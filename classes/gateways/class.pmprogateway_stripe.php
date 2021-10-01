@@ -716,50 +716,43 @@ class PMProGateway_stripe extends PMProGateway {
 	/**
 	 * AJAX callback to create webhooks.
 	 */
-	static function wp_ajax_pmpro_stripe_create_webhook() {
-		// TODO: Try to get secretkey from Stripe Connect before sending legacy key.
+	static function wp_ajax_pmpro_stripe_create_webhook( $silent = false ) {
 		$secretkey = sanitize_text_field( $_REQUEST['secretkey'] );
 		
 		$stripe = new PMProGateway_stripe();
 		Stripe\Stripe::setApiKey( $secretkey );
 		
-		$r = $stripe::update_webhook_events();
-		
-		if ( empty( $r ) ) {
+		$update_webhook_response = $stripe::update_webhook_events();
+
+		if ( empty( $update_webhook_response ) || is_wp_error( $update_webhook_response ) ) {
+			$message = empty( $update_webhook_response ) ? __( 'Webhook creation failed. You might already have a webhook set up.', 'paid-memberships-pro' ) : $update_webhook_response->get_error_message();
 			$r = array(
 				'success' => false,
 				'notice' => 'error',
-				'message' => __( 'Webhook creation failed. You might already have a webhook set up.', 'paid-memberships-pro' ),
-				'response' => $r
+				'message' => $message,
+				'response' => $update_webhook_response
 			);
 		} else {
-			if ( is_wp_error( $r ) ) {
-				$r = array(
-					'success' => false,
-					'notice' => 'error',
-					'message' => $r->get_error_message(),
-					'response' => $r
-				);
-			} else {
-				$r = array(
-					'success' => true,
-					'notice' => 'notice-success',
-					'message' => __( 'Your webhook is enabled.', 'paid-memberships-pro' ),
-					'response' => $r
-				);
-			}
+			$r = array(
+				'success' => true,
+				'notice' => 'notice-success',
+				'message' => __( 'Your webhook is enabled.', 'paid-memberships-pro' ),
+				'response' => $update_webhook_response
+			);
 		}
 		
-		echo json_encode( $r );
-		
-		exit;
+		if ( $silent ) {
+			return $r;
+		} else {
+			echo json_encode( $r );
+			exit;
+		}
 	}
 	
 	/**
 	 * AJAX callback to disable webhooks.
 	 */
-	static function wp_ajax_pmpro_stripe_delete_webhook() {
-		// TODO: Try to get secretkey from Stripe Connect before sending legacy key.
+	static function wp_ajax_pmpro_stripe_delete_webhook( $silent = false ) {
 		$secretkey = sanitize_text_field( $_REQUEST['secretkey'] );
 		
 		$stripe = new PMProGateway_stripe();
@@ -767,117 +760,48 @@ class PMProGateway_stripe extends PMProGateway {
 		
 		$webhook = self::does_webhook_exist();
 
-		if ( empty( $webhook ) ) {
-			$r = array(
-				'success' => true,
-				'notice' => 'error',
-				'message' => __( 'A webhook in Stripe is required to process recurring payments, manage failed payments, and synchronize cancellations.', 'paid-memberships-pro' )
-			);
-		} else {
-			$r = $stripe::delete_webhook( $webhook, $secretkey );
-			
-			if ( is_wp_error( $r ) ) {
+		$r = array(
+			'success' => true,
+			'notice' => 'error',
+			'message' => __( 'A webhook in Stripe is required to process recurring payments, manage failed payments, and synchronize cancellations.', 'paid-memberships-pro' )
+		);
+		if ( ! empty( $webhook ) ) {
+			$delete_webhook_response = $stripe::delete_webhook( $webhook, $secretkey );
+
+			if ( is_wp_error( $delete_webhook_response ) || empty( $delete_webhook_response['deleted'] ) || $delete_webhook_response['deleted'] != true ) {
+				$message = is_wp_error( $delete_webhook_response ) ? $delete_webhook_response->get_error_message() : __( 'There was an error deleting the webhook.', 'paid-memberships-pro' );
 				$r = array(
 					'success' => false,
 					'notice' => 'error',
-					'message' => $r->get_error_message(),
-					'response' => $r
+					'message' => $message,
 				);
-			} else {
-				if ( ! empty( $r['deleted'] ) && $r['deleted'] == true ) {
-					$r = array(
-						'success' => true,
-						'notice' => 'error',
-						'message' => __( 'A webhook in Stripe is required to process recurring payments, manage failed payments, and synchronize cancellations.', 'paid-memberships-pro' ),
-						'response' => $r
-					);
-				} else {
-					$r = array(
-						'success' => false,
-						'notice' => 'error',
-						'message' => __( 'There was an error deleting the webhook.', 'paid-memberships-pro' ),
-						'response' => $r
-					);
-				}
 			}
+			$r['response'] = $delete_webhook_response;
 		}
 
-		echo json_encode( $r );
-		
-		exit;
+		if ( $silent ) {
+			return $r;
+		} else {
+			echo json_encode( $r );
+			exit;
+		}
 	}
 
 	/**
-	 * AJAX callback to disable webhooks.
+	 * AJAX callback to rebuild webhook.
 	 */
 	static function wp_ajax_pmpro_stripe_rebuild_webhook() {
-		$secretkey = sanitize_text_field( $_REQUEST['secretkey'] );
-		
-		$stripe = new PMProGateway_stripe();
-		Stripe\Stripe::setApiKey( $secretkey );
-		
-		$webhook = self::does_webhook_exist();
-
-		if ( empty( $webhook ) ) {
-			$r = array(
-				'success' => true,
-				'notice' => 'error',
-				'message' => __( 'A webhook in Stripe is required to process recurring payments, manage failed payments, and synchronize cancellations.', 'paid-memberships-pro' )
-			);
-		} else {
-			$r = $stripe::delete_webhook( $webhook, $secretkey );
-			
-			if ( is_wp_error( $r ) ) {
-				$r = array(
-					'success' => false,
-					'notice' => 'error',
-					'message' => $r->get_error_message(),
-					'response' => $r
-				);
-			} else {
-				if ( ! empty( $r['deleted'] ) && $r['deleted'] == true ) {
-					// Deletion succeeded. Rebuild...
-					self::does_webhook_exist( true ); // Break the webhook cache.
-					$r = $stripe::update_webhook_events();
-		
-					if ( empty( $r ) ) {
-						$r = array(
-							'success' => false,
-							'notice' => 'error',
-							'message' => $r,
-							'message' => __( 'Webhook creation failed. Please refresh and try again.', 'paid-memberships-pro' ),
-							'response' => $r
-						);
-					} else {
-						if ( is_wp_error( $r ) ) {
-							$r = array(
-								'success' => false,
-								'notice' => 'error',
-								'message' => $r->get_error_message(),
-								'response' => $r
-							);
-						} else {
-							$r = array(
-								'success' => true,
-								'notice' => 'notice-success',
-								'message' => __( 'Your webhook is enabled.', 'paid-memberships-pro' ),
-								'response' => $r
-							);
-						}
-					}
-				} else {
-					$r = array(
-						'success' => false,
-						'notice' => 'error',
-						'message' => __( 'There was an error deleting the webhook.', 'paid-memberships-pro' ),
-						'response' => $r
-					);
-				}
+		// First try to delete the webhook.
+		$r = self::wp_ajax_pmpro_stripe_delete_webhook( true ) ;
+		if ( $r['success'] ) {
+			// Webhook was successfully deleted. Now make a new one.
+			$r = self::wp_ajax_pmpro_stripe_create_webhook( true );
+			if ( ! $r['success'] ) {
+				$r['message'] = __( 'Webhook creation failed. Please refresh and try again.', 'paid-memberships-pro' );
 			}
 		}
 
 		echo json_encode( $r );
-		
 		exit;
 	}
 
