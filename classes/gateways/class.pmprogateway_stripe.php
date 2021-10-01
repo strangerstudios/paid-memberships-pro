@@ -828,8 +828,12 @@ class PMProGateway_stripe extends PMProGateway {
 	 * Get available webhooks
 	 * 
 	 * @since 2.4
+	 * @deprecated TBD. Only deprecated for public use, will be changed to private nonstatic in a future version.
 	 */
-	static function get_webhooks( $limit = 10 ) {		
+	static function get_webhooks( $limit = 10 ) {
+		if ( method_being_called_from_outside_class() ) {
+			_deprecated_function( __FUNCTION__, 'TBD' );
+		}
 		if ( ! class_exists( 'Stripe\WebhookEndpoint' ) ) {
 			// Load Stripe library.
 			new PMProGateway_stripe();
@@ -877,8 +881,12 @@ class PMProGateway_stripe extends PMProGateway {
 	 * Create webhook with relevant events
 	 * 
 	 * @since 2.4
+	 * @deprecated TBD. Only deprecated for public use, will be changed to private nonstatic in a future version.
 	 */
 	static function create_webhook() {
+		if ( method_being_called_from_outside_class() ) {
+			_deprecated_function( __FUNCTION__, 'TBD' );
+		}
 		try {
 			$create = Stripe_Webhook::create([
 				'url' => self::get_site_webhook_url(),
@@ -903,8 +911,13 @@ class PMProGateway_stripe extends PMProGateway {
 	 * See if a webhook is registered with Stripe.
 	 * 
 	 * @since 2.4
+	 * @deprecated TBD. Only deprecated for public use, will be changed to private nonstatic in a future version.
 	 */
 	static function does_webhook_exist( $force = false ) {
+		if ( method_being_called_from_outside_class() ) {
+			_deprecated_function( __FUNCTION__, 'TBD' );
+		}
+
 		static $cached_webhook = null;
 		if ( ! empty( $cached_webhook ) && ! $force ) {
 			return $cached_webhook;
@@ -947,8 +960,12 @@ class PMProGateway_stripe extends PMProGateway {
 	 * Get a list of events that are missing between the created existing webhook and required webhook events for Paid Memberships Pro.
 	 * 
 	 * @since 2.4
+	 * @deprecated TBD. Only deprecated for public use, will be changed to private nonstatic in a future version.
 	 */
 	static function check_missing_webhook_events( $webhook_events ) {
+		if ( method_being_called_from_outside_class() ) {
+			_deprecated_function( __FUNCTION__, 'TBD' );
+		}
 
 		// Get required events
 		$pmpro_webhook_events = self::webhook_events();
@@ -973,8 +990,12 @@ class PMProGateway_stripe extends PMProGateway {
 	 * Update required webhook enabled events.
 	 * 
 	 * @since 2.4
+	 * @deprecated TBD. Only deprecated for public use, will be changed to private nonstatic in a future version.
 	 */
 	static function update_webhook_events() {
+		if ( method_being_called_from_outside_class() ) {
+			_deprecated_function( __FUNCTION__, 'TBD' );
+		}
 
 		// Also checks database to see if it's been saved.
 		$webhook = self::does_webhook_exist();
@@ -1018,8 +1039,13 @@ class PMProGateway_stripe extends PMProGateway {
 	 * Delete an existing webhook.
 	 * 
 	 * @since 2.4
+	 * @deprecated TBD. Only deprecated for public use, will be changed to private nonstatic in a future version.
 	 */
 	static function delete_webhook( $webhook_id, $secretkey = false ) {
+		if ( method_being_called_from_outside_class() ) {
+			_deprecated_function( __FUNCTION__, 'TBD' );
+		}
+
 		if ( empty( $secretkey ) ) {
 			$secretkey = self::get_secretkey();
 		}
@@ -3395,5 +3421,21 @@ class PMProGateway_stripe extends PMProGateway {
 		}
 
 		return intval( $price * $currency_unit_multiplier );
+	}
+	/**
+	 * Determine whether the calling method was called from
+	 * inside or outside of the Stripe Gateway class.
+	 *
+	 * Useful for preparing to change method visibility from
+	 * public to private.
+	 *
+	 * @return bool
+	 */
+	static private function method_being_called_from_outside_class() {
+		$backtrace = debug_backtrace();
+
+		// $backtrace[0] is the call to this method.
+		// $backtrace[1] is the call to the public method that called this one.
+		return false === strpos( $backtrace[1]['file'], 'class.pmprogateway_stripe.php' );
 	}
 }
