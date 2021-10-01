@@ -1540,9 +1540,12 @@ class PMProGateway_stripe extends PMProGateway {
 		// Figure out user_id.
 		if ( ! empty( $order->user_id ) ) {
 			$user_id = $order->user_id;
-		} elseif ( ! empty( $current_user->ID ) ) {
+		}
+
+		if ( empty( $user_id ) && ! empty( $current_user->ID ) ) {
 			$user_id = $current_user->ID;
 		}
+
 		$user = empty( $user_id ) ? null : get_userdata( $user_id );
 
 		// Make sure we have an order.
@@ -1554,16 +1557,20 @@ class PMProGateway_stripe extends PMProGateway {
 			), null, 'stripe', $order->Gateway->gateway_environment );
 		}
 
-	$user_customer_id = get_user_meta( $user_id, 'pmpro_stripe_customerid', true );
+		$user_customer_id = get_user_meta( $user_id, 'pmpro_stripe_customerid', true );
 
 		// Try to find the customer's ID.
 		if ( ! empty( $order->customer_id ) ) {
 			// Customer ID is already in the order.
 			$customer_id = $order->customer_id;
-		} elseif ( ! empty( $user_id ) && ! empty( $user_customer_id ) ) {
+		}
+
+		if ( empty( $customer_id ) && ! empty( $user_id ) && ! empty( $user_customer_id ) ) {
 			// Customer ID in user meta.
 			$customer_id = $user_customer_id;
-		} elseif ( ! empty( $order->subscription_transaction_id ) && strpos( $order->subscription_transaction_id, "sub_" ) !== false ) {
+		}
+
+		if ( empty( $customer_id ) && ! empty( $order->subscription_transaction_id ) && strpos( $order->subscription_transaction_id, "sub_" ) !== false ) {
 			// Get the Customer ID from their subscription.
 			try {
 				$subscription = Stripe_Subscription::retrieve( $order->subscription_transaction_id );
@@ -1582,7 +1589,9 @@ class PMProGateway_stripe extends PMProGateway {
 			if ( ! empty( $subscription ) && ! empty( $subscription->customer ) ) {
 				$customer_id = $subscription->customer;
 			}
-		} elseif ( ! empty( $order->payment_transaction_id ) && strpos( $order->payment_transaction_id, "ch_" ) !== false ) {
+		}
+
+		if ( empty( $customer_id ) && ! empty( $order->payment_transaction_id ) && strpos( $order->payment_transaction_id, "ch_" ) !== false ) {
 			// Get the Customer ID from their charge.
 			try {
 				$charge = Stripe_Charge::retrieve( $order->payment_transaction_id );
@@ -1600,7 +1609,9 @@ class PMProGateway_stripe extends PMProGateway {
 			if ( ! empty( $charge ) && ! empty( $charge->customer ) ) {
 				$customer_id = $charge->customer;
 			}
-		} elseif ( ! empty( $order->payment_transaction_id ) && strpos( $order->payment_transaction_id, "in_" ) !== false ) {
+		}
+
+		if ( empty( $customer_id ) && ! empty( $order->payment_transaction_id ) && strpos( $order->payment_transaction_id, "in_" ) !== false ) {
 			// Get the Customer ID from their invoice.
 			try {
 				$invoice = Stripe_Invoice::retrieve( $order->payment_transaction_id );
