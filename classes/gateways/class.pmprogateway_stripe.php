@@ -1791,6 +1791,7 @@ class PMProGateway_stripe extends PMProGateway {
 			return false;
 		}
 
+		// If we don't have a user yet, we need to update their user meta after registration.
 		if ( empty( $user_id ) ) {
 			// User not registered yet, queue it up.
 			global $pmpro_stripe_customer_id;
