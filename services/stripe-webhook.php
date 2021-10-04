@@ -488,7 +488,20 @@
         }
 
 		// Try to get the order ID from the subscription ID in the event.
-		$old_order_id = $wpdb->get_var("SELECT id FROM $wpdb->pmpro_membership_orders WHERE (subscription_transaction_id =  '"  . esc_sql($subscription_id) . "') AND gateway = 'stripe' ORDER BY timestamp DESC LIMIT 1");
+		$old_order_id = $wpdb->get_var(
+			$wpdb->prepare(
+				"
+					SELECT id
+					FROM $wpdb->pmpro_membership_orders
+					WHERE
+						subscription_transaction_id = %s
+						AND gateway = 'stripe'
+					ORDER BY timestamp DESC
+					LIMIT 1
+				",
+				$subscription_id
+			)
+		);
 
 		if(empty($old_order_id)){
 			// Try to get the order ID from the invoice ID in the event.
