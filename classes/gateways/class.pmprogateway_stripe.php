@@ -1683,7 +1683,7 @@ class PMProGateway_stripe extends PMProGateway {
 	 * @param MemberOrder $order to create/update Stripe customer for.
 	 * @return Stripe_Customer|false
 	 */
-	private function update_customer_from_order( $order ) {
+	private function update_customer_at_checkout( $order ) {
 		global $current_user;
 
 		// Get user's ID.
