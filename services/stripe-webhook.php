@@ -104,12 +104,6 @@
 					$old_order = new MemberOrder();
 					$old_order->getLastMemberOrderBySubscriptionTransactionID($pmpro_stripe_event->data->object->subscription);
 					
-					//lookup by customer id
-					if(empty($old_order) || empty($old_order->id))
-					{
-						$old_order->getLastMemberOrderBySubscriptionTransactionID($pmpro_stripe_event->data->object->customer);
-					}
-					
 					//still can't find the order
 					if(empty($old_order) || empty($old_order->id))
 					{
@@ -426,8 +420,11 @@
 		pmpro_stripeWebhookExit();
 	}
 
-	function getUserFromInvoiceEvent($pmpro_stripe_event)
-	{
+	/**
+	 * @deprecated TBD.
+	 */
+	function getUserFromInvoiceEvent($pmpro_stripe_event) {
+		_deprecated_function( __FUNCTION__, 'TBD' );
 		//pause here to give PMPro a chance to finish checkout
 		sleep(PMPRO_STRIPE_WEBHOOK_DELAY);
 
@@ -444,8 +441,12 @@
 			return false;
 	}
 
-	function getUserFromCustomerEvent($pmpro_stripe_event, $status = false, $checkplan = true)
-	{
+	/**
+	 * @deprecated TBD.
+	 */
+	function getUserFromCustomerEvent($pmpro_stripe_event, $status = false, $checkplan = true) {
+		_deprecated_function( __FUNCTION__, 'TBD' );
+
 		//pause here to give PMPro a chance to finish checkout
 		sleep(PMPRO_STRIPE_WEBHOOK_DELAY);
 
@@ -480,28 +481,30 @@
 
 		global $wpdb;
 
-		$customer_id = $pmpro_stripe_event->data->object->customer;
-
 		if ( ! empty( $pmpro_stripe_event->data->object->subscription ) ) {
             $subscription_id = $pmpro_stripe_event->data->object->subscription;
         } else {
             $subscription_id = $pmpro_stripe_event->data->object->id;
         }
 
-		// no customer passed? we can't cross reference
-		if(empty($customer_id))
-			return false;
+		// Try to get the order ID from the subscription ID in the event.
+		$old_order_id = $wpdb->get_var(
+			$wpdb->prepare(
+				"
+					SELECT id
+					FROM $wpdb->pmpro_membership_orders
+					WHERE
+						subscription_transaction_id = %s
+						AND gateway = 'stripe'
+					ORDER BY timestamp DESC
+					LIMIT 1
+				",
+				$subscription_id
+			)
+		);
 
-		// okay, add an invoice. first lookup the user_id from the subscription id passed
-		$old_order_id = $wpdb->get_var("SELECT id FROM $wpdb->pmpro_membership_orders WHERE (subscription_transaction_id = '" . $customer_id . "' OR subscription_transaction_id = '"  . esc_sql($subscription_id) . "') AND gateway = 'stripe' ORDER BY timestamp DESC LIMIT 1");
-
-		// since v1.8, PMPro may store the Stripe subscription_id (sub_XXXX) instead of the Stripe customer_id (cus_XXXX)
-		// so that last query may turn up an empty result
-		if(empty($old_order_id))
-		{
-			// let's look up the Stripe subscription_id instead
-			// unfortunately, the subscription_id is not included in the JSON data from the Stripe event
-			// so, we must look up the subscription_id from the invoice_id, which IS included in the JSON data from the Stripe event
+		if(empty($old_order_id)){
+			// Try to get the order ID from the invoice ID in the event.
 			$invoice_id = $pmpro_stripe_event->data->object->invoice;
 
 			try {
@@ -519,6 +522,7 @@
 			}
 		}
 
+		// If we have an ID, get the associated MemberOrder.
 		if (!empty($old_order_id)) {
 
 			$old_order = new MemberOrder( $old_order_id );
