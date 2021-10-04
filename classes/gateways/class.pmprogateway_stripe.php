@@ -1782,7 +1782,7 @@ class PMProGateway_stripe extends PMProGateway {
 			}
 		}
 
-		// The current user does not have an existing customer in Stripe. Create one.
+		// No customer yet. Need to create one.
 		$customer = $this->create_customer( $customer_args );
 		if ( is_string( $customer ) ) {
 			// We were not able to create a new user in Stripe.
