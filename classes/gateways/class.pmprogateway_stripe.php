@@ -1526,7 +1526,7 @@ class PMProGateway_stripe extends PMProGateway {
 	 */
 	function getCustomer( &$order = false, $force = false ) {
 		_deprecated_function( __FUNCTION__, 'TBD', 'update_customer_from_user()' );
-		return $this->update_customer_from_order( $order );
+		return $this->update_customer_at_checkout( $order );
 	}
 
 	/**
@@ -1546,6 +1546,25 @@ class PMProGateway_stripe extends PMProGateway {
 		} catch ( \Exception $e ) {
 			// Assume no customer found.
 		}
+	}
+
+	/**
+	 * Check whether a given Stripe customer has a billing address set.
+	 *
+	 * @since TBD
+	 *
+	 * @param Stripe_Customer $customer to check.
+	 * @return bool
+	 */
+	private function customer_has_billing_address( $customer ) {
+		return (
+			! empty( $customer ) &&
+			! empty( $customer->address->line1 ) &&
+			! empty( $customer->address->city ) &&
+			! empty( $customer->address->state ) &&
+			! empty( $customer->address->postal_code ) &&
+			! empty( $customer->address->country )
+		);
 	}
 
 	/**
@@ -1694,6 +1713,7 @@ class PMProGateway_stripe extends PMProGateway {
 			$user_id = $current_user->ID;
 		}
 		$user = empty( $user_id ) ? null : get_userdata( $user_id );
+		$customer = empty( $user_id ) ? null : $this->get_customer_for_user( $user_id );
 
 		// Get customer name.
 		if ( ! empty( $order->FirstName ) && ! empty( $order->LastName ) ) {
@@ -1725,25 +1745,36 @@ class PMProGateway_stripe extends PMProGateway {
 		$customer_args = array(
 			'email'       => $email,
 			'description' => $name . ' (' . $email . ')',
-			'address'     => array(
+		);
+
+		// Maybe update billing address for customer.
+		if (
+			! empty( $order->billing->street ) &&
+			! empty( $order->billing->city ) &&
+			! empty( $order->billing->state ) &&
+			! empty( $order->billing->postal_code ) &&
+			! empty( $order->billing->country ) 
+		) {
+			// We collected a billing address at checkout.
+			// Send it to Stripe.
+			$customer_args['address'] = array(
 				'city'        => $order->billing->city,
 				'country'     => $order->billing->country,
 				'line1'       => $order->billing->street,
 				'line2'       => '',
 				'postal_code' => $order->billing->zip,
 				'state'       => $order->billing->state,
-			),
-		);
-
-		if (
-			! empty( $user ) &&
-			empty( $customer_args['address']['city'] ) &&
-			empty( $customer_args['address']['country'] ) &&
-			empty( $customer_args['address']['line1'] ) &&
-			empty( $customer_args['address']['line2'] ) &&
-			empty( $customer_args['address']['postal_code'] ) &&
-			empty( $customer_args['address']['state'] )
+			);
+		} elseif (
+			! customer_has_billing_address( $customer ) &&
+			! empty( $user->pmpro_baddress1 ) &&
+			! empty( $user->pmpro_bcity ) &&
+			! empty( $user->pmpro_bstate ) &&
+			! empty( $user->pmpro_bzipcode ) &&
+			! empty( $user->pmpro_bcountry ) 
 		) {
+			// We have an address in user meta and there is
+			// no address in Stripe. May as well send it.
 			$customer_args['address'] = array(
 				'city'        => $user->pmpro_bcity,
 				'country'     => $user->pmpro_bcountry,
@@ -1763,23 +1794,19 @@ class PMProGateway_stripe extends PMProGateway {
 		 * @param array       $customer_args to be sent.
 		 * @param MemberOrder $order being used to create/update customer.
 		 */
-		$customer_args = apply_filters( 'pmpro_stripe_update_customer_from_order', $customer_args, $order );
+		$customer_args = apply_filters( 'pmpro_stripe_update_customer_at_checkout', $customer_args, $order );
 
 		// Check if we have an existing user.
-		if ( ! empty( $user_id ) ) {
-			// Check if the existing user is already a customer in Stripe.
-			$customer = $this->get_customer_for_user( $user_id );
-			if ( ! empty( $customer ) ) {
-				// User is already a customer in Stripe. Update.
-				$customer = $this->update_customer( $current_customer->ID, $customer );
-				if ( is_string( $customer ) ) {
-					// We were not able to create a new user in Stripe.
-					$order->error      = __( "Error updating customer record with Stripe.", 'paid-memberships-pro' ) . " " . $customer;
-					$order->shorterror = $order->error;
-					return false;
-				}
-				return $customer;
+		if ( ! empty( $customer ) ) {
+			// User is already a customer in Stripe. Update.
+			$customer = $this->update_customer( $current_customer->ID, $customer );
+			if ( is_string( $customer ) ) {
+				// We were not able to create a new user in Stripe.
+				$order->error      = __( "Error updating customer record with Stripe.", 'paid-memberships-pro' ) . " " . $customer;
+				$order->shorterror = $order->error;
+				return false;
 			}
+			return $customer;
 		}
 
 		// No customer yet. Need to create one.
@@ -1808,7 +1835,7 @@ class PMProGateway_stripe extends PMProGateway {
 		 * Fires after a Stripe_Customer is created at checkout.
 		 *
 		 * @since Unknown
-		 * @deprecated TBD. Use pmpro_stripe_update_customer_from_user or pmpro_stripe_update_customer_from_order.
+		 * @deprecated TBD. Use pmpro_stripe_update_customer_from_user or pmpro_stripe_update_customer_at_checkout.
 		 *
 		 * @param array       $customer_args to be sent.
 		 * @param MemberOrder $order being used to create/update customer.
@@ -1833,6 +1860,9 @@ class PMProGateway_stripe extends PMProGateway {
 			return false;
 		}
 
+		// Get the existing customer from Stripe.
+		$customer = $this->get_customer_for_user( $user_id );
+
 		// Get the name for the customer.
 		$name = trim( $user->first_name . " " . $user->last_name );
 		if ( empty( $name ) ) {
@@ -1844,15 +1874,28 @@ class PMProGateway_stripe extends PMProGateway {
 		$customer_args = array(
 			'email'       => $user->user_email,
 			'description' => $name . ' (' . $email . ')',
-			'address'     => array(
+		);
+
+		// Maybe update billing address for customer.
+		if (
+			! customer_has_billing_address( $customer ) &&
+			! empty( $user->pmpro_baddress1 ) &&
+			! empty( $user->pmpro_bcity ) &&
+			! empty( $user->pmpro_bstate ) &&
+			! empty( $user->pmpro_bzipcode ) &&
+			! empty( $user->pmpro_bcountry ) 
+		) {
+			// We have an address in user meta and there is
+			// no address in Stripe. May as well send it.
+			$customer_args['address'] = array(
 				'city'        => $user->pmpro_bcity,
 				'country'     => $user->pmpro_bcountry,
 				'line1'       => $user->pmpro_baddress1,
 				'line2'       => $user->pmpro_baddress2,
 				'postal_code' => $user->pmpro_bzipcode,
 				'state'       => $user->pmpro_bstate,
-			),
-		);
+			);
+		}
 
 		/**
 		 * Change the information that is sent when updating/creating
@@ -1866,7 +1909,6 @@ class PMProGateway_stripe extends PMProGateway {
 		$customer_args = apply_filters( 'pmpro_stripe_update_customer_from_user', $customer_args, $user );
 
 		// Update the customer.
-		$customer = $this->get_customer_for_user( $user_id );
 		if ( empty( $customer ) ) {
 			// We need to build a new customer.
 			$customer = $this->create_customer( $customer_args );
@@ -2626,7 +2668,7 @@ class PMProGateway_stripe extends PMProGateway {
 			return true;
 		}
 		// Temporarily setting this, will be removed when this function is deprecated.
-		$this->customer = $this->update_customer_from_order( $order );
+		$this->customer = $this->update_customer_at_checkout( $order );
 		return $this->customer;
 	}
 
