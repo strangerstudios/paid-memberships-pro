@@ -3431,7 +3431,7 @@ class PMProGateway_stripe extends PMProGateway {
 	 *
 	 * @return bool
 	 */
-	static private function method_being_called_from_outside_class() {
+	private static function method_being_called_from_outside_class() {
 		$backtrace = debug_backtrace( DEBUG_BACKTRACE_IGNORE_ARGS );
 
 		// $backtrace[0] is the call to this method.
