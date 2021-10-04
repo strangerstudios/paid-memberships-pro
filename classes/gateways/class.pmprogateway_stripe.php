@@ -1766,7 +1766,7 @@ class PMProGateway_stripe extends PMProGateway {
 				'state'       => $order->billing->state,
 			);
 		} elseif (
-			! customer_has_billing_address( $customer ) &&
+			! $this->customer_has_billing_address( $customer ) &&
 			! empty( $user->pmpro_baddress1 ) &&
 			! empty( $user->pmpro_bcity ) &&
 			! empty( $user->pmpro_bstate ) &&
@@ -1878,7 +1878,7 @@ class PMProGateway_stripe extends PMProGateway {
 
 		// Maybe update billing address for customer.
 		if (
-			! customer_has_billing_address( $customer ) &&
+			! $this->customer_has_billing_address( $customer ) &&
 			! empty( $user->pmpro_baddress1 ) &&
 			! empty( $user->pmpro_bcity ) &&
 			! empty( $user->pmpro_bstate ) &&
