@@ -1540,7 +1540,7 @@ class PMProGateway_stripe extends PMProGateway {
 	private function get_customer( $customer_id ) {
 		try {
 			$customer = Stripe_Customer::retrieve( $customer_id );
-			return $this->customer;
+			return $customer;
 		} catch ( \Throwable $e ) {
 			// Assume no customer found.
 		} catch ( \Exception $e ) {
