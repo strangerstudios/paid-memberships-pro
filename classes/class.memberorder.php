@@ -159,17 +159,17 @@
 		 */
 		function get_original_subscription_order( $subscription_id = '' ){
 			global $wpdb;
-			
+
 			// Default to use the subscription ID on this order object.
 			if ( empty( $subscription_id ) && ! empty( $this->subscription_transaction_id ) ) {
 				$subscription_id = $this->subscription_transaction_id;
 			}
-			
+
 			// Must have a subscription ID.
 			if ( empty( $subscription_id ) ) {
 				return false;
 			}
-			
+
 			// Get some other values from this order to narrow the search.
 			if ( ! empty( $this->user_id ) ) {
 				$user_id = $this->user_id;
@@ -186,7 +186,7 @@
 			} else {
 				$gateway_environment = '';
 			}
-			
+
 			// Double check for a user_id, gateway and gateway environment.
 			$sql = $wpdb->prepare(
 				"SELECT ID
@@ -204,7 +204,7 @@
 					 $gateway_environment
 				 )
 			 );
-			
+
 			$order_id = $wpdb->get_var( $sql );
 			if ( ! empty( $order_id ) ) {
 				return new MemberOrder( $order_id );
@@ -430,10 +430,10 @@
 			if(!empty($this->user))
 				return $this->user;
 
-			
+
 			$this->user = $wpdb->get_row("SELECT * FROM $wpdb->users WHERE ID = '" . $this->user_id . "' LIMIT 1");
-			
-			// Fix the timestamp for local time 
+
+			// Fix the timestamp for local time
 			if ( ! empty( $this->user ) && ! empty( $this->user->user_registered ) ) {
 				$this->user->user_registered = strtotime( get_date_from_gmt( $this->user->user_registered, 'Y-m-d H:i:s' ) );
 			}
@@ -482,7 +482,7 @@
 			{
 				$this->membership_level = $wpdb->get_row("SELECT l.* FROM $wpdb->pmpro_membership_levels l WHERE l.id = '" . $this->membership_id . "' LIMIT 1");
 			}
-			
+
 			// Round prices to avoid extra decimals.
 			if( ! empty( $this->membership_level ) ) {
 				$this->membership_level->initial_payment = pmpro_round_price( $this->membership_level->initial_payment );
@@ -492,7 +492,7 @@
 
 			return $this->membership_level;
 		}
-		
+
 		/**
 		 * Get a membership level object at checkout
 		 * for the level associated with this order.
@@ -507,27 +507,27 @@
 			if( ! empty( $this->membership_level ) && empty( $force ) ) {
 				return $this->membership_level;
 			}
-			
+
 			// If for some reason, we haven't setup pmpro_level yet, do that.
 			if ( empty( $pmpro_level ) ) {
 				$pmpro_level = pmpro_getLevelAtCheckout();
 			}
-			
+
 			// Set the level to the checkout level global.
 			$this->membership_level = $pmpro_level;
-			
+
 			// Fix the membership level id.
 			if(!empty( $this->membership_level) && !empty($this->membership_level->level_id)) {
 				$this->membership_level->id = $this->membership_level->level_id;
 			}
-			
+
 			// Round prices to avoid extra decimals.
 			if( ! empty( $this->membership_level ) ) {
 				$this->membership_level->initial_payment = pmpro_round_price( $this->membership_level->initial_payment );
 				$this->membership_level->billing_amount = pmpro_round_price( $this->membership_level->billing_amount );
 				$this->membership_level->trial_amount = pmpro_round_price( $this->membership_level->trial_amount );
 			}
-			
+
 			return $this->membership_level;
 		}
 
@@ -624,7 +624,7 @@
 			if($wpdb->query($this->sqlQuery) !== "false") {
 				$this->timestamp = strtotime( $date );
 				do_action('pmpro_updated_order', $this);
-				
+
 				return $this->getMemberOrderByID($this->id);
 			} else {
 				return false;
@@ -669,7 +669,7 @@
 			} else {
 				$total = 0;
 			}
-			
+
 			//these fix some warnings/notices
 			if(empty($this->billing))
 			{
@@ -711,7 +711,7 @@
 				$this->gateway = pmpro_getOption("gateway");
 			if(empty($this->gateway_environment))
 				$this->gateway_environment = pmpro_getOption("gateway_environment");
-			
+
 			if(empty($this->datetime) && empty($this->timestamp))
 				$this->datetime = date("Y-m-d H:i:s", time());
 			elseif(empty($this->datetime) && !empty($this->timestamp) && is_numeric($this->timestamp))
@@ -777,13 +777,13 @@
 				//set up actions
 				$before_action = "pmpro_add_order";
 				$after_action = "pmpro_added_order";
-				
+
 				//only on inserts, we might want to set the expirationmonth and expirationyear from ExpirationDate
 				if( (empty($this->expirationmonth) || empty($this->expirationyear)) && !empty($this->ExpirationDate)) {
 					$this->expirationmonth = substr($this->ExpirationDate, 0, 2);
 					$this->expirationyear = substr($this->ExpirationDate, 2, 4);
 				}
-				
+
 				//insert
 				$this->sqlQuery = "INSERT INTO $wpdb->pmpro_membership_orders
 								(`code`, `session_id`, `user_id`, `membership_id`, `paypal_token`, `billing_name`, `billing_street`, `billing_city`, `billing_state`, `billing_zip`, `billing_country`, `billing_phone`, `subtotal`, `tax`, `couponamount`, `certificate_id`, `certificateamount`, `total`, `payment_type`, `cardtype`, `accountnumber`, `expirationmonth`, `expirationyear`, `status`, `gateway`, `gateway_environment`, `payment_transaction_id`, `subscription_transaction_id`, `timestamp`, `affiliate_id`, `affiliate_subid`, `notes`, `checkout_id`)
@@ -871,12 +871,12 @@
 				return false;
 
 			$this->sqlQuery = "UPDATE $wpdb->pmpro_membership_orders SET status = '" . esc_sql($newstatus) . "' WHERE id = '" . $this->id . "' LIMIT 1";
-			
+
 			do_action('pmpro_update_order', $this);
 			if($wpdb->query($this->sqlQuery) !== false){
 				$this->status = $newstatus;
 				do_action('pmpro_updated_order', $this);
-				
+
 				return true;
 			}else{
 				return false;
@@ -910,7 +910,7 @@
 		 */
 		function cancel() {
 			global $wpdb;
-			
+
 			//only need to cancel on the gateway if there is a subscription id
 			if(empty($this->subscription_transaction_id)) {
 				//just mark as cancelled
@@ -922,7 +922,7 @@
 
 				//cancel orders for the same subscription
 				//Note: We do this early to avoid race conditions if and when the
-				//gateway send the cancel webhook after cancelling the subscription.				
+				//gateway send the cancel webhook after cancelling the subscription.
 				$sqlQuery = $wpdb->prepare(
 					"UPDATE $wpdb->pmpro_membership_orders 
 						SET `status` = 'cancelled' 
@@ -931,7 +931,7 @@
 							AND gateway = %s 
 							AND gateway_environment = %s 
 							AND subscription_transaction_id = %s 
-							AND `status` IN('success', '') ",					
+							AND `status` IN('success', '') ",
 					$this->user_id,
 					$this->membership_id,
 					$this->gateway,
@@ -941,7 +941,7 @@
 				do_action('pmpro_update_order', $this);
 				$wpdb->query($sqlQuery);
 				do_action('pmpro_updated_order', $this);
-				
+
 				//cancel the gateway subscription first
 				if (is_object($this->Gateway)) {
 					$result = $this->Gateway->cancel( $this );
@@ -970,13 +970,13 @@
 				} else {
 					//Note: status would have been set to cancelled by the gateway class. So we don't have to update it here.
 
-					//remove billing numbers in pmpro_memberships_users if the membership is still active					
+					//remove billing numbers in pmpro_memberships_users if the membership is still active
 					$sqlQuery = "UPDATE $wpdb->pmpro_memberships_users SET initial_payment = 0, billing_amount = 0, cycle_number = 0 WHERE user_id = '" . $this->user_id . "' AND membership_id = '" . $this->membership_id . "' AND status = 'active'";
 					$wpdb->query($sqlQuery);
 				}
-				
-				
-				
+
+
+
 				return $result;
 			}
 		}
@@ -1011,7 +1011,7 @@
 			}
 		}
 
-		/** 
+		/**
 		 * Get TOS consent information.
 		 * @since  1.9.5
 		 */
@@ -1019,7 +1019,7 @@
 			if ( empty( $this->id ) ) {
 				return false;
 			}
-			
+
 			$consent_log = pmpro_get_consent_log( $this->user_id );
 			foreach( $consent_log as $entry ) {
 				if( $entry['order_id'] == $this->id ) {
@@ -1043,7 +1043,7 @@
 				$last_subscription_order = new MemberOrder();
 				$last_subscription_order->getLastMemberOrderBySubscriptionTransactionID( $this->subscription_transaction_id );
 				if ( ! empty( $last_subscription_order->billing ) && ! empty( $last_subscription_order->billing->street ) ) {
-					// Last order in subscription has biling information. Pull data from there. 
+					// Last order in subscription has biling information. Pull data from there.
 					$this->Address1    = $last_subscription_order->billing->street;
 					$this->City        = $last_subscription_order->billing->city;
 					$this->State       = $last_subscription_order->billing->state;
