@@ -2149,6 +2149,68 @@ class PMProGateway_stripe extends PMProGateway {
 		$update_order->saveOrder();
 	}
 
+/**
+ 	 * Helper method to update the customer info via getCustomer
+ 	 *
+ 	 * @since 1.4
+ 	 */
+	  function update( &$order ) {
+
+		$steps = array(
+			'set_customer',
+			'set_payment_method',
+			'attach_payment_method_to_customer',
+			'update_payment_method_for_subscriptions',
+		);
+
+		foreach ( $steps as $key => $step ) {
+			do_action( "pmpro_update_billing_before_{$step}", $order );
+			$this->$step( $order );
+			do_action( "pmpro_update_billing_after_{$step}", $order );
+			if ( ! empty( $order->error ) ) {
+				return false;
+			}
+		}
+
+		return true;
+
+	}
+
+	/**
+	 * Update the payment method for a subscription.
+	 */
+	function update_payment_method_for_subscriptions( &$order ) {
+		// get customer
+		$this->getCustomer( $order );
+
+		if ( empty( $this->customer ) ) {
+			return false;
+		}
+
+		// get all subscriptions
+		if ( ! empty( $this->customer->subscriptions ) ) {
+			$subscriptions = $this->customer->subscriptions->all();
+		}
+
+		foreach( $subscriptions as $subscription ) {
+			// check if cancelled or expired
+			if ( in_array( $subscription->status, array( 'canceled', 'incomplete', 'incomplete_expired' ) ) ) {
+				continue;
+			}
+
+			// check if we have a related order for it
+			$one_order = new MemberOrder();
+			$one_order->getLastMemberOrderBySubscriptionTransactionID( $subscription->id );
+			if ( empty( $one_order ) || empty( $one_order->id ) ) {
+				continue;
+			}
+
+			// update the payment method
+			$subscription->default_payment_method = $this->customer->invoice_settings->default_payment_method;
+			$subscription->save();
+		}
+	}
+
 	/**
 	 * Cancel a subscription at Stripe
 	 *
@@ -3348,6 +3410,7 @@ class PMProGateway_stripe extends PMProGateway {
 			wp_redirect( $customer_portal_url );
 			exit;
 		}
+	}
 
 	/**
 	 * Convert a price to a positive integer in cents (or 0 for a free price)
