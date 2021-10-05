@@ -2,10 +2,56 @@
 	class PMProEmail
 	{
 
-		function __construct()
-		{
-			$this->email = $this->from = $this->fromname = $this->subject = $this->template = $this->data = $this->body = NULL;
-		}
+		/**
+		 * The email to send to.
+		 *
+		 * @var null|string
+		 */
+		public $email;
+
+		/**
+		 * The email to send from.
+		 *
+		 * @var null|string
+		 */
+		public $from;
+
+		/**
+		 * The email name to send from.
+		 *
+		 * @var null|string
+		 */
+		public $fromname;
+
+		/**
+		 * The email subject to send.
+		 *
+		 * @var null|string
+		 */
+		public $subject;
+
+		/**
+		 * The email body to send.
+		 *
+		 * @var null|string
+		 */
+		public $body;
+
+		/**
+		 * The email template to send.
+		 *
+		 * @var null|string
+		 */
+		public $template;
+
+		/**
+		 * The custom data provided for email tag replacement.
+		 *
+		 * You can pass in body override content by setting the 'body' key to a non-empty string.
+		 *
+		 * @var null|array
+		 */
+		public $data;
 
 		function sendEmail($email = NULL, $from = NULL, $fromname = NULL, $subject = NULL, $template = NULL, $data = NULL)
 		{
