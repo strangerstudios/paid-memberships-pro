@@ -48,13 +48,13 @@
 					</select>
 					<img src="<?php echo esc_url( admin_url( 'images/wpspin_light.gif' ) ); ?>" id="pmproet-spinner" style="display:none;"/>
 
-					<p id="email_template_help_text" class="description"></p>
+					<p id="pmpro_email_template_help_text" class="description"></p>
 				</td>
 			</tr>
 			<tr class="hide-while-loading">
 				<th scope="row" valign="top"></th>
 				<td>
-					<label><input id="email_template_disable" name="email_template_disable" type="checkbox" /><span
+					<label><input id="pmpro_email_template_disable" name="pmpro_email_template_disable" type="checkbox" /><span
 							id="disable_label"><?php esc_html_e( 'Disable this email?', 'paid-memberships-pro' ); ?></span></label>
 
 
@@ -63,18 +63,18 @@
 				</td>
 			</tr>
 			<tr class="hide-while-loading">
-				<th scope="row" valign="top"><label for="email_template_subject"><?php esc_html_e( 'Subject', 'paid-memberships-pro' ); ?></label></th>
+				<th scope="row" valign="top"><label for="pmpro_email_template_subject"><?php esc_html_e( 'Subject', 'paid-memberships-pro' ); ?></label></th>
 
 				<td>
-					<input id="email_template_subject" name="email_template_subject" type="text" size="100"/>
+					<input id="pmpro_email_template_subject" name="pmpro_email_template_subject" type="text" size="100"/>
 				</td>
 			</tr>
 			<tr class="hide-while-loading">
-				<th scope="row" valign="top"><label for="email_template_body"><?php esc_html_e( 'Body', 'paid-memberships-pro' ); ?></label></th>
+				<th scope="row" valign="top"><label for="pmpro_email_template_body"><?php esc_html_e( 'Body', 'paid-memberships-pro' ); ?></label></th>
 
 				<td>
 					<div id="template_editor_container">
-						<textarea rows="10" cols="80" name="email_template_body" id="email_template_body"></textarea>
+						<textarea rows="10" cols="80" name="pmpro_email_template_body" id="pmpro_email_template_body"></textarea>
 					</div>
 				</td>
 			</tr>
@@ -97,10 +97,10 @@
 				<th scope="row" valign="top"></th>
 				<td>
 					<p class="submit">
-						<input id="submit_template_data" name="save_template" type="button" class="button-primary"
+						<input id="pmpro_submit_template_data" name="pmpro_save_template" type="button" class="button-primary"
 							value="<?php esc_attr_e( 'Save Template', 'paid-memberships-pro' ); ?>"/>
 
-						<input id="reset_template_data" name="reset_template" type="button" class="button"
+						<input id="pmpro_reset_template_data" name="pmpro_reset_template" type="button" class="button"
 							value="<?php esc_attr_e( 'Reset Template', 'paid-memberships-pro' ); ?>"/>
 
 					</p>
@@ -178,6 +178,7 @@
 									'!!invoice_date!!'    => __( 'Invoice Date', 'paid-memberships-pro' ),
 									'!!invoice_url!!'    => __( 'Invoice Page URL', 'paid-memberships-pro' ),
 									'!!discount_code!!'   => __( 'Discount Code Applied', 'paid-memberships-pro' ),
+									'!!membership_level_confirmation_message!!' => __( 'Custom Level Confirmation Message', 'paid-memberships-pro' ),
 									
 								];
 

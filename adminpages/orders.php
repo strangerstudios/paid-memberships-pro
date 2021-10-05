@@ -156,8 +156,14 @@ $condition = apply_filters( 'pmpro_admin_orders_query_condition', $condition, $f
 
 // deleting?
 if ( ! empty( $_REQUEST['delete'] ) ) {
+	// Check nonce for deleting.
+	$nonceokay = true;
+	if ( empty( $_REQUEST['pmpro_orders_nonce'] ) || ! check_admin_referer( 'delete_order', 'pmpro_orders_nonce' ) ) {
+		$nonceokay = false;
+	}
+
 	$dorder = new MemberOrder( intval( $_REQUEST['delete'] ) );
-	if ( $dorder->deleteMe() ) {
+	if ( $nonceokay && $dorder->deleteMe() ) {
 		$pmpro_msg  = __( 'Order deleted successfully.', 'paid-memberships-pro' );
 		$pmpro_msgt = 'success';
 	} else {
@@ -960,7 +966,7 @@ if ( function_exists( 'pmpro_add_email_order_modal' ) ) {
 			"/>
 			<input name="save" type="submit" class="button-primary" value="<?php esc_attr_e( 'Save Order', 'paid-memberships-pro' ); ?>"/>
 			<input name="cancel" type="button" class="cancel button-secondary" value="<?php esc_attr_e( 'Cancel', 'paid-memberships-pro' ); ?>"
-				   onclick="location.href='<?php echo esc_url( get_admin_url( null, '/admin.php?page=pmpro-orders' ) ); ?>';"/>
+				   onclick="location.href='<?php echo esc_url( admin_url( '/admin.php?page=pmpro-orders' ) ); ?>';"/>
 		</p>
 
 	</form>
@@ -970,7 +976,7 @@ if ( function_exists( 'pmpro_add_email_order_modal' ) ) {
 	<form id="posts-filter" method="get" action="">
 
 		<h1 class="wp-heading-inline"><?php esc_html_e( 'Orders', 'paid-memberships-pro' ); ?></h1>
-		<a href="<?php echo esc_url( add_query_arg( array( 'page' => 'pmpro-orders', 'order' => -1 ), get_admin_url(null, 'admin.php' ) ) ); ?>" class="page-title-action"><?php esc_html_e( 'Add New Order', 'paid-memberships-pro' ); ?></a>
+		<a href="<?php echo esc_url( add_query_arg( array( 'page' => 'pmpro-orders', 'order' => -1 ), admin_url( 'admin.php' ) ) ); ?>" class="page-title-action"><?php esc_html_e( 'Add New Order', 'paid-memberships-pro' ); ?></a>
 
 		<?php
 		// build the export URL
@@ -1362,37 +1368,108 @@ if ( function_exists( 'pmpro_add_email_order_modal' ) ) {
 						<a href="admin.php?page=pmpro-orders&order=<?php echo esc_attr( $order->id ); ?>"><?php echo esc_html( $order->code ); ?></a>
 						<br />
 						<div class="row-actions">
-							<span class="edit">
-								<a title="<?php esc_attr_e( 'Edit', 'paid-memberships-pro' ); ?>" href="<?php echo esc_url( add_query_arg( array( 'page' => 'pmpro-orders', 'order' => $order->id ), admin_url('admin.php' ) ) ); ?>"><?php esc_html_e( 'Edit', 'paid-memberships-pro' ); ?></a>
-							</span> |
-							<span class="copy">
-								<a title="<?php esc_attr_e( 'Copy', 'paid-memberships-pro' ); ?>" href="<?php echo esc_url( add_query_arg( array( 'page' => 'pmpro-orders', 'order' => '-1', 'copy' => $order->id ), admin_url('admin.php' ) ) ); ?>"><?php esc_html_e( 'Copy', 'paid-memberships-pro' ); ?></a>
-							</span> |
-							<span class="delete">
-							<?php $delete_prompt = sprintf( __( 'Deleting orders is permanent and can affect active users. Are you sure you want to delete order %s?', 'paid-memberships-pro' ), str_replace( "'", '', $order->code ) ); ?>
-								<a href='javascript:pmpro_askfirst("<?php echo esc_attr
-								( $delete_prompt ) ?>", "admin.php?page=pmpro-orders&delete=<?php echo $order->id; ?>"); void(0);'><?php esc_html_e( 'Delete', 'paid-memberships-pro' ); ?></a>
-							</span> |
-							<span class="print">
-								<a target="_blank" title="<?php esc_attr_e( 'Print', 'paid-memberships-pro' ); ?>" href="<?php echo esc_url( add_query_arg( array( 'action' => 'pmpro_orders_print_view', 'order' => $order->id ), admin_url('admin-ajax.php' ) ) ); ?>"><?php esc_html_e( 'Print', 'paid-memberships-pro' ); ?></a>
-							</span> |
-							<span class="email">
-								<a href="#TB_inline?width=600&height=200&inlineId=email_invoice" class="thickbox email_link"
-								   data-order="<?php echo esc_attr( $order->id ); ?>"><?php esc_html_e( 'Email', 'paid-memberships-pro' ); ?></a>
-							</span>
 							<?php
-							// Set up the hover actions for this user
-							$actions      = apply_filters( 'pmpro_orders_user_row_actions', array(), $order->user, $order );
-							$action_count = count( $actions );
-							$i            = 0;
-							if ( $action_count ) {
-								$out = ' | ';
-								foreach ( $actions as $action => $link ) {
-									++ $i;
-									( $i == $action_count ) ? $sep = '' : $sep = ' | ';
-									$out .= "<span class='" . esc_attr( $action ) . "'>" . $link . $sep . "</span>";
-								}
-								echo $out;
+							$delete_text = esc_html(
+								sprintf(
+									// translators: %s is the Order Code.
+									__( 'Deleting orders is permanent and can affect active users. Are you sure you want to delete order %s?', 'paid-memberships-pro' ),
+									str_replace( "'", '', $order->code )
+								)
+							);
+
+							$delete_nonce_url = wp_nonce_url(
+								add_query_arg(
+									[
+										'page'   => 'pmpro-orders',
+										'action' => 'delete_order',
+										'delete' => $order->id,
+									],
+									admin_url( 'admin.php' )
+								),
+								'delete_order',
+								'pmpro_orders_nonce'
+							);
+
+							$actions = [
+								'edit'   => sprintf(
+									'<a title="%1$s" href="%2$s">%3$s</a>',
+									esc_attr__( 'Edit', 'paid-memberships-pro' ),
+									esc_url(
+										add_query_arg(
+											[
+												'page'  => 'pmpro-orders',
+												'order' => $order->id,
+											],
+											admin_url( 'admin.php' )
+										)
+									),
+									esc_html__( 'Edit', 'paid-memberships-pro' )
+								),
+								'copy'   => sprintf(
+									'<a title="%1$s" href="%2$s">%3$s</a>',
+									esc_attr__( 'Copy', 'paid-memberships-pro' ),
+									esc_url(
+										add_query_arg(
+											[
+												'page'  => 'pmpro-orders',
+												'order' => - 1,
+												'copy'  => $order->id,
+											],
+											admin_url( 'admin.php' )
+										)
+									),
+									esc_html__( 'Copy', 'paid-memberships-pro' )
+								),
+								'delete' => sprintf(
+									'<a title="%1$s" href="%2$s">%3$s</a>',
+									esc_attr__( 'Delete', 'paid-memberships-pro' ),
+									'javascript:pmpro_askfirst(\'' . esc_js( $delete_text ) . '\', \'' . esc_js( $delete_nonce_url ) . '\'); void(0);',
+									esc_html__( 'Delete', 'paid-memberships-pro' )
+								),
+								'print'   => sprintf(
+									'<a title="%1$s" href="%2$s" target="_blank" rel="noopener noreferrer">%3$s</a>',
+									esc_attr__( 'Print', 'paid-memberships-pro' ),
+									esc_url(
+										add_query_arg(
+											[
+												'action' => 'pmpro_orders_print_view',
+												'order'  => $order->id,
+											],
+											admin_url( 'admin-ajax.php' )
+										)
+									),
+									esc_html__( 'Print', 'paid-memberships-pro' )
+								),
+								'email'   => sprintf(
+									'<a title="%1$s" href="%2$s" data-order="%3$s" class="thickbox email_link">%4$s</a>',
+									esc_attr__( 'Email', 'paid-memberships-pro' ),
+									'#TB_inline?width=600&height=200&inlineId=email_invoice',
+									esc_attr( $order->id ),
+									esc_html__( 'Email', 'paid-memberships-pro' )
+								),
+							];
+
+							/**
+							 * Filter the extra actions for this user on this order.
+							 *
+							 * @param array       $actions The list of actions.
+							 * @param object      $user    The user data.
+							 * @param MemberOrder $order   The current order.
+							 */
+							$actions = apply_filters( 'pmpro_orders_user_row_actions', $actions, $order->user, $order );
+
+							$actions_html = [];
+
+							foreach ( $actions as $action => $link ) {
+								$actions_html[] = sprintf(
+									'<span class="%1$s">%2$s</span>',
+									esc_attr( $action ),
+									$link
+								);
+							}
+
+							if ( ! empty( $actions_html ) ) {
+								echo implode( ' | ', $actions_html );
 							}
 							?>
 						</div>
@@ -1468,8 +1545,7 @@ if ( function_exists( 'pmpro_add_email_order_modal' ) ) {
 						}
 						?>
 						<br/>
-						<?php esc_html_e( 'Subscription', 'paid-memberships-pro' ); ?>
-						:
+						<?php esc_html_e( 'Subscription', 'paid-memberships-pro' ); ?>:
 						<?php
 						if ( ! empty( $order->subscription_transaction_id ) ) {
 							echo esc_html( $order->subscription_transaction_id );
@@ -1507,7 +1583,7 @@ if ( function_exists( 'pmpro_add_email_order_modal' ) ) {
 	</form>
 	<?php
 	// add normal args
-	$pagination_url = esc_url( add_query_arg( $url_params, get_admin_url( null, '/admin.php?page=pmpro-orders' ) ) );
+	$pagination_url = esc_url( add_query_arg( $url_params, admin_url( '/admin.php?page=pmpro-orders' ) ) );
 	echo pmpro_getPaginationString( $pn, $totalrows, $limit, 1, $pagination_url, "&limit=$limit&pn=" );
 	?>
 

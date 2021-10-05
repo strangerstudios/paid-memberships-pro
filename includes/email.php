@@ -1,4 +1,7 @@
 <?php
+// Sanitize all PMPro email bodies. @since 2.6.1
+add_filter( 'pmpro_email_body', 'pmpro_kses', 11 );
+
 /**
  * The default name for WP emails is WordPress.
  * Use our setting instead.
@@ -6,15 +9,15 @@
 function pmpro_wp_mail_from_name($from_name)
 {
 	$default_from_name = 'WordPress';
-	
+
 	//make sure it's the default from name
 	if($from_name == $default_from_name)
-	{	
+	{
 		$pmpro_from_name = pmpro_getOption("from_name");
 		if ($pmpro_from_name)
 			$from_name = stripslashes($pmpro_from_name);
 	}
-	
+
 	return $from_name;
 }
 
@@ -30,15 +33,15 @@ function pmpro_wp_mail_from($from_email)
 		$sitename = substr( $sitename, 4 );
 	}
 	$default_from_email = 'wordpress@' . $sitename;
-		
+
 	//make sure it's the default email address
 	if($from_email == $default_from_email)
-	{	
+	{
 		$pmpro_from_email = pmpro_getOption("from_email");
 		if ($pmpro_from_email && is_email( $pmpro_from_email ) )
 			$from_email = $pmpro_from_email;
 	}
-	
+
 	return $from_email;
 }
 
@@ -63,22 +66,22 @@ if(empty($email_member_notification))
  * Adds template files and changes content type to html if using PHPMailer directly.
  */
 function pmpro_send_html( $phpmailer ) {
-	
+
 	//to check if we should wpautop later
 	$original_body = $phpmailer->Body;
-	
+
 	// Set the original plain text message
 	$phpmailer->AltBody = wp_specialchars_decode($phpmailer->Body, ENT_QUOTES);
 	// Clean < and > around text links in WP 3.1
-	$phpmailer->Body = preg_replace('#<(https?://[^*]+)>#', '$1', $phpmailer->Body);	
-	
-	// If there is no HTML, run through wpautop	
+	$phpmailer->Body = preg_replace('#<(https?://[^*]+)>#', '$1', $phpmailer->Body);
+
+	// If there is no HTML, run through wpautop
 	if($phpmailer->Body == strip_tags($phpmailer->Body))
 		$phpmailer->Body = wpautop($phpmailer->Body);
-	
+
 	// Convert line breaks & make links clickable
 	$phpmailer->Body = make_clickable ($phpmailer->Body);
-		
+
 	// Get header for message if found
 	if(file_exists(get_stylesheet_directory() . "/email_header.html"))
 		$header = file_get_contents(get_stylesheet_directory() . "/email_header.html");
@@ -86,11 +89,11 @@ function pmpro_send_html( $phpmailer ) {
 		$header = file_get_contents(get_template_directory() . "/email_header.html");
 	else
 		$header = "";
-	
+
 	//wpautop header if needed
 	if(!empty($header) && $header == strip_tags($header))
 		$header = wpautop($header);
-	
+
 	// Get footer for message if found
 	if(file_exists(get_stylesheet_directory() . "/email_footer.html"))
 		$footer = file_get_contents(get_stylesheet_directory() . "/email_footer.html");
@@ -98,7 +101,7 @@ function pmpro_send_html( $phpmailer ) {
 		$footer =  file_get_contents(get_template_directory() . "/email_footer.html");
 	else
 		$footer = "";
-	
+
 	//wpautop header if needed
 	if(!empty($footer) && $footer == strip_tags($footer))
 		$footer = wpautop($footer);
@@ -111,7 +114,7 @@ function pmpro_send_html( $phpmailer ) {
 		$phpmailer->Body = $header . "\n" . $phpmailer->Body;
 	if(!empty($footer))
 		$phpmailer->Body = $phpmailer->Body . "\n" . $footer;
-	
+
 	// Replace variables in email
 	global $current_user;
 	$data = array(
@@ -126,8 +129,8 @@ function pmpro_send_html( $phpmailer ) {
 	foreach($data as $key => $value)
 	{
 		$phpmailer->Body = str_replace("!!" . $key . "!!", $value, $phpmailer->Body);
-	}	
-		
+	}
+
 	do_action("pmpro_after_phpmailer_init", $phpmailer);
 	do_action("pmpro_after_pmpmailer_init", $phpmailer);	//typo left in for backwards compatibility
 }
@@ -135,14 +138,14 @@ function pmpro_send_html( $phpmailer ) {
 /**
  * Change the content type of emails to HTML.
  */
-function pmpro_wp_mail_content_type( $content_type ) {	
+function pmpro_wp_mail_content_type( $content_type ) {
 	add_action('phpmailer_init', 'pmpro_send_html');
 
 	// Change to html if not already.
-	if( $content_type == 'text/plain') {			
+	if( $content_type == 'text/plain') {
 		$content_type = 'text/html';
 	}
-	
+
 	return $content_type;
 }
 add_filter('wp_mail_content_type', 'pmpro_wp_mail_content_type');
@@ -153,14 +156,14 @@ add_filter('wp_mail_content_type', 'pmpro_wp_mail_content_type');
  * We check if there are already <br /> tags before running nl2br.
  * Running make_clickable() multiple times has no effect.
  */
-function pmpro_retrieve_password_message( $message ) {		
-	if ( has_filter( 'wp_mail_content_type', 'pmpro_wp_mail_content_type' ) ) {		
+function pmpro_retrieve_password_message( $message ) {
+	if ( has_filter( 'wp_mail_content_type', 'pmpro_wp_mail_content_type' ) ) {
 		$message = make_clickable( $message );
-		
+
 		if ( strpos( '<br', strtolower( $message ) ) === false ) {
 			$message = nl2br( $message );
-		}		
-	}	
+		}
+	}
 
 	return $message;
 }
@@ -170,6 +173,10 @@ add_filter( 'retrieve_password_message', 'pmpro_retrieve_password_message', 10, 
 function pmpro_email_templates_get_template_data() {
 
 	check_ajax_referer('pmproet', 'security');
+
+	if ( ! current_user_can( 'pmpro_emailtemplates' ) ) {
+		die( __( 'You do not have permissions to perform this action.', 'paid-memberships-pro' ) );
+	}
 
 	global $pmpro_email_templates_defaults;
 
@@ -193,7 +200,7 @@ function pmpro_email_templates_get_template_data() {
 	$template_data['help_text'] = $pmpro_email_templates_defaults[$template]['help_text'];
 
 	echo json_encode($template_data);
-	
+
 	exit;
 }
 add_action('wp_ajax_pmpro_email_templates_get_template_data', 'pmpro_email_templates_get_template_data');
@@ -203,12 +210,20 @@ function pmpro_email_templates_save_template_data() {
 
 	check_ajax_referer('pmproet', 'security');
 
+	if ( ! current_user_can( 'pmpro_emailtemplates' ) ) {
+		die( __( 'You do not have permissions to perform this action.', 'paid-memberships-pro' ) );
+	}
+
+	$template = sanitize_text_field( $_REQUEST['template'] );
+	$subject = sanitize_text_field( wp_unslash( $_REQUEST['subject'] ) );
+	$body = pmpro_kses( wp_unslash( $_REQUEST['body'] ), 'email' );
+
 	//update this template's settings
-	pmpro_setOption('email_' . $_REQUEST['template'] . '_subject', stripslashes($_REQUEST['subject']));
-	pmpro_setOption('email_' . $_REQUEST['template'] . '_body', stripslashes($_REQUEST['body']));
-	delete_transient( 'pmproet_' . $_REQUEST['template'] );
+	pmpro_setOption( 'email_' . $template . '_subject', $subject );
+	pmpro_setOption( 'email_' . $template . '_body', $body );
+	delete_transient( 'pmproet_' . $template );
 	esc_html_e( 'Template Saved', 'paid-memberships-pro' );
-	
+
 	exit;
 }
 add_action('wp_ajax_pmpro_email_templates_save_template_data', 'pmpro_email_templates_save_template_data');
@@ -217,6 +232,10 @@ add_action('wp_ajax_pmpro_email_templates_save_template_data', 'pmpro_email_temp
 function pmpro_email_templates_reset_template_data() {
 
 	check_ajax_referer('pmproet', 'security');
+
+	if ( ! current_user_can( 'pmpro_emailtemplates' ) ) {
+		die( __( 'You do not have permissions to perform this action.', 'paid-memberships-pro' ) );
+	}
 
 	global $pmpro_email_templates_defaults;
 
@@ -239,7 +258,11 @@ function pmpro_email_templates_disable_template() {
 
 	check_ajax_referer('pmproet', 'security');
 
-	$template = sanitize_text_field( $_REQUEST['template'] );	
+	if ( ! current_user_can( 'pmpro_emailtemplates' ) ) {
+		die( __( 'You do not have permissions to perform this action.', 'paid-memberships-pro' ) );
+	}
+
+	$template = sanitize_text_field( $_REQUEST['template'] );
 	$disabled = sanitize_text_field( $_REQUEST['disabled'] );
 	$response['result'] = update_option('pmpro_email_' . $template . '_disabled', $disabled );
 	$response['status'] = $disabled;
@@ -253,26 +276,30 @@ function pmpro_email_templates_send_test() {
 
 	check_ajax_referer('pmproet', 'security');
 
+	if ( ! current_user_can( 'pmpro_emailtemplates' ) ) {
+		die( __( 'You do not have permissions to perform this action.', 'paid-memberships-pro' ) );
+	}
+
 	global $current_user;
 
 	//setup test email
 	$test_email = new PMProEmail();
 	$test_email->to = sanitize_email( $_REQUEST['email'] );
 	$test_email->template = sanitize_text_field( str_replace('email_', '', $_REQUEST['template']) );
-	
+
 	//add filter to change recipient
 	add_filter('pmpro_email_recipient', 'pmpro_email_templates_test_recipient', 10, 2);
-	
+
 	//load test order
 	$test_order = new MemberOrder();
 	$test_order->get_test_order();
-	
+
 	$test_user = $current_user;
-	
+
 	// Grab the first membership level defined as a "test level" to use
 	$all_levels = pmpro_getAllLevels( true);
 	$test_user->membership_level = array_pop( $all_levels );
-	
+
 	//add notice to email body
 	add_filter('pmpro_email_body', 'pmpro_email_templates_test_body', 10, 2);
 
@@ -381,7 +408,7 @@ function pmpro_email_templates_test_template($email)
 {
 	if( ! empty( $_REQUEST['template'] ) ) {
 		$email->template = sanitize_text_field( str_replace('email_', '', $_REQUEST['template']) );
-	}		
+	}
 
 	return $email;
 }
@@ -389,32 +416,37 @@ function pmpro_email_templates_test_template($email)
 /* Filter for Variables */
 function pmpro_email_templates_email_data($data, $email) {
 
-	global $current_user, $pmpro_currency_symbol, $wpdb;
+	global $pmpro_currency_symbol;
 
 	if ( ! empty( $data ) && ! empty( $data['user_login'] ) ) {
 		$user = get_user_by( 'login', $data['user_login'] );
 	} elseif ( ! empty( $email ) ) {
 		$user = get_user_by( 'email', $email->email );
 	} else {
-		$user = $current_user;
+		$user = wp_get_current_user();
 	}
 
-	//make sure we have the current membership level data
-	$user->membership_level = pmpro_getMembershipLevelForUser($user->ID, true);
+	// Make sure we have the current membership level data.
+	if ( $user instanceof WP_User ) {
+		$user->membership_level = pmpro_getMembershipLevelForUser(
+			$user->ID,
+			true
+		);
+	}
 
 	//make sure data is an array
 	if(!is_array($data))
 		$data = array();
-	
-	//general data	
+
+	//general data
 	$new_data['sitename'] = get_option("blogname");
 	$new_data['siteemail'] = pmpro_getOption("from_email");
 	if(empty($new_data['login_link'])) {
 		$new_data['login_link'] = wp_login_url();
 		$new_data['login_url'] = wp_login_url();
-	}		
-	$new_data['levels_link'] = pmpro_url("levels");        
-	
+	}
+	$new_data['levels_link'] = pmpro_url("levels");
+
 	// User Data.
 	if ( ! empty( $user ) ) {
 		$new_data['name'] = $user->display_name;
@@ -425,7 +457,7 @@ function pmpro_email_templates_email_data($data, $email) {
 		// Membership Information.
 		$new_data['membership_expiration'] = '';
 		$new_data["membership_change"] = __("Your membership has been cancelled.", "paid-memberships-pro");
-		if ( empty( $user->membership_level ) ) { 
+		if ( empty( $user->membership_level ) ) {
 			$user->membership_level = pmpro_getMembershipLevelForUser($user->ID, true);
 		}
 		if ( ! empty( $user->membership_level ) ) {
@@ -444,7 +476,7 @@ function pmpro_email_templates_email_data($data, $email) {
 			}
 		}
 	}
-	
+
 	//invoice data
 	if(!empty($data['invoice_id']))
 	{
@@ -467,7 +499,7 @@ function pmpro_email_templates_email_data($data, $email) {
 			$new_data['invoice_total'] = $pmpro_currency_symbol . number_format($invoice->total, 2);
 			$new_data['invoice_date'] = date_i18n( get_option( 'date_format' ), $invoice->getTimestamp() );
 			$new_data['invoice_link'] = pmpro_url('invoice', '?invoice=' . $invoice->code);
-			
+
 				//billing address
 			$new_data["billing_address"] = pmpro_formatAddress($invoice->billing->name,
 				$invoice->billing->street,
@@ -492,7 +524,7 @@ function pmpro_email_templates_email_data($data, $email) {
 					if( is_array( $usermeta ) && ! empty( $usermeta['fullurl'] ) ) {
 						$new_data[$match] = $usermeta['fullurl'];
 					} elseif( is_array($usermeta ) ) {
-						$new_data[$match] = implode(", ", $usermeta);					
+						$new_data[$match] = implode(", ", $usermeta);
 					} else {
 						$new_data[$match] = $usermeta;
 					}
@@ -531,11 +563,11 @@ function pmpro_email_templates_get_template_body($template) {
 	// Defaults
 	$body = "";
 	$file = false;
-	
+
 
 	// Load the template.
 	if ( get_transient( 'pmproet_' . $template ) === false ) {
-		// Load template  
+		// Load template
 		if ( ! empty( pmpro_getOption('email_' . $template . '_body') ) ) {
 			$body = pmpro_getOption('email_' . $template . '_body');
 		}elseif( ! empty($pmpro_email_templates_defaults[$template]['body'])) {
@@ -545,7 +577,7 @@ function pmpro_email_templates_get_template_body($template) {
 		} elseif ( file_exists( get_template_directory() . '/paid-memberships-pro/email/' . $template . '.html') ) {
 			$file = get_template_directory() . '/paid-memberships-pro/email/' . $template . '.html';
 		}
-			
+
 		if( $file && ! $body ) {
 			ob_start();
 			require_once( $file );

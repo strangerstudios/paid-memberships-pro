@@ -72,9 +72,8 @@ class PMPro_Members_List_Table extends WP_List_Table {
 	 */
 	public function get_columns() {
 		$columns = array(
-			// 'cb'            => '<input type="checkbox" />',
-			'ID'				=> 'ID',
 			'username'			=> 'Username',
+			'ID'				=> 'ID',
 			'first_name'		=> 'First Name',
 			'last_name'			=> 'Last Name',
 			'display_name'		=> 'Display Name',
