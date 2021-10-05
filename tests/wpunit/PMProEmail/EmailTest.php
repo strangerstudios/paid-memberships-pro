@@ -289,6 +289,11 @@ class EmailTest extends TestCase {
 			$test_user->display_name,
 			$admin_email,
 			get_bloginfo( 'name' ),
+			$test_order->id,
+			$test_order->code,
+			date_i18n( get_option( 'date_format' ) ),
+			date_i18n( get_option( 'date_format' ), strtotime( '+1 day' ) ),
+			date_i18n( get_option( 'date_format' ), strtotime( '-1 day' ) ),
 			$level_id,
 			$user_id,
 		] );
