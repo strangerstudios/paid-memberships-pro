@@ -224,7 +224,6 @@ class EmailTest extends TestCase {
 		$test_email->template = $template;
 
 		// Set the default to address as the admin email.
-		$test_email->to    = $admin_email;
 		$test_email->email = $admin_email;
 
 		// Check for subject override.
