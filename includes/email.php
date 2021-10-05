@@ -348,7 +348,7 @@ function pmpro_email_templates_send_test() {
 			break;
 		case 'billing_failure_admin':
 			$send_email = 'sendBillingFailureAdminEmail';
-			$params = array($test_user->user_email, $test_order);
+			$params = array(get_bloginfo( 'admin_email' ), $test_order);
 			break;
 		case 'credit_card_expiring':
 			$send_email = 'sendCreditCardExpiringEmail';
