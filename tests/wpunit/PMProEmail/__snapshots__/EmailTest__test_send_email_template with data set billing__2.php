@@ -9,7 +9,7 @@ US<br />
 </p><p>
 	Visa: XXXX-XXXX-XXXX-1111<br />
 	Expires: 10/2022
-</p><p>If you did not request a billing information change please contact us at wordpress@pmpro-phx.local</p><p>Log in to your membership account here: http://wordpress.test/wp-login.php</p><p>
+</p><p>If you did not request a billing information change please contact us at wordpress@wordpress.test</p><p>Log in to your membership account here: http://wordpress.test/wp-login.php</p><p>
 	Respectfully,<br />
 	wordpress.test
 </p>';
