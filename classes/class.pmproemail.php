@@ -353,10 +353,11 @@
 			$this->template = apply_filters( "pmpro_email_template", $this->template, $this );
 
 			// Gather data depending on template being used.
-			if( in_array( $this->template, array( 'checkout_express', 'checkout_check', 'checkout_trial', 'checkout_paid' ) ) ) {
+			if( in_array( $this->template, array( 'checkout_express', 'checkout_check', 'checkout_trial', 'checkout_freetrial', 'checkout_paid' ) ) ) {
 				if( $this->template === 'checkout_check' ) {
 					$this->data["instructions"] = wpautop(pmpro_getOption("instructions"));
 				}
+
 				$this->data["invoice_id"] = $invoice->code;
 				$this->data["invoice_total"] = pmpro_formatPrice($invoice->total);
 				$this->data["invoice_date"] = date_i18n( get_option( 'date_format' ), $invoice->getTimestamp() );
@@ -386,12 +387,6 @@
 					$this->data["discount_code"] = "";
 				}
 			} elseif( $this->template === 'checkout_free' ) {
-				if( ! empty( $discount_code ) ) {
-					$this->data["discount_code"] = "<p>" . __("Discount Code", 'paid-memberships-pro' ) . ": " . $discount_code . "</p>\n";
-				} else {
-					$this->data["discount_code"] = "";
-				}
-			} elseif ( $this->template === 'checkout_freetrial' ) {
 				if( ! empty( $discount_code ) ) {
 					$this->data["discount_code"] = "<p>" . __("Discount Code", 'paid-memberships-pro' ) . ": " . $discount_code . "</p>\n";
 				} else {
@@ -458,7 +453,7 @@
 			$this->template = apply_filters( "pmpro_email_template", $this->template, $this );
 
 			// Gather data depending on template being used.
-			if( in_array( $this->template, array( 'checkout_express_admin', 'checkout_check_admin', 'checkout_trial_admin', 'checkout_paid_admin' ) ) ) {
+			if( in_array( $this->template, array( 'checkout_express_admin', 'checkout_check_admin', 'checkout_trial_admin', 'checkout_freetrial_admin', 'checkout_paid_admin' ) ) ) {
 				$this->data["invoice_id"] = $invoice->code;
 				$this->data["invoice_total"] = pmpro_formatPrice($invoice->total);
 				$this->data["invoice_date"] = date_i18n(get_option('date_format'), $invoice->getTimestamp());
@@ -493,8 +488,6 @@
 				} else {
 					$this->data["discount_code"] = "";
 				}
-			} elseif( $this->template === 'checkout_freetrial_admin' ) {
-				$this->data["discount_code"] = "";
 			}
 
 			$enddate = $wpdb->get_var("SELECT UNIX_TIMESTAMP(CONVERT_TZ(enddate, '+00:00', @@global.time_zone)) FROM $wpdb->pmpro_memberships_users WHERE user_id = '" . $user->ID . "' AND status = 'active' LIMIT 1");
