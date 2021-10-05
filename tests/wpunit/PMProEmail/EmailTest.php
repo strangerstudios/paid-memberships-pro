@@ -13,6 +13,7 @@ use WP_User;
  * @group pmpro-email
  */
 class EmailTest extends TestCase {
+
 	use MatchesSnapshots;
 
 	/**
@@ -26,78 +27,153 @@ class EmailTest extends TestCase {
 			// ],
 			'cancel'                   => [
 				'cancel',
+				[
+					'to' => 'member',
+				],
 			],
 			'cancel_admin'             => [
 				'cancel_admin',
+				[
+					'to' => 'admin',
+				],
 			],
 			'checkout_check'           => [
 				'checkout_check',
+				[
+					'to' => 'member',
+				],
 			],
 			'checkout_express'         => [
 				'checkout_express',
+				[
+					'to' => 'member',
+				],
 			],
 			'checkout_free'            => [
 				'checkout_free',
+				[
+					'to' => 'member',
+				],
 			],
 			'checkout_freetrial'       => [
 				'checkout_freetrial',
+				[
+					'to' => 'member',
+				],
 			],
 			'checkout_paid'            => [
 				'checkout_paid',
+				[
+					'to' => 'member',
+				],
 			],
 			'checkout_trial'           => [
 				'checkout_trial',
+				[
+					'to' => 'member',
+				],
 			],
 			'checkout_check_admin'     => [
 				'checkout_check_admin',
+				[
+					'to' => 'admin',
+				],
 			],
 			'checkout_express_admin'   => [
 				'checkout_express_admin',
+				[
+					'to' => 'admin',
+				],
 			],
 			'checkout_free_admin'      => [
 				'checkout_free_admin',
+				[
+					'to' => 'admin',
+				],
 			],
 			'checkout_freetrial_admin' => [
 				'checkout_freetrial_admin',
+				[
+					'to' => 'admin',
+				],
 			],
 			'checkout_paid_admin'      => [
 				'checkout_paid_admin',
+				[
+					'to' => 'admin',
+				],
 			],
 			'checkout_trial_admin'     => [
 				'checkout_trial_admin',
+				[
+					'to' => 'admin',
+				],
 			],
 			'billing'                  => [
 				'billing',
+				[
+					'to' => 'member',
+				],
 			],
 			'billing_admin'            => [
 				'billing_admin',
+				[
+					'to' => 'admin',
+				],
 			],
 			'billing_failure'          => [
 				'billing_failure',
+				[
+					'to' => 'member',
+				],
 			],
 			'billing_failure_admin'    => [
 				'billing_failure_admin',
+				[
+					'to' => 'admin',
+				],
 			],
 			'credit_card_expiring'     => [
 				'credit_card_expiring',
+				[
+					'to' => 'member',
+				],
 			],
 			'invoice'                  => [
 				'invoice',
+				[
+					'to' => 'member',
+				],
 			],
 			'trial_ending'             => [
 				'trial_ending',
+				[
+					'to' => 'member',
+				],
 			],
 			'membership_expired'       => [
 				'membership_expired',
+				[
+					'to' => 'member',
+				],
 			],
 			'membership_expiring'      => [
 				'membership_expiring',
+				[
+					'to' => 'member',
+				],
 			],
 			'payment_action'           => [
 				'payment_action',
+				[
+					'to' => 'member',
+				],
 			],
 			'payment_action_admin'     => [
 				'payment_action_admin',
+				[
+					'to' => 'admin',
+				],
 			],
 			'custom_email_template'    => [
 				'custom_email_template',
@@ -133,16 +209,23 @@ class EmailTest extends TestCase {
 	 */
 	public function test_send_email_template( $template, $params = [] ) {
 		// Set up test data.
-		$user_id  = $this->factory()->user->create();
-		$level_id = $this->factory()->pmpro_level->create();
+		$user_id     = $this->factory()->user->create();
+		$level_id    = $this->factory()->pmpro_level->create();
+		$admin_email = get_bloginfo( 'admin_email' );
+
+		// Set the membership level for the user.
+		pmpro_changeMembershipLevel( $level_id, $user_id );
 
 		// Set current user.
 		wp_set_current_user( $user_id );
 
 		// Set up test email.
 		$test_email           = new PMProEmail();
-		$test_email->to       = 'dev@test.pmpro.local';
 		$test_email->template = $template;
+
+		// Set the default to address as the admin email.
+		$test_email->to    = $admin_email;
+		$test_email->email = $admin_email;
 
 		// Check for subject override.
 		if ( ! empty( $params['subject'] ) ) {
@@ -156,20 +239,18 @@ class EmailTest extends TestCase {
 
 		// Set up test order.
 		$test_order = new MemberOrder();
-		$test_order->get_test_order();
+		$test_order->get_test_order( [
+			'membership_id' => $level_id,
+		] );
 
 		// Set up test user.
-		$test_user                   = wp_get_current_user();
-		$test_user->membership_level = pmpro_getLevel( $level_id );
+		$test_user = wp_get_current_user();
 
-		//force the template
-		//add_filter( 'pmpro_email_filter', 'pmpro_email_templates_test_template', 5, 1 );
-
+		// Catch the email details.
 		global $test_catch_email;
 
 		$test_catch_email = false;
 
-		// Catch the email details.
 		add_filter( 'pre_wp_mail', static function ( $return, $atts ) {
 			$GLOBALS['test_catch_email'] = $atts;
 
@@ -186,29 +267,35 @@ class EmailTest extends TestCase {
 		$this->assertIsArray( $test_catch_email );
 
 		// Basic tests on the email itself.
-		$this->assertEquals( $test_email->to, $test_catch_email['to'] );
 		$this->assertContains( 'Content-Type: text/html', $test_catch_email['headers'] );
 		$this->assertEquals( [], $test_catch_email['attachments'] );
+
+		// Check the email was sent to the correct person.
+		if ( isset( $params['to'] ) && 'member' === $params['to'] ) {
+			$this->assertEquals( $test_user->user_email, $test_catch_email['to'] );
+		} else {
+			$this->assertEquals( $admin_email, $test_catch_email['to'] );
+		}
 
 		/*
 		 * Snapshot testing.
 		 */
 
 		// Set up the driver for flexibility.
-		$driver = new WPHtmlOutputDriver( home_url(), 'https://wordpress.test' );
+		$driver = new WPHtmlOutputDriver();
 
 		// Allow differences in IDs, generated emails, and the display name.
 		$driver->setTolerableDifferences( [
 			$test_user->user_email,
-			$test_email->display_name,
+			$test_user->display_name,
+			$admin_email,
 			get_bloginfo( 'name' ),
 			$level_id,
 			$user_id,
 		] );
 
-		/*$this->assertMatchesSnapshot( $test_catch_email['subject'], $driver );
-		$this->assertMatchesSnapshot( $test_catch_email['message'], $driver );*/
-
+		$this->assertMatchesSnapshot( $test_catch_email['subject'], $driver );
+		$this->assertMatchesSnapshot( $test_catch_email['message'], $driver );
 	}
 
 	/**
@@ -257,7 +344,7 @@ class EmailTest extends TestCase {
 				break;
 			case 'billing_failure_admin':
 				$send_email = 'sendBillingFailureAdminEmail';
-				$params     = [ $user->user_email, $order ];
+				$params     = [ get_bloginfo( 'admin_email' ), $order ];
 				break;
 			case 'credit_card_expiring':
 				$send_email = 'sendCreditCardExpiringEmail';
