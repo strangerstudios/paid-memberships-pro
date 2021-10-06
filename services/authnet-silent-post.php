@@ -144,6 +144,9 @@
 			//prep this order for the failure emails
 			$morder = new MemberOrder();
 			$morder->user_id = $user_id;
+			$morder->membership_id = $old_order->membership_id;
+			
+			$morder->billing = new stdClass();
 			$morder->billing->name = $fields['x_first_name'] . " " . $fields['x_last_name'];
 			$morder->billing->street = $fields['x_address'];
 			$morder->billing->city = $fields['x_city'];
