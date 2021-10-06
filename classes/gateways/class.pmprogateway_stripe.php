@@ -1433,21 +1433,46 @@ class PMProGateway_stripe extends PMProGateway {
 	 * @since 1.4
 	 */
 	function process( &$order ) {
-		$steps = array(
-			'set_customer',
-			'set_payment_method',
-			'attach_payment_method_to_customer',
-			'process_charges',
-			'process_subscriptions',
-		);
+		$customer = $this->update_customer_at_checkout( $order );
+		if ( empty( $customer ) ) {
+			// There was an issue creating/updating the Stripe customer.
+			// $order will have an error message, so we don't need to add one.
+			return false;
+		}
 
-		foreach ( $steps as $key => $step ) {
-			do_action( "pmpro_process_order_before_{$step}", $order );
-			$this->$step( $order );
-			do_action( "pmpro_process_order_after_{$step}", $order );
-			if ( ! empty( $order->error ) ) {
-				return false;
-			}
+		$payment_method = $this->get_payment_method( $order );
+		if ( empty( $payment_method ) ) {
+			// There was an issue getting the payment method.
+			$order->error      = __( "Error retrieving payment method.", 'paid-memberships-pro' );
+			$order->shorterror = $order->error;
+			return false;
+		}
+
+		$customer = $this->set_default_payment_method_for_customer( $customer, $payment_method );
+		if ( is_string( $customer ) ) {
+			// There was an issue updating the default payment method.
+			$order->error      = __( "Error updating default payment method.", 'paid-memberships-pro' ) . " " . $customer;
+			$order->shorterror = $order->error;
+			return false;
+		}
+
+		// Save customer and payment method in $order.
+		// This will likely be removed as we rework payment processing.
+		$order->stripe_customer = $customer;
+		$order->stripe_payment_method = $payment_method;
+
+		$charges_processed = $this->process_charges( $order );
+		if ( ! empty( $order->error ) ) {
+			// There was an error processing charges.
+			// $order has an error message, so we don't need to add one.
+			return false;
+		}
+
+		$subscriptions_processed = $this->process_subscriptions( $order );
+		if ( ! empty( $order->error ) ) {
+			// There was an error processing charges.
+			// $order has an error message, so we don't need to add one.
+			return false;
 		}
 
 		$this->clean_up( $order );
@@ -1479,9 +1504,8 @@ class PMProGateway_stripe extends PMProGateway {
 		$amount          = pmpro_round_price( (float) $order->subtotal + (float) $tax );
 
 		//create a customer
-		$result = $this->setCustomer( $order );
-
-		if ( empty( $result ) ) {
+		$customer = $this->update_customer_at_checkout( $order );
+		if ( empty( $customer ) ) {
 			//failed to create customer
 			return false;
 		}
@@ -1491,7 +1515,7 @@ class PMProGateway_stripe extends PMProGateway {
 			$params = array(
 					"amount"      => $this->convert_price_to_unit_amount( $amount ), # amount in cents, again
 					"currency"    => strtolower( $pmpro_currency ),
-					"customer"    => $this->customer->id,
+					"customer"    => $customer->id,
 					"description" => apply_filters( 'pmpro_stripe_order_description', "Order #" . $order->code . ", " . trim( $order->FirstName . " " . $order->LastName ) . " (" . $order->Email . ")", $order )
 				);
 			$params   = self::add_application_fee_amount( $params  );
@@ -1821,7 +1845,7 @@ class PMProGateway_stripe extends PMProGateway {
 		// Check if we have an existing user.
 		if ( ! empty( $customer ) ) {
 			// User is already a customer in Stripe. Update.
-			$customer = $this->update_customer( $current_customer->ID, $customer );
+			$customer = $this->update_customer( $customer->id, $customer_args );
 			if ( is_string( $customer ) ) {
 				// We were not able to create a new user in Stripe.
 				$order->error      = __( "Error updating customer record with Stripe.", 'paid-memberships-pro' ) . " " . $customer;
@@ -1942,6 +1966,38 @@ class PMProGateway_stripe extends PMProGateway {
 	}
 
 	/**
+	 * Sets the default Payment Method for a Customer in Stripe.
+	 *
+	 * @param Stripe_Customer $customer to update default payment method for.
+	 * @param Stripe_PaymentMethod $payment_method to set as default.
+	 * @return Stripe_Customer|string error message.
+	 * 
+	 */
+	function set_default_payment_method_for_customer( $customer, $payment_method ) {
+		if ( ! empty( $customer->invoice_settings->default_payment_method ) && $customer->invoice_settings->default_payment_method === $payment_method->id ) {
+			// Payment method already correct, no need to update.
+			return $customer;
+		}
+
+		try {
+			$payment_method->attach( [ 'customer' => $customer->id ] );
+			$customer->invoice_settings->default_payment_method = $payment_method->id;
+			$customer->save();
+		} catch ( Stripe\Error\Base $e ) {
+			$order->error = $e->getMessage();
+			return $e->getMessage();
+		} catch ( \Throwable $e ) {
+			$order->error = $e->getMessage();
+			return $e->getMessage();
+		} catch ( \Exception $e ) {
+			$order->error = $e->getMessage();
+			return $e->getMessage();
+		}
+
+		return $customer;
+	}
+
+	/**
 	 * Get a Stripe subscription from a PMPro order
 	 *
 	 * @since 1.8
@@ -1954,22 +2010,22 @@ class PMProGateway_stripe extends PMProGateway {
 			return false;
 		}
 
-		$result = $this->setCustomer( $order, true );    //force so we don't get a cached sub for someone else
+		$customer = $this->update_customer_at_checkout( $order, true );    //force so we don't get a cached sub for someone else
 
 		//no customer?
-		if ( empty( $result ) ) {
+		if ( empty( $customer ) ) {
 			return false;
 		}
 
 		//no subscriptions?
-		if ( empty( $this->customer->subscriptions ) ) {
+		if ( empty( $customer->subscriptions ) ) {
 			return false;
 		}
 
 		//is there a subscription transaction id pointing to a sub?
 		if ( ! empty( $order->subscription_transaction_id ) && strpos( $order->subscription_transaction_id, "sub_" ) !== false ) {
 			try {
-				$sub = $this->customer->subscriptions->retrieve( $order->subscription_transaction_id );
+				$sub = $customer->subscriptions->retrieve( $order->subscription_transaction_id );
 			} catch ( \Throwable $e ) {
 				$order->error      = __( "Error getting subscription with Stripe:", 'paid-memberships-pro' ) . $e->getMessage();
 				$order->shorterror = $order->error;
@@ -1986,7 +2042,7 @@ class PMProGateway_stripe extends PMProGateway {
 		}
 
 		//find subscription based on customer id and order/plan id
-		$subscriptions = $this->customer->subscriptions->all();
+		$subscriptions = $customer->subscriptions->all();
 
 		//no subscriptions
 		if ( empty( $subscriptions ) || empty( $subscriptions->data ) ) {
@@ -2051,14 +2107,15 @@ class PMProGateway_stripe extends PMProGateway {
 
 		//set up customer
 
-		$result = $this->setCustomer( $order );
+		$result = $this->update_customer_at_checkout( $order );
 		if ( empty( $result ) ) {
 			return false;    //error retrieving customer
 		}
+		$order->stripe_customer = $result;
 
 		// set subscription id to custom id
 
-		$order->subscription_transaction_id = $this->customer['id'];    //transaction id is the customer id, we save it in user meta later too
+		$order->subscription_transaction_id = $order->stripe_customer['id'];    //transaction id is the customer id, we save it in user meta later too
 
 		//figure out the amounts
 		$amount     = $order->PaymentAmount;
@@ -2159,8 +2216,8 @@ class PMProGateway_stripe extends PMProGateway {
 		}
 
 
-		if ( empty( $order->subscription_transaction_id ) && ! empty( $this->customer['id'] ) ) {
-			$order->subscription_transaction_id = $this->customer['id'];
+		if ( empty( $order->subscription_transaction_id ) && ! empty( $order->stripe_customer['id'] ) ) {
+			$order->subscription_transaction_id = $order->stripe_customer['id'];
 		}
 
 		// subscribe to the plan
@@ -2269,7 +2326,7 @@ class PMProGateway_stripe extends PMProGateway {
 		$last_order = new MemberOrder();
 		$last_order->getLastMemberOrder( $user_id );
 		$last_order->setGateway( 'stripe' );
-		$last_order->Gateway->setCustomer( $last_order );
+		$last_order->Gateway->update_customer_at_checkout( $last_order );
 
 		$subscription = $last_order->Gateway->getSubscription( $last_order );
 
@@ -2319,7 +2376,8 @@ class PMProGateway_stripe extends PMProGateway {
 		}, 10, 2 );
 
 		//update subscription
-		$update_order->Gateway->set_customer( $update_order, true );
+		$customer = $update_order->Gateway->update_customer_at_checkout( $update_order, true );
+		$order->stripe_customer = $customer;
 		$update_order->Gateway->process_subscriptions( $update_order );
 
 		//update membership
@@ -2343,30 +2401,41 @@ class PMProGateway_stripe extends PMProGateway {
 	}
 
 	/**
-	 * Helper method to update the customer info via setCustomer
+	 * Helper method to update the customer info via update_customer_at_checkout
 	 *
 	 * @since 1.4
 	 */
 	function update( &$order ) {
+		$customer = $this->update_customer_at_checkout( $order );
+		if ( empty( $customer ) ) {
+			// There was an issue creating/updating the Stripe customer.
+			// $order will have an error message, so we don't need to add one.
+			return false;
+		}
 
-		$steps = array(
-			'set_customer',
-			'set_payment_method',
-			'attach_payment_method_to_customer',
-			'update_payment_method_for_subscriptions',
-		);
+		$payment_method = $this->get_payment_method( $order );
+		if ( empty( $payment_method ) ) {
+			// There was an issue getting the payment method.
+			$order->error      = __( "Error retrieving payment method.", 'paid-memberships-pro' );
+			$order->shorterror = $order->error;
+			return false;
+		}
 
-		foreach ( $steps as $key => $step ) {
-			do_action( "pmpro_update_billing_before_{$step}", $order );
-			$this->$step( $order );
-			do_action( "pmpro_update_billing_after_{$step}", $order );
-			if ( ! empty( $order->error ) ) {
-				return false;
-			}
+		$customer = $this->set_default_payment_method_for_customer( $customer, $payment_method );
+		if ( is_string( $customer ) ) {
+			// There was an issue updating the default payment method.
+			$order->error      = __( "Error updating default payment method.", 'paid-memberships-pro' ) . " " . $customer;
+			$order->shorterror = $order->error;
+			return false;
+		}
+
+		if ( ! $this->update_payment_method_for_subscriptions( $order ) ) {
+			$order->error      = __( "Error updating payment method for subscription.", 'paid-memberships-pro' );
+			$order->shorterror = $order->error;
+			return false;
 		}
 
 		return true;
-
 	}
 	
 	/**
@@ -2374,15 +2443,15 @@ class PMProGateway_stripe extends PMProGateway {
 	 */
 	function update_payment_method_for_subscriptions( &$order ) {
 		// get customer
-		$this->setCustomer( $order );
+		$customer = $this->update_customer_at_checkout( $order );
 		
-		if ( empty( $this->customer ) ) {
+		if ( empty( $customer ) ) {
 			return false;
 		}
 		
 		// get all subscriptions
-		if ( ! empty( $this->customer->subscriptions ) ) {
-			$subscriptions = $this->customer->subscriptions->all();
+		if ( ! empty( $customer->subscriptions ) ) {
+			$subscriptions = $customer->subscriptions->all();
 		}
 		
 		foreach( $subscriptions as $subscription ) {
@@ -2399,9 +2468,10 @@ class PMProGateway_stripe extends PMProGateway {
 			}
 			
 			// update the payment method
-			$subscription->default_payment_method = $this->customer->invoice_settings->default_payment_method;
+			$subscription->default_payment_method = $customer->invoice_settings->default_payment_method;
 			$subscription->save();
 		}
+		return true;
 	}
 
 	/**
@@ -2423,7 +2493,7 @@ class PMProGateway_stripe extends PMProGateway {
 		}
 
 		//find the customer
-		$result = $this->setCustomer( $order );
+		$result = $this->update_customer_at_checkout( $order );
 
 		if ( ! empty( $result ) ) {
 			//find subscription with this order code
@@ -2486,10 +2556,10 @@ class PMProGateway_stripe extends PMProGateway {
 		}
 
 		// Okay have an order, so get customer so we can cancel invoices too
-		$this->setCustomer( $order );
+		$customer = $this->update_customer_at_checkout( $order );
 
 		// Get open invoices.
-		$invoices = Stripe_Invoice::all(['customer' => $this->customer->id, 'status' => 'open']);
+		$invoices = Stripe_Invoice::all(['customer' => $customer->id, 'status' => 'open']);
 
 		// Found it, cancel it.
 		try {
@@ -2536,7 +2606,7 @@ class PMProGateway_stripe extends PMProGateway {
 				$subscription = $order->Gateway->getSubscription( $order );
 
 				if ( ! empty( $subscription ) ) {
-					$customer = $order->Gateway->setCustomer();
+					$customer = $order->Gateway->set_customer();
 					if ( ! $customer->delinquent && ! empty ( $subscription->current_period_end ) ) {
 						$offset = get_option( 'gmt_offset' );						
 						$timestamp = $subscription->current_period_end + ( $offset * 3600 );
@@ -2695,16 +2765,17 @@ class PMProGateway_stripe extends PMProGateway {
 	}
 
 	function attach_payment_method_to_customer( &$order ) {
+		$customer = $this->update_customer_at_checkout( $order );
 
-		if ( ! empty( $this->customer->invoice_settings->default_payment_method ) &&
-             $this->customer->invoice_settings->default_payment_method === $this->payment_method->id ) {
+		if ( ! empty( $customer->invoice_settings->default_payment_method ) &&
+             $customer->invoice_settings->default_payment_method === $this->payment_method->id ) {
 			return true;
 		}
 
 		try {
-			$this->payment_method->attach( [ 'customer' => $this->customer->id ] );
-			$this->customer->invoice_settings->default_payment_method = $this->payment_method->id;
-			$this->customer->save();
+			$this->payment_method->attach( [ 'customer' => $customer->id ] );
+			$customer->invoice_settings->default_payment_method = $this->payment_method->id;
+			$customer->save();
 		} catch ( Stripe\Error\Base $e ) {
 			$order->error = $e->getMessage();
 			return false;
@@ -2739,7 +2810,7 @@ class PMProGateway_stripe extends PMProGateway {
 
 	function set_payment_intent( &$order, $force = false ) {
 
-		if ( ! empty( $this->payment_intent ) && ! $force ) {
+		if ( ! empty( $order->stripe_payment_intent ) && ! $force ) {
 			return true;
 		}
 
@@ -2792,8 +2863,8 @@ class PMProGateway_stripe extends PMProGateway {
 		$amount = pmpro_round_price( (float) $order->subtotal + (float) $tax );
 
 		$params = array(
-			'customer'               => $this->customer->id,
-			'payment_method'         => $this->payment_method->id,
+			'customer'               => $order->stripe_customer->id,
+			'payment_method'         => $order->stripe_payment_method->id,
 			'amount'                 => $this->convert_price_to_unit_amount( $amount ),
 			'currency'               => $pmpro_currency,
 			'confirmation_method'    => 'manual',
@@ -2969,8 +3040,7 @@ class PMProGateway_stripe extends PMProGateway {
 		//subscribe to the plan
 		try {
 			$params              = array(
-				'customer'               => $this->customer->id,
-				'default_payment_method' => $this->payment_method,
+				'customer'               => $order->stripe_customer->id,
 				'items'                  => array(
 					array( 'plan' => $order->code ),
 				),
