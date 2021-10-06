@@ -3598,7 +3598,7 @@ class PMProGateway_stripe extends PMProGateway {
 		}
 
 		$stripe = new PMProGateway_stripe();
-		$customer = $stripe->getCustomer( $user_order );
+		$customer = $stripe->get_customer_for_user( $user_order->user_id );
 		if ( empty( $customer->id ) ) {
 			return;
 		}
