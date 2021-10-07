@@ -1039,7 +1039,10 @@
 					'timeout' => 60,
 					'sslverify' => FALSE,
 					'httpversion' => '1.1',
-					'body' => $nvpreq
+					'body' => $nvpreq,
+					'headers'     => array(
+						'content-type'      => 'application/json',
+					),
 			    )
 			);
 
