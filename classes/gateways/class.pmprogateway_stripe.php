@@ -1300,7 +1300,9 @@ class PMProGateway_stripe extends PMProGateway {
 		$current_month = date_i18n( "m" );
 		?>
             <h3><?php _e( "Subscription Updates", 'paid-memberships-pro' ); ?></h3>
+			<p><?php _e( "Subscription updates will be deprecated in a future version of PMPro, though your existing subscription updates will still trigger as expected. We now instead reccomend updating the subscription directly in Stripe.", 'paid-memberships-pro' ); ?></p>
             <table class="form-table">
+				<input type='hidden' name='pmpro_subscription_updates_visible' value='1' />
                 <tr>
                     <th><label for="membership_level"><?php _e( "Update", 'paid-memberships-pro' ); ?></label></th>
                     <td id="updates_td">
@@ -1401,8 +1403,15 @@ class PMProGateway_stripe extends PMProGateway {
 			return false;
 		}
 
-		//make sure some value was passed
+		//make sure subscription updates were shown.
+		if ( ! isset( $_POST['pmpro_subscription_updates_visible'] ) ) {
+			return;
+		}
+
+		// Check whether all updates were deleted.
 		if ( ! isset( $_POST['updates_when'] ) || ! is_array( $_POST['updates_when'] ) ) {
+			delete_user_meta( $user_id, 'pmpro_stripe_updates' );
+			delete_user_meta( $user_id, 'pmpro_stripe_next_on_date_update' );
 			return;
 		}
 
