@@ -99,7 +99,6 @@ function pmpro_license_check_key($key = NULL) {
         $timeout = apply_filters("pmpro_license_check_key_timeout", 5);
 
         $r = wp_remote_get($url, array("timeout" => $timeout));
-		echo "((getting))";
 
         //test response
         if(is_wp_error($r)) {			
