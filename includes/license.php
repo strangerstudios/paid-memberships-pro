@@ -77,6 +77,8 @@ register_deactivation_hook(__FILE__, 'pmpro_deactivation');
 
 //check keys with PMPro once a month
 function pmpro_license_check_key($key = NULL) {
+	global $pmpro_license_error;
+	
 	//get key
 	if(empty($key))
 		$key = get_option('pmpro_license_key');
@@ -97,11 +99,12 @@ function pmpro_license_check_key($key = NULL) {
         $timeout = apply_filters("pmpro_license_check_key_timeout", 5);
 
         $r = wp_remote_get($url, array("timeout" => $timeout));
+		echo "((getting))";
 
         //test response
-        if(is_wp_error($r)) {
-            //error
-            pmpro_setMessage("Could not connect to the PMPro License Server to check key Try again later.", "error");
+        if(is_wp_error($r)) {			
+			//invalid key			
+			$pmpro_license_error = $r->get_error_message();
         }
         elseif(!empty($r) && $r['response']['code'] == 200)
 		{
@@ -120,14 +123,12 @@ function pmpro_license_check_key($key = NULL) {
 				return true;
 			}
 			elseif(!empty($r->error))
-			{
-				//invalid key
-				global $pmpro_license_error;
+			{	
+				//invalid key				
 				$pmpro_license_error = $r->error;
 				
 				delete_option('pmpro_license_check');
 				add_option('pmpro_license_check', array('license'=>false, 'enddate'=>0), NULL, 'no');
-                
 			}
 		}	
 	}
