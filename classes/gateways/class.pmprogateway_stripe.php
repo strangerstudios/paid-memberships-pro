@@ -1242,16 +1242,124 @@ class PMProGateway_stripe extends PMProGateway {
 	static function user_profile_fields( $user ) {
 		global $wpdb, $current_user, $pmpro_currency_symbol;
 
-		// Get the user's last order.
-		$last_order = new MemberOrder();
-		$last_order->getLastMemberOrder( $user->ID );
-
-		// Check that this order is for a Stripe subscription.
-		if ( $last_order->gateway == "stripe" && ! empty( $last_order->subscription_transaction_id ) ) {
-			// Get the link to edit the subscription.
-			echo '<hr>';
-			echo '<a target="_blank" href="https://dashboard.stripe.com/' . ( $last_order->gateway_environment == 'sandbox' ? 'test/' : '' ) . 'subscriptions/' . esc_attr( $last_order->subscription_transaction_id ) . '">' . esc_html__( 'Edit subscription in Stripe', 'paid-memberships-pro' ) . '</a>';
+		//make sure the current user has privileges
+		$membership_level_capability = apply_filters( "pmpro_edit_member_capability", "manage_options" );
+		if ( ! current_user_can( $membership_level_capability ) ) {
+			return false;
 		}
+
+		//more privelges they should have
+		$show_membership_level = apply_filters( "pmpro_profile_show_membership_level", true, $user );
+		if ( ! $show_membership_level ) {
+			return false;
+		}
+
+		// Get the user's Stripe Customer if they have one.
+		$stripe = new PMProGateway_Stripe();
+		$customer = $stripe->get_customer_for_user( $user->ID );
+
+		// Check whether we have a Stripe Customer.
+		if ( ! empty( $customer ) ) {
+			// Get the link to edit the customer.
+			echo '<hr>';
+			echo '<a target="_blank" href="https://dashboard.stripe.com/' . ( pmpro_getOption( 'gateway_environment' ) == 'sandbox' ? 'test/' : '' ) . 'customers/' . esc_attr( $customer->id ) . '">' . esc_html__( 'Edit customer in Stripe', 'paid-memberships-pro' ) . '</a>';
+			if ( ! empty( $user->pmpro_stripe_updates ) && is_array( $user->pmpro_stripe_updates ) ) {
+				$stripe->user_profile_fields_subscription_updates( $user, $customer );
+			}
+		}
+	}
+
+	/**
+	 * Temporary function to allow users to view and delete subscription updates.
+	 * Will be removed once subscription updates are completely deprecated.
+	 *
+	 * @since TBD.
+	 *
+	 * @param WP_User $user whose profile is being shown.
+	 * @param Stripe_Customer $customer associated with that user.
+	 */
+	function user_profile_fields_subscription_updates( $user, $customer ) {
+		$subscriptions = $customer->subscriptions->all();
+		if ( empty( $subscriptions ) ) {
+			// User does not have any subscriptions to udpate. Delete all updates.
+			delete_user_meta( $user->ID, 'pmpro_stripe_updates' );
+			return;
+		}
+		?>
+            <h3><?php _e( "Subscription Updates", 'paid-memberships-pro' ); ?></h3>
+            <table class="form-table">
+                <tr>
+                    <th><label for="membership_level"><?php _e( "Update", 'paid-memberships-pro' ); ?></label></th>
+                    <td id="updates_td">
+						<?php
+						$updates = $user->pmpro_stripe_updates;
+
+						foreach ( $updates as $update ) {
+							?>
+                            <div class="updates_update"
+							     <?php if ( ! empty( $update['template'] ) ) { ?>style="display: none;"<?php } ?>>
+                                <select class="updates_when" name="updates_when[]">
+                                    <option value="now" <?php selected( $update['when'], "now" ); ?>>Now</option>
+                                    <option value="payment" <?php selected( $update['when'], "payment" ); ?>>After
+                                        Next Payment
+                                    </option>
+                                    <option value="date" <?php selected( $update['when'], "date" ); ?>>On Date
+                                    </option>
+                                </select>
+                                <span class="updates_date"
+								      <?php if ( $update['when'] != "date" ) { ?>style="display: none;"<?php } ?>>
+								<select name="updates_date_month[]">
+									<?php
+									for ( $i = 1; $i < 13; $i ++ ) {
+										?>
+                                        <option value="<?php echo str_pad( $i, 2, "0", STR_PAD_LEFT ); ?>"
+										        <?php if ( ! empty( $update['date_month'] ) && $update['date_month'] == $i ) { ?>selected="selected"<?php } ?>>
+											<?php echo date_i18n( "M", strtotime( $i . "/15/" . $current_year ) ); ?>
+										</option>
+										<?php
+									}
+									?>
+								</select>
+								<input name="updates_date_day[]" type="text" size="2"
+                                       value="<?php if ( ! empty( $update['date_day'] ) ) {
+									       echo esc_attr( $update['date_day'] );
+								       } ?>"/>
+								<input name="updates_date_year[]" type="text" size="4"
+                                       value="<?php if ( ! empty( $update['date_year'] ) ) {
+									       echo esc_attr( $update['date_year'] );
+								       } ?>"/>
+							</span>
+                                <span class="updates_billing"
+								      <?php if ( $update['when'] == "now" ) { ?>style="display: none;"<?php } ?>>
+								<?php echo $pmpro_currency_symbol ?><input name="updates_billing_amount[]" type="text"
+                                                                           size="10"
+                                                                           value="<?php echo esc_attr( $update['billing_amount'] ); ?>"/>
+								<small><?php _e( 'per', 'paid-memberships-pro' ); ?></small>
+								<input name="updates_cycle_number[]" type="text" size="5"
+                                       value="<?php echo esc_attr( $update['cycle_number'] ); ?>"/>
+								<select name="updates_cycle_period[]">
+								  <?php
+								  foreach ( $cycles as $name => $value ) {
+									  echo "<option value='$value'";
+									  if ( ! empty( $update['cycle_period'] ) && $update['cycle_period'] == $value ) {
+										  echo " selected='selected'";
+									  }
+									  echo ">$name</option>";
+								  }
+								  ?>
+								</select>
+							</span>
+                                <span>
+								<a class="updates_remove" href="javascript:void(0);">Remove</a>
+							</span>
+                            </div>
+							<?php
+						}
+						?>
+                    </td>
+                </tr>
+            </table>
+			<?php
 	}
 
 	/**
