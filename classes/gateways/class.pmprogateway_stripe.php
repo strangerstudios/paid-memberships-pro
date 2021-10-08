@@ -766,12 +766,12 @@ class PMProGateway_stripe extends PMProGateway {
 				);
 
 				if ( ! empty( $order ) ) {
-					if ( ! empty( $order->Gateway->payment_intent ) ) {
-						$localize_vars['paymentIntent'] = $order->Gateway->payment_intent;
+					if ( ! empty( $order->stripe_payment_intent ) ) {
+						$localize_vars['paymentIntent'] = $order->stripe_payment_intent;
 					}
-					if ( ! empty( $order->Gateway->setup_intent ) ) {
-						$localize_vars['setupIntent']  = $order->Gateway->setup_intent;
-						$localize_vars['subscription'] = $order->Gateway->subscription;
+					if ( ! empty( $order->stripe_setup_intent ) ) {
+						$localize_vars['setupIntent']  = $order->stripe_setup_intent;
+						$localize_vars['subscription'] = $order->stripe_subscription;
 					}
 				}
 
@@ -1760,6 +1760,11 @@ class PMProGateway_stripe extends PMProGateway {
 		}
 		$user = empty( $user_id ) ? null : get_userdata( $user_id );
 		$customer = empty( $user_id ) ? null : $this->get_customer_for_user( $user_id );
+
+		// If we can't get a customer from the user, try to get it from the order.
+		if ( empty( $customer ) && ! empty( $order->customer_id ) ) {
+			$customer = $this->get_customer( $order->customer_id );
+		}
 
 		// Get customer name.
 		if ( ! empty( $order->FirstName ) && ! empty( $order->LastName ) ) {
@@ -2796,7 +2801,15 @@ class PMProGateway_stripe extends PMProGateway {
 			return true;
 		}
 
-		$this->set_payment_intent( $order );
+		$payment_intent = $this->get_payment_intent( $order );
+		if ( empty( $payment_intent) ) {
+			// There was an error, and the message should already
+			// be saved on the order.
+			return false;
+		}
+		// Save payment intent to order so that we can use it in confirm_payment_intent().
+		$order->stripe_payment_intent = $payment_intent;
+
 		$this->confirm_payment_intent( $order );
 
 		if ( ! empty( $order->error ) ) {
@@ -2911,7 +2924,15 @@ class PMProGateway_stripe extends PMProGateway {
 			update_user_meta( $user_id, "pmpro_stripe_updates", array() );
 		}
 
-		$this->set_setup_intent( $order );
+		$setup_intent = $this->get_setup_intent( $order );
+		if ( empty( $setup_intent ) ) {
+			// There was an error, and the message should already
+			// be saved on the order.
+			return false;
+		}
+		// Save setup intent to order so that we can use it in confirm_setup_intent().
+		$order->stripe_setup_intent = $setup_intent;
+
 		$this->confirm_setup_intent( $order );
 
 		if ( ! empty( $order->error ) ) {
@@ -3158,14 +3179,14 @@ class PMProGateway_stripe extends PMProGateway {
 	function create_setup_intent( &$order ) {
 
 		$this->create_plan( $order );
-		$this->subscription = $this->create_subscription( $order );
+		$order->stripe_subscription = $this->create_subscription( $order );
 		$this->delete_plan( $order );
 
-		if ( ! empty( $order->error ) || empty( $this->subscription->pending_setup_intent ) ) {
+		if ( ! empty( $order->error ) || empty( $order->stripe_subscription->pending_setup_intent ) ) {
 			return false;
 		}
 
-		return $this->subscription->pending_setup_intent;
+		return $order->stripe_subscription->pending_setup_intent;
 	}
 
 	function confirm_payment_intent( &$order ) {
@@ -3176,7 +3197,7 @@ class PMProGateway_stripe extends PMProGateway {
 					'payment_method',
 				),
 			);
-			$this->payment_intent->confirm( $params );
+			$order->stripe_payment_intent->confirm( $params );
 		} catch ( Stripe\Error\Base $e ) {
 			$order->error = $e->getMessage();
 			return false;
@@ -3188,7 +3209,7 @@ class PMProGateway_stripe extends PMProGateway {
 			return false;
 		}
 
-		if ( 'requires_action' == $this->payment_intent->status ) {
+		if ( 'requires_action' == $order->stripe_payment_intent->status ) {
 			$order->errorcode = true;
 			$order->error = __( 'Customer authentication is required to complete this transaction. Please complete the verification steps issued by your payment provider.', 'paid-memberships-pro' );
 			$order->error_type = 'pmpro_alert';
@@ -3201,11 +3222,11 @@ class PMProGateway_stripe extends PMProGateway {
 
 	function confirm_setup_intent( &$order ) {
 
-		if ( empty( $this->setup_intent ) ) {
+		if ( empty( $order->stripe_setup_intent ) ) {
 			return true;
 		}
 
-		if ( 'requires_action' === $this->setup_intent->status ) {
+		if ( 'requires_action' === $order->stripe_setup_intent->status ) {
 			$order->errorcode = true;
 			$order->error     = __( 'Customer authentication is required to finish setting up your subscription. Please complete the verification steps issued by your payment provider.', 'paid-memberships-pro' );
 
@@ -3321,12 +3342,12 @@ class PMProGateway_stripe extends PMProGateway {
 	}
 
 	function clean_up( &$order ) {
-		if ( ! empty( $this->payment_intent ) && 'succeeded' == $this->payment_intent->status ) {
-			$order->payment_transaction_id = $this->payment_intent->charges->data[0]->id;
+		if ( ! empty( $order->stripe_payment_intent ) && 'succeeded' == $order->stripe_payment_intent->status ) {
+			$order->payment_transaction_id = $order->stripe_payment_intent->charges->data[0]->id;
 		}
 
-		if ( empty( $order->subscription_transaction_id ) && ! empty( $this->subscription ) ) {
-			$order->subscription_transaction_id = $this->subscription->id;
+		if ( empty( $order->subscription_transaction_id ) && ! empty( $order->stripe_subscription ) ) {
+			$order->subscription_transaction_id = $order->stripe_subscription->id;
 		}
 	}
 
