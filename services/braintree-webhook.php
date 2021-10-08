@@ -254,6 +254,7 @@ if ( $webhookNotification->kind === Braintree_WebhookNotification::SUBSCRIPTION_
 	$morder->user_id = $user_id;
 	$morder->membership_id = $old_order->membership_id;
 	
+	$morder->billing = new stdClass();
 	$morder->billing->name = isset( $transaction->billing_details->first_name ) && isset( $transaction->billing_details->last_name ) ?
 		trim( $transaction->billing_details->first_name . " " . $transaction->billing_details->first_name ) :
 		$old_order->billing->name;
