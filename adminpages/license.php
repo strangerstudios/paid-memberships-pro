@@ -1,6 +1,4 @@
 <?php
-global $pmpro_license_error;
-
 //only let admins get here
 if ( ! function_exists( 'current_user_can' ) || ( ! current_user_can( 'manage_options' ) && ! current_user_can( 'pmpro_license') ) ) {
 	die( __( 'You do not have permissions to perform this action.', 'paid-memberships-pro' ) );
@@ -9,22 +7,25 @@ if ( ! function_exists( 'current_user_can' ) || ( ! current_user_can( 'manage_op
 //updating license?
 if ( ! empty( $_REQUEST['pmpro-verify-submit'] ) ) {
 	$key = preg_replace("/[^a-zA-Z0-9]/", "", $_REQUEST['pmpro-license-key']);
-				
-	//erase the old key
-	delete_option('pmpro_license_key');
 	
-	//check key
-	$valid = pmpro_license_isValid($key, NULL, true);
+	// Check key.
+	$pmpro_license_check = pmpro_license_check_key( $key );
+	$r = pmpro_license_isValid( $key );
 	
-	//update key
+	// Update key.
 	update_option( 'pmpro_license_key', $key, 'no' );
-}	
+}
 
-//get saved license
-$key = get_option( 'pmpro_license_key', '' );
-$pmpro_license_check = get_option( 'pmpro_license_check', array( 'license' => false, 'enddate' => 0 ) );
+// Get values from options if not updating.
+if ( empty( $key ) ) {
+	$key = get_option( 'pmpro_license_key', '' );
+}
 
-//html for license settings page
+if ( empty( $pmpro_license_check ) ) {
+	$pmpro_license_check = get_option( 'pmpro_license_check', array( 'license' => false, 'enddate' => 0 ) );
+}
+
+// HTML for license settings page.
 if ( defined( 'PMPRO_DIR' ) ) {
 	require_once( PMPRO_DIR . '/adminpages/admin_header.php' );
 } ?>
@@ -32,14 +33,14 @@ if ( defined( 'PMPRO_DIR' ) ) {
 		<h2><?php _e('Paid Memberships Pro Support License', 'paid-memberships-pro' );?></h2>
 
 		<div class="about-text">
-			<?php if ( ! empty( $pmpro_license_error ) ) { ?>
-				<p class="pmpro_message pmpro_error"><strong><?php echo esc_html( sprintf( __( 'There was an issue validating your license key: %s', 'paid-memberships-pro' ), $pmpro_license_error ) );?></strong> <?php _e('Visit the PMPro <a href="https://www.paidmembershipspro.com/login/?redirect_to=%2Fmembership-account%2F%3Futm_source%3Dplugin%26utm_medium%3Dpmpro-license%26utm_campaign%3Dmembership-account%26utm_content%3Dkey-not-valid" target="_blank">Membership Account</a> page to confirm that your account is active and to find your license key.', 'paid-memberships-pro' );?></p>
+			<?php if ( is_wp_error( $pmpro_license_check ) ) { ?>
+				<p class="pmpro_message pmpro_error"><strong><?php echo esc_html( sprintf( __( 'There was an issue validating your license key: %s', 'paid-memberships-pro' ), $pmpro_license_check->get_error_message() ) );?></strong> <?php _e('Visit the PMPro <a href="https://www.paidmembershipspro.com/login/?redirect_to=%2Fmembership-account%2F%3Futm_source%3Dplugin%26utm_medium%3Dpmpro-license%26utm_campaign%3Dmembership-account%26utm_content%3Dkey-not-valid" target="_blank">Membership Account</a> page to confirm that your account is active and to find your license key.', 'paid-memberships-pro' );?></p>
 			<?php } elseif( ! pmpro_license_isValid() && empty( $key ) ) { ?>
 				<p class="pmpro_message pmpro_error"><strong><?php _e('Enter your support license key.</strong> Your license key can be found in your membership email receipt or in your <a href="https://www.paidmembershipspro.com/login/?redirect_to=%2Fmembership-account%2F%3Futm_source%3Dplugin%26utm_medium%3Dpmpro-license%26utm_campaign%3Dmembership-account%26utm_content%3Dno-key" target="_blank">Membership Account</a>.', 'paid-memberships-pro' );?></p>
-			<?php } elseif(!pmpro_license_isValid()) { ?>
+			<?php } elseif( ! pmpro_license_isValid() ) { ?>
 				<p class="pmpro_message pmpro_error"><strong><?php _e('Your license is invalid or expired.', 'paid-memberships-pro' );?></strong> <?php _e('Visit the PMPro <a href="https://www.paidmembershipspro.com/login/?redirect_to=%2Fmembership-account%2F%3Futm_source%3Dplugin%26utm_medium%3Dpmpro-license%26utm_campaign%3Dmembership-account%26utm_content%3Dkey-not-valid" target="_blank">Membership Account</a> page to confirm that your account is active and to find your license key.', 'paid-memberships-pro' );?></p>
 			<?php } else { ?>													
-				<p class="pmpro_message pmpro_success"><?php printf(__('<strong>Thank you!</strong> A valid <strong>%s</strong> license key has been used to activate your support license on this site.', 'paid-memberships-pro' ), ucwords($pmpro_license_check['license']));?></p>
+				<p class="pmpro_message pmpro_success"><?php printf(__('<strong>Thank you!</strong> A valid <strong>%s</strong> license key has been used to activate your support license on this site.', 'paid-memberships-pro' ), ucwords( $pmpro_license_check['license'] ) );?></p>
 			<?php } ?>
 
 			<form action="" method="post">
