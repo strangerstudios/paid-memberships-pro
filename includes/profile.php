@@ -481,9 +481,15 @@ function pmpro_membership_history_profile_fields( $user ) {
 			?>
 			</tbody>
 			</table>
-			<?php } else { 
-				esc_html_e( 'No membership orders found.', 'paid-memberships-pro' );
-			} ?>
+			<?php } else { ?>
+                <table class="wp-list-table widefat striped fixed" width="100%" cellpadding="0" cellspacing="0" border="0">
+                    <tbody>
+                        <tr>
+                            <td><?php esc_html_e( 'No membership orders found.', 'paid-memberships-pro' ); ?></td>
+                        </tr>
+                    </tbody>
+                </table>
+			<?php } ?>
 		</div>
 		<div id="member-history-memberships" class="widgets-holder-wrap" style="display: none;">
 		<?php if ( $levelshistory ) { ?>
@@ -533,9 +539,15 @@ function pmpro_membership_history_profile_fields( $user ) {
 			?>
 			</tbody>
 			</table>
-			<?php } else { 
-				esc_html_e( 'No membership history found.', 'paid-memberships-pro');
-			} ?>
+			<?php } else { ?>
+                <table class="wp-list-table widefat striped fixed" width="100%" cellpadding="0" cellspacing="0" border="0">
+                    <tbody>
+                        <tr>
+                            <td><?php esc_html_e( 'No membership history found.', 'paid-memberships-pro'); ?></td>
+                        </tr>
+                    </tbody>
+                </table>
+			<?php } ?>
 		</div>
 		<script>
 			//tabs
