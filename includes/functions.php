@@ -3501,7 +3501,7 @@ function pmpro_show_discount_code() {
 	$morder->discount_code    = $discount_code;
 	$morder->InitialPayment   = pmpro_round_price( $pmpro_level->initial_payment );
 	$morder->PaymentAmount    = pmpro_round_price( $pmpro_level->billing_amount );
-	$morder->ProfileStartDate = date_i18n( "Y-m-d", current_time( "timestamp" ) ) . "T0:0:0";
+	$morder->ProfileStartDate = date_i18n( "Y-m-d\TH:i:s", current_time( "timestamp" ) );
 	$morder->BillingPeriod    = $pmpro_level->cycle_period;
 	$morder->BillingFrequency = $pmpro_level->cycle_number;
 	if ( $pmpro_level->billing_limit ) {
