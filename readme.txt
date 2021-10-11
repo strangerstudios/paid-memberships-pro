@@ -155,6 +155,18 @@ Not sure? You can find out by doing a bit a research.
 9. Membership Account page, display all sections or show specific sections using shortcode attributes.
 
 == Changelog ==
+= 2.6.3 - 2021-10-11 =
+* ENHANCEMENT: Now passing "app" information to Stripe through API calls. (@dparker1005)
+* ENHANCEMENT: Updated PayPal IPN to detect messages for refunds to at least log it. (@mircobabini)
+* ENHANCEMENT: Updated PayPal IPN to differentiate between cases where the initial payment failed vs a subscription was cancelled. (@mircobabini)
+* ENHANCEMENT: Better styling of the membership levels history when empty. (@mircobabini)
+* BUG FIX/ENHANCEMENT: Now showing better error messages when license key checks fail due to connection issues. (@ideadude)
+* BUG FIX: Improved PayPal API integration to handle cases where PayPal is returning encoding errors but still processing payments and subscriptions. (@mircobabini)
+* BUG FIX: Fixed issue where the Stripe sandbox key wasn't saved properly when using Stripe connect. (@dparker1005)
+* BUG FIX: Fixed issue where a double $$ was showing up in specific emails. (@andrewlimaza)
+* BUG FIX: Fixed warnings in various webhook and IPN handlers. (@ideadude)
+* BUG FIX: Fixed warning in the admin activity email cron job. (@andrewlimaza)
+
 = 2.6.2 - 2021-09-17 =
 * ENHANCEMENT: Made username the first column in the members list. This helps with the mobile view. #1764 (@dparker1005)
 * BUG FIX/ENHANCEMENT: Will now block uninstall.php from running if an older version of PMPro is deleted from the plugins page. #1773 (@mircobabini)
