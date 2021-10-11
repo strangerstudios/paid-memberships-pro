@@ -107,7 +107,7 @@ if ( $webhookNotification->kind === Braintree_WebhookNotification::SUBSCRIPTION_
 	$old_order->getLastMemberOrderBySubscriptionTransactionID( $webhookNotification->subscription->id );
 
 	//no order?
-	if ( empty( $old_order ) ) {
+	if ( empty( $old_order->id ) ) {
 		$logstr[] = "Couldn't find the original subscription with ID={$webhookNotification->subscription->id}.";
 		pmpro_braintreeWebhookExit();
 	}
