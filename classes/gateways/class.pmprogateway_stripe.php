@@ -2971,6 +2971,150 @@ class PMProGateway_stripe extends PMProGateway {
 		}
 	}
 
+	/**
+	 * @deprecated TBD. Only deprecated for public use, will be changed to private in a future version.
+	 */
+	function get_payment_intent( &$order ) {
+		pmpro_method_should_be_private( 'TBD' );
+		if ( ! empty( $order->payment_intent_id ) ) {
+			try {
+				$payment_intent = Stripe_PaymentIntent::retrieve( $order->payment_intent_id );
+			} catch ( Stripe\Error\Base $e ) {
+				$order->error = $e->getMessage();
+				return false;
+			} catch ( \Throwable $e ) {
+				$order->error = $e->getMessage();
+				return false;
+			} catch ( \Exception $e ) {
+				$order->error = $e->getMessage();
+				return false;
+			}
+		}
+
+		if ( empty( $payment_intent ) ) {
+			$payment_intent = $this->create_payment_intent( $order );
+		}
+
+		if ( empty( $payment_intent ) ) {
+			return false;
+		}
+
+		return $payment_intent;
+	}
+
+	/**
+	 * @deprecated TBD. Only deprecated for public use, will be changed to private in a future version.
+	 */
+	function create_payment_intent( &$order ) {
+		pmpro_method_should_be_private( 'TBD' );
+		global $pmpro_currency;
+
+		$amount          = $order->InitialPayment;
+		$order->subtotal = $amount;
+		$tax             = $order->getTax( true );
+
+		$amount = pmpro_round_price( (float) $order->subtotal + (float) $tax );
+
+		$params = array(
+			'customer'               => $order->stripe_customer->id,
+			'payment_method'         => $order->stripe_payment_method->id,
+			'amount'                 => $this->convert_price_to_unit_amount( $amount ),
+			'currency'               => $pmpro_currency,
+			'confirmation_method'    => 'manual',
+			'description'            => apply_filters( 'pmpro_stripe_order_description', "Order #" . $order->code . ", " . trim( $order->FirstName . " " . $order->LastName ) . " (" . $order->Email . ")", $order ),
+			'setup_future_usage'     => 'off_session',
+		);
+		$params = self::add_application_fee_amount( $params );
+
+		/**
+		 * Filter params used to create the payment intent.
+		 *
+		 * @since 2.4.1
+		 *
+	 	 * @param array  $params 	Array of params sent to Stripe.
+		 * @param object $order		Order object for this checkout.
+		 */
+		$params = apply_filters( 'pmpro_stripe_payment_intent_params', $params, $order );
+
+		try {
+			$payment_intent = Stripe_PaymentIntent::create( $params );
+		} catch ( Stripe\Error\Base $e ) {
+			$order->error = $e->getMessage();
+			return false;
+		} catch ( \Throwable $e ) {
+			$order->error = $e->getMessage();
+			return false;
+		} catch ( \Exception $e ) {
+			$order->error = $e->getMessage();
+			return false;
+		}
+
+		return $payment_intent;
+	}
+
+	/**
+	 * @deprecated TBD. Only deprecated for public use, will be changed to private in a future version.
+	 */
+	function process_subscriptions( &$order ) {
+		pmpro_method_should_be_private( 'TBD' );
+		if ( ! pmpro_isLevelRecurring( $order->membership_level ) ) {
+			return true;
+		}
+
+		//before subscribing, let's clear out the updates so we don't trigger any during sub
+		if ( ! empty( $user_id ) ) {
+			$old_user_updates = get_user_meta( $user_id, "pmpro_stripe_updates", true );
+			update_user_meta( $user_id, "pmpro_stripe_updates", array() );
+		}
+
+		$setup_intent = $this->get_setup_intent( $order );
+		if ( empty( $setup_intent ) ) {
+			// There was an error, and the message should already
+			// be saved on the order.
+			return false;
+		}
+		// Save setup intent to order so that we can use it in confirm_setup_intent().
+		$order->stripe_setup_intent = $setup_intent;
+
+		$this->confirm_setup_intent( $order );
+
+		if ( ! empty( $order->error ) ) {
+			$order->error = $order->error;
+
+			//give the user any old updates back
+			if ( ! empty( $user_id ) ) {
+				update_user_meta( $user_id, "pmpro_stripe_updates", $old_user_updates );
+			}
+
+			return false;
+		}
+
+		//save new updates if this is at checkout
+		//empty out updates unless set above
+		if ( empty( $new_user_updates ) ) {
+			$new_user_updates = array();
+		}
+
+		//update user meta
+		if ( ! empty( $user_id ) ) {
+			update_user_meta( $user_id, "pmpro_stripe_updates", $new_user_updates );
+		} else {
+			//need to remember the user updates to save later
+			global $pmpro_stripe_updates;
+			$pmpro_stripe_updates = $new_user_updates;
+			
+			if( ! function_exists( 'pmpro_user_register_stripe_updates' ) ) {
+				function pmpro_user_register_stripe_updates( $user_id ) {
+					global $pmpro_stripe_updates;
+					update_user_meta( $user_id, 'pmpro_stripe_updates', $pmpro_stripe_updates );
+				}
+				add_action( 'user_register', 'pmpro_user_register_stripe_updates' );
+			}
+		}
+
+		return true;
+	}
+
 	/****************************************
 	 ********** DEPRECATED METHODS **********
 	 ****************************************/
@@ -3529,150 +3673,6 @@ class PMProGateway_stripe extends PMProGateway {
 		}
 
 		$this->payment_intent = $payment_intent;
-
-		return true;
-	}
-
-	/**
-	 * @deprecated TBD. Only deprecated for public use, will be changed to private in a future version.
-	 */
-	function get_payment_intent( &$order ) {
-		pmpro_method_should_be_private( 'TBD' );
-		if ( ! empty( $order->payment_intent_id ) ) {
-			try {
-				$payment_intent = Stripe_PaymentIntent::retrieve( $order->payment_intent_id );
-			} catch ( Stripe\Error\Base $e ) {
-				$order->error = $e->getMessage();
-				return false;
-			} catch ( \Throwable $e ) {
-				$order->error = $e->getMessage();
-				return false;
-			} catch ( \Exception $e ) {
-				$order->error = $e->getMessage();
-				return false;
-			}
-		}
-
-		if ( empty( $payment_intent ) ) {
-			$payment_intent = $this->create_payment_intent( $order );
-		}
-
-		if ( empty( $payment_intent ) ) {
-			return false;
-		}
-
-		return $payment_intent;
-	}
-
-	/**
-	 * @deprecated TBD. Only deprecated for public use, will be changed to private in a future version.
-	 */
-	function create_payment_intent( &$order ) {
-		pmpro_method_should_be_private( 'TBD' );
-		global $pmpro_currency;
-
-		$amount          = $order->InitialPayment;
-		$order->subtotal = $amount;
-		$tax             = $order->getTax( true );
-
-		$amount = pmpro_round_price( (float) $order->subtotal + (float) $tax );
-
-		$params = array(
-			'customer'               => $order->stripe_customer->id,
-			'payment_method'         => $order->stripe_payment_method->id,
-			'amount'                 => $this->convert_price_to_unit_amount( $amount ),
-			'currency'               => $pmpro_currency,
-			'confirmation_method'    => 'manual',
-			'description'            => apply_filters( 'pmpro_stripe_order_description', "Order #" . $order->code . ", " . trim( $order->FirstName . " " . $order->LastName ) . " (" . $order->Email . ")", $order ),
-			'setup_future_usage'     => 'off_session',
-		);
-		$params = self::add_application_fee_amount( $params );
-
-		/**
-		 * Filter params used to create the payment intent.
-		 *
-		 * @since 2.4.1
-		 *
-	 	 * @param array  $params 	Array of params sent to Stripe.
-		 * @param object $order		Order object for this checkout.
-		 */
-		$params = apply_filters( 'pmpro_stripe_payment_intent_params', $params, $order );
-
-		try {
-			$payment_intent = Stripe_PaymentIntent::create( $params );
-		} catch ( Stripe\Error\Base $e ) {
-			$order->error = $e->getMessage();
-			return false;
-		} catch ( \Throwable $e ) {
-			$order->error = $e->getMessage();
-			return false;
-		} catch ( \Exception $e ) {
-			$order->error = $e->getMessage();
-			return false;
-		}
-
-		return $payment_intent;
-	}
-
-	/**
-	 * @deprecated TBD. Only deprecated for public use, will be changed to private in a future version.
-	 */
-	function process_subscriptions( &$order ) {
-		pmpro_method_should_be_private( 'TBD' );
-		if ( ! pmpro_isLevelRecurring( $order->membership_level ) ) {
-			return true;
-		}
-
-		//before subscribing, let's clear out the updates so we don't trigger any during sub
-		if ( ! empty( $user_id ) ) {
-			$old_user_updates = get_user_meta( $user_id, "pmpro_stripe_updates", true );
-			update_user_meta( $user_id, "pmpro_stripe_updates", array() );
-		}
-
-		$setup_intent = $this->get_setup_intent( $order );
-		if ( empty( $setup_intent ) ) {
-			// There was an error, and the message should already
-			// be saved on the order.
-			return false;
-		}
-		// Save setup intent to order so that we can use it in confirm_setup_intent().
-		$order->stripe_setup_intent = $setup_intent;
-
-		$this->confirm_setup_intent( $order );
-
-		if ( ! empty( $order->error ) ) {
-			$order->error = $order->error;
-
-			//give the user any old updates back
-			if ( ! empty( $user_id ) ) {
-				update_user_meta( $user_id, "pmpro_stripe_updates", $old_user_updates );
-			}
-
-			return false;
-		}
-
-		//save new updates if this is at checkout
-		//empty out updates unless set above
-		if ( empty( $new_user_updates ) ) {
-			$new_user_updates = array();
-		}
-
-		//update user meta
-		if ( ! empty( $user_id ) ) {
-			update_user_meta( $user_id, "pmpro_stripe_updates", $new_user_updates );
-		} else {
-			//need to remember the user updates to save later
-			global $pmpro_stripe_updates;
-			$pmpro_stripe_updates = $new_user_updates;
-			
-			if( ! function_exists( 'pmpro_user_register_stripe_updates' ) ) {
-				function pmpro_user_register_stripe_updates( $user_id ) {
-					global $pmpro_stripe_updates;
-					update_user_meta( $user_id, 'pmpro_stripe_updates', $pmpro_stripe_updates );
-				}
-				add_action( 'user_register', 'pmpro_user_register_stripe_updates' );
-			}
-		}
 
 		return true;
 	}
