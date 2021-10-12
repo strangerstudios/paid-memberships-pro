@@ -1415,7 +1415,7 @@ class PMProGateway_stripe extends PMProGateway {
 
 			//so let's cancel the user's susbcription
 			if ( ! empty( $last_order ) && ! empty( $last_order->subscription_transaction_id ) ) {
-				$subscription = $last_order->Gateway->getSubscription( $last_order );
+				$subscription = $last_order->Gateway->get_subscription( $last_order->subscription_transaction_id );
 				if ( ! empty( $subscription ) ) {
 					$last_order->Gateway->cancelSubscriptionAtGateway( $subscription, true );
 
@@ -2085,12 +2085,31 @@ class PMProGateway_stripe extends PMProGateway {
 	}
 
 	/**
+	 * Retrieve a Stripe_Subscription.
+	 *
+	 * @since TBD
+	 *
+	 * @param string $subscription_id to retrieve.
+	 * @return Stripe_Subscription|null
+	 */
+	private function get_subscription( $subscription_id ) {
+		try {
+			$customer = Stripe_Subscription::retrieve( $subscription_id );
+			return $customer;
+		} catch ( \Throwable $e ) {
+			// Assume no subscription found.
+		} catch ( \Exception $e ) {
+			// Assume no subscription found.
+		}
+	}
+
+	/**
 	 * Get subscription status from the Gateway.
 	 *
 	 * @since 2.3
 	 */
 	public function getSubscriptionStatus( &$order ) {
-		$subscription = $this->getSubscription( $order );
+		$subscription = $this->get_subscription( $order->subscription_transaction_id );
 		
 		if ( ! empty( $subscription ) ) {
 			return $subscription->status;
@@ -2358,7 +2377,7 @@ class PMProGateway_stripe extends PMProGateway {
 		$last_order->setGateway( 'stripe' );
 		$last_order->Gateway->update_customer_at_checkout( $last_order );
 
-		$subscription = $last_order->Gateway->getSubscription( $last_order );
+		$subscription = $last_order->Gateway->get_subscription( $last_order->subscription_transaction_id );
 
 		if ( ! empty( $subscription ) ) {
 			$end_timestamp = $subscription->current_period_end;
@@ -2531,7 +2550,7 @@ class PMProGateway_stripe extends PMProGateway {
 
 		if ( ! empty( $result ) ) {
 			//find subscription with this order code
-			$subscription = $this->getSubscription( $order );
+			$subscription = $this->get_subscription( $order->subscription_transaction_id );
 
 			if ( ! empty( $subscription )
 			     && ( empty( $pmpro_stripe_event ) || empty( $pmpro_stripe_event->type ) || $pmpro_stripe_event->type != 'customer.subscription.deleted' ) ) {
@@ -2640,7 +2659,7 @@ class PMProGateway_stripe extends PMProGateway {
 			//check if this is a Stripe order with a subscription transaction id
 			if ( ! empty( $order->id ) && ! empty( $order->subscription_transaction_id ) && $order->gateway == "stripe" ) {
 				//get the subscription and return the current_period end or false
-				$subscription = $order->Gateway->getSubscription( $order );
+				$subscription = $order->Gateway->get_subscription( $order->subscription_transaction_id );
 
 				if ( ! empty( $subscription ) ) {
 					$customer = $order->Gateway->set_customer();
