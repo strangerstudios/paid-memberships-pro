@@ -461,6 +461,8 @@
 			$order->cardtype = "";
 			$order->ProfileStartDate = date_i18n("Y-m-d\TH:i:s", strtotime("+ " . $order->BillingFrequency . " " . $order->BillingPeriod));
 			$order->ProfileStartDate = apply_filters("pmpro_profile_start_date", $order->ProfileStartDate, $order);
+			// Convert to UTC for PayPal...
+			$order->ProfileStartDate = get_gmt_from_date( date( 'Y-m-d H:i:s', strtotime( $order->ProfileStartDate ) ), "Y-m-d\TH:i:s\Z" );
 
 			return $this->setExpressCheckout($order);
 		}
@@ -476,6 +478,8 @@
 			{
 				$order->ProfileStartDate = date_i18n("Y-m-d\TH:i:s", strtotime("+ " . $order->BillingFrequency . " " . $order->BillingPeriod, current_time("timestamp")));
 				$order->ProfileStartDate = apply_filters("pmpro_profile_start_date", $order->ProfileStartDate, $order);
+				// Convert to UTC for PayPal...
+				$order->ProfileStartDate = get_gmt_from_date( date( 'Y-m-d H:i:s', strtotime( $order->ProfileStartDate ) ), "Y-m-d\TH:i:s\Z" );
 				return $this->subscribe($order);
 			}
 			else
