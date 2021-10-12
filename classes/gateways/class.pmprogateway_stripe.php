@@ -1304,7 +1304,7 @@ class PMProGateway_stripe extends PMProGateway {
             <table class="form-table">
 				<input type='hidden' name='pmpro_subscription_updates_visible' value='1' />
                 <tr>
-                    <th><label for="membership_level"><?php _e( "Update", 'paid-memberships-pro' ); ?></label></th>
+                    <th><label><?php _e( "Update", 'paid-memberships-pro' ); ?></label></th>
                     <td id="updates_td">
 						<?php
 						$updates = $user->pmpro_stripe_updates;
@@ -1355,17 +1355,17 @@ class PMProGateway_stripe extends PMProGateway {
 								<select name="updates_cycle_period[]" disabled>
 								  <?php
 								  foreach ( $cycles as $name => $value ) {
-									  echo "<option value='$value'";
+									  echo "<option value='" . esc_attr( $value ) . "'";
 									  if ( ! empty( $update['cycle_period'] ) && $update['cycle_period'] == $value ) {
 										  echo " selected='selected'";
 									  }
-									  echo ">$name</option>";
+									  echo ">" . esc_html( $name ) . "</option>";
 								  }
 								  ?>
 								</select>
 							</span>
                                 <span>
-								<a class="updates_remove" href="javascript:void(0);">Remove</a>
+								<a class="updates_remove" href="javascript:void(0);"><?php esc_html_e( 'Remove', 'paid-memberships-pro' ); ?></a>
 							</span>
                             </div>
 							<script>
