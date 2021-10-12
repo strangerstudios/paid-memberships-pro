@@ -73,7 +73,7 @@ class PMProGateway_stripe extends PMProGateway {
 	 * @since 1.8
 	 * Moved into a method in version 1.8 so we only load it when needed.
 	 */
-	static function loadStripeLibrary() {
+	public static function loadStripeLibrary() {
 		//load Stripe library if it hasn't been loaded already (usually by another plugin using Stripe)
 		if ( ! class_exists( "Stripe\Stripe" ) ) {
 			require_once( PMPRO_DIR . "/includes/lib/Stripe/init.php" );
@@ -85,7 +85,7 @@ class PMProGateway_stripe extends PMProGateway {
 	 *
 	 * @since 1.8
 	 */
-	static function init() {
+	public static function init() {
 		//make sure Stripe is a gateway option
 		add_filter( 'pmpro_gateways', array( 'PMProGateway_stripe', 'pmpro_gateways' ) );
 
@@ -180,7 +180,7 @@ class PMProGateway_stripe extends PMProGateway {
 	/**
 	 * Clear any saved (preserved) subscription IDs that should have been processed and are now timed out.
 	 */
-	static function clear_saved_subscriptions() {
+	public static function clear_saved_subscriptions() {
 
 		if ( ! is_user_logged_in() ) {
 			return;
@@ -209,7 +209,7 @@ class PMProGateway_stripe extends PMProGateway {
 	 *
 	 * @since 1.8
 	 */
-	static function pmpro_gateways( $gateways ) {
+	public static function pmpro_gateways( $gateways ) {
 		if ( empty( $gateways['stripe'] ) ) {
 			$gateways['stripe'] = __( 'Stripe', 'paid-memberships-pro' );
 		}
@@ -222,7 +222,7 @@ class PMProGateway_stripe extends PMProGateway {
 	 *
 	 * @since 1.8
 	 */
-	static function getGatewayOptions() {
+	public static function getGatewayOptions() {
 		$options = array(
 			'sslseal',
 			'nuclear_HTTPS',
@@ -253,7 +253,7 @@ class PMProGateway_stripe extends PMProGateway {
 	 *
 	 * @since 1.8
 	 */
-	static function pmpro_payment_options( $options ) {
+	public static function pmpro_payment_options( $options ) {
 		//get stripe options
 		$stripe_options = self::getGatewayOptions();
 
@@ -268,7 +268,7 @@ class PMProGateway_stripe extends PMProGateway {
 	 *
 	 * @since 1.8
 	 */
-	static function pmpro_payment_option_fields( $values, $gateway ) {
+	public static function pmpro_payment_option_fields( $values, $gateway ) {
 		$stripe = new PMProGateway_stripe();
 
 		// Show connect fields.
@@ -478,7 +478,7 @@ class PMProGateway_stripe extends PMProGateway {
 	/**
 	 * AJAX callback to create webhooks.
 	 */
-	static function wp_ajax_pmpro_stripe_create_webhook( $silent = false ) {
+	public static function wp_ajax_pmpro_stripe_create_webhook( $silent = false ) {
 		$secretkey = sanitize_text_field( $_REQUEST['secretkey'] );
 		
 		$stripe = new PMProGateway_stripe();
@@ -514,7 +514,7 @@ class PMProGateway_stripe extends PMProGateway {
 	/**
 	 * AJAX callback to disable webhooks.
 	 */
-	static function wp_ajax_pmpro_stripe_delete_webhook( $silent = false ) {
+	public static function wp_ajax_pmpro_stripe_delete_webhook( $silent = false ) {
 		$secretkey = sanitize_text_field( $_REQUEST['secretkey'] );
 		
 		$stripe = new PMProGateway_stripe();
@@ -552,7 +552,7 @@ class PMProGateway_stripe extends PMProGateway {
 	/**
 	 * AJAX callback to rebuild webhook.
 	 */
-	static function wp_ajax_pmpro_stripe_rebuild_webhook() {
+	public static function wp_ajax_pmpro_stripe_rebuild_webhook() {
 		// First try to delete the webhook.
 		$r = self::wp_ajax_pmpro_stripe_delete_webhook( true ) ;
 		if ( $r['success'] ) {
@@ -572,7 +572,7 @@ class PMProGateway_stripe extends PMProGateway {
 	 *
 	 * @since 1.8
 	 */
-	static function pmpro_checkout_after_preheader( $order ) {
+	public static function pmpro_checkout_after_preheader( $order ) {
 		global $gateway, $pmpro_level, $current_user, $pmpro_requirebilling, $pmpro_pages, $pmpro_currency;
 
 		$default_gateway = pmpro_getOption( "gateway" );
@@ -620,7 +620,7 @@ class PMProGateway_stripe extends PMProGateway {
 	 * Don't require the CVV.
 	 * Don't require address fields if they are set to hide.
 	 */
-	static function pmpro_required_billing_fields( $fields ) {
+	public static function pmpro_required_billing_fields( $fields ) {
 		global $pmpro_stripe_lite, $current_user, $bemail, $bconfirmemail;
 
 		//CVV is not required if set that way at Stripe. The Stripe JS will require it if it is required.
@@ -660,7 +660,7 @@ class PMProGateway_stripe extends PMProGateway {
 	 *
 	 * @since 1.8
 	 */
-	static function pmpro_checkout_order( $morder ) {
+	public static function pmpro_checkout_order( $morder ) {
 
 		// Create a code for the order.
 		if ( empty( $morder->code ) ) {
@@ -715,7 +715,7 @@ class PMProGateway_stripe extends PMProGateway {
 	 *
 	 * @since 1.8
 	 */
-	static function pmpro_after_checkout( $user_id, $morder ) {
+	public static function pmpro_after_checkout( $user_id, $morder ) {
 		global $gateway;
 
 		if ( $gateway == "stripe" ) {
@@ -729,7 +729,7 @@ class PMProGateway_stripe extends PMProGateway {
 	 * Check settings if billing address should be shown.
 	 * @since 1.8
 	 */
-	static function pmpro_include_billing_address_fields( $include ) {
+	public static function pmpro_include_billing_address_fields( $include ) {
 		//check settings RE showing billing address
 		if ( ! pmpro_getOption( "stripe_billingaddress" ) ) {
 			$include = false;
@@ -742,7 +742,7 @@ class PMProGateway_stripe extends PMProGateway {
 	 * Use our own payment fields at checkout. (Remove the name attributes.)
 	 * @since 1.8
 	 */
-	static function pmpro_include_payment_information_fields( $include ) {
+	public static function pmpro_include_payment_information_fields( $include ) {
 		//global vars
 		global $pmpro_requirebilling, $pmpro_show_discount_code, $discount_code, $CardType, $AccountNumber, $ExpirationMonth, $ExpirationYear;
 
@@ -833,7 +833,7 @@ class PMProGateway_stripe extends PMProGateway {
 	 *
 	 * @since 1.8
 	 */
-	static function user_profile_fields( $user ) {
+	public static function user_profile_fields( $user ) {
 		global $wpdb, $current_user, $pmpro_currency_symbol;
 
 		// Get the user's last order.
@@ -856,7 +856,7 @@ class PMProGateway_stripe extends PMProGateway {
 	 *
 	 * @since 1.8
 	 */
-	static function pmpro_activation() {
+	public static function pmpro_activation() {
 		pmpro_maybe_schedule_event( time(), 'daily', 'pmpro_cron_stripe_subscription_updates' );
 	}
 
@@ -868,7 +868,7 @@ class PMProGateway_stripe extends PMProGateway {
 	 *
 	 * @since 1.8
 	 */
-	static function pmpro_deactivation() {
+	public static function pmpro_deactivation() {
 		wp_clear_scheduled_hook( 'pmpro_cron_stripe_subscription_updates' );
 	}
 
@@ -880,7 +880,7 @@ class PMProGateway_stripe extends PMProGateway {
 	 *
 	 * @since 1.8
 	 */
-	static function pmpro_cron_stripe_subscription_updates() {
+	public static function pmpro_cron_stripe_subscription_updates() {
 		global $wpdb;
 
 		//get all updates for today (or before today)
@@ -947,7 +947,7 @@ class PMProGateway_stripe extends PMProGateway {
 	 * because of an expired credit card/etc and a user checks out to renew their subscription
 	 * instead of updating their billing information via the billing info page.
 	 */
-	static function pmpro_checkout_before_processing() {
+	public static function pmpro_checkout_before_processing() {
 		global $wpdb, $current_user;
 
 		// we're only worried about cases where the user is logged in
@@ -1026,7 +1026,7 @@ class PMProGateway_stripe extends PMProGateway {
 	 *
 	 * @since 1.8.6
 	 */
-	static function pmpro_next_payment( $timestamp, $user_id, $order_status ) {
+	public static function pmpro_next_payment( $timestamp, $user_id, $order_status ) {
 		//find the last order for this user
 		if ( ! empty( $user_id ) ) {
 			//get last order
@@ -1056,7 +1056,7 @@ class PMProGateway_stripe extends PMProGateway {
 		return $timestamp;
 	}
 
-	static function pmpro_set_up_apple_pay( $payment_option_values, $gateway  ) {
+	public static function pmpro_set_up_apple_pay( $payment_option_values, $gateway  ) {
 		// Check that we just saved Stripe settings.
 		if ( $gateway != 'stripe' || empty( $_REQUEST['savesettings'] ) ) {
 			return;
@@ -1086,7 +1086,7 @@ class PMProGateway_stripe extends PMProGateway {
 	 *
 	 * @return void
 	 */
-	static function stripe_connect_save_options() {
+	public static function stripe_connect_save_options() {
 		// Is user have permission to edit give setting.
 		if ( ! current_user_can( 'manage_options' ) ) {
 			return;
@@ -1147,7 +1147,7 @@ class PMProGateway_stripe extends PMProGateway {
 		}
 	}
 
-	static function stripe_connect_show_errors() {
+	public static function stripe_connect_show_errors() {
 		global $pmpro_stripe_error;
 		if ( ! empty( $pmpro_stripe_error ) ) {
 			$class   = 'notice notice-error pmpro-stripe-connect-message';
@@ -1158,7 +1158,7 @@ class PMProGateway_stripe extends PMProGateway {
 	/**
 	 * Disconnects user from the Stripe Connected App.
 	 */
-	static function stripe_connect_deauthorize() {
+	public static function stripe_connect_deauthorize() {
 		if ( ! current_user_can( 'manage_options' ) ) {
 			return;
 		}
@@ -1203,7 +1203,7 @@ class PMProGateway_stripe extends PMProGateway {
 	 *
 	 * @return bool Whether the site is using legacy Stripe keys.
 	 */
-	static function using_legacy_keys() {
+	public static function using_legacy_keys() {
 		$r = ! empty( pmpro_getOption( 'stripe_secretkey' ) ) && ! empty( pmpro_getOption( 'stripe_publishablekey' ) );		
 		return $r;
 	}
@@ -1215,7 +1215,7 @@ class PMProGateway_stripe extends PMProGateway {
 	 *
 	 * @return bool Whether the site has Stripe Connect credentials set.
 	 */
-	static function has_connect_credentials( $gateway_environment = null ) {
+	public static function has_connect_credentials( $gateway_environment = null ) {
 		if ( empty( $gateway_environment ) ) {
 			$gateway_engvironemnt = pmpro_getOption( 'pmpro_gateway_environment' );
 		}
@@ -2002,7 +2002,7 @@ class PMProGateway_stripe extends PMProGateway {
 	 * @since 1.8.13.6 - Add json dependency
 	 * @deprecated TBD. Only deprecated for public use, will be changed to private non-static in a future version.
 	 */
-	static function dependencies() {
+	public static function dependencies() {
 		pmpro_method_should_be_private( 'TBD' );
 
 		global $msg, $msgt, $pmpro_stripe_error;
@@ -2048,7 +2048,7 @@ class PMProGateway_stripe extends PMProGateway {
 	 * @since 2.4
 	 * @deprecated TBD. Only deprecated for public use, will be changed to private non-static in a future version.
 	 */
-	static function get_webhooks( $limit = 10 ) {
+	public static function get_webhooks( $limit = 10 ) {
 		// Show deprecation warning if called publically.
 		pmpro_method_should_be_private( 'TBD' );
 
@@ -2078,7 +2078,7 @@ class PMProGateway_stripe extends PMProGateway {
 	 * @since 2.4
 	 * @deprecated TBD. Only deprecated for public use, will be changed to private non-static in a future version.
 	 */
-	static function get_site_webhook_url() {
+	public static function get_site_webhook_url() {
 		// Show deprecation warning if called publically.
 		pmpro_method_should_be_private( 'TBD' );
 		return admin_url( 'admin-ajax.php' ) . '?action=stripe_webhook';
@@ -2090,7 +2090,7 @@ class PMProGateway_stripe extends PMProGateway {
 	 * @since 2.4
 	 * @deprecated TBD. Only deprecated for public use, will be changed to private non-static in a future version.
 	 */
-	static function webhook_events() {
+	public static function webhook_events() {
 		// Show deprecation warning if called publically.
 		pmpro_method_should_be_private( 'TBD' );
 		return apply_filters( 'pmpro_stripe_webhook_events', array(
@@ -2107,7 +2107,7 @@ class PMProGateway_stripe extends PMProGateway {
 	 * @since 2.4
 	 * @deprecated TBD. Only deprecated for public use, will be changed to private non-static in a future version.
 	 */
-	static function create_webhook() {
+	public static function create_webhook() {
 		// Show deprecation warning if called publically.
 		pmpro_method_should_be_private( 'TBD' );
 
@@ -2137,7 +2137,7 @@ class PMProGateway_stripe extends PMProGateway {
 	 * @since 2.4
 	 * @deprecated TBD. Only deprecated for public use, will be changed to private non-static in a future version.
 	 */
-	static function does_webhook_exist( $force = false ) {
+	public static function does_webhook_exist( $force = false ) {
 		// Show deprecation warning if called publically.
 		pmpro_method_should_be_private( 'TBD' );
 
@@ -2185,7 +2185,7 @@ class PMProGateway_stripe extends PMProGateway {
 	 * @since 2.4
 	 * @deprecated TBD. Only deprecated for public use, will be changed to private non-static in a future version.
 	 */
-	static function check_missing_webhook_events( $webhook_events ) {
+	public static function check_missing_webhook_events( $webhook_events ) {
 		// Show deprecation warning if called publically.
 		pmpro_method_should_be_private( 'TBD' );
 
@@ -2214,7 +2214,7 @@ class PMProGateway_stripe extends PMProGateway {
 	 * @since 2.4
 	 * @deprecated TBD. Only deprecated for public use, will be changed to private non-static in a future version.
 	 */
-	static function update_webhook_events() {
+	public static function update_webhook_events() {
 		// Show deprecation warning if called publically.
 		pmpro_method_should_be_private( 'TBD' );
 
@@ -2262,7 +2262,7 @@ class PMProGateway_stripe extends PMProGateway {
 	 * @since 2.4
 	 * @deprecated TBD. Only deprecated for public use, will be changed to private non-static in a future version.
 	 */
-	static function delete_webhook( $webhook_id, $secretkey = false ) {
+	public static function delete_webhook( $webhook_id, $secretkey = false ) {
 		// Show deprecation warning if called publically.
 		pmpro_method_should_be_private( 'TBD' );
 
@@ -2290,7 +2290,7 @@ class PMProGateway_stripe extends PMProGateway {
 	 *
 	 * @deprecated TBD. Only deprecated for public use, will be changed to private non-static in a future version.
 	 */
-	static function ignoreCancelWebhookForThisSubscription( $subscription_id, $user_id = null ) {
+	public static function ignoreCancelWebhookForThisSubscription( $subscription_id, $user_id = null ) {
 		pmpro_method_should_be_private( 'TBD' );
 
 		if ( empty( $user_id ) ) {
@@ -2406,7 +2406,7 @@ class PMProGateway_stripe extends PMProGateway {
 	 *
 	 * @deprecated TBD. Only deprecated for public use, will be changed to private non-static in a future version.
 	 */
-	function update_payment_method_for_subscriptions( &$order ) {
+	public function update_payment_method_for_subscriptions( &$order ) {
 		pmpro_method_should_be_private( 'TBD' );
 
 		// get customer
@@ -2447,7 +2447,7 @@ class PMProGateway_stripe extends PMProGateway {
 	 * @since 1.8
 	 * @deprecated TBD. Only deprecated for public use, will be changed to private non-static in a future version.
 	 */
-	function cancelSubscriptionAtGateway( $subscription, $preserve_local_membership = false ) {
+	public function cancelSubscriptionAtGateway( $subscription, $preserve_local_membership = false ) {
 		pmpro_method_should_be_private( 'TBD' );
 
 		// Check if a valid sub.
@@ -2508,7 +2508,7 @@ class PMProGateway_stripe extends PMProGateway {
 	/**
 	 * @deprecated TBD. Only deprecated for public use, will be changed to private non-static in a future version.
 	 */
-	function get_payment_method( &$order ) {
+	public function get_payment_method( &$order ) {
 		pmpro_method_should_be_private( 'TBD' );
 		if ( ! empty( $order->payment_method_id ) ) {
 			try {
@@ -2535,7 +2535,7 @@ class PMProGateway_stripe extends PMProGateway {
 	/**
 	 * @deprecated TBD. Only deprecated for public use, will be changed to private in a future version.
 	 */
-	function process_charges( &$order ) {
+	public function process_charges( &$order ) {
 		pmpro_method_should_be_private( 'TBD' );
 		if ( 0 == floatval( $order->InitialPayment ) ) {
 			return true;
@@ -2564,7 +2564,7 @@ class PMProGateway_stripe extends PMProGateway {
 	/**
 	 * @deprecated TBD. Only deprecated for public use, will be changed to private non-static in a future version.
 	 */
-	function get_setup_intent( &$order ) {
+	public function get_setup_intent( &$order ) {
 		pmpro_method_should_be_private( 'TBD' );
 		if ( ! empty( $order->setup_intent_id ) ) {
 			try {
@@ -2595,7 +2595,7 @@ class PMProGateway_stripe extends PMProGateway {
 	/**
 	 * @deprecated TBD. Use get_setup_intent() instead.
 	 */
-	function set_setup_intent( &$order, $force = false ) {
+	public function set_setup_intent( &$order, $force = false ) {
 		_deprecated_function( __FUNCTION__, 'TBD', 'get_setup_intent()' );
 		if ( ! empty( $this->setup_intent ) && ! $force ) {
 			return true;
@@ -2615,7 +2615,7 @@ class PMProGateway_stripe extends PMProGateway {
 	/**
 	 * @deprecated TBD. Only deprecated for public use, will be changed to private non-static in a future version.
 	 */
-	function create_setup_intent( &$order ) {
+	public function create_setup_intent( &$order ) {
 		pmpro_method_should_be_private( 'TBD' );
 		$this->create_plan( $order );
 		$order->stripe_subscription = $this->create_subscription( $order );
@@ -2631,7 +2631,7 @@ class PMProGateway_stripe extends PMProGateway {
 	/**
 	 * @deprecated TBD. Only deprecated for public use, will be changed to private non-static in a future version.
 	 */
-	function confirm_payment_intent( &$order ) {
+	public function confirm_payment_intent( &$order ) {
 		pmpro_method_should_be_private( 'TBD' );
 		try {
 			$params = array(
@@ -2665,7 +2665,7 @@ class PMProGateway_stripe extends PMProGateway {
 	/**
 	 * @deprecated TBD. Only deprecated for public use, will be changed to private non-static in a future version.
 	 */
-	function confirm_setup_intent( &$order ) {
+	public function confirm_setup_intent( &$order ) {
     pmpro_method_should_be_private( 'TBD' );
 		if ( empty( $order->stripe_setup_intent ) ) {
 			return true;
@@ -2685,7 +2685,7 @@ class PMProGateway_stripe extends PMProGateway {
 	 *
 	 * @deprecated TBD. Only deprecated for public use, will be changed to private non-static in a future version.
  	 */
-	function pmpro_get_apple_pay_domains( $limit = 10 ) {
+	public function pmpro_get_apple_pay_domains( $limit = 10 ) {
 		pmpro_method_should_be_private( 'TBD' );
 		try {
 			$apple_pay_domains = Stripe_ApplePayDomain::all( [ 'limit' => apply_filters( 'pmpro_stripe_apple_pay_domain_retrieve_limit', $limit ) ] );
@@ -2702,7 +2702,7 @@ class PMProGateway_stripe extends PMProGateway {
  	 * @since 2.4
 	 * @deprecated TBD. Only deprecated for public use, will be changed to private non-static in a future version.
  	 */
-	function pmpro_create_apple_pay_domain() {
+	public function pmpro_create_apple_pay_domain() {
 		pmpro_method_should_be_private( 'TBD' );
 		try {
 			$create = Stripe_ApplePayDomain::create([
@@ -2721,7 +2721,7 @@ class PMProGateway_stripe extends PMProGateway {
  	 * @since 2.4
 	 * @deprecated TBD. Only deprecated for public use, will be changed to private non-static in a future version.
  	 */
-	function pmpro_does_apple_pay_domain_exist() {
+	public function pmpro_does_apple_pay_domain_exist() {
 		pmpro_method_should_be_private( 'TBD' );
 		$apple_pay_domains = $this->pmpro_get_apple_pay_domains();
 
@@ -2740,7 +2740,7 @@ class PMProGateway_stripe extends PMProGateway {
    /**
 	* @deprecated TBD. Only deprecated for public use, will be changed to private non-static in a future version.
     */
-	function get_account() {
+	public function get_account() {
 		pmpro_method_should_be_private( 'TBD' );
 		try {
 			$account = Stripe_Account::retrieve();
@@ -2762,7 +2762,7 @@ class PMProGateway_stripe extends PMProGateway {
 	/**
 	 * @deprecated TBD. Only deprecated for public use, will be changed to private non-static in a future version.
 	 */
-	static function get_account_country() {
+	public static function get_account_country() {
 		pmpro_method_should_be_private( 'TBD' );
 		$account_country = get_transient( 'pmpro_stripe_account_country' );
 		if ( empty( $account_country ) ) {
@@ -2779,7 +2779,7 @@ class PMProGateway_stripe extends PMProGateway {
 	/**
 	 * @deprecated TBD. Only deprecated for public use, will be changed to private non-static in a future version.
 	 */
-	function clean_up( &$order ) {
+	public function clean_up( &$order ) {
     pmpro_method_should_be_private( 'TBD' );
 		if ( ! empty( $order->stripe_payment_intent ) && 'succeeded' == $order->stripe_payment_intent->status ) {
 			$order->payment_transaction_id = $order->stripe_payment_intent->charges->data[0]->id;
@@ -2797,7 +2797,7 @@ class PMProGateway_stripe extends PMProGateway {
 	 *
 	 * @return int percentage to charge for application fee.
 	 */
-	static function get_application_fee_percentage() {
+	public static function get_application_fee_percentage() {
 		pmpro_method_should_be_private( 'TBD' );
 		$application_fee_percentage = pmpro_license_isValid( null, 'plus' ) ? 0 : 1;
 		$application_fee_percentage = apply_filters( 'pmpro_set_application_fee_percentage', $application_fee_percentage );
@@ -2813,7 +2813,7 @@ class PMProGateway_stripe extends PMProGateway {
 	 * @param  bool  $add_percent true if percentage should be added, false if actual amount.
 	 * @return array params with application fee if applicable.
 	 */
-	static function add_application_fee_amount( $params ) {
+	public static function add_application_fee_amount( $params ) {
 		pmpro_method_should_be_private( 'TBD' );
 		if ( empty( $params['amount'] ) || self::using_legacy_keys() ) {
 			return $params;
@@ -2834,7 +2834,7 @@ class PMProGateway_stripe extends PMProGateway {
 	 * @since 2.6
 	 * @deprecated TBD. Only deprecated for public use, will be changed to private non-static in a future version.
 	 */
-	static function show_legacy_keys_settings() {
+	public static function show_legacy_keys_settings() {
 		pmpro_method_should_be_private( 'TBD' );
 		$r = self::using_legacy_keys();
 		$r = apply_filters( 'pmpro_stripe_show_legacy_keys_settings', $r );
@@ -2848,7 +2848,7 @@ class PMProGateway_stripe extends PMProGateway {
 	 *
 	 * @return The Stripe secret key.
 	 */
-	static function get_secretkey() {
+	public static function get_secretkey() {
 		pmpro_method_should_be_private( 'TBD' );
 		$secretkey = '';
 		if ( self::using_legacy_keys() ) {
@@ -2868,7 +2868,7 @@ class PMProGateway_stripe extends PMProGateway {
 	 *
 	 * @return The Stripe publishable key.
 	 */
-	static function get_publishablekey() {
+	public static function get_publishablekey() {
 		pmpro_method_should_be_private( 'TBD' );
 		$publishablekey = '';
 		if ( self::using_legacy_keys() ) {
@@ -2889,7 +2889,7 @@ class PMProGateway_stripe extends PMProGateway {
 	 *
 	 * @return string The Stripe Connect User ID.
 	 */
-	static function get_connect_user_id() {
+	public static function get_connect_user_id() {
 		pmpro_method_should_be_private( 'TBD' );
 		return pmpro_getOption( 'gateway_environment' ) === 'live'
 			? pmpro_getOption( 'live_stripe_connect_user_id' )
@@ -2904,7 +2904,7 @@ class PMProGateway_stripe extends PMProGateway {
 	 * @param string|null $gateway_environment to check webhooks for. Defaults to set gateway environment.
 	 * @return bool Whether the webhook is working.
 	 */
-	static function webhook_is_working( $gateway_environment = null ) {
+	public static function webhook_is_working( $gateway_environment = null ) {
 		pmpro_method_should_be_private( 'TBD' );
 		global $wpdb;
 
@@ -2953,7 +2953,7 @@ class PMProGateway_stripe extends PMProGateway {
 	 * @since 2.6
 	 * @deprecated TBD. Only deprecated for public use, will be changed to private non-static in a future version.
 	 */
-	static function get_last_webhook_date( $environment = 'live' ) {
+	public static function get_last_webhook_date( $environment = 'live' ) {
 		pmpro_method_should_be_private( 'TBD' );
 		$last_webhook = get_option( 'pmpro_stripe_last_webhook_received_' . $environment );
 		if ( ! empty( $last_webhook ) ) {
@@ -2974,7 +2974,7 @@ class PMProGateway_stripe extends PMProGateway {
 	/**
 	 * @deprecated TBD. Only deprecated for public use, will be changed to private in a future version.
 	 */
-	function get_payment_intent( &$order ) {
+	public function get_payment_intent( &$order ) {
 		pmpro_method_should_be_private( 'TBD' );
 		if ( ! empty( $order->payment_intent_id ) ) {
 			try {
@@ -3005,7 +3005,7 @@ class PMProGateway_stripe extends PMProGateway {
 	/**
 	 * @deprecated TBD. Only deprecated for public use, will be changed to private in a future version.
 	 */
-	function create_payment_intent( &$order ) {
+	public function create_payment_intent( &$order ) {
 		pmpro_method_should_be_private( 'TBD' );
 		global $pmpro_currency;
 
@@ -3055,7 +3055,7 @@ class PMProGateway_stripe extends PMProGateway {
 	/**
 	 * @deprecated TBD. Only deprecated for public use, will be changed to private in a future version.
 	 */
-	function process_subscriptions( &$order ) {
+	public function process_subscriptions( &$order ) {
 		pmpro_method_should_be_private( 'TBD' );
 		if ( ! pmpro_isLevelRecurring( $order->membership_level ) ) {
 			return true;
@@ -3124,7 +3124,7 @@ class PMProGateway_stripe extends PMProGateway {
 	 * @since 1.4
 	 * @deprecated TBD. Use process_charges() instead.
 	 */
-	function charge( &$order ) {
+	public function charge( &$order ) {
 		_deprecated_function( __FUNCTION__, 'TBD' );
 		global $pmpro_currency;
 
@@ -3208,7 +3208,7 @@ class PMProGateway_stripe extends PMProGateway {
 	 *
 	 * @return Stripe_Customer|false
 	 */
-	function getCustomer( &$order = false, $force = false ) {
+	public function getCustomer( &$order = false, $force = false ) {
 		_deprecated_function( __FUNCTION__, 'TBD', 'update_customer_from_user()' );
 		return $this->update_customer_at_checkout( $order );
 	}
@@ -3219,7 +3219,7 @@ class PMProGateway_stripe extends PMProGateway {
 	 * @since 1.8
 	 * @deprecated TBD. Need to write replacement methods for this.
 	 */
-	function getSubscription( &$order ) {
+	public function getSubscription( &$order ) {
 		_deprecated_function( __FUNCTION__, 'TBD' );
 		global $wpdb;
 
@@ -3290,7 +3290,7 @@ class PMProGateway_stripe extends PMProGateway {
 	 * @since 1.4
 	 * @deprecated TBD. Use process_subscriptions() instead.
 	 */
-	function subscribe( &$order, $checkout = true ) {
+	public function subscribe( &$order, $checkout = true ) {
 		_deprecated_function( __FUNCTION__, 'TBD' );
 		global $pmpro_currency;
 
@@ -3597,7 +3597,7 @@ class PMProGateway_stripe extends PMProGateway {
 	/**
 	 * @deprecated TBD. Use get_payment_method() instead.
 	 */
-	function set_payment_method( &$order, $force = false ) {
+	public function set_payment_method( &$order, $force = false ) {
 		_deprecated_function( __FUNCTION__, 'TBD', 'get_payment_method' );
 		if ( ! empty( $this->payment_method ) && ! $force ) {
 			return true;
@@ -3617,7 +3617,7 @@ class PMProGateway_stripe extends PMProGateway {
 	/**
 	 * @deprecated TBD. Use get_customer_for_user() or update_customer_from_user().
 	 */
-	function set_customer( &$order, $force = false ) {
+	public function set_customer( &$order, $force = false ) {
 		_deprecated_function( __FUNCTION__, 'TBD', 'get_customer_for_user()' );
 		if ( ! empty( $this->customer ) && ! $force ) {
 			return true;
@@ -3630,7 +3630,7 @@ class PMProGateway_stripe extends PMProGateway {
 	/**
 	 * @deprecated TBD. Use set_default_payment_method_for_customer().
 	 */
-	function attach_payment_method_to_customer( &$order ) {
+	public function attach_payment_method_to_customer( &$order ) {
 		_deprecated_function( __FUNCTION__, 'TBD', 'set_default_payment_method_for_customer()' );
 		$customer = $this->update_customer_at_checkout( $order );
 
@@ -3660,7 +3660,7 @@ class PMProGateway_stripe extends PMProGateway {
 	/**
 	 * @deprecated TBD. Use get_payment_intent() instead.
 	 */
-	function set_payment_intent( &$order, $force = false ) {
+	public function set_payment_intent( &$order, $force = false ) {
 		_deprecated_function( __FUNCTION__, 'TBD', 'get_payment_intent()' );
 		if ( ! empty( $order->stripe_payment_intent ) && ! $force ) {
 			return true;
@@ -3680,7 +3680,7 @@ class PMProGateway_stripe extends PMProGateway {
 	/**
 	 * @deprecated TBD. Will only be deprecated once we are using Prices.
 	 */
-	function create_plan( &$order ) {
+	public function create_plan( &$order ) {
 		// _deprecated_function( __FUNCTION__, 'TBD' );
 		global $pmpro_currency;
 
@@ -3768,7 +3768,7 @@ class PMProGateway_stripe extends PMProGateway {
 	/**
 	 * @deprecated TBD. Will only be deprecated once we create a function with better params.
 	 */
-	function create_subscription( &$order ) {
+	public function create_subscription( &$order ) {
 		// _deprecated_function( __FUNCTION__, 'TBD' );
 		//subscribe to the plan
 		try {
@@ -3804,7 +3804,7 @@ class PMProGateway_stripe extends PMProGateway {
 	/**
 	 * @deprecated TBD. Will only be deprecated once we are using Prices.
 	 */
-	function delete_plan( &$order ) {
+	public function delete_plan( &$order ) {
 		// _deprecated_function( __FUNCTION__, 'TBD' );
 		try {
 			// Delete the product first while we have a reference to it...
@@ -3833,7 +3833,7 @@ class PMProGateway_stripe extends PMProGateway {
 	/**
 	 * @deprecated TBD. Will only be deprecated once we start re-using products.
 	 */
-	function archive_product( &$order ) {
+	public function archive_product( &$order ) {
 		// _deprecated_function( __FUNCTION__, 'TBD' );
 		try {
 			$product = Stripe_Product::update( $order->plan->product, array( 'active' => false ) );
