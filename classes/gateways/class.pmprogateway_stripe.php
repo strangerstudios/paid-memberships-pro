@@ -2035,6 +2035,25 @@ class PMProGateway_stripe extends PMProGateway {
 		return intval( $price * $currency_unit_multiplier );
 	}
 
+	/**
+	 * Retrieve a Stripe_Subscription.
+	 *
+	 * @since TBD
+	 *
+	 * @param string $subscription_id to retrieve.
+	 * @return Stripe_Subscription|null
+	 */
+	private function get_subscription( $subscription_id ) {
+		try {
+			$customer = Stripe_Subscription::retrieve( $subscription_id );
+			return $customer;
+		} catch ( \Throwable $e ) {
+			// Assume no subscription found.
+		} catch ( \Exception $e ) {
+			// Assume no subscription found.
+		}
+	}
+
 	
 
 	/****************************************
