@@ -1237,6 +1237,52 @@ class PMProGateway_stripe extends PMProGateway {
 		}
 	}
 
+	/**
+	 * Warn if required extensions aren't loaded.
+	 *
+	 * @return bool
+	 * @since 1.8.6.8.1
+	 * @since 1.8.13.6 - Add json dependency
+	 * @deprecated TBD. Only deprecated for public use, will be changed to private non-static in a future version.
+	 */
+	public static function dependencies() {
+		global $msg, $msgt, $pmpro_stripe_error;
+
+		if ( version_compare( PHP_VERSION, '5.3.29', '<' ) ) {
+
+			$pmpro_stripe_error = true;
+			$msg                = - 1;
+			$msgt               = sprintf( __( "The Stripe Gateway requires PHP 5.3.29 or greater. We recommend upgrading to PHP %s or greater. Ask your host to upgrade.", "paid-memberships-pro" ), PMPRO_PHP_MIN_VERSION );
+
+			if ( ! is_admin() ) {
+				pmpro_setMessage( $msgt, "pmpro_error" );
+			}
+
+			return false;
+		}
+
+		$modules = array( 'curl', 'mbstring', 'json' );
+
+		foreach ( $modules as $module ) {
+			if ( ! extension_loaded( $module ) ) {
+				$pmpro_stripe_error = true;
+				$msg                = - 1;
+				$msgt               = sprintf( __( "The %s gateway depends on the %s PHP extension. Please enable it, or ask your hosting provider to enable it.", 'paid-memberships-pro' ), 'Stripe', $module );
+
+				//throw error on checkout page
+				if ( ! is_admin() ) {
+					pmpro_setMessage( $msgt, 'pmpro_error' );
+				}
+
+				return false;
+			}
+		}
+
+		self::$is_loaded = true;
+
+		return true;
+	}
+
 	/****************************************
 	 ************ PUBLIC METHODS ************
 	 ****************************************/
@@ -1994,54 +2040,6 @@ class PMProGateway_stripe extends PMProGateway {
 	/****************************************
 	 ******* METHODS BECOMING PRIVATE *******
 	 ****************************************/
-	/**
-	 * Warn if required extensions aren't loaded.
-	 *
-	 * @return bool
-	 * @since 1.8.6.8.1
-	 * @since 1.8.13.6 - Add json dependency
-	 * @deprecated TBD. Only deprecated for public use, will be changed to private non-static in a future version.
-	 */
-	public static function dependencies() {
-		pmpro_method_should_be_private( 'TBD' );
-
-		global $msg, $msgt, $pmpro_stripe_error;
-
-		if ( version_compare( PHP_VERSION, '5.3.29', '<' ) ) {
-
-			$pmpro_stripe_error = true;
-			$msg                = - 1;
-			$msgt               = sprintf( __( "The Stripe Gateway requires PHP 5.3.29 or greater. We recommend upgrading to PHP %s or greater. Ask your host to upgrade.", "paid-memberships-pro" ), PMPRO_PHP_MIN_VERSION );
-
-			if ( ! is_admin() ) {
-				pmpro_setMessage( $msgt, "pmpro_error" );
-			}
-
-			return false;
-		}
-
-		$modules = array( 'curl', 'mbstring', 'json' );
-
-		foreach ( $modules as $module ) {
-			if ( ! extension_loaded( $module ) ) {
-				$pmpro_stripe_error = true;
-				$msg                = - 1;
-				$msgt               = sprintf( __( "The %s gateway depends on the %s PHP extension. Please enable it, or ask your hosting provider to enable it.", 'paid-memberships-pro' ), 'Stripe', $module );
-
-				//throw error on checkout page
-				if ( ! is_admin() ) {
-					pmpro_setMessage( $msgt, 'pmpro_error' );
-				}
-
-				return false;
-			}
-		}
-
-		self::$is_loaded = true;
-
-		return true;
-	}
-
 	/**
 	 * Get available webhooks
 	 * 
