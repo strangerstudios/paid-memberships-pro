@@ -865,125 +865,6 @@ class PMProGateway_stripe extends PMProGateway {
 	}
 
 	/**
-	 * Temporary function to allow users to view and delete subscription updates.
-	 * Will be removed once subscription updates are completely deprecated.
-	 *
-	 * @since TBD.
-	 *
-	 * @param WP_User $user whose profile is being shown.
-	 * @param Stripe_Customer $customer associated with that user.
-	 */
-	function user_profile_fields_subscription_updates( $user, $customer ) {
-		global $pmpro_currency_symbol;
-
-		$subscriptions = $customer->subscriptions->all();
-		if ( empty( $subscriptions ) ) {
-			// User does not have any subscriptions to udpate. Delete all updates.
-			delete_user_meta( $user->ID, 'pmpro_stripe_updates' );
-			return;
-		}
-
-		$cycles        = array(
-			__( 'Day(s)', 'paid-memberships-pro' )   => 'Day',
-			__( 'Week(s)', 'paid-memberships-pro' )  => 'Week',
-			__( 'Month(s)', 'paid-memberships-pro' ) => 'Month',
-			__( 'Year(s)', 'paid-memberships-pro' )  => 'Year'
-		);
-
-		$current_year  = date_i18n( "Y" );
-		$current_month = date_i18n( "m" );
-		?>
-            <h3><?php _e( "Subscription Updates", 'paid-memberships-pro' ); ?></h3>
-			<p><?php _e( "Subscription updates will be deprecated in a future version of PMPro, though your existing subscription updates will still trigger as expected. We now instead reccomend updating the subscription directly in Stripe.", 'paid-memberships-pro' ); ?></p>
-            <table class="form-table">
-				<input type='hidden' name='pmpro_subscription_updates_visible' value='1' />
-                <tr>
-                    <th><label><?php _e( "Update", 'paid-memberships-pro' ); ?></label></th>
-                    <td id="updates_td">
-						<?php
-						$updates = $user->pmpro_stripe_updates;
-
-						foreach ( $updates as $update ) {
-							?>
-                            <div class="updates_update">
-                                <select class="updates_when" name="updates_when[]" disabled>
-                                    <option value="now" <?php selected( $update['when'], "now" ); ?>>Now</option>
-                                    <option value="payment" <?php selected( $update['when'], "payment" ); ?>>After
-                                        Next Payment
-                                    </option>
-                                    <option value="date" <?php selected( $update['when'], "date" ); ?>>On Date
-                                    </option>
-                                </select>
-                                <span class="updates_date"
-								      <?php if ( $update['when'] != "date" ) { ?>style="display: none;"<?php } ?>>
-								<select name="updates_date_month[]" disabled>
-									<?php
-									for ( $i = 1; $i < 13; $i ++ ) {
-										?>
-                                        <option value="<?php echo str_pad( $i, 2, "0", STR_PAD_LEFT ); ?>"
-										        <?php if ( ! empty( $update['date_month'] ) && $update['date_month'] == $i ) { ?>selected="selected"<?php } ?>>
-											<?php echo date_i18n( "M", strtotime( $i . "/15/" . $current_year ) ); ?>
-										</option>
-										<?php
-									}
-									?>
-								</select>
-								<input name="updates_date_day[]" type="text" size="2"
-                                       value="<?php if ( ! empty( $update['date_day'] ) ) {
-									       echo esc_attr( $update['date_day'] );
-								       } ?>" readonly/>
-								<input name="updates_date_year[]" type="text" size="4"
-                                       value="<?php if ( ! empty( $update['date_year'] ) ) {
-									       echo esc_attr( $update['date_year'] );
-								       } ?>" readonly/>
-							</span>
-                                <span class="updates_billing"
-								      <?php if ( $update['when'] == "now" ) { ?>style="display: none;"<?php } ?>>
-								<?php echo $pmpro_currency_symbol ?><input name="updates_billing_amount[]" type="text"
-                                                                           size="10"
-                                                                           value="<?php echo esc_attr( $update['billing_amount'] ); ?>"
-																		   readonly/>
-								<small><?php _e( 'per', 'paid-memberships-pro' ); ?></small>
-								<input name="updates_cycle_number[]" type="text" size="5"
-                                       value="<?php echo esc_attr( $update['cycle_number'] ); ?>" readonly/>
-								<select name="updates_cycle_period[]" disabled>
-								  <?php
-								  foreach ( $cycles as $name => $value ) {
-									  echo "<option value='" . esc_attr( $value ) . "'";
-									  if ( ! empty( $update['cycle_period'] ) && $update['cycle_period'] == $value ) {
-										  echo " selected='selected'";
-									  }
-									  echo ">" . esc_html( $name ) . "</option>";
-								  }
-								  ?>
-								</select>
-							</span>
-                                <span>
-								<a class="updates_remove" href="javascript:void(0);"><?php esc_html_e( 'Remove', 'paid-memberships-pro' ); ?></a>
-							</span>
-                            </div>
-							<script>
-							jQuery(document).ready(function () {
-								//remove updates when clicking
-								jQuery('.updates_remove').click(function () {
-									jQuery(this).parent().parent().remove();
-								});
-								jQuery('form').bind('submit', function () {
-									// Makes sure that disabled select fields are still submitted.
-									jQuery(this).find(':input').prop('disabled', false);
-									});
-							});
-							</script>
-							<?php
-						}
-						?>
-                    </td>
-                </tr>
-            </table>
-			<?php
-	}
-
-	/**
 	 * Temporary function to allow users to delete subscription updates.
 	 * Will be removed once subscription updates are completely deprecated.
 	 *
@@ -2267,6 +2148,125 @@ class PMProGateway_stripe extends PMProGateway {
 		} catch ( \Exception $e ) {
 			// Assume no subscription found.
 		}
+	}
+
+	/**
+	 * Temporary function to allow users to view and delete subscription updates.
+	 * Will be removed once subscription updates are completely deprecated.
+	 *
+	 * @since TBD.
+	 *
+	 * @param WP_User $user whose profile is being shown.
+	 * @param Stripe_Customer $customer associated with that user.
+	 */
+	private function user_profile_fields_subscription_updates( $user, $customer ) {
+		global $pmpro_currency_symbol;
+
+		$subscriptions = $customer->subscriptions->all();
+		if ( empty( $subscriptions ) ) {
+			// User does not have any subscriptions to udpate. Delete all updates.
+			delete_user_meta( $user->ID, 'pmpro_stripe_updates' );
+			return;
+		}
+
+		$cycles        = array(
+			__( 'Day(s)', 'paid-memberships-pro' )   => 'Day',
+			__( 'Week(s)', 'paid-memberships-pro' )  => 'Week',
+			__( 'Month(s)', 'paid-memberships-pro' ) => 'Month',
+			__( 'Year(s)', 'paid-memberships-pro' )  => 'Year'
+		);
+
+		$current_year  = date_i18n( "Y" );
+		$current_month = date_i18n( "m" );
+		?>
+            <h3><?php _e( "Subscription Updates", 'paid-memberships-pro' ); ?></h3>
+			<p><?php _e( "Subscription updates will be deprecated in a future version of PMPro, though your existing subscription updates will still trigger as expected. We now instead reccomend updating the subscription directly in Stripe.", 'paid-memberships-pro' ); ?></p>
+            <table class="form-table">
+				<input type='hidden' name='pmpro_subscription_updates_visible' value='1' />
+                <tr>
+                    <th><label><?php _e( "Update", 'paid-memberships-pro' ); ?></label></th>
+                    <td id="updates_td">
+						<?php
+						$updates = $user->pmpro_stripe_updates;
+
+						foreach ( $updates as $update ) {
+							?>
+                            <div class="updates_update">
+                                <select class="updates_when" name="updates_when[]" disabled>
+                                    <option value="now" <?php selected( $update['when'], "now" ); ?>>Now</option>
+                                    <option value="payment" <?php selected( $update['when'], "payment" ); ?>>After
+                                        Next Payment
+                                    </option>
+                                    <option value="date" <?php selected( $update['when'], "date" ); ?>>On Date
+                                    </option>
+                                </select>
+                                <span class="updates_date"
+								      <?php if ( $update['when'] != "date" ) { ?>style="display: none;"<?php } ?>>
+								<select name="updates_date_month[]" disabled>
+									<?php
+									for ( $i = 1; $i < 13; $i ++ ) {
+										?>
+                                        <option value="<?php echo str_pad( $i, 2, "0", STR_PAD_LEFT ); ?>"
+										        <?php if ( ! empty( $update['date_month'] ) && $update['date_month'] == $i ) { ?>selected="selected"<?php } ?>>
+											<?php echo date_i18n( "M", strtotime( $i . "/15/" . $current_year ) ); ?>
+										</option>
+										<?php
+									}
+									?>
+								</select>
+								<input name="updates_date_day[]" type="text" size="2"
+                                       value="<?php if ( ! empty( $update['date_day'] ) ) {
+									       echo esc_attr( $update['date_day'] );
+								       } ?>" readonly/>
+								<input name="updates_date_year[]" type="text" size="4"
+                                       value="<?php if ( ! empty( $update['date_year'] ) ) {
+									       echo esc_attr( $update['date_year'] );
+								       } ?>" readonly/>
+							</span>
+                                <span class="updates_billing"
+								      <?php if ( $update['when'] == "now" ) { ?>style="display: none;"<?php } ?>>
+								<?php echo $pmpro_currency_symbol ?><input name="updates_billing_amount[]" type="text"
+                                                                           size="10"
+                                                                           value="<?php echo esc_attr( $update['billing_amount'] ); ?>"
+																		   readonly/>
+								<small><?php _e( 'per', 'paid-memberships-pro' ); ?></small>
+								<input name="updates_cycle_number[]" type="text" size="5"
+                                       value="<?php echo esc_attr( $update['cycle_number'] ); ?>" readonly/>
+								<select name="updates_cycle_period[]" disabled>
+								  <?php
+								  foreach ( $cycles as $name => $value ) {
+									  echo "<option value='" . esc_attr( $value ) . "'";
+									  if ( ! empty( $update['cycle_period'] ) && $update['cycle_period'] == $value ) {
+										  echo " selected='selected'";
+									  }
+									  echo ">" . esc_html( $name ) . "</option>";
+								  }
+								  ?>
+								</select>
+							</span>
+                                <span>
+								<a class="updates_remove" href="javascript:void(0);"><?php esc_html_e( 'Remove', 'paid-memberships-pro' ); ?></a>
+							</span>
+                            </div>
+							<script>
+							jQuery(document).ready(function () {
+								//remove updates when clicking
+								jQuery('.updates_remove').click(function () {
+									jQuery(this).parent().parent().remove();
+								});
+								jQuery('form').bind('submit', function () {
+									// Makes sure that disabled select fields are still submitted.
+									jQuery(this).find(':input').prop('disabled', false);
+									});
+							});
+							</script>
+							<?php
+						}
+						?>
+                    </td>
+                </tr>
+            </table>
+			<?php
 	}
 
 	
