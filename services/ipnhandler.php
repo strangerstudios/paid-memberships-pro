@@ -662,6 +662,7 @@ function pmpro_ipnFailedPayment( $last_order ) {
 	//create a blank order for the email
 	$morder          = new MemberOrder();
 	$morder->user_id = $last_order->user_id;
+	$morder->membership_id = $last_order->membership_id;
 
 	$user                   = new WP_User( $last_order->user_id );
 	$user->membership_level = pmpro_getMembershipLevelForUser( $user->ID );
@@ -669,6 +670,7 @@ function pmpro_ipnFailedPayment( $last_order ) {
 	//add billing information if appropriate
 	if ( $last_order->gateway == "paypal" )        //website payments pro
 	{
+		$morder->billing = new stdClass();
 		$morder->billing->name    = $_POST['address_name'];
 		$morder->billing->street  = $_POST['address_street'];
 		$morder->billing->city    = $_POST['address_city '];

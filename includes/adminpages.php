@@ -133,7 +133,7 @@ function pmpro_admin_bar_menu() {
 		array(
 			'id' => 'paid-memberships-pro',
 			'title' => __( '<span class="ab-icon"></span>Memberships', 'paid-memberships-pro' ),
-			'href' => get_admin_url( NULL, '/admin.php?page=' . $top_menu_page )
+			'href' => admin_url( '/admin.php?page=' . $top_menu_page )
 		) 
 	);
 
@@ -144,7 +144,7 @@ function pmpro_admin_bar_menu() {
 				'id' => 'pmpro-dashboard',
 				'parent' => 'paid-memberships-pro',
 				'title' => __( 'Dashboard', 'paid-memberships-pro' ),
-				'href' => get_admin_url( NULL, '/admin.php?page=pmpro-dashboard' ) 
+				'href' => admin_url( '/admin.php?page=pmpro-dashboard' ) 
 			)
 		);
 	}
@@ -156,7 +156,7 @@ function pmpro_admin_bar_menu() {
 				'id' => 'pmpro-members-list',
 				'parent' => 'paid-memberships-pro',
 				'title' => __( 'Members', 'paid-memberships-pro' ),
-				'href' => get_admin_url( NULL, '/admin.php?page=pmpro-memberslist' )
+				'href' => admin_url( '/admin.php?page=pmpro-memberslist' )
 			)
 		);
 	}
@@ -168,7 +168,7 @@ function pmpro_admin_bar_menu() {
 				'id' => 'pmpro-orders',
 				'parent' => 'paid-memberships-pro',
 				'title' => __( 'Orders', 'paid-memberships-pro' ),
-				'href' => get_admin_url( NULL, '/admin.php?page=pmpro-orders' )
+				'href' => admin_url( '/admin.php?page=pmpro-orders' )
 			)
 		);
 	}
@@ -180,7 +180,7 @@ function pmpro_admin_bar_menu() {
 				'id' => 'pmpro-reports',
 				'parent' => 'paid-memberships-pro',
 				'title' => __( 'Reports', 'paid-memberships-pro' ),
-				'href' => get_admin_url( NULL, '/admin.php?page=pmpro-reports' )
+				'href' => admin_url( '/admin.php?page=pmpro-reports' )
 			)
 		);
 	}
@@ -192,7 +192,7 @@ function pmpro_admin_bar_menu() {
 				'id' => 'pmpro-membership-levels',
 				'parent' => 'paid-memberships-pro',
 				'title' => __( 'Settings', 'paid-memberships-pro' ),
-				'href' => get_admin_url( NULL, '/admin.php?page=pmpro-membershiplevels' )
+				'href' => admin_url( '/admin.php?page=pmpro-membershiplevels' )
 			)
 		);
 	}
@@ -204,7 +204,7 @@ function pmpro_admin_bar_menu() {
 				'id' => 'pmpro-addons',
 				'parent' => 'paid-memberships-pro',
 				'title' => __( 'Add Ons', 'paid-memberships-pro' ),
-				'href' => get_admin_url( NULL, '/admin.php?page=pmpro-addons' )
+				'href' => admin_url( '/admin.php?page=pmpro-addons' )
 			)
 		);
 	}
@@ -223,7 +223,7 @@ function pmpro_admin_bar_menu() {
 				'id' => 'pmpro-license',
 				'parent' => 'paid-memberships-pro',
 				'title' => __( '<span style="color: ' . $span_color . '; line-height: 26px;">License</span>', 'paid-memberships-pro' ),
-				'href' => get_admin_url( NULL, '/admin.php?page=pmpro-license' )
+				'href' => admin_url( '/admin.php?page=pmpro-license' )
 			)
 		);
 	}
@@ -399,7 +399,7 @@ function pmpro_add_action_links( $links ) {
 	}
 
 	$new_links = array(
-		'<a href="' . get_admin_url( NULL, 'admin.php?page=' . $top_menu_page ) . '">Settings</a>',
+		'<a href="' . admin_url( 'admin.php?page=' . $top_menu_page ) . '">Settings</a>',
 	);
 	return array_merge( $new_links, $links );
 }
