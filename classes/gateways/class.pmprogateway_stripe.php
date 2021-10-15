@@ -4,6 +4,7 @@ use Stripe\Customer as Stripe_Customer;
 use Stripe\Invoice as Stripe_Invoice;
 use Stripe\Plan as Stripe_Plan;
 use Stripe\Product as Stripe_Product;
+use Stripe\Price as Stripe_Price;
 use Stripe\Charge as Stripe_Charge;
 use Stripe\PaymentIntent as Stripe_PaymentIntent;
 use Stripe\SetupIntent as Stripe_SetupIntent;
@@ -687,12 +688,8 @@ class PMProGateway_stripe extends PMProGateway {
 			$morder->payment_method_id = sanitize_text_field( $_REQUEST['payment_method_id'] );
 		}
 
-		// Add the Customer ID to the order.
-		if ( empty( $morder->customer_id ) ) {
-
-		}
 		if ( ! empty ( $_REQUEST['customer_id'] ) ) {
-			$morder->customer_id = sanitize_text_field( $_REQUEST['customer_id'] );
+			$morder->stripe_customer_id = sanitize_text_field( $_REQUEST['customer_id'] );
 		}
 
 		//stripe lite code to get name from other sources if available
@@ -1327,11 +1324,43 @@ class PMProGateway_stripe extends PMProGateway {
 			return false;
 		}
 
-		$subscriptions_processed = $this->process_subscriptions( $order );
-		if ( ! empty( $order->error ) ) {
-			// There was an error processing charges.
-			// $order has an error message, so we don't need to add one.
-			return false;
+		if ( pmpro_isLevelRecurring( $order->membership_level ) ) {
+			if ( ! empty( $order->setup_intent_id ) ) {
+				try {
+					$setup_intent = Stripe_SetupIntent::retrieve( $order->setup_intent_id );
+				} catch ( Stripe\Error\Base $e ) {
+					$order->error = $e->getMessage();
+					return false;
+				} catch ( \Throwable $e ) {
+					$order->error = $e->getMessage();
+					return false;
+				} catch ( \Exception $e ) {
+					$order->error = $e->getMessage();
+					return false;
+				}
+			}
+
+			if ( empty( $setup_intent ) ) {
+				$subscription = $this->create_subscription_for_customer_from_order( $customer->id, $order );
+				if ( empty( $subscription ) ) {
+					// There was an issue updating the default payment method.
+					$order->error      = __( "Error creating subscription for customer.", 'paid-memberships-pro' );
+					$order->shorterror = $order->error;
+					return false;
+				}
+				$order->stripe_subscription = $subscription;
+				$setup_intent = $subscription->pending_setup_intent;
+			}
+
+			if ( ! empty( $setup_intent->status ) && 'requires_action' === $setup_intent->status ) {
+				// So that we can authenticate at checkout. 
+				$order->stripe_setup_intent = $setup_intent;
+				$order->errorcode = true;
+				$order->error     = __( 'Customer authentication is required to finish setting up your subscription. Please complete the verification steps issued by your payment provider.', 'paid-memberships-pro' );
+	
+				return false;
+			}
+
 		}
 
 		$this->clean_up( $order );
@@ -1848,8 +1877,8 @@ class PMProGateway_stripe extends PMProGateway {
 		$customer = empty( $user_id ) ? null : $this->get_customer_for_user( $user_id );
 
 		// If we can't get a customer from the user, try to get it from the order.
-		if ( empty( $customer ) && ! empty( $order->customer_id ) ) {
-			$customer = $this->get_customer( $order->customer_id );
+		if ( empty( $customer ) && ! empty( $order->stripe_customer_id ) ) {
+			$customer = $this->get_customer( $order->stripe_customer_id );
 		}
 
 		// Get customer name.
@@ -2054,6 +2083,244 @@ class PMProGateway_stripe extends PMProGateway {
 		}
 	}
 
+	/**
+	 * Get the Stripe product ID for a given membership level.
+	 *
+	 * TODO: Separate products for live and sandbox mode.
+	 *
+	 * @since TBD
+	 *
+	 * @param PMPro_Membership_Leve|int $level to get product ID for.
+	 * @return string|null
+	 */
+	private function get_product_id_for_level( $level ) {
+		if ( ! is_a( $level, 'PMPro_Membership_Level' ) ) {
+			if ( is_numeric( $level ) ) {
+				$level = new PMPro_Membership_Level( $level );
+			}
+		}
+
+		if ( empty( $level->ID ) ) {
+			// We do not have a valid level.
+			return;
+		}
+
+		$stripe_product_id = $level->stripe_product_id;
+		if ( empty( $stripe_product_id ) ) {
+			$stripe_product_id = $this->create_product_for_level( $level );
+		}
+
+		if ( ! empty( $stripe_product_id ) ) {
+			return $stripe_product_id;
+		}
+	}
+
+	/**
+	 * Create a new Stripe product for a given membership level.
+	 *
+	 * WARNING: Will overwrite old Stripe product set for level if
+	 * there is already one set.
+	 *
+	 * TODO: Separate products for live and sandbox mode.
+	 *
+	 * @since TBD
+	 *
+	 * @param PMPro_Membership_Level|int $level to create product ID for.
+	 * @return string|null ID of new product
+	 */
+	private function create_product_for_level( $level ) {
+		if ( ! is_a( $level, 'PMPro_Membership_Level' ) ) {
+			if ( is_numeric( $level ) ) {
+				$level = new PMPro_Membership_Level( $level );
+			}
+		}
+
+		if ( empty( $level->ID ) ) {
+			// We do not have a valid level.
+			return;
+		}
+
+		$product_args = array(
+			'name' => $level->name,
+		);
+		/**
+		 * Filter the data sent to Stripe when creating a new product for a membership level.
+		 *
+		 * @since TBD
+		 *
+		 * @param array $product_args being sent to Stripe.
+		 * @param PMPro_Membership_Level $level that product is being created for.
+		 */
+		$product_args = apply_filters( 'pmpro_stripe_create_product_for_level', $product_args, $level );
+
+		try {
+			$product = Stripe_Product::create( $product_args );
+			if ( ! empty( $product->id ) ) {
+				update_pmpro_membership_level_meta( $level->ID, 'stripe_product_id', $product->id );
+				return $product->id;
+			}
+		} catch (\Throwable $th) {
+			// Could not create product.
+		} catch (\Exception $e) {
+			// Could not create product.
+		}
+	}
+
+	/**
+	 * Get a Price for a given product, or create one if it doesn't exist.
+	 *
+	 * TODO: Add pagination.
+	 *
+	 * @since TBD
+	 *
+	 * @param string $product_id to get Price for.
+	 * @param float $amount that the Price will charge.
+	 * @param string|null $cycle_period for subscription payments.
+	 * @param string|null $cycle_number of cycle periods between each subscription payment.
+	 *
+	 * @return string|null Price ID.
+	 */
+	private function get_price_for_product( $product_id, $amount, $cycle_period = null, $cycle_number = null ) {
+		global $pmpro_currency;
+
+		$is_recurring = ! empty( $cycle_period ) && ! empty( $cycle_number );
+		$unit_amount  = intval( $amount * 100 ); // TODO: Change this based on currency.
+		$cycle_period = strtolower( $cycle_period );
+
+		$price_search_args = array(
+			'product'  => $product_id,
+			'type'     => $is_recurring ? 'recurring' : 'one_time',
+			'currency' => strtolower( $pmpro_currency ),
+		);
+		if ( $is_recurring ) {
+			$price_search_args['recurring'] = array( 'interval' => $cycle_period );
+		}
+
+		try {
+			$prices = Stripe_Price::all( $price_search_args );
+
+			foreach ( $prices as $price ) {
+				// Check whether price is the same. If not, continue.
+				if ( intval( $price->unit_amount ) !== intval( $unit_amount ) ) {
+					continue;
+				}
+				// Check if recurring structure is the same. If not, continue.
+				if ( $is_recurring && ( empty( $price->recurring->interval_count ) || intval( $price->recurring->interval_count ) !== intval( $cycle_number ) ) ) {
+					continue;
+				}
+				return $price->id;
+			}
+		} catch (\Throwable $th) {
+			// There was an error listing prices.
+			return;
+		} catch (\Exception $e) {
+			// There was an error listing prices.
+			return;
+		}
+
+		// Create a new Price.
+		$price_args = array(
+			'product'     => $product_id,
+			'currency'    => strtolower( $pmpro_currency ),
+			'unit_amount' => $unit_amount
+		);
+		if ( $is_recurring ) {
+			$price_args['recurring'] = array(
+				'interval'       => $cycle_period,
+				'interval_count' => $cycle_number
+			);
+		}
+
+		try {
+			$price = Stripe_Price::create( $price_args );
+			if ( ! empty( $price->id ) ) {
+				return $price->id;
+			}
+		} catch (\Throwable $th) {
+			// Could not create product.
+		} catch (\Exception $e) {
+			// Could not create product.
+		}
+	}
+
+	private function calculate_trial_period_days( $order ) {
+		// Use a trial period to set the first recurring payment date.
+		if ( $order->BillingPeriod == "Year" ) {
+			$days_in_billing_period = $order->BillingFrequency * 365;    //annual
+		} elseif ( $order->BillingPeriod == "Day" ) {
+			$days_in_billing_period = $order->BillingFrequency * 1;        //daily
+		} elseif ( $order->BillingPeriod == "Week" ) {
+			$days_in_billing_period = $order->BillingFrequency * 7;        //weekly
+		} else {
+			$days_in_billing_period = $order->BillingFrequency * 30;    //assume monthly
+		}
+		$trial_period_days = $order->BillingFrequency * $days_in_billing_period;
+
+		// For free trials, multiply the trial period for each additional free period.
+		if ( ! empty( $order->TrialBillingCycles ) && $order->TrialAmount == 0 ) {
+			$trialOccurrences = (int) $order->TrialBillingCycles;
+			$trial_period_days = $trial_period_days * ( $order->TrialBillingCycles + 1 );
+		}
+
+		//convert to a profile start date
+		$order->ProfileStartDate = date_i18n( "Y-m-d", strtotime( "+ " . $trial_period_days . " Day", current_time( "timestamp" ) ) ) . "T0:0:0";
+
+		//filter the start date
+		$order->ProfileStartDate = apply_filters( "pmpro_profile_start_date", $order->ProfileStartDate, $order );
+
+		//convert back to days
+		$trial_period_days = ceil( abs( strtotime( date_i18n( "Y-m-d" ), current_time( "timestamp" ) ) - strtotime( $order->ProfileStartDate, current_time( "timestamp" ) ) ) / 86400 );
+		return $trial_period_days;
+	}
+
+	function create_subscription_for_customer_from_order( $customer_id, $order ) {
+		$subtotal = $order->PaymentAmount;
+		$tax      = $order->getTaxForPrice( $subtotal );
+		$amount   = pmpro_round_price( (float) $subtotal + (float) $tax );
+
+		// Set up the subscription.
+		$product_id = $this->get_product_id_for_level( $order->membership_id );
+		if ( empty( $product_id ) ) {
+			$order->error = esc_html__( 'Cannot find product for membership level.', 'paid-memberships-pro' );
+			return false;
+		}
+
+		$price = $this->get_price_for_product( $product_id, $amount, $order->BillingPeriod, $order->BillingFrequency );
+		if ( empty( $price ) ) {
+			$order->error = esc_html__( 'Cannot get price.', 'paid-memberships-pro' );
+			return false;
+		}
+
+		$trial_period_days = $this->calculate_trial_period_days( $order );
+
+		try {
+			$subscription_params = array(
+				'customer'          => $customer_id,
+				'items'             => array(
+					array( 'price' => $price ),
+				),
+				'trial_period_days' => $trial_period_days,
+				'expand'                 => array(
+					'pending_setup_intent.payment_method',
+				),
+			);
+			if ( ! self::using_legacy_keys() ) {
+				$params['application_fee_percent'] = self::get_application_fee_percentage();
+			}
+			$subscription_params = apply_filters( 'pmpro_stripe_create_subscription_array', $subscription_params );
+			$subscription = Stripe_Subscription::create( $subscription_params );
+		} catch ( Stripe\Error\Base $e ) {
+			$order->error = $e->getMessage();
+			return false;
+		} catch ( \Throwable $e ) {
+			$order->error = $e->getMessage();
+			return false;
+		} catch ( \Exception $e ) {
+			$order->error = $e->getMessage();
+			return false;
+		}
+		return $subscription;
+	}
 	
 
 	/****************************************
@@ -3344,64 +3611,7 @@ class PMProGateway_stripe extends PMProGateway {
 		$amount_tax = $order->getTaxForPrice( $amount );
 		$amount     = pmpro_round_price( (float) $amount + (float) $amount_tax );
 
-		/*
-            There are two parts to the trial. Part 1 is simply the delay until the first payment
-            since we are doing the first payment as a separate transaction.
-            The second part is the actual "trial" set by the admin.
-
-            Stripe only supports Year or Month for billing periods, but we account for Days and Weeks just in case.
-        */
-		//figure out the trial length (first payment handled by initial charge)
-		if ( $order->BillingPeriod == "Year" ) {
-			$trial_period_days = $order->BillingFrequency * 365;    //annual
-		} elseif ( $order->BillingPeriod == "Day" ) {
-			$trial_period_days = $order->BillingFrequency * 1;        //daily
-		} elseif ( $order->BillingPeriod == "Week" ) {
-			$trial_period_days = $order->BillingFrequency * 7;        //weekly
-		} else {
-			$trial_period_days = $order->BillingFrequency * 30;    //assume monthly
-		}
-
-		//convert to a profile start date
-		$order->ProfileStartDate = date_i18n( "Y-m-d", strtotime( "+ " . $trial_period_days . " Day", current_time( "timestamp" ) ) ) . "T0:0:0";
-
-		//filter the start date
-		$order->ProfileStartDate = apply_filters( "pmpro_profile_start_date", $order->ProfileStartDate, $order );
-
-		//convert back to days
-		$trial_period_days = ceil( abs( strtotime( date_i18n( "Y-m-d" ), current_time( "timestamp" ) ) - strtotime( $order->ProfileStartDate, current_time( "timestamp" ) ) ) / 86400 );
-
-		//for free trials, just push the start date of the subscription back
-		if ( ! empty( $order->TrialBillingCycles ) && $order->TrialAmount == 0 ) {
-			$trialOccurrences = (int) $order->TrialBillingCycles;
-			if ( $order->BillingPeriod == "Year" ) {
-				$trial_period_days = $trial_period_days + ( 365 * $order->BillingFrequency * $trialOccurrences );    //annual
-			} elseif ( $order->BillingPeriod == "Day" ) {
-				$trial_period_days = $trial_period_days + ( 1 * $order->BillingFrequency * $trialOccurrences );        //daily
-			} elseif ( $order->BillingPeriod == "Week" ) {
-				$trial_period_days = $trial_period_days + ( 7 * $order->BillingFrequency * $trialOccurrences );    //weekly
-			} else {
-				$trial_period_days = $trial_period_days + ( 30 * $order->BillingFrequency * $trialOccurrences );    //assume monthly
-			}
-		} elseif ( ! empty( $order->TrialBillingCycles ) ) {
-			/*
-                Let's set the subscription to the trial and give the user an "update" to change the sub later to full price (since v2.0)
-
-                This will force TrialBillingCycles > 1 to act as if they were 1
-            */
-			$new_user_updates   = array();
-			$new_user_updates[] = array(
-				'when'           => 'payment',
-				'billing_amount' => $order->PaymentAmount,
-				'cycle_period'   => $order->BillingPeriod,
-				'cycle_number'   => $order->BillingFrequency
-			);
-
-			//now amount to equal the trial #s
-			$amount     = $order->TrialAmount;
-			$amount_tax = $order->getTaxForPrice( $amount );
-			$amount     = pmpro_round_price( (float) $amount + (float) $amount_tax );
-		}
+		$trial_period_days = calculate_trial_period_days( $order );
 
 		// Save $trial_period_days to order for now too.
 		$order->TrialPeriodDays = $trial_period_days;
@@ -3706,50 +3916,8 @@ class PMProGateway_stripe extends PMProGateway {
 		$amount_tax = $order->getTaxForPrice( $amount );
 		$amount     = pmpro_round_price( (float) $amount + (float) $amount_tax );
 
-		/*
-		Figure out the trial length (first payment handled by initial charge)
-
-		There are two parts to the trial. Part 1 is simply the delay until the first payment
-        since we are doing the first payment as a separate transaction.
-        The second part is the actual "trial" set by the admin.
-
-        Stripe only supports Year or Month for billing periods, but we account for Days and Weeks just in case.
-        */
-		if ( $order->BillingPeriod == "Year" ) {
-			$trial_period_days = $order->BillingFrequency * 365;    //annual
-		} elseif ( $order->BillingPeriod == "Day" ) {
-			$trial_period_days = $order->BillingFrequency * 1;        //daily
-		} elseif ( $order->BillingPeriod == "Week" ) {
-			$trial_period_days = $order->BillingFrequency * 7;        //weekly
-		} else {
-			$trial_period_days = $order->BillingFrequency * 30;    //assume monthly
-		}
-
-		//convert to a profile start date
-		$order->ProfileStartDate = date_i18n( "Y-m-d", strtotime( "+ " . $trial_period_days . " Day", current_time( "timestamp" ) ) ) . "T0:0:0";
-
-		//filter the start date
-		$order->ProfileStartDate = apply_filters( "pmpro_profile_start_date", $order->ProfileStartDate, $order );
-
-		//convert back to days
-		$trial_period_days = ceil( abs( strtotime( date_i18n( "Y-m-d" ), current_time( "timestamp" ) ) - strtotime( $order->ProfileStartDate, current_time( "timestamp" ) ) ) / 86400 );
-
-		//for free trials, just push the start date of the subscription back
-		if ( ! empty( $order->TrialBillingCycles ) && $order->TrialAmount == 0 ) {
-			$trialOccurrences = (int) $order->TrialBillingCycles;
-			if ( $order->BillingPeriod == "Year" ) {
-				$trial_period_days = $trial_period_days + ( 365 * $order->BillingFrequency * $trialOccurrences );    //annual
-			} elseif ( $order->BillingPeriod == "Day" ) {
-				$trial_period_days = $trial_period_days + ( 1 * $order->BillingFrequency * $trialOccurrences );        //daily
-			} elseif ( $order->BillingPeriod == "Week" ) {
-				$trial_period_days = $trial_period_days + ( 7 * $order->BillingFrequency * $trialOccurrences );    //weekly
-			} else {
-				$trial_period_days = $trial_period_days + ( 30 * $order->BillingFrequency * $trialOccurrences );    //assume monthly
-			}
-		} elseif ( ! empty( $order->TrialBillingCycles ) ) {
-
-		}
-
+		
+		$trial_period_days = calculate_trial_period_days( $order );
 		// Save $trial_period_days to order for now too.
 		$order->TrialPeriodDays = $trial_period_days;
 
@@ -3866,164 +4034,5 @@ class PMProGateway_stripe extends PMProGateway {
 		}
 
 		return true;
-	}
-
-	/**
-	 * Get the Stripe product ID for a given membership level.
-	 *
-	 * TODO: Separate products for live and sandbox mode.
-	 *
-	 * @since TBD
-	 *
-	 * @param PMPro_Membership_Leve|int $level to get product ID for.
-	 * @return string|null
-	 */
-	public function get_product_id_for_level( $level ) {
-		if ( ! is_a( $level, 'PMPro_Membership_Level' ) ) {
-			if ( is_numeric( $level ) ) {
-				$level = new PMPro_Membership_Level( $level );
-			}
-		}
-
-		if ( empty( $level->ID ) ) {
-			// We do not have a valid level.
-			return;
-		}
-
-		$stripe_product_id = $level->stripe_product_id;
-		if ( empty( $stripe_product_id ) ) {
-			$stripe_product_id = $this->create_product_for_level( $level );
-		}
-
-		if ( ! empty( $stripe_product_id ) ) {
-			return $stripe_product_id;
-		}
-	}
-
-	/**
-	 * Create a new Stripe product for a given membership level.
-	 *
-	 * WARNING: Will overwrite old Stripe product set for level if
-	 * there is already one set.
-	 *
-	 * TODO: Separate products for live and sandbox mode.
-	 *
-	 * @since TBD
-	 *
-	 * @param PMPro_Membership_Level|int $level to create product ID for.
-	 * @return string|null ID of new product
-	 */
-	public function create_product_for_level( $level ) {
-		if ( ! is_a( $level, 'PMPro_Membership_Level' ) ) {
-			if ( is_numeric( $level ) ) {
-				$level = new PMPro_Membership_Level( $level );
-			}
-		}
-
-		if ( empty( $level->ID ) ) {
-			// We do not have a valid level.
-			return;
-		}
-
-		$product_args = array(
-			'name' => $level->name,
-		);
-		/**
-		 * Filter the data sent to Stripe when creating a new product for a membership level.
-		 *
-		 * @since TBD
-		 *
-		 * @param array $product_args being sent to Stripe.
-		 * @param PMPro_Membership_Level $level that product is being created for.
-		 */
-		$product_args = apply_filters( 'pmpro_stripe_create_product_for_level', $product_args, $level );
-
-		try {
-			$product = Stripe_Product::create( $product_args );
-			if ( ! empty( $product->id ) ) {
-				update_pmpro_membership_level_meta( $level->ID, 'stripe_product_id', $product->id );
-				return $product->id;
-			}
-		} catch (\Throwable $th) {
-			// Could not create product.
-		} catch (\Exception $e) {
-			// Could not create product.
-		}
-	}
-
-	/**
-	 * Get a Price for a given product, or create one if it doesn't exist.
-	 *
-	 * TODO: Add pagination.
-	 *
-	 * @since TBD
-	 *
-	 * @param string $product_id to get Price for.
-	 * @param float $amount that the Price will charge.
-	 * @param string|null $cycle_period for subscription payments.
-	 * @param string|null $cycle_number of cycle periods between each subscription payment.
-	 *
-	 * @return string|null Price ID.
-	 */
-	public function get_price_for_product( $product_id, $amount, $cycle_period = null, $cycle_number = null ) {
-		global $pmpro_currency;
-
-		$is_recurring = ! empty( $cycle_period ) && ! empty( $cycle_number );
-		$unit_amount  = intval( $amount * 100 ); // TODO: Change this based on currency.
-
-		$price_search_args = array(
-			'product'  => $product_id,
-			'type'     => $is_recurring ? 'recurring' : 'one_time',
-			'currency' => strtolower( $pmpro_currency ),
-		);
-		if ( $is_recurring ) {
-			$price_search_args['recurring'] = array( 'interval' => $cycle_period );
-		}
-
-		try {
-			$prices = Stripe_Price::all( $price_search_args );
-
-			foreach ( $prices as $price ) {
-				// Check whether price is the same. If not, continue.
-				if ( intval( $price->unit_amount ) !== intval( $unit_amount ) ) {
-					continue;
-				}
-				// Check if recurring structure is the same. If not, continue.
-				if ( $is_recurring && ( empty( $price->recurring->interval_count ) || intval( $price->recurring->interval_count ) !== intval( $cycle_number ) ) ) {
-					continue;
-				}
-				return $price->id;
-			}
-		} catch (\Throwable $th) {
-			// There was an error listing prices.
-			return;
-		} catch (\Exception $e) {
-			// There was an error listing prices.
-			return;
-		}
-
-		// Create a new Price.
-		$price_args = array(
-			'product'     => $product_id,
-			'currency'    => strtolower( $pmpro_currency ),
-			'unit_amount' => $unit_amount
-		);
-		if ( $is_recurring ) {
-			$price_args['recurring'] = array(
-				'interval'       => $cycle_period,
-				'inverval_count' => $cycle_number
-			);
-		}
-
-		try {
-			$price = Stripe_Price::create( $price_args );
-			if ( ! empty( $price->id ) ) {
-				return $price->id;
-			}
-		} catch (\Throwable $th) {
-			// Could not create product.
-		} catch (\Exception $e) {
-			// Could not create product.
-		}
 	}
 }
