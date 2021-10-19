@@ -2273,7 +2273,7 @@ class PMProGateway_stripe extends PMProGateway {
 		return $trial_period_days;
 	}
 
-	function create_subscription_for_customer_from_order( $customer_id, $order ) {
+	private function create_subscription_for_customer_from_order( $customer_id, $order ) {
 		$subtotal = $order->PaymentAmount;
 		$tax      = $order->getTaxForPrice( $subtotal );
 		$amount   = pmpro_round_price( (float) $subtotal + (float) $tax );
