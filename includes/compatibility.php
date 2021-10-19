@@ -13,12 +13,12 @@ function pmpro_compatibility_checker () {
         ),
         array(
             'file' => 'elementor.php',
-            'check_type' => 'constant', 
+            'check_type' => 'constant',
             'check_value' => 'ELEMENTOR_VERSION'
         ),
         array(
             'file' => 'beaver-builder.php',
-            'check_type' => 'constant', 
+            'check_type' => 'constant',
             'check_value' => 'FL_BUILDER_VERSION'
         ),
         array(
@@ -40,15 +40,41 @@ function pmpro_compatibility_checker () {
             'file' => 'divi.php',
             'check_type' => 'constant',
             'check_value' => 'ET_BUILDER_PLUGIN_DIR'
+        ),
+        array(
+            'file' => 'wp-com.php',
+            'check_type' => 'constant',
+            'check_value' => 'IS_WPCOM',
+            'check_constant_true' => true,
         )
     );
 
     foreach ( $compat_checks as $key => $value ) {
-        if ( ( $value['check_type'] == 'constant' && defined( $value['check_value'] ) )
-          || ( $value['check_type'] == 'function' && function_exists( $value['check_value'] ) )
-          || ( $value['check_type'] == 'class' && class_exists( $value['check_value'] ) ) ) {
-            include( PMPRO_DIR . '/includes/compatibility/' . $value['file'] ) ;
-        }
+		// Check for a constant and maybe check if the constant is true-ish.
+	    if (
+			'constant' === $value['check_type']
+			&& (
+				! defined( $value['check_value'] )
+				|| (
+					! isset( $value['check_constant_true'] )
+					&& constant( $value['check_value'] )
+				)
+			)
+	    ) {
+			return;
+	    }
+
+		// Check for a function.
+	    if ( 'function' === $value['check_type'] && ! function_exists( $value['check_value'] ) ) {
+			return;
+	    }
+
+		// Check for a class.
+	    if ( 'class' === $value['check_type'] && ! class_exists( $value['check_value'] ) ) {
+			return;
+	    }
+
+        include( PMPRO_DIR . '/includes/compatibility/' . $value['file'] ) ;
     }
 }
 add_action( 'plugins_loaded', 'pmpro_compatibility_checker' );
