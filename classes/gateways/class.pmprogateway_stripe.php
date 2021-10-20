@@ -2769,7 +2769,9 @@ class PMProGateway_stripe extends PMProGateway {
 	}
 
 	/**
-	 * Helper method to process a Stripe subscription update
+	 * Helper method to process a Stripe subscription update.
+	 *
+	 * Only called during subscription updates. Should be completely deprecated once that functionality is removed.
 	 *
 	 * @deprecated TBD. Only deprecated for public use, will be changed to private non-static in a future version.
 	 */
@@ -2860,6 +2862,8 @@ class PMProGateway_stripe extends PMProGateway {
 
 	/**
 	 * Update the payment method for a subscription.
+	 *
+	 * Only called on update billing page. Should be completely deprecated if we switch to using Stripe Customer Portal.
 	 *
 	 * @deprecated TBD. Only deprecated for public use, will be changed to private non-static in a future version.
 	 */
@@ -3019,6 +3023,8 @@ class PMProGateway_stripe extends PMProGateway {
 	}
 
 	/**
+	 * Only called during subscription updates. Should be completely deprecated once that functionality is removed.
+	 *
 	 * @deprecated TBD. Only deprecated for public use, will be changed to private non-static in a future version.
 	 */
 	public function get_setup_intent( &$order ) {
@@ -3070,6 +3076,8 @@ class PMProGateway_stripe extends PMProGateway {
 	}
 
 	/**
+	 * Only called during subscription updates. Should be completely deprecated once that functionality is removed.
+	 *
 	 * @deprecated TBD. Only deprecated for public use, will be changed to private non-static in a future version.
 	 */
 	public function create_setup_intent( &$order ) {
@@ -3510,6 +3518,8 @@ class PMProGateway_stripe extends PMProGateway {
 	}
 
 	/**
+	 * Only called during subscription updates. Should be completely deprecated once that functionality is removed.
+	 *
 	 * @deprecated TBD. Only deprecated for public use, will be changed to private in a future version.
 	 */
 	public function process_subscriptions( &$order ) {
@@ -3567,6 +3577,98 @@ class PMProGateway_stripe extends PMProGateway {
 				}
 				add_action( 'user_register', 'pmpro_user_register_stripe_updates' );
 			}
+		}
+
+		return true;
+	}
+
+	/**
+	 * Only called during subscription updates. Should be completely deprecated once that functionality is removed.
+	 *
+	 * @deprecated TBD. Will only be deprecated once we create a function with better params.
+	 */
+	public function create_subscription( &$order ) {
+		// _deprecated_function( __FUNCTION__, 'TBD' );
+		//subscribe to the plan
+		try {
+			$params              = array(
+				'customer'               => $order->stripe_customer->id,
+				'items'                  => array(
+					array( 'plan' => $order->code ),
+				),
+				'trial_period_days'      => $order->TrialPeriodDays,
+				'expand'                 => array(
+					'pending_setup_intent.payment_method',
+				),
+			);
+			if ( ! self::using_legacy_keys() ) {
+				$params['application_fee_percent'] = self::get_application_fee_percentage();
+			}
+			$order->subscription = Stripe_Subscription::create( apply_filters( 'pmpro_stripe_create_subscription_array', $params ) );
+		} catch ( Stripe\Error\Base $e ) {
+			$order->error = $e->getMessage();
+			return false;
+		} catch ( \Throwable $e ) {
+			$order->error = $e->getMessage();
+			return false;
+		} catch ( \Exception $e ) {
+			$order->error = $e->getMessage();
+			return false;
+		}
+
+		return $order->subscription;
+
+	}
+
+	/**
+	 * Only called during subscription updates. Should be completely deprecated once that functionality is removed.
+	 *
+	 * @deprecated TBD. Only deprecated for public use, will be changed to private non-static in a future version.
+	 */
+	public function delete_plan( &$order ) {
+		// _deprecated_function( __FUNCTION__, 'TBD' );
+		try {
+			// Delete the product first while we have a reference to it...
+			if ( ( ! empty( $order->plan->product ) ) && ( ! $this->archive_product( $order ) ) ) {
+				return false;
+			}
+			// Then delete the plan.
+			$order->plan->delete();
+		} catch ( Stripe\Error\Base $e ) {
+			$order->error = $e->getMessage();
+
+			return false;
+		} catch ( \Throwable $e ) {
+			$order->error = $e->getMessage();
+
+			return false;
+		} catch ( \Exception $e ) {
+			$order->error = $e->getMessage();
+
+			return false;
+		}
+
+		return true;
+	}
+
+	/**
+	 * Only called during subscription updates. Should be completely deprecated once that functionality is removed.
+	 *
+	 * @deprecated TBD. Only deprecated for public use, will be changed to private non-static in a future version.
+	 */
+	public function archive_product( &$order ) {
+		// _deprecated_function( __FUNCTION__, 'TBD' );
+		try {
+			$product = Stripe_Product::update( $order->plan->product, array( 'active' => false ) );
+		} catch ( Stripe\Error\Base $e ) {
+			$order->error = $e->getMessage();
+			return false;
+		} catch ( \Throwable $e ) {
+			$order->error = $e->getMessage();
+			return false;
+		} catch ( \Exception $e ) {
+			$order->error = $e->getMessage();
+			return false;
 		}
 
 		return true;
@@ -4078,6 +4180,8 @@ class PMProGateway_stripe extends PMProGateway {
 	}
 
 	/**
+	 * Only called during subscription updates. Should be completely deprecated once that functionality is removed.
+	 *
 	 * @deprecated TBD. Will only be deprecated once we are using Prices.
 	 */
 	public function create_plan( &$order ) {
@@ -4123,89 +4227,5 @@ class PMProGateway_stripe extends PMProGateway {
 		return $order->plan;
 	}
 
-	/**
-	 * @deprecated TBD. Will only be deprecated once we create a function with better params.
-	 */
-	public function create_subscription( &$order ) {
-		// _deprecated_function( __FUNCTION__, 'TBD' );
-		//subscribe to the plan
-		try {
-			$params              = array(
-				'customer'               => $order->stripe_customer->id,
-				'items'                  => array(
-					array( 'plan' => $order->code ),
-				),
-				'trial_period_days'      => $order->TrialPeriodDays,
-				'expand'                 => array(
-					'pending_setup_intent.payment_method',
-				),
-			);
-			if ( ! self::using_legacy_keys() ) {
-				$params['application_fee_percent'] = self::get_application_fee_percentage();
-			}
-			$order->subscription = Stripe_Subscription::create( apply_filters( 'pmpro_stripe_create_subscription_array', $params ) );
-		} catch ( Stripe\Error\Base $e ) {
-			$order->error = $e->getMessage();
-			return false;
-		} catch ( \Throwable $e ) {
-			$order->error = $e->getMessage();
-			return false;
-		} catch ( \Exception $e ) {
-			$order->error = $e->getMessage();
-			return false;
-		}
-
-		return $order->subscription;
-
-	}
-
-	/**
-	 * @deprecated TBD. Will only be deprecated once we are using Prices.
-	 */
-	public function delete_plan( &$order ) {
-		// _deprecated_function( __FUNCTION__, 'TBD' );
-		try {
-			// Delete the product first while we have a reference to it...
-			if ( ( ! empty( $order->plan->product ) ) && ( ! $this->archive_product( $order ) ) ) {
-				return false;
-			}
-			// Then delete the plan.
-			$order->plan->delete();
-		} catch ( Stripe\Error\Base $e ) {
-			$order->error = $e->getMessage();
-
-			return false;
-		} catch ( \Throwable $e ) {
-			$order->error = $e->getMessage();
-
-			return false;
-		} catch ( \Exception $e ) {
-			$order->error = $e->getMessage();
-
-			return false;
-		}
-
-		return true;
-	}
-
-	/**
-	 * @deprecated TBD. Will only be deprecated once we start re-using products.
-	 */
-	public function archive_product( &$order ) {
-		// _deprecated_function( __FUNCTION__, 'TBD' );
-		try {
-			$product = Stripe_Product::update( $order->plan->product, array( 'active' => false ) );
-		} catch ( Stripe\Error\Base $e ) {
-			$order->error = $e->getMessage();
-			return false;
-		} catch ( \Throwable $e ) {
-			$order->error = $e->getMessage();
-			return false;
-		} catch ( \Exception $e ) {
-			$order->error = $e->getMessage();
-			return false;
-		}
-
-		return true;
-	}
+	
 }
