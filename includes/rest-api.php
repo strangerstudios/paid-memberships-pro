@@ -720,8 +720,14 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 		public function pmpro_rest_api_recent_memberships( $request ) {
 			$params = $request->get_params();
 
+			if ( isset($params['limit']) && is_int($params['limit']) ) {
+				$members_limit = $params['limit'];
+			} else {
+				$members_limit = 1;
+			}
+
 			$response_type = isset( $params['response_type'] ) ? sanitize_text_field( $params['response_type'] ) : null;
-			$limit = apply_filters( 'pmpro_trigger_recent_members_limit', 1 );
+			$limit = apply_filters( 'pmpro_trigger_recent_members_limit', $members_limit );
 
 			// Grab the useful information.
 			global $wpdb;
@@ -770,9 +776,15 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 		 */
 		public function pmpro_rest_api_recent_orders( $request ) {
 			$params = $request->get_params();
+			
+			if ( isset($params['limit']) && is_int($params['limit']) ) {
+				$orders_limit = $params['limit'];
+			} else {
+				$orders_limit = 1;
+			}
 
 			$response_type = isset( $params['response_type'] ) ? sanitize_text_field( $params['response_type'] ) : null;
-			$limit = apply_filters( 'pmpro_trigger_recent_orders_limit', 1 );
+			$limit = apply_filters( 'pmpro_trigger_recent_orders_limit', $orders_limit );
 
 			global $wpdb;
 
