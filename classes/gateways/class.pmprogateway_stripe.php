@@ -2264,6 +2264,15 @@ class PMProGateway_stripe extends PMProGateway {
 		}
 	}
 
+	/**
+	 * Calculate the number of days until the first recurring payment
+	 * for a subscription should be charged.
+	 *
+	 * @since TBD.
+	 *
+	 * @param MemberOrder $order to calculate trial period days for.
+	 * @return int trial period days.
+	 */
 	private function calculate_trial_period_days( $order ) {
 		// Use a trial period to set the first recurring payment date.
 		if ( $order->BillingPeriod == "Year" ) {
@@ -2294,6 +2303,15 @@ class PMProGateway_stripe extends PMProGateway {
 		return $trial_period_days;
 	}
 
+	/**
+	 * Create a subscription for a customer from an order using a Stripe Price.
+	 *
+	 * @since TBD.
+	 *
+	 * @param string $customer_id to create subscription for.
+	 * @param MemberOrder $order to pull subscription details from.
+	 * @return Stripe_Subscription|bool false if error.
+	 */
 	private function create_subscription_for_customer_from_order( $customer_id, $order ) {
 		$subtotal = $order->PaymentAmount;
 		$tax      = $order->getTaxForPrice( $subtotal );
@@ -2343,6 +2361,14 @@ class PMProGateway_stripe extends PMProGateway {
 		return $subscription;
 	}
 
+	/**
+	 * Retrieve a payment intent.
+	 *
+	 * @since TBD.
+	 *
+	 * @param string $payment_intent_id to retrieve.
+	 * @return Stripe_PaymentIntent|string error.
+	 */
 	private function retrieve_payment_intent( $payment_intent_id ) {
 		try {
 			$payment_intent = Stripe_PaymentIntent::retrieve( $payment_intent_id );
@@ -2356,6 +2382,14 @@ class PMProGateway_stripe extends PMProGateway {
 		return $payment_intent;
 	}
 
+	/**
+	 * Retrieve a setup intent.
+	 *
+	 * @since TBD.
+	 *
+	 * @param string $setup_intent_id to retrieve.
+	 * @return Stripe_SetupIntent|string error.
+	 */
 	private function retrieve_setup_intent( $setup_intent_id ) {
 		try {
 			$setup_intent = Stripe_SetupIntent::retrieve( $setup_intent_id );
@@ -2369,6 +2403,14 @@ class PMProGateway_stripe extends PMProGateway {
 		return $setup_intent;
 	}
 
+	/**
+	 * Confirm the payment intent after authentication.
+	 *
+	 * @since TBD.
+	 *
+	 * @param string $payment_intent_id to confirm.
+	 * @return Stripe_PaymentIntent|string error.
+	 */
 	private function process_payment_intent( $payment_intent_id ) {
 		// Get the payment intent.
 		$payment_intent = $this->retrieve_payment_intent( $payment_intent_id );
@@ -2402,6 +2444,14 @@ class PMProGateway_stripe extends PMProGateway {
 		return $payment_intent;
 	}
 
+	/**
+	 * Confirm the setup intent after authentication.
+	 *
+	 * @since TBD.
+	 *
+	 * @param string $setup_intent_id to confirm.
+	 * @return Stripe_SetupIntent|string error.
+	 */
 	private function process_setup_intent( $setup_intent_id ) {
 		// Get the setup intent.
 		$setup_intent = $this->retrieve_setup_intent( $setup_intent_id );
@@ -2416,6 +2466,15 @@ class PMProGateway_stripe extends PMProGateway {
 		return $setup_intent;
 	}
 
+	/**
+	 * Add a subscription ID to the metadata of a setup intent.
+	 *
+	 * @since TBD.
+	 *
+	 * @param Stripe_SetupIntent $setup_intent to add metadata to.
+	 * @param string $subscription_id that created this setup intent.
+	 * @return Stripe_SetupIntent|string error.
+	 */
 	private function add_subscription_id_to_setup_intent( $setup_intent, $subscription_id ) {
 		try {
 			$setup_intent = Stripe_SetupIntent::update(
