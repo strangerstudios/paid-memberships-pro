@@ -18,9 +18,8 @@ function pmpro_jetpack_sso_handle_login() {
 		return;
 	}
 
-	$login_page_id = (int) pmpro_getOption( 'login_page_id' );
 
-	if ( ! $login_page_id || ! is_page( $login_page_id ) ) {
+	if ( empty( $pmpro_pages['login'] ) || ! is_page( $pmpro_pages['login'] ) ) {
 		return;
 	}
 
