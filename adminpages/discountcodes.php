@@ -6,7 +6,7 @@
 	}
 
 	//vars
-	global $wpdb, $pmpro_currency_symbol, $pmpro_stripe_error, $pmpro_braintree_error, $pmpro_payflow_error, $pmpro_twocheckout_error, $pmpro_pages;
+	global $wpdb, $pmpro_currency_symbol, $pmpro_stripe_error, $pmpro_braintree_error, $pmpro_payflow_error, $pmpro_twocheckout_error, $pmpro_pages, $gateway;
 
 	$now = current_time( 'timestamp' );
 
@@ -17,6 +17,8 @@
 
 	if(isset($_REQUEST['copy']))
 		$copy = intval($_REQUEST['copy']);
+	else
+		$copy = false;
 
 	if(isset($_REQUEST['delete']))
 		$delete = intval($_REQUEST['delete']);
@@ -58,7 +60,7 @@
 	$start = $end - $limit;
 
 	//check nonce for saving codes
-	if (!empty($_REQUEST['saveid']) && (empty($_REQUEST['pmpro_discountcodes_nonce']) || !check_admin_referer('save', 'pmpro_discountcodes_nonce'))) {
+	if (!empty($saveid) && (empty($_REQUEST['pmpro_discountcodes_nonce']) || !check_admin_referer('save', 'pmpro_discountcodes_nonce'))) {
 		$pmpro_msgt = 'error';
 		$pmpro_msg = __("Are you sure you want to do that? Try again.", 'paid-memberships-pro' );
 		$saveid = false;
@@ -306,7 +308,7 @@
 	}
 
 	//check nonce for deleting codes
-	if (!empty($_REQUEST['delete']) && (empty($_REQUEST['pmpro_discountcodes_nonce']) || !check_admin_referer('delete', 'pmpro_discountcodes_nonce'))) {
+	if (!empty($delete) && (empty($_REQUEST['pmpro_discountcodes_nonce']) || !check_admin_referer('delete', 'pmpro_discountcodes_nonce'))) {
 		$pmpro_msgt = 'error';
 		$pmpro_msg = __("Are you sure you want to do that? Try again.", 'paid-memberships-pro' );
 		$delete = false;
@@ -724,7 +726,7 @@
 
 			<p class="submit topborder">
 				<input name="save" type="submit" class="button button-primary" value="Save Code" />
-				<input name="cancel" type="button" class="button" value="Cancel" onclick="location.href='<?php echo get_admin_url(NULL, '/admin.php?page=pmpro-discountcodes')?>';" />
+				<input name="cancel" type="button" class="button" value="Cancel" onclick="location.href='<?php echo admin_url( '/admin.php?page=pmpro-discountcodes')?>';" />
 			</p>
 			</form>
 		</div>
@@ -886,7 +888,7 @@
 									/**
 									 * Filter the extra actions for this discount code.
 									 *
-									 * @since TBD
+									 * @since 2.6.2
 									 *
 									 * @param array  $actions The list of actions.
 									 * @param object $code    The discount code data.
@@ -960,7 +962,7 @@
 		</table>
 
 		<?php
-			$pagination_url = get_admin_url( null, "/admin.php?page=pmpro-discountcodes&s=" . $s );
+			$pagination_url = admin_url( "/admin.php?page=pmpro-discountcodes&s=" . $s );
 			echo pmpro_getPaginationString( $pn, $totalrows, $limit, 1, $pagination_url, "&limit=$limit&pn=" );
 		?>
 

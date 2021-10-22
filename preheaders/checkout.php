@@ -699,37 +699,56 @@ if ( ! empty( $pmpro_confirmed ) ) {
 
 			//save billing info ect, as user meta
 			$meta_keys   = array(
-				"pmpro_bfirstname",
-				"pmpro_blastname",
-				"pmpro_baddress1",
-				"pmpro_baddress2",
-				"pmpro_bcity",
-				"pmpro_bstate",
-				"pmpro_bzipcode",
-				"pmpro_bcountry",
-				"pmpro_bphone",
-				"pmpro_bemail",
 				"pmpro_CardType",
 				"pmpro_AccountNumber",
 				"pmpro_ExpirationMonth",
-				"pmpro_ExpirationYear"
+				"pmpro_ExpirationYear",
 			);
 			$meta_values = array(
-				$bfirstname,
-				$blastname,
-				$baddress1,
-				$baddress2,
-				$bcity,
-				$bstate,
-				$bzipcode,
-				$bcountry,
-				$bphone,
-				$bemail,
 				$CardType,
 				hideCardNumber( $AccountNumber ),
 				$ExpirationMonth,
-				$ExpirationYear
+				$ExpirationYear,
 			);
+
+			// Check if firstname and last name fields are set.
+			if ( ! empty( $bfirstname ) || ! empty( $blastname ) ) {
+				$meta_keys = array_merge( $meta_keys, array(
+					"pmpro_bfirstname",
+					"pmpro_blastname",
+				) );
+
+				$meta_values = array_merge( $meta_values, array(
+					$bfirstname,
+					$blastname,
+				) );
+			}
+
+			// Check if billing details are available, if not adjust the arrays.
+			if ( ! empty( $baddress1 ) ) {
+				$meta_keys = array_merge( $meta_keys, array(
+					"pmpro_baddress1",
+					"pmpro_baddress2",
+					"pmpro_bcity",
+					"pmpro_bstate",
+					"pmpro_bzipcode",
+					"pmpro_bcountry",
+					"pmpro_bphone",
+					"pmpro_bemail",
+				) );
+
+				$meta_values = array_merge( $meta_values, array(
+					$baddress1,
+					$baddress2,
+					$bcity,
+					$bstate,
+					$bzipcode,
+					$bcountry,
+					$bphone,
+					$bemail,
+				) );
+			}
+
 			pmpro_replaceUserMeta( $user_id, $meta_keys, $meta_values );
 
 			//save first and last name fields
@@ -803,7 +822,7 @@ if ( empty( $submit ) ) {
 	//show message if the payment gateway is not setup yet
 	if ( $pmpro_requirebilling && ! pmpro_getOption( "gateway", true ) ) {
 		if ( pmpro_isAdmin() ) {
-			$pmpro_msg = sprintf( __( 'You must <a href="%s">set up a Payment Gateway</a> before any payments will be processed.', 'paid-memberships-pro' ), get_admin_url( null, '/admin.php?page=pmpro-paymentsettings' ) );
+			$pmpro_msg = sprintf( __( 'You must <a href="%s">set up a Payment Gateway</a> before any payments will be processed.', 'paid-memberships-pro' ), admin_url( '/admin.php?page=pmpro-paymentsettings' ) );
 		} else {
 			$pmpro_msg = __( "A Payment Gateway must be set up before any payments will be processed.", 'paid-memberships-pro' );
 		}

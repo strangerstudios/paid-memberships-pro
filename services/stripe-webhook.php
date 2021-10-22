@@ -57,7 +57,7 @@
 		} elseif ( $livemode ) {
 			$secret_key = pmpro_getOption( 'live_stripe_connect_secretkey' );
 		} else {
-			$secret_key = pmpro_getOption( 'test_stripe_connect_secretkey' );
+			$secret_key = pmpro_getOption( 'sandbox_stripe_connect_secretkey' );
 		}
 		Stripe\Stripe::setApiKey( $secret_key );
 	} catch ( Exception $e ) {
@@ -299,9 +299,9 @@
 				//prep this order for the failure emails
 				$morder = new MemberOrder();
 				$morder->user_id = $user_id;
+				$morder->membership_id = $old_order->membership_id;
 				
 				$morder->billing = new stdClass();
-				
 				$morder->billing->name = $old_order->billing->name;
 				$morder->billing->street = $old_order->billing->street;
 				$morder->billing->city = $old_order->billing->city;

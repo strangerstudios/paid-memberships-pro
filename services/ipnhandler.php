@@ -30,7 +30,7 @@ $subscr_id              = pmpro_getParam( "subscr_id", "POST" );
 $txn_id                 = pmpro_getParam( "txn_id", "POST" );
 $item_name              = pmpro_getParam( "item_name", "POST" );
 $item_number            = pmpro_getParam( "item_number", "POST" );
-$initial_payment_status = pmpro_getParam( "initial_payment_status", "POST" );
+$initial_payment_status = strtolower( pmpro_getParam( "initial_payment_status", "POST" ) );
 $payment_status         = pmpro_getParam( "payment_status", "POST" );
 $payment_amount         = pmpro_getParam( "payment_amount", "POST" );
 $payment_currency       = pmpro_getParam( "payment_currency", "POST" );
@@ -263,33 +263,19 @@ if ( $txn_type == 'recurring_payment_profile_cancel' || $txn_type == 'recurring_
 			if ( PMPro_Subscription::subscription_exists_for_order( $last_subscription_order ) ) {
 				$subscription = new PMPro_Subscription( $last_subscription_order );
 			}
-			if ( $last_subscription_order->status == "cancelled" || ( ! empty( $subscription ) && $subscription->status == 'cancelled') ) {
+
+			// Check if there was an error
+			if ( $initial_payment_status === "failed" ) {
+				// The user membership should already be in status error
+				$cancelled = pmpro_cancelMembershipLevel( $last_subscription_order->membership_id, $last_subscription_order->user_id, 'error' );
+
+				// The order should already be in status error
+				$last_subscription_order->updateStatus('error');
+			} elseif ( $last_subscription_order->status == "cancelled" || ( ! empty( $subscription ) && $subscription->status == 'cancelled') ) {
 				ipnlog( "We've already processed this cancellation. Probably originated from WP/PMPro. (Order #" . $last_subscription_order->id . ", Subscription Transaction ID #" . $recurring_payment_id . ")" );
-				
-				// Still check if there was an error.
-				if ( $initial_payment_status === "Failed" ) {
-					$cancelled = pmpro_cancelMembershipLevel( $last_subscription_order->membership_id, $last_subscription_order->user_id, 'error' );
-					
-					// If we couldn't cancel, still set the order status to error.
-					if ( $cancelled === null ) {
-						$last_subscription_order->updateStatus('error');
-					}
-				}
 			} elseif ( ! pmpro_hasMembershipLevel( $last_subscription_order->membership_id, $user->ID ) ) {
 				ipnlog( "This user has a different level than the one associated with this order. Their membership was probably changed by an admin or through an upgrade/downgrade. (Order #" . $last_subscription_order->id . ", Subscription Transaction ID #" . $recurring_payment_id . ")" );
 			} else {
-				//if the initial payment failed, cancel with status error instead of cancelled
-				if ( $initial_payment_status === "Failed" ) {
-					$cancelled = pmpro_cancelMembershipLevel( $last_subscription_order->membership_id, $last_subscription_order->user_id, 'error' );
-					
-					// If we couldn't cancel, still set the order status to error.
-					if ( $cancelled === null ) {
-						$last_subscription_order->updateStatus('error');
-					}
-				} else {
-					pmpro_cancelMembershipLevel( $last_subscription_order->membership_id, $last_subscription_order->user_id, 'cancelled' );
-				}
-
 				ipnlog( "Cancelled membership for user with id = " . $last_subscription_order->user_id . ". Subscription transaction id = " . $recurring_payment_id . "." );
 
 				//send an email to the member
@@ -352,6 +338,13 @@ if ( $txn_type == "subscr_cancel" ) {
 
 		pmpro_ipnExit();
 	}
+}
+
+// Order Refunded (PayPal Express)
+if( '' === $txn_type && 'Refunded' === $payment_status ) {
+	ipnlog( 'Refund for this payment: ' . print_r( $_POST, true ) );
+
+	pmpro_ipnExit();
 }
 
 //Other
@@ -664,6 +657,7 @@ function pmpro_ipnFailedPayment( $last_order ) {
 	//create a blank order for the email
 	$morder          = new MemberOrder();
 	$morder->user_id = $last_order->user_id;
+	$morder->membership_id = $last_order->membership_id;
 
 	$user                   = new WP_User( $last_order->user_id );
 	$user->membership_level = pmpro_getMembershipLevelForUser( $user->ID );
@@ -671,6 +665,7 @@ function pmpro_ipnFailedPayment( $last_order ) {
 	//add billing information if appropriate
 	if ( $last_order->gateway == "paypal" )        //website payments pro
 	{
+		$morder->billing = new stdClass();
 		$morder->billing->name    = $_POST['address_name'];
 		$morder->billing->street  = $_POST['address_street'];
 		$morder->billing->city    = $_POST['address_city '];
