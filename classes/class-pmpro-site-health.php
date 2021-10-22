@@ -358,6 +358,14 @@ class PMPro_Site_Health {
 	 * @return string The .htaccess services/getfile.php usage information.
 	 */
 	public function get_getfile_usage() {
+		if ( ! defined( 'PMPRO_GETFILE_ENABLED' ) ) {
+			return __( 'PMPRO_GETFILE_ENABLED is not set', 'paid-memberships-pro' );
+		}
+
+		if ( ! PMPRO_GETFILE_ENABLED ) {
+			return __( 'PMPRO_GETFILE_ENABLED is off', 'paid-memberships-pro' );
+		}
+
 		require_once ABSPATH . 'wp-admin/includes/file.php';
 
 		/**
@@ -368,7 +376,7 @@ class PMPro_Site_Health {
 		WP_Filesystem();
 
 		if ( ! $wp_filesystem ) {
-			return __( 'Unable to verify', 'paid-memberships-pro' );
+			return __( 'Unable to access .htaccess file', 'paid-memberships-pro' );
 		}
 
 		if ( ! $wp_filesystem->exists( ABSPATH . '/.htaccess' ) ) {
@@ -402,7 +410,7 @@ class PMPro_Site_Health {
 		WP_Filesystem();
 
 		if ( ! $wp_filesystem ) {
-			return __( 'Unable to verify', 'paid-memberships-pro' );
+			return __( 'Unable to access .htaccess file', 'paid-memberships-pro' );
 		}
 
 		if ( ! $wp_filesystem->exists( ABSPATH . '/.htaccess' ) ) {
