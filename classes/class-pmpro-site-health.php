@@ -221,6 +221,37 @@ class PMPro_Site_Health {
 	 * @return string The custom template information.
 	 */
 	public function get_custom_templates() {
+		$parent_theme_path = get_template_directory() . '/paid-memberships-pro/';
+		$child_theme_path  = get_stylesheet_directory() . '/paid-memberships-pro/';
+
+		$parent_theme_templates = $this->get_custom_templates_from_path( $parent_theme_path );
+		$child_theme_templates  = null;
+
+		if ( $parent_theme_path !== $child_theme_path ) {
+			$child_theme_templates = $this->get_custom_templates_from_path( $child_theme_path );
+		}
+
+		if ( is_wp_error( $parent_theme_templates ) ) {
+			return $parent_theme_templates->get_error_message();
+		}
+
+		$templates = $parent_theme_templates;
+
+		if ( null !== $child_theme_templates ) {
+			if ( is_wp_error( $child_theme_templates ) ) {
+				$child_theme_templates = $child_theme_templates->get_error_message();
+			}
+
+			$templates = [
+				'parent' => $parent_theme_templates,
+				'child'  => $child_theme_templates,
+			];
+		}
+
+		return wp_json_encode( $templates, JSON_PRETTY_PRINT );
+	}
+
+	private function get_custom_templates_from_path( $path ) {
 		require_once ABSPATH . 'wp-admin/includes/file.php';
 
 		/**
@@ -231,20 +262,20 @@ class PMPro_Site_Health {
 		WP_Filesystem();
 
 		if ( ! $wp_filesystem ) {
-			return __( 'Unable to verify', 'paid-memberships-pro' );
+			return new WP_Error( 'access-denied', __( 'Unable to verify', 'paid-memberships-pro' ) );
 		}
 
 		$override_path = get_stylesheet_directory() . '/paid-memberships-pro/';
 		$override_list = false;
 
-		if ( ! $wp_filesystem->is_dir( $override_path ) ) {
-			return __( 'No template overrides', 'paid-membership-pro' );
+		if ( ! $wp_filesystem->is_dir( $path ) ) {
+			return new WP_Error( 'path-not-found', __( 'No template overrides', 'paid-membership-pro' ) );
 		}
 
-		$override_list = $wp_filesystem->dirlist( $override_path );
+		$override_list = $wp_filesystem->dirlist( $path );
 
 		if ( ! $override_list ) {
-			return __( 'Empty override folder -- no template overrides', 'paid-membership-pro' );
+			return new WP_Error( 'path-empty', __( 'Empty override folder -- no template overrides', 'paid-membership-pro' ) );
 		}
 
 		$templates = [];
@@ -258,10 +289,11 @@ class PMPro_Site_Health {
 
 			$templates[ $template ] = [
 				'last_updated' => $last_modified,
+				'path'         => str_replace( ABSPATH, '', $path ) . $template,
 			];
 		}
 
-		return wp_json_encode( $templates, JSON_PRETTY_PRINT );
+		return $templates;
 	}
 
 	/**
