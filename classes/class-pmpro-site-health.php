@@ -61,33 +61,41 @@ class PMPro_Site_Health {
 			'label'       => 'Paid Memberships Pro',
 			'description' => __( 'This debug information for your Paid Memberships Pro installation can assist you in getting support.', 'paid-memberships-pro' ),
 			'fields'      => [
-				'pmpro-cron-jobs'         => [
-					'label' => __( 'Cron Job Status', 'paid-membership-levels' ),
+				'pmpro-cron-jobs'            => [
+					'label' => __( 'Cron Job Status', 'paid-memberships-pro' ),
 					'value' => self::get_cron_jobs(),
 				],
-				'pmpro-gateway'           => [
-					'label' => __( 'Payment Gateway', 'paid-membership-levels' ),
+				'pmpro-gateway'              => [
+					'label' => __( 'Payment Gateway', 'paid-memberships-pro' ),
 					'value' => self::get_gateway(),
 				],
-				'pmpro-gateway-env'       => [
-					'label' => __( 'Payment Gateway Environment', 'paid-membership-levels' ),
+				'pmpro-gateway-env'          => [
+					'label' => __( 'Payment Gateway Environment', 'paid-memberships-pro' ),
 					'value' => self::get_gateway_env(),
 				],
-				'pmpro-orders'            => [
-					'label' => __( 'Orders', 'paid-membership-levels' ),
+				'pmpro-orders'               => [
+					'label' => __( 'Orders', 'paid-memberships-pro' ),
 					'value' => self::get_orders(),
 				],
-				'pmpro-discount-codes'    => [
-					'label' => __( 'Discount Codes', 'paid-membership-levels' ),
+				'pmpro-discount-codes'       => [
+					'label' => __( 'Discount Codes', 'paid-memberships-pro' ),
 					'value' => self::get_discount_codes(),
 				],
-				'pmpro-membership-levels' => [
-					'label' => __( 'Membership Levels', 'paid-membership-levels' ),
+				'pmpro-membership-levels'    => [
+					'label' => __( 'Membership Levels', 'paid-memberships-pro' ),
 					'value' => self::get_levels(),
 				],
-				'pmpro-custom-templates'  => [
-					'label' => __( 'Custom Templates', 'paid-membership-levels' ),
+				'pmpro-custom-templates'     => [
+					'label' => __( 'Custom Templates', 'paid-memberships-pro' ),
 					'value' => self::get_custom_templates(),
+				],
+				'pmpro-getfile-usage'        => [
+					'label' => __( 'getfile.php Usage', 'paid-memberships-pro' ),
+					'value' => self::get_getfile_usage(),
+				],
+				'pmpro-htaccess-cache-usage' => [
+					'label' => __( '.htaccess Cache Usage', 'paid-memberships-pro' ),
+					'value' => self::get_htaccess_cache_usage(),
 				],
 			],
 		];
@@ -308,6 +316,76 @@ class PMPro_Site_Health {
 		}
 
 		return implode( " | \n", $cron_information );
+	}
+
+	/**
+	 * Get the .htaccess services/getfile.php usage information.
+	 *
+	 * @since TBD
+	 *
+	 * @return string The .htaccess services/getfile.php usage information.
+	 */
+	public function get_getfile_usage() {
+		require_once ABSPATH . 'wp-admin/includes/file.php';
+
+		/**
+		 * @var $wp_filesystem WP_Filesystem_Base
+		 */
+		global $wp_filesystem;
+
+		WP_Filesystem();
+
+		if ( ! $wp_filesystem ) {
+			return __( 'Unable to verify', 'paid-memberships-pro' );
+		}
+
+		if ( ! $wp_filesystem->exists( ABSPATH . '/.htaccess' ) ) {
+			return __( 'Off - No .htaccess file', 'paid-memberships-pro' );
+		}
+
+		$htaccess_contents = $wp_filesystem->get_contents( ABSPATH . '/.htaccess' );
+
+		if ( false === strpos( $htaccess_contents, '/services/getfile.php' ) ) {
+			return __( 'Off', 'paid-memberships-pro' );
+		}
+
+		return __( 'On - .htaccess contains services/getfile.php usage', 'paid-memberships-pro' );
+	}
+
+	/**
+	 * Get the .htaccess cache usage information.
+	 *
+	 * @since TBD
+	 *
+	 * @return string The .htaccess cache usage information.
+	 */
+	public function get_htaccess_cache_usage() {
+		require_once ABSPATH . 'wp-admin/includes/file.php';
+
+		/**
+		 * @var $wp_filesystem WP_Filesystem_Base
+		 */
+		global $wp_filesystem;
+
+		WP_Filesystem();
+
+		if ( ! $wp_filesystem ) {
+			return __( 'Unable to verify', 'paid-memberships-pro' );
+		}
+
+		if ( ! $wp_filesystem->exists( ABSPATH . '/.htaccess' ) ) {
+			return __( 'Off - No .htaccess file', 'paid-memberships-pro' );
+		}
+
+		$htaccess_contents = $wp_filesystem->get_contents( ABSPATH . '/.htaccess' );
+
+		if ( false !== strpos( $htaccess_contents, 'ExpiresByType text/html' ) ) {
+			return __( 'On - Browser cache enabled for HTML (ExpiresByType text/html), this may interfere with Content Restriction after Login. Remove that line from your .htaccess to resolve this problem.', 'paid-memberships-pro' );
+		} elseif ( false !== strpos( $htaccess_contents, 'ExpiresDefault' ) ) {
+			return __( 'On - Browser cache enabled for HTML (ExpiresDefault), this may interfere with Content Restriction after Login. Remove that line from your .htaccess to resolve this problem.', 'paid-memberships-pro' );
+		}
+
+		return __( 'Off', 'paid-memberships-pro' );
 	}
 
 }
