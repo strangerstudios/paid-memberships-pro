@@ -9,6 +9,7 @@ modules:
     - WPWebDriver #browse
     - WPDb #manipulate the database and look up stuff
     - WPFilesystem #manipulate the WP filesystem, scaffold themes and plugins
+    - MailCatcher #emulate email sending
     - Asserts #PHPUnit-like assertions
   config:
     WPWebDriver:
@@ -32,6 +33,8 @@ modules:
             - "--user-agent=tribe-tester"
             - "--high-dpi-support=1.0"
             - "--force-device-scale-factor=1.0"
+            - "--no-sandbox"
+            - "--disable-dev-shm-usage"
     WPDb:
       dsn: 'mysql:host=%WP_DB_HOST%;dbname=%WP_DB_NAME%'
       user: %WP_DB_USER%
@@ -49,3 +52,6 @@ modules:
       plugins: '/wp-content/plugins'
       mu-plugins: '/wp-content/mu-plugins'
       uploads: '/wp-content/uploads'
+    MailCatcher:
+      url: 'http://127.0.0.1'
+      port: '1080'
