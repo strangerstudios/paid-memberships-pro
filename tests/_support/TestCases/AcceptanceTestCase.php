@@ -2,6 +2,7 @@
 
 namespace PMPro\Test_Support\TestCases;
 
+use AcceptanceTester;
 use PMPro\Test_Support\Factories\PMPro_LevelFactory;
 
 /**
