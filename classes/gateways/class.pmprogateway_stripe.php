@@ -857,7 +857,7 @@ class PMProGateway_stripe extends PMProGateway {
 		if ( ! empty( $customer ) ) {
 			// Get the link to edit the customer.
 			echo '<hr>';
-			echo '<a target="_blank" href="https://dashboard.stripe.com/' . ( pmpro_getOption( 'gateway_environment' ) == 'sandbox' ? 'test/' : '' ) . 'customers/' . esc_attr( $customer->id ) . '">' . esc_html__( 'Edit customer in Stripe', 'paid-memberships-pro' ) . '</a>';
+			echo '<a target="_blank" href="' . esc_url( 'https://dashboard.stripe.com/' . ( pmpro_getOption( 'gateway_environment' ) == 'sandbox' ? 'test/' : '' ) . 'customers/' . $customer->id ) . '">' . esc_html__( 'Edit customer in Stripe', 'paid-memberships-pro' ) . '</a>';
 			if ( ! empty( $user->pmpro_stripe_updates ) && is_array( $user->pmpro_stripe_updates ) ) {
 				$stripe->user_profile_fields_subscription_updates( $user, $customer );
 			}
