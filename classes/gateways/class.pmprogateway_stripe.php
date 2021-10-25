@@ -2249,15 +2249,15 @@ class PMProGateway_stripe extends PMProGateway {
 							</span>
                             </div>
 							<script>
-							jQuery(document).ready(function () {
+							jQuery(function () {
 								//remove updates when clicking
-								jQuery('.updates_remove').click(function () {
+								jQuery('.updates_remove').on('click', function () {
 									jQuery(this).parent().parent().remove();
 								});
-								jQuery('form').bind('submit', function () {
+								jQuery('form').on('submit', function () {
 									// Makes sure that disabled select fields are still submitted.
 									jQuery(this).find(':input').prop('disabled', false);
-									});
+								});
 							});
 							</script>
 							<?php
