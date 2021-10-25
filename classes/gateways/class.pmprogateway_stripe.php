@@ -3886,7 +3886,7 @@ class PMProGateway_stripe extends PMProGateway {
 		$amount_tax = $order->getTaxForPrice( $amount );
 		$amount     = pmpro_round_price( (float) $amount + (float) $amount_tax );
 
-		$trial_period_days = calculate_trial_period_days( $order );
+		$trial_period_days = $this->calculate_trial_period_days( $order );
 
 		// Save $trial_period_days to order for now too.
 		$order->TrialPeriodDays = $trial_period_days;
