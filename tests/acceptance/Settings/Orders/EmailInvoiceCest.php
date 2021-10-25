@@ -3,11 +3,12 @@
 namespace PMPro\Tests\Settings\Orders;
 
 use AcceptanceTester;
+use PMPro\Test_Support\TestCases\AcceptanceTestCase;
 
 /**
  * @group pmpro-email
  */
-class EmailInvoiceCest {
+class EmailInvoiceCest extends AcceptanceTestCase {
 
 	public function _before( AcceptanceTester $I ) {
 		$I->haveOptionInDatabase( 'active_plugins', [ 'paid-memberships-pro/paid-memberships-pro.php' ] );
@@ -192,8 +193,8 @@ class EmailInvoiceCest {
 	 * @param AcceptanceTester $I The tester instance.
 	 */
 	public function should_allow_emailing_invoice( AcceptanceTester $I ) {
-		$user_id  = $this->factory()->user->create();
-		$level_id = $this->factory()->pmpro_level->create();
+		$user_id  = $I->factory()->user->create();
+		$level_id = $I->factory()->pmpro_level->create();
 
 		$test_user = get_userdata( $user_id );
 
