@@ -7,7 +7,7 @@ use PMPro\Test_Support\Factories\PMPro_LevelFactory;
 /**
  * Class AcceptanceTestCase
  */
-class AcceptanceTestCase extends WPTestCase {
+class AcceptanceTestCase {
 
 	/**
 	 *
