@@ -211,44 +211,6 @@
 			return array();
 		}
 
-		function get_next_payment_date( &$subscription ) {
-			global $wpdb;
-
-			// 1. Get date of most recent order for this subscription
-			$morder = $subscription->get_last_order();
-			if ( ! is_a( $morder, 'MemberOrder' ) || empty( $morder->timestamp ) ) {
-				// No valid order found.
-				return '0000-00-00 00:00:00';
-			}
-
-			// 2. Get the MU data if available, if not get level_id from order and assume default settings.
-			if ( ! empty( $subscription->mu_id ) ) {
-				$level = $wpdb->get_row( "SELECT * FROM $wpdb->pmpro_memberships_users WHERE id = '$subscription->mu_id'" );
-			} else {
-				$level = new PMPro_Membership_Level( $morder->membership_id );
-			}
-			if ( empty( $level->cycle_number ) || empty( $level->cycle_period ) ) {
-				// Level not recurring.
-				return '0000-00-00 00:00:00';
-			}
-
-			// 3. Calculate next payment date
-			$r = strtotime( '+' . $level->cycle_number . ' ' . $level->cycle_period, $morder->timestamp );
-
-			/**
-			 * Filter the next payment date.
-			 * Should not be done for other gateways.
-			 *
-			 * @since 1.8.5
-			 *
-			 * @param mixed $r false or the next payment date timestamp
-			 * @param int $user_id The user id to get the next payment date for
-			 * @param string $order_status Status or array of statuses to find the last order based on.
-			 */
-			$r = apply_filters( 'pmpro_next_payment', $r, $morder->user_id, $morder->status );
-			return get_gmt_from_date( date( 'Y-m-d H:i:s', $r ) );
-		}
-
 		function getTransactionStatus(&$order)
 		{			
 			//this looks different for each gateway, but generally an array of some sort

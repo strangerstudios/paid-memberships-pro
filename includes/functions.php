@@ -699,7 +699,7 @@ function pmpro_next_payment( $user_id = null, $order_status = 'success', $format
 		return false;
 	} else {
 		$subscription = new PMPro_Subscription();
-		$subscription->get_subscription_by_user( $user_id );
+		$subscription->get_subscriptions_for_user( $user_id );
 		return $subscription->get_next_payment_date( $format );
 	}
 }
