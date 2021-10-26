@@ -512,6 +512,7 @@ function pmpro_db_delta()
 			KEY `modified` (`modified`)
 		);
 	";
+	dbDelta($sqlQuery);
 
 	//pmpro_membership_ordermeta
 	$sqlQuery = "

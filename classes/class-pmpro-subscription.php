@@ -225,6 +225,7 @@ class PMPro_Subscription {
 	 */
 	function get_next_payment_date( $format = 'timestamp', $local_time = true ) {
 		return $this->format_subscription_date( $this->next_payment_date, $format, $local_time );
+
 	}
 
 	/**
@@ -288,6 +289,7 @@ class PMPro_Subscription {
 			return null;
 		}
 	}
+
 
 	function save() {
 		global $wpdb;

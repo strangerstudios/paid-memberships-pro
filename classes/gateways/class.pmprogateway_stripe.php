@@ -2812,6 +2812,36 @@ class PMProGateway_stripe extends PMProGateway {
 		return $timestamp;
 	}
 
+	function get_next_payment_date( &$subscription ) {
+		// Get most recent order for this subscription.
+		$morder = $subscription->get_last_order();
+		if ( ! is_a( $morder, 'MemberOrder' ) || empty( $morder->timestamp ) ) {
+			// No valid order found.
+			return '0000-00-00 00:00:00';
+		}
+	
+		//check if this is a Stripe order with a subscription transaction id
+		if ( ! empty( $morder->id ) && ! empty( $morder->subscription_transaction_id ) && $morder->gateway == "stripe" ) {
+			//get the subscription and return the current_period end or false
+			$stripe_subscription = $morder->Gateway->getSubscription( $morder );
+
+			if ( ! empty( $stripe_subscription ) ) {
+				$customer = $morder->Gateway->getCustomer();
+				if ( ! $customer->delinquent && ! empty ( $stripe_subscription->current_period_end ) ) {
+					$timestamp = $stripe_subscription->current_period_end;
+				} elseif ( $customer->delinquent && ! empty( $stripe_subscription->current_period_start ) ) {
+					$timestamp = $stripe_subscription->current_period_start;
+				}
+			}
+		}
+
+		if ( empty( $timestamp ) ) {
+			return '0000-00-00 00:00:00';
+		} else {
+			return date( 'Y-m-d H:i:s', $timestamp );
+		}
+	}
+
 	/**
 	 * Refund a payment or invoice
 	 *
