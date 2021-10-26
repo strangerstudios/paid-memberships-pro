@@ -134,15 +134,12 @@
 				$this->gateway_environment = $dbobj->gateway_environment;
 				$this->payment_transaction_id = $dbobj->payment_transaction_id;
 				$this->subscription_transaction_id = $dbobj->subscription_transaction_id;
-				$this->timestamp = $dbobj->timestamp;
+				$this->timestamp = strtotime( $dbobj->timestamp );
 				$this->affiliate_id = $dbobj->affiliate_id;
 				$this->affiliate_subid = $dbobj->affiliate_subid;
 
 				$this->notes = $dbobj->notes;
 				$this->checkout_id = $dbobj->checkout_id;
-
-				// Fix the timestamp for local time
-				$this->timestamp = strtotime( get_date_from_gmt( $this->timestamp, 'Y-m-d H:i:s' ) );
 
 				//reset the gateway
 				if(empty($this->nogateway))
@@ -152,6 +149,68 @@
 			}
 			else
 				return false;	//didn't find it in the DB
+		}
+
+		/**
+		 * Get the first order for this subscription.
+		 * Useful to find the original order from a recurring order.
+		 * @since 2.5
+		 * @return mixed Order object if found or false if not.
+		 */
+		function get_original_subscription_order( $subscription_id = '' ){
+			global $wpdb;
+			
+			// Default to use the subscription ID on this order object.
+			if ( empty( $subscription_id ) && ! empty( $this->subscription_transaction_id ) ) {
+				$subscription_id = $this->subscription_transaction_id;
+			}
+			
+			// Must have a subscription ID.
+			if ( empty( $subscription_id ) ) {
+				return false;
+			}
+			
+			// Get some other values from this order to narrow the search.
+			if ( ! empty( $this->user_id ) ) {
+				$user_id = $this->user_id;
+			} else {
+				$user_id = '';
+			}
+			if ( ! empty( $this->gateway ) ) {
+				$gateway = $this->gateway;
+			} else {
+				$gateway = '';
+			}
+			if ( ! empty( $this->gateway_environment ) ) {
+				$gateway_environment = $this->gateway_environment;
+			} else {
+				$gateway_environment = '';
+			}
+			
+			// Double check for a user_id, gateway and gateway environment.
+			$sql = $wpdb->prepare(
+				"SELECT ID
+				 FROM $wpdb->pmpro_membership_orders
+				 WHERE `subscription_transaction_id` = %s
+				   AND `user_id` = %d
+				   AND `gateway` = %s
+				   AND `gateway_environment` = %s
+				 ORDER BY id ASC
+				 LIMIT 1",
+				 array(
+					 $subscription_id,
+					 $user_id,
+					 $gateway,
+					 $gateway_environment
+				 )
+			 );
+			
+			$order_id = $wpdb->get_var( $sql );
+			if ( ! empty( $order_id ) ) {
+				return new MemberOrder( $order_id );
+			} else {
+				return false;
+			}
 		}
 
 		/**
@@ -398,7 +457,7 @@
 			//check if there is an entry in memberships_users first
 			if(!empty($this->user_id))
 			{
-				$this->membership_level = $wpdb->get_row("SELECT l.id as level_id, l.name, l.description, l.allow_signups, l.expiration_number, l.expiration_period, mu.*, UNIX_TIMESTAMP(mu.startdate) as startdate, UNIX_TIMESTAMP(mu.enddate) as enddate, l.name, l.description, l.allow_signups FROM $wpdb->pmpro_membership_levels l LEFT JOIN $wpdb->pmpro_memberships_users mu ON l.id = mu.membership_id WHERE mu.status = 'active' AND l.id = '" . $this->membership_id . "' AND mu.user_id = '" . $this->user_id . "' LIMIT 1");
+				$this->membership_level = $wpdb->get_row("SELECT l.id as level_id, l.name, l.description, l.allow_signups, l.expiration_number, l.expiration_period, mu.*, UNIX_TIMESTAMP(CONVERT_TZ(mu.startdate, '+00:00', @@global.time_zone)) as startdate, UNIX_TIMESTAMP(CONVERT_TZ(mu.enddate, '+00:00', @@global.time_zone)) as enddate, l.name, l.description, l.allow_signups FROM $wpdb->pmpro_membership_levels l LEFT JOIN $wpdb->pmpro_memberships_users mu ON l.id = mu.membership_id WHERE mu.status = 'active' AND l.id = '" . $this->membership_id . "' AND mu.user_id = '" . $this->user_id . "' LIMIT 1");
 
 				//fix the membership level id
 				if(!empty($this->membership_level->level_id))
@@ -497,6 +556,8 @@
 
 			//set values array for filter
 			$values = array("price" => $price, "tax_state" => $tax_state, "tax_rate" => $tax_rate);
+			if(!empty($this->billing->street))
+				$values['billing_street'] = $this->billing->street;
 			if(!empty($this->billing->state))
 				$values['billing_state'] = $this->billing->state;
 			if(!empty($this->billing->city))
@@ -526,9 +587,23 @@
 		}
 
 		/**
+		 * Get the timestamp for this order.
+		 *
+		 * @param bool $gmt whether to return GMT time or local timestamp.
+		 * @return int timestamp.
+		 */
+		function getTimestamp( $gmt = false ) {
+			return $gmt ? $this->timestamp : strtotime( get_date_from_gmt( date( 'Y-m-d H:i:s', $this->timestamp ) ) );
+		}
+
+		/**
 		 * Change the timestamp of an order by passing in year, month, day, time.
 		 *
 		 * $time should be adjusted for local timezone.
+		 *
+		 * NOTE: This function should no longer be used. Instead, set the timestamp
+		 * for the order directly and call the MemberOrder->saveOrder() function.
+		 * This function is no longer used on the /adminpages/orders.php page.
 		 */
 		function updateTimestamp($year, $month, $day, $time = NULL)
 		{
@@ -545,10 +620,15 @@
 			global $wpdb;
 			$this->sqlQuery = "UPDATE $wpdb->pmpro_membership_orders SET timestamp = '" . $date . "' WHERE id = '" . $this->id . "' LIMIT 1";
 
-			if($wpdb->query($this->sqlQuery) !== "false")
+			do_action('pmpro_update_order', $this);
+			if($wpdb->query($this->sqlQuery) !== "false") {
+				$this->timestamp = strtotime( $date );
+				do_action('pmpro_updated_order', $this);
+				
 				return $this->getMemberOrderByID($this->id);
-			else
+			} else {
 				return false;
+			}
 		}
 
 		/**
@@ -583,10 +663,12 @@
 			//calculate total
 			if(!empty($this->total))
 				$total = $this->total;
-			else {
+			elseif ( ! isset( $this->total ) || $this->total === '' ) {
 				$total = (float)$amount + (float)$tax;
 				$this->total = $total;
-			}			
+			} else {
+				$total = 0;
+			}
 			
 			//these fix some warnings/notices
 			if(empty($this->billing))
@@ -765,22 +847,24 @@
 		/**
 		 * Get a random code to use as the order code.
 		 */
-		function getRandomCode()
-		{
+		function getRandomCode() {
 			global $wpdb;
 
-			while(empty($code))
-			{
+			// We mix this with the seed to make sure we get unique codes.
+			static $count = 0;
+			$count++;
 
-				$scramble = md5(AUTH_KEY . current_time('timestamp') . SECURE_AUTH_KEY);
-				$code = substr($scramble, 0, 10);
-				$code = apply_filters("pmpro_random_code", $code, $this);	//filter
-				$check = $wpdb->get_var("SELECT id FROM $wpdb->pmpro_membership_orders WHERE code = '$code' LIMIT 1");
-				if($check || is_numeric($code))
+			while( empty( $code ) ) {
+				$scramble = md5( AUTH_KEY . microtime() . SECURE_AUTH_KEY . $count );
+				$code = substr( $scramble, 0, 10 );
+				$code = apply_filters( 'pmpro_random_code', $code, $this );	//filter
+				$check = $wpdb->get_var( "SELECT id FROM $wpdb->pmpro_membership_orders WHERE code = '$code' LIMIT 1" );
+				if( $check || is_numeric( $code ) ) {
 					$code = NULL;
+				}
 			}
 
-			return strtoupper($code);
+			return strtoupper( $code );
 		}
 
 		/**
@@ -807,10 +891,16 @@
 
 			$this->status = $newstatus;
 			$this->sqlQuery = "UPDATE $wpdb->pmpro_membership_orders SET status = '" . esc_sql($newstatus) . "' WHERE id = '" . $this->id . "' LIMIT 1";
-			if($wpdb->query($this->sqlQuery) !== false)
+			
+			do_action('pmpro_update_order', $this);
+			if($wpdb->query($this->sqlQuery) !== false){
+				$this->status = $newstatus;
+				do_action('pmpro_updated_order', $this);
+				
 				return true;
-			else
+			}else{
 				return false;
+			}
 		}
 
 		/**
@@ -885,6 +975,10 @@
 		 * @since  1.9.5
 		 */
 		function get_tos_consent_log_entry() {
+			if ( empty( $this->id ) ) {
+				return false;
+			}
+			
 			$consent_log = pmpro_get_consent_log( $this->user_id );
 			foreach( $consent_log as $entry ) {
 				if( $entry['order_id'] == $this->id ) {
@@ -893,6 +987,58 @@
 			}
 
 			return false;
+		}
+
+		/**
+		 * Sets the billing address fields on the order object.
+		 * Checks the last order for the same sub or pulls from user meta.
+		 * @since 2.5.5
+		 */
+		function find_billing_address() {
+			global $wpdb;
+
+			if ( empty( $this->billing ) || empty( $this->billing->street ) ) {
+				// We do not already have a billing address.
+				$last_subscription_order = new MemberOrder();
+				$last_subscription_order->getLastMemberOrderBySubscriptionTransactionID( $this->subscription_transaction_id );
+				if ( ! empty( $last_subscription_order->billing ) && ! empty( $last_subscription_order->billing->street ) ) {
+					// Last order in subscription has biling information. Pull data from there. 
+					$this->Address1    = $last_subscription_order->billing->street;
+					$this->City        = $last_subscription_order->billing->city;
+					$this->State       = $last_subscription_order->billing->state;
+					$this->Zip         = $last_subscription_order->billing->zip;
+					$this->CountryCode = $last_subscription_order->billing->country;
+					$this->PhoneNumber = $last_subscription_order->billing->phone;
+					$this->Email       = $wpdb->get_var("SELECT user_email FROM $wpdb->users WHERE ID = '" . $this->user_id . "' LIMIT 1");
+
+					$this->billing          = new stdClass();
+					$this->billing->name    = $last_subscription_order->billing->name;
+					$this->billing->street  = $last_subscription_order->billing->street;
+					$this->billing->city    = $last_subscription_order->billing->city;
+					$this->billing->state   = $last_subscription_order->billing->state;
+					$this->billing->zip     = $last_subscription_order->billing->zip;
+					$this->billing->country = $last_subscription_order->billing->country;
+					$this->billing->phone   = $last_subscription_order->billing->phone;
+				} else {
+					// Last order did not have billing information. Try to pull from usermeta.
+					$this->Address1    = get_user_meta( $this->user_id, "pmpro_baddress1", true );
+					$this->City        = get_user_meta( $this->user_id, "pmpro_bcity", true );
+					$this->State       = get_user_meta( $this->user_id, "pmpro_bstate", true );
+					$this->Zip         = get_user_meta( $this->user_id, "pmpro_bzip", true );
+					$this->CountryCode = get_user_meta( $this->user_id, "pmpro_bcountry", true );
+					$this->PhoneNumber = get_user_meta( $this->user_id, "pmpro_bphone", true );
+					$this->Email       = $wpdb->get_var("SELECT user_email FROM $wpdb->users WHERE ID = '" . $this->user_id . "' LIMIT 1");
+
+					$this->billing          = new stdClass();
+					$this->billing->name    = get_user_meta( $this->user_id, "pmpro_bfirstname", true ) . " " . get_user_meta( $this->user_id, "pmpro_blastname", true ) ;
+					$this->billing->street  = $this->Address1;
+					$this->billing->city    = $this->City;
+					$this->billing->state   = $this->State;
+					$this->billing->zip     = $this->Zip;
+					$this->billing->country = $this->CountryCode;
+					$this->billing->phone   = $this->PhoneNumber;
+				}
+			}
 		}
 
 		/**
@@ -913,4 +1059,46 @@
 			else
 				return false;
 		}
-	}
+
+		/*
+		* Generates a test order on the fly for orders.
+		*/
+		function get_test_order() {
+			global $current_user;
+
+			//$test_order = $this->getEmptyMemberOrder();
+			$all_levels = pmpro_getAllLevels();
+			
+			if ( ! empty( $all_levels ) ) {
+				$first_level                = array_shift( $all_levels );
+				$this->membership_id  = $first_level->id;
+				$this->InitialPayment = $first_level->initial_payment;
+			} else {
+				$this->membership_id  = 1;
+				$this->InitialPayment = 1;
+			}
+			$this->user_id             = $current_user->ID;
+			$this->cardtype            = "Visa";
+			$this->accountnumber       = "4111111111111111";
+			$this->expirationmonth     = date( 'm', current_time( 'timestamp' ) );
+			$this->expirationyear      = ( intval( date( 'Y', current_time( 'timestamp' ) ) ) + 1 );
+			$this->ExpirationDate      = $this->expirationmonth . $this->expirationyear;
+			$this->CVV2                = '123';
+			$this->FirstName           = 'Jane';
+			$this->LastName            = 'Doe';
+			$this->Address1            = '123 Street';
+			$this->billing             = new stdClass();
+			$this->billing->name       = 'Jane Doe';
+			$this->billing->street     = '123 Street';
+			$this->billing->city       = 'City';
+			$this->billing->state      = 'ST';
+			$this->billing->country    = 'US';
+			$this->billing->zip        = '12345';
+			$this->billing->phone      = '5558675309';
+			$this->gateway_environment = 'sandbox';
+			$this->timestamp		   = time();
+			$this->notes               = __( 'This is a test order used with the PMPro Email Templates addon.', 'paid-memberships-pro' );
+
+			return apply_filters( 'pmpro_test_order_data', $this );
+		}
+	} // End of Class

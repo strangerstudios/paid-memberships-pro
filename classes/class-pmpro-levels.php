@@ -134,7 +134,7 @@ class PMPro_Membership_Level{
 
         do_action( $before_action, $this );
 
-        $wpdb->replace(
+        pmpro_insert_or_replace(
 			$wpdb->pmpro_membership_levels,
 			array(
 				'id'=> $this->id,

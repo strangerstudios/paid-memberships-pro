@@ -123,7 +123,7 @@ class PMProGateway_authorizenet extends PMProGateway
 			<label for="transactionkey"><?php _e('Transaction Key', 'paid-memberships-pro' );?>:</label>
 		</th>
 		<td>
-			<input type="text" id="transactionkey" name="transactionkey" value="<?php echo esc_attr($values['transactionkey'])?>" class="regular-text code" />
+			<input type="text" id="transactionkey" name="transactionkey" value="<?php echo esc_attr($values['transactionkey'])?>" autocomplete="off" class="regular-text code pmpro-admin-secure-key" />
 		</td>
 	</tr>
 	<tr class="gateway gateway_authorizenet" <?php if($gateway != "authorizenet") { ?>style="display: none;"<?php } ?>>

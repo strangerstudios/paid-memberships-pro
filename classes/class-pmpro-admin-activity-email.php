@@ -79,8 +79,10 @@ class PMPro_Admin_Activity_Email extends PMProEmail {
 					?>
 					<tr>
 						<td valign="top" style="background:#FFFFFF;font-family:Helvetica,Arial,sans-serif;font-size:16px;line-height:25px;color:#222222;padding:30px;text-align:center;">
-							<h2 style="color:#2997c8;font-size:30px;margin:0px 0px 20px 0px;padding:0px;"><?php get_bloginfo( 'name' ); ?></h2>
-							<p style="font-size:20px;line-height:30px;margin:0px;padding:0px;"><?php printf( __( "Here's a summary of what happened in your Paid Memberships Pro site %s.", 'paid-memberships-pro' ), esc_html( $term ) ); ?></p>
+							<p style="font-size:20px;line-height:30px;margin:0px;padding:0px;">
+								<a href="<?php echo site_url(); ?>" target="_blank" style="color:#2997c8;font-weight:bold;">[<?php echo get_bloginfo( 'name' ); ?>]</a><br />
+								<?php printf( __( "Here's a summary of what happened in your Paid Memberships Pro site %s.", 'paid-memberships-pro' ), esc_html( $term ) ); ?>
+							</p>
 						</td>
 					</tr>
 					<tr>
@@ -99,7 +101,7 @@ class PMPro_Admin_Activity_Email extends PMProEmail {
 							if ( $revenue > 0 ) {
 								?>
 								<h3 style="color:#2997c8;font-size:20px;line-height:30px;margin:0px 0px 15px 0px;padding:0px;"><?php esc_html_e( 'Sales and Revenue', 'paid-memberships-pro' ); ?></h3>
-								<p style="margin:0px 0px 15px 0px;padding:0px;"><?php printf( __( 'Your membership site made <strong>%1$s</strong> in revenue %2$s.', 'paid-memberships-pro' ), esc_html( pmpro_formatPrice( $revenue ) ), esc_html( $term ) ); ?></p>
+								<p style="margin:0px 0px 15px 0px;padding:0px;"><?php printf( __( 'Your membership site made <strong>%1$s</strong> in revenue %2$s.', 'paid-memberships-pro' ), pmpro_escape_price( pmpro_formatPrice( $revenue ) ), esc_html( $term ) ); ?></p>
 							<?php } else { ?>
 								<h3 style="color:#2997c8;font-size:20px;line-height:30px;margin:0px 0px 15px 0px;padding:0px;"><?php esc_html_e( 'Signups and Cancellations', 'paid-memberships-pro' ); ?></h3>
 							<?php } ?>
@@ -240,7 +242,7 @@ class PMPro_Admin_Activity_Email extends PMProEmail {
 							<table align="center" border="0" cellpadding="0" cellspacing="0" width="100%" style="border:0;background-color:#F1F1F1;text-align:center;font-family:Helvetica,Arial,sans-serif;font-size:16px;line-height:25px;color:#222222;">
 								<tr>
 									<?php
-									// Get addon statistics.
+									// Get Add On statistics.
 									$free_addons   = 0;
 									$plus_addons   = 0;
 									$update_addons = 0;
@@ -354,7 +356,7 @@ class PMPro_Admin_Activity_Email extends PMProEmail {
 										<p style="margin:0px 0px 15px 0px;padding:0px;"><a style="color:#2997c8;" href="https://www.paidmembershipspro.com/support/" target="_blank"><?php esc_html_e( 'Get Support', 'paid-memberships-pro' ); ?></a></p>
 										<p style="margin:0px 0px 15px 0px;padding:0px;"><a style="color:#2997c8;" href="https://twitter.com/pmproplugin" target="_blank"><?php esc_html_e( 'Follow @pmproplugin on Twitter', 'paid-memberships-pro' ); ?></a></p>
 										<p style="margin:0px 0px 15px 0px;padding:0px;"><a style="color:#2997c8;" href="https://www.facebook.com/PaidMembershipsPro/" target="_blank"><?php esc_html_e( 'Like us on Facebook', 'paid-memberships-pro' ); ?></p></p>
-										<p style="margin:0px;padding:0px;"><a style="color:#2997c8;" href="https://www.youtube.com/user/strangerstudiostv" target="_blank"><?php esc_html_e( 'Subscribe to our YouTube Channel', 'paid-memberships-pro' ); ?></a></p>
+										<p style="margin:0px;padding:0px;"><a style="color:#2997c8;" href="https://www.youtube.com/user/strangerstudiostv?sub_confirmation=1" target="_blank"><?php esc_html_e( 'Subscribe to our YouTube Channel', 'paid-memberships-pro' ); ?></a></p>
 									</td>
 								</tr>
 							</table>

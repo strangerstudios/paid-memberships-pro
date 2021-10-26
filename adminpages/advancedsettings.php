@@ -355,7 +355,16 @@ if ( function_exists( 'pmpro_displayAds' ) && pmpro_displayAds() ) {
 						<label for="hideadslevels"><?php _e('Choose Levels to Hide Ads From', 'paid-memberships-pro' );?>:</label>
 					</th>
 					<td>
-						<div class="checkbox_box" <?php if(count($levels) > 5) { ?>style="height: 100px; overflow: auto;"<?php } ?>>
+						<?php
+							// Build the selectors for the checkbox list based on number of levels.
+							$classes = array();
+							$classes[] = "pmpro_checkbox_box";
+							if ( count( $levels ) > 5 ) {
+								$classes[] = "pmpro_scrollable";
+							}
+							$class = implode( ' ', array_unique( $classes ) );
+						?>
+						<div class="<?php echo esc_attr( $class ); ?>">
 							<?php
 								$hideadslevels = pmpro_getOption("hideadslevels");
 								if(!is_array($hideadslevels))
@@ -363,24 +372,18 @@ if ( function_exists( 'pmpro_displayAds' ) && pmpro_displayAds() ) {
 
 								$sqlQuery = "SELECT * FROM $wpdb->pmpro_membership_levels ";
 								$levels = $wpdb->get_results($sqlQuery, OBJECT);
+								$levels = pmpro_sort_levels_by_order( $levels );
 								foreach($levels as $level)
 								{
 							?>
-								<div class="clickable"><input type="checkbox" id="hideadslevels_<?php echo $level->id?>" name="hideadslevels[]" value="<?php echo $level->id?>" <?php if(in_array($level->id, $hideadslevels)) { ?>checked="checked"<?php } ?>> <?php echo $level->name?></div>
+								<div class="pmpro_clickable">
+									<input type="checkbox" id="hideadslevels_<?php echo esc_attr( $level->id ); ?>" name="hideadslevels[]" value="<?php echo esc_attr( $level->id); ?>" <?php checked( in_array( $level->id, $hideadslevels ), true ); ?>>
+									<label for="hideadslevels_<?php echo esc_attr( $level->id ); ?>"><?php echo esc_html( $level->name ); ?></label>
+								</div>
 							<?php
 								}
 							?>
 						</div>
-						<script>
-							jQuery('.checkbox_box input').click(function(event) {
-								event.stopPropagation()
-							});
-
-							jQuery('.checkbox_box div.clickable').click(function() {
-								var checkbox = jQuery(this).find(':checkbox');
-								checkbox.attr('checked', !checkbox.attr('checked'));
-							});
-						</script>
 					</td>
 				</tr>
 				<?php if(is_multisite()) { ?>
@@ -450,12 +453,17 @@ if ( function_exists( 'pmpro_displayAds' ) && pmpro_displayAds() ) {
 		                        default:
 		                            break;
 		                    }
-		                    if (!empty($field['description'])) {
-		                        ?>
-		                        <p class="description"><?php echo esc_textarea( $field['description'] ); ?></p>
-		                    <?php
-		                    }
-		                    ?>
+							if ( ! empty( $field['description'] ) ) {
+								$allowed_pmpro_custom_advanced_settings_html = array (
+									'a' => array (
+										'href' => array(),
+										'target' => array(),
+										'title' => array(),
+									),
+								);
+								?>
+								<p class="description"><?php echo wp_kses( $field['description'], $allowed_pmpro_custom_advanced_settings_html ); ?></p>
+								<?php } ?>
 		                </td>
 		            </tr>
 		            <?php
@@ -464,7 +472,7 @@ if ( function_exists( 'pmpro_displayAds' ) && pmpro_displayAds() ) {
 		        ?>
 				<tr>
 					<th scope="row" valign="top">
-						<label for="showexcerpts"><?php _e('Uninstall PMPro on deletion?', 'paid-memberships-pro' );?></label>
+						<label for="uninstall"><?php _e('Uninstall PMPro on deletion?', 'paid-memberships-pro' );?></label>
 					</th>
 					<td>
 						<select id="uninstall" name="uninstall">
@@ -514,8 +522,7 @@ if ( function_exists( 'pmpro_displayAds' ) && pmpro_displayAds() ) {
 				}
 				pmpro_updateRecaptchaTRs();
 			</script>
-		</div> <!-- end pmpro_admin_section-other-settings -->
-
+		</div> <!-- end pmpro_admin_section-other-settings -->		
 		<p class="submit">
 			<input name="savesettings" type="submit" class="button button-primary" value="<?php _e('Save Settings', 'paid-memberships-pro' );?>" />
 		</p>

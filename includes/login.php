@@ -4,7 +4,7 @@
  * Checks for WP default, TML, and PMPro login page.
  */
 function pmpro_is_login_page() {
-	return ( in_array( $GLOBALS['pagenow'], array( 'wp-login.php', 'wp-register.php' ) ) || is_page( 'login' ) || ( ! empty( pmpro_getOption( 'login_page_id' ) ) && is_page( pmpro_getOption( 'login_page_id' ) ) ) );
+	return ( in_array( $GLOBALS['pagenow'], array( 'wp-login.php', 'wp-register.php' ) ) || is_page( 'login' ) || ( pmpro_getOption( 'login_page_id' ) && is_page( pmpro_getOption( 'login_page_id' ) ) ) );
 }
 
 /**
@@ -27,6 +27,8 @@ function pmpro_login_redirect( $redirect_to, $request = NULL, $user = NULL ) {
 		}
 	}
 
+	// Custom redirect filters should use the core WordPress login_redirect filter instead of this one.
+	// This filter is left in place for PMPro versions dating back to 2014.
 	return apply_filters( 'pmpro_login_redirect_url', $redirect_to, $request, $user );
 }
 add_filter( 'login_redirect','pmpro_login_redirect', 10, 3 );
@@ -82,22 +84,41 @@ add_action('login_init', 'pmpro_login_head');
  * @since 1.7.14
  */
 function pmpro_redirect_to_logged_in() {
-	if((pmpro_is_login_page() || is_page("login")) && !empty($_REQUEST['redirect_to']) && is_user_logged_in() && (empty($_REQUEST['action']) || $_REQUEST['action'] == 'login') && empty($_REQUEST['reauth'])) {
-		wp_safe_redirect($_REQUEST['redirect_to']);
+	// Fixes Site Health loopback test.
+	
+	if( ( pmpro_is_login_page() || is_page("login") )
+		&& ! empty( $_REQUEST['redirect_to'] )
+		&& is_user_logged_in()
+		&& ( empty( $_REQUEST['action'] ) || $_REQUEST['action'] == 'login' )
+		&& empty( $_REQUEST['reauth']) ) {
+
+		wp_safe_redirect( esc_url_raw( $_REQUEST['redirect_to'] ) );
 		exit;
 	}
 }
-add_action("template_redirect", "pmpro_redirect_to_logged_in", 5);
+add_action("template_redirect", "pmpro_redirect_to_logged_in", 15);
 add_action("login_init", "pmpro_redirect_to_logged_in", 5);
 
 /**
  * Redirect to the login page for member login.
+ * This filter is added on wp_loaded in the pmpro_wp_loaded_login_setup() function.
+ *
  * @since 2.3
  */
 function pmpro_login_url_filter( $login_url='', $redirect='' ) {
+	// Don't filter when specifically on wp-login.php.
+	if ( $_SERVER['SCRIPT_NAME'] === '/wp-login.php' ) {
+		return $login_url;
+	}
+
+	// Check for a PMPro Login page.
 	$login_page_id = pmpro_getOption( 'login_page_id' );
 	if ( ! empty ( $login_page_id ) ) {
-		$login_url = get_permalink( $login_page_id );
+		$login_page_permalink = get_permalink( $login_page_id );
+		// If the page or permalink is unavailable, don't override the url here.
+		if ( $login_page_permalink ) {
+			$login_url = $login_page_permalink;
+		}
 		
 		if ( ! empty( $redirect ) ) {
 			$login_url = add_query_arg( 'redirect_to', urlencode( $redirect ), $login_url ) ;
@@ -106,7 +127,18 @@ function pmpro_login_url_filter( $login_url='', $redirect='' ) {
 
 	return $login_url;
 }
-add_filter( 'login_url', 'pmpro_login_url_filter', 50, 2 );
+
+/**
+ * Add the filter for login_url after WordPress is loaded.
+ * This avoids errors with certain setups that may call wp_login_url() very early.
+ *
+ * @since 2.4
+ *
+ */
+function pmpro_wp_loaded_login_setup() {
+	add_filter( 'login_url', 'pmpro_login_url_filter', 50, 2 );
+}
+add_action( 'wp_loaded', 'pmpro_wp_loaded_login_setup' );
 
 /**
  * Make sure confirm_admin_email actions go to the default WP login page.
@@ -115,16 +147,16 @@ add_filter( 'login_url', 'pmpro_login_url_filter', 50, 2 );
 function pmpro_use_default_login_for_confirm_admin_email( $location ) {
 	if ( strpos( $location, 'action=confirm_admin_email' ) !== false ) {
 		$login_url = wp_login_url();
-		
+
 		remove_filter( 'login_url', 'pmpro_login_url_filter', 50, 2 );
 		$default_login_url = wp_login_url();
 		add_filter( 'login_url', 'pmpro_login_url_filter', 50, 2 );
-		
+
 		if ( $login_url != $default_login_url ) {
 			$location = str_replace( $login_url, $default_login_url, $location );
 		}
 	}
-	
+
 	return $location;
 }
 add_filter( 'wp_redirect', 'pmpro_use_default_login_for_confirm_admin_email' );
@@ -140,22 +172,22 @@ add_filter( 'wp_redirect', 'pmpro_use_default_login_for_confirm_admin_email' );
  */
 function pmpro_login_url( $redirect = '', $force_reauth = false ) {
 	global $pmpro_pages;
-	
+
 	if ( empty( $pmpro_pages['login'] ) ) {
 		// skip everything, including filter below
 		return wp_login_url( $redirect, $force_reauth );
 	}
-	
+
 	$login_url = get_permalink( $pmpro_pages['login'] );
- 
+
     if ( ! empty( $redirect ) ) {
         $login_url = add_query_arg( 'redirect_to', urlencode( $redirect ), $login_url );
     }
- 
+
     if ( $force_reauth ) {
         $login_url = add_query_arg( 'reauth', '1', $login_url );
     }
- 
+
     /**
      * Filters the login URL.
      *
@@ -177,19 +209,19 @@ function pmpro_login_url( $redirect = '', $force_reauth = false ) {
  */
 function pmpro_lostpassword_url( $redirect = '' ) {
     global $pmpro_pages;
-	
+
 	if ( empty( $pmpro_pages['login'] ) ) {
 		// skip everything, including filter below
 		return wp_lostpassword_url( $redirect );
 	}
-	
+
 	$args = array( 'action' => 'lostpassword' );
     if ( ! empty( $redirect ) ) {
-        $args['redirect_to'] = urlencode( $redirect );		
+        $args['redirect_to'] = urlencode( $redirect );
     }
- 
+
     $lostpassword_url = add_query_arg( $args, get_permalink( $pmpro_pages['login'] ) );
- 
+
     /**
      * Filters the Lost Password URL.
      *
@@ -255,7 +287,7 @@ function pmpro_login_document_title_parts( $titleparts ) {
 	if ( empty( $pmpro_pages ) || empty ( $pmpro_pages['login'] ) || ! is_page( $pmpro_pages['login'] ) ) {
 		return $titleparts;
 	}
-	
+
 	if ( is_user_logged_in() ) {
 		$titleparts['title'] = __( 'Welcome', 'paid-memberships-pro' );
 	} elseif ( ! empty( $_REQUEST['action'] ) && $_REQUEST['action'] === 'reset_pass' ) {
@@ -278,7 +310,7 @@ function pmpro_login_forms_handler( $show_menu = true, $show_logout_link = true,
 	if ( $location === 'widget' && pmpro_is_login_page() ) {
 		return '';
 	}
-	
+
 	// Set the message return string.
 	$message = '';
 	$msgt = 'pmpro_alert';
@@ -306,6 +338,12 @@ function pmpro_login_forms_handler( $show_menu = true, $show_logout_link = true,
 				break;
 			case 'recovered':
 				$message = __( 'Check your email for the confirmation link.', 'paid-memberships-pro' );
+				break;
+			case 'confirmaction':
+				// Check if we are processing a confirmaction for a Data Request.
+				$request_id = pmpro_confirmaction_handler();
+				$message = _wp_privacy_account_request_confirmed_message( $request_id );
+				$msgt = 'pmpro_success';
 				break;
 		}
 	}
@@ -356,7 +394,7 @@ function pmpro_login_forms_handler( $show_menu = true, $show_logout_link = true,
 	}
 
 	if ( isset( $_GET['password'] ) ) {
-		switch( sanitize_text_field( $_GET['password'] ) ) {
+		switch( $_GET['password'] ) {
 			case 'changed':
 				$message = __( 'Your password has successfully been updated.', 'paid-memberships-pro' );
 				$msgt = 'pmpro_success';
@@ -395,6 +433,10 @@ function pmpro_login_forms_handler( $show_menu = true, $show_logout_link = true,
 				$message = __( 'Please complete all fields.', 'paid-memberships-pro' );
 				$msgt = 'pmpro_error';
 				break;
+			case 'retrieve_password_email_failure':
+				$message = __( 'The email could not be sent. This site may not be correctly configured to send emails.', 'paid-memberships-pro' );
+				$msgt = 'pmpro_error';
+				break;
 		}
 	}
 
@@ -402,7 +444,7 @@ function pmpro_login_forms_handler( $show_menu = true, $show_logout_link = true,
 
 	// Note we don't show messages on the widget form.
 	if ( $message && $location !== 'widget' ) {
-		echo '<div class="' . pmpro_get_element_class( 'pmpro_message ' . $msgt, esc_attr( $msgt ) ) . '">'. esc_html( $message ) .'</div>';
+		echo '<div class="' . pmpro_get_element_class( 'pmpro_message ' . $msgt, esc_attr( $msgt ) ) . '">'. wp_kses_post( $message ) .'</div>';
 	}
 
 	// Get the form title HTML tag.
@@ -421,44 +463,44 @@ function pmpro_login_forms_handler( $show_menu = true, $show_logout_link = true,
 	}
 
 	// Figure out which login view to show.
-	if ( ! is_user_logged_in() ) {			
+	if ( ! is_user_logged_in() ) {
 		if ( ! in_array( $action, array( 'reset_pass', 'rp' ) ) ) {
 			// Login form.
 			if ( empty( $_GET['login'] ) || empty( $_GET['key'] ) ) {
 				$username = isset( $_REQUEST['username'] ) ? sanitize_text_field( $_REQUEST['username'] ) : NULL;
 				$redirect_to = isset( $_REQUEST['redirect_to'] ) ? esc_url( $_REQUEST['redirect_to'] ) : NULL;
-        
-				// Redirect users back to their page that they logged-in from via the widget.  
-				if( empty( $redirect_to ) && $location === 'widget' && apply_filters( 'pmpro_login_widget_redirect_back', true ) ) {		
+
+				// Redirect users back to their page that they logged-in from via the widget.
+				if( empty( $redirect_to ) && $location === 'widget' && apply_filters( 'pmpro_login_widget_redirect_back', true ) ) {
 					$redirect_to = esc_url( site_url( $_SERVER['REQUEST_URI'] ) );
 				}
 				?>
 				<div class="<?php echo pmpro_get_element_class( 'pmpro_login_wrap' ); ?>">
-					<?php 
+					<?php
 						if ( ! pmpro_is_login_page() ) {
-							echo $before_title . esc_html( 'Log In', 'paid-memberships-pro' ) . $after_title;
+							echo $before_title . esc_html__( 'Log In', 'paid-memberships-pro' ) . $after_title;
 						}
 					?>
 					<?php
 						pmpro_login_form( array( 'value_username' => esc_html( $username ), 'redirect' => esc_url( $redirect_to ) ) );
 						pmpro_login_forms_handler_nav( 'login' );
 					?>
-				</div> <!-- end pmpro_login_wrap -->				
+				</div> <!-- end pmpro_login_wrap -->
 				<?php if ( pmpro_is_login_page() ) { ?>
 				<script>
 					document.getElementById('user_login').focus();
 				</script>
 				<?php } ?>
-				
+
 				<?php
 			}
 		} elseif ( $location !== 'widget' && ( $action === 'reset_pass' || ( $action === 'rp' && in_array( $_REQUEST['login'], array( 'invalidkey', 'expiredkey' ) ) ) ) ) {
-			// Reset password form.			
+			// Reset password form.
 			?>
 			<div class="<?php echo pmpro_get_element_class( 'pmpro_lost_password_wrap' ); ?>">
-				<?php 
+				<?php
 					if ( ! pmpro_is_login_page() ) {
-						echo $before_title . esc_html( 'Password Reset', 'paid-memberships-pro' ) . $after_title;
+						echo $before_title . esc_html__( 'Password Reset', 'paid-memberships-pro' ) . $after_title;
 					}
 				?>
 				<p class="<?php echo pmpro_get_element_class( 'pmpro_lost_password-instructions' ); ?>">
@@ -473,12 +515,12 @@ function pmpro_login_forms_handler( $show_menu = true, $show_logout_link = true,
 			</div> <!-- end pmpro_lost_password_wrap -->
 			<?php
 		} elseif ( $location !== 'widget' && $action === 'rp' ) {
-			// Password reset processing key.			
+			// Password reset processing key.
 			?>
 			<div class="<?php echo pmpro_get_element_class( 'pmpro_reset_password_wrap' ); ?>">
-				<?php 
+				<?php
 					if ( ! pmpro_is_login_page() ) {
-						echo $before_title . esc_html( 'Reset Password', 'paid-memberships-pro' ) . $after_title;
+						echo $before_title . esc_html__( 'Reset Password', 'paid-memberships-pro' ) . $after_title;
 					}
 				?>
 				<?php pmpro_reset_password_form(); ?>
@@ -496,12 +538,12 @@ function pmpro_login_forms_handler( $show_menu = true, $show_logout_link = true,
 			<?php
 		}
 	}
-	
+
 	$content = ob_get_clean();
 	if ( $echo ) {
 		echo $content;
 	}
-	
+
 	return $content;
 }
 
@@ -541,11 +583,11 @@ function pmpro_lost_password_form() { ?>
 function pmpro_lost_password_redirect() {
 	if ( 'POST' == $_SERVER['REQUEST_METHOD'] ) {
 		$login_page = pmpro_getOption( 'login_page_id' );
-		
+
 		if ( empty( $login_page ) ) {
 			return;
 		}
-		
+
 		$redirect_url = $login_page ? get_permalink( $login_page ): '';
 
 		$errors = retrieve_password();
@@ -565,17 +607,17 @@ add_action( 'login_form_lostpassword', 'pmpro_lost_password_redirect' );
  * Redirect Password reset to our own page.
  * @since 2.3
  */
-function pmpro_reset_password_redirect() {	
+function pmpro_reset_password_redirect() {
 	if ( 'GET' == $_SERVER['REQUEST_METHOD'] ) {
 		$login_page = pmpro_getOption( 'login_page_id' );
-		
+
 		if ( empty( $login_page ) ) {
 			return;
 		}
-		
+
 		$redirect_url = $login_page ? get_permalink( $login_page ): '';
 		$user = check_password_reset_key( $_REQUEST['rp_key'], $_REQUEST['rp_login'] );
-		
+
 		if ( ! $user || is_wp_error( $user ) ) {
             if ( $user && $user->get_error_code() === 'expired_key' ) {
 				wp_redirect( add_query_arg( 'login', urlencode( 'expiredkey' ), $redirect_url ) );
@@ -602,11 +644,42 @@ add_action( 'login_form_resetpass', 'pmpro_reset_password_redirect' );
 function pmpro_reset_password_form() {
 	if ( isset( $_REQUEST['login'] ) && isset( $_REQUEST['key'] ) ) {
 
-		// Error messages
-		$errors = array();
-		if ( isset( $_REQUEST['error'] ) ) {
-			$error_codes = explode( ',', sanitize_text_field( $_REQUEST['error'] ) );
-		} ?>
+		// Check if reset key is valid.
+		$user = check_password_reset_key( $_REQUEST['key'], $_REQUEST['login'] );
+		$errors = new WP_Error();
+		if ( ! $user || is_wp_error( $user ) ) {
+			if ( $user && $user->get_error_code() === 'invalid_key' ) {
+				$errors->add( 'invalidkey', __( 'Your password reset link appears to be invalid. Please request a new link below.', 'paid-membeships-pro' ) );
+			} elseif ( $user && $user->get_error_code() === 'expired_key' ) {
+				$errors->add( 'expiredkey', __( 'Your password reset link has expired. Please request a new link below.', 'paid-membeships-pro' ) );
+            }
+		}
+
+		// Grabbing errors from $_GET like wp-login.php does.
+		if ( isset( $_GET['error'] ) ) {
+			if ( 'invalidkey' === $_GET['error'] ) {
+				$errors->add( 'invalidkey', __( 'Your password reset link appears to be invalid. Please request a new link below.', 'paid-membeships-pro' ) );
+			} elseif ( 'expiredkey' === $_GET['error'] ) {
+				$errors->add( 'expiredkey', __( 'Your password reset link has expired. Please request a new link below.', 'paid-membeships-pro' ) );
+			}
+		}
+
+		if ( ! empty( $errors ) && $errors->has_errors() ) {
+			// Combine errors into one message.
+			$message = '';
+			foreach ( $errors->get_error_codes() as $code ) {
+				foreach ( $errors->get_error_messages( $code ) as $error_message ) {
+					$message .= ' ' . $error_message . ' ';
+				}
+			}
+
+			$msgt = 'pmpro_error';
+			echo '<div class="' . pmpro_get_element_class( 'pmpro_message ' . $msgt, esc_attr( $msgt ) ) . '">'. esc_html( $message ) .'</div>';
+			echo pmpro_lost_password_form();
+			return;
+		}
+
+		?>
 		<form name="resetpassform" id="resetpassform" class="<?php echo pmpro_get_element_class( 'pmpro_form', 'resetpassform' ); ?>" action="<?php echo esc_url( site_url( 'wp-login.php?action=resetpass' ) ); ?>" method="post" autocomplete="off">
 			<input type="hidden" id="user_login" name="rp_login" value="<?php echo esc_attr( sanitize_text_field( $_REQUEST['login'] ) ); ?>" autocomplete="off" />
 			<input type="hidden" name="rp_key" value="<?php echo esc_attr( sanitize_text_field( $_REQUEST['key'] ) ); ?>" />
@@ -682,14 +755,14 @@ function pmpro_login_forms_handler_nav( $pmpro_form ) { ?>
 function pmpro_do_password_reset() {
     if ( 'POST' == $_SERVER['REQUEST_METHOD'] ) {
         $login_page = pmpro_getOption( 'login_page_id' );
-		
+
 		if ( empty( $login_page ) ) {
 			return;
 		}
-		
+
 		$rp_key = sanitize_text_field( $_REQUEST['rp_key'] );
-		$rp_login = sanitize_text_field( $_REQUEST['rp_login'] );	
-		
+		$rp_login = sanitize_text_field( $_REQUEST['rp_login'] );
+
 		$redirect_url = $login_page ? get_permalink( $login_page ): '';
 		$user = check_password_reset_key( $rp_key, $rp_login );
 
@@ -748,35 +821,22 @@ add_action( 'login_form_resetpass', 'pmpro_do_password_reset' );
  *
  * @since 2.3
  */
-function pmpro_password_reset_email_filter( $message, $key, $user_login, $user_data ) {
+function pmpro_password_reset_email_filter( $message, $key, $user_login ) {
 
 	$login_page_id = pmpro_getOption( 'login_page_id' );
     if ( ! empty ( $login_page_id ) ) {
-        $login_url = get_permalink( $login_page_id );
-		$message = str_replace( site_url( 'wp-login.php' ), $login_url, $message );
-	}
-
-	return $message;
-}
-add_filter( 'retrieve_password_message', 'pmpro_password_reset_email_filter', 10, 4 );
-
-/**
- * Replace the default login URL in the new user notification email
- * with the membership account page login URL instead.
- *
- * @since 2.3.4
- */
-function pmpro_new_user_notification_email_filter( $message, $user, $blogname ) {
-
-	$login_page_id = pmpro_getOption( 'login_page_id' );
-    if ( ! empty ( $login_page_id ) ) {
-        $login_url = get_permalink( $login_page_id );
+		$login_url = get_permalink( $login_page_id );
+		if ( strpos( $login_url, '?' ) ) {
+			// Login page permalink contains a '?', so we need to replace the '?' already in the login URL with '&'.
+			$message = str_replace( network_site_url( 'wp-login.php' ) . '?', $login_url . '&', $message );
+		}
 		$message = str_replace( network_site_url( 'wp-login.php' ), $login_url, $message );
 	}
 
 	return $message;
 }
-add_filter( 'wp_new_user_notification_email', 'pmpro_new_user_notification_email_filter', 10, 3 );
+add_filter( 'retrieve_password_message', 'pmpro_password_reset_email_filter', 20, 3 );
+add_filter( 'wp_new_user_notification_email', 'pmpro_password_reset_email_filter', 10, 3 );
 
 /**
  * Authenticate the frontend user login.
@@ -827,13 +887,17 @@ add_filter( 'authenticate', 'pmpro_authenticate_username_password', 30, 3);
  */
 function pmpro_login_failed( $username ) {
 
-	$login_page = pmpro_getOption( 'login_page_id' );	
+	$login_page = pmpro_getOption( 'login_page_id' );
 	if ( empty( $login_page ) ) {
 		return;
 	}
 
 	$referrer = wp_get_referer();
-	$redirect_to = esc_url( $_REQUEST['redirect_to'] );
+	if ( ! empty( $_REQUEST['redirect_to'] ) ) {
+		$redirect_to = esc_url( $_REQUEST['redirect_to'] );
+	} else {
+		$redirect_to = '';
+	}
 
 	if ( $referrer && ! strstr( $referrer, 'wp-login' ) && ! strstr( $referrer, 'wp-admin' ) ) {
 		if ( ! strstr( $referrer, '?login=failed') ) {
@@ -931,7 +995,7 @@ function pmpro_confirmaction_handler() {
 	if ( empty( $_REQUEST['action'] ) || $_REQUEST['action'] !== 'confirmaction' ) {
 		return false;
 	}
-	
+
 	if ( ! isset( $_GET['request_id'] ) ) {
 		wp_die( __( 'Missing request ID.' ) );
 	}
@@ -950,4 +1014,6 @@ function pmpro_confirmaction_handler() {
 
 	/** This action is documented in wp-login.php */
 	do_action( 'user_request_action_confirmed', $request_id );
+
+	return $request_id;
 }

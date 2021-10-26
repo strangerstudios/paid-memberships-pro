@@ -23,7 +23,7 @@ if ( isset( $_REQUEST['l'] ) ) {
 
 	<?php do_action( 'pmpro_memberslist_before_table' ); ?>			
 	<form id="member-list-form" method="get">
-		<input type="hidden" name="page" value="<?php echo $_REQUEST['page']; ?>" />
+		<input type="hidden" name="page" value="pmpro-memberslist" />
 		<?php
 			$user_list_table->search_box( __( 'Search Members', 'paid-memberships-pro' ), 'paid-memberships-pro' );
 			$user_list_table->display();

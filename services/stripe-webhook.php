@@ -7,12 +7,16 @@
 	use Stripe\Invoice as Stripe_Invoice;
 	use Stripe\Event as Stripe_Event;
 	use Stripe\PaymentIntent as Stripe_PaymentIntent;
+	use Stripe\Charge as Stripe_Charge;
 
 	global $isapage;
 	$isapage = true;
 
 	global $logstr;
 	$logstr = "";
+
+	// Sets the PMPRO_DOING_WEBHOOK constant and fires the pmpro_doing_webhook action.
+	pmpro_doing_webhook( 'stripe', true );
 
 	//you can define a different # of seconds (define PMPRO_STRIPE_WEBHOOK_DELAY in your wp-config.php) if you need this webhook to delay more or less
 	if(!defined('PMPRO_STRIPE_WEBHOOK_DELAY'))
@@ -29,14 +33,6 @@
 		require_once( PMPRO_DIR . "/includes/lib/Stripe/init.php" );
 	}
 
-
-	try {
-		Stripe\Stripe::setApiKey( pmpro_getOption( "stripe_secretkey" ) );
-	} catch ( Exception $e ) {
-		$logstr .= "Unable to set API key for Stripe gateway: " . $e->getMessage();
-		pmpro_stripeWebhookExit();
-	}
-
 	// retrieve the request's body and parse it as JSON
 	if(empty($_REQUEST['event_id']))
 	{
@@ -44,12 +40,29 @@
 		$post_event = json_decode($body);
 
 		//get the id
-		if(!empty($post_event))
+		if ( ! empty( $post_event ) ) {
 			$event_id = sanitize_text_field($post_event->id);
+			$livemode = ! empty( $post_event->livemode );
+		}
 	}
 	else
 	{
 		$event_id = sanitize_text_field($_REQUEST['event_id']);
+		$livemode = pmpro_getOption( 'gateway_environment' ) === 'live'; // User is testing, so use current environment.
+	}
+
+	try {
+		if ( PMProGateway_stripe::using_legacy_keys() ) {
+			$secret_key = pmpro_getOption( "stripe_secretkey" );
+		} elseif ( $livemode ) {
+			$secret_key = pmpro_getOption( 'live_stripe_connect_secretkey' );
+		} else {
+			$secret_key = pmpro_getOption( 'sandbox_stripe_connect_secretkey' );
+		}
+		Stripe\Stripe::setApiKey( $secret_key );
+	} catch ( Exception $e ) {
+		$logstr .= "Unable to set API key for Stripe gateway: " . $e->getMessage();
+		pmpro_stripeWebhookExit();
 	}
 
 	//get the event through the API now
@@ -73,6 +86,9 @@
 	//real event?
 	if(!empty($pmpro_stripe_event->id))
 	{
+		// Log that we have successfully received a webhook from Stripe.
+		update_option( 'pmpro_stripe_last_webhook_received_' . ( $livemode ? 'live' : 'sandbox' ), date( 'Y-m-d H:i:s' ) );
+
 		//check what kind of event it is
 		if($pmpro_stripe_event->type == "invoice.payment_succeeded")
 		{
@@ -130,12 +146,13 @@
 					
 					if(isset($invoice->amount))
 					{
-						$morder->subtotal = $invoice->amount / $currency_unit_multiplier;					
+						$morder->subtotal = $invoice->amount / $currency_unit_multiplier;
+						$morder->tax = 0;
 					}
 					elseif(isset($invoice->subtotal))
 					{
 						$morder->subtotal = (! empty( $invoice->subtotal ) ? $invoice->subtotal / $currency_unit_multiplier : 0);
-						$morder->tax = (! empty($invoice->tax) ? $invoice->tax / $currency_unit_multiplier : null);
+						$morder->tax = (! empty($invoice->tax) ? $invoice->tax / $currency_unit_multiplier : 0);
 						$morder->total = (! empty($invoice->total) ? $invoice->total / $currency_unit_multiplier : 0);
 					}
 
@@ -145,25 +162,28 @@
 					$morder->gateway = $old_order->gateway;
 					$morder->gateway_environment = $old_order->gateway_environment;
 
-					$morder->FirstName = $old_order->FirstName;
-					$morder->LastName = $old_order->LastName;
-					$morder->Email = $wpdb->get_var("SELECT user_email FROM $wpdb->users WHERE ID = '" . $old_order->user_id . "' LIMIT 1");
-					$morder->Address1 = $old_order->Address1;
-					$morder->City = $old_order->billing->city;
-					$morder->State = $old_order->billing->state;
-					//$morder->CountryCode = $old_order->billing->city;
-					$morder->Zip = $old_order->billing->zip;
-					$morder->PhoneNumber = $old_order->billing->phone;
+					$charge = Stripe_Charge::retrieve( $pmpro_stripe_event->data->object->charge );
+					if ( ! empty ( $charge->billing_details->address->line1 ) ) {
+						// Get order billing details from Stripe.
+						$morder->billing = $charge->billing_details->address;
+						$morder->billing->name = $charge->billing_details->name; // Add name.
+						$morder->billing->phone = $charge->billing_details->phone; // Add phone.
+						$morder->billing->zip = $morder->billing->postal_code; // Fix zip.
+						$morder->billing->street = $morder->billing->line1; // Fix street. 
 
-					$morder->billing = new stdClass();
-					
-					$morder->billing->name = $morder->FirstName . " " . $morder->LastName;
-					$morder->billing->street = $old_order->billing->street;
-					$morder->billing->city = $old_order->billing->city;
-					$morder->billing->state = $old_order->billing->state;
-					$morder->billing->zip = $old_order->billing->zip;
-					$morder->billing->country = $old_order->billing->country;
-					$morder->billing->phone = $old_order->billing->phone;
+						$nameparts = pnp_split_full_name( $morder->billing->name );
+						$morder->FirstName = empty( $nameparts['fname'] ) ? '' : $nameparts['fname'];
+						$morder->LastName = empty( $nameparts['lname'] ) ? '' : $nameparts['lname'];
+						$morder->Email = $wpdb->get_var("SELECT user_email FROM $wpdb->users WHERE ID = '" . $old_order->user_id . "' LIMIT 1");
+						$morder->Address1 = $morder->billing->street;
+						$morder->City = $morder->billing->city;
+						$morder->State = $morder->billing->state;
+						$morder->Zip = $morder->billing->zip;
+						$morder->PhoneNumber = $morder->billing->phone;
+					} else {
+						// Pull from previous order.
+						$morder->find_billing_address();
+					}
 
 					//get CC info that is on file
 					$morder->cardtype = get_user_meta($user_id, "pmpro_CardType", true);
@@ -279,9 +299,9 @@
 				//prep this order for the failure emails
 				$morder = new MemberOrder();
 				$morder->user_id = $user_id;
+				$morder->membership_id = $old_order->membership_id;
 				
 				$morder->billing = new stdClass();
-				
 				$morder->billing->name = $old_order->billing->name;
 				$morder->billing->street = $old_order->billing->street;
 				$morder->billing->city = $old_order->billing->city;

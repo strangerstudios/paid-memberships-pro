@@ -23,13 +23,21 @@
 	require_once(dirname(__FILE__) . '/../classes/class.mimetype.php');
 	
 	global $wpdb;
-	
+
+	// Get the file path.
 	$uri = $_SERVER['REQUEST_URI'];
-	if($uri[0] == "/")
-		$uri = substr($uri, 1, strlen($uri) - 1);
+
+	// Remove the query string from the path.
+	$uri_parts = explode( '?', $uri );
+	$uri       = $uri_parts[0];
+
+	// Take the / off of the 
+	if ( '/' === $uri[0] ) {
+		$uri = substr( $uri, 1, strlen( $uri ) - 1 );
+	}
 	
 	// decode the file in case it's encoded.
-	$uri = urldecode($uri);
+	$uri = urldecode( $uri );
 	
 	/*
 		Remove ../-like strings from the URI.
