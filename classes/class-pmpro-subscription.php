@@ -178,9 +178,9 @@ class PMPro_Subscription {
 				$wpdb->prepare(
 					"SELECT * 
 					FROM $wpdb->pmpro_membership_orders
-					WHERE subscription_transaction_id = '%s'
-					AND gateway = '%s'
-					AND gateway_environment = '%s'
+					WHERE subscription_transaction_id = %s
+					AND gateway = %s
+					AND gateway_environment = %s
 					ORDER BY timestamp ASC",
 					$subscription_transaction_id,
 					$gateway,
