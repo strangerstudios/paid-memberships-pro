@@ -517,7 +517,7 @@ function pmpro_membership_history_profile_fields( $user ) {
 					<tr>
 						<td><?php esc_html_e( $subscription->startdate ); ?></td>
 						<td><a href="<?php echo ( esc_url( add_query_arg( array( 'page' => 'pmpro-orders', 's' => $subscription->subscription_transaction_id ), admin_url('admin.php' ) ) ) ); ?>"><?php esc_html_e( $subscription->subscription_transaction_id ); ?></a></td>
-						<td><?php if ( ! empty( $level ) ) { echo $level->name; } else { _e( 'N/A', 'paid-memberships-pro'); } ?></td>
+						<td><?php if ( ! empty( $level ) ) { echo esc_html( $level->name ); } else { esc_html_e( 'N/A', 'paid-memberships-pro'); } ?></td>
 						<td><?php esc_html_e( $subscription->gateway ); ?>
 						<td><?php esc_html_e( $subscription->gateway_environment ); ?>
 						<td><?php esc_html_e( $subscription->next_payment_date ); ?>
