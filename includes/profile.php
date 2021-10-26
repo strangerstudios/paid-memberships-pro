@@ -399,7 +399,7 @@ function pmpro_membership_history_profile_fields( $user ) {
 	global $wpdb;
 
 	//Show all invoices for user
-	$invoices = $wpdb->get_results("SELECT mo.*, UNIX_TIMESTAMP(mo.timestamp) as timestamp, du.code_id as code_id FROM $wpdb->pmpro_membership_orders mo LEFT JOIN $wpdb->pmpro_discount_codes_uses du ON mo.id = du.order_id WHERE mo.user_id = '$user->ID' ORDER BY mo.timestamp DESC");
+	$invoices = $wpdb->get_results( $wpdb->prepare( "SELECT mo.*, UNIX_TIMESTAMP(mo.timestamp) as timestamp, du.code_id as code_id FROM $wpdb->pmpro_membership_orders mo LEFT JOIN $wpdb->pmpro_discount_codes_uses du ON mo.id = du.order_id WHERE mo.user_id = %s ORDER BY mo.timestamp DESC", $user->ID ) );
 
 	$subscriptions = $wpdb->get_results("SELECT * FROM $wpdb->pmpro_subscriptions WHERE user_id = '$user->ID' ORDER BY startdate DESC");
 
@@ -516,7 +516,7 @@ function pmpro_membership_history_profile_fields( $user ) {
 					?>
 					<tr>
 						<td><?php esc_html_e( $subscription->startdate ); ?></td>
-						<td><a href="<?php echo ( esc_url( add_query_arg( array( 'page' => 'pmpro-orders', 's' => $subscription->subscription_transaction_id ), admin_url('admin.php' ) ) ) ); ?>"><?php esc_html_e( $subscription->subscription_transaction_id ); ?></a></td>
+						<td><a href="<?php echo ( esc_url( add_query_arg( array( 'page' => 'pmpro-orders', 's' => $subscription->subscription_transaction_id ), admin_url('admin.php' ) ) ) ); ?>"><?php echo esc_html( $subscription->subscription_transaction_id ); ?></a></td>
 						<td><?php if ( ! empty( $level ) ) { echo esc_html( $level->name ); } else { esc_html_e( 'N/A', 'paid-memberships-pro'); } ?></td>
 						<td><?php esc_html_e( $subscription->gateway ); ?>
 						<td><?php esc_html_e( $subscription->gateway_environment ); ?>
