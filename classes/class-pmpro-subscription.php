@@ -369,6 +369,7 @@ class PMPro_Subscription {
 		}
 
 		/*
+		 * @todo We should probably send an email when the subscription cancellation fails. Gateway or MemberOrder class may already be sending a sub cancel failure email though, something to look into further. May want to remove that and use the subscription class for that.
 		if ( $result == false && is_a( $morder, 'MemberOrder' ) ) {
 			// Notify the admin.
 			$order_user = get_userdata($morder->user_id);
