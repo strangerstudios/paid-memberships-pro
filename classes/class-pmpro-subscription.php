@@ -73,7 +73,7 @@ class PMPro_Subscription {
 			$statuses = array( $statuses );
 		}
 
-		$sql_query = "SELECT id FROM $wpdb->pmpro_subscriptions WHERE user_id = $user_id";
+		$sql_query = $wpdb->prepare( "SELECT id FROM $wpdb->pmpro_subscriptions WHERE user_id = %s", $user_id );
 		if ( ! empty( $membership_level_ids ) ) {
 			$sql_query .= " AND membership_level_id IN (" . implode( ',', array_map( 'intval', $membership_level_ids ) ) . ")";
 		}
@@ -155,7 +155,7 @@ class PMPro_Subscription {
 				$wpdb->prepare(
 					"SELECT * 
 					FROM $wpdb->pmpro_membership_orders
-					WHERE membership_id = '%s'
+					WHERE membership_id = %s
 					ORDER BY timestamp DESC",
 					$membership_level_id
 				),
@@ -212,7 +212,7 @@ class PMPro_Subscription {
 	function update_from_gateway() {
 		$gateway_object = $this->get_gateway_object();
 		if ( method_exists( $gateway_object, 'update_subscription_info' ) ) {
-			$subscription_info = $gateway_object->update_subscription_info( $this );
+			$gateway_object->update_subscription_info( $this );
 		}
 	}
 

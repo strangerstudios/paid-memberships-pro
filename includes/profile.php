@@ -401,11 +401,11 @@ function pmpro_membership_history_profile_fields( $user ) {
 	//Show all invoices for user
 	$invoices = $wpdb->get_results( $wpdb->prepare( "SELECT mo.*, UNIX_TIMESTAMP(mo.timestamp) as timestamp, du.code_id as code_id FROM $wpdb->pmpro_membership_orders mo LEFT JOIN $wpdb->pmpro_discount_codes_uses du ON mo.id = du.order_id WHERE mo.user_id = %s ORDER BY mo.timestamp DESC", $user->ID ) );
 
-	$subscriptions = $wpdb->get_results("SELECT * FROM $wpdb->pmpro_subscriptions WHERE user_id = '$user->ID' ORDER BY startdate DESC");
+	$subscriptions = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM $wpdb->pmpro_subscriptions WHERE user_id = %s ORDER BY startdate DESC", $user->ID ) );
 
-	$levelshistory = $wpdb->get_results("SELECT * FROM $wpdb->pmpro_memberships_users WHERE user_id = '$user->ID' ORDER BY id DESC");
+	$levelshistory = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM $wpdb->pmpro_memberships_users WHERE user_id = %s ORDER BY id DESC", $user->ID ) );
 	
-	$totalvalue = $wpdb->get_var("SELECT SUM(total) FROM $wpdb->pmpro_membership_orders WHERE user_id = '$user->ID' AND status NOT IN('token','review','pending','error','refunded')");
+	$totalvalue = $wpdb->get_var( $wpdb->prepare( "SELECT SUM(total) FROM $wpdb->pmpro_membership_orders WHERE user_id = %s AND status NOT IN('token','review','pending','error','refunded')", $user->ID ) );
 
 	if ( $invoices || $subscriptions || $levelshistory ) { ?>
 		<hr />
@@ -515,14 +515,14 @@ function pmpro_membership_history_profile_fields( $user ) {
 					$level = pmpro_getLevel( $subscription->membership_level_id );
 					?>
 					<tr>
-						<td><?php esc_html_e( $subscription->startdate ); ?></td>
+						<td><?php echo esc_html( $subscription->startdate ); ?></td>
 						<td><a href="<?php echo ( esc_url( add_query_arg( array( 'page' => 'pmpro-orders', 's' => $subscription->subscription_transaction_id ), admin_url('admin.php' ) ) ) ); ?>"><?php echo esc_html( $subscription->subscription_transaction_id ); ?></a></td>
 						<td><?php if ( ! empty( $level ) ) { echo esc_html( $level->name ); } else { esc_html_e( 'N/A', 'paid-memberships-pro'); } ?></td>
-						<td><?php esc_html_e( $subscription->gateway ); ?>
-						<td><?php esc_html_e( $subscription->gateway_environment ); ?>
-						<td><?php esc_html_e( $subscription->next_payment_date ); ?>
-						<td><?php esc_html_e( $subscription->enddate ); ?>
-						<td><?php esc_html_e( $subscription->status ); ?>
+						<td><?php echo esc_html( $subscription->gateway ); ?>
+						<td><?php echo esc_html( $subscription->gateway_environment ); ?>
+						<td><?php echo esc_html( $subscription->next_payment_date ); ?>
+						<td><?php echo esc_html( $subscription->enddate ); ?>
+						<td><?php echo esc_html( $subscription->status ); ?>
 					</tr>
 					<?php
 				}
