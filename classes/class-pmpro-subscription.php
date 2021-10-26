@@ -14,7 +14,7 @@ class PMPro_Subscription {
 				$wpdb->prepare(
 					"SELECT * 
 					FROM $wpdb->pmpro_subscriptions
-					WHERE id = '%d'",
+					WHERE id = %d",
 					$id
 				),
 				OBJECT
