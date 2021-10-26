@@ -279,7 +279,7 @@ class PMPro_Subscription {
 	 */
 	function get_gateway_object() {
 		$classname = 'PMProGateway';	// Default test gateway.
-		if ( ! empty( $this->gateway ) && $this->gateway != 'free' ) {
+		if ( ! empty( $this->gateway ) && $this->gateway !== 'free' ) {
 			$classname .= '_' . $this->gateway;	// Adding the gateway suffix.
 		}
 
