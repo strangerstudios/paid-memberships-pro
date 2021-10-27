@@ -3791,7 +3791,7 @@ add_filter( 'wp_kses_allowed_html', 'pmpro_kses_allowed_html', 10, 2 );
  *
  * Works with Apache and Nginx.
  *
- * Copied from https://stackoverflow.com/a/42245266
+ * Based on code from https://stackoverflow.com/a/42245266
  *
  * @since TBD.
  */
