@@ -273,6 +273,8 @@ if ( $txn_type == 'recurring_payment_profile_cancel' || $txn_type == 'recurring_
 			} elseif ( ! pmpro_hasMembershipLevel( $last_subscription_order->membership_id, $user->ID ) ) {
 				ipnlog( "This user has a different level than the one associated with this order. Their membership was probably changed by an admin or through an upgrade/downgrade. (Order #" . $last_subscription_order->id . ", Subscription Transaction ID #" . $recurring_payment_id . ")" );
 			} else {
+				pmpro_cancelMembershipLevel( $last_subscription_order->membership_id, $last_subscription_order->user_id, 'cancelled' );
+
 				ipnlog( "Cancelled membership for user with id = " . $last_subscription_order->user_id . ". Subscription transaction id = " . $recurring_payment_id . "." );
 
 				//send an email to the member
