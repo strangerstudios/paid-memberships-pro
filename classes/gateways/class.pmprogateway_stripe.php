@@ -2471,9 +2471,10 @@ class PMProGateway_stripe extends PMProGateway {
 	 *
 	 * @since TBD.
 	 *
-	 * @param Stripe_SetupIntent $setup_intent to add metadata to.
-	 * @param string $subscription_id that created this setup intent.
-	 * @return Stripe_SetupIntent|string error.
+	 * @param Stripe_SetupIntent $setup_intent    The setup intent to add metadata to.
+	 * @param string             $subscription_id The subscription ID that created this setup intent.
+	 *
+	 * @return Stripe_SetupIntent|string The setup intent object or an error message string.
 	 */
 	private function add_subscription_id_to_setup_intent( $setup_intent, $subscription_id ) {
 		try {
@@ -2866,6 +2867,8 @@ class PMProGateway_stripe extends PMProGateway {
 	 * Only called on update billing page. Should be completely deprecated if we switch to using Stripe Customer Portal.
 	 *
 	 * @deprecated TBD. Only deprecated for public use, will be changed to private non-static in a future version.
+	 *
+	 * @param MemberOrder $order The MemberOrder object.
 	 */
 	public function update_payment_method_for_subscriptions( &$order ) {
 		pmpro_method_should_be_private( 'TBD' );
@@ -3026,6 +3029,8 @@ class PMProGateway_stripe extends PMProGateway {
 	 * Only called during subscription updates. Should be completely deprecated once that functionality is removed.
 	 *
 	 * @deprecated TBD. Only deprecated for public use, will be changed to private non-static in a future version.
+	 *
+	 * @param MemberOrder $order The MemberOrder object.
 	 */
 	public function get_setup_intent( &$order ) {
 		pmpro_method_should_be_private( 'TBD' );
@@ -3079,6 +3084,8 @@ class PMProGateway_stripe extends PMProGateway {
 	 * Only called during subscription updates. Should be completely deprecated once that functionality is removed.
 	 *
 	 * @deprecated TBD. Only deprecated for public use, will be changed to private non-static in a future version.
+	 *
+	 * @param MemberOrder $order The MemberOrder object.
 	 */
 	public function create_setup_intent( &$order ) {
 		pmpro_method_should_be_private( 'TBD' );
@@ -3521,6 +3528,8 @@ class PMProGateway_stripe extends PMProGateway {
 	 * Only called during subscription updates. Should be completely deprecated once that functionality is removed.
 	 *
 	 * @deprecated TBD. Only deprecated for public use, will be changed to private in a future version.
+	 *
+	 * @param MemberOrder $order The MemberOrder object.
 	 */
 	public function process_subscriptions( &$order ) {
 		pmpro_method_should_be_private( 'TBD' );
@@ -3586,6 +3595,8 @@ class PMProGateway_stripe extends PMProGateway {
 	 * Only called during subscription updates. Should be completely deprecated once that functionality is removed.
 	 *
 	 * @deprecated TBD. Will only be deprecated once we create a function with better params.
+	 *
+	 * @param MemberOrder $order The MemberOrder object.
 	 */
 	public function create_subscription( &$order ) {
 		// _deprecated_function( __FUNCTION__, 'TBD' );
@@ -3624,6 +3635,8 @@ class PMProGateway_stripe extends PMProGateway {
 	 * Only called during subscription updates. Should be completely deprecated once that functionality is removed.
 	 *
 	 * @deprecated TBD. Only deprecated for public use, will be changed to private non-static in a future version.
+	 *
+	 * @param MemberOrder $order The MemberOrder object.
 	 */
 	public function delete_plan( &$order ) {
 		// _deprecated_function( __FUNCTION__, 'TBD' );
