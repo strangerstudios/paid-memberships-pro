@@ -3801,7 +3801,7 @@ function pmpro_send_200_http_response() {
 	}
 
 	// Check if fastcgi_finish_request is callable.
-	if (is_callable('fastcgi_finish_request')) {
+	if ( is_callable( 'fastcgi_finish_request' ) ) {
 		/*
 		 * This works in Nginx but the next approach not
 		 */
