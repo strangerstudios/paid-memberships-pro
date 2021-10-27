@@ -3807,11 +3807,8 @@ function pmpro_send_200_http_response() {
 		return;
 	}
 
-	// Check if fastcgi_finish_request is callable.
+	// Ngnix compatibility: Check if fastcgi_finish_request is callable.
 	if ( is_callable( 'fastcgi_finish_request' ) ) {
-		/*
-		 * This works in Nginx but the next approach not
-		 */
 		session_write_close();
 		fastcgi_finish_request();
 
