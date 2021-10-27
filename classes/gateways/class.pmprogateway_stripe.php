@@ -3655,6 +3655,8 @@ class PMProGateway_stripe extends PMProGateway {
 	 * Only called during subscription updates. Should be completely deprecated once that functionality is removed.
 	 *
 	 * @deprecated TBD. Only deprecated for public use, will be changed to private non-static in a future version.
+	 *
+	 * @param MemberOrder $order The MemberOrder object.
 	 */
 	public function archive_product( &$order ) {
 		// _deprecated_function( __FUNCTION__, 'TBD' );
