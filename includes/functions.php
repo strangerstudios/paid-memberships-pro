@@ -3793,7 +3793,7 @@ add_filter( 'wp_kses_allowed_html', 'pmpro_kses_allowed_html', 10, 2 );
  *
  * Based on code from https://stackoverflow.com/a/42245266
  *
- * @since TBD.
+ * @since TBD
  */
 function pmpro_send_200_http_response() {
 	/**
