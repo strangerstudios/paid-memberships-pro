@@ -3814,11 +3814,11 @@ function pmpro_send_200_http_response() {
 	ignore_user_abort(true);
 
 	ob_start();
-	$serverProtocole = filter_input(INPUT_SERVER, 'SERVER_PROTOCOL', FILTER_SANITIZE_STRING);
-	header($serverProtocole.' 200 OK');
-	header('Content-Encoding: none');
-	header('Content-Length: '.ob_get_length());
-	header('Connection: close');
+	$server_protocol = filter_input( INPUT_SERVER, 'SERVER_PROTOCOL', FILTER_SANITIZE_STRING );
+	header( $server_protocol . ' 200 OK' );
+	header( 'Content-Encoding: none' );
+	header( 'Content-Length: ' . ob_get_length() );
+	header( 'Connection: close' );
 
 	ob_end_flush();
 	ob_flush();
