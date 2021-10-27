@@ -3782,3 +3782,45 @@ function pmpro_kses_allowed_html( $allowed_html, $context ) {
 	return $allowed_html;
 }
 add_filter( 'wp_kses_allowed_html', 'pmpro_kses_allowed_html', 10, 2 );
+
+/**
+ * Send a 200 HTTP reponse without ending PHP execution.
+ *
+ * Useful to avoid issues like timeouts from gateways during
+ * webhook/IPN handlers.
+ *
+ * Works with Apache and Nginx.
+ *
+ * Copied from https://stackoverflow.com/a/42245266
+ *
+ * @since TBD.
+ */
+function pmpro_send_200_http_response() {
+	if ( ! apply_filters( 'pmpro_send_200_http_response', true ) ) {
+		return;
+	}
+
+	// Check if fastcgi_finish_request is callable.
+	if (is_callable('fastcgi_finish_request')) {
+		/*
+		 * This works in Nginx but the next approach not
+		 */
+		session_write_close();
+		fastcgi_finish_request();
+
+		return;
+	}
+
+	ignore_user_abort(true);
+
+	ob_start();
+	$serverProtocole = filter_input(INPUT_SERVER, 'SERVER_PROTOCOL', FILTER_SANITIZE_STRING);
+	header($serverProtocole.' 200 OK');
+	header('Content-Encoding: none');
+	header('Content-Length: '.ob_get_length());
+	header('Connection: close');
+
+	ob_end_flush();
+	ob_flush();
+	flush();
+}
