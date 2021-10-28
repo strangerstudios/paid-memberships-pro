@@ -476,6 +476,16 @@ class PMPro_Site_Health {
 			$constants = array_merge( $constants, $gateway_specific_constants[ $gateway ] );
 		}
 
+		/**
+		 * Allow filtering the supported Site Health constants by other add ons.
+		 *
+		 * @since TBD
+		 *
+		 * @param array  $constants The list of constants to show in Site Health.
+		 * @param string $gateway   The current payment gateway.
+		 */
+		$constants = apply_filters( 'pmpro_site_health_constants', $constants, $gateway );
+
 		// Get and format constant information.
 		$constants_formatted = [];
 
