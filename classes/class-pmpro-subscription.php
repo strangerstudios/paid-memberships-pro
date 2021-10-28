@@ -81,6 +81,9 @@ class PMPro_Subscription {
 			$sql_query .= " AND status IN ('" . implode( "','", array_map( 'esc_sql', $statuses ) ) . "')";
 		}
 
+		// Array returned from this function should be from newest to oldest.
+		$sql_query .= " ORDER BY startdate DESC";
+
 		$subscription_ids = $wpdb->get_results( $sql_query );
 		if ( empty( $subscription_ids ) ) {
 			return array();

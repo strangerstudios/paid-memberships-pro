@@ -689,19 +689,35 @@ function pmpro_displayAds() {
 	return $pmpro_display_ads;
 }
 
+/**
+ * Get the next payment date for a user.
+ *
+ * This function will only return the next payment date for the subscription with
+ * the most recent start date. For this reason, it is not MMPU-compatible.
+ *
+ * @since unknown
+ *
+ * @param int|null $user_id      User ID. Defaults to the current user.
+ * @param string   $order_status If value passed in is not "success", will get next payment date for a cancelled subscription.
+ * @param string   $format       Date format to return.
+ *
+ * @return string|bool Date of next payment, or false if no subscription is found.
+ */
 function pmpro_next_payment( $user_id = null, $order_status = 'success', $format = 'timestamp' ) {
 	global $wpdb, $current_user;
 	if ( ! $user_id ) {
 		$user_id = $current_user->ID;
 	}
 
-	if ( ! $user_id ) {
-		return false;
-	} else {
-		$subscription = new PMPro_Subscription();
-		$subscription->get_subscriptions_for_user( $user_id );
-		return $subscription->get_next_payment_date( $format );
+	if ( $user_id ) {
+		// Convert passed order status to a subscription status.
+		$subscription_status = $order_status === 'success' ? 'active' : 'cancelled';
+		$subscriptions = PMPro_Subscription::get_subscriptions_for_user( $user_id, null, $subscription_status );
+		if ( ! empty( $subscriptions ) ) {
+			return $subscriptions[0]->get_next_payment_date( $format );
+		}
 	}
+	return false;
 }
 
 if ( ! function_exists( 'last4' ) ) {

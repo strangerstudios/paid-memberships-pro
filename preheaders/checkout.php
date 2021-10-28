@@ -675,12 +675,6 @@ if ( ! empty( $pmpro_confirmed ) ) {
 				$morder->user_id       = $user_id;
 				$morder->membership_id = $pmpro_level->id;
 				$morder->saveOrder();
-
-				// Link subscription to membership user.
-				if ( PMPro_Subscription::subscription_exists_for_order( $morder ) ) {
-					$subscription = new PMPro_Subscription( $morder );
-					$subscription->link_membership_user( $user_id, $pmpro_level->id );
-				}
 			}
 
 			//update the current user
