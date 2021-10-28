@@ -4,7 +4,9 @@ class PMPro_Subscription {
 	/**
 	 * Create a new PMPro_Subscription object.
 	 *
-	 * @param int $id of subscription to get.
+	 * @since TBD.
+	 *
+	 * @param int $id ID of the subscription to load.
 	 */
 	function __construct( $id = null ) {
 		global $wpdb;
@@ -51,6 +53,17 @@ class PMPro_Subscription {
 		return $this;
 	}
 
+	/**
+	 * Get subscriptions for a user.
+	 *
+	 * @since TBD.
+	 *
+	 * @param int|null          $user_id              ID of the user to get subscriptions for. Defaults to current user.
+	 * @param array|null        $membership_level_ids Array of membership level IDs to get subscriptions for. Defaults to all.
+	 * @param string|array|null $status               Status of the subscription to get. Defaults to active.
+	 *
+	 * @return array Array of PMPro_Subscription objects.
+	 */
 	static function get_subscriptions_for_user( $user_id = null, $membership_level_ids = null, $statuses = array( 'active' ) ) {
 		global $current_user, $wpdb;
 
@@ -97,6 +110,17 @@ class PMPro_Subscription {
 		return $subscriptions;
 	}
 
+	/**
+	 * Get the subscription with the given subscription transaction ID.
+	 *
+	 * @since TBD.
+	 *
+	 * @param string $subscription_transaction_id Subscription transaction ID to get.
+	 * @param string $gateway                     Gateway to get the subscription for.
+	 * @param string $gateway_environment         Gateway environment to get the subscription for.
+	 *
+	 * @return PMPro_Subscription|null PMPro_Subscription object if found, null if not found.
+	 */
 	static function get_subscription_from_subscription_transaction_id( $subscription_transaction_id, $gateway, $gateway_environment ) {
 		global $wpdb;
 		// Get the discount code object.
@@ -125,17 +149,30 @@ class PMPro_Subscription {
 		return null;
 	}
 
+	/**
+	 * Create a new subscription.
+	 *
+	 * @since TBD.
+	 *
+	 * @param int    $user_id                     ID of the user to create the subscription for.
+	 * @param int    $membership_level_id         ID of the membership level to create the subscription for.
+	 * @param string $subscription_transaction_id Subscription transaction ID to create the subscription for.
+	 * @param string $gateway                     Gateway to create the subscription for.
+	 * @param string $gateway_environment         Gateway environment to create the subscription for.
+	 *
+	 * @return PMPro_Subscription|null PMPro_Subscription object if created, null if not.
+	 */
 	static function create_subscription( $user_id, $membership_level_id, $subscription_transaction_id, $gateway, $gateway_environment ) {
 		global $wpdb;
 
 		if ( empty( $user_id ) ) {
-			return false;
+			return null;
 		}
 
 		$existing_subscription = self::get_subscription_from_subscription_transaction_id( $subscription_transaction_id, $gateway, $gateway_environment );
 		if ( ! empty( $existing_subscription ) ) {
 			// Subscription already exists.
-			return false;
+			return null;
 		}
 	
 		$new_subscription = new PMPro_Subscription();
@@ -209,6 +246,11 @@ class PMPro_Subscription {
 		return $new_subscription;
 	}
 
+	/**
+	 * Pull subscription info from the gateway.
+	 *
+	 * @since TBD.
+	 */
 	function update_from_gateway() {
 		$gateway_object = $this->get_gateway_object();
 		if ( method_exists( $gateway_object, 'update_subscription_info' ) ) {
@@ -219,9 +261,12 @@ class PMPro_Subscription {
 	/**
 	 * Get the next payment date for this subscription.
 	 *
-	 * @param string $format to return the next payment date in.
-	 * @param bool   $local_time set to false for date in GMT.
-	 * @param bool   $query_gateway for next payment date.
+	 * @since TBD.
+	 *
+	 * @param string $format     Format to return the date in.
+	 * @param bool   $local_time Whether to return the date in local time or UTC.
+	 *
+	 * @return string|null Date in the requested format.
 	 */
 	function get_next_payment_date( $format = 'timestamp', $local_time = true ) {
 		return $this->format_subscription_date( $this->next_payment_date, $format, $local_time );
@@ -229,38 +274,47 @@ class PMPro_Subscription {
 	}
 
 	/**
-	 * Get the startdate for this subscription.
+	 * Get the start date for this subscription.
 	 *
-	 * @param string $format to return the startdate in.
-	 * @param bool   $local_time set to false for date in GMT.
+	 * @since TBD.
+	 *
+	 * @param string $format     Format to return the date in.
+	 * @param bool   $local_time Whether to return the date in local time or UTC.
+	 *
+	 * @return string|null Date in the requested format.
 	 */
 	function get_startdate( $format = 'timestamp', $local_time = true ) {
 		return $this->format_subscription_date( $this->startdate, $format, $local_time );
 	}
 
 	/**
-	 * Get the enddate for this subscription.
+	 * Get the end date for this subscription.
 	 *
-	 * @param string $format to return the enddate in.
-	 * @param bool   $local_time set to false for date in GMT.
+	 * @since TBD.
+	 *
+	 * @param string $format     Format to return the date in.
+	 * @param bool   $local_time Whether to return the date in local time or UTC. 
+	 *
+	 * @return string|null Date in the requested format.
 	 */
 	function get_enddate( $format = 'timestamp', $local_time = true ) {
 		return $this->format_subscription_date( $this->enddate, $format, $local_time );
 	}
 
 	/**
-	 * Factoring code out of date getters.
+	 * Format a date.
 	 *
-	 * Function set to protected in case we later move out of class.
-	 * If we do, we only need to make changes within this class file.
+	 * @since TBD.
 	 *
-	 * @param string $date to format.
-	 * @param string $format to return the next payment date in.
-	 * @param bool   $local_time set to false for date in GMT.
+	 * @param string $date       Date to format.
+	 * @param string $format     Format to return the date in.
+	 * @param bool   $local_time Whether to return the date in local time or UTC.
+	 *
+	 * @return string|null Date in the requested format.
 	 */
-	protected function format_subscription_date( $date, $format = 'timestamp', $local_time = true ) {
+	private function format_subscription_date( $date, $format = 'timestamp', $local_time = true ) {
 		if ( empty( $date ) || $date == '0000-00-00 00:00:00' ) {
-			return false;
+			return null;
 		} elseif ( 'timestamp' === $format ) {
 			$format = 'U';
 		} elseif ( 'date_format' === $format ) {
@@ -276,6 +330,8 @@ class PMPro_Subscription {
 
 	/**
 	 * Returns the PMProGateway object for this subscription.
+	 *
+	 * @since TBD.
 	 */
 	function get_gateway_object() {
 		$classname = 'PMProGateway';	// Default test gateway.
@@ -291,6 +347,11 @@ class PMPro_Subscription {
 	}
 
 
+	/**
+	 * Save the subscription.
+	 *
+	 * @since TBD.
+	 */
 	function save() {
 		global $wpdb;
 
@@ -350,6 +411,10 @@ class PMPro_Subscription {
 
 	/**
 	 * Cancels this subscription in PMPro and at the payment gateway.
+	 *
+	 * @since TBD.
+	 *
+	 * @return bool True if the subscription was canceled successfully.
 	 */
 	function cancel() {
 		// Cancel subscription at gateway first.
