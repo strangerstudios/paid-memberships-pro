@@ -100,6 +100,9 @@ class PMPro_Site_Health {
 			],
 		];
 
+		// Automatically add information about constants set.
+		$info['pmpro']['fields'] = array_merge( $info['pmpro']['fields'], self::get_constants() );
+
 		return $info;
 	}
 
@@ -426,6 +429,69 @@ class PMPro_Site_Health {
 		}
 
 		return __( 'Off', 'paid-memberships-pro' );
+	}
+
+	/**
+	 * Get the constants site health information.
+	 *
+	 * @since TBD
+	 *
+	 * @return array The constants site health information.
+	 */
+	public function get_constants() {
+		$constants = [
+			'PMPRO_CRON_LIMIT'                => __( 'Cron Limit', 'paid-memberships-pro' ),
+			'PMPRO_DEFAULT_LEVEL'             => __( 'Default Membership Level', 'paid-memberships-pro' ),
+			'PMPRO_USE_SESSIONS'              => __( 'Use Sessions', 'paid-memberships-pro' ),
+		];
+
+		$gateway_specific_constants = [
+			'authorizenet' => [
+				'PMPRO_AUTHNET_SILENT_POST_DEBUG' => __( 'Authorize.net Silent Post Debug Mode', 'paid-memberships-pro' ),
+			],
+			'braintree' => [
+				'PMPRO_BRAINTREE_WEBHOOK_DEBUG'   => __( 'Braintree Webhook Debug Mode', 'paid-memberships-pro' ),
+			],
+			'paypal' => [
+				'PMPRO_IPN_DEBUG'                 => __( 'PayPal IPN Debug Mode', 'paid-memberships-pro' ),
+			],
+			'paypalexpress' => [
+				'PMPRO_IPN_DEBUG'                 => __( 'PayPal IPN Debug Mode', 'paid-memberships-pro' ),
+			],
+			'paypalstandard' => [
+				'PMPRO_IPN_DEBUG'                 => __( 'PayPal IPN Debug Mode', 'paid-memberships-pro' ),
+			],
+			'stripe' => [
+				'PMPRO_STRIPE_WEBHOOK_DELAY'      => __( 'Stripe Webhook Delay', 'paid-memberships-pro' ),
+				'PMPRO_STRIPE_WEBHOOK_DEBUG'      => __( 'Stripe Webhook Debug Mode', 'paid-memberships-pro' ),
+			],
+			'twocheckout' => [
+				'PMPRO_INS_DEBUG'                 => __( '2Checkout INS Debug Mode', 'paid-memberships-pro' ),
+			],
+		];
+
+		$gateway = pmpro_getOption( 'gateway' );
+
+		if ( $gateway && isset( $gateway_specific_constants[ $gateway ] ) ) {
+			$constants = array_merge( $constants, $gateway_specific_constants[ $gateway ] );
+		}
+
+		// Get and format constant information.
+		$constants_formatted = [];
+
+		foreach ( $constants as $constant => $label ) {
+			// Only get site health info for constants that are set.
+			if ( ! defined( $constant ) ) {
+				continue;
+			}
+
+			$constants_formatted[ 'pmpro-constants-' . $constant ] = [
+				'label' => $label . ' (' . $constant . ')',
+				'value' => var_export( constant( $constant ), true ),
+			];
+		}
+
+		return $constants_formatted;
 	}
 
 }
