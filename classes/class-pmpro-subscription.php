@@ -102,7 +102,8 @@ class PMPro_Subscription {
 	 *
 	 * @since TBD
 	 *
-	 * @param null|int|object $subscription The ID of the subscription to load or subscription data.
+	 * @param null|int|array|object $subscription The ID of the subscription to set up or the subscription data to load.
+	 *                                            Leave empty for a new subscription.
 	 */
 	public function __construct( $subscription = null ) {
 		global $wpdb;
