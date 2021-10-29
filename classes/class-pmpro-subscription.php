@@ -484,7 +484,7 @@ class PMPro_Subscription {
 	public function update_from_gateway() {
 		$gateway_object = $this->get_gateway_object();
 
-		if ( method_exists( $gateway_object, 'update_subscription_info' ) ) {
+		if ( $gateway_object && method_exists( $gateway_object, 'update_subscription_info' ) ) {
 			$gateway_object->update_subscription_info( $this );
 		}
 	}
