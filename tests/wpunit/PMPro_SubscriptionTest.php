@@ -29,8 +29,8 @@ class PMPro_SubscriptionTest extends TestCase {
 			'user_id'             => $user_id,
 		] );
 
-		$this->assertEquals( $subscription_id, PMPro_Subscription::get_subscription( (int) $subscription_id ) );
-		$this->assertEquals( $subscription_id, PMPro_Subscription::get_subscription( (string) $subscription_id ) );
+		$this->assertAttributeEquals( $subscription_id, 'id', PMPro_Subscription::get_subscription( (int) $subscription_id ) );
+		$this->assertAttributeEquals( $subscription_id, 'id', PMPro_Subscription::get_subscription( (string) $subscription_id ) );
 		$this->assertNull( PMPro_Subscription::get_subscription( 'something-' . $subscription_id ) );
 		$this->assertNull( PMPro_Subscription::get_subscription( 'something_' . $subscription_id ) );
 		$this->assertNull( PMPro_Subscription::get_subscription( 's' . $subscription_id ) );
@@ -44,21 +44,21 @@ class PMPro_SubscriptionTest extends TestCase {
 			'user_id'             => $user_id,
 		] );
 
-		$this->assertEquals( $subscription_id, PMPro_Subscription::get_subscription( [
+		$this->assertAttributeEquals( $subscription_id, 'id', PMPro_Subscription::get_subscription( [
 			'user_id' => $user_id,
 		] ) );
-		$this->assertEquals( $subscription_id, PMPro_Subscription::get_subscription( [
+		$this->assertAttributeEquals( $subscription_id, 'id', PMPro_Subscription::get_subscription( [
 			'user_id' => [ $user_id ],
 		] ) );
 		$this->assertNull( PMPro_Subscription::get_subscription( [
 			'user_id' => 123456, // Wrong user ID.
 		] ) );
 
-		$this->assertEquals( $subscription_id, PMPro_Subscription::get_subscription( [
+		$this->assertAttributeEquals( $subscription_id, 'id', PMPro_Subscription::get_subscription( [
 			'user_id'             => $user_id,
 			'membership_level_id' => $level_id,
 		] ) );
-		$this->assertEquals( $subscription_id, PMPro_Subscription::get_subscription( [
+		$this->assertAttributeEquals( $subscription_id, 'id', PMPro_Subscription::get_subscription( [
 			'user_id'             => $user_id,
 			'membership_level_id' => [ $level_id ],
 		] ) );
@@ -67,13 +67,13 @@ class PMPro_SubscriptionTest extends TestCase {
 			'membership_level_id' => 123456, // Wrong level ID.
 		] ) );
 
-		$this->assertEquals( $subscription_id, PMPro_Subscription::get_subscription( [
+		$this->assertAttributeEquals( $subscription_id, 'id', PMPro_Subscription::get_subscription( [
 			'user_id'             => $user_id,
 			'membership_level_id' => $level_id,
 			'gateway'             => 'check',
 			'gateway_environment' => 'sandbox',
 		] ) );
-		$this->assertEquals( $subscription_id, PMPro_Subscription::get_subscription( [
+		$this->assertAttributeEquals( $subscription_id, 'id', PMPro_Subscription::get_subscription( [
 			'user_id'             => $user_id,
 			'membership_level_id' => $level_id,
 			'gateway'             => [ 'check' ],
@@ -92,10 +92,10 @@ class PMPro_SubscriptionTest extends TestCase {
 			'gateway_environment' => 'sandybox', // Wrong gateway environment.
 		] ) );
 
-		$this->assertEquals( $subscription_id, PMPro_Subscription::get_subscription( [
+		$this->assertAttributeEquals( $subscription_id, 'id', PMPro_Subscription::get_subscription( [
 			'id' => $subscription_id,
 		] ) );
-		$this->assertEquals( $subscription_id, PMPro_Subscription::get_subscription( [
+		$this->assertAttributeEquals( $subscription_id, 'id', PMPro_Subscription::get_subscription( [
 			'id' => [ $subscription_id ],
 		] ) );
 		$this->assertNull( PMPro_Subscription::get_subscription( [
