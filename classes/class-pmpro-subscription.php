@@ -175,7 +175,6 @@ class PMPro_Subscription {
 		// TODO: Validate values if needed.
 		if ( isset( $this->{$property} ) ) {
 			$this->{$property} = $value;
-			return true;
 		}
 		return false;
 	}
