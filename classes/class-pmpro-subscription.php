@@ -136,15 +136,10 @@ class PMPro_Subscription {
 			return;
 		}
 
-		$int_columns = [
-			'id'                  => true,
-			'user_id'             => true,
-			'membership_level_id' => true,
-		];
-
 		if ( ! empty( $subscription_data ) ) {
 			foreach ( $subscription_data as $arg => $value ) {
-				if ( isset( $int_columns[ $arg ] ) ) {
+				// Enforce integers for properties.
+				if ( isset( $this->{$arg} ) && is_int( $this->{$arg} ) ) {
 					$value = (int) $value;
 				}
 
