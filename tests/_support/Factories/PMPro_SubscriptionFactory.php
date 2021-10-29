@@ -65,17 +65,29 @@ class PMPro_SubscriptionFactory extends Test_Factory {
 	public function create_object( $args ) {
 		global $wpdb;
 
-		$wpdb->insert( $this->_table, $args, $this->_format );
+		$format = [];
+
+		foreach ( $args as $arg => $value ) {
+			$format[] = isset( $this->_format[ $arg ] ) ? $this->_format[ $arg ] : '%s';
+		}
+
+		$wpdb->insert( $this->_table, $args, $format );
 
 		return $wpdb->insert_id;
 	}
 
-	public function update_object( $object, $fields ) {
+	public function update_object( $object, $args ) {
 		global $wpdb;
 
-		$fields = [ 'id' => $object ] + $fields;
+		$args = [ 'id' => $object ] + $args;
 
-		$wpdb->update( $this->_table, $fields, $this->_format );
+		$format = [];
+
+		foreach ( $args as $arg => $value ) {
+			$format[] = isset( $this->_format[ $arg ] ) ? $this->_format[ $arg ] : '%s';
+		}
+
+		$wpdb->update( $this->_table, $args, $format );
 
 		return $wpdb->insert_id;
 	}
