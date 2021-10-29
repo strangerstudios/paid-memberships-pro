@@ -14,7 +14,7 @@ class PMPro_Subscription {
 	 *
 	 * @var int
 	 */
-	public $id = 0;
+	private $id = 0;
 
 	/**
 	 * The subscription user ID.
@@ -23,7 +23,7 @@ class PMPro_Subscription {
 	 *
 	 * @var int
 	 */
-	public $user_id = 0;
+	private $user_id = 0;
 
 	/**
 	 * The subscription membership level ID.
@@ -32,7 +32,7 @@ class PMPro_Subscription {
 	 *
 	 * @var int
 	 */
-	public $membership_level_id = 0;
+	private $membership_level_id = 0;
 
 	/**
 	 * The subscription gateway.
@@ -41,7 +41,7 @@ class PMPro_Subscription {
 	 *
 	 * @var string
 	 */
-	public $gateway = '';
+	private $gateway = '';
 
 	/**
 	 * The subscription gateway environment.
@@ -50,7 +50,7 @@ class PMPro_Subscription {
 	 *
 	 * @var string
 	 */
-	public $gateway_environment = '';
+	private $gateway_environment = '';
 
 	/**
 	 * The subscription transaction id.
@@ -59,7 +59,7 @@ class PMPro_Subscription {
 	 *
 	 * @var string
 	 */
-	public $subscription_transaction_id = '';
+	private $subscription_transaction_id = '';
 
 	/**
 	 * The subscription status.
@@ -68,7 +68,7 @@ class PMPro_Subscription {
 	 *
 	 * @var string
 	 */
-	public $status = '';
+	private $status = '';
 
 	/**
 	 * The subscription start date (UTC YYYY-MM-DD HH:MM:SS).
@@ -77,7 +77,7 @@ class PMPro_Subscription {
 	 *
 	 * @var string
 	 */
-	public $startdate = '';
+	private $startdate = '';
 
 	/**
 	 * The subscription end date (UTC YYYY-MM-DD HH:MM:SS).
@@ -86,7 +86,7 @@ class PMPro_Subscription {
 	 *
 	 * @var string
 	 */
-	public $enddate = '';
+	private $enddate = '';
 
 	/**
 	 * The subscription next payment date (UTC YYYY-MM-DD HH:MM:SS).
@@ -95,7 +95,7 @@ class PMPro_Subscription {
 	 *
 	 * @var string
 	 */
-	public $next_payment_date = '';
+	private $next_payment_date = '';
 
 	/**
 	 * Create a new PMPro_Subscription object.
@@ -146,6 +146,38 @@ class PMPro_Subscription {
 				$this->{$arg} = $value;
 			}
 		}
+	}
+
+	/**
+	 * Get a property of this object.
+	 *
+	 * @since TBD
+	 *
+	 * @param  string $property The property to get.
+	 * @return mixed  The property value.
+	 */
+	public function __get( $property ) {
+		if ( isset( $this->{$property} ) ) {
+			return $this->{$property};
+		}
+	}
+
+	/**
+	 * Set a property of this object.
+	 *
+	 * @since TBD
+	 *
+	 * @param  string $property The property to set.
+	 * @param  mixed  $value    The value to set.
+	 * @return bool   True if the property was set, false if not.
+	 */
+	public function __set( $property, $value ) {
+		// TODO: Validate properties if needed.
+		if ( isset( $this->{$property} ) ) {
+			$this->{$property} = $value;
+			return true;
+		}
+		return false;
 	}
 
 	/**
