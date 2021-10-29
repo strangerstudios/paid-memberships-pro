@@ -53,7 +53,7 @@ class PMPro_Subscription {
 	public $gateway_environment = '';
 
 	/**
-	 * The subscription subscription transaction id.
+	 * The subscription transaction id.
 	 *
 	 * @since TBD
 	 *
@@ -297,13 +297,13 @@ class PMPro_Subscription {
 			$sql_query .= ' WHERE ' . implode( ' AND ', $where );
 		}
 
+		$sql_query .= ' ORDER BY startdate DESC';
+
 		// Maybe limit the data.
 		if ( $limit ) {
 			$sql_query .= ' LIMIT %d';
 			$prepared[] = $limit;
 		}
-
-		$sql_query .= ' ORDER BY startdate DESC';
 
 		// Maybe prepare the query.
 		if ( $prepared ) {
