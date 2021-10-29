@@ -176,7 +176,6 @@ class PMPro_Subscription {
 		if ( isset( $this->{$property} ) ) {
 			$this->{$property} = $value;
 		}
-		return false;
 	}
 
 	/**
