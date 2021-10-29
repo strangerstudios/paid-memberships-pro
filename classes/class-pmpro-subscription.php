@@ -571,6 +571,8 @@ class PMPro_Subscription {
 	 * Returns the PMProGateway object for this subscription.
 	 *
 	 * @since TBD
+	 *
+	 * @return null|PMProGateway The PMProGateway object, null if not set or class found.
 	 */
 	public function get_gateway_object() {
 		// No gatway was set.
