@@ -130,6 +130,9 @@ class PMPro_Subscription {
 			$subscription_data = $subscription;
 		} elseif ( is_object( $subscription ) ) {
 			$subscription_data = get_object_vars( $subscription );
+		} else {
+			// Invalid $subscription so there's nothing we can do.
+			return;
 		}
 
 		$int_columns = [
