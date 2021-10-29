@@ -370,9 +370,7 @@
 				if(!empty($user->ID) && true === $cancel_membership ) {
 					do_action( "pmpro_stripe_subscription_deleted", $user->ID );
 
-					if ( PMPro_Subscription::subscription_exists_for_order( $old_order ) ) {
-						$subscription = new PMPro_Subscription( $old_order );
-					}
+					$subscription  = PMPro_Subscription::get_subscription_from_subscription_transaction_id( $old_order->subscription_transaction_id, $old_order->gateway, $old_order->gateway_environment );
 
 					if ( $old_order->status == "cancelled" || ( ! empty( $subscription ) && $subscription->status == 'cancelled') ) {
 						$logstr .= "We've already processed this cancellation. Probably originated from WP/PMPro. (Order #{$old_order->id}, Subscription Transaction ID #{$old_order->subscription_transaction_id})\n";

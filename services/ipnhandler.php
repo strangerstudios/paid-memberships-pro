@@ -260,9 +260,7 @@ if ( $txn_type == 'recurring_payment_profile_cancel' || $txn_type == 'recurring_
 				(1) This order already has "cancelled" status.
 				(2) The user doesn't currently have the level attached to this order.
 			*/
-			if ( PMPro_Subscription::subscription_exists_for_order( $last_subscription_order ) ) {
-				$subscription = new PMPro_Subscription( $last_subscription_order );
-			}
+			$subscription  = PMPro_Subscription::get_subscription_from_subscription_transaction_id( $last_subscription_order->subscription_transaction_id, $last_subscription_order->gateway, $last_subscription_order->gateway_environment );
 
 			// Check if there was an error
 			if ( $initial_payment_status === "failed" ) {
