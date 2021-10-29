@@ -169,7 +169,6 @@ class PMPro_Subscription {
 	 *
 	 * @param  string $property The property to set.
 	 * @param  mixed  $value    The value to set.
-	 * @return bool   True if the property was set, false if not.
 	 */
 	public function __set( $property, $value ) {
 		// TODO: Validate values if needed.
