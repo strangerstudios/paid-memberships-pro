@@ -172,7 +172,7 @@ class PMPro_Subscription {
 	 * @return bool   True if the property was set, false if not.
 	 */
 	public function __set( $property, $value ) {
-		// TODO: Validate properties if needed.
+		// TODO: Validate values if needed.
 		if ( isset( $this->{$property} ) ) {
 			$this->{$property} = $value;
 			return true;
