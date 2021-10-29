@@ -45,34 +45,6 @@ class PMPro_SubscriptionTest extends TestCase {
 		$this->assertNull( PMPro_Subscription::get_subscription( 's' . $subscription_id ) );
 	}
 
-	public function test_get_subscription_with_args_with_user_id() {
-		$user_id         = $this->factory()->user->create();
-		$level_id        = $this->factory()->pmpro_level->create();
-		$subscription_id = $this->factory()->pmpro_subscription->create( [
-			'membership_level_id' => $level_id,
-			'user_id'             => $user_id,
-		] );
-
-		// By user ID.
-		$subscription = PMPro_Subscription::get_subscription( [
-			'user_id' => $user_id,
-		] );
-		$this->assertInstanceOf( PMPro_Subscription::class, $subscription );
-		$this->assertAttributeEquals( $subscription_id, 'id', $subscription );
-
-		// By user ID array.
-		$subscription = PMPro_Subscription::get_subscription( [
-			'user_id' => [ $user_id ],
-		] );
-		$this->assertInstanceOf( PMPro_Subscription::class, $subscription );
-		$this->assertAttributeEquals( $subscription_id, 'id', $subscription );
-
-		// By invalid user ID.
-		$this->assertNull( PMPro_Subscription::get_subscription( [
-			'user_id' => 123456,
-		] ) );
-	}
-
 	public function test_get_subscription_with_args_with_membership_level_id() {
 		$user_id         = $this->factory()->user->create();
 		$level_id        = $this->factory()->pmpro_level->create();
@@ -101,51 +73,6 @@ class PMPro_SubscriptionTest extends TestCase {
 		$this->assertNull( PMPro_Subscription::get_subscription( [
 			'user_id'             => $user_id,
 			'membership_level_id' => 123456, // Wrong level ID.
-		] ) );
-	}
-
-	public function test_get_subscription_with_args_gateway() {
-		$user_id         = $this->factory()->user->create();
-		$level_id        = $this->factory()->pmpro_level->create();
-		$subscription_id = $this->factory()->pmpro_subscription->create( [
-			'membership_level_id' => $level_id,
-			'user_id'             => $user_id,
-		] );
-
-		// By gateway and gateway environment.
-		$subscription = PMPro_Subscription::get_subscription( [
-			'user_id'             => $user_id,
-			'membership_level_id' => $level_id,
-			'gateway'             => 'check',
-			'gateway_environment' => 'sandbox',
-		] );
-		$this->assertInstanceOf( PMPro_Subscription::class, $subscription );
-		$this->assertAttributeEquals( $subscription_id, 'id', $subscription );
-
-		// By gateway and gateway environment arrays.
-		$subscription = PMPro_Subscription::get_subscription( [
-			'user_id'             => $user_id,
-			'membership_level_id' => $level_id,
-			'gateway'             => [ 'check' ],
-			'gateway_environment' => [ 'sandbox' ],
-		] );
-		$this->assertInstanceOf( PMPro_Subscription::class, $subscription );
-		$this->assertAttributeEquals( $subscription_id, 'id', $subscription );
-
-		// By invalid gateway and valid gateway environment.
-		$this->assertNull( PMPro_Subscription::get_subscription( [
-			'user_id'             => $user_id,
-			'membership_level_id' => $level_id,
-			'gateway'             => 'checkers', // Wrong gateway.
-			'gateway_environment' => 'sandbox',
-		] ) );
-
-		// By valid gateway and invalid gateway environment.
-		$this->assertNull( PMPro_Subscription::get_subscription( [
-			'user_id'             => $user_id,
-			'membership_level_id' => $level_id,
-			'gateway'             => 'check',
-			'gateway_environment' => 'sandybox', // Wrong gateway environment.
 		] ) );
 	}
 
