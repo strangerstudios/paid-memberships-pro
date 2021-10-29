@@ -177,15 +177,152 @@ class PMPro_SubscriptionTest extends TestCase {
 		] ) );
 	}
 
-	public function test_get_subscriptions() {
-		$this->markTestIncomplete( 'Still building this out' );
+	public function test_get_subscriptions_with_args_with_user_id() {
+		$user_id         = $this->factory()->user->create();
+		$level_id        = $this->factory()->pmpro_level->create();
+		$subscription_id = $this->factory()->pmpro_subscription->create( [
+			'membership_level_id' => $level_id,
+			'user_id'             => $user_id,
+		] );
 
-		// public static function get_subscriptions( array $args = [] );
-		$result = PMPro_Subscription::get_subscriptions();
+		// By user ID.
+		$subscriptions = PMPro_Subscription::get_subscriptions( [
+			'user_id' => $user_id,
+		] );
+		$this->assertCount( 1, $subscriptions );
+		$subscription = reset( $subscriptions ); // Get first subscription.
+		$this->assertInstanceOf( PMPro_Subscription::class, $subscription );
+		$this->assertAttributeEquals( $subscription_id, 'id', $subscription );
 
-		// Do the setup needed here.
+		// By user ID array.
+		$subscriptions = PMPro_Subscription::get_subscriptions( [
+			'user_id' => [ $user_id ],
+		] );
+		$this->assertCount( 1, $subscriptions );
+		$subscription = reset( $subscriptions ); // Get first subscription.
+		$this->assertInstanceOf( PMPro_Subscription::class, $subscription );
+		$this->assertAttributeEquals( $subscription_id, 'id', $subscription );
 
-		// Add assertions here.
+		// By invalid user ID.
+		$this->assertCount( 0, PMPro_Subscription::get_subscriptions( [
+			'user_id' => 123456,
+		] ) );
+	}
+
+	public function test_get_subscriptions_with_args_with_membership_level_id() {
+		$user_id         = $this->factory()->user->create();
+		$level_id        = $this->factory()->pmpro_level->create();
+		$subscription_id = $this->factory()->pmpro_subscription->create( [
+			'membership_level_id' => $level_id,
+			'user_id'             => $user_id,
+		] );
+
+		// By membership level ID.
+		$subscriptions = PMPro_Subscription::get_subscriptions( [
+			'user_id'             => $user_id,
+			'membership_level_id' => $level_id,
+		] );
+		$this->assertCount( 1, $subscriptions );
+		$subscription = reset( $subscriptions ); // Get first subscription.
+		$this->assertInstanceOf( PMPro_Subscription::class, $subscription );
+		$this->assertAttributeEquals( $subscription_id, 'id', $subscription );
+
+		// By membership level ID array.
+		$subscriptions = PMPro_Subscription::get_subscriptions( [
+			'user_id'             => $user_id,
+			'membership_level_id' => [ $level_id ],
+		] );
+		$this->assertCount( 1, $subscriptions );
+		$subscription = reset( $subscriptions ); // Get first subscription.
+		$this->assertInstanceOf( PMPro_Subscription::class, $subscription );
+		$this->assertAttributeEquals( $subscription_id, 'id', $subscription );
+
+		// By invalid membership level ID.
+		$this->assertCount( 0, PMPro_Subscription::get_subscriptions( [
+			'user_id'             => $user_id,
+			'membership_level_id' => 123456, // Wrong level ID.
+		] ) );
+	}
+
+	public function test_get_subscriptions_with_args_gateway() {
+		$user_id         = $this->factory()->user->create();
+		$level_id        = $this->factory()->pmpro_level->create();
+		$subscription_id = $this->factory()->pmpro_subscription->create( [
+			'membership_level_id' => $level_id,
+			'user_id'             => $user_id,
+		] );
+
+		// By gateway and gateway environment.
+		$subscriptions = PMPro_Subscription::get_subscriptions( [
+			'user_id'             => $user_id,
+			'membership_level_id' => $level_id,
+			'gateway'             => 'check',
+			'gateway_environment' => 'sandbox',
+		] );
+		$this->assertCount( 1, $subscriptions );
+		$subscription = reset( $subscriptions ); // Get first subscription.
+		$this->assertInstanceOf( PMPro_Subscription::class, $subscription );
+		$this->assertAttributeEquals( $subscription_id, 'id', $subscription );
+
+		// By gateway and gateway environment arrays.
+		$subscriptions = PMPro_Subscription::get_subscriptions( [
+			'user_id'             => $user_id,
+			'membership_level_id' => $level_id,
+			'gateway'             => [ 'check' ],
+			'gateway_environment' => [ 'sandbox' ],
+		] );
+		$this->assertCount( 1, $subscriptions );
+		$subscription = reset( $subscriptions ); // Get first subscription.
+		$this->assertInstanceOf( PMPro_Subscription::class, $subscription );
+		$this->assertAttributeEquals( $subscription_id, 'id', $subscription );
+
+		// By invalid gateway and valid gateway environment.
+		$this->assertCount( 0, PMPro_Subscription::get_subscriptions( [
+			'user_id'             => $user_id,
+			'membership_level_id' => $level_id,
+			'gateway'             => 'checkers', // Wrong gateway.
+			'gateway_environment' => 'sandbox',
+		] ) );
+
+		// By valid gateway and invalid gateway environment.
+		$this->assertCount( 0, PMPro_Subscription::get_subscriptions( [
+			'user_id'             => $user_id,
+			'membership_level_id' => $level_id,
+			'gateway'             => 'check',
+			'gateway_environment' => 'sandybox', // Wrong gateway environment.
+		] ) );
+	}
+
+	public function test_get_subscriptions_with_args_with_id() {
+		$user_id         = $this->factory()->user->create();
+		$level_id        = $this->factory()->pmpro_level->create();
+		$subscription_id = $this->factory()->pmpro_subscription->create( [
+			'membership_level_id' => $level_id,
+			'user_id'             => $user_id,
+		] );
+
+		// By subscription ID.
+		$subscriptions = PMPro_Subscription::get_subscriptions( [
+			'id' => $subscription_id,
+		] );
+		$this->assertCount( 1, $subscriptions );
+		$subscription = reset( $subscriptions ); // Get first subscription.
+		$this->assertInstanceOf( PMPro_Subscription::class, $subscription );
+		$this->assertAttributeEquals( $subscription_id, 'id', $subscription );
+
+		// By subscription ID array.
+		$subscriptions = PMPro_Subscription::get_subscriptions( [
+			'id' => [ $subscription_id ],
+		] );
+		$this->assertCount( 1, $subscriptions );
+		$subscription = reset( $subscriptions ); // Get first subscription.
+		$this->assertInstanceOf( PMPro_Subscription::class, $subscription );
+		$this->assertAttributeEquals( $subscription_id, 'id', $subscription );
+
+		// By invalid subscription ID.
+		$this->assertCount( 0, PMPro_Subscription::get_subscriptions( [
+			'id' => 123456, // Wrong ID.
+		] ) );
 	}
 
 	public function test_get_subscriptions_for_user() {
