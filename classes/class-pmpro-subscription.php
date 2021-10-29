@@ -553,11 +553,18 @@ class PMPro_Subscription {
 			$format = get_option( 'date_format' );
 		}
 
+		// Get date in WP local timezone.
 		if ( $local_time ) {
-			return get_date_from_gmt( $date, $format ); // Local time.
+			return get_date_from_gmt( $date, $format );
 		}
 
-		return date( $format, strtotime( $date ) ); // GMT.
+		// Allow timestamps.
+		if ( ! is_numeric( $date ) ) {
+			$date = strtotime( $date );
+		}
+
+		// Get date in GMT timezone.
+		return gmdate( $format, $date );
 	}
 
 	/**
