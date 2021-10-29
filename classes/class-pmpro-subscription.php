@@ -299,6 +299,8 @@ class PMPro_Subscription {
 			$prepared[] = $limit;
 		}
 
+		$sql_query .= ' ORDER BY startdate DESC';
+
 		// Maybe prepare the query.
 		if ( $prepared ) {
 			$sql_query = $wpdb->prepare( $sql_query, $prepared );
