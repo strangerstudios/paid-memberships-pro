@@ -330,9 +330,9 @@ class PMPro_Subscription {
 	 *
 	 * @since TBD
 	 *
-	 * @param int|null          $user_id             ID of the user to get subscriptions for. Defaults to current user.
-	 * @param int|array|null    $membership_level_id The membership level ID(s) to get subscriptions for. Defaults to all.
-	 * @param string|array|null $status              The status(es) of the subscription to get. Defaults to active.
+	 * @param int|null             $user_id             ID of the user to get subscriptions for. Defaults to current user.
+	 * @param int|int[]|null       $membership_level_id The membership level ID(s) to get subscriptions for. Defaults to all.
+	 * @param string|string[]|null $status              The status(es) of the subscription to get. Defaults to active.
 	 *
 	 * @return PMPro_Subscription[] The list of subscription objects.
 	 */
@@ -342,9 +342,9 @@ class PMPro_Subscription {
 			$user_id = get_current_user_id();
 		}
 
-		// If we don't have a valid user, return.
+		// Check for a valid user.
 		if ( empty( $user_id ) ) {
-			return false;
+			return [];
 		}
 
 		// Filter by user ID.
