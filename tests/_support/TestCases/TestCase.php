@@ -4,6 +4,7 @@ namespace PMPro\Test_Support\TestCases;
 
 use Codeception\TestCase\WPTestCase;
 use PMPro\Test_Support\Factories\PMPro_LevelFactory;
+use PMPro\Test_Support\Factories\PMPro_SubscriptionFactory;
 
 /**
  * Class TestCase
@@ -19,6 +20,7 @@ class TestCase extends WPTestCase {
 		// Do anything we need to do to set up the environment for these tests.
 
 		$this->factory()->pmpro_level = new PMPro_LevelFactory();
+		$this->factory()->pmpro_subscription = new PMPro_SubscriptionFactory();
 
 		// Reset the user to visitor before each test.
 		wp_set_current_user( 0 );
