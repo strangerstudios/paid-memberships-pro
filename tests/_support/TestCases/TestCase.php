@@ -4,6 +4,7 @@ namespace PMPro\Test_Support\TestCases;
 
 use Codeception\TestCase\WPTestCase;
 use PMPro\Test_Support\Factories\PMPro_LevelFactory;
+use PMPro\Test_Support\Factories\PMPro_SubscriptionFactory;
 
 /**
  * Class TestCase
