@@ -418,12 +418,15 @@ class PMPro_Subscription {
 			return null;
 		}
 
-		$new_subscription                              = new PMPro_Subscription();
-		$new_subscription->user_id                     = $user_id;
-		$new_subscription->membership_level_id         = $membership_level_id;
-		$new_subscription->gateway                     = $gateway;
-		$new_subscription->gateway_environment         = $gateway_environment;
-		$new_subscription->subscription_transaction_id = $subscription_transaction_id;
+		$subscription_data = [
+			'user_id'                     => $user_id,
+			'membership_level_id'         => $membership_level_id,
+			'gateway'                     => $gateway,
+			'gateway_environment'         => $gateway_environment,
+			'subscription_transaction_id' => $subscription_transaction_id,
+		];
+
+		$new_subscription = new PMPro_Subscription( $subscription_data );
 
 		// Try to pull as much info as possible directly from the gateway.
 		$new_subscription->update_from_gateway();
