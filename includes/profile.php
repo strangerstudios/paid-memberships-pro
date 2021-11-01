@@ -40,31 +40,7 @@ function pmpro_membership_level_profile_fields($user)
 				<?php
 					}
 				?>
-				</select>
-                <span id="current_level_cost">
-                <?php
-                $membership_values = pmpro_getMembershipLevelForUser($user->ID);
-
-				//we tweak the initial payment here so the text here effectively shows the recurring amount
-				if(!empty($membership_values))
-				{
-					$membership_values->original_initial_payment = $membership_values->initial_payment;
-					$membership_values->initial_payment = $membership_values->billing_amount;
-				}
-
-				if(empty($membership_values) || pmpro_isLevelFree($membership_values))
-                {
-					if(!empty($membership_values->original_initial_payment) && $membership_values->original_initial_payment > 0)
-						echo __('Paid', 'paid-memberships-pro' ) . " " . pmpro_formatPrice($membership_values->original_initial_payment) . ".";
-					else
-						_e('Not paying.', 'paid-memberships-pro' );
-				}
-				else
-                {
-                    echo pmpro_getLevelCost($membership_values, true, true);
-                }
-                ?>
-                </span>
+				</select>                
                 <p id="cancel_description" class="description hidden"><?php _e("This will not change the subscription at the gateway unless the 'Cancel' checkbox is selected below.", 'paid-memberships-pro' ); ?></p>
             </td>
 		</tr>
@@ -481,9 +457,15 @@ function pmpro_membership_history_profile_fields( $user ) {
 			?>
 			</tbody>
 			</table>
-			<?php } else { 
-				esc_html_e( 'No membership orders found.', 'paid-memberships-pro' );
-			} ?>
+			<?php } else { ?>
+                <table class="wp-list-table widefat striped fixed" width="100%" cellpadding="0" cellspacing="0" border="0">
+                    <tbody>
+                        <tr>
+                            <td><?php esc_html_e( 'No membership orders found.', 'paid-memberships-pro' ); ?></td>
+                        </tr>
+                    </tbody>
+                </table>
+			<?php } ?>
 		</div>
 		<div id="member-history-memberships" class="widgets-holder-wrap" style="display: none;">
 		<?php if ( $levelshistory ) { ?>
@@ -533,9 +515,15 @@ function pmpro_membership_history_profile_fields( $user ) {
 			?>
 			</tbody>
 			</table>
-			<?php } else { 
-				esc_html_e( 'No membership history found.', 'paid-memberships-pro');
-			} ?>
+			<?php } else { ?>
+                <table class="wp-list-table widefat striped fixed" width="100%" cellpadding="0" cellspacing="0" border="0">
+                    <tbody>
+                        <tr>
+                            <td><?php esc_html_e( 'No membership history found.', 'paid-memberships-pro'); ?></td>
+                        </tr>
+                    </tbody>
+                </table>
+			<?php } ?>
 		</div>
 		<script>
 			//tabs

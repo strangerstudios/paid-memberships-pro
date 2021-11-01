@@ -2,8 +2,9 @@
 Contributors: strangerstudios, kimannwall, andrewza, dlparker1005, paidmembershipspro
 Tags: memberships, members, subscriptions, ecommerce, user registration, member, membership, e-commerce, paypal, stripe, braintree, authorize.net, payflow, restrict access, restrict content, directory
 Requires at least: 5.2
-Tested up to: 5.8
-Stable tag: 2.6.1.1
+Tested up to: 5.8.1
+Requires PHP: 5.6
+Stable tag: 2.6.3
 
 Get Paid with Paid Memberships Pro: The most complete member management and membership subscriptions plugin for your WordPress site.
 
@@ -155,6 +156,32 @@ Not sure? You can find out by doing a bit a research.
 9. Membership Account page, display all sections or show specific sections using shortcode attributes.
 
 == Changelog ==
+= 2.6.3 - 2021-10-11 =
+* ENHANCEMENT: Now passing "app" information to Stripe through API calls. (@dparker1005)
+* ENHANCEMENT: Updated PayPal IPN to detect messages for refunds to at least log it. (@mircobabini)
+* ENHANCEMENT: Updated PayPal IPN to differentiate between cases where the initial payment failed vs a subscription was cancelled. (@mircobabini)
+* ENHANCEMENT: Better styling of the membership levels history when empty. (@mircobabini)
+* BUG FIX/ENHANCEMENT: Now showing better error messages when license key checks fail due to connection issues. (@ideadude)
+* BUG FIX: Improved PayPal API integration to handle cases where PayPal is returning encoding errors but still processing payments and subscriptions. (@mircobabini)
+* BUG FIX: Fixed issue where the Stripe sandbox key wasn't saved properly when using Stripe connect. (@dparker1005)
+* BUG FIX: Fixed issue where a double $$ was showing up in specific emails. (@andrewlimaza)
+* BUG FIX: Fixed warnings in various webhook and IPN handlers. (@ideadude)
+* BUG FIX: Fixed warning in the admin activity email cron job. (@andrewlimaza)
+
+= 2.6.2 - 2021-09-17 =
+* ENHANCEMENT: Made username the first column in the members list. This helps with the mobile view. #1764 (@dparker1005)
+* BUG FIX/ENHANCEMENT: Will now block uninstall.php from running if an older version of PMPro is deleted from the plugins page. #1773 (@mircobabini)
+* BUG FIX/ENAHCEMENT: Expanded the allowed HTML for pmpro_kses to support email templates and added a pmpro_kses filter. #1770 (@sc0ttkclark)
+* BUG FIX/ENHANCEMENT: Updated the CSS for "clickable" labels in checkbox lists. #1752 (@kimcoleman)
+* BUG FIX: Fixed bug with sending test emails from the email templates page. #1765 (@ideadude)
+* BUG FIX: Added the !!membership_level_confirmation_message!! var to the list on the email tempaltes page. #1783 (@kimwhite)
+* BUG FIX: Updated the SendWP link per their new dashboard area. #1777 (@kimcoleman)
+* BUG FIX: Fixed bug where PMPro-related usermeta was sometimes blanked out if those fields weren't present at checkout, e.g. when a logged in user was checking out. #1762 (@andrewlimaza)
+* BUG FIX: Fixed issue where gateway-related notices weren't showing up on the discount codes page. #1757 (@mircobabini)
+* BUG FIX: Fixed some design issues with the member history tables. #1753 (@mircobabini)
+* BUG FIX: Fixed issues where the option to block subscribers from the dashboard would interfere with other plugins, e.g. the MailPoet plugin. #1749 (@sc0ttkclark)
+* BUG FIX: Fixed issues where the RTL stylesheets might not load if your theme overrode frontend.css or admin.css but didn't have the RTL equivalents. (@ideadude, @sc0ttkclark)
+
 = 2.6.1.1 - 2021-08-25 =
 * BUG FIX: Fixed issue with PMPro blocks not showing up in the block editor.
 * REFACTOR: Some JS functions and element IDs and names have been prefixed with pmpro_ to avoid conflicts.

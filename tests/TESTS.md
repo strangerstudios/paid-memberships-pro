@@ -9,7 +9,7 @@
 
 [Follow the set up instructions](https://github.com/the-events-calendar/tric/blob/main/docs/setup.md) for [tric](https://github.com/the-events-calendar/tric).
 
-## Step 2: Setting up your plugin for testing
+## Step 2: Setting up your plugin for testing (if not already set up)
 
 1. Run `tric here` from your local site's `wp-content/plugins/` folder (only needed once per session)
 1. Run `tric use your-plugin-folder` to set which plugin target to use for testing (only needed once per session)
