@@ -3,6 +3,14 @@
 /**
  * The PMPro Subscription object.
  *
+ * @method int    get_id                  Get the ID of the subscription.
+ * @method int    get_user_id             Get the ID of the user the subscription belongs to.
+ * @method int    get_membership_id       Get the ID of the membership level that this subscription is for.
+ * @method string get_gateway             Get the gateway used to create the subscription.
+ * @method string get_gateway_environment Get the gateway environment used to create the subscription.
+ * @method string get_subscription_id     Get the ID of the subscription in the gateway.
+ * @method string get_status              Get the status of the subscription.
+ *
  * @since TBD
  */
 class PMPro_Subscription {
@@ -14,7 +22,7 @@ class PMPro_Subscription {
 	 *
 	 * @var int
 	 */
-	public $id = 0;
+	protected $id = 0;
 
 	/**
 	 * The subscription user ID.
@@ -23,7 +31,7 @@ class PMPro_Subscription {
 	 *
 	 * @var int
 	 */
-	public $user_id = 0;
+	protected $user_id = 0;
 
 	/**
 	 * The subscription membership level ID.
@@ -32,7 +40,7 @@ class PMPro_Subscription {
 	 *
 	 * @var int
 	 */
-	public $membership_level_id = 0;
+	protected $membership_level_id = 0;
 
 	/**
 	 * The subscription gateway.
@@ -41,7 +49,7 @@ class PMPro_Subscription {
 	 *
 	 * @var string
 	 */
-	public $gateway = '';
+	protected $gateway = '';
 
 	/**
 	 * The subscription gateway environment.
@@ -50,7 +58,7 @@ class PMPro_Subscription {
 	 *
 	 * @var string
 	 */
-	public $gateway_environment = '';
+	protected $gateway_environment = '';
 
 	/**
 	 * The subscription transaction id.
@@ -59,7 +67,7 @@ class PMPro_Subscription {
 	 *
 	 * @var string
 	 */
-	public $subscription_transaction_id = '';
+	protected $subscription_transaction_id = '';
 
 	/**
 	 * The subscription status.
@@ -68,7 +76,7 @@ class PMPro_Subscription {
 	 *
 	 * @var string
 	 */
-	public $status = '';
+	protected $status = '';
 
 	/**
 	 * The subscription start date (UTC YYYY-MM-DD HH:MM:SS).
@@ -77,7 +85,7 @@ class PMPro_Subscription {
 	 *
 	 * @var string
 	 */
-	public $startdate = '';
+	protected $startdate = '';
 
 	/**
 	 * The subscription end date (UTC YYYY-MM-DD HH:MM:SS).
@@ -86,7 +94,7 @@ class PMPro_Subscription {
 	 *
 	 * @var string
 	 */
-	public $enddate = '';
+	protected $enddate = '';
 
 	/**
 	 * The subscription next payment date (UTC YYYY-MM-DD HH:MM:SS).
@@ -95,7 +103,7 @@ class PMPro_Subscription {
 	 *
 	 * @var string
 	 */
-	public $next_payment_date = '';
+	protected $next_payment_date = '';
 
 	/**
 	 * Create a new PMPro_Subscription object.
@@ -146,6 +154,38 @@ class PMPro_Subscription {
 				$this->{$arg} = $value;
 			}
 		}
+	}
+
+	/**
+	 * Call magic methods.
+	 *
+	 * @since TBD
+	 *
+	 * @param string $name      The method that was called.
+	 * @param array  $arguments The arguments passed to the method.
+	 *
+	 * @return mixed|null
+	 */
+	public function __call( $name, $arguments ) {
+		if ( 0 === strpos( $name, 'get_' ) ) {
+			$property_name_arr = explode( 'get_', $name );
+			$property_name = $property_name_arr[1];
+
+			$supported_properties = [
+				'id',
+				'user_id',
+				'membership_level_id',
+				'gateway',
+				'gateway_environment',
+				'subscription_transaction_id',
+				'status',
+			];
+
+			if ( in_array( $property_name, $supported_properties, true ) ) {
+				return $this->{$property_name};
+			}
+		}
+		return null;
 	}
 
 	/**
