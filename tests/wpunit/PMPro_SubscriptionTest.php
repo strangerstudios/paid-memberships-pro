@@ -25,23 +25,23 @@ class PMPro_SubscriptionTest extends TestCase {
 
 		// By integer.
 		$subscription = new PMPro_Subscription( (int) $subscription_id );
-		$this->assertEquals( $subscription_id, $subscription->id );
+		$this->assertEquals( $subscription_id, $subscription->get_id() );
 
 		// By numeric string.
 		$subscription = new PMPro_Subscription( (string) $subscription_id );
-		$this->assertEquals( $subscription_id, $subscription->id );
+		$this->assertEquals( $subscription_id, $subscription->get_id() );
 
 		// By invalid string.
 		$subscription = new PMPro_Subscription( 'something-' . $subscription_id );
-		$this->assertEquals( 0, $subscription->id );
+		$this->assertEquals( 0, $subscription->get_id() );
 
 		// By invalid string.
 		$subscription = new PMPro_Subscription( 'something_' . $subscription_id );
-		$this->assertEquals( 0, $subscription->id );
+		$this->assertEquals( 0, $subscription->get_id() );
 
 		// By invalid string.
 		$subscription = new PMPro_Subscription( 's' . $subscription_id );
-		$this->assertEquals( 0, $subscription->id );
+		$this->assertEquals( 0, $subscription->get_id() );
 	}
 
 	/**
@@ -58,16 +58,16 @@ class PMPro_SubscriptionTest extends TestCase {
 
 		// Confirm the data gets set.
 		$subscription = new PMPro_Subscription( $subscription_data );
-		$this->assertEquals( $subscription_data['id'], $subscription->id );
-		$this->assertEquals( $subscription_data['user_id'], $subscription->user_id );
-		$this->assertEquals( $subscription_data['membership_level_id'], $subscription->membership_level_id );
-		$this->assertEquals( $subscription_data['status'], $subscription->status );
+		$this->assertEquals( $subscription_data['id'], $subscription->get_id() );
+		$this->assertEquals( $subscription_data['user_id'], $subscription->get_user_id() );
+		$this->assertEquals( $subscription_data['membership_level_id'], $subscription->get_membership_level_id() );
+		$this->assertEquals( $subscription_data['status'], $subscription->get_status() );
 
 		// Confirm it casts the integers as expected.
-		$this->assertInternalType( 'int', $subscription->id );
-		$this->assertInternalType( 'int', $subscription->user_id );
-		$this->assertInternalType( 'int', $subscription->membership_level_id );
-		$this->assertInternalType( 'string', $subscription->status );
+		$this->assertInternalType( 'int', $subscription->get_id() );
+		$this->assertInternalType( 'int', $subscription->get_user_id() );
+		$this->assertInternalType( 'int', $subscription->get_membership_level_id() );
+		$this->assertInternalType( 'string', $subscription->get_status() );
 	}
 
 	/**
@@ -84,16 +84,63 @@ class PMPro_SubscriptionTest extends TestCase {
 
 		// Confirm the data gets set.
 		$subscription = new PMPro_Subscription( $subscription_data );
-		$this->assertEquals( $subscription_data->id, $subscription->id );
-		$this->assertEquals( $subscription_data->user_id, $subscription->user_id );
-		$this->assertEquals( $subscription_data->membership_level_id, $subscription->membership_level_id );
-		$this->assertEquals( $subscription_data->status, $subscription->status );
+		$this->assertEquals( $subscription_data->id, $subscription->get_id() );
+		$this->assertEquals( $subscription_data->user_id, $subscription->get_user_id() );
+		$this->assertEquals( $subscription_data->membership_level_id, $subscription->get_membership_level_id() );
+		$this->assertEquals( $subscription_data->status, $subscription->get_status() );
 
 		// Confirm it casts the integers as expected.
-		$this->assertInternalType( 'int', $subscription->id );
-		$this->assertInternalType( 'int', $subscription->user_id );
-		$this->assertInternalType( 'int', $subscription->membership_level_id );
-		$this->assertInternalType( 'string', $subscription->status );
+		$this->assertInternalType( 'int', $subscription->get_id() );
+		$this->assertInternalType( 'int', $subscription->get_user_id() );
+		$this->assertInternalType( 'int', $subscription->get_membership_level_id() );
+		$this->assertInternalType( 'string', $subscription->get_status() );
+	}
+
+	/**
+	 * @covers PMPro_Subscription::__call
+	 * @covers PMPro_Subscription::get_id
+	 * @covers PMPro_Subscription::get_user_id
+	 * @covers PMPro_Subscription::get_membership_level_id
+	 * @covers PMPro_Subscription::get_gateway
+	 * @covers PMPro_Subscription::get_gateway_environment
+	 * @covers PMPro_Subscription::get_subscription_transaction_id
+	 * @covers PMPro_Subscription::get_status
+	 */
+	public function test___call() {
+		$user_id  = $this->factory()->user->create();
+		$level_id = $this->factory()->pmpro_level->create();
+
+		$subscription_data = [
+			'user_id'                     => $user_id,
+			'membership_level_id'         => $level_id,
+			'gateway'                     => 'stripe',
+			'gateway_environment'         => 'sandbox',
+			'subscription_transaction_id' => 'sub_12345',
+			'status'                      => 'active',
+		];
+
+		$subscription_id = $this->factory()->pmpro_subscription->create( $subscription_data );
+
+		$subscription = PMPro_Subscription::get_subscription( (int) $subscription_id );
+		$this->assertInstanceOf( PMPro_Subscription::class, $subscription );
+
+		// Confirm the methods return the expected values.
+		$this->assertEquals( $subscription_id, $subscription->get_id() );
+		$this->assertEquals( $subscription_data['user_id'], $subscription->get_user_id() );
+		$this->assertEquals( $subscription_data['membership_level_id'], $subscription->get_membership_level_id() );
+		$this->assertEquals( $subscription_data['gateway'], $subscription->get_gateway() );
+		$this->assertEquals( $subscription_data['gateway_environment'], $subscription->get_gateway_environment() );
+		$this->assertEquals( $subscription_data['subscription_transaction_id'], $subscription->get_subscription_transaction_id() );
+		$this->assertEquals( $subscription_data['status'], $subscription->get_status() );
+
+		// Confirm it returns the types as expected.
+		$this->assertInternalType( 'int', $subscription->get_id() );
+		$this->assertInternalType( 'int', $subscription->get_user_id() );
+		$this->assertInternalType( 'int', $subscription->get_membership_level_id() );
+		$this->assertInternalType( 'string', $subscription->get_gateway() );
+		$this->assertInternalType( 'string', $subscription->get_gateway_environment() );
+		$this->assertInternalType( 'string', $subscription->get_subscription_transaction_id() );
+		$this->assertInternalType( 'string', $subscription->get_status() );
 	}
 
 	/**
@@ -110,12 +157,12 @@ class PMPro_SubscriptionTest extends TestCase {
 		// By integer.
 		$subscription = PMPro_Subscription::get_subscription( (int) $subscription_id );
 		$this->assertInstanceOf( PMPro_Subscription::class, $subscription );
-		$this->assertAttributeEquals( $subscription_id, 'id', $subscription );
+		$this->assertEquals( $subscription_id, $subscription->get_id() );
 
 		// By numeric string.
 		$subscription = PMPro_Subscription::get_subscription( (string) $subscription_id );
 		$this->assertInstanceOf( PMPro_Subscription::class, $subscription );
-		$this->assertAttributeEquals( $subscription_id, 'id', $subscription );
+		$this->assertEquals( $subscription_id, $subscription->get_id() );
 
 		// By invalid strings.
 		$this->assertNull( PMPro_Subscription::get_subscription( 'something-' . $subscription_id ) );
@@ -140,7 +187,7 @@ class PMPro_SubscriptionTest extends TestCase {
 			'membership_level_id' => $level_id,
 		] );
 		$this->assertInstanceOf( PMPro_Subscription::class, $subscription );
-		$this->assertAttributeEquals( $subscription_id, 'id', $subscription );
+		$this->assertEquals( $subscription_id, $subscription->get_id() );
 
 		// By membership level ID array.
 		$subscription = PMPro_Subscription::get_subscription( [
@@ -148,7 +195,7 @@ class PMPro_SubscriptionTest extends TestCase {
 			'membership_level_id' => [ $level_id ],
 		] );
 		$this->assertInstanceOf( PMPro_Subscription::class, $subscription );
-		$this->assertAttributeEquals( $subscription_id, 'id', $subscription );
+		$this->assertEquals( $subscription_id, $subscription->get_id() );
 
 		// By invalid membership level ID.
 		$this->assertNull( PMPro_Subscription::get_subscription( [
@@ -173,14 +220,14 @@ class PMPro_SubscriptionTest extends TestCase {
 			'id' => $subscription_id,
 		] );
 		$this->assertInstanceOf( PMPro_Subscription::class, $subscription );
-		$this->assertAttributeEquals( $subscription_id, 'id', $subscription );
+		$this->assertEquals( $subscription_id, $subscription->get_id() );
 
 		// By subscription ID array.
 		$subscription = PMPro_Subscription::get_subscription( [
 			'id' => [ $subscription_id ],
 		] );
 		$this->assertInstanceOf( PMPro_Subscription::class, $subscription );
-		$this->assertAttributeEquals( $subscription_id, 'id', $subscription );
+		$this->assertEquals( $subscription_id, $subscription->get_id() );
 
 		// By invalid subscription ID.
 		$this->assertNull( PMPro_Subscription::get_subscription( [
@@ -206,7 +253,7 @@ class PMPro_SubscriptionTest extends TestCase {
 		$this->assertCount( 1, $subscriptions );
 		$subscription = reset( $subscriptions ); // Get first subscription.
 		$this->assertInstanceOf( PMPro_Subscription::class, $subscription );
-		$this->assertAttributeEquals( $subscription_id, 'id', $subscription );
+		$this->assertEquals( $subscription_id, $subscription->get_id() );
 
 		// By user ID array.
 		$subscriptions = PMPro_Subscription::get_subscriptions( [
@@ -215,7 +262,7 @@ class PMPro_SubscriptionTest extends TestCase {
 		$this->assertCount( 1, $subscriptions );
 		$subscription = reset( $subscriptions ); // Get first subscription.
 		$this->assertInstanceOf( PMPro_Subscription::class, $subscription );
-		$this->assertAttributeEquals( $subscription_id, 'id', $subscription );
+		$this->assertEquals( $subscription_id, $subscription->get_id() );
 
 		// By invalid user ID.
 		$this->assertCount( 0, PMPro_Subscription::get_subscriptions( [
@@ -242,7 +289,7 @@ class PMPro_SubscriptionTest extends TestCase {
 		$this->assertCount( 1, $subscriptions );
 		$subscription = reset( $subscriptions ); // Get first subscription.
 		$this->assertInstanceOf( PMPro_Subscription::class, $subscription );
-		$this->assertAttributeEquals( $subscription_id, 'id', $subscription );
+		$this->assertEquals( $subscription_id, $subscription->get_id() );
 
 		// By membership level ID array.
 		$subscriptions = PMPro_Subscription::get_subscriptions( [
@@ -252,7 +299,7 @@ class PMPro_SubscriptionTest extends TestCase {
 		$this->assertCount( 1, $subscriptions );
 		$subscription = reset( $subscriptions ); // Get first subscription.
 		$this->assertInstanceOf( PMPro_Subscription::class, $subscription );
-		$this->assertAttributeEquals( $subscription_id, 'id', $subscription );
+		$this->assertEquals( $subscription_id, $subscription->get_id() );
 
 		// By invalid membership level ID.
 		$this->assertCount( 0, PMPro_Subscription::get_subscriptions( [
@@ -282,7 +329,7 @@ class PMPro_SubscriptionTest extends TestCase {
 		$this->assertCount( 1, $subscriptions );
 		$subscription = reset( $subscriptions ); // Get first subscription.
 		$this->assertInstanceOf( PMPro_Subscription::class, $subscription );
-		$this->assertAttributeEquals( $subscription_id, 'id', $subscription );
+		$this->assertEquals( $subscription_id, $subscription->get_id() );
 
 		// By gateway and gateway environment arrays.
 		$subscriptions = PMPro_Subscription::get_subscriptions( [
@@ -294,7 +341,7 @@ class PMPro_SubscriptionTest extends TestCase {
 		$this->assertCount( 1, $subscriptions );
 		$subscription = reset( $subscriptions ); // Get first subscription.
 		$this->assertInstanceOf( PMPro_Subscription::class, $subscription );
-		$this->assertAttributeEquals( $subscription_id, 'id', $subscription );
+		$this->assertEquals( $subscription_id, $subscription->get_id() );
 
 		// By invalid gateway and valid gateway environment.
 		$this->assertCount( 0, PMPro_Subscription::get_subscriptions( [
@@ -331,7 +378,7 @@ class PMPro_SubscriptionTest extends TestCase {
 		$this->assertCount( 1, $subscriptions );
 		$subscription = reset( $subscriptions ); // Get first subscription.
 		$this->assertInstanceOf( PMPro_Subscription::class, $subscription );
-		$this->assertAttributeEquals( $subscription_id, 'id', $subscription );
+		$this->assertEquals( $subscription_id, $subscription->get_id() );
 
 		// By subscription ID array.
 		$subscriptions = PMPro_Subscription::get_subscriptions( [
@@ -340,7 +387,7 @@ class PMPro_SubscriptionTest extends TestCase {
 		$this->assertCount( 1, $subscriptions );
 		$subscription = reset( $subscriptions ); // Get first subscription.
 		$this->assertInstanceOf( PMPro_Subscription::class, $subscription );
-		$this->assertAttributeEquals( $subscription_id, 'id', $subscription );
+		$this->assertEquals( $subscription_id, $subscription->get_id() );
 
 		// By invalid subscription ID.
 		$this->assertCount( 0, PMPro_Subscription::get_subscriptions( [
@@ -364,14 +411,14 @@ class PMPro_SubscriptionTest extends TestCase {
 		$this->assertCount( 1, $subscriptions );
 		$subscription = reset( $subscriptions ); // Get first subscription.
 		$this->assertInstanceOf( PMPro_Subscription::class, $subscription );
-		$this->assertAttributeEquals( $subscription_id, 'id', $subscription );
+		$this->assertEquals( $subscription_id, $subscription->get_id() );
 
 		// By user ID array.
 		$subscriptions = PMPro_Subscription::get_subscriptions_for_user( [ $user_id ] );
 		$this->assertCount( 1, $subscriptions );
 		$subscription = reset( $subscriptions ); // Get first subscription.
 		$this->assertInstanceOf( PMPro_Subscription::class, $subscription );
-		$this->assertAttributeEquals( $subscription_id, 'id', $subscription );
+		$this->assertEquals( $subscription_id, $subscription->get_id() );
 
 		// By invalid user ID.
 		$this->assertCount( 0, PMPro_Subscription::get_subscriptions_for_user( 123456 ) );
@@ -395,7 +442,7 @@ class PMPro_SubscriptionTest extends TestCase {
 		$this->assertCount( 1, $subscriptions );
 		$subscription = reset( $subscriptions ); // Get first subscription.
 		$this->assertInstanceOf( PMPro_Subscription::class, $subscription );
-		$this->assertAttributeEquals( $subscription_id, 'id', $subscription );
+		$this->assertEquals( $subscription_id, $subscription->get_id() );
 
 		// By using a different user.
 		wp_set_current_user( 1 );
@@ -424,14 +471,14 @@ class PMPro_SubscriptionTest extends TestCase {
 		$this->assertCount( 1, $subscriptions );
 		$subscription = reset( $subscriptions ); // Get first subscription.
 		$this->assertInstanceOf( PMPro_Subscription::class, $subscription );
-		$this->assertAttributeEquals( $subscription_id, 'id', $subscription );
+		$this->assertEquals( $subscription_id, $subscription->get_id() );
 
 		// By membership level ID array.
 		$subscriptions = PMPro_Subscription::get_subscriptions_for_user( $user_id, [ $level_id ] );
 		$this->assertCount( 1, $subscriptions );
 		$subscription = reset( $subscriptions ); // Get first subscription.
 		$this->assertInstanceOf( PMPro_Subscription::class, $subscription );
-		$this->assertAttributeEquals( $subscription_id, 'id', $subscription );
+		$this->assertEquals( $subscription_id, $subscription->get_id() );
 
 		// By invalid membership level ID.
 		$this->assertCount( 0, PMPro_Subscription::get_subscriptions_for_user( $user_id, 123456 ) );
@@ -454,14 +501,14 @@ class PMPro_SubscriptionTest extends TestCase {
 		$this->assertCount( 1, $subscriptions );
 		$subscription = reset( $subscriptions ); // Get first subscription.
 		$this->assertInstanceOf( PMPro_Subscription::class, $subscription );
-		$this->assertAttributeEquals( $subscription_id, 'id', $subscription );
+		$this->assertEquals( $subscription_id, $subscription->get_id() );
 
 		// By status array.
 		$subscriptions = PMPro_Subscription::get_subscriptions_for_user( $user_id, $level_id, [ 'cancelled' ] );
 		$this->assertCount( 1, $subscriptions );
 		$subscription = reset( $subscriptions ); // Get first subscription.
 		$this->assertInstanceOf( PMPro_Subscription::class, $subscription );
-		$this->assertAttributeEquals( $subscription_id, 'id', $subscription );
+		$this->assertEquals( $subscription_id, $subscription->get_id() );
 
 		// By default, it uses active status and there should be with no match.
 		$this->assertCount( 0, PMPro_Subscription::get_subscriptions_for_user( $user_id, $level_id ) );
@@ -491,7 +538,7 @@ class PMPro_SubscriptionTest extends TestCase {
 		// By subscription transaction ID.
 		$subscription = PMPro_Subscription::get_subscription_from_subscription_transaction_id( $subscription_transaction_id, $gateway, $gateway_environment );
 		$this->assertInstanceOf( PMPro_Subscription::class, $subscription );
-		$this->assertAttributeEquals( $subscription_id, 'id', $subscription );
+		$this->assertEquals( $subscription_id, $subscription->get_id() );
 
 		// By invalid subscription transaction ID.
 		$this->assertNull( PMPro_Subscription::get_subscription_from_subscription_transaction_id( 'sub_404', $gateway, $gateway_environment ) );
