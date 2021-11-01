@@ -40,31 +40,7 @@ function pmpro_membership_level_profile_fields($user)
 				<?php
 					}
 				?>
-				</select>
-                <span id="current_level_cost">
-                <?php
-                $membership_values = pmpro_getMembershipLevelForUser($user->ID);
-
-				//we tweak the initial payment here so the text here effectively shows the recurring amount
-				if(!empty($membership_values))
-				{
-					$membership_values->original_initial_payment = $membership_values->initial_payment;
-					$membership_values->initial_payment = $membership_values->billing_amount;
-				}
-
-				if(empty($membership_values) || pmpro_isLevelFree($membership_values))
-                {
-					if(!empty($membership_values->original_initial_payment) && $membership_values->original_initial_payment > 0)
-						echo __('Paid', 'paid-memberships-pro' ) . " " . pmpro_formatPrice($membership_values->original_initial_payment) . ".";
-					else
-						_e('Not paying.', 'paid-memberships-pro' );
-				}
-				else
-                {
-                    echo pmpro_getLevelCost($membership_values, true, true);
-                }
-                ?>
-                </span>
+				</select>                
                 <p id="cancel_description" class="description hidden"><?php _e("This will not change the subscription at the gateway unless the 'Cancel' checkbox is selected below.", 'paid-memberships-pro' ); ?></p>
             </td>
 		</tr>
