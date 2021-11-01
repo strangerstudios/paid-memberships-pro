@@ -163,7 +163,7 @@
 				if($authorization_id)
 				{
 					$this->void($order, $authorization_id);
-					$order->ProfileStartDate = date_i18n("Y-m-d", strtotime("+ " . $order->BillingFrequency . " " . $order->BillingPeriod, current_time("timestamp"))) . "T0:0:0";
+					$order->ProfileStartDate = date_i18n("Y-m-d\TH:i:s", strtotime("+ " . $order->BillingFrequency . " " . $order->BillingPeriod, current_time("timestamp")));
 					$order->ProfileStartDate = apply_filters("pmpro_profile_start_date", $order->ProfileStartDate, $order);
 					return $this->subscribe($order);
 				}
@@ -182,7 +182,7 @@
 					//set up recurring billing
 					if(pmpro_isLevelRecurring($order->membership_level))
 					{
-						$order->ProfileStartDate = date_i18n("Y-m-d", strtotime("+ " . $order->BillingFrequency . " " . $order->BillingPeriod, current_time("timestamp"))) . "T0:0:0";
+						$order->ProfileStartDate = date_i18n("Y-m-d\TH:i:s", strtotime("+ " . $order->BillingFrequency . " " . $order->BillingPeriod, current_time("timestamp")));
 						$order->ProfileStartDate = apply_filters("pmpro_profile_start_date", $order->ProfileStartDate, $order);
 						if($this->subscribe($order))
 						{
@@ -453,7 +453,7 @@
 				$trial_period_days = $order->BillingFrequency * 30;	//assume monthly
 
 			//convert to a profile start date
-			$order->ProfileStartDate = date_i18n("Y-m-d", strtotime("+ " . $trial_period_days . " Day", current_time("timestamp"))) . "T0:0:0";
+			$order->ProfileStartDate = date_i18n("Y-m-d\TH:i:s", strtotime("+ " . $trial_period_days . " Day", current_time("timestamp")));
 
 			//filter the start date
 			$order->ProfileStartDate = apply_filters("pmpro_profile_start_date", $order->ProfileStartDate, $order);
@@ -476,7 +476,7 @@
 			}
 
 			//convert back into a date
-			$order->ProfileStartDate = date_i18n("Y-m-d", strtotime("+ " . $trial_period_days . " Day", current_time("timestamp"))) . "T0:0:0";
+			$order->ProfileStartDate = date_i18n("Y-m-d\TH:i:s", strtotime("+ " . $trial_period_days . " Day", current_time("timestamp")));
 
 			//start date
 			$nvpStr .= "&START=" . date_i18n("mdY", strtotime($order->ProfileStartDate));
