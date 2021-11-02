@@ -50,11 +50,9 @@ function pmpro_compatibility_checker() {
 	];
 
 	foreach ( $compat_checks as $value ) {
-		if ( ! pmpro_compatibility_checker_is_requirement_met( $value ) ) {
-			return;
+		if ( pmpro_compatibility_checker_is_requirement_met( $value ) ) {
+			include_once( PMPRO_DIR . '/includes/compatibility/' . $value['file'] ) ;
 		}
-
-        include( PMPRO_DIR . '/includes/compatibility/' . $value['file'] ) ;
     }
 }
 add_action( 'plugins_loaded', 'pmpro_compatibility_checker' );
