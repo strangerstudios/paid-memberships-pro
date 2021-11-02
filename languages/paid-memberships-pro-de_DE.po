@@ -2,14 +2,14 @@
 # This file is distributed under the same license as the Paid Memberships Pro plugin.
 msgid ""
 msgstr ""
-"Project-Id-Version: Paid Memberships Pro 2.6.3\n"
+"Project-Id-Version: Paid Memberships Pro 2.6.4\n"
 "Report-Msgid-Bugs-To: info@paidmembershipspro.com\n"
 "Last-Translator: Paid Memberships Pro <info@paidmembershipspro.com>\n"
 "Language-Team: Paid Memberships Pro <info@paidmembershipspro.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2021-10-11T14:00:14+00:00\n"
+"POT-Creation-Date: 2021-11-02T16:03:36+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.5.0\n"
 "X-Domain: paid-memberships-pro\n"
@@ -312,6 +312,11 @@ msgstr "WordPress.org"
 #: includes/profile.php:520
 #: includes/profile.php:521
 #: includes/profile.php:522
+#: includes/profile.php:151
+#: includes/profile.php:443
+#: includes/profile.php:444
+#: includes/profile.php:517
+#: includes/profile.php:518
 msgid "N/A"
 msgstr "Nicht verfügbar"
 
@@ -506,6 +511,7 @@ msgstr "Support bekommen"
 #: adminpages/membershiplevels.php:792
 #: adminpages/pagesettings.php:98
 #: includes/compatibility/beaver-builder.php:134
+#: classes/class-pmpro-site-health.php:85
 msgid "Membership Levels"
 msgstr "Pakete"
 
@@ -559,6 +565,8 @@ msgstr "Zahlungsdienstleister &amp; SSL"
 #: adminpages/orders.php:1445
 #: adminpages/orders.php:1448
 #: includes/profile.php:762
+#: includes/profile.php:438
+#: includes/profile.php:758
 msgid "Email"
 msgstr "Email"
 
@@ -829,6 +837,7 @@ msgstr "Werbung vor Mitgliedern verstecken?"
 #: classes/gateways/class.pmprogateway_stripe.php:648
 #: classes/gateways/class.pmprogateway_stripe.php:640
 #: classes/gateways/class.pmprogateway_stripe.php:654
+#: includes/profile.php:68
 msgid "No"
 msgstr "Nein"
 
@@ -963,6 +972,7 @@ msgstr "nur multisite"
 #: classes/gateways/class.pmprogateway_stripe.php:650
 #: classes/gateways/class.pmprogateway_stripe.php:642
 #: classes/gateways/class.pmprogateway_stripe.php:656
+#: includes/profile.php:69
 msgid "Yes"
 msgstr "Ja"
 
@@ -1359,6 +1369,7 @@ msgstr "Code"
 #: includes/profile.php:495
 #: adminpages/discountcodes.php:489
 #: includes/profile.php:501
+#: includes/profile.php:497
 msgid "Start Date"
 msgstr "Start Datum"
 
@@ -2165,6 +2176,7 @@ msgstr "Beginnt"
 #: includes/profile.php:89
 #: adminpages/dashboard.php:226
 #: adminpages/discountcodes.php:788
+#: includes/profile.php:65
 msgid "Expires"
 msgstr "Endet"
 
@@ -2888,6 +2900,8 @@ msgstr "Paket speichern"
 #: adminpages/orders.php:968
 #: includes/profile.php:798
 #: includes/profile.php:922
+#: includes/profile.php:794
+#: includes/profile.php:918
 msgid "Cancel"
 msgstr "Stornieren"
 
@@ -3923,6 +3937,8 @@ msgstr "Ablaufdatum Jahr"
 #: adminpages/orders.php:742
 #: adminpages/orders.php:1348
 #: includes/profile.php:505
+#: includes/profile.php:415
+#: includes/profile.php:501
 msgid "Status"
 msgstr "Status"
 
@@ -3994,6 +4010,7 @@ msgstr "Zahlungsfunktion"
 #: adminpages/paymentsettings.php:152
 #: adminpages/orders.php:795
 #: classes/class-pmpro-site-health.php:195
+#: classes/class-pmpro-site-health.php:206
 msgid "Sandbox/Testing"
 msgstr "Sandbox/Testing"
 
@@ -4015,6 +4032,7 @@ msgstr "Sandbox/Testing"
 #: adminpages/paymentsettings.php:153
 #: adminpages/orders.php:796
 #: classes/class-pmpro-site-health.php:196
+#: classes/class-pmpro-site-health.php:207
 msgid "Live/Production"
 msgstr "Live/Production"
 
@@ -4116,6 +4134,7 @@ msgstr "Vom Zahlungsdienstleister generiert. Hilfreich um Zahlungen zuzuordnen."
 #: adminpages/dashboard.php:295
 #: adminpages/orders.php:835
 #: adminpages/orders.php:1349
+#: includes/profile.php:409
 msgid "Date"
 msgstr "Datum"
 
@@ -4232,6 +4251,7 @@ msgstr "E-Mail senden"
 #: adminpages/discountcodes.php:882
 #: adminpages/orders.php:978
 #: adminpages/discountcodes.php:884
+#: classes/class-pmpro-site-health.php:77
 msgid "Orders"
 msgstr "Bestellungen"
 
@@ -5015,6 +5035,7 @@ msgstr "Ihre Zahlungs-Einstellungen wurden gespeichert."
 #: adminpages/paymentsettings.php:154
 #: adminpages/paymentsettings.php:112
 #: adminpages/paymentsettings.php:127
+#: classes/class-pmpro-site-health.php:69
 msgid "Payment Gateway"
 msgstr "Zahlungsdienstleister"
 
@@ -5845,6 +5866,7 @@ msgstr "Bestätigung Ihrer Anmeldung bei %s"
 #: classes/class.pmproemail.php:771
 #: classes/gateways/class.pmprogateway_stripe.php:1333
 #: classes/gateways/class.pmprogateway_stripe.php:1339
+#: includes/profile.php:414
 msgid "Discount Code"
 msgstr "Gutscheincode"
 
@@ -7371,6 +7393,7 @@ msgstr "Diese URL wird an PayPal für alle neuen Zahlungen und Anmeldungen weite
 #: classes/gateways/class.pmprogateway_paypalstandard.php:241
 #: pages/checkout.php:218
 #: classes/gateways/class.pmprogateway_paypalexpress.php:498
+#: classes/gateways/class.pmprogateway_paypalexpress.php:502
 msgid "Check Out with PayPal"
 msgstr "Zahlung mit PayPal abschließen"
 
@@ -7401,6 +7424,7 @@ msgstr "Zahlung mit PayPal abschließen"
 #: classes/gateways/class.pmprogateway_paypalstandard.php:246
 #: pages/checkout.php:526
 #: classes/gateways/class.pmprogateway_paypalexpress.php:503
+#: classes/gateways/class.pmprogateway_paypalexpress.php:507
 msgid "Submit and Check Out"
 msgstr "Zahlung bestätigen"
 
@@ -7435,6 +7459,7 @@ msgstr "Zahlung bestätigen"
 #: classes/gateways/class.pmprogateway_twocheckout.php:205
 #: pages/checkout.php:526
 #: classes/gateways/class.pmprogateway_paypalexpress.php:503
+#: classes/gateways/class.pmprogateway_paypalexpress.php:507
 msgid "Submit and Confirm"
 msgstr "Senden und Bestätigen"
 
@@ -7463,6 +7488,7 @@ msgstr "Senden und Bestätigen"
 #: classes/gateways/class.pmprogateway_paypalexpress.php:831
 #: classes/gateways/class.pmprogateway_paypalstandard.php:588
 #: classes/gateways/class.pmprogateway_paypalexpress.php:841
+#: classes/gateways/class.pmprogateway_paypalexpress.php:845
 msgid "Please contact the site owner or cancel your subscription from within PayPal to make sure you are not charged going forward."
 msgstr "Bitte kontaktieren Sie den Betreiber der Seite, wenn Sie Ihr Abonemment über PayPal stornieren, um sicherzugehen, dass Ihr PayPal Konto nicht weiterhin belastet wird."
 
@@ -8281,6 +8307,7 @@ msgstr "Berichte"
 #: includes/adminpages.php:174
 #: adminpages/admin_header.php:257
 #: includes/adminpages.php:68
+#: classes/class-pmpro-site-health.php:81
 msgid "Discount Codes"
 msgstr "Gutscheincodes"
 
@@ -10614,6 +10641,7 @@ msgstr "Paid Memberships Pro User Data"
 #: adminpages/advancedsettings.php:316
 #: includes/profile.php:509
 #: includes/profile.php:515
+#: includes/profile.php:511
 msgid "Never"
 msgstr "Nie"
 
@@ -10621,24 +10649,29 @@ msgstr "Nie"
 #: includes/profile.php:425
 #: includes/profile.php:493
 #: includes/profile.php:499
+#: includes/profile.php:412
+#: includes/profile.php:495
 msgid "Level ID"
 msgstr "Paket-ID"
 
 #: includes/privacy.php:190
 #: includes/profile.php:496
 #: includes/profile.php:502
+#: includes/profile.php:498
 msgid "Date Modified"
 msgstr "Änderungsdatum"
 
 #: includes/privacy.php:194
 #: includes/profile.php:497
 #: includes/profile.php:503
+#: includes/profile.php:499
 msgid "End Date"
 msgstr "End-Datum"
 
 #: includes/privacy.php:198
 #: includes/profile.php:498
 #: includes/profile.php:504
+#: includes/profile.php:500
 msgid "Level Cost"
 msgstr "Paket-Preis"
 
@@ -10702,6 +10735,8 @@ msgstr "Bestelldatum"
 #: adminpages/dashboard.php:292
 #: adminpages/orders.php:1343
 #: includes/profile.php:500
+#: includes/profile.php:411
+#: includes/profile.php:496
 msgid "Level"
 msgstr "Paket"
 
@@ -10791,6 +10826,8 @@ msgstr "Aktuelles Paket"
 #: includes/profile.php:242
 #: includes/profile.php:208
 #: includes/profile.php:255
+#: includes/profile.php:186
+#: includes/profile.php:233
 msgid "Not paying."
 msgstr "Nicht bezahlen."
 
@@ -10799,21 +10836,25 @@ msgstr "Nicht bezahlen."
 #: includes/profile.php:68
 #: includes/profile.php:73
 #: includes/profile.php:76
+#: includes/profile.php:44
 msgid "This will not change the subscription at the gateway unless the 'Cancel' checkbox is selected below."
 msgstr ""
 
 #: includes/profile.php:156
 #: includes/profile.php:138
+#: includes/profile.php:114
 msgid "Send the user an email about this change."
 msgstr "Sende dem User eine Email über diese Änderung."
 
 #: includes/profile.php:162
 #: includes/profile.php:144
+#: includes/profile.php:120
 msgid "Cancel this user's subscription at the gateway."
 msgstr ""
 
 #: includes/profile.php:176
 #: includes/profile.php:158
+#: includes/profile.php:134
 msgid "TOS Consent History"
 msgstr ""
 
@@ -10997,6 +11038,7 @@ msgstr "Ihre Zahlungen werden von PayPal abgewickelt. Sie können sich <a href=\
 #: pages/billing.php:164
 #: pages/checkout.php:234
 #: includes/profile.php:759
+#: includes/profile.php:755
 msgid "First Name"
 msgstr "Vorname"
 
@@ -11026,6 +11068,7 @@ msgstr "Vorname"
 #: pages/billing.php:168
 #: pages/checkout.php:238
 #: includes/profile.php:760
+#: includes/profile.php:756
 msgid "Last Name"
 msgstr "Nachname"
 
@@ -11721,6 +11764,7 @@ msgstr "Rechnung  Nr. %s vom %s"
 #: adminpages/orders.php:390
 #: adminpages/orders.php:1431
 #: adminpages/orders.php:1441
+#: includes/profile.php:433
 msgid "Print"
 msgstr "Drucken"
 
@@ -11797,6 +11841,7 @@ msgstr "endet mit"
 #: pages/confirmation.php:107
 #: pages/invoice.php:97
 #: pages/invoice.php:125
+#: includes/profile.php:413
 msgid "Total Billed"
 msgstr "Summe"
 
@@ -12528,6 +12573,8 @@ msgstr "Profil editieren"
 #: shortcodes/pmpro_account.php:195
 #: includes/profile.php:884
 #: includes/profile.php:921
+#: includes/profile.php:880
+#: includes/profile.php:917
 msgid "Change Password"
 msgstr "Passwort ändern"
 
@@ -13717,6 +13764,7 @@ msgstr ""
 #: adminpages/orders.php:1406
 #: adminpages/discountcodes.php:835
 #: adminpages/discountcodes.php:845
+#: includes/profile.php:430
 msgid "Edit"
 msgstr ""
 
@@ -13946,6 +13994,7 @@ msgstr ""
 
 #: adminpages/emailtemplates.php:176
 #: includes/profile.php:423
+#: includes/profile.php:410
 msgid "Invoice ID"
 msgstr ""
 
@@ -14034,6 +14083,7 @@ msgstr ""
 #: adminpages/orders.php:862
 #: includes/profile.php:109
 #: adminpages/orders.php:868
+#: includes/profile.php:85
 msgid "at"
 msgstr ""
 
@@ -14210,6 +14260,7 @@ msgstr ""
 
 #: adminpages/reports/history.php:188
 #: includes/profile.php:411
+#: includes/profile.php:389
 msgid "Total Paid"
 msgstr ""
 
@@ -14763,11 +14814,13 @@ msgstr ""
 
 #: classes/gateways/class.pmprogateway_paypalexpress.php:781
 #: classes/gateways/class.pmprogateway_paypalexpress.php:791
+#: classes/gateways/class.pmprogateway_paypalexpress.php:795
 msgid "Something went wrong creating plan with PayPal; missing PROFILESTATUS."
 msgstr ""
 
 #: classes/gateways/class.pmprogateway_paypalexpress.php:782
 #: classes/gateways/class.pmprogateway_paypalexpress.php:792
+#: classes/gateways/class.pmprogateway_paypalexpress.php:796
 msgid "Error creating plan with PayPal."
 msgstr ""
 
@@ -16176,12 +16229,14 @@ msgstr ""
 #: includes/login.php:429
 #: includes/profile.php:843
 #: includes/profile.php:855
+#: includes/profile.php:851
 msgid "New passwords do not match."
 msgstr ""
 
 #: includes/login.php:433
 #: includes/profile.php:839
 #: includes/profile.php:851
+#: includes/profile.php:847
 msgid "Please complete all fields."
 msgstr ""
 
@@ -16212,6 +16267,7 @@ msgstr ""
 #: includes/login.php:688
 #: includes/profile.php:891
 #: includes/profile.php:903
+#: includes/profile.php:899
 msgid "New Password"
 msgstr ""
 
@@ -16220,12 +16276,14 @@ msgstr ""
 #: includes/scripts.php:86
 #: includes/profile.php:906
 #: includes/scripts.php:85
+#: includes/profile.php:902
 msgid "Strength Indicator"
 msgstr ""
 
 #: includes/login.php:694
 #: includes/profile.php:898
 #: includes/profile.php:910
+#: includes/profile.php:906
 msgid "Confirm New Password"
 msgstr ""
 
@@ -16294,89 +16352,107 @@ msgid "Paid"
 msgstr ""
 
 #: includes/profile.php:410
+#: includes/profile.php:388
 msgid "Member History"
 msgstr ""
 
 #: includes/profile.php:413
+#: includes/profile.php:391
 msgid "Order History"
 msgstr ""
 
 #: includes/profile.php:414
+#: includes/profile.php:392
 msgid "Membership Levels History"
 msgstr ""
 
 #: includes/profile.php:485
 #: includes/profile.php:488
+#: includes/profile.php:475
 msgid "No membership orders found."
 msgstr ""
 
 #: includes/profile.php:537
 #: includes/profile.php:546
+#: includes/profile.php:542
 msgid "No membership history found."
 msgstr ""
 
 #: includes/profile.php:644
 #: includes/profile.php:656
+#: includes/profile.php:652
 msgid "Log in to edit your profile."
 msgstr ""
 
 #: includes/profile.php:679
 #: includes/profile.php:691
+#: includes/profile.php:687
 msgid "Please enter a display name."
 msgstr ""
 
 #: includes/profile.php:689
 #: includes/profile.php:701
+#: includes/profile.php:697
 msgid "Please enter an email address."
 msgstr ""
 
 #: includes/profile.php:691
 #: includes/profile.php:703
+#: includes/profile.php:699
 msgid "The email address isn&#8217;t correct."
 msgstr ""
 
 #: includes/profile.php:695
 #: includes/profile.php:707
+#: includes/profile.php:703
 msgid "This email is already registered, please choose another one."
 msgstr ""
 
 #: includes/profile.php:722
 #: includes/profile.php:734
+#: includes/profile.php:730
 msgid "Your profile has been updated."
 msgstr ""
 
 #: includes/profile.php:749
 #: includes/profile.php:761
+#: includes/profile.php:757
 msgid "Display name publicly as"
 msgstr ""
 
 #: includes/profile.php:762
 #: includes/profile.php:774
+#: includes/profile.php:770
 msgid "Site administrators must use the WordPress dashboard to update their email address."
 msgstr ""
 
 #: includes/profile.php:785
 #: includes/profile.php:797
+#: includes/profile.php:793
 msgid "Update Profile"
 msgstr ""
 
 #: includes/profile.php:841
 #: includes/profile.php:853
+#: includes/profile.php:849
 msgid "Please enter your current password."
 msgstr ""
 
 #: includes/profile.php:845
 #: includes/profile.php:857
+#: includes/profile.php:853
 msgid "Your current password is incorrect."
 msgstr ""
 
 #: includes/profile.php:856
 #: includes/profile.php:868
+#: includes/profile.php:864
 msgid "Your password has been updated."
 msgstr ""
 
 #: includes/profile.php:886
 #: includes/profile.php:898
+#: includes/profile.php:894
 msgid "Current Password"
 msgstr ""
 
@@ -16385,6 +16461,9 @@ msgstr ""
 #: includes/profile.php:900
 #: includes/profile.php:905
 #: includes/profile.php:912
+#: includes/profile.php:896
+#: includes/profile.php:901
+#: includes/profile.php:908
 msgid "Required Field"
 msgstr ""
 
@@ -16805,11 +16884,13 @@ msgid "This debug information for your Paid Memberships Pro installation can ass
 msgstr ""
 
 #: classes/class-pmpro-site-health.php:109
+#: classes/class-pmpro-site-health.php:120
 msgid "No Levels Found"
 msgstr ""
 
 #. translators: %d: The total count of discount codes.
 #: classes/class-pmpro-site-health.php:128
+#: classes/class-pmpro-site-health.php:139
 msgid "%d discount code"
 msgid_plural "%d discount codes"
 msgstr[0] ""
@@ -16817,6 +16898,7 @@ msgstr[1] ""
 
 #. translators: %d: The total count of orders.
 #: classes/class-pmpro-site-health.php:144
+#: classes/class-pmpro-site-health.php:155
 msgid "%d order"
 msgid_plural "%d orders"
 msgstr[0] ""
@@ -16824,27 +16906,33 @@ msgstr[1] ""
 
 #. translators: %s: The gateway name that is not registered.
 #: classes/class-pmpro-site-health.php:161
+#: classes/class-pmpro-site-health.php:172
 msgid "%s (gateway not registered)"
 msgstr ""
 
 #: classes/class-pmpro-site-health.php:174
+#: classes/class-pmpro-site-health.php:185
 msgid "Legacy Keys"
 msgstr ""
 
 #: classes/class-pmpro-site-health.php:178
+#: classes/class-pmpro-site-health.php:189
 msgid "Stripe Connect"
 msgstr ""
 
 #. translators: %s: The environment name that is not registered.
 #: classes/class-pmpro-site-health.php:202
+#: classes/class-pmpro-site-health.php:213
 msgid "%s (environment not registered)"
 msgstr ""
 
 #: classes/class-pmpro-site-health.php:226
+#: classes/class-pmpro-site-health.php:268
 msgid "Unable to verify"
 msgstr ""
 
 #: classes/class-pmpro-site-health.php:302
+#: classes/class-pmpro-site-health.php:345
 msgid "missing"
 msgstr ""
 
@@ -16890,4 +16978,97 @@ msgstr ""
 #: shortcodes/pmpro_account.php:145
 msgctxt "A dash is shown when there is no expiration date."
 msgid "&#8212;"
+msgstr ""
+
+#: classes/class-pmpro-site-health.php:65
+msgid "Cron Job Status"
+msgstr ""
+
+#: classes/class-pmpro-site-health.php:73
+msgid "Payment Gateway Environment"
+msgstr ""
+
+#: classes/class-pmpro-site-health.php:89
+msgid "Custom Templates"
+msgstr ""
+
+#: classes/class-pmpro-site-health.php:93
+msgid "getfile.php Usage"
+msgstr ""
+
+#: classes/class-pmpro-site-health.php:97
+msgid ".htaccess Cache Usage"
+msgstr ""
+
+#: classes/class-pmpro-site-health.php:365
+msgid "PMPRO_GETFILE_ENABLED is not set"
+msgstr ""
+
+#: classes/class-pmpro-site-health.php:369
+msgid "PMPRO_GETFILE_ENABLED is off"
+msgstr ""
+
+#: classes/class-pmpro-site-health.php:382
+#: classes/class-pmpro-site-health.php:416
+msgid "Unable to access .htaccess file"
+msgstr ""
+
+#: classes/class-pmpro-site-health.php:386
+#: classes/class-pmpro-site-health.php:420
+msgid "Off - No .htaccess file"
+msgstr ""
+
+#: classes/class-pmpro-site-health.php:392
+#: classes/class-pmpro-site-health.php:431
+msgid "Off"
+msgstr ""
+
+#: classes/class-pmpro-site-health.php:395
+msgid "On - .htaccess contains services/getfile.php usage"
+msgstr ""
+
+#: classes/class-pmpro-site-health.php:426
+msgid "On - Browser cache enabled for HTML (ExpiresByType text/html), this may interfere with Content Restriction after Login. Remove that line from your .htaccess to resolve this problem."
+msgstr ""
+
+#: classes/class-pmpro-site-health.php:428
+msgid "On - Browser cache enabled for HTML (ExpiresDefault), this may interfere with Content Restriction after Login. Remove that line from your .htaccess to resolve this problem."
+msgstr ""
+
+#: classes/class-pmpro-site-health.php:443
+msgid "Cron Limit"
+msgstr ""
+
+#: classes/class-pmpro-site-health.php:444
+msgid "Default Membership Level"
+msgstr ""
+
+#: classes/class-pmpro-site-health.php:445
+msgid "Use Sessions"
+msgstr ""
+
+#: classes/class-pmpro-site-health.php:450
+msgid "Authorize.net Silent Post Debug Mode"
+msgstr ""
+
+#: classes/class-pmpro-site-health.php:453
+msgid "Braintree Webhook Debug Mode"
+msgstr ""
+
+#: classes/class-pmpro-site-health.php:456
+#: classes/class-pmpro-site-health.php:459
+#: classes/class-pmpro-site-health.php:462
+msgid "PayPal IPN Debug Mode"
+msgstr ""
+
+#: classes/class-pmpro-site-health.php:465
+msgid "Stripe Webhook Delay"
+msgstr ""
+
+#: classes/class-pmpro-site-health.php:466
+msgid "Stripe Webhook Debug Mode"
+msgstr ""
+
+#: classes/class-pmpro-site-health.php:469
+msgid "2Checkout INS Debug Mode"
 msgstr ""
