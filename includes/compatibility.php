@@ -79,7 +79,7 @@ function pmpro_compatibility_checker_is_requirement_met( $requirement ) {
 		return (
 			defined( $requirement['check_value'] )
 			&& (
-				! isset( $requirement['check_constant_true'] )
+				empty( $requirement['check_constant_true'] )
 				|| constant( $requirement['check_value'] )
 			)
 		);
