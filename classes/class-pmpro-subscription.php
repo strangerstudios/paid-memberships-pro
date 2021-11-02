@@ -3,20 +3,20 @@
 /**
  * The PMPro Subscription object.
  *
- * @method int    get_id                  Get the ID of the subscription.
- * @method int    get_user_id             Get the ID of the user the subscription belongs to.
- * @method int    get_membership_id       Get the ID of the membership level that this subscription is for.
- * @method string get_gateway             Get the gateway used to create the subscription.
- * @method string get_gateway_environment Get the gateway environment used to create the subscription.
- * @method string get_subscription_id     Get the ID of the subscription in the gateway.
- * @method string get_status              Get the status of the subscription.
- * @method float  get_initial_payment     Get the initial payment amount.
- * @method float  get_billing_amount      Get the billing amount.
- * @method int	  get_cycle_number        Get the number of cycles.
- * @method string get_cycle_period        Get the cycle period.
- * @method int	  get_billing_limit       Get the billing limit.
- * @method float  get_trial_amount        Get the trial amount.
- * @method int	  get_trial_limit         Get the trial limit.
+ * @method int    get_id                          Get the ID of the subscription.
+ * @method int    get_user_id                     Get the ID of the user the subscription belongs to.
+ * @method int    get_membership_level_id         Get the ID of the membership level that this subscription is for.
+ * @method string get_gateway                     Get the gateway used to create the subscription.
+ * @method string get_gateway_environment         Get the gateway environment used to create the subscription.
+ * @method string get_subscription_transaction_id Get the ID of the subscription in the gateway.
+ * @method string get_status                      Get the status of the subscription.
+ * @method float  get_initial_payment             Get the initial payment amount.
+ * @method float  get_billing_amount              Get the billing amount.
+ * @method int	  get_cycle_number                Get the number of cycles.
+ * @method string get_cycle_period                Get the cycle period.
+ * @method int	  get_billing_limit               Get the billing limit.
+ * @method float  get_trial_amount                Get the trial amount.
+ * @method int	  get_trial_limit                 Get the trial limit.
  *
  * @since TBD
  */
