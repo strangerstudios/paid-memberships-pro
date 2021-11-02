@@ -10,6 +10,13 @@
  * @method string get_gateway_environment Get the gateway environment used to create the subscription.
  * @method string get_subscription_id     Get the ID of the subscription in the gateway.
  * @method string get_status              Get the status of the subscription.
+ * @method float  get_initial_payment     Get the initial payment amount.
+ * @method float  get_billing_amount      Get the billing amount.
+ * @method int	  get_cycle_number        Get the number of cycles.
+ * @method string get_cycle_period        Get the cycle period.
+ * @method int	  get_billing_limit       Get the billing limit.
+ * @method float  get_trial_amount        Get the trial amount.
+ * @method int	  get_trial_limit         Get the trial limit.
  *
  * @since TBD
  */
@@ -106,6 +113,69 @@ class PMPro_Subscription {
 	protected $next_payment_date = '';
 
 	/**
+	 * The initial payment amount for this subscription.
+	 *
+	 * @since TBD
+	 *
+	 * @var float
+	 */
+	protected $initial_payment = 0.00;
+
+	/**
+	 * The subscription billing amount.
+	 *
+	 * @since TBD
+	 *
+	 * @var float
+	 */
+	protected $billing_amount = 0.00;
+
+	/**
+	 * The subscription billing cycle number.
+	 *
+	 * @since TBD
+	 *
+	 * @var int
+	 */
+	protected $cycle_number = 0;
+
+	/**
+	 * The subscription billing cycle period.
+	 *
+	 * @since TBD
+	 *
+	 * @var string
+	 */
+	protected $cycle_period = 'Month';
+
+	/**
+	 * The subscription billing limit.
+	 *
+	 * @since TBD
+	 *
+	 * @var int
+	 */
+	protected $billing_limit = 0;
+
+	/**
+	 * The subscription trial billing amount.
+	 *
+	 * @since TBD
+	 *
+	 * @var float
+	 */
+	protected $trial_amount = 0.00;
+
+	/**
+	 * The subscription trial billing cycle number.
+	 *
+	 * @since TBD
+	 *
+	 * @var int
+	 */
+	protected $trial_limit = 0;
+
+	/**
 	 * Create a new PMPro_Subscription object.
 	 *
 	 * @since TBD
@@ -179,6 +249,13 @@ class PMPro_Subscription {
 				'gateway_environment',
 				'subscription_transaction_id',
 				'status',
+				'initial_payment',
+				'billing_amount',
+				'cycle_number',
+				'cycle_period',
+				'billing_limit',
+				'trial_amount',
+				'trial_limit',
 			];
 
 			if ( in_array( $property_name, $supported_properties, true ) ) {
@@ -326,6 +403,84 @@ class PMPro_Subscription {
 				$prepared = array_merge( $prepared, $args['gateway_environment'] );
 			}
 		}
+
+		// Filter by initial payment(s).
+		if ( isset( $args['initial_payment'] ) && null !== $args['initial_payment'] ) {
+			if ( ! is_array( $args['initial_payment'] ) ) {
+				$where[]    = 'initial_payment = %f';
+				$prepared[] = $args['initial_payment'];
+			} else {
+				$where[]  = 'initial_payment IN ( ' . implode( ', ', array_fill( 0, count( $args['initial_payment'] ), '%f' ) ) . ' )';
+				$prepared = array_merge( $prepared, $args['initial_payment'] );
+			}
+		}
+
+		// Filter by billing amount(s).
+		if ( isset( $args['billing_amount'] ) && null !== $args['billing_amount'] ) {
+			if ( ! is_array( $args['billing_amount'] ) ) {
+				$where[]    = 'billing_amount = %f';
+				$prepared[] = $args['billing_amount'];
+			} else {
+				$where[]  = 'billing_amount IN ( ' . implode( ', ', array_fill( 0, count( $args['billing_amount'] ), '%f' ) ) . ' )';
+				$prepared = array_merge( $prepared, $args['billing_amount'] );
+			}
+		}
+
+		// Filter by cycle number(s).
+		if ( isset( $args['cycle_number'] ) && null !== $args['cycle_number'] ) {
+			if ( ! is_array( $args['cycle_number'] ) ) {
+				$where[]    = 'cycle_number = %d';
+				$prepared[] = $args['cycle_number'];
+			} else {
+				$where[]  = 'cycle_number IN ( ' . implode( ', ', array_fill( 0, count( $args['cycle_number'] ), '%d' ) ) . ' )';
+				$prepared = array_merge( $prepared, $args['cycle_number'] );
+			}
+		}
+
+		// Filter by cycle period(s).
+		if ( isset( $args['cycle_period'] ) && null !== $args['cycle_period'] ) {
+			if ( ! is_array( $args['cycle_period'] ) ) {
+				$where[]    = 'cycle_period = %s';
+				$prepared[] = $args['cycle_period'];
+			} else {
+				$where[]  = 'cycle_period IN ( ' . implode( ', ', array_fill( 0, count( $args['cycle_period'] ), '%s' ) ) . ' )';
+				$prepared = array_merge( $prepared, $args['cycle_period'] );
+			}
+		}
+
+		// Filter by billing limit(s).
+		if ( isset( $args['billing_limit'] ) && null !== $args['billing_limit'] ) {
+			if ( ! is_array( $args['billing_limit'] ) ) {
+				$where[]    = 'billing_limit = %d';
+				$prepared[] = $args['billing_limit'];
+			} else {
+				$where[]  = 'billing_limit IN ( ' . implode( ', ', array_fill( 0, count( $args['billing_limit'] ), '%d' ) ) . ' )';
+				$prepared = array_merge( $prepared, $args['billing_limit'] );
+			}
+		}
+
+		// Filter by trial amount(s).
+		if ( isset( $args['trial_amount'] ) && null !== $args['trial_amount'] ) {
+			if ( ! is_array( $args['trial_amount'] ) ) {
+				$where[]    = 'trial_amount = %f';
+				$prepared[] = $args['trial_amount'];
+			} else {
+				$where[]  = 'trial_amount IN ( ' . implode( ', ', array_fill( 0, count( $args['trial_amount'] ), '%f' ) ) . ' )';
+				$prepared = array_merge( $prepared, $args['trial_amount'] );
+			}
+		}
+
+		// Filter by trial limit(s).
+		if ( isset( $args['trial_limit'] ) && null !== $args['trial_limit'] ) {
+			if ( ! is_array( $args['trial_limit'] ) ) {
+				$where[]    = 'trial_limit = %d';
+				$prepared[] = $args['trial_limit'];
+			} else {
+				$where[]  = 'trial_limit IN ( ' . implode( ', ', array_fill( 0, count( $args['trial_limit'] ), '%d' ) ) . ' )';
+				$prepared = array_merge( $prepared, $args['trial_limit'] );
+			}
+		}
+
 
 		// Maybe filter the data.
 		if ( $where ) {
@@ -683,6 +838,13 @@ class PMPro_Subscription {
 			'startdate'                   => $this->startdate,
 			'enddate'                     => $this->enddate,
 			'next_payment_date'           => $this->next_payment_date,
+			'initial_payment'             => $this->initial_payment,
+			'billing_amount'              => $this->billing_amount,
+			'cycle_number'                => $this->cycle_number,
+			'cycle_period'                => $this->cycle_period,
+			'billing_limit'               => $this->billing_limit,
+			'trial_amount'                => $this->trial_amount,
+			'trial_limit'                 => $this->trial_limit,
 		], [
 			'%d', // id
 			'%d', // user_id
@@ -694,6 +856,13 @@ class PMPro_Subscription {
 			'%s', // startdate
 			'%s', // enddate
 			'%s', // next_payment_date
+			'%f', // initial_payment
+			'%f', // billing_amount
+			'%d', // cycle_number
+			'%s', // cycle_period
+			'%d', // billing_limit
+			'%f', // trial_amount
+			'%d', // trial_limit
 		] );
 
 		if ( $wpdb->insert_id ) {
