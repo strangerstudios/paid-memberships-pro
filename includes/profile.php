@@ -134,17 +134,19 @@ function pmpro_membership_level_profile_fields($user)
 				<th><label for="tos_consent_history"><?php _e("TOS Consent History", 'paid-memberships-pro' ); ?></label></th>
 				<td id="tos_consent_history">
 					<?php
-						if( !empty( $consent_log ) ) {
-							if( count( $consent_log ) > 5 ) {
-								$scrollable = ' pmpro_scrollable';
-							} else {
-								$scrollable = '';
+						if ( ! empty( $consent_log ) ) {
+							// Build the selectors for the invoices history list based on history count.
+							$consent_log_classes = array();
+							$consent_log_classes[] = "pmpro_consent_log";
+							if ( count( $consent_log ) > 5 ) {
+								$consent_log_classes[] = "pmpro_scrollable";
 							}
-							echo '<ul class="pmpro_consent_log' . $scrollable . '">';
+							$consent_log_class = implode( ' ', array_unique( $consent_log_classes ) );
+							echo '<ul class="' . esc_attr( $consent_log_class ) . '">';
 							foreach( $consent_log as $entry ) {
 								echo '<li>' . pmpro_consent_to_text( $entry ) . '</li>';
 							}
-							echo '</ul>';
+							echo '</ul> <!-- end pmpro_consent_log -->';
 						} else {
 							echo __( 'N/A', 'paid-memberships-pro' );
 						}
@@ -390,7 +392,16 @@ function pmpro_membership_history_profile_fields( $user ) {
 			<li id="member-history-filters-memberships">| <a href="javascript:void(0);" class="tab"><?php esc_html_e( 'Membership Levels History', 'paid-memberships-pro' ); ?></a> <span>(<?php echo count( $levelshistory ); ?>)</span></li>
 		</ul>
 		<br class="clear" />
-		<div id="member-history-orders" class="widgets-holder-wrap" <?php if(count($invoices) > 5) { ?>style="height: 150px; overflow: auto;"<?php } ?>>
+		<?php
+			// Build the selectors for the invoices history list based on history count.
+			$invoices_classes = array();
+			$invoices_classes[] = "widgets-holder-wrap";
+			if ( ! empty( $invoices ) && count( $invoices ) > 2 ) {
+				$invoices_classes[] = "pmpro_scrollable";
+			}
+			$invoice_class = implode( ' ', array_unique( $invoices_classes ) );
+		?>
+		<div id="member-history-orders" class="<?php echo esc_attr( $invoice_class ); ?>">
 		<?php if ( $invoices ) { ?>
 			<table class="wp-list-table widefat striped fixed" width="100%" cellpadding="0" cellspacing="0" border="0">
 			<thead>
@@ -457,17 +468,26 @@ function pmpro_membership_history_profile_fields( $user ) {
 			?>
 			</tbody>
 			</table>
-			<?php } else { ?>
-                <table class="wp-list-table widefat striped fixed" width="100%" cellpadding="0" cellspacing="0" border="0">
-                    <tbody>
-                        <tr>
-                            <td><?php esc_html_e( 'No membership orders found.', 'paid-memberships-pro' ); ?></td>
-                        </tr>
-                    </tbody>
-                </table>
-			<?php } ?>
-		</div>
-		<div id="member-history-memberships" class="widgets-holder-wrap" style="display: none;">
+		<?php } else { ?>
+            <table class="wp-list-table widefat striped fixed" width="100%" cellpadding="0" cellspacing="0" border="0">
+                <tbody>
+                    <tr>
+                        <td><?php esc_html_e( 'No membership orders found.', 'paid-memberships-pro' ); ?></td>
+                    </tr>
+                </tbody>
+            </table>
+		<?php } ?>
+		</div> <!-- end #member-history-invoices -->
+		<?php
+			// Build the selectors for the membership levels history list based on history count.
+			$levelshistory_classes = array();
+			$levelshistory_classes[] = "widgets-holder-wrap";
+			if ( ! empty( $levelshistory ) && count( $levelshistory ) > 4 ) {
+				$levelshistory_classes[] = "pmpro_scrollable";
+			}
+			$levelshistory_class = implode( ' ', array_unique( $levelshistory_classes ) );
+		?>
+		<div id="member-history-memberships" class="<?php echo esc_attr( $levelshistory_class ); ?>" style="display: none;">
 		<?php if ( $levelshistory ) { ?>
 			<table class="wp-list-table widefat striped fixed" width="100%" cellpadding="0" cellspacing="0" border="0">
 			<thead>
@@ -524,7 +544,7 @@ function pmpro_membership_history_profile_fields( $user ) {
                     </tbody>
                 </table>
 			<?php } ?>
-		</div>
+		</div> <!-- end #member-history-memberships -->
 		<script>
 			//tabs
 			jQuery(document).ready(function() {
