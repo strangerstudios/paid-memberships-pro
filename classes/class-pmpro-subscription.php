@@ -3,13 +3,13 @@
 /**
  * The PMPro Subscription object.
  *
- * @method int    get_id                  Get the ID of the subscription.
- * @method int    get_user_id             Get the ID of the user the subscription belongs to.
- * @method int    get_membership_id       Get the ID of the membership level that this subscription is for.
- * @method string get_gateway             Get the gateway used to create the subscription.
- * @method string get_gateway_environment Get the gateway environment used to create the subscription.
- * @method string get_subscription_id     Get the ID of the subscription in the gateway.
- * @method string get_status              Get the status of the subscription.
+ * @method int    get_id                          Get the ID of the subscription.
+ * @method int    get_user_id                     Get the ID of the user the subscription belongs to.
+ * @method int    get_membership_level_id         Get the ID of the membership level that this subscription is for.
+ * @method string get_gateway                     Get the gateway used to create the subscription.
+ * @method string get_gateway_environment         Get the gateway environment used to create the subscription.
+ * @method string get_subscription_transaction_id Get the ID of the subscription in the gateway.
+ * @method string get_status                      Get the status of the subscription.
  *
  * @since TBD
  */
