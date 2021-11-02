@@ -777,8 +777,8 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 		public function pmpro_rest_api_recent_orders( $request ) {
 			$params = $request->get_params();
 			
-			if ( isset($params['limit']) && is_int($params['limit']) ) {
-				$orders_limit = $params['limit'];
+			if ( isset($params['limit']) ) {
+				$orders_limit = intval( $params['limit'] );
 			} else {
 				$orders_limit = 1;
 			}
