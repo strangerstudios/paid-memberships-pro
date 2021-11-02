@@ -721,7 +721,7 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 			$params = $request->get_params();
 
 			if ( isset($params['limit']) && is_int($params['limit']) ) {
-				$members_limit = $params['limit'];
+				$members_limit = intval( $params['limit'] );
 			} else {
 				$members_limit = 1;
 			}
