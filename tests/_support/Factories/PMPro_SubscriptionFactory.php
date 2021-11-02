@@ -25,6 +25,13 @@ class PMPro_SubscriptionFactory extends Test_Factory {
 		'startdate'                   => '%s',
 		'enddate'                     => '%s',
 		'next_payment_date'           => '%s',
+		'initial_payment'             => '%f',
+		'billing_amount'              => '%f',
+		'cycle_number'                => '%d',
+		'cycle_period'                => '%s',
+		'billing_limit'               => '%d',
+		'trial_amount'                => '%f',
+		'trial_limit'                 => '%d',
 	];
 
 	/**
@@ -59,6 +66,13 @@ class PMPro_SubscriptionFactory extends Test_Factory {
 			'startdate'                   => gmdate( 'Y-m-d H:i:s' ),
 			'enddate'                     => '',
 			'next_payment_date'           => gmdate( 'Y-m-d H:i:s', strtotime( '+1 year' ) ),
+			'initial_payment'             => 0,
+			'billing_amount'              => 0,
+			'cycle_number'                => 0,
+			'cycle_period'                => 'Month',
+			'billing_limit'               => 0,
+			'trial_amount'                => 0,
+			'trial_limit'                => 0,
 		];
 	}
 

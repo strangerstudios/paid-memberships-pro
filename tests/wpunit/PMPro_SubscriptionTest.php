@@ -80,6 +80,13 @@ class PMPro_SubscriptionTest extends TestCase {
 			'user_id'             => '2345',
 			'membership_level_id' => '3456',
 			'status'              => 'active',
+			'initial_payment'     => 12.34,
+			'billing_amount'      => 23.45,
+			'cycle_number'        => '7',
+			'cycle_period'        => 'Day',
+			'billing_limit'       => '14',
+			'trial_amount'        => 34.56,
+			'trial_limit'         => '3',
 		];
 
 		// Confirm the data gets set.
@@ -88,12 +95,26 @@ class PMPro_SubscriptionTest extends TestCase {
 		$this->assertEquals( $subscription_data->user_id, $subscription->get_user_id() );
 		$this->assertEquals( $subscription_data->membership_level_id, $subscription->get_membership_level_id() );
 		$this->assertEquals( $subscription_data->status, $subscription->get_status() );
+		$this->assertEquals( $subscription_data->initial_payment, $subscription->get_initial_payment() );
+		$this->assertEquals( $subscription_data->billing_amount, $subscription->get_billing_amount() );
+		$this->assertEquals( $subscription_data->cycle_number, $subscription->get_cycle_number() );
+		$this->assertEquals( $subscription_data->cycle_period, $subscription->get_cycle_period() );
+		$this->assertEquals( $subscription_data->billing_limit, $subscription->get_billing_limit() );
+		$this->assertEquals( $subscription_data->trial_amount, $subscription->get_trial_amount() );
+		$this->assertEquals( $subscription_data->trial_limit, $subscription->get_trial_limit() );
 
 		// Confirm it casts the integers as expected.
 		$this->assertInternalType( 'int', $subscription->get_id() );
 		$this->assertInternalType( 'int', $subscription->get_user_id() );
 		$this->assertInternalType( 'int', $subscription->get_membership_level_id() );
 		$this->assertInternalType( 'string', $subscription->get_status() );
+		$this->assertInternalType( 'float', $subscription->get_initial_payment() );
+		$this->assertInternalType( 'float', $subscription->get_billing_amount() );
+		$this->assertInternalType( 'int', $subscription->get_cycle_number() );
+		$this->assertInternalType( 'string', $subscription->get_cycle_period() );
+		$this->assertInternalType( 'int', $subscription->get_billing_limit() );
+		$this->assertInternalType( 'float', $subscription->get_trial_amount() );
+		$this->assertInternalType( 'int', $subscription->get_trial_limit() );
 	}
 
 	/**
