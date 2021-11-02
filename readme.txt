@@ -3,7 +3,8 @@ Contributors: strangerstudios, kimannwall, andrewza, dlparker1005, paidmembershi
 Tags: memberships, members, subscriptions, ecommerce, user registration, member, membership, e-commerce, paypal, stripe, braintree, authorize.net, payflow, restrict access, restrict content, directory
 Requires at least: 5.2
 Tested up to: 5.8.1
-Stable tag: 2.6.3
+Requires PHP: 5.6
+Stable tag: 2.6.4
 
 Get Paid with Paid Memberships Pro: The most complete member management and membership subscriptions plugin for your WordPress site.
 
@@ -155,6 +156,20 @@ Not sure? You can find out by doing a bit a research.
 9. Membership Account page, display all sections or show specific sections using shortcode attributes.
 
 == Changelog ==
+= 2.6.4 - 2021-11-02 =
+* ENHANCEMENT: Now including some information from the htaccess file in Site Health, including whether a getfile.php script is defined or if caching is being used. (@sc0ttkclark)
+* ENHANCEMENT: Now including some of the PMPro-related PHP constants in the Site Health. (@sc0ttkclark)
+* ENHNACEMENT: Now including the minimum PHP version (5.6 currently) in the readme.txt so it's shared on the WordPress.org page. (@sc0ttkclark)
+* ENHANCEMENT: Added scrollable classes to the member history shown on user profile edit page in the dashboard. (@kimcoleman)
+* BUG FIX/ENHANCEMENT: Now sending a 200 OK status message early when the Stripe webhook is running to avoid timeout issues. We may use this new pmpro_send_200_http_response in the other webhook/IPN handlers later on. (@dparker1005)
+* BUG FIX/EHNANCEMENT: Removed the "fee" info from the edit user page. This was often misleading. The fee is still shown on the members list and frontend account page. Future updates will include work to make sure the fee is more accurate in cases where subscriptions or levels are being changed by admins after checkout. (@ideadude)
+* BUG FIX/ENHANCEMENT: Once again enqueuing the admin.css file on all WP admin pages. This fixes issues where styles weren't being applied to the edit user/profile page in the dashboard. (@ideadude)
+* BUG FIX/ENHANCEMENT: Removed the "Member Value Report". We didn't intend to move this over from the old Member History add on. The report was inaccurate and had optimization issues. (@kimcoleman)
+* BUG FIX/ENHANCEMENT: Added login compatibility for wordpress.com hosted sites. This fixes some issues with wordpress.com's SSO when using the PMPro login page. (@sc0ttkclark)
+* BUG FIX: Fixed issue introduced in 2.6.3 where memberships were not being cancelled when cancelled at PayPal. (@mircobabini)
+* BUG FIX: Now including time when calculating profile start date. In the past, we would set it to 00:00:00 which could add or remove a few hours from the subscription. (@dparker1005)
+* BUG FIX: Fixed issue where enddates were incorrectly set sometimes when expiration period was "Hour". (@kimwhite)
+
 = 2.6.3 - 2021-10-11 =
 * ENHANCEMENT: Now passing "app" information to Stripe through API calls. (@dparker1005)
 * ENHANCEMENT: Updated PayPal IPN to detect messages for refunds to at least log it. (@mircobabini)
