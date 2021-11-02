@@ -86,6 +86,9 @@
 	//real event?
 	if(!empty($pmpro_stripe_event->id))
 	{
+		// Send a 200 HTTP response to Stripe to avoid timeout.
+		pmpro_send_200_http_response();
+
 		// Log that we have successfully received a webhook from Stripe.
 		update_option( 'pmpro_stripe_last_webhook_received_' . ( $livemode ? 'live' : 'sandbox' ), date( 'Y-m-d H:i:s' ) );
 

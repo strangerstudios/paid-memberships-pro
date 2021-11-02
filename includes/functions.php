@@ -3483,7 +3483,7 @@ function pmpro_show_discount_code() {
 	$morder->discount_code    = $discount_code;
 	$morder->InitialPayment   = pmpro_round_price( $pmpro_level->initial_payment );
 	$morder->PaymentAmount    = pmpro_round_price( $pmpro_level->billing_amount );
-	$morder->ProfileStartDate = date_i18n( "Y-m-d", current_time( "timestamp" ) ) . "T0:0:0";
+	$morder->ProfileStartDate = date_i18n( "Y-m-d\TH:i:s", current_time( "timestamp" ) );
 	$morder->BillingPeriod    = $pmpro_level->cycle_period;
 	$morder->BillingFrequency = $pmpro_level->cycle_number;
 	if ( $pmpro_level->billing_limit ) {
@@ -3764,3 +3764,49 @@ function pmpro_kses_allowed_html( $allowed_html, $context ) {
 	return $allowed_html;
 }
 add_filter( 'wp_kses_allowed_html', 'pmpro_kses_allowed_html', 10, 2 );
+
+/**
+ * Send a 200 HTTP reponse without ending PHP execution.
+ *
+ * Useful to avoid issues like timeouts from gateways during
+ * webhook/IPN handlers.
+ *
+ * Works with Apache and Nginx.
+ *
+ * Based on code from https://stackoverflow.com/a/42245266
+ *
+ * @since TBD
+ */
+function pmpro_send_200_http_response() {
+	/**
+	 * Allow filtering whether to send an early 200 HTTP response.
+	 *
+	 * @since TBD
+	 *
+	 * @param bool $send_early_response Whether to send an early 200 HTTP response.
+	 */
+	if ( ! apply_filters( 'pmpro_send_200_http_response', true ) ) {
+		return;
+	}
+
+	// Ngnix compatibility: Check if fastcgi_finish_request is callable.
+	if ( is_callable( 'fastcgi_finish_request' ) ) {
+		session_write_close();
+		fastcgi_finish_request();
+
+		return;
+	}
+
+	ignore_user_abort(true);
+
+	ob_start();
+	$server_protocol = filter_input( INPUT_SERVER, 'SERVER_PROTOCOL', FILTER_SANITIZE_STRING );
+	header( $server_protocol . ' 200 OK' );
+	header( 'Content-Encoding: none' );
+	header( 'Content-Length: ' . ob_get_length() );
+	header( 'Connection: close' );
+
+	ob_end_flush();
+	ob_flush();
+	flush();
+}
