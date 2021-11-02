@@ -784,7 +784,7 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 			}
 
 			$response_type = isset( $params['response_type'] ) ? sanitize_text_field( $params['response_type'] ) : null;
-			$limit = apply_filters( 'pmpro_trigger_recent_orders_limit', $orders_limit );
+			$limit = apply_filters( 'pmpro_rest_api_recent_orders_limit', $orders_limit );
 
 			global $wpdb;
 
