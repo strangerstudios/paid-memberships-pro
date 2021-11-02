@@ -60,7 +60,7 @@ add_action( 'plugins_loaded', 'pmpro_compatibility_checker' );
 /**
  * Check whether the requirement is met.
  *
- * @since TBD
+ * @since 2.8.4
  *
  * @param array $requirement The requirement config (check_type, check_value, check_constant_true).
  *

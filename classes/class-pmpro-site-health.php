@@ -356,7 +356,7 @@ class PMPro_Site_Health {
 	/**
 	 * Get the .htaccess services/getfile.php usage information.
 	 *
-	 * @since TBD
+	 * @since 2.8.4
 	 *
 	 * @return string The .htaccess services/getfile.php usage information.
 	 */
@@ -398,7 +398,7 @@ class PMPro_Site_Health {
 	/**
 	 * Get the .htaccess cache usage information.
 	 *
-	 * @since TBD
+	 * @since 2.8.4
 	 *
 	 * @return string The .htaccess cache usage information.
 	 */
@@ -434,7 +434,7 @@ class PMPro_Site_Health {
 	/**
 	 * Get the constants site health information.
 	 *
-	 * @since TBD
+	 * @since 2.8.4
 	 *
 	 * @return array The constants site health information.
 	 */
@@ -479,7 +479,7 @@ class PMPro_Site_Health {
 		/**
 		 * Allow filtering the supported Site Health constants by other add ons.
 		 *
-		 * @since TBD
+		 * @since 2.8.4
 		 *
 		 * @param array  $constants The list of constants to show in Site Health.
 		 * @param string $gateway   The current payment gateway.
