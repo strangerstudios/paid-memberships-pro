@@ -105,6 +105,13 @@ class PMPro_SubscriptionTest extends TestCase {
 	 * @covers PMPro_Subscription::get_gateway_environment
 	 * @covers PMPro_Subscription::get_subscription_transaction_id
 	 * @covers PMPro_Subscription::get_status
+	 * @covers PMPro_Subscription::get_initial_payment
+	 * @covers PMPro_Subscription::get_billing_amount
+	 * @covers PMPro_Subscription::get_cycle_number
+	 * @covers PMPro_Subscription::get_cycle_period
+	 * @covers PMPro_Subscription::get_billing_limit
+	 * @covers PMPro_Subscription::get_trial_amount
+	 * @covers PMPro_Subscription::get_trial_limit
 	 */
 	public function test___call() {
 		$user_id  = $this->factory()->user->create();
@@ -117,6 +124,13 @@ class PMPro_SubscriptionTest extends TestCase {
 			'gateway_environment'         => 'sandbox',
 			'subscription_transaction_id' => 'sub_12345',
 			'status'                      => 'active',
+			'initial_payment'             => '12.34',
+			'billing_amount'              => '23.45',
+			'cycle_number'                => '7',
+			'cycle_period'                => 'Day',
+			'billing_limit'               => '14',
+			'trial_amount'                => '34.56',
+			'trial_limit'                 => '3',
 		];
 
 		$subscription_id = $this->factory()->pmpro_subscription->create( $subscription_data );
@@ -132,6 +146,13 @@ class PMPro_SubscriptionTest extends TestCase {
 		$this->assertEquals( $subscription_data['gateway_environment'], $subscription->get_gateway_environment() );
 		$this->assertEquals( $subscription_data['subscription_transaction_id'], $subscription->get_subscription_transaction_id() );
 		$this->assertEquals( $subscription_data['status'], $subscription->get_status() );
+		$this->assertEquals( $subscription_data['initial_payment'], $subscription->get_initial_payment() );
+		$this->assertEquals( $subscription_data['billing_amount'], $subscription->get_billing_amount() );
+		$this->assertEquals( $subscription_data['cycle_number'], $subscription->get_cycle_number() );
+		$this->assertEquals( $subscription_data['cycle_period'], $subscription->get_cycle_period() );
+		$this->assertEquals( $subscription_data['billing_limit'], $subscription->get_billing_limit() );
+		$this->assertEquals( $subscription_data['trial_amount'], $subscription->get_trial_amount() );
+		$this->assertEquals( $subscription_data['trial_limit'], $subscription->get_trial_limit() );
 
 		// Confirm it returns the types as expected.
 		$this->assertInternalType( 'int', $subscription->get_id() );
@@ -141,6 +162,13 @@ class PMPro_SubscriptionTest extends TestCase {
 		$this->assertInternalType( 'string', $subscription->get_gateway_environment() );
 		$this->assertInternalType( 'string', $subscription->get_subscription_transaction_id() );
 		$this->assertInternalType( 'string', $subscription->get_status() );
+		$this->assertInternalType( 'float', $subscription->get_initial_payment() );
+		$this->assertInternalType( 'float', $subscription->get_billing_amount() );
+		$this->assertInternalType( 'int', $subscription->get_cycle_number() );
+		$this->assertInternalType( 'string', $subscription->get_cycle_period() );
+		$this->assertInternalType( 'int', $subscription->get_billing_limit() );
+		$this->assertInternalType( 'float', $subscription->get_trial_amount() );
+		$this->assertInternalType( 'int', $subscription->get_trial_limit() );
 	}
 
 	/**
