@@ -217,7 +217,7 @@ class PMPro_Subscription {
 		if ( ! empty( $subscription_data ) ) {
 			foreach ( $subscription_data as $arg => $value ) {
 				// Enforce integers/floats for properties.
-				if ( isset( $this->{$arg} ) && is_int( $this->{$arg} ) ) {
+				if ( isset( $this->{$arg} ) && ( is_int( $this->{$arg} ) || is_float( $this->{$arg} ) ) ) {
 					if ( is_int( $this->{$arg} ) ) {
 						$value = (int) $value;
 					} elseif ( is_float( $this->{$arg} ) ) {
