@@ -165,6 +165,13 @@ class PMPro_SubscriptionTest extends TestCase {
 	 * @covers PMPro_Subscription::get_gateway_environment
 	 * @covers PMPro_Subscription::get_subscription_transaction_id
 	 * @covers PMPro_Subscription::get_status
+	 * @covers PMPro_Subscription::get_initial_payment
+	 * @covers PMPro_Subscription::get_billing_amount
+	 * @covers PMPro_Subscription::get_cycle_number
+	 * @covers PMPro_Subscription::get_cycle_period
+	 * @covers PMPro_Subscription::get_billing_limit
+	 * @covers PMPro_Subscription::get_trial_amount
+	 * @covers PMPro_Subscription::get_trial_limit
 	 */
 	public function test___call() {
 		$user_id  = $this->factory()->user->create();
