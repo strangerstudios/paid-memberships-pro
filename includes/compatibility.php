@@ -52,14 +52,14 @@ function pmpro_compatibility_checker() {
 		if ( pmpro_compatibility_checker_is_requirement_met( $value ) ) {
 			include_once( PMPRO_DIR . '/includes/compatibility/' . $value['file'] ) ;
 		}
-    }
+	}
 }
 add_action( 'plugins_loaded', 'pmpro_compatibility_checker' );
 
 /**
  * Check whether the requirement is met.
  *
- * @since 2.8.4
+ * @since 2.6.4
  *
  * @param array $requirement The requirement config (check_type, check_value, check_constant_true).
  *
@@ -72,7 +72,7 @@ function pmpro_compatibility_checker_is_requirement_met( $requirement ) {
 	}
 
 	// Check for a constant and maybe check if the constant is true-ish.
-    if ( 'constant' === $requirement['check_type'] ) {
+	if ( 'constant' === $requirement['check_type'] ) {
 		return (
 			defined( $requirement['check_value'] )
 			&& (
@@ -80,38 +80,36 @@ function pmpro_compatibility_checker_is_requirement_met( $requirement ) {
 				|| constant( $requirement['check_value'] )
 			)
 		);
-    }
+	}
 
 	// Check for a function.
-    if ( 'function' === $requirement['check_type'] ) {
+	if ( 'function' === $requirement['check_type'] ) {
 		return function_exists( $requirement['check_value'] );
-    }
+	}
 
 	// Check for a class.
-    if ( 'class' === $requirement['check_type'] ) {
+	if ( 'class' === $requirement['check_type'] ) {
 		return class_exists( $requirement['check_value'] );
-    }
+	}
 
 	return false;
 }
 
 function pmpro_compatibility_checker_themes(){
 
-    $compat_checks = array(
-        array(
-            'file' => 'divi.php',
-            'check_type' => 'constant',
-            'check_value' => 'ET_BUILDER_THEME' //Adds support for the Divi theme.
-        )
-    );
+	$compat_checks = array(
+		array(
+			'file' => 'divi.php',
+			'check_type' => 'constant',
+			'check_value' => 'ET_BUILDER_THEME' //Adds support for the Divi theme.
+		)
+	);
 
-    foreach ( $compat_checks as $key => $value ) {
-        if ( ( $value['check_type'] == 'constant' && defined( $value['check_value'] ) )
-          || ( $value['check_type'] == 'function' && function_exists( $value['check_value'] ) )
-          || ( $value['check_type'] == 'class' && class_exists( $value['check_value'] ) ) ) {
-            include( PMPRO_DIR . '/includes/compatibility/' . $value['file'] ) ;
-        }
-    }
+	foreach ( $compat_checks as $key => $value ) {
+		if ( pmpro_compatibility_checker_is_requirement_met( $value ) ) {
+			include_once( PMPRO_DIR . '/includes/compatibility/' . $value['file'] ) ;
+		}
+	}
 
 
 }
