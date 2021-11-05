@@ -3793,13 +3793,13 @@ add_filter( 'wp_kses_allowed_html', 'pmpro_kses_allowed_html', 10, 2 );
  *
  * Based on code from https://stackoverflow.com/a/42245266
  *
- * @since 2.8.4
+ * @since 2.6.4
  */
 function pmpro_send_200_http_response() {
 	/**
 	 * Allow filtering whether to send an early 200 HTTP response.
 	 *
-	 * @since 2.8.4
+	 * @since 2.6.4
 	 *
 	 * @param bool $send_early_response Whether to send an early 200 HTTP response.
 	 */
