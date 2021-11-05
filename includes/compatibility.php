@@ -43,8 +43,8 @@ function pmpro_compatibility_checker() {
 		],
 		[
 			'file'        => 'jetpack.php',
-			'check_type'  => 'function',
-			'check_value' => [ 'Jetpack', 'is_module_active' ],
+			'check_type'  => 'class',
+			'check_value' => 'Jetpack',
 		],
 	];
 
