@@ -215,18 +215,7 @@ class PMPro_Subscription {
 		}
 
 		if ( ! empty( $subscription_data ) ) {
-			foreach ( $subscription_data as $arg => $value ) {
-				// Enforce integers/floats for properties.
-				if ( isset( $this->{$arg} ) ) {
-					if ( is_int( $this->{$arg} ) ) {
-						$value = (int) $value;
-					} elseif ( is_float( $this->{$arg} ) ) {
-						$value = (float) $value;
-					}
-				}
-
-				$this->{$arg} = $value;
-			}
+			$this->set( $subscription_data );
 		}
 	}
 
@@ -604,73 +593,49 @@ class PMPro_Subscription {
 	 *
 	 * @return PMPro_Subscription|null PMPro_Subscription object if created, null if not.
 	 */
-	public static function create_subscription( $user_id, $membership_level_id, $subscription_transaction_id, $gateway, $gateway_environment ) {
+	public static function create( $args ) {
 		global $wpdb;
 
-		if ( empty( $user_id ) ) {
+		// Make sure that $args is an array.
+		$subscription_data = array();
+		if ( is_array( $args ) ) {
+			$subscription_data = $args;
+		} elseif ( is_object( $args ) ) {
+			$subscription_data = get_object_vars( $args );
+		} else {
+			// Invalid $subscription so there's nothing we can do.
 			return null;
 		}
 
-		$existing_subscription = self::get_subscription_from_subscription_transaction_id( $subscription_transaction_id, $gateway, $gateway_environment );
+		// At a minimum, we need a user_id, membership_level_id, subscription_transaction_id, gateway, and gateway_environment.
+		if (
+			empty( $args['user_id'] ) ||
+			empty( $args['membership_level_id'] ) ||
+			empty( $args['subscription_transaction_id'] ) ||
+			empty( $args['gateway'] ) ||
+			empty( $args['gateway_environment'] )
+		) {
+			return null;
+		}
+
+		// Make sure we don't already have a subscription with this transaction ID and gateway.
+		$existing_subscription = self::get_subscription_from_subscription_transaction_id( $args['subscription_transaction_id'], $args['gateway'], $args['gateway_environment'] );
 		if ( ! empty( $existing_subscription ) ) {
 			// Subscription already exists.
 			return null;
 		}
 
-		$subscription_data = [
-			'user_id'                     => $user_id,
-			'membership_level_id'         => $membership_level_id,
-			'gateway'                     => $gateway,
-			'gateway_environment'         => $gateway_environment,
-			'subscription_transaction_id' => $subscription_transaction_id,
-		];
-
+		// Create the subscription.
 		$new_subscription = new PMPro_Subscription( $subscription_data );
 
 		// Try to pull as much info as possible directly from the gateway.
 		$new_subscription->update_from_gateway();
 
-		// If we are still missing information, fall back on order and membership history.
-		if ( empty( $new_subscription->status ) ) {
-			$new_subscription->status = pmpro_hasMembershipLevel( $membership_level_id, $user_id ) ? 'active' : 'cancelled';
-			$last_order_for_level     = $wpdb->get_row( $wpdb->prepare( "SELECT * 
-					FROM $wpdb->pmpro_membership_orders
-					WHERE membership_id = %s
-					ORDER BY timestamp DESC", $membership_level_id ), OBJECT );
-			if ( ! empty( $last_order_for_level->subscription_transaction_id ) && $last_order_for_level->subscription_transaction_id === $subscription_transaction_id && ! empty( $last_order_for_level->gateway ) && $last_order_for_level->gateway === $gateway && ! empty( $last_order_for_level->gateway_environment ) && $last_order_for_level->gateway_environment === $gateway_environment ) {
-				$new_subscription->status = 'active';
-			} else {
-				$new_subscription->status = 'cancelled';
-			}
+		$saved = $new_subscription->save();
+		if ( ! $saved ) {
+			// We couldn't save the subscription.
+			return null;
 		}
-
-		if ( empty( $new_subscription->startdate ) ) {
-			// Get the earliest order for this subscription.
-			// There should be one since we are usually making a subscription from an order.
-			$first_order = $wpdb->get_row( $wpdb->prepare( "SELECT * 
-					FROM $wpdb->pmpro_membership_orders
-					WHERE subscription_transaction_id = %s
-					AND gateway = %s
-					AND gateway_environment = %s
-					ORDER BY timestamp ASC", $subscription_transaction_id, $gateway, $gateway_environment ), OBJECT );
-			if ( ! empty( $first_order->timestamp ) ) {
-				$new_subscription->startdate = $first_order->timestamp;
-			}
-		}
-
-		if ( $new_subscription->status === 'active' && empty( $new_subscription->next_payment_date ) ) {
-			// Calculate their next payment date based on their current membership.
-			// TODO: Implement this.
-
-		}
-
-		if ( $new_subscription->status !== 'active' && empty( $new_subscription->enddate ) ) {
-			// Get the end date for their old membership. May not work well if they've changed levels a lot.
-			// TODO: Implement this.
-
-		}
-
-		$new_subscription->save();
 
 		return $new_subscription;
 	}
@@ -792,6 +757,33 @@ class PMPro_Subscription {
 		}
 
 		return null;
+	}
+
+	/**
+	 * Set a property for this subscription.
+	 *
+	 * @since TBD
+	 *
+	 * @param string|array $property Property to set, or an array with property => value pairs.
+	 * @param mixed        $value    Value to set.
+	 */
+	public function set( $property, $value = null ) {
+		if ( is_array( $property ) ) {
+			foreach ( $property as $key => $value ) {
+				$this->set( $key, $value );
+			}
+		} else {
+			// TODO: Perform validation here.
+			if ( isset( $this->{$property} ) ) {
+				if ( is_int( $this->{$property} ) ) {
+					$value = (int) $value;
+				} elseif ( is_float( $this->{$property} ) ) {
+					$value = (float) $value;
+				}
+			}
+
+			$this->{$property} = $value;
+		}
 	}
 
 	/**

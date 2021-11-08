@@ -146,7 +146,7 @@
 					$this->setGateway();
 
 				if ( ! empty( $this->subscription_transaction_id ) && empty( PMPro_Subscription::get_subscription_from_subscription_transaction_id( $this->subscription_transaction_id, $this->gateway, $this->gateway_environment ) ) ) {
-					$subscription = PMPro_Subscription::create_subscription( $this->user_id, $this->membership_id, $this->subscription_transaction_id, $this->gateway, $this->gateway_environment );
+					$this->create_subscription_for_order();
 				}
 
 				return $this->id;
@@ -834,9 +834,8 @@
 					$this->id = $wpdb->insert_id;
 				do_action($after_action, $this);
 
-				if ( ! empty( $this->subscription_transaction_id ) && 'pmpro_add_order' === $before_action && empty( PMPro_Subscription::get_subscription_from_subscription_transaction_id( $this->subscription_transaction_id, $this->gateway, $this->gateway_environment ) ) ) {
-					// New order created and associated subscription does not yet exist on site.
-					$subscription = PMPro_Subscription::create_subscription( $this->user_id, $this->membership_id, $this->subscription_transaction_id, $this->gateway, $this->gateway_environment );
+				if ( ! empty( $this->subscription_transaction_id ) && 'pmpro_add_order' === $before_action ) {
+					$this->create_subscription_for_order();
 				}
 
 				return $this->getMemberOrderByID($this->id);
@@ -1096,5 +1095,54 @@
 			$this->notes               = __( 'This is a test order used with the PMPro Email Templates addon.', 'paid-memberships-pro' );
 
 			return apply_filters( 'pmpro_test_order_data', $this );
+		}
+
+		/**
+		 * If a subscription does not already exist for this order, create one.
+		 *
+		 * @return bool True if a subscription was created, false if not.
+		 */
+		private function create_subscription_for_order() {
+			if ( empty( $this->subscription_transaction_id ) ) {
+				// No subscription transaction ID, so we don't need to create a subscription.
+				return false;
+			}
+
+			$get_subscription_args = array(
+				'subscription_transaction_id' => $this->subscription_transaction_id,
+				'gateway'                     => $this->gateway,
+				'gateway_environment'  	      => $this->gateway_environment,
+			);
+			$existing_subscription = PMPro_Subscription::get_subscription( $get_subscription_args );
+			if ( ! empty( $existing_subscription ) ) {
+				// We already have a subscription for this order, so we don't need to create a new one.
+				return false;
+			}
+
+			$create_subscription_args = array(
+				'user_id'                     => $this->user_id,
+				'membership_level_id'  		  => $this->membership_id,
+				'gateway'                     => $this->gateway,
+				'gateway_environment'  	      => $this->gateway_environment,
+				'subscription_transaction_id' => $this->subscription_transaction_id,
+			);
+			// Check if we have additional information from checkout to pass to the subscription.
+			$checkout_level = $this->getMembershipLevelAtCheckout();
+			if ( ! empty( $checkout_level->billing_amount ) && ! empty( $checkout_level->cycle_number ) ) {
+				// We have a real level that is recurring, so we can use the level to create the subscription.
+				$create_subscription_args['initial_payment'] = $checkout_level->initial_payment;
+				$create_subscription_args['billing_amount']  = $checkout_level->billing_amount;
+				$create_subscription_args['cycle_number']    = $checkout_level->cycle_number;
+				$create_subscription_args['cycle_period']    = $checkout_level->cycle_period;
+				$create_subscription_args['billing_limit']   = $checkout_level->billing_limit;
+				$create_subscription_args['trial_amount']    = $checkout_level->trial_amount;
+				$create_subscription_args['trial_limit']     = $checkout_level->trial_limit;
+
+				// Since we know that this is checkout, the subscription will be active and there will be a next payment date.
+				$create_subscription_args['status'] = 'active';
+				// TODO: Calculate the next payment date.
+			}
+			$new_subscription = PMPro_Subscription::create( $create_subscription_args );
+			return ! empty( $new_subscription );
 		}
 	} // End of Class
