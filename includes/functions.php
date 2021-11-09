@@ -3818,7 +3818,7 @@ function pmpro_send_200_http_response() {
 	ignore_user_abort(true);
 
 	ob_start();
-	$server_protocol = $_SERVER['SERVER_PROTOCOL'];
+	$server_protocol = filter_input( INPUT_SERVER, 'SERVER_PROTOCOL', FILTER_SANITIZE_STRING );
 	if ( ! in_array( $server_protocol, array( 'HTTP/1.1', 'HTTP/2', 'HTTP/2.0' ), true ) ) {
 		$server_protocol = 'HTTP/1.0';
 	}
