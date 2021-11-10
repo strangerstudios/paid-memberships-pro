@@ -3819,6 +3819,10 @@ function pmpro_send_200_http_response() {
 
 	ob_start();
 	$server_protocol = filter_input( INPUT_SERVER, 'SERVER_PROTOCOL', FILTER_SANITIZE_STRING );
+	if ( ! in_array( $server_protocol, array( 'HTTP/1.1', 'HTTP/2', 'HTTP/2.0' ), true ) ) {
+		$server_protocol = 'HTTP/1.0';
+	}
+
 	header( $server_protocol . ' 200 OK' );
 	header( 'Content-Encoding: none' );
 	header( 'Content-Length: ' . ob_get_length() );
