@@ -647,7 +647,7 @@ function add_pmpro_membership_level_meta( $level_id, $meta_key, $meta_value, $un
 	return add_metadata( 'pmpro_membership_level', $level_id, $meta_key, $meta_value, $unique );
 }
 
-function get_pmpro_membership_level_meta( $level_id, $key, $single = false ) {
+function get_pmpro_membership_level_meta( $level_id, $key = '', $single = false ) {
 	return get_metadata( 'pmpro_membership_level', $level_id, $key, $single );
 }
 
@@ -666,7 +666,7 @@ function add_pmpro_membership_order_meta( $order_id, $meta_key, $meta_value, $un
 	return add_metadata( 'pmpro_membership_order', $order_id, $meta_key, $meta_value, $unique );
 }
 
-function get_pmpro_membership_order_meta( $order_id, $key, $single = false ) {
+function get_pmpro_membership_order_meta( $order_id, $key = '', $single = false ) {
 	return get_metadata( 'pmpro_membership_order', $order_id, $key, $single );
 }
 
