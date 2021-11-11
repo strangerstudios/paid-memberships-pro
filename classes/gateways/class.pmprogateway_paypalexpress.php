@@ -598,6 +598,15 @@
 				//update order
 				$order->saveOrder();
 
+				/**
+				 * Allow performing actions just before sending the user to the gateway to complete the payment.
+				 *
+				 * @since TBD
+				 *
+				 * @param MemberOrder $order The new order with status = token.
+				 */
+				do_action( 'pmpro_before_commit_express_checkout', $order );
+
 				//redirect to paypal
 				$paypal_url = "https://www.paypal.com/webscr?cmd=_express-checkout&useraction=commit&token=" . $this->httpParsedResponseAr['TOKEN'];
 				$environment = pmpro_getOption("gateway_environment");
