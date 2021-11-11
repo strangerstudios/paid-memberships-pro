@@ -727,7 +727,7 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 			}
 
 			$response_type = isset( $params['response_type'] ) ? sanitize_text_field( $params['response_type'] ) : null;
-			$limit = apply_filters( 'pmpro_rest_api_recent_memberships_limit', $members_limit );
+			$limit = apply_filters( 'pmpro_trigger_recent_members_limit', $members_limit );
 
 			// Grab the useful information.
 			global $wpdb;
