@@ -598,7 +598,7 @@ function pmpro_braintreeWebhookExit() {
 				$log_email = get_option( "admin_email" );
 			}
 			
-			wp_mail( $log_email, get_option( "blogname" ) . " Braintree Webhook Log", nl2br( $debuglog ) );
+			wp_mail( $log_email, get_option( "blogname" ) . " Braintree Webhook Log", nl2br( esc_html( $debuglog ) ) );
 		}
 	}
 	
