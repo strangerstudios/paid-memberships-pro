@@ -58,7 +58,7 @@
 		else
 			$log_email = get_option("admin_email");
 			
-		wp_mail($log_email, "Authorize.net Silent Post From " . get_option("blogname"), nl2br($logstr));
+		wp_mail( $log_email, "Authorize.net Silent Post From " . get_option( "blogname" ), nl2br( esc_html( $logstr ) ) );
 	}	
 
 	// If it is an ARB transaction, do something with it

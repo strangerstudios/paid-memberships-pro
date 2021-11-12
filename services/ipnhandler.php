@@ -369,7 +369,7 @@ function pmpro_ipnExit() {
 	if ( $logstr ) {
 		$logstr = "Logged On: " . date_i18n( "m/d/Y H:i:s" ) . "\n" . $logstr . "\n-------------\n";
 
-		echo $logstr;
+		echo esc_html( $logstr );
 
 		//log or dont log? log in file or email?
 		//- dont log if constant is undefined or defined but false
@@ -387,10 +387,10 @@ function pmpro_ipnExit() {
 				fclose( $loghandle );
 			} elseif ( is_email( PMPRO_IPN_DEBUG ) ) {
 				//email to specified address
-				wp_mail( PMPRO_IPN_DEBUG, get_option( "blogname" ) . " IPN Log", nl2br( $logstr ) );							
+				wp_mail( PMPRO_IPN_DEBUG, get_option( "blogname" ) . " IPN Log", nl2br( esc_html( $logstr ) ) );							
 			} else {
 				//email to admin
-				wp_mail( get_option( "admin_email" ), get_option( "blogname" ) . " IPN Log", nl2br( $logstr ) );							
+				wp_mail( get_option( "admin_email" ), get_option( "blogname" ) . " IPN Log", nl2br( esc_html( $logstr ) ) );							
 			}
 		}
 	}
@@ -573,7 +573,7 @@ function pmpro_ipnChangeMembershipLevel( $txn_id, &$morder ) {
 
 	global $pmpro_error;
 	if ( ! empty( $pmpro_error ) ) {
-		echo $pmpro_error;
+		echo esc_html( $pmpro_error );
 		ipnlog( $pmpro_error );
 	}
 

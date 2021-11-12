@@ -558,7 +558,7 @@
 		{
 			$logstr = "Logged On: " . date_i18n("m/d/Y H:i:s") . "\n" . $logstr . "\n-------------\n";
 
-			echo $logstr;
+			echo esc_html( $logstr );
 
 			//log in file or email?
 			if(defined('PMPRO_STRIPE_WEBHOOK_DEBUG') && PMPRO_STRIPE_WEBHOOK_DEBUG === "log")
@@ -576,7 +576,7 @@
 				else
 					$log_email = get_option("admin_email");
 
-				wp_mail($log_email, get_option("blogname") . " Stripe Webhook Log", nl2br($logstr));
+				wp_mail( $log_email, get_option( "blogname" ) . " Stripe Webhook Log", nl2br( esc_html( $logstr ) ) );
 			}
 		}
 

@@ -647,7 +647,7 @@ function add_pmpro_membership_level_meta( $level_id, $meta_key, $meta_value, $un
 	return add_metadata( 'pmpro_membership_level', $level_id, $meta_key, $meta_value, $unique );
 }
 
-function get_pmpro_membership_level_meta( $level_id, $key, $single = false ) {
+function get_pmpro_membership_level_meta( $level_id, $key = '', $single = false ) {
 	return get_metadata( 'pmpro_membership_level', $level_id, $key, $single );
 }
 
@@ -666,7 +666,7 @@ function add_pmpro_membership_order_meta( $order_id, $meta_key, $meta_value, $un
 	return add_metadata( 'pmpro_membership_order', $order_id, $meta_key, $meta_value, $unique );
 }
 
-function get_pmpro_membership_order_meta( $order_id, $key, $single = false ) {
+function get_pmpro_membership_order_meta( $order_id, $key = '', $single = false ) {
 	return get_metadata( 'pmpro_membership_order', $order_id, $key, $single );
 }
 
@@ -3793,13 +3793,13 @@ add_filter( 'wp_kses_allowed_html', 'pmpro_kses_allowed_html', 10, 2 );
  *
  * Based on code from https://stackoverflow.com/a/42245266
  *
- * @since TBD
+ * @since 2.6.4
  */
 function pmpro_send_200_http_response() {
 	/**
 	 * Allow filtering whether to send an early 200 HTTP response.
 	 *
-	 * @since TBD
+	 * @since 2.6.4
 	 *
 	 * @param bool $send_early_response Whether to send an early 200 HTTP response.
 	 */
@@ -3819,6 +3819,10 @@ function pmpro_send_200_http_response() {
 
 	ob_start();
 	$server_protocol = filter_input( INPUT_SERVER, 'SERVER_PROTOCOL', FILTER_SANITIZE_STRING );
+	if ( ! in_array( $server_protocol, array( 'HTTP/1.1', 'HTTP/2', 'HTTP/2.0' ), true ) ) {
+		$server_protocol = 'HTTP/1.0';
+	}
+
 	header( $server_protocol . ' 200 OK' );
 	header( 'Content-Encoding: none' );
 	header( 'Content-Length: ' . ob_get_length() );
