@@ -42,10 +42,9 @@ function pmpro_compatibility_checker() {
 			'check_value' => 'ET_BUILDER_PLUGIN_DIR',
 		],
 		[
-			'file'                => 'wp-com.php',
-			'check_type'          => 'constant',
-			'check_value'         => 'IS_WPCOM',
-			'check_constant_true' => true,
+			'file'        => 'jetpack.php',
+			'check_type'  => 'class',
+			'check_value' => 'Jetpack',
 		],
 	];
 
