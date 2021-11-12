@@ -22,7 +22,6 @@ package-lock.json
 # composer
 vendor
 composer.js
-composer.json
 composer.lock
 
 # Temporary files
