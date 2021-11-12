@@ -4,7 +4,7 @@ Tags: memberships, members, subscriptions, ecommerce, user registration, member,
 Requires at least: 5.2
 Tested up to: 5.8.1
 Requires PHP: 5.6
-Stable tag: 2.6.4
+Stable tag: 2.6.5
 
 Get Paid with Paid Memberships Pro: The most complete member management and membership subscriptions plugin for your WordPress site.
 
@@ -156,6 +156,13 @@ Not sure? You can find out by doing a bit a research.
 9. Membership Account page, display all sections or show specific sections using shortcode attributes.
 
 == Changelog ==
+= 2.6.5 - 2021-11-12 =
+* ENHANCEMENT: Introduced new action `pmpro_before_commit_express_checkout` to allow additional changes after an order has been saved but before sending customer to PayPal Express checkout. #1852 (@mircobabini)
+* BUG FIX/ENHANCEMENT: Added login compatibility for Jetpack WordPress.com SSO when using the PMPro login page. #1848 (@sc0ttkclark)
+* BUG FIX: Fixed PHP notices from status headers when server protocol information is unavailable. #1849 (@dparker1005)
+* BUG FIX: Fixed metadata compatibility for membership levels and orders when calling `get_pmpro_membership_level_meta()` and `get_pmpro_membership_order_meta()` so they support getting all meta values for all keys. #1853 (@mircobabini)
+* BUG FIX: Escape all Webhook communication debug output coming from gateways. #1855 (@ideadude, Victor Garcia)
+
 = 2.6.4 - 2021-11-02 =
 * ENHANCEMENT: Now including some information from the htaccess file in Site Health, including whether a getfile.php script is defined or if caching is being used. (@sc0ttkclark)
 * ENHANCEMENT: Now including some of the PMPro-related PHP constants in the Site Health. (@sc0ttkclark)
