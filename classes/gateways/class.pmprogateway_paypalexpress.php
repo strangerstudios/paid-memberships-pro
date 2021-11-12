@@ -601,7 +601,7 @@
 				/**
 				 * Allow performing actions just before sending the user to the gateway to complete the payment.
 				 *
-				 * @since TBD
+				 * @since 2.6.5
 				 *
 				 * @param MemberOrder $order The new order with status = token.
 				 */
