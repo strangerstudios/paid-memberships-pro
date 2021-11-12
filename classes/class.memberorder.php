@@ -145,7 +145,7 @@
 				if(empty($this->nogateway))
 					$this->setGateway();
 
-				if ( ! empty( $this->subscription_transaction_id ) && empty( PMPro_Subscription::get_subscription_from_subscription_transaction_id( $this->subscription_transaction_id, $this->gateway, $this->gateway_environment ) ) ) {
+				if ( ! empty( $this->subscription_transaction_id ) ) {
 					$this->create_subscription_for_order();
 				}
 

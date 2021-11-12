@@ -609,17 +609,17 @@ class PMPro_Subscription {
 
 		// At a minimum, we need a user_id, membership_level_id, subscription_transaction_id, gateway, and gateway_environment.
 		if (
-			empty( $args['user_id'] ) ||
-			empty( $args['membership_level_id'] ) ||
-			empty( $args['subscription_transaction_id'] ) ||
-			empty( $args['gateway'] ) ||
-			empty( $args['gateway_environment'] )
+			empty( $subscription_data['user_id'] ) ||
+			empty( $subscription_data['membership_level_id'] ) ||
+			empty( $subscription_data['subscription_transaction_id'] ) ||
+			empty( $subscription_data['gateway'] ) ||
+			empty( $subscription_data['gateway_environment'] )
 		) {
 			return null;
 		}
 
 		// Make sure we don't already have a subscription with this transaction ID and gateway.
-		$existing_subscription = self::get_subscription_from_subscription_transaction_id( $args['subscription_transaction_id'], $args['gateway'], $args['gateway_environment'] );
+		$existing_subscription = self::get_subscription_from_subscription_transaction_id( $subscription_data['subscription_transaction_id'], $subscription_data['gateway'], $subscription_data['gateway_environment'] );
 		if ( ! empty( $existing_subscription ) ) {
 			// Subscription already exists.
 			return null;
@@ -800,6 +800,8 @@ class PMPro_Subscription {
 		if ( empty( $this->gateway ) || empty( $this->gateway_environment ) || empty( $this->subscription_transaction_id ) ) {
 			return false;
 		}
+
+		// TODO: Perform validation here.
 
 		$create = empty( $this->id );
 
