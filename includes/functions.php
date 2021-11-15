@@ -1191,6 +1191,29 @@ function pmpro_changeMembershipLevel( $level, $user_id = null, $old_level_status
 			$pmpro_error = sprintf( __( 'Error interacting with database: %s', 'paid-memberships-pro' ), ( ! empty( $wpdb->last_error ) ? $wpdb->last_error : 'unavailable' ) );
 			return false;
 		}
+
+		// Remove duplicates of this level. Default to off for now.
+		if ( apply_filters( 'pmpro_remove_duplicate_membership_entries', false ) ) {
+			$wpdb->query(
+				$wpdb->prepare(
+					"
+						UPDATE {$wpdb->pmpro_memberships_users}
+						SET status = %s,
+							enddate = %s
+						WHERE user_id = %d
+							AND membership_id = %d
+							AND status = %s
+							AND id != %d
+					",
+					'changed',
+					current_time( 'mysql' ),
+					$user_id,
+					$level_id,
+					'active',
+					$wpdb->insert_id // Ignore the membership that we just added.
+				)
+			);
+		}
 	}
 
 	// remove cached level
