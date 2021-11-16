@@ -1192,8 +1192,16 @@ function pmpro_changeMembershipLevel( $level, $user_id = null, $old_level_status
 			return false;
 		}
 
-		// Remove duplicates of this level. Default to off for now.
-		if ( apply_filters( 'pmpro_remove_duplicate_membership_entries', false ) ) {
+		/**
+		 * Allow filtering whether to remove duplicate "active" memberships by setting them to "changed".
+		 *
+		 * @since TBD
+		 *
+		 * @param bool $remove_duplicate_memberships Whether to remove duplicate "active" memberships by setting them to "changed".
+		 */
+		$remove_duplicate_memberships = apply_filters( 'pmpro_remove_duplicate_membership_entries', false );
+
+		if ( $remove_duplicate_memberships ) {
 			$wpdb->query(
 				$wpdb->prepare(
 					"
