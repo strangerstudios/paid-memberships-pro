@@ -585,11 +585,26 @@ class PMPro_Subscription {
 	 *
 	 * @since TBD
 	 *
-	 * @param int    $user_id                     ID of the user to create the subscription for.
-	 * @param int    $membership_level_id         ID of the membership level to create the subscription for.
-	 * @param string $subscription_transaction_id Subscription transaction ID to create the subscription for.
-	 * @param string $gateway                     Gateway to create the subscription for.
-	 * @param string $gateway_environment         Gateway environment to create the subscription for.
+	 * @param array $args {
+	 *                    Arguments to create a new subscription.
+	 *
+	 *                    @type int    $user_id                     ID of the user to create the subscription for. Required.
+	 *                    @type int    $membership_level_id         ID of the membership level to create the subscription for. Required.
+	 *                    @type string $gateway                     Gateway to create the subscription for. Required.
+	 *                    @type string $gateway_environment         Gateway environment to create the subscription for. Required.
+	 *                    @type string $subscription_transaction_id Subscription transaction ID to create the subscription for. Required.
+	 *                    @type string $status                      Status of the subscription.
+	 *                    @type string $startdate                   The subscription start date (UTC YYYY-MM-DD HH:MM:SS).
+	 *                    @type string $enddate                     The subscription end date (UTC YYYY-MM-DD HH:MM:SS).
+	 *                    @type string $next_payment_date           The subscription next payment date (UTC YYYY-MM-DD HH:MM:SS).
+	 *                    @type float  $initial_payment             The subscription initial payment.
+	 *                    @type float  $billing_amount              The subscription billing amount.
+	 *                    @type int    $cycle_number                The subscription cycle number.
+	 *                    @type string $cycle_period                The subscription cycle period.
+	 *                    @type int    $billing_limit               The subscription billing limit.
+	 *                    @type float  $trial_amount                The subscription trial amount.
+	 *                    @type int    $trial_limit                 The subscription trial limit.
+	 * }
 	 *
 	 * @return PMPro_Subscription|null PMPro_Subscription object if created, null if not.
 	 */
@@ -801,7 +816,9 @@ class PMPro_Subscription {
 			return false;
 		}
 
-		// TODO: Perform validation here.
+		// TODO: Perform validation here. The setter should make sure that fields have valid values,
+		// but we should also check here that the values make sense together. For example, cancelled
+		// subscriptions should not have a next payment date and startdates should not be before end dates.
 
 		$create = empty( $this->id );
 
