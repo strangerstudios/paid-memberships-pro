@@ -1126,7 +1126,7 @@
 				'gateway_environment'  	      => $this->gateway_environment,
 				'subscription_transaction_id' => $this->subscription_transaction_id,
 			);
-			// Check if we have additional information from checkout to pass to the subscription.
+			// Check if we have additional information from checkout to pass to the subscription. If not set on checkout, this will use the current membership level set on the order.
 			$checkout_level = $this->getMembershipLevelAtCheckout();
 			if ( ! empty( $checkout_level->billing_amount ) && ! empty( $checkout_level->cycle_number ) ) {
 				// We have a real level that is recurring, so we can use the level to create the subscription.

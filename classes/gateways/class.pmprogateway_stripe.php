@@ -3882,9 +3882,11 @@ class PMProGateway_stripe extends PMProGateway {
 		try {
 			$stripe_subscription = Stripe_Subscription::retrieve( $subscription->get_subscription_transaction_id() );
 		} catch ( \Throwable $e ) {
-			//assume no subscription found
+			// Assume no subscription found.
+			return;
 		} catch ( \Exception $e ) {
-			//assume no subscription found
+			// Assume no subscription found.
+			return;
 		}
 
 		if ( ! empty( $stripe_subscription ) ) {
@@ -3896,7 +3898,7 @@ class PMProGateway_stripe extends PMProGateway {
 				$update_array['status'] = 'active';
 				$update_array['next_payment_date'] = date( 'Y-m-d H:i:s', intval( $stripe_subscription->current_period_end ) );
 			} else {
-				// Subscription is no lonver active.
+				// Subscription is no longer active.
 				$update_array['status'] = 'cancelled';
 				$update_array['enddate'] = date( 'Y-m-d H:i:s', intval( $stripe_subscription->ended_at ) );
 			}
