@@ -768,22 +768,25 @@ class PMPro_Subscription {
 	 * @param mixed        $value    Value to set.
 	 */
 	public function set( $property, $value = null ) {
+		// Check if we need to set multiple properties as an array.
 		if ( is_array( $property ) ) {
 			foreach ( $property as $key => $value ) {
 				$this->set( $key, $value );
 			}
-		} else {
-			// TODO: Perform validation here.
-			if ( isset( $this->{$property} ) ) {
-				if ( is_int( $this->{$property} ) ) {
-					$value = (int) $value;
-				} elseif ( is_float( $this->{$property} ) ) {
-					$value = (float) $value;
-				}
-			}
 
-			$this->{$property} = $value;
+			return;
 		}
+
+		// Perform validation as needed here.
+		if ( isset( $this->{$property} ) ) {
+			if ( is_int( $this->{$property} ) ) {
+				$value = (int) $value;
+			} elseif ( is_float( $this->{$property} ) ) {
+				$value = (float) $value;
+			}
+		}
+
+		$this->{$property} = $value;
 	}
 
 	/**
