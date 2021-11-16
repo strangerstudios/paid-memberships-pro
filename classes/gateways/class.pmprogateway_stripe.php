@@ -3896,7 +3896,7 @@ class PMProGateway_stripe extends PMProGateway {
 				$update_array['status'] = 'active';
 				$update_array['next_payment_date'] = date( 'Y-m-d H:i:s', intval( $stripe_subscription->current_period_end ) );
 			} else {
-				// Subscription is no lonver active.
+				// Subscription is no longer active.
 				$update_array['status'] = 'cancelled';
 				$update_array['enddate'] = date( 'Y-m-d H:i:s', intval( $stripe_subscription->ended_at ) );
 			}
