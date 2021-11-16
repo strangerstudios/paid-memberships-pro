@@ -3885,7 +3885,8 @@ class PMProGateway_stripe extends PMProGateway {
 			// Assume no subscription found.
 			return;
 		} catch ( \Exception $e ) {
-			//assume no subscription found
+			// Assume no subscription found.
+			return;
 		}
 
 		if ( ! empty( $stripe_subscription ) ) {
