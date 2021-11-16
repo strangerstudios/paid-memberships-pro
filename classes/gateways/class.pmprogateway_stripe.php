@@ -3882,7 +3882,8 @@ class PMProGateway_stripe extends PMProGateway {
 		try {
 			$stripe_subscription = Stripe_Subscription::retrieve( $subscription->get_subscription_transaction_id() );
 		} catch ( \Throwable $e ) {
-			//assume no subscription found
+			// Assume no subscription found.
+			return;
 		} catch ( \Exception $e ) {
 			//assume no subscription found
 		}
