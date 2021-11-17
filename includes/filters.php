@@ -37,7 +37,14 @@ function pmpro_checkout_level_extend_memberships( $level ) {
 			} elseif ( $level->expiration_period == 'Week' ) {
 				$total_days = $days_left + $level->expiration_number * 7;
 			} elseif ( $level->expiration_period == 'Month' ) {
-				$total_days = $days_left + $level->expiration_number * 30;
+				$expiration_day = $expiration_date->format('d');
+				$expiration_month = strtotime('+1 month', $expiration_date->format('n'));
+				if ($expiration_day > cal_days_in_month($expiration_month)) {
+					$additional_month = strtotime('Y-m-t', strtotime("+1 month", $expiration_date));
+				} else {
+					$additional_month = strtotime('Y-m-d', strtotime("+1 month", $expiration_date));
+				}
+				$total_days = $days_left + $level->expiration_number * $additional_month;
 			} elseif ( $level->expiration_period == 'Year' ) {
 				$total_days = $days_left + $level->expiration_number * 365;
 			}
