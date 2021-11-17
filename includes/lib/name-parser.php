@@ -14,8 +14,17 @@
 if(!function_exists("pnp_split_full_name"))
 {
 	function pnp_split_full_name($full_name) {
-		if(empty($full_name))
-			return "";
+		$name = [
+			'salutation' => '',
+			'fname'      => '',
+			'initials'   => '',
+			'lname'      => '',
+			'suffix'     => '',
+		];
+
+		if ( empty( $full_name ) ) {
+			return $name;
+		}
 
 		$fname = $lname = $initials = NULL;
 
@@ -30,7 +39,7 @@ if(!function_exists("pnp_split_full_name"))
 		}
 
 		if ( empty( $name_parts ) ) {
-			return '';
+			return $name;
 		}
 
 		$num_words = sizeof($name_parts);
