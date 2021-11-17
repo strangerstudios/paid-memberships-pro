@@ -7,6 +7,16 @@
 
 	class PMProGateway_paypalexpress extends PMProGateway
 	{
+		/** @var int Maximum number of request retries */
+		protected static $maxNetworkRetries = 5;
+
+		/** @var float Maximum delay between retries, in seconds */
+		protected static $maxNetworkRetryDelay = 2.0;
+
+		/** @var float Initial delay between retries, in seconds */
+		protected static $initialNetworkRetryDelay = 0.5;
+
+
 		function __construct($gateway = NULL)
 		{
 			$this->gateway = $gateway;
@@ -364,7 +374,7 @@
 					$morder->discount_code = $discount_code;
 					$morder->InitialPayment = pmpro_round_price( $pmpro_level->initial_payment );
 					$morder->PaymentAmount = pmpro_round_price( $pmpro_level->billing_amount );
-					$morder->ProfileStartDate = date_i18n("Y-m-d") . "T0:0:0";
+					$morder->ProfileStartDate = date_i18n("Y-m-d\TH:i:s");
 					$morder->BillingPeriod = $pmpro_level->cycle_period;
 					$morder->BillingFrequency = $pmpro_level->cycle_number;
 					$morder->Email = $bemail;
@@ -449,8 +459,10 @@
 		{
 			$order->payment_type = "PayPal Express";
 			$order->cardtype = "";
-			$order->ProfileStartDate = date_i18n("Y-m-d", strtotime("+ " . $order->BillingFrequency . " " . $order->BillingPeriod)) . "T0:0:0";
+			$order->ProfileStartDate = date_i18n("Y-m-d\TH:i:s", strtotime("+ " . $order->BillingFrequency . " " . $order->BillingPeriod));
 			$order->ProfileStartDate = apply_filters("pmpro_profile_start_date", $order->ProfileStartDate, $order);
+			// Convert to UTC for PayPal...
+			$order->ProfileStartDate = get_gmt_from_date( $order->ProfileStartDate, 'Y-m-d\TH:i:s\Z' );
 
 			return $this->setExpressCheckout($order);
 		}
@@ -464,8 +476,10 @@
 		{
 			if(pmpro_isLevelRecurring($order->membership_level))
 			{
-				$order->ProfileStartDate = date_i18n("Y-m-d", strtotime("+ " . $order->BillingFrequency . " " . $order->BillingPeriod, current_time("timestamp"))) . "T0:0:0";
+				$order->ProfileStartDate = date_i18n("Y-m-d\TH:i:s", strtotime("+ " . $order->BillingFrequency . " " . $order->BillingPeriod, current_time("timestamp")));
 				$order->ProfileStartDate = apply_filters("pmpro_profile_start_date", $order->ProfileStartDate, $order);
+				// Convert to UTC for PayPal...
+				$order->ProfileStartDate = get_gmt_from_date( $order->ProfileStartDate, 'Y-m-d\TH:i:s\Z' );
 				return $this->subscribe($order);
 			}
 			else
@@ -583,6 +597,15 @@
 
 				//update order
 				$order->saveOrder();
+
+				/**
+				 * Allow performing actions just before sending the user to the gateway to complete the payment.
+				 *
+				 * @since 2.6.5
+				 *
+				 * @param MemberOrder $order The new order with status = token.
+				 */
+				do_action( 'pmpro_before_commit_express_checkout', $order );
 
 				//redirect to paypal
 				$paypal_url = "https://www.paypal.com/webscr?cmd=_express-checkout&useraction=commit&token=" . $this->httpParsedResponseAr['TOKEN'];
@@ -1011,13 +1034,50 @@
 
 		/**
 		 * PAYPAL Function
-		 * Send HTTP POST Request
+		 * Send HTTP POST Request with retries
+		 *
+		 * @param string    The API method name
+		 * @param string    The POST Message fields in &name=value pair format
+		 *
+		 * @return array    Parsed HTTP Response body
+		 */
+		function PPHttpPost( $methodName_, $nvpStr_ ) {
+			// Create a UUID for this request, to enable idempotency which is supported
+			// by PayPal Express even if it's legacy (thus it's not reported in the docs)
+			// https://developer.paypal.com/docs/business/develop/idempotency/
+			$uuid = self::RandomGenerator_uuid();
+
+			$numRetries = 0;
+			do {
+				$httpParsedResponseAr = $this->PPHttpPost_DontDieOnError( $methodName_, $nvpStr_, $uuid );
+				if ( is_wp_error( $httpParsedResponseAr ) ) {
+					$numRetries++;
+					sleep( self::sleepTime( $numRetries ) );
+				} else {
+					break;
+				}
+			} while ( $numRetries <= self::$maxNetworkRetries );
+
+			// If we still have an error even with the retries, there's not much we can do.
+			if ( is_wp_error( $httpParsedResponseAr ) ) {
+				// exiting is never a good user experience and it's hard to debug, but we can
+				// at least leave a trace in error log to make it easier to see this happening
+				error_log( "Unable to complete $methodName_ request with $nvpStr_: " . $httpParsedResponseAr->get_error_message() );
+				die( "Unable to complete $methodName_ request with $nvpStr_: " . $httpParsedResponseAr->get_error_message() );
+			}
+
+			return $httpParsedResponseAr;
+		}
+        
+        /**
+		 * PAYPAL Function
+		 * Send HTTP POST Request with uuid
 		 *
 		 * @param	string	The API method name
 		 * @param	string	The POST Message fields in &name=value pair format
-		 * @return	array	Parsed HTTP Response body
+		 * @return	array|\WP_Error	Parsed HTTP Response body
 		 */
-		function PPHttpPost($methodName_, $nvpStr_) {
+		function PPHttpPost_DontDieOnError($methodName_, $nvpStr_, $uuid) {
 			global $gateway_environment;
 			$environment = $gateway_environment;
 
@@ -1039,24 +1099,80 @@
 					'timeout' => 60,
 					'sslverify' => FALSE,
 					'httpversion' => '1.1',
-					'body' => $nvpreq
+					'body' => $nvpreq,
+					'headers'     => array(
+						'content-type'      => 'application/json',
+						'PayPal-Request-Id' => $uuid,
+					),
 			    )
 			);
 
 			if ( is_wp_error( $response ) ) {
-			   $error_message = $response->get_error_message();
-			   die( "methodName_ failed: $error_message" );
-			} else {
-				//extract the response details
-				$httpParsedResponseAr = array();
-				parse_str(wp_remote_retrieve_body($response), $httpParsedResponseAr);
-
-				//check for valid response
-				if((0 == sizeof($httpParsedResponseAr)) || !array_key_exists('ACK', $httpParsedResponseAr)) {
-					exit("Invalid HTTP Response for POST request($nvpreq) to $API_Endpoint.");
-				}
+                return $response;
 			}
+            
+            //extract the response details
+            $httpParsedResponseAr = array();
+            parse_str(wp_remote_retrieve_body($response), $httpParsedResponseAr);
+
+            //check for valid response
+            if((0 == sizeof($httpParsedResponseAr)) || !array_key_exists('ACK', $httpParsedResponseAr)) {
+	            return new WP_Error( 1, "Invalid HTTP Response for POST request($nvpreq) to $API_Endpoint." );
+            }
 
 			return $httpParsedResponseAr;
+		}
+
+		/**
+		 * Provides the number of seconds to wait before retrying a request.
+		 * Inspired by Stripe\HttpClient\CurlClient::sleepTime
+		 *
+		 * @param int $numRetries
+		 *
+		 * @return int
+		 */
+		public static function sleepTime( $numRetries ) {
+			// Apply exponential backoff with $initialNetworkRetryDelay on the
+			// number of $numRetries so far as inputs. Do not allow the number to exceed
+			// $maxNetworkRetryDelay.
+			$sleepSeconds = \min(
+				self::$maxNetworkRetryDelay * 1.0 * 2 ** ( $numRetries - 1 ),
+				self::$maxNetworkRetryDelay
+			);
+
+			// Apply some jitter by randomizing the value in the range of
+			// ($sleepSeconds / 2) to ($sleepSeconds).
+			$sleepSeconds *= 0.5 * ( 1 + self::randFloat() );
+
+			// But never sleep less than the base sleep seconds.
+			$sleepSeconds = \max( self::$initialNetworkRetryDelay, $sleepSeconds );
+
+			return $sleepSeconds;
+		}
+
+		/**
+		 * Returns a random value between 0 and $max.
+		 * From Stripe\Util\RandomGenerator::randFloat()
+		 *
+		 * @param float $max (optional)
+		 *
+		 * @return float
+		 */
+		public static function randFloat( $max = 1.0 ) {
+			return \mt_rand() / \mt_getrandmax() * $max;
+		}
+
+		/**
+		 * Returns a v4 UUID.
+		 * From Stripe\Util\RandomGenerator::uuid()
+		 *
+		 * @return string
+		 */
+		public static function RandomGenerator_uuid() {
+			$arr    = \array_values( \unpack( 'N1a/n4b/N1c', \openssl_random_pseudo_bytes( 16 ) ) );
+			$arr[2] = ( $arr[2] & 0x0fff ) | 0x4000;
+			$arr[3] = ( $arr[3] & 0x3fff ) | 0x8000;
+
+			return \vsprintf( '%08x-%04x-%04x-%04x-%04x%08x', $arr );
 		}
 	}

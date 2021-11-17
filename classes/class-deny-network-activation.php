@@ -12,15 +12,27 @@ class PMPro_Deny_Network_Activation {
 
 	public function wp_admin_style() {
 		global $current_screen;
-		if ( is_admin() && ( 'sites-network' === $current_screen->id || 'plugins-network' === $current_screen->id ) ) {
-	?>
+		// Bail if not in the dashboard.
+		if ( ! is_admin() ) {
+			return;
+		}
+		
+		// Bail if there is no current screen.
+		if ( empty( $current_screen ) ) {
+			return;
+		}
+		
+		// Bail if not on the screens we want.
+		if ( 'sites-network' !== $current_screen->id && 'plugins-network' !== $current_screen->id ) {
+			return;
+		}
+		?>
 		<style type="text/css">
 			.notice.notice-info {
 				background-color: #ffd;
 			}
 		</style>
-	<?php
-		}
+		<?php
 	}
 
 	public function display_message_after_network_activation_attempt() {
