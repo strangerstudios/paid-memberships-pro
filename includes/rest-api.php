@@ -726,7 +726,6 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 				$members_limit = 1;
 			}
 
-			$response_type = isset( $params['response_type'] ) ? sanitize_text_field( $params['response_type'] ) : null;
 			$limit = apply_filters( 'pmpro_trigger_recent_members_limit', $members_limit );
 
 			// Grab the useful information.
@@ -734,7 +733,7 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 
 			$sql = "
 				SELECT
-					`mu`.`user_id`,
+					`mu`.`user_id` as `id`,
 					`u`.`user_email`,
 					`u`.`user_nicename`,
 					`mu`.`membership_id`,
@@ -755,13 +754,10 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 
 			$results = $wpdb->get_results( $wpdb->prepare( $sql, $limit ) );
 
-			// Generate random ID for Zapier and then also add all member information.
-			if ( $response_type == 'json' ) {
-				$id = isset( $results[0]->user_id ) ? intval( $results[0]->user_id ) : 0; 
-				wp_send_json( array( 'id' => $id, 'results' => $results ) );
-			}
+			// Let's format the date to ISO8601
+			$results[0]->modified = $this->pmpro_format_date_iso8601( $results[0]->modified );
 
-			return new WP_REST_Response( $results );
+			return new WP_REST_Response( $results, 200 );
 
 		}
 
@@ -783,14 +779,13 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 				$orders_limit = 1;
 			}
 
-			$response_type = isset( $params['response_type'] ) ? sanitize_text_field( $params['response_type'] ) : null;
 			$limit = apply_filters( 'pmpro_trigger_recent_orders_limit', $orders_limit );
 
 			global $wpdb;
 
 			$sql = "
 				SELECT
-					`o`.`id` AS `order_id`,
+					`o`.`id`,
 					`o`.`code`,
 					`u`.`ID` AS `user_id`,
 					`u`.`user_email`,
@@ -819,12 +814,9 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 			
 			$results = $wpdb->get_results( $wpdb->prepare( $sql, $limit ) );
 
-			if ( 'json' === $response_type ) {
-				$id = isset( $results[0]->order_id ) ? intval( $results[0]->order_id ) : 0;
-				wp_send_json( array( 'id' => $id, 'results' => $results ) );
-			}
+			$results[0]->timestamp = $this->pmpro_format_date_iso8601( $results[0]->timestamp );
 
-			return new WP_REST_Response( $results );
+			return new WP_REST_Response( $results, 200 );
 		}
 
 		/**
@@ -885,6 +877,16 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 			return explode( ',', $string );
 		}
 
+		/** 
+		 * Returns formatted ISO-8601 date (Used for Zapier Native app.)
+		 * @param $date date A valid date value.
+		 * @since TBD
+		 */
+		function pmpro_format_date_iso8601( $date ) {
+			$datetime = new DateTime( $date );
+			return $datetime->format( DateTime::ATOM );
+
+		}
 
 	} // End of class
 
@@ -899,6 +901,7 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 
 	add_action( 'rest_api_init', 'pmpro_rest_api_register_custom_routes', 5 );
 }
+
 
 /**
  * Get the allowed methods for PMPro REST API endpoints.
