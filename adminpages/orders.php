@@ -1474,7 +1474,7 @@ if ( function_exists( 'pmpro_add_email_order_modal' ) ) {
 							?>
 						</div>
 					</td>
-					<td class="username column-username">
+					<td class="username column-username">						
 						<?php $order->getUser(); ?>
 						<?php if ( ! empty( $order->user ) ) { ?>
 							<a href="user-edit.php?user_id=<?php echo esc_attr( $order->user->ID ); ?>"><?php echo esc_html( $order->user->user_login ); ?></a><br />
@@ -1484,6 +1484,7 @@ if ( function_exists( 'pmpro_add_email_order_modal' ) ) {
 						<?php } else { ?>
 							[<?php esc_html_e( 'none', 'paid-memberships-pro' ); ?>]
 						<?php } ?>
+						<?php if( $order->get_original_subscription_order() ){ echo "(".__( 'renewal', 'paid-memberships-pro' ).")"; } ?>						
 					</td>
 					<?php do_action( 'pmpro_orders_extra_cols_body', $order ); ?>
 					<td>

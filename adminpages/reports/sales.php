@@ -41,7 +41,8 @@ function pmpro_report_sales_widget() {
 	<thead>
 		<tr>
 			<th scope="col">&nbsp;</th>
-			<th scope="col"><?php _e('Sales', 'paid-memberships-pro' ); ?></th>
+			<th scope="col"><?php _e('New Sales', 'paid-memberships-pro' ); ?></th>
+			<th scope="col"><?php _e('Renewals', 'paid-memberships-pro' ); ?></th>
 			<th scope="col"><?php _e('Revenue', 'paid-memberships-pro' ); ?></th>
 		</tr>
 	</thead>
@@ -69,6 +70,7 @@ function pmpro_report_sales_widget() {
 					<?php } ?>
 				</th>
 				<td><?php echo esc_html( number_format_i18n( pmpro_getSales( $report_type ) ) ); ?></td>
+				<td>Ren1</td>
 				<td><?php echo pmpro_escape_price( pmpro_formatPrice( pmpro_getRevenue( $report_type ) ) ); ?></td>
 			</tr>
 			<?php
@@ -84,6 +86,7 @@ function pmpro_report_sales_widget() {
 				<tr class="pmpro_report_tr_sub" style="display: none;">
 					<th scope="row">- <?php echo pmpro_escape_price( pmpro_formatPrice( $price ) );?></th>
 					<td><?php echo esc_html( number_format_i18n( $quantity ) ); ?></td>
+					<td>Ren2</td>
 					<td><?php echo pmpro_escape_price( pmpro_formatPrice( $price * $quantity ) ); ?></td>
 				</tr>
 			<?php
@@ -298,7 +301,8 @@ function pmpro_report_sales_page()
 		</select>
 		<select name="type">
 			<option value="revenue" <?php selected($type, "revenue");?>><?php _e('Revenue', 'paid-memberships-pro' );?></option>
-			<option value="sales" <?php selected($type, "sales");?>><?php _e('Sales', 'paid-memberships-pro' );?></option>
+			<option value="sales" <?php selected($type, "sales");?>><?php _e('All Sales', 'paid-memberships-pro' );?></option>
+			<option value="renewals" <?php selected($type, "renewals");?>><?php _e('Renewals', 'paid-memberships-pro' );?></option>
 		</select>
 		<span id="for"><?php _e('for', 'paid-memberships-pro' )?></span>
 		<select id="month" name="month">
@@ -383,17 +387,17 @@ function pmpro_report_sales_page()
 
 			var data = google.visualization.arrayToDataTable([
 				[
-					{ label: '<?php echo esc_html( $date_function );?>' },
-					{ label: '<?php echo esc_html( ucwords( $type ) );?>' },
-					{ label: '<?php _e( 'Average*', 'paid-memberships-pro' );?>' },
+					'<?php echo esc_html( $date_function );?>', '<?php echo esc_html( ucwords( $type ) );?>', '<?php _e( 'Renewals', 'paid-memberships-pro' );?>', '<?php _e( 'Average*', 'paid-memberships-pro' );?>', 
 				],
-				<?php foreach($cols as $date => $value) { ?>
+				<?php foreach($cols as $date => $value) { 
+					$renewals = 23;
+					?>
 					['<?php
 						if($period == "monthly") {
 							echo esc_html(date_i18n("M", mktime(0,0,0,$date,2)));
 						} else {
 						echo esc_html( $date );
-					} ?>', <?php echo esc_html( pmpro_round_price( $value ) );?>, <?php echo esc_html( pmpro_round_price( $average ) );?>],
+					} ?>', <?php echo esc_html( pmpro_round_price( $value ) );?>, <?php echo esc_html( pmpro_round_price( $renewals ) );?>, <?php echo esc_html( pmpro_round_price( $average ) );?>,  ], 
 				<?php } ?>
 			]);
 
@@ -419,8 +423,9 @@ function pmpro_report_sales_page()
 					textStyle: {color: '#555555', fontSize: '12', italic: false},
 				},
 				seriesType: 'bars',
-				series: {1: {type: 'line', color: 'red'}},
+				series: { 2: {type: 'line', color: 'red'}, 1: {color: 'yellow' } },
 				legend: {position: 'none'},
+				isStacked: true
 			};
 
 			<?php
