@@ -3863,3 +3863,14 @@ function pmpro_send_200_http_response() {
 	ob_flush();
 	flush();
 }
+
+/** 
+ * Returns formatted ISO-8601 date (Used for Zapier Native app.)
+ * @since 2.6.6
+ * @param $date date A valid date value.
+ * @return string The date in ISO-8601 format.
+ */
+function pmpro_format_date_iso8601( $date ) {
+	$datetime = new DateTime( $date );
+	return $datetime->format( DateTime::ATOM );
+}
