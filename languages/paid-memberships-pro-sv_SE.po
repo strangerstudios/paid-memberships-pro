@@ -2,14 +2,14 @@
 # This file is distributed under the same license as the Paid Memberships Pro plugin.
 msgid ""
 msgstr ""
-"Project-Id-Version: Paid Memberships Pro 2.6.4\n"
+"Project-Id-Version: Paid Memberships Pro 2.6.6\n"
 "Report-Msgid-Bugs-To: info@paidmembershipspro.com\n"
 "Last-Translator: Paid Memberships Pro <info@paidmembershipspro.com>\n"
 "Language-Team: Paid Memberships Pro <info@paidmembershipspro.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2021-11-12T17:26:23+00:00\n"
+"POT-Creation-Date: 2021-11-18T22:34:33+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.5.0\n"
 "X-Domain: paid-memberships-pro\n"
@@ -3161,6 +3161,7 @@ msgstr "Delsumma"
 #: includes/functions.php:2849
 #: includes/privacy.php:277
 #: adminpages/orders.php:615
+#: includes/functions.php:2880
 msgid "Tax"
 msgstr "Skatt"
 
@@ -3201,6 +3202,7 @@ msgstr "Kupongbelopp"
 #: adminpages/dashboard.php:293
 #: adminpages/orders.php:650
 #: adminpages/orders.php:1344
+#: includes/functions.php:2909
 msgid "Total"
 msgstr "Totalt"
 
@@ -4797,6 +4799,7 @@ msgstr "Pris"
 #: pages/invoice.php:79
 #: pages/invoice.php:77
 #: includes/functions.php:2842
+#: includes/functions.php:2873
 msgid "Subtotal"
 msgstr "Delsumma"
 
@@ -7781,6 +7784,8 @@ msgstr "Fel vid interaktion med databasen: %s"
 #: includes/functions.php:1237
 #: includes/functions.php:1304
 #: includes/functions.php:1342
+#: includes/functions.php:1335
+#: includes/functions.php:1373
 msgid "Membership level not found."
 msgstr "Medlemskapsnivå hittades inte."
 
@@ -7800,6 +7805,7 @@ msgstr "Medlemskapsnivå hittades inte."
 #: includes/functions.php:1362
 #: includes/functions.php:1605
 #: includes/functions.php:1722
+#: includes/functions.php:1753
 msgid "No code was given to check."
 msgstr "Ingen kod angavs för kontroll."
 
@@ -7826,6 +7832,7 @@ msgstr "Ingen kod angavs för kontroll."
 #: includes/functions.php:1371
 #: includes/functions.php:1614
 #: includes/functions.php:1731
+#: includes/functions.php:1762
 msgid "The discount code could not be found."
 msgstr "Rabattkod kunde inte hittas."
 
@@ -7852,6 +7859,7 @@ msgstr "Rabattkod kunde inte hittas."
 #: includes/functions.php:1386
 #: includes/functions.php:1629
 #: includes/functions.php:1746
+#: includes/functions.php:1777
 #, php-format
 msgid "This discount code goes into effect on %s."
 msgstr "Denna rabattkod börjar gälla %s."
@@ -7879,6 +7887,7 @@ msgstr "Denna rabattkod börjar gälla %s."
 #: includes/functions.php:1393
 #: includes/functions.php:1636
 #: includes/functions.php:1753
+#: includes/functions.php:1784
 #, php-format
 msgid "This discount code expired on %s."
 msgstr "Denna rabattkod upphörde %s."
@@ -7906,6 +7915,7 @@ msgstr "Denna rabattkod upphörde %s."
 #: includes/functions.php:1403
 #: includes/functions.php:1646
 #: includes/functions.php:1762
+#: includes/functions.php:1793
 msgid "This discount code is no longer valid."
 msgstr "Denna rabattkod är inte längre giltig"
 
@@ -7931,6 +7941,7 @@ msgstr "Denna rabattkod är inte längre giltig"
 #: includes/functions.php:1416
 #: includes/functions.php:1666
 #: includes/functions.php:1781
+#: includes/functions.php:1812
 msgid "This discount code does not apply to this membership level."
 msgstr "Denna rabattkod gäller inte för denna medlemskapsnivå."
 
@@ -7957,6 +7968,7 @@ msgstr "Denna rabattkod gäller inte för denna medlemskapsnivå."
 #: includes/functions.php:1448
 #: includes/functions.php:1703
 #: includes/functions.php:1819
+#: includes/functions.php:1850
 msgid "This discount code is okay."
 msgstr "Denna rabattkod är ok."
 
@@ -7983,6 +7995,7 @@ msgstr "Denna rabattkod är ok."
 #: includes/functions.php:1475
 #: includes/functions.php:1730
 #: includes/functions.php:1847
+#: includes/functions.php:1878
 msgid "and"
 msgstr "och"
 
@@ -8010,6 +8023,7 @@ msgstr "och"
 #: includes/functions.php:1703
 #: includes/functions.php:2015
 #: includes/functions.php:2409
+#: includes/functions.php:2440
 msgid "Sign Up for !!name!! Now"
 msgstr "Registrera dig för !!namn!! nu"
 
@@ -9141,6 +9155,7 @@ msgstr "Om ditt konto inte aktiverats inom några minuter, vänligen kontakta we
 #: pages/invoice.php:82
 #: pages/invoice.php:80
 #: includes/functions.php:2857
+#: includes/functions.php:2888
 msgid "Coupon"
 msgstr "Kupong"
 
@@ -14264,6 +14279,7 @@ msgid "No membership_id specified in pmpro_changeMembershipLevel."
 msgstr ""
 
 #: includes/functions.php:2433
+#: includes/functions.php:2464
 msgid "Sign Up Now"
 msgstr ""
 

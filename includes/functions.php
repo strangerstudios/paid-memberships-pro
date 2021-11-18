@@ -1191,6 +1191,37 @@ function pmpro_changeMembershipLevel( $level, $user_id = null, $old_level_status
 			$pmpro_error = sprintf( __( 'Error interacting with database: %s', 'paid-memberships-pro' ), ( ! empty( $wpdb->last_error ) ? $wpdb->last_error : 'unavailable' ) );
 			return false;
 		}
+
+		/**
+		 * Allow filtering whether to remove duplicate "active" memberships by setting them to "changed".
+		 *
+		 * @since 2.6.6
+		 *
+		 * @param bool $remove_duplicate_memberships Whether to remove duplicate "active" memberships by setting them to "changed".
+		 */
+		$remove_duplicate_memberships = apply_filters( 'pmpro_remove_duplicate_membership_entries', true );
+
+		if ( $remove_duplicate_memberships ) {
+			$wpdb->query(
+				$wpdb->prepare(
+					"
+						UPDATE {$wpdb->pmpro_memberships_users}
+						SET status = %s,
+							enddate = %s
+						WHERE user_id = %d
+							AND membership_id = %d
+							AND status = %s
+							AND id != %d
+					",
+					'changed',
+					current_time( 'mysql' ),
+					$user_id,
+					$level_id,
+					'active',
+					$wpdb->insert_id // Ignore the membership that we just added.
+				)
+			);
+		}
 	}
 
 	// remove cached level
@@ -3831,4 +3862,15 @@ function pmpro_send_200_http_response() {
 	ob_end_flush();
 	ob_flush();
 	flush();
+}
+
+/** 
+ * Returns formatted ISO-8601 date (Used for Zapier Native app.)
+ * @since 2.6.6
+ * @param $date date A valid date value.
+ * @return string The date in ISO-8601 format.
+ */
+function pmpro_format_date_iso8601( $date ) {
+	$datetime = new DateTime( $date );
+	return $datetime->format( DateTime::ATOM );
 }

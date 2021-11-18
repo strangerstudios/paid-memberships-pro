@@ -2,14 +2,14 @@
 # This file is distributed under the same license as the Paid Memberships Pro plugin.
 msgid ""
 msgstr ""
-"Project-Id-Version: Paid Memberships Pro 2.6.4\n"
+"Project-Id-Version: Paid Memberships Pro 2.6.6\n"
 "Report-Msgid-Bugs-To: info@paidmembershipspro.com\n"
 "Last-Translator: Paid Memberships Pro <info@paidmembershipspro.com>\n"
 "Language-Team: Paid Memberships Pro <info@paidmembershipspro.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2021-11-12T17:26:12+00:00\n"
+"POT-Creation-Date: 2021-11-18T22:34:24+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.5.0\n"
 "X-Domain: paid-memberships-pro\n"
@@ -2709,6 +2709,7 @@ msgstr "Subtotal"
 #: includes/functions.php:2849
 #: includes/privacy.php:277
 #: adminpages/orders.php:615
+#: includes/functions.php:2880
 msgid "Tax"
 msgstr "Impostos"
 
@@ -2743,6 +2744,7 @@ msgstr "Desconto"
 #: adminpages/dashboard.php:293
 #: adminpages/orders.php:650
 #: adminpages/orders.php:1344
+#: includes/functions.php:2909
 msgid "Total"
 msgstr "Total"
 
@@ -4167,6 +4169,7 @@ msgstr "Preço"
 #: pages/invoice.php:79
 #: pages/invoice.php:77
 #: includes/functions.php:2842
+#: includes/functions.php:2873
 msgid "Subtotal"
 msgstr "Subtotal"
 
@@ -6542,6 +6545,8 @@ msgstr "Erro ao conectar com o banco de dados"
 #: includes/functions.php:826
 #: includes/functions.php:1304
 #: includes/functions.php:1342
+#: includes/functions.php:1335
+#: includes/functions.php:1373
 msgid "Membership level not found."
 msgstr "Nivel de assinatura não encontrado."
 
@@ -6556,6 +6561,7 @@ msgstr "Nivel de assinatura não encontrado."
 #: includes/functions.php:1173
 #: includes/functions.php:1196
 #: includes/functions.php:1722
+#: includes/functions.php:1753
 msgid "No code was given to check."
 msgstr "Nenhum código foi informado para checagem."
 
@@ -6577,6 +6583,7 @@ msgstr "Nenhum código foi informado para checagem."
 #: includes/functions.php:1182
 #: includes/functions.php:1205
 #: includes/functions.php:1731
+#: includes/functions.php:1762
 msgid "The discount code could not be found."
 msgstr "O Cupom de Desconto não foi encontrado."
 
@@ -6598,6 +6605,7 @@ msgstr "O Cupom de Desconto não foi encontrado."
 #: includes/functions.php:1197
 #: includes/functions.php:1220
 #: includes/functions.php:1746
+#: includes/functions.php:1777
 #, php-format
 msgid "This discount code goes into effect on %s."
 msgstr "O cupom de desconto começa em %s."
@@ -6620,6 +6628,7 @@ msgstr "O cupom de desconto começa em %s."
 #: includes/functions.php:1204
 #: includes/functions.php:1227
 #: includes/functions.php:1753
+#: includes/functions.php:1784
 #, php-format
 msgid "This discount code expired on %s."
 msgstr "O cupom de desconto expirou em %s."
@@ -6642,6 +6651,7 @@ msgstr "O cupom de desconto expirou em %s."
 #: includes/functions.php:1214
 #: includes/functions.php:1237
 #: includes/functions.php:1762
+#: includes/functions.php:1793
 msgid "This discount code is no longer valid."
 msgstr "Este cupom de desconto não é mais válido."
 
@@ -6662,6 +6672,7 @@ msgstr "Este cupom de desconto não é mais válido."
 #: includes/functions.php:1227
 #: includes/functions.php:1250
 #: includes/functions.php:1781
+#: includes/functions.php:1812
 msgid "This discount code does not apply to this membership level."
 msgstr "Este cupom de desconto não pode ser aplicado a esse nível de assinatura."
 
@@ -6683,6 +6694,7 @@ msgstr "Este cupom de desconto não pode ser aplicado a esse nível de assinatur
 #: includes/functions.php:1253
 #: includes/functions.php:1276
 #: includes/functions.php:1819
+#: includes/functions.php:1850
 msgid "This discount code is okay."
 msgstr "O cupom de desconto está ok."
 
@@ -6704,6 +6716,7 @@ msgstr "O cupom de desconto está ok."
 #: includes/functions.php:1301
 #: includes/functions.php:1395
 #: includes/functions.php:1847
+#: includes/functions.php:1878
 msgid "and"
 msgstr "e"
 
@@ -6726,6 +6739,7 @@ msgstr "e"
 #: includes/functions.php:1501
 #: includes/functions.php:1620
 #: includes/functions.php:2409
+#: includes/functions.php:2440
 msgid "Sign Up for !!name!! Now"
 msgstr "Cadastre-se no !!name!! já"
 
@@ -7673,6 +7687,7 @@ msgstr "Se sua conta não for ativada em alguns minutos, entre em contato com os
 #: pages/invoice.php:82
 #: pages/invoice.php:80
 #: includes/functions.php:2857
+#: includes/functions.php:2888
 msgid "Coupon"
 msgstr "Cupom de Desconto"
 
@@ -12703,6 +12718,7 @@ msgid "Error interacting with database: %s"
 msgstr ""
 
 #: includes/functions.php:2433
+#: includes/functions.php:2464
 msgid "Sign Up Now"
 msgstr ""
 

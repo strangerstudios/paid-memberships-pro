@@ -2,14 +2,14 @@
 # This file is distributed under the same license as the Paid Memberships Pro plugin.
 msgid ""
 msgstr ""
-"Project-Id-Version: Paid Memberships Pro 2.6.4\n"
+"Project-Id-Version: Paid Memberships Pro 2.6.6\n"
 "Report-Msgid-Bugs-To: info@paidmembershipspro.com\n"
 "Last-Translator: Paid Memberships Pro <info@paidmembershipspro.com>\n"
 "Language-Team: Paid Memberships Pro <info@paidmembershipspro.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2021-11-12T17:26:01+00:00\n"
+"POT-Creation-Date: 2021-11-18T22:34:14+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.5.0\n"
 "X-Domain: paid-memberships-pro\n"
@@ -2771,6 +2771,7 @@ msgstr ""
 #: includes/functions.php:2849
 #: includes/privacy.php:277
 #: adminpages/orders.php:615
+#: includes/functions.php:2880
 msgid "Tax"
 msgstr ""
 
@@ -2805,6 +2806,7 @@ msgstr "סכום ההנחה"
 #: adminpages/dashboard.php:293
 #: adminpages/orders.php:650
 #: adminpages/orders.php:1344
+#: includes/functions.php:2909
 msgid "Total"
 msgstr "סה’’כ"
 
@@ -4239,6 +4241,7 @@ msgstr "מחיר"
 #: pages/invoice.php:79
 #: pages/invoice.php:77
 #: includes/functions.php:2842
+#: includes/functions.php:2873
 msgid "Subtotal"
 msgstr "סכום לא סופי"
 
@@ -6628,6 +6631,8 @@ msgstr ""
 #: includes/functions.php:826
 #: includes/functions.php:1304
 #: includes/functions.php:1342
+#: includes/functions.php:1335
+#: includes/functions.php:1373
 msgid "Membership level not found."
 msgstr "‎לא נמצאה דרגה זו‫.‬"
 
@@ -6642,6 +6647,7 @@ msgstr "‎לא נמצאה דרגה זו‫.‬"
 #: includes/functions.php:1173
 #: includes/functions.php:1196
 #: includes/functions.php:1722
+#: includes/functions.php:1753
 msgid "No code was given to check."
 msgstr ""
 
@@ -6663,6 +6669,7 @@ msgstr ""
 #: includes/functions.php:1182
 #: includes/functions.php:1205
 #: includes/functions.php:1731
+#: includes/functions.php:1762
 msgid "The discount code could not be found."
 msgstr "‎הקוד אינו תקין‫.‬"
 
@@ -6684,6 +6691,7 @@ msgstr "‎הקוד אינו תקין‫.‬"
 #: includes/functions.php:1197
 #: includes/functions.php:1220
 #: includes/functions.php:1746
+#: includes/functions.php:1777
 #, php-format
 msgid "This discount code goes into effect on %s."
 msgstr "‎הקוד תקף על %s."
@@ -6706,6 +6714,7 @@ msgstr "‎הקוד תקף על %s."
 #: includes/functions.php:1204
 #: includes/functions.php:1227
 #: includes/functions.php:1753
+#: includes/functions.php:1784
 #, php-format
 msgid "This discount code expired on %s."
 msgstr "‎הקוד פג תוקף ב %s."
@@ -6728,6 +6737,7 @@ msgstr "‎הקוד פג תוקף ב %s."
 #: includes/functions.php:1214
 #: includes/functions.php:1237
 #: includes/functions.php:1762
+#: includes/functions.php:1793
 msgid "This discount code is no longer valid."
 msgstr "‎הקוד אינו תקף יותר‫.‬"
 
@@ -6748,6 +6758,7 @@ msgstr "‎הקוד אינו תקף יותר‫.‬"
 #: includes/functions.php:1227
 #: includes/functions.php:1250
 #: includes/functions.php:1781
+#: includes/functions.php:1812
 msgid "This discount code does not apply to this membership level."
 msgstr "‎הקוד אינו מתאים לדרגה של משתמש זה‫.‬"
 
@@ -6769,6 +6780,7 @@ msgstr "‎הקוד אינו מתאים לדרגה של משתמש זה‫.‬"
 #: includes/functions.php:1253
 #: includes/functions.php:1276
 #: includes/functions.php:1819
+#: includes/functions.php:1850
 msgid "This discount code is okay."
 msgstr "‎הקוד עובד‫.‬"
 
@@ -6790,6 +6802,7 @@ msgstr "‎הקוד עובד‫.‬"
 #: includes/functions.php:1301
 #: includes/functions.php:1395
 #: includes/functions.php:1847
+#: includes/functions.php:1878
 msgid "and"
 msgstr "‎ו"
 
@@ -6812,6 +6825,7 @@ msgstr "‎ו"
 #: includes/functions.php:1501
 #: includes/functions.php:1620
 #: includes/functions.php:2409
+#: includes/functions.php:2440
 msgid "Sign Up for !!name!! Now"
 msgstr "‎הירשם עבור !!name!! עכשיו"
 
@@ -7764,6 +7778,7 @@ msgstr ""
 #: pages/invoice.php:82
 #: pages/invoice.php:80
 #: includes/functions.php:2857
+#: includes/functions.php:2888
 msgid "Coupon"
 msgstr ""
 
@@ -12801,6 +12816,7 @@ msgid "Error interacting with database: %s"
 msgstr ""
 
 #: includes/functions.php:2433
+#: includes/functions.php:2464
 msgid "Sign Up Now"
 msgstr ""
 

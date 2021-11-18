@@ -2,14 +2,14 @@
 # This file is distributed under the same license as the Paid Memberships Pro plugin.
 msgid ""
 msgstr ""
-"Project-Id-Version: Paid Memberships Pro 2.6.4\n"
+"Project-Id-Version: Paid Memberships Pro 2.6.6\n"
 "Report-Msgid-Bugs-To: info@paidmembershipspro.com\n"
 "Last-Translator: Paid Memberships Pro <info@paidmembershipspro.com>\n"
 "Language-Team: Paid Memberships Pro <info@paidmembershipspro.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2021-11-12T17:25:34+00:00\n"
+"POT-Creation-Date: 2021-11-18T22:33:50+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.5.0\n"
 "X-Domain: paid-memberships-pro\n"
@@ -3674,6 +3674,7 @@ msgstr "Zwischensumme"
 #: adminpages/orders.php:609
 #: includes/functions.php:2849
 #: adminpages/orders.php:615
+#: includes/functions.php:2880
 msgid "Tax"
 msgstr "Steuern"
 
@@ -3722,6 +3723,7 @@ msgstr "Gutscheinbetrag"
 #: adminpages/dashboard.php:293
 #: adminpages/orders.php:650
 #: adminpages/orders.php:1344
+#: includes/functions.php:2909
 msgid "Total"
 msgstr "Gesamt"
 
@@ -5632,6 +5634,7 @@ msgstr "Preis"
 #: pages/invoice.php:77
 #: pages/invoice.php:79
 #: includes/functions.php:2842
+#: includes/functions.php:2873
 msgid "Subtotal"
 msgstr "Zwischensumme"
 
@@ -10131,6 +10134,8 @@ msgstr "Fehler bei Datenbankverbindung: %s"
 #: includes/functions.php:1252
 #: includes/functions.php:1304
 #: includes/functions.php:1342
+#: includes/functions.php:1335
+#: includes/functions.php:1373
 msgid "Membership level not found."
 msgstr "Paket nicht gefunden."
 
@@ -10153,6 +10158,7 @@ msgstr "Paket nicht gefunden."
 #: includes/functions.php:1611
 #: includes/functions.php:1620
 #: includes/functions.php:1722
+#: includes/functions.php:1753
 msgid "No code was given to check."
 msgstr "Kein Code zur Überprüfung eingegeben."
 
@@ -10182,6 +10188,7 @@ msgstr "Kein Code zur Überprüfung eingegeben."
 #: includes/functions.php:1620
 #: includes/functions.php:1629
 #: includes/functions.php:1731
+#: includes/functions.php:1762
 msgid "The discount code could not be found."
 msgstr "Der Gutscheincode konnte nicht gefunden werden."
 
@@ -10211,6 +10218,7 @@ msgstr "Der Gutscheincode konnte nicht gefunden werden."
 #: includes/functions.php:1635
 #: includes/functions.php:1644
 #: includes/functions.php:1746
+#: includes/functions.php:1777
 #, php-format
 msgid "This discount code goes into effect on %s."
 msgstr "Dieser Gutscheincode gilt ab %s."
@@ -10241,6 +10249,7 @@ msgstr "Dieser Gutscheincode gilt ab %s."
 #: includes/functions.php:1642
 #: includes/functions.php:1651
 #: includes/functions.php:1753
+#: includes/functions.php:1784
 #, php-format
 msgid "This discount code expired on %s."
 msgstr "Dieser Gutscheincode läuft am %s ab."
@@ -10271,6 +10280,7 @@ msgstr "Dieser Gutscheincode läuft am %s ab."
 #: includes/functions.php:1652
 #: includes/functions.php:1661
 #: includes/functions.php:1762
+#: includes/functions.php:1793
 msgid "This discount code is no longer valid."
 msgstr "Dieser Gutscheincode ist nicht mehr gültig."
 
@@ -10299,6 +10309,7 @@ msgstr "Dieser Gutscheincode ist nicht mehr gültig."
 #: includes/functions.php:1672
 #: includes/functions.php:1681
 #: includes/functions.php:1781
+#: includes/functions.php:1812
 msgid "This discount code does not apply to this membership level."
 msgstr "Dieser Gutscheincode kann für dieses Membership Level nicht angewendet werden."
 
@@ -10328,6 +10339,7 @@ msgstr "Dieser Gutscheincode kann für dieses Membership Level nicht angewendet 
 #: includes/functions.php:1709
 #: includes/functions.php:1718
 #: includes/functions.php:1819
+#: includes/functions.php:1850
 msgid "This discount code is okay."
 msgstr "Dieser Gutscheincode ist in Ordnung."
 
@@ -10357,6 +10369,7 @@ msgstr "Dieser Gutscheincode ist in Ordnung."
 #: includes/functions.php:1736
 #: includes/functions.php:1745
 #: includes/functions.php:1847
+#: includes/functions.php:1878
 msgid "and"
 msgstr "und"
 
@@ -10389,6 +10402,7 @@ msgstr "und"
 #: includes/functions.php:2033
 #: includes/functions.php:2034
 #: includes/functions.php:2409
+#: includes/functions.php:2440
 msgid "Sign Up for !!name!! Now"
 msgstr "Jetzt für !!name!! anmelden"
 
@@ -11851,6 +11865,7 @@ msgstr "Summe"
 #: pages/invoice.php:80
 #: pages/invoice.php:82
 #: includes/functions.php:2857
+#: includes/functions.php:2888
 msgid "Coupon"
 msgstr "Gutschein"
 
@@ -16120,6 +16135,7 @@ msgid "THIS IS A TEST EMAIL"
 msgstr ""
 
 #: includes/functions.php:2433
+#: includes/functions.php:2464
 msgid "Sign Up Now"
 msgstr ""
 
