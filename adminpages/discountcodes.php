@@ -772,7 +772,7 @@
 					<p class="search-box">
 						<label class="screen-reader-text" for="post-search-input"><?php _e('Search Discount Codes', 'paid-memberships-pro' );?>:</label>
 						<input type="hidden" name="page" value="pmpro-discountcodes" />
-						<input id="post-search-input" type="text" value="<?php echo esc_attr( $s ); ?>" name="s" size="30" />
+						<input id="post-search-input" type="text" value="<?php echo esc_attr( wp_unslash( $s ) ); ?>" name="s" size="30" />
 						<input class="button" type="submit" value="<?php esc_attr_e('Search', 'paid-memberships-pro' );?>" id="search-submit "/>
 					</p>
 				</form>
