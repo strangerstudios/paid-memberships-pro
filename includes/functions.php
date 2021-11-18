@@ -1195,7 +1195,7 @@ function pmpro_changeMembershipLevel( $level, $user_id = null, $old_level_status
 		/**
 		 * Allow filtering whether to remove duplicate "active" memberships by setting them to "changed".
 		 *
-		 * @since TBD
+		 * @since 2.6.6
 		 *
 		 * @param bool $remove_duplicate_memberships Whether to remove duplicate "active" memberships by setting them to "changed".
 		 */
