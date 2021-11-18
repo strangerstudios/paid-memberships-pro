@@ -21,7 +21,32 @@ global $pmpro_pages;
  * @since 1.8.5
  */
 $extra_pages = apply_filters('pmpro_extra_page_settings', array());
-$post_types = apply_filters('pmpro_admin_pagesetting_post_type_array', array( 'page' ) );
+
+/**
+ * @deprecated replaced with pmpro_admin_pagesetting_post_type from 2.6.6
+ */
+$post_types = apply_filters( 'pmpro_admin_pagesetting_post_type_array', array( 'page' ) );
+
+// For backward compatibility we extract the first element from the array
+$post_types = is_array( $post_types ) ? $post_types[ array_key_first( $post_types ) ] : $post_types;
+
+// Set default post type for page settings dropdown.
+$post_type_default = 'page';
+
+// Get post type from historic hook and reset to default if it does not exists and is not hierarchical
+$post_type = post_type_exists( $post_types ) && is_post_type_hierarchical( $post_types ) ? $post_types : $post_type_default;
+
+/**
+ * Set post type to use for PMPro pages in the page settings dropdown.
+ *
+ * @param string $post_type Accepts existing hierarchical post type
+ * @since 2.6.6
+ * @
+ */
+$post_type = apply_filters( 'pmpro_admin_pagesetting_post_type', $post_type );
+
+// Reset post_type to default if it does not exists and is not hierarchical
+$post_type = post_type_exists( $post_type ) && is_post_type_hierarchical( $post_type ) ? $post_type : $post_type_default;
 
 //check nonce for saving settings
 if (!empty($_REQUEST['savesettings']) && (empty($_REQUEST['pmpro_pagesettings_nonce']) || !check_admin_referer('savesettings', 'pmpro_pagesettings_nonce'))) {
@@ -187,7 +212,14 @@ require_once(dirname(__FILE__) . "/admin_header.php");
                 </th>
                 <td>
                     <?php
-                    wp_dropdown_pages(array("name" => "account_page_id", "show_option_none" => "-- " . __('Choose One', 'paid-memberships-pro' ) . " --", "selected" => $pmpro_pages['account']));
+                    wp_dropdown_pages(
+                        array(
+                            'name'             => 'account_page_id',
+                            'show_option_none' => '-- ' . __( 'Choose One', 'paid-memberships-pro' ) . ' --',
+                            'selected'         => $pmpro_pages['account'],
+                            'post_type'        => $post_type,
+                        )
+                    );
                     ?>
                     <?php if (!empty($pmpro_pages['account'])) { ?>
                         <a target="_blank" href="post.php?post=<?php echo $pmpro_pages['account']; ?>&action=edit"
@@ -204,7 +236,14 @@ require_once(dirname(__FILE__) . "/admin_header.php");
                 </th>
                 <td>
                     <?php
-                    wp_dropdown_pages(array("name" => "billing_page_id", "show_option_none" => "-- " . __('Choose One', 'paid-memberships-pro' ) . " --", "selected" => $pmpro_pages['billing']));
+                    wp_dropdown_pages(
+                        array(
+                            'name'             => 'billing_page_id',
+                            'show_option_none' => '-- ' . __( 'Choose One', 'paid-memberships-pro' ) . ' --',
+                            'selected'         => $pmpro_pages['billing'],
+                            'post_type'        => $post_type,
+                        )
+                    );
                     ?>
                     <?php if (!empty($pmpro_pages['billing'])) { ?>
                         <a target="_blank" href="post.php?post=<?php echo $pmpro_pages['billing'] ?>&action=edit"
@@ -221,7 +260,14 @@ require_once(dirname(__FILE__) . "/admin_header.php");
                 </th>
                 <td>
                     <?php
-                    wp_dropdown_pages(array("name" => "cancel_page_id", "show_option_none" => "-- " . __('Choose One', 'paid-memberships-pro') . " --", "selected" => $pmpro_pages['cancel'], "post_types" => $post_types ) );
+                    wp_dropdown_pages(
+                        array(
+                            'name'             => 'cancel_page_id',
+                            'show_option_none' => '-- ' . __( 'Choose One', 'paid-memberships-pro' ) . ' --',
+                            'selected'         => $pmpro_pages['cancel'],
+                            'post_type'        => $post_type,
+                        )
+                    );
                     ?>
                     <?php if (!empty($pmpro_pages['cancel'])) { ?>
                         <a target="_blank" href="post.php?post=<?php echo $pmpro_pages['cancel'] ?>&action=edit"
@@ -239,7 +285,14 @@ require_once(dirname(__FILE__) . "/admin_header.php");
                 </th>
                 <td>
                     <?php
-                    wp_dropdown_pages(array("name" => "checkout_page_id", "show_option_none" => "-- " . __('Choose One', 'paid-memberships-pro') . " --", "selected" => $pmpro_pages['checkout'], "post_types" => $post_types ));
+                    wp_dropdown_pages(
+                        array(
+                            'name'             => 'checkout_page_id',
+                            'show_option_none' => '-- ' . __( 'Choose One', 'paid-memberships-pro' ) . ' --',
+                            'selected'         => $pmpro_pages['checkout'],
+                            'post_type'        => $post_type,
+                        )
+                    );
                     ?>
                     <?php if (!empty($pmpro_pages['checkout'])) { ?>
                         <a target="_blank" href="post.php?post=<?php echo $pmpro_pages['checkout'] ?>&action=edit"
@@ -257,7 +310,14 @@ require_once(dirname(__FILE__) . "/admin_header.php");
                 </th>
                 <td>
                     <?php
-                    wp_dropdown_pages(array("name" => "confirmation_page_id", "show_option_none" => "-- " . __('Choose One', 'paid-memberships-pro') . " --", "selected" => $pmpro_pages['confirmation'], "post_types" => $post_types));
+                    wp_dropdown_pages(
+                        array(
+                            'name'             => 'confirmation_page_id',
+                            'show_option_none' => '-- ' . __( 'Choose One', 'paid-memberships-pro' ) . ' --',
+                            'selected'         => $pmpro_pages['confirmation'],
+                            'post_type'        => $post_type,
+                        )
+                    );
                     ?>
                     <?php if (!empty($pmpro_pages['confirmation'])) { ?>
                         <a target="_blank" href="post.php?post=<?php echo $pmpro_pages['confirmation'] ?>&action=edit"
@@ -275,7 +335,14 @@ require_once(dirname(__FILE__) . "/admin_header.php");
                 </th>
                 <td>
                     <?php
-                    wp_dropdown_pages(array("name" => "invoice_page_id", "show_option_none" => "-- " . __('Choose One', 'paid-memberships-pro') . " --", "selected" => $pmpro_pages['invoice'], "post_types" => $post_types));
+                    wp_dropdown_pages(
+                        array(
+                            'name'             => 'invoice_page_id',
+                            'show_option_none' => '-- ' . __( 'Choose One', 'paid-memberships-pro' ) . ' --',
+                            'selected'         => $pmpro_pages['invoice'],
+                            'post_type'        => $post_type,
+                        )
+                    );
                     ?>
                     <?php if (!empty($pmpro_pages['invoice'])) { ?>
                         <a target="_blank" href="post.php?post=<?php echo $pmpro_pages['invoice'] ?>&action=edit"
@@ -293,7 +360,14 @@ require_once(dirname(__FILE__) . "/admin_header.php");
                 </th>
                 <td>
                     <?php
-                    wp_dropdown_pages(array("name" => "levels_page_id", "show_option_none" => "-- " . __('Choose One', 'paid-memberships-pro') . " --", "selected" => $pmpro_pages['levels'], "post_types" => $post_types));
+                    wp_dropdown_pages(
+                        array(
+                            'name'             => 'levels_page_id',
+                            'show_option_none' => '-- ' . __( 'Choose One', 'paid-memberships-pro' ) . ' --',
+                            'selected'         => $pmpro_pages['levels'],
+                            'post_type'        => $post_type,
+                        )
+                    );
                     ?>
                     <?php if (!empty($pmpro_pages['levels'])) { ?>
                         <a target="_blank" href="post.php?post=<?php echo $pmpro_pages['levels'] ?>&action=edit"
@@ -326,7 +400,8 @@ require_once(dirname(__FILE__) . "/admin_header.php");
 							array(
 								'name' => 'login_page_id',
 								'show_option_none' => '-- ' . __('Use WordPress Default', 'paid-memberships-pro') . ' --',
-								'selected' => $pmpro_pages['login'], 'post_types' => $post_types
+								'selected' => $pmpro_pages['login'],
+                                'post_type' => $post_type,
 							)
 						);
 					?>
@@ -354,7 +429,8 @@ require_once(dirname(__FILE__) . "/admin_header.php");
 							array(
 								'name' => 'member_profile_edit_page_id',
 								'show_option_none' => '-- ' . __('Use WordPress Default', 'paid-memberships-pro') . ' --',
-								'selected' => $pmpro_pages['member_profile_edit'], 'post_types' => $post_types
+								'selected' => $pmpro_pages['member_profile_edit'],
+                                'post_type' => $post_type,
 							)
 						);
 					?>
@@ -409,11 +485,14 @@ require_once(dirname(__FILE__) . "/admin_header.php");
                             <label for="<?php echo $name; ?>_page_id"><?php echo $label; ?></label>
                         </th>
                         <td>
-                            <?php wp_dropdown_pages(array(
-                                "name" => $name . '_page_id',
-                                "show_option_none" => "-- " . __('Choose One', 'paid-memberships-pro' ) . " --",
-                                "selected" => $pmpro_pages[$name],
-                            ));
+                            <?php wp_dropdown_pages(
+                                array(
+                                    'name'             => $name . '_page_id',
+                                    'show_option_none' => '-- ' . __( 'Choose One', 'paid-memberships-pro' ) . ' --',
+                                    'selected'         => $pmpro_pages[ $name ],
+                                    'post_type'        => $post_type,
+                                )
+                            );
                             if(!empty($pmpro_pages[$name])) {
                                 ?>
                                 <a target="_blank" href="post.php?post=<?php echo $pmpro_pages[$name] ?>&action=edit"
