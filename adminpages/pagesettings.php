@@ -39,9 +39,9 @@ $post_type = post_type_exists( $post_types ) && is_post_type_hierarchical( $post
 /**
  * Set post type to use for PMPro pages in the page settings dropdown.
  *
- * @param string $post_type Accepts existing hierarchical post type
  * @since 2.6.6
- * @
+ * @param string $post_type Accepts existing hierarchical post type
+ * @return string Post type
  */
 $post_type = apply_filters( 'pmpro_admin_pagesetting_post_type', $post_type );
 
