@@ -449,7 +449,7 @@
 
                     <tr>
                         <th scope="row" valign="top"><label for="code"><?php _e('Code', 'paid-memberships-pro' );?>:</label></th>
-                        <td><input name="code" type="text" size="20" value="<?php echo esc_attr( str_replace( "\"", "&quot;", stripslashes( $code->code ) ) ); ?>" /></td>
+                        <td><input name="code" type="text" size="20" value="<?php echo esc_attr( $code->code ); ?>" /></td>
                     </tr>
 
 					<?php
@@ -524,7 +524,7 @@
 					<tr>
                         <th scope="row" valign="top"><label for="uses"><?php _e('Uses', 'paid-memberships-pro' );?>:</label></th>
                         <td>
-							<input name="uses" type="text" size="10" value="<?php if ( ! empty( $code->uses ) ) echo esc_attr( str_replace( "\"", "&quot;", stripslashes( $code->uses ) ) ); ?>" />
+							<input name="uses" type="text" size="10" value="<?php if ( ! empty( $code->uses ) ) echo esc_attr( $code->uses ); ?>" />
 							<p class="description"><?php _e('Leave blank for unlimited uses.', 'paid-memberships-pro' );?></p>
 						</td>
                     </tr>
@@ -606,7 +606,7 @@
 										echo $pmpro_currency_symbol;
 									?>
 									<?php _e('per', 'paid-memberships-pro' ); ?>
-									<input name="cycle_number[]" type="text" size="10" value="<?php echo esc_attr( str_replace( "\"", "&quot;", stripslashes( $level->cycle_number ) ) ); ?>" />
+									<input name="cycle_number[]" type="text" size="10" value="<?php echo esc_attr( $level->cycle_number ); ?>" />
 									<select name="cycle_period[]">
 									  <?php
 										$cycles = array( __('Day(s)', 'paid-memberships-pro' ) => 'Day', __('Week(s)', 'paid-memberships-pro' ) => 'Week', __('Month(s)', 'paid-memberships-pro' ) => 'Month', __('Year(s)', 'paid-memberships-pro' ) => 'Year' );
@@ -672,7 +672,7 @@
 										echo $pmpro_currency_symbol;
 									?>
 									<?php _e('for the first', 'paid-memberships-pro' );?>
-									<input name="trial_limit[]" type="text" size="10" value="<?php echo esc_attr( str_replace( "\"", "&quot;", stripslashes( $level->trial_limit ) ) ); ?>" />
+									<input name="trial_limit[]" type="text" size="10" value="<?php echo esc_attr( $level->trial_limit ); ?>" />
 									<?php _e('subscription payments', 'paid-memberships-pro' );?>.
 									<?php if($gateway == "stripe") { ?>
 										<p class="description"><strong <?php if(!empty($pmpro_stripe_error)) { ?>class="pmpro_red"<?php } ?>><?php _e('Stripe integration currently does not support trial amounts greater than $0.', 'paid-memberships-pro' );?></strong></p>
@@ -692,7 +692,7 @@
 							<tr class="expiration_info" <?php if(!pmpro_isLevelExpiring($level)) {?>style="display: none;"<?php } ?>>
 								<th scope="row" valign="top"><label for="billing_amount"><?php _e('Expires In', 'paid-memberships-pro' );?>:</label></th>
 								<td>
-									<input id="expiration_number" name="expiration_number[]" type="text" size="10" value="<?php echo esc_attr( str_replace( "\"", "&quot;", stripslashes( $level->expiration_number ) ) ); ?>" />
+									<input id="expiration_number" name="expiration_number[]" type="text" size="10" value="<?php echo esc_attr( $level->expiration_number ); ?>" />
 									<select id="expiration_period" name="expiration_period[]">
 									  <?php
 
