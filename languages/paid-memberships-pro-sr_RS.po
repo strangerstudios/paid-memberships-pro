@@ -2,14 +2,14 @@
 # This file is distributed under the same license as the Paid Memberships Pro plugin.
 msgid ""
 msgstr ""
-"Project-Id-Version: Paid Memberships Pro 2.6.4\n"
+"Project-Id-Version: Paid Memberships Pro 2.6.6\n"
 "Report-Msgid-Bugs-To: info@paidmembershipspro.com\n"
 "Last-Translator: Paid Memberships Pro <info@paidmembershipspro.com>\n"
 "Language-Team: Paid Memberships Pro <info@paidmembershipspro.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2021-11-12T17:26:20+00:00\n"
+"POT-Creation-Date: 2021-11-18T22:34:31+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.5.0\n"
 "X-Domain: paid-memberships-pro\n"
@@ -515,48 +515,58 @@ msgstr "Greška u interakciji sa bazom podataka."
 #: includes/functions.php:698
 #: includes/functions.php:1304
 #: includes/functions.php:1342
+#: includes/functions.php:1335
+#: includes/functions.php:1373
 msgid "Membership level not found."
 msgstr "Nivo Članstva nije pronađen."
 
 #: includes/functions.php:1080
 #: includes/functions.php:1731
+#: includes/functions.php:1762
 msgid "The discount code could not be found."
 msgstr "Kod za popust nije pronađen."
 
 #: includes/functions.php:1096
 #: includes/functions.php:1746
+#: includes/functions.php:1777
 #, php-format
 msgid "This discount code goes into effect on %s."
 msgstr "Kod za popust važi za %s"
 
 #: includes/functions.php:1105
 #: includes/functions.php:1753
+#: includes/functions.php:1784
 #, php-format
 msgid "This discount code expired on %s."
 msgstr "Kod za popust je istekao %s."
 
 #: includes/functions.php:1117
 #: includes/functions.php:1762
+#: includes/functions.php:1793
 msgid "This discount code is no longer valid."
 msgstr "Kod za popust nije više važeći."
 
 #: includes/functions.php:1132
 #: includes/functions.php:1781
+#: includes/functions.php:1812
 msgid "This discount code does not apply to this membership level."
 msgstr "Kod za popust ne važi za ovaj nivo članstva."
 
 #: includes/functions.php:1140
 #: includes/functions.php:1819
+#: includes/functions.php:1850
 msgid "This discount code is okay."
 msgstr "Kod za popust je važeći."
 
 #: includes/functions.php:1164
 #: includes/functions.php:1847
+#: includes/functions.php:1878
 msgid "and"
 msgstr "i"
 
 #: includes/functions.php:1349
 #: includes/functions.php:2409
+#: includes/functions.php:2440
 msgid "Sign Up for !!name!! Now"
 msgstr "Prijavite Se za !!name!! Sada"
 
@@ -687,6 +697,7 @@ msgstr "Isticanje"
 
 #: pages/invoice.php:79
 #: includes/functions.php:2842
+#: includes/functions.php:2873
 msgid "Subtotal"
 msgstr "Suma stavke"
 
@@ -696,11 +707,13 @@ msgstr "Suma stavke"
 #: includes/functions.php:2849
 #: includes/privacy.php:277
 #: adminpages/orders.php:615
+#: includes/functions.php:2880
 msgid "Tax"
 msgstr "Porez"
 
 #: pages/invoice.php:82
 #: includes/functions.php:2857
+#: includes/functions.php:2888
 msgid "Coupon"
 msgstr "Kupon"
 
@@ -715,6 +728,7 @@ msgstr "Kupon"
 #: adminpages/dashboard.php:293
 #: adminpages/orders.php:650
 #: adminpages/orders.php:1344
+#: includes/functions.php:2909
 msgid "Total"
 msgstr "Ukupno"
 
@@ -8760,10 +8774,12 @@ msgid "Error interacting with database: %s"
 msgstr ""
 
 #: includes/functions.php:1722
+#: includes/functions.php:1753
 msgid "No code was given to check."
 msgstr ""
 
 #: includes/functions.php:2433
+#: includes/functions.php:2464
 msgid "Sign Up Now"
 msgstr ""
 
