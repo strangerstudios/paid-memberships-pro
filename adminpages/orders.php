@@ -1483,8 +1483,7 @@ if ( function_exists( 'pmpro_add_email_order_modal' ) ) {
 							[<?php esc_html_e( 'deleted', 'paid-memberships-pro' ); ?>]
 						<?php } else { ?>
 							[<?php esc_html_e( 'none', 'paid-memberships-pro' ); ?>]
-						<?php } ?>
-						<?php if( $order->get_original_subscription_order() ){ echo "(".__( 'renewal', 'paid-memberships-pro' ).")"; } ?>						
+						<?php } ?>											
 					</td>
 					<?php do_action( 'pmpro_orders_extra_cols_body', $order ); ?>
 					<td>
@@ -1555,7 +1554,7 @@ if ( function_exists( 'pmpro_add_email_order_modal' ) ) {
 						}
 						?>
 					</td>
-					<td><?php echo esc_html( $order->status ); ?></td>
+					<td><?php echo esc_html( $order->status );  if( $order->is_renewal() ){ echo "<br/>(".__( 'renewal', 'paid-memberships-pro' ).")"; } ?></td>
 					<td>
 						<?php echo esc_html( date_i18n( get_option( 'date_format' ), $order->getTimestamp() ) ); ?><br/>
 						<?php echo esc_html( date_i18n( get_option( 'time_format' ), $order->getTimestamp() ) ); ?>
