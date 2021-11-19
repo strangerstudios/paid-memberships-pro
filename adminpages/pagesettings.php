@@ -30,12 +30,6 @@ $post_types = apply_filters( 'pmpro_admin_pagesetting_post_type_array', array( '
 // For backward compatibility we extract the first element from the array
 $post_types = is_array( $post_types ) ? $post_types[ array_key_first( $post_types ) ] : $post_types;
 
-// Set default post type for page settings dropdown.
-$post_type_default = 'page';
-
-// Get post type from historic hook and reset to default if it does not exists and is not hierarchical
-$post_type = post_type_exists( $post_types ) && is_post_type_hierarchical( $post_types ) ? $post_types : $post_type_default;
-
 /**
  * Set post type to use for PMPro pages in the page settings dropdown.
  *
@@ -44,9 +38,6 @@ $post_type = post_type_exists( $post_types ) && is_post_type_hierarchical( $post
  * @return string Post type
  */
 $post_type = apply_filters( 'pmpro_admin_pagesetting_post_type', $post_type );
-
-// Reset post_type to default if it does not exists and is not hierarchical
-$post_type = post_type_exists( $post_type ) && is_post_type_hierarchical( $post_type ) ? $post_type : $post_type_default;
 
 //check nonce for saving settings
 if (!empty($_REQUEST['savesettings']) && (empty($_REQUEST['pmpro_pagesettings_nonce']) || !check_admin_referer('savesettings', 'pmpro_pagesettings_nonce'))) {
