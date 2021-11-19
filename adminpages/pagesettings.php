@@ -23,7 +23,7 @@ global $pmpro_pages;
 $extra_pages = apply_filters('pmpro_extra_page_settings', array());
 
 /**
- * @deprecated replaced with pmpro_admin_pagesetting_post_type from 2.6.6
+ * @deprecated replaced with pmpro_admin_pagesetting_post_type since 2.6.7
  */
 $post_types = apply_filters( 'pmpro_admin_pagesetting_post_type_array', array( 'page' ) );
 
@@ -39,7 +39,7 @@ $post_type = post_type_exists( $post_types ) && is_post_type_hierarchical( $post
 /**
  * Set post type to use for PMPro pages in the page settings dropdown.
  *
- * @since 2.6.6
+ * @since 2.6.7
  * @param string $post_type Accepts existing hierarchical post type
  * @return string Post type
  */
