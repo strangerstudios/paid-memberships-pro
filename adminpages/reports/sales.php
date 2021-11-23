@@ -471,7 +471,7 @@ function pmpro_getSales( $period = 'all time', $levels = 'all', $type = 'all' ) 
 	$cache = get_transient( 'pmpro_report_sales' );
 	$param_hash = md5( $period . ' ' . $type . PMPRO_VERSION );
 	if(!empty($cache) && isset($cache[$param_hash]) && isset($cache[$param_hash][$levels]))
-		return $cache[$param_hash][$levels];		
+		return $cache[$param_hash][$levels];
 
 	//a sale is an order with status NOT IN('refunded', 'review', 'token', 'error') with a total > 0
 	if($period == "today")
@@ -498,7 +498,7 @@ function pmpro_getSales( $period = 'all time', $levels = 'all', $type = 'all' ) 
                         AND mo2.total > 0
                         AND mo2.status NOT IN('refunded', 'review', 'token', 'error')                                            
                         AND mo2.timestamp < mo1.timestamp
-                        AND mo2.gateway_environment = 'sandbox' ";
+                        AND mo2.gateway_environment = '" . esc_sql( $gateway_environment ) . "' ";
 	}
 	
 	// Get valid orders within the time frame.
