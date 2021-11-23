@@ -207,7 +207,6 @@ function pmpro_report_sales_page()
 	$sqlQuery .= " GROUP BY date ORDER BY date ";
 
 	$dates = $wpdb->get_results($sqlQuery);
-	var_dump($dates);
 	//fill in blanks in dates
 	$cols = array();
 	$total_in_period = 0;
