@@ -2392,7 +2392,13 @@ class PMProGateway_stripe extends PMProGateway {
 	 */
 	private function retrieve_setup_intent( $setup_intent_id ) {
 		try {
-			$setup_intent = Stripe_SetupIntent::retrieve( $setup_intent_id );
+			$setup_intent_args = array(
+				'id'     => $setup_intent_id,
+				'expand' => array(
+					'latest_attempt',
+				),
+			);
+			$setup_intent = Stripe_SetupIntent::retrieve( $setup_intent_args );
 		} catch ( Stripe\Error\Base $e ) {
 			return $e->getMessage();
 		} catch ( \Throwable $e ) {
@@ -2457,6 +2463,20 @@ class PMProGateway_stripe extends PMProGateway {
 		$setup_intent = $this->retrieve_setup_intent( $setup_intent_id );
 		if ( is_string( $setup_intent ) ) {
 			return $setup_intent;
+		}
+
+		// Make sure that the setup intent was recently confirmed.
+		/**
+		 * The time in seconds that a setup intent must be confirmed within.
+		 *
+		 * @since TBD
+		 *
+		 * @param int $seconds_to_confirm_setup_intent The time in seconds that a setup intent must be confirmed within.
+		 */
+		$setup_intent_timeout = apply_filters( 'pmpro_stripe_setup_intent_timeout', 60 * 10 );
+		$last_setup_attempt_created = $setup_intent->latest_attempt->created;
+		if (  $last_setup_attempt_created < time() - $setup_intent_timeout ) {
+			return __( 'Cannot reuse an old setup intent.', 'paid-memberships-pro' );
 		}
 
 		// Make sure that the confirmation was successful.
