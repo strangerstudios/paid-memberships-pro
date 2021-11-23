@@ -469,7 +469,7 @@ function pmpro_report_sales_page()
 function pmpro_getSales( $period = 'all time', $levels = 'all', $type = 'all' ) {	
 	//check for a transient
 	$cache = get_transient( 'pmpro_report_sales' );
-	$param_hash = md5( $period . ' ' . $type . ' ' . $levels );
+	$param_hash = md5( $period . ' ' . $type . PMPRO_VERSION );
 	if(!empty($cache) && isset($cache[$param_hash]) && isset($cache[$param_hash][$levels]))
 		return $cache[$param_hash][$levels];		
 
@@ -654,12 +654,12 @@ function pmpro_get_prices_paid( $period, $count = NULL ) {
 }
 
 //get revenue
-function pmpro_getRevenue($period, $levels = NULL)
-{
+function pmpro_getRevenue( $period, $levels = NULL, $type = 'all' ) {
 	//check for a transient
 	$cache = get_transient("pmpro_report_revenue");
-	if(!empty($cache) && !empty($cache[$period]) && !empty($cache[$period][$levels]))
-		return $cache[$period][$levels];
+	$param_hash = md5( $period . ' ' . $type . PMPRO_VERSION );
+	if(!empty($cache) && isset($cache[$param_hash]) && isset($cache[$param_hash][$levels]))
+		return $cache[$param_hash][$levels];
 
 	//a sale is an order with status NOT IN('refunded', 'review', 'token', 'error')
 	if($period == "today")
@@ -676,23 +676,52 @@ function pmpro_getRevenue($period, $levels = NULL)
 
 	$gateway_environment = pmpro_getOption("gateway_environment");
 
-	//build query
+	// Build query.
 	global $wpdb;
-	$sqlQuery = "SELECT SUM(total) FROM $wpdb->pmpro_membership_orders WHERE status NOT IN('refunded', 'review', 'token', 'error') AND timestamp >= '" . esc_sql( $startdate ) . "' AND gateway_environment = '" . esc_sql( $gateway_environment ) . "' ";
+	$sqlQuery = "SELECT mo1.total as total
+				 FROM $wpdb->pmpro_membership_orders mo1 ";
 
-	//restrict by level
+	// Need to join on older orders if we're looking for renewals or new sales.			
+	if ( $type != 'all' ) {
+		$sqlQuery .= "LEFT JOIN $wpdb->pmpro_membership_orders mo2
+					 	ON mo1.user_id = mo2.user_id
+						AND mo2.total > 0
+						AND mo2.status NOT IN('refunded', 'review', 'token', 'error')
+						AND mo2.timestamp < mo1.end_timestamp
+						AND mo2.gateway_environment = '" . esc_sql( $gateway_environment ) . "' ";
+	}
+	
+	// Get valid orders within the timeframe.		 
+	$sqlQuery .= "WHERE mo1.status NOT IN('refunded', 'review', 'token', 'error')
+				 	AND mo1.timestamp >= '" . esc_sql( $startdate ) . "'
+					AND mo1.gateway_environment = '" . esc_sql( $gateway_environment ) . "' ";
+
+	// Restrict by level.
 	if(!empty($levels))
-		$sqlQuery .= "AND membership_id IN(" . $levels . ") ";
+		$sqlQuery .= "AND mo1.membership_id IN(" . $levels . ") ";
+		
+	// Filter to renewals or new orders only. 	
+	if ( $type == 'renewals' ) {
+		$sqlQuery .= "AND mo2.id IS NOT NULL ";
+	} elseif ( $type == 'new' ) {
+		$sqlQuery .= "AND mo2.id IS NULL ";
+	}
 
-	$revenue = $wpdb->get_var($sqlQuery);
+	// Group so we get one mo1 order per row.
+	$sqlQuery .= "GROUP BY mo1.id ";
+	
+	// Want the total across the orders found.
+	$sqlQuery = "SELECT SUM(total) FROM(" . $sqlQuery . ") as t1";
+	
+	$revenue = pmpro_round_price( $wpdb->get_var($sqlQuery) );
 
 	//save in cache
-	if(!empty($cache) && !empty($cache[$period]))
-		$cache[$period][$levels] = $revenue;
+	if(!empty($cache) && !empty($cache[$param_hash]))
+		$cache[$param_hash][$levels] = $revenue;
 	elseif(!empty($cache))
-		$cache[$period] = array($levels => $revenue);
+		$cache[$param_hash] = array($levels => $revenue);
 	else
-		$cache = array($period => array($levels => $revenue));
+		$cache = array($param_hash => array($levels => $revenue));
 
 	set_transient("pmpro_report_revenue", $cache, 3600*24);
 
