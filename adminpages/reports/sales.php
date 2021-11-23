@@ -468,7 +468,7 @@ function pmpro_getSales( $period = 'all time', $levels = 'all', $type = 'all' ) 
 	//check for a transient
 	$cache = get_transient( 'pmpro_report_sales' );
 	if(!empty($cache) && isset($cache[$period . ' ' . $type]) && isset($cache[$period . ' ' . $type][$levels]))
-		return $cache[$period . ' ' . $type][$levels];	
+		return $cache[$period . ' ' . $type][$levels];		
 
 	//a sale is an order with status NOT IN('refunded', 'review', 'token', 'error') with a total > 0
 	if($period == "today")
@@ -487,7 +487,7 @@ function pmpro_getSales( $period = 'all time', $levels = 'all', $type = 'all' ) 
 
 	// Build the query.
 	global $wpdb;
-	$sqlQuery = "SELECT COUNT(*) FROM $wpdb->pmpro_membership_orders mo1 ";
+	$sqlQuery = "SELECT mo1.id FROM $wpdb->pmpro_membership_orders mo1 ";
 	
 	// Need to join on older orders if we're looking for renewals or new sales.
 	if ( $type !== 'all' ) {
@@ -516,7 +516,11 @@ function pmpro_getSales( $period = 'all time', $levels = 'all', $type = 'all' ) 
 		$sqlQuery .= "AND mo2.id IS NULL ";
 	}
 
-	$sqlQuery .= "GROUP BY mo1.`code` ";
+	// Group so we get one mo1 order per row.
+	$sqlQuery .= "GROUP BY mo1.id ";
+
+	// We want the count of rows produced, so update the query.
+	$sqlQuery = "SELECT COUNT(*) FROM (" . $sqlQuery . ") as t1";
 
 	$sales = $wpdb->get_var($sqlQuery);
 
