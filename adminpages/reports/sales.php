@@ -469,9 +469,9 @@ function pmpro_report_sales_page()
 function pmpro_getSales( $period = 'all time', $levels = 'all', $type = 'all' ) {	
 	//check for a transient
 	$cache = get_transient( 'pmpro_report_sales' );
-	$cache_hash = md5( $period . ' ' . $type . ' ' . $levels );
-	if(!empty($cache) && isset($cache[$cache_hash]) && isset($cache[$cache_hash][$levels]))
-		return $cache[$cache_hash][$levels];		
+	$param_hash = md5( $period . ' ' . $type . ' ' . $levels );
+	if(!empty($cache) && isset($cache[$param_hash]) && isset($cache[$param_hash][$levels]))
+		return $cache[$param_hash][$levels];		
 
 	//a sale is an order with status NOT IN('refunded', 'review', 'token', 'error') with a total > 0
 	if($period == "today")
@@ -528,12 +528,12 @@ function pmpro_getSales( $period = 'all time', $levels = 'all', $type = 'all' ) 
 	$sales = $wpdb->get_var($sqlQuery);
 
 	//save in cache
-	if(!empty($cache) && isset($cache[$cache_hash])) {
-		$cache[$cache_hash][$levels] = (int)$sales;
+	if(!empty($cache) && isset($cache[$param_hash])) {
+		$cache[$param_hash][$levels] = (int)$sales;
 	} elseif(!empty($cache))
-		$cache[$cache_hash] = array($levels => $sales);
+		$cache[$param_hash] = array($levels => $sales);
 	else
-		$cache = array($cache_hash => array($levels => $sales));
+		$cache = array($param_hash => array($levels => $sales));
 
 	set_transient( 'pmpro_report_sales', $cache, 3600*24 );
 
@@ -549,9 +549,9 @@ function pmpro_getSales( $period = 'all time', $levels = 'all', $type = 'all' ) 
 function pmpro_get_prices_paid( $period, $count = NULL ) {
 	// Check for a transient.
 	$cache = get_transient( 'pmpro_report_prices_paid' );
-	$cache_hash = md5( $period . $count . PMPRO_VERSION );
-	if ( ! empty( $cache ) && ! empty( $cache[$cache_hash] ) ) {
-		return $cache[$cache_hash];
+	$param_hash = md5( $period . $count . PMPRO_VERSION );
+	if ( ! empty( $cache ) && ! empty( $cache[$param_hash] ) ) {
+		return $cache[$param_hash];
 	}
 
 	// A sale is an order with status NOT IN('refunded', 'review', 'token', 'error') with a total > 0.
@@ -643,9 +643,9 @@ function pmpro_get_prices_paid( $period, $count = NULL ) {
 
 	// Save in cache.
 	if ( ! empty( $cache ) ) {
-		$cache[$cache_hash] = $prices_formatted;
+		$cache[$param_hash] = $prices_formatted;
 	} else {
-		$cache = array($cache_hash => $prices_formatted );
+		$cache = array($param_hash => $prices_formatted );
 	}
 
 	set_transient( 'pmpro_report_prices_paid', $cache, 3600 * 24 );
