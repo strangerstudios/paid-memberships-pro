@@ -53,6 +53,12 @@ class PMProGateway_stripe extends PMProGateway {
 			$this->loadStripeLibrary();
 			Stripe\Stripe::setApiKey( self::get_secretkey() );
 			Stripe\Stripe::setAPIVersion( PMPRO_STRIPE_API_VERSION );
+			Stripe\Stripe::setAppInfo(
+				'WordPress Paid Memberships Pro',
+				PMPRO_VERSION,
+				'https://www.paidmembershipspro.com',
+				'pp_partner_DKlIQ5DD7SFW3A'
+			);
 			self::$is_loaded = true;
 		}
 
@@ -2313,7 +2319,7 @@ class PMProGateway_stripe extends PMProGateway {
 		}
 
 		//convert to a profile start date
-		$order->ProfileStartDate = date_i18n( "Y-m-d", strtotime( "+ " . $trial_period_days . " Day", current_time( "timestamp" ) ) ) . "T0:0:0";
+		$order->ProfileStartDate = date_i18n( "Y-m-d\TH:i:s", strtotime( "+ " . $trial_period_days . " Day", current_time( "timestamp" ) ) );
 
 		//filter the start date
 		$order->ProfileStartDate = apply_filters( "pmpro_profile_start_date", $order->ProfileStartDate, $order );
@@ -3149,7 +3155,7 @@ class PMProGateway_stripe extends PMProGateway {
 		}
 
 		//convert to a profile start date
-		$order->ProfileStartDate = date_i18n( "Y-m-d", strtotime( "+ " . $trial_period_days . " Day", current_time( "timestamp" ) ) ) . "T0:0:0";
+		$order->ProfileStartDate = date_i18n( "Y-m-d\TH:i:s", strtotime( "+ " . $trial_period_days . " Day", current_time( "timestamp" ) ) );
 
 		//filter the start date
 		$order->ProfileStartDate = apply_filters( "pmpro_profile_start_date", $order->ProfileStartDate, $order );
