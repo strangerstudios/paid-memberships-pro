@@ -464,12 +464,11 @@ function pmpro_report_sales_page()
 */
 
 //get sales
-function pmpro_getSales($period, $levels = NULL)
-{
+function pmpro_getSales( $period = 'all time', $levels = 'all', $type = 'all' ) {	
 	//check for a transient
 	$cache = get_transient( 'pmpro_report_sales' );
-	if(!empty($cache) && !empty($cache[$period]) && !empty($cache[$period][$levels]))
-		return $cache[$period][$levels];
+	if(!empty($cache) && isset($cache[$period . ' ' . $type]) && isset($cache[$period . ' ' . $type][$levels]))
+		return $cache[$period . ' ' . $type][$levels];	
 
 	//a sale is an order with status NOT IN('refunded', 'review', 'token', 'error') with a total > 0
 	if($period == "today")
@@ -486,23 +485,48 @@ function pmpro_getSales($period, $levels = NULL)
 	// Convert from local to UTC.
 	$startdate = get_gmt_from_date( $startdate );
 
-	//build query
+	// Build the query.
 	global $wpdb;
-	$sqlQuery = "SELECT COUNT(*) FROM $wpdb->pmpro_membership_orders WHERE total > 0 AND status NOT IN('refunded', 'review', 'token', 'error') AND timestamp >= '" . esc_sql( $startdate ) . "' AND gateway_environment = '" . esc_sql( $gateway_environment ) . "' ";
+	$sqlQuery = "SELECT COUNT(*) FROM $wpdb->pmpro_membership_orders mo1 ";
+	
+	// Need to join on older orders if we're looking for renewals or new sales.
+	if ( $type !== 'all' ) {
+		$sqlQuery .= "LEFT JOIN $wpdb->pmpro_membership_orders mo2 ON mo1.user_id = mo2.user_id
+                        AND mo2.total > 0
+                        AND mo2.status NOT IN('refunded', 'review', 'token', 'error')                                            
+                        AND mo2.timestamp < mo1.timestamp
+                        AND mo2.gateway_environment = 'sandbox' ";
+	}
+	
+	// Get valid orders within the time frame.
+	$sqlQuery .= "WHERE mo1.total > 0
+				 	AND mo1.status NOT IN('refunded', 'review', 'token', 'error')
+					AND mo1.timestamp >= '" . esc_sql( $startdate ) . "'
+					AND mo1.gateway_environment = '" . esc_sql( $gateway_environment ) . "' ";									
 
-	//restrict by level
-	if(!empty($levels))
-		$sqlQuery .= "AND membership_id IN(" . esc_sql( $levels ) . ") ";
+	// Restrict by level.
+	if( ! empty( $levels ) && $levels != 'all' ) {
+		$sqlQuery .= "AND mo1.membership_id IN(" . esc_sql( $levels ) . ") ";
+	}		
+	
+	// Filter to renewals or new orders only. 	
+	if ( $type == 'renewals' ) {
+		$sqlQuery .= "AND mo2.id IS NOT NULL ";
+	} elseif ( $type == 'new' ) {
+		$sqlQuery .= "AND mo2.id IS NULL ";
+	}
+
+	$sqlQuery .= "GROUP BY mo1.`code` ";
 
 	$sales = $wpdb->get_var($sqlQuery);
 
 	//save in cache
-	if(!empty($cache) && !empty($cache[$period]))
-		$cache[$period][$levels] = $sales;
-	elseif(!empty($cache))
-		$cache[$period] = array($levels => $sales);
+	if(!empty($cache) && isset($cache[$period . ' ' . $type])) {
+		$cache[$period . ' ' . $type][$levels] = (int)$sales;
+	} elseif(!empty($cache))
+		$cache[$period . ' ' . $type] = array($levels => $sales);
 	else
-		$cache = array($period => array($levels => $sales));
+		$cache = array($period . ' ' . $type => array($levels => $sales));
 
 	set_transient( 'pmpro_report_sales', $cache, 3600*24 );
 
