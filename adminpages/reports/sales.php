@@ -469,8 +469,9 @@ function pmpro_report_sales_page()
 function pmpro_getSales( $period = 'all time', $levels = 'all', $type = 'all' ) {	
 	//check for a transient
 	$cache = get_transient( 'pmpro_report_sales' );
-	if(!empty($cache) && isset($cache[$period . ' ' . $type]) && isset($cache[$period . ' ' . $type][$levels]))
-		return $cache[$period . ' ' . $type][$levels];		
+	$cache_hash = md5( $period . ' ' . $type . ' ' . $levels );
+	if(!empty($cache) && isset($cache[$cache_hash]) && isset($cache[$cache_hash][$levels]))
+		return $cache[$cache_hash][$levels];		
 
 	//a sale is an order with status NOT IN('refunded', 'review', 'token', 'error') with a total > 0
 	if($period == "today")
@@ -527,12 +528,12 @@ function pmpro_getSales( $period = 'all time', $levels = 'all', $type = 'all' ) 
 	$sales = $wpdb->get_var($sqlQuery);
 
 	//save in cache
-	if(!empty($cache) && isset($cache[$period . ' ' . $type])) {
-		$cache[$period . ' ' . $type][$levels] = (int)$sales;
+	if(!empty($cache) && isset($cache[$cache_hash])) {
+		$cache[$cache_hash][$levels] = (int)$sales;
 	} elseif(!empty($cache))
-		$cache[$period . ' ' . $type] = array($levels => $sales);
+		$cache[$cache_hash] = array($levels => $sales);
 	else
-		$cache = array($period . ' ' . $type => array($levels => $sales));
+		$cache = array($cache_hash => array($levels => $sales));
 
 	set_transient( 'pmpro_report_sales', $cache, 3600*24 );
 
