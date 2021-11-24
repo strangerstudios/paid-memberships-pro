@@ -181,13 +181,25 @@ function pmpro_report_sales_page()
 	$tz_offset = strtotime( $startdate ) - strtotime( get_gmt_from_date( $startdate . " 00:00:00" ) );
 
 	//get data
-	$sqlQuery = "SELECT $date_function( DATE_ADD( o.timestamp, INTERVAL $tz_offset SECOND ) ) as date, $type_function(o.total) as value FROM $wpdb->pmpro_membership_orders o ";
+	$sqlQuery = "SELECT $date_function( DATE_ADD( o.timestamp, INTERVAL $tz_offset SECOND ) ) as date, $type_function(o.total) as value, $type_function( mo2.total ) as renewals FROM $wpdb->pmpro_membership_orders o ";
 
 	if ( ! empty( $discount_code ) ) {
 		$sqlQuery .= "LEFT JOIN $wpdb->pmpro_discount_codes_uses dc ON o.id = dc.order_id ";
 	}
 
-	$sqlQuery .= "WHERE o.total > 0 AND o.timestamp >= DATE_ADD( '$startdate' , INTERVAL - $tz_offset SECOND ) AND o.status NOT IN('refunded', 'review', 'token', 'error') AND o.gateway_environment = '" . esc_sql( $gateway_environment ) . "' ";
+	$sqlQuery .= "LEFT JOIN $wpdb->pmpro_membership_orders mo2 ON o.membership_id = mo2.membership_id
+                        AND mo2.total > 0
+                        AND mo2.status NOT IN('refunded', 'review', 'token', 'error')                                            
+                        AND mo2.timestamp > o.timestamp
+                        AND mo2.id IS NOT NULL
+                        AND mo2.user_id = o.user_id 
+                        AND mo2.gateway_environment = '" . esc_sql( $gateway_environment ) . "'
+                         ";
+	
+	$sqlQuery .= "WHERE o.total > 0
+				 	AND o.status NOT IN('refunded', 'review', 'token', 'error')
+					AND o.timestamp >= '" . esc_sql( $startdate ) . "'					
+					AND o.gateway_environment = '" . esc_sql( $gateway_environment ) . "' ";			
 
 	if(!empty($enddate))
 		$sqlQuery .= "AND o.timestamp <= DATE_ADD( '$enddate 23:59:59' , INTERVAL - $tz_offset SECOND )";
@@ -202,7 +214,7 @@ function pmpro_report_sales_page()
 	$sqlQuery .= " GROUP BY date ORDER BY date ";
 
 	$dates = $wpdb->get_results($sqlQuery);
-
+	
 	//fill in blanks in dates
 	$cols = array();
 	$total_in_period = 0;
@@ -223,7 +235,7 @@ function pmpro_report_sales_page()
 			foreach($dates as $date)
 			{
 				if($date->date == $i) {
-					$cols[$i] = $date->value;
+					$cols[$i] = array( $date->value, $date->renewals );
 					if ( ! $currently_in_period || $i < $day_of_month ) {
 						$total_in_period += $date->value;
 					}
@@ -244,7 +256,7 @@ function pmpro_report_sales_page()
 			foreach($dates as $date)
 			{
 				if($date->date == $i) {
-					$cols[$i] = $date->value;
+					$cols[$i] = array( $date->value, $date->renewals );
 					if ( ! $currently_in_period || $i < $month_of_year ) {
 						$total_in_period += $date->value;
 					}
@@ -272,7 +284,7 @@ function pmpro_report_sales_page()
 			foreach($dates as $date)
 			{
 				if($date->date == $i) {
-					$cols[$i] = $date->value;
+					$cols[$i] = array( $date->value, $date->renewals );
 					if ( $i < $current_year ) {
 						$total_in_period += $date->value;
 					}
@@ -385,17 +397,16 @@ function pmpro_report_sales_page()
 
 			var data = google.visualization.arrayToDataTable([
 				[
-					{ label: '<?php echo esc_html( $date_function );?>' },
-					{ label: '<?php echo esc_html( ucwords( $type ) );?>' },
-					{ label: '<?php _e( 'Average*', 'paid-memberships-pro' );?>' },
+					'<?php echo esc_html( $date_function );?>', '<?php echo esc_html( ucwords( $type ) );?>', '<?php _e( 'Renewals', 'paid-memberships-pro' );?>', '<?php _e( 'Average*', 'paid-memberships-pro' );?>', 
 				],
-				<?php foreach($cols as $date => $value) { ?>
+				<?php foreach($cols as $date => $value) { 
+					?>
 					['<?php
 						if($period == "monthly") {
 							echo esc_html(date_i18n("M", mktime(0,0,0,$date,2)));
 						} else {
 						echo esc_html( $date );
-					} ?>', <?php echo esc_html( pmpro_round_price( $value ) );?>, <?php echo esc_html( pmpro_round_price( $average ) );?>],
+					} ?>', <?php echo esc_html( pmpro_round_price( $value[0] - $value[1] ) );?>, <?php echo esc_html( pmpro_round_price( $value[1] ) );?>, <?php echo esc_html( pmpro_round_price( $average ) );?>,  ], 
 				<?php } ?>
 			]);
 
@@ -421,8 +432,9 @@ function pmpro_report_sales_page()
 					textStyle: {color: '#555555', fontSize: '12', italic: false},
 				},
 				seriesType: 'bars',
-				series: {1: {type: 'line', color: 'red'}},
+				series: { 2: {type: 'line', color: 'red'}, 1: {color: 'lime' } },
 				legend: {position: 'none'},
+				isStacked: true			
 			};
 
 			<?php
