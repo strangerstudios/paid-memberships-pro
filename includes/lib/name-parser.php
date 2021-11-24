@@ -1,7 +1,7 @@
 <?php
 /*
 	Taken from: http://code.google.com/p/php-name-parser/
-	
+
 	Changed function names to avoid conflicts.
 */
 
@@ -14,11 +14,20 @@
 if(!function_exists("pnp_split_full_name"))
 {
 	function pnp_split_full_name($full_name) {
-		if(empty($full_name))
-			return "";
-			
+		$name = [
+			'salutation' => '',
+			'fname'      => '',
+			'initials'   => '',
+			'lname'      => '',
+			'suffix'     => '',
+		];
+
+		if ( empty( $full_name ) ) {
+			return $name;
+		}
+
 		$fname = $lname = $initials = NULL;
-		
+
 		$full_name = trim($full_name);
 		// split into words
 		$unfiltered_name_parts = explode(" ",$full_name);
@@ -28,11 +37,21 @@ if(!function_exists("pnp_split_full_name"))
 			if (!empty($word) && $word[0] != "(")
 				$name_parts[] = $word;
 		}
+
+		if ( empty( $name_parts ) ) {
+			return $name;
+		}
+
 		$num_words = sizeof($name_parts);
 
 		// is the first word a title? (Mr. Mrs, etc)
 		$salutation = pnp_is_salutation($name_parts[0]);
-		$suffix = pnp_is_suffix($name_parts[sizeof($name_parts)-1]);
+
+		$suffix = false;
+
+		if ( isset( $name_parts[sizeof($name_parts)-1] ) ) {
+			$suffix = pnp_is_suffix( $name_parts[ sizeof( $name_parts ) - 1 ] );
+		}
 
 		// set the range for the middle part of the name (trim prefixes & suffixes)
 		$start = ($salutation) ? 1 : 0;
@@ -48,12 +67,12 @@ if(!function_exists("pnp_split_full_name"))
 			// is it a middle initial or part of their first name?
 			// if we start off with an initial, we'll call it the first name
 			if (pnp_is_initial($word)) {
-				// is the initial the first word?  
+				// is the initial the first word?
 				if ($i == $start) {
 					// if so, do a look-ahead to see if they go by their middle name
 					// for ex: "R. Jason Smith" => "Jason Smith" & "R." is stored as an initial
 					// but "R. J. Smith" => "R. Smith" and "J." is stored as an initial
-					if (pnp_is_initial($name_parts[$i+1]))
+					if ( isset( $name_parts[ $i + 1 ] ) && pnp_is_initial( $name_parts[ $i + 1 ] ) )
 						$fname .= " ".strtoupper($word);
 					else
 						$initials .= " ".strtoupper($word);
@@ -63,7 +82,7 @@ if(!function_exists("pnp_split_full_name"))
 				}
 			} else {
 				$fname .= " ".pnp_fix_case($word);
-			}  
+			}
 		}
 
 		// check that we have more than 1 word in our string

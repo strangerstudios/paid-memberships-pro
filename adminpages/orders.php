@@ -1255,7 +1255,7 @@ if ( function_exists( 'pmpro_add_email_order_modal' ) ) {
 		<p class="search-box">
 			<label class="hidden" for="post-search-input"><?php esc_html_e( 'Search Orders', 'paid-memberships-pro' ); ?>:</label>
 			<input type="hidden" name="page" value="pmpro-orders"/>
-			<input id="post-search-input" type="text" value="<?php echo esc_attr( $s ); ?>" name="s"/>
+			<input id="post-search-input" type="text" value="<?php echo esc_attr( wp_unslash( $s ) ); ?>" name="s"/>
 			<input class="button" type="submit" value="<?php esc_attr_e( 'Search Orders', 'paid-memberships-pro' ); ?>"/>
 		</p>
 
@@ -1554,7 +1554,7 @@ if ( function_exists( 'pmpro_add_email_order_modal' ) ) {
 						}
 						?>
 					</td>
-					<td><?php echo esc_html( $order->status ); ?></td>
+					<td><?php echo esc_html( $order->status );  if( $order->is_renewal() ){ echo "<br/>(".__( 'renewal', 'paid-memberships-pro' ).")"; } ?></td>
 					<td>
 						<?php echo esc_html( date_i18n( get_option( 'date_format' ), $order->getTimestamp() ) ); ?><br/>
 						<?php echo esc_html( date_i18n( get_option( 'time_format' ), $order->getTimestamp() ) ); ?>

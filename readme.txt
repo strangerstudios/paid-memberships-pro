@@ -4,7 +4,7 @@ Tags: memberships, members, subscriptions, ecommerce, user registration, member,
 Requires at least: 5.2
 Tested up to: 5.8.1
 Requires PHP: 5.6
-Stable tag: 2.6.5
+Stable tag: 2.6.6
 
 Get Paid with Paid Memberships Pro: The most complete member management and membership subscriptions plugin for your WordPress site.
 
@@ -156,6 +156,12 @@ Not sure? You can find out by doing a bit a research.
 9. Membership Account page, display all sections or show specific sections using shortcode attributes.
 
 == Changelog ==
+= 2.6.6 - 2021-11-18 =
+* SECURITY: Updated escaping on the discount codes page in the dashboard to prevent XSS attacks. #1867 (Thanks, Erwan from WPScan)
+* BUG FIX/ENHANCEMENT: Added code to remove duplicate active rows in the pmpro_memberships_users table after level change. This might have happened e.g. if users were purchasing a level via the WooCommerce Add On multiple times. #1860 (@dlparker1005)
+* BUG FIX/ENHANCEMENT: Improved the REST API endpoints to better support Zapier native requirements. #1862 (@andrewlimaza)
+* BUG FIX: Fixed PHP notices in the name parser library. #1861 (@sc0ttkclark)
+
 = 2.6.5 - 2021-11-12 =
 * ENHANCEMENT: Introduced new action `pmpro_before_commit_express_checkout` to allow additional changes after an order has been saved but before sending customer to PayPal Express checkout. #1852 (@mircobabini)
 * BUG FIX/ENHANCEMENT: Added login compatibility for Jetpack WordPress.com SSO when using the PMPro login page. #1848 (@sc0ttkclark)

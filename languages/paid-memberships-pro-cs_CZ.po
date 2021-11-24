@@ -2,14 +2,14 @@
 # This file is distributed under the same license as the Paid Memberships Pro plugin.
 msgid ""
 msgstr ""
-"Project-Id-Version: Paid Memberships Pro 2.6.4\n"
+"Project-Id-Version: Paid Memberships Pro 2.6.6\n"
 "Report-Msgid-Bugs-To: info@paidmembershipspro.com\n"
 "Last-Translator: Paid Memberships Pro <info@paidmembershipspro.com>\n"
 "Language-Team: Paid Memberships Pro <info@paidmembershipspro.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2021-11-12T17:25:28+00:00\n"
+"POT-Creation-Date: 2021-11-18T22:33:46+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.5.0\n"
 "X-Domain: paid-memberships-pro\n"
@@ -2089,6 +2089,7 @@ msgstr "Mezisoučet"
 #: includes/functions.php:2849
 #: includes/privacy.php:277
 #: adminpages/orders.php:615
+#: includes/functions.php:2880
 msgid "Tax"
 msgstr "Daň"
 
@@ -2114,6 +2115,7 @@ msgstr "Sleva"
 #: adminpages/dashboard.php:293
 #: adminpages/orders.php:650
 #: adminpages/orders.php:1344
+#: includes/functions.php:2909
 msgid "Total"
 msgstr "Celkem"
 
@@ -5017,6 +5019,8 @@ msgstr "Chyba komunikace s databází"
 #: includes/functions.php:753
 #: includes/functions.php:1304
 #: includes/functions.php:1342
+#: includes/functions.php:1335
+#: includes/functions.php:1373
 msgid "Membership level not found."
 msgstr "Úroveň členství nebyla nalezena."
 
@@ -5025,6 +5029,7 @@ msgstr "Úroveň členství nebyla nalezena."
 #: includes/functions.php:1101
 #: includes/functions.php:1118
 #: includes/functions.php:1722
+#: includes/functions.php:1753
 msgid "No code was given to check."
 msgstr "Pro zkontrolování nebyl zadán žádný kód."
 
@@ -5040,6 +5045,7 @@ msgstr "Pro zkontrolování nebyl zadán žádný kód."
 #: includes/functions.php:1113
 #: includes/functions.php:1127
 #: includes/functions.php:1731
+#: includes/functions.php:1762
 msgid "The discount code could not be found."
 msgstr "Slevový kód nebyl nalezen."
 
@@ -5055,6 +5061,7 @@ msgstr "Slevový kód nebyl nalezen."
 #: includes/functions.php:1129
 #: includes/functions.php:1142
 #: includes/functions.php:1746
+#: includes/functions.php:1777
 #, php-format
 msgid "This discount code goes into effect on %s."
 msgstr "Tento slevový kód nabude účinnosti %s."
@@ -5071,6 +5078,7 @@ msgstr "Tento slevový kód nabude účinnosti %s."
 #: includes/functions.php:1138
 #: includes/functions.php:1149
 #: includes/functions.php:1753
+#: includes/functions.php:1784
 #, php-format
 msgid "This discount code expired on %s."
 msgstr "Tento slevový kód vyprší %s."
@@ -5087,6 +5095,7 @@ msgstr "Tento slevový kód vyprší %s."
 #: includes/functions.php:1150
 #: includes/functions.php:1159
 #: includes/functions.php:1762
+#: includes/functions.php:1793
 msgid "This discount code is no longer valid."
 msgstr "Tento slevový kód již není platný."
 
@@ -5101,6 +5110,7 @@ msgstr "Tento slevový kód již není platný."
 #: includes/functions.php:1165
 #: includes/functions.php:1172
 #: includes/functions.php:1781
+#: includes/functions.php:1812
 msgid "This discount code does not apply to this membership level."
 msgstr "Tento slevový kód se nevztahuje na tuto úroveň členství."
 
@@ -5116,6 +5126,7 @@ msgstr "Tento slevový kód se nevztahuje na tuto úroveň členství."
 #: includes/functions.php:1182
 #: includes/functions.php:1198
 #: includes/functions.php:1819
+#: includes/functions.php:1850
 msgid "This discount code is okay."
 msgstr "Tento slevový kód je v pořádku."
 
@@ -5130,6 +5141,7 @@ msgstr "Tento slevový kód je v pořádku."
 #: includes/functions.php:1206
 #: includes/functions.php:1223
 #: includes/functions.php:1847
+#: includes/functions.php:1878
 msgid "and"
 msgstr "a"
 
@@ -5144,6 +5156,7 @@ msgstr "a"
 #: includes/functions.php:1395
 #: includes/functions.php:1412
 #: includes/functions.php:2409
+#: includes/functions.php:2440
 msgid "Sign Up for !!name!! Now"
 msgstr "Pro !!name!! se nyní přihlaste"
 
@@ -5927,12 +5940,14 @@ msgstr "Pokud nebude Váš účet aktivován během několika minut, kontaktujte
 #: pages/invoice.php:79
 #: pages/invoice.php:77
 #: includes/functions.php:2842
+#: includes/functions.php:2873
 msgid "Subtotal"
 msgstr "Mezisoučet"
 
 #: pages/invoice.php:82
 #: pages/invoice.php:80
 #: includes/functions.php:2857
+#: includes/functions.php:2888
 msgid "Coupon"
 msgstr "Kupón"
 
@@ -11011,6 +11026,7 @@ msgid "Error interacting with database: %s"
 msgstr ""
 
 #: includes/functions.php:2433
+#: includes/functions.php:2464
 msgid "Sign Up Now"
 msgstr ""
 

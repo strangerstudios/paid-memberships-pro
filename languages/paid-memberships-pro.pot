@@ -2,14 +2,14 @@
 # This file is distributed under the same license as the Paid Memberships Pro plugin.
 msgid ""
 msgstr ""
-"Project-Id-Version: Paid Memberships Pro 2.6.4\n"
+"Project-Id-Version: Paid Memberships Pro 2.6.6\n"
 "Report-Msgid-Bugs-To: info@paidmembershipspro.com\n"
 "Last-Translator: Paid Memberships Pro <info@paidmembershipspro.com>\n"
 "Language-Team: Paid Memberships Pro <info@paidmembershipspro.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2021-11-12T17:25:15+00:00\n"
+"POT-Creation-Date: 2021-11-18T22:33:33+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.5.0\n"
 "X-Domain: paid-memberships-pro\n"
@@ -2551,6 +2551,7 @@ msgstr ""
 #: includes/functions.php:2878
 #: adminpages/orders.php:650
 #: adminpages/orders.php:1344
+#: includes/functions.php:2909
 msgid "Total"
 msgstr ""
 
@@ -6248,6 +6249,7 @@ msgstr ""
 #: pages/invoice.php:89
 #: includes/functions.php:2849
 #: adminpages/orders.php:615
+#: includes/functions.php:2880
 msgid "Tax"
 msgstr ""
 
@@ -15343,6 +15345,8 @@ msgstr ""
 #: includes/functions.php:1331
 #: includes/functions.php:1304
 #: includes/functions.php:1342
+#: includes/functions.php:1335
+#: includes/functions.php:1373
 msgid "Membership level not found."
 msgstr ""
 
@@ -15375,6 +15379,7 @@ msgstr ""
 #: includes/functions.php:1658
 #: includes/functions.php:1709
 #: includes/functions.php:1722
+#: includes/functions.php:1753
 msgid "No code was given to check."
 msgstr ""
 
@@ -15414,6 +15419,7 @@ msgstr ""
 #: includes/functions.php:1667
 #: includes/functions.php:1718
 #: includes/functions.php:1731
+#: includes/functions.php:1762
 msgid "The discount code could not be found."
 msgstr ""
 
@@ -15453,6 +15459,7 @@ msgstr ""
 #: includes/functions.php:1682
 #: includes/functions.php:1733
 #: includes/functions.php:1746
+#: includes/functions.php:1777
 #, php-format
 msgid "This discount code goes into effect on %s."
 msgstr ""
@@ -15493,6 +15500,7 @@ msgstr ""
 #: includes/functions.php:1689
 #: includes/functions.php:1740
 #: includes/functions.php:1753
+#: includes/functions.php:1784
 #, php-format
 msgid "This discount code expired on %s."
 msgstr ""
@@ -15533,6 +15541,7 @@ msgstr ""
 #: includes/functions.php:1698
 #: includes/functions.php:1749
 #: includes/functions.php:1762
+#: includes/functions.php:1793
 msgid "This discount code is no longer valid."
 msgstr ""
 
@@ -15571,6 +15580,7 @@ msgstr ""
 #: includes/functions.php:1717
 #: includes/functions.php:1768
 #: includes/functions.php:1781
+#: includes/functions.php:1812
 msgid "This discount code does not apply to this membership level."
 msgstr ""
 
@@ -15610,6 +15620,7 @@ msgstr ""
 #: includes/functions.php:1755
 #: includes/functions.php:1806
 #: includes/functions.php:1819
+#: includes/functions.php:1850
 msgid "This discount code is okay."
 msgstr ""
 
@@ -15649,6 +15660,7 @@ msgstr ""
 #: includes/functions.php:1783
 #: includes/functions.php:1834
 #: includes/functions.php:1847
+#: includes/functions.php:1878
 msgid "and"
 msgstr ""
 
@@ -15693,6 +15705,7 @@ msgstr ""
 #: includes/functions.php:2303
 #: includes/functions.php:2388
 #: includes/functions.php:2409
+#: includes/functions.php:2440
 msgid "Sign Up for !!name!! Now"
 msgstr ""
 
@@ -15709,6 +15722,7 @@ msgstr ""
 #: includes/functions.php:2327
 #: includes/functions.php:2412
 #: includes/functions.php:2433
+#: includes/functions.php:2464
 msgid "Sign Up Now"
 msgstr ""
 
@@ -15731,6 +15745,7 @@ msgstr ""
 #: pages/invoice.php:84
 #: pages/invoice.php:88
 #: includes/functions.php:2842
+#: includes/functions.php:2873
 msgid "Subtotal"
 msgstr ""
 
@@ -15751,6 +15766,7 @@ msgstr ""
 #: pages/invoice.php:87
 #: pages/invoice.php:91
 #: includes/functions.php:2857
+#: includes/functions.php:2888
 msgid "Coupon"
 msgstr ""
 

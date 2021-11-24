@@ -214,6 +214,34 @@
 		}
 
 		/**
+		 * Check if the user ID on the order has at least one other order where 
+		 * the total is greater than 0
+		 */
+		function is_renewal (){
+
+			global $wpdb;
+
+			if ( ! empty( $this->user_id ) ) {
+				$user_id = $this->user_id;
+			} else {
+				$user_id = '';
+			}
+
+			$order_result = $wpdb->get_var ( "SELECT `id` FROM $wpdb->pmpro_membership_orders WHERE `user_id` = '" . esc_sql( $user_id ) . "' AND `membership_id` = '".$this->membership_id."' AND `id` <> '".$this->id."' AND `gateway_environment` = '" . esc_sql( $this->gateway_environment ) . "' AND `total` > 0 AND `total` IS NOT NULL LIMIT 1" );
+
+			if ( ( (int)$this->id > (int)$order_result ) && $order_result !== NULL ) {
+
+				return true;
+
+			} else {
+
+				return false;
+
+			}
+		}
+
+
+		/**
 		 * Set up the Gateway class to use with this order.
 		 *
 		 * @param string $gateway Name/label for the gateway to set.
