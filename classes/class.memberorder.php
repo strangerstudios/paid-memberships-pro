@@ -226,7 +226,18 @@
 				return false;
 			}
 			
-			$order_result = $wpdb->get_var ( "SELECT `id` FROM $wpdb->pmpro_membership_orders WHERE `user_id` = '" . esc_sql( $this->user_id ) . "' AND `membership_id` = '".$this->membership_id."' AND `id` <> '".$this->id."' AND `gateway_environment` = '" . esc_sql( $this->gateway_environment ) . "' AND `total` > 0 AND `total` IS NOT NULL LIMIT 1" );
+			$sqlQuery = "SELECT `id`
+						 FROM $wpdb->pmpro_membership_orders
+						 WHERE `user_id` = '" . esc_sql( $this->user_id ) . "'
+						 	AND `membership_id` = '" . esc_sql( $this->membership_id ) . "'
+							AND `id` <> '" . esc_sql( $this->id ) . "'
+							AND `gateway_environment` = '" . esc_sql( $this->gateway_environment ) . "'
+							AND `total` > 0
+							AND `total` IS NOT NULL
+							AND status NOT IN('refunded', 'review', 'token', 'error')
+							AND timestamp < '" . esc_sql( date( 'Y-m-d H:i:s', $this->timestamp ) ) . "'
+						 LIMIT 1";		
+			$order_result = $wpdb->get_var ( $sqlQuery );
 
 			if ( ( (int)$this->id > (int)$order_result ) && $order_result !== NULL ) {
 
