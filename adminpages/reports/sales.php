@@ -181,19 +181,30 @@ function pmpro_report_sales_page()
 	$tz_offset = strtotime( $startdate ) - strtotime( get_gmt_from_date( $startdate . " 00:00:00" ) );
 
 	//get data
-	$sqlQuery = "SELECT $date_function( DATE_ADD( o.timestamp, INTERVAL $tz_offset SECOND ) ) as date, $type_function(o.total) as value FROM $wpdb->pmpro_membership_orders o ";
+	$sqlQuery = "SELECT $date_function( DATE_ADD( mo1.timestamp, INTERVAL $tz_offset SECOND ) ) as date,
+					    $type_function(mo1.total) as value,
+						$type_function( IF( mo2.id IS NOT NULL, mo1.total, NULL ) ) as renewals
+				 FROM $wpdb->pmpro_membership_orders mo1
+				 	LEFT JOIN $wpdb->pmpro_membership_orders mo2 ON mo1.user_id = mo2.user_id
+                        AND mo2.total > 0
+                        AND mo2.status NOT IN('refunded', 'review', 'token', 'error')                                            
+                        AND mo2.timestamp < mo1.timestamp
+                        AND mo2.gateway_environment = '" . esc_sql( $gateway_environment ) . "' ";
 
 	if ( ! empty( $discount_code ) ) {
-		$sqlQuery .= "LEFT JOIN $wpdb->pmpro_discount_codes_uses dc ON o.id = dc.order_id ";
+		$sqlQuery .= "LEFT JOIN $wpdb->pmpro_discount_codes_uses dc ON mo1.id = dc.order_id ";
 	}
 
-	$sqlQuery .= "WHERE o.total > 0 AND o.timestamp >= DATE_ADD( '$startdate' , INTERVAL - $tz_offset SECOND ) AND o.status NOT IN('refunded', 'review', 'token', 'error') AND o.gateway_environment = '" . esc_sql( $gateway_environment ) . "' ";
+	$sqlQuery .= "WHERE mo1.total > 0
+					AND mo1.timestamp >= DATE_ADD( '$startdate' , INTERVAL - $tz_offset SECOND )
+					AND mo1.status NOT IN('refunded', 'review', 'token', 'error')
+					AND mo1.gateway_environment = '" . esc_sql( $gateway_environment ) . "' ";
 
 	if(!empty($enddate))
-		$sqlQuery .= "AND o.timestamp <= DATE_ADD( '$enddate 23:59:59' , INTERVAL - $tz_offset SECOND )";
+		$sqlQuery .= "AND mo1.timestamp <= DATE_ADD( '$enddate 23:59:59' , INTERVAL - $tz_offset SECOND )";
 
 	if(!empty($l))
-		$sqlQuery .= "AND o.membership_id IN(" . esc_sql( $l ) . ") ";
+		$sqlQuery .= "AND mo1.membership_id IN(" . esc_sql( $l ) . ") ";
 
 	if ( ! empty( $discount_code ) ) {
 		$sqlQuery .= "AND dc.code_id = '" . esc_sql( $discount_code ) . "' ";
@@ -202,7 +213,7 @@ function pmpro_report_sales_page()
 	$sqlQuery .= " GROUP BY date ORDER BY date ";
 
 	$dates = $wpdb->get_results($sqlQuery);
-
+		
 	//fill in blanks in dates
 	$cols = array();
 	$total_in_period = 0;
@@ -215,7 +226,7 @@ function pmpro_report_sales_page()
 		
 		for($i = 1; $i <= $lastday; $i++)
 		{
-			$cols[$i] = 0;
+			$cols[$i] = array(0, 0);
 			if ( ! $currently_in_period || $i < $day_of_month ) {
 				$units_in_period++;
 			}
@@ -223,7 +234,7 @@ function pmpro_report_sales_page()
 			foreach($dates as $date)
 			{
 				if($date->date == $i) {
-					$cols[$i] = $date->value;
+					$cols[$i] = array( $date->value, $date->renewals );
 					if ( ! $currently_in_period || $i < $day_of_month ) {
 						$total_in_period += $date->value;
 					}
@@ -236,7 +247,7 @@ function pmpro_report_sales_page()
 		$month_of_year = intval( date( 'n' ) );
 		for($i = 1; $i < 13; $i++)
 		{
-			$cols[$i] = 0;
+			$cols[$i] = array(0, 0);
 			if ( ! $currently_in_period || $i < $month_of_year ) {
 				$units_in_period++;
 			}
@@ -244,7 +255,7 @@ function pmpro_report_sales_page()
 			foreach($dates as $date)
 			{
 				if($date->date == $i) {
-					$cols[$i] = $date->value;
+					$cols[$i] = array( $date->value, $date->renewals );
 					if ( ! $currently_in_period || $i < $month_of_year ) {
 						$total_in_period += $date->value;
 					}
@@ -272,7 +283,7 @@ function pmpro_report_sales_page()
 			foreach($dates as $date)
 			{
 				if($date->date == $i) {
-					$cols[$i] = $date->value;
+					$cols[$i] = array( $date->value, $date->renewals );
 					if ( $i < $current_year ) {
 						$total_in_period += $date->value;
 					}
@@ -385,17 +396,16 @@ function pmpro_report_sales_page()
 
 			var data = google.visualization.arrayToDataTable([
 				[
-					{ label: '<?php echo esc_html( $date_function );?>' },
-					{ label: '<?php echo esc_html( ucwords( $type ) );?>' },
-					{ label: '<?php _e( 'Average*', 'paid-memberships-pro' );?>' },
+					'<?php echo esc_html( $date_function );?>', '<?php echo esc_html( ucwords( $type ) );?>', '<?php _e( 'Renewals', 'paid-memberships-pro' );?>', '<?php _e( 'Average*', 'paid-memberships-pro' );?>', 
 				],
-				<?php foreach($cols as $date => $value) { ?>
+				<?php foreach($cols as $date => $value) { 
+					?>
 					['<?php
 						if($period == "monthly") {
 							echo esc_html(date_i18n("M", mktime(0,0,0,$date,2)));
 						} else {
 						echo esc_html( $date );
-					} ?>', <?php echo esc_html( pmpro_round_price( $value ) );?>, <?php echo esc_html( pmpro_round_price( $average ) );?>],
+					} ?>', <?php echo esc_html( pmpro_round_price( $value[0] - $value[1] ) );?>, <?php echo esc_html( pmpro_round_price( $value[1] ) );?>, <?php echo esc_html( pmpro_round_price( $average ) );?>,  ], 
 				<?php } ?>
 			]);
 
@@ -421,8 +431,9 @@ function pmpro_report_sales_page()
 					textStyle: {color: '#555555', fontSize: '12', italic: false},
 				},
 				seriesType: 'bars',
-				series: {1: {type: 'line', color: 'red'}},
+				series: { 2: {type: 'line', color: 'red'}, 1: {color: 'lime' } },
 				legend: {position: 'none'},
+				isStacked: true			
 			};
 
 			<?php
@@ -471,7 +482,7 @@ function pmpro_getSales( $period = 'all time', $levels = 'all', $type = 'all' ) 
 	$cache = get_transient( 'pmpro_report_sales' );
 	$param_hash = md5( $period . ' ' . $type . PMPRO_VERSION );
 	if(!empty($cache) && isset($cache[$param_hash]) && isset($cache[$param_hash][$levels]))
-		return $cache[$param_hash][$levels];		
+		return $cache[$param_hash][$levels];
 
 	//a sale is an order with status NOT IN('refunded', 'review', 'token', 'error') with a total > 0
 	if($period == "today")
@@ -498,7 +509,7 @@ function pmpro_getSales( $period = 'all time', $levels = 'all', $type = 'all' ) 
                         AND mo2.total > 0
                         AND mo2.status NOT IN('refunded', 'review', 'token', 'error')                                            
                         AND mo2.timestamp < mo1.timestamp
-                        AND mo2.gateway_environment = 'sandbox' ";
+                        AND mo2.gateway_environment = '" . esc_sql( $gateway_environment ) . "' ";
 	}
 	
 	// Get valid orders within the time frame.
