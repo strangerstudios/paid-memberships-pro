@@ -214,8 +214,9 @@
 		}
 
 		/**
-		 * Check if the user ID on the order has at least one other
-		 * previous paid order.
+		 * Is this order a 'renewal'?
+		 * We currently define a renewal as any order from a user who has
+		 * a previous paid (non-$0) order.
 		 */
 		function is_renewal() {
 			global $wpdb;			
@@ -234,8 +235,7 @@
 			// Check the DB.
 			$sqlQuery = "SELECT `id`
 						 FROM $wpdb->pmpro_membership_orders
-						 WHERE `user_id` = '" . esc_sql( $this->user_id ) . "'
-						 	AND `membership_id` = '" . esc_sql( $this->membership_id ) . "'
+						 WHERE `user_id` = '" . esc_sql( $this->user_id ) . "'						 	
 							AND `id` <> '" . esc_sql( $this->id ) . "'
 							AND `gateway_environment` = '" . esc_sql( $this->gateway_environment ) . "'
 							AND `total` > 0
