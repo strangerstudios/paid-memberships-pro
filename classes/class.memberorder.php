@@ -214,8 +214,8 @@
 		}
 
 		/**
-		 * Check if the user ID on the order has at least one other order where 
-		 * the total is greater than 0
+		 * Check if the user ID on the order has at least one other
+		 * previous paid order.
 		 */
 		function is_renewal (){
 
