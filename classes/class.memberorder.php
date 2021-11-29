@@ -217,8 +217,7 @@
 		 * Check if the user ID on the order has at least one other
 		 * previous paid order.
 		 */
-		function is_renewal (){
-
+		function is_renewal() {
 			global $wpdb;
 
 			// Can't tell if this is a renewal without a user.
@@ -236,17 +235,13 @@
 							AND `total` IS NOT NULL
 							AND status NOT IN('refunded', 'review', 'token', 'error')
 							AND timestamp < '" . esc_sql( date( 'Y-m-d H:i:s', $this->timestamp ) ) . "'
-						 LIMIT 1";		
+						 LIMIT 1";
 			$order_result = $wpdb->get_var ( $sqlQuery );
 
 			if ( ( (int)$this->id > (int)$order_result ) && $order_result !== NULL ) {
-
 				return true;
-
 			} else {
-
 				return false;
-
 			}
 		}
 
