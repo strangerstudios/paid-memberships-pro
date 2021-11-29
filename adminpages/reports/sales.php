@@ -181,31 +181,30 @@ function pmpro_report_sales_page()
 	$tz_offset = strtotime( $startdate ) - strtotime( get_gmt_from_date( $startdate . " 00:00:00" ) );
 
 	//get data
-	$sqlQuery = "SELECT $date_function( DATE_ADD( o.timestamp, INTERVAL $tz_offset SECOND ) ) as date, $type_function(o.total) as value, $type_function( mo2.total ) as renewals FROM $wpdb->pmpro_membership_orders o ";
-
-	if ( ! empty( $discount_code ) ) {
-		$sqlQuery .= "LEFT JOIN $wpdb->pmpro_discount_codes_uses dc ON o.id = dc.order_id ";
-	}
-
-	$sqlQuery .= "LEFT JOIN $wpdb->pmpro_membership_orders mo2 ON o.membership_id = mo2.membership_id
+	$sqlQuery = "SELECT $date_function( DATE_ADD( mo1.timestamp, INTERVAL $tz_offset SECOND ) ) as date,
+					    $type_function(mo1.total) as value,
+						$type_function( IF( mo2.id IS NOT NULL, mo1.total, NULL ) ) as renewals
+				 FROM $wpdb->pmpro_membership_orders mo1
+				 	LEFT JOIN $wpdb->pmpro_membership_orders mo2 ON mo1.user_id = mo2.user_id
                         AND mo2.total > 0
                         AND mo2.status NOT IN('refunded', 'review', 'token', 'error')                                            
-                        AND mo2.timestamp > o.timestamp
-                        AND mo2.id IS NOT NULL
-                        AND mo2.user_id = o.user_id 
-                        AND mo2.gateway_environment = '" . esc_sql( $gateway_environment ) . "'
-                         ";
-	
-	$sqlQuery .= "WHERE o.total > 0
-				 	AND o.status NOT IN('refunded', 'review', 'token', 'error')
-					AND o.timestamp >= '" . esc_sql( $startdate ) . "'					
-					AND o.gateway_environment = '" . esc_sql( $gateway_environment ) . "' ";			
+                        AND mo2.timestamp < mo1.timestamp
+                        AND mo2.gateway_environment = '" . esc_sql( $gateway_environment ) . "' ";
+
+	if ( ! empty( $discount_code ) ) {
+		$sqlQuery .= "LEFT JOIN $wpdb->pmpro_discount_codes_uses dc ON mo1.id = dc.order_id ";
+	}
+
+	$sqlQuery .= "WHERE mo1.total > 0
+					AND mo1.timestamp >= DATE_ADD( '$startdate' , INTERVAL - $tz_offset SECOND )
+					AND mo1.status NOT IN('refunded', 'review', 'token', 'error')
+					AND mo1.gateway_environment = '" . esc_sql( $gateway_environment ) . "' ";
 
 	if(!empty($enddate))
-		$sqlQuery .= "AND o.timestamp <= DATE_ADD( '$enddate 23:59:59' , INTERVAL - $tz_offset SECOND )";
+		$sqlQuery .= "AND mo1.timestamp <= DATE_ADD( '$enddate 23:59:59' , INTERVAL - $tz_offset SECOND )";
 
 	if(!empty($l))
-		$sqlQuery .= "AND o.membership_id IN(" . esc_sql( $l ) . ") ";
+		$sqlQuery .= "AND mo1.membership_id IN(" . esc_sql( $l ) . ") ";
 
 	if ( ! empty( $discount_code ) ) {
 		$sqlQuery .= "AND dc.code_id = '" . esc_sql( $discount_code ) . "' ";
@@ -214,7 +213,7 @@ function pmpro_report_sales_page()
 	$sqlQuery .= " GROUP BY date ORDER BY date ";
 
 	$dates = $wpdb->get_results($sqlQuery);
-	
+		
 	//fill in blanks in dates
 	$cols = array();
 	$total_in_period = 0;
@@ -227,7 +226,7 @@ function pmpro_report_sales_page()
 		
 		for($i = 1; $i <= $lastday; $i++)
 		{
-			$cols[$i] = 0;
+			$cols[$i] = array(0, 0);
 			if ( ! $currently_in_period || $i < $day_of_month ) {
 				$units_in_period++;
 			}
@@ -248,7 +247,7 @@ function pmpro_report_sales_page()
 		$month_of_year = intval( date( 'n' ) );
 		for($i = 1; $i < 13; $i++)
 		{
-			$cols[$i] = 0;
+			$cols[$i] = array(0, 0);
 			if ( ! $currently_in_period || $i < $month_of_year ) {
 				$units_in_period++;
 			}
