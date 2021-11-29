@@ -1,6 +1,6 @@
 <?php
 	class MemberOrder
-	{
+	{	
 		/**
 		 * Constructor
 		 */
@@ -218,13 +218,20 @@
 		 * previous paid order.
 		 */
 		function is_renewal() {
-			global $wpdb;
-
-			// Can't tell if this is a renewal without a user.
-			if ( empty( $this->user_id ) ) {
-				return false;
+			global $wpdb;			
+			
+			// If our property is already set, use that.
+			if ( isset( $this->is_renewal ) ) {				
+				return $this->is_renewal;
 			}
 			
+			// Can't tell if this is a renewal without a user.
+			if ( empty( $this->user_id ) ) {
+				$this->is_renewal = false;
+				return $this->is_renewal;
+			}
+			
+			// Check the DB.
 			$sqlQuery = "SELECT `id`
 						 FROM $wpdb->pmpro_membership_orders
 						 WHERE `user_id` = '" . esc_sql( $this->user_id ) . "'
@@ -239,10 +246,12 @@
 			$order_result = $wpdb->get_var ( $sqlQuery );
 
 			if ( ( (int)$this->id > (int)$order_result ) && $order_result !== NULL ) {
-				return true;
+				$this->is_renewal = true;
 			} else {
-				return false;
+				$this->is_renewal = false;
 			}
+			
+			return $this->is_renewal;
 		}
 
 
