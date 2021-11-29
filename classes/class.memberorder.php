@@ -221,13 +221,12 @@
 
 			global $wpdb;
 
-			if ( ! empty( $this->user_id ) ) {
-				$user_id = $this->user_id;
-			} else {
-				$user_id = '';
+			// Can't tell if this is a renewal without a user.
+			if ( empty( $this->user_id ) ) {
+				return false;
 			}
-
-			$order_result = $wpdb->get_var ( "SELECT `id` FROM $wpdb->pmpro_membership_orders WHERE `user_id` = '" . esc_sql( $user_id ) . "' AND `membership_id` = '".$this->membership_id."' AND `id` <> '".$this->id."' AND `gateway_environment` = '" . esc_sql( $this->gateway_environment ) . "' AND `total` > 0 AND `total` IS NOT NULL LIMIT 1" );
+			
+			$order_result = $wpdb->get_var ( "SELECT `id` FROM $wpdb->pmpro_membership_orders WHERE `user_id` = '" . esc_sql( $this->user_id ) . "' AND `membership_id` = '".$this->membership_id."' AND `id` <> '".$this->id."' AND `gateway_environment` = '" . esc_sql( $this->gateway_environment ) . "' AND `total` > 0 AND `total` IS NOT NULL LIMIT 1" );
 
 			if ( ( (int)$this->id > (int)$order_result ) && $order_result !== NULL ) {
 
