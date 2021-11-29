@@ -243,9 +243,9 @@
 							AND status NOT IN('refunded', 'review', 'token', 'error')
 							AND timestamp < '" . esc_sql( date( 'Y-m-d H:i:s', $this->timestamp ) ) . "'
 						 LIMIT 1";
-			$order_result = $wpdb->get_var ( $sqlQuery );
+			$older_order_id = $wpdb->get_var( $sqlQuery );
 
-			if ( ( (int)$this->id > (int)$order_result ) && $order_result !== NULL ) {
+			if ( ! empty( $older_order_id ) ) {
 				$this->is_renewal = true;
 			} else {
 				$this->is_renewal = false;
