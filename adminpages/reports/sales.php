@@ -181,9 +181,15 @@ function pmpro_report_sales_page()
 	$tz_offset = strtotime( $startdate ) - strtotime( get_gmt_from_date( $startdate . " 00:00:00" ) );
 
 	//get data
-	$sqlQuery = "SELECT $date_function( DATE_ADD( mo1.timestamp, INTERVAL $tz_offset SECOND ) ) as date,
-					    $type_function(mo1.total) as value,
-						$type_function( IF( mo2.id IS NOT NULL, mo1.total, NULL ) ) as renewals
+	$sqlQuery = "SELECT date,
+				 	$type_function(mo1total) as value,
+				 	$type_function( IF( mo2id IS NOT NULL, mo1total, NULL ) ) as renewals
+				 FROM ";
+	$sqlQuery .= "(";	// Sub query.
+	$sqlQuery .= "SELECT $date_function( DATE_ADD( mo1.timestamp, INTERVAL $tz_offset SECOND ) ) as date,
+					    mo1.id as mo1id,
+						mo1.total as mo1total,
+						mo2.id as mo2id
 				 FROM $wpdb->pmpro_membership_orders mo1
 				 	LEFT JOIN $wpdb->pmpro_membership_orders mo2 ON mo1.user_id = mo2.user_id
                         AND mo2.total > 0
@@ -210,7 +216,9 @@ function pmpro_report_sales_page()
 		$sqlQuery .= "AND dc.code_id = '" . esc_sql( $discount_code ) . "' ";
 	}
 
-	$sqlQuery .= " GROUP BY date ORDER BY date ";
+	$sqlQuery .= " GROUP BY mo1.id ";
+	$sqlQuery .= ") t1";
+	$sqlQuery .= " GROUP BY date ORDER by date";
 
 	$dates = $wpdb->get_results($sqlQuery);
 		
