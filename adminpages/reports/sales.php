@@ -404,7 +404,7 @@ function pmpro_report_sales_page()
 
 			var data = google.visualization.arrayToDataTable([
 				[
-					'<?php echo esc_html( $date_function );?>', '<?php echo esc_html( ucwords( $type ) );?>', '<?php _e( 'Renewals', 'paid-memberships-pro' );?>', '<?php _e( 'Average*', 'paid-memberships-pro' );?>', 
+					'<?php echo esc_html( $date_function );?>', '<?php _e( 'Renewals', 'paid-memberships-pro' );?>', '<?php echo esc_html( sprintf( __( 'New %s', 'paid-memberships-pro' ), ucwords( $type ) ) );?>', '<?php _e( 'Average*', 'paid-memberships-pro' );?>', 
 				],
 				<?php foreach($cols as $date => $value) { 
 					?>
