@@ -409,11 +409,12 @@ function pmpro_report_sales_page()
 				<?php foreach($cols as $date => $value) { 
 					?>
 					['<?php
-						if($period == "monthly") {
+						if ( $period == "monthly" ) {
 							echo esc_html(date_i18n("M", mktime(0,0,0,$date,2)));
 						} else {
-						echo esc_html( $date );
-					} ?>', <?php echo esc_html( pmpro_round_price( $value[0] - $value[1] ) );?>, <?php echo esc_html( pmpro_round_price( $value[1] ) );?>, <?php echo esc_html( pmpro_round_price( $average ) );?>,  ], 
+							echo esc_html( $date );
+						}
+					?>', <?php echo esc_html( pmpro_round_price( $value[1] ) );?>, <?php echo esc_html( pmpro_round_price( $value[0] - $value[1] ) );?>, <?php echo esc_html( pmpro_round_price( $average ) );?>,  ], 
 				<?php } ?>
 			]);
 
@@ -439,7 +440,7 @@ function pmpro_report_sales_page()
 					textStyle: {color: '#555555', fontSize: '12', italic: false},
 				},
 				seriesType: 'bars',
-				series: { 2: {type: 'line', color: 'red'}, 1: {color: 'lime' } },
+				series: { 2: {type: 'line', color: 'red'}, 1: {color: '#6dff6d' } },
 				legend: {position: 'none'},
 				isStacked: true			
 			};
