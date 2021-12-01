@@ -44,6 +44,7 @@ function pmpro_notifications() {
 							'class' => array(),
 						),
 						'br' => array(),
+						'strike' => array(),
 					);
 					echo wp_kses( $notification->content, $allowed_html );
 				?>

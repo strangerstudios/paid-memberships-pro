@@ -577,11 +577,9 @@
 						<input id="expiration_number" name="expiration_number" type="text" value="<?php echo esc_attr($level->expiration_number);?>" class="small-text" />
 						<select id="expiration_period" name="expiration_period">
 						  <?php
-							$cycles = array( __('Day(s)', 'paid-memberships-pro' ) => 'Day', __('Week(s)', 'paid-memberships-pro' ) => 'Week', __('Month(s)', 'paid-memberships-pro' ) => 'Month', __('Year(s)', 'paid-memberships-pro' ) => 'Year' );
+							$cycles = array( __('Hour(s)', 'paid-memberships-pro' ) => 'Hour', __('Day(s)', 'paid-memberships-pro' ) => 'Day', __('Week(s)', 'paid-memberships-pro' ) => 'Week', __('Month(s)', 'paid-memberships-pro' ) => 'Month', __('Year(s)', 'paid-memberships-pro' ) => 'Year' );
 							foreach ( $cycles as $name => $value ) {
-							  echo "<option value='$value'";
-							  if ( $level->expiration_period == $value ) echo " selected='selected'";
-							  echo ">$name</option>";
+							  echo "<option value='$value' ".selected( $level->expiration_period, $value, true ).">$name</option>";
 							}
 						  ?>
 						</select>
@@ -674,7 +672,7 @@
 
 		<p class="submit topborder">
 			<input name="save" type="submit" class="button button-primary" value="<?php _e('Save Level', 'paid-memberships-pro' ); ?>" />
-			<input name="cancel" type="button" class="button" value="<?php _e('Cancel', 'paid-memberships-pro' ); ?>" onclick="location.href='<?php echo add_query_arg( 'page', 'pmpro-membershiplevels' , get_admin_url(NULL, '/admin.php') ); ?>';" />
+			<input name="cancel" type="button" class="button" value="<?php _e('Cancel', 'paid-memberships-pro' ); ?>" onclick="location.href='<?php echo add_query_arg( 'page', 'pmpro-membershiplevels' , admin_url( '/admin.php') ); ?>';" />
 		</p>
 	</form>
 	</div>
@@ -792,7 +790,7 @@
 			</p>
 		</form>
 		<h1 class="wp-heading-inline"><?php esc_html_e( 'Membership Levels', 'paid-memberships-pro' ); ?></h1>
-		<a href="<?php echo add_query_arg( array( 'page' => 'pmpro-membershiplevels', 'edit' => -1 ), get_admin_url(null, 'admin.php' ) ); ?>" class="page-title-action"><?php esc_html_e( 'Add New Level', 'paid-memberships-pro' ); ?></a>
+		<a href="<?php echo add_query_arg( array( 'page' => 'pmpro-membershiplevels', 'edit' => -1 ), admin_url( 'admin.php' ) ); ?>" class="page-title-action"><?php esc_html_e( 'Add New Level', 'paid-memberships-pro' ); ?></a>
 		<hr class="wp-header-end">
 
 		<?php if(empty($_REQUEST['s']) && count($reordered_levels) > 1) { ?>
@@ -832,9 +830,90 @@
 				<td class="level_name has-row-actions">
 					<span class="level-name"><a href="<?php echo add_query_arg( array( 'page' => 'pmpro-membershiplevels', 'edit' => $level->id ), admin_url( 'admin.php' ) ); ?>"><?php esc_attr_e( $level->name ); ?></a></span>
 					<div class="row-actions">
-						<span class="edit"><a title="<?php _e('Edit', 'paid-memberships-pro' ); ?>" href="<?php echo add_query_arg( array( 'page' => 'pmpro-membershiplevels', 'edit' => $level->id ), admin_url('admin.php' ) ); ?>"><?php _e('Edit', 'paid-memberships-pro' ); ?></a></span> |
-						<span class="copy"><a title="<?php _e('Copy', 'paid-memberships-pro' ); ?>" href="<?php echo add_query_arg( array( 'page' => 'pmpro-membershiplevels', 'edit' => -1, 'copy' => $level->id ), admin_url( 'admin.php' ) ); ?>"><?php _e('Copy', 'paid-memberships-pro' ); ?></a></span> |
-						<span class="delete"><a title="<?php _e('Delete', 'paid-memberships-pro' ); ?>" href="javascript:pmpro_askfirst('<?php echo str_replace("'", "\'", sprintf(__("Are you sure you want to delete membership level %s? All subscriptions will be cancelled.", 'paid-memberships-pro' ), $level->name));?>', '<?php echo wp_nonce_url(add_query_arg( array( 'page' => 'pmpro-membershiplevels', 'action' => 'delete_membership_level', 'deleteid' => $level->id ), admin_url( 'admin.php' ) ), 'delete_membership_level', 'pmpro_membershiplevels_nonce'); ?>'); void(0);"><?php _e('Delete', 'paid-memberships-pro' ); ?></a></span>
+						<?php
+						$delete_text = esc_html(
+							sprintf(
+								// translators: %s is the Level Name.
+								__( 'Are you sure you want to delete membership level %s? All subscriptions will be cancelled.', 'paid-memberships-pro' ),
+								$level->name
+							)
+						);
+
+						$delete_nonce_url = wp_nonce_url(
+							add_query_arg(
+								[
+									'page'   => 'pmpro-membershiplevels',
+									'action' => 'delete_membership_level',
+									'deleteid' => $level->id,
+								],
+								admin_url( 'admin.php' )
+							),
+							'delete_membership_level',
+							'pmpro_membershiplevels_nonce'
+						);
+
+						$actions = [
+							'edit'   => sprintf(
+								'<a title="%1$s" href="%2$s">%3$s</a>',
+								esc_attr__( 'Edit', 'paid-memberships-pro' ),
+								esc_url(
+									add_query_arg(
+										[
+											'page' => 'pmpro-membershiplevels',
+											'edit' => $level->id,
+										],
+										admin_url( 'admin.php' )
+									)
+								),
+								esc_html__( 'Edit', 'paid-memberships-pro' )
+							),
+							'copy'   => sprintf(
+								'<a title="%1$s" href="%2$s">%3$s</a>',
+								esc_attr__( 'Copy', 'paid-memberships-pro' ),
+								esc_url(
+									add_query_arg(
+										[
+											'page' => 'pmpro-membershiplevels',
+											'edit' => - 1,
+											'copy' => $level->id,
+										],
+										admin_url( 'admin.php' )
+									)
+								),
+								esc_html__( 'Copy', 'paid-memberships-pro' )
+							),
+							'delete' => sprintf(
+								'<a title="%1$s" href="%2$s">%3$s</a>',
+								esc_attr__( 'Delete', 'paid-memberships-pro' ),
+								'javascript:pmpro_askfirst(\'' . esc_js( $delete_text ) . '\', \'' . esc_js( $delete_nonce_url ) . '\'); void(0);',
+								esc_html__( 'Delete', 'paid-memberships-pro' )
+							),
+						];
+
+						/**
+						 * Filter the extra actions for this level.
+						 *
+						 * @since 2.6.2
+						 *
+						 * @param array  $actions The list of actions.
+						 * @param object $level   The membership level data.
+						 */
+						$actions = apply_filters( 'pmpro_membershiplevels_row_actions', $actions, $level );
+
+						$actions_html = [];
+
+						foreach ( $actions as $action => $link ) {
+							$actions_html[] = sprintf(
+								'<span class="%1$s">%2$s</span>',
+								esc_attr( $action ),
+								$link
+							);
+						}
+
+						if ( ! empty( $actions_html ) ) {
+							echo implode( ' | ', $actions_html );
+						}
+						?>
 					</div>
 				</td>
 				<td>

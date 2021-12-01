@@ -33,14 +33,6 @@
 		require_once( PMPRO_DIR . "/includes/lib/Stripe/init.php" );
 	}
 
-
-	try {
-		Stripe\Stripe::setApiKey( pmpro_getOption( "stripe_secretkey" ) );
-	} catch ( Exception $e ) {
-		$logstr .= "Unable to set API key for Stripe gateway: " . $e->getMessage();
-		pmpro_stripeWebhookExit();
-	}
-
 	// retrieve the request's body and parse it as JSON
 	if(empty($_REQUEST['event_id']))
 	{
@@ -48,12 +40,29 @@
 		$post_event = json_decode($body);
 
 		//get the id
-		if(!empty($post_event))
+		if ( ! empty( $post_event ) ) {
 			$event_id = sanitize_text_field($post_event->id);
+			$livemode = ! empty( $post_event->livemode );
+		}
 	}
 	else
 	{
 		$event_id = sanitize_text_field($_REQUEST['event_id']);
+		$livemode = pmpro_getOption( 'gateway_environment' ) === 'live'; // User is testing, so use current environment.
+	}
+
+	try {
+		if ( PMProGateway_stripe::using_legacy_keys() ) {
+			$secret_key = pmpro_getOption( "stripe_secretkey" );
+		} elseif ( $livemode ) {
+			$secret_key = pmpro_getOption( 'live_stripe_connect_secretkey' );
+		} else {
+			$secret_key = pmpro_getOption( 'sandbox_stripe_connect_secretkey' );
+		}
+		Stripe\Stripe::setApiKey( $secret_key );
+	} catch ( Exception $e ) {
+		$logstr .= "Unable to set API key for Stripe gateway: " . $e->getMessage();
+		pmpro_stripeWebhookExit();
 	}
 
 	//get the event through the API now
@@ -77,6 +86,12 @@
 	//real event?
 	if(!empty($pmpro_stripe_event->id))
 	{
+		// Send a 200 HTTP response to Stripe to avoid timeout.
+		pmpro_send_200_http_response();
+
+		// Log that we have successfully received a webhook from Stripe.
+		update_option( 'pmpro_stripe_last_webhook_received_' . ( $livemode ? 'live' : 'sandbox' ), date( 'Y-m-d H:i:s' ) );
+
 		//check what kind of event it is
 		if($pmpro_stripe_event->type == "invoice.payment_succeeded")
 		{
@@ -287,9 +302,9 @@
 				//prep this order for the failure emails
 				$morder = new MemberOrder();
 				$morder->user_id = $user_id;
+				$morder->membership_id = $old_order->membership_id;
 				
 				$morder->billing = new stdClass();
-				
 				$morder->billing->name = $old_order->billing->name;
 				$morder->billing->street = $old_order->billing->street;
 				$morder->billing->city = $old_order->billing->city;
@@ -543,7 +558,7 @@
 		{
 			$logstr = "Logged On: " . date_i18n("m/d/Y H:i:s") . "\n" . $logstr . "\n-------------\n";
 
-			echo $logstr;
+			echo esc_html( $logstr );
 
 			//log in file or email?
 			if(defined('PMPRO_STRIPE_WEBHOOK_DEBUG') && PMPRO_STRIPE_WEBHOOK_DEBUG === "log")
@@ -561,7 +576,7 @@
 				else
 					$log_email = get_option("admin_email");
 
-				wp_mail($log_email, get_option("blogname") . " Stripe Webhook Log", nl2br($logstr));
+				wp_mail( $log_email, get_option( "blogname" ) . " Stripe Webhook Log", nl2br( esc_html( $logstr ) ) );
 			}
 		}
 
