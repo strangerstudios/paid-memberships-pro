@@ -417,9 +417,7 @@ function pmpro_report_sales_page()
 					$tooltip_string .= "<div style='padding: 10px'>";
 					if( $period == "daily" ){
 						if( !empty( $_REQUEST['year'] ) && !empty( $_REQUEST['month'] ) ){
-
-							$create_date_string = $_REQUEST['year'].'-'.$_REQUEST['month'].'-'.$date;
-
+							$create_date_string = sanitize_text_field( $_REQUEST['year'] ).'-'.sanitize_text_field( $_REQUEST['month'] ).'-'.$date;
 							$formatted_date = date_i18n( "F j, Y", strtotime( $create_date_string, current_time("timestamp") ) );
 							$tooltip_string .= "<p><strong>".$formatted_date."</strong></p>";	
 						}
