@@ -412,7 +412,7 @@ function pmpro_report_sales_page()
 					{ 'label': '<?php _e( 'Average*', 'paid-memberships-pro' );?>', 'type': 'number' },
 				],
 				<?php foreach($cols as $date => $value) { 
-					$tooltip_string = "<div style='padding: 10px'><p><strong>".$date."</strong></p><p><strong>". esc_html( sprintf( __( 'New %s', 'paid-memberships-pro' ), ucwords( $type ) ) ).'</strong>: '.pmpro_round_price( $value[1] ).'</p><p><strong>'.__('Renewals', 'paid-memberships-pro' ).'</strong>: '.pmpro_round_price( $value[0] - $value[1] ).'</p></div>';
+					$tooltip_string = "<div style='padding: 10px'><p><strong>".$date."</strong></p><p><strong>". esc_html( sprintf( __( 'New %s', 'paid-memberships-pro' ), ucwords( $type ) ) ).'</strong>: '.pmpro_round_price( $value[1] ).'</p><p><strong>'.__('Recurring', 'paid-memberships-pro' ).'</strong>: '.pmpro_round_price( $value[0] - $value[1] ).'</p><p><strong>'.__('Total', 'paid-memberships-pro').'</strong>: '.pmpro_round_price( $value[0] ).'</div>';
 					?>
 					['<?php
 						if ( $period == "monthly" ) {
