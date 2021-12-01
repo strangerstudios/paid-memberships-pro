@@ -404,9 +404,15 @@ function pmpro_report_sales_page()
 
 			var data = google.visualization.arrayToDataTable([
 				[
-					'<?php echo esc_html( $date_function );?>', '<?php _e( 'Renewals', 'paid-memberships-pro' );?>', '<?php echo esc_html( sprintf( __( 'New %s', 'paid-memberships-pro' ), ucwords( $type ) ) );?>', '<?php _e( 'Average*', 'paid-memberships-pro' );?>', 
+					{ 'label': '<?php echo esc_html( $date_function );?>', 'type': 'string' },
+					{ 'label': '<?php _e( 'Renewals', 'paid-memberships-pro' );?>', 'type': 'number' },
+					{ 'role': 'tooltip', 'type': 'string', 'p': {'html': true}, 'strong': {'html': true} },
+					{ 'label': '<?php echo esc_html( sprintf( __( 'New %s', 'paid-memberships-pro' ), ucwords( $type ) ) );?>', 'type': 'number' },
+					{ 'role': 'tooltip', 'type': 'string', 'p': {'html': true}, 'strong': {'html': true} },
+					{ 'label': '<?php _e( 'Average*', 'paid-memberships-pro' );?>', 'type': 'number' },
 				],
 				<?php foreach($cols as $date => $value) { 
+					$tooltip_string = "<div style='padding: 10px'><p><strong>".$date."</strong></p><p><strong>". esc_html( sprintf( __( 'New %s', 'paid-memberships-pro' ), ucwords( $type ) ) ).'</strong>: '.pmpro_round_price( $value[1] ).'</p><p><strong>'.__('Renewals', 'paid-memberships-pro' ).'</strong>: '.pmpro_round_price( $value[0] - $value[1] ).'</p></div>';
 					?>
 					['<?php
 						if ( $period == "monthly" ) {
@@ -414,7 +420,7 @@ function pmpro_report_sales_page()
 						} else {
 							echo esc_html( $date );
 						}
-					?>', <?php echo esc_html( pmpro_round_price( $value[1] ) );?>, <?php echo esc_html( pmpro_round_price( $value[0] - $value[1] ) );?>, <?php echo esc_html( pmpro_round_price( $average ) );?>,  ], 
+					?>', <?php echo esc_html( pmpro_round_price( $value[1] ) );?>, "<?php echo $tooltip_string; ?>", <?php echo esc_html( pmpro_round_price( $value[0] - $value[1] ) );?>, "<?php echo $tooltip_string; ?>", <?php echo esc_html( pmpro_round_price( $average ) );?>,  ], 
 				<?php } ?>
 			]);
 
@@ -442,7 +448,8 @@ function pmpro_report_sales_page()
 				seriesType: 'bars',
 				series: { 2: {type: 'line', color: 'red'}, 1: {color: '#6dff6d' } },
 				legend: {position: 'none'},
-				isStacked: true			
+				isStacked: true,
+	          	tooltip: { isHtml: true },
 			};
 
 			<?php
