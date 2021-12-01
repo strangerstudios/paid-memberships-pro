@@ -409,6 +409,120 @@
 				pmpro_stripeWebhookExit();
 			}
 		}
+		elseif($pmpro_stripe_event->type == "checkout.session.completed")
+		{
+			// First, let's get the checkout session.
+			$checkout_session = $pmpro_stripe_event->data->object;
+
+			// Let's then find the PMPro order for the checkout session.
+			$order_id = $wpdb->get_var( $wpdb->prepare( "SELECT pmpro_membership_order_id FROM $wpdb->pmpro_membership_ordermeta WHERE meta_key = 'stripe_checkout_session_id' AND meta_value = %s LIMIT 1", $checkout_session->id ) );
+			if ( empty( $order_id ) ) {
+				$logstr .= "Could not find an order for Checkout Session " . $checkout_session->id;
+				pmpro_stripeWebhookExit();
+			}
+			$order = new MemberOrder( $order_id );
+			if (  empty( $order ) ) {
+				$logstr .= "Order ID " . $order_id . " for Checkout Session " . $checkout_session->id . " could not be found.";
+				pmpro_stripeWebhookExit();
+			}
+
+			// Assign payment and subscription transaction IDs to the order.
+			if ( $checkout_session->mode === 'payment' ) {
+				// User purchased a one-time payment level. Assign the payment intent ID to the order.
+				$order->payment_transaction_id = $checkout_session->payment_intent;
+			} elseif ( $checkout_session->mode === 'subscription' ) {
+				// User purchased a subscription. Assign the subscription ID invoice ID to the order.
+				$order->subscription_transaction_id = $checkout_session->subscription;
+				try {
+					$invoices = \Stripe\Invoice::all( [ 'subscription' => $checkout_session->subscription ] );
+					if ( ! empty( $invoices->data ) ) {
+						$order->payment_transaction_id = $invoices->data[0]->id;
+					}
+				} catch ( \Stripe\Error\Base $e ) {
+					// Could not get invoices. We just won't set a payment transaction ID.
+				}
+			}
+
+			// Was the checkout session successful?
+			if ( $checkout_session->payment_status == "paid" ) {
+				// Yes. But did we already process this order?
+				if ( ! in_array( $order->status , array( 'token', 'pending' ) ) ) {
+					$logstr .= "Order #" . $order->id . " for Checkout Session " . $checkout_session->id . " has already been processed. Ignoring.";
+					pmpro_stripeWebhookExit();
+				}
+				// No we have not processed this order. Let's process it now.
+				if ( pmpro_webhookChangeMembershipLevel( $order, $checkout_session ) ) {
+					$logstr .= "Order #" . $order->id . " for Checkout Session " . $checkout_session->id . " was processed successfully.";
+				} else {
+					$logstr .= "Order #" . $order->id . " for Checkout Session " . $checkout_session->id . " could not be processed.";
+					$order->status = "error";
+					$order->saveOrder();
+				}
+			} else {
+				// No. The user is probably using a delayed notification payment method.
+				// Set to pending in the meantime and wait for the next webhook.
+				$order->status = "pending";
+				$order->saveOrder();
+				$logstr .= "Checkout Session " . $checkout_session->id . " has not yet been processed for PMPro order ID " . $order->id . ".";
+			}
+			pmpro_stripeWebhookExit();
+
+		}
+		elseif($pmpro_stripe_event->type == "checkout.session.async_payment_succeeded")
+		{
+			// First, let's get the checkout session.
+			$checkout_session = $pmpro_stripe_event->data->object;
+
+			// Let's then find the PMPro order for the checkout session.
+			$order_id = $wpdb->get_var( $wpdb->prepare( "SELECT pmpro_membership_order_id FROM $wpdb->pmpro_membership_ordermeta WHERE meta_key = 'stripe_checkout_session_id' AND meta_value = %s LIMIT 1", $checkout_session->id ) );
+			if ( empty( $order_id ) ) {
+				$logstr .= "Could not find an order for Checkout Session " . $checkout_session->id;
+				pmpro_stripeWebhookExit();
+			}
+			$order = new MemberOrder( $order_id );
+			if (  empty( $order ) ) {
+				$logstr .= "Order ID " . $order_id . " for Checkout Session " . $checkout_session->id . " could not be found.";
+				pmpro_stripeWebhookExit();
+			}
+
+			// Have we already processed this order?
+			if ( ! in_array( $order->status , array( 'token', 'pending' ) ) ) {
+				$logstr .= "Order #" . $order->id . " for Checkout Session " . $checkout_session->id . " has already been processed. Ignoring.";
+				pmpro_stripeWebhookExit();
+			}
+			// No we have not processed this order. Let's process it now.
+			if ( pmpro_webhookChangeMembershipLevel( $order, $checkout_session ) ) {
+				$logstr .= "Order #" . $order->id . " for Checkout Session " . $checkout_session->id . " was processed successfully.";
+			} else {
+				$logstr .= "Order #" . $order->id . " for Checkout Session " . $checkout_session->id . " could not be processed.";
+				$order->status = "error";
+				$order->saveOrder();
+			}
+			pmpro_stripeWebhookExit();
+		}
+		elseif($pmpro_stripe_event->type == "checkout.session.async_payment_failed")
+		{
+			// First, let's get the checkout session.
+			$checkout_session = $pmpro_stripe_event->data->object;
+
+			// Let's then find the PMPro order for the checkout session.
+			$order_id = $wpdb->get_var( $wpdb->prepare( "SELECT pmpro_membership_order_id FROM $wpdb->pmpro_membership_ordermeta WHERE meta_key = 'stripe_checkout_session_id' AND meta_value = %s LIMIT 1", $checkout_session->id ) );
+			if ( empty( $order_id ) ) {
+				$logstr .= "Could not find an order for Checkout Session " . $checkout_session->id;
+				pmpro_stripeWebhookExit();
+			}
+			$order = new MemberOrder( $order_id );
+			if (  empty( $order ) ) {
+				$logstr .= "Order ID " . $order_id . " for Checkout Session " . $checkout_session->id . " could not be found.";
+				pmpro_stripeWebhookExit();
+			}
+
+			// Mark the order as failed.
+			$order->status = "error";
+			$order->saveOrder();
+			$logstr .= "Order #" . $order->id . " for Checkout Session " . $checkout_session->id . " could not be processed.";
+			pmpro_stripeWebhookExit();
+		}
 	}
 	else
 	{
@@ -583,3 +697,122 @@
 
 		exit;
 	}
+
+	/*
+	Change the membership level. We also update the membership order to include filtered valus.
+*/
+function pmpro_webhookChangeMembershipLevel( $morder, $checkout_session ) {
+
+	global $wpdb;
+
+	// Get the membership level.
+	$morder->getMembershipLevel();
+
+	//set the start date to current_time('timestamp') but allow filters  (documented in preheaders/checkout.php)
+	$startdate = apply_filters( "pmpro_checkout_start_date", "'" . current_time( 'mysql' ) . "'", $morder->user_id, $morder->membership_level );
+
+	//fix expiration date
+	if ( ! empty( $morder->membership_level->expiration_number ) ) {
+		$enddate = "'" . date_i18n( "Y-m-d", strtotime( "+ " . $morder->membership_level->expiration_number . " " . $morder->membership_level->expiration_period, current_time( "timestamp" ) ) ) . "'";
+	} else {
+		$enddate = "NULL";
+	}
+
+	//filter the enddate (documented in preheaders/checkout.php)
+	$enddate = apply_filters( "pmpro_checkout_end_date", $enddate, $morder->user_id, $morder->membership_level, $startdate );
+
+	//get discount code
+	$morder->getDiscountCode();
+	if ( ! empty( $morder->discount_code ) ) {
+		//update membership level
+		$morder->getMembershipLevel( true );
+		$discount_code_id = $morder->discount_code->id;
+	} else {
+		$discount_code_id = "";
+	}
+
+
+	//custom level to change user to
+	$custom_level = array(
+		'user_id'         => $morder->user_id,
+		'membership_id'   => $morder->membership_level->id,
+		'code_id'         => $discount_code_id,
+		'initial_payment' => $morder->membership_level->initial_payment,
+		'billing_amount'  => $morder->membership_level->billing_amount,
+		'cycle_number'    => $morder->membership_level->cycle_number,
+		'cycle_period'    => $morder->membership_level->cycle_period,
+		'billing_limit'   => $morder->membership_level->billing_limit,
+		'trial_amount'    => $morder->membership_level->trial_amount,
+		'trial_limit'     => $morder->membership_level->trial_limit,
+		'startdate'       => $startdate,
+		'enddate'         => $enddate
+	);
+
+	global $pmpro_error;
+	if ( ! empty( $pmpro_error ) ) {
+		echo $pmpro_error;
+		ipnlog( $pmpro_error );
+	}
+
+	//change level and continue "checkout"
+	if ( pmpro_changeMembershipLevel( $custom_level, $morder->user_id, 'changed' ) !== false ) {
+		//update order status and transaction ids
+		$morder->status                 = "success";
+		// TODO: Set payment and subscription IDs.
+		$morder->saveOrder();
+
+		//add discount code use
+		if ( ! empty( $discount_code ) && ! empty( $use_discount_code ) ) {
+
+			$wpdb->query(
+				$wpdb->prepare(
+					"INSERT INTO {$wpdb->pmpro_discount_codes_uses} 
+						( code_id, user_id, order_id, timestamp ) 
+						VALUES( %d, %d, %s, %s )",
+					$discount_code_id),
+					$morder->user_id,
+					$morder->id,
+					current_time( 'mysql' )
+				);
+		}
+
+		//save first and last name fields
+		if ( ! empty( $_POST['first_name'] ) ) {
+			$old_firstname = get_user_meta( $morder->user_id, "first_name", true );
+			if ( empty( $old_firstname ) ) {
+				update_user_meta( $morder->user_id, "first_name", $_POST['first_name'] );
+			}
+		}
+		if ( ! empty( $_POST['last_name'] ) ) {
+			$old_lastname = get_user_meta( $morder->user_id, "last_name", true );
+			if ( empty( $old_lastname ) ) {
+				update_user_meta( $morder->user_id, "last_name", $_POST['last_name'] );
+			}
+		}
+
+		//hook
+		do_action( "pmpro_after_checkout", $morder->user_id, $morder );
+
+		//setup some values for the emails
+		if ( ! empty( $morder ) ) {
+			$invoice = new MemberOrder( $morder->id );
+		} else {
+			$invoice = null;
+		}
+
+		$user                   = get_userdata( $morder->user_id );
+		$user->membership_level = $morder->membership_level;        //make sure they have the right level info
+
+		//send email to member
+		$pmproemail = new PMProEmail();
+		$pmproemail->sendCheckoutEmail( $user, $invoice );
+
+		//send email to admin
+		$pmproemail = new PMProEmail();
+		$pmproemail->sendCheckoutAdminEmail( $user, $invoice );
+
+		return true;
+	} else {
+		return false;
+	}
+}
