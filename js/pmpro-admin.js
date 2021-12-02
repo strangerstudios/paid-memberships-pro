@@ -203,10 +203,10 @@ jQuery(document).ready(function() {
 
 function pmpro_userfields_prep_click_events() {
     // Add group button.
-	jQuery('#pmpro_userfields_add_group').on( 'click', function(event){
+	jQuery('#pmpro_userfields_add_group').unbind('click').on( 'click', function(event){
         event.preventDefault();
                 
-		var postData = {
+		let postData = {
 			action: 'pmpro_userfields_get_group',
             group_id: '',         
 		}
@@ -224,10 +224,10 @@ function pmpro_userfields_prep_click_events() {
     });
     
     // Add field button.
-	jQuery('button[name="pmpro_userfields_add_field"]').on( 'click', function(event){
+	jQuery('button[name="pmpro_userfields_add_field"]').unbind('click').on( 'click', function(event){
         event.preventDefault();
 
-		var postData = {
+		let postData = {
 			action: 'pmpro_userfields_get_field',
             field_id: '',
 		}
@@ -237,18 +237,19 @@ function pmpro_userfields_prep_click_events() {
 			data: postData,
 			url: ajaxurl,
 			success: function( response ) {
-				jQuery(event.target).closest('div.pmpro_userfield-group-actions').siblings('div.pmpro_userfield-group-fields').append( response );              			
+				jQuery(event.target).closest('div.pmpro_userfield-group-actions').siblings('div.pmpro_userfield-group-fields').append( response );
+                pmpro_userfields_prep_click_events();
 			}
 		});
     });
     
     // Expand/Hide Groups
-    jQuery('button.pmpro_userfield-group-buttons-button-toggle-group').on( 'click', function(event){
+    jQuery('button.pmpro_userfield-group-buttons-button-toggle-group').unbind('click').on( 'click', function(event){
         event.preventDefault();
-        var thebutton = jQuery(event.target).closest('button.pmpro_userfield-group-buttons-button-toggle-group');
-        var buttonicon = thebutton.children('.dashicons');
-        var groupheader = thebutton.closest('.pmpro_userfield-group-header');
-        var groupinside = groupheader.siblings('.pmpro_userfield-inside');
+        let thebutton = jQuery(event.target).closest('button.pmpro_userfield-group-buttons-button-toggle-group');
+        let buttonicon = thebutton.children('.dashicons');
+        let groupheader = thebutton.closest('.pmpro_userfield-group-header');
+        let groupinside = groupheader.siblings('.pmpro_userfield-inside');
             
         if ( buttonicon.hasClass('dashicons-arrow-up') ) {
             // closing
