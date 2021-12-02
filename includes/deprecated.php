@@ -107,6 +107,13 @@ function pmpro_register_helper_deprecated() {
 			return pmpro_check_field_for_level( $field, $scope, $args );
 		}
 	}
+	
+	// pmprorh_end function
+	if ( ! function_exists( 'pmprorh_end' ) ) {
+		function pmprorh_end( $array ) {
+			return pmpro_array_end( $array );
+		}
+	}
 }
 add_action( 'plugins_loaded', 'pmpro_register_helper_deprecated', 20 );
 

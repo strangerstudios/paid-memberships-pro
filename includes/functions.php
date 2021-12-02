@@ -3951,3 +3951,15 @@ function pmpro_format_date_iso8601( $date ) {
 	$datetime = new DateTime( $date );
 	return $datetime->format( DateTime::ATOM );
 }
+
+/**
+ * Get the last item of an array without affecting the internal array pointer.
+ * Going through the function keeps the original array from being updated.
+ * @since TBD
+ * @param  $array array The array to get the value of.
+ * @return mixed Whatever is the last element in the array.
+ * from: http://www.php.net/manual/en/function.end.php#107733
+ */
+function pmpro_array_end( $array ) {
+	return end( $array );
+}

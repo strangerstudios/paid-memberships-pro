@@ -69,7 +69,7 @@ function pmpro_add_field_group( $name, $label = NULL, $description = '', $order 
         $temp->label = ucwords($temp->name);
     }
 	if( ! isset( $order ) ) {
-		$lastbox = pmprorh_end( $pmpro_field_groups );
+		$lastbox = pmpro_array_end( $pmpro_field_groups );
 		$temp->order = $lastbox->order + 1;
 	}
 
