@@ -2592,7 +2592,27 @@ class PMProGateway_stripe extends PMProGateway {
 	 *
 	 * @return Stripe_SetupIntent|string The setup intent object or an error message string.
 	 */
-	<?php
+	private function add_subscription_id_to_setup_intent( $setup_intent, $subscription_id ) {
+		try {
+			$setup_intent = Stripe_SetupIntent::update(
+				$setup_intent->id,
+				array(
+					'metadata' => array(
+						'subscription_id' => $subscription_id,
+					),
+					'expand' => array(
+						'payment_method',
+					),
+				)
+			);
+		} catch ( \Throwable $e ) {
+			return __( "Error adding metadata to setup intent.", 'paid-memberships-pro' );
+		} catch ( \Exception $e ) {
+			return __( "Error adding metadata to setup intent.", 'paid-memberships-pro' );
+		}
+		return $setup_intent;
+	}
+
 	/**
 	 * Temporary function to allow users to view and delete subscription updates.
 	 * Will be removed once subscription updates are completely deprecated.
