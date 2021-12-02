@@ -420,14 +420,19 @@ function pmpro_report_sales_page()
 							$create_date_string = sanitize_text_field( $_REQUEST['year'] ).'-'.sanitize_text_field( $_REQUEST['month'] ).'-'.$date;
 							$formatted_date = date_i18n( "F j, Y", strtotime( $create_date_string, current_time("timestamp") ) );
 							$tooltip_string .= "<p><strong>".$formatted_date."</strong></p>";	
+						}						
+					} else if ( $period == "monthly" ) { 
+						if( !empty( $_REQUEST['year'] ) && !empty( $_REQUEST['month'] ) ){
+							$create_date_string = sanitize_text_field( $_REQUEST['year'] ).'-'.$date;
+							$formatted_date = date_i18n( "F Y", strtotime( $create_date_string, current_time("timestamp") ) );
+							$tooltip_string .= "<p><strong>".$formatted_date."</strong></p>";	
 						}
-						
 					} else {
 						$tooltip_string .= "<p><strong>".$date."</strong></p>";
 					}				
-					$tooltip_string .= "<p><strong>". esc_html( sprintf( __( "New %s", "paid-memberships-pro" ), ucwords( $type ) ) )."</strong>: ".pmpro_round_price( $value[1] )."</p>";
-					$tooltip_string .= "<p><strong>".__( "Recurring", "paid-memberships-pro" )."</strong>: ".pmpro_round_price( $value[0] - $value[1] )."</p>";
-					$tooltip_string .= "<p><strong>".__( "Total", "paid-memberships-pro" )."</strong>: ".pmpro_round_price( $value[0] )."</p>";
+					$tooltip_string .= "<p><strong>". esc_html( sprintf( __( "New %s", "paid-memberships-pro" ), ucwords( $type ) ) )."</strong>: ".pmpro_formatPrice( $value[1] )."</p>";
+					$tooltip_string .= "<p><strong>".__( "Recurring", "paid-memberships-pro" )."</strong>: ".pmpro_formatPrice( $value[0] - $value[1] )."</p>";
+					$tooltip_string .= "<p><strong>".__( "Total", "paid-memberships-pro" )."</strong>: ".pmpro_formatPrice( $value[0] )."</p>";
 					$tooltip_string .= "</div>";
 					?>
 					['<?php
