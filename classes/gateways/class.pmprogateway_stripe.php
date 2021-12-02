@@ -285,12 +285,56 @@ class PMProGateway_stripe extends PMProGateway {
 			);
 		}
 
+		// Set up tax and billing address information.
+		// TODO: Make these variables into PMPro settings.
+		// TODO: Use $tax_type when getting/creating prices.
+		$tax_type                = 'exclusive';   // Can be none, inclusive, or exclusive.
+		$collect_tax_id          = true;          // Can be true or false. Force to false if tax_type is none.
+		$collect_billing_address = true;          // Can be true or false. Force to true if tax_type is not none.
+		if (  $tax_type === 'none' ) {
+			$automatic_tax = array(
+				'enabled' => false,
+			);
+			$tax_id_collection = array(
+				'enabled' => false,
+			);
+			$billing_address_collection = $collect_billing_address ? 'required' : 'auto';
+		} else {
+			$automatic_tax = array(
+				'enabled' => true,
+			);
+			$tax_id_collection = array(
+				'enabled' => $collect_tax_id,
+			);
+			$billing_address_collection = 'required';
+		}
+
+		// Set up payment method types.
+		$payment_method_types = array(
+			'card',
+		);
+		if ( empty( $subscription_data ) ) {
+			if ( $pmpro_currency === 'USD' ) {
+				$payment_method_types = array( 'card', 'klarna' );
+			}
+			if ( $pmpro_currency === 'EUR' ) {
+				$payment_method_types = array( 'card', 'bancontact', 'eps', 'giropay', 'ideal', 'p24', 'sepa_debit', 'sofort');
+			}
+		}
+
 		// And let's send 'em to Stripe!
 		$checkout_session_params = array(
 			'customer' => $customer->id,
-			'payment_method_types' => $pmpro_currency == 'EUR' && empty( $subscription_data ) ? array( 'card', 'bancontact', 'eps', 'giropay', 'ideal', 'p24', 'sepa_debit', 'sofort') : array('card'),
+			'payment_method_types' => $payment_method_types,
 			'line_items' => $line_items,
 			'mode' => empty( $subscription_data ) ? 'payment' : 'subscription',
+			'automatic_tax' => $automatic_tax,
+			'tax_id_collection' => $tax_id_collection,
+			'billing_address_collection' => $billing_address_collection,
+			'customer_update' => array(
+				'address' => 'auto',
+				'name' => 'auto'
+			),
 			'success_url' =>  add_query_arg( 'level', $morder->membership_level->id, pmpro_url("confirmation" ) ),
 			'cancel_url' =>  add_query_arg( 'level', $morder->membership_level->id, pmpro_url("checkout" ) ),
 			//'payment_intent_data' => array(
@@ -2353,6 +2397,11 @@ class PMProGateway_stripe extends PMProGateway {
 				if ( $is_recurring && ( empty( $price->recurring->interval_count ) || intval( $price->recurring->interval_count ) !== intval( $cycle_number ) ) ) {
 					continue;
 				}
+				// Check if tax is set up correctly. If not, continue.
+				// TODO: Update this to pull from PMPro settings.
+				if ( $price->tax_behavior !== 'exclusive' ) {
+					continue;
+				}
 				return $price;
 			}
 		} catch (\Throwable $th) {
@@ -2367,7 +2416,8 @@ class PMProGateway_stripe extends PMProGateway {
 		$price_args = array(
 			'product'     => $product_id,
 			'currency'    => strtolower( $pmpro_currency ),
-			'unit_amount' => $unit_amount
+			'unit_amount' => $unit_amount,
+			'tax_behavior' => 'exclusive',
 		);
 		if ( $is_recurring ) {
 			$price_args['recurring'] = array(

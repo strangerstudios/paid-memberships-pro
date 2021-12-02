@@ -443,6 +443,11 @@
 				}
 			}
 
+			// Update order total, subtotal, and tax.
+			$order->total    = (float) $checkout_session->amount_total / 100;
+			$order->subtotal = (float) $checkout_session->amount_subtotal / 100;
+			$order->tax      = (float) $checkout_session->total_details->amount_tax / 100;
+
 			// Was the checkout session successful?
 			if ( $checkout_session->payment_status == "paid" ) {
 				// Yes. But did we already process this order?
