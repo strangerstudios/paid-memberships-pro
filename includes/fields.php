@@ -1262,7 +1262,7 @@ function pmpro_get_field_html( $field_id ) {
             </div> <!-- end pmpro_userfield-field-setting -->
         </div> <!-- end pmpro_userfield-field-settings -->
         <div class="pmpro_userfield-field-actions">
-            <button name="pmpro_userfields_add_field" class="button button-secondary">
+            <button name="pmpro_userfields_close_field" class="button button-secondary pmpro_userfields_close_field">
                 <?php esc_html_e( 'Close Field', 'paid-memberships-pro' ); ?>
             </button>
         </div> <!-- end pmpro_userfield-field-actions -->

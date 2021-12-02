@@ -262,7 +262,16 @@ function pmpro_userfields_prep_click_events() {
             buttonicon.addClass('dashicons-arrow-up');
             groupinside.show();
         }
-    });    
+    });
+    
+    // Close field.
+    jQuery('button.pmpro_userfields_close_field').unbind('click').on('click', function(event){
+        event.preventDefault();
+        let thebutton = jQuery(event.target).closest('button.pmpro_userfields_close_field');
+        let thefield = thebutton.closest('.pmpro_userfield-group-field');        
+        
+        thefield.hide();
+    });
 }
 
 function pmpro_stripe_get_secretkey() {
