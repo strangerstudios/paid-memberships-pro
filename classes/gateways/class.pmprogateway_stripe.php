@@ -1384,7 +1384,7 @@ class PMProGateway_stripe extends PMProGateway {
 			// and that the subscription needed authorization before being created.
 			$setup_intent = $this->process_setup_intent( $order->setup_intent_id );
 			if ( is_string( $setup_intent ) ) {
-				$order->error      = __( "Error processing setup intent.", 'paid-memberships-pro' ) . " " . $setup_intent;
+				$order->error      = __( 'Error processing setup intent.', 'paid-memberships-pro' ) . ' ' . $setup_intent;
 				$order->shorterror = $order->error;
 				return false;
 			}
@@ -1399,7 +1399,7 @@ class PMProGateway_stripe extends PMProGateway {
 				// confirmed successfully, and then try to create their subscription if needed.
 				$payment_intent = $this->process_payment_intent( $order->payment_intent_id );
 				if ( is_string( $payment_intent ) ) {
-					$order->error      = __( "Error processing payment intent.", 'paid-memberships-pro' ) . " " . $payment_intent;
+					$order->error      = __( 'Error processing payment intent.', 'paid-memberships-pro' ) . ' ' . $payment_intent;
 					$order->shorterror = $order->error;
 					return false;
 				}
@@ -1421,7 +1421,7 @@ class PMProGateway_stripe extends PMProGateway {
 				$payment_method = $this->get_payment_method( $order );
 				if ( empty( $payment_method ) ) {
 					// There was an issue getting the payment method.
-					$order->error      = __( "Error retrieving payment method.", 'paid-memberships-pro' );
+					$order->error      = __( 'Error retrieving payment method.', 'paid-memberships-pro' );
 					$order->shorterror = $order->error;
 					return false;
 				}
@@ -1429,7 +1429,7 @@ class PMProGateway_stripe extends PMProGateway {
 				$customer = $this->set_default_payment_method_for_customer( $customer, $payment_method );
 				if ( is_string( $customer ) ) {
 					// There was an issue updating the default payment method.
-					$order->error      = __( "Error updating default payment method.", 'paid-memberships-pro' ) . " " . $customer;
+					$order->error      = __( 'Error updating default payment method.', 'paid-memberships-pro' ) . ' ' . $customer;
 					$order->shorterror = $order->error;
 					return false;
 				}
@@ -1457,7 +1457,7 @@ class PMProGateway_stripe extends PMProGateway {
 				$subscription = $this->create_subscription_for_customer_from_order( $customer->id, $order );
 				if ( empty( $subscription ) ) {
 					// There was an issue creating the subscription.
-					$order->error      = __( "Error creating subscription for customer.", 'paid-memberships-pro' );
+					$order->error      = __( 'Error creating subscription for customer.', 'paid-memberships-pro' );
 					$order->shorterror = $order->error;
 					return false;
 				}
