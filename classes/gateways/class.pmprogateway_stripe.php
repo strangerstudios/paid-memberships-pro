@@ -103,6 +103,7 @@ class PMProGateway_stripe extends PMProGateway {
 			'PMProGateway_stripe',
 			'user_profile_fields'
 		) );
+		add_action( 'profile_update', array( 'PMProGateway_stripe', 'user_profile_fields_save' ) );
 
 		//old global RE showing billing address or not
 		global $pmpro_stripe_lite;
@@ -990,16 +991,111 @@ class PMProGateway_stripe extends PMProGateway {
 	public static function user_profile_fields( $user ) {
 		global $wpdb, $current_user, $pmpro_currency_symbol;
 
-		// Get the user's last order.
-		$last_order = new MemberOrder();
-		$last_order->getLastMemberOrder( $user->ID );
-
-		// Check that this order is for a Stripe subscription.
-		if ( $last_order->gateway == "stripe" && ! empty( $last_order->subscription_transaction_id ) ) {
-			// Get the link to edit the subscription.
-			echo '<hr>';
-			echo '<a target="_blank" href="https://dashboard.stripe.com/' . ( $last_order->gateway_environment == 'sandbox' ? 'test/' : '' ) . 'subscriptions/' . esc_attr( $last_order->subscription_transaction_id ) . '">' . esc_html__( 'Edit subscription in Stripe', 'paid-memberships-pro' ) . '</a>';
+		//make sure the current user has privileges
+		$membership_level_capability = apply_filters( "pmpro_edit_member_capability", "manage_options" );
+		if ( ! current_user_can( $membership_level_capability ) ) {
+			return false;
 		}
+
+		//more privelges they should have
+		$show_membership_level = apply_filters( "pmpro_profile_show_membership_level", true, $user );
+		if ( ! $show_membership_level ) {
+			return false;
+		}
+
+		// Get the user's Stripe Customer if they have one.
+		$stripe = new PMProGateway_Stripe();
+		$customer = $stripe->get_customer_for_user( $user->ID );
+
+		// Check whether we have a Stripe Customer.
+		if ( ! empty( $customer ) ) {
+			// Get the link to edit the customer.
+			echo '<hr>';
+			echo '<a target="_blank" href="' . esc_url( 'https://dashboard.stripe.com/' . ( pmpro_getOption( 'gateway_environment' ) == 'sandbox' ? 'test/' : '' ) . 'customers/' . $customer->id ) . '">' . esc_html__( 'Edit customer in Stripe', 'paid-memberships-pro' ) . '</a>';
+			if ( ! empty( $user->pmpro_stripe_updates ) && is_array( $user->pmpro_stripe_updates ) ) {
+				$stripe->user_profile_fields_subscription_updates( $user, $customer );
+			}
+		}
+	}
+
+	/**
+	 * Temporary function to allow users to delete subscription updates.
+	 * Will be removed once subscription updates are completely deprecated.
+	 *
+	 * @since TBD.
+	 */
+	static function user_profile_fields_save( $user_id ) {
+		global $wpdb;
+		//check capabilities
+		$membership_level_capability = apply_filters( "pmpro_edit_member_capability", "manage_options" );
+		if ( ! current_user_can( $membership_level_capability ) ) {
+			return false;
+		}
+
+		//make sure subscription updates were shown.
+		if ( ! isset( $_POST['pmpro_subscription_updates_visible'] ) ) {
+			return;
+		}
+
+		// Check whether all updates were deleted.
+		if ( ! isset( $_POST['updates_when'] ) || ! is_array( $_POST['updates_when'] ) ) {
+			delete_user_meta( $user_id, 'pmpro_stripe_updates' );
+			delete_user_meta( $user_id, 'pmpro_stripe_next_on_date_update' );
+			return;
+		}
+
+		//vars
+		$updates             = array();
+		$next_on_date_update = "";
+
+		//build array of updates
+		for ( $i = 0; $i < count( $_POST['updates_when'] ); $i ++ ) {
+			$update = array();
+
+			//all updates have these values
+			$update['when']           = pmpro_sanitize_with_safelist( $_POST['updates_when'][ $i ], array(
+				'now',
+				'payment',
+				'date'
+			) );
+			$update['billing_amount'] = sanitize_text_field( $_POST['updates_billing_amount'][ $i ] );
+			$update['cycle_number']   = intval( $_POST['updates_cycle_number'][ $i ] );
+			$update['cycle_period']   = sanitize_text_field( $_POST['updates_cycle_period'][ $i ] );
+
+			//these values only for on date updates
+			if ( $_POST['updates_when'][ $i ] == "date" ) {
+				$update['date_month'] = str_pad( intval( $_POST['updates_date_month'][ $i ] ), 2, "0", STR_PAD_LEFT );
+				$update['date_day']   = str_pad( intval( $_POST['updates_date_day'][ $i ] ), 2, "0", STR_PAD_LEFT );
+				$update['date_year']  = intval( $_POST['updates_date_year'][ $i ] );
+			}
+
+			//make sure the update is valid
+			if ( empty( $update['cycle_number'] ) ) {
+				continue;
+			}
+
+			//if when is now, update the subscription
+			if ( $update['when'] == "now" ) {
+				self::updateSubscription( $update, $user_id );
+
+				continue;
+			} elseif ( $update['when'] == 'date' ) {
+				if ( ! empty( $next_on_date_update ) ) {
+					$next_on_date_update = min( $next_on_date_update, $update['date_year'] . "-" . $update['date_month'] . "-" . $update['date_day'] );
+				} else {
+					$next_on_date_update = $update['date_year'] . "-" . $update['date_month'] . "-" . $update['date_day'];
+				}
+			}
+
+			//add to array
+			$updates[] = $update;
+		}
+
+		//save in user meta
+		update_user_meta( $user_id, "pmpro_stripe_updates", $updates );
+
+		//save date of next on-date update to make it easier to query for these in cron job
+		update_user_meta( $user_id, "pmpro_stripe_next_on_date_update", $next_on_date_update );
 	}
 
 	/**
@@ -1456,7 +1552,7 @@ class PMProGateway_stripe extends PMProGateway {
 			// and that the subscription needed authorization before being created.
 			$setup_intent = $this->process_setup_intent( $order->setup_intent_id );
 			if ( is_string( $setup_intent ) ) {
-				$order->error      = __( "Error processing setup intent.", 'paid-memberships-pro' ) . " " . $setup_intent;
+				$order->error      = __( 'Error processing setup intent.', 'paid-memberships-pro' ) . ' ' . $setup_intent;
 				$order->shorterror = $order->error;
 				return false;
 			}
@@ -1471,7 +1567,7 @@ class PMProGateway_stripe extends PMProGateway {
 				// confirmed successfully, and then try to create their subscription if needed.
 				$payment_intent = $this->process_payment_intent( $order->payment_intent_id );
 				if ( is_string( $payment_intent ) ) {
-					$order->error      = __( "Error processing payment intent.", 'paid-memberships-pro' ) . " " . $payment_intent;
+					$order->error      = __( 'Error processing payment intent.', 'paid-memberships-pro' ) . ' ' . $payment_intent;
 					$order->shorterror = $order->error;
 					return false;
 				}
@@ -1493,7 +1589,7 @@ class PMProGateway_stripe extends PMProGateway {
 				$payment_method = $this->get_payment_method( $order );
 				if ( empty( $payment_method ) ) {
 					// There was an issue getting the payment method.
-					$order->error      = __( "Error retrieving payment method.", 'paid-memberships-pro' );
+					$order->error      = __( 'Error retrieving payment method.', 'paid-memberships-pro' );
 					$order->shorterror = $order->error;
 					return false;
 				}
@@ -1501,7 +1597,7 @@ class PMProGateway_stripe extends PMProGateway {
 				$customer = $this->set_default_payment_method_for_customer( $customer, $payment_method );
 				if ( is_string( $customer ) ) {
 					// There was an issue updating the default payment method.
-					$order->error      = __( "Error updating default payment method.", 'paid-memberships-pro' ) . " " . $customer;
+					$order->error      = __( 'Error updating default payment method.', 'paid-memberships-pro' ) . ' ' . $customer;
 					$order->shorterror = $order->error;
 					return false;
 				}
@@ -1529,7 +1625,7 @@ class PMProGateway_stripe extends PMProGateway {
 				$subscription = $this->create_subscription_for_customer_from_order( $customer->id, $order );
 				if ( empty( $subscription ) ) {
 					// There was an issue creating the subscription.
-					$order->error      = __( "Error creating subscription for customer.", 'paid-memberships-pro' );
+					$order->error      = __( 'Error creating subscription for customer.', 'paid-memberships-pro' );
 					$order->shorterror = $order->error;
 					return false;
 				}
@@ -2690,6 +2786,127 @@ class PMProGateway_stripe extends PMProGateway {
 		}
 		return $setup_intent;
 	}
+
+	/**
+	 * Temporary function to allow users to view and delete subscription updates.
+	 * Will be removed once subscription updates are completely deprecated.
+	 *
+	 * @since TBD.
+	 *
+	 * @param WP_User $user whose profile is being shown.
+	 * @param Stripe_Customer $customer associated with that user.
+	 */
+	private function user_profile_fields_subscription_updates( $user, $customer ) {
+		global $pmpro_currency_symbol;
+
+		$subscriptions = $customer->subscriptions->all();
+		if ( empty( $subscriptions ) ) {
+			// User does not have any subscriptions to udpate. Delete all updates.
+			delete_user_meta( $user->ID, 'pmpro_stripe_updates' );
+			return;
+		}
+
+		$cycles        = array(
+			__( 'Day(s)', 'paid-memberships-pro' )   => 'Day',
+			__( 'Week(s)', 'paid-memberships-pro' )  => 'Week',
+			__( 'Month(s)', 'paid-memberships-pro' ) => 'Month',
+			__( 'Year(s)', 'paid-memberships-pro' )  => 'Year'
+		);
+
+		$current_year  = date_i18n( "Y" );
+		$current_month = date_i18n( "m" );
+		?>
+            <h3><?php _e( "Subscription Updates", 'paid-memberships-pro' ); ?></h3>
+			<p><?php _e( "Subscription updates will be deprecated in a future version of PMPro, though your existing subscription updates will still trigger as expected. We now instead reccomend updating the subscription directly in Stripe.", 'paid-memberships-pro' ); ?></p>
+            <table class="form-table">
+				<input type='hidden' name='pmpro_subscription_updates_visible' value='1' />
+                <tr>
+                    <th><label><?php _e( "Update", 'paid-memberships-pro' ); ?></label></th>
+                    <td id="updates_td">
+						<?php
+						$updates = $user->pmpro_stripe_updates;
+
+						foreach ( $updates as $update ) {
+							?>
+                            <div class="updates_update">
+                                <select class="updates_when" name="updates_when[]" disabled>
+                                    <option value="now" <?php selected( $update['when'], "now" ); ?>>Now</option>
+                                    <option value="payment" <?php selected( $update['when'], "payment" ); ?>>After
+                                        Next Payment
+                                    </option>
+                                    <option value="date" <?php selected( $update['when'], "date" ); ?>>On Date
+                                    </option>
+                                </select>
+                                <span class="updates_date"
+								      <?php if ( $update['when'] != "date" ) { ?>style="display: none;"<?php } ?>>
+								<select name="updates_date_month[]" disabled>
+									<?php
+									for ( $i = 1; $i < 13; $i ++ ) {
+										?>
+                                        <option value="<?php echo str_pad( $i, 2, "0", STR_PAD_LEFT ); ?>"
+										        <?php if ( ! empty( $update['date_month'] ) && $update['date_month'] == $i ) { ?>selected="selected"<?php } ?>>
+											<?php echo date_i18n( "M", strtotime( $i . "/15/" . $current_year ) ); ?>
+										</option>
+										<?php
+									}
+									?>
+								</select>
+								<input name="updates_date_day[]" type="text" size="2"
+                                       value="<?php if ( ! empty( $update['date_day'] ) ) {
+									       echo esc_attr( $update['date_day'] );
+								       } ?>" readonly/>
+								<input name="updates_date_year[]" type="text" size="4"
+                                       value="<?php if ( ! empty( $update['date_year'] ) ) {
+									       echo esc_attr( $update['date_year'] );
+								       } ?>" readonly/>
+							</span>
+                                <span class="updates_billing"
+								      <?php if ( $update['when'] == "now" ) { ?>style="display: none;"<?php } ?>>
+								<?php echo $pmpro_currency_symbol ?><input name="updates_billing_amount[]" type="text"
+                                                                           size="10"
+                                                                           value="<?php echo esc_attr( $update['billing_amount'] ); ?>"
+																		   readonly/>
+								<small><?php _e( 'per', 'paid-memberships-pro' ); ?></small>
+								<input name="updates_cycle_number[]" type="text" size="5"
+                                       value="<?php echo esc_attr( $update['cycle_number'] ); ?>" readonly/>
+								<select name="updates_cycle_period[]" disabled>
+								  <?php
+								  foreach ( $cycles as $name => $value ) {
+									  echo "<option value='" . esc_attr( $value ) . "'";
+									  if ( ! empty( $update['cycle_period'] ) && $update['cycle_period'] == $value ) {
+										  echo " selected='selected'";
+									  }
+									  echo ">" . esc_html( $name ) . "</option>";
+								  }
+								  ?>
+								</select>
+							</span>
+                                <span>
+								<a class="updates_remove" href="javascript:void(0);"><?php esc_html_e( 'Remove', 'paid-memberships-pro' ); ?></a>
+							</span>
+                            </div>
+							<script>
+							jQuery(function () {
+								//remove updates when clicking
+								jQuery('.updates_remove').on('click', function () {
+									jQuery(this).parent().parent().remove();
+								});
+								jQuery('form').on('submit', function () {
+									// Makes sure that disabled select fields are still submitted.
+									jQuery(this).find(':input').prop('disabled', false);
+								});
+							});
+							</script>
+							<?php
+						}
+						?>
+                    </td>
+                </tr>
+            </table>
+			<?php
+	}
+
+	
 
 	/****************************************
 	 ******* METHODS BECOMING PRIVATE *******
