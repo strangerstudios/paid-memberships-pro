@@ -2592,27 +2592,7 @@ class PMProGateway_stripe extends PMProGateway {
 	 *
 	 * @return Stripe_SetupIntent|string The setup intent object or an error message string.
 	 */
-	private function add_subscription_id_to_setup_intent( $setup_intent, $subscription_id ) {
-		try {
-			$setup_intent = Stripe_SetupIntent::update(
-				$setup_intent->id,
-				array(
-					'metadata' => array(
-						'subscription_id' => $subscription_id,
-					),
-					'expand' => array(
-						'payment_method',
-					),
-				)
-			);
-		} catch ( \Throwable $e ) {
-			return __( "Error adding metadata to setup intent.", 'paid-memberships-pro' );
-		} catch ( \Exception $e ) {
-			return __( "Error adding metadata to setup intent.", 'paid-memberships-pro' );
-		}
-		return $setup_intent;
-	}
-
+	<?php
 	/**
 	 * Temporary function to allow users to view and delete subscription updates.
 	 * Will be removed once subscription updates are completely deprecated.
@@ -2632,22 +2612,22 @@ class PMProGateway_stripe extends PMProGateway {
 			return;
 		}
 
-		$cycles        = array(
+		$cycles = array(
 			__( 'Day(s)', 'paid-memberships-pro' )   => 'Day',
 			__( 'Week(s)', 'paid-memberships-pro' )  => 'Week',
 			__( 'Month(s)', 'paid-memberships-pro' ) => 'Month',
-			__( 'Year(s)', 'paid-memberships-pro' )  => 'Year'
+			__( 'Year(s)', 'paid-memberships-pro' )  => 'Year',
 		);
 
-		$current_year  = date_i18n( "Y" );
-		$current_month = date_i18n( "m" );
+		$current_year  = date_i18n( 'Y' );
+		$current_month = date_i18n( 'm' );
 		?>
-            <h3><?php _e( "Subscription Updates", 'paid-memberships-pro' ); ?></h3>
-			<p><?php _e( "Subscription updates will be deprecated in a future version of PMPro, though your existing subscription updates will still trigger as expected. We now instead reccomend updating the subscription directly in Stripe.", 'paid-memberships-pro' ); ?></p>
+            <h3><?php esc_html_e( 'Subscription Updates', 'paid-memberships-pro' ); ?></h3>
+			<p><?php esc_html_e( 'Subscription updates will be deprecated in a future version of PMPro, though your existing subscription updates will still trigger as expected. We now instead reccomend updating the subscription directly in Stripe.', 'paid-memberships-pro' ); ?></p>
             <table class="form-table">
 				<input type='hidden' name='pmpro_subscription_updates_visible' value='1' />
                 <tr>
-                    <th><label><?php _e( "Update", 'paid-memberships-pro' ); ?></label></th>
+                    <th><label><?php esc_html_e( 'Update', 'paid-memberships-pro' ); ?></label></th>
                     <td id="updates_td">
 						<?php
 						$updates = $user->pmpro_stripe_updates;
@@ -2656,22 +2636,22 @@ class PMProGateway_stripe extends PMProGateway {
 							?>
                             <div class="updates_update">
                                 <select class="updates_when" name="updates_when[]" disabled>
-                                    <option value="now" <?php selected( $update['when'], "now" ); ?>>Now</option>
-                                    <option value="payment" <?php selected( $update['when'], "payment" ); ?>>After
+                                    <option value="now" <?php selected( $update['when'], 'now' ); ?>>Now</option>
+                                    <option value="payment" <?php selected( $update['when'], 'payment' ); ?>>After
                                         Next Payment
                                     </option>
-                                    <option value="date" <?php selected( $update['when'], "date" ); ?>>On Date
+                                    <option value="date" <?php selected( $update['when'], 'date' ); ?>>On Date
                                     </option>
                                 </select>
                                 <span class="updates_date"
-								      <?php if ( $update['when'] != "date" ) { ?>style="display: none;"<?php } ?>>
+								      <?php if ( $update['when'] != 'date' ) { ?>style="display: none;"<?php } ?>>
 								<select name="updates_date_month[]" disabled>
 									<?php
 									for ( $i = 1; $i < 13; $i ++ ) {
 										?>
-                                        <option value="<?php echo str_pad( $i, 2, "0", STR_PAD_LEFT ); ?>"
+                                        <option value="<?php echo str_pad( $i, 2, '0', STR_PAD_LEFT ); ?>"
 										        <?php if ( ! empty( $update['date_month'] ) && $update['date_month'] == $i ) { ?>selected="selected"<?php } ?>>
-											<?php echo date_i18n( "M", strtotime( $i . "/15/" . $current_year ) ); ?>
+											<?php echo date_i18n( 'M', strtotime( $i . '/15/' . $current_year ) ); ?>
 										</option>
 										<?php
 									}
@@ -2688,11 +2668,11 @@ class PMProGateway_stripe extends PMProGateway {
 							</span>
                                 <span class="updates_billing"
 								      <?php if ( $update['when'] == "now" ) { ?>style="display: none;"<?php } ?>>
-								<?php echo $pmpro_currency_symbol ?><input name="updates_billing_amount[]" type="text"
+								<?php echo $pmpro_currency_symbol; ?><input name="updates_billing_amount[]" type="text"
                                                                            size="10"
                                                                            value="<?php echo esc_attr( $update['billing_amount'] ); ?>"
 																		   readonly/>
-								<small><?php _e( 'per', 'paid-memberships-pro' ); ?></small>
+								<small><?php esc_html_e( 'per', 'paid-memberships-pro' ); ?></small>
 								<input name="updates_cycle_number[]" type="text" size="5"
                                        value="<?php echo esc_attr( $update['cycle_number'] ); ?>" readonly/>
 								<select name="updates_cycle_period[]" disabled>
