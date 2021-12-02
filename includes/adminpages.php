@@ -278,6 +278,11 @@ function pmpro_emailsettings() {
 }
 
 function pmpro_userfields() {
+	//ensure, that the needed javascripts been loaded to allow drag/drop, expand/collapse and hide/show of boxes
+	wp_enqueue_script( 'common' );
+	wp_enqueue_script( 'wp-lists' );
+	wp_enqueue_script( 'postbox' );
+	
 	require_once( PMPRO_DIR . '/adminpages/userfields.php' );
 }
 

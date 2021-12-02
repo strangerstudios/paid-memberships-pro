@@ -239,8 +239,29 @@ function pmpro_userfields_prep_click_events() {
 			success: function( response ) {
 				jQuery(event.target).closest('div.pmpro_userfield-group-actions').siblings('div.pmpro_userfield-group-fields').append( response );              			
 			}
-		})
+		});
     });
+    
+    // Expand/Hide Groups
+    jQuery('button.pmpro_userfield-group-buttons-button-toggle-group').on( 'click', function(event){
+        event.preventDefault();
+        var thebutton = jQuery(event.target).closest('button.pmpro_userfield-group-buttons-button-toggle-group');
+        var buttonicon = thebutton.children('.dashicons');
+        var groupheader = thebutton.closest('.pmpro_userfield-group-header');
+        var groupinside = groupheader.siblings('.pmpro_userfield-inside');
+            
+        if ( buttonicon.hasClass('dashicons-arrow-up') ) {
+            // closing
+            buttonicon.removeClass('dashicons-arrow-up');
+            buttonicon.addClass('dashicons-arrow-down');
+            groupinside.hide();
+        } else {
+            // opening
+            buttonicon.removeClass('dashicons-arrow-down');
+            buttonicon.addClass('dashicons-arrow-up');
+            groupinside.show();
+        }
+    });    
 }
 
 function pmpro_stripe_get_secretkey() {

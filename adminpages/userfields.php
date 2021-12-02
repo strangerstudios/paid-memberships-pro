@@ -89,7 +89,20 @@
 
 			</div> <!-- end post-body -->
 		</div> <!-- end poststuff -->
+		
+		<?php wp_nonce_field('closedpostboxes', 'closedpostboxesnonce', false ); ?>
+		<?php wp_nonce_field('meta-box-order', 'meta-box-order-nonce', false ); ?>
 	</form>
+	<script type="text/javascript">
+	  //<![CDATA[
+	  jQuery(document).ready( function($) {
+		  // close postboxes that should be closed
+		  $('.if-js-closed').removeClass('if-js-closed').addClass('closed');
+		  // postboxes setup
+		  postboxes.add_postbox_toggles('admin_page_pmpro-userfields');
+	  });
+	  //]]>
+	</script>
 
 <?php
 	require_once(dirname(__FILE__) . "/admin_footer.php");

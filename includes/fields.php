@@ -1073,8 +1073,8 @@ function pmpro_get_field_group_html( $group_id ) {
                 <label for="pmpro_userfields_group_name"><?php esc_html_e( 'Group Name', 'paid-memberships-pro' ); ?></label>
                 <input type="text" name="pmpro_userfields_group_name" placeholder="<?php esc_attr_e( 'Group Name', 'paid-memberships-pro' ); ?>" value="<?php echo esc_attr( $group_name ); ?>" />
             </h3>
-            <button type="button" aria-disabled="false" class="pmpro_userfield-group-buttons-button pmpro_userfield-group-buttons-button-expand-group" aria-label="<?php esc_attr_e( 'Expand and Edit Group', 'paid-memberships-pro' ); ?>">
-                <span class="dashicons dashicons-arrow-down"></span>
+            <button type="button" aria-disabled="false" class="pmpro_userfield-group-buttons-button pmpro_userfield-group-buttons-button-toggle-group" aria-label="<?php esc_attr_e( 'Expand and Edit Group', 'paid-memberships-pro' ); ?>">
+                <span class="dashicons dashicons-arrow-up"></span>
             </button>
             <span class="pmpro_userfield-group-buttons-description"><?php esc_html_e( 'Expand and Edit Group', 'paid-memberships-pro' ); ?></span>
         </div> <!-- end pmpro_userfield-group-header -->
