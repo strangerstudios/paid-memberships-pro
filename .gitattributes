@@ -10,6 +10,7 @@
 .travis.yml export-ignore
 README.md export-ignore
 codeception.*.yml export-ignore
+composer.json export-ignore
 composer.lock export-ignore
 package.json export-ignore
 paid-memberships-pro-banner.jpg export-ignore

@@ -720,15 +720,20 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 		public function pmpro_rest_api_recent_memberships( $request ) {
 			$params = $request->get_params();
 
-			$response_type = isset( $params['response_type'] ) ? sanitize_text_field( $params['response_type'] ) : null;
-			$limit = apply_filters( 'pmpro_trigger_recent_members_limit', 1 );
+			if ( isset($params['limit']) ) {
+				$members_limit = intval( $params['limit'] );
+			} else {
+				$members_limit = 1;
+			}
+
+			$limit = apply_filters( 'pmpro_trigger_recent_members_limit', $members_limit );
 
 			// Grab the useful information.
 			global $wpdb;
 
 			$sql = "
 				SELECT
-					`mu`.`user_id`,
+					`mu`.`user_id` as `id`,
 					`u`.`user_email`,
 					`u`.`user_nicename`,
 					`mu`.`membership_id`,
@@ -749,13 +754,10 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 
 			$results = $wpdb->get_results( $wpdb->prepare( $sql, $limit ) );
 
-			// Generate random ID for Zapier and then also add all member information.
-			if ( $response_type == 'json' ) {
-				$id = isset( $results[0]->user_id ) ? intval( $results[0]->user_id ) : 0; 
-				wp_send_json( array( 'id' => $id, 'results' => $results ) );
-			}
+			// Let's format the date to ISO8601
+			$results[0]->modified = pmpro_format_date_iso8601( $results[0]->modified );
 
-			return new WP_REST_Response( $results );
+			return new WP_REST_Response( $results, 200 );
 
 		}
 
@@ -770,15 +772,20 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 		 */
 		public function pmpro_rest_api_recent_orders( $request ) {
 			$params = $request->get_params();
+			
+			if ( isset($params['limit']) ) {
+				$orders_limit = intval( $params['limit'] );
+			} else {
+				$orders_limit = 1;
+			}
 
-			$response_type = isset( $params['response_type'] ) ? sanitize_text_field( $params['response_type'] ) : null;
-			$limit = apply_filters( 'pmpro_trigger_recent_orders_limit', 1 );
+			$limit = apply_filters( 'pmpro_trigger_recent_orders_limit', $orders_limit );
 
 			global $wpdb;
 
 			$sql = "
 				SELECT
-					`o`.`id` AS `order_id`,
+					`o`.`id`,
 					`o`.`code`,
 					`u`.`ID` AS `user_id`,
 					`u`.`user_email`,
@@ -807,12 +814,9 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 			
 			$results = $wpdb->get_results( $wpdb->prepare( $sql, $limit ) );
 
-			if ( 'json' === $response_type ) {
-				$id = isset( $results[0]->order_id ) ? intval( $results[0]->order_id ) : 0;
-				wp_send_json( array( 'id' => $id, 'results' => $results ) );
-			}
+			$results[0]->timestamp = pmpro_format_date_iso8601( $results[0]->timestamp );
 
-			return new WP_REST_Response( $results );
+			return new WP_REST_Response( $results, 200 );
 		}
 
 		/**
@@ -846,15 +850,15 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 				'/pmpro/v1/recent_orders' => 'pmpro_orders'
 			);
 			$route_caps = apply_filters( 'pmpro_rest_api_route_capabilities', $route_caps, $request );			
-
+			
 			if ( isset( $route_caps[$route] ) ) {
 				if ( $route_caps[$route] === true ) {
 					// public
 					$permission = true;
-				} else {
-					$permission = current_user_can( $route_caps[$route] );				
+				} else {									
+					$permission = current_user_can( $route_caps[$route] );					
 				}				
-			}	
+			}
 
 			// Is the request method allowed? We disable DELETE by default.
 			if ( ! in_array( $method, pmpro_get_rest_api_methods( $route ) ) ) {
@@ -872,8 +876,6 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 		function pmpro_rest_api_convert_to_array( $string ) {
 			return explode( ',', $string );
 		}
-
-
 	} // End of class
 
 	/**
@@ -887,6 +889,7 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 
 	add_action( 'rest_api_init', 'pmpro_rest_api_register_custom_routes', 5 );
 }
+
 
 /**
  * Get the allowed methods for PMPro REST API endpoints.
