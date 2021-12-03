@@ -4,6 +4,7 @@ use Stripe\Customer as Stripe_Customer;
 use Stripe\Invoice as Stripe_Invoice;
 use Stripe\Plan as Stripe_Plan;
 use Stripe\Product as Stripe_Product;
+use Stripe\Price as Stripe_Price;
 use Stripe\Charge as Stripe_Charge;
 use Stripe\PaymentIntent as Stripe_PaymentIntent;
 use Stripe\SetupIntent as Stripe_SetupIntent;
@@ -603,7 +604,6 @@ class PMProGateway_stripe extends PMProGateway {
 					}
 					if ( ! empty( $order->stripe_setup_intent ) ) {
 						$localize_vars['setupIntent']  = $order->stripe_setup_intent;
-						$localize_vars['subscription'] = $order->stripe_subscription;
 					}
 				}
 
@@ -678,22 +678,9 @@ class PMProGateway_stripe extends PMProGateway {
 			$morder->setup_intent_id = sanitize_text_field( $_REQUEST['setup_intent_id'] );
 		}
 
-		// Add the Subscription ID to the order.
-		if ( ! empty ( $_REQUEST['subscription_id'] ) ) {
-			$morder->subscription_transaction_id = sanitize_text_field( $_REQUEST['subscription_id'] );
-		}
-
 		// Add the PaymentMethod ID to the order.
 		if ( ! empty ( $_REQUEST['payment_method_id'] ) ) {
 			$morder->payment_method_id = sanitize_text_field( $_REQUEST['payment_method_id'] );
-		}
-
-		// Add the Customer ID to the order.
-		if ( empty( $morder->customer_id ) ) {
-
-		}
-		if ( ! empty ( $_REQUEST['customer_id'] ) ) {
-			$morder->customer_id = sanitize_text_field( $_REQUEST['customer_id'] );
 		}
 
 		//stripe lite code to get name from other sources if available
@@ -1388,52 +1375,120 @@ class PMProGateway_stripe extends PMProGateway {
 	 * @since 1.4
 	 */
 	public function process( &$order ) {
-		$customer = $this->update_customer_at_checkout( $order );
-		if ( empty( $customer ) ) {
-			// There was an issue creating/updating the Stripe customer.
-			// $order will have an error message, so we don't need to add one.
-			return false;
+		$payment_transaction_id = '';
+		$subscription_transaction_id = '';
+
+		if ( ! empty( $order->setup_intent_id ) ){
+			// The user tried to confirm a setup intent. This means that there was no initial
+			// payment needed for this chekout (otherwise there would be a payment intent instead),
+			// and that the subscription needed authorization before being created.
+			$setup_intent = $this->process_setup_intent( $order->setup_intent_id );
+			if ( is_string( $setup_intent ) ) {
+				$order->error      = __( 'Error processing setup intent.', 'paid-memberships-pro' ) . ' ' . $setup_intent;
+				$order->shorterror = $order->error;
+				return false;
+			}
+			// Subscription should now be active. Let's get its ID to save to the MemberOrder.
+			$subscription_transaction_id = $setup_intent->metadata->subscription_id;
+		} else {
+			// User has either just submitted the checkout form or tried to confirm their
+			// payment intent.
+			$customer = null; // This will be used to create the subscription later.
+			if ( ! empty( $order->payment_intent_id ) ) {
+				// User has just tried to confirm their payment intent. We need to make sure that it was
+				// confirmed successfully, and then try to create their subscription if needed.
+				$payment_intent = $this->process_payment_intent( $order->payment_intent_id );
+				if ( is_string( $payment_intent ) ) {
+					$order->error      = __( 'Error processing payment intent.', 'paid-memberships-pro' ) . ' ' . $payment_intent;
+					$order->shorterror = $order->error;
+					return false;
+				}
+				// Payment should now be processed.
+				$payment_transaction_id = $payment_intent->charges->data[0]->id;
+
+				// Note the customer so that we can create a subscription if needed..
+				$customer = $payment_intent->customer;
+			} else {
+				// We have not yet tried to process this checkout.
+				// Make sure we have a customer with a payment method.
+				$customer = $this->update_customer_at_checkout( $order );
+				if ( empty( $customer ) ) {
+					// There was an issue creating/updating the Stripe customer.
+					// $order will have an error message, so we don't need to add one.
+					return false;
+				}
+
+				$payment_method = $this->get_payment_method( $order );
+				if ( empty( $payment_method ) ) {
+					// There was an issue getting the payment method.
+					$order->error      = __( 'Error retrieving payment method.', 'paid-memberships-pro' );
+					$order->shorterror = $order->error;
+					return false;
+				}
+
+				$customer = $this->set_default_payment_method_for_customer( $customer, $payment_method );
+				if ( is_string( $customer ) ) {
+					// There was an issue updating the default payment method.
+					$order->error      = __( 'Error updating default payment method.', 'paid-memberships-pro' ) . ' ' . $customer;
+					$order->shorterror = $order->error;
+					return false;
+				}
+
+				// Save customer in $order for create_payment_intent().
+				// This will likely be removed as we rework payment processing.
+				$order->stripe_customer = $customer;
+
+				// Process the charges.
+				$charges_processed = $this->process_charges( $order );
+				if ( ! empty( $order->error ) ) {
+					// There was an error processing charges.
+					// $order has an error message, so we don't need to add one.
+					return false;
+				}
+
+				// If we needed to charge an initial payment, it was successful.
+				if ( ! empty( $order->stripe_payment_intent->charges->data[0]->id ) ) {
+					$payment_transaction_id = $order->stripe_payment_intent->charges->data[0]->id;
+				}
+			}
+
+			// Create a subscription if we need to.
+			if ( pmpro_isLevelRecurring( $order->membership_level ) ) {
+				$subscription = $this->create_subscription_for_customer_from_order( $customer->id, $order );
+				if ( empty( $subscription ) ) {
+					// There was an issue creating the subscription.
+					$order->error      = __( 'Error creating subscription for customer.', 'paid-memberships-pro' );
+					$order->shorterror = $order->error;
+					return false;
+				}
+				$order->stripe_subscription = $subscription;
+				$setup_intent = $subscription->pending_setup_intent;
+	
+				if ( ! empty( $setup_intent->status ) && 'requires_action' === $setup_intent->status ) {
+					// We will need to reload the page to authenticate, so save the subscription ID in the setup intent
+					// so that we don't lose it.
+					$setup_intent = $this->add_subscription_id_to_setup_intent( $setup_intent, $subscription->id );
+					if ( is_string( $setup_intent ) ) {
+						$order->error      = $setup_intent;
+						$order->shorterror = $order->error;
+						return false;
+					}
+					$order->stripe_setup_intent = $setup_intent;
+					$order->errorcode = true;
+					$order->error     = __( 'Customer authentication is required to finish setting up your subscription. Please complete the verification steps issued by your payment provider.', 'paid-memberships-pro' );
+		
+					return false;
+				}
+
+				// Successfully created a subscription.
+				$subscription_transaction_id = $subscription->id;
+			}
 		}
-
-		$payment_method = $this->get_payment_method( $order );
-		if ( empty( $payment_method ) ) {
-			// There was an issue getting the payment method.
-			$order->error      = __( "Error retrieving payment method.", 'paid-memberships-pro' );
-			$order->shorterror = $order->error;
-			return false;
-		}
-
-		$customer = $this->set_default_payment_method_for_customer( $customer, $payment_method );
-		if ( is_string( $customer ) ) {
-			// There was an issue updating the default payment method.
-			$order->error      = __( "Error updating default payment method.", 'paid-memberships-pro' ) . " " . $customer;
-			$order->shorterror = $order->error;
-			return false;
-		}
-
-		// Save customer and payment method in $order.
-		// This will likely be removed as we rework payment processing.
-		$order->stripe_customer = $customer;
-		$order->stripe_payment_method = $payment_method;
-
-		$charges_processed = $this->process_charges( $order );
-		if ( ! empty( $order->error ) ) {
-			// There was an error processing charges.
-			// $order has an error message, so we don't need to add one.
-			return false;
-		}
-
-		$subscriptions_processed = $this->process_subscriptions( $order );
-		if ( ! empty( $order->error ) ) {
-			// There was an error processing charges.
-			// $order has an error message, so we don't need to add one.
-			return false;
-		}
-
-		$this->clean_up( $order );
+		// All charges have been processed and all subscriptions have been created.
+		$order->payment_transaction_id = $payment_transaction_id;
+		$order->subscription_transaction_id = $subscription_transaction_id;
 		$order->status = 'success';
 		$order->saveOrder();
-
 		return true;
 	}
 
@@ -1943,11 +1998,6 @@ class PMProGateway_stripe extends PMProGateway {
 		$user = empty( $user_id ) ? null : get_userdata( $user_id );
 		$customer = empty( $user_id ) ? null : $this->get_customer_for_user( $user_id );
 
-		// If we can't get a customer from the user, try to get it from the order.
-		if ( empty( $customer ) && ! empty( $order->customer_id ) ) {
-			$customer = $this->get_customer( $order->customer_id );
-		}
-
 		// Get customer name.
 		if ( ! empty( $order->FirstName ) && ! empty( $order->LastName ) ) {
 			$name = trim( $order->FirstName . " " . $order->LastName );
@@ -2151,6 +2201,419 @@ class PMProGateway_stripe extends PMProGateway {
 	}
 
 	/**
+	 * Get the Stripe product ID for a given membership level.
+	 *
+	 * TODO: Separate products for live and sandbox mode.
+	 *
+	 * @since TBD
+	 *
+	 * @param PMPro_Membership_Leve|int $level to get product ID for.
+	 * @return string|null
+	 */
+	private function get_product_id_for_level( $level ) {
+		if ( ! is_a( $level, 'PMPro_Membership_Level' ) ) {
+			if ( is_numeric( $level ) ) {
+				$level = new PMPro_Membership_Level( $level );
+			}
+		}
+
+		if ( empty( $level->ID ) ) {
+			// We do not have a valid level.
+			return;
+		}
+
+		$stripe_product_id = $level->stripe_product_id;
+		if ( empty( $stripe_product_id ) ) {
+			$stripe_product_id = $this->create_product_for_level( $level );
+		}
+
+		if ( ! empty( $stripe_product_id ) ) {
+			return $stripe_product_id;
+		}
+	}
+
+	/**
+	 * Create a new Stripe product for a given membership level.
+	 *
+	 * WARNING: Will overwrite old Stripe product set for level if
+	 * there is already one set.
+	 *
+	 * TODO: Separate products for live and sandbox mode.
+	 *
+	 * @since TBD
+	 *
+	 * @param PMPro_Membership_Level|int $level to create product ID for.
+	 * @return string|null ID of new product
+	 */
+	private function create_product_for_level( $level ) {
+		if ( ! is_a( $level, 'PMPro_Membership_Level' ) ) {
+			if ( is_numeric( $level ) ) {
+				$level = new PMPro_Membership_Level( $level );
+			}
+		}
+
+		if ( empty( $level->ID ) ) {
+			// We do not have a valid level.
+			return;
+		}
+
+		$product_args = array(
+			'name' => $level->name,
+		);
+		/**
+		 * Filter the data sent to Stripe when creating a new product for a membership level.
+		 *
+		 * @since TBD
+		 *
+		 * @param array $product_args being sent to Stripe.
+		 * @param PMPro_Membership_Level $level that product is being created for.
+		 */
+		$product_args = apply_filters( 'pmpro_stripe_create_product_for_level', $product_args, $level );
+
+		try {
+			$product = Stripe_Product::create( $product_args );
+			if ( ! empty( $product->id ) ) {
+				update_pmpro_membership_level_meta( $level->ID, 'stripe_product_id', $product->id );
+				return $product->id;
+			}
+		} catch (\Throwable $th) {
+			// Could not create product.
+		} catch (\Exception $e) {
+			// Could not create product.
+		}
+	}
+
+	/**
+	 * Get a Price for a given product, or create one if it doesn't exist.
+	 *
+	 * TODO: Add pagination.
+	 *
+	 * @since TBD
+	 *
+	 * @param string $product_id to get Price for.
+	 * @param float $amount that the Price will charge.
+	 * @param string|null $cycle_period for subscription payments.
+	 * @param string|null $cycle_number of cycle periods between each subscription payment.
+	 *
+	 * @return string|null Price ID.
+	 */
+	private function get_price_for_product( $product_id, $amount, $cycle_period = null, $cycle_number = null ) {
+		global $pmpro_currency;
+
+		$is_recurring = ! empty( $cycle_period ) && ! empty( $cycle_number );
+		$unit_amount  = intval( $amount * 100 ); // TODO: Change this based on currency.
+		$cycle_period = strtolower( $cycle_period );
+
+		$price_search_args = array(
+			'product'  => $product_id,
+			'type'     => $is_recurring ? 'recurring' : 'one_time',
+			'currency' => strtolower( $pmpro_currency ),
+		);
+		if ( $is_recurring ) {
+			$price_search_args['recurring'] = array( 'interval' => $cycle_period );
+		}
+
+		try {
+			$prices = Stripe_Price::all( $price_search_args );
+
+			foreach ( $prices as $price ) {
+				// Check whether price is the same. If not, continue.
+				if ( intval( $price->unit_amount ) !== intval( $unit_amount ) ) {
+					continue;
+				}
+				// Check if recurring structure is the same. If not, continue.
+				if ( $is_recurring && ( empty( $price->recurring->interval_count ) || intval( $price->recurring->interval_count ) !== intval( $cycle_number ) ) ) {
+					continue;
+				}
+				return $price->id;
+			}
+		} catch (\Throwable $th) {
+			// There was an error listing prices.
+			return;
+		} catch (\Exception $e) {
+			// There was an error listing prices.
+			return;
+		}
+
+		// Create a new Price.
+		$price_args = array(
+			'product'     => $product_id,
+			'currency'    => strtolower( $pmpro_currency ),
+			'unit_amount' => $unit_amount
+		);
+		if ( $is_recurring ) {
+			$price_args['recurring'] = array(
+				'interval'       => $cycle_period,
+				'interval_count' => $cycle_number
+			);
+		}
+
+		try {
+			$price = Stripe_Price::create( $price_args );
+			if ( ! empty( $price->id ) ) {
+				return $price->id;
+			}
+		} catch (\Throwable $th) {
+			// Could not create product.
+		} catch (\Exception $e) {
+			// Could not create product.
+		}
+	}
+
+	/**
+	 * Calculate the number of days until the first recurring payment
+	 * for a subscription should be charged.
+	 *
+	 * @since TBD.
+	 *
+	 * @param MemberOrder $order to calculate trial period days for.
+	 * @return int trial period days.
+	 */
+	private function calculate_trial_period_days( $order ) {
+		// Use a trial period to set the first recurring payment date.
+		if ( $order->BillingPeriod == "Year" ) {
+			$days_in_billing_period = $order->BillingFrequency * 365;    //annual
+		} elseif ( $order->BillingPeriod == "Day" ) {
+			$days_in_billing_period = $order->BillingFrequency * 1;        //daily
+		} elseif ( $order->BillingPeriod == "Week" ) {
+			$days_in_billing_period = $order->BillingFrequency * 7;        //weekly
+		} else {
+			$days_in_billing_period = $order->BillingFrequency * 30;    //assume monthly
+		}
+		$trial_period_days = $order->BillingFrequency * $days_in_billing_period;
+
+		// For free trials, multiply the trial period for each additional free period.
+		if ( ! empty( $order->TrialBillingCycles ) && $order->TrialAmount == 0 ) {
+			$trialOccurrences = (int) $order->TrialBillingCycles;
+			$trial_period_days = $trial_period_days * ( $order->TrialBillingCycles + 1 );
+		}
+
+		//convert to a profile start date
+		$order->ProfileStartDate = date_i18n( "Y-m-d", strtotime( "+ " . $trial_period_days . " Day", current_time( "timestamp" ) ) ) . "T0:0:0";
+
+		//filter the start date
+		$order->ProfileStartDate = apply_filters( "pmpro_profile_start_date", $order->ProfileStartDate, $order );
+
+		//convert back to days
+		$trial_period_days = ceil( abs( strtotime( date_i18n( "Y-m-d" ), current_time( "timestamp" ) ) - strtotime( $order->ProfileStartDate, current_time( "timestamp" ) ) ) / 86400 );
+		return $trial_period_days;
+	}
+
+	/**
+	 * Create a subscription for a customer from an order using a Stripe Price.
+	 *
+	 * @since TBD.
+	 *
+	 * @param string $customer_id to create subscription for.
+	 * @param MemberOrder $order to pull subscription details from.
+	 * @return Stripe_Subscription|bool false if error.
+	 */
+	private function create_subscription_for_customer_from_order( $customer_id, $order ) {
+		$subtotal = $order->PaymentAmount;
+		$tax      = $order->getTaxForPrice( $subtotal );
+		$amount   = pmpro_round_price( (float) $subtotal + (float) $tax );
+
+		// Set up the subscription.
+		$product_id = $this->get_product_id_for_level( $order->membership_id );
+		if ( empty( $product_id ) ) {
+			$order->error = esc_html__( 'Cannot find product for membership level.', 'paid-memberships-pro' );
+			return false;
+		}
+
+		$price = $this->get_price_for_product( $product_id, $amount, $order->BillingPeriod, $order->BillingFrequency );
+		if ( empty( $price ) ) {
+			$order->error = esc_html__( 'Cannot get price.', 'paid-memberships-pro' );
+			return false;
+		}
+
+		$trial_period_days = $this->calculate_trial_period_days( $order );
+
+		try {
+			$subscription_params = array(
+				'customer'          => $customer_id,
+				'items'             => array(
+					array( 'price' => $price ),
+				),
+				'trial_period_days' => $trial_period_days,
+				'expand'                 => array(
+					'pending_setup_intent.payment_method',
+				),
+			);
+			if ( ! self::using_legacy_keys() ) {
+				$params['application_fee_percent'] = self::get_application_fee_percentage();
+			}
+			$subscription_params = apply_filters( 'pmpro_stripe_create_subscription_array', $subscription_params );
+			$subscription = Stripe_Subscription::create( $subscription_params );
+		} catch ( Stripe\Error\Base $e ) {
+			$order->error = $e->getMessage();
+			return false;
+		} catch ( \Throwable $e ) {
+			$order->error = $e->getMessage();
+			return false;
+		} catch ( \Exception $e ) {
+			$order->error = $e->getMessage();
+			return false;
+		}
+		return $subscription;
+	}
+
+	/**
+	 * Retrieve a payment intent.
+	 *
+	 * @since TBD.
+	 *
+	 * @param string $payment_intent_id to retrieve.
+	 * @return Stripe_PaymentIntent|string error.
+	 */
+	private function retrieve_payment_intent( $payment_intent_id ) {
+		try {
+			$payment_intent = Stripe_PaymentIntent::retrieve( $payment_intent_id );
+		} catch ( Stripe\Error\Base $e ) {
+			return $e->getMessage();
+		} catch ( \Throwable $e ) {
+			return $e->getMessage();
+		} catch ( \Exception $e ) {
+			return $e->getMessage();
+		}
+		return $payment_intent;
+	}
+
+	/**
+	 * Retrieve a setup intent.
+	 *
+	 * @since TBD.
+	 *
+	 * @param string $setup_intent_id to retrieve.
+	 * @return Stripe_SetupIntent|string error.
+	 */
+	private function retrieve_setup_intent( $setup_intent_id ) {
+		try {
+			$setup_intent_args = array(
+				'id'     => $setup_intent_id,
+				'expand' => array(
+					'latest_attempt',
+				),
+			);
+			$setup_intent = Stripe_SetupIntent::retrieve( $setup_intent_args );
+		} catch ( Stripe\Error\Base $e ) {
+			return $e->getMessage();
+		} catch ( \Throwable $e ) {
+			return $e->getMessage();
+		} catch ( \Exception $e ) {
+			return $e->getMessage();
+		}
+		return $setup_intent;
+	}
+
+	/**
+	 * Confirm the payment intent after authentication.
+	 *
+	 * @since TBD.
+	 *
+	 * @param string $payment_intent_id to confirm.
+	 * @return Stripe_PaymentIntent|string error.
+	 */
+	private function process_payment_intent( $payment_intent_id ) {
+		// Get the payment intent.
+		$payment_intent = $this->retrieve_payment_intent( $payment_intent_id );
+		if ( is_string( $payment_intent ) ) {
+			// There was an issue retrieving the payment intent.
+			return $payment_intent;
+		}
+
+		// Confirm the payment.
+		try {
+			$params = array(
+				'expand' => array(
+					'payment_method',
+					'customer'
+				),
+			);
+			$payment_intent->confirm( $params );
+		} catch ( Stripe\Error\Base $e ) {
+			return $e->getMessage();
+		} catch ( \Throwable $e ) {
+			return $e->getMessage();
+		} catch ( \Exception $e ) {
+			return $e->getMessage();
+		}
+
+		// Check that the confirmation was successful.
+		if ( 'requires_action' == $payment_intent->status ) {
+			return __( 'Customer authentication is required to finish setting up your subscription. Please complete the verification steps issued by your payment provider.', 'paid-memberships-pro' );
+		}
+
+		return $payment_intent;
+	}
+
+	/**
+	 * Confirm the setup intent after authentication.
+	 *
+	 * @since TBD.
+	 *
+	 * @param string $setup_intent_id to confirm.
+	 * @return Stripe_SetupIntent|string error.
+	 */
+	private function process_setup_intent( $setup_intent_id ) {
+		// Get the setup intent.
+		$setup_intent = $this->retrieve_setup_intent( $setup_intent_id );
+		if ( is_string( $setup_intent ) ) {
+			return $setup_intent;
+		}
+
+		// Make sure that the setup intent was recently confirmed.
+		/**
+		 * The time in seconds that a setup intent must be confirmed within.
+		 *
+		 * @since TBD
+		 *
+		 * @param int $seconds_to_confirm_setup_intent The time in seconds that a setup intent must be confirmed within.
+		 */
+		$setup_intent_timeout = apply_filters( 'pmpro_stripe_setup_intent_timeout', 60 * 10 );
+		$last_setup_attempt_created = $setup_intent->latest_attempt->created;
+		if (  $last_setup_attempt_created < time() - $setup_intent_timeout ) {
+			return __( 'Cannot reuse an old setup intent.', 'paid-memberships-pro' );
+		}
+
+		// Make sure that the confirmation was successful.
+		if ( 'requires_action' === $setup_intent->status ) {
+			return __( 'Customer authentication is required to finish setting up your subscription. Please complete the verification steps issued by your payment provider.', 'paid-memberships-pro' );
+		}
+		return $setup_intent;
+	}
+
+	/**
+	 * Add a subscription ID to the metadata of a setup intent.
+	 *
+	 * @since TBD.
+	 *
+	 * @param Stripe_SetupIntent $setup_intent    The setup intent to add metadata to.
+	 * @param string             $subscription_id The subscription ID that created this setup intent.
+	 *
+	 * @return Stripe_SetupIntent|string The setup intent object or an error message string.
+	 */
+	private function add_subscription_id_to_setup_intent( $setup_intent, $subscription_id ) {
+		try {
+			$setup_intent = Stripe_SetupIntent::update(
+				$setup_intent->id,
+				array(
+					'metadata' => array(
+						'subscription_id' => $subscription_id,
+					),
+					'expand' => array(
+						'payment_method',
+					),
+				)
+			);
+		} catch ( \Throwable $e ) {
+			return __( "Error adding metadata to setup intent.", 'paid-memberships-pro' );
+		} catch ( \Exception $e ) {
+			return __( "Error adding metadata to setup intent.", 'paid-memberships-pro' );
+		}
+		return $setup_intent;
+	}
+
+	/**
 	 * Temporary function to allow users to view and delete subscription updates.
 	 * Will be removed once subscription updates are completely deprecated.
 	 *
@@ -2169,22 +2632,22 @@ class PMProGateway_stripe extends PMProGateway {
 			return;
 		}
 
-		$cycles        = array(
+		$cycles = array(
 			__( 'Day(s)', 'paid-memberships-pro' )   => 'Day',
 			__( 'Week(s)', 'paid-memberships-pro' )  => 'Week',
 			__( 'Month(s)', 'paid-memberships-pro' ) => 'Month',
-			__( 'Year(s)', 'paid-memberships-pro' )  => 'Year'
+			__( 'Year(s)', 'paid-memberships-pro' )  => 'Year',
 		);
 
-		$current_year  = date_i18n( "Y" );
-		$current_month = date_i18n( "m" );
+		$current_year  = date_i18n( 'Y' );
+		$current_month = date_i18n( 'm' );
 		?>
-            <h3><?php _e( "Subscription Updates", 'paid-memberships-pro' ); ?></h3>
-			<p><?php _e( "Subscription updates will be deprecated in a future version of PMPro, though your existing subscription updates will still trigger as expected. We now instead reccomend updating the subscription directly in Stripe.", 'paid-memberships-pro' ); ?></p>
+            <h3><?php esc_html_e( 'Subscription Updates', 'paid-memberships-pro' ); ?></h3>
+			<p><?php esc_html_e( 'Subscription updates will be deprecated in a future version of PMPro, though your existing subscription updates will still trigger as expected. We now instead reccomend updating the subscription directly in Stripe.', 'paid-memberships-pro' ); ?></p>
             <table class="form-table">
 				<input type='hidden' name='pmpro_subscription_updates_visible' value='1' />
                 <tr>
-                    <th><label><?php _e( "Update", 'paid-memberships-pro' ); ?></label></th>
+                    <th><label><?php esc_html_e( 'Update', 'paid-memberships-pro' ); ?></label></th>
                     <td id="updates_td">
 						<?php
 						$updates = $user->pmpro_stripe_updates;
@@ -2193,22 +2656,22 @@ class PMProGateway_stripe extends PMProGateway {
 							?>
                             <div class="updates_update">
                                 <select class="updates_when" name="updates_when[]" disabled>
-                                    <option value="now" <?php selected( $update['when'], "now" ); ?>>Now</option>
-                                    <option value="payment" <?php selected( $update['when'], "payment" ); ?>>After
+                                    <option value="now" <?php selected( $update['when'], 'now' ); ?>>Now</option>
+                                    <option value="payment" <?php selected( $update['when'], 'payment' ); ?>>After
                                         Next Payment
                                     </option>
-                                    <option value="date" <?php selected( $update['when'], "date" ); ?>>On Date
+                                    <option value="date" <?php selected( $update['when'], 'date' ); ?>>On Date
                                     </option>
                                 </select>
                                 <span class="updates_date"
-								      <?php if ( $update['when'] != "date" ) { ?>style="display: none;"<?php } ?>>
+								      <?php if ( $update['when'] != 'date' ) { ?>style="display: none;"<?php } ?>>
 								<select name="updates_date_month[]" disabled>
 									<?php
 									for ( $i = 1; $i < 13; $i ++ ) {
 										?>
-                                        <option value="<?php echo str_pad( $i, 2, "0", STR_PAD_LEFT ); ?>"
+                                        <option value="<?php echo str_pad( $i, 2, '0', STR_PAD_LEFT ); ?>"
 										        <?php if ( ! empty( $update['date_month'] ) && $update['date_month'] == $i ) { ?>selected="selected"<?php } ?>>
-											<?php echo date_i18n( "M", strtotime( $i . "/15/" . $current_year ) ); ?>
+											<?php echo date_i18n( 'M', strtotime( $i . '/15/' . $current_year ) ); ?>
 										</option>
 										<?php
 									}
@@ -2225,11 +2688,11 @@ class PMProGateway_stripe extends PMProGateway {
 							</span>
                                 <span class="updates_billing"
 								      <?php if ( $update['when'] == "now" ) { ?>style="display: none;"<?php } ?>>
-								<?php echo $pmpro_currency_symbol ?><input name="updates_billing_amount[]" type="text"
+								<?php echo $pmpro_currency_symbol; ?><input name="updates_billing_amount[]" type="text"
                                                                            size="10"
                                                                            value="<?php echo esc_attr( $update['billing_amount'] ); ?>"
 																		   readonly/>
-								<small><?php _e( 'per', 'paid-memberships-pro' ); ?></small>
+								<small><?php esc_html_e( 'per', 'paid-memberships-pro' ); ?></small>
 								<input name="updates_cycle_number[]" type="text" size="5"
                                        value="<?php echo esc_attr( $update['cycle_number'] ); ?>" readonly/>
 								<select name="updates_cycle_period[]" disabled>
@@ -2544,7 +3007,9 @@ class PMProGateway_stripe extends PMProGateway {
 	}
 
 	/**
-	 * Helper method to process a Stripe subscription update
+	 * Helper method to process a Stripe subscription update.
+	 *
+	 * Only called during subscription updates. Should be completely deprecated once that functionality is removed.
 	 *
 	 * @deprecated TBD. Only deprecated for public use, will be changed to private non-static in a future version.
 	 */
@@ -2636,7 +3101,11 @@ class PMProGateway_stripe extends PMProGateway {
 	/**
 	 * Update the payment method for a subscription.
 	 *
+	 * Only called on update billing page. Should be completely deprecated if we switch to using Stripe Customer Portal.
+	 *
 	 * @deprecated TBD. Only deprecated for public use, will be changed to private non-static in a future version.
+	 *
+	 * @param MemberOrder $order The MemberOrder object.
 	 */
 	public function update_payment_method_for_subscriptions( &$order ) {
 		pmpro_method_should_be_private( 'TBD' );
@@ -2794,7 +3263,11 @@ class PMProGateway_stripe extends PMProGateway {
 	}
 
 	/**
+	 * Only called during subscription updates. Should be completely deprecated once that functionality is removed.
+	 *
 	 * @deprecated TBD. Only deprecated for public use, will be changed to private non-static in a future version.
+	 *
+	 * @param MemberOrder $order The MemberOrder object.
 	 */
 	public function get_setup_intent( &$order ) {
 		pmpro_method_should_be_private( 'TBD' );
@@ -2845,7 +3318,11 @@ class PMProGateway_stripe extends PMProGateway {
 	}
 
 	/**
+	 * Only called during subscription updates. Should be completely deprecated once that functionality is removed.
+	 *
 	 * @deprecated TBD. Only deprecated for public use, will be changed to private non-static in a future version.
+	 *
+	 * @param MemberOrder $order The MemberOrder object.
 	 */
 	public function create_setup_intent( &$order ) {
 		pmpro_method_should_be_private( 'TBD' );
@@ -3249,7 +3726,7 @@ class PMProGateway_stripe extends PMProGateway {
 
 		$params = array(
 			'customer'               => $order->stripe_customer->id,
-			'payment_method'         => $order->stripe_payment_method->id,
+			'payment_method'         => $order->payment_method_id,
 			'amount'                 => $this->convert_price_to_unit_amount( $amount ),
 			'currency'               => $pmpro_currency,
 			'confirmation_method'    => 'manual',
@@ -3285,7 +3762,11 @@ class PMProGateway_stripe extends PMProGateway {
 	}
 
 	/**
+	 * Only called during subscription updates. Should be completely deprecated once that functionality is removed.
+	 *
 	 * @deprecated TBD. Only deprecated for public use, will be changed to private in a future version.
+	 *
+	 * @param MemberOrder $order The MemberOrder object.
 	 */
 	public function process_subscriptions( &$order ) {
 		pmpro_method_should_be_private( 'TBD' );
@@ -3342,6 +3823,104 @@ class PMProGateway_stripe extends PMProGateway {
 				}
 				add_action( 'user_register', 'pmpro_user_register_stripe_updates' );
 			}
+		}
+
+		return true;
+	}
+
+	/**
+	 * Only called during subscription updates. Should be completely deprecated once that functionality is removed.
+	 *
+	 * @deprecated TBD. Will only be deprecated once we create a function with better params.
+	 *
+	 * @param MemberOrder $order The MemberOrder object.
+	 */
+	public function create_subscription( &$order ) {
+		// _deprecated_function( __FUNCTION__, 'TBD' );
+		//subscribe to the plan
+		try {
+			$params              = array(
+				'customer'               => $order->stripe_customer->id,
+				'items'                  => array(
+					array( 'plan' => $order->code ),
+				),
+				'trial_period_days'      => $order->TrialPeriodDays,
+				'expand'                 => array(
+					'pending_setup_intent.payment_method',
+				),
+			);
+			if ( ! self::using_legacy_keys() ) {
+				$params['application_fee_percent'] = self::get_application_fee_percentage();
+			}
+			$order->subscription = Stripe_Subscription::create( apply_filters( 'pmpro_stripe_create_subscription_array', $params ) );
+		} catch ( Stripe\Error\Base $e ) {
+			$order->error = $e->getMessage();
+			return false;
+		} catch ( \Throwable $e ) {
+			$order->error = $e->getMessage();
+			return false;
+		} catch ( \Exception $e ) {
+			$order->error = $e->getMessage();
+			return false;
+		}
+
+		return $order->subscription;
+
+	}
+
+	/**
+	 * Only called during subscription updates. Should be completely deprecated once that functionality is removed.
+	 *
+	 * @deprecated TBD. Only deprecated for public use, will be changed to private non-static in a future version.
+	 *
+	 * @param MemberOrder $order The MemberOrder object.
+	 */
+	public function delete_plan( &$order ) {
+		// _deprecated_function( __FUNCTION__, 'TBD' );
+		try {
+			// Delete the product first while we have a reference to it...
+			if ( ( ! empty( $order->plan->product ) ) && ( ! $this->archive_product( $order ) ) ) {
+				return false;
+			}
+			// Then delete the plan.
+			$order->plan->delete();
+		} catch ( Stripe\Error\Base $e ) {
+			$order->error = $e->getMessage();
+
+			return false;
+		} catch ( \Throwable $e ) {
+			$order->error = $e->getMessage();
+
+			return false;
+		} catch ( \Exception $e ) {
+			$order->error = $e->getMessage();
+
+			return false;
+		}
+
+		return true;
+	}
+
+	/**
+	 * Only called during subscription updates. Should be completely deprecated once that functionality is removed.
+	 *
+	 * @deprecated TBD. Only deprecated for public use, will be changed to private non-static in a future version.
+	 *
+	 * @param MemberOrder $order The MemberOrder object.
+	 */
+	public function archive_product( &$order ) {
+		// _deprecated_function( __FUNCTION__, 'TBD' );
+		try {
+			$product = Stripe_Product::update( $order->plan->product, array( 'active' => false ) );
+		} catch ( Stripe\Error\Base $e ) {
+			$order->error = $e->getMessage();
+			return false;
+		} catch ( \Throwable $e ) {
+			$order->error = $e->getMessage();
+			return false;
+		} catch ( \Exception $e ) {
+			$order->error = $e->getMessage();
+			return false;
 		}
 
 		return true;
@@ -3559,64 +4138,7 @@ class PMProGateway_stripe extends PMProGateway {
 		$amount_tax = $order->getTaxForPrice( $amount );
 		$amount     = pmpro_round_price( (float) $amount + (float) $amount_tax );
 
-		/*
-            There are two parts to the trial. Part 1 is simply the delay until the first payment
-            since we are doing the first payment as a separate transaction.
-            The second part is the actual "trial" set by the admin.
-
-            Stripe only supports Year or Month for billing periods, but we account for Days and Weeks just in case.
-        */
-		//figure out the trial length (first payment handled by initial charge)
-		if ( $order->BillingPeriod == "Year" ) {
-			$trial_period_days = $order->BillingFrequency * 365;    //annual
-		} elseif ( $order->BillingPeriod == "Day" ) {
-			$trial_period_days = $order->BillingFrequency * 1;        //daily
-		} elseif ( $order->BillingPeriod == "Week" ) {
-			$trial_period_days = $order->BillingFrequency * 7;        //weekly
-		} else {
-			$trial_period_days = $order->BillingFrequency * 30;    //assume monthly
-		}
-
-		//convert to a profile start date
-		$order->ProfileStartDate = date_i18n( "Y-m-d", strtotime( "+ " . $trial_period_days . " Day", current_time( "timestamp" ) ) ) . "T0:0:0";
-
-		//filter the start date
-		$order->ProfileStartDate = apply_filters( "pmpro_profile_start_date", $order->ProfileStartDate, $order );
-
-		//convert back to days
-		$trial_period_days = ceil( abs( strtotime( date_i18n( "Y-m-d" ), current_time( "timestamp" ) ) - strtotime( $order->ProfileStartDate, current_time( "timestamp" ) ) ) / 86400 );
-
-		//for free trials, just push the start date of the subscription back
-		if ( ! empty( $order->TrialBillingCycles ) && $order->TrialAmount == 0 ) {
-			$trialOccurrences = (int) $order->TrialBillingCycles;
-			if ( $order->BillingPeriod == "Year" ) {
-				$trial_period_days = $trial_period_days + ( 365 * $order->BillingFrequency * $trialOccurrences );    //annual
-			} elseif ( $order->BillingPeriod == "Day" ) {
-				$trial_period_days = $trial_period_days + ( 1 * $order->BillingFrequency * $trialOccurrences );        //daily
-			} elseif ( $order->BillingPeriod == "Week" ) {
-				$trial_period_days = $trial_period_days + ( 7 * $order->BillingFrequency * $trialOccurrences );    //weekly
-			} else {
-				$trial_period_days = $trial_period_days + ( 30 * $order->BillingFrequency * $trialOccurrences );    //assume monthly
-			}
-		} elseif ( ! empty( $order->TrialBillingCycles ) ) {
-			/*
-                Let's set the subscription to the trial and give the user an "update" to change the sub later to full price (since v2.0)
-
-                This will force TrialBillingCycles > 1 to act as if they were 1
-            */
-			$new_user_updates   = array();
-			$new_user_updates[] = array(
-				'when'           => 'payment',
-				'billing_amount' => $order->PaymentAmount,
-				'cycle_period'   => $order->BillingPeriod,
-				'cycle_number'   => $order->BillingFrequency
-			);
-
-			//now amount to equal the trial #s
-			$amount     = $order->TrialAmount;
-			$amount_tax = $order->getTaxForPrice( $amount );
-			$amount     = pmpro_round_price( (float) $amount + (float) $amount_tax );
-		}
+		$trial_period_days = $this->calculate_trial_period_days( $order );
 
 		// Save $trial_period_days to order for now too.
 		$order->TrialPeriodDays = $trial_period_days;
@@ -3910,6 +4432,8 @@ class PMProGateway_stripe extends PMProGateway {
 	}
 
 	/**
+	 * Only called during subscription updates. Should be completely deprecated once that functionality is removed.
+	 *
 	 * @deprecated TBD. Will only be deprecated once we are using Prices.
 	 */
 	public function create_plan( &$order ) {
@@ -3921,50 +4445,8 @@ class PMProGateway_stripe extends PMProGateway {
 		$amount_tax = $order->getTaxForPrice( $amount );
 		$amount     = pmpro_round_price( (float) $amount + (float) $amount_tax );
 
-		/*
-		Figure out the trial length (first payment handled by initial charge)
-
-		There are two parts to the trial. Part 1 is simply the delay until the first payment
-        since we are doing the first payment as a separate transaction.
-        The second part is the actual "trial" set by the admin.
-
-        Stripe only supports Year or Month for billing periods, but we account for Days and Weeks just in case.
-        */
-		if ( $order->BillingPeriod == "Year" ) {
-			$trial_period_days = $order->BillingFrequency * 365;    //annual
-		} elseif ( $order->BillingPeriod == "Day" ) {
-			$trial_period_days = $order->BillingFrequency * 1;        //daily
-		} elseif ( $order->BillingPeriod == "Week" ) {
-			$trial_period_days = $order->BillingFrequency * 7;        //weekly
-		} else {
-			$trial_period_days = $order->BillingFrequency * 30;    //assume monthly
-		}
-
-		//convert to a profile start date
-		$order->ProfileStartDate = date_i18n( "Y-m-d", strtotime( "+ " . $trial_period_days . " Day", current_time( "timestamp" ) ) ) . "T0:0:0";
-
-		//filter the start date
-		$order->ProfileStartDate = apply_filters( "pmpro_profile_start_date", $order->ProfileStartDate, $order );
-
-		//convert back to days
-		$trial_period_days = ceil( abs( strtotime( date_i18n( "Y-m-d" ), current_time( "timestamp" ) ) - strtotime( $order->ProfileStartDate, current_time( "timestamp" ) ) ) / 86400 );
-
-		//for free trials, just push the start date of the subscription back
-		if ( ! empty( $order->TrialBillingCycles ) && $order->TrialAmount == 0 ) {
-			$trialOccurrences = (int) $order->TrialBillingCycles;
-			if ( $order->BillingPeriod == "Year" ) {
-				$trial_period_days = $trial_period_days + ( 365 * $order->BillingFrequency * $trialOccurrences );    //annual
-			} elseif ( $order->BillingPeriod == "Day" ) {
-				$trial_period_days = $trial_period_days + ( 1 * $order->BillingFrequency * $trialOccurrences );        //daily
-			} elseif ( $order->BillingPeriod == "Week" ) {
-				$trial_period_days = $trial_period_days + ( 7 * $order->BillingFrequency * $trialOccurrences );    //weekly
-			} else {
-				$trial_period_days = $trial_period_days + ( 30 * $order->BillingFrequency * $trialOccurrences );    //assume monthly
-			}
-		} elseif ( ! empty( $order->TrialBillingCycles ) ) {
-
-		}
-
+		
+		$trial_period_days = $this->calculate_trial_period_days( $order );
 		// Save $trial_period_days to order for now too.
 		$order->TrialPeriodDays = $trial_period_days;
 
@@ -3997,89 +4479,5 @@ class PMProGateway_stripe extends PMProGateway {
 		return $order->plan;
 	}
 
-	/**
-	 * @deprecated TBD. Will only be deprecated once we create a function with better params.
-	 */
-	public function create_subscription( &$order ) {
-		// _deprecated_function( __FUNCTION__, 'TBD' );
-		//subscribe to the plan
-		try {
-			$params              = array(
-				'customer'               => $order->stripe_customer->id,
-				'items'                  => array(
-					array( 'plan' => $order->code ),
-				),
-				'trial_period_days'      => $order->TrialPeriodDays,
-				'expand'                 => array(
-					'pending_setup_intent.payment_method',
-				),
-			);
-			if ( ! self::using_legacy_keys() ) {
-				$params['application_fee_percent'] = self::get_application_fee_percentage();
-			}
-			$order->subscription = Stripe_Subscription::create( apply_filters( 'pmpro_stripe_create_subscription_array', $params ) );
-		} catch ( Stripe\Error\Base $e ) {
-			$order->error = $e->getMessage();
-			return false;
-		} catch ( \Throwable $e ) {
-			$order->error = $e->getMessage();
-			return false;
-		} catch ( \Exception $e ) {
-			$order->error = $e->getMessage();
-			return false;
-		}
-
-		return $order->subscription;
-
-	}
-
-	/**
-	 * @deprecated TBD. Will only be deprecated once we are using Prices.
-	 */
-	public function delete_plan( &$order ) {
-		// _deprecated_function( __FUNCTION__, 'TBD' );
-		try {
-			// Delete the product first while we have a reference to it...
-			if ( ( ! empty( $order->plan->product ) ) && ( ! $this->archive_product( $order ) ) ) {
-				return false;
-			}
-			// Then delete the plan.
-			$order->plan->delete();
-		} catch ( Stripe\Error\Base $e ) {
-			$order->error = $e->getMessage();
-
-			return false;
-		} catch ( \Throwable $e ) {
-			$order->error = $e->getMessage();
-
-			return false;
-		} catch ( \Exception $e ) {
-			$order->error = $e->getMessage();
-
-			return false;
-		}
-
-		return true;
-	}
-
-	/**
-	 * @deprecated TBD. Will only be deprecated once we start re-using products.
-	 */
-	public function archive_product( &$order ) {
-		// _deprecated_function( __FUNCTION__, 'TBD' );
-		try {
-			$product = Stripe_Product::update( $order->plan->product, array( 'active' => false ) );
-		} catch ( Stripe\Error\Base $e ) {
-			$order->error = $e->getMessage();
-			return false;
-		} catch ( \Throwable $e ) {
-			$order->error = $e->getMessage();
-			return false;
-		} catch ( \Exception $e ) {
-			$order->error = $e->getMessage();
-			return false;
-		}
-
-		return true;
-	}
+	
 }

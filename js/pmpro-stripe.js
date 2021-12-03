@@ -198,7 +198,7 @@ jQuery( document ).ready( function( $ ) {
 	 */
 	function pmpro_stripeResponseHandler( response ) {
 
-		var form, data, card, paymentMethodId, customerId;
+		var form, data, card, paymentMethodId;
 
 		form = $('#pmpro_form, .pmpro_form');
 
@@ -240,11 +240,7 @@ jQuery( document ).ready( function( $ ) {
 			// Card authentication was successful. Finish the checkout in PHP.
 			// success message
 			$( '#pmpro_message' ).text( pmproStripe.msgAuthenticationValidated ).addClass( 'pmpro_success' ).removeClass( 'pmpro_alert' ).removeClass( 'pmpro_error' ).show();
-			
-			customerId = pmproStripe.paymentIntent 
-				? pmproStripe.paymentIntent.customer
-				: pmproStripe.setupIntent.customer;
-			
+
 			paymentMethodId = pmproStripe.paymentIntent
 				? pmproStripe.paymentIntent.payment_method.id
 				: pmproStripe.setupIntent.payment_method.id;
@@ -253,16 +249,12 @@ jQuery( document ).ready( function( $ ) {
 				? pmproStripe.paymentIntent.payment_method.card
 				: pmproStripe.setupIntent.payment_method.card;
 
-		    	if ( pmproStripe.paymentIntent ) {
+		    if ( pmproStripe.paymentIntent ) {
 				form.append( '<input type="hidden" name="payment_intent_id" value="' + pmproStripe.paymentIntent.id + '" />' );
 			}
 			if ( pmproStripe.setupIntent ) {
 				form.append( '<input type="hidden" name="setup_intent_id" value="' + pmproStripe.setupIntent.id + '" />' );
-				form.append( '<input type="hidden" name="subscription_id" value="' + pmproStripe.subscription.id + '" />' );
 			}
-
-			// Insert the Customer ID into the form so it gets submitted to the server.
-			form.append( '<input type="hidden" name="customer_id" value="' + customerId + '" />' );
 
 			// Insert the PaymentMethod ID into the form so it gets submitted to the server.
 			form.append( '<input type="hidden" name="payment_method_id" value="' + paymentMethodId + '" />' );
