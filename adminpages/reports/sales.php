@@ -304,6 +304,16 @@ function pmpro_report_sales_page()
 	if ( 0 !== $units_in_period ) {
 		$average = $total_in_period / $units_in_period; // Not including this unit.
 	}
+
+	$chart_headers = array(
+		array( "label" => esc_html( $date_function ), "type" => "string" ),
+		array( "label" => __( "Renewals", "paid-memberships-pro" ), "type" => "number" ),
+		array( "role" => "tooltip", "type" => "string", "p" => array( "html" => true ), "strong" => array( "html" => true ) ),
+		array( "label" => esc_html( sprintf( __( "New %s", "paid-memberships-pro" ), ucwords( $type ) ) ), "type" => "number" ),
+		array( "role" => "tooltip", "type" => "string", "p" => array( "html" => true ), "strong" => array( "html" => true ) ),
+		array( "label" => __( "Average*", "paid-memberships-pro" ), "type" => "number" )
+	);
+	
 	?>
 	<form id="posts-filter" method="get" action="">
 	<h1>
@@ -403,14 +413,7 @@ function pmpro_report_sales_page()
 		function drawVisualization() {
 
 			var data = google.visualization.arrayToDataTable([
-				[
-					{ 'label': '<?php echo esc_html( $date_function );?>', 'type': 'string' },
-					{ 'label': '<?php _e( 'Renewals', 'paid-memberships-pro' );?>', 'type': 'number' },
-					{ 'role': 'tooltip', 'type': 'string', 'p': {'html': true}, 'strong': {'html': true} },
-					{ 'label': '<?php echo esc_html( sprintf( __( 'New %s', 'paid-memberships-pro' ), ucwords( $type ) ) );?>', 'type': 'number' },
-					{ 'role': 'tooltip', 'type': 'string', 'p': {'html': true}, 'strong': {'html': true} },
-					{ 'label': '<?php _e( 'Average*', 'paid-memberships-pro' );?>', 'type': 'number' },
-				],
+				<?php echo wp_json_encode( $chart_headers ); ?>,
 				<?php foreach($cols as $date => $value) { 
 
 					$tooltip_string = "";
