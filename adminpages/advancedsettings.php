@@ -244,7 +244,7 @@
 						<select id="recaptcha" name="recaptcha" onchange="pmpro_updateRecaptchaTRs();">
 							<option value="0" <?php if(!$recaptcha) { ?>selected="selected"<?php } ?>><?php _e('No', 'paid-memberships-pro' );?></option>
 							<!-- For reference, removed the Yes - Free memberships only. option -->
-							<option value="2" <?php if($recaptcha == 2) { ?>selected="selected"<?php } ?>><?php _e('Yes - All memberships.', 'paid-memberships-pro' );?></option>
+							<option value="2" <?php if( $recaptcha > 0 ) { ?>selected="selected"<?php } ?>><?php _e('Yes - All memberships.', 'paid-memberships-pro' );?></option>
 						</select>
 						<p class="description"><?php _e('A free reCAPTCHA key is required.', 'paid-memberships-pro' );?> <a href="https://www.google.com/recaptcha/admin/create"><?php _e('Click here to signup for reCAPTCHA', 'paid-memberships-pro' );?></a>.</p>
 					</td>
