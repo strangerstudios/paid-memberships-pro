@@ -647,7 +647,7 @@ function add_pmpro_membership_level_meta( $level_id, $meta_key, $meta_value, $un
 	return add_metadata( 'pmpro_membership_level', $level_id, $meta_key, $meta_value, $unique );
 }
 
-function get_pmpro_membership_level_meta( $level_id, $key, $single = false ) {
+function get_pmpro_membership_level_meta( $level_id, $key = '', $single = false ) {
 	return get_metadata( 'pmpro_membership_level', $level_id, $key, $single );
 }
 
@@ -666,7 +666,7 @@ function add_pmpro_membership_order_meta( $order_id, $meta_key, $meta_value, $un
 	return add_metadata( 'pmpro_membership_order', $order_id, $meta_key, $meta_value, $unique );
 }
 
-function get_pmpro_membership_order_meta( $order_id, $key, $single = false ) {
+function get_pmpro_membership_order_meta( $order_id, $key = '', $single = false ) {
 	return get_metadata( 'pmpro_membership_order', $order_id, $key, $single );
 }
 
@@ -1190,6 +1190,37 @@ function pmpro_changeMembershipLevel( $level, $user_id = null, $old_level_status
 		if ( false === $wpdb->query( $sql ) ) {
 			$pmpro_error = sprintf( __( 'Error interacting with database: %s', 'paid-memberships-pro' ), ( ! empty( $wpdb->last_error ) ? $wpdb->last_error : 'unavailable' ) );
 			return false;
+		}
+
+		/**
+		 * Allow filtering whether to remove duplicate "active" memberships by setting them to "changed".
+		 *
+		 * @since 2.6.6
+		 *
+		 * @param bool $remove_duplicate_memberships Whether to remove duplicate "active" memberships by setting them to "changed".
+		 */
+		$remove_duplicate_memberships = apply_filters( 'pmpro_remove_duplicate_membership_entries', true );
+
+		if ( $remove_duplicate_memberships ) {
+			$wpdb->query(
+				$wpdb->prepare(
+					"
+						UPDATE {$wpdb->pmpro_memberships_users}
+						SET status = %s,
+							enddate = %s
+						WHERE user_id = %d
+							AND membership_id = %d
+							AND status = %s
+							AND id != %d
+					",
+					'changed',
+					current_time( 'mysql' ),
+					$user_id,
+					$level_id,
+					'active',
+					$wpdb->insert_id // Ignore the membership that we just added.
+				)
+			);
 		}
 	}
 
@@ -3501,7 +3532,7 @@ function pmpro_show_discount_code() {
 	$morder->discount_code    = $discount_code;
 	$morder->InitialPayment   = pmpro_round_price( $pmpro_level->initial_payment );
 	$morder->PaymentAmount    = pmpro_round_price( $pmpro_level->billing_amount );
-	$morder->ProfileStartDate = date_i18n( "Y-m-d", current_time( "timestamp" ) ) . "T0:0:0";
+	$morder->ProfileStartDate = date_i18n( "Y-m-d\TH:i:s", current_time( "timestamp" ) );
 	$morder->BillingPeriod    = $pmpro_level->cycle_period;
 	$morder->BillingFrequency = $pmpro_level->cycle_number;
 	if ( $pmpro_level->billing_limit ) {
@@ -3801,4 +3832,65 @@ function pmpro_method_should_be_private( $deprecated_notice_version ) {
 		return true;
 	}
 	return false;
+}
+
+/**
+ * Send a 200 HTTP reponse without ending PHP execution.
+ *
+ * Useful to avoid issues like timeouts from gateways during
+ * webhook/IPN handlers.
+ *
+ * Works with Apache and Nginx.
+ *
+ * Based on code from https://stackoverflow.com/a/42245266
+ *
+ * @since 2.6.4
+ */
+function pmpro_send_200_http_response() {
+	/**
+	 * Allow filtering whether to send an early 200 HTTP response.
+	 *
+	 * @since 2.6.4
+	 *
+	 * @param bool $send_early_response Whether to send an early 200 HTTP response.
+	 */
+	if ( ! apply_filters( 'pmpro_send_200_http_response', true ) ) {
+		return;
+	}
+
+	// Ngnix compatibility: Check if fastcgi_finish_request is callable.
+	if ( is_callable( 'fastcgi_finish_request' ) ) {
+		session_write_close();
+		fastcgi_finish_request();
+
+		return;
+	}
+
+	ignore_user_abort(true);
+
+	ob_start();
+	$server_protocol = filter_input( INPUT_SERVER, 'SERVER_PROTOCOL', FILTER_SANITIZE_STRING );
+	if ( ! in_array( $server_protocol, array( 'HTTP/1.1', 'HTTP/2', 'HTTP/2.0' ), true ) ) {
+		$server_protocol = 'HTTP/1.0';
+	}
+
+	header( $server_protocol . ' 200 OK' );
+	header( 'Content-Encoding: none' );
+	header( 'Content-Length: ' . ob_get_length() );
+	header( 'Connection: close' );
+
+	ob_end_flush();
+	ob_flush();
+	flush();
+}
+
+/** 
+ * Returns formatted ISO-8601 date (Used for Zapier Native app.)
+ * @since 2.6.6
+ * @param $date date A valid date value.
+ * @return string The date in ISO-8601 format.
+ */
+function pmpro_format_date_iso8601( $date ) {
+	$datetime = new DateTime( $date );
+	return $datetime->format( DateTime::ATOM );
 }

@@ -1,4 +1,43 @@
 == Changelog ==
+= 2.6.6 - 2021-11-18 =
+* SECURITY: Updated escaping on the discount codes page in the dashboard to prevent XSS attacks. #1867 (Thanks, Erwan from WPScan)
+* BUG FIX/ENHANCEMENT: Added code to remove duplicate active rows in the pmpro_memberships_users table after level change. This might have happened e.g. if users were purchasing a level via the WooCommerce Add On multiple times. #1860 (@dlparker1005)
+* BUG FIX/ENHANCEMENT: Improved the REST API endpoints to better support Zapier native requirements. #1862 (@andrewlimaza)
+* BUG FIX: Fixed PHP notices in the name parser library. #1861 (@sc0ttkclark)
+
+= 2.6.5 - 2021-11-12 =
+* ENHANCEMENT: Introduced new action `pmpro_before_commit_express_checkout` to allow additional changes after an order has been saved but before sending customer to PayPal Express checkout. #1852 (@mircobabini)
+* BUG FIX/ENHANCEMENT: Added login compatibility for Jetpack WordPress.com SSO when using the PMPro login page. #1848 (@sc0ttkclark)
+* BUG FIX: Fixed PHP notices from status headers when server protocol information is unavailable. #1849 (@dparker1005)
+* BUG FIX: Fixed metadata compatibility for membership levels and orders when calling `get_pmpro_membership_level_meta()` and `get_pmpro_membership_order_meta()` so they support getting all meta values for all keys. #1853 (@mircobabini)
+* BUG FIX: Escape all Webhook communication debug output coming from gateways. #1855 (@ideadude, Victor Garcia)
+
+= 2.6.4 - 2021-11-02 =
+* ENHANCEMENT: Now including some information from the htaccess file in Site Health, including whether a getfile.php script is defined or if caching is being used. (@sc0ttkclark)
+* ENHANCEMENT: Now including some of the PMPro-related PHP constants in the Site Health. (@sc0ttkclark)
+* ENHNACEMENT: Now including the minimum PHP version (5.6 currently) in the readme.txt so it's shared on the WordPress.org page. (@sc0ttkclark)
+* ENHANCEMENT: Added scrollable classes to the member history shown on user profile edit page in the dashboard. (@kimcoleman)
+* BUG FIX/ENHANCEMENT: Now sending a 200 OK status message early when the Stripe webhook is running to avoid timeout issues. We may use this new pmpro_send_200_http_response in the other webhook/IPN handlers later on. (@dparker1005)
+* BUG FIX/EHNANCEMENT: Removed the "fee" info from the edit user page. This was often misleading. The fee is still shown on the members list and frontend account page. Future updates will include work to make sure the fee is more accurate in cases where subscriptions or levels are being changed by admins after checkout. (@ideadude)
+* BUG FIX/ENHANCEMENT: Once again enqueuing the admin.css file on all WP admin pages. This fixes issues where styles weren't being applied to the edit user/profile page in the dashboard. (@ideadude)
+* BUG FIX/ENHANCEMENT: Removed the "Member Value Report". We didn't intend to move this over from the old Member History add on. The report was inaccurate and had optimization issues. (@kimcoleman)
+* BUG FIX/ENHANCEMENT: Added login compatibility for wordpress.com hosted sites. This fixes some issues with wordpress.com's SSO when using the PMPro login page. (@sc0ttkclark)
+* BUG FIX: Fixed issue introduced in 2.6.3 where memberships were not being cancelled when cancelled at PayPal. (@mircobabini)
+* BUG FIX: Now including time when calculating profile start date. In the past, we would set it to 00:00:00 which could add or remove a few hours from the subscription. (@dparker1005)
+* BUG FIX: Fixed issue where enddates were incorrectly set sometimes when expiration period was "Hour". (@kimwhite)
+
+= 2.6.3 - 2021-10-11 =
+* ENHANCEMENT: Now passing "app" information to Stripe through API calls. (@dparker1005)
+* ENHANCEMENT: Updated PayPal IPN to detect messages for refunds to at least log it. (@mircobabini)
+* ENHANCEMENT: Updated PayPal IPN to differentiate between cases where the initial payment failed vs a subscription was cancelled. (@mircobabini)
+* ENHANCEMENT: Better styling of the membership levels history when empty. (@mircobabini)
+* BUG FIX/ENHANCEMENT: Now showing better error messages when license key checks fail due to connection issues. (@ideadude)
+* BUG FIX: Improved PayPal API integration to handle cases where PayPal is returning encoding errors but still processing payments and subscriptions. (@mircobabini)
+* BUG FIX: Fixed issue where the Stripe sandbox key wasn't saved properly when using Stripe connect. (@dparker1005)
+* BUG FIX: Fixed issue where a double $$ was showing up in specific emails. (@andrewlimaza)
+* BUG FIX: Fixed warnings in various webhook and IPN handlers. (@ideadude)
+* BUG FIX: Fixed warning in the admin activity email cron job. (@andrewlimaza)
+
 = 2.6.2 - 2021-09-17 =
 * ENHANCEMENT: Made username the first column in the members list. This helps with the mobile view. #1764 (@dparker1005)
 * BUG FIX/ENHANCEMENT: Will now block uninstall.php from running if an older version of PMPro is deleted from the plugins page. #1773 (@mircobabini)

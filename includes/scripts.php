@@ -133,12 +133,7 @@ function pmpro_admin_enqueue_scripts() {
 	}        
 
 	wp_register_style( 'pmpro_admin', $admin_css, [], PMPRO_VERSION, 'screen' );
-	wp_register_style( 'pmpro_admin_rtl', $admin_css_rtl, [], PMPRO_VERSION, 'screen' );
-
-	// Only enqueue PMPro admin scripts on our own pages.
-	if ( ! isset( $_GET['page'] ) || 0 !== strpos( $_GET['page'], 'pmpro' ) ) {
-		return;
-	}
+	wp_register_style( 'pmpro_admin_rtl', $admin_css_rtl, [], PMPRO_VERSION, 'screen' );	
 
 	wp_enqueue_script( 'pmpro_admin' );
 	wp_enqueue_style( 'pmpro_admin' );
