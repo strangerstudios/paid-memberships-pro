@@ -612,7 +612,7 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 
 			$discount_code->code = $code;
 			$discount_code->starts = $starts;
-			$discount_code->ends = $expires;
+			$discount_code->expires = $expires;
 			$discount_code->uses = $uses;
 			$discount_code->levels = !empty( $levels_array ) ? $levels_array : $levels;
 			$discount_code->save();
