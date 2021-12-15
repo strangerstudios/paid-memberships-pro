@@ -11,6 +11,11 @@
 	$levels = pmpro_getAllLevels( false, true );
 
 	/**
+	 * Get the user fields from options.
+	 */
+	$user_fields_settings = pmpro_get_user_fields_settings();
+
+	/**
 	 * Load the common header for admin pages.
 	 *
 	 */
@@ -41,7 +46,7 @@
 	 */
 	function pmpro_userfields_save_widget() { ?>
 		<p class="submit">
-			<input name="savesettings" type="submit" class="button-primary" value="<?php esc_attr_e( 'Save All Settings', 'paid-memberships-pro' ); ?>" />
+			<input id="pmpro_userfields_savesettings" name="savesettings" type="submit" class="button-primary" value="<?php esc_attr_e( 'Save All Settings', 'paid-memberships-pro' ); ?>" />
 		</p>
 		<?php
 	}
@@ -85,6 +90,7 @@
 					<?php do_meta_boxes( 'memberships_page_pmpro-userfields', 'side', '' ); ?>
 					<?php wp_nonce_field('closedpostboxes', 'closedpostboxesnonce', false ); ?>
 					<?php wp_nonce_field('meta-box-order', 'meta-box-order-nonce', false ); ?>
+					<input type="hidden" name="pmpro_user_fields_settings" value="<?php echo esc_attr( json_encode( $user_fields_settings ) );?>" />
 				</form>
 			</div> <!-- end postbox-container-1 -->
 

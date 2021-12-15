@@ -1106,9 +1106,12 @@ function pmpro_get_field_group_html( $group_id ) {
 				
 				<div class="pmpro_userfield-field-setting">
 					<label for="pmpro_userfields_group_membership"><?php esc_html_e( 'Restrict Group for Membership Levels', 'paid-memberships-pro' ); ?></label>
-					<div class="checkbox_box" <?php if ( count( $levels ) > 3 ) { ?>style="height: 90px; overflow: auto;"<?php } ?>>
+					<div class="pmpro_checkbox_box" <?php if ( count( $levels ) > 3 ) { ?>style="height: 90px; overflow: auto;"<?php } ?>>
 						<?php foreach( $levels as $level ) { ?>
-							<div class="clickable"><input type="checkbox" id="pmpro_userfields_group_membership_<?php echo esc_attr( $level->id); ?>" name="pmpro_userfields_group_membership[]" <?php checked( true, in_array( $level->id, $group_levels ) );?>> <?php echo esc_html( $level->name ); ?></div>
+							<div class="pmpro_clickable">
+                                <input type="checkbox" id="pmpro_userfields_group_membership_<?php echo esc_attr( $level->id); ?>" name="pmpro_userfields_group_membership[]" <?php checked( true, in_array( $level->id, $group_levels ) );?>>
+                                <label for="pmpro_userfields_group_membership_<?php echo esc_attr( $level->id); ?>"><?php echo esc_html( $level->name ); ?></label>
+                            </div>
 						<?php } ?>
 					</div>
 				</div> <!-- end pmpro_userfield-field-setting -->
@@ -1127,7 +1130,7 @@ function pmpro_get_field_group_html( $group_id ) {
 			<div class="pmpro_userfield-group-fields">
 
 				<div class="pmpro_userfield-group-field pmpro_userfield-group-field-collapse">
-					
+                    
 				</div> <!-- end pmpro_userfield-group-fields -->
             
             </div> <!-- end pmpro_userfield-inside -->
@@ -1262,14 +1265,37 @@ function pmpro_get_field_html( $field_id ) {
             </div> <!-- end pmpro_userfield-field-setting -->
         </div> <!-- end pmpro_userfield-field-settings -->
         <div class="pmpro_userfield-field-actions">
+            <?php /*
             <button name="pmpro_userfields_close_field" class="button button-secondary pmpro_userfields_close_field">
                 <?php esc_html_e( 'Close Field', 'paid-memberships-pro' ); ?>
             </button>
+            */ ?>
         </div> <!-- end pmpro_userfield-field-actions -->
     </div> <!-- end pmpro_userfield-group-field -->
     <?php
 }
- 
+
+/**
+ * Get user fields from options.
+ */
+function pmpro_get_user_fields_settings() {
+    $default_user_fields_settings = array(
+        array(
+            'name' => 'More Information',
+            'checkout' => 'yes',
+            'profile' => 'yes',
+            'description' => '',
+            'levels' => array()            
+        )
+    );
+    
+    $settings = get_option( 'pmpro_user_fields_settings', $default_user_fields_settings );
+    
+    // TODO: Might want to validate the format the settings are in here.
+    
+    return $settings;
+}
+
 /**
  * Load user field settings into the fields global var.
  */

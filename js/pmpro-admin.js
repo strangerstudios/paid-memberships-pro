@@ -272,6 +272,74 @@ function pmpro_userfields_prep_click_events() {
         
         thefield.hide();
     });
+    
+    // Save Settings
+	jQuery('#pmpro_userfields_savesettings').unbind('click').on( 'click', function(event){
+        event.preventDefault();
+
+        let field_groups = [];
+
+		jQuery('.pmpro_userfield-group').each(function(index, value) {
+            let group_name = jQuery(this).find('input[name=pmpro_userfields_group_name]').val();
+            let group_checkout = jQuery(this).find('select[name=pmpro_userfields_group_checkout]').val();
+            let group_profile = jQuery(this).find('select[name=pmpro_userfields_group_profile]').val();
+            let group_description = jQuery(this).find('textarea[name=pmpro_userfields_group_description]').val();
+
+            // Get level ids.            
+            let group_levels = [];
+            jQuery('input[name="pmpro_userfields_group_membership[]"]:checked').each(function(){
+                group_levels.push(parseInt(jQuery(this).attr('id').replace('pmpro_userfields_group_membership_', '')));
+            });
+            
+            // Get fields.
+            let group_fields = [];
+            // TODO: Fix the selector here.
+            jQuery('div.pmpro_userfield-field-settings').each(function(){
+                let field_label = '';
+                let field_name = '';
+                let field_type = '';
+                let field_required = '';
+                let field_readonly = '';
+                let field_levels = '';
+                let field_profile = '';
+                let field_wrapper_class = '';
+                let field_element_class = '';
+                let field_hint = '';
+                
+                let field = {
+                    'label': field_label,
+                    'name': field_name,
+                    'type': field_type,
+                    'required': field_required,
+                    'readonly': field_readonly,
+                    'levels': field_levels,
+                    'profile': field_profile,
+                    'wrapper_class': field_wrapper_class,
+                    'element_class': field_element_class,
+                    'hint': field_hint
+                }
+
+                // Add to array.
+                group_fields.push( field );
+            });
+            
+            // Set up the field group object.
+            let field_group = {
+                'name': group_name,
+                'checkout': group_checkout,
+                'profile': group_profile,
+                'description': group_description,
+                'levels': group_levels,
+                'fields': group_fields
+            };
+
+            // Add to array.
+            field_groups.push( field_group );            
+        });
+        
+        console.log( field_groups );
+        jQuery('#pmpro_user_fields_settings').val( JSON.stringify( field_groups ) );
+    });
 }
 
 function pmpro_stripe_get_secretkey() {
