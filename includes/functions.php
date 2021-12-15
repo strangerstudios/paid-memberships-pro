@@ -3834,7 +3834,7 @@ function pmpro_send_200_http_response() {
 	 *
 	 * @param bool $send_early_response Whether to send an early 200 HTTP response.
 	 */
-	if ( ! apply_filters( 'pmpro_send_200_http_response', true ) ) {
+	if ( ! apply_filters( 'pmpro_send_200_http_response', false ) ) {
 		return;
 	}
 
