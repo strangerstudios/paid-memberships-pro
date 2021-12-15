@@ -227,7 +227,7 @@ class PMProGateway_stripe extends PMProGateway {
 	 */
 	static function pmpro_checkout_before_change_membership_level($user_id, $morder)
 	{
-		global $discount_code_id, $wpdb, $pmpro_currency;
+		global $pmpro_level, $discount_code, $discount_code_id, $wpdb, $pmpro_currency;
 
 		//if no order, no need to pay
 		if(empty($morder))
@@ -237,10 +237,21 @@ class PMProGateway_stripe extends PMProGateway {
 		$morder->status  = 'token';
 		$morder->saveOrder();
 
-		//save discount code use
-		if(!empty($discount_code_id)) {
-			$wpdb->query("INSERT INTO $wpdb->pmpro_discount_codes_uses (code_id, user_id, order_id, timestamp) VALUES('" . $discount_code_id . "', '" . $user_id . "', '" . $morder->id . "', now())");
-		}
+		// Save some checkout information in the order so that we can access it when the payment is complete.
+		// Save the request variables.
+		$request_vars = $_REQUEST;
+		unset( $request_vars['password'] );
+		unset( $request_vars['password2'] );
+		unset( $request_vars['password2_copy'] );
+		update_pmpro_membership_order_meta( $morder->id, 'checkout_request_vars', $request_vars );
+
+		// Save the checkout level.
+		$pmpro_level_arr = (array) $pmpro_level;
+		update_pmpro_membership_order_meta( $morder->id, 'checkout_level', $pmpro_level_arr );
+
+		// Save the discount code.
+		$pmpro_discount_code_arr = (array) $discount_code;
+		update_pmpro_membership_order_meta( $morder->id, 'checkout_discount_code', $pmpro_discount_code_arr );
 
 		// Time to send the user to pay with Stripe!
 		$stripe = new PMProGateway_stripe();

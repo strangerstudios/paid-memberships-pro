@@ -708,30 +708,45 @@
 */
 function pmpro_webhookChangeMembershipLevel( $morder, $checkout_session ) {
 
-	global $wpdb;
+	global $wpdb, $pmpro_level, $discount_code;
 
-	// Get the membership level.
-	$morder->getMembershipLevel();
+	// We need to pull the checkout level and fields data from the order.
+	$checkout_level_arr = get_pmpro_membership_order_meta( $morder->id, 'checkout_level', true );
+	$pmpro_level = (object) $checkout_level_arr;
+
+	// TODO: Maybe set $pmpro_checkout_level_ids for MMPU compatibility.
+
+	// Set $discount_code.
+	$discount_code_arr = get_pmpro_membership_order_meta( $morder->id, 'discount_code', true );
+	if ( ! empty( $discount_code_arr ) ) {
+		$discount_code = (object) $discount_code_arr;
+	}
+	
+	// Set $_REQUEST.
+	$checkout_request_vars = get_pmpro_membership_order_meta( $morder->id, 'checkout_request_vars', true );
+	$_REQUEST = array_merge( $_REQUEST, $checkout_request_vars );
+
+	// Run the pmpro_checkout_before_change_membership_level action in case add ons need to set up.
+	remove_action(  'pmpro_checkout_before_change_membership_level', array('PMProGateway_stripe', 'pmpro_checkout_before_change_membership_level'), 10, 2 );
+	do_action( 'pmpro_checkout_before_change_membership_level', $morder->user_id, $morder );
 
 	//set the start date to current_time('timestamp') but allow filters  (documented in preheaders/checkout.php)
-	$startdate = apply_filters( "pmpro_checkout_start_date", "'" . current_time( 'mysql' ) . "'", $morder->user_id, $morder->membership_level );
+	$startdate = apply_filters( "pmpro_checkout_start_date", "'" . current_time( 'mysql' ) . "'", $morder->user_id, $pmpro_level );
 
 	//fix expiration date
-	if ( ! empty( $morder->membership_level->expiration_number ) ) {
-		$enddate = "'" . date_i18n( "Y-m-d", strtotime( "+ " . $morder->membership_level->expiration_number . " " . $morder->membership_level->expiration_period, current_time( "timestamp" ) ) ) . "'";
+	if ( ! empty( $pmpro_level->expiration_number ) ) {
+		$enddate = "'" . date_i18n( "Y-m-d", strtotime( "+ " . $pmpro_level->expiration_number . " " . $pmpro_level->expiration_period, current_time( "timestamp" ) ) ) . "'";
 	} else {
 		$enddate = "NULL";
 	}
 
 	//filter the enddate (documented in preheaders/checkout.php)
-	$enddate = apply_filters( "pmpro_checkout_end_date", $enddate, $morder->user_id, $morder->membership_level, $startdate );
+	$enddate = apply_filters( "pmpro_checkout_end_date", $enddate, $morder->user_id, $pmpro_level, $startdate );
 
 	//get discount code
-	$morder->getDiscountCode();
-	if ( ! empty( $morder->discount_code ) ) {
+	if ( ! empty( $discount_code ) ) {
 		//update membership level
-		$morder->getMembershipLevel( true );
-		$discount_code_id = $morder->discount_code->id;
+		$discount_code_id = $discount_code->id;
 	} else {
 		$discount_code_id = "";
 	}
@@ -740,15 +755,15 @@ function pmpro_webhookChangeMembershipLevel( $morder, $checkout_session ) {
 	//custom level to change user to
 	$custom_level = array(
 		'user_id'         => $morder->user_id,
-		'membership_id'   => $morder->membership_level->id,
+		'membership_id'   => $pmpro_level->id,
 		'code_id'         => $discount_code_id,
-		'initial_payment' => $morder->membership_level->initial_payment,
-		'billing_amount'  => $morder->membership_level->billing_amount,
-		'cycle_number'    => $morder->membership_level->cycle_number,
-		'cycle_period'    => $morder->membership_level->cycle_period,
-		'billing_limit'   => $morder->membership_level->billing_limit,
-		'trial_amount'    => $morder->membership_level->trial_amount,
-		'trial_limit'     => $morder->membership_level->trial_limit,
+		'initial_payment' => $pmpro_level->initial_payment,
+		'billing_amount'  => $pmpro_level->billing_amount,
+		'cycle_number'    => $pmpro_level->cycle_number,
+		'cycle_period'    => $pmpro_level->cycle_period,
+		'billing_limit'   => $pmpro_level->billing_limit,
+		'trial_amount'    => $pmpro_level->trial_amount,
+		'trial_limit'     => $pmpro_level->trial_limit,
 		'startdate'       => $startdate,
 		'enddate'         => $enddate
 	);
@@ -806,7 +821,7 @@ function pmpro_webhookChangeMembershipLevel( $morder, $checkout_session ) {
 		}
 
 		$user                   = get_userdata( $morder->user_id );
-		$user->membership_level = $morder->membership_level;        //make sure they have the right level info
+		$user->membership_level = $pmpro_level;        //make sure they have the right level info
 
 		//send email to member
 		$pmproemail = new PMProEmail();
