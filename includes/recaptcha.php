@@ -5,14 +5,15 @@
  */
 function pmpro_init_recaptcha() {
 	//don't load if setting is off
-	global $recaptcha, $recaptcha_validated;
+	global $recaptcha, $recaptcha_validated, $pmpro_pages;
 	$recaptcha = pmpro_getOption( 'recaptcha' );
 	if ( empty( $recaptcha ) ) {
 		return;
 	}
 	
-	//don't load unless we're on the checkout page
-	if ( ! pmpro_is_checkout() ) {
+	//don't load unless we're on the checkout or billing page
+	$is_billing = ! empty( $pmpro_pages['billing'] ) && is_page( $pmpro_pages['billing'] );
+	if ( ! pmpro_is_checkout() && ! $is_billing ) {
 		return;
 	}
 	
