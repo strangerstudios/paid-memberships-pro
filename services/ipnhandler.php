@@ -321,7 +321,7 @@ if ( $txn_type == "subscr_cancel" ) {
 			} elseif ( isset($last_subscription_order->membership_id) && ! pmpro_hasMembershipLevel( $last_subscription_order->membership_id, $user->ID ) ) {
 				ipnlog( "This user has a different level than the one associated with this order. Their membership was probably changed by an admin or through an upgrade/downgrade. (Order #" . $last_subscription_order->id . ", Subscription Transaction ID #" . $subscr_id . ")" );
 			} else {
-				pmpro_changeMembershipLevel( 0, $last_subscription_order->user_id, 'cancelled' );
+				pmpro_cancelMembershipLevel( $last_subscription_order->membership_id, $last_subscription_order->user_id, 'cancelled' );
 
 				ipnlog( "Canceled membership for user with id = " . $last_subscription_order->user_id . ". Subscription transaction id = " . $subscr_id . "." );
 
