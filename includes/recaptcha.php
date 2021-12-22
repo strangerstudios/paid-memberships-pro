@@ -17,8 +17,8 @@ function pmpro_init_recaptcha() {
 		return;
 	}
 	
-	//check for validation
-	$recaptcha_validated = pmpro_get_session_var( 'pmpro_recaptcha_validated' );
+	//check for validation	
+	$recaptcha_validated = pmpro_get_session_var( 'pmpro_recaptcha_validated' );	
 	if ( ! empty( $recaptcha_validated ) ) {
 	    $recaptcha = false;
     }
@@ -190,7 +190,7 @@ function pmpro_wp_ajax_validate_recaptcha() {
 	
 	$reCaptcha = new pmpro_ReCaptcha( $recaptcha_privatekey );
 	$resp      = $reCaptcha->verifyResponse( $_SERVER['REMOTE_ADDR'], $_REQUEST['g-recaptcha-response'] );
-
+	
 	if ( $resp->success ) {
 	    pmpro_set_session_var( 'pmpro_recaptcha_validated', true );
 		echo "1";
@@ -207,3 +207,4 @@ function pmpro_after_checkout_reset_recaptcha() {
     pmpro_unset_session_var( 'pmpro_recaptcha_validated' );
 }
 add_action( 'pmpro_after_checkout', 'pmpro_after_checkout_reset_recaptcha' );
+add_action( 'pmpro_after_update_billing', 'pmpro_after_checkout_reset_recaptcha' );
