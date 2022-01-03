@@ -382,7 +382,7 @@ if ( function_exists( 'pmpro_add_email_order_modal' ) ) {
 }
 
 // Clean-up request uri from in-page actions
-$_SERVER['REQUEST_URI'] = remove_query_arg( [ 'copy', 'delete' ], $_SERVER['REQUEST_URI'] );
+$current_page_url = remove_query_arg( [ 'copy', 'delete' ], $_SERVER['REQUEST_URI'] );
 ?>
 
 <?php if ( ! empty( $order ) ) { ?>
@@ -1386,7 +1386,7 @@ $_SERVER['REQUEST_URI'] = remove_query_arg( [ 'copy', 'delete' ], $_SERVER['REQU
 										'action' => 'delete_order',
 										'delete' => $order->id,
 									],
-									$_SERVER['REQUEST_URI']
+									$current_page_url
 								),
 								'delete_order',
 								'pmpro_orders_nonce'
