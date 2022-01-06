@@ -2356,12 +2356,7 @@ function pmpro_getLevelAtCheckout( $level_id = null, $discount_code = null ) {
 
 	// what level are they purchasing? (discount code passed)
 	if ( ! empty( $level_id ) && ! empty( $discount_code ) ) {
-		$discount_code_id = $wpdb->get_var( "SELECT id FROM $wpdb->pmpro_discount_codes WHERE code = '" . esc_sql( $discount_code ) . "' LIMIT 1" );
-
-		var_dump( $wpdb );
-		echo "<hr />";
-		var_dump( $wpdb->error );
-		echo "<hr />";
+		$discount_code_id = $wpdb->get_var( "SELECT id FROM $wpdb->pmpro_discount_codes WHERE code = '" . esc_sql( $discount_code ) . "' LIMIT 1" );		
 
 		// check code
 		global $pmpro_checkout_level_ids; // Set by MMPU.
