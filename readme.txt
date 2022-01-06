@@ -157,7 +157,7 @@ Not sure? You can find out by doing a bit a research.
 
 == Changelog ==
 = 2.6.7 - 2022-01-06 =
-* SECURITY: Updated escaping in the pmpro_getCheckoutLevel function as extra precaution against SQL injections. (Thanks, WPScan)
+* SECURITY: Updated escaping in the pmpro_getLevelAtCheckout and pmpro_checkDiscountCode functions as extra precaution against SQL injections. (Thanks, WPScan)
 
 = 2.6.6 - 2021-11-18 =
 * SECURITY: Updated escaping on the discount codes page in the dashboard to prevent XSS attacks. #1867 (Thanks, Erwan from WPScan)
