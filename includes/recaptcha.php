@@ -17,7 +17,7 @@ function pmpro_init_recaptcha() {
 		return;
 	}
 	
-	//check for validation	
+	//check for validation
 	$recaptcha_validated = pmpro_get_session_var( 'pmpro_recaptcha_validated' );	
 	if ( ! empty( $recaptcha_validated ) ) {
 	    $recaptcha = false;
