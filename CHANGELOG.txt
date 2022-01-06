@@ -1,4 +1,7 @@
 == Changelog ==
+= 2.5.11 - 2022-01-06 =
+* SECURITY: Updated escaping in the pmpro_getLevelAtCheckout and pmpro_checkDiscountCode functions as extra precaution against SQL injections. (Thanks, WPScan)
+
 = 2.5.10.2 - 2021-08-02 =
 * ENHANCEMENT: New scripts to use WP CLI to update pot and po/mo files.
 * BUG FIX/ENHANCEMENT: Updated cancellation logic to support upcoming Cancel on Next Payment Date Add On changes.
