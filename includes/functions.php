@@ -109,7 +109,7 @@ function pmpro_get_slug( $post_id ) {
 	$post_id = intval( $post_id );
 
 	if ( ! $pmpro_slugs[ $post_id ] ) {
-		$pmpro_slugs[ $post_id ] = $wpdb->get_var( "SELECT post_name FROM $wpdb->posts WHERE ID = '" . $post_id . "' LIMIT 1" );
+		$pmpro_slugs[ $post_id ] = $wpdb->get_var( "SELECT post_name FROM $wpdb->posts WHERE ID = '" . esc_sql( $post_id ) . "' LIMIT 1" );
 	}
 
 	return $pmpro_slugs[ $post_id ];
@@ -1027,7 +1027,7 @@ function pmpro_changeMembershipLevel( $level, $user_id = null, $old_level_status
 	if ( $old_levels && $pmpro_deactivate_old_levels ) {
 		foreach ( $old_levels as $old_level ) {
 
-			$sql = "UPDATE $wpdb->pmpro_memberships_users SET `status`='$old_level_status', `enddate`='" . current_time( 'mysql' ) . "' WHERE `id`=" . $old_level->subscription_id;
+			$sql = "UPDATE $wpdb->pmpro_memberships_users SET `status`='$old_level_status', `enddate`='" . esc_sql( current_time( 'mysql' ) ) . "' WHERE `id`=" . esc_sql( $old_level->subscription_id );
 
 			if ( ! $wpdb->query( $sql ) ) {
 				$pmpro_error = __( 'Error interacting with database', 'paid-memberships-pro' ) . ': ' . ( $wpdb->last_error ? $wpdb->last_error : 'unavailable' );
@@ -1041,7 +1041,7 @@ function pmpro_changeMembershipLevel( $level, $user_id = null, $old_level_status
 	if ( ! empty( $cancel_level ) ) {
 		$pmpro_cancel_previous_subscriptions = true;    // don't filter cause we're doing just the one
 
-		$other_order_ids = $wpdb->get_col( "SELECT id FROM $wpdb->pmpro_membership_orders WHERE user_id = '" . $user_id . "' AND status = 'success' AND membership_id = '" . esc_sql( $cancel_level ) . "' ORDER BY id DESC LIMIT 1" );
+		$other_order_ids = $wpdb->get_col( "SELECT id FROM $wpdb->pmpro_membership_orders WHERE user_id = '" . esc_sql( $user_id ) . "' AND status = 'success' AND membership_id = '" . esc_sql( $cancel_level ) . "' ORDER BY id DESC LIMIT 1" );
 	} else {
 		$pmpro_cancel_previous_subscriptions = true;
 		if ( isset( $_REQUEST['cancel_membership'] ) && $_REQUEST['cancel_membership'] == false ) {
@@ -1052,7 +1052,7 @@ function pmpro_changeMembershipLevel( $level, $user_id = null, $old_level_status
 		$other_order_ids = $wpdb->get_col(
 			"SELECT id, IF(subscription_transaction_id = '', CONCAT('UNIQUE_SUB_ID_', id), subscription_transaction_id) as unique_sub_id
 											FROM $wpdb->pmpro_membership_orders
-											WHERE user_id = '" . $user_id . "'
+											WHERE user_id = '" . esc_sql( $user_id ) . "'
 												AND status = 'success'
 											GROUP BY unique_sub_id
 											ORDER BY id DESC"
