@@ -3874,3 +3874,12 @@ function pmpro_format_date_iso8601( $date ) {
 	$datetime = new DateTime( $date );
 	return $datetime->format( DateTime::ATOM );
 }
+
+/**
+ * Returns the IP address of the current visitor.
+ */
+function pmpro_get_ip() {
+	$remote_ip = preg_replace( '/[^0-9a-fA-F:., ]/', '', $_SERVER['REMOTE_ADDR'] );
+	$remote_ip = apply_filters( 'pmpro_get_ip', $remote_ip );
+	return $remote_ip;
+}
