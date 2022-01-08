@@ -159,7 +159,16 @@ class PMPro_Field
             //use the save date function
             $this->save_function = array($this, "saveDate");
         }
-		
+
+		/**
+		 * Allow hooking into after field properties are set up.
+		 *
+		 * @since TBD
+		 *
+		 * @param PMPro_Field $field The field object.
+		 */
+		do_action( 'pmpro_field_set', $this );
+
 		return true;
 	}
 
@@ -747,8 +756,26 @@ class PMPro_Field
 		//anything meant to be added to the beginning or end?
 		$r = $r_beginning . $r . $r_end;
 
-		//filter
-		$r = apply_filters('pmprorh_get_html', $r, $this);
+		/**
+		 * Allow hooking into the generated field HTML for a specific field type.
+		 *
+		 * @since TBD
+		 *
+		 * @param string      $r     The field HTML.
+		 * @param mixed       $value The field value.
+		 * @param PMPro_Field $field The field object.
+		 */
+		$r = apply_filters( "pmpro_field_get_html_{$this->type}", $r, $value, $this );
+
+		/**
+		 * Allow hooking into the generated field HTML.
+		 *
+		 * @since TBD
+		 *
+		 * @param string      $r     The field HTML.
+		 * @param PMPro_Field $field The field object.
+		 */
+		$r = apply_filters( 'pmprorh_get_html', $r, $this );
 
 		return $r;
 	}
@@ -775,8 +802,7 @@ class PMPro_Field
 			{
 				if(!empty($check['id']))
 				{
-					// If checking grouped_checkbox, need to update the $check['id'] with index of option.
-					$field_id = $check['id'];
+					// If checking grouped_checkbox, need to update the $check['id'] with index of option.					$field_id = $check['id'];
 					$depends_checkout_box = PMPro_Field::get_checkout_box_name_for_field( $field_id );
 					if ( empty( $depends_checkout_box ) ) {
 						continue;
@@ -977,21 +1003,48 @@ class PMPro_Field
 	function displayValue($value)
 	{
 		if(is_array($value) && !empty($this->options))
-		{							
+		{
 			$labels = array();
 			foreach($value as $item)
 			{
 				$labels[] = $this->options[$item];
 			}
-			
-			echo implode(", ", $labels);
+
+			$output = implode( ', ', $labels);
 		}
 		elseif(is_array($value))
-			echo implode(", ", $value);
+			$output = implode( ', ', $value );
 		elseif(!empty($this->options))
-			echo $this->options[$value];
+			$output = $this->options[$value];
 		else
-			echo $value;
+			$output = $value;
+
+		// Enforce string as output.
+		$output = (string) $output;
+
+		/**
+		 * Allow hooking the field display value for a specific field type.
+		 *
+		 * @since TBD
+		 *
+		 * @param string      $output The field display value to output.
+		 * @param mixed       $value  The raw value.
+		 * @param PMPro_Field $field  The field object.
+		 */
+		$output = apply_filters( "pmpro_field_display_value_{$this->type}", $output, $value, $this );
+
+		/**
+		 * Allow hooking the field display value.
+		 *
+		 * @since TBD
+		 *
+		 * @param string      $output The field display value to output.
+		 * @param mixed       $value  The raw value.
+		 * @param PMPro_Field $field  The field object.
+		 */
+		$output = apply_filters( 'pmpro_field_display_value', $output, $value, $this );
+
+		echo $output;
 	}
 	
 	//from: http://stackoverflow.com/questions/173400/php-arrays-a-good-way-to-check-if-an-array-is-associative-or-numeric/4254008#4254008
@@ -1084,6 +1137,25 @@ class PMPro_Field
 			default:
 				$filled = ! ( empty( $_REQUEST[$this->name] ) && empty( $_FILES[$this->name]['name'] ) && empty( $_REQUEST[$this->name.'_old'] ) );
 		}
-		return $filled;
+
+		/**
+		 * Allow hooking into whether the field is filled for a specific field type.
+		 *
+		 * @since TBD
+		 *
+		 * @param bool        $filled Whether the field is filled.
+		 * @param PMPro_Field $field  The field object.
+		 */
+		$filled = (bool) apply_filters( "pmpro_field_was_filled_if_needed_{$this->type}", $filled, $this );
+
+		/**
+		 * Allow hooking into whether the field is filled.
+		 *
+		 * @since TBD
+		 *
+		 * @param bool        $filled Whether the field is filled.
+		 * @param PMPro_Field $field  The field object.
+		 */
+		return (bool) apply_filters( 'pmpro_field_was_filled_if_needed', $filled, $this );
 	}
 }
