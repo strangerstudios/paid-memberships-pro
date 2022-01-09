@@ -50,6 +50,9 @@ function pmpro_enqueue_scripts() {
 			'discount_code_passed_in' => !empty( $_REQUEST['discount_code'] ),
         ));
         wp_enqueue_script( 'pmpro_checkout' );
+        
+        // To combat spam. The init enqueues the script.
+        $submit_limiter = PMPro_Submit_Throttle::init();
     }
     
     // Change Password page JS 
