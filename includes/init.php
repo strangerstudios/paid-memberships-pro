@@ -53,6 +53,9 @@ function pmpro_init() {
 		$pmpro_currency_symbol = pmpro_getMatches("/\((.*)\)/", $pmpro_currencies[$pmpro_currency], true);
 	else
 		$pmpro_currency_symbol = $pmpro_currency . " ";	//just use the code
+		
+	//load submit throttle	
+	$submit_throttle = PMPro_Submit_Throttle::init();
 }
 add_action("init", "pmpro_init");
 
