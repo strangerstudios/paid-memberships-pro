@@ -76,7 +76,7 @@ class PMPro_Submit_Throttle {
                 for (var i = 2; i < pmpro_submit_clicks.length+2; i++) {
                     fibonacci[i] = fibonacci[i - 2] + fibonacci[i - 1];
                 }
-                delay = fibonacci.pop() * 100;
+                delay = fibonacci.pop() * 100 - 100;
 
                 // Delay
                 const start = Date.now();
