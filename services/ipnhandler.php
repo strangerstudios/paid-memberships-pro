@@ -249,6 +249,13 @@ if ( $txn_type == 'recurring_payment_profile_cancel' || $txn_type == 'recurring_
 		$user = get_userdata( $last_subscription_order->user_id );
 
 		if ( empty( $user ) || empty( $user->ID ) ) {
+			//if the initial payment failed, cancel with status error instead of cancelled
+			if ( $initial_payment_status === "failed" ) {
+				$last_subscription_order->updateStatus('error');
+			} else {
+				$last_subscription_order->updateStatus('cancelled');
+			}
+
 			ipnlog( "ERROR: Could not cancel membership. No user attached to order #" . $last_subscription_order->id . " with subscription transaction id = " . $recurring_payment_id . "." );
 		} else {
 			/*
@@ -268,6 +275,8 @@ if ( $txn_type == 'recurring_payment_profile_cancel' || $txn_type == 'recurring_
 
 				// The order should already be in status error
 				$last_subscription_order->updateStatus('error');
+
+				ipnlog( "Errored membership for user with id = " . $last_subscription_order->user_id . ". Subscription transaction id = " . $recurring_payment_id . "." );
 			} elseif ( $last_subscription_order->status === "cancelled" ) {
 				ipnlog( "We've already processed this cancellation. Probably originated from WP/PMPro. (Order #" . $last_subscription_order->id . ", Subscription Transaction ID #" . $recurring_payment_id . ")" );
 			} elseif ( ! pmpro_hasMembershipLevel( $last_subscription_order->membership_id, $user->ID ) ) {
