@@ -53,7 +53,7 @@ class PMPro_Submit_Throttler {
      */
 	public static function get_clicks_ajax() {
 		$old_clicks = pmpro_get_session_var( 'pmpro_submit_clicks' );
-		if ( empty( $old_clicks ) ) { $old_clicks = []; }
+		if ( empty( $old_clicks ) ) { $old_clicks = []; }		
 		sort( $old_clicks );
 		echo json_encode( $old_clicks );
 		exit;
@@ -73,15 +73,11 @@ class PMPro_Submit_Throttler {
 		$all_clicks = array_unique( array_merge( $new_clicks, $old_clicks ) );		
 		sort( $all_clicks );
 
-		// Remove old items.
-		// Note: We remove things older than 24 hours. The JS in the frontend
-		// removes things older than 5 minutes. We can't trust the timestamps
-		// from the frontend to match the server. So we're cautious to avoid
-		// a case where the server is clearing out timestamps < 5 minutes old.
-		$now = current_time( 'timestamp' );
+		// Remove old items. (5*60=5m)		
+		$now = current_time( 'timestamp', true );	// UTC		
 		$new_clicks = [];
 		foreach( $all_clicks as $click ) {
-			if ( $click > $now-(3600*24) ) {
+			if ( $click > $now-(5*60) ) {
 				$new_clicks[] = $click;
 			}
 		}
