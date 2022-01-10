@@ -296,7 +296,9 @@ if ( $txn_type == 'recurring_payment_profile_cancel' || $txn_type == 'recurring_
 if ( $txn_type == 'recurring_payment_profile_created' ) {
 	$last_subscription_order = new MemberOrder();
 	if ( $last_subscription_order->getLastMemberOrderBySubscriptionTransactionID( $subscr_id ) ) {
-		update_pmpro_membership_order_meta( $last_subscription_order->id, 'initial_payment_txn_id', $initial_payment_txn_id );
+		$wpdb->update( $wpdb->pmpro_membership_orders, array( 'payment_transaction_id' => $initial_payment_txn_id ), array(
+			'id' => $last_subscription_order->id
+		), array( '%s' ), array( '%d' ) );
 
 		ipnlog( 'Confirmation of profile creation for this recurring payment (' . $subscr_id . ').' );
 	} else {
