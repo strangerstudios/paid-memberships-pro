@@ -123,13 +123,13 @@ class PMPro_Submit_Throttler {
         		jQuery('input[type=image]', this).attr('disabled', 'disabled');
 
                 // Push the current timestamp onto the stack
-                var right_now = Date.now();
+                var right_now = Date.now()/1000;	// in seconds
                 pmpro_submit_clicks.push(right_now);
 
-                // Check for old timestamps in the stack
+                // Check for old timestamps in the stack (5*60 = 5min)
                 var temp = [];
-                for (let i = 0; i < pmpro_submit_clicks.length; i++) {
-                    if ( pmpro_submit_clicks[i] > right_now-5*60 ) {
+				for (let i = 0; i < pmpro_submit_clicks.length; i++) {
+                    if ( pmpro_submit_clicks[i] > right_now-(5*60) ) {
                         temp.push(pmpro_submit_clicks[i]);
                     }
                 }
@@ -161,11 +161,11 @@ class PMPro_Submit_Throttler {
                 delay = fibonacci.pop() * 100 - 100;
 
                 // Delay
-                const start = Date.now();
+                const start = Date.now();	// in milliseconds
                 let now = start;
                 while (now - start < delay) {
                     now = Date.now();
-                }				
+                }
             });
         });
         </script>
