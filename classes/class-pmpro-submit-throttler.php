@@ -111,7 +111,7 @@ class PMPro_Submit_Throttler {
 				console.log(xml);
 			},
 			success: function(clicks){
-				pmpro_submit_clicks = clicks;
+				pmpro_submit_clicks = JSON.parse( clicks );		
 			}
 		});
 		
