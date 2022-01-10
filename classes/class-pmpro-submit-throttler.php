@@ -129,7 +129,7 @@ class PMPro_Submit_Throttler {
                 // Check for old timestamps in the stack
                 var temp = [];
                 for (let i = 0; i < pmpro_submit_clicks.length; i++) {
-                    if ( pmpro_submit_clicks[i] > right_now-5000*60 ) {
+                    if ( pmpro_submit_clicks[i] > right_now-5*60 ) {
                         temp.push(pmpro_submit_clicks[i]);
                     }
                 }
