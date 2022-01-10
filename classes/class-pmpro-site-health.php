@@ -114,7 +114,7 @@ class PMPro_Site_Health {
 	 * @return string The level information.
 	 */
 	public function get_levels() {
-		$membership_levels = pmpro_getAllLevels( true );
+		$membership_levels = pmpro_getAllLevels( true, true );
 
 		if ( ! $membership_levels ) {
 			return __( 'No Levels Found', 'paid-memberships-pro' );
