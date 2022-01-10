@@ -4,7 +4,7 @@
  *
  * @since 2.6.8
  */
-class PMPro_Submit_Throttle {
+class PMPro_Submit_Throttler {
     /**
 	 * The current object instance.
 	 *
@@ -31,11 +31,11 @@ class PMPro_Submit_Throttle {
      * Hook things up in the constructor.
      */
 	function __construct() {
-		add_action( 'wp_ajax_nopriv_pmpro_get_clicks', array( 'PMPro_Submit_Throttle', 'get_clicks_ajax' ) );
-		add_action( 'wp_ajax_pmpro_get_clicks', array( 'PMPro_Submit_Throttle', 'get_clicks_ajax' ) );
-		add_action( 'wp_ajax_nopriv_pmpro_update_clicks', array( 'PMPro_Submit_Throttle', 'update_clicks_ajax' ) );
-		add_action( 'wp_ajax_pmpro_update_clicks', array( 'PMPro_Submit_Throttle', 'update_clicks_ajax' ) );
-		add_action( 'wp', array( 'PMPro_Submit_Throttle', 'wp' ) );
+		add_action( 'wp_ajax_nopriv_pmpro_get_clicks', array( 'PMPro_Submit_Throttler', 'get_clicks_ajax' ) );
+		add_action( 'wp_ajax_pmpro_get_clicks', array( 'PMPro_Submit_Throttler', 'get_clicks_ajax' ) );
+		add_action( 'wp_ajax_nopriv_pmpro_update_clicks', array( 'PMPro_Submit_Throttler', 'update_clicks_ajax' ) );
+		add_action( 'wp_ajax_pmpro_update_clicks', array( 'PMPro_Submit_Throttler', 'update_clicks_ajax' ) );
+		add_action( 'wp', array( 'PMPro_Submit_Throttler', 'wp' ) );
 	}
 
 	/**
@@ -44,7 +44,7 @@ class PMPro_Submit_Throttle {
 	public static function wp() {
 		global $pmpro_pages;
 		if ( pmpro_is_checkout() || ! empty( $pmpro_pages['billing'] ) && is_page( $pmpro_pages['billing']) ) {
-			add_action( 'wp_footer', array( 'PMPro_Submit_Throttle', 'get_js' ), 99 );
+			add_action( 'wp_footer', array( 'PMPro_Submit_Throttler', 'get_js' ), 99 );
 		}
 	}
 

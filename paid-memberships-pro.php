@@ -81,7 +81,7 @@ require_once( PMPRO_DIR . '/includes/rest-api.php' );               // rest API 
 require_once( PMPRO_DIR . '/includes/widgets.php' );                // widgets for PMPro
 
 require_once( PMPRO_DIR . '/classes/class-pmpro-site-health.php' ); 	// Site Health information.
-require_once( PMPRO_DIR . '/classes/class-pmpro-submit-throttle.php' ); 	// Spam protection for checkout forms.
+require_once( PMPRO_DIR . '/classes/class-pmpro-submit-throttler.php' ); 	// Spam protection for checkout forms.
 
 require_once( PMPRO_DIR . '/shortcodes/checkout_button.php' );      // [pmpro_checkout_button] shortcode to show link to checkout for a level
 require_once( PMPRO_DIR . '/shortcodes/membership.php' );           // [membership] shortcode to hide/show member content

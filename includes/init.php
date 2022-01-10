@@ -54,8 +54,8 @@ function pmpro_init() {
 	else
 		$pmpro_currency_symbol = $pmpro_currency . " ";	//just use the code
 		
-	//load submit throttle	
-	$submit_throttle = PMPro_Submit_Throttle::init();
+	//load submit throttler
+	$submit_throttler = PMPro_Submit_Throttler::init();
 }
 add_action("init", "pmpro_init");
 
