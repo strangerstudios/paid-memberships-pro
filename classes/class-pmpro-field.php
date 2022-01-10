@@ -802,7 +802,7 @@ class PMPro_Field
 			{
 				if(!empty($check['id']))
 				{
-					// If checking grouped_checkbox, need to update the $check['id'] with index of option.				
+					// If checking grouped_checkbox, need to update the $check['id'] with index of option.
 					$field_id = $check['id'];
 					$depends_checkout_box = PMPro_Field::get_checkout_box_name_for_field( $field_id );
 					if ( empty( $depends_checkout_box ) ) {
