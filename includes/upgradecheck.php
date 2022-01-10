@@ -268,6 +268,15 @@ function pmpro_checkForUpgrades()
 		$pmpro_db_version = pmpro_upgrade_2_6();
 		pmpro_setOption( 'db_version', '2.6' );
 	}
+	
+	/**
+	 * Version 2.6.7
+	 * Running pmpro_db_delta to update KEY types in a couple tables.
+	 */
+	 if( $pmpro_db_version < 2.67 ) {
+ 		pmpro_db_delta(); 		
+ 		pmpro_setOption( 'db_version', '2.67' );
+ 	}
 }
 
 function pmpro_db_delta()
@@ -373,7 +382,7 @@ function pmpro_db_delta()
 		  `membership_id` int(11) unsigned NOT NULL,
 		  `category_id` bigint(20) unsigned NOT NULL,
 		  `modified` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-		  UNIQUE KEY `membership_category` (`membership_id`,`category_id`),
+		  PRIMARY KEY `membership_category` (`membership_id`,`category_id`),
 		  UNIQUE KEY `category_membership` (`category_id`,`membership_id`)
 		);
 	";
@@ -385,7 +394,7 @@ function pmpro_db_delta()
 		  `membership_id` int(11) unsigned NOT NULL,
 		  `page_id` bigint(20) unsigned NOT NULL,
 		  `modified` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-		  UNIQUE KEY `category_membership` (`page_id`,`membership_id`),
+		  PRIMARY KEY `category_membership` (`page_id`,`membership_id`),
 		  UNIQUE KEY `membership_page` (`membership_id`,`page_id`)
 		);
 	";
