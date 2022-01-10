@@ -249,6 +249,13 @@ if ( $txn_type == 'recurring_payment_profile_cancel' || $txn_type == 'recurring_
 		$user = get_userdata( $last_subscription_order->user_id );
 
 		if ( empty( $user ) || empty( $user->ID ) ) {
+			//if the initial payment failed, cancel with status error instead of cancelled
+			if ( $initial_payment_status === "failed" ) {
+				$last_subscription_order->updateStatus('error');
+			} else {
+				$last_subscription_order->updateStatus('cancelled');
+			}
+
 			ipnlog( "ERROR: Could not cancel membership. No user attached to order #" . $last_subscription_order->id . " with subscription transaction id = " . $recurring_payment_id . "." );
 		} else {
 			/*
