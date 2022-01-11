@@ -3939,5 +3939,8 @@ function pmpro_get_ip() {
 		return false;
 	}
 	
+	// Sanitize the IP
+	$client_ip = preg_replace( '/[^0-9a-fA-F:., ]/', '', $client_ip );
+	
 	return $client_ip;
 }
