@@ -260,9 +260,9 @@ class PMProGateway_stripe extends PMProGateway {
 
 		if ( self::stripe_checkout_beta_enabled() ) {
 			$options[] = 'stripe_payment_flow'; // 'onsite' or 'checkout'
-			$options[] = 'stripe_checkout_billing_address';
+			$options[] = 'stripe_checkout_billing_address'; //'auto' or 'required'
 			$options[] = 'stripe_tax'; // 'none', 'inclusive', 'exclusive'
-			$options[] = 'stripe_vat'; // true, false
+			$options[] = 'stripe_tax_id_collection_enabled'; // true, false
 			$options[] = 'enabled_payment_methods'; // array of enabled payment methods.
 		}
 
@@ -521,8 +521,8 @@ class PMProGateway_stripe extends PMProGateway {
 			</th>
 			<td>
 				<select id="stripe_checkout_billing_address" name="stripe_checkout_billing_address">
-					<option value="0"><?php _e( 'No', 'paid-memberships-pro' ); ?></option>
-					<option value="1" <?php if ( ! empty( $values['stripe_checkout_billing_address'] ) ) { ?>selected="selected"<?php } ?>><?php _e( 'Yes', 'paid-memberships-pro' ); ?></option>
+					<option value="auto"><?php _e( 'Only when necessary.', 'paid-memberships-pro' ); ?></option>
+					<option value="required" <?php if ( ! empty( $values['stripe_checkout_billing_address'] ) ) { ?>selected="selected"<?php } ?>><?php _e( 'Always.', 'paid-memberships-pro' ); ?></option>
 				</select>
 				<p class="description"><?php _e( 'Enabling this setting is necessary to use Stripe Tax.', 'paid-memberships-pro' ); ?></p>
 			</td>
@@ -542,12 +542,12 @@ class PMProGateway_stripe extends PMProGateway {
 		</tr>
 		<tr class="gateway gateway_stripe" <?php if ( $gateway != "stripe" ) { ?>style="display: none;"<?php } ?>>
 			<th scope="row" valign="top">
-				<label for="stripe_vat"><?php _e( 'Collect VAT Number', 'paid-memberships-pro' ); ?>:</label>
+				<label for="stripe_tax_id_collection_enabled"><?php _e( 'Collect VAT Number', 'paid-memberships-pro' ); ?>:</label>
 			</th>
 			<td>
-				<select id="stripe_vat" name="stripe_vat">
+				<select id="stripe_tax_id_collection_enabled" name="stripe_tax_id_collection_enabled">
 					<option value="0"><?php _e( 'No', 'paid-memberships-pro' ); ?></option>
-					<option value="1" <?php if ( ! empty( $values['stripe_vat'] ) ) { ?>selected="selected"<?php } ?>><?php _e( 'Yes', 'paid-memberships-pro' ); ?></option>
+					<option value="1" <?php if ( ! empty( $values['stripe_tax_id_collection_enabled'] ) ) { ?>selected="selected"<?php } ?>><?php _e( 'Yes', 'paid-memberships-pro' ); ?></option>
 				</select>
 				<p class="description"><?php _e( 'Only relevent if using Stripe Tax.', 'paid-memberships-pro' ); ?></p>
 			</td>
@@ -1622,12 +1622,12 @@ class PMProGateway_stripe extends PMProGateway {
 		) : array(
 			'enabled' => false,
 		);
-		$tax_id_collection = ! empty( pmpro_getOption( 'stripe_vat' ) ) ? array(
+		$tax_id_collection = ! empty( pmpro_getOption( 'stripe_tax_id_collection_enabled' ) ) ? array(
 			'enabled' => true,
 		) : array(
 			'enabled' => false,
 		);
-		$billing_address_collection = ! empty( pmpro_getOption( 'stripe_checkout_billing_address' ) ) ? 'required' : 'auto';
+		$billing_address_collection = pmpro_getOption( 'stripe_checkout_billing_address' ) ?: 'auto';
 
 		// Set up payment method types.
 		$payment_method_types = array(
