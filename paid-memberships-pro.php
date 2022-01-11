@@ -74,7 +74,8 @@ require_once( PMPRO_DIR . '/includes/cleanup.php' );                // clean thi
 require_once( PMPRO_DIR . '/includes/login.php' );                  // code to redirect away from login/register page
 require_once( PMPRO_DIR . '/includes/capabilities.php' );           // manage PMPro capabilities for roles
 require_once( PMPRO_DIR . '/includes/privacy.php' );                // code to aid with user data privacy, e.g. GDPR compliance
-require_once( PMPRO_DIR . '/includes/pointers.php' );
+require_once( PMPRO_DIR . '/includes/pointers.php' );				// popover help pointers
+require_once( PMPRO_DIR . '/includes/spam.php' );					// code to combat spam of various kinds
 
 require_once( PMPRO_DIR . '/includes/xmlrpc.php' );                 // xmlrpc methods
 require_once( PMPRO_DIR . '/includes/rest-api.php' );               // rest API endpoints
