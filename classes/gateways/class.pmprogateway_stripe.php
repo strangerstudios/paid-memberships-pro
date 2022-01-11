@@ -522,7 +522,7 @@ class PMProGateway_stripe extends PMProGateway {
 			<td>
 				<select id="stripe_checkout_billing_address" name="stripe_checkout_billing_address">
 					<option value="auto"><?php _e( 'Only when necessary.', 'paid-memberships-pro' ); ?></option>
-					<option value="required" <?php if ( ! empty( $values['stripe_checkout_billing_address'] ) ) { ?>selected="selected"<?php } ?>><?php _e( 'Always.', 'paid-memberships-pro' ); ?></option>
+					<option value="required" <?php if ( 'required' === $values['stripe_checkout_billing_address'] ) { ?>selected="selected"<?php } ?>><?php _e( 'Always.', 'paid-memberships-pro' ); ?></option>
 				</select>
 				<p class="description"><?php _e( 'Enabling this setting is necessary to use Stripe Tax.', 'paid-memberships-pro' ); ?></p>
 			</td>
@@ -542,7 +542,7 @@ class PMProGateway_stripe extends PMProGateway {
 		</tr>
 		<tr class="gateway gateway_stripe" <?php if ( $gateway != "stripe" ) { ?>style="display: none;"<?php } ?>>
 			<th scope="row" valign="top">
-				<label for="stripe_tax_id_collection_enabled"><?php _e( 'Collect VAT Number', 'paid-memberships-pro' ); ?>:</label>
+				<label for="stripe_tax_id_collection_enabled"><?php _e( 'Collect Tax ID Numbers', 'paid-memberships-pro' ); ?>:</label>
 			</th>
 			<td>
 				<select id="stripe_tax_id_collection_enabled" name="stripe_tax_id_collection_enabled">
@@ -1557,12 +1557,19 @@ class PMProGateway_stripe extends PMProGateway {
 		$customer = $stripe->update_customer_at_checkout( $morder );
 		if ( empty( $customer ) ) {
 			// There was an issue creating/updating the Stripe customer.
-			// $order will have an error message, so we don't need to add one.
-			return false;
+			// $order will have an error message.
+			pmpro_setMessage( __( 'Could not get customer. ', 'paid-memberships-pro' ) . $order->error, 'pmpro_error', true );
+			return;
 		}
 
 		// Next, let's get the product being purchased.
 		$product_id = $stripe->get_product_id_for_level( $morder->membership_id );
+		if ( empty( $product_id ) ) {
+			// Something went wrong getting the product ID or creating the product.
+			// Show the user a general error message.
+			pmpro_setMessage( __( 'Could not get product ID.', 'paid-memberships-pro' ), 'pmpro_error', true );
+			return;
+		}
 
 		// Then, we need to build the line items array to charge.
 		$line_items = array();
@@ -1570,6 +1577,11 @@ class PMProGateway_stripe extends PMProGateway {
 		// First, let's handle the initial payment.
 		if ( ! empty( $morder->InitialPayment ) ) {
 			$initial_payment_price = $stripe->get_price_for_product( $product_id, $morder->InitialPayment );
+			if ( is_string( $initial_payment_price ) ) {
+				// There was an error getting the price.
+				pmpro_setMessage( __( 'Could not get price for initial payment. ', 'paid-memberships-pro' ) . $initial_payment_price, 'pmpro_error', true );
+				return;
+			}
 			$line_items[] = array(
 				'price'    => $initial_payment_price->id,
 				'quantity' => 1,
@@ -1578,10 +1590,15 @@ class PMProGateway_stripe extends PMProGateway {
 
 		// Now, let's handle the recurring payments.
 		if ( pmpro_isLevelRecurring( $morder->membership_level ) ) {
-			$subtotal = $morder->PaymentAmount;
-			$tax      = $morder->getTaxForPrice( $subtotal );
-			$recurring_payment_amount   = pmpro_round_price( (float) $subtotal + (float) $tax );
-			$recurring_payment_price = $stripe->get_price_for_product( $product_id, $recurring_payment_amount, $morder->BillingPeriod, $morder->BillingFrequency );
+			$subtotal                 = $morder->PaymentAmount;
+			$tax                      = $morder->getTaxForPrice( $subtotal );
+			$recurring_payment_amount = pmpro_round_price( (float) $subtotal + (float) $tax );
+			$recurring_payment_price  = $stripe->get_price_for_product( $product_id, $recurring_payment_amount, $morder->BillingPeriod, $morder->BillingFrequency );
+			if ( is_string( $recurring_payment_price ) ) {
+				// There was an error getting the price.
+				pmpro_setMessage( __( 'Could not get price for recurring payment. ', 'paid-memberships-pro' ) . $recurring_payment_price, 'pmpro_error', true );
+				return;
+			}
 			$line_items[] = array(
 				'price'    => $recurring_payment_price->id,
 				'quantity' => 1,
@@ -1669,16 +1686,20 @@ class PMProGateway_stripe extends PMProGateway {
 		}
 		try {
 			$checkout_session = Stripe_Checkout_Session::create( $checkout_session_params );
-			// Save so that we can confirm the payment later.
-			update_pmpro_membership_order_meta( $morder->id, 'stripe_checkout_session_id', $checkout_session->id );
-			wp_redirect( $checkout_session->url );
-			exit;
+		} catch ( Throwable $th ) {
+			// Error creating checkout session.
+			pmpro_setMessage( __( 'Could not create checkout session. ', 'paid-memberships-pro' ) . $th->getMessage(), 'pmpro_error', true );
+			return;
 		} catch ( Exception $e ) {
-			d($e);
-			d($checkout_session_params);
-			wp_die();
-			return null;
+			// Error creating checkout session.
+			pmpro_setMessage( __( 'Could not create checkout session. ', 'paid-memberships-pro' ) . $e->getMessage(), 'pmpro_error', true );
+			return;
 		}
+
+		// Save so that we can confirm the payment later.
+		update_pmpro_membership_order_meta( $morder->id, 'stripe_checkout_session_id', $checkout_session->id );
+		wp_redirect( $checkout_session->url );
+		exit;
 	}
 
 	/****************************************
@@ -2615,7 +2636,7 @@ class PMProGateway_stripe extends PMProGateway {
 	 * @param string|null $cycle_period for subscription payments.
 	 * @param string|null $cycle_number of cycle periods between each subscription payment.
 	 *
-	 * @return string|null Price ID.
+	 * @return Stripe_Price|string Price or error message.
 	 */
 	private function get_price_for_product( $product_id, $amount, $cycle_period = null, $cycle_number = null ) {
 		global $pmpro_currency;
@@ -2643,10 +2664,10 @@ class PMProGateway_stripe extends PMProGateway {
 			$prices = Stripe_Price::all( $price_search_args );
 		} catch (\Throwable $th) {
 			// There was an error listing prices.
-			return;
+			return $th->getMessage();;
 		} catch (\Exception $e) {
 			// There was an error listing prices.
-			return;
+			return $e->getMessage();
 		}
 		foreach ( $prices as $price ) {
 			// Check whether price is the same. If not, continue.
@@ -2663,7 +2684,6 @@ class PMProGateway_stripe extends PMProGateway {
 			}
 			return $price;
 		}
-		d('hit');
 
 		// Create a new Price.
 		$price_args = array(
@@ -2680,7 +2700,6 @@ class PMProGateway_stripe extends PMProGateway {
 		if ( 'no' !== $tax_behavior ) {
 			$price_args['tax_behavior'] = $tax_behavior;
 		}
-		d($tax_behavior);
 
 		try {
 			$price = Stripe_Price::create( $price_args );
@@ -2688,11 +2707,11 @@ class PMProGateway_stripe extends PMProGateway {
 				return $price;
 			}
 		} catch (\Throwable $th) {
-			d($th);
 			// Could not create product.
+			return $th->getMessage();
 		} catch (\Exception $e) {
-			d($e);
 			// Could not create product.
+			return $e->getMessage();
 		}
 	}
 
