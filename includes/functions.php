@@ -3815,6 +3815,26 @@ function pmpro_kses_allowed_html( $allowed_html, $context ) {
 add_filter( 'wp_kses_allowed_html', 'pmpro_kses_allowed_html', 10, 2 );
 
 /**
+ * Show deprecation warning if calling function was called publically.
+ *
+ * Useful for preparing to change method visibility from public to private.
+ *
+ * @param string $deprecation_notice_version to show.
+ * @return bool
+ */
+function pmpro_method_should_be_private( $deprecated_notice_version ) {
+	$backtrace = debug_backtrace( DEBUG_BACKTRACE_IGNORE_ARGS );
+
+	// Check whether the caller of this function is in the same file (class)
+	// as the caller of the previous function.
+	if ( $backtrace[0]['file'] !== $backtrace[1]['file'] ) {
+		_deprecated_function( $backtrace[1]['function'], $deprecated_notice_version );
+		return true;
+	}
+	return false;
+}
+
+/**
  * Send a 200 HTTP reponse without ending PHP execution.
  *
  * Useful to avoid issues like timeouts from gateways during
