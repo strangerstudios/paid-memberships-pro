@@ -2,7 +2,7 @@
 /**
  * Code related to spam detection and prevention.
  */
-// Some values used below.
+// Constants. Define these in wp-config.php to override.
 if ( ! defined( 'PMPRO_SPAM_ACTION_NUM_LIMIT' ) ) {
     define( 'PMPRO_SPAM_ACTION_NUM_LIMIT', 10 );
 }
