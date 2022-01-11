@@ -1122,7 +1122,7 @@ class PMProGateway_stripe extends PMProGateway {
 				$subscription = $order->Gateway->get_subscription( $order->subscription_transaction_id );
 
 				if ( ! empty( $subscription ) ) {
-					$customer = $order->Gateway->set_customer();
+					$customer = $order->Gateway->get_customer_for_user( $user_id );
 					if ( ! $customer->delinquent && ! empty ( $subscription->current_period_end ) ) {
 						$offset = get_option( 'gmt_offset' );						
 						$timestamp = $subscription->current_period_end + ( $offset * 3600 );
