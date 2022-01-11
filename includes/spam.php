@@ -22,7 +22,7 @@ function pmpro_is_spammer() {
         $is_spammer = true;
     }
     
-    return apply_filters( 'pmpro_is_spammer', $is_spammer );
+    return apply_filters( 'pmpro_is_spammer', $is_spammer, $activity );
 }
 
 /**

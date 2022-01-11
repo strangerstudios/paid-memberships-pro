@@ -450,11 +450,14 @@ if ( $submit && $pmpro_msgt != "pmpro_error" ) {
 						$pmpro_msgt      = "pmpro_success";
 						$pmpro_confirmed = true;
 					} else {
+						// Track as spam activity to prevent too many CC attempts.
+						pmpro_track_spam_activity();
+						
+						// Make sure we have an error message.
 						$pmpro_msg = !empty( $morder->error ) ? $morder->error : null;
 						if ( empty( $pmpro_msg ) ) {
 							$pmpro_msg = __( "Unknown error generating account. Please contact us to set up your membership.", 'paid-memberships-pro' );
-						}
-						
+						}						
 						if ( ! empty( $morder->error_type ) ) {
 							$pmpro_msgt = $morder->error_type;
 						} else {

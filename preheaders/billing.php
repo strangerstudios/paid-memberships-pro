@@ -276,7 +276,11 @@ if ($submit) {
 			
 			do_action( 'pmpro_after_update_billing', $current_user->ID, $morder );
         } else {
-            $pmpro_msg = $morder->error;
+			// Track as spam activity to prevent too many CC attempts.
+			pmpro_track_spam_activity();
+			
+			// Make sure we have an error message.
+			$pmpro_msg = $morder->error;
 
             if (!$pmpro_msg)
                 $pmpro_msg = __("Error updating billing information.", 'paid-memberships-pro' );
