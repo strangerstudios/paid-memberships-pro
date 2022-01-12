@@ -46,7 +46,9 @@ function pmpro_get_spam_activity( $ip = null ) {
     
     $transient_key = 'pmpro_spam_activity_' . $ip;
     $activity = get_transient( $transient_key );    
-    if ( empty( $activity ) ) { $activity = []; }
+	if ( empty( $activity ) || ! is_array( $activity ) ) {
+		$activity = [];
+	}
     
     // Remove old items.
 	$new_activity = [];
