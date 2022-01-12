@@ -34,7 +34,7 @@ $post_types = is_array( $post_types ) ? $post_types[ array_key_first( $post_type
 /**
  * Set post type to use for PMPro pages in the page settings dropdown.
  *
- * @since 2.6.7
+ * @since 2.7.0
  * @param string $post_type Accepts existing hierarchical post type
  */
 $post_type = apply_filters( 'pmpro_admin_pagesetting_post_type', $post_type );
