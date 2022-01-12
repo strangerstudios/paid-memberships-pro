@@ -2299,9 +2299,10 @@ class PMProGateway_stripe extends PMProGateway {
 	 */
 	private function get_price_for_product( $product_id, $amount, $cycle_period = null, $cycle_number = null ) {
 		global $pmpro_currency;
+		$currency = pmpro_get_currency();
 
 		$is_recurring = ! empty( $cycle_period ) && ! empty( $cycle_number );
-		$unit_amount  = intval( $amount * 100 ); // TODO: Change this based on currency.
+		$unit_amount  = intval( $amount * pow( 10, intval( $currency['decimals'] ) ) );
 		$cycle_period = strtolower( $cycle_period );
 
 		$price_search_args = array(
