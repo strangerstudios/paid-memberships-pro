@@ -11,8 +11,11 @@ if ( ! defined( 'PMPRO_SPAM_ACTION_TIME_LIMIT' ) ) {
 }
 
 /**
- * Is the current visitor a spammer?
+ * Determine whether the current visitor a spammer.
+ *
  * @since 2.7
+ *
+ * @return bool Whether the current visitor a spammer.
  */
 function pmpro_is_spammer() {
     $is_spammer = false;
