@@ -4,10 +4,10 @@
  */
 // Constants. Define these in wp-config.php to override.
 if ( ! defined( 'PMPRO_SPAM_ACTION_NUM_LIMIT' ) ) {
-    define( 'PMPRO_SPAM_ACTION_NUM_LIMIT', 10 );
+	define( 'PMPRO_SPAM_ACTION_NUM_LIMIT', 10 );
 }
 if ( ! defined( 'PMPRO_SPAM_ACTION_TIME_LIMIT' ) ) {
-    define( 'PMPRO_SPAM_ACTION_TIME_LIMIT', 900 );  // in seconds
+	define( 'PMPRO_SPAM_ACTION_TIME_LIMIT', 900 );  // in seconds
 }
 
 /**
@@ -18,13 +18,13 @@ if ( ! defined( 'PMPRO_SPAM_ACTION_TIME_LIMIT' ) ) {
  * @return bool Whether the current visitor a spammer.
  */
 function pmpro_is_spammer() {
-    $is_spammer = false;
-    
-    $activity = pmpro_get_spam_activity();
-    if ( count( $activity ) >= PMPRO_SPAM_ACTION_NUM_LIMIT ) {
-        $is_spammer = true;
-    }
-    
+	$is_spammer = false;
+
+	$activity = pmpro_get_spam_activity();
+	if ( count( $activity ) >= PMPRO_SPAM_ACTION_NUM_LIMIT ) {
+		$is_spammer = true;
+	}
+
 	/**
 	 * Allow filtering whether the current visitor is a spammer.
 	 *
@@ -40,35 +40,35 @@ function pmpro_is_spammer() {
  * Get spam activity by IP.
  * @since 2.7
  * @param string $ip    The IP address to get activity for.
- * @return array|False  The array of activity if successful, false if no IP. 
+ * @return array|False  The array of activity if successful, false if no IP.
  */
 function pmpro_get_spam_activity( $ip = null ) {
-    if ( empty( $ip ) ) {
-        $ip = pmpro_get_ip();        
-    }
-    
-    // If we can't determine the IP, let's bail.
-    if ( empty( $ip ) ) {
-        return false;
-    }
-    
-    $transient_key = 'pmpro_spam_activity_' . $ip;
-    $activity = get_transient( $transient_key );    
+	if ( empty( $ip ) ) {
+		$ip = pmpro_get_ip();
+	}
+
+	// If we can't determine the IP, let's bail.
+	if ( empty( $ip ) ) {
+		return false;
+	}
+
+	$transient_key = 'pmpro_spam_activity_' . $ip;
+	$activity = get_transient( $transient_key );
 	if ( empty( $activity ) || ! is_array( $activity ) ) {
 		$activity = [];
 	}
-    
-    // Remove old items.
+
+	// Remove old items.
 	$new_activity = [];
 	$now = current_time( 'timestamp', true ); // UTC
-    foreach( $activity as $item ) {
+	foreach( $activity as $item ) {
 		// Determine whether this item is recent enough to include.
 		if ( $item > $now-( PMPRO_SPAM_ACTION_TIME_LIMIT ) ) {
 			$new_activity[] = $item;
 		}
 	}
-    
-    return $new_activity;    
+
+	return $new_activity;
 }
 
 /**
@@ -84,30 +84,30 @@ function pmpro_get_spam_activity( $ip = null ) {
  * @return bool True if the tracking of activity was successful, or false if IP could not be determined.
  */
 function pmpro_track_spam_activity( $ip = null ) {
-    if ( empty( $ip ) ) {
-        $ip = pmpro_get_ip();        
-    }
-    
-    // If we can't determine the IP, let's bail.
-    if ( empty( $ip ) ) {
-        return false;
-    }
-        
-    $activity = pmpro_get_spam_activity( $ip );
-    $now = current_time( 'timestamp', true ); // UTC
-    array_unshift( $activity, $now );
-    
-    // If we have more than the limit, don't bother storing them.
-    if ( count( $activity ) > PMPRO_SPAM_ACTION_NUM_LIMIT ) {
-        rsort( $activity );
-        $activity = array_slice( $activity, 0, PMPRO_SPAM_ACTION_NUM_LIMIT );
-    }
-    
-    // Save to transient.
-    $transient_key = 'pmpro_spam_activity_' . $ip;
-    set_transient( $transient_key, $activity, (int) PMPRO_SPAM_ACTION_TIME_LIMIT );
-    
-    return true;
+	if ( empty( $ip ) ) {
+		$ip = pmpro_get_ip();
+	}
+
+	// If we can't determine the IP, let's bail.
+	if ( empty( $ip ) ) {
+		return false;
+	}
+
+	$activity = pmpro_get_spam_activity( $ip );
+	$now = current_time( 'timestamp', true ); // UTC
+	array_unshift( $activity, $now );
+
+	// If we have more than the limit, don't bother storing them.
+	if ( count( $activity ) > PMPRO_SPAM_ACTION_NUM_LIMIT ) {
+		rsort( $activity );
+		$activity = array_slice( $activity, 0, PMPRO_SPAM_ACTION_NUM_LIMIT );
+	}
+
+	// Save to transient.
+	$transient_key = 'pmpro_spam_activity_' . $ip;
+	set_transient( $transient_key, $activity, (int) PMPRO_SPAM_ACTION_TIME_LIMIT );
+
+	return true;
 }
 
 /**
@@ -122,17 +122,17 @@ function pmpro_track_spam_activity( $ip = null ) {
  * @return bool True if the clearing of activity was successful, or false if IP could not be determined.
  */
 function pmpro_clear_spam_activity( $ip = null ) {
-    if ( empty( $ip ) ) {
-        $ip = pmpro_get_ip();        
-    }
-    
-    // If we can't determine the IP, let's bail.
-    if ( empty( $ip ) ) {
-        return false;
-    }
-    
-    $transient_key = 'pmpro_spam_activity_' . $ip;
-    
+	if ( empty( $ip ) ) {
+		$ip = pmpro_get_ip();
+	}
+
+	// If we can't determine the IP, let's bail.
+	if ( empty( $ip ) ) {
+		return false;
+	}
+
+	$transient_key = 'pmpro_spam_activity_' . $ip;
+
 	delete_transient( $transient_key );
 
 	return true;
@@ -145,7 +145,7 @@ function pmpro_clear_spam_activity( $ip = null ) {
  * @param MemberOrder $morder The order object used at checkout. We ignore it.
  */
 function pmpro_track_failed_checkouts_for_spam( $morder ) {
-    pmpro_track_spam_activity();
+	pmpro_track_spam_activity();
 }
 add_action( 'pmpro_checkout_processing_failed', 'pmpro_track_failed_checkouts_for_spam' );
 add_action( 'pmpro_update_billing_failed', 'pmpro_track_failed_checkouts_for_spam' );
@@ -165,11 +165,11 @@ add_action( 'pmpro_update_billing_failed', 'pmpro_track_failed_checkouts_for_spa
  *
  * @return array The list of required fields.
  */
-function pmpro_disable_checkout_for_spammers( $required_fields ) {    
-    if ( pmpro_was_checkout_form_submitted() && pmpro_is_spammer() ) {
-        pmpro_setMessage( __( 'Suspicious activity detected. Try again in a few minutes.', 'paid-memberships-pro' ), 'pmpro_error' );        
-    }
-    
-    return $required_fields;
+function pmpro_disable_checkout_for_spammers( $required_fields ) {
+	if ( pmpro_was_checkout_form_submitted() && pmpro_is_spammer() ) {
+		pmpro_setMessage( __( 'Suspicious activity detected. Try again in a few minutes.', 'paid-memberships-pro' ), 'pmpro_error' );
+	}
+
+	return $required_fields;
 }
 add_filter( 'pmpro_required_billing_fields', 'pmpro_disable_checkout_for_spammers' );
