@@ -23,7 +23,7 @@ global $pmpro_pages;
 $extra_pages = apply_filters('pmpro_extra_page_settings', array());
 
 /**
- * @deprecated replaced with pmpro_admin_pagesetting_post_type since 2.6.8
+ * @deprecated replaced with pmpro_admin_pagesetting_post_type since 2.7.0
 
  */
 $post_types = apply_filters( 'pmpro_admin_pagesetting_post_type_array', array( 'page' ) );
