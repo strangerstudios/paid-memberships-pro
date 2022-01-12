@@ -40,8 +40,6 @@ function pmpro_is_spammer() {
  * Get the list of potential spam activity.
  *
  * @since 2.7
- * @param string $ip    The IP address to get activity for.
- * @return array|False  The array of activity if successful, false if no IP.
  *
  * @param string|null $ip The IP address to get activity for, or leave as null to attempt to determine current IP address.
  *
