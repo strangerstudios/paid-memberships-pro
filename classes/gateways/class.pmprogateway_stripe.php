@@ -1605,6 +1605,9 @@ class PMProGateway_stripe extends PMProGateway {
 		// Then, we need to build the line items array to charge.
 		$line_items = array();
 
+		// Used to calculate Stripe Connect fees.
+		$application_fee_percentage = self::get_application_fee_percentage();
+
 		// First, let's handle the initial payment.
 		if ( ! empty( $morder->InitialPayment ) ) {
 			$initial_payment_price = $stripe->get_price_for_product( $product_id, $morder->InitialPayment );
@@ -1617,6 +1620,15 @@ class PMProGateway_stripe extends PMProGateway {
 				'price'    => $initial_payment_price->id,
 				'quantity' => 1,
 			);
+			if ( ! empty( $application_fee_percentage ) ) {
+				// We are multiplying initial payment by 100 to get the amount in cents. May need to tweak based on currency.
+				$application_fee = floor( $initial_payment_price->amount * 100 * $application_fee_percentage / 100 );
+				if ( ! empty( $application_fee ) ) {
+					$payment_intent_data = array(
+						'application_fee_amount' => floor( $initial_payment_price->amount * 100 * $application_fee_percentage / 100 ),
+					);
+				}
+			}
 		}
 
 		// Now, let's handle the recurring payments.
@@ -1637,34 +1649,14 @@ class PMProGateway_stripe extends PMProGateway {
 			$subscription_data = array(
 				'trial_period_days' => $stripe->calculate_trial_period_days( $morder ),
 			);
+			// Add application fee for Stripe Connect.
+			$application_fee_percentage = self::get_application_fee_percentage();
+			if ( ! empty( $application_fee_percentage ) ) {
+				$subscription_data['application_fee_percent'] = $application_fee_percentage;
+			}
 		}
 
-		// Set up tax and billing address information.
-		/*
-		// TODO: Make these variables into PMPro settings.
-		// TODO: Use $tax_type when getting/creating prices.
-		$tax_type                = 'exclusive';   // Can be none, inclusive, or exclusive.
-		$collect_tax_id          = true;          // Can be true or false. Force to false if tax_type is none.
-		$collect_billing_address = true;          // Can be true or false. Force to true if tax_type is not none.
-		if (  $tax_type === 'none' ) {
-			$automatic_tax = array(
-				'enabled' => false,
-			);
-			$tax_id_collection = array(
-				'enabled' => false,
-			);
-			$billing_address_collection = $collect_billing_address ? 'required' : 'auto';
-		} else {
-			$automatic_tax = array(
-				'enabled' => true,
-			);
-			$tax_id_collection = array(
-				'enabled' => $collect_tax_id,
-			);
-			$billing_address_collection = 'required';
-		}
-		*/
-
+		// Set up tax and billing addres collection.
 		$automatic_tax = ( ! empty( pmpro_getOption( 'stripe_tax' ) ) && 'no' !== pmpro_getOption( 'stripe_tax' ) ) ? array(
 			'enabled' => true,
 		) : array(
@@ -1710,16 +1702,14 @@ class PMProGateway_stripe extends PMProGateway {
 			),
 			'success_url' =>  add_query_arg( 'level', $morder->membership_level->id, pmpro_url("confirmation" ) ),
 			'cancel_url' =>  add_query_arg( 'level', $morder->membership_level->id, pmpro_url("checkout" ) ),
-			//'payment_intent_data' => array(
-			//	'application_fee_amount' => 10000 // Get paid for orders.
-			//),
-			//'subscription_data' => array(
-			//	'application_fee_percent' => 2 // Get paid for subscriptions.
-			//),
 		);
+		if ( ! empty( $payment_intent_data ) ) {
+			$checkout_session_params['payment_intent_data'] = $payment_intent_data;
+		}
 		if ( ! empty( $subscription_data ) ) {
 			$checkout_session_params['subscription_data'] = $subscription_data;
 		}
+
 		try {
 			$checkout_session = Stripe_Checkout_Session::create( $checkout_session_params );
 		} catch ( Throwable $th ) {
@@ -4017,7 +4007,6 @@ class PMProGateway_stripe extends PMProGateway {
 	 * @deprecated TBD. Only deprecated for public use, will be changed to private non-static in a future version.
 	 *
 	 * @param  array $params to be sent to Stripe.
-	 * @param  bool  $add_percent true if percentage should be added, false if actual amount.
 	 * @return array params with application fee if applicable.
 	 */
 	public static function add_application_fee_amount( $params ) {
