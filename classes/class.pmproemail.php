@@ -87,24 +87,6 @@
 			elseif(!empty($this->data) && !empty($this->data['body']))
 				$this->body = $this->data['body'];																						//data passed in
 
-
-			// Get template header.
-			if( pmpro_getOption( 'email_header_disabled' ) != 'true' ) {
-				$email_header = pmpro_email_templates_get_template_body('header');
-			} else {
-				$email_header = '';
-			}
-
-			// Get template footer
-			if( pmpro_getOption( 'email_footer_disabled' ) != 'true' ) {
-				$email_footer = pmpro_email_templates_get_template_body('footer');
-			} else {
-				$email_footer = '';
-			}
-
-			// Add header and footer to email body.
-			$this->body = $email_header . $this->body . $email_footer;
-
 			//if data is a string, assume we mean to replace !!body!! with it
 			if(is_string($this->data))
 				$this->data = array("body"=>$data);											

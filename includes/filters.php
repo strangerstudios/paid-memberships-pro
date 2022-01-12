@@ -259,3 +259,23 @@ function pmpro_ignore_checkout_order_when_cancelling_old_orders( $order_ids ) {
 	return $order_ids;
 }
 add_filter( 'pmpro_other_order_ids_to_cancel', 'pmpro_ignore_checkout_order_when_cancelling_old_orders' );
+
+function pmpro_email_add_header_footer( $body, $temail ){
+	// Get template header.
+	if( pmpro_getOption( 'email_header_disabled' ) != 'true' ) {
+		$email_header = pmpro_email_templates_get_template_body('header');
+	} else {
+		$email_header = '';
+	}
+
+	// Get template footer
+	if( pmpro_getOption( 'email_footer_disabled' ) != 'true' ) {
+		$email_footer = pmpro_email_templates_get_template_body('footer');
+	} else {
+		$email_footer = '';
+	}
+
+	// Add header and footer to email body.
+	return $email_header . $body . $email_footer;
+}
+add_filter( 'pmpro_email_body', 'pmpro_email_add_header_footer', 99999, 2 );
