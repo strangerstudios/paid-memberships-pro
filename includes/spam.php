@@ -55,6 +55,7 @@ function pmpro_get_spam_activity( $ip = null ) {
 		return false;
 	}
 
+	$ip = preg_replace( '/[^0-9a-fA-F:., ]/', '', $ip );
 	$transient_key = 'pmpro_spam_activity_' . $ip;
 	$activity = get_transient( $transient_key );
 	if ( empty( $activity ) || ! is_array( $activity ) ) {
@@ -107,6 +108,7 @@ function pmpro_track_spam_activity( $ip = null ) {
 	}
 
 	// Save to transient.
+	$ip = preg_replace( '/[^0-9a-fA-F:., ]/', '', $ip );
 	$transient_key = 'pmpro_spam_activity_' . $ip;
 	set_transient( $transient_key, $activity, (int) PMPRO_SPAM_ACTION_TIME_LIMIT );
 
