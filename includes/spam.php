@@ -133,6 +133,10 @@ function pmpro_clear_spam_activity( $ip = null ) {
  * We return the $required_fields parameter to keep the filter working.
  *
  * @since 2.7
+ *
+ * @param array $required_fields The list of required fields.
+ *
+ * @return array The list of required fields.
  */
 function pmpro_disable_checkout_for_spammers( $required_fields ) {    
     if ( pmpro_was_checkout_form_submitted() && pmpro_is_spammer() ) {
