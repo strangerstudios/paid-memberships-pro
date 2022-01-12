@@ -95,7 +95,7 @@ function pmpro_track_spam_activity( $ip = null ) {
     
     // Save to transient.
     $transient_key = 'pmpro_spam_activity_' . $ip;
-    set_transient( $transient_key, $activity );
+    set_transient( $transient_key, $activity, (int) PMPRO_SPAM_ACTION_TIME_LIMIT );
     
     return true;
 }
