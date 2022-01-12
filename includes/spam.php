@@ -25,7 +25,15 @@ function pmpro_is_spammer() {
         $is_spammer = true;
     }
     
-    return apply_filters( 'pmpro_is_spammer', $is_spammer, $activity );
+	/**
+	 * Allow filtering whether the current visitor is a spammer.
+	 *
+	 * @since 2.7
+	 *
+	 * @param bool  $is_spammer Whether the current visitor is a spammer.
+	 * @param array $activity   The list of potential spam activity.
+	 */
+	return apply_filters( 'pmpro_is_spammer', $is_spammer, $activity );
 }
 
 /**
