@@ -156,12 +156,35 @@ Not sure? You can find out by doing a bit a research.
 9. Membership Account page, display all sections or show specific sections using shortcode attributes.
 
 == Changelog ==
+= 2.7 - 2022-01-12 =
+* ENHANCEMENT: Checkouts with Stripe will now reuse Stripe Products and Prices. (@dparker1005)
+* ENHANCEMENT: User profile now links to Stripe customer so that subscriptions can easily be directly updated in Stripe rather than through Subscriptions Updates which is now deprecated. (@dparker1005)
+* ENHANCEMENT: Improved usability of the Require Membership metabox for sites with a large number of levels. #1885 #1692 (@kimcoleman)
+* ENHANCEMENT: Include reCAPTCHA on Billing Page form. #1884 (@ideadude)
+* BUG FIX: Consolidated the "Free memberships only" option into the "All memberships" option for enabling reCAPTCHA to ensure that paid memberships with discounts that make the membership $0 cost show reCAPTCHA consistently. #1878 #1840 (@JarrydLong)
+* BUG FIX: Resolved PHP 8 fatal error with Authorize.net Silent Post handling. #1899 (@ZebulanStanphill)
+* BUG FIX: The new filter `pmpro_admin_pagesetting_post_type` replaces the now deprecated filter `pmpro_admin_pagesetting_post_type_array` to allows setting one specific post type instead of always getting the first from an array. #1866 #1865 (@ipokkel)
+* BUG FIX: Resolved issue where users may not be linked to their Stripe customer. (@dparker1005)
+* BUG FIX: Now including all levels (public and hidden) in the Paid Memberships Pro section of Site Health information. #1898 (@kimcoleman)
+* BUG FIX: Set cancelled/error status from PayPal Express IPN even when an order has no user. #1897 (@mircobabini)
+* BUG FIX: Ensure styles are removed from excerpts generated for protected content. #1894 (@sc0ttkclark)
+* BUG FIX: Various text adjustments for readability. #1892 (@kimcoleman)
+* BUG FIX: Set primary key for `wp_pmpro_memberships_categories` and `wp_pmpro_memberships_pages` tables. #1891 (@ideadude)
+* BUG FIX: Fixes around the `pmpro_manage_memberslist_columns` filter to accommodate sites that aren't in English. #1879 #1876 (@JarrydLong)
+* BUG FIX: Use the correct cancel method when cancelling an oder through PayPal Standard IPN requests. Fixes compatibility with PMPro Cancel on Next Payment Date add on. #1882 (@mircobabini)
+* BUG FIX: Discount code expiration date is now properly being used in the REST API. #1877 (@JarrydLong)
+* BUG FIX: Remove the `SHIPTOPHONENUM` parameter sent to PayPal Website Payments API and encode all parameters passed into API updates. #1883 (@dparker1005)
+* BUG FIX: Set the default for the `pmpro_send_200_http_response` filter to `false` instead of `true` to reduce impact of the functionality on sites that don't need it. #1868 (@dparker1005)
+* BUG FIX: Resolve timezone issue with Stripe subscriptions to resolve problems where trials would receive an extra day depending on the time of checkout. #1874 (@dparker1005)
+* BUG FIX: Now using a single product per level and a single Stripe price per payment amount to prevent duplicate products and prices. #1824 (@dparker1005)
+* REFACTOR: Organized and simplified Stripe gateway class. (@dparker1005)
+
 = 2.6.7 - 2022-01-06 =
 * SECURITY: Updated escaping in the pmpro_getLevelAtCheckout and pmpro_checkDiscountCode functions as extra precaution against SQL injections. (Thanks, WPScan)
 
 = 2.6.6 - 2021-11-18 =
 * SECURITY: Updated escaping on the discount codes page in the dashboard to prevent XSS attacks. #1867 (Thanks, Erwan from WPScan)
-* BUG FIX/ENHANCEMENT: Added code to remove duplicate active rows in the pmpro_memberships_users table after level change. This might have happened e.g. if users were purchasing a level via the WooCommerce Add On multiple times. #1860 (@dlparker1005)
+* BUG FIX/ENHANCEMENT: Added code to remove duplicate active rows in the pmpro_memberships_users table after level change. This might have happened e.g. if users were purchasing a level via the WooCommerce Add On multiple times. #1860 (@dparker1005)
 * BUG FIX/ENHANCEMENT: Improved the REST API endpoints to better support Zapier native requirements. #1862 (@andrewlimaza)
 * BUG FIX: Fixed PHP notices in the name parser library. #1861 (@sc0ttkclark)
 

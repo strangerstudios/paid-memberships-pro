@@ -423,10 +423,10 @@
 	}
 
 	/**
-	 * @deprecated TBD.
+	 * @deprecated 2.7.0.
 	 */
 	function getUserFromInvoiceEvent($pmpro_stripe_event) {
-		_deprecated_function( __FUNCTION__, 'TBD' );
+		_deprecated_function( __FUNCTION__, '2.7.0' );
 		//pause here to give PMPro a chance to finish checkout
 		sleep(PMPRO_STRIPE_WEBHOOK_DELAY);
 
@@ -444,10 +444,10 @@
 	}
 
 	/**
-	 * @deprecated TBD.
+	 * @deprecated 2.7.0.
 	 */
 	function getUserFromCustomerEvent($pmpro_stripe_event, $status = false, $checkplan = true) {
-		_deprecated_function( __FUNCTION__, 'TBD' );
+		_deprecated_function( __FUNCTION__, '2.7.0' );
 
 		//pause here to give PMPro a chance to finish checkout
 		sleep(PMPRO_STRIPE_WEBHOOK_DELAY);
