@@ -147,4 +147,4 @@ function pmpro_disable_checkout_for_spammers( $required_fields ) {
     
     return $required_fields;
 }
-add_filter( 'pmpro_required_billing_fields', 'pmpro_disable_checkout_for_spammers', 10, 1 );
+add_filter( 'pmpro_required_billing_fields', 'pmpro_disable_checkout_for_spammers' );
