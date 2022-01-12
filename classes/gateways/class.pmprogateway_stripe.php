@@ -263,7 +263,7 @@ class PMProGateway_stripe extends PMProGateway {
 			$options[] = 'stripe_checkout_billing_address'; //'auto' or 'required'
 			$options[] = 'stripe_tax'; // 'none', 'inclusive', 'exclusive'
 			$options[] = 'stripe_tax_id_collection_enabled'; // true, false
-			$options[] = 'enabled_payment_methods'; // array of enabled payment methods.
+			$options[] = 'stripe_enabled_payment_methods'; // array of enabled payment methods.
 		}
 
 		return $options;
@@ -550,6 +550,37 @@ class PMProGateway_stripe extends PMProGateway {
 					<option value="1" <?php if ( ! empty( $values['stripe_tax_id_collection_enabled'] ) ) { ?>selected="selected"<?php } ?>><?php _e( 'Yes', 'paid-memberships-pro' ); ?></option>
 				</select>
 				<p class="description"><?php _e( 'Only relevent if using Stripe Tax.', 'paid-memberships-pro' ); ?></p>
+			</td>
+		</tr>
+		<tr class="gateway gateway_stripe" <?php if ( $gateway != "stripe" ) { ?>style="display: none;"<?php } ?>>
+			<th scope="row" valign="top">
+				<label for="stripe_enabled_payment_methods"><?php _e( 'Payment Methods', 'paid-memberships-pro' ); ?>:</label>
+			</th>
+			<td>
+				<table>
+					<tr>
+						<th></th>
+						<th><?php _e( 'Payment Method', 'paid-memberships-pro' ); ?></th>
+						<th><?php _e( 'Supported Currencies', 'paid-memberships-pro' ); ?></th>
+						<th><?php _e( 'Supports Recurring Payments', 'paid-memberships-pro' ); ?></th>
+					</tr>
+					<?php
+						$payment_methods = self::get_all_checkout_payment_methods();
+						if ( empty( $values['stripe_enabled_payment_methods'] ) ) {
+							$enabled_payment_methods = array();
+						} else {
+							$enabled_payment_methods = explode( ',', $values['stripe_enabled_payment_methods'] );
+						}
+						foreach ( $payment_methods as $payment_method => $payment_method_data ) {
+							?><tr><?php
+								?><td><input type="checkbox" name="stripe_enabled_payment_methods[]" value="<?php echo esc_attr( $payment_method ); ?>" <?php if ( in_array( $payment_method, $enabled_payment_methods ) ) { ?>checked="checked"<?php } ?> /></td><?php
+								?><td><?php echo esc_html( $payment_method_data['name'] ); ?></td><?php
+								?><td><?php echo esc_html( implode( ', ', $payment_method_data['supported_currencies'] ) ); ?></td><?php
+								?><td><?php echo esc_html( $payment_method_data['recurring'] ? __( 'Yes', 'paid-memberships-pro' ) : __( 'No', 'paid-memberships-pro' ) ); ?></td><?php
+							?></tr><?php
+						}
+					?>
+				</table>
 			</td>
 		</tr>
 		<?php
@@ -1647,17 +1678,22 @@ class PMProGateway_stripe extends PMProGateway {
 		$billing_address_collection = pmpro_getOption( 'stripe_checkout_billing_address' ) ?: 'auto';
 
 		// Set up payment method types.
-		$payment_method_types = array(
-			'card',
-		);
-		if ( empty( $subscription_data ) ) {
-			if ( $pmpro_currency === 'USD' ) {
-				$payment_method_types = array( 'card', 'klarna' );
-			}
-			if ( $pmpro_currency === 'EUR' ) {
-				$payment_method_types = array( 'card', 'bancontact', 'eps', 'giropay', 'ideal', 'p24', 'sepa_debit', 'sofort');
+		$all_payment_methods = self::get_all_checkout_payment_methods();
+		$payment_method_types = array();
+		$enabled_payment_methods = pmpro_getOption( 'stripe_enabled_payment_methods' );
+		if ( empty( $enabled_payment_methods ) ) {
+			$enabled_payment_methods = array();
+		} else {
+			$enabled_payment_methods = explode( ',', $enabled_payment_methods );
+		}
+		foreach( $enabled_payment_methods as $enabled_payment_method ) {
+			if ( array_key_exists( $enabled_payment_method, $all_payment_methods ) &&
+				in_array( strtolower( $pmpro_currency ), $all_payment_methods[ $enabled_payment_method ]['supported_currencies'] ) &&
+				( empty( $subscription_data ) || $all_payment_methods[ $enabled_payment_method ]['recurring'] ) ){
+				$payment_method_types[] = $enabled_payment_method;
 			}
 		}
+		$payment_method_types[] = 'card';
 
 		// And let's send 'em to Stripe!
 		$checkout_session_params = array(
@@ -1700,6 +1736,113 @@ class PMProGateway_stripe extends PMProGateway {
 		update_pmpro_membership_order_meta( $morder->id, 'stripe_checkout_session_id', $checkout_session->id );
 		wp_redirect( $checkout_session->url );
 		exit;
+	}
+
+	public static function get_all_checkout_payment_methods() {
+		// List based off of https://stripe.com/docs/payments/payment-methods/integration-options.
+		return array(
+			/* Would require collecting shipping info. Put off for now.
+			'afterpay_clearpay' => array(
+				'name' => 'Afterpay Card',
+				'supported_currencies' => array( 'aud', 'cad', 'nzd', 'gbp', 'usd' ),
+				'recurring' => false,
+			),
+			*/
+			'alipay' => array(
+				'name' => 'Alipay',
+				// 'supported_currencies' => array( 'aud', 'cad', 'cny', 'eur', 'gbp', 'hkd', 'jpy', 'myr', 'nzd', 'sgd', 'usd' ), // Documentaion says that all these should work, but throws error at checkout.
+				'supported_currencies' => array( 'cny', 'usd' ),
+				// 'recurring' => true, // Documentation says this is true, but throws error at checkout.
+				'recurring' => false,
+			),
+			'bacs_debit' => array(
+				'name' => 'BACS Direct Debit',
+				'supported_currencies' => array( 'gbp' ),
+				'recurring' => true,
+			),
+			'bancontact' => array(
+				'name' => 'Bancontact',
+				'supported_currencies' => array( 'eur' ),
+				'recurring' => false,
+			),
+			/* Documentation says that this is a valid payment gateway, but throws error at checkout.
+			'au_becs_debit' => array(
+				'name' => 'BECS Direct Debit',
+				'supported_currencies' => array( 'aud' ),
+				'recurring' => false,
+			),
+			*/
+			'boleto' => array(
+				'name' => 'Boleto',
+				'supported_currencies' => array( 'brl' ),
+				'recurring' => false,
+			),
+			'eps' => array(
+				'name' => 'EPS',
+				'supported_currencies' => array( 'eur' ),
+				'recurring' => false,
+			),
+			'fpx' => array(
+				'name' => 'FPX',
+				'supported_currencies' => array( 'myr' ),
+				'recurring' => false,
+			),
+			'giropay' => array(
+				'name' => 'GiroPay',
+				'supported_currencies' => array( 'eur' ),
+				'recurring' => false,
+			),
+			'grabpay' => array(
+				'name' => 'GrabPay',
+				'supported_currencies' => array( 'myr', 'sgd' ),
+				'recurring' => false,
+			),
+			'ideal' => array(
+				'name' => 'iDEAL',
+				'supported_currencies' => array( 'eur' ),
+				'recurring' => false,
+			),
+			'klarna' => array(
+				'name' => 'Klarna',
+				// 'supported_currencies' => array( 'dkk', 'eur', 'gbp', 'nok', 'sek', 'usd' ), // Documentaion says that all these should work, but throws error at checkout.
+				'supported_currencies' => array( 'usd' ),
+				'recurring' => false,
+			),
+			'oxxo' => array(
+				'name' => 'OXXO',
+				'supported_currencies' => array( 'mxn' ),
+				'recurring' => false,
+			),
+			'p24' => array(
+				'name' => 'P24',
+				'supported_currencies' => array( 'eur', 'pln' ),
+				'recurring' => false,
+			),
+			/* Requires additional setup when creating Checkout Session. Put off for now.
+			'acss_debit' => array(
+				'name' => 'Pre-authorized debits in Canada',
+				'supported_currencies' => array( 'cad', 'usd' ),
+				'recurring' => true,
+			),
+			*/
+			'sepa_debit' => array(
+				'name' => 'SEPA Direct Debit',
+				'supported_currencies' => array( 'eur' ),
+				'recurring' => true,
+			),
+			'sofort' => array(
+				'name' => 'Sofort',
+				'supported_currencies' => array( 'eur' ),
+				'recurring' => false,
+			),
+			/* Requires additional setup when creating Checkout session. Put off for now.
+			'wechat_pay' => array(
+				'name' => 'WeChat Pay',
+				'supported_currencies' => array( 'aud', 'cad', 'cny', 'eur', 'gbp', 'hkd', 'jpy', 'sgd', 'usd', 'dkk', 'nok', 'sek', 'chf' ),
+				'recurring' => false,
+			),
+			*/
+		);
 	}
 
 	/****************************************
