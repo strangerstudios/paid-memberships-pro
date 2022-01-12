@@ -21,7 +21,7 @@ function pmpro_is_spammer() {
     $is_spammer = false;
     
     $activity = pmpro_get_spam_activity();
-    if ( count( $activity ) >= PMPRO_SPAM_ACTION_NUM_LIMIT ) {
+    if ( false !== $activity && count( $activity ) >= PMPRO_SPAM_ACTION_NUM_LIMIT ) {
         $is_spammer = true;
     }
     
