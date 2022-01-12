@@ -150,6 +150,12 @@ function pmpro_clear_spam_activity( $ip = null ) {
  * @param MemberOrder $morder The order object used at checkout. We ignore it.
  */
 function pmpro_track_failed_checkouts_for_spam( $morder ) {
+	// Bail if Spam Protection is disabled.
+	$spamprotection = pmpro_getOption("spamprotection");	
+	if ( empty( $spamprotection ) ) {
+		return;
+	}
+	
 	pmpro_track_spam_activity();
 }
 add_action( 'pmpro_checkout_processing_failed', 'pmpro_track_failed_checkouts_for_spam' );
@@ -171,6 +177,12 @@ add_action( 'pmpro_update_billing_failed', 'pmpro_track_failed_checkouts_for_spa
  * @return array The list of required fields.
  */
 function pmpro_disable_checkout_for_spammers( $required_fields ) {
+	// Bail if Spam Protection is disabled.
+	$spamprotection = pmpro_getOption("spamprotection");	
+	if ( empty( $spamprotection ) ) {
+		return $required_fields;
+	}
+	
 	if ( pmpro_was_checkout_form_submitted() && pmpro_is_spammer() ) {
 		pmpro_setMessage( __( 'Suspicious activity detected. Try again in a few minutes.', 'paid-memberships-pro' ), 'pmpro_error' );
 	}
