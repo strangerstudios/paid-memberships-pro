@@ -450,8 +450,13 @@ if ( $submit && $pmpro_msgt != "pmpro_error" ) {
 						$pmpro_msgt      = "pmpro_success";
 						$pmpro_confirmed = true;
 					} else {
-						// Track as spam activity to prevent too many CC attempts.
-						pmpro_track_spam_activity();
+						/**
+						 * Allow running code when processing fails.
+						 *
+						 * @since 2.7
+						 * @param MemberOrder $morder The order object used at checkout.
+						 */
+						do_action( 'pmpro_checkout_processing_failed', $morder );
 						
 						// Make sure we have an error message.
 						$pmpro_msg = !empty( $morder->error ) ? $morder->error : null;

@@ -276,8 +276,13 @@ if ($submit) {
 			
 			do_action( 'pmpro_after_update_billing', $current_user->ID, $morder );
         } else {
-			// Track as spam activity to prevent too many CC attempts.
-			pmpro_track_spam_activity();
+			/**
+			 * Allow running code when the update fails.
+			 *
+			 * @since 2.7
+			 * @param MemberOrder $morder The order for the sub being updated.
+			 */
+			do_action( 'pmpro_update_billing_failed', $morder );
 			
 			// Make sure we have an error message.
 			$pmpro_msg = $morder->error;

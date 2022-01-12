@@ -121,7 +121,6 @@ function pmpro_track_spam_activity( $ip = null ) {
  *
  * @return bool True if the clearing of activity was successful, or false if IP could not be determined.
  */
- */
 function pmpro_clear_spam_activity( $ip = null ) {
     if ( empty( $ip ) ) {
         $ip = pmpro_get_ip();        
@@ -138,6 +137,18 @@ function pmpro_clear_spam_activity( $ip = null ) {
 
 	return true;
 }
+
+/**
+ * Track spam activity when checkouts or billing updates fail.
+ *
+ * @since 2.7
+ * @param MemberOrder $morder The order object used at checkout. We ignore it.
+ */
+function pmpro_track_failed_checkouts_for_spam( $morder ) {
+    pmpro_track_spam_activity();
+}
+add_action( 'pmpro_checkout_processing_failed', 'pmpro_track_failed_checkouts_for_spam' );
+add_action( 'pmpro_update_billing_failed', 'pmpro_track_failed_checkouts_for_spam' );
 
 /**
  * Disable checkout and billing update forms for spammers.
