@@ -54,6 +54,7 @@ function pmpro_get_spam_activity( $ip = null ) {
 	$new_activity = [];
 	$now = current_time( 'timestamp', true ); // UTC
     foreach( $activity as $item ) {
+		// Determine whether this item is recent enough to include.
 		if ( $item > $now-( PMPRO_SPAM_ACTION_TIME_LIMIT ) ) {
 			$new_activity[] = $item;
 		}
