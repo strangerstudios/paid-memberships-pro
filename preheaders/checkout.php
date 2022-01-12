@@ -457,17 +457,17 @@ if ( $submit && $pmpro_msgt != "pmpro_error" ) {
 						 * @param MemberOrder $morder The order object used at checkout.
 						 */
 						do_action( 'pmpro_checkout_processing_failed', $morder );
-						
+
 						// Make sure we have an error message.
 						$pmpro_msg = !empty( $morder->error ) ? $morder->error : null;
 						if ( empty( $pmpro_msg ) ) {
 							$pmpro_msg = __( "Unknown error generating account. Please contact us to set up your membership.", 'paid-memberships-pro' );
-						}						
+						}
 						if ( ! empty( $morder->error_type ) ) {
 							$pmpro_msgt = $morder->error_type;
 						} else {
 							$pmpro_msgt = "pmpro_error";
-						}						
+						}
 					}
 
 				} else // !$pmpro_requirebilling
@@ -635,7 +635,7 @@ if ( ! empty( $pmpro_confirmed ) ) {
 		} else {
 			$code_check = pmpro_checkDiscountCode( $discount_code, $pmpro_level->id, true );
 		}
-		
+
 		if ( $code_check[0] == false ) {
 			//error
 			$pmpro_msg  = $code_check[1];
@@ -647,8 +647,8 @@ if ( ! empty( $pmpro_confirmed ) ) {
 			//all okay
 			$use_discount_code = true;
 		}
-		
-		//update membership_user table.		
+
+		//update membership_user table.
 		if ( ! empty( $discount_code ) && ! empty( $use_discount_code ) ) {
 			$discount_code_id = $wpdb->get_var( "SELECT id FROM $wpdb->pmpro_discount_codes WHERE code = '" . esc_sql( $discount_code ) . "' LIMIT 1" );
 		} else {
@@ -705,7 +705,7 @@ if ( ! empty( $pmpro_confirmed ) ) {
 				}
 
 				$wpdb->query( "INSERT INTO $wpdb->pmpro_discount_codes_uses (code_id, user_id, order_id, timestamp) VALUES('" . $discount_code_id . "', '" . $user_id . "', '" . intval( $code_order_id ) . "', '" . current_time( "mysql" ) . "')" );
-				
+
 				do_action( 'pmpro_discount_code_used', $discount_code_id, $user_id, $code_order_id );
 			}
 
@@ -788,7 +788,7 @@ if ( ! empty( $pmpro_confirmed ) ) {
 			do_action( "pmpro_after_checkout", $user_id, $morder );    //added $morder param in v2.0
 
 			$sendemails = apply_filters( "pmpro_send_checkout_emails", true);
-	
+
 			if($sendemails) { // Send the emails only if the flag is set to true
 
 				//setup some values for the emails
