@@ -2203,8 +2203,6 @@ class PMProGateway_stripe extends PMProGateway {
 	/**
 	 * Get the Stripe product ID for a given membership level.
 	 *
-	 * TODO: Separate products for live and sandbox mode.
-	 *
 	 * @since TBD
 	 *
 	 * @param PMPro_Membership_Leve|int $level to get product ID for.
@@ -2242,8 +2240,6 @@ class PMProGateway_stripe extends PMProGateway {
 	 *
 	 * WARNING: Will overwrite old Stripe product set for level if
 	 * there is already one set.
-	 *
-	 * TODO: Separate products for live and sandbox mode.
 	 *
 	 * @since TBD
 	 *
