@@ -106,8 +106,11 @@ function pmpro_track_spam_activity( $ip = null ) {
  * automatically, and this should only be used to completely clear the activity.
  *
  * @since 2.7
- * @param string $ip    The IP address to clear activity for.
- * @return bool         True if successful. False if we couldn't determine the IP.
+ *
+ * @param string|null $ip The IP address to clear activity for, or leave as null to attempt to determine current IP address.
+ *
+ * @return bool True if the clearing of activity was successful, or false if IP could not be determined.
+ */
  */
 function pmpro_clear_spam_activity( $ip = null ) {
     if ( empty( $ip ) ) {
