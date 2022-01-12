@@ -408,6 +408,10 @@ if ( $submit && $pmpro_msgt != "pmpro_error" ) {
 					$recaptcha_errors = $resp->error;
 				} else {
 					//using newer recaptcha lib
+					// NOTE: In practice, we don't execute this code because
+					// we use AJAX to send the data back to the server and set the
+					// pmpro_recaptcha_validated session variable, which is checked
+					// earlier. We should remove/refactor this code.
 					$reCaptcha = new pmpro_ReCaptcha( $recaptcha_privatekey );
 					$resp      = $reCaptcha->verifyResponse( $_SERVER["REMOTE_ADDR"], $_POST["g-recaptcha-response"] );
 

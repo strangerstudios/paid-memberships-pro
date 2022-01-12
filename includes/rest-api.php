@@ -201,6 +201,9 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 				array(
 					'methods'  => WP_REST_Server::READABLE,
 					'callback' => array( $this, 'pmpro_rest_api_recent_memberships' ),
+					'args'	=> array(
+						'status' => array(),
+					),
 					'permission_callback' => array( $this, 'pmpro_rest_api_get_permissions_check' ),
 				)
 		));
@@ -612,7 +615,7 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 
 			$discount_code->code = $code;
 			$discount_code->starts = $starts;
-			$discount_code->ends = $expires;
+			$discount_code->expires = $expires;
 			$discount_code->uses = $uses;
 			$discount_code->levels = !empty( $levels_array ) ? $levels_array : $levels;
 			$discount_code->save();
@@ -719,14 +722,35 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 		 */
 		public function pmpro_rest_api_recent_memberships( $request ) {
 			$params = $request->get_params();
-
 			if ( isset($params['limit']) ) {
-				$members_limit = intval( $params['limit'] );
+				$limit = intval( $params['limit'] );
 			} else {
-				$members_limit = 1;
+				$limit = 1;
+			}
+			/**
+			 * Allow filtering the total number of recent members to show in the /recent_memberships PMPro endpoint.
+			 *
+			 * @param int $limit The total number of recent members to show.
+			 */
+			$limit = apply_filters( 'pmpro_trigger_recent_members_limit', $limit );
+			
+			$response_type = isset( $params['response_type'] ) ? sanitize_text_field( $params['response_type'] ) : null;
+			
+			if ( empty( $params['level_status'] ) ) {
+				$level_status = [ 'active' ];
+			} else {
+				$level_status = sanitize_text_field( trim( $params['level_status'] ) );
+
+				// Force it into an array so we can implode it in the query itself.
+				$level_status = explode( ',', $level_status );
 			}
 
-			$limit = apply_filters( 'pmpro_trigger_recent_members_limit', $members_limit );
+			// Set up values to prepare.
+			$prepare   = $level_status;
+			$prepare[] = $limit;
+
+			// Set up the placeholders we want to use.
+			$level_status_placeholders = implode( ', ', array_fill( 0, count( $level_status ), '%s' ) );
 
 			// Grab the useful information.
 			global $wpdb;
@@ -746,13 +770,13 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 				LEFT JOIN `{$wpdb->pmpro_membership_levels}` AS `ml`
 					ON `ml`.`id` = `mu`.`membership_id`
 				WHERE
-					`mu`.`status` = 'active' 
+					`mu`.`status` IN ( {$level_status_placeholders} ) 
 				ORDER BY
 					`mu`.`modified` DESC
 				LIMIT %d
 			";
 
-			$results = $wpdb->get_results( $wpdb->prepare( $sql, $limit ) );
+			$results = $wpdb->get_results( $wpdb->prepare( $sql, $prepare ) );
 
 			// Let's format the date to ISO8601
 			$results[0]->modified = pmpro_format_date_iso8601( $results[0]->modified );
