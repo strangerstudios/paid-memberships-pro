@@ -70,8 +70,10 @@ function pmpro_get_spam_activity( $ip = null ) {
  * IP address isn't a perfect way to track this, but it's the best we have.
  *
  * @since 2.7
- * @param string $ip    The IP address to track activity for.
- * @return bool         True if successful. False if we couldn't determine the IP.
+ *
+ * @param string|null $ip The IP address to track activity for, or leave as null to attempt to determine current IP address.
+ *
+ * @return bool True if the tracking of activity was successful, or false if IP could not be determined.
  */
 function pmpro_track_spam_activity( $ip = null ) {
     if ( empty( $ip ) ) {
