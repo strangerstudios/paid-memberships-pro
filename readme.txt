@@ -157,14 +157,18 @@ Not sure? You can find out by doing a bit a research.
 
 == Changelog ==
 = 2.7 - 2022-01-12 =
-*
+* ENHANCEMENT: Checkouts with Stripe will now reuse Stripe Products and Prices. (@dparker1005)
+* ENHANCEMENT: User profile now links to Stripe customer so that subscriptions can easily be directly updated in Stripe rather than through Subscriptions Updates which is now deprecated. (@dparker1005)
+* BUG FIX: Consolidated the "Free memberships only" option into the "All memberships" option for enabling reCAPTCHA to ensure that paid memberships with discounts that make the membership $0 cost show reCAPTCHA consistently. #1878 #1840 (@jarrydlong)
+* BUG FIX: Resolved issue where users may not be linked to their Stripe customer. (@dparker1005)
+* REFACTOR: Organized and simplified Stripe gateway class. (@dparker1005)
 
 = 2.6.7 - 2022-01-06 =
 * SECURITY: Updated escaping in the pmpro_getLevelAtCheckout and pmpro_checkDiscountCode functions as extra precaution against SQL injections. (Thanks, WPScan)
 
 = 2.6.6 - 2021-11-18 =
 * SECURITY: Updated escaping on the discount codes page in the dashboard to prevent XSS attacks. #1867 (Thanks, Erwan from WPScan)
-* BUG FIX/ENHANCEMENT: Added code to remove duplicate active rows in the pmpro_memberships_users table after level change. This might have happened e.g. if users were purchasing a level via the WooCommerce Add On multiple times. #1860 (@dlparker1005)
+* BUG FIX/ENHANCEMENT: Added code to remove duplicate active rows in the pmpro_memberships_users table after level change. This might have happened e.g. if users were purchasing a level via the WooCommerce Add On multiple times. #1860 (@dparker1005)
 * BUG FIX/ENHANCEMENT: Improved the REST API endpoints to better support Zapier native requirements. #1862 (@andrewlimaza)
 * BUG FIX: Fixed PHP notices in the name parser library. #1861 (@sc0ttkclark)
 
