@@ -2222,9 +2222,14 @@ class PMProGateway_stripe extends PMProGateway {
 			return;
 		}
 
-		$stripe_product_id = $level->stripe_product_id;
+		$gateway_environment = pmpro_getOption( 'gateway_environment' );
+		if ( $gateway_environment === 'sandbox' ) {
+			$stripe_product_id = $level->stripe_product_id_sandbox;
+		} else {
+			$stripe_product_id = $level->stripe_product_id;
+		}
 		if ( empty( $stripe_product_id ) ) {
-			$stripe_product_id = $this->create_product_for_level( $level );
+			$stripe_product_id = $this->create_product_for_level( $level, $gateway_environment );
 		}
 
 		if ( ! empty( $stripe_product_id ) ) {
@@ -2243,9 +2248,10 @@ class PMProGateway_stripe extends PMProGateway {
 	 * @since TBD
 	 *
 	 * @param PMPro_Membership_Level|int $level to create product ID for.
+	 * @param string $gateway_environment to create product for.
 	 * @return string|null ID of new product
 	 */
-	private function create_product_for_level( $level ) {
+	private function create_product_for_level( $level, $gateway_environment ) {
 		if ( ! is_a( $level, 'PMPro_Membership_Level' ) ) {
 			if ( is_numeric( $level ) ) {
 				$level = new PMPro_Membership_Level( $level );
@@ -2267,13 +2273,15 @@ class PMProGateway_stripe extends PMProGateway {
 		 *
 		 * @param array $product_args being sent to Stripe.
 		 * @param PMPro_Membership_Level $level that product is being created for.
+		 * @param string $gateway_environment being used.
 		 */
-		$product_args = apply_filters( 'pmpro_stripe_create_product_for_level', $product_args, $level );
+		$product_args = apply_filters( 'pmpro_stripe_create_product_for_level', $product_args, $level, $gateway_environment );
 
 		try {
 			$product = Stripe_Product::create( $product_args );
 			if ( ! empty( $product->id ) ) {
-				update_pmpro_membership_level_meta( $level->ID, 'stripe_product_id', $product->id );
+				$meta_name = 'sandbox' === $gateway_environment ? 'stripe_product_id_sandbox' : 'stripe_product_id';
+				update_pmpro_membership_level_meta( $level->ID, $meta_name, $product->id );
 				return $product->id;
 			}
 		} catch (\Throwable $th) {
