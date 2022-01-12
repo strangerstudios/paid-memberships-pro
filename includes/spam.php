@@ -18,12 +18,12 @@ if ( ! defined( 'PMPRO_SPAM_ACTION_TIME_LIMIT' ) ) {
  * @return bool Whether the current visitor a spammer.
  */
 function pmpro_is_spammer() {
-	$is_spammer = false;
+    $is_spammer = false;
 
-	$activity = pmpro_get_spam_activity();
-	if ( count( $activity ) >= PMPRO_SPAM_ACTION_NUM_LIMIT ) {
-		$is_spammer = true;
-	}
+    $activity = pmpro_get_spam_activity();
+    if ( false !== $activity && count( $activity ) >= PMPRO_SPAM_ACTION_NUM_LIMIT ) {
+        $is_spammer = true;
+    }
 
 	/**
 	 * Allow filtering whether the current visitor is a spammer.
