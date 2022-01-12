@@ -120,7 +120,9 @@ function pmpro_clear_spam_activity( $ip = null ) {
     
     $transient_key = 'pmpro_spam_activity_' . $ip;
     
-    delete_transient( $transient_key );
+	delete_transient( $transient_key );
+
+	return true;
 }
 
 /**
