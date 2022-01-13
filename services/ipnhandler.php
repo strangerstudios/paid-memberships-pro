@@ -358,6 +358,8 @@ if( '' === $txn_type && 'Refunded' === $payment_status ) {
 //Other
 //if we got here, this is a different kind of txn
 ipnlog( "No recurring payment id or item number. txn_type = " . $txn_type );
+
+do_action( 'pmpro_webhook_unhandled' );
 pmpro_ipnExit();
 
 /*

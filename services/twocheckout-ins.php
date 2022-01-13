@@ -178,6 +178,8 @@
 	//Other
 	//if we got here, this is a different kind of txn
 	inslog("The PMPro INS handler does not process this type of message. message_type = " . $message_type);
+
+	do_action( 'pmpro_webhook_unhandled' );
 	pmpro_twocheckoutExit();
 
 	/*
