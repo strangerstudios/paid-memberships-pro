@@ -575,7 +575,7 @@ class PMProGateway_stripe extends PMProGateway {
 							?><tr><?php
 								?><td><input type="checkbox" name="stripe_enabled_payment_methods[]" value="<?php echo esc_attr( $payment_method ); ?>" <?php if ( in_array( $payment_method, $enabled_payment_methods ) ) { ?>checked="checked"<?php } ?> /></td><?php
 								?><td><?php echo esc_html( $payment_method_data['name'] ); ?></td><?php
-								?><td><?php echo esc_html( implode( ', ', $payment_method_data['supported_currencies'] ) ); ?></td><?php
+								?><td><?php echo esc_html( implode( ', ', array_map( 'strtoupper', $payment_method_data['supported_currencies'] ) ) ); ?></td><?php
 								?><td><?php echo esc_html( $payment_method_data['recurring'] ? __( 'Yes', 'paid-memberships-pro' ) : __( 'No', 'paid-memberships-pro' ) ); ?></td><?php
 							?></tr><?php
 						}
@@ -1690,6 +1690,17 @@ class PMProGateway_stripe extends PMProGateway {
 		$checkout_session_params = array(
 			'customer' => $customer->id,
 			'payment_method_types' => $payment_method_types,
+			'payment_method_options' => array( // All of this can be filtered to customize.
+				'acss_debit' => array(
+					'mandate_options' => array(
+						'payment_schedule' => 'sporadic',
+						'transaction_type' => 'personal',
+					),
+				),
+				'wechat_pay' => array(
+					'client' => 'web',
+				),
+			),
 			'line_items' => $line_items,
 			'mode' => empty( $subscription_data ) ? 'payment' : 'subscription',
 			'automatic_tax' => $automatic_tax,
@@ -1806,13 +1817,12 @@ class PMProGateway_stripe extends PMProGateway {
 				'supported_currencies' => array( 'eur', 'pln' ),
 				'recurring' => false,
 			),
-			/* Requires additional setup when creating Checkout Session. Put off for now.
 			'acss_debit' => array(
 				'name' => 'Pre-authorized debits in Canada',
 				'supported_currencies' => array( 'cad', 'usd' ),
-				'recurring' => true,
+				// 'recurring' => true, // Documentation says this is true, but throws error at checkout.
+				'recurring' => false,
 			),
-			*/
 			'sepa_debit' => array(
 				'name' => 'SEPA Direct Debit',
 				'supported_currencies' => array( 'eur' ),
@@ -1823,13 +1833,12 @@ class PMProGateway_stripe extends PMProGateway {
 				'supported_currencies' => array( 'eur' ),
 				'recurring' => false,
 			),
-			/* Requires additional setup when creating Checkout session. Put off for now.
 			'wechat_pay' => array(
 				'name' => 'WeChat Pay',
-				'supported_currencies' => array( 'aud', 'cad', 'cny', 'eur', 'gbp', 'hkd', 'jpy', 'sgd', 'usd', 'dkk', 'nok', 'sek', 'chf' ),
+				// 'supported_currencies' => array( 'aud', 'cad', 'cny', 'eur', 'gbp', 'hkd', 'jpy', 'sgd', 'usd', 'dkk', 'nok', 'sek', 'chf' ),
+				'supported_currencies' => array( 'cny', 'usd' ),
 				'recurring' => false,
 			),
-			*/
 		);
 	}
 
