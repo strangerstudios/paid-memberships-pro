@@ -4,7 +4,7 @@ Tags: memberships, members, subscriptions, ecommerce, user registration, member,
 Requires at least: 5.2
 Tested up to: 5.8.3
 Requires PHP: 5.6
-Stable tag: 2.7
+Stable tag: 2.7.1
 
 Get Paid with Paid Memberships Pro: The most complete member management and membership subscriptions plugin for your WordPress site.
 
@@ -156,6 +156,9 @@ Not sure? You can find out by doing a bit a research.
 9. Membership Account page, display all sections or show specific sections using shortcode attributes.
 
 == Changelog ==
+= 2.7.1 - 2022-01-13 =
+* BUG FIX: Fixed issue on some MySQL setups that would throw an error about the primary key in the pmpro_memberships_pages and pmpro_memberships_categories tables.
+
 = 2.7 - 2022-01-13 =
 * FEATURE: Added a "Spam Protection" option to the advanced settings page. When used, IP addresses are blocked from checkout if there are more than 10 failsures within 15 minutes. (@ideadude)
 * ENHANCEMENT: Checkouts with Stripe will now reuse Stripe Products and Prices. (@dparker1005)
