@@ -981,7 +981,7 @@ class PMProGateway_stripe extends PMProGateway {
 	 * Temporary function to allow users to delete subscription updates.
 	 * Will be removed once subscription updates are completely deprecated.
 	 *
-	 * @since TBD.
+	 * @since 2.7.0.
 	 */
 	static function user_profile_fields_save( $user_id ) {
 		global $wpdb;
@@ -1248,7 +1248,7 @@ class PMProGateway_stripe extends PMProGateway {
 				$subscription = $order->Gateway->get_subscription( $order->subscription_transaction_id );
 
 				if ( ! empty( $subscription ) ) {
-					$customer = $order->Gateway->set_customer();
+					$customer = $order->Gateway->get_customer_for_user( $user_id );
 					if ( ! $customer->delinquent && ! empty ( $subscription->current_period_end ) ) {
 						$offset = get_option( 'gmt_offset' );						
 						$timestamp = $subscription->current_period_end + ( $offset * 3600 );
@@ -1452,7 +1452,7 @@ class PMProGateway_stripe extends PMProGateway {
 	 * @return bool
 	 * @since 1.8.6.8.1
 	 * @since 1.8.13.6 - Add json dependency
-	 * @deprecated TBD. Only deprecated for public use, will be changed to private non-static in a future version.
+	 * @deprecated 2.7.0. Only deprecated for public use, will be changed to private non-static in a future version.
 	 */
 	public static function dependencies() {
 		global $msg, $msgt, $pmpro_stripe_error;
@@ -1976,7 +1976,7 @@ class PMProGateway_stripe extends PMProGateway {
 	/**
 	 * Retrieve a Stripe_Customer for a given user.
 	 *
-	 * @since TBD
+	 * @since 2.7.0
 	 *
 	 * @param int $user_id to get Stripe_Customer for.
 	 * @return Stripe_Customer|null
@@ -2054,7 +2054,7 @@ class PMProGateway_stripe extends PMProGateway {
 	/**
 	 * Create/Update Stripe customer for a user.
 	 *
-	 * @since TBD
+	 * @since 2.7.0
 	 *
 	 * @param int $user_id to create/update Stripe customer for.
 	 * @return Stripe_Customer|false
@@ -2108,7 +2108,7 @@ class PMProGateway_stripe extends PMProGateway {
 		 * Change the information that is sent when updating/creating
 		 * a Stripe_Customer from a user.
 		 *
-		 * @since TBD
+		 * @since 2.7.0
 		 *
 		 * @param array       $customer_args to be sent.
 		 * @param WP_User     $user being used to create/update customer.
@@ -2239,7 +2239,7 @@ class PMProGateway_stripe extends PMProGateway {
 	/**
 	 * Shows settings for connecting to Stripe.
 	 *
-	 * @since TBD.
+	 * @since 2.7.0.
 	 *
 	 * @param bool $livemode True if live credentials, false if sandbox.
 	 * @param array $values Current settings.
@@ -2374,7 +2374,7 @@ class PMProGateway_stripe extends PMProGateway {
 	/**
 	 * Retrieve a Stripe_Customer.
 	 *
-	 * @since TBD
+	 * @since 2.7.0
 	 *
 	 * @param string $customer_id to retrieve.
 	 * @return Stripe_Customer|null
@@ -2393,7 +2393,7 @@ class PMProGateway_stripe extends PMProGateway {
 	/**
 	 * Check whether a given Stripe customer has a billing address set.
 	 *
-	 * @since TBD
+	 * @since 2.7.0
 	 *
 	 * @param Stripe_Customer $customer to check.
 	 * @return bool
@@ -2412,7 +2412,7 @@ class PMProGateway_stripe extends PMProGateway {
 	/**
 	 * Update a customer in Stripe.
 	 *
-	 * @since TBD
+	 * @since 2.7.0
 	 *
 	 * @param string $customer_id to update.
 	 * @param array  $args to update with.
@@ -2434,7 +2434,7 @@ class PMProGateway_stripe extends PMProGateway {
 	/**
 	 * Create a new customer in Stripe.
 	 *
-	 * @since TBD
+	 * @since 2.7.0
 	 *
 	 * @param array  $args to update with.
 	 * @return Stripe_Customer|string error message.
@@ -2461,7 +2461,7 @@ class PMProGateway_stripe extends PMProGateway {
 	 * Should only be called when checkout is being proceesed. Otherwise,
 	 * use update_customer_from_user() method.
 	 *
-	 * @since TBD
+	 * @since 2.7.0
 	 *
 	 * @param MemberOrder $order to create/update Stripe customer for.
 	 * @return Stripe_Customer|false
@@ -2553,7 +2553,7 @@ class PMProGateway_stripe extends PMProGateway {
 		 * Change the information that is sent when updating/creating
 		 * a Stripe_Customer from a MemberOrder.
 		 *
-		 * @since TBD
+		 * @since 2.7.0
 		 *
 		 * @param array       $customer_args to be sent.
 		 * @param MemberOrder $order being used to create/update customer.
@@ -2599,7 +2599,7 @@ class PMProGateway_stripe extends PMProGateway {
 		 * Fires after a Stripe_Customer is created at checkout.
 		 *
 		 * @since Unknown
-		 * @deprecated TBD. Use pmpro_stripe_update_customer_from_user or pmpro_stripe_update_customer_at_checkout.
+		 * @deprecated 2.7.0. Use pmpro_stripe_update_customer_from_user or pmpro_stripe_update_customer_at_checkout.
 		 *
 		 * @param array       $customer_args to be sent.
 		 * @param MemberOrder $order being used to create/update customer.
@@ -2665,7 +2665,7 @@ class PMProGateway_stripe extends PMProGateway {
 	/**
 	 * Retrieve a Stripe_Subscription.
 	 *
-	 * @since TBD
+	 * @since 2.7.0
 	 *
 	 * @param string $subscription_id to retrieve.
 	 * @return Stripe_Subscription|null
@@ -2684,9 +2684,7 @@ class PMProGateway_stripe extends PMProGateway {
 	/**
 	 * Get the Stripe product ID for a given membership level.
 	 *
-	 * TODO: Separate products for live and sandbox mode.
-	 *
-	 * @since TBD
+	 * @since 2.7.0
 	 *
 	 * @param PMPro_Membership_Leve|int $level to get product ID for.
 	 * @return string|null
@@ -2703,9 +2701,14 @@ class PMProGateway_stripe extends PMProGateway {
 			return;
 		}
 
-		$stripe_product_id = $level->stripe_product_id;
+		$gateway_environment = pmpro_getOption( 'gateway_environment' );
+		if ( $gateway_environment === 'sandbox' ) {
+			$stripe_product_id = $level->stripe_product_id_sandbox;
+		} else {
+			$stripe_product_id = $level->stripe_product_id;
+		}
 		if ( empty( $stripe_product_id ) ) {
-			$stripe_product_id = $this->create_product_for_level( $level );
+			$stripe_product_id = $this->create_product_for_level( $level, $gateway_environment );
 		}
 
 		if ( ! empty( $stripe_product_id ) ) {
@@ -2719,14 +2722,13 @@ class PMProGateway_stripe extends PMProGateway {
 	 * WARNING: Will overwrite old Stripe product set for level if
 	 * there is already one set.
 	 *
-	 * TODO: Separate products for live and sandbox mode.
-	 *
-	 * @since TBD
-	 *
+	 * @since 2.7.0
+   *
 	 * @param PMPro_Membership_Level|int $level to create product ID for.
+	 * @param string $gateway_environment to create product for.
 	 * @return string|null ID of new product
 	 */
-	private function create_product_for_level( $level ) {
+	private function create_product_for_level( $level, $gateway_environment ) {
 		if ( ! is_a( $level, 'PMPro_Membership_Level' ) ) {
 			if ( is_numeric( $level ) ) {
 				$level = new PMPro_Membership_Level( $level );
@@ -2744,17 +2746,19 @@ class PMProGateway_stripe extends PMProGateway {
 		/**
 		 * Filter the data sent to Stripe when creating a new product for a membership level.
 		 *
-		 * @since TBD
+		 * @since 2.7.0
 		 *
 		 * @param array $product_args being sent to Stripe.
 		 * @param PMPro_Membership_Level $level that product is being created for.
+		 * @param string $gateway_environment being used.
 		 */
-		$product_args = apply_filters( 'pmpro_stripe_create_product_for_level', $product_args, $level );
+		$product_args = apply_filters( 'pmpro_stripe_create_product_for_level', $product_args, $level, $gateway_environment );
 
 		try {
 			$product = Stripe_Product::create( $product_args );
 			if ( ! empty( $product->id ) ) {
-				update_pmpro_membership_level_meta( $level->ID, 'stripe_product_id', $product->id );
+				$meta_name = 'sandbox' === $gateway_environment ? 'stripe_product_id_sandbox' : 'stripe_product_id';
+				update_pmpro_membership_level_meta( $level->ID, $meta_name, $product->id );
 				return $product->id;
 			}
 		} catch (\Throwable $th) {
@@ -2769,7 +2773,7 @@ class PMProGateway_stripe extends PMProGateway {
 	 *
 	 * TODO: Add pagination.
 	 *
-	 * @since TBD
+	 * @since 2.7.0
 	 *
 	 * @param string $product_id to get Price for.
 	 * @param float $amount that the Price will charge.
@@ -2780,9 +2784,10 @@ class PMProGateway_stripe extends PMProGateway {
 	 */
 	private function get_price_for_product( $product_id, $amount, $cycle_period = null, $cycle_number = null ) {
 		global $pmpro_currency;
+		$currency = pmpro_get_currency();
 
 		$is_recurring = ! empty( $cycle_period ) && ! empty( $cycle_number );
-		$unit_amount  = intval( $amount * 100 ); // TODO: Change this based on currency.
+		$unit_amount  = intval( $amount * pow( 10, intval( $currency['decimals'] ) ) );
 		$cycle_period = strtolower( $cycle_period );
 
 		// Only for use with Stripe Checkout.
@@ -2859,7 +2864,7 @@ class PMProGateway_stripe extends PMProGateway {
 	 * Calculate the number of days until the first recurring payment
 	 * for a subscription should be charged.
 	 *
-	 * @since TBD.
+	 * @since 2.7.0.
 	 *
 	 * @param MemberOrder $order to calculate trial period days for.
 	 * @return int trial period days.
@@ -2884,20 +2889,20 @@ class PMProGateway_stripe extends PMProGateway {
 		}
 
 		//convert to a profile start date
-		$order->ProfileStartDate = date_i18n( "Y-m-d", strtotime( "+ " . $trial_period_days . " Day", current_time( "timestamp" ) ) ) . "T0:0:0";
+		$order->ProfileStartDate = date_i18n( "Y-m-d\TH:i:s", strtotime( "+ " . $trial_period_days . " Day", current_time( "timestamp" ) ) );
 
 		//filter the start date
 		$order->ProfileStartDate = apply_filters( "pmpro_profile_start_date", $order->ProfileStartDate, $order );
 
 		//convert back to days
-		$trial_period_days = ceil( abs( strtotime( date_i18n( "Y-m-d" ), current_time( "timestamp" ) ) - strtotime( $order->ProfileStartDate, current_time( "timestamp" ) ) ) / 86400 );
+		$trial_period_days = ceil( abs( strtotime( date_i18n( "Y-m-d\TH:i:s" ), current_time( "timestamp" ) ) - strtotime( $order->ProfileStartDate, current_time( "timestamp" ) ) ) / 86400 );
 		return $trial_period_days;
 	}
 
 	/**
 	 * Create a subscription for a customer from an order using a Stripe Price.
 	 *
-	 * @since TBD.
+	 * @since 2.7.0.
 	 *
 	 * @param string $customer_id to create subscription for.
 	 * @param MemberOrder $order to pull subscription details from.
@@ -2955,7 +2960,7 @@ class PMProGateway_stripe extends PMProGateway {
 	/**
 	 * Retrieve a payment intent.
 	 *
-	 * @since TBD.
+	 * @since 2.7.0.
 	 *
 	 * @param string $payment_intent_id to retrieve.
 	 * @return Stripe_PaymentIntent|string error.
@@ -2976,7 +2981,7 @@ class PMProGateway_stripe extends PMProGateway {
 	/**
 	 * Retrieve a setup intent.
 	 *
-	 * @since TBD.
+	 * @since 2.7.0.
 	 *
 	 * @param string $setup_intent_id to retrieve.
 	 * @return Stripe_SetupIntent|string error.
@@ -3003,7 +3008,7 @@ class PMProGateway_stripe extends PMProGateway {
 	/**
 	 * Confirm the payment intent after authentication.
 	 *
-	 * @since TBD.
+	 * @since 2.7.0.
 	 *
 	 * @param string $payment_intent_id to confirm.
 	 * @return Stripe_PaymentIntent|string error.
@@ -3044,7 +3049,7 @@ class PMProGateway_stripe extends PMProGateway {
 	/**
 	 * Confirm the setup intent after authentication.
 	 *
-	 * @since TBD.
+	 * @since 2.7.0.
 	 *
 	 * @param string $setup_intent_id to confirm.
 	 * @return Stripe_SetupIntent|string error.
@@ -3060,7 +3065,7 @@ class PMProGateway_stripe extends PMProGateway {
 		/**
 		 * The time in seconds that a setup intent must be confirmed within.
 		 *
-		 * @since TBD
+		 * @since 2.7.0
 		 *
 		 * @param int $seconds_to_confirm_setup_intent The time in seconds that a setup intent must be confirmed within.
 		 */
@@ -3080,7 +3085,7 @@ class PMProGateway_stripe extends PMProGateway {
 	/**
 	 * Add a subscription ID to the metadata of a setup intent.
 	 *
-	 * @since TBD.
+	 * @since 2.7.0.
 	 *
 	 * @param Stripe_SetupIntent $setup_intent    The setup intent to add metadata to.
 	 * @param string             $subscription_id The subscription ID that created this setup intent.
@@ -3112,7 +3117,7 @@ class PMProGateway_stripe extends PMProGateway {
 	 * Temporary function to allow users to view and delete subscription updates.
 	 * Will be removed once subscription updates are completely deprecated.
 	 *
-	 * @since TBD.
+	 * @since 2.7.0.
 	 *
 	 * @param WP_User $user whose profile is being shown.
 	 * @param Stripe_Customer $customer associated with that user.
@@ -3127,22 +3132,22 @@ class PMProGateway_stripe extends PMProGateway {
 			return;
 		}
 
-		$cycles        = array(
+		$cycles = array(
 			__( 'Day(s)', 'paid-memberships-pro' )   => 'Day',
 			__( 'Week(s)', 'paid-memberships-pro' )  => 'Week',
 			__( 'Month(s)', 'paid-memberships-pro' ) => 'Month',
-			__( 'Year(s)', 'paid-memberships-pro' )  => 'Year'
+			__( 'Year(s)', 'paid-memberships-pro' )  => 'Year',
 		);
 
-		$current_year  = date_i18n( "Y" );
-		$current_month = date_i18n( "m" );
+		$current_year  = date_i18n( 'Y' );
+		$current_month = date_i18n( 'm' );
 		?>
-            <h3><?php _e( "Subscription Updates", 'paid-memberships-pro' ); ?></h3>
-			<p><?php _e( "Subscription updates will be deprecated in a future version of PMPro, though your existing subscription updates will still trigger as expected. We now instead reccomend updating the subscription directly in Stripe.", 'paid-memberships-pro' ); ?></p>
+            <h3><?php esc_html_e( 'Subscription Updates', 'paid-memberships-pro' ); ?></h3>
+			<p><?php esc_html_e( 'Subscription updates will be deprecated in a future version of PMPro, though your existing subscription updates will still trigger as expected. We now instead reccomend updating the subscription directly in Stripe.', 'paid-memberships-pro' ); ?></p>
             <table class="form-table">
 				<input type='hidden' name='pmpro_subscription_updates_visible' value='1' />
                 <tr>
-                    <th><label><?php _e( "Update", 'paid-memberships-pro' ); ?></label></th>
+                    <th><label><?php esc_html_e( 'Update', 'paid-memberships-pro' ); ?></label></th>
                     <td id="updates_td">
 						<?php
 						$updates = $user->pmpro_stripe_updates;
@@ -3151,22 +3156,22 @@ class PMProGateway_stripe extends PMProGateway {
 							?>
                             <div class="updates_update">
                                 <select class="updates_when" name="updates_when[]" disabled>
-                                    <option value="now" <?php selected( $update['when'], "now" ); ?>>Now</option>
-                                    <option value="payment" <?php selected( $update['when'], "payment" ); ?>>After
+                                    <option value="now" <?php selected( $update['when'], 'now' ); ?>>Now</option>
+                                    <option value="payment" <?php selected( $update['when'], 'payment' ); ?>>After
                                         Next Payment
                                     </option>
-                                    <option value="date" <?php selected( $update['when'], "date" ); ?>>On Date
+                                    <option value="date" <?php selected( $update['when'], 'date' ); ?>>On Date
                                     </option>
                                 </select>
                                 <span class="updates_date"
-								      <?php if ( $update['when'] != "date" ) { ?>style="display: none;"<?php } ?>>
+								      <?php if ( $update['when'] != 'date' ) { ?>style="display: none;"<?php } ?>>
 								<select name="updates_date_month[]" disabled>
 									<?php
 									for ( $i = 1; $i < 13; $i ++ ) {
 										?>
-                                        <option value="<?php echo str_pad( $i, 2, "0", STR_PAD_LEFT ); ?>"
+                                        <option value="<?php echo str_pad( $i, 2, '0', STR_PAD_LEFT ); ?>"
 										        <?php if ( ! empty( $update['date_month'] ) && $update['date_month'] == $i ) { ?>selected="selected"<?php } ?>>
-											<?php echo date_i18n( "M", strtotime( $i . "/15/" . $current_year ) ); ?>
+											<?php echo date_i18n( 'M', strtotime( $i . '/15/' . $current_year ) ); ?>
 										</option>
 										<?php
 									}
@@ -3183,11 +3188,11 @@ class PMProGateway_stripe extends PMProGateway {
 							</span>
                                 <span class="updates_billing"
 								      <?php if ( $update['when'] == "now" ) { ?>style="display: none;"<?php } ?>>
-								<?php echo $pmpro_currency_symbol ?><input name="updates_billing_amount[]" type="text"
+								<?php echo $pmpro_currency_symbol; ?><input name="updates_billing_amount[]" type="text"
                                                                            size="10"
                                                                            value="<?php echo esc_attr( $update['billing_amount'] ); ?>"
 																		   readonly/>
-								<small><?php _e( 'per', 'paid-memberships-pro' ); ?></small>
+								<small><?php esc_html_e( 'per', 'paid-memberships-pro' ); ?></small>
 								<input name="updates_cycle_number[]" type="text" size="5"
                                        value="<?php echo esc_attr( $update['cycle_number'] ); ?>" readonly/>
 								<select name="updates_cycle_period[]" disabled>
@@ -3236,11 +3241,11 @@ class PMProGateway_stripe extends PMProGateway {
 	 * Get available webhooks
 	 * 
 	 * @since 2.4
-	 * @deprecated TBD. Only deprecated for public use, will be changed to private non-static in a future version.
+	 * @deprecated 2.7.0. Only deprecated for public use, will be changed to private non-static in a future version.
 	 */
 	public static function get_webhooks( $limit = 10 ) {
 		// Show deprecation warning if called publically.
-		pmpro_method_should_be_private( 'TBD' );
+		pmpro_method_should_be_private( '2.7.0' );
 
 		if ( ! class_exists( 'Stripe\WebhookEndpoint' ) ) {
 			// Load Stripe library.
@@ -3266,11 +3271,11 @@ class PMProGateway_stripe extends PMProGateway {
 	 * Get current webhook URL for website to compare.
 	 * 
 	 * @since 2.4
-	 * @deprecated TBD. Only deprecated for public use, will be changed to private non-static in a future version.
+	 * @deprecated 2.7.0. Only deprecated for public use, will be changed to private non-static in a future version.
 	 */
 	public static function get_site_webhook_url() {
 		// Show deprecation warning if called publically.
-		pmpro_method_should_be_private( 'TBD' );
+		pmpro_method_should_be_private( '2.7.0' );
 		return admin_url( 'admin-ajax.php' ) . '?action=stripe_webhook';
 	}
 
@@ -3278,11 +3283,11 @@ class PMProGateway_stripe extends PMProGateway {
 	 * List of current enabled events required for PMPro to work.
 	 * 
 	 * @since 2.4
-	 * @deprecated TBD. Only deprecated for public use, will be changed to private non-static in a future version.
+	 * @deprecated 2.7.0. Only deprecated for public use, will be changed to private non-static in a future version.
 	 */
 	public static function webhook_events() {
 		// Show deprecation warning if called publically.
-		pmpro_method_should_be_private( 'TBD' );
+		pmpro_method_should_be_private( '2.7.0' );
 		return apply_filters( 'pmpro_stripe_webhook_events', array(
 			'invoice.payment_succeeded',
 			'invoice.payment_action_required',
@@ -3295,11 +3300,11 @@ class PMProGateway_stripe extends PMProGateway {
 	 * Create webhook with relevant events
 	 * 
 	 * @since 2.4
-	 * @deprecated TBD. Only deprecated for public use, will be changed to private non-static in a future version.
+	 * @deprecated 2.7.0. Only deprecated for public use, will be changed to private non-static in a future version.
 	 */
 	public static function create_webhook() {
 		// Show deprecation warning if called publically.
-		pmpro_method_should_be_private( 'TBD' );
+		pmpro_method_should_be_private( '2.7.0' );
 
 		try {
 			$create = Stripe_Webhook::create([
@@ -3325,11 +3330,11 @@ class PMProGateway_stripe extends PMProGateway {
 	 * See if a webhook is registered with Stripe.
 	 * 
 	 * @since 2.4
-	 * @deprecated TBD. Only deprecated for public use, will be changed to private non-static in a future version.
+	 * @deprecated 2.7.0. Only deprecated for public use, will be changed to private non-static in a future version.
 	 */
 	public static function does_webhook_exist( $force = false ) {
 		// Show deprecation warning if called publically.
-		pmpro_method_should_be_private( 'TBD' );
+		pmpro_method_should_be_private( '2.7.0' );
 
 		static $cached_webhook = null;
 		if ( ! empty( $cached_webhook ) && ! $force ) {
@@ -3373,11 +3378,11 @@ class PMProGateway_stripe extends PMProGateway {
 	 * Get a list of events that are missing between the created existing webhook and required webhook events for Paid Memberships Pro.
 	 * 
 	 * @since 2.4
-	 * @deprecated TBD. Only deprecated for public use, will be changed to private non-static in a future version.
+	 * @deprecated 2.7.0. Only deprecated for public use, will be changed to private non-static in a future version.
 	 */
 	public static function check_missing_webhook_events( $webhook_events ) {
 		// Show deprecation warning if called publically.
-		pmpro_method_should_be_private( 'TBD' );
+		pmpro_method_should_be_private( '2.7.0' );
 
 		// Get required events
 		$pmpro_webhook_events = self::webhook_events();
@@ -3402,11 +3407,11 @@ class PMProGateway_stripe extends PMProGateway {
 	 * Update required webhook enabled events.
 	 * 
 	 * @since 2.4
-	 * @deprecated TBD. Only deprecated for public use, will be changed to private non-static in a future version.
+	 * @deprecated 2.7.0. Only deprecated for public use, will be changed to private non-static in a future version.
 	 */
 	public static function update_webhook_events() {
 		// Show deprecation warning if called publically.
-		pmpro_method_should_be_private( 'TBD' );
+		pmpro_method_should_be_private( '2.7.0' );
 
 		// Also checks database to see if it's been saved.
 		$webhook = self::does_webhook_exist();
@@ -3450,11 +3455,11 @@ class PMProGateway_stripe extends PMProGateway {
 	 * Delete an existing webhook.
 	 * 
 	 * @since 2.4
-	 * @deprecated TBD. Only deprecated for public use, will be changed to private non-static in a future version.
+	 * @deprecated 2.7.0. Only deprecated for public use, will be changed to private non-static in a future version.
 	 */
 	public static function delete_webhook( $webhook_id, $secretkey = false ) {
 		// Show deprecation warning if called publically.
-		pmpro_method_should_be_private( 'TBD' );
+		pmpro_method_should_be_private( '2.7.0' );
 
 		if ( empty( $secretkey ) ) {
 			$secretkey = self::get_secretkey();
@@ -3478,10 +3483,10 @@ class PMProGateway_stripe extends PMProGateway {
 	/**
 	 * Helper method to save the subscription ID to make sure the membership doesn't get cancelled by the webhook
 	 *
-	 * @deprecated TBD. Only deprecated for public use, will be changed to private non-static in a future version.
+	 * @deprecated 2.7.0. Only deprecated for public use, will be changed to private non-static in a future version.
 	 */
 	public static function ignoreCancelWebhookForThisSubscription( $subscription_id, $user_id = null ) {
-		pmpro_method_should_be_private( 'TBD' );
+		pmpro_method_should_be_private( '2.7.0' );
 
 		if ( empty( $user_id ) ) {
 			global $current_user;
@@ -3506,10 +3511,10 @@ class PMProGateway_stripe extends PMProGateway {
 	 *
 	 * Only called during subscription updates. Should be completely deprecated once that functionality is removed.
 	 *
-	 * @deprecated TBD. Only deprecated for public use, will be changed to private non-static in a future version.
+	 * @deprecated 2.7.0. Only deprecated for public use, will be changed to private non-static in a future version.
 	 */
 	static function updateSubscription( $update, $user_id ) {
-		pmpro_method_should_be_private( 'TBD' );
+		pmpro_method_should_be_private( '2.7.0' );
 		global $wpdb;
 
 		//get level for user
@@ -3598,12 +3603,12 @@ class PMProGateway_stripe extends PMProGateway {
 	 *
 	 * Only called on update billing page. Should be completely deprecated if we switch to using Stripe Customer Portal.
 	 *
-	 * @deprecated TBD. Only deprecated for public use, will be changed to private non-static in a future version.
+	 * @deprecated 2.7.0. Only deprecated for public use, will be changed to private non-static in a future version.
 	 *
 	 * @param MemberOrder $order The MemberOrder object.
 	 */
 	public function update_payment_method_for_subscriptions( &$order ) {
-		pmpro_method_should_be_private( 'TBD' );
+		pmpro_method_should_be_private( '2.7.0' );
 
 		// get customer
 		$customer = $this->update_customer_at_checkout( $order );
@@ -3641,10 +3646,10 @@ class PMProGateway_stripe extends PMProGateway {
 	 * Helper method to cancel a subscription at Stripe and also clear up any upaid invoices.
 	 *
 	 * @since 1.8
-	 * @deprecated TBD. Only deprecated for public use, will be changed to private non-static in a future version.
+	 * @deprecated 2.7.0. Only deprecated for public use, will be changed to private non-static in a future version.
 	 */
 	public function cancelSubscriptionAtGateway( $subscription, $preserve_local_membership = false ) {
-		pmpro_method_should_be_private( 'TBD' );
+		pmpro_method_should_be_private( '2.7.0' );
 
 		// Check if a valid sub.
 		if ( empty( $subscription ) || empty( $subscription->id ) ) {
@@ -3702,10 +3707,10 @@ class PMProGateway_stripe extends PMProGateway {
 	}
 
 	/**
-	 * @deprecated TBD. Only deprecated for public use, will be changed to private non-static in a future version.
+	 * @deprecated 2.7.0. Only deprecated for public use, will be changed to private non-static in a future version.
 	 */
 	public function get_payment_method( &$order ) {
-		pmpro_method_should_be_private( 'TBD' );
+		pmpro_method_should_be_private( '2.7.0' );
 		if ( ! empty( $order->payment_method_id ) ) {
 			try {
 				$payment_method = Stripe_PaymentMethod::retrieve( $order->payment_method_id );
@@ -3729,10 +3734,10 @@ class PMProGateway_stripe extends PMProGateway {
 	}
 
 	/**
-	 * @deprecated TBD. Only deprecated for public use, will be changed to private in a future version.
+	 * @deprecated 2.7.0. Only deprecated for public use, will be changed to private in a future version.
 	 */
 	public function process_charges( &$order ) {
-		pmpro_method_should_be_private( 'TBD' );
+		pmpro_method_should_be_private( '2.7.0' );
 		if ( 0 == floatval( $order->InitialPayment ) ) {
 			return true;
 		}
@@ -3760,12 +3765,12 @@ class PMProGateway_stripe extends PMProGateway {
 	/**
 	 * Only called during subscription updates. Should be completely deprecated once that functionality is removed.
 	 *
-	 * @deprecated TBD. Only deprecated for public use, will be changed to private non-static in a future version.
+	 * @deprecated 2.7.0. Only deprecated for public use, will be changed to private non-static in a future version.
 	 *
 	 * @param MemberOrder $order The MemberOrder object.
 	 */
 	public function get_setup_intent( &$order ) {
-		pmpro_method_should_be_private( 'TBD' );
+		pmpro_method_should_be_private( '2.7.0' );
 		if ( ! empty( $order->setup_intent_id ) ) {
 			try {
 				$setup_intent = Stripe_SetupIntent::retrieve( $order->setup_intent_id );
@@ -3793,10 +3798,10 @@ class PMProGateway_stripe extends PMProGateway {
 	}
 
 	/**
-	 * @deprecated TBD. Use get_setup_intent() instead.
+	 * @deprecated 2.7.0. Use get_setup_intent() instead.
 	 */
 	public function set_setup_intent( &$order, $force = false ) {
-		_deprecated_function( __FUNCTION__, 'TBD', 'get_setup_intent()' );
+		_deprecated_function( __FUNCTION__, '2.7.0', 'get_setup_intent()' );
 		if ( ! empty( $this->setup_intent ) && ! $force ) {
 			return true;
 		}
@@ -3815,12 +3820,12 @@ class PMProGateway_stripe extends PMProGateway {
 	/**
 	 * Only called during subscription updates. Should be completely deprecated once that functionality is removed.
 	 *
-	 * @deprecated TBD. Only deprecated for public use, will be changed to private non-static in a future version.
+	 * @deprecated 2.7.0. Only deprecated for public use, will be changed to private non-static in a future version.
 	 *
 	 * @param MemberOrder $order The MemberOrder object.
 	 */
 	public function create_setup_intent( &$order ) {
-		pmpro_method_should_be_private( 'TBD' );
+		pmpro_method_should_be_private( '2.7.0' );
 		$this->create_plan( $order );
 		$order->stripe_subscription = $this->create_subscription( $order );
 		$this->delete_plan( $order );
@@ -3833,10 +3838,10 @@ class PMProGateway_stripe extends PMProGateway {
 	}
 
 	/**
-	 * @deprecated TBD. Only deprecated for public use, will be changed to private non-static in a future version.
+	 * @deprecated 2.7.0. Only deprecated for public use, will be changed to private non-static in a future version.
 	 */
 	public function confirm_payment_intent( &$order ) {
-		pmpro_method_should_be_private( 'TBD' );
+		pmpro_method_should_be_private( '2.7.0' );
 		try {
 			$params = array(
 				'expand' => array(
@@ -3867,10 +3872,10 @@ class PMProGateway_stripe extends PMProGateway {
 	}
 
 	/**
-	 * @deprecated TBD. Only deprecated for public use, will be changed to private non-static in a future version.
+	 * @deprecated 2.7.0. Only deprecated for public use, will be changed to private non-static in a future version.
 	 */
 	public function confirm_setup_intent( &$order ) {
-    pmpro_method_should_be_private( 'TBD' );
+    pmpro_method_should_be_private( '2.7.0' );
 		if ( empty( $order->stripe_setup_intent ) ) {
 			return true;
 		}
@@ -3887,10 +3892,10 @@ class PMProGateway_stripe extends PMProGateway {
 	/**
  	 * Get available Apple Pay domains.
 	 *
-	 * @deprecated TBD. Only deprecated for public use, will be changed to private non-static in a future version.
+	 * @deprecated 2.7.0. Only deprecated for public use, will be changed to private non-static in a future version.
  	 */
 	public function pmpro_get_apple_pay_domains( $limit = 10 ) {
-		pmpro_method_should_be_private( 'TBD' );
+		pmpro_method_should_be_private( '2.7.0' );
 		try {
 			$apple_pay_domains = Stripe_ApplePayDomain::all( [ 'limit' => apply_filters( 'pmpro_stripe_apple_pay_domain_retrieve_limit', $limit ) ] );
 		} catch (\Throwable $th) {
@@ -3904,10 +3909,10 @@ class PMProGateway_stripe extends PMProGateway {
  	 * Register domain with Apple Pay.
  	 * 
  	 * @since 2.4
-	 * @deprecated TBD. Only deprecated for public use, will be changed to private non-static in a future version.
+	 * @deprecated 2.7.0. Only deprecated for public use, will be changed to private non-static in a future version.
  	 */
 	public function pmpro_create_apple_pay_domain() {
-		pmpro_method_should_be_private( 'TBD' );
+		pmpro_method_should_be_private( '2.7.0' );
 		try {
 			$create = Stripe_ApplePayDomain::create([
 				'domain_name' => $_SERVER['HTTP_HOST'],
@@ -3923,10 +3928,10 @@ class PMProGateway_stripe extends PMProGateway {
  	 * See if domain is registered with Apple Pay.
  	 * 
  	 * @since 2.4
-	 * @deprecated TBD. Only deprecated for public use, will be changed to private non-static in a future version.
+	 * @deprecated 2.7.0. Only deprecated for public use, will be changed to private non-static in a future version.
  	 */
 	public function pmpro_does_apple_pay_domain_exist() {
-		pmpro_method_should_be_private( 'TBD' );
+		pmpro_method_should_be_private( '2.7.0' );
 		$apple_pay_domains = $this->pmpro_get_apple_pay_domains();
 
 		if ( empty( $apple_pay_domains ) ) {
@@ -3942,10 +3947,10 @@ class PMProGateway_stripe extends PMProGateway {
    }
 
    /**
-	* @deprecated TBD. Only deprecated for public use, will be changed to private non-static in a future version.
+	* @deprecated 2.7.0. Only deprecated for public use, will be changed to private non-static in a future version.
     */
 	public function get_account() {
-		pmpro_method_should_be_private( 'TBD' );
+		pmpro_method_should_be_private( '2.7.0' );
 		try {
 			$account = Stripe_Account::retrieve();
 		} catch ( Stripe\Error\Base $e ) {
@@ -3964,10 +3969,10 @@ class PMProGateway_stripe extends PMProGateway {
 	}
 
 	/**
-	 * @deprecated TBD. Only deprecated for public use, will be changed to private non-static in a future version.
+	 * @deprecated 2.7.0. Only deprecated for public use, will be changed to private non-static in a future version.
 	 */
 	public static function get_account_country() {
-		pmpro_method_should_be_private( 'TBD' );
+		pmpro_method_should_be_private( '2.7.0' );
 		$account_country = get_transient( 'pmpro_stripe_account_country' );
 		if ( empty( $account_country ) ) {
 			$stripe = new PMProGateway_stripe();
@@ -3981,10 +3986,10 @@ class PMProGateway_stripe extends PMProGateway {
 	}
 
 	/**
-	 * @deprecated TBD. Only deprecated for public use, will be changed to private non-static in a future version.
+	 * @deprecated 2.7.0. Only deprecated for public use, will be changed to private non-static in a future version.
 	 */
 	public function clean_up( &$order ) {
-    pmpro_method_should_be_private( 'TBD' );
+    pmpro_method_should_be_private( '2.7.0' );
 		if ( ! empty( $order->stripe_payment_intent ) && 'succeeded' == $order->stripe_payment_intent->status ) {
 			$order->payment_transaction_id = $order->stripe_payment_intent->charges->data[0]->id;
 		}
@@ -3997,12 +4002,12 @@ class PMProGateway_stripe extends PMProGateway {
 	/**
 	 * Get percentage of Stripe payment to charge as application fee.
 	 *
-	 * @deprecated TBD. Only deprecated for public use, will be changed to private non-static in a future version.
+	 * @deprecated 2.7.0. Only deprecated for public use, will be changed to private non-static in a future version.
 	 *
 	 * @return int percentage to charge for application fee.
 	 */
 	public static function get_application_fee_percentage() {
-		pmpro_method_should_be_private( 'TBD' );
+		pmpro_method_should_be_private( '2.7.0' );
 		$application_fee_percentage = pmpro_license_isValid( null, 'plus' ) ? 0 : 1;
 		$application_fee_percentage = apply_filters( 'pmpro_set_application_fee_percentage', $application_fee_percentage );
 		return round( floatval( $application_fee_percentage ), 2 );
@@ -4011,13 +4016,13 @@ class PMProGateway_stripe extends PMProGateway {
 	/**
 	 * Add application fee to params to be sent to Stripe.
 	 *
-	 * @deprecated TBD. Only deprecated for public use, will be changed to private non-static in a future version.
+	 * @deprecated 2.7.0. Only deprecated for public use, will be changed to private non-static in a future version.
 	 *
 	 * @param  array $params to be sent to Stripe.
 	 * @return array params with application fee if applicable.
 	 */
 	public static function add_application_fee_amount( $params ) {
-		pmpro_method_should_be_private( 'TBD' );
+		pmpro_method_should_be_private( '2.7.0' );
 		if ( empty( $params['amount'] ) || self::using_legacy_keys() ) {
 			return $params;
 		}
@@ -4035,10 +4040,10 @@ class PMProGateway_stripe extends PMProGateway {
 	 * We should if the site is using legacy keys already or
 	 * if a filter has been set.
 	 * @since 2.6
-	 * @deprecated TBD. Only deprecated for public use, will be changed to private non-static in a future version.
+	 * @deprecated 2.7.0. Only deprecated for public use, will be changed to private non-static in a future version.
 	 */
 	public static function show_legacy_keys_settings() {
-		pmpro_method_should_be_private( 'TBD' );
+		pmpro_method_should_be_private( '2.7.0' );
 		$r = self::using_legacy_keys();
 		$r = apply_filters( 'pmpro_stripe_show_legacy_keys_settings', $r );
 		return $r;
@@ -4047,12 +4052,12 @@ class PMProGateway_stripe extends PMProGateway {
 	/**
 	 * Get the Stripe secret key based on gateway environment.
 	 *
-	 * @deprecated TBD. Only deprecated for public use, will be changed to private non-static in a future version.
+	 * @deprecated 2.7.0. Only deprecated for public use, will be changed to private non-static in a future version.
 	 *
 	 * @return The Stripe secret key.
 	 */
 	public static function get_secretkey() {
-		pmpro_method_should_be_private( 'TBD' );
+		pmpro_method_should_be_private( '2.7.0' );
 		$secretkey = '';
 		if ( self::using_legacy_keys() ) {
 			$secretkey = pmpro_getOption( 'stripe_secretkey' ); 
@@ -4067,12 +4072,12 @@ class PMProGateway_stripe extends PMProGateway {
 	/**
 	 * Get the Stripe publishable key based on gateway environment.
 	 *
-	 * @deprecated TBD. Only deprecated for public use, will be changed to private non-static in a future version.
+	 * @deprecated 2.7.0. Only deprecated for public use, will be changed to private non-static in a future version.
 	 *
 	 * @return The Stripe publishable key.
 	 */
 	public static function get_publishablekey() {
-		pmpro_method_should_be_private( 'TBD' );
+		pmpro_method_should_be_private( '2.7.0' );
 		$publishablekey = '';
 		if ( self::using_legacy_keys() ) {
 			$publishablekey = pmpro_getOption( 'stripe_publishablekey' ); 
@@ -4088,12 +4093,12 @@ class PMProGateway_stripe extends PMProGateway {
 	 * Get the Stripe Connect User ID based on gateway environment.
 	 *
 	 * @since 2.6.0
-	 * @deprecated TBD. Only deprecated for public use, will be changed to private non-static in a future version.
+	 * @deprecated 2.7.0. Only deprecated for public use, will be changed to private non-static in a future version.
 	 *
 	 * @return string The Stripe Connect User ID.
 	 */
 	public static function get_connect_user_id() {
-		pmpro_method_should_be_private( 'TBD' );
+		pmpro_method_should_be_private( '2.7.0' );
 		return pmpro_getOption( 'gateway_environment' ) === 'live'
 			? pmpro_getOption( 'live_stripe_connect_user_id' )
 			: pmpro_getOption( 'sandbox_stripe_connect_user_id' );
@@ -4102,13 +4107,13 @@ class PMProGateway_stripe extends PMProGateway {
 	/**
 	 * Determine whether the webhook is working by checking for Stripe orders with invalid transaction IDs.
 	 *
-	 * @deprecated TBD. Only deprecated for public use, will be changed to private non-static in a future version.
+	 * @deprecated 2.7.0. Only deprecated for public use, will be changed to private non-static in a future version.
 	 *
 	 * @param string|null $gateway_environment to check webhooks for. Defaults to set gateway environment.
 	 * @return bool Whether the webhook is working.
 	 */
 	public static function webhook_is_working( $gateway_environment = null ) {
-		pmpro_method_should_be_private( 'TBD' );
+		pmpro_method_should_be_private( '2.7.0' );
 		global $wpdb;
 
 		if ( empty( $gateway_environment ) ) {
@@ -4154,10 +4159,10 @@ class PMProGateway_stripe extends PMProGateway {
 	 * @param environment The gateway environment (live or sandbox) to check for.
 	 * @returns HTML with the date of the last webhook or an error message.
 	 * @since 2.6
-	 * @deprecated TBD. Only deprecated for public use, will be changed to private non-static in a future version.
+	 * @deprecated 2.7.0. Only deprecated for public use, will be changed to private non-static in a future version.
 	 */
 	public static function get_last_webhook_date( $environment = 'live' ) {
-		pmpro_method_should_be_private( 'TBD' );
+		pmpro_method_should_be_private( '2.7.0' );
 		$last_webhook = get_option( 'pmpro_stripe_last_webhook_received_' . $environment );
 		if ( ! empty( $last_webhook ) ) {
 			echo '<p>' . esc_html__( 'Last webhook received at', 'paid-memberships-pro' ) . ': ' . esc_html( $last_webhook ) . ' GMT.</p>';
@@ -4175,10 +4180,10 @@ class PMProGateway_stripe extends PMProGateway {
 	}
 
 	/**
-	 * @deprecated TBD. Only deprecated for public use, will be changed to private in a future version.
+	 * @deprecated 2.7.0. Only deprecated for public use, will be changed to private in a future version.
 	 */
 	public function get_payment_intent( &$order ) {
-		pmpro_method_should_be_private( 'TBD' );
+		pmpro_method_should_be_private( '2.7.0' );
 		if ( ! empty( $order->payment_intent_id ) ) {
 			try {
 				$payment_intent = Stripe_PaymentIntent::retrieve( $order->payment_intent_id );
@@ -4206,10 +4211,10 @@ class PMProGateway_stripe extends PMProGateway {
 	}
 
 	/**
-	 * @deprecated TBD. Only deprecated for public use, will be changed to private in a future version.
+	 * @deprecated 2.7.0. Only deprecated for public use, will be changed to private in a future version.
 	 */
 	public function create_payment_intent( &$order ) {
-		pmpro_method_should_be_private( 'TBD' );
+		pmpro_method_should_be_private( '2.7.0' );
 		global $pmpro_currency;
 
 		$amount          = $order->InitialPayment;
@@ -4258,12 +4263,12 @@ class PMProGateway_stripe extends PMProGateway {
 	/**
 	 * Only called during subscription updates. Should be completely deprecated once that functionality is removed.
 	 *
-	 * @deprecated TBD. Only deprecated for public use, will be changed to private in a future version.
+	 * @deprecated 2.7.0. Only deprecated for public use, will be changed to private in a future version.
 	 *
 	 * @param MemberOrder $order The MemberOrder object.
 	 */
 	public function process_subscriptions( &$order ) {
-		pmpro_method_should_be_private( 'TBD' );
+		pmpro_method_should_be_private( '2.7.0' );
 		if ( ! pmpro_isLevelRecurring( $order->membership_level ) ) {
 			return true;
 		}
@@ -4325,12 +4330,12 @@ class PMProGateway_stripe extends PMProGateway {
 	/**
 	 * Only called during subscription updates. Should be completely deprecated once that functionality is removed.
 	 *
-	 * @deprecated TBD. Will only be deprecated once we create a function with better params.
+	 * @deprecated 2.7.0. Will only be deprecated once we create a function with better params.
 	 *
 	 * @param MemberOrder $order The MemberOrder object.
 	 */
 	public function create_subscription( &$order ) {
-		// _deprecated_function( __FUNCTION__, 'TBD' );
+		// _deprecated_function( __FUNCTION__, '2.7.0' );
 		//subscribe to the plan
 		try {
 			$params              = array(
@@ -4365,12 +4370,12 @@ class PMProGateway_stripe extends PMProGateway {
 	/**
 	 * Only called during subscription updates. Should be completely deprecated once that functionality is removed.
 	 *
-	 * @deprecated TBD. Only deprecated for public use, will be changed to private non-static in a future version.
+	 * @deprecated 2.7.0. Only deprecated for public use, will be changed to private non-static in a future version.
 	 *
 	 * @param MemberOrder $order The MemberOrder object.
 	 */
 	public function delete_plan( &$order ) {
-		// _deprecated_function( __FUNCTION__, 'TBD' );
+		// _deprecated_function( __FUNCTION__, '2.7.0' );
 		try {
 			// Delete the product first while we have a reference to it...
 			if ( ( ! empty( $order->plan->product ) ) && ( ! $this->archive_product( $order ) ) ) {
@@ -4398,12 +4403,12 @@ class PMProGateway_stripe extends PMProGateway {
 	/**
 	 * Only called during subscription updates. Should be completely deprecated once that functionality is removed.
 	 *
-	 * @deprecated TBD. Only deprecated for public use, will be changed to private non-static in a future version.
+	 * @deprecated 2.7.0. Only deprecated for public use, will be changed to private non-static in a future version.
 	 *
 	 * @param MemberOrder $order The MemberOrder object.
 	 */
 	public function archive_product( &$order ) {
-		// _deprecated_function( __FUNCTION__, 'TBD' );
+		// _deprecated_function( __FUNCTION__, '2.7.0' );
 		try {
 			$product = Stripe_Product::update( $order->plan->product, array( 'active' => false ) );
 		} catch ( Stripe\Error\Base $e ) {
@@ -4427,10 +4432,10 @@ class PMProGateway_stripe extends PMProGateway {
 	 * Make a one-time charge with Stripe
 	 *
 	 * @since 1.4
-	 * @deprecated TBD. Use process_charges() instead.
+	 * @deprecated 2.7.0. Use process_charges() instead.
 	 */
 	public function charge( &$order ) {
-		_deprecated_function( __FUNCTION__, 'TBD' );
+		_deprecated_function( __FUNCTION__, '2.7.0' );
 		global $pmpro_currency;
 
 		//create a code for the order
@@ -4509,12 +4514,12 @@ class PMProGateway_stripe extends PMProGateway {
 	 * Get a Stripe Customer object and update it.
 	 *
 	 * @since 1.4
-	 * @deprecated TBD. Use get_customer_for_user() or update_customer_from_user().
+	 * @deprecated 2.7.0. Use get_customer_for_user() or update_customer_from_user().
 	 *
 	 * @return Stripe_Customer|false
 	 */
 	public function getCustomer( &$order = false, $force = false ) {
-		_deprecated_function( __FUNCTION__, 'TBD', 'update_customer_from_user()' );
+		_deprecated_function( __FUNCTION__, '2.7.0', 'update_customer_from_user()' );
 		return $this->update_customer_at_checkout( $order );
 	}
 
@@ -4522,10 +4527,10 @@ class PMProGateway_stripe extends PMProGateway {
 	 * Get a Stripe subscription from a PMPro order
 	 *
 	 * @since 1.8
-	 * @deprecated TBD. Need to write replacement methods for this.
+	 * @deprecated 2.7.0. Need to write replacement methods for this.
 	 */
 	public function getSubscription( &$order ) {
-		_deprecated_function( __FUNCTION__, 'TBD' );
+		_deprecated_function( __FUNCTION__, '2.7.0' );
 		global $wpdb;
 
 		//no order?
@@ -4593,10 +4598,10 @@ class PMProGateway_stripe extends PMProGateway {
 	 * See method create_setup_intent().
 	 *
 	 * @since 1.4
-	 * @deprecated TBD. Use process_subscriptions() instead.
+	 * @deprecated 2.7.0. Use process_subscriptions() instead.
 	 */
 	public function subscribe( &$order, $checkout = true ) {
-		_deprecated_function( __FUNCTION__, 'TBD' );
+		_deprecated_function( __FUNCTION__, '2.7.0' );
 		global $pmpro_currency;
 
 		//create a code for the order
@@ -4747,7 +4752,7 @@ class PMProGateway_stripe extends PMProGateway {
 	/**
 	 * Refund a payment or invoice
 	 *
-	 * @deprecated TBD.
+	 * @deprecated 2.7.0.
 	 *
 	 * @param object &$order Related PMPro order object.
 	 * @param string $transaction_id Payment or Invoice id to void.
@@ -4755,7 +4760,7 @@ class PMProGateway_stripe extends PMProGateway {
 	 * @return bool                     True or false if the void worked
 	 */
 	public function void( &$order, $transaction_id = null ) {
-		_deprecated_function( __FUNCTION__, 'TBD' );
+		_deprecated_function( __FUNCTION__, '2.7.0' );
 		//stripe doesn't differentiate between voids and refunds, so let's just pass on to the refund function
 		return $this->refund( $order, $transaction_id );
 	}
@@ -4763,7 +4768,7 @@ class PMProGateway_stripe extends PMProGateway {
 	/**
 	 * Refund a payment or invoice
 	 *
-	 * @deprecated TBD.
+	 * @deprecated 2.7.0.
 	 *
 	 * @param object &$order Related PMPro order object.
 	 * @param string $transaction_id Payment or invoice id to void.
@@ -4771,7 +4776,7 @@ class PMProGateway_stripe extends PMProGateway {
 	 * @return bool                   True or false if the refund worked.
 	 */
 	public function refund( &$order, $transaction_id = null ) {
-		_deprecated_function( __FUNCTION__, 'TBD' );
+		_deprecated_function( __FUNCTION__, '2.7.0' );
 		//default to using the payment id from the order
 		if ( empty( $transaction_id ) && ! empty( $order->payment_transaction_id ) ) {
 			$transaction_id = $order->payment_transaction_id;
@@ -4843,10 +4848,10 @@ class PMProGateway_stripe extends PMProGateway {
 	}
 
 	/**
-	 * @deprecated TBD. Use get_payment_method() instead.
+	 * @deprecated 2.7.0. Use get_payment_method() instead.
 	 */
 	public function set_payment_method( &$order, $force = false ) {
-		_deprecated_function( __FUNCTION__, 'TBD', 'get_payment_method' );
+		_deprecated_function( __FUNCTION__, '2.7.0', 'get_payment_method' );
 		if ( ! empty( $this->payment_method ) && ! $force ) {
 			return true;
 		}
@@ -4863,10 +4868,10 @@ class PMProGateway_stripe extends PMProGateway {
 	}
 
 	/**
-	 * @deprecated TBD. Use get_customer_for_user() or update_customer_from_user().
+	 * @deprecated 2.7.0. Use get_customer_for_user() or update_customer_from_user().
 	 */
 	public function set_customer( &$order, $force = false ) {
-		_deprecated_function( __FUNCTION__, 'TBD', 'get_customer_for_user()' );
+		_deprecated_function( __FUNCTION__, '2.7.0', 'get_customer_for_user()' );
 		if ( ! empty( $this->customer ) && ! $force ) {
 			return true;
 		}
@@ -4876,10 +4881,10 @@ class PMProGateway_stripe extends PMProGateway {
 	}
 
 	/**
-	 * @deprecated TBD. Use set_default_payment_method_for_customer().
+	 * @deprecated 2.7.0. Use set_default_payment_method_for_customer().
 	 */
 	public function attach_payment_method_to_customer( &$order ) {
-		_deprecated_function( __FUNCTION__, 'TBD', 'set_default_payment_method_for_customer()' );
+		_deprecated_function( __FUNCTION__, '2.7.0', 'set_default_payment_method_for_customer()' );
 		$customer = $this->update_customer_at_checkout( $order );
 
 		if ( ! empty( $customer->invoice_settings->default_payment_method ) &&
@@ -4906,10 +4911,10 @@ class PMProGateway_stripe extends PMProGateway {
 	}
 
 	/**
-	 * @deprecated TBD. Use get_payment_intent() instead.
+	 * @deprecated 2.7.0. Use get_payment_intent() instead.
 	 */
 	public function set_payment_intent( &$order, $force = false ) {
-		_deprecated_function( __FUNCTION__, 'TBD', 'get_payment_intent()' );
+		_deprecated_function( __FUNCTION__, '2.7.0', 'get_payment_intent()' );
 		if ( ! empty( $order->stripe_payment_intent ) && ! $force ) {
 			return true;
 		}
@@ -4928,10 +4933,10 @@ class PMProGateway_stripe extends PMProGateway {
 	/**
 	 * Only called during subscription updates. Should be completely deprecated once that functionality is removed.
 	 *
-	 * @deprecated TBD. Will only be deprecated once we are using Prices.
+	 * @deprecated 2.7.0. Will only be deprecated once we are using Prices.
 	 */
 	public function create_plan( &$order ) {
-		// _deprecated_function( __FUNCTION__, 'TBD' );
+		// _deprecated_function( __FUNCTION__, '2.7.0' );
 		global $pmpro_currency;
 
 		//figure out the amounts

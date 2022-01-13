@@ -58,7 +58,7 @@
 		else
 			$log_email = get_option("admin_email");
 			
-		wp_mail($log_email, "Authorize.net Silent Post From " . get_option("blogname"), nl2br($logstr));
+		wp_mail( $log_email, "Authorize.net Silent Post From " . get_option( "blogname" ), nl2br( esc_html( $logstr ) ) );
 	}	
 
 	// If it is an ARB transaction, do something with it
@@ -104,6 +104,7 @@
 				$morder->Zip = $fields['x_zip'];
 				$morder->PhoneNumber = $fields['x_phone'];
 
+				$morder->billing = new stdClass();
 				$morder->billing->name = $fields['x_first_name'] . " " . $fields['x_last_name'];
 				$morder->billing->street = $fields['x_address'];
 				$morder->billing->city = $fields['x_city'];

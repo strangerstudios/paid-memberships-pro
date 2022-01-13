@@ -374,7 +374,7 @@
 					$morder->discount_code = $discount_code;
 					$morder->InitialPayment = pmpro_round_price( $pmpro_level->initial_payment );
 					$morder->PaymentAmount = pmpro_round_price( $pmpro_level->billing_amount );
-					$morder->ProfileStartDate = date_i18n("Y-m-d") . "T0:0:0";
+					$morder->ProfileStartDate = date_i18n("Y-m-d\TH:i:s");
 					$morder->BillingPeriod = $pmpro_level->cycle_period;
 					$morder->BillingFrequency = $pmpro_level->cycle_number;
 					$morder->Email = $bemail;
@@ -459,8 +459,10 @@
 		{
 			$order->payment_type = "PayPal Express";
 			$order->cardtype = "";
-			$order->ProfileStartDate = date_i18n("Y-m-d", strtotime("+ " . $order->BillingFrequency . " " . $order->BillingPeriod)) . "T0:0:0";
+			$order->ProfileStartDate = date_i18n("Y-m-d\TH:i:s", strtotime("+ " . $order->BillingFrequency . " " . $order->BillingPeriod));
 			$order->ProfileStartDate = apply_filters("pmpro_profile_start_date", $order->ProfileStartDate, $order);
+			// Convert to UTC for PayPal...
+			$order->ProfileStartDate = get_gmt_from_date( $order->ProfileStartDate, 'Y-m-d\TH:i:s\Z' );
 
 			return $this->setExpressCheckout($order);
 		}
@@ -474,8 +476,10 @@
 		{
 			if(pmpro_isLevelRecurring($order->membership_level))
 			{
-				$order->ProfileStartDate = date_i18n("Y-m-d", strtotime("+ " . $order->BillingFrequency . " " . $order->BillingPeriod, current_time("timestamp"))) . "T0:0:0";
+				$order->ProfileStartDate = date_i18n("Y-m-d\TH:i:s", strtotime("+ " . $order->BillingFrequency . " " . $order->BillingPeriod, current_time("timestamp")));
 				$order->ProfileStartDate = apply_filters("pmpro_profile_start_date", $order->ProfileStartDate, $order);
+				// Convert to UTC for PayPal...
+				$order->ProfileStartDate = get_gmt_from_date( $order->ProfileStartDate, 'Y-m-d\TH:i:s\Z' );
 				return $this->subscribe($order);
 			}
 			else
@@ -593,6 +597,15 @@
 
 				//update order
 				$order->saveOrder();
+
+				/**
+				 * Allow performing actions just before sending the user to the gateway to complete the payment.
+				 *
+				 * @since 2.6.5
+				 *
+				 * @param MemberOrder $order The new order with status = token.
+				 */
+				do_action( 'pmpro_before_commit_express_checkout', $order );
 
 				//redirect to paypal
 				$paypal_url = "https://www.paypal.com/webscr?cmd=_express-checkout&useraction=commit&token=" . $this->httpParsedResponseAr['TOKEN'];

@@ -107,7 +107,7 @@ if ( $webhookNotification->kind === Braintree_WebhookNotification::SUBSCRIPTION_
 	$old_order->getLastMemberOrderBySubscriptionTransactionID( $webhookNotification->subscription->id );
 
 	//no order?
-	if ( empty( $old_order ) ) {
+	if ( empty( $old_order->id ) ) {
 		$logstr[] = "Couldn't find the original subscription with ID={$webhookNotification->subscription->id}.";
 		pmpro_braintreeWebhookExit();
 	}
@@ -598,7 +598,7 @@ function pmpro_braintreeWebhookExit() {
 				$log_email = get_option( "admin_email" );
 			}
 			
-			wp_mail( $log_email, get_option( "blogname" ) . " Braintree Webhook Log", nl2br( $debuglog ) );
+			wp_mail( $log_email, get_option( "blogname" ) . " Braintree Webhook Log", nl2br( esc_html( $debuglog ) ) );
 		}
 	}
 	

@@ -485,7 +485,7 @@ if ( empty( $default_gateway ) ) {
 	<div class="<?php echo pmpro_get_element_class( 'pmpro_checkout-field pmpro_captcha', 'pmpro_captcha' ); ?>">
 	<?php
 		global $recaptcha, $recaptcha_publickey;
-		if ( $recaptcha == 2 || ( $recaptcha == 1 && pmpro_isLevelFree( $pmpro_level ) ) ) {
+		if ( $recaptcha == 2 || $recaptcha == 1 ) {
 			echo pmpro_recaptcha_get_html($recaptcha_publickey, NULL, true);
 		}
 	?>

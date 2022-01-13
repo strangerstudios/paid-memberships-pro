@@ -86,6 +86,9 @@
 	//real event?
 	if(!empty($pmpro_stripe_event->id))
 	{
+		// Send a 200 HTTP response to Stripe to avoid timeout.
+		pmpro_send_200_http_response();
+
 		// Log that we have successfully received a webhook from Stripe.
 		update_option( 'pmpro_stripe_last_webhook_received_' . ( $livemode ? 'live' : 'sandbox' ), date( 'Y-m-d H:i:s' ) );
 
@@ -539,10 +542,10 @@
 	}
 
 	/**
-	 * @deprecated TBD.
+	 * @deprecated 2.7.0.
 	 */
 	function getUserFromInvoiceEvent($pmpro_stripe_event) {
-		_deprecated_function( __FUNCTION__, 'TBD' );
+		_deprecated_function( __FUNCTION__, '2.7.0' );
 		//pause here to give PMPro a chance to finish checkout
 		sleep(PMPRO_STRIPE_WEBHOOK_DELAY);
 
@@ -560,10 +563,10 @@
 	}
 
 	/**
-	 * @deprecated TBD.
+	 * @deprecated 2.7.0.
 	 */
 	function getUserFromCustomerEvent($pmpro_stripe_event, $status = false, $checkplan = true) {
-		_deprecated_function( __FUNCTION__, 'TBD' );
+		_deprecated_function( __FUNCTION__, '2.7.0' );
 
 		//pause here to give PMPro a chance to finish checkout
 		sleep(PMPRO_STRIPE_WEBHOOK_DELAY);
@@ -678,7 +681,7 @@
 		{
 			$logstr = "Logged On: " . date_i18n("m/d/Y H:i:s") . "\n" . $logstr . "\n-------------\n";
 
-			echo $logstr;
+			echo esc_html( $logstr );
 
 			//log in file or email?
 			if(defined('PMPRO_STRIPE_WEBHOOK_DEBUG') && PMPRO_STRIPE_WEBHOOK_DEBUG === "log")
@@ -696,7 +699,7 @@
 				else
 					$log_email = get_option("admin_email");
 
-				wp_mail($log_email, get_option("blogname") . " Stripe Webhook Log", nl2br($logstr));
+				wp_mail( $log_email, get_option( "blogname" ) . " Stripe Webhook Log", nl2br( esc_html( $logstr ) ) );
 			}
 		}
 

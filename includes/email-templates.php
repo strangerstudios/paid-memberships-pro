@@ -182,7 +182,7 @@ $pmpro_email_templates_defaults = array(
 
 <p>
 	Invoice #!!invoice_id!! on !!invoice_date!!<br />
-	Total Billed: $!!invoice_total!!
+	Total Billed: !!invoice_total!!
 </p>
 
 <p>Log in to your membership account here: !!login_url!!</p>', 'paid-memberships-pro' ),
