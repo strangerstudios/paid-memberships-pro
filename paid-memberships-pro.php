@@ -10,7 +10,7 @@
  * Domain Path: /languages
  */
 /**
- * Copyright 2011-2021	Stranger Studios
+ * Copyright 2011-2022	Stranger Studios
  * (email : info@paidmembershipspro.com)
  * GPLv2 Full license details in license.txt
  */
