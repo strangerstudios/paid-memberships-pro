@@ -1621,11 +1621,10 @@ class PMProGateway_stripe extends PMProGateway {
 				'quantity' => 1,
 			);
 			if ( ! empty( $application_fee_percentage ) ) {
-				// We are multiplying initial payment by 100 to get the amount in cents. May need to tweak based on currency.
-				$application_fee = floor( $initial_payment_price->amount * 100 * $application_fee_percentage / 100 );
+				$application_fee = floor( $initial_payment_price->unit_amount * $application_fee_percentage / 100 );
 				if ( ! empty( $application_fee ) ) {
 					$payment_intent_data = array(
-						'application_fee_amount' => floor( $initial_payment_price->amount * 100 * $application_fee_percentage / 100 ),
+						'application_fee_amount' => $application_fee,
 					);
 				}
 			}
@@ -1703,11 +1702,10 @@ class PMProGateway_stripe extends PMProGateway {
 			'success_url' =>  add_query_arg( 'level', $morder->membership_level->id, pmpro_url("confirmation" ) ),
 			'cancel_url' =>  add_query_arg( 'level', $morder->membership_level->id, pmpro_url("checkout" ) ),
 		);
-		if ( ! empty( $payment_intent_data ) ) {
-			$checkout_session_params['payment_intent_data'] = $payment_intent_data;
-		}
 		if ( ! empty( $subscription_data ) ) {
 			$checkout_session_params['subscription_data'] = $subscription_data;
+		} elseif ( ! empty( $payment_intent_data ) ) {
+			$checkout_session_params['payment_intent_data'] = $payment_intent_data;
 		}
 
 		try {
