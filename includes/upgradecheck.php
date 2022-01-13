@@ -267,16 +267,7 @@ function pmpro_checkForUpgrades()
 		pmpro_db_delta();
 		$pmpro_db_version = pmpro_upgrade_2_6();
 		pmpro_setOption( 'db_version', '2.6' );
-	}
-
-	/**
-	 * Version 2.7.0
-	 * Running pmpro_db_delta to update KEY types in a couple tables.
-	 */
-	 if( $pmpro_db_version < 2.7 ) {
- 		pmpro_db_delta();
- 		pmpro_setOption( 'db_version', '2.7' );
- 	}
+	}	
 	
 	/**
 	 * Version 2.7.1
