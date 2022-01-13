@@ -1,3 +1,11 @@
+/* Metaboxes on Editor */
+#poststuff #pmpro_page_meta.postbox .postbox-header {
+	border-bottom-width: 0;
+}
+#poststuff #pmpro_page_meta.postbox.closed .postbox-header {
+	border-bottom-width: 1px;
+}
+
 /* icon */
 #wp-admin-bar-paid-memberships-pro .ab-item .ab-icon:before {
 	font-family: "dashicons";

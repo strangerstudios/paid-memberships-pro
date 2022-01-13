@@ -2356,7 +2356,7 @@ function pmpro_getLevelAtCheckout( $level_id = null, $discount_code = null ) {
 
 	// what level are they purchasing? (discount code passed)
 	if ( ! empty( $level_id ) && ! empty( $discount_code ) ) {
-		$discount_code_id = $wpdb->get_var( "SELECT id FROM $wpdb->pmpro_discount_codes WHERE code = '" . esc_sql( $discount_code ) . "' LIMIT 1" );		
+		$discount_code_id = $wpdb->get_var( "SELECT id FROM $wpdb->pmpro_discount_codes WHERE code = '" . esc_sql( $discount_code ) . "' LIMIT 1" );
 
 		// check code
 		global $pmpro_checkout_level_ids; // Set by MMPU.
@@ -3813,8 +3813,8 @@ if( ! function_exists("str_lreplace") ) {
  * From: http://www.php.net/manual/en/function.end.php#107733
  * @since 2.6
  */
-function pmpro_end( $array ) { 
-	return end( $array ); 
+function pmpro_end( $array ) {
+	return end( $array );
 }
 
 /**
@@ -3892,6 +3892,26 @@ function pmpro_kses_allowed_html( $allowed_html, $context ) {
 add_filter( 'wp_kses_allowed_html', 'pmpro_kses_allowed_html', 10, 2 );
 
 /**
+ * Show deprecation warning if calling function was called publically.
+ *
+ * Useful for preparing to change method visibility from public to private.
+ *
+ * @param string $deprecation_notice_version to show.
+ * @return bool
+ */
+function pmpro_method_should_be_private( $deprecated_notice_version ) {
+	$backtrace = debug_backtrace( DEBUG_BACKTRACE_IGNORE_ARGS );
+
+	// Check whether the caller of this function is in the same file (class)
+	// as the caller of the previous function.
+	if ( $backtrace[0]['file'] !== $backtrace[1]['file'] ) {
+		_deprecated_function( $backtrace[1]['function'], $deprecated_notice_version );
+		return true;
+	}
+	return false;
+}
+
+/**
  * Send a 200 HTTP reponse without ending PHP execution.
  *
  * Useful to avoid issues like timeouts from gateways during
@@ -3911,7 +3931,7 @@ function pmpro_send_200_http_response() {
 	 *
 	 * @param bool $send_early_response Whether to send an early 200 HTTP response.
 	 */
-	if ( ! apply_filters( 'pmpro_send_200_http_response', true ) ) {
+	if ( ! apply_filters( 'pmpro_send_200_http_response', false ) ) {
 		return;
 	}
 
@@ -3941,7 +3961,7 @@ function pmpro_send_200_http_response() {
 	flush();
 }
 
-/** 
+/**
  * Returns formatted ISO-8601 date (Used for Zapier Native app.)
  * @since 2.6.6
  * @param $date date A valid date value.
@@ -3950,6 +3970,76 @@ function pmpro_send_200_http_response() {
 function pmpro_format_date_iso8601( $date ) {
 	$datetime = new DateTime( $date );
 	return $datetime->format( DateTime::ATOM );
+}
+
+/**
+ * Determines the user's actual IP address
+ *
+ * $_SERVER['REMOTE_ADDR'] cannot be used in all cases, such as when the user
+ * is making their request through a proxy, or when the web server is behind
+ * a proxy. In those cases, $_SERVER['REMOTE_ADDR'] is set to the proxy address rather
+ * than the user's actual address.
+ *
+ * Modified from WP_Community_Events::get_unsafe_client_ip() in core WP.
+ * Modified from https://stackoverflow.com/a/2031935/450127, MIT license.
+ * Modified from https://github.com/geertw/php-ip-anonymizer, MIT license.
+ *
+ * SECURITY WARNING: This function is _NOT_ intended to be used in
+ * circumstances where the authenticity of the IP address matters. This does
+ * _NOT_ guarantee that the returned address is valid or accurate, and it can
+ * be easily spoofed.
+ *
+ * @since 2.7
+ *
+ * @return string|false The ip address on success or false on failure.
+ */
+function pmpro_get_ip() {
+	$client_ip = false;
+
+	// In order of preference, with the best ones for this purpose first.
+	// Added some from JetPack's Jetpack_Protect_Module::get_headers()
+	$address_headers = array(
+		'GD_PHP_HANDLER',
+		'HTTP_AKAMAI_ORIGIN_HOP',
+		'HTTP_CF_CONNECTING_IP',
+		'HTTP_CLIENT_IP',
+		'HTTP_FASTLY_CLIENT_IP',
+		'HTTP_FORWARDED',
+		'HTTP_FORWARDED_FOR',
+		'HTTP_INCAP_CLIENT_IP',
+		'HTTP_TRUE_CLIENT_IP',
+		'HTTP_X_CLIENTIP',
+		'HTTP_X_CLUSTER_CLIENT_IP',
+		'HTTP_X_FORWARDED',
+		'HTTP_X_FORWARDED_FOR',
+		'HTTP_X_IP_TRAIL',
+		'HTTP_X_REAL_IP',
+		'HTTP_X_VARNISH',
+		'REMOTE_ADDR',
+	);
+
+	foreach ( $address_headers as $header ) {
+		if ( array_key_exists( $header, $_SERVER ) ) {
+			/*
+			 * HTTP_X_FORWARDED_FOR can contain a chain of comma-separated
+			 * addresses. The first one is the original client. It can't be
+			 * trusted for authenticity, but we don't need to for this purpose.
+			 */
+			$address_chain = explode( ',', $_SERVER[ $header ] );
+			$client_ip     = trim( $address_chain[0] );
+
+			break;
+		}
+	}
+
+	if ( ! $client_ip ) {
+		return false;
+	}
+
+	// Sanitize the IP
+	$client_ip = preg_replace( '/[^0-9a-fA-F:., ]/', '', $client_ip );
+
+	return $client_ip;
 }
 
 /**

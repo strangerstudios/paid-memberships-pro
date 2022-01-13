@@ -118,7 +118,7 @@ class PMPro_Members_List_Table extends WP_List_Table {
 
 		// Shortcut for editing columns in default memberslist location.
 		$current_screen = get_current_screen();
-		if ( ! empty( $current_screen ) && 'memberships_page_pmpro-memberslist' === $current_screen->id ) {
+		if ( ! empty( $current_screen ) && strpos( $current_screen->id, "pmpro-memberslist" ) !== false ) {
 			$columns = apply_filters( 'pmpro_manage_memberslist_columns', $columns );
 		}
 
