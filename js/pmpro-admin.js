@@ -275,7 +275,7 @@ function pmpro_userfields_prep_click_events() {
     
     // Save Settings
 	jQuery('#pmpro_userfields_savesettings').unbind('click').on( 'click', function(event){
-        event.preventDefault();
+        ///event.preventDefault();
 
         let field_groups = [];
 
@@ -339,6 +339,8 @@ function pmpro_userfields_prep_click_events() {
         
         console.log( field_groups );
         jQuery('#pmpro_user_fields_settings').val( JSON.stringify( field_groups ) );
+        
+        return true;
     });
 }
 

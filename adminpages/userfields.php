@@ -1,14 +1,29 @@
 <?php
-	//only admins can get this
+	global $msg, $msgt;
+	
+	// Only admins can get this.
 	if ( ! function_exists( 'current_user_can' ) || ( ! current_user_can( 'manage_options' ) && ! current_user_can( 'pmpro_userfields' ) ) ) {
 		die( __( 'You do not have permissions to perform this action.', 'paid-memberships-pro' ) );
 	}
 
-	/**
-	 * Get all levels regardless of visibility.
-	 *
-	 */
+	// Get all levels regardless of visibility.	
 	$levels = pmpro_getAllLevels( false, true );
+
+	/**
+	 * Save fields if form was submitted.
+	 */
+	if ( ! empty( $_REQUEST['savesettings'] ) ) {		
+		// Check nonce.
+		check_admin_referer( 'savesettings', 'pmpro_userfields_nonce' );
+		
+		$groups = json_decode( stripslashes( $_REQUEST['pmpro_user_fields_settings'] ) );
+		// TODO: Do we want to sanitize the input here before being added to the DB?
+		update_option( 'pmpro_user_fields_settings', $groups, false );
+		
+		// Assume success.
+		$msg = true;
+		$msgt = __( 'Your user field settings have been updated.', 'paid-memberships-pro' );
+	}
 
 	/**
 	 * Get the user fields from options.
@@ -71,7 +86,7 @@
 			<div id="post-body-content">
 				<div class="inside">
 
-					
+					<?php // TODO: Output groups and fields. ?>
 
 					<p class="text-center">
 						<button id="pmpro_userfields_add_group" name="pmpro_userfields_add_group" class="button button-primary button-hero">
@@ -90,7 +105,7 @@
 					<?php do_meta_boxes( 'memberships_page_pmpro-userfields', 'side', '' ); ?>
 					<?php wp_nonce_field('closedpostboxes', 'closedpostboxesnonce', false ); ?>
 					<?php wp_nonce_field('meta-box-order', 'meta-box-order-nonce', false ); ?>
-					<input type="hidden" name="pmpro_user_fields_settings" value="<?php echo esc_attr( json_encode( $user_fields_settings ) );?>" />
+					<input type="hidden" id="pmpro_user_fields_settings" name="pmpro_user_fields_settings" value="<?php echo esc_attr( json_encode( $user_fields_settings ) );?>" />
 				</form>
 			</div> <!-- end postbox-container-1 -->
 
