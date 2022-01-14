@@ -104,6 +104,7 @@
 				$morder->Zip = $fields['x_zip'];
 				$morder->PhoneNumber = $fields['x_phone'];
 
+				$morder->billing = new stdClass();
 				$morder->billing->name = $fields['x_first_name'] . " " . $fields['x_last_name'];
 				$morder->billing->street = $fields['x_address'];
 				$morder->billing->city = $fields['x_city'];

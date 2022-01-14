@@ -3,20 +3,20 @@
  * Plugin Name: Paid Memberships Pro
  * Plugin URI: https://www.paidmembershipspro.com
  * Description: The most complete member management and membership subscriptions plugin for WordPress.
- * Version: 2.6.6
+ * Version: 2.7.1
  * Author: Stranger Studios
  * Author URI: https://www.strangerstudios.com
  * Text Domain: paid-memberships-pro
  * Domain Path: /languages
  */
 /**
- * Copyright 2011-2021	Stranger Studios
+ * Copyright 2011-2022	Stranger Studios
  * (email : info@paidmembershipspro.com)
  * GPLv2 Full license details in license.txt
  */
 
 // version constant
-define( 'PMPRO_VERSION', '2.6.6' );
+define( 'PMPRO_VERSION', '2.7.1' );
 define( 'PMPRO_USER_AGENT', 'Paid Memberships Pro v' . PMPRO_VERSION . '; ' . site_url() );
 define( 'PMPRO_MIN_PHP_VERSION', '5.6' );
 
@@ -74,7 +74,8 @@ require_once( PMPRO_DIR . '/includes/cleanup.php' );                // clean thi
 require_once( PMPRO_DIR . '/includes/login.php' );                  // code to redirect away from login/register page
 require_once( PMPRO_DIR . '/includes/capabilities.php' );           // manage PMPro capabilities for roles
 require_once( PMPRO_DIR . '/includes/privacy.php' );                // code to aid with user data privacy, e.g. GDPR compliance
-require_once( PMPRO_DIR . '/includes/pointers.php' );
+require_once( PMPRO_DIR . '/includes/pointers.php' );				// popover help pointers
+require_once( PMPRO_DIR . '/includes/spam.php' );					// code to combat spam of various kinds
 
 require_once( PMPRO_DIR . '/includes/xmlrpc.php' );                 // xmlrpc methods
 require_once( PMPRO_DIR . '/includes/rest-api.php' );               // rest API endpoints

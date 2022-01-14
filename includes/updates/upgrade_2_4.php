@@ -32,16 +32,7 @@ function pmpro_upgrade_2_4() {
 			pmpro_addUpdate( 'pmpro_upgrade_2_4_ajax' );
 		} else {
 			//less than 10, let's just do them now
-			$stripe = new PMProGateway_stripe();
-			require_once( ABSPATH . "/wp-includes/pluggable.php" );
-            foreach($orders as $order) {                
-                $subscription = $stripe->getSubscription( $order );
-                
-                if ( ! empty( $subscription ) ) {
-                    $sqlQuery = "UPDATE $wpdb->pmpro_membership_orders SET subscription_transaction_id = '" . esc_sql( $subscription->id ) . "' WHERE id = '" . esc_sql( $order->id ) . "' LIMIT 1";
-                    $wpdb->query( $sqlQuery );
-                }
-			}
+			pmpro_upgrade_2_4_helper_get_subscriptions_for_orders( $orders, false );
 		}
 	}
 
@@ -75,20 +66,55 @@ function pmpro_upgrade_2_4_ajax() {
 		pmpro_removeUpdate('pmpro_upgrade_2_4_ajax');
 		delete_option( 'pmpro_upgrade_2_4_last_order_id' );
 	} else {
-		//less than 10, let's just do them now
-		$stripe = new PMProGateway_stripe();
-		require_once( ABSPATH . "/wp-includes/pluggable.php" );
-		foreach($orders as $order) {                
-			$subscription = $stripe->getSubscription( $order );
-			
-			if ( ! empty( $subscription ) ) {
-				$sqlQuery = "UPDATE $wpdb->pmpro_membership_orders SET subscription_transaction_id = '" . esc_sql( $subscription->id ) . "' WHERE id = '" . esc_sql( $order->id ) . "' LIMIT 1";
-				$wpdb->query( $sqlQuery );
-			}
-			
-			$last_order_id = $order->id;
+		pmpro_upgrade_2_4_helper_get_subscriptions_for_orders( $orders, true );
+	}
+}
+
+/**
+ * Populate subscription_ids for Stripe orders.
+ *
+ * @param array $orders to find subscription_id for.
+ * @param bool $update_last_order_id. Should be true if updating via ajax.
+ */
+function pmpro_upgrade_2_4_helper_get_subscriptions_for_orders( $orders, $update_last_order_id ) {
+	global $wpdb;
+	$stripe = new PMProGateway_stripe();
+	require_once( ABSPATH . "/wp-includes/pluggable.php" );
+	foreach($orders as $order) {
+		if ( empty( $order->code ) ) {
+			continue;
+		}
+		$customer = $stripe->get_customer_for_user( $order->user_id );
+
+		//no customer or no subscriptions?
+		if ( empty( $customer ) || empty( $customer->subscriptions ) ) {
+			continue;
 		}
 
+		//find subscription based on customer id and order/plan id
+		$subscriptions = $customer->subscriptions->all();
+		
+
+		//no subscriptions
+		if ( empty( $subscriptions ) || empty( $subscriptions->data ) ) {
+			return false;
+		}
+
+		//we really want to test against the order codes of all orders with the same subscription_transaction_id (customer id)
+		$codes = $wpdb->get_col( "SELECT code FROM $wpdb->pmpro_membership_orders WHERE user_id = '" . esc_sql( $order->user_id ) . "' AND subscription_transaction_id = '' AND status NOT IN('refunded', 'review', 'token', 'error')" );
+
+		//find the one for this order
+		foreach ( $subscriptions->data as $sub ) {
+			if ( in_array( $sub->plan->id, $codes ) ) {
+				$sqlQuery = "UPDATE $wpdb->pmpro_membership_orders SET subscription_transaction_id = '" . esc_sql( $sub->id ) . "' WHERE id = '" . esc_sql( $order->id ) . "' LIMIT 1";
+				$wpdb->query( $sqlQuery );
+				break;
+			}
+		}
+		$last_order_id = $order->id;
+	}
+
+	if ( $update_last_order_id ) {
 		update_option( 'pmpro_upgrade_2_4_last_order_id', $last_order_id );
 	}
 }

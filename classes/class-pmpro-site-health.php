@@ -97,6 +97,10 @@ class PMPro_Site_Health {
 					'label' => __( '.htaccess Cache Usage', 'paid-memberships-pro' ),
 					'value' => self::get_htaccess_cache_usage(),
 				],
+				'pmpro-pages' => [
+					'label' => __( 'Membership Pages', 'paid-memberships-pro' ),
+					'value' => self::get_pmpro_pages(),
+				]
 			],
 		];
 
@@ -114,7 +118,7 @@ class PMPro_Site_Health {
 	 * @return string The level information.
 	 */
 	public function get_levels() {
-		$membership_levels = pmpro_getAllLevels( true );
+		$membership_levels = pmpro_getAllLevels( true, true );
 
 		if ( ! $membership_levels ) {
 			return __( 'No Levels Found', 'paid-memberships-pro' );
@@ -351,6 +355,43 @@ class PMPro_Site_Health {
 		}
 
 		return implode( " | \n", $cron_information );
+	}
+
+	/**
+	 * Get the assigned Member pages and their URL's
+	 *
+	 * @since TBA
+	 *
+	 * @return string The member page information
+	 */
+	public function get_pmpro_pages() {
+
+		global $pmpro_pages;
+
+		$page_information = array();
+		
+		if( !empty( $pmpro_pages ) ){
+
+			foreach( $pmpro_pages as $key => $val ){
+
+				$permalink = get_the_permalink( (int)$val );
+
+				if( empty( $permalink ) ){
+					$page_information[$key] = 'Not Set'; //Not translating this
+				} else {
+					$page_information[$key] = $permalink;
+				}
+
+			}
+
+		} else {
+
+			return __( 'No Membership Pages Found', 'paid-memberships-pro' );
+
+		}
+
+		return $page_information;
+
 	}
 
 	/**
