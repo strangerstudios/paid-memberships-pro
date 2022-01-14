@@ -178,6 +178,7 @@ class PMProGateway_stripe extends PMProGateway {
 				add_filter('pmpro_required_billing_fields', array('PMProGateway_stripe', 'pmpro_required_billing_fields'));
 				add_filter('pmpro_checkout_default_submit_button', array('PMProGateway_stripe', 'pmpro_checkout_default_submit_button'));
 				add_filter('pmpro_checkout_before_change_membership_level', array('PMProGateway_stripe', 'pmpro_checkout_before_change_membership_level'), 10, 2);
+				add_filter('pmprommpu_gateway_supports_multiple_level_checkout', array('PMProGateway_stripe', 'pmprommpu_gateway_supports_multiple_level_checkout'), 10, 2);
 			}
 		}
 
@@ -1840,6 +1841,16 @@ class PMProGateway_stripe extends PMProGateway {
 				'recurring' => false,
 			),
 		);
+	}
+
+	/**
+	 * Only allow purchasing a single level at a time if using Stripe Checkout.
+	 */
+	public static function pmprommpu_gateway_supports_multiple_level_checkout( $has_support, $gateway ) {
+		if ( 'stripe' === $gateway && self::using_stripe_checkout() ) {
+			return false;
+		}
+		return $has_support;
 	}
 
 	/****************************************
