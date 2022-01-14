@@ -5,14 +5,15 @@
  */
 function pmpro_init_recaptcha() {
 	//don't load if setting is off
-	global $recaptcha, $recaptcha_validated;
+	global $recaptcha, $recaptcha_validated, $pmpro_pages;
 	$recaptcha = pmpro_getOption( 'recaptcha' );
 	if ( empty( $recaptcha ) ) {
 		return;
 	}
 	
-	//don't load unless we're on the checkout page
-	if ( ! pmpro_is_checkout() ) {
+	//don't load unless we're on the checkout or billing page
+	$is_billing = ! empty( $pmpro_pages['billing'] ) && is_page( $pmpro_pages['billing'] );
+	if ( ! pmpro_is_checkout() && ! $is_billing ) {
 		return;
 	}
 	
@@ -189,7 +190,6 @@ function pmpro_wp_ajax_validate_recaptcha() {
 	
 	$reCaptcha = new pmpro_ReCaptcha( $recaptcha_privatekey );
 	$resp      = $reCaptcha->verifyResponse( $_SERVER['REMOTE_ADDR'], $_REQUEST['g-recaptcha-response'] );
-
 	if ( $resp->success ) {
 	    pmpro_set_session_var( 'pmpro_recaptcha_validated', true );
 		echo "1";
@@ -206,3 +206,4 @@ function pmpro_after_checkout_reset_recaptcha() {
     pmpro_unset_session_var( 'pmpro_recaptcha_validated' );
 }
 add_action( 'pmpro_after_checkout', 'pmpro_after_checkout_reset_recaptcha' );
+add_action( 'pmpro_after_update_billing', 'pmpro_after_checkout_reset_recaptcha' );
