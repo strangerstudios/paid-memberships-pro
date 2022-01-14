@@ -1527,18 +1527,24 @@ class PMProGateway_stripe extends PMProGateway {
 	 */
 	static function pmpro_checkout_default_submit_button($show)
 	{
-		global $gateway, $pmpro_requirebilling;
+		global $gateway;
 
 		//show our submit buttons
 		?>
-		<span id="pmpro_stripe_checkout" <?php if( $gateway != "stripe" || !$pmpro_requirebilling ) { ?>style="display: none;"<?php } ?>>
+		<span id="pmpro_stripe_checkout" <?php if( $gateway != "stripe" ) { ?>style="display: none;"<?php } ?>>
+			<?php
+			// If the current user's last order is a pending Stripe order, warn them that they already have a pending order.
+			$last_order = new MemberOrder();
+			$last_order->getLastMemberOrder( get_current_user_id(), null, null, 'stripe' );
+			if ( ! empty( $last_order->id ) && $last_order->status === 'pending' ) {
+				?>
+				<p class="pmpro_error"><?php _e( 'Your previous order has not yet been processed. Submitting your payment again will cause a separate charge to be initiated.', 'paid-memberships-pro' ); ?></p>
+				<?php
+			}
+			
+			?>
 			<input type="hidden" name="submit-checkout" value="1" />
 			<input type="submit" class="<?php echo pmpro_get_element_class( 'pmpro_btn pmpro_btn-submit-checkout', 'pmpro_btn-submit-checkout' ); ?>" value="<?php _e('Check Out With Stripe', 'paid-memberships-pro' ); ?> &raquo;" />
-		</span>
-
-		<span id="pmpro_submit_span" <?php if($gateway == "stripe" && $pmpro_requirebilling) { ?>style="display: none;"<?php } ?>>
-			<input type="hidden" name="submit-checkout" value="1" />
-			<input type="submit" class="<?php echo pmpro_get_element_class( 'pmpro_btn pmpro_btn-submit-checkout', 'pmpro_btn-submit-checkout' ); ?>" value="<?php if($pmpro_requirebilling) { _e('Submit and Check Out', 'paid-memberships-pro' ); } else { _e('Submit and Confirm', 'paid-memberships-pro' );}?> &raquo;" />
 		</span>
 		<?php
 
