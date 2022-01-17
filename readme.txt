@@ -2,9 +2,9 @@
 Contributors: strangerstudios, kimannwall, andrewza, dlparker1005, paidmembershipspro
 Tags: memberships, members, subscriptions, ecommerce, user registration, member, membership, e-commerce, paypal, stripe, braintree, authorize.net, payflow, restrict access, restrict content, directory
 Requires at least: 5.2
-Tested up to: 5.8.3
+Tested up to: 5.9
 Requires PHP: 5.6
-Stable tag: 2.7.1
+Stable tag: 2.7.2
 
 Get Paid with Paid Memberships Pro: The most complete member management and membership subscriptions plugin for your WordPress site.
 
@@ -156,6 +156,9 @@ Not sure? You can find out by doing a bit a research.
 9. Membership Account page, display all sections or show specific sections using shortcode attributes.
 
 == Changelog ==
+= 2.7.2 - 2022-01-17 =
+* BUG FIX: Fixed issue where certain Stripe trial periods would be sent to the Stripe subscription as longer than intended. #1912 (@dparker1005)
+
 = 2.7.1 - 2022-01-13 =
 * BUG FIX: Fixed issue on some MySQL setups that would throw an error about the primary key in the pmpro_memberships_pages and pmpro_memberships_categories tables.
 
