@@ -37,7 +37,7 @@ function pmpro_report_sales_widget() {
 	#pmpro_report_sales tbody td:last-child {text-align: right; }
 </style>
 <span id="pmpro_report_sales" class="pmpro_report-holder">
-	<table class="wp-list-table widefat fixed striped">
+	<table class="wp-list-table widefat fixed">
 	<thead>
 		<tr>
 			<th scope="col">&nbsp;</th>
@@ -55,44 +55,53 @@ function pmpro_report_sales_widget() {
 		);
 
 	foreach ( $reports as $report_type => $report_name ) {
-		//sale prices stats
-		$count = 0;
-		$max_prices_count = apply_filters( 'pmpro_admin_reports_max_sale_prices', 5 );
-		$prices = pmpro_get_prices_paid( $report_type, $max_prices_count );		
-		?>
-		<tbody>
-			<tr class="pmpro_report_tr">
-				<th scope="row">
-					<?php if( ! empty( $prices ) ) { ?>
-						<button class="pmpro_report_th pmpro_report_th_closed"><?php echo esc_html($report_name); ?></button>
-					<?php } else { ?>
-						<?php echo esc_html($report_name); ?>
-					<?php } ?>
-				</th>
-				<td><?php echo esc_html( number_format_i18n( pmpro_getSales( $report_type, null, 'new' ) ) ); ?></td>
-				<td><?php echo esc_html( number_format_i18n( pmpro_getSales( $report_type, null, 'renewals' ) ) ); ?></td>
-				<td><?php echo pmpro_escape_price( pmpro_formatPrice( pmpro_getRevenue( $report_type ) ) ); ?></td>
-			</tr>
-			<?php
-				//sale prices stats
-				$count = 0;
-				$max_prices_count = apply_filters( 'pmpro_admin_reports_max_sale_prices', 5 );				
-				foreach ( $prices as $price => $quantity ) {
-					if ( $count++ >= $max_prices_count ) {
-						break;
-					}
-			?>
-				<tr class="pmpro_report_tr_sub" style="display: none;">
-					<th scope="row">- <?php echo pmpro_escape_price( pmpro_formatPrice( $price ) );?></th>
-					<td><?php echo esc_html( number_format_i18n( $quantity['new'] ) ); ?></td>
-					<td><?php echo esc_html( number_format_i18n( $quantity['renewals'] ) ); ?></td>
-					<td><?php echo pmpro_escape_price( pmpro_formatPrice( $price * $quantity['total'] ) ); ?></td>
+		if ( $report_type === 'all time' ) { ?>
+			<tfoot>
+				<tr>
+					<th><?php echo esc_html( $report_name ); ?></th>
+					<td colspan="3"><?php echo pmpro_escape_price( pmpro_formatPrice( pmpro_getRevenue( $report_type ) ) ); ?></td>
 				</tr>
-			<?php
-			}
+			</tfoot>
+		<?php } else {
+			//sale prices stats
+			$count = 0;
+			$max_prices_count = apply_filters( 'pmpro_admin_reports_max_sale_prices', 5 );
+			$prices = pmpro_get_prices_paid( $report_type, $max_prices_count );
 			?>
-		</tbody>
-		<?php
+			<tbody>
+				<tr class="pmpro_report_tr">
+					<th scope="row">
+						<?php if( ! empty( $prices ) ) { ?>
+							<button class="pmpro_report_th pmpro_report_th_closed"><?php echo esc_html($report_name); ?></button>
+						<?php } else { ?>
+							<?php echo esc_html($report_name); ?>
+						<?php } ?>
+					</th>
+					<td><?php echo esc_html( number_format_i18n( pmpro_getSales( $report_type, null, 'new' ) ) ); ?></td>
+					<td><?php echo esc_html( number_format_i18n( pmpro_getSales( $report_type, null, 'renewals' ) ) ); ?></td>
+					<td><?php echo pmpro_escape_price( pmpro_formatPrice( pmpro_getRevenue( $report_type ) ) ); ?></td>
+				</tr>
+				<?php
+					//sale prices stats
+					$count = 0;
+					$max_prices_count = apply_filters( 'pmpro_admin_reports_max_sale_prices', 5 );
+					foreach ( $prices as $price => $quantity ) {
+						if ( $count++ >= $max_prices_count ) {
+							break;
+						}
+				?>
+					<tr class="pmpro_report_tr_sub" style="display: none;">
+						<th scope="row">- <?php echo pmpro_escape_price( pmpro_formatPrice( $price ) );?></th>
+						<td><?php echo esc_html( number_format_i18n( $quantity['new'] ) ); ?></td>
+						<td><?php echo esc_html( number_format_i18n( $quantity['renewals'] ) ); ?></td>
+						<td><?php echo pmpro_escape_price( pmpro_formatPrice( $price * $quantity['total'] ) ); ?></td>
+					</tr>
+				<?php
+				}
+				?>
+			</tbody>
+			<?php
+		}
 	}
 	?>
 	</table>
@@ -362,6 +371,7 @@ function pmpro_report_sales_page()
 		<input type="hidden" name="report" value="sales" />
 		<input type="submit" class="button action" value="<?php _e('Generate Report', 'paid-memberships-pro' );?>" />
 	</div>
+	<style>rect[stroke-opacity]{stroke-width:0 !important;}</style>
 	<div id="chart_div" style="clear: both; width: 100%; height: 500px;"></div>
 	<p>* <?php _e( 'Average line calculated using data prior to current day, month, or year.', 'paid-memberships-pro' ); ?></p>
 	<script>
@@ -401,20 +411,41 @@ function pmpro_report_sales_page()
 		google.charts.load('current', {'packages':['corechart']});
 		google.charts.setOnLoadCallback(drawVisualization);
 		function drawVisualization() {
-
-			var data = google.visualization.arrayToDataTable([
-				[
-					'<?php echo esc_html( $date_function );?>', '<?php _e( 'Renewals', 'paid-memberships-pro' );?>', '<?php echo esc_html( sprintf( __( 'New %s', 'paid-memberships-pro' ), ucwords( $type ) ) );?>', '<?php _e( 'Average*', 'paid-memberships-pro' );?>', 
-				],
-				<?php foreach($cols as $date => $value) { 
-					?>
-					['<?php
-						if ( $period == "monthly" ) {
-							echo esc_html(date_i18n("M", mktime(0,0,0,$date,2)));
-						} else {
-							echo esc_html( $date );
-						}
-					?>', <?php echo esc_html( pmpro_round_price( $value[1] ) );?>, <?php echo esc_html( pmpro_round_price( $value[0] - $value[1] ) );?>, <?php echo esc_html( pmpro_round_price( $average ) );?>,  ], 
+			var dataTable = new google.visualization.DataTable();
+			dataTable.addColumn('string', '<?php echo esc_html( $date_function );?>');
+			dataTable.addColumn({type: 'string', role: 'tooltip', 'p': {'html': true}});
+			dataTable.addColumn('number', '<?php esc_html_e( 'Renewals', 'paid-memberships-pro' );?>');
+			dataTable.addColumn('number', '<?php esc_html_e( sprintf( __( 'New %s', 'paid-memberships-pro' ), ucwords( $type ) ) );?>');
+			dataTable.addColumn('number', '<?php esc_html_e( 'Average*', 'paid-memberships-pro' );?>');
+			dataTable.addRows([
+				<?php foreach($cols as $date => $value) { ?>
+					[
+						'<?php
+							if ( $period == "monthly" ) {
+								echo esc_html(date_i18n( 'M', mktime(0,0,0,$date,2)));
+							} else {
+								echo esc_html( $date );
+							}
+						?>',
+						createCustomHTMLContent(
+							'<?php
+								if ( $period == "monthly" ) {
+									echo esc_html(date_i18n( 'F', mktime(0,0,0,$date,2)));
+								} elseif ( $period == "daily" ) {
+									echo date_i18n( get_option( 'date_format' ), strtotime( $year . '-' . $month . '-' . $date ) );
+								} else {
+									echo esc_html( $date );
+								}
+							?>',
+							'<?php echo pmpro_escape_price( pmpro_formatPrice( pmpro_round_price( $value[1] ) ) ); ?>',
+							'<?php echo pmpro_escape_price( pmpro_formatPrice( pmpro_round_price( $value[0] - $value[1] ) ) ); ?>',
+							'<?php echo pmpro_escape_price( pmpro_formatPrice( pmpro_round_price( $average ) ) ); ?>',
+							'<?php echo pmpro_escape_price( pmpro_formatPrice( pmpro_round_price( $value[0] ) ) ); ?>',
+						),
+						<?php echo esc_html( pmpro_round_price( $value[1] ) ); ?>,
+						<?php echo esc_html( pmpro_round_price( $value[0] - $value[1] ) ); ?>,
+						<?php echo esc_html( pmpro_round_price( $average ) ); ?>,
+					],
 				<?php } ?>
 			]);
 
@@ -423,10 +454,12 @@ function pmpro_report_sales_page()
 					if ( $type === 'sales') {
 						echo '#0099c6'; // Blue for "Sales" chart.
 					} else {
-						echo '#51a351'; // Green for "Revenue" chart.
+						echo '#31825D'; // Green for "Revenue" chart.
 					}
 				?>'],
-				chartArea: {width: '90%'},
+				chartArea: {width: '70%'},
+				focusTarget: 'category',
+				tooltip: { isHtml: true },
 				hAxis: {
 					title: '<?php echo esc_html( $date_function );?>',
 					textStyle: {color: '#555555', fontSize: '12', italic: false},
@@ -440,40 +473,23 @@ function pmpro_report_sales_page()
 					textStyle: {color: '#555555', fontSize: '12', italic: false},
 				},
 				seriesType: 'bars',
-				series: { 2: {type: 'line', color: 'red'}, 1: {color: '#6dff6d' } },
-				legend: {position: 'none'},
+				series: { 2: {type: 'line', color: '#B00000', enableInteractivity: false, lineDashStyle: [4, 1], }, 1: {color: '#5ec16c' } },
+				legend: {position: 'right'},
 				isStacked: true			
 			};
 
-			<?php
-				if($type != "sales")
-				{	
-					$decimals = isset( $pmpro_currencies[ $pmpro_currency ]['decimals'] ) ? (int) $pmpro_currencies[ $pmpro_currency ]['decimals'] : 2;
-					
-					$decimal_separator = isset( $pmpro_currencies[ $pmpro_currency ]['decimal_separator'] ) ? $pmpro_currencies[ $pmpro_currency ]['decimal_separator'] : '.';
-					
-					$thousands_separator = isset( $pmpro_currencies[ $pmpro_currency ]['thousands_separator'] ) ? $pmpro_currencies[ $pmpro_currency ]['thousands_separator'] : ',';
-					
-					if ( pmpro_getCurrencyPosition() == 'right' ) {
-						$position = "suffix";
-					} else {
-						$position = "prefix";
-					}
-					?>
-					var formatter = new google.visualization.NumberFormat({
-						<?php echo esc_html( $position );?>: '<?php echo esc_html( html_entity_decode($pmpro_currency_symbol) ); ?>',
-						'decimalSymbol': '<?php echo esc_html( html_entity_decode( $decimal_separator ) ); ?>',
-						'fractionDigits': <?php echo intval( $decimals ); ?>,
-						'groupingSymbol': '<?php echo esc_html( html_entity_decode( $thousands_separator ) ); ?>',
-					});
-					formatter.format(data, 1);
-					formatter.format(data, 2);
-					<?php
-				}
-			?>
+			var chart = new google.visualization.ColumnChart(document.getElementById('chart_div'));
+			chart.draw(dataTable, options);
+		}
 
-			var chart = new google.visualization.ComboChart(document.getElementById('chart_div'));
-			chart.draw(data, options);
+		function createCustomHTMLContent(period, renewals, notRenewals, average, total) {
+			return '<div style="padding:15px; font-size: 14px; line-height: 20px; color: #000000;">' +
+				'<strong>' + period + '</strong><br/>' +
+				'<ul>' +
+				'<li><span style="margin-right: 3px;"><?php esc_html_e( 'Renewals:', 'paid-memberships-pro' ); ?></span>' + renewals + '</li>' +
+				'<li><span style="margin-right: 3px;"><?php esc_html_e( 'New:', 'paid-memberships-pro' ); ?></span>' + notRenewals + '</li>' +
+				'<li><span style="margin-right: 3px;"><?php esc_html_e( 'Total:', 'paid-memberships-pro' ); ?></span>' + total + '</li>' +
+				'<li><span style="margin-right: 3px;"><?php esc_html_e( 'Average:', 'paid-memberships-pro' ); ?></span>' + average + '</li>' + '</ul>' + '</div>';
 		}
 	</script>
 
