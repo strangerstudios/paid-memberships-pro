@@ -2388,7 +2388,6 @@ class PMProGateway_stripe extends PMProGateway {
 
 		// For free trials, multiply the trial period for each additional free period.
 		if ( ! empty( $order->TrialBillingCycles ) && $order->TrialAmount == 0 ) {
-			$trialOccurrences = (int) $order->TrialBillingCycles;
 			$trial_period_days = $trial_period_days * ( $order->TrialBillingCycles + 1 );
 		}
 
