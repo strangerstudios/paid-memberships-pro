@@ -2377,19 +2377,17 @@ class PMProGateway_stripe extends PMProGateway {
 	private function calculate_trial_period_days( $order ) {
 		// Use a trial period to set the first recurring payment date.
 		if ( $order->BillingPeriod == "Year" ) {
-			$days_in_billing_period = $order->BillingFrequency * 365;    //annual
+			$trial_period_days = $order->BillingFrequency * 365;    //annual
 		} elseif ( $order->BillingPeriod == "Day" ) {
-			$days_in_billing_period = $order->BillingFrequency * 1;        //daily
+			$trial_period_days = $order->BillingFrequency * 1;        //daily
 		} elseif ( $order->BillingPeriod == "Week" ) {
-			$days_in_billing_period = $order->BillingFrequency * 7;        //weekly
+			$trial_period_days = $order->BillingFrequency * 7;        //weekly
 		} else {
-			$days_in_billing_period = $order->BillingFrequency * 30;    //assume monthly
+			$trial_period_days = $order->BillingFrequency * 30;    //assume monthly
 		}
-		$trial_period_days = $order->BillingFrequency * $days_in_billing_period;
 
 		// For free trials, multiply the trial period for each additional free period.
 		if ( ! empty( $order->TrialBillingCycles ) && $order->TrialAmount == 0 ) {
-			$trialOccurrences = (int) $order->TrialBillingCycles;
 			$trial_period_days = $trial_period_days * ( $order->TrialBillingCycles + 1 );
 		}
 
