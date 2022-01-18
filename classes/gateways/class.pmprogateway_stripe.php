@@ -1456,8 +1456,8 @@ class PMProGateway_stripe extends PMProGateway {
 			if ( pmpro_isLevelRecurring( $order->membership_level ) ) {
 				$subscription = $this->create_subscription_for_customer_from_order( $customer->id, $order );
 				if ( empty( $subscription ) ) {
-					// There was an issue creating the subscription.
-					$order->error      = __( 'Error creating subscription for customer.', 'paid-memberships-pro' );
+					// There was an issue creating the subscription. Order will have error message.
+					$order->error      = __( 'Error creating subscription for customer.', 'paid-memberships-pro' ) . ' ' . $order->error;
 					$order->shorterror = $order->error;
 					return false;
 				}
