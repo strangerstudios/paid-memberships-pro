@@ -28,13 +28,8 @@ $extra_pages = apply_filters('pmpro_extra_page_settings', array());
 $post_types = apply_filters( 'pmpro_admin_pagesetting_post_type_array', array( 'page' ) );
 
 // For backward compatibility we extract the first element from the array
-// For backward compatibility we extract the first element from the array
 if ( is_array( $post_types ) ) {
-    if ( function_exists( 'array_key_first' ) ) {
-        $post_type = $post_types[ array_key_first( $post_types ) ];
-    } else {
-        $post_type = $post_types[0];
-    }
+        $post_type = reset( $post_types );
 } else {
     $post_type = $post_types;
 }
