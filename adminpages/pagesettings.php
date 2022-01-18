@@ -33,6 +33,7 @@ if ( is_array( $post_types ) ) {
 } else {
     $post_type = $post_types;
 }
+
 /**
  * Set post type to use for PMPro pages in the page settings dropdown.
  *
