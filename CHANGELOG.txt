@@ -1,4 +1,9 @@
 == Changelog ==
+= 2.7.2 - 2022-01-17 =
+* BUG FIX/ENHANCEMENT: Improved error messages when creating subscriptions with Stripe. (@dparker1005)
+* BUG FIX: Fixed issue where certain Stripe trial periods would be sent to the Stripe subscription as longer than intended. #1912 (@dparker1005)
+* BUG FIX: Fixed visual issues with dropdowns in our blocks when using Full Site Editing in WP 5.9+. #1909 (@sc0ttkclark)
+
 = 2.7.1 - 2022-01-13 =
 * BUG FIX: Fixed issue on some MySQL setups that would throw an error about the primary key in the pmpro_memberships_pages and pmpro_memberships_categories tables.
 
