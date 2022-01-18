@@ -29,7 +29,7 @@ $post_types = apply_filters( 'pmpro_admin_pagesetting_post_type_array', array( '
 
 // For backward compatibility we extract the first element from the array
 if ( is_array( $post_types ) ) {
-        $post_type = reset( $post_types );
+    $post_type = reset( $post_types );
 } else {
     $post_type = $post_types;
 }
