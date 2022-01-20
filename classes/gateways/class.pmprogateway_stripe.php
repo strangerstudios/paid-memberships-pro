@@ -141,26 +141,27 @@ class PMProGateway_stripe extends PMProGateway {
 		$current_gateway = pmpro_getGateway();
 
 		// $_REQUEST['review'] here means the PayPal Express review pag
-		if ( ( $default_gateway == "stripe" || $current_gateway == "stripe" ) && empty( $_REQUEST['review'] ) )
-		{
+		if ( ( $default_gateway == "stripe" || $current_gateway == "stripe" ) && empty( $_REQUEST['review'] ) ) {
+			add_filter( 'pmpro_include_billing_address_fields', array(
+				'PMProGateway_stripe',
+				'pmpro_include_billing_address_fields'
+			) );
+
+			
+
 			if ( ! self::using_stripe_checkout() ) {
 				// On-site checkout flow.
 				add_action( 'pmpro_after_checkout_preheader', array(
 					'PMProGateway_stripe',
 					'pmpro_checkout_after_preheader'
 				) );
-				
-				add_action( 'pmpro_billing_preheader', array( 'PMProGateway_stripe', 'pmpro_checkout_after_preheader' ) );
-				add_filter( 'pmpro_checkout_order', array( 'PMProGateway_stripe', 'pmpro_checkout_order' ) );
-				add_filter( 'pmpro_billing_order', array( 'PMProGateway_stripe', 'pmpro_checkout_order' ) );
-				add_filter( 'pmpro_include_billing_address_fields', array(
-					'PMProGateway_stripe',
-					'pmpro_include_billing_address_fields'
-				) );
 				add_filter( 'pmpro_include_cardtype_field', array(
 					'PMProGateway_stripe',
 					'pmpro_include_billing_address_fields'
 				) );
+				add_action( 'pmpro_billing_preheader', array( 'PMProGateway_stripe', 'pmpro_checkout_after_preheader' ) );
+				add_filter( 'pmpro_checkout_order', array( 'PMProGateway_stripe', 'pmpro_checkout_order' ) );
+				add_filter( 'pmpro_billing_order', array( 'PMProGateway_stripe', 'pmpro_checkout_order' ) );
 				add_filter( 'pmpro_include_payment_information_fields', array(
 					'PMProGateway_stripe',
 					'pmpro_include_payment_information_fields'
@@ -173,12 +174,10 @@ class PMProGateway_stripe extends PMProGateway {
 				) );
 			} else {
 				// Checkout flow for Stripe Checkout.
-				add_filter('pmpro_include_billing_address_fields', '__return_false');
 				add_filter('pmpro_include_payment_information_fields', '__return_false');
-				add_filter('pmpro_required_billing_fields', array('PMProGateway_stripe', 'pmpro_required_billing_fields'));
 				add_filter('pmpro_checkout_default_submit_button', array('PMProGateway_stripe', 'pmpro_checkout_default_submit_button'));
 				add_filter('pmpro_checkout_before_change_membership_level', array('PMProGateway_stripe', 'pmpro_checkout_before_change_membership_level'), 10, 2);
-				add_filter('pmprommpu_gateway_supports_multiple_level_checkout', array('PMProGateway_stripe', 'pmprommpu_gateway_supports_multiple_level_checkout'), 10, 2);
+				add_filter('pmprommpu_gateway_supports_multiple_level_checkout', '__return_false', 10, 2);
 			}
 		}
 
@@ -732,52 +731,31 @@ class PMProGateway_stripe extends PMProGateway {
 	 * Don't require address fields if they are set to hide.
 	 */
 	public static function pmpro_required_billing_fields( $fields ) {
-		if ( ! self::using_stripe_checkout() ) {
-			global $pmpro_stripe_lite, $current_user, $bemail, $bconfirmemail;
+		global $pmpro_stripe_lite, $current_user, $bemail, $bconfirmemail;
 
-			//CVV is not required if set that way at Stripe. The Stripe JS will require it if it is required.
-			unset( $fields['CVV'] );
+		//CVV is not required if set that way at Stripe. The Stripe JS will require it if it is required.
+		$remove = [ 'CVV' ];
 
-			//if using stripe lite, remove some fields from the required array
-			if ( $pmpro_stripe_lite ) {
-				//some fields to remove
-				$remove = array(
-					'bfirstname',
-					'blastname',
-					'baddress1',
-					'bcity',
-					'bstate',
-					'bzipcode',
-					'bphone',
-					'bcountry',
-					'CardType'
-				);
-				//if a user is logged in, don't require bemail either
-				if ( ! empty( $current_user->user_email ) ) {
-					$remove[]      = 'bemail';
-					$bemail        = $current_user->user_email;
-					$bconfirmemail = $bemail;
-				}
-				//remove the fields
-				foreach ( $remove as $field ) {
-					unset( $fields[ $field ] );
-				}
-			}
-		} else {
-			unset($fields['bfirstname']);
-			unset($fields['blastname']);
-			unset($fields['baddress1']);
-			unset($fields['bcity']);
-			unset($fields['bstate']);
-			unset($fields['bzipcode']);
-			unset($fields['bphone']);
-			unset($fields['bemail']);
-			unset($fields['bcountry']);
-			unset($fields['CardType']);
-			unset($fields['AccountNumber']);
-			unset($fields['ExpirationMonth']);
-			unset($fields['ExpirationYear']);
-			unset($fields['CVV']);
+		//if using stripe lite, remove some fields from the required array
+		if ( $pmpro_stripe_lite ) {
+			$remove = array_merge( $remove, [ 'bfirstname', 'blastname', 'baddress', 'bcity', 'bstate', 'bzipcode', 'bphone', 'bcountry', 'CardType' ] );
+		}
+
+		// If a user is logged in, don't require bemail either
+		if ( ! empty( $current_user->user_email ) ) {
+			$remove        = array_merge( $remove, [ 'bemail' ] );
+			$bemail        = $current_user->user_email;
+			$bconfirmemail = $bemail;
+		}
+
+		// If using Stripe Checkout, don't require card information.
+		if ( self::using_stripe_checkout() ) {
+			$remove = array_merge( $remove, [ 'CardType', 'AccountNumber', 'ExpirationMonth', 'ExpirationYear', 'CVV' ] );
+		}
+
+		// Remove the fields.
+		foreach ( $remove as $field ) {
+			unset( $fields[ $field ] );
 		}
 
 		return $fields;
@@ -1847,16 +1825,6 @@ class PMProGateway_stripe extends PMProGateway {
 				'recurring' => false,
 			),
 		);
-	}
-
-	/**
-	 * Only allow purchasing a single level at a time if using Stripe Checkout.
-	 */
-	public static function pmprommpu_gateway_supports_multiple_level_checkout( $has_support, $gateway ) {
-		if ( 'stripe' === $gateway && self::using_stripe_checkout() ) {
-			return false;
-		}
-		return $has_support;
 	}
 
 	/****************************************
