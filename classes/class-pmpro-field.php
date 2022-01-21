@@ -775,7 +775,7 @@ class PMPro_Field
 		 * @param string      $r     The field HTML.
 		 * @param PMPro_Field $field The field object.
 		 */
-		$r = apply_filters( 'pmprorh_get_html', $r, $this );
+		$r = apply_filters( 'pmpro_field_get_html', $r, $this );
 
 		return $r;
 	}
