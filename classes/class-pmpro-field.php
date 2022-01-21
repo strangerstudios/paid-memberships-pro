@@ -780,16 +780,43 @@ class PMPro_Field
 		return $r;
 	}
 
+	/**
+	 * Get the HTML attributes for this field.
+	 *
+	 * Note: Attribute names and values are escaped for output.
+	 *
+	 * @return string The HTML attributes for this field.
+	 */
 	function getHTMLAttributes() {
-		$astring = "";
-		if(!empty($this->html_attributes)) {
-			foreach($this->html_attributes as $name => $value)
-				$astring .= "{$name}=\"{$value}\"";
+		$html = '';
+
+		/**
+		 * Allow filtering the HTML attributes before escaping.
+		 *
+		 * @since TBD
+		 *
+		 * @param array       $html_attributes The list of HTML attributes.
+		 * @param PMPro_Field $field           The field object.
+		 */
+		$this->html_attributes = apply_filters( 'pmpro_field_custom_html_attributes', $this->html_attributes, $this );
+
+		if ( ! empty( $this->html_attributes ) ) {
+			foreach ( $this->html_attributes as $name => $value ) {
+				// Note: In the future, WP may introduce esc_attr_name(), but for now we'll do it ourselves.
+				$attribute_name = wp_check_invalid_utf8( $name );
+				$attribute_name = preg_replace( '/[^a-zA-Z0-9\-_\[\]]+/', '-', $attribute_name );
+
+				$html .= sprintf(
+					' %1$s="%2$s"',
+					$attribute_name,
+					esc_attr( $value )
+				);
+			}
 		}
 
-		return $astring;
-	}	
-	
+		return $html;
+	}
+
 	function getDependenciesJS()
 	{
 		global $pmprorh_registration_fields;
