@@ -141,14 +141,7 @@
 			$this->headers = apply_filters("pmpro_email_headers", $temail->headers, $this);
 			$this->attachments = apply_filters("pmpro_email_attachments", $temail->attachments, $this);
 			
-			if(wp_mail($this->email,$this->subject,$this->body,$this->headers,$this->attachments))
-			{
-				return true;
-			}
-			else
-			{
-				return false;
-			}		
+            return wp_mail($this->email,$this->subject,$this->body,$this->headers,$this->attachments);
 		}
 		
 		/**
