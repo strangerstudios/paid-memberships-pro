@@ -429,6 +429,7 @@
 				pmpro_stripeWebhookExit();
 			}
 
+			// Get the payment and subscription IDs for the checkout.
 			if ( $checkout_session->mode === 'payment' ) {
 				// User purchased a one-time payment level. Assign the charge ID to the order.
 				try {
@@ -448,6 +449,27 @@
 				} catch ( \Stripe\Error\Base $e ) {
 					// Could not get invoices. We just won't set a payment transaction ID.
 				}
+			}
+
+			// Get the customer's billing address.
+			try {
+				$customer = \Stripe\Customer::retrieve( $checkout_session->customer );
+				if (
+					! empty( $customer->name ) &&
+					! empty( $customer->address->line1 ) &&
+					! empty( $customer->address->city ) &&
+					! empty( $customer->address->postal_code ) &&
+					! empty( $customer->address->country )
+				) {
+					$order->billing->name = $customer->name;
+					$order->billing->street = $customer->address->line1;
+					$order->billing->city = $customer->address->city;
+					$order->billing->state = $customer->address->state;
+					$order->billing->zip = $customer->address->postal_code;
+					$order->billing->country = $customer->address->country;
+				}
+			} catch ( \Stripe\Error\Base $e ) {
+				// Could not get customer. We just won't set billing info.
 			}
 
 			// Update order total, subtotal, and tax.
