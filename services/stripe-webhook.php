@@ -429,10 +429,14 @@
 				pmpro_stripeWebhookExit();
 			}
 
-			// Assign payment and subscription transaction IDs to the order.
 			if ( $checkout_session->mode === 'payment' ) {
-				// User purchased a one-time payment level. Assign the payment intent ID to the order.
-				$order->payment_transaction_id = $checkout_session->payment_intent;
+				// User purchased a one-time payment level. Assign the charge ID to the order.
+				try {
+					$payment_intent = \Stripe\PaymentIntent::retrieve( $checkout_session->payment_intent );
+					error_log( $payment_intent->charges->data[0]->id );
+				} catch ( \Stripe\Error\Base $e ) {
+					// Could not get payment intent. We just won't set a payment transaction ID.
+				}
 			} elseif ( $checkout_session->mode === 'subscription' ) {
 				// User purchased a subscription. Assign the subscription ID invoice ID to the order.
 				$order->subscription_transaction_id = $checkout_session->subscription;
