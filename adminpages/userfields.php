@@ -15,8 +15,9 @@
 	if ( ! empty( $_REQUEST['savesettings'] ) ) {		
 		// Check nonce.
 		check_admin_referer( 'savesettings', 'pmpro_userfields_nonce' );
-		
+				
 		$groups = json_decode( stripslashes( $_REQUEST['pmpro_user_fields_settings'] ) );
+
 		// TODO: Do we want to sanitize the input here before being added to the DB?
 		update_option( 'pmpro_user_fields_settings', $groups, false );
 		
@@ -86,7 +87,11 @@
 			<div id="post-body-content">
 				<div class="inside">
 
-					<?php // TODO: Output groups and fields. ?>
+					<?php						
+						foreach( $user_fields_settings as $group ) {
+							echo pmpro_get_field_group_html( $group );
+						}
+					?>
 
 					<p class="text-center">
 						<button id="pmpro_userfields_add_group" name="pmpro_userfields_add_group" class="button button-primary button-hero">

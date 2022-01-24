@@ -273,7 +273,7 @@ function pmpro_userfields_prep_click_events() {
         thefield.hide();
     });
     
-    // Save Settings
+    // Save User Field Settings
 	jQuery('#pmpro_userfields_savesettings').unbind('click').on( 'click', function(event){
         ///event.preventDefault();
 
@@ -292,19 +292,18 @@ function pmpro_userfields_prep_click_events() {
             });
             
             // Get fields.
-            let group_fields = [];
-            // TODO: Fix the selector here.
-            jQuery('div.pmpro_userfield-field-settings').each(function(){
-                let field_label = '';
-                let field_name = '';
-                let field_type = '';
-                let field_required = '';
-                let field_readonly = '';
-                let field_levels = '';
-                let field_profile = '';
-                let field_wrapper_class = '';
-                let field_element_class = '';
-                let field_hint = '';
+            let group_fields = [];            
+            jQuery('div.pmpro_userfield-group-fields div.pmpro_userfield-field-settings').each(function(){
+                let field_label = jQuery(this).find('input[name=pmpro_userfields-field-label]').val();
+                let field_name = jQuery(this).find('input[name=pmpro_userfields-field-name]').val();
+                let field_type = jQuery(this).find('select[name=pmpro_userfields-field-type]').val();
+                let field_required = jQuery(this).find('select[name=pmpro_userfields_field-required]').val();
+                let field_readonly = jQuery(this).find('select[name=pmpro_userfields_field-readonly]').val();
+                let field_membership = jQuery(this).find('select[name=pmpro_userfields_field-membership]').val();
+                let field_profile = jQuery(this).find('select[name=pmpro_userfields_field-profile]').val();
+                let field_wrapper_class = jQuery(this).find('input[name=pmpro_userfields-field-class]').val();
+                let field_element_class = jQuery(this).find('input[name=pmpro_userfields-field-divclass]').val();
+                let field_hint = jQuery(this).find('textarea[name=pmpro_userfields-field-hint]').val();
                 
                 let field = {
                     'label': field_label,
@@ -312,15 +311,17 @@ function pmpro_userfields_prep_click_events() {
                     'type': field_type,
                     'required': field_required,
                     'readonly': field_readonly,
-                    'levels': field_levels,
+                    'membership': field_membership,
                     'profile': field_profile,
                     'wrapper_class': field_wrapper_class,
                     'element_class': field_element_class,
                     'hint': field_hint
                 }
 
-                // Add to array.
-                group_fields.push( field );
+                // Add to array. (Only if it has a label or name.)
+                if ( field.label.length > 0 || field.name.length > 0 ) {
+                    group_fields.push( field );
+                }                
             });
             
             // Set up the field group object.

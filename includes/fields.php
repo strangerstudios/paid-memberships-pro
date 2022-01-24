@@ -1044,15 +1044,26 @@ function pmpro_get_user_fields() {
 /**
  * Get field group HTML for settings.
  */
-function pmpro_get_field_group_html( $group_id ) {
-    
-    // Get group settings.
-    $group_name = '';
-	$group_show_checkout = 'yes';
-	$group_show_profile = 'yes';
-	$group_description = '';
-	$levels = pmpro_getAllLevels( false, true );
-	$group_levels = array();		
+function pmpro_get_field_group_html( $group = null ) {
+    if ( ! empty( $group ) ) {
+        // Assume group stdClass in format we save to settings.
+        $group_name = $group->name;
+    	$group_show_checkout = $group->checkout;
+    	$group_show_profile = $group->profile;
+    	$group_description = $group->description;
+    	$levels = pmpro_getAllLevels( false, true );
+    	$group_levels = $group->levels;
+        $group_fields = $group->fields;
+    } else {
+        // Default group settings.
+        $group_name = '';
+    	$group_show_checkout = 'yes';
+    	$group_show_profile = 'yes';
+    	$group_description = '';
+    	$levels = pmpro_getAllLevels( false, true );
+    	$group_levels = array();
+        $group_fields = array();
+    }
 	
     // Render field group HTML.
     ?>
@@ -1131,7 +1142,15 @@ function pmpro_get_field_group_html( $group_id ) {
 
 				<div class="pmpro_userfield-group-field pmpro_userfield-group-field-collapse">
                     
-				</div> <!-- end pmpro_userfield-group-fields -->
+				</div>
+                
+                <?php 
+                    foreach ( $group->fields as $field ) {
+                        echo pmpro_get_field_html( $field );
+                    }
+                ?>
+                
+                <!-- end pmpro_userfield-group-fields -->
             
             </div> <!-- end pmpro_userfield-inside -->
 
@@ -1151,7 +1170,32 @@ function pmpro_get_field_group_html( $group_id ) {
 /**
  * Get field HTML for settings.
  */
-function pmpro_get_field_html( $field_id ) {
+function pmpro_get_field_html( $field = null ) {    
+    if ( ! empty( $field ) ) {
+        // Assume field stdClass in format we save to settings.
+        $field_label = $field->label;
+        $field_name = $field->name;
+        $field_type = $field->type;
+        $field_required = $field->required;
+        $field_readonly = $field->required;        
+    	$field_membership = $field->membership;
+        $field_profile = $field->profile;
+        $field_wrapper_class = $field->wrapper_class;
+        $field_element_class = $field->element_class;
+        $field_hint = $field->hint;
+    } else {
+        // Default field values
+        $field_label = '';
+        $field_name = '';
+        $field_type = '';
+        $field_required = false;
+        $field_readonly = false;    
+    	$field_membership = '';
+        $field_profile = '';
+        $field_wrapper_class = '';
+        $field_element_class = '';
+        $field_hint = '';
+    }    
     ?>
     <div class="pmpro_userfield-group-field pmpro_userfield-group-field-expand">
         <ul class="pmpro_userfield-group-tbody">
@@ -1215,16 +1259,16 @@ function pmpro_get_field_html( $field_id ) {
                 <div class="pmpro_userfield-field-setting">
                     <label for="pmpro_userfields_field-required"><?php esc_html_e( 'Required?', 'paid-memberships-pro' ); ?></label>
                     <select name="pmpro_userfields_field-required">
-                        <option value="no" selected="selected"><?php esc_html_e( 'No', 'paid-memberships-pro' ); ?></option>
-                        <option value="yes"><?php esc_html_e( 'Yes', 'paid-memberships-pro' ); ?></option>
+                        <option value="no" <?php selected( $field_required, 'no' );?>><?php esc_html_e( 'No', 'paid-memberships-pro' ); ?></option>
+                        <option value="yes" <?php selected( $field_required, 'yes' );?>><?php esc_html_e( 'Yes', 'paid-memberships-pro' ); ?></option>
                     </select>
                 </div> <!-- end pmpro_userfield-field-setting -->
 
                 <div class="pmpro_userfield-field-setting">
                     <label for="pmpro_userfields_field-readonly"><?php esc_html_e( 'Read Only?', 'paid-memberships-pro' ); ?></label>
                 <select name="pmpro_userfields_field-readonly">
-                        <option value="no" selected="selected"><?php esc_html_e( 'No', 'paid-memberships-pro' ); ?></option>
-                        <option value="yes"><?php esc_html_e( 'Yes', 'paid-memberships-pro' ); ?></option>
+                        <option value="no" <?php selected( $field_readonly, 'no' );?>><?php esc_html_e( 'No', 'paid-memberships-pro' ); ?></option>
+                        <option value="yes" <?php selected( $field_readonly, 'yes' );?>><?php esc_html_e( 'Yes', 'paid-memberships-pro' ); ?></option>
                     </select>
                 </div> <!-- end pmpro_userfield-field-setting -->
             </div> <!-- end pmpro_userfield-field-setting-dual -->
@@ -1238,29 +1282,29 @@ function pmpro_get_field_html( $field_id ) {
 
             <div class="pmpro_userfield-field-setting">
                 <label for="pmpro_userfields_group_profile"><?php esc_html_e( 'Show field on user profile?', 'paid-memberships-pro' ); ?></label>
-                <select name="pmpro_userfields_group_profile">
-                    <option><?php esc_html_e( '[Inherit Group Setting]', 'paid-memberships-pro' ); ?></option>
-                    <option value="yes"><?php esc_html_e( 'Yes', 'paid-memberships-pro' ); ?></option>
-                    <option value="admins"><?php esc_html_e( 'Yes (only admins)', 'paid-memberships-pro' ); ?></option>
-                    <option value="no"><?php esc_html_e( 'No', 'paid-memberships-pro' ); ?></option>
+                <select name="pmpro_userfields_field-profile">
+                    <option <?php selected( empty( $field_profile ), 0);?>><?php esc_html_e( '[Inherit Group Setting]', 'paid-memberships-pro' ); ?></option>
+                    <option value="yes" <?php selected( $field_profile, 'yes' );?>><?php esc_html_e( 'Yes', 'paid-memberships-pro' ); ?></option>
+                    <option value="admins" <?php selected( $field_profile, 'admins' );?>><?php esc_html_e( 'Yes (only admins)', 'paid-memberships-pro' ); ?></option>
+                    <option value="no" <?php selected( $field_profile, 'no' );?>><?php esc_html_e( 'No', 'paid-memberships-pro' ); ?></option>
                 </select>
             </div> <!-- end pmpro_userfield-field-setting -->
 
             <div class="pmpro_userfield-field-setting">
                 <label for="pmpro_userfields_field-class"><?php esc_html_e( 'Field Wrapper Class', 'paid-memberships-pro' ); ?></label>
-                <input type="text" name="pmpro_userfields-field-class" />
+                <input type="text" name="pmpro_userfields-field-class" value="<?php echo esc_attr( $field_wrapper_class );?>" />
                 <span class="description"><?php esc_html_e( 'Assign a custom CSS selector to the field\'s wrapping div', 'paid-memberships-pro' ); ?>.</span>
             </div> <!-- end pmpro_userfield-field-setting -->
 
             <div class="pmpro_userfield-field-setting">
                 <label for="pmpro_userfields_field-divclass"><?php esc_html_e( 'Field Element Class', 'paid-memberships-pro' ); ?></label>
-                <input type="text" name="pmpro_userfields-field-divclass" />
+                <input type="text" name="pmpro_userfields-field-divclass" value="<?php echo esc_attr( $field_element_class );?>" />
                 <span class="description"><?php esc_html_e( 'Assign a custom CSS selector to the field', 'paid-memberships-pro' ); ?></span>
             </div> <!-- end pmpro_userfield-field-setting -->
 
             <div class="pmpro_userfield-field-setting">
                 <label for="pmpro_userfields_field-hint"><?php esc_html_e( 'Hint', 'paid-memberships-pro' ); ?></label>
-                <textarea name="pmpro_userfields-field-hint" /></textarea>
+                <textarea name="pmpro_userfields-field-hint" /><?php echo esc_textarea( $field_hint );?></textarea>
                 <span class="description"><?php esc_html_e( 'Descriptive text for users or admins submitting the field.', 'paid-memberships-pro' ); ?></span>
             </div> <!-- end pmpro_userfield-field-setting -->
         </div> <!-- end pmpro_userfield-field-settings -->
