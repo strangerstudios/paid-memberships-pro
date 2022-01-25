@@ -178,6 +178,7 @@ class PMProGateway_stripe extends PMProGateway {
 				add_filter('pmpro_checkout_default_submit_button', array('PMProGateway_stripe', 'pmpro_checkout_default_submit_button'));
 				add_filter('pmpro_checkout_before_change_membership_level', array('PMProGateway_stripe', 'pmpro_checkout_before_change_membership_level'), 10, 2);
 				add_filter('pmprommpu_gateway_supports_multiple_level_checkout', '__return_false', 10, 2);
+				add_action( 'pmpro_billing_preheader', array( 'PMProGateway_stripe', 'pmpro_billing_preheader_stripe_customer_portal' ) );
 			}
 		}
 
@@ -1827,6 +1828,28 @@ class PMProGateway_stripe extends PMProGateway {
 		);
 	}
 
+	public static function pmpro_billing_preheader_stripe_customer_portal() {
+ 		$user_order = new MemberOrder();
+ 		$user_order->getLastMemberOrder( null, array( 'success', 'pending' ) );
+
+ 		// Check whether the user's most recent order is a Stripe subscription.
+ 		if ( empty( $user_order->gateway ) || 'stripe' !== $user_order->gateway ) {
+ 			return;
+ 		}
+
+ 		$stripe = new PMProGateway_stripe();
+ 		$customer = $stripe->get_customer_for_user( $user_order->user_id );
+ 		if ( empty( $customer->id ) ) {
+ 			return;
+ 		}
+
+ 		$customer_portal_url = $stripe->get_customer_portal_url( $customer->id );
+ 		if ( ! empty( $customer_portal_url ) ) {
+ 			wp_redirect( $customer_portal_url );
+ 			exit;
+ 		}
+	}
+
 	/****************************************
 	 ************ PUBLIC METHODS ************
 	 ****************************************/
@@ -2214,6 +2237,18 @@ class PMProGateway_stripe extends PMProGateway {
 			$order->shorterror = $order->error;
 
 			return false;    //no customer found
+		}
+	}
+
+	public function get_customer_portal_url( $customer_id ) {
+		try {
+			$session = \Stripe\BillingPortal\Session::create([
+				'customer' => $customer_id,
+				'return_url' => pmpro_url( 'account' ),
+			]);
+			return $session->url;
+		} catch ( Exception $e ) {
+			return '';
 		}
 	}
 
@@ -3216,8 +3251,6 @@ class PMProGateway_stripe extends PMProGateway {
             </table>
 			<?php
 	}
-
-	
 
 	/****************************************
 	 ******* METHODS BECOMING PRIVATE *******
