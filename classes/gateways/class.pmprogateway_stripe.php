@@ -2699,7 +2699,7 @@ class PMProGateway_stripe extends PMProGateway {
 	 */
 	function cancel_subscription( $subscription ) {
 		try {
-			$stripe_subscription = Stripe_Subscription::retrieve( $subscription->subscription_transaction_id );
+			$stripe_subscription = Stripe_Subscription::retrieve( $subscription->get_subscription_transaction_id() );
 		} catch ( \Throwable $e ) {
 			//assume no subscription found
 			return false;
@@ -3880,15 +3880,29 @@ class PMProGateway_stripe extends PMProGateway {
 	 */
 	function update_subscription_info( $subscription ) {
 		try {
-			$stripe_subscription = Stripe_Subscription::retrieve( $subscription->subscription_transaction_id );
-			$subscription->status = in_array( $stripe_subscription->status, array( 'trialing', 'active' ) ) ? 'active' : 'cancelled';
-			$subscription->startdate = date( 'Y-m-d H:i:s', intval( $stripe_subscription->created ) );
-			$subscription->enddate = empty( $stripe_subscription->ended_at ) ? '' : date( 'Y-m-d H:i:s', intval( $stripe_subscription->ended_at ) );
-			$subscription->next_payment_date = $subscription->status === 'active' ? date( 'Y-m-d H:i:s', intval( $stripe_subscription->current_period_end ) ) : '';
+			$stripe_subscription = Stripe_Subscription::retrieve( $subscription->get_subscription_transaction_id() );
 		} catch ( \Throwable $e ) {
-			//assume no subscription found
+			// Assume no subscription found.
+			return;
 		} catch ( \Exception $e ) {
-			//assume no subscription found
+			// Assume no subscription found.
+			return;
+		}
+
+		if ( ! empty( $stripe_subscription ) ) {
+			$update_array = array(
+				'startdate' => date( 'Y-m-d H:i:s', intval( $stripe_subscription->created ) ),
+			);
+			if ( in_array( $stripe_subscription->status, array( 'trialing', 'active' ) ) ) {
+				// Subscription is active.
+				$update_array['status'] = 'active';
+				$update_array['next_payment_date'] = date( 'Y-m-d H:i:s', intval( $stripe_subscription->current_period_end ) );
+			} else {
+				// Subscription is no longer active.
+				$update_array['status'] = 'cancelled';
+				$update_array['enddate'] = date( 'Y-m-d H:i:s', intval( $stripe_subscription->ended_at ) );
+			}
+			$subscription->set( $update_array );
 		}
 	}
 }
