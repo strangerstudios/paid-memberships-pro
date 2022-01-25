@@ -110,7 +110,7 @@ function pmpro_get_slug( $post_id ) {
 	$post_id = intval( $post_id );
 
 	if ( ! $pmpro_slugs[ $post_id ] ) {
-		$pmpro_slugs[ $post_id ] = $wpdb->get_var( "SELECT post_name FROM $wpdb->posts WHERE ID = '" . $post_id . "' LIMIT 1" );
+		$pmpro_slugs[ $post_id ] = $wpdb->get_var( "SELECT post_name FROM $wpdb->posts WHERE ID = '" . esc_sql( $post_id ) . "' LIMIT 1" );
 	}
 
 	return $pmpro_slugs[ $post_id ];
@@ -647,7 +647,7 @@ function add_pmpro_membership_level_meta( $level_id, $meta_key, $meta_value, $un
 	return add_metadata( 'pmpro_membership_level', $level_id, $meta_key, $meta_value, $unique );
 }
 
-function get_pmpro_membership_level_meta( $level_id, $key, $single = false ) {
+function get_pmpro_membership_level_meta( $level_id, $key = '', $single = false ) {
 	return get_metadata( 'pmpro_membership_level', $level_id, $key, $single );
 }
 
@@ -666,7 +666,7 @@ function add_pmpro_membership_order_meta( $order_id, $meta_key, $meta_value, $un
 	return add_metadata( 'pmpro_membership_order', $order_id, $meta_key, $meta_value, $unique );
 }
 
-function get_pmpro_membership_order_meta( $order_id, $key, $single = false ) {
+function get_pmpro_membership_order_meta( $order_id, $key = '', $single = false ) {
 	return get_metadata( 'pmpro_membership_order', $order_id, $key, $single );
 }
 
@@ -1079,7 +1079,7 @@ function pmpro_changeMembershipLevel( $level, $user_id = null, $old_level_status
 	if ( $old_levels && $pmpro_deactivate_old_levels ) {
 		foreach ( $old_levels as $old_level ) {
 
-			$sql = "UPDATE $wpdb->pmpro_memberships_users SET `status`='$old_level_status', `enddate`='" . current_time( 'mysql' ) . "' WHERE `id`=" . $old_level->subscription_id;
+			$sql = "UPDATE $wpdb->pmpro_memberships_users SET `status`='$old_level_status', `enddate`='" . esc_sql( current_time( 'mysql' ) ) . "' WHERE `id`=" . esc_sql( $old_level->subscription_id );
 
 			if ( ! $wpdb->query( $sql ) ) {
 				$pmpro_error = __( 'Error interacting with database', 'paid-memberships-pro' ) . ': ' . ( $wpdb->last_error ? $wpdb->last_error : 'unavailable' );
@@ -1093,7 +1093,7 @@ function pmpro_changeMembershipLevel( $level, $user_id = null, $old_level_status
 	if ( ! empty( $cancel_level ) ) {
 		$pmpro_cancel_previous_subscriptions = true;    // don't filter cause we're doing just the one
 
-		$other_order_ids = $wpdb->get_col( "SELECT id FROM $wpdb->pmpro_membership_orders WHERE user_id = '" . $user_id . "' AND status = 'success' AND membership_id = '" . esc_sql( $cancel_level ) . "' ORDER BY id DESC LIMIT 1" );
+		$other_order_ids = $wpdb->get_col( "SELECT id FROM $wpdb->pmpro_membership_orders WHERE user_id = '" . esc_sql( $user_id ) . "' AND status = 'success' AND membership_id = '" . esc_sql( $cancel_level ) . "' ORDER BY id DESC LIMIT 1" );
 	} else {
 		$pmpro_cancel_previous_subscriptions = true;
 		if ( isset( $_REQUEST['cancel_membership'] ) && $_REQUEST['cancel_membership'] == false ) {
@@ -1104,7 +1104,7 @@ function pmpro_changeMembershipLevel( $level, $user_id = null, $old_level_status
 		$other_order_ids = $wpdb->get_col(
 			"SELECT id, IF(subscription_transaction_id = '', CONCAT('UNIQUE_SUB_ID_', id), subscription_transaction_id) as unique_sub_id
 											FROM $wpdb->pmpro_membership_orders
-											WHERE user_id = '" . $user_id . "'
+											WHERE user_id = '" . esc_sql( $user_id ) . "'
 												AND status = 'success'
 											GROUP BY unique_sub_id
 											ORDER BY id DESC"
@@ -1190,6 +1190,37 @@ function pmpro_changeMembershipLevel( $level, $user_id = null, $old_level_status
 		if ( false === $wpdb->query( $sql ) ) {
 			$pmpro_error = sprintf( __( 'Error interacting with database: %s', 'paid-memberships-pro' ), ( ! empty( $wpdb->last_error ) ? $wpdb->last_error : 'unavailable' ) );
 			return false;
+		}
+
+		/**
+		 * Allow filtering whether to remove duplicate "active" memberships by setting them to "changed".
+		 *
+		 * @since 2.6.6
+		 *
+		 * @param bool $remove_duplicate_memberships Whether to remove duplicate "active" memberships by setting them to "changed".
+		 */
+		$remove_duplicate_memberships = apply_filters( 'pmpro_remove_duplicate_membership_entries', true );
+
+		if ( $remove_duplicate_memberships ) {
+			$wpdb->query(
+				$wpdb->prepare(
+					"
+						UPDATE {$wpdb->pmpro_memberships_users}
+						SET status = %s,
+							enddate = %s
+						WHERE user_id = %d
+							AND membership_id = %d
+							AND status = %s
+							AND id != %d
+					",
+					'changed',
+					current_time( 'mysql' ),
+					$user_id,
+					$level_id,
+					'active',
+					$wpdb->insert_id // Ignore the membership that we just added.
+				)
+			);
 		}
 	}
 
@@ -1378,7 +1409,7 @@ function pmpro_getMembershipCategories( $level_id ) {
 	$categories = $wpdb->get_col(
 		"SELECT c.category_id
 										FROM {$wpdb->pmpro_memberships_categories} AS c
-										WHERE c.membership_id = '" . $level_id . "'"
+										WHERE c.membership_id = '" . esc_sql( $level_id ) . "'"
 	);
 
 	return $categories;
@@ -1757,7 +1788,7 @@ function pmpro_checkDiscountCode( $code, $level_id = null, $return_errors = fals
 	// have we run out of uses?
 	if ( ! $error ) {
 		if ( $dbcode->uses > 0 ) {
-			$used = $wpdb->get_var( "SELECT COUNT(*) FROM $wpdb->pmpro_discount_codes_uses WHERE code_id = '" . $dbcode->id . "'" );
+			$used = $wpdb->get_var( "SELECT COUNT(*) FROM $wpdb->pmpro_discount_codes_uses WHERE code_id = '" . esc_sql( $dbcode->id ) . "'" );
 			if ( $used >= $dbcode->uses ) {
 				$error = __( 'This discount code is no longer valid.', 'paid-memberships-pro' );
 			}
@@ -1775,7 +1806,7 @@ function pmpro_checkDiscountCode( $code, $level_id = null, $return_errors = fals
 			} else {
 				$level_id = intval( $level_id );
 			}
-			$code_level = $wpdb->get_row( "SELECT l.id, cl.*, l.name, l.description, l.allow_signups FROM $wpdb->pmpro_discount_codes_levels cl LEFT JOIN $wpdb->pmpro_membership_levels l ON cl.level_id = l.id WHERE cl.code_id = '" . $dbcode->id . "' AND cl.level_id IN (" . $level_id . ") LIMIT 1" );
+			$code_level = $wpdb->get_row( "SELECT l.id, cl.*, l.name, l.description, l.allow_signups FROM $wpdb->pmpro_discount_codes_levels cl LEFT JOIN $wpdb->pmpro_membership_levels l ON cl.level_id = l.id WHERE cl.code_id = '" . esc_sql( $dbcode->id ) . "' AND cl.level_id IN (" . esc_sql( $level_id ) . ") LIMIT 1" );
 
 			if ( empty( $code_level ) ) {
 				$error = __( 'This discount code does not apply to this membership level.', 'paid-memberships-pro' );
@@ -2174,7 +2205,7 @@ function pmpro_getLevel( $level ) {
 			return $pmpro_levels[ $level_id ];
 		} else {
 			global $wpdb;
-			$pmpro_levels[ $level_id ] = $wpdb->get_row( "SELECT * FROM $wpdb->pmpro_membership_levels WHERE id = '" . $level_id . "' LIMIT 1" );
+			$pmpro_levels[ $level_id ] = $wpdb->get_row( "SELECT * FROM $wpdb->pmpro_membership_levels WHERE id = '" . esc_sql( $level_id ) . "' LIMIT 1" );
 		}
 	} else {
 		global $wpdb;
@@ -2325,7 +2356,7 @@ function pmpro_getLevelAtCheckout( $level_id = null, $discount_code = null ) {
 
 	// what level are they purchasing? (discount code passed)
 	if ( ! empty( $level_id ) && ! empty( $discount_code ) ) {
-		$discount_code_id = $wpdb->get_var( "SELECT id FROM $wpdb->pmpro_discount_codes WHERE code = '" . $discount_code . "' LIMIT 1" );
+		$discount_code_id = $wpdb->get_var( "SELECT id FROM $wpdb->pmpro_discount_codes WHERE code = '" . esc_sql( $discount_code ) . "' LIMIT 1" );		
 
 		// check code
 		global $pmpro_checkout_level_ids; // Set by MMPU.
@@ -2335,12 +2366,12 @@ function pmpro_getLevelAtCheckout( $level_id = null, $discount_code = null ) {
 			$code_check = pmpro_checkDiscountCode( $discount_code, $level_id, true );
 		}
 		if ( $code_check[0] != false ) {
-			$sqlQuery    = "SELECT l.id, cl.*, l.name, l.description, l.allow_signups, l.confirmation FROM $wpdb->pmpro_discount_codes_levels cl LEFT JOIN $wpdb->pmpro_membership_levels l ON cl.level_id = l.id LEFT JOIN $wpdb->pmpro_discount_codes dc ON dc.id = cl.code_id WHERE dc.code = '" . $discount_code . "' AND cl.level_id = '" . $level_id . "' LIMIT 1";
+			$sqlQuery    = "SELECT l.id, cl.*, l.name, l.description, l.allow_signups, l.confirmation FROM $wpdb->pmpro_discount_codes_levels cl LEFT JOIN $wpdb->pmpro_membership_levels l ON cl.level_id = l.id LEFT JOIN $wpdb->pmpro_discount_codes dc ON dc.id = cl.code_id WHERE dc.code = '" . esc_sql( $discount_code ) . "' AND cl.level_id = '" . esc_sql( $level_id ) . "' LIMIT 1";
 			$pmpro_level = $wpdb->get_row( $sqlQuery );
 
 			// if the discount code doesn't adjust the level, let's just get the straight level
 			if ( empty( $pmpro_level ) ) {
-				$pmpro_level = $wpdb->get_row( "SELECT * FROM $wpdb->pmpro_membership_levels WHERE id = '" . $level_id . "' LIMIT 1" );
+				$pmpro_level = $wpdb->get_row( "SELECT * FROM $wpdb->pmpro_membership_levels WHERE id = '" . esc_sql( $level_id ) . "' LIMIT 1" );
 			}
 
 			// filter adjustments to the level
@@ -2501,7 +2532,7 @@ if ( ! function_exists( 'pmpro_getMemberStartdate' ) ) {
 			if ( ! empty( $level_id ) ) {
 				$sqlQuery = "SELECT UNIX_TIMESTAMP(CONVERT_TZ(startdate, '+00:00', @@global.time_zone)) FROM $wpdb->pmpro_memberships_users WHERE status = 'active' AND membership_id IN(" . esc_sql( $level_id ) . ") AND user_id = '" . $user_id . "' ORDER BY id LIMIT 1";
 			} else {
-				$sqlQuery = "SELECT UNIX_TIMESTAMP(CONVERT_TZ(startdate, '+00:00', @@global.time_zone)) FROM $wpdb->pmpro_memberships_users WHERE status = 'active' AND user_id = '" . $user_id . "' ORDER BY id LIMIT 1";
+				$sqlQuery = "SELECT UNIX_TIMESTAMP(CONVERT_TZ(startdate, '+00:00', @@global.time_zone)) FROM $wpdb->pmpro_memberships_users WHERE status = 'active' AND user_id = '" . esc_sql( $user_id ) . "' ORDER BY id LIMIT 1";
 			}
 
 			$startdate = apply_filters( 'pmpro_member_startdate', $wpdb->get_var( $sqlQuery ), $user_id, $level_id );
@@ -3514,7 +3545,7 @@ function pmpro_show_discount_code() {
 	$morder->discount_code    = $discount_code;
 	$morder->InitialPayment   = pmpro_round_price( $pmpro_level->initial_payment );
 	$morder->PaymentAmount    = pmpro_round_price( $pmpro_level->billing_amount );
-	$morder->ProfileStartDate = date_i18n( "Y-m-d", current_time( "timestamp" ) ) . "T0:0:0";
+	$morder->ProfileStartDate = date_i18n( "Y-m-d\TH:i:s", current_time( "timestamp" ) );
 	$morder->BillingPeriod    = $pmpro_level->cycle_period;
 	$morder->BillingFrequency = $pmpro_level->cycle_number;
 	if ( $pmpro_level->billing_limit ) {
@@ -3729,7 +3760,7 @@ function pmpro_kses( $original_string, $context = 'email' ) {
 	 * @param string $original_string  The original string.
 	 * @param string $context          The sanitization context.
 	 *
-	 * @since TBD
+	 * @since 2.6.2
 	 */
 	return apply_filters( 'pmpro_kses', $sanitized_string, $original_string, $context );
 }
@@ -3740,7 +3771,7 @@ function pmpro_kses( $original_string, $context = 'email' ) {
  * @param array[]|string $allowed_html The allowed HTML tags.
  * @param string         $context      The context name.
  *
- * @since TBD
+ * @since 2.6.2
  */
 function pmpro_kses_allowed_html( $allowed_html, $context ) {
 	// Only override for our pmpro_* contexts.
@@ -3795,3 +3826,154 @@ function pmpro_kses_allowed_html( $allowed_html, $context ) {
 	return $allowed_html;
 }
 add_filter( 'wp_kses_allowed_html', 'pmpro_kses_allowed_html', 10, 2 );
+
+/**
+ * Show deprecation warning if calling function was called publically.
+ *
+ * Useful for preparing to change method visibility from public to private.
+ *
+ * @param string $deprecation_notice_version to show.
+ * @return bool
+ */
+function pmpro_method_should_be_private( $deprecated_notice_version ) {
+	$backtrace = debug_backtrace( DEBUG_BACKTRACE_IGNORE_ARGS );
+
+	// Check whether the caller of this function is in the same file (class)
+	// as the caller of the previous function.
+	if ( $backtrace[0]['file'] !== $backtrace[1]['file'] ) {
+		_deprecated_function( $backtrace[1]['function'], $deprecated_notice_version );
+		return true;
+	}
+	return false;
+}
+
+/**
+ * Send a 200 HTTP reponse without ending PHP execution.
+ *
+ * Useful to avoid issues like timeouts from gateways during
+ * webhook/IPN handlers.
+ *
+ * Works with Apache and Nginx.
+ *
+ * Based on code from https://stackoverflow.com/a/42245266
+ *
+ * @since 2.6.4
+ */
+function pmpro_send_200_http_response() {
+	/**
+	 * Allow filtering whether to send an early 200 HTTP response.
+	 *
+	 * @since 2.6.4
+	 *
+	 * @param bool $send_early_response Whether to send an early 200 HTTP response.
+	 */
+	if ( ! apply_filters( 'pmpro_send_200_http_response', false ) ) {
+		return;
+	}
+
+	// Ngnix compatibility: Check if fastcgi_finish_request is callable.
+	if ( is_callable( 'fastcgi_finish_request' ) ) {
+		session_write_close();
+		fastcgi_finish_request();
+
+		return;
+	}
+
+	ignore_user_abort(true);
+
+	ob_start();
+	$server_protocol = filter_input( INPUT_SERVER, 'SERVER_PROTOCOL', FILTER_SANITIZE_STRING );
+	if ( ! in_array( $server_protocol, array( 'HTTP/1.1', 'HTTP/2', 'HTTP/2.0' ), true ) ) {
+		$server_protocol = 'HTTP/1.0';
+	}
+
+	header( $server_protocol . ' 200 OK' );
+	header( 'Content-Encoding: none' );
+	header( 'Content-Length: ' . ob_get_length() );
+	header( 'Connection: close' );
+
+	ob_end_flush();
+	ob_flush();
+	flush();
+}
+
+/** 
+ * Returns formatted ISO-8601 date (Used for Zapier Native app.)
+ * @since 2.6.6
+ * @param $date date A valid date value.
+ * @return string The date in ISO-8601 format.
+ */
+function pmpro_format_date_iso8601( $date ) {
+	$datetime = new DateTime( $date );
+	return $datetime->format( DateTime::ATOM );
+}
+
+/**
+ * Determines the user's actual IP address
+ *
+ * $_SERVER['REMOTE_ADDR'] cannot be used in all cases, such as when the user
+ * is making their request through a proxy, or when the web server is behind
+ * a proxy. In those cases, $_SERVER['REMOTE_ADDR'] is set to the proxy address rather
+ * than the user's actual address.
+ *
+ * Modified from WP_Community_Events::get_unsafe_client_ip() in core WP.
+ * Modified from https://stackoverflow.com/a/2031935/450127, MIT license.
+ * Modified from https://github.com/geertw/php-ip-anonymizer, MIT license.
+ *
+ * SECURITY WARNING: This function is _NOT_ intended to be used in
+ * circumstances where the authenticity of the IP address matters. This does
+ * _NOT_ guarantee that the returned address is valid or accurate, and it can
+ * be easily spoofed.
+ *
+ * @since 2.7
+ *
+ * @return string|false The ip address on success or false on failure.
+ */
+function pmpro_get_ip() {
+	$client_ip = false;
+
+	// In order of preference, with the best ones for this purpose first.
+	// Added some from JetPack's Jetpack_Protect_Module::get_headers()
+	$address_headers = array(
+		'GD_PHP_HANDLER',
+		'HTTP_AKAMAI_ORIGIN_HOP',
+		'HTTP_CF_CONNECTING_IP',
+		'HTTP_CLIENT_IP',
+		'HTTP_FASTLY_CLIENT_IP',
+		'HTTP_FORWARDED',
+		'HTTP_FORWARDED_FOR',
+		'HTTP_INCAP_CLIENT_IP',
+		'HTTP_TRUE_CLIENT_IP',
+		'HTTP_X_CLIENTIP',
+		'HTTP_X_CLUSTER_CLIENT_IP',
+		'HTTP_X_FORWARDED',
+		'HTTP_X_FORWARDED_FOR',
+		'HTTP_X_IP_TRAIL',
+		'HTTP_X_REAL_IP',
+		'HTTP_X_VARNISH',
+		'REMOTE_ADDR',			
+	);
+
+	foreach ( $address_headers as $header ) {
+		if ( array_key_exists( $header, $_SERVER ) ) {
+			/*
+			 * HTTP_X_FORWARDED_FOR can contain a chain of comma-separated
+			 * addresses. The first one is the original client. It can't be
+			 * trusted for authenticity, but we don't need to for this purpose.
+			 */
+			$address_chain = explode( ',', $_SERVER[ $header ] );
+			$client_ip     = trim( $address_chain[0] );
+
+			break;
+		}
+	}
+
+	if ( ! $client_ip ) {
+		return false;
+	}
+	
+	// Sanitize the IP
+	$client_ip = preg_replace( '/[^0-9a-fA-F:., ]/', '', $client_ip );
+	
+	return $client_ip;
+}

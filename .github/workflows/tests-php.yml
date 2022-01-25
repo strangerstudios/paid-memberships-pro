@@ -14,6 +14,7 @@ jobs:
       fail-fast: false
       matrix:
         suite:
+          - acceptance
           - wpunit
     runs-on: ubuntu-latest
     steps:
@@ -75,6 +76,12 @@ jobs:
           ${TRIC_BIN} debug on
           ${TRIC_BIN} info
           ${TRIC_BIN} config
+      # ------------------------------------------------------------------------------
+      # Start the Chrome container
+      # ------------------------------------------------------------------------------
+      - name: Start the Chrome container
+        if: ${{ matrix.suite == 'acceptance' }}
+        run: ${TRIC_BIN} up chrome
       # ------------------------------------------------------------------------------
       # Set up plugin
       # ------------------------------------------------------------------------------
