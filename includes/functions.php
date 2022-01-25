@@ -3406,6 +3406,8 @@ function pmpro_cleanup_memberships_users_table() {
 /**
  * Whether the current page is a PMPRO page or not.
  *
+ * @since TBD
+ *
  * @return bool
  */
 function pmpro_is_page() {
