@@ -588,12 +588,27 @@ class PMProGateway_stripe extends PMProGateway {
 							$enabled_payment_methods = explode( ',', $values['stripe_enabled_payment_methods'] );
 						}
 						foreach ( $payment_methods as $payment_method => $payment_method_data ) {
+							// Build the table data.
+							$checkbox_disabled_attr    = empty( $payment_method_data['always_enabled'] ) ? '' : ' disabled ';
+							$checkbox_checked_attr     = in_array( $payment_method, $enabled_payment_methods ) || ! empty( $payment_method_data['always_enabled'] ) ? ' checked ' : '';
+							$payment_method_name       = $payment_method_data['name'];
+							$payment_method_currencies = '<strong>All</strong>';
+							if ( ! empty( $payment_method_data['supported_currencies'] ) ) {
+								// List all supported currencies.
+								$payment_method_currencies = implode( ', ', $payment_method_data['supported_currencies'] );
+								// Ensure upper-case currency codes.
+								$payment_method_currencies = strtoupper( $payment_method_currencies );
+								// Bold the current currency.
+								$payment_method_currencies = str_replace( strtoupper( $pmpro_currency ), '<strong>' . strtoupper( $pmpro_currency ) . '</strong>', $payment_method_currencies );
+							}
+							$payment_method_instant_confirmation = $payment_method_data['instant_confirmation'] ? "&#10003;" : '';
+							$payment_method_supports_recurring = $payment_method_data['recurring'] ? "&#10003;" : '';
 							?><tr><?php
-								?><td><input type="checkbox" name="stripe_enabled_payment_methods[]" value="<?php echo esc_attr( $payment_method ); ?>" <?php if ( in_array( $payment_method, $enabled_payment_methods ) ) { ?>checked="checked"<?php } ?> /></td><?php
-								?><td><?php echo esc_html( $payment_method_data['name'] ); ?></td><?php
-								?><td><?php echo str_replace( strtoupper( $pmpro_currency ), '<strong>' . strtoupper( $pmpro_currency ) . '</strong>' , esc_html( implode( ', ', array_map( 'strtoupper', $payment_method_data['supported_currencies'] ) ) ) ); ?></td><?php
-								?><td><?php echo esc_html( $payment_method_data['instant_confirmation'] ? "&#10003;" : '' ); ?></td><?php
-								?><td><?php echo esc_html( $payment_method_data['recurring'] ? "&#10003;" : '' ); ?></td><?php
+								?><td><input type="checkbox" name="stripe_enabled_payment_methods[]" value="<?php echo esc_attr( $payment_method ); ?>" <?php echo $checkbox_disabled_attr . $checkbox_checked_attr ?> /></td><?php
+								?><td><?php echo esc_html( $payment_method_name ); ?></td><?php
+								?><td><?php echo wp_kses( $payment_method_currencies, 'strong' )?></td><?php
+								?><td><?php echo $payment_method_instant_confirmation; ?></td><?php
+								?><td><?php echo $payment_method_supports_recurring; ?></td><?php
 							?></tr><?php
 						}
 					?>
@@ -1682,12 +1697,11 @@ class PMProGateway_stripe extends PMProGateway {
 		}
 		foreach( $enabled_payment_methods as $enabled_payment_method ) {
 			if ( array_key_exists( $enabled_payment_method, $all_payment_methods ) &&
-				in_array( strtolower( $pmpro_currency ), $all_payment_methods[ $enabled_payment_method ]['supported_currencies'] ) &&
+				( empty( $all_payment_methods[ $enabled_payment_method ]['supported_currencies'] ) || in_array( strtolower( $pmpro_currency ), $all_payment_methods[ $enabled_payment_method ]['supported_currencies'] ) ) &&
 				( empty( $subscription_data ) || $all_payment_methods[ $enabled_payment_method ]['recurring'] ) ){
 				$payment_method_types[] = $enabled_payment_method;
 			}
 		}
-		$payment_method_types[] = 'card';
 
 		// And let's send 'em to Stripe!
 		$checkout_session_params = array(
@@ -1778,6 +1792,13 @@ class PMProGateway_stripe extends PMProGateway {
 				'recurring' => false,
 			),
 			*/
+			'card' => array(
+				'name' => 'Card',
+				'supported_currencies' => null, // All currencies.
+				'instant_confirmation' => true,
+				'recurring' => true,
+				'always_enabled' => true,
+			),
 			'boleto' => array(
 				'name' => 'Boleto',
 				'supported_currencies' => array( 'brl' ),
