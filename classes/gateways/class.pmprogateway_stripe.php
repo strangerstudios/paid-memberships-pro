@@ -1688,7 +1688,7 @@ class PMProGateway_stripe extends PMProGateway {
 
 		// Set up payment method types.
 		$all_payment_methods = self::get_all_checkout_payment_methods();
-		$payment_method_types = array();
+		$payment_method_types = array( 'card' );
 		$enabled_payment_methods = pmpro_getOption( 'stripe_enabled_payment_methods' );
 		if ( empty( $enabled_payment_methods ) ) {
 			$enabled_payment_methods = array();

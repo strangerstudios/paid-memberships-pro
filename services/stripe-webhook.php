@@ -433,8 +433,17 @@
 			if ( $checkout_session->mode === 'payment' ) {
 				// User purchased a one-time payment level. Assign the charge ID to the order.
 				try {
-					$payment_intent = \Stripe\PaymentIntent::retrieve( $checkout_session->payment_intent );
-					error_log( $payment_intent->charges->data[0]->id );
+					$payment_intent_args = array(
+						'id'     => $checkout_session->payment_intent,
+						'expand' => array(
+							'payment_method',
+						),
+					);
+					$payment_intent = \Stripe\PaymentIntent::retrieve( $payment_intent_args );
+					$order->payment_transaction_id = $payment_intent->charges->data[0]->id;
+					if ( ! empty( $payment_intent->payment_method ) ) {
+						$payment_method = $payment_intent->payment_method;
+					}
 				} catch ( \Stripe\Error\Base $e ) {
 					// Could not get payment intent. We just won't set a payment transaction ID.
 				}
@@ -442,12 +451,30 @@
 				// User purchased a subscription. Assign the subscription ID invoice ID to the order.
 				$order->subscription_transaction_id = $checkout_session->subscription;
 				try {
-					$invoices = \Stripe\Invoice::all( [ 'subscription' => $checkout_session->subscription ] );
-					if ( ! empty( $invoices->data ) ) {
-						$order->payment_transaction_id = $invoices->data[0]->id;
+					$subscription_args = array(
+						'id'     => $checkout_session->subscription,
+						'expand' => array(
+							'latest_invoice',
+							'default_payment_method',
+						),
+					);
+					$subscription = \Stripe\Subscription::retrieve( $subscription_args );
+					if ( ! empty( $subscription->latest_invoice->id ) ) {
+						$order->payment_transaction_id = $subscription->latest_invoice->id;
+					}
+					if ( ! empty( $subscription->default_payment_method ) ) {
+						$payment_method = $subscription->default_payment_method;
 					}
 				} catch ( \Stripe\Error\Base $e ) {
 					// Could not get invoices. We just won't set a payment transaction ID.
+				}
+			}
+
+			// Fill the "Payment Type" for the order.
+			if ( ! empty( $payment_method ) ) {
+				$all_payment_methods = PMProGateway_stripe::get_all_checkout_payment_methods();
+				if ( ! empty( $all_payment_methods[ $payment_method->type ] ) ) {
+					$order->payment_type = 'Stripe - ' . $all_payment_methods[ $payment_method->type ]['name'];
 				}
 			}
 
