@@ -178,7 +178,7 @@ class PMProGateway_stripe extends PMProGateway {
 				add_filter('pmpro_checkout_default_submit_button', array('PMProGateway_stripe', 'pmpro_checkout_default_submit_button'));
 				add_filter('pmpro_checkout_before_change_membership_level', array('PMProGateway_stripe', 'pmpro_checkout_before_change_membership_level'), 10, 2);
 				add_filter('pmprommpu_gateway_supports_multiple_level_checkout', '__return_false', 10, 2);
-				add_action( 'pmpro_billing_preheader', array( 'PMProGateway_stripe', 'pmpro_billing_preheader_stripe_customer_portal' ) );
+				add_action( 'pmpro_billing_preheader', array( 'PMProGateway_stripe', 'pmpro_billing_preheader_stripe_checkout' ) );
 			}
 		}
 
@@ -261,6 +261,7 @@ class PMProGateway_stripe extends PMProGateway {
 
 		if ( self::stripe_checkout_beta_enabled() ) {
 			$options[] = 'stripe_payment_flow'; // 'onsite' or 'checkout'
+			$options[] = 'stripe_update_billing_flow'; // 'onsite' or 'portal'
 			$options[] = 'stripe_checkout_billing_address'; //'auto' or 'required'
 			$options[] = 'stripe_tax'; // 'none', 'inclusive', 'exclusive'
 			$options[] = 'stripe_tax_id_collection_enabled'; // true, false
@@ -527,6 +528,17 @@ class PMProGateway_stripe extends PMProGateway {
 				<select id="stripe_payment_flow" name="stripe_payment_flow">
 					<option value="onsite"><?php _e( 'On-Site', 'paid-memberships-pro' ); ?></option>
 					<option value="checkout" <?php if ( $values['stripe_payment_flow'] === 'checkout' ) { ?>selected="selected"<?php } ?>><?php _e( 'Stripe Checkout (Beta)', 'paid-memberships-pro' ); ?></option>
+				</select>
+			</td>
+		</tr>
+		<tr class="gateway gateway_stripe" <?php if ( $gateway != "stripe" ) { ?>style="display: none;"<?php } ?>>
+			<th scope="row" valign="top">
+				<label for="stripe_update_billing_flow"><?php _e( 'Update Billing Flow', 'paid-memberships-pro' ); ?>:</label>
+			</th>
+			<td>
+				<select id="stripe_update_billing_flow" name="stripe_update_billing_flow">
+					<option value="onsite"><?php _e( 'On-Site', 'paid-memberships-pro' ); ?></option>
+					<option value="portal" <?php if ( $values['stripe_update_billing_flow'] === 'portal' ) { ?>selected="selected"<?php } ?>><?php _e( 'Stripe Customer Portal', 'paid-memberships-pro' ); ?></option>
 				</select>
 			</td>
 		</tr>
@@ -1883,26 +1895,42 @@ class PMProGateway_stripe extends PMProGateway {
 		);
 	}
 
-	public static function pmpro_billing_preheader_stripe_customer_portal() {
- 		$user_order = new MemberOrder();
- 		$user_order->getLastMemberOrder( null, array( 'success', 'pending' ) );
+	public static function pmpro_billing_preheader_stripe_checkout() {
+		if ( 'portal' === pmpro_getOption( 'stripe_update_billing_flow' ) ) {
+			// Send user to Stripe Customer Portal.
+			$user_order = new MemberOrder();
+			$user_order->getLastMemberOrder( null, array( 'success', 'pending' ) );
 
- 		// Check whether the user's most recent order is a Stripe subscription.
- 		if ( empty( $user_order->gateway ) || 'stripe' !== $user_order->gateway ) {
- 			return;
- 		}
+			// Check whether the user's most recent order is a Stripe subscription.
+			if ( empty( $user_order->gateway ) || 'stripe' !== $user_order->gateway ) {
+				return;
+			}
 
- 		$stripe = new PMProGateway_stripe();
- 		$customer = $stripe->get_customer_for_user( $user_order->user_id );
- 		if ( empty( $customer->id ) ) {
- 			return;
- 		}
+			$stripe = new PMProGateway_stripe();
+			$customer = $stripe->get_customer_for_user( $user_order->user_id );
+			if ( empty( $customer->id ) ) {
+				return;
+			}
 
- 		$customer_portal_url = $stripe->get_customer_portal_url( $customer->id );
- 		if ( ! empty( $customer_portal_url ) ) {
- 			wp_redirect( $customer_portal_url );
- 			exit;
- 		}
+			$customer_portal_url = $stripe->get_customer_portal_url( $customer->id );
+			if ( ! empty( $customer_portal_url ) ) {
+				wp_redirect( $customer_portal_url );
+				exit;
+			}
+		} else {
+			// Disable Stripe Checkout functionality for the rest of this page load.
+			add_filter( 'pmpro_include_cardtype_field', array(
+				'PMProGateway_stripe',
+				'pmpro_include_billing_address_fields'
+			), 15 );
+			add_action( 'pmpro_billing_preheader', array( 'PMProGateway_stripe', 'pmpro_checkout_after_preheader' ), 15 );
+			add_filter( 'pmpro_billing_order', array( 'PMProGateway_stripe', 'pmpro_checkout_order' ), 15 );
+			add_filter( 'pmpro_include_payment_information_fields', array(
+				'PMProGateway_stripe',
+				'pmpro_include_payment_information_fields'
+			), 15 );
+			add_filter( 'option_pmpro_stripe_payment_flow', '__return_false' ); // Disable Stripe Checkout for rest of page load.
+		}
 	}
 
 	/****************************************
