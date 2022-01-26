@@ -507,12 +507,25 @@
 					! empty( $customer->address->postal_code ) &&
 					! empty( $customer->address->country )
 				) {
+					// Update the billing address on the order.
 					$order->billing->name = $customer->name;
 					$order->billing->street = $customer->address->line1;
 					$order->billing->city = $customer->address->city;
 					$order->billing->state = $customer->address->state;
 					$order->billing->zip = $customer->address->postal_code;
 					$order->billing->country = $customer->address->country;
+
+					// Update the user's meta with the billing address.
+					$name_parts = explode( ' ', $customer->name );
+					$last_name = array_pop( $name_parts );
+					$first_name = implode( ' ', $name_parts );
+					update_user_meta( $order->user_id, "pmpro_bfirstname", $first_name );
+					update_user_meta( $order->user_id, "pmpro_blastname", $last_name );
+					update_user_meta( $order->user_id, "pmpro_baddress1", $customer->address->line1 );
+					update_user_meta( $order->user_id, "pmpro_bcity", $customer->address->city );
+					update_user_meta( $order->user_id, "pmpro_bstate", $customer->address->state );
+					update_user_meta( $order->user_id, "pmpro_bzipcode", $customer->address->postal_code );
+					update_user_meta( $order->user_id, "pmpro_bcountry", $customer->address->country );
 				}
 			} catch ( \Stripe\Error\Base $e ) {
 				// Could not get customer. We just won't set billing info.
