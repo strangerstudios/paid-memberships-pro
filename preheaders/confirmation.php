@@ -20,9 +20,9 @@ if ( $current_user->ID ) {
 
 // Get the most recent invoice for the current user.
 $pmpro_invoice = new MemberOrder();
-$pmpro_invoice->getLastMemberOrder( $current_user->ID, apply_filters( "pmpro_confirmation_order_status", array( "success", "pending" ) ) );
+$pmpro_invoice->getLastMemberOrder( $current_user->ID, apply_filters( 'pmpro_confirmation_order_status', array( 'success', 'pending', 'token' ) ) );
 
-if ( 'pending' !== $pmpro_invoice->status && empty( $current_user->membership_level ) ) {
+if ( ! in_array( $pmpro_invoice->status, array( 'pending', 'token' ) ) && empty( $current_user->membership_level ) ) {
 	// The user does not have a membership level (including pending checkouts).
 	// Redirect them to the account page.
 	$redirect_url = pmpro_url( 'account' );
@@ -31,7 +31,7 @@ if ( 'pending' !== $pmpro_invoice->status && empty( $current_user->membership_le
 } elseif ( ! empty( $current_user->membership_level ) && pmpro_isLevelFree( $current_user->membership_level ) ) {
 	// User checked out for a free level. We are not going to show the invoice on the confirmation page.
 	$pmpro_invoice = null;
-} elseif ( 'pending' === $pmpro_invoice->status ) {
+} elseif ( in_array( $pmpro_invoice->status, array( 'pending', 'token' ) ) ) {
 	// Enqueue PMPro Confirmation script.
 	wp_register_script(
 		'pmpro_confirmation',

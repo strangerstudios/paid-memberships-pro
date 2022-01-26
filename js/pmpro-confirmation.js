@@ -14,7 +14,7 @@ jQuery( document ).ready( function() {
                 'code': pmpro.code
             },
             success: function( response ) {
-                if ( response.status == 'success' ) {
+                if ( response.status == 'success' || response.status == 'error' ) {
                     // Order is complete.
                     clearInterval( pollInterval );
                     window.location.reload();
