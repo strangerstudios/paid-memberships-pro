@@ -78,7 +78,9 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 					'callback'	=> array( $this, 'pmpro_rest_api_change_membership_level' ),
 					'args'	=> array(
 						'user_id' => array(),
-						'level_id' => array()
+						'level_id' => array(),
+						'email' => array(),
+						'create_user' => array(),
 					),
 					'permission_callback' => array( $this, 'pmpro_rest_api_get_permissions_check' ),
 				)			
@@ -318,17 +320,39 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 		 */
 		function pmpro_rest_api_change_membership_level( $request ) {
 			$params = $request->get_params();
-			$user_id = isset( $params['user_id'] ) ? intval( $params['user_id'] ) : null;
-			$level_id = isset( $params['level_id'] ) ? intval( $params['level_id'] ) : null;
+			$user_id = isset( $params['user_id'] ) ? (int) $params['user_id'] : null;
+			$level_id = isset( $params['level_id'] ) ? (int) $params['level_id'] : null;
 			$email = isset( $params['email'] ) ? sanitize_email( $params['email'] ) : null;
+			$create_user = isset( $params['create_user'] ) ? (bool) $params['create_user'] : false;
 			$response_type = isset( $params['response_type'] ) ? sanitize_text_field( $params['response_type'] ) : null;
 
 			if ( empty( $user_id ) ) {
+
 				// see if they sent an email
 				if ( ! empty( $email ) ) {
+
 					$user = get_user_by_email( $email );
-					$user_id = $user->ID;
+					
+					// Assume the user doesn't already exist.
+					if ( $create_user && ! $user ) {
+
+						$user_id = wp_create_user( $email, wp_generate_password(), $email );
+						// Send notification to both admin and user.
+						if ( apply_filters( 'pmpro_api_create_user_notifications', true, $notify ) ) {
+							wp_send_new_user_notifications( $user_id, $notify );
+						}
+
+					} else {
+						$user_id = $user->ID;
+
+						// Make sure the user isn't an admin. If they are throw an error.
+						if ( user_can( $user_id, 'manage_options' ) ) {
+							return new WP_REST_Response( 'Sorry, You are not allowed to edit admin accounts.', 403 );
+						}
+					}
+					
 				} else {
+
 					if ( 'json' === $response_type ) {
 						wp_send_json_error( array( 'email' => $email, 'error' => 'No user information passed through.' ) );
 					}
