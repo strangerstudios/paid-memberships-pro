@@ -313,6 +313,48 @@ function pmpro_report_sales_page()
 		array( "role" => "tooltip", "type" => "string", "p" => array( "html" => true ), "strong" => array( "html" => true ) ),
 		array( "label" => __( "Average*", "paid-memberships-pro" ), "type" => "number" )
 	);
+	$chart_contents = array();
+	foreach($cols as $date => $value) { 
+
+		$tooltip_string = "";
+		$tooltip_string .= "<div style='padding: 10px'>";
+			
+		if( $period == "daily" ){
+			if( !empty( $_REQUEST['year'] ) && !empty( $_REQUEST['month'] ) ){
+				$create_date_string = sanitize_text_field( $_REQUEST['year'] ).'-'.sanitize_text_field( $_REQUEST['month'] ).'-'.$date;
+				$formatted_date = date_i18n( "F j, Y", strtotime( $create_date_string, current_time("timestamp") ) );
+				$tooltip_string .= "<p><strong>".$formatted_date."</strong></p>";	
+			}						
+		} else if ( $period == "monthly" ) { 
+			if( !empty( $_REQUEST['year'] ) && !empty( $_REQUEST['month'] ) ){
+				$create_date_string = sanitize_text_field( $_REQUEST['year'] ).'-'.$date;
+				$formatted_date = date_i18n( "F Y", strtotime( $create_date_string, current_time("timestamp") ) );
+				$tooltip_string .= "<p><strong>".$formatted_date."</strong></p>";	
+			}
+		} else {
+			$tooltip_string .= "<p><strong>".$date."</strong></p>";
+		}				
+		$tooltip_string .= "<p><strong>". esc_html( sprintf( __( "New %s", "paid-memberships-pro" ), ucwords( $type ) ) )."</strong>: ".pmpro_formatPrice( $value[1] )."</p>";
+		$tooltip_string .= "<p><strong>".__( "Recurring", "paid-memberships-pro" )."</strong>: ".pmpro_formatPrice( $value[0] - $value[1] )."</p>";
+		$tooltip_string .= "<p><strong>".__( "Total", "paid-memberships-pro" )."</strong>: ".pmpro_formatPrice( $value[0] )."</p>";
+		$tooltip_string .= "</div>";
+		
+		$chart_contents[$date] = array();
+
+		if ( $period == "monthly" ) {
+			$chart_contents[$date][] = esc_html(date_i18n("M", mktime(0,0,0,$date,2)));
+		} else {
+			$chart_contents[$date][] = esc_html( $date );
+		}
+
+		$chart_contents[$date][] = esc_html( pmpro_round_price( $value[1] ) );
+		$chart_contents[$date][] = $tooltip_string;
+		$chart_contents[$date][] = esc_html( pmpro_round_price( $value[0] - $value[1] ) );
+		$chart_contents[$date][] = $tooltip_string;
+		$chart_contents[$date][] = esc_html( pmpro_round_price( $average ) );
+
+	}
+	// var_dump($chart_contents);
 	
 	?>
 	<form id="posts-filter" method="get" action="">
@@ -412,41 +454,10 @@ function pmpro_report_sales_page()
 		google.charts.setOnLoadCallback(drawVisualization);
 		function drawVisualization() {
 
-			var data = google.visualization.arrayToDataTable([
+			var data = google.visualization.arrayToDataTable([ 
 				<?php echo wp_json_encode( $chart_headers ); ?>,
-				<?php foreach($cols as $date => $value) { 
-
-					$tooltip_string = "";
-					$tooltip_string .= "<div style='padding: 10px'>";
-					if( $period == "daily" ){
-						if( !empty( $_REQUEST['year'] ) && !empty( $_REQUEST['month'] ) ){
-							$create_date_string = sanitize_text_field( $_REQUEST['year'] ).'-'.sanitize_text_field( $_REQUEST['month'] ).'-'.$date;
-							$formatted_date = date_i18n( "F j, Y", strtotime( $create_date_string, current_time("timestamp") ) );
-							$tooltip_string .= "<p><strong>".$formatted_date."</strong></p>";	
-						}						
-					} else if ( $period == "monthly" ) { 
-						if( !empty( $_REQUEST['year'] ) && !empty( $_REQUEST['month'] ) ){
-							$create_date_string = sanitize_text_field( $_REQUEST['year'] ).'-'.$date;
-							$formatted_date = date_i18n( "F Y", strtotime( $create_date_string, current_time("timestamp") ) );
-							$tooltip_string .= "<p><strong>".$formatted_date."</strong></p>";	
-						}
-					} else {
-						$tooltip_string .= "<p><strong>".$date."</strong></p>";
-					}				
-					$tooltip_string .= "<p><strong>". esc_html( sprintf( __( "New %s", "paid-memberships-pro" ), ucwords( $type ) ) )."</strong>: ".pmpro_formatPrice( $value[1] )."</p>";
-					$tooltip_string .= "<p><strong>".__( "Recurring", "paid-memberships-pro" )."</strong>: ".pmpro_formatPrice( $value[0] - $value[1] )."</p>";
-					$tooltip_string .= "<p><strong>".__( "Total", "paid-memberships-pro" )."</strong>: ".pmpro_formatPrice( $value[0] )."</p>";
-					$tooltip_string .= "</div>";
-					?>
-					['<?php
-						if ( $period == "monthly" ) {
-							echo esc_html(date_i18n("M", mktime(0,0,0,$date,2)));
-						} else {
-							echo esc_html( $date );
-						}
-					?>', <?php echo esc_html( pmpro_round_price( $value[1] ) );?>, "<?php echo $tooltip_string; ?>", <?php echo esc_html( pmpro_round_price( $value[0] - $value[1] ) );?>, "<?php echo $tooltip_string; ?>", <?php echo esc_html( pmpro_round_price( $average ) );?>,  ], 
-				<?php } ?>
-			]);
+				<?php foreach( $chart_contents as $cc ) { echo wp_json_encode( $cc ).","; } ?> 
+			] );
 
 			var options = {
 				colors: ['<?php
