@@ -3406,12 +3406,21 @@ class PMProGateway_stripe extends PMProGateway {
 	public static function webhook_events() {
 		// Show deprecation warning if called publically.
 		pmpro_method_should_be_private( '2.7.0' );
-		return apply_filters( 'pmpro_stripe_webhook_events', array(
+
+		$events = array(
 			'invoice.payment_succeeded',
 			'invoice.payment_action_required',
 			'customer.subscription.deleted',
-			'charge.failed'
-		) );
+			'charge.failed',
+		);
+
+		if ( self::using_stripe_checkout() ) {
+			$events[] = 'checkout.session.completed';
+			$events[] = 'checkout.session.async_payment_succeeded';
+			$events[] = 'checkout.session.async_payment_failed';
+		}
+
+		return apply_filters( 'pmpro_stripe_webhook_events', $events );
 	}
 
 	/**
