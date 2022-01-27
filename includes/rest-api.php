@@ -337,9 +337,16 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 					if ( $create_user && ! $user ) {
 
 						$user_id = wp_create_user( $email, wp_generate_password(), $email );
-						// Send notification to both admin and user.
-						if ( apply_filters( 'pmpro_api_create_user_notifications', true, $notify ) ) {
-							wp_send_new_user_notifications( $user_id, $notify );
+						
+						/**
+						 * Send the default WordPress emails when creating a WordPress user, using the /change_membership_level route.
+						 *
+						 * @since TBD
+						 *
+						 * @param boolean $bool Should default WordPress emails be sent to both the admins and users.
+						 */
+						if ( apply_filters( 'pmpro_api_create_user_notifications', false ) ) {
+							wp_send_new_user_notifications( $user_id, 'both' );
 						}
 
 					} else {
