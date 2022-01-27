@@ -1,5 +1,5 @@
 jQuery( document ).ready( function() { 
-    // If this script is loaded, then we are on the confirmation page for a pending order.
+    // If this script is loaded, then we are on the confirmation page for a pending or token order.
     // We want to poll the server to see if the order has been completed and if so, refresh so
     // the user can see the user can see their completed checkout.
     var pollInterval = setInterval( function() {
@@ -14,7 +14,7 @@ jQuery( document ).ready( function() {
                 'code': pmpro.code
             },
             success: function( response ) {
-                if ( response.status == 'success' || response.status == 'error' ) {
+                if ( response.status == 'success' ) {
                     // Order is complete.
                     clearInterval( pollInterval );
                     window.location.reload();

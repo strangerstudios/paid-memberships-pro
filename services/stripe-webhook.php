@@ -802,8 +802,6 @@ function pmpro_webhookChangeMembershipLevel( $morder, $checkout_session ) {
 	$checkout_level_arr = get_pmpro_membership_order_meta( $morder->id, 'checkout_level', true );
 	$pmpro_level = (object) $checkout_level_arr;
 
-	// TODO: Maybe set $pmpro_checkout_level_ids for MMPU compatibility.
-
 	// Set $discount_code.
 	$discount_code_arr = get_pmpro_membership_order_meta( $morder->id, 'discount_code', true );
 	if ( ! empty( $discount_code_arr ) ) {
@@ -866,7 +864,6 @@ function pmpro_webhookChangeMembershipLevel( $morder, $checkout_session ) {
 	if ( pmpro_changeMembershipLevel( $custom_level, $morder->user_id, 'changed' ) !== false ) {
 		//update order status and transaction ids
 		$morder->status                 = "success";
-		// TODO: Set payment and subscription IDs.
 		$morder->saveOrder();
 
 		//add discount code use

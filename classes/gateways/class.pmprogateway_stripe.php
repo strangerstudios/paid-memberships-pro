@@ -263,8 +263,8 @@ class PMProGateway_stripe extends PMProGateway {
 			$options[] = 'stripe_payment_flow'; // 'onsite' or 'checkout'
 			$options[] = 'stripe_update_billing_flow'; // 'onsite' or 'portal'
 			$options[] = 'stripe_checkout_billing_address'; //'auto' or 'required'
-			$options[] = 'stripe_tax'; // 'none', 'inclusive', 'exclusive'
-			$options[] = 'stripe_tax_id_collection_enabled'; // true, false
+			$options[] = 'stripe_tax'; // 'no', 'inclusive', 'exclusive'
+			$options[] = 'stripe_tax_id_collection_enabled'; // '0', '1'
 			$options[] = 'stripe_enabled_payment_methods'; // array of enabled payment methods.
 		}
 
@@ -1542,11 +1542,10 @@ class PMProGateway_stripe extends PMProGateway {
 	/**
 	 * Swap in our submit buttons.
 	 *
-	 * @param bool $show
+	 * @since TBD
 	 *
+	 * @param bool $show Whether to show the default submit button.
 	 * @return bool
-	 *
-	 * @since 1.8
 	 */
 	static function pmpro_checkout_default_submit_button($show)
 	{
@@ -1571,17 +1570,17 @@ class PMProGateway_stripe extends PMProGateway {
 		</span>
 		<?php
 
-		//don't show the default
+		//don't show the default submit button.
 		return false;
 	}
 
 	/**
-	 * Instead of change membership levels, send users to Stripe to pay.
+	 * Instead of changeing membership levels, send users to Stripe to pay.
 	 *
-	 * @param int           $user_id
-	 * @param \MemberOrder  $morder
+	 * @since TBD
 	 *
-	 * @since 1.8
+	 * @param int         $user_id ID of user who is checking out.
+	 * @param MemberOrder $morder  MemberOrder object for this checkout.
 	 */
 	static function pmpro_checkout_before_change_membership_level($user_id, $morder)
 	{
@@ -1766,6 +1765,12 @@ class PMProGateway_stripe extends PMProGateway {
 		exit;
 	}
 
+	/**
+	 * Get a list of all payment methods available in Stripe Checkout.
+	 *
+	 * @since TBD
+	 * @return array
+	 */
 	public static function get_all_checkout_payment_methods() {
 		// List based off of https://stripe.com/docs/payments/payment-methods/integration-options.
 		return array(
@@ -1895,6 +1900,12 @@ class PMProGateway_stripe extends PMProGateway {
 		);
 	}
 
+	/**
+	 * If using Stripe Checkout, either redirect the user to the Stripe Customer
+	 * portal or set up our update billing page with the onsite payment fields.
+	 *
+	 * @since TBD
+	 */
 	public static function pmpro_billing_preheader_stripe_checkout() {
 		if ( 'portal' === pmpro_getOption( 'stripe_update_billing_flow' ) ) {
 			// Send user to Stripe Customer Portal.
@@ -2323,6 +2334,14 @@ class PMProGateway_stripe extends PMProGateway {
 		}
 	}
 
+	/**
+	 * Get the URL for a customer's Stripe Customer Portal.
+	 *
+	 * @since TBD
+	 *
+	 * @param string $customer_id Customer to get the URL for.
+	 * @return string URL for customer portal, or empty String if not found.
+	 */
 	public function get_customer_portal_url( $customer_id ) {
 		try {
 			$session = \Stripe\BillingPortal\Session::create([

@@ -62,8 +62,8 @@
 	<ul>
 		<?php do_action("pmpro_invoice_bullets_top", $pmpro_invoice); ?>
 		<li><strong><?php _e('Account', 'paid-memberships-pro' );?>:</strong> <?php echo esc_html( $current_user->display_name );?> (<?php echo esc_html( $current_user->user_email );?>)</li>
-		<li><strong><?php _e('Membership Level', 'paid-memberships-pro' );?>:</strong> <?php echo esc_html( $pmpro_invoice->membership_level->name);?> <?php if ( 'pending' === $pmpro_invoice->status ) { echo ' (' . esc_html__( 'Pending', 'paid-memberships-pro' ) . ')'; }?></li>
-		<?php if( ! empty( $current_user->membership_level->enddate ) && 'pending' !== $pmpro_invoice->status ) { ?>
+		<li><strong><?php _e('Membership Level', 'paid-memberships-pro' );?>:</strong> <?php echo esc_html( $pmpro_invoice->membership_level->name);?> <?php if ( in_array( $pmpro_invoice->status, array( 'pending', 'token' ) ) ) { echo ' (' . esc_html__( 'Pending', 'paid-memberships-pro' ) . ')'; }?></li>
+		<?php if( ! empty( $current_user->membership_level->enddate ) && ! in_array( $pmpro_invoice->status, array( 'pending', 'token' ) ) ) { ?>
 			<li><strong><?php _e('Membership Expires', 'paid-memberships-pro' );?>:</strong> <?php echo date_i18n(get_option('date_format'), $current_user->membership_level->enddate)?></li>
 		<?php } ?>
 		<?php if($pmpro_invoice->getDiscountCode()) { ?>
