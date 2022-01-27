@@ -719,6 +719,19 @@ button.pmpro_report_th_closed:before {
 .pmpro_report-holder .pmpro_report-button {
 	text-align: center;
 }
+.pmpro_chart_area {
+	background-color: #FFF;
+	clear: both;
+	margin: 0 0 40px 0;
+	padding: 0px 10px 10px 10px;
+}
+.pmpro_chart_area rect[stroke-opacity] {
+	stroke-width: 0 !important;
+}
+.pmpro_chart_area #chart_div {
+	height: 500px;
+	width: 100%;
+}
 
 /* Dashboard */
 .pmpro_admin #pmpro_dashboard_welcome h3 {

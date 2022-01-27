@@ -371,9 +371,10 @@ function pmpro_report_sales_page()
 		<input type="hidden" name="report" value="sales" />
 		<input type="submit" class="button action" value="<?php _e('Generate Report', 'paid-memberships-pro' );?>" />
 	</div>
-	<style>rect[stroke-opacity]{stroke-width:0 !important;}</style>
-	<div id="chart_div" style="clear: both; width: 100%; height: 500px;"></div>
-	<p>* <?php _e( 'Average line calculated using data prior to current day, month, or year.', 'paid-memberships-pro' ); ?></p>
+	<div class="pmpro_chart_area">
+		<div id="chart_div"></div>
+		<div class="pmpro_chart_description"><p><center><em><?php _e( 'Average line calculated using data prior to current day, month, or year.', 'paid-memberships-pro' ); ?></em></center></p></div>
+	</div>
 	<script>
 		//update month/year when period dropdown is changed
 		jQuery(document).ready(function() {
@@ -416,7 +417,11 @@ function pmpro_report_sales_page()
 			dataTable.addColumn({type: 'string', role: 'tooltip', 'p': {'html': true}});
 			dataTable.addColumn('number', '<?php esc_html_e( 'Renewals', 'paid-memberships-pro' ); ?>');
 			dataTable.addColumn('number', '<?php esc_html_e( sprintf( __( 'New %s', 'paid-memberships-pro' ), ucwords( $type ) ) ); ?>');
-			dataTable.addColumn('number', '<?php esc_html_e( 'Average*', 'paid-memberships-pro' ); ?>');
+			<?php if ( $type === 'sales' ) { ?>
+				dataTable.addColumn('number', '<?php esc_html_e( sprintf( __( 'Average: %s', 'paid-memberships-pro' ), number_format_i18n( $average, 2 ) ) ); ?>');
+			<?php } else { ?>
+				dataTable.addColumn('number', '<?php esc_html_e( sprintf( __( 'Average: %s', 'paid-memberships-pro' ), pmpro_escape_price( html_entity_decode( pmpro_formatPrice( $average ) ) ) ) ); ?>');
+			<?php } ?>
 			dataTable.addRows([
 				<?php foreach($cols as $date => $value) { ?>
 					[
@@ -440,23 +445,27 @@ function pmpro_report_sales_page()
 							<?php if ( $type === 'sales' ) { ?>
 								'<?php esc_html_e( $value[1] ); ?>',
 								'<?php esc_html_e( $value[0] - $value[1] ); ?>',
-								'<?php esc_html_e( round( $average, 2) ); ?>',
 								'<?php esc_html_e( $value[0] ); ?>',
 							<?php } else { ?>
-								'<?php echo pmpro_escape_price( pmpro_formatPrice( pmpro_round_price( $value[1] ) ) ); ?>',
-								'<?php echo pmpro_escape_price( pmpro_formatPrice( pmpro_round_price( $value[0] - $value[1] ) ) ); ?>',
-								'<?php echo pmpro_escape_price( pmpro_formatPrice( pmpro_round_price( $average ) ) ); ?>',
-								'<?php echo pmpro_escape_price( pmpro_formatPrice( pmpro_round_price( $value[0] ) ) ); ?>',
+								'<?php echo pmpro_escape_price( pmpro_formatPrice( $value[1] ) ); ?>',
+								'<?php echo pmpro_escape_price( pmpro_formatPrice( $value[0] - $value[1] ) ); ?>',
+								'<?php echo pmpro_escape_price( pmpro_formatPrice( $value[0] ) ); ?>',
 							<?php } ?>
 						),
 						<?php echo esc_html( pmpro_round_price( $value[1] ) ); ?>,
 						<?php echo esc_html( pmpro_round_price( $value[0] - $value[1] ) ); ?>,
-						<?php echo esc_html( pmpro_round_price( $average ) ); ?>,
+						<?php echo esc_html( number_format_i18n( $average, 2 ) ); ?>,
 					],
 				<?php } ?>
 			]);
 
 			var options = {
+				title: pmpro_report_title_sales(),
+				titlePosition: 'top',
+				titleTextStyle: {
+					color: '#555555',
+				},
+				legend: {position: 'bottom'},
 				colors: ['<?php
 					if ( $type === 'sales') {
 						echo '#006699'; // Blue for "Sales" chart.
@@ -464,24 +473,38 @@ function pmpro_report_sales_page()
 						echo '#31825D'; // Green for "Revenue" chart.
 					}
 				?>'],
-				chartArea: {width: '70%'},
+				chartArea: {
+					width: '90%',
+				},
 				focusTarget: 'category',
-				tooltip: { isHtml: true },
+				tooltip: {
+					isHtml: true
+				},
 				hAxis: {
-					title: '<?php echo esc_html( $date_function );?>',
-					textStyle: {color: '#555555', fontSize: '12', italic: false},
-					titleTextStyle: {color: '#555555', fontSize: '20', bold: true, italic: false},
-					maxAlternation: 1
+					textStyle: {
+						color: '#555555',
+						fontSize: '12',
+						italic: false,
+					},
 				},
 				vAxis: {
 					<?php if ( $type === 'sales') { ?>
 						format: '0',
 					<?php } ?>
-					textStyle: {color: '#555555', fontSize: '12', italic: false},
+					textStyle: {
+						color: '#555555',
+						fontSize: '12',
+						italic: false,
+					},
 				},
 				seriesType: 'bars',
 				series: {
-					2: {type: 'line', color: '#B00000', enableInteractivity: false, lineDashStyle: [4, 1], },
+					2: {
+						type: 'line',
+						color: '#B00000',
+						enableInteractivity: false,
+						lineDashStyle: [4, 1], 
+					},
 					1: {<?php
 						if ( $type === 'sales') {
 							echo "color: '#0099C6'"; // Lighter Blue for "Sales" chart.
@@ -490,22 +513,32 @@ function pmpro_report_sales_page()
 						} ?>
 					},
 				},
-				legend: {position: 'right'},
-				isStacked: true			
+				isStacked: true,
 			};
 
 			var chart = new google.visualization.ColumnChart(document.getElementById('chart_div'));
 			chart.draw(dataTable, options);
 		}
 
-		function createCustomHTMLContent(period, renewals, notRenewals, average, total) {
+		function createCustomHTMLContent(period, renewals, notRenewals, total) {
 			return '<div style="padding:15px; font-size: 14px; line-height: 20px; color: #000000;">' +
 				'<strong>' + period + '</strong><br/>' +
 				'<ul>' +
+				'<li><span style="margin-right: 3px;"><?php esc_html_e( 'New:', 'paid-memberships-pro' ); ?></span>' + notRenewals + '</li>' +
 				'<li><span style="margin-right: 3px;"><?php esc_html_e( 'Renewals:', 'paid-memberships-pro' ); ?></span>' + renewals + '</li>' +
-				'<li><span style="margin-right: 3px;"><?php esc_html_e( sprintf( __( 'New %s:', 'paid-memberships-pro' ), $type ) ); ?></span>' + notRenewals + '</li>' +
-				'<li><span style="margin-right: 3px;"><?php esc_html_e( 'Total:', 'paid-memberships-pro' ); ?></span>' + total + '</li>' +
-				'<li><span style="margin-right: 3px;"><?php esc_html_e( 'Average:', 'paid-memberships-pro' ); ?></span>' + average + '</li>' + '</ul>' + '</div>';
+				'<li><span style="margin-right: 3px;"><?php esc_html_e( 'Total:', 'paid-memberships-pro' ); ?></span>' + total + '</li>' + '</ul>' + '</div>';
+		}
+		function pmpro_report_title_sales() {
+			<?php
+				if ( ! empty( $month ) && $period === 'daily' ) {
+					$date = date_i18n( 'F', mktime(0, 0, 0, $month, 2) ) . ' ' . $year;
+				} elseif( ! empty( $year ) && $period === 'monthly'  ) {
+					$date = $year;
+				} else {
+					$date = __( 'All Time');
+				}
+			?>
+			return '<?php echo sprintf( __( '%s %s for %s', 'paid-memberships-pro' ), ucwords( $period ), ucwords( $type ), ucwords( $date ) ); ?>';
 		}
 	</script>
 

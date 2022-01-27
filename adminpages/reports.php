@@ -15,7 +15,6 @@ if ( ! empty( $_REQUEST[ 'report' ] ) ) {
 	//view a single report
 	$report = sanitize_text_field( $_REQUEST[ 'report' ] );
 	call_user_func( 'pmpro_report_' . $report . '_page' ); ?>
-	<hr />
 	<a class="button button-primary" href="<?php echo admin_url("admin.php?page=pmpro-reports");?>"><?php _e( 'Back to Reports Dashboard', 'paid-memberships-pro' ); ?></a>
 	<?php
 } else {
