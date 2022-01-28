@@ -471,29 +471,26 @@
 			}
 
 			// Fill the "Payment Type" and credit card fields for the order.
-			if ( ! empty( $payment_method ) ) {
-				$all_payment_methods = PMProGateway_stripe::get_all_checkout_payment_methods();
-				if ( ! empty( $all_payment_methods[ $payment_method->type ] ) ) {
-					$order->payment_type = 'Stripe - ' . $all_payment_methods[ $payment_method->type ]['name'];
-					if ( ! empty( $payment_method->card ) ) {
-						// Paid with a card, let's update order and user meta with the card info.
-						$order->cardtype = $payment_method->card->brand;
-						$order->accountnumber = hideCardNumber( $payment_method->card->last4 );
-						$order->expirationmonth = $payment_method->card->exp_month;
-						$order->expirationyear = $payment_method->card->exp_year;
+			if ( ! empty( $payment_method ) && ! empty( $payment_method->type ) ) {
+				$order->payment_type = 'Stripe - ' . $payment_method->type;
+				if ( ! empty( $payment_method->card ) ) {
+					// Paid with a card, let's update order and user meta with the card info.
+					$order->cardtype = $payment_method->card->brand;
+					$order->accountnumber = hideCardNumber( $payment_method->card->last4 );
+					$order->expirationmonth = $payment_method->card->exp_month;
+					$order->expirationyear = $payment_method->card->exp_year;
 
-						// And let's also update the user meta with the card info.
-						update_user_meta( $order->user_id, "pmpro_CardType", $payment_method->card->brand );
-						update_user_meta( $order->user_id, "pmpro_AccountNumber", hideCardNumber( $payment_method->card->last4 ) );
-						update_user_meta( $order->user_id, "pmpro_ExpirationMonth", $payment_method->card->exp_month );
-						update_user_meta( $order->user_id, "pmpro_ExpirationYear", $payment_method->card->exp_year );
-					} else {
-						// Didn't pay with card. Let's clear out user meta so that they don't get expiration warnings.
-						update_user_meta( $order->user_id, "pmpro_CardType", '' );
-						update_user_meta( $order->user_id, "pmpro_AccountNumber", '' );
-						update_user_meta( $order->user_id, "pmpro_ExpirationMonth", '' );
-						update_user_meta( $order->user_id, "pmpro_ExpirationYear", '' );
-					}
+					// And let's also update the user meta with the card info.
+					update_user_meta( $order->user_id, "pmpro_CardType", $payment_method->card->brand );
+					update_user_meta( $order->user_id, "pmpro_AccountNumber", hideCardNumber( $payment_method->card->last4 ) );
+					update_user_meta( $order->user_id, "pmpro_ExpirationMonth", $payment_method->card->exp_month );
+					update_user_meta( $order->user_id, "pmpro_ExpirationYear", $payment_method->card->exp_year );
+				} else {
+					// Didn't pay with card. Let's clear out user meta so that they don't get expiration warnings.
+					update_user_meta( $order->user_id, "pmpro_CardType", '' );
+					update_user_meta( $order->user_id, "pmpro_AccountNumber", '' );
+					update_user_meta( $order->user_id, "pmpro_ExpirationMonth", '' );
+					update_user_meta( $order->user_id, "pmpro_ExpirationYear", '' );
 				}
 			}
 
