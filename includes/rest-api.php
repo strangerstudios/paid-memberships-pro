@@ -323,7 +323,7 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 			$user_id = isset( $params['user_id'] ) ? (int) $params['user_id'] : null;
 			$level_id = isset( $params['level_id'] ) ? (int) $params['level_id'] : null;
 			$email = isset( $params['email'] ) ? sanitize_email( $params['email'] ) : null;
-			$create_user = isset( $params['create_user'] ) ? (bool) $params['create_user'] : false;
+			$create_user = isset( $params['create_user'] ) ? filter_var( $params['create_user'], FILTER_VAR_BOOLEAN ) : false;
 			$response_type = isset( $params['response_type'] ) ? sanitize_text_field( $params['response_type'] ) : null;
 
 			if ( empty( $user_id ) ) {
