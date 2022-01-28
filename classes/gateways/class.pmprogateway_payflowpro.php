@@ -316,7 +316,7 @@
 			$amount = $order->InitialPayment;
 			$amount_tax = $order->getTaxForPrice($amount);
 			$order->subtotal = $amount;
-			$amount = pmpro_round_price((float)$amount + (float)$amount_tax);
+			$amount = pmpro_round_price_as_string((float)$amount + (float)$amount_tax);
 
 			//paypal profile stuff
 			$nvpStr = "";
@@ -392,7 +392,7 @@
 			//taxes on the amount
 			$amount = $order->PaymentAmount;
 			$amount_tax = $order->getTaxForPrice($amount);
-			$amount = pmpro_round_price((float)$amount + (float)$amount_tax);
+			$amount = pmpro_round_price_as_string((float)$amount + (float)$amount_tax);
 
 			if($order->BillingPeriod == "Day")
 				$payperiod = "DAYS";

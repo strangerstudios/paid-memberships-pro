@@ -318,7 +318,7 @@
 				$order->shorterror = __( "Error validating credit card type. Make sure your credit card number is correct and try again.", "paid-memberships-pro" );
 				return false;
 			}
-			
+
 			//currency
 			$purchaseTotals = new stdClass();
 			$purchaseTotals->currency = $pmpro_currency;
@@ -343,7 +343,7 @@
 			{
 				$order->error = sprintf( __( 'Error communicating with Cybersource: %', 'paid-memberships-pro' ), $t->getMessage() );
 				$order->shorterror = __( 'Error communicating with Cybersource.', 'paid-memberships-pro' );
-				return false;			
+				return false;
 			}
 			catch(Exception $e)
 			{
@@ -395,7 +395,7 @@
 			{
 				$order->error = sprintf( __( 'Error communicating with Cybersource: %', 'paid-memberships-pro' ), $t->getMessage() );
 				$order->shorterror = __( 'Error communicating with Cybersource.', 'paid-memberships-pro' );
-				return false;			
+				return false;
 			}
 			catch(Exception $e)
 			{
@@ -433,7 +433,7 @@
 			//tax
 			$order->subtotal = $amount;
 			$tax = $order->getTax(true);
-			$amount = pmpro_round_price((float)$order->subtotal + (float)$tax);
+			$amount = pmpro_round_price_as_string((float)$order->subtotal + (float)$tax);
 			//combine address
 			$address = $order->Address1;
 			if(!empty($order->Address2))
@@ -505,7 +505,7 @@
 			{
 				$order->error = sprintf( __( 'Error communicating with Cybersource: %', 'paid-memberships-pro' ), $t->getMessage() );
 				$order->shorterror = __( 'Error communicating with Cybersource.', 'paid-memberships-pro' );
-				return false;			
+				return false;
 			}
 			catch(Exception $e)
 			{
@@ -556,7 +556,7 @@
 			//figure out the amounts
 			$amount = $order->PaymentAmount;
 			$amount_tax = $order->getTaxForPrice($amount);
-			$amount = pmpro_round_price((float)$amount + (float)$amount_tax);
+			$amount = pmpro_round_price_as_string((float)$amount + (float)$amount_tax);
 			/*
 				There are two parts to the trial. Part 1 is simply the delay until the first payment
 				since we are doing the first payment as a separate transaction.
@@ -643,7 +643,7 @@
 			$request->subscription = $subscription;
 			//recurring info
 			$recurringSubscriptionInfo = new stdClass();
-			$recurringSubscriptionInfo->amount = number_format($amount, 2);
+			$recurringSubscriptionInfo->amount = $amount;
 			$recurringSubscriptionInfo->startDate = $profile_start_date;
 			$recurringSubscriptionInfo->frequency = $frequency;
 			if(!empty($order->TotalBillingCycles))
@@ -695,7 +695,7 @@
 			{
 				$order->error = sprintf( __( 'Error communicating with Cybersource: %', 'paid-memberships-pro' ), $t->getMessage() );
 				$order->shorterror = __( 'Error communicating with Cybersource.', 'paid-memberships-pro' );
-				return false;			
+				return false;
 			}
 			catch(Exception $e)
 			{
@@ -779,7 +779,7 @@
 			{
 				$order->error = sprintf( __( 'Error communicating with Cybersource: %', 'paid-memberships-pro' ), $t->getMessage() );
 				$order->shorterror = __( 'Error communicating with Cybersource.', 'paid-memberships-pro' );
-				return false;			
+				return false;
 			}
 			catch(Exception $e)
 			{
@@ -833,7 +833,7 @@
 			{
 				$order->error = sprintf( __( 'Error communicating with Cybersource: %', 'paid-memberships-pro' ), $t->getMessage() );
 				$order->shorterror = __( 'Error communicating with Cybersource.', 'paid-memberships-pro' );
-				return false;			
+				return false;
 			}
 			catch(Exception $e)
 			{
@@ -920,7 +920,7 @@
 				$error = $error_messages[$reply->reasonCode];
 			else
 				return __( "Unknown error.", "paid-memberships-pro" );
-			
+
 			// list invalid fields from reply
 			if( isset($reply->invalidField) && !empty($reply->invalidField) )
 			{

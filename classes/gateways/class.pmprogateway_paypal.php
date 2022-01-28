@@ -472,9 +472,11 @@
 
 			//taxes on the amount
 			$amount = $order->InitialPayment;
-			$amount_tax = $order->getTaxForPrice($amount);
+			$amount_tax = pmpro_round_price_as_string( $order->getTaxForPrice( $amount ) );
 			$order->subtotal = $amount;
-			$amount = pmpro_round_price((float)$amount + (float)$amount_tax);
+
+			// Note: For the DoDirectPayment API call, it expects the AMT to be the total including taxes (unlike CreateRecurringPaymentsProfile).
+			$amount = pmpro_round_price_as_string( (float) $amount + (float) $amount_tax );
 
 			//paypal profile stuff
 			$nvpStr = "";
@@ -542,15 +544,17 @@
 
 			//taxes on the amount
 			$amount = $order->PaymentAmount;
-			$amount_tax = $order->getTaxForPrice($amount);
-			$amount = pmpro_round_price((float)$amount + (float)$amount_tax);
+			$amount_tax = pmpro_round_price_as_string( $order->getTaxForPrice( $amount ) );
+
+			// Note: For the CreateRecurringPaymentsProfile API call, it expects the AMT to be the total excluding taxes.
+			$amount = pmpro_round_price_as_string( $amount );
 
 			//paypal profile stuff
 			$nvpStr = "";
 
 			if(!empty($order->Token))
 				$nvpStr .= "&TOKEN=" . $order->Token;
-			$nvpStr .="&AMT=" . $order->PaymentAmount . "&TAXAMT=" . $amount_tax . "&CURRENCYCODE=" . $pmpro_currency . "&PROFILESTARTDATE=" . $order->ProfileStartDate;
+			$nvpStr .="&AMT=" . $amount . "&TAXAMT=" . $amount_tax . "&CURRENCYCODE=" . $pmpro_currency . "&PROFILESTARTDATE=" . $order->ProfileStartDate;
 			$nvpStr .= "&BILLINGPERIOD=" . $order->BillingPeriod . "&BILLINGFREQUENCY=" . $order->BillingFrequency . "&AUTOBILLOUTAMT=AddToNextBilling";
 			$nvpStr .= "&DESC=" . urlencode( apply_filters( 'pmpro_paypal_level_description', substr($order->membership_level->name . " at " . get_bloginfo("name"), 0, 127), $order->membership_level->name, $order, get_bloginfo("name")) );
 			$nvpStr .= "&NOTIFYURL=" . urlencode( add_query_arg( 'action', 'ipnhandler', admin_url('admin-ajax.php') ) );
@@ -565,7 +569,13 @@
 			{
 				$trial_amount = $order->TrialAmount;
 				$trial_tax = $order->getTaxForPrice($trial_amount);
-				$trial_amount = pmpro_round_price((float)$trial_amount + (float)$trial_tax);
+
+				/*
+				 * Note: For the CreateRecurringPaymentsProfile API call, it expects the TRIALAMT to be the total excluding taxes.
+				 *
+				 * However, there is no TRIALTAXAMT for trial periods so this is a workaround.
+				 */
+				$trial_amount = pmpro_round_price_as_string( (float) $trial_amount + (float) $trial_tax );
 
 				$nvpStr .= "&TRIALBILLINGPERIOD=" . $order->TrialBillingPeriod . "&TRIALBILLINGFREQUENCY=" . $order->TrialBillingFrequency . "&TRIALAMT=" . $trial_amount;
 			}
@@ -603,12 +613,12 @@
 
 			// Set MAXFAILEDPAYMENTS so subscriptions are cancelled after 1 failed payment.
 			$nvpStr .= "&MAXFAILEDPAYMENTS=1";
-			
+
 			$nvpStr = apply_filters("pmpro_create_recurring_payments_profile_nvpstr", $nvpStr, $order);
 
 			//for debugging let's add this to the class object
 			$this->nvpStr = $nvpStr;
-			
+
 			///echo str_replace("&", "&<br />", $nvpStr);
 			///exit;
 
@@ -680,7 +690,7 @@
 				return false;
 				//exit('CreateRecurringPaymentsProfile failed: ' . print_r($httpParsedResponseAr, true));
 			}
-		}		
+		}
 
 		function cancel(&$order) {
 			// Always cancel the order locally even if PayPal might fail
@@ -747,7 +757,7 @@
 				return false;
 			}
 		}
-		
+
 		function getTransactionStatus(&$order) {
 			$transaction_details = $order->Gateway->getTransactionDetailsByOrder( $order );
 			if( false === $transaction_details ){
@@ -822,7 +832,7 @@
 				return $this->getTransactionDetails( $order->payment_transaction_id );
 			}
 		}
-		
+
 		function getTransactionDetails($payment_transaction_id)
         	{
 			$nvpStr = "";

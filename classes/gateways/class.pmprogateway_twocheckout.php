@@ -289,11 +289,10 @@
 
 			// Recurring membership
 			if( pmpro_isLevelRecurring( $order->membership_level ) ) {
-				$tco_args['li_0_startup_fee'] = number_format($initial_payment - $amount, 2, ".", "");		//negative amount for lower initial payments
-				$recurring_payment = number_format($order->membership_level->billing_amount, 2, ".", "");
-				$recurring_payment_tax = number_format($order->getTaxForPrice($recurring_payment), 2, ".", "");
-				$recurring_payment = number_format(pmpro_round_price((float)$recurring_payment + (float)$recurring_payment_tax), 2, ".", "");
-				$tco_args['li_0_price'] = number_format($recurring_payment, 2, ".", "");
+				$tco_args['li_0_startup_fee'] = pmpro_round_price_as_string( $initial_payment - $amount );		//negative amount for lower initial payments
+				$recurring_payment = (float) $order->membership_level->billing_amount;
+				$recurring_payment_tax = (float) $order->getTaxForPrice( $recurring_payment );
+				$tco_args['li_0_price'] = pmpro_round_price_as_string( $recurring_payment + $recurring_payment_tax );
 
 				$tco_args['li_0_recurrence'] = ( $order->BillingFrequency == 1 ) ? $order->BillingFrequency . ' ' . $order->BillingPeriod : $order->BillingFrequency . ' ' . $order->BillingPeriod;
 
@@ -304,7 +303,7 @@
 			}
 			// Non-recurring membership
 			else {
-				$tco_args['li_0_price'] = number_format($initial_payment, 2, ".", "");
+				$tco_args['li_0_price'] = pmpro_round_price_as_string( $initial_payment );
 			}
 
 			// Demo mode?
@@ -325,8 +324,8 @@
 			if(!empty($order->TrialBillingPeriod)) {
 				$trial_amount = $order->TrialAmount;
 				$trial_tax = $order->getTaxForPrice($trial_amount);
-				$trial_amount = pmpro_formatPrice(pmpro_round_price((float)$trial_amount + (float)$trial_tax), false, false);
-				$tco_args['li_0_startup_fee'] = $trial_amount; // Negative trial amount
+				$trial_amount = (float) $trial_amount + (float) $trial_tax;
+				$tco_args['li_0_startup_fee'] = pmpro_round_price_as_string( $trial_amount ); // Negative trial amount
 			}
 
 			$ptpStr = '';

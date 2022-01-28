@@ -92,7 +92,7 @@ function pmpro_wp()
 			{
 				//add class to body
 				$pmpro_body_classes[] = "pmpro-" . str_replace("_", "-", $pmpro_page_name);
-				
+
 				//shortcode has params, but we still want to load the preheader
 				require_once(PMPRO_DIR . "/preheaders/" . $pmpro_page_name . ".php");
 			}
