@@ -1516,7 +1516,7 @@ class PMProGateway_stripe extends PMProGateway {
 					),
 					null,
 					'stripe',
-					$order->Gateway->gateway_environment
+					$this->gateway_environment
 				);
 			}
 
