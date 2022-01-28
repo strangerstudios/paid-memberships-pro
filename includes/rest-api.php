@@ -352,8 +352,14 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 					} else {
 						$user_id = $user->ID;
 
-						// Make sure the user isn't an admin. If they are throw an error.
-						if ( user_can( $user_id, 'manage_options' ) ) {
+						/**
+						 * Filter to allow admin levels to be changed via the REST API or Zapier application.
+						 *
+						 * @since TBD
+						 *
+						 * @param boolean $disallow_admin_changes Should API calls change admin account membership levels.
+						 */
+						if ( apply_filters( 'pmpro_api_change_membership_level_disallow_admin_change', true ) && user_can( $user_id, 'manage_options' ) ) {
 							return new WP_REST_Response( 'Sorry, You are not allowed to edit admin accounts.', 403 );
 						}
 					}
