@@ -504,7 +504,14 @@ if ( $webhookNotification->kind === Braintree_WebhookNotification::SUBSCRIPTION_
 	pmpro_braintreeWebhookExit();
 }
 
-do_action( 'pmpro_webhook_unhandled' );
+/**
+ * Allow hooking into after a webhook has been run but was not handled.
+ *
+ * @since TBD
+ *
+ * @param string $gateway The gateway the webhook was not handled for.
+ */
+do_action( 'pmpro_webhook_unhandled', PMPRO_DOING_WEBHOOK );
 
 /**
  * @since 1.9.5 - BUG FIX: Didn't terminate & save debug log for webhook event
