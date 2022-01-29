@@ -286,14 +286,14 @@ function pmpro_userfields_prep_click_events() {
             let group_description = jQuery(this).find('textarea[name=pmpro_userfields_group_description]').val();
 
             // Get level ids.            
-            let group_levels = [];
+            let group_levels = [];            
             jQuery('input[name="pmpro_userfields_group_membership[]"]:checked').each(function(){
                 group_levels.push(parseInt(jQuery(this).attr('id').replace('pmpro_userfields_group_membership_', '')));
             });
             
             // Get fields.
-            let group_fields = [];            
-            jQuery('div.pmpro_userfield-group-fields div.pmpro_userfield-field-settings').each(function(){
+            let group_fields = [];
+            jQuery(this).find('div.pmpro_userfield-group-fields div.pmpro_userfield-field-settings').each(function(){
                 let field_label = jQuery(this).find('input[name=pmpro_userfields-field-label]').val();
                 let field_name = jQuery(this).find('input[name=pmpro_userfields-field-name]').val();
                 let field_type = jQuery(this).find('select[name=pmpro_userfields-field-type]').val();
@@ -339,7 +339,7 @@ function pmpro_userfields_prep_click_events() {
         });
         
         console.log( field_groups );
-        jQuery('#pmpro_user_fields_settings').val( JSON.stringify( field_groups ) );
+        jQuery('#pmpro_user_fields_settings').val( JSON.stringify( field_groups ) );        
         
         return true;
     });
