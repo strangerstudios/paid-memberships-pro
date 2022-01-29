@@ -218,8 +218,9 @@ function pmpro_userfields_prep_click_events() {
 			url: ajaxurl,
 			success: function( response ) {
                 ///console.log( response );
-				jQuery('#pmpro_userfields_add_group').parent('p').before( response );
+				jQuery('#pmpro_userfields_add_group').parent('p').before( response );                
                 pmpro_userfields_prep_click_events();
+                jQuery('#pmpro_userfields_add_group').parent('p').prev().find('h3').click();
 			}
 		})
     });
