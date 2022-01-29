@@ -201,6 +201,7 @@ jQuery(document).ready(function() {
     pmpro_userfields_prep_click_events();
 });
 
+// Function to prep click events.
 function pmpro_userfields_prep_click_events() {
     // Add group button.
 	jQuery('#pmpro_userfields_add_group').unbind('click').on( 'click', function(event){
@@ -242,11 +243,17 @@ function pmpro_userfields_prep_click_events() {
 			}
 		});
     });
-    
-    // Expand/Hide Groups
-    jQuery('button.pmpro_userfield-group-buttons-button-toggle-group').unbind('click').on( 'click', function(event){
-        event.preventDefault();
-        let thebutton = jQuery(event.target).closest('button.pmpro_userfield-group-buttons-button-toggle-group');
+        
+    jQuery('button.pmpro_userfield-group-buttons-button-toggle-group, div.pmpro_userfield-group-header h3').unbind('click').on( 'click', function(event){
+        event.preventDefault();        
+        
+        // Ignore if the text field was clicked.        
+        if ( jQuery(event.target).prop('nodeName') === 'INPUT' ) {
+            return;
+        }
+        
+        // Find the toggle button and open or close.
+        let thebutton = jQuery(event.target).parents('.pmpro_userfield-group').find('button.pmpro_userfield-group-buttons-button-toggle-group');        
         let buttonicon = thebutton.children('.dashicons');
         let groupheader = thebutton.closest('.pmpro_userfield-group-header');
         let groupinside = groupheader.siblings('.pmpro_userfield-inside');
@@ -262,7 +269,7 @@ function pmpro_userfields_prep_click_events() {
             buttonicon.addClass('dashicons-arrow-up');
             groupinside.show();
         }
-    });
+    });    
     
     // Close field.
     jQuery('button.pmpro_userfields_close_field').unbind('click').on('click', function(event){

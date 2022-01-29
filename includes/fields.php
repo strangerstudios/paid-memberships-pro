@@ -1087,12 +1087,12 @@ function pmpro_get_field_group_html( $group = null ) {
                 </label>                
             </h3>
             <button type="button" aria-disabled="false" class="pmpro_userfield-group-buttons-button pmpro_userfield-group-buttons-button-toggle-group" aria-label="<?php esc_attr_e( 'Expand and Edit Group', 'paid-memberships-pro' ); ?>">
-                <span class="dashicons dashicons-arrow-up"></span>
+                <span class="dashicons dashicons-arrow-down"></span>
             </button>
             <span class="pmpro_userfield-group-buttons-description"><?php esc_html_e( 'Expand and Edit Group', 'paid-memberships-pro' ); ?></span>
         </div> <!-- end pmpro_userfield-group-header -->
 
-        <div class="pmpro_userfield-inside">
+        <div class="pmpro_userfield-inside" style="display: none;">
 			<div class="pmpro_userfield-field-settings">
 				
 				<div class="pmpro_userfield-field-setting">
