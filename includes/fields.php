@@ -1258,15 +1258,15 @@ function pmpro_get_field_html( $field = null ) {
                     <select name="pmpro_userfields-field-type" />
                         <option value="text"><?php esc_html_e( 'Text', 'paid-memberships-pro' ); ?></option>
                         <option value="textarea"><?php esc_html_e( 'Text Area', 'paid-memberships-pro' ); ?></option>
-                        <option value=""><?php esc_html_e( 'Checkbox and checkbox grouped', 'paid-memberships-pro' ); ?></option>
-                        <option value=""><?php esc_html_e( 'Radio', 'paid-memberships-pro' ); ?></option>
-                        <option value=""><?php esc_html_e( 'Select', 'paid-memberships-pro' ); ?></option>
-                        <option value=""><?php esc_html_e( 'Multi Select - ACF calls select2 "stylized UI"', 'paid-memberships-pro' ); ?></option>
-                        <option value=""><?php esc_html_e( 'File', 'paid-memberships-pro' ); ?></option>
-                        <option value=""><?php esc_html_e( 'Number', 'paid-memberships-pro' ); ?></option>
-                        <option value=""><?php esc_html_e( 'Date', 'paid-memberships-pro' ); ?></option>
-                        <option value=""><?php esc_html_e( 'Read-Only', 'paid-memberships-pro' ); ?></option>
-                        <option value=""><?php esc_html_e( 'Hidden', 'paid-memberships-pro' ); ?></option>
+                        <option value="checkbox"><?php esc_html_e( 'Checkbox and checkbox grouped', 'paid-memberships-pro' ); ?></option>
+                        <option value="radio"><?php esc_html_e( 'Radio', 'paid-memberships-pro' ); ?></option>
+                        <option value="select"><?php esc_html_e( 'Select', 'paid-memberships-pro' ); ?></option>
+                        <option value="multiselect"><?php esc_html_e( 'Multi Select - ACF calls select2 "stylized UI"', 'paid-memberships-pro' ); ?></option>
+                        <option value="file"><?php esc_html_e( 'File', 'paid-memberships-pro' ); ?></option>
+                        <option value="number"><?php esc_html_e( 'Number', 'paid-memberships-pro' ); ?></option>
+                        <option value="date"><?php esc_html_e( 'Date', 'paid-memberships-pro' ); ?></option>
+                        <option value="readonly"><?php esc_html_e( 'Read-Only', 'paid-memberships-pro' ); ?></option>
+                        <option value="hidden"><?php esc_html_e( 'Hidden', 'paid-memberships-pro' ); ?></option>
                     </select>
                 </label>                
             </div> <!-- end pmpro_userfield-field-setting -->

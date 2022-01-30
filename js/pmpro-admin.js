@@ -290,7 +290,13 @@ function pmpro_userfields_prep_click_events() {
         event.preventDefault();
         var fieldcontainer = jQuery(this).parents('.pmpro_userfield-group-field');
         var fieldsettings = fieldcontainer.children('.pmpro_userfield-field-settings');
+        var fieldheading = fieldsettings.prev();
+        // Update label, name, and type.
+        fieldheading.find('span.pmpro_userfield-label').html(fieldsettings.find('input[name=pmpro_userfields-field-label]').val());
+        fieldheading.find('li.pmpro_userfield-group-column-name').html(fieldsettings.find('input[name=pmpro_userfields-field-name]').val());
+        fieldheading.find('li.pmpro_userfield-group-column-type').html(fieldsettings.find('select[name=pmpro_userfields-field-type]').val());
         
+        // Toggle
         fieldcontainer.removeClass('pmpro_userfield-group-field-expand');
         fieldcontainer.addClass('pmpro_userfield-group-field-collapse');
         fieldsettings.hide();

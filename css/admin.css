@@ -317,6 +317,12 @@
 	margin-bottom: .2em;
 }
 
+.admin_page_pmpro-userfields .pmpro_userfield-group-field-expand li.pmpro_userfield-group-column-label,
+.admin_page_pmpro-userfields .pmpro_userfield-group-field-expand li.pmpro_userfield-group-column-name,
+.admin_page_pmpro-userfields .pmpro_userfield-group-field-expand li.pmpro_userfield-group-column-type {
+	display: none;
+}
+
 .admin_page_pmpro-userfields .pmpro_userfield-group-field .pmpro_userfield-group-options {
 	color: #DDD;
 	font-size: 13px;
