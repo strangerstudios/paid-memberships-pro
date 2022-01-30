@@ -187,6 +187,7 @@
 	 * @param string $gateway The gateway the webhook was not handled for.
 	 */
 	do_action( 'pmpro_webhook_unhandled', PMPRO_DOING_WEBHOOK );
+
 	pmpro_twocheckoutExit();
 
 	/*
