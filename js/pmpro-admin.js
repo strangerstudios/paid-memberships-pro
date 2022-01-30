@@ -239,12 +239,15 @@ function pmpro_userfields_prep_click_events() {
 			data: postData,
 			url: ajaxurl,
 			success: function( response ) {
-				jQuery(event.target).closest('div.pmpro_userfield-group-actions').siblings('div.pmpro_userfield-group-fields').append( response );
-                pmpro_userfields_prep_click_events();
+			    var thefields = jQuery(event.target).closest('div.pmpro_userfield-group-actions').siblings('div.pmpro_userfield-group-fields');
+            	thefields.append( response );
+                pmpro_userfields_prep_click_events();                
+                thefields.children().last().find('a.edit-field').click();
 			}
 		});
     });
-        
+    
+    // Toggle groups.    
     jQuery('button.pmpro_userfield-group-buttons-button-toggle-group, div.pmpro_userfield-group-header h3').unbind('click').on( 'click', function(event){
         event.preventDefault();        
         
@@ -272,13 +275,25 @@ function pmpro_userfields_prep_click_events() {
         }
     });    
     
+    // Open field.
+    jQuery('a.edit-field').unbind('click').on('click', function(event){
+        var fieldcontainer = jQuery(this).parents('.pmpro_userfield-group-field');
+        var fieldsettings = fieldcontainer.children('.pmpro_userfield-field-settings');
+        
+        fieldcontainer.removeClass('pmpro_userfield-group-field-collapse');
+        fieldcontainer.addClass('pmpro_userfield-group-field-expand');
+        fieldsettings.show();
+    });
+    
     // Close field.
     jQuery('button.pmpro_userfields_close_field').unbind('click').on('click', function(event){
         event.preventDefault();
-        let thebutton = jQuery(event.target).closest('button.pmpro_userfields_close_field');
-        let thefield = thebutton.closest('.pmpro_userfield-group-field');        
+        var fieldcontainer = jQuery(this).parents('.pmpro_userfield-group-field');
+        var fieldsettings = fieldcontainer.children('.pmpro_userfield-field-settings');
         
-        thefield.hide();
+        fieldcontainer.removeClass('pmpro_userfield-group-field-expand');
+        fieldcontainer.addClass('pmpro_userfield-group-field-collapse');
+        fieldsettings.hide();
     });
     
     // Save User Field Settings

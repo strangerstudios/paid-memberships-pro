@@ -376,7 +376,8 @@
 	display: inline-block;
 	margin-right: 12px;	
 }
-.admin_page_pmpro-userfields .pmpro_userfield-field-actions {
+.admin_page_pmpro-userfields .pmpro_userfield-field-actions {	
+	width: 100%;
 	padding: 8px 12px;
 }
 .admin_page_pmpro-userfields .pmpro_userfield-group-actions {

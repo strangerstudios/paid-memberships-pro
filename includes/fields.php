@@ -1207,7 +1207,7 @@ function pmpro_get_field_html( $field = null ) {
         $field_hint = '';
     }    
     ?>
-    <div class="pmpro_userfield-group-field pmpro_userfield-group-field-expand">
+    <div class="pmpro_userfield-group-field pmpro_userfield-group-field-collapse">
         <ul class="pmpro_userfield-group-tbody">
             <li class="pmpro_userfield-group-column-order">
                 <div class="pmpro_userfield-group-buttons">
@@ -1225,16 +1225,16 @@ function pmpro_get_field_html( $field = null ) {
             <li class="pmpro_userfield-group-column-label">
                 <span class="pmpro_userfield-label"><?php echo esc_html( $field_label );?></span>
                 <div class="pmpro_userfield-group-options">
-                    <a class="edit-field" title="<?php esc_attr_e( 'Edit field', 'paid-memberships-pro' ); ?>" href="#"><?php esc_html_e( 'Edit', 'paid-memberships-pro' ); ?></a> |
-                    <a class="duplicate-field" title="<?php esc_attr_e( 'Duplicate field', 'paid-memberships-pro' ); ?>" href="#"><?php esc_html_e( 'Duplicate', 'paid-memberships-pro' ); ?></a> |
-                    <a class="delete-field" title="<?php esc_attr_e( 'Delete field', 'paid-memberships-pro' ); ?>" href="#"><?php esc_html_e( 'Delete', 'paid-memberships-pro' ); ?></a>
+                    <a class="edit-field" title="<?php esc_attr_e( 'Edit field', 'paid-memberships-pro' ); ?>" href="javascript:void(0);"><?php esc_html_e( 'Edit', 'paid-memberships-pro' ); ?></a> |
+                    <a class="duplicate-field" title="<?php esc_attr_e( 'Duplicate field', 'paid-memberships-pro' ); ?>" href="javascript:void(0);"><?php esc_html_e( 'Duplicate', 'paid-memberships-pro' ); ?></a> |
+                    <a class="delete-field" title="<?php esc_attr_e( 'Delete field', 'paid-memberships-pro' ); ?>" href="javascript:void(0);"><?php esc_html_e( 'Delete', 'paid-memberships-pro' ); ?></a>
                 </div> <!-- end pmpro_userfield-group-options -->
             </li>
             <li class="pmpro_userfield-group-column-name"><?php echo esc_html( $field_name); ?></li>
             <li class="pmpro_userfield-group-column-type"><?php echo esc_html( $field_type); ?></li>
         </ul>
 
-        <div class="pmpro_userfield-field-settings">
+        <div class="pmpro_userfield-field-settings" style="display: none;">
 
             <div class="pmpro_userfield-field-setting">
                 <label>
@@ -1337,14 +1337,12 @@ function pmpro_get_field_html( $field = null ) {
                 </label>                
                 <span class="description"><?php esc_html_e( 'Descriptive text for users or admins submitting the field.', 'paid-memberships-pro' ); ?></span>
             </div> <!-- end pmpro_userfield-field-setting -->
-        </div> <!-- end pmpro_userfield-field-settings -->
-        <div class="pmpro_userfield-field-actions">
-            <?php /*
-            <button name="pmpro_userfields_close_field" class="button button-secondary pmpro_userfields_close_field">
-                <?php esc_html_e( 'Close Field', 'paid-memberships-pro' ); ?>
-            </button>
-            */ ?>
-        </div> <!-- end pmpro_userfield-field-actions -->
+            <div class="pmpro_userfield-field-actions">            
+                <button name="pmpro_userfields_close_field" class="button button-secondary pmpro_userfields_close_field">
+                    <?php esc_html_e( 'Close Field', 'paid-memberships-pro' ); ?>
+                </button>            
+            </div> <!-- end pmpro_userfield-field-actions -->
+        </div> <!-- end pmpro_userfield-field-settings -->        
     </div> <!-- end pmpro_userfield-group-field -->
     <?php
 }
