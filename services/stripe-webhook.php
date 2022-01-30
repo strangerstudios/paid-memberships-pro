@@ -426,14 +426,15 @@
 		else
 			$logstr .= "No event ID given.";
 
-/**
- * Allow hooking into after a webhook has been run but was not handled.
- *
- * @since TBD
- *
- * @param string $gateway The gateway the webhook was not handled for.
- */
-do_action( 'pmpro_webhook_unhandled', PMPRO_DOING_WEBHOOK );
+	/**
+	 * Allow hooking into after a webhook has been run but was not handled.
+	 *
+	 * @since TBD
+	 *
+	 * @param string $gateway The gateway the webhook was not handled for.
+	 */
+	do_action( 'pmpro_webhook_unhandled', PMPRO_DOING_WEBHOOK );
+	
 		pmpro_stripeWebhookExit();
 	}
 

@@ -513,6 +513,7 @@ if ( $webhookNotification->kind === Braintree_WebhookNotification::SUBSCRIPTION_
  */
 do_action( 'pmpro_webhook_unhandled', PMPRO_DOING_WEBHOOK );
 
+
 /**
  * @since 1.9.5 - BUG FIX: Didn't terminate & save debug log for webhook event
  */
