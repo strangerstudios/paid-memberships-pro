@@ -246,6 +246,13 @@
 .admin_page_pmpro-userfields .pmpro_userfield-group-field-expand .pmpro_userfield-group-buttons-button:disabled {
 	color: #0071a1;
 }
+.admin_page_pmpro-userfields .pmpro_userfield-group-actions button.is-destructive {
+	border: none;
+	background: auto;
+	padding: 1em 0 0 .5em;
+	color: red;
+}
+
 
 /* General User Fields Page Styles */
 .admin_page_pmpro-userfields .pmpro_userfield-inside label,

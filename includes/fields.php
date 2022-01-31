@@ -1170,6 +1170,9 @@ function pmpro_get_field_group_html( $group = null ) {
 						/* translators: a plus sign dashicon */
 						printf( esc_html__( '%s Add Field', 'paid-memberships-pro' ), '<span class="dashicons dashicons-plus"></span>' ); ?>
 				</button>
+                <button name="pmpro_userfields_delete_group" class="button button-secondary is-destructive">
+                    <?php _e( 'Delete This Group', 'paid-memberships-pro' ); ?>
+                </button>
 			</div> <!-- end pmpro_userfield-group-actions -->
 
 		</div> <!-- end pmpro_userfield-group -->

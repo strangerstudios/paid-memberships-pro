@@ -225,6 +225,21 @@ function pmpro_userfields_prep_click_events() {
 		})
     });
     
+    // Delete group button.
+    jQuery('.pmpro_userfield-group-actions button[name=pmpro_userfields_delete_group]').unbind('click').on( 'click', function(event) {
+        var thegroup = jQuery(this).closest('.pmpro_userfield-group');
+        var thename = thegroup.find('input[name=pmpro_userfields_group_name]').val();
+        var answer;
+        if ( thename.length > 0 ) {
+            answer = window.confirm('Delete the "' + thename + '" group?');
+        } else {
+            answer = window.confirm('Delete this group?');
+        }
+    	if ( answer ) {
+    		thegroup.remove();
+    	}
+    });
+    
     // Add field button.
 	jQuery('button[name="pmpro_userfields_add_field"]').unbind('click').on( 'click', function(event){
         event.preventDefault();
