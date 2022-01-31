@@ -247,6 +247,21 @@ function pmpro_userfields_prep_click_events() {
 		});
     });
     
+    // Delete field button.
+    jQuery('.pmpro_userfield-field-options a.delete-field').unbind('click').on( 'click', function(event) {
+        var thefield = jQuery(this).closest('.pmpro_userfield-group-field');
+        var thelabel = thefield.find('input[name=pmpro_userfields-field-label]').val();
+        var answer;
+        if ( thelabel.length > 0 ) {
+            answer = window.confirm('Delete the "' + thelabel + '" field?');
+        } else {
+            answer = window.confirm('Delete this unlabeled field?');
+        }
+    	if ( answer ) {
+    		thefield.remove();
+    	}
+    });
+    
     // Toggle groups.    
     jQuery('button.pmpro_userfield-group-buttons-button-toggle-group, div.pmpro_userfield-group-header h3').unbind('click').on( 'click', function(event){
         event.preventDefault();        
