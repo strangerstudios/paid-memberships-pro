@@ -171,7 +171,7 @@ Not sure? You can find out by doing a bit a research.
 * BUG FIX: Fixed issue on some MySQL setups that would throw an error about the primary key in the pmpro_memberships_pages and pmpro_memberships_categories tables.
 
 = 2.7 - 2022-01-13 =
-* FEATURE: Added a "Spam Protection" option to the advanced settings page. When used, IP addresses are blocked from checkout if there are more than 10 failsures within 15 minutes. (@ideadude)
+* FEATURE: Added a "Spam Protection" option to the advanced settings page. When used, IP addresses are blocked from checkout if there are more than 10 failures within 15 minutes. (@ideadude)
 * ENHANCEMENT: Checkouts with Stripe will now reuse Stripe Products and Prices. (@dparker1005)
 * ENHANCEMENT: User profile now links to Stripe customer so that subscriptions can easily be directly updated in Stripe rather than through Subscriptions Updates which is now deprecated. (@dparker1005)
 * ENHANCEMENT: Improved usability of the Require Membership metabox for sites with a large number of levels. #1885 #1692 (@kimcoleman)
