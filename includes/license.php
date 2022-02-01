@@ -64,7 +64,7 @@ function pmpro_license_isValid($key = NULL, $type = NULL, $force = false) {
 	}
 	
 	// Check if 30 days past the end date. (We only run the cron every 30 days.)
-	if ( $pmpro_license_check['enddate'] < ( current_time( 'timestamp' ) + 86400*31 ) ) {
+	if ( $pmpro_license_check['enddate'] < ( current_time( 'timestamp' ) - 86400*31 ) ) {
 		return false;
 	}
 	
