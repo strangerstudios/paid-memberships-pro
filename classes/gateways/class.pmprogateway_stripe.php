@@ -503,78 +503,81 @@ class PMProGateway_stripe extends PMProGateway {
 			<td colspan="2">
 				<hr />
 				<h2><?php esc_html_e( 'Stripe Checkout Settings (Beta)', 'paid-memberships-pro' ); ?></h2>
-			</td>
-		</tr>
-		<tr class="gateway gateway_stripe" <?php if ( $gateway != "stripe" ) { ?>style="display: none;"<?php } ?>>		
-			<td colspan="2">
-				<p class="pmpro_error">
-					<?php
-						esc_html_e(
-							'Stripe Checkout is an off-site checkout solution that offloads the entire payment collection process to Stripe.
-							This integration is currently in Beta, meaning that it is not reccomended for use on live sites.
-							As this integration relies heavily on processing webhooks sent by Stripe, it is essential to ensure that Stripe webhooks are properly configured before enabling Stripe Checkout.',
-							'paid-memberships-pro'
-						);
-					?>
-				</p>
+				<div class="notice notice-large notice-warning inline">
+					<p>
+						<strong><?php esc_html_e( 'Stripe Checkout is currently in beta and not recommended for use on live sites.', 'paid-memberships-pro' ); ?></strong><br />
+						<?php esc_html_e( 'Stripe Checkout is a secure, Stripe-hosted payment page that lets you collect payments quickly. The offsite, conversion-optimized payment form works across devices, removes friction with real-time card validation, and has built-in error messaging. This gateway option relies heavily on the webhooks sent by Stripe. Your Stripe webhooks must be properly configured before enabling Stripe Checkout.', 'paid-memberships-pro' );
+					?></p>
+				</div>
 			</td>
 		</tr>
 		<tr class="gateway gateway_stripe" <?php if ( $gateway != "stripe" ) { ?>style="display: none;"<?php } ?>>
 			<th scope="row" valign="top">
-				<label for="stripe_payment_flow"><?php _e( 'Payment Flow', 'paid-memberships-pro' ); ?>:</label>
+				<label for="stripe_payment_flow"><?php esc_html_e( 'Payment Flow', 'paid-memberships-pro' ); ?>:</label>
 			</th>
 			<td>
 				<select id="stripe_payment_flow" name="stripe_payment_flow">
-					<option value="onsite"><?php _e( 'On-Site', 'paid-memberships-pro' ); ?></option>
-					<option value="checkout" <?php if ( $values['stripe_payment_flow'] === 'checkout' ) { ?>selected="selected"<?php } ?>><?php _e( 'Stripe Checkout (Beta)', 'paid-memberships-pro' ); ?></option>
+					<option value="onsite"><?php esc_html_e( 'Accept payments on this site', 'paid-memberships-pro' ); ?></option>
+					<option value="checkout" <?php if ( $values['stripe_payment_flow'] === 'checkout' ) { ?>selected="selected"<?php } ?>><?php esc_html_e( 'Accept payments on Stripe (Stripe Checkout)', 'paid-memberships-pro' ); ?></option>
 				</select>
+				<p class="description"><?php esc_html_e( 'Embed the payment information fields on your Membership Checkout page or use the Stripe-hosted payment page (Stripe Checkout).', 'paid-memberships-pro' ); ?>
 			</td>
 		</tr>
 		<tr class="gateway gateway_stripe" <?php if ( $gateway != "stripe" ) { ?>style="display: none;"<?php } ?>>
 			<th scope="row" valign="top">
-				<label for="stripe_update_billing_flow"><?php _e( 'Update Billing Flow', 'paid-memberships-pro' ); ?>:</label>
+				<label for="stripe_update_billing_flow"><?php esc_html_e( 'Update Billing Flow', 'paid-memberships-pro' ); ?>:</label>
 			</th>
 			<td>
 				<select id="stripe_update_billing_flow" name="stripe_update_billing_flow">
-					<option value="onsite"><?php _e( 'On-Site', 'paid-memberships-pro' ); ?></option>
-					<option value="portal" <?php if ( $values['stripe_update_billing_flow'] === 'portal' ) { ?>selected="selected"<?php } ?>><?php _e( 'Stripe Customer Portal', 'paid-memberships-pro' ); ?></option>
+					<option value="onsite"><?php esc_html_e( 'Update billing on this site', 'paid-memberships-pro' ); ?></option>
+					<option value="portal" <?php if ( $values['stripe_update_billing_flow'] === 'portal' ) { ?>selected="selected"<?php } ?>><?php esc_html_e( 'Update billing in the Stripe Customer Portal', 'paid-memberships-pro' ); ?></option>
 				</select>
+				<p class="description"><?php esc_html_e( 'Embed the billing information fields on your Membership Billing page or use the Stripe Customer Portal hosted by Stripe.', 'paid-memberships-pro' ); ?></p>
 			</td>
 		</tr>
 		<tr class="gateway gateway_stripe" <?php if ( $gateway != "stripe" ) { ?>style="display: none;"<?php } ?>>
 			<th scope="row" valign="top">
-				<label for="stripe_checkout_billing_address"><?php _e( 'Collect Billing Address in Stripe Checkout', 'paid-memberships-pro' ); ?>:</label>
+				<label for="stripe_checkout_billing_address"><?php esc_html_e( 'Collect Billing Address in Stripe Checkout', 'paid-memberships-pro' ); ?>:</label>
 			</th>
 			<td>
 				<select id="stripe_checkout_billing_address" name="stripe_checkout_billing_address">
-					<option value="auto"><?php _e( 'Only when necessary.', 'paid-memberships-pro' ); ?></option>
-					<option value="required" <?php if ( 'required' === $values['stripe_checkout_billing_address'] ) { ?>selected="selected"<?php } ?>><?php _e( 'Always.', 'paid-memberships-pro' ); ?></option>
+					<option value="auto"><?php esc_html_e( 'Only when necessary', 'paid-memberships-pro' ); ?></option>
+					<option value="required" <?php if ( 'required' === $values['stripe_checkout_billing_address'] ) { ?>selected="selected"<?php } ?>><?php esc_html_e( 'Always', 'paid-memberships-pro' ); ?></option>
 				</select>
 			</td>
 		</tr>
 		<tr class="gateway gateway_stripe" <?php if ( $gateway != "stripe" ) { ?>style="display: none;"<?php } ?>>
 			<th scope="row" valign="top">
-				<label for="stripe_tax"><?php _e( 'Stripe Tax', 'paid-memberships-pro' ); ?>:</label>
+				<label for="stripe_tax"><?php esc_html_e( 'Stripe Tax', 'paid-memberships-pro' ); ?>:</label>
 			</th>
 			<td>
 				<select id="stripe_tax" name="stripe_tax">
-					<option value="no"><?php _e( 'Do not calculate tax.', 'paid-memberships-pro' ); ?></option>
-					<option value="inclusive" <?php if ( $values['stripe_tax'] === 'inclusive' ) { ?>selected="selected"<?php } ?>><?php _e( 'Membership price includes tax.', 'paid-memberships-pro' ); ?></option>
-					<option value="exclusive" <?php if ( $values['stripe_tax'] === 'exclusive' ) { ?>selected="selected"<?php } ?>><?php _e( 'Calculate tax on top of membership price.', 'paid-memberships-pro' ); ?></option>
+					<option value="no"><?php esc_html_e( 'Do not calculate tax', 'paid-memberships-pro' ); ?></option>
+					<option value="inclusive" <?php if ( $values['stripe_tax'] === 'inclusive' ) { ?>selected="selected"<?php } ?>><?php esc_html_e( 'Membership price includes tax', 'paid-memberships-pro' ); ?></option>
+					<option value="exclusive" <?php if ( $values['stripe_tax'] === 'exclusive' ) { ?>selected="selected"<?php } ?>><?php esc_html_e( 'Calculate tax on top of membership price', 'paid-memberships-pro' ); ?></option>
 				</select>
+				<?php
+					$allowed_stripe_tax_description_html = array (
+						'a' => array (
+							'href' => array(),
+							'target' => array(),
+							'title' => array(),
+						),
+					);
+				?>
+				<p class="description"><?php echo sprintf( wp_kses( __( 'Stripe Tax is only available when using Stripe Checkout (the Stripe-hosted payment page). You must <a target="_blank" href="%s">activate Stripe Tax</a> in your Stripe dashboard. <a target="_blank" href="%s">More information about Stripe Tax »</a>', 'paid-memberships-pro' ), $allowed_stripe_tax_description_html ), 'https://stripe.com/tax', 'https://dashboard.stripe.com/settings/tax/activate' ); ?></p>
 			</td>
-			<p class="description"><?php _e( 'Only available while using Stripe Checkout.', 'paid-memberships-pro' ); ?></p>
 		</tr>
 		<tr class="gateway gateway_stripe" <?php if ( $gateway != "stripe" ) { ?>style="display: none;"<?php } ?>>
 			<th scope="row" valign="top">
-				<label for="stripe_tax_id_collection_enabled"><?php _e( 'Collect Tax ID Numbers', 'paid-memberships-pro' ); ?>:</label>
+				<label for="stripe_tax_id_collection_enabled"><?php esc_html_e( 'Collect Tax IDs', 'paid-memberships-pro' ); ?>:</label>
 			</th>
 			<td>
 				<select id="stripe_tax_id_collection_enabled" name="stripe_tax_id_collection_enabled">
-					<option value="0"><?php _e( 'No', 'paid-memberships-pro' ); ?></option>
-					<option value="1" <?php if ( ! empty( $values['stripe_tax_id_collection_enabled'] ) ) { ?>selected="selected"<?php } ?>><?php _e( 'Yes', 'paid-memberships-pro' ); ?></option>
+					<option value="0"><?php esc_html_e( 'No', 'paid-memberships-pro' ); ?></option>
+					<option value="1" <?php if ( ! empty( $values['stripe_tax_id_collection_enabled'] ) ) { ?>selected="selected"<?php } ?>><?php esc_html_e( 'Yes', 'paid-memberships-pro' ); ?></option>
 				</select>
-				<p class="description"><?php _e( 'Only relevent if using Stripe Tax.', 'paid-memberships-pro' ); ?></p>
+				<p class="description"><?php esc_html_e( 'Tax IDs are only collected if you have enabled Stripe Tax. Stripe only performs automatic validation for ABN, EU VAT, and GB VAT numbers. You must verify that provided tax IDs are valid during the Session for all other numbers.', 'paid-memberships-pro' ); ?></p>
 			</td>
 		</tr>
 		<?php
