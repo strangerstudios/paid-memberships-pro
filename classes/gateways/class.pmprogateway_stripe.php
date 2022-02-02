@@ -14,6 +14,7 @@ use Stripe\ApplePayDomain as Stripe_ApplePayDomain;
 use Stripe\WebhookEndpoint as Stripe_Webhook;
 use Stripe\StripeClient as Stripe_Client; // Used for deleting webhook as of 2.4
 use Stripe\Account as Stripe_Account;
+use Stripe\Checkout\Session as Stripe_Checkout_Session;
 
 define( "PMPRO_STRIPE_API_VERSION", "2020-03-02" );
 
@@ -140,34 +141,45 @@ class PMProGateway_stripe extends PMProGateway {
 		$current_gateway = pmpro_getGateway();
 
 		// $_REQUEST['review'] here means the PayPal Express review pag
-		if ( ( $default_gateway == "stripe" || $current_gateway == "stripe" ) && empty( $_REQUEST['review'] ) )
-		{
-			add_action( 'pmpro_after_checkout_preheader', array(
-				'PMProGateway_stripe',
-				'pmpro_checkout_after_preheader'
-			) );
-			
-			add_action( 'pmpro_billing_preheader', array( 'PMProGateway_stripe', 'pmpro_checkout_after_preheader' ) );
-			add_filter( 'pmpro_checkout_order', array( 'PMProGateway_stripe', 'pmpro_checkout_order' ) );
-			add_filter( 'pmpro_billing_order', array( 'PMProGateway_stripe', 'pmpro_checkout_order' ) );
+		if ( ( $default_gateway == "stripe" || $current_gateway == "stripe" ) && empty( $_REQUEST['review'] ) ) {
 			add_filter( 'pmpro_include_billing_address_fields', array(
 				'PMProGateway_stripe',
 				'pmpro_include_billing_address_fields'
 			) );
-			add_filter( 'pmpro_include_cardtype_field', array(
-				'PMProGateway_stripe',
-				'pmpro_include_billing_address_fields'
-			) );
-			add_filter( 'pmpro_include_payment_information_fields', array(
-				'PMProGateway_stripe',
-				'pmpro_include_payment_information_fields'
-			) );
 
-			//make sure we clean up subs we will be cancelling after checkout before processing
-			add_action( 'pmpro_checkout_before_processing', array(
-				'PMProGateway_stripe',
-				'pmpro_checkout_before_processing'
-			) );
+			
+
+			if ( ! self::using_stripe_checkout() ) {
+				// On-site checkout flow.
+				add_action( 'pmpro_after_checkout_preheader', array(
+					'PMProGateway_stripe',
+					'pmpro_checkout_after_preheader'
+				) );
+				add_filter( 'pmpro_include_cardtype_field', array(
+					'PMProGateway_stripe',
+					'pmpro_include_billing_address_fields'
+				) );
+				add_action( 'pmpro_billing_preheader', array( 'PMProGateway_stripe', 'pmpro_checkout_after_preheader' ) );
+				add_filter( 'pmpro_checkout_order', array( 'PMProGateway_stripe', 'pmpro_checkout_order' ) );
+				add_filter( 'pmpro_billing_order', array( 'PMProGateway_stripe', 'pmpro_checkout_order' ) );
+				add_filter( 'pmpro_include_payment_information_fields', array(
+					'PMProGateway_stripe',
+					'pmpro_include_payment_information_fields'
+				) );
+
+				//make sure we clean up subs we will be cancelling after checkout before processing
+				add_action( 'pmpro_checkout_before_processing', array(
+					'PMProGateway_stripe',
+					'pmpro_checkout_before_processing'
+				) );
+			} else {
+				// Checkout flow for Stripe Checkout.
+				add_filter('pmpro_include_payment_information_fields', '__return_false');
+				add_filter('pmpro_checkout_default_submit_button', array('PMProGateway_stripe', 'pmpro_checkout_default_submit_button'));
+				add_filter('pmpro_checkout_before_change_membership_level', array('PMProGateway_stripe', 'pmpro_checkout_before_change_membership_level'), 10, 2);
+				add_filter('pmprommpu_gateway_supports_multiple_level_checkout', '__return_false', 10, 2);
+				add_action( 'pmpro_billing_preheader', array( 'PMProGateway_stripe', 'pmpro_billing_preheader_stripe_checkout' ) );
+			}
 		}
 
 		add_action( 'pmpro_payment_option_fields', array( 'PMProGateway_stripe', 'pmpro_set_up_apple_pay' ), 10, 2 );
@@ -246,6 +258,14 @@ class PMProGateway_stripe extends PMProGateway {
 			'accepted_credit_cards',
 			'stripe_payment_request_button',
 		);
+
+		if ( self::stripe_checkout_beta_enabled() ) {
+			$options[] = 'stripe_payment_flow'; // 'onsite' or 'checkout'
+			$options[] = 'stripe_update_billing_flow'; // 'onsite' or 'portal'
+			$options[] = 'stripe_checkout_billing_address'; //'auto' or 'required'
+			$options[] = 'stripe_tax'; // 'no', 'inclusive', 'exclusive'
+			$options[] = 'stripe_tax_id_collection_enabled'; // '0', '1'
+		}
 
 		return $options;
 	}
@@ -473,7 +493,90 @@ class PMProGateway_stripe extends PMProGateway {
 					echo ' style="display: none;"';
 				}
 				echo '><th>&nbsp;</th><td><p class="description">' . sprintf( wp_kses( __( 'Optional: Offer PayPal Express as an option at checkout using the <a target="_blank" href="%s" title="Paid Memberships Pro - Add PayPal Express Option at Checkout Add On">Add PayPal Express Add On</a>.', 'paid-memberships-pro' ), $allowed_appe_html ), 'https://www.paidmembershipspro.com/add-ons/pmpro-add-paypal-express-option-checkout/?utm_source=plugin&utm_medium=pmpro-paymentsettings&utm_campaign=add-ons&utm_content=pmpro-add-paypal-express-option-checkout' ) . '</p></td></tr>';
-		} ?>
+		}
+		if ( ! self::stripe_checkout_beta_enabled() ) {
+			// Don't show Stripe Checkout settings if the beta is not enabled.
+			return;
+		}
+		?>
+		<tr class="pmpro_settings_divider gateway gateway_stripe" <?php if ( $gateway != "stripe" ) { ?>style="display: none;"<?php } ?>>		
+			<td colspan="2">
+				<hr />
+				<h2><?php esc_html_e( 'Stripe Checkout Settings (Beta)', 'paid-memberships-pro' ); ?></h2>
+			</td>
+		</tr>
+		<tr class="gateway gateway_stripe" <?php if ( $gateway != "stripe" ) { ?>style="display: none;"<?php } ?>>		
+			<td colspan="2">
+				<p class="pmpro_error">
+					<?php
+						esc_html_e(
+							'Stripe Checkout is an off-site checkout solution that offloads the entire payment collection process to Stripe.
+							This integration is currently in Beta, meaning that it is not reccomended for use on live sites.
+							As this integration relies heavily on processing webhooks sent by Stripe, it is essential to ensure that Stripe webhooks are properly configured before enabling Stripe Checkout.',
+							'paid-memberships-pro'
+						);
+					?>
+				</p>
+			</td>
+		</tr>
+		<tr class="gateway gateway_stripe" <?php if ( $gateway != "stripe" ) { ?>style="display: none;"<?php } ?>>
+			<th scope="row" valign="top">
+				<label for="stripe_payment_flow"><?php _e( 'Payment Flow', 'paid-memberships-pro' ); ?>:</label>
+			</th>
+			<td>
+				<select id="stripe_payment_flow" name="stripe_payment_flow">
+					<option value="onsite"><?php _e( 'On-Site', 'paid-memberships-pro' ); ?></option>
+					<option value="checkout" <?php if ( $values['stripe_payment_flow'] === 'checkout' ) { ?>selected="selected"<?php } ?>><?php _e( 'Stripe Checkout (Beta)', 'paid-memberships-pro' ); ?></option>
+				</select>
+			</td>
+		</tr>
+		<tr class="gateway gateway_stripe" <?php if ( $gateway != "stripe" ) { ?>style="display: none;"<?php } ?>>
+			<th scope="row" valign="top">
+				<label for="stripe_update_billing_flow"><?php _e( 'Update Billing Flow', 'paid-memberships-pro' ); ?>:</label>
+			</th>
+			<td>
+				<select id="stripe_update_billing_flow" name="stripe_update_billing_flow">
+					<option value="onsite"><?php _e( 'On-Site', 'paid-memberships-pro' ); ?></option>
+					<option value="portal" <?php if ( $values['stripe_update_billing_flow'] === 'portal' ) { ?>selected="selected"<?php } ?>><?php _e( 'Stripe Customer Portal', 'paid-memberships-pro' ); ?></option>
+				</select>
+			</td>
+		</tr>
+		<tr class="gateway gateway_stripe" <?php if ( $gateway != "stripe" ) { ?>style="display: none;"<?php } ?>>
+			<th scope="row" valign="top">
+				<label for="stripe_checkout_billing_address"><?php _e( 'Collect Billing Address in Stripe Checkout', 'paid-memberships-pro' ); ?>:</label>
+			</th>
+			<td>
+				<select id="stripe_checkout_billing_address" name="stripe_checkout_billing_address">
+					<option value="auto"><?php _e( 'Only when necessary.', 'paid-memberships-pro' ); ?></option>
+					<option value="required" <?php if ( 'required' === $values['stripe_checkout_billing_address'] ) { ?>selected="selected"<?php } ?>><?php _e( 'Always.', 'paid-memberships-pro' ); ?></option>
+				</select>
+			</td>
+		</tr>
+		<tr class="gateway gateway_stripe" <?php if ( $gateway != "stripe" ) { ?>style="display: none;"<?php } ?>>
+			<th scope="row" valign="top">
+				<label for="stripe_tax"><?php _e( 'Stripe Tax', 'paid-memberships-pro' ); ?>:</label>
+			</th>
+			<td>
+				<select id="stripe_tax" name="stripe_tax">
+					<option value="no"><?php _e( 'Do not calculate tax.', 'paid-memberships-pro' ); ?></option>
+					<option value="inclusive" <?php if ( $values['stripe_tax'] === 'inclusive' ) { ?>selected="selected"<?php } ?>><?php _e( 'Membership price includes tax.', 'paid-memberships-pro' ); ?></option>
+					<option value="exclusive" <?php if ( $values['stripe_tax'] === 'exclusive' ) { ?>selected="selected"<?php } ?>><?php _e( 'Calculate tax on top of membership price.', 'paid-memberships-pro' ); ?></option>
+				</select>
+			</td>
+			<p class="description"><?php _e( 'Only available while using Stripe Checkout.', 'paid-memberships-pro' ); ?></p>
+		</tr>
+		<tr class="gateway gateway_stripe" <?php if ( $gateway != "stripe" ) { ?>style="display: none;"<?php } ?>>
+			<th scope="row" valign="top">
+				<label for="stripe_tax_id_collection_enabled"><?php _e( 'Collect Tax ID Numbers', 'paid-memberships-pro' ); ?>:</label>
+			</th>
+			<td>
+				<select id="stripe_tax_id_collection_enabled" name="stripe_tax_id_collection_enabled">
+					<option value="0"><?php _e( 'No', 'paid-memberships-pro' ); ?></option>
+					<option value="1" <?php if ( ! empty( $values['stripe_tax_id_collection_enabled'] ) ) { ?>selected="selected"<?php } ?>><?php _e( 'Yes', 'paid-memberships-pro' ); ?></option>
+				</select>
+				<p class="description"><?php _e( 'Only relevent if using Stripe Tax.', 'paid-memberships-pro' ); ?></p>
+			</td>
+		</tr>
 		<?php
 	}
 
@@ -625,32 +728,28 @@ class PMProGateway_stripe extends PMProGateway {
 		global $pmpro_stripe_lite, $current_user, $bemail, $bconfirmemail;
 
 		//CVV is not required if set that way at Stripe. The Stripe JS will require it if it is required.
-		unset( $fields['CVV'] );
+		$remove = [ 'CVV' ];
 
 		//if using stripe lite, remove some fields from the required array
 		if ( $pmpro_stripe_lite ) {
-			//some fields to remove
-			$remove = array(
-				'bfirstname',
-				'blastname',
-				'baddress1',
-				'bcity',
-				'bstate',
-				'bzipcode',
-				'bphone',
-				'bcountry',
-				'CardType'
-			);
-			//if a user is logged in, don't require bemail either
-			if ( ! empty( $current_user->user_email ) ) {
-				$remove[]      = 'bemail';
-				$bemail        = $current_user->user_email;
-				$bconfirmemail = $bemail;
-			}
-			//remove the fields
-			foreach ( $remove as $field ) {
-				unset( $fields[ $field ] );
-			}
+			$remove = array_merge( $remove, [ 'bfirstname', 'blastname', 'baddress', 'bcity', 'bstate', 'bzipcode', 'bphone', 'bcountry', 'CardType' ] );
+		}
+
+		// If a user is logged in, don't require bemail either
+		if ( ! empty( $current_user->user_email ) ) {
+			$remove        = array_merge( $remove, [ 'bemail' ] );
+			$bemail        = $current_user->user_email;
+			$bconfirmemail = $bemail;
+		}
+
+		// If using Stripe Checkout, don't require card information.
+		if ( self::using_stripe_checkout() ) {
+			$remove = array_merge( $remove, [ 'CardType', 'AccountNumber', 'ExpirationMonth', 'ExpirationYear', 'CVV' ] );
+		}
+
+		// Remove the fields.
+		foreach ( $remove as $field ) {
+			unset( $fields[ $field ] );
 		}
 
 		return $fields;
@@ -1366,6 +1465,270 @@ class PMProGateway_stripe extends PMProGateway {
 		return true;
 	}
 
+	/**
+	 * Check if the user has opted into the Stripe Checkout beta.
+	 *
+	 * @return bool
+	 */
+	public static function stripe_checkout_beta_enabled() {
+		return ( defined( 'PMPRO_STRIPE_CHECKOUT_BETA_ENABLED' ) && PMPRO_STRIPE_CHECKOUT_BETA_ENABLED );
+	}
+
+	/**
+	 * Check if Stripe Checkout is being used.
+	 *
+	 * @return bool
+	 */
+	public static function using_stripe_checkout() {
+		// While Stripe Checkout is in beta, only enable it if the constant is set.
+		if ( ! self::stripe_checkout_beta_enabled() ) {
+			return false;
+		}
+
+		return 'checkout' === pmpro_getOption( 'stripe_payment_flow' );
+	}
+
+	/**
+	 * Swap in our submit buttons.
+	 *
+	 * @since TBD
+	 *
+	 * @param bool $show Whether to show the default submit button.
+	 * @return bool
+	 */
+	static function pmpro_checkout_default_submit_button($show)
+	{
+		global $gateway;
+
+		//show our submit buttons
+		?>
+		<span id="pmpro_stripe_checkout" <?php if( $gateway != "stripe" ) { ?>style="display: none;"<?php } ?>>
+			<?php
+			// If the current user's last order is a pending Stripe order, warn them that they already have a pending order.
+			$last_order = new MemberOrder();
+			$last_order->getLastMemberOrder( get_current_user_id(), null, null, 'stripe' );
+			if ( ! empty( $last_order->id ) && $last_order->status === 'pending' ) {
+				?>
+				<p class="pmpro_error"><?php _e( 'Your previous order has not yet been processed. Submitting your payment again will cause a separate charge to be initiated.', 'paid-memberships-pro' ); ?></p>
+				<?php
+			}
+			
+			?>
+			<input type="hidden" name="submit-checkout" value="1" />
+			<input type="submit" class="<?php echo pmpro_get_element_class( 'pmpro_btn pmpro_btn-submit-checkout', 'pmpro_btn-submit-checkout' ); ?>" value="<?php _e('Check Out With Stripe', 'paid-memberships-pro' ); ?> &raquo;" />
+		</span>
+		<?php
+
+		//don't show the default submit button.
+		return false;
+	}
+
+	/**
+	 * Instead of changeing membership levels, send users to Stripe to pay.
+	 *
+	 * @since TBD
+	 *
+	 * @param int         $user_id ID of user who is checking out.
+	 * @param MemberOrder $morder  MemberOrder object for this checkout.
+	 */
+	static function pmpro_checkout_before_change_membership_level($user_id, $morder)
+	{
+		global $pmpro_level, $discount_code, $discount_code_id, $wpdb, $pmpro_currency;
+
+		//if no order, no need to pay
+		if(empty($morder))
+			return;
+
+		$morder->user_id = $user_id;
+		$morder->status  = 'token';
+		$morder->saveOrder();
+
+		// Save some checkout information in the order so that we can access it when the payment is complete.
+		// Save the request variables.
+		$request_vars = $_REQUEST;
+		unset( $request_vars['password'] );
+		unset( $request_vars['password2'] );
+		unset( $request_vars['password2_copy'] );
+		update_pmpro_membership_order_meta( $morder->id, 'checkout_request_vars', $request_vars );
+
+		// Save the checkout level.
+		$pmpro_level_arr = (array) $pmpro_level;
+		update_pmpro_membership_order_meta( $morder->id, 'checkout_level', $pmpro_level_arr );
+
+		// Save the discount code.
+		$pmpro_discount_code_arr = (array) $discount_code;
+		update_pmpro_membership_order_meta( $morder->id, 'checkout_discount_code', $pmpro_discount_code_arr );
+
+		// Time to send the user to pay with Stripe!
+		$stripe = new PMProGateway_stripe();
+
+		// Let's first get the customer to charge.
+		$customer = $stripe->update_customer_at_checkout( $morder );
+		if ( empty( $customer ) ) {
+			// There was an issue creating/updating the Stripe customer.
+			// $order will have an error message.
+			pmpro_setMessage( __( 'Could not get customer. ', 'paid-memberships-pro' ) . $order->error, 'pmpro_error', true );
+			return;
+		}
+
+		// Next, let's get the product being purchased.
+		$product_id = $stripe->get_product_id_for_level( $morder->membership_id );
+		if ( empty( $product_id ) ) {
+			// Something went wrong getting the product ID or creating the product.
+			// Show the user a general error message.
+			pmpro_setMessage( __( 'Could not get product ID.', 'paid-memberships-pro' ), 'pmpro_error', true );
+			return;
+		}
+
+		// Then, we need to build the line items array to charge.
+		$line_items = array();
+
+		// Used to calculate Stripe Connect fees.
+		$application_fee_percentage = self::get_application_fee_percentage();
+
+		// First, let's handle the initial payment.
+		if ( ! empty( $morder->InitialPayment ) ) {
+			$initial_payment_price = $stripe->get_price_for_product( $product_id, $morder->InitialPayment );
+			if ( is_string( $initial_payment_price ) ) {
+				// There was an error getting the price.
+				pmpro_setMessage( __( 'Could not get price for initial payment. ', 'paid-memberships-pro' ) . $initial_payment_price, 'pmpro_error', true );
+				return;
+			}
+			$line_items[] = array(
+				'price'    => $initial_payment_price->id,
+				'quantity' => 1,
+			);
+			if ( ! empty( $application_fee_percentage ) ) {
+				$application_fee = floor( $initial_payment_price->unit_amount * $application_fee_percentage / 100 );
+				if ( ! empty( $application_fee ) ) {
+					$payment_intent_data = array(
+						'application_fee_amount' => $application_fee,
+					);
+				}
+			}
+		}
+
+		// Now, let's handle the recurring payments.
+		if ( pmpro_isLevelRecurring( $morder->membership_level ) ) {
+			$subtotal                 = $morder->PaymentAmount;
+			$tax                      = $morder->getTaxForPrice( $subtotal );
+			$recurring_payment_amount = pmpro_round_price( (float) $subtotal + (float) $tax );
+			$recurring_payment_price  = $stripe->get_price_for_product( $product_id, $recurring_payment_amount, $morder->BillingPeriod, $morder->BillingFrequency );
+			if ( is_string( $recurring_payment_price ) ) {
+				// There was an error getting the price.
+				pmpro_setMessage( __( 'Could not get price for recurring payment. ', 'paid-memberships-pro' ) . $recurring_payment_price, 'pmpro_error', true );
+				return;
+			}
+			$line_items[] = array(
+				'price'    => $recurring_payment_price->id,
+				'quantity' => 1,
+			);
+			$subscription_data = array(
+				'trial_period_days' => $stripe->calculate_trial_period_days( $morder ),
+			);
+			// Add application fee for Stripe Connect.
+			$application_fee_percentage = self::get_application_fee_percentage();
+			if ( ! empty( $application_fee_percentage ) ) {
+				$subscription_data['application_fee_percent'] = $application_fee_percentage;
+			}
+		}
+
+		// Set up tax and billing addres collection.
+		$automatic_tax = ( ! empty( pmpro_getOption( 'stripe_tax' ) ) && 'no' !== pmpro_getOption( 'stripe_tax' ) ) ? array(
+			'enabled' => true,
+		) : array(
+			'enabled' => false,
+		);
+		$tax_id_collection = ! empty( pmpro_getOption( 'stripe_tax_id_collection_enabled' ) ) ? array(
+			'enabled' => true,
+		) : array(
+			'enabled' => false,
+		);
+		$billing_address_collection = pmpro_getOption( 'stripe_checkout_billing_address' ) ?: 'auto';
+
+		// And let's send 'em to Stripe!
+		$checkout_session_params = array(
+			'customer' => $customer->id,
+			'line_items' => $line_items,
+			'mode' => empty( $subscription_data ) ? 'payment' : 'subscription',
+			'automatic_tax' => $automatic_tax,
+			'tax_id_collection' => $tax_id_collection,
+			'billing_address_collection' => $billing_address_collection,
+			'customer_update' => array(
+				'address' => 'auto',
+				'name' => 'auto'
+			),
+			'success_url' =>  add_query_arg( 'level', $morder->membership_level->id, pmpro_url("confirmation" ) ),
+			'cancel_url' =>  add_query_arg( 'level', $morder->membership_level->id, pmpro_url("checkout" ) ),
+		);
+		if ( ! empty( $subscription_data ) ) {
+			$checkout_session_params['subscription_data'] = $subscription_data;
+		} elseif ( ! empty( $payment_intent_data ) ) {
+			$checkout_session_params['payment_intent_data'] = $payment_intent_data;
+		}
+
+		try {
+			$checkout_session = Stripe_Checkout_Session::create( $checkout_session_params );
+		} catch ( Throwable $th ) {
+			// Error creating checkout session.
+			pmpro_setMessage( __( 'Could not create checkout session. ', 'paid-memberships-pro' ) . $th->getMessage(), 'pmpro_error', true );
+			return;
+		} catch ( Exception $e ) {
+			// Error creating checkout session.
+			pmpro_setMessage( __( 'Could not create checkout session. ', 'paid-memberships-pro' ) . $e->getMessage(), 'pmpro_error', true );
+			return;
+		}
+
+		// Save so that we can confirm the payment later.
+		update_pmpro_membership_order_meta( $morder->id, 'stripe_checkout_session_id', $checkout_session->id );
+		wp_redirect( $checkout_session->url );
+		exit;
+	}
+
+	/**
+	 * If using Stripe Checkout, either redirect the user to the Stripe Customer
+	 * portal or set up our update billing page with the onsite payment fields.
+	 *
+	 * @since TBD
+	 */
+	public static function pmpro_billing_preheader_stripe_checkout() {
+		if ( 'portal' === pmpro_getOption( 'stripe_update_billing_flow' ) ) {
+			// Send user to Stripe Customer Portal.
+			$user_order = new MemberOrder();
+			$user_order->getLastMemberOrder( null, array( 'success', 'pending' ) );
+
+			// Check whether the user's most recent order is a Stripe subscription.
+			if ( empty( $user_order->gateway ) || 'stripe' !== $user_order->gateway ) {
+				return;
+			}
+
+			$stripe = new PMProGateway_stripe();
+			$customer = $stripe->get_customer_for_user( $user_order->user_id );
+			if ( empty( $customer->id ) ) {
+				return;
+			}
+
+			$customer_portal_url = $stripe->get_customer_portal_url( $customer->id );
+			if ( ! empty( $customer_portal_url ) ) {
+				wp_redirect( $customer_portal_url );
+				exit;
+			}
+		} else {
+			// Disable Stripe Checkout functionality for the rest of this page load.
+			add_filter( 'pmpro_include_cardtype_field', array(
+				'PMProGateway_stripe',
+				'pmpro_include_billing_address_fields'
+			), 15 );
+			add_action( 'pmpro_billing_preheader', array( 'PMProGateway_stripe', 'pmpro_checkout_after_preheader' ), 15 );
+			add_filter( 'pmpro_billing_order', array( 'PMProGateway_stripe', 'pmpro_checkout_order' ), 15 );
+			add_filter( 'pmpro_include_payment_information_fields', array(
+				'PMProGateway_stripe',
+				'pmpro_include_payment_information_fields'
+			), 15 );
+			add_filter( 'option_pmpro_stripe_payment_flow', '__return_false' ); // Disable Stripe Checkout for rest of page load.
+		}
+	}
+
 	/****************************************
 	 ************ PUBLIC METHODS ************
 	 ****************************************/
@@ -1375,6 +1738,11 @@ class PMProGateway_stripe extends PMProGateway {
 	 * @since 1.4
 	 */
 	public function process( &$order ) {
+		if ( self::using_stripe_checkout() ) {
+			// If using Stripe Checkout, we will try to collect the payment later.
+			return true;
+		}
+
 		$payment_transaction_id = '';
 		$subscription_transaction_id = '';
 
@@ -1748,6 +2116,26 @@ class PMProGateway_stripe extends PMProGateway {
 			$order->shorterror = $order->error;
 
 			return false;    //no customer found
+		}
+	}
+
+	/**
+	 * Get the URL for a customer's Stripe Customer Portal.
+	 *
+	 * @since TBD
+	 *
+	 * @param string $customer_id Customer to get the URL for.
+	 * @return string URL for customer portal, or empty String if not found.
+	 */
+	public function get_customer_portal_url( $customer_id ) {
+		try {
+			$session = \Stripe\BillingPortal\Session::create([
+				'customer' => $customer_id,
+				'return_url' => pmpro_url( 'account' ),
+			]);
+			return $session->url;
+		} catch ( Exception $e ) {
+			return '';
 		}
 	}
 
@@ -2299,7 +2687,7 @@ class PMProGateway_stripe extends PMProGateway {
 	 * @param string|null $cycle_period for subscription payments.
 	 * @param string|null $cycle_number of cycle periods between each subscription payment.
 	 *
-	 * @return string|null Price ID.
+	 * @return Stripe_Price|string Price or error message.
 	 */
 	private function get_price_for_product( $product_id, $amount, $cycle_period = null, $cycle_number = null ) {
 		global $pmpro_currency;
@@ -2308,6 +2696,12 @@ class PMProGateway_stripe extends PMProGateway {
 		$is_recurring = ! empty( $cycle_period ) && ! empty( $cycle_number );
 		$unit_amount  = intval( $amount * pow( 10, intval( $currency['decimals'] ) ) );
 		$cycle_period = strtolower( $cycle_period );
+
+		// Only for use with Stripe Checkout.
+		$tax_behavior = pmpro_getOption( 'stripe_tax' );
+		if ( ! self::using_stripe_checkout() || empty( $tax_behavior ) ) {
+			$tax_behavior = 'no';
+		}
 
 		$price_search_args = array(
 			'product'  => $product_id,
@@ -2320,31 +2714,34 @@ class PMProGateway_stripe extends PMProGateway {
 
 		try {
 			$prices = Stripe_Price::all( $price_search_args );
-
-			foreach ( $prices as $price ) {
-				// Check whether price is the same. If not, continue.
-				if ( intval( $price->unit_amount ) !== intval( $unit_amount ) ) {
-					continue;
-				}
-				// Check if recurring structure is the same. If not, continue.
-				if ( $is_recurring && ( empty( $price->recurring->interval_count ) || intval( $price->recurring->interval_count ) !== intval( $cycle_number ) ) ) {
-					continue;
-				}
-				return $price->id;
-			}
 		} catch (\Throwable $th) {
 			// There was an error listing prices.
-			return;
+			return $th->getMessage();;
 		} catch (\Exception $e) {
 			// There was an error listing prices.
-			return;
+			return $e->getMessage();
+		}
+		foreach ( $prices as $price ) {
+			// Check whether price is the same. If not, continue.
+			if ( intval( $price->unit_amount ) !== intval( $unit_amount ) ) {
+				continue;
+			}
+			// Check if recurring structure is the same. If not, continue.
+			if ( $is_recurring && ( empty( $price->recurring->interval_count ) || intval( $price->recurring->interval_count ) !== intval( $cycle_number ) ) ) {
+				continue;
+			}
+			// Check if tax is enabled and set up correctly. If not, continue.
+			if ( 'no' !== $tax_behavior && $price->tax_behavior !== $tax_behavior ) {
+				continue;
+			}
+			return $price;
 		}
 
 		// Create a new Price.
 		$price_args = array(
 			'product'     => $product_id,
 			'currency'    => strtolower( $pmpro_currency ),
-			'unit_amount' => $unit_amount
+			'unit_amount' => $unit_amount,
 		);
 		if ( $is_recurring ) {
 			$price_args['recurring'] = array(
@@ -2352,16 +2749,21 @@ class PMProGateway_stripe extends PMProGateway {
 				'interval_count' => $cycle_number
 			);
 		}
+		if ( 'no' !== $tax_behavior ) {
+			$price_args['tax_behavior'] = $tax_behavior;
+		}
 
 		try {
 			$price = Stripe_Price::create( $price_args );
 			if ( ! empty( $price->id ) ) {
-				return $price->id;
+				return $price;
 			}
 		} catch (\Throwable $th) {
 			// Could not create product.
+			return $th->getMessage();
 		} catch (\Exception $e) {
 			// Could not create product.
+			return $e->getMessage();
 		}
 	}
 
@@ -2435,7 +2837,7 @@ class PMProGateway_stripe extends PMProGateway {
 			$subscription_params = array(
 				'customer'          => $customer_id,
 				'items'             => array(
-					array( 'price' => $price ),
+					array( 'price' => $price->id ),
 				),
 				'trial_period_days' => $trial_period_days,
 				'expand'                 => array(
@@ -2735,8 +3137,6 @@ class PMProGateway_stripe extends PMProGateway {
 			<?php
 	}
 
-	
-
 	/****************************************
 	 ******* METHODS BECOMING PRIVATE *******
 	 ****************************************/
@@ -2791,12 +3191,21 @@ class PMProGateway_stripe extends PMProGateway {
 	public static function webhook_events() {
 		// Show deprecation warning if called publically.
 		pmpro_method_should_be_private( '2.7.0' );
-		return apply_filters( 'pmpro_stripe_webhook_events', array(
+
+		$events = array(
 			'invoice.payment_succeeded',
 			'invoice.payment_action_required',
 			'customer.subscription.deleted',
-			'charge.failed'
-		) );
+			'charge.failed',
+		);
+
+		if ( self::using_stripe_checkout() ) {
+			$events[] = 'checkout.session.completed';
+			$events[] = 'checkout.session.async_payment_succeeded';
+			$events[] = 'checkout.session.async_payment_failed';
+		}
+
+		return apply_filters( 'pmpro_stripe_webhook_events', $events );
 	}
 
 	/**
@@ -3522,7 +3931,6 @@ class PMProGateway_stripe extends PMProGateway {
 	 * @deprecated 2.7.0. Only deprecated for public use, will be changed to private non-static in a future version.
 	 *
 	 * @param  array $params to be sent to Stripe.
-	 * @param  bool  $add_percent true if percentage should be added, false if actual amount.
 	 * @return array params with application fee if applicable.
 	 */
 	public static function add_application_fee_amount( $params ) {
