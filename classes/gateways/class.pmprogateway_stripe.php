@@ -516,26 +516,13 @@ class PMProGateway_stripe extends PMProGateway {
 				<label for="stripe_payment_flow"><?php esc_html_e( 'Payment Flow', 'paid-memberships-pro' ); ?>:</label>
 			</th>
 			<td>
-				<select id="stripe_payment_flow" name="stripe_payment_flow" onchange="pmpro_updateAllowStripeCheckoutTRs();">
+				<select id="stripe_payment_flow" name="stripe_payment_flow">
 					<option value="onsite" <?php selected( $values['stripe_payment_flow'], 'onsite' ); ?>><?php esc_html_e( 'Accept payments on this site', 'paid-memberships-pro' ); ?></option>
 					<option value="checkout" <?php selected( $values['stripe_payment_flow'], 'checkout' ); ?>><?php esc_html_e( 'Accept payments in Stripe (Stripe Checkout)', 'paid-memberships-pro' ); ?></option>
 				</select>
 				<p class="description"><?php esc_html_e( 'Embed the payment information fields on your Membership Checkout page or use the Stripe-hosted payment page (Stripe Checkout).', 'paid-memberships-pro' ); ?>
 			</td>
 		</tr>
-		<script>
-			function pmpro_updateAllowStripeCheckoutTRs() {
-				// Toggle to show the Stripe Checkout-specific settings.
-				jQuery(document).ready(function(){
-					var allowStripeCheckout = jQuery('#stripe_payment_flow').val();
-					if ( allowStripeCheckout == 'checkout' ) {
-						jQuery('.gateway_stripe_checkout_fields').show();
-					} else {
-						jQuery('.gateway_stripe_checkout_fields').hide();
-					}
-				});
-			}
-		</script>
 		<tr class="gateway gateway_stripe" <?php if ( $gateway != "stripe" ) { ?>style="display: none;"<?php } ?>>
 			<th scope="row" valign="top">
 				<label for="stripe_update_billing_flow"><?php esc_html_e( 'Update Billing Flow', 'paid-memberships-pro' ); ?>:</label>
@@ -548,7 +535,7 @@ class PMProGateway_stripe extends PMProGateway {
 				<p class="description"><?php esc_html_e( 'Embed the billing information fields on your Membership Billing page or use the Stripe Customer Portal hosted by Stripe.', 'paid-memberships-pro' ); ?></p>
 			</td>
 		</tr>
-		<tr class="gateway gateway_stripe gateway_stripe_checkout_fields" <?php if ( $gateway != "stripe" || in_array( $values['stripe_payment_flow'], array( null, 'onsite' ) ) ) { ?>style="display: none;"<?php } ?>>
+		<tr class="gateway gateway_stripe" <?php if ( $gateway != "stripe" ) { ?>style="display: none;"<?php } ?>>
 			<th scope="row" valign="top">
 				<label for="stripe_checkout_billing_address"><?php esc_html_e( 'Collect Billing Address in Stripe Checkout', 'paid-memberships-pro' ); ?>:</label>
 			</th>
@@ -559,7 +546,7 @@ class PMProGateway_stripe extends PMProGateway {
 				</select>
 			</td>
 		</tr>
-		<tr class="gateway gateway_stripe gateway_stripe_checkout_fields" <?php if ( $gateway != "stripe" || in_array( $values['stripe_payment_flow'], array( null, 'onsite' ) ) ) { ?>style="display: none;"<?php } ?>>
+		<tr class="gateway gateway_stripe" <?php if ( $gateway != "stripe" ) { ?>style="display: none;"<?php } ?>>
 			<th scope="row" valign="top">
 				<label for="stripe_tax"><?php esc_html_e( 'Stripe Tax', 'paid-memberships-pro' ); ?>:</label>
 			</th>
@@ -1544,7 +1531,7 @@ class PMProGateway_stripe extends PMProGateway {
 			
 			?>
 			<input type="hidden" name="submit-checkout" value="1" />
-			<input type="submit" class="<?php echo pmpro_get_element_class( 'pmpro_btn pmpro_btn-submit-checkout', 'pmpro_btn-submit-checkout' ); ?>" value="<?php _e('Check Out With Stripe', 'paid-memberships-pro' ); ?> &raquo;" />
+			<input type="submit" class="<?php echo pmpro_get_element_class( 'pmpro_btn pmpro_btn-submit-checkout', 'pmpro_btn-submit-checkout' ); ?>" value="<?php esc_attr_e( 'Continue to Payment', 'paid-memberships-pro' ); ?> &raquo;" />
 		</span>
 		<?php
 
