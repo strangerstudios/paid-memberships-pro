@@ -3719,6 +3719,24 @@ function pmpro_doing_webhook( $gateway = null, $set = false ){
 }
 
 /**
+ * Called once a webhook has been run but was not handled.
+ * 
+ * @return void
+ *
+ * @since TBD
+ */
+function pmpro_unhandled_webhook(){
+	/**
+	 * Allow hooking into after a webhook has been run but was not handled.
+	 *
+	 * @since TBD
+	 *
+	 * @param string $gateway The gateway the webhook was not handled for.
+	 */
+	do_action( 'pmpro_unhandled_webhook', PMPRO_DOING_WEBHOOK );
+}
+
+/**
  * Sanitizing strings using wp_kses and allowing style tags.
  *
  * @param string $original_string  The string to sanitize.

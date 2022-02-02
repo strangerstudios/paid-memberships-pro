@@ -359,15 +359,7 @@ if( '' === $txn_type && 'Refunded' === $payment_status ) {
 //if we got here, this is a different kind of txn
 ipnlog( "No recurring payment id or item number. txn_type = " . $txn_type );
 
-/**
- * Allow hooking into after a webhook has been run but was not handled.
- *
- * @since TBD
- *
- * @param string $gateway The gateway the webhook was not handled for.
- */
-do_action( 'pmpro_webhook_unhandled', PMPRO_DOING_WEBHOOK );
-
+pmpro_unhandled_webhook();
 pmpro_ipnExit();
 
 /*
