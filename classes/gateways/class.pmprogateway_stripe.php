@@ -516,13 +516,26 @@ class PMProGateway_stripe extends PMProGateway {
 				<label for="stripe_payment_flow"><?php esc_html_e( 'Payment Flow', 'paid-memberships-pro' ); ?>:</label>
 			</th>
 			<td>
-				<select id="stripe_payment_flow" name="stripe_payment_flow">
-					<option value="onsite"><?php esc_html_e( 'Accept payments on this site', 'paid-memberships-pro' ); ?></option>
-					<option value="checkout" <?php if ( $values['stripe_payment_flow'] === 'checkout' ) { ?>selected="selected"<?php } ?>><?php esc_html_e( 'Accept payments on Stripe (Stripe Checkout)', 'paid-memberships-pro' ); ?></option>
+				<select id="stripe_payment_flow" name="stripe_payment_flow" onchange="pmpro_updateAllowStripeCheckoutTRs();">
+					<option value="onsite" <?php selected( $values['stripe_payment_flow'], 'onsite' ); ?>><?php esc_html_e( 'Accept payments on this site', 'paid-memberships-pro' ); ?></option>
+					<option value="checkout" <?php selected( $values['stripe_payment_flow'], 'checkout' ); ?>><?php esc_html_e( 'Accept payments in Stripe (Stripe Checkout)', 'paid-memberships-pro' ); ?></option>
 				</select>
 				<p class="description"><?php esc_html_e( 'Embed the payment information fields on your Membership Checkout page or use the Stripe-hosted payment page (Stripe Checkout).', 'paid-memberships-pro' ); ?>
 			</td>
 		</tr>
+		<script>
+			function pmpro_updateAllowStripeCheckoutTRs() {
+				// Toggle to show the Stripe Checkout-specific settings.
+				jQuery(document).ready(function(){
+					var allowStripeCheckout = jQuery('#stripe_payment_flow').val();
+					if ( allowStripeCheckout == 'checkout' ) {
+						jQuery('.gateway_stripe_checkout_fields').show();
+					} else {
+						jQuery('.gateway_stripe_checkout_fields').hide();
+					}
+				});
+			}
+		</script>
 		<tr class="gateway gateway_stripe" <?php if ( $gateway != "stripe" ) { ?>style="display: none;"<?php } ?>>
 			<th scope="row" valign="top">
 				<label for="stripe_update_billing_flow"><?php esc_html_e( 'Update Billing Flow', 'paid-memberships-pro' ); ?>:</label>
@@ -535,7 +548,7 @@ class PMProGateway_stripe extends PMProGateway {
 				<p class="description"><?php esc_html_e( 'Embed the billing information fields on your Membership Billing page or use the Stripe Customer Portal hosted by Stripe.', 'paid-memberships-pro' ); ?></p>
 			</td>
 		</tr>
-		<tr class="gateway gateway_stripe" <?php if ( $gateway != "stripe" ) { ?>style="display: none;"<?php } ?>>
+		<tr class="gateway gateway_stripe gateway_stripe_checkout_fields" <?php if ( $gateway != "stripe" || in_array( $values['stripe_payment_flow'], array( null, 'onsite' ) ) ) { ?>style="display: none;"<?php } ?>>
 			<th scope="row" valign="top">
 				<label for="stripe_checkout_billing_address"><?php esc_html_e( 'Collect Billing Address in Stripe Checkout', 'paid-memberships-pro' ); ?>:</label>
 			</th>
@@ -546,7 +559,7 @@ class PMProGateway_stripe extends PMProGateway {
 				</select>
 			</td>
 		</tr>
-		<tr class="gateway gateway_stripe" <?php if ( $gateway != "stripe" ) { ?>style="display: none;"<?php } ?>>
+		<tr class="gateway gateway_stripe gateway_stripe_checkout_fields" <?php if ( $gateway != "stripe" || in_array( $values['stripe_payment_flow'], array( null, 'onsite' ) ) ) { ?>style="display: none;"<?php } ?>>
 			<th scope="row" valign="top">
 				<label for="stripe_tax"><?php esc_html_e( 'Stripe Tax', 'paid-memberships-pro' ); ?>:</label>
 			</th>
@@ -568,14 +581,27 @@ class PMProGateway_stripe extends PMProGateway {
 				<p class="description"><?php echo sprintf( wp_kses( __( 'Stripe Tax is only available when using Stripe Checkout (the Stripe-hosted payment page). You must <a target="_blank" href="%s">activate Stripe Tax</a> in your Stripe dashboard. <a target="_blank" href="%s">More information about Stripe Tax »</a>', 'paid-memberships-pro' ), $allowed_stripe_tax_description_html ), 'https://stripe.com/tax', 'https://dashboard.stripe.com/settings/tax/activate' ); ?></p>
 			</td>
 		</tr>
-		<tr class="gateway gateway_stripe" <?php if ( $gateway != "stripe" ) { ?>style="display: none;"<?php } ?>>
+		<script>
+			function pmpro_updateAllowStripeTaxIDTRs() {
+				// Toggle to show the Stripe Checkout-specific settings.
+				jQuery(document).ready(function(){
+					var allowStripeCheckout = jQuery('#stripe_payment_flow').val();
+					if ( allowStripeCheckout == 'checkout' ) {
+						jQuery('.gateway_stripe_checkout_fields').show();
+					} else {
+						jQuery('.gateway_stripe_checkout_fields').hide();
+					}
+				});
+			}
+		</script>
+		<tr class="gateway gateway_stripe gateway_stripe_checkout_fields" <?php if ( $gateway != "stripe" || in_array( $values['stripe_payment_flow'], array( null, 'onsite' ) ) ) { ?>style="display: none;"<?php } ?>>
 			<th scope="row" valign="top">
 				<label for="stripe_tax_id_collection_enabled"><?php esc_html_e( 'Collect Tax IDs', 'paid-memberships-pro' ); ?>:</label>
 			</th>
 			<td>
 				<select id="stripe_tax_id_collection_enabled" name="stripe_tax_id_collection_enabled">
-					<option value="0"><?php esc_html_e( 'No', 'paid-memberships-pro' ); ?></option>
-					<option value="1" <?php if ( ! empty( $values['stripe_tax_id_collection_enabled'] ) ) { ?>selected="selected"<?php } ?>><?php esc_html_e( 'Yes', 'paid-memberships-pro' ); ?></option>
+					<option value="0"><?php esc_html_e( 'No, do not collect tax IDs.', 'paid-memberships-pro' ); ?></option>
+					<option value="1" <?php if ( ! empty( $values['stripe_tax_id_collection_enabled'] ) ) { ?>selected="selected"<?php } ?>><?php esc_html_e( 'Yes, collect tax IDs.', 'paid-memberships-pro' ); ?></option>
 				</select>
 				<p class="description"><?php esc_html_e( 'Tax IDs are only collected if you have enabled Stripe Tax. Stripe only performs automatic validation for ABN, EU VAT, and GB VAT numbers. You must verify that provided tax IDs are valid during the Session for all other numbers.', 'paid-memberships-pro' ); ?></p>
 			</td>
