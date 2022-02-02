@@ -649,18 +649,18 @@ function pmpro_reset_password_form() {
 		$errors = new WP_Error();
 		if ( ! $user || is_wp_error( $user ) ) {
 			if ( $user && $user->get_error_code() === 'invalid_key' ) {
-				$errors->add( 'invalidkey', __( 'Your password reset link appears to be invalid. Please request a new link below.', 'paid-membeships-pro' ) );
+				$errors->add( 'invalidkey', __( 'Your password reset link appears to be invalid. Please request a new link below.', 'paid-memberships-pro' ) );
 			} elseif ( $user && $user->get_error_code() === 'expired_key' ) {
-				$errors->add( 'expiredkey', __( 'Your password reset link has expired. Please request a new link below.', 'paid-membeships-pro' ) );
+				$errors->add( 'expiredkey', __( 'Your password reset link has expired. Please request a new link below.', 'paid-memberships-pro' ) );
             }
 		}
 
 		// Grabbing errors from $_GET like wp-login.php does.
 		if ( isset( $_GET['error'] ) ) {
 			if ( 'invalidkey' === $_GET['error'] ) {
-				$errors->add( 'invalidkey', __( 'Your password reset link appears to be invalid. Please request a new link below.', 'paid-membeships-pro' ) );
+				$errors->add( 'invalidkey', __( 'Your password reset link appears to be invalid. Please request a new link below.', 'paid-memberships-pro' ) );
 			} elseif ( 'expiredkey' === $_GET['error'] ) {
-				$errors->add( 'expiredkey', __( 'Your password reset link has expired. Please request a new link below.', 'paid-membeships-pro' ) );
+				$errors->add( 'expiredkey', __( 'Your password reset link has expired. Please request a new link below.', 'paid-memberships-pro' ) );
 			}
 		}
 
