@@ -1300,7 +1300,7 @@ class PMProGateway_stripe extends PMProGateway {
 	 */
 	public static function has_connect_credentials( $gateway_environment = null ) {
 		if ( empty( $gateway_environment ) ) {
-			$gateway_engvironemnt = pmpro_getOption( 'pmpro_gateway_environment' );
+			$gateway_environment = pmpro_getOption( 'pmpro_gateway_environment' );
 		}
 
 		if ( $gateway_environment === 'live' ) {
@@ -1506,19 +1506,17 @@ class PMProGateway_stripe extends PMProGateway {
 
 		if ( empty( $customer_id ) ) {
 			// Try to figure out the cuseromer ID from their last order.
-			if ( empty ( $order ) ) {
-				$order = new MemberOrder();
-				$order->getLastMemberOrder(
-					$user_id,
-					array(
-						'success',
-						'cancelled'
-					),
-					null,
-					'stripe',
-					$this->gateway_environment
-				);
-			}
+			$order = new MemberOrder();
+			$order->getLastMemberOrder(
+				$user_id,
+				array(
+					'success',
+					'cancelled'
+				),
+				null,
+				'stripe',
+				$this->gateway_environment
+			);
 
 			// If we don't have a customer ID yet, get the Customer ID from their subscription.
 			if ( empty( $customer_id ) && ! empty( $order->subscription_transaction_id ) && strpos( $order->subscription_transaction_id, "sub_" ) !== false ) {
@@ -1599,7 +1597,7 @@ class PMProGateway_stripe extends PMProGateway {
 		// Get data to update customer with.
 		$customer_args = array(
 			'email'       => $user->user_email,
-			'description' => $name . ' (' . $email . ')',
+			'description' => $name . ' (' . $user->user_email . ')',
 		);
 
 		// Maybe update billing address for customer.
@@ -2145,13 +2143,10 @@ class PMProGateway_stripe extends PMProGateway {
 			$customer->invoice_settings->default_payment_method = $payment_method->id;
 			$customer->save();
 		} catch ( Stripe\Error\Base $e ) {
-			$order->error = $e->getMessage();
 			return $e->getMessage();
 		} catch ( \Throwable $e ) {
-			$order->error = $e->getMessage();
 			return $e->getMessage();
 		} catch ( \Exception $e ) {
-			$order->error = $e->getMessage();
 			return $e->getMessage();
 		}
 
@@ -3078,7 +3073,7 @@ class PMProGateway_stripe extends PMProGateway {
 
 		//update subscription
 		$customer = $update_order->Gateway->update_customer_at_checkout( $update_order, true );
-		$order->stripe_customer = $customer;
+		$update_order->stripe_customer = $customer;
 		$update_order->Gateway->process_subscriptions( $update_order );
 
 		//update membership
@@ -3621,7 +3616,7 @@ class PMProGateway_stripe extends PMProGateway {
 		global $wpdb;
 
 		if ( empty( $gateway_environment ) ) {
-			$gateway_engvironemnt = pmpro_getOption( 'pmpro_gateway_environment' );
+			$gateway_environment = pmpro_getOption( 'pmpro_gateway_environment' );
 		}
 
 		$last_webhook = get_option( 'pmpro_stripe_last_webhook_received_' . $gateway_environment );
