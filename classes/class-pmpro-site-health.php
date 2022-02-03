@@ -362,7 +362,7 @@ class PMPro_Site_Health {
 	 *
 	 * @since 2.7.3
 	 *
-	 * @return string The member page information
+	 * @return string|string[] The member page information
 	 */
 	public function get_pmpro_pages() {
 
