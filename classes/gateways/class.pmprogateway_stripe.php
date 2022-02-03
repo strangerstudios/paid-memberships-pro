@@ -2503,6 +2503,9 @@ class PMProGateway_stripe extends PMProGateway {
 				}
 				add_action( "user_register", "pmpro_user_register_stripe_customerid" );
 			}
+		} else {
+			// User already exists. Update their Stripe customer ID.
+			update_user_meta( $user_id, 'pmpro_stripe_customerid', $customer->id );
 		}
 
 		/**
