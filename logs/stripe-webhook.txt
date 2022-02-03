@@ -1,6 +1,0 @@
-Logged On: 02/03/2022 06:08:52
-Ignoring an invoice for $0. Probably for a new subscription just created. Event ID #evt_1KP9jjGEs1yekmMiZijeQumU.
--------------
-Logged On: 02/03/2022 06:09:38
-Created new order with ID #1000. Event ID #evt_1KP9kPGEs1yekmMi5yTRQuFK.
--------------

@@ -244,7 +244,6 @@
 				),
 			);
 			$payment_intent = \Stripe\PaymentIntent::retrieve( $payment_intent_args );
-			error_log( print_r( $payment_intent->charges->data[0], true ) );
 			$payment_method = $payment_intent->charges->data[0]->payment_method_details;
 			if ( empty( $payment_method ) ) {
 				$logstr .= "Could not find payment method for invoice " . $invoice->id;
