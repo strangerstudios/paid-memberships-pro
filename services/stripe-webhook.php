@@ -8,6 +8,7 @@
 	use Stripe\Event as Stripe_Event;
 	use Stripe\PaymentIntent as Stripe_PaymentIntent;
 	use Stripe\Charge as Stripe_Charge;
+	use Stripe\PaymentMethod as Stripe_PaymentMethod;
 
 	global $isapage;
 	$isapage = true;
@@ -159,36 +160,19 @@
 					$morder->gateway = $old_order->gateway;
 					$morder->gateway_environment = $old_order->gateway_environment;
 
-					$charge = Stripe_Charge::retrieve( $pmpro_stripe_event->data->object->charge );
-					if ( ! empty ( $charge->billing_details->address->line1 ) ) {
-						// Get order billing details from Stripe.
-						$morder->billing = $charge->billing_details->address;
-						$morder->billing->name = $charge->billing_details->name; // Add name.
-						$morder->billing->phone = $charge->billing_details->phone; // Add phone.
-						$morder->billing->zip = $morder->billing->postal_code; // Fix zip.
-						$morder->billing->street = $morder->billing->line1; // Fix street. 
-
-						$nameparts = pnp_split_full_name( $morder->billing->name );
-						$morder->FirstName = empty( $nameparts['fname'] ) ? '' : $nameparts['fname'];
-						$morder->LastName = empty( $nameparts['lname'] ) ? '' : $nameparts['lname'];
-						$morder->Email = $wpdb->get_var("SELECT user_email FROM $wpdb->users WHERE ID = '" . $old_order->user_id . "' LIMIT 1");
-						$morder->Address1 = $morder->billing->street;
-						$morder->City = $morder->billing->city;
-						$morder->State = $morder->billing->state;
-						$morder->Zip = $morder->billing->zip;
-						$morder->PhoneNumber = $morder->billing->phone;
-					} else {
-						// Pull from previous order.
-						$morder->find_billing_address();
+					// Update payment method and billing address on order.
+					$payment_intent_args = array(
+						'id'     => $invoice->payment_intent,
+						'expand' => array(
+							'payment_method',
+						),
+					);
+					$payment_intent = \Stripe\PaymentIntent::retrieve( $payment_intent_args );
+					if ( empty( $payment_intent->payment_method ) ) {
+						$logstr .= "Could not find payment method for invoice " . $invoice->id;
+						pmpro_stripeWebhookExit();
 					}
-
-					//get CC info that is on file
-					$morder->cardtype = get_user_meta($user_id, "pmpro_CardType", true);
-					$morder->accountnumber = hideCardNumber(get_user_meta($user_id, "pmpro_AccountNumber", true), false);
-					$morder->expirationmonth = get_user_meta($user_id, "pmpro_ExpirationMonth", true);
-					$morder->expirationyear = get_user_meta($user_id, "pmpro_ExpirationYear", true);
-					$morder->ExpirationDate = $morder->expirationmonth . $morder->expirationyear;
-					$morder->ExpirationDate_YdashM = $morder->expirationyear . "-" . $morder->expirationmonth;
+					pmpro_stripe_webhook_populate_order_from_payment( $morder, $payment_intent->payment_method );
 
 					//save
 					$morder->status = "success";
@@ -246,27 +230,30 @@
 			$old_order = getOldOrderFromInvoiceEvent($pmpro_stripe_event);
 			$user_id = $old_order->user_id;
 			$user = get_userdata($user_id);
+			$invoice = $pmpro_stripe_event->data->object;
 			
 			// Prep order for emails.
 			$morder = new MemberOrder();
 			$morder->user_id = $user_id;
-			$morder->billing = new stdClass();
-			$morder->billing->name = $old_order->billing->name;
-			$morder->billing->street = $old_order->billing->street;
-			$morder->billing->city = $old_order->billing->city;
-			$morder->billing->state = $old_order->billing->state;
-			$morder->billing->zip = $old_order->billing->zip;
-			$morder->billing->country = $old_order->billing->country;
-			$morder->billing->phone = $old_order->billing->phone;
 
-			//get CC info that is on file
-			$morder->cardtype = get_user_meta($user_id, "pmpro_CardType", true);
-			$morder->accountnumber = hideCardNumber(get_user_meta($user_id, "pmpro_AccountNumber", true), false);
-			$morder->expirationmonth = get_user_meta($user_id, "pmpro_ExpirationMonth", true);
-			$morder->expirationyear = get_user_meta($user_id, "pmpro_ExpirationYear", true);
+			// Update payment method and billing address on order.
+			$payment_intent_args = array(
+				'id'     => $invoice->payment_intent,
+				'expand' => array(
+					'payment_method',
+				),
+			);
+			$payment_intent = \Stripe\PaymentIntent::retrieve( $payment_intent_args );
+			error_log( print_r( $payment_intent->charges->data[0], true ) );
+			$payment_method = $payment_intent->charges->data[0]->payment_method_details;
+			if ( empty( $payment_method ) ) {
+				$logstr .= "Could not find payment method for invoice " . $invoice->id;
+				pmpro_stripeWebhookExit();
+			}
+			pmpro_stripe_webhook_populate_order_from_payment( $morder, $payment_method );
 			
 			// Add invoice link to the order.
-			$morder->invoice_url = $pmpro_stripe_event->data->object->hosted_invoice_url;
+			$morder->invoice_url = $invoice->hosted_invoice_url;
 			
 			// Email the user and ask them to authenticate their payment.
 			$pmproemail = new PMProEmail();
@@ -297,21 +284,20 @@
 				$morder = new MemberOrder();
 				$morder->user_id = $user_id;
 				$morder->membership_id = $old_order->membership_id;
-				
-				$morder->billing = new stdClass();
-				$morder->billing->name = $old_order->billing->name;
-				$morder->billing->street = $old_order->billing->street;
-				$morder->billing->city = $old_order->billing->city;
-				$morder->billing->state = $old_order->billing->state;
-				$morder->billing->zip = $old_order->billing->zip;
-				$morder->billing->country = $old_order->billing->country;
-				$morder->billing->phone = $old_order->billing->phone;
 
-				//get CC info that is on file
-				$morder->cardtype = get_user_meta($user_id, "pmpro_CardType", true);
-				$morder->accountnumber = hideCardNumber(get_user_meta($user_id, "pmpro_AccountNumber", true), false);
-				$morder->expirationmonth = get_user_meta($user_id, "pmpro_ExpirationMonth", true);
-				$morder->expirationyear = get_user_meta($user_id, "pmpro_ExpirationYear", true);
+				// Update payment method and billing address on order.
+				$payment_intent_args = array(
+					'id'     => $pmpro_stripe_event->data->object->payment_intent,
+					'expand' => array(
+						'payment_method',
+					),
+				);
+				$payment_intent = \Stripe\PaymentIntent::retrieve( $payment_intent_args );
+				if ( empty( $payment_intent->payment_method ) ) {
+					$logstr .= "Could not find payment method for charge " . $pmpro_stripe_event->data->object->id;
+					pmpro_stripeWebhookExit();
+				}
+				pmpro_stripe_webhook_populate_order_from_payment( $morder, $payment_intent->payment_method );
 
 				// Email the user and ask them to update their credit card information
 				$pmproemail = new PMProEmail();
@@ -429,7 +415,7 @@
 				pmpro_stripeWebhookExit();
 			}
 
-			// Get the payment and subscription IDs for the checkout.
+			// Get the payment method object for this checkout and set transaction and subscription ids.
 			if ( $checkout_session->mode === 'payment' ) {
 				// User purchased a one-time payment level. Assign the charge ID to the order.
 				try {
@@ -469,69 +455,22 @@
 					// Could not get invoices. We just won't set a payment transaction ID.
 				}
 			}
-
-			// Fill the "Payment Type" and credit card fields for the order.
-			if ( ! empty( $payment_method ) && ! empty( $payment_method->type ) ) {
-				$order->payment_type = 'Stripe - ' . $payment_method->type;
-				if ( ! empty( $payment_method->card ) ) {
-					// Paid with a card, let's update order and user meta with the card info.
-					$order->cardtype = $payment_method->card->brand;
-					$order->accountnumber = hideCardNumber( $payment_method->card->last4 );
-					$order->expirationmonth = $payment_method->card->exp_month;
-					$order->expirationyear = $payment_method->card->exp_year;
-
-					// And let's also update the user meta with the card info.
-					update_user_meta( $order->user_id, "pmpro_CardType", $payment_method->card->brand );
-					update_user_meta( $order->user_id, "pmpro_AccountNumber", hideCardNumber( $payment_method->card->last4 ) );
-					update_user_meta( $order->user_id, "pmpro_ExpirationMonth", $payment_method->card->exp_month );
-					update_user_meta( $order->user_id, "pmpro_ExpirationYear", $payment_method->card->exp_year );
-				} else {
-					// Didn't pay with card. Let's clear out user meta so that they don't get expiration warnings.
-					update_user_meta( $order->user_id, "pmpro_CardType", '' );
-					update_user_meta( $order->user_id, "pmpro_AccountNumber", '' );
-					update_user_meta( $order->user_id, "pmpro_ExpirationMonth", '' );
-					update_user_meta( $order->user_id, "pmpro_ExpirationYear", '' );
-				}
+			// Make sure that we have payment and payment method objects.
+			if ( empty( $payment_method ) ) {
+				$logstr .= "Could not find payment method for Checkout Session " . $checkout_session->id;
+			} else {
+				// Update payment method and billing address on order.
+				pmpro_stripe_webhook_populate_order_from_payment( $order, $payment_method );
 			}
 
-			// Get the customer's billing address.
-			try {
-				$customer = \Stripe\Customer::retrieve( $checkout_session->customer );
-				if (
-					! empty( $customer->name ) &&
-					! empty( $customer->address->line1 ) &&
-					! empty( $customer->address->city ) &&
-					! empty( $customer->address->postal_code ) &&
-					! empty( $customer->address->country )
-				) {
-					// Update the billing address on the order.
-					$order->billing->name = $customer->name;
-					$order->billing->street = $customer->address->line1;
-					$order->billing->city = $customer->address->city;
-					$order->billing->state = $customer->address->state;
-					$order->billing->zip = $customer->address->postal_code;
-					$order->billing->country = $customer->address->country;
+			// Update the amounts paid.
+			global $pmpro_currency;
+			$currency = pmpro_get_currency();
+			$currency_unit_multiplier = pow( 10, intval( $currency['decimals'] ) );
 
-					// Update the user's meta with the billing address.
-					$name_parts = explode( ' ', $customer->name );
-					$last_name = array_pop( $name_parts );
-					$first_name = implode( ' ', $name_parts );
-					update_user_meta( $order->user_id, "pmpro_bfirstname", $first_name );
-					update_user_meta( $order->user_id, "pmpro_blastname", $last_name );
-					update_user_meta( $order->user_id, "pmpro_baddress1", $customer->address->line1 );
-					update_user_meta( $order->user_id, "pmpro_bcity", $customer->address->city );
-					update_user_meta( $order->user_id, "pmpro_bstate", $customer->address->state );
-					update_user_meta( $order->user_id, "pmpro_bzipcode", $customer->address->postal_code );
-					update_user_meta( $order->user_id, "pmpro_bcountry", $customer->address->country );
-				}
-			} catch ( \Stripe\Error\Base $e ) {
-				// Could not get customer. We just won't set billing info.
-			}
-
-			// Update order total, subtotal, and tax.
-			$order->total    = (float) $checkout_session->amount_total / 100;
-			$order->subtotal = (float) $checkout_session->amount_subtotal / 100;
-			$order->tax      = (float) $checkout_session->total_details->amount_tax / 100;
+			$order->total    = (float) $checkout_session->amount_total / $currency_unit_multiplier;
+			$order->subtotal = (float) $checkout_session->amount_subtotal / $currency_unit_multiplier;
+			$order->tax      = (float) $checkout_session->total_details->amount_tax / $currency_unit_multiplier;
 
 			// Was the checkout session successful?
 			if ( $checkout_session->payment_status == "paid" ) {
@@ -541,7 +480,7 @@
 					pmpro_stripeWebhookExit();
 				}
 				// No we have not processed this order. Let's process it now.
-				if ( pmpro_webhookChangeMembershipLevel( $order, $checkout_session ) ) {
+				if ( pmpro_stripe_webhook_change_membership_level( $order, $checkout_session ) ) {
 					$logstr .= "Order #" . $order->id . " for Checkout Session " . $checkout_session->id . " was processed successfully.";
 				} else {
 					$logstr .= "Order #" . $order->id . " for Checkout Session " . $checkout_session->id . " could not be processed.";
@@ -581,7 +520,7 @@
 				pmpro_stripeWebhookExit();
 			}
 			// No we have not processed this order. Let's process it now.
-			if ( pmpro_webhookChangeMembershipLevel( $order, $checkout_session ) ) {
+			if ( pmpro_stripe_webhook_change_membership_level( $order, $checkout_session ) ) {
 				$logstr .= "Order #" . $order->id . " for Checkout Session " . $checkout_session->id . " was processed successfully.";
 			} else {
 				$logstr .= "Order #" . $order->id . " for Checkout Session " . $checkout_session->id . " could not be processed.";
@@ -788,10 +727,25 @@
 		exit;
 	}
 
-	/*
-	Change the membership level. We also update the membership order to include filtered valus.
-*/
-function pmpro_webhookChangeMembershipLevel( $morder, $checkout_session ) {
+/**
+ * Assign a membership level when a checkout is completed via Stripe webhook.
+ *
+ * Steps:
+ * 1. Pull checkout data from order meta.
+ * 2. Build checkout level.
+ * 3. Change membership level.
+ * 4. Mark order as successful.
+ * 5. Record discount code use.
+ * 6. Save some user meta.
+ * 7. Run pmpro_after_checkout.
+ * 8. Send checkout emails.
+ *
+ * @since TBD
+ *
+ * @param MemberOrder $morder The order for the checkout being completed.
+ * @return bool
+ */
+function pmpro_stripe_webhook_change_membership_level( $morder ) {
 
 	global $wpdb, $pmpro_level, $discount_code;
 
@@ -859,7 +813,7 @@ function pmpro_webhookChangeMembershipLevel( $morder, $checkout_session ) {
 
 	//change level and continue "checkout"
 	if ( pmpro_changeMembershipLevel( $custom_level, $morder->user_id, 'changed' ) !== false ) {
-		//update order status and transaction ids
+		// Mark the order as successful.
 		$morder->status                 = "success";
 		$morder->saveOrder();
 
@@ -896,25 +850,73 @@ function pmpro_webhookChangeMembershipLevel( $morder, $checkout_session ) {
 		do_action( "pmpro_after_checkout", $morder->user_id, $morder );
 
 		//setup some values for the emails
-		if ( ! empty( $morder ) ) {
-			$invoice = new MemberOrder( $morder->id );
-		} else {
-			$invoice = null;
-		}
-
 		$user                   = get_userdata( $morder->user_id );
 		$user->membership_level = $pmpro_level;        //make sure they have the right level info
 
 		//send email to member
 		$pmproemail = new PMProEmail();
-		$pmproemail->sendCheckoutEmail( $user, $invoice );
+		$pmproemail->sendCheckoutEmail( $user, $morder );
 
 		//send email to admin
 		$pmproemail = new PMProEmail();
-		$pmproemail->sendCheckoutAdminEmail( $user, $invoice );
+		$pmproemail->sendCheckoutAdminEmail( $user, $morder );
 
 		return true;
 	} else {
 		return false;
 	}
+}
+
+/**
+ * Update order information from a Stripe payment method.
+ *
+ * @since TBD
+ *
+ * @param MemberOrder          $order            The order to update.
+ * @param Stripe_PaymentMethod $payment_method   The payment method object.
+ */
+function pmpro_stripe_webhook_populate_order_from_payment( $order, $payment_method ) {
+	global $wpdb;
+
+	// Fill the "Payment Type" and credit card fields.
+	if ( ! empty( $payment_method ) && ! empty( $payment_method->type ) ) {
+		$order->payment_type = 'Stripe - ' . $payment_method->type;
+		if ( ! empty( $payment_method->card ) ) {
+			// Paid with a card, let's update order and user meta with the card info.
+			$order->cardtype = $payment_method->card->brand;
+			$order->accountnumber = hideCardNumber( $payment_method->card->last4 );
+			$order->expirationmonth = $payment_method->card->exp_month;
+			$order->expirationyear = $payment_method->card->exp_year;
+			$order->ExpirationDate = $order->expirationmonth . $order->expirationyear;
+			$order->ExpirationDate_YdashM = $order->expirationyear . "-" . $order->expirationmonth;			
+		} else {
+			$order->cardtype = '';
+			$order->accountnumber = '';
+			$order->expirationmonth = '';
+			$order->expirationyear = '';
+			$order->ExpirationDate = '';
+			$order->ExpirationDate_YdashM = '';
+		}
+	}
+
+	// Add billing address information.
+	$morder->billing = new stdClass();
+	$order->billing->name = empty( $payment_method->billing_details->name ) ? '' : $payment_method->billing_details->name;
+	$order->billing->street = empty( $payment_method->billing_details->address->line1 ) ? '' : $payment_method->billing_details->address->line1;
+	$order->billing->city = empty( $payment_method->billing_details->address->city ) ? '' : $payment_method->billing_details->address->city;
+	$order->billing->state = empty( $payment_method->billing_details->address->state ) ? '' : $payment_method->billing_details->address->state;
+	$order->billing->zip = empty( $payment_method->billing_details->address->postal_code ) ? '' : $payment_method->billing_details->address->postal_code;
+	$order->billing->country = empty( $payment_method->billing_details->address->country ) ? '' : $payment_method->billing_details->address->country;
+	$order->billing->phone = empty( $payment_method->billing_details->phone ) ? '' : $payment_method->billing_details->phone;
+
+	$name_parts = empty( $payment_method->billing_details->name ) ? [] : pnp_split_full_name( $payment_method->billing_details->name );
+	$order->FirstName = empty( $nameparts['fname'] ) ? '' : $nameparts['fname'];
+	$order->LastName = empty( $nameparts['lname'] ) ? '' : $nameparts['lname'];
+	$order->Email = $wpdb->get_var("SELECT user_email FROM $wpdb->users WHERE ID = '" . $order->user_id . "' LIMIT 1");
+	$order->Address1 = $order->billing->street;
+	$order->City = $order->billing->city;
+	$order->State = $order->billing->state;
+	$order->Zip = $order->billing->zip;
+	$order->Country = $order->billing->country;
+	$order->PhoneNumber = $order->billing->phone;
 }
