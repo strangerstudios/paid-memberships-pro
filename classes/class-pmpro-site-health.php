@@ -276,13 +276,13 @@ class PMPro_Site_Health {
 		$override_list = false;
 
 		if ( ! $wp_filesystem->is_dir( $path ) ) {
-			return new WP_Error( 'path-not-found', __( 'No template overrides', 'paid-membership-pro' ) );
+			return new WP_Error( 'path-not-found', __( 'No template overrides', 'paid-memberships-pro' ) );
 		}
 
 		$override_list = $wp_filesystem->dirlist( $path );
 
 		if ( ! $override_list ) {
-			return new WP_Error( 'path-empty', __( 'Empty override folder -- no template overrides', 'paid-membership-pro' ) );
+			return new WP_Error( 'path-empty', __( 'Empty override folder -- no template overrides', 'paid-memberships-pro' ) );
 		}
 
 		$templates = [];
