@@ -272,9 +272,6 @@ class PMPro_Site_Health {
 			return new WP_Error( 'access-denied', __( 'Unable to verify', 'paid-memberships-pro' ) );
 		}
 
-		$override_path = get_stylesheet_directory() . '/paid-memberships-pro/';
-		$override_list = false;
-
 		if ( ! $wp_filesystem->is_dir( $path ) ) {
 			return new WP_Error( 'path-not-found', __( 'No template overrides', 'paid-memberships-pro' ) );
 		}
