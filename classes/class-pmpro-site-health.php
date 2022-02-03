@@ -360,7 +360,7 @@ class PMPro_Site_Health {
 	/**
 	 * Get the assigned Member pages and their URL's
 	 *
-	 * @since TBA
+	 * @since 2.7.3
 	 *
 	 * @return string The member page information
 	 */
