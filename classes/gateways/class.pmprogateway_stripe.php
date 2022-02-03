@@ -568,19 +568,6 @@ class PMProGateway_stripe extends PMProGateway {
 				<p class="description"><?php echo sprintf( wp_kses( __( 'Stripe Tax is only available when using Stripe Checkout (the Stripe-hosted payment page). You must <a target="_blank" href="%s">activate Stripe Tax</a> in your Stripe dashboard. <a target="_blank" href="%s">More information about Stripe Tax »</a>', 'paid-memberships-pro' ), $allowed_stripe_tax_description_html ), 'https://stripe.com/tax', 'https://dashboard.stripe.com/settings/tax/activate' ); ?></p>
 			</td>
 		</tr>
-		<script>
-			function pmpro_updateAllowStripeTaxIDTRs() {
-				// Toggle to show the Stripe Checkout-specific settings.
-				jQuery(document).ready(function(){
-					var allowStripeCheckout = jQuery('#stripe_payment_flow').val();
-					if ( allowStripeCheckout == 'checkout' ) {
-						jQuery('.gateway_stripe_checkout_fields').show();
-					} else {
-						jQuery('.gateway_stripe_checkout_fields').hide();
-					}
-				});
-			}
-		</script>
 		<tr class="gateway gateway_stripe gateway_stripe_checkout_fields" <?php if ( $gateway != "stripe" || in_array( $values['stripe_payment_flow'], array( null, 'onsite' ) ) ) { ?>style="display: none;"<?php } ?>>
 			<th scope="row" valign="top">
 				<label for="stripe_tax_id_collection_enabled"><?php esc_html_e( 'Collect Tax IDs', 'paid-memberships-pro' ); ?>:</label>
