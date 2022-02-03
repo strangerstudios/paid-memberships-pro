@@ -20,11 +20,11 @@
 	?>
 	<p id="pmpro_updates_intro"><?php _e('Updates are processing. This may take a few minutes to complete.', 'paid-memberships-pro' );?></p>
 	<p id="pmpro_updates_progress">[...]</p>
-	<textarea id="pmpro_updates_status" rows="10" cols="60">Loading...</textarea>
+	<textarea id="pmpro_updates_status" rows="10" cols="60"><?php _e( 'Loading&hellip;' ) ?></textarea>
 	
 	<?php
 	} else {
-	?><p><?php _e('Update complete.');?></p><?php
+	?><p><?php _e('Update complete.', 'paid-memberships-pro');?></p><?php
 	}
 ?>
 

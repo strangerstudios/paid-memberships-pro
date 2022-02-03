@@ -328,7 +328,7 @@ class PMPro_Admin_Activity_Email extends PMProEmail {
 							<table align="center" border="0" cellpadding="0" cellspacing="10" width="100%" style="border:0;background-color:#FFFFFF;text-align:left;font-family:Helvetica,Arial,sans-serif;font-size:16px;line-height:25px;color:#222222;">
 								<tr valign="top">
 									<td width="60%" style="background-color:#F1F1F1;padding:15px;">
-										<h3 style="color:#2997c8;font-size:20px;line-height:30px;margin:0px;padding:0px;"><?php _e( 'PMPro News and Updates'); ?></h3>
+										<h3 style="color:#2997c8;font-size:20px;line-height:30px;margin:0px;padding:0px;"><?php _e( 'PMPro News and Updates', 'paid-memberships-pro' ); ?></h3>
 									<?php
 									// Get RSS Feed(s).
 									include_once ABSPATH . WPINC . '/feed.php';

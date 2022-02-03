@@ -997,11 +997,11 @@ function pmpro_confirmaction_handler() {
 	}
 
 	if ( ! isset( $_GET['request_id'] ) ) {
-		wp_die( __( 'Missing request ID.' ) );
+		wp_die( __( 'Missing request ID.', 'paid-memberships-pro' ) );
 	}
 
 	if ( ! isset( $_GET['confirm_key'] ) ) {
-		wp_die( __( 'Missing confirm key.' ) );
+		wp_die( __( 'Missing confirm key.', 'paid-memberships-pro' ) );
 	}
 
 	$request_id = (int) $_GET['request_id'];
