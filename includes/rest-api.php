@@ -80,6 +80,11 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 						'user_id' => array(),
 						'level_id' => array(),
 						'email' => array(),
+						'first_name' => array(),
+						'last_name' => array(),
+						'user_url' => array(),
+						'user_login' => array(),
+						'description' => array(),
 						'create_user' => array(),
 					),
 					'permission_callback' => array( $this, 'pmpro_rest_api_get_permissions_check' ),
@@ -323,7 +328,12 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 			$user_id = isset( $params['user_id'] ) ? (int) $params['user_id'] : null;
 			$level_id = isset( $params['level_id'] ) ? (int) $params['level_id'] : null;
 			$email = isset( $params['email'] ) ? sanitize_email( $params['email'] ) : null;
-			$create_user = isset( $params['create_user'] ) ? filter_var( $params['create_user'], FILTER_VAR_BOOLEAN ) : false;
+			$first_name = isset( $params['first_name'] ) ? sanitize_text_field( $params['first_name'] ) : '';
+			$last_name = isset( $params['last_name'] ) ? sanitize_text_field( $params['last_name'] ) : '';
+			$username = isset( $params['user_login'] ) ? sanitize_text_field( $params['user_login'] ) : $email;
+			$user_url = isset( $params['user_url'] ) ? sanitize_text_field( $params['user_url'] ) : '';
+			$description = isset( $params['description'] ) ? sanitize_textarea_field( $params['description'] ) : '';
+			$create_user = isset( $params['create_user'] ) ? filter_var( $params['create_user'], FILTER_VALIDATE_BOOLEAN ) : false;
 			$response_type = isset( $params['response_type'] ) ? sanitize_text_field( $params['response_type'] ) : null;
 
 			if ( empty( $user_id ) ) {
@@ -336,8 +346,29 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 					// Assume the user doesn't already exist.
 					if ( $create_user && ! $user ) {
 
-						$user_id = wp_create_user( $email, wp_generate_password(), $email );
+						/**
+						 * Filter the user data arguments for wp_insert_user when creating the user via the REST API.
+						 * 
+						 * @since TBD
+						 * 
+						 * @param array $user_data An associative array with user arguments when creating the user. See https://developer.wordpress.org/reference/functions/wp_insert_user/ for reference.
+						 */
+						$user_data = apply_filters( 'pmpro_api_new_user_array', array(
+								'user_pass' => wp_generate_password(),
+								'user_email' => $email,
+								'user_login' => $username,
+								'first_name' => $first_name,
+								'last_name' => $last_name,
+								'user_url' => $user_url,
+								'description' => $description
+							) 
+						);
+
+						$user_id = wp_insert_user( $user_data );
 						
+						if ( ! $user_id || empty( $user_id ) ) {
+							return new WP_REST_Response( 'Error creating user', 400 );
+						}
 						/**
 						 * Send the default WordPress emails when creating a WordPress user, using the /change_membership_level route.
 						 *
