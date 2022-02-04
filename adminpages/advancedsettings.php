@@ -13,28 +13,42 @@
 		$msgt = __("Are you sure you want to do that? Try again.", 'paid-memberships-pro' );
 		unset($_REQUEST['savesettings']);
 	}
-	
+
+	// Handle full settings option.
+	$full_settings = pmpro_getOption( 'settings' );
+
+	$full_settings_defaults = [
+		// Default to no tracking (this key is what Wisdom uses).
+		'wisdom_opt_out' => 1,
+	];
+
+	if ( ! $full_settings ) {
+		$full_settings = [];
+	}
+
+	$full_settings = array_merge( $full_settings_defaults, $full_settings );
+
 	//get/set settings
 	if(!empty($_REQUEST['savesettings']))
 	{
 		// Dashboard settings.
 		pmpro_setOption( 'hide_toolbar' );
 		pmpro_setOption( 'block_dashboard' );
-		
+
 		// Message settings.
 		// These use wp_kses for better security handling.
 		$nonmembertext = wp_kses(wp_unslash($_POST['nonmembertext']), $allowedposttags);
 		update_option('pmpro_nonmembertext', $nonmembertext);
-		
+
 		$notloggedintext = wp_kses(wp_unslash($_POST['notloggedintext']), $allowedposttags);
 		update_option('pmpro_notloggedintext', $notloggedintext);
-		
+
 		$rsstext = wp_kses(wp_unslash($_POST['rsstext']), $allowedposttags);
-		update_option('pmpro_rsstext', $rsstext);		
-		
+		update_option('pmpro_rsstext', $rsstext);
+
 		// Content settings.
 		pmpro_setOption("filterqueries");
-		pmpro_setOption("showexcerpts");		
+		pmpro_setOption("showexcerpts");
 
 		// Checkout settings.
 		pmpro_setOption("tospage");
@@ -42,7 +56,7 @@
 		pmpro_setOption("recaptcha");
 		pmpro_setOption("recaptcha_version");
 		pmpro_setOption("recaptcha_publickey");
-		pmpro_setOption("recaptcha_privatekey");		
+		pmpro_setOption("recaptcha_privatekey");
 
 		// Communication settings.
 		pmpro_setOption("maxnotificationpriority");
@@ -54,6 +68,13 @@
 		pmpro_setOption("redirecttosubscription");
 		pmpro_setOption("uninstall");
 
+		// Handle updating Wisdom tracking setting.
+		if ( isset( $_POST['wisdom_opt_out'] ) ) {
+			$full_settings['wisdom_opt_out'] = (int) $_POST['wisdom_opt_out'];
+        }
+
+		update_option( 'pmpro_settings', $full_settings );
+
         /**
          * Filter to add custom settings to the advanced settings page.
          * @param array $settings Array of settings, each setting an array with keys field_name, field_type, label, description.
@@ -63,7 +84,7 @@
         	if(!empty($setting['field_name']))
         		pmpro_setOption($setting['field_name']);
         }
-        
+
 		// Assume success.
 		$msg = true;
 		$msgt = __("Your advanced settings have been updated.", 'paid-memberships-pro' );
@@ -72,15 +93,15 @@
 	// Dashboard settings.
 	$hide_toolbar = pmpro_getOption( 'hide_toolbar' );
 	$block_dashboard = pmpro_getOption( 'block_dashboard' );
-	
+
 	// Message settings.
 	$nonmembertext = pmpro_getOption("nonmembertext");
 	$notloggedintext = pmpro_getOption("notloggedintext");
 	$rsstext = pmpro_getOption("rsstext");
-    
+
 	// Content settings.
 	$filterqueries = pmpro_getOption('filterqueries');
-	$showexcerpts = pmpro_getOption("showexcerpts");	
+	$showexcerpts = pmpro_getOption("showexcerpts");
 
 	// Checkout settings.
 	$tospage = pmpro_getOption("tospage");
@@ -130,7 +151,7 @@
 
 	<form action="" method="post" enctype="multipart/form-data">
 		<?php wp_nonce_field('savesettings', 'pmpro_advancedsettings_nonce');?>
-		
+
 		<h1 class="wp-heading-inline"><?php esc_html_e( 'Advanced Settings', 'paid-memberships-pro' ); ?></h1>
 		<hr class="wp-header-end">
 		<div class="pmpro_admin_section pmpro_admin_section-restrict-dashboard">
@@ -270,7 +291,7 @@
 			<tbody>
 				<tr>
 					<th scope="row" valign="top"><label for="recaptcha_version"><?php _e( 'reCAPTCHA Version', 'paid-memberships-pro' );?>:</label></th>
-					<td>					
+					<td>
 						<select id="recaptcha_version" name="recaptcha_version">
 							<option value="2_checkbox" <?php selected( '2_checkbox', $recaptcha_version ); ?>><?php _e( ' v2 - Checkbox', 'paid-memberships-pro' ); ?></option>
 							<option value="3_invisible" <?php selected( '3_invisible', $recaptcha_version ); ?>><?php _e( 'v3 - Invisible', 'paid-memberships-pro' ); ?></option>
@@ -364,7 +385,7 @@ if ( function_exists( 'pmpro_displayAds' ) && pmpro_displayAds() ) {
 	//insert ad code here
 }</pre>
 					</td>
-				</tr>			
+				</tr>
 				<tr id="hideadslevels_tr" <?php if($hideads != 2) { ?>style="display: none;"<?php } ?>>
 					<th scope="row" valign="top">
 						<label for="hideadslevels"><?php _e('Choose Levels to Hide Ads From', 'paid-memberships-pro' );?>:</label>
@@ -413,7 +434,7 @@ if ( function_exists( 'pmpro_displayAds' ) && pmpro_displayAds() ) {
 						</select>
 					</td>
 				</tr>
-				<?php } ?>			
+				<?php } ?>
 				<?php
 	            // Filter to Add More Advanced Settings for Misc Plugin Options, etc.
 	            if (has_action('pmpro_custom_advanced_settings')) {
@@ -432,7 +453,7 @@ if ( function_exists( 'pmpro_displayAds' ) && pmpro_displayAds() ) {
 		                            ?>
 		                            <select id="<?php echo esc_attr( $field['field_name'] ); ?>"
 		                                    name="<?php echo esc_attr( $field['field_name'] ); ?>">
-		                                <?php 
+		                                <?php
 		                                	//For associative arrays, we use the array keys as values. For numerically indexed arrays, we use the array values.
 		                                	$is_associative = (bool)count(array_filter(array_keys($field['options']), 'is_string'));
 		                                	foreach ($field['options'] as $key => $option) {
@@ -442,7 +463,7 @@ if ( function_exists( 'pmpro_displayAds' ) && pmpro_displayAds() ) {
 		                                    		<?php echo esc_textarea($option); ?>
 		                                    	</option>
 		                               			<?php
-		                                	} 
+		                                	}
 		                                ?>
 		                            </select>
 		                            <?php
@@ -483,8 +504,30 @@ if ( function_exists( 'pmpro_displayAds' ) && pmpro_displayAds() ) {
 		            </tr>
 		            <?php
 		            }
-		        } 
+		        }
 		        ?>
+				<tr>
+					<th scope="row" valign="top">
+						<label for="wisdom_opt_out">
+							<?php esc_html_e( 'Would you like to opt-in to stats tracking?', 'paid-memberships-pro' ); ?>
+						</label>
+					</th>
+					<td>
+						<p>
+							<label>
+								<input name="wisdom_opt_out" type="radio" value="0"<?php checked( 0, $full_settings['wisdom_opt_out'] ); ?> />
+								<?php esc_html_e( 'Track usage on my site', 'paid-memberships-pro' );?>
+							</label>
+						</p>
+						<p>
+							<label>
+								<input name="wisdom_opt_out" type="radio" value="1"<?php checked( 1, $full_settings['wisdom_opt_out'] ); ?> />
+								<?php esc_html_e( 'DO NOT track usage on my site', 'paid-memberships-pro' );?>
+							</label>
+						</p>
+						<p class="description"><?php esc_html_e( 'Thank you for installing our plugin. We\'d like your permission to track its usage on your site. We won\'t record any sensitive data, only information regarding the WordPress environment and plugin settings. We will only use this information help us make improvements to the plugin and provide better support when you reach out. Tracking is completely optional.', 'paid-memberships-pro' ); ?></p>
+					</td>
+				</tr>
 				<tr>
 					<th scope="row" valign="top">
 						<label for="uninstall"><?php _e('Uninstall PMPro on deletion?', 'paid-memberships-pro' );?></label>
@@ -537,7 +580,7 @@ if ( function_exists( 'pmpro_displayAds' ) && pmpro_displayAds() ) {
 				}
 				pmpro_updateRecaptchaTRs();
 			</script>
-		</div> <!-- end pmpro_admin_section-other-settings -->		
+		</div> <!-- end pmpro_admin_section-other-settings -->
 		<p class="submit">
 			<input name="savesettings" type="submit" class="button button-primary" value="<?php _e('Save Settings', 'paid-memberships-pro' );?>" />
 		</p>

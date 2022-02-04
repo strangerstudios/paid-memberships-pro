@@ -92,7 +92,7 @@ function pmpro_wp()
 			{
 				//add class to body
 				$pmpro_body_classes[] = "pmpro-" . str_replace("_", "-", $pmpro_page_name);
-				
+
 				//shortcode has params, but we still want to load the preheader
 				require_once(PMPRO_DIR . "/preheaders/" . $pmpro_page_name . ".php");
 			}
@@ -219,3 +219,20 @@ add_filter('manage_users_columns', 'pmpro_manage_users_columns');
 add_filter('manage_users_custom_column', 'pmpro_manage_users_custom_column', 10, 3);
 add_filter( 'manage_users_sortable_columns', 'pmpro_sortable_column' );
 add_action('pre_user_query','pmpro_sortable_column_query');
+
+/**
+ * Set up the Wisdom tracking.
+ *
+ * @since TBD
+ */
+function pmpro_wisdom_tracking() {
+	require_once PMPRO_DIR . '/classes/class-pmpro-wisdom-integration.php';
+
+	// Set up the instance.
+	$wisdom_integration = PMPro_Wisdom_Integration::instance();
+
+	// Set up Wisdom tracking.
+	$wisdom_integration->setup_wisdom();
+}
+
+add_action( 'plugins_loaded', 'pmpro_wisdom_tracking' );
