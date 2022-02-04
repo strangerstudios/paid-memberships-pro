@@ -174,8 +174,7 @@ class PMProGateway_stripe extends PMProGateway {
 				) );
 			} else {
 				// Checkout flow for Stripe Checkout.
-				add_filter('pmpro_include_payment_information_fields', '__return_false');
-				add_filter('pmpro_checkout_default_submit_button', array('PMProGateway_stripe', 'pmpro_checkout_default_submit_button'));
+				add_filter('pmpro_include_payment_information_fields', array('PMProGateway_stripe', 'show_stripe_checkout_pending_warning'));
 				add_filter('pmpro_checkout_before_change_membership_level', array('PMProGateway_stripe', 'pmpro_checkout_before_change_membership_level'), 10, 2);
 				add_filter('pmprommpu_gateway_supports_multiple_level_checkout', '__return_false', 10, 2);
 				add_action( 'pmpro_billing_preheader', array( 'PMProGateway_stripe', 'pmpro_billing_preheader_stripe_checkout' ) );
@@ -1492,20 +1491,21 @@ class PMProGateway_stripe extends PMProGateway {
 	}
 
 	/**
-	 * Swap in our submit buttons.
+	 * Show warning at checkout if Stripe Checkout is being used and
+	 * the last order is pending.
 	 *
 	 * @since TBD
 	 *
-	 * @param bool $show Whether to show the default submit button.
+	 * @param bool $show Whether to show the default payment information fields.
 	 * @return bool
 	 */
-	static function pmpro_checkout_default_submit_button($show)
+	static function show_stripe_checkout_pending_warning($show)
 	{
 		global $gateway;
 
 		//show our submit buttons
 		?>
-		<span id="pmpro_stripe_checkout" <?php if( $gateway != "stripe" ) { ?>style="display: none;"<?php } ?>>
+		<span id="pmpro_payment_information_fields" <?php if( $gateway != "stripe" ) { ?>style="display: none;"<?php } ?>>
 			<?php
 			// If the current user's last order is a pending Stripe order, warn them that they already have a pending order.
 			$last_order = new MemberOrder();
@@ -1517,8 +1517,6 @@ class PMProGateway_stripe extends PMProGateway {
 			}
 			
 			?>
-			<input type="hidden" name="submit-checkout" value="1" />
-			<input type="submit" class="<?php echo pmpro_get_element_class( 'pmpro_btn pmpro_btn-submit-checkout', 'pmpro_btn-submit-checkout' ); ?>" value="<?php esc_attr_e( 'Continue to Payment', 'paid-memberships-pro' ); ?> &raquo;" />
 		</span>
 		<?php
 
@@ -1539,8 +1537,9 @@ class PMProGateway_stripe extends PMProGateway {
 		global $pmpro_level, $discount_code, $discount_code_id, $wpdb, $pmpro_currency;
 
 		//if no order, no need to pay
-		if(empty($morder))
+		if ( empty( $morder ) || $morder->gateway != 'stripe' ) {
 			return;
+		}
 
 		$morder->user_id = $user_id;
 		$morder->status  = 'token';
