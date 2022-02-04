@@ -548,6 +548,15 @@
 			// Mark the order as failed.
 			$order->status = "error";
 			$order->saveOrder();
+
+			// Email the user to notify them of failed payment
+			$pmproemail = new PMProEmail();
+			$pmproemail->sendBillingFailureEmail( get_userdata( $order->user_id ), $order);
+
+			// Email admin so they are aware of the failure
+			$pmproemail = new PMProEmail();
+			$pmproemail->sendBillingFailureAdminEmail( get_bloginfo( 'admin_email'), $order );
+
 			$logstr .= "Order #" . $order->id . " for Checkout Session " . $checkout_session->id . " could not be processed.";
 			pmpro_stripeWebhookExit();
 		}
