@@ -2427,7 +2427,7 @@ class PMProGateway_stripe extends PMProGateway {
 
 		$price = $this->get_price_for_product( $product_id, $amount, $order->BillingPeriod, $order->BillingFrequency );
 		if ( is_string( $price ) ) {
-			$order->error = esc_html__( 'Cannot get price.', 'paid-memberships-pro' ) . ' ' . $price;
+			$order->error = esc_html__( 'Cannot get price.', 'paid-memberships-pro' ) . ' ' . esc_html( $price );
 			return false;
 		}
 
