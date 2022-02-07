@@ -2299,7 +2299,7 @@ class PMProGateway_stripe extends PMProGateway {
 	 * @param string|null $cycle_period for subscription payments.
 	 * @param string|null $cycle_number of cycle periods between each subscription payment.
 	 *
-	 * @return string|null Price ID.
+	 * @return Stripe_Price|string Price or error message.
 	 */
 	private function get_price_for_product( $product_id, $amount, $cycle_period = null, $cycle_number = null ) {
 		global $pmpro_currency;
@@ -2330,14 +2330,14 @@ class PMProGateway_stripe extends PMProGateway {
 				if ( $is_recurring && ( empty( $price->recurring->interval_count ) || intval( $price->recurring->interval_count ) !== intval( $cycle_number ) ) ) {
 					continue;
 				}
-				return $price->id;
+				return $price;
 			}
 		} catch (\Throwable $th) {
 			// There was an error listing prices.
-			return;
+			return $th->getMessage();
 		} catch (\Exception $e) {
 			// There was an error listing prices.
-			return;
+			return $e->getMessage();
 		}
 
 		// Create a new Price.
@@ -2356,12 +2356,14 @@ class PMProGateway_stripe extends PMProGateway {
 		try {
 			$price = Stripe_Price::create( $price_args );
 			if ( ! empty( $price->id ) ) {
-				return $price->id;
+				return $price;
 			}
 		} catch (\Throwable $th) {
 			// Could not create product.
+			return $th->getMessage();
 		} catch (\Exception $e) {
 			// Could not create product.
+			return $e->getMessage();
 		}
 	}
 
@@ -2424,8 +2426,8 @@ class PMProGateway_stripe extends PMProGateway {
 		}
 
 		$price = $this->get_price_for_product( $product_id, $amount, $order->BillingPeriod, $order->BillingFrequency );
-		if ( empty( $price ) ) {
-			$order->error = esc_html__( 'Cannot get price.', 'paid-memberships-pro' );
+		if ( is_string( $price ) ) {
+			$order->error = esc_html__( 'Cannot get price.', 'paid-memberships-pro' ) . ' ' . $price;
 			return false;
 		}
 
