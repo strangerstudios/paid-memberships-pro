@@ -121,7 +121,7 @@
 			</th>
 			<td>
 				<input type="text" id="twocheckout_apiusername" name="twocheckout_apiusername" value="<?php echo esc_attr($values['twocheckout_apiusername'])?>" class="regular-text code" />
-				<p class="description"><?php _e('Go to Account &raquo; User Management in 2Checkout and create a user with API Access and API Updating.', 'paid-memberships-pro');?></p>
+				<p class="description"><?php esc_html_e('Go to Account &raquo; User Management in 2Checkout and create a user with API Access and API Updating.', 'paid-memberships-pro');?></p>
 			</td>
 		</tr>
 		<tr class="gateway gateway_twocheckout" <?php if($gateway != "twocheckout") { ?>style="display: none;"<?php } ?>>
