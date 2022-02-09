@@ -4,7 +4,7 @@ Tags: memberships, members, subscriptions, ecommerce, user registration, member,
 Requires at least: 5.2
 Tested up to: 5.9
 Requires PHP: 5.6
-Stable tag: 2.7.2
+Stable tag: 2.7.3
 
 Get Paid with Paid Memberships Pro: The most complete member management and membership subscriptions plugin for your WordPress site.
 
@@ -156,6 +156,12 @@ Not sure? You can find out by doing a bit a research.
 9. Membership Account page, display all sections or show specific sections using shortcode attributes.
 
 == Changelog ==
+= 2.7.3 - 2022-02-01 =
+* ENHANCEMENT: Added CSS to make sure input fields input fields aren't extra tiny/short, e.g. in the Twenty Twenty Two theme. (@kimcoleman)
+* BUG FIX: Fixed a fatal error for older PHP sites when visiting the page settings in the admin dasboard. (@andrewlimaza)
+* BUG FIX: Fixed issue where license keys were incorrectly flagged as invalid if expiring within 1 month. (@ideadude)
+* BUG FIX: Fixed issue where billing addresses were not added to the Stripe customer at checkout. (@dparker1005)
+
 = 2.7.2 - 2022-01-17 =
 * BUG FIX/ENHANCEMENT: Improved error messages when creating subscriptions with Stripe. (@dparker1005)
 * BUG FIX: Fixed issue where certain Stripe trial periods would be sent to the Stripe subscription as longer than intended. #1912 (@dparker1005)
@@ -165,7 +171,7 @@ Not sure? You can find out by doing a bit a research.
 * BUG FIX: Fixed issue on some MySQL setups that would throw an error about the primary key in the pmpro_memberships_pages and pmpro_memberships_categories tables.
 
 = 2.7 - 2022-01-13 =
-* FEATURE: Added a "Spam Protection" option to the advanced settings page. When used, IP addresses are blocked from checkout if there are more than 10 failsures within 15 minutes. (@ideadude)
+* FEATURE: Added a "Spam Protection" option to the advanced settings page. When used, IP addresses are blocked from checkout if there are more than 10 failures within 15 minutes. (@ideadude)
 * ENHANCEMENT: Checkouts with Stripe will now reuse Stripe Products and Prices. (@dparker1005)
 * ENHANCEMENT: User profile now links to Stripe customer so that subscriptions can easily be directly updated in Stripe rather than through Subscriptions Updates which is now deprecated. (@dparker1005)
 * ENHANCEMENT: Improved usability of the Require Membership metabox for sites with a large number of levels. #1885 #1692 (@kimcoleman)
