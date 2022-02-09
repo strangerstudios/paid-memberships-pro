@@ -997,7 +997,7 @@ function pmpro_confirmaction_handler() {
 	}
 
 	if ( ! isset( $_GET['request_id'] ) ) {
-		wp_die( __( 'Missing request ID.', 'paid-memberships-pro' ) );
+		wp_die( esc_html__( 'Missing request ID.', 'paid-memberships-pro' ) );
 	}
 
 	if ( ! isset( $_GET['confirm_key'] ) ) {
