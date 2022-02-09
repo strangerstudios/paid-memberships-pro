@@ -425,13 +425,15 @@ function pmpro_report_sales_page()
 			dataTable.addRows([
 				<?php foreach($cols as $date => $value) { ?>
 					[
-						'<?php
-							if ( $period == "monthly" ) {
-								echo esc_html(date_i18n( 'M', mktime(0,0,0,$date,2)));
-							} else {
-								echo esc_html( $date );
+						<?php
+							$date_value = $date;
+
+							if ( $period === 'monthly' ) {
+								$date_value = date_i18n( 'M', mktime( 0, 0, 0, $date, 2 ) );
 							}
-						?>',
+
+							echo wp_json_encode( esc_html( $date_value ) );
+						?>,
 						createCustomHTMLContent(
 							'<?php
 								if ( $period == "monthly" ) {
