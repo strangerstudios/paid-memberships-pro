@@ -420,7 +420,7 @@ function pmpro_report_sales_page()
 			<?php if ( $type === 'sales' ) { ?>
 				dataTable.addColumn('number', <?php echo wp_json_encode( esc_html( sprintf( __( 'Average: %s', 'paid-memberships-pro' ), number_format_i18n( $average, 2 ) ) ) ); ?>);
 			<?php } else { ?>
-				dataTable.addColumn('number', '<?php esc_html_e( sprintf( __( 'Average: %s', 'paid-memberships-pro' ), pmpro_escape_price( html_entity_decode( pmpro_formatPrice( $average ) ) ) ) ); ?>');
+				dataTable.addColumn('number', <?php echo wp_json_encode( sprintf( esc_html__( 'Average: %s', 'paid-memberships-pro' ), pmpro_escape_price( html_entity_decode( pmpro_formatPrice( $average ) ) ) ) ); ?>);
 			<?php } ?>
 			dataTable.addRows([
 				<?php foreach($cols as $date => $value) { ?>
