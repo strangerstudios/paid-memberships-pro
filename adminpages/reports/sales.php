@@ -548,7 +548,7 @@ function pmpro_report_sales_page()
 					$date = __( 'All Time');
 				}
 			?>
-			return '<?php echo sprintf( __( '%s %s for %s', 'paid-memberships-pro' ), ucwords( $period ), ucwords( $type ), ucwords( $date ) ); ?>';
+			return <?php echo wp_json_encode( esc_html( sprintf( __( '%s %s for %s', 'paid-memberships-pro' ), ucwords( $period ), ucwords( $type ), ucwords( $date ) ) ) ); ?>;
 		}
 	</script>
 
