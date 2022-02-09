@@ -435,15 +435,17 @@ function pmpro_report_sales_page()
 							echo wp_json_encode( esc_html( $date_value ) );
 						?>,
 						createCustomHTMLContent(
-							'<?php
-								if ( $period == "monthly" ) {
-									echo esc_html(date_i18n( 'F', mktime(0,0,0,$date,2)));
-								} elseif ( $period == "daily" ) {
-									echo date_i18n( get_option( 'date_format' ), strtotime( $year . '-' . $month . '-' . $date ) );
-								} else {
-									echo esc_html( $date );
+							<?php
+								$date_value = $date;
+
+								if ( $period === 'monthly' ) {
+									$date_value = date_i18n( 'F', mktime( 0, 0, 0, $date, 2 ) ) );
+								} elseif ( $period === 'daily' ) {
+									$date_value = date_i18n( get_option( 'date_format' ), strtotime( $year . '-' . $month . '-' . $date ) );
 								}
-							?>',
+
+								echo wp_json_encode( esc_html( $date_value ) );
+							?>,
 							<?php if ( $type === 'sales' ) { ?>
 								'<?php esc_html_e( $value[1] ); ?>',
 								'<?php esc_html_e( $value[0] - $value[1] ); ?>',
