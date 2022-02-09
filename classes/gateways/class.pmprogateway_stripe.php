@@ -2033,7 +2033,7 @@ class PMProGateway_stripe extends PMProGateway {
 			! empty( $order->billing->street ) &&
 			! empty( $order->billing->city ) &&
 			! empty( $order->billing->state ) &&
-			! empty( $order->billing->postal_code ) &&
+			! empty( $order->billing->zip ) &&
 			! empty( $order->billing->country ) 
 		) {
 			// We collected a billing address at checkout.
