@@ -373,7 +373,7 @@ function pmpro_report_sales_page()
 	</div>
 	<div class="pmpro_chart_area">
 		<div id="chart_div"></div>
-		<div class="pmpro_chart_description"><p><center><em><?php _e( 'Average line calculated using data prior to current day, month, or year.', 'paid-memberships-pro' ); ?></em></center></p></div>
+		<div class="pmpro_chart_description"><p><center><em><?php esc_html_e( 'Average line calculated using data prior to current day, month, or year.', 'paid-memberships-pro' ); ?></em></center></p></div>
 	</div>
 	<script>
 		//update month/year when period dropdown is changed
