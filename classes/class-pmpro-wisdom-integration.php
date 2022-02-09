@@ -12,35 +12,37 @@ class PMPro_Wisdom_Integration {
 	/**
 	 * The current object instance.
 	 *
+	 * @since TBD
+	 *
 	 * @var self
 	 */
 	public static $instance;
 
 	/**
-     * The plugin slug to use with Wisdom.
+	 * The plugin slug to use with Wisdom.
 	 *
 	 * @since TBD
-     *
-     * @var string
-     */
+	 *
+	 * @var string
+	 */
 	public $plugin_slug = 'paid-memberships-pro';
 
 	/**
-     * The plugin option to send to Wisdom.
+	 * The plugin option to send to Wisdom.
 	 *
 	 * @since TBD
-     *
-     * @var string
-     */
+	 *
+	 * @var string
+	 */
 	public $plugin_option = 'pmpro_settings';
 
 	/**
-     * The plugin settings pages to include Wisdom notices on.
+	 * The plugin settings pages to include Wisdom notices on.
 	 *
 	 * @since TBD
-     *
-     * @var array
-     */
+	 *
+	 * @var array
+	 */
 	public $plugin_pages = [
 		'pmpro-membershiplevels' => true,
 		'pmpro-discountcodes'    => true,
@@ -53,6 +55,8 @@ class PMPro_Wisdom_Integration {
 
 	/**
 	 * The Wisdom Tracker object.
+	 *
+	 * @since TBD
 	 *
 	 * @var PMPro_Wisdom_Tracker
 	 */
@@ -67,10 +71,10 @@ class PMPro_Wisdom_Integration {
 	 */
 	public static function instance() {
 		if ( ! isset( self::$instance ) ) {
-            self::$instance = new self;
-        }
+			self::$instance = new self;
+		}
 
-        return self::$instance;
+		return self::$instance;
 	}
 
 	/**
@@ -82,6 +86,8 @@ class PMPro_Wisdom_Integration {
 
 	/**
 	 * Set up the Wisdom tracker.
+	 *
+	 * @since TBD
 	 */
 	public function setup_wisdom() {
 		require_once PMPRO_DIR . '/classes/class-pmpro-wisdom-tracker.php';
@@ -397,7 +403,7 @@ class PMPro_Wisdom_Integration {
 			foreach ( $range_groups as $key => $group ) {
 				// Zero price range handling.
 				if ( 0 === $group['range'][0] && 0 === $group['range'][1] && 0 === $billing_amount_price ) {
-                    $range_groups[ $key ]['count']++;
+					$range_groups[ $key ]['count'] ++;
 
 					break;
 				}
