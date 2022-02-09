@@ -413,7 +413,7 @@ function pmpro_report_sales_page()
 		google.charts.setOnLoadCallback(drawVisualization);
 		function drawVisualization() {
 			var dataTable = new google.visualization.DataTable();
-			dataTable.addColumn('string', '<?php echo esc_html( $date_function ); ?>');
+			dataTable.addColumn('string', <?php echo wp_json_encode( esc_html( $date_function ) ); ?>);
 			dataTable.addColumn({type: 'string', role: 'tooltip', 'p': {'html': true}});
 			dataTable.addColumn('number', '<?php esc_html_e( 'Renewals', 'paid-memberships-pro' ); ?>');
 			dataTable.addColumn('number', '<?php esc_html_e( sprintf( __( 'New %s', 'paid-memberships-pro' ), ucwords( $type ) ) ); ?>');
