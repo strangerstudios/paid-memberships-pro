@@ -28,7 +28,11 @@ $extra_pages = apply_filters('pmpro_extra_page_settings', array());
 $post_types = apply_filters( 'pmpro_admin_pagesetting_post_type_array', array( 'page' ) );
 
 // For backward compatibility we extract the first element from the array
-$post_type = is_array( $post_types ) ? $post_types[ array_key_first( $post_types ) ] : $post_types;
+if ( is_array( $post_types ) ) {
+    $post_type = reset( $post_types );
+} else {
+    $post_type = $post_types;
+}
 
 /**
  * Set post type to use for PMPro pages in the page settings dropdown.
