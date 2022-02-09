@@ -528,9 +528,15 @@ function pmpro_report_sales_page()
 			return '<div style="padding:15px; font-size: 14px; line-height: 20px; color: #000000;">' +
 				'<strong>' + period + '</strong><br/>' +
 				'<ul>' +
-				'<li><span style="margin-right: 3px;"><?php esc_html_e( 'New:', 'paid-memberships-pro' ); ?></span>' + notRenewals + '</li>' +
-				'<li><span style="margin-right: 3px;"><?php esc_html_e( 'Renewals:', 'paid-memberships-pro' ); ?></span>' + renewals + '</li>' +
-				'<li><span style="margin-right: 3px;"><?php esc_html_e( 'Total:', 'paid-memberships-pro' ); ?></span>' + total + '</li>' + '</ul>' + '</div>';
+				'<li><span style="margin-right: 3px;">' +
+				<?php echo wp_json_encode( esc_html__( 'New:', 'paid-memberships-pro' ) ); ?> +
+				'</span>' + notRenewals + '</li>' +
+				'<li><span style="margin-right: 3px;">' +
+				<?php echo wp_json_encode( esc_html__( 'Renewals:', 'paid-memberships-pro' ) ); ?> +
+				'</span>' + renewals + '</li>' +
+				'<li><span style="margin-right: 3px;">' +
+				<?php echo wp_json_encode( esc_html__( 'Total:', 'paid-memberships-pro' ) ); ?> +
+				'</span>' + total + '</li>' + '</ul>' + '</div>';
 		}
 		function pmpro_report_title_sales() {
 			<?php
