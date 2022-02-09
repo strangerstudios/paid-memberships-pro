@@ -24,7 +24,7 @@
 	
 	<?php
 	} else {
-	?><p><?php _e('Update complete.', 'paid-memberships-pro');?></p><?php
+	?><p><?php esc_html_e('Update complete.', 'paid-memberships-pro');?></p><?php
 	}
 ?>
 
