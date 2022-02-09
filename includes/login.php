@@ -1001,7 +1001,7 @@ function pmpro_confirmaction_handler() {
 	}
 
 	if ( ! isset( $_GET['confirm_key'] ) ) {
-		wp_die( __( 'Missing confirm key.', 'paid-memberships-pro' ) );
+		wp_die( esc_html__( 'Missing confirm key.', 'paid-memberships-pro' ) );
 	}
 
 	$request_id = (int) $_GET['request_id'];
