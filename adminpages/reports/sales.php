@@ -447,13 +447,13 @@ function pmpro_report_sales_page()
 								echo wp_json_encode( esc_html( $date_value ) );
 							?>,
 							<?php if ( $type === 'sales' ) { ?>
-								'<?php esc_html_e( $value[1] ); ?>',
-								'<?php esc_html_e( $value[0] - $value[1] ); ?>',
-								'<?php esc_html_e( $value[0] ); ?>',
+								<?php echo wp_json_encode( esc_html( $value[1] ) ); ?>,
+								<?php echo wp_json_encode( esc_html( $value[0] - $value[1] ) ); ?>,
+								<?php echo wp_json_encode( esc_html( $value[0] ) ); ?>,
 							<?php } else { ?>
-								'<?php echo pmpro_escape_price( pmpro_formatPrice( $value[1] ) ); ?>',
-								'<?php echo pmpro_escape_price( pmpro_formatPrice( $value[0] - $value[1] ) ); ?>',
-								'<?php echo pmpro_escape_price( pmpro_formatPrice( $value[0] ) ); ?>',
+								<?php echo wp_json_encode( pmpro_escape_price( pmpro_formatPrice( $value[1] ) ) ); ?>,
+								<?php echo wp_json_encode( pmpro_escape_price( pmpro_formatPrice( $value[0] - $value[1] ) ) ); ?>,
+								<?php echo wp_json_encode( pmpro_escape_price( pmpro_formatPrice( $value[0] ) ) ); ?>,
 							<?php } ?>
 						),
 						<?php echo esc_html( pmpro_round_price( $value[1] ) ); ?>,
