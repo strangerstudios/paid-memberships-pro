@@ -4321,7 +4321,11 @@ class PMProGateway_stripe extends PMProGateway {
 
 		//attempt refund
 		try {
-			$refund = $charge->refund();
+			$secretkey = pmpro_getOption( "stripe_secretkey" );
+			$stripe = new Stripe_Client( $secretkey );
+			$refund = $stripe->refunds->create( [
+				'charge' => $transaction_id,
+			] );
 		} catch ( \Throwable $e ) {
 			$order->errorcode  = true;
 			$order->error      = __( "Error: ", 'paid-memberships-pro' ) . $e->getMessage();
