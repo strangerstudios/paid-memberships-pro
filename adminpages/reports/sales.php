@@ -55,53 +55,44 @@ function pmpro_report_sales_widget() {
 		);
 
 	foreach ( $reports as $report_type => $report_name ) {
-		if ( $report_type === 'all time' ) { ?>
-			<tfoot>
-				<tr>
-					<th><?php echo esc_html( $report_name ); ?></th>
-					<td colspan="3"><?php echo pmpro_escape_price( pmpro_formatPrice( pmpro_getRevenue( $report_type ) ) ); ?></td>
-				</tr>
-			</tfoot>
-		<?php } else {
-			//sale prices stats
-			$count = 0;
-			$max_prices_count = apply_filters( 'pmpro_admin_reports_max_sale_prices', 5 );
-			$prices = pmpro_get_prices_paid( $report_type, $max_prices_count );
-			?>
-			<tbody>
-				<tr class="pmpro_report_tr">
-					<th scope="row">
-						<?php if( ! empty( $prices ) ) { ?>
-							<button class="pmpro_report_th pmpro_report_th_closed"><?php echo esc_html($report_name); ?></button>
-						<?php } else { ?>
-							<?php echo esc_html($report_name); ?>
-						<?php } ?>
-					</th>
-					<td><?php echo esc_html( number_format_i18n( pmpro_getSales( $report_type, null, 'new' ) ) ); ?></td>
-					<td><?php echo esc_html( number_format_i18n( pmpro_getSales( $report_type, null, 'renewals' ) ) ); ?></td>
-					<td><?php echo pmpro_escape_price( pmpro_formatPrice( pmpro_getRevenue( $report_type ) ) ); ?></td>
-				</tr>
-				<?php
-					//sale prices stats
-					$count = 0;
-					$max_prices_count = apply_filters( 'pmpro_admin_reports_max_sale_prices', 5 );
-					foreach ( $prices as $price => $quantity ) {
-						if ( $count++ >= $max_prices_count ) {
-							break;
-						}
-				?>
-					<tr class="pmpro_report_tr_sub" style="display: none;">
-						<th scope="row">- <?php echo pmpro_escape_price( pmpro_formatPrice( $price ) );?></th>
-						<td><?php echo esc_html( number_format_i18n( $quantity['new'] ) ); ?></td>
-						<td><?php echo esc_html( number_format_i18n( $quantity['renewals'] ) ); ?></td>
-						<td><?php echo pmpro_escape_price( pmpro_formatPrice( $price * $quantity['total'] ) ); ?></td>
-					</tr>
-				<?php
-				}
-				?>
-			</tbody>
+		//sale prices stats
+		$count = 0;
+		$max_prices_count = apply_filters( 'pmpro_admin_reports_max_sale_prices', 5 );
+		$prices = pmpro_get_prices_paid( $report_type, $max_prices_count );
+		?>
+		<tbody>
+			<tr class="pmpro_report_tr">
+				<th scope="row">
+					<?php if( ! empty( $prices ) ) { ?>
+						<button class="pmpro_report_th pmpro_report_th_closed"><?php echo esc_html($report_name); ?></button>
+					<?php } else { ?>
+						<?php echo esc_html($report_name); ?>
+					<?php } ?>
+				</th>
+				<td><?php echo esc_html( number_format_i18n( pmpro_getSales( $report_type, null, 'new' ) ) ); ?></td>
+				<td><?php echo esc_html( number_format_i18n( pmpro_getSales( $report_type, null, 'renewals' ) ) ); ?></td>
+				<td><?php echo pmpro_escape_price( pmpro_formatPrice( pmpro_getRevenue( $report_type ) ) ); ?></td>
+			</tr>
 			<?php
-		}
+				//sale prices stats
+				$count = 0;
+				$max_prices_count = apply_filters( 'pmpro_admin_reports_max_sale_prices', 5 );
+				foreach ( $prices as $price => $quantity ) {
+					if ( $count++ >= $max_prices_count ) {
+						break;
+					}
+			?>
+				<tr class="pmpro_report_tr_sub" style="display: none;">
+					<th scope="row">- <?php echo pmpro_escape_price( pmpro_formatPrice( $price ) );?></th>
+					<td><?php echo esc_html( number_format_i18n( $quantity['new'] ) ); ?></td>
+					<td><?php echo esc_html( number_format_i18n( $quantity['renewals'] ) ); ?></td>
+					<td><?php echo pmpro_escape_price( pmpro_formatPrice( $price * $quantity['total'] ) ); ?></td>
+				</tr>
+			<?php
+			}
+			?>
+		</tbody>
+		<?php
 	}
 	?>
 	</table>
@@ -439,7 +430,7 @@ function pmpro_report_sales_page()
 								$date_value = $date;
 
 								if ( $period === 'monthly' ) {
-									$date_value = date_i18n( 'F', mktime( 0, 0, 0, $date, 2 ) ) );
+									$date_value = date_i18n( 'F', mktime( 0, 0, 0, $date, 2 ) );
 								} elseif ( $period === 'daily' ) {
 									$date_value = date_i18n( get_option( 'date_format' ), strtotime( $year . '-' . $month . '-' . $date ) );
 								}
@@ -447,18 +438,24 @@ function pmpro_report_sales_page()
 								echo wp_json_encode( esc_html( $date_value ) );
 							?>,
 							<?php if ( $type === 'sales' ) { ?>
-								<?php echo wp_json_encode( esc_html( $value[1] ) ); ?>,
-								<?php echo wp_json_encode( esc_html( $value[0] - $value[1] ) ); ?>,
-								<?php echo wp_json_encode( esc_html( $value[0] ) ); ?>,
+								<?php echo wp_json_encode( (int) $value[1] ); ?>,
+								<?php echo wp_json_encode( (int) $value[0] - $value[1] ); ?>,
+								<?php echo wp_json_encode( (int) $value[0] ); ?>,
 							<?php } else { ?>
 								<?php echo wp_json_encode( pmpro_escape_price( pmpro_formatPrice( $value[1] ) ) ); ?>,
 								<?php echo wp_json_encode( pmpro_escape_price( pmpro_formatPrice( $value[0] - $value[1] ) ) ); ?>,
 								<?php echo wp_json_encode( pmpro_escape_price( pmpro_formatPrice( $value[0] ) ) ); ?>,
 							<?php } ?>
 						),
-						<?php echo esc_html( pmpro_round_price( $value[1] ) ); ?>,
-						<?php echo esc_html( pmpro_round_price( $value[0] - $value[1] ) ); ?>,
-						<?php echo esc_html( number_format_i18n( $average, 2 ) ); ?>,
+						<?php if ( $type === 'sales' ) { ?>
+							<?php echo wp_json_encode( (int) $value[1] ); ?>,
+							<?php echo wp_json_encode( (int) $value[0] - $value[1] ); ?>,
+							<?php echo wp_json_encode( (int) $average ); ?>,
+						<?php } else { ?>
+							<?php echo wp_json_encode( pmpro_round_price( $value[1] ) ); ?>,
+							<?php echo wp_json_encode( pmpro_round_price( $value[0] - $value[1] ) ); ?>,
+							<?php echo wp_json_encode( pmpro_round_price( $average ) ); ?>,
+						<?php } ?>
 					],
 				<?php } ?>
 			]);
@@ -527,14 +524,14 @@ function pmpro_report_sales_page()
 		function createCustomHTMLContent(period, renewals, notRenewals, total) {
 			return '<div style="padding:15px; font-size: 14px; line-height: 20px; color: #000000;">' +
 				'<strong>' + period + '</strong><br/>' +
-				'<ul>' +
+				'<ul style="margin-bottom: 0px;">' +
 				'<li><span style="margin-right: 3px;">' +
 				<?php echo wp_json_encode( esc_html__( 'New:', 'paid-memberships-pro' ) ); ?> +
 				'</span>' + notRenewals + '</li>' +
 				'<li><span style="margin-right: 3px;">' +
 				<?php echo wp_json_encode( esc_html__( 'Renewals:', 'paid-memberships-pro' ) ); ?> +
 				'</span>' + renewals + '</li>' +
-				'<li><span style="margin-right: 3px;">' +
+				'<li style="border-top: 1px solid #CCC; margin-bottom: 0px; margin-top: 8px; padding-top: 8px;"><span style="margin-right: 3px;">' +
 				<?php echo wp_json_encode( esc_html__( 'Total:', 'paid-memberships-pro' ) ); ?> +
 				'</span>' + total + '</li>' + '</ul>' + '</div>';
 		}
