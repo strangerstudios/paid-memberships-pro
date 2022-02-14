@@ -135,7 +135,7 @@ function pmpro_checkForUpgrades()
 
 	//fix subscription ids on stripe orders
 	require_once(PMPRO_DIR . "/includes/updates/upgrade_1_8_6_9.php");	//need to include this for AJAX calls
-	if($pmpro_db_version < 1.869) {		
+	if($pmpro_db_version < 1.869) {
 		$pmpro_db_version = pmpro_upgrade_1_8_6_9();
 	}
 
@@ -144,27 +144,27 @@ function pmpro_checkForUpgrades()
 		require_once(PMPRO_DIR . "/includes/updates/upgrade_1_8_7.php");
 		$pmpro_db_version = pmpro_upgrade_1_8_7();
 	}
-	
+
 	/*
 		v1.8.8
 		* Running the cron job cleanup again.
 		* Fixing old $0 Stripe orders.
 		* Fixing old Authorize.net orders with empty status.
-	*/	
+	*/
 	require_once(PMPRO_DIR . "/includes/updates/upgrade_1_8_8.php");
-	if($pmpro_db_version < 1.88) {		
-		$pmpro_db_version = pmpro_upgrade_1_8_8();			
+	if($pmpro_db_version < 1.88) {
+		$pmpro_db_version = pmpro_upgrade_1_8_8();
 	}
-	
+
 	/*
 		v1.8.9.1
 		* Fixing Stripe orders where user_id/membership_id = 0
 		* Updated in v1.9.2.2 to check for namespace compatibility first,
 		  since the Stripe class isn't loaded for PHP < 5.3.29
-	*/	
+	*/
 	if (version_compare( PHP_VERSION, '5.3.29', '>=' )) {
 		require_once(PMPRO_DIR . "/includes/updates/upgrade_1_8_9_1.php");
-		if($pmpro_db_version < 1.891) {			
+		if($pmpro_db_version < 1.891) {
 			$pmpro_db_version = pmpro_upgrade_1_8_9_1();
 		}
 	} elseif($pmpro_db_version < 1.891) {
@@ -177,18 +177,18 @@ function pmpro_checkForUpgrades()
 	*/
 	if($pmpro_db_version < 1.892) {
 		pmpro_db_delta();
-		
+
 		$pmpro_db_version = 1.892;
 		pmpro_setOption("db_version", "1.892");
 	}
 
 	/*
 		v1.8.9.3 (db v1.91)
-		* Fixing incorrect start and end dates.	
+		* Fixing incorrect start and end dates.
 	*/
 	require_once(PMPRO_DIR . "/includes/updates/upgrade_1_8_9_3.php");
 	if($pmpro_db_version < 1.91) {
-		$pmpro_db_version = pmpro_upgrade_1_8_9_3();			
+		$pmpro_db_version = pmpro_upgrade_1_8_9_3();
 	}
 
 	/*
@@ -198,7 +198,7 @@ function pmpro_checkForUpgrades()
 	*/
 	if($pmpro_db_version < 1.92) {
 		pmpro_db_delta();
-		
+
 		$pmpro_db_version = 1.92;
 		pmpro_setOption("db_version", "1.92");
 	}
@@ -210,16 +210,16 @@ function pmpro_checkForUpgrades()
 	*/
 	if($pmpro_db_version < 1.93) {
 		pmpro_db_delta();
-		
+
 		$pmpro_db_version = 1.93;
 		pmpro_setOption("db_version", "1.93");
 	}
 
-	require_once( PMPRO_DIR . "/includes/updates/upgrade_1_9_4.php" );	
+	require_once( PMPRO_DIR . "/includes/updates/upgrade_1_9_4.php" );
 	if($pmpro_db_version < 1.94) {
 		$pmpro_db_version = pmpro_upgrade_1_9_4();
 	}
-	
+
 	if($pmpro_db_version < 1.944) {
 		pmpro_cleanup_memberships_users_table();
 		$pmpro_db_version = '1.944';
@@ -232,22 +232,22 @@ function pmpro_checkForUpgrades()
 		$pmpro_db_version = 2.1;
 		pmpro_setOption( 'db_version', '2.1' );
 	}
-	
+
 	if ( $pmpro_db_version < 2.3 ) {
 		pmpro_maybe_schedule_event( strtotime( '10:30:00' ) - ( get_option( 'gmt_offset' ) * HOUR_IN_SECONDS ), 'daily', 'pmpro_cron_admin_activity_email' );
 		pmpro_setOption( 'db_version', '2.3' );
 	}
-	
+
 	/**
 	 * Version 2.4
 	 * Fixing subscription_transaction_id
 	 * for orders created through a Stripe Update.
 	 */
-	require_once( PMPRO_DIR . "/includes/updates/upgrade_2_4.php" );	
+	require_once( PMPRO_DIR . "/includes/updates/upgrade_2_4.php" );
  	if($pmpro_db_version < 2.4) {
  		$pmpro_db_version = pmpro_upgrade_2_4();
  	}
-	
+
 	/**
 	 * Version 2.5
 	 * Running pmpro_db_delta to install the ordermeta table.
@@ -264,18 +264,18 @@ function pmpro_checkForUpgrades()
 	 */
 	require_once( PMPRO_DIR . "/includes/updates/upgrade_2_6.php" );
 	if( $pmpro_db_version < 2.6 ) {
-		pmpro_db_delta();		
+		pmpro_db_delta();
 		$pmpro_db_version = pmpro_upgrade_2_6();
 		pmpro_setOption( 'db_version', '2.6' );
-	}
+	}	
 	
 	/**
-	 * Version 2.6.7
-	 * Running pmpro_db_delta to update KEY types in a couple tables.
+	 * Version 2.7.1
+	 * Running pmpro_db_delta to fix the primary key in a couple tables.
 	 */
-	 if( $pmpro_db_version < 2.67 ) {
- 		pmpro_db_delta(); 		
- 		pmpro_setOption( 'db_version', '2.67' );
+	 if( $pmpro_db_version < 2.71 ) {
+ 		pmpro_db_delta();
+ 		pmpro_setOption( 'db_version', '2.71' );
  	}
 }
 
@@ -382,7 +382,7 @@ function pmpro_db_delta()
 		  `membership_id` int(11) unsigned NOT NULL,
 		  `category_id` bigint(20) unsigned NOT NULL,
 		  `modified` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-		  PRIMARY KEY `membership_category` (`membership_id`,`category_id`),
+		  PRIMARY KEY (`membership_id`,`category_id`),
 		  UNIQUE KEY `category_membership` (`category_id`,`membership_id`)
 		);
 	";
@@ -394,7 +394,7 @@ function pmpro_db_delta()
 		  `membership_id` int(11) unsigned NOT NULL,
 		  `page_id` bigint(20) unsigned NOT NULL,
 		  `modified` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-		  PRIMARY KEY `category_membership` (`page_id`,`membership_id`),
+		  PRIMARY KEY (`page_id`,`membership_id`),
 		  UNIQUE KEY `membership_page` (`membership_id`,`page_id`)
 		);
 	";

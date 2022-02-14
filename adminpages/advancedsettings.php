@@ -38,6 +38,7 @@
 
 		// Checkout settings.
 		pmpro_setOption("tospage");
+		pmpro_setOption("spamprotection");
 		pmpro_setOption("recaptcha");
 		pmpro_setOption("recaptcha_version");
 		pmpro_setOption("recaptcha_publickey");
@@ -83,6 +84,7 @@
 
 	// Checkout settings.
 	$tospage = pmpro_getOption("tospage");
+	$spamprotection = pmpro_getOption("spamprotection");
 	$recaptcha = pmpro_getOption("recaptcha");
 	$recaptcha_version = pmpro_getOption("recaptcha_version");
 	$recaptcha_publickey = pmpro_getOption("recaptcha_publickey");
@@ -234,6 +236,19 @@
 						?>
 						<br />
 						<p class="description"><?php _e('If yes, create a WordPress page containing your TOS agreement and assign it using the dropdown above.', 'paid-memberships-pro' );?></p>
+					</td>
+				</tr>
+				<tr>
+					<th scope="row" valign="top">
+						<label for="spamprotection"><?php _e('Enable Spam Protection?', 'paid-memberships-pro' );?>:</label>
+					</th>
+					<td>
+						<select id="spamprotection" name="spamprotection">
+							<option value="0" <?php if(!$spamprotection) { ?>selected="selected"<?php } ?>><?php _e('No', 'paid-memberships-pro' );?></option>
+							<!-- For reference, removed the Yes - Free memberships only. option -->
+							<option value="2" <?php if( $spamprotection > 0 ) { ?>selected="selected"<?php } ?>><?php _e('Yes - Enable Spam Protection', 'paid-memberships-pro' );?></option>
+						</select>
+						<p class="description"><?php printf( __( 'Block IPs from checkout if there are more than %d failures within %d minutes.', 'paid-memberships-pro' ), PMPRO_SPAM_ACTION_NUM_LIMIT, round(PMPRO_SPAM_ACTION_TIME_LIMIT/60,2) );?></p>
 					</td>
 				</tr>
 				<tr>
