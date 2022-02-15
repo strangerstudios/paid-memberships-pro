@@ -122,7 +122,7 @@ function pmpro_get_all_notifications() {
 		set_transient( 'pmpro_notifications_' . PMPRO_VERSION, 'NULL', 86400 );
 		
 		// We use the filter to hit our testing servers.
-		$pmpro_notification_url = apply_filters( 'pmpro_notifications_url', esc_url( 'https://notifications.paidmembershipspro.com/v2/notifications.json' ) );
+		$pmpro_notification_url = apply_filters( 'pmpro_notifications_url', esc_url( 'https://notifications.strangerstudios.com/v2/notifications.json' ) );
 
 		// Get notifications.
 		$remote_notifications = wp_remote_get( $pmpro_notification_url );		
