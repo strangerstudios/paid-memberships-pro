@@ -71,6 +71,7 @@
 				add_filter('pmpro_checkout_default_submit_button', array('PMProGateway_paypalexpress', 'pmpro_checkout_default_submit_button'));
 				add_action('http_api_curl', array('PMProGateway_paypalexpress', 'http_api_curl'), 10, 3);
 			}
+			add_filter( 'pmpro_process_refund_paypal', array('PMProGateway_paypalexpress', 'process_refund' ), 10, 2 );
 		}
 
 		/**
@@ -1067,6 +1068,37 @@
 			}
 
 			return $httpParsedResponseAr;
+		}
+
+		/**
+		 * Refunds an order (only supports full amounts)
+		 *
+		 * @param bool    Status of the refund (default: false)
+		 * @param object  The Member Order Object
+		 *
+		 * @return bool   Status of the processed refund
+		 */
+		function process_refund( $success, $morder ){
+
+			$transaction_id = $morder->payment_transaction_id;
+
+			if ( $transaction_id === $morder->subscription_transaction_id ) {
+				$transaction_id = $morder->Gateway->getRealPaymentTransactionId( $morder );
+			}
+
+			$httpParsedResponseAr = $morder->Gateway->PPHttpPost( 'RefundTransaction', "&TRANSACTIONID=$transaction_id" );
+
+			if ( 'SUCCESS' === strtoupper( $httpParsedResponseAr['ACK'] ) ) {
+				$morder->updateStatus( 'refunded' );
+				return true;
+			} else {
+				//Localize this with better wording
+				$morder->notes = $morder->notes.' Attempted refund failed '.print_r( $httpParsedResponseAr, true );
+				return false;
+			}
+
+			return false;
+
 		}
         
         /**

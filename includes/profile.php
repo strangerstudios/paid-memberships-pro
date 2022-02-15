@@ -120,6 +120,12 @@ function pmpro_membership_level_profile_fields($user)
                 <label for="cancel_subscription"><input value="1" id="cancel_subscription" name="cancel_subscription" type="checkbox"> <?php _e("Cancel this user's subscription at the gateway.", "paid-memberships-pro" ); ?></label>
             </td>
         </tr>
+         <tr class="more_level_options">
+            <th></th>
+            <td>
+                <label for="refund_subscription"><input value="1" id="refund_subscription" name="refund_subscription" type="checkbox"> <?php _e("Refund this user's most recent order.", "paid-memberships-pro" ); ?></label>
+            </td>
+        </tr>
 		<?php
 		}
 		?>
@@ -301,7 +307,8 @@ function pmpro_membership_level_profile_fields_update()
 
 		//remove filter after ward
 		if(empty($_REQUEST['cancel_subscription']))
-			remove_filter('pmpro_cancel_previous_subscriptions', 'pmpro_cancel_previous_subscriptions_false');
+			remove_filter('pmpro_cancel_previous_subscriptions', 'pmpro_cancel_previous_subscriptions_false');		
+
     }
 
 	//expiration change
@@ -355,6 +362,22 @@ function pmpro_membership_level_profile_fields_update()
 			$pmproemail->sendAdminChangeEmail(get_userdata($user_ID));
 		}
 	}
+
+	//Refund their most recent subscription
+	if( !empty( $_REQUEST['refund_subscription'] ) ) {
+
+		$order = new MemberOrder();
+		$order->getLastMemberOrder( $user_ID );
+
+		if( !empty( $order ) && !empty( $order->id ) ) {
+			
+			//Gateways that we want to support this can run the action from their own class.
+			pmpro_refund_order( $order );
+
+		}
+
+	}
+
 }
 add_action( 'show_user_profile', 'pmpro_membership_level_profile_fields' );
 add_action( 'edit_user_profile', 'pmpro_membership_level_profile_fields' );

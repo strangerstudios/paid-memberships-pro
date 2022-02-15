@@ -177,6 +177,8 @@ class PMProGateway_stripe extends PMProGateway {
 		add_action( 'admin_init', array( 'PMProGateway_stripe', 'stripe_connect_save_options' ) );
 		add_action( 'admin_notices', array( 'PMProGateway_stripe', 'stripe_connect_show_errors' ) );
 		add_action( 'admin_notices', array( 'PMProGateway_stripe', 'stripe_connect_deauthorize' ) );
+
+		add_filter( 'pmpro_process_refund_stripe', array( 'PMProGateway_stripe', 'process_refund' ), 10, 2 );
 	}
 
 	/**
@@ -4349,6 +4351,49 @@ class PMProGateway_stripe extends PMProGateway {
 
 			return false;
 		}
+	}
+
+	/**
+	 * Initiates a refund for a given order
+	 *
+	 * @param bool $success Outcome of the refund (default: false)
+	 * @param object $order The order we want to refund
+	 *
+	 * @return bool                   True or false if the refund worked.
+	 */
+	public function process_refund( $success, $morder ){
+
+		$secretkey = pmpro_getOption( 'stripe_secretkey' );
+
+		// ensure to use a payment transaction id ch_*
+		$transaction_id = $morder->payment_transaction_id;
+		if ( strpos( $transaction_id, "in_" ) !== false ) {
+			$invoice = Stripe\Invoice::retrieve( $transaction_id );
+
+			if ( ! empty( $invoice ) && ! empty( $invoice->charge ) ) {
+				$transaction_id = $invoice->charge;
+			}
+		}
+
+		try {
+			$stripe = new Stripe\StripeClient( $secretkey );
+			$Refund = $stripe->refunds->create( [
+				'charge' => $transaction_id,
+			] );
+			var_dump($Refund);
+		} catch ( \Stripe\Exception\ApiErrorException $e ) {
+			var_dump($e);
+			return false;
+		}
+
+		if ( 'succeeded' === $Refund->status ) {
+			$morder->updateStatus( 'refunded' );
+
+			return true;
+		}
+
+		return false;
+
 	}
 
 	/**

@@ -172,6 +172,31 @@ if ( ! empty( $_REQUEST['delete'] ) ) {
 	}
 }
 
+// Refund this order
+if ( ! empty( $_REQUEST['refund'] ) ) {
+	// Check nonce for refunding.
+	$nonceokay = true;
+	if ( empty( $_REQUEST['pmpro_orders_nonce'] ) || ! check_admin_referer( 'refund_order', 'pmpro_orders_nonce' ) ) {
+		$nonceokay = false;
+	}
+
+	$rorder = new MemberOrder( intval( $_REQUEST['refund'] ) );
+	if ( $nonceokay && !empty( $rorder ) && pmpro_allowed_refunds( $rorder ) ) {
+		
+		if( pmpro_refund_order( $rorder ) ) {
+			$pmpro_msg  = __( 'Order refunded successfully.', 'paid-memberships-pro' );
+			$pmpro_msgt = 'success';
+		} else {
+			$pmpro_msg  = __( 'Error refunding order.', 'paid-memberships-pro' );
+			$pmpro_msgt = 'error';
+		}
+
+	} else {
+		$pmpro_msg  = __( 'Error refunding order.', 'paid-memberships-pro' );
+		$pmpro_msgt = 'error';
+	}
+}
+
 $thisyear = date( 'Y', $now );
 
 // this array stores fields that should be read only
@@ -385,10 +410,35 @@ if ( function_exists( 'pmpro_add_email_order_modal' ) ) {
 
 <?php if ( ! empty( $order ) ) { ?>
 
-	<?php if ( ! empty( $order->id ) ) { ?>
+	<?php if ( ! empty( $order->id ) ) { 
+		$refund_text = esc_html(
+			sprintf(
+				// translators: %s is the Order Code.
+				__( 'Refunding an order is permanent and can affect active users. Are you sure you want to refund order %s?', 'paid-memberships-pro' ),
+				str_replace( "'", '', $order->code )
+			)
+		);
+
+		$refund_nonce_url = wp_nonce_url(
+			add_query_arg(
+				[
+					'page'   => 'pmpro-orders',
+					'action' => 'refund_order',
+					'refund' => $order->id,
+					'order'  => $order->id
+				],
+				admin_url( 'admin.php' )
+			),
+			'refund_order',
+			'pmpro_orders_nonce'
+		);
+		?>
 		<h1 class="wp-heading-inline"><?php esc_html_e( 'Order', 'paid-memberships-pro' ); ?> #<?php echo esc_html( $order->id ); ?>: <?php echo esc_html( $order->code ); ?></h1>
 		<a title="<?php esc_attr_e( 'Print', 'paid-memberships-pro' ); ?>" href="<?php echo esc_url( add_query_arg( array( 'action' => 'pmpro_orders_print_view', 'order' => $order->id ), admin_url( 'admin-ajax.php' ) ) ); ?>" class="page-title-action" target="_blank" ><?php esc_html_e( 'Print', 'paid-memberships-pro' ); ?></a>
 		<a title="<?php esc_attr_e( 'Email', 'paid-memberships-pro' ); ?>" href="#TB_inline?width=600&height=200&inlineId=email_invoice" class="thickbox email_link page-title-action" data-order="<?php echo esc_html( $order->id ); ?>"><?php esc_html_e( 'Email', 'paid-memberships-pro' ); ?></a>
+		<?php if( pmpro_allowed_refunds( $order ) ) { ?>
+			<a title="<?php esc_attr_e( 'Refund', 'paid-memberships-pro' ); ?>" href="<?php echo 'javascript:pmpro_askfirst(\'' . esc_js( $refund_text ) . '\', \'' . esc_js( $refund_nonce_url ) . '\'); void(0);'; ?>" class="page-title-action"><?php esc_html_e( 'Refund', 'paid-memberships-pro' ); ?></a>
+		<?php } ?>
 	<?php } else { ?>
 		<h1 class="wp-heading-inline"><?php esc_html_e( 'New Order', 'paid-memberships-pro' ); ?></h1>
 	<?php } ?>
@@ -1382,6 +1432,27 @@ if ( function_exists( 'pmpro_add_email_order_modal' ) ) {
 								'pmpro_orders_nonce'
 							);
 
+							$refund_text = esc_html(
+								sprintf(
+									// translators: %s is the Order Code.
+									__( 'Refunding orders is permanent and can affect active users. Are you sure you want to refund order %s?', 'paid-memberships-pro' ),
+									str_replace( "'", '', $order->code )
+								)
+							);
+
+							$refund_nonce_url = wp_nonce_url(
+								add_query_arg(
+									[
+										'page'   => 'pmpro-orders',
+										'action' => 'refund_order',
+										'refund' => $order->id,
+									],
+									admin_url( 'admin.php' )
+								),
+								'refund_order',
+								'pmpro_orders_nonce'
+							);
+
 							$actions = [
 								'edit'   => sprintf(
 									'<a title="%1$s" href="%2$s">%3$s</a>',
@@ -1417,7 +1488,7 @@ if ( function_exists( 'pmpro_add_email_order_modal' ) ) {
 									esc_attr__( 'Delete', 'paid-memberships-pro' ),
 									'javascript:pmpro_askfirst(\'' . esc_js( $delete_text ) . '\', \'' . esc_js( $delete_nonce_url ) . '\'); void(0);',
 									esc_html__( 'Delete', 'paid-memberships-pro' )
-								),
+								),								
 								'print'   => sprintf(
 									'<a title="%1$s" href="%2$s" target="_blank" rel="noopener noreferrer">%3$s</a>',
 									esc_attr__( 'Print', 'paid-memberships-pro' ),
@@ -1440,6 +1511,15 @@ if ( function_exists( 'pmpro_add_email_order_modal' ) ) {
 									esc_html__( 'Email', 'paid-memberships-pro' )
 								),
 							];
+
+							if( pmpro_allowed_refunds( $order ) ) {
+								$actions['refund'] = sprintf(
+									'<a title="%1$s" href="%2$s">%3$s</a>',
+									esc_attr__( 'Refund', 'paid-memberships-pro' ),
+									'javascript:pmpro_askfirst(\'' . esc_js( $refund_text ) . '\', \'' . esc_js( $refund_nonce_url ) . '\'); void(0);',
+									esc_html__( 'Refund', 'paid-memberships-pro' )
+								);
+							}
 
 							/**
 							 * Filter the extra actions for this user on this order.
