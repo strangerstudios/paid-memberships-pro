@@ -3340,8 +3340,9 @@ class PMProGateway_stripe extends PMProGateway {
 		}
 
 		$this->setup_intent = $setup_intent;
+	}
 
-	function get_next_payment_date( &$subscription ) {
+	public function get_next_payment_date( &$subscription ) {
 		// Get most recent order for this subscription.
 		$morder = $subscription->get_last_order();
 		if ( ! is_a( $morder, 'MemberOrder' ) || empty( $morder->timestamp ) ) {
@@ -3369,19 +3370,6 @@ class PMProGateway_stripe extends PMProGateway {
 		} else {
 			return date( 'Y-m-d H:i:s', $timestamp );
 		}
-	}
-
-	/**
-	 * Refund a payment or invoice
-	 *
-	 * @param object &$order Related PMPro order object.
-	 * @param string $transaction_id Payment or Invoice id to void.
-	 *
-	 * @return bool                     True or false if the void worked
-	 */
-	function void( &$order, $transaction_id = null ) {
-		//stripe doesn't differentiate between voids and refunds, so let's just pass on to the refund function
-		return $this->refund( $order, $transaction_id );
 	}
 
 	/**
