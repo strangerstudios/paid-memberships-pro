@@ -366,8 +366,9 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 
 						$user_id = wp_insert_user( $user_data );
 						
-						if ( ! $user_id || empty( $user_id ) ) {
-							return new WP_REST_Response( 'Error creating user', 400 );
+						if ( is_wp_error( $user_id ) ) {
+							$error = $user_id->get_error_message();
+							return new WP_REST_Response( $error, 500 ); // Assume it failed and return a 500 error occured like core WordPress.
 						}
 						/**
 						 * Send the default WordPress emails when creating a WordPress user, using the /change_membership_level route.
