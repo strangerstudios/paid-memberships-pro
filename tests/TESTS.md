@@ -3,6 +3,7 @@
 ## Prerequisites
 
 * This plugin repo checked out on your local site into `/wp-content/plugins/this-plugin/` and other plugins you may need for the testing context.
+* [Composer](https://getcomposer.org/)
 * [Docker](https://www.docker.com/get-started)
 
 ## Step 1: Setting up your testing environment
@@ -25,7 +26,12 @@
 1. That class should at minimal extend the `Codeception\TestCase\WPTestCase` class or your own test case class if you have one set up in `tests/_support/`
 1. Add `test_my_function_returns_true_with_valid_id` style functions and include assertions like `$this->assertTrue( my_function( $valid_id ) )`
 
-## Step 3: Running tests
+## Step 3: Install composer
+
+1. Run `composer install` from your-plugin-folder, if you run into an issue with version constraint problems with that, try running `tric composer install` to run it from the tric container context.
+2. Composer dependencies should now be installed which include WP-Browser, Codeception, PHPUnit, and other testing-related scripts.
+
+## Step 4: Running tests
 
 1. Run `tric here` from your local site's `wp-content/plugins/` folder (only needed once per session)
 1. Run `tric use your-plugin-folder` to set which plugin target to use for testing (only needed once per session)

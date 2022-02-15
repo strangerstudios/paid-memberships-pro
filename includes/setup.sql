@@ -193,7 +193,7 @@ CREATE TABLE `wp_pmpro_memberships_categories` (
   `membership_id` int(11) unsigned NOT NULL,
   `category_id` int(11) unsigned NOT NULL,
   `modified` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  UNIQUE KEY `membership_category` (`membership_id`,`category_id`),
+  PRIMARY KEY (`membership_id`,`category_id`),
   UNIQUE KEY `category_membership` (`category_id`,`membership_id`)
 );
 
@@ -207,7 +207,7 @@ CREATE TABLE `wp_pmpro_memberships_pages` (
   `membership_id` int(11) unsigned NOT NULL,
   `page_id` int(11) unsigned NOT NULL,
   `modified` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  UNIQUE KEY `category_membership` (`page_id`,`membership_id`),
+  PRIMARY KEY (`page_id`,`membership_id`),
   UNIQUE KEY `membership_page` (`membership_id`,`page_id`)
 );
 
