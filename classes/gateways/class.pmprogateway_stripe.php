@@ -4321,21 +4321,21 @@ class PMProGateway_stripe extends PMProGateway {
 			$notes = $order->notes;
 			$order->notes = $notes.' '.sprintf( __('Order successfully refunded on %1s for transation ID %2s by %3s', 'paid-memberships-pro' ), date_i18n('Y-m-d H:i:s'), $transaction_id, $current_user->display_name );	
 
+			if ( $refund->status == "succeeded" ) {
+				$order->status = "refunded";					
+			} else {
+				$notes = $order->notes;
+				$order->notes = $notes.' '.__('An error occured while attempting to process this refund.', 'paid-memberships-pro' );	
+
+			}
+
 		} catch ( \Throwable $e ) {			
 			$notes = $order->notes;
 			$order->notes = $notes.' '.__('An error occured while attempting to process this refund.', 'paid-memberships-pro' );			
 		} catch ( \Exception $e ) {
 			$notes = $order->notes;
 			$order->notes = $notes.' '.__('An error occured while attempting to process this refund.', 'paid-memberships-pro' );			
-		}
-
-		if ( $refund->status == "succeeded" ) {
-			$order->status = "refunded";					
-		} else {
-			$notes = $order->notes;
-			$order->notes = $notes.' '.__('An error occured while attempting to process this refund.', 'paid-memberships-pro' );	
-
-		}
+		}		
 
 		$order->saveOrder();
 
