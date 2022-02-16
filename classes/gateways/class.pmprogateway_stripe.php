@@ -178,7 +178,7 @@ class PMProGateway_stripe extends PMProGateway {
 		add_action( 'admin_notices', array( 'PMProGateway_stripe', 'stripe_connect_show_errors' ) );
 		add_action( 'admin_notices', array( 'PMProGateway_stripe', 'stripe_connect_deauthorize' ) );
 
-		add_filter( 'pmpro_process_refund_stripe', array( 'PMProGateway_stripe', 'process_refund' ), 10, 2 );
+		add_filter( 'pmpro_process_refund_stripe', array( 'PMProGateway_stripe', 'refund' ), 10, 2 );
 	}
 
 	/**
@@ -4281,10 +4281,11 @@ class PMProGateway_stripe extends PMProGateway {
 	 *
 	 * @return bool                   True or false if the refund worked.
 	 */
-	public function refund( &$order, $transaction_id = null ) {
-		_deprecated_function( __FUNCTION__, '2.7.0' );
+	static function refund( $success, $order ) {
+		// _deprecated_function( __FUNCTION__, '2.7.0' );
+
 		//default to using the payment id from the order
-		if ( empty( $transaction_id ) && ! empty( $order->payment_transaction_id ) ) {
+		if ( !empty( $order->payment_transaction_id ) ) {
 			$transaction_id = $order->payment_transaction_id;
 		}
 
@@ -4302,98 +4303,43 @@ class PMProGateway_stripe extends PMProGateway {
 			}
 		}
 
-		//get the charge
-		try {
-			$charge = Stripe_Charge::retrieve( $transaction_id );
-		} catch ( \Throwable $e ) {
-			$charge = false;
-		} catch ( \Exception $e ) {
-			$charge = false;
-		}
-
-		//can't find the charge?
-		if ( empty( $charge ) ) {
-			$order->status     = "error";
-			$order->errorcode  = "";
-			$order->error      = "";
-			$order->shorterror = "";
-
-			return false;
-		}
+		$success = false;
 
 		//attempt refund
 		try {
-			$refund = $charge->refund();
-		} catch ( \Throwable $e ) {
-			$order->errorcode  = true;
-			$order->error      = __( "Error: ", 'paid-memberships-pro' ) . $e->getMessage();
-			$order->shorterror = $order->error;
+			
+			$secretkey = pmpro_getOption( "stripe_secretkey" );
+			$client = new Stripe_Client( $secretkey );
+			$refund = $client->refunds->create( [
+				'charge' => $transaction_id,
+			] );
 
-			return false;
+			$success = true;
+			
+			global $current_user;
+
+			$notes = $order->notes;
+			$order->notes = $notes.' '.sprintf( __('Order successfully refunded on %1s for transation ID %2s by %3s', 'paid-memberships-pro' ), date_i18n('Y-m-d H:i:s'), $transaction_id, $current_user->display_name );	
+
+		} catch ( \Throwable $e ) {			
+			$notes = $order->notes;
+			$order->notes = $notes.' '.__('An error occured while attempting to process this refund.', 'paid-memberships-pro' );			
 		} catch ( \Exception $e ) {
-			$order->errorcode  = true;
-			$order->error      = __( "Error: ", 'paid-memberships-pro' ) . $e->getMessage();
-			$order->shorterror = $order->error;
-
-			return false;
+			$notes = $order->notes;
+			$order->notes = $notes.' '.__('An error occured while attempting to process this refund.', 'paid-memberships-pro' );			
 		}
 
 		if ( $refund->status == "succeeded" ) {
-			$order->status = "refunded";
-			$order->saveOrder();
-
-			return true;
+			$order->status = "refunded";					
 		} else {
-			$order->status     = "error";
-			$order->errorcode  = true;
-			$order->error      = sprintf( __( "Error: Unkown error while refunding charge #%s", 'paid-memberships-pro' ), $transaction_id );
-			$order->shorterror = $order->error;
+			$notes = $order->notes;
+			$order->notes = $notes.' '.__('An error occured while attempting to process this refund.', 'paid-memberships-pro' );	
 
-			return false;
-		}
-	}
-
-	/**
-	 * Initiates a refund for a given order
-	 *
-	 * @param bool $success Outcome of the refund (default: false)
-	 * @param object $order The order we want to refund
-	 *
-	 * @return bool                   True or false if the refund worked.
-	 */
-	public function process_refund( $success, $morder ){
-
-		$secretkey = pmpro_getOption( 'stripe_secretkey' );
-
-		// ensure to use a payment transaction id ch_*
-		$transaction_id = $morder->payment_transaction_id;
-		if ( strpos( $transaction_id, "in_" ) !== false ) {
-			$invoice = Stripe\Invoice::retrieve( $transaction_id );
-
-			if ( ! empty( $invoice ) && ! empty( $invoice->charge ) ) {
-				$transaction_id = $invoice->charge;
-			}
 		}
 
-		try {
-			$stripe = new Stripe\StripeClient( $secretkey );
-			$Refund = $stripe->refunds->create( [
-				'charge' => $transaction_id,
-			] );
-			var_dump($Refund);
-		} catch ( \Stripe\Exception\ApiErrorException $e ) {
-			var_dump($e);
-			return false;
-		}
+		$order->saveOrder();
 
-		if ( 'succeeded' === $Refund->status ) {
-			$morder->updateStatus( 'refunded' );
-
-			return true;
-		}
-
-		return false;
-
+		return $success;
 	}
 
 	/**

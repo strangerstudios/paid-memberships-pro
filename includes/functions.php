@@ -3964,3 +3964,53 @@ function pmpro_get_ip() {
 	
 	return $client_ip;
 }
+
+/**
+ * Determines if this order can be refunded
+ * @param  object $order The order that we want to refund
+ * @return bool Returns a bool value based on if the order can be refunded
+ */
+function pmpro_allowed_refunds( $order ) { 
+
+	if( empty( $order ) || empty( $order->gateway ) ) {
+		return false;
+	}
+
+	if( 
+		in_array( $order->status, array( 'success' ) ) && //Only successfully paid orders
+		in_array( $order->gateway, array( 'stripe', 'paypal-express' ) )  //Only apply to these gateways
+	) {
+		return true;
+	}
+
+	return false;
+}
+
+
+/**
+ * Decides which filter should be used for the refund depending on gateway
+ * @param  object $order Member Order that we are refunding
+ * @return bool 	Returns a bool value based on if a refund was processed successfully or not
+ */
+function pmpro_refund_order( $order ){
+
+	if( empty( $order ) ){
+		return;
+	}
+
+	//Not going to refund an order that has already been refunded
+	if( $order->status == 'refunded' ) {
+		return true; 
+	}
+
+	if( $order->gateway === 'stripe' ) {
+		$success = apply_filters( 'pmpro_process_refund_stripe', false, $order );
+	}
+
+	if( strpos( $order->gateway, 'paypal' ) !== FALSE ) {
+		$success = apply_filters( 'pmpro_process_refund_paypal', false, $order );
+	}
+
+	return $success;
+
+}
