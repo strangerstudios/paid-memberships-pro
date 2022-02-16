@@ -238,10 +238,12 @@
 						<?php
 							if($addon['License'] == 'free')
 								_e("PMPro Free", 'paid-memberships-pro' );
-							elseif($addon['License'] == 'core')
-								_e("PMPro Core", 'paid-memberships-pro' );
+							elseif($addon['License'] == 'standard')
+								_e("PMPro Standard", 'paid-memberships-pro' );
 							elseif($addon['License'] == 'plus')
 								_e("PMPro Plus", 'paid-memberships-pro' );
+							elseif($addon['License'] == 'builder')
+								_e("PMPro Builder", 'paid-memberships-pro' );
 							elseif($addon['License'] == 'wordpress.org')
 								_e("WordPress.org", 'paid-memberships-pro' );
 							else

@@ -23,7 +23,7 @@
 /*
 	Constants
 */
-define('PMPRO_LICENSE_SERVER', 'https://license.paidmembershipspro.com/');
+define('PMPRO_LICENSE_SERVER', 'https://license.paidmembershipspro.com/v2/');
 
 /**
  * Check if a license key is valid.
