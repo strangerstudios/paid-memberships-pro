@@ -617,6 +617,8 @@ class PMPro_SubscriptionTest extends TestCase {
 		$this->assertInstanceOf( PMPro_Subscription::class, $subscription );
 
 		// Local timezone is UTC-5.
+		update_option( 'timezone_string', 'America/New_York' );
+		update_option( 'gmt_offset', '-5' );
 
 		// Timestamps should always be in UTC no matter what local parameter is set to.
 		$this->assertEquals( 1609556645, $subscription->get_next_payment_date() );
@@ -647,6 +649,8 @@ class PMPro_SubscriptionTest extends TestCase {
 		$subscription = PMPro_Subscription::get_subscription( $subscription_id );
 
 		// Local timezone is UTC-5.
+		update_option( 'timezone_string', 'America/New_York' );
+		update_option( 'gmt_offset', '-5' );
 
 		// Timestamps should always be in UTC no matter what local parameter is set to.
 		$this->assertEquals( 1609556645, $subscription->get_startdate() );
@@ -677,6 +681,8 @@ class PMPro_SubscriptionTest extends TestCase {
 		$subscription = PMPro_Subscription::get_subscription( $subscription_id );
 
 		// Local timezone is UTC-5.
+		update_option( 'timezone_string', 'America/New_York' );
+		update_option( 'gmt_offset', '-5' );
 
 		// Timestamps should always be in UTC no matter what local parameter is set to.
 		$this->assertEquals( 1609556645, $subscription->get_enddate() );
