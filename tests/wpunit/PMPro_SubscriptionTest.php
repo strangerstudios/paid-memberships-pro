@@ -617,6 +617,7 @@ class PMPro_SubscriptionTest extends TestCase {
 		$this->assertInstanceOf( PMPro_Subscription::class, $subscription );
 
 		// Local timezone is UTC-5.
+		date_default_timezone_set( 'America/New_York' );
 		update_option( 'timezone_string', 'America/New_York' );
 		update_option( 'gmt_offset', '-5' );
 
@@ -649,6 +650,7 @@ class PMPro_SubscriptionTest extends TestCase {
 		$subscription = PMPro_Subscription::get_subscription( $subscription_id );
 
 		// Local timezone is UTC-5.
+		date_default_timezone_set( 'America/New_York' );
 		update_option( 'timezone_string', 'America/New_York' );
 		update_option( 'gmt_offset', '-5' );
 
@@ -681,6 +683,7 @@ class PMPro_SubscriptionTest extends TestCase {
 		$subscription = PMPro_Subscription::get_subscription( $subscription_id );
 
 		// Local timezone is UTC-5.
+		date_default_timezone_set( 'America/New_York' );
 		update_option( 'timezone_string', 'America/New_York' );
 		update_option( 'gmt_offset', '-5' );
 

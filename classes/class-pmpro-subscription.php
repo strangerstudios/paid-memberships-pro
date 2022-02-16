@@ -740,6 +740,7 @@ class PMPro_Subscription {
 
 		// Get date in WP local timezone.
 		if ( $local_time ) {
+			// strtotime pushes timestamp UTC timestamp to local time.
 			return date( $format, strtotime( $date . ' UTC' ) );
 		}
 
