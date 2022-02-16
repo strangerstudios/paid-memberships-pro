@@ -6,9 +6,6 @@
 		 */
 		function __construct($id = NULL)
 		{
-			//set up the gateway
-			$this->setGateway(pmpro_getOption("gateway"));
-
 			//get data if an id was passed
 			if($id)
 			{
@@ -19,6 +16,25 @@
 			}
 			else
 				return $this->getEmptyMemberOrder();	//blank constructor
+		}
+
+		public function __get( $name )
+		{
+			if( 'Gateway' === $name ){
+				// we are here only if ->Gateway is NOT set
+				$this->setGateway( $this->gateway ? $this->gateway : '' );
+
+				return $this->Gateway;
+			}
+
+			$trace = debug_backtrace();
+			trigger_error(
+				'Undefined property via __get(): ' . $name .
+				' in ' . $trace[0]['file'] .
+				' on line ' . $trace[0]['line']
+			);
+
+			return null;
 		}
 
 		/**
@@ -142,8 +158,11 @@
 				$this->checkout_id = $dbobj->checkout_id;
 
 				//reset the gateway
-				if(empty($this->nogateway))
+				if( empty( $this->nogateway ) ) {
 					$this->setGateway();
+				} else {
+					unset( $this->Gateway );
+				}
 
 				return $this->id;
 			}
