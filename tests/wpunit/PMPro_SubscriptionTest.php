@@ -614,6 +614,8 @@ class PMPro_SubscriptionTest extends TestCase {
 
 		$subscription = PMPro_Subscription::get_subscription( $subscription_id );
 
+		$this->assertInstanceOf( PMPro_Subscription::class, $subscription );
+
 		// Local timezone is UTC-5.
 
 		// Timestamps should always be in UTC no matter what local parameter is set to.
