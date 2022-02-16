@@ -4309,6 +4309,16 @@ class PMProGateway_stripe extends PMProGateway {
 		try {
 			
 			$secretkey = pmpro_getOption( "stripe_secretkey" );
+
+			// If they are not using legacy keys, get Stripe Connect keys for the relevant environment.
+			if ( ! self::using_legacy_keys() && empty( $secretkey ) ) {
+				if ( pmpro_getOption( 'gateway_environment' ) === 'live' ) {
+					$secretkey = pmpro_getOption( 'live_stripe_connect_secretkey' );
+				} else {
+					$secretkey = pmpro_getOption( 'sandbox_stripe_connect_secretkey' );;
+				}
+			} 
+
 			$client = new Stripe_Client( $secretkey );
 			$refund = $client->refunds->create( [
 				'charge' => $transaction_id,
@@ -4331,10 +4341,10 @@ class PMProGateway_stripe extends PMProGateway {
 
 		} catch ( \Throwable $e ) {			
 			$notes = $order->notes;
-			$order->notes = $notes.' '.__('An error occured while attempting to process this refund.', 'paid-memberships-pro' );			
+			$order->notes .= __( 'There was a problem processing the refund', 'paid-memberships-pro' ) . ' ' . $e->getMessage();				
 		} catch ( \Exception $e ) {
 			$notes = $order->notes;
-			$order->notes = $notes.' '.__('An error occured while attempting to process this refund.', 'paid-memberships-pro' );			
+			$order->notes .= __( 'There was a problem processing the refund', 'paid-memberships-pro' ) . ' ' . $e->getMessage();			
 		}		
 
 		$order->saveOrder();
