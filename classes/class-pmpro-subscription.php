@@ -715,7 +715,7 @@ class PMPro_Subscription {
 	 *
 	 * @since TBD
 	 *
-	 * @param string $date       Date to format.
+	 * @param string $date       Date to format in UTC. YYYY-MM-DD HH:MM:SS.
 	 * @param string $format     Format to return the date in.
 	 * @param bool   $local_time Whether to return the date in local time or UTC.
 	 *
@@ -726,24 +726,25 @@ class PMPro_Subscription {
 			return null;
 		}
 
+		// Switch out dynamic variables.
 		if ( 'timestamp' === $format ) {
 			$format = 'U';
 		} elseif ( 'date_format' === $format ) {
 			$format = get_option( 'date_format' );
 		}
 
-		// Get date in WP local timezone.
-		if ( $local_time ) {
-			return get_date_from_gmt( $date, $format );
+		// Always return timestamps in UTC.
+		if ( 'U' === $format ) {
+			return strtotime( $date . ' UTC' );
 		}
 
-		// Allow timestamps.
-		if ( ! is_numeric( $date ) ) {
-			$date = strtotime( $date );
+		// Get date in WP local timezone.
+		if ( $local_time ) {
+			return date( $format, strtotime( $date . ' UTC' ) );
 		}
 
 		// Get date in GMT timezone.
-		return gmdate( $format, $date );
+		return date( $format, strtotime( $date ) );
 	}
 
 	/**
