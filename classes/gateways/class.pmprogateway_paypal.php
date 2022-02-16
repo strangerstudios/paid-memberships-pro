@@ -633,7 +633,7 @@
 		{
 			//paypal profile stuff
 			$nvpStr = "";
-			$nvpStr .= "&PROFILEID=" . $order->subscription_transaction_id;
+			$nvpStr .= "&PROFILEID=" .  urlencode( $order->subscription_transaction_id );
 
 			//credit card fields
 			if($order->cardtype == "American Express")
@@ -643,26 +643,26 @@
 
 			//credit card fields
 			if($cardtype)
-				$nvpStr .= "&CREDITCARDTYPE=" . $cardtype . "&ACCT=" . $order->accountnumber . "&EXPDATE=" . $order->ExpirationDate . "&CVV2=" . $order->CVV2;
+				$nvpStr .= "&CREDITCARDTYPE=" .  urlencode( $cardtype ) . "&ACCT=" .  urlencode( $order->accountnumber ) . "&EXPDATE=" .  urlencode( $order->ExpirationDate ) . "&CVV2=" .  urlencode( $order->CVV2 );
 
 			//Maestro/Solo card fields. (Who uses these?) :)
 			if($order->StartDate)
-				$nvpStr .= "&STARTDATE=" . $order->StartDate . "&ISSUENUMBER=" . $order->IssueNumber;
+				$nvpStr .= "&STARTDATE=" .  urlencode( $order->StartDate ) . "&ISSUENUMBER=" .  urlencode( $order->IssueNumber );
 
 				// Name and email info
 				if ( $order->FirstName && $order->LastName && $order->Email ) {
-					$nvpStr .= "&EMAIL=" . $order->Email . "&FIRSTNAME=" . $order->FirstName . "&LASTNAME=" . $order->LastName;
+					$nvpStr .= "&EMAIL=" .  urlencode( $order->Email ) . "&FIRSTNAME=" .  urlencode( $order->FirstName ) . "&LASTNAME=" .  urlencode( $order->LastName );
 				}
 
 				//billing address, etc
 				if($order->Address1)
 				{
-					$nvpStr .= "&STREET=" . $order->Address1;
+					$nvpStr .= "&STREET=" . urlencode( $order->Address1 );
 
 					if($order->Address2)
-						$nvpStr .= "&STREET2=" . $order->Address2;
+						$nvpStr .= "&STREET2=" . urlencode( $order->Address2 );
 
-					$nvpStr .= "&CITY=" . $order->billing->city . "&STATE=" . $order->billing->state . "&COUNTRYCODE=" . $order->billing->country . "&ZIP=" . $order->billing->zip . "&SHIPTOPHONENUM=" . $order->billing->phone;
+					$nvpStr .= "&CITY=" . urlencode( $order->billing->city ) . "&STATE=" . urlencode( $order->billing->state ) . "&COUNTRYCODE=" . urlencode( $order->billing->country )  . "&ZIP=" . urlencode( $order->billing->zip ) . "&SHIPTOPHONENUM=" . urlencode( $order->billing->phone );
 				}
 
 			$this->httpParsedResponseAr = $this->PPHttpPost('UpdateRecurringPaymentsProfile', $nvpStr);

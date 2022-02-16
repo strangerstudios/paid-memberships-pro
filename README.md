@@ -17,9 +17,9 @@ For more information please visit [the Paid Memberships Pro website](https://www
 
 Paid Memberships Pro is distributed under the GPLv2 license. This means, among other things, that you may use the software on any site free of charge.
 
-An annual support license is recommended for websites running Paid Memberships Pro. This support license includes access to our technical support team in the Member Support Area, as well as one-click installation and updates for over 70 feature-enhancing Add Ons. Plus membership is backed by a 30-day, no questions asked, refund guarantee.
+An annual support license is recommended for websites running Paid Memberships Pro. Support licenses include access to our technical support team in the Member Support Area, as well as one-click installation and updates for feature-enhancing Add Ons based on your level. All of our paid  memberships are backed by a 30-day, no questions asked, refund guarantee.
 
-[Purchase a Plus Membership »](https://www.paidmembershipspro.com/membership-checkout/?level=20)
+[View Plans and Pricing »](https://www.paidmembershipspro.com/pricing/)
 
 ## Installation ##
 For detailed installation steps, visit the [documentation on installing the plugin](https://www.paidmembershipspro.com/documentation/download/) and the [initial plugin setup instructions](https://www.paidmembershipspro.com/documentation/initial-plugin-setup/).
@@ -45,5 +45,5 @@ There are various **ways to help the development** of Paid Memberships Pro:
 Here are some ways for **non-developers to contribute** to Paid Memberships Pro:
 
 1. Translate Paid Memberships Pro into your own [language](https://www.paidmembershipspro.com/paid-memberships-pro-in-your-language/).
-2. [Purchase a plus membership](https://paidmembershipspro.com/pricing) to help fund ongoing development and bug fixes.
+2. [Purchase a paid membership](https://paidmembershipspro.com/pricing) to help fund ongoing development and bug fixes.
 3. Leave an honest review for [Paid Memberships Pro](https://wordpress.org/support/plugin/paid-memberships-pro/reviews/#new-post).
