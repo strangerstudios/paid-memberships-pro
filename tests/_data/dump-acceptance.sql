@@ -151,9 +151,8 @@ UNLOCK TABLES;
 -- Table structure for table `wp_pmpro_discount_codes`
 --
 
+
 DROP TABLE IF EXISTS `wp_pmpro_discount_codes`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
- SET character_set_client = utf8mb4 ;
 CREATE TABLE `wp_pmpro_discount_codes` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `code` varchar(32) NOT NULL,
@@ -164,58 +163,40 @@ CREATE TABLE `wp_pmpro_discount_codes` (
   UNIQUE KEY `code` (`code`),
   KEY `starts` (`starts`),
   KEY `expires` (`expires`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-/*!40101 SET character_set_client = @saved_cs_client */;
+);
 
---
--- Dumping data for table `wp_pmpro_discount_codes`
---
-
-LOCK TABLES `wp_pmpro_discount_codes` WRITE;
-/*!40000 ALTER TABLE `wp_pmpro_discount_codes` DISABLE KEYS */;
-/*!40000 ALTER TABLE `wp_pmpro_discount_codes` ENABLE KEYS */;
-UNLOCK TABLES;
+-- --------------------------------------------------------
 
 --
 -- Table structure for table `wp_pmpro_discount_codes_levels`
 --
 
+
 DROP TABLE IF EXISTS `wp_pmpro_discount_codes_levels`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
- SET character_set_client = utf8mb4 ;
 CREATE TABLE `wp_pmpro_discount_codes_levels` (
   `code_id` int(11) unsigned NOT NULL,
   `level_id` int(11) unsigned NOT NULL,
-  `initial_payment` decimal(18,8) NOT NULL DEFAULT '0.00000000',
-  `billing_amount` decimal(18,8) NOT NULL DEFAULT '0.00000000',
+  `initial_payment` decimal(18,8) NOT NULL DEFAULT '0.00',
+  `billing_amount` decimal(18,8) NOT NULL DEFAULT '0.00',
   `cycle_number` int(11) NOT NULL DEFAULT '0',
   `cycle_period` enum('Day','Week','Month','Year') DEFAULT 'Month',
   `billing_limit` int(11) NOT NULL COMMENT 'After how many cycles should billing stop?',
-  `trial_amount` decimal(18,8) NOT NULL DEFAULT '0.00000000',
+  `trial_amount` decimal(18,8) NOT NULL DEFAULT '0.00',
   `trial_limit` int(11) NOT NULL DEFAULT '0',
   `expiration_number` int(10) unsigned NOT NULL,
-  `expiration_period` enum('Day','Week','Month','Year') NOT NULL,
+  `expiration_period` enum('Hour','Day','Week','Month','Year') NOT NULL,
   PRIMARY KEY (`code_id`,`level_id`),
   KEY `initial_payment` (`initial_payment`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-/*!40101 SET character_set_client = @saved_cs_client */;
+);
 
---
--- Dumping data for table `wp_pmpro_discount_codes_levels`
---
-
-LOCK TABLES `wp_pmpro_discount_codes_levels` WRITE;
-/*!40000 ALTER TABLE `wp_pmpro_discount_codes_levels` DISABLE KEYS */;
-/*!40000 ALTER TABLE `wp_pmpro_discount_codes_levels` ENABLE KEYS */;
-UNLOCK TABLES;
+-- --------------------------------------------------------
 
 --
 -- Table structure for table `wp_pmpro_discount_codes_uses`
 --
 
+
 DROP TABLE IF EXISTS `wp_pmpro_discount_codes_uses`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
- SET character_set_client = utf8mb4 ;
 CREATE TABLE `wp_pmpro_discount_codes_uses` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `code_id` int(10) unsigned NOT NULL,
@@ -225,25 +206,45 @@ CREATE TABLE `wp_pmpro_discount_codes_uses` (
   PRIMARY KEY (`id`),
   KEY `user_id` (`user_id`),
   KEY `timestamp` (`timestamp`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-/*!40101 SET character_set_client = @saved_cs_client */;
+);
+
+-- --------------------------------------------------------
 
 --
--- Dumping data for table `wp_pmpro_discount_codes_uses`
+-- Table structure for table `wp_pmpro_membership_levels`
 --
 
-LOCK TABLES `wp_pmpro_discount_codes_uses` WRITE;
-/*!40000 ALTER TABLE `wp_pmpro_discount_codes_uses` DISABLE KEYS */;
-/*!40000 ALTER TABLE `wp_pmpro_discount_codes_uses` ENABLE KEYS */;
-UNLOCK TABLES;
+
+DROP TABLE IF EXISTS `wp_pmpro_membership_levels`;
+CREATE TABLE `wp_pmpro_membership_levels` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) NOT NULL,
+  `description` longtext NOT NULL,
+  `confirmation` longtext NOT NULL,
+  `initial_payment` decimal(18,8) NOT NULL DEFAULT '0.00',
+  `billing_amount` decimal(18,8) NOT NULL DEFAULT '0.00',
+  `cycle_number` int(11) NOT NULL DEFAULT '0',
+  `cycle_period` enum('Day','Week','Month','Year') DEFAULT 'Month',
+  `billing_limit` int(11) NOT NULL COMMENT 'After how many cycles should billing stop?',
+  `trial_amount` decimal(18,8) NOT NULL DEFAULT '0.00',
+  `trial_limit` int(11) NOT NULL DEFAULT '0',
+  `allow_signups` tinyint(4) NOT NULL DEFAULT '1',
+  `expiration_number` int(10) unsigned NOT NULL,
+  `expiration_period` enum('Hour','Day','Week','Month','Year') NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `allow_signups` (`allow_signups`),
+  KEY `initial_payment` (`initial_payment`),
+  KEY `name` (`name`)
+);
+
+-- --------------------------------------------------------
 
 --
 -- Table structure for table `wp_pmpro_membership_levelmeta`
 --
 
+
 DROP TABLE IF EXISTS `wp_pmpro_membership_levelmeta`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
- SET character_set_client = utf8mb4 ;
 CREATE TABLE `wp_pmpro_membership_levelmeta` (
   `meta_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `pmpro_membership_level_id` int(10) unsigned NOT NULL,
@@ -252,63 +253,16 @@ CREATE TABLE `wp_pmpro_membership_levelmeta` (
   PRIMARY KEY (`meta_id`),
   KEY `pmpro_membership_level_id` (`pmpro_membership_level_id`),
   KEY `meta_key` (`meta_key`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-/*!40101 SET character_set_client = @saved_cs_client */;
+);
 
---
--- Dumping data for table `wp_pmpro_membership_levelmeta`
---
-
-LOCK TABLES `wp_pmpro_membership_levelmeta` WRITE;
-/*!40000 ALTER TABLE `wp_pmpro_membership_levelmeta` DISABLE KEYS */;
-/*!40000 ALTER TABLE `wp_pmpro_membership_levelmeta` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `wp_pmpro_membership_levels`
---
-
-DROP TABLE IF EXISTS `wp_pmpro_membership_levels`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
- SET character_set_client = utf8mb4 ;
-CREATE TABLE `wp_pmpro_membership_levels` (
-  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `name` varchar(255) NOT NULL,
-  `description` longtext NOT NULL,
-  `confirmation` longtext NOT NULL,
-  `initial_payment` decimal(18,8) NOT NULL DEFAULT '0.00000000',
-  `billing_amount` decimal(18,8) NOT NULL DEFAULT '0.00000000',
-  `cycle_number` int(11) NOT NULL DEFAULT '0',
-  `cycle_period` enum('Day','Week','Month','Year') DEFAULT 'Month',
-  `billing_limit` int(11) NOT NULL COMMENT 'After how many cycles should billing stop?',
-  `trial_amount` decimal(18,8) NOT NULL DEFAULT '0.00000000',
-  `trial_limit` int(11) NOT NULL DEFAULT '0',
-  `allow_signups` tinyint(4) NOT NULL DEFAULT '1',
-  `expiration_number` int(10) unsigned NOT NULL,
-  `expiration_period` enum('Day','Week','Month','Year') NOT NULL,
-  PRIMARY KEY (`id`),
-  KEY `allow_signups` (`allow_signups`),
-  KEY `initial_payment` (`initial_payment`),
-  KEY `name` (`name`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `wp_pmpro_membership_levels`
---
-
-LOCK TABLES `wp_pmpro_membership_levels` WRITE;
-/*!40000 ALTER TABLE `wp_pmpro_membership_levels` DISABLE KEYS */;
-/*!40000 ALTER TABLE `wp_pmpro_membership_levels` ENABLE KEYS */;
-UNLOCK TABLES;
+-- --------------------------------------------------------
 
 --
 -- Table structure for table `wp_pmpro_membership_ordermeta`
 --
 
+
 DROP TABLE IF EXISTS `wp_pmpro_membership_ordermeta`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
- SET character_set_client = utf8mb4 ;
 CREATE TABLE `wp_pmpro_membership_ordermeta` (
   `meta_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `pmpro_membership_order_id` int(10) unsigned NOT NULL,
@@ -317,28 +271,19 @@ CREATE TABLE `wp_pmpro_membership_ordermeta` (
   PRIMARY KEY (`meta_id`),
   KEY `pmpro_membership_order_id` (`pmpro_membership_order_id`),
   KEY `meta_key` (`meta_key`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-/*!40101 SET character_set_client = @saved_cs_client */;
+);
 
---
--- Dumping data for table `wp_pmpro_membership_ordermeta`
---
-
-LOCK TABLES `wp_pmpro_membership_ordermeta` WRITE;
-/*!40000 ALTER TABLE `wp_pmpro_membership_ordermeta` DISABLE KEYS */;
-/*!40000 ALTER TABLE `wp_pmpro_membership_ordermeta` ENABLE KEYS */;
-UNLOCK TABLES;
+-- --------------------------------------------------------
 
 --
 -- Table structure for table `wp_pmpro_membership_orders`
 --
 
+
 DROP TABLE IF EXISTS `wp_pmpro_membership_orders`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
- SET character_set_client = utf8mb4 ;
 CREATE TABLE `wp_pmpro_membership_orders` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `code` varchar(32) NOT NULL,
+  `code` varchar(10) NOT NULL,
   `session_id` varchar(64) NOT NULL DEFAULT '',
   `user_id` int(11) unsigned NOT NULL DEFAULT '0',
   `membership_id` int(11) unsigned NOT NULL DEFAULT '0',
@@ -362,7 +307,7 @@ CREATE TABLE `wp_pmpro_membership_orders` (
   `accountnumber` varchar(32) NOT NULL DEFAULT '',
   `expirationmonth` char(2) NOT NULL DEFAULT '',
   `expirationyear` varchar(4) NOT NULL DEFAULT '',
-  `status` varchar(32) NOT NULL DEFAULT '',
+  `status` varchar(20) NOT NULL DEFAULT '',
   `gateway` varchar(64) NOT NULL,
   `gateway_environment` varchar(64) NOT NULL,
   `payment_transaction_id` varchar(64) NOT NULL,
@@ -370,95 +315,107 @@ CREATE TABLE `wp_pmpro_membership_orders` (
   `timestamp` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
   `affiliate_id` varchar(32) NOT NULL,
   `affiliate_subid` varchar(32) NOT NULL,
-  `notes` text NOT NULL,
+  `notes` TEXT NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `code` (`code`),
-  KEY `session_id` (`session_id`),
-  KEY `user_id` (`user_id`),
-  KEY `membership_id` (`membership_id`),
-  KEY `status` (`status`),
-  KEY `timestamp` (`timestamp`),
-  KEY `gateway` (`gateway`),
-  KEY `gateway_environment` (`gateway_environment`),
-  KEY `payment_transaction_id` (`payment_transaction_id`),
-  KEY `subscription_transaction_id` (`subscription_transaction_id`),
-  KEY `affiliate_id` (`affiliate_id`),
-  KEY `affiliate_subid` (`affiliate_subid`),
-  KEY `checkout_id` (`checkout_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-/*!40101 SET character_set_client = @saved_cs_client */;
+   KEY `session_id` (`session_id`),
+	KEY `user_id` (`user_id`),
+	KEY `membership_id` (`membership_id`),
+	KEY `status` (`status`),
+	KEY `timestamp` (`timestamp`),
+	KEY `gateway` (`gateway`),
+	KEY `gateway_environment` (`gateway_environment`),
+	KEY `payment_transaction_id` (`payment_transaction_id`),
+	KEY `subscription_transaction_id` (`subscription_transaction_id`),
+	KEY `affiliate_id` (`affiliate_id`),
+	KEY `affiliate_subid` (`affiliate_subid`),
+	KEY `checkout_id` (`checkout_id`)
+);
 
---
--- Dumping data for table `wp_pmpro_membership_orders`
---
-
-LOCK TABLES `wp_pmpro_membership_orders` WRITE;
-/*!40000 ALTER TABLE `wp_pmpro_membership_orders` DISABLE KEYS */;
-/*!40000 ALTER TABLE `wp_pmpro_membership_orders` ENABLE KEYS */;
-UNLOCK TABLES;
+-- --------------------------------------------------------
 
 --
 -- Table structure for table `wp_pmpro_memberships_categories`
 --
 
+
 DROP TABLE IF EXISTS `wp_pmpro_memberships_categories`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
- SET character_set_client = utf8mb4 ;
 CREATE TABLE `wp_pmpro_memberships_categories` (
   `membership_id` int(11) unsigned NOT NULL,
   `category_id` int(11) unsigned NOT NULL,
   `modified` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   UNIQUE KEY `membership_category` (`membership_id`,`category_id`),
   UNIQUE KEY `category_membership` (`category_id`,`membership_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-/*!40101 SET character_set_client = @saved_cs_client */;
+);
 
---
--- Dumping data for table `wp_pmpro_memberships_categories`
---
-
-LOCK TABLES `wp_pmpro_memberships_categories` WRITE;
-/*!40000 ALTER TABLE `wp_pmpro_memberships_categories` DISABLE KEYS */;
-/*!40000 ALTER TABLE `wp_pmpro_memberships_categories` ENABLE KEYS */;
-UNLOCK TABLES;
+-- --------------------------------------------------------
 
 --
 -- Table structure for table `wp_pmpro_memberships_pages`
 --
 
+
 DROP TABLE IF EXISTS `wp_pmpro_memberships_pages`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
- SET character_set_client = utf8mb4 ;
 CREATE TABLE `wp_pmpro_memberships_pages` (
   `membership_id` int(11) unsigned NOT NULL,
   `page_id` int(11) unsigned NOT NULL,
   `modified` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   UNIQUE KEY `category_membership` (`page_id`,`membership_id`),
   UNIQUE KEY `membership_page` (`membership_id`,`page_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-/*!40101 SET character_set_client = @saved_cs_client */;
+);
 
---
--- Dumping data for table `wp_pmpro_memberships_pages`
---
-
-LOCK TABLES `wp_pmpro_memberships_pages` WRITE;
-/*!40000 ALTER TABLE `wp_pmpro_memberships_pages` DISABLE KEYS */;
-/*!40000 ALTER TABLE `wp_pmpro_memberships_pages` ENABLE KEYS */;
-UNLOCK TABLES;
+-- --------------------------------------------------------
 
 --
 -- Table structure for table `wp_pmpro_memberships_users`
 --
 
+
 DROP TABLE IF EXISTS `wp_pmpro_memberships_users`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
- SET character_set_client = utf8mb4 ;
 CREATE TABLE `wp_pmpro_memberships_users` (
+   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+   `user_id` int(11) unsigned NOT NULL,
+   `membership_id` int(11) unsigned NOT NULL,
+   `code_id` int(11) unsigned NOT NULL,
+   `initial_payment` decimal(18,8) NOT NULL,
+   `billing_amount` decimal(18,8) NOT NULL,
+   `cycle_number` int(11) NOT NULL,
+   `cycle_period` enum('Day','Week','Month','Year') NOT NULL DEFAULT 'Month',
+   `billing_limit` int(11) NOT NULL,
+   `trial_amount` decimal(18,8) NOT NULL,
+   `trial_limit` int(11) NOT NULL,
+   `status` varchar(20) NOT NULL DEFAULT 'active',
+   `startdate` datetime NOT NULL,
+   `enddate` datetime DEFAULT NULL,
+   `modified` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+   PRIMARY KEY (`id`),
+   KEY `membership_id` (`membership_id`),
+   KEY `modified` (`modified`),
+   KEY `code_id` (`code_id`),
+   KEY `enddate` (`enddate`),
+   KEY `user_id` (`user_id`),
+   KEY `status` (`status`)
+);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `wp_pmpro_subscriptions`
+--
+
+
+DROP TABLE IF EXISTS `wp_pmpro_subscriptions`;
+CREATE TABLE `wp_pmpro_subscriptions` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `user_id` int(11) unsigned NOT NULL,
-  `membership_id` int(11) unsigned NOT NULL,
-  `code_id` int(11) unsigned NOT NULL,
+  `membership_level_id` int(20) unsigned NOT NULL,
+  `gateway` varchar(64) NOT NULL,
+  `gateway_environment` varchar(64) NOT NULL,
+  `subscription_transaction_id` varchar(32) NOT NULL,
+  `status` varchar(20) NOT NULL DEFAULT 'active',
+  `startdate` datetime NOT NULL,
+  `enddate` datetime DEFAULT NULL,
+  `next_payment_date` datetime DEFAULT NULL,
   `initial_payment` decimal(18,8) NOT NULL,
   `billing_amount` decimal(18,8) NOT NULL,
   `cycle_number` int(11) NOT NULL,
@@ -466,28 +423,19 @@ CREATE TABLE `wp_pmpro_memberships_users` (
   `billing_limit` int(11) NOT NULL,
   `trial_amount` decimal(18,8) NOT NULL,
   `trial_limit` int(11) NOT NULL,
-  `status` varchar(20) NOT NULL DEFAULT 'active',
-  `startdate` datetime NOT NULL,
-  `enddate` datetime DEFAULT NULL,
   `modified` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
-  KEY `membership_id` (`membership_id`),
-  KEY `modified` (`modified`),
-  KEY `code_id` (`code_id`),
-  KEY `enddate` (`enddate`),
   KEY `user_id` (`user_id`),
-  KEY `status` (`status`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `wp_pmpro_memberships_users`
---
-
-LOCK TABLES `wp_pmpro_memberships_users` WRITE;
-/*!40000 ALTER TABLE `wp_pmpro_memberships_users` DISABLE KEYS */;
-/*!40000 ALTER TABLE `wp_pmpro_memberships_users` ENABLE KEYS */;
-UNLOCK TABLES;
+  KEY `membership_level_id` (`membership_level_id`),
+  KEY `gateway` (`gateway`),
+  KEY `gateway_environment` (`gateway_environment`),
+  KEY `subscription_transaction_id` (`subscription_transaction_id`),
+  KEY `status` (`status`),
+  KEY `startdate` (`startdate`),
+  KEY `enddate` (`enddate`),
+  KEY `next_payment_date` (`next_payment_date`),
+  KEY `modified` (`modified`)
+);
 
 --
 -- Table structure for table `wp_podsrel`
