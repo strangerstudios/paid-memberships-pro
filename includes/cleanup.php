@@ -50,7 +50,10 @@ add_action( 'delete_user_form', 'pmpro_delete_user_form_notice', 10, 2 );
 // deleting a category? remove any level associations
 function pmpro_delete_category( $cat_id = null ) {
 	global $wpdb;
-	$sqlQuery = "DELETE FROM $wpdb->pmpro_memberships_categories WHERE category_id = '" . esc_sql( $cat_id ) . "'";
+	$sqlQuery = $wpdb->prepare(
+		"DELETE FROM $wpdb->pmpro_memberships_categories WHERE category_id = '%d'",
+		$cat_id
+	);
 	$wpdb->query( $sqlQuery );
 }
 add_action( 'delete_category', 'pmpro_delete_category' );
@@ -58,7 +61,10 @@ add_action( 'delete_category', 'pmpro_delete_category' );
 // deleting a post? remove any level associations
 function pmpro_delete_post( $post_id = null ) {
 	global $wpdb;
-	$sqlQuery = "DELETE FROM $wpdb->pmpro_memberships_pages WHERE page_id = '" . esc_sql( $post_id ) . "'";
+	$sqlQuery = $wpdb->prepare(
+		"DELETE FROM $wpdb->pmpro_memberships_pages WHERE page_id = '%d'",
+		$post_id
+	);
 	$wpdb->query( $sqlQuery );
 }
 add_action( 'delete_post', 'pmpro_delete_post' );
