@@ -1864,10 +1864,10 @@ class PMProGateway_stripe extends PMProGateway {
 				?>
 				<p class="description">
 					<?php
-						if ( pmpro_license_isValid( null, 'plus' ) ) {
+						if ( pmpro_license_isValid( null, array( 'standard', 'plus', 'builder' ) ) ) {
 							esc_html_e( 'Note: You have a valid license and are not charged additional platform fees for payment processing.', 'paid-memberships-pro');
 						} else {
-							esc_html_e( 'Note: You are using the free Stripe payment gateway integration. This includes an additional 1% fee for payment processing. This fee is removed by activating a Plus license.', 'paid-memberships-pro');
+							esc_html_e( 'Note: You are using the free Stripe payment gateway integration. This includes an additional 1% fee for payment processing. This fee is removed by activating a premium PMPro license.', 'paid-memberships-pro');
 						}
 						echo ' <a href="https://www.paidmembershipspro.com/gateway/stripe/?utm_source=plugin&utm_medium=pmpro-paymentsettings&utm_campaign=gateways&utm_content=stripe-fees#tab-fees" target="_blank">' . esc_html( 'Learn More &raquo;', 'paid-memberships-pro' ) . '</a>';
 					?>
