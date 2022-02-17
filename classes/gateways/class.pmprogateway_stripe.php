@@ -2365,6 +2365,7 @@ class PMProGateway_stripe extends PMProGateway {
 			// Could not create product.
 			return $e->getMessage();
 		}
+		return esc_html__( 'Could not create price.', 'paid-memberships-pro' );
 	}
 
 	/**
