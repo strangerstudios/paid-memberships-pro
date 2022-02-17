@@ -914,17 +914,21 @@
 
 			if("SUCCESS" == strtoupper($response["ACK"]) || "SUCCESSWITHWARNING" == strtoupper($response["ACK"])) {
 				// Found subscription.
+				// Can't fill subscription start date, $request only has profile start date.
 				$update_array = array();
 				if ( in_array( $response['STATUS'], array( 'Pending', 'Active' ) ) ) {
 					// Subscription is active.
 					$update_array['status'] = 'active';
 					$update_array['next_payment_date'] = date( 'Y-m-d H:i:s', strtotime( $response['NEXTBILLINGDATE'] ) );
-					$update_array['billing_amount'] = floatval( $response['AMT'] );
+					$update_array['billing_amount'] = floatval( $response['REGULARAMT'] );
 					$update_array['cycle_number'] = intval( $response['REGULARBILLINGFREQUENCY'] );
-					$update_array['cycle_period'] = $this->convert_interval( $response['REGULARBILLINGPERIOD'] );
+					$update_array['cycle_period'] = $response['REGULARBILLINGPERIOD'];
+					$update_array['trial_amount'] = empty( $response['TRIALAMT'] ) ? 0 : floatval( $response['TRIALAMT'] );
+					$update_array['trial_limit'] = empty( $response['TRIALTOTALBILLINGCYCLES'] ) ? 0 : intval( $response['TRIALTOTALBILLINGCYCLES'] );
+					$update_array['billing_limit'] = empty( $response['REGULARTOTALBILLINGCYCLES'] ) ? 0 : intval( $response['REGULARTOTALBILLINGCYCLES'] );
 				} else {
 					// Subscription is no longer active.
-					// PayPal doesn't send end date, weird.
+					// Can't fill subscription end date, $request only has the date of the last payment.
 					$update_array['status'] = 'cancelled';
 				}
 				$subscription->set( $update_array );
