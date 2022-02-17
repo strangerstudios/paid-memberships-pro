@@ -666,6 +666,8 @@ class PMPro_Subscription {
 		if ( $gateway_object && method_exists( $gateway_object, 'update_subscription_info' ) ) {
 			$gateway_object->update_subscription_info( $this );
 		}
+
+		$this->save();
 	}
 
 	/**

@@ -902,24 +902,32 @@
 		 * @param PMPro_Subscription $subscription to pull data for.
 		 */
 		function update_subscription_info( $subscription ) {
-			if(empty($subscription->subscription_transaction_id))
-				return false;
+			$subscription_transaction_id = $subscription->get_subscription_transaction_id();
+			if ( empty( $subscription_transaction_id ) ) {
+				return;
+			}
 
 			//paypal profile stuff
 			$nvpStr = "";
-			$nvpStr .= "&PROFILEID=" . urlencode($subscription->subscription_transaction_id);
-
-			$nvpStr = apply_filters("pmpro_get_recurring_payments_profile_details_nvpstr", $nvpStr, $subscription);
-
+			$nvpStr .= "&PROFILEID=" . urlencode( $subscription_transaction_id );
 			$response = $this->PPHttpPost('GetRecurringPaymentsProfileDetails', $nvpStr);
 
 			if("SUCCESS" == strtoupper($response["ACK"]) || "SUCCESSWITHWARNING" == strtoupper($response["ACK"])) {
-				$subscription->status = in_array( $response['STATUS'], array( 'Pending', 'Active' ) ) ? 'active' : 'cancelled';
-				$subscription->next_payment_date = $subscription->status === 'active' ? date( 'Y-m-d H:i:s', strtotime( $response['NEXTBILLINGDATE'] ) ) : '';
-				// Note: Startdate and Enddate information is not included in recurring payments profile details.
-				// Maybe we can try to pull this from the user's membership history. We should not ovewrite
-				// it's curently set value just in case we calculated it in another way.
-				// $subscription->enddate = '';
+				// Found subscription.
+				$update_array = array();
+				if ( in_array( $response['STATUS'], array( 'Pending', 'Active' ) ) ) {
+					// Subscription is active.
+					$update_array['status'] = 'active';
+					$update_array['next_payment_date'] = date( 'Y-m-d H:i:s', strtotime( $response['NEXTBILLINGDATE'] ) );
+					$update_array['billing_amount'] = floatval( $response['AMT'] );
+					$update_array['cycle_number'] = intval( $response['REGULARBILLINGFREQUENCY'] );
+					$update_array['cycle_period'] = $this->convert_interval( $response['REGULARBILLINGPERIOD'] );
+				} else {
+					// Subscription is no longer active.
+					// PayPal doesn't send end date, weird.
+					$update_array['status'] = 'cancelled';
+				}
+				$subscription->set( $update_array );
 			}
 		}
 		
