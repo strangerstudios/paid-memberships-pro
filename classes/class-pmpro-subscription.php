@@ -10,7 +10,6 @@
  * @method string get_gateway_environment         Get the gateway environment used to create the subscription.
  * @method string get_subscription_transaction_id Get the ID of the subscription in the gateway.
  * @method string get_status                      Get the status of the subscription.
- * @method float  get_initial_payment             Get the initial payment amount.
  * @method float  get_billing_amount              Get the billing amount.
  * @method int	  get_cycle_number                Get the number of cycles.
  * @method string get_cycle_period                Get the cycle period.
@@ -111,15 +110,6 @@ class PMPro_Subscription {
 	 * @var string
 	 */
 	protected $next_payment_date = '';
-
-	/**
-	 * The initial payment amount for this subscription.
-	 *
-	 * @since TBD
-	 *
-	 * @var float
-	 */
-	protected $initial_payment = 0.00;
 
 	/**
 	 * The subscription billing amount.
@@ -242,7 +232,6 @@ class PMPro_Subscription {
 				'gateway_environment',
 				'subscription_transaction_id',
 				'status',
-				'initial_payment',
 				'billing_amount',
 				'cycle_number',
 				'cycle_period',
@@ -394,17 +383,6 @@ class PMPro_Subscription {
 			} else {
 				$where[]  = 'gateway_environment IN ( ' . implode( ', ', array_fill( 0, count( $args['gateway_environment'] ), '%s' ) ) . ' )';
 				$prepared = array_merge( $prepared, $args['gateway_environment'] );
-			}
-		}
-
-		// Filter by initial payment(s).
-		if ( isset( $args['initial_payment'] ) && null !== $args['initial_payment'] ) {
-			if ( ! is_array( $args['initial_payment'] ) ) {
-				$where[]    = 'initial_payment = %f';
-				$prepared[] = $args['initial_payment'];
-			} else {
-				$where[]  = 'initial_payment IN ( ' . implode( ', ', array_fill( 0, count( $args['initial_payment'] ), '%f' ) ) . ' )';
-				$prepared = array_merge( $prepared, $args['initial_payment'] );
 			}
 		}
 
@@ -597,7 +575,6 @@ class PMPro_Subscription {
 	 *                    @type string $startdate                   The subscription start date (UTC YYYY-MM-DD HH:MM:SS).
 	 *                    @type string $enddate                     The subscription end date (UTC YYYY-MM-DD HH:MM:SS).
 	 *                    @type string $next_payment_date           The subscription next payment date (UTC YYYY-MM-DD HH:MM:SS).
-	 *                    @type float  $initial_payment             The subscription initial payment.
 	 *                    @type float  $billing_amount              The subscription billing amount.
 	 *                    @type int    $cycle_number                The subscription cycle number.
 	 *                    @type string $cycle_period                The subscription cycle period.
@@ -856,7 +833,6 @@ class PMPro_Subscription {
 			'startdate'                   => $this->startdate,
 			'enddate'                     => $this->enddate,
 			'next_payment_date'           => $this->next_payment_date,
-			'initial_payment'             => $this->initial_payment,
 			'billing_amount'              => $this->billing_amount,
 			'cycle_number'                => $this->cycle_number,
 			'cycle_period'                => $this->cycle_period,
@@ -874,7 +850,6 @@ class PMPro_Subscription {
 			'%s', // startdate
 			'%s', // enddate
 			'%s', // next_payment_date
-			'%f', // initial_payment
 			'%f', // billing_amount
 			'%d', // cycle_number
 			'%s', // cycle_period
