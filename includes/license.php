@@ -28,7 +28,7 @@ define('PMPRO_LICENSE_SERVER', 'https://license.paidmembershipspro.com/v2/');
 /**
  * Check if a license key is valid.
  * @param string $key   The key to check.
- * @param string $type  If passed will also check that the key is this type.
+ * @param string|array $type  If passed will also check that the key is this type.
  * @param bool   $force If true, will check key against the PMPro server.
  * @return bool True if valid, false if not.
  */
@@ -69,8 +69,14 @@ function pmpro_license_isValid($key = NULL, $type = NULL, $force = false) {
 	}
 	
 	// Check if a specific type.
-	if ( ! empty( $type ) && $type != $pmpro_license_check['license'] ) {
-		return false;
+	if ( ! empty( $type ) ) {
+		if ( ! is_array( $type ) ) {
+			$type = array( $type );
+		}
+		
+		if ( ! in_array( $pmpro_license_check['license'], $type ) ) {
+			return false;
+		}
 	}
 	
 	// If we got here, we should be good.
