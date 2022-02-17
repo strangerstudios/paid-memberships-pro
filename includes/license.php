@@ -70,9 +70,7 @@ function pmpro_license_isValid($key = NULL, $type = NULL, $force = false) {
 	
 	// Check if a specific type.
 	if ( ! empty( $type ) ) {
-		if ( ! is_array( $type ) ) {
-			$type = array( $type );
-		}
+		$type = (array)$type;
 		
 		if ( ! in_array( $pmpro_license_check['license'], $type ) ) {
 			return false;
