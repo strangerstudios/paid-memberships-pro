@@ -1130,7 +1130,6 @@
 			$checkout_level = $this->getMembershipLevelAtCheckout();
 			if ( ! empty( $checkout_level->billing_amount ) && ! empty( $checkout_level->cycle_number ) ) {
 				// We have a real level that is recurring, so we can use the level to create the subscription.
-				$create_subscription_args['initial_payment'] = $checkout_level->initial_payment;
 				$create_subscription_args['billing_amount']  = $checkout_level->billing_amount;
 				$create_subscription_args['cycle_number']    = $checkout_level->cycle_number;
 				$create_subscription_args['cycle_period']    = $checkout_level->cycle_period;
