@@ -1864,7 +1864,7 @@ class PMProGateway_stripe extends PMProGateway {
 				?>
 				<p class="description">
 					<?php
-						if ( pmpro_license_isValid( null, array( 'standard', 'plus', 'builder' ) ) ) {
+						if ( pmpro_license_isValid( null, pmpro_license_get_premium_types() ) ) {
 							esc_html_e( 'Note: You have a valid license and are not charged additional platform fees for payment processing.', 'paid-memberships-pro');
 						} else {
 							esc_html_e( 'Note: You are using the free Stripe payment gateway integration. This includes an additional 1% fee for payment processing. This fee is removed by activating a premium PMPro license.', 'paid-memberships-pro');

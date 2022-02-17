@@ -164,3 +164,23 @@ function pmpro_license_check_key($key = NULL) {
 	}
 }
 add_action('pmpro_license_check_key', 'pmpro_license_check_key');
+
+/**
+ * Check if a license type is "premium"
+ * @since 2.7.4
+ * @param string $type The license type for an add on for license key.
+ * @return bool True if the type is for a paid PMPro membership, false if not.
+ */
+function pmpro_license_type_is_premium( $type ) {	
+	$premium_types = pmpro_license_get_premium_types();
+	return in_array( strtolower( $type ), $premium_types );
+}
+
+/**
+ * Get array of premium license types.
+ * @since 2.7.4
+ * @return array Premium types.
+ */
+function pmpro_license_get_premium_types() {
+	return array( 'standard', 'plus', 'buidler' );
+}
