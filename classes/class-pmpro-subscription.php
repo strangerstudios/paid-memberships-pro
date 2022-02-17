@@ -962,7 +962,7 @@ class PMPro_Subscription {
 			$pmproemail->sendEmail( get_bloginfo( 'admin_email' ) );
 		}
 		*/
-		$this->save();
+		$this->update_from_gateway();
 
 		return $result;
 	}

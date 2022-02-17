@@ -864,9 +864,11 @@
 		 * @param PMPro_Subscription $subscription to cancel.
 	 	 */
 		function cancel_subscription( $subscription ) {
-			// PMPro_Subscription has same `subscription_transaction_id` property
-			// as MemberOrder, so just pass it to cancelSubscriptionAtGateway().
-			return $this->cancelSubscriptionAtGateway( $subscription );
+			// Build the nvp string for PayPal API
+			$nvpStr = '&PROFILEID=' . urlencode( $subscription->get_subscription_transaction_id() ) . '&ACTION=Cancel&NOTE=' . urlencode('User requested cancel.');
+			$this->httpParsedResponseAr = $this->PPHttpPost('ManageRecurringPaymentsProfileStatus', $nvpStr);
+
+			return ( 'SUCCESS' == strtoupper( $this->httpParsedResponseAr['ACK'] ) || 'SUCCESSWITHWARNING' == strtoupper( $this->httpParsedResponseAr['ACK'] ) );
 		}
 
 		function getSubscriptionStatus(&$order)
