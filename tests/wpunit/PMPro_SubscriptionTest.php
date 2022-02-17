@@ -144,6 +144,7 @@ class PMPro_SubscriptionTest extends TestCase {
 		$this->assertEquals( $subscription_data['gateway_environment'], $subscription->get_gateway_environment() );
 		$this->assertEquals( $subscription_data['subscription_transaction_id'], $subscription->get_subscription_transaction_id() );
 		$this->assertEquals( $subscription_data['status'], $subscription->get_status() );
+		// @todo Handle initial payment method test
 		$this->assertEquals( $subscription_data['billing_amount'], $subscription->get_billing_amount() );
 		$this->assertEquals( $subscription_data['cycle_number'], $subscription->get_cycle_number() );
 		$this->assertEquals( $subscription_data['cycle_period'], $subscription->get_cycle_period() );
