@@ -4331,7 +4331,7 @@ class PMProGateway_stripe extends PMProGateway {
 			if ( $refund->status == 'succeeded' ) {
 				$order->status = 'refunded';					
 			} else {
-				$order->notes = trim( $order->notes ) .' '. __('An error occured while attempting to process this refund.', 'paid-memberships-pro' );
+				$order->notes = trim( $order->notes . ' ' . __( 'An error occured while attempting to process this refund.', 'paid-memberships-pro' ) );
 
 			}
 
