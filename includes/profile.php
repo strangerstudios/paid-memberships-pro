@@ -362,7 +362,7 @@ function pmpro_membership_level_profile_fields_update()
 		}
 	}
 
-	//Refund their most recent subscription if the level was successfully changed
+	//Refund their most recent subscription
 	if( !empty( $_REQUEST['refund_last_subscription'] ) ) {
 
 		$order = new MemberOrder();
