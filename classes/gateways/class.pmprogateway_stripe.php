@@ -4315,7 +4315,7 @@ class PMProGateway_stripe extends PMProGateway {
 				if ( pmpro_getOption( 'gateway_environment' ) === 'live' ) {
 					$secretkey = pmpro_getOption( 'live_stripe_connect_secretkey' );
 				} else {
-					$secretkey = pmpro_getOption( 'sandbox_stripe_connect_secretkey' );;
+					$secretkey = pmpro_getOption( 'sandbox_stripe_connect_secretkey' );
 				}
 			} 
 
