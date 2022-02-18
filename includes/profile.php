@@ -123,7 +123,7 @@ function pmpro_membership_level_profile_fields($user)
          <tr class="more_level_options">
             <th></th>
             <td>
-                <label for="refund_subscription"><input value="1" id="refund_subscription" name="refund_subscription" type="checkbox"> <?php _e("Refund this user's most recent order.", "paid-memberships-pro" ); ?></label>
+                <label for="refund_last_subscription"><input value="1" id="refund_last_subscription" name="refund_last_subscription" type="checkbox"> <?php _e("Refund this user's most recent order.", "paid-memberships-pro" ); ?></label>
             </td>
         </tr>
 		<?php
@@ -362,8 +362,8 @@ function pmpro_membership_level_profile_fields_update()
 		}
 	}
 
-	//Refund their most recent subscription
-	if( !empty( $_REQUEST['refund_subscription'] ) ) {
+	//Refund their most recent subscription if the level was successfully changed
+	if( !empty( $_REQUEST['refund_last_subscription'] ) ) {
 
 		$order = new MemberOrder();
 		$order->getLastMemberOrder( $user_ID );

@@ -3976,8 +3976,20 @@ function pmpro_allowed_refunds( $order ) {
 		return false;
 	}
 
+	/**
+	 * Processes a refund for Stripe orders
+	 *
+	 * @since TBA
+	 *
+	 * @param bool Default return value is false to determine if the refund was successfully processed. 
+	 * @param object $order The Member Order we want to refund
+	 * @return bool If the refund was successfully processed
+	 */
+	
+	$disallowed_statuses = apply_filters( 'pmpro_disallowed_refund_statuses', array( 'pending', 'refunded' ) );
+	
 	if( 
-		in_array( $order->status, array( 'success' ), true ) && //Only successfully paid orders
+		!in_array( $order->status, $disallowed_statuses, true ) && //Don't allow pending orders to be refunded
 		in_array( $order->gateway, array( 'stripe', 'paypalexpress' ), true )  //Only apply to these gateways
 	) {
 		return true;
