@@ -4274,15 +4274,12 @@ class PMProGateway_stripe extends PMProGateway {
 	/**
 	 * Refund a payment or invoice
 	 *
-	 * @deprecated 2.7.0.
-	 *
 	 * @param object &$order Related PMPro order object.
 	 * @param string $transaction_id Payment or invoice id to void.
 	 *
 	 * @return bool                   True or false if the refund worked.
 	 */
 	static function refund( $success, $order ) {
-		// _deprecated_function( __FUNCTION__, '2.7.0' );
 
 		//default to using the payment id from the order
 		if ( !empty( $order->payment_transaction_id ) ) {
@@ -4308,7 +4305,7 @@ class PMProGateway_stripe extends PMProGateway {
 		//attempt refund
 		try {
 			
-			$secretkey = pmpro_getOption( "stripe_secretkey" );
+			$secretkey = pmpro_getOption( 'stripe_secretkey' );
 
 			// If they are not using legacy keys, get Stripe Connect keys for the relevant environment.
 			if ( ! self::using_legacy_keys() && empty( $secretkey ) ) {
@@ -4329,22 +4326,19 @@ class PMProGateway_stripe extends PMProGateway {
 			global $current_user;
 
 			$notes = $order->notes;
-			$order->notes = $notes.' '.sprintf( __('Order successfully refunded on %1$s for translation ID %2$s by %3$s', 'paid-memberships-pro' ), date_i18n('Y-m-d H:i:s'), $transaction_id, $current_user->display_name );	
+			$order->notes = '\n\n'.sprintf( __('Order successfully refunded on %1$s for transaction  ID %2$s by %3$s', 'paid-memberships-pro' ), date_i18n('Y-m-d H:i:s'), $transaction_id, $current_user->display_name );	
 
-			if ( $refund->status == "succeeded" ) {
-				$order->status = "refunded";					
+			if ( $refund->status == 'succeeded' ) {
+				$order->status = 'refunded';					
 			} else {
-				$notes = $order->notes;
-				$order->notes = $notes.' '.__('An error occured while attempting to process this refund.', 'paid-memberships-pro' );	
+				$order->notes = trim( $order->notes ) .' '. __('An error occured while attempting to process this refund.', 'paid-memberships-pro' );
 
 			}
 
 		} catch ( \Throwable $e ) {			
-			$notes = $order->notes;
-			$order->notes .= __( 'There was a problem processing the refund', 'paid-memberships-pro' ) . ' ' . $e->getMessage();				
+			$order->notes = trim( $order->notes ) .' '. __( 'There was a problem processing the refund', 'paid-memberships-pro' ) . ' ' . $e->getMessage();	
 		} catch ( \Exception $e ) {
-			$notes = $order->notes;
-			$order->notes .= __( 'There was a problem processing the refund', 'paid-memberships-pro' ) . ' ' . $e->getMessage();			
+			$order->notes = trim( $order->notes ) .' '. __( 'There was a problem processing the refund', 'paid-memberships-pro' ) . ' ' . $e->getMessage();
 		}		
 
 		$order->saveOrder();
