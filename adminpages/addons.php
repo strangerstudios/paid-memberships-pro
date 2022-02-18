@@ -207,7 +207,7 @@
 									$actions['settings'] = '<span class="settings"><a href="' . admin_url('admin.php?page=pmpro-license') . '">' . __('Update License', 'paid-memberships-pro' ) . '</a></span>';
 									$actions['download'] = '<span class="download"><a target="_blank" href="' . $plugin_data['PluginURI'] . '">' . __('Download', 'paid-memberships-pro' ) . '</a></span>';
 								}
-								elseif(pmpro_license_isValid($pmpro_license_key, $plugin_data['License']))
+								elseif(pmpro_can_download_addon_with_license($plugin_data['License']))
 								{
 									//valid key
 									$actions['install'] = '<span class="install"><a href="' . wp_nonce_url(self_admin_url('update.php?action=install-plugin&plugin=' . $plugin_data['Slug']), 'install-plugin_' . $plugin_data['Slug']) . '">' . __('Install Now', 'paid-memberships-pro' ) . '</a></span>';
