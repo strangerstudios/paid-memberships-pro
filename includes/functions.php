@@ -4004,10 +4004,28 @@ function pmpro_refund_order( $order ){
 	}
 
 	if( $order->gateway === 'stripe' ) {
+		/**
+		 * Processes a refund for Stripe orders
+		 *
+		 * @since TBA
+		 *
+		 * @param bool Default return value is false to determine if the refund was successfully processed. 
+		 * @param object $order The Member Order we want to refund
+		 * @return bool If the refund was successfully processed
+		 */
 		$success = apply_filters( 'pmpro_process_refund_stripe', false, $order );
 	}
 
 	if( strpos( $order->gateway, 'paypal' ) !== FALSE ) {
+		/**
+		 * Processes a refund for PayPal orders
+		 *
+		 * @since TBA
+		 *
+		 * @param bool Default return value is false to determine if the refund was successfully processed. 
+		 * @param object $order The Member Order we want to refund
+		 * @return bool If the refund was successfully processed
+		 */
 		$success = apply_filters( 'pmpro_process_refund_paypal', false, $order );
 	}
 

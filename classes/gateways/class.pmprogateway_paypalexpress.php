@@ -1085,7 +1085,7 @@
 			if ( $transaction_id === $morder->subscription_transaction_id ) {
 				$transaction_id = $morder->Gateway->getRealPaymentTransactionId( $morder );
 			}
-var_dump($transaction_id);
+
 			$httpParsedResponseAr = $morder->Gateway->PPHttpPost( 'RefundTransaction', '&TRANSACTIONID=$transaction_id' );		
 
 			if ( 'SUCCESS' === strtoupper( $httpParsedResponseAr['ACK'] ) ) {
