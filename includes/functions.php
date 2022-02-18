@@ -3977,7 +3977,7 @@ function pmpro_allowed_refunds( $order ) {
 	}
 
 	if( 
-		in_array( $order->status, array( 'success' ) ) && //Only successfully paid orders
+		in_array( $order->status, array( 'success' ), true ) && //Only successfully paid orders
 		in_array( $order->gateway, array( 'stripe', 'paypal-express' ) )  //Only apply to these gateways
 	) {
 		return true;
