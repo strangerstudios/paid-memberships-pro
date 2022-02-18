@@ -1488,7 +1488,7 @@ if ( function_exists( 'pmpro_add_email_order_modal' ) ) {
 									esc_attr__( 'Delete', 'paid-memberships-pro' ),
 									'javascript:pmpro_askfirst(\'' . esc_js( $delete_text ) . '\', \'' . esc_js( $delete_nonce_url ) . '\'); void(0);',
 									esc_html__( 'Delete', 'paid-memberships-pro' )
-								),								
+								),
 								'print'   => sprintf(
 									'<a title="%1$s" href="%2$s" target="_blank" rel="noopener noreferrer">%3$s</a>',
 									esc_attr__( 'Print', 'paid-memberships-pro' ),
