@@ -1516,7 +1516,7 @@ if ( function_exists( 'pmpro_add_email_order_modal' ) ) {
 								$actions['refund'] = sprintf(
 									'<a title="%1$s" href="%2$s">%3$s</a>',
 									esc_attr__( 'Refund', 'paid-memberships-pro' ),
-									'javascript:pmpro_askfirst(\'' . esc_js( $refund_text ) . '\', \'' . esc_js( $refund_nonce_url ) . '\'); void(0);',
+									esc_js( 'javascript:pmpro_askfirst(' . wp_json_encode( $refund_text ) . ', ' . wp_json_encode( $refund_nonce_url ) . '); void(0);' ),
 									esc_html__( 'Refund', 'paid-memberships-pro' )
 								);
 							}
