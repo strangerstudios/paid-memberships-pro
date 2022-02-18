@@ -1080,46 +1080,56 @@ class PMPro_Subscription {
 	 *
 	 * @since TBD
 	 *
-	 * @return bool True if the subscription was canceled successfully.
+	 * @return bool True if the subscription was canceled successfully in the payment gateway.
 	 */
 	public function cancel() {
-		// Cancel subscription at gateway first.
+		// Prevent infinite loops when calling gateway's cancel() method and passing an order.
+		static $cancelled_subscription_ids = [];
+		if ( 'cancelled' !== $this->status && in_array( $this->id, $cancelled_subscription_ids, true ) ) {
+			return false;
+		}
+		$cancelled_subscription_ids[] = $this->id;
+
+		// Cancel the subscription in the gateway.
 		$gateway_object = $this->get_gateway_object();
+		if ( is_object( $gateway_object ) ) {
+			if ( method_exists( $gateway_object, 'cancel_subscription' ) ) {
+				$result = $gateway_object->cancel_subscription( $this );
+			} elseif ( method_exists( $gateway_object, 'cancel' ) ) {
+				// Build an order to pass to the old cancel() methods in gateways.
+				$morder                              = new MemberOrder();
+				$morder->user_id                     = $this->user_id;
+				$morder->membership_id               = $this->membership_level_id;
+				$morder->gateway                     = $this->gateway;
+				$morder->gateway_environment         = $this->gateway_environment;
+				$morder->subscription_transaction_id = $this->subscription_transaction_id;
 
-		if ( method_exists( $gateway_object, 'cancel_subscription' ) ) {
-			$result = $gateway_object->cancel_subscription( $this );
-		} else {
-			// Legacy cancel code.
-			// TODO: Make this work if gateway doesn't support cancel_subscription()
-			$morder = $this->get_last_order();
-
-			if ( is_object( $gateway_object ) && is_a( $morder, 'MemberOrder' ) ) {
 				$result = $gateway_object->cancel( $morder );
 			} else {
+				// We don't have any way to cancel this subscription in the gateway.
 				$result = false;
 			}
 		}
 
-		/*
-		 * @todo We should probably send an email when the subscription cancellation fails. Gateway or MemberOrder class may already be sending a sub cancel failure email though, something to look into further. May want to remove that and use the subscription class for that.
-		if ( $result == false && is_a( $morder, 'MemberOrder' ) ) {
+		// If the cancellation failed, send an email to the admin.
+		if ( ! $result ) {
 			// Notify the admin.
-			$order_user = get_userdata($morder->user_id);
-			$pmproemail = new PMProEmail();
+			$user                      = get_userdata( $this->user_id );
+			$pmproemail                = new PMProEmail();
 			$pmproemail->template      = 'subscription_cancel_error';
-			$pmproemail->data          = array( 'body' => '<p>' . sprintf( __( 'There was an error canceling the subscription for user with ID=%s. You will want to check your payment gateway to see if their subscription is still active.', 'paid-memberships-pro' ), strval( $this->user_id ) ) . '</p><p>Error: ' . $this->error . '</p>' );
-			$pmproemail->data['body'] .= '<p>' . __( 'User Email', 'paid-memberships-pro' ) . ': ' . $order_user->user_email . '</p>';
-			$pmproemail->data['body'] .= '<p>' . __( 'Username', 'paid-memberships-pro' ) . ': ' . $order_user->user_login . '</p>';
-			$pmproemail->data['body'] .= '<p>' . __( 'User Display Name', 'paid-memberships-pro' ) . ': ' . $order_user->display_name . '</p>';
-			$pmproemail->data['body'] .= '<p>' . __( 'Order', 'paid-memberships-pro' ) . ': ' . $morder->code . '</p>';
-			$pmproemail->data['body'] .= '<p>' . __( 'Gateway', 'paid-memberships-pro' ) . ': ' . $morder->gateway . '</p>';
-			$pmproemail->data['body'] .= '<p>' . __( 'Subscription Transaction ID', 'paid-memberships-pro' ) . ': ' . $morder->subscription_transaction_id . '</p>';
+			$pmproemail->data          = array( 'body' => '<p>' . esc_html__( 'There was an error canceling a subscription from your website. You will want to check your payment gateway to see if their subscription is still active.', 'paid-memberships-pro' ) );
+			$pmproemail->data['body'] .= '<p>' . __( 'User Email', 'paid-memberships-pro' ) . ': ' . $user->user_email . '</p>';
+			$pmproemail->data['body'] .= '<p>' . __( 'Username', 'paid-memberships-pro' ) . ': ' . $user->user_login . '</p>';
+			$pmproemail->data['body'] .= '<p>' . __( 'User Display Name', 'paid-memberships-pro' ) . ': ' . $user->display_name . '</p>';
+			$pmproemail->data['body'] .= '<p>' . __( 'Subscription', 'paid-memberships-pro' ) . ': ' . $this->ID . '</p>';
+			$pmproemail->data['body'] .= '<p>' . __( 'Gateway', 'paid-memberships-pro' ) . ': ' . $this->gateway . '</p>';
+			$pmproemail->data['body'] .= '<p>' . __( 'Subscription Transaction ID', 'paid-memberships-pro' ) . ': ' . $this->subscription_transaction_id . '</p>';
 			$pmproemail->data['body'] .= '<hr />';
-			$pmproemail->data['body'] .= '<p>' . __( 'Edit User', 'paid-memberships-pro' ) . ': ' . esc_url( add_query_arg( 'user_id', $morder->user_id, self_admin_url( 'user-edit.php' ) ) ) . '</p>';
-			$pmproemail->data['body'] .= '<p>' . __( 'Edit Order', 'paid-memberships-pro' ) . ': ' . esc_url( add_query_arg( array( 'page' => 'pmpro-orders', 'order' => $morder->id ), admin_url( 'admin.php' ) ) ) . '</p>';
+			$pmproemail->data['body'] .= '<p>' . __( 'Edit User', 'paid-memberships-pro' ) . ': ' . esc_url( add_query_arg( 'user_id', $this->user_id, self_admin_url( 'user-edit.php' ) ) ) . '</p>';
 			$pmproemail->sendEmail( get_bloginfo( 'admin_email' ) );
 		}
-		*/
+		$this->status = 'cancelled';
+		$this->update_from_gateway();
 		$this->save();
 
 		return $result;
