@@ -4329,7 +4329,7 @@ class PMProGateway_stripe extends PMProGateway {
 			global $current_user;
 
 			$notes = $order->notes;
-			$order->notes = $notes.' '.sprintf( __('Order successfully refunded on %1s for transation ID %2s by %3s', 'paid-memberships-pro' ), date_i18n('Y-m-d H:i:s'), $transaction_id, $current_user->display_name );	
+			$order->notes = $notes.' '.sprintf( __('Order successfully refunded on %1$s for translation ID %2$s by %3$s', 'paid-memberships-pro' ), date_i18n('Y-m-d H:i:s'), $transaction_id, $current_user->display_name );	
 
 			if ( $refund->status == "succeeded" ) {
 				$order->status = "refunded";					
