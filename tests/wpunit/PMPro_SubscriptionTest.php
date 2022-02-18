@@ -1057,6 +1057,11 @@ class PMPro_SubscriptionTest extends TestCase {
 
 		$this->assertCount( 1, $active_orders );
 		$this->assertContains( $order_id2, wp_list_pluck( $active_orders, 'id' ) );
+
+		$multiple_orders = $subscription->get_orders( [ 'status' => [ 'pending', 'somethingelse', 'active' ] ] );
+
+		$this->assertCount( 2, $multiple_orders );
+		$this->assertEquals( [ $order_id2, $order_id ], wp_list_pluck( $multiple_orders, 'id' ) );
 	}
 
 	public function test_get_orders_with_orderby() {
