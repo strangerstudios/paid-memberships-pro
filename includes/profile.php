@@ -307,8 +307,7 @@ function pmpro_membership_level_profile_fields_update()
 
 		//remove filter after ward
 		if(empty($_REQUEST['cancel_subscription']))
-			remove_filter('pmpro_cancel_previous_subscriptions', 'pmpro_cancel_previous_subscriptions_false');		
-
+			remove_filter('pmpro_cancel_previous_subscriptions', 'pmpro_cancel_previous_subscriptions_false');
     }
 
 	//expiration change
