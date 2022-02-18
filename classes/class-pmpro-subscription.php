@@ -166,6 +166,18 @@ class PMPro_Subscription {
 	protected $trial_limit = 0;
 
 	/**
+	 * The initial payment amount for this subscription.
+	 *
+	 * This will be filled in automatically when $sub->get_initial_payment() is called.
+	 *
+	 * @since TBD
+	 *
+	 * @var null|float|int
+	 * @see get_initial_payment()
+	 */
+	protected $initial_payment;
+
+	/**
 	 * Create a new PMPro_Subscription object.
 	 *
 	 * @since TBD
@@ -289,6 +301,8 @@ class PMPro_Subscription {
 	/**
 	 * Get the list of subscription objects based on query arguments.
 	 *
+	 * Defaults to returning the latest 100 subscriptions.
+	 *
 	 * @param array $args The query arguments to use.
 	 *
 	 * @return PMPro_Subscription[] The list of subscription objects.
@@ -296,11 +310,17 @@ class PMPro_Subscription {
 	public static function get_subscriptions( array $args = [] ) {
 		global $wpdb;
 
-		$sql_query = "SELECT id FROM $wpdb->pmpro_subscriptions";
+		$sql_query = "SELECT `id` FROM `$wpdb->pmpro_subscriptions`";
 
 		$prepared = [];
 		$where    = [];
-		$limit    = isset( $args['limit'] ) ? $args['limit'] : 100;
+		$orderby  = isset( $args['orderby'] ) ? $args['orderby'] : '`startdate` DESC';
+		$limit    = isset( $args['limit'] ) ? (int) $args['limit'] : 100;
+
+		// Detect unsupported orderby usage (in the future we may support better syntax).
+		if ( $orderby !== preg_replace( '/[^a-zA-Z0-9\s,`]/', ' ', $orderby ) ) {
+			return [];
+		}
 
 		/*
 		 * Now filter the query based on the arguments provided.
@@ -458,7 +478,8 @@ class PMPro_Subscription {
 			$sql_query .= ' WHERE ' . implode( ' AND ', $where );
 		}
 
-		$sql_query .= ' ORDER BY startdate DESC';
+		// Handle the order of data.
+		$sql_query .= ' ORDER BY ' . $orderby;
 
 		// Maybe limit the data.
 		if ( $limit ) {
@@ -749,6 +770,170 @@ class PMPro_Subscription {
 		}
 
 		return null;
+	}
+
+	/**
+	 * Get the initial payment amount for the subscription.
+	 *
+	 * @since TBD
+	 *
+	 * @return float The initial payment amount for the subscription.
+	 */
+	public function get_initial_payment() {
+		if ( null !== $this->initial_payment ) {
+			return $this->initial_payment;
+		}
+
+		$this->initial_payment = 0;
+
+		// Fetch the first order for this subscription.
+		$orders = $this->get_orders( [
+			'limit'   => 1,
+			'orderby' => '`timestamp` ASC, `id` ASC',
+		] );
+
+		if ( ! empty( $orders ) ) {
+			// Get the first order object.
+			$order = current( $orders );
+
+			// Use the order total as the intitial payment.
+			$this->initial_payment = $order->total;
+		}
+
+		return $this->initial_payment;
+	}
+
+	/**
+	 * Get the list of order objects for this subscription based on query arguments.
+	 *
+	 * Defaults to returning the latest 100 orders from a subscription based on the subscription transaction ID,
+	 * the gateway, and the gateway environment.
+	 *
+	 * @since TBD
+	 *
+	 * @param array $args The query arguments to use.
+	 *
+	 * @return MemberOrder[] The list of order objects.
+	 */
+	public function get_orders( array $args = [] ) {
+		if ( empty( $this->subscription_transaction_id ) ) {
+			return [];
+		}
+
+		global $wpdb;
+
+		$sql_query = "SELECT `id` FROM `$wpdb->pmpro_membership_orders`";
+
+		$prepared = [];
+		$where    = [];
+		$orderby  = isset( $args['orderby'] ) ? $args['orderby'] : '`timestamp` DESC, `id` DESC';
+		$limit    = isset( $args['limit'] ) ? (int) $args['limit'] : 100;
+
+		// Detect unsupported orderby usage (in the future we may support better syntax).
+		if ( $orderby !== preg_replace( '/[^a-zA-Z0-9\s,`]/', ' ', $orderby ) ) {
+			return [];
+		}
+
+		// Filter by subscription transaction ID.
+		$where[]    = 'subscription_transaction_id = %s';
+		$prepared[] = $this->subscription_transaction_id;
+
+		// Filter by gateway.
+		$where[]    = 'gateway = %s';
+		$prepared[] = $this->gateway;
+
+		// Filter by gateway environment.
+		$where[]    = 'gateway_environment = %s';
+		$prepared[] = $this->gateway_environment;
+
+		/*
+		 * Now filter the query based on the arguments provided.
+		 *
+		 * isset( $arg ) && null !== $arg is meant to deal with $args['arg'] = null usage
+		 * while still supporting $args['arg'] = ''.
+		 */
+
+		// Filter by ID(s).
+		if ( isset( $args['id'] ) && null !== $args['id'] ) {
+			if ( ! is_array( $args['id'] ) ) {
+				$where[]    = 'id = %d';
+				$prepared[] = $args['id'];
+			} else {
+				$where[]  = 'id IN ( ' . implode( ', ', array_fill( 0, count( $args['id'] ), '%d' ) ) . ' )';
+				$prepared = array_merge( $prepared, $args['id'] );
+			}
+		}
+
+		// Filter by code(s).
+		if ( isset( $args['code'] ) && null !== $args['code'] ) {
+			if ( ! is_array( $args['code'] ) ) {
+				$where[]    = 'code = %s';
+				$prepared[] = $args['code'];
+			} else {
+				$where[]  = 'code IN ( ' . implode( ', ', array_fill( 0, count( $args['code'] ), '%s' ) ) . ' )';
+				$prepared = array_merge( $prepared, $args['code'] );
+			}
+		}
+
+		// Filter by status(es).
+		if ( isset( $args['status'] ) && null !== $args['status'] ) {
+			if ( ! is_array( $args['status'] ) ) {
+				$where[]    = 'status = %s';
+				$prepared[] = $args['status'];
+			} else {
+				$where[]  = 'status IN ( ' . implode( ', ', array_fill( 0, count( $args['status'] ), '%s' ) ) . ' )';
+				$prepared = array_merge( $prepared, $args['status'] );
+			}
+		}
+
+		// Filter by payment transaction ID(s).
+		if ( isset( $args['payment_transaction_id'] ) && null !== $args['payment_transaction_id'] ) {
+			if ( ! is_array( $args['payment_transaction_id'] ) ) {
+				$where[]    = 'payment_transaction_id = %s';
+				$prepared[] = $args['payment_transaction_id'];
+			} else {
+				$where[]  = 'payment_transaction_id IN ( ' . implode( ', ', array_fill( 0, count( $args['payment_transaction_id'] ), '%s' ) ) . ' )';
+				$prepared = array_merge( $prepared, $args['payment_transaction_id'] );
+			}
+		}
+
+		// Maybe filter the data.
+		if ( $where ) {
+			$sql_query .= ' WHERE ' . implode( ' AND ', $where );
+		}
+
+		// Handle the order of data.
+		$sql_query .= ' ORDER BY ' . $orderby;
+
+		// Maybe limit the data.
+		if ( $limit ) {
+			$sql_query .= ' LIMIT %d';
+			$prepared[] = $limit;
+		}
+
+		// Maybe prepare the query.
+		if ( $prepared ) {
+			$sql_query = $wpdb->prepare( $sql_query, $prepared );
+		}
+
+		$order_ids = $wpdb->get_col( $sql_query );
+
+		if ( empty( $order_ids ) ) {
+			return [];
+		}
+
+		$orders = [];
+
+		foreach ( $order_ids as $order_id ) {
+			$order = new MemberOrder( $order_id );
+
+			// Make sure the order object is valid.
+			if ( ! empty( $order->id ) ) {
+				$orders[] = $order;
+			}
+		}
+
+		return $orders;
 	}
 
 	/**

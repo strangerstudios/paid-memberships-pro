@@ -260,6 +260,55 @@ class PMPro_SubscriptionTest extends TestCase {
 		] ) );
 	}
 
+	public function test_get_subscriptions_with_orderby() {
+		$user_id         = $this->factory()->user->create();
+		$level_id        = $this->factory()->pmpro_level->create();
+		$subscription_id = $this->factory()->pmpro_subscription->create( [
+			'membership_level_id'         => $level_id,
+			'user_id'                     => $user_id,
+			'gateway'                     => 'stripe',
+			'gateway_environment'         => 'sandbox',
+			'subscription_transaction_id' => '1234123455555',
+			'billing_amount'              => '250.00',
+		] );
+		$subscription_id2 = $this->factory()->pmpro_subscription->create( [
+			'membership_level_id'         => $level_id,
+			'user_id'                     => $user_id,
+			'gateway'                     => 'stripe',
+			'gateway_environment'         => 'sandbox',
+			'subscription_transaction_id' => '4444444444444',
+			'billing_amount'              => '150.00',
+		] );
+
+		$fetch_id = static function( $sub ) {
+			return $sub->get_id();
+		};
+
+		$oldest_subscriptions = PMPro_Subscription::get_subscriptions( [ 'orderby' => 'id ASC' ] );
+		$oldest_subscriptions = array_map( $fetch_id, $oldest_subscriptions );
+
+		$this->assertCount( 2, $oldest_subscriptions );
+		$this->assertEquals( [ $subscription_id, $subscription_id2 ], $oldest_subscriptions );
+
+		$latest_subscriptions = PMPro_Subscription::get_subscriptions( [ 'orderby' => 'id DESC' ] );
+		$latest_subscriptions = array_map( $fetch_id, $latest_subscriptions );
+
+		$this->assertCount( 2, $latest_subscriptions );
+		$this->assertEquals( [ $subscription_id2, $subscription_id ], $latest_subscriptions );
+
+		// Test default orderby.
+		$default_subscriptions = PMPro_Subscription::get_subscriptions();
+		$default_subscriptions = array_map( $fetch_id, $default_subscriptions );
+
+		$this->assertCount( 2, $default_subscriptions );
+		$this->assertEquals( [ $subscription_id2, $subscription_id ], $default_subscriptions );
+
+		// Test bad orderby.
+		$invalid_orderby_subscriptions = PMPro_Subscription::get_subscriptions( [ 'orderby' => 'FUNCTIONS_ARE_NOT_SUPPORTED() DESC' ] );
+
+		$this->assertCount( 0, $invalid_orderby_subscriptions );
+	}
+
 	/**
 	 * @covers PMPro_Subscription::get_subscriptions
 	 */
@@ -342,6 +391,8 @@ class PMPro_SubscriptionTest extends TestCase {
 		$subscription_id = $this->factory()->pmpro_subscription->create( [
 			'membership_level_id' => $level_id,
 			'user_id'             => $user_id,
+			'gateway'             => 'check',
+			'gateway_environment' => 'sandbox',
 		] );
 
 		// By gateway and gateway environment.
@@ -791,5 +842,276 @@ class PMPro_SubscriptionTest extends TestCase {
 		// Add assertions here.
 	}
 
+	public function test_get_initial_payment() {
+		$user_id         = $this->factory()->user->create();
+		$level_id        = $this->factory()->pmpro_level->create();
+		$subscription_id = $this->factory()->pmpro_subscription->create( [
+			'membership_level_id'         => $level_id,
+			'user_id'                     => $user_id,
+			'gateway'                     => 'stripe',
+			'gateway_environment'         => 'sandbox',
+			'subscription_transaction_id' => '1234123455555',
+			'billing_amount'              => '250.00',
+		] );
+		$order_id        = $this->factory()->pmpro_order->create( [
+			'membership_id'               => $level_id,
+			'user_id'                     => $user_id,
+			'gateway'                     => 'stripe',
+			'gateway_environment'         => 'sandbox',
+			'subscription_transaction_id' => '1234123455555',
+			'total'                       => '100.00',
+		] );
+
+		$subscription = new PMPro_Subscription( $subscription_id );
+
+		$this->assertEquals( 250, $subscription->get_billing_amount() );
+		$this->assertEquals( 100, $subscription->get_initial_payment() );
+	}
+
+	public function test_get_initial_payment_with_no_order() {
+		$user_id         = $this->factory()->user->create();
+		$level_id        = $this->factory()->pmpro_level->create();
+		$subscription_id = $this->factory()->pmpro_subscription->create( [
+			'membership_level_id'         => $level_id,
+			'user_id'                     => $user_id,
+			'gateway'                     => 'stripe',
+			'gateway_environment'         => 'sandbox',
+			'subscription_transaction_id' => '1234123455555',
+			'billing_amount'              => '250.00',
+		] );
+
+		$subscription = new PMPro_Subscription( $subscription_id );
+
+		$this->assertEquals( 250, $subscription->get_billing_amount() );
+		$this->assertEquals( 0, $subscription->get_initial_payment() );
+	}
+
+	public function test_get_initial_payment_with_no_subscription_transaction_id() {
+		$user_id         = $this->factory()->user->create();
+		$level_id        = $this->factory()->pmpro_level->create();
+		$subscription_id = $this->factory()->pmpro_subscription->create( [
+			'membership_level_id'         => $level_id,
+			'user_id'                     => $user_id,
+			'gateway'                     => 'stripe',
+			'gateway_environment'         => 'sandbox',
+			'subscription_transaction_id' => '',
+			'billing_amount'              => '250.00',
+		] );
+
+		$subscription = new PMPro_Subscription( $subscription_id );
+
+		$this->assertEquals( 250, $subscription->get_billing_amount() );
+		$this->assertEquals( 0, $subscription->get_initial_payment() );
+	}
+
+	public function test_get_orders() {
+		$user_id         = $this->factory()->user->create();
+		$level_id        = $this->factory()->pmpro_level->create();
+		$subscription_id = $this->factory()->pmpro_subscription->create( [
+			'membership_level_id'         => $level_id,
+			'user_id'                     => $user_id,
+			'gateway'                     => 'stripe',
+			'gateway_environment'         => 'sandbox',
+			'subscription_transaction_id' => '1234123455555',
+			'billing_amount'              => '250.00',
+		] );
+		$order_id        = $this->factory()->pmpro_order->create( [
+			'membership_id'               => $level_id,
+			'user_id'                     => $user_id,
+			'gateway'                     => 'stripe',
+			'gateway_environment'         => 'sandbox',
+			'subscription_transaction_id' => '1234123455555',
+			'total'                       => '100.00',
+		] );
+
+		// Add another order but not associated to this subscription.
+		$order_id2 = $this->factory()->pmpro_order->create( [
+			'membership_id'               => $level_id,
+			'user_id'                     => $user_id,
+			'gateway'                     => 'stripe',
+			'gateway_environment'         => 'sandbox',
+			'subscription_transaction_id' => '4444444444444',
+			'total'                       => '100.00',
+		] );
+
+		$subscription = new PMPro_Subscription( $subscription_id );
+
+		$this->assertCount( 1, $subscription->get_orders() );
+	}
+
+	public function test_get_orders_with_no_orders() {
+		$user_id         = $this->factory()->user->create();
+		$level_id        = $this->factory()->pmpro_level->create();
+		$subscription_id = $this->factory()->pmpro_subscription->create( [
+			'membership_level_id'         => $level_id,
+			'user_id'                     => $user_id,
+			'gateway'                     => 'stripe',
+			'gateway_environment'         => 'sandbox',
+			'subscription_transaction_id' => '1234123455555',
+			'billing_amount'              => '250.00',
+		] );
+
+		$subscription = new PMPro_Subscription( $subscription_id );
+
+		$this->assertCount( 0, $subscription->get_orders() );
+	}
+
+	public function test_get_orders_using_different_gateway_info_for_order() {
+		$user_id         = $this->factory()->user->create();
+		$level_id        = $this->factory()->pmpro_level->create();
+		$subscription_id = $this->factory()->pmpro_subscription->create( [
+			'membership_level_id'         => $level_id,
+			'user_id'                     => $user_id,
+			'gateway'                     => 'stripe',
+			'gateway_environment'         => 'sandbox',
+			'subscription_transaction_id' => '1234123455555',
+			'billing_amount'              => '250.00',
+		] );
+		$order_id        = $this->factory()->pmpro_order->create( [
+			'membership_id'               => $level_id,
+			'user_id'                     => $user_id,
+			'gateway'                     => 'stripe',
+			'gateway_environment'         => 'live',
+			'subscription_transaction_id' => '1234123455555',
+			'total'                       => '100.00',
+		] );
+
+		$subscription = new PMPro_Subscription( $subscription_id );
+
+		// It should not find the order because the gateway info does not match.
+		$this->assertCount( 0, $subscription->get_orders() );
+	}
+
+	public function test_get_orders_with_limit() {
+		$user_id         = $this->factory()->user->create();
+		$level_id        = $this->factory()->pmpro_level->create();
+		$subscription_id = $this->factory()->pmpro_subscription->create( [
+			'membership_level_id'         => $level_id,
+			'user_id'                     => $user_id,
+			'gateway'                     => 'stripe',
+			'gateway_environment'         => 'sandbox',
+			'subscription_transaction_id' => '1234123455555',
+			'billing_amount'              => '250.00',
+		] );
+		$order_id        = $this->factory()->pmpro_order->create( [
+			'membership_id'               => $level_id,
+			'user_id'                     => $user_id,
+			'gateway'                     => 'stripe',
+			'gateway_environment'         => 'sandbox',
+			'subscription_transaction_id' => '1234123455555',
+			'total'                       => '100.00',
+		] );
+		$order_id2 = $this->factory()->pmpro_order->create( [
+			'membership_id'               => $level_id,
+			'user_id'                     => $user_id,
+			'gateway'                     => 'stripe',
+			'gateway_environment'         => 'sandbox',
+			'subscription_transaction_id' => '1234123455555',
+			'total'                       => '250.00',
+		] );
+
+		$subscription = new PMPro_Subscription( $subscription_id );
+
+		$this->assertCount( 1, $subscription->get_orders( [ 'limit' => 1 ] ) );
+		$this->assertCount( 2, $subscription->get_orders() );
+	}
+
+	public function test_get_orders_with_status() {
+		$user_id         = $this->factory()->user->create();
+		$level_id        = $this->factory()->pmpro_level->create();
+		$subscription_id = $this->factory()->pmpro_subscription->create( [
+			'membership_level_id'         => $level_id,
+			'user_id'                     => $user_id,
+			'gateway'                     => 'stripe',
+			'gateway_environment'         => 'sandbox',
+			'subscription_transaction_id' => '1234123455555',
+			'billing_amount'              => '250.00',
+		] );
+		$order_id        = $this->factory()->pmpro_order->create( [
+			'membership_id'               => $level_id,
+			'user_id'                     => $user_id,
+			'gateway'                     => 'stripe',
+			'gateway_environment'         => 'sandbox',
+			'subscription_transaction_id' => '1234123455555',
+			'total'                       => '100.00',
+			'status'                      => 'pending',
+		] );
+		$order_id2 = $this->factory()->pmpro_order->create( [
+			'membership_id'               => $level_id,
+			'user_id'                     => $user_id,
+			'gateway'                     => 'stripe',
+			'gateway_environment'         => 'sandbox',
+			'subscription_transaction_id' => '1234123455555',
+			'total'                       => '250.00',
+			'status'                      => 'active',
+		] );
+
+		$subscription = new PMPro_Subscription( $subscription_id );
+
+		$pending_orders = $subscription->get_orders( [ 'status' => 'pending' ] );
+
+		$this->assertCount( 1, $pending_orders );
+		$this->assertContains( $order_id, wp_list_pluck( $pending_orders, 'id' ) );
+
+		$active_orders = $subscription->get_orders( [ 'status' => 'active' ] );
+
+		$this->assertCount( 1, $active_orders );
+		$this->assertContains( $order_id2, wp_list_pluck( $active_orders, 'id' ) );
+	}
+
+	public function test_get_orders_with_orderby() {
+		$user_id         = $this->factory()->user->create();
+		$level_id        = $this->factory()->pmpro_level->create();
+		$subscription_id = $this->factory()->pmpro_subscription->create( [
+			'membership_level_id'         => $level_id,
+			'user_id'                     => $user_id,
+			'gateway'                     => 'stripe',
+			'gateway_environment'         => 'sandbox',
+			'subscription_transaction_id' => '1234123455555',
+			'billing_amount'              => '250.00',
+		] );
+		$order_id        = $this->factory()->pmpro_order->create( [
+			'membership_id'               => $level_id,
+			'user_id'                     => $user_id,
+			'gateway'                     => 'stripe',
+			'gateway_environment'         => 'sandbox',
+			'subscription_transaction_id' => '1234123455555',
+			'total'                       => '100.00',
+		] );
+		$order_id2 = $this->factory()->pmpro_order->create( [
+			'membership_id'               => $level_id,
+			'user_id'                     => $user_id,
+			'gateway'                     => 'stripe',
+			'gateway_environment'         => 'sandbox',
+			'subscription_transaction_id' => '1234123455555',
+			'total'                       => '250.00',
+		] );
+
+		$subscription = new PMPro_Subscription( $subscription_id );
+
+		$oldest_orders = $subscription->get_orders( [ 'orderby' => 'id ASC' ] );
+		$oldest_orders = wp_list_pluck( $oldest_orders, 'id' );
+
+		$this->assertCount( 2, $oldest_orders );
+		$this->assertEquals( [ $order_id, $order_id2 ], $oldest_orders );
+
+		$latest_orders = $subscription->get_orders( [ 'orderby' => 'id DESC' ] );
+		$latest_orders = wp_list_pluck( $latest_orders, 'id' );
+
+		$this->assertCount( 2, $latest_orders );
+		$this->assertEquals( [ $order_id2, $order_id ], $latest_orders );
+
+		// Test default orderby.
+		$default_orders = $subscription->get_orders();
+		$default_orders = wp_list_pluck( $default_orders, 'id' );
+
+		$this->assertCount( 2, $default_orders );
+		$this->assertEquals( [ $order_id2, $order_id ], $default_orders );
+
+		// Test bad orderby.
+		$invalid_orderby_orders = $subscription->get_orders( [ 'orderby' => 'FUNCTIONS_ARE_NOT_SUPPORTED() DESC' ] );
+
+		$this->assertCount( 0, $invalid_orderby_orders );
+	}
 
 }
