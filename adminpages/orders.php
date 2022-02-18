@@ -180,7 +180,7 @@ if ( ! empty( $_REQUEST['refund'] ) ) {
 		$nonceokay = false;
 	}
 
-	$rorder = new MemberOrder( intval( $_REQUEST['refund'] ) );
+	$rorder = new MemberOrder( (int) $_REQUEST['refund'] );
 	if ( $nonceokay && !empty( $rorder ) && pmpro_allowed_refunds( $rorder ) ) {
 		
 		if( pmpro_refund_order( $rorder ) ) {
