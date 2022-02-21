@@ -909,7 +909,7 @@ if ( function_exists( 'pmpro_add_email_order_modal' ) ) {
 							if( !empty( $consent_entry ) ) {
 								echo esc_html( pmpro_consent_to_text( $consent_entry ) );
 							} else {
-								esc_html_e( 'N/A' );
+								esc_html_e( 'N/A', 'paid-memberships-pro' );
 							}
 						?>
 					</td>
