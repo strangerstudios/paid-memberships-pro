@@ -80,7 +80,7 @@ class PMPro_Admin_Activity_Email extends PMProEmail {
 					<tr>
 						<td valign="top" style="background:#FFFFFF;font-family:Helvetica,Arial,sans-serif;font-size:16px;line-height:25px;color:#222222;padding:30px;text-align:center;">
 							<p style="font-size:20px;line-height:30px;margin:0px;padding:0px;">
-								<a href="<?php echo site_url(); ?>" target="_blank" style="color:#2997c8;font-weight:bold;">[<?php echo get_bloginfo( 'name' ); ?>]</a><br />
+								<a href="<?php echo site_url(); ?>" target="_blank" style="color:#1A688B;font-weight:bold;">[<?php echo get_bloginfo( 'name' ); ?>]</a><br />
 								<?php printf( __( "Here's a summary of what happened in your Paid Memberships Pro site %s.", 'paid-memberships-pro' ), esc_html( $term ) ); ?>
 							</p>
 						</td>
@@ -100,10 +100,10 @@ class PMPro_Admin_Activity_Email extends PMProEmail {
 							$revenue = pmpro_get_revenue_between_dates( $report_start_date, $report_end_date );
 							if ( $revenue > 0 ) {
 								?>
-								<h3 style="color:#2997c8;font-size:20px;line-height:30px;margin:0px 0px 15px 0px;padding:0px;"><?php esc_html_e( 'Sales and Revenue', 'paid-memberships-pro' ); ?></h3>
+								<h3 style="color:#1A688B;font-size:20px;line-height:30px;margin:0px 0px 15px 0px;padding:0px;"><?php esc_html_e( 'Sales and Revenue', 'paid-memberships-pro' ); ?></h3>
 								<p style="margin:0px 0px 15px 0px;padding:0px;"><?php printf( __( 'Your membership site made <strong>%1$s</strong> in revenue %2$s.', 'paid-memberships-pro' ), pmpro_escape_price( pmpro_formatPrice( $revenue ) ), esc_html( $term ) ); ?></p>
 							<?php } else { ?>
-								<h3 style="color:#2997c8;font-size:20px;line-height:30px;margin:0px 0px 15px 0px;padding:0px;"><?php esc_html_e( 'Signups and Cancellations', 'paid-memberships-pro' ); ?></h3>
+								<h3 style="color:#1A688B;font-size:20px;line-height:30px;margin:0px 0px 15px 0px;padding:0px;"><?php esc_html_e( 'Signups and Cancellations', 'paid-memberships-pro' ); ?></h3>
 							<?php } ?>
 							<table align="center" border="0" cellpadding="0" cellspacing="0" width="100%" style="border:0;background-color:#FFFFFF;text-align:center;font-family:Helvetica,Arial,sans-serif;font-size:16px;line-height:25px;color:#222222;">
 								<tr>
@@ -132,7 +132,7 @@ class PMPro_Admin_Activity_Email extends PMProEmail {
 							<?php
 							$total_members = $wpdb->get_var( "SELECT COUNT( DISTINCT user_id ) FROM {$wpdb->pmpro_memberships_users} WHERE status IN ('active')" );
 							?>
-							<h3 style="color:#2997c8;font-size:20px;line-height:30px;margin:0px 0px 5px 0px;padding:0px;"><span style="background:#2997c8;color:#FFFFFF;padding:5px 10px 5px 10px;"><?php esc_html_e( number_format_i18n( $total_members ) ); ?></span><?php esc_html_e( ' Total Members', 'paid-memberships-pro' ); ?></h3>
+							<h3 style="color:#1A688B;font-size:20px;line-height:30px;margin:0px 0px 5px 0px;padding:0px;"><span style="background:#1A688B;color:#FFFFFF;padding:5px 10px 5px 10px;"><?php esc_html_e( number_format_i18n( $total_members ) ); ?></span><?php esc_html_e( ' Total Members', 'paid-memberships-pro' ); ?></h3>
 							<?php
 							$members_per_level = $wpdb->get_results(
 								"
@@ -162,7 +162,7 @@ class PMPro_Admin_Activity_Email extends PMProEmail {
 							}
 							?>
 							</ul>
-							<p style="margin:0px;padding:0px;"><a style="color:#2997c8;" href="<?php echo( esc_url( admin_url( 'admin.php?page=pmpro-reports&report=memberships' ) ) ); ?>" target="_blank"><?php esc_html_e( 'View Signups and Cancellations Report &raquo;', 'paid-memberships-pro' ); ?></a></p>
+							<p style="margin:0px;padding:0px;"><a style="color:#1A688B;" href="<?php echo( esc_url( admin_url( 'admin.php?page=pmpro-reports&report=memberships' ) ) ); ?>" target="_blank"><?php esc_html_e( 'View Signups and Cancellations Report &raquo;', 'paid-memberships-pro' ); ?></a></p>
 						</td>
 					</tr>
 					<?php
@@ -172,7 +172,7 @@ class PMPro_Admin_Activity_Email extends PMProEmail {
 					<tr>
 						<td valign="top" style="background:#FFFFFF;font-family:Helvetica,Arial,sans-serif;font-size:16px;line-height:25px;color:#222222;padding:30px;text-align:left;">
 							<div style="border:8px dashed #F1F1F1;padding:30px;margin:0px;text-align:center;">
-								<h3 style="color:#2997c8;font-size:20px;line-height:30px;margin:0px 0px 15px 0px;padding:0px;"><?php esc_html_e( 'Discount Code Usage', 'paid-memberships-pro' ); ?></h3>
+								<h3 style="color:#1A688B;font-size:20px;line-height:30px;margin:0px 0px 15px 0px;padding:0px;"><?php esc_html_e( 'Discount Code Usage', 'paid-memberships-pro' ); ?></h3>
 								<?php
 									$sqlQuery = "SELECT mo.id
 															 FROM $wpdb->pmpro_membership_orders mo, $wpdb->pmpro_discount_codes_uses dcu
@@ -203,9 +203,9 @@ class PMPro_Admin_Activity_Email extends PMProEmail {
 									<p style="margin:0px 0px 15px 0px;padding:0px;">
 									<?php
 										if ( $num_orders_with_discount_code == 1 ) {
-											printf( __( '<strong>%1$d order</strong> used a <a %2$s>Discount Code</a> at checkout:', 'paid-memberships-pro' ), esc_html( number_format_i18n( $num_orders_with_discount_code ) ), 'style="color:#2997c8;" target="_blank" href="' . esc_url( admin_url( 'admin.php?page=pmpro-discountcodes' ) ) . '"' );
+											printf( __( '<strong>%1$d order</strong> used a <a %2$s>Discount Code</a> at checkout:', 'paid-memberships-pro' ), esc_html( number_format_i18n( $num_orders_with_discount_code ) ), 'style="color:#1A688B;" target="_blank" href="' . esc_url( admin_url( 'admin.php?page=pmpro-discountcodes' ) ) . '"' );
 										} else {
-											printf( __( '<strong>%1$d orders</strong> used a <a %2$s>Discount Code</a> at checkout. Here is a breakdown of your most used codes:', 'paid-memberships-pro' ), esc_html( number_format_i18n( $num_orders_with_discount_code ) ), 'style="color:#2997c8;" target="_blank" href="' . esc_url( admin_url( 'admin.php?page=pmpro-discountcodes' ) ) . '"' );
+											printf( __( '<strong>%1$d orders</strong> used a <a %2$s>Discount Code</a> at checkout. Here is a breakdown of your most used codes:', 'paid-memberships-pro' ), esc_html( number_format_i18n( $num_orders_with_discount_code ) ), 'style="color:#1A688B;" target="_blank" href="' . esc_url( admin_url( 'admin.php?page=pmpro-discountcodes' ) ) . '"' );
 										}
 										?>
 									</p>
@@ -225,7 +225,7 @@ class PMPro_Admin_Activity_Email extends PMProEmail {
 										}
 								} else {
 									?>
-									<p style="margin:0px;padding:0px;"><?php printf( __( 'No <a %1$s>Discount Codes</a> were used %2$s.', 'paid-memberships-pro' ), 'style="color:#2997c8;" target="_blank" href="' . esc_url( admin_url( 'admin.php?page=pmpro-discountcodes' ) ) . '"', esc_html( $term ) ); ?></p>
+									<p style="margin:0px;padding:0px;"><?php printf( __( 'No <a %1$s>Discount Codes</a> were used %2$s.', 'paid-memberships-pro' ), 'style="color:#1A688B;" target="_blank" href="' . esc_url( admin_url( 'admin.php?page=pmpro-discountcodes' ) ) . '"', esc_html( $term ) ); ?></p>
 									<?php
 								}
 								?>
@@ -238,7 +238,7 @@ class PMPro_Admin_Activity_Email extends PMProEmail {
 					?>
 					<tr>
 						<td valign="top" style="background:#F1F1F1;font-family:Helvetica,Arial,sans-serif;font-size:16px;line-height:25px;color:#222222;padding:30px;text-align:center;">
-							<h3 style="color:#2997c8;font-size:20px;line-height:30px;margin:0px 0px 15px 0px;padding:0px;"><?php esc_html_e( 'Paid Memberships Pro Add Ons', 'paid-memberships-pro' ); ?></h3>
+							<h3 style="color:#1A688B;font-size:20px;line-height:30px;margin:0px 0px 15px 0px;padding:0px;"><?php esc_html_e( 'Paid Memberships Pro Add Ons', 'paid-memberships-pro' ); ?></h3>
 							<table align="center" border="0" cellpadding="0" cellspacing="0" width="100%" style="border:0;background-color:#F1F1F1;text-align:center;font-family:Helvetica,Arial,sans-serif;font-size:16px;line-height:25px;color:#222222;">
 								<tr>
 									<?php
@@ -266,7 +266,7 @@ class PMPro_Admin_Activity_Email extends PMProEmail {
 									<td width="500%"><div style="background:<?php echo $addon_updates_box_color; ?>;color:<?php echo $addon_updates_text_color; ?>;margin:5px;padding:10px;"><a style="color:<?php echo $addon_updates_text_color; ?>;display:block;text-decoration:none;" href="<?php echo( esc_url( admin_url( 'admin.php?page=pmpro-addons&plugin_status=update' ) ) ); ?>" target="_blank"><div style="font-size:50px;font-weight:900;line-height:65px;"><?php esc_html_e( number_format_i18n( $update_addons ) ); ?></div><?php esc_html_e( 'Required Updates', 'paid-memberships-pro' ); ?></a></div></td>
 								</tr>
 							</table>
-							<p style="margin:15px 0px 0px 0px;padding:0px;"><?php printf( __( 'It is important to keep all Add Ons up to date to take advantage of security improvements, bug fixes, and expanded features. Add On updates can be made <a href="%s" style="color:#2997c8;" target="_blank">via the WordPress Dashboard</a>.', 'paid-memberships-pro' ), esc_url( admin_url( 'update-core.php' ) ) ); ?></p>
+							<p style="margin:15px 0px 0px 0px;padding:0px;"><?php printf( __( 'It is important to keep all Add Ons up to date to take advantage of security improvements, bug fixes, and expanded features. Add On updates can be made <a href="%s" style="color:#1A688B;" target="_blank">via the WordPress Dashboard</a>.', 'paid-memberships-pro' ), esc_url( admin_url( 'update-core.php' ) ) ); ?></p>
 						</td>
 					</tr>
 					<?php
@@ -275,7 +275,7 @@ class PMPro_Admin_Activity_Email extends PMProEmail {
 					?>
 					<tr>
 						<td valign="top" style="background:#FFFFFF;font-family:Helvetica,Arial,sans-serif;font-size:16px;line-height:25px;color:#222222;padding:30px 30px 15px 30px;text-align:left;">
-							<h3 style="color:#2997c8;font-size:20px;line-height:30px;margin:0px 0px 15px 0px;padding:0px;"><?php esc_html_e( 'Membership Site Administration', 'paid-memberships-pro' ); ?></h3>
+							<h3 style="color:#1A688B;font-size:20px;line-height:30px;margin:0px 0px 15px 0px;padding:0px;"><?php esc_html_e( 'Membership Site Administration', 'paid-memberships-pro' ); ?></h3>
 							<ul>
 								<?php
 								$roles_to_list = array(
@@ -292,7 +292,7 @@ class PMPro_Admin_Activity_Email extends PMProEmail {
 										echo( '<li>' . count( $users_with_role ) . ' ' . esc_html( $role_name ) . ': ' );
 										$users_with_role_formatted = array();
 										foreach ( $users_with_role as $user_with_role ) {
-											$users_with_role_formatted[] = '<a target="_blank" style="color:#2997c8;" href="' . admin_url( 'user-edit.php?user_id=' . $user_with_role->ID ) . '">' . $user_with_role->data->user_login . '</a>';
+											$users_with_role_formatted[] = '<a target="_blank" style="color:#1A688B;" href="' . admin_url( 'user-edit.php?user_id=' . $user_with_role->ID ) . '">' . $user_with_role->data->user_login . '</a>';
 										}
 										echo( implode( ', ', $users_with_role_formatted ) );
 									}
@@ -303,11 +303,11 @@ class PMPro_Admin_Activity_Email extends PMProEmail {
 
 							<?php
 							$key = get_option( 'pmpro_license_key', '' );
-							if ( ! pmpro_license_isValid( $key, null ) ) {
+							if ( ! pmpro_license_isValid( $key, pmpro_license_get_premium_types() ) ) {
 								?>
 							<hr style="background-color:#F1F1F1;border:0;height:4px;margin:30px 0px 30px 0px;" />
-							<h3 style="color:#2997c8;font-size:20px;line-height:30px;margin:0px 0px 15px 0px;padding:0px;"><?php esc_html_e( 'License Status: None', 'paid-memberships-pro' ); ?></h3>
-							<p style="margin:0px;padding:0px;"><?php printf( __( '...and that is perfectly OK! PMPro is free to use for as long as you want for membership sites of all sizes. Interested in unlimited support, access to over 70 featured-enhancing Add Ons and instant installs and updates? <a %s>Check out our paid plans to learn more</a>.', 'paid-memberships-pro' ), ' style="color:#2997c8;" href="https://www.paidmembershipspro.com/pricing/?utm_source=plugin&utm_medium=pmpro-admin-activity-email&utm_campaign=pricing&utm_content=license-section" target="_blank"' ); ?></p>
+							<h3 style="color:#1A688B;font-size:20px;line-height:30px;margin:0px 0px 15px 0px;padding:0px;"><?php esc_html_e( 'Premium License Status: None', 'paid-memberships-pro' ); ?></h3>
+							<p style="margin:0px;padding:0px;"><?php printf( __( '...and that is perfectly OK! PMPro is free to use for as long as you want for membership sites of all sizes. Interested in unlimited support, access to over 70 featured-enhancing Add Ons and instant installs and updates? <a %s>Check out our paid plans to learn more</a>.', 'paid-memberships-pro' ), ' style="color:#1A688B;" href="https://www.paidmembershipspro.com/pricing/?utm_source=plugin&utm_medium=pmpro-admin-activity-email&utm_campaign=pricing&utm_content=license-section" target="_blank"' ); ?></p>
 								<?php
 							}
 							?>
@@ -322,7 +322,7 @@ class PMPro_Admin_Activity_Email extends PMProEmail {
 							<table align="center" border="0" cellpadding="0" cellspacing="10" width="100%" style="border:0;background-color:#FFFFFF;text-align:left;font-family:Helvetica,Arial,sans-serif;font-size:16px;line-height:25px;color:#222222;">
 								<tr valign="top">
 									<td width="60%" style="background-color:#F1F1F1;padding:15px;">
-										<h3 style="color:#2997c8;font-size:20px;line-height:30px;margin:0px;padding:0px;"><?php _e( 'PMPro News and Updates'); ?></h3>
+										<h3 style="color:#1A688B;font-size:20px;line-height:30px;margin:0px;padding:0px;"><?php _e( 'PMPro News and Updates'); ?></h3>
 									<?php
 									// Get RSS Feed(s).
 									include_once ABSPATH . WPINC . '/feed.php';
@@ -340,17 +340,17 @@ class PMPro_Admin_Activity_Email extends PMProEmail {
 										echo( '<p style="margin:15px 0px 0px 0px;padding:0;">' . __( 'No news found.', 'paid-memberships-pro' ) . '</p>' );
 									} else {
 										foreach ( $rss_items as $item ) {
-											echo( '<p style="margin:15px 0px 0px 0px;padding:0;"><a style="color:#2997c8;" href=" ' . esc_url( $item->get_permalink() ) . ' " target="_blank">' . esc_html( $item->get_title() ) . '</a> ' . esc_html( $item->get_date( get_option( 'date_format' ) ) ) . '</p>' );
+											echo( '<p style="margin:15px 0px 0px 0px;padding:0;"><a style="color:#1A688B;" href=" ' . esc_url( $item->get_permalink() ) . ' " target="_blank">' . esc_html( $item->get_title() ) . '</a> ' . esc_html( $item->get_date( get_option( 'date_format' ) ) ) . '</p>' );
 										}
 									}
 									?>
 									</td>
 									<td width="40%" style="background-color:#F1F1F1;padding:15px;">
-										<p style="margin:0px;padding:0px;text-align:center;"><a style="color:#2997c8;" href="https://www.paidmembershipspro.com" target="_blank"><img style="width:100px;height:100px;" src="<?php echo esc_url( plugins_url( 'images/Paid-Memberships-Pro_icon.png', PMPRO_BASE_FILE ) ); ?>" alt="<?php esc_html_e( 'Paid Memberships Pro', 'paid-memberships-pro' ); ?>" /></a></p>
-										<p style="margin:0px 0px 15px 0px;padding:0px;"><a style="color:#2997c8;" href="https://www.paidmembershipspro.com/support/" target="_blank"><?php esc_html_e( 'Get Support', 'paid-memberships-pro' ); ?></a></p>
-										<p style="margin:0px 0px 15px 0px;padding:0px;"><a style="color:#2997c8;" href="https://twitter.com/pmproplugin" target="_blank"><?php esc_html_e( 'Follow @pmproplugin on Twitter', 'paid-memberships-pro' ); ?></a></p>
-										<p style="margin:0px 0px 15px 0px;padding:0px;"><a style="color:#2997c8;" href="https://www.facebook.com/PaidMembershipsPro/" target="_blank"><?php esc_html_e( 'Like us on Facebook', 'paid-memberships-pro' ); ?></p></p>
-										<p style="margin:0px;padding:0px;"><a style="color:#2997c8;" href="https://www.youtube.com/user/strangerstudiostv?sub_confirmation=1" target="_blank"><?php esc_html_e( 'Subscribe to our YouTube Channel', 'paid-memberships-pro' ); ?></a></p>
+										<p style="margin:0px;padding:0px;text-align:center;"><a style="color:#1A688B;" href="https://www.paidmembershipspro.com" target="_blank"><img style="width:100px;height:100px;" src="<?php echo esc_url( plugins_url( 'images/Paid-Memberships-Pro_icon.png', PMPRO_BASE_FILE ) ); ?>" alt="<?php esc_html_e( 'Paid Memberships Pro', 'paid-memberships-pro' ); ?>" /></a></p>
+										<p style="margin:0px 0px 15px 0px;padding:0px;"><a style="color:#1A688B;" href="https://www.paidmembershipspro.com/support/" target="_blank"><?php esc_html_e( 'Get Support', 'paid-memberships-pro' ); ?></a></p>
+										<p style="margin:0px 0px 15px 0px;padding:0px;"><a style="color:#1A688B;" href="https://twitter.com/pmproplugin" target="_blank"><?php esc_html_e( 'Follow @pmproplugin on Twitter', 'paid-memberships-pro' ); ?></a></p>
+										<p style="margin:0px 0px 15px 0px;padding:0px;"><a style="color:#1A688B;" href="https://www.facebook.com/PaidMembershipsPro/" target="_blank"><?php esc_html_e( 'Like us on Facebook', 'paid-memberships-pro' ); ?></p></p>
+										<p style="margin:0px;padding:0px;"><a style="color:#1A688B;" href="https://www.youtube.com/user/strangerstudiostv?sub_confirmation=1" target="_blank"><?php esc_html_e( 'Subscribe to our YouTube Channel', 'paid-memberships-pro' ); ?></a></p>
 									</td>
 								</tr>
 							</table>
