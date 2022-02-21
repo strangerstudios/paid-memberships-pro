@@ -72,7 +72,8 @@ function pmpro_license_isValid($key = NULL, $type = NULL, $force = false) {
 	if ( ! empty( $type ) ) {
 		$type = (array)$type;
 		
-		if ( ! in_array( $pmpro_license_check['license'], $type ) ) {
+		if ( ! in_array( $pmpro_license_check['license'], $type, true ) ) {
+
 			return false;
 		}
 	}
