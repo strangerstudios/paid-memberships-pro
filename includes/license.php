@@ -174,7 +174,7 @@ add_action('pmpro_license_check_key', 'pmpro_license_check_key');
  */
 function pmpro_license_type_is_premium( $type ) {	
 	$premium_types = pmpro_license_get_premium_types();
-	return in_array( strtolower( $type ), $premium_types );
+	return in_array( strtolower( $type ), $premium_types, true );
 }
 
 /**
