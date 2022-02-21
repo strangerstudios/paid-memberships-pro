@@ -64,7 +64,7 @@ function pmpro_delete_post( $post_id = null ) {
 	$wpdb->delete( 
 		$wpdb->pmpro_memberships_pages, 
 		array( 'page_id' => $post_id ), 
-		'%d' 
+		array( '%d' )
 	);
 }
 add_action( 'delete_post', 'pmpro_delete_post' );
