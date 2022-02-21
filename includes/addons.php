@@ -347,7 +347,7 @@ function pmpro_admin_init_updating_plugins() {
 
 		$slug = str_replace( '.php', '', basename( $plugin ) );
 		$addon = pmpro_getAddonBySlug( $slug );
-		if ( ! empty( $addon ) && pmpro_license_type_is_premium( $addon['License'] ) && ! pmpro_can_download_addon_with_license( $addon['License'] ) ) {		
+		if ( ! empty( $addon ) && pmpro_license_type_is_premium( $addon['License'] ) && ! pmpro_can_download_addon_with_license( $addon['License'] ) ) {
 			$msg = sprintf( __( 'You must enter a valid PMPro %s License Key under Settings > PMPro License to update this add on.', 'paid-memberships-pro' ), ucwords( $addon['License'] ) );
 			echo '<div class="error"><p>' . $msg . '</p></div>';
 
