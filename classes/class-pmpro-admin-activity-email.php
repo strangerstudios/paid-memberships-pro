@@ -238,13 +238,12 @@ class PMPro_Admin_Activity_Email extends PMProEmail {
 					?>
 					<tr>
 						<td valign="top" style="background:#F1F1F1;font-family:Helvetica,Arial,sans-serif;font-size:16px;line-height:25px;color:#222222;padding:30px;text-align:center;">
-							<h3 style="color:#2997c8;font-size:20px;line-height:30px;margin:0px 0px 15px 0px;padding:0px;"><?php esc_html_e( 'Active Add Ons', 'paid-memberships-pro' ); ?></h3>
+							<h3 style="color:#2997c8;font-size:20px;line-height:30px;margin:0px 0px 15px 0px;padding:0px;"><?php esc_html_e( 'Paid Memberships Pro Add Ons', 'paid-memberships-pro' ); ?></h3>
 							<table align="center" border="0" cellpadding="0" cellspacing="0" width="100%" style="border:0;background-color:#F1F1F1;text-align:center;font-family:Helvetica,Arial,sans-serif;font-size:16px;line-height:25px;color:#222222;">
 								<tr>
 									<?php
 									// Get Add On statistics.
-									$free_addons   = 0;
-									$plus_addons   = 0;
+									$all_addons   = 0;
 									$update_addons = 0;
 									require_once( PMPRO_DIR . '/includes/addons.php' );
 									$addons        = pmpro_getAddons();
@@ -254,11 +253,7 @@ class PMPro_Admin_Activity_Email extends PMProEmail {
 										$plugin_file_abs = ABSPATH . 'wp-content/plugins/' . $plugin_file;
 										include_once( ABSPATH . 'wp-admin/includes/plugin.php' ); // To load is_plugin_active().
 										if ( is_plugin_active( $plugin_file ) ) {
-											if ( 'plus' === $addon['License'] ) {
-												$plus_addons++;
-											} else {
-												$free_addons++;
-											}
+											$all_addons++;
 										}
 										if ( isset( $plugin_info->response[ $plugin_file ] ) ) {
 											$update_addons++;
@@ -267,9 +262,8 @@ class PMPro_Admin_Activity_Email extends PMProEmail {
 									$addon_updates_box_color      = $update_addons ? '#f2dede' : '#FFFFFF';
 									$addon_updates_text_color = $update_addons ? '#a94442' : '#222222';
 									?>
-									<td width="33%"><div style="background:#FFFFFF;margin:5px;padding:10px;"><div style="font-size:50px;font-weight:900;line-height:65px;"><?php esc_html_e( number_format_i18n( $free_addons ) ); ?></div><?php esc_html_e( 'Free Add Ons', 'paid-memberships-pro' ); ?></div></td>
-									<td width="33%"><div style="background:#FFFFFF;margin:5px;padding:10px;"><div style="font-size:50px;font-weight:900;line-height:65px;"><?php esc_html_e( number_format_i18n( $plus_addons ) ); ?></div><?php esc_html_e( 'Plus Add Ons', 'paid-memberships-pro' ); ?></div></td>
-									<td width="33%"><div style="background:<?php echo $addon_updates_box_color; ?>;color:<?php echo $addon_updates_text_color; ?>;margin:5px;padding:10px;"><a style="color:<?php echo $addon_updates_text_color; ?>;display:block;text-decoration:none;" href="<?php echo( esc_url( admin_url( 'admin.php?page=pmpro-addons&plugin_status=update' ) ) ); ?>" target="_blank"><div style="font-size:50px;font-weight:900;line-height:65px;"><?php esc_html_e( number_format_i18n( $update_addons ) ); ?></div><?php esc_html_e( 'Required Updates', 'paid-memberships-pro' ); ?></a></div></td>
+									<td width="50%"><div style="background:#FFFFFF;margin:5px;padding:10px;"><div style="font-size:50px;font-weight:900;line-height:65px;"><?php esc_html_e( number_format_i18n( $all_addons ) ); ?></div><?php esc_html_e( 'Active Add Ons', 'paid-memberships-pro' ); ?></div></td>
+									<td width="500%"><div style="background:<?php echo $addon_updates_box_color; ?>;color:<?php echo $addon_updates_text_color; ?>;margin:5px;padding:10px;"><a style="color:<?php echo $addon_updates_text_color; ?>;display:block;text-decoration:none;" href="<?php echo( esc_url( admin_url( 'admin.php?page=pmpro-addons&plugin_status=update' ) ) ); ?>" target="_blank"><div style="font-size:50px;font-weight:900;line-height:65px;"><?php esc_html_e( number_format_i18n( $update_addons ) ); ?></div><?php esc_html_e( 'Required Updates', 'paid-memberships-pro' ); ?></a></div></td>
 								</tr>
 							</table>
 							<p style="margin:15px 0px 0px 0px;padding:0px;"><?php printf( __( 'It is important to keep all Add Ons up to date to take advantage of security improvements, bug fixes, and expanded features. Add On updates can be made <a href="%s" style="color:#2997c8;" target="_blank">via the WordPress Dashboard</a>.', 'paid-memberships-pro' ), esc_url( admin_url( 'update-core.php' ) ) ); ?></p>
