@@ -377,7 +377,7 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 						 *
 						 * @param boolean $create_user_notifications Should default WordPress emails be sent to both the admins and users.
 						 */
-						if ( apply_filters( 'pmpro_api_create_user_notifications', false ) ) {
+						if ( apply_filters( 'pmpro_api_new_user_notifications', false ) ) {
 							wp_send_new_user_notifications( $user_id, 'both' );
 						}
 
