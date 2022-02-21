@@ -243,7 +243,7 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 			
 			// Query by email.
 			if ( empty( $user_id ) && !empty( $params['email'] ) ) {
-				$user = get_user_by_email( sanitize_email( $params['email'] ) );
+				$user = get_user_by( 'email', sanitize_email( $params['email'] ) );
 				$user_id = $user->ID;
 			}
 			
@@ -273,7 +273,7 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 
 			// Param email was used instead.
 			if ( empty( $user_id ) && !empty( $params['email'] ) ) {
-				$user = get_user_by_email( sanitize_email( $params['email'] ) );
+				$user = get_user_by( 'email', sanitize_email( $params['email'] ) );
 				$user_id = $user->ID;
 			}
 			
@@ -300,7 +300,7 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 			if ( empty( $user_id ) ) {
 				// see if they sent an email
 				if ( ! empty( $params['email'] ) ) {
-					$user = get_user_by_email( sanitize_email( $params['email'] ) );
+					$user = get_user_by( 'email', sanitize_email( $params['email'] ) );
 					$user_id = $user->ID;
 				} else {
 					return new WP_REST_Response( 'No user information passed through.', 404 );
@@ -341,7 +341,7 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 				// see if they sent an email
 				if ( ! empty( $email ) ) {
 
-					$user = get_user_by_email( $email );
+					$user = get_user_by( 'email', $email );
 					
 					// Assume the user doesn't already exist.
 					if ( $create_user && ! $user ) {
@@ -442,7 +442,7 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 			if ( empty( $user_id ) ) {
 				// see if they sent an email
 				if ( ! empty( $email ) ) {
-					$user = get_user_by_email( $email );
+					$user = get_user_by( 'email', $email );
 					$user_id = $user->ID;
 				} else {
 					if ( 'json' === $response_type ) {
