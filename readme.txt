@@ -156,6 +156,24 @@ Not sure? You can find out by doing a bit a research.
 9. Membership Account page, display all sections or show specific sections using shortcode attributes.
 
 == Changelog ==
+= 2.7.4 - 2022-02-22 =
+* ENHANCEMENT: Adjusting the readme title and description. (@kimcoleman)
+* ENHANCEMENT: Improved error handling for Stripe Prices. (@dparker1005)
+* ENHANCEMENT: Adjusted the '/change_membership_level' route to support email and create_user parameter to improve our Zapier integration. No parameters are removed, this is to ensure backwards compatibility for any pre-existing applications using this REST route. (@andrewlimaza)
+* ENHANCEMENT: Now showing new vs renewal orders on the sales and revenue reports. (@ideadude, @JarrydLong, @kimcoleman)
+* ENHANCEMENT: Better tool tips in the sales and revenue reports. (@ideadude, @JarrydLong, @kimcoleman)
+* ENHANCEMENT: Now handling recurring_payment_profile_created IPN transactions and updating the payment_transaction_id for new orders made via PayPal. (@mircobabini)
+* ENHANCEMENT: Added pmpro_webhook_unhandled action at the end of any webhook handler. (@mircobabini)
+* BUG FIX/ENHANCEMENT: Updated logic and text around license keys to account for new premium plans. (@ideadude, @kimcoleman)
+* BUG FIX/ENHANCEMENT: Made Terms of Service text a bit darker for accessibility. (@kimcoleman)
+* BUG FIX/ENHANCEMENT: Updated queries in includes/cleanup.php to use WPDB delete method for better DB escaping. (@andrewlimaza)
+* BUG FIX/ENHANCEMENT: Fixed the text domain for some strings that weren't translatable. (@mircobabini)
+* BUG FIX/ENHANCEMENT: Fixed misspelled text domains in the pmpro_reset_password_form() function. (Thanks, @isaiahfb)
+* BUG FIX: Fixed issues with the update billing page when using PayPal Websites Payments Pro. (@dparker1005)
+* BUG FIX: Fixed issues with Stripe checkouts when users had previous checkouts throug a different gateway. (@dparker1005)
+* REFACTOR: Removed unused condition in send method of PMProEmail class. (Thanks, @freax)
+* BUG FIX: Fixed notice when pmpro_check_plugin_version was called for an invalid plugin file. (@ideadude)
+
 = 2.7.3 - 2022-02-01 =
 * ENHANCEMENT: Added CSS to make sure input fields input fields aren't extra tiny/short, e.g. in the Twenty Twenty Two theme. (@kimcoleman)
 * BUG FIX: Fixed a fatal error for older PHP sites when visiting the page settings in the admin dasboard. (@andrewlimaza)
