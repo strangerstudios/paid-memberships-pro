@@ -3972,7 +3972,7 @@ function pmpro_get_ip() {
  */
 function pmpro_allowed_refunds( $order ) { 
 
-	if( empty( $order ) || empty( $order->gateway ) ) {
+	if( empty( $order ) || empty( $order->gateway ) || empty( $order->status ) ) {
 		return false;
 	}
 

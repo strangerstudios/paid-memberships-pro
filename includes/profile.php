@@ -60,6 +60,16 @@ function pmpro_membership_level_profile_fields($user)
 			$selected_expires_hour = date( 'H', $end_date ? $user->membership_level->enddate : current_time('timestamp') );
 
 			$selected_expires_minute = date( 'i', $end_date ? $user->membership_level->enddate : current_time('timestamp') );
+
+		$last_order = new MemberOrder();
+
+		$last_order->getLastMemberOrder( $user->ID );
+
+		$allows_refunds = false;
+
+		if( pmpro_allowed_refunds( $last_order ) ) {
+			$allows_refunds = true;
+		}
 		?>
 		<tr>
 			<th><label for="expiration"><?php _e("Expires", 'paid-memberships-pro' ); ?></label></th>
@@ -123,7 +133,7 @@ function pmpro_membership_level_profile_fields($user)
          <tr class="more_level_options">
             <th></th>
             <td>
-                <label for="refund_last_subscription"><input value="1" id="refund_last_subscription" name="refund_last_subscription" type="checkbox"> <?php _e("Refund this user's most recent order.", "paid-memberships-pro" ); ?></label>
+                <label for="refund_last_subscription"><input value="1" id="refund_last_subscription" name="refund_last_subscription" type="checkbox" <?php if( !$allows_refunds ) { echo "disabled='true'"; } ?>> <?php _e("Refund this user's most recent order.", "paid-memberships-pro" ); ?></label>
             </td>
         </tr>
 		<?php

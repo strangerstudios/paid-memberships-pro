@@ -248,6 +248,77 @@
 
 			return $this->sendEmail();
 		}
+
+		function sendRefundedEmail($user = NULL, $old_level_id = NULL)
+		{
+			global $wpdb, $current_user;
+			if(!$user)
+				$user = $current_user;
+			
+			if(!$user)
+				return false;
+			
+			$this->email = $user->user_email;
+			$this->subject = sprintf(__('Your membership at %s has been REFUNDED', 'paid-memberships-pro'), get_option("blogname"));
+
+			$this->data = array("user_email" => $user->user_email, "display_name" => $user->display_name, "user_login" => $user->user_login, "sitename" => get_option("blogname"), "siteemail" => pmpro_getOption("from_email"));
+
+			if(!empty($old_level_id)) {
+				if(!is_array($old_level_id))
+					$old_level_id = array($old_level_id);
+				$this->data['membership_id'] = $old_level_id[0];	//pass just the first as the level id
+				$this->data['membership_level_name'] = pmpro_implodeToEnglish($wpdb->get_col("SELECT name FROM $wpdb->pmpro_membership_levels WHERE id IN('" . implode("','", $old_level_id) . "')"));
+			} else {
+				$this->data['membership_id'] = '';
+				$this->data['membership_level_name'] = __('All Levels', 'paid-memberships-pro' );
+			}
+
+			$this->template = apply_filters("pmpro_email_template", "refund", $this);
+			return $this->sendEmail();
+		}
+		
+		function sendRefundedAdminEmail($user = NULL, $old_level_id = NULL)
+		{
+			global $wpdb, $current_user;
+			if(!$user)
+				$user = $current_user;
+			
+			if(!$user)
+				return false;
+			
+			$this->email = get_bloginfo("admin_email");
+			$this->subject = sprintf(__("Membership for %s at %s has been REFUNDED", 'paid-memberships-pro'), $user->user_login, get_option("blogname"));			
+
+			$this->data = array("user_login" => $user->user_login, "user_email" => $user->user_email, "display_name" => $user->display_name, "sitename" => get_option("blogname"), "siteemail" => pmpro_getOption("from_email"), "login_link" => pmpro_login_url(), "login_url" => pmpro_login_url());
+			
+			if(!empty($old_level_id)) {
+				if(!is_array($old_level_id))
+					$old_level_id = array($old_level_id);
+				$this->data['membership_id'] = $old_level_id[0];	//pass just the first as the level id
+				$this->data['membership_level_name'] = pmpro_implodeToEnglish($wpdb->get_col("SELECT name FROM $wpdb->pmpro_membership_levels WHERE id IN('" . implode("','", $old_level_id) . "')"));
+
+				//start and end date
+				$startdate = $wpdb->get_var("SELECT UNIX_TIMESTAMP(CONVERT_TZ(startdate, '+00:00', @@global.time_zone)) as startdate FROM $wpdb->pmpro_memberships_users WHERE user_id = '" . $user->ID . "' AND membership_id = '" . $old_level_id[0] . "' AND status IN('inactive', 'cancelled', 'admin_cancelled') ORDER BY id DESC");
+				if(!empty($startdate))
+					$this->data['startdate'] = date_i18n(get_option('date_format'), $startdate);
+				else
+					$this->data['startdate'] = "";
+				$enddate = $wpdb->get_var("SELECT UNIX_TIMESTAMP(CONVERT_TZ(enddate, '+00:00', @@global.time_zone)) as enddate FROM $wpdb->pmpro_memberships_users WHERE user_id = '" . $user->ID . "' AND membership_id = '" . $old_level_id[0] . "' AND status IN('inactive', 'cancelled', 'admin_cancelled') ORDER BY id DESC");
+				if(!empty($enddate))
+					$this->data['enddate'] = date_i18n(get_option('date_format'), $enddate);
+				else
+					$this->data['enddate'] = "";
+			} else {
+				$this->data['membership_id'] = '';
+				$this->data['membership_level_name'] = __('All Levels', 'paid-memberships-pro' );
+				$this->data['startdate'] = '';
+				$this->data['enddate'] = '';
+			}
+
+			$this->template = apply_filters("pmpro_email_template", "refund_admin", $this);
+
+			return $this->sendEmail();
+		}
 		
 		function sendCheckoutEmail($user = NULL, $invoice = NULL)
 		{

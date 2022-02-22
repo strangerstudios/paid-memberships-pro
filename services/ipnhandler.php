@@ -39,6 +39,8 @@ $business_email         = pmpro_getParam( "business", "POST", '', 'sanitize_emai
 $payer_email            = pmpro_getParam( "payer_email", "POST", '', 'sanitize_email'  );
 $recurring_payment_id   = pmpro_getParam( "recurring_payment_id", "POST" );
 $profile_status         = strtolower( pmpro_getParam( "profile_status", "POST" ) );
+$payment_status 		= strtolower( pmpro_getParam( "payment_status", "POST" ) );
+$parent_txn_id  		= pmpro_getParam( "parent_txn_id", "POST" );
 
 if ( empty( $subscr_id ) ) {
 	$subscr_id = $recurring_payment_id;
@@ -346,6 +348,79 @@ if ( $txn_type == "subscr_cancel" ) {
 
 		pmpro_ipnExit();
 	}
+}
+
+if ( '' === $txn_type && 'Refunded' === $payment_status ) {
+
+	$payment_transaction_id = $parent_txn_id;
+
+	if ( $payment_transaction_id ) {
+
+		$success = false;
+
+		$m = new MemberOrder();
+
+		$m->getMemberOrderByPaymentTransactionID( $payment_transaction_id );
+
+		if ( ! isset( $m->id ) ) {
+			
+			if ( $recurring_payment_id ) {
+				try {
+
+					$last_order_by_subscription = new MemberOrder();
+					$last_order_by_subscription->getLastMemberOrderBySubscriptionTransactionID( $recurring_payment_id );
+
+					$first_order_by_subscription = $last_order_by_subscription->get_original_subscription_order();
+					if ( $first_order_by_subscription && $first_order_by_subscription->id ) {
+						if ( 'paypalexpress' === $first_order_by_subscription->gateway ) {
+							$first_order_payment_transaction_id = $first_order_by_subscription->Gateway->getRealPaymentTransactionId( $first_order_by_subscription );
+
+							if ( $first_order_payment_transaction_id === $payment_transaction_id ) {
+								$m = $first_order_by_subscription;								
+							}
+						}
+					}
+				} catch ( Exception $e ) {
+					// if something goes wrong with the logic above,
+					// we dont want to miss the management of the current ipn request.
+					// so ignoring the error is the best thing to do. dont care too much.
+					//The refund failed, so lets return the gateway message
+				
+					// translators: %1$s is the Transaction ID. %1$s is the Gateway Error
+					$morder->notes = trim( $morder->notes ) .' '. sprintf( __( 'There was a problem processing a refund for transaction ID %1$s. Gateway Error: %2$s ', 'paid-memberships-pro' ), $transaction_id, $httpParsedResponseAr['L_LONGMESSAGE0'] );
+
+					ipnlog( "Canceled membership for user with id = " . $last_subscription_order->user_id . ". Subscription transaction id = " . $subscr_id . "." );
+					
+				}
+			}
+		}
+
+		if ( isset( $m->id ) ) {
+			
+			$success = true;
+
+			$m->updateStatus( 'refunded' );
+
+			global $current_user;
+
+			// translators: %1$s is the Transaction ID. %2$s is the user display name that initiated the refund.
+			$m->notes = trim( $m->notes ) .' '. sprintf( __('Order successfully refunded on %1$s for transaction ID %2$s by %3$s', 'paid-memberships-pro' ), date_i18n('Y-m-d H:i:s'), $transaction_id, $current_user->display_name );
+
+			ipnlog( "Canceled membership for user with id = " . $last_subscription_order->user_id . ". Subscription transaction id = " . $subscr_id . "." );
+
+			//send an email to the member
+			$myemail = new PMProEmail();
+			$myemail->sendCancelEmail( $user );
+
+			//send an email to the admin
+			$myemail = new PMProEmail();
+			$myemail->sendCancelAdminEmail( $user, $last_subscription_order->membership_id );
+
+		}
+
+		$m->SaveOrder();
+	}
+
 }
 
 // Order Refunded (PayPal Express)

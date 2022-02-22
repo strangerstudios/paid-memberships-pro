@@ -1086,7 +1086,7 @@
 				$transaction_id = $morder->Gateway->getRealPaymentTransactionId( $morder );
 			}
 
-			$httpParsedResponseAr = $morder->Gateway->PPHttpPost( 'RefundTransaction', '&TRANSACTIONID=$transaction_id' );		
+			$httpParsedResponseAr = $morder->Gateway->PPHttpPost( 'RefundTransaction', '&TRANSACTIONID='.$transaction_id );		
 
 			if ( 'SUCCESS' === strtoupper( $httpParsedResponseAr['ACK'] ) ) {
 				

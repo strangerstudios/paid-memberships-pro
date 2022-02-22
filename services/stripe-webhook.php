@@ -413,6 +413,20 @@
 			}
 		}
 	}
+	elseif( $pmpro_stripe_event->type == "charge.refunded" )
+	{
+
+		//Lets handle refunds here
+
+		$payment_transaction_id = $pmpro_stripe_event->id;
+
+		$morder = new MemberOrder();
+
+		$morder->getMemberOrderByPaymentTransactionID( $payment_transaction_id );
+
+		error_log(print_r( $morder, true ) );
+
+	}	
 	else
 	{
 		if(!empty($event_id))

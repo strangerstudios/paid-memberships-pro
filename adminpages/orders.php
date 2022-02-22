@@ -187,12 +187,12 @@ if ( ! empty( $_REQUEST['refund'] ) ) {
 			$pmpro_msg  = __( 'Order refunded successfully.', 'paid-memberships-pro' );
 			$pmpro_msgt = 'success';
 		} else {
-			$pmpro_msg  = __( 'Error refunding order.', 'paid-memberships-pro' );
+			$pmpro_msg  = __( 'Error refunding order. Please check the order notes for more information.', 'paid-memberships-pro' );
 			$pmpro_msgt = 'error';
 		}
 
 	} else {
-		$pmpro_msg  = __( 'Error refunding order.', 'paid-memberships-pro' );
+		$pmpro_msg  = __( 'Error refunding order. Please check the order notes for more information.', 'paid-memberships-pro' );
 		$pmpro_msgt = 'error';
 	}
 }
