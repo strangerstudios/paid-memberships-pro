@@ -41,8 +41,7 @@ function pmpro_report_sales_widget() {
 	<thead>
 		<tr>
 			<th scope="col">&nbsp;</th>
-			<th scope="col"><?php _e('New Sales', 'paid-memberships-pro' ); ?></th>
-			<th scope="col"><?php _e('Renewals', 'paid-memberships-pro' ); ?></th>
+			<th scope="col"><?php _e('Sales', 'paid-memberships-pro' ); ?></th>
 			<th scope="col"><?php _e('Revenue', 'paid-memberships-pro' ); ?></th>
 		</tr>
 	</thead>
@@ -69,8 +68,7 @@ function pmpro_report_sales_widget() {
 						<?php echo esc_html($report_name); ?>
 					<?php } ?>
 				</th>
-				<td><?php echo esc_html( number_format_i18n( pmpro_getSales( $report_type, null, 'new' ) ) ); ?></td>
-				<td><?php echo esc_html( number_format_i18n( pmpro_getSales( $report_type, null, 'renewals' ) ) ); ?></td>
+				<td><?php echo esc_html( number_format_i18n( pmpro_getSales( $report_type, null, 'all' ) ) ); ?></td>
 				<td><?php echo pmpro_escape_price( pmpro_formatPrice( pmpro_getRevenue( $report_type ) ) ); ?></td>
 			</tr>
 			<?php
@@ -84,8 +82,7 @@ function pmpro_report_sales_widget() {
 			?>
 				<tr class="pmpro_report_tr_sub" style="display: none;">
 					<th scope="row">- <?php echo pmpro_escape_price( pmpro_formatPrice( $price ) );?></th>
-					<td><?php echo esc_html( number_format_i18n( $quantity['new'] ) ); ?></td>
-					<td><?php echo esc_html( number_format_i18n( $quantity['renewals'] ) ); ?></td>
+					<td><?php echo esc_html( number_format_i18n( $quantity['total'] ) ); ?></td>
 					<td><?php echo pmpro_escape_price( pmpro_formatPrice( $price * $quantity['total'] ) ); ?></td>
 				</tr>
 			<?php
