@@ -918,7 +918,7 @@
 				// Found subscription.
 				// Can't fill subscription start date, $request only has profile start date.
 				$update_array = array();
-				if ( in_array( $response['STATUS'], array( 'Pending', 'Active' ) ) ) {
+				if ( in_array( $response['STATUS'], array( 'Pending', 'Active' ), true ) ) {
 					// Subscription is active.
 					$update_array['status'] = 'active';
 					$update_array['next_payment_date'] = date( 'Y-m-d H:i:s', strtotime( $response['NEXTBILLINGDATE'] ) );
