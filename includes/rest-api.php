@@ -348,9 +348,7 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 
 						/**
 						 * Filter the user data arguments for wp_insert_user when creating the user via the REST API.
-						 * 
-						 * @since TBD
-						 * 
+						 * @since 2.7.4
 						 * @param array $user_data An associative array with user arguments when creating the user. See https://developer.wordpress.org/reference/functions/wp_insert_user/ for reference.
 						 */
 						$user_data = apply_filters( 'pmpro_api_new_user_array', array(
