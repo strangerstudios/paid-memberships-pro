@@ -38,10 +38,10 @@
 	line-height: 1.5;
 }
 .pmpro_admin .pmpro_banner .pmpro_meta .pmpro_version {
-	color: #77a02e;
+	color: #333333;
 	display: inline-block;
 	font-weight: bold;
-	padding: 5px 10px 5px 2px;
+	padding: 5px 10px 5px 5px;
 }
 .pmpro_admin .pmpro_banner .pmpro_meta a {
 	border-left: 1px solid #CCC;
@@ -429,7 +429,7 @@ tr.pmpro_settings_divider td {
 }
 #pmpro_notifications .pmpro_notification .pmpro_notification-general {
 	background: #FFF;
-	border-left: 4px solid #77A02E;
+	border-left: 4px solid #658B24;
 	box-shadow: 0 1px 1px 0 rgba(0,0,0,.1);
 	margin: 1em 0;
 	padding: 15px;
@@ -453,7 +453,7 @@ tr.pmpro_settings_divider td {
 	margin-right: 5px;
 }
 #pmpro_notifications .pmpro_notification .pmpro_notification-general h3 {
-	color: #77A02E;
+	color: #658B24;
 }
 #pmpro_notifications .pmpro_notification .pmpro_notification-error h3 {
 	color: #DC3232;
