@@ -923,7 +923,7 @@
 					$update_array['status'] = 'active';
 					$update_array['next_payment_date'] = date( 'Y-m-d H:i:s', strtotime( $response['NEXTBILLINGDATE'] ) );
 					$update_array['billing_amount'] = floatval( $response['REGULARAMT'] );
-					$update_array['cycle_number'] = intval( $response['REGULARBILLINGFREQUENCY'] );
+					$update_array['cycle_number'] = (int) $response['REGULARBILLINGFREQUENCY'];
 					$update_array['cycle_period'] = $response['REGULARBILLINGPERIOD'];
 					$update_array['trial_amount'] = empty( $response['TRIALAMT'] ) ? 0 : floatval( $response['TRIALAMT'] );
 					$update_array['trial_limit'] = empty( $response['TRIALTOTALBILLINGCYCLES'] ) ? 0 : (int) $response['TRIALTOTALBILLINGCYCLES'];
