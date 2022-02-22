@@ -361,7 +361,7 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 								'last_name' => $last_name,
 								'user_url' => $user_url,
 								'description' => $description
-							) 
+							)
 						);
 
 						$user_id = wp_insert_user( $user_data );
@@ -370,17 +370,8 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 							$error = $user_id->get_error_message();
 							return new WP_REST_Response( $error, 500 ); // Assume it failed and return a 500 error occured like core WordPress.
 						}
-						/**
-						 * Send the default WordPress emails when creating a WordPress user, using the /change_membership_level route.
-						 *
-						 * @since TBD
-						 *
-						 * @param boolean $create_user_notifications Should default WordPress emails be sent to both the admins and users.
-						 */
-						if ( apply_filters( 'pmpro_api_new_user_notifications', false ) ) {
-							wp_send_new_user_notifications( $user_id, 'both' );
-						}
-
+						
+						pmpro_maybe_send_wp_new_user_notification( $user_id, $level_id );
 					} else {
 						$user_id = $user->ID;
 

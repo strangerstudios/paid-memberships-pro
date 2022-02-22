@@ -3982,3 +3982,17 @@ function pmpro_get_ip() {
 	
 	return $client_ip;
 }
+
+/**
+ * Send the WP new user notification email, but also check our filter.
+ * NOTE: includes/email.php has code to check for the related setting and
+ *       filters on the pmpro_wp_new_user_notification hook.
+ * @since 2.7.4
+ * @param int $user_id ID of the user to send the email for.
+ * @param int $level_id Level ID the user just got. (Need to send to filter.)
+ */
+function pmpro_maybe_send_wp_new_user_notification( $user_id, $level_id = null ) {	
+	if ( apply_filters( 'pmpro_wp_new_user_notification', true, $user_id, $level_id ) ) {		
+		wp_new_user_notification( $user_id, null, 'both' );		
+	}
+}

@@ -550,18 +550,9 @@ if ( ! empty( $pmpro_confirmed ) ) {
 			$pmpro_msgt = "pmpro_error";
 		} elseif ( apply_filters( 'pmpro_setup_new_user', true, $user_id, $new_user_array, $pmpro_level ) ) {
 
-			//check pmpro_wp_new_user_notification filter before sending the default WP email
-			if ( apply_filters( "pmpro_wp_new_user_notification", true, $user_id, $pmpro_level->id ) ) {
-				if ( version_compare( $wp_version, "4.3.0" ) >= 0 ) {
-					wp_new_user_notification( $user_id, null, 'both' );
-				} else {
-					wp_new_user_notification( $user_id, $new_user_array['user_pass'] );
-				}
-			}
-
+			pmpro_maybe_send_wp_new_user_notification( $user_id, $pmpro_level->id );
+			
 			$wpuser = get_userdata( $user_id );
-
-			//make the user a subscriber
 			$wpuser->set_role( get_option( 'default_role', 'subscriber' ) );
 
 			/**
