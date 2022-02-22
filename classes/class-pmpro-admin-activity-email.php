@@ -162,7 +162,7 @@ class PMPro_Admin_Activity_Email extends PMProEmail {
 							}
 							?>
 							</ul>
-							<p style="margin:0px;padding:0px;"><a style="color:#1A688B;" href="<?php echo( esc_url( admin_url( 'admin.php?page=pmpro-reports&report=memberships' ) ) ); ?>" target="_blank"><?php esc_html_e( 'View Signups and Cancellations Report &raquo;', 'paid-memberships-pro' ); ?></a></p>
+							<p style="margin:0px;padding:0px;"><a style="color:#1A688B;" href="<?php echo esc_url( admin_url( 'admin.php?page=pmpro-reports&report=memberships' ) ); ?>" target="_blank"><?php esc_html_e( 'View Signups and Cancellations Report &raquo;', 'paid-memberships-pro' ); ?></a></p>
 						</td>
 					</tr>
 					<?php
