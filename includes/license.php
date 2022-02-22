@@ -183,5 +183,5 @@ function pmpro_license_type_is_premium( $type ) {
  * @return array Premium types.
  */
 function pmpro_license_get_premium_types() {
-	return array( 'standard', 'plus', 'buidler' );
+	return array( 'standard', 'plus', 'builder' );
 }
