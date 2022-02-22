@@ -926,7 +926,7 @@
 					$update_array['cycle_number'] = intval( $response['REGULARBILLINGFREQUENCY'] );
 					$update_array['cycle_period'] = $response['REGULARBILLINGPERIOD'];
 					$update_array['trial_amount'] = empty( $response['TRIALAMT'] ) ? 0 : floatval( $response['TRIALAMT'] );
-					$update_array['trial_limit'] = empty( $response['TRIALTOTALBILLINGCYCLES'] ) ? 0 : intval( $response['TRIALTOTALBILLINGCYCLES'] );
+					$update_array['trial_limit'] = empty( $response['TRIALTOTALBILLINGCYCLES'] ) ? 0 : (int) $response['TRIALTOTALBILLINGCYCLES'];
 					$update_array['billing_limit'] = empty( $response['REGULARTOTALBILLINGCYCLES'] ) ? 0 : (int) $response['REGULARTOTALBILLINGCYCLES'];
 				} else {
 					// Subscription is no longer active.
