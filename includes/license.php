@@ -23,12 +23,12 @@
 /*
 	Constants
 */
-define('PMPRO_LICENSE_SERVER', 'https://license.paidmembershipspro.com/');
+define('PMPRO_LICENSE_SERVER', 'https://license.paidmembershipspro.com/v2/');
 
 /**
  * Check if a license key is valid.
  * @param string $key   The key to check.
- * @param string $type  If passed will also check that the key is this type.
+ * @param string|array $type  If passed will also check that the key is this type.
  * @param bool   $force If true, will check key against the PMPro server.
  * @return bool True if valid, false if not.
  */
@@ -64,13 +64,18 @@ function pmpro_license_isValid($key = NULL, $type = NULL, $force = false) {
 	}
 	
 	// Check if 30 days past the end date. (We only run the cron every 30 days.)
-	if ( $pmpro_license_check['enddate'] < ( current_time( 'timestamp' ) + 86400*31 ) ) {
+	if ( $pmpro_license_check['enddate'] < ( current_time( 'timestamp' ) - 86400*31 ) ) {
 		return false;
 	}
 	
 	// Check if a specific type.
-	if ( ! empty( $type ) && $type != $pmpro_license_check['license'] ) {
-		return false;
+	if ( ! empty( $type ) ) {
+		$type = (array)$type;
+		
+		if ( ! in_array( $pmpro_license_check['license'], $type, true ) ) {
+
+			return false;
+		}
 	}
 	
 	// If we got here, we should be good.
@@ -160,3 +165,23 @@ function pmpro_license_check_key($key = NULL) {
 	}
 }
 add_action('pmpro_license_check_key', 'pmpro_license_check_key');
+
+/**
+ * Check if a license type is "premium"
+ * @since 2.7.4
+ * @param string $type The license type for an add on for license key.
+ * @return bool True if the type is for a paid PMPro membership, false if not.
+ */
+function pmpro_license_type_is_premium( $type ) {	
+	$premium_types = pmpro_license_get_premium_types();
+	return in_array( strtolower( $type ), $premium_types, true );
+}
+
+/**
+ * Get array of premium license types.
+ * @since 2.7.4
+ * @return array Premium types.
+ */
+function pmpro_license_get_premium_types() {
+	return array( 'standard', 'plus', 'buidler' );
+}

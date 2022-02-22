@@ -78,7 +78,14 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 					'callback'	=> array( $this, 'pmpro_rest_api_change_membership_level' ),
 					'args'	=> array(
 						'user_id' => array(),
-						'level_id' => array()
+						'level_id' => array(),
+						'email' => array(),
+						'first_name' => array(),
+						'last_name' => array(),
+						'user_url' => array(),
+						'user_login' => array(),
+						'description' => array(),
+						'create_user' => array(),
 					),
 					'permission_callback' => array( $this, 'pmpro_rest_api_get_permissions_check' ),
 				)			
@@ -236,7 +243,7 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 			
 			// Query by email.
 			if ( empty( $user_id ) && !empty( $params['email'] ) ) {
-				$user = get_user_by_email( sanitize_email( $params['email'] ) );
+				$user = get_user_by( 'email', sanitize_email( $params['email'] ) );
 				$user_id = $user->ID;
 			}
 			
@@ -266,7 +273,7 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 
 			// Param email was used instead.
 			if ( empty( $user_id ) && !empty( $params['email'] ) ) {
-				$user = get_user_by_email( sanitize_email( $params['email'] ) );
+				$user = get_user_by( 'email', sanitize_email( $params['email'] ) );
 				$user_id = $user->ID;
 			}
 			
@@ -293,7 +300,7 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 			if ( empty( $user_id ) ) {
 				// see if they sent an email
 				if ( ! empty( $params['email'] ) ) {
-					$user = get_user_by_email( sanitize_email( $params['email'] ) );
+					$user = get_user_by( 'email', sanitize_email( $params['email'] ) );
 					$user_id = $user->ID;
 				} else {
 					return new WP_REST_Response( 'No user information passed through.', 404 );
@@ -318,21 +325,62 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 		 */
 		function pmpro_rest_api_change_membership_level( $request ) {
 			$params = $request->get_params();
-			$user_id = isset( $params['user_id'] ) ? intval( $params['user_id'] ) : null;
-			$level_id = isset( $params['level_id'] ) ? intval( $params['level_id'] ) : null;
+			$user_id = isset( $params['user_id'] ) ? (int) $params['user_id'] : null;
+			$level_id = isset( $params['level_id'] ) ? (int) $params['level_id'] : null;
 			$email = isset( $params['email'] ) ? sanitize_email( $params['email'] ) : null;
+			$first_name = isset( $params['first_name'] ) ? sanitize_text_field( $params['first_name'] ) : '';
+			$last_name = isset( $params['last_name'] ) ? sanitize_text_field( $params['last_name'] ) : '';
+			$username = isset( $params['user_login'] ) ? sanitize_text_field( $params['user_login'] ) : $email;
+			$user_url = isset( $params['user_url'] ) ? sanitize_text_field( $params['user_url'] ) : '';
+			$description = isset( $params['description'] ) ? sanitize_textarea_field( $params['description'] ) : '';
+			$create_user = isset( $params['create_user'] ) ? filter_var( $params['create_user'], FILTER_VALIDATE_BOOLEAN ) : false;
 			$response_type = isset( $params['response_type'] ) ? sanitize_text_field( $params['response_type'] ) : null;
 
 			if ( empty( $user_id ) ) {
+
 				// see if they sent an email
 				if ( ! empty( $email ) ) {
-					$user = get_user_by_email( $email );
-					$user_id = $user->ID;
+
+					$user = get_user_by( 'email', $email );
+					
+					// Assume the user doesn't already exist.
+					if ( $create_user && ! $user ) {
+
+						/**
+						 * Filter the user data arguments for wp_insert_user when creating the user via the REST API.
+						 * 
+						 * @since TBD
+						 * 
+						 * @param array $user_data An associative array with user arguments when creating the user. See https://developer.wordpress.org/reference/functions/wp_insert_user/ for reference.
+						 */
+						$user_data = apply_filters( 'pmpro_api_new_user_array', array(
+								'user_pass' => wp_generate_password(),
+								'user_email' => $email,
+								'user_login' => $username,
+								'first_name' => $first_name,
+								'last_name' => $last_name,
+								'user_url' => $user_url,
+								'description' => $description
+							)
+						);
+
+						$user_id = wp_insert_user( $user_data );
+						
+						if ( is_wp_error( $user_id ) ) {
+							$error = $user_id->get_error_message();
+							return new WP_REST_Response( $error, 500 ); // Assume it failed and return a 500 error occured like core WordPress.
+						}
+						
+						pmpro_maybe_send_wp_new_user_notification( $user_id, $level_id );
+					} else {
+						$user_id = $user->ID;
+					}
+					
 				} else {
+
 					if ( 'json' === $response_type ) {
 						wp_send_json_error( array( 'email' => $email, 'error' => 'No user information passed through.' ) );
 					}
-
 					return new WP_REST_Response( 'No user information passed through.', 404 );
 				}
 			}
@@ -341,20 +389,36 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 				if ( 'json' === $response_type ) {
 					wp_send_json_error( array( 'email' => $email, 'error' => 'Paid Memberships Pro function not found.' ) );
 				}
-
 				return new WP_REST_Response( 'Paid Memberships Pro function not found.', 404 );
 			}
 
-			if ( ! empty( $user_id ) ) {
-				$response = pmpro_changeMembershipLevel( $level_id, $user_id );
-			} else {
-				$response = false;
+			// Make sure we have a user_id by now.
+			if ( empty( $user_id ) ) {
+				if ( 'json' === $response_type ) {
+					wp_send_json_error( array( 'email' => $email, 'error' => 'No user found with that email address. Try the create_user parameter.' ) );
+				}				
+				return new WP_REST_Response( 'No user found with that email address. Try the create_user parameter.', 404 );
 			}
-
+			
+			/**
+			 * Filter to allow admin levels to be changed via the REST API or Zapier application.
+			 * Defaults to false to prevent admin users from having their level changed via API.
+			 * @since 2.7.4
+			 * @param boolean $can_change_admin_users Should API calls change admin account membership levels.
+			 */
+			$can_change_admin_users = apply_filters( 'pmpro_api_change_membership_level_for_admin_users', false );
+			if ( ! $can_change_admin_users && user_can( $user_id, 'manage_options' ) ) {
+				if ( 'json' === $response_type ) {
+					wp_send_json_error( array( 'email' => $email, 'error' => 'Sorry, you are not allowed to edit admin accounts.' ) );
+				}
+				return new WP_REST_Response( 'Sorry, you are not allowed to edit admin accounts.', 403 );
+			}
+						
+			$response = pmpro_changeMembershipLevel( $level_id, $user_id );
+						
 			if ( 'json' === $response_type ) {
 				wp_send_json_success( array( 'user_id' => $user_id, 'level_changed' => $level_id, 'response' => $response, 'status' => 200 ) );
 			}
-
 			return new WP_REST_Response( $response, 200 );
 		}
 
@@ -373,7 +437,7 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 			if ( empty( $user_id ) ) {
 				// see if they sent an email
 				if ( ! empty( $email ) ) {
-					$user = get_user_by_email( $email );
+					$user = get_user_by( 'email', $email );
 					$user_id = $user->ID;
 				} else {
 					if ( 'json' === $response_type ) {
