@@ -1300,7 +1300,7 @@ class PMProGateway_stripe extends PMProGateway {
 	 */
 	public static function has_connect_credentials( $gateway_environment = null ) {
 		if ( empty( $gateway_environment ) ) {
-			$gateway_engvironemnt = pmpro_getOption( 'pmpro_gateway_environment' );
+			$gateway_environment = pmpro_getOption( 'pmpro_gateway_environment' );
 		}
 
 		if ( $gateway_environment === 'live' ) {
@@ -1506,19 +1506,17 @@ class PMProGateway_stripe extends PMProGateway {
 
 		if ( empty( $customer_id ) ) {
 			// Try to figure out the cuseromer ID from their last order.
-			if ( empty ( $order ) ) {
-				$order = new MemberOrder();
-				$order->getLastMemberOrder(
-					$user_id,
-					array(
-						'success',
-						'cancelled'
-					),
-					null,
-					'stripe',
-					$order->Gateway->gateway_environment
-				);
-			}
+			$order = new MemberOrder();
+			$order->getLastMemberOrder(
+				$user_id,
+				array(
+					'success',
+					'cancelled'
+				),
+				null,
+				'stripe',
+				$this->gateway_environment
+			);
 
 			// If we don't have a customer ID yet, get the Customer ID from their subscription.
 			if ( empty( $customer_id ) && ! empty( $order->subscription_transaction_id ) && strpos( $order->subscription_transaction_id, "sub_" ) !== false ) {
@@ -1599,7 +1597,7 @@ class PMProGateway_stripe extends PMProGateway {
 		// Get data to update customer with.
 		$customer_args = array(
 			'email'       => $user->user_email,
-			'description' => $name . ' (' . $email . ')',
+			'description' => $name . ' (' . $user->user_email . ')',
 		);
 
 		// Maybe update billing address for customer.
@@ -1864,10 +1862,10 @@ class PMProGateway_stripe extends PMProGateway {
 				?>
 				<p class="description">
 					<?php
-						if ( pmpro_license_isValid( null, 'plus' ) ) {
+						if ( pmpro_license_isValid( null, pmpro_license_get_premium_types() ) ) {
 							esc_html_e( 'Note: You have a valid license and are not charged additional platform fees for payment processing.', 'paid-memberships-pro');
 						} else {
-							esc_html_e( 'Note: You are using the free Stripe payment gateway integration. This includes an additional 1% fee for payment processing. This fee is removed by activating a Plus license.', 'paid-memberships-pro');
+							esc_html_e( 'Note: You are using the free Stripe payment gateway integration. This includes an additional 1% fee for payment processing. This fee is removed by activating a premium PMPro license.', 'paid-memberships-pro');
 						}
 						echo ' <a href="https://www.paidmembershipspro.com/gateway/stripe/?utm_source=plugin&utm_medium=pmpro-paymentsettings&utm_campaign=gateways&utm_content=stripe-fees#tab-fees" target="_blank">' . esc_html( 'Learn More &raquo;', 'paid-memberships-pro' ) . '</a>';
 					?>
@@ -2145,13 +2143,10 @@ class PMProGateway_stripe extends PMProGateway {
 			$customer->invoice_settings->default_payment_method = $payment_method->id;
 			$customer->save();
 		} catch ( Stripe\Error\Base $e ) {
-			$order->error = $e->getMessage();
 			return $e->getMessage();
 		} catch ( \Throwable $e ) {
-			$order->error = $e->getMessage();
 			return $e->getMessage();
 		} catch ( \Exception $e ) {
-			$order->error = $e->getMessage();
 			return $e->getMessage();
 		}
 
@@ -2299,7 +2294,7 @@ class PMProGateway_stripe extends PMProGateway {
 	 * @param string|null $cycle_period for subscription payments.
 	 * @param string|null $cycle_number of cycle periods between each subscription payment.
 	 *
-	 * @return string|null Price ID.
+	 * @return Stripe_Price|string Price or error message.
 	 */
 	private function get_price_for_product( $product_id, $amount, $cycle_period = null, $cycle_number = null ) {
 		global $pmpro_currency;
@@ -2330,14 +2325,14 @@ class PMProGateway_stripe extends PMProGateway {
 				if ( $is_recurring && ( empty( $price->recurring->interval_count ) || intval( $price->recurring->interval_count ) !== intval( $cycle_number ) ) ) {
 					continue;
 				}
-				return $price->id;
+				return $price;
 			}
 		} catch (\Throwable $th) {
 			// There was an error listing prices.
-			return;
+			return $th->getMessage();
 		} catch (\Exception $e) {
 			// There was an error listing prices.
-			return;
+			return $e->getMessage();
 		}
 
 		// Create a new Price.
@@ -2356,13 +2351,16 @@ class PMProGateway_stripe extends PMProGateway {
 		try {
 			$price = Stripe_Price::create( $price_args );
 			if ( ! empty( $price->id ) ) {
-				return $price->id;
+				return $price;
 			}
 		} catch (\Throwable $th) {
 			// Could not create product.
+			return $th->getMessage();
 		} catch (\Exception $e) {
 			// Could not create product.
+			return $e->getMessage();
 		}
+		return esc_html__( 'Could not create price.', 'paid-memberships-pro' );
 	}
 
 	/**
@@ -2424,8 +2422,8 @@ class PMProGateway_stripe extends PMProGateway {
 		}
 
 		$price = $this->get_price_for_product( $product_id, $amount, $order->BillingPeriod, $order->BillingFrequency );
-		if ( empty( $price ) ) {
-			$order->error = esc_html__( 'Cannot get price.', 'paid-memberships-pro' );
+		if ( is_string( $price ) ) {
+			$order->error = esc_html__( 'Cannot get price.', 'paid-memberships-pro' ) . ' ' . esc_html( $price );
 			return false;
 		}
 
@@ -3078,7 +3076,7 @@ class PMProGateway_stripe extends PMProGateway {
 
 		//update subscription
 		$customer = $update_order->Gateway->update_customer_at_checkout( $update_order, true );
-		$order->stripe_customer = $customer;
+		$update_order->stripe_customer = $customer;
 		$update_order->Gateway->process_subscriptions( $update_order );
 
 		//update membership
@@ -3621,7 +3619,7 @@ class PMProGateway_stripe extends PMProGateway {
 		global $wpdb;
 
 		if ( empty( $gateway_environment ) ) {
-			$gateway_engvironemnt = pmpro_getOption( 'pmpro_gateway_environment' );
+			$gateway_environment = pmpro_getOption( 'pmpro_gateway_environment' );
 		}
 
 		$last_webhook = get_option( 'pmpro_stripe_last_webhook_received_' . $gateway_environment );

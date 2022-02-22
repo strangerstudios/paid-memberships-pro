@@ -1,4 +1,4 @@
-=== Paid Memberships Pro ===
+=== Paid Memberships Pro - Restrict Member Access to Content, Courses, Communities - Free or Paid Subscriptions ===
 Contributors: strangerstudios, kimannwall, andrewza, dlparker1005, paidmembershipspro
 Tags: memberships, members, subscriptions, ecommerce, user registration, member, membership, e-commerce, paypal, stripe, braintree, authorize.net, payflow, restrict access, restrict content, directory
 Requires at least: 5.2
@@ -6,7 +6,7 @@ Tested up to: 5.9
 Requires PHP: 5.6
 Stable tag: 2.7.3
 
-Get Paid with Paid Memberships Pro: The most complete member management and membership subscriptions plugin for your WordPress site.
+WordPress membership plugin: restrict content, accept member subscriptions with recurring payment. Includes user registration, login, & profile fields
 
 == Description ==
 

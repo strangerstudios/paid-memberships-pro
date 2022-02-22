@@ -3719,6 +3719,24 @@ function pmpro_doing_webhook( $gateway = null, $set = false ){
 }
 
 /**
+ * Called once a webhook has been run but was not handled.
+ * 
+ * @return void
+ *
+ * @since TBD
+ */
+function pmpro_unhandled_webhook(){
+	/**
+	 * Allow hooking into after a webhook has been run but was not handled.
+	 *
+	 * @since TBD
+	 *
+	 * @param string $gateway The gateway the webhook was not handled for.
+	 */
+	do_action( 'pmpro_unhandled_webhook', PMPRO_DOING_WEBHOOK );
+}
+
+/**
  * Sanitizing strings using wp_kses and allowing style tags.
  *
  * @param string $original_string  The string to sanitize.
@@ -3938,7 +3956,7 @@ function pmpro_get_ip() {
 		'HTTP_X_IP_TRAIL',
 		'HTTP_X_REAL_IP',
 		'HTTP_X_VARNISH',
-		'REMOTE_ADDR',			
+		'REMOTE_ADDR',
 	);
 
 	foreach ( $address_headers as $header ) {
@@ -3963,4 +3981,18 @@ function pmpro_get_ip() {
 	$client_ip = preg_replace( '/[^0-9a-fA-F:., ]/', '', $client_ip );
 	
 	return $client_ip;
+}
+
+/**
+ * Send the WP new user notification email, but also check our filter.
+ * NOTE: includes/email.php has code to check for the related setting and
+ *       filters on the pmpro_wp_new_user_notification hook.
+ * @since 2.7.4
+ * @param int $user_id ID of the user to send the email for.
+ * @param int $level_id Level ID the user just got. (Need to send to filter.)
+ */
+function pmpro_maybe_send_wp_new_user_notification( $user_id, $level_id = null ) {	
+	if ( apply_filters( 'pmpro_wp_new_user_notification', true, $user_id, $level_id ) ) {		
+		wp_new_user_notification( $user_id, null, 'both' );
+	}
 }
