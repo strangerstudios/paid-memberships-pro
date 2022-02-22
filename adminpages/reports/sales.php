@@ -688,6 +688,7 @@ function pmpro_get_prices_paid( $period, $count = NULL ) {
 							AND gateway_environment = '" . esc_sql( $gateway_environment ) . "' ";
 			$total = $wpdb->get_var( $sql_query );
 			
+			/* skipping this until we figure out how to make it performant
 			// New sales.
 			$sql_query = "SELECT mo1.id
 						  FROM $wpdb->pmpro_membership_orders mo1
@@ -725,6 +726,8 @@ function pmpro_get_prices_paid( $period, $count = NULL ) {
 			$renewals = $wpdb->get_var( $sql_query );
 			
 			$prices_formatted[ $price->rtotal ] = array( 'total' => $total, 'new' => $new, 'renewals' => $renewals );
+			*/
+			$prices_formatted[ $price->rtotal ] = array( 'total' => $total );
 		}
 	}
 
