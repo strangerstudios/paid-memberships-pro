@@ -3993,6 +3993,6 @@ function pmpro_get_ip() {
  */
 function pmpro_maybe_send_wp_new_user_notification( $user_id, $level_id = null ) {	
 	if ( apply_filters( 'pmpro_wp_new_user_notification', true, $user_id, $level_id ) ) {		
-		wp_new_user_notification( $user_id, null, 'both' );		
+		wp_new_user_notification( $user_id, null, 'both' );
 	}
 }

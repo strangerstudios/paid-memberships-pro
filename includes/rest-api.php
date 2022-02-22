@@ -374,17 +374,6 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 						pmpro_maybe_send_wp_new_user_notification( $user_id, $level_id );
 					} else {
 						$user_id = $user->ID;
-
-						/**
-						 * Filter to allow admin levels to be changed via the REST API or Zapier application.
-						 *
-						 * @since TBD
-						 *
-						 * @param boolean $disallow_admin_changes Should API calls change admin account membership levels.
-						 */
-						if ( apply_filters( 'pmpro_api_change_membership_level_disallow_admin_change', true ) && user_can( $user_id, 'manage_options' ) ) {
-							return new WP_REST_Response( 'Sorry, You are not allowed to edit admin accounts.', 403 );
-						}
 					}
 					
 				} else {
@@ -392,7 +381,6 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 					if ( 'json' === $response_type ) {
 						wp_send_json_error( array( 'email' => $email, 'error' => 'No user information passed through.' ) );
 					}
-
 					return new WP_REST_Response( 'No user information passed through.', 404 );
 				}
 			}
@@ -401,20 +389,36 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 				if ( 'json' === $response_type ) {
 					wp_send_json_error( array( 'email' => $email, 'error' => 'Paid Memberships Pro function not found.' ) );
 				}
-
 				return new WP_REST_Response( 'Paid Memberships Pro function not found.', 404 );
 			}
 
-			if ( ! empty( $user_id ) ) {
-				$response = pmpro_changeMembershipLevel( $level_id, $user_id );
-			} else {
-				$response = false;
+			// Make sure we have a user_id by now.
+			if ( empty( $user_id ) ) {
+				if ( 'json' === $response_type ) {
+					wp_send_json_error( array( 'email' => $email, 'error' => 'No user found with that email address. Try the create_user parameter.' ) );
+				}				
+				return new WP_REST_Response( 'No user found with that email address. Try the create_user parameter.', 404 );
 			}
-
+			
+			/**
+			 * Filter to allow admin levels to be changed via the REST API or Zapier application.
+			 * Defaults to false to prevent admin users from having their level changed via API.
+			 * @since 2.7.4
+			 * @param boolean $can_change_admin_users Should API calls change admin account membership levels.
+			 */
+			$can_change_admin_users = apply_filters( 'pmpro_api_change_membership_level_for_admin_users', false );
+			if ( ! $can_change_admin_users && user_can( $user_id, 'manage_options' ) ) {
+				if ( 'json' === $response_type ) {
+					wp_send_json_error( array( 'email' => $email, 'error' => 'Sorry, you are not allowed to edit admin accounts.' ) );
+				}
+				return new WP_REST_Response( 'Sorry, you are not allowed to edit admin accounts.', 403 );
+			}
+						
+			$response = pmpro_changeMembershipLevel( $level_id, $user_id );
+						
 			if ( 'json' === $response_type ) {
 				wp_send_json_success( array( 'user_id' => $user_id, 'level_changed' => $level_id, 'response' => $response, 'status' => 200 ) );
 			}
-
 			return new WP_REST_Response( $response, 200 );
 		}
 
