@@ -1117,14 +1117,14 @@ class PMPro_Subscription {
 			$user                      = get_userdata( $this->user_id );
 			$pmproemail                = new PMProEmail();
 			$pmproemail->template      = 'subscription_cancel_error';
-			$pmproemail->data          = array( 'body' => '<p>' . esc_html__( 'There was an error canceling a subscription from your website. You will want to check your payment gateway to see if their subscription is still active.', 'paid-memberships-pro' ) );
-			$pmproemail->data['body'] .= '<p>' . __( 'User Email', 'paid-memberships-pro' ) . ': ' . $user->user_email . '</p>';
-			$pmproemail->data['body'] .= '<p>' . __( 'Username', 'paid-memberships-pro' ) . ': ' . $user->user_login . '</p>';
-			$pmproemail->data['body'] .= '<p>' . __( 'User Display Name', 'paid-memberships-pro' ) . ': ' . $user->display_name . '</p>';
-			$pmproemail->data['body'] .= '<p>' . __( 'Subscription', 'paid-memberships-pro' ) . ': ' . $this->ID . '</p>';
-			$pmproemail->data['body'] .= '<p>' . __( 'Gateway', 'paid-memberships-pro' ) . ': ' . $this->gateway . '</p>';
-			$pmproemail->data['body'] .= '<p>' . __( 'Subscription Transaction ID', 'paid-memberships-pro' ) . ': ' . $this->subscription_transaction_id . '</p>';
-			$pmproemail->data['body'] .= '<hr />';
+			$pmproemail->data          = array( 'body' => '<p>' . esc_html__( 'There was an error canceling a subscription from your website. You will want to check your payment gateway to see if their subscription is still active.', 'paid-memberships-pro' ) . '</p><br />' );
+			$pmproemail->data['body'] .= '<p>' . __( 'User Email', 'paid-memberships-pro' ) . ': ' . $user->user_email . '</p><br />';
+			$pmproemail->data['body'] .= '<p>' . __( 'Username', 'paid-memberships-pro' ) . ': ' . $user->user_login . '</p><br />';
+			$pmproemail->data['body'] .= '<p>' . __( 'User Display Name', 'paid-memberships-pro' ) . ': ' . $user->display_name . '</p><br />';
+			$pmproemail->data['body'] .= '<p>' . __( 'Subscription', 'paid-memberships-pro' ) . ': ' . $this->ID . '</p><br />';
+			$pmproemail->data['body'] .= '<p>' . __( 'Gateway', 'paid-memberships-pro' ) . ': ' . $this->gateway . '</p><br />';
+			$pmproemail->data['body'] .= '<p>' . __( 'Subscription Transaction ID', 'paid-memberships-pro' ) . ': ' . $this->subscription_transaction_id . '</p><br />';
+			$pmproemail->data['body'] .= '<hr /><br />';
 			$pmproemail->data['body'] .= '<p>' . __( 'Edit User', 'paid-memberships-pro' ) . ': ' . esc_url( add_query_arg( 'user_id', $this->user_id, self_admin_url( 'user-edit.php' ) ) ) . '</p>';
 			$pmproemail->sendEmail( get_bloginfo( 'admin_email' ) );
 		}
