@@ -3611,8 +3611,11 @@ function pmpro_check_plugin_version( $plugin_file, $comparison, $version ) {
 		return false;
 	}
 
-	// Get plugin data.
-	$plugin_data = get_plugin_data( WP_PLUGIN_DIR . '/' . $plugin_file, false, true );
+	// Get plugin data.	
+	$full_plugin_file_path = WP_PLUGIN_DIR . '/' . $plugin_file;
+	if ( is_file( $full_plugin_file_path ) ) {
+		$plugin_data = get_plugin_data( $full_plugin_file_path, false, true );
+	}
 
 	// Return false if there is no plugin data.
 	if ( empty( $plugin_data ) || empty( $plugin_data['Version'] ) ) {
