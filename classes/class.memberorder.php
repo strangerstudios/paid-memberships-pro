@@ -145,10 +145,6 @@
 				if(empty($this->nogateway))
 					$this->setGateway();
 
-				if ( ! empty( $this->subscription_transaction_id ) ) {
-					$this->create_subscription_for_order();
-				}
-
 				return $this->id;
 			}
 			else
@@ -834,9 +830,8 @@
 					$this->id = $wpdb->insert_id;
 				do_action($after_action, $this);
 
-				if ( ! empty( $this->subscription_transaction_id ) && 'pmpro_add_order' === $before_action ) {
-					$this->create_subscription_for_order();
-				}
+				// Create a subscription if we need to.
+				$this->create_subscription_for_order();
 
 				return $this->getMemberOrderByID($this->id);
 			}
@@ -1103,8 +1098,23 @@
 		 * @return bool True if a subscription was created, false if not.
 		 */
 		private function create_subscription_for_order() {
+			global $pmpro_level;
+
+			// Make sure that this order is a part of a subscription.
 			if ( empty( $this->subscription_transaction_id ) ) {
 				// No subscription transaction ID, so we don't need to create a subscription.
+				return false;
+			}
+
+			// Make sure that this order has been completed.
+			if ( 'success' !== $this->status ) {
+				// The order is not complete, so we shouldn't create a subscription yet.
+				return false;
+			}
+
+			// Make sure that the user has the membership level for this order.
+			if ( ! pmpro_hasMembershipLevel( $this->membership_id, $this->user_id ) ) {
+				// The user doesn't have the membership level for this order, so we shouldn't track the subscription.
 				return false;
 			}
 
@@ -1119,28 +1129,34 @@
 				return false;
 			}
 
+			if ( isset( $pmpro_level ) ) {
+				// We are processing a checkout. Get the level from the checkout.
+				$subscription_level = $this->getMembershipLevelAtCheckout();
+			} else {
+				// Not at checkout. Get the level from the database.
+				$subscription_level = $this->getMembershipLevel();
+			}
+
+			if ( empty( $subscription_level ) ) {
+				// We couldn't get level information, so we shouldn't create a subscription.
+				return false;
+			}
+
 			$create_subscription_args = array(
 				'user_id'                     => $this->user_id,
 				'membership_level_id'  		  => $this->membership_id,
 				'gateway'                     => $this->gateway,
 				'gateway_environment'  	      => $this->gateway_environment,
 				'subscription_transaction_id' => $this->subscription_transaction_id,
+				'billing_amount'              => empty( $subscription_level->billing_amount ) ? 0.00 : $subscription_level->billing_amount,
+				'cycle_number'                => empty( $subscription_level->cycle_number ) ? 0 : $subscription_level->cycle_number,
+				'cycle_period'                => empty( $subscription_level->cycle_period ) ? 'Month' : $subscription_level->cycle_period,
+				'billing_limit'               => empty( $subscription_level->billing_limit ) ? 0 : $subscription_level->billing_limit,
+				'trial_amount'                => empty( $subscription_level->trial_amount ) ? 0.00 : $subscription_level->trial_amount,
+				'trial_limit'                 => empty( $subscription_level->trial_limit ) ? 0 : $subscription_level->trial_limit,
+				'next_payment_date'           => empty( $this->ProfileStartDate ) ? '' : $this->ProfileStartDate,
 			);
-			// Check if we have additional information from checkout to pass to the subscription. If not set on checkout, this will use the current membership level set on the order.
-			$checkout_level = $this->getMembershipLevelAtCheckout();
-			if ( ! empty( $checkout_level->billing_amount ) && ! empty( $checkout_level->cycle_number ) ) {
-				// We have a real level that is recurring, so we can use the level to create the subscription.
-				$create_subscription_args['billing_amount']  = $checkout_level->billing_amount;
-				$create_subscription_args['cycle_number']    = $checkout_level->cycle_number;
-				$create_subscription_args['cycle_period']    = $checkout_level->cycle_period;
-				$create_subscription_args['billing_limit']   = $checkout_level->billing_limit;
-				$create_subscription_args['trial_amount']    = $checkout_level->trial_amount;
-				$create_subscription_args['trial_limit']     = $checkout_level->trial_limit;
 
-				// Since we know that this is checkout, the subscription will be active and there will be a next payment date.
-				$create_subscription_args['status'] = 'active';
-				// TODO: Calculate the next payment date.
-			}
 			$new_subscription = PMPro_Subscription::create( $create_subscription_args );
 			return ! empty( $new_subscription );
 		}

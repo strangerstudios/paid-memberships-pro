@@ -641,10 +641,8 @@ class PMPro_Subscription {
 		// Create the subscription.
 		$new_subscription = new PMPro_Subscription( $subscription_data );
 
-		// Try to pull as much info as possible directly from the gateway.
-		$new_subscription->update_from_gateway();
-
-		$saved = $new_subscription->save();
+		// Try to pull as much info as possible directly from the gateway or from the database.
+		$saved = $new_subscription->update();
 		if ( ! $saved ) {
 			// We couldn't save the subscription.
 			return null;
@@ -654,16 +652,47 @@ class PMPro_Subscription {
 	}
 
 	/**
-	 * Pull subscription info from the gateway.
+	 * Pull subscription info from the gateway or try to update
+	 * information from PMPro data.
 	 *
 	 * @since TBD
+	 *
+	 * @return bool True if the subscription was saved, false if not.
 	 */
-	public function update_from_gateway() {
-		$gateway_object = $this->get_gateway_object();
+	private function update() {
+		global $pmpro_level;
 
+		// Try to update directly from gateway.
+		$gateway_object = $this->get_gateway_object();
 		if ( $gateway_object && method_exists( $gateway_object, 'update_subscription_info' ) ) {
 			$gateway_object->update_subscription_info( $this );
+		} else {
+			// Update the start date to the date of the first order for this subscription.
+			$orders = $this->get_orders( [
+				'limit'   => 1,
+				'orderby' => '`timestamp` ASC, `id` ASC',
+			] );
+			if ( ! empty( $orders ) ) {
+				$order = current( $orders );
+				$this->startdate = date_i18n( 'Y-m-d H:i:s', $order->getTimestamp( true ) );
+			}
+
+			// Update the next payment date based on the most recent order.
+			if ( ! empty( $this->cycle_number ) ) {
+				// Only update the next payment date if we are not at checkout or there is no next payment date already set.
+				if ( ! isset( $pmpro_level ) || empty( $this->next_payment_date ) ) {
+					$orders = $this->get_orders( array( 'limit' => 1 ) );
+					if ( ! empty( $orders ) ) {
+						// Get the most recent order.
+						$last_order = $orders[0];
+
+						// Calculate the next payment date.
+						$this->next_payment_date = date_i18n( 'Y-m-d H:i:s', strtotime( '+ ' . $this->cycle_number . ' ' . $this->cycle_period, $last_order->getTimestamp( true ) ) );
+					}
+				}
+			}
 		}
+		return $this->save();
 	}
 
 	/**
