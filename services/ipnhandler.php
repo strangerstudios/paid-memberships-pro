@@ -350,7 +350,7 @@ if ( $txn_type == "subscr_cancel" ) {
 	}
 }
 
-if ( '' === $txn_type && 'Refunded' === $payment_status ) {
+if ( strtolower( $payment_status ) === 'refunded' ) {
 
 	$payment_transaction_id = $parent_txn_id;
 
@@ -358,55 +358,51 @@ if ( '' === $txn_type && 'Refunded' === $payment_status ) {
 
 		$success = false;
 
-		$m = new MemberOrder();
+		$morder = new MemberOrder();
 
-		$m->getMemberOrderByPaymentTransactionID( $payment_transaction_id );
+		$morder->getMemberOrderByPaymentTransactionID( $payment_transaction_id );
 
-		if ( ! isset( $m->id ) ) {
+		if ( ! isset( $morder->id ) ) {
 			
-			if ( $recurring_payment_id ) {
-				try {
+			try {
 
-					$last_order_by_subscription = new MemberOrder();
-					$last_order_by_subscription->getLastMemberOrderBySubscriptionTransactionID( $recurring_payment_id );
+				$last_order_by_subscription = new MemberOrder();
+				$last_order_by_subscription->getLastMemberOrderBySubscriptionTransactionID( $recurring_payment_id );
 
-					$first_order_by_subscription = $last_order_by_subscription->get_original_subscription_order();
-					if ( $first_order_by_subscription && $first_order_by_subscription->id ) {
-						if ( 'paypalexpress' === $first_order_by_subscription->gateway ) {
-							$first_order_payment_transaction_id = $first_order_by_subscription->Gateway->getRealPaymentTransactionId( $first_order_by_subscription );
+				$first_order_by_subscription = $last_order_by_subscription->get_original_subscription_order();
+				if ( $first_order_by_subscription && $first_order_by_subscription->id ) {
+					if ( 'paypalexpress' === $first_order_by_subscription->gateway ) {
+						$first_order_payment_transaction_id = $first_order_by_subscription->Gateway->getRealPaymentTransactionId( $first_order_by_subscription );
 
-							if ( $first_order_payment_transaction_id === $payment_transaction_id ) {
-								$m = $first_order_by_subscription;								
-							}
+						if ( $first_order_payment_transaction_id === $payment_transaction_id ) {
+							$morder = $first_order_by_subscription;								
 						}
 					}
-				} catch ( Exception $e ) {
-					// if something goes wrong with the logic above,
-					// we dont want to miss the management of the current ipn request.
-					// so ignoring the error is the best thing to do. dont care too much.
-					//The refund failed, so lets return the gateway message
-				
-					// translators: %1$s is the Transaction ID. %1$s is the Gateway Error
-					$morder->notes = trim( $morder->notes ) .' '. sprintf( __( 'There was a problem processing a refund for transaction ID %1$s. Gateway Error: %2$s ', 'paid-memberships-pro' ), $transaction_id, $httpParsedResponseAr['L_LONGMESSAGE0'] );
-
-					ipnlog( "Canceled membership for user with id = " . $last_subscription_order->user_id . ". Subscription transaction id = " . $subscr_id . "." );
-					
 				}
+			} catch ( Exception $e ) {
+				// if something goes wrong with the logic above,
+				// we dont want to miss the management of the current ipn request.
+				// so ignoring the error is the best thing to do. dont care too much.
+				//The refund failed, so lets return the gateway message
+			
+				ipnlog( "Canceled membership for user with id = " . $last_subscription_order->user_id . ". Subscription transaction ID = " . $payment_transaction_id . ". " . $httpParsedResponseAr['L_LONGMESSAGE0'] );
+				
 			}
+		
 		}
 
-		if ( isset( $m->id ) ) {
+		if ( isset( $morder->id ) ) {
 			
 			$success = true;
 
-			$m->updateStatus( 'refunded' );
+			$morder->status = 'refunded';
 
-			global $current_user;
+			// translators: %1$s is the date. %2$s is the transaction ID.
+			$morder->notes = trim( $morder->notes .' '. sprintf( __('Order successfully refunded on %1$s for transaction ID %2$s at the gateway.', 'paid-memberships-pro' ), date_i18n('Y-m-d H:i:s'), $payment_transaction_id ) );
 
-			// translators: %1$s is the Transaction ID. %2$s is the user display name that initiated the refund.
-			$m->notes = trim( $m->notes ) .' '. sprintf( __('Order successfully refunded on %1$s for transaction ID %2$s by %3$s', 'paid-memberships-pro' ), date_i18n('Y-m-d H:i:s'), $transaction_id, $current_user->display_name );
+			ipnlog( printf( __('Order successfully refunded on %1$s for transaction ID %2$s at the gateway.', 'paid-memberships-pro' ), date_i18n('Y-m-d H:i:s'), $payment_transaction_id ) );
 
-			ipnlog( "Canceled membership for user with id = " . $last_subscription_order->user_id . ". Subscription transaction id = " . $subscr_id . "." );
+			$user = get_user_by( 'email', $morder->Email );
 
 			//send an email to the member
 			$myemail = new PMProEmail();
@@ -414,11 +410,14 @@ if ( '' === $txn_type && 'Refunded' === $payment_status ) {
 
 			//send an email to the admin
 			$myemail = new PMProEmail();
-			$myemail->sendRefundedAdminEmail( $user, $last_subscription_order->membership_id );
+			$myemail->sendRefundedAdminEmail( $user, $morder->membership_id );
 
-		}
+			$morder->SaveOrder();
 
-		$m->SaveOrder();
+		}		
+
+		return $success;
+
 	}
 
 }
