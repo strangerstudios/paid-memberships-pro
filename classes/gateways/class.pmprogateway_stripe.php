@@ -1751,6 +1751,47 @@ class PMProGateway_stripe extends PMProGateway {
 		}
 	}
 
+	/**
+	 * Pull subscription info from Stripe.
+	 *
+	 * @param PMPro_Subscription $subscription to pull data for.
+	 */
+	public function update_subscription_info( $subscription ) {
+		try {
+			$stripe_subscription = Stripe_Subscription::retrieve( $subscription->get_subscription_transaction_id() );
+		} catch ( \Throwable $e ) {
+			// Assume no subscription found.
+			// TODO: What should we do here?
+			return;
+		} catch ( \Exception $e ) {
+			// Assume no subscription found.
+			// TODO: What should we do here?
+			return;
+		}
+
+		if ( ! empty( $stripe_subscription ) ) {
+			$update_array = array(
+				'startdate' => date( 'Y-m-d H:i:s', intval( $stripe_subscription->created ) ),
+			);
+			if ( in_array( $stripe_subscription->status, array( 'trialing', 'active' ) ) ) {
+				// Subscription is active.
+				$update_array['status'] = 'active';
+				$update_array['next_payment_date'] = date( 'Y-m-d H:i:s', intval( $stripe_subscription->current_period_end ) );
+				if ( ! empty( $stripe_subscription->items->data[0]->price ) ) {
+					$stripe_subscription_price = $stripe_subscription->items->data[0]->price;
+					$update_array['billing_amount'] = $this->convert_unit_amount_to_price( $stripe_subscription_price->unit_amount );
+					$update_array['cycle_number']   = $stripe_subscription_price->recurring->interval_count;
+					$update_array['cycle_period']   = ucfirst( $stripe_subscription_price->recurring->interval );
+				}
+			} else {
+				// Subscription is no longer active.
+				$update_array['status'] = 'cancelled';
+				$update_array['enddate'] = date( 'Y-m-d H:i:s', intval( $stripe_subscription->ended_at ) );
+			}
+			$subscription->set( $update_array );
+		}
+	}
+
 
 	/****************************************
 	 *********** PRIVATE METHODS ************
@@ -2158,7 +2199,7 @@ class PMProGateway_stripe extends PMProGateway {
 		return $customer;
 	}
 
-		/**
+	/**
 	 * Convert a price to a positive integer in cents (or 0 for a free price)
 	 * representing how much to charge. This is how Stripe wants us to send price amounts.
 	 *
@@ -2179,6 +2220,28 @@ class PMProGateway_stripe extends PMProGateway {
 		}
 
 		return intval( $price * $currency_unit_multiplier );
+	}
+
+	/**
+	 * Convert a unit amount (price in cents) into a decimal price.
+	 *
+	 * @param integer $unit_amount to be converted.
+	 * @return float
+	 */
+	private function convert_unit_amount_to_price( $unit_amount ) {
+		global $pmpro_currencies, $pmpro_currency;
+		$currency_unit_multiplier = 100; // ie 100 cents per USD.
+
+		// Account for zero-decimal currencies like the Japanese Yen.
+		if (
+			is_array( $pmpro_currencies[ $pmpro_currency ] ) &&
+			isset( $pmpro_currencies[ $pmpro_currency ]['decimals'] ) &&
+			$pmpro_currencies[ $pmpro_currency ]['decimals'] == 0 
+		) {
+			$currency_unit_multiplier = 1;
+		}
+
+		return floatval( $unit_amount / $currency_unit_multiplier );
 	}
 
 	/**
@@ -4532,38 +4595,5 @@ class PMProGateway_stripe extends PMProGateway {
 		}
 
 		return $order->plan;
-	}
-
-	/**
-	 * Pull subscription info from Stripe.
-	 *
-	 * @param PMPro_Subscription $subscription to pull data for.
-	 */
-	function update_subscription_info( $subscription ) {
-		try {
-			$stripe_subscription = Stripe_Subscription::retrieve( $subscription->get_subscription_transaction_id() );
-		} catch ( \Throwable $e ) {
-			// Assume no subscription found.
-			return;
-		} catch ( \Exception $e ) {
-			// Assume no subscription found.
-			return;
-		}
-
-		if ( ! empty( $stripe_subscription ) ) {
-			$update_array = array(
-				'startdate' => date( 'Y-m-d H:i:s', intval( $stripe_subscription->created ) ),
-			);
-			if ( in_array( $stripe_subscription->status, array( 'trialing', 'active' ) ) ) {
-				// Subscription is active.
-				$update_array['status'] = 'active';
-				$update_array['next_payment_date'] = date( 'Y-m-d H:i:s', intval( $stripe_subscription->current_period_end ) );
-			} else {
-				// Subscription is no longer active.
-				$update_array['status'] = 'cancelled';
-				$update_array['enddate'] = date( 'Y-m-d H:i:s', intval( $stripe_subscription->ended_at ) );
-			}
-			$subscription->set( $update_array );
-		}
 	}
 }

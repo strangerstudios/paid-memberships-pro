@@ -664,6 +664,8 @@ class PMPro_Subscription {
 		if ( $gateway_object && method_exists( $gateway_object, 'update_subscription_info' ) ) {
 			$gateway_object->update_subscription_info( $this );
 		}
+
+		$this->save();
 	}
 
 	/**
@@ -981,30 +983,16 @@ class PMPro_Subscription {
 			return false;
 		}
 
-		// TODO: Perform validation here. The setter should make sure that fields have valid values,
-		// but we should also check here that the values make sense together. For example, cancelled
-		// subscriptions should not have a next payment date and startdates should not be before end dates.
+		// Active subscriptions shouldn't have an enddate yet, and cancelled subscriptions shouldn't have a next payment date.
+		if ( 'active' === $this->status ) {
+			$this->enddate = '';
+		} elseif ( 'cancelled' === $this->status ) {
+			$this->next_payment_date = '';
+		}
 
-		$create = empty( $this->id );
-
-		if ( $create ) {
-			/**
-			 * Allow hooking into before the creation of a subscription.
-			 *
-			 * @since TBD
-			 *
-			 * @param PMPro_Subscription The subscription object.
-			 */
-			do_action( 'pmpro_create_subscription', $this );
-		} else {
-			/**
-			 * Allow hooking into before the update of a subscription.
-			 *
-			 * @since TBD
-			 *
-			 * @param PMPro_Subscription The subscription object.
-			 */
-			do_action( 'pmpro_update_subscription', $this );
+		// If the startdate is empty or later than the current time, set it to the current time.
+		if ( empty( $this->startdate ) || strtotime( $this->startdate ) > time() ) {
+			$this->startdate = gmdate( 'Y-m-d H:i:s' );
 		}
 
 		$wpdb->replace( $wpdb->pmpro_subscriptions, [
@@ -1050,26 +1038,6 @@ class PMPro_Subscription {
 		// The subscription was not created properly.
 		if ( empty( $this->id ) ) {
 			return false;
-		}
-
-		if ( $create ) {
-			/**
-			 * Allow hooking into after the creation of a subscription.
-			 *
-			 * @since TBD
-			 *
-			 * @param PMPro_Subscription The subscription object.
-			 */
-			do_action( 'pmpro_created_subscription', $this );
-		} else {
-			/**
-			 * Allow hooking into after the creation of a subscription.
-			 *
-			 * @since TBD
-			 *
-			 * @param PMPro_Subscription The subscription object.
-			 */
-			do_action( 'pmpro_updated_subscription', $this );
 		}
 
 		return $this->id;
@@ -1127,9 +1095,11 @@ class PMPro_Subscription {
 			$pmproemail->data['body'] .= '<hr />' . "\n";
 			$pmproemail->data['body'] .= '<p>' . esc_html__( 'Edit User', 'paid-memberships-pro' ) . ': ' . esc_url( add_query_arg( 'user_id', $this->user_id, self_admin_url( 'user-edit.php' ) ) ) . '</p>';
 			$pmproemail->sendEmail( get_bloginfo( 'admin_email' ) );
-		}
-		$this->status = 'cancelled';
-		$this->update_from_gateway();
+    }
+    
+		$this->status  = 'cancelled';
+    $this->enddate = gmdate( 'Y-m-d H:i:s' );
+		$this->update();
 		$this->save();
 
 		return $result;
