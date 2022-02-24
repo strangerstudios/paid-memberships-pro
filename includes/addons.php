@@ -237,9 +237,12 @@ function pmpro_getPluginAPIObjectFromAddon( $addon ) {
 	if ( ! empty( $key ) && ! empty( $api->package ) ) {
 		$api->package = add_query_arg( 'key', $key, $api->package );
 	}
-	if ( empty( $api->upgrade_notice ) && ! pmpro_license_isValid( null, 'plus' ) ) {
-		$api->upgrade_notice = __( 'Important: This plugin requires a valid PMPro Plus license key to update.', 'paid-memberships-pro' );
-	}
+	
+	if ( empty( $api->upgrade_notice ) && pmpro_license_type_is_premium( $addon['License'] ) ) {
+		if ( ! pmpro_license_isValid( null, $addon['License'] ) ) {
+			$api->upgrade_notice = sprintf( __( 'Important: This plugin requires a valid PMPro %s license key to update.', 'paid-memberships-pro' ), ucwords( $addon['License'] ) );
+		}
+	}	
 
 	return $api;
 }
@@ -271,28 +274,39 @@ function pmpro_admin_init_updating_plugins() {
 
 	// updating one or more plugins via Dashboard -> Upgrade
 	if ( basename( $_SERVER['SCRIPT_NAME'] ) == 'update.php' && ! empty( $_REQUEST['action'] ) && $_REQUEST['action'] == 'update-selected' && ! empty( $_REQUEST['plugins'] ) ) {
-		// figure out which plugin we are updating
+		// figure out which plugins we are updating
 		$plugins = explode( ',', stripslashes( $_GET['plugins'] ) );
 		$plugins = array_map( 'urldecode', $plugins );
 
 		// look for addons
-		$plus_addons = array();
-		$plus_plugins = array();
+		$premium_addons = array();
+		$premium_plugins = array();
 		foreach ( $plugins as $plugin ) {
 			$slug = str_replace( '.php', '', basename( $plugin ) );
 			$addon = pmpro_getAddonBySlug( $slug );
-			if ( ! empty( $addon ) && $addon['License'] == 'plus' ) {
-				$plus_addons[] = $addon['Name'];
-				$plus_plugins[] = $plugin;
+			if ( ! empty( $addon ) && pmpro_license_type_is_premium( $addon['License'] ) ) {
+				if ( ! isset( $premium_addons[$addon['License']] ) ) {
+					$premium_addons[$addon['License']] = array();
+					$premium_plugins[$addon['License']] = array();
+				}
+				$premium_addons[$addon['License']][] = $addon['Name'];
+				$premium_plugins[$addon['License']][] = $plugin;
 			}
 		}
 		unset( $plugin );
 
 		// if Plus addons found, check license key
-		if ( ! empty( $plus_plugins ) && ! pmpro_license_isValid( null, 'plus' ) ) {
-			// show error
-			$msg = __( 'You must have a <a href="https://www.paidmembershipspro.com/pricing/?utm_source=wp-admin&utm_pluginlink=bulkupdate">valid PMPro Plus License Key</a> to update PMPro Plus add ons. The following plugins will not be updated:', 'paid-memberships-pro' );
-			echo '<div class="error"><p>' . $msg . ' <strong>' . implode( ', ', $plus_addons ) . '</strong></p></div>';
+		if ( ! empty( $premium_plugins ) ) {			
+			foreach( $premium_plugins as $license_type => $premium_plugin ) {				
+				// if they have a good license, skip the error				
+				if ( pmpro_can_download_addon_with_license( $license_type ) ) {
+					continue;
+				}
+				
+				// show error
+				$msg = sprintf( __( 'You must have a <a href="https://www.paidmembershipspro.com/pricing/?utm_source=wp-admin&utm_pluginlink=bulkupdate">valid PMPro %s License Key</a> to update PMPro %s add ons. The following plugins will not be updated:', 'paid-memberships-pro' ), ucwords( $license_type ), ucwords( $license_type ) );
+				echo '<div class="error"><p>' . $msg . ' <strong>' . implode( ', ', $premium_addons[$license_type] ) . '</strong></p></div>';
+			}			
 		}
 
 		// can exit out of this function now
@@ -306,12 +320,13 @@ function pmpro_admin_init_updating_plugins() {
 
 		$slug = str_replace( '.php', '', basename( $plugin ) );
 		$addon = pmpro_getAddonBySlug( $slug );
-		if ( ! empty( $addon ) && $addon->License == 'plus' && ! pmpro_license_isValid( null, 'plus' ) ) {
+		
+		if ( ! empty( $addon ) && pmpro_license_type_is_premium( $addon['License'] ) && ! pmpro_can_download_addon_with_license( $addon['License'] ) ) {
 			require_once( ABSPATH . 'wp-admin/admin-header.php' );
 
 			echo '<div class="wrap"><h2>' . __( 'Update Plugin' ) . '</h2>';
 
-			$msg = __( 'You must have a <a href="https://www.paidmembershipspro.com/pricing/?utm_source=wp-admin&utm_pluginlink=addon_update">valid PMPro Plus License Key</a> to update PMPro Plus add ons.', 'paid-memberships-pro' );
+			$msg = sprintf( __( 'You must have a <a href="https://www.paidmembershipspro.com/pricing/?utm_source=wp-admin&utm_pluginlink=addon_update">valid PMPro %s License Key</a> to update PMPro %s add ons.', 'paid-memberships-pro' ), ucwords( $addon['License'] ), ucwords( $addon['License'] ) );
 			echo '<div class="error"><p>' . $msg . '</p></div>';
 
 			echo '<p><a href="' . admin_url( 'admin.php?page=pmpro-addons' ) . '" target="_parent">' . __( 'Return to the PMPro Add Ons page', 'paid-memberships-pro' ) . '</a></p>';
@@ -332,21 +347,45 @@ function pmpro_admin_init_updating_plugins() {
 
 		$slug = str_replace( '.php', '', basename( $plugin ) );
 		$addon = pmpro_getAddonBySlug( $slug );
-		if ( ! empty( $addon ) && $addon->License == 'plus' && ! pmpro_license_isValid( null, 'plus' ) ) {
-			$msg = __( 'You must enter a valid PMPro Plus License Key under Settings > PMPro License to update this add on.', 'paid-memberships-pro' );
+		if ( ! empty( $addon ) && pmpro_license_type_is_premium( $addon['License'] ) && ! pmpro_can_download_addon_with_license( $addon['License'] ) ) {
+			$msg = sprintf( __( 'You must enter a valid PMPro %s License Key under Settings > PMPro License to update this add on.', 'paid-memberships-pro' ), ucwords( $addon['License'] ) );
 			echo '<div class="error"><p>' . $msg . '</p></div>';
 
 			// can exit WP now
 			exit;
 		}
 	}
-
-	/*
-        TODO:
-		* Check for PMPro Plug plugins
-		* If a plus plugin is found, check the PMPro license key
-		* If the key is missing or invalid, throw an error
-		* Show appropriate footer and exit... maybe do something else to keep plugin update from happening
-	*/
 }
 add_action( 'admin_init', 'pmpro_admin_init_updating_plugins' );
+
+/**
+ * Check if an add on can be downloaded based on it's license.
+ * @since 2.7.4
+ * @param string $addon_license The license type of the add on to check.
+ * @return bool True if the user's license key can download that add on,
+ *              False if the user's license key cannot download it.
+ */
+function pmpro_can_download_addon_with_license( $addon_license ) {
+	// The wordpress.org and free types can always be downloaded.
+	if ( $addon_license === 'wordpress.org' || $addon_license === 'free' ) {
+		return true;
+	}
+	
+	// Check premium license types.
+	if ( $addon_license === 'standard' ) {
+		$types_to_check = array( 'standard', 'plus', 'builder' );
+	}
+	if ( $addon_license === 'plus' ) {
+		$types_to_check = array( 'plus', 'builder' );
+	}
+	if ( $addon_license === 'builder' ) {
+		$types_to_check = array( 'builder' );
+	}
+	
+	// Some unknown license?
+	if ( empty( $types_to_check ) ) {
+		return false;
+	}
+	
+	return pmpro_license_isValid( null, $types_to_check );		
+}
