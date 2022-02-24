@@ -831,7 +831,7 @@
 				do_action($after_action, $this);
 
 				// Create a subscription if we need to.
-				$this->create_subscription_for_order();
+				$this->maybe_create_subscription_for_order();
 
 				return $this->getMemberOrderByID($this->id);
 			}
@@ -1097,7 +1097,7 @@
 		 *
 		 * @return bool True if a subscription was created, false if not.
 		 */
-		private function create_subscription_for_order() {
+		private function maybe_create_subscription_for_order() {
 			global $pmpro_level;
 
 			// Make sure that this order is a part of a subscription.
