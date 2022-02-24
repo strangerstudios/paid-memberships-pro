@@ -410,11 +410,11 @@ if ( '' === $txn_type && 'Refunded' === $payment_status ) {
 
 			//send an email to the member
 			$myemail = new PMProEmail();
-			$myemail->sendCancelEmail( $user );
+			$myemail->sendRefundedEmail( $user );
 
 			//send an email to the admin
 			$myemail = new PMProEmail();
-			$myemail->sendCancelAdminEmail( $user, $last_subscription_order->membership_id );
+			$myemail->sendRefundedAdminEmail( $user, $last_subscription_order->membership_id );
 
 		}
 

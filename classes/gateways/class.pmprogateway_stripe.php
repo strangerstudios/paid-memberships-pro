@@ -4319,16 +4319,24 @@ class PMProGateway_stripe extends PMProGateway {
 			$client = new Stripe_Client( $secretkey );
 			$refund = $client->refunds->create( [
 				'charge' => $transaction_id,
-			] );
-
-			$success = true;
-			
-			global $current_user;
-
-			$order->notes = $order->notes.' '.sprintf( __('Order successfully refunded on %1$s for transaction  ID %2$s by %3$s', 'paid-memberships-pro' ), date_i18n('Y-m-d H:i:s'), $transaction_id, $current_user->display_name );	
+			] );			
 
 			if ( $refund->status == 'succeeded' ) {
-				$order->status = 'refunded';					
+				$order->status = 'refunded';	
+
+				$success = true;
+			
+				global $current_user;
+
+				$order->notes = $order->notes.' '.sprintf( __('Order successfully refunded on %1$s for transaction ID %2$s by %3$s', 'paid-memberships-pro' ), date_i18n('Y-m-d H:i:s'), $transaction_id, $current_user->display_name );	
+
+				//send an email to the member
+				$myemail = new PMProEmail();
+				$myemail->sendRefundedEmail( $current_user );
+
+				//send an email to the admin
+				$myemail = new PMProEmail();
+				$myemail->sendRefundedAdminEmail( $current_user, $order->membership_id );				
 			} else {
 				$order->notes = trim( $order->notes ) .' '. __('An error occured while attempting to process this refund.', 'paid-memberships-pro' );
 

@@ -498,7 +498,30 @@ $pmpro_email_templates_defaults = array(
 <p>Log in to your membership account here: !!login_url!!</p>', 'paid-memberships-pro' ),
 		'help_text' => __( 'This email is sent to the member when the trial portion of their membership level is approaching, at an interval based on the term of the trial.', 'paid-memberships-pro' )
 	),
+	'refund'                   => array(
+		'subject'     => __( "Your membership at !!sitename!! has been REFUNDED", 'paid-memberships-pro' ),
+		'description' => __('Refund', 'paid-memberships-pro'),
+		'body' => __( '<p>Your membership at !!sitename!! has been refunded.</p>
 
+<p>Account: !!display_name!! (!!user_email!!)</p>
+<p>Membership Level: !!membership_level_name!!</p>
+
+<p>If you did not request this refund and would like more information please contact us at !!siteemail!!</p>', 'paid-memberships-pro' ),
+		'help_text' => __( 'The site administrator can manually refund a user\'s membership through the WordPress admin. This email is sent to the member as confirmation of a refunded membership.', 'paid-memberships-pro' )
+	),
+	'refund_admin'             => array(
+		'subject'     => __( "Membership for !!user_login!! at !!sitename!! has been REFUNDED", 'paid-memberships-pro' ),
+		'description' => __('Refund (admin)', 'paid-memberships-pro'),
+		'body' => __( '<p>The membership for !!user_login!! at !!sitename!! has been refunded.</p>
+
+<p>Account: !!display_name!! (!!user_email!!)</p>
+<p>Membership Level: !!membership_level_name!!</p>
+<p>Start Date: !!startdate!!</p>
+<p>End Date: !!enddate!!</p>
+
+<p>Log in to your WordPress admin here: !!login_url!!</p>', 'paid-memberships-pro' ),
+		'help_text' => __( 'The site administrator can manually refund a user\'s membership through the WordPress admin. This email is sent to the site administrator as confirmation of a refunded membership.', 'paid-memberships-pro' )
+	),
 );
 
 // add SCA payment action required emails if we're using PMPro 2.1 or later

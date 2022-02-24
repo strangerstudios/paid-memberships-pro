@@ -82,7 +82,8 @@
 	}
 
 	global $wpdb;
-
+	error_log( print_r( $pmpro_stripe_event, true ) );
+	error_log($pmpro_stripe_event->type);
 	//real event?
 	if(!empty($pmpro_stripe_event->id))
 	{
@@ -412,19 +413,62 @@
 				pmpro_stripeWebhookExit();
 			}
 		}
-	}
-	elseif( $pmpro_stripe_event->type == "charge.refunded" )
-	{
+		elseif( $pmpro_stripe_event->type == "charge.refunded" )
+		{
+		
+		/**
+		 * Stripe's charge.refunded takes a while to come through. 
+		 *
+		 * When requesting a refund, you'll have a payment_intent.succeeded first,
+		 * and then the charge.refunded will come through later.
+		 */
 
-		//Lets handle refunds here
-
-		$payment_transaction_id = $pmpro_stripe_event->id;
+		/**
+		 * ch_ prefixed. Using this in case someone tries to resend a webhook, then we get this ID
+		 * instead of an event ID
+		 */
+		$payment_transaction_id = $pmpro_stripe_event->data->object->id;
 
 		$morder = new MemberOrder();
 
-		$morder->getMemberOrderByPaymentTransactionID( $payment_transaction_id );
+		$morder->getMemberOrderByPaymentTransactionID( $payment_transaction_id );		
 
-		error_log(print_r( $morder, true ) );
+		if( !empty( $morder ) ) { 
+
+			//We've got the right order			
+			$morder->status = 'refunded';
+
+			// translators: %1$s is the date of the refund. %2$s is the transaction ID.
+			
+			$logstr .= sprintf( __('Order successfully refunded on %1$s for transaction ID %2$s at the gateway.', 'paid-memberships-pro' ), date_i18n('Y-m-d H:i:s'), $payment_transaction_id );	
+			//Add to order notes. 
+			
+			// translators: %1$s is the date of the refund. %2$s is the transaction ID.
+			$morder->notes = trim( $morder->notes ) .' '. sprintf( __('Order successfully refunded on %1$s for transaction ID %2$s at the gateway.', 'paid-memberships-pro' ), date_i18n('Y-m-d H:i:s'), $payment_transaction_id );
+
+			$morder->SaveOrder();
+
+			$user = get_user_by( 'email', $morder->Email );
+
+			//send an email to the member
+			$myemail = new PMProEmail();
+			$myemail->sendRefundedEmail( $user );
+
+			//send an email to the admin
+			$myemail = new PMProEmail();
+			$myemail->sendRefundedAdminEmail( $user, $morder->membership_id );
+
+			pmpro_stripeWebhookExit();
+
+		} else {
+
+			//We can't find that order
+			
+			$logstr .= sprintf( __('%1$s - Failed to update transaction ID %2$s after it was refunded at the gateway.', 'paid-memberships-pro' ), $payment_transaction_id, date_i18n('Y-m-d H:i:s') );
+
+			pmpro_stripeWebhookExit();
+		
+		}		
 
 	}	
 	else
@@ -435,7 +479,7 @@
 			$logstr .= "No event ID given.";
 		pmpro_stripeWebhookExit();
 	}
-
+}
 	/**
 	 * @deprecated 2.7.0.
 	 */
