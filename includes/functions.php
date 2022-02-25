@@ -4040,7 +4040,7 @@ function pmpro_refund_order( $order ){
 		/**
 		 * Processes a refund for Stripe orders
 		 *
-		 * @since TBA
+		 * @since TBD
 		 *
 		 * @param bool Default return value is false to determine if the refund was successfully processed. 
 		 * @param object $order The Member Order we want to refund
@@ -4053,7 +4053,7 @@ function pmpro_refund_order( $order ){
 		/**
 		 * Processes a refund for PayPal orders
 		 *
-		 * @since TBA
+		 * @since TBD
 		 *
 		 * @param bool Default return value is false to determine if the refund was successfully processed. 
 		 * @param object $order The Member Order we want to refund
@@ -4065,7 +4065,8 @@ function pmpro_refund_order( $order ){
 	return $success;
 
 }
- * Send the WP new user notification email, but also check our filter.
+
+/* Send the WP new user notification email, but also check our filter.
  * NOTE: includes/email.php has code to check for the related setting and
  *       filters on the pmpro_wp_new_user_notification hook.
  * @since 2.7.4

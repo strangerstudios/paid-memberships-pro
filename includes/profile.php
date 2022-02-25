@@ -376,10 +376,18 @@ function pmpro_membership_level_profile_fields_update()
 	if( !empty( $_REQUEST['refund_last_subscription'] ) ) {
 
 		$order = new MemberOrder();
-		$order->getLastMemberOrder( $user_ID );
 
-		if( !empty( $order ) && !empty( $order->id ) ) {
-			
+		//We need to get a different order if we already cancelled it on the profile edit page.
+		if( !empty( $_REQUEST['cancel_subscription'] ) ){
+			$order_status = 'cancelled';
+		} else {
+			$order_status = 'success';
+		}
+
+		$order->getLastMemberOrder( $user_ID, $order_status );
+
+		if( !empty( $order ) && !empty( $order->id ) ) {				
+
 			//Gateways that we want to support this can run the action from their own class.
 			pmpro_refund_order( $order );
 
