@@ -1075,24 +1075,31 @@
 		 *
 		 * @param bool    Status of the refund (default: false)
 		 * @param object  The Member Order Object
-		 *
+		 * @since TBD
+		 * 
 		 * @return bool   Status of the processed refund
 		 */
 		public static function process_refund( $success, $morder ){
 
+			//need a transaction id
+			if ( empty( $morder->payment_transaction_id ) ) {
+				return false;
+			}
+
 			$transaction_id = $morder->payment_transaction_id;
 
+			//Get the real transaction ID
 			if ( $transaction_id === $morder->subscription_transaction_id ) {
 				$transaction_id = $morder->Gateway->getRealPaymentTransactionId( $morder );
 			}
 
 			$httpParsedResponseAr = $morder->Gateway->PPHttpPost( 'RefundTransaction', '&TRANSACTIONID='.$transaction_id );		
 
-			if ( 'SUCCESS' === strtoupper( $httpParsedResponseAr['ACK'] ) ) {
+			if ( 'success' === strtolower( $httpParsedResponseAr['ACK'] ) ) {
 				
 				$success = true;
 
-				$morder->updateStatus( 'refunded' );
+				$morder->status = 'refunded';
 
 				global $current_user;
 
@@ -1112,7 +1119,7 @@
 				//The refund failed, so lets return the gateway message
 				
 				// translators: %1$s is the Transaction ID. %1$s is the Gateway Error
-				$morder->notes = trim( $morder->notes ) .' '. sprintf( __( 'There was a problem processing a refund for transaction ID %1$s. Gateway Error: %2$s ', 'paid-memberships-pro' ), $transaction_id, $httpParsedResponseAr['L_LONGMESSAGE0'] );
+				$morder->notes = trim( $morder->notes .' '. sprintf( __( 'There was a problem processing a refund for transaction ID %1$s. Gateway Error: %2$s ', 'paid-memberships-pro' ), $transaction_id, $httpParsedResponseAr['L_LONGMESSAGE0'] ) );
 			}
 
 			$morder->SaveOrder();

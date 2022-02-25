@@ -4321,14 +4321,16 @@ class PMProGateway_stripe extends PMProGateway {
 				'charge' => $transaction_id,
 			] );			
 
+			//Make sure we're refunding an order that was successful
 			if ( $refund->status == 'succeeded' ) {
+
 				$order->status = 'refunded';	
 
 				$success = true;
 			
 				global $current_user;
 
-				$order->notes = $order->notes.' '.sprintf( __('Order successfully refunded on %1$s for transaction ID %2$s by %3$s', 'paid-memberships-pro' ), date_i18n('Y-m-d H:i:s'), $transaction_id, $current_user->display_name );	
+				$order->notes = trim( $order->notes.' '.sprintf( __('Order successfully refunded on %1$s for transaction ID %2$s by %3$s', 'paid-memberships-pro' ), date_i18n('Y-m-d H:i:s'), $transaction_id, $current_user->display_name ) );	
 
 				//send an email to the member
 				$myemail = new PMProEmail();

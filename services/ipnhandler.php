@@ -385,7 +385,7 @@ if ( strtolower( $payment_status ) === 'refunded' ) {
 				// so ignoring the error is the best thing to do. dont care too much.
 				//The refund failed, so lets return the gateway message
 			
-				ipnlog( "Canceled membership for user with id = " . $last_subscription_order->user_id . ". Subscription transaction ID = " . $payment_transaction_id . ". " . $httpParsedResponseAr['L_LONGMESSAGE0'] );
+				ipnlog( "Canceled membership for user with id = " . $morder->user_id . ". Subscription transaction ID = " . $payment_transaction_id . ". " . $httpParsedResponseAr['L_LONGMESSAGE0'] );
 				
 			}
 		
@@ -420,13 +420,6 @@ if ( strtolower( $payment_status ) === 'refunded' ) {
 
 	}
 
-}
-
-// Order Refunded (PayPal Express)
-if( '' === $txn_type && 'Refunded' === $payment_status ) {
-	ipnlog( 'Refund for this payment: ' . print_r( $_POST, true ) );
-
-	pmpro_ipnExit();
 }
 
 //Other

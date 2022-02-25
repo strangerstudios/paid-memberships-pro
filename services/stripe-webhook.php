@@ -433,9 +433,9 @@
 
 		$morder->getMemberOrderByPaymentTransactionID( $payment_transaction_id );		
 
-		if( !empty( $morder ) ) { 
-
-			//We've got the right order			
+		//We've got the right order	
+		if( !empty( $morder->id ) ) { 
+				
 			$morder->status = 'refunded';
 
 			// translators: %1$s is the date of the refund. %2$s is the transaction ID.
