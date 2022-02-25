@@ -693,7 +693,22 @@ class PMPro_Subscription {
 			}
 		}
 
-    return $this->save();
+		return $this->save();
+	}
+
+	/**
+	 * Update a subscription when a recurring payment is made. Should only
+	 * be used on `pmpro_subscription_payment_completed` hook.
+	 *
+	 * @since TBD
+	 *
+	 * @param MemberOrder $order The order for the recurring payment that was just processed.
+	 */
+	public static function update_subscription_for_order( $odrer ) {
+		$subscription = self::get_subscription_from_subscription_transaction_id( $order->subscription_transaction_id, $order->gateway, $order->gateway_environment );
+		if ( ! empty( $subscription ) ) {
+			$subscription->update();
+		}
 	}
 
 	/**
@@ -1134,3 +1149,7 @@ class PMPro_Subscription {
 	}
 
 } // end of class
+
+// Update the subscription status when a recurring payment is successful.
+// Cancellations during IPNs/Webhooks are handled when the order is "changed" to 'cancelled' status, which is passed through to the sub.
+add_action( 'pmpro_subscription_payment_completed', [ 'PMPro_Subscription', 'update_subscription_for_order' ], 10, 1 );
