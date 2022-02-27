@@ -1762,7 +1762,7 @@ class PMProGateway_stripe extends PMProGateway {
 	 * @param array $values Current settings.
 	 * @param string $gateway currently being shown.
 	 */
-	private function show_connect_payment_option_fields( $livemode = true, $values, $gateway ) {
+	private function show_connect_payment_option_fields( $livemode, $values, $gateway ) {
 		$gateway_environment = $this->gateway_environment;
 
 		$stripe_legacy_key      = $values['stripe_publishablekey'];
