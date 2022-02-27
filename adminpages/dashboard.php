@@ -105,14 +105,14 @@ function pmpro_dashboard_welcome_callback() { ?>
 	<div class="pmpro-dashboard-welcome-columns">
         <div class="pmpro-dashboard-welcome-column">
     		<?php global $pmpro_level_ready, $pmpro_gateway_ready, $pmpro_pages_ready; ?>
-    		<h3><?php echo esc_attr_e( 'Initial Setup', 'paid-memberships-pro' ); ?></h3>
+    		<h3><?php esc_html_e( 'Initial Setup', 'paid-memberships-pro' ); ?></h3>
     		<ul>
     			<?php if ( current_user_can( 'pmpro_membershiplevels' ) ) { ?>
     				<li>
     					<?php if ( empty( $pmpro_level_ready ) ) { ?>
-    						<a href="<?php echo esc_url( admin_url( 'admin.php?page=pmpro-membershiplevels&edit=-1' ) );?>"><i class="dashicons dashicons-admin-users"></i> <?php echo esc_attr_e( 'Create a Membership Level', 'paid-memberships-pro' ); ?></a>
+    						<a href="<?php echo esc_url( admin_url( 'admin.php?page=pmpro-membershiplevels&edit=-1' ) );?>"><i class="dashicons dashicons-admin-users"></i> <?php esc_html_e( 'Create a Membership Level', 'paid-memberships-pro' ); ?></a>
     					<?php } else { ?>
-    						<a href="<?php echo esc_url( admin_url( 'admin.php?page=pmpro-membershiplevels' ) );?>"><i class="dashicons dashicons-admin-users"></i> <?php echo esc_attr_e( 'View Membership Levels', 'paid-memberships-pro' ); ?></a>
+    						<a href="<?php echo esc_url( admin_url( 'admin.php?page=pmpro-membershiplevels' ) );?>"><i class="dashicons dashicons-admin-users"></i> <?php esc_html_e( 'View Membership Levels', 'paid-memberships-pro' ); ?></a>
     					<?php } ?>
     				</li>
     			<?php } ?>
@@ -120,9 +120,9 @@ function pmpro_dashboard_welcome_callback() { ?>
     			<?php if ( current_user_can( 'pmpro_pagesettings' ) ) { ?>
     				<li>
     					<?php if ( empty( $pmpro_pages_ready ) ) { ?>
-    						<a href="<?php echo esc_url( admin_url( 'admin.php?page=pmpro-pagesettings' ) );?>"><i class="dashicons dashicons-welcome-add-page"></i> <?php echo esc_attr_e( 'Generate Membership Pages', 'paid-memberships-pro' ); ?></a>
+    						<a href="<?php echo esc_url( admin_url( 'admin.php?page=pmpro-pagesettings' ) );?>"><i class="dashicons dashicons-welcome-add-page"></i> <?php esc_html_e( 'Generate Membership Pages', 'paid-memberships-pro' ); ?></a>
     					<?php } else { ?>
-    						<a href="<?php echo esc_url( admin_url( 'admin.php?page=pmpro-pagesettings' ) );?>"><i class="dashicons dashicons-welcome-add-page"></i> <?php echo esc_attr_e( 'Manage Membership Pages', 'paid-memberships-pro' ); ?>
+    						<a href="<?php echo esc_url( admin_url( 'admin.php?page=pmpro-pagesettings' ) );?>"><i class="dashicons dashicons-welcome-add-page"></i> <?php esc_html_e( 'Manage Membership Pages', 'paid-memberships-pro' ); ?>
     					<?php } ?>
     				</li>
     			<?php } ?>
@@ -130,39 +130,39 @@ function pmpro_dashboard_welcome_callback() { ?>
     			<?php if ( current_user_can( 'pmpro_pagesettings' ) ) { ?>
     				<li>
     					<?php if ( empty( $pmpro_gateway_ready ) ) { ?>
-    						<a href="<?php echo esc_url( admin_url( 'admin.php?page=pmpro-paymentsettings' ) );?>"><i class="dashicons dashicons-cart"></i> <?php echo esc_attr_e( 'Configure Payment Settings', 'paid-memberships-pro' ); ?></a>
+    						<a href="<?php echo esc_url( admin_url( 'admin.php?page=pmpro-paymentsettings' ) );?>"><i class="dashicons dashicons-cart"></i> <?php esc_html_e( 'Configure Payment Settings', 'paid-memberships-pro' ); ?></a>
     					<?php } else { ?>
-    						<a href="<?php echo esc_url( admin_url( 'admin.php?page=pmpro-paymentsettings' ) );?>"><i class="dashicons dashicons-cart"></i> <?php echo esc_attr_e( 'Configure Payment Settings', 'paid-memberships-pro' ); ?></a>
+    						<a href="<?php echo esc_url( admin_url( 'admin.php?page=pmpro-paymentsettings' ) );?>"><i class="dashicons dashicons-cart"></i> <?php esc_html_e( 'Configure Payment Settings', 'paid-memberships-pro' ); ?></a>
     					<?php } ?>
     				</li>
     			<?php } ?>
     		</ul>
-    		<h3><?php echo esc_attr_e( 'Other Settings', 'paid-memberships-pro' ); ?></h3>
+    		<h3><?php esc_html_e( 'Other Settings', 'paid-memberships-pro' ); ?></h3>
     		<ul>
     			<?php if ( current_user_can( 'pmpro_emailsettings' ) ) { ?>
-    				<li><a href="<?php echo esc_url( admin_url( 'admin.php?page=pmpro-emailsettings' ) );?>"><i class="dashicons dashicons-email"></i> <?php echo esc_attr_e( 'Confirm Email Settings', 'paid-memberships-pro' );?></a></li>
+    				<li><a href="<?php echo esc_url( admin_url( 'admin.php?page=pmpro-emailsettings' ) );?>"><i class="dashicons dashicons-email"></i> <?php esc_html_e( 'Confirm Email Settings', 'paid-memberships-pro' );?></a></li>
     			<?php } ?>
 
 				<?php if ( current_user_can( 'pmpro_emailtemplates' ) ) { ?>
-					<li><a href="<?php echo esc_url( admin_url( 'admin.php?page=pmpro-emailtemplates' ) );?>"><i class="dashicons dashicons-editor-spellcheck"></i> <?php echo esc_attr_e( 'Customize Email Templates', 'paid-memberships-pro' );?></a></li>
+					<li><a href="<?php echo esc_url( admin_url( 'admin.php?page=pmpro-emailtemplates' ) );?>"><i class="dashicons dashicons-editor-spellcheck"></i> <?php esc_html_e( 'Customize Email Templates', 'paid-memberships-pro' );?></a></li>
 				<?php } ?>
 
     			<?php if ( current_user_can( 'pmpro_advancedsettings' ) ) { ?>
-    				<li><a href="<?php echo esc_url( admin_url( 'admin.php?page=pmpro-advancedsettings' ) );?>"><i class="dashicons dashicons-admin-settings"></i> <?php echo esc_attr_e( 'View Advanced Settings', 'paid-memberships-pro' ); ?></a></li>
+    				<li><a href="<?php echo esc_url( admin_url( 'admin.php?page=pmpro-advancedsettings' ) );?>"><i class="dashicons dashicons-admin-settings"></i> <?php esc_html_e( 'View Advanced Settings', 'paid-memberships-pro' ); ?></a></li>
     			<?php } ?>
 
     			<?php if ( current_user_can( 'pmpro_addons' ) ) { ?>
-    				<li><a href="<?php echo esc_url( admin_url( 'admin.php?page=pmpro-addons' ) );?>"><i class="dashicons dashicons-admin-plugins"></i> <?php echo esc_attr_e( 'Explore Add Ons for Additional Features', 'paid-memberships-pro' ); ?></a></li>
+    				<li><a href="<?php echo esc_url( admin_url( 'admin.php?page=pmpro-addons' ) );?>"><i class="dashicons dashicons-admin-plugins"></i> <?php esc_html_e( 'Explore Add Ons for Additional Features', 'paid-memberships-pro' ); ?></a></li>
     			<?php } ?>
     		</ul>
     		<hr />
     		<p class="text-center">
     			<?php echo esc_html( __( 'For guidance as your begin these steps,', 'paid-memberships-pro' ) ); ?>
-    			<a href="https://www.paidmembershipspro.com/documentation/initial-plugin-setup/?utm_source=plugin&utm_medium=pmpro-dashboard&utm_campaign=documentation&utm_content=initial-plugin-setup" target="_blank"><?php echo esc_attr_e( 'view the Initial Setup Video and Docs.', 'paid-memberships-pro' ); ?></a>
+    			<a href="https://www.paidmembershipspro.com/documentation/initial-plugin-setup/?utm_source=plugin&utm_medium=pmpro-dashboard&utm_campaign=documentation&utm_content=initial-plugin-setup" target="_blank"><?php esc_html_e( 'view the Initial Setup Video and Docs.', 'paid-memberships-pro' ); ?></a>
     		</p>
     	</div> <!-- end pmpro-dashboard-welcome-column -->
     	<div class="pmpro-dashboard-welcome-column">
-    		<h3><?php echo esc_attr_e( 'Support License', 'paid-memberships-pro' ); ?></h3>
+    		<h3><?php esc_html_e( 'Support License', 'paid-memberships-pro' ); ?></h3>
     		<?php
     			// Get saved license.
     			$key = get_option( 'pmpro_license_key', '' );
@@ -170,12 +170,12 @@ function pmpro_dashboard_welcome_callback() { ?>
     		?>
 			<?php if ( ! pmpro_license_isValid() && empty( $key ) ) { ?>
     			<p class="pmpro_message pmpro_error">
-    				<strong><?php echo esc_html_e( 'No support license key found.', 'paid-memberships-pro' ); ?></strong><br />
+    				<strong><?php esc_html_e( 'No support license key found.', 'paid-memberships-pro' ); ?></strong><br />
     				<?php printf(__( '<a href="%s">Enter your key here &raquo;</a>', 'paid-memberships-pro' ), admin_url( 'admin.php?page=pmpro-license' ) );?>
     			</p>
 			<?php } elseif ( ! pmpro_license_isValid() ) { ?>
 				<p class="pmpro_message pmpro_alert">
-    				<strong><?php echo esc_html_e( 'Your license is invalid or expired.', 'paid-memberships-pro' ); ?></strong><br />
+    				<strong><?php esc_html_e( 'Your license is invalid or expired.', 'paid-memberships-pro' ); ?></strong><br />
 					<?php printf(__( '<a href="%s">View your membership account</a> to verify your license key.', 'paid-memberships-pro' ), 'https://www.paidmembershipspro.com/login/?redirect_to=%2Fmembership-account%2F%3Futm_source%3Dplugin%26utm_medium%3Dpmpro-dashboard%26utm_campaign%3Dmembership-account%26utm_content%3Dverify-license-key' );?>
     		<?php } elseif ( pmpro_license_isValid() && ! pmpro_license_isValid( $key, pmpro_license_get_premium_types() ) ) { ?>
     			<p class="pmpro_message pmpro_alert"><?php printf(__('Your <strong>%1$s</strong> key is active. %1$s accounts include access to documentation and free downloads.', 'paid-memberships-pro' ), ucwords( $pmpro_license_check['license'] ) );?></p>
