@@ -207,7 +207,7 @@
 							if(is_array($cdescription))
 								$cdescription = $cdescription['name'];
 						?>
-						<option value="<?php echo $ccode?>" <?php if($currency == $ccode) { ?>selected="selected"<?php } ?>><?php echo $cdescription?></option>
+						<option value="<?php echo esc_attr( $ccode ) ?>" <?php if($currency == $ccode) { ?>selected="selected"<?php } ?>><?php echo $cdescription?></option>
 						<?php
 						}
 					?>

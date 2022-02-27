@@ -36,7 +36,7 @@ function pmpro_membership_level_profile_fields($user)
 					foreach($levels as $level)
 					{
 				?>
-					<option value="<?php echo $level->id?>" <?php selected($level->id, (isset($user->membership_level->ID) ? $user->membership_level->ID : 0 )); ?>><?php echo $level->name?></option>
+					<option value="<?php echo esc_attr( $level->id ) ?>" <?php selected($level->id, (isset($user->membership_level->ID) ? $user->membership_level->ID : 0 )); ?>><?php echo $level->name?></option>
 				<?php
 					}
 				?>
@@ -75,25 +75,25 @@ function pmpro_membership_level_profile_fields($user)
 							for($i = 1; $i < 13; $i++)
 							{
 							?>
-							<option value="<?php echo $i?>" <?php if($i == $selected_expires_month) { ?>selected="selected"<?php } ?>><?php echo date("M", strtotime($i . "/15/" . date("Y", current_time( 'timestamp' ) ), current_time("timestamp")))?></option>
+							<option value="<?php echo esc_attr( $i ) ?>" <?php if($i == $selected_expires_month) { ?>selected="selected"<?php } ?>><?php echo date("M", strtotime($i . "/15/" . date("Y", current_time( 'timestamp' ) ), current_time("timestamp")))?></option>
 							<?php
 							}
 						?>
 					</select>
-					<input name="expires_day" type="text" size="2" value="<?php echo $selected_expires_day?>" />
-					<input name="expires_year" type="text" size="4" value="<?php echo $selected_expires_year?>" />
+					<input name="expires_day" type="text" size="2" value="<?php echo esc_attr( $selected_expires_day ) ?>" />
+					<input name="expires_year" type="text" size="4" value="<?php echo esc_attr( $selected_expires_year ) ?>" />
 					<?php _e('at', 'paid-memberships-pro'); ?>
 					<select name='expires_hour'>
 						<?php
 						for( $i = 0; $i <= 24; $i++ ){
-							echo "<option value='".$i."' ".selected( $selected_expires_hour, sprintf("%02d", $i ), true ).">".sprintf("%02d", $i )."</option>";
+							echo "<option value='".esc_attr($i)."' ".selected( $selected_expires_hour, sprintf("%02d", $i ), true ).">".sprintf("%02d", $i )."</option>";
 						}
 						?>
 					</select>
 					<select name='expires_minute'>
 						<?php
 						for( $i = 0; $i <= 59; $i++ ){
-							echo "<option value='".$i."' ".selected( $selected_expires_minute, sprintf("%02d", $i ), true ).">".sprintf("%02d", $i )."</option>";
+							echo "<option value='".esc_attr($i)."' ".selected( $selected_expires_minute, sprintf("%02d", $i ), true ).">".sprintf("%02d", $i )."</option>";
 						}
 						?>
 					</select>
@@ -787,7 +787,7 @@ function pmpro_member_profile_edit_form() {
 				do_action( 'pmpro_show_user_profile', $current_user );
 			?>
 			<input type="hidden" name="action" value="update-profile" />
-			<input type="hidden" name="user_id" value="<?php echo $current_user->ID; ?>" />
+			<input type="hidden" name="user_id" value="<?php echo esc_attr( $current_user->ID ) ; ?>" />
 			<div class="<?php echo pmpro_get_element_class( 'pmpro_submit' ); ?>">
 				<hr />
 				<input type="submit" name="submit" class="<?php echo pmpro_get_element_class( 'pmpro_btn pmpro_btn-submit', 'pmpro_btn-submit' ); ?>" value="<?php _e( 'Update Profile', 'paid-memberships-pro' );?>" />

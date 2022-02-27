@@ -138,7 +138,7 @@
 				<label for="twocheckout_accountnumber"><?php _e('Account Number', 'paid-memberships-pro' );?>:</label>
 			</th>
 			<td>
-				<input type="text" name="twocheckout_accountnumber" value="<?php echo $values['twocheckout_accountnumber']?>" class="regular-text code" />
+				<input type="text" name="twocheckout_accountnumber" value="<?php echo esc_attr( $values['twocheckout_accountnumber'] ) ?>" class="regular-text code" />
 				<p class="description"><?php esc_html_e( 'Click on the profile icon in 2Checkout to find your Account Number.', 'paid-memberships-pro' ); ?></p>
 			</td>
 		</tr>
@@ -147,7 +147,7 @@
 				<label for="twocheckout_secretword"><?php _e('Secret Word', 'paid-memberships-pro' );?>:</label>
 			</th>
 			<td>
-				<input type="text" name="twocheckout_secretword" size="60" value="<?php echo $values['twocheckout_secretword']?>" />
+				<input type="text" name="twocheckout_secretword" size="60" value="<?php echo esc_attr( $values['twocheckout_secretword'] ) ?>" />
 				<p class="description"><?php _e('Go to Account &raquo; Site Management. Look under Checkout Options to find the Secret Word.', 'paid-memberships-pro' ); ?></p>
 			</td>
 		</tr>

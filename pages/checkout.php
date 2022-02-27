@@ -308,7 +308,7 @@ if ( empty( $default_gateway ) ) {
 								$bcountry = $pmpro_default_country;
 							}
 							foreach($pmpro_countries as $abbr => $country) { ?>
-								<option value="<?php echo $abbr?>" <?php if($abbr == $bcountry) { ?>selected="selected"<?php } ?>><?php echo $country?></option>
+								<option value="<?php echo esc_attr( $abbr ) ?>" <?php if($abbr == $bcountry) { ?>selected="selected"<?php } ?>><?php echo $country?></option>
 							<?php } ?>
 						</select>
 					</div> <!-- end pmpro_checkout-field-bcountry -->
@@ -378,7 +378,7 @@ if ( empty( $default_gateway ) ) {
 							<label for="CardType"><?php _e('Card Type', 'paid-memberships-pro' );?></label>
 							<select id="CardType" name="CardType" class="<?php echo pmpro_get_element_class( '', 'CardType' ); ?>">
 								<?php foreach($pmpro_accepted_credit_cards as $cc) { ?>
-									<option value="<?php echo $cc; ?>" <?php if($CardType == $cc) { ?>selected="selected"<?php } ?>><?php echo $cc; ?></option>
+									<option value="<?php echo esc_attr( $cc ) ; ?>" <?php if($CardType == $cc) { ?>selected="selected"<?php } ?>><?php echo $cc; ?></option>
 								<?php } ?>
 							</select>
 						</div>
@@ -411,7 +411,7 @@ if ( empty( $default_gateway ) ) {
 							for($i = date_i18n("Y"); $i < intval( date_i18n("Y") ) + intval( $num_years ); $i++)
 							{
 						?>
-							<option value="<?php echo $i?>" <?php if($ExpirationYear == $i) { ?>selected="selected"<?php } ?>><?php echo $i?></option>
+							<option value="<?php echo esc_attr( $i ) ?>" <?php if($ExpirationYear == $i) { ?>selected="selected"<?php } ?>><?php echo $i?></option>
 						<?php
 							}
 						?>

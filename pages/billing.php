@@ -264,7 +264,7 @@
 									if(!$bcountry)
 										$bcountry = $pmpro_default_country;
 								?>
-								<option value="<?php echo $abbr?>" <?php if($abbr == $bcountry) { ?>selected="selected"<?php } ?>><?php echo $country?></option>
+								<option value="<?php echo esc_attr( $abbr ) ?>" <?php if($abbr == $bcountry) { ?>selected="selected"<?php } ?>><?php echo $country?></option>
 								<?php
 								}
 							?>
@@ -333,7 +333,7 @@
 									<label for="CardType"><?php _e('Card Type', 'paid-memberships-pro' );?></label>
 									<select id="CardType" name="CardType" class="<?php echo pmpro_get_element_class( '', 'CardType' );?>">
 										<?php foreach($pmpro_accepted_credit_cards as $cc) { ?>
-											<option value="<?php echo $cc?>" <?php if($CardType == $cc) { ?>selected="selected"<?php } ?>><?php echo $cc?></option>
+											<option value="<?php echo esc_attr( $cc ) ?>" <?php if($CardType == $cc) { ?>selected="selected"<?php } ?>><?php echo $cc?></option>
 										<?php } ?>
 									</select>
 								</div> <!-- end pmpro_payment-card-type -->
@@ -391,7 +391,7 @@
 									for($i = date_i18n("Y"); $i < date_i18n("Y") + 10; $i++)
 									{
 								?>
-									<option value="<?php echo $i?>" <?php if($ExpirationYear == $i) { ?>selected="selected"<?php } ?>><?php echo $i?></option>
+									<option value="<?php echo esc_attr( $i ) ?>" <?php if($ExpirationYear == $i) { ?>selected="selected"<?php } ?>><?php echo $i?></option>
 								<?php
 									}
 								?>

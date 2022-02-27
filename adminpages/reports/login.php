@@ -109,7 +109,7 @@ function pmpro_report_login_page()
 					foreach($levels as $level)
 					{
 				?>
-					<option value="<?php echo $level->id?>" <?php if($l == $level->id) { ?>selected="selected"<?php } ?>><?php echo $level->name?></option>
+					<option value="<?php echo esc_attr( $level->id ) ?>" <?php if($l == $level->id) { ?>selected="selected"<?php } ?>><?php echo $level->name?></option>
 				<?php
 					}
 				?>
