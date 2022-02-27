@@ -51,7 +51,7 @@ function pmpro_init_recaptcha() {
 						var pmpro_recaptcha_validated = false;
 						var pmpro_recaptcha_onSubmit = function(token) {
 							if ( pmpro_recaptcha_validated ) {
-								jQuery('#pmpro_form').submit();
+								jQuery('#pmpro_form').trigger('submit');
 								return;
 							} else {
 								jQuery.ajax({

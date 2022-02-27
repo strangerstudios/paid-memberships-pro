@@ -312,7 +312,7 @@ class PMProGateway_stripe extends PMProGateway {
 							btn.parent().remove();
 							jQuery('.pmpro_stripe_legacy_keys').show();
 							jQuery('.pmpro_stripe_legacy_keys').addClass('gateway_stripe');
-							jQuery('#stripe_publishablekey').focus();
+							jQuery('#stripe_publishablekey').trigger('focus');
 						});
 					});
 				</script>

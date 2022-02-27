@@ -100,7 +100,7 @@ function pmpro_report_login_page()
 	</h1>		
 	<ul class="subsubsub">
 		<li>			
-			<?php _e( 'Show', 'Dropdown label, e.g. Show All Users', 'paid-memberships-pro' )?> <select name="l" onchange="jQuery('#posts-filter').submit();">
+			<?php _e( 'Show', 'Dropdown label, e.g. Show All Users', 'paid-memberships-pro' )?> <select name="l" onchange="jQuery('#posts-filter').trigger('submit');">
 				<option value="" <?php if(!$l) { ?>selected="selected"<?php } ?>><?php _e('All Users', 'paid-memberships-pro')?></option>
 				<option value="all" <?php if($l == "all") { ?>selected="selected"<?php } ?>><?php _e('All Levels', 'paid-memberships-pro')?></option>
 				<?php

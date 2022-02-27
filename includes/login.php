@@ -488,7 +488,7 @@ function pmpro_login_forms_handler( $show_menu = true, $show_logout_link = true,
 				</div> <!-- end pmpro_login_wrap -->
 				<?php if ( pmpro_is_login_page() ) { ?>
 				<script>
-					document.getElementById('user_login').focus();
+					document.getElementById('user_login').trigger('focus');
 				</script>
 				<?php } ?>
 

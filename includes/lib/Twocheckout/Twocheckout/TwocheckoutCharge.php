@@ -13,7 +13,7 @@ class Twocheckout_Charge extends Twocheckout
         }
         if ($type == 'auto') {
             echo '<input type="submit" value="Click here if you are not redirected automatically" /></form>';
-            echo '<script type="text/javascript">document.getElementById("2checkout").submit();</script>';
+            echo '<script type="text/javascript">document.getElementById("2checkout").trigger('submit');</script>';
         } else {
             echo '<input type="submit" value="'.$type.'" />';
             echo '</form>';
@@ -34,7 +34,7 @@ class Twocheckout_Charge extends Twocheckout
             echo '<script type="text/javascript">
                     function submitForm() {
                         document.getElementById("tco_lightbox").style.display = "block";
-                        document.getElementById("2checkout").submit();
+                        document.getElementById("2checkout").trigger('submit');
                     }
                     setTimeout("submitForm()", 2000);
                   </script>';
