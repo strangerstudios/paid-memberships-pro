@@ -539,7 +539,7 @@ if ( function_exists( 'pmpro_displayAds' ) && pmpro_displayAds() ) {
 			</script>
 		</div> <!-- end pmpro_admin_section-other-settings -->		
 		<p class="submit">
-			<input name="savesettings" type="submit" class="button button-primary" value="<?php _e('Save Settings', 'paid-memberships-pro' );?>" />
+			<input name="savesettings" type="submit" class="button button-primary" value="<?php esc_attr_e('Save Settings', 'paid-memberships-pro' );?>" />
 		</p>
 	</form>
 

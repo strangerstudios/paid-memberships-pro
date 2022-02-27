@@ -278,7 +278,7 @@
 			<?php if($gateway == "paypal" || $gateway == "paypalexpress" || $gateway == "paypalstandard") { ?>
 			<span id="pmpro_paypalexpress_checkout" <?php if(($gateway != "paypalexpress" && $gateway != "paypalstandard") || !$pmpro_requirebilling) { ?>style="display: none;"<?php } ?>>
 				<input type="hidden" name="submit-checkout" value="1" />
-				<input type="image" id="pmpro_btn-submit-paypal" class="<?php echo pmpro_get_element_class( 'pmpro_btn-submit-checkout' ); ?>" value="<?php _e('Check Out with PayPal', 'paid-memberships-pro' );?> &raquo;" src="<?php echo apply_filters("pmpro_paypal_button_image", "https://www.paypalobjects.com/webstatic/en_US/i/buttons/checkout-logo-medium.png");?>" />
+				<input type="image" id="pmpro_btn-submit-paypal" class="<?php echo pmpro_get_element_class( 'pmpro_btn-submit-checkout' ); ?>" value="<?php esc_attr_e('Check Out with PayPal', 'paid-memberships-pro' );?> &raquo;" src="<?php echo apply_filters("pmpro_paypal_button_image", "https://www.paypalobjects.com/webstatic/en_US/i/buttons/checkout-logo-medium.png");?>" />
 			</span>
 			<?php } ?>
 

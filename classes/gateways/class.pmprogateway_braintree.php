@@ -508,7 +508,7 @@ use Braintree\WebhookNotification as Braintree_WebhookNotification;
 						<div class="<?php echo pmpro_get_element_class( 'pmpro_checkout-field pmpro_payment-discount-code', 'pmpro_payment-discount-code' ); ?>">
 							<label for="discount_code"><?php _e('Discount Code', 'paid-memberships-pro' );?></label>
 							<input class="<?php echo pmpro_get_element_class( 'input', 'discount_code' ); ?>" id="discount_code" name="discount_code" type="text" size="20" value="<?php echo esc_attr($discount_code)?>" />
-							<input type="button" id="discount_code_button" name="discount_code_button" value="<?php _e('Apply', 'paid-memberships-pro' );?>" />
+							<input type="button" id="discount_code_button" name="discount_code_button" value="<?php esc_attr_e('Apply', 'paid-memberships-pro' );?>" />
 							<p id="discount_code_message" class="<?php echo pmpro_get_element_class( 'pmpro_message' ); ?>" style="display: none;"></p>
 						</div>
 					<?php } ?>

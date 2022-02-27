@@ -790,8 +790,8 @@ function pmpro_member_profile_edit_form() {
 			<input type="hidden" name="user_id" value="<?php echo esc_attr( $current_user->ID ) ; ?>" />
 			<div class="<?php echo pmpro_get_element_class( 'pmpro_submit' ); ?>">
 				<hr />
-				<input type="submit" name="submit" class="<?php echo pmpro_get_element_class( 'pmpro_btn pmpro_btn-submit', 'pmpro_btn-submit' ); ?>" value="<?php _e( 'Update Profile', 'paid-memberships-pro' );?>" />
-				<input type="button" name="cancel" class="<?php echo pmpro_get_element_class( 'pmpro_btn pmpro_btn-cancel', 'pmpro_btn-cancel' ); ?>" value="<?php _e( 'Cancel', 'paid-memberships-pro' );?>" onclick="location.href='<?php echo pmpro_url( 'account'); ?>';" />
+				<input type="submit" name="submit" class="<?php echo pmpro_get_element_class( 'pmpro_btn pmpro_btn-submit', 'pmpro_btn-submit' ); ?>" value="<?php esc_attr_e( 'Update Profile', 'paid-memberships-pro' );?>" />
+				<input type="button" name="cancel" class="<?php echo pmpro_get_element_class( 'pmpro_btn pmpro_btn-cancel', 'pmpro_btn-cancel' ); ?>" value="<?php esc_attr_e( 'Cancel', 'paid-memberships-pro' );?>" onclick="location.href='<?php echo pmpro_url( 'account'); ?>';" />
 			</div>
 		</form>
 	</div> <!-- end pmpro_member_profile_edit_wrap -->

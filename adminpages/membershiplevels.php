@@ -671,8 +671,8 @@
 		?>
 
 		<p class="submit topborder">
-			<input name="save" type="submit" class="button button-primary" value="<?php _e('Save Level', 'paid-memberships-pro' ); ?>" />
-			<input name="cancel" type="button" class="button" value="<?php _e('Cancel', 'paid-memberships-pro' ); ?>" onclick="location.href='<?php echo add_query_arg( 'page', 'pmpro-membershiplevels' , admin_url( '/admin.php') ); ?>';" />
+			<input name="save" type="submit" class="button button-primary" value="<?php esc_attr_e('Save Level', 'paid-memberships-pro' ); ?>" />
+			<input name="cancel" type="button" class="button" value="<?php esc_attr_e('Cancel', 'paid-memberships-pro' ); ?>" onclick="location.href='<?php echo add_query_arg( 'page', 'pmpro-membershiplevels' , admin_url( '/admin.php') ); ?>';" />
 		</p>
 	</form>
 	</div>
@@ -786,7 +786,7 @@
 				<label class="screen-reader-text" for="post-search-input"><?php _e('Search Levels', 'paid-memberships-pro' );?>:</label>
 				<input type="hidden" name="page" value="pmpro-membershiplevels" />
 				<input id="post-search-input" type="text" value="<?php echo esc_attr($s); ?>" name="s" size="30" />
-				<input class="button" type="submit" value="<?php _e('Search Levels', 'paid-memberships-pro' );?>" id="search-submit" />
+				<input class="button" type="submit" value="<?php esc_attr_e('Search Levels', 'paid-memberships-pro' );?>" id="search-submit" />
 			</p>
 		</form>
 		<h1 class="wp-heading-inline"><?php esc_html_e( 'Membership Levels', 'paid-memberships-pro' ); ?></h1>

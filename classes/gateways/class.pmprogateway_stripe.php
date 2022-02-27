@@ -800,7 +800,7 @@ class PMProGateway_stripe extends PMProGateway {
                                    id="discount_code" name="discount_code" type="text" size="10"
                                    value="<?php echo esc_attr( $discount_code ) ?>"/>
                             <input type="button" id="discount_code_button" name="discount_code_button"
-                                   value="<?php _e( 'Apply', 'paid-memberships-pro' ); ?>"/>
+                                   value="<?php esc_attr_e( 'Apply', 'paid-memberships-pro' ); ?>"/>
                             <p id="discount_code_message" class="<?php echo pmpro_get_element_class( 'pmpro_message' ); ?>" style="display: none;"></p>
                         </div>
 					<?php } ?>

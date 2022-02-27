@@ -104,7 +104,7 @@ if ( empty( $default_gateway ) ) {
 				<div id="other_discount_code_tr" style="display: none;">
 					<label for="other_discount_code"><?php _e('Discount Code', 'paid-memberships-pro' );?></label>
 					<input id="other_discount_code" name="other_discount_code" type="text" class="<?php echo pmpro_get_element_class( 'input pmpro_alter_price', 'other_discount_code' ); ?>" size="20" value="<?php echo esc_attr($discount_code); ?>" />
-					<input type="button" name="other_discount_code_button" id="other_discount_code_button" value="<?php _e('Apply', 'paid-memberships-pro' );?>" />
+					<input type="button" name="other_discount_code_button" id="other_discount_code_button" value="<?php esc_attr_e('Apply', 'paid-memberships-pro' );?>" />
 				</div>
 				<?php } ?>
 			</div> <!-- end pmpro_checkout-fields -->
@@ -429,7 +429,7 @@ if ( empty( $default_gateway ) ) {
 					<div class="<?php echo pmpro_get_element_class( 'pmpro_checkout-field pmpro_payment-discount-code', 'pmpro_payment-discount-code' ); ?>">
 						<label for="discount_code"><?php _e('Discount Code', 'paid-memberships-pro' );?></label>
 						<input class="<?php echo pmpro_get_element_class( 'input pmpro_alter_price', 'discount_code' ); ?>" id="discount_code" name="discount_code" type="text" size="10" value="<?php echo esc_attr($discount_code); ?>" />
-						<input type="button" id="discount_code_button" name="discount_code_button" value="<?php _e('Apply', 'paid-memberships-pro' );?>" />
+						<input type="button" id="discount_code_button" name="discount_code_button" value="<?php esc_attr_e('Apply', 'paid-memberships-pro' );?>" />
 						<p id="discount_code_message" class="<?php echo pmpro_get_element_class( 'pmpro_message', 'discount_code_message' ); ?>" style="display: none;"></p>
 					</div>
 				<?php } ?>
@@ -511,7 +511,7 @@ if ( empty( $default_gateway ) ) {
 				<input type="hidden" name="confirm" value="1" />
 				<input type="hidden" name="token" value="<?php echo esc_attr($pmpro_paypal_token); ?>" />
 				<input type="hidden" name="gateway" value="<?php echo esc_attr($gateway); ?>" />
-				<input type="submit" id="pmpro_btn-submit" class="<?php echo pmpro_get_element_class( 'pmpro_btn pmpro_btn-submit-checkout', 'pmpro_btn-submit-checkout' ); ?>" value="<?php _e('Complete Payment', 'paid-memberships-pro' );?> &raquo;" />
+				<input type="submit" id="pmpro_btn-submit" class="<?php echo pmpro_get_element_class( 'pmpro_btn pmpro_btn-submit-checkout', 'pmpro_btn-submit-checkout' ); ?>" value="<?php esc_attr_e('Complete Payment', 'paid-memberships-pro' );?> &raquo;" />
 			</span>
 
 		<?php } else { ?>

@@ -294,7 +294,7 @@
 		</tbody>
 		</table>
 		<p class="submit">
-			<input name="savesettings" type="submit" class="button button-primary" value="<?php _e('Save Settings', 'paid-memberships-pro' );?>" />
+			<input name="savesettings" type="submit" class="button button-primary" value="<?php esc_attr_e('Save Settings', 'paid-memberships-pro' );?>" />
 		</p>
 	</form>
 
