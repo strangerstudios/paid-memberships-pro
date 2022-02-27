@@ -424,13 +424,13 @@ function pmpro_membership_history_profile_fields( $user ) {
 					<tr>
 						<td><?php echo date_i18n( get_option( 'date_format'), $invoice->timestamp ); ?></td>
 						<td class="order_code column-order_code has-row-actions">
-							<a href="<?php echo add_query_arg( array( 'page' => 'pmpro-orders', 'order' => $invoice->id ), admin_url('admin.php' ) ); ?>"><?php echo $invoice->code; ?></a><br />
+							<a href="<?php echo esc_url( add_query_arg( array( 'page' => 'pmpro-orders', 'order' => $invoice->id ), admin_url( 'admin.php' ) ) ); ?>"><?php echo $invoice->code; ?></a><br />
 							<div class="row-actions">
 								<span class="edit">
-									<a title="<?php esc_attr_e( 'Edit', 'paid-memberships-pro' ); ?>" href="<?php echo add_query_arg( array( 'page' => 'pmpro-orders', 'order' => $invoice->id ), admin_url('admin.php' ) ); ?>"><?php esc_html_e( 'Edit', 'paid-memberships-pro' ); ?></a>
+									<a title="<?php esc_attr_e( 'Edit', 'paid-memberships-pro' ); ?>" href="<?php echo esc_url( add_query_arg( array( 'page' => 'pmpro-orders', 'order' => $invoice->id ), admin_url('admin.php' ) ) ); ?>"><?php esc_html_e( 'Edit', 'paid-memberships-pro' ); ?></a>
 								</span> |
 								<span class="print">
-									<a target="_blank" title="<?php _e( 'Print', 'paid-memberships-pro' ); ?>" href="<?php echo add_query_arg( array( 'action' => 'pmpro_orders_print_view', 'order' => $invoice->id ), admin_url('admin-ajax.php' ) ); ?>"><?php esc_html_e( 'Print', 'paid-memberships-pro' ); ?></a>
+									<a target="_blank" title="<?php _e( 'Print', 'paid-memberships-pro' ); ?>" href="<?php echo esc_url( add_query_arg( array( 'action' => 'pmpro_orders_print_view', 'order' => $invoice->id ), admin_url('admin-ajax.php' ) ) ); ?>"><?php esc_html_e( 'Print', 'paid-memberships-pro' ); ?></a>
 								</span>
 								<?php if ( function_exists( 'pmpro_add_email_order_modal' ) ) { ?>
 									 |

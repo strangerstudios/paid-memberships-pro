@@ -790,7 +790,7 @@
 			</p>
 		</form>
 		<h1 class="wp-heading-inline"><?php esc_html_e( 'Membership Levels', 'paid-memberships-pro' ); ?></h1>
-		<a href="<?php echo add_query_arg( array( 'page' => 'pmpro-membershiplevels', 'edit' => -1 ), admin_url( 'admin.php' ) ); ?>" class="page-title-action"><?php esc_html_e( 'Add New Level', 'paid-memberships-pro' ); ?></a>
+		<a href="<?php echo esc_url( add_query_arg( array( 'page' => 'pmpro-membershiplevels', 'edit' => -1 ), admin_url( 'admin.php' ) ) ); ?>" class="page-title-action"><?php esc_html_e( 'Add New Level', 'paid-memberships-pro' ); ?></a>
 		<hr class="wp-header-end">
 
 		<?php if(empty($_REQUEST['s']) && count($reordered_levels) > 1) { ?>
@@ -828,7 +828,7 @@
 			<tr class="<?php if($count++ % 2 == 1) { ?>alternate<?php } ?> <?php if(!$level->allow_signups) { ?>pmpro_gray<?php } ?> <?php if(!pmpro_checkLevelForStripeCompatibility($level) || !pmpro_checkLevelForBraintreeCompatibility($level) || !pmpro_checkLevelForPayflowCompatibility($level) || !pmpro_checkLevelForTwoCheckoutCompatibility($level)) { ?>pmpro_error<?php } ?>">
 				<td><?php echo $level->id?></td>
 				<td class="level_name has-row-actions">
-					<span class="level-name"><a href="<?php echo add_query_arg( array( 'page' => 'pmpro-membershiplevels', 'edit' => $level->id ), admin_url( 'admin.php' ) ); ?>"><?php esc_html_e( $level->name ); ?></a></span>
+					<span class="level-name"><a href="<?php echo esc_url( add_query_arg( array( 'page' => 'pmpro-membershiplevels', 'edit' => $level->id ), admin_url( 'admin.php' ) ) ); ?>"><?php esc_html_e( $level->name ); ?></a></span>
 					<div class="row-actions">
 						<?php
 						$delete_text = esc_html(
@@ -933,7 +933,7 @@
 				<td><?php
 					if($level->allow_signups) {
 						if ( ! empty( $pmpro_pages['checkout'] ) ) {
-							?><a target="_blank" href="<?php echo add_query_arg( 'level', $level->id, pmpro_url("checkout") );?>"><?php esc_html_e('Yes', 'paid-memberships-pro' );?></a><?php
+							?><a target="_blank" href="<?php echo esc_url( add_query_arg( 'level', $level->id, pmpro_url("checkout") ) );?>"><?php esc_html_e('Yes', 'paid-memberships-pro' );?></a><?php
 						} else {
 							_e('Yes', 'paid-memberships-pro' );
 						}
