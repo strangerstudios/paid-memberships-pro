@@ -725,8 +725,8 @@
 			</div>
 
 			<p class="submit topborder">
-				<input name="save" type="submit" class="button button-primary" value="Save Code" />
-				<input name="cancel" type="button" class="button" value="Cancel" onclick="location.href='<?php echo admin_url( '/admin.php?page=pmpro-discountcodes')?>';" />
+				<input name="save" type="submit" class="button button-primary" value="<?php esc_attr_e( 'Save Code', 'paid-memberships-pro' ) ?>" />
+				<input name="cancel" type="button" class="button" value="<?php esc_attr_e( 'Cancel', 'paid-memberships-pro' ) ?>" onclick="location.href='<?php echo admin_url( '/admin.php?page=pmpro-discountcodes')?>';" />
 			</p>
 			</form>
 		</div>

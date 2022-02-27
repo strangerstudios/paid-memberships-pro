@@ -121,7 +121,7 @@ function pmpro_report_login_page()
 		<input type="hidden" name="page" value="pmpro-reports" />		
 		<input type="hidden" name="report" value="login" />		
 		<input id="post-search-input" type="text" value="<?php echo esc_attr($s)?>" name="s"/>
-		<input class="button" type="submit" value="Search Members"/>
+		<input class="button" type="submit" value="<?php esc_attr_e( 'Search Members', 'paid-memberships-pro' ) ?>"/>
 	</p>
 	<?php 
 		//some vars for the search					
