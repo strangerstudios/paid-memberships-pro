@@ -765,8 +765,8 @@
 
 			if( empty($request->card->cardType) )
 			{
-				$order->error = __( "Error validating credit card type. Make sure your credit card number is correct and try again.", "paid-memberships-pro", "paid-memberships-pro" );
-				$order->shorterror = __( "Error validating credit card type. Make sure your credit card number is correct and try again.", "paid-memberships-pro", "paid-memberships-pro" );
+				$order->error = __( "Error validating credit card type. Make sure your credit card number is correct and try again.", "paid-memberships-pro" );
+				$order->shorterror = __( "Error validating credit card type. Make sure your credit card number is correct and try again.", "paid-memberships-pro" );
 				return false;
 			}
 
