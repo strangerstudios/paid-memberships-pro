@@ -162,7 +162,7 @@ require_once(dirname(__FILE__) . "/admin_header.php");
 ?>
 
 
-    <form action="<?php echo admin_url('admin.php?page=pmpro-pagesettings');?>" method="post" enctype="multipart/form-data">
+    <form action="<?php echo esc_url( admin_url( 'admin.php?page=pmpro-pagesettings' ) );?>" method="post" enctype="multipart/form-data">
         <?php wp_nonce_field('savesettings', 'pmpro_pagesettings_nonce');?>
 
         <h1 class="wp-heading-inline"><?php esc_html_e( 'Page Settings', 'paid-memberships-pro' ); ?></h1>

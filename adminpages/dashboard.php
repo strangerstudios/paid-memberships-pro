@@ -110,9 +110,9 @@ function pmpro_dashboard_welcome_callback() { ?>
     			<?php if ( current_user_can( 'pmpro_membershiplevels' ) ) { ?>
     				<li>
     					<?php if ( empty( $pmpro_level_ready ) ) { ?>
-    						<a href="<?php echo admin_url( 'admin.php?page=pmpro-membershiplevels&edit=-1' );?>"><i class="dashicons dashicons-admin-users"></i> <?php echo esc_attr_e( 'Create a Membership Level', 'paid-memberships-pro' ); ?></a>
+    						<a href="<?php echo esc_url( admin_url( 'admin.php?page=pmpro-membershiplevels&edit=-1' ) );?>"><i class="dashicons dashicons-admin-users"></i> <?php echo esc_attr_e( 'Create a Membership Level', 'paid-memberships-pro' ); ?></a>
     					<?php } else { ?>
-    						<a href="<?php echo admin_url( 'admin.php?page=pmpro-membershiplevels' );?>"><i class="dashicons dashicons-admin-users"></i> <?php echo esc_attr_e( 'View Membership Levels', 'paid-memberships-pro' ); ?></a>
+    						<a href="<?php echo esc_url( admin_url( 'admin.php?page=pmpro-membershiplevels' ) );?>"><i class="dashicons dashicons-admin-users"></i> <?php echo esc_attr_e( 'View Membership Levels', 'paid-memberships-pro' ); ?></a>
     					<?php } ?>
     				</li>
     			<?php } ?>
@@ -120,9 +120,9 @@ function pmpro_dashboard_welcome_callback() { ?>
     			<?php if ( current_user_can( 'pmpro_pagesettings' ) ) { ?>
     				<li>
     					<?php if ( empty( $pmpro_pages_ready ) ) { ?>
-    						<a href="<?php echo admin_url( 'admin.php?page=pmpro-pagesettings' );?>"><i class="dashicons dashicons-welcome-add-page"></i> <?php echo esc_attr_e( 'Generate Membership Pages', 'paid-memberships-pro' ); ?></a>
+    						<a href="<?php echo esc_url( admin_url( 'admin.php?page=pmpro-pagesettings' ) );?>"><i class="dashicons dashicons-welcome-add-page"></i> <?php echo esc_attr_e( 'Generate Membership Pages', 'paid-memberships-pro' ); ?></a>
     					<?php } else { ?>
-    						<a href="<?php echo admin_url( 'admin.php?page=pmpro-pagesettings' );?>"><i class="dashicons dashicons-welcome-add-page"></i> <?php echo esc_attr_e( 'Manage Membership Pages', 'paid-memberships-pro' ); ?>
+    						<a href="<?php echo esc_url( admin_url( 'admin.php?page=pmpro-pagesettings' ) );?>"><i class="dashicons dashicons-welcome-add-page"></i> <?php echo esc_attr_e( 'Manage Membership Pages', 'paid-memberships-pro' ); ?>
     					<?php } ?>
     				</li>
     			<?php } ?>
@@ -130,9 +130,9 @@ function pmpro_dashboard_welcome_callback() { ?>
     			<?php if ( current_user_can( 'pmpro_pagesettings' ) ) { ?>
     				<li>
     					<?php if ( empty( $pmpro_gateway_ready ) ) { ?>
-    						<a href="<?php echo admin_url( 'admin.php?page=pmpro-paymentsettings' );?>"><i class="dashicons dashicons-cart"></i> <?php echo esc_attr_e( 'Configure Payment Settings', 'paid-memberships-pro' ); ?></a>
+    						<a href="<?php echo esc_url( admin_url( 'admin.php?page=pmpro-paymentsettings' ) );?>"><i class="dashicons dashicons-cart"></i> <?php echo esc_attr_e( 'Configure Payment Settings', 'paid-memberships-pro' ); ?></a>
     					<?php } else { ?>
-    						<a href="<?php echo admin_url( 'admin.php?page=pmpro-paymentsettings' );?>"><i class="dashicons dashicons-cart"></i> <?php echo esc_attr_e( 'Configure Payment Settings', 'paid-memberships-pro' ); ?></a>
+    						<a href="<?php echo esc_url( admin_url( 'admin.php?page=pmpro-paymentsettings' ) );?>"><i class="dashicons dashicons-cart"></i> <?php echo esc_attr_e( 'Configure Payment Settings', 'paid-memberships-pro' ); ?></a>
     					<?php } ?>
     				</li>
     			<?php } ?>
@@ -140,19 +140,19 @@ function pmpro_dashboard_welcome_callback() { ?>
     		<h3><?php echo esc_attr_e( 'Other Settings', 'paid-memberships-pro' ); ?></h3>
     		<ul>
     			<?php if ( current_user_can( 'pmpro_emailsettings' ) ) { ?>
-    				<li><a href="<?php echo admin_url( 'admin.php?page=pmpro-emailsettings' );?>"><i class="dashicons dashicons-email"></i> <?php echo esc_attr_e( 'Confirm Email Settings', 'paid-memberships-pro' );?></a></li>
+    				<li><a href="<?php echo esc_url( admin_url( 'admin.php?page=pmpro-emailsettings' ) );?>"><i class="dashicons dashicons-email"></i> <?php echo esc_attr_e( 'Confirm Email Settings', 'paid-memberships-pro' );?></a></li>
     			<?php } ?>
 
 				<?php if ( current_user_can( 'pmpro_emailtemplates' ) ) { ?>
-					<li><a href="<?php echo admin_url( 'admin.php?page=pmpro-emailtemplates' );?>"><i class="dashicons dashicons-editor-spellcheck"></i> <?php echo esc_attr_e( 'Customize Email Templates', 'paid-memberships-pro' );?></a></li>
+					<li><a href="<?php echo esc_url( admin_url( 'admin.php?page=pmpro-emailtemplates' ) );?>"><i class="dashicons dashicons-editor-spellcheck"></i> <?php echo esc_attr_e( 'Customize Email Templates', 'paid-memberships-pro' );?></a></li>
 				<?php } ?>
 
     			<?php if ( current_user_can( 'pmpro_advancedsettings' ) ) { ?>
-    				<li><a href="<?php echo admin_url( 'admin.php?page=pmpro-advancedsettings' );?>"><i class="dashicons dashicons-admin-settings"></i> <?php echo esc_attr_e( 'View Advanced Settings', 'paid-memberships-pro' ); ?></a></li>
+    				<li><a href="<?php echo esc_url( admin_url( 'admin.php?page=pmpro-advancedsettings' ) );?>"><i class="dashicons dashicons-admin-settings"></i> <?php echo esc_attr_e( 'View Advanced Settings', 'paid-memberships-pro' ); ?></a></li>
     			<?php } ?>
 
     			<?php if ( current_user_can( 'pmpro_addons' ) ) { ?>
-    				<li><a href="<?php echo admin_url( 'admin.php?page=pmpro-addons' );?>"><i class="dashicons dashicons-admin-plugins"></i> <?php echo esc_attr_e( 'Explore Add Ons for Additional Features', 'paid-memberships-pro' ); ?></a></li>
+    				<li><a href="<?php echo esc_url( admin_url( 'admin.php?page=pmpro-addons' ) );?>"><i class="dashicons dashicons-admin-plugins"></i> <?php echo esc_attr_e( 'Explore Add Ons for Additional Features', 'paid-memberships-pro' ); ?></a></li>
     			<?php } ?>
     		</ul>
     		<hr />
@@ -268,7 +268,7 @@ function pmpro_dashboard_report_recent_members_callback() {
     	</table>
     </span>
     <?php if ( ! empty( $theusers ) ) { ?>
-        <p class="text-center"><a class="button button-primary" href="<?php echo admin_url( 'admin.php?page=pmpro-memberslist' ); ?>"><?php esc_attr_e( 'View All Members ', 'paid-memberships-pro' ); ?></a></p>
+        <p class="text-center"><a class="button button-primary" href="<?php echo esc_url( admin_url( 'admin.php?page=pmpro-memberslist' ) ); ?>"><?php esc_attr_e( 'View All Members ', 'paid-memberships-pro' ); ?></a></p>
     <?php } ?>
 	<?php
 }
@@ -359,7 +359,7 @@ function pmpro_dashboard_report_recent_orders_callback() {
     	</table>
     </span>
     <?php if ( ! empty( $order_ids ) ) { ?>
-        <p class="text-center"><a class="button button-primary" href="<?php echo admin_url( 'admin.php?page=pmpro-orders' ); ?>"><?php esc_attr_e( 'View All Orders ', 'paid-memberships-pro' ); ?></a></p>
+        <p class="text-center"><a class="button button-primary" href="<?php echo esc_url( admin_url( 'admin.php?page=pmpro-orders' ) ); ?>"><?php esc_attr_e( 'View All Orders ', 'paid-memberships-pro' ); ?></a></p>
     <?php } ?>
 	<?php
 }
