@@ -3,6 +3,9 @@
  * Template for Email Invoices
  *
  * @since 1.8.6
+ * 
+ * @var object $level
+ * @var MemberOrder $order
  */
 ?>
 <table style="width:600px;margin-left:auto;margin-right:auto;">

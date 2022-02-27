@@ -3,6 +3,9 @@
  * Template for Print Invoices
  *
  * @since 1.8.6
+ * 
+ * @var object $level
+ * @var MemberOrder $order
  */
 ?>
 <!doctype html>
