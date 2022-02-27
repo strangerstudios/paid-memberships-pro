@@ -405,7 +405,7 @@ function pmpro_add_email_order_modal() {
 		// Update fields in email modal.
 		jQuery(document).ready(function ($) {
 			var order, order_id;
-			$('.email_link').click(function () {
+			$('.email_link').on('click',function () {
 				order_id = $(this).data('order');
 				$('input[name=order]').val(order_id);
 				// Get email address from order ID

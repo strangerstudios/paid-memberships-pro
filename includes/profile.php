@@ -99,7 +99,7 @@ function pmpro_membership_level_profile_fields($user)
 					</select>
 				</span>
 				<script>
-					jQuery('#expires').change(function() {
+					jQuery('#expires').on('change',function() {
 						if(jQuery(this).val() == 1)
 							jQuery('#expires_date').show();
 						else
@@ -210,23 +210,23 @@ function pmpro_membership_level_profile_fields($user)
 			}
 
 			//run check when fields change
-            $membership_level_select.change(function() {
+            $membership_level_select.on('change',function() {
                 pmpro_checkForLevelChangeInProfile();
             });
-			$expires_select.change(function() {
+			$expires_select.on('change',function() {
                 pmpro_checkForLevelChangeInProfile();
             });
-			$expires_month_select.change(function() {
+			$expires_month_select.on('change',function() {
                 pmpro_checkForLevelChangeInProfile();
             });
-			$expires_day_text.change(function() {
+			$expires_day_text.on('change',function() {
                 pmpro_checkForLevelChangeInProfile();
             });
-			$expires_year_text.change(function() {
+			$expires_year_text.on('change',function() {
                 pmpro_checkForLevelChangeInProfile();
             });
 
-            jQuery("#cancel_subscription").change(function() {
+            jQuery("#cancel_subscription").on('change',function() {
                 if(jQuery(this).attr('checked') == 'checked')
                 {
                     jQuery("#cancel_description").hide();
@@ -548,7 +548,7 @@ function pmpro_membership_history_profile_fields( $user ) {
 		<script>
 			//tabs
 			jQuery(document).ready(function() {
-				jQuery('#member-history-filters a.tab').click(function() {
+				jQuery('#member-history-filters a.tab').on('click',function() {
 					//which tab?
 					var tab = jQuery(this).parent().attr('id').replace('member-history-filters-', '');
 					

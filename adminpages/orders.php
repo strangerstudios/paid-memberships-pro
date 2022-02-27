@@ -1118,7 +1118,7 @@ if ( function_exists( 'pmpro_add_email_order_modal' ) ) {
 		<script>
 			//update month/year when period dropdown is changed
 			jQuery(document).ready(function () {
-				jQuery('#filter').change(function () {
+				jQuery('#filter').on('change',function () {
 					pmpro_ShowMonthOrYear();
 				});
 			});

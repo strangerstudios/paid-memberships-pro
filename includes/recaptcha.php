@@ -97,7 +97,7 @@ function pmpro_init_recaptcha() {
 							var submit_buttons = jQuery('.pmpro_btn-submit-checkout');
 							submit_buttons.each(function() {
 								if(jQuery(this).attr('id') != 'pmpro_btn-submit') {
-									jQuery(this).click(function(event) {
+									jQuery(this).on('click',function(event) {
 										event.preventDefault();
 										grecaptcha.execute();
 									});
@@ -139,7 +139,7 @@ function pmpro_init_recaptcha() {
 						
 						// Check validation on submit.
 						jQuery(document).ready(function(){
-							jQuery('#pmpro_form').submit(function(event){
+							jQuery('#pmpro_form').on('submit',function(event){
 								if( pmpro_recaptcha_validated == false ) {
 									event.preventDefault();
 									

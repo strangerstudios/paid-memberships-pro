@@ -99,7 +99,7 @@ function pmpro_report_memberships_widget() {
 </span>
 <script>
 	jQuery(document).ready(function() {
-		jQuery('.pmpro_report_th ').click(function(event) {
+		jQuery('.pmpro_report_th ').on('click',function(event) {
 			//prevent form submit onclick
 			event.preventDefault();
 
@@ -391,7 +391,7 @@ function pmpro_report_memberships_page()
 	<script>
 		//update month/year when period dropdown is changed
 		jQuery(document).ready(function() {
-			jQuery('#period').change(function() {
+			jQuery('#period').on('change',function() {
 				pmpro_ShowMonthOrYear();
 			});
 		});

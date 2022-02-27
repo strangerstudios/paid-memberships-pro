@@ -600,7 +600,7 @@
 
 								pmpro_expirationWarningCheck();
 
-								jQuery('#recurring,#expiration').change(function() { pmpro_expirationWarningCheck(); });
+								jQuery('#recurring,#expiration').on('change',function() { pmpro_expirationWarningCheck(); });
 							});
 						</script>
 					</td>
