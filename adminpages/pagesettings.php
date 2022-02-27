@@ -386,7 +386,7 @@ require_once(dirname(__FILE__) . "/admin_header.php");
             </tr>
 			<tr>
 				<th scope="row" valign="top">
-					<label for="login_page_id"><?php esc_attr_e( 'Log In Page', 'paid-memberships-pro' ); ?>:</label>
+					<label for="login_page_id"><?php esc_html_e( 'Log In Page', 'paid-memberships-pro' ); ?>:</label>
 				</th>
 				<td>
 					<?php
@@ -415,7 +415,7 @@ require_once(dirname(__FILE__) . "/admin_header.php");
 			</tr>
 			<tr>
 				<th scope="row" valign="top">
-					<label for="member_profile_edit_page_id"><?php esc_attr_e( 'Member Profile Edit Page', 'paid-memberships-pro' ); ?>:</label>
+					<label for="member_profile_edit_page_id"><?php esc_html_e( 'Member Profile Edit Page', 'paid-memberships-pro' ); ?>:</label>
 				</th>
 				<td>
 					<?php
