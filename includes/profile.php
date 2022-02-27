@@ -427,7 +427,7 @@ function pmpro_membership_history_profile_fields( $user ) {
 							<a href="<?php echo add_query_arg( array( 'page' => 'pmpro-orders', 'order' => $invoice->id ), admin_url('admin.php' ) ); ?>"><?php echo $invoice->code; ?></a><br />
 							<div class="row-actions">
 								<span class="edit">
-									<a title="<?php esc_html_e( 'Edit', 'paid-memberships-pro' ); ?>" href="<?php echo add_query_arg( array( 'page' => 'pmpro-orders', 'order' => $invoice->id ), admin_url('admin.php' ) ); ?>"><?php esc_html_e( 'Edit', 'paid-memberships-pro' ); ?></a>
+									<a title="<?php esc_attr_e( 'Edit', 'paid-memberships-pro' ); ?>" href="<?php echo add_query_arg( array( 'page' => 'pmpro-orders', 'order' => $invoice->id ), admin_url('admin.php' ) ); ?>"><?php esc_html_e( 'Edit', 'paid-memberships-pro' ); ?></a>
 								</span> |
 								<span class="print">
 									<a target="_blank" title="<?php _e( 'Print', 'paid-memberships-pro' ); ?>" href="<?php echo add_query_arg( array( 'action' => 'pmpro_orders_print_view', 'order' => $invoice->id ), admin_url('admin-ajax.php' ) ); ?>"><?php esc_html_e( 'Print', 'paid-memberships-pro' ); ?></a>
@@ -435,7 +435,7 @@ function pmpro_membership_history_profile_fields( $user ) {
 								<?php if ( function_exists( 'pmpro_add_email_order_modal' ) ) { ?>
 									 |
 									<span class="email">
-										<a title="<?php esc_html_e( 'Email', 'paid-memberships-pro' ); ?>" href="#TB_inline?width=600&height=200&inlineId=email_invoice" class="thickbox email_link" data-order="<?php echo esc_attr( $invoice->id ); ?>"><?php esc_html_e( 'Email', 'paid-memberships-pro' ); ?></a>
+										<a title="<?php esc_attr_e( 'Email', 'paid-memberships-pro' ); ?>" href="#TB_inline?width=600&height=200&inlineId=email_invoice" class="thickbox email_link" data-order="<?php echo esc_attr( $invoice->id ); ?>"><?php esc_html_e( 'Email', 'paid-memberships-pro' ); ?></a>
 									</span>
 								<?php } ?>
 							</div> <!-- end .row-actions -->
