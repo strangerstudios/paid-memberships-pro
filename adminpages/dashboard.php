@@ -222,16 +222,16 @@ function pmpro_dashboard_report_recent_members_callback() {
     	<table class="wp-list-table widefat fixed striped">
     		<thead>
     			<tr>
-    				<th><?php _e( 'Username', 'paid-memberships-pro' );?></th>
-    				<th><?php _e( 'Level', 'paid-memberships-pro' );?></th>
-    				<th><?php _e( 'Joined', 'paid-memberships-pro' );?></th>
-    				<th><?php _e( 'Expires', 'paid-memberships-pro' ); ?></th>
+    				<th><?php esc_html_e( 'Username', 'paid-memberships-pro' );?></th>
+    				<th><?php esc_html_e( 'Level', 'paid-memberships-pro' );?></th>
+    				<th><?php esc_html_e( 'Joined', 'paid-memberships-pro' );?></th>
+    				<th><?php esc_html_e( 'Expires', 'paid-memberships-pro' ); ?></th>
     			</tr>
     		</thead>
     		<tbody>
     		<?php if ( empty( $theusers ) ) { ?>
                 <tr>
-                    <td colspan="4"><p><?php _e( 'No members found.', 'paid-memberships-pro' ); ?></p></td>
+                    <td colspan="4"><p><?php esc_html_e( 'No members found.', 'paid-memberships-pro' ); ?></p></td>
                 </tr>
             <?php } else {
     			foreach ( $theusers as $auser ) {
@@ -289,19 +289,19 @@ function pmpro_dashboard_report_recent_orders_callback() {
     	<table class="wp-list-table widefat fixed striped">
     	<thead>
     		<tr class="thead">
-    			<th><?php _e( 'Code', 'paid-memberships-pro' ); ?></th>
-    			<th><?php _e( 'User', 'paid-memberships-pro' ); ?></th>
-    			<th><?php _e( 'Level', 'paid-memberships-pro' ); ?></th>
-    			<th><?php _e( 'Total', 'paid-memberships-pro' ); ?></th>
-    			<th><?php _e( 'Status', 'paid-memberships-pro' ); ?></th>
-    			<th><?php _e( 'Date', 'paid-memberships-pro' ); ?></th>
+    			<th><?php esc_html_e( 'Code', 'paid-memberships-pro' ); ?></th>
+    			<th><?php esc_html_e( 'User', 'paid-memberships-pro' ); ?></th>
+    			<th><?php esc_html_e( 'Level', 'paid-memberships-pro' ); ?></th>
+    			<th><?php esc_html_e( 'Total', 'paid-memberships-pro' ); ?></th>
+    			<th><?php esc_html_e( 'Status', 'paid-memberships-pro' ); ?></th>
+    			<th><?php esc_html_e( 'Date', 'paid-memberships-pro' ); ?></th>
     		</tr>
     		</thead>
     		<tbody id="orders" class="orders-list">
         	<?php
                 if ( empty( $order_ids ) ) { ?>
                     <tr>
-                        <td colspan="6"><p><?php _e( 'No orders found.', 'paid-memberships-pro' ); ?></p></td>
+                        <td colspan="6"><p><?php esc_html_e( 'No orders found.', 'paid-memberships-pro' ); ?></p></td>
                     </tr>
                 <?php } else {
                     foreach ( $order_ids as $order_id ) {
@@ -390,7 +390,7 @@ function pmpro_dashboard_news_updates_callback() {
 
 	<ul>
 	    <?php if ( $maxitems == 0 ) : ?>
-	        <li><?php _e( 'No news found.', 'paid-memberships-pro' ); ?></li>
+	        <li><?php esc_html_e( 'No news found.', 'paid-memberships-pro' ); ?></li>
 	    <?php else : ?>
 	        <?php // Loop through each feed item and display each item as a hyperlink. ?>
 	        <?php foreach ( $rss_items as $item ) : ?>

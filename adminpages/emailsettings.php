@@ -84,14 +84,14 @@
 		
 		<h1 class="wp-heading-inline"><?php esc_html_e( 'Email Settings', 'paid-memberships-pro' ); ?></h1>
 		<hr class="wp-header-end">
-		<h2><?php _e( 'Send Emails From', 'paid-memberships-pro' ); ?></h2>
-		<p><?php _e('By default, system generated emails are sent from <em><strong>wordpress@yourdomain.com</strong></em>. You can update this from address using the fields below.', 'paid-memberships-pro' );?></p>
+		<h2><?php esc_html_e( 'Send Emails From', 'paid-memberships-pro' ); ?></h2>
+		<p><?php esc_html_e('By default, system generated emails are sent from <em><strong>wordpress@yourdomain.com</strong></em>. You can update this from address using the fields below.', 'paid-memberships-pro' );?></p>
 
 		<table class="form-table">
 		<tbody>                
 			<tr>
 				<th scope="row" valign="top">
-					<label for="from_email"><?php _e('From Email', 'paid-memberships-pro' );?>:</label>
+					<label for="from_email"><?php esc_html_e('From Email', 'paid-memberships-pro' );?>:</label>
 				</th>
 				<td>
 					<input type="text" name="from_email" value="<?php echo esc_attr($from_email);?>" class="regular-text" />
@@ -99,7 +99,7 @@
 			</tr>
 			<tr>
 				<th scope="row" valign="top">
-					<label for="from_name"><?php _e('From Name', 'paid-memberships-pro' );?>:</label>
+					<label for="from_name"><?php esc_html_e('From Name', 'paid-memberships-pro' );?>:</label>
 				</th>
 				<td>
 					<input type="text" name="from_name" value="<?php echo esc_attr($from_name);?>" class="regular-text" />
@@ -107,7 +107,7 @@
 			</tr>
 			<tr>
 				<th scope="row" valign="top">
-					<label for="only_filter_pmpro_emails"><?php _e('Only Filter PMPro Emails?', 'paid-memberships-pro' );?>:</label>
+					<label for="only_filter_pmpro_emails"><?php esc_html_e('Only Filter PMPro Emails?', 'paid-memberships-pro' );?>:</label>
 				</th>
 				<td>
 					<input type="checkbox" id="only_filter_pmpro_emails" name="only_filter_pmpro_emails" value="1" <?php if(!empty($only_filter_pmpro_emails)) { ?>checked="checked"<?php } ?> />
@@ -119,7 +119,7 @@
 		<p class="submit"><input name="savesettings" type="submit" class="button-primary" value="<?php esc_attr_e( 'Save All Settings', 'paid-memberships-pro' ); ?>" /></p>
 		<hr />
 		<div class="pmpro_admin_section pmpro_admin_section-email-deliverability">
-			<h2><?php _e( 'Email Deliverability', 'paid-memberships-pro' ); ?></h2>
+			<h2><?php esc_html_e( 'Email Deliverability', 'paid-memberships-pro' ); ?></h2>
 
 			<p><?php
 				$allowed_email_troubleshooting_html = array (
@@ -159,12 +159,12 @@
 		<tbody>            
 			<tr>
 				<th scope="row" valign="top">
-					<label for="email_member_notification"><?php _e('Send members emails', 'paid-memberships-pro' );?>:</label>
+					<label for="email_member_notification"><?php esc_html_e('Send members emails', 'paid-memberships-pro' );?>:</label>
 				</th>
 				<td>
 					<input type="checkbox" id="email_member_notification" name="email_member_notification" value="1" <?php if(!empty($email_member_notification)) { ?>checked="checked"<?php } ?> />
-					<label for="email_member_notification"><?php _e('Default WP notification email.', 'paid-memberships-pro' );?></label>
-					<p class="description"><?php _e( 'Recommended: Leave unchecked. Members will still get an email confirmation from PMPro after checkout.', 'paid-memberships-pro' ); ?></p>
+					<label for="email_member_notification"><?php esc_html_e('Default WP notification email.', 'paid-memberships-pro' );?></label>
+					<p class="description"><?php esc_html_e( 'Recommended: Leave unchecked. Members will still get an email confirmation from PMPro after checkout.', 'paid-memberships-pro' ); ?></p>
 				</td>
 			</tr>
 		</tbody>

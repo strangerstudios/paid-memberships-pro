@@ -129,7 +129,7 @@
 		<tr class="pmpro_settings_divider gateway gateway_paypal gateway_paypalexpress gateway_paypalstandard" <?php if($gateway != "paypal" && $gateway != "paypalexpress" && $gateway != "paypalstandard") { ?>style="display: none;"<?php } ?>>
 			<td colspan="2">
 				<hr />
-				<h2 class="title"><?php _e('PayPal Settings', 'paid-memberships-pro' ); ?></h2>
+				<h2 class="title"><?php esc_html_e('PayPal Settings', 'paid-memberships-pro' ); ?></h2>
 			</td>
 		</tr>
 		<tr class="gateway gateway_paypalstandard" <?php if($gateway != "paypalstandard") { ?>style="display: none;"<?php } ?>>
@@ -150,7 +150,7 @@
 		</tr>
 		<tr class="gateway gateway_paypal gateway_paypalexpress gateway_paypalstandard" <?php if($gateway != "paypal" && $gateway != "paypalexpress" && $gateway != "paypalstandard") { ?>style="display: none;"<?php } ?>>
 			<th scope="row" valign="top">
-				<label for="gateway_email"><?php _e('Gateway Account Email', 'paid-memberships-pro' );?>:</label>
+				<label for="gateway_email"><?php esc_html_e('Gateway Account Email', 'paid-memberships-pro' );?>:</label>
 			</th>
 			<td>
 				<input type="text" id="gateway_email" name="gateway_email" value="<?php echo esc_attr($values['gateway_email'])?>" class="regular-text code" />
@@ -158,7 +158,7 @@
 		</tr>
 		<tr class="gateway gateway_paypal gateway_paypalexpress" <?php if($gateway != "paypal" && $gateway != "paypalexpress") { ?>style="display: none;"<?php } ?>>
 			<th scope="row" valign="top">
-				<label for="apiusername"><?php _e('API Username', 'paid-memberships-pro' );?>:</label>
+				<label for="apiusername"><?php esc_html_e('API Username', 'paid-memberships-pro' );?>:</label>
 			</th>
 			<td>
 				<input type="text" id="apiusername" name="apiusername" value="<?php echo esc_attr($values['apiusername'])?>" class="regular-text code" />
@@ -166,7 +166,7 @@
 		</tr>
 		<tr class="gateway gateway_paypal gateway_paypalexpress" <?php if($gateway != "paypal" && $gateway != "paypalexpress") { ?>style="display: none;"<?php } ?>>
 			<th scope="row" valign="top">
-				<label for="apipassword"><?php _e('API Password', 'paid-memberships-pro' );?>:</label>
+				<label for="apipassword"><?php esc_html_e('API Password', 'paid-memberships-pro' );?>:</label>
 			</th>
 			<td>
 				<input type="text" id="apipassword" name="apipassword" value="<?php echo esc_attr($values['apipassword'])?>" autocomplete="off" class="regular-text code pmpro-admin-secure-key" />
@@ -174,7 +174,7 @@
 		</tr>
 		<tr class="gateway gateway_paypal gateway_paypalexpress" <?php if($gateway != "paypal" && $gateway != "paypalexpress") { ?>style="display: none;"<?php } ?>>
 			<th scope="row" valign="top">
-				<label for="apisignature"><?php _e('API Signature', 'paid-memberships-pro' );?>:</label>
+				<label for="apisignature"><?php esc_html_e('API Signature', 'paid-memberships-pro' );?>:</label>
 			</th>
 			<td>
 				<input type="text" id="apisignature" name="apisignature" value="<?php echo esc_attr($values['apisignature'])?>" class="regular-text code" />
@@ -182,7 +182,7 @@
 		</tr>
 		<tr class="gateway gateway_paypal gateway_paypalexpress" <?php if($gateway != "paypal" && $gateway != "paypalexpress") { ?>style="display: none;"<?php } ?>>
 			<th scope="row" valign="top">
-				<label for="paypalexpress_skip_confirmation"><?php _e('Confirmation Step', 'paid-memberships-pro' );?>:</label>
+				<label for="paypalexpress_skip_confirmation"><?php esc_html_e('Confirmation Step', 'paid-memberships-pro' );?>:</label>
 			</th>
 			<td>
 				<select id="paypalexpress_skip_confirmation" name="paypalexpress_skip_confirmation">
@@ -193,10 +193,10 @@
 		</tr>
 		<tr class="gateway gateway_paypal gateway_paypalexpress gateway_paypalstandard" <?php if($gateway != "paypal" && $gateway != "paypalexpress" && $gateway != "paypalstandard") { ?>style="display: none;"<?php } ?>>
 			<th scope="row" valign="top">
-				<label><?php _e('IPN Handler URL', 'paid-memberships-pro' );?>:</label>
+				<label><?php esc_html_e('IPN Handler URL', 'paid-memberships-pro' );?>:</label>
 			</th>
 			<td>
-				<p class="description"><?php _e('To fully integrate with PayPal, be sure to set your IPN Handler URL to ', 'paid-memberships-pro' );?></p>
+				<p class="description"><?php esc_html_e('To fully integrate with PayPal, be sure to set your IPN Handler URL to ', 'paid-memberships-pro' );?></p>
 				<p><code><?php echo add_query_arg( 'action', 'ipnhandler', admin_url('admin-ajax.php') );?></code></p>
 			</td>
 		</tr>
