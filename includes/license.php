@@ -137,7 +137,7 @@ function pmpro_license_check_key($key = NULL) {
 	
 	// Bad response code?
 	if ( $r['response']['code'] !== 200 ) {
-		return new WP_Error( 'bad_response_code', __( sprintf( 'Bad response code %s.', 'paid-memberships-pro' ), $r['response']['code'] ) );
+		return new WP_Error( 'bad_response_code', sprintf( __( 'Bad response code %s.', 'paid-memberships-pro' ), $r['response']['code'] ) );
 	}
 		
     // Process the response.
