@@ -155,7 +155,7 @@ function pmpro_shortcode_account($atts, $content=null, $code="")
 				</table>
 				<?php //Todo: If there are multiple levels defined that aren't all in the same group defined as upgrades/downgrades ?>
 				<div class="<?php echo pmpro_get_element_class( 'pmpro_actionlinks' ); ?>">
-					<a id="pmpro_actionlink-levels" href="<?php echo pmpro_url("levels")?>"><?php esc_html_e("View all Membership Options", 'paid-memberships-pro' );?></a>
+					<a id="pmpro_actionlink-levels" href="<?php echo esc_url( pmpro_url( "levels" ) ) ?>"><?php esc_html_e("View all Membership Options", 'paid-memberships-pro' );?></a>
 				</div>
 
 			</div> <!-- end pmpro_account-membership -->
@@ -250,7 +250,7 @@ function pmpro_shortcode_account($atts, $content=null, $code="")
 						}
 						?>
 						<tr id="pmpro_account-invoice-<?php echo $invoice->code; ?>">
-							<td><a href="<?php echo pmpro_url("invoice", "?invoice=" . $invoice->code)?>"><?php echo date_i18n(get_option("date_format"), $invoice->getTimestamp())?></a></td>
+							<td><a href="<?php echo esc_url( pmpro_url( "invoice", "?invoice=" . $invoice->code ) ) ?>"><?php echo date_i18n(get_option("date_format"), $invoice->getTimestamp())?></a></td>
 							<td><?php if(!empty($invoice->membership_level)) echo $invoice->membership_level->name; else echo __("N/A", 'paid-memberships-pro' );?></td>
 							<td><?php echo pmpro_escape_price( pmpro_formatPrice($invoice->total) ); ?></td>
 							<td><?php echo $display_status; ?></td>
@@ -261,7 +261,7 @@ function pmpro_shortcode_account($atts, $content=null, $code="")
 				</tbody>
 			</table>
 			<?php if($count == 6) { ?>
-				<div class="<?php echo pmpro_get_element_class( 'pmpro_actionlinks' ); ?>"><a id="pmpro_actionlink-invoices" href="<?php echo pmpro_url("invoice"); ?>"><?php esc_html_e("View All Invoices", 'paid-memberships-pro' );?></a></div>
+				<div class="<?php echo pmpro_get_element_class( 'pmpro_actionlinks' ); ?>"><a id="pmpro_actionlink-invoices" href="<?php echo esc_url( pmpro_url( "invoice" ) ); ?>"><?php esc_html_e("View All Invoices", 'paid-memberships-pro' );?></a></div>
 			<?php } ?>
 		</div> <!-- end pmpro_account-invoices -->
 		<?php } ?>

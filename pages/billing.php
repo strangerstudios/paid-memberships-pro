@@ -122,13 +122,13 @@
 		<div class="<?php echo pmpro_get_element_class( 'pmpro_check_instructions' ); ?>"><?php echo wpautop( wp_unslash( $instructions ) ); ?></div>
 		<hr />
 		<p class="<?php echo pmpro_get_element_class( 'pmpro_actions_nav' ); ?>">
-			<span class="<?php echo pmpro_get_element_class( 'pmpro_actions_nav-right' ); ?>"><a href="<?php echo pmpro_url( 'account' )?>"><?php esc_html_e('View Your Membership Account &rarr;', 'paid-memberships-pro' );?></a></span>
+			<span class="<?php echo pmpro_get_element_class( 'pmpro_actions_nav-right' ); ?>"><a href="<?php echo esc_url( pmpro_url( 'account' ) ) ?>"><?php esc_html_e('View Your Membership Account &rarr;', 'paid-memberships-pro' );?></a></span>
 		</p> <!-- end pmpro_actions_nav -->
 	<?php } elseif ( $show_paypal_link ) { ?>
 		<p><?php  _e('Your payment subscription is managed by PayPal. Please <a href="http://www.paypal.com">login to PayPal here</a> to update your billing information.', 'paid-memberships-pro' );?></p>
 		<hr />
 		<p class="<?php echo pmpro_get_element_class( 'pmpro_actions_nav' ); ?>">
-			<span class="<?php echo pmpro_get_element_class( 'pmpro_actions_nav-right' ); ?>"><a href="<?php echo pmpro_url( 'account' )?>"><?php esc_html_e('View Your Membership Account &rarr;', 'paid-memberships-pro' );?></a></span>
+			<span class="<?php echo pmpro_get_element_class( 'pmpro_actions_nav-right' ); ?>"><a href="<?php echo esc_url( pmpro_url( 'account' ) ) ?>"><?php esc_html_e('View Your Membership Account &rarr;', 'paid-memberships-pro' );?></a></span>
 		</p> <!-- end pmpro_actions_nav -->
 	<?php } elseif ( $gateway != $default_gateway ) {
 		// This membership's gateway is not the default site gateway, Pay by Check, or PayPal Express.
@@ -138,7 +138,7 @@
 		// Show the default gateway form and allow billing information update.
 		?>
 		<div id="pmpro_level-<?php echo $level->id; ?>" class="<?php echo pmpro_get_element_class( $pmpro_billing_gateway_class, 'pmpro_level-' . $level->id ); ?>">
-		<form id="pmpro_form" class="<?php echo pmpro_get_element_class( 'pmpro_form' ); ?>" action="<?php echo pmpro_url("billing", "", "https")?>" method="post">
+		<form id="pmpro_form" class="<?php echo pmpro_get_element_class( 'pmpro_form' ); ?>" action="<?php echo esc_url( pmpro_url( "billing", "", "https") ) ?>" method="post">
 
 			<input type="hidden" name="level" value="<?php echo esc_attr($level->id);?>" />
 			<?php if($pmpro_msg)
