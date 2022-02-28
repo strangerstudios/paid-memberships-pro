@@ -37,20 +37,20 @@
 	//get users (search input field)
 	$search_key = false;
 	if( isset( $_REQUEST['s'] ) ) {
-		$s = sanitize_text_field( trim( $_REQUEST['s'] ) );		
+		$s = sanitize_text_field( trim( $_REQUEST['s'] ) );
 	} else {
 		$s = '';
 	}
-	
+
 	// If there's a colon in the search, let's split it out.
-	if( ! empty( $s ) && strpos( $s, ':' ) !== false ) {				
+	if( ! empty( $s ) && strpos( $s, ':' ) !== false ) {
 		$parts = explode( ':', $s );
 		$search_key = $parts[0];
 		$s = $parts[1];
 	}
-	
+
 	// Treat * as wild cards.
-	$s = str_replace( '*', '%', $s );	
+	$s = str_replace( '*', '%', $s );
 
 	// requested a level id
 	if(isset($_REQUEST['l']))
@@ -154,7 +154,7 @@
 		SELECT
 			DISTINCT u.ID
 		FROM $wpdb->users u ";
-		
+
 	if ( $s ) {
 		if ( ! empty( $search_key ) ) {
 			// If there's a colon in the search string, make the search smarter.
@@ -171,11 +171,11 @@
 		} else {
 			// Default search checks a few fields.
 			$sqlQuery .= "LEFT JOIN {$wpdb->usermeta} um ON u.ID = um.user_id ";
-			$search = " AND ( u.user_login LIKE '%" . esc_sql($s) . "%' OR u.user_email LIKE '%" . esc_sql($s) . "%' OR um.meta_value LIKE '%" . esc_sql($s) . "%' OR u.display_name LIKE '%" . esc_sql($s) . "%' ) ";			
+			$search = " AND ( u.user_login LIKE '%" . esc_sql($s) . "%' OR u.user_email LIKE '%" . esc_sql($s) . "%' OR um.meta_value LIKE '%" . esc_sql($s) . "%' OR u.display_name LIKE '%" . esc_sql($s) . "%' ) ";
 		}
 	} else {
 		$search = '';
-	}		
+	}
 
 	$sqlQuery .= "LEFT JOIN {$wpdb->pmpro_memberships_users} mu ON u.ID = mu.user_id ";
 	$sqlQuery .= "LEFT JOIN {$wpdb->pmpro_membership_levels} m ON mu.membership_id = m.id ";
@@ -193,7 +193,7 @@
 
 	// looking for a specific user
 	if ( ! empty( $s ) ) {
-		$sqlQuery .= $search;		
+		$sqlQuery .= $search;
 	}
 
 	// if ($former_members)
@@ -324,7 +324,7 @@
 
 		//increment starting position
 		$i_start += $max_users_per_loop;
-		
+
 		//escape the % for LIKE comparison with $wpdb
 		if(!empty($search))
 			$search = str_replace('%', '%%', $search);
