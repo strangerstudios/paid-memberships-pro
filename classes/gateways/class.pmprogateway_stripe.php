@@ -2024,6 +2024,7 @@ class PMProGateway_stripe extends PMProGateway {
 
 		// Build data to update customer with.
 		$customer_args = array(
+			'name'        => $name,
 			'email'       => $email,
 			'description' => $name . ' (' . $email . ')',
 		);
