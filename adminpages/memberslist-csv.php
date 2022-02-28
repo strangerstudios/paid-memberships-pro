@@ -37,17 +37,20 @@
 	//get users (search input field)
 	$search_key = false;
 	if( isset( $_REQUEST['s'] ) ) {
-		$s = sanitize_text_field( trim( $_REQUEST['s'] ) );
-		
-		// If there's a colon in the search, let's split it out.
-		if( ! empty( $s ) && strpos( $s, ':' ) !== false ) {				
-			$parts = explode( ':', $s );
-			$search_key = $parts[0];
-			$s = $parts[1];
-		}
+		$s = sanitize_text_field( trim( $_REQUEST['s'] ) );		
 	} else {
 		$s = '';
-	}	
+	}
+	
+	// If there's a colon in the search, let's split it out.
+	if( ! empty( $s ) && strpos( $s, ':' ) !== false ) {				
+		$parts = explode( ':', $s );
+		$search_key = $parts[0];
+		$s = $parts[1];
+	}
+	
+	// Treat * as wild cards.
+	$s = str_replace( '*', '%', $s );	
 
 	// requested a level id
 	if(isset($_REQUEST['l']))
