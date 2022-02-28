@@ -35,10 +35,19 @@
 	global $wpdb;
 
 	//get users (search input field)
-	if(isset($_REQUEST['s']))
-		$s = sanitize_text_field($_REQUEST['s']);
-	else
-		$s = "";
+	$search_key = false;
+	if( isset( $_REQUEST['s'] ) ) {
+		$s = sanitize_text_field( trim( $_REQUEST['s'] ) );
+		
+		// If there's a colon in the search, let's split it out.
+		if( ! empty( $s ) && strpos( $s, ':' ) !== false ) {				
+			$parts = explode( ':', $s );
+			$search_key = $parts[0];
+			$s = $parts[1];
+		}
+	} else {
+		$s = '';
+	}	
 
 	// requested a level id
 	if(isset($_REQUEST['l']))
@@ -163,10 +172,25 @@
 	// looking for a specific user
 	$search = "";
 	
-	if($s)
-	{
-		$search = "AND (u.display_name LIKE '%" . esc_sql($s) . "%' OR u.user_login LIKE '%". esc_sql($s) ."%' OR u.user_email LIKE '%". esc_sql($s) ."%' OR um.meta_value LIKE '%". esc_sql($s) ."%') ";
-		$sqlQuery .= $search;
+	if ( ! empty( $s ) ) {
+		if ( ! empty( $search_key ) ) {
+			// If there's a colon in the search string, make the search smarter.
+			if( in_array( $search_key, array( 'login', 'nicename', 'email', 'url', 'display_name' ) ) ) {
+				$key_column = 'u.user_' . esc_sql( $search_key );
+				$search = " AND $key_column LIKE '%" . esc_sql( $s ) . "%' ";
+			} elseif ( $search_key === 'discount' || $search_key === 'discount_code' || $search_key === 'dc' ) {
+				$user_ids = $wpdb->get_col( "SELECT dcu.user_id FROM $wpdb->pmpro_discount_codes_uses dcu LEFT JOIN $wpdb->pmpro_discount_codes dc ON dcu.code_id = dc.id WHERE dc.code = '" . esc_sql( $s ) . "'" );
+				$search = " AND u.ID IN(" . implode( ",", $user_ids ) . ") ";
+			} else {
+				$user_ids = $wpdb->get_col( "SELECT user_id FROM $wpdb->usermeta WHERE meta_key = '" . esc_sql( $search_key ) . "' AND meta_value lIKE '%" . esc_sql( $s ) . "%'" );
+				$search = " AND u.ID IN(" . implode( ",", $user_ids ) . ") ";
+			}
+		} else {
+			// Default search checks a few fields.
+			$search = " AND ( u.user_login LIKE '%" . esc_sql($s) . "%' OR u.user_email LIKE '%" . esc_sql($s) . "%' OR um.meta_value LIKE '%" . esc_sql($s) . "%' OR u.display_name LIKE '%" . esc_sql($s) . "%' ) ";			
+		}
+		
+		$sqlQuery .= $search;		
 	}
 
 	// if ($former_members)
