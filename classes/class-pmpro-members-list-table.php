@@ -253,14 +253,14 @@ class PMPro_Members_List_Table extends WP_List_Table {
 			$l = false;
 		}
 		
-		$colon_search_key = false;
+		$search_key = false;
 		if( isset( $_REQUEST['s'] ) ) {
 			$s = sanitize_text_field( trim( $_REQUEST['s'] ) );
 			
 			// If there's a colon in the search, let's split it out.
 			if( ! empty( $s ) && strpos( $s, ':' ) !== false ) {				
 				$parts = explode( ':', $s );
-				$colon_search_key = $parts[0];
+				$search_key = $parts[0];
 				$s = $parts[1];
 			}
 		} else {
@@ -328,16 +328,16 @@ class PMPro_Members_List_Table extends WP_List_Table {
 		$sqlQuery .= ' WHERE mu.membership_id > 0 ';
 		
 		if ( ! empty( $s ) ) {
-			if ( ! empty( $colon_search_key ) ) {
+			if ( ! empty( $search_key ) ) {
 				// If there's a colon in the search string, make the search smarter.
-				if( in_array( $colon_search_key, array( 'login', 'nicename', 'email', 'url', 'display_name' ) ) ) {
-					$key_column = 'u.user_' . esc_sql( $colon_search_key );
+				if( in_array( $search_key, array( 'login', 'nicename', 'email', 'url', 'display_name' ) ) ) {
+					$key_column = 'u.user_' . esc_sql( $search_key );
 					$sqlQuery .= " AND $key_column LIKE '%" . esc_sql( $s ) . "%' ";
-				} elseif ( $colon_search_key == 'discount' || $colon_search_key == 'discount_code' || $colon_search_key = 'dc' ) {
+				} elseif ( $search_key == 'discount' || $search_key == 'discount_code' || $search_key = 'dc' ) {
 					$user_ids = $wpdb->get_col( "SELECT dcu.user_id FROM $wpdb->pmpro_discount_codes_uses dcu LEFT JOIN $wpdb->pmpro_discount_codes dc ON dcu.code_id = dc.id WHERE dc.code = '" . esc_sql( $s ) . "'" );
 					$sqlQuery .= " AND u.ID IN(" . implode( ",", $user_ids ) . ") ";
 				} else {
-					$user_ids = $wpdb->get_col( "SELECT user_id FROM $wpdb->usermeta WHERE meta_key = '" . esc_sql( $colon_search_key ) . "' AND meta_value lIKE '%" . esc_sql( $s ) . "%'" );
+					$user_ids = $wpdb->get_col( "SELECT user_id FROM $wpdb->usermeta WHERE meta_key = '" . esc_sql( $search_key ) . "' AND meta_value lIKE '%" . esc_sql( $s ) . "%'" );
 					$sqlQuery .= " AND u.ID IN(" . implode( ",", $user_ids ) . ") ";
 				}
 			} else {
