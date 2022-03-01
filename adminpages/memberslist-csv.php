@@ -158,7 +158,7 @@
 	if ( $s ) {
 		if ( ! empty( $search_key ) ) {
 			// If there's a colon in the search string, make the search smarter.
-			if( in_array( $search_key, array( 'login', 'nicename', 'email', 'url', 'display_name' ) ) ) {
+			if( in_array( $search_key, array( 'login', 'nicename', 'email', 'url', 'display_name' ), true ) ) {
 				$key_column = 'u.user_' . esc_sql( $search_key );
 				$search = " AND $key_column LIKE '%" . esc_sql( $s ) . "%' ";
 			} elseif ( $search_key === 'discount' || $search_key === 'discount_code' || $search_key === 'dc' ) {
