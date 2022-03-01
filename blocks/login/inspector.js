@@ -36,7 +36,7 @@ export default class Inspector extends Component {
 					/>
 					<ToggleControl
 						label={__("Display the 'Log In Widget' menu.", "paid-memberships-pro")}
-						help={__("Assign the menu under Appearance > Menus.")}
+						help={__("Assign the menu under Appearance > Menus.", "paid-memberships-pro")}
 						checked={show_menu}
 						onChange={(value) => {
 							this.props.setAttributes({

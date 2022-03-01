@@ -672,7 +672,7 @@
 					if($order->Address2)
 						$nvpStr .= "&STREET2=" . urlencode( $order->Address2 );
 
-					$nvpStr .= "&CITY=" . urlencode( $order->billing->city ) . "&STATE=" . urlencode( $order->billing->state ) . "&COUNTRYCODE=" . urlencode( $order->billing->country )  . "&ZIP=" . urlencode( $order->billing->zip ) . "&SHIPTOPHONENUM=" . urlencode( $order->billing->phone );
+					$nvpStr .= "&CITY=" . urlencode( $order->billing->city ) . "&STATE=" . urlencode( $order->billing->state ) . "&COUNTRYCODE=" . urlencode( $order->billing->country )  . "&ZIP=" . urlencode( $order->billing->zip );
 				}
 
 			$this->httpParsedResponseAr = $this->PPHttpPost('UpdateRecurringPaymentsProfile', $nvpStr);

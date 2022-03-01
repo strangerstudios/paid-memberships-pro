@@ -1,12 +1,12 @@
-=== Paid Memberships Pro ===
+=== Paid Memberships Pro - Restrict Member Access to Content, Courses, Communities - Free or Paid Subscriptions ===
 Contributors: strangerstudios, kimannwall, andrewza, dlparker1005, paidmembershipspro
 Tags: memberships, members, subscriptions, ecommerce, user registration, member, membership, e-commerce, paypal, stripe, braintree, authorize.net, payflow, restrict access, restrict content, directory
 Requires at least: 5.2
-Tested up to: 5.9
+Tested up to: 5.9.1
 Requires PHP: 5.6
-Stable tag: 2.7.2
+Stable tag: 2.7.5
 
-Get Paid with Paid Memberships Pro: The most complete member management and membership subscriptions plugin for your WordPress site.
+WordPress membership plugin: restrict content, accept member subscriptions with recurring payment. Includes user registration, login, & profile fields
 
 == Description ==
 
@@ -156,6 +156,36 @@ Not sure? You can find out by doing a bit a research.
 9. Membership Account page, display all sections or show specific sections using shortcode attributes.
 
 == Changelog ==
+= 2.7.5 - 2022-03-01 =
+* ENHANCEMENT: Now sending "name" separate from the "description" when creating customers for Stripe checkouts. (@ideadude)
+* ENHANCEMENT: You can now search the members list on specific user table columns or user meta fields by using a colon in your search term. These queries are faster than the default queries. The format is meta_key:meta_value (no backticks). You can also use login, nicename, email, url, or display_name as the meta_key and the users table will be searched against the related column. (@ideadude)
+* BUG FIX/ENHANCEMENT: Increased search limit to make sure we reuse Stripe "prices" when members check out for recurring plans with Stripe. (@ideadude)
+* BUG FIX: Fixed issue where Stripe application fees were still charged for PMPro Standard and PMPro Builder license holders. From now on, payments and subscriptions will not include the fee. (@ideadude)
+
+= 2.7.4 - 2022-02-22 =
+* ENHANCEMENT: Adjusting the readme title and description. (@kimcoleman)
+* ENHANCEMENT: Improved error handling for Stripe Prices. (@dparker1005)
+* ENHANCEMENT: Adjusted the '/change_membership_level' route to support email and create_user parameter to improve our Zapier integration. No parameters are removed, this is to ensure backwards compatibility for any pre-existing applications using this REST route. (@andrewlimaza)
+* ENHANCEMENT: Now showing new vs renewal orders on the sales and revenue reports. (@ideadude, @JarrydLong, @kimcoleman)
+* ENHANCEMENT: Better tool tips in the sales and revenue reports. (@ideadude, @JarrydLong, @kimcoleman)
+* ENHANCEMENT: Now handling recurring_payment_profile_created IPN transactions and updating the payment_transaction_id for new orders made via PayPal. (@mircobabini)
+* ENHANCEMENT: Added pmpro_webhook_unhandled action at the end of any webhook handler. (@mircobabini)
+* BUG FIX/ENHANCEMENT: Updated logic and text around license keys to account for new premium plans. (@ideadude, @kimcoleman)
+* BUG FIX/ENHANCEMENT: Made Terms of Service text a bit darker for accessibility. (@kimcoleman)
+* BUG FIX/ENHANCEMENT: Updated queries in includes/cleanup.php to use WPDB delete method for better DB escaping. (@andrewlimaza)
+* BUG FIX/ENHANCEMENT: Fixed the text domain for some strings that weren't translatable. (@mircobabini)
+* BUG FIX/ENHANCEMENT: Fixed misspelled text domains in the pmpro_reset_password_form() function. (Thanks, @isaiahfb)
+* BUG FIX: Fixed issues with the update billing page when using PayPal Websites Payments Pro. (@dparker1005)
+* BUG FIX: Fixed issues with Stripe checkouts when users had previous checkouts throug a different gateway. (@dparker1005)
+* REFACTOR: Removed unused condition in send method of PMProEmail class. (Thanks, @freax)
+* BUG FIX: Fixed notice when pmpro_check_plugin_version was called for an invalid plugin file. (@ideadude)
+
+= 2.7.3 - 2022-02-01 =
+* ENHANCEMENT: Added CSS to make sure input fields input fields aren't extra tiny/short, e.g. in the Twenty Twenty Two theme. (@kimcoleman)
+* BUG FIX: Fixed a fatal error for older PHP sites when visiting the page settings in the admin dasboard. (@andrewlimaza)
+* BUG FIX: Fixed issue where license keys were incorrectly flagged as invalid if expiring within 1 month. (@ideadude)
+* BUG FIX: Fixed issue where billing addresses were not added to the Stripe customer at checkout. (@dparker1005)
+
 = 2.7.2 - 2022-01-17 =
 * BUG FIX/ENHANCEMENT: Improved error messages when creating subscriptions with Stripe. (@dparker1005)
 * BUG FIX: Fixed issue where certain Stripe trial periods would be sent to the Stripe subscription as longer than intended. #1912 (@dparker1005)
@@ -165,7 +195,7 @@ Not sure? You can find out by doing a bit a research.
 * BUG FIX: Fixed issue on some MySQL setups that would throw an error about the primary key in the pmpro_memberships_pages and pmpro_memberships_categories tables.
 
 = 2.7 - 2022-01-13 =
-* FEATURE: Added a "Spam Protection" option to the advanced settings page. When used, IP addresses are blocked from checkout if there are more than 10 failsures within 15 minutes. (@ideadude)
+* FEATURE: Added a "Spam Protection" option to the advanced settings page. When used, IP addresses are blocked from checkout if there are more than 10 failures within 15 minutes. (@ideadude)
 * ENHANCEMENT: Checkouts with Stripe will now reuse Stripe Products and Prices. (@dparker1005)
 * ENHANCEMENT: User profile now links to Stripe customer so that subscriptions can easily be directly updated in Stripe rather than through Subscriptions Updates which is now deprecated. (@dparker1005)
 * ENHANCEMENT: Improved usability of the Require Membership metabox for sites with a large number of levels. #1885 #1692 (@kimcoleman)
