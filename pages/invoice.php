@@ -35,7 +35,7 @@
 		<ul>
 			<?php do_action("pmpro_invoice_bullets_top", $pmpro_invoice); ?>
 			<li><strong><?php esc_html_e('Account', 'paid-memberships-pro' );?>:</strong> <?php echo $pmpro_invoice->user->display_name?> (<?php echo $pmpro_invoice->user->user_email?>)</li>
-			<li><strong><?php esc_html_e('Membership Level', 'paid-memberships-pro' );?>:</strong> <?php echo $pmpro_invoice->membership_level->name?></li>
+			<li><strong><?php esc_html_e('Membership Level', 'paid-memberships-pro' );?>:</strong> <?php echo esc_html( $pmpro_invoice->membership_level->name ); ?></li>
 			<?php if ( ! empty( $pmpro_invoice->status ) ) { ?>
 				<li><strong><?php esc_html_e('Status', 'paid-memberships-pro' ); ?>:</strong>
 				<?php
