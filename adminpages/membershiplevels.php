@@ -777,7 +777,7 @@
 			<div class="pmpro-new-install">
 				<h2><?php esc_html_e( 'No Membership Levels Found', 'paid-memberships-pro' ); ?></h2>
 				<a href="<?php echo esc_url( admin_url( 'admin.php?page=pmpro-membershiplevels&edit=-1' ) ); ?>" class="button-primary"><?php esc_html_e( 'Create a Membership Level', 'paid-memberships-pro' ); ?></a>
-				<a href="<?php echo esc_url( 'https://www.paidmembershipspro.com/documentation/initial-plugin-setup/step-1-add-new-membership-level/?utm_source=plugin&utm_medium=pmpro-membershiplevels&utm_campaign=documentation&utm_content=step-1-add-new-membership-level' ); ?>" target="_blank" class="button"><?php esc_html_e( 'Video: Membership Levels', 'paid-memberships-pro' ); ?></a>
+				<a href="https://www.paidmembershipspro.com/documentation/initial-plugin-setup/step-1-add-new-membership-level/?utm_source=plugin&utm_medium=pmpro-membershiplevels&utm_campaign=documentation&utm_content=step-1-add-new-membership-level" target="_blank" rel="noopener noreferrer" class="button"><?php esc_html_e( 'Video: Membership Levels', 'paid-memberships-pro' ); ?></a>
 			</div> <!-- end pmpro-new-install -->
 		<?php } else { ?>
 
