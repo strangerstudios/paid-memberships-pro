@@ -61,7 +61,7 @@ if ( defined( 'PMPRO_DIR' ) ) {
 
 			<p>
 				<?php if ( ! pmpro_license_isValid() ) { ?>
-					<a class="button button-primary button-hero" href="https://www.paidmembershipspro.com/pricing/?utm_source=plugin&utm_medium=pmpro-license&utm_campaign=pricing&utm_content=view-plans-pricing" target="_blank"><?php esc_html_e( 'View Plans and Pricing', 'paid-memberships-pro' ); ?></a>
+					<a class="button button-primary button-hero" href="https://www.paidmembershipspro.com/pricing/?utm_source=plugin&utm_medium=pmpro-license&utm_campaign=pricing&utm_content=view-plans-pricing" target="_blank" rel="noopener noreferrer"><?php esc_html_e( 'View Plans and Pricing', 'paid-memberships-pro' ); ?></a>
 				<?php } else { ?>
 					<a class="button button-primary button-hero" href="https://www.paidmembershipspro.com/login/?redirect_to=%2Fmembership-account%2F%3Futm_source%3Dplugin%26utm_medium%3Dpmpro-license%26utm_campaign%3Dmembership-account%26utm_content%3Dview-account" target="_blank"><?php esc_html_e( 'Manage My Account', 'paid-memberships-pro' ); ?></a>
 					<?php if ( pmpro_license_isValid( $key, pmpro_license_get_premium_types() ) ) { ?>
