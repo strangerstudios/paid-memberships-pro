@@ -67,7 +67,8 @@
 					continue;
 				}
 				?>
-				<li><strong><?php esc_html_e("Level", 'paid-memberships-pro' );?>:</strong> <?php echo $level->name?></li>
+				<li><strong><?php esc_html_e("Level", 'paid-memberships-pro' );?>:</strong> <?php echo esc_html( $level->name ); ?></li>
+
 				<?php if($level->billing_amount > 0) { ?>
 					<li><strong><?php esc_html_e("Membership Fee", 'paid-memberships-pro' );?>:</strong>
 						<?php
