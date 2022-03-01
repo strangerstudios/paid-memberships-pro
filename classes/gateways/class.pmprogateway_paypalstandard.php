@@ -186,7 +186,7 @@
 				<label><?php esc_html_e('IPN Handler URL', 'paid-memberships-pro' );?>:</label>
 			</th>
 			<td>
-				<p><?php esc_html_e('Here is your IPN URL for reference. You SHOULD NOT set this in your PayPal settings.', 'paid-memberships-pro' );?> <pre><?php echo add_query_arg( 'action', 'ipnhandler', admin_url('admin-ajax.php') );?></pre></p>
+				<p><?php esc_html_e('Here is your IPN URL for reference. You SHOULD NOT set this in your PayPal settings.', 'paid-memberships-pro' );?> <pre><?php echo esc_html( add_query_arg( 'action', 'ipnhandler', admin_url('admin-ajax.php') ) ); ?></pre></p>
 			</td>
 		</tr>
 		<?php
