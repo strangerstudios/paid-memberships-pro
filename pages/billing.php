@@ -86,7 +86,8 @@
 			<?php } ?>
 
 			<?php if($level->billing_limit) { ?>
-				<li><strong><?php esc_html_e("Duration", 'paid-memberships-pro' );?>:</strong> <?php echo $level->billing_limit.' '.sornot($level->cycle_period,$level->billing_limit)?></li>
+				<li><strong><?php esc_html_e("Duration", 'paid-memberships-pro' );?>:</strong> <?php echo esc_html( $level->billing_limit . ' ' . sornot( $level->cycle_period, $level->billing_limit ) ); ?></li>
+
 			<?php } ?>
 
 			<?php
