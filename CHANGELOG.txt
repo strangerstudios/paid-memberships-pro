@@ -1,4 +1,9 @@
 == Changelog ==
+= 2.7.5 - 2022-03-01 =
+* ENHANCEMENT: Now sending "name" separate from the "description" when creating customers for Stripe checkouts. (@ideadude)
+* ENHANCEMENT: You can now search the members list on specific user table columns or user meta fields by using a colon in your search term. These queries are faster than the default queries. The format is meta_key:meta_value (no backticks). You can also use login, nicename, email, url, or display_name as the meta_key and the users table will be searched against the related column. (@ideadude)
+* BUG FIX/ENHANCEMENT: Increased search limit to make sure we reuse Stripe "prices" when members check out for recurring plans with Stripe. (@ideadude)
+
 = 2.7.4 - 2022-02-22 =
 * ENHANCEMENT: Adjusting the readme title and description. (@kimcoleman)
 * ENHANCEMENT: Improved error handling for Stripe Prices. (@dparker1005)
