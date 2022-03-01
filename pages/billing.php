@@ -264,7 +264,8 @@
 									if(!$bcountry)
 										$bcountry = $pmpro_default_country;
 								?>
-								<option value="<?php echo esc_attr( $abbr ) ?>" <?php if($abbr == $bcountry) { ?>selected="selected"<?php } ?>><?php echo $country?></option>
+								<option value="<?php echo esc_attr( $abbr ) ?>" <?php if($abbr === $bcountry) { ?>selected="selected"<?php } ?>><?php echo esc_html( $country ); ?></option>
+
 								<?php
 								}
 							?>
