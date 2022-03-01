@@ -158,7 +158,7 @@ function pmpro_dashboard_welcome_callback() { ?>
     		<hr />
     		<p class="text-center">
     			<?php echo esc_html( __( 'For guidance as your begin these steps,', 'paid-memberships-pro' ) ); ?>
-    			<a href="https://www.paidmembershipspro.com/documentation/initial-plugin-setup/?utm_source=plugin&utm_medium=pmpro-dashboard&utm_campaign=documentation&utm_content=initial-plugin-setup" target="_blank"><?php esc_html_e( 'view the Initial Setup Video and Docs.', 'paid-memberships-pro' ); ?></a>
+    			<a href="https://www.paidmembershipspro.com/documentation/initial-plugin-setup/?utm_source=plugin&utm_medium=pmpro-dashboard&utm_campaign=documentation&utm_content=initial-plugin-setup" target="_blank" rel="noopener noreferrer"><?php esc_html_e( 'view the Initial Setup Video and Docs.', 'paid-memberships-pro' ); ?></a>
     		</p>
     	</div> <!-- end pmpro-dashboard-welcome-column -->
     	<div class="pmpro-dashboard-welcome-column">
