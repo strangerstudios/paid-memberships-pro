@@ -216,7 +216,7 @@
 			</th>
 			<td>
 				<p class="description"><?php esc_html_e('To fully integrate with PayPal, be sure to set your IPN Handler URL to ', 'paid-memberships-pro' );?></p>
-				<p><code><?php echo add_query_arg( 'action', 'ipnhandler', admin_url('admin-ajax.php') );?></code></p>
+				<p><code><?php echo esc_html( add_query_arg( 'action', 'ipnhandler', admin_url('admin-ajax.php') ) );?></code></p>
 			</td>
 		</tr>
 		<?php
