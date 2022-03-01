@@ -176,7 +176,7 @@
 					</th>
 					<td>
 						<textarea name="notloggedintext" rows="3" cols="50" class="large-text"><?php echo stripslashes($notloggedintext)?></textarea>
-						<p class="description"><?php esc_html_e('This message replaces the post content for logged-out visitors.', 'paid-memberships-pro' );?> <?php _e('Available variables', 'paid-memberships-pro' );?>: <code>!!levels!!</code> <code>!!referrer!!</code> <code>!!login_url!!</code> <code>!!levels_page_url!!</code></p>
+						<p class="description"><?php esc_html_e('This message replaces the post content for logged-out visitors.', 'paid-memberships-pro' );?> <?php esc_html_e('Available variables', 'paid-memberships-pro' );?>: <code>!!levels!!</code> <code>!!referrer!!</code> <code>!!login_url!!</code> <code>!!levels_page_url!!</code></p>
 					</td>
 				</tr>
 				<tr>
@@ -185,7 +185,7 @@
 					</th>
 					<td>
 						<textarea name="rsstext" rows="3" cols="50" class="large-text"><?php echo stripslashes($rsstext)?></textarea>
-						<p class="description"><?php esc_html_e('This message replaces the post content in RSS feeds.', 'paid-memberships-pro' );?> <?php _e('Available variables', 'paid-memberships-pro' );?>: <code>!!levels!!</code></p>
+						<p class="description"><?php esc_html_e('This message replaces the post content in RSS feeds.', 'paid-memberships-pro' );?> <?php esc_html_e('Available variables', 'paid-memberships-pro' );?>: <code>!!levels!!</code></p>
 					</td>
 				</tr>
 			</tbody>
@@ -404,7 +404,7 @@ if ( function_exists( 'pmpro_displayAds' ) && pmpro_displayAds() ) {
 				<?php if(is_multisite()) { ?>
 				<tr>
 					<th scope="row" valign="top">
-						<label for="redirecttosubscription"><?php esc_html_e('Redirect all traffic from registration page to /susbcription/?', 'paid-memberships-pro' );?>: <em>(<?php _e('multisite only', 'paid-memberships-pro' );?>)</em></label>
+						<label for="redirecttosubscription"><?php esc_html_e('Redirect all traffic from registration page to /susbcription/?', 'paid-memberships-pro' );?>: <em>(<?php esc_html_e('multisite only', 'paid-memberships-pro' );?>)</em></label>
 					</th>
 					<td>
 						<select id="redirecttosubscription" name="redirecttosubscription">

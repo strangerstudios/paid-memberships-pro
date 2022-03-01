@@ -222,7 +222,7 @@ require_once(dirname(__FILE__) . "/admin_header.php");
                         <a target="_blank" href="<?php echo get_permalink($pmpro_pages['account']); ?>"
                            class="button button-secondary pmpro_page_view"><?php esc_html_e('view page', 'paid-memberships-pro' ); ?></a>
                     <?php } ?>
-					<p class="description"><?php esc_html_e('Include the shortcode', 'paid-memberships-pro' ); ?> [pmpro_account] <?php _e('or the Membership Account block', 'paid-memberships-pro' ); ?>.</p>
+					<p class="description"><?php esc_html_e('Include the shortcode', 'paid-memberships-pro' ); ?> [pmpro_account] <?php esc_html_e('or the Membership Account block', 'paid-memberships-pro' ); ?>.</p>
                 </td>
             <tr>
                 <th scope="row" valign="top">
@@ -246,7 +246,7 @@ require_once(dirname(__FILE__) . "/admin_header.php");
                         <a target="_blank" href="<?php echo get_permalink($pmpro_pages['billing']); ?>"
                            class="button button-secondary pmpro_page_view"><?php esc_html_e('view page', 'paid-memberships-pro' ); ?></a>
                     <?php } ?>
-					<p class="description"><?php esc_html_e('Include the shortcode', 'paid-memberships-pro' ); ?> [pmpro_billing] <?php _e('or the Membership Billing block', 'paid-memberships-pro' ); ?>.</p>
+					<p class="description"><?php esc_html_e('Include the shortcode', 'paid-memberships-pro' ); ?> [pmpro_billing] <?php esc_html_e('or the Membership Billing block', 'paid-memberships-pro' ); ?>.</p>
                 </td>
             <tr>
                 <th scope="row" valign="top">
@@ -270,7 +270,7 @@ require_once(dirname(__FILE__) . "/admin_header.php");
                         <a target="_blank" href="<?php echo get_permalink($pmpro_pages['cancel']); ?>"
                            class="button button-secondary pmpro_page_view"><?php esc_html_e('view page', 'paid-memberships-pro' ); ?></a>
                     <?php } ?>
-					<p class="description"><?php esc_html_e('Include the shortcode', 'paid-memberships-pro' ); ?> [pmpro_cancel] <?php _e('or the Membership Cancel block', 'paid-memberships-pro' ); ?>.</p>
+					<p class="description"><?php esc_html_e('Include the shortcode', 'paid-memberships-pro' ); ?> [pmpro_cancel] <?php esc_html_e('or the Membership Cancel block', 'paid-memberships-pro' ); ?>.</p>
                 </td>
             </tr>
             <tr>
@@ -295,7 +295,7 @@ require_once(dirname(__FILE__) . "/admin_header.php");
                         <a target="_blank" href="<?php echo get_permalink($pmpro_pages['checkout']); ?>"
                            class="button button-secondary pmpro_page_view"><?php esc_html_e('view page', 'paid-memberships-pro' ); ?></a>
                     <?php } ?>
-					<p class="description"><?php esc_html_e('Include the shortcode', 'paid-memberships-pro' ); ?> [pmpro_checkout] <?php _e('or the Membership Checkout block', 'paid-memberships-pro' ); ?>.</p>
+					<p class="description"><?php esc_html_e('Include the shortcode', 'paid-memberships-pro' ); ?> [pmpro_checkout] <?php esc_html_e('or the Membership Checkout block', 'paid-memberships-pro' ); ?>.</p>
                 </td>
             </tr>
             <tr>
@@ -320,7 +320,7 @@ require_once(dirname(__FILE__) . "/admin_header.php");
                         <a target="_blank" href="<?php echo get_permalink($pmpro_pages['confirmation']); ?>"
                            class="button button-secondary pmpro_page_view"><?php esc_html_e('view page', 'paid-memberships-pro' ); ?></a>
                     <?php } ?>
-					<p class="description"><?php esc_html_e('Include the shortcode', 'paid-memberships-pro' ); ?> [pmpro_confirmation] <?php _e('or the Membership Confirmation block', 'paid-memberships-pro' ); ?>.</p>
+					<p class="description"><?php esc_html_e('Include the shortcode', 'paid-memberships-pro' ); ?> [pmpro_confirmation] <?php esc_html_e('or the Membership Confirmation block', 'paid-memberships-pro' ); ?>.</p>
                 </td>
             </tr>
             <tr>
@@ -345,7 +345,7 @@ require_once(dirname(__FILE__) . "/admin_header.php");
                         <a target="_blank" href="<?php echo get_permalink($pmpro_pages['invoice']); ?>"
                            class="button button-secondary pmpro_page_view"><?php esc_html_e('view page', 'paid-memberships-pro' ); ?></a>
                     <?php } ?>
-					<p class="description"><?php esc_html_e('Include the shortcode', 'paid-memberships-pro' ); ?> [pmpro_invoice] <?php _e('or the Membership Invoice block', 'paid-memberships-pro' ); ?>.</p>
+					<p class="description"><?php esc_html_e('Include the shortcode', 'paid-memberships-pro' ); ?> [pmpro_invoice] <?php esc_html_e('or the Membership Invoice block', 'paid-memberships-pro' ); ?>.</p>
                 </td>
             </tr>
             <tr>
@@ -370,7 +370,7 @@ require_once(dirname(__FILE__) . "/admin_header.php");
                         <a target="_blank" href="<?php echo get_permalink($pmpro_pages['levels']); ?>"
                            class="button button-secondary pmpro_page_view"><?php esc_html_e('view page', 'paid-memberships-pro' ); ?></a>
                     <?php } ?>
-					<p class="description"><?php esc_html_e('Include the shortcode', 'paid-memberships-pro' ); ?> [pmpro_levels] <?php _e('or the Membership Levels block', 'paid-memberships-pro' ); ?>.</p>
+					<p class="description"><?php esc_html_e('Include the shortcode', 'paid-memberships-pro' ); ?> [pmpro_levels] <?php esc_html_e('or the Membership Levels block', 'paid-memberships-pro' ); ?>.</p>
 
 					<?php if ( ! function_exists( 'pmpro_advanced_levels_shortcode' ) ) {
 						$allowed_advanced_levels_html = array (

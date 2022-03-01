@@ -178,7 +178,8 @@
 					</div> <!-- end pmpro_checkout-field-baddress1 -->
 					<div class="<?php echo pmpro_get_element_class( 'pmpro_checkout-field pmpro_checkout-field-baddress2', 'pmpro_checkout-field-baddress2' ); ?>">
 						<label for="baddress2"><?php esc_html_e('Address 2', 'paid-memberships-pro' );?></label>
-						<input id="baddress2" name="baddress2" type="text" class="<?php echo pmpro_get_element_class( 'input', 'baddress2' ); ?>" size="30" value="<?php echo esc_attr($baddress2);?>" /> <small class="<?php echo pmpro_get_element_class( 'lite' ); ?>">(<?php _e('optional', 'paid-memberships-pro' );?>)</small>
+						<input id="baddress2" name="baddress2" type="text" class="<?php echo pmpro_get_element_class( 'input', 'baddress2' ); ?>" size="30" value="<?php echo esc_attr($baddress2);?>" /> <small class="<?php echo pmpro_get_element_class( 'lite' ); ?>">(<?php esc_html_e('optional', 'paid-memberships-pro' );?>)</small>
+
 					</div> <!-- end pmpro_checkout-field-baddress2 -->
 
 					<?php
@@ -322,7 +323,8 @@
 				<div id="pmpro_payment_information_fields" class="<?php echo pmpro_get_element_class( 'pmpro_checkout', 'pmpro_payment_information_fields' ); ?>">
 					<h3>
 						<span class="<?php echo pmpro_get_element_class( 'pmpro_checkout-h3-name' ); ?>"><?php esc_html_e('Credit Card Information', 'paid-memberships-pro' );?></span>
-						<span class="<?php echo pmpro_get_element_class( 'pmpro_checkout-h3-msg' ); ?>"><?php printf(__('We accept %s', 'paid-memberships-pro' ), $pmpro_accepted_credit_cards_string);?></span>
+						<span class="<?php echo pmpro_get_element_class( 'pmpro_checkout-h3-msg' ); ?>"><?php printf( esc_html__('We accept %s', 'paid-memberships-pro' ), $pmpro_accepted_credit_cards_string ); ?></span>
+
 					</h3>
 					<?php $sslseal = pmpro_getOption("sslseal"); ?>
 					<?php if(!empty($sslseal)) { ?>
@@ -336,7 +338,8 @@
 									<label for="CardType"><?php esc_html_e('Card Type', 'paid-memberships-pro' );?></label>
 									<select id="CardType" name="CardType" class="<?php echo pmpro_get_element_class( '', 'CardType' );?>">
 										<?php foreach($pmpro_accepted_credit_cards as $cc) { ?>
-											<option value="<?php echo esc_attr( $cc ) ?>" <?php if($CardType == $cc) { ?>selected="selected"<?php } ?>><?php echo $cc?></option>
+											<option value="<?php echo esc_attr( $cc ); ?>" <?php if($CardType === $cc) { ?>selected="selected"<?php } ?>><?php echo esc_html( $cc ); ?></option>
+
 										<?php } ?>
 									</select>
 								</div> <!-- end pmpro_payment-card-type -->
@@ -394,7 +397,8 @@
 									for($i = date_i18n("Y"); $i < date_i18n("Y") + 10; $i++)
 									{
 								?>
-									<option value="<?php echo esc_attr( $i ) ?>" <?php if($ExpirationYear == $i) { ?>selected="selected"<?php } ?>><?php echo $i?></option>
+									<option value="<?php echo esc_attr( $i ) ?>" <?php if($ExpirationYear == $i) { ?>selected="selected"<?php } ?>><?php echo esc_html( $i ); ?></option>
+
 								<?php
 									}
 								?>

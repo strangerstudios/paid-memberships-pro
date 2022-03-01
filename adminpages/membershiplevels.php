@@ -346,7 +346,7 @@
 				<tr>
 					<th scope="row" valign="top"><label><?php esc_html_e('ID', 'paid-memberships-pro' );?>:</label></th>
 					<td>
-						<?php echo $level->id?>
+						<?php echo esc_html( $level->id ); ?>
 					</td>
 				</tr>
 
@@ -451,12 +451,12 @@
 							<?php }?>
 						</p>
 						<?php if($gateway == "braintree" && $edit < 0) { ?>
-							<p class="pmpro_message"><strong><?php esc_html_e('Note', 'paid-memberships-pro' );?>:</strong> <?php _e('After saving this level, make note of the ID and create a "Plan" in your Braintree dashboard with the same settings and the "Plan ID" set to <em>pmpro_#</em>, where # is the level ID.', 'paid-memberships-pro' );?></p>
+							<p class="pmpro_message"><strong><?php esc_html_e('Note', 'paid-memberships-pro' );?>:</strong> <?php echo wp_kses_post( 'After saving this level, make note of the ID and create a "Plan" in your Braintree dashboard with the same settings and the "Plan ID" set to <em>pmpro_#</em>, where # is the level ID.', 'paid-memberships-pro' ) );?></p>
 						<?php } elseif($gateway == "braintree") {
 						    $has_bt_plan = PMProGateway_braintree::checkLevelForPlan( $level->id );
 							?>
 							<p class="pmpro_message <?php if ( ! $has_bt_plan ) {?>pmpro_error<?php } ?>">
-                                <strong><?php esc_html_e('Note', 'paid-memberships-pro' );?>:</strong> <?php printf( __('You will need to create a "Plan" in your Braintree dashboard with the same settings and the "Plan ID" set to %s.', 'paid-memberships-pro' ), PMProGateway_braintree::get_plan_id( $level->id ) ); ?></p>
+                                <strong><?php esc_html_e('Note', 'paid-memberships-pro' );?>:</strong> <?php echo esc_html( sprintf( __('You will need to create a "Plan" in your Braintree dashboard with the same settings and the "Plan ID" set to %s.', 'paid-memberships-pro' ), PMProGateway_braintree::get_plan_id( $level->id ) ) ); ?></p>
 						<?php } ?>
 					</td>
 				</tr>
@@ -672,7 +672,7 @@
 
 		<p class="submit topborder">
 			<input name="save" type="submit" class="button button-primary" value="<?php esc_attr_e('Save Level', 'paid-memberships-pro' ); ?>" />
-			<input name="cancel" type="button" class="button" value="<?php esc_attr_e('Cancel', 'paid-memberships-pro' ); ?>" onclick="location.href='<?php echo add_query_arg( 'page', 'pmpro-membershiplevels' , admin_url( '/admin.php') ); ?>';" />
+			<input name="cancel" type="button" class="button" value="<?php esc_attr_e('Cancel', 'paid-memberships-pro' ); ?>" onclick="location.href='<?php echo esc_url( add_query_arg( 'page', 'pmpro-membershiplevels' , admin_url( '/admin.php') ) ); ?>';" />
 		</p>
 	</form>
 	</div>
@@ -828,7 +828,7 @@
 			<tr class="<?php if($count++ % 2 == 1) { ?>alternate<?php } ?> <?php if(!$level->allow_signups) { ?>pmpro_gray<?php } ?> <?php if(!pmpro_checkLevelForStripeCompatibility($level) || !pmpro_checkLevelForBraintreeCompatibility($level) || !pmpro_checkLevelForPayflowCompatibility($level) || !pmpro_checkLevelForTwoCheckoutCompatibility($level)) { ?>pmpro_error<?php } ?>">
 				<td><?php echo $level->id?></td>
 				<td class="level_name has-row-actions">
-					<span class="level-name"><a href="<?php echo esc_url( add_query_arg( array( 'page' => 'pmpro-membershiplevels', 'edit' => $level->id ), admin_url( 'admin.php' ) ) ); ?>"><?php esc_html_e( $level->name ); ?></a></span>
+					<span class="level-name"><a href="<?php echo esc_url( add_query_arg( array( 'page' => 'pmpro-membershiplevels', 'edit' => $level->id ), admin_url( 'admin.php' ) ) ); ?>"><?php echo esc_html( $level->name ); ?></a></span>
 					<div class="row-actions">
 						<?php
 						$delete_text = esc_html(
