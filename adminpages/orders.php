@@ -909,7 +909,7 @@ if ( function_exists( 'pmpro_add_email_order_modal' ) ) {
 							if( !empty( $consent_entry ) ) {
 								echo esc_html( pmpro_consent_to_text( $consent_entry ) );
 							} else {
-								esc_html_e( 'N/A' );
+								esc_html_e( 'N/A', 'paid-memberships-pro' );
 							}
 						?>
 					</td>
@@ -1546,7 +1546,7 @@ if ( function_exists( 'pmpro_add_email_order_modal' ) ) {
 						}
 						?>
 					</td>
-					<td><?php echo esc_html( $order->status ); ?></td>
+					<td><?php echo esc_html( $order->status );  if( $order->is_renewal() ){ echo "<br/>(".__( 'renewal', 'paid-memberships-pro' ).")"; } ?></td>
 					<td>
 						<?php echo esc_html( date_i18n( get_option( 'date_format' ), $order->getTimestamp() ) ); ?><br/>
 						<?php echo esc_html( date_i18n( get_option( 'time_format' ), $order->getTimestamp() ) ); ?>

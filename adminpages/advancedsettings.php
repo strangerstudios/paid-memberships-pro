@@ -537,7 +537,7 @@ if ( function_exists( 'pmpro_displayAds' ) && pmpro_displayAds() ) {
 							<option value="0" <?php if ( ! $uninstall ) { ?>selected="selected"<?php } ?>><?php _e( 'No', 'paid-memberships-pro' );?></option>
 							<option value="1" <?php if ( $uninstall == 1 ) { ?>selected="selected"<?php } ?>><?php _e( 'Yes - Delete all PMPro Data.', 'paid-memberships-pro' );?></option>
 						</select>
-						<p class="description"><?php esc_html_e( 'To delete all PMPro data from the database, set to Yes, deactivate PMPro, and then click to delete PMPro from the plugins page.' ); ?></p>
+						<p class="description"><?php esc_html_e( 'To delete all PMPro data from the database, set to Yes, deactivate PMPro, and then click to delete PMPro from the plugins page.', 'paid-memberships-pro' ); ?></p>
 					</td>
 				</tr>
 	        </tbody>

@@ -3,9 +3,9 @@
  * Plugin Name: Paid Memberships Pro
  * Plugin URI: https://www.paidmembershipspro.com
  * Description: The most complete member management and membership subscriptions plugin for WordPress.
- * Version: 2.7.3
- * Author: Stranger Studios
- * Author URI: https://www.strangerstudios.com
+ * Version: 2.7.5
+ * Author: Paid Memberships Pro
+ * Author URI: https://www.paidmembershipspro.com
  * Text Domain: paid-memberships-pro
  * Domain Path: /languages
  */
@@ -16,7 +16,7 @@
  */
 
 // version constant
-define( 'PMPRO_VERSION', '2.7.3' );
+define( 'PMPRO_VERSION', '2.7.5' );
 define( 'PMPRO_USER_AGENT', 'Paid Memberships Pro v' . PMPRO_VERSION . '; ' . site_url() );
 define( 'PMPRO_MIN_PHP_VERSION', '5.6' );
 
