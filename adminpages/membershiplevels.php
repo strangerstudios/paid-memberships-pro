@@ -451,7 +451,7 @@
 							<?php }?>
 						</p>
 						<?php if($gateway == "braintree" && $edit < 0) { ?>
-							<p class="pmpro_message"><strong><?php esc_html_e('Note', 'paid-memberships-pro' );?>:</strong> <?php echo wp_kses_post( 'After saving this level, make note of the ID and create a "Plan" in your Braintree dashboard with the same settings and the "Plan ID" set to <em>pmpro_#</em>, where # is the level ID.', 'paid-memberships-pro' ) );?></p>
+							<p class="pmpro_message"><strong><?php esc_html_e('Note', 'paid-memberships-pro' );?>:</strong> <?php echo wp_kses_post( __( 'After saving this level, make note of the ID and create a "Plan" in your Braintree dashboard with the same settings and the "Plan ID" set to <em>pmpro_#</em>, where # is the level ID.', 'paid-memberships-pro' ) );?></p>
 						<?php } elseif($gateway == "braintree") {
 						    $has_bt_plan = PMProGateway_braintree::checkLevelForPlan( $level->id );
 							?>
