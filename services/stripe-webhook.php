@@ -421,6 +421,8 @@
 			$logstr .= "Could not find an event with ID #" . $event_id;
 		else
 			$logstr .= "No event ID given.";
+
+		pmpro_unhandled_webhook();
 		pmpro_stripeWebhookExit();
 	}
 

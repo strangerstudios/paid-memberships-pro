@@ -30,6 +30,7 @@ $subscr_id              = pmpro_getParam( "subscr_id", "POST" );
 $txn_id                 = pmpro_getParam( "txn_id", "POST" );
 $item_name              = pmpro_getParam( "item_name", "POST" );
 $item_number            = pmpro_getParam( "item_number", "POST" );
+$initial_payment_txn_id = pmpro_getParam( "initial_payment_txn_id", "POST" );
 $initial_payment_status = strtolower( pmpro_getParam( "initial_payment_status", "POST" ) );
 $payment_status         = pmpro_getParam( "payment_status", "POST" );
 $payment_amount         = pmpro_getParam( "payment_amount", "POST" );
@@ -300,6 +301,29 @@ if ( $txn_type == 'recurring_payment_profile_cancel' || $txn_type == 'recurring_
 	}
 }
 
+// Recurring Payment Profile Created (PayPal Express)
+if ( $txn_type == 'recurring_payment_profile_created' ) {
+	$last_subscription_order = new MemberOrder();
+	if ( $last_subscription_order->getLastMemberOrderBySubscriptionTransactionID( $subscr_id ) ) {
+		$wpdb->update( $wpdb->pmpro_membership_orders, array( 'payment_transaction_id' => $initial_payment_txn_id ), array(
+			'id' => $last_subscription_order->id
+		), array( '%s' ), array( '%d' ) );
+
+		ipnlog( 'Confirmation of profile creation for this recurring payment (' . $subscr_id . ').' );
+	} else {
+		ipnlog( 'ERROR: Could not find last order for this recurring payment (' . $subscr_id . ').' );
+	}
+
+	pmpro_ipnExit();
+}
+
+// Order completed (PayPal Express)
+if ( $txn_type === 'express_checkout' ) {
+	ipnlog( 'Confirmation of order completion for this payment: ' . print_r( $_POST, true ) );
+
+	pmpro_ipnExit();
+}
+
 //Subscription Cancelled (PayPal Standard)
 if ( $txn_type == "subscr_cancel" ) {
 	//find last order
@@ -358,6 +382,8 @@ if( '' === $txn_type && 'Refunded' === $payment_status ) {
 //Other
 //if we got here, this is a different kind of txn
 ipnlog( "No recurring payment id or item number. txn_type = " . $txn_type );
+
+pmpro_unhandled_webhook();
 pmpro_ipnExit();
 
 /*
