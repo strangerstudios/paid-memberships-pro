@@ -2309,6 +2309,7 @@ class PMProGateway_stripe extends PMProGateway {
 			'product'  => $product_id,
 			'type'     => $is_recurring ? 'recurring' : 'one_time',
 			'currency' => strtolower( $pmpro_currency ),
+			'limit' => 100,
 		);
 		if ( $is_recurring ) {
 			$price_search_args['recurring'] = array( 'interval' => $cycle_period );
