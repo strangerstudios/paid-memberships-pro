@@ -79,7 +79,7 @@ if($pmpro_msg)
 </table>
 <p class="<?php echo pmpro_get_element_class( 'pmpro_actions_nav' ); ?>">
 	<?php if( $has_any_level ) { ?>
-		<a href="<?php echo esc_url( pmpro_url("account" ) ) ?>" id="pmpro_levels-return-account"><?php esc_html_e('&larr; Return to Your Account', 'paid-memberships-pro' );?></a>
+		<a href="<?php echo esc_url( pmpro_url("account" ) ) ?>" id="pmpro_levels-return-account">&larr; <?php esc_html_e('Return to Your Account', 'paid-memberships-pro' );?></a>
 	<?php } else { ?>
 		<a href="<?php echo esc_url( home_url() ) ?>" id="pmpro_levels-return-home"><?php esc_html_e('&larr; Return to Home', 'paid-memberships-pro' );?></a>
 	<?php } ?>
