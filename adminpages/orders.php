@@ -481,8 +481,7 @@ if ( function_exists( 'pmpro_add_email_order_modal' ) ) {
 				</td>
 			</tr>
 			<tr>
-				<th scope="row" valign="top"><label for="billing_street"><?php esc_html_e( 'Billing Street', 'paid-memberships-pro' ); ?>
-						:</label></th>
+				<th scope="row" valign="top"><label for="billing_street"><?php esc_html_e( 'Billing Street', 'paid-memberships-pro' ); ?>:</label></th>
 				<td>
 					<?php
 					if ( in_array( 'billing_street', $read_only_fields ) && $order_id > 0 ) {
@@ -507,8 +506,7 @@ if ( function_exists( 'pmpro_add_email_order_modal' ) ) {
 									<?php } ?>
 			</tr>
 			<tr>
-				<th scope="row" valign="top"><label for="billing_state"><?php esc_html_e( 'Billing State', 'paid-memberships-pro' ); ?>
-						:</label></th>
+				<th scope="row" valign="top"><label for="billing_state"><?php esc_html_e( 'Billing State', 'paid-memberships-pro' ); ?>:</label></th>
 				<td>
 					<?php
 					if ( in_array( 'billing_state', $read_only_fields ) && $order_id > 0 ) {
@@ -520,8 +518,7 @@ if ( function_exists( 'pmpro_add_email_order_modal' ) ) {
 									<?php } ?>
 			</tr>
 			<tr>
-				<th scope="row" valign="top"><label for="billing_zip"><?php esc_html_e( 'Billing Postal Code', 'paid-memberships-pro' ); ?>
-						:</label></th>
+				<th scope="row" valign="top"><label for="billing_zip"><?php esc_html_e( 'Billing Postal Code', 'paid-memberships-pro' ); ?>:</label></th>
 				<td>
 					<?php
 					if ( in_array( 'billing_zip', $read_only_fields ) && $order_id > 0 ) {
@@ -533,8 +530,7 @@ if ( function_exists( 'pmpro_add_email_order_modal' ) ) {
 									<?php } ?>
 			</tr>
 			<tr>
-				<th scope="row" valign="top"><label for="billing_country"><?php esc_html_e( 'Billing Country', 'paid-memberships-pro' ); ?>
-						:</label></th>
+				<th scope="row" valign="top"><label for="billing_country"><?php esc_html_e( 'Billing Country', 'paid-memberships-pro' ); ?>:</label></th>
 				<td>
 					<?php
 					if ( in_array( 'billing_country', $read_only_fields ) && $order_id > 0 ) {
@@ -547,8 +543,7 @@ if ( function_exists( 'pmpro_add_email_order_modal' ) ) {
 				</td>
 			</tr>
 			<tr>
-				<th scope="row" valign="top"><label for="billing_phone"><?php esc_html_e( 'Billing Phone', 'paid-memberships-pro' ); ?>
-						:</label></th>
+				<th scope="row" valign="top"><label for="billing_phone"><?php esc_html_e( 'Billing Phone', 'paid-memberships-pro' ); ?>:</label></th>
 				<td>
 					<?php
 					if ( in_array( 'billing_phone', $read_only_fields ) && $order_id > 0 ) {
@@ -676,7 +671,7 @@ if ( function_exists( 'pmpro_add_email_order_modal' ) ) {
 				</td>
 			</tr>
 			<tr>
-				<th scope="row" valign="top"><label for="cardtype"><?php esc_html_e( 'Card Type', 'paid-memberships-pro' ); ?></label></th>
+				<th scope="row" valign="top"><label for="cardtype"><?php esc_html_e( 'Card Type', 'paid-memberships-pro' ); ?>:</label></th>
 				<td>
 					<?php
 					if ( in_array( 'cardtype', $read_only_fields ) && $order_id > 0 ) {
@@ -690,8 +685,7 @@ if ( function_exists( 'pmpro_add_email_order_modal' ) ) {
 				</td>
 			</tr>
 			<tr>
-				<th scope="row" valign="top"><label for="accountnumber"><?php esc_html_e( 'Account Number', 'paid-memberships-pro' ); ?>
-						:</label></th>
+				<th scope="row" valign="top"><label for="accountnumber"><?php esc_html_e( 'Account Number', 'paid-memberships-pro' ); ?>:</label></th>
 				<td>
 					<?php
 					if ( in_array( 'accountnumber', $read_only_fields ) && $order_id > 0 ) {
@@ -729,8 +723,7 @@ if ( function_exists( 'pmpro_add_email_order_modal' ) ) {
 					</td>
 				</tr>
 				<tr>
-					<th scope="row" valign="top"><label for="expirationyear"><?php esc_html_e( 'Expiration Year', 'paid-memberships-pro' ); ?>
-				:</label></th>
+					<th scope="row" valign="top"><label for="expirationyear"><?php esc_html_e( 'Expiration Year', 'paid-memberships-pro' ); ?>:</label></th>
 					<td>
 						<input id="expirationyear" name="expirationyear" type="text" size="10"
 				   value="<?php echo esc_attr( $order->expirationyear ); ?>"/>
@@ -816,8 +809,7 @@ if ( function_exists( 'pmpro_add_email_order_modal' ) ) {
 			</tr>
 			<tr>
 				<th scope="row" valign="top"><label
-						for="subscription_transaction_id"><?php esc_html_e( 'Subscription Transaction ID', 'paid-memberships-pro' ); ?>
-						:</label></th>
+						for="subscription_transaction_id"><?php esc_html_e( 'Subscription Transaction ID', 'paid-memberships-pro' ); ?>:</label></th>
 				<td>
 					<?php
 					if ( in_array( 'subscription_transaction_id', $read_only_fields ) && $order_id > 0 ) {
@@ -917,7 +909,7 @@ if ( function_exists( 'pmpro_add_email_order_modal' ) ) {
 							if( !empty( $consent_entry ) ) {
 								echo esc_html( pmpro_consent_to_text( $consent_entry ) );
 							} else {
-								esc_html_e( 'N/A' );
+								esc_html_e( 'N/A', 'paid-memberships-pro' );
 							}
 						?>
 					</td>
@@ -1255,7 +1247,7 @@ if ( function_exists( 'pmpro_add_email_order_modal' ) ) {
 		<p class="search-box">
 			<label class="hidden" for="post-search-input"><?php esc_html_e( 'Search Orders', 'paid-memberships-pro' ); ?>:</label>
 			<input type="hidden" name="page" value="pmpro-orders"/>
-			<input id="post-search-input" type="text" value="<?php echo esc_attr( $s ); ?>" name="s"/>
+			<input id="post-search-input" type="text" value="<?php echo esc_attr( wp_unslash( $s ) ); ?>" name="s"/>
 			<input class="button" type="submit" value="<?php esc_attr_e( 'Search Orders', 'paid-memberships-pro' ); ?>"/>
 		</p>
 
@@ -1554,7 +1546,7 @@ if ( function_exists( 'pmpro_add_email_order_modal' ) ) {
 						}
 						?>
 					</td>
-					<td><?php echo esc_html( $order->status ); ?></td>
+					<td><?php echo esc_html( $order->status );  if( $order->is_renewal() ){ echo "<br/>(".__( 'renewal', 'paid-memberships-pro' ).")"; } ?></td>
 					<td>
 						<?php echo esc_html( date_i18n( get_option( 'date_format' ), $order->getTimestamp() ) ); ?><br/>
 						<?php echo esc_html( date_i18n( get_option( 'time_format' ), $order->getTimestamp() ) ); ?>

@@ -78,7 +78,14 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 					'callback'	=> array( $this, 'pmpro_rest_api_change_membership_level' ),
 					'args'	=> array(
 						'user_id' => array(),
-						'level_id' => array()
+						'level_id' => array(),
+						'email' => array(),
+						'first_name' => array(),
+						'last_name' => array(),
+						'user_url' => array(),
+						'user_login' => array(),
+						'description' => array(),
+						'create_user' => array(),
 					),
 					'permission_callback' => array( $this, 'pmpro_rest_api_get_permissions_check' ),
 				)			
@@ -201,6 +208,9 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 				array(
 					'methods'  => WP_REST_Server::READABLE,
 					'callback' => array( $this, 'pmpro_rest_api_recent_memberships' ),
+					'args'	=> array(
+						'status' => array(),
+					),
 					'permission_callback' => array( $this, 'pmpro_rest_api_get_permissions_check' ),
 				)
 		));
@@ -233,7 +243,7 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 			
 			// Query by email.
 			if ( empty( $user_id ) && !empty( $params['email'] ) ) {
-				$user = get_user_by_email( sanitize_email( $params['email'] ) );
+				$user = get_user_by( 'email', sanitize_email( $params['email'] ) );
 				$user_id = $user->ID;
 			}
 			
@@ -263,7 +273,7 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 
 			// Param email was used instead.
 			if ( empty( $user_id ) && !empty( $params['email'] ) ) {
-				$user = get_user_by_email( sanitize_email( $params['email'] ) );
+				$user = get_user_by( 'email', sanitize_email( $params['email'] ) );
 				$user_id = $user->ID;
 			}
 			
@@ -290,7 +300,7 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 			if ( empty( $user_id ) ) {
 				// see if they sent an email
 				if ( ! empty( $params['email'] ) ) {
-					$user = get_user_by_email( sanitize_email( $params['email'] ) );
+					$user = get_user_by( 'email', sanitize_email( $params['email'] ) );
 					$user_id = $user->ID;
 				} else {
 					return new WP_REST_Response( 'No user information passed through.', 404 );
@@ -315,21 +325,60 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 		 */
 		function pmpro_rest_api_change_membership_level( $request ) {
 			$params = $request->get_params();
-			$user_id = isset( $params['user_id'] ) ? intval( $params['user_id'] ) : null;
-			$level_id = isset( $params['level_id'] ) ? intval( $params['level_id'] ) : null;
+			$user_id = isset( $params['user_id'] ) ? (int) $params['user_id'] : null;
+			$level_id = isset( $params['level_id'] ) ? (int) $params['level_id'] : null;
 			$email = isset( $params['email'] ) ? sanitize_email( $params['email'] ) : null;
+			$first_name = isset( $params['first_name'] ) ? sanitize_text_field( $params['first_name'] ) : '';
+			$last_name = isset( $params['last_name'] ) ? sanitize_text_field( $params['last_name'] ) : '';
+			$username = isset( $params['user_login'] ) ? sanitize_text_field( $params['user_login'] ) : $email;
+			$user_url = isset( $params['user_url'] ) ? sanitize_text_field( $params['user_url'] ) : '';
+			$description = isset( $params['description'] ) ? sanitize_textarea_field( $params['description'] ) : '';
+			$create_user = isset( $params['create_user'] ) ? filter_var( $params['create_user'], FILTER_VALIDATE_BOOLEAN ) : false;
 			$response_type = isset( $params['response_type'] ) ? sanitize_text_field( $params['response_type'] ) : null;
 
 			if ( empty( $user_id ) ) {
+
 				// see if they sent an email
 				if ( ! empty( $email ) ) {
-					$user = get_user_by_email( $email );
-					$user_id = $user->ID;
+
+					$user = get_user_by( 'email', $email );
+					
+					// Assume the user doesn't already exist.
+					if ( $create_user && ! $user ) {
+
+						/**
+						 * Filter the user data arguments for wp_insert_user when creating the user via the REST API.
+						 * @since 2.7.4
+						 * @param array $user_data An associative array with user arguments when creating the user. See https://developer.wordpress.org/reference/functions/wp_insert_user/ for reference.
+						 */
+						$user_data = apply_filters( 'pmpro_api_new_user_array', array(
+								'user_pass' => wp_generate_password(),
+								'user_email' => $email,
+								'user_login' => $username,
+								'first_name' => $first_name,
+								'last_name' => $last_name,
+								'user_url' => $user_url,
+								'description' => $description
+							)
+						);
+
+						$user_id = wp_insert_user( $user_data );
+						
+						if ( is_wp_error( $user_id ) ) {
+							$error = $user_id->get_error_message();
+							return new WP_REST_Response( $error, 500 ); // Assume it failed and return a 500 error occured like core WordPress.
+						}
+						
+						pmpro_maybe_send_wp_new_user_notification( $user_id, $level_id );
+					} else {
+						$user_id = $user->ID;
+					}
+					
 				} else {
+
 					if ( 'json' === $response_type ) {
 						wp_send_json_error( array( 'email' => $email, 'error' => 'No user information passed through.' ) );
 					}
-
 					return new WP_REST_Response( 'No user information passed through.', 404 );
 				}
 			}
@@ -338,20 +387,36 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 				if ( 'json' === $response_type ) {
 					wp_send_json_error( array( 'email' => $email, 'error' => 'Paid Memberships Pro function not found.' ) );
 				}
-
 				return new WP_REST_Response( 'Paid Memberships Pro function not found.', 404 );
 			}
 
-			if ( ! empty( $user_id ) ) {
-				$response = pmpro_changeMembershipLevel( $level_id, $user_id );
-			} else {
-				$response = false;
+			// Make sure we have a user_id by now.
+			if ( empty( $user_id ) ) {
+				if ( 'json' === $response_type ) {
+					wp_send_json_error( array( 'email' => $email, 'error' => 'No user found with that email address. Try the create_user parameter.' ) );
+				}				
+				return new WP_REST_Response( 'No user found with that email address. Try the create_user parameter.', 404 );
 			}
-
+			
+			/**
+			 * Filter to allow admin levels to be changed via the REST API or Zapier application.
+			 * Defaults to false to prevent admin users from having their level changed via API.
+			 * @since 2.7.4
+			 * @param boolean $can_change_admin_users Should API calls change admin account membership levels.
+			 */
+			$can_change_admin_users = apply_filters( 'pmpro_api_change_membership_level_for_admin_users', false );
+			if ( ! $can_change_admin_users && user_can( $user_id, 'manage_options' ) ) {
+				if ( 'json' === $response_type ) {
+					wp_send_json_error( array( 'email' => $email, 'error' => 'Sorry, you are not allowed to edit admin accounts.' ) );
+				}
+				return new WP_REST_Response( 'Sorry, you are not allowed to edit admin accounts.', 403 );
+			}
+						
+			$response = pmpro_changeMembershipLevel( $level_id, $user_id );
+						
 			if ( 'json' === $response_type ) {
 				wp_send_json_success( array( 'user_id' => $user_id, 'level_changed' => $level_id, 'response' => $response, 'status' => 200 ) );
 			}
-
 			return new WP_REST_Response( $response, 200 );
 		}
 
@@ -370,7 +435,7 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 			if ( empty( $user_id ) ) {
 				// see if they sent an email
 				if ( ! empty( $email ) ) {
-					$user = get_user_by_email( $email );
+					$user = get_user_by( 'email', $email );
 					$user_id = $user->ID;
 				} else {
 					if ( 'json' === $response_type ) {
@@ -612,7 +677,7 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 
 			$discount_code->code = $code;
 			$discount_code->starts = $starts;
-			$discount_code->ends = $expires;
+			$discount_code->expires = $expires;
 			$discount_code->uses = $uses;
 			$discount_code->levels = !empty( $levels_array ) ? $levels_array : $levels;
 			$discount_code->save();
@@ -719,16 +784,42 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 		 */
 		public function pmpro_rest_api_recent_memberships( $request ) {
 			$params = $request->get_params();
-
+			if ( isset($params['limit']) ) {
+				$limit = intval( $params['limit'] );
+			} else {
+				$limit = 1;
+			}
+			/**
+			 * Allow filtering the total number of recent members to show in the /recent_memberships PMPro endpoint.
+			 *
+			 * @param int $limit The total number of recent members to show.
+			 */
+			$limit = apply_filters( 'pmpro_trigger_recent_members_limit', $limit );
+			
 			$response_type = isset( $params['response_type'] ) ? sanitize_text_field( $params['response_type'] ) : null;
-			$limit = apply_filters( 'pmpro_trigger_recent_members_limit', 1 );
+			
+			if ( empty( $params['level_status'] ) ) {
+				$level_status = [ 'active' ];
+			} else {
+				$level_status = sanitize_text_field( trim( $params['level_status'] ) );
+
+				// Force it into an array so we can implode it in the query itself.
+				$level_status = explode( ',', $level_status );
+			}
+
+			// Set up values to prepare.
+			$prepare   = $level_status;
+			$prepare[] = $limit;
+
+			// Set up the placeholders we want to use.
+			$level_status_placeholders = implode( ', ', array_fill( 0, count( $level_status ), '%s' ) );
 
 			// Grab the useful information.
 			global $wpdb;
 
 			$sql = "
 				SELECT
-					`mu`.`user_id`,
+					`mu`.`user_id` as `id`,
 					`u`.`user_email`,
 					`u`.`user_nicename`,
 					`mu`.`membership_id`,
@@ -741,21 +832,18 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 				LEFT JOIN `{$wpdb->pmpro_membership_levels}` AS `ml`
 					ON `ml`.`id` = `mu`.`membership_id`
 				WHERE
-					`mu`.`status` = 'active' 
+					`mu`.`status` IN ( {$level_status_placeholders} ) 
 				ORDER BY
 					`mu`.`modified` DESC
 				LIMIT %d
 			";
 
-			$results = $wpdb->get_results( $wpdb->prepare( $sql, $limit ) );
+			$results = $wpdb->get_results( $wpdb->prepare( $sql, $prepare ) );
 
-			// Generate random ID for Zapier and then also add all member information.
-			if ( $response_type == 'json' ) {
-				$id = isset( $results[0]->user_id ) ? intval( $results[0]->user_id ) : 0; 
-				wp_send_json( array( 'id' => $id, 'results' => $results ) );
-			}
+			// Let's format the date to ISO8601
+			$results[0]->modified = pmpro_format_date_iso8601( $results[0]->modified );
 
-			return new WP_REST_Response( $results );
+			return new WP_REST_Response( $results, 200 );
 
 		}
 
@@ -770,15 +858,20 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 		 */
 		public function pmpro_rest_api_recent_orders( $request ) {
 			$params = $request->get_params();
+			
+			if ( isset($params['limit']) ) {
+				$orders_limit = intval( $params['limit'] );
+			} else {
+				$orders_limit = 1;
+			}
 
-			$response_type = isset( $params['response_type'] ) ? sanitize_text_field( $params['response_type'] ) : null;
-			$limit = apply_filters( 'pmpro_trigger_recent_orders_limit', 1 );
+			$limit = apply_filters( 'pmpro_trigger_recent_orders_limit', $orders_limit );
 
 			global $wpdb;
 
 			$sql = "
 				SELECT
-					`o`.`id` AS `order_id`,
+					`o`.`id`,
 					`o`.`code`,
 					`u`.`ID` AS `user_id`,
 					`u`.`user_email`,
@@ -807,12 +900,9 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 			
 			$results = $wpdb->get_results( $wpdb->prepare( $sql, $limit ) );
 
-			if ( 'json' === $response_type ) {
-				$id = isset( $results[0]->order_id ) ? intval( $results[0]->order_id ) : 0;
-				wp_send_json( array( 'id' => $id, 'results' => $results ) );
-			}
+			$results[0]->timestamp = pmpro_format_date_iso8601( $results[0]->timestamp );
 
-			return new WP_REST_Response( $results );
+			return new WP_REST_Response( $results, 200 );
 		}
 
 		/**
@@ -846,15 +936,15 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 				'/pmpro/v1/recent_orders' => 'pmpro_orders'
 			);
 			$route_caps = apply_filters( 'pmpro_rest_api_route_capabilities', $route_caps, $request );			
-
+			
 			if ( isset( $route_caps[$route] ) ) {
 				if ( $route_caps[$route] === true ) {
 					// public
 					$permission = true;
-				} else {
-					$permission = current_user_can( $route_caps[$route] );				
+				} else {									
+					$permission = current_user_can( $route_caps[$route] );					
 				}				
-			}	
+			}
 
 			// Is the request method allowed? We disable DELETE by default.
 			if ( ! in_array( $method, pmpro_get_rest_api_methods( $route ) ) ) {
@@ -872,8 +962,6 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 		function pmpro_rest_api_convert_to_array( $string ) {
 			return explode( ',', $string );
 		}
-
-
 	} // End of class
 
 	/**
@@ -887,6 +975,7 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 
 	add_action( 'rest_api_init', 'pmpro_rest_api_register_custom_routes', 5 );
 }
+
 
 /**
  * Get the allowed methods for PMPro REST API endpoints.

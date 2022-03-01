@@ -118,7 +118,7 @@ class PMPro_Members_List_Table extends WP_List_Table {
 
 		// Shortcut for editing columns in default memberslist location.
 		$current_screen = get_current_screen();
-		if ( ! empty( $current_screen ) && 'memberships_page_pmpro-memberslist' === $current_screen->id ) {
+		if ( ! empty( $current_screen ) && strpos( $current_screen->id, "pmpro-memberslist" ) !== false ) {
 			$columns = apply_filters( 'pmpro_manage_memberslist_columns', $columns );
 		}
 
@@ -252,11 +252,24 @@ class PMPro_Members_List_Table extends WP_List_Table {
 		} else {
 			$l = false;
 		}
-		if(isset($_REQUEST['s']))
-			$s = sanitize_text_field(trim($_REQUEST['s']));
-		else
-			$s = "";
-		
+
+		$search_key = false;
+		if( isset( $_REQUEST['s'] ) ) {
+			$s = sanitize_text_field( trim( $_REQUEST['s'] ) );
+		} else {
+			$s = '';
+		}
+
+		// If there's a colon in the search, let's split it out.
+		if( ! empty( $s ) && strpos( $s, ':' ) !== false ) {
+			$parts = explode( ':', $s );
+		$search_key = array_shift( $parts );
+		$s = implode( ':', $parts );
+		}
+
+		// Treat * as wild cards.
+		$s = str_replace( '*', '%', $s );
+
 		// some vars for ordering
 		if(isset($_REQUEST['orderby'])) {
 			$orderby = $this->sanitize_orderby( $_REQUEST['orderby'] );
@@ -274,13 +287,13 @@ class PMPro_Members_List_Table extends WP_List_Table {
 				$order = 'DESC';
 			}
 		}
-		
-		// some vars for pagination	
+
+		// some vars for pagination
 		if(isset($_REQUEST['paged']))
 			$pn = intval($_REQUEST['paged']);
 		else
 			$pn = 1;
-		
+
 		$limit = $this->get_items_per_page( 'users_per_page' );
 
 		$end = $pn * $limit;
@@ -297,8 +310,8 @@ class PMPro_Members_List_Table extends WP_List_Table {
 				UNIX_TIMESTAMP(CONVERT_TZ(max(mu.enddate), '+00:00', @@global.time_zone)) as enddate, m.name as membership
 				";
 		}
-			
-		$sqlQuery .= 
+
+		$sqlQuery .=
 			"	
 			FROM $wpdb->users u 
 			LEFT JOIN $wpdb->pmpro_memberships_users mu
@@ -306,19 +319,35 @@ class PMPro_Members_List_Table extends WP_List_Table {
 			LEFT JOIN $wpdb->pmpro_membership_levels m
 			ON mu.membership_id = m.id
 			";
-			
+
 		if ( !empty( $s ) ) {
-			$sqlQuery .= " LEFT JOIN $wpdb->usermeta um ON u.ID = um.user_id ";
+			if ( ! empty( $search_key ) ) {
+				// If there's a colon in the search string, make the search smarter.
+				if( in_array( $search_key, array( 'login', 'nicename', 'email', 'url', 'display_name' ), true ) ) {
+					$key_column = 'u.user_' . esc_sql( $search_key );
+					$search_query = " AND $key_column LIKE '%" . esc_sql( $s ) . "%' ";
+				} elseif ( $search_key === 'discount' || $search_key === 'discount_code' || $search_key === 'dc' ) {
+					$user_ids = $wpdb->get_col( "SELECT dcu.user_id FROM $wpdb->pmpro_discount_codes_uses dcu LEFT JOIN $wpdb->pmpro_discount_codes dc ON dcu.code_id = dc.id WHERE dc.code = '" . esc_sql( $s ) . "'" );
+					$search_query = " AND u.ID IN(" . implode( ",", $user_ids ) . ") ";
+				} else {
+					$user_ids = $wpdb->get_col( "SELECT user_id FROM $wpdb->usermeta WHERE meta_key = '" . esc_sql( $search_key ) . "' AND meta_value lIKE '%" . esc_sql( $s ) . "%'" );
+					$search_query = " AND u.ID IN(" . implode( ",", $user_ids ) . ") ";
+				}
+			} else {
+				// Default search checks a few fields.
+				$sqlQuery .= " LEFT JOIN $wpdb->usermeta um ON u.ID = um.user_id ";
+				$search_query = " AND ( u.user_login LIKE '%" . esc_sql($s) . "%' OR u.user_email LIKE '%" . esc_sql($s) . "%' OR um.meta_value LIKE '%" . esc_sql($s) . "%' OR u.display_name LIKE '%" . esc_sql($s) . "%' ) ";
+			}
 		}
 
 		if ( 'oldmembers' === $l || 'expired' === $l || 'cancelled' === $l ) {
 				$sqlQuery .= " LEFT JOIN $wpdb->pmpro_memberships_users mu2 ON u.ID = mu2.user_id AND mu2.status = 'active' ";
 		}
-		
+
 		$sqlQuery .= ' WHERE mu.membership_id > 0 ';
-		
+
 		if ( ! empty( $s ) ) {
-			$sqlQuery .= " AND (u.user_login LIKE '%" . esc_sql($s) . "%' OR u.user_email LIKE '%" . esc_sql($s) . "%' OR um.meta_value LIKE '%" . esc_sql($s) . "%' OR u.display_name LIKE '%" . esc_sql($s) . "%') ";
+			$sqlQuery .= $search_query;
 		}
 
 		if ( 'oldmembers' === $l ) {
@@ -332,26 +361,26 @@ class PMPro_Members_List_Table extends WP_List_Table {
 		} else {
 			$sqlQuery .= " AND mu.status = 'active' ";
 		}
-		
+
 		if ( ! $count ) {
 			$sqlQuery .= ' GROUP BY u.ID ';
-			
+
 			$sqlQuery .= " ORDER BY $orderby $order ";
-			
+
 			$sqlQuery .= " LIMIT $start, $limit ";
 		}
 
 		$sqlQuery = apply_filters("pmpro_members_list_sql", $sqlQuery);
-		
+
 		if( $count ) {
 			$sql_table_data = $wpdb->get_var( $sqlQuery );
 		} else {
 			$sql_table_data = $wpdb->get_results( $sqlQuery, ARRAY_A );
 		}
-		
+
 		return $sql_table_data;
 	}
-	
+
 	/**
 	 * Sanitize the orderby value.
 	 * Only allow fields we want to order by.
@@ -373,15 +402,15 @@ class PMPro_Members_List_Table extends WP_List_Table {
 			'startdate' 		=> 'mu.startdate',
 			'enddate' 			=> 'mu.enddate',
 		);
-		
+
 		$allowed_orderbys = apply_filters('pmpro_memberslist_allowed_orderbys', $allowed_orderbys );
-		
+
 	 	if ( ! empty( $allowed_orderbys[$orderby] ) ) {
 			$orderby = $allowed_orderbys[$orderby];
 		} else {
 			$orderby = false;
 		}
-		
+
 		return $orderby;
 	}
 

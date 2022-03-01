@@ -408,6 +408,10 @@ if ( $submit && $pmpro_msgt != "pmpro_error" ) {
 					$recaptcha_errors = $resp->error;
 				} else {
 					//using newer recaptcha lib
+					// NOTE: In practice, we don't execute this code because
+					// we use AJAX to send the data back to the server and set the
+					// pmpro_recaptcha_validated session variable, which is checked
+					// earlier. We should remove/refactor this code.
 					$reCaptcha = new pmpro_ReCaptcha( $recaptcha_privatekey );
 					$resp      = $reCaptcha->verifyResponse( $_SERVER["REMOTE_ADDR"], $_POST["g-recaptcha-response"] );
 
@@ -446,16 +450,24 @@ if ( $submit && $pmpro_msgt != "pmpro_error" ) {
 						$pmpro_msgt      = "pmpro_success";
 						$pmpro_confirmed = true;
 					} else {
+						/**
+						 * Allow running code when processing fails.
+						 *
+						 * @since 2.7
+						 * @param MemberOrder $morder The order object used at checkout.
+						 */
+						do_action( 'pmpro_checkout_processing_failed', $morder );
+
+						// Make sure we have an error message.
 						$pmpro_msg = !empty( $morder->error ) ? $morder->error : null;
 						if ( empty( $pmpro_msg ) ) {
 							$pmpro_msg = __( "Unknown error generating account. Please contact us to set up your membership.", 'paid-memberships-pro' );
 						}
-						
 						if ( ! empty( $morder->error_type ) ) {
 							$pmpro_msgt = $morder->error_type;
 						} else {
 							$pmpro_msgt = "pmpro_error";
-						}						
+						}
 					}
 
 				} else // !$pmpro_requirebilling
@@ -538,18 +550,9 @@ if ( ! empty( $pmpro_confirmed ) ) {
 			$pmpro_msgt = "pmpro_error";
 		} elseif ( apply_filters( 'pmpro_setup_new_user', true, $user_id, $new_user_array, $pmpro_level ) ) {
 
-			//check pmpro_wp_new_user_notification filter before sending the default WP email
-			if ( apply_filters( "pmpro_wp_new_user_notification", true, $user_id, $pmpro_level->id ) ) {
-				if ( version_compare( $wp_version, "4.3.0" ) >= 0 ) {
-					wp_new_user_notification( $user_id, null, 'both' );
-				} else {
-					wp_new_user_notification( $user_id, $new_user_array['user_pass'] );
-				}
-			}
-
+			pmpro_maybe_send_wp_new_user_notification( $user_id, $pmpro_level->id );
+			
 			$wpuser = get_userdata( $user_id );
-
-			//make the user a subscriber
 			$wpuser->set_role( get_option( 'default_role', 'subscriber' ) );
 
 			/**
@@ -595,7 +598,7 @@ if ( ! empty( $pmpro_confirmed ) ) {
 
 		//calculate the end date
 		if ( ! empty( $pmpro_level->expiration_number ) ) {
-			if( $pmpro_level->cycle_period == 'Hour' ){
+			if( $pmpro_level->expiration_period == 'Hour' ){
 				$enddate =  date( "Y-m-d H:i:s", strtotime( "+ " . $pmpro_level->expiration_number . " " . $pmpro_level->expiration_period, current_time( "timestamp" ) ) );
 			} else {
 				$enddate =  date( "Y-m-d 23:59:59", strtotime( "+ " . $pmpro_level->expiration_number . " " . $pmpro_level->expiration_period, current_time( "timestamp" ) ) );
@@ -623,7 +626,7 @@ if ( ! empty( $pmpro_confirmed ) ) {
 		} else {
 			$code_check = pmpro_checkDiscountCode( $discount_code, $pmpro_level->id, true );
 		}
-		
+
 		if ( $code_check[0] == false ) {
 			//error
 			$pmpro_msg  = $code_check[1];
@@ -635,8 +638,8 @@ if ( ! empty( $pmpro_confirmed ) ) {
 			//all okay
 			$use_discount_code = true;
 		}
-		
-		//update membership_user table.		
+
+		//update membership_user table.
 		if ( ! empty( $discount_code ) && ! empty( $use_discount_code ) ) {
 			$discount_code_id = $wpdb->get_var( "SELECT id FROM $wpdb->pmpro_discount_codes WHERE code = '" . esc_sql( $discount_code ) . "' LIMIT 1" );
 		} else {
@@ -693,7 +696,7 @@ if ( ! empty( $pmpro_confirmed ) ) {
 				}
 
 				$wpdb->query( "INSERT INTO $wpdb->pmpro_discount_codes_uses (code_id, user_id, order_id, timestamp) VALUES('" . $discount_code_id . "', '" . $user_id . "', '" . intval( $code_order_id ) . "', '" . current_time( "mysql" ) . "')" );
-				
+
 				do_action( 'pmpro_discount_code_used', $discount_code_id, $user_id, $code_order_id );
 			}
 
@@ -776,7 +779,7 @@ if ( ! empty( $pmpro_confirmed ) ) {
 			do_action( "pmpro_after_checkout", $user_id, $morder );    //added $morder param in v2.0
 
 			$sendemails = apply_filters( "pmpro_send_checkout_emails", true);
-	
+
 			if($sendemails) { // Send the emails only if the flag is set to true
 
 				//setup some values for the emails

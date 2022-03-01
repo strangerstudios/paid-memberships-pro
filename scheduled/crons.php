@@ -285,7 +285,7 @@ function pmpro_cron_admin_activity_email() {
 	if (
 		'day' === $frequency ||
 		( 'week' === $frequency && 'Mon' === date( 'D' ) ) ||
-		( 'month' === $frequency && 'Mon' === date( 'D' ) && 7 >= date( j ) )
+		( 'month' === $frequency && 'Mon' === date( 'D' ) && 7 >= date( 'j' ) )
 	) {
 		$pmproemail = new PMPro_Admin_Activity_Email();
 		$pmproemail->sendAdminActivity();

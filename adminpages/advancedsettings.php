@@ -38,6 +38,7 @@
 
 		// Checkout settings.
 		pmpro_setOption("tospage");
+		pmpro_setOption("spamprotection");
 		pmpro_setOption("recaptcha");
 		pmpro_setOption("recaptcha_version");
 		pmpro_setOption("recaptcha_publickey");
@@ -83,6 +84,7 @@
 
 	// Checkout settings.
 	$tospage = pmpro_getOption("tospage");
+	$spamprotection = pmpro_getOption("spamprotection");
 	$recaptcha = pmpro_getOption("recaptcha");
 	$recaptcha_version = pmpro_getOption("recaptcha_version");
 	$recaptcha_publickey = pmpro_getOption("recaptcha_publickey");
@@ -238,13 +240,26 @@
 				</tr>
 				<tr>
 					<th scope="row" valign="top">
+						<label for="spamprotection"><?php _e('Enable Spam Protection?', 'paid-memberships-pro' );?>:</label>
+					</th>
+					<td>
+						<select id="spamprotection" name="spamprotection">
+							<option value="0" <?php if(!$spamprotection) { ?>selected="selected"<?php } ?>><?php _e('No', 'paid-memberships-pro' );?></option>
+							<!-- For reference, removed the Yes - Free memberships only. option -->
+							<option value="2" <?php if( $spamprotection > 0 ) { ?>selected="selected"<?php } ?>><?php _e('Yes - Enable Spam Protection', 'paid-memberships-pro' );?></option>
+						</select>
+						<p class="description"><?php printf( __( 'Block IPs from checkout if there are more than %d failures within %d minutes.', 'paid-memberships-pro' ), PMPRO_SPAM_ACTION_NUM_LIMIT, round(PMPRO_SPAM_ACTION_TIME_LIMIT/60,2) );?></p>
+					</td>
+				</tr>
+				<tr>
+					<th scope="row" valign="top">
 						<label for="recaptcha"><?php _e('Use reCAPTCHA?', 'paid-memberships-pro' );?>:</label>
 					</th>
 					<td>
 						<select id="recaptcha" name="recaptcha" onchange="pmpro_updateRecaptchaTRs();">
 							<option value="0" <?php if(!$recaptcha) { ?>selected="selected"<?php } ?>><?php _e('No', 'paid-memberships-pro' );?></option>
-							<option value="1" <?php if($recaptcha == 1) { ?>selected="selected"<?php } ?>><?php _e('Yes - Free memberships only.', 'paid-memberships-pro' );?></option>
-							<option value="2" <?php if($recaptcha == 2) { ?>selected="selected"<?php } ?>><?php _e('Yes - All memberships.', 'paid-memberships-pro' );?></option>
+							<!-- For reference, removed the Yes - Free memberships only. option -->
+							<option value="2" <?php if( $recaptcha > 0 ) { ?>selected="selected"<?php } ?>><?php _e('Yes - All memberships.', 'paid-memberships-pro' );?></option>
 						</select>
 						<p class="description"><?php _e('A free reCAPTCHA key is required.', 'paid-memberships-pro' );?> <a href="https://www.google.com/recaptcha/admin/create"><?php _e('Click here to signup for reCAPTCHA', 'paid-memberships-pro' );?></a>.</p>
 					</td>
@@ -479,7 +494,7 @@ if ( function_exists( 'pmpro_displayAds' ) && pmpro_displayAds() ) {
 							<option value="0" <?php if ( ! $uninstall ) { ?>selected="selected"<?php } ?>><?php _e( 'No', 'paid-memberships-pro' );?></option>
 							<option value="1" <?php if ( $uninstall == 1 ) { ?>selected="selected"<?php } ?>><?php _e( 'Yes - Delete all PMPro Data.', 'paid-memberships-pro' );?></option>
 						</select>
-						<p class="description"><?php esc_html_e( 'To delete all PMPro data from the database, set to Yes, deactivate PMPro, and then click to delete PMPro from the plugins page.' ); ?></p>
+						<p class="description"><?php esc_html_e( 'To delete all PMPro data from the database, set to Yes, deactivate PMPro, and then click to delete PMPro from the plugins page.', 'paid-memberships-pro' ); ?></p>
 					</td>
 				</tr>
 	        </tbody>

@@ -1430,7 +1430,7 @@ var Inspector = /*#__PURE__*/function (_Component) {
         }
       }), Object(_wordpress_element__WEBPACK_IMPORTED_MODULE_5__["createElement"])(ToggleControl, {
         label: __("Display the 'Log In Widget' menu.", "paid-memberships-pro"),
-        help: __("Assign the menu under Appearance > Menus."),
+        help: __("Assign the menu under Appearance > Menus.", "paid-memberships-pro"),
         checked: show_menu,
         onChange: function onChange(value) {
           _this.props.setAttributes({

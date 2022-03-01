@@ -178,6 +178,8 @@
 	//Other
 	//if we got here, this is a different kind of txn
 	inslog("The PMPro INS handler does not process this type of message. message_type = " . $message_type);
+
+	pmpro_unhandled_webhook();
 	pmpro_twocheckoutExit();
 
 	/*
@@ -195,7 +197,7 @@
 	function pmpro_twocheckoutExit($redirect = false)
 	{
 		global $logstr;
-		//echo $logstr;
+		//echo esc_html( $logstr );
 
 		$logstr = var_export($_REQUEST, true) . "Logged On: " . date_i18n("m/d/Y H:i:s") . "\n" . $logstr . "\n-------------\n";
 
@@ -215,7 +217,7 @@
 			else
 				$log_email = get_option("admin_email");
 
-			wp_mail($log_email, get_option("blogname") . " 2Checkout INS Log", nl2br($logstr));
+			wp_mail( $log_email, get_option( "blogname" ) . " 2Checkout INS Log", nl2br( esc_html( $logstr ) ) );
 		}
 
 		if(!empty($redirect))
@@ -330,7 +332,7 @@
 		global $pmpro_error;
 		if(!empty($pmpro_error))
 		{
-			echo $pmpro_error;
+			echo esc_html( $pmpro_error );
 			inslog($pmpro_error);
 		}
 

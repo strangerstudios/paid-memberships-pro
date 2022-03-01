@@ -61,36 +61,51 @@ class PMPro_Site_Health {
 			'label'       => 'Paid Memberships Pro',
 			'description' => __( 'This debug information for your Paid Memberships Pro installation can assist you in getting support.', 'paid-memberships-pro' ),
 			'fields'      => [
-				'pmpro-cron-jobs'         => [
-					'label' => __( 'Cron Job Status', 'paid-membership-levels' ),
+				'pmpro-cron-jobs'            => [
+					'label' => __( 'Cron Job Status', 'paid-memberships-pro' ),
 					'value' => self::get_cron_jobs(),
 				],
-				'pmpro-gateway'           => [
-					'label' => __( 'Payment Gateway', 'paid-membership-levels' ),
+				'pmpro-gateway'              => [
+					'label' => __( 'Payment Gateway', 'paid-memberships-pro' ),
 					'value' => self::get_gateway(),
 				],
-				'pmpro-gateway-env'       => [
-					'label' => __( 'Payment Gateway Environment', 'paid-membership-levels' ),
+				'pmpro-gateway-env'          => [
+					'label' => __( 'Payment Gateway Environment', 'paid-memberships-pro' ),
 					'value' => self::get_gateway_env(),
 				],
-				'pmpro-orders'            => [
-					'label' => __( 'Orders', 'paid-membership-levels' ),
+				'pmpro-orders'               => [
+					'label' => __( 'Orders', 'paid-memberships-pro' ),
 					'value' => self::get_orders(),
 				],
-				'pmpro-discount-codes'    => [
-					'label' => __( 'Discount Codes', 'paid-membership-levels' ),
+				'pmpro-discount-codes'       => [
+					'label' => __( 'Discount Codes', 'paid-memberships-pro' ),
 					'value' => self::get_discount_codes(),
 				],
-				'pmpro-membership-levels' => [
-					'label' => __( 'Membership Levels', 'paid-membership-levels' ),
+				'pmpro-membership-levels'    => [
+					'label' => __( 'Membership Levels', 'paid-memberships-pro' ),
 					'value' => self::get_levels(),
 				],
-				'pmpro-custom-templates'  => [
-					'label' => __( 'Custom Templates', 'paid-membership-levels' ),
+				'pmpro-custom-templates'     => [
+					'label' => __( 'Custom Templates', 'paid-memberships-pro' ),
 					'value' => self::get_custom_templates(),
 				],
+				'pmpro-getfile-usage'        => [
+					'label' => __( 'getfile.php Usage', 'paid-memberships-pro' ),
+					'value' => self::get_getfile_usage(),
+				],
+				'pmpro-htaccess-cache-usage' => [
+					'label' => __( '.htaccess Cache Usage', 'paid-memberships-pro' ),
+					'value' => self::get_htaccess_cache_usage(),
+				],
+				'pmpro-pages' => [
+					'label' => __( 'Membership Pages', 'paid-memberships-pro' ),
+					'value' => self::get_pmpro_pages(),
+				]
 			],
 		];
+
+		// Automatically add information about constants set.
+		$info['pmpro']['fields'] = array_merge( $info['pmpro']['fields'], self::get_constants() );
 
 		return $info;
 	}
@@ -103,7 +118,7 @@ class PMPro_Site_Health {
 	 * @return string The level information.
 	 */
 	public function get_levels() {
-		$membership_levels = pmpro_getAllLevels( true );
+		$membership_levels = pmpro_getAllLevels( true, true );
 
 		if ( ! $membership_levels ) {
 			return __( 'No Levels Found', 'paid-memberships-pro' );
@@ -213,6 +228,37 @@ class PMPro_Site_Health {
 	 * @return string The custom template information.
 	 */
 	public function get_custom_templates() {
+		$parent_theme_path = get_template_directory() . '/paid-memberships-pro/';
+		$child_theme_path  = get_stylesheet_directory() . '/paid-memberships-pro/';
+
+		$parent_theme_templates = $this->get_custom_templates_from_path( $parent_theme_path );
+		$child_theme_templates  = null;
+
+		if ( $parent_theme_path !== $child_theme_path ) {
+			$child_theme_templates = $this->get_custom_templates_from_path( $child_theme_path );
+		}
+
+		if ( is_wp_error( $parent_theme_templates ) ) {
+			return $parent_theme_templates->get_error_message();
+		}
+
+		$templates = $parent_theme_templates;
+
+		if ( null !== $child_theme_templates ) {
+			if ( is_wp_error( $child_theme_templates ) ) {
+				$child_theme_templates = $child_theme_templates->get_error_message();
+			}
+
+			$templates = [
+				'parent' => $parent_theme_templates,
+				'child'  => $child_theme_templates,
+			];
+		}
+
+		return wp_json_encode( $templates, JSON_PRETTY_PRINT );
+	}
+
+	private function get_custom_templates_from_path( $path ) {
 		require_once ABSPATH . 'wp-admin/includes/file.php';
 
 		/**
@@ -223,20 +269,17 @@ class PMPro_Site_Health {
 		WP_Filesystem();
 
 		if ( ! $wp_filesystem ) {
-			return __( 'Unable to verify', 'paid-memberships-pro' );
+			return new WP_Error( 'access-denied', __( 'Unable to verify', 'paid-memberships-pro' ) );
 		}
 
-		$override_path = get_stylesheet_directory() . '/paid-memberships-pro/';
-		$override_list = false;
-
-		if ( ! $wp_filesystem->is_dir( $override_path ) ) {
-			return __( 'No template overrides', 'paid-membership-pro' );
+		if ( ! $wp_filesystem->is_dir( $path ) ) {
+			return new WP_Error( 'path-not-found', __( 'No template overrides', 'paid-memberships-pro' ) );
 		}
 
-		$override_list = $wp_filesystem->dirlist( $override_path );
+		$override_list = $wp_filesystem->dirlist( $path );
 
 		if ( ! $override_list ) {
-			return __( 'Empty override folder -- no template overrides', 'paid-membership-pro' );
+			return new WP_Error( 'path-empty', __( 'Empty override folder -- no template overrides', 'paid-memberships-pro' ) );
 		}
 
 		$templates = [];
@@ -250,10 +293,11 @@ class PMPro_Site_Health {
 
 			$templates[ $template ] = [
 				'last_updated' => $last_modified,
+				'path'         => str_replace( ABSPATH, '', $path ) . $template,
 			];
 		}
 
-		return wp_json_encode( $templates, JSON_PRETTY_PRINT );
+		return $templates;
 	}
 
 	/**
@@ -308,6 +352,194 @@ class PMPro_Site_Health {
 		}
 
 		return implode( " | \n", $cron_information );
+	}
+
+	/**
+	 * Get the assigned Member pages and their URL's
+	 *
+	 * @since 2.7.3
+	 *
+	 * @return string|string[] The member page information
+	 */
+	public function get_pmpro_pages() {
+
+		global $pmpro_pages;
+
+		$page_information = array();
+		
+		if( !empty( $pmpro_pages ) ){
+
+			foreach( $pmpro_pages as $key => $val ){
+
+				$permalink = get_the_permalink( (int)$val );
+
+				if( empty( $permalink ) ){
+					$page_information[$key] = 'Not Set'; //Not translating this
+				} else {
+					$page_information[$key] = $permalink;
+				}
+
+			}
+
+		} else {
+
+			return __( 'No Membership Pages Found', 'paid-memberships-pro' );
+
+		}
+
+		return $page_information;
+
+	}
+
+	/**
+	 * Get the .htaccess services/getfile.php usage information.
+	 *
+	 * @since 2.6.4
+	 *
+	 * @return string The .htaccess services/getfile.php usage information.
+	 */
+	public function get_getfile_usage() {
+		if ( ! defined( 'PMPRO_GETFILE_ENABLED' ) ) {
+			return __( 'PMPRO_GETFILE_ENABLED is not set', 'paid-memberships-pro' );
+		}
+
+		if ( ! PMPRO_GETFILE_ENABLED ) {
+			return __( 'PMPRO_GETFILE_ENABLED is off', 'paid-memberships-pro' );
+		}
+
+		require_once ABSPATH . 'wp-admin/includes/file.php';
+
+		/**
+		 * @var $wp_filesystem WP_Filesystem_Base
+		 */
+		global $wp_filesystem;
+
+		WP_Filesystem();
+
+		if ( ! $wp_filesystem ) {
+			return __( 'Unable to access .htaccess file', 'paid-memberships-pro' );
+		}
+
+		if ( ! $wp_filesystem->exists( ABSPATH . '/.htaccess' ) ) {
+			return __( 'Off - No .htaccess file', 'paid-memberships-pro' );
+		}
+
+		$htaccess_contents = $wp_filesystem->get_contents( ABSPATH . '/.htaccess' );
+
+		if ( false === strpos( $htaccess_contents, '/services/getfile.php' ) ) {
+			return __( 'Off', 'paid-memberships-pro' );
+		}
+
+		return __( 'On - .htaccess contains services/getfile.php usage', 'paid-memberships-pro' );
+	}
+
+	/**
+	 * Get the .htaccess cache usage information.
+	 *
+	 * @since 2.6.4
+	 *
+	 * @return string The .htaccess cache usage information.
+	 */
+	public function get_htaccess_cache_usage() {
+		require_once ABSPATH . 'wp-admin/includes/file.php';
+
+		/**
+		 * @var $wp_filesystem WP_Filesystem_Base
+		 */
+		global $wp_filesystem;
+
+		WP_Filesystem();
+
+		if ( ! $wp_filesystem ) {
+			return __( 'Unable to access .htaccess file', 'paid-memberships-pro' );
+		}
+
+		if ( ! $wp_filesystem->exists( ABSPATH . '/.htaccess' ) ) {
+			return __( 'Off - No .htaccess file', 'paid-memberships-pro' );
+		}
+
+		$htaccess_contents = $wp_filesystem->get_contents( ABSPATH . '/.htaccess' );
+
+		if ( false !== strpos( $htaccess_contents, 'ExpiresByType text/html' ) ) {
+			return __( 'On - Browser cache enabled for HTML (ExpiresByType text/html), this may interfere with Content Restriction after Login. Remove that line from your .htaccess to resolve this problem.', 'paid-memberships-pro' );
+		} elseif ( false !== strpos( $htaccess_contents, 'ExpiresDefault' ) ) {
+			return __( 'On - Browser cache enabled for HTML (ExpiresDefault), this may interfere with Content Restriction after Login. Remove that line from your .htaccess to resolve this problem.', 'paid-memberships-pro' );
+		}
+
+		return __( 'Off', 'paid-memberships-pro' );
+	}
+
+	/**
+	 * Get the constants site health information.
+	 *
+	 * @since 2.6.4
+	 *
+	 * @return array The constants site health information.
+	 */
+	public function get_constants() {
+		$constants = [
+			'PMPRO_CRON_LIMIT'                => __( 'Cron Limit', 'paid-memberships-pro' ),
+			'PMPRO_DEFAULT_LEVEL'             => __( 'Default Membership Level', 'paid-memberships-pro' ),
+			'PMPRO_USE_SESSIONS'              => __( 'Use Sessions', 'paid-memberships-pro' ),
+		];
+
+		$gateway_specific_constants = [
+			'authorizenet' => [
+				'PMPRO_AUTHNET_SILENT_POST_DEBUG' => __( 'Authorize.net Silent Post Debug Mode', 'paid-memberships-pro' ),
+			],
+			'braintree' => [
+				'PMPRO_BRAINTREE_WEBHOOK_DEBUG'   => __( 'Braintree Webhook Debug Mode', 'paid-memberships-pro' ),
+			],
+			'paypal' => [
+				'PMPRO_IPN_DEBUG'                 => __( 'PayPal IPN Debug Mode', 'paid-memberships-pro' ),
+			],
+			'paypalexpress' => [
+				'PMPRO_IPN_DEBUG'                 => __( 'PayPal IPN Debug Mode', 'paid-memberships-pro' ),
+			],
+			'paypalstandard' => [
+				'PMPRO_IPN_DEBUG'                 => __( 'PayPal IPN Debug Mode', 'paid-memberships-pro' ),
+			],
+			'stripe' => [
+				'PMPRO_STRIPE_WEBHOOK_DELAY'      => __( 'Stripe Webhook Delay', 'paid-memberships-pro' ),
+				'PMPRO_STRIPE_WEBHOOK_DEBUG'      => __( 'Stripe Webhook Debug Mode', 'paid-memberships-pro' ),
+			],
+			'twocheckout' => [
+				'PMPRO_INS_DEBUG'                 => __( '2Checkout INS Debug Mode', 'paid-memberships-pro' ),
+			],
+		];
+
+		$gateway = pmpro_getOption( 'gateway' );
+
+		if ( $gateway && isset( $gateway_specific_constants[ $gateway ] ) ) {
+			$constants = array_merge( $constants, $gateway_specific_constants[ $gateway ] );
+		}
+
+		/**
+		 * Allow filtering the supported Site Health constants by other add ons.
+		 *
+		 * @since 2.6.4
+		 *
+		 * @param array  $constants The list of constants to show in Site Health.
+		 * @param string $gateway   The current payment gateway.
+		 */
+		$constants = apply_filters( 'pmpro_site_health_constants', $constants, $gateway );
+
+		// Get and format constant information.
+		$constants_formatted = [];
+
+		foreach ( $constants as $constant => $label ) {
+			// Only get site health info for constants that are set.
+			if ( ! defined( $constant ) ) {
+				continue;
+			}
+
+			$constants_formatted[ 'pmpro-constants-' . $constant ] = [
+				'label' => $label . ' (' . $constant . ')',
+				'value' => var_export( constant( $constant ), true ),
+			];
+		}
+
+		return $constants_formatted;
 	}
 
 }
