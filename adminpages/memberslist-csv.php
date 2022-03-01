@@ -45,8 +45,8 @@
 	// If there's a colon in the search, let's split it out.
 	if( ! empty( $s ) && strpos( $s, ':' ) !== false ) {
 		$parts = explode( ':', $s );
-		$search_key = $parts[0];
-		$s = $parts[1];
+		$search_key = array_shift( $parts );
+		$s = implode( ':', $parts );
 	}
 
 	// Treat * as wild cards.
