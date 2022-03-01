@@ -157,7 +157,7 @@
 			</th>
 			<td>
 				<p><?php esc_html_e('To fully integrate with 2Checkout, be sure to use the following for your INS URL and Approved URL', 'paid-memberships-pro' );?></p>
-				<p><code><?php echo admin_url("admin-ajax.php") . "?action=twocheckout-ins";?></code></p>
+				<p><code><?php echo esc_html( admin_url("admin-ajax.php?action=twocheckout-ins" ) ); ?></code></p>
 
 			</td>
 		</tr>
