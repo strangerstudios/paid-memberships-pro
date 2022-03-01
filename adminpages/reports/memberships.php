@@ -353,8 +353,8 @@ function pmpro_report_memberships_page()
 			<span id="for"><?php esc_html_e('for', 'paid-memberships-pro' )?></span>
 			<select name="level">
 				<option value="" <?php if(!$l) { ?>selected="selected"<?php } ?>><?php esc_html_e('All Levels', 'paid-memberships-pro' );?></option>
-				<option value="paid-levels" <?php if(isset($_REQUEST['level']) && $_REQUEST['level'] == "paid-levels"){?> selected="selected" <?php }?>><?php esc_html_e( 'All Paid Levels', 'paid-memberships-pro' ); ?></option>
-				<option value="free-levels" <?php if(isset($_REQUEST['level']) && $_REQUEST['level'] == "free-levels"){?> selected="selected" <?php }?>><?php esc_html_e( 'All Free Levels', 'paid-memberships-pro' ); ?></option>
+				<option value="paid-levels" <?php if(isset($_REQUEST['level']) && $_REQUEST['level'] === "paid-levels"){?> selected="selected" <?php }?>><?php esc_html_e( 'All Paid Levels', 'paid-memberships-pro' ); ?></option>
+				<option value="free-levels" <?php if(isset($_REQUEST['level']) && $_REQUEST['level'] === "free-levels"){?> selected="selected" <?php }?>><?php esc_html_e( 'All Free Levels', 'paid-memberships-pro' ); ?></option>
 				<?php
 					$levels = $wpdb->get_results("SELECT id, name FROM $wpdb->pmpro_membership_levels ORDER BY name");
 					$levels = pmpro_sort_levels_by_order( $levels );

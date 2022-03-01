@@ -249,7 +249,7 @@ function pmpro_dashboard_report_recent_members_callback() {
     							?>
     						</strong>
     					</td>
-    					<td><?php esc_html_e( $auser->membership ); ?></td>
+    					<td><?php echo esc_html( $auser->membership ); ?></td>
     					<td><?php echo date_i18n( get_option( 'date_format' ), strtotime( get_date_from_gmt( $theuser->user_registered ), current_time( 'timestamp' ) ) ); ?></td>
     					<td>
     						<?php

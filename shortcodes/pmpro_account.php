@@ -170,8 +170,8 @@ function pmpro_shortcode_account($atts, $content=null, $code="")
 				<?php } ?>
 				<ul>
 					<?php do_action('pmpro_account_bullets_top');?>
-					<li><strong><?php esc_html_e("Username", 'paid-memberships-pro' );?>:</strong> <?php echo $current_user->user_login?></li>
-					<li><strong><?php esc_html_e("Email", 'paid-memberships-pro' );?>:</strong> <?php echo $current_user->user_email?></li>
+					<li><strong><?php esc_html_e("Username", 'paid-memberships-pro' );?>:</strong> <?php echo esc_html( $current_user->user_login ); ?></li>
+					<li><strong><?php esc_html_e("Email", 'paid-memberships-pro' );?>:</strong> <?php echo esc_html( $current_user->user_email ); ?></li>
 					<?php do_action('pmpro_account_bullets_bottom');?>
 				</ul>
 				<div class="<?php echo pmpro_get_element_class( 'pmpro_actionlinks' ); ?>">

@@ -139,7 +139,9 @@
 						?>
 					</select>
 					<?php if( pmpro_onlyFreeLevels() ) { ?>
-						<div id="pmpro-default-gateway-message" style="display:none;"><p class="description"><?php echo esc_html( __( 'This gateway is for membership sites with Free levels or for sites that accept payment offline.', 'paid-memberships-pro' ) . '<br/>' . __( 'It is not connected to a live gateway environment and cannot accept payments.', 'paid-memberships-pro' ) ); ?></p></div>
+						<div id="pmpro-default-gateway-message" style="display:none;"><p class="description"><?php echo esc_html__( 'This gateway is for membership sites with Free levels or for sites that accept payment offline.', 'paid-memberships-pro' )
+						. '<br/>'
+						. esc_html__( 'It is not connected to a live gateway environment and cannot accept payments.', 'paid-memberships-pro' ); ?></p></div>
 					<?php } ?>
 				</td>
 			</tr>
@@ -207,7 +209,7 @@
 							if(is_array($cdescription))
 								$cdescription = $cdescription['name'];
 						?>
-						<option value="<?php echo esc_attr( $ccode ) ?>" <?php if($currency == $ccode) { ?>selected="selected"<?php } ?>><?php echo $cdescription?></option>
+						<option value="<?php echo esc_attr( $ccode ) ?>" <?php if($currency == $ccode) { ?>selected="selected"<?php } ?>><?php echo esc_html( $cdescription ); ?></option>
 						<?php
 						}
 					?>
@@ -231,7 +233,7 @@
 			</tr>
 			<tr class="gateway gateway_ <?php echo esc_attr(pmpro_getClassesForPaymentSettingsField("tax_rate"));?>" <?php if(!empty($gateway) && $gateway != "stripe" && $gateway != "authorizenet" && $gateway != "paypal" && $gateway != "paypalexpress" && $gateway != "check" && $gateway != "paypalstandard" && $gateway != "payflowpro" && $gateway != "braintree" && $gateway != "twocheckout" && $gateway != "cybersource") { ?>style="display: none;"<?php } ?>>
 				<th scope="row" valign="top">
-					<label for="tax"><?php esc_html_e('Sales Tax', 'paid-memberships-pro' );?> (<?php _e('optional', 'paid-memberships-pro' );?>)</label>
+					<label for="tax"><?php esc_html_e('Sales Tax', 'paid-memberships-pro' );?> (<?php esc_html_e('optional', 'paid-memberships-pro' );?>)</label>
 				</th>
 				<td>
 					<?php _e('Tax State', 'paid-memberships-pro' );?>:

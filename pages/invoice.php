@@ -34,7 +34,7 @@
 		<a class="<?php echo pmpro_get_element_class( 'pmpro_a-print' ); ?>" href="javascript:window.print()"><?php esc_html_e('Print', 'paid-memberships-pro' ); ?></a>
 		<ul>
 			<?php do_action("pmpro_invoice_bullets_top", $pmpro_invoice); ?>
-			<li><strong><?php esc_html_e('Account', 'paid-memberships-pro' );?>:</strong> <?php echo $pmpro_invoice->user->display_name?> (<?php echo $pmpro_invoice->user->user_email?>)</li>
+			<li><strong><?php esc_html_e('Account', 'paid-memberships-pro' );?>:</strong> <?php echo esc_html( $pmpro_invoice->user->display_name ); ?> (<?php echo esc_html( $pmpro_invoice->user->user_email ); ?>)</li>
 			<li><strong><?php esc_html_e('Membership Level', 'paid-memberships-pro' );?>:</strong> <?php echo esc_html( $pmpro_invoice->membership_level->name ); ?></li>
 			<?php if ( ! empty( $pmpro_invoice->status ) ) { ?>
 				<li><strong><?php esc_html_e('Status', 'paid-memberships-pro' ); ?>:</strong>
@@ -49,7 +49,7 @@
 				</li>
 			<?php } ?>
 			<?php if($pmpro_invoice->getDiscountCode()) { ?>
-				<li><strong><?php esc_html_e('Discount Code', 'paid-memberships-pro' );?>:</strong> <?php echo $pmpro_invoice->discount_code->code?></li>
+				<li><strong><?php esc_html_e('Discount Code', 'paid-memberships-pro' );?>:</strong> <?php echo esc_html( $pmpro_invoice->discount_code->code ); ?></li>
 			<?php } ?>
 			<?php do_action("pmpro_invoice_bullets_bottom", $pmpro_invoice); ?>
 		</ul>
@@ -132,7 +132,7 @@
 					?>
 					<tr>
 						<td><a href="<?php echo esc_url( pmpro_url("invoice", "?invoice=" . $invoice->code ) ) ?>"><?php echo date_i18n( get_option("date_format"), strtotime( get_date_from_gmt( date( 'Y-m-d H:i:s', $invoice->timestamp ) ) ) )?></a></td>
-						<td><a href="<?php echo esc_url( pmpro_url("invoice", "?invoice=" . $invoice->code ) ) ?>"><?php echo $invoice->code; ?></a></td>
+						<td><a href="<?php echo esc_url( pmpro_url("invoice", "?invoice=" . $invoice->code ) ) ?>"><?php echo esc_html( $invoice->code ); ?></a></td>
 						<td><?php echo $invoice->membership_level_name;?></td>
 						<td><?php echo pmpro_formatPrice($invoice->total);?></td>
 					</tr>

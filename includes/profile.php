@@ -424,7 +424,7 @@ function pmpro_membership_history_profile_fields( $user ) {
 					<tr>
 						<td><?php echo date_i18n( get_option( 'date_format'), $invoice->timestamp ); ?></td>
 						<td class="order_code column-order_code has-row-actions">
-							<a href="<?php echo esc_url( add_query_arg( array( 'page' => 'pmpro-orders', 'order' => $invoice->id ), admin_url( 'admin.php' ) ) ); ?>"><?php echo $invoice->code; ?></a><br />
+							<a href="<?php echo esc_url( add_query_arg( array( 'page' => 'pmpro-orders', 'order' => $invoice->id ), admin_url( 'admin.php' ) ) ); ?>"><?php echo esc_html( $invoice->code ); ?></a><br />
 							<div class="row-actions">
 								<span class="edit">
 									<a title="<?php esc_attr_e( 'Edit', 'paid-memberships-pro' ); ?>" href="<?php echo esc_url( add_query_arg( array( 'page' => 'pmpro-orders', 'order' => $invoice->id ), admin_url('admin.php' ) ) ); ?>"><?php esc_html_e( 'Edit', 'paid-memberships-pro' ); ?></a>

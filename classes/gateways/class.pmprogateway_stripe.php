@@ -769,7 +769,7 @@ class PMProGateway_stripe extends PMProGateway {
                             <select id="CardType" class="<?php echo pmpro_get_element_class( 'CardType' ); ?>">
 								<?php foreach ( $pmpro_accepted_credit_cards as $cc ) { ?>
                                     <option value="<?php echo esc_attr( $cc ) ?>"
-									        <?php if ( $CardType == $cc ) { ?>selected="selected"<?php } ?>><?php echo $cc ?></option>
+									<?php if ( $CardType === $cc ) { ?>selected="selected"<?php } ?>><?php echo esc_html( $cc ); ?></option>
 								<?php } ?>
                             </select>
                         </div>

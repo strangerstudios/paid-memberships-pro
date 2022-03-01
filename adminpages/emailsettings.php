@@ -85,7 +85,7 @@
 		<h1 class="wp-heading-inline"><?php esc_html_e( 'Email Settings', 'paid-memberships-pro' ); ?></h1>
 		<hr class="wp-header-end">
 		<h2><?php esc_html_e( 'Send Emails From', 'paid-memberships-pro' ); ?></h2>
-		<p><?php esc_html_e('By default, system generated emails are sent from <em><strong>wordpress@yourdomain.com</strong></em>. You can update this from address using the fields below.', 'paid-memberships-pro' );?></p>
+		<p><?php echo wp_kses_post( __( 'By default, system generated emails are sent from <em><strong>wordpress@yourdomain.com</strong></em>. You can update this from address using the fields below.', 'paid-memberships-pro' ) );?></p>
 
 		<table class="form-table">
 		<tbody>                
