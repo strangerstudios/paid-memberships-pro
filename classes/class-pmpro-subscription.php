@@ -684,10 +684,10 @@ class PMPro_Subscription {
 					$newest_orders = $this->get_orders( array( 'limit' => 1 ) );
 					if ( ! empty( $newest_orders ) ) {
 						// Get the most recent order.
-						$last_order = $newest_orders[0];
+						$newest_order = $newest_orders[0];
 
 						// Calculate the next payment date.
-						$this->next_payment_date = date_i18n( 'Y-m-d H:i:s', strtotime( '+ ' . $this->cycle_number . ' ' . $this->cycle_period, $last_order->getTimestamp( true ) ) );
+						$this->next_payment_date = date_i18n( 'Y-m-d H:i:s', strtotime( '+ ' . $this->cycle_number . ' ' . $this->cycle_period, $newest_order->getTimestamp( true ) ) );
 					}
 				}
 			}
