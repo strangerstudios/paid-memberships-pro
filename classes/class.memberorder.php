@@ -1,6 +1,6 @@
 <?php
 	class MemberOrder
-	{
+	{	
 		/**
 		 * Constructor
 		 */
@@ -214,30 +214,44 @@
 		}
 
 		/**
-		 * Check if the user ID on the order has at least one other order where 
-		 * the total is greater than 0
+		 * Is this order a 'renewal'?
+		 * We currently define a renewal as any order from a user who has
+		 * a previous paid (non-$0) order.
 		 */
-		function is_renewal (){
-
-			global $wpdb;
-
-			if ( ! empty( $this->user_id ) ) {
-				$user_id = $this->user_id;
-			} else {
-				$user_id = '';
+		function is_renewal() {
+			global $wpdb;			
+			
+			// If our property is already set, use that.
+			if ( isset( $this->is_renewal ) ) {				
+				return $this->is_renewal;
 			}
-
-			$order_result = $wpdb->get_var ( "SELECT `id` FROM $wpdb->pmpro_membership_orders WHERE `user_id` = '" . esc_sql( $user_id ) . "' AND `membership_id` = '".$this->membership_id."' AND `id` <> '".$this->id."' AND `gateway_environment` = '" . esc_sql( $this->gateway_environment ) . "' AND `total` > 0 AND `total` IS NOT NULL LIMIT 1" );
-
-			if ( ( (int)$this->id > (int)$order_result ) && $order_result !== NULL ) {
-
-				return true;
-
-			} else {
-
-				return false;
-
+			
+			// Can't tell if this is a renewal without a user.
+			if ( empty( $this->user_id ) ) {
+				$this->is_renewal = false;
+				return $this->is_renewal;
 			}
+			
+			// Check the DB.
+			$sqlQuery = "SELECT `id`
+						 FROM $wpdb->pmpro_membership_orders
+						 WHERE `user_id` = '" . esc_sql( $this->user_id ) . "'						 	
+							AND `id` <> '" . esc_sql( $this->id ) . "'
+							AND `gateway_environment` = '" . esc_sql( $this->gateway_environment ) . "'
+							AND `total` > 0
+							AND `total` IS NOT NULL
+							AND status NOT IN('refunded', 'review', 'token', 'error')
+							AND timestamp < '" . esc_sql( date( 'Y-m-d H:i:s', $this->timestamp ) ) . "'
+						 LIMIT 1";
+			$older_order_id = $wpdb->get_var( $sqlQuery );
+
+			if ( ! empty( $older_order_id ) ) {
+				$this->is_renewal = true;
+			} else {
+				$this->is_renewal = false;
+			}
+			
+			return $this->is_renewal;
 		}
 
 

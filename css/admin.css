@@ -38,10 +38,10 @@
 	line-height: 1.5;
 }
 .pmpro_admin .pmpro_banner .pmpro_meta .pmpro_version {
-	color: #77a02e;
+	color: #333333;
 	display: inline-block;
 	font-weight: bold;
-	padding: 5px 10px 5px 2px;
+	padding: 5px 10px 5px 5px;
 }
 .pmpro_admin .pmpro_banner .pmpro_meta a {
 	border-left: 1px solid #CCC;
@@ -429,7 +429,7 @@ tr.pmpro_settings_divider td {
 }
 #pmpro_notifications .pmpro_notification .pmpro_notification-general {
 	background: #FFF;
-	border-left: 4px solid #77A02E;
+	border-left: 4px solid #658B24;
 	box-shadow: 0 1px 1px 0 rgba(0,0,0,.1);
 	margin: 1em 0;
 	padding: 15px;
@@ -453,7 +453,7 @@ tr.pmpro_settings_divider td {
 	margin-right: 5px;
 }
 #pmpro_notifications .pmpro_notification .pmpro_notification-general h3 {
-	color: #77A02E;
+	color: #658B24;
 }
 #pmpro_notifications .pmpro_notification .pmpro_notification-error h3 {
 	color: #DC3232;
@@ -660,12 +660,17 @@ h2.nav-tab-wrapper {
 }
 #pmpro_report_login .wp-list-table tbody td,
 #pmpro_report_memberships .wp-list-table tbody tr.pmpro_report_tr td,
-#pmpro_report_sales .wp-list-table tbody tr.pmpro_report_tr td {
-	font-size: 1.2rem;
+#pmpro_report_sales .wp-list-table tbody tr.pmpro_report_tr td,
+#pmpro_report_sales .wp-list-table tfoot td {
+	font-size: 1.1rem;
 	font-weight: bold;
 }
-#pmpro_report_sales .wp-list-table tbody td:last-child {
+#pmpro_report_sales .wp-list-table tbody td:last-child,
+#pmpro_report_sales .wp-list-table tfoot td:last-child {
 	text-align: right;
+}
+.pmpro_report-holder .wp-list-table tbody th {
+	vertical-align: top;
 }
 .pmpro_report-holder .wp-list-table tbody th button {
 	border: none;
@@ -675,14 +680,16 @@ h2.nav-tab-wrapper {
 	color: #555;
 	cursor: pointer;
 	line-height: 1.7;
+	margin: 0;
 	padding: 0;
+	text-align: left;
 }
 button.pmpro_report_th:before {
 	bottom: 2px;
 	display: inline-block;
 	font: 400 20px/1 dashicons;
 	left: 0;
-	padding: 0 5px 0 0;
+	padding: 0;
 	position: relative;
 	text-decoration: none;
 	vertical-align: bottom;
@@ -697,20 +704,33 @@ button.pmpro_report_th_closed:before {
 .pmpro_report-holder .wp-list-table tbody tr.pmpro_report_tr_sub:last-child td {
 	border-bottom: 1px solid #CCC;
 }
-#pmpro_report_memberships .wp-list-table tbody:nth-child(odd) .pmpro_report_tr th,
-#pmpro_report_memberships .wp-list-table tbody:nth-child(odd) .pmpro_report_tr td,
-#pmpro_report_sales .wp-list-table tbody:nth-child(odd) .pmpro_report_tr th,
-#pmpro_report_sales .wp-list-table tbody:nth-child(odd) .pmpro_report_tr td {
+#pmpro_report_memberships .wp-list-table tbody:nth-child(odd) th,
+#pmpro_report_memberships .wp-list-table tbody:nth-child(odd) td,
+#pmpro_report_sales .wp-list-table tbody:nth-child(odd) th,
+#pmpro_report_sales .wp-list-table tbody:nth-child(odd) td {
 	background-color: #fff;
 }
-#pmpro_report_memberships .wp-list-table tbody:nth-child(even) .pmpro_report_tr th,
-#pmpro_report_memberships .wp-list-table tbody:nth-child(even) .pmpro_report_tr td,
-#pmpro_report_sales .wp-list-table tbody:nth-child(even) .pmpro_report_tr th,
-#pmpro_report_sales .wp-list-table tbody:nth-child(even) .pmpro_report_tr td {
-	background-color: #f9f9f9;
+#pmpro_report_memberships .wp-list-table tbody:nth-child(even) th,
+#pmpro_report_memberships .wp-list-table tbody:nth-child(even) td,
+#pmpro_report_sales .wp-list-table tbody:nth-child(even) th,
+#pmpro_report_sales .wp-list-table tbody:nth-child(even) td {
+	background-color: #f6f7f7;
 }
 .pmpro_report-holder .pmpro_report-button {
 	text-align: center;
+}
+.pmpro_chart_area {
+	background-color: #FFF;
+	clear: both;
+	margin: 0 0 40px 0;
+	padding: 0px 10px 10px 10px;
+}
+.pmpro_chart_area rect[stroke-opacity] {
+	stroke-width: 0 !important;
+}
+.pmpro_chart_area #chart_div {
+	height: 500px;
+	width: 100%;
 }
 
 /* Dashboard */

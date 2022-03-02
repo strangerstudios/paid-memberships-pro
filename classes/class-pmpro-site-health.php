@@ -272,17 +272,14 @@ class PMPro_Site_Health {
 			return new WP_Error( 'access-denied', __( 'Unable to verify', 'paid-memberships-pro' ) );
 		}
 
-		$override_path = get_stylesheet_directory() . '/paid-memberships-pro/';
-		$override_list = false;
-
 		if ( ! $wp_filesystem->is_dir( $path ) ) {
-			return new WP_Error( 'path-not-found', __( 'No template overrides', 'paid-membership-pro' ) );
+			return new WP_Error( 'path-not-found', __( 'No template overrides', 'paid-memberships-pro' ) );
 		}
 
 		$override_list = $wp_filesystem->dirlist( $path );
 
 		if ( ! $override_list ) {
-			return new WP_Error( 'path-empty', __( 'Empty override folder -- no template overrides', 'paid-membership-pro' ) );
+			return new WP_Error( 'path-empty', __( 'Empty override folder -- no template overrides', 'paid-memberships-pro' ) );
 		}
 
 		$templates = [];
@@ -360,9 +357,9 @@ class PMPro_Site_Health {
 	/**
 	 * Get the assigned Member pages and their URL's
 	 *
-	 * @since TBA
+	 * @since 2.7.3
 	 *
-	 * @return string The member page information
+	 * @return string|string[] The member page information
 	 */
 	public function get_pmpro_pages() {
 

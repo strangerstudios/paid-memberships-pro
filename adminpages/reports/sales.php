@@ -37,12 +37,11 @@ function pmpro_report_sales_widget() {
 	#pmpro_report_sales tbody td:last-child {text-align: right; }
 </style>
 <span id="pmpro_report_sales" class="pmpro_report-holder">
-	<table class="wp-list-table widefat fixed striped">
+	<table class="wp-list-table widefat fixed">
 	<thead>
 		<tr>
 			<th scope="col">&nbsp;</th>
-			<th scope="col"><?php _e('New Sales', 'paid-memberships-pro' ); ?></th>
-			<th scope="col"><?php _e('Renewals', 'paid-memberships-pro' ); ?></th>
+			<th scope="col"><?php _e('Sales', 'paid-memberships-pro' ); ?></th>
 			<th scope="col"><?php _e('Revenue', 'paid-memberships-pro' ); ?></th>
 		</tr>
 	</thead>
@@ -58,7 +57,7 @@ function pmpro_report_sales_widget() {
 		//sale prices stats
 		$count = 0;
 		$max_prices_count = apply_filters( 'pmpro_admin_reports_max_sale_prices', 5 );
-		$prices = pmpro_get_prices_paid( $report_type, $max_prices_count );		
+		$prices = pmpro_get_prices_paid( $report_type, $max_prices_count );
 		?>
 		<tbody>
 			<tr class="pmpro_report_tr">
@@ -69,14 +68,13 @@ function pmpro_report_sales_widget() {
 						<?php echo esc_html($report_name); ?>
 					<?php } ?>
 				</th>
-				<td><?php echo esc_html( number_format_i18n( pmpro_getSales( $report_type, null, 'new' ) ) ); ?></td>
-				<td><?php echo esc_html( number_format_i18n( pmpro_getSales( $report_type, null, 'renewals' ) ) ); ?></td>
+				<td><?php echo esc_html( number_format_i18n( pmpro_getSales( $report_type, null, 'all' ) ) ); ?></td>
 				<td><?php echo pmpro_escape_price( pmpro_formatPrice( pmpro_getRevenue( $report_type ) ) ); ?></td>
 			</tr>
 			<?php
 				//sale prices stats
 				$count = 0;
-				$max_prices_count = apply_filters( 'pmpro_admin_reports_max_sale_prices', 5 );				
+				$max_prices_count = apply_filters( 'pmpro_admin_reports_max_sale_prices', 5 );
 				foreach ( $prices as $price => $quantity ) {
 					if ( $count++ >= $max_prices_count ) {
 						break;
@@ -84,8 +82,7 @@ function pmpro_report_sales_widget() {
 			?>
 				<tr class="pmpro_report_tr_sub" style="display: none;">
 					<th scope="row">- <?php echo pmpro_escape_price( pmpro_formatPrice( $price ) );?></th>
-					<td><?php echo esc_html( number_format_i18n( $quantity['new'] ) ); ?></td>
-					<td><?php echo esc_html( number_format_i18n( $quantity['renewals'] ) ); ?></td>
+					<td><?php echo esc_html( number_format_i18n( $quantity['total'] ) ); ?></td>
 					<td><?php echo pmpro_escape_price( pmpro_formatPrice( $price * $quantity['total'] ) ); ?></td>
 				</tr>
 			<?php
@@ -181,40 +178,47 @@ function pmpro_report_sales_page()
 	$tz_offset = strtotime( $startdate ) - strtotime( get_gmt_from_date( $startdate . " 00:00:00" ) );
 
 	//get data
-	$sqlQuery = "SELECT $date_function( DATE_ADD( o.timestamp, INTERVAL $tz_offset SECOND ) ) as date, $type_function(o.total) as value, $type_function( mo2.total ) as renewals FROM $wpdb->pmpro_membership_orders o ";
-
-	if ( ! empty( $discount_code ) ) {
-		$sqlQuery .= "LEFT JOIN $wpdb->pmpro_discount_codes_uses dc ON o.id = dc.order_id ";
-	}
-
-	$sqlQuery .= "LEFT JOIN $wpdb->pmpro_membership_orders mo2 ON o.membership_id = mo2.membership_id
+	$sqlQuery = "SELECT date,
+				 	$type_function(mo1total) as value,
+				 	$type_function( IF( mo2id IS NOT NULL, mo1total, NULL ) ) as renewals
+				 FROM ";
+	$sqlQuery .= "(";	// Sub query.
+	$sqlQuery .= "SELECT $date_function( DATE_ADD( mo1.timestamp, INTERVAL $tz_offset SECOND ) ) as date,
+					    mo1.id as mo1id,
+						mo1.total as mo1total,
+						mo2.id as mo2id
+				 FROM $wpdb->pmpro_membership_orders mo1
+				 	LEFT JOIN $wpdb->pmpro_membership_orders mo2 ON mo1.user_id = mo2.user_id
                         AND mo2.total > 0
                         AND mo2.status NOT IN('refunded', 'review', 'token', 'error')                                            
-                        AND mo2.timestamp > o.timestamp
-                        AND mo2.id IS NOT NULL
-                        AND mo2.user_id = o.user_id 
-                        AND mo2.gateway_environment = '" . esc_sql( $gateway_environment ) . "'
-                         ";
-	
-	$sqlQuery .= "WHERE o.total > 0
-				 	AND o.status NOT IN('refunded', 'review', 'token', 'error')
-					AND o.timestamp >= '" . esc_sql( $startdate ) . "'					
-					AND o.gateway_environment = '" . esc_sql( $gateway_environment ) . "' ";			
+                        AND mo2.timestamp < mo1.timestamp
+                        AND mo2.gateway_environment = '" . esc_sql( $gateway_environment ) . "' ";
+
+	if ( ! empty( $discount_code ) ) {
+		$sqlQuery .= "LEFT JOIN $wpdb->pmpro_discount_codes_uses dc ON mo1.id = dc.order_id ";
+	}
+
+	$sqlQuery .= "WHERE mo1.total > 0
+					AND mo1.timestamp >= DATE_ADD( '$startdate' , INTERVAL - $tz_offset SECOND )
+					AND mo1.status NOT IN('refunded', 'review', 'token', 'error')
+					AND mo1.gateway_environment = '" . esc_sql( $gateway_environment ) . "' ";
 
 	if(!empty($enddate))
-		$sqlQuery .= "AND o.timestamp <= DATE_ADD( '$enddate 23:59:59' , INTERVAL - $tz_offset SECOND )";
+		$sqlQuery .= "AND mo1.timestamp <= DATE_ADD( '$enddate 23:59:59' , INTERVAL - $tz_offset SECOND )";
 
 	if(!empty($l))
-		$sqlQuery .= "AND o.membership_id IN(" . esc_sql( $l ) . ") ";
+		$sqlQuery .= "AND mo1.membership_id IN(" . esc_sql( $l ) . ") ";
 
 	if ( ! empty( $discount_code ) ) {
 		$sqlQuery .= "AND dc.code_id = '" . esc_sql( $discount_code ) . "' ";
 	}
 
-	$sqlQuery .= " GROUP BY date ORDER BY date ";
+	$sqlQuery .= " GROUP BY mo1.id ";
+	$sqlQuery .= ") t1";
+	$sqlQuery .= " GROUP BY date ORDER by date";
 
 	$dates = $wpdb->get_results($sqlQuery);
-	
+		
 	//fill in blanks in dates
 	$cols = array();
 	$total_in_period = 0;
@@ -227,7 +231,7 @@ function pmpro_report_sales_page()
 		
 		for($i = 1; $i <= $lastday; $i++)
 		{
-			$cols[$i] = 0;
+			$cols[$i] = array(0, 0);
 			if ( ! $currently_in_period || $i < $day_of_month ) {
 				$units_in_period++;
 			}
@@ -248,7 +252,7 @@ function pmpro_report_sales_page()
 		$month_of_year = intval( date( 'n' ) );
 		for($i = 1; $i < 13; $i++)
 		{
-			$cols[$i] = 0;
+			$cols[$i] = array(0, 0);
 			if ( ! $currently_in_period || $i < $month_of_year ) {
 				$units_in_period++;
 			}
@@ -353,10 +357,12 @@ function pmpro_report_sales_page()
 		<?php } ?>
 		<input type="hidden" name="page" value="pmpro-reports" />
 		<input type="hidden" name="report" value="sales" />
-		<input type="submit" class="button action" value="<?php _e('Generate Report', 'paid-memberships-pro' );?>" />
+		<input type="submit" class="button action" value="<?php esc_attr_e('Generate Report', 'paid-memberships-pro' );?>" />
 	</div>
-	<div id="chart_div" style="clear: both; width: 100%; height: 500px;"></div>
-	<p>* <?php _e( 'Average line calculated using data prior to current day, month, or year.', 'paid-memberships-pro' ); ?></p>
+	<div class="pmpro_chart_area">
+		<div id="chart_div"></div>
+		<div class="pmpro_chart_description"><p><center><em><?php esc_html_e( 'Average line calculated using data prior to current day, month, or year.', 'paid-memberships-pro' ); ?></em></center></p></div>
+	</div>
 	<script>
 		//update month/year when period dropdown is changed
 		jQuery(document).ready(function() {
@@ -394,78 +400,149 @@ function pmpro_report_sales_page()
 		google.charts.load('current', {'packages':['corechart']});
 		google.charts.setOnLoadCallback(drawVisualization);
 		function drawVisualization() {
+			var dataTable = new google.visualization.DataTable();
+			dataTable.addColumn('string', <?php echo wp_json_encode( esc_html( $date_function ) ); ?>);
+			dataTable.addColumn({type: 'string', role: 'tooltip', 'p': {'html': true}});
+			dataTable.addColumn('number', <?php echo wp_json_encode( esc_html__( 'Renewals', 'paid-memberships-pro' ) ); ?>);
+			dataTable.addColumn('number', <?php echo wp_json_encode( esc_html( sprintf( __( 'New %s', 'paid-memberships-pro' ), ucwords( $type ) ) ) ); ?>);
+			<?php if ( $type === 'sales' ) { ?>
+				dataTable.addColumn('number', <?php echo wp_json_encode( esc_html( sprintf( __( 'Average: %s', 'paid-memberships-pro' ), number_format_i18n( $average, 2 ) ) ) ); ?>);
+			<?php } else { ?>
+				dataTable.addColumn('number', <?php echo wp_json_encode( sprintf( esc_html__( 'Average: %s', 'paid-memberships-pro' ), pmpro_escape_price( html_entity_decode( pmpro_formatPrice( $average ) ) ) ) ); ?>);
+			<?php } ?>
+			dataTable.addRows([
+				<?php foreach($cols as $date => $value) { ?>
+					[
+						<?php
+							$date_value = $date;
 
-			var data = google.visualization.arrayToDataTable([
-				[
-					'<?php echo esc_html( $date_function );?>', '<?php echo esc_html( ucwords( $type ) );?>', '<?php _e( 'Renewals', 'paid-memberships-pro' );?>', '<?php _e( 'Average*', 'paid-memberships-pro' );?>', 
-				],
-				<?php foreach($cols as $date => $value) { 
-					?>
-					['<?php
-						if($period == "monthly") {
-							echo esc_html(date_i18n("M", mktime(0,0,0,$date,2)));
-						} else {
-						echo esc_html( $date );
-					} ?>', <?php echo esc_html( pmpro_round_price( $value[0] - $value[1] ) );?>, <?php echo esc_html( pmpro_round_price( $value[1] ) );?>, <?php echo esc_html( pmpro_round_price( $average ) );?>,  ], 
+							if ( $period === 'monthly' ) {
+								$date_value = date_i18n( 'M', mktime( 0, 0, 0, $date, 2 ) );
+							}
+
+							echo wp_json_encode( esc_html( $date_value ) );
+						?>,
+						createCustomHTMLContent(
+							<?php
+								$date_value = $date;
+
+								if ( $period === 'monthly' ) {
+									$date_value = date_i18n( 'F', mktime( 0, 0, 0, $date, 2 ) );
+								} elseif ( $period === 'daily' ) {
+									$date_value = date_i18n( get_option( 'date_format' ), strtotime( $year . '-' . $month . '-' . $date ) );
+								}
+
+								echo wp_json_encode( esc_html( $date_value ) );
+							?>,
+							<?php if ( $type === 'sales' ) { ?>
+								<?php echo wp_json_encode( (int) $value[1] ); ?>,
+								<?php echo wp_json_encode( (int) $value[0] - $value[1] ); ?>,
+								<?php echo wp_json_encode( (int) $value[0] ); ?>,
+							<?php } else { ?>
+								<?php echo wp_json_encode( pmpro_escape_price( pmpro_formatPrice( $value[1] ) ) ); ?>,
+								<?php echo wp_json_encode( pmpro_escape_price( pmpro_formatPrice( $value[0] - $value[1] ) ) ); ?>,
+								<?php echo wp_json_encode( pmpro_escape_price( pmpro_formatPrice( $value[0] ) ) ); ?>,
+							<?php } ?>
+						),
+						<?php if ( $type === 'sales' ) { ?>
+							<?php echo wp_json_encode( (int) $value[1] ); ?>,
+							<?php echo wp_json_encode( (int) $value[0] - $value[1] ); ?>,
+							<?php echo wp_json_encode( (int) $average ); ?>,
+						<?php } else { ?>
+							<?php echo wp_json_encode( pmpro_round_price( $value[1] ) ); ?>,
+							<?php echo wp_json_encode( pmpro_round_price( $value[0] - $value[1] ) ); ?>,
+							<?php echo wp_json_encode( pmpro_round_price( $average ) ); ?>,
+						<?php } ?>
+					],
 				<?php } ?>
 			]);
 
 			var options = {
+				title: pmpro_report_title_sales(),
+				titlePosition: 'top',
+				titleTextStyle: {
+					color: '#555555',
+				},
+				legend: {position: 'bottom'},
 				colors: ['<?php
 					if ( $type === 'sales') {
-						echo '#0099c6'; // Blue for "Sales" chart.
+						echo '#006699'; // Blue for "Sales" chart.
 					} else {
-						echo '#51a351'; // Green for "Revenue" chart.
+						echo '#31825D'; // Green for "Revenue" chart.
 					}
 				?>'],
-				chartArea: {width: '90%'},
+				chartArea: {
+					width: '90%',
+				},
+				focusTarget: 'category',
+				tooltip: {
+					isHtml: true
+				},
 				hAxis: {
-					title: '<?php echo esc_html( $date_function );?>',
-					textStyle: {color: '#555555', fontSize: '12', italic: false},
-					titleTextStyle: {color: '#555555', fontSize: '20', bold: true, italic: false},
-					maxAlternation: 1
+					textStyle: {
+						color: '#555555',
+						fontSize: '12',
+						italic: false,
+					},
 				},
 				vAxis: {
 					<?php if ( $type === 'sales') { ?>
 						format: '0',
 					<?php } ?>
-					textStyle: {color: '#555555', fontSize: '12', italic: false},
+					textStyle: {
+						color: '#555555',
+						fontSize: '12',
+						italic: false,
+					},
 				},
 				seriesType: 'bars',
-				series: { 2: {type: 'line', color: 'red'}, 1: {color: 'lime' } },
-				legend: {position: 'none'},
-				isStacked: true			
+				series: {
+					2: {
+						type: 'line',
+						color: '#B00000',
+						enableInteractivity: false,
+						lineDashStyle: [4, 1], 
+					},
+					1: {<?php
+						if ( $type === 'sales') {
+							echo "color: '#0099C6'"; // Lighter Blue for "Sales" chart.
+						} else {
+							echo "color: '#5EC16C'"; // Lighter Green for "Revenue" chart.
+						} ?>
+					},
+				},
+				isStacked: true,
 			};
 
+			var chart = new google.visualization.ColumnChart(document.getElementById('chart_div'));
+			chart.draw(dataTable, options);
+		}
+
+		function createCustomHTMLContent(period, renewals, notRenewals, total) {
+			return '<div style="padding:15px; font-size: 14px; line-height: 20px; color: #000000;">' +
+				'<strong>' + period + '</strong><br/>' +
+				'<ul style="margin-bottom: 0px;">' +
+				'<li><span style="margin-right: 3px;">' +
+				<?php echo wp_json_encode( esc_html__( 'New:', 'paid-memberships-pro' ) ); ?> +
+				'</span>' + notRenewals + '</li>' +
+				'<li><span style="margin-right: 3px;">' +
+				<?php echo wp_json_encode( esc_html__( 'Renewals:', 'paid-memberships-pro' ) ); ?> +
+				'</span>' + renewals + '</li>' +
+				'<li style="border-top: 1px solid #CCC; margin-bottom: 0px; margin-top: 8px; padding-top: 8px;"><span style="margin-right: 3px;">' +
+				<?php echo wp_json_encode( esc_html__( 'Total:', 'paid-memberships-pro' ) ); ?> +
+				'</span>' + total + '</li>' + '</ul>' + '</div>';
+		}
+		function pmpro_report_title_sales() {
 			<?php
-				if($type != "sales")
-				{	
-					$decimals = isset( $pmpro_currencies[ $pmpro_currency ]['decimals'] ) ? (int) $pmpro_currencies[ $pmpro_currency ]['decimals'] : 2;
-					
-					$decimal_separator = isset( $pmpro_currencies[ $pmpro_currency ]['decimal_separator'] ) ? $pmpro_currencies[ $pmpro_currency ]['decimal_separator'] : '.';
-					
-					$thousands_separator = isset( $pmpro_currencies[ $pmpro_currency ]['thousands_separator'] ) ? $pmpro_currencies[ $pmpro_currency ]['thousands_separator'] : ',';
-					
-					if ( pmpro_getCurrencyPosition() == 'right' ) {
-						$position = "suffix";
-					} else {
-						$position = "prefix";
-					}
-					?>
-					var formatter = new google.visualization.NumberFormat({
-						<?php echo esc_html( $position );?>: '<?php echo esc_html( html_entity_decode($pmpro_currency_symbol) ); ?>',
-						'decimalSymbol': '<?php echo esc_html( html_entity_decode( $decimal_separator ) ); ?>',
-						'fractionDigits': <?php echo intval( $decimals ); ?>,
-						'groupingSymbol': '<?php echo esc_html( html_entity_decode( $thousands_separator ) ); ?>',
-					});
-					formatter.format(data, 1);
-					formatter.format(data, 2);
-					<?php
+				if ( ! empty( $month ) && $period === 'daily' ) {
+					$date = date_i18n( 'F', mktime(0, 0, 0, $month, 2) ) . ' ' . $year;
+				} elseif( ! empty( $year ) && $period === 'monthly'  ) {
+					$date = $year;
+				} else {
+					$date = __( 'All Time');
 				}
 			?>
-
-			var chart = new google.visualization.ComboChart(document.getElementById('chart_div'));
-			chart.draw(data, options);
+			return <?php echo wp_json_encode( esc_html( sprintf( __( '%s %s for %s', 'paid-memberships-pro' ), ucwords( $period ), ucwords( $type ), ucwords( $date ) ) ) ); ?>;
 		}
 	</script>
 
@@ -611,6 +688,7 @@ function pmpro_get_prices_paid( $period, $count = NULL ) {
 							AND gateway_environment = '" . esc_sql( $gateway_environment ) . "' ";
 			$total = $wpdb->get_var( $sql_query );
 			
+			/* skipping this until we figure out how to make it performant
 			// New sales.
 			$sql_query = "SELECT mo1.id
 						  FROM $wpdb->pmpro_membership_orders mo1
@@ -648,6 +726,8 @@ function pmpro_get_prices_paid( $period, $count = NULL ) {
 			$renewals = $wpdb->get_var( $sql_query );
 			
 			$prices_formatted[ $price->rtotal ] = array( 'total' => $total, 'new' => $new, 'renewals' => $renewals );
+			*/
+			$prices_formatted[ $price->rtotal ] = array( 'total' => $total );
 		}
 	}
 
