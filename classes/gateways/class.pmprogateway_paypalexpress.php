@@ -917,6 +917,7 @@
 			if("SUCCESS" == strtoupper($response["ACK"]) || "SUCCESSWITHWARNING" == strtoupper($response["ACK"])) {
 				// Found subscription.
 				$update_array = array();
+
 				// PayPal doesn't send the subscription start date, so let's take a guess based on the user's order history.
 				$oldest_orders = $subscription->get_orders( [
 					'limit'   => 1,
