@@ -1146,7 +1146,10 @@ class PMPro_Subscription {
     }
     
 		$this->status  = 'cancelled';
-    $this->enddate = gmdate( 'Y-m-d H:i:s' );
+		if ( empty( $this->enddate ) ) {
+			// Only set enddate if we don't have one yet.
+    		$this->enddate = gmdate( 'Y-m-d H:i:s' );
+		}
 		$this->update();
 		$this->save();
 
