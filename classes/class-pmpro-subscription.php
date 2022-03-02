@@ -1150,6 +1150,7 @@ class PMPro_Subscription {
 
 } // end of class
 
+// @todo Move this into another location outside of the bottom of the class file.
 // Update the subscription status when a recurring payment is successful.
 // Cancellations during IPNs/Webhooks are handled when the order is "changed" to 'cancelled' status, which is passed through to the sub.
 add_action( 'pmpro_subscription_payment_completed', [ 'PMPro_Subscription', 'update_subscription_for_order' ] );
