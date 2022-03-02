@@ -668,26 +668,26 @@ class PMPro_Subscription {
 			$gateway_object->update_subscription_info( $this );
 		} else {
 			// Update the start date to the date of the first order for this subscription.
-			$newest_orders = $this->get_orders( [
+			$oldest_orders = $this->get_orders( [
 				'limit'   => 1,
 				'orderby' => '`timestamp` ASC, `id` ASC',
 			] );
-			if ( ! empty( $newest_orders ) ) {
-				$newest_order           = current( $newest_orders );
-				$this->startdate = date_i18n( 'Y-m-d H:i:s', $newest_order->getTimestamp( true ) );
+			if ( ! empty( $oldest_orders ) ) {
+				$oldest_order    = current( $oldest_orders );
+				$this->startdate = date_i18n( 'Y-m-d H:i:s', $oldest_order->getTimestamp( true ) );
 			}
 
 			// Update the next payment date based on the most recent order.
 			if ( ! empty( $this->cycle_number ) ) {
 				// Only update the next payment date if we are not at checkout or there is no next payment date already set.
 				if ( ! isset( $pmpro_level ) || empty( $this->next_payment_date ) ) {
-					$oldest_orders = $this->get_orders( array( 'limit' => 1 ) );
-					if ( ! empty( $oldest_orders ) ) {
+					$newest_orders = $this->get_orders( array( 'limit' => 1 ) );
+					if ( ! empty( $newest_orders ) ) {
 						// Get the most recent order.
-						$last_order = $oldest_orders[0];
+						$newest_order = current( $newest_orders );
 
 						// Calculate the next payment date.
-						$this->next_payment_date = date_i18n( 'Y-m-d H:i:s', strtotime( '+ ' . $this->cycle_number . ' ' . $this->cycle_period, $last_order->getTimestamp( true ) ) );
+						$this->next_payment_date = date_i18n( 'Y-m-d H:i:s', strtotime( '+ ' . $this->cycle_number . ' ' . $this->cycle_period, $newest_order->getTimestamp( true ) ) );
 					}
 				}
 			}
