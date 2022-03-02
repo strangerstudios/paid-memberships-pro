@@ -404,7 +404,7 @@ if ( function_exists( 'pmpro_displayAds' ) && pmpro_displayAds() ) {
 				<?php if(is_multisite()) { ?>
 				<tr>
 					<th scope="row" valign="top">
-						<label for="redirecttosubscription"><?php _e('Redirect all traffic from registration page to /susbcription/?', 'paid-memberships-pro' );?>: <em>(<?php _e('multisite only', 'paid-memberships-pro' );?>)</em></label>
+						<label for="redirecttosubscription"><?php _e('Redirect all traffic from registration page to /subscription/?', 'paid-memberships-pro' );?>: <em>(<?php _e('multisite only', 'paid-memberships-pro' );?>)</em></label>
 					</th>
 					<td>
 						<select id="redirecttosubscription" name="redirecttosubscription">
