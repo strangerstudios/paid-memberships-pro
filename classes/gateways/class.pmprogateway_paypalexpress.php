@@ -922,10 +922,13 @@
 					'limit'   => 1,
 					'orderby' => '`timestamp` ASC, `id` ASC',
 				] );
+
 				if ( ! empty( $oldest_orders ) ) {
-					$oldest_order              = current( $oldest_orders );
+					$oldest_order = current( $oldest_orders );
+
 					$update_array['startdate'] = date_i18n( 'Y-m-d H:i:s', $oldest_order->getTimestamp( true ) );
 				}
+
 				if ( in_array( $response['STATUS'], array( 'Pending', 'Active' ), true ) ) {
 					// Subscription is active.
 					$update_array['status'] = 'active';
