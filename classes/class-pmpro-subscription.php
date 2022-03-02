@@ -1023,6 +1023,11 @@ class PMPro_Subscription {
 			$this->startdate = gmdate( 'Y-m-d H:i:s' );
 		}
 
+		// If the enddate is empty and the subscription is cancelled, set it to the current time.
+		if ( empty( $this->enddate ) && 'cancelled' === $this->status ) {
+			$this->enddate = gmdate( 'Y-m-d H:i:s' );
+		}
+
 		$wpdb->replace( $wpdb->pmpro_subscriptions, [
 			'id'                          => $this->id,
 			'user_id'                     => $this->user_id,
