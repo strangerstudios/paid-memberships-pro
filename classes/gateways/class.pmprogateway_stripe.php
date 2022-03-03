@@ -108,18 +108,12 @@ class PMProGateway_stripe extends PMProGateway {
 		global $pmpro_stripe_lite;
 		$pmpro_stripe_lite = apply_filters( "pmpro_stripe_lite", ! pmpro_getOption( "stripe_billingaddress" ) );    //default is oposite of the stripe_billingaddress setting
 
-		$gateway = pmpro_getGateway();
-		if($gateway == "stripe")
-		{
-			add_filter( 'pmpro_required_billing_fields', array( 'PMProGateway_stripe', 'pmpro_required_billing_fields' ) );
-		}
-
 		//updates cron
 		add_action( 'pmpro_cron_stripe_subscription_updates', array(
 			'PMProGateway_stripe',
 			'pmpro_cron_stripe_subscription_updates'
 		) );
-		
+
 		//AJAX services for creating/disabling webhooks
 		add_action( 'wp_ajax_pmpro_stripe_create_webhook', array( 'PMProGateway_stripe', 'wp_ajax_pmpro_stripe_create_webhook' ) );
 		add_action( 'wp_ajax_pmpro_stripe_delete_webhook', array( 'PMProGateway_stripe', 'wp_ajax_pmpro_stripe_delete_webhook' ) );
@@ -168,6 +162,8 @@ class PMProGateway_stripe extends PMProGateway {
 				'PMProGateway_stripe',
 				'pmpro_checkout_before_processing'
 			) );
+
+			add_filter( 'pmpro_required_billing_fields', array( 'PMProGateway_stripe', 'pmpro_required_billing_fields' ) );
 		}
 
 		add_action( 'pmpro_payment_option_fields', array( 'PMProGateway_stripe', 'pmpro_set_up_apple_pay' ), 10, 2 );
