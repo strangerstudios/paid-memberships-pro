@@ -67,7 +67,7 @@ jQuery(document).ready(function(){
 				jQuery('#'+notification_id).hide();
 			}
 		})
-	
+
 	});
 });
 
@@ -85,11 +85,11 @@ jQuery(document).ready(function() {
         pmpro_stripe_check_api_keys();
     });
 	pmpro_stripe_check_api_keys();
-    
+
     // AJAX call to create webhook.
 	jQuery('#pmpro_stripe_create_webhook').on( 'click', function(event){
         event.preventDefault();
-                
+
 		var postData = {
 			action: 'pmpro_stripe_create_webhook',
 			secretkey: pmpro_stripe_get_secretkey(),
@@ -101,10 +101,10 @@ jQuery(document).ready(function() {
 			success: function( response ) {
 				response = jQuery.parseJSON( response );
                 ///console.log( response );
-                
+
                 jQuery( '#pmpro_stripe_webhook_notice' ).parent('div').removeClass('error')
                 jQuery( '#pmpro_stripe_webhook_notice' ).parent('div').removeClass('notice-success')
-                
+
                 if ( response.notice ) {
                     jQuery('#pmpro_stripe_webhook_notice').parent('div').addClass(response.notice);
                 }
@@ -117,11 +117,11 @@ jQuery(document).ready(function() {
 			}
 		})
     });
-    
+
     // AJAX call to delete webhook.
 	jQuery('#pmpro_stripe_delete_webhook').on( 'click', function(event){
         event.preventDefault();
-                
+
 		var postData = {
 			action: 'pmpro_stripe_delete_webhook',
 			secretkey: pmpro_stripe_get_secretkey(),
@@ -134,10 +134,10 @@ jQuery(document).ready(function() {
 			success: function( response ) {
 				response = jQuery.parseJSON( response );
                 ///console.log( response );
-                
+
                 jQuery( '#pmpro_stripe_webhook_notice' ).parent('div').removeClass('error')
                 jQuery( '#pmpro_stripe_webhook_notice' ).parent('div').removeClass('notice-success')
-                
+
                 if ( response.notice ) {
                     jQuery('#pmpro_stripe_webhook_notice').parent('div').addClass(response.notice);
                 }
@@ -146,7 +146,7 @@ jQuery(document).ready(function() {
                 }
                 if ( response.success ) {
                     jQuery('#pmpro_stripe_create_webhook').show();
-                }				
+                }
 			}
 		})
 	});
@@ -154,7 +154,7 @@ jQuery(document).ready(function() {
 	// AJAX call to rebuild webhook.
 	jQuery('#pmpro_stripe_rebuild_webhook').on( 'click', function(event){
         event.preventDefault();
-                
+
 		var postData = {
 			action: 'pmpro_stripe_rebuild_webhook',
 			secretkey: pmpro_stripe_get_secretkey(),
@@ -167,10 +167,10 @@ jQuery(document).ready(function() {
 			success: function( response ) {
 				response = jQuery.parseJSON( response );
                 ///console.log( response );
-                
+
                 jQuery( '#pmpro_stripe_webhook_notice' ).parent('div').removeClass('error')
                 jQuery( '#pmpro_stripe_webhook_notice' ).parent('div').removeClass('notice-success')
-                
+
                 if ( response.notice ) {
                     jQuery('#pmpro_stripe_webhook_notice').parent('div').addClass(response.notice);
                 }
@@ -179,18 +179,18 @@ jQuery(document).ready(function() {
                 }
                 if ( response.success ) {
                     jQuery('#pmpro_stripe_create_webhook').hide();
-                }				
+                }
 			}
 		})
     });
 });
 
 // Disable the webhook buttons if the API keys aren't complete yet.
-function pmpro_stripe_check_api_keys() {  
+function pmpro_stripe_check_api_keys() {
     if( ( jQuery('#stripe_publishablekey').val().length > 0 && jQuery('#stripe_secretkey').val().length > 0 ) || jQuery('#live_stripe_connect_secretkey').val().length > 0 ) {
         jQuery('#pmpro_stripe_create_webhook').removeClass('disabled');
         jQuery('#pmpro_stripe_create_webhook').addClass('button-secondary');
-    } else {            
+    } else {
         jQuery('#pmpro_stripe_create_webhook').removeClass('button-secondary');
         jQuery('#pmpro_stripe_create_webhook').addClass('disabled');
     }
@@ -208,7 +208,7 @@ function pmpro_stripe_get_secretkey() {
 
 // EMAIL TEMPLATES.
 jQuery(document).ready(function($) {
-    
+
 	/* Variables */
 	var template, disabled, $subject, $editor, $testemail;
 	$subject = $("#pmpro_email_template_subject").closest("tr");
@@ -220,10 +220,10 @@ jQuery(document).ready(function($) {
 
     /* PMPro Email Template Switcher */
     $("#pmpro_email_template_switcher").change(function() {
-        
+
         $(".status_message").hide();
         template = $(this).val();
-        
+
         //get template data
         if (template)
             pmpro_get_template(template);
@@ -245,13 +245,13 @@ jQuery(document).ready(function($) {
         pmpro_disable_template();
     });
 
-    $("#send_test_email").click(function(e) {       
+    $("#send_test_email").click(function(e) {
 		pmpro_save_template().done(setTimeout(function(){pmpro_send_test_email();}, '1000'));
     });
 
     /* Functions */
-    function pmpro_get_template(template) {        
-				
+    function pmpro_get_template(template) {
+
 		//hide stuff and show ajax spinner
         $(".hide-while-loading").hide();
         $("#pmproet-spinner").show();
@@ -279,7 +279,7 @@ jQuery(document).ready(function($) {
 
                 $subject.hide();
 				$testemail.hide();
-				
+
                 if(template == 'header')
                     $("#disable_label").text("Disable email header for all PMPro emails?");
                 else
@@ -400,7 +400,7 @@ jQuery(document).ready(function($) {
 
         data = {
             template: template,
-            email: $("#test_email_address").val(),			
+            email: $("#test_email_address").val(),
             action: 'pmpro_email_templates_send_test',
             security: $('input[name=security]').val()
         };
