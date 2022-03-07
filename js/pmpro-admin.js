@@ -214,9 +214,9 @@ jQuery(document).ready(function($) {
 	$subject = $("#pmpro_email_template_subject").closest("tr");
 	$editor = $("#wp-email_template_body-wrap");
 	$testemail = $("#test_email_address").closest("tr");
-	
-    $(".hide-while-loading").hide();
-    $(".controls").hide();
+
+    $(".pmpro_admin .hide-while-loading").hide();
+    $(".pmpro_admin .controls").hide();
 
     /* PMPro Email Template Switcher */
     $("#pmpro_email_template_switcher").change(function() {
@@ -228,8 +228,8 @@ jQuery(document).ready(function($) {
         if (template)
             pmpro_get_template(template);
         else {
-            $(".hide-while-loading").hide();
-            $(".controls").hide();
+            $(".pmpro_admin .hide-while-loading").hide();
+            $(".pmpro_admin .controls").hide();
         }
     });
 
@@ -270,9 +270,9 @@ jQuery(document).ready(function($) {
 
             //show/hide stuff
 			$("#pmproet-spinner").hide();
-            $(".controls").show();
-            $(".hide-while-loading").show();
-            $(".status").hide();
+            $(".pmpro_admin .controls").show();
+            $(".pmpro_admin .hide-while-loading").show();
+            $(".pmpro_admin .status").hide();
 
             //change disable text
             if (template == 'header' || template === 'footer') {
@@ -408,8 +408,8 @@ jQuery(document).ready(function($) {
         $.post(ajaxurl, data, function(success) {
             //show/hide stuff
             $("#pmproet-spinner").hide();
-            $(".controls").show();
-            $(".hide-while-loading").show();
+            $(".pmpro_admin .controls").show();
+            $(".pmpro_admin .hide-while-loading").show();
 
             if(success) {
                 $(".status_message_wrapper").addClass("updated").removeClass("error");
@@ -428,13 +428,13 @@ jQuery(document).ready(function($) {
             $("#pmpro_email_template_disable").prop('checked', true);
             $("#pmpro_email_template_body").attr('readonly', 'readonly').attr('disabled', 'disabled');
             $("#pmpro_email_template_subject").attr('readonly', 'readonly').attr('disabled', 'disabled');
-            $(".controls").hide();
+            $(".pmpro_admin .controls").hide();
         }
         else {
             $("#pmpro_email_template_disable").prop('checked', false);
             $("#pmpro_email_template_body").removeAttr('readonly','readonly').removeAttr('disabled', 'disabled');
             $("#pmpro_email_template_subject").removeAttr('readonly','readonly').removeAttr('disabled', 'disabled');
-            $(".controls").show();
+            $(".pmpro_admin .controls").show();
         }
 
     }
