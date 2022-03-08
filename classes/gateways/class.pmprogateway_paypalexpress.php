@@ -1071,10 +1071,10 @@
 			 *
 			 * @since TBD
 			 *
-			 * @param string $methodName_ The NVP API name.
 			 * @param array $httpParsedResponseAr The parsed response.
+			 * @param string $methodName_ The NVP API name.
 			 */
-			do_action( 'pmpro_ppe_http_post_response', $methodName_, $httpParsedResponseAr );
+			do_action( 'pmpro_paypal_http_post_response', $httpParsedResponseAr, $methodName_ );
 			
 			return $httpParsedResponseAr;
 		}
