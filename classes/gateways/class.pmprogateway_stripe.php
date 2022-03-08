@@ -4277,7 +4277,7 @@ class PMProGateway_stripe extends PMProGateway {
 	 *
 	 * @return bool                   True or false if the refund worked.
 	 */
-	static function refund( $success, $order ) {
+	public static function refund( $success, $order ) {
 
 		//default to using the payment id from the order
 		if ( !empty( $order->payment_transaction_id ) ) {
@@ -4338,14 +4338,14 @@ class PMProGateway_stripe extends PMProGateway {
 				$myemail = new PMProEmail();
 				$myemail->sendRefundedAdminEmail( $current_user, $order->membership_id );				
 			} else {
-				$order->notes = trim( $order->notes ) .' '. __('An error occured while attempting to process this refund.', 'paid-memberships-pro' );
+				$order->notes = trim( $order->notes . ' ' . __('An error occured while attempting to process this refund.', 'paid-memberships-pro' ) );
 
 			}
 
 		} catch ( \Throwable $e ) {			
-			$order->notes = trim( $order->notes ) .' '. __( 'There was a problem processing the refund', 'paid-memberships-pro' ) . ' ' . $e->getMessage();	
+			$order->notes = trim( $order->notes . ' ' . __( 'There was a problem processing the refund', 'paid-memberships-pro' ) . ' ' . $e->getMessage() );	
 		} catch ( \Exception $e ) {
-			$order->notes = trim( $order->notes ) .' '. __( 'There was a problem processing the refund', 'paid-memberships-pro' ) . ' ' . $e->getMessage();
+			$order->notes = trim( $order->notes . ' ' . __( 'There was a problem processing the refund', 'paid-memberships-pro' ) . ' ' . $e->getMessage() );
 		}		
 
 		$order->saveOrder();

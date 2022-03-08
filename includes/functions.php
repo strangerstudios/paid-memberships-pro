@@ -3998,15 +3998,12 @@ function pmpro_allowed_refunds( $order ) {
 	}
 
 	/**
-	 * Processes a refund for Stripe orders
+	 * Allow filtering the list of statuses that can not be refunded from.
 	 *
-	 * @since TBA
+	 * @since TBD
 	 *
-	 * @param bool Default return value is false to determine if the refund was successfully processed. 
-	 * @param object $order The Member Order we want to refund
-	 * @return bool If the refund was successfully processed
+	 * @param array $disallowed_statuses The list of statuses that can not be refunded from.
 	 */
-	
 	$disallowed_statuses = apply_filters( 'pmpro_disallowed_refund_statuses', array( 'pending', 'refunded' ) );
 	
 	if( 
@@ -4055,9 +4052,8 @@ function pmpro_refund_order( $order ){
 		 *
 		 * @since TBD
 		 *
-		 * @param bool Default return value is false to determine if the refund was successfully processed. 
-		 * @param object $order The Member Order we want to refund
-		 * @return bool If the refund was successfully processed
+		 * @param bool $success Default return value is false to determine if the refund was successfully processed. 
+		 * @param object $order The Member Order we want to refund.
 		 */
 		$success = apply_filters( 'pmpro_process_refund_paypal', false, $order );
 	}

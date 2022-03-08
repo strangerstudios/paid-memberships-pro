@@ -1104,7 +1104,7 @@
 				global $current_user;
 
 				// translators: %1$s is the Transaction ID. %2$s is the user display name that initiated the refund.
-				$morder->notes = trim( $morder->notes ) .' '. sprintf( __('Order successfully refunded on %1$s for transaction ID %2$s by %3$s', 'paid-memberships-pro' ), date_i18n('Y-m-d H:i:s'), $transaction_id, $current_user->display_name );
+				$morder->notes = trim( $morder->notes . ' ' . sprintf( __('Order successfully refunded on %1$s for transaction ID %2$s by %3$s', 'paid-memberships-pro' ), date_i18n('Y-m-d H:i:s'), $transaction_id, $current_user->display_name ) );
 
 				$user = get_user_by( 'email', $morder->Email );
 				//send an email to the member
