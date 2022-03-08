@@ -90,7 +90,7 @@
 		$code_levels = apply_filters("pmpro_discount_code_level", $code_levels, $discount_code_id);
 	}
 
-	printf(__("The %s code has been applied to your order. ", 'paid-memberships-pro' ), $discount_code);
+	echo wp_kses_post( sprintf( __( 'The <strong>%s</strong> code has been applied to your order.', 'paid-memberships-pro' ), $discount_code ) );
 
 	$combined_level = null;
 	foreach ( $code_levels as $code_level ) {
