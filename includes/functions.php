@@ -3959,7 +3959,7 @@ function pmpro_get_ip() {
 		'HTTP_X_IP_TRAIL',
 		'HTTP_X_REAL_IP',
 		'HTTP_X_VARNISH',
-		'REMOTE_ADDR',			
+		'REMOTE_ADDR',
 	);
 
 	foreach ( $address_headers as $header ) {
