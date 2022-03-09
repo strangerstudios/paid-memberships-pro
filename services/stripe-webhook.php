@@ -571,7 +571,7 @@
 			{
 				//file
 				$logfile = apply_filters( 'pmpro_stripe_webhook_logfile', dirname( __FILE__ ) . "/../logs/stripe-webhook.txt" );
-				$loghandle = fopen( logfile, "a+" );
+				$loghandle = fopen( $logfile, "a+" );
 				fwrite( $loghandle, $logstr );
 				fclose( $loghandle );
 			}
