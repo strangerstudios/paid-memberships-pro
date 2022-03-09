@@ -1074,7 +1074,7 @@
 			 * @param array $httpParsedResponseAr The parsed response.
 			 * @param string $methodName_ The NVP API name.
 			 */
-			do_action( 'pmpro_paypal_http_post_response', $httpParsedResponseAr, $methodName_ );
+			do_action( 'pmpro_paypal_handle_http_post_response', $httpParsedResponseAr, $methodName_ );
 			
 			return $httpParsedResponseAr;
 		}
