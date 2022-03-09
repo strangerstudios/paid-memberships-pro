@@ -570,9 +570,10 @@
 			if(defined('PMPRO_STRIPE_WEBHOOK_DEBUG') && PMPRO_STRIPE_WEBHOOK_DEBUG === "log")
 			{
 				//file
-				$loghandle = fopen(dirname(__FILE__) . "/../logs/stripe-webhook.txt", "a+");
-				fwrite($loghandle, $logstr);
-				fclose($loghandle);
+				$logfile = apply_filters( 'pmpro_stripe_webhook_logfile', dirname( __FILE__ ) . "/../logs/stripe-webhook.txt" );
+				$loghandle = fopen( logfile, "a+" );
+				fwrite( $loghandle, $logstr );
+				fclose( $loghandle );
 			}
 			elseif(defined('PMPRO_STRIPE_WEBHOOK_DEBUG') && false !== PMPRO_STRIPE_WEBHOOK_DEBUG )
 			{
