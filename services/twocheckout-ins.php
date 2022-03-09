@@ -205,7 +205,8 @@
 		if(defined('PMPRO_INS_DEBUG') && PMPRO_INS_DEBUG === "log")
 		{
 			//file
-			$loghandle = fopen(dirname(__FILE__) . "/../logs/ipn.txt", "a+");
+			$logfile = apply_filters( 'pmpro_twocheckout_ins_logfile', dirname( __FILE__ ) . "/../logs/ipn.txt" );
+			$loghandle = fopen( $logfile, "a+" );
 			fwrite($loghandle, $logstr);
 			fclose($loghandle);
 		}
