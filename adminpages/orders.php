@@ -436,9 +436,16 @@ if ( function_exists( 'pmpro_add_email_order_modal' ) ) {
 		<h1 class="wp-heading-inline"><?php esc_html_e( 'Order', 'paid-memberships-pro' ); ?> #<?php echo esc_html( $order->id ); ?>: <?php echo esc_html( $order->code ); ?></h1>
 		<a title="<?php esc_attr_e( 'Print', 'paid-memberships-pro' ); ?>" href="<?php echo esc_url( add_query_arg( array( 'action' => 'pmpro_orders_print_view', 'order' => $order->id ), admin_url( 'admin-ajax.php' ) ) ); ?>" class="page-title-action" target="_blank" ><?php esc_html_e( 'Print', 'paid-memberships-pro' ); ?></a>
 		<a title="<?php esc_attr_e( 'Email', 'paid-memberships-pro' ); ?>" href="#TB_inline?width=600&height=200&inlineId=email_invoice" class="thickbox email_link page-title-action" data-order="<?php echo esc_html( $order->id ); ?>"><?php esc_html_e( 'Email', 'paid-memberships-pro' ); ?></a>
-		<?php if( pmpro_allowed_refunds( $order ) ) { ?>
-			<a title="<?php esc_attr_e( 'Refund', 'paid-memberships-pro' ); ?>" href="<?php echo wp_json_encode( "javascript:pmpro_askfirst($refund_text, $refund_nonce_url ); void(0);" ); ?> " class="page-title-action"><?php esc_html_e( 'Refund', 'paid-memberships-pro' ); ?></a>
-		<?php } ?>
+		<?php
+			if( pmpro_allowed_refunds( $order ) ) {
+				printf(
+					'<a title="%1$s" href="%2$s" class="page-title-action">%3$s</a>',
+					esc_attr__( 'Refund', 'paid-memberships-pro' ),
+					esc_js( 'javascript:pmpro_askfirst(' . wp_json_encode( $refund_text ) . ', ' . wp_json_encode( $refund_nonce_url ) . '); void(0);' ),
+					esc_html__( 'Refund', 'paid-memberships-pro' )
+				);
+			}
+		?>
 	<?php } else { ?>
 		<h1 class="wp-heading-inline"><?php esc_html_e( 'New Order', 'paid-memberships-pro' ); ?></h1>
 	<?php } ?>
