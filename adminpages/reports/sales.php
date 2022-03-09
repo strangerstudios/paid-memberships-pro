@@ -539,7 +539,7 @@ function pmpro_report_sales_page()
 				} elseif( ! empty( $year ) && $period === 'monthly'  ) {
 					$date = $year;
 				} else {
-					$date = __( 'All Time');
+					$date = __( 'All Time', 'paid-memberships-pro' );
 				}
 			?>
 			return <?php echo wp_json_encode( esc_html( sprintf( __( '%s %s for %s', 'paid-memberships-pro' ), ucwords( $period ), ucwords( $type ), ucwords( $date ) ) ) ); ?>;
