@@ -3993,7 +3993,7 @@ function pmpro_get_ip() {
  */
 function pmpro_allowed_refunds( $order ) { 
 
-	if( empty( $order ) || empty( $order->gateway ) || empty( $order->status ) ) {
+	if( empty( $order ) || empty( $order->gateway ) || empty( $order->status ) || empty( $order->payment_transaction_id ) ) {
 		return false;
 	}
 
