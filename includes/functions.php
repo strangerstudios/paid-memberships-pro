@@ -3333,6 +3333,8 @@ function pmpro_generatePages( $pages ) {
  * @param array  $args Optional. Arguments to pass to the hook's callback function.
  * @return false|void False when an event is not scheduled.
  * @since 1.8.7.3
+ *
+ * @deprecated TBD Use pmpro_maybe_schedule_cron() going forward.
  */
 function pmpro_maybe_schedule_event( $timestamp, $recurrence, $hook, $args = array() ) {
 	$next = wp_next_scheduled( $hook, $args );
@@ -3342,7 +3344,6 @@ function pmpro_maybe_schedule_event( $timestamp, $recurrence, $hook, $args = arr
 		return false;
 	}
 }
-
 /**
  * Get an array of orders for a specific checkout ID
  *

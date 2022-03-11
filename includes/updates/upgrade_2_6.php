@@ -42,5 +42,5 @@ function pmpro_upgrade_2_6() {
 	if ( ! empty( $next ) ) {
 		wp_unschedule_event( $next, 'pmpro_cron_expire_memberships' );
 	}
-	pmpro_maybe_schedule_event( current_time( 'timestamp' ), 'hourly', 'pmpro_cron_expire_memberships' );
+	pmpro_maybe_schedule_cron( current_time( 'timestamp' ), 'hourly', 'pmpro_cron_expire_memberships' );
 }
