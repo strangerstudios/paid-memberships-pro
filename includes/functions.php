@@ -2356,7 +2356,7 @@ function pmpro_getLevelAtCheckout( $level_id = null, $discount_code = null ) {
 
 	// what level are they purchasing? (discount code passed)
 	if ( ! empty( $level_id ) && ! empty( $discount_code ) ) {
-		$discount_code_id = $wpdb->get_var( "SELECT id FROM $wpdb->pmpro_discount_codes WHERE code = '" . esc_sql( $discount_code ) . "' LIMIT 1" );		
+		$discount_code_id = $wpdb->get_var( "SELECT id FROM $wpdb->pmpro_discount_codes WHERE code = '" . esc_sql( $discount_code ) . "' LIMIT 1" );
 
 		// check code
 		global $pmpro_checkout_level_ids; // Set by MMPU.
@@ -3612,7 +3612,7 @@ function pmpro_check_plugin_version( $plugin_file, $comparison, $version ) {
 		return false;
 	}
 
-	// Get plugin data.	
+	// Get plugin data.
 	$full_plugin_file_path = WP_PLUGIN_DIR . '/' . $plugin_file;
 	if ( is_file( $full_plugin_file_path ) ) {
 		$plugin_data = get_plugin_data( $full_plugin_file_path, false, true );
@@ -3724,7 +3724,7 @@ function pmpro_doing_webhook( $gateway = null, $set = false ){
 
 /**
  * Called once a webhook has been run but was not handled.
- * 
+ *
  * @return void
  *
  * @since TBD
@@ -3906,7 +3906,7 @@ function pmpro_send_200_http_response() {
 	flush();
 }
 
-/** 
+/**
  * Returns formatted ISO-8601 date (Used for Zapier Native app.)
  * @since 2.6.6
  * @param $date date A valid date value.
@@ -3980,10 +3980,10 @@ function pmpro_get_ip() {
 	if ( ! $client_ip ) {
 		return false;
 	}
-	
+
 	// Sanitize the IP
 	$client_ip = preg_replace( '/[^0-9a-fA-F:., ]/', '', $client_ip );
-	
+
 	return $client_ip;
 }
 
@@ -3995,8 +3995,8 @@ function pmpro_get_ip() {
  * @param int $user_id ID of the user to send the email for.
  * @param int $level_id Level ID the user just got. (Need to send to filter.)
  */
-function pmpro_maybe_send_wp_new_user_notification( $user_id, $level_id = null ) {	
-	if ( apply_filters( 'pmpro_wp_new_user_notification', true, $user_id, $level_id ) ) {		
+function pmpro_maybe_send_wp_new_user_notification( $user_id, $level_id = null ) {
+	if ( apply_filters( 'pmpro_wp_new_user_notification', true, $user_id, $level_id ) ) {
 		wp_new_user_notification( $user_id, null, 'both' );
 	}
 }
