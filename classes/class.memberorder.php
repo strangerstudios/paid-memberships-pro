@@ -141,6 +141,9 @@
 				$this->notes = $dbobj->notes;
 				$this->checkout_id = $dbobj->checkout_id;
 
+				//reset caches
+				$this->is_renewal = null;
+				
 				//reset the gateway
 				if(empty($this->nogateway))
 					$this->setGateway();
