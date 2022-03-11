@@ -86,16 +86,14 @@ function pmpro_license_isValid($key = NULL, $type = NULL, $force = false) {
 	Activation/Deactivation. Check keys once a month.
 */
 //activation
-function pmpro_license_activation() {
-	pmpro_maybe_schedule_event(current_time('timestamp'), 'monthly', 'pmpro_license_check_key');
-}
-register_activation_hook(__FILE__, 'pmpro_activation');
+add_action( 'pmpro_activation', function () {
+	pmpro_maybe_schedule_event( current_time( 'timestamp' ), 'monthly', 'pmpro_license_check_key' );
+} );
 
 //deactivation
-function pmpro_license_deactivation() {
-	wp_clear_scheduled_hook('pmpro_license_check_key');
-}
-register_deactivation_hook(__FILE__, 'pmpro_deactivation');
+add_action( 'pmpro_deactivation', function () {
+	wp_clear_scheduled_hook( 'pmpro_license_check_key' );
+} );
 
 /**
  * Check a key against the PMPro license server.
