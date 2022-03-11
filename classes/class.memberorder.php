@@ -235,23 +235,33 @@
 				return $this->is_renewal;
 			}
 			
-			// Check the DB.
-			$sqlQuery = "SELECT `id`
-						 FROM $wpdb->pmpro_membership_orders
-						 WHERE `user_id` = '" . esc_sql( $this->user_id ) . "'						 	
-							AND `id` <> '" . esc_sql( $this->id ) . "'
-							AND `gateway_environment` = '" . esc_sql( $this->gateway_environment ) . "'
-							AND `total` > 0
-							AND `total` IS NOT NULL
-							AND status NOT IN('refunded', 'review', 'token', 'error')
-							AND timestamp < '" . esc_sql( date( 'Y-m-d H:i:s', $this->timestamp ) ) . "'
-						 LIMIT 1";
-			$older_order_id = $wpdb->get_var( $sqlQuery );
-
-			if ( ! empty( $older_order_id ) ) {
-				$this->is_renewal = true;
+			if( ! empty( $this->subscription_transaction_id ) ){
+				// Logic for recurring orders.
+				$original_subscription_order = $this->get_original_subscription_order();
+				if ( $this->id !== $original_subscription_order->id ) {
+					$this->is_renewal = true;
+				} else {
+					$this->is_renewal = false;
+				}
 			} else {
-				$this->is_renewal = false;
+				// Logic for non-recurring orders.
+				$sqlQuery = "SELECT `id`
+							 FROM $wpdb->pmpro_membership_orders
+							 WHERE `user_id` = '" . esc_sql( $this->user_id ) . "'						 	
+								AND `id` <> '" . esc_sql( $this->id ) . "'
+								AND `gateway_environment` = '" . esc_sql( $this->gateway_environment ) . "'
+								AND `total` > 0
+								AND `total` IS NOT NULL
+								AND status NOT IN('refunded', 'review', 'token', 'error')
+								AND timestamp < '" . esc_sql( date( 'Y-m-d H:i:s', $this->timestamp ) ) . "'
+							 LIMIT 1";
+				$older_order_id = $wpdb->get_var( $sqlQuery );
+
+				if ( ! empty( $older_order_id ) ) {
+					$this->is_renewal = true;
+				} else {
+					$this->is_renewal = false;
+				}
 			}
 			
 			return $this->is_renewal;
