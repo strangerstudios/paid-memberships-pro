@@ -125,17 +125,25 @@
 			$this->attachments = apply_filters("pmpro_email_attachments", $temail->attachments, $this);
 
 			// Get template header.
-			if( pmpro_getOption( 'email_header_disabled' ) != 'true' ) {
-				$email_header = pmpro_email_templates_get_template_body('header');
-			} else {
-				$email_header = '';
+			$email_header = '';
+			if ( pmpro_getOption( 'email_header_disabled' ) != 'true' ) {
+				$email_header = pmpro_email_templates_get_template_body( 'header' );
+				if ( has_filter( 'pmpro_email_body', 'pmpro_kses' ) ) {
+					$email_header = pmpro_kses( $email_header );
+				}
+
+				$email_header = apply_filters( 'pmpro_email_header', $email_header, $this );
 			}
 
 			// Get template footer
-			if( pmpro_getOption( 'email_footer_disabled' ) != 'true' ) {
-				$email_footer = pmpro_email_templates_get_template_body('footer');
-			} else {
-				$email_footer = '';
+			$email_footer = '';
+			if ( pmpro_getOption( 'email_footer_disabled' ) != 'true' ) {
+				$email_footer = pmpro_email_templates_get_template_body( 'footer' );
+				if ( has_filter( 'pmpro_email_body', 'pmpro_kses' ) ) {
+					$email_footer = pmpro_kses( $email_footer );
+				}
+
+				$email_footer = apply_filters( 'pmpro_email_footer', $email_footer, $this );
 			}
 
 			// Add header and footer to email body.
