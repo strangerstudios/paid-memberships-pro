@@ -312,6 +312,7 @@ function pmpro_userfields_prep_click_events() {
         
         fieldcontainer.removeClass('pmpro_userfield-group-field-collapse');
         fieldcontainer.addClass('pmpro_userfield-group-field-expand');
+        fieldsettings.find('select[name=pmpro_userfields-field-type]').change();
         fieldsettings.show();
     });
     
@@ -330,6 +331,22 @@ function pmpro_userfields_prep_click_events() {
         fieldcontainer.removeClass('pmpro_userfield-group-field-expand');
         fieldcontainer.addClass('pmpro_userfield-group-field-collapse');
         fieldsettings.hide();
+    });
+    
+    // Toggle field settings based on type.
+    jQuery('select[name=pmpro_userfields-field-type]').on('change', function(event){
+        var fieldcontainer = jQuery(this).parents('.pmpro_userfield-group-field');
+        var fieldsettings = fieldcontainer.children('.pmpro_userfield-field-settings');
+        var fieldtype = jQuery(this).val();
+        var fieldoptions = fieldsettings.find('textarea[name=pmpro_userfields-field-options]').parents('.pmpro_userfield-field-setting');        
+        
+        var optiontypes = ['select', 'multiselect'];
+        
+        if( jQuery.inArray( fieldtype, optiontypes ) > -1 ) {            
+            fieldoptions.show();
+        } else {
+            fieldoptions.hide();
+        }
     });
     
     // Save User Field Settings
@@ -363,6 +380,7 @@ function pmpro_userfields_prep_click_events() {
                 let field_wrapper_class = jQuery(this).find('input[name=pmpro_userfields-field-class]').val();
                 let field_element_class = jQuery(this).find('input[name=pmpro_userfields-field-divclass]').val();
                 let field_hint = jQuery(this).find('textarea[name=pmpro_userfields-field-hint]').val();
+                let field_options = jQuery(this).find('textarea[name=pmpro_userfields-field-options]').val();
                 
                 let field = {
                     'label': field_label,
@@ -374,7 +392,8 @@ function pmpro_userfields_prep_click_events() {
                     'profile': field_profile,
                     'wrapper_class': field_wrapper_class,
                     'element_class': field_element_class,
-                    'hint': field_hint
+                    'hint': field_hint,
+                    'options': field_options,
                 }
 
                 // Add to array. (Only if it has a label or name.)

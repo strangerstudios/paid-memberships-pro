@@ -1087,12 +1087,12 @@ function pmpro_get_field_group_html( $group = null ) {
                 </label>                
             </h3>
             <button type="button" aria-disabled="false" class="pmpro_userfield-group-buttons-button pmpro_userfield-group-buttons-button-toggle-group" aria-label="<?php esc_attr_e( 'Expand and Edit Group', 'paid-memberships-pro' ); ?>">
-                <span class="dashicons dashicons-arrow-down"></span>
+                <span class="dashicons dashicons-arrow-up"></span>
             </button>
             <span class="pmpro_userfield-group-buttons-description"><?php esc_html_e( 'Expand and Edit Group', 'paid-memberships-pro' ); ?></span>
         </div> <!-- end pmpro_userfield-group-header -->
 
-        <div class="pmpro_userfield-inside" style="display: none;">
+        <div class="pmpro_userfield-inside">
 			<div class="pmpro_userfield-field-settings">
 				
 				<div class="pmpro_userfield-field-setting">
@@ -1196,6 +1196,7 @@ function pmpro_get_field_html( $field = null ) {
         $field_wrapper_class = $field->wrapper_class;
         $field_element_class = $field->element_class;
         $field_hint = $field->hint;
+        $field_options = $field->options;
     } else {
         // Default field values
         $field_label = '';
@@ -1208,6 +1209,7 @@ function pmpro_get_field_html( $field = null ) {
         $field_wrapper_class = '';
         $field_element_class = '';
         $field_hint = '';
+        $field_options = '';
     }    
     ?>
     <div class="pmpro_userfield-group-field pmpro_userfield-group-field-collapse">
@@ -1266,7 +1268,7 @@ function pmpro_get_field_html( $field = null ) {
                         <option value="checkbox"><?php esc_html_e( 'Checkbox', 'paid-memberships-pro' ); ?></option>
                         <option value="radio"><?php esc_html_e( 'Radio', 'paid-memberships-pro' ); ?></option>
                         <option value="select"><?php esc_html_e( 'Select', 'paid-memberships-pro' ); ?></option>
-                        <option value="multiselect"><?php esc_html_e( 'Multi Select - ACF calls select2 "stylized UI"', 'paid-memberships-pro' ); ?></option>
+                        <option value="multiselect"><?php esc_html_e( 'Multi Select', 'paid-memberships-pro' ); ?></option>
                         <option value="file"><?php esc_html_e( 'File', 'paid-memberships-pro' ); ?></option>
                         <option value="number"><?php esc_html_e( 'Number', 'paid-memberships-pro' ); ?></option>
                         <option value="date"><?php esc_html_e( 'Date', 'paid-memberships-pro' ); ?></option>
@@ -1342,6 +1344,15 @@ function pmpro_get_field_html( $field = null ) {
                 </label>                
                 <span class="description"><?php esc_html_e( 'Descriptive text for users or admins submitting the field.', 'paid-memberships-pro' ); ?></span>
             </div> <!-- end pmpro_userfield-field-setting -->
+            
+            <div class="pmpro_userfield-field-setting">
+                <label>
+                    <?php esc_html_e( 'Options', 'paid-memberships-pro' ); ?><br />
+                    <textarea name="pmpro_userfields-field-options" /><?php echo esc_textarea( $field_options );?></textarea>
+                </label>                
+                <span class="description"><?php esc_html_e( 'One option per line. To set separate values and labels, use `value:label`.', 'paid-memberships-pro' ); ?></span>
+            </div> <!-- end pmpro_userfield-field-setting -->
+            
             <div class="pmpro_userfield-field-actions">            
                 <button name="pmpro_userfields_close_field" class="button button-secondary pmpro_userfields_close_field">
                     <?php esc_html_e( 'Close Field', 'paid-memberships-pro' ); ?>
