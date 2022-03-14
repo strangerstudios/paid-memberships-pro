@@ -1349,8 +1349,8 @@ function pmpro_get_field_html( $field = null ) {
                 <label>
                     <?php esc_html_e( 'Options', 'paid-memberships-pro' ); ?><br />
                     <textarea name="pmpro_userfields-field-options" /><?php echo esc_textarea( $field_options );?></textarea>
-                </label>                
-                <span class="description"><?php esc_html_e( 'One option per line. To set separate values and labels, use `value:label`.', 'paid-memberships-pro' ); ?></span>
+                </label>
+                <span class="description"><?php esc_html_e( 'One option per line. To set separate values and labels, use value:label.', 'paid-memberships-pro' ); ?></span>
             </div> <!-- end pmpro_userfield-field-setting -->
             
             <div class="pmpro_userfield-field-actions">            
