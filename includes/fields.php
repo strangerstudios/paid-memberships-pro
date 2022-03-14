@@ -1279,7 +1279,7 @@ function pmpro_get_field_html( $field = null ) {
         $field_name = $field->name;
         $field_type = $field->type;
         $field_required = $field->required;
-        $field_readonly = $field->required;        
+        $field_readonly = $field->readonly; 
     	$field_membership = $field->membership;
         $field_profile = $field->profile;
         $field_wrapper_class = $field->wrapper_class;
@@ -1476,3 +1476,84 @@ function pmpro_get_user_fields_settings() {
 /**
  * Load user field settings into the fields global var.
  */
+function pmpro_load_user_fields_from_settings() {
+    global $pmpro_user_fields, $pmpro_field_groups;
+    $settings_groups = pmpro_get_user_fields_settings();
+    
+    foreach ( $settings_groups as $group ) {
+        pmpro_add_field_group( $group->name, $group->name, $group->description );
+        
+        // Figure out profile value. Change 2 settings values into 1 field value.
+        if ( $group->checkout === 'yes' ) {
+            if ( $group->profile === 'yes' ) {
+                $group_profile = true;
+            } elseif ( $group->profile === 'admins' ) {
+                $group_profile = 'admin';
+            } else {
+                $group_profile = false;
+            }
+        } else {
+            if ( $group->profile === 'yes' ) {
+                $group_profile = 'only';
+            } elseif ( $group->profile === 'admins' ) {
+                $group_profile = 'only_admin';
+            } else {
+                // Hide from checkout AND profile? Okay, skip this group.
+                continue;
+            }
+        }
+        
+        foreach ( $group->fields as $settings_field ) {
+            // Figure out field profile from settings and group profile.
+            if ( empty( $settings_field->profile ) || $settings_field->profile === '[Inherit Group Setting]' ) {
+                $profile = $group_profile;
+            } else {
+                if ( $settings_field->profile === 'yes' ) {
+                    $profile = true;
+                } elseif ( $settings_field->profile === 'no' ) {
+                    $profile = false;
+                } elseif ( $settings_field->profile === 'admins' ) {
+                    $profile = 'admin';
+                } else {
+                    // default to no
+                    $profile = false;
+                }
+            }
+            
+            // Figure out options.
+            $option_types = array( 'radio', 'select', 'multiselect' );
+            if ( in_array( $settings_field->type, $option_types ) ) {
+                $options = array();
+                $settings_options = explode( "\n", $settings_field->options );
+                foreach( $settings_options as $settings_option ) {
+                    if ( strpos( $settings_option, ':' ) !== false ) {
+                        $parts = explode( ':', $settings_option );
+                        $options[trim( $parts[0] )] = trim( $parts[1] );
+                    } else {
+                        $options[] = $settings_option;
+                    }
+                }
+            } else {
+                $options = false;
+            }
+            
+            $field = new PMPro_Field(
+                $settings_field->name,
+                $settings_field->type,
+                array(
+                    'label' => $settings_field->label,                    
+                    'required' => filter_var( $settings_field->required, FILTER_VALIDATE_BOOLEAN ),
+                    'readonly' => filter_var( $settings_field->readonly, FILTER_VALIDATE_BOOLEAN ),
+                    'profile' => $profile,
+                    'class' => $settings_field->element_class,
+                    'divclass' => $settings_field->wrapper_class,
+                    'hint' => $settings_field->hint,
+                    'options' => $options,
+                    // TODO: levels
+                )
+            );
+            pmpro_add_user_field( $group->name, $field );
+        }
+    }        
+}
+add_action( 'init', 'pmpro_load_user_fields_from_settings', 1 );
