@@ -324,18 +324,29 @@ class PMPro_Field
 				$preview_file = $preview_file->save();
 			}
 		}
+		
+		// Our folder in the uploads directory that we want to save files to.
+		$upload_dir = '/pmpro-user-fields/' . $user->user_login . '/';
+
+		// If multisite, prefix the directory with the current blog ID specific folder.
+		if ( is_multisite() ) {
+			$upload_dir = '/sites/' . get_current_blog_id() . $upload_dir;
+		}
+
+		// Get the full uploads directory URL we want to save files to.
+		$upload_path = content_url( '/uploads' . $upload_dir );
 
 		$file_meta_value_array = array(
 			'original_filename'	=> $file['name'],
 			'filename'			=> $filename,
 			'fullpath'			=> $pmprorh_dir . $filename,
-			'fullurl'			=> content_url('/uploads/pmpro-register-helper/' . $user->user_login . '/' . $filename),
+			'fullurl'			=> $upload_path . $filename,
 			'size'				=> $file['size'],
 		);
 
 		if ( ! empty( $preview_file ) && ! is_wp_error( $preview_file ) ) {
 			$file_meta_value_array['previewpath'] = $preview_file['path'];
-			$file_meta_value_array['previewurl'] = content_url('/uploads/pmpro-register-helper/' . $user->user_login . '/' . $preview_file['file'] );
+			$file_meta_value_array['previewurl'] = $upload_path . $preview_file['file'];			
 		}
 
 		//save filename in usermeta
@@ -642,10 +653,11 @@ class PMPro_Field
 			//show name of existing file
 			if(!empty($value))
 			{
-				if(!empty($this->file['fullurl']))
+				if( ! empty( $this->file['fullurl'] ) ) {										
 					$r_end .= '<span class="pmprorh_file_' . $this->name . '_name">' . sprintf(__('Current File: %s', 'pmpro-register-helper' ), '<a target="_blank" href="' . $this->file['fullurl'] . '">' . basename($value) . '</a>' ) . '</span>';
-				else
+				} else {
 					$r_end .= sprintf(__('Current File: %s', 'pmpro-register-helper' ), basename($value) );
+				}
 
 				// Allow user to delete the uploaded file if we know the full location. 
 				if ( ( ! empty( $this->allow_delete ) ) && ! empty( $this->file['fullurl'] ) ) {
