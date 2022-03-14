@@ -80,6 +80,95 @@ function pmpro_add_field_group( $name, $label = NULL, $description = '', $order 
 }
 
 /**
+ * Add a new User Taxonomy. You can then use this as the user_taxonomny parameter to pmprorh_add_registration_field.
+ *
+ * @param string $name The singular name for the taxonomy object.
+ * @param string $name_plural The plural name for the taxonomy object.
+ *
+ */
+function pmpro_add_user_taxonomy( $name, $name_plural ) {
+	global $pmpro_user_taxonomies;
+
+	// Sanitize the taxonomy $name and make sure it is less than 32 characters.
+	$safe_name = sanitize_key( $name );
+	if ( strlen( $safe_name ) > 32 ) {
+		$safe_name = substr( $safe_name, 0, 32 );
+	}
+
+	// Make sure name and plural name are less than 32 characters.
+	if ( strlen( $name ) > 32 ) {
+		$name = substr( $name, 0, 32 );
+	}
+	if ( strlen( $name_plural ) > 32 ) {
+		$name_plural = substr( $name_plural, 0, 32 );
+	}
+
+	$pmpro_user_taxonomy_labels = array(
+		'name' => ucwords( $name ),
+		'singular_name' => ucwords( $name ),
+		'menu_name' => ucwords( $name_plural ),
+		'search_items' => sprintf( __( 'Search %s', 'pmpro-register-helper' ), ucwords( $name_plural ) ),
+		'popular_items' => sprintf( __( 'Popular %s', 'pmpro-register-helper' ), ucwords( $name_plural ) ),
+		'all_items' => sprintf( __( 'All %s', 'pmpro-register-helper' ), ucwords( $name_plural ) ),
+		'edit_item' => sprintf( __( 'Edit %s', 'pmpro-register-helper' ), ucwords( $name ) ),
+		'update_item' => sprintf( __( 'Update %s', 'pmpro-register-helper' ), ucwords( $name ) ),
+		'add_new_item' => sprintf( __( 'Add New %s', 'pmpro-register-helper' ), ucwords( $name ) ),
+		'new_item_name' => sprintf( __( 'New %s Name', 'pmpro-register-helper' ), ucwords( $name ) ),
+		'separate_items_with_commas' => sprintf( __( 'Separate %s with commas', 'pmpro-register-helper' ), $name_plural ),
+		'add_or_remove_items' => sprintf( __( 'Add or remove %s', 'pmpro-register-helper' ), $name_plural ),
+		'choose_from_most_used' => sprintf( __( 'Choose from the most popular %s', 'pmpro-register-helper' ), $name_plural ),
+	);
+	
+	/**
+	 * Filter the args passed to the user taxonomy created.
+	 *
+	 * @param array $pmpro_user_taxonomy_args The arguments passed to the register_taxonomy function.
+	 *
+	 */
+	$pmpro_user_taxonomy_args = apply_filters( 'pmpro_user_taxonomy_args', array(
+			'public' => false,
+			'labels' => $pmpro_user_taxonomy_labels,
+			'rewrite' => false,
+			'show_ui' => true,
+			'capabilities' => array(
+				'manage_terms' => 'edit_users',
+				'edit_terms'   => 'edit_users',
+				'delete_terms' => 'edit_users',
+				'assign_terms' => 'read',
+			),
+		)
+	);
+	register_taxonomy( $safe_name, 'user', $pmpro_user_taxonomy_args );
+
+	/**
+	 * Add admin page for the registered user taxonomies.
+	 */
+	add_action( 'admin_menu', function() use ( $pmpro_user_taxonomy_labels, $safe_name ) {
+		add_users_page(
+			esc_attr( $pmpro_user_taxonomy_labels['menu_name'] ),
+			esc_attr( $pmpro_user_taxonomy_labels['menu_name'] ),
+			'edit_users',
+			'edit-tags.php?taxonomy=' . $safe_name
+		);
+	} );
+
+	/**
+	 * Update parent file name to fix the selected menu issue for a user taaxonomy.
+	 */
+	add_filter( 'parent_file', function( $parent_file ) use ( $safe_name ) {
+		global $submenu_file;
+		if (
+			isset($_GET['taxonomy']) &&
+			$_GET['taxonomy'] == $safe_name &&
+			$submenu_file == 'edit-tags.php?taxonomy=' . $safe_name
+		) {
+			$parent_file = 'users.php';
+		}
+		return $parent_file;
+	} );
+}
+
+/**
  * Get a field group by name.
  */
 function pmpro_get_field_group_by_name( $name ) {
