@@ -340,7 +340,7 @@ function pmpro_userfields_prep_click_events() {
         var fieldtype = jQuery(this).val();
         var fieldoptions = fieldsettings.find('textarea[name=pmpro_userfields-field-options]').parents('.pmpro_userfield-field-setting');        
         
-        var optiontypes = ['select', 'multiselect'];
+        var optiontypes = ['radio', 'select', 'multiselect']; // eventually checkboxgroup and select2
         
         if( jQuery.inArray( fieldtype, optiontypes ) > -1 ) {            
             fieldoptions.show();
