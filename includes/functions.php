@@ -3166,7 +3166,7 @@ function pmpro_get_price_info( $amount, $currency = null ) {
 		// The flat amount represent (example: 1.99 would be 199).
 		'amount_flat'   => 0,
 		// The amount as a string.
-		'amount_string' => 0,
+		'amount_string' => '',
 		'parts'         => [
 			// The whole number part of the amount (example: 1.99 would be 1).
 			'number'         => (int) $amount,
