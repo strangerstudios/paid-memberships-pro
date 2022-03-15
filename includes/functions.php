@@ -3702,7 +3702,7 @@ function pmpro_check_plugin_version( $plugin_file, $comparison, $version ) {
 		return false;
 	}
 
-	// Get plugin data.	
+	// Get plugin data.
 	$full_plugin_file_path = WP_PLUGIN_DIR . '/' . $plugin_file;
 	if ( is_file( $full_plugin_file_path ) ) {
 		$plugin_data = get_plugin_data( $full_plugin_file_path, false, true );
@@ -3814,7 +3814,7 @@ function pmpro_doing_webhook( $gateway = null, $set = false ){
 
 /**
  * Called once a webhook has been run but was not handled.
- * 
+ *
  * @return void
  *
  * @since TBD
@@ -4085,8 +4085,8 @@ function pmpro_get_ip() {
  * @param int $user_id ID of the user to send the email for.
  * @param int $level_id Level ID the user just got. (Need to send to filter.)
  */
-function pmpro_maybe_send_wp_new_user_notification( $user_id, $level_id = null ) {	
-	if ( apply_filters( 'pmpro_wp_new_user_notification', true, $user_id, $level_id ) ) {		
+function pmpro_maybe_send_wp_new_user_notification( $user_id, $level_id = null ) {
+	if ( apply_filters( 'pmpro_wp_new_user_notification', true, $user_id, $level_id ) ) {
 		wp_new_user_notification( $user_id, null, 'both' );
 	}
 }
