@@ -207,7 +207,7 @@
 									$actions['settings'] = '<span class="settings"><a href="' . admin_url('admin.php?page=pmpro-license') . '">' . __('Update License', 'paid-memberships-pro' ) . '</a></span>';
 									$actions['download'] = '<span class="download"><a target="_blank" href="' . $plugin_data['PluginURI'] . '">' . __('Download', 'paid-memberships-pro' ) . '</a></span>';
 								}
-								elseif(pmpro_license_isValid($pmpro_license_key, $plugin_data['License']))
+								elseif(pmpro_can_download_addon_with_license($plugin_data['License']))
 								{
 									//valid key
 									$actions['install'] = '<span class="install"><a href="' . wp_nonce_url(self_admin_url('update.php?action=install-plugin&plugin=' . $plugin_data['Slug']), 'install-plugin_' . $plugin_data['Slug']) . '">' . __('Install Now', 'paid-memberships-pro' ) . '</a></span>';
@@ -238,10 +238,12 @@
 						<?php
 							if($addon['License'] == 'free')
 								_e("PMPro Free", 'paid-memberships-pro' );
-							elseif($addon['License'] == 'core')
-								_e("PMPro Core", 'paid-memberships-pro' );
+							elseif($addon['License'] == 'standard')
+								_e("PMPro Standard", 'paid-memberships-pro' );
 							elseif($addon['License'] == 'plus')
 								_e("PMPro Plus", 'paid-memberships-pro' );
+							elseif($addon['License'] == 'builder')
+								_e("PMPro Builder", 'paid-memberships-pro' );
 							elseif($addon['License'] == 'wordpress.org')
 								_e("WordPress.org", 'paid-memberships-pro' );
 							else
