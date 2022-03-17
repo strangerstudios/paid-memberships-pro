@@ -57,12 +57,21 @@
 				$pmpro_payment_option_fields_for_paypal = true;
 			}
 
+			add_filter( 'pmpro_payment_option_fields', array(
+				'PMProGateway_paypalexpress',
+				'pmpro_payment_option_fields_ppe_extra_fields'
+			), 10, 2 );
+            
 			//code to add at checkout
 			$gateway = pmpro_getGateway();
 			if($gateway == "paypalexpress")
 			{
+				// check settings RE showing billing address
+				if ( ! pmpro_getOption( "paypal_billingaddress" ) ) {
+					add_filter( 'pmpro_include_billing_address_fields', '__return_false' );
+				}
+
 				add_action('pmpro_checkout_preheader', array('PMProGateway_paypalexpress', 'pmpro_checkout_preheader'));
-				add_filter('pmpro_include_billing_address_fields', '__return_false');
 				add_filter('pmpro_include_payment_information_fields', '__return_false');
 				add_filter('pmpro_required_billing_fields', array('PMProGateway_paypalexpress', 'pmpro_required_billing_fields'));
 				add_filter('pmpro_checkout_new_user_array', array('PMProGateway_paypalexpress', 'pmpro_checkout_new_user_array'));
@@ -111,6 +120,7 @@
 				'apiusername',
 				'apipassword',
 				'apisignature',
+				'paypal_billingaddress',
 				'currency',
 				'use_ssl',
 				'tax_state',
@@ -223,21 +233,56 @@
 		}
 
 		/**
+		 * Display fields for this gateway's options (PPE ONLY).
+		 *
+		 * @since TBD
+		 */
+		static function pmpro_payment_option_fields_ppe_extra_fields($values, $gateway)
+		{
+			?>
+            <tr class="pmpro_settings_divider gateway gateway_paypalexpress" <?php if ( $gateway != "paypalexpress" ) { ?>style="display: none;"<?php } ?>>
+                <td colspan="2">
+                    <hr />
+                    <h2><?php esc_html_e( 'Other PayPal Settings', 'paid-memberships-pro' ); ?></h2>
+                </td>
+            </tr>
+            <tr class="gateway gateway_paypalexpress" <?php if ( $gateway != "paypalexpress" ) { ?>style="display: none;"<?php } ?>>
+                <th scope="row" valign="top">
+                    <label for="paypal_billingaddress"><?php _e( 'Show Billing Address Fields', 'paid-memberships-pro' ); ?>:</label>
+                </th>
+                <td>
+                    <select id="paypal_billingaddress" name="paypal_billingaddress">
+                        <option value="0"
+						        <?php if ( empty( $values['paypal_billingaddress'] ) ) { ?>selected="selected"<?php } ?>><?php _e( 'No', 'paid-memberships-pro' ); ?></option>
+                        <option value="1"
+						        <?php if ( ! empty( $values['paypal_billingaddress'] ) ) { ?>selected="selected"<?php } ?>><?php _e( 'Yes', 'paid-memberships-pro' ); ?></option>
+                    </select>
+                    <p class="description"><?php _e( "PayPal Express doesn't require billing address fields. Choose 'No' to hide them on the checkout page.", 'paid-memberships-pro' ); ?></p>
+                </td>
+            </tr>
+			<?php
+		}
+        
+		/**
 		 * Remove required billing fields
 		 *
 		 * @since 1.8
 		 */
 		static function pmpro_required_billing_fields($fields)
 		{
-			unset($fields['bfirstname']);
-			unset($fields['blastname']);
-			unset($fields['baddress1']);
-			unset($fields['bcity']);
-			unset($fields['bstate']);
-			unset($fields['bzipcode']);
-			unset($fields['bphone']);
-			unset($fields['bemail']);
-			unset($fields['bcountry']);
+			// check settings RE showing billing address
+			if ( ! pmpro_getOption( "paypal_billingaddress" ) ) {
+				unset($fields['bfirstname']);
+				unset($fields['blastname']);
+				unset($fields['baddress1']);
+				unset($fields['bcity']);
+				unset($fields['bstate']);
+				unset($fields['bzipcode']);
+				unset($fields['bphone']);
+				unset($fields['bemail']);
+				unset($fields['bcountry']);
+			}
+
 			unset($fields['CardType']);
 			unset($fields['AccountNumber']);
 			unset($fields['ExpirationMonth']);
