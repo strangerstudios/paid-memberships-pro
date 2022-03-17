@@ -1,6 +1,6 @@
 <?php
 	class MemberOrder
-	{
+	{	
 		/**
 		 * Constructor
 		 */
@@ -212,6 +212,48 @@
 				return false;
 			}
 		}
+
+		/**
+		 * Is this order a 'renewal'?
+		 * We currently define a renewal as any order from a user who has
+		 * a previous paid (non-$0) order.
+		 */
+		function is_renewal() {
+			global $wpdb;			
+			
+			// If our property is already set, use that.
+			if ( isset( $this->is_renewal ) ) {				
+				return $this->is_renewal;
+			}
+			
+			// Can't tell if this is a renewal without a user.
+			if ( empty( $this->user_id ) ) {
+				$this->is_renewal = false;
+				return $this->is_renewal;
+			}
+			
+			// Check the DB.
+			$sqlQuery = "SELECT `id`
+						 FROM $wpdb->pmpro_membership_orders
+						 WHERE `user_id` = '" . esc_sql( $this->user_id ) . "'						 	
+							AND `id` <> '" . esc_sql( $this->id ) . "'
+							AND `gateway_environment` = '" . esc_sql( $this->gateway_environment ) . "'
+							AND `total` > 0
+							AND `total` IS NOT NULL
+							AND status NOT IN('refunded', 'review', 'token', 'error')
+							AND timestamp < '" . esc_sql( date( 'Y-m-d H:i:s', $this->timestamp ) ) . "'
+						 LIMIT 1";
+			$older_order_id = $wpdb->get_var( $sqlQuery );
+
+			if ( ! empty( $older_order_id ) ) {
+				$this->is_renewal = true;
+			} else {
+				$this->is_renewal = false;
+			}
+			
+			return $this->is_renewal;
+		}
+
 
 		/**
 		 * Set up the Gateway class to use with this order.

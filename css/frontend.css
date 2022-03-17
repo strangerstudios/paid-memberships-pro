@@ -148,6 +148,7 @@ form.pmpro_form select,
 #loginform input[type=password] {
 	display: inline-block;
 	max-width: 90%;
+	min-height: 1.5rem;
 }
 form.pmpro_form .pmpro_checkout-field-bcity_state_zip .input,
 form.pmpro_form .pmpro_checkout-field-bcity_state_zip select {
@@ -341,7 +342,7 @@ span.pmpro_price_part_sub:before {
 #pmpro_license {
 	background: #FFF;
 	border: 1px solid #CCC;
-	color: #666;
+	color: #333;
 	height: 200px;
 	margin: 3px;
 	overflow: auto;
