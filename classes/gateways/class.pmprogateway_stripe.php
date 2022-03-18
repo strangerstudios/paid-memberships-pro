@@ -1569,7 +1569,7 @@ class PMProGateway_stripe extends PMProGateway {
 		if ( empty( $customer ) ) {
 			// There was an issue creating/updating the Stripe customer.
 			// $order will have an error message.
-			pmpro_setMessage( __( 'Could not get customer. ', 'paid-memberships-pro' ) . $order->error, 'pmpro_error', true );
+			pmpro_setMessage( __( 'Could not get customer. ', 'paid-memberships-pro' ) . $morder->error, 'pmpro_error', true );
 			return;
 		}
 
