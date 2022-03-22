@@ -2,14 +2,14 @@
 # This file is distributed under the same license as the Paid Memberships Pro plugin.
 msgid ""
 msgstr ""
-"Project-Id-Version: Paid Memberships Pro 2.7.4\n"
+"Project-Id-Version: Paid Memberships Pro 2.7.5\n"
 "Report-Msgid-Bugs-To: info@paidmembershipspro.com\n"
 "Last-Translator: Paid Memberships Pro <info@paidmembershipspro.com>\n"
 "Language-Team: Paid Memberships Pro <info@paidmembershipspro.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2022-02-22T16:00:52+00:00\n"
+"POT-Creation-Date: 2022-03-01T15:07:05+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.6.0\n"
 "X-Domain: paid-memberships-pro\n"
@@ -1457,6 +1457,7 @@ msgstr "付款帳單數量"
 #: classes/gateways/class.pmprogateway_stripe.php:1369
 #: classes/gateways/class.pmprogateway_stripe.php:2641
 #: classes/gateways/class.pmprogateway_stripe.php:2637
+#: classes/gateways/class.pmprogateway_stripe.php:2639
 msgid "Day(s)"
 msgstr "日(s)"
 
@@ -1505,6 +1506,7 @@ msgstr "日(s)"
 #: classes/gateways/class.pmprogateway_stripe.php:1371
 #: classes/gateways/class.pmprogateway_stripe.php:2643
 #: classes/gateways/class.pmprogateway_stripe.php:2639
+#: classes/gateways/class.pmprogateway_stripe.php:2641
 msgid "Month(s)"
 msgstr "月(s)"
 
@@ -1553,6 +1555,7 @@ msgstr "月(s)"
 #: classes/gateways/class.pmprogateway_stripe.php:1370
 #: classes/gateways/class.pmprogateway_stripe.php:2642
 #: classes/gateways/class.pmprogateway_stripe.php:2638
+#: classes/gateways/class.pmprogateway_stripe.php:2640
 msgid "Week(s)"
 msgstr "星期(s)"
 
@@ -1601,6 +1604,7 @@ msgstr "星期(s)"
 #: classes/gateways/class.pmprogateway_stripe.php:1372
 #: classes/gateways/class.pmprogateway_stripe.php:2644
 #: classes/gateways/class.pmprogateway_stripe.php:2640
+#: classes/gateways/class.pmprogateway_stripe.php:2642
 msgid "Year(s)"
 msgstr "年(s)"
 
@@ -2306,6 +2310,7 @@ msgstr "付款帳單資料"
 #: classes/gateways/class.pmprogateway_stripe.php:1503
 #: classes/gateways/class.pmprogateway_stripe.php:2700
 #: classes/gateways/class.pmprogateway_stripe.php:2696
+#: classes/gateways/class.pmprogateway_stripe.php:2698
 msgid "per"
 msgstr "每"
 
@@ -2789,6 +2794,7 @@ msgstr "輸出到CSV"
 #: classes/class-pmpro-members-list-table.php:622
 #: adminpages/orders.php:1012
 #: adminpages/reports/sales.php:311
+#: classes/class-pmpro-members-list-table.php:651
 msgid "Show"
 msgstr "顯示"
 
@@ -2818,6 +2824,7 @@ msgstr "顯示"
 #: adminpages/reports/sales.php:334
 #: classes/class.pmproemail.php:195
 #: classes/class.pmproemail.php:235
+#: classes/class-pmpro-members-list-table.php:653
 msgid "All Levels"
 msgstr "所有程度"
 
@@ -2826,6 +2833,7 @@ msgstr "所有程度"
 #: classes/class-pmpro-members-list-table.php:635
 #: classes/class-pmpro-members-list-table.php:234
 #: classes/class-pmpro-members-list-table.php:634
+#: classes/class-pmpro-members-list-table.php:663
 msgid "Cancelled Members"
 msgstr "會員以取消了"
 
@@ -2834,6 +2842,7 @@ msgstr "會員以取消了"
 #: classes/class-pmpro-members-list-table.php:636
 #: classes/class-pmpro-members-list-table.php:235
 #: classes/class-pmpro-members-list-table.php:635
+#: classes/class-pmpro-members-list-table.php:664
 msgid "Expired Members"
 msgstr "會員已經到期了"
 
@@ -2843,6 +2852,7 @@ msgstr "會員已經到期了"
 #: classes/class-pmpro-members-list-table.php:637
 #: classes/class-pmpro-members-list-table.php:236
 #: classes/class-pmpro-members-list-table.php:636
+#: classes/class-pmpro-members-list-table.php:665
 msgid "Old Members"
 msgstr "舊會員"
 
@@ -6833,6 +6843,7 @@ msgstr "如果要完全配合Stripe, 一定要設定你的Web Hook URL到"
 #: classes/gateways/class.pmprogateway_stripe.php:1416
 #: classes/gateways/class.pmprogateway_stripe.php:2650
 #: classes/gateways/class.pmprogateway_stripe.php:2646
+#: classes/gateways/class.pmprogateway_stripe.php:2648
 msgid "Subscription Updates"
 msgstr "訂閱以更新"
 
@@ -6902,6 +6913,7 @@ msgstr "訂閱以更新, 可以允許你在預早時改好你的訂閱數值. �
 #: classes/gateways/class.pmprogateway_stripe.php:2655
 #: pages/billing.php:434
 #: classes/gateways/class.pmprogateway_stripe.php:2651
+#: classes/gateways/class.pmprogateway_stripe.php:2653
 msgid "Update"
 msgstr "更新"
 
@@ -6922,6 +6934,7 @@ msgstr "更新"
 #: classes/gateways/class.pmprogateway_stripe.php:2520
 #: classes/gateways/class.pmprogateway_stripe.php:3045
 #: classes/gateways/class.pmprogateway_stripe.php:3041
+#: classes/gateways/class.pmprogateway_stripe.php:3043
 msgid "Could not cancel the old subscription. Updates have not been processed."
 msgstr "不可以取消舊訂閱. 不可以取消舊訂閱. 更新没有處理."
 
@@ -6982,6 +6995,8 @@ msgstr "造Stripe的客戶記錄有錯:"
 #: classes/gateways/class.pmprogateway_stripe.php:4069
 #: classes/gateways/class.pmprogateway_stripe.php:4060
 #: classes/gateways/class.pmprogateway_stripe.php:4065
+#: classes/gateways/class.pmprogateway_stripe.php:4062
+#: classes/gateways/class.pmprogateway_stripe.php:4067
 msgid "Error getting subscription with Stripe:"
 msgstr "在Stripe找訂閱有錯:"
 
@@ -7025,6 +7040,8 @@ msgstr "在Stripe找訂閱有錯:"
 #: classes/gateways/class.pmprogateway_stripe.php:4170
 #: classes/gateways/class.pmprogateway_stripe.php:4161
 #: classes/gateways/class.pmprogateway_stripe.php:4166
+#: classes/gateways/class.pmprogateway_stripe.php:4163
+#: classes/gateways/class.pmprogateway_stripe.php:4168
 msgid "Error creating plan with Stripe:"
 msgstr "在Stripe建造計劃有錯:"
 
@@ -7063,6 +7080,8 @@ msgstr "在Stripe建造計劃有錯:"
 #: classes/gateways/class.pmprogateway_stripe.php:4215
 #: classes/gateways/class.pmprogateway_stripe.php:4197
 #: classes/gateways/class.pmprogateway_stripe.php:4211
+#: classes/gateways/class.pmprogateway_stripe.php:4199
+#: classes/gateways/class.pmprogateway_stripe.php:4213
 msgid "Error subscribing customer to plan with Stripe:"
 msgstr "在Stripe訂閱客戶到計劃有錯:"
 
@@ -7136,6 +7155,8 @@ msgstr "找不到找客戶."
 #: classes/gateways/class.pmprogateway_stripe.php:4335
 #: classes/gateways/class.pmprogateway_stripe.php:4325
 #: classes/gateways/class.pmprogateway_stripe.php:4331
+#: classes/gateways/class.pmprogateway_stripe.php:4327
+#: classes/gateways/class.pmprogateway_stripe.php:4333
 msgid "Error: "
 msgstr "有錯: "
 
@@ -7149,6 +7170,7 @@ msgstr "有錯: "
 #: classes/gateways/class.pmprogateway_stripe.php:2876
 #: classes/gateways/class.pmprogateway_stripe.php:4349
 #: classes/gateways/class.pmprogateway_stripe.php:4345
+#: classes/gateways/class.pmprogateway_stripe.php:4347
 #, php-format
 msgid "Error: Unkown error while refunding charge #%s"
 msgstr "提交 #%s退款時有未知的錯誤發生"
@@ -12059,6 +12081,7 @@ msgstr ""
 #: classes/class-pmpro-members-list-table.php:542
 #: shortcodes/pmpro_account.php:145
 #: classes/class-pmpro-members-list-table.php:541
+#: classes/class-pmpro-members-list-table.php:570
 msgid "&#8212;"
 msgstr ""
 
@@ -12921,6 +12944,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:3364
 #: classes/gateways/class.pmprogateway_stripe.php:3370
 #: classes/gateways/class.pmprogateway_stripe.php:3366
+#: classes/gateways/class.pmprogateway_stripe.php:3368
 msgid "Customer authentication is required to complete this transaction. Please complete the verification steps issued by your payment provider."
 msgstr ""
 
@@ -12935,6 +12959,9 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:2544
 #: classes/gateways/class.pmprogateway_stripe.php:2581
 #: classes/gateways/class.pmprogateway_stripe.php:3386
+#: classes/gateways/class.pmprogateway_stripe.php:2546
+#: classes/gateways/class.pmprogateway_stripe.php:2583
+#: classes/gateways/class.pmprogateway_stripe.php:3388
 msgid "Customer authentication is required to finish setting up your subscription. Please complete the verification steps issued by your payment provider."
 msgstr ""
 
@@ -12970,6 +12997,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:3808
 #: classes/gateways/class.pmprogateway_stripe.php:3674
 #: classes/gateways/class.pmprogateway_stripe.php:3670
+#: classes/gateways/class.pmprogateway_stripe.php:3672
 msgid "Last webhook received at"
 msgstr ""
 
@@ -12979,6 +13007,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:3810
 #: classes/gateways/class.pmprogateway_stripe.php:3676
 #: classes/gateways/class.pmprogateway_stripe.php:3672
+#: classes/gateways/class.pmprogateway_stripe.php:3674
 msgid "No webhooks have been received."
 msgstr ""
 
@@ -12988,6 +13017,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:3814
 #: classes/gateways/class.pmprogateway_stripe.php:3680
 #: classes/gateways/class.pmprogateway_stripe.php:3676
+#: classes/gateways/class.pmprogateway_stripe.php:3678
 msgid "Your webhook may not be working correctly."
 msgstr ""
 
@@ -12997,6 +13027,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:3816
 #: classes/gateways/class.pmprogateway_stripe.php:3682
 #: classes/gateways/class.pmprogateway_stripe.php:3678
+#: classes/gateways/class.pmprogateway_stripe.php:3680
 msgid "Click here for info on setting up your webhook with Stripe."
 msgstr ""
 
@@ -16235,26 +16266,31 @@ msgstr ""
 
 #: classes/gateways/class.pmprogateway_stripe.php:2088
 #: classes/gateways/class.pmprogateway_stripe.php:2086
+#: classes/gateways/class.pmprogateway_stripe.php:2087
 msgid "Error updating customer record with Stripe."
 msgstr ""
 
 #: classes/gateways/class.pmprogateway_stripe.php:2099
 #: classes/gateways/class.pmprogateway_stripe.php:2097
+#: classes/gateways/class.pmprogateway_stripe.php:2098
 msgid "Error creating customer record with Stripe."
 msgstr ""
 
 #: classes/gateways/class.pmprogateway_stripe.php:2424
 #: classes/gateways/class.pmprogateway_stripe.php:2420
+#: classes/gateways/class.pmprogateway_stripe.php:2422
 msgid "Cannot find product for membership level."
 msgstr ""
 
 #: classes/gateways/class.pmprogateway_stripe.php:2430
 #: classes/gateways/class.pmprogateway_stripe.php:2426
+#: classes/gateways/class.pmprogateway_stripe.php:2428
 msgid "Cannot get price."
 msgstr ""
 
 #: classes/gateways/class.pmprogateway_stripe.php:2580
 #: classes/gateways/class.pmprogateway_stripe.php:2576
+#: classes/gateways/class.pmprogateway_stripe.php:2578
 msgid "Cannot reuse an old setup intent."
 msgstr ""
 
@@ -16267,11 +16303,13 @@ msgstr ""
 
 #: classes/gateways/class.pmprogateway_stripe.php:2651
 #: classes/gateways/class.pmprogateway_stripe.php:2647
+#: classes/gateways/class.pmprogateway_stripe.php:2649
 msgid "Subscription updates will be deprecated in a future version of PMPro, though your existing subscription updates will still trigger as expected. We now instead reccomend updating the subscription directly in Stripe."
 msgstr ""
 
 #: classes/gateways/class.pmprogateway_stripe.php:2716
 #: classes/gateways/class.pmprogateway_stripe.php:2712
+#: classes/gateways/class.pmprogateway_stripe.php:2714
 msgid "Remove"
 msgstr ""
 
@@ -16374,6 +16412,7 @@ msgid "Note: You are using the free Stripe payment gateway integration. This inc
 msgstr ""
 
 #: classes/gateways/class.pmprogateway_stripe.php:2363
+#: classes/gateways/class.pmprogateway_stripe.php:2365
 msgid "Could not create price."
 msgstr ""
 

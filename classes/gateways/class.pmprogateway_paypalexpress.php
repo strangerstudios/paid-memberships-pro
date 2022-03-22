@@ -333,7 +333,7 @@
 
 				$morder = new MemberOrder();
 				$morder->getMemberOrderByPayPalToken(sanitize_text_field($_REQUEST['token']));
-				
+
 				if( $morder->status === 'token' ){
 					$morder->Token = $morder->paypal_token; $pmpro_paypal_token = $morder->paypal_token;
 					if($morder->Token)
@@ -529,12 +529,9 @@
 			//taxes on initial amount
 			$initial_payment = $order->InitialPayment;
 			$initial_payment_tax = $order->getTaxForPrice($initial_payment);
-			$initial_payment = pmpro_round_price((float)$initial_payment + (float)$initial_payment_tax);
 
-			//taxes on the amount
-			$amount = $order->PaymentAmount;
-			$amount_tax = $order->getTaxForPrice($amount);
-			$amount = pmpro_round_price((float)$amount + (float)$amount_tax);
+			// Note: SetExpressCheckout expects this amount to be the total including tax.
+			$initial_payment = pmpro_round_price_as_string( (float) $initial_payment + (float) $initial_payment_tax );
 
 			//paypal profile stuff
 			$nvpStr = "";
@@ -556,7 +553,9 @@
 			{
 				$trial_amount = $order->TrialAmount;
 				$trial_tax = $order->getTaxForPrice($trial_amount);
-				$trial_amount = pmpro_round_price((float)$trial_amount + (float)$trial_tax);
+
+				// Note: SetExpressCheckout expects this amount to be the total including tax.
+				$trial_amount = pmpro_round_price_as_string( (float) $trial_amount + (float) $trial_tax );
 
 				$nvpStr .= "&TRIALBILLINGPERIOD=" . $order->TrialBillingPeriod . "&TRIALBILLINGFREQUENCY=" . $order->TrialBillingFrequency . "&TRIALAMT=" . $trial_amount;
 			}
@@ -673,7 +672,9 @@
 			$amount = $order->InitialPayment;
 			$amount_tax = $order->getTaxForPrice($amount);
 			$order->subtotal = $amount;
-			$amount = pmpro_round_price((float)$amount + (float)$amount_tax);
+
+			// Note: DoExpressCheckoutPayment expects this amount to be the total including tax.
+			$amount = pmpro_round_price_as_string( (float) $amount + (float) $amount_tax );
 
 			//paypal profile stuff
 			$nvpStr = "";
@@ -728,12 +729,16 @@
 			//taxes on initial amount
 			$initial_payment = $order->InitialPayment;
 			$initial_payment_tax = $order->getTaxForPrice($initial_payment);
-			$initial_payment = pmpro_round_price((float)$initial_payment + (float)$initial_payment_tax);
+
+			// Note: CreateRecurringPaymentsProfile expects this amount to be the total including tax.
+			$initial_payment = pmpro_round_price_as_string( (float) $initial_payment + (float) $initial_payment_tax );
 
 			//taxes on the amount
 			$amount = $order->PaymentAmount;
-			$amount_tax = $order->getTaxForPrice($amount);
-			//$amount = pmpro_round_price((float)$amount + (float)$amount_tax);
+			$amount_tax = $order->getTaxForPrice( $amount );
+
+			// Note: CreateRecurringPaymentsProfile expects this amount to be the total excluding tax.
+			$amount = pmpro_round_price_as_string( $amount );
 
 			//paypal profile stuff
 			$nvpStr = "";
@@ -741,7 +746,7 @@
 				$nvpStr .= "&TOKEN=" . $order->Token;
 			$nvpStr .="&INITAMT=" . $initial_payment . "&AMT=" . $amount . "&CURRENCYCODE=" . $pmpro_currency . "&PROFILESTARTDATE=" . $order->ProfileStartDate;
 			if(!empty($amount_tax))
-				$nvpStr .= "&TAXAMT=" . $amount_tax;
+				$nvpStr .= "&TAXAMT=" . pmpro_round_price_as_string( $amount_tax );
 			$nvpStr .= "&BILLINGPERIOD=" . $order->BillingPeriod . "&BILLINGFREQUENCY=" . $order->BillingFrequency . "&AUTOBILLOUTAMT=AddToNextBilling";
 			$nvpStr .= "&NOTIFYURL=" . urlencode( add_query_arg( 'action', 'ipnhandler', admin_url('admin-ajax.php') ) );
 			$nvpStr .= "&DESC=" . urlencode( apply_filters( 'pmpro_paypal_level_description', substr($order->membership_level->name . " at " . get_bloginfo("name"), 0, 127), $order->membership_level->name, $order, get_bloginfo("name")) );
@@ -755,7 +760,13 @@
 			{
 				$trial_amount = $order->TrialAmount;
 				$trial_tax = $order->getTaxForPrice($trial_amount);
-				$trial_amount = pmpro_round_price((float)$trial_amount + (float)$trial_tax);
+
+				/*
+				 * Note: For the CreateRecurringPaymentsProfile API call, it expects the TRIALAMT to be the total excluding taxes.
+				 *
+				 * However, there is no TRIALTAXAMT for trial periods so this is a workaround.
+				 */
+				$trial_amount = pmpro_round_price_as_string( (float) $trial_amount + (float) $trial_tax );
 
 				$nvpStr .= "&TRIALBILLINGPERIOD=" . $order->TrialBillingPeriod . "&TRIALBILLINGFREQUENCY=" . $order->TrialBillingFrequency . "&TRIALAMT=" . $trial_amount;
 			}
@@ -885,7 +896,7 @@
 				return false;
 			}
 		}
-		
+
 		function getTransactionStatus(&$order) {
 			$transaction_details = $order->Gateway->getTransactionDetailsByOrder( $order );
 			if( false === $transaction_details ){
@@ -916,7 +927,7 @@
 				return $this->getTransactionDetails( $order->payment_transaction_id );
 			}
 		}
-		
+
 		/**
 		 * Try to recover the real payment_transaction_id when payment_transaction_id === subscription_transaction_id === I-xxxxxxxx.
 		 *
@@ -973,10 +984,10 @@
 
 			// found the payment transaction id, it's the last one (the oldest)
 			$payment_transaction_id = end( $transaction_ids );
-			
+
 			return $payment_transaction_id;
 		}
-		
+
 		function getTransactionDetails($payment_transaction_id)
         	{
 			$nvpStr = "";
@@ -1127,8 +1138,8 @@
 			return $success;
 			
 		}
-        
-        /**
+    
+    /**
 		 * PAYPAL Function
 		 * Send HTTP POST Request with uuid
 		 *
@@ -1169,7 +1180,7 @@
 			if ( is_wp_error( $response ) ) {
                 return $response;
 			}
-            
+
             //extract the response details
             $httpParsedResponseAr = array();
             parse_str(wp_remote_retrieve_body($response), $httpParsedResponseAr);
