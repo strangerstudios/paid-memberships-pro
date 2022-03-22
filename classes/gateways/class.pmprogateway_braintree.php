@@ -613,8 +613,8 @@ use Braintree\WebhookNotification as Braintree_WebhookNotification;
 			{
 				$braintree_sale_array = apply_filters( 'pmpro_braintree_transaction_sale_array', array(
 					'amount' => $amount,
-				    'customerId' => $this->customer->id
-					) 
+					'customerId' => $this->customer->id
+					)
 				);
 
 				$response = Braintree_Transaction::sale( $braintree_sale_array );
