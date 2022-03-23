@@ -4318,8 +4318,7 @@ class PMProGateway_stripe extends PMProGateway {
 			] );			
 
 			//Make sure we're refunding an order that was successful
-			if ( $refund->status == 'succeeded' ) {
-
+			if ( !in_array( $refund->status, pmpro_disallowed_refund_statuses() ) ) {
 				$order->status = 'refunded';	
 
 				$success = true;

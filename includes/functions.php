@@ -4084,27 +4084,37 @@ function pmpro_get_ip() {
  */
 function pmpro_allowed_refunds( $order ) { 
 
+	//If this isn't a valid order then lets not allow it
 	if( empty( $order ) || empty( $order->gateway ) || empty( $order->status ) || empty( $order->payment_transaction_id ) ) {
 		return false;
 	}
 
+	$disallowed_statuses = pmpro_disallowed_refund_statuses();
+
 	/**
-	 * Allow filtering the list of statuses that can not be refunded from.
+	 * Specify which gateways support refund functionality
 	 *
 	 * @since TBD
 	 *
-	 * @param array $disallowed_statuses The list of statuses that can not be refunded from.
+	 * @param bool $okay If an order can be refunded
 	 */
-	$disallowed_statuses = apply_filters( 'pmpro_disallowed_refund_statuses', array( 'pending', 'refunded' ) );
+	$allowed_gateways = apply_filters( 'pmpro_allowed_refunds_gateways', array( 'stripe', 'paypalexpress' ) );
 	
-	if( 
-		!in_array( $order->status, $disallowed_statuses, true ) && //Don't allow pending orders to be refunded
-		in_array( $order->gateway, array( 'stripe', 'paypalexpress' ), true )  //Only apply to these gateways
-	) {
-		return true;
+	$okay = false;
+
+	//Don't allow pending orders to be refunded
+	if( !in_array( $order->status, $disallowed_statuses, true ) ){
+		$okay = true;
 	}
 
-	return false;
+	//Only apply to these gateways
+	if( in_array( $order->gateway, $allowed_gateways, true ) ) {
+		$okay = true;
+	}
+
+	$okay = apply_filters( 'pmpro_refund_allowed', $okay, $order );
+
+	return $okay;
 }
 
 
@@ -4116,7 +4126,7 @@ function pmpro_allowed_refunds( $order ) {
 function pmpro_refund_order( $order ){
 
 	if( empty( $order ) ){
-		return;
+		return false;
 	}
 
 	//Not going to refund an order that has already been refunded
@@ -4124,33 +4134,37 @@ function pmpro_refund_order( $order ){
 		return true; 
 	}
 
-	if( $order->gateway === 'stripe' ) {
-		/**
-		 * Processes a refund for Stripe orders
-		 *
-		 * @since TBD
-		 *
-		 * @param bool Default return value is false to determine if the refund was successfully processed. 
-		 * @param object $order The Member Order we want to refund
-		 * @return bool If the refund was successfully processed
-		 */
-		$success = apply_filters( 'pmpro_process_refund_stripe', false, $order );
-	}
-
-	if( strpos( $order->gateway, 'paypal' ) !== FALSE ) {
-		/**
-		 * Processes a refund for PayPal orders
-		 *
-		 * @since TBD
-		 *
-		 * @param bool $success Default return value is false to determine if the refund was successfully processed. 
-		 * @param object $order The Member Order we want to refund.
-		 */
-		$success = apply_filters( 'pmpro_process_refund_paypal', false, $order );
-	}
-
+	/**
+	 * Processes a refund for a specific gateway
+	 *
+	 * @since TBD
+	 *
+	 * @param bool $success Default return value is false to determine if the refund was successfully processed. 
+	 * @param object $order The Member Order we want to refund.
+	 */
+	$success = apply_filters( 'pmpro_process_refund_'.$order->gateway, false, $order );
+	
 	return $success;
 
+}
+
+/**
+ * Returns an array of order statuses that do not qualify for a refund
+ * 
+ * @return array Returns an array of statuses that are not allowe to be refunded
+ */
+function pmpro_disallowed_refund_statuses() {
+
+	/**
+	 * Allow filtering the list of statuses that can not be refunded from.
+	 *
+	 * @since TBD
+	 *
+	 * @param array $disallowed_statuses The list of statuses that can not be refunded from.
+	 */
+	$disallowed_statuses = apply_filters( 'pmpro_disallowed_refund_statuses', array( 'pending', 'refunded', 'review', 'token', 'error' ) );
+
+	return $disallowed_statuses;
 }
 
 /* Send the WP new user notification email, but also check our filter.
