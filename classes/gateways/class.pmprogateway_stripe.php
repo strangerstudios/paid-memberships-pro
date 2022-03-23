@@ -2642,7 +2642,7 @@ class PMProGateway_stripe extends PMProGateway {
 		$current_month = date_i18n( 'm' );
 		?>
             <h3><?php esc_html_e( 'Subscription Updates', 'paid-memberships-pro' ); ?></h3>
-			<p><?php esc_html_e( 'Subscription updates will be deprecated in a future version of PMPro, though your existing subscription updates will still trigger as expected. We now instead reccomend updating the subscription directly in Stripe.', 'paid-memberships-pro' ); ?></p>
+			<p><?php esc_html_e( 'Subscription updates will be deprecated in a future version of PMPro, though your existing subscription updates will still trigger as expected. We now instead recommend updating the subscription directly in Stripe.', 'paid-memberships-pro' ); ?></p>
             <table class="form-table">
 				<input type='hidden' name='pmpro_subscription_updates_visible' value='1' />
                 <tr>
