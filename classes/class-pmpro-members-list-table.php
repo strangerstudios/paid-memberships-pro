@@ -328,9 +328,15 @@ class PMPro_Members_List_Table extends WP_List_Table {
 					$search_query = " AND $key_column LIKE '%" . esc_sql( $s ) . "%' ";
 				} elseif ( $search_key === 'discount' || $search_key === 'discount_code' || $search_key === 'dc' ) {
 					$user_ids = $wpdb->get_col( "SELECT dcu.user_id FROM $wpdb->pmpro_discount_codes_uses dcu LEFT JOIN $wpdb->pmpro_discount_codes dc ON dcu.code_id = dc.id WHERE dc.code = '" . esc_sql( $s ) . "'" );
-					$search_query = " AND u.ID IN(" . implode( ",", $user_ids ) . ") ";
+					if ( empty( $user_ids ) ) {
+						$user_ids = array(0);	// Avoid warning, but ensure 0 results.
+					}
+					$search_query = " AND u.ID IN(" . implode( ",", $user_ids ) . ") ";					
 				} else {
-					$user_ids = $wpdb->get_col( "SELECT user_id FROM $wpdb->usermeta WHERE meta_key = '" . esc_sql( $search_key ) . "' AND meta_value lIKE '%" . esc_sql( $s ) . "%'" );
+					$user_ids = $wpdb->get_col( "SELECT user_id FROM $wpdb->usermeta WHERE meta_key = '" . esc_sql( $search_key ) . "' AND meta_value LIKE '%" . esc_sql( $s ) . "%'" );
+					if ( empty( $user_ids ) ) {
+						$user_ids = array(0);	// Avoid warning, but ensure 0 results.
+					}
 					$search_query = " AND u.ID IN(" . implode( ",", $user_ids ) . ") ";
 				}
 			} else {
