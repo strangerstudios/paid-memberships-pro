@@ -4087,29 +4087,32 @@ function pmpro_allowed_refunds( $order ) {
 	//If this isn't a valid order then lets not allow it
 	if( empty( $order ) || empty( $order->gateway ) || empty( $order->status ) || empty( $order->payment_transaction_id ) ) {
 		return false;
+	}	
+
+	//Orders with a 0 total shouldn't be able to be refunded
+	if( $order->total == 0 ){
+		return false;
 	}
 
-	$disallowed_statuses = pmpro_disallowed_refund_statuses();
+	$okay = false;
 
 	/**
 	 * Specify which gateways support refund functionality
 	 *
 	 * @since TBD
 	 *
-	 * @param bool $okay If an order can be refunded
+	 * @param array $allowed_gateways A list of allowed gateways to work with refunds
 	 */
 	$allowed_gateways = apply_filters( 'pmpro_allowed_refunds_gateways', array( 'stripe', 'paypalexpress' ) );
-	
-	$okay = false;
-
-	//Don't allow pending orders to be refunded
-	if( !in_array( $order->status, $disallowed_statuses, true ) ){
-		$okay = true;
-	}
-
 	//Only apply to these gateways
 	if( in_array( $order->gateway, $allowed_gateways, true ) ) {
 		$okay = true;
+	}
+	
+	$disallowed_statuses = pmpro_disallowed_refund_statuses();
+	//Don't allow pending orders to be refunded
+	if( in_array( $order->status, $disallowed_statuses, true ) ){
+		$okay = false;
 	}
 
 	$okay = apply_filters( 'pmpro_refund_allowed', $okay, $order );

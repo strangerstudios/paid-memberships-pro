@@ -178,7 +178,7 @@ class PMProGateway_stripe extends PMProGateway {
 		add_action( 'admin_notices', array( 'PMProGateway_stripe', 'stripe_connect_show_errors' ) );
 		add_action( 'admin_notices', array( 'PMProGateway_stripe', 'stripe_connect_deauthorize' ) );
 
-		add_filter( 'pmpro_process_refund_stripe', array( 'PMProGateway_stripe', 'refund' ), 10, 2 );
+		add_filter( 'pmpro_process_refund_stripe', array( 'PMProGateway_stripe', 'process_refund' ), 10, 2 );
 	}
 
 	/**
@@ -4268,14 +4268,15 @@ class PMProGateway_stripe extends PMProGateway {
 	}
 
 	/**
-	 * Refund a payment or invoice
+	 * Refunds an order (only supports full amounts)
 	 *
-	 * @param object &$order Related PMPro order object.
-	 * @param string $transaction_id Payment or invoice id to void.
-	 *
-	 * @return bool                   True or false if the refund worked.
+	 * @param bool    Status of the refund (default: false)
+	 * @param object  The Member Order Object
+	 * @since TBD
+	 * 
+	 * @return bool   Status of the processed refund
 	 */
-	public static function refund( $success, $order ) {
+	public static function process_refund( $success, $order ) {
 
 		//default to using the payment id from the order
 		if ( !empty( $order->payment_transaction_id ) ) {
@@ -4325,11 +4326,12 @@ class PMProGateway_stripe extends PMProGateway {
 			
 				global $current_user;
 
-				$order->notes = trim( $order->notes.' '.sprintf( __('Order successfully refunded on %1$s for transaction ID %2$s by %3$s', 'paid-memberships-pro' ), date_i18n('Y-m-d H:i:s'), $transaction_id, $current_user->display_name ) );	
+				$order->notes = trim( $order->notes.' '.sprintf( __('Order successfully refunded on %1$s for transaction ID %2$s by %3$s.', 'paid-memberships-pro' ), date_i18n('Y-m-d H:i:s'), $transaction_id, $current_user->display_name ) );	
 
+				$user = get_user_by( 'id', $order->user_id );
 				//send an email to the member
 				$myemail = new PMProEmail();
-				$myemail->sendRefundedEmail( $current_user );
+				$myemail->sendRefundedEmail( $user );
 
 				//send an email to the admin
 				$myemail = new PMProEmail();

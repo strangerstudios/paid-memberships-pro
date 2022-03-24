@@ -71,7 +71,7 @@
 				add_filter('pmpro_checkout_default_submit_button', array('PMProGateway_paypalexpress', 'pmpro_checkout_default_submit_button'));
 				add_action('http_api_curl', array('PMProGateway_paypalexpress', 'http_api_curl'), 10, 3);
 			}
-			add_filter( 'pmpro_process_refund_paypal', array('PMProGateway_paypalexpress', 'process_refund' ), 10, 2 );
+			add_filter( 'pmpro_process_refund_paypalexpress', array('PMProGateway_paypalexpress', 'process_refund' ), 10, 2 );
 		}
 
 		/**
@@ -1115,9 +1115,9 @@
 				global $current_user;
 
 				// translators: %1$s is the Transaction ID. %2$s is the user display name that initiated the refund.
-				$morder->notes = trim( $morder->notes . ' ' . sprintf( __('Order successfully refunded on %1$s for transaction ID %2$s by %3$s', 'paid-memberships-pro' ), date_i18n('Y-m-d H:i:s'), $transaction_id, $current_user->display_name ) );
+				$morder->notes = trim( $morder->notes . ' ' . sprintf( __('Order successfully refunded on %1$s for transaction ID %2$s by %3$s.', 'paid-memberships-pro' ), date_i18n('Y-m-d H:i:s'), $transaction_id, $current_user->display_name ) );
 
-				$user = get_user_by( 'email', $morder->Email );
+				$user = get_user_by( 'id', $morder->user_id );
 				//send an email to the member
 				$myemail = new PMProEmail();
 				$myemail->sendRefundedEmail( $user );
@@ -1130,7 +1130,7 @@
 				//The refund failed, so lets return the gateway message
 				
 				// translators: %1$s is the Transaction ID. %1$s is the Gateway Error
-				$morder->notes = trim( $morder->notes .' '. sprintf( __( 'There was a problem processing a refund for transaction ID %1$s. Gateway Error: %2$s ', 'paid-memberships-pro' ), $transaction_id, $httpParsedResponseAr['L_LONGMESSAGE0'] ) );
+				$morder->notes = trim( $morder->notes .' '. sprintf( __( 'There was a problem processing a refund for transaction ID %1$s. Gateway Error: %2$s.', 'paid-memberships-pro' ), $transaction_id, $httpParsedResponseAr['L_LONGMESSAGE0'] ) );
 			}
 
 			$morder->SaveOrder();
