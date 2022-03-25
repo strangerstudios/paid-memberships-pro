@@ -1792,7 +1792,7 @@ class PMProGateway_stripe extends PMProGateway {
 				$payment_method = $this->get_payment_method( $order );
 				if ( empty( $payment_method ) ) {
 					// There was an issue getting the payment method.
-					$order->error      = __( 'Error retrieving payment method.', 'paid-memberships-pro' ) . empty( $order->error ) ? '' , ' ' . $order->error;
+					$order->error      = __( 'Error retrieving payment method.', 'paid-memberships-pro' ) . empty( $order->error ) ? '' : ' ' . $order->error;
 					$order->shorterror = $order->error;
 					return false;
 				}
@@ -2045,7 +2045,7 @@ class PMProGateway_stripe extends PMProGateway {
 		$payment_method = $this->get_payment_method( $order );
 		if ( empty( $payment_method ) ) {
 			// There was an issue getting the payment method.
-			$order->error      = __( 'Error retrieving payment method.', 'paid-memberships-pro' ) . empty( $order->error ) ? '' , ' ' . $order->error;
+			$order->error      = __( 'Error retrieving payment method.', 'paid-memberships-pro' ) . empty( $order->error ) ? '' : ' ' . $order->error;
 			$order->shorterror = $order->error;
 			return false;
 		}
