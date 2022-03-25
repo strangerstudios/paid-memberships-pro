@@ -1588,7 +1588,10 @@ class PMProGateway_stripe extends PMProGateway {
 
 		// First, let's handle the initial payment.
 		if ( ! empty( $morder->InitialPayment ) ) {
-			$initial_payment_price = $stripe->get_price_for_product( $product_id, $morder->InitialPayment );
+			$initial_subtotal       = $morder->InitialPayment;
+			$initial_tax            = $morder->getTaxForPrice( $initial_subtotal );
+			$initial_payment_amount = pmpro_round_price( (float) $initial_subtotal + (float) $initial_tax );
+			$initial_payment_price  = $stripe->get_price_for_product( $product_id, $initial_payment_amount );
 			if ( is_string( $initial_payment_price ) ) {
 				// There was an error getting the price.
 				pmpro_setMessage( __( 'Could not get price for initial payment. ', 'paid-memberships-pro' ) . $initial_payment_price, 'pmpro_error', true );
@@ -1610,9 +1613,9 @@ class PMProGateway_stripe extends PMProGateway {
 
 		// Now, let's handle the recurring payments.
 		if ( pmpro_isLevelRecurring( $morder->membership_level ) ) {
-			$subtotal                 = $morder->PaymentAmount;
-			$tax                      = $morder->getTaxForPrice( $subtotal );
-			$recurring_payment_amount = pmpro_round_price( (float) $subtotal + (float) $tax );
+			$recurring_subtotal       = $morder->PaymentAmount;
+			$recurring_tax            = $morder->getTaxForPrice( $recurring_subtotal );
+			$recurring_payment_amount = pmpro_round_price( (float) $recurring_subtotal + (float) $recurring_tax );
 			$recurring_payment_price  = $stripe->get_price_for_product( $product_id, $recurring_payment_amount, $morder->BillingPeriod, $morder->BillingFrequency );
 			if ( is_string( $recurring_payment_price ) ) {
 				// There was an error getting the price.
