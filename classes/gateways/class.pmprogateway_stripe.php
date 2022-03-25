@@ -4353,6 +4353,88 @@ class PMProGateway_stripe extends PMProGateway {
 	}
 
 	/**
+	 * Refund a payment or invoice
+	 *
+	 * @deprecated 2.7.0.
+	 *
+	 * @param object &$order Related PMPro order object.
+	 * @param string $transaction_id Payment or invoice id to void.
+	 *
+	 * @return bool                   True or false if the refund worked.
+	 */
+	public function refund( &$order, $transaction_id = null ) {
+		_deprecated_function( __FUNCTION__, '2.7.0' );
+		//default to using the payment id from the order
+		if ( empty( $transaction_id ) && ! empty( $order->payment_transaction_id ) ) {
+			$transaction_id = $order->payment_transaction_id;
+		}
+
+		//need a transaction id
+		if ( empty( $transaction_id ) ) {
+			return false;
+		}
+
+		//if an invoice ID is passed, get the charge/payment id
+		if ( strpos( $transaction_id, "in_" ) !== false ) {
+			$invoice = Stripe_Invoice::retrieve( $transaction_id );
+
+			if ( ! empty( $invoice ) && ! empty( $invoice->charge ) ) {
+				$transaction_id = $invoice->charge;
+			}
+		}
+
+		//get the charge
+		try {
+			$charge = Stripe_Charge::retrieve( $transaction_id );
+		} catch ( \Throwable $e ) {
+			$charge = false;
+		} catch ( \Exception $e ) {
+			$charge = false;
+		}
+
+		//can't find the charge?
+		if ( empty( $charge ) ) {
+			$order->status     = "error";
+			$order->errorcode  = "";
+			$order->error      = "";
+			$order->shorterror = "";
+
+			return false;
+		}
+
+		//attempt refund
+		try {
+			$refund = $charge->refund();
+		} catch ( \Throwable $e ) {
+			$order->errorcode  = true;
+			$order->error      = __( "Error: ", 'paid-memberships-pro' ) . $e->getMessage();
+			$order->shorterror = $order->error;
+
+			return false;
+		} catch ( \Exception $e ) {
+			$order->errorcode  = true;
+			$order->error      = __( "Error: ", 'paid-memberships-pro' ) . $e->getMessage();
+			$order->shorterror = $order->error;
+
+			return false;
+		}
+
+		if ( $refund->status == "succeeded" ) {
+			$order->status = "refunded";
+			$order->saveOrder();
+
+			return true;
+		} else {
+			$order->status     = "error";
+			$order->errorcode  = true;
+			$order->error      = sprintf( __( "Error: Unkown error while refunding charge #%s", 'paid-memberships-pro' ), $transaction_id );
+			$order->shorterror = $order->error;
+
+			return false;
+		}
+	}
+
+	/**
 	 * @deprecated 2.7.0. Use get_payment_method() instead.
 	 */
 	public function set_payment_method( &$order, $force = false ) {
