@@ -474,9 +474,9 @@ if ( empty( $default_gateway ) ) {
 					}
 				?>
 				<label class="<?php echo pmpro_get_element_class( 'pmpro_label-inline pmpro_clickable', 'tos' ); ?>" for="tos">
-            <input type="checkbox" name="tos" value="1" id="tos" <?php checked( 1, $tos ); ?> />
-            <?php printf(__('I agree to the %s', 'paid-memberships-pro' ), $tospage->post_title);?>
-        </label>
+		            <input type="checkbox" name="tos" value="1" id="tos" <?php checked( 1, $tos ); ?> />
+		            <?php printf(__('I agree to the %s', 'paid-memberships-pro' ), $tospage->post_title);?>
+		        </label>
 				<?php
 				/**
 				 * Allow adding text or more checkboxes after the Tos checkbox
