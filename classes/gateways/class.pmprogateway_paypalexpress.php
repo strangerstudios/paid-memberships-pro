@@ -1077,6 +1077,16 @@
 				die( "Unable to complete $methodName_ request with $nvpStr_: " . $httpParsedResponseAr->get_error_message() );
 			}
 
+			/**
+			 * Allow performing actions using the http post request's response.
+			 *
+			 * @since TBD
+			 *
+			 * @param array $httpParsedResponseAr The parsed response.
+			 * @param string $methodName_ The NVP API name.
+			 */
+			do_action( 'pmpro_paypal_handle_http_post_response', $httpParsedResponseAr, $methodName_ );
+			
 			return $httpParsedResponseAr;
 		}
 
