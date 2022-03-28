@@ -2356,7 +2356,7 @@ function pmpro_getLevelAtCheckout( $level_id = null, $discount_code = null ) {
 
 	// what level are they purchasing? (discount code passed)
 	if ( ! empty( $level_id ) && ! empty( $discount_code ) ) {
-		$discount_code_id = $wpdb->get_var( "SELECT id FROM $wpdb->pmpro_discount_codes WHERE code = '" . esc_sql( $discount_code ) . "' LIMIT 1" );		
+		$discount_code_id = $wpdb->get_var( "SELECT id FROM $wpdb->pmpro_discount_codes WHERE code = '" . esc_sql( $discount_code ) . "' LIMIT 1" );
 
 		// check code
 		global $pmpro_checkout_level_ids; // Set by MMPU.
@@ -3120,6 +3120,97 @@ function pmpro_round_price( $price, $currency = '' ) {
 }
 
 /**
+ * Rounds price based on currency and returns a string.
+ *
+ * Does not format price, to do that, call pmpro_formatPrice().
+ *
+ * @since TBD
+ *
+ * @param int|float|string $amount   The amount to get price information for.
+ * @param null|string      $currency The currency to use, defaults to current currency.
+ *
+ * @return string The rounded price as a string.
+ */
+function pmpro_round_price_as_string( $amount, $currency = null ) {
+	$price_info = pmpro_get_price_info( $amount, $currency );
+
+	if ( ! $price_info ) {
+		return (string) pmpro_round_price( $amount, $currency );
+	}
+
+	return $price_info['amount_string'];
+}
+
+/**
+ * Get the price information about the provided amount.
+ *
+ * @since TBD
+ *
+ * @param int|float|string $amount   The amount to get price information for.
+ * @param null|string      $currency The currency to use, defaults to current currency.
+ *
+ * @return array The price information about the provided amount.
+ */
+function pmpro_get_price_info( $amount, $currency = null ) {
+	if ( ! is_numeric( $amount ) ) {
+		return false;
+	}
+
+	$amount = (float) $amount;
+
+	$currency_info = pmpro_get_currency( $currency );
+
+	$price_info = [
+		// The amount represented as a float.
+		'amount'        => $amount,
+		// The flat amount represent (example: 1.99 would be 199).
+		'amount_flat'   => 0,
+		// The amount as a string.
+		'amount_string' => '',
+		'parts'         => [
+			// The whole number part of the amount (example: 1.99 would be 1).
+			'number'         => (int) $amount,
+			// The decimal part of the amount (example: 1.99 would be 99, 1.00 would be 0).
+			'decimal'        => 0,
+			// The decimal part of the amount as a string (example: 1.99 would be 99, 1.00 would be 00).
+			'decimal_string' => '',
+		],
+		// The currency information.
+		'currency'      => $currency_info,
+	];
+
+	// Enforce integer.
+	$currency_info['decimals'] = (int) $currency_info['decimals'];
+
+	$multiplier = 1;
+
+	if ( 0 < $currency_info['decimals'] ) {
+		$multiplier = pow( 10, $currency_info['decimals'] );
+	}
+
+	// Convert the amount from 100.99 to 10099.
+	$price_info['amount_flat'] = $amount * $multiplier;
+
+	// If there were additional unsupported decimal points, round to remove and convert to integer.
+	$price_info['amount_flat'] = round( $price_info['amount_flat'] );
+
+	// Get the decimal part of the amount as a whole number.
+	$price_info['parts']['decimal'] = (
+		$price_info['amount_flat'] - (
+			$price_info['parts']['number'] * $multiplier
+		)
+	);
+
+	// Get the zero-padded decimal amount.
+	$price_info['parts']['decimal_string'] = sprintf( '%02d', $price_info['parts']['decimal'] );
+
+	// Get the amount as a string.
+	$price_info['amount_string'] = sprintf( '%s.%s', $price_info['parts']['number'], $price_info['parts']['decimal_string'] );
+
+	return $price_info;
+}
+
+/**
  * Cast to floats and pad zeroes after the decimal
  * when editing the price on the edit level page.
  * Only do this for currency with decimals = 2
@@ -3611,7 +3702,7 @@ function pmpro_check_plugin_version( $plugin_file, $comparison, $version ) {
 		return false;
 	}
 
-	// Get plugin data.	
+	// Get plugin data.
 	$full_plugin_file_path = WP_PLUGIN_DIR . '/' . $plugin_file;
 	if ( is_file( $full_plugin_file_path ) ) {
 		$plugin_data = get_plugin_data( $full_plugin_file_path, false, true );
@@ -3723,7 +3814,7 @@ function pmpro_doing_webhook( $gateway = null, $set = false ){
 
 /**
  * Called once a webhook has been run but was not handled.
- * 
+ *
  * @return void
  *
  * @since TBD
@@ -3905,7 +3996,7 @@ function pmpro_send_200_http_response() {
 	flush();
 }
 
-/** 
+/**
  * Returns formatted ISO-8601 date (Used for Zapier Native app.)
  * @since 2.6.6
  * @param $date date A valid date value.
@@ -3979,10 +4070,10 @@ function pmpro_get_ip() {
 	if ( ! $client_ip ) {
 		return false;
 	}
-	
+
 	// Sanitize the IP
 	$client_ip = preg_replace( '/[^0-9a-fA-F:., ]/', '', $client_ip );
-	
+
 	return $client_ip;
 }
 
@@ -3994,8 +4085,8 @@ function pmpro_get_ip() {
  * @param int $user_id ID of the user to send the email for.
  * @param int $level_id Level ID the user just got. (Need to send to filter.)
  */
-function pmpro_maybe_send_wp_new_user_notification( $user_id, $level_id = null ) {	
-	if ( apply_filters( 'pmpro_wp_new_user_notification', true, $user_id, $level_id ) ) {		
+function pmpro_maybe_send_wp_new_user_notification( $user_id, $level_id = null ) {
+	if ( apply_filters( 'pmpro_wp_new_user_notification', true, $user_id, $level_id ) ) {
 		wp_new_user_notification( $user_id, null, 'both' );
 	}
 }

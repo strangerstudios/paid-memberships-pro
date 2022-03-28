@@ -36,7 +36,7 @@ function pmpro_upgrade_2_6() {
 	if ( empty( $admin_billing ) ) {
 		pmpro_setOption( 'email_billing_admin_disabled', 'true' );
 	}
-	
+
 	// Reschedule cron job for hourly checks.
 	$next = wp_next_scheduled( 'pmpro_cron_expire_memberships' );
 	if ( ! empty( $next ) ) {

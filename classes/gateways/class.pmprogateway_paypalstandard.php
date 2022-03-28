@@ -243,7 +243,7 @@
 
 			<span id="pmpro_submit_span" <?php if(($gateway == "paypalexpress" || $gateway == "paypalstandard") && $pmpro_requirebilling) { ?>style="display: none;"<?php } ?>>
 				<input type="hidden" name="submit-checkout" value="1" />
-				<input type="submit" id="pmpro_btn-submit" class="<?php echo pmpro_get_element_class( 'pmpro_btn pmpro_btn-submit-checkout', 'pmpro_btn-submit-checkout' ); ?>" value="<?php if($pmpro_requirebilling) { _e('Submit and Check Out', 'paid-memberships-pro' ); } else { _e('Submit and Confirm', 'paid-memberships-pro' );}?> &raquo;" />				
+				<input type="submit" id="pmpro_btn-submit" class="<?php echo pmpro_get_element_class( 'pmpro_btn pmpro_btn-submit-checkout', 'pmpro_btn-submit-checkout' ); ?>" value="<?php if($pmpro_requirebilling) { _e('Submit and Check Out', 'paid-memberships-pro' ); } else { _e('Submit and Confirm', 'paid-memberships-pro' );}?> &raquo;" />
 			</span>
 			<?php
 
@@ -315,12 +315,12 @@
 			//taxes on initial amount
 			$initial_payment = $order->InitialPayment;
 			$initial_payment_tax = $order->getTaxForPrice($initial_payment);
-			$initial_payment = pmpro_round_price((float)$initial_payment + (float)$initial_payment_tax);
+			$initial_payment = pmpro_round_price_as_string( (float) $initial_payment + (float) $initial_payment_tax );
 
 			//taxes on the amount
 			$amount = $order->PaymentAmount;
 			$amount_tax = $order->getTaxForPrice($amount);
-			$amount = pmpro_round_price((float)$amount + (float)$amount_tax);
+			$amount = pmpro_round_price_as_string( (float) $amount + (float) $amount_tax );
 
 			//build PayPal Redirect	URL
 			$environment = pmpro_getOption("gateway_environment");
@@ -353,10 +353,10 @@
 				$paypal_args = array(
                     'business'      => pmpro_getOption("gateway_email"),
 					'cmd'           => '_xclick-subscriptions',
-					'a1'			=> number_format($initial_payment, 2, '.', ''),
+					'a1'			=> $initial_payment,
 					'p1'			=> $order->BillingFrequency,
 					't1'			=> $period,
-					'a3'			=> number_format($amount, 2, '.', ''),
+					'a3'			=> $amount,
 					'p3'			=> $order->BillingFrequency,
 					't3'			=> $period,
 					'item_name'     => apply_filters( 'pmpro_paypal_level_description', substr($order->membership_level->name . " at " . get_bloginfo("name"), 0, 127), $order->membership_level->name, $order, get_bloginfo("name") ),
@@ -391,7 +391,7 @@
 					{
 						$trial_amount = $order->TrialAmount;
 						$trial_tax = $order->getTaxForPrice($trial_amount);
-						$trial_amount = pmpro_round_price((float)$trial_amount + (float)$trial_tax);
+						$trial_amount = pmpro_round_price_as_string((float)$trial_amount + (float)$trial_tax);
 
 						$paypal_args['a2'] = $trial_amount;
 						$paypal_args['p2'] = $order->TrialBillingFrequency;
@@ -469,7 +469,7 @@
 				$paypal_args = array(
 					'business'      => pmpro_getOption("gateway_email"),
 					'cmd'           => '_xclick',
-					'amount'        => number_format($initial_payment, 2, '.', ''),
+					'amount'        => $initial_payment,
 					'item_name'     => apply_filters( 'pmpro_paypal_level_description', substr($order->membership_level->name . " at " . get_bloginfo("name"), 0, 127), $order->membership_level->name, $order, get_bloginfo("name") ),
 					'email'         => $order->Email,
 					'no_shipping'   => '1',
