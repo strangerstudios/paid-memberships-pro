@@ -87,15 +87,15 @@
 	
 	<p>
 		<?php printf(__('Last checked on %s at %s.', 'paid-memberships-pro' ), date_i18n(get_option('date_format'), $addons_timestamp), date_i18n(get_option('time_format'), $addons_timestamp));?> &nbsp;	
-		<a class="button" href="<?php echo admin_url("admin.php?page=pmpro-addons&force-check=1&plugin_status=" . $status);?>"><?php _e('Check Again', 'paid-memberships-pro' ); ?></a>
+		<a class="button" href="<?php echo esc_url( admin_url("admin.php?page=pmpro-addons&force-check=1&plugin_status=" . $status) );?>"><?php esc_html_e('Check Again', 'paid-memberships-pro' ); ?></a>
 	</p>
 
 	<ul class="subsubsub">
-		<li class="all"><a href="admin.php?page=pmpro-addons&plugin_status=all" <?php if(empty($status) || $status == "all") { ?>class="current"<?php } ?>><?php _e('All', 'paid-memberships-pro' ); ?> <span class="count">(<?php echo count($all_visible_addons);?>)</span></a> |</li>
-		<li class="active"><a href="admin.php?page=pmpro-addons&plugin_status=active" <?php if($status == "active") { ?>class="current"<?php } ?>><?php _e('Active', 'paid-memberships-pro' ); ?> <span class="count">(<?php echo count($active_addons);?>)</span></a> |</li>
-		<li class="inactive"><a href="admin.php?page=pmpro-addons&plugin_status=inactive" <?php if($status == "inactive") { ?>class="current"<?php } ?>><?php _e('Inactive', 'paid-memberships-pro' ); ?> <span class="count">(<?php echo count($inactive_addons);?>)</span></a> |</li>
-		<li class="update"><a href="admin.php?page=pmpro-addons&plugin_status=update" <?php if($status == "update") { ?>class="current"<?php } ?>><?php _e('Update Available', 'paid-memberships-pro' ); ?> <span class="count">(<?php echo count($update_available_addons);?>)</span></a> |</li>
-		<li class="uninstalled"><a href="admin.php?page=pmpro-addons&plugin_status=uninstalled" <?php if($status == "uninstalled") { ?>class="current"<?php } ?>><?php _e('Not Installed', 'paid-memberships-pro' ); ?> <span class="count">(<?php echo count($not_installed_addons);?>)</span></a></li>
+		<li class="all"><a href="admin.php?page=pmpro-addons&plugin_status=all" <?php if(empty($status) || $status == "all") { ?>class="current"<?php } ?>><?php esc_html_e('All', 'paid-memberships-pro' ); ?> <span class="count">(<?php echo count($all_visible_addons);?>)</span></a> |</li>
+		<li class="active"><a href="admin.php?page=pmpro-addons&plugin_status=active" <?php if($status == "active") { ?>class="current"<?php } ?>><?php esc_html_e('Active', 'paid-memberships-pro' ); ?> <span class="count">(<?php echo count($active_addons);?>)</span></a> |</li>
+		<li class="inactive"><a href="admin.php?page=pmpro-addons&plugin_status=inactive" <?php if($status == "inactive") { ?>class="current"<?php } ?>><?php esc_html_e('Inactive', 'paid-memberships-pro' ); ?> <span class="count">(<?php echo count($inactive_addons);?>)</span></a> |</li>
+		<li class="update"><a href="admin.php?page=pmpro-addons&plugin_status=update" <?php if($status == "update") { ?>class="current"<?php } ?>><?php esc_html_e('Update Available', 'paid-memberships-pro' ); ?> <span class="count">(<?php echo count($update_available_addons);?>)</span></a> |</li>
+		<li class="uninstalled"><a href="admin.php?page=pmpro-addons&plugin_status=uninstalled" <?php if($status == "uninstalled") { ?>class="current"<?php } ?>><?php esc_html_e('Not Installed', 'paid-memberships-pro' ); ?> <span class="count">(<?php echo count($not_installed_addons);?>)</span></a></li>
 	</ul>
 
 	<table class="wp-list-table widefat plugins">
@@ -103,12 +103,12 @@
 	<tr>
 		<th scope="col" id="cb" class="manage-column column-cb check-column" style="">
 			<?php /*
-			<label class="screen-reader-text" for="cb-select-all-1"><?php _e('Select All'); ?></label><input id="cb-select-all-1" type="checkbox">
+			<label class="screen-reader-text" for="cb-select-all-1"><?php esc_html_e('Select All'); ?></label><input id="cb-select-all-1" type="checkbox">
 			*/ ?>
 		</th>	
-		<th scope="col" id="name" class="manage-column column-name" style=""><?php _e('Add On Name', 'paid-memberships-pro' ); ?></th>
-		<th scope="col" id="type" class="manage-column column-type" style=""><?php _e('Type', 'paid-memberships-pro' ); ?></th>
-		<th scope="col" id="description" class="manage-column column-description" style=""><?php _e('Description', 'paid-memberships-pro' ); ?></th>		
+		<th scope="col" id="name" class="manage-column column-name" style=""><?php esc_html_e('Add On Name', 'paid-memberships-pro' ); ?></th>
+		<th scope="col" id="type" class="manage-column column-type" style=""><?php esc_html_e('Type', 'paid-memberships-pro' ); ?></th>
+		<th scope="col" id="description" class="manage-column column-description" style=""><?php esc_html_e('Description', 'paid-memberships-pro' ); ?></th>		
 	</tr>
 	</thead>
 	<tbody id="the-list">
@@ -132,7 +132,7 @@
 			?>
 			<tr>
 				<td></td>
-				<td colspan="3"><p><?php _e('No Add Ons found.', 'paid-memberships-pro' ); ?></p></td>	
+				<td colspan="3"><p><?php esc_html_e('No Add Ons found.', 'paid-memberships-pro' ); ?></p></td>	
 			</tr>
 			<?php
 			}

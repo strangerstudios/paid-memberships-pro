@@ -98,7 +98,7 @@
 		</tr>
 		<tr class="gateway gateway_payflowpro" <?php if($gateway != "payflowpro") { ?>style="display: none;"<?php } ?>>
 		    <th scope="row" valign="top">
-				<label for="payflow_partner"><?php _e('Partner', 'paid-memberships-pro' );?>:</label>
+				<label for="payflow_partner"><?php esc_html_e('Partner', 'paid-memberships-pro' );?>:</label>
 			</th>
 			<td>
 				<input type="text" id="payflow_partner" name="payflow_partner" value="<?php echo esc_attr($values['payflow_partner'])?>" class="regular-text code" />
@@ -106,7 +106,7 @@
 	    </tr>
 	    <tr class="gateway gateway_payflowpro" <?php if($gateway != "payflowpro") { ?>style="display: none;"<?php } ?>>
 		    <th scope="row" valign="top">
-				<label for="payflow_vendor"><?php _e('Vendor', 'paid-memberships-pro' );?>:</label>
+				<label for="payflow_vendor"><?php esc_html_e('Vendor', 'paid-memberships-pro' );?>:</label>
 			</th>
 			<td>
 				<input type="text" id="payflow_vendor" name="payflow_vendor" value="<?php echo esc_attr($values['payflow_vendor'])?>" class="regular-text code" />
@@ -114,7 +114,7 @@
 	    </tr>
 	    <tr class="gateway gateway_payflowpro" <?php if($gateway != "payflowpro") { ?>style="display: none;"<?php } ?>>
 		    <th scope="row" valign="top">
-				<label for="payflow_user"><?php _e('User', 'paid-memberships-pro' );?>:</label>
+				<label for="payflow_user"><?php esc_html_e('User', 'paid-memberships-pro' );?>:</label>
 			</th>
 			<td>
 				<input type="text" id="payflow_user" name="payflow_user" value="<?php echo esc_attr($values['payflow_user'])?>" class="regular-text code" />
@@ -122,7 +122,7 @@
 	    </tr>
 	    <tr class="gateway gateway_payflowpro" <?php if($gateway != "payflowpro") { ?>style="display: none;"<?php } ?>>
 		    <th scope="row" valign="top">
-				<label for="payflow_pwd"><?php _e('Password', 'paid-memberships-pro' );?>:</label>
+				<label for="payflow_pwd"><?php esc_html_e('Password', 'paid-memberships-pro' );?>:</label>
 			</th>
 			<td>
 				<input type="password" id="payflow_pwd" name="payflow_pwd" value="<?php echo esc_attr($values['payflow_pwd'])?>" class="regular-text code" />
@@ -130,7 +130,7 @@
 	    </tr>
 		<tr class="gateway gateway_payflowpro" <?php if($gateway != "payflowpro") { ?>style="display: none;"<?php } ?>>
 			<th scope="row" valign="top">
-				<label><?php _e('IPN Handler', 'paid-memberships-pro' );?>:</label>
+				<label><?php esc_html_e('IPN Handler', 'paid-memberships-pro' );?>:</label>
 			</th>
 			<td>
 				<p class="description">
@@ -316,7 +316,7 @@
 			$amount = $order->InitialPayment;
 			$amount_tax = $order->getTaxForPrice($amount);
 			$order->subtotal = $amount;
-			$amount = pmpro_round_price((float)$amount + (float)$amount_tax);
+			$amount = pmpro_round_price_as_string((float)$amount + (float)$amount_tax);
 
 			//paypal profile stuff
 			$nvpStr = "";
@@ -392,7 +392,7 @@
 			//taxes on the amount
 			$amount = $order->PaymentAmount;
 			$amount_tax = $order->getTaxForPrice($amount);
-			$amount = pmpro_round_price((float)$amount + (float)$amount_tax);
+			$amount = pmpro_round_price_as_string((float)$amount + (float)$amount_tax);
 
 			if($order->BillingPeriod == "Day")
 				$payperiod = "DAYS";

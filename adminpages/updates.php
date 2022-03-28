@@ -11,14 +11,14 @@
 	require_once(dirname(__FILE__) . "/admin_header.php");	
 ?>
 
-<h2><?php _e('Updating Paid Memberships Pro', 'paid-memberships-pro' );?></h2>
+<h2><?php esc_html_e('Updating Paid Memberships Pro', 'paid-memberships-pro' );?></h2>
 
 <?php
 	$updates = get_option('pmpro_updates', array());
 	if(!empty($updates)) {
 		//let's process the first one
 	?>
-	<p id="pmpro_updates_intro"><?php _e('Updates are processing. This may take a few minutes to complete.', 'paid-memberships-pro' );?></p>
+	<p id="pmpro_updates_intro"><?php esc_html_e('Updates are processing. This may take a few minutes to complete.', 'paid-memberships-pro' );?></p>
 	<p id="pmpro_updates_progress">[...]</p>
 	<textarea id="pmpro_updates_status" rows="10" cols="60"><?php echo esc_textarea( __( 'Loading...', 'paid-memberships-pro' ) ); ?></textarea>
 

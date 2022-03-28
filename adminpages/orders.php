@@ -425,7 +425,7 @@ if ( function_exists( 'pmpro_add_email_order_modal' ) ) {
 			</tr>
 
 			<tr>
-				<th scope="row" valign="top"><label for="code"><?php _e( 'Code', 'paid-memberships-pro' ); ?>:</label></th>
+				<th scope="row" valign="top"><label for="code"><?php esc_html_e( 'Code', 'paid-memberships-pro' ); ?>:</label></th>
 				<td>
 					<?php
 						if ( in_array( 'code', $read_only_fields ) ) {
@@ -441,7 +441,7 @@ if ( function_exists( 'pmpro_add_email_order_modal' ) ) {
 				</td>
 			</tr>
 			<tr>
-				<th scope="row" valign="top"><label for="user_id"><?php _e( 'User ID', 'paid-memberships-pro' ); ?>:</label></th>
+				<th scope="row" valign="top"><label for="user_id"><?php esc_html_e( 'User ID', 'paid-memberships-pro' ); ?>:</label></th>
 				<td>
 					<?php
 						if ( in_array( 'user_id', $read_only_fields ) && $order_id > 0 ) {
@@ -594,7 +594,7 @@ if ( function_exists( 'pmpro_add_email_order_modal' ) ) {
 			</tr>
 			<?php } ?>
 			<tr>
-				<th scope="row" valign="top"><label for="subtotal"><?php _e( 'Sub Total', 'paid-memberships-pro' ); ?>:</label></th>
+				<th scope="row" valign="top"><label for="subtotal"><?php esc_html_e( 'Sub Total', 'paid-memberships-pro' ); ?>:</label></th>
 				<td>
 					<?php
 					if ( in_array( 'subtotal', $read_only_fields ) && $order_id > 0 ) {
@@ -794,7 +794,7 @@ if ( function_exists( 'pmpro_add_email_order_modal' ) ) {
 
 			<tr>
 				<th scope="row" valign="top"><label
-						for="payment_transaction_id"><?php _e( 'Payment Transaction ID', 'paid-memberships-pro' ); ?>:</label></th>
+						for="payment_transaction_id"><?php esc_html_e( 'Payment Transaction ID', 'paid-memberships-pro' ); ?>:</label></th>
 				<td>
 					<?php
 					if ( in_array( 'payment_transaction_id', $read_only_fields ) && $order_id > 0 ) {

@@ -43,7 +43,7 @@ class PMProGateway_authorizenet extends PMProGateway
 		$morder->CVV2 = $authorizenet_cvv;
 		return $morder;
 	}
-	
+
 	/**
 	 * Make sure this gateway is in the gateways list
 	 *
@@ -112,7 +112,7 @@ class PMProGateway_authorizenet extends PMProGateway
 	</tr>
 	<tr class="gateway gateway_authorizenet" <?php if($gateway != "authorizenet") { ?>style="display: none;"<?php } ?>>
 		<th scope="row" valign="top">
-			<label for="loginname"><?php _e('Login Name', 'paid-memberships-pro' );?>:</label>
+			<label for="loginname"><?php esc_html_e('Login Name', 'paid-memberships-pro' );?>:</label>
 		</th>
 		<td>
 			<input type="text" id="loginname" name="loginname" value="<?php echo esc_attr($values['loginname'])?>" class="regular-text code" />
@@ -120,7 +120,7 @@ class PMProGateway_authorizenet extends PMProGateway
 	</tr>
 	<tr class="gateway gateway_authorizenet" <?php if($gateway != "authorizenet") { ?>style="display: none;"<?php } ?>>
 		<th scope="row" valign="top">
-			<label for="transactionkey"><?php _e('Transaction Key', 'paid-memberships-pro' );?>:</label>
+			<label for="transactionkey"><?php esc_html_e('Transaction Key', 'paid-memberships-pro' );?>:</label>
 		</th>
 		<td>
 			<input type="text" id="transactionkey" name="transactionkey" value="<?php echo esc_attr($values['transactionkey'])?>" autocomplete="off" class="regular-text code pmpro-admin-secure-key" />
@@ -128,10 +128,10 @@ class PMProGateway_authorizenet extends PMProGateway
 	</tr>
 	<tr class="gateway gateway_authorizenet" <?php if($gateway != "authorizenet") { ?>style="display: none;"<?php } ?>>
 		<th scope="row" valign="top">
-			<label><?php _e('Silent Post URL', 'paid-memberships-pro' );?>:</label>
+			<label><?php esc_html_e('Silent Post URL', 'paid-memberships-pro' );?>:</label>
 		</th>
 		<td>
-			<p><?php _e('To fully integrate with Authorize.net, be sure to set your Silent Post URL to', 'paid-memberships-pro' ); ?></p>
+			<p><?php esc_html_e('To fully integrate with Authorize.net, be sure to set your Silent Post URL to', 'paid-memberships-pro' ); ?></p>
 			<p><code><?php echo admin_url("admin-ajax.php") . "?action=authnet_silent_post";?></code></p>
 		</td>
 	</tr>
@@ -463,7 +463,7 @@ class PMProGateway_authorizenet extends PMProGateway
 		//tax
 		$order->subtotal = $amount;
 		$tax = $order->getTax(true);
-		$amount = pmpro_round_price((float)$order->subtotal + (float)$tax);
+		$amount = pmpro_round_price_as_string((float)$order->subtotal + (float)$tax);
 
 		//combine address
 		$address = $order->Address1;
@@ -613,8 +613,8 @@ class PMProGateway_authorizenet extends PMProGateway
 		$amount_tax = $order->getTaxForPrice($amount);
 		$trial_tax = $order->getTaxForPrice($trialAmount);
 
-		$amount = pmpro_round_price((float)$amount + (float)$amount_tax);
-		$trialAmount = pmpro_round_price((float)$trialAmount + (float)$trial_tax);
+		$amount = pmpro_round_price_as_string((float)$amount + (float)$amount_tax);
+		$trialAmount = pmpro_round_price_as_string((float)$trialAmount + (float)$trial_tax);
 
 		//authorize.net doesn't support different periods between trial and actual
 
@@ -988,7 +988,7 @@ class PMProGateway_authorizenet extends PMProGateway
 			$order->shorterror = $text;
 		}
 	}
-	
+
 	/**
 	 * This function takes the post_values and converts them to the proper format
 	 * for an http post. For example: "x_login=username&x_tran_key=a1B2c3D4"
@@ -1008,13 +1008,13 @@ class PMProGateway_authorizenet extends PMProGateway
 		 * @param string $action being performed.
 		 */
 		$post_values = apply_filters( 'pmpro_authorizenet_post_values', $post_values, $action );
-		
+
 		$post_string = '';
 		foreach( $post_values as $key => $value ) {
 			$post_string .= "$key=" . urlencode( str_replace("#", "%23", $value) ) . "&";
 		}
 		$post_string = rtrim( $post_string, "& " );
-		
+
 		return $post_string;
 	}
 
