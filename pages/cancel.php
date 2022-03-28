@@ -41,7 +41,7 @@ if(isset($_REQUEST['levelstocancel']) && $_REQUEST['levelstocancel'] !== 'all') 
 				if(!is_array($old_level_ids) && $old_level_ids == "all")
 				{
 					?>
-					<p><?php _e('Are you sure you want to cancel your membership?', 'paid-memberships-pro' ); ?></p>
+					<p><?php esc_html_e('Are you sure you want to cancel your membership?', 'paid-memberships-pro' ); ?></p>
 					<?php
 				}
 				else
@@ -53,8 +53,8 @@ if(isset($_REQUEST['levelstocancel']) && $_REQUEST['levelstocancel'] !== 'all') 
 				}
 			?>
 			<div class="<?php echo pmpro_get_element_class( 'pmpro_actionlinks' ); ?>">
-				<a class="<?php echo pmpro_get_element_class( 'pmpro_btn pmpro_btn-submit pmpro_yeslink yeslink', 'pmpro_btn-submit' ); ?>" href="<?php echo pmpro_url("cancel", "?levelstocancel=" . esc_attr($_REQUEST['levelstocancel']) . "&confirm=true")?>"><?php _e('Yes, cancel this membership', 'paid-memberships-pro' );?></a>
-				<a class="<?php echo pmpro_get_element_class( 'pmpro_btn pmpro_btn-cancel pmpro_nolink nolink', 'pmpro_btn-cancel' ); ?>" href="<?php echo pmpro_url("account")?>"><?php _e('No, keep this membership', 'paid-memberships-pro' );?></a>
+				<a class="<?php echo pmpro_get_element_class( 'pmpro_btn pmpro_btn-submit pmpro_yeslink yeslink', 'pmpro_btn-submit' ); ?>" href="<?php echo esc_url( pmpro_url( "cancel", "?levelstocancel=" . esc_attr($_REQUEST['levelstocancel']) . "&confirm=true" ) ) ?>"><?php esc_html_e('Yes, cancel this membership', 'paid-memberships-pro' );?></a>
+				<a class="<?php echo pmpro_get_element_class( 'pmpro_btn pmpro_btn-cancel pmpro_nolink nolink', 'pmpro_btn-cancel' ); ?>" href="<?php echo esc_url( pmpro_url( "account" ) ) ?>"><?php esc_html_e('No, keep this membership', 'paid-memberships-pro' );?></a>
 			</div>
 			<?php
 			}
@@ -63,12 +63,12 @@ if(isset($_REQUEST['levelstocancel']) && $_REQUEST['levelstocancel'] !== 'all') 
 				if($current_user->membership_level->ID)
 				{
 					?>
-					<h2><?php _e("My Memberships", 'paid-memberships-pro' );?></h2>
+					<h2><?php esc_html_e("My Memberships", 'paid-memberships-pro' );?></h2>
 					<table class="<?php echo pmpro_get_element_class( 'pmpro_table' ); ?>" width="100%" cellpadding="0" cellspacing="0" border="0">
 						<thead>
 							<tr>
-								<th><?php _e("Level", 'paid-memberships-pro' );?></th>
-								<th><?php _e("Expiration", 'paid-memberships-pro' ); ?></th>
+								<th><?php esc_html_e("Level", 'paid-memberships-pro' );?></th>
+								<th><?php esc_html_e("Expiration", 'paid-memberships-pro' ); ?></th>
 								<th></th>
 							</tr>
 						</thead>
@@ -93,7 +93,7 @@ if(isset($_REQUEST['levelstocancel']) && $_REQUEST['levelstocancel'] !== 'all') 
 									?>
 									</td>
 									<td class="<?php echo pmpro_get_element_class( 'pmpro_cancel-membership-cancel' ); ?>">
-										<a href="<?php echo pmpro_url("cancel", "?levelstocancel=" . $level->id)?>"><?php _e("Cancel", 'paid-memberships-pro' );?></a>
+										<a href="<?php echo esc_url( pmpro_url( "cancel", "?levelstocancel=" . $level->id ) ) ?>"><?php esc_html_e("Cancel", 'paid-memberships-pro' );?></a>
 									</td>
 								</tr>
 								<?php
@@ -102,7 +102,7 @@ if(isset($_REQUEST['levelstocancel']) && $_REQUEST['levelstocancel'] !== 'all') 
 						</tbody>
 					</table>
 					<div class="<?php echo pmpro_get_element_class( 'pmpro_actions_nav' ); ?>">
-						<a href="<?php echo pmpro_url("cancel", "?levelstocancel=all"); ?>"><?php _e("Cancel All Memberships", 'paid-memberships-pro' );?></a>
+						<a href="<?php echo esc_url( pmpro_url( "cancel", "?levelstocancel=all" ) ); ?>"><?php esc_html_e("Cancel All Memberships", 'paid-memberships-pro' );?></a>
 					</div>
 					<?php
 				}
@@ -111,7 +111,7 @@ if(isset($_REQUEST['levelstocancel']) && $_REQUEST['levelstocancel'] !== 'all') 
 		else
 		{
 			?>
-			<p class="<?php echo pmpro_get_element_class( 'pmpro_cancel_return_home' ); ?>"><a href="<?php echo get_home_url()?>"><?php _e('Click here to go to the home page.', 'paid-memberships-pro' );?></a></p>
+			<p class="<?php echo pmpro_get_element_class( 'pmpro_cancel_return_home' ); ?>"><a href="<?php echo get_home_url()?>"><?php esc_html_e('Click here to go to the home page.', 'paid-memberships-pro' );?></a></p>
 			<?php
 		}
 	?>

@@ -391,11 +391,11 @@ function pmpro_add_email_order_modal() {
 		$order = new MemberOrder( $_REQUEST['order'] );
 		if ( ! empty( $user ) && ! empty( $order ) && $email->sendBillableInvoiceEmail( $user, $order ) ) { ?>
 			<div class="notice notice-success is-dismissible">
-				<p><?php _e( 'Invoice emailed successfully.', 'paid-memberships-pro' ); ?></p>
+				<p><?php esc_html_e( 'Invoice emailed successfully.', 'paid-memberships-pro' ); ?></p>
 			</div>
 		<?php } else { ?>
 			<div class="notice notice-error is-dismissible">
-				<p><?php _e( 'Error emailing invoice.', 'paid-memberships-pro' ); ?></p>
+				<p><?php esc_html_e( 'Error emailing invoice.', 'paid-memberships-pro' ); ?></p>
 			</div>
 		<?php }
 	}
@@ -422,12 +422,12 @@ function pmpro_add_email_order_modal() {
 	</script>
 	<?php add_thickbox(); ?>
 	<div id="email_invoice" style="display:none;">
-		<h3><?php _e( 'Email Invoice', 'paid-memberships-pro' ); ?></h3>
+		<h3><?php esc_html_e( 'Email Invoice', 'paid-memberships-pro' ); ?></h3>
 		<form method="post" action="">
 			<input type="hidden" name="order" value=""/>
 			<?php _e( 'Send an invoice for this order to: ', 'paid-memberships-pro' ); ?>
 			<input type="text" value="" name="email"/>
-			<button class="button button-primary alignright"><?php _e( 'Send Email', 'paid-memberships-pro' ); ?></button>
+			<button class="button button-primary alignright"><?php esc_html_e( 'Send Email', 'paid-memberships-pro' ); ?></button>
 		</form>
 	</div>
 	<?php

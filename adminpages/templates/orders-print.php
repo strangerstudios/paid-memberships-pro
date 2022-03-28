@@ -3,6 +3,9 @@
  * Template for Print Invoices
  *
  * @since 1.8.6
+ * 
+ * @var object $level
+ * @var MemberOrder $order
  */
 ?>
 <!doctype html>
@@ -47,7 +50,7 @@
 		<div class="right">
 			<table>
 				<tr>
-					<td><?php echo __('Invoice #: ', 'paid-memberships-pro' ) . '&nbsp;' . $order->code; ?></td>
+					<td><?php echo esc_html( __('Invoice #: ', 'paid-memberships-pro' ) . '&nbsp;' . $order->code ); ?></td>
 				</tr>
 				<tr>
 					<td>
@@ -72,9 +75,9 @@
 		</p>
 		<table class="invoice" style="border-width:0px;border-collapse:collapse;">
 			<tr>
-				<th><?php _e('ID', 'paid-memberships-pro' ); ?></th>
-				<th><?php _e('Item', 'paid-memberships-pro' ); ?></th>
-				<th><?php _e('Price', 'paid-memberships-pro' ); ?></th>
+				<th><?php esc_html_e('ID', 'paid-memberships-pro' ); ?></th>
+				<th><?php esc_html_e('Item', 'paid-memberships-pro' ); ?></th>
+				<th><?php esc_html_e('Price', 'paid-memberships-pro' ); ?></th>
 			</tr>
 			<tr>
 				<td class="aligncenter"><?php echo $level->id; ?></td>
