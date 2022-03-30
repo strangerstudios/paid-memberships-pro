@@ -56,9 +56,6 @@ if ( get_option( 'pmpro_uninstall', 0 ) ) {
 	    $wpdb->query($sql);
 	}
 
-	require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
-	dbDelta($sql);
-
 	//delete options
 	global $wpdb;
 	$sqlQuery = "DELETE FROM $wpdb->options WHERE option_name LIKE 'pmpro_%'";
