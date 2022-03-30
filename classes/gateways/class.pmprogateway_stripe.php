@@ -2793,7 +2793,8 @@ class PMProGateway_stripe extends PMProGateway {
 			'invoice.payment_succeeded',
 			'invoice.payment_action_required',
 			'customer.subscription.deleted',
-			'charge.failed'
+			'charge.failed',
+			'charge.refunded'
 		) );
 	}
 
