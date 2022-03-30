@@ -1124,7 +1124,7 @@
 
 				//send an email to the admin
 				$myemail = new PMProEmail();
-				$myemail->sendRefundedAdminEmail( $user, $morder->membership_id );
+				$myemail->sendRefundedAdminEmail( $current_user, $morder->membership_id );
 
 			} else {
 				//The refund failed, so lets return the gateway message
