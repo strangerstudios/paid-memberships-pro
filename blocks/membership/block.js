@@ -56,9 +56,13 @@ const all_levels = [{ value: 0, label: "Non-Members" }].concat( pmpro.all_level_
                  type: 'string',
                  default:'',
              },
+             show_noaccess: {
+                 type: 'boolean',
+                 default: false,
+             },
          },
          edit: props => {
-             const { attributes: {levels, uid}, setAttributes, isSelected } = props;            
+             const { attributes: {levels, uid, show_noaccess}, setAttributes, isSelected } = props;            
              if( uid=='' ) {
                var rand = Math.random()+"";
                setAttributes( { uid:rand } );
@@ -89,7 +93,12 @@ const all_levels = [{ value: 0, label: "Non-Members" }].concat( pmpro.all_level_
              
              return [
                 isSelected && <InspectorControls>
-                    <PanelBody>                        
+                    <PanelBody>
+                        <CheckboxControl
+                            label={ __( "Swap Content With a 'No Access' Message", 'paid-memberships-pro' ) }
+                            checked={ show_noaccess }
+                            onChange={ show_noaccess => setAttributes( {show_noaccess} ) }
+                        />
                         <div class="pmpro-block-inspector-scrollable">
                             {checkboxes}
                         </div>
@@ -97,6 +106,11 @@ const all_levels = [{ value: 0, label: "Non-Members" }].concat( pmpro.all_level_
                 </InspectorControls>,
                 isSelected && <div className="pmpro-block-require-membership-element" >
                   <span className="pmpro-block-title">{ __( 'Membership Required', 'paid-memberships-pro' ) }</span>
+                  <CheckboxControl
+                      label={ __( "Swap Content With a 'No Access' Message", 'paid-memberships-pro' ) }
+                      checked={ show_noaccess }
+                      onChange={ show_noaccess => setAttributes( {show_noaccess} ) }
+                  />
                   <div class="pmpro-block-inspector-scrollable">
                   <PanelBody>                      
                       {checkboxes}
