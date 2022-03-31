@@ -295,6 +295,7 @@ function pmpro_db_delta()
 	$wpdb->pmpro_discount_codes_uses = $wpdb->prefix . 'pmpro_discount_codes_uses';
 	$wpdb->pmpro_membership_levelmeta = $wpdb->prefix . 'pmpro_membership_levelmeta';
 	$wpdb->pmpro_membership_ordermeta = $wpdb->prefix . 'pmpro_membership_ordermeta';
+	$wpdb->pmpro_subscriptionmeta = $wpdb->prefix . 'pmpro_subscriptionmeta';
 
 	//wp_pmpro_membership_levels
 	$sqlQuery = "
@@ -538,6 +539,20 @@ function pmpro_db_delta()
 		  `meta_value` longtext,
 		  PRIMARY KEY (`meta_id`),
 		  KEY `pmpro_membership_order_id` (`pmpro_membership_order_id`),
+		  KEY `meta_key` (`meta_key`)
+		);
+	";
+	dbDelta($sqlQuery);
+
+	//pmpro_subscriptionmeta
+	$sqlQuery = "
+		CREATE TABLE `" . $wpdb->pmpro_subscriptionmeta . "` (
+		  `meta_id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+		  `pmpro_subscription_id` int(11) unsigned NOT NULL,
+		  `meta_key` varchar(255) NOT NULL,
+		  `meta_value` longtext,
+		  PRIMARY KEY (`meta_id`),
+		  KEY `pmpro_subscription_id` (`pmpro_subscription_id`),
 		  KEY `meta_key` (`meta_key`)
 		);
 	";

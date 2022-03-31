@@ -54,6 +54,8 @@ abstract class Base Extends \WP_UnitTestCase {
 			$wpdb->pmpro_memberships_categories,
 			$wpdb->pmpro_memberships_pages,
 			$wpdb->pmpro_memberships_users,
+			$wpdb->pmpro_subscriptions,
+			$wpdb->pmpro_subscriptionmeta,
 		];
 
 		foreach ( $tables as $table ) {
