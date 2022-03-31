@@ -154,6 +154,26 @@
 	margin-top: 0;
 }
 
+/* Page Actions Row */
+.pmpro-page-actions {
+	align-items: center;
+	background-color: #FFF;
+	border: 1px solid #C3C4C7;
+	border-radius: 5px;
+	box-shadow: 0 1px 1px rgb(0 0 0 / 4%);
+	display: flex;
+	font-size: 14px;
+	margin: 1em 0;
+	padding: 1em;
+}
+.pmpro-page-actions > * {
+	margin: 0 1.5em 0 0;
+}
+.pmpro-page-actions a {
+	font-weight: 500;
+	text-decoration: none;
+}
+
 /* Consent Log */
 .pmpro_consent_log.pmpro_scrollable {
 	max-width: 800px;

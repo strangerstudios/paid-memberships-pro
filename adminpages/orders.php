@@ -384,15 +384,19 @@ if ( function_exists( 'pmpro_add_email_order_modal' ) ) {
 ?>
 
 <?php if ( ! empty( $order ) ) { ?>
+	<hr class="wp-header-end">
 
 	<?php if ( ! empty( $order->id ) ) { ?>
-		<h1 class="wp-heading-inline"><?php esc_html_e( 'Order', 'paid-memberships-pro' ); ?> #<?php echo esc_html( $order->id ); ?>: <?php echo esc_html( $order->code ); ?></h1>
-		<a title="<?php esc_attr_e( 'Print', 'paid-memberships-pro' ); ?>" href="<?php echo esc_url( add_query_arg( array( 'action' => 'pmpro_orders_print_view', 'order' => $order->id ), admin_url( 'admin-ajax.php' ) ) ); ?>" class="page-title-action" target="_blank" ><?php esc_html_e( 'Print', 'paid-memberships-pro' ); ?></a>
-		<a title="<?php esc_attr_e( 'Email', 'paid-memberships-pro' ); ?>" href="#TB_inline?width=600&height=200&inlineId=email_invoice" class="thickbox email_link page-title-action" data-order="<?php echo esc_html( $order->id ); ?>"><?php esc_html_e( 'Email', 'paid-memberships-pro' ); ?></a>
+		<h1><?php esc_html_e( 'Order', 'paid-memberships-pro' ); ?> #<?php echo esc_html( $order->id ); ?></h1>
+		<div class="pmpro-page-actions">
+			<strong><?php esc_html_e( 'Order actions:', 'paid-memberships-pro' ); ?></strong>
+			<a title="<?php esc_attr_e( 'Print', 'paid-memberships-pro' ); ?>" href="<?php echo esc_url( add_query_arg( array( 'action' => 'pmpro_orders_print_view', 'order' => $order->id ), admin_url( 'admin-ajax.php' ) ) ); ?>" target="_blank" ><span class="dashicons dashicons-printer"></span> <?php esc_html_e( 'Print', 'paid-memberships-pro' ); ?></a>
+			<a title="<?php esc_attr_e( 'Email', 'paid-memberships-pro' ); ?>" href="#TB_inline?width=600&height=200&inlineId=email_invoice" class="thickbox email_link" data-order="<?php echo esc_html( $order->id ); ?>"><span class="dashicons dashicons-email"></span> <?php esc_html_e( 'Email', 'paid-memberships-pro' ); ?></a>
+			<a title="<?php esc_attr_e( 'View As Member', 'paid-memberships-pro' ); ?>" href="<?php echo esc_url( pmpro_url("invoice", "?invoice=" . $order->code ) ) ?>" target="_blank"> <span class="dashicons dashicons-admin-users"></span><?php esc_html_e( 'View As Member', 'paid-memberships-pro' ); ?></a>
+		</div>
 	<?php } else { ?>
 		<h1 class="wp-heading-inline"><?php esc_html_e( 'New Order', 'paid-memberships-pro' ); ?></h1>
 	<?php } ?>
-	<hr class="wp-header-end">
 
 	<?php if ( ! empty( $pmpro_msg ) ) { ?>
 		<div id="message" class="
@@ -411,6 +415,7 @@ if ( function_exists( 'pmpro_add_email_order_modal' ) ) {
 
 		<table class="form-table">
 			<tbody>
+<?php /*
 			<tr>
 				<th scope="row" valign="top"><label>ID:</label></th>
 				<td>
@@ -423,7 +428,7 @@ if ( function_exists( 'pmpro_add_email_order_modal' ) ) {
 					?>
 					</td>
 			</tr>
-
+*/ ?>
 			<tr>
 				<th scope="row" valign="top"><label for="code"><?php esc_html_e( 'Code', 'paid-memberships-pro' ); ?>:</label></th>
 				<td>
@@ -431,15 +436,63 @@ if ( function_exists( 'pmpro_add_email_order_modal' ) ) {
 						if ( in_array( 'code', $read_only_fields ) ) {
 							echo esc_html( $order->code );
 						} else { ?>
-							<input id="code" name="code" type="text" value="<?php echo esc_attr( $order->code ); ?>" class="regular-text" />
+							<input id="code" name="code" type="text" value="<?php echo esc_attr( $order->code ); ?>" />
 						<?php
 						}
 					?>
+					<p class="description"><?php esc_html_e( 'A randomly generated code that serves as a unique, non-sequential invoice number.', 'paid-memberships-pro' ); ?></p>
 					<?php if ( $order_id < 0 ) { ?>
 						<p class="description"><?php esc_html_e( 'Randomly generated for you.', 'paid-memberships-pro' ); ?></p>
 					<?php } ?>
 				</td>
 			</tr>
+			<tr>
+				<th scope="row" valign="top"><label for="ts_month"><?php esc_html_e( 'Date', 'paid-memberships-pro' ); ?>:</label></th>
+				<td>
+					<?php
+					if ( in_array( 'timestamp', $read_only_fields ) && $order_id > 0 ) {
+						echo esc_html( date_i18n( get_option( 'date_format' ) . ' ' . get_option( 'time_format' ), $order->getTimestamp() ) );
+					} else {
+						// set up date vars
+						if ( ! empty( $order->timestamp ) ) {
+							$timestamp = $order->getTimestamp();
+						} else {
+							$timestamp = current_time( 'timestamp' );
+						}
+
+						$year   = date( 'Y', $timestamp );
+						$month  = date( 'n', $timestamp );
+						$day    = date( 'j', $timestamp );
+						$hour   = date( 'H', $timestamp );
+						$minute = date( 'i', $timestamp );
+						$second = date( 's', $timestamp );
+						?>
+						<select id="ts_month" name="ts_month">
+						<?php
+						for ( $i = 1; $i < 13; $i ++ ) {
+						?>
+							<option value="<?php echo esc_attr( $i ); ?>" <?php selected( $i, $month ); ?>>
+							<?php echo esc_html( date_i18n( 'F', mktime( 0, 0, 0, $i, 2 ) ) ); ?>
+							</option>
+						<?php
+						}
+						?>
+						</select>
+						<input name="ts_day" type="text" size="2" value="<?php echo esc_attr( $day ); ?>"/>
+						<input name="ts_year" type="text" size="4" value="<?php echo esc_attr( $year ); ?>"/>
+						<?php esc_html_e( 'at', 'paid-memberships-pro' ); ?>
+						<input name="ts_hour" type="text" size="2" value="<?php echo esc_attr( $hour ); ?>"/> :
+						<input name="ts_minute" type="text" size="2" value="<?php echo esc_attr( $minute ); ?>"/>
+					<?php } ?>
+				</td>
+			</tr>
+			</tbody>
+		</table>
+		<hr />
+		<h2><?php esc_html_e( 'Member Information', 'paid-memberships-pro' ); ?></h2>
+		<table class="form-table">
+			<tbody>
+			<tr>
 			<tr>
 				<th scope="row" valign="top"><label for="user_id"><?php esc_html_e( 'User ID', 'paid-memberships-pro' ); ?>:</label></th>
 				<td>
@@ -447,7 +500,7 @@ if ( function_exists( 'pmpro_add_email_order_modal' ) ) {
 						if ( in_array( 'user_id', $read_only_fields ) && $order_id > 0 ) {
 							echo esc_html( $order->user_id );
 						} else { ?>
-							<input id="user_id" name="user_id" type="text" value="<?php echo esc_attr( $order->user_id ); ?>" class="regular-text" />
+							<input id="user_id" name="user_id" type="text" value="<?php echo esc_attr( $order->user_id ); ?>" size="10" />
 						<?php
 						}
 					?>
@@ -460,12 +513,18 @@ if ( function_exists( 'pmpro_add_email_order_modal' ) ) {
 						if ( in_array( 'membership_id', $read_only_fields ) && $order_id > 0 ) {
 						echo esc_html( $order->membership_id );
 						} else { ?>
-							<input id="membership_id" name="membership_id" type="text" value="<?php echo esc_attr( $order->membership_id ); ?>" class="regular-text" />
+							<input id="membership_id" name="membership_id" type="text" value="<?php echo esc_attr( $order->membership_id ); ?>" size="10" />
 						<?php
 						}
 					?>
 				</td>
 			</tr>
+			</tbody>
+		</table>
+		<hr />
+		<h2><?php esc_html_e( 'Billing Information', 'paid-memberships-pro' ); ?></h2>
+		<table class="form-table">
+			<tbody>
 			<tr>
 				<th scope="row" valign="top"><label for="billing_name"><?php esc_html_e( 'Billing Name', 'paid-memberships-pro' ); ?>:</label>
 				</th>
@@ -555,6 +614,13 @@ if ( function_exists( 'pmpro_add_email_order_modal' ) ) {
 					<?php } ?>
 				</td>
 			</tr>
+			</tbody>
+		</table>
+		<hr />
+		<h2><?php esc_html_e( 'Payment Information', 'paid-memberships-pro' ); ?></h2>
+		<table class="form-table">
+			<tbody>
+
 			<?php
 			if ( $order_id > 0 ) {
 				$order->getDiscountCode();
@@ -711,23 +777,15 @@ if ( function_exists( 'pmpro_add_email_order_modal' ) ) {
 				</tr>
 
 				<?php
-			} else {
-						?>
-							<tr>
-								<th scope="row" valign="top"><label
-							for="expirationmonth"><?php esc_html_e( 'Expiration Month', 'paid-memberships-pro' ); ?>:</label></th>
+			} else { ?>
+				<tr>
+					<th scope="row" valign="top"><label for="expiration"><?php esc_html_e( 'Expiration', 'paid-memberships-pro' ); ?>:</label></th>
 					<td>
 						<input id="expirationmonth" name="expirationmonth" type="text" size="10"
-				   value="<?php echo esc_attr( $order->expirationmonth ); ?>"/>
-						<span class="description">MM</span>
-					</td>
-				</tr>
-				<tr>
-					<th scope="row" valign="top"><label for="expirationyear"><?php esc_html_e( 'Expiration Year', 'paid-memberships-pro' ); ?>:</label></th>
-					<td>
+				   value="<?php echo esc_attr( $order->expirationmonth ); ?>"/> /
 						<input id="expirationyear" name="expirationyear" type="text" size="10"
 				   value="<?php echo esc_attr( $order->expirationyear ); ?>"/>
-						<span class="description">YYYY</span>
+						<span class="description">MM/YYYY</span>
 					</td>
 				</tr>
 			<?php } ?>
@@ -736,7 +794,7 @@ if ( function_exists( 'pmpro_add_email_order_modal' ) ) {
 				<td>
 					<?php
 					if ( in_array( 'status', $read_only_fields ) && $order_id > 0 ) {
-						echo esc_html( $order->status );
+						echo esc_html( ucwords( $order->status ) );
 					} else { ?>
 					<?php
 						$statuses = pmpro_getOrderStatuses();
@@ -744,7 +802,7 @@ if ( function_exists( 'pmpro_add_email_order_modal' ) ) {
 						<select id="status" name="status">
 							<?php foreach ( $statuses as $status ) { ?>
 								<option
-									value="<?php echo esc_attr( $status ); ?>" <?php selected( $order->status, $status ); ?>><?php echo esc_html( $status ); ?></option>
+									value="<?php echo esc_attr( $status ); ?>" <?php selected( $order->status, $status ); ?>><?php echo esc_html( ucwords( $status ) ); ?></option>
 							<?php } ?>
 						</select>
 						<?php
@@ -752,7 +810,12 @@ if ( function_exists( 'pmpro_add_email_order_modal' ) ) {
 					?>
 				</td>
 			</tr>
-
+			</tbody>
+		</table>
+		<hr />
+		<h2><?php esc_html_e( 'Payment Gateway Information', 'paid-memberships-pro' ); ?></h2>
+		<table class="form-table">
+			<tbody>
 			<tr>
 				<th scope="row" valign="top"><label for="gateway"><?php esc_html_e( 'Gateway', 'paid-memberships-pro' ); ?>:</label></th>
 				<td>
@@ -822,48 +885,12 @@ if ( function_exists( 'pmpro_add_email_order_modal' ) ) {
 					<p class="description"><?php esc_html_e( 'Generated by the gateway. Useful to cross reference subscriptions.', 'paid-memberships-pro' ); ?></p>
 				</td>
 			</tr>
-
-			<tr>
-				<th scope="row" valign="top"><label for="ts_month"><?php esc_html_e( 'Date', 'paid-memberships-pro' ); ?>:</label></th>
-				<td>
-					<?php
-					if ( in_array( 'timestamp', $read_only_fields ) && $order_id > 0 ) {
-						echo esc_html( date_i18n( get_option( 'date_format' ) . ' ' . get_option( 'time_format' ), $order->getTimestamp() ) );
-					} else {
-						// set up date vars
-						if ( ! empty( $order->timestamp ) ) {
-							$timestamp = $order->getTimestamp();
-						} else {
-							$timestamp = current_time( 'timestamp' );
-						}
-
-						$year   = date( 'Y', $timestamp );
-						$month  = date( 'n', $timestamp );
-						$day    = date( 'j', $timestamp );
-						$hour   = date( 'H', $timestamp );
-						$minute = date( 'i', $timestamp );
-						$second = date( 's', $timestamp );
-						?>
-						<select id="ts_month" name="ts_month">
-						<?php
-						for ( $i = 1; $i < 13; $i ++ ) {
-						?>
-							<option value="<?php echo esc_attr( $i ); ?>" <?php selected( $i, $month ); ?>>
-							<?php echo esc_html( date_i18n( 'F', mktime( 0, 0, 0, $i, 2 ) ) ); ?>
-							</option>
-						<?php
-						}
-						?>
-						</select>
-						<input name="ts_day" type="text" size="2" value="<?php echo esc_attr( $day ); ?>"/>
-						<input name="ts_year" type="text" size="4" value="<?php echo esc_attr( $year ); ?>"/>
-						<?php esc_html_e( 'at', 'paid-memberships-pro' ); ?>
-						<input name="ts_hour" type="text" size="2" value="<?php echo esc_attr( $hour ); ?>"/> :
-						<input name="ts_minute" type="text" size="2" value="<?php echo esc_attr( $minute ); ?>"/>
-					<?php } ?>
-				</td>
-			</tr>
-
+			</tbody>
+		</table>
+		<hr />
+		<h2><?php esc_html_e( 'Additional Order Information', 'paid-memberships-pro' ); ?></h2>
+		<table class="form-table">
+			<tbody>
 			<?php
 			$affiliates = apply_filters( 'pmpro_orders_show_affiliate_ids', false );
 			if ( ! empty( $affiliates ) ) {
