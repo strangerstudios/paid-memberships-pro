@@ -103,7 +103,7 @@ const all_levels = [{ value: 0, label: "Non-Members" }].concat( pmpro.all_level_
                         <p><strong>{ __( 'What should users without access see?', 'paid-memberships-pro' ) }</strong></p>
                         <SelectControl
                           value={ show_noaccess }
-                          help={__( "Optionally show the message for visitors or logged-in users without access as defined in PMPro Advanced Settings.", "paid-memberships-pro" ) }
+                          help={__( "Modify the 'no access' message on the Memberships > Advanced Settings page.", "paid-memberships-pro" ) }
                           options={ [
                                 { label: __( "Show nothing", 'paid-memberships-pro' ), value: '0' },
                                 { label: __( "Show the 'no access' message", 'paid-memberships-pro' ), value: '1' },
