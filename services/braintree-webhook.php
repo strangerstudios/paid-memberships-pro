@@ -586,7 +586,8 @@ function pmpro_braintreeWebhookExit() {
 		//log in file or email?
 		if ( defined( 'PMPRO_BRAINTREE_WEBHOOK_DEBUG' ) && PMPRO_BRAINTREE_WEBHOOK_DEBUG === "log" ) {
 			//file
-			$loghandle = fopen( dirname( __FILE__ ) . "/../logs/braintree-webhook.txt", "a+" );
+			$logfile = apply_filters( 'pmpro_braintree_webhook_logfile', dirname( __FILE__ ) . "/../logs/braintree-webhook.txt" );
+			$loghandle = fopen( $logfile, "a+" );
 			fwrite( $loghandle, $debuglog );
 			fclose( $loghandle );
 		} else if ( defined( 'PMPRO_BRAINTREE_WEBHOOK_DEBUG' ) ) {

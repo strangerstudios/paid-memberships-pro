@@ -228,56 +228,62 @@
 		elseif($pmpro_stripe_event->type == "invoice.payment_action_required") {
 			// TODO: Test subs with SCA.
 			$old_order = getOldOrderFromInvoiceEvent($pmpro_stripe_event);
-			$user_id = $old_order->user_id;
-			$user = get_userdata($user_id);
-			$invoice = $pmpro_stripe_event->data->object;
-			
-			// Prep order for emails.
-			$morder = new MemberOrder();
-			$morder->user_id = $user_id;
+			if( ! empty( $old_order ) && ! empty( $old_order->id ) ) {
+				$user_id = $old_order->user_id;
+				$user = get_userdata($user_id);
+        $invoice = $pmpro_stripe_event->data->object;
 
-			// Update payment method and billing address on order.
-			$payment_intent_args = array(
-				'id'     => $invoice->payment_intent,
-				'expand' => array(
-					'payment_method',
-				),
-			);
-			$payment_intent = \Stripe\PaymentIntent::retrieve( $payment_intent_args );
-			$payment_method = $payment_intent->charges->data[0]->payment_method_details;
-			if ( empty( $payment_method ) ) {
-				$logstr .= "Could not find payment method for invoice " . $invoice->id;
+				// Prep order for emails.
+				$morder = new MemberOrder();
+				$morder->user_id = $user_id;
+
+				// Update payment method and billing address on order.
+        $payment_intent_args = array(
+          'id'     => $invoice->payment_intent,
+          'expand' => array(
+            'payment_method',
+          ),
+        );
+        $payment_intent = \Stripe\PaymentIntent::retrieve( $payment_intent_args );
+        $payment_method = $payment_intent->charges->data[0]->payment_method_details;
+        if ( empty( $payment_method ) ) {
+          $logstr .= "Could not find payment method for invoice " . $invoice->id;
+          pmpro_stripeWebhookExit();
+        }
+        pmpro_stripe_webhook_populate_order_from_payment( $morder, $payment_method );
+
+				// Add invoice link to the order.
+				$morder->invoice_url = $pmpro_stripe_event->data->object->hosted_invoice_url;
+
+				// Email the user and ask them to authenticate their payment.
+				$pmproemail = new PMProEmail();
+				$pmproemail->sendPaymentActionRequiredEmail($user, $morder);
+
+				// Email admin so they are aware.
+				// TODO: Remove?
+				$pmproemail = new PMProEmail();
+				$pmproemail->sendPaymentActionRequiredAdminEmail($user, $morder);
+
+				$logstr .= "Subscription payment for order ID #" . $old_order->id . " requires customer authentication. Sent email to the member and site admin.";
 				pmpro_stripeWebhookExit();
 			}
-			pmpro_stripe_webhook_populate_order_from_payment( $morder, $payment_method );
-			
-			// Add invoice link to the order.
-			$morder->invoice_url = $invoice->hosted_invoice_url;
-			
-			// Email the user and ask them to authenticate their payment.
-			$pmproemail = new PMProEmail();
-			$pmproemail->sendPaymentActionRequiredEmail($user, $morder);
-
-			// Email admin so they are aware.
-			// TODO: Remove?
-			$pmproemail = new PMProEmail();
-			$pmproemail->sendPaymentActionRequiredAdminEmail($user, $morder);
-
-			$logstr .= "Subscription payment for order ID #" . $old_order->id . " requires customer authentication. Sent email to the member and site admin.";
-			pmpro_stripeWebhookExit();
-			
-			
-		} elseif($pmpro_stripe_event->type == "charge.failed")
-		{
+			else
+			{
+				$logstr .= "Could not find the related subscription for event with ID #" . $pmpro_stripe_event->id . ".";
+				if(!empty($pmpro_stripe_event->data->object->customer))
+					$logstr .= " Customer ID #" . $pmpro_stripe_event->data->object->customer . ".";
+				pmpro_stripeWebhookExit();
+			}
+		} elseif($pmpro_stripe_event->type == "charge.failed") {
 			//last order for this subscription
 			$old_order = getOldOrderFromInvoiceEvent($pmpro_stripe_event);
 
-			$user_id = $old_order->user_id;
-			$user = get_userdata($user_id);
-
-			if(!empty($old_order->id))
+			if( ! empty( $old_order ) && ! empty( $old_order->id ) )
 			{
 				do_action("pmpro_subscription_payment_failed", $old_order);
+
+				$user_id = $old_order->user_id;
+				$user = get_userdata($user_id);
 
 				//prep this order for the failure emails
 				$morder = new MemberOrder();
@@ -322,7 +328,7 @@
 			//for one of our users? if they still have a membership for the same level, cancel it
 			$old_order = getOldOrderFromInvoiceEvent($pmpro_stripe_event);
 
-			if(!empty($old_order)) {
+			if( ! empty( $old_order ) && ! empty( $old_order->id ) ) {
 				$user_id = $old_order->user_id;
 				$user = get_userdata($user_id);
 								
@@ -718,9 +724,10 @@
 			if(defined('PMPRO_STRIPE_WEBHOOK_DEBUG') && PMPRO_STRIPE_WEBHOOK_DEBUG === "log")
 			{
 				//file
-				$loghandle = fopen(dirname(__FILE__) . "/../logs/stripe-webhook.txt", "a+");
-				fwrite($loghandle, $logstr);
-				fclose($loghandle);
+				$logfile = apply_filters( 'pmpro_stripe_webhook_logfile', dirname( __FILE__ ) . "/../logs/stripe-webhook.txt" );
+				$loghandle = fopen( $logfile, "a+" );
+				fwrite( $loghandle, $logstr );
+				fclose( $loghandle );
 			}
 			elseif(defined('PMPRO_STRIPE_WEBHOOK_DEBUG') && false !== PMPRO_STRIPE_WEBHOOK_DEBUG )
 			{
