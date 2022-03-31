@@ -49,7 +49,8 @@
 	if(defined('PMPRO_AUTHNET_SILENT_POST_DEBUG') && PMPRO_AUTHNET_SILENT_POST_DEBUG === "log")
 	{
 		//file
-		$loghandle = fopen(dirname(__FILE__) . "/../logs/authnet-silent-post.txt", "a+");
+		$logfile = apply_filters( 'pmpro_authnet_silent_post_logfile', dirname( __FILE__ ) . "/../logs/authnet-silent-post.txt" );
+		$loghandle = fopen( $logfile, "a+" );
 		fwrite($loghandle, $logstr);
 		fclose($loghandle);
 	} elseif(defined('PMPRO_AUTHNET_SILENT_POST_DEBUG') && false !== PMPRO_AUTHNET_SILENT_POST_DEBUG) {
