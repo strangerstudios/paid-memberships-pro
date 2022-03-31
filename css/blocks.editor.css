@@ -31,7 +31,7 @@
 .pmpro-block-element .components-base-control .components-select-control {
 	height: auto;
 }
-.pmpro-block-element .components-base-control .components-base-control__label {
+..pmpro-block-element .components-base-control .components-base-control__label {
 	display: block;
 }
 
@@ -76,6 +76,9 @@
 .pmpro-block-inspector-scrollable::-webkit-scrollbar-thumb {
 	background: #2c3338;
 	border-radius: 5px;
+}
+.pmpro-block-inspector-scrollable .components-base-control.components-checkbox-control {
+	margin-bottom: 5px;
 }
 
 /* Checkout Button Block */

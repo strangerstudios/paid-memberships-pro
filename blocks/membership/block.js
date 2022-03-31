@@ -9,11 +9,12 @@
   */
  const { __ } = wp.i18n;
  const {
-    registerBlockType,
+    registerBlockType
 } = wp.blocks;
 const {
     PanelBody,
     CheckboxControl,
+    SelectControl,
 } = wp.components;
 const {
     InspectorControls,
@@ -83,7 +84,7 @@ const all_levels = [{ value: 0, label: "Non-Members" }].concat( pmpro.all_level_
                      }
                  }
                  return [                    
-                    <CheckboxControl                    
+                    <CheckboxControl
                         label = { level.label }
                         checked = { levels.some( levelID => levelID == level.value ) }
                         onChange = { setLevelsAttribute }
@@ -94,23 +95,25 @@ const all_levels = [{ value: 0, label: "Non-Members" }].concat( pmpro.all_level_
              return [
                 isSelected && <InspectorControls>
                     <PanelBody>
-                        <CheckboxControl
-                            label={ __( "Swap Content With a 'No Access' Message", 'paid-memberships-pro' ) }
-                            checked={ show_noaccess }
-                            onChange={ show_noaccess => setAttributes( {show_noaccess} ) }
-                        />
+                        <p><strong>{ __( 'Which membership levels can view this block?', 'paid-memberships-pro' ) }</strong></p>
                         <div class="pmpro-block-inspector-scrollable">
                             {checkboxes}
                         </div>
+                        <hr />
+                        <p><strong>{ __( 'What should users without access see?', 'paid-memberships-pro' ) }</strong></p>
+                        <SelectControl
+                          value={ show_noaccess }
+                          help={__( "Optionally show the message for visitors or logged-in users without access as defined in PMPro Advanced Settings.", "paid-memberships-pro" ) }
+                          options={ [
+                                { label: __( "Show nothing", 'paid-memberships-pro' ), value: '0' },
+                                { label: __( "Show the 'no access' message", 'paid-memberships-pro' ), value: '1' },
+                            ] }
+                          onChange={ show_noaccess => setAttributes( { show_noaccess } ) }
+                        />
                     </PanelBody>
                 </InspectorControls>,
                 isSelected && <div className="pmpro-block-require-membership-element" >
                   <span className="pmpro-block-title">{ __( 'Membership Required', 'paid-memberships-pro' ) }</span>
-                  <CheckboxControl
-                      label={ __( "Swap Content With a 'No Access' Message", 'paid-memberships-pro' ) }
-                      checked={ show_noaccess }
-                      onChange={ show_noaccess => setAttributes( {show_noaccess} ) }
-                  />
                   <div class="pmpro-block-inspector-scrollable">
                   <PanelBody>                      
                       {checkboxes}
