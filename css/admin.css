@@ -16,61 +16,63 @@
 }
 
 /* header/etc */
+.pmpro-page #wpcontent,
+.pmpro-page #wpbody-content{
+	padding: 0;
+}
 .pmpro_admin {
 	background-image: url(../images/Paid-Memberships-Pro_watermark.png);
 	background-position: bottom right;
 	background-repeat: no-repeat;
 	background-size: 290px 40px;
-	padding: 1em 0 70px 0;
+	padding: 0 0 70px 0;
 }
-.pmpro_admin .pmpro_banner {
-	display: grid;
-	grid-template-areas: "logo meta";
-	grid-template-columns: 350px auto;
+.pmpro_banner {
+	display: flex;
+	padding: .5em 0;
 }
-.pmpro_admin .pmpro_banner .pmpro_logo {
-	grid-area: logo;
+.pmpro_banner .pmpro_logo {
+	margin-right: 10px;
 }
-.pmpro_admin .pmpro_banner .pmpro_meta {
+.pmpro_banner .pmpro_meta {
 	align-self: center;
-	grid-area: meta;
 	font-size: 16px;
 	line-height: 1.5;
 }
-.pmpro_admin .pmpro_banner .pmpro_meta .pmpro_version {
-	color: #333333;
+.pmpro_banner .pmpro_meta .pmpro_version {
+	background: #DCDCDE;
+	color: #555;
+	border-radius: 999px;
+	font-size: 14px;
+	font-weight: bold;
+	padding: 6px 12px;
+}
+.pmpro_banner .pmpro_meta a {
 	display: inline-block;
-	font-weight: bold;
-	padding: 5px 10px 5px 5px;
+	margin: 0 0 0 10px;
 }
-.pmpro_admin .pmpro_banner .pmpro_meta a {
-	border-left: 1px solid #CCC;
-	padding: 5px 10px;
-}
-.pmpro_admin .pmpro_banner .pmpro_meta a.pmpro_license_tag {
+.pmpro_banner .pmpro_meta a.pmpro_license_tag {
 	font-weight: bold;
-	padding: 5px 10px 5px 5px;
 	text-decoration: none;
 }
-.pmpro_admin .pmpro_banner .pmpro_meta a.pmpro_license_tag:before {
-	bottom: 7px;
+.pmpro_banner .pmpro_meta a.pmpro_license_tag:before {
 	display: inline-block;
 	font: 400 20px/1 dashicons;
 	left: 0;
 	position: relative;
 	text-decoration: none;
-	vertical-align: bottom;
+	vertical-align: middle;
 }
-.pmpro_admin .pmpro_banner .pmpro_meta a.pmpro_license_tag.pmpro_license_tag-valid {
+.pmpro_banner .pmpro_meta a.pmpro_license_tag.pmpro_license_tag-valid {
 	color: rgb( 70, 180, 80 );
 }
-.pmpro_admin .pmpro_banner .pmpro_meta a.pmpro_license_tag.pmpro_license_tag-valid:before {
+.pmpro_banner .pmpro_meta a.pmpro_license_tag.pmpro_license_tag-valid:before {
 	content: "\f147";
 }
-.pmpro_admin .pmpro_banner .pmpro_meta a.pmpro_license_tag.pmpro_license_tag-invalid {
+.pmpro_banner .pmpro_meta a.pmpro_license_tag.pmpro_license_tag-invalid {
 	color: #AAA;
 }
-.pmpro_admin .pmpro_banner .pmpro_meta a.pmpro_license_tag.pmpro_license_tag-invalid:before {
+.pmpro_banner .pmpro_meta a.pmpro_license_tag.pmpro_license_tag-invalid:before {
 	content: "\f335";
 }
 
@@ -170,6 +172,18 @@
 	background-color: #f6f7f7;
 }
 
+/* General admin-area tables styles */
+.pmpro_admin table.wp-list-table thead th {
+	padding-left: 1.25em;
+	padding-right: 1.25em;
+}
+.pmpro_admin table.wp-list-table tbody td {
+	padding: 1.25em;
+}
+.pmpro_admin table.wp-list-table .row-actions {
+	color: #999;
+}
+
 /* levels */
 .memberships_page_pmpro-membershiplevels .pmpro_admin #posts-filter p.search-box {
 	margin: 2em 0 1em 0;
@@ -217,36 +231,37 @@
 }
 
 .admin_page_pmpro-paymentsettings span.pmpro_gateway-mode {
-	border: 1px solid;
+	border: 1px solid transparent;
 	border-radius: 3px;
 	display: inline-block;
-	font-size:  75%;
+	font-size: 14px;
+	font-weight: 500;
 	margin-left: 5px;
-	padding: 3px 5px;
+	padding: .25em .5em;
 }
 
 .admin_page_pmpro-paymentsettings span.pmpro_gateway-mode-live {
-	background-color: #edfaef;
-	border-color: #00a32a;
-	color: #00a32a;
+	background-color: #d4edda;
+	border-color: #c3e6cb;
+	color: #0F441C;
 }
 
 .admin_page_pmpro-paymentsettings span.pmpro_gateway-mode-live.pmpro_gateway-mode-not-connected {
-	background-color: #fcf0f1;
-	border-color: #d63638;
-	color: #d63638;
+	background-color: #f8d7da;
+	border-color: #f5c6cb;
+	color: #721c24;
 }
 
 .admin_page_pmpro-paymentsettings span.pmpro_gateway-mode-test {
-	background-color: #fcf9e8;
-	border-color: #dba617;
-	color: #dba617;
+	background-color: #FFF2E0;
+	border-color: #F2E5D3;
+	color: #6B4201;
 }
 
 .admin_page_pmpro-paymentsettings span.pmpro_gateway-mode-test.pmpro_gateway-mode-not-connected {
-	background-color: #f9f3d3;
-	border-color: #d59a13;
-	color: #d59a13;
+	background-color: #FFF8E0;
+	border-color: #ffeeba;
+	color: #6C5101;
 }
 
 .admin_page_pmpro-paymentsettings .pmpro-stripe-connect {
@@ -369,6 +384,52 @@
 .memberships_page_pmpro-orders .pmpro_admin .nav-tab-wrapper {
 	margin-bottom: 10px;
 }
+.pmpro_admin .wp-list-table .column-username,
+.pmpro_admin .wp-list-table .column-billing {
+	word-break: break-word;
+}
+.pmpro_order-status {
+	border: 1px solid transparent;
+	border-radius: 5px;
+	display: block;
+	font-weight: 500;
+	padding: .25em .5em;
+	text-align: center;
+}
+.pmpro_order-status-success,
+.pmpro_order-status-cancelled {
+	background-color: #d4edda;
+	border-color: #c3e6cb;
+	color: #0F441C;
+}
+.pmpro_order-status-error,
+.pmpro_order-status-refunded {
+	background-color: #f8d7da;
+	border-color: #f5c6cb;
+	color: #721c24;
+}
+.pmpro_order-status-pending,
+.pmpro_order-status-review,
+.pmpro_order-status-token {
+	background-color: #FFF8E0;
+	border-color: #ffeeba;
+	color: #6C5101;
+}
+.pmpro_order-renewal {
+	display: block;
+	margin-top: 8px;
+	text-align: center;
+}
+.pmpro_order-renewal:before {
+	content: "\f113";
+	font: normal 12px/1 dashicons;
+	margin-right: 3px;
+	vertical-align: middle;
+	position: relative;
+	top: -1px;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+}
 
 /* members list */
 .wp-list-table.members .column-ID {
@@ -400,27 +461,27 @@ tr.pmpro_settings_divider td {
 	padding: 15px;
 }
 .pmpro_admin .pmpro_success {
-	background-color: rgba( 70, 180, 80, 0.1 );
-	border-left-color: rgb( 70, 180, 80 );
+	background-color: #d4edda;
+	border-left-color: #0F441C;
 }
 .pmpro_admin .pmpro_error,
 .pmpro_admin tr.pmpro_error td {
-	background-color: rgba( 220, 50, 50, 0.1 );
-	border-left-color: rgb( 220, 50, 50 );
+	background-color: #f8d7da;
+	border-left-color: #721c24;
 }
 .pmpro_admin .pmpro_alert {
-	background-color: rgba( 255, 185, 0, 0.1 );
-	border-left-color: rgb( 255, 185, 0 );
+	background-color: #FFF8E0;
+	border-left-color: #6C5101;
 }
 .pmpro_admin .pmpro_success a {
-	color: #208A1B;
+	color: #0F441C;
 }
 .pmpro_admin .pmpro_error a,
 .pmpro_admin tr.pmpro_error td {
-	color: #CC0000;
+	color: #721c24;
 }
 .pmpro_admin .pmpro_alert a {
-	color: #CF8516;
+	color: #6C5101;
 }
 
 /* notifications */

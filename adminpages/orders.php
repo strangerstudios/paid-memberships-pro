@@ -1324,41 +1324,46 @@ if ( function_exists( 'pmpro_add_email_order_modal' ) ) {
 			<p class="clear"><?php printf( __( '%d orders found.', 'paid-memberships-pro' ), $totalrows ); ?></span></p>
 			<?php
 		}
+
+		// Get all the gateways so we can reference their name later.
+		$pmpro_gateways = pmpro_gateways();
+
+		// Get the value for whether to show discount codes or now.
+		if ( $wpdb->get_var( "SELECT id FROM $wpdb->pmpro_discount_codes LIMIT 1" ) ) {
+			$pmpro_discount_codes = true;
+		} else {
+			$pmpro_discount_codes = false;
+		}
 		?>
-		<table class="widefat">
+		<table class="wp-list-table widefat striped">
 			<thead>
 			<tr class="thead">
-				<th><?php esc_html_e( 'ID', 'paid-memberships-pro' ); ?></th>
-				<th><?php esc_html_e( 'Code', 'paid-memberships-pro' ); ?></th>
-				<th><?php esc_html_e( 'User', 'paid-memberships-pro' ); ?></th>
+				<th class="column-code"><?php esc_html_e( 'Code', 'paid-memberships-pro' ); ?></th>
+				<th class="column-username"><?php esc_html_e( 'User', 'paid-memberships-pro' ); ?></th>
 				<?php do_action( 'pmpro_orders_extra_cols_header', $order_ids ); ?>
-				<th><?php esc_html_e( 'Level', 'paid-memberships-pro' ); ?></th>
-				<th><?php esc_html_e( 'Total', 'paid-memberships-pro' ); ?></th>
-				<th><?php esc_html_e( 'Payment', 'paid-memberships-pro' ); ?></th>
-				<th><?php esc_html_e( 'Gateway', 'paid-memberships-pro' ); ?></th>
-				<th><?php esc_html_e( 'Transaction IDs', 'paid-memberships-pro' ); ?></th>
-				<th><?php esc_html_e( 'Status', 'paid-memberships-pro' ); ?></th>
-				<th><?php esc_html_e( 'Date', 'paid-memberships-pro' ); ?></th>
-				<th><?php esc_html_e( 'Discount Code', 'paid-memberships-pro' );?></th>
+				<th class="column-level"><?php esc_html_e( 'Level', 'paid-memberships-pro' ); ?></th>
+				<th class="column-total"><?php esc_html_e( 'Total', 'paid-memberships-pro' ); ?></th>
+				<th class="column-billing"><?php esc_html_e( 'Billing', 'paid-memberships-pro' ); ?></th>
+				<th class="column-gateway"><?php esc_html_e( 'Gateway', 'paid-memberships-pro' ); ?></th>
+				<th class="column-transaction-ids"><?php esc_html_e( 'Transaction IDs', 'paid-memberships-pro' ); ?></th>
+				<th class="column-status"><?php esc_html_e( 'Status', 'paid-memberships-pro' ); ?></th>
+				<th class="column-date"><?php esc_html_e( 'Date', 'paid-memberships-pro' ); ?></th>
+				<?php if ( ! empty( $pmpro_discount_codes ) ) { ?>
+					<th class="column-discount-code"><?php esc_html_e( 'Discount Code', 'paid-memberships-pro' );?></th>
+				<?php } ?>
 			</tr>
 			</thead>
 			<tbody id="orders" class="list:order orders-list">
 			<?php
-			$count = 0;
 			foreach ( $order_ids as $order_id ) {
 				$order            = new MemberOrder();
 				$order->nogateway = true;
 				$order->getMemberOrderByID( $order_id );
 				$order->getUser();
 				?>
-				<tr <?php if ( $count ++ % 2 == 0 ) { ?>
-				class="alternate"<?php } ?>>
-					<td>
-						<a href="admin.php?page=pmpro-orders&order=<?php echo esc_attr( $order->id ); ?>"><?php echo esc_html( $order->id ); ?></a>
-					</td>
-					<td class="order_code column-order_code has-row-actions">
-						<a href="admin.php?page=pmpro-orders&order=<?php echo esc_attr( $order->id ); ?>"><?php echo esc_html( $order->code ); ?></a>
-						<br />
+				<tr>
+					<td class="column-code has-row-actions">
+						<strong><a href="admin.php?page=pmpro-orders&order=<?php echo esc_attr( $order->id ); ?>"><?php echo esc_html( $order->code ); ?></a></strong>
 						<div class="row-actions">
 							<?php
 							$delete_text = esc_html(
@@ -1383,6 +1388,11 @@ if ( function_exists( 'pmpro_add_email_order_modal' ) ) {
 							);
 
 							$actions = [
+								'id'	 => sprintf(
+									// translators: %s is the Order ID.
+									__( 'ID: %s', 'paid-memberships-pro' ),
+									esc_attr( $order->id ),
+								),
 								'edit'   => sprintf(
 									'<a title="%1$s" href="%2$s">%3$s</a>',
 									esc_attr__( 'Edit', 'paid-memberships-pro' ),
@@ -1412,7 +1422,7 @@ if ( function_exists( 'pmpro_add_email_order_modal' ) ) {
 									),
 									esc_html__( 'Copy', 'paid-memberships-pro' )
 								),
-								'delete' => sprintf(
+								'delete'  => sprintf(
 									'<a title="%1$s" href="%2$s">%3$s</a>',
 									esc_attr__( 'Delete', 'paid-memberships-pro' ),
 									'javascript:pmpro_askfirst(\'' . esc_js( $delete_text ) . '\', \'' . esc_js( $delete_nonce_url ) . '\'); void(0);',
@@ -1466,7 +1476,7 @@ if ( function_exists( 'pmpro_add_email_order_modal' ) ) {
 							?>
 						</div>
 					</td>
-					<td class="username column-username">
+					<td class="column-username">
 						<?php $order->getUser(); ?>
 						<?php if ( ! empty( $order->user ) ) { ?>
 							<a href="user-edit.php?user_id=<?php echo esc_attr( $order->user->ID ); ?>"><?php echo esc_html( $order->user->user_login ); ?></a><br />
@@ -1478,56 +1488,84 @@ if ( function_exists( 'pmpro_add_email_order_modal' ) ) {
 						<?php } ?>
 					</td>
 					<?php do_action( 'pmpro_orders_extra_cols_body', $order ); ?>
-					<td>
+					<td class="column-level">
 						<?php
 							$level = pmpro_getLevel( $order->membership_id );
 							if ( ! empty( $level ) ) {
 								echo esc_html( $level->name );
 							} elseif ( $order->membership_id > 0 ) { ?>
 								[<?php esc_html_e( 'deleted', 'paid-memberships-pro' ); ?>]
-							<?php } else { ?>
-								[<?php esc_html_e( 'none', 'paid-memberships-pro' ); ?>]
-							<?php }
+							<?php } else {
+								esc_html_e( '&#8212;', 'paid-memberships-pro' );
+							}
 						?>
 					</td>
-					<td><?php echo pmpro_escape_price( pmpro_formatPrice( $order->total ) ); ?></td>
-					<td>
+					<td class="column-total"><?php echo pmpro_escape_price( pmpro_formatPrice( $order->total ) ); ?></td>
+					<td class="column-billing">
 						<?php
-						if ( ! empty( $order->payment_type ) ) {
-							echo esc_html( $order->payment_type ) . '<br />';
-						}
-						?>
-						<?php if ( ! empty( $order->accountnumber ) ) { ?>
-							<?php echo esc_html( $order->cardtype ); ?>: x<?php echo esc_html( last4( $order->accountnumber ) ); ?><br/>
-						<?php } ?>
-						<?php if ( ! empty( $order->billing->name ) ) { ?>
-								<?php echo esc_html( $order->billing->name ); ?><br/>
-						<?php } ?>
-						<?php if ( ! empty( $order->billing->street ) ) { ?>
-							<?php echo esc_html( $order->billing->street ); ?><br/>
-							<?php if ( $order->billing->city && $order->billing->state ) { ?>
-								<?php echo esc_html( $order->billing->city ); ?>, <?php echo esc_html( $order->billing->state ); ?> <?php echo esc_html( $order->billing->zip ); ?>
-									<?php
-									if ( ! empty( $order->billing->country ) ) {
-										echo esc_html( $order->billing->country ); }
-									?>
-									<br/>
-							<?php } ?>
-						<?php } ?>
-						<?php
-						if ( ! empty( $order->billing->phone ) ) {
-							echo esc_html( formatPhone( $order->billing->phone ) );
-						}
+							// Build our return variable.
+							$r = '';
+
+							if ( ! empty( $order->payment_type ) ) {
+								if ( in_array( $order->payment_type, array( 'PayPal Standard', 'PayPal Express' ) ) ) {
+									$r .= esc_html( 'PayPal', 'paid-memberships-pro' );
+								} else {
+									$r .= esc_html( ucwords( $order->payment_type ) );
+								}
+								$r .= '<br />';
+							}
+
+							if ( ! empty( $order->accountnumber ) ) {
+								$r .= esc_html( $order->cardtype ) . ': x' . esc_html( last4( $order->accountnumber ) ) . '<br />';
+							}
+
+							if ( ! empty( $order->billing->name ) ) {
+								$r .= esc_html( $order->billing->name ) . '<br />';
+							}
+
+							if ( ! empty( $order->billing->street ) ) {
+								$r .= esc_html( $order->billing->street ) . '<br />';
+							}
+
+							if ( $order->billing->city && $order->billing->state ) {
+								$r .= esc_html( $order->billing->city ) . ', ';
+								$r .= esc_html( $order->billing->state ) . ' ';
+								$r .= esc_html( $order->billing->zip ) . ' ';
+								if ( ! empty( $order->billing->country ) ) {
+									$r .= esc_html( $order->billing->country );
+								}
+							}
+
+							if ( ! empty( $order->billing->phone ) ) {
+								$r .= '<br />' . esc_html( formatPhone( $order->billing->phone ) );
+							}
+
+							// If this column is completely empty, set $r to a dash.
+							if ( empty( $r ) ) {
+								$r .= esc_html( '&#8212;', 'paid-memberships-pro' );
+							}
+
+							// Echo the data for this column.
+							echo $r;
 						?>
 					</td>
-					<td><?php echo $order->gateway; ?>
+					<td class="column-gateway">
 						<?php
-						if ( $order->gateway_environment == 'test' ) {
-							echo '(test)';
-						}
+							if ( ! empty( $order->gateway ) ) {
+								if ( ! empty( $pmpro_gateways[$order->gateway] ) ) {
+									echo $pmpro_gateways[$order->gateway];
+								} else {
+									esc_html_e( ucwords( $order->gateway ) );
+								}
+								if ( $order->gateway_environment == 'sandbox' ) {
+									echo ' (test)';
+								}
+							} else {
+								esc_html_e( '&#8212;', 'paid-memberships-pro' );
+							}
 						?>
 					</td>
-					<td>
+					<td class="column-transaction-ids">
 						<?php esc_html_e( 'Payment', 'paid-memberships-pro' ); ?>:
 						<?php
 						if ( ! empty( $order->payment_transaction_id ) ) {
@@ -1546,18 +1584,38 @@ if ( function_exists( 'pmpro_add_email_order_modal' ) ) {
 						}
 						?>
 					</td>
-					<td><?php echo esc_html( $order->status );  if( $order->is_renewal() ){ echo "<br/>(".__( 'renewal', 'paid-memberships-pro' ).")"; } ?></td>
-					<td>
-						<?php echo esc_html( date_i18n( get_option( 'date_format' ), $order->getTimestamp() ) ); ?><br/>
-						<?php echo esc_html( date_i18n( get_option( 'time_format' ), $order->getTimestamp() ) ); ?>
-					</td>
-					<td>
-						<?php if ( $order->getDiscountCode() ) { ?>
-							<a title="<?php esc_attr_e('edit', 'paid-memberships-pro' ); ?>" href="<?php echo esc_url( add_query_arg( array( 'page' => 'pmpro-discountcodes', 'edit' => $order->discount_code->id ), admin_url('admin.php' ) ) ); ?>">
-								<?php echo esc_html( $order->discount_code->code ); ?>
-							</a>
+					<td class="column-status">
+						<span class="pmpro_order-status pmpro_order-status-<?php esc_attr_e( $order->status ); ?>">
+							<?php if ( in_array( $order->status, array( 'success', 'cancelled' ) ) ) {
+								esc_html_e( 'Paid', 'paid-memberships-pro' );
+							} else {
+								esc_html_e( ucwords( $order->status ) );
+							} ?>
+						</span>
+						<?php if ( $order->is_renewal() ) { ?>
+							<span class="pmpro_order-renewal"><?php esc_html_e( 'Renewal', 'paid-memberships-pro' ); ?></span>
 						<?php } ?>
 					</td>
+					<td class="column-date">
+						<?php
+							 echo esc_html( sprintf(
+								// translators: %1$s is the date and %2$s is the time.
+								__( '%1$s at %2$s', 'paid-memberships-pro' ),
+								esc_html( date_i18n( get_option( 'date_format' ), $order->getTimestamp() ) ),
+								esc_html( date_i18n( get_option( 'time_format' ), $order->getTimestamp() ) ),
+							) ); ?>
+					</td>
+					<?php if ( ! empty( $pmpro_discount_codes ) ) { ?>
+						<td class="column-discount-code">
+							<?php if ( $order->getDiscountCode() ) { ?>
+								<a title="<?php esc_attr_e('edit', 'paid-memberships-pro' ); ?>" href="<?php echo esc_url( add_query_arg( array( 'page' => 'pmpro-discountcodes', 'edit' => $order->discount_code->id ), admin_url('admin.php' ) ) ); ?>">
+									<?php echo esc_html( $order->discount_code->code ); ?>
+								</a>
+							<?php } else {
+								esc_html_e( '&#8212;', 'paid-memberships-pro' );
+							} ?>
+						</td>
+					<?php } ?>
 				</tr>
 				<?php
 			}
