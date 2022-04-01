@@ -2371,30 +2371,21 @@ class PMProGateway_stripe extends PMProGateway {
 	 * @return int trial period days.
 	 */
 	private function calculate_trial_period_days( $order ) {
-		// Use a trial period to set the first recurring payment date.
-		if ( $order->BillingPeriod == "Year" ) {
-			$trial_period_days = $order->BillingFrequency * 365;    //annual
-		} elseif ( $order->BillingPeriod == "Day" ) {
-			$trial_period_days = $order->BillingFrequency * 1;        //daily
-		} elseif ( $order->BillingPeriod == "Week" ) {
-			$trial_period_days = $order->BillingFrequency * 7;        //weekly
-		} else {
-			$trial_period_days = $order->BillingFrequency * 30;    //assume monthly
-		}
-
-		// For free trials, multiply the trial period for each additional free period.
+		// Get the number of payment periods until the first subscription date (ie account for free trial billing amounts).
+		$payment_periods = 1;
 		if ( ! empty( $order->TrialBillingCycles ) && $order->TrialAmount == 0 ) {
-			$trial_period_days = $trial_period_days * ( $order->TrialBillingCycles + 1 );
+			$payment_periods = $order->TrialBillingCycles + 1;
 		}
 
-		//convert to a profile start date
-		$order->ProfileStartDate = date_i18n( "Y-m-d\TH:i:s", strtotime( "+ " . $trial_period_days . " Day", current_time( "timestamp" ) ) );
+		// Calculate the profile start date.
+		// Multiplying billing frequency by payment periods to give free subscription payments if needed.
+		$order->ProfileStartDate = date_i18n("Y-m-d\TH:i:s", strtotime("+ " . $order->BillingFrequency * $payment_periods. " " . $order->BillingPeriod));
 
-		//filter the start date
+		// Filter the start date.
 		$order->ProfileStartDate = apply_filters( "pmpro_profile_start_date", $order->ProfileStartDate, $order );
 
-		//convert back to days
-		$trial_period_days = ceil( abs( strtotime( date_i18n( "Y-m-d\TH:i:s" ), current_time( "timestamp" ) ) - strtotime( $order->ProfileStartDate, current_time( "timestamp" ) ) ) / 86400 );
+		// Convert back to days (86400 seconds per day).
+		$trial_period_days = floor( abs( strtotime( date_i18n( 'Y-m-d' ) ) - strtotime( $order->ProfileStartDate ) ) / 86400 );
 		return $trial_period_days;
 	}
 
