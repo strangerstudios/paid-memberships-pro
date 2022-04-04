@@ -90,7 +90,8 @@ function pmpro_redirect_to_logged_in() {
 		&& ! empty( $_REQUEST['redirect_to'] )
 		&& is_user_logged_in()
 		&& ( empty( $_REQUEST['action'] ) || $_REQUEST['action'] == 'login' )
-		&& empty( $_REQUEST['reauth']) ) {
+		&& empty( $_REQUEST['reauth'])
+        && ! (in_array( $GLOBALS['pagenow'], array( 'wp-login.php', 'wp-register.php' ) ) && ! wp_validate_auth_cookie('', 'secure_auth'))) {
 
 		wp_safe_redirect( esc_url_raw( $_REQUEST['redirect_to'] ) );
 		exit;
@@ -160,6 +161,31 @@ function pmpro_use_default_login_for_confirm_admin_email( $location ) {
 	return $location;
 }
 add_filter( 'wp_redirect', 'pmpro_use_default_login_for_confirm_admin_email' );
+
+/**
+ * Avoid redirect loop when wordpress_sec_ cookie is not set
+ */
+function pmpro_use_default_login_for_logged_users_without_secure_auth_cookie( $location ) {
+    $detect_situation = is_admin() &&
+                        wp_validate_auth_cookie('', 'auth') &&
+                        ! wp_validate_auth_cookie('', 'secure_auth');
+    
+    if( $detect_situation ){
+	    $login_url = wp_login_url();
+
+	    remove_filter( 'login_url', 'pmpro_login_url_filter', 50, 2 );
+	    $default_login_url = wp_login_url();
+	    add_filter( 'login_url', 'pmpro_login_url_filter', 50, 2 );
+
+	    if ( $login_url != $default_login_url ) {
+		    $location = str_replace( $login_url, $default_login_url, $location );
+	    }
+        
+    }
+
+	return $location;
+}
+add_filter( 'wp_redirect', 'pmpro_use_default_login_for_logged_users_without_secure_auth_cookie' );
 
 /**
  * Get a link to the PMPro login page.
