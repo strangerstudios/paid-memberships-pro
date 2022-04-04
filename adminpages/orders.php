@@ -384,16 +384,15 @@ if ( function_exists( 'pmpro_add_email_order_modal' ) ) {
 ?>
 
 <?php if ( ! empty( $order ) ) { ?>
+
 	<hr class="wp-header-end">
 
 	<?php if ( ! empty( $order->id ) ) { ?>
-		<h1><?php esc_html_e( 'Order', 'paid-memberships-pro' ); ?> #<?php echo esc_html( $order->id ); ?></h1>
-		<div class="pmpro-page-actions">
-			<strong><?php esc_html_e( 'Order actions:', 'paid-memberships-pro' ); ?></strong>
-			<a title="<?php esc_attr_e( 'Print', 'paid-memberships-pro' ); ?>" href="<?php echo esc_url( add_query_arg( array( 'action' => 'pmpro_orders_print_view', 'order' => $order->id ), admin_url( 'admin-ajax.php' ) ) ); ?>" target="_blank" ><span class="dashicons dashicons-printer"></span> <?php esc_html_e( 'Print', 'paid-memberships-pro' ); ?></a>
-			<a title="<?php esc_attr_e( 'Email', 'paid-memberships-pro' ); ?>" href="#TB_inline?width=600&height=200&inlineId=email_invoice" class="thickbox email_link" data-order="<?php echo esc_html( $order->id ); ?>"><span class="dashicons dashicons-email"></span> <?php esc_html_e( 'Email', 'paid-memberships-pro' ); ?></a>
-			<a title="<?php esc_attr_e( 'View As Member', 'paid-memberships-pro' ); ?>" href="<?php echo esc_url( pmpro_url("invoice", "?invoice=" . $order->code ) ) ?>" target="_blank"> <span class="dashicons dashicons-admin-users"></span><?php esc_html_e( 'View As Member', 'paid-memberships-pro' ); ?></a>
-		</div>
+		<h1 class="wp-heading-inline"><?php esc_html_e( 'Edit Order', 'paid-memberships-pro' ); ?> ID: <?php echo esc_html( $order->id ); ?></h1>
+
+			<a title="<?php esc_attr_e( 'Print', 'paid-memberships-pro' ); ?>" href="<?php echo esc_url( add_query_arg( array( 'action' => 'pmpro_orders_print_view', 'order' => $order->id ), admin_url( 'admin-ajax.php' ) ) ); ?>" target="_blank" class="page-title-action pmpro-has-icon pmpro-has-icon-printer"><?php esc_html_e( 'Print', 'paid-memberships-pro' ); ?></a>
+			<a title="<?php esc_attr_e( 'Email', 'paid-memberships-pro' ); ?>" href="#TB_inline?width=600&height=200&inlineId=email_invoice" class="thickbox email_link page-title-action pmpro-has-icon pmpro-has-icon-email" data-order="<?php echo esc_html( $order->id ); ?>"><?php esc_html_e( 'Email', 'paid-memberships-pro' ); ?></a>
+			<a title="<?php esc_attr_e( 'View', 'paid-memberships-pro' ); ?>" href="<?php echo esc_url( pmpro_url("invoice", "?invoice=" . $order->code ) ) ?>" target="_blank" class="page-title-action pmpro-has-icon pmpro-has-icon-admin-users"><?php esc_html_e( 'View', 'paid-memberships-pro' ); ?></a>
 	<?php } else { ?>
 		<h1 class="wp-heading-inline"><?php esc_html_e( 'New Order', 'paid-memberships-pro' ); ?></h1>
 	<?php } ?>
@@ -415,20 +414,6 @@ if ( function_exists( 'pmpro_add_email_order_modal' ) ) {
 
 		<table class="form-table">
 			<tbody>
-<?php /*
-			<tr>
-				<th scope="row" valign="top"><label>ID:</label></th>
-				<td>
-				<?php
-				if ( ! empty( $order->id ) ) {
-						echo esc_html( $order->id );
-				} else {
-					echo '<p class="description">' . __( 'This will be generated when you save.', 'paid-memberships-pro' ) . '</p>';
-				}
-					?>
-					</td>
-			</tr>
-*/ ?>
 			<tr>
 				<th scope="row" valign="top"><label for="code"><?php esc_html_e( 'Code', 'paid-memberships-pro' ); ?>:</label></th>
 				<td>
@@ -522,8 +507,13 @@ if ( function_exists( 'pmpro_add_email_order_modal' ) ) {
 			</tbody>
 		</table>
 		<hr />
-		<h2><?php esc_html_e( 'Billing Information', 'paid-memberships-pro' ); ?></h2>
-		<table class="form-table">
+		<h2>
+			<?php esc_html_e( 'Billing Address', 'paid-memberships-pro' ); ?>
+			<?php if ( empty( $order->billing_street) ) { ?>
+				<a href="javascript:void(0);" id="show_billing_action"><?php esc_html_e( 'Show Billing Fields', 'paid-memberships-pro' ); ?></a>
+			<?php } ?>
+		</h2>
+		<table id="billing_address_fields" class="form-table"<?php if ( empty( $order->billing_street) ) { ?> style="display: none;"<?php } ?>>
 			<tbody>
 			<tr>
 				<th scope="row" valign="top"><label for="billing_name"><?php esc_html_e( 'Billing Name', 'paid-memberships-pro' ); ?>:</label>
@@ -615,7 +605,16 @@ if ( function_exists( 'pmpro_add_email_order_modal' ) ) {
 				</td>
 			</tr>
 			</tbody>
-		</table>
+		</table> <!-- end #billing_address_fields -->
+		<script>
+			// Script to show billing fields if they are empty and hidden by default on this form.
+			jQuery(document).ready(function() {
+				jQuery('#show_billing_action').click(function() {
+					jQuery('#show_billing_action').hide();
+					jQuery('#billing_address_fields').show();
+				});
+			});
+		</script>
 		<hr />
 		<h2><?php esc_html_e( 'Payment Information', 'paid-memberships-pro' ); ?></h2>
 		<table class="form-table">
@@ -802,7 +801,7 @@ if ( function_exists( 'pmpro_add_email_order_modal' ) ) {
 						<select id="status" name="status">
 							<?php foreach ( $statuses as $status ) { ?>
 								<option
-									value="<?php echo esc_attr( $status ); ?>" <?php selected( $order->status, $status ); ?>><?php echo esc_html( ucwords( $status ) ); ?></option>
+									value="<?php echo esc_attr( $status ); ?>" <?php selected( $order->status, $status ); ?>><?php echo esc_html( $status ); ?></option>
 							<?php } ?>
 						</select>
 						<?php
@@ -877,10 +876,11 @@ if ( function_exists( 'pmpro_add_email_order_modal' ) ) {
 					<?php
 					if ( in_array( 'subscription_transaction_id', $read_only_fields ) && $order_id > 0 ) {
 						echo $order->subscription_transaction_id;
-					} else {
-										?>
-											<input id="subscription_transaction_id" name="subscription_transaction_id" type="text" size="50"
-												   value="<?php echo esc_attr( $order->subscription_transaction_id ); ?>"/>
+					} else { ?>
+						<input id="subscription_transaction_id" name="subscription_transaction_id" type="text" size="50" value="<?php echo esc_attr( $order->subscription_transaction_id ); ?>"/>
+						<?php if ( $order->is_renewal() ) { ?>
+							<span class="pmpro_order-renewal"><?php esc_html_e( 'Renewal', 'paid-memberships-pro' ); ?></span>
+						<?php } ?>
 					<?php } ?>
 					<p class="description"><?php esc_html_e( 'Generated by the gateway. Useful to cross reference subscriptions.', 'paid-memberships-pro' ); ?></p>
 				</td>

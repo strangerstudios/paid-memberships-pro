@@ -6,7 +6,7 @@
 	border-bottom-width: 1px;
 }
 
-/* icon */
+/* icons */
 #wp-admin-bar-paid-memberships-pro .ab-item .ab-icon:before {
 	font-family: "dashicons";
 	content: "\f307";
@@ -14,12 +14,27 @@
 .pmpro_admin tr td .dashicons {
 	padding-top: 5px;
 }
+.pmpro_admin .pmpro-has-icon:before {
+	font: normal 16px/1 dashicons;
+	margin-right: 8px;
+	speak: never;
+	vertical-align: middle;
+	position: relative;
+	top: -2px;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+}
+.pmpro_admin .pmpro-has-icon-printer:before {
+	content: "\f193";
+}
+.pmpro_admin .pmpro-has-icon-email:before {
+	content: "\f465";
+}
+.pmpro_admin .pmpro-has-icon-admin-users:before {
+	content: "\f110";
+}
 
 /* header/etc */
-.pmpro-page #wpcontent,
-.pmpro-page #wpbody-content{
-	padding: 0;
-}
 .pmpro_admin {
 	background-image: url(../images/Paid-Memberships-Pro_watermark.png);
 	background-position: bottom right;
@@ -94,6 +109,10 @@
 	max-width: 200px;
 	height: auto;
 }
+.pmpro_admin h2,
+.pmpro_admin h3 {
+	font-size: 18px;
+}
 
 /* Scollable Boxes */
 .pmpro_scrollable {
@@ -152,26 +171,6 @@
 }
 .pmpro_checkbox_box .pmpro_clickable input[type=checkbox] {
 	margin-top: 0;
-}
-
-/* Page Actions Row */
-.pmpro-page-actions {
-	align-items: center;
-	background-color: #FFF;
-	border: 1px solid #C3C4C7;
-	border-radius: 5px;
-	box-shadow: 0 1px 1px rgb(0 0 0 / 4%);
-	display: flex;
-	font-size: 14px;
-	margin: 1em 0;
-	padding: 1em;
-}
-.pmpro-page-actions > * {
-	margin: 0 1.5em 0 0;
-}
-.pmpro-page-actions a {
-	font-weight: 500;
-	text-decoration: none;
 }
 
 /* Consent Log */
@@ -435,7 +434,7 @@
 	border-color: #ffeeba;
 	color: #6C5101;
 }
-.pmpro_order-renewal {
+.wp-list-table .pmpro_order-renewal {
 	display: block;
 	margin-top: 8px;
 	text-align: center;
@@ -449,6 +448,11 @@
 	top: -1px;
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;
+}
+.memberships_page_pmpro-orders #show_billing_action {
+	font-size: 14px;
+	font-weight: normal;
+	margin-left: 10px;
 }
 
 /* members list */
