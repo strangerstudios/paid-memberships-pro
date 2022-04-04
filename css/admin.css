@@ -440,7 +440,7 @@
 	text-align: center;
 }
 a.pmpro_order-renewal {
-	color: initial;
+	color: inherit;
 	text-decoration: none;
 }
 .pmpro_order-renewal:before {
