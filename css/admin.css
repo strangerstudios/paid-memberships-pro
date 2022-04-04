@@ -385,11 +385,9 @@ tr.pmpro_settings_divider td {
 }
 
 /* admin pages */
-.pmpro_admin_section-email-templates-content .pmpro-email-templates-variable-reference .form-table td {
-	padding: 5px;
-}
-.pmpro_admin_section-email-templates-content .pmpro-email-templates-variable-reference .form-table .widefat {
-	margin-bottom: 20px;
+.pmpro_admin_section-email-templates-content .pmpro-email-templates-variable-reference table {
+	margin-bottom: 3em;
+	max-width: 900px;
 }
 
 /* messages */
