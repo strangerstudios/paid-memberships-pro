@@ -510,7 +510,7 @@ if ( function_exists( 'pmpro_add_email_order_modal' ) ) {
 		<h2>
 			<?php esc_html_e( 'Billing Address', 'paid-memberships-pro' ); ?>
 			<?php if ( empty( $order->billing_street) ) { ?>
-				<a href="javascript:void(0);" id="show_billing_action"><?php esc_html_e( 'Show Billing Fields', 'paid-memberships-pro' ); ?></a>
+				<a href="javascript:void(0);" id="show_billing_action"><?php esc_html_e( 'Show Billing Address Fields', 'paid-memberships-pro' ); ?></a>
 			<?php } ?>
 		</h2>
 		<table id="billing_address_fields" class="form-table"<?php if ( empty( $order->billing_street) ) { ?> style="display: none;"<?php } ?>>
