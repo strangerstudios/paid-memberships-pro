@@ -439,6 +439,10 @@
 	margin-top: 8px;
 	text-align: center;
 }
+a.pmpro_order-renewal {
+	color: initial;
+	text-decoration: none;
+}
 .pmpro_order-renewal:before {
 	content: "\f113";
 	font: normal 12px/1 dashicons;
