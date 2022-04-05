@@ -17,10 +17,6 @@
 
 /* header/etc */
 .pmpro_admin {
-	background-image: url(../images/Paid-Memberships-Pro_watermark.png);
-	background-position: bottom right;
-	background-repeat: no-repeat;
-	background-size: 290px 40px;
 	padding: 1em 0 70px 0;
 }
 .pmpro_admin .pmpro_banner {
