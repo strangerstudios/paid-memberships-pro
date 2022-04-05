@@ -259,7 +259,7 @@
 <?php
 	if($edit) {
 	?>
-
+	<hr class="wp-header-end">
 	<h1 class="wp-heading-inline">
 		<?php
 			if($edit > 0)
@@ -268,8 +268,6 @@
 				echo __("Add New Membership Level", 'paid-memberships-pro' );
 		?>
 	</h1>
-	<hr class="wp-header-end">
-
 	<div>
 		<?php
 			// get the level...
@@ -772,7 +770,7 @@
 			<?php
 			}
 		?>
-
+		<hr class="wp-header-end">
 		<?php if( empty( $s ) && count( $reordered_levels ) === 0 ) { ?>
 			<div class="pmpro-new-install">
 				<h2><?php esc_html_e( 'No Membership Levels Found', 'paid-memberships-pro' ); ?></h2>
@@ -780,7 +778,6 @@
 				<a href="https://www.paidmembershipspro.com/documentation/initial-plugin-setup/step-1-add-new-membership-level/?utm_source=plugin&utm_medium=pmpro-membershiplevels&utm_campaign=documentation&utm_content=step-1-add-new-membership-level" target="_blank" rel="noopener noreferrer" class="button"><?php esc_html_e( 'Video: Membership Levels', 'paid-memberships-pro' ); ?></a>
 			</div> <!-- end pmpro-new-install -->
 		<?php } else { ?>
-
 		<form id="posts-filter" method="get" action="">
 			<p class="search-box">
 				<label class="screen-reader-text" for="post-search-input"><?php esc_html_e('Search Levels', 'paid-memberships-pro' );?>:</label>
@@ -791,8 +788,6 @@
 		</form>
 		<h1 class="wp-heading-inline"><?php esc_html_e( 'Membership Levels', 'paid-memberships-pro' ); ?></h1>
 		<a href="<?php echo esc_url( add_query_arg( array( 'page' => 'pmpro-membershiplevels', 'edit' => -1 ), admin_url( 'admin.php' ) ) ); ?>" class="page-title-action"><?php esc_html_e( 'Add New Level', 'paid-memberships-pro' ); ?></a>
-		<hr class="wp-header-end">
-
 		<?php if(empty($_REQUEST['s']) && count($reordered_levels) > 1) { ?>
 		    <p><?php esc_html_e('Drag and drop membership levels to reorder them on the Levels page.', 'paid-memberships-pro' ); ?></p>
 	    <?php } ?>

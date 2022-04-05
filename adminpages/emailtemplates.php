@@ -16,10 +16,8 @@
 ?>
 <form action="" method="post" enctype="multipart/form-data"> 
 	<?php wp_nonce_field('savesettings', 'pmpro_emailsettings_nonce');?>
-	
-	<h1 class="wp-heading-inline"><?php esc_html_e( 'Email Templates', 'paid-memberships-pro' ); ?></h1>
 	<hr class="wp-header-end">
-
+	<h1 class="wp-heading-inline"><?php esc_html_e( 'Email Templates', 'paid-memberships-pro' ); ?></h1>
 	<p><?php esc_html_e( 'Select an email template from the dropdown below to customize the subject and body of emails sent through your membership site. You can also disable a specific email or send a test version through this admin page.', 'paid-memberships-pro' ); ?> <a href="https://www.paidmembershipspro.com/documentation/member-communications/list-of-pmpro-email-templates/" target="_blank"><?php esc_html_e( 'Click here for a description of each email sent to your members and admins at different stages of the member experience.', 'paid-memberships-pro'); ?></a></p>
 
 	<div class="pmpro_admin_section pmpro_admin_section-email-templates-content">

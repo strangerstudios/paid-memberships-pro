@@ -130,9 +130,8 @@
 
 	<form action="" method="post" enctype="multipart/form-data">
 		<?php wp_nonce_field('savesettings', 'pmpro_advancedsettings_nonce');?>
-		
-		<h1 class="wp-heading-inline"><?php esc_html_e( 'Advanced Settings', 'paid-memberships-pro' ); ?></h1>
 		<hr class="wp-header-end">
+		<h1 class="wp-heading-inline"><?php esc_html_e( 'Advanced Settings', 'paid-memberships-pro' ); ?></h1>
 		<div class="pmpro_admin_section pmpro_admin_section-restrict-dashboard">
 			<h2 class="title"><?php esc_html_e( 'Restrict Dashboard Access', 'paid-memberships-pro' ); ?></h2>
 			<table class="form-table">
