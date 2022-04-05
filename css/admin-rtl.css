@@ -1,5 +1,5 @@
 .pmpro_admin {
-	background: url(../images/Paid-Memberships-Pro_watermark.png) bottom left no-repeat !important;
+	background-position: bottom left;
 }
 
 .pmpro_admin .pmpro_banner h2 {
@@ -29,7 +29,7 @@
 /* discount levels */
 
 /* pagination */
-div.pmpro_pagination {
+.pmpro_pagination {
 	float: left;
 }
 
