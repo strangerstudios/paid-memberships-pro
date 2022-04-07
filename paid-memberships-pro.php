@@ -116,6 +116,11 @@ if ( version_compare( PHP_VERSION, '5.3.29', '>=' ) ) {
 	require_once( PMPRO_DIR . '/includes/lib/stripe-apple-pay/stripe-apple-pay.php' ); // rewrite rules to set up Apple Pay.
 }
 
+// Set up Wisdom tracking.
+require_once PMPRO_DIR . '/classes/class-pmpro-wisdom-integration.php';
+$wisdom_integration = PMPro_Wisdom_Integration::instance();
+$wisdom_integration->setup_wisdom();
+
 /*
 	Setup the DB and check for upgrades
 */
