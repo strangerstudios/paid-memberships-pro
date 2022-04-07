@@ -876,6 +876,7 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 					`u`.`ID` AS `user_id`,
 					`u`.`user_email`,
 					`u`.`user_nicename`,
+					`o`.`membership_id`,
 					`o`.`billing_name`,
 					`o`.`billing_street`,
 					`o`.`billing_city`,
