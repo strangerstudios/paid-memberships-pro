@@ -267,8 +267,8 @@ function pmpro_checkForUpgrades()
 		pmpro_db_delta();
 		$pmpro_db_version = pmpro_upgrade_2_6();
 		pmpro_setOption( 'db_version', '2.6' );
-	}	
-	
+	}
+
 	/**
 	 * Version 2.7.1
 	 * Running pmpro_db_delta to fix the primary key in a couple tables.

@@ -119,7 +119,7 @@ class PMProGateway_stripe extends PMProGateway {
 			'PMProGateway_stripe',
 			'pmpro_cron_stripe_subscription_updates'
 		) );
-		
+
 		//AJAX services for creating/disabling webhooks
 		add_action( 'wp_ajax_pmpro_stripe_create_webhook', array( 'PMProGateway_stripe', 'wp_ajax_pmpro_stripe_create_webhook' ) );
 		add_action( 'wp_ajax_pmpro_stripe_delete_webhook', array( 'PMProGateway_stripe', 'wp_ajax_pmpro_stripe_delete_webhook' ) );
@@ -146,7 +146,7 @@ class PMProGateway_stripe extends PMProGateway {
 				'PMProGateway_stripe',
 				'pmpro_checkout_after_preheader'
 			) );
-			
+
 			add_action( 'pmpro_billing_preheader', array( 'PMProGateway_stripe', 'pmpro_checkout_after_preheader' ) );
 			add_filter( 'pmpro_checkout_order', array( 'PMProGateway_stripe', 'pmpro_checkout_order' ) );
 			add_filter( 'pmpro_billing_order', array( 'PMProGateway_stripe', 'pmpro_checkout_order' ) );
@@ -294,7 +294,7 @@ class PMProGateway_stripe extends PMProGateway {
 		}
 
 		?>
-			<tr class="pmpro_settings_divider gateway gateway_stripe" <?php if ( $gateway != "stripe" ) { ?>style="display: none;"<?php } ?>>		
+			<tr class="pmpro_settings_divider gateway gateway_stripe" <?php if ( $gateway != "stripe" ) { ?>style="display: none;"<?php } ?>>
 			<td colspan="2">
 				<hr />
 				<h2 class="pmpro_stripe_legacy_keys" <?php if( ! self::show_legacy_keys_settings() ) {?>style="display: none;"<?php }?>><?php esc_html_e( 'Stripe API Settings (Legacy)', 'paid-memberships-pro' ); ?></h2>
@@ -308,7 +308,7 @@ class PMProGateway_stripe extends PMProGateway {
 					jQuery(document).ready(function(){
 						jQuery('#pmpro_stripe_legacy_keys_toggle').click(function(e){
 							var btn = jQuery('#pmpro_stripe_legacy_keys_toggle');
-							var div = btn.closest('.pmpro_settings_divider');							
+							var div = btn.closest('.pmpro_settings_divider');
 							btn.parent().remove();
 							jQuery('.pmpro_stripe_legacy_keys').show();
 							jQuery('.pmpro_stripe_legacy_keys').addClass('gateway_stripe');
@@ -321,7 +321,7 @@ class PMProGateway_stripe extends PMProGateway {
 		</tr>
 		<tr class="gateway pmpro_stripe_legacy_keys <?php if ( self::show_legacy_keys_settings() ) { echo 'gateway_stripe'; } ?>" <?php if ( $gateway != "stripe" || ! self::show_legacy_keys_settings() ) { ?>style="display: none;"<?php } ?>>
 			<th scope="row" valign="top">
-				<label for="stripe_publishablekey"><?php _e( 'Publishable Key', 'paid-memberships-pro' ); ?>:</label>
+				<label for="stripe_publishablekey"><?php esc_html_e( 'Publishable Key', 'paid-memberships-pro' ); ?>:</label>
 			</th>
 			<td>
 				<input type="text" id="stripe_publishablekey" name="stripe_publishablekey" value="<?php echo esc_attr( $values['stripe_publishablekey'] ) ?>" class="regular-text code" />
@@ -329,7 +329,7 @@ class PMProGateway_stripe extends PMProGateway {
 				$public_key_prefix = substr( $values['stripe_publishablekey'], 0, 3 );
 				if ( ! empty( $values['stripe_publishablekey'] ) && $public_key_prefix != 'pk_' ) {
 					?>
-					<p class="pmpro_red"><strong><?php _e( 'Your Publishable Key appears incorrect.', 'paid-memberships-pro' ); ?></strong></p>
+					<p class="pmpro_red"><strong><?php esc_html_e( 'Your Publishable Key appears incorrect.', 'paid-memberships-pro' ); ?></strong></p>
 					<?php
 				}
 				?>
@@ -337,12 +337,12 @@ class PMProGateway_stripe extends PMProGateway {
 		</tr>
 		<tr class="gateway pmpro_stripe_legacy_keys <?php if ( self::show_legacy_keys_settings() ) { echo 'gateway_stripe'; } ?>" <?php if ( $gateway != "stripe" ||  ! self::show_legacy_keys_settings() ) { ?>style="display: none;"<?php } ?>>
 			<th scope="row" valign="top">
-				<label for="stripe_secretkey"><?php _e( 'Secret Key', 'paid-memberships-pro' ); ?>:</label>
+				<label for="stripe_secretkey"><?php esc_html_e( 'Secret Key', 'paid-memberships-pro' ); ?>:</label>
 			</th>
 			<td>
 				<input type="text" id="stripe_secretkey" name="stripe_secretkey" value="<?php echo esc_attr( $values['stripe_secretkey'] ) ?>" autocomplete="off" class="regular-text code pmpro-admin-secure-key" />
 			</td>
-		</tr>		
+		</tr>
 		<tr class="gateway pmpro_stripe_legacy_keys <?php if ( self::show_legacy_keys_settings() ) { echo 'gateway_stripe'; } ?>" <?php if ( $gateway != "stripe" || ! self::show_legacy_keys_settings() ) { ?>style="display: none;"<?php } ?>>
 			<th scope="row" valign="top">
 				<label><?php esc_html_e( 'Webhook', 'paid-memberships-pro' ); ?>:</label>
@@ -350,32 +350,32 @@ class PMProGateway_stripe extends PMProGateway {
 			<td>
 				<?php if ( ! empty( $webhook ) && is_array( $webhook ) && self::show_legacy_keys_settings()) { ?>
 				<button type="button" id="pmpro_stripe_create_webhook" class="button button-secondary" style="display: none;"><span class="dashicons dashicons-update-alt"></span> <?php _e( 'Create Webhook' ,'paid-memberships-pro' ); ?></button>
-					<?php 
+					<?php
 						if ( 'disabled' === $webhook['status'] ) {
 							// Check webhook status.
 							?>
 							<div class="notice error inline">
-								<p id="pmpro_stripe_webhook_notice" class="pmpro_stripe_webhook_notice"><?php _e( 'A webhook is set up in Stripe, but it is disabled.', 'paid-memberships-pro' ); ?> <a id="pmpro_stripe_rebuild_webhook" href="#">Rebuild Webhook</a></p>
+								<p id="pmpro_stripe_webhook_notice" class="pmpro_stripe_webhook_notice"><?php esc_html_e( 'A webhook is set up in Stripe, but it is disabled.', 'paid-memberships-pro' ); ?> <a id="pmpro_stripe_rebuild_webhook" href="#"><?php esc_html_e( 'Rebuild Webhook', 'paid-memberships-pro' ); ?></a></p>
 							</div>
 							<?php
 						} elseif ( $webhook['api_version'] < PMPRO_STRIPE_API_VERSION ) {
 							// Check webhook API version.
 							?>
 							<div class="notice error inline">
-								<p id="pmpro_stripe_webhook_notice" class="pmpro_stripe_webhook_notice"><?php _e( 'A webhook is set up in Stripe, but it is using an old API version.', 'paid-memberships-pro' ); ?> <a id="pmpro_stripe_rebuild_webhook" href="#"><?php _e( 'Rebuild Webhook', 'paid-memberships-pro' ); ?></a></p>
+								<p id="pmpro_stripe_webhook_notice" class="pmpro_stripe_webhook_notice"><?php esc_html_e( 'A webhook is set up in Stripe, but it is using an old API version.', 'paid-memberships-pro' ); ?> <a id="pmpro_stripe_rebuild_webhook" href="#"><?php esc_html_e( 'Rebuild Webhook', 'paid-memberships-pro' ); ?></a></p>
 							</div>
 							<?php
 						} else {
 							?>
 							<div class="notice notice-success inline">
-								<p id="pmpro_stripe_webhook_notice" class="pmpro_stripe_webhook_notice"><?php _e( 'Your webhook is enabled.', 'paid-memberships-pro' ); ?> <a id="pmpro_stripe_delete_webhook" href="#"><?php _e( 'Disable Webhook', 'paid-memberships-pro' ); ?></a></p>
+								<p id="pmpro_stripe_webhook_notice" class="pmpro_stripe_webhook_notice"><?php esc_html_e( 'Your webhook is enabled.', 'paid-memberships-pro' ); ?> <a id="pmpro_stripe_delete_webhook" href="#"><?php esc_html_e( 'Disable Webhook', 'paid-memberships-pro' ); ?></a></p>
 							</div>
 							<?php
 						}
 					} elseif ( self::show_legacy_keys_settings() ) { ?>
 						<button type="button" id="pmpro_stripe_create_webhook" class="button button-secondary"><span class="dashicons dashicons-update-alt"></span> <?php _e( 'Create Webhook' ,'paid-memberships-pro' ); ?></button>
 						<div class="notice error inline">
-							<p id="pmpro_stripe_webhook_notice" class="pmpro_stripe_webhook_notice"><?php _e('A webhook in Stripe is required to process recurring payments, manage failed payments, and synchronize cancellations.', 'paid-memberships-pro' );?></p>
+							<p id="pmpro_stripe_webhook_notice" class="pmpro_stripe_webhook_notice"><?php esc_html_e('A webhook in Stripe is required to process recurring payments, manage failed payments, and synchronize cancellations.', 'paid-memberships-pro' );?></p>
 						</div>
 						<?php
 					}
@@ -384,40 +384,40 @@ class PMProGateway_stripe extends PMProGateway {
 				<code><?php echo self::get_site_webhook_url(); ?></code></p>
 			</td>
 		</tr>
-		<tr class="pmpro_settings_divider gateway gateway_stripe" <?php if ( $gateway != "stripe" ) { ?>style="display: none;"<?php } ?>>		
+		<tr class="pmpro_settings_divider gateway gateway_stripe" <?php if ( $gateway != "stripe" ) { ?>style="display: none;"<?php } ?>>
 			<td colspan="2">
 				<hr />
-				<h2><?php esc_html_e( 'Other Stripe Settings', 'paid-memberships-pro' ); ?></h2>				
+				<h2><?php esc_html_e( 'Other Stripe Settings', 'paid-memberships-pro' ); ?></h2>
 			</td>
 		</tr>
 		<tr class="gateway gateway_stripe" <?php if ( $gateway != "stripe" ) { ?>style="display: none;"<?php } ?>>
-			<th><?php _e( 'Stripe API Version', 'paid-memberships-pro' ); ?>:</th>
+			<th><?php esc_html_e( 'Stripe API Version', 'paid-memberships-pro' ); ?>:</th>
 			<td><code><?php echo PMPRO_STRIPE_API_VERSION; ?></code></td>
 		</tr>
 		<tr class="gateway gateway_stripe" <?php if ( $gateway != "stripe" ) { ?>style="display: none;"<?php } ?>>
 			<th scope="row" valign="top">
-				<label for="stripe_billingaddress"><?php _e( 'Show Billing Address Fields', 'paid-memberships-pro' ); ?>:</label>
+				<label for="stripe_billingaddress"><?php esc_html_e( 'Show Billing Address Fields', 'paid-memberships-pro' ); ?>:</label>
 			</th>
 			<td>
 				<select id="stripe_billingaddress" name="stripe_billingaddress">
 					<option value="0"
-							<?php if ( empty( $values['stripe_billingaddress'] ) ) { ?>selected="selected"<?php } ?>><?php _e( 'No', 'paid-memberships-pro' ); ?></option>
+							<?php if ( empty( $values['stripe_billingaddress'] ) ) { ?>selected="selected"<?php } ?>><?php esc_html_e( 'No', 'paid-memberships-pro' ); ?></option>
 					<option value="1"
-							<?php if ( ! empty( $values['stripe_billingaddress'] ) ) { ?>selected="selected"<?php } ?>><?php _e( 'Yes', 'paid-memberships-pro' ); ?></option>
+							<?php if ( ! empty( $values['stripe_billingaddress'] ) ) { ?>selected="selected"<?php } ?>><?php esc_html_e( 'Yes', 'paid-memberships-pro' ); ?></option>
 				</select>
-				<p class="description"><?php _e( "Stripe doesn't require billing address fields. Choose 'No' to hide them on the checkout page.<br /><strong>If No, make sure you disable address verification in the Stripe dashboard settings.</strong>", 'paid-memberships-pro' ); ?></p>
+				<p class="description"><?php echo wp_kses_post( __( "Stripe doesn't require billing address fields. Choose 'No' to hide them on the checkout page.<br /><strong>If No, make sure you disable address verification in the Stripe dashboard settings.</strong>", 'paid-memberships-pro' ) ); ?></p>
 			</td>
 		</tr>
 		<tr class="gateway gateway_stripe" <?php if ( $gateway != "stripe" ) { ?>style="display: none;"<?php } ?>>
 			<th scope="row" valign="top">
-				<label for="stripe_payment_request_button"><?php _e( 'Enable Payment Request Button', 'paid-memberships-pro' ); ?>:</label>
+				<label for="stripe_payment_request_button"><?php esc_html_e( 'Enable Payment Request Button', 'paid-memberships-pro' ); ?>:</label>
 			</th>
 			<td>
 				<select id="stripe_payment_request_button" name="stripe_payment_request_button">
 					<option value="0"
-							<?php if ( empty( $values['stripe_payment_request_button'] ) ) { ?>selected="selected"<?php } ?>><?php _e( 'No', 'paid-memberships-pro' ); ?></option>
+							<?php if ( empty( $values['stripe_payment_request_button'] ) ) { ?>selected="selected"<?php } ?>><?php esc_html_e( 'No', 'paid-memberships-pro' ); ?></option>
 					<option value="1"
-							<?php if ( ! empty( $values['stripe_payment_request_button'] ) ) { ?>selected="selected"<?php } ?>><?php _e( 'Yes', 'paid-memberships-pro' ); ?></option>
+							<?php if ( ! empty( $values['stripe_payment_request_button'] ) ) { ?>selected="selected"<?php } ?>><?php esc_html_e( 'Yes', 'paid-memberships-pro' ); ?></option>
 				</select>
 				<?php
 					$allowed_stripe_payment_button_html = array (
@@ -469,7 +469,7 @@ class PMProGateway_stripe extends PMProGateway {
 					),
 				);
 				echo '<tr class="gateway gateway_stripe"';
-				if ( $gateway != "stripe" ) { 
+				if ( $gateway != "stripe" ) {
 					echo ' style="display: none;"';
 				}
 				echo '><th>&nbsp;</th><td><p class="description">' . sprintf( wp_kses( __( 'Optional: Offer PayPal Express as an option at checkout using the <a target="_blank" href="%s" title="Paid Memberships Pro - Add PayPal Express Option at Checkout Add On">Add PayPal Express Add On</a>.', 'paid-memberships-pro' ), $allowed_appe_html ), 'https://www.paidmembershipspro.com/add-ons/pmpro-add-paypal-express-option-checkout/?utm_source=plugin&utm_medium=pmpro-paymentsettings&utm_campaign=add-ons&utm_content=pmpro-add-paypal-express-option-checkout' ) . '</p></td></tr>';
@@ -482,10 +482,10 @@ class PMProGateway_stripe extends PMProGateway {
 	 */
 	public static function wp_ajax_pmpro_stripe_create_webhook( $silent = false ) {
 		$secretkey = sanitize_text_field( $_REQUEST['secretkey'] );
-		
+
 		$stripe = new PMProGateway_stripe();
 		Stripe\Stripe::setApiKey( $secretkey );
-		
+
 		$update_webhook_response = $stripe::update_webhook_events();
 
 		if ( empty( $update_webhook_response ) || is_wp_error( $update_webhook_response ) ) {
@@ -504,7 +504,7 @@ class PMProGateway_stripe extends PMProGateway {
 				'response' => $update_webhook_response
 			);
 		}
-		
+
 		if ( $silent ) {
 			return $r;
 		} else {
@@ -512,16 +512,16 @@ class PMProGateway_stripe extends PMProGateway {
 			exit;
 		}
 	}
-	
+
 	/**
 	 * AJAX callback to disable webhooks.
 	 */
 	public static function wp_ajax_pmpro_stripe_delete_webhook( $silent = false ) {
 		$secretkey = sanitize_text_field( $_REQUEST['secretkey'] );
-		
+
 		$stripe = new PMProGateway_stripe();
 		Stripe\Stripe::setApiKey( $secretkey );
-		
+
 		$webhook = self::does_webhook_exist();
 
 		$r = array(
@@ -744,8 +744,8 @@ class PMProGateway_stripe extends PMProGateway {
         <div id="pmpro_payment_information_fields" class="<?php echo pmpro_get_element_class( 'pmpro_checkout', 'pmpro_payment_information_fields' ); ?>"
 		     <?php if ( ! $pmpro_requirebilling || apply_filters( "pmpro_hide_payment_information_fields", false ) ) { ?>style="display: none;"<?php } ?>>
             <h3>
-                <span class="<?php echo pmpro_get_element_class( 'pmpro_checkout-h3-name' ); ?>"><?php _e( 'Payment Information', 'paid-memberships-pro' ); ?></span>
-                <span class="<?php echo pmpro_get_element_class( 'pmpro_checkout-h3-msg' ); ?>"><?php printf( __( 'We Accept %s', 'paid-memberships-pro' ), $pmpro_accepted_credit_cards_string ); ?></span>
+                <span class="<?php echo pmpro_get_element_class( 'pmpro_checkout-h3-name' ); ?>"><?php esc_html_e( 'Payment Information', 'paid-memberships-pro' ); ?></span>
+                <span class="<?php echo pmpro_get_element_class( 'pmpro_checkout-h3-msg' ); ?>"><?php printf( esc_html__( 'We Accept %s', 'paid-memberships-pro' ), $pmpro_accepted_credit_cards_string ); ?></span>
             </h3>
 			<?php $sslseal = pmpro_getOption( "sslseal" ); ?>
 			<?php if ( ! empty( $sslseal ) ) { ?>
@@ -765,11 +765,11 @@ class PMProGateway_stripe extends PMProGateway {
 					$pmpro_include_cardtype_field = apply_filters( 'pmpro_include_cardtype_field', false );
 					if ( $pmpro_include_cardtype_field ) { ?>
                         <div class="<?php echo pmpro_get_element_class( 'pmpro_checkout-field pmpro_payment-card-type', 'pmpro_payment-card-type' ); ?>">
-                            <label for="CardType"><?php _e( 'Card Type', 'paid-memberships-pro' ); ?></label>
+                            <label for="CardType"><?php esc_html_e( 'Card Type', 'paid-memberships-pro' ); ?></label>
                             <select id="CardType" class="<?php echo pmpro_get_element_class( 'CardType' ); ?>">
 								<?php foreach ( $pmpro_accepted_credit_cards as $cc ) { ?>
-                                    <option value="<?php echo $cc ?>"
-									        <?php if ( $CardType == $cc ) { ?>selected="selected"<?php } ?>><?php echo $cc ?></option>
+                                    <option value="<?php echo esc_attr( $cc ) ?>"
+									<?php if ( $CardType === $cc ) { ?>selected="selected"<?php } ?>><?php echo esc_html( $cc ); ?></option>
 								<?php } ?>
                             </select>
                         </div>
@@ -778,29 +778,29 @@ class PMProGateway_stripe extends PMProGateway {
                                value="<?php echo esc_attr( $CardType ); ?>"/>
 					<?php } ?>
                     <div class="<?php echo pmpro_get_element_class( 'pmpro_checkout-field pmpro_payment-account-number', 'pmpro_payment-account-number' ); ?>">
-                        <label for="AccountNumber"><?php _e( 'Card Number', 'paid-memberships-pro' ); ?></label>
+                        <label for="AccountNumber"><?php esc_html_e( 'Card Number', 'paid-memberships-pro' ); ?></label>
                         <div id="AccountNumber"></div>
                     </div>
                     <div class="<?php echo pmpro_get_element_class( 'pmpro_checkout-field pmpro_payment-expiration', 'pmpro_payment-expiration' ); ?>">
-                        <label for="Expiry"><?php _e( 'Expiration Date', 'paid-memberships-pro' ); ?></label>
+                        <label for="Expiry"><?php esc_html_e( 'Expiration Date', 'paid-memberships-pro' ); ?></label>
                         <div id="Expiry"></div>
                     </div>
 					<?php
 					$pmpro_show_cvv = apply_filters( "pmpro_show_cvv", true );
 					if ( $pmpro_show_cvv ) { ?>
                         <div class="<?php echo pmpro_get_element_class( 'pmpro_checkout-field pmpro_payment-cvv', 'pmpro_payment-cvv' ); ?>">
-                            <label for="CVV"><?php _e( 'CVC', 'paid-memberships-pro' ); ?></label>
+                            <label for="CVV"><?php esc_html_e( 'CVC', 'paid-memberships-pro' ); ?></label>
                             <div id="CVV"></div>
                         </div>
 					<?php } ?>
 					<?php if ( $pmpro_show_discount_code ) { ?>
                         <div class="<?php echo pmpro_get_element_class( 'pmpro_checkout-field pmpro_payment-discount-code', 'pmpro_payment-discount-code' ); ?>">
-                            <label for="discount_code"><?php _e( 'Discount Code', 'paid-memberships-pro' ); ?></label>
+                            <label for="discount_code"><?php esc_html_e( 'Discount Code', 'paid-memberships-pro' ); ?></label>
                             <input class="<?php echo pmpro_get_element_class( 'input pmpro_alter_price', 'discount_code' ); ?>"
                                    id="discount_code" name="discount_code" type="text" size="10"
                                    value="<?php echo esc_attr( $discount_code ) ?>"/>
                             <input type="button" id="discount_code_button" name="discount_code_button"
-                                   value="<?php _e( 'Apply', 'paid-memberships-pro' ); ?>"/>
+                                   value="<?php esc_attr_e( 'Apply', 'paid-memberships-pro' ); ?>"/>
                             <p id="discount_code_message" class="<?php echo pmpro_get_element_class( 'pmpro_message' ); ?>" style="display: none;"></p>
                         </div>
 					<?php } ?>
@@ -1124,10 +1124,10 @@ class PMProGateway_stripe extends PMProGateway {
 				if ( ! empty( $subscription ) ) {
 					$customer = $order->Gateway->get_customer_for_user( $user_id );
 					if ( ! $customer->delinquent && ! empty ( $subscription->current_period_end ) ) {
-						$offset = get_option( 'gmt_offset' );						
+						$offset = get_option( 'gmt_offset' );
 						$timestamp = $subscription->current_period_end + ( $offset * 3600 );
 					} elseif ( $customer->delinquent && ! empty( $subscription->current_period_start ) ) {
-						$offset = get_option( 'gmt_offset' );						
+						$offset = get_option( 'gmt_offset' );
 						$timestamp = $subscription->current_period_start + ( $offset * 3600 );
 					} else {
 						$timestamp = null;  // shouldn't really get here
@@ -1149,9 +1149,9 @@ class PMProGateway_stripe extends PMProGateway {
 		if ( empty( $payment_option_values['stripe_payment_request_button'] ) ) {
 			// We don't want to unregister domain or remove file in case
 			// other plugins are using it.
-			return;	
+			return;
 		}
-	
+
 		// Make sure that Apple Pay is set up.
 		// TODO: Apple Pay API functions don't seem to work with
 		//       test API keys. Need to figure this out.
@@ -1179,7 +1179,7 @@ class PMProGateway_stripe extends PMProGateway {
 		if ( ! isset( $_REQUEST['pmpro_stripe_connected'] ) || ! isset( $_REQUEST['pmpro_stripe_connected_environment'] ) ) {
 			return false;
 		}
-		
+
 		// Change current gateway to Stripe
 		pmpro_setOption( 'gateway', 'stripe' );
 		pmpro_setOption( 'gateway_environment', $_REQUEST['pmpro_stripe_connected_environment'] );
@@ -1210,7 +1210,7 @@ class PMProGateway_stripe extends PMProGateway {
 				pmpro_setOption( 'sandbox_stripe_connect_secretkey', $_REQUEST['pmpro_stripe_access_token'] );
 				pmpro_setOption( 'sandbox_stripe_connect_publishablekey', $_REQUEST['pmpro_stripe_publishable_key'] );
 			}
-			
+
 
 			// Delete option for user API key.
 			delete_option( 'pmpro_stripe_secretkey' );
@@ -1287,7 +1287,7 @@ class PMProGateway_stripe extends PMProGateway {
 	 * @return bool Whether the site is using legacy Stripe keys.
 	 */
 	public static function using_legacy_keys() {
-		$r = ! empty( pmpro_getOption( 'stripe_secretkey' ) ) && ! empty( pmpro_getOption( 'stripe_publishablekey' ) );		
+		$r = ! empty( pmpro_getOption( 'stripe_secretkey' ) ) && ! empty( pmpro_getOption( 'stripe_publishablekey' ) );
 		return $r;
 	}
 
@@ -1305,14 +1305,14 @@ class PMProGateway_stripe extends PMProGateway {
 
 		if ( $gateway_environment === 'live' ) {
 			// Return whether Stripe is connected for live gateway environment.
-			return ( 
+			return (
 				pmpro_getOption( 'live_stripe_connect_user_id' ) &&
 				pmpro_getOption( 'live_stripe_connect_secretkey' ) &&
 				pmpro_getOption( 'live_stripe_connect_publishablekey' )
 			);
 		} else {
 			// Return whether Stripe is connected for sandbox gateway environment.
-			return ( 
+			return (
 				pmpro_getOption( 'sandbox_stripe_connect_user_id' ) &&
 				pmpro_getOption( 'sandbox_stripe_connect_secretkey' ) &&
 				pmpro_getOption( 'sandbox_stripe_connect_publishablekey' )
@@ -1463,7 +1463,7 @@ class PMProGateway_stripe extends PMProGateway {
 				}
 				$order->stripe_subscription = $subscription;
 				$setup_intent = $subscription->pending_setup_intent;
-	
+
 				if ( ! empty( $setup_intent->status ) && 'requires_action' === $setup_intent->status ) {
 					// We will need to reload the page to authenticate, so save the subscription ID in the setup intent
 					// so that we don't lose it.
@@ -1476,7 +1476,7 @@ class PMProGateway_stripe extends PMProGateway {
 					$order->stripe_setup_intent = $setup_intent;
 					$order->errorcode = true;
 					$order->error     = __( 'Customer authentication is required to finish setting up your subscription. Please complete the verification steps issued by your payment provider.', 'paid-memberships-pro' );
-		
+
 					return false;
 				}
 
@@ -1607,7 +1607,7 @@ class PMProGateway_stripe extends PMProGateway {
 			! empty( $user->pmpro_bcity ) &&
 			! empty( $user->pmpro_bstate ) &&
 			! empty( $user->pmpro_bzipcode ) &&
-			! empty( $user->pmpro_bcountry ) 
+			! empty( $user->pmpro_bcountry )
 		) {
 			// We have an address in user meta and there is
 			// no address in Stripe. May as well send it.
@@ -1650,7 +1650,7 @@ class PMProGateway_stripe extends PMProGateway {
 	 */
 	public function getSubscriptionStatus( &$order ) {
 		$subscription = $this->get_subscription( $order->subscription_transaction_id );
-		
+
 		if ( ! empty( $subscription ) ) {
 			return $subscription->status;
 		} else {
@@ -1762,7 +1762,7 @@ class PMProGateway_stripe extends PMProGateway {
 	 * @param array $values Current settings.
 	 * @param string $gateway currently being shown.
 	 */
-	private function show_connect_payment_option_fields( $livemode = true, $values, $gateway ) {
+	private function show_connect_payment_option_fields( $livemode, $values, $gateway ) {
 		$gateway_environment = $this->gateway_environment;
 
 		$stripe_legacy_key      = $values['stripe_publishablekey'];
@@ -1787,7 +1787,7 @@ class PMProGateway_stripe extends PMProGateway {
 				<h2>
 					<?php esc_html_e( 'Stripe Connect Settings', 'paid-memberships-pro' ); ?>
 					<span class="pmpro_gateway-mode pmpro_gateway-mode-<?php echo $environment2; ?> <?php esc_attr_e( $connection_selector ); ?>">
-						<?php  
+						<?php
 							echo ( $livemode ? esc_html__( 'Live Mode:', 'paid-memberships-pro' ) : esc_html__( 'Test Mode:', 'paid-memberships-pro' ) ) . ' ';
 							if ( self::has_connect_credentials( $environment ) ) {
 								esc_html_e( 'Connected', 'paid-memberships-pro' );
@@ -1867,7 +1867,7 @@ class PMProGateway_stripe extends PMProGateway {
 						} else {
 							esc_html_e( 'Note: You are using the free Stripe payment gateway integration. This includes an additional 1% fee for payment processing. This fee is removed by activating a premium PMPro license.', 'paid-memberships-pro');
 						}
-						echo ' <a href="https://www.paidmembershipspro.com/gateway/stripe/?utm_source=plugin&utm_medium=pmpro-paymentsettings&utm_campaign=gateways&utm_content=stripe-fees#tab-fees" target="_blank">' . esc_html( 'Learn More &raquo;', 'paid-memberships-pro' ) . '</a>';
+						echo ' <a href="https://www.paidmembershipspro.com/gateway/stripe/?utm_source=plugin&utm_medium=pmpro-paymentsettings&utm_campaign=gateways&utm_content=stripe-fees#tab-fees" target="_blank" rel="noopener noreferrer">' . esc_html__( 'Learn More &raquo;', 'paid-memberships-pro' ) . '</a>';
 					?>
 				</p>
 				<input type='hidden' name='<?php echo $environment; ?>_stripe_connect_user_id' id='<?php echo $environment; ?>_stripe_connect_user_id' value='<?php echo esc_attr( $values[ $environment . '_stripe_connect_user_id'] ) ?>'/>
@@ -2035,7 +2035,7 @@ class PMProGateway_stripe extends PMProGateway {
 			! empty( $order->billing->city ) &&
 			! empty( $order->billing->state ) &&
 			! empty( $order->billing->zip ) &&
-			! empty( $order->billing->country ) 
+			! empty( $order->billing->country )
 		) {
 			// We collected a billing address at checkout.
 			// Send it to Stripe.
@@ -2053,7 +2053,7 @@ class PMProGateway_stripe extends PMProGateway {
 			! empty( $user->pmpro_bcity ) &&
 			! empty( $user->pmpro_bstate ) &&
 			! empty( $user->pmpro_bzipcode ) &&
-			! empty( $user->pmpro_bcountry ) 
+			! empty( $user->pmpro_bcountry )
 		) {
 			// We have an address in user meta and there is
 			// no address in Stripe. May as well send it.
@@ -2154,7 +2154,7 @@ class PMProGateway_stripe extends PMProGateway {
 		return $customer;
 	}
 
-		/**
+	/**
 	 * Convert a price to a positive integer in cents (or 0 for a free price)
 	 * representing how much to charge. This is how Stripe wants us to send price amounts.
 	 *
@@ -2162,19 +2162,13 @@ class PMProGateway_stripe extends PMProGateway {
 	 * @return integer
 	 */
 	private function convert_price_to_unit_amount( $price ) {
-		global $pmpro_currencies, $pmpro_currency;
-		$currency_unit_multiplier = 100; // ie 100 cents per USD.
+		$price_info = pmpro_get_price_info( $price );
 
-		// Account for zero-decimal currencies like the Japanese Yen.
-		if (
-			is_array( $pmpro_currencies[ $pmpro_currency ] ) &&
-			isset( $pmpro_currencies[ $pmpro_currency ]['decimals'] ) &&
-			$pmpro_currencies[ $pmpro_currency ]['decimals'] == 0 
-		) {
-			$currency_unit_multiplier = 1;
+		if ( ! $price_info ) {
+			return 0;
 		}
 
-		return intval( $price * $currency_unit_multiplier );
+		return $price_info['amount_flat'];
 	}
 
 	/**
@@ -2302,7 +2296,9 @@ class PMProGateway_stripe extends PMProGateway {
 		$currency = pmpro_get_currency();
 
 		$is_recurring = ! empty( $cycle_period ) && ! empty( $cycle_number );
-		$unit_amount  = intval( $amount * pow( 10, intval( $currency['decimals'] ) ) );
+
+		$unit_amount = $this->convert_price_to_unit_amount( $amount );
+
 		$cycle_period = strtolower( $cycle_period );
 
 		$price_search_args = array(
@@ -2320,11 +2316,11 @@ class PMProGateway_stripe extends PMProGateway {
 
 			foreach ( $prices as $price ) {
 				// Check whether price is the same. If not, continue.
-				if ( intval( $price->unit_amount ) !== intval( $unit_amount ) ) {
+				if ( (int) $price->unit_amount !== $unit_amount ) {
 					continue;
 				}
 				// Check if recurring structure is the same. If not, continue.
-				if ( $is_recurring && ( empty( $price->recurring->interval_count ) || intval( $price->recurring->interval_count ) !== intval( $cycle_number ) ) ) {
+				if ( $is_recurring && ( empty( $price->recurring->interval_count ) || (int) $price->recurring->interval_count !== (int) $cycle_number ) ) {
 					continue;
 				}
 				return $price;
@@ -2646,7 +2642,7 @@ class PMProGateway_stripe extends PMProGateway {
 		$current_month = date_i18n( 'm' );
 		?>
             <h3><?php esc_html_e( 'Subscription Updates', 'paid-memberships-pro' ); ?></h3>
-			<p><?php esc_html_e( 'Subscription updates will be deprecated in a future version of PMPro, though your existing subscription updates will still trigger as expected. We now instead reccomend updating the subscription directly in Stripe.', 'paid-memberships-pro' ); ?></p>
+			<p><?php esc_html_e( 'Subscription updates will be deprecated in a future version of PMPro, though your existing subscription updates will still trigger as expected. We now instead recommend updating the subscription directly in Stripe.', 'paid-memberships-pro' ); ?></p>
             <table class="form-table">
 				<input type='hidden' name='pmpro_subscription_updates_visible' value='1' />
                 <tr>
@@ -2735,14 +2731,14 @@ class PMProGateway_stripe extends PMProGateway {
 			<?php
 	}
 
-	
+
 
 	/****************************************
 	 ******* METHODS BECOMING PRIVATE *******
 	 ****************************************/
 	/**
 	 * Get available webhooks
-	 * 
+	 *
 	 * @since 2.4
 	 * @deprecated 2.7.0. Only deprecated for public use, will be changed to private non-static in a future version.
 	 */
@@ -2766,13 +2762,13 @@ class PMProGateway_stripe extends PMProGateway {
 		} catch (\Exception $e) {
 			$webhooks = $e->getMessage();
 		}
-		
+
 		return $webhooks;
 	}
 
 	/**
 	 * Get current webhook URL for website to compare.
-	 * 
+	 *
 	 * @since 2.4
 	 * @deprecated 2.7.0. Only deprecated for public use, will be changed to private non-static in a future version.
 	 */
@@ -2784,7 +2780,7 @@ class PMProGateway_stripe extends PMProGateway {
 
 	/**
 	 * List of current enabled events required for PMPro to work.
-	 * 
+	 *
 	 * @since 2.4
 	 * @deprecated 2.7.0. Only deprecated for public use, will be changed to private non-static in a future version.
 	 */
@@ -2801,7 +2797,7 @@ class PMProGateway_stripe extends PMProGateway {
 
 	/**
 	 * Create webhook with relevant events
-	 * 
+	 *
 	 * @since 2.4
 	 * @deprecated 2.7.0. Only deprecated for public use, will be changed to private non-static in a future version.
 	 */
@@ -2826,12 +2822,12 @@ class PMProGateway_stripe extends PMProGateway {
 			//throw $th;
 			return new WP_Error( 'error', $e->getMessage() );
 		}
-		
+
 	}
 
 	/**
 	 * See if a webhook is registered with Stripe.
-	 * 
+	 *
 	 * @since 2.4
 	 * @deprecated 2.7.0. Only deprecated for public use, will be changed to private non-static in a future version.
 	 */
@@ -2845,7 +2841,7 @@ class PMProGateway_stripe extends PMProGateway {
 		}
 
 		$webhooks = self::get_webhooks();
-		
+
 		$webhook_id = false;
 		if ( ! empty( $webhooks ) && ! empty( $webhooks['data'] ) ) {
 
@@ -2879,7 +2875,7 @@ class PMProGateway_stripe extends PMProGateway {
 
 	/**
 	 * Get a list of events that are missing between the created existing webhook and required webhook events for Paid Memberships Pro.
-	 * 
+	 *
 	 * @since 2.4
 	 * @deprecated 2.7.0. Only deprecated for public use, will be changed to private non-static in a future version.
 	 */
@@ -2893,7 +2889,7 @@ class PMProGateway_stripe extends PMProGateway {
 		// No missing events if webhook event is "All Events" selected.
 		if ( is_array( $webhook_events ) && $webhook_events[0] === '*' ) {
 			return false;
-		} 
+		}
 
 		if ( count( array_diff( $pmpro_webhook_events, $webhook_events ) ) ) {
 			$events = array_unique( array_merge( $pmpro_webhook_events, $webhook_events ) );
@@ -2908,7 +2904,7 @@ class PMProGateway_stripe extends PMProGateway {
 
 	/**
 	 * Update required webhook enabled events.
-	 * 
+	 *
 	 * @since 2.4
 	 * @deprecated 2.7.0. Only deprecated for public use, will be changed to private non-static in a future version.
 	 */
@@ -2928,17 +2924,17 @@ class PMProGateway_stripe extends PMProGateway {
 		if ( ! isset( $webhook['enabled_events'] ) ) {
 			return;
 		}
-		
+
 		$events = self::check_missing_webhook_events( $webhook['enabled_events'] );
-		
+
 		if ( $events ) {
 
 			try {
-				$update = Stripe_Webhook::update( 
+				$update = Stripe_Webhook::update(
 					$webhook['webhook_id'],
 					['enabled_events' => $events ]
 				);
-	
+
 				if ( $update ) {
 					return $update;
 				}
@@ -2949,14 +2945,14 @@ class PMProGateway_stripe extends PMProGateway {
 				//throw $th;
 				return new WP_Error( 'error', $e->getMessage() );
 			}
-				
+
 		}
-		
+
 	}
 
 	/**
 	 * Delete an existing webhook.
-	 * 
+	 *
 	 * @since 2.4
 	 * @deprecated 2.7.0. Only deprecated for public use, will be changed to private non-static in a future version.
 	 */
@@ -2970,7 +2966,7 @@ class PMProGateway_stripe extends PMProGateway {
 		if ( is_array( $webhook_id ) ) {
 			$webhook_id = $webhook_id['webhook_id'];
 		}
-		
+
 		try {
 			$stripe = new Stripe_Client( $secretkey );
 			$delete = $stripe->webhookEndpoints->delete( $webhook_id, [] );
@@ -3115,29 +3111,29 @@ class PMProGateway_stripe extends PMProGateway {
 
 		// get customer
 		$customer = $this->update_customer_at_checkout( $order );
-		
+
 		if ( empty( $customer ) ) {
 			return false;
 		}
-		
+
 		// get all subscriptions
 		if ( ! empty( $customer->subscriptions ) ) {
 			$subscriptions = $customer->subscriptions->all();
 		}
-		
+
 		foreach( $subscriptions as $subscription ) {
 			// check if cancelled or expired
 			if ( in_array( $subscription->status, array( 'canceled', 'incomplete', 'incomplete_expired' ) ) ) {
 				continue;
 			}
-			
+
 			// check if we have a related order for it
 			$one_order = new MemberOrder();
 			$one_order->getLastMemberOrderBySubscriptionTransactionID( $subscription->id );
 			if ( empty( $one_order ) || empty( $one_order->id ) ) {
 				continue;
 			}
-			
+
 			// update the payment method
 			$subscription->default_payment_method = $customer->invoice_settings->default_payment_method;
 			$subscription->save();
@@ -3410,7 +3406,7 @@ class PMProGateway_stripe extends PMProGateway {
 
 	/**
  	 * Register domain with Apple Pay.
- 	 * 
+ 	 *
  	 * @since 2.4
 	 * @deprecated 2.7.0. Only deprecated for public use, will be changed to private non-static in a future version.
  	 */
@@ -3429,7 +3425,7 @@ class PMProGateway_stripe extends PMProGateway {
 
 	/**
  	 * See if domain is registered with Apple Pay.
- 	 * 
+ 	 *
  	 * @since 2.4
 	 * @deprecated 2.7.0. Only deprecated for public use, will be changed to private non-static in a future version.
  	 */
@@ -3564,7 +3560,7 @@ class PMProGateway_stripe extends PMProGateway {
 		pmpro_method_should_be_private( '2.7.0' );
 		$secretkey = '';
 		if ( self::using_legacy_keys() ) {
-			$secretkey = pmpro_getOption( 'stripe_secretkey' ); 
+			$secretkey = pmpro_getOption( 'stripe_secretkey' );
 		} else {
 			$secretkey = pmpro_getOption( 'gateway_environment' ) === 'live'
 				? pmpro_getOption( 'live_stripe_connect_secretkey' )
@@ -3584,7 +3580,7 @@ class PMProGateway_stripe extends PMProGateway {
 		pmpro_method_should_be_private( '2.7.0' );
 		$publishablekey = '';
 		if ( self::using_legacy_keys() ) {
-			$publishablekey = pmpro_getOption( 'stripe_publishablekey' ); 
+			$publishablekey = pmpro_getOption( 'stripe_publishablekey' );
 		} else {
 			$publishablekey = pmpro_getOption( 'gateway_environment' ) === 'live'
 				? pmpro_getOption( 'live_stripe_connect_publishablekey' )
@@ -3657,7 +3653,7 @@ class PMProGateway_stripe extends PMProGateway {
 
 		return ( empty( $num_problem_orders ) );
 	}
-	
+
 	/**
 	 * Get the date the last webhook was processed.
 	 * @param environment The gateway environment (live or sandbox) to check for.
@@ -3818,7 +3814,7 @@ class PMProGateway_stripe extends PMProGateway {
 			//need to remember the user updates to save later
 			global $pmpro_stripe_updates;
 			$pmpro_stripe_updates = $new_user_updates;
-			
+
 			if( ! function_exists( 'pmpro_user_register_stripe_updates' ) ) {
 				function pmpro_user_register_stripe_updates( $user_id ) {
 					global $pmpro_stripe_updates;
@@ -4448,7 +4444,7 @@ class PMProGateway_stripe extends PMProGateway {
 		$amount_tax = $order->getTaxForPrice( $amount );
 		$amount     = pmpro_round_price( (float) $amount + (float) $amount_tax );
 
-		
+
 		$trial_period_days = $this->calculate_trial_period_days( $order );
 		// Save $trial_period_days to order for now too.
 		$order->TrialPeriodDays = $trial_period_days;
@@ -4482,5 +4478,5 @@ class PMProGateway_stripe extends PMProGateway {
 		return $order->plan;
 	}
 
-	
+
 }

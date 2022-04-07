@@ -187,14 +187,17 @@ class PMPro_Site_Health {
 
 			if ( $legacy ) {
 				$gateway_text .= ' (' . __( 'Legacy Keys', 'paid-memberships-pro' ) . ')';
+				return $gateway_text . ' [' . $gateway . ':legacy-keys]';
 			}
 
 			if ( $connect ) {
 				$gateway_text .= ' (' . __( 'Stripe Connect', 'paid-memberships-pro' ) . ')';
+				return $gateway_text . ' [' . $gateway . ':stripe-connect]';
 			}
+
 		}
 
-		return $gateway_text;
+		return $gateway_text . ' [' . $gateway . ']';
 	}
 
 	/**
@@ -217,7 +220,7 @@ class PMPro_Site_Health {
 			return sprintf( __( '%s (environment not registered)', 'paid-memberships-pro' ), $environment );
 		}
 
-		return $environments[ $environment ];
+		return $environments[ $environment ] . ' [' . $environment . ']';
 	}
 
 	/**

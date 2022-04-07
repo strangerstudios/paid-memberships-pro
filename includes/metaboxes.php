@@ -148,11 +148,11 @@ function pmpro_taxonomy_meta( $term ) {
 	if( ! empty( $protectedlevels ) ) {
 	?>
 	<tr class="form-field">
-		<th scope="row" valign="top"><?php _e( 'Membership Levels', 'paid-memberships-pro' ); ?></label></th>
+		<th scope="row" valign="top"><?php esc_html_e( 'Membership Levels', 'paid-memberships-pro' ); ?></label></th>
 		<td>
 			<p><strong>
 				<?php echo implode(', ',$protectedlevels); ?></strong></p>
-			<p class="description"><?php _e( 'Only members of these levels will be able to view posts in this category.', 'paid-memberships-pro' ); ?></p>
+			<p class="description"><?php esc_html_e( 'Only members of these levels will be able to view posts in this category.', 'paid-memberships-pro' ); ?></p>
 		</td>
 	</tr>
 	<?php

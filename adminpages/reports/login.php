@@ -28,38 +28,38 @@ function pmpro_report_login_widget() {
 	<thead>
 		<tr>
 			<th scope="col">&nbsp;</th>
-			<th scope="col"><?php _e('Visits','paid-memberships-pro'); ?></th>
-			<th scope="col"><?php _e('Views','paid-memberships-pro'); ?></th>
-			<th scope="col"><?php _e('Logins','paid-memberships-pro'); ?></th>
+			<th scope="col"><?php esc_html_e('Visits','paid-memberships-pro'); ?></th>
+			<th scope="col"><?php esc_html_e('Views','paid-memberships-pro'); ?></th>
+			<th scope="col"><?php esc_html_e('Logins','paid-memberships-pro'); ?></th>
 		</tr>
 	</thead>
 	<tbody>
 		<tr>
-			<th scope="row"><?php _e('Today','paid-memberships-pro'); ?></th>
+			<th scope="row"><?php esc_html_e('Today','paid-memberships-pro'); ?></th>
 			<td><?php echo number_format_i18n($visits['today']); ?></td>
 			<td><?php echo number_format_i18n($views['today']); ?></td>
 			<td><?php echo number_format_i18n($logins['today']);?></td>
 		</tr>
 		<tr>
-			<th scope="row"><?php _e('This Week','paid-memberships-pro'); ?></th>
+			<th scope="row"><?php esc_html_e('This Week','paid-memberships-pro'); ?></th>
 			<td><?php echo number_format_i18n($visits['week']); ?></td>
 			<td><?php echo number_format_i18n($views['week']); ?></td>
 			<td><?php echo number_format_i18n($logins['week']); ?></td>
 		</tr>
 		<tr>
-			<th scope="row"><?php _e('This Month','paid-memberships-pro'); ?></th>
+			<th scope="row"><?php esc_html_e('This Month','paid-memberships-pro'); ?></th>
 			<td><?php echo number_format_i18n($visits['month']); ?></td>
 			<td><?php echo number_format_i18n($views['month']); ?></td>
 			<td><?php echo number_format_i18n($logins['month']); ?></td>
 		</tr>
 		<tr>
-			<th scope="row"><?php _e('Year to Date','paid-memberships-pro'); ?></th>
+			<th scope="row"><?php esc_html_e('Year to Date','paid-memberships-pro'); ?></th>
 			<td><?php echo number_format_i18n($visits['ytd']); ?></td>
 			<td><?php echo number_format_i18n($views['ytd']); ?></td>
 			<td><?php echo number_format_i18n($logins['ytd']);?></td>
 		</tr>
 		<tr>
-			<th scope="row"><?php _e('All Time','paid-memberships-pro'); ?></th>
+			<th scope="row"><?php esc_html_e('All Time','paid-memberships-pro'); ?></th>
 			<td><?php echo number_format_i18n($visits['alltime']); ?></td>
 			<td><?php echo number_format_i18n($views['alltime']);?></td>
 			<td><?php echo number_format_i18n($logins['alltime']); ?></td>
@@ -68,7 +68,7 @@ function pmpro_report_login_widget() {
 	</table>
 	<?php if ( function_exists( 'pmpro_report_login_page' ) ) { ?>
 		<p class="pmpro_report-button">
-			<a class="button button-primary" href="<?php echo admin_url( 'admin.php?page=pmpro-reports&report=login' ); ?>"><?php _e('Details', 'paid-memberships-pro' );?></a>
+			<a class="button button-primary" href="<?php echo esc_url( admin_url( 'admin.php?page=pmpro-reports&report=login' ) ); ?>"><?php esc_html_e('Details', 'paid-memberships-pro' );?></a>
 		</p>
 	<?php } ?>	
 </span>
@@ -100,16 +100,18 @@ function pmpro_report_login_page()
 	</h1>		
 	<ul class="subsubsub">
 		<li>			
-			<?php _e( 'Show', 'Dropdown label, e.g. Show All Users', 'paid-memberships-pro' )?> <select name="l" onchange="jQuery('#posts-filter').submit();">
-				<option value="" <?php if(!$l) { ?>selected="selected"<?php } ?>><?php _e('All Users', 'paid-memberships-pro')?></option>
-				<option value="all" <?php if($l == "all") { ?>selected="selected"<?php } ?>><?php _e('All Levels', 'paid-memberships-pro')?></option>
+			<?php echo esc_html_x( 'Show', 'Dropdown label, e.g. Show All Users', 'paid-memberships-pro' )?> <select name="l" onchange="jQuery('#posts-filter').submit();">
+
+				<option value="" <?php if(!$l) { ?>selected="selected"<?php } ?>><?php esc_html_e('All Users', 'paid-memberships-pro')?></option>
+				<option value="all" <?php if($l == "all") { ?>selected="selected"<?php } ?>><?php esc_html_e('All Levels', 'paid-memberships-pro')?></option>
 				<?php
 					$levels = $wpdb->get_results("SELECT id, name FROM $wpdb->pmpro_membership_levels ORDER BY name");
 					$levels = pmpro_sort_levels_by_order( $levels );
 					foreach($levels as $level)
 					{
 				?>
-					<option value="<?php echo $level->id?>" <?php if($l == $level->id) { ?>selected="selected"<?php } ?>><?php echo $level->name?></option>
+					<option value="<?php echo esc_attr( $level->id ) ?>" <?php if($l == $level->id) { ?>selected="selected"<?php } ?>><?php echo esc_html( $level->name ); ?></option>
+
 				<?php
 					}
 				?>
@@ -117,11 +119,12 @@ function pmpro_report_login_page()
 		</li>
 	</ul>
 	<p class="search-box">
-		<label class="hidden" for="post-search-input"><?php _e( 'Search', 'Search form label', 'paid-memberships-pro')?> <?php if(empty($l)) echo "Users"; else echo "Members";?>:</label>
+		<label class="hidden" for="post-search-input"><?php echo esc_html_x( 'Search', 'Search form label', 'paid-memberships-pro')?> <?php if(empty($l)) esc_html_e( 'Users', 'paid-memberships-pro' ); else esc_html_e( 'Members', 'paid-memberships-pro' );?>:</label>
+
 		<input type="hidden" name="page" value="pmpro-reports" />		
 		<input type="hidden" name="report" value="login" />		
 		<input id="post-search-input" type="text" value="<?php echo esc_attr($s)?>" name="s"/>
-		<input class="button" type="submit" value="Search Members"/>
+		<input class="button" type="submit" value="<?php esc_attr_e( 'Search Members', 'paid-memberships-pro' ) ?>"/>
 	</p>
 	<?php 
 		//some vars for the search					
@@ -176,26 +179,26 @@ function pmpro_report_login_page()
 	<table class="widefat">
 		<thead>
 			<tr class="thead">
-				<th><?php _e('ID', 'paid-memberships-pro')?></th>
-				<th><?php _e('Username', 'paid-memberships-pro')?></th>	
-				<th><?php _e('Name', 'paid-memberships-pro')?></th>
-				<th><?php _e('Level', 'paid-memberships-pro')?></th>	
-				<th><?php _e('Joined', 'paid-memberships-pro')?></th>
-				<th><?php _e('Expires', 'paid-memberships-pro')?></th>
-				<th><?php _e('Last Visit', 'paid-memberships-pro')?></th>
-				<th><?php _e('Visits This Week', 'paid-memberships-pro')?></th>
-				<th><?php _e('Visits This Month', 'paid-memberships-pro')?></th>				
-				<th><?php _e('Visits This Year', 'paid-memberships-pro')?></th>
-				<th><?php _e('Visits All Time', 'paid-memberships-pro')?></th>
-				<th><?php _e('Views This Week', 'paid-memberships-pro')?></th>
-				<th><?php _e('Views This Month', 'paid-memberships-pro')?></th>				
-				<th><?php _e('Views This Year', 'paid-memberships-pro')?></th>
-				<th><?php _e('Views All Time', 'paid-memberships-pro')?></th>
-				<th><?php _e('Last Login', 'paid-memberships-pro')?></th>
-				<th><?php _e('Logins This Week', 'paid-memberships-pro')?></th>
-				<th><?php _e('Logins This Month', 'paid-memberships-pro')?></th>				
-				<th><?php _e('Logins This Year', 'paid-memberships-pro')?></th>
-				<th><?php _e('Logins All Time', 'paid-memberships-pro')?></th>
+				<th><?php esc_html_e('ID', 'paid-memberships-pro')?></th>
+				<th><?php esc_html_e('Username', 'paid-memberships-pro')?></th>	
+				<th><?php esc_html_e('Name', 'paid-memberships-pro')?></th>
+				<th><?php esc_html_e('Level', 'paid-memberships-pro')?></th>	
+				<th><?php esc_html_e('Joined', 'paid-memberships-pro')?></th>
+				<th><?php esc_html_e('Expires', 'paid-memberships-pro')?></th>
+				<th><?php esc_html_e('Last Visit', 'paid-memberships-pro')?></th>
+				<th><?php esc_html_e('Visits This Week', 'paid-memberships-pro')?></th>
+				<th><?php esc_html_e('Visits This Month', 'paid-memberships-pro')?></th>				
+				<th><?php esc_html_e('Visits This Year', 'paid-memberships-pro')?></th>
+				<th><?php esc_html_e('Visits All Time', 'paid-memberships-pro')?></th>
+				<th><?php esc_html_e('Views This Week', 'paid-memberships-pro')?></th>
+				<th><?php esc_html_e('Views This Month', 'paid-memberships-pro')?></th>				
+				<th><?php esc_html_e('Views This Year', 'paid-memberships-pro')?></th>
+				<th><?php esc_html_e('Views All Time', 'paid-memberships-pro')?></th>
+				<th><?php esc_html_e('Last Login', 'paid-memberships-pro')?></th>
+				<th><?php esc_html_e('Logins This Week', 'paid-memberships-pro')?></th>
+				<th><?php esc_html_e('Logins This Month', 'paid-memberships-pro')?></th>				
+				<th><?php esc_html_e('Logins This Year', 'paid-memberships-pro')?></th>
+				<th><?php esc_html_e('Logins All Time', 'paid-memberships-pro')?></th>
 			</tr>
 		</thead>
 		<tbody id="users" class="list:user user-list">	
@@ -260,7 +263,7 @@ function pmpro_report_login_page()
 				{
 				?>
 				<tr>
-					<td colspan="9"><p><?php _e('No members found.', 'paid-memberships-pro')?> <?php if($l) { ?><a href="?page=pmpro-memberslist&s=<?php echo esc_attr($s)?>"><?php _e('Search all levels', 'paid-memberships-pro')?></a>.<?php } ?></p></td>
+					<td colspan="9"><p><?php esc_html_e('No members found.', 'paid-memberships-pro')?> <?php if($l) { ?><a href="?page=pmpro-memberslist&s=<?php echo esc_attr($s)?>"><?php esc_html_e('Search all levels', 'paid-memberships-pro')?></a>.<?php } ?></p></td>
 				</tr>
 				<?php
 				}

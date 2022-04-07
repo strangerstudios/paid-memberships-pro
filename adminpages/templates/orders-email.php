@@ -3,6 +3,9 @@
  * Template for Email Invoices
  *
  * @since 1.8.6
+ * 
+ * @var object $level
+ * @var MemberOrder $order
  */
 ?>
 <table style="width:600px;margin-left:auto;margin-right:auto;">
@@ -11,17 +14,17 @@
 		<td rowspan="2" style="width:80%;">
 			<h2><?php bloginfo( 'sitename' ); ?></h2>
 		</td>
-		<td><?php echo __('Invoice #: ', 'paid-memberships-pro' ) . '&nbsp;' . $order->code; ?></td>
+		<td><?php echo esc_html( __('Invoice #: ', 'paid-memberships-pro' ) . '&nbsp;' . $order->code ); ?></td>
 	</tr>
 	<tr>
 		<td>
-			<?php echo __( 'Date:', 'paid-memberships-pro' ) . '&nbsp;' . date_i18n( get_option( 'date_format' ), $order->getTimestamp() ); ?>
+			<?php echo esc_html( __( 'Date:', 'paid-memberships-pro' ) . '&nbsp;' . date_i18n( get_option( 'date_format' ), $order->getTimestamp() ) ); ?>
 		</td>
 	</tr>
 	<?php if(!empty($order->billing->name)): ?>
 		<tr>
 			<td style="padding-bottom:10px;">
-				<strong><?php _e( 'Bill to:', 'paid-memberships-pro' ); ?></strong><br>
+				<strong><?php esc_html_e( 'Bill to:', 'paid-memberships-pro' ); ?></strong><br>
 				<?php
 					echo pmpro_formatAddress(
 						$order->billing->name,
@@ -43,9 +46,9 @@
 		<td colspan="2">
 			<table style="width:100%;border-width:0px;border-collapse:collapse;">
 				<tr style="border-width:1px;border-style:solid;border-collapse:collapse;">
-					<th style="text-align:center;border-width:1px;border-style:solid;border-collapse:collapse;padding:4px;"><?php _e('ID', 'paid-memberships-pro' ); ?></th>
-					<th style="border-width:1px;border-style:solid;border-collapse:collapse;padding:4px;"><?php _e('Item', 'paid-memberships-pro' ); ?></th>
-					<th style="border-width:1px;border-style:solid;border-collapse:collapse;padding:4px;"><?php _e('Price', 'paid-memberships-pro' ); ?></th>
+					<th style="text-align:center;border-width:1px;border-style:solid;border-collapse:collapse;padding:4px;"><?php esc_html_e('ID', 'paid-memberships-pro' ); ?></th>
+					<th style="border-width:1px;border-style:solid;border-collapse:collapse;padding:4px;"><?php esc_html_e('Item', 'paid-memberships-pro' ); ?></th>
+					<th style="border-width:1px;border-style:solid;border-collapse:collapse;padding:4px;"><?php esc_html_e('Price', 'paid-memberships-pro' ); ?></th>
 				</tr>
 				<tr style="border-width:1px;border-style:solid;border-collapse:collapse;">
 					<td style="text-align:center;border-width:1px;border-style:solid;border-collapse:collapse;padding:4px;"><?php echo $level->id; ?></td>
