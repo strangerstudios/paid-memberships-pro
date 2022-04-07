@@ -442,13 +442,14 @@ class PMPro_Wisdom_Integration {
 		$addons_update_available = [];
 
 		// Build array of Visible, Hidden, Active, Inactive, Installed, and Not Installed Add Ons.
-		foreach ( $addons as $addon ) {
+		foreach ( $addons as $addon ) {			
 			$plugin_file     = $addon['Slug'] . '/' . $addon['Slug'] . '.php';
 			$plugin_file_abs = WP_PLUGIN_DIR . '/' . $plugin_file;
-			$plugin_data     = get_plugin_data( $plugin_file_abs );
-
-			// Plugin is not on the site.
-			if ( empty( $plugin_data['Version'] ) ) {
+			
+			if ( file_exists( $plugin_file_abs ) ) {
+				$plugin_data = get_plugin_data( $plugin_file_abs );
+			} else {
+				// Plugin is not on the site.
 				continue;
 			}
 
