@@ -112,7 +112,7 @@ class PMPro_Wisdom_Integration {
 				$this->plugin_option,
 			],
 			true,
-			true,
+			false,
 			1
 		);
 
