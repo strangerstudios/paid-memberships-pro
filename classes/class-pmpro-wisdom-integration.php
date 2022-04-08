@@ -34,7 +34,7 @@ class PMPro_Wisdom_Integration {
 	 *
 	 * @var string
 	 */
-	public $plugin_option = 'pmpro_settings';
+	public $plugin_option = 'pmpro_wisdom_opt_out';
 
 	/**
 	 * The plugin settings pages to include Wisdom notices on.
@@ -129,17 +129,8 @@ class PMPro_Wisdom_Integration {
 	 * @param array      $value     The new value of the option.
 	 */
 	public function sync_wisdom_setting_to_plugin( $old_value, $value ) {
-		$opt_out = ! empty( $value[ $this->plugin_slug ] ) ? 0 : 1;
-
-		$settings = get_option( $this->plugin_option );
-
-		if ( empty( $settings ) ){
-			$settings = [];
-		}
-
-		$settings['wisdom_opt_out'] = $opt_out;
-
-		update_option( $this->plugin_option, $settings );
+		$opt_out = ! empty( $value[ $this->plugin_slug ] ) ? 0 : 1;		
+		pmpro_setOption( $this->plugin_option, $opt_out );
 	}
 
 	/**
@@ -152,16 +143,16 @@ class PMPro_Wisdom_Integration {
 	 */
 	public function sync_plugin_setting_to_wisdom( $old_value, $value ) {
 		// Only handle opt in when needed.
-		if ( ! is_array( $value ) || ! isset( $value['wisdom_opt_out'] ) ) {
+		if ( ! isset( $value ) ) {
 			return;
 		}
 
 		// Only update when changing the value.
-		if ( is_array( $old_value ) && isset( $old_value['wisdom_opt_out'] ) && (int) $old_value['wisdom_opt_out'] === (int) $value['wisdom_opt_out'] ) {
+		if ( isset( $old_value ) && (int) $old_value === (int) $value ) {
 			return;
 		}
 
-		$opt_out = filter_var( $value['wisdom_opt_out'], FILTER_VALIDATE_BOOLEAN );
+		$opt_out = filter_var( $value, FILTER_VALIDATE_BOOLEAN );
 
 		// Update opt-in.
 		$this->wisdom_tracker->set_is_tracking_allowed( ! $opt_out, $this->plugin_slug );
@@ -224,7 +215,7 @@ class PMPro_Wisdom_Integration {
 	 * @return string
 	 */
 	public function override_notice() {
-		return __( 'Thank you for installing our plugin. We\'d like your permission to track its usage on your site. We won\'t record any sensitive data, only information regarding the WordPress environment and plugin settings. We will only use this information help us make improvements to the plugin and provide better support when you reach out. Tracking is completely optional.', 'paid-memberships-pro' );
+		return __( 'Thank you for installing our plugin. We would like your permission to track its usage on your site. We will not record any sensitive data, only information regarding the WordPress environment and plugin settings. We will only use this information help us make improvements to the plugin and provide better support when you reach out. Tracking is completely optional.', 'paid-memberships-pro' );
 	}
 
 	/**

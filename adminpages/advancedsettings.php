@@ -12,21 +12,7 @@
 		$msg = -1;
 		$msgt = __("Are you sure you want to do that? Try again.", 'paid-memberships-pro' );
 		unset($_REQUEST['savesettings']);
-	}
-
-	// Handle full settings option.
-	$full_settings = pmpro_getOption( 'settings' );
-
-	$full_settings_defaults = [
-		// Default to no tracking (this key is what Wisdom uses).
-		'wisdom_opt_out' => 1,
-	];
-
-	if ( ! $full_settings ) {
-		$full_settings = [];
-	}
-
-	$full_settings = array_merge( $full_settings_defaults, $full_settings );
+	}	
 
 	//get/set settings
 	if(!empty($_REQUEST['savesettings']))
@@ -64,16 +50,16 @@
 
 		// Other settings.
 		pmpro_setOption("hideads");
+		pmpro_setOption("wisdom_opt_out");
 		pmpro_setOption("hideadslevels");
 		pmpro_setOption("redirecttosubscription");
-		pmpro_setOption("uninstall");
+		pmpro_setOption("uninstall");		
 
-		// Handle updating Wisdom tracking setting.
-		if ( isset( $_POST['wisdom_opt_out'] ) ) {
-			$full_settings['wisdom_opt_out'] = (int) $_POST['wisdom_opt_out'];
-        }
-
-		update_option( 'pmpro_settings', $full_settings );
+		// Set up Wisdom tracking cron if needed.
+		if ( (int)pmpro_getOption("wisdom_opt_out") === 0 ) {
+			$wisdom_integration = PMPro_Wisdom_Integration::instance();
+			$wisdom_integration->wisdom_tracker->schedule_tracking();
+		}
 
         /**
          * Filter to add custom settings to the advanced settings page.
@@ -117,6 +103,7 @@
 
 	// Other settings.
 	$hideads = pmpro_getOption("hideads");
+	$wisdom_opt_out = (int)pmpro_getOption("wisdom_opt_out");
 	$hideadslevels = pmpro_getOption("hideadslevels");
 	if( is_multisite() ) {
 		$redirecttosubscription = pmpro_getOption("redirecttosubscription");
@@ -514,14 +501,14 @@ if ( function_exists( 'pmpro_displayAds' ) && pmpro_displayAds() ) {
 					</th>
 					<td>
 						<p>
-							<label>
-								<input name="wisdom_opt_out" type="radio" value="0"<?php checked( 0, $full_settings['wisdom_opt_out'] ); ?> />
+							<label>								
+								<input name="wisdom_opt_out" type="radio" value="0"<?php checked( 0, $wisdom_opt_out ); ?> />
 								<?php esc_html_e( 'Track usage on my site', 'paid-memberships-pro' );?>
 							</label>
 						</p>
 						<p>
 							<label>
-								<input name="wisdom_opt_out" type="radio" value="1"<?php checked( 1, $full_settings['wisdom_opt_out'] ); ?> />
+								<input name="wisdom_opt_out" type="radio" value="1"<?php checked( 1, $wisdom_opt_out ); ?> />
 								<?php esc_html_e( 'DO NOT track usage on my site', 'paid-memberships-pro' );?>
 							</label>
 						</p>
