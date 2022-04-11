@@ -100,7 +100,11 @@ class PMPro_Site_Health {
 				'pmpro-pages' => [
 					'label' => __( 'Membership Pages', 'paid-memberships-pro' ),
 					'value' => self::get_pmpro_pages(),
-				]
+				],
+				'pmpro-library-conflicts' => [
+					'label' => __( 'Library Conflicts', 'paid-memberships-pro' ),
+					'value' => self::get_library_conflicts(),
+				],
 			],
 		];
 
@@ -473,6 +477,37 @@ class PMPro_Site_Health {
 	}
 
 	/**
+	 * Get library conflicts.
+	 *
+	 * @since TBD
+	 *
+	 * @return string|string[] The member page information
+	 */
+	function get_library_conflicts() {
+		// Get the current list of library conflicts.
+		$library_conflicts = get_option( 'pmpro_library_conflicts' );
+
+		// If there are no library conflicts, return a message.
+		if ( empty( $library_conflicts ) ) {
+			return __( 'No library conflicts detected.', 'paid-memberships-pro' );
+		}
+
+		// Format data to be displayed in site health.
+		$return_arr = array();
+
+		// Loop through all libraries that have conflicts.
+		foreach ( $library_conflicts as $library_name => $conflicting_plugins ) {
+			$conflict_strings = array();
+			// Loop through all plugins that have conflicts with this library.
+			foreach ( $conflicting_plugins as $conflicting_plugin_path => $conflicting_plugin_data ) {
+				$conflict_strings[] = 'v' . $conflicting_plugin_data['version'] . ' (' . $conflicting_plugin_data['timestamp'] . ')' . ' - ' . $conflicting_plugin_path;
+			}
+			$return_arr[ $library_name ] = implode( ' | ', $conflict_strings );
+		}
+		return $return_arr;
+	}
+
+	/**
 	 * Get the constants site health information.
 	 *
 	 * @since 2.6.4
@@ -544,5 +579,4 @@ class PMPro_Site_Health {
 
 		return $constants_formatted;
 	}
-
 }

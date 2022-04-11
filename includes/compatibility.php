@@ -114,3 +114,34 @@ function pmpro_compatibility_checker_themes(){
 
 }
 add_action( 'after_setup_theme', 'pmpro_compatibility_checker_themes' );
+
+/**
+ * Keep track of plugins that load libraries before PMPro loads its version.
+ *
+ * @param string $name    The name of the library.
+ * @param string $path    The path of the loaded library.
+ * @param string $version The version of the loaded library.
+ *
+ * @since TBD
+ */
+function pmpro_track_library_conflict( $name, $path, $version ) {
+	// Get the current list of library conflicts.
+	$library_conflicts = get_option( 'pmpro_library_conflicts', array() );
+
+	// Make sure we have an entry for this library.
+	if ( ! isset( $library_conflicts[ $name ] ) ) {
+		$library_conflicts[ $name ] = array();
+	}
+
+	// Make sure we have an entry for this path.
+	if ( ! isset( $library_conflicts[ $name ][ $path ] ) ) {
+		$library_conflicts[ $name ][ $path ] = array();
+	}
+
+	// Update the library conflict information.
+	$library_conflicts[ $name ][ $path ]['version']   = $version;
+	$library_conflicts[ $name ][ $path ]['timestamp'] = current_time( 'Y-m-d H:i:s' );
+
+	// Save changes.
+	update_option( 'pmpro_library_conflicts', $library_conflicts );
+}

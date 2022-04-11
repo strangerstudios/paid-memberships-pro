@@ -9,8 +9,15 @@
 	{
 		function __construct($gateway = NULL)
 		{
-			if(!class_exists("Twocheckout"))
-				require_once(dirname(__FILE__) . "/../../includes/lib/Twocheckout/Twocheckout.php");
+			if ( ! class_exists( "Twocheckout" ) ) {
+				require_once( dirname(__FILE__) . "/../../includes/lib/Twocheckout/Twocheckout.php" );
+			} else {
+				// Another plugin may have loaded the 2Checkout library already.
+				// Let's log the current 2Checkout Library info so that we know
+				// where to look if we need to troubleshoot library conflicts.
+				$previously_loaded_class = new \ReflectionClass( 'Twocheckout' );
+				pmpro_track_library_conflict( 'twocheckout', $previously_loaded_class->getFileName(), Twocheckout::VERSION );
+			}
 
 			//set API connection vars
 			Twocheckout::sellerId(pmpro_getOption('twocheckout_accountnumber'));
