@@ -784,7 +784,7 @@ if ( function_exists( 'pmpro_add_email_order_modal' ) ) {
 				   value="<?php echo esc_attr( $order->expirationmonth ); ?>"/> /
 						<input id="expirationyear" name="expirationyear" type="text" size="10"
 				   value="<?php echo esc_attr( $order->expirationyear ); ?>"/>
-						<span class="description">MM/YYYY</span>
+						<span class="description"><?php esc_html_e( 'MM/YYYY', 'paid-memberships-pro' );?></span>
 					</td>
 				</tr>
 			<?php } ?>
