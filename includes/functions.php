@@ -1510,7 +1510,7 @@ function pmpro_getPaginationString( $page = 1, $totalitems = 0, $limit = 15, $ad
 	*/
 	$pagination = '';
 	if ( $lastpage > 1 ) {
-		$pagination .= '<div class="pmpro_pagination"';
+		$pagination .= '<span class="pmpro_pagination"';
 		if ( ! empty( $margin ) || ! empty( $padding ) ) {
 			$pagination .= ' style="';
 			if ( $margin ) {
@@ -1588,7 +1588,7 @@ function pmpro_getPaginationString( $page = 1, $totalitems = 0, $limit = 15, $ad
 		} else {
 			$pagination .= '<span class="disabled">next &raquo;</span>';
 		}
-		$pagination .= "</div>\n";
+		$pagination .= "</span>\n";
 	}
 
 	return $pagination;

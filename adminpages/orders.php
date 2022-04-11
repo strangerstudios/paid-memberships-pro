@@ -1033,114 +1033,117 @@ if ( function_exists( 'pmpro_add_email_order_modal' ) ) {
 			"><p><?php echo $pmpro_msg; ?></p></div>
 		<?php } ?>
 
+		<p class="search-box">
+			<label class="hidden" for="post-search-input"><?php esc_html_e( 'Search Orders', 'paid-memberships-pro' ); ?>:</label>
+			<input type="hidden" name="page" value="pmpro-orders"/>
+			<input id="post-search-input" type="text" value="<?php echo esc_attr( wp_unslash( $s ) ); ?>" name="s"/>
+			<input class="button" type="submit" value="<?php esc_attr_e( 'Search Orders', 'paid-memberships-pro' ); ?>"/>
+		</p>
 
-		<ul class="subsubsub">
-			<li>
-				<?php esc_html_e( 'Show', 'paid-memberships-pro' ); ?>
-				<select id="filter" name="filter">
-					<option value="all" <?php selected( $filter, 'all' ); ?>><?php esc_html_e( 'All', 'paid-memberships-pro' ); ?></option>
+		<div class="tablenav top">
+			<?php esc_html_e( 'Show', 'paid-memberships-pro' ); ?>
+			<select id="filter" name="filter">
+				<option value="all" <?php selected( $filter, 'all' ); ?>><?php esc_html_e( 'All', 'paid-memberships-pro' ); ?></option>
+				<option
+					value="within-a-date-range" <?php selected( $filter, 'within-a-date-range' ); ?>><?php esc_html_e( 'Within a Date Range', 'paid-memberships-pro' ); ?></option>
+				<option
+					value="predefined-date-range" <?php selected( $filter, 'predefined-date-range' ); ?>><?php esc_html_e( 'Predefined Date Range', 'paid-memberships-pro' ); ?></option>
+				<option
+					value="within-a-level" <?php selected( $filter, 'within-a-level' ); ?>><?php esc_html_e( 'Within a Level', 'paid-memberships-pro' ); ?></option>
+				<option
+					value="with-discount-code" <?php selected( $filter, 'with-discount-code' ); ?>><?php esc_html_e( 'With a Discount Code', 'paid-memberships-pro' ); ?></option>
+				<option
+					value="within-a-status" <?php selected( $filter, 'within-a-status' ); ?>><?php esc_html_e( 'Within a Status', 'paid-memberships-pro' ); ?></option>
+				<option
+					value="only-paid" <?php selected( $filter, 'only-paid' ); ?>><?php esc_html_e( 'Only Paid Orders', 'paid-memberships-pro' ); ?></option>
+				<option
+					value="only-free" <?php selected( $filter, 'only-free' ); ?>><?php esc_html_e( 'Only Free Orders', 'paid-memberships-pro' ); ?></option>
+
+				<?php $custom_filters = apply_filters( 'pmpro_admin_orders_filters', array() ); ?>
+				<?php foreach( $custom_filters as $value => $name ) { ?>
+					<option value="<?php echo esc_attr( $value ); ?>" <?php selected( $filter, $value ); ?>><?php esc_html_e( $name ); ?></option>
+				<?php } ?>
+			</select>
+
+			<span id="from"><?php esc_html_e( 'From', 'paid-memberships-pro' ); ?></span>
+
+			<select id="start-month" name="start-month">
+				<?php for ( $i = 1; $i < 13; $i ++ ) { ?>
 					<option
-						value="within-a-date-range" <?php selected( $filter, 'within-a-date-range' ); ?>><?php esc_html_e( 'Within a Date Range', 'paid-memberships-pro' ); ?></option>
+						value="<?php echo esc_attr( $i ); ?>" <?php selected( $start_month, $i ); ?>><?php echo esc_html( date_i18n( 'F', mktime( 0, 0, 0, $i, 2 ) ) ); ?></option>
+				<?php } ?>
+			</select>
+
+			<input id='start-day' name="start-day" type="text" size="2"
+				   value="<?php echo esc_attr( $start_day ); ?>"/>
+			<input id='start-year' name="start-year" type="text" size="4"
+				   value="<?php echo esc_attr( $start_year ); ?>"/>
+
+
+			<span id="to"><?php esc_html_e( 'To', 'paid-memberships-pro' ); ?></span>
+
+			<select id="end-month" name="end-month">
+				<?php for ( $i = 1; $i < 13; $i ++ ) { ?>
 					<option
-						value="predefined-date-range" <?php selected( $filter, 'predefined-date-range' ); ?>><?php esc_html_e( 'Predefined Date Range', 'paid-memberships-pro' ); ?></option>
+						value="<?php echo esc_attr( $i ); ?>" <?php selected( $end_month, $i ); ?>><?php echo esc_html( date_i18n( 'F', mktime( 0, 0, 0, $i, 2 ) ) ); ?></option>
+				<?php } ?>
+			</select>
+
+
+			<input id='end-day' name="end-day" type="text" size="2" value="<?php echo esc_attr( $end_day ); ?>"/>
+			<input id='end-year' name="end-year" type="text" size="4" value="<?php echo esc_attr( $end_year ); ?>"/>
+
+			<span id="filterby"><?php esc_html_e( 'filter by ', 'paid-memberships-pro' ); ?></span>
+
+			<select id="predefined-date" name="predefined-date">
+
+				<option
+					value="<?php echo 'This Month'; ?>" <?php selected( $predefined_date, 'This Month' ); ?>><?php esc_html_e( 'This Month', 'paid-memberships-pro' ); ?></option>
+				<option
+					value="<?php echo 'Last Month'; ?>" <?php selected( $predefined_date, 'Last Month' ); ?>><?php esc_html_e( 'Last Month', 'paid-memberships-pro' ); ?></option>
+				<option
+					value="<?php echo 'This Year'; ?>" <?php selected( $predefined_date, 'This Year' ); ?>><?php esc_html_e( 'This Year', 'paid-memberships-pro' ); ?></option>
+				<option
+					value="<?php echo 'Last Year'; ?>" <?php selected( $predefined_date, 'Last Year' ); ?>><?php esc_html_e( 'Last Year', 'paid-memberships-pro' ); ?></option>
+
+			</select>
+
+			<?php
+			// Note: only orders belonging to current levels can be filtered. There is no option for orders belonging to deleted levels
+			$levels = pmpro_sort_levels_by_order( pmpro_getAllLevels( true, true ) );
+			?>
+			<select id="l" name="l">
+				<?php foreach ( $levels as $level ) { ?>
 					<option
-						value="within-a-level" <?php selected( $filter, 'within-a-level' ); ?>><?php esc_html_e( 'Within a Level', 'paid-memberships-pro' ); ?></option>
-					<option
-						value="with-discount-code" <?php selected( $filter, 'with-discount-code' ); ?>><?php esc_html_e( 'With a Discount Code', 'paid-memberships-pro' ); ?></option>
-					<option
-						value="within-a-status" <?php selected( $filter, 'within-a-status' ); ?>><?php esc_html_e( 'Within a Status', 'paid-memberships-pro' ); ?></option>
-					<option
-						value="only-paid" <?php selected( $filter, 'only-paid' ); ?>><?php esc_html_e( 'Only Paid Orders', 'paid-memberships-pro' ); ?></option>
-					<option
-						value="only-free" <?php selected( $filter, 'only-free' ); ?>><?php esc_html_e( 'Only Free Orders', 'paid-memberships-pro' ); ?></option>
-
-					<?php $custom_filters = apply_filters( 'pmpro_admin_orders_filters', array() ); ?>
-					<?php foreach( $custom_filters as $value => $name ) { ?>
-						<option value="<?php echo esc_attr( $value ); ?>" <?php selected( $filter, $value ); ?>><?php esc_html_e( $name ); ?></option>
-					<?php } ?>
-				</select>
-
-				<span id="from"><?php esc_html_e( 'From', 'paid-memberships-pro' ); ?></span>
-
-				<select id="start-month" name="start-month">
-					<?php for ( $i = 1; $i < 13; $i ++ ) { ?>
-						<option
-							value="<?php echo esc_attr( $i ); ?>" <?php selected( $start_month, $i ); ?>><?php echo esc_html( date_i18n( 'F', mktime( 0, 0, 0, $i, 2 ) ) ); ?></option>
-					<?php } ?>
-				</select>
-
-				<input id='start-day' name="start-day" type="text" size="2"
-					   value="<?php echo esc_attr( $start_day ); ?>"/>
-				<input id='start-year' name="start-year" type="text" size="4"
-					   value="<?php echo esc_attr( $start_year ); ?>"/>
-
-
-				<span id="to"><?php esc_html_e( 'To', 'paid-memberships-pro' ); ?></span>
-
-				<select id="end-month" name="end-month">
-					<?php for ( $i = 1; $i < 13; $i ++ ) { ?>
-						<option
-							value="<?php echo esc_attr( $i ); ?>" <?php selected( $end_month, $i ); ?>><?php echo esc_html( date_i18n( 'F', mktime( 0, 0, 0, $i, 2 ) ) ); ?></option>
-					<?php } ?>
-				</select>
-
-
-				<input id='end-day' name="end-day" type="text" size="2" value="<?php echo esc_attr( $end_day ); ?>"/>
-				<input id='end-year' name="end-year" type="text" size="4" value="<?php echo esc_attr( $end_year ); ?>"/>
-
-				<span id="filterby"><?php esc_html_e( 'filter by ', 'paid-memberships-pro' ); ?></span>
-
-				<select id="predefined-date" name="predefined-date">
-
-					<option
-						value="<?php echo 'This Month'; ?>" <?php selected( $predefined_date, 'This Month' ); ?>><?php esc_html_e( 'This Month', 'paid-memberships-pro' ); ?></option>
-					<option
-						value="<?php echo 'Last Month'; ?>" <?php selected( $predefined_date, 'Last Month' ); ?>><?php esc_html_e( 'Last Month', 'paid-memberships-pro' ); ?></option>
-					<option
-						value="<?php echo 'This Year'; ?>" <?php selected( $predefined_date, 'This Year' ); ?>><?php esc_html_e( 'This Year', 'paid-memberships-pro' ); ?></option>
-					<option
-						value="<?php echo 'Last Year'; ?>" <?php selected( $predefined_date, 'Last Year' ); ?>><?php esc_html_e( 'Last Year', 'paid-memberships-pro' ); ?></option>
-
-				</select>
-
-				<?php
-				// Note: only orders belonging to current levels can be filtered. There is no option for orders belonging to deleted levels
-				$levels = pmpro_sort_levels_by_order( pmpro_getAllLevels( true, true ) );
-				?>
-				<select id="l" name="l">
-					<?php foreach ( $levels as $level ) { ?>
-						<option
-							value="<?php echo esc_attr( $level->id ); ?>" <?php selected( $l, $level->id ); ?>><?php echo esc_html( $level->name ); ?></option>
-					<?php } ?>
-
-				</select>
-
-				<?php
-				$sqlQuery = "SELECT SQL_CALC_FOUND_ROWS * FROM $wpdb->pmpro_discount_codes ";
-				$sqlQuery .= "ORDER BY id DESC ";
-				$codes = $wpdb->get_results($sqlQuery, OBJECT);
-				if ( ! empty( $codes ) ) { ?>
-				<select id="discount-code" name="discount-code">
-					<?php foreach ( $codes as $code ) { ?>
-						<option
-							value="<?php echo esc_attr( $code->id ); ?>" <?php selected( $discount_code, $code->id ); ?>><?php echo esc_html( $code->code ); ?></option>
-					<?php } ?>
-				</select>
+						value="<?php echo esc_attr( $level->id ); ?>" <?php selected( $l, $level->id ); ?>><?php echo esc_html( $level->name ); ?></option>
 				<?php } ?>
 
-				<?php
-					$statuses = pmpro_getOrderStatuses();
-				?>
-				<select id="status" name="status">
-					<?php foreach ( $statuses as $the_status ) { ?>
-						<option
-							value="<?php echo esc_attr( $the_status ); ?>" <?php selected( $the_status, $status ); ?>><?php echo esc_html( $the_status ); ?></option>
-					<?php } ?>
-				</select>
+			</select>
 
-				<input id="submit" class="button" type="submit" value="<?php esc_attr_e( 'Filter', 'paid-memberships-pro' ); ?>"/>
-			</li>
-		</ul>
+			<?php
+			$sqlQuery = "SELECT SQL_CALC_FOUND_ROWS * FROM $wpdb->pmpro_discount_codes ";
+			$sqlQuery .= "ORDER BY id DESC ";
+			$codes = $wpdb->get_results($sqlQuery, OBJECT);
+			if ( ! empty( $codes ) ) { ?>
+			<select id="discount-code" name="discount-code">
+				<?php foreach ( $codes as $code ) { ?>
+					<option
+						value="<?php echo esc_attr( $code->id ); ?>" <?php selected( $discount_code, $code->id ); ?>><?php echo esc_html( $code->code ); ?></option>
+				<?php } ?>
+			</select>
+			<?php } ?>
+
+			<?php
+				$statuses = pmpro_getOrderStatuses();
+			?>
+			<select id="status" name="status">
+				<?php foreach ( $statuses as $the_status ) { ?>
+					<option
+						value="<?php echo esc_attr( $the_status ); ?>" <?php selected( $the_status, $status ); ?>><?php echo esc_html( $the_status ); ?></option>
+				<?php } ?>
+			</select>
+
+			<input id="submit" class="button" type="submit" value="<?php esc_attr_e( 'Filter', 'paid-memberships-pro' ); ?>"/>
 
 		<script>
 			//update month/year when period dropdown is changed
@@ -1271,13 +1274,6 @@ if ( function_exists( 'pmpro_add_email_order_modal' ) ) {
 
 		</script>
 
-		<p class="search-box">
-			<label class="hidden" for="post-search-input"><?php esc_html_e( 'Search Orders', 'paid-memberships-pro' ); ?>:</label>
-			<input type="hidden" name="page" value="pmpro-orders"/>
-			<input id="post-search-input" type="text" value="<?php echo esc_attr( wp_unslash( $s ) ); ?>" name="s"/>
-			<input class="button" type="submit" value="<?php esc_attr_e( 'Search Orders', 'paid-memberships-pro' ); ?>"/>
-		</p>
-
 		<?php
 		if ( $s ) {
 			$sqlQuery = "SELECT SQL_CALC_FOUND_ROWS o.id FROM $wpdb->pmpro_membership_orders o LEFT JOIN $wpdb->users u ON o.user_id = u.ID LEFT JOIN $wpdb->pmpro_membership_levels l ON o.membership_id = l.id ";
@@ -1348,7 +1344,9 @@ if ( function_exists( 'pmpro_add_email_order_modal' ) ) {
 
 		if ( $order_ids ) {
 			?>
-			<p class="clear"><?php printf( __( '%d orders found.', 'paid-memberships-pro' ), $totalrows ); ?></span></p>
+			<div class="tablenav-pages one-page">
+				<span class="displaying-num"><?php printf( __( '%d orders found.', 'paid-memberships-pro' ), $totalrows ); ?></span>
+			</div>
 			<?php
 		}
 
@@ -1362,6 +1360,9 @@ if ( function_exists( 'pmpro_add_email_order_modal' ) ) {
 			$pmpro_discount_codes = false;
 		}
 		?>
+			<br class="clear" />
+		</div> <!-- end tablenav -->
+
 		<table class="wp-list-table widefat striped">
 			<thead>
 			<tr class="thead">
@@ -1658,12 +1659,18 @@ if ( function_exists( 'pmpro_add_email_order_modal' ) ) {
 			</tbody>
 		</table>
 	</form>
-	<?php
-	// add normal args
-	$pagination_url = esc_url( add_query_arg( $url_params, admin_url( '/admin.php?page=pmpro-orders' ) ) );
-	echo pmpro_getPaginationString( $pn, $totalrows, $limit, 1, $pagination_url, "&limit=$limit&pn=" );
-	?>
-
+	<div class="tablenav bottom">
+		<div class="tablenav-pages">
+			<?php if ( $order_ids ) { ?>
+				<span class="displaying-num"><?php printf( __( '%d orders found.', 'paid-memberships-pro' ), $totalrows ); ?></span>
+			<?php } ?>
+			<?php
+				// add normal args
+				$pagination_url = esc_url( add_query_arg( $url_params, admin_url( '/admin.php?page=pmpro-orders' ) ) );
+				echo pmpro_getPaginationString( $pn, $totalrows, $limit, 1, $pagination_url, "&limit=$limit&pn=" );
+			?>
+		</div>
+	</div>
 <?php } ?>
 <?php
 require_once( dirname( __FILE__ ) . '/admin_footer.php' );
