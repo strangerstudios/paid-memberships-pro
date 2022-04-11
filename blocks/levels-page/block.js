@@ -19,15 +19,21 @@
  export default registerBlockType(
      'pmpro/levels-page',
      {
-         title: __( 'Membership Levels List', 'paid-memberships-pro' ),
-         description: __( 'Displays a list of Membership Levels. To change the order, go to Memberships > Settings > Levels.', 'paid-memberships-pro' ),
+         title: __( 'Membership Levels and Pricing Table', 'paid-memberships-pro' ),
+         description: __( 'Dynamic page section that displays a list of membership levels and pricing, linked to membership checkout. To reorder the display, navigate to Memberships > Settings > Levels.', 'paid-memberships-pro' ),
          category: 'pmpro',
          icon: {
-            background: '#2997c8',
-            foreground: '#ffffff',
+            background: '#FFFFFF',
+            foreground: '#658B24',
             src: 'list-view',
          },
-         keywords: [ __( 'pmpro', 'paid-memberships-pro' ) ],
+         keywords: [
+             __( 'level', 'paid-memberships-pro' ),
+             __( 'paid memberships pro', 'paid-memberships-pro' ),
+             __( 'pmpro', 'paid-memberships-pro' ),
+             __( 'price', 'paid-memberships-pro' ),
+             __( 'pricing table', 'paid-memberships-pro' ),
+         ],
          supports: {
          },
          attributes: {
