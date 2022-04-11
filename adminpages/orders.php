@@ -509,11 +509,11 @@ if ( function_exists( 'pmpro_add_email_order_modal' ) ) {
 		<hr />
 		<h2>
 			<?php esc_html_e( 'Billing Address', 'paid-memberships-pro' ); ?>
-			<?php if ( empty( $order->billing_street) ) { ?>
+			<?php if ( ! $order->has_billing_address() ) { ?>
 				<a href="javascript:void(0);" id="show_billing_action"><?php esc_html_e( 'Show Billing Address Fields', 'paid-memberships-pro' ); ?></a>
 			<?php } ?>
 		</h2>
-		<table id="billing_address_fields" class="form-table"<?php if ( empty( $order->billing_street) ) { ?> style="display: none;"<?php } ?>>
+		<table id="billing_address_fields" class="form-table"<?php if ( ! $order->has_billing_address() ) { ?> style="display: none;"<?php } ?>>
 			<tbody>
 			<tr>
 				<th scope="row" valign="top"><label for="billing_name"><?php esc_html_e( 'Billing Name', 'paid-memberships-pro' ); ?>:</label>
