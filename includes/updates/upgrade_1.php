@@ -50,6 +50,9 @@ function pmpro_upgrade_1()
 	//let's pause the nag for the first week of use
 	$pmpro_nag_paused = current_time('timestamp')+(3600*24*7);
 	update_option('pmpro_nag_paused', $pmpro_nag_paused, 'no');
+	
+	//wisdom tracking turned off by default
+	pmpro_setOption('wisdom_opt_out', 1);
 
 	//db update
 	pmpro_db_delta();

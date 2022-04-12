@@ -1510,7 +1510,7 @@ function pmpro_getPaginationString( $page = 1, $totalitems = 0, $limit = 15, $ad
 	*/
 	$pagination = '';
 	if ( $lastpage > 1 ) {
-		$pagination .= '<div class="pmpro_pagination"';
+		$pagination .= '<span class="pmpro_pagination"';
 		if ( ! empty( $margin ) || ! empty( $padding ) ) {
 			$pagination .= ' style="';
 			if ( $margin ) {
@@ -1588,7 +1588,7 @@ function pmpro_getPaginationString( $page = 1, $totalitems = 0, $limit = 15, $ad
 		} else {
 			$pagination .= '<span class="disabled">next &raquo;</span>';
 		}
-		$pagination .= "</div>\n";
+		$pagination .= "</span>\n";
 	}
 
 	return $pagination;
@@ -4100,7 +4100,99 @@ function pmpro_get_ip() {
 }
 
 /**
- * Send the WP new user notification email, but also check our filter.
+ * Determines if this order can be refunded
+ * @param  object $order The order that we want to refund
+ * @return bool Returns a bool value based on if the order can be refunded
+ */
+function pmpro_allowed_refunds( $order ) { 
+
+	//If this isn't a valid order then lets not allow it
+	if( empty( $order ) || empty( $order->gateway ) || empty( $order->status ) || empty( $order->payment_transaction_id ) ) {
+		return false;
+	}	
+
+	//Orders with a 0 total shouldn't be able to be refunded
+	if( $order->total == 0 ){
+		return false;
+	}
+
+	$okay = false;
+
+	/**
+	 * Specify which gateways support refund functionality
+	 *
+	 * @since TBD
+	 *
+	 * @param array $allowed_gateways A list of allowed gateways to work with refunds
+	 */
+	$allowed_gateways = apply_filters( 'pmpro_allowed_refunds_gateways', array( 'stripe', 'paypalexpress' ) );
+	//Only apply to these gateways
+	if( in_array( $order->gateway, $allowed_gateways, true ) ) {
+		$okay = true;
+	}
+	
+	$disallowed_statuses = pmpro_disallowed_refund_statuses();
+	//Don't allow pending orders to be refunded
+	if( in_array( $order->status, $disallowed_statuses, true ) ){
+		$okay = false;
+	}
+
+	$okay = apply_filters( 'pmpro_refund_allowed', $okay, $order );
+
+	return $okay;
+}
+
+
+/**
+ * Decides which filter should be used for the refund depending on gateway
+ * @param  object $order Member Order that we are refunding
+ * @return bool 	Returns a bool value based on if a refund was processed successfully or not
+ */
+function pmpro_refund_order( $order ){
+
+	if( empty( $order ) ){
+		return false;
+	}
+
+	//Not going to refund an order that has already been refunded
+	if( $order->status == 'refunded' ) {
+		return true; 
+	}
+
+	/**
+	 * Processes a refund for a specific gateway
+	 *
+	 * @since TBD
+	 *
+	 * @param bool $success Default return value is false to determine if the refund was successfully processed. 
+	 * @param object $order The Member Order we want to refund.
+	 */
+	$success = apply_filters( 'pmpro_process_refund_'.$order->gateway, false, $order );
+	
+	return $success;
+
+}
+
+/**
+ * Returns an array of order statuses that do not qualify for a refund
+ * 
+ * @return array Returns an array of statuses that are not allowe to be refunded
+ */
+function pmpro_disallowed_refund_statuses() {
+
+	/**
+	 * Allow filtering the list of statuses that can not be refunded from.
+	 *
+	 * @since TBD
+	 *
+	 * @param array $disallowed_statuses The list of statuses that can not be refunded from.
+	 */
+	$disallowed_statuses = apply_filters( 'pmpro_disallowed_refund_statuses', array( 'pending', 'refunded', 'review', 'token', 'error' ) );
+
+	return $disallowed_statuses;
+}
+
+/* Send the WP new user notification email, but also check our filter.
  * NOTE: includes/email.php has code to check for the related setting and
  *       filters on the pmpro_wp_new_user_notification hook.
  * @since 2.7.4
@@ -4111,4 +4203,5 @@ function pmpro_maybe_send_wp_new_user_notification( $user_id, $level_id = null )
 	if ( apply_filters( 'pmpro_wp_new_user_notification', true, $user_id, $level_id ) ) {
 		wp_new_user_notification( $user_id, null, 'both' );
 	}
+
 }

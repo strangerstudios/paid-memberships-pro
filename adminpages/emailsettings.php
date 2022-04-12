@@ -81,9 +81,8 @@
 
 	<form action="" method="post" enctype="multipart/form-data"> 
 		<?php wp_nonce_field('savesettings', 'pmpro_emailsettings_nonce');?>
-		
-		<h1 class="wp-heading-inline"><?php esc_html_e( 'Email Settings', 'paid-memberships-pro' ); ?></h1>
 		<hr class="wp-header-end">
+		<h1 class="wp-heading-inline"><?php esc_html_e( 'Email Settings', 'paid-memberships-pro' ); ?></h1>
 		<h2><?php esc_html_e( 'Send Emails From', 'paid-memberships-pro' ); ?></h2>
 		<p><?php echo wp_kses_post( __( 'By default, system generated emails are sent from <em><strong>wordpress@yourdomain.com</strong></em>. You can update this from address using the fields below.', 'paid-memberships-pro' ) );?></p>
 
