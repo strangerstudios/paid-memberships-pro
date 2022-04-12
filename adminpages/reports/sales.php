@@ -358,6 +358,7 @@ function pmpro_report_sales_page()
 		<input type="hidden" name="page" value="pmpro-reports" />
 		<input type="hidden" name="report" value="sales" />
 		<input type="submit" class="button action" value="<?php esc_attr_e('Generate Report', 'paid-memberships-pro' );?>" />
+		<br class="clear" />
 	</div>
 	<div class="pmpro_chart_area">
 		<div id="chart_div"></div>

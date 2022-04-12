@@ -40,6 +40,8 @@ $business_email         = pmpro_getParam( "business", "POST", '', 'sanitize_emai
 $payer_email            = pmpro_getParam( "payer_email", "POST", '', 'sanitize_email'  );
 $recurring_payment_id   = pmpro_getParam( "recurring_payment_id", "POST" );
 $profile_status         = strtolower( pmpro_getParam( "profile_status", "POST" ) );
+$payment_status 		= strtolower( pmpro_getParam( "payment_status", "POST" ) );
+$parent_txn_id  		= pmpro_getParam( "parent_txn_id", "POST" );
 
 if ( empty( $subscr_id ) ) {
 	$subscr_id = $recurring_payment_id;
@@ -372,11 +374,76 @@ if ( $txn_type == "subscr_cancel" ) {
 	}
 }
 
-// Order Refunded (PayPal Express)
-if( '' === $txn_type && 'Refunded' === $payment_status ) {
-	ipnlog( 'Refund for this payment: ' . print_r( $_POST, true ) );
+if ( strtolower( $payment_status ) === 'refunded' ) {
 
-	pmpro_ipnExit();
+	$payment_transaction_id = $parent_txn_id;
+
+	if ( $payment_transaction_id ) {
+
+		$success = false;
+
+		$morder = new MemberOrder();
+
+		$morder->getMemberOrderByPaymentTransactionID( $payment_transaction_id );
+
+		if ( ! isset( $morder->id ) ) {
+			
+			try {
+
+				$last_order_by_subscription = new MemberOrder();
+				$last_order_by_subscription->getLastMemberOrderBySubscriptionTransactionID( $recurring_payment_id );
+
+				$first_order_by_subscription = $last_order_by_subscription->get_original_subscription_order();
+				if ( $first_order_by_subscription && $first_order_by_subscription->id ) {
+					if ( 'paypalexpress' === $first_order_by_subscription->gateway ) {
+						$first_order_payment_transaction_id = $first_order_by_subscription->Gateway->getRealPaymentTransactionId( $first_order_by_subscription );
+
+						if ( $first_order_payment_transaction_id === $payment_transaction_id ) {
+							$morder = $first_order_by_subscription;								
+						}
+					}
+				}
+			} catch ( Exception $e ) {
+				// if something goes wrong with the logic above,
+				// we dont want to miss the management of the current ipn request.
+				// so ignoring the error is the best thing to do. dont care too much.
+				//The refund failed, so lets return the gateway message
+			
+				ipnlog( "Canceled membership for user with id = " . $morder->user_id . ". Subscription transaction ID = " . $payment_transaction_id . ". " . $httpParsedResponseAr['L_LONGMESSAGE0'] );
+				
+			}
+		
+		}
+
+		if ( isset( $morder->id ) ) {
+			
+			$success = true;
+
+			$morder->status = 'refunded';
+
+			// translators: %1$s is the date. %2$s is the transaction ID.
+			$morder->notes = trim( $morder->notes .' '. sprintf( __('Order successfully refunded on %1$s for transaction ID %2$s at the gateway.', 'paid-memberships-pro' ), date_i18n('Y-m-d H:i:s'), $payment_transaction_id ) );
+
+			ipnlog( printf( __('Order successfully refunded on %1$s for transaction ID %2$s at the gateway.', 'paid-memberships-pro' ), date_i18n('Y-m-d H:i:s'), $payment_transaction_id ) );
+
+			$user = get_user_by( 'email', $morder->Email );
+
+			//send an email to the member
+			$myemail = new PMProEmail();
+			$myemail->sendRefundedEmail( $user );
+
+			//send an email to the admin
+			$myemail = new PMProEmail();
+			$myemail->sendRefundedAdminEmail( $user, $morder->membership_id );
+
+			$morder->SaveOrder();
+
+		}		
+
+		return $success;
+
+	}
+
 }
 
 //Other
