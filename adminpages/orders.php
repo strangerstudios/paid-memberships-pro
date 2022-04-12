@@ -172,6 +172,31 @@ if ( ! empty( $_REQUEST['delete'] ) ) {
 	}
 }
 
+// Refund this order
+if ( ! empty( $_REQUEST['refund'] ) ) {
+	// Check nonce for refunding.
+	$nonceokay = true;
+	if ( empty( $_REQUEST['pmpro_orders_nonce'] ) || ! check_admin_referer( 'refund_order', 'pmpro_orders_nonce' ) ) {
+		$nonceokay = false;
+	}
+
+	$rorder = new MemberOrder( (int) $_REQUEST['refund'] );
+	if ( $nonceokay && !empty( $rorder ) && pmpro_allowed_refunds( $rorder ) ) {
+		
+		if( pmpro_refund_order( $rorder ) ) {
+			$pmpro_msg  = __( 'Order refunded successfully.', 'paid-memberships-pro' );
+			$pmpro_msgt = 'success';
+		} else {
+			$pmpro_msg  = __( 'Error refunding order. Please check the order notes for more information.', 'paid-memberships-pro' );
+			$pmpro_msgt = 'error';
+		}
+
+	} else {
+		$pmpro_msg  = __( 'Error refunding order. Please check the order notes for more information.', 'paid-memberships-pro' );
+		$pmpro_msgt = 'error';
+	}
+}
+
 $thisyear = date( 'Y', $now );
 
 // this array stores fields that should be read only
@@ -385,14 +410,44 @@ if ( function_exists( 'pmpro_add_email_order_modal' ) ) {
 
 <?php if ( ! empty( $order ) ) { ?>
 
-	<hr class="wp-header-end">
+	<?php if ( ! empty( $order->id ) ) { 
+		$refund_text = esc_html(
+			sprintf(
+				// translators: %s is the Order Code.
+				__( 'Refunding an order is permanent and can affect active users. Are you sure you want to refund order %s?', 'paid-memberships-pro' ),
+				str_replace( "'", '', $order->code )
+			)
+		);
 
-	<?php if ( ! empty( $order->id ) ) { ?>
-		<h1 class="wp-heading-inline"><?php esc_html_e( 'Edit Order', 'paid-memberships-pro' ); ?> ID: <?php echo esc_html( $order->id ); ?></h1>
-
-			<a title="<?php esc_attr_e( 'Print', 'paid-memberships-pro' ); ?>" href="<?php echo esc_url( add_query_arg( array( 'action' => 'pmpro_orders_print_view', 'order' => $order->id ), admin_url( 'admin-ajax.php' ) ) ); ?>" target="_blank" class="page-title-action pmpro-has-icon pmpro-has-icon-printer"><?php esc_html_e( 'Print', 'paid-memberships-pro' ); ?></a>
-			<a title="<?php esc_attr_e( 'Email', 'paid-memberships-pro' ); ?>" href="#TB_inline?width=600&height=200&inlineId=email_invoice" class="thickbox email_link page-title-action pmpro-has-icon pmpro-has-icon-email" data-order="<?php echo esc_html( $order->id ); ?>"><?php esc_html_e( 'Email', 'paid-memberships-pro' ); ?></a>
-			<a title="<?php esc_attr_e( 'View', 'paid-memberships-pro' ); ?>" href="<?php echo esc_url( pmpro_url("invoice", "?invoice=" . $order->code ) ) ?>" target="_blank" class="page-title-action pmpro-has-icon pmpro-has-icon-admin-users"><?php esc_html_e( 'View', 'paid-memberships-pro' ); ?></a>
+		$refund_nonce_url = wp_nonce_url(
+			add_query_arg(
+				[
+					'page'   => 'pmpro-orders',
+					'action' => 'refund_order',
+					'refund' => $order->id,
+					'order'  => $order->id
+				],
+				admin_url( 'admin.php' )
+			),
+			'refund_order',
+			'pmpro_orders_nonce'
+		);
+		?>
+    <h1 class="wp-heading-inline"><?php esc_html_e( 'Edit Order', 'paid-memberships-pro' ); ?> ID: <?php echo esc_html( $order->id ); ?></h1>
+		<a title="<?php esc_attr_e( 'Print', 'paid-memberships-pro' ); ?>" href="<?php echo esc_url( add_query_arg( array( 'action' => 'pmpro_orders_print_view', 'order' => $order->id ), admin_url( 'admin-ajax.php' ) ) ); ?>" target="_blank" class="page-title-action pmpro-has-icon pmpro-has-icon-printer"><?php esc_html_e( 'Print', 'paid-memberships-pro' ); ?></a>
+		<a title="<?php esc_attr_e( 'Email', 'paid-memberships-pro' ); ?>" href="#TB_inline?width=600&height=200&inlineId=email_invoice" class="thickbox email_link page-title-action pmpro-has-icon pmpro-has-icon-email" data-order="<?php echo esc_html( $order->id ); ?>"><?php esc_html_e( 'Email', 'paid-memberships-pro' ); ?></a>
+		<a title="<?php esc_attr_e( 'View', 'paid-memberships-pro' ); ?>" href="<?php echo esc_url( pmpro_url("invoice", "?invoice=" . $order->code ) ) ?>" target="_blank" class="page-title-action pmpro-has-icon pmpro-has-icon-admin-users"><?php esc_html_e( 'View', 'paid-memberships-pro' ); ?></a>
+		<?php
+			if( pmpro_allowed_refunds( $order ) ) {
+				printf(
+					'<a title="%1$s" href="%2$s" class="page-title-action">%3$s</a>',
+					esc_attr__( 'Refund', 'paid-memberships-pro' ),
+					esc_js( 'javascript:pmpro_askfirst(' . wp_json_encode( $refund_text ) . ', ' . wp_json_encode( $refund_nonce_url ) . '); void(0);' ),
+					esc_html__( 'Refund', 'paid-memberships-pro' )
+				);
+			}
+		?>
+	<hr class="wp-header-end">	
 	<?php } else { ?>
 		<h1 class="wp-heading-inline"><?php esc_html_e( 'New Order', 'paid-memberships-pro' ); ?></h1>
 	<?php } ?>
@@ -1415,6 +1470,27 @@ if ( function_exists( 'pmpro_add_email_order_modal' ) ) {
 								'pmpro_orders_nonce'
 							);
 
+							$refund_text = esc_html(
+								sprintf(
+									// translators: %s is the Order Code.
+									__( 'Refunding orders is permanent and can affect active users. Are you sure you want to refund order %s?', 'paid-memberships-pro' ),
+									str_replace( "'", '', $order->code )
+								)
+							);
+
+							$refund_nonce_url = wp_nonce_url(
+								add_query_arg(
+									[
+										'page'   => 'pmpro-orders',
+										'action' => 'refund_order',
+										'refund' => $order->id,
+									],
+									admin_url( 'admin.php' )
+								),
+								'refund_order',
+								'pmpro_orders_nonce'
+							);
+
 							$actions = [
 								'id'	 => sprintf(
 									// translators: %s is the Order ID.
@@ -1478,6 +1554,15 @@ if ( function_exists( 'pmpro_add_email_order_modal' ) ) {
 									esc_html__( 'Email', 'paid-memberships-pro' )
 								),
 							];
+
+							if( pmpro_allowed_refunds( $order ) ) {
+								$actions['refund'] = sprintf(
+									'<a title="%1$s" href="%2$s">%3$s</a>',
+									esc_attr__( 'Refund', 'paid-memberships-pro' ),
+									esc_js( 'javascript:pmpro_askfirst(' . wp_json_encode( $refund_text ) . ', ' . wp_json_encode( $refund_nonce_url ) . '); void(0);' ),
+									esc_html__( 'Refund', 'paid-memberships-pro' )
+								);
+							}
 
 							/**
 							 * Filter the extra actions for this user on this order.

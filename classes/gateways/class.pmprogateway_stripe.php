@@ -177,6 +177,8 @@ class PMProGateway_stripe extends PMProGateway {
 		add_action( 'admin_init', array( 'PMProGateway_stripe', 'stripe_connect_save_options' ) );
 		add_action( 'admin_notices', array( 'PMProGateway_stripe', 'stripe_connect_show_errors' ) );
 		add_action( 'admin_notices', array( 'PMProGateway_stripe', 'stripe_connect_deauthorize' ) );
+
+		add_filter( 'pmpro_process_refund_stripe', array( 'PMProGateway_stripe', 'process_refund' ), 10, 2 );
 	}
 
 	/**
@@ -2791,7 +2793,8 @@ class PMProGateway_stripe extends PMProGateway {
 			'invoice.payment_succeeded',
 			'invoice.payment_action_required',
 			'customer.subscription.deleted',
-			'charge.failed'
+			'charge.failed',
+			'charge.refunded'
 		) );
 	}
 
@@ -4263,6 +4266,91 @@ class PMProGateway_stripe extends PMProGateway {
 		_deprecated_function( __FUNCTION__, '2.7.0' );
 		//stripe doesn't differentiate between voids and refunds, so let's just pass on to the refund function
 		return $this->refund( $order, $transaction_id );
+	}
+
+	/**
+	 * Refunds an order (only supports full amounts)
+	 *
+	 * @param bool    Status of the refund (default: false)
+	 * @param object  The Member Order Object
+	 * @since TBD
+	 * 
+	 * @return bool   Status of the processed refund
+	 */
+	public static function process_refund( $success, $order ) {
+
+		//default to using the payment id from the order
+		if ( !empty( $order->payment_transaction_id ) ) {
+			$transaction_id = $order->payment_transaction_id;
+		}
+
+		//need a transaction id
+		if ( empty( $transaction_id ) ) {
+			return false;
+		}
+
+		//if an invoice ID is passed, get the charge/payment id
+		if ( strpos( $transaction_id, "in_" ) !== false ) {
+			$invoice = Stripe_Invoice::retrieve( $transaction_id );
+
+			if ( ! empty( $invoice ) && ! empty( $invoice->charge ) ) {
+				$transaction_id = $invoice->charge;
+			}
+		}
+
+		$success = false;
+
+		//attempt refund
+		try {
+			
+			$secretkey = pmpro_getOption( 'stripe_secretkey' );
+
+			// If they are not using legacy keys, get Stripe Connect keys for the relevant environment.
+			if ( ! self::using_legacy_keys() && empty( $secretkey ) ) {
+				if ( pmpro_getOption( 'gateway_environment' ) === 'live' ) {
+					$secretkey = pmpro_getOption( 'live_stripe_connect_secretkey' );
+				} else {
+					$secretkey = pmpro_getOption( 'sandbox_stripe_connect_secretkey' );
+				}
+			} 
+
+			$client = new Stripe_Client( $secretkey );
+			$refund = $client->refunds->create( [
+				'charge' => $transaction_id,
+			] );			
+
+			//Make sure we're refunding an order that was successful
+			if ( !in_array( $refund->status, pmpro_disallowed_refund_statuses() ) ) {
+				$order->status = 'refunded';	
+
+				$success = true;
+			
+				global $current_user;
+
+				$order->notes = trim( $order->notes.' '.sprintf( __('Order successfully refunded on %1$s for transaction ID %2$s by %3$s.', 'paid-memberships-pro' ), date_i18n('Y-m-d H:i:s'), $transaction_id, $current_user->display_name ) );	
+
+				$user = get_user_by( 'id', $order->user_id );
+				//send an email to the member
+				$myemail = new PMProEmail();
+				$myemail->sendRefundedEmail( $user );
+
+				//send an email to the admin
+				$myemail = new PMProEmail();
+				$myemail->sendRefundedAdminEmail( $current_user, $order->membership_id );				
+			} else {
+				$order->notes = trim( $order->notes . ' ' . __('An error occured while attempting to process this refund.', 'paid-memberships-pro' ) );
+
+			}
+
+		} catch ( \Throwable $e ) {			
+			$order->notes = trim( $order->notes . ' ' . __( 'There was a problem processing the refund', 'paid-memberships-pro' ) . ' ' . $e->getMessage() );	
+		} catch ( \Exception $e ) {
+			$order->notes = trim( $order->notes . ' ' . __( 'There was a problem processing the refund', 'paid-memberships-pro' ) . ' ' . $e->getMessage() );
+		}		
+
+		$order->saveOrder();
+
+		return $success;
 	}
 
 	/**
