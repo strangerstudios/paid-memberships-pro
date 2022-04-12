@@ -147,7 +147,7 @@ function pmpro_show_notice_for_reports() {
 
 	?>
     <div class="notice notice-warning">
-        <p><?php _e( sprintf( 'You currently have the Better Login Reports Add On activated. This functionality has now been merged into Paid Memberships Pro. %s', "<br/><a href='". esc_url( admin_url( '/plugins.php?s=better%20logins%20report%20add%20on&plugin_status=inactive&pmpro-deactivate-reports=true' ) ) . "'>Please deactivate and remove this plugin.</a>" ), 'paid-memberships-pro' ); ?></p>
+        <p><?php echo sprintf( __( 'You currently have the Better Login Reports Add On activated. This functionality has now been merged into Paid Memberships Pro. %s', 'paid-memberships-pro' ), "<br/><a href='". esc_url( admin_url( '/plugins.php?s=better%20logins%20report%20add%20on&plugin_status=inactive&pmpro-deactivate-reports=true' ) ) . "'>" . __( 'Please deactivate and remove this plugin.', 'paid-memberships-pro' ) . "</a>" ); ?></p>
     </div>
     <?php
 }

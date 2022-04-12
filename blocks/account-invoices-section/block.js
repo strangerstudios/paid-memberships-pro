@@ -19,15 +19,24 @@
  export default registerBlockType(
      'pmpro/account-invoices-section',
      {
-         title: __( 'Membership Account: Invoices', 'paid-memberships-pro' ),
-         description: __( 'Displays the member\'s invoices.', 'paid-memberships-pro' ),
-         category: 'pmpro',
+         title: __( 'PMPro Page: Account Invoices', 'paid-memberships-pro' ),
+         description: __( 'Dynamic page section that displays a list of the last 5 membership invoices for the active member.', 'paid-memberships-pro' ),
+         category: 'pmpro-pages',
          icon: {
-            background: '#2997c8',
-            foreground: '#ffffff',
+            background: '#FFFFFF',
+            foreground: '#1A688B',
             src: 'archive',
          },
-         keywords: [ __( 'pmpro', 'paid-memberships-pro' ) ],
+         keywords: [
+             __( 'account', 'paid-memberships-pro' ),
+             __( 'member', 'paid-memberships-pro' ),
+             __( 'order', 'paid-memberships-pro' ),
+             __( 'paid memberships pro', 'paid-memberships-pro' ),
+             __( 'pmpro', 'paid-memberships-pro' ),
+             __( 'purchases', 'paid-memberships-pro' ),
+             __( 'receipt', 'paid-memberships-pro' ),
+             __( 'user', 'paid-memberships-pro' ),
+         ],
          supports: {
          },
          attributes: {
