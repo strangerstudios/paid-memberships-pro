@@ -52,6 +52,10 @@ function pmpro_getAddons() {
 		} elseif ( ! empty( $remote_addons ) && $remote_addons['response']['code'] == 200 ) {
 			// update addons in cache
 			$addons = json_decode( wp_remote_retrieve_body( $remote_addons ), true );
+			foreach ( $addons as $key => $value ) {
+				$addons[$key]['ShortName'] = str_replace( 'Paid Memberships Pro - ', '', $addons[$key]['Title'] );
+				$addons[$key]['ShortName'] = str_replace( 'Add On', '', $addons[$key]['ShortName'] );
+			}
 			delete_option( 'pmpro_addons' );
 			add_option( 'pmpro_addons', $addons, null, 'no' );
 		}
