@@ -93,11 +93,21 @@ function pmpro_report_login_page()
 	} else {
 		$l = "";
 	}
+
+	// Build CSV export link.
+	$csv_export_link = admin_url( 'admin-ajax.php' ) . '?action=login_report_csv';
+	if ( ! empty( $s ) ) {
+		$csv_export_link .= '&s=' . esc_attr( trim( $s ) );
+	}
+	if ( ! empty( $l ) ) {
+		$csv_export_link .= '&l=' . esc_attr( trim( $l ) );
+	}
 ?>
 	<form id="posts-filter" method="get" action="">	
 	<h1>
 		<?php _e('Visits, Views, and Logins Report', 'paid-memberships-pro');?>
-	</h1>		
+	</h1>
+	<a target="_blank" href="<?php echo esc_url( $csv_export_link ); ?>" class="page-title-action"><?php esc_html_e( 'Export to CSV', 'paid-memberships-pro' ); ?></a>		
 	<ul class="subsubsub">
 		<li>			
 			<?php echo esc_html_x( 'Show', 'Dropdown label, e.g. Show All Users', 'paid-memberships-pro' )?> <select name="l" onchange="jQuery('#posts-filter').submit();">
