@@ -943,7 +943,7 @@ class PMProGateway_stripe extends PMProGateway {
 	 * @since 1.8
 	 */
 	public static function pmpro_activation() {
-		pmpro_maybe_schedule_cron( time(), 'daily', 'pmpro_cron_stripe_subscription_updates' );
+		pmpro_maybe_schedule_event( time(), 'daily', 'pmpro_cron_stripe_subscription_updates' );
 	}
 
 	/**

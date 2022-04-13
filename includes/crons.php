@@ -71,7 +71,7 @@ function pmpro_maybe_schedule_crons() {
 	$crons = pmpro_get_crons();
 
 	foreach ( $crons as $hook => $cron ) {
-		pmpro_maybe_schedule_cron( $cron['timestamp'], $cron['recurrence'], $hook, $cron['args'] );
+		pmpro_maybe_schedule_event( $cron['timestamp'], $cron['recurrence'], $hook, $cron['args'] );
 	}
 }
 
@@ -113,7 +113,7 @@ add_filter( 'pre_get_ready_cron_jobs', 'pmpro_handle_schedule_crons_on_cron_read
  *
  * @return bool|WP_Error True when an event is scheduled, WP_Error on failure, and false if the event was already scheduled.
  */
-function pmpro_maybe_schedule_cron( $timestamp, $recurrence, $hook, $args = [] ) {
+function pmpro_maybe_schedule_event( $timestamp, $recurrence, $hook, $args = [] ) {
 	$next = wp_next_scheduled( $hook, $args );
 
 	if ( empty( $next ) ) {
