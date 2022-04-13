@@ -25,9 +25,9 @@ function pmpro_upgrade_1_8_7() {
     _set_cron_array($jobs);
 
     //add the three we want back
-	pmpro_maybe_schedule_event(current_time('timestamp'), 'daily', 'pmpro_cron_expire_memberships');
-	pmpro_maybe_schedule_event(current_time('timestamp')+1, 'daily', 'pmpro_cron_expiration_warnings');
-	pmpro_maybe_schedule_event(current_time('timestamp'), 'monthly', 'pmpro_cron_credit_card_expiring_warnings');
+	pmpro_maybe_schedule_cron(current_time('timestamp'), 'daily', 'pmpro_cron_expire_memberships');
+	pmpro_maybe_schedule_cron(current_time('timestamp')+1, 'daily', 'pmpro_cron_expiration_warnings');
+	pmpro_maybe_schedule_cron(current_time('timestamp'), 'monthly', 'pmpro_cron_credit_card_expiring_warnings');
 
 	pmpro_setOption("db_version", "1.87");
 

@@ -316,18 +316,7 @@ class PMPro_Site_Health {
 		$cron_times = [];
 
 		// These are our crons.
-		$expected_crons = [
-			'pmpro_cron_expire_memberships',
-			'pmpro_cron_expiration_warnings',
-			'pmpro_cron_credit_card_expiring_warnings',
-			'pmpro_cron_admin_activity_email',
-		];
-
-		$gateway = pmpro_getOption( 'gateway' );
-
-		if ( 'stripe' === $gateway ) {
-			$expected_crons[] = 'pmpro_cron_stripe_subscription_updates';
-		}
+		$expected_crons = array_keys( pmpro_get_crons() );
 
 		// Find any of our crons and when their next run is.
 		if ( $crons ) {
@@ -369,7 +358,7 @@ class PMPro_Site_Health {
 		global $pmpro_pages;
 
 		$page_information = array();
-		
+
 		if( !empty( $pmpro_pages ) ){
 
 			foreach( $pmpro_pages as $key => $val ){

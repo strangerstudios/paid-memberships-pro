@@ -40,6 +40,7 @@ if ( ! defined( 'PMPRO_LICENSE_SERVER' ) ) {
 	require_once( PMPRO_DIR . '/includes/license.php' );            // defines location of addons data and licenses
 }
 
+require_once( PMPRO_DIR . '/includes/crons.php' );                  // cron-related functionality
 require_once( PMPRO_DIR . '/scheduled/crons.php' );                 // crons for expiring members, sending expiration emails, etc
 
 require_once( PMPRO_DIR . '/classes/class.memberorder.php' );       // class to process and save orders
@@ -206,10 +207,10 @@ add_filter( 'cron_schedules', 'pmpro_cron_schedules_monthly' );
 // activation
 function pmpro_activation() {
 	// schedule crons
-	pmpro_maybe_schedule_event( current_time( 'timestamp' ), 'hourly', 'pmpro_cron_expire_memberships' );
-	pmpro_maybe_schedule_event( current_time( 'timestamp' ) + 1, 'hourly', 'pmpro_cron_expiration_warnings' );
-	pmpro_maybe_schedule_event( current_time( 'timestamp' ), 'monthly', 'pmpro_cron_credit_card_expiring_warnings' );
-	pmpro_maybe_schedule_event( strtotime( '10:30:00' ) - ( get_option( 'gmt_offset' ) * HOUR_IN_SECONDS ), 'daily', 'pmpro_cron_admin_activity_email' );
+	pmpro_maybe_schedule_cron( current_time( 'timestamp' ), 'hourly', 'pmpro_cron_expire_memberships' );
+	pmpro_maybe_schedule_cron( current_time( 'timestamp' ) + 1, 'hourly', 'pmpro_cron_expiration_warnings' );
+	pmpro_maybe_schedule_cron( current_time( 'timestamp' ), 'monthly', 'pmpro_cron_credit_card_expiring_warnings' );
+	pmpro_maybe_schedule_cron( strtotime( '10:30:00' ) - ( get_option( 'gmt_offset' ) * HOUR_IN_SECONDS ), 'daily', 'pmpro_cron_admin_activity_email' );
 
 	pmpro_set_capabilities_for_role( 'administrator', 'enable' );
 

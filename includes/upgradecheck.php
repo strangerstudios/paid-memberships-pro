@@ -105,7 +105,7 @@ function pmpro_checkForUpgrades()
 	if($pmpro_db_version < 1.72)
 	{
 		//schedule the credit card expiring cron
-		pmpro_maybe_schedule_event(current_time('timestamp'), 'monthly', 'pmpro_cron_credit_card_expiring_warnings');
+		pmpro_maybe_schedule_cron(current_time('timestamp'), 'monthly', 'pmpro_cron_credit_card_expiring_warnings');
 
 		pmpro_setOption("db_version", "1.72");
 		$pmpro_db_version = 1.72;
@@ -234,7 +234,7 @@ function pmpro_checkForUpgrades()
 	}
 
 	if ( $pmpro_db_version < 2.3 ) {
-		pmpro_maybe_schedule_event( strtotime( '10:30:00' ) - ( get_option( 'gmt_offset' ) * HOUR_IN_SECONDS ), 'daily', 'pmpro_cron_admin_activity_email' );
+		pmpro_maybe_schedule_cron( strtotime( '10:30:00' ) - ( get_option( 'gmt_offset' ) * HOUR_IN_SECONDS ), 'daily', 'pmpro_cron_admin_activity_email' );
 		pmpro_setOption( 'db_version', '2.3' );
 	}
 

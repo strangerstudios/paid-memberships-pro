@@ -26,6 +26,7 @@ add_action( 'init', array( 'PMProGateway_stripe', 'init' ) );
 // loading plugin activation actions
 add_action( 'activate_paid-memberships-pro', array( 'PMProGateway_stripe', 'pmpro_activation' ) );
 add_action( 'deactivate_paid-memberships-pro', array( 'PMProGateway_stripe', 'pmpro_deactivation' ) );
+add_filter( 'pmpro_registered_crons', array( 'PMProGateway_stripe', 'register_cron' ) );
 
 /**
  * PMProGateway_stripe Class
@@ -942,7 +943,7 @@ class PMProGateway_stripe extends PMProGateway {
 	 * @since 1.8
 	 */
 	public static function pmpro_activation() {
-		pmpro_maybe_schedule_event( time(), 'daily', 'pmpro_cron_stripe_subscription_updates' );
+		pmpro_maybe_schedule_cron( time(), 'daily', 'pmpro_cron_stripe_subscription_updates' );
 	}
 
 	/**
@@ -955,6 +956,23 @@ class PMProGateway_stripe extends PMProGateway {
 	 */
 	public static function pmpro_deactivation() {
 		wp_clear_scheduled_hook( 'pmpro_cron_stripe_subscription_updates' );
+	}
+
+	/**
+	 * Register the cron we need for Stripe subscription updates.
+	 *
+	 * @since TBD
+	 *
+	 * @param array $crons The list of registered crons for Paid Memberships Pro.
+	 *
+	 * @return array The list of registered crons for Paid Memberships Pro.
+	 */
+	public static function register_cron( $crons ) {
+		$crons['pmpro_cron_stripe_subscription_updates'] = [
+			'interval' => 'daily',
+		];
+
+		return $crons;
 	}
 
 	/**
