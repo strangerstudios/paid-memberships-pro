@@ -6,8 +6,7 @@ if ( ! function_exists( "current_user_can" ) || ( ! current_user_can( "manage_op
 
 $sales_data = get_transient( 'pmpro_sales_data' );
 
-if( empty( $sales_data ) ) {
-	die( __( "No report data found. Please reload the report page and click on the Export to CSV button again.", 'paid-memberships-pro' ) );
+if ( empty( $sales_data ) ) {
 }
 
 define('PMPRO_BENCHMARK', true);
@@ -92,6 +91,11 @@ $csv_fh = fopen( $filename, 'a' );
 fprintf( $csv_fh, '%s', $csv_file_header );
 
 $orders_found = count( $sales_data );
+
+// If no data found, just create an empty CSV - this is how other CSV functionality is handled.
+if ( empty( $orders_found ) ) {
+	pmpro_transmit_order_content( $csv_fh, $filename, $headers );
+}
 
 if (PMPRO_BENCHMARK)
 {
