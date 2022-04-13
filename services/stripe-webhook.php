@@ -82,8 +82,6 @@
 	}
 
 	global $wpdb;
-	error_log( print_r( $pmpro_stripe_event, true ) );
-	error_log($pmpro_stripe_event->type);
 	//real event?
 	if(!empty($pmpro_stripe_event->id))
 	{
@@ -440,7 +438,13 @@
 
 		$morder = new MemberOrder();
 
-		$morder->getMemberOrderByPaymentTransactionID( $payment_transaction_id );		
+		$morder->getMemberOrderByPaymentTransactionID( $payment_transaction_id );
+		
+		// Initial payment orders are stored using the invoice ID, so check that value too.
+		if ( empty( $morder->id ) && ! empty( $pmpro_stripe_event->data->object->invoice ) ) {
+			$payment_transaction_id = $pmpro_stripe_event->data->object->invoice;
+			$morder->getMemberOrderByPaymentTransactionID( $payment_transaction_id );
+		}
 
 		//We've got the right order	
 		if( !empty( $morder->id ) ) { 
