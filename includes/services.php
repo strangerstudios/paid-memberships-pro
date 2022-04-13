@@ -78,6 +78,16 @@ function pmpro_wp_ajax_login_report_csv() {
 	exit;	
 }
 add_action('wp_ajax_login_report_csv', 'pmpro_wp_ajax_login_report_csv');
+
+/**
+ * Handles the Sales Export
+ */
+function pmpro_wp_ajax_salesreport_csv() {
+	require_once(dirname(__FILE__) . "/../adminpages/reports-csv.php");	
+	exit;	
+}
+add_action('wp_ajax_salesreport_csv', 'pmpro_wp_ajax_salesreport_csv');
+
 /**
  * Load the Orders print view.
  *
