@@ -1210,10 +1210,6 @@ class PMPro_Subscription {
 
 		// Now that we have the basic data filled in, the `update()` method will take care of the rest.
 		$saved = $this->update();
-		if ( ! $saved ) {
-			// We couldn't save the subscription.
-			return null;
-		}
 
 		// Mark this subscription as having default migration data.
 		delete_pmpro_subscription_meta( $this->id, 'has_default_migration_data' );
