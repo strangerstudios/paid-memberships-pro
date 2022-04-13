@@ -278,3 +278,19 @@ CREATE TABLE `wp_pmpro_subscriptions` (
   KEY `next_payment_date` (`next_payment_date`),
   KEY `modified` (`modified`)
 );
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `wp_pmpro_subscriptionmeta`
+--
+
+CREATE TABLE `wp_pmpro_subscriptionmeta` (
+  `meta_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `pmpro_subscription_id` int(10) unsigned NOT NULL,
+  `meta_key` varchar(255) NOT NULL,
+  `meta_value` longtext,
+  PRIMARY KEY (`meta_id`),
+  KEY `pmpro_subscription_id` (`pmpro_subscription_id`),
+  KEY `meta_key` (`meta_key`)
+);
