@@ -1,6 +1,6 @@
 <?php
 //only admins can get this
-if ( ! function_exists( "current_user_can" ) || ( ! current_user_can( "manage_options" ) && ! current_user_can( "pmpro_salesreport_csv" ) ) ) {
+if ( ! function_exists( "current_user_can" ) || ( ! current_user_can( "manage_options" ) && ! current_user_can( "pmpro_sales_report_csv" ) ) ) {
 	die( __( "You do not have permissions to perform this action.", 'paid-memberships-pro' ) );
 }
 
@@ -60,16 +60,12 @@ $default_columns = array(
 	array( "renewals", "renewals" ),
 );
 
-
-$default_columns = apply_filters( "pmpro_order_list_csv_default_columns", $default_columns );
-
-$csv_file_header_array = apply_filters( "pmpro_order_list_csv_export_header_array", $csv_file_header_array );
-
-$dateformat = apply_filters( 'pmpro_order_list_csv_dateformat', get_option( 'date_format' ) . ' ' . get_option( 'time_format' ) );
+$default_columns = apply_filters( "pmpro_sales_report_csv_default_columns", $default_columns );
+$csv_file_header_array = apply_filters( "pmpro_sales_report_csv_export_header_array", $csv_file_header_array );
+$dateformat = apply_filters( 'pmpro_sales_report_csv_dateformat', get_option( 'date_format' ) . ' ' . get_option( 'time_format' ) );
 
 //any extra columns
-$extra_columns = apply_filters( "pmpro_orders_csv_extra_columns", array() );	//the original filter
-$extra_columns = apply_filters( "pmpro_order_list_csv_extra_columns", $extra_columns );	//in case anyone used the typo'd filter
+$extra_columns = apply_filters( "pmpro_sales_report_csv_extra_columns", array() );	//the original filter
 
 if ( ! empty( $extra_columns ) ) {
 	foreach ( $extra_columns as $heading => $callback ) {
@@ -80,7 +76,7 @@ if ( ! empty( $extra_columns ) ) {
 $csv_file_header = implode( ',', $csv_file_header_array ) . "\n";
 
 // Generate a temporary file to store the data in.
-$tmp_dir  = apply_filters( 'pmpro_order_list_csv_export_tmp_dir', sys_get_temp_dir() );
+$tmp_dir  = apply_filters( 'pmpro_sales_report_csv_export_tmp_dir', sys_get_temp_dir() );
 
 $filename = tempnam( $tmp_dir, 'pmpro_salescsv_' );
 

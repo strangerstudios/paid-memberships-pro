@@ -219,7 +219,7 @@ function pmpro_report_sales_page()
 
 	$dates = $wpdb->get_results($sqlQuery);
 
-	set_transient( 'pmpro_sales_data', $dates, ( DAY_IN_SECONDS / 2 ) );
+	set_transient( 'pmpro_sales_data', $dates, DAY_IN_SECONDS );
 	
 	//fill in blanks in dates
 	$cols = array();
@@ -305,12 +305,9 @@ function pmpro_report_sales_page()
 	}
 
 	// Build CSV export link.
-	$csv_export_link = admin_url( 'admin-ajax.php' ) . '?action=salesreport_csv';
-	if ( isset( $_REQUEST['s'] ) ) {
-		$csv_export_link .= '&s=' . esc_attr( sanitize_text_field( trim( $_REQUEST['s'] ) ) );
-	}
-	if ( isset( $_REQUEST['l'] ) ) {
-		$csv_export_link .= '&l=' . sanitize_text_field( trim( $_REQUEST['l'] ) );
+	$csv_export_link = admin_url( 'admin-ajax.php' ) . '?action=sales_report_csv';
+	if ( $l ) {
+		$csv_export_link = add_query_arg( 'level', $l, $csv_export_link );
 	}
 	?>
 	<form id="posts-filter" method="get" action="">
