@@ -219,6 +219,9 @@ class PMPro_Subscription {
 		if ( ! empty( $subscription_data ) ) {
 			$this->set( $subscription_data );
 		}
+
+		// Check if this subscription has default migration data.
+		$this->maybe_fix_default_migration_data();
 	}
 
 	/**
@@ -1154,6 +1157,66 @@ class PMPro_Subscription {
 		$this->save();
 
 		return $result;
+	}
+
+	/**
+	 * Checks if this subscription has default migration data and,
+	 * if so, fixes it.
+	 *
+	 * @since TBD
+	 */
+	private function maybe_fix_default_migration_data() {
+		if ( empty( get_pmpro_subscription_meta( $this->id, 'has_default_migration_data', true ) ) ) {
+			// This subscription has already been populated.
+			return;
+		}
+
+		// The following data should already be correct from the migration:
+		// id, user_id, membership_level_id, gateway, gateway_environment, subscription_transaction_id, status.
+
+		// Let's try to guess the rest of the data from the memberships_users table by finding
+		// the most recent recurring membership for this user and this membership level.
+		$all_user_levels = pmpro_getMembershipLevelsForUser( $this->user_id, true );
+		// Looping through $all_user_levels backwards to get the most recent first.
+		for ( end( $all_user_levels ); key( $all_user_levels ) !== null; prev( $all_user_levels ) ) {
+			$level_check = current( $all_user_levels );
+
+			// Let's check if level the same level as this subscription and if it's a recurring level.
+			if ( $level_check->id == $this->membership_level_id && pmpro_isLevelRecurring( $level_check ) ) {
+				$subscription_level = $level_check;
+				break;
+			}
+		}
+
+		// If the user hasn't had a recurring membership for this level,
+		// pull from the level settings instead.
+		if ( empty( $subscription_level ) ) {
+			$level = pmpro_getLevel( $this->membership_level_id );
+			if ( ! empty( $level ) && pmpro_isLevelRecurring( $level ) ) {
+				$subscription_level = $level;
+			}
+		}
+
+		// If we have found a level, let's fill in the subscription.
+		// Otherwise, we'll just have to hope the data can be pulled from the gateway.
+		if ( ! empty( $subscription_level ) ) {
+			$this->billing_amount = $subscription_level->billing_amount;
+			$this->cycle_number   = $subscription_level->cycle_number;
+			$this->cycle_period   = $subscription_level->cycle_period;
+			$this->billing_limit  = $subscription_level->billing_limit;
+			$this->trial_amount   = $subscription_level->trial_amount;
+			$this->trial_limit    = $subscription_level->trial_limit;
+		}
+
+		// Now that we have the basic data filled in, the `update()` method will take care of the rest.
+		$saved = $this->update();
+		if ( ! $saved ) {
+			// We couldn't save the subscription.
+			return null;
+		}
+
+		// Mark this subscription as having default migration data.
+		delete_pmpro_subscription_meta( $this->id, 'has_default_migration_data' );
 	}
 
 } // end of class
