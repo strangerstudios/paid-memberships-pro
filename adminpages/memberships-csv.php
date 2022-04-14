@@ -251,9 +251,9 @@ $csv_file_header_array = array(
 
 // These are the meta_keys for the fields (arrays are object, property. so e.g. $theuser->ID) - Date items are manually handled further down.
 $default_columns = array(
-	array( 'date', 'date' ),
-	array( 'date', 'signups' ),
-	array( 'date', 'cancellations' ),
+	array( 'each_date', 'date' ),
+	array( 'each_date', 'signups' ),
+	array( 'each_date', 'cancellations' ),
 );
 
 
@@ -344,7 +344,7 @@ for ( $ic = 1; $ic <= $iterations; $ic ++ ) {
 		$pre_orderdata_memory = memory_get_usage( true );
 	}
 
-	foreach ( $dates as $date ) {
+	foreach ( $dates as $each_date ) {
 
 		$csvoutput = array();
 
@@ -352,7 +352,7 @@ for ( $ic = 1; $ic <= $iterations; $ic ++ ) {
 			$count = 0;
 
 			foreach ( $default_columns as $col ) {
-				
+
 				// checking $object->property. note the double $$
 				switch ( count( $col ) ) {
 					case 3:
@@ -368,7 +368,6 @@ for ( $ic = 1; $ic <= $iterations; $ic ++ ) {
 				}
 				
 				array_push( $csvoutput, pmpro_enclose( $val ) );
-
 			}
 		}
 
