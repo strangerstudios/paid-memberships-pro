@@ -97,10 +97,10 @@ function pmpro_report_login_page()
 	// Build CSV export link.
 	$csv_export_link = admin_url( 'admin-ajax.php' ) . '?action=login_report_csv';
 	if ( ! empty( $s ) ) {
-		$csv_export_link .= '&s=' . esc_attr( trim( $s ) );
+		$csv_export_link = add_query_arg( 's', $s, $csv_export_link );
 	}
 	if ( ! empty( $l ) ) {
-		$csv_export_link .= '&l=' . esc_attr( trim( $l ) );
+		$csv_export_link = add_query_arg( 'l', $l, $csv_export_link );
 	}
 ?>
 	<form id="posts-filter" method="get" action="">	
