@@ -83,10 +83,19 @@ add_action('wp_ajax_login_report_csv', 'pmpro_wp_ajax_login_report_csv');
  * Handles the Sales Export
  */
 function pmpro_wp_ajax_sales_report_csv() {
-	require_once(dirname(__FILE__) . "/../adminpages/reports-csv.php");	
+	require_once(dirname(__FILE__) . "/../adminpages/sales-csv.php");	
 	exit;	
 }
 add_action('wp_ajax_sales_report_csv', 'pmpro_wp_ajax_sales_report_csv');
+
+/**
+ * Handles the Membership Stats Export
+ */
+function pmpro_wp_ajax_membership_stats_csv() {
+	require_once(dirname(__FILE__) . "/../adminpages/memberships-csv.php");	
+	exit;	
+}
+add_action('wp_ajax_membership_stats_csv', 'pmpro_wp_ajax_membership_stats_csv');
 
 /**
  * Load the Orders print view.
