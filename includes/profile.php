@@ -481,7 +481,16 @@ function pmpro_membership_history_profile_fields( $user ) {
             </table>
 		<?php } ?>
 		</div> <!-- end #member-history-invoices -->
-		<div id="member-history-subscriptions" class="widgets-holder-wrap" style="display: none;">
+		<?php
+			// Build the selectors for the subscription history list based on history count.
+			$subscriptions_classes = array();
+			$subscriptions_classes[] = "widgets-holder-wrap";
+			if ( ! empty( $subscriptions ) && count( $subscriptions ) > 2 ) {
+				$subscriptions_classes[] = "pmpro_scrollable";
+			}
+			$subscriptions_class = implode( ' ', array_unique( $subscriptions_classes ) );
+		?>
+		<div id="member-history-subscriptions" class="<?php echo esc_attr( $subscriptions_class ); ?>" style="display: none;">
 		<?php if ( $subscriptions ) { ?>
 			<table class="wp-list-table widefat striped fixed" width="100%" cellpadding="0" cellspacing="0" border="0">
 			<thead>
