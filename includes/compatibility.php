@@ -124,7 +124,18 @@ add_action( 'after_setup_theme', 'pmpro_compatibility_checker_themes' );
  *
  * @since TBD
  */
-function pmpro_track_library_conflict( $name, $path, $version ) {
+function pmpro_track_library_conflict( $name, $path, $version ) {	
+	// Ignore when PMPro is trying to load.
+	if ( strpos( $path, '/plugins/paid-memberships-pro/' ) !== false ) {
+		return;
+	}
+	
+	// Use a static var for timestamp so we can avoid multiple updates per pageload.
+	static $now = null;
+	if ( empty( $now ) ) {
+		$now = current_time( 'Y-m-d H:i:s' );
+	}	
+	
 	// Get the current list of library conflicts.
 	$library_conflicts = get_option( 'pmpro_library_conflicts', array() );
 
@@ -137,11 +148,14 @@ function pmpro_track_library_conflict( $name, $path, $version ) {
 	if ( ! isset( $library_conflicts[ $name ][ $path ] ) ) {
 		$library_conflicts[ $name ][ $path ] = array();
 	}
+	
+	// Don't save conflict if no time has passed.
+	if ( ! empty( $library_conflicts[ $name ][ $path ]['timestamp'] ) && $library_conflicts[ $name ][ $path ]['timestamp'] === $now ) {
+		return;
+	}
 
 	// Update the library conflict information.
 	$library_conflicts[ $name ][ $path ]['version']   = $version;
-	$library_conflicts[ $name ][ $path ]['timestamp'] = current_time( 'Y-m-d H:i:s' );
-
-	// Save changes.
+	$library_conflicts[ $name ][ $path ]['timestamp'] = $now;	
 	update_option( 'pmpro_library_conflicts', $library_conflicts, false );
 }
