@@ -143,5 +143,5 @@ function pmpro_track_library_conflict( $name, $path, $version ) {
 	$library_conflicts[ $name ][ $path ]['timestamp'] = current_time( 'Y-m-d H:i:s' );
 
 	// Save changes.
-	update_option( 'pmpro_library_conflicts', $library_conflicts );
+	update_option( 'pmpro_library_conflicts', $library_conflicts, false );
 }
