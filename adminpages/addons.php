@@ -79,8 +79,8 @@
 	}
 
 	?>
-	<h1 class="wp-heading-inline"><?php esc_html_e( 'Add Ons', 'paid-memberships-pro' ); ?></h1>
 	<hr class="wp-header-end">
+	<h1 class="wp-heading-inline"><?php esc_html_e( 'Add Ons', 'paid-memberships-pro' ); ?></h1>
 	<div id="pmpro-admin-add-ons">
 		<?php
 			pmpro_showMessage();
