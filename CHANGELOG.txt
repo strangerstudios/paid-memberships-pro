@@ -1,4 +1,15 @@
 == Changelog ==
+= 2.8 - 2022-04-?? =
+* FEATURE: Added refunds buttons for Stripe and Paypal Express orders. #1948 (@JarrydLong)
+* FEATURE: Released Beta version of Stripe Checkout. Add `define('PMPRO_STRIPE_CHECKOUT_BETA_ENABLED', true);` to your wp-config.php to enable this gateway during the beta. #1923 (@dlparker1005)
+* ENHANCEMENT: Introduced a new set of functions that handle cron-related tasks including: `pmpro_get_crons()` to get the list of PMPro registered crons. #1999 (@sc0ttkclark)
+* ENHANCEMENT: New filter `pmpro_registered_crons` which you can register new crons to be handled by PMPro. They show up in the PMPro Site Health info and are automatically scheduled when they need to be. #1999 (@sc0ttkclark)
+* ENHANCEMENT: Added an opt-in stats collection so we can get better insight on how people use Paid Memberships Pro. (@sc0ttkclark, @ideadude)
+* BUG FIX/ENHANCEMENT: Fixed escaping and localization for many strings across the codebase. #1976 (@mircobabini)
+* BUG FIX/ENHANCEMENT: Resolve admin area conflicts with other plugins using similar class names. #1991 (@sc0ttkclark)
+* BUG FIX: Crons are now automatically rescheduled if they disappear form the cron schedule. #1999 (@sc0ttkclark, @mircobabini)
+* BUG FIX: Resolved problems with PHP float precision and prevent passing along faulty floats to the gateway APIs. #1929 (@sc0ttkclark)
+
 = 2.7.5 - 2022-03-01 =
 * ENHANCEMENT: Now sending "name" separate from the "description" when creating customers for Stripe checkouts. (@ideadude)
 * ENHANCEMENT: You can now search the members list on specific user table columns or user meta fields by using a colon in your search term. These queries are faster than the default queries. The format is meta_key:meta_value (no backticks). You can also use login, nicename, email, url, or display_name as the meta_key and the users table will be searched against the related column. (@ideadude)
