@@ -80,6 +80,12 @@ class PMProGateway_stripe extends PMProGateway {
 		//load Stripe library if it hasn't been loaded already (usually by another plugin using Stripe)
 		if ( ! class_exists( "Stripe\Stripe" ) ) {
 			require_once( PMPRO_DIR . "/includes/lib/Stripe/init.php" );
+		} else {
+			// Another plugin may have loaded the Stripe library already.
+			// Let's log the current Stripe Library info so that we know
+			// where to look if we need to troubleshoot library conflicts.
+			$previously_loaded_class = new \ReflectionClass( 'Stripe\Stripe' );
+			pmpro_track_library_conflict( 'stripe', $previously_loaded_class->getFileName(), Stripe\Stripe::VERSION );
 		}
 	}
 

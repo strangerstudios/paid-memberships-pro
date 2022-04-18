@@ -109,8 +109,15 @@ use Braintree\WebhookNotification as Braintree_WebhookNotification;
 		function loadBraintreeLibrary()
 		{
 			//load Braintree library if it hasn't been loaded already (usually by another plugin using Braintree)
-			if(!class_exists("\Braintree"))
+			if ( ! class_exists( "\Braintree" ) ) {
 				require_once( PMPRO_DIR . "/includes/lib/Braintree/lib/Braintree.php");
+			} else {
+				// Another plugin may have loaded the Braintree library already.
+				// Let's log the current Braintree Library info so that we know
+				// where to look if we need to troubleshoot library conflicts.
+				$previously_loaded_class = new \ReflectionClass( '\Braintree' );
+				pmpro_track_library_conflict( 'braintree', $previously_loaded_class->getFileName(), Braintree\Version::get() );
+			}
 		}
 
 		/**
