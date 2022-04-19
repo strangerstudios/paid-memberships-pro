@@ -41,8 +41,8 @@ function pmpro_report_sales_widget() {
 	<thead>
 		<tr>
 			<th scope="col">&nbsp;</th>
-			<th scope="col"><?php _e('Sales', 'paid-memberships-pro' ); ?></th>
-			<th scope="col"><?php _e('Revenue', 'paid-memberships-pro' ); ?></th>
+			<th scope="col"><?php esc_html_e('Sales', 'paid-memberships-pro' ); ?></th>
+			<th scope="col"><?php esc_html_e('Revenue', 'paid-memberships-pro' ); ?></th>
 		</tr>
 	</thead>
 	<?php
@@ -95,7 +95,7 @@ function pmpro_report_sales_widget() {
 	</table>
 	<?php if ( function_exists( 'pmpro_report_sales_page' ) ) { ?>
 		<p class="pmpro_report-button">
-			<a class="button button-primary" href="<?php echo esc_url( admin_url( 'admin.php?page=pmpro-reports&report=sales' ) ); ?>"><?php _e('Details', 'paid-memberships-pro' );?></a>
+			<a class="button button-primary" href="<?php echo esc_url( admin_url( 'admin.php?page=pmpro-reports&report=sales' ) ); ?>"><?php esc_html_e('Details', 'paid-memberships-pro' );?></a>
 		</p>
 	<?php } ?>
 </span>
@@ -310,15 +310,15 @@ function pmpro_report_sales_page()
 	<div class="tablenav top">
 		<?php _e('Show', 'paid-memberships-pro' )?>
 		<select id="period" name="period">
-			<option value="daily" <?php selected($period, "daily");?>><?php _e('Daily', 'paid-memberships-pro' );?></option>
-			<option value="monthly" <?php selected($period, "monthly");?>><?php _e('Monthly', 'paid-memberships-pro' );?></option>
-			<option value="annual" <?php selected($period, "annual");?>><?php _e('Annual', 'paid-memberships-pro' );?></option>
+			<option value="daily" <?php selected($period, "daily");?>><?php esc_html_e('Daily', 'paid-memberships-pro' );?></option>
+			<option value="monthly" <?php selected($period, "monthly");?>><?php esc_html_e('Monthly', 'paid-memberships-pro' );?></option>
+			<option value="annual" <?php selected($period, "annual");?>><?php esc_html_e('Annual', 'paid-memberships-pro' );?></option>
 		</select>
 		<select name="type">
-			<option value="revenue" <?php selected($type, "revenue");?>><?php _e('Revenue', 'paid-memberships-pro' );?></option>
-			<option value="sales" <?php selected($type, "sales");?>><?php _e('Sales', 'paid-memberships-pro' );?></option>
+			<option value="revenue" <?php selected($type, "revenue");?>><?php esc_html_e('Revenue', 'paid-memberships-pro' );?></option>
+			<option value="sales" <?php selected($type, "sales");?>><?php esc_html_e('Sales', 'paid-memberships-pro' );?></option>
 		</select>
-		<span id="for"><?php _e('for', 'paid-memberships-pro' )?></span>
+		<span id="for"><?php esc_html_e('for', 'paid-memberships-pro' )?></span>
 		<select id="month" name="month">
 			<?php for($i = 1; $i < 13; $i++) { ?>
 				<option value="<?php echo esc_attr( $i );?>" <?php selected($month, $i);?>><?php echo esc_html(date_i18n("F", mktime(0, 0, 0, $i, 2)));?></option>
@@ -329,9 +329,9 @@ function pmpro_report_sales_page()
 				<option value="<?php echo esc_attr( $i );?>" <?php selected($year, $i);?>><?php echo esc_html( $i );?></option>
 			<?php } ?>
 		</select>
-		<span id="for"><?php _e('for', 'paid-memberships-pro' )?></span>
+		<span id="for"><?php esc_html_e('for', 'paid-memberships-pro' )?></span>
 		<select id="level" name="level">
-			<option value="" <?php if(!$l) { ?>selected="selected"<?php } ?>><?php _e('All Levels', 'paid-memberships-pro' );?></option>
+			<option value="" <?php if(!$l) { ?>selected="selected"<?php } ?>><?php esc_html_e('All Levels', 'paid-memberships-pro' );?></option>
 			<?php
 				$levels = $wpdb->get_results("SELECT id, name FROM $wpdb->pmpro_membership_levels ORDER BY name");
 				$levels = pmpro_sort_levels_by_order( $levels );
@@ -349,7 +349,7 @@ function pmpro_report_sales_page()
 		$codes = $wpdb->get_results($sqlQuery, OBJECT);
 		if ( ! empty( $codes ) ) { ?>
 		<select id="discount_code" name="discount_code">
-			<option value="" <?php if ( empty( $discount_code ) ) { ?>selected="selected"<?php } ?>><?php _e('All Codes', 'paid-memberships-pro' );?></option>
+			<option value="" <?php if ( empty( $discount_code ) ) { ?>selected="selected"<?php } ?>><?php esc_html_e('All Codes', 'paid-memberships-pro' );?></option>
 			<?php foreach ( $codes as $code ) { ?>
 				<option value="<?php echo esc_attr( $code->id ); ?>" <?php selected( $discount_code, $code->id ); ?>><?php echo esc_html( $code->code ); ?></option>
 			<?php } ?>
@@ -358,6 +358,7 @@ function pmpro_report_sales_page()
 		<input type="hidden" name="page" value="pmpro-reports" />
 		<input type="hidden" name="report" value="sales" />
 		<input type="submit" class="button action" value="<?php esc_attr_e('Generate Report', 'paid-memberships-pro' );?>" />
+		<br class="clear" />
 	</div>
 	<div class="pmpro_chart_area">
 		<div id="chart_div"></div>
@@ -539,7 +540,7 @@ function pmpro_report_sales_page()
 				} elseif( ! empty( $year ) && $period === 'monthly'  ) {
 					$date = $year;
 				} else {
-					$date = __( 'All Time');
+					$date = __( 'All Time', 'paid-memberships-pro' );
 				}
 			?>
 			return <?php echo wp_json_encode( esc_html( sprintf( __( '%s %s for %s', 'paid-memberships-pro' ), ucwords( $period ), ucwords( $type ), ucwords( $date ) ) ) ); ?>;

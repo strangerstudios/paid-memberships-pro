@@ -228,56 +228,62 @@
 		elseif($pmpro_stripe_event->type == "invoice.payment_action_required") {
 			// TODO: Test subs with SCA.
 			$old_order = getOldOrderFromInvoiceEvent($pmpro_stripe_event);
-			$user_id = $old_order->user_id;
-			$user = get_userdata($user_id);
-			$invoice = $pmpro_stripe_event->data->object;
-			
-			// Prep order for emails.
-			$morder = new MemberOrder();
-			$morder->user_id = $user_id;
+			if( ! empty( $old_order ) && ! empty( $old_order->id ) ) {
+				$user_id = $old_order->user_id;
+				$user = get_userdata($user_id);
+        $invoice = $pmpro_stripe_event->data->object;
 
-			// Update payment method and billing address on order.
-			$payment_intent_args = array(
-				'id'     => $invoice->payment_intent,
-				'expand' => array(
-					'payment_method',
-				),
-			);
-			$payment_intent = \Stripe\PaymentIntent::retrieve( $payment_intent_args );
-			$payment_method = $payment_intent->charges->data[0]->payment_method_details;
-			if ( empty( $payment_method ) ) {
-				$logstr .= "Could not find payment method for invoice " . $invoice->id;
+				// Prep order for emails.
+				$morder = new MemberOrder();
+				$morder->user_id = $user_id;
+
+				// Update payment method and billing address on order.
+        $payment_intent_args = array(
+          'id'     => $invoice->payment_intent,
+          'expand' => array(
+            'payment_method',
+          ),
+        );
+        $payment_intent = \Stripe\PaymentIntent::retrieve( $payment_intent_args );
+        $payment_method = $payment_intent->charges->data[0]->payment_method_details;
+        if ( empty( $payment_method ) ) {
+          $logstr .= "Could not find payment method for invoice " . $invoice->id;
+          pmpro_stripeWebhookExit();
+        }
+        pmpro_stripe_webhook_populate_order_from_payment( $morder, $payment_method );
+
+				// Add invoice link to the order.
+				$morder->invoice_url = $pmpro_stripe_event->data->object->hosted_invoice_url;
+
+				// Email the user and ask them to authenticate their payment.
+				$pmproemail = new PMProEmail();
+				$pmproemail->sendPaymentActionRequiredEmail($user, $morder);
+
+				// Email admin so they are aware.
+				// TODO: Remove?
+				$pmproemail = new PMProEmail();
+				$pmproemail->sendPaymentActionRequiredAdminEmail($user, $morder);
+
+				$logstr .= "Subscription payment for order ID #" . $old_order->id . " requires customer authentication. Sent email to the member and site admin.";
 				pmpro_stripeWebhookExit();
 			}
-			pmpro_stripe_webhook_populate_order_from_payment( $morder, $payment_method );
-			
-			// Add invoice link to the order.
-			$morder->invoice_url = $invoice->hosted_invoice_url;
-			
-			// Email the user and ask them to authenticate their payment.
-			$pmproemail = new PMProEmail();
-			$pmproemail->sendPaymentActionRequiredEmail($user, $morder);
-
-			// Email admin so they are aware.
-			// TODO: Remove?
-			$pmproemail = new PMProEmail();
-			$pmproemail->sendPaymentActionRequiredAdminEmail($user, $morder);
-
-			$logstr .= "Subscription payment for order ID #" . $old_order->id . " requires customer authentication. Sent email to the member and site admin.";
-			pmpro_stripeWebhookExit();
-			
-			
-		} elseif($pmpro_stripe_event->type == "charge.failed")
-		{
+			else
+			{
+				$logstr .= "Could not find the related subscription for event with ID #" . $pmpro_stripe_event->id . ".";
+				if(!empty($pmpro_stripe_event->data->object->customer))
+					$logstr .= " Customer ID #" . $pmpro_stripe_event->data->object->customer . ".";
+				pmpro_stripeWebhookExit();
+			}
+		} elseif($pmpro_stripe_event->type == "charge.failed") {
 			//last order for this subscription
 			$old_order = getOldOrderFromInvoiceEvent($pmpro_stripe_event);
 
-			$user_id = $old_order->user_id;
-			$user = get_userdata($user_id);
-
-			if(!empty($old_order->id))
+			if( ! empty( $old_order ) && ! empty( $old_order->id ) )
 			{
 				do_action("pmpro_subscription_payment_failed", $old_order);
+
+				$user_id = $old_order->user_id;
+				$user = get_userdata($user_id);
 
 				//prep this order for the failure emails
 				$morder = new MemberOrder();
@@ -322,7 +328,7 @@
 			//for one of our users? if they still have a membership for the same level, cancel it
 			$old_order = getOldOrderFromInvoiceEvent($pmpro_stripe_event);
 
-			if(!empty($old_order)) {
+			if( ! empty( $old_order ) && ! empty( $old_order->id ) ) {
 				$user_id = $old_order->user_id;
 				$user = get_userdata($user_id);
 								
@@ -396,6 +402,70 @@
 				$logstr .= "Stripe tells us a subscription is deleted, but we could not find the order for that subscription. Could be a subscription managed by a different app or plugin. Event ID #" . $pmpro_stripe_event->id . ".";
 				pmpro_stripeWebhookExit();
 			}
+		}
+		elseif( $pmpro_stripe_event->type == "charge.refunded" )
+		{
+			/**
+			 * Stripe's charge.refunded takes a while to come through. 
+			 *
+			 * When requesting a refund, you'll have a payment_intent.succeeded first,
+			 * and then the charge.refunded will come through later.
+			 */
+
+			/**
+			 * ch_ prefixed. Using this in case someone tries to resend a webhook, then we get this ID
+			 * instead of an event ID
+			 */
+			$payment_transaction_id = $pmpro_stripe_event->data->object->id;
+
+			$morder = new MemberOrder();
+
+
+      $morder->getMemberOrderByPaymentTransactionID( $payment_transaction_id );
+		
+      // Initial payment orders are stored using the invoice ID, so check that value too.
+      if ( empty( $morder->id ) && ! empty( $pmpro_stripe_event->data->object->invoice ) ) {
+        $payment_transaction_id = $pmpro_stripe_event->data->object->invoice;
+        $morder->getMemberOrderByPaymentTransactionID( $payment_transaction_id );
+      }
+
+			//We've got the right order	
+			if( !empty( $morder->id ) ) { 
+					
+				$morder->status = 'refunded';
+
+				// translators: %1$s is the date of the refund. %2$s is the transaction ID.
+				
+				$logstr .= sprintf( __('Order successfully refunded on %1$s for transaction ID %2$s at the gateway.', 'paid-memberships-pro' ), date_i18n('Y-m-d H:i:s'), $payment_transaction_id );	
+				//Add to order notes. 
+				
+				// translators: %1$s is the date of the refund. %2$s is the transaction ID.
+				$morder->notes = trim( $morder->notes . ' ' . sprintf( __('Order successfully refunded on %1$s for transaction ID %2$s at the gateway.', 'paid-memberships-pro' ), date_i18n('Y-m-d H:i:s'), $payment_transaction_id ) );
+
+				$morder->SaveOrder();
+
+				$user = get_user_by( 'email', $morder->Email );
+
+				//send an email to the member
+				$myemail = new PMProEmail();
+				$myemail->sendRefundedEmail( $user );
+
+				//send an email to the admin
+				$myemail = new PMProEmail();
+				$myemail->sendRefundedAdminEmail( $user, $morder->membership_id );
+
+				pmpro_stripeWebhookExit();
+
+			} else {
+
+				//We can't find that order
+				
+				$logstr .= sprintf( __('%1$s - Failed to update transaction ID %2$s after it was refunded at the gateway.', 'paid-memberships-pro' ), $payment_transaction_id, date_i18n('Y-m-d H:i:s') );
+
+				pmpro_stripeWebhookExit();
+			
+			}		
+
 		}
 		elseif($pmpro_stripe_event->type == "checkout.session.completed")
 		{
@@ -718,9 +788,10 @@
 			if(defined('PMPRO_STRIPE_WEBHOOK_DEBUG') && PMPRO_STRIPE_WEBHOOK_DEBUG === "log")
 			{
 				//file
-				$loghandle = fopen(dirname(__FILE__) . "/../logs/stripe-webhook.txt", "a+");
-				fwrite($loghandle, $logstr);
-				fclose($loghandle);
+				$logfile = apply_filters( 'pmpro_stripe_webhook_logfile', dirname( __FILE__ ) . "/../logs/stripe-webhook.txt" );
+				$loghandle = fopen( $logfile, "a+" );
+				fwrite( $loghandle, $logstr );
+				fclose( $loghandle );
 			}
 			elseif(defined('PMPRO_STRIPE_WEBHOOK_DEBUG') && false !== PMPRO_STRIPE_WEBHOOK_DEBUG )
 			{

@@ -9,8 +9,15 @@
 	{
 		function __construct($gateway = NULL)
 		{
-			if(!class_exists("Twocheckout"))
-				require_once(dirname(__FILE__) . "/../../includes/lib/Twocheckout/Twocheckout.php");
+			if ( ! class_exists( "Twocheckout" ) ) {
+				require_once( dirname(__FILE__) . "/../../includes/lib/Twocheckout/Twocheckout.php" );
+			} else {
+				// Another plugin may have loaded the 2Checkout library already.
+				// Let's log the current 2Checkout Library info so that we know
+				// where to look if we need to troubleshoot library conflicts.
+				$previously_loaded_class = new \ReflectionClass( 'Twocheckout' );
+				pmpro_track_library_conflict( 'twocheckout', $previously_loaded_class->getFileName(), Twocheckout::VERSION );
+			}
 
 			//set API connection vars
 			Twocheckout::sellerId(pmpro_getOption('twocheckout_accountnumber'));
@@ -117,7 +124,7 @@
 		</tr>
 		<tr class="gateway gateway_twocheckout" <?php if($gateway != "twocheckout") { ?>style="display: none;"<?php } ?>>
 			<th scope="row" valign="top">
-				<label for="twocheckout_apiusername"><?php _e('API Username', 'paid-memberships-pro' );?>:</label>
+				<label for="twocheckout_apiusername"><?php esc_html_e('API Username', 'paid-memberships-pro' );?>:</label>
 			</th>
 			<td>
 				<input type="text" id="twocheckout_apiusername" name="twocheckout_apiusername" value="<?php echo esc_attr($values['twocheckout_apiusername'])?>" class="regular-text code" />
@@ -126,7 +133,7 @@
 		</tr>
 		<tr class="gateway gateway_twocheckout" <?php if($gateway != "twocheckout") { ?>style="display: none;"<?php } ?>>
 			<th scope="row" valign="top">
-				<label for="twocheckout_apipassword"><?php _e('API Password', 'paid-memberships-pro' );?>:</label>
+				<label for="twocheckout_apipassword"><?php esc_html_e('API Password', 'paid-memberships-pro' );?>:</label>
 			</th>
 			<td>
 				<input type="text" id="twocheckout_apipassword" name="twocheckout_apipassword" value="<?php echo esc_attr($values['twocheckout_apipassword'])?>" autocomplete="off" class="regular-text code pmpro-admin-secure-key" />
@@ -135,29 +142,29 @@
 		</tr>
 		<tr class="gateway gateway_twocheckout" <?php if($gateway != "twocheckout") { ?>style="display: none;"<?php } ?>>
 			<th scope="row" valign="top">
-				<label for="twocheckout_accountnumber"><?php _e('Account Number', 'paid-memberships-pro' );?>:</label>
+				<label for="twocheckout_accountnumber"><?php esc_html_e('Account Number', 'paid-memberships-pro' );?>:</label>
 			</th>
 			<td>
-				<input type="text" name="twocheckout_accountnumber" value="<?php echo $values['twocheckout_accountnumber']?>" class="regular-text code" />
+				<input type="text" name="twocheckout_accountnumber" value="<?php echo esc_attr( $values['twocheckout_accountnumber'] ) ?>" class="regular-text code" />
 				<p class="description"><?php esc_html_e( 'Click on the profile icon in 2Checkout to find your Account Number.', 'paid-memberships-pro' ); ?></p>
 			</td>
 		</tr>
 		<tr class="gateway gateway_twocheckout" <?php if($gateway != "twocheckout") { ?>style="display: none;"<?php } ?>>
 			<th scope="row" valign="top">
-				<label for="twocheckout_secretword"><?php _e('Secret Word', 'paid-memberships-pro' );?>:</label>
+				<label for="twocheckout_secretword"><?php esc_html_e('Secret Word', 'paid-memberships-pro' );?>:</label>
 			</th>
 			<td>
-				<input type="text" name="twocheckout_secretword" size="60" value="<?php echo $values['twocheckout_secretword']?>" />
-				<p class="description"><?php _e('Go to Account &raquo; Site Management. Look under Checkout Options to find the Secret Word.', 'paid-memberships-pro' ); ?></p>
+				<input type="text" name="twocheckout_secretword" size="60" value="<?php echo esc_attr( $values['twocheckout_secretword'] ) ?>" />
+				<p class="description"><?php esc_html_e('Go to Account &raquo; Site Management. Look under Checkout Options to find the Secret Word.', 'paid-memberships-pro' ); ?></p>
 			</td>
 		</tr>
 		<tr class="gateway gateway_twocheckout" <?php if($gateway != "twocheckout") { ?>style="display: none;"<?php } ?>>
 			<th scope="row" valign="top">
-				<label><?php _e('TwoCheckout INS URL', 'paid-memberships-pro' );?>:</label>
+				<label><?php esc_html_e('TwoCheckout INS URL', 'paid-memberships-pro' );?>:</label>
 			</th>
 			<td>
-				<p><?php _e('To fully integrate with 2Checkout, be sure to use the following for your INS URL and Approved URL', 'paid-memberships-pro' );?></p>
-				<p><code><?php echo admin_url("admin-ajax.php") . "?action=twocheckout-ins";?></code></p>
+				<p><?php esc_html_e('To fully integrate with 2Checkout, be sure to use the following for your INS URL and Approved URL', 'paid-memberships-pro' );?></p>
+				<p><code><?php echo esc_html( admin_url("admin-ajax.php?action=twocheckout-ins" ) ); ?></code></p>
 
 			</td>
 		</tr>

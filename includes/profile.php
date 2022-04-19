@@ -19,7 +19,7 @@ function pmpro_membership_level_profile_fields($user)
 	if(!$levels)
 		return "";
 ?>
-<h3><?php _e("Membership Level", 'paid-memberships-pro' ); ?></h3>
+<h3><?php esc_html_e("Membership Level", 'paid-memberships-pro' ); ?></h3>
 <table class="form-table">
     <?php
 		$show_membership_level = true;
@@ -28,7 +28,7 @@ function pmpro_membership_level_profile_fields($user)
 		{
 		?>
 		<tr>
-			<th><label for="membership_level"><?php _e("Current Level", 'paid-memberships-pro' ); ?></label></th>
+			<th><label for="membership_level"><?php esc_html_e("Current Level", 'paid-memberships-pro' ); ?></label></th>
 			<td>
 				<select name="membership_level">
 					<option value="" <?php if(empty($user->membership_level->ID)) { ?>selected="selected"<?php } ?>>-- <?php _e("None", 'paid-memberships-pro' );?> --</option>
@@ -36,12 +36,12 @@ function pmpro_membership_level_profile_fields($user)
 					foreach($levels as $level)
 					{
 				?>
-					<option value="<?php echo $level->id?>" <?php selected($level->id, (isset($user->membership_level->ID) ? $user->membership_level->ID : 0 )); ?>><?php echo $level->name?></option>
+					<option value="<?php echo esc_attr( $level->id ) ?>" <?php selected($level->id, (isset($user->membership_level->ID) ? $user->membership_level->ID : 0 )); ?>><?php echo esc_html( $level->name ); ?></option>
 				<?php
 					}
 				?>
 				</select>                
-                <p id="cancel_description" class="description hidden"><?php _e("This will not change the subscription at the gateway unless the 'Cancel' checkbox is selected below.", 'paid-memberships-pro' ); ?></p>
+                <p id="cancel_description" class="description hidden"><?php esc_html_e("This will not change the subscription at the gateway unless the 'Cancel' checkbox is selected below.", 'paid-memberships-pro' ); ?></p>
             </td>
 		</tr>
 		<?php
@@ -60,13 +60,23 @@ function pmpro_membership_level_profile_fields($user)
 			$selected_expires_hour = date( 'H', $end_date ? $user->membership_level->enddate : current_time('timestamp') );
 
 			$selected_expires_minute = date( 'i', $end_date ? $user->membership_level->enddate : current_time('timestamp') );
+
+		$last_order = new MemberOrder();
+
+		$last_order->getLastMemberOrder( $user->ID );
+
+		$allows_refunds = false;
+
+		if( pmpro_allowed_refunds( $last_order ) ) {
+			$allows_refunds = true;
+		}
 		?>
 		<tr>
-			<th><label for="expiration"><?php _e("Expires", 'paid-memberships-pro' ); ?></label></th>
+			<th><label for="expiration"><?php esc_html_e("Expires", 'paid-memberships-pro' ); ?></label></th>
 			<td>
 				<select id="expires" name="expires">
-					<option value="0" <?php if(!$end_date) { ?>selected="selected"<?php } ?>><?php _e("No", 'paid-memberships-pro' );?></option>
-					<option value="1" <?php if($end_date) { ?>selected="selected"<?php } ?>><?php _e("Yes", 'paid-memberships-pro' );?></option>
+					<option value="0" <?php if(!$end_date) { ?>selected="selected"<?php } ?>><?php esc_html_e("No", 'paid-memberships-pro' );?></option>
+					<option value="1" <?php if($end_date) { ?>selected="selected"<?php } ?>><?php esc_html_e("Yes", 'paid-memberships-pro' );?></option>
 				</select>
 				<span id="expires_date" <?php if(!$end_date) { ?>style="display: none;"<?php } ?>>
 					on
@@ -75,25 +85,25 @@ function pmpro_membership_level_profile_fields($user)
 							for($i = 1; $i < 13; $i++)
 							{
 							?>
-							<option value="<?php echo $i?>" <?php if($i == $selected_expires_month) { ?>selected="selected"<?php } ?>><?php echo date("M", strtotime($i . "/15/" . date("Y", current_time( 'timestamp' ) ), current_time("timestamp")))?></option>
+							<option value="<?php echo esc_attr( $i ) ?>" <?php if($i == $selected_expires_month) { ?>selected="selected"<?php } ?>><?php echo date("M", strtotime($i . "/15/" . date("Y", current_time( 'timestamp' ) ), current_time("timestamp")))?></option>
 							<?php
 							}
 						?>
 					</select>
-					<input name="expires_day" type="text" size="2" value="<?php echo $selected_expires_day?>" />
-					<input name="expires_year" type="text" size="4" value="<?php echo $selected_expires_year?>" />
+					<input name="expires_day" type="text" size="2" value="<?php echo esc_attr( $selected_expires_day ) ?>" />
+					<input name="expires_year" type="text" size="4" value="<?php echo esc_attr( $selected_expires_year ) ?>" />
 					<?php _e('at', 'paid-memberships-pro'); ?>
 					<select name='expires_hour'>
 						<?php
 						for( $i = 0; $i <= 24; $i++ ){
-							echo "<option value='".$i."' ".selected( $selected_expires_hour, sprintf("%02d", $i ), true ).">".sprintf("%02d", $i )."</option>";
+							echo "<option value='".esc_attr($i)."' ".selected( $selected_expires_hour, sprintf("%02d", $i ), true ).">".sprintf("%02d", $i )."</option>";
 						}
 						?>
 					</select>
 					<select name='expires_minute'>
 						<?php
 						for( $i = 0; $i <= 59; $i++ ){
-							echo "<option value='".$i."' ".selected( $selected_expires_minute, sprintf("%02d", $i ), true ).">".sprintf("%02d", $i )."</option>";
+							echo "<option value='".esc_attr($i)."' ".selected( $selected_expires_minute, sprintf("%02d", $i ), true ).">".sprintf("%02d", $i )."</option>";
 						}
 						?>
 					</select>
@@ -120,6 +130,12 @@ function pmpro_membership_level_profile_fields($user)
                 <label for="cancel_subscription"><input value="1" id="cancel_subscription" name="cancel_subscription" type="checkbox"> <?php _e("Cancel this user's subscription at the gateway.", "paid-memberships-pro" ); ?></label>
             </td>
         </tr>
+         <tr class="more_level_options">
+            <th></th>
+            <td>
+                <label for="refund_last_subscription"><input value="1" id="refund_last_subscription" name="refund_last_subscription" type="checkbox"<?php disabled( !$allows_refunds ); ?>> <?php esc_html_e("Refund this user's most recent order.", "paid-memberships-pro" ); ?></label>
+            </td>
+        </tr>
 		<?php
 		}
 		?>
@@ -131,7 +147,7 @@ function pmpro_membership_level_profile_fields($user)
 			if( !empty( $tospage_id ) || !empty( $consent_log ) ) {
 			?>
 	        <tr>
-				<th><label for="tos_consent_history"><?php _e("TOS Consent History", 'paid-memberships-pro' ); ?></label></th>
+				<th><label for="tos_consent_history"><?php esc_html_e("TOS Consent History", 'paid-memberships-pro' ); ?></label></th>
 				<td id="tos_consent_history">
 					<?php
 						if ( ! empty( $consent_log ) ) {
@@ -355,6 +371,30 @@ function pmpro_membership_level_profile_fields_update()
 			$pmproemail->sendAdminChangeEmail(get_userdata($user_ID));
 		}
 	}
+
+	//Refund their most recent subscription
+	if( !empty( $_REQUEST['refund_last_subscription'] ) ) {
+
+		$order = new MemberOrder();
+
+		//We need to get a different order if we already cancelled it on the profile edit page.
+		if( !empty( $_REQUEST['cancel_subscription'] ) ){
+			$order_status = 'cancelled';
+		} else {
+			$order_status = 'success';
+		}
+
+		$order->getLastMemberOrder( $user_ID, $order_status );
+
+		if( !empty( $order ) && !empty( $order->id ) ) {				
+
+			//Gateways that we want to support this can run the action from their own class.
+			pmpro_refund_order( $order );
+
+		}
+
+	}
+
 }
 add_action( 'show_user_profile', 'pmpro_membership_level_profile_fields' );
 add_action( 'edit_user_profile', 'pmpro_membership_level_profile_fields' );
@@ -424,18 +464,18 @@ function pmpro_membership_history_profile_fields( $user ) {
 					<tr>
 						<td><?php echo date_i18n( get_option( 'date_format'), $invoice->timestamp ); ?></td>
 						<td class="order_code column-order_code has-row-actions">
-							<a href="<?php echo add_query_arg( array( 'page' => 'pmpro-orders', 'order' => $invoice->id ), admin_url('admin.php' ) ); ?>"><?php echo $invoice->code; ?></a><br />
+							<a href="<?php echo esc_url( add_query_arg( array( 'page' => 'pmpro-orders', 'order' => $invoice->id ), admin_url( 'admin.php' ) ) ); ?>"><?php echo esc_html( $invoice->code ); ?></a><br />
 							<div class="row-actions">
 								<span class="edit">
-									<a title="<?php esc_html_e( 'Edit', 'paid-memberships-pro' ); ?>" href="<?php echo add_query_arg( array( 'page' => 'pmpro-orders', 'order' => $invoice->id ), admin_url('admin.php' ) ); ?>"><?php esc_html_e( 'Edit', 'paid-memberships-pro' ); ?></a>
+									<a title="<?php esc_attr_e( 'Edit', 'paid-memberships-pro' ); ?>" href="<?php echo esc_url( add_query_arg( array( 'page' => 'pmpro-orders', 'order' => $invoice->id ), admin_url('admin.php' ) ) ); ?>"><?php esc_html_e( 'Edit', 'paid-memberships-pro' ); ?></a>
 								</span> |
 								<span class="print">
-									<a target="_blank" title="<?php _e( 'Print', 'paid-memberships-pro' ); ?>" href="<?php echo add_query_arg( array( 'action' => 'pmpro_orders_print_view', 'order' => $invoice->id ), admin_url('admin-ajax.php' ) ); ?>"><?php esc_html_e( 'Print', 'paid-memberships-pro' ); ?></a>
+									<a target="_blank" title="<?php esc_attr_e( 'Print', 'paid-memberships-pro' ); ?>" href="<?php echo esc_url( add_query_arg( array( 'action' => 'pmpro_orders_print_view', 'order' => $invoice->id ), admin_url('admin-ajax.php' ) ) ); ?>"><?php esc_html_e( 'Print', 'paid-memberships-pro' ); ?></a>
 								</span>
 								<?php if ( function_exists( 'pmpro_add_email_order_modal' ) ) { ?>
 									 |
 									<span class="email">
-										<a title="<?php esc_html_e( 'Email', 'paid-memberships-pro' ); ?>" href="#TB_inline?width=600&height=200&inlineId=email_invoice" class="thickbox email_link" data-order="<?php echo esc_attr( $invoice->id ); ?>"><?php _e( 'Email', 'paid-memberships-pro' ); ?></a>
+										<a title="<?php esc_attr_e( 'Email', 'paid-memberships-pro' ); ?>" href="#TB_inline?width=600&height=200&inlineId=email_invoice" class="thickbox email_link" data-order="<?php echo esc_attr( $invoice->id ); ?>"><?php esc_html_e( 'Email', 'paid-memberships-pro' ); ?></a>
 									</span>
 								<?php } ?>
 							</div> <!-- end .row-actions -->
@@ -787,11 +827,11 @@ function pmpro_member_profile_edit_form() {
 				do_action( 'pmpro_show_user_profile', $current_user );
 			?>
 			<input type="hidden" name="action" value="update-profile" />
-			<input type="hidden" name="user_id" value="<?php echo $current_user->ID; ?>" />
+			<input type="hidden" name="user_id" value="<?php echo esc_attr( $current_user->ID ) ; ?>" />
 			<div class="<?php echo pmpro_get_element_class( 'pmpro_submit' ); ?>">
 				<hr />
-				<input type="submit" name="submit" class="<?php echo pmpro_get_element_class( 'pmpro_btn pmpro_btn-submit', 'pmpro_btn-submit' ); ?>" value="<?php _e( 'Update Profile', 'paid-memberships-pro' );?>" />
-				<input type="button" name="cancel" class="<?php echo pmpro_get_element_class( 'pmpro_btn pmpro_btn-cancel', 'pmpro_btn-cancel' ); ?>" value="<?php _e( 'Cancel', 'paid-memberships-pro' );?>" onclick="location.href='<?php echo pmpro_url( 'account'); ?>';" />
+				<input type="submit" name="submit" class="<?php echo pmpro_get_element_class( 'pmpro_btn pmpro_btn-submit', 'pmpro_btn-submit' ); ?>" value="<?php esc_attr_e( 'Update Profile', 'paid-memberships-pro' );?>" />
+				<input type="button" name="cancel" class="<?php echo pmpro_get_element_class( 'pmpro_btn pmpro_btn-cancel', 'pmpro_btn-cancel' ); ?>" value="<?php esc_attr_e( 'Cancel', 'paid-memberships-pro' );?>" onclick="location.href='<?php echo pmpro_url( 'account'); ?>';" />
 			</div>
 		</form>
 	</div> <!-- end pmpro_member_profile_edit_wrap -->
@@ -877,7 +917,7 @@ add_action( 'init', 'pmpro_change_password_process' );
 function pmpro_change_password_form() {
 	global $current_user, $pmpro_msg, $pmpro_msgt;
 	?>
-	<h2><?php _e( 'Change Password', 'paid-memberships-pro' ); ?></h2>
+	<h2><?php esc_html_e( 'Change Password', 'paid-memberships-pro' ); ?></h2>
 	<?php if ( ! empty( $pmpro_msg ) ) { ?>
 		<div class="<?php echo pmpro_get_element_class( 'pmpro_message ' . $pmpro_msgt, $pmpro_msgt ); ?>">
 			<?php echo esc_html( $pmpro_msg ); ?>
@@ -891,19 +931,19 @@ function pmpro_change_password_form() {
 			<div class="<?php echo pmpro_get_element_class( 'pmpro_checkout_box-password' ); ?>">
 				<div class="<?php echo pmpro_get_element_class( 'pmpro_change_password-fields' ); ?>">
 					<div class="<?php echo pmpro_get_element_class( 'pmpro_change_password-field pmpro_change_password-field-password_current', 'pmpro_change_password-field-password_current' ); ?>">
-						<label for="password_current"><?php _e( 'Current Password', 'paid-memberships-pro' ); ?></label></th>
+						<label for="password_current"><?php esc_html_e( 'Current Password', 'paid-memberships-pro' ); ?></label></th>
 						<input type="password" name="password_current" id="password_current" value="" class="<?php echo pmpro_get_element_class( 'input', 'password_current' ); ?>" />
 						<span class="<?php echo pmpro_get_element_class( 'pmpro_asterisk' ); ?>"> <abbr title="<?php _e( 'Required Field', 'paid-memberships-pro' ); ?>">*</abbr></span>
 					</div> <!-- end pmpro_change_password-field-password_current -->
 					<div class="<?php echo pmpro_get_element_class( 'pmpro_change_password-field pmpro_change_password-field-pass1', 'pmpro_change_password-field-pass1' ); ?>">
-						<label for="pass1"><?php _e( 'New Password', 'paid-memberships-pro' ); ?></label></th>
+						<label for="pass1"><?php esc_html_e( 'New Password', 'paid-memberships-pro' ); ?></label></th>
 						<input type="password" name="pass1" id="pass1" value="" class="<?php echo pmpro_get_element_class( 'input pass1', 'pass1' ); ?>" autocomplete="off" />
 						<span class="<?php echo pmpro_get_element_class( 'pmpro_asterisk' ); ?>"> <abbr title="<?php _e( 'Required Field', 'paid-memberships-pro' ); ?>">*</abbr></span>
-						<div id="pass-strength-result" class="hide-if-no-js" aria-live="polite"><?php _e( 'Strength Indicator', 'paid-memberships-pro' ); ?></div>
+						<div id="pass-strength-result" class="hide-if-no-js" aria-live="polite"><?php esc_html_e( 'Strength Indicator', 'paid-memberships-pro' ); ?></div>
 						<p class="<?php echo pmpro_get_element_class( 'lite' ); ?>"><?php echo wp_get_password_hint(); ?></p>
 					</div> <!-- end pmpro_change_password-field-pass1 -->
 					<div class="<?php echo pmpro_get_element_class( 'pmpro_change_password-field pmpro_change_password-field-pass2', 'pmpro_change_password-field-pass2' ); ?>">
-						<label for="pass2"><?php _e( 'Confirm New Password', 'paid-memberships-pro' ); ?></label></th>
+						<label for="pass2"><?php esc_html_e( 'Confirm New Password', 'paid-memberships-pro' ); ?></label></th>
 						<input type="password" name="pass2" id="pass2" value="" class="<?php echo pmpro_get_element_class( 'input', 'pass2' ); ?>" autocomplete="off" />
 						<span class="<?php echo pmpro_get_element_class( 'pmpro_asterisk' ); ?>"> <abbr title="<?php _e( 'Required Field', 'paid-memberships-pro' ); ?>">*</abbr></span>
 					</div> <!-- end pmpro_change_password-field-pass2 -->
