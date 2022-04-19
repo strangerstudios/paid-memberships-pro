@@ -1171,12 +1171,25 @@ class PMPro_Subscription {
 			return;
 		}
 
-		// The following data should already be correct from the migration:
-		// id, user_id, membership_level_id, gateway, gateway_environment, subscription_transaction_id, status.
-
-		// Let's try to guess the rest of the data from the memberships_users table by finding
-		// the most recent recurring membership for this user and this membership level.
-		$all_user_levels = pmpro_getMembershipLevelsForUser( $this->user_id, true );
+		/*
+		 * The following data should already be correct from the migration:
+		 * id, user_id, membership_level_id, gateway, gateway_environment, subscription_transaction_id, status.
+		 *
+		 * In order to populate the rest of the subscription data, we need to guess at the
+		 * biling_amount, cycle_number, cycle_period, billing_limit, trial_amount, and trial_limit.
+		 *
+		 * Our approach for guessing will be as follows:
+		 * 1. Get all previous membership levels for the user (including old membesrhips). Can't use
+		 *        pmpro_get_specific_membership_levels_for_user() because it doesn't include
+		 *        old memberships.
+		 * 2. Loop through membership levels in reverse (most recent first).
+		 * 3. If we find a membership level that matches the subscription level and is recurring,
+		 *	      then let's assume that this is the membership level that the subscription was
+		 *        created for.
+		 * 4. If we do not find a membership level that matches the subscription level and is recurring,
+		 *       then let's use the default membership level settings if it is recurring.
+		*/
+		$all_user_levels = pmpro_getMembershipLevelsForUser( $this->user_id, true ); // True to include old memberships.
 		// Looping through $all_user_levels backwards to get the most recent first.
 		for ( end( $all_user_levels ); key( $all_user_levels ) !== null; prev( $all_user_levels ) ) {
 			$level_check = current( $all_user_levels );
