@@ -173,6 +173,57 @@
 	margin-top: 0;
 }
 
+/* Popups */
+.pmpro-popup-overlay {
+	background: rgba( 0, 0, 0, 0.4 );
+	display: none;
+	height: 100%;
+	left: 0;
+	position: fixed;
+	text-align: center;
+	top: 0;
+	width: 100%;
+	z-index: 10000;
+}
+.pmpro-popup-helper {
+	display: inline-block;
+	height: 100%;
+	vertical-align: middle;
+}
+.pmpro-popup-wrap {
+	background-color: #FFF;
+	border-radius: 10px;
+	box-shadow: 10px 10px 30px #555;
+	display: inline-block;
+	height: auto;
+	max-height: 90%;
+	padding: 25px;
+	position: relative;
+	text-align: center;
+	overflow-y: scroll;
+	overflow-x: hidden;
+	vertical-align: middle;
+	width: 80%;
+}
+@media only screen and (min-width: 1200px) {
+	.pmpro-popup-wrap {
+		width: 65%;
+	}
+}
+.pmpro-popup-wrap h1,
+.pmpro-popup-wrap p {
+	margin: 0 0 20px 0;
+}
+.pmpro-popup-wrap a.pmproPopupCloseButton {
+	color: #666;
+	display: inline-block;
+	margin: .9rem 0 0 1.45rem;
+	position: absolute;
+	right: 25px;
+	text-decoration: none;
+	top: 10px;
+}
+
 /* Consent Log */
 .pmpro_consent_log.pmpro_scrollable {
 	max-width: 800px;
@@ -623,6 +674,9 @@ p.pmpro_meta_notice {
 #pmpro-admin-add-ons {
 	padding-right: 20px;
 }
+#pmpro-admin-add-ons .tablenav .actions p {
+	margin: 0;
+}
 #pmpro-admin-add-ons *,
 #pmpro-admin-add-ons *::before,
 #pmpro-admin-add-ons *::after {
@@ -652,13 +706,16 @@ p.pmpro_meta_notice {
         width: 100%;
     }
 }
+#pmpro-admin-add-ons .add-on-container.search-hide {
+	display: none !important;
+}
 #pmpro-admin-add-ons h4 {
     font-size: 17px;
     font-weight: 700;
 }
 #pmpro-admin-add-ons .add-on-item {
-	background-color: #fff;
-	border: 1px solid #ddd;
+	background-color: #FFF;
+	border: 1px solid #DDD;
 	border-radius: 3px;
 	margin: 0;
 	height: 100%;
@@ -684,7 +741,11 @@ p.pmpro_meta_notice {
 	color: #006799;
 }
 #pmpro-admin-add-ons .add-on-item p {
-	margin: 5px 0 0 100px;
+	margin-top: 3px;
+	margin-bottom: 3px;
+}
+#pmpro-admin-add-ons .add-on-item .details p {
+	margin-left: 100px;
 }
 #pmpro-admin-add-ons .add-on-item .details {
 	padding: 30px 20px;
@@ -694,37 +755,24 @@ p.pmpro_meta_notice {
 	align-items: center;
 	background-color: #f7f7f7;
 	border-top: 1px solid #ddd;
-	padding: 20px;
+	padding: 10px 20px;
 	min-height: 75px;
 	position: relative;
 }
 #pmpro-admin-add-ons .add-on-item .status {
 	flex-grow: 1;
 }
-#pmpro-admin-add-ons #pmpro-admin-add-ons-list .list .action-button button {
-	background: none;
-	border: 1px solid #ddd;
-	border-radius: 3px;
-	box-shadow: none;
+#pmpro-admin-add-ons #pmpro-admin-add-ons-list .list .action-button .button {
 	cursor: pointer;
 	font-weight: 600;
 	width: 140px;
 	text-align: center;
 	padding: 8px 5px;
+}
+#pmpro-admin-add-ons #pmpro-admin-add-ons-list .list .action-button .button:hover,
+#pmpro-admin-add-ons #pmpro-admin-add-ons-list .list .action-button .button:focus { }
+#pmpro-admin-add-ons #pmpro-admin-add-ons-list .list .action-button .button:focus { }
 
-	background-color: #e27730;
-	border-color: #e27730;
-	color: #fff;
-}
-#pmpro-admin-add-ons #pmpro-admin-add-ons-list .list .action-button button:hover,
-#pmpro-admin-add-ons #pmpro-admin-add-ons-list .list .action-button button:focus {
-	background-color: #e9e9e9;
-}
-#pmpro-admin-add-ons #pmpro-admin-add-ons-list .list .action-button button:focus {
-	border-color: #2271b1;
-	box-shadow: 0 0 0 1px #2271b1;
-	outline: none;
-}
 /* license */
 .memberships_page_pmpro-license h2 {
 	text-align: left;

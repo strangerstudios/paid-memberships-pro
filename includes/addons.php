@@ -53,9 +53,12 @@ function pmpro_getAddons() {
 			// update addons in cache
 			$addons = json_decode( wp_remote_retrieve_body( $remote_addons ), true );
 			foreach ( $addons as $key => $value ) {
-				$addons[$key]['ShortName'] = str_replace( 'Paid Memberships Pro - ', '', $addons[$key]['Title'] );
-				$addons[$key]['ShortName'] = str_replace( 'Add On', '', $addons[$key]['ShortName'] );
+				$addons[$key]['ShortName'] = trim( str_replace( array( 'Add On', 'Paid Memberships Pro - ' ), '', $addons[$key]['Title'] ) );
 			}
+			// Alphabetize the list by ShortName.
+			$short_names = array_column( $addons, 'ShortName' );
+			array_multisort( $short_names, SORT_ASC, SORT_STRING | SORT_FLAG_CASE, $addons );
+
 			delete_option( 'pmpro_addons' );
 			add_option( 'pmpro_addons', $addons, null, 'no' );
 		}
@@ -90,6 +93,99 @@ function pmpro_getAddonBySlug( $slug ) {
 	}
 
 	return false;
+}
+
+/**
+ * Get Add On information by category.
+ *
+ * @since 2.8.x
+ *
+ * @param string $license A single license type for our Add Ons.
+ * @return array $addons An array of all plugin objects found or an empty array if none found.
+ */
+function pmpro_get_addons_by_license_types( $license_types = array(), $include_hidden = null ) {
+	// Return if we don't have a license to search.
+	if ( empty( $license_types ) ) {
+		return array();
+	}
+
+	// Get all Add Ons. Return if empty.
+	$addons = pmpro_getAddons();
+	if ( empty( $addons ) ) {
+		return array();
+	}
+
+	// Build our return array of Add On objects.
+	$license_addons = array();
+	foreach ( $addons as $addon ) {
+		if ( in_array( $addon['License'], $license_types ) ) {
+			if ( empty( $include_hidden ) && ! empty ( $addon['HideFromAddOnsList'] ) ) {
+				// This Add On is hidden, we shouldn't include it.
+				continue;
+			}
+
+			// Add the Add Ons to the return array.
+			$license_addons[ $addon['Slug'] ] = $addon;
+		}
+	}
+
+	return $license_addons;
+}
+
+/**
+ * Get Add On information by category.
+ *
+ * @since 2.8.x
+ *
+ * @param string $category A single category we know to be represented by this function.
+ * @return array $addons An array of all plugin objects found or an empty array if none found.
+ */
+function pmpro_get_addons_by_category( $category ) {
+	// Return if we don't have a category to search.
+	if ( empty( $category ) ) {
+		return array();
+	}
+
+	// Get all Add Ons. Return if empty.
+	$addons = pmpro_getAddons();
+	if ( empty( $addons ) ) {
+		return array();
+	}
+
+	// Get all Add On Categories. Return if nothing in this category.
+	$addon_cats = pmpro_get_addon_categories();
+	if ( empty( $addon_cats ) || empty( $addon_cats[ $category ] ) ) {
+		return array();
+	}
+
+	// Build our return array of Add On objects.
+	$cat_addons = array();
+	foreach ( $addons as $addon ) {
+		if ( in_array( $addon['Slug'], $addon_cats[ $category ] ) ) {
+			$cat_addons[ $addon['Slug'] ] = $addon;
+		}
+	}
+	return $cat_addons;
+}
+
+/**
+ * Get the Add On slugs for each category we identify.
+ *
+ * @since 2.8.x
+ *
+ * @return array $addon_cats An array of plugin categories and plugin slugs within each.
+ */
+function pmpro_get_addon_categories() {
+	return array(
+		'popular' => array( 'pmpro-advanced-levels-shortcode', 'pmpro-register-helper', 'pmpro-woocommerce', 'pmpro-courses', 'pmpro-member-directory', 'pmpro-subscription-delays', 'pmpro-roles', 'pmpro-add-paypal-express', 'pmpro-set-expiration-dates' ),
+		'association' => array( 'basic-user-avatars', 'pmpro-add-member-admin', 'pmpro-add-name-to-checkout', 'pmpro-approvals', 'pmpro-donations', 'pmpro-events', 'pmpro-import-users-from-csv', 'pmpro-member-directory', 'pmpro-membership-manager-role', 'pmpro-pay-by-check', 'pmpro-set-expiration-dates', 'pmpro-sponsored-members' ),
+		'coaching' => array( 'pmpro-affiliates', 'pmpro-courses', 'pmpro-gift-levels', 'pmpro-member-badges', 'pmpro-membership-card', 'pmpro-user-pages' ),
+		'community' => array( 'pmpro-approvals', 'pmpro-bbpress', 'pmpro-buddypress', 'pmpro-discord-add-on', 'pmpro-email-confirmation', 'pmpro-import-users-from-csv', 'pmpro-invite-only' ),
+		'courses' => array( 'pmpro-courses', 'pmpro-goals', 'pmpro-member-badges', 'pmpro-multiple-memberships-per-user', 'pmpro-user-pages' ),
+		'directory' => array( 'basic-user-avatars', 'pmpro-member-badges', 'pmpro-member-directory', 'pmpro-membership-maps' ),
+		'products' => array( 'pmpro-gift-levels', 'pmpro-shipping', 'pmpro-woocommerce' ),
+		'content' => array( 'pmpro-addon-packages', 'pmpro-cpt', 'pmpro-series', 'seriously-simple-podcasting', 'pmpro-user-pages' ),
+	);
 }
 
 /**
