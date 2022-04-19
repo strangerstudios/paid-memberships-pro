@@ -96,14 +96,15 @@ function pmpro_getAddonBySlug( $slug ) {
 }
 
 /**
- * Get Add On information by category.
+ * Get Add Ons by license type.
  *
  * @since 2.8.x
  *
- * @param string $license A single license type for our Add Ons.
+ * @param array $license An array of license type for our Add Ons.
+ * @param bool $include_hidden Optionally include hidden Add Ons in the return array.
  * @return array $addons An array of all plugin objects found or an empty array if none found.
  */
-function pmpro_get_addons_by_license_types( $license_types = array(), $include_hidden = null ) {
+function pmpro_get_addons_by_license_types( $license_types = array(), $include_hidden = false ) {
 	// Return if we don't have a license to search.
 	if ( empty( $license_types ) ) {
 		return array();
@@ -114,6 +115,8 @@ function pmpro_get_addons_by_license_types( $license_types = array(), $include_h
 	if ( empty( $addons ) ) {
 		return array();
 	}
+
+	// Note: Do we need to make sure that $license_types is an array here?
 
 	// Build our return array of Add On objects.
 	$license_addons = array();
@@ -138,9 +141,10 @@ function pmpro_get_addons_by_license_types( $license_types = array(), $include_h
  * @since 2.8.x
  *
  * @param string $category A single category we know to be represented by this function.
+ * @param bool $include_hidden Optionally include hidden Add Ons in the return array.
  * @return array $addons An array of all plugin objects found or an empty array if none found.
  */
-function pmpro_get_addons_by_category( $category ) {
+function pmpro_get_addons_by_category( $category, $include_hidden = false ) {
 	// Return if we don't have a category to search.
 	if ( empty( $category ) ) {
 		return array();
@@ -162,6 +166,11 @@ function pmpro_get_addons_by_category( $category ) {
 	$cat_addons = array();
 	foreach ( $addons as $addon ) {
 		if ( in_array( $addon['Slug'], $addon_cats[ $category ] ) ) {
+			if ( empty( $include_hidden ) && ! empty ( $addon['HideFromAddOnsList'] ) ) {
+				// This Add On is hidden, we shouldn't include it.
+				continue;
+			}
+
 			$cat_addons[ $addon['Slug'] ] = $addon;
 		}
 	}

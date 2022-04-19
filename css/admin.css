@@ -674,8 +674,10 @@ p.pmpro_meta_notice {
 #pmpro-admin-add-ons {
 	padding-right: 20px;
 }
-#pmpro-admin-add-ons .tablenav .actions p {
-	margin: 0;
+#pmpro-admin-add-ons .pmpro-admin-add-ons-refresh {
+	display: inline-block;
+	float: right;
+	margin-bottom: 0;
 }
 #pmpro-admin-add-ons *,
 #pmpro-admin-add-ons *::before,
