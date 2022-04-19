@@ -46,6 +46,7 @@
 	$popular_addons = pmpro_get_addons_by_category( 'popular' );
 	$free_addons = pmpro_get_addons_by_license_types( array( 'free', 'wordpress.org' ) );
 	$premium_addons = pmpro_get_addons_by_license_types( pmpro_license_get_premium_types() );
+	$association_addons = pmpro_get_addons_by_category( 'association' );
 
 	// If search term in URL, pass it to a variable.
 	if ( isset( $_REQUEST['s'] ) ) {
@@ -72,15 +73,12 @@
 		?>
 		<div class="wp-filter">
 			<ul class="filter-links">
-				<?php
-					if ( ! empty( $s ) ) { ?>
-					<li class="addons-search"><a href="<?php echo add_query_arg( array( 'page' => 'pmpro-addons', 'view' => 'search', 's' => $s ), admin_url( 'admin.php' ) ); ?>" class="current"><?php esc_html_e('Search Results', 'paid-memberships-pro' ); ?></a></li>
-					<?php }
-				?>
-				<li class="addons-all"><a href="<?php echo add_query_arg( array( 'page' => 'pmpro-addons', 'view' => 'all' ), admin_url( 'admin.php' ) ); ?>" <?php if(empty($view) || $view == "all") { ?>class="current"<?php } ?>><?php esc_html_e('All', 'paid-memberships-pro' ); ?></a></li>
-				<li class="addons-popular"><a href="<?php echo add_query_arg( array( 'page' => 'pmpro-addons', 'view' => 'popular' ), admin_url( 'admin.php' ) ); ?>" <?php if( ! empty( $view ) && $view == "popular") { ?>class="current"<?php } ?>><?php esc_html_e( 'Popular', 'paid-memberships-pro' ); ?></a></li>
-				<li class="addons-free"><a href="<?php echo add_query_arg( array( 'page' => 'pmpro-addons', 'view' => 'free' ), admin_url( 'admin.php' ) ); ?>" <?php if( ! empty( $view ) && $view == "free") { ?>class="current"<?php } ?>><?php esc_html_e( 'Free', 'paid-memberships-pro' ); ?></a></li>
-				<li class="addons-premium"><a href="<?php echo add_query_arg( array( 'page' => 'pmpro-addons', 'view' => 'premium' ), admin_url( 'admin.php' ) ); ?>" <?php if( ! empty( $view ) && $view == "premium") { ?>class="current"<?php } ?>><?php esc_html_e( 'Premium', 'paid-memberships-pro' ); ?></a></li>
+				<li class="addons-search" style="display: none;"><a href="#search"><?php esc_html_e('Search Results', 'paid-memberships-pro' ); ?></a></li>
+				<li><a data-toggle="view" data-search="view" data-view="all" href="#all" class="current"><?php esc_html_e('All', 'paid-memberships-pro' ); ?></a></li>
+				<li><a data-toggle="view" data-search="view" data-view="popular" href="#popular"><?php esc_html_e( 'Popular', 'paid-memberships-pro' ); ?></a></li>
+				<li><a data-toggle="view" data-search="view" data-view="free" href="#free"><?php esc_html_e( 'Free', 'paid-memberships-pro' ); ?></a></li>
+				<li><a data-toggle="view" data-search="view" data-view="premium" href="#premium"><?php esc_html_e( 'Premium', 'paid-memberships-pro' ); ?></a></li>
+				<li><a data-toggle="view" data-search="view" data-view="association" href="#association"><?php esc_html_e( 'Association', 'paid-memberships-pro' ); ?></a></li>
 			</ul>
 			<form class="search-form search-plugins" method="get">
 				<input type="hidden" name="tab" value="search">
@@ -167,8 +165,25 @@
 								$classes[] = 'add-on-' . $addon['needs_update'];
 							}
 							$class = implode( ' ', array_unique( $classes ) );
+
+							// Build the data-view for the Add On in the list.
+							$views = array();
+							$views[] = 'all';
+							if ( array_key_exists( $addon['Slug'], $free_addons ) ) {
+								$views[] = 'free';
+							}
+							if ( array_key_exists( $addon['Slug'], $premium_addons ) ) {
+								$views[] = 'premium';
+							}
+							if ( array_key_exists( $addon['Slug'], $popular_addons ) ) {
+								$views[] = 'popular';
+							}
+							if ( array_key_exists( $addon['Slug'], $association_addons ) ) {
+								$views[] = 'association';
+							}
+							$view = implode( ' ', array_unique( $views ) );
 						?>
-						<div id="<?php echo esc_attr( $addon['Slug'] ); ?>" class="<?php echo esc_attr( $class ); ?>" data-search-content="<?php echo esc_attr( $addon['Name'] ); ?> <?php echo esc_attr( $addon['Slug'] ); ?> <?php echo esc_attr( $addon['Description'] ); ?>" data-search-license="<?php echo esc_attr( $addon['License'] ); ?>">
+						<div id="<?php echo esc_attr( $addon['Slug'] ); ?>" class="<?php echo esc_attr( $class ); ?>" data-search-content="<?php echo esc_attr( $addon['Name'] ); ?> <?php echo esc_attr( $addon['Slug'] ); ?> <?php echo esc_attr( $addon['Description'] ); ?>" data-search-license="<?php echo esc_attr( $addon['License'] ); ?>" data-search-view="<?php echo esc_attr( $view ); ?>">
 							<div class="add-on-item">
 								<div class="details">
 									<?php
@@ -352,7 +367,11 @@
 			<script>
 				jQuery(document).ready( function($) {
 					$('[data-search]').keyup(function() {
-						jQuery('.addons-search').show();
+						var views = $( '.addons-search' ).closest( '.filter-links' );
+						views.find( 'li a' ).removeClass( 'current' );
+						$('.addons-search a').addClass( 'current' );
+						$('.addons-search').show();
+
 						var filter = $(this).data('search');
 						var filter_items = $(`[data-search-${filter}]`);
 						var search_val = $(this).val();
@@ -365,6 +384,45 @@
 							jQuery('.addons-search').hide();
 						}
 					});
+
+					$('.filter-links li a' ).click( function(e) {
+						// don't want to jump to #
+						e.preventDefault();
+
+						var views = $( this ).closest( '.filter-links' );
+						var view = $(this).data('search');
+						var view_items = $(`[data-search-${view}]`);
+						var view_val = $(this).data('view');
+
+						// Update the URL hash.
+						$( this ).attr( 'href' ).replace( /#/, '' );
+
+						// Unstyle view links
+						views.find( 'li a' ).removeClass( 'current' );
+						$( this ).addClass( 'current' );
+						views.find('.addons-search').hide();
+
+						// Clear the search input, if full.
+						document.getElementById( 'search-add-ons' ).value = '';
+
+						// update the URL
+						if ( history.pushState ) {
+						    history.pushState( null, null, '#' + view_val );
+						} else {
+						    location.hash = '#' + view_val;
+						}
+
+						if ( view_val != '' ) {
+							view_items.addClass('search-hide');
+							$(`[data-search-${view}*="${view_val.toLowerCase()}"]`).removeClass('search-hide');
+						} else {
+							view_items.removeClass('search-hide');
+						}
+					});
+
+					// check if we should switch Add On content on page loads
+					$( 'a[data-toggle="view"][href="' + window.location.hash + '"]' ).click();
+
 				});
 			</script>
 			<?php
