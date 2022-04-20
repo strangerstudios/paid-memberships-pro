@@ -431,20 +431,21 @@
 
 		}
 
-		public static function get_orders( array $args = [] ) {
+		public static function get_orders( array $args = array() ) {
 
 			global $wpdb;
 
 			$sql_query = "SELECT `id` FROM `$wpdb->pmpro_membership_orders`";
 
-			$prepared = [];
-			$where    = [];
+			$prepared = array();
+			$where    = array();
+
 			$orderby  = isset( $args['orderby'] ) ? $args['orderby'] : '`timestamp` DESC';
 			$limit    = isset( $args['limit'] ) ? (int) $args['limit'] : 100;
 
 			// Detect unsupported orderby usage (in the future we may support better syntax).
 			if ( $orderby !== preg_replace( '/[^a-zA-Z0-9\s,`]/', ' ', $orderby ) ) {
-				return [];
+				return array();
 			}
 
 			/*
@@ -542,62 +543,6 @@
 				}
 			}
 
-			// Filter by cycle number(s).
-			// if ( isset( $args['cycle_number'] ) && null !== $args['cycle_number'] ) {
-			// 	if ( ! is_array( $args['cycle_number'] ) ) {
-			// 		$where[]    = 'cycle_number = %d';
-			// 		$prepared[] = $args['cycle_number'];
-			// 	} else {
-			// 		$where[]  = 'cycle_number IN ( ' . implode( ', ', array_fill( 0, count( $args['cycle_number'] ), '%d' ) ) . ' )';
-			// 		$prepared = array_merge( $prepared, $args['cycle_number'] );
-			// 	}
-			// }
-
-			// Filter by cycle period(s).
-			// if ( isset( $args['cycle_period'] ) && null !== $args['cycle_period'] ) {
-			// 	if ( ! is_array( $args['cycle_period'] ) ) {
-			// 		$where[]    = 'cycle_period = %s';
-			// 		$prepared[] = $args['cycle_period'];
-			// 	} else {
-			// 		$where[]  = 'cycle_period IN ( ' . implode( ', ', array_fill( 0, count( $args['cycle_period'] ), '%s' ) ) . ' )';
-			// 		$prepared = array_merge( $prepared, $args['cycle_period'] );
-			// 	}
-			// }
-
-			// Filter by billing limit(s).
-			// if ( isset( $args['billing_limit'] ) && null !== $args['billing_limit'] ) {
-			// 	if ( ! is_array( $args['billing_limit'] ) ) {
-			// 		$where[]    = 'billing_limit = %d';
-			// 		$prepared[] = $args['billing_limit'];
-			// 	} else {
-			// 		$where[]  = 'billing_limit IN ( ' . implode( ', ', array_fill( 0, count( $args['billing_limit'] ), '%d' ) ) . ' )';
-			// 		$prepared = array_merge( $prepared, $args['billing_limit'] );
-			// 	}
-			// }
-
-			// Filter by trial amount(s).
-			// if ( isset( $args['trial_amount'] ) && null !== $args['trial_amount'] ) {
-			// 	if ( ! is_array( $args['trial_amount'] ) ) {
-			// 		$where[]    = 'trial_amount = %f';
-			// 		$prepared[] = $args['trial_amount'];
-			// 	} else {
-			// 		$where[]  = 'trial_amount IN ( ' . implode( ', ', array_fill( 0, count( $args['trial_amount'] ), '%f' ) ) . ' )';
-			// 		$prepared = array_merge( $prepared, $args['trial_amount'] );
-			// 	}
-			// }
-
-			// Filter by trial limit(s).
-			// if ( isset( $args['trial_limit'] ) && null !== $args['trial_limit'] ) {
-			// 	if ( ! is_array( $args['trial_limit'] ) ) {
-			// 		$where[]    = 'trial_limit = %d';
-			// 		$prepared[] = $args['trial_limit'];
-			// 	} else {
-			// 		$where[]  = 'trial_limit IN ( ' . implode( ', ', array_fill( 0, count( $args['trial_limit'] ), '%d' ) ) . ' )';
-			// 		$prepared = array_merge( $prepared, $args['trial_limit'] );
-			// 	}
-			// }
-
-
 			// Maybe filter the data.
 			if ( $where ) {
 				$sql_query .= ' WHERE ' . implode( ' AND ', $where );
@@ -620,10 +565,10 @@
 			$member_order_ids = $wpdb->get_col( $sql_query );
 
 			if ( empty( $member_order_ids ) ) {
-				return [];
+				return array();
 			}
 
-			$member_orders = [];
+			$member_orders = array();
 
 			foreach ( $member_order_ids as $member_order_id ) {
 				$morder = new MemberOrder( $member_order_id );
