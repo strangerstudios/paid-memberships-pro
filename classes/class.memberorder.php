@@ -2,6 +2,396 @@
 	class MemberOrder
 	{	
 		/**
+		 * The Member Order ID
+		 *
+		 * @since TBD
+		 *
+		 * @var int
+		 */
+		
+		public $id = 0;
+
+		/**
+		 * The Member Order Identifier, also used as invoie number
+		 *
+		 * @since TBD
+		 *
+		 * @var string
+		 */
+		public $code = '';
+
+		/**
+		 * User ID
+		 *
+		 * @since TBD
+		 *
+		 * @var int
+		 */
+		public $user_id = 0;
+
+		/**
+		 * Level ID
+		 *
+		 * @since TBD
+		 *
+		 * @var int
+		 */
+		public $membership_id = 0;
+
+		/**
+		 * Session ID
+		 *
+		 * @since TBD
+		 *
+		 * @var string
+		 */
+		public $session_id = '';
+
+		/**
+		 * PayPal Token 
+		 *
+		 * @since TBD
+		 *
+		 * @var string
+		 */
+		public $paypal_token = '';
+
+		/**
+		 * Contain a billing address object
+		 *
+		 * @since TBD
+		 *
+		 * @var object
+		 */
+		public $billing = '';
+
+		/**
+		 * Subtotal value
+		 *
+		 * @since TBD
+		 *
+		 * @var float
+		 */
+		public $subtotal = 0.00;
+
+		/**
+		 * Tax Amount
+		 *
+		 * @since TBD
+		 *
+		 * @var float
+		 */
+		public $tax = 0.00;
+
+		/**
+		 * Discount Code Amount
+		 *
+		 * @since TBD
+		 *
+		 * @var float
+		 */
+		public $couponamount = 0.00;
+
+		/**
+		 * Certificate ID
+		 *
+		 * @since TBD
+		 *
+		 * @var string
+		 */
+		public $certificate_id = '';
+
+		/**
+		 * Total order amount
+		 *
+		 * @since TBD
+		 *
+		 * @var float
+		 */
+		public $total = 0.00;
+
+		/**
+		 * Payment Type
+		 *
+		 * @since TBD
+		 *
+		 * @var string
+		 */
+		public $payment_type = '';
+
+		/**
+		 * Card Type
+		 *
+		 * @since TBD
+		 *
+		 * @var string
+		 */
+		public $cardtype = '';
+
+		/**
+		 * Account or Card Number
+		 *
+		 * @since TBD
+		 *
+		 * @var string
+		 */
+		public $accountnumber = '';
+
+		/**
+		 * Card Expiration Month
+		 *
+		 * @since TBD
+		 *
+		 * @var sring
+		 */
+		public $expirationmonth = '';
+
+		/**
+		 * Expiration Year
+		 *
+		 * @since TBD
+		 *
+		 * @var string
+		 */
+		public $expirationyear = '';
+
+		/**
+		 * Order Status
+		 *
+		 * @since TBD
+		 *
+		 * @var string
+		 */
+		public $status = '';
+
+		/**
+		 * Gateway ID
+		 *
+		 * @since TBD
+		 *
+		 * @var string
+		 */
+		public $gateway = '';
+
+		/**
+		 * Gateway Environment
+		 *
+		 * @since TBD
+		 *
+		 * @var string
+		 */
+		public $gateway_environment = '';
+
+		/**
+		 * Transaction ID
+		 *
+		 * @since TBD
+		 *
+		 * @var string
+		 */
+		public $payment_transaction_id = '';
+
+		/**
+		 * Subscription Transaction ID
+		 *
+		 * @since TBD
+		 *
+		 * @var string
+		 */
+		public $subscription_transaction_id = '';
+
+		/**
+		 * Timestamp
+		 *
+		 * @since TBD
+		 *
+		 * @var string
+		 */
+		public $timestamp = '';
+
+		/**
+		 * Affiliate ID 
+		 *
+		 * @since TBD
+		 *
+		 * @var int
+		 */
+		public $affiliate_id = 0;
+
+		/**
+		 * Affiliate Sub ID
+		 *
+		 * @since TBD
+		 *
+		 * @var string
+		 */
+		public $affiliate_subid = '';
+
+		/**
+		 * Order notes
+		 *
+		 * @since TBD
+		 *
+		 * @var string
+		 */
+		public $notes = '';
+
+		/**
+		 * Checkout ID
+		 *
+		 * @since TBD
+		 *
+		 * @var string
+		 */
+		public $checkout_id = '';
+
+		/**
+		 * First Name
+		 *
+		 * @since TBD
+		 *
+		 * @var string
+		 */
+		public $FirstName = '';
+
+		/**
+		 * Last Name
+		 *
+		 * @since TBD
+		 *
+		 * @var string
+		 */
+		public $LastName = '';
+
+		/**
+		 * Address Line 1
+		 *
+		 * @since TBD
+		 *
+		 * @var string
+		 */
+		public $Address1 = '';
+
+		/**
+		 * Email Address
+		 *
+		 * @since TBD
+		 *
+		 * @var string
+		 */
+		public $Email = '';
+
+		/**
+		 * Card Expiration Date
+		 *
+		 * @since TBD
+		 *
+		 * @var string
+		 */
+		public $ExpirationDate = '';
+
+		/**
+		 * Expiration Date Y-M Format
+		 *
+		 * @since TBD
+		 *
+		 * @var string
+		 */
+		public $ExpirationDate_YdashM = '';
+
+		/**
+		 * ???
+		 *
+		 * @since TBD
+		 *
+		 * @var string
+		 */
+		public $nogateway = '';
+
+		/**
+		 * Is Order a Renewal
+		 *
+		 * @since TBD
+		 *
+		 * @var bool
+		 */
+		public $is_renewal = false;
+
+		/**
+		 * Gateway ID
+		 *
+		 * @since TBD
+		 *
+		 * @var string
+		 */
+		public $Gateway = '';
+
+		/**
+		 * SQL Query used to retrieve respective Member Order
+		 *
+		 * @since TBD
+		 *
+		 * @var string
+		 */
+		public $sqlQuery = '';
+
+		/**
+		 * Discount Code
+		 *
+		 * @since TBD
+		 *
+		 * @var string
+		 */
+		public $discount_code = '';
+
+		/**
+		 * User ???
+		 *
+		 * @since TBD
+		 *
+		 * @var int
+		 */
+		public $user = 0;
+
+		/**
+		 * Membership Level
+		 *
+		 * @since TBD
+		 *
+		 * @var int
+		 */
+		public $membership_level = 0;
+
+		/**
+		 * Initial Payment Amount
+		 *
+		 * @since TBD
+		 *
+		 * @var float
+		 */
+		public $InitialPayment = 0.00;
+
+		/**
+		 * Timestamp
+		 *
+		 * @since TBD
+		 *
+		 * @var string
+		 */
+		public $datetime = '';
+
+		/**
+		 * Previous Order Status
+		 *
+		 * @since TBD
+		 *
+		 * @var string
+		 */
+		protected $previous_status = '';
+		
+
+
+		/**
 		 * Constructor
 		 */
 		function __construct($id = NULL)
@@ -10,15 +400,231 @@
 			$this->setGateway(pmpro_getOption("gateway"));
 
 			//get data if an id was passed
-			if($id)
-			{
+			if( $id ) {
 				if(is_numeric($id))
-					return $this->getMemberOrderByID($id);
+					$morder = $this->getMemberOrderByID($id);
 				else
-					return $this->getMemberOrderByCode($id);
+					$morder = $this->getMemberOrderByCode($id);
+			} else {
+				$morder = $this->getEmptyMemberOrder();	//blank constructor
 			}
-			else
-				return $this->getEmptyMemberOrder();	//blank constructor
+
+			$this->previous_status = $this->status;
+
+			return $morder;
+		}
+
+		public static function get_order( $id = NULL ) {
+
+			return new MemberOrder( $id );
+
+		}
+
+		public static function get_orders( array $args = [] ) {
+
+			global $wpdb;
+
+			$sql_query = "SELECT `id` FROM `$wpdb->pmpro_membership_orders`";
+
+			$prepared = [];
+			$where    = [];
+			$orderby  = isset( $args['orderby'] ) ? $args['orderby'] : '`timestamp` DESC';
+			$limit    = isset( $args['limit'] ) ? (int) $args['limit'] : 100;
+
+			// Detect unsupported orderby usage (in the future we may support better syntax).
+			if ( $orderby !== preg_replace( '/[^a-zA-Z0-9\s,`]/', ' ', $orderby ) ) {
+				return [];
+			}
+
+			/*
+			 * Now filter the query based on the arguments provided.
+			 *
+			 * isset( $arg ) && null !== $arg is meant to deal with $args['arg'] = null usage
+			 * while still supporting $args['arg'] = ''.
+			 */
+
+			// Filter by ID(s).
+			if ( isset( $args['id'] ) && null !== $args['id'] ) {
+				if ( ! is_array( $args['id'] ) ) {
+					$where[]    = 'id = %d';
+					$prepared[] = $args['id'];
+				} else {
+					$where[]  = 'id IN ( ' . implode( ', ', array_fill( 0, count( $args['id'] ), '%d' ) ) . ' )';
+					$prepared = array_merge( $prepared, $args['id'] );
+				}
+			}
+
+			// Filter by user ID(s).
+			if ( isset( $args['user_id'] ) && null !== $args['user_id'] ) {
+				if ( ! is_array( $args['user_id'] ) ) {
+					$where[]    = 'user_id = %d';
+					$prepared[] = $args['user_id'];
+				} else {
+					$where[]  = 'user_id IN ( ' . implode( ', ', array_fill( 0, count( $args['user_id'] ), '%d' ) ) . ' )';
+					$prepared = array_merge( $prepared, $args['user_id'] );
+				}
+			}
+
+			// Filter by membership level ID(s).
+			if ( isset( $args['membership_level_id'] ) && null !== $args['membership_level_id'] ) {
+				if ( ! is_array( $args['membership_level_id'] ) ) {
+					$where[]    = 'membership_level_id = %d';
+					$prepared[] = $args['membership_level_id'];
+				} else {
+					$where[]  = 'membership_level_id IN ( ' . implode( ', ', array_fill( 0, count( $args['membership_level_id'] ), '%d' ) ) . ' )';
+					$prepared = array_merge( $prepared, $args['membership_level_id'] );
+				}
+			}
+
+			// Filter by status(es).
+			if ( isset( $args['status'] ) && null !== $args['status'] ) {
+				if ( ! is_array( $args['status'] ) ) {
+					$where[]    = 'status = %s';
+					$prepared[] = $args['status'];
+				} else {
+					$where[]  = 'status IN ( ' . implode( ', ', array_fill( 0, count( $args['status'] ), '%s' ) ) . ' )';
+					$prepared = array_merge( $prepared, $args['status'] );
+				}
+			}
+
+			// Filter by subscription transaction ID(s).
+			if ( isset( $args['subscription_transaction_id'] ) && null !== $args['subscription_transaction_id'] ) {
+				if ( ! is_array( $args['subscription_transaction_id'] ) ) {
+					$where[]    = 'subscription_transaction_id = %s';
+					$prepared[] = $args['subscription_transaction_id'];
+				} else {
+					$where[]  = 'subscription_transaction_id IN ( ' . implode( ', ', array_fill( 0, count( $args['subscription_transaction_id'] ), '%s' ) ) . ' )';
+					$prepared = array_merge( $prepared, $args['subscription_transaction_id'] );
+				}
+			}
+
+			// Filter by gateway(s).
+			if ( isset( $args['gateway'] ) && null !== $args['gateway'] ) {
+				if ( ! is_array( $args['gateway'] ) ) {
+					$where[]    = 'gateway = %s';
+					$prepared[] = $args['gateway'];
+				} else {
+					$where[]  = 'gateway IN ( ' . implode( ', ', array_fill( 0, count( $args['gateway'] ), '%s' ) ) . ' )';
+					$prepared = array_merge( $prepared, $args['gateway'] );
+				}
+			}
+
+			// Filter by gateway environment(s).
+			if ( isset( $args['gateway_environment'] ) && null !== $args['gateway_environment'] ) {
+				if ( ! is_array( $args['gateway_environment'] ) ) {
+					$where[]    = 'gateway_environment = %s';
+					$prepared[] = $args['gateway_environment'];
+				} else {
+					$where[]  = 'gateway_environment IN ( ' . implode( ', ', array_fill( 0, count( $args['gateway_environment'] ), '%s' ) ) . ' )';
+					$prepared = array_merge( $prepared, $args['gateway_environment'] );
+				}
+			}
+
+			// Filter by billing amount(s).
+			if ( isset( $args['total'] ) && null !== $args['total'] ) {
+				if ( ! is_array( $args['total'] ) ) {
+					$where[]    = 'total = %f';
+					$prepared[] = $args['total'];
+				} else {
+					$where[]  = 'total IN ( ' . implode( ', ', array_fill( 0, count( $args['total'] ), '%f' ) ) . ' )';
+					$prepared = array_merge( $prepared, $args['total'] );
+				}
+			}
+
+			// Filter by cycle number(s).
+			// if ( isset( $args['cycle_number'] ) && null !== $args['cycle_number'] ) {
+			// 	if ( ! is_array( $args['cycle_number'] ) ) {
+			// 		$where[]    = 'cycle_number = %d';
+			// 		$prepared[] = $args['cycle_number'];
+			// 	} else {
+			// 		$where[]  = 'cycle_number IN ( ' . implode( ', ', array_fill( 0, count( $args['cycle_number'] ), '%d' ) ) . ' )';
+			// 		$prepared = array_merge( $prepared, $args['cycle_number'] );
+			// 	}
+			// }
+
+			// Filter by cycle period(s).
+			// if ( isset( $args['cycle_period'] ) && null !== $args['cycle_period'] ) {
+			// 	if ( ! is_array( $args['cycle_period'] ) ) {
+			// 		$where[]    = 'cycle_period = %s';
+			// 		$prepared[] = $args['cycle_period'];
+			// 	} else {
+			// 		$where[]  = 'cycle_period IN ( ' . implode( ', ', array_fill( 0, count( $args['cycle_period'] ), '%s' ) ) . ' )';
+			// 		$prepared = array_merge( $prepared, $args['cycle_period'] );
+			// 	}
+			// }
+
+			// Filter by billing limit(s).
+			// if ( isset( $args['billing_limit'] ) && null !== $args['billing_limit'] ) {
+			// 	if ( ! is_array( $args['billing_limit'] ) ) {
+			// 		$where[]    = 'billing_limit = %d';
+			// 		$prepared[] = $args['billing_limit'];
+			// 	} else {
+			// 		$where[]  = 'billing_limit IN ( ' . implode( ', ', array_fill( 0, count( $args['billing_limit'] ), '%d' ) ) . ' )';
+			// 		$prepared = array_merge( $prepared, $args['billing_limit'] );
+			// 	}
+			// }
+
+			// Filter by trial amount(s).
+			// if ( isset( $args['trial_amount'] ) && null !== $args['trial_amount'] ) {
+			// 	if ( ! is_array( $args['trial_amount'] ) ) {
+			// 		$where[]    = 'trial_amount = %f';
+			// 		$prepared[] = $args['trial_amount'];
+			// 	} else {
+			// 		$where[]  = 'trial_amount IN ( ' . implode( ', ', array_fill( 0, count( $args['trial_amount'] ), '%f' ) ) . ' )';
+			// 		$prepared = array_merge( $prepared, $args['trial_amount'] );
+			// 	}
+			// }
+
+			// Filter by trial limit(s).
+			// if ( isset( $args['trial_limit'] ) && null !== $args['trial_limit'] ) {
+			// 	if ( ! is_array( $args['trial_limit'] ) ) {
+			// 		$where[]    = 'trial_limit = %d';
+			// 		$prepared[] = $args['trial_limit'];
+			// 	} else {
+			// 		$where[]  = 'trial_limit IN ( ' . implode( ', ', array_fill( 0, count( $args['trial_limit'] ), '%d' ) ) . ' )';
+			// 		$prepared = array_merge( $prepared, $args['trial_limit'] );
+			// 	}
+			// }
+
+
+			// Maybe filter the data.
+			if ( $where ) {
+				$sql_query .= ' WHERE ' . implode( ' AND ', $where );
+			}
+
+			// Handle the order of data.
+			$sql_query .= ' ORDER BY ' . $orderby;
+
+			// Maybe limit the data.
+			if ( $limit ) {
+				$sql_query .= ' LIMIT %d';
+				$prepared[] = $limit;
+			}
+
+			// Maybe prepare the query.
+			if ( $prepared ) {
+				$sql_query = $wpdb->prepare( $sql_query, $prepared );
+			}
+
+			$member_order_ids = $wpdb->get_col( $sql_query );
+
+			if ( empty( $member_order_ids ) ) {
+				return [];
+			}
+
+			$member_orders = [];
+
+			foreach ( $member_order_ids as $member_order_id ) {
+				$morder = new MemberOrder( $member_order_id );
+
+				// Make sure the subscription object is valid.
+				if ( ! empty( $morder->id ) ) {
+					$member_orders[] = $morder;
+				}
+			}
+
+			return $member_orders;
+
 		}
 
 		/**
@@ -768,6 +1374,17 @@
 				$highestval = $wpdb->get_var("SELECT MAX(checkout_id) FROM $wpdb->pmpro_membership_orders");
 				$this->checkout_id = intval($highestval)+1;
 				$pmpro_checkout_id = $this->checkout_id;
+			}
+
+			if( $this->status !== $this->previous_status ) {
+				
+				/**
+				 * Runs when the order status changes
+				 * 
+				 * @since TBD
+				 */
+				do_action( 'pmpro_order_status_'.$this->status, $this );
+					
 			}
 
 			//build query
