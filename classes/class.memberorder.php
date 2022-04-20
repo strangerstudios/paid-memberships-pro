@@ -8,7 +8,6 @@
 		 *
 		 * @var int
 		 */
-		
 		public $id = 0;
 
 		/**
@@ -387,7 +386,7 @@
 		 *
 		 * @var string
 		 */
-		protected $previous_status = '';
+		protected $original_status = '';
 		
 
 
@@ -409,7 +408,7 @@
 				$morder = $this->getEmptyMemberOrder();	//blank constructor
 			}
 
-			$this->previous_status = $this->status;
+			$this->original_status = $this->status;
 
 			return $morder;
 		}
@@ -1376,14 +1375,17 @@
 				$pmpro_checkout_id = $this->checkout_id;
 			}
 
-			if( $this->status !== $this->previous_status ) {
+			if( $this->status !== $this->original_status ) {
 				
 				/**
 				 * Runs when the order status changes
+				 *
+				 * @param $this object The current member order object
+				 * @param $original_status The original status before changing to the new status
 				 * 
 				 * @since TBD
 				 */
-				do_action( 'pmpro_order_status_'.$this->status, $this );
+				do_action( 'pmpro_order_status_'.$this->status, $this, $this->original_status );
 					
 			}
 
