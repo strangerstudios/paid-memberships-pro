@@ -425,12 +425,28 @@
 			return $morder;
 		}
 
+		/**
+		 * Get a specific order by ID or code
+		 *
+		 * @since TBA
+		 * 
+		 * @param mixed $id Specify an order ID or code that you want to retrieve
+		 *
+		 */
 		public static function get_order( $id = NULL ) {
 
 			return new MemberOrder( $id );
 
 		}
 
+		/**
+		 * Get orders based on various parameters
+		 *
+		 * @since TBA
+		 * 
+		 * @param array $args Specify what you'd like to filter the query by
+		 *
+		 */
 		public static function get_orders( array $args = array() ) {
 
 			global $wpdb;
