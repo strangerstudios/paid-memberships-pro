@@ -1753,18 +1753,18 @@ class PMProGateway_stripe extends PMProGateway {
 	 * Pull subscription info from Stripe.
 	 *
 	 * @param PMPro_Subscription $subscription to pull data for.
+	 *
+	 * @return string|null Error message is returned if update fails.
 	 */
 	public function update_subscription_info( $subscription ) {
 		try {
 			$stripe_subscription = Stripe_Subscription::retrieve( $subscription->get_subscription_transaction_id() );
 		} catch ( \Throwable $e ) {
 			// Assume no subscription found.
-			// TODO: What should we do here?
-			return;
+			return $e->getMessage();
 		} catch ( \Exception $e ) {
 			// Assume no subscription found.
-			// TODO: What should we do here?
-			return;
+			return $e->getMessage();
 		}
 
 		if ( ! empty( $stripe_subscription ) ) {
