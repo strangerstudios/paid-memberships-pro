@@ -1166,8 +1166,17 @@ class PMPro_Subscription {
 	 * @since TBD
 	 */
 	private function maybe_fix_default_migration_data() {
+		// Let's first check if the subscription's data looks like migration data.
+		// If not, then this saves a subscription meta check.
+		if ( ! empty( $this->billing_amount ) || ! empty( $this->cycle_number ) ) {
+			// We have some data, so we don't need to migrate.
+			return;
+		}
+
+		// Even if it looks like we have migration data, we may not need to fix it.
+		// Let's check subscription meta.
 		if ( empty( get_pmpro_subscription_meta( $this->id, 'has_default_migration_data', true ) ) ) {
-			// This subscription has already been populated.
+			// This subscription has already been migrated.
 			return;
 		}
 
