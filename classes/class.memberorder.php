@@ -92,13 +92,26 @@
 		public $couponamount = 0.00;
 
 		/**
-		 * Certificate ID
+		 * Certificate ID - Notice of deprecation started in 1.8.10. Should no longer be used.
 		 *
 		 * @since TBD
 		 *
 		 * @var string
+		 *
+		 * @deprecated 1.8.10
 		 */
 		public $certificate_id = '';
+
+		/**
+		 * Certificate Amount - Notice of deprecation started in 1.8.10. Should no longer be used.
+		 *
+		 * @since TBD
+		 *
+		 * @var string
+		 *
+		 * @deprecated 1.8.10
+		 */
+		public $certificateamount = '';
 
 		/**
 		 * Total order amount
@@ -110,7 +123,7 @@
 		public $total = 0.00;
 
 		/**
-		 * Payment Type
+		 * The gateway name or label used (Stripe, Check etc)
 		 *
 		 * @since TBD
 		 *
@@ -119,7 +132,7 @@
 		public $payment_type = '';
 
 		/**
-		 * Card Type
+		 * The Card Type used (Visa etc)
 		 *
 		 * @since TBD
 		 *
@@ -128,7 +141,7 @@
 		public $cardtype = '';
 
 		/**
-		 * Account or Card Number
+		 * Account or Card Number (only shows last 4 digits)
 		 *
 		 * @since TBD
 		 *
@@ -137,25 +150,25 @@
 		public $accountnumber = '';
 
 		/**
-		 * Card Expiration Month
+		 * Card Expiration Month (02)
 		 *
 		 * @since TBD
 		 *
-		 * @var sring
+		 * @var int
 		 */
 		public $expirationmonth = '';
 
 		/**
-		 * Expiration Year
+		 * Expiration Year (22)
 		 *
 		 * @since TBD
 		 *
-		 * @var string
+		 * @var int
 		 */
 		public $expirationyear = '';
 
 		/**
-		 * Order Status
+		 * The Order Status
 		 *
 		 * @since TBD
 		 *
@@ -164,7 +177,7 @@
 		public $status = '';
 
 		/**
-		 * Gateway ID
+		 * The Gateway identifier (stripe, paypalexpress etc)
 		 *
 		 * @since TBD
 		 *
@@ -173,7 +186,7 @@
 		public $gateway = '';
 
 		/**
-		 * Gateway Environment
+		 * The Gateway Environment (live, sandbox)
 		 *
 		 * @since TBD
 		 *
@@ -182,7 +195,7 @@
 		public $gateway_environment = '';
 
 		/**
-		 * Transaction ID
+		 * The payment Transaction ID
 		 *
 		 * @since TBD
 		 *
@@ -191,7 +204,7 @@
 		public $payment_transaction_id = '';
 
 		/**
-		 * Subscription Transaction ID
+		 * The Subscription Transaction ID
 		 *
 		 * @since TBD
 		 *
@@ -200,7 +213,7 @@
 		public $subscription_transaction_id = '';
 
 		/**
-		 * Timestamp
+		 * The current time the order was created
 		 *
 		 * @since TBD
 		 *
@@ -209,7 +222,7 @@
 		public $timestamp = '';
 
 		/**
-		 * Affiliate ID 
+		 * The Affiliate ID 
 		 *
 		 * @since TBD
 		 *
@@ -218,7 +231,7 @@
 		public $affiliate_id = 0;
 
 		/**
-		 * Affiliate Sub ID
+		 * The Affiliate Sub ID
 		 *
 		 * @since TBD
 		 *
@@ -227,7 +240,7 @@
 		public $affiliate_subid = '';
 
 		/**
-		 * Order notes
+		 * The Order notes
 		 *
 		 * @since TBD
 		 *
@@ -236,7 +249,7 @@
 		public $notes = '';
 
 		/**
-		 * Checkout ID
+		 * The Checkout ID - used to track multiple orders during a single checkout
 		 *
 		 * @since TBD
 		 *
@@ -245,7 +258,7 @@
 		public $checkout_id = '';
 
 		/**
-		 * First Name
+		 * Member First Name
 		 *
 		 * @since TBD
 		 *
@@ -254,7 +267,7 @@
 		public $FirstName = '';
 
 		/**
-		 * Last Name
+		 * Member Last Name
 		 *
 		 * @since TBD
 		 *
@@ -263,7 +276,7 @@
 		public $LastName = '';
 
 		/**
-		 * Address Line 1
+		 * Member Address Line 1
 		 *
 		 * @since TBD
 		 *
@@ -272,7 +285,7 @@
 		public $Address1 = '';
 
 		/**
-		 * Email Address
+		 * The member's Email Address
 		 *
 		 * @since TBD
 		 *
@@ -281,7 +294,7 @@
 		public $Email = '';
 
 		/**
-		 * Card Expiration Date
+		 * Formatted expiration date (02/22)
 		 *
 		 * @since TBD
 		 *
@@ -290,7 +303,7 @@
 		public $ExpirationDate = '';
 
 		/**
-		 * Expiration Date Y-M Format
+		 * Formatted expiration date Y-M Format (02-22)
 		 *
 		 * @since TBD
 		 *
@@ -308,7 +321,7 @@
 		public $nogateway = '';
 
 		/**
-		 * Is Order a Renewal
+		 * Is current order a renewal
 		 *
 		 * @since TBD
 		 *
@@ -317,16 +330,16 @@
 		public $is_renewal = false;
 
 		/**
-		 * Gateway ID
+		 * The gateway object, contains gateway ID and environment
 		 *
 		 * @since TBD
 		 *
-		 * @var string
+		 * @var object
 		 */
 		public $Gateway = '';
 
 		/**
-		 * SQL Query used to retrieve respective Member Order
+		 * SQL Query used to retrieve the current Member Order
 		 *
 		 * @since TBD
 		 *
@@ -335,7 +348,7 @@
 		public $sqlQuery = '';
 
 		/**
-		 * Discount Code
+		 * The discount code used
 		 *
 		 * @since TBD
 		 *
@@ -344,16 +357,16 @@
 		public $discount_code = '';
 
 		/**
-		 * User ???
+		 * ???
 		 *
 		 * @since TBD
 		 *
-		 * @var int
+		 * @var string
 		 */
-		public $user = 0;
+		public $user = '';
 
 		/**
-		 * Membership Level
+		 * Level ID
 		 *
 		 * @since TBD
 		 *
@@ -380,7 +393,7 @@
 		public $datetime = '';
 
 		/**
-		 * Previous Order Status
+		 * The original order status
 		 *
 		 * @since TBD
 		 *
@@ -388,7 +401,6 @@
 		 */
 		protected $original_status = '';
 		
-
 
 		/**
 		 * Constructor
