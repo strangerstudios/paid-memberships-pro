@@ -277,6 +277,17 @@ function pmpro_checkForUpgrades()
  		pmpro_db_delta();
  		pmpro_setOption( 'db_version', '2.71' );
  	}
+
+	 /**
+	 * Version 3.0
+	 * Running pmpro_db_delta to add subscription and subscription meta tables.
+	 */
+	require_once( PMPRO_DIR . "/includes/updates/upgrade_3_0.php" );
+	if( $pmpro_db_version < 3.0 ) {
+		pmpro_db_delta();
+		$pmpro_db_version = pmpro_upgrade_3_0();
+		pmpro_setOption( 'db_version', '3.0' );
+	}
 }
 
 function pmpro_db_delta()
@@ -505,17 +516,18 @@ function pmpro_db_delta()
 			`gateway_environment` varchar(64) NOT NULL,
 			`subscription_transaction_id` varchar(32) NOT NULL,
 			`status` varchar(20) NOT NULL DEFAULT 'active',
-			`startdate` datetime NOT NULL,
+			`startdate` datetime DEFAULT NULL,
 			`enddate` datetime DEFAULT NULL,
 			`next_payment_date` datetime DEFAULT NULL,
-			`billing_amount` decimal(18,8) NOT NULL,
-			`cycle_number` int(11) NOT NULL,
+			`billing_amount` decimal(18,8) NOT NULL DEFAULT '0.00',
+			`cycle_number` int(11) NOT NULL DEFAULT '0',
 			`cycle_period` enum('Day','Week','Month','Year') NOT NULL DEFAULT 'Month',
-			`billing_limit` int(11) NOT NULL,
-			`trial_amount` decimal(18,8) NOT NULL,
-			`trial_limit` int(11) NOT NULL,
+			`billing_limit` int(11) NOT NULL DEFAULT '0',
+			`trial_amount` decimal(18,8) NOT NULL DEFAULT '0.00',
+			`trial_limit` int(11) NOT NULL DEFAULT '0',
 			`modified` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 			PRIMARY KEY (`id`),
+			UNIQUE KEY `subscription_link` (`subscription_transaction_id`, `gateway_environment`, `gateway`),
 			KEY `user_id` (`user_id`),
 			KEY `membership_level_id` (`membership_level_id`),
 			KEY `gateway` (`gateway`),

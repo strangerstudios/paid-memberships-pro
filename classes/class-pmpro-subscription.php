@@ -219,6 +219,9 @@ class PMPro_Subscription {
 		if ( ! empty( $subscription_data ) ) {
 			$this->set( $subscription_data );
 		}
+
+		// Check if this subscription has default migration data.
+		$this->maybe_fix_default_migration_data();
 	}
 
 	/**
@@ -1154,6 +1157,84 @@ class PMPro_Subscription {
 		$this->save();
 
 		return $result;
+	}
+
+	/**
+	 * Checks if this subscription has default migration data and,
+	 * if so, fixes it.
+	 *
+	 * @since TBD
+	 */
+	private function maybe_fix_default_migration_data() {
+		// Let's first check if the subscription's data looks like migration data.
+		// If not, then this saves a subscription meta check.
+		if ( ! empty( $this->billing_amount ) || ! empty( $this->cycle_number ) ) {
+			// We have some data, so we don't need to migrate.
+			return;
+		}
+
+		// Even if it looks like we have migration data, we may not need to fix it.
+		// Let's check subscription meta.
+		if ( empty( get_pmpro_subscription_meta( $this->id, 'has_default_migration_data', true ) ) ) {
+			// This subscription has already been migrated.
+			return;
+		}
+
+		/*
+		 * The following data should already be correct from the migration:
+		 * id, user_id, membership_level_id, gateway, gateway_environment, subscription_transaction_id, status.
+		 *
+		 * In order to populate the rest of the subscription data, we need to guess at the
+		 * biling_amount, cycle_number, cycle_period, billing_limit, trial_amount, and trial_limit.
+		 *
+		 * Our approach for guessing will be as follows:
+		 * 1. Get all previous membership levels for the user (including old membesrhips). Can't use
+		 *        pmpro_get_specific_membership_levels_for_user() because it doesn't include
+		 *        old memberships.
+		 * 2. Loop through membership levels in reverse (most recent first).
+		 * 3. If we find a membership level that matches the subscription level and is recurring,
+		 *	      then let's assume that this is the membership level that the subscription was
+		 *        created for.
+		 * 4. If we do not find a membership level that matches the subscription level and is recurring,
+		 *       then let's use the default membership level settings if it is recurring.
+		*/
+		$all_user_levels = pmpro_getMembershipLevelsForUser( $this->user_id, true ); // True to include old memberships.
+		// Looping through $all_user_levels backwards to get the most recent first.
+		for ( end( $all_user_levels ); key( $all_user_levels ) !== null; prev( $all_user_levels ) ) {
+			$level_check = current( $all_user_levels );
+
+			// Let's check if level the same level as this subscription and if it's a recurring level.
+			if ( $level_check->id == $this->membership_level_id && pmpro_isLevelRecurring( $level_check ) ) {
+				$subscription_level = $level_check;
+				break;
+			}
+		}
+
+		// If the user hasn't had a recurring membership for this level,
+		// pull from the level settings instead.
+		if ( empty( $subscription_level ) ) {
+			$level = pmpro_getLevel( $this->membership_level_id );
+			if ( ! empty( $level ) && pmpro_isLevelRecurring( $level ) ) {
+				$subscription_level = $level;
+			}
+		}
+
+		// If we have found a level, let's fill in the subscription.
+		// Otherwise, we'll just have to hope the data can be pulled from the gateway.
+		if ( ! empty( $subscription_level ) ) {
+			$this->billing_amount = $subscription_level->billing_amount;
+			$this->cycle_number   = $subscription_level->cycle_number;
+			$this->cycle_period   = $subscription_level->cycle_period;
+			$this->billing_limit  = $subscription_level->billing_limit;
+			$this->trial_amount   = $subscription_level->trial_amount;
+			$this->trial_limit    = $subscription_level->trial_limit;
+		}
+
+		// Now that we have the basic data filled in, the `update()` method will take care of the rest.
+		$saved = $this->update();
+
+		// Mark this subscription as having default migration data.
+		delete_pmpro_subscription_meta( $this->id, 'has_default_migration_data' );
 	}
 
 } // end of class
