@@ -727,13 +727,9 @@ h2.nav-tab-wrapper {
 .memberships_page_pmpro-reports .pmpro_admin .nav-tab-wrapper {
 	margin-bottom: 10px;
 }
-.pmpro_reports-holder { }
-.pmpro_reports-holder .postbox h2 {
-	border-bottom: 1px solid #eee;
-	font-size: 14px;
-	padding: 8px 12px;
-	margin: 0;
-	line-height: 1.4;
+.pmpro_report-holder table.wp-list-table thead th,
+.pmpro_report-holder table.wp-list-table tbody td {
+	padding: 8px 10px;
 }
 .pmpro_clickable {
 	cursor: pointer;
@@ -800,6 +796,7 @@ button.pmpro_report_th_closed:before {
 	background-color: #f6f7f7;
 }
 .pmpro_report-holder .pmpro_report-button {
+	margin-bottom: 0;
 	text-align: center;
 }
 .pmpro_chart_area {
