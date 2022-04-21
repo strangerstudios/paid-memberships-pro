@@ -60,6 +60,16 @@ function pmpro_membership_level_profile_fields($user)
 			$selected_expires_hour = date( 'H', $end_date ? $user->membership_level->enddate : current_time('timestamp') );
 
 			$selected_expires_minute = date( 'i', $end_date ? $user->membership_level->enddate : current_time('timestamp') );
+
+		$last_order = new MemberOrder();
+
+		$last_order->getLastMemberOrder( $user->ID );
+
+		$allows_refunds = false;
+
+		if( pmpro_allowed_refunds( $last_order ) ) {
+			$allows_refunds = true;
+		}
 		?>
 		<tr>
 			<th><label for="expiration"><?php esc_html_e("Expires", 'paid-memberships-pro' ); ?></label></th>
@@ -118,6 +128,12 @@ function pmpro_membership_level_profile_fields($user)
             <th></th>
             <td>
                 <label for="cancel_subscription"><input value="1" id="cancel_subscription" name="cancel_subscription" type="checkbox"> <?php _e("Cancel this user's subscription at the gateway.", "paid-memberships-pro" ); ?></label>
+            </td>
+        </tr>
+         <tr class="more_level_options">
+            <th></th>
+            <td>
+                <label for="refund_last_subscription"><input value="1" id="refund_last_subscription" name="refund_last_subscription" type="checkbox"<?php disabled( !$allows_refunds ); ?>> <?php esc_html_e("Refund this user's most recent order.", "paid-memberships-pro" ); ?></label>
             </td>
         </tr>
 		<?php
@@ -355,6 +371,30 @@ function pmpro_membership_level_profile_fields_update()
 			$pmproemail->sendAdminChangeEmail(get_userdata($user_ID));
 		}
 	}
+
+	//Refund their most recent subscription
+	if( !empty( $_REQUEST['refund_last_subscription'] ) ) {
+
+		$order = new MemberOrder();
+
+		//We need to get a different order if we already cancelled it on the profile edit page.
+		if( !empty( $_REQUEST['cancel_subscription'] ) ){
+			$order_status = 'cancelled';
+		} else {
+			$order_status = 'success';
+		}
+
+		$order->getLastMemberOrder( $user_ID, $order_status );
+
+		if( !empty( $order ) && !empty( $order->id ) ) {				
+
+			//Gateways that we want to support this can run the action from their own class.
+			pmpro_refund_order( $order );
+
+		}
+
+	}
+
 }
 add_action( 'show_user_profile', 'pmpro_membership_level_profile_fields' );
 add_action( 'edit_user_profile', 'pmpro_membership_level_profile_fields' );

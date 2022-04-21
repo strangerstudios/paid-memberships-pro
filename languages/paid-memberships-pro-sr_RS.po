@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2022-03-01T15:06:56+00:00\n"
+"POT-Creation-Date: 2022-04-19T13:21:12+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.6.0\n"
 "X-Domain: paid-memberships-pro\n"
@@ -288,6 +288,7 @@ msgstr "Izvještaji"
 #: adminpages/discountcodes.php:884
 #: classes/class-pmpro-site-health.php:77
 #: adminpages/orders.php:970
+#: adminpages/orders.php:971
 msgid "Orders"
 msgstr "Narudžbe"
 
@@ -355,6 +356,7 @@ msgstr "Trenutni Nivo"
 #: includes/metaboxes.php:19
 #: classes/class.pmproemail.php:888
 #: classes/class.pmproemail.php:933
+#: adminpages/orders.php:587
 msgid "None"
 msgstr "Nijedan"
 
@@ -375,6 +377,7 @@ msgstr "Korisnik ne plaća."
 #: adminpages/discountcodes.php:788
 #: includes/profile.php:65
 #: adminpages/dashboard.php:228
+#: adminpages/reports/login.php:187
 msgid "Expires"
 msgstr "Ističe"
 
@@ -413,6 +416,7 @@ msgstr "Ističe"
 #: adminpages/advancedsettings.php:494
 #: classes/gateways/class.pmprogateway_stripe.php:404
 #: classes/gateways/class.pmprogateway_stripe.php:418
+#: adminpages/paymentsettings.php:279
 msgid "No"
 msgstr "Ne"
 
@@ -443,12 +447,15 @@ msgstr "Ne"
 #: adminpages/advancedsettings.php:412
 #: classes/gateways/class.pmprogateway_stripe.php:406
 #: classes/gateways/class.pmprogateway_stripe.php:420
+#: adminpages/paymentsettings.php:280
 msgid "Yes"
 msgstr "Da"
 
 #: includes/functions.php:196
 #: includes/functions.php:393
 #: includes/functions.php:509
+#: includes/functions.php:397
+#: includes/functions.php:515
 #, php-format
 msgid "The price for membership is <strong>%s</strong> now"
 msgstr "Cijena članstva je <strong>%s</strong> sada"
@@ -481,12 +488,14 @@ msgstr "a onda <strong> %s svaki %d %s</strong>."
 #: includes/functions.php:241
 #: pages/levels.php:82
 #: includes/functions.php:446
+#: includes/functions.php:450
 msgid "After your initial payment, your first payment is Free."
 msgstr "Naredna uplaata nakon vaše početne uplate je besplatna"
 
 #: includes/functions.php:245
 #: pages/levels.php:86
 #: includes/functions.php:448
+#: includes/functions.php:452
 #, php-format
 msgid "After your initial payment, your first %d payments are Free."
 msgstr "Poslije vaše prvobitne uplate, vaša naredna %d uplata je Besplatna."
@@ -494,6 +503,7 @@ msgstr "Poslije vaše prvobitne uplate, vaša naredna %d uplata je Besplatna."
 #: includes/functions.php:252
 #: pages/levels.php:93
 #: includes/functions.php:452
+#: includes/functions.php:456
 #, php-format
 msgid "After your initial payment, your first payment will cost %s."
 msgstr "Nakon vaše prvobitne uplate, vaša naredna uplata će da iznosi %s."
@@ -516,12 +526,15 @@ msgstr "Članstvo ističe nakon %d %s."
 
 #: includes/functions.php:517
 #: includes/functions.php:979
+#: includes/functions.php:986
 msgid "User ID not found."
 msgstr "Korisnički ID nije pronađen."
 
 #: includes/functions.php:534
 #: includes/functions.php:1003
 #: includes/functions.php:1011
+#: includes/functions.php:1010
+#: includes/functions.php:1018
 msgid "Invalid level."
 msgstr "Nevažećo nivo."
 
@@ -533,6 +546,7 @@ msgstr "Ne mijenjate?"
 #: includes/functions.php:609
 #: includes/functions.php:618
 #: includes/functions.php:1085
+#: includes/functions.php:1092
 msgid "Error interacting with database"
 msgstr "Greška u interakciji sa bazom podataka."
 
@@ -542,18 +556,22 @@ msgstr "Greška u interakciji sa bazom podataka."
 #: includes/functions.php:1342
 #: includes/functions.php:1335
 #: includes/functions.php:1373
+#: includes/functions.php:1343
+#: includes/functions.php:1382
 msgid "Membership level not found."
 msgstr "Nivo Članstva nije pronađen."
 
 #: includes/functions.php:1080
 #: includes/functions.php:1731
 #: includes/functions.php:1762
+#: includes/functions.php:1776
 msgid "The discount code could not be found."
 msgstr "Kod za popust nije pronađen."
 
 #: includes/functions.php:1096
 #: includes/functions.php:1746
 #: includes/functions.php:1777
+#: includes/functions.php:1791
 #, php-format
 msgid "This discount code goes into effect on %s."
 msgstr "Kod za popust važi za %s"
@@ -561,6 +579,7 @@ msgstr "Kod za popust važi za %s"
 #: includes/functions.php:1105
 #: includes/functions.php:1753
 #: includes/functions.php:1784
+#: includes/functions.php:1798
 #, php-format
 msgid "This discount code expired on %s."
 msgstr "Kod za popust je istekao %s."
@@ -568,30 +587,35 @@ msgstr "Kod za popust je istekao %s."
 #: includes/functions.php:1117
 #: includes/functions.php:1762
 #: includes/functions.php:1793
+#: includes/functions.php:1807
 msgid "This discount code is no longer valid."
 msgstr "Kod za popust nije više važeći."
 
 #: includes/functions.php:1132
 #: includes/functions.php:1781
 #: includes/functions.php:1812
+#: includes/functions.php:1826
 msgid "This discount code does not apply to this membership level."
 msgstr "Kod za popust ne važi za ovaj nivo članstva."
 
 #: includes/functions.php:1140
 #: includes/functions.php:1819
 #: includes/functions.php:1850
+#: includes/functions.php:1864
 msgid "This discount code is okay."
 msgstr "Kod za popust je važeći."
 
 #: includes/functions.php:1164
 #: includes/functions.php:1847
 #: includes/functions.php:1878
+#: includes/functions.php:1894
 msgid "and"
 msgstr "i"
 
 #: includes/functions.php:1349
 #: includes/functions.php:2409
 #: includes/functions.php:2440
+#: includes/functions.php:2460
 msgid "Sign Up for !!name!! Now"
 msgstr "Prijavite Se za !!name!! Sada"
 
@@ -672,6 +696,8 @@ msgstr "Članstvo ističe"
 #: classes/class.pmproemail.php:440
 #: classes/class.pmproemail.php:762
 #: classes/class.pmproemail.php:764
+#: adminpages/orders.php:576
+#: adminpages/orders.php:1343
 msgid "Discount Code"
 msgstr "Kod za Popust"
 
@@ -685,6 +711,7 @@ msgstr "Kod za Popust"
 #: pages/checkout.php:230
 #: pages/confirmation.php:78
 #: pages/invoice.php:68
+#: pages/billing.php:162
 msgid "Billing Address"
 msgstr "Adresa za naplatu"
 
@@ -694,6 +721,7 @@ msgstr "Adresa za naplatu"
 #: pages/billing.php:96
 #: pages/confirmation.php:95
 #: pages/invoice.php:85
+#: pages/billing.php:98
 msgid "Payment Method"
 msgstr "Metoda plaćanja"
 
@@ -713,6 +741,7 @@ msgstr "Ukupno naplaćeno"
 #: pages/billing.php:98
 #: pages/confirmation.php:97
 #: pages/invoice.php:87
+#: pages/billing.php:100
 msgid "ending in"
 msgstr "Ističe za"
 
@@ -725,12 +754,14 @@ msgstr "Ističe za"
 #: pages/confirmation.php:99
 #: pages/invoice.php:89
 #: shortcodes/pmpro_account.php:44
+#: pages/billing.php:102
 msgid "Expiration"
 msgstr "Isticanje"
 
 #: pages/invoice.php:79
 #: includes/functions.php:2842
 #: includes/functions.php:2873
+#: includes/functions.php:2895
 msgid "Subtotal"
 msgstr "Suma stavke"
 
@@ -742,12 +773,15 @@ msgstr "Suma stavke"
 #: adminpages/orders.php:615
 #: includes/functions.php:2880
 #: adminpages/orders.php:610
+#: adminpages/orders.php:611
+#: includes/functions.php:2902
 msgid "Tax"
 msgstr "Porez"
 
 #: pages/invoice.php:82
 #: includes/functions.php:2857
 #: includes/functions.php:2888
+#: includes/functions.php:2910
 msgid "Coupon"
 msgstr "Kupon"
 
@@ -766,6 +800,9 @@ msgstr "Kupon"
 #: adminpages/orders.php:645
 #: adminpages/orders.php:1336
 #: adminpages/dashboard.php:295
+#: adminpages/orders.php:646
+#: adminpages/orders.php:1337
+#: includes/functions.php:2931
 msgid "Total"
 msgstr "Ukupno"
 
@@ -785,6 +822,8 @@ msgstr "Ukupno"
 #: adminpages/orders.php:827
 #: adminpages/orders.php:1341
 #: adminpages/dashboard.php:297
+#: adminpages/orders.php:828
+#: adminpages/orders.php:1342
 msgid "Date"
 msgstr "Datum"
 
@@ -808,6 +847,8 @@ msgstr "Faktura nije pronađena"
 #: pages/billing.php:131
 #: pages/confirmation.php:149
 #: pages/invoice.php:155
+#: pages/billing.php:127
+#: pages/billing.php:133
 msgid "View Your Membership Account &rarr;"
 msgstr "Pregled vašeg naloga članstva &rarr;"
 
@@ -847,18 +888,22 @@ msgstr "Vaše članstvo je <strong>aktivno</strong>."
 #: adminpages/orders.php:1335
 #: adminpages/dashboard.php:226
 #: adminpages/dashboard.php:294
+#: adminpages/orders.php:1336
+#: adminpages/reports/login.php:185
 msgid "Level"
 msgstr "Nivo"
 
 #: pages/account.php:14
 #: pages/billing.php:18
 #: pages/billing.php:72
+#: pages/billing.php:73
 msgid "Membership Fee"
 msgstr "Provizija za Članstvo"
 
 #: pages/account.php:25
 #: pages/billing.php:29
 #: pages/billing.php:89
+#: pages/billing.php:90
 msgid "Duration"
 msgstr "Trajanje"
 
@@ -890,6 +935,7 @@ msgstr "Moj Nalog"
 #: adminpages/dashboard.php:223
 #: adminpages/dashboard.php:225
 #: classes/class.memberorder.php:1003
+#: adminpages/reports/login.php:183
 msgid "Username"
 msgstr "Korisničko Ime"
 
@@ -909,6 +955,9 @@ msgstr "Korisničko Ime"
 #: includes/profile.php:758
 #: adminpages/orders.php:1437
 #: adminpages/orders.php:1440
+#: adminpages/orders.php:392
+#: adminpages/orders.php:1438
+#: adminpages/orders.php:1441
 msgid "Email"
 msgstr ""
 
@@ -1047,6 +1096,7 @@ msgstr "Potvrdite Lozinku"
 #: pages/billing.php:294
 #: pages/checkout.php:164
 #: pages/checkout.php:334
+#: pages/billing.php:298
 msgid "Email Address"
 msgstr "E-mail Adresa"
 
@@ -1073,6 +1123,7 @@ msgstr "Prijavljeni ste kao <strong>%s</strong>. Ako želite da koristite drugi 
 
 #: pages/checkout.php:288
 #: pages/checkout.php:476
+#: pages/checkout.php:478
 #, php-format
 msgid "I agree to the %s"
 msgstr "Saglasan sam sa %s"
@@ -1105,6 +1156,7 @@ msgstr "Platite sa Paypal"
 #: pages/checkout.php:234
 #: includes/profile.php:759
 #: includes/profile.php:755
+#: pages/billing.php:166
 msgid "First Name"
 msgstr "Ime"
 
@@ -1115,6 +1167,7 @@ msgstr "Ime"
 #: pages/checkout.php:238
 #: includes/profile.php:760
 #: includes/profile.php:756
+#: pages/billing.php:170
 msgid "Last Name"
 msgstr "Prezime"
 
@@ -1122,6 +1175,7 @@ msgstr "Prezime"
 #: pages/billing.php:73
 #: pages/billing.php:174
 #: pages/checkout.php:242
+#: pages/billing.php:176
 msgid "Address 1"
 msgstr "Adresa 1"
 
@@ -1129,6 +1183,7 @@ msgstr "Adresa 1"
 #: pages/billing.php:77
 #: pages/billing.php:178
 #: pages/checkout.php:246
+#: pages/billing.php:180
 msgid "Address 2"
 msgstr "Adresa 2"
 
@@ -1136,6 +1191,7 @@ msgstr "Adresa 2"
 #: pages/billing.php:87
 #: pages/billing.php:188
 #: pages/checkout.php:253
+#: pages/billing.php:191
 msgid "City"
 msgstr "Grad"
 
@@ -1143,6 +1199,7 @@ msgstr "Grad"
 #: pages/billing.php:91
 #: pages/billing.php:192
 #: pages/checkout.php:257
+#: pages/billing.php:195
 msgid "State"
 msgstr "Oblast"
 
@@ -1150,6 +1207,7 @@ msgstr "Oblast"
 #: pages/billing.php:95
 #: pages/billing.php:196
 #: pages/checkout.php:261
+#: pages/billing.php:199
 msgid "Postal Code"
 msgstr "Poštanski Broj"
 
@@ -1157,6 +1215,7 @@ msgstr "Poštanski Broj"
 #: pages/billing.php:104
 #: pages/billing.php:205
 #: pages/checkout.php:266
+#: pages/billing.php:208
 msgid "City, State Zip"
 msgstr "Grad, Oblast Poštanski broj "
 
@@ -1164,6 +1223,7 @@ msgstr "Grad, Oblast Poštanski broj "
 #: pages/billing.php:157
 #: pages/billing.php:258
 #: pages/checkout.php:303
+#: pages/billing.php:261
 msgid "Country"
 msgstr "Država"
 
@@ -1171,6 +1231,7 @@ msgstr "Država"
 #: pages/billing.php:182
 #: pages/billing.php:283
 #: pages/checkout.php:319
+#: pages/billing.php:287
 msgid "Phone"
 msgstr "Telefon"
 
@@ -1178,6 +1239,7 @@ msgstr "Telefon"
 #: pages/billing.php:197
 #: pages/billing.php:298
 #: pages/checkout.php:341
+#: pages/billing.php:302
 msgid "Confirm Email"
 msgstr "Potvrdite E-mail"
 
@@ -1219,6 +1281,8 @@ msgstr "Informacije o Plaćanju"
 #: classes/gateways/class.pmprogateway_stripe.php:1309
 #: adminpages/orders.php:674
 #: classes/gateways/class.pmprogateway_stripe.php:768
+#: adminpages/orders.php:675
+#: pages/billing.php:338
 msgid "Card Type"
 msgstr "Tip Kartice"
 
@@ -1232,6 +1296,7 @@ msgstr "Tip Kartice"
 #: classes/gateways/class.pmprogateway_stripe.php:1316
 #: classes/gateways/class.pmprogateway_stripe.php:1322
 #: classes/gateways/class.pmprogateway_stripe.php:781
+#: pages/billing.php:377
 msgid "Card Number"
 msgstr "Broj Kartice"
 
@@ -1248,6 +1313,7 @@ msgstr "Broj Kartice"
 #: classes/gateways/class.pmprogateway_stripe.php:1320
 #: classes/gateways/class.pmprogateway_stripe.php:1326
 #: classes/gateways/class.pmprogateway_stripe.php:785
+#: pages/billing.php:381
 msgid "Expiration Date"
 msgstr "Datum Isteka"
 
@@ -1255,6 +1321,7 @@ msgstr "Datum Isteka"
 #: pages/billing.php:281
 #: classes/gateways/class.pmprogateway_braintree.php:503
 #: pages/billing.php:410
+#: pages/billing.php:417
 msgid "CVV"
 msgstr "CVV (Sigurnosni broj)"
 
@@ -1263,11 +1330,13 @@ msgstr "CVV (Sigurnosni broj)"
 #: classes/gateways/class.pmprogateway_braintree.php:504
 #: pages/billing.php:411
 #: pages/checkout.php:425
+#: pages/billing.php:418
 msgid "what's this?"
 msgstr "šta je to?"
 
 #: pages/checkout.php:678
 #: pages/checkout.php:514
+#: pages/checkout.php:526
 msgid "Complete Payment"
 msgstr "Dovršite Plaćanje"
 
@@ -1282,6 +1351,7 @@ msgstr "Podnesite i Platite sa 2CheckOut"
 #: pages/checkout.php:526
 #: classes/gateways/class.pmprogateway_paypalexpress.php:503
 #: classes/gateways/class.pmprogateway_paypalexpress.php:507
+#: pages/checkout.php:538
 msgid "Submit and Check Out"
 msgstr "Podnesite i Platite"
 
@@ -1293,11 +1363,13 @@ msgstr "Podnesite i Platite"
 #: pages/checkout.php:526
 #: classes/gateways/class.pmprogateway_paypalexpress.php:503
 #: classes/gateways/class.pmprogateway_paypalexpress.php:507
+#: pages/checkout.php:538
 msgid "Submit and Confirm"
 msgstr "Podnesite i Potvrdite"
 
 #: pages/checkout.php:698
 #: pages/checkout.php:536
+#: pages/checkout.php:548
 msgid "Processing..."
 msgstr "Obrada..."
 
@@ -1348,6 +1420,9 @@ msgstr "Ispod su detalji o Vašem nalogu i račun za Vašu prvu člansku fakturu
 #: includes/profile.php:433
 #: adminpages/orders.php:1423
 #: adminpages/orders.php:1433
+#: adminpages/orders.php:391
+#: adminpages/orders.php:1424
+#: adminpages/orders.php:1434
 msgid "Print"
 msgstr "Štampaj"
 
@@ -1380,6 +1455,7 @@ msgstr "odjavi se"
 
 #: pages/billing.php:39
 #: pages/billing.php:128
+#: pages/billing.php:130
 msgid "Your payment subscription is managed by PayPal. Please <a href=\"http://www.paypal.com\">login to PayPal here</a> to update your billing information."
 msgstr "Vašom pretplatom upravlja PayPal. Molim Vas <a href=\"http://www.paypal.com\"> prijavite se na PayPal ovdje</a> da ažurirate Vaše informacije o plaćanju."
 
@@ -1387,17 +1463,21 @@ msgstr "Vašom pretplatom upravlja PayPal. Molim Vas <a href=\"http://www.paypal
 #: adminpages/paymentsettings.php:457
 #: adminpages/paymentsettings.php:234
 #: pages/billing.php:179
+#: adminpages/paymentsettings.php:241
+#: pages/billing.php:181
 msgid "optional"
 msgstr "opciono"
 
 #: pages/billing.php:217
 #: pages/billing.php:322
+#: pages/billing.php:326
 #, php-format
 msgid "We accept %s"
 msgstr "Mi prihvatamo %s"
 
 #: pages/billing.php:217
 #: pages/billing.php:321
+#: pages/billing.php:325
 msgid "Credit Card Information"
 msgstr "Informacije o Kreditnoj Kartici"
 
@@ -1411,6 +1491,8 @@ msgstr "Informacije o Kreditnoj Kartici"
 #: pages/billing.php:434
 #: classes/gateways/class.pmprogateway_stripe.php:2651
 #: classes/gateways/class.pmprogateway_stripe.php:2653
+#: classes/gateways/class.pmprogateway_stripe.php:2649
+#: pages/billing.php:441
 msgid "Update"
 msgstr "Ažuriraj"
 
@@ -1431,12 +1513,16 @@ msgstr "Ažuriraj"
 #: includes/profile.php:918
 #: adminpages/orders.php:960
 #: pages/billing.php:436
+#: adminpages/discountcodes.php:729
+#: adminpages/orders.php:961
+#: pages/billing.php:443
 msgid "Cancel"
 msgstr "Otkaži"
 
 #: pages/billing.php:309
 #: pages/billing.php:467
 #: pages/billing.php:477
+#: pages/billing.php:484
 msgid "This subscription is not recurring. So you don't need to update your billing information."
 msgstr "Pretlata se ne ponavlja. Tako da ne treba da ažurirate Vaše informacije o plačanju"
 
@@ -1460,6 +1546,7 @@ msgstr ""
 
 #: pages/levels.php:43
 #: includes/functions.php:396
+#: includes/functions.php:400
 msgid "Free"
 msgstr "Besplatno"
 
@@ -1480,12 +1567,14 @@ msgstr "%s poslije %d %s."
 
 #: pages/levels.php:66
 #: pages/billing.php:78
+#: pages/billing.php:79
 #, php-format
 msgid "%s per %s."
 msgstr "%s po %s."
 
 #: pages/levels.php:70
 #: pages/billing.php:76
+#: pages/billing.php:77
 #, php-format
 msgid "%s every %d %s."
 msgstr "%s svaki %d %s."
@@ -1759,26 +1848,31 @@ msgstr "Nepoznata greška: Početna uplata nije uspijela."
 
 #: classes/gateways/class.pmprogateway_braintree.php:120
 #: classes/gateways/class.pmprogateway_braintree.php:650
+#: classes/gateways/class.pmprogateway_braintree.php:653
 msgid "Error during settlement:"
 msgstr "Greška prilikom namirenja:"
 
 #: classes/gateways/class.pmprogateway_braintree.php:129
 #: classes/gateways/class.pmprogateway_braintree.php:659
+#: classes/gateways/class.pmprogateway_braintree.php:662
 msgid "Error during charge:"
 msgstr "Greška prilikom naplate:"
 
 #: classes/gateways/class.pmprogateway_braintree.php:198
 #: classes/gateways/class.pmprogateway_braintree.php:762
+#: classes/gateways/class.pmprogateway_braintree.php:765
 msgid "Failed to update customer."
 msgstr "Neuspjeh prilikom ažuriranja korisnika."
 
 #: classes/gateways/class.pmprogateway_braintree.php:246
 #: classes/gateways/class.pmprogateway_braintree.php:810
+#: classes/gateways/class.pmprogateway_braintree.php:813
 msgid "Failed to create customer."
 msgstr "Neuspjeh prilikom kreiranja korisnika"
 
 #: classes/gateways/class.pmprogateway_braintree.php:253
 #: classes/gateways/class.pmprogateway_braintree.php:817
+#: classes/gateways/class.pmprogateway_braintree.php:820
 msgid "Error creating customer record with Braintree:"
 msgstr "Greška prilikom kreiranja korisničkog zapisa sa Braintree:"
 
@@ -1796,6 +1890,7 @@ msgstr "Neuspjeh prilikom pretplate na Braintree:"
 #: classes/gateways/class.pmprogateway_stripe.php:344
 #: classes/gateways/class.pmprogateway_stripe.php:354
 #: classes/gateways/class.pmprogateway_braintree.php:1036
+#: classes/gateways/class.pmprogateway_braintree.php:1039
 msgid "Could not find the subscription."
 msgstr "Neuspjeh prilikom potrage za pretplatom."
 
@@ -1851,6 +1946,8 @@ msgstr "Greška prilikom kreiranja korisničkog naloga Stripe:"
 #: classes/gateways/class.pmprogateway_stripe.php:4166
 #: classes/gateways/class.pmprogateway_stripe.php:4163
 #: classes/gateways/class.pmprogateway_stripe.php:4168
+#: classes/gateways/class.pmprogateway_stripe.php:4159
+#: classes/gateways/class.pmprogateway_stripe.php:4164
 msgid "Error creating plan with Stripe:"
 msgstr "Greška prilikom kreiranja plana sa Stripe:"
 
@@ -1869,6 +1966,8 @@ msgstr "Greška prilikom kreiranja plana sa Stripe:"
 #: classes/gateways/class.pmprogateway_stripe.php:4211
 #: classes/gateways/class.pmprogateway_stripe.php:4199
 #: classes/gateways/class.pmprogateway_stripe.php:4213
+#: classes/gateways/class.pmprogateway_stripe.php:4195
+#: classes/gateways/class.pmprogateway_stripe.php:4209
 msgid "Error subscribing customer to plan with Stripe:"
 msgstr "Greška prilikom pretplate korisnika na Stripe:"
 
@@ -1980,6 +2079,10 @@ msgstr "Dodajte Novi Nivo Članstva"
 #: adminpages/discountcodes.php:446
 #: adminpages/discountcodes.php:785
 #: adminpages/orders.php:1331
+#: adminpages/orders.php:1332
+#: adminpages/reports/login.php:182
+#: adminpages/templates/orders-email.php:49
+#: adminpages/templates/orders-print.php:78
 msgid "ID"
 msgstr ""
 
@@ -1990,6 +2093,7 @@ msgstr ""
 #: adminpages/membershiplevels.php:808
 #: adminpages/reports/history.php:184
 #: adminpages/reports/login.php:181
+#: adminpages/reports/login.php:184
 msgid "Name"
 msgstr "Ime"
 
@@ -2052,6 +2156,7 @@ msgstr "Iznost za Plaćanje"
 #: classes/gateways/class.pmprogateway_stripe.php:2700
 #: classes/gateways/class.pmprogateway_stripe.php:2696
 #: classes/gateways/class.pmprogateway_stripe.php:2698
+#: classes/gateways/class.pmprogateway_stripe.php:2694
 msgid "per"
 msgstr "po"
 
@@ -2069,6 +2174,7 @@ msgstr "po"
 #: classes/gateways/class.pmprogateway_stripe.php:2641
 #: classes/gateways/class.pmprogateway_stripe.php:2637
 #: classes/gateways/class.pmprogateway_stripe.php:2639
+#: classes/gateways/class.pmprogateway_stripe.php:2635
 msgid "Day(s)"
 msgstr "Dan(a)"
 
@@ -2086,6 +2192,7 @@ msgstr "Dan(a)"
 #: classes/gateways/class.pmprogateway_stripe.php:2642
 #: classes/gateways/class.pmprogateway_stripe.php:2638
 #: classes/gateways/class.pmprogateway_stripe.php:2640
+#: classes/gateways/class.pmprogateway_stripe.php:2636
 msgid "Week(s)"
 msgstr "Sedmica"
 
@@ -2103,6 +2210,7 @@ msgstr "Sedmica"
 #: classes/gateways/class.pmprogateway_stripe.php:2643
 #: classes/gateways/class.pmprogateway_stripe.php:2639
 #: classes/gateways/class.pmprogateway_stripe.php:2641
+#: classes/gateways/class.pmprogateway_stripe.php:2637
 msgid "Month(s)"
 msgstr "Mjesec(i)"
 
@@ -2120,6 +2228,7 @@ msgstr "Mjesec(i)"
 #: classes/gateways/class.pmprogateway_stripe.php:2644
 #: classes/gateways/class.pmprogateway_stripe.php:2640
 #: classes/gateways/class.pmprogateway_stripe.php:2642
+#: classes/gateways/class.pmprogateway_stripe.php:2638
 msgid "Year(s)"
 msgstr "Godin(a)"
 
@@ -2382,6 +2491,7 @@ msgstr "Poslije"
 #: adminpages/orders.php:1565
 #: adminpages/orders.php:1564
 #: adminpages/orders.php:1556
+#: adminpages/orders.php:1557
 msgid "edit"
 msgstr "uredi"
 
@@ -2413,12 +2523,14 @@ msgstr "Narudžba uspješno obrisana."
 #: adminpages/orders.php:31
 #: adminpages/orders.php:164
 #: adminpages/orders.php:170
+#: adminpages/orders.php:171
 msgid "Error deleting order."
 msgstr "Greška prilikom brisanja narudžbe."
 
 #: adminpages/orders.php:119
 #: adminpages/orders.php:309
 #: adminpages/orders.php:315
+#: adminpages/orders.php:316
 msgid "Order saved successfully."
 msgstr "Narudžba je uspješno sačuvana."
 
@@ -2429,6 +2541,7 @@ msgstr "Greška prilikom ažuriranja vremenske oznake."
 #: adminpages/orders.php:130
 #: adminpages/orders.php:312
 #: adminpages/orders.php:318
+#: adminpages/orders.php:319
 msgid "Error saving order."
 msgstr "Greška prilikom saviranja narudžbe."
 
@@ -2438,12 +2551,14 @@ msgstr "Greška prilikom saviranja narudžbe."
 #: classes/class.memberorder.php:963
 #: adminpages/orders.php:389
 #: classes/class.memberorder.php:1005
+#: adminpages/orders.php:390
 msgid "Order"
 msgstr "Narudžba"
 
 #: adminpages/orders.php:197
 #: adminpages/orders.php:387
 #: adminpages/orders.php:393
+#: adminpages/orders.php:394
 msgid "New Order"
 msgstr "Nova Narudžba"
 
@@ -2453,6 +2568,7 @@ msgstr "Nova Narudžba"
 #: adminpages/orders.php:415
 #: adminpages/orders.php:421
 #: adminpages/discountcodes.php:447
+#: adminpages/orders.php:422
 msgid "This will be generated when you save."
 msgstr "Ovo će da generiše kada sačuvate."
 
@@ -2472,18 +2588,22 @@ msgstr "Ovo će da generiše kada sačuvate."
 #: adminpages/discountcodes.php:786
 #: adminpages/orders.php:1332
 #: adminpages/dashboard.php:292
+#: adminpages/orders.php:429
+#: adminpages/orders.php:1333
 msgid "Code"
 msgstr "Kod"
 
 #: adminpages/orders.php:220
 #: adminpages/orders.php:433
 #: adminpages/orders.php:439
+#: adminpages/orders.php:440
 msgid "Randomly generated for you."
 msgstr "Nasumično generisan za Vas."
 
 #: adminpages/orders.php:225
 #: adminpages/orders.php:438
 #: adminpages/orders.php:444
+#: adminpages/orders.php:445
 msgid "User ID"
 msgstr "Korisnički ID"
 
@@ -2491,6 +2611,7 @@ msgstr "Korisnički ID"
 #: adminpages/emailtemplates.php:130
 #: adminpages/orders.php:451
 #: adminpages/orders.php:457
+#: adminpages/orders.php:458
 msgid "Membership Level ID"
 msgstr "ID Nivoa Članstva"
 
@@ -2498,6 +2619,7 @@ msgstr "ID Nivoa Članstva"
 #: adminpages/orders.php:464
 #: includes/privacy.php:245
 #: adminpages/orders.php:470
+#: adminpages/orders.php:471
 msgid "Billing Name"
 msgstr "Ime za Naplatu"
 
@@ -2505,6 +2627,7 @@ msgstr "Ime za Naplatu"
 #: adminpages/orders.php:478
 #: includes/privacy.php:249
 #: adminpages/orders.php:484
+#: adminpages/orders.php:485
 msgid "Billing Street"
 msgstr "Ime Ulice za Naplatu"
 
@@ -2531,6 +2654,7 @@ msgstr "Ime Oblasti za Naplatu"
 #: includes/privacy.php:360
 #: adminpages/orders.php:523
 #: adminpages/orders.php:521
+#: adminpages/orders.php:522
 msgid "Billing Postal Code"
 msgstr "Poštanski broj"
 
@@ -2540,6 +2664,7 @@ msgstr "Poštanski broj"
 #: includes/privacy.php:362
 #: adminpages/orders.php:536
 #: adminpages/orders.php:533
+#: adminpages/orders.php:534
 msgid "Billing Country"
 msgstr "Ime Države za Naplatu"
 
@@ -2548,6 +2673,7 @@ msgstr "Ime Države za Naplatu"
 #: includes/privacy.php:269
 #: adminpages/orders.php:550
 #: adminpages/orders.php:546
+#: adminpages/orders.php:547
 msgid "Billing Phone"
 msgstr "Broj Telefona za Naplatu"
 
@@ -2556,6 +2682,7 @@ msgstr "Broj Telefona za Naplatu"
 #: includes/privacy.php:273
 #: adminpages/orders.php:602
 #: adminpages/orders.php:597
+#: adminpages/orders.php:598
 msgid "Sub Total"
 msgstr "Ukupna Suma"
 
@@ -2564,6 +2691,7 @@ msgstr "Ukupna Suma"
 #: includes/privacy.php:281
 #: adminpages/orders.php:632
 #: adminpages/orders.php:627
+#: adminpages/orders.php:628
 msgid "Coupon Amount"
 msgstr "Iznos Kupona"
 
@@ -2576,6 +2704,7 @@ msgstr "Trebalo bi da bude ukupna suma + porez - iznoskupona"
 #: includes/privacy.php:289
 #: adminpages/orders.php:664
 #: adminpages/orders.php:659
+#: adminpages/orders.php:660
 msgid "Payment Type"
 msgstr "Tip Plaćanja"
 
@@ -2583,6 +2712,7 @@ msgstr "Tip Plaćanja"
 #: adminpages/orders.php:669
 #: adminpages/orders.php:675
 #: adminpages/orders.php:670
+#: adminpages/orders.php:671
 msgid "e.g. PayPal Express, PayPal Standard, Credit Card."
 msgstr "npr. PayPal Express, PayPal Standard, Credit Card."
 
@@ -2590,6 +2720,7 @@ msgstr "npr. PayPal Express, PayPal Standard, Credit Card."
 #: adminpages/orders.php:683
 #: adminpages/orders.php:689
 #: adminpages/orders.php:684
+#: adminpages/orders.php:685
 msgid "e.g. Visa, MasterCard, AMEX, etc"
 msgstr "npr.  Visa, MasterCard, AMEX, etc"
 
@@ -2600,12 +2731,14 @@ msgstr "npr.  Visa, MasterCard, AMEX, etc"
 #: includes/privacy.php:297
 #: adminpages/orders.php:693
 #: adminpages/orders.php:688
+#: adminpages/orders.php:689
 msgid "Account Number"
 msgstr "Broj Računa"
 
 #: adminpages/orders.php:353
 #: adminpages/orders.php:698
 #: adminpages/orders.php:704
+#: adminpages/orders.php:699
 msgid "Obscure all but last 4 digits."
 msgstr "Sve nejasno sem posljednje 4 cifre."
 
@@ -2615,6 +2748,8 @@ msgstr "Sve nejasno sem posljednje 4 cifre."
 #: includes/privacy.php:301
 #: adminpages/orders.php:713
 #: adminpages/orders.php:724
+#: adminpages/orders.php:708
+#: adminpages/orders.php:719
 msgid "Expiration Month"
 msgstr "Mjesec Isteka"
 
@@ -2622,6 +2757,7 @@ msgstr "Mjesec Isteka"
 #: adminpages/orders.php:726
 #: includes/privacy.php:305
 #: adminpages/orders.php:732
+#: adminpages/orders.php:727
 msgid "Expiration Year"
 msgstr "Godina Isteka"
 
@@ -2645,6 +2781,7 @@ msgstr "Godina Isteka"
 #: adminpages/orders.php:735
 #: adminpages/orders.php:1340
 #: adminpages/dashboard.php:296
+#: adminpages/orders.php:1341
 msgid "Status"
 msgstr "Status"
 
@@ -2659,6 +2796,7 @@ msgstr "Status"
 #: adminpages/orders.php:757
 #: adminpages/orders.php:1338
 #: classes/class.memberorder.php:1006
+#: adminpages/orders.php:1339
 msgid "Gateway"
 msgstr "Prolaz za Plaćanje"
 
@@ -2685,6 +2823,7 @@ msgstr "Plati Čekom"
 #: includes/privacy.php:317
 #: adminpages/orders.php:787
 #: adminpages/orders.php:780
+#: adminpages/paymentsettings.php:155
 msgid "Gateway Environment"
 msgstr "Okruženje Prolaza za Ppla ćanje"
 
@@ -2697,6 +2836,8 @@ msgstr "Okruženje Prolaza za Ppla ćanje"
 #: classes/class-pmpro-site-health.php:206
 #: adminpages/orders.php:788
 #: classes/class-pmpro-site-health.php:210
+#: adminpages/paymentsettings.php:159
+#: classes/class-pmpro-site-health.php:213
 msgid "Sandbox/Testing"
 msgstr "Sandbox/Testiranje"
 
@@ -2709,6 +2850,8 @@ msgstr "Sandbox/Testiranje"
 #: classes/class-pmpro-site-health.php:207
 #: adminpages/orders.php:789
 #: classes/class-pmpro-site-health.php:211
+#: adminpages/paymentsettings.php:160
+#: classes/class-pmpro-site-health.php:214
 msgid "Live/Production"
 msgstr "Uživo/Produkcija"
 
@@ -2741,6 +2884,7 @@ msgstr "ID Transakcije za Pretplatu"
 #: adminpages/orders.php:824
 #: adminpages/orders.php:830
 #: adminpages/orders.php:822
+#: adminpages/orders.php:823
 msgid "Generated by the gateway. Useful to cross reference subscriptions."
 msgstr ""
 
@@ -2748,6 +2892,7 @@ msgstr ""
 #: adminpages/orders.php:874
 #: adminpages/orders.php:880
 #: adminpages/orders.php:872
+#: adminpages/orders.php:873
 msgid "Affiliate ID"
 msgstr "ID Partnera (Affiliate)"
 
@@ -2755,6 +2900,7 @@ msgstr "ID Partnera (Affiliate)"
 #: adminpages/orders.php:887
 #: adminpages/orders.php:893
 #: adminpages/orders.php:885
+#: adminpages/orders.php:886
 msgid "Affiliate SubID"
 msgstr "SubID Partnera ( Affiliate)"
 
@@ -2762,6 +2908,7 @@ msgstr "SubID Partnera ( Affiliate)"
 #: adminpages/orders.php:923
 #: adminpages/orders.php:929
 #: adminpages/orders.php:921
+#: adminpages/orders.php:922
 msgid "Notes"
 msgstr "Belješke"
 
@@ -2769,6 +2916,7 @@ msgstr "Belješke"
 #: adminpages/orders.php:961
 #: adminpages/orders.php:967
 #: adminpages/orders.php:959
+#: adminpages/orders.php:960
 msgid "Save Order"
 msgstr "Sačuvaj Narudžbu"
 
@@ -2776,6 +2924,7 @@ msgstr "Sačuvaj Narudžbu"
 #: adminpages/orders.php:973
 #: adminpages/orders.php:979
 #: adminpages/orders.php:971
+#: adminpages/orders.php:972
 msgid "Add New Order"
 msgstr "Dodaj Novu Narudžbu"
 
@@ -2785,6 +2934,7 @@ msgstr "Dodaj Novu Narudžbu"
 #: adminpages/orders.php:994
 #: adminpages/orders.php:1000
 #: adminpages/orders.php:992
+#: adminpages/orders.php:993
 msgid "Export to CSV"
 msgstr "Izvedi do CSV"
 
@@ -2796,6 +2946,8 @@ msgstr "Izvedi do CSV"
 #: adminpages/orders.php:1259
 #: adminpages/orders.php:1248
 #: adminpages/orders.php:1251
+#: adminpages/orders.php:1249
+#: adminpages/orders.php:1252
 msgid "Search Orders"
 msgstr "Pretraži Narudžbe"
 
@@ -2803,6 +2955,7 @@ msgstr "Pretraži Narudžbe"
 #: adminpages/orders.php:1326
 #: adminpages/orders.php:1332
 #: adminpages/orders.php:1324
+#: adminpages/orders.php:1325
 #, php-format
 msgid "%d orders found."
 msgstr "%d pronađene narudžbe"
@@ -2817,6 +2970,7 @@ msgstr "%d pronađene narudžbe"
 #: adminpages/orders.php:1341
 #: adminpages/orders.php:1333
 #: adminpages/dashboard.php:293
+#: adminpages/orders.php:1334
 msgid "User"
 msgstr "Korisnik"
 
@@ -2828,6 +2982,8 @@ msgstr "Korisnik"
 #: adminpages/orders.php:1539
 #: adminpages/orders.php:1337
 #: adminpages/orders.php:1531
+#: adminpages/orders.php:1338
+#: adminpages/orders.php:1532
 msgid "Payment"
 msgstr "Plaćanje"
 
@@ -2835,6 +2991,7 @@ msgstr "Plaćanje"
 #: adminpages/orders.php:1341
 #: adminpages/orders.php:1347
 #: adminpages/orders.php:1339
+#: adminpages/orders.php:1340
 msgid "Transaction IDs"
 msgstr "Transakcijski ID"
 
@@ -2852,6 +3009,8 @@ msgstr "Transakcijski ID"
 #: adminpages/orders.php:1487
 #: adminpages/dashboard.php:321
 #: adminpages/dashboard.php:336
+#: adminpages/orders.php:1476
+#: adminpages/orders.php:1488
 msgid "deleted"
 msgstr "obrisano"
 
@@ -2859,6 +3018,7 @@ msgstr "obrisano"
 #: adminpages/orders.php:1471
 #: adminpages/orders.php:1548
 #: adminpages/orders.php:1540
+#: adminpages/orders.php:1541
 msgid "Subscription"
 msgstr "Pretplata"
 
@@ -2867,6 +3027,7 @@ msgstr "Pretplata"
 #: adminpages/orders.php:1372
 #: adminpages/orders.php:1375
 #: adminpages/orders.php:1367
+#: adminpages/orders.php:1368
 #, php-format
 msgid "Deleting orders is permanent and can affect active users. Are you sure you want to delete order %s?"
 msgstr "Brisanje narudžbi je trajno i može da utiče na aktivne korisnike. Da li ste sigurni da želite da obrišete narudžbu %s?"
@@ -2879,6 +3040,7 @@ msgstr "Brisanje narudžbi je trajno i može da utiče na aktivne korisnike. Da 
 #: adminpages/orders.php:1576
 #: adminpages/orders.php:1568
 #: adminpages/dashboard.php:304
+#: adminpages/orders.php:1569
 msgid "No orders found."
 msgstr "Nijedna narudžba nije pronađena"
 
@@ -2896,6 +3058,8 @@ msgstr "Nijedna narudžba nije pronađena"
 #: adminpages/orders.php:1012
 #: adminpages/reports/sales.php:311
 #: classes/class-pmpro-members-list-table.php:651
+#: adminpages/orders.php:1013
+#: classes/class-pmpro-members-list-table.php:657
 msgid "Show"
 msgstr "Prikaži"
 
@@ -2915,6 +3079,8 @@ msgstr "Prikaži"
 #: classes/class.pmproemail.php:195
 #: classes/class.pmproemail.php:235
 #: classes/class-pmpro-members-list-table.php:653
+#: adminpages/reports/login.php:106
+#: classes/class-pmpro-members-list-table.php:659
 msgid "All Levels"
 msgstr "Svi Nivoi"
 
@@ -2924,6 +3090,7 @@ msgstr "Svi Nivoi"
 #: classes/class-pmpro-members-list-table.php:236
 #: classes/class-pmpro-members-list-table.php:636
 #: classes/class-pmpro-members-list-table.php:665
+#: classes/class-pmpro-members-list-table.php:671
 msgid "Old Members"
 msgstr "Stari Članovi"
 
@@ -2932,6 +3099,7 @@ msgstr "Stari Članovi"
 #: adminpages/memberslist.php:28
 #: adminpages/reports/history.php:115
 #: adminpages/reports/history.php:119
+#: adminpages/reports/login.php:127
 msgid "Search Members"
 msgstr "Pretraži Članove"
 
@@ -2960,6 +3128,7 @@ msgstr "Provizija"
 #: adminpages/reports/login.php:183
 #: adminpages/dashboard.php:225
 #: adminpages/dashboard.php:227
+#: adminpages/reports/login.php:186
 msgid "Joined"
 msgstr "Učlanjen"
 
@@ -2986,6 +3155,7 @@ msgstr "Nikad"
 #: adminpages/dashboard.php:232
 #: classes/class-pmpro-members-list-table.php:225
 #: adminpages/dashboard.php:234
+#: adminpages/reports/login.php:266
 msgid "No members found."
 msgstr "Nijedan član nije pronađen."
 
@@ -2995,6 +3165,7 @@ msgstr "Nijedan član nije pronađen."
 #: adminpages/reports/login.php:263
 #: classes/class-pmpro-members-list-table.php:228
 #: classes/class-pmpro-members-list-table.php:227
+#: adminpages/reports/login.php:266
 msgid "Search all levels"
 msgstr "Pretraži sve nivoe."
 
@@ -3008,12 +3179,14 @@ msgstr "Vaše informacije o plaćanju su ažurirane."
 #: adminpages/paymentsettings.php:112
 #: adminpages/paymentsettings.php:127
 #: classes/class-pmpro-site-health.php:69
+#: adminpages/paymentsettings.php:132
 msgid "Payment Gateway"
 msgstr "Prolazi za Plaćanje (npr. PayPal)"
 
 #: adminpages/paymentsettings.php:150
 #: adminpages/paymentsettings.php:112
 #: adminpages/paymentsettings.php:248
+#: adminpages/paymentsettings.php:261
 msgid "SSL Settings"
 msgstr "SSL Postavke"
 
@@ -3138,11 +3311,13 @@ msgstr ""
 
 #: adminpages/paymentsettings.php:400
 #: adminpages/paymentsettings.php:199
+#: adminpages/paymentsettings.php:206
 msgid "Currency"
 msgstr "Valuta"
 
 #: adminpages/paymentsettings.php:420
 #: adminpages/paymentsettings.php:220
+#: adminpages/paymentsettings.php:227
 msgid "Accepted Credit Card Types"
 msgstr "Odobreni Tipovi Kreditnih kartica"
 
@@ -3176,21 +3351,25 @@ msgstr "Stripe nije potrbna polja za adresu za plaćanje"
 
 #: adminpages/paymentsettings.php:457
 #: adminpages/paymentsettings.php:234
+#: adminpages/paymentsettings.php:241
 msgid "Sales Tax"
 msgstr "Porez Na Prodaju"
 
 #: adminpages/paymentsettings.php:460
 #: adminpages/paymentsettings.php:237
+#: adminpages/paymentsettings.php:244
 msgid "Tax State"
 msgstr "Stanje Poreza"
 
 #: adminpages/paymentsettings.php:461
 #: adminpages/paymentsettings.php:238
+#: adminpages/paymentsettings.php:245
 msgid "abbreviation, e.g. \"PA\""
 msgstr ""
 
 #: adminpages/paymentsettings.php:463
 #: adminpages/paymentsettings.php:240
+#: adminpages/paymentsettings.php:247
 msgid "decimal, e.g. \"0.06\""
 msgstr ""
 
@@ -3200,16 +3379,19 @@ msgstr ""
 
 #: adminpages/paymentsettings.php:469
 #: adminpages/paymentsettings.php:253
+#: adminpages/paymentsettings.php:266
 msgid "Force SSL"
 msgstr ""
 
 #: adminpages/paymentsettings.php:475
 #: adminpages/paymentsettings.php:268
+#: adminpages/paymentsettings.php:281
 msgid "Yes (with JavaScript redirects)"
 msgstr ""
 
 #: adminpages/paymentsettings.php:482
 #: adminpages/paymentsettings.php:278
+#: adminpages/paymentsettings.php:291
 msgid "SSL Seal Code"
 msgstr ""
 
@@ -3280,6 +3462,7 @@ msgstr ""
 #: adminpages/advancedsettings.php:542
 #: adminpages/pagesettings.php:508
 #: adminpages/pagesettings.php:512
+#: adminpages/paymentsettings.php:316
 msgid "Save Settings"
 msgstr "Sačuvaj promijene"
 
@@ -4018,11 +4201,13 @@ msgstr "Posjete Danas"
 #: adminpages/reports/login.php:27
 #: adminpages/reports/login.php:147
 #: adminpages/reports/login.php:187
+#: adminpages/reports/login.php:190
 msgid "Visits This Month"
 msgstr "Posjete Ovog Mjeseca"
 
 #: adminpages/reports/login.php:28
 #: adminpages/reports/login.php:189
+#: adminpages/reports/login.php:192
 msgid "Visits All Time"
 msgstr "Posjete od Početka"
 
@@ -4033,11 +4218,13 @@ msgstr "Pregleda Danas"
 #: adminpages/reports/login.php:32
 #: adminpages/reports/login.php:149
 #: adminpages/reports/login.php:191
+#: adminpages/reports/login.php:194
 msgid "Views This Month"
 msgstr "Pregleda Ovog Mjeseca"
 
 #: adminpages/reports/login.php:33
 #: adminpages/reports/login.php:193
+#: adminpages/reports/login.php:196
 msgid "Views All Time"
 msgstr "Pregleda Od Početka"
 
@@ -4048,11 +4235,13 @@ msgstr "Prijava Danas"
 #: adminpages/reports/login.php:37
 #: adminpages/reports/login.php:152
 #: adminpages/reports/login.php:196
+#: adminpages/reports/login.php:199
 msgid "Logins This Month"
 msgstr "Prijava Ovog Mjeseca"
 
 #: adminpages/reports/login.php:38
 #: adminpages/reports/login.php:198
+#: adminpages/reports/login.php:201
 msgid "Logins All Time"
 msgstr "Prijava od Početka"
 
@@ -4065,11 +4254,13 @@ msgstr "Posjete, Pregledi, i Izvještaji Prijava"
 #: adminpages/reports/login.php:104
 #: classes/class-pmpro-members-list-table.php:234
 #: classes/class-pmpro-members-list-table.php:233
+#: adminpages/reports/login.php:105
 msgid "All Users"
 msgstr "Svi Korisnici"
 
 #: adminpages/reports/login.php:146
 #: adminpages/reports/login.php:185
+#: adminpages/reports/login.php:188
 msgid "Last Visit"
 msgstr "Posljedna Posjeta"
 
@@ -4083,6 +4274,7 @@ msgstr "Ukupno Pregleda"
 
 #: adminpages/reports/login.php:151
 #: adminpages/reports/login.php:194
+#: adminpages/reports/login.php:197
 msgid "Last Login"
 msgstr "Posljednja Prijava"
 
@@ -4151,6 +4343,7 @@ msgstr "%s je pretlata otkazana od strane Stripe. Molimo provjerite da li je pre
 #: services/authnet-silent-post.php:173
 #: services/authnet-silent-post.php:176
 #: services/authnet-silent-post.php:177
+#: services/authnet-silent-post.php:178
 msgid "<p>A payment is being held for review within Authorize.net.</p><p>Payment Information From Authorize.net"
 msgstr ""
 
@@ -4412,6 +4605,7 @@ msgstr ""
 #: adminpages/orders.php:1022
 #: adminpages/orders.php:1014
 #: includes/metaboxes.php:19
+#: adminpages/orders.php:1015
 msgid "All"
 msgstr ""
 
@@ -4506,6 +4700,10 @@ msgstr ""
 #: adminpages/orders.php:1545
 #: adminpages/addons.php:250
 #: adminpages/orders.php:912
+#: adminpages/orders.php:583
+#: adminpages/orders.php:913
+#: adminpages/orders.php:1537
+#: adminpages/orders.php:1546
 msgid "N/A"
 msgstr ""
 
@@ -4573,6 +4771,7 @@ msgstr ""
 #: adminpages/admin_header.php:226
 #: includes/adminpages.php:52
 #: includes/adminpages.php:158
+#: adminpages/reports/login.php:122
 msgid "Members"
 msgstr ""
 
@@ -4977,6 +5176,8 @@ msgstr ""
 #: adminpages/orders.php:1489
 #: adminpages/dashboard.php:323
 #: adminpages/dashboard.php:338
+#: adminpages/orders.php:1478
+#: adminpages/orders.php:1490
 msgid "none"
 msgstr ""
 
@@ -5080,6 +5281,8 @@ msgstr ""
 #: includes/profile.php:430
 #: adminpages/orders.php:1388
 #: adminpages/orders.php:1398
+#: adminpages/orders.php:1389
+#: adminpages/orders.php:1399
 msgid "Edit"
 msgstr ""
 
@@ -5096,6 +5299,8 @@ msgstr ""
 #: adminpages/discountcodes.php:860
 #: adminpages/orders.php:1402
 #: adminpages/orders.php:1413
+#: adminpages/orders.php:1403
+#: adminpages/orders.php:1414
 msgid "Copy"
 msgstr ""
 
@@ -5111,6 +5316,8 @@ msgstr ""
 #: adminpages/discountcodes.php:866
 #: adminpages/orders.php:1417
 #: adminpages/orders.php:1419
+#: adminpages/orders.php:1418
+#: adminpages/orders.php:1420
 msgid "Delete"
 msgstr ""
 
@@ -5482,72 +5689,84 @@ msgstr ""
 #: adminpages/orders.php:868
 #: includes/profile.php:85
 #: adminpages/orders.php:860
+#: adminpages/orders.php:861
 msgid "at"
 msgstr ""
 
 #: adminpages/orders.php:908
 #: adminpages/orders.php:914
 #: adminpages/orders.php:906
+#: adminpages/orders.php:907
 msgid "TOS Consent"
 msgstr ""
 
 #: adminpages/orders.php:1018
 #: adminpages/orders.php:1024
 #: adminpages/orders.php:1016
+#: adminpages/orders.php:1017
 msgid "Within a Date Range"
 msgstr ""
 
 #: adminpages/orders.php:1020
 #: adminpages/orders.php:1026
 #: adminpages/orders.php:1018
+#: adminpages/orders.php:1019
 msgid "Predefined Date Range"
 msgstr ""
 
 #: adminpages/orders.php:1022
 #: adminpages/orders.php:1028
 #: adminpages/orders.php:1020
+#: adminpages/orders.php:1021
 msgid "Within a Level"
 msgstr ""
 
 #: adminpages/orders.php:1024
 #: adminpages/orders.php:1030
 #: adminpages/orders.php:1022
+#: adminpages/orders.php:1023
 msgid "With a Discount Code"
 msgstr ""
 
 #: adminpages/orders.php:1026
 #: adminpages/orders.php:1032
 #: adminpages/orders.php:1024
+#: adminpages/orders.php:1025
 msgid "Within a Status"
 msgstr ""
 
 #: adminpages/orders.php:1028
 #: adminpages/orders.php:1034
 #: adminpages/orders.php:1026
+#: adminpages/orders.php:1027
 msgid "Only Paid Orders"
 msgstr ""
 
 #: adminpages/orders.php:1030
 #: adminpages/orders.php:1036
 #: adminpages/orders.php:1028
+#: adminpages/orders.php:1029
 msgid "Only Free Orders"
 msgstr ""
 
 #: adminpages/orders.php:1038
 #: adminpages/orders.php:1044
 #: adminpages/orders.php:1036
+#: adminpages/orders.php:1037
 msgid "From"
 msgstr ""
 
 #: adminpages/orders.php:1053
 #: adminpages/orders.php:1059
 #: adminpages/orders.php:1051
+#: adminpages/orders.php:1052
 msgid "To"
 msgstr ""
 
 #: adminpages/orders.php:1066
 #: adminpages/orders.php:1072
 #: adminpages/orders.php:1064
+#: adminpages/orders.php:1065
 msgid "filter by "
 msgstr ""
 
@@ -5557,12 +5776,14 @@ msgstr ""
 #: adminpages/reports/sales.php:51
 #: adminpages/orders.php:1077
 #: adminpages/orders.php:1069
+#: adminpages/orders.php:1070
 msgid "This Month"
 msgstr ""
 
 #: adminpages/orders.php:1073
 #: adminpages/orders.php:1079
 #: adminpages/orders.php:1071
+#: adminpages/orders.php:1072
 msgid "Last Month"
 msgstr ""
 
@@ -5571,18 +5792,21 @@ msgstr ""
 #: adminpages/reports/sales.php:52
 #: adminpages/orders.php:1081
 #: adminpages/orders.php:1073
+#: adminpages/orders.php:1074
 msgid "This Year"
 msgstr ""
 
 #: adminpages/orders.php:1077
 #: adminpages/orders.php:1083
 #: adminpages/orders.php:1075
+#: adminpages/orders.php:1076
 msgid "Last Year"
 msgstr ""
 
 #: adminpages/orders.php:1116
 #: adminpages/orders.php:1122
 #: adminpages/orders.php:1114
+#: adminpages/orders.php:1115
 msgid "Filter"
 msgstr ""
 
@@ -5821,26 +6045,32 @@ msgid "Learn more about <a title=\"Paid Memberships Pro - SSL Settings\" target=
 msgstr ""
 
 #: adminpages/paymentsettings.php:122
+#: adminpages/paymentsettings.php:127
 msgid "Choose a Gateway"
 msgstr ""
 
 #: adminpages/paymentsettings.php:142
+#: adminpages/paymentsettings.php:147
 msgid "This gateway is for membership sites with Free levels or for sites that accept payment offline."
 msgstr ""
 
 #: adminpages/paymentsettings.php:142
+#: adminpages/paymentsettings.php:149
 msgid "It is not connected to a live gateway environment and cannot accept payments."
 msgstr ""
 
 #: adminpages/paymentsettings.php:194
+#: adminpages/paymentsettings.php:201
 msgid "Currency and Tax Settings"
 msgstr ""
 
 #: adminpages/paymentsettings.php:215
+#: adminpages/paymentsettings.php:222
 msgid "Not all currencies will be supported by every gateway. Please check with your gateway."
 msgstr ""
 
 #: adminpages/paymentsettings.php:239
+#: adminpages/paymentsettings.php:246
 msgid "Tax Rate"
 msgstr ""
 
@@ -5849,10 +6079,12 @@ msgid "US only. If values are given, tax will be applied for any members orderin
 msgstr ""
 
 #: adminpages/paymentsettings.php:260
+#: adminpages/paymentsettings.php:273
 msgid "Your Site URL starts with https:// and so PMPro will allow your entire site to be served over HTTPS."
 msgstr ""
 
 #: adminpages/paymentsettings.php:270
+#: adminpages/paymentsettings.php:283
 msgid "Recommended: Yes. Try the JavaScript redirects setting if you are having issues with infinite redirect loops."
 msgstr ""
 
@@ -5861,10 +6093,12 @@ msgid "Your <strong><a target=\"_blank\" href=\"https://www.paidmembershipspro.c
 msgstr ""
 
 #: adminpages/paymentsettings.php:287
+#: adminpages/paymentsettings.php:306
 msgid "Extra HTTPS URL Filter"
 msgstr ""
 
 #: adminpages/paymentsettings.php:290
+#: adminpages/paymentsettings.php:309
 msgid "Pass all generated HTML through a URL filter to add HTTPS to URLs used on secure pages. Check this if you are using SSL and have warnings on your checkout pages."
 msgstr ""
 
@@ -5939,30 +6173,37 @@ msgstr ""
 #: adminpages/reports/login.php:62
 #: adminpages/reports/memberships.php:52
 #: adminpages/reports/sales.php:53
+#: adminpages/reports/sales.php:542
 msgid "All Time"
 msgstr ""
 
 #: adminpages/reports/login.php:186
+#: adminpages/reports/login.php:189
 msgid "Visits This Week"
 msgstr ""
 
 #: adminpages/reports/login.php:188
+#: adminpages/reports/login.php:191
 msgid "Visits This Year"
 msgstr ""
 
 #: adminpages/reports/login.php:190
+#: adminpages/reports/login.php:193
 msgid "Views This Week"
 msgstr ""
 
 #: adminpages/reports/login.php:192
+#: adminpages/reports/login.php:195
 msgid "Views This Year"
 msgstr ""
 
 #: adminpages/reports/login.php:195
+#: adminpages/reports/login.php:198
 msgid "Logins This Week"
 msgstr ""
 
 #: adminpages/reports/login.php:197
+#: adminpages/reports/login.php:200
 msgid "Logins This Year"
 msgstr ""
 
@@ -6007,26 +6248,35 @@ msgstr ""
 
 #: adminpages/templates/orders-email.php:14
 #: adminpages/templates/orders-print.php:50
+#: adminpages/templates/orders-email.php:17
+#: adminpages/templates/orders-print.php:53
 msgid "Invoice #: "
 msgstr ""
 
 #: adminpages/templates/orders-email.php:18
 #: adminpages/templates/orders-print.php:54
+#: adminpages/templates/orders-email.php:21
+#: adminpages/templates/orders-print.php:57
 msgid "Date:"
 msgstr ""
 
 #: adminpages/templates/orders-email.php:24
+#: adminpages/templates/orders-email.php:27
 msgid "Bill to:"
 msgstr ""
 
 #: adminpages/templates/orders-email.php:47
 #: adminpages/templates/orders-print.php:76
+#: adminpages/templates/orders-email.php:50
+#: adminpages/templates/orders-print.php:79
 msgid "Item"
 msgstr ""
 
 #: adminpages/templates/orders-email.php:48
 #: adminpages/templates/orders-print.php:77
 #: pages/levels.php:28
+#: adminpages/templates/orders-email.php:51
+#: adminpages/templates/orders-print.php:80
 msgid "Price"
 msgstr ""
 
@@ -6189,6 +6439,7 @@ msgstr ""
 #: classes/class-pmpro-members-list-table.php:234
 #: classes/class-pmpro-members-list-table.php:634
 #: classes/class-pmpro-members-list-table.php:663
+#: classes/class-pmpro-members-list-table.php:669
 msgid "Cancelled Members"
 msgstr ""
 
@@ -6197,6 +6448,7 @@ msgstr ""
 #: classes/class-pmpro-members-list-table.php:235
 #: classes/class-pmpro-members-list-table.php:635
 #: classes/class-pmpro-members-list-table.php:664
+#: classes/class-pmpro-members-list-table.php:670
 msgid "Expired Members"
 msgstr ""
 
@@ -6204,6 +6456,7 @@ msgstr ""
 #: shortcodes/pmpro_account.php:145
 #: classes/class-pmpro-members-list-table.php:541
 #: classes/class-pmpro-members-list-table.php:570
+#: classes/class-pmpro-members-list-table.php:576
 msgid "&#8212;"
 msgstr ""
 
@@ -6347,27 +6600,37 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_braintree.php:848
 #: classes/gateways/class.pmprogateway_braintree.php:957
 #: classes/gateways/class.pmprogateway_braintree.php:984
+#: classes/gateways/class.pmprogateway_braintree.php:680
+#: classes/gateways/class.pmprogateway_braintree.php:851
+#: classes/gateways/class.pmprogateway_braintree.php:960
+#: classes/gateways/class.pmprogateway_braintree.php:987
 msgid "Payment error: Please contact the webmaster (braintree-load-error)"
 msgstr ""
 
 #: classes/gateways/class.pmprogateway_braintree.php:750
+#: classes/gateways/class.pmprogateway_braintree.php:753
 msgid "Failed to update customer: %s"
 msgstr ""
 
 #: classes/gateways/class.pmprogateway_braintree.php:933
+#: classes/gateways/class.pmprogateway_braintree.php:936
 msgid "Error subscribing customer to plan with Braintree: %s (%s)"
 msgstr ""
 
 #: classes/gateways/class.pmprogateway_braintree.php:948
+#: classes/gateways/class.pmprogateway_braintree.php:951
 msgid "Failed to subscribe with Braintree: %s"
 msgstr ""
 
 #: classes/gateways/class.pmprogateway_braintree.php:1018
 #: classes/gateways/class.pmprogateway_braintree.php:1029
+#: classes/gateways/class.pmprogateway_braintree.php:1021
+#: classes/gateways/class.pmprogateway_braintree.php:1032
 msgid "Could not find the subscription. %s"
 msgstr ""
 
 #: classes/gateways/class.pmprogateway_braintree.php:1082
+#: classes/gateways/class.pmprogateway_braintree.php:1085
 msgid "Error getting subscription with Braintree:"
 msgstr ""
 
@@ -6641,6 +6904,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_cybersource.php:922
 #: includes/license.php:159
 #: includes/license.php:164
+#: includes/license.php:165
 msgid "Unknown error."
 msgstr ""
 
@@ -6697,6 +6961,8 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_paypalexpress.php:841
 #: classes/gateways/class.pmprogateway_paypalexpress.php:845
 #: classes/gateways/class.pmprogateway_paypalexpress.php:854
+#: classes/gateways/class.pmprogateway_paypal.php:726
+#: classes/gateways/class.pmprogateway_paypalexpress.php:865
 msgid "Please contact the site owner or cancel your subscription from within PayPal to make sure you are not charged going forward."
 msgstr ""
 
@@ -6717,6 +6983,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_paypalexpress.php:791
 #: classes/gateways/class.pmprogateway_paypalexpress.php:795
 #: classes/gateways/class.pmprogateway_paypalexpress.php:804
+#: classes/gateways/class.pmprogateway_paypalexpress.php:815
 msgid "Something went wrong creating plan with PayPal; missing PROFILESTATUS."
 msgstr ""
 
@@ -6724,6 +6991,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_paypalexpress.php:792
 #: classes/gateways/class.pmprogateway_paypalexpress.php:796
 #: classes/gateways/class.pmprogateway_paypalexpress.php:805
+#: classes/gateways/class.pmprogateway_paypalexpress.php:816
 msgid "Error creating plan with PayPal."
 msgstr ""
 
@@ -6972,6 +7240,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:595
 #: classes/gateways/class.pmprogateway_stripe.php:601
 #: classes/gateways/class.pmprogateway_stripe.php:365
+#: classes/gateways/class.pmprogateway_stripe.php:358
 msgid "Rebuild Webhook"
 msgstr ""
 
@@ -7159,6 +7428,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:2650
 #: classes/gateways/class.pmprogateway_stripe.php:2646
 #: classes/gateways/class.pmprogateway_stripe.php:2648
+#: classes/gateways/class.pmprogateway_stripe.php:2644
 msgid "Subscription Updates"
 msgstr ""
 
@@ -7209,6 +7479,8 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:4065
 #: classes/gateways/class.pmprogateway_stripe.php:4062
 #: classes/gateways/class.pmprogateway_stripe.php:4067
+#: classes/gateways/class.pmprogateway_stripe.php:4058
+#: classes/gateways/class.pmprogateway_stripe.php:4063
 msgid "Error getting subscription with Stripe:"
 msgstr ""
 
@@ -7219,6 +7491,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:3045
 #: classes/gateways/class.pmprogateway_stripe.php:3041
 #: classes/gateways/class.pmprogateway_stripe.php:3043
+#: classes/gateways/class.pmprogateway_stripe.php:3039
 msgid "Could not cancel the old subscription. Updates have not been processed."
 msgstr ""
 
@@ -7253,6 +7526,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:4331
 #: classes/gateways/class.pmprogateway_stripe.php:4327
 #: classes/gateways/class.pmprogateway_stripe.php:4333
+#: classes/gateways/class.pmprogateway_stripe.php:4323
 msgid "Error: "
 msgstr ""
 
@@ -7263,6 +7537,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:4349
 #: classes/gateways/class.pmprogateway_stripe.php:4345
 #: classes/gateways/class.pmprogateway_stripe.php:4347
+#: classes/gateways/class.pmprogateway_stripe.php:4343
 msgid "Error: Unkown error while refunding charge #%s"
 msgstr ""
 
@@ -7289,6 +7564,9 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:2546
 #: classes/gateways/class.pmprogateway_stripe.php:2583
 #: classes/gateways/class.pmprogateway_stripe.php:3388
+#: classes/gateways/class.pmprogateway_stripe.php:2542
+#: classes/gateways/class.pmprogateway_stripe.php:2579
+#: classes/gateways/class.pmprogateway_stripe.php:3384
 msgid "Customer authentication is required to finish setting up your subscription. Please complete the verification steps issued by your payment provider."
 msgstr ""
 
@@ -7325,6 +7603,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:3674
 #: classes/gateways/class.pmprogateway_stripe.php:3670
 #: classes/gateways/class.pmprogateway_stripe.php:3672
+#: classes/gateways/class.pmprogateway_stripe.php:3668
 msgid "Last webhook received at"
 msgstr ""
 
@@ -7335,6 +7614,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:3676
 #: classes/gateways/class.pmprogateway_stripe.php:3672
 #: classes/gateways/class.pmprogateway_stripe.php:3674
+#: classes/gateways/class.pmprogateway_stripe.php:3670
 msgid "No webhooks have been received."
 msgstr ""
 
@@ -7345,6 +7625,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:3680
 #: classes/gateways/class.pmprogateway_stripe.php:3676
 #: classes/gateways/class.pmprogateway_stripe.php:3678
+#: classes/gateways/class.pmprogateway_stripe.php:3674
 msgid "Your webhook may not be working correctly."
 msgstr ""
 
@@ -7355,6 +7636,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:3682
 #: classes/gateways/class.pmprogateway_stripe.php:3678
 #: classes/gateways/class.pmprogateway_stripe.php:3680
+#: classes/gateways/class.pmprogateway_stripe.php:3676
 msgid "Click here for info on setting up your webhook with Stripe."
 msgstr ""
 
@@ -9344,97 +9626,122 @@ msgstr ""
 
 #: includes/functions.php:398
 #: includes/functions.php:511
+#: includes/functions.php:402
+#: includes/functions.php:517
 msgid "<strong>%s</strong> now"
 msgstr ""
 
 #: includes/functions.php:406
+#: includes/functions.php:410
 msgid " and then <strong>%1$s per %2$s for %3$d more %4$s</strong>."
 msgstr ""
 
 #: includes/functions.php:408
+#: includes/functions.php:412
 msgid " and then <strong>%1$s every %2$d %3$s for %4$d more payments</strong>."
 msgstr ""
 
 #: includes/functions.php:411
+#: includes/functions.php:415
 msgid " and then <strong>%1$s after %2$d %3$s</strong>."
 msgstr ""
 
 #: includes/functions.php:416
+#: includes/functions.php:420
 msgid "The price for membership is <strong>%1$s per %2$s</strong>."
 msgstr ""
 
 #: includes/functions.php:418
+#: includes/functions.php:422
 msgid "<strong>%1$s per %2$s</strong>."
 msgstr ""
 
 #: includes/functions.php:422
+#: includes/functions.php:426
 msgid "The price for membership is <strong>%1$s every %2$d %3$s</strong>."
 msgstr ""
 
 #: includes/functions.php:424
+#: includes/functions.php:428
 msgid "<strong>%1$s every %2$d %3$s</strong>."
 msgstr ""
 
 #: includes/functions.php:429
+#: includes/functions.php:433
 msgid " and then <strong>%1$s per %2$s</strong>."
 msgstr ""
 
 #: includes/functions.php:431
+#: includes/functions.php:435
 msgid " and then <strong>%1$s every %2$d %3$s</strong>."
 msgstr ""
 
 #: includes/functions.php:454
+#: includes/functions.php:458
 msgid "After your initial payment, your first %1$d payments will cost %2$s."
 msgstr ""
 
 #: includes/functions.php:464
 #: includes/functions.php:565
+#: includes/functions.php:468
+#: includes/functions.php:571
 msgid "Customers in %1$s will be charged %2$s%% tax."
 msgstr ""
 
 #: includes/functions.php:522
+#: includes/functions.php:528
 msgid "<strong>%1$s per %2$s for %3$d more %4$s</strong>"
 msgstr ""
 
 #: includes/functions.php:524
+#: includes/functions.php:530
 msgid "<strong>%1$s every %2$d %3$s for %4$d more payments</strong>"
 msgstr ""
 
 #: includes/functions.php:527
+#: includes/functions.php:533
 msgid "<strong>%1$s after %2$d %3$s</strong>"
 msgstr ""
 
 #: includes/functions.php:530
+#: includes/functions.php:536
 msgid "<strong>%1$s every %2$s</strong>"
 msgstr ""
 
 #: includes/functions.php:532
+#: includes/functions.php:538
 msgid "<strong>%1$s every %2$d %3$s</strong>"
 msgstr ""
 
 #: includes/functions.php:582
+#: includes/functions.php:588
 msgid "Membership expires after %1$d %2$s."
 msgstr ""
 
 #: includes/functions.php:601
+#: includes/functions.php:607
 msgid "%1$s membership expires after %2$d %3$s"
 msgstr ""
 
 #: includes/functions.php:997
+#: includes/functions.php:1004
 msgid "No membership_id specified in pmpro_changeMembershipLevel."
 msgstr ""
 
 #: includes/functions.php:1191
+#: includes/functions.php:1198
 msgid "Error interacting with database: %s"
 msgstr ""
 
 #: includes/functions.php:1722
 #: includes/functions.php:1753
+#: includes/functions.php:1767
 msgid "No code was given to check."
 msgstr ""
 
 #: includes/functions.php:2433
 #: includes/functions.php:2464
+#: includes/functions.php:2484
 msgid "Sign Up Now"
 msgstr ""
 
@@ -9807,6 +10114,7 @@ msgid "Views Data"
 msgstr ""
 
 #: includes/privacy.php:520
+#: includes/privacy.php:521
 msgid "That post has since been updated."
 msgstr ""
 
@@ -10018,24 +10326,28 @@ msgid "Customize this menu per level using the <a href=\"%s\" title=\"Paid Membe
 msgstr ""
 
 #: pages/billing.php:136
+#: pages/billing.php:138
 msgid "Your billing information cannot be updated at this time."
 msgstr ""
 
 #: pages/billing.php:458
 #: shortcodes/pmpro_account.php:68
 #: pages/billing.php:468
+#: pages/billing.php:475
 msgid "Your membership is not active. <a href='%s'>Renew now.</a>"
 msgstr ""
 
 #: pages/billing.php:461
 #: shortcodes/pmpro_account.php:71
 #: pages/billing.php:471
+#: pages/billing.php:478
 msgid "You do not have an active membership. <a href='%s'>Register here.</a>"
 msgstr ""
 
 #: pages/billing.php:464
 #: shortcodes/pmpro_account.php:74
 #: pages/billing.php:474
+#: pages/billing.php:481
 msgid "You do not have an active membership. <a href='%s'>Choose a membership level.</a>"
 msgstr ""
 
@@ -10522,6 +10834,7 @@ msgstr ""
 #: classes/class-pmpro-site-health.php:178
 #: classes/class-pmpro-site-health.php:189
 #: classes/class-pmpro-site-health.php:193
+#: classes/class-pmpro-site-health.php:194
 msgid "Stripe Connect"
 msgstr ""
 
@@ -10529,12 +10842,14 @@ msgstr ""
 #: classes/class-pmpro-site-health.php:202
 #: classes/class-pmpro-site-health.php:213
 #: classes/class-pmpro-site-health.php:217
+#: classes/class-pmpro-site-health.php:220
 msgid "%s (environment not registered)"
 msgstr ""
 
 #: classes/class-pmpro-site-health.php:226
 #: classes/class-pmpro-site-health.php:268
 #: classes/class-pmpro-site-health.php:272
+#: classes/class-pmpro-site-health.php:275
 msgid "Unable to verify"
 msgstr ""
 
@@ -10746,6 +11061,7 @@ msgstr ""
 
 #: adminpages/dashboard.php:186
 #: adminpages/dashboard.php:188
+#: adminpages/license.php:64
 msgid "View Plans and Pricing"
 msgstr ""
 
@@ -10811,18 +11127,21 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:2424
 #: classes/gateways/class.pmprogateway_stripe.php:2420
 #: classes/gateways/class.pmprogateway_stripe.php:2422
+#: classes/gateways/class.pmprogateway_stripe.php:2418
 msgid "Cannot find product for membership level."
 msgstr ""
 
 #: classes/gateways/class.pmprogateway_stripe.php:2430
 #: classes/gateways/class.pmprogateway_stripe.php:2426
 #: classes/gateways/class.pmprogateway_stripe.php:2428
+#: classes/gateways/class.pmprogateway_stripe.php:2424
 msgid "Cannot get price."
 msgstr ""
 
 #: classes/gateways/class.pmprogateway_stripe.php:2580
 #: classes/gateways/class.pmprogateway_stripe.php:2576
 #: classes/gateways/class.pmprogateway_stripe.php:2578
+#: classes/gateways/class.pmprogateway_stripe.php:2574
 msgid "Cannot reuse an old setup intent."
 msgstr ""
 
@@ -10830,6 +11149,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:2616
 #: classes/gateways/class.pmprogateway_stripe.php:2610
 #: classes/gateways/class.pmprogateway_stripe.php:2612
+#: classes/gateways/class.pmprogateway_stripe.php:2608
 msgid "Error adding metadata to setup intent."
 msgstr ""
 
@@ -10842,6 +11162,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:2716
 #: classes/gateways/class.pmprogateway_stripe.php:2712
 #: classes/gateways/class.pmprogateway_stripe.php:2714
+#: classes/gateways/class.pmprogateway_stripe.php:2710
 msgid "Remove"
 msgstr ""
 
@@ -10879,6 +11200,7 @@ msgid "<strong>Need help?</strong> Your license allows you to open new tickets i
 msgstr ""
 
 #: adminpages/orders.php:1549
+#: adminpages/orders.php:1550
 msgid "renewal"
 msgstr ""
 
@@ -10936,10 +11258,12 @@ msgid "PMPro News and Updates"
 msgstr ""
 
 #: classes/class-pmpro-site-health.php:276
+#: classes/class-pmpro-site-health.php:279
 msgid "No template overrides"
 msgstr ""
 
 #: classes/class-pmpro-site-health.php:282
+#: classes/class-pmpro-site-health.php:285
 msgid "Empty override folder -- no template overrides"
 msgstr ""
 
@@ -10949,6 +11273,7 @@ msgstr ""
 
 #: classes/gateways/class.pmprogateway_stripe.php:2363
 #: classes/gateways/class.pmprogateway_stripe.php:2365
+#: classes/gateways/class.pmprogateway_stripe.php:2361
 msgid "Could not create price."
 msgstr ""
 
@@ -11012,10 +11337,142 @@ msgid "Paid Memberships Pro Order History"
 msgstr ""
 
 #: includes/privacy.php:512
+#: includes/privacy.php:513
 msgid "%s agreed to %s (ID #%d, last modified %s) on %s."
 msgstr ""
 
 #: blocks/login/inspector.js:39
 #: js/blocks.build.js:1433
 msgid "Assign the menu under Appearance > Menus."
+msgstr ""
+
+#: adminpages/advancedsettings.php:407
+msgid "Redirect all traffic from registration page to /subscription/?"
+msgstr ""
+
+#: adminpages/discountcodes.php:728
+msgid "Save Code"
+msgstr ""
+
+#: adminpages/license.php:66
+msgid "Manage My Account"
+msgstr ""
+
+#: adminpages/license.php:68
+msgid "Open Support Ticket"
+msgstr ""
+
+#: adminpages/license.php:70
+msgid "Upgrade For Support"
+msgstr ""
+
+#: adminpages/license.php:103
+msgid "View Support License Options &raquo;"
+msgstr ""
+
+#: adminpages/orders.php:168
+msgid "Order %s deleted successfully."
+msgstr ""
+
+#: adminpages/paymentsettings.php:116
+msgid "Paid Memberships Pro - Payment Gateway Settings"
+msgstr ""
+
+#: adminpages/paymentsettings.php:116
+msgid "Payment Gateway Settings"
+msgstr ""
+
+#: adminpages/paymentsettings.php:117
+msgid "Paid Memberships Pro - SSL Settings"
+msgstr ""
+
+#: adminpages/paymentsettings.php:117
+msgid "SSL"
+msgstr ""
+
+#. translators: %s and %s: Links to Payment Gateway Settings and SSL Settings docs.
+#: adminpages/paymentsettings.php:119
+msgid "Learn more about %s and %s."
+msgstr ""
+
+#. translators: %s: A link to the docs for the pmpro_tax filter.
+#: adminpages/paymentsettings.php:252
+msgid "US only. If values are given, tax will be applied for any members ordering from the selected state. For non-US or more complex tax rules, use the %s."
+msgstr ""
+
+#: adminpages/paymentsettings.php:297
+msgid "SSL Certificate"
+msgstr ""
+
+#. translators: %s: Link to SSL Certificate docs.
+#: adminpages/paymentsettings.php:299
+msgid "Your %s must be installed by your web host. Use this field to display your seal or other trusted merchant images. This field does not accept JavaScript."
+msgstr ""
+
+#: adminpages/reports/login.php:103
+msgctxt "Dropdown label, e.g. Show All Users"
+msgid "Show"
+msgstr ""
+
+#: adminpages/reports/login.php:122
+msgctxt "Search form label"
+msgid "Search"
+msgstr ""
+
+#: adminpages/reports/login.php:122
+msgid "Users"
+msgstr ""
+
+#: classes/class-pmpro-members-list-table.php:584
+msgid " + "
+msgstr ""
+
+#: classes/class-pmpro-members-list-table.php:589
+msgid " per "
+msgstr ""
+
+#: classes/gateways/class.pmprogateway_paypal.php:189
+#: classes/gateways/class.pmprogateway_paypalexpress.php:208
+msgid "Require an extra confirmation after users return from PayPal."
+msgstr ""
+
+#: classes/gateways/class.pmprogateway_paypal.php:190
+#: classes/gateways/class.pmprogateway_paypalexpress.php:209
+msgid "Skip the extra confirmation after users return from PayPal."
+msgstr ""
+
+#: classes/gateways/class.pmprogateway_stripe.php:1870
+msgid "Learn More &raquo;"
+msgstr ""
+
+#: classes/gateways/class.pmprogateway_stripe.php:2645
+msgid "Subscription updates will be deprecated in a future version of PMPro, though your existing subscription updates will still trigger as expected. We now instead recommend updating the subscription directly in Stripe."
+msgstr ""
+
+#: includes/lib/Twocheckout/Twocheckout/TwocheckoutCharge.php:15
+msgid "Click here if you are not redirected automatically."
+msgstr ""
+
+#: includes/lib/Twocheckout/Twocheckout/TwocheckoutCharge.php:33
+msgid "Click here if the payment form does not open automatically."
+msgstr ""
+
+#: includes/license.php:140
+msgid "Bad response code %s."
+msgstr ""
+
+#: includes/updates.php:150
+msgid "You currently have the Better Login Reports Add On activated. This functionality has now been merged into Paid Memberships Pro. %s"
+msgstr ""
+
+#: includes/updates.php:150
+msgid "Please deactivate and remove this plugin."
+msgstr ""
+
+#: pages/levels.php:82
+msgid "Return to Your Account"
+msgstr ""
+
+#: pages/levels.php:84
+msgid "Return to Home"
 msgstr ""

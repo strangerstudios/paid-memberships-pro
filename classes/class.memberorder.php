@@ -1202,4 +1202,35 @@
 			$new_subscription = PMPro_Subscription::create( $create_subscription_args );
 			return ! empty( $new_subscription );
 		}
+
+		/**
+		 * Does this order have any billing address fields set?
+		 * @since 2.8
+		 * @return bool True if ANY billing address field is non-empty.
+		 *              False if ALL billing address fields are empty.
+		 */
+		function has_billing_address() {
+			// This is sometimes set.
+			if ( ! empty( $this->Address1 ) ) {
+				return true;
+			}
+			
+			// Avoid a warning if no billing object at all.
+			if ( empty( $this->billing ) ) {
+				return false;
+			}
+			
+			// Check billing fields.
+			if ( ! empty( $this->billing->name ) 
+				|| ! empty( $this->billing->street )
+				|| ! empty( $this->billing->city )
+				|| ! empty( $this->billing->state )
+				|| ! empty( $this->billing->country )
+				|| ! empty( $this->billing->zip )
+				|| ! empty( $this->billing->phone ) ) {
+				return true;
+			}
+		
+			return false;
+		}
 	} // End of Class

@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2022-03-01T15:06:04+00:00\n"
+"POT-Creation-Date: 2022-04-19T13:20:02+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.6.0\n"
 "X-Domain: paid-memberships-pro\n"
@@ -122,6 +122,7 @@ msgstr ""
 #: adminpages/orders.php:1022
 #: adminpages/orders.php:1014
 #: includes/metaboxes.php:19
+#: adminpages/orders.php:1015
 msgid "All"
 msgstr ""
 
@@ -320,6 +321,8 @@ msgstr ""
 #: adminpages/discountcodes.php:866
 #: adminpages/orders.php:1417
 #: adminpages/orders.php:1419
+#: adminpages/orders.php:1418
+#: adminpages/orders.php:1420
 msgid "Delete"
 msgstr ""
 
@@ -432,6 +435,9 @@ msgstr ""
 #: adminpages/orders.php:1536
 #: adminpages/orders.php:1545
 #: adminpages/addons.php:250
+#: adminpages/orders.php:583
+#: adminpages/orders.php:1537
+#: adminpages/orders.php:1546
 msgid "N/A"
 msgstr ""
 
@@ -669,6 +675,7 @@ msgstr ""
 #: adminpages/admin_header.php:226
 #: includes/adminpages.php:52
 #: includes/adminpages.php:158
+#: adminpages/reports/login.php:122
 msgid "Members"
 msgstr ""
 
@@ -720,6 +727,7 @@ msgstr ""
 #: adminpages/discountcodes.php:884
 #: classes/class-pmpro-site-health.php:77
 #: adminpages/orders.php:970
+#: adminpages/orders.php:971
 msgid "Orders"
 msgstr ""
 
@@ -1003,6 +1011,9 @@ msgstr ""
 #: includes/profile.php:758
 #: adminpages/orders.php:1437
 #: adminpages/orders.php:1440
+#: adminpages/orders.php:392
+#: adminpages/orders.php:1438
+#: adminpages/orders.php:1441
 msgid "Email"
 msgstr ""
 
@@ -1539,6 +1550,7 @@ msgstr ""
 #: adminpages/advancedsettings.php:494
 #: classes/gateways/class.pmprogateway_stripe.php:404
 #: classes/gateways/class.pmprogateway_stripe.php:418
+#: adminpages/paymentsettings.php:279
 msgid "No"
 msgstr ""
 
@@ -1991,6 +2003,7 @@ msgstr ""
 #: adminpages/advancedsettings.php:412
 #: classes/gateways/class.pmprogateway_stripe.php:406
 #: classes/gateways/class.pmprogateway_stripe.php:420
+#: adminpages/paymentsettings.php:280
 msgid "Yes"
 msgstr ""
 
@@ -2056,6 +2069,7 @@ msgstr ""
 #: adminpages/advancedsettings.php:542
 #: adminpages/pagesettings.php:508
 #: adminpages/pagesettings.php:512
+#: adminpages/paymentsettings.php:316
 msgid "Save Settings"
 msgstr ""
 
@@ -2345,6 +2359,7 @@ msgstr ""
 #: shortcodes/pmpro_account.php:173
 #: adminpages/dashboard.php:225
 #: classes/class.memberorder.php:1003
+#: adminpages/reports/login.php:183
 msgid "Username"
 msgstr ""
 
@@ -2419,6 +2434,8 @@ msgstr ""
 #: adminpages/orders.php:1335
 #: adminpages/dashboard.php:226
 #: adminpages/dashboard.php:294
+#: adminpages/orders.php:1336
+#: adminpages/reports/login.php:185
 msgid "Level"
 msgstr ""
 
@@ -2438,6 +2455,7 @@ msgstr ""
 #: adminpages/reports/login.php:182
 #: adminpages/reports/history.php:186
 #: adminpages/dashboard.php:227
+#: adminpages/reports/login.php:186
 msgid "Joined"
 msgstr ""
 
@@ -2484,6 +2502,7 @@ msgstr ""
 #: adminpages/discountcodes.php:788
 #: includes/profile.php:65
 #: adminpages/dashboard.php:228
+#: adminpages/reports/login.php:187
 msgid "Expires"
 msgstr ""
 
@@ -2511,6 +2530,7 @@ msgstr ""
 #: adminpages/reports/history.php:236
 #: classes/class-pmpro-members-list-table.php:225
 #: adminpages/dashboard.php:234
+#: adminpages/reports/login.php:266
 msgid "No members found."
 msgstr ""
 
@@ -2585,6 +2605,8 @@ msgstr ""
 #: adminpages/discountcodes.php:786
 #: adminpages/orders.php:1332
 #: adminpages/dashboard.php:292
+#: adminpages/orders.php:429
+#: adminpages/orders.php:1333
 msgid "Code"
 msgstr ""
 
@@ -2617,6 +2639,7 @@ msgstr ""
 #: adminpages/orders.php:1341
 #: adminpages/orders.php:1333
 #: adminpages/dashboard.php:293
+#: adminpages/orders.php:1334
 msgid "User"
 msgstr ""
 
@@ -2681,6 +2704,9 @@ msgstr ""
 #: adminpages/orders.php:645
 #: adminpages/orders.php:1336
 #: adminpages/dashboard.php:295
+#: adminpages/orders.php:646
+#: adminpages/orders.php:1337
+#: includes/functions.php:2931
 msgid "Total"
 msgstr ""
 
@@ -2739,6 +2765,7 @@ msgstr ""
 #: includes/profile.php:501
 #: adminpages/orders.php:1340
 #: adminpages/dashboard.php:296
+#: adminpages/orders.php:1341
 msgid "Status"
 msgstr ""
 
@@ -2804,6 +2831,7 @@ msgstr ""
 #: includes/profile.php:409
 #: adminpages/orders.php:1341
 #: adminpages/dashboard.php:297
+#: adminpages/orders.php:1342
 msgid "Date"
 msgstr ""
 
@@ -2833,6 +2861,7 @@ msgstr ""
 #: adminpages/orders.php:1576
 #: adminpages/orders.php:1568
 #: adminpages/dashboard.php:304
+#: adminpages/orders.php:1569
 msgid "No orders found."
 msgstr ""
 
@@ -2871,6 +2900,8 @@ msgstr ""
 #: adminpages/orders.php:1487
 #: adminpages/dashboard.php:321
 #: adminpages/dashboard.php:336
+#: adminpages/orders.php:1476
+#: adminpages/orders.php:1488
 msgid "deleted"
 msgstr ""
 
@@ -2901,6 +2932,8 @@ msgstr ""
 #: adminpages/orders.php:1489
 #: adminpages/dashboard.php:323
 #: adminpages/dashboard.php:338
+#: adminpages/orders.php:1478
+#: adminpages/orders.php:1490
 msgid "none"
 msgstr ""
 
@@ -3204,6 +3237,10 @@ msgstr ""
 #: adminpages/discountcodes.php:446
 #: adminpages/discountcodes.php:785
 #: adminpages/orders.php:1331
+#: adminpages/orders.php:1332
+#: adminpages/reports/login.php:182
+#: adminpages/templates/orders-email.php:49
+#: adminpages/templates/orders-print.php:78
 msgid "ID"
 msgstr ""
 
@@ -3234,6 +3271,7 @@ msgstr ""
 #: adminpages/orders.php:414
 #: adminpages/orders.php:421
 #: adminpages/discountcodes.php:447
+#: adminpages/orders.php:422
 msgid "This will be generated when you save."
 msgstr ""
 
@@ -3343,6 +3381,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:1320
 #: classes/gateways/class.pmprogateway_stripe.php:1326
 #: classes/gateways/class.pmprogateway_stripe.php:785
+#: pages/billing.php:381
 msgid "Expiration Date"
 msgstr ""
 
@@ -3576,6 +3615,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:2700
 #: classes/gateways/class.pmprogateway_stripe.php:2696
 #: classes/gateways/class.pmprogateway_stripe.php:2698
+#: classes/gateways/class.pmprogateway_stripe.php:2694
 msgid "per"
 msgstr ""
 
@@ -3663,6 +3703,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:2641
 #: classes/gateways/class.pmprogateway_stripe.php:2637
 #: classes/gateways/class.pmprogateway_stripe.php:2639
+#: classes/gateways/class.pmprogateway_stripe.php:2635
 msgid "Day(s)"
 msgstr ""
 
@@ -3750,6 +3791,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:2643
 #: classes/gateways/class.pmprogateway_stripe.php:2639
 #: classes/gateways/class.pmprogateway_stripe.php:2641
+#: classes/gateways/class.pmprogateway_stripe.php:2637
 msgid "Month(s)"
 msgstr ""
 
@@ -3837,6 +3879,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:2642
 #: classes/gateways/class.pmprogateway_stripe.php:2638
 #: classes/gateways/class.pmprogateway_stripe.php:2640
+#: classes/gateways/class.pmprogateway_stripe.php:2636
 msgid "Week(s)"
 msgstr ""
 
@@ -3924,6 +3967,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:2644
 #: classes/gateways/class.pmprogateway_stripe.php:2640
 #: classes/gateways/class.pmprogateway_stripe.php:2642
+#: classes/gateways/class.pmprogateway_stripe.php:2638
 msgid "Year(s)"
 msgstr ""
 
@@ -4597,6 +4641,8 @@ msgstr ""
 #: includes/profile.php:430
 #: adminpages/orders.php:1388
 #: adminpages/orders.php:1398
+#: adminpages/orders.php:1389
+#: adminpages/orders.php:1399
 msgid "Edit"
 msgstr ""
 
@@ -4636,6 +4682,8 @@ msgstr ""
 #: adminpages/discountcodes.php:860
 #: adminpages/orders.php:1402
 #: adminpages/orders.php:1413
+#: adminpages/orders.php:1403
+#: adminpages/orders.php:1414
 msgid "Copy"
 msgstr ""
 
@@ -5104,6 +5152,7 @@ msgstr ""
 #: adminpages/reports/login.php:180
 #: adminpages/membershiplevels.php:808
 #: adminpages/reports/history.php:184
+#: adminpages/reports/login.php:184
 msgid "Name"
 msgstr ""
 
@@ -5457,6 +5506,9 @@ msgstr ""
 #: includes/profile.php:918
 #: adminpages/orders.php:960
 #: pages/billing.php:436
+#: adminpages/discountcodes.php:729
+#: adminpages/orders.php:961
+#: pages/billing.php:443
 msgid "Cancel"
 msgstr ""
 
@@ -5623,6 +5675,7 @@ msgstr ""
 #: pages/cancel.php:71
 #: pages/confirmation.php:99
 #: pages/invoice.php:89
+#: pages/billing.php:102
 msgid "Expiration"
 msgstr ""
 
@@ -5773,6 +5826,7 @@ msgstr ""
 #: adminpages/orders.php:1018
 #: adminpages/orders.php:1000
 #: adminpages/orders.php:992
+#: adminpages/orders.php:993
 msgid "Export to CSV"
 msgstr ""
 
@@ -5784,6 +5838,7 @@ msgstr ""
 #: adminpages/memberslist.php:52
 #: adminpages/reports/history.php:115
 #: adminpages/reports/history.php:119
+#: adminpages/reports/login.php:127
 msgid "Search Members"
 msgstr ""
 
@@ -5813,6 +5868,7 @@ msgstr ""
 #: adminpages/orders.php:177
 #: adminpages/orders.php:180
 #: adminpages/orders.php:170
+#: adminpages/orders.php:171
 msgid "Error deleting order."
 msgstr ""
 
@@ -5830,6 +5886,7 @@ msgstr ""
 #: adminpages/orders.php:304
 #: adminpages/orders.php:314
 #: adminpages/orders.php:315
+#: adminpages/orders.php:316
 msgid "Order saved successfully."
 msgstr ""
 
@@ -5848,6 +5905,7 @@ msgstr ""
 #: adminpages/orders.php:311
 #: adminpages/orders.php:321
 #: adminpages/orders.php:318
+#: adminpages/orders.php:319
 msgid "Error saving order."
 msgstr ""
 
@@ -5879,6 +5937,7 @@ msgstr ""
 #: classes/class.memberorder.php:953
 #: adminpages/orders.php:389
 #: classes/class.memberorder.php:1005
+#: adminpages/orders.php:390
 msgid "Order"
 msgstr ""
 
@@ -5910,6 +5969,9 @@ msgstr ""
 #: includes/profile.php:433
 #: adminpages/orders.php:1423
 #: adminpages/orders.php:1433
+#: adminpages/orders.php:391
+#: adminpages/orders.php:1424
+#: adminpages/orders.php:1434
 msgid "Print"
 msgstr ""
 
@@ -5927,6 +5989,7 @@ msgstr ""
 #: adminpages/orders.php:385
 #: adminpages/orders.php:386
 #: adminpages/orders.php:393
+#: adminpages/orders.php:394
 msgid "New Order"
 msgstr ""
 
@@ -5946,6 +6009,7 @@ msgstr ""
 #: adminpages/orders.php:431
 #: adminpages/orders.php:432
 #: adminpages/orders.php:439
+#: adminpages/orders.php:440
 msgid "Randomly generated for you."
 msgstr ""
 
@@ -5966,6 +6030,7 @@ msgstr ""
 #: adminpages/orders.php:436
 #: adminpages/orders.php:437
 #: adminpages/orders.php:444
+#: adminpages/orders.php:445
 msgid "User ID"
 msgstr ""
 
@@ -5986,6 +6051,7 @@ msgstr ""
 #: adminpages/orders.php:450
 #: adminpages/emailtemplates.php:130
 #: adminpages/orders.php:457
+#: adminpages/orders.php:458
 msgid "Membership Level ID"
 msgstr ""
 
@@ -6006,6 +6072,7 @@ msgstr ""
 #: adminpages/orders.php:463
 #: adminpages/orders.php:465
 #: adminpages/orders.php:470
+#: adminpages/orders.php:471
 msgid "Billing Name"
 msgstr ""
 
@@ -6026,6 +6093,7 @@ msgstr ""
 #: adminpages/orders.php:477
 #: adminpages/orders.php:479
 #: adminpages/orders.php:484
+#: adminpages/orders.php:485
 msgid "Billing Street"
 msgstr ""
 
@@ -6091,6 +6159,7 @@ msgstr ""
 #: adminpages/orders.php:518
 #: adminpages/orders.php:523
 #: adminpages/orders.php:521
+#: adminpages/orders.php:522
 msgid "Billing Postal Code"
 msgstr ""
 
@@ -6113,6 +6182,7 @@ msgstr ""
 #: adminpages/orders.php:531
 #: adminpages/orders.php:536
 #: adminpages/orders.php:533
+#: adminpages/orders.php:534
 msgid "Billing Country"
 msgstr ""
 
@@ -6134,6 +6204,7 @@ msgstr ""
 #: adminpages/orders.php:545
 #: adminpages/orders.php:550
 #: adminpages/orders.php:546
+#: adminpages/orders.php:547
 msgid "Billing Phone"
 msgstr ""
 
@@ -6335,6 +6406,8 @@ msgstr ""
 #: classes/class.pmproemail.php:440
 #: classes/class.pmproemail.php:762
 #: classes/class.pmproemail.php:764
+#: adminpages/orders.php:576
+#: adminpages/orders.php:1343
 msgid "Discount Code"
 msgstr ""
 
@@ -6384,6 +6457,7 @@ msgstr ""
 #: includes/metaboxes.php:19
 #: classes/class.pmproemail.php:888
 #: classes/class.pmproemail.php:933
+#: adminpages/orders.php:587
 msgid "None"
 msgstr ""
 
@@ -6405,6 +6479,7 @@ msgstr ""
 #: adminpages/orders.php:595
 #: adminpages/orders.php:597
 #: adminpages/orders.php:602
+#: adminpages/orders.php:598
 msgid "Sub Total"
 msgstr ""
 
@@ -6445,6 +6520,8 @@ msgstr ""
 #: includes/functions.php:2849
 #: adminpages/orders.php:615
 #: includes/functions.php:2880
+#: adminpages/orders.php:611
+#: includes/functions.php:2902
 msgid "Tax"
 msgstr ""
 
@@ -6466,6 +6543,7 @@ msgstr ""
 #: adminpages/orders.php:625
 #: adminpages/orders.php:632
 #: adminpages/orders.php:627
+#: adminpages/orders.php:628
 msgid "Coupon Amount"
 msgstr ""
 
@@ -6488,6 +6566,7 @@ msgstr ""
 #: adminpages/orders.php:657
 #: adminpages/orders.php:664
 #: adminpages/orders.php:659
+#: adminpages/orders.php:660
 msgid "Payment Type"
 msgstr ""
 
@@ -6509,6 +6588,7 @@ msgstr ""
 #: adminpages/orders.php:668
 #: adminpages/orders.php:675
 #: adminpages/orders.php:670
+#: adminpages/orders.php:671
 msgid "e.g. PayPal Express, PayPal Standard, Credit Card."
 msgstr ""
 
@@ -6610,6 +6690,8 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:1309
 #: adminpages/orders.php:674
 #: classes/gateways/class.pmprogateway_stripe.php:768
+#: adminpages/orders.php:675
+#: pages/billing.php:338
 msgid "Card Type"
 msgstr ""
 
@@ -6631,6 +6713,7 @@ msgstr ""
 #: adminpages/orders.php:682
 #: adminpages/orders.php:689
 #: adminpages/orders.php:684
+#: adminpages/orders.php:685
 msgid "e.g. Visa, MasterCard, AMEX, etc"
 msgstr ""
 
@@ -6659,6 +6742,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_twocheckout.php:148
 #: adminpages/orders.php:693
 #: adminpages/orders.php:688
+#: adminpages/orders.php:689
 msgid "Account Number"
 msgstr ""
 
@@ -6679,6 +6763,7 @@ msgstr ""
 #: adminpages/orders.php:696
 #: adminpages/orders.php:697
 #: adminpages/orders.php:704
+#: adminpages/orders.php:699
 msgid "Obscure all but last 4 digits."
 msgstr ""
 
@@ -6704,6 +6789,8 @@ msgstr ""
 #: adminpages/orders.php:717
 #: adminpages/orders.php:713
 #: adminpages/orders.php:724
+#: adminpages/orders.php:708
+#: adminpages/orders.php:719
 msgid "Expiration Month"
 msgstr ""
 
@@ -6725,6 +6812,7 @@ msgstr ""
 #: adminpages/orders.php:724
 #: adminpages/orders.php:725
 #: adminpages/orders.php:732
+#: adminpages/orders.php:727
 msgid "Expiration Year"
 msgstr ""
 
@@ -6778,6 +6866,7 @@ msgstr ""
 #: adminpages/orders.php:1346
 #: adminpages/orders.php:1338
 #: classes/class.memberorder.php:1006
+#: adminpages/orders.php:1339
 msgid "Gateway"
 msgstr ""
 
@@ -6809,6 +6898,7 @@ msgstr ""
 #: adminpages/paymentsettings.php:179
 #: adminpages/paymentsettings.php:184
 #: adminpages/orders.php:787
+#: adminpages/paymentsettings.php:155
 msgid "Gateway Environment"
 msgstr ""
 
@@ -6842,6 +6932,8 @@ msgstr ""
 #: classes/class-pmpro-site-health.php:195
 #: classes/class-pmpro-site-health.php:206
 #: classes/class-pmpro-site-health.php:210
+#: adminpages/paymentsettings.php:159
+#: classes/class-pmpro-site-health.php:213
 msgid "Sandbox/Testing"
 msgstr ""
 
@@ -6875,6 +6967,8 @@ msgstr ""
 #: classes/class-pmpro-site-health.php:196
 #: classes/class-pmpro-site-health.php:207
 #: classes/class-pmpro-site-health.php:211
+#: adminpages/paymentsettings.php:160
+#: classes/class-pmpro-site-health.php:214
 msgid "Live/Production"
 msgstr ""
 
@@ -7077,6 +7171,7 @@ msgstr ""
 #: adminpages/orders.php:949
 #: adminpages/orders.php:967
 #: adminpages/orders.php:959
+#: adminpages/orders.php:960
 msgid "Save Order"
 msgstr ""
 
@@ -7096,6 +7191,7 @@ msgstr ""
 #: adminpages/orders.php:996
 #: adminpages/orders.php:979
 #: adminpages/orders.php:971
+#: adminpages/orders.php:972
 msgid "Add New Order"
 msgstr ""
 
@@ -7147,6 +7243,8 @@ msgstr ""
 #: adminpages/orders.php:1012
 #: adminpages/reports/sales.php:311
 #: classes/class-pmpro-members-list-table.php:651
+#: adminpages/orders.php:1013
+#: classes/class-pmpro-members-list-table.php:657
 msgid "Show"
 msgstr ""
 
@@ -7166,6 +7264,7 @@ msgstr ""
 #: adminpages/orders.php:1041
 #: adminpages/orders.php:1024
 #: adminpages/orders.php:1016
+#: adminpages/orders.php:1017
 msgid "Within a Date Range"
 msgstr ""
 
@@ -7185,6 +7284,7 @@ msgstr ""
 #: adminpages/orders.php:1043
 #: adminpages/orders.php:1026
 #: adminpages/orders.php:1018
+#: adminpages/orders.php:1019
 msgid "Predefined Date Range"
 msgstr ""
 
@@ -7204,6 +7304,7 @@ msgstr ""
 #: adminpages/orders.php:1045
 #: adminpages/orders.php:1028
 #: adminpages/orders.php:1020
+#: adminpages/orders.php:1021
 msgid "Within a Level"
 msgstr ""
 
@@ -7216,6 +7317,7 @@ msgstr ""
 #: adminpages/orders.php:1047
 #: adminpages/orders.php:1030
 #: adminpages/orders.php:1022
+#: adminpages/orders.php:1023
 msgid "With a Discount Code"
 msgstr ""
 
@@ -7235,6 +7337,7 @@ msgstr ""
 #: adminpages/orders.php:1049
 #: adminpages/orders.php:1032
 #: adminpages/orders.php:1024
+#: adminpages/orders.php:1025
 msgid "Within a Status"
 msgstr ""
 
@@ -7247,6 +7350,7 @@ msgstr ""
 #: adminpages/orders.php:1051
 #: adminpages/orders.php:1034
 #: adminpages/orders.php:1026
+#: adminpages/orders.php:1027
 msgid "Only Paid Orders"
 msgstr ""
 
@@ -7259,6 +7363,7 @@ msgstr ""
 #: adminpages/orders.php:1053
 #: adminpages/orders.php:1036
 #: adminpages/orders.php:1028
+#: adminpages/orders.php:1029
 msgid "Only Free Orders"
 msgstr ""
 
@@ -7279,6 +7384,7 @@ msgstr ""
 #: adminpages/orders.php:1056
 #: adminpages/orders.php:1044
 #: adminpages/orders.php:1036
+#: adminpages/orders.php:1037
 msgid "From"
 msgstr ""
 
@@ -7299,6 +7405,7 @@ msgstr ""
 #: adminpages/orders.php:1071
 #: adminpages/orders.php:1059
 #: adminpages/orders.php:1051
+#: adminpages/orders.php:1052
 msgid "To"
 msgstr ""
 
@@ -7319,6 +7426,7 @@ msgstr ""
 #: adminpages/orders.php:1084
 #: adminpages/orders.php:1072
 #: adminpages/orders.php:1064
+#: adminpages/orders.php:1065
 msgid "filter by "
 msgstr ""
 
@@ -7340,6 +7448,7 @@ msgstr ""
 #: adminpages/reports/sales.php:57
 #: adminpages/orders.php:1077
 #: adminpages/orders.php:1069
+#: adminpages/orders.php:1070
 msgid "This Month"
 msgstr ""
 
@@ -7348,6 +7457,7 @@ msgstr ""
 #: adminpages/orders.php:1061
 #: adminpages/orders.php:1079
 #: adminpages/orders.php:1071
+#: adminpages/orders.php:1072
 msgid "Last Month"
 msgstr ""
 
@@ -7367,6 +7477,7 @@ msgstr ""
 #: adminpages/reports/sales.php:62
 #: adminpages/orders.php:1081
 #: adminpages/orders.php:1073
+#: adminpages/orders.php:1074
 msgid "This Year"
 msgstr ""
 
@@ -7375,6 +7486,7 @@ msgstr ""
 #: adminpages/orders.php:1065
 #: adminpages/orders.php:1083
 #: adminpages/orders.php:1075
+#: adminpages/orders.php:1076
 msgid "Last Year"
 msgstr ""
 
@@ -7395,6 +7507,7 @@ msgstr ""
 #: adminpages/orders.php:1135
 #: adminpages/orders.php:1122
 #: adminpages/orders.php:1114
+#: adminpages/orders.php:1115
 msgid "Filter"
 msgstr ""
 
@@ -7434,6 +7547,8 @@ msgstr ""
 #: adminpages/orders.php:1259
 #: adminpages/orders.php:1248
 #: adminpages/orders.php:1251
+#: adminpages/orders.php:1249
+#: adminpages/orders.php:1252
 msgid "Search Orders"
 msgstr ""
 
@@ -7456,6 +7571,7 @@ msgstr ""
 #: adminpages/orders.php:1345
 #: adminpages/orders.php:1332
 #: adminpages/orders.php:1324
+#: adminpages/orders.php:1325
 #, php-format
 msgid "%d orders found."
 msgstr ""
@@ -7498,6 +7614,8 @@ msgstr ""
 #: adminpages/orders.php:1539
 #: adminpages/orders.php:1337
 #: adminpages/orders.php:1531
+#: adminpages/orders.php:1338
+#: adminpages/orders.php:1532
 msgid "Payment"
 msgstr ""
 
@@ -7520,6 +7638,7 @@ msgstr ""
 #: adminpages/orders.php:1360
 #: adminpages/orders.php:1347
 #: adminpages/orders.php:1339
+#: adminpages/orders.php:1340
 msgid "Transaction IDs"
 msgstr ""
 
@@ -7548,6 +7667,7 @@ msgstr ""
 #: adminpages/orders.php:1495
 #: adminpages/orders.php:1375
 #: adminpages/orders.php:1367
+#: adminpages/orders.php:1368
 #, php-format
 msgid "Deleting orders is permanent and can affect active users. Are you sure you want to delete order %s?"
 msgstr ""
@@ -7572,6 +7692,7 @@ msgstr ""
 #: adminpages/orders.php:1466
 #: adminpages/orders.php:1548
 #: adminpages/orders.php:1540
+#: adminpages/orders.php:1541
 msgid "Subscription"
 msgstr ""
 
@@ -7623,6 +7744,7 @@ msgstr ""
 #: adminpages/orders.php:1565
 #: adminpages/orders.php:1564
 #: adminpages/orders.php:1556
+#: adminpages/orders.php:1557
 msgid "edit"
 msgstr ""
 
@@ -8436,6 +8558,7 @@ msgstr ""
 #: adminpages/paymentsettings.php:152
 #: adminpages/paymentsettings.php:154
 #: classes/class-pmpro-site-health.php:69
+#: adminpages/paymentsettings.php:132
 msgid "Payment Gateway"
 msgstr ""
 
@@ -8451,6 +8574,7 @@ msgstr ""
 #: adminpages/paymentsettings.php:238
 #: adminpages/paymentsettings.php:239
 #: adminpages/paymentsettings.php:248
+#: adminpages/paymentsettings.php:261
 msgid "SSL Settings"
 msgstr ""
 
@@ -8465,6 +8589,7 @@ msgstr ""
 #: adminpages/paymentsettings.php:118
 #: adminpages/paymentsettings.php:119
 #: adminpages/paymentsettings.php:120
+#: adminpages/paymentsettings.php:127
 msgid "Choose a Gateway"
 msgstr ""
 
@@ -8472,6 +8597,7 @@ msgstr ""
 #: adminpages/paymentsettings.php:138
 #: adminpages/paymentsettings.php:139
 #: adminpages/paymentsettings.php:140
+#: adminpages/paymentsettings.php:149
 msgid "It is not connected to a live gateway environment and cannot accept payments."
 msgstr ""
 
@@ -8479,6 +8605,7 @@ msgstr ""
 #: adminpages/paymentsettings.php:138
 #: adminpages/paymentsettings.php:139
 #: adminpages/paymentsettings.php:140
+#: adminpages/paymentsettings.php:147
 msgid "This gateway is for membership sites with Free levels or for sites that accept payment offline."
 msgstr ""
 
@@ -8489,6 +8616,7 @@ msgstr ""
 #: adminpages/paymentsettings.php:184
 #: adminpages/paymentsettings.php:185
 #: adminpages/paymentsettings.php:194
+#: adminpages/paymentsettings.php:201
 msgid "Currency and Tax Settings"
 msgstr ""
 
@@ -8504,6 +8632,7 @@ msgstr ""
 #: adminpages/paymentsettings.php:381
 #: adminpages/paymentsettings.php:386
 #: adminpages/paymentsettings.php:199
+#: adminpages/paymentsettings.php:206
 msgid "Currency"
 msgstr ""
 
@@ -8516,6 +8645,7 @@ msgstr ""
 #: adminpages/paymentsettings.php:400
 #: adminpages/paymentsettings.php:402
 #: adminpages/paymentsettings.php:215
+#: adminpages/paymentsettings.php:222
 msgid "Not all currencies will be supported by every gateway. Please check with your gateway."
 msgstr ""
 
@@ -8530,6 +8660,7 @@ msgstr ""
 #: adminpages/paymentsettings.php:406
 #: adminpages/paymentsettings.php:408
 #: adminpages/paymentsettings.php:220
+#: adminpages/paymentsettings.php:227
 msgid "Accepted Credit Card Types"
 msgstr ""
 
@@ -8544,6 +8675,7 @@ msgstr ""
 #: adminpages/paymentsettings.php:443
 #: adminpages/paymentsettings.php:445
 #: adminpages/paymentsettings.php:234
+#: adminpages/paymentsettings.php:241
 msgid "Sales Tax"
 msgstr ""
 
@@ -8575,6 +8707,8 @@ msgstr ""
 #: pages/billing.php:143
 #: adminpages/paymentsettings.php:234
 #: pages/billing.php:179
+#: adminpages/paymentsettings.php:241
+#: pages/billing.php:181
 msgid "optional"
 msgstr ""
 
@@ -8589,6 +8723,7 @@ msgstr ""
 #: adminpages/paymentsettings.php:446
 #: adminpages/paymentsettings.php:448
 #: adminpages/paymentsettings.php:237
+#: adminpages/paymentsettings.php:244
 msgid "Tax State"
 msgstr ""
 
@@ -8603,6 +8738,7 @@ msgstr ""
 #: adminpages/paymentsettings.php:447
 #: adminpages/paymentsettings.php:449
 #: adminpages/paymentsettings.php:238
+#: adminpages/paymentsettings.php:245
 msgid "abbreviation, e.g. \"PA\""
 msgstr ""
 
@@ -8613,6 +8749,7 @@ msgstr ""
 #: adminpages/paymentsettings.php:229
 #: adminpages/paymentsettings.php:230
 #: adminpages/paymentsettings.php:239
+#: adminpages/paymentsettings.php:246
 msgid "Tax Rate"
 msgstr ""
 
@@ -8627,6 +8764,7 @@ msgstr ""
 #: adminpages/paymentsettings.php:449
 #: adminpages/paymentsettings.php:451
 #: adminpages/paymentsettings.php:240
+#: adminpages/paymentsettings.php:247
 msgid "decimal, e.g. \"0.06\""
 msgstr ""
 
@@ -8648,6 +8786,7 @@ msgstr ""
 #: adminpages/paymentsettings.php:455
 #: adminpages/paymentsettings.php:457
 #: adminpages/paymentsettings.php:253
+#: adminpages/paymentsettings.php:266
 msgid "Force SSL"
 msgstr ""
 
@@ -8658,6 +8797,7 @@ msgstr ""
 #: adminpages/paymentsettings.php:250
 #: adminpages/paymentsettings.php:251
 #: adminpages/paymentsettings.php:260
+#: adminpages/paymentsettings.php:273
 msgid "Your Site URL starts with https:// and so PMPro will allow your entire site to be served over HTTPS."
 msgstr ""
 
@@ -8672,6 +8812,7 @@ msgstr ""
 #: adminpages/paymentsettings.php:461
 #: adminpages/paymentsettings.php:463
 #: adminpages/paymentsettings.php:268
+#: adminpages/paymentsettings.php:281
 msgid "Yes (with JavaScript redirects)"
 msgstr ""
 
@@ -8683,6 +8824,7 @@ msgstr ""
 #: adminpages/paymentsettings.php:260
 #: adminpages/paymentsettings.php:261
 #: adminpages/paymentsettings.php:270
+#: adminpages/paymentsettings.php:283
 msgid "Recommended: Yes. Try the JavaScript redirects setting if you are having issues with infinite redirect loops."
 msgstr ""
 
@@ -8698,6 +8840,7 @@ msgstr ""
 #: adminpages/paymentsettings.php:468
 #: adminpages/paymentsettings.php:470
 #: adminpages/paymentsettings.php:278
+#: adminpages/paymentsettings.php:291
 msgid "SSL Seal Code"
 msgstr ""
 
@@ -8716,6 +8859,7 @@ msgstr ""
 #: adminpages/paymentsettings.php:277
 #: adminpages/paymentsettings.php:278
 #: adminpages/paymentsettings.php:287
+#: adminpages/paymentsettings.php:306
 msgid "Extra HTTPS URL Filter"
 msgstr ""
 
@@ -8727,6 +8871,7 @@ msgstr ""
 #: adminpages/paymentsettings.php:280
 #: adminpages/paymentsettings.php:281
 #: adminpages/paymentsettings.php:290
+#: adminpages/paymentsettings.php:309
 msgid "Pass all generated HTML through a URL filter to add HTTPS to URLs used on secure pages. Check this if you are using SSL and have warnings on your checkout pages."
 msgstr ""
 
@@ -8784,6 +8929,7 @@ msgstr ""
 #: adminpages/reports/sales.php:54
 #: adminpages/reports/sales.php:66
 #: adminpages/reports/sales.php:67
+#: adminpages/reports/sales.php:542
 msgid "All Time"
 msgstr ""
 
@@ -8819,6 +8965,7 @@ msgstr ""
 #: classes/class-pmpro-members-list-table.php:260
 #: classes/class-pmpro-members-list-table.php:265
 #: classes/class-pmpro-members-list-table.php:233
+#: adminpages/reports/login.php:105
 msgid "All Users"
 msgstr ""
 
@@ -8865,6 +9012,8 @@ msgstr ""
 #: classes/class.pmproemail.php:195
 #: classes/class.pmproemail.php:235
 #: classes/class-pmpro-members-list-table.php:653
+#: adminpages/reports/login.php:106
+#: classes/class-pmpro-members-list-table.php:659
 msgid "All Levels"
 msgstr ""
 
@@ -8874,11 +9023,13 @@ msgstr ""
 #: adminpages/reports/login.php:164
 #: adminpages/reports/login.php:168
 #: adminpages/reports/login.php:184
+#: adminpages/reports/login.php:188
 msgid "Last Visit"
 msgstr ""
 
 #: adminpages/reports/login.php:186
 #: adminpages/reports/login.php:185
+#: adminpages/reports/login.php:189
 msgid "Visits This Week"
 msgstr ""
 
@@ -8890,11 +9041,13 @@ msgstr ""
 #: adminpages/reports/login.php:165
 #: adminpages/reports/login.php:169
 #: adminpages/reports/login.php:186
+#: adminpages/reports/login.php:190
 msgid "Visits This Month"
 msgstr ""
 
 #: adminpages/reports/login.php:188
 #: adminpages/reports/login.php:187
+#: adminpages/reports/login.php:191
 msgid "Visits This Year"
 msgstr ""
 
@@ -8902,11 +9055,13 @@ msgstr ""
 #: adminpages/reports/login.php:28
 #: adminpages/reports/login.php:29
 #: adminpages/reports/login.php:188
+#: adminpages/reports/login.php:192
 msgid "Visits All Time"
 msgstr ""
 
 #: adminpages/reports/login.php:190
 #: adminpages/reports/login.php:189
+#: adminpages/reports/login.php:193
 msgid "Views This Week"
 msgstr ""
 
@@ -8918,11 +9073,13 @@ msgstr ""
 #: adminpages/reports/login.php:167
 #: adminpages/reports/login.php:171
 #: adminpages/reports/login.php:190
+#: adminpages/reports/login.php:194
 msgid "Views This Month"
 msgstr ""
 
 #: adminpages/reports/login.php:192
 #: adminpages/reports/login.php:191
+#: adminpages/reports/login.php:195
 msgid "Views This Year"
 msgstr ""
 
@@ -8930,6 +9087,7 @@ msgstr ""
 #: adminpages/reports/login.php:33
 #: adminpages/reports/login.php:34
 #: adminpages/reports/login.php:192
+#: adminpages/reports/login.php:196
 msgid "Views All Time"
 msgstr ""
 
@@ -8939,11 +9097,13 @@ msgstr ""
 #: adminpages/reports/login.php:169
 #: adminpages/reports/login.php:173
 #: adminpages/reports/login.php:193
+#: adminpages/reports/login.php:197
 msgid "Last Login"
 msgstr ""
 
 #: adminpages/reports/login.php:195
 #: adminpages/reports/login.php:194
+#: adminpages/reports/login.php:198
 msgid "Logins This Week"
 msgstr ""
 
@@ -8955,11 +9115,13 @@ msgstr ""
 #: adminpages/reports/login.php:170
 #: adminpages/reports/login.php:174
 #: adminpages/reports/login.php:195
+#: adminpages/reports/login.php:199
 msgid "Logins This Month"
 msgstr ""
 
 #: adminpages/reports/login.php:197
 #: adminpages/reports/login.php:196
+#: adminpages/reports/login.php:200
 msgid "Logins This Year"
 msgstr ""
 
@@ -8967,6 +9129,7 @@ msgstr ""
 #: adminpages/reports/login.php:38
 #: adminpages/reports/login.php:39
 #: adminpages/reports/login.php:197
+#: adminpages/reports/login.php:201
 msgid "Logins All Time"
 msgstr ""
 
@@ -8990,6 +9153,7 @@ msgstr ""
 #: classes/class-pmpro-members-list-table.php:259
 #: adminpages/reports/history.php:236
 #: classes/class-pmpro-members-list-table.php:227
+#: adminpages/reports/login.php:266
 msgid "Search all levels"
 msgstr ""
 
@@ -9187,20 +9351,27 @@ msgstr ""
 
 #: adminpages/templates/orders-email.php:14
 #: adminpages/templates/orders-print.php:50
+#: adminpages/templates/orders-email.php:17
+#: adminpages/templates/orders-print.php:53
 msgid "Invoice #: "
 msgstr ""
 
 #: adminpages/templates/orders-email.php:18
 #: adminpages/templates/orders-print.php:54
+#: adminpages/templates/orders-email.php:21
+#: adminpages/templates/orders-print.php:57
 msgid "Date:"
 msgstr ""
 
 #: adminpages/templates/orders-email.php:24
+#: adminpages/templates/orders-email.php:27
 msgid "Bill to:"
 msgstr ""
 
 #: adminpages/templates/orders-email.php:47
 #: adminpages/templates/orders-print.php:76
+#: adminpages/templates/orders-email.php:50
+#: adminpages/templates/orders-print.php:79
 msgid "Item"
 msgstr ""
 
@@ -9210,6 +9381,8 @@ msgstr ""
 #: pages/levels.php:14
 #: pages/levels.php:36
 #: pages/levels.php:28
+#: adminpages/templates/orders-email.php:51
+#: adminpages/templates/orders-print.php:80
 msgid "Price"
 msgstr ""
 
@@ -9467,6 +9640,7 @@ msgstr ""
 #: classes/class-pmpro-members-list-table.php:234
 #: classes/class-pmpro-members-list-table.php:634
 #: classes/class-pmpro-members-list-table.php:663
+#: classes/class-pmpro-members-list-table.php:669
 msgid "Cancelled Members"
 msgstr ""
 
@@ -9485,6 +9659,7 @@ msgstr ""
 #: classes/class-pmpro-members-list-table.php:235
 #: classes/class-pmpro-members-list-table.php:635
 #: classes/class-pmpro-members-list-table.php:664
+#: classes/class-pmpro-members-list-table.php:670
 msgid "Expired Members"
 msgstr ""
 
@@ -9504,6 +9679,7 @@ msgstr ""
 #: classes/class-pmpro-members-list-table.php:236
 #: classes/class-pmpro-members-list-table.php:636
 #: classes/class-pmpro-members-list-table.php:665
+#: classes/class-pmpro-members-list-table.php:671
 msgid "Old Members"
 msgstr ""
 
@@ -9511,6 +9687,7 @@ msgstr ""
 #: shortcodes/pmpro_account.php:145
 #: classes/class-pmpro-members-list-table.php:541
 #: classes/class-pmpro-members-list-table.php:570
+#: classes/class-pmpro-members-list-table.php:576
 msgid "&#8212;"
 msgstr ""
 
@@ -10721,6 +10898,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:1316
 #: classes/gateways/class.pmprogateway_stripe.php:1322
 #: classes/gateways/class.pmprogateway_stripe.php:781
+#: pages/billing.php:377
 msgid "Card Number"
 msgstr ""
 
@@ -10779,6 +10957,7 @@ msgstr ""
 #: pages/checkout.php:612
 #: pages/checkout.php:615
 #: pages/billing.php:410
+#: pages/billing.php:417
 msgid "CVV"
 msgstr ""
 
@@ -10850,6 +11029,7 @@ msgstr ""
 #: pages/checkout.php:616
 #: pages/billing.php:411
 #: pages/checkout.php:425
+#: pages/billing.php:418
 msgid "what's this?"
 msgstr ""
 
@@ -10979,6 +11159,10 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_braintree.php:985
 #: classes/gateways/class.pmprogateway_braintree.php:986
 #: classes/gateways/class.pmprogateway_braintree.php:991
+#: classes/gateways/class.pmprogateway_braintree.php:680
+#: classes/gateways/class.pmprogateway_braintree.php:851
+#: classes/gateways/class.pmprogateway_braintree.php:960
+#: classes/gateways/class.pmprogateway_braintree.php:987
 msgid "Payment error: Please contact the webmaster (braintree-load-error)"
 msgstr ""
 
@@ -11037,6 +11221,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_braintree.php:651
 #: classes/gateways/class.pmprogateway_braintree.php:656
 #: classes/gateways/class.pmprogateway_braintree.php:657
+#: classes/gateways/class.pmprogateway_braintree.php:653
 msgid "Error during settlement:"
 msgstr ""
 
@@ -11056,6 +11241,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_braintree.php:660
 #: classes/gateways/class.pmprogateway_braintree.php:665
 #: classes/gateways/class.pmprogateway_braintree.php:666
+#: classes/gateways/class.pmprogateway_braintree.php:662
 msgid "Error during charge:"
 msgstr ""
 
@@ -11066,6 +11252,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_braintree.php:752
 #: classes/gateways/class.pmprogateway_braintree.php:757
 #: classes/gateways/class.pmprogateway_braintree.php:758
+#: classes/gateways/class.pmprogateway_braintree.php:753
 #, php-format
 msgid "Failed to update customer: %s"
 msgstr ""
@@ -11087,6 +11274,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_braintree.php:764
 #: classes/gateways/class.pmprogateway_braintree.php:769
 #: classes/gateways/class.pmprogateway_braintree.php:770
+#: classes/gateways/class.pmprogateway_braintree.php:765
 msgid "Failed to update customer."
 msgstr ""
 
@@ -11107,6 +11295,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_braintree.php:812
 #: classes/gateways/class.pmprogateway_braintree.php:817
 #: classes/gateways/class.pmprogateway_braintree.php:818
+#: classes/gateways/class.pmprogateway_braintree.php:813
 msgid "Failed to create customer."
 msgstr ""
 
@@ -11127,6 +11316,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_braintree.php:819
 #: classes/gateways/class.pmprogateway_braintree.php:824
 #: classes/gateways/class.pmprogateway_braintree.php:825
+#: classes/gateways/class.pmprogateway_braintree.php:820
 msgid "Error creating customer record with Braintree:"
 msgstr ""
 
@@ -11134,6 +11324,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_braintree.php:934
 #: classes/gateways/class.pmprogateway_braintree.php:935
 #: classes/gateways/class.pmprogateway_braintree.php:940
+#: classes/gateways/class.pmprogateway_braintree.php:936
 #, php-format
 msgid "Error subscribing customer to plan with Braintree: %s (%s)"
 msgstr ""
@@ -11142,6 +11333,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_braintree.php:949
 #: classes/gateways/class.pmprogateway_braintree.php:950
 #: classes/gateways/class.pmprogateway_braintree.php:955
+#: classes/gateways/class.pmprogateway_braintree.php:951
 #, php-format
 msgid "Failed to subscribe with Braintree: %s"
 msgstr ""
@@ -11220,6 +11412,7 @@ msgstr ""
 
 #: classes/gateways/class.pmprogateway_braintree.php:1082
 #: classes/gateways/class.pmprogateway_braintree.php:1083
+#: classes/gateways/class.pmprogateway_braintree.php:1085
 msgid "Error getting subscription with Braintree:"
 msgstr ""
 
@@ -11643,6 +11836,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_cybersource.php:921
 #: includes/license.php:159
 #: includes/license.php:164
+#: includes/license.php:165
 msgid "Unknown error."
 msgstr ""
 
@@ -11976,6 +12170,7 @@ msgstr ""
 #: pages/checkout.php:526
 #: classes/gateways/class.pmprogateway_paypalexpress.php:503
 #: classes/gateways/class.pmprogateway_paypalexpress.php:507
+#: pages/checkout.php:538
 msgid "Submit and Check Out"
 msgstr ""
 
@@ -12025,6 +12220,7 @@ msgstr ""
 #: pages/checkout.php:526
 #: classes/gateways/class.pmprogateway_paypalexpress.php:503
 #: classes/gateways/class.pmprogateway_paypalexpress.php:507
+#: pages/checkout.php:538
 msgid "Submit and Confirm"
 msgstr ""
 
@@ -12070,6 +12266,8 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_paypalexpress.php:841
 #: classes/gateways/class.pmprogateway_paypalexpress.php:845
 #: classes/gateways/class.pmprogateway_paypalexpress.php:854
+#: classes/gateways/class.pmprogateway_paypal.php:726
+#: classes/gateways/class.pmprogateway_paypalexpress.php:865
 msgid "Please contact the site owner or cancel your subscription from within PayPal to make sure you are not charged going forward."
 msgstr ""
 
@@ -12142,6 +12340,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_paypalexpress.php:791
 #: classes/gateways/class.pmprogateway_paypalexpress.php:795
 #: classes/gateways/class.pmprogateway_paypalexpress.php:804
+#: classes/gateways/class.pmprogateway_paypalexpress.php:815
 msgid "Something went wrong creating plan with PayPal; missing PROFILESTATUS."
 msgstr ""
 
@@ -12149,6 +12348,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_paypalexpress.php:792
 #: classes/gateways/class.pmprogateway_paypalexpress.php:796
 #: classes/gateways/class.pmprogateway_paypalexpress.php:805
+#: classes/gateways/class.pmprogateway_paypalexpress.php:816
 msgid "Error creating plan with PayPal."
 msgstr ""
 
@@ -12408,6 +12608,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:595
 #: classes/gateways/class.pmprogateway_stripe.php:601
 #: classes/gateways/class.pmprogateway_stripe.php:365
+#: classes/gateways/class.pmprogateway_stripe.php:358
 msgid "Rebuild Webhook"
 msgstr ""
 
@@ -12770,6 +12971,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:2650
 #: classes/gateways/class.pmprogateway_stripe.php:2646
 #: classes/gateways/class.pmprogateway_stripe.php:2648
+#: classes/gateways/class.pmprogateway_stripe.php:2644
 msgid "Subscription Updates"
 msgstr ""
 
@@ -12893,6 +13095,8 @@ msgstr ""
 #: pages/billing.php:434
 #: classes/gateways/class.pmprogateway_stripe.php:2651
 #: classes/gateways/class.pmprogateway_stripe.php:2653
+#: classes/gateways/class.pmprogateway_stripe.php:2649
+#: pages/billing.php:441
 msgid "Update"
 msgstr ""
 
@@ -13058,6 +13262,8 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:4065
 #: classes/gateways/class.pmprogateway_stripe.php:4062
 #: classes/gateways/class.pmprogateway_stripe.php:4067
+#: classes/gateways/class.pmprogateway_stripe.php:4058
+#: classes/gateways/class.pmprogateway_stripe.php:4063
 msgid "Error getting subscription with Stripe:"
 msgstr ""
 
@@ -13127,6 +13333,8 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:4166
 #: classes/gateways/class.pmprogateway_stripe.php:4163
 #: classes/gateways/class.pmprogateway_stripe.php:4168
+#: classes/gateways/class.pmprogateway_stripe.php:4159
+#: classes/gateways/class.pmprogateway_stripe.php:4164
 msgid "Error creating plan with Stripe:"
 msgstr ""
 
@@ -13191,6 +13399,8 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:4211
 #: classes/gateways/class.pmprogateway_stripe.php:4199
 #: classes/gateways/class.pmprogateway_stripe.php:4213
+#: classes/gateways/class.pmprogateway_stripe.php:4195
+#: classes/gateways/class.pmprogateway_stripe.php:4209
 msgid "Error subscribing customer to plan with Stripe:"
 msgstr ""
 
@@ -13230,6 +13440,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:3045
 #: classes/gateways/class.pmprogateway_stripe.php:3041
 #: classes/gateways/class.pmprogateway_stripe.php:3043
+#: classes/gateways/class.pmprogateway_stripe.php:3039
 msgid "Could not cancel the old subscription. Updates have not been processed."
 msgstr ""
 
@@ -13365,6 +13576,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:4331
 #: classes/gateways/class.pmprogateway_stripe.php:4327
 #: classes/gateways/class.pmprogateway_stripe.php:4333
+#: classes/gateways/class.pmprogateway_stripe.php:4323
 msgid "Error: "
 msgstr ""
 
@@ -13397,6 +13609,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:4349
 #: classes/gateways/class.pmprogateway_stripe.php:4345
 #: classes/gateways/class.pmprogateway_stripe.php:4347
+#: classes/gateways/class.pmprogateway_stripe.php:4343
 #, php-format
 msgid "Error: Unkown error while refunding charge #%s"
 msgstr ""
@@ -13443,6 +13656,9 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:2546
 #: classes/gateways/class.pmprogateway_stripe.php:2583
 #: classes/gateways/class.pmprogateway_stripe.php:3388
+#: classes/gateways/class.pmprogateway_stripe.php:2542
+#: classes/gateways/class.pmprogateway_stripe.php:2579
+#: classes/gateways/class.pmprogateway_stripe.php:3384
 msgid "Customer authentication is required to finish setting up your subscription. Please complete the verification steps issued by your payment provider."
 msgstr ""
 
@@ -15337,6 +15553,8 @@ msgstr ""
 #: includes/functions.php:496
 #: includes/functions.php:393
 #: includes/functions.php:509
+#: includes/functions.php:397
+#: includes/functions.php:515
 #, php-format
 msgid "The price for membership is <strong>%s</strong> now"
 msgstr ""
@@ -15347,6 +15565,7 @@ msgstr ""
 #: pages/levels.php:43
 #: pages/levels.php:55
 #: includes/functions.php:396
+#: includes/functions.php:400
 msgid "Free"
 msgstr ""
 
@@ -15375,6 +15594,8 @@ msgstr ""
 #: includes/functions.php:498
 #: includes/functions.php:398
 #: includes/functions.php:511
+#: includes/functions.php:402
+#: includes/functions.php:517
 #, php-format
 msgid "<strong>%s</strong> now"
 msgstr ""
@@ -15385,6 +15606,7 @@ msgstr ""
 #: includes/functions.php:388
 #: includes/functions.php:393
 #: includes/functions.php:406
+#: includes/functions.php:410
 #, php-format
 msgid " and then <strong>%1$s per %2$s for %3$d more %4$s</strong>."
 msgstr ""
@@ -15395,6 +15617,7 @@ msgstr ""
 #: includes/functions.php:390
 #: includes/functions.php:395
 #: includes/functions.php:408
+#: includes/functions.php:412
 #, php-format
 msgid " and then <strong>%1$s every %2$d %3$s for %4$d more payments</strong>."
 msgstr ""
@@ -15405,6 +15628,7 @@ msgstr ""
 #: includes/functions.php:393
 #: includes/functions.php:398
 #: includes/functions.php:411
+#: includes/functions.php:415
 #, php-format
 msgid " and then <strong>%1$s after %2$d %3$s</strong>."
 msgstr ""
@@ -15415,6 +15639,7 @@ msgstr ""
 #: includes/functions.php:398
 #: includes/functions.php:403
 #: includes/functions.php:416
+#: includes/functions.php:420
 #, php-format
 msgid "The price for membership is <strong>%1$s per %2$s</strong>."
 msgstr ""
@@ -15425,6 +15650,7 @@ msgstr ""
 #: includes/functions.php:400
 #: includes/functions.php:405
 #: includes/functions.php:418
+#: includes/functions.php:422
 #, php-format
 msgid "<strong>%1$s per %2$s</strong>."
 msgstr ""
@@ -15435,6 +15661,7 @@ msgstr ""
 #: includes/functions.php:404
 #: includes/functions.php:409
 #: includes/functions.php:422
+#: includes/functions.php:426
 #, php-format
 msgid "The price for membership is <strong>%1$s every %2$d %3$s</strong>."
 msgstr ""
@@ -15445,6 +15672,7 @@ msgstr ""
 #: includes/functions.php:406
 #: includes/functions.php:411
 #: includes/functions.php:424
+#: includes/functions.php:428
 #, php-format
 msgid "<strong>%1$s every %2$d %3$s</strong>."
 msgstr ""
@@ -15455,6 +15683,7 @@ msgstr ""
 #: includes/functions.php:411
 #: includes/functions.php:416
 #: includes/functions.php:429
+#: includes/functions.php:433
 #, php-format
 msgid " and then <strong>%1$s per %2$s</strong>."
 msgstr ""
@@ -15465,6 +15694,7 @@ msgstr ""
 #: includes/functions.php:413
 #: includes/functions.php:418
 #: includes/functions.php:431
+#: includes/functions.php:435
 #, php-format
 msgid " and then <strong>%1$s every %2$d %3$s</strong>."
 msgstr ""
@@ -15490,6 +15720,7 @@ msgstr ""
 #: includes/functions.php:433
 #: pages/levels.php:82
 #: includes/functions.php:446
+#: includes/functions.php:450
 msgid "After your initial payment, your first payment is Free."
 msgstr ""
 
@@ -15514,6 +15745,7 @@ msgstr ""
 #: includes/functions.php:435
 #: pages/levels.php:86
 #: includes/functions.php:448
+#: includes/functions.php:452
 #, php-format
 msgid "After your initial payment, your first %d payments are Free."
 msgstr ""
@@ -15538,6 +15770,7 @@ msgstr ""
 #: includes/functions.php:439
 #: pages/levels.php:93
 #: includes/functions.php:452
+#: includes/functions.php:456
 #, php-format
 msgid "After your initial payment, your first payment will cost %s."
 msgstr ""
@@ -15548,6 +15781,7 @@ msgstr ""
 #: includes/functions.php:436
 #: includes/functions.php:441
 #: includes/functions.php:454
+#: includes/functions.php:458
 #, php-format
 msgid "After your initial payment, your first %1$d payments will cost %2$s."
 msgstr ""
@@ -15564,6 +15798,8 @@ msgstr ""
 #: includes/functions.php:552
 #: includes/functions.php:464
 #: includes/functions.php:565
+#: includes/functions.php:468
+#: includes/functions.php:571
 #, php-format
 msgid "Customers in %1$s will be charged %2$s%% tax."
 msgstr ""
@@ -15574,6 +15810,7 @@ msgstr ""
 #: includes/functions.php:504
 #: includes/functions.php:509
 #: includes/functions.php:522
+#: includes/functions.php:528
 #, php-format
 msgid "<strong>%1$s per %2$s for %3$d more %4$s</strong>"
 msgstr ""
@@ -15584,6 +15821,7 @@ msgstr ""
 #: includes/functions.php:506
 #: includes/functions.php:511
 #: includes/functions.php:524
+#: includes/functions.php:530
 #, php-format
 msgid "<strong>%1$s every %2$d %3$s for %4$d more payments</strong>"
 msgstr ""
@@ -15594,6 +15832,7 @@ msgstr ""
 #: includes/functions.php:509
 #: includes/functions.php:514
 #: includes/functions.php:527
+#: includes/functions.php:533
 #, php-format
 msgid "<strong>%1$s after %2$d %3$s</strong>"
 msgstr ""
@@ -15604,6 +15843,7 @@ msgstr ""
 #: includes/functions.php:512
 #: includes/functions.php:517
 #: includes/functions.php:530
+#: includes/functions.php:536
 #, php-format
 msgid "<strong>%1$s every %2$s</strong>"
 msgstr ""
@@ -15614,6 +15854,7 @@ msgstr ""
 #: includes/functions.php:514
 #: includes/functions.php:519
 #: includes/functions.php:532
+#: includes/functions.php:538
 #, php-format
 msgid "<strong>%1$s every %2$d %3$s</strong>"
 msgstr ""
@@ -15645,6 +15886,7 @@ msgstr ""
 #: includes/functions.php:563
 #: includes/functions.php:568
 #: includes/functions.php:582
+#: includes/functions.php:588
 #, php-format
 msgid "Membership expires after %1$d %2$s."
 msgstr ""
@@ -15655,6 +15897,7 @@ msgstr ""
 #: includes/functions.php:582
 #: includes/functions.php:587
 #: includes/functions.php:601
+#: includes/functions.php:607
 #, php-format
 msgid "%1$s membership expires after %2$d %3$s"
 msgstr ""
@@ -15686,6 +15929,7 @@ msgstr ""
 #: includes/functions.php:964
 #: includes/functions.php:968
 #: includes/functions.php:979
+#: includes/functions.php:986
 msgid "User ID not found."
 msgstr ""
 
@@ -15699,6 +15943,7 @@ msgstr ""
 #: includes/functions.php:976
 #: includes/functions.php:986
 #: includes/functions.php:997
+#: includes/functions.php:1004
 msgid "No membership_id specified in pmpro_changeMembershipLevel."
 msgstr ""
 
@@ -15740,6 +15985,8 @@ msgstr ""
 #: includes/functions.php:1000
 #: includes/functions.php:1003
 #: includes/functions.php:1011
+#: includes/functions.php:1010
+#: includes/functions.php:1018
 msgid "Invalid level."
 msgstr ""
 
@@ -15801,6 +16048,7 @@ msgstr ""
 #: includes/functions.php:1057
 #: includes/functions.php:1074
 #: includes/functions.php:1085
+#: includes/functions.php:1092
 msgid "Error interacting with database"
 msgstr ""
 
@@ -15820,6 +16068,7 @@ msgstr ""
 #: includes/functions.php:1163
 #: includes/functions.php:1180
 #: includes/functions.php:1191
+#: includes/functions.php:1198
 #, php-format
 msgid "Error interacting with database: %s"
 msgstr ""
@@ -15891,6 +16140,8 @@ msgstr ""
 #: includes/functions.php:1342
 #: includes/functions.php:1335
 #: includes/functions.php:1373
+#: includes/functions.php:1343
+#: includes/functions.php:1382
 msgid "Membership level not found."
 msgstr ""
 
@@ -15924,6 +16175,7 @@ msgstr ""
 #: includes/functions.php:1709
 #: includes/functions.php:1722
 #: includes/functions.php:1753
+#: includes/functions.php:1767
 msgid "No code was given to check."
 msgstr ""
 
@@ -15964,6 +16216,7 @@ msgstr ""
 #: includes/functions.php:1718
 #: includes/functions.php:1731
 #: includes/functions.php:1762
+#: includes/functions.php:1776
 msgid "The discount code could not be found."
 msgstr ""
 
@@ -16004,6 +16257,7 @@ msgstr ""
 #: includes/functions.php:1733
 #: includes/functions.php:1746
 #: includes/functions.php:1777
+#: includes/functions.php:1791
 #, php-format
 msgid "This discount code goes into effect on %s."
 msgstr ""
@@ -16045,6 +16299,7 @@ msgstr ""
 #: includes/functions.php:1740
 #: includes/functions.php:1753
 #: includes/functions.php:1784
+#: includes/functions.php:1798
 #, php-format
 msgid "This discount code expired on %s."
 msgstr ""
@@ -16086,6 +16341,7 @@ msgstr ""
 #: includes/functions.php:1749
 #: includes/functions.php:1762
 #: includes/functions.php:1793
+#: includes/functions.php:1807
 msgid "This discount code is no longer valid."
 msgstr ""
 
@@ -16125,6 +16381,7 @@ msgstr ""
 #: includes/functions.php:1768
 #: includes/functions.php:1781
 #: includes/functions.php:1812
+#: includes/functions.php:1826
 msgid "This discount code does not apply to this membership level."
 msgstr ""
 
@@ -16165,6 +16422,7 @@ msgstr ""
 #: includes/functions.php:1806
 #: includes/functions.php:1819
 #: includes/functions.php:1850
+#: includes/functions.php:1864
 msgid "This discount code is okay."
 msgstr ""
 
@@ -16205,6 +16463,7 @@ msgstr ""
 #: includes/functions.php:1834
 #: includes/functions.php:1847
 #: includes/functions.php:1878
+#: includes/functions.php:1894
 msgid "and"
 msgstr ""
 
@@ -16250,6 +16509,7 @@ msgstr ""
 #: includes/functions.php:2388
 #: includes/functions.php:2409
 #: includes/functions.php:2440
+#: includes/functions.php:2460
 msgid "Sign Up for !!name!! Now"
 msgstr ""
 
@@ -16267,6 +16527,7 @@ msgstr ""
 #: includes/functions.php:2412
 #: includes/functions.php:2433
 #: includes/functions.php:2464
+#: includes/functions.php:2484
 msgid "Sign Up Now"
 msgstr ""
 
@@ -16290,6 +16551,7 @@ msgstr ""
 #: pages/invoice.php:88
 #: includes/functions.php:2842
 #: includes/functions.php:2873
+#: includes/functions.php:2895
 msgid "Subtotal"
 msgstr ""
 
@@ -16311,6 +16573,7 @@ msgstr ""
 #: pages/invoice.php:91
 #: includes/functions.php:2857
 #: includes/functions.php:2888
+#: includes/functions.php:2910
 msgid "Coupon"
 msgstr ""
 
@@ -17071,12 +17334,14 @@ msgstr ""
 
 #: includes/privacy.php:512
 #: includes/privacy.php:507
+#: includes/privacy.php:513
 #, php-format
 msgid "%s agreed to %s (ID #%d, last modified %s) on %s."
 msgstr ""
 
 #: includes/privacy.php:520
 #: includes/privacy.php:515
+#: includes/privacy.php:521
 msgid "That post has since been updated."
 msgstr ""
 
@@ -17251,6 +17516,7 @@ msgstr ""
 #: pages/checkout.php:234
 #: includes/profile.php:759
 #: includes/profile.php:755
+#: pages/billing.php:166
 msgid "First Name"
 msgstr ""
 
@@ -17296,6 +17562,7 @@ msgstr ""
 #: pages/checkout.php:238
 #: includes/profile.php:760
 #: includes/profile.php:756
+#: pages/billing.php:170
 msgid "Last Name"
 msgstr ""
 
@@ -17543,6 +17810,7 @@ msgstr ""
 #: pages/billing.php:52
 #: pages/billing.php:59
 #: pages/billing.php:72
+#: pages/billing.php:73
 msgid "Membership Fee"
 msgstr ""
 
@@ -17561,6 +17829,7 @@ msgstr ""
 #: pages/billing.php:63
 #: pages/levels.php:70
 #: pages/billing.php:76
+#: pages/billing.php:77
 #, php-format
 msgid "%s every %d %s."
 msgstr ""
@@ -17580,6 +17849,7 @@ msgstr ""
 #: pages/billing.php:65
 #: pages/levels.php:66
 #: pages/billing.php:78
+#: pages/billing.php:79
 #, php-format
 msgid "%s per %s."
 msgstr ""
@@ -17600,6 +17870,7 @@ msgstr ""
 #: pages/billing.php:68
 #: pages/billing.php:76
 #: pages/billing.php:89
+#: pages/billing.php:90
 msgid "Duration"
 msgstr ""
 
@@ -17623,6 +17894,7 @@ msgstr ""
 #: pages/billing.php:96
 #: pages/confirmation.php:95
 #: pages/invoice.php:85
+#: pages/billing.php:98
 msgid "Payment Method"
 msgstr ""
 
@@ -17644,6 +17916,7 @@ msgstr ""
 #: pages/billing.php:98
 #: pages/confirmation.php:97
 #: pages/invoice.php:87
+#: pages/billing.php:100
 msgid "ending in"
 msgstr ""
 
@@ -17674,6 +17947,8 @@ msgstr ""
 #: pages/billing.php:131
 #: pages/confirmation.php:149
 #: pages/invoice.php:155
+#: pages/billing.php:127
+#: pages/billing.php:133
 msgid "View Your Membership Account &rarr;"
 msgstr ""
 
@@ -17692,11 +17967,13 @@ msgstr ""
 #: pages/billing.php:94
 #: pages/billing.php:100
 #: pages/billing.php:128
+#: pages/billing.php:130
 msgid "Your payment subscription is managed by PayPal. Please <a href=\"http://www.paypal.com\">login to PayPal here</a> to update your billing information."
 msgstr ""
 
 #: pages/billing.php:124
 #: pages/billing.php:136
+#: pages/billing.php:138
 msgid "Your billing information cannot be updated at this time."
 msgstr ""
 
@@ -17753,6 +18030,7 @@ msgstr ""
 #: pages/checkout.php:230
 #: pages/confirmation.php:78
 #: pages/invoice.php:68
+#: pages/billing.php:162
 msgid "Billing Address"
 msgstr ""
 
@@ -17790,6 +18068,7 @@ msgstr ""
 #: pages/checkout.php:344
 #: pages/billing.php:174
 #: pages/checkout.php:242
+#: pages/billing.php:176
 msgid "Address 1"
 msgstr ""
 
@@ -17827,6 +18106,7 @@ msgstr ""
 #: pages/checkout.php:348
 #: pages/billing.php:178
 #: pages/checkout.php:246
+#: pages/billing.php:180
 msgid "Address 2"
 msgstr ""
 
@@ -17864,6 +18144,7 @@ msgstr ""
 #: pages/checkout.php:358
 #: pages/billing.php:188
 #: pages/checkout.php:253
+#: pages/billing.php:191
 msgid "City"
 msgstr ""
 
@@ -17901,6 +18182,7 @@ msgstr ""
 #: pages/checkout.php:362
 #: pages/billing.php:192
 #: pages/checkout.php:257
+#: pages/billing.php:195
 msgid "State"
 msgstr ""
 
@@ -17938,6 +18220,7 @@ msgstr ""
 #: pages/checkout.php:366
 #: pages/billing.php:196
 #: pages/checkout.php:261
+#: pages/billing.php:199
 msgid "Postal Code"
 msgstr ""
 
@@ -17975,6 +18258,7 @@ msgstr ""
 #: pages/checkout.php:375
 #: pages/billing.php:205
 #: pages/checkout.php:266
+#: pages/billing.php:208
 msgid "City, State Zip"
 msgstr ""
 
@@ -18012,6 +18296,7 @@ msgstr ""
 #: pages/checkout.php:428
 #: pages/billing.php:258
 #: pages/checkout.php:303
+#: pages/billing.php:261
 msgid "Country"
 msgstr ""
 
@@ -18049,6 +18334,7 @@ msgstr ""
 #: pages/checkout.php:453
 #: pages/billing.php:283
 #: pages/checkout.php:319
+#: pages/billing.php:287
 msgid "Phone"
 msgstr ""
 
@@ -18100,6 +18386,7 @@ msgstr ""
 #: pages/billing.php:294
 #: pages/checkout.php:164
 #: pages/checkout.php:334
+#: pages/billing.php:298
 msgid "Email Address"
 msgstr ""
 
@@ -18137,6 +18424,7 @@ msgstr ""
 #: pages/checkout.php:476
 #: pages/billing.php:298
 #: pages/checkout.php:341
+#: pages/billing.php:302
 msgid "Confirm Email"
 msgstr ""
 
@@ -18158,6 +18446,7 @@ msgstr ""
 #: pages/billing.php:276
 #: pages/billing.php:285
 #: pages/billing.php:321
+#: pages/billing.php:325
 msgid "Credit Card Information"
 msgstr ""
 
@@ -18179,6 +18468,7 @@ msgstr ""
 #: pages/billing.php:277
 #: pages/billing.php:286
 #: pages/billing.php:322
+#: pages/billing.php:326
 #, php-format
 msgid "We accept %s"
 msgstr ""
@@ -18191,6 +18481,7 @@ msgstr ""
 #: pages/billing.php:422
 #: pages/billing.php:458
 #: pages/billing.php:468
+#: pages/billing.php:475
 #, php-format
 msgid "Your membership is not active. <a href='%s'>Renew now.</a>"
 msgstr ""
@@ -18203,6 +18494,7 @@ msgstr ""
 #: pages/billing.php:425
 #: pages/billing.php:461
 #: pages/billing.php:471
+#: pages/billing.php:478
 #, php-format
 msgid "You do not have an active membership. <a href='%s'>Register here.</a>"
 msgstr ""
@@ -18215,6 +18507,7 @@ msgstr ""
 #: pages/billing.php:428
 #: pages/billing.php:464
 #: pages/billing.php:474
+#: pages/billing.php:481
 #, php-format
 msgid "You do not have an active membership. <a href='%s'>Choose a membership level.</a>"
 msgstr ""
@@ -18241,6 +18534,7 @@ msgstr ""
 #: pages/billing.php:431
 #: pages/billing.php:467
 #: pages/billing.php:477
+#: pages/billing.php:484
 msgid "This subscription is not recurring. So you don't need to update your billing information."
 msgstr ""
 
@@ -18594,6 +18888,7 @@ msgstr ""
 #: pages/checkout.php:696
 #: pages/checkout.php:697
 #: pages/checkout.php:476
+#: pages/checkout.php:478
 #, php-format
 msgid "I agree to the %s"
 msgstr ""
@@ -18618,6 +18913,7 @@ msgstr ""
 #: pages/checkout.php:716
 #: pages/checkout.php:717
 #: pages/checkout.php:514
+#: pages/checkout.php:526
 msgid "Complete Payment"
 msgstr ""
 
@@ -18641,6 +18937,7 @@ msgstr ""
 #: pages/checkout.php:738
 #: pages/checkout.php:739
 #: pages/checkout.php:536
+#: pages/checkout.php:548
 msgid "Processing..."
 msgstr ""
 
@@ -19569,6 +19866,7 @@ msgstr ""
 #: services/authnet-silent-post.php:172
 #: services/authnet-silent-post.php:176
 #: services/authnet-silent-post.php:177
+#: services/authnet-silent-post.php:178
 msgid "<p>A payment is being held for review within Authorize.net.</p><p>Payment Information From Authorize.net"
 msgstr ""
 
@@ -21578,6 +21876,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:3674
 #: classes/gateways/class.pmprogateway_stripe.php:3670
 #: classes/gateways/class.pmprogateway_stripe.php:3672
+#: classes/gateways/class.pmprogateway_stripe.php:3668
 msgid "Last webhook received at"
 msgstr ""
 
@@ -21588,6 +21887,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:3676
 #: classes/gateways/class.pmprogateway_stripe.php:3672
 #: classes/gateways/class.pmprogateway_stripe.php:3674
+#: classes/gateways/class.pmprogateway_stripe.php:3670
 msgid "No webhooks have been received."
 msgstr ""
 
@@ -21598,6 +21898,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:3680
 #: classes/gateways/class.pmprogateway_stripe.php:3676
 #: classes/gateways/class.pmprogateway_stripe.php:3678
+#: classes/gateways/class.pmprogateway_stripe.php:3674
 msgid "Your webhook may not be working correctly."
 msgstr ""
 
@@ -21608,6 +21909,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:3682
 #: classes/gateways/class.pmprogateway_stripe.php:3678
 #: classes/gateways/class.pmprogateway_stripe.php:3680
+#: classes/gateways/class.pmprogateway_stripe.php:3676
 msgid "Click here for info on setting up your webhook with Stripe."
 msgstr ""
 
@@ -22787,6 +23089,7 @@ msgstr ""
 #: classes/class-pmpro-site-health.php:178
 #: classes/class-pmpro-site-health.php:189
 #: classes/class-pmpro-site-health.php:193
+#: classes/class-pmpro-site-health.php:194
 msgid "Stripe Connect"
 msgstr ""
 
@@ -22794,12 +23097,14 @@ msgstr ""
 #: classes/class-pmpro-site-health.php:202
 #: classes/class-pmpro-site-health.php:213
 #: classes/class-pmpro-site-health.php:217
+#: classes/class-pmpro-site-health.php:220
 msgid "%s (environment not registered)"
 msgstr ""
 
 #: classes/class-pmpro-site-health.php:226
 #: classes/class-pmpro-site-health.php:268
 #: classes/class-pmpro-site-health.php:272
+#: classes/class-pmpro-site-health.php:275
 msgid "Unable to verify"
 msgstr ""
 
@@ -23006,6 +23311,7 @@ msgstr ""
 
 #: adminpages/dashboard.php:186
 #: adminpages/dashboard.php:188
+#: adminpages/license.php:64
 msgid "View Plans and Pricing"
 msgstr ""
 
@@ -23071,18 +23377,21 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:2424
 #: classes/gateways/class.pmprogateway_stripe.php:2420
 #: classes/gateways/class.pmprogateway_stripe.php:2422
+#: classes/gateways/class.pmprogateway_stripe.php:2418
 msgid "Cannot find product for membership level."
 msgstr ""
 
 #: classes/gateways/class.pmprogateway_stripe.php:2430
 #: classes/gateways/class.pmprogateway_stripe.php:2426
 #: classes/gateways/class.pmprogateway_stripe.php:2428
+#: classes/gateways/class.pmprogateway_stripe.php:2424
 msgid "Cannot get price."
 msgstr ""
 
 #: classes/gateways/class.pmprogateway_stripe.php:2580
 #: classes/gateways/class.pmprogateway_stripe.php:2576
 #: classes/gateways/class.pmprogateway_stripe.php:2578
+#: classes/gateways/class.pmprogateway_stripe.php:2574
 msgid "Cannot reuse an old setup intent."
 msgstr ""
 
@@ -23090,6 +23399,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:2616
 #: classes/gateways/class.pmprogateway_stripe.php:2610
 #: classes/gateways/class.pmprogateway_stripe.php:2612
+#: classes/gateways/class.pmprogateway_stripe.php:2608
 msgid "Error adding metadata to setup intent."
 msgstr ""
 
@@ -23102,6 +23412,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:2716
 #: classes/gateways/class.pmprogateway_stripe.php:2712
 #: classes/gateways/class.pmprogateway_stripe.php:2714
+#: classes/gateways/class.pmprogateway_stripe.php:2710
 msgid "Remove"
 msgstr ""
 
@@ -23131,6 +23442,7 @@ msgid "<strong>Paid Memberships Pro offers plans for automatic updates of Add On
 msgstr ""
 
 #: adminpages/orders.php:1549
+#: adminpages/orders.php:1550
 msgid "renewal"
 msgstr ""
 
@@ -23180,10 +23492,12 @@ msgid "Premium License Status: None"
 msgstr ""
 
 #: classes/class-pmpro-site-health.php:276
+#: classes/class-pmpro-site-health.php:279
 msgid "No template overrides"
 msgstr ""
 
 #: classes/class-pmpro-site-health.php:282
+#: classes/class-pmpro-site-health.php:285
 msgid "Empty override folder -- no template overrides"
 msgstr ""
 
@@ -23193,6 +23507,7 @@ msgstr ""
 
 #: classes/gateways/class.pmprogateway_stripe.php:2363
 #: classes/gateways/class.pmprogateway_stripe.php:2365
+#: classes/gateways/class.pmprogateway_stripe.php:2361
 msgid "Could not create price."
 msgstr ""
 
@@ -23215,4 +23530,135 @@ msgstr ""
 #: blocks/login/inspector.js:39
 #: js/blocks.build.js:1433
 msgid "Assign the menu under Appearance > Menus."
+msgstr ""
+
+#: adminpages/advancedsettings.php:407
+msgid "Redirect all traffic from registration page to /subscription/?"
+msgstr ""
+
+#: adminpages/discountcodes.php:728
+msgid "Save Code"
+msgstr ""
+
+#: adminpages/license.php:66
+msgid "Manage My Account"
+msgstr ""
+
+#: adminpages/license.php:68
+msgid "Open Support Ticket"
+msgstr ""
+
+#: adminpages/license.php:70
+msgid "Upgrade For Support"
+msgstr ""
+
+#: adminpages/license.php:103
+msgid "View Support License Options &raquo;"
+msgstr ""
+
+#: adminpages/orders.php:168
+msgid "Order %s deleted successfully."
+msgstr ""
+
+#: adminpages/paymentsettings.php:116
+msgid "Paid Memberships Pro - Payment Gateway Settings"
+msgstr ""
+
+#: adminpages/paymentsettings.php:116
+msgid "Payment Gateway Settings"
+msgstr ""
+
+#: adminpages/paymentsettings.php:117
+msgid "Paid Memberships Pro - SSL Settings"
+msgstr ""
+
+#: adminpages/paymentsettings.php:117
+msgid "SSL"
+msgstr ""
+
+#. translators: %s and %s: Links to Payment Gateway Settings and SSL Settings docs.
+#: adminpages/paymentsettings.php:119
+msgid "Learn more about %s and %s."
+msgstr ""
+
+#. translators: %s: A link to the docs for the pmpro_tax filter.
+#: adminpages/paymentsettings.php:252
+msgid "US only. If values are given, tax will be applied for any members ordering from the selected state. For non-US or more complex tax rules, use the %s."
+msgstr ""
+
+#: adminpages/paymentsettings.php:297
+msgid "SSL Certificate"
+msgstr ""
+
+#. translators: %s: Link to SSL Certificate docs.
+#: adminpages/paymentsettings.php:299
+msgid "Your %s must be installed by your web host. Use this field to display your seal or other trusted merchant images. This field does not accept JavaScript."
+msgstr ""
+
+#: adminpages/reports/login.php:103
+msgctxt "Dropdown label, e.g. Show All Users"
+msgid "Show"
+msgstr ""
+
+#: adminpages/reports/login.php:122
+msgctxt "Search form label"
+msgid "Search"
+msgstr ""
+
+#: adminpages/reports/login.php:122
+msgid "Users"
+msgstr ""
+
+#: classes/class-pmpro-members-list-table.php:584
+msgid " + "
+msgstr ""
+
+#: classes/class-pmpro-members-list-table.php:589
+msgid " per "
+msgstr ""
+
+#: classes/gateways/class.pmprogateway_paypal.php:189
+#: classes/gateways/class.pmprogateway_paypalexpress.php:208
+msgid "Require an extra confirmation after users return from PayPal."
+msgstr ""
+
+#: classes/gateways/class.pmprogateway_paypal.php:190
+#: classes/gateways/class.pmprogateway_paypalexpress.php:209
+msgid "Skip the extra confirmation after users return from PayPal."
+msgstr ""
+
+#: classes/gateways/class.pmprogateway_stripe.php:1870
+msgid "Learn More &raquo;"
+msgstr ""
+
+#: classes/gateways/class.pmprogateway_stripe.php:2645
+msgid "Subscription updates will be deprecated in a future version of PMPro, though your existing subscription updates will still trigger as expected. We now instead recommend updating the subscription directly in Stripe."
+msgstr ""
+
+#: includes/lib/Twocheckout/Twocheckout/TwocheckoutCharge.php:15
+msgid "Click here if you are not redirected automatically."
+msgstr ""
+
+#: includes/lib/Twocheckout/Twocheckout/TwocheckoutCharge.php:33
+msgid "Click here if the payment form does not open automatically."
+msgstr ""
+
+#: includes/license.php:140
+msgid "Bad response code %s."
+msgstr ""
+
+#: includes/updates.php:150
+msgid "You currently have the Better Login Reports Add On activated. This functionality has now been merged into Paid Memberships Pro. %s"
+msgstr ""
+
+#: includes/updates.php:150
+msgid "Please deactivate and remove this plugin."
+msgstr ""
+
+#: pages/levels.php:82
+msgid "Return to Your Account"
+msgstr ""
+
+#: pages/levels.php:84
+msgid "Return to Home"
 msgstr ""

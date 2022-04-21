@@ -278,6 +278,15 @@ function pmpro_checkForUpgrades()
  		pmpro_setOption( 'db_version', '2.71' );
  	}
 
+	/**
+	 * Version 2.8
+	 * Default option for Wisdom tracking.
+	 */
+	if ( $pmpro_db_version < 2.8 ) {
+		pmpro_setOption('wisdom_opt_out', 1);
+		pmpro_setOption( 'db_version', '2.8' );
+	}
+
 	 /**
 	 * Version 3.0
 	 * Running pmpro_db_delta to add subscription and subscription meta tables.
@@ -287,7 +296,6 @@ function pmpro_checkForUpgrades()
 		pmpro_db_delta();
 		$pmpro_db_version = pmpro_upgrade_3_0();
 		pmpro_setOption( 'db_version', '3.0' );
-	}
 }
 
 function pmpro_db_delta()
