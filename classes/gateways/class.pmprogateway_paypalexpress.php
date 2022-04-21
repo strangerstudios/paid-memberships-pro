@@ -960,7 +960,7 @@
 				}
 				$subscription->set( $update_array );
 			} else {
-				return 'Subscription could not be found.';
+				return __( 'Subscription could not be found.', 'paid-memberships-pro' );
 			}
 		}
 		
