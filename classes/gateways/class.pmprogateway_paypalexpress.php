@@ -913,11 +913,13 @@
 		 * Pull subscription info from PayPal.
 		 *
 		 * @param PMPro_Subscription $subscription to pull data for.
+		 *
+		 * @return string|null Error message is returned if update fails.
 		 */
 		function update_subscription_info( $subscription ) {
 			$subscription_transaction_id = $subscription->get_subscription_transaction_id();
 			if ( empty( $subscription_transaction_id ) ) {
-				return;
+				return 'Subscription transaction ID is empty.';
 			}
 
 			//paypal profile stuff
@@ -957,6 +959,8 @@
 					$update_array['status'] = 'cancelled';
 				}
 				$subscription->set( $update_array );
+			} else {
+				return __( 'Subscription could not be found.', 'paid-memberships-pro' );
 			}
 		}
 		
