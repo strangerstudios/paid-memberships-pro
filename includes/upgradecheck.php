@@ -527,6 +527,7 @@ function pmpro_db_delta()
 			`trial_limit` int(11) NOT NULL DEFAULT '0',
 			`modified` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 			PRIMARY KEY (`id`),
+			UNIQUE KEY `subscription_link` (`subscription_transaction_id`, `gateway_environment`, `gateway`),
 			KEY `user_id` (`user_id`),
 			KEY `membership_level_id` (`membership_level_id`),
 			KEY `gateway` (`gateway`),

@@ -13,15 +13,21 @@
 function pmpro_upgrade_3_0() {
 	global $wpdb;
 
+	// Get ID for most recent subscription so that the metadata step can start at the right place.
+	$last_subscription_id = $wpdb->get_var( "SELECT id FROM {$wpdb->pmpro_subscriptions} ORDER BY id DESC LIMIT 1" );
+	if ( empty( $last_subscription_id ) ) {
+		$last_subscription_id = 0;
+	}
+
 	// Create a subscription for each unique subscription_transaction_id in the orders table.
 	$sqlQuery = "
-		INSERT INTO {$wpdb->pmpro_subscriptions} ( user_id, membership_level_id, gateway,  gateway_environment, subscription_transaction_id, status )
-		SELECT DISTINCT user_id, membership_id, gateway, gateway_environment, subscription_transaction_id, 'active'
+		INSERT IGNORE INTO {$wpdb->pmpro_subscriptions} ( user_id, membership_level_id, gateway,  gateway_environment, subscription_transaction_id, status )
+		SELECT DISTINCT user_id, membership_id, gateway, gateway_environment, subscription_transaction_id, IF(STRCMP(status,'success'), 'cancelled', 'active')
 		FROM {$wpdb->pmpro_membership_orders}
 		WHERE subscription_transaction_id <> ''
 		AND gateway <> ''
 		AND gateway_environment <> ''
-		AND status = 'success'
+		AND status in ('success','cancelled')
 		";
 	$wpdb->query( $sqlQuery );
 
@@ -30,6 +36,7 @@ function pmpro_upgrade_3_0() {
 		INSERT INTO {$wpdb->pmpro_subscriptionmeta} ( pmpro_subscription_id, meta_key, meta_value )
 		SELECT DISTINCT id, 'has_default_migration_data', '1'
 		FROM {$wpdb->pmpro_subscriptions}
+		WHERE id > {$last_subscription_id}
 		";
 	$wpdb->query( $sqlQuery );
 
