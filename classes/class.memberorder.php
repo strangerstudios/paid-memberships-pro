@@ -435,7 +435,43 @@
 		 */
 		public static function get_order( $id = NULL ) {
 
-			return new MemberOrder( $id );
+			// At least one argument is required.
+			if ( empty( $id ) ) {
+				return null;
+			}
+
+			if ( is_numeric( $id ) ) {
+				//If its numeric we assume you're trying to get an ID
+				$args = array(
+					'id' => $id,
+				);
+
+			} else {
+				//If its not, we assume it's a string and should be a code
+				$args = array(
+					'code' => $id,
+				);
+
+			}
+
+			// Invalid arguments.
+			if ( ! is_array( $args ) ) {
+				return null;
+			}
+
+			// Force returning of one order.
+			$args['limit'] = 1;
+
+			// Get the orders using query arguments.
+			$orders = self::get_orders( $args );
+
+			// Check if we found any orders.
+			if ( empty( $orders ) ) {
+				return null;
+			}
+
+			// Get the first order in the array.
+			return reset( $orders );
 
 		}
 
@@ -556,6 +592,17 @@
 				} else {
 					$where[]  = 'total IN ( ' . implode( ', ', array_fill( 0, count( $args['total'] ), '%f' ) ) . ' )';
 					$prepared = array_merge( $prepared, $args['total'] );
+				}
+			}
+
+			// Filter by payment transaction ID
+			if ( isset( $args['payment_transaction_id'] ) && null !== $args['payment_transaction_id'] ) {
+				if ( ! is_array( $args['payment_transaction_id'] ) ) {
+					$where[]    = 'payment_transaction_id = %s';
+					$prepared[] = $args['payment_transaction_id'];
+				} else {
+					$where[]  = 'payment_transaction_id IN ( ' . implode( ', ', array_fill( 0, count( $args['payment_transaction_id'] ), '%f' ) ) . ' )';
+					$prepared = array_merge( $prepared, $args['payment_transaction_id'] );
 				}
 			}
 
@@ -1346,21 +1393,7 @@
 				$highestval = $wpdb->get_var("SELECT MAX(checkout_id) FROM $wpdb->pmpro_membership_orders");
 				$this->checkout_id = intval($highestval)+1;
 				$pmpro_checkout_id = $this->checkout_id;
-			}
-
-			if( $this->status !== $this->original_status ) {
-				
-				/**
-				 * Runs when the order status changes
-				 *
-				 * @param $this object The current member order object
-				 * @param $original_status The original status before changing to the new status
-				 * 
-				 * @since TBD
-				 */
-				do_action( 'pmpro_order_status_'.$this->status, $this, $this->original_status );
-					
-			}
+			}			
 
 			//build query
 			if(!empty($this->id))
@@ -1463,6 +1496,24 @@
 				if(empty($this->id))
 					$this->id = $wpdb->insert_id;
 				do_action($after_action, $this);
+
+				//Lets only run this once the update has been run successfully.
+				if( $this->status !== $this->original_status ) {
+				
+					/**
+					 * Runs when the order status changes
+					 *
+					 * @param $this object The current member order object
+					 * @param $original_status The original status before changing to the new status
+					 * 
+					 * @since TBD
+					 */
+					do_action( 'pmpro_order_status_'.$this->status, $this, $this->original_status );
+					
+					//Set the original status to the new status
+					$this->original_status = $this->status;
+				}
+
 				return $this->getMemberOrderByID($this->id);
 			}
 			else
