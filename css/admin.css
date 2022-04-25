@@ -36,11 +36,7 @@
 
 /* header/etc */
 .pmpro_admin {
-	background-image: url(../images/Paid-Memberships-Pro_watermark.png);
-	background-position: bottom right;
-	background-repeat: no-repeat;
-	background-size: 290px 40px;
-	padding: 1em 0 70px 0;
+	padding: 1em 0 0 0;
 }
 .pmpro_banner {
 	display: flex;
@@ -488,16 +484,16 @@ tr.pmpro_settings_divider td {
 }
 .pmpro_admin .pmpro_success {
 	background-color: #d4edda;
-	border-left-color: #0F441C;
+	border-left-color: #c3e6cb;
 }
 .pmpro_admin .pmpro_error,
 .pmpro_admin tr.pmpro_error td {
 	background-color: #f8d7da;
-	border-left-color: #721c24;
+	border-left-color: #f5c6cb;
 }
 .pmpro_admin .pmpro_alert {
 	background-color: #FFF8E0;
-	border-left-color: #6C5101;
+	border-left-color: #ffeeba;
 }
 .pmpro_admin .pmpro_success a {
 	color: #0F441C;
@@ -731,13 +727,9 @@ h2.nav-tab-wrapper {
 .memberships_page_pmpro-reports .pmpro_admin .nav-tab-wrapper {
 	margin-bottom: 10px;
 }
-.pmpro_reports-holder { }
-.pmpro_reports-holder .postbox h2 {
-	border-bottom: 1px solid #eee;
-	font-size: 14px;
-	padding: 8px 12px;
-	margin: 0;
-	line-height: 1.4;
+.pmpro_report-holder table.wp-list-table thead th,
+.pmpro_report-holder table.wp-list-table tbody td {
+	padding: 8px 10px;
 }
 .pmpro_clickable {
 	cursor: pointer;
@@ -804,6 +796,7 @@ button.pmpro_report_th_closed:before {
 	background-color: #f6f7f7;
 }
 .pmpro_report-holder .pmpro_report-button {
+	margin-bottom: 0;
 	text-align: center;
 }
 .pmpro_chart_area {
