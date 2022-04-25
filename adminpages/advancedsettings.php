@@ -495,23 +495,26 @@ if ( function_exists( 'pmpro_displayAds' ) && pmpro_displayAds() ) {
 				<tr>
 					<th scope="row" valign="top">
 						<label for="wisdom_opt_out">
-							<?php esc_html_e( 'Would you like to opt-in to stats tracking?', 'paid-memberships-pro' ); ?>
+							<?php esc_html_e( 'Enable Tracking', 'paid-memberships-pro' ); ?>
 						</label>
 					</th>
 					<td>
 						<p>
 							<label>								
 								<input name="wisdom_opt_out" type="radio" value="0"<?php checked( 0, $wisdom_opt_out ); ?> />
-								<?php esc_html_e( 'Track usage on my site', 'paid-memberships-pro' );?>
+								<?php esc_html_e( 'Allow usage of Paid Memberships Pro to be tracked.', 'paid-memberships-pro' );?>
 							</label>
 						</p>
 						<p>
 							<label>
 								<input name="wisdom_opt_out" type="radio" value="1"<?php checked( 1, $wisdom_opt_out ); ?> />
-								<?php esc_html_e( 'DO NOT track usage on my site', 'paid-memberships-pro' );?>
+								<?php esc_html_e( 'Do not track usage of Paid Memberships Pro on my site.', 'paid-memberships-pro' );?>
 							</label>
 						</p>
-						<p class="description"><?php esc_html_e( 'Thank you for installing our plugin. We\'d like your permission to track its usage on your site. We won\'t record any sensitive data, only information regarding the WordPress environment and plugin settings. We will only use this information help us make improvements to the plugin and provide better support when you reach out. Tracking is completely optional.', 'paid-memberships-pro' ); ?></p>
+						<p class="description">
+							<?php esc_html_e( 'Sharing non-sensitive membership site data helps us analyze how our plugin is meeting your needs and identify opportunities to improve. Read about what usage data is tracked:', 'paid-memberships-pro' ); ?>
+							<a href="https://www.paidmembershipspro.com/privacy-policy/usage-tracking/" title="<?php esc_attr_e( 'PaidMembershipsPro.com Usage Tracking', 'paid-memberships-pro' ); ?>"><?php esc_html_e( 'Paid Memberships Pro Usage Tracking', 'paid-memberships-pro' ); ?></a>.
+						</p>
 					</td>
 				</tr>
 				<tr>
