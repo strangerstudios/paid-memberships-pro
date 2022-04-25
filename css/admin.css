@@ -411,7 +411,8 @@
 	margin-bottom: 10px;
 }
 .pmpro_admin .wp-list-table .column-username,
-.pmpro_admin .wp-list-table .column-billing {
+.pmpro_admin .wp-list-table .column-billing,
+.pmpro_admin .wp-list-table .column-transaction-ids {
 	word-break: break-word;
 }
 .pmpro_order-status {
