@@ -441,7 +441,7 @@ if ( function_exists( 'pmpro_add_email_order_modal' ) ) {
 		<?php
 			if( pmpro_allowed_refunds( $order ) ) {
 				printf(
-					'<a title="%1$s" href="%2$s" class="page-title-action">%3$s</a>',
+					'<a title="%1$s" href="%2$s" class="page-title-action pmpro-has-icon pmpro-has-icon-image-rotate">%3$s</a>',
 					esc_attr__( 'Refund', 'paid-memberships-pro' ),
 					esc_js( 'javascript:pmpro_askfirst(' . wp_json_encode( $refund_text ) . ', ' . wp_json_encode( $refund_nonce_url ) . '); void(0);' ),
 					esc_html__( 'Refund', 'paid-memberships-pro' )
@@ -1051,7 +1051,7 @@ if ( function_exists( 'pmpro_add_email_order_modal' ) ) {
 	<form id="posts-filter" method="get" action="">
 
 		<h1 class="wp-heading-inline"><?php esc_html_e( 'Orders', 'paid-memberships-pro' ); ?></h1>
-		<a href="<?php echo esc_url( add_query_arg( array( 'page' => 'pmpro-orders', 'order' => -1 ), admin_url( 'admin.php' ) ) ); ?>" class="page-title-action"><?php esc_html_e( 'Add New Order', 'paid-memberships-pro' ); ?></a>
+		<a href="<?php echo esc_url( add_query_arg( array( 'page' => 'pmpro-orders', 'order' => -1 ), admin_url( 'admin.php' ) ) ); ?>" class="page-title-action pmpro-has-icon pmpro-has-icon-plus"><?php esc_html_e( 'Add New Order', 'paid-memberships-pro' ); ?></a>
 
 		<?php
 		// build the export URL
@@ -1072,7 +1072,7 @@ if ( function_exists( 'pmpro_add_email_order_modal' ) ) {
 		);
 		$export_url = add_query_arg( $url_params, $export_url );
 		?>
-		<a target="_blank" href="<?php echo esc_url( $export_url ); ?>" class="page-title-action"><?php esc_html_e( 'Export to CSV', 'paid-memberships-pro' ); ?></a>
+		<a target="_blank" href="<?php echo esc_url( $export_url ); ?>" class="page-title-action pmpro-has-icon pmpro-has-icon-download"><?php esc_html_e( 'Export to CSV', 'paid-memberships-pro' ); ?></a>
 
 		<hr class="wp-header-end">
 

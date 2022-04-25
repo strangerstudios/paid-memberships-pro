@@ -33,6 +33,17 @@
 .pmpro_admin .pmpro-has-icon-admin-users:before {
 	content: "\f110";
 }
+.pmpro_admin .pmpro-has-icon-image-rotate:before {
+	content: "\f531";
+}
+.pmpro_admin .pmpro-has-icon-download:before {
+	content: "\f316";
+	top: 0;
+}
+.pmpro_admin .pmpro-has-icon-plus:before {
+	content:  "\f132";
+	top: 0;
+}
 
 /* header/etc */
 .pmpro_admin {
