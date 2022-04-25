@@ -453,7 +453,7 @@ class PMPro_Wisdom_Integration {
 
 			// Build array of Add Ons that have an update available.
 			if ( isset( $plugin_info->response[ $plugin_file ] ) ) {
-				$addons_update_available[] = $addon;
+				$addons_update_available[ $addon['Slug'] ] = $plugin_data['Version'];
 			}
 		}
 
