@@ -1728,34 +1728,42 @@ class PMProGateway_stripe extends PMProGateway {
 
 			// Check whether the user's most recent order is a Stripe subscription.
 			if ( empty( $user_order->gateway ) || 'stripe' !== $user_order->gateway ) {
-				return;
+				$error = __( 'Last order was not charged with Stripe.', 'paid-memberships-pro' );
 			}
 
-			$stripe = new PMProGateway_stripe();
-			$customer = $stripe->get_customer_for_user( $user_order->user_id );
-			if ( empty( $customer->id ) ) {
-				return;
+			if ( empty( $error ) ) {
+				$stripe = new PMProGateway_stripe();
+				$customer = $stripe->get_customer_for_user( $user_order->user_id );
+				if ( empty( $customer->id ) ) {
+					$error = __( 'Could not get Stripe customer for user.', 'paid-memberships-pro' );
+				}
 			}
 
-			$customer_portal_url = $stripe->get_customer_portal_url( $customer->id );
-			if ( ! empty( $customer_portal_url ) ) {
-				wp_redirect( $customer_portal_url );
-				exit;
+			if ( empty( $error ) ) {
+				$customer_portal_url = $stripe->get_customer_portal_url( $customer->id );
+				if ( ! empty( $customer_portal_url ) ) {
+					wp_redirect( $customer_portal_url );
+					exit;
+				}
+				$error = __( 'Could not get Customer Portal URL. This feature may not be set up in Stripe.', 'paid-memberships-pro' );
 			}
-		} else {
-			// Disable Stripe Checkout functionality for the rest of this page load.
-			add_filter( 'pmpro_include_cardtype_field', array(
-				'PMProGateway_stripe',
-				'pmpro_include_billing_address_fields'
-			), 15 );
-			add_action( 'pmpro_billing_preheader', array( 'PMProGateway_stripe', 'pmpro_checkout_after_preheader' ), 15 );
-			add_filter( 'pmpro_billing_order', array( 'PMProGateway_stripe', 'pmpro_checkout_order' ), 15 );
-			add_filter( 'pmpro_include_payment_information_fields', array(
-				'PMProGateway_stripe',
-				'pmpro_include_payment_information_fields'
-			), 15 );
-			add_filter( 'option_pmpro_stripe_payment_flow', '__return_false' ); // Disable Stripe Checkout for rest of page load.
+
+			// There must have been an error while getting the customer portal URL. Show an error and let user update
+			// their billing info onsite.
+			pmpro_setMessage( $error . ' ' . __( 'Please contact the site administrator.', 'paid-memberships-pro' ), 'pmpro_alert', true );
 		}
+		// Disable Stripe Checkout functionality for the rest of this page load.
+		add_filter( 'pmpro_include_cardtype_field', array(
+			'PMProGateway_stripe',
+			'pmpro_include_billing_address_fields'
+		), 15 );
+		add_action( 'pmpro_billing_preheader', array( 'PMProGateway_stripe', 'pmpro_checkout_after_preheader' ), 15 );
+		add_filter( 'pmpro_billing_order', array( 'PMProGateway_stripe', 'pmpro_checkout_order' ), 15 );
+		add_filter( 'pmpro_include_payment_information_fields', array(
+			'PMProGateway_stripe',
+			'pmpro_include_payment_information_fields'
+		), 15 );
+		add_filter( 'option_pmpro_stripe_payment_flow', '__return_false' ); // Disable Stripe Checkout for rest of page load.
 	}
 
 	/****************************************
