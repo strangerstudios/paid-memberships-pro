@@ -415,7 +415,7 @@ if ( function_exists( 'pmpro_add_email_order_modal' ) ) {
 		$refund_text = esc_html(
 			sprintf(
 				// translators: %s is the Order Code.
-				__( 'Refunding an order is permanent and can affect active users. Are you sure you want to refund order %s?', 'paid-memberships-pro' ),
+				__( 'Refund order %s at the payment gateway. This action is permanent. The user and admin will receive an email confirmation after the refund is processed. Are you sure you want to refund this order?', 'paid-memberships-pro' ),
 				str_replace( "'", '', $order->code )
 			)
 		);
@@ -1474,7 +1474,7 @@ if ( function_exists( 'pmpro_add_email_order_modal' ) ) {
 							$refund_text = esc_html(
 								sprintf(
 									// translators: %s is the Order Code.
-									__( 'Refunding orders is permanent and can affect active users. Are you sure you want to refund order %s?', 'paid-memberships-pro' ),
+									__( 'Refund order %s at the payment gateway. This action is permanent. The user and admin will receive an email confirmation after the refund is processed. Are you sure you want to refund this order?', 'paid-memberships-pro' ),
 									str_replace( "'", '', $order->code )
 								)
 							);
