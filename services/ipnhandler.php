@@ -427,9 +427,9 @@ if ( strtolower( $payment_status ) === 'refunded' ) {
 			$morder->status = 'refunded';
 
 			// translators: %1$s is the date. %2$s is the transaction ID.
-			$morder->notes = trim( $morder->notes .' '. sprintf( __('IPN: Order successfully refunded on %1$s for transaction ID %2$s at the gateway.', 'paid-memberships-pro' ), date_i18n('Y-m-d H:i:s'), $payment_transaction_id ) );
+			$morder->notes = trim( $morder->notes .' '. sprintf( 'IPN: Order successfully refunded on %1$s for transaction ID %2$s at the gateway.', date_i18n('Y-m-d H:i:s'), $payment_transaction_id ) );
 
-			ipnlog( printf( __('IPN: Order successfully refunded on %1$s for transaction ID %2$s at the gateway.', 'paid-memberships-pro' ), date_i18n('Y-m-d H:i:s'), $payment_transaction_id ) );
+			ipnlog( sprintf( 'IPN: Order successfully refunded on %1$s for transaction ID %2$s at the gateway.', date_i18n('Y-m-d H:i:s'), $payment_transaction_id ) );
 
 			$user = get_user_by( 'email', $morder->Email );
 
