@@ -14,7 +14,7 @@
  */
 function pmpro_handle_subscription_cancellation_at_gateway( $subscription_transaction_id, $gateway, $gateway_environment ) {
 	// Find subscription.
-	$subscription = PMPro_Subscription::get_subscription_from_subscription_transaction_id( $subscription_transaction_id, 'paypal_express', $gateway_environment );
+	$subscription = PMPro_Subscription::get_subscription_from_subscription_transaction_id( $subscription_transaction_id, $gateway, $gateway_environment );
 	if ( empty( $subscription ) ) {
 		// The subscription does not exist on this site. Bail.
 		return 'ERROR: Could not find this subscription to cancel (subscription_transaction_id=' . $subscription_transaction_id . ').';
