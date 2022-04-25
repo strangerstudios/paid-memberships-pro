@@ -231,26 +231,26 @@
 			if( ! empty( $old_order ) && ! empty( $old_order->id ) ) {
 				$user_id = $old_order->user_id;
 				$user = get_userdata($user_id);
-        $invoice = $pmpro_stripe_event->data->object;
+        		$invoice = $pmpro_stripe_event->data->object;
 
 				// Prep order for emails.
 				$morder = new MemberOrder();
 				$morder->user_id = $user_id;
 
 				// Update payment method and billing address on order.
-        $payment_intent_args = array(
-          'id'     => $invoice->payment_intent,
-          'expand' => array(
-            'payment_method',
-          ),
-        );
-        $payment_intent = \Stripe\PaymentIntent::retrieve( $payment_intent_args );
-        $payment_method = $payment_intent->charges->data[0]->payment_method_details;
-        if ( empty( $payment_method ) ) {
-          $logstr .= "Could not find payment method for invoice " . $invoice->id;
-          pmpro_stripeWebhookExit();
-        }
-        pmpro_stripe_webhook_populate_order_from_payment( $morder, $payment_method );
+		        $payment_intent_args = array(
+		          'id'     => $invoice->payment_intent,
+		          'expand' => array(
+		            'payment_method',
+		          ),
+		        );
+		        $payment_intent = \Stripe\PaymentIntent::retrieve( $payment_intent_args );
+		        $payment_method = $payment_intent->charges->data[0]->payment_method_details;
+		        if ( empty( $payment_method ) ) {
+		          $logstr .= "Could not find payment method for invoice " . $invoice->id;
+		          pmpro_stripeWebhookExit();
+		        }
+		        pmpro_stripe_webhook_populate_order_from_payment( $morder, $payment_method );
 
 				// Add invoice link to the order.
 				$morder->invoice_url = $pmpro_stripe_event->data->object->hosted_invoice_url;
@@ -421,13 +421,13 @@
 			$morder = new MemberOrder();
 
 
-      $morder->getMemberOrderByPaymentTransactionID( $payment_transaction_id );
+      		$morder->getMemberOrderByPaymentTransactionID( $payment_transaction_id );
 		
-      // Initial payment orders are stored using the invoice ID, so check that value too.
-      if ( empty( $morder->id ) && ! empty( $pmpro_stripe_event->data->object->invoice ) ) {
-        $payment_transaction_id = $pmpro_stripe_event->data->object->invoice;
-        $morder->getMemberOrderByPaymentTransactionID( $payment_transaction_id );
-      }
+			// Initial payment orders are stored using the invoice ID, so check that value too.
+			if ( empty( $morder->id ) && ! empty( $pmpro_stripe_event->data->object->invoice ) ) {
+				$payment_transaction_id = $pmpro_stripe_event->data->object->invoice;
+				$morder->getMemberOrderByPaymentTransactionID( $payment_transaction_id );
+			}
 
 			//We've got the right order	
 			if( !empty( $morder->id ) ) { 
@@ -471,7 +471,6 @@
 				pmpro_stripeWebhookExit();
 			
 			}		
-
 		}
 		elseif($pmpro_stripe_event->type == "checkout.session.completed")
 		{
