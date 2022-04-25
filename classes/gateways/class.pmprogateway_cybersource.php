@@ -86,12 +86,12 @@
 		</tr>
 		<tr class="gateway gateway_cybersource" <?php if($gateway != "cybersource") { ?>style="display: none;"<?php } ?>>
 			<td colspan="2" style="padding: 0px;">
-				<p class="pmpro_message"><?php _e('Note', 'paid-memberships-pro' );?>:</strong> <?php _e('This gateway option is in beta. Some functionality may not be available. Please contact Paid Memberships Pro with any issues you run into. <strong>Please be sure to upgrade Paid Memberships Pro to the latest versions when available.</strong>', 'paid-memberships-pro' );?></p>
+				<p class="pmpro_message"><?php esc_html_e('Note', 'paid-memberships-pro' );?>:</strong> <?php _e('This gateway option is in beta. Some functionality may not be available. Please contact Paid Memberships Pro with any issues you run into. <strong>Please be sure to upgrade Paid Memberships Pro to the latest versions when available.</strong>', 'paid-memberships-pro' );?></p>
 			</td>
 		</tr>
 		<tr class="gateway gateway_cybersource" <?php if($gateway != "cybersource") { ?>style="display: none;"<?php } ?>>
 			<th scope="row" valign="top">
-				<label for="cybersource_merchantid"><?php _e('Merchant ID', 'paid-memberships-pro' );?>:</label>
+				<label for="cybersource_merchantid"><?php esc_html_e('Merchant ID', 'paid-memberships-pro' );?>:</label>
 			</th>
 			<td>
 				<input type="text" id="cybersource_merchantid" name="cybersource_merchantid" value="<?php echo esc_attr($values['cybersource_merchantid'])?>" class="regular-text code" />
@@ -99,7 +99,7 @@
 		</tr>
 		<tr class="gateway gateway_cybersource" <?php if($gateway != "cybersource") { ?>style="display: none;"<?php } ?>>
 			<th scope="row" valign="top">
-				<label for="cybersource_securitykey"><?php _e('Transaction Security Key', 'paid-memberships-pro' );?>:</label>
+				<label for="cybersource_securitykey"><?php esc_html_e('Transaction Security Key', 'paid-memberships-pro' );?>:</label>
 			</th>
 			<td>
 				<textarea id="cybersource_securitykey" name="cybersource_securitykey" autocomplete="off" rows="3" cols="50" class="large-text code pmpro-admin-secure-key"><?php echo esc_textarea($values['cybersource_securitykey']);?></textarea>
@@ -318,7 +318,7 @@
 				$order->shorterror = __( "Error validating credit card type. Make sure your credit card number is correct and try again.", "paid-memberships-pro" );
 				return false;
 			}
-			
+
 			//currency
 			$purchaseTotals = new stdClass();
 			$purchaseTotals->currency = $pmpro_currency;
@@ -343,7 +343,7 @@
 			{
 				$order->error = sprintf( __( 'Error communicating with Cybersource: %', 'paid-memberships-pro' ), $t->getMessage() );
 				$order->shorterror = __( 'Error communicating with Cybersource.', 'paid-memberships-pro' );
-				return false;			
+				return false;
 			}
 			catch(Exception $e)
 			{
@@ -395,7 +395,7 @@
 			{
 				$order->error = sprintf( __( 'Error communicating with Cybersource: %', 'paid-memberships-pro' ), $t->getMessage() );
 				$order->shorterror = __( 'Error communicating with Cybersource.', 'paid-memberships-pro' );
-				return false;			
+				return false;
 			}
 			catch(Exception $e)
 			{
@@ -433,7 +433,7 @@
 			//tax
 			$order->subtotal = $amount;
 			$tax = $order->getTax(true);
-			$amount = pmpro_round_price((float)$order->subtotal + (float)$tax);
+			$amount = pmpro_round_price_as_string((float)$order->subtotal + (float)$tax);
 			//combine address
 			$address = $order->Address1;
 			if(!empty($order->Address2))
@@ -505,7 +505,7 @@
 			{
 				$order->error = sprintf( __( 'Error communicating with Cybersource: %', 'paid-memberships-pro' ), $t->getMessage() );
 				$order->shorterror = __( 'Error communicating with Cybersource.', 'paid-memberships-pro' );
-				return false;			
+				return false;
 			}
 			catch(Exception $e)
 			{
@@ -556,7 +556,7 @@
 			//figure out the amounts
 			$amount = $order->PaymentAmount;
 			$amount_tax = $order->getTaxForPrice($amount);
-			$amount = pmpro_round_price((float)$amount + (float)$amount_tax);
+			$amount = pmpro_round_price_as_string((float)$amount + (float)$amount_tax);
 			/*
 				There are two parts to the trial. Part 1 is simply the delay until the first payment
 				since we are doing the first payment as a separate transaction.
@@ -643,7 +643,7 @@
 			$request->subscription = $subscription;
 			//recurring info
 			$recurringSubscriptionInfo = new stdClass();
-			$recurringSubscriptionInfo->amount = number_format($amount, 2);
+			$recurringSubscriptionInfo->amount = $amount;
 			$recurringSubscriptionInfo->startDate = $profile_start_date;
 			$recurringSubscriptionInfo->frequency = $frequency;
 			if(!empty($order->TotalBillingCycles))
@@ -695,7 +695,7 @@
 			{
 				$order->error = sprintf( __( 'Error communicating with Cybersource: %', 'paid-memberships-pro' ), $t->getMessage() );
 				$order->shorterror = __( 'Error communicating with Cybersource.', 'paid-memberships-pro' );
-				return false;			
+				return false;
 			}
 			catch(Exception $e)
 			{
@@ -765,8 +765,8 @@
 
 			if( empty($request->card->cardType) )
 			{
-				$order->error = __( "Error validating credit card type. Make sure your credit card number is correct and try again.", "paid-memberships-pro", "paid-memberships-pro" );
-				$order->shorterror = __( "Error validating credit card type. Make sure your credit card number is correct and try again.", "paid-memberships-pro", "paid-memberships-pro" );
+				$order->error = __( "Error validating credit card type. Make sure your credit card number is correct and try again.", "paid-memberships-pro" );
+				$order->shorterror = __( "Error validating credit card type. Make sure your credit card number is correct and try again.", "paid-memberships-pro" );
 				return false;
 			}
 
@@ -779,7 +779,7 @@
 			{
 				$order->error = sprintf( __( 'Error communicating with Cybersource: %', 'paid-memberships-pro' ), $t->getMessage() );
 				$order->shorterror = __( 'Error communicating with Cybersource.', 'paid-memberships-pro' );
-				return false;			
+				return false;
 			}
 			catch(Exception $e)
 			{
@@ -833,7 +833,7 @@
 			{
 				$order->error = sprintf( __( 'Error communicating with Cybersource: %', 'paid-memberships-pro' ), $t->getMessage() );
 				$order->shorterror = __( 'Error communicating with Cybersource.', 'paid-memberships-pro' );
-				return false;			
+				return false;
 			}
 			catch(Exception $e)
 			{
@@ -920,7 +920,7 @@
 				$error = $error_messages[$reply->reasonCode];
 			else
 				return __( "Unknown error.", "paid-memberships-pro" );
-			
+
 			// list invalid fields from reply
 			if( isset($reply->invalidField) && !empty($reply->invalidField) )
 			{

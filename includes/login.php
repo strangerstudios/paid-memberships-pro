@@ -687,7 +687,7 @@ function pmpro_reset_password_form() {
 				<div class="<?php echo pmpro_get_element_class( 'pmpro_reset_password-field pmpro_reset_password-field-pass1', 'pmpro_reset_password-field-pass1' ); ?>">
 					<label for="pass1"><?php esc_html_e( 'New Password', 'paid-memberships-pro' ) ?></label>
 					<input type="password" name="pass1" id="pass1" class="<?php echo pmpro_get_element_class( 'input pass1', 'pass1' ); ?>" size="20" value="" autocomplete="off" />
-					<div id="pass-strength-result" class="hide-if-no-js" aria-live="polite"><?php _e( 'Strength Indicator', 'paid-memberships-pro' ); ?></div>
+					<div id="pass-strength-result" class="hide-if-no-js" aria-live="polite"><?php esc_html_e( 'Strength Indicator', 'paid-memberships-pro' ); ?></div>
 					<p class="<?php echo pmpro_get_element_class( 'lite' ); ?>"><?php echo wp_get_password_hint(); ?></p>
 				</div>
 				<div class="<?php echo pmpro_get_element_class( 'pmpro_reset_password-field pmpro_reset_password-field-pass2', 'pmpro_reset_password-field-pass2' ); ?>">

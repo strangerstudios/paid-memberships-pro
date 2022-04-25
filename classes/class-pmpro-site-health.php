@@ -100,7 +100,11 @@ class PMPro_Site_Health {
 				'pmpro-pages' => [
 					'label' => __( 'Membership Pages', 'paid-memberships-pro' ),
 					'value' => self::get_pmpro_pages(),
-				]
+				],
+				'pmpro-library-conflicts' => [
+					'label' => __( 'Library Conflicts', 'paid-memberships-pro' ),
+					'value' => self::get_library_conflicts(),
+				],
 			],
 		];
 
@@ -187,14 +191,17 @@ class PMPro_Site_Health {
 
 			if ( $legacy ) {
 				$gateway_text .= ' (' . __( 'Legacy Keys', 'paid-memberships-pro' ) . ')';
+				return $gateway_text . ' [' . $gateway . ':legacy-keys]';
 			}
 
 			if ( $connect ) {
 				$gateway_text .= ' (' . __( 'Stripe Connect', 'paid-memberships-pro' ) . ')';
+				return $gateway_text . ' [' . $gateway . ':stripe-connect]';
 			}
+
 		}
 
-		return $gateway_text;
+		return $gateway_text . ' [' . $gateway . ']';
 	}
 
 	/**
@@ -217,7 +224,7 @@ class PMPro_Site_Health {
 			return sprintf( __( '%s (environment not registered)', 'paid-memberships-pro' ), $environment );
 		}
 
-		return $environments[ $environment ];
+		return $environments[ $environment ] . ' [' . $environment . ']';
 	}
 
 	/**
@@ -313,18 +320,7 @@ class PMPro_Site_Health {
 		$cron_times = [];
 
 		// These are our crons.
-		$expected_crons = [
-			'pmpro_cron_expire_memberships',
-			'pmpro_cron_expiration_warnings',
-			'pmpro_cron_credit_card_expiring_warnings',
-			'pmpro_cron_admin_activity_email',
-		];
-
-		$gateway = pmpro_getOption( 'gateway' );
-
-		if ( 'stripe' === $gateway ) {
-			$expected_crons[] = 'pmpro_cron_stripe_subscription_updates';
-		}
+		$expected_crons = array_keys( pmpro_get_crons() );
 
 		// Find any of our crons and when their next run is.
 		if ( $crons ) {
@@ -366,7 +362,7 @@ class PMPro_Site_Health {
 		global $pmpro_pages;
 
 		$page_information = array();
-		
+
 		if( !empty( $pmpro_pages ) ){
 
 			foreach( $pmpro_pages as $key => $val ){
@@ -470,6 +466,37 @@ class PMPro_Site_Health {
 	}
 
 	/**
+	 * Get library conflicts.
+	 *
+	 * @since TBD
+	 *
+	 * @return string|string[] The member page information
+	 */
+	function get_library_conflicts() {
+		// Get the current list of library conflicts.
+		$library_conflicts = get_option( 'pmpro_library_conflicts' );
+
+		// If there are no library conflicts, return a message.
+		if ( empty( $library_conflicts ) ) {
+			return __( 'No library conflicts detected.', 'paid-memberships-pro' );
+		}
+
+		// Format data to be displayed in site health.
+		$return_arr = array();
+
+		// Loop through all libraries that have conflicts.
+		foreach ( $library_conflicts as $library_name => $conflicting_plugins ) {
+			$conflict_strings = array();
+			// Loop through all plugins that have conflicts with this library.
+			foreach ( $conflicting_plugins as $conflicting_plugin_path => $conflicting_plugin_data ) {
+				$conflict_strings[] = 'v' . $conflicting_plugin_data['version'] . ' (' . $conflicting_plugin_data['timestamp'] . ')' . ' - ' . $conflicting_plugin_path;
+			}
+			$return_arr[ $library_name ] = implode( ' | ', $conflict_strings );
+		}
+		return $return_arr;
+	}
+
+	/**
 	 * Get the constants site health information.
 	 *
 	 * @since 2.6.4
@@ -541,5 +568,4 @@ class PMPro_Site_Health {
 
 		return $constants_formatted;
 	}
-
 }

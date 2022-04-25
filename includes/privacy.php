@@ -495,6 +495,7 @@ function pmpro_after_checkout_update_consent( $user_id, $order ) {
 add_action( 'pmpro_after_checkout', 'pmpro_after_checkout_update_consent', 10, 2 );
 add_action( 'pmpro_before_send_to_paypal_standard', 'pmpro_after_checkout_update_consent', 10, 2);
 add_action( 'pmpro_before_send_to_twocheckout', 'pmpro_after_checkout_update_consent', 10, 2);
+add_action( 'pmpro_before_send_to_payfast', 'pmpro_after_checkout_update_consent', 10, 2 );
 
 /**
  * Convert a consent entry into a English sentence.
