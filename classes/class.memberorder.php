@@ -965,7 +965,7 @@
 			if ( ! empty( $this->subscription_transaction_id ) ) {
 				$subscription = PMPro_Subscription::get_subscription_from_subscription_transaction_id( $this->subscription_transaction_id, $this->gateway, $this->gateway_environment );
 				if ( ! empty( $subscription ) ) {
-					return $subscription->cancel();
+					return $subscription->cancel_at_gateway();
 				}
 			}
 				
