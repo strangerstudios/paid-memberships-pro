@@ -1652,9 +1652,23 @@ class PMProGateway_stripe extends PMProGateway {
 				'price'    => $recurring_payment_price->id,
 				'quantity' => 1,
 			);
-			$subscription_data = array(
-				'trial_period_days' => $stripe->calculate_trial_period_days( $morder ),
-			);
+			$subscription_data = array();
+
+			// Check if we can combine initial and recurring payments.
+			$filtered_trial_period_days = $stripe->calculate_trial_period_days( $morder );
+			if (
+				empty( $order->TrialBillingCycles ) && // Check if there is a trial period.
+				$filtered_trial_period_days === $stripe->calculate_trial_period_days( $morder, false ) && // Check if the trial period is the same as the filtered trial period.
+				( ! empty( $initial_payment_amount ) && $initial_payment_amount === $recurring_payment_amount ) // Check if the initial payment and recurring payment prices are the same.
+				) {
+				// We can combine the initial payment and the recurring payment.
+				array_shift( $line_items );
+				$payment_intent_data = null;
+			} else {
+				// We need to set the trial period days and send initial and recurring payments as separate line items.
+				$subscription_data['trial_period_days'] = $filtered_trial_period_days;
+			}
+
 			// Add application fee for Stripe Connect.
 			$application_fee_percentage = self::get_application_fee_percentage();
 			if ( ! empty( $application_fee_percentage ) ) {
@@ -1679,7 +1693,7 @@ class PMProGateway_stripe extends PMProGateway {
 		$checkout_session_params = array(
 			'customer' => $customer->id,
 			'line_items' => $line_items,
-			'mode' => empty( $subscription_data ) ? 'payment' : 'subscription',
+			'mode' => isset( $subscription_data ) ? 'subscription' : 'payment',
 			'automatic_tax' => $automatic_tax,
 			'tax_id_collection' => $tax_id_collection,
 			'billing_address_collection' => $billing_address_collection,
@@ -2808,9 +2822,10 @@ class PMProGateway_stripe extends PMProGateway {
 	 * @since 2.7.0.
 	 *
 	 * @param MemberOrder $order to calculate trial period days for.
+	 * @param bool        $filtered whether to filter the result.
 	 * @return int trial period days.
 	 */
-	private function calculate_trial_period_days( $order ) {
+	private function calculate_trial_period_days( $order, $filtered = true ) {
 		// Use a trial period to set the first recurring payment date.
 		if ( $order->BillingPeriod == "Year" ) {
 			$trial_period_days = $order->BillingFrequency * 365;    //annual
@@ -2831,7 +2846,9 @@ class PMProGateway_stripe extends PMProGateway {
 		$order->ProfileStartDate = date_i18n( "Y-m-d\TH:i:s", strtotime( "+ " . $trial_period_days . " Day", current_time( "timestamp" ) ) );
 
 		//filter the start date
-		$order->ProfileStartDate = apply_filters( "pmpro_profile_start_date", $order->ProfileStartDate, $order );
+		if ( $filtered ) {
+			$order->ProfileStartDate = apply_filters( "pmpro_profile_start_date", $order->ProfileStartDate, $order );
+		}
 
 		//convert back to days
 		$trial_period_days = ceil( abs( strtotime( date_i18n( "Y-m-d\TH:i:s" ), current_time( "timestamp" ) ) - strtotime( $order->ProfileStartDate, current_time( "timestamp" ) ) ) / 86400 );
