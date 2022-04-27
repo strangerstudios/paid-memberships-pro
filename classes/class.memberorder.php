@@ -1159,12 +1159,6 @@
 				return false;
 			}
 
-			// Make sure that the user has the membership level for this order.
-			if ( ! pmpro_hasMembershipLevel( $this->membership_id, $this->user_id ) ) {
-				// The user doesn't have the membership level for this order, so we shouldn't track the subscription.
-				return false;
-			}
-
 			$get_subscription_args = array(
 				'subscription_transaction_id' => $this->subscription_transaction_id,
 				'gateway'                     => $this->gateway,
