@@ -265,7 +265,7 @@ function pmpro_userfields_prep_click_events() {
     // Delete field button.
     jQuery('.pmpro_userfield-field-options a.delete-field').unbind('click').on( 'click', function(event) {
         var thefield = jQuery(this).closest('.pmpro_userfield-group-field');
-        var thelabel = thefield.find('input[name=pmpro_userfields-field-label]').val();
+        var thelabel = thefield.find('input[name=pmpro_userfields_field_label]').val();
         var answer;
         if ( thelabel.length > 0 ) {
             answer = window.confirm('Delete the "' + thelabel + '" field?');
@@ -312,7 +312,7 @@ function pmpro_userfields_prep_click_events() {
         
         fieldcontainer.removeClass('pmpro_userfield-group-field-collapse');
         fieldcontainer.addClass('pmpro_userfield-group-field-expand');
-        fieldsettings.find('select[name=pmpro_userfields-field-type]').change();
+        fieldsettings.find('select[name=pmpro_userfields_field_type]').change();
         fieldsettings.show();
     });
     
@@ -323,9 +323,9 @@ function pmpro_userfields_prep_click_events() {
         var fieldsettings = fieldcontainer.children('.pmpro_userfield-field-settings');
         var fieldheading = fieldsettings.prev();
         // Update label, name, and type.
-        fieldheading.find('span.pmpro_userfield-label').html(fieldsettings.find('input[name=pmpro_userfields-field-label]').val());
-        fieldheading.find('li.pmpro_userfield-group-column-name').html(fieldsettings.find('input[name=pmpro_userfields-field-name]').val());
-        fieldheading.find('li.pmpro_userfield-group-column-type').html(fieldsettings.find('select[name=pmpro_userfields-field-type]').val());
+        fieldheading.find('span.pmpro_userfield-label').html(fieldsettings.find('input[name=pmpro_userfields_field_label]').val());
+        fieldheading.find('li.pmpro_userfield-group-column-name').html(fieldsettings.find('input[name=pmpro_userfields_field_name]').val());
+        fieldheading.find('li.pmpro_userfield-group-column-type').html(fieldsettings.find('select[name=pmpro_userfields_field_type]').val());
         
         // Toggle
         fieldcontainer.removeClass('pmpro_userfield-group-field-expand');
@@ -334,11 +334,11 @@ function pmpro_userfields_prep_click_events() {
     });
     
     // Toggle field settings based on type.
-    jQuery('select[name=pmpro_userfields-field-type]').on('change', function(event){
+    jQuery('select[name=pmpro_userfields_field_type]').on('change', function(event){
         var fieldcontainer = jQuery(this).parents('.pmpro_userfield-group-field');
         var fieldsettings = fieldcontainer.children('.pmpro_userfield-field-settings');
         var fieldtype = jQuery(this).val();
-        var fieldoptions = fieldsettings.find('textarea[name=pmpro_userfields-field-options]').parents('.pmpro_userfield-field-setting');        
+        var fieldoptions = fieldsettings.find('textarea[name=pmpro_userfields_field_options]').parents('.pmpro_userfield-field-setting');        
         
         var optiontypes = ['radio', 'select', 'multiselect']; // eventually checkboxgroup and select2
         
@@ -346,6 +346,20 @@ function pmpro_userfields_prep_click_events() {
             fieldoptions.show();
         } else {
             fieldoptions.hide();
+        }
+    });
+    
+    // Toggle field levels based on membership setting.
+    jQuery('select[name=pmpro_userfields_field_membership]').on('change', function(event){
+        var fieldcontainer = jQuery(this).parents('.pmpro_userfield-group-field');
+        var fieldsettings = fieldcontainer.children('.pmpro_userfield-field-settings');
+        var fieldmembership = jQuery(this).val();
+        var fieldlevels = fieldsettings.find('div.pmpro_userfields-field-levels');        
+        
+        if( fieldmembership === 'yes' ) {
+            fieldlevels.show();
+        } else {
+            fieldlevels.hide();
         }
     });
     
@@ -362,7 +376,7 @@ function pmpro_userfields_prep_click_events() {
             let group_description = jQuery(this).find('textarea[name=pmpro_userfields_group_description]').val();
 
             // Get level ids.            
-            let group_levels = [];            
+            let group_levels = [];
             jQuery('input[name="pmpro_userfields_group_membership[]"]:checked').each(function(){
                 group_levels.push(parseInt(jQuery(this).attr('id').replace('pmpro_userfields_group_membership_', '')));
             });
@@ -370,17 +384,23 @@ function pmpro_userfields_prep_click_events() {
             // Get fields.
             let group_fields = [];
             jQuery(this).find('div.pmpro_userfield-group-fields div.pmpro_userfield-field-settings').each(function(){
-                let field_label = jQuery(this).find('input[name=pmpro_userfields-field-label]').val();
-                let field_name = jQuery(this).find('input[name=pmpro_userfields-field-name]').val();
-                let field_type = jQuery(this).find('select[name=pmpro_userfields-field-type]').val();
-                let field_required = jQuery(this).find('select[name=pmpro_userfields_field-required]').val();
-                let field_readonly = jQuery(this).find('select[name=pmpro_userfields_field-readonly]').val();
-                let field_membership = jQuery(this).find('select[name=pmpro_userfields_field-membership]').val();
-                let field_profile = jQuery(this).find('select[name=pmpro_userfields_field-profile]').val();
-                let field_wrapper_class = jQuery(this).find('input[name=pmpro_userfields-field-class]').val();
-                let field_element_class = jQuery(this).find('input[name=pmpro_userfields-field-divclass]').val();
-                let field_hint = jQuery(this).find('textarea[name=pmpro_userfields-field-hint]').val();
-                let field_options = jQuery(this).find('textarea[name=pmpro_userfields-field-options]').val();
+                let field_label = jQuery(this).find('input[name=pmpro_userfields_field_label]').val();
+                let field_name = jQuery(this).find('input[name=pmpro_userfields_field_name]').val();
+                let field_type = jQuery(this).find('select[name=pmpro_userfields_field_type]').val();
+                let field_required = jQuery(this).find('select[name=pmpro_userfields_field_required]').val();
+                let field_readonly = jQuery(this).find('select[name=pmpro_userfields_field_readonly]').val();
+                let field_membership = jQuery(this).find('select[name=pmpro_userfields_field_membership]').val();
+                let field_profile = jQuery(this).find('select[name=pmpro_userfields_field_profile]').val();
+                let field_wrapper_class = jQuery(this).find('input[name=pmpro_userfields_field_class]').val();
+                let field_element_class = jQuery(this).find('input[name=pmpro_userfields_field_divclass]').val();
+                let field_hint = jQuery(this).find('textarea[name=pmpro_userfields_field_hint]').val();
+                let field_options = jQuery(this).find('textarea[name=pmpro_userfields_field_options]').val();
+                
+                // Get level ids.            
+                let field_levels = [];
+                jQuery(this).find('input[name="pmpro_userfields_field_levels[]"]:checked').each(function(){
+                    field_levels.push(parseInt(jQuery(this).attr('id').replace('pmpro_userfields_field_levels_', '')));
+                });
                 
                 let field = {
                     'label': field_label,
@@ -389,6 +409,7 @@ function pmpro_userfields_prep_click_events() {
                     'required': field_required,
                     'readonly': field_readonly,
                     'membership': field_membership,
+                    'levels': field_levels,
                     'profile': field_profile,
                     'wrapper_class': field_wrapper_class,
                     'element_class': field_element_class,

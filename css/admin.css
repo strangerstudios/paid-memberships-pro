@@ -165,7 +165,8 @@
 	border-bottom: none;
 }
 .pmpro_checkbox_box .pmpro_clickable,
-.checkbox_box .clickable {
+.checkbox_box .clickable,
+.pmpro_userfield-group-header {
 	cursor: pointer;
 }
 .pmpro_checkbox_box .pmpro_clickable:hover,

@@ -12,7 +12,7 @@
 	/**
 	 * Save fields if form was submitted.
 	 */
-	if ( ! empty( $_REQUEST['savesettings'] ) ) {		
+	if ( ! empty( $_REQUEST['savesettings'] ) ) {
 		// Check nonce.
 		check_admin_referer( 'savesettings', 'pmpro_userfields_nonce' );
 				
