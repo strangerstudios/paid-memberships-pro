@@ -33,7 +33,9 @@ function pmpro_handle_subscription_cancellation_at_gateway( $subscription_transa
 	if ( 'stripe' === $gateway ) {
 		/**
 		 * Action for when a subscription is cancelled at a payment gateway.
-		 * Legacy filter brought over from Stripe. May soon be deprecated.
+		 * Legacy filter brought over from Stripe.
+		 *
+		 * @deprecated 3.0
 		 *
 		 * @param int $user_id The ID of the user associated with the subscription.
 		 */
@@ -49,19 +51,6 @@ function pmpro_handle_subscription_cancellation_at_gateway( $subscription_transa
 	$subscription->set( 'status', 'cancelled' );
 	$subscription->save();
 
-	// Legacy Stripe code to avoid cancelling membership in some cases.
-	if ( 'stripe' === $gateway ) {
-		// Array of Stripe.com subscription IDs and the timestamp when they were configured as 'preservable'.
-		$preserve = get_user_meta( $user_id, 'pmpro_stripe_dont_cancel', true );
-
-		// If the $subscription_transaction_id is in the list, remove it and bail on cancelling membership.
-		if ( is_array( $preserve ) && in_array( $subscription_transaction_id, array_keys( $preserve ) ) ) {
-			unset( $preserve[ $subscription_transaction_id ] );
-			update_user_meta( $user_id, 'pmpro_stripe_dont_cancel', $preserve );
-			return 'Stripe subscription ' . $subscription_transaction_id . ' has been flagged as preservable. Not removing membership.';			
-		}
-	}
-
 	// Check to see if the user has the membership level associated with this subscription.
 	if ( ! pmpro_hasMembershipLevel( $subscription->get_membership_level_id(), $user->ID ) ) {
 		return 'The user no longer has the membership level associated with this subscription. No membership cancellation is needed. ( Subscription Transaction ID #' . $recurring_payment_id . ')';
@@ -73,7 +62,9 @@ function pmpro_handle_subscription_cancellation_at_gateway( $subscription_transa
 		if ( ! empty( $newest_order ) ) {
 			/**
 			 * Action for when a subscription is cancelled at a payment gateway.
-			 * Legacy filter brought over from Braintree. May soon be deprecated.
+			 * Legacy filter brought over from Braintree.
+			 *
+			 * @deprecated 3.0
 			 *
 			 * @param int $user_id The ID of the user associated with the subscription.
 			 */
