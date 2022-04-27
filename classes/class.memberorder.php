@@ -770,6 +770,11 @@
 				$pmpro_checkout_id = $this->checkout_id;
 			}
 
+			// Deprecating cancelled status with subscriptions table update. Change to success.
+			if ( $this->status == 'cancelled' ) {
+				$this->status = 'success';
+			}
+
 			//build query
 			if(!empty($this->id))
 			{

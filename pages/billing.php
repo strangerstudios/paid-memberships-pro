@@ -456,32 +456,13 @@
 		</div> <!-- end pmpro_level-ID -->
 	<?php } ?>
 
-<?php } else { // End for recurring level check.
-	// Check to see if the user has a cancelled order
-	$order = new MemberOrder();
-	$order->getLastMemberOrder( $current_user->ID, array( 'cancelled', 'expired', 'admin_cancelled' ) );
-
-	if ( isset( $order->membership_id ) && ! empty( $order->membership_id ) && empty( $level->id ) ) {
-		$level = pmpro_getLevel( $order->membership_id );
-
-		// If no level check for a default level.
-		if ( empty( $level ) || ! $level->allow_signups ) {
-			$default_level_id = apply_filters( 'pmpro_default_level', 0 );
-		}
-
-		// Show the correct checkout link.
-		if ( ! empty( $level ) && ! empty( $level->allow_signups ) ) {
-			$url = pmpro_url( 'checkout', '?level=' . $level->id );
-			printf( __( "Your membership is not active. <a href='%s'>Renew now.</a>", 'paid-memberships-pro' ), $url );
-		} elseif ( ! empty( $default_level_id ) ) {
-			$url = pmpro_url( 'checkout', '?level=' . $default_level_id );
-			printf( __( "You do not have an active membership. <a href='%s'>Register here.</a>", 'paid-memberships-pro' ), $url );
-		} else {
-			$url = pmpro_url( 'levels' );
-			printf( __( "You do not have an active membership. <a href='%s'>Choose a membership level.</a>", 'paid-memberships-pro' ), $url );
-		}
-	} else { ?>
+<?php } elseif ( pmpro_hasMembershipLevel() ) {
+		// User's level must not be recurring.
+		?>
 		<p><?php esc_html_e("This subscription is not recurring. So you don't need to update your billing information.", 'paid-memberships-pro' );?></p>
-	<?php }
-} ?>
+		<?php
+	} else {
+		// User does not have a membership level.
+		printf( __( "You do not have an active membership. <a href='%s'>Choose a membership level.</a>", 'paid-memberships-pro' ), $url );
+	} ?>
 </div> <!-- end pmpro_billing_wrap -->
