@@ -1766,7 +1766,6 @@ class MemberOrder {
 	function get_test_order() {
 		global $current_user;
 
-		// $test_order = $this->getEmptyMemberOrder();
 		$all_levels = pmpro_getAllLevels();
 
 		if ( ! empty( $all_levels ) ) {
