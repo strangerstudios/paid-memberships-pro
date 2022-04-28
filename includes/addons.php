@@ -242,6 +242,8 @@ function pmpro_update_plugins_filter( $value ) {
 		if ( version_compare( $plugin_data['Version'], $addon['Version'], '<' ) ) {
 			$value->response[ $plugin_file ] = pmpro_getPluginAPIObjectFromAddon( $addon );
 			$value->response[ $plugin_file ]->new_version = $addon['Version'];
+			$value->response[ $plugin_file ]->icons = array( 'default' => esc_url( PMPRO_URL . '/images/add-ons/' . $addon['Slug'] . '.png' ) );
+
 		} else {
 			$value->no_update[ $plugin_file ] = pmpro_getPluginAPIObjectFromAddon( $addon );
 		}
