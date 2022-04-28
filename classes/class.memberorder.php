@@ -8,7 +8,7 @@
 		 *
 		 * @var int
 		 */
-		public $id = 0;
+		private $id = 0;
 
 		/**
 		 * The Member Order Identifier, also used as invoie number
@@ -17,7 +17,7 @@
 		 *
 		 * @var string
 		 */
-		public $code = '';
+		private $code = '';
 
 		/**
 		 * User ID
@@ -26,7 +26,7 @@
 		 *
 		 * @var int
 		 */
-		public $user_id = 0;
+		private $user_id = 0;
 
 		/**
 		 * Level ID
@@ -35,7 +35,7 @@
 		 *
 		 * @var int
 		 */
-		public $membership_id = 0;
+		private $membership_id = 0;
 
 		/**
 		 * Session ID
@@ -44,7 +44,7 @@
 		 *
 		 * @var string
 		 */
-		public $session_id = '';
+		private $session_id = '';
 
 		/**
 		 * PayPal Token 
@@ -53,7 +53,7 @@
 		 *
 		 * @var string
 		 */
-		public $paypal_token = '';
+		private $paypal_token = '';
 
 		/**
 		 * Contain a billing address object
@@ -62,7 +62,7 @@
 		 *
 		 * @var object
 		 */
-		public $billing = '';
+		private $billing = '';
 
 		/**
 		 * Subtotal value
@@ -71,7 +71,7 @@
 		 *
 		 * @var float
 		 */
-		public $subtotal = 0.00;
+		private $subtotal = 0.00;
 
 		/**
 		 * Tax Amount
@@ -80,7 +80,7 @@
 		 *
 		 * @var float
 		 */
-		public $tax = 0.00;
+		private $tax = 0.00;
 
 		/**
 		 * Discount Code Amount
@@ -89,7 +89,7 @@
 		 *
 		 * @var float
 		 */
-		public $couponamount = 0.00;
+		private $couponamount = 0.00;
 
 		/**
 		 * Certificate ID - Notice of deprecation started in 1.8.10. Should no longer be used.
@@ -100,7 +100,7 @@
 		 *
 		 * @deprecated 1.8.10
 		 */
-		public $certificate_id = '';
+		private $certificate_id = '';
 
 		/**
 		 * Certificate Amount - Notice of deprecation started in 1.8.10. Should no longer be used.
@@ -111,7 +111,7 @@
 		 *
 		 * @deprecated 1.8.10
 		 */
-		public $certificateamount = '';
+		private $certificateamount = '';
 
 		/**
 		 * Total order amount
@@ -120,7 +120,7 @@
 		 *
 		 * @var float
 		 */
-		public $total = 0.00;
+		private $total = 0.00;
 
 		/**
 		 * The gateway name or label used (Stripe, Check etc)
@@ -129,7 +129,7 @@
 		 *
 		 * @var string
 		 */
-		public $payment_type = '';
+		private $payment_type = '';
 
 		/**
 		 * The Card Type used (Visa etc)
@@ -138,7 +138,7 @@
 		 *
 		 * @var string
 		 */
-		public $cardtype = '';
+		private $cardtype = '';
 
 		/**
 		 * Account or Card Number (only shows last 4 digits)
@@ -147,7 +147,7 @@
 		 *
 		 * @var string
 		 */
-		public $accountnumber = '';
+		private $accountnumber = '';
 
 		/**
 		 * Card Expiration Month (02)
@@ -156,7 +156,7 @@
 		 *
 		 * @var int
 		 */
-		public $expirationmonth = '';
+		private $expirationmonth = '';
 
 		/**
 		 * Expiration Year (22)
@@ -165,7 +165,7 @@
 		 *
 		 * @var int
 		 */
-		public $expirationyear = '';
+		private $expirationyear = '';
 
 		/**
 		 * The Order Status
@@ -174,7 +174,7 @@
 		 *
 		 * @var string
 		 */
-		public $status = '';
+		private $status = '';
 
 		/**
 		 * The Gateway identifier (stripe, paypalexpress etc)
@@ -183,7 +183,7 @@
 		 *
 		 * @var string
 		 */
-		public $gateway = '';
+		private $gateway = '';
 
 		/**
 		 * The Gateway Environment (live, sandbox)
@@ -192,7 +192,7 @@
 		 *
 		 * @var string
 		 */
-		public $gateway_environment = '';
+		private $gateway_environment = '';
 
 		/**
 		 * The payment Transaction ID
@@ -201,7 +201,7 @@
 		 *
 		 * @var string
 		 */
-		public $payment_transaction_id = '';
+		private $payment_transaction_id = '';
 
 		/**
 		 * The Subscription Transaction ID
@@ -210,7 +210,7 @@
 		 *
 		 * @var string
 		 */
-		public $subscription_transaction_id = '';
+		private $subscription_transaction_id = '';
 
 		/**
 		 * The current time the order was created
@@ -219,7 +219,7 @@
 		 *
 		 * @var string
 		 */
-		public $timestamp = '';
+		private $timestamp = '';
 
 		/**
 		 * The Affiliate ID 
@@ -228,7 +228,7 @@
 		 *
 		 * @var int
 		 */
-		public $affiliate_id = 0;
+		private $affiliate_id = 0;
 
 		/**
 		 * The Affiliate Sub ID
@@ -237,7 +237,7 @@
 		 *
 		 * @var string
 		 */
-		public $affiliate_subid = '';
+		private $affiliate_subid = '';
 
 		/**
 		 * The Order notes
@@ -246,7 +246,7 @@
 		 *
 		 * @var string
 		 */
-		public $notes = '';
+		private $notes = '';
 
 		/**
 		 * The Checkout ID - used to track multiple orders during a single checkout
@@ -255,158 +255,25 @@
 		 *
 		 * @var string
 		 */
-		public $checkout_id = '';
+		private $checkout_id = '';	
 
 		/**
-		 * Member First Name
+		 * Defines an array of optionally used properties
 		 *
 		 * @since TBD
 		 *
-		 * @var string
+		 * @var array
 		 */
-		public $FirstName = '';
+		private $other_properties = array();	
 
-		/**
-		 * Member Last Name
-		 *
-		 * @since TBD
-		 *
-		 * @var string
-		 */
-		public $LastName = '';
-
-		/**
-		 * Member Address Line 1
-		 *
-		 * @since TBD
-		 *
-		 * @var string
-		 */
-		public $Address1 = '';
-
-		/**
-		 * The member's Email Address
-		 *
-		 * @since TBD
-		 *
-		 * @var string
-		 */
-		public $Email = '';
-
-		/**
-		 * Formatted expiration date (02/22)
-		 *
-		 * @since TBD
-		 *
-		 * @var string
-		 */
-		public $ExpirationDate = '';
-
-		/**
-		 * Formatted expiration date Y-M Format (02-22)
-		 *
-		 * @since TBD
-		 *
-		 * @var string
-		 */
-		public $ExpirationDate_YdashM = '';
-
-		/**
-		 * ???
-		 *
-		 * @since TBD
-		 *
-		 * @var string
-		 */
-		public $nogateway = '';
-
-		/**
-		 * Is current order a renewal
-		 *
-		 * @since TBD
-		 *
-		 * @var bool
-		 */
-		public $is_renewal = false;
-
-		/**
-		 * The gateway object, contains gateway ID and environment
-		 *
-		 * @since TBD
-		 *
-		 * @var object
-		 */
-		public $Gateway = '';
-
-		/**
-		 * SQL Query used to retrieve the current Member Order
-		 *
-		 * @since TBD
-		 *
-		 * @var string
-		 */
-		public $sqlQuery = '';
-
-		/**
-		 * The discount code used
-		 *
-		 * @since TBD
-		 *
-		 * @var string
-		 */
-		public $discount_code = '';
-
-		/**
-		 * ???
-		 *
-		 * @since TBD
-		 *
-		 * @var string
-		 */
-		public $user = '';
-
-		/**
-		 * Level ID
-		 *
-		 * @since TBD
-		 *
-		 * @var int
-		 */
-		public $membership_level = 0;
-
-		/**
-		 * Initial Payment Amount
-		 *
-		 * @since TBD
-		 *
-		 * @var float
-		 */
-		public $InitialPayment = 0.00;
-
-		/**
-		 * Timestamp
-		 *
-		 * @since TBD
-		 *
-		 * @var string
-		 */
-		public $datetime = '';
-
-		/**
-		 * The original order status
-		 *
-		 * @since TBD
-		 *
-		 * @var string
-		 */
-		protected $original_status = '';
-		
 
 		/**
 		 * Constructor
 		 */
 		function __construct($id = NULL)
 		{
+
+
 			//set up the gateway
 			$this->setGateway(pmpro_getOption("gateway"));
 
@@ -424,7 +291,82 @@
 
 			return $morder;
 		}
+		
+		/**
+		 * Get Magic Method
+		 *
+		 * @since TBA
+		 * 
+		 * @param string $property The property we want to get
+		 *
+		 * @return mixed|null
+		 */
+		public function __get( $property ) {
 
+			if( $property == 'other_properties' ) {
+				return; //We don't want the actual other_properties array to be changed
+			}
+
+			if( property_exists( $this, $property ) ) {
+				return $this->{$property};
+			}
+
+			if ( isset( $this->other_properties[ $property ] ) ) {
+				return $this->other_properties[ $property ];
+			}
+
+		}
+
+		/**
+		 * Set Magic Method
+		 *
+		 * @since TBA
+		 * 
+		 * @param string $property The property we want to reference
+		 * @param string $value The property we want to set
+		 *
+		 * @return mixed|null
+		 */
+		public function __set( $property, $value ) {
+
+			if( $property == 'other_properties' ) {
+				return; //We don't want the actual other_properties array to be changed
+			}
+
+			if( property_exists( $this, $property ) ) {
+				
+				// Perform validation as needed here.
+				if ( is_int( $this->{$property} ) ) {
+					$value = (int) $value;
+				} elseif ( is_float( $this->{$property} ) ) {
+					$value = (float) $value;
+				}
+				
+				$this->{$property} = $value;
+
+			} else {
+
+				$this->other_properties[ $property ] = $value;
+
+			}
+
+		}
+
+		/**
+		 * Is Set Magic Method
+		 *
+		 * @since TBA
+		 * 
+		 * @param string $property The property we want to reference
+		 *
+		 * @return bool
+		 */
+		public function __isset( $property ) {
+
+			return property_exists( $this, $property ) || isset( $this->other_properties[ $property ] );
+	
+		}
+		
 		/**
 		 * Get a specific order by ID or code
 		 *
