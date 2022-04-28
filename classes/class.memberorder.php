@@ -272,9 +272,6 @@ class MemberOrder {
 	 */
 	function __construct( $id = null ) {
 
-		// set up the gateway
-		$this->setGateway( pmpro_getOption( 'gateway' ) );
-
 		// get data if an id was passed
 		if ( $id ) {
 			if ( is_numeric( $id ) ) {
@@ -304,6 +301,11 @@ class MemberOrder {
 
 		if ( $property == 'other_properties' ) {
 			return; // We don't want the actual other_properties array to be changed
+		}
+
+		if( 'Gateway' === $property ){
+			// we are here only if ->Gateway is NOT set
+			$this->setGateway( $this->gateway ? $this->gateway : '' );
 		}
 
 		if ( property_exists( $this, $property ) ) {
