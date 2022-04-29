@@ -1115,9 +1115,6 @@ class PMPro_Subscription {
 	/**
 	 * Cancels the subscription at the payment gateway.
 	 *
-	 * IPNs/Webhooks should then trigger the cancellation of the subscription in the
-	 * database.
-	 *
 	 * Legacy: Falls back on calling the gateway's cancel() method if the gateway does not
 	 * support cancelling PMPro_Subscription objects specifically.
 	 *
@@ -1153,8 +1150,6 @@ class PMPro_Subscription {
 		}
 
 		// If the cancellation failed, send an email to the admin.
-		// We will also mark the subscription as cancelled in the database since
-		// no IPN/webhooks will be sent by the gateway.
 		if ( ! $cancelled ) {
 			// Notify the admin.
 			$user                      = get_userdata( $this->user_id );
@@ -1170,10 +1165,11 @@ class PMPro_Subscription {
 			$pmproemail->data['body'] .= '<hr />' . "\n";
 			$pmproemail->data['body'] .= '<p>' . esc_html__( 'Edit User', 'paid-memberships-pro' ) . ': ' . esc_url( add_query_arg( 'user_id', $this->user_id, self_admin_url( 'user-edit.php' ) ) ) . '</p>';
 			$pmproemail->sendEmail( get_bloginfo( 'admin_email' ) );
-
-			// Mark the subscription as cancelled in the database.
-			$this->mark_as_cancelled();
 		}
+
+		// Mark the subscription as cancelled in the database.
+		$this->mark_as_cancelled();
+
 		return $cancelled;
 	}
 
