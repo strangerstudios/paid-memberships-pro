@@ -1334,7 +1334,7 @@
 				$highestval = $wpdb->get_var("SELECT MAX(checkout_id) FROM $wpdb->pmpro_membership_orders");
 				$this->checkout_id = intval($highestval)+1;
 				$pmpro_checkout_id = $this->checkout_id;
-			}			
+			}
 
 			//build query
 			if(!empty($this->id))
