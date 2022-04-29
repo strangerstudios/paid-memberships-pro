@@ -232,6 +232,9 @@
 				return $this->is_renewal;
 			}
 			
+			if ( empty( $this->timestamp ) ) {
+				$this->timestamp = time();
+			}
 			// Check the DB.
 			$sqlQuery = "SELECT `id`
 						 FROM $wpdb->pmpro_membership_orders
