@@ -163,7 +163,7 @@
 		 *
 		 * @since TBD
 		 *
-		 * @var int
+		 * @var string
 		 */
 		private $expirationyear = '';
 
