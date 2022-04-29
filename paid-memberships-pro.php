@@ -82,6 +82,7 @@ require_once( PMPRO_DIR . '/includes/spam.php' );					// code to combat spam of 
 require_once( PMPRO_DIR . '/includes/xmlrpc.php' );                 // xmlrpc methods
 require_once( PMPRO_DIR . '/includes/rest-api.php' );               // rest API endpoints
 require_once( PMPRO_DIR . '/includes/widgets.php' );                // widgets for PMPro
+require_once( PMPRO_DIR . '/includes/gateway-request-handlers.php' ); // gateway request handlers
 
 require_once( PMPRO_DIR . '/classes/class-pmpro-site-health.php' ); // Site Health information.
 
