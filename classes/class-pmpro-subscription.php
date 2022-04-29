@@ -1122,6 +1122,8 @@ class PMPro_Subscription {
 	 * support cancelling PMPro_Subscription objects specifically.
 	 *
 	 * @since TBD
+	 *
+	 * @return bool True if the subscription was canceled successfully in the payment gateway.
 	 */
 	public function cancel_at_gateway() {
 		// Legacy: Prevent infinite loops when calling gateway's cancel() method and passing an order.
