@@ -368,32 +368,31 @@
 		}
 		
 		/**
-		 * Get a specific order by ID or code
+		 * Get a specific order by ID, code, or an array of arguments
 		 *
 		 * @since TBA
 		 * 
-		 * @param mixed $id Specify an order ID or code that you want to retrieve
+		 * @param mixed $args Specify an order ID, code, or array of arguments to find an order for.
 		 *
 		 */
-		public static function get_order( $id = NULL ) {
+		public static function get_order( $args = NULL ) {
 
 			// At least one argument is required.
-			if ( empty( $id ) ) {
+			if ( empty( $args ) ) {
 				return null;
 			}
 
-			if ( is_numeric( $id ) ) {
-				//If its numeric we assume you're trying to get an ID
+			if ( is_numeric( $args ) ) {
+				// If its numeric we assume you're trying to get an ID.
 				$args = array(
-					'id' => $id,
+					'id' => $args,
 				);
 
-			} else {
-				//If its not, we assume it's a string and should be a code
+			} else if ( is_string( $args ) ) {
+				// If it is a string but not numeric, we assume it's a string and should be a code.
 				$args = array(
-					'code' => $id,
+					'code' => $args,
 				);
-
 			}
 
 			// Invalid arguments.
