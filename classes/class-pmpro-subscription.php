@@ -1113,14 +1113,20 @@ class PMPro_Subscription {
 	}
 
 	/**
-	 * Cancels this subscription in PMPro and at the payment gateway.
+	 * Cancels the subscription at the payment gateway.
+	 *
+	 * IPNs/Webhooks should then trigger the cancellation of the subscription in the
+	 * database.
+	 *
+	 * Legacy: Falls back on calling the gateway's cancel() method if the gateway does not
+	 * support cancelling PMPro_Subscription objects specifically.
 	 *
 	 * @since TBD
 	 *
 	 * @return bool True if the subscription was canceled successfully in the payment gateway.
 	 */
-	public function cancel() {
-		// Prevent infinite loops when calling gateway's cancel() method and passing an order.
+	public function cancel_at_gateway() {
+		// Legacy: Prevent infinite loops when calling gateway's cancel() method and passing an order.
 		static $cancelled_subscription_ids = [];
 		if ( 'cancelled' !== $this->status && in_array( $this->id, $cancelled_subscription_ids, true ) ) {
 			return false;
@@ -1128,12 +1134,13 @@ class PMPro_Subscription {
 		$cancelled_subscription_ids[] = $this->id;
 
 		// Cancel the subscription in the gateway.
+		$cancelled = false;
 		$gateway_object = $this->get_gateway_object();
 		if ( is_object( $gateway_object ) ) {
 			if ( method_exists( $gateway_object, 'cancel_subscription' ) ) {
-				$result = $gateway_object->cancel_subscription( $this );
+				$cancelled = $gateway_object->cancel_subscription( $this );
 			} elseif ( method_exists( $gateway_object, 'cancel' ) ) {
-				// Build an order to pass to the old cancel() methods in gateways.
+				// Legacy: Build an order to pass to the old cancel() methods in gateways.
 				$morder                              = new MemberOrder();
 				$morder->user_id                     = $this->user_id;
 				$morder->membership_id               = $this->membership_level_id;
@@ -1141,15 +1148,14 @@ class PMPro_Subscription {
 				$morder->gateway_environment         = $this->gateway_environment;
 				$morder->subscription_transaction_id = $this->subscription_transaction_id;
 
-				$result = $gateway_object->cancel( $morder );
-			} else {
-				// We don't have any way to cancel this subscription in the gateway.
-				$result = false;
+				$cancelled = $gateway_object->cancel( $morder );
 			}
 		}
 
 		// If the cancellation failed, send an email to the admin.
-		if ( ! $result ) {
+		// We will also mark the subscription as cancelled in the database since
+		// no IPN/webhooks will be sent by the gateway.
+		if ( ! $cancelled ) {
 			// Notify the admin.
 			$user                      = get_userdata( $this->user_id );
 			$pmproemail                = new PMProEmail();
@@ -1164,17 +1170,34 @@ class PMPro_Subscription {
 			$pmproemail->data['body'] .= '<hr />' . "\n";
 			$pmproemail->data['body'] .= '<p>' . esc_html__( 'Edit User', 'paid-memberships-pro' ) . ': ' . esc_url( add_query_arg( 'user_id', $this->user_id, self_admin_url( 'user-edit.php' ) ) ) . '</p>';
 			$pmproemail->sendEmail( get_bloginfo( 'admin_email' ) );
-    }
-    
+
+			// Mark the subscription as cancelled in the database.
+			$this->mark_as_cancelled();
+		}
+		return $cancelled;
+	}
+
+	/**
+	 * Marks the subscription as cancelled in the database. Also marks
+	 * incomplete orders for this subscription as error.
+	 *
+	 * @since TBD
+	 */
+	public function mark_as_cancelled() {
+		// Mark subscription as cancelled.
 		$this->status  = 'cancelled';
 		if ( empty( $this->enddate ) ) {
 			// Only set enddate if we don't have one yet.
-    		$this->enddate = gmdate( 'Y-m-d H:i:s' );
+			$this->enddate = gmdate( 'Y-m-d H:i:s' );
 		}
 		$this->update();
 		$this->save();
 
-		return $result;
+		// Mark incomplete orders as error.
+		$incomplete_orders = $this->get_orders( array( 'status' => array( 'token', 'pending', 'review' ) ) );
+		foreach ( $incomplete_orders as $order ) {
+			$last_subscription_order->updateStatus( 'error' );
+		}
 	}
 
 	/**
