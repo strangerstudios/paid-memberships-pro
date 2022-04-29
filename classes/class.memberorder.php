@@ -213,7 +213,7 @@
 		private $subscription_transaction_id = '';
 
 		/**
-		 * The current time the order was created
+		 * The time the order was created (UTC YYYY-MM-DD HH:MM:SS)
 		 *
 		 * @since TBD
 		 *
