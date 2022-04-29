@@ -25,7 +25,7 @@ function pmpro_handle_subscription_cancellation_at_gateway( $subscription_transa
 	if ( empty( $user ) ) {
 		// The user for this subscription does not exist. Let's just set the subscription status to cancelled.
 		$subscription->mark_as_cancelled();
-		return 'ERROR: Could not cancel membership. No user attached to subscription #' . $subscription->get_id() . ' with subscription transaction id = ' . $recurring_payment_id . '.';
+		return 'ERROR: Could not cancel membership. No user attached to subscription #' . $subscription->get_id() . ' with subscription transaction id = ' . $subscription_transaction_id . '.';
 	}
 
 	// Legacy Stripe code to add action on subscription cancellation.
@@ -42,8 +42,8 @@ function pmpro_handle_subscription_cancellation_at_gateway( $subscription_transa
 	}
 
 	// Check if we have already cancelled the subscription in PMPro.
-	if ( 'cancelled' === $subscription->status ) {
-		return 'We have already processed this cancellation. Probably originated from WP/PMPro. ( Subscription Transaction ID #' . $recurring_payment_id . ')';
+	if ( 'cancelled' === $subscription->get_status() ) {
+		return 'We have already processed this cancellation. Probably originated from WP/PMPro. ( Subscription Transaction ID #' . $subscription_transaction_id . ')';
 	}
 
 	// Mark the PMPro_Subscription as cancelled.
@@ -51,7 +51,7 @@ function pmpro_handle_subscription_cancellation_at_gateway( $subscription_transa
 
 	// Check to see if the user has the membership level associated with this subscription.
 	if ( ! pmpro_hasMembershipLevel( $subscription->get_membership_level_id(), $user->ID ) ) {
-		return 'The user no longer has the membership level associated with this subscription. No membership cancellation is needed. ( Subscription Transaction ID #' . $recurring_payment_id . ')';
+		return 'The user no longer has the membership level associated with this subscription. No membership cancellation is needed. ( Subscription Transaction ID #' . $subscription_transaction_id . ')';
 	}
 
 	// Legacy Braintree code to add action on subscription cancellation.
@@ -81,5 +81,5 @@ function pmpro_handle_subscription_cancellation_at_gateway( $subscription_transa
 	$myemail = new PMProEmail();
 	$myemail->sendCancelAdminEmail( $user, $subscription->get_membership_level_id() );
 
-	return 'Cancelled membership for user with id = ' . $user->ID . '. Subscription transaction id = ' . $recurring_payment_id . '.';
+	return 'Cancelled membership for user with id = ' . $user->ID . '. Subscription transaction id = ' . $subscription_transaction_id . '.';
 }
