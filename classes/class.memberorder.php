@@ -323,7 +323,7 @@
 		 * @since TBA
 		 * 
 		 * @param string $property The property we want to reference
-		 * @param string $value The property we want to set
+		 * @param string $value The value we want to set for $property
 		 *
 		 * @return mixed|null
 		 */
