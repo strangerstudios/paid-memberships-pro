@@ -1195,8 +1195,10 @@ class PMPro_Subscription {
 
 		// Mark incomplete orders as error.
 		$incomplete_orders = $this->get_orders( array( 'status' => array( 'token', 'pending', 'review' ) ) );
-		foreach ( $incomplete_orders as $order ) {
-			$last_subscription_order->updateStatus( 'error' );
+		if ( ! empty( $incomplete_orders ) ) {
+			foreach ( $incomplete_orders as $order ) {
+				$last_subscription_order->updateStatus( 'error' );
+			}
 		}
 	}
 
