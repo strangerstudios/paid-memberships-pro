@@ -128,6 +128,10 @@ class PMPro_Site_Health {
 			return __( 'No Levels Found', 'paid-memberships-pro' );
 		}
 
+		foreach ( $membership_levels as $membership_level ) {
+			$membership_level->meta = get_pmpro_membership_level_meta( $membership_level->id );
+		}
+
 		return wp_json_encode( $membership_levels, JSON_PRETTY_PRINT );
 	}
 
