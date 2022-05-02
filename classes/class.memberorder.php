@@ -214,26 +214,49 @@
 		}
 
 		/**
-		 * Is this order a 'renewal'?
-		 * We currently define a renewal as any order from a user who has
-		 * a previous paid (non-$0) order.
+		 * Is this order a renewal?
+		 * True for any order which is not an initial payment.
+		 *
+		 * @return bool
+		 *
+		 * @since 2.8.0
 		 */
-		function is_renewal() {
-			global $wpdb;			
-			
-			// If our property is already set, use that.
-			if ( isset( $this->is_renewal ) ) {				
-				return $this->is_renewal;
+		function is_renewal_order() {
+			// If this order does not have a payment or subscription id, it's not a renewal.
+			if ( empty( $this->payment_transaction_id ) || empty( $this->subscription_transaction_id ) ) {
+				return false;
 			}
-			
+
+			$original_sub_order = $this->get_original_subscription_order( $this->subscription_transaction_id );
+
+			return $this->payment_transaction_id !== $original_sub_order->payment_transaction_id;
+		}
+
+		/**
+		 * Is this order from a returning customer?
+		 * True for any order from a user who has a previous paid (non-$0) order.
+		 *
+		 * @return bool
+		 *
+		 * @since 2.8.0
+		 */
+		function is_returning_customer() {
+			global $wpdb;
+
+			// If our property is already set, use that.
+			if ( isset( $this->is_returning_customer ) ) {
+				return $this->is_returning_customer;
+			}
+
 			// Can't tell if this is a renewal without a user.
 			if ( empty( $this->user_id ) ) {
-				$this->is_renewal = false;
-				return $this->is_renewal;
+				$this->is_returning_customer = false;
+
+				return $this->is_returning_customer;
 			}
-			
+
 			// Check the DB.
-			$sqlQuery = "SELECT `id`
+			$sqlQuery       = "SELECT `id`
 						 FROM $wpdb->pmpro_membership_orders
 						 WHERE `user_id` = '" . esc_sql( $this->user_id ) . "'						 	
 							AND `id` <> '" . esc_sql( $this->id ) . "'
@@ -246,12 +269,24 @@
 			$older_order_id = $wpdb->get_var( $sqlQuery );
 
 			if ( ! empty( $older_order_id ) ) {
-				$this->is_renewal = true;
+				$this->is_returning_customer = true;
 			} else {
-				$this->is_renewal = false;
+				$this->is_returning_customer = false;
 			}
-			
-			return $this->is_renewal;
+
+			return $this->is_returning_customer;
+		}
+
+		/**
+		 * Is this order a 'renewal'?
+		 * We currently define a renewal as any order from a user who has a previous paid (non-$0) order.
+		 *
+		 * @deprecated 2.8.0. Use is_returning_customer() instead.
+		 */
+		function is_renewal() {
+			_deprecated_function( __FUNCTION__, '2.8.0', 'is_returning_customer()' );
+
+			return $this->is_returning_customer();
 		}
 
 
