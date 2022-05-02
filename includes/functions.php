@@ -381,6 +381,12 @@ function pmpro_loadTemplate( $page_name = null, $where = 'local', $type = 'pages
 	foreach ( $templates as $template_path ) {
 		// If loading a local file, check if it exists first
 		if ( $where == 'url' || file_exists( $template_path ) ) {
+			//Checks and records the current template version
+			$template_version = pmpro_get_template_version( $template_path, $type );
+			if( $template_version ) {
+				pmpro_setOption( 'template_version_'.$template_version['slug'], $template_version['version'] );
+			}
+
 			include $template_path;
 			break;
 		}
@@ -389,6 +395,97 @@ function pmpro_loadTemplate( $page_name = null, $where = 'local', $type = 'pages
 
 	// return template content
 	return $template;
+}
+
+function pmpro_get_template_version( $path ) {
+
+	$headers = array( 
+		'template' => 'Template',
+		'version' => 'Version' 
+	);
+
+	$data = get_file_data( $path, $headers );
+
+	if( !empty( $data ) ) {
+
+		$data['slug'] = sanitize_title( $data['template'] );
+
+		return $data;
+	}
+
+	return false;
+
+}
+
+function pmpro_get_template_versions() {
+
+	$type = 'pages';
+	$ext = 'php';
+
+	$pages = array(
+		'account',
+		'billing',
+		'cancel',
+		'checkout',
+		'confirmation',
+		'invoice',
+		'levels',
+		'login',
+		'member_profile_edit'
+	);
+
+	$template_versions = array();
+
+	foreach( $pages as $page_name ) {
+
+		$template = PMPRO_DIR . "/{$type}/{$page_name}.{$ext}";
+
+		$template_data = pmpro_get_template_version( $template );
+
+		$template_versions[$template_data['slug']] = $template_data['version'];
+
+	}
+
+	pmpro_setOption( 'template_versions', maybe_serialize( $template_versions ) );
+
+	return $template_versions;
+
+}
+
+function pmpro_get_used_template_version( $slug ) {
+
+	return pmpro_getOption( 'template_version_'.$slug );
+
+}
+
+function pmpro_compare_template_versions() {
+
+	$templates = pmpro_get_template_versions();
+
+	$affected_templates = array();
+
+	if( !empty( $templates ) ) {
+
+		foreach( $templates as $template_slug => $version ) {
+
+			$actual_version = $version;
+
+			$used_version = pmpro_get_used_template_version( $template_slug );
+
+			if( !empty( $used_version ) ){
+				//Only compare if we have a used version number
+				$compared = version_compare( floatval( $used_version ), floatval( $actual_version ), "<");
+				if( $compared ) {
+					$affected_templates[$template_slug] = array( 'our_version' => $actual_version, 'your_version' => $used_version );
+				}
+			} else {
+				//No template headers present
+				// $affected_templates[$template_slug] = array( 'our_version' => $actual_version, 'your_version' => __('Unknown', 'paid-memberships-pro') );
+			}
+		}
+	}
+
+	return $affected_templates;
 }
 
 function pmpro_getLevelCost( &$level, $tags = true, $short = false ) {

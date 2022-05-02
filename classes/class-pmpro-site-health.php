@@ -100,6 +100,10 @@ class PMPro_Site_Health {
 				'pmpro-pages' => [
 					'label' => __( 'Membership Pages', 'paid-memberships-pro' ),
 					'value' => self::get_pmpro_pages(),
+				],
+				'pmpro-template-versions' => [
+					'label' => __( 'Template Versions', 'paid-memberships-pro' ),
+					'value' => self::get_template_versions(),
 				]
 			],
 		];
@@ -543,6 +547,22 @@ class PMPro_Site_Health {
 		}
 
 		return $constants_formatted;
+	}
+
+	public function get_template_versions() {
+
+		$data = array();
+
+		$templates = pmpro_compare_template_versions();
+
+		if( !empty( $templates ) ) {
+			foreach( $templates as $slug => $versions ) {
+				$data[$slug] = sprintf( __('%s - Core Version: %s, Your Version: %s.'), $slug, $versions['our_version'], $versions['your_version'] );
+			}
+		}
+
+		return $data;
+
 	}
 
 }
