@@ -1060,7 +1060,7 @@ class PMPro_Subscription {
 		}
 
 		// If the enddate is empty and the subscription is cancelled, set it to the current time.
-		if ( empty( $this->enddate ) && 'cancelled' === $this->status ) {
+		if ( ( empty( $this->enddate ) || '0000-00-00 00:00:00' === $this->enddate || '1970-01-01 00:00:00' === $this->enddate ) && 'cancelled' === $this->status ) {
 			$this->enddate = gmdate( 'Y-m-d H:i:s' );
 		}
 
@@ -1186,10 +1186,6 @@ class PMPro_Subscription {
 	public function mark_as_cancelled() {
 		// Mark subscription as cancelled.
 		$this->status  = 'cancelled';
-		if ( empty( $this->enddate ) ) {
-			// Only set enddate if we don't have one yet.
-			$this->enddate = gmdate( 'Y-m-d H:i:s' );
-		}
 		$this->update();
 		$this->save();
 
