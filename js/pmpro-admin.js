@@ -48,6 +48,45 @@ jQuery(document).ready(function() {
 	});
 });
 
+// Admin Settings Code.
+jQuery(document).ready(function() {
+	pmpro_admin_prep_click_events();
+});
+
+// Function to prep click events for admin settings.
+function pmpro_admin_prep_click_events() {
+	/*
+	 * Toggle content within the settings sections boxes.
+	 * @since TBD
+	 */
+	jQuery( 'button.pmpro_section-toggle-button' ).on( 'click', function(event){
+		event.preventDefault();
+
+		let thebutton = jQuery(event.target).parents('.pmpro_section').find('button.pmpro_section-toggle-button');
+		let buttonicon = thebutton.children('.dashicons');
+		let section = thebutton.closest('.pmpro_section');
+		let sectioninside = section.children('.pmpro_section_inside');
+
+		//let visibility = container.data('visibility');
+		//let activated = container.data('activated');
+		if ( buttonicon.hasClass('dashicons-arrow-down-alt2') ) {
+			// Section is not visible. Show it.
+			jQuery( sectioninside ).show();
+			jQuery( buttonicon ).removeClass('dashicons-arrow-down-alt2');
+			jQuery( buttonicon ).addClass('dashicons-arrow-up-alt2');
+			jQuery( section ).attr('data-visibility','shown');
+			jQuery( thebutton ).attr('aria-expanded', 'true');
+		} else {
+			// Section is visible. Hide it.
+			jQuery( sectioninside ).hide();
+			jQuery( buttonicon ).removeClass('dashicons-arrow-up-alt2');
+			jQuery( buttonicon ).addClass('dashicons-arrow-down-alt2');
+			jQuery( section ).attr('data-visibility','hidden');
+			jQuery( thebutton ).attr('aria-expanded', 'false');
+		}
+	});
+}
+
 /** JQuery to hide the notifications. */
 jQuery(document).ready(function(){
 	jQuery(document).on( 'click', '.pmpro-notice-button.notice-dismiss', function() {
