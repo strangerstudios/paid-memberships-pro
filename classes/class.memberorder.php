@@ -1189,6 +1189,7 @@
 				'gateway'                     => $this->gateway,
 				'gateway_environment'  	      => $this->gateway_environment,
 				'subscription_transaction_id' => $this->subscription_transaction_id,
+				'status'                      => 'active',
 				'billing_amount'              => empty( $subscription_level->billing_amount ) ? 0.00 : $subscription_level->billing_amount,
 				'cycle_number'                => empty( $subscription_level->cycle_number ) ? 0 : $subscription_level->cycle_number,
 				'cycle_period'                => empty( $subscription_level->cycle_period ) ? 'Month' : $subscription_level->cycle_period,
