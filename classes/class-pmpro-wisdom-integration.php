@@ -215,7 +215,9 @@ class PMPro_Wisdom_Integration {
 	 * @return string
 	 */
 	public function override_notice() {
-		return __( 'Share your usage data to help us improve Paid Memberships Pro. We use this data to analyze how our plugin is meeting your needs and identify new opportunities to help you create a thriving membership business. You can always visit the Advanced Settings and change this preference. <a href="https://www.paidmembershipspro.com/privacy-policy/usage-tracking/">Read more about what data we collect</a>.' );
+		$message = esc_html__( 'Share your usage data to help us improve Paid Memberships Pro. We use this data to analyze how our plugin is meeting your needs and identify new opportunities to help you create a thriving membership business. You can always visit the Advanced Settings and change this preference.', 'paid-memberships-pro' );
+		$link = '<a href="https://www.paidmembershipspro.com/privacy-policy/usage-tracking/" target="_blank" rel="nofollow noopener">' . esc_html__( 'Read more about what data we collect.', 'paid-memberships-pro' ) . '</a>';
+		return $message . ' ' . $link;
 	}
 
 	/**
