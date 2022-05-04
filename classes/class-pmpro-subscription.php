@@ -1130,6 +1130,9 @@ class PMPro_Subscription {
 		}
 		$cancelled_subscription_ids[] = $this->id;
 
+		// Mark the subscription as cancelled in the database.
+		$this->mark_as_cancelled();
+
 		// Cancel the subscription in the gateway.
 		$cancelled = false;
 		$gateway_object = $this->get_gateway_object();
@@ -1166,9 +1169,6 @@ class PMPro_Subscription {
 			$pmproemail->data['body'] .= '<p>' . esc_html__( 'Edit User', 'paid-memberships-pro' ) . ': ' . esc_url( add_query_arg( 'user_id', $this->user_id, self_admin_url( 'user-edit.php' ) ) ) . '</p>';
 			$pmproemail->sendEmail( get_bloginfo( 'admin_email' ) );
 		}
-
-		// Mark the subscription as cancelled in the database.
-		$this->mark_as_cancelled();
 
 		return $cancelled;
 	}
