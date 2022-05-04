@@ -1949,7 +1949,9 @@ function pmpro_get_no_access_message( $content, $level_ids, $level_names = NULL 
 		$level_names = array();
 		foreach ( $level_ids as $key => $id ) {
 			$level_obj = pmpro_getLevel( $id );
-			$level_names[] = $level_obj->name;
+			if ( ! empty( $level_obj ) ) {
+				$level_names[] = $level_obj->name;
+			}
 		}
 	}
 
