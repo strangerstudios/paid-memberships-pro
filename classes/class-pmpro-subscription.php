@@ -1130,8 +1130,11 @@ class PMPro_Subscription {
 		}
 		$cancelled_subscription_ids[] = $this->id;
 
-		// Mark the subscription as cancelled in the database.
-		$this->mark_as_cancelled();
+		// Mark the subscription as cancelled in the database without
+		// syncing with the payment gateway. We want this subscription
+		// to be cancelled in the database when the IPN/webhook hits
+		// so that the user's membership is not cancelled.
+		$this->mark_as_cancelled( false );
 
 		// Cancel the subscription in the gateway.
 		$cancelled = false;
@@ -1170,6 +1173,9 @@ class PMPro_Subscription {
 			$pmproemail->sendEmail( get_bloginfo( 'admin_email' ) );
 		}
 
+		$this->update();
+		$this->save();
+
 		return $cancelled;
 	}
 
@@ -1178,11 +1184,15 @@ class PMPro_Subscription {
 	 * incomplete orders for this subscription as error.
 	 *
 	 * @since TBD
+	 *
+	 * @param bool $update Whether to update the subscription from the gateway.
 	 */
-	public function mark_as_cancelled() {
+	public function mark_as_cancelled( $update = true ) {
 		// Mark subscription as cancelled.
 		$this->status  = 'cancelled';
-		$this->update();
+		if ( $update ) {
+			$this->update();
+		}
 		$this->save();
 
 		// Mark incomplete orders as error.
