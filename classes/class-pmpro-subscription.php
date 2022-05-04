@@ -1134,7 +1134,7 @@ class PMPro_Subscription {
 		// syncing with the payment gateway. We want this subscription
 		// to be cancelled in the database when the IPN/webhook hits
 		// so that the user's membership is not cancelled.
-		$this->mark_as_cancelled( false );
+		$this->mark_as_cancelled( false ); // False so that we don't sync with the gateway.
 
 		// Cancel the subscription in the gateway.
 		$cancelled = false;
