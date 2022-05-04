@@ -340,26 +340,35 @@ function pmpro_isLevelExpiringSoon( &$level ) {
  *
  * @since 1.8.9
  */
-function pmpro_loadTemplate( $page_name = null, $where = 'local', $type = 'pages', $ext = 'php' ) {
+function pmpro_loadTemplate( $page_name = null, $where = 'local', $type = 'pages', $ext = 'php', $plugin_dir = PMPRO_DIR, $plugin_slug = 'paid-memberships-pro', $load = true ) {
 	// called from page handler shortcode
 	if ( is_null( $page_name ) ) {
 		global $pmpro_page_name;
 		$page_name = $pmpro_page_name;
 	}
 
+	if( $plugin_slug == 'paid-memberships-pro' ) {
+		//Core template being loaded
+		$pmpro_file_structure = 'paid-memberships-pro';
+	} else {
+		//An Add On is loading a template now
+		$pmpro_file_structure = 'paid-memberships-pro/$plugin_slug';
+	}
+	
+
 	if ( $where == 'local' ) {
 		// template paths in order of priority (array gets reversed)
 		$default_templates = array(
-			PMPRO_DIR . "/{$type}/{$page_name}.{$ext}", // default plugin path
-			get_template_directory() . "/paid-memberships-pro/{$type}/{$page_name}.{$ext}", // parent theme
-			get_stylesheet_directory() . "/paid-memberships-pro/{$type}/{$page_name}.{$ext}", // child / active theme
+			$plugin_dir . "/{$type}/{$page_name}.{$ext}", // default plugin path
+			get_template_directory() . "/{$pmpro_file_structure}/{$type}/{$page_name}.{$ext}", // parent theme
+			get_stylesheet_directory() . "/{$pmpro_file_structure}/{$type}/{$page_name}.{$ext}", // child / active theme
 		);
 	} elseif ( $where == 'url' ) {
 		// template paths in order of priority (array gets reversed)
 		$default_templates = array(
-			PMPRO_URL . "/{$type}/{$page_name}.{$ext}", // default plugin path
-			get_template_directory_uri() . "/paid-memberships-pro/{$type}/{$page_name}.{$ext}", // parent theme
-			get_stylesheet_directory_uri() . "/paid-memberships-pro/{$type}/{$page_name}.{$ext}", // child / active theme
+			$plugin_dir . "/{$type}/{$page_name}.{$ext}", // default plugin path
+			get_template_directory_uri() . "/{$pmpro_file_structure}/{$type}/{$page_name}.{$ext}", // parent theme
+			get_stylesheet_directory_uri() . "/{$pmpro_file_structure}/{$type}/{$page_name}.{$ext}", // child / active theme
 		);
 
 	}
@@ -377,24 +386,27 @@ function pmpro_loadTemplate( $page_name = null, $where = 'local', $type = 'pages
 	$templates = array_reverse( $templates );
 
 	// look for template file to include
-	ob_start();
+	if( $load ) {
+		ob_start();
+	}
 	foreach ( $templates as $template_path ) {
 		// If loading a local file, check if it exists first
 		if ( $where == 'url' || file_exists( $template_path ) ) {
 			//Checks and records the current template version
 			$template_version = pmpro_get_template_version( $template_path, $type );
 			if( $template_version ) {
-				pmpro_setOption( 'template_version_'.$template_version['slug'], $template_version['version'] );
+				pmpro_setOption( 'template_version_'.$page_name, $template_version['version'] );
 			}
 
 			include $template_path;
 			break;
 		}
 	}
-	$template = ob_get_clean();
-
-	// return template content
-	return $template;
+	if( $load ) {
+		$template = ob_get_clean();
+		// return template content
+		return $template;
+	}
 }
 
 function pmpro_get_template_version( $path ) {
@@ -406,43 +418,43 @@ function pmpro_get_template_version( $path ) {
 
 	$data = get_file_data( $path, $headers );
 
-	if( !empty( $data ) ) {
-
-		$data['slug'] = sanitize_title( $data['template'] );
-
-		return $data;
-	}
-
-	return false;
+	return $data;
 
 }
 
 function pmpro_get_template_versions() {
 
-	$type = 'pages';
-	$ext = 'php';
-
-	$pages = array(
-		'account',
-		'billing',
-		'cancel',
-		'checkout',
-		'confirmation',
-		'invoice',
-		'levels',
-		'login',
-		'member_profile_edit'
-	);
+	$pages = apply_filters( 'pmpro_base_template_versions', array(
+		array( PMPRO_DIR => array( 'type' => 'pages', 'page' => 'account' ) ),
+		array( PMPRO_DIR => array( 'type' => 'pages', 'page' => 'billing' ) ),
+		array( PMPRO_DIR => array( 'type' => 'pages', 'page' => 'cancel' ) ),
+		array( PMPRO_DIR => array( 'type' => 'pages', 'page' => 'checkout' ) ),
+		array( PMPRO_DIR => array( 'type' => 'pages', 'page' => 'confirmation' ) ),
+		array( PMPRO_DIR => array( 'type' => 'pages', 'page' => 'invoice' ) ),
+		array( PMPRO_DIR => array( 'type' => 'pages', 'page' => 'levels' ) ),
+		array( PMPRO_DIR => array( 'type' => 'pages', 'page' => 'login' ) ),
+		array( PMPRO_DIR => array( 'type' => 'pages', 'page' => 'member_profile_edit' ) )
+	) );
 
 	$template_versions = array();
 
-	foreach( $pages as $page_name ) {
+	foreach( $pages as $page ) {
 
-		$template = PMPRO_DIR . "/{$type}/{$page_name}.{$ext}";
+		foreach( $page as $location => $template_data ) {
+			
+			if( !empty( $template_data['ext'] ) ) {
+				//This will add support for things like email templates
+				$ext = $template_data['ext']; 
+			} else {
+				$ext = 'php';
+			}
 
-		$template_data = pmpro_get_template_version( $template );
+			$template = $location . "/".$template_data['type']."/".$template_data['page'].".{$ext}";
 
-		$template_versions[$template_data['slug']] = $template_data['version'];
+			$template_header = pmpro_get_template_version( $template );
+
+			$template_versions[$template_data['page']] = $template_header['version'];
+		}
 
 	}
 
