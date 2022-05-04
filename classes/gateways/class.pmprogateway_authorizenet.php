@@ -1185,7 +1185,7 @@ class PMProGateway_authorizenet extends PMProGateway
 	}
 
 	/**
-	 * Cancels a subscription in PayPal.
+	 * Cancels a subscription in Authorize.net.
 	 *
 	 * @param PMPro_Subscription $subscription to cancel.
 	 */
