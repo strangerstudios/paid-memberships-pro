@@ -1119,4 +1119,65 @@ use Braintree\WebhookNotification as Braintree_WebhookNotification;
 
 		return $timestamp;
 	}
+
+	/**
+	 * Pull subscription info from Braintree.
+	 *
+	 * @param PMPro_Subscription $subscription to pull data for.
+	 *
+	 * @return string|null Error message is returned if update fails.
+	 */
+	public function update_subscription_info( $subscription ) {
+		// Get the subscription from Braintree
+		try {
+			$braintree_subscription = Braintree_Subscription::find( $subscription->get_subscription_transaction_id() );
+			$braintree_plan         = $this->getPlanByID( $braintree_subscription->planId );
+		} catch ( Exception $e ) {
+			return __( "Error getting subscription with Braintree:", 'paid-memberships-pro' ) . $e->getMessage();
+		}
+
+		if ( ! empty( $braintree_subscription ) ) {
+			$update_array = array(
+				'startdate' => $braintree_subscription->createdAt->format( 'Y-m-d H:i:s' ),
+			);
+			if ( in_array( $braintree_subscription->status, array( 'Active', 'Pending', 'PastDue' ) ) ) {
+				// Subscription is active.
+				$update_array['status'] = 'active';
+				$update_array['next_payment_date'] = $braintree_subscription->nextBillingDate->format( 'Y-m-d H:i:s' );
+				$update_array['billing_amount'] = $braintree_subscription->price;
+				$update_array['cycle_number']   = $braintree_plan->billingFrequency;
+				$update_array['cycle_period']   = 'Month'; // Braintree only has cycle periods in months.
+			} else {
+				// Subscription is no longer active.
+				// Can't fill subscription end date, $braintree_subscription only has the date of the last payment.
+				$update_array['status'] = 'cancelled';
+			}
+			$subscription->set( $update_array );
+		}
+	}
+
+	/**
+	 * Cancels a subscription in Braintree.
+	 *
+	 * @param PMPro_Subscription $subscription to cancel.
+	 * @return bool True if subscription was canceled, false if not.
+	 */
+	function cancel_subscription( $subscription ) {
+		// Make sure that we can access the API.
+		if ( ! self::$is_loaded ) {
+			return false;
+		}
+		
+		// Cancel the subscription in Braintree.
+		try
+		{
+			$result = Braintree_Subscription::cancel( $subscription->get_subscription_transaction_id() );
+		}
+		catch(Exception $e)
+		{
+			return false;
+		}
+
+		return (bool) $result->success;
+	}
 }
