@@ -122,7 +122,7 @@ add_action( 'after_setup_theme', 'pmpro_compatibility_checker_themes' );
  * @param string $path    The path of the loaded library.
  * @param string $version The version of the loaded library.
  *
- * @since TBD
+ * @since 2.8
  */
 function pmpro_track_library_conflict( $name, $path, $version ) {	
 	// Ignore when PMPro is trying to load.
