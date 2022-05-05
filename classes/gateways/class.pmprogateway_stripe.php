@@ -4781,7 +4781,7 @@ class PMProGateway_stripe extends PMProGateway {
 			] );			
 
 			//Make sure we're refunding an order that was successful
-			if ( !in_array( $refund->status, pmpro_disallowed_refund_statuses() ) ) {
+			if ( $refund->status != 'failed' ) {
 				$order->status = 'refunded';	
 
 				$success = true;
@@ -4801,7 +4801,6 @@ class PMProGateway_stripe extends PMProGateway {
 
 			} else {
 				$order->notes = trim( $order->notes . ' ' . __('Admin: An error occured while attempting to process this refund.', 'paid-memberships-pro' ) );
-
 			}
 
 		} catch ( \Throwable $e ) {			
