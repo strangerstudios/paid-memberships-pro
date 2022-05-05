@@ -779,7 +779,7 @@
 		
 		function sendTrialEndingEmail($user = NULL)
 		{
-			global $current_user, $wpdb;
+			global $current_user;
 			if(!$user)
 				$user = $current_user;
 			
@@ -824,7 +824,7 @@
 		
 		function sendMembershipExpiredEmail($user = NULL)
 		{
-			global $current_user, $wpdb;
+			global $current_user;
 			if(!$user)
 				$user = $current_user;
 			
@@ -843,7 +843,7 @@
 		
 		function sendMembershipExpiringEmail($user = NULL)
 		{
-			global $current_user, $wpdb;
+			global $current_user;
 			if(!$user)
 				$user = $current_user;
 			
@@ -870,7 +870,7 @@
 		
 		function sendAdminChangeEmail($user = NULL)
 		{
-			global $current_user, $wpdb;
+			global $current_user;
 			if(!$user)
 				$user = $current_user;
 			
@@ -915,7 +915,7 @@
 		
 		function sendAdminChangeAdminEmail($user = NULL)
 		{
-			global $current_user, $wpdb;
+			global $current_user;
 			if(!$user)
 				$user = $current_user;
 			
@@ -1015,7 +1015,7 @@
 
 		function sendPaymentActionRequiredEmail($user = NULL, $order = NULL, $invoice_url = NULL)
 		{
-			global $wpdb, $current_user;
+			global $current_user;
 			if(!$user)
 				$user = $current_user;
 			
@@ -1053,7 +1053,7 @@
 
 		function sendPaymentActionRequiredAdminEmail($user = NULL, $order = NULL, $invoice_url = NULL)
 		{
-			global $wpdb, $current_user;
+			global $current_user;
 			if(!$user)
 				$user = $current_user;
 			
