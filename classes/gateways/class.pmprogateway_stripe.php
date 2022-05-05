@@ -4732,8 +4732,8 @@ class PMProGateway_stripe extends PMProGateway {
 	/**
 	 * Refunds an order (only supports full amounts)
 	 *
-	 * @param bool    Status of the refund (default: false)
-	 * @param object  The Member Order Object
+	 * @param bool    $success Status of the refund (default: false)
+	 * @param object  $order The Member Order Object
 	 * @since TBD
 	 * 
 	 * @return bool   Status of the processed refund
