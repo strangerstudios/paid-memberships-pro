@@ -439,11 +439,11 @@
 
 				//send an email to the member
 				$myemail = new PMProEmail();
-				$myemail->sendRefundedEmail( $user );
+				$myemail->sendRefundedEmail( $user, $morder );
 
 				//send an email to the admin
 				$myemail = new PMProEmail();
-				$myemail->sendRefundedAdminEmail( $user, $morder->membership_id );
+				$myemail->sendRefundedAdminEmail( $user, $morder );
 
 				pmpro_stripeWebhookExit();
 			} else {
