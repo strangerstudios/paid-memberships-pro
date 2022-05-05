@@ -430,23 +430,24 @@
 					$morder->SaveOrder();
 					pmpro_stripeWebhookExit();
 				}
-					
+				
+				// Full refund.	
 				$morder->status = 'refunded';
 				
 				$logstr .= sprintf( 'Webhook: Order ID %1$s successfully refunded on %2$s for transaction ID %3$s at the gateway.', $morder->id, date_i18n('Y-m-d H:i:s'), $payment_transaction_id );
 
-				//Add to order notes.
+				// Add to order notes.
 				$morder->notes = trim( $morder->notes . ' ' . sprintf( 'Webhook: Order ID %1$s successfully refunded on %2$s for transaction ID %3$s at the gateway.', $morder->id, date_i18n('Y-m-d H:i:s'), $payment_transaction_id ) );
 
 				$morder->SaveOrder();
 
 				$user = get_user_by( 'email', $morder->Email );
 
-				//send an email to the member
+				// Send an email to the member.
 				$myemail = new PMProEmail();
 				$myemail->sendRefundedEmail( $user, $morder );
 
-				//send an email to the admin
+				// Send an email to the admin.
 				$myemail = new PMProEmail();
 				$myemail->sendRefundedAdminEmail( $user, $morder );
 
