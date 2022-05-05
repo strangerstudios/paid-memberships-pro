@@ -12,29 +12,29 @@
 		$msg = -1;
 		$msgt = __("Are you sure you want to do that? Try again.", 'paid-memberships-pro' );
 		unset($_REQUEST['savesettings']);
-	}
-	
+	}	
+
 	//get/set settings
 	if(!empty($_REQUEST['savesettings']))
 	{
 		// Dashboard settings.
 		pmpro_setOption( 'hide_toolbar' );
 		pmpro_setOption( 'block_dashboard' );
-		
+
 		// Message settings.
 		// These use wp_kses for better security handling.
 		$nonmembertext = wp_kses(wp_unslash($_POST['nonmembertext']), $allowedposttags);
 		update_option('pmpro_nonmembertext', $nonmembertext);
-		
+
 		$notloggedintext = wp_kses(wp_unslash($_POST['notloggedintext']), $allowedposttags);
 		update_option('pmpro_notloggedintext', $notloggedintext);
-		
+
 		$rsstext = wp_kses(wp_unslash($_POST['rsstext']), $allowedposttags);
-		update_option('pmpro_rsstext', $rsstext);		
-		
+		update_option('pmpro_rsstext', $rsstext);
+
 		// Content settings.
 		pmpro_setOption("filterqueries");
-		pmpro_setOption("showexcerpts");		
+		pmpro_setOption("showexcerpts");
 
 		// Checkout settings.
 		pmpro_setOption("tospage");
@@ -42,7 +42,7 @@
 		pmpro_setOption("recaptcha");
 		pmpro_setOption("recaptcha_version");
 		pmpro_setOption("recaptcha_publickey");
-		pmpro_setOption("recaptcha_privatekey");		
+		pmpro_setOption("recaptcha_privatekey");
 
 		// Communication settings.
 		pmpro_setOption("maxnotificationpriority");
@@ -50,9 +50,16 @@
 
 		// Other settings.
 		pmpro_setOption("hideads");
+		pmpro_setOption("wisdom_opt_out");
 		pmpro_setOption("hideadslevels");
 		pmpro_setOption("redirecttosubscription");
-		pmpro_setOption("uninstall");
+		pmpro_setOption("uninstall");		
+
+		// Set up Wisdom tracking cron if needed.
+		if ( (int)pmpro_getOption("wisdom_opt_out") === 0 ) {
+			$wisdom_integration = PMPro_Wisdom_Integration::instance();
+			$wisdom_integration->wisdom_tracker->schedule_tracking();
+		}
 
         /**
          * Filter to add custom settings to the advanced settings page.
@@ -63,7 +70,7 @@
         	if(!empty($setting['field_name']))
         		pmpro_setOption($setting['field_name']);
         }
-        
+
 		// Assume success.
 		$msg = true;
 		$msgt = __("Your advanced settings have been updated.", 'paid-memberships-pro' );
@@ -72,15 +79,15 @@
 	// Dashboard settings.
 	$hide_toolbar = pmpro_getOption( 'hide_toolbar' );
 	$block_dashboard = pmpro_getOption( 'block_dashboard' );
-	
+
 	// Message settings.
 	$nonmembertext = pmpro_getOption("nonmembertext");
 	$notloggedintext = pmpro_getOption("notloggedintext");
 	$rsstext = pmpro_getOption("rsstext");
-    
+
 	// Content settings.
 	$filterqueries = pmpro_getOption('filterqueries');
-	$showexcerpts = pmpro_getOption("showexcerpts");	
+	$showexcerpts = pmpro_getOption("showexcerpts");
 
 	// Checkout settings.
 	$tospage = pmpro_getOption("tospage");
@@ -96,6 +103,7 @@
 
 	// Other settings.
 	$hideads = pmpro_getOption("hideads");
+	$wisdom_opt_out = (int)pmpro_getOption("wisdom_opt_out");
 	$hideadslevels = pmpro_getOption("hideadslevels");
 	if( is_multisite() ) {
 		$redirecttosubscription = pmpro_getOption("redirecttosubscription");
@@ -130,9 +138,8 @@
 
 	<form action="" method="post" enctype="multipart/form-data">
 		<?php wp_nonce_field('savesettings', 'pmpro_advancedsettings_nonce');?>
-		
-		<h1 class="wp-heading-inline"><?php esc_html_e( 'Advanced Settings', 'paid-memberships-pro' ); ?></h1>
 		<hr class="wp-header-end">
+		<h1 class="wp-heading-inline"><?php esc_html_e( 'Advanced Settings', 'paid-memberships-pro' ); ?></h1>
 		<div class="pmpro_admin_section pmpro_admin_section-restrict-dashboard">
 			<h2 class="title"><?php esc_html_e( 'Restrict Dashboard Access', 'paid-memberships-pro' ); ?></h2>
 			<table class="form-table">
@@ -261,7 +268,7 @@
 							<!-- For reference, removed the Yes - Free memberships only. option -->
 							<option value="2" <?php if( $recaptcha > 0 ) { ?>selected="selected"<?php } ?>><?php esc_html_e('Yes - All memberships.', 'paid-memberships-pro' );?></option>
 						</select>
-						<p class="description"><?php esc_html_e('A free reCAPTCHA key is required.', 'paid-memberships-pro' );?> <a href="https://www.google.com/recaptcha/admin/create"><?php esc_html_e('Click here to signup for reCAPTCHA', 'paid-memberships-pro' );?></a>.</p>
+						<p class="description"><?php esc_html_e('A free reCAPTCHA key is required.', 'paid-memberships-pro' );?> <a href="https://www.google.com/recaptcha/admin/create" target="_blank" rel="nofollow noopener"><?php esc_html_e('Click here to signup for reCAPTCHA', 'paid-memberships-pro' );?></a>.</p>
 					</td>
 				</tr>
 			</tbody>
@@ -364,7 +371,7 @@ if ( function_exists( 'pmpro_displayAds' ) && pmpro_displayAds() ) {
 	//insert ad code here
 }</pre>
 					</td>
-				</tr>			
+				</tr>
 				<tr id="hideadslevels_tr" <?php if($hideads != 2) { ?>style="display: none;"<?php } ?>>
 					<th scope="row" valign="top">
 						<label for="hideadslevels"><?php esc_html_e('Choose Levels to Hide Ads From', 'paid-memberships-pro' );?>:</label>
@@ -413,7 +420,7 @@ if ( function_exists( 'pmpro_displayAds' ) && pmpro_displayAds() ) {
 						</select>
 					</td>
 				</tr>
-				<?php } ?>			
+				<?php } ?>
 				<?php
 	            // Filter to Add More Advanced Settings for Misc Plugin Options, etc.
 	            if (has_action('pmpro_custom_advanced_settings')) {
@@ -432,7 +439,7 @@ if ( function_exists( 'pmpro_displayAds' ) && pmpro_displayAds() ) {
 		                            ?>
 		                            <select id="<?php echo esc_attr( $field['field_name'] ); ?>"
 		                                    name="<?php echo esc_attr( $field['field_name'] ); ?>">
-		                                <?php 
+		                                <?php
 		                                	//For associative arrays, we use the array keys as values. For numerically indexed arrays, we use the array values.
 		                                	$is_associative = (bool)count(array_filter(array_keys($field['options']), 'is_string'));
 		                                	foreach ($field['options'] as $key => $option) {
@@ -442,7 +449,7 @@ if ( function_exists( 'pmpro_displayAds' ) && pmpro_displayAds() ) {
 		                                    		<?php echo esc_textarea($option); ?>
 		                                    	</option>
 		                               			<?php
-		                                	} 
+		                                	}
 		                                ?>
 		                            </select>
 		                            <?php
@@ -483,8 +490,33 @@ if ( function_exists( 'pmpro_displayAds' ) && pmpro_displayAds() ) {
 		            </tr>
 		            <?php
 		            }
-		        } 
+		        }
 		        ?>
+				<tr>
+					<th scope="row" valign="top">
+						<label for="wisdom_opt_out">
+							<?php esc_html_e( 'Enable Tracking', 'paid-memberships-pro' ); ?>
+						</label>
+					</th>
+					<td>
+						<p>
+							<label>								
+								<input name="wisdom_opt_out" type="radio" value="0"<?php checked( 0, $wisdom_opt_out ); ?> />
+								<?php esc_html_e( 'Allow usage of Paid Memberships Pro to be tracked.', 'paid-memberships-pro' );?>
+							</label>
+						</p>
+						<p>
+							<label>
+								<input name="wisdom_opt_out" type="radio" value="1"<?php checked( 1, $wisdom_opt_out ); ?> />
+								<?php esc_html_e( 'Do not track usage of Paid Memberships Pro on my site.', 'paid-memberships-pro' );?>
+							</label>
+						</p>
+						<p class="description">
+							<?php esc_html_e( 'Sharing non-sensitive membership site data helps us analyze how our plugin is meeting your needs and identify opportunities to improve. Read about what usage data is tracked:', 'paid-memberships-pro' ); ?>
+							<a href="https://www.paidmembershipspro.com/privacy-policy/usage-tracking/" title="<?php esc_attr_e( 'PaidMembershipsPro.com Usage Tracking', 'paid-memberships-pro' ); ?>" target="_blank" rel="nofollow noopener"><?php esc_html_e( 'Paid Memberships Pro Usage Tracking', 'paid-memberships-pro' ); ?></a>.
+						</p>
+					</td>
+				</tr>
 				<tr>
 					<th scope="row" valign="top">
 						<label for="uninstall"><?php esc_html_e('Uninstall PMPro on deletion?', 'paid-memberships-pro' );?></label>
@@ -537,7 +569,7 @@ if ( function_exists( 'pmpro_displayAds' ) && pmpro_displayAds() ) {
 				}
 				pmpro_updateRecaptchaTRs();
 			</script>
-		</div> <!-- end pmpro_admin_section-other-settings -->		
+		</div> <!-- end pmpro_admin_section-other-settings -->
 		<p class="submit">
 			<input name="savesettings" type="submit" class="button button-primary" value="<?php esc_attr_e('Save Settings', 'paid-memberships-pro' );?>" />
 		</p>
