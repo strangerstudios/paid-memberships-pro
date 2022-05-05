@@ -1,10 +1,43 @@
 <?php
 	class PMProEmail
 	{
-		
-		function __construct()
-		{
-			$this->email = $this->from = $this->fromname = $this->subject = $this->template = $this->data = $this->body = NULL;
+		/**
+		 * @var string
+		 */
+		public $email;
+
+		/**
+		 * @var string
+		 */
+		public $from;
+
+		/**
+		 * @var string
+		 */
+		public $fromname;
+
+		/**
+		 * @var string
+		 */
+		public $subject;
+
+		/**
+		 * @var string
+		 */
+		public $template;
+
+		/**
+		 * @var string
+		 */
+		public $data;
+
+		/**
+		 * @var string
+		 */
+		public $body;
+
+
+		function __construct() {
 		}					
 		
 		function sendEmail($email = NULL, $from = NULL, $fromname = NULL, $subject = NULL, $template = NULL, $data = NULL)
