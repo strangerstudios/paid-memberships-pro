@@ -393,7 +393,7 @@ class PMPro_Wisdom_Integration {
 		$stats = array(
 			'pmpro_level_setups'   => array(),
 			'pmpro_has_free_level' => 'no',
-			'pmpro_has_paid_level' => 'yes',
+			'pmpro_has_paid_level' => 'no',
 			'pmpro_level_count'    => 0,
 		);
 
