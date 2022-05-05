@@ -253,6 +253,13 @@
 			}
 
 			$membership_level = pmpro_getSpecificMembershipLevelForUser( $user->ID, $invoice->membership_id );
+			if ( ! empty( $membership_level ) ) {
+				$membership_level_id = $membership_level->id;
+				$membership_level_name = $membership_level->name;
+			} else {
+				$membership_level_id = '';
+				$membership_level_name = __( 'N/A', 'paid-memberships-pro' );
+			}
 
 			$this->email = $user->user_email;
 			$this->subject = sprintf(__( 'Your invoice for order #%s at %s has been REFUNDED', 'paid-memberships-pro' ), $invoice->code, get_option( 'blogname' ) );
@@ -265,8 +272,8 @@
 				'siteemail' => pmpro_getOption('from_email'),
 				'login_link' => pmpro_login_url(),
 				'login_url' => pmpro_login_url(),
-				'membership_id' => $membership_level->id,
-				'membership_level_name' => $membership_level->name,
+				'membership_id' => $membership_level_id,
+				'membership_level_name' => $membership_level_name,
 				'invoice_id' => $invoice->code,
 				'invoice_total' => pmpro_formatPrice($invoice->total),
 				'invoice_date' => date_i18n(get_option('date_format'), $invoice->getTimestamp()),
@@ -312,6 +319,13 @@
 			}
 
 			$membership_level = pmpro_getSpecificMembershipLevelForUser( $user->ID, $invoice->membership_id );
+			if ( ! empty( $membership_level ) ) {
+				$membership_level_id = $membership_level->id;
+				$membership_level_name = $membership_level->name;
+			} else {
+				$membership_level_id = '';
+				$membership_level_name = __( 'N/A', 'paid-memberships-pro' );
+			}
 
 			$this->email = get_bloginfo( 'admin_email' );
 			$this->subject = sprintf(__( 'Invoice for order #%s at %s has been REFUNDED', 'paid-memberships-pro' ), $invoice->code, get_option( 'blogname' ) );
@@ -324,8 +338,8 @@
 				'siteemail' => pmpro_getOption('from_email'),
 				'login_link' => pmpro_login_url(),
 				'login_url' => pmpro_login_url(),
-				'membership_id' => $membership_level->id,
-				'membership_level_name' => $membership_level->name,
+				'membership_id' => $membership_level_id,
+				'membership_level_name' => $membership_level_name,
 				'invoice_id' => $invoice->code,
 				'invoice_total' => pmpro_formatPrice($invoice->total),
 				'invoice_date' => date_i18n(get_option('date_format'), $invoice->getTimestamp()),
