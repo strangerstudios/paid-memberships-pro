@@ -267,6 +267,7 @@ class PMPro_Wisdom_Integration {
 
 		// Levels info.
 		$levels_info = $this->get_levels_info();
+		$stats['plugin_options_fields']['pmpro_level_count']    = $levels_info['pmpro_level_count'];
 		$stats['plugin_options_fields']['pmpro_level_setups']   = $levels_info['pmpro_level_setups'];
 		$stats['plugin_options_fields']['pmpro_has_free_level'] = $levels_info['pmpro_has_free_level'];
 		$stats['plugin_options_fields']['pmpro_has_paid_level'] = $levels_info['pmpro_has_paid_level'];
@@ -393,9 +394,16 @@ class PMPro_Wisdom_Integration {
 			'pmpro_level_setups'   => array(),
 			'pmpro_has_free_level' => 'no',
 			'pmpro_has_paid_level' => 'yes',
+			'pmpro_level_count'    => 0,
 		);
 
+		// Get the levels.
 		$levels = pmpro_getAllLevels( true );
+
+		// Update the level count.
+		$stats['pmpro_level_count'] = count( $levels );
+
+		// Loop through the levels.
 		foreach ( $levels as $level_id => $level_data ) {
 			// Remove sensitive info.
 			unset( $level_data->name );
