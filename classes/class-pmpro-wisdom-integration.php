@@ -266,7 +266,11 @@ class PMPro_Wisdom_Integration {
 		$stats['plugin_options_fields'] = array_merge( $stats['plugin_options_fields'], $this->get_gateway_info() );
 
 		// Levels info.
-		$stats['plugin_options_fields'] = array_merge( $stats['plugin_options_fields'], $this->get_levels_info() );
+		$levels_info = $this->get_levels_info();
+		$stats['plugin_options_fields']['pmpro_level_count']    = $levels_info['pmpro_level_count'];
+		$stats['plugin_options_fields']['pmpro_level_setups']   = $levels_info['pmpro_level_setups'];
+		$stats['plugin_options_fields']['pmpro_has_free_level'] = $levels_info['pmpro_has_free_level'];
+		$stats['plugin_options_fields']['pmpro_has_paid_level'] = $levels_info['pmpro_has_paid_level'];
 
 		// Members info.
 		$stats['plugin_options_fields']['pmpro_members_count']           = pmpro_getSignups( 'all time' );
@@ -312,7 +316,6 @@ class PMPro_Wisdom_Integration {
 
 			$stats['plugin_options_fields'][ $option ] = $value;
 		}
-
 		return $stats;
 	}
 
@@ -385,68 +388,53 @@ class PMPro_Wisdom_Integration {
 	 * @return array The level information for all levels to track.
 	 */
 	public function get_levels_info() {
-		$stats = [];
+		global $wpdb;
 
+		$stats = array(
+			'pmpro_level_setups'   => array(),
+			'pmpro_has_free_level' => 'no',
+			'pmpro_has_paid_level' => 'no',
+			'pmpro_level_count'    => 0,
+		);
+
+		// Get the levels.
 		$levels = pmpro_getAllLevels( true );
 
-		$stats['pmpro_levels_count'] = count( $levels );
+		// Update the level count.
+		$stats['pmpro_level_count'] = count( $levels );
 
-		$range_groups = [
-			'0'  => [
-				'range' => [ 0, 0 ],
-				'count' => 0,
-			],
-			'0.01_to_10'  => [
-				'range' => [ 0.01, 10 ],
-				'count' => 0,
-			],
-			'10.01_to_30' => [
-				'range' => [ 10.01, 30 ],
-				'count' => 0,
-			],
-			'30.01_to_100' => [
-				'range' => [ 30.01, 100 ],
-				'count' => 0,
-			],
-			'100.01_to_300' => [
-				'range' => [ 100.01, 300 ],
-				'count' => 0,
-			],
-			'300.01_to_1000' => [
-				'range' => [ 300.01, 1000 ],
-				'count' => 0,
-			],
-			'1000.01_to_9999' => [
-				'range' => [ 1000.01, 9999 ],
-				'count' => 0,
-			],
-		];
+		// Loop through the levels.
+		foreach ( $levels as $level_id => $level_data ) {
+			// Remove sensitive info.
+			unset( $level_data->name );
+			unset( $level_data->description );
+			unset( $level_data->confirmation );
 
-		$billing_amount_prices = wp_list_pluck( $levels, 'billing_amount' );
-		$billing_amount_prices = array_unique( $billing_amount_prices );
+			// Add Set Expiration Date/Subscription Delay info.
+			$level_data->set_expiration_date = get_option( 'pmprosed_' . $level_id , '' );
+			$level_data->subscription_delay  = get_option( 'pmpro_subscription_delay_' . $level_id , '' );
 
-		foreach ( $billing_amount_prices as $billing_amount_price ) {
-			foreach ( $range_groups as $key => $group ) {
-				// Zero price range handling.
-				if ( 0 === $group['range'][0] && 0 === $group['range'][1] && 0 === $billing_amount_price ) {
-					$range_groups[ $key ]['count'] ++;
+			// Add if a category is set.
+			$categories = $wpdb->get_col(
+				$wpdb->prepare(
+					"SELECT category_id
+					FROM $wpdb->pmpro_memberships_categories
+					WHERE membership_id = %d",
+					$level_id
+				)
+			);
+			$level_data->has_categories = ! empty( $categories ) ? 'yes' : 'no';
 
-					break;
-				}
+			// Add level info.
+			$stats['pmpro_level_setups'][ $level_id ] = $level_data;
 
-				// Check if price is within the range group constraints.
-				if ( $group['range'][0] <= $billing_amount_price && $billing_amount_price <= $group['range'][1] ) {
-					$range_groups[ $key ]['count'] ++;
-
-					break;
-				}
+			// Update whether or not we have a free/paid level yet.
+			if ( pmpro_isLevelFree( $level_data ) ) {
+				$stats['pmpro_has_free_level'] = 'yes';
+			} else {
+				$stats['pmpro_has_paid_level'] = 'yes';
 			}
 		}
-
-		foreach ( $range_groups as $key => $group ) {
-			$stats['pmpro_levels_price_ranges_' . $key ] = $group['count'];
-		}
-
 		return $stats;
 	}
 
