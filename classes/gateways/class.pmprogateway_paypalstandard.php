@@ -659,7 +659,7 @@
 			/**
 			 * Allow performing actions using the http post request's response.
 			 *
-			 * @since TBD
+			 * @since 2.8
 			 *
 			 * @param array $httpParsedResponseAr The parsed response.
 			 * @param string $methodName_ The NVP API name.

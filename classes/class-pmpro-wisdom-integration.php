@@ -5,14 +5,14 @@
  *
  * @see PMPro_Wisdom_Tracker
  *
- * @since TBD
+ * @since 2.8
  */
 class PMPro_Wisdom_Integration {
 
 	/**
 	 * The current object instance.
 	 *
-	 * @since TBD
+	 * @since 2.8
 	 *
 	 * @var self
 	 */
@@ -21,7 +21,7 @@ class PMPro_Wisdom_Integration {
 	/**
 	 * The plugin slug to use with Wisdom.
 	 *
-	 * @since TBD
+	 * @since 2.8
 	 *
 	 * @var string
 	 */
@@ -30,7 +30,7 @@ class PMPro_Wisdom_Integration {
 	/**
 	 * The plugin option to send to Wisdom.
 	 *
-	 * @since TBD
+	 * @since 2.8
 	 *
 	 * @var string
 	 */
@@ -39,7 +39,7 @@ class PMPro_Wisdom_Integration {
 	/**
 	 * The plugin settings pages to include Wisdom notices on.
 	 *
-	 * @since TBD
+	 * @since 2.8
 	 *
 	 * @var array
 	 */
@@ -56,7 +56,7 @@ class PMPro_Wisdom_Integration {
 	/**
 	 * The Wisdom Tracker object.
 	 *
-	 * @since TBD
+	 * @since 2.8
 	 *
 	 * @var PMPro_Wisdom_Tracker
 	 */
@@ -65,7 +65,7 @@ class PMPro_Wisdom_Integration {
 	/**
 	 * Set up and return the class instance.
 	 *
-	 * @since TBD
+	 * @since 2.8
 	 *
 	 * @return self
 	 */
@@ -87,7 +87,7 @@ class PMPro_Wisdom_Integration {
 	/**
 	 * Set up the Wisdom tracker.
 	 *
-	 * @since TBD
+	 * @since 2.8
 	 */
 	public function setup_wisdom() {
 		require_once PMPRO_DIR . '/classes/class-pmpro-wisdom-tracker.php';
@@ -123,7 +123,7 @@ class PMPro_Wisdom_Integration {
 	/**
 	 * When the Wisdom setting for tracking is changed, sync the plugin setting to match.
 	 *
-	 * @since TBD
+	 * @since 2.8
 	 *
 	 * @param array|null $old_value The old value of the option.
 	 * @param array      $value     The new value of the option.
@@ -136,7 +136,7 @@ class PMPro_Wisdom_Integration {
 	/**
 	 * When the plugin setting for tracking is changed, sync the Wisdom setting to match.
 	 *
-	 * @since TBD
+	 * @since 2.8
 	 *
 	 * @param array|null $old_value The old value of the option.
 	 * @param array      $value     The new value of the option.
@@ -162,7 +162,7 @@ class PMPro_Wisdom_Integration {
 	/**
 	 * Bypass local tracking for additional local URLs.
 	 *
-	 * @since TBD
+	 * @since 2.8
 	 *
 	 * @param bool $is_local Whether the site is recognized as a local site.
 	 *
@@ -210,7 +210,7 @@ class PMPro_Wisdom_Integration {
 	/**
 	 * Override the notice for the Wisdom Tracker opt-in.
 	 *
-	 * @since TBD
+	 * @since 2.8
 	 *
 	 * @return string
 	 */
@@ -223,7 +223,7 @@ class PMPro_Wisdom_Integration {
 	/**
 	 * Remove Wisdom notices from non-plugin screens.
 	 *
-	 * @since TBD
+	 * @since 2.8
 	 */
 	public function remove_wisdom_notices_from_non_plugin_screens() {
 		$settings_page = ! empty( $_GET['page'] ) ? sanitize_text_field( $_GET['page'] ) : '';
@@ -241,7 +241,7 @@ class PMPro_Wisdom_Integration {
 	/**
 	 * Add custom stats for the plugin to the data being tracked.
 	 *
-	 * @since TBD
+	 * @since 2.8
 	 *
 	 * @param array $stats The data to be sent to the Wisdom plugin site.
 	 *
@@ -302,7 +302,7 @@ class PMPro_Wisdom_Integration {
 	/**
 	 * Get the gateway information to track.
 	 *
-	 * @since TBD
+	 * @since 2.8
 	 *
 	 * @return array The gateway information to track.
 	 */
@@ -363,7 +363,7 @@ class PMPro_Wisdom_Integration {
 	/**
 	 * Get the level information for all levels to track.
 	 *
-	 * @since TBD
+	 * @since 2.8
 	 *
 	 * @return array The level information for all levels to track.
 	 */
@@ -436,7 +436,7 @@ class PMPro_Wisdom_Integration {
 	/**
 	 * Get the list of Add Ons categorized by active, inactive, and update available.
 	 *
-	 * @since TBD
+	 * @since 2.8
 	 *
 	 * @return array The list of Add Ons categorized by active, inactive, and update available.
 	 */

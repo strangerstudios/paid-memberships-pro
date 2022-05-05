@@ -156,7 +156,7 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 
 		/**
 		 * Retrieve an order.
-		 * @since TBD
+		 * @since 2.8
 		 * Example: https://example.com/wp-json/pmpro/v1/order
 		 */
 		register_rest_route( $pmpro_namespace, '/order', 
@@ -702,7 +702,7 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 
 		/**
 		 * Get an order.
-		 * @since TBD
+		 * @since 2.8
 		 * Example: https://example.com/wp-json/pmpro/v1/order
 		 */
 		function pmpro_rest_api_get_order( $request ) {
@@ -722,7 +722,7 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 
 		/**
 		 * Make sure that users can GET their own orders.
-		 * @since TBD
+		 * @since 2.8
 		 */
 		function pmpro_rest_api_permissions_get_order( $permission, $request ) {
 			$method = $request->get_method();

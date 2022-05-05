@@ -813,7 +813,7 @@
  * 7. Run pmpro_after_checkout.
  * 8. Send checkout emails.
  *
- * @since TBD
+ * @since 2.8
  *
  * @param MemberOrder $morder The order for the checkout being completed.
  * @return bool
@@ -943,7 +943,7 @@ function pmpro_stripe_webhook_change_membership_level( $morder ) {
 /**
  * Update order information from a Stripe payment method.
  *
- * @since TBD
+ * @since 2.8
  *
  * @param MemberOrder          $order            The order to update.
  * @param Stripe_PaymentMethod $payment_method   The payment method object.

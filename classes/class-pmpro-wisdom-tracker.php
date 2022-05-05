@@ -7,7 +7,7 @@
  *
  * @link https://wisdomplugin.com/
  *
- * @since TBD
+ * @since 2.8
  */
 class PMPro_Wisdom_Tracker {
 
@@ -363,7 +363,7 @@ class PMPro_Wisdom_Tracker {
 		/**
 		 * Allow filtering the data to be sent to the Wisdom plugin site.
 		 *
-		 * @since TBD
+		 * @since 2.8
 		 *
 		 * @param array $body The data to be sent to the Wisdom plugin site.
 		 */

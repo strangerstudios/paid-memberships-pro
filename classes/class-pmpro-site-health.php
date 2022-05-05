@@ -468,7 +468,7 @@ class PMPro_Site_Health {
 	/**
 	 * Get library conflicts.
 	 *
-	 * @since TBD
+	 * @since 2.8
 	 *
 	 * @return string|string[] The member page information
 	 */
