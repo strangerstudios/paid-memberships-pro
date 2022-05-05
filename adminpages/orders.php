@@ -315,7 +315,8 @@ if ( ! empty( $_REQUEST['save'] ) ) {
 		$day    = intval( $_POST['ts_day'] );
 		$hour   = intval( $_POST['ts_hour'] );
 		$minute = intval( $_POST['ts_minute'] );
-		$order->timestamp = $date = get_gmt_from_date( $year . '-' . $month . '-' . $day . ' ' . $hour . ':' . $minute . ':00' , 'U' );;
+		$date = get_gmt_from_date( $year . '-' . $month . '-' . $day . ' ' . $hour . ':' . $minute . ':00' , 'U' );
+		$order->timestamp = strtotime( $date );
 	}
 
 	// affiliate stuff
