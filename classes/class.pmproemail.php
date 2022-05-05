@@ -264,7 +264,6 @@
 			$this->data = array(
 								"subject" => $this->subject, 
 								"name" => $user->display_name, 
-								"display_name" => $user->display_name,
 								"user_login" => $user->user_login,
 								"sitename" => get_option("blogname"),
 								"siteemail" => pmpro_getOption("from_email"),
