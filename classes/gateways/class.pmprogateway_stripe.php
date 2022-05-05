@@ -4793,11 +4793,11 @@ class PMProGateway_stripe extends PMProGateway {
 				$user = get_user_by( 'id', $order->user_id );
 				//send an email to the member
 				$myemail = new PMProEmail();
-				$myemail->sendRefundedEmail( $user );
+				$myemail->sendRefundedEmail( $user, $order );
 
 				//send an email to the admin
 				$myemail = new PMProEmail();
-				$myemail->sendRefundedAdminEmail( $user, $order->membership_id );
+				$myemail->sendRefundedAdminEmail( $user, $order );
 
 			} else {
 				$order->notes = trim( $order->notes . ' ' . __('Admin: An error occured while attempting to process this refund.', 'paid-memberships-pro' ) );
