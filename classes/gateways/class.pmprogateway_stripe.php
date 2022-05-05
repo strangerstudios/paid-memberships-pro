@@ -243,7 +243,6 @@ class PMProGateway_stripe extends PMProGateway {
 			'use_ssl',
 			'tax_state',
 			'tax_rate',
-			'accepted_credit_cards',
 			'stripe_payment_request_button',
 		);
 
@@ -734,18 +733,13 @@ class PMProGateway_stripe extends PMProGateway {
 		//global vars
 		global $pmpro_requirebilling, $pmpro_show_discount_code, $discount_code, $CardType, $AccountNumber, $ExpirationMonth, $ExpirationYear;
 
-		//get accepted credit cards
-		$pmpro_accepted_credit_cards        = pmpro_getOption( "accepted_credit_cards" );
-		$pmpro_accepted_credit_cards        = explode( ",", $pmpro_accepted_credit_cards );
-		$pmpro_accepted_credit_cards_string = pmpro_implodeToEnglish( $pmpro_accepted_credit_cards );
-
 		//include ours
 		?>
         <div id="pmpro_payment_information_fields" class="<?php echo pmpro_get_element_class( 'pmpro_checkout', 'pmpro_payment_information_fields' ); ?>"
 		     <?php if ( ! $pmpro_requirebilling || apply_filters( "pmpro_hide_payment_information_fields", false ) ) { ?>style="display: none;"<?php } ?>>
             <h3>
                 <span class="<?php echo pmpro_get_element_class( 'pmpro_checkout-h3-name' ); ?>"><?php esc_html_e( 'Payment Information', 'paid-memberships-pro' ); ?></span>
-                <span class="<?php echo pmpro_get_element_class( 'pmpro_checkout-h3-msg' ); ?>"><?php printf( esc_html__( 'We Accept %s', 'paid-memberships-pro' ), $pmpro_accepted_credit_cards_string ); ?></span>
+                <span class="<?php echo pmpro_get_element_class( 'pmpro_checkout-h3-msg' ); ?>"><?php esc_html_e( 'We accept all major credit cards', 'paid-memberships-pro' ); ?></span>
             </h3>
 			<?php $sslseal = pmpro_getOption( "sslseal" ); ?>
 			<?php if ( ! empty( $sslseal ) ) { ?>
@@ -761,22 +755,8 @@ class PMProGateway_stripe extends PMProGateway {
 			}
 		?>
                 <div class="pmpro_checkout-fields<?php if ( ! empty( $sslseal ) ) { ?> pmpro_checkout-fields-leftcol<?php } ?>">
-					<?php
-					$pmpro_include_cardtype_field = apply_filters( 'pmpro_include_cardtype_field', false );
-					if ( $pmpro_include_cardtype_field ) { ?>
-                        <div class="<?php echo pmpro_get_element_class( 'pmpro_checkout-field pmpro_payment-card-type', 'pmpro_payment-card-type' ); ?>">
-                            <label for="CardType"><?php esc_html_e( 'Card Type', 'paid-memberships-pro' ); ?></label>
-                            <select id="CardType" class="<?php echo pmpro_get_element_class( 'CardType' ); ?>">
-								<?php foreach ( $pmpro_accepted_credit_cards as $cc ) { ?>
-                                    <option value="<?php echo esc_attr( $cc ) ?>"
-									<?php if ( $CardType === $cc ) { ?>selected="selected"<?php } ?>><?php echo esc_html( $cc ); ?></option>
-								<?php } ?>
-                            </select>
-                        </div>
-					<?php } else { ?>
-                        <input type="hidden" id="CardType" name="CardType"
-                               value="<?php echo esc_attr( $CardType ); ?>"/>
-					<?php } ?>
+                    <input type="hidden" id="CardType" name="CardType"
+                           value="<?php echo esc_attr( $CardType ); ?>"/>
                     <div class="<?php echo pmpro_get_element_class( 'pmpro_checkout-field pmpro_payment-account-number', 'pmpro_payment-account-number' ); ?>">
                         <label for="AccountNumber"><?php esc_html_e( 'Card Number', 'paid-memberships-pro' ); ?></label>
                         <div id="AccountNumber"></div>
