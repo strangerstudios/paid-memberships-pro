@@ -36,6 +36,7 @@ $payment_status         = pmpro_getParam( "payment_status", "POST" );
 $payment_amount         = pmpro_getParam( "payment_amount", "POST" );
 $payment_currency       = pmpro_getParam( "payment_currency", "POST" );
 $receiver_email         = pmpro_getParam( "receiver_email", "POST", '', 'sanitize_email' );
+$refund_amount         = pmpro_getParam( "refund_amount", "POST" );
 $business_email         = pmpro_getParam( "business", "POST", '', 'sanitize_email'  );
 $payer_email            = pmpro_getParam( "payer_email", "POST", '', 'sanitize_email'  );
 $recurring_payment_id   = pmpro_getParam( "recurring_payment_id", "POST" );
@@ -375,80 +376,53 @@ if ( $txn_type == "subscr_cancel" ) {
 }
 
 if ( strtolower( $payment_status ) === 'refunded' ) {
-
 	$payment_transaction_id = $parent_txn_id;
 
 	if ( $payment_transaction_id ) {
-
-		$success = false;
-
 		$morder = new MemberOrder();
-
 		$morder->getMemberOrderByPaymentTransactionID( $payment_transaction_id );
-
-		if ( ! isset( $morder->id ) ) {
-			
-			try {
-
-				$last_order_by_subscription = new MemberOrder();
-				$last_order_by_subscription->getLastMemberOrderBySubscriptionTransactionID( $recurring_payment_id );
-
-				$first_order_by_subscription = $last_order_by_subscription->get_original_subscription_order();
-				if ( $first_order_by_subscription && $first_order_by_subscription->id ) {
-					if ( 'paypalexpress' === $first_order_by_subscription->gateway ) {
-						$first_order_payment_transaction_id = $first_order_by_subscription->Gateway->getRealPaymentTransactionId( $first_order_by_subscription );
-
-						if ( $first_order_payment_transaction_id === $payment_transaction_id ) {
-							$morder = $first_order_by_subscription;								
-						}
-					}
-				}
-			} catch ( Exception $e ) {
-				// if something goes wrong with the logic above,
-				// we dont want to miss the management of the current ipn request.
-				// so ignoring the error is the best thing to do. dont care too much.
-				//The refund failed, so lets return the gateway message
-			
-				ipnlog( "Canceled membership for user with id = " . $morder->user_id . ". Subscription transaction ID = " . $payment_transaction_id . ". " . $httpParsedResponseAr['L_LONGMESSAGE0'] );
-				
-			}
 		
+		// Make sure we found a matching order.
+		if ( empty( $morder ) || empty( $morder->id ) ) {
+			ipnlog( sprintf( 'IPN: Order refunded on %1$s for transaction ID %2$s at the gateway, but we could not find a matching order.', date_i18n('Y-m-d H:i:s'), $payment_transaction_id ) );			
+			pmpro_ipnExit();
+		}
+			
+		// Ignore orders already in refund status.
+		if( $morder->status == 'refunded' ) {				
+			$logstr .= sprintf( 'IPN: Order ID %1$s with transaction ID %2$s was already in refund status.', $morder->id, $payment_transaction_id );
+			pmpro_ipnExit();
+		}
+		
+		// Handle partial refunds. Only updating the log and notes for now.
+		if ( abs( (float)$_POST['mc_gross'] ) < (float)$morder->total ) {				
+			ipnlog( sprintf( 'IPN: Order was partially refunded on %1$s for transaction ID %2$s at the gateway. The order will need to be updated in the WP dashboard.', date_i18n('Y-m-d H:i:s'), $payment_transaction_id ) );
+			$morder->notes = trim( $morder->notes . ' ' . sprintf( 'IPN: Order was partially refunded on %1$s for transaction ID %2$s at the gateway. The order will need to be updated in the WP dashboard.', date_i18n('Y-m-d H:i:s'), $payment_transaction_id ) );
+			$morder->SaveOrder();
+			pmpro_ipnExit();
 		}
 
-		if ( isset( $morder->id ) ) {
-			
-			$success = true;
+		// Full refund.
+		$morder->status = 'refunded';
 
-			if( $morder->status == 'refunded' ) {
-				//Refunded already, don't do this again
-				return true;
-			}
+		// translators: %1$s is the date. %2$s is the transaction ID.
+		$morder->notes = trim( $morder->notes .' '. sprintf( 'IPN: Order successfully refunded on %1$s for transaction ID %2$s at the gateway.', date_i18n('Y-m-d H:i:s'), $payment_transaction_id ) );
 
-			$morder->status = 'refunded';
+		ipnlog( sprintf( 'IPN: Order successfully refunded on %1$s for transaction ID %2$s at the gateway.', date_i18n('Y-m-d H:i:s'), $payment_transaction_id ) );
 
-			// translators: %1$s is the date. %2$s is the transaction ID.
-			$morder->notes = trim( $morder->notes .' '. sprintf( 'IPN: Order successfully refunded on %1$s for transaction ID %2$s at the gateway.', date_i18n('Y-m-d H:i:s'), $payment_transaction_id ) );
+		$user = get_user_by( 'email', $morder->Email );
 
-			ipnlog( sprintf( 'IPN: Order successfully refunded on %1$s for transaction ID %2$s at the gateway.', date_i18n('Y-m-d H:i:s'), $payment_transaction_id ) );
+		// Send an email to the member.
+		$myemail = new PMProEmail();
+		$myemail->sendRefundedEmail( $user, $morder );
 
-			$user = get_user_by( 'email', $morder->Email );
+		// Send an email to the admin.
+		$myemail = new PMProEmail();
+		$myemail->sendRefundedAdminEmail( $user, $morder );
 
-			//send an email to the member
-			$myemail = new PMProEmail();
-			$myemail->sendRefundedEmail( $user, $morder );
-
-			//send an email to the admin
-			$myemail = new PMProEmail();
-			$myemail->sendRefundedAdminEmail( $user, $morder );
-
-			$morder->SaveOrder();
-
-		}		
-
-		return $success;
-
+		$morder->SaveOrder();
+		pmpro_ipnExit();		
 	}
-
 }
 
 //Other
