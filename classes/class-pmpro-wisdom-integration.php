@@ -276,9 +276,26 @@ class PMPro_Wisdom_Integration {
 		$stats['plugin_options_fields']['pmpro_orders_count'] = $wpdb->get_var( "SELECT COUNT(*) FROM `{$wpdb->pmpro_membership_orders}`" );
 
 		// Features.
+		$stats['plugin_options_fields']['pmpro_hide_toolbar']  = get_option( 'pmpro_hide_toolbar', 'No Value' );
+		$stats['plugin_options_fields']['pmpro_block_dashboard']  = get_option( 'pmpro_block_dashboard', 'No Value' );
 		$stats['plugin_options_fields']['pmpro_filterqueries']  = get_option( 'pmpro_filterqueries', 'No Value' );
 		$stats['plugin_options_fields']['pmpro_showexcerpts']   = get_option( 'pmpro_showexcerpts', 'No Value' );
 		$stats['plugin_options_fields']['pmpro_spamprotection'] = get_option( 'pmpro_spamprotection', 'No Value' );
+		$stats['plugin_options_fields']['pmpro_recaptcha'] = get_option( 'pmpro_recaptcha', 'No Value' );
+		$stats['plugin_options_fields']['pmpro_maxnotificationpriority'] = get_option( 'pmpro_maxnotificationpriority', 'No Value' );
+		$stats['plugin_options_fields']['pmpro_activity_email_frequency'] = get_option( 'pmpro_activity_email_frequency', 'No Value' );
+		$stats['plugin_options_fields']['pmpro_hideads'] = get_option( 'pmpro_hideads', 'No Value' );
+		$stats['plugin_options_fields']['pmpro_redirecttosubscription'] = get_option( 'pmpro_redirecttosubscription', 'No Value' );
+		$stats['plugin_options_fields']['pmpro_only_filter_pmpro_emails'] = get_option( 'pmpro_only_filter_pmpro_emails', 'No Value' );
+		$stats['plugin_options_fields']['pmpro_email_member_notification'] = get_option( 'pmpro_email_member_notification', 'No Value' );
+		$stats['plugin_options_fields']['pmpro_use_ssl'] = get_option( 'pmpro_pmpro_use_ssl', 'No Value' );
+		$ssl_seal = get_option( 'pmpro_sslseal', '' );
+		if ( ! empty( $ssl_seal ) ) {
+			$stats['plugin_options_fields']['pmpro_sslseal'] = 'Yes';
+		} else {
+			$stats['plugin_options_fields']['pmpro_sslseal'] = 'No';
+		}
+		$stats['plugin_options_fields']['pmpro_nuclear_HTTPS'] = get_option( 'pmpro_nuclear_HTTPS', 'No Value' );
 
 		// Add Ons.
 		$addons_info = $this->get_addons_info();
