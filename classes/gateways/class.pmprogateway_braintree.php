@@ -1169,12 +1169,9 @@ use Braintree\WebhookNotification as Braintree_WebhookNotification;
 		}
 		
 		// Cancel the subscription in Braintree.
-		try
-		{
+		try {
 			$result = Braintree_Subscription::cancel( $subscription->get_subscription_transaction_id() );
-		}
-		catch(Exception $e)
-		{
+		} catch( Exception $e ) {
 			return false;
 		}
 
