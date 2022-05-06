@@ -1115,7 +1115,7 @@ class PMProGateway_authorizenet extends PMProGateway
 		}
 
 		$host = pmpro_getOption( 'gateway_environment' ) === 'live' ? 'api.authorize.net' : 'apitest.authorize.net';
-		$path = "/xml/v1/request.api";
+		$path = '/xml/v1/request.api';
 
 		// Build xml to post.
 		$content =
