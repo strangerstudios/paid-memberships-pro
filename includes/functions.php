@@ -395,6 +395,17 @@ function pmpro_loadTemplate( $page_name = null, $where = 'local', $type = 'pages
 	return $template;
 }
 
+/**
+ * Returns the path of a template from one of the default paths (PMPro plugin or theme), or from filtered path
+ *
+ * @param null   $page_name - Name of the page/template
+ * @param PMPRO_DIR   $plugin_dir - Plugin directory where the template is located
+ * @param paid-memberships-pro   $plugin_slug - Plugin slug that the template belongs to
+ *
+ * @since TBD
+ *
+ * @return string - The path to the page template
+ */
 function pmpro_load_page_template( $page_name = null, $plugin_dir = PMPRO_DIR, $plugin_slug = 'paid-memberships-pro' ) {
 	
 	// called from page handler shortcode
@@ -420,7 +431,13 @@ function pmpro_load_page_template( $page_name = null, $plugin_dir = PMPRO_DIR, $
 		get_stylesheet_directory() . "/{$pmpro_file_structure}/{$type}/{$page_name}.php", // child / active theme
 	);
 
-	///Needs docbloc
+	/**
+	 * Filter the current template path and add/replace it with an alternative source
+	 *
+	 * @since TBD
+	 *
+	 * @param array $default_templates The array of templates to cycle through
+	 */
 	$templates = apply_filters( "pmpro_{$type}_custom_template_path", $default_templates, $page_name, $type, 'local', 'php' ); ///note that local and PHP are hardcoded for backwards compat
 
 	$user_templates = array_diff( $templates, $default_templates );
@@ -449,6 +466,7 @@ function pmpro_load_page_template( $page_name = null, $plugin_dir = PMPRO_DIR, $
 				 */
 				$mmpu_present = true;
 			}
+
 			if( $template_version && !$mmpu_present ) {
 				pmpro_setOption( 'template_version_'.$page_name, $template_version['version'] );
 			}
@@ -462,6 +480,17 @@ function pmpro_load_page_template( $page_name = null, $plugin_dir = PMPRO_DIR, $
 
 }
 
+/**
+ * Renders a page template based on a generated path
+ *
+ * @param null   $page_name - Name of the page/template
+ * @param PMPRO_DIR   $plugin_dir - Plugin directory where the template is located
+ * @param paid-memberships-pro   $plugin_slug - Plugin slug that the template belongs to
+ *
+ * @since TBD
+ *
+ * @return string - The HTML for the template.
+ */
 function pmpro_render_page_template( $page_name = null, $plugin_dir = PMPRO_DIR, $plugin_slug = 'paid-memberships-pro' ) {
 
 	ob_start();
@@ -474,6 +503,15 @@ function pmpro_render_page_template( $page_name = null, $plugin_dir = PMPRO_DIR,
 	return $template;
 }
 
+/**
+ * Get the template header data
+ *
+ * @param null   $path - The path to the template
+ *
+ * @since TBD
+ *
+ * @return array - Template header details including template name and version
+ */
 function pmpro_get_template_version( $path ) {
 
 	$headers = array( 
@@ -487,10 +525,16 @@ function pmpro_get_template_version( $path ) {
 
 }
 
+/**
+ * Retrieves the base template versions of core and Add On templates
+ *
+ * @since TBD
+ *
+ * @return array - An array of templates containing their respective names and versions
+ */
 function pmpro_get_template_versions() {
-
-	///To do docbloc for filter
-	$pages = apply_filters( 'pmpro_base_template_versions', array(
+	
+	$core_page_templates = array(
 		array( PMPRO_DIR => array( 'type' => 'pages', 'page' => 'account' ) ),
 		array( PMPRO_DIR => array( 'type' => 'pages', 'page' => 'billing' ) ),
 		array( PMPRO_DIR => array( 'type' => 'pages', 'page' => 'cancel' ) ),
@@ -500,7 +544,16 @@ function pmpro_get_template_versions() {
 		array( PMPRO_DIR => array( 'type' => 'pages', 'page' => 'levels' ) ),
 		array( PMPRO_DIR => array( 'type' => 'pages', 'page' => 'login' ) ),
 		array( PMPRO_DIR => array( 'type' => 'pages', 'page' => 'member_profile_edit' ) )
-	) );
+	);
+
+	/**
+	 * Filter the current array of base templates used to compare template versions
+	 *
+	 * @since TBD
+	 *
+	 * @param array $core_page_templates The array of core templates we compare with overridden template versions
+	 */
+	$pages = apply_filters( 'pmpro_base_template_versions', $core_page_templates );
 
 	$template_versions = array();
 
@@ -530,12 +583,28 @@ function pmpro_get_template_versions() {
 
 }
 
-function pmpro_get_used_template_version( $slug ) {
+/**
+ * Get a specific template version
+ *
+ * @param null   $pagename - Name of the template 
+ *
+ * @since TBD
+ *
+ * @return string - Version number
+ */
+function pmpro_get_used_template_version( $pagename ) {
 
-	return pmpro_getOption( 'template_version_'.$slug );
+	return pmpro_getOption( 'template_version_'.$pagename );
 
 }
 
+/**
+ * Compares all base template versions with any overridden templates
+ *
+ * @since TBD
+ *
+ * @return array - An array of templates that are out of date compared to the base templates
+ */
 function pmpro_compare_template_versions() {
 
 	$templates = pmpro_get_template_versions();
@@ -557,10 +626,8 @@ function pmpro_compare_template_versions() {
 				if( $compared ) {
 					$affected_templates[$template_slug] = array( 'our_version' => $actual_version, 'your_version' => $used_version );
 				}
-			} else {
-				//No template headers present
-				//$affected_templates[$template_slug] = array( 'our_version' => $actual_version, 'your_version' => __('Unknown', 'paid-memberships-pro') );
 			}
+
 		}
 	}
 
