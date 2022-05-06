@@ -84,6 +84,13 @@ function pmpro_init_site_health_integration() {
 
 add_action( 'admin_init', 'pmpro_init_site_health_integration' );
 
+/**
+ * Displays a warning notice regarding outdated templates
+ *
+ * @since TBD
+ *
+ * @return mixed|string - Empty, or the HTML containing the notice
+ */
 function pmpro_template_notices() {
 
 	//Only show this notice on PMPro admin pages
@@ -91,7 +98,14 @@ function pmpro_template_notices() {
 		return;
 	}
 
-	///TO DO docbloc
+	/**
+	 * Permanently disable any template version notices
+	 *
+	 * @param bool To permanently hide template version notices
+	 * 
+	 * @since TBD
+	 *
+	 */
 	$hide_template_notices = apply_filters( 'pmpro_hide_template_version_notices', false );
 
 	if( $hide_template_notices ) {
@@ -111,11 +125,11 @@ function pmpro_template_notices() {
 		<div class="notice notice-warning">
 			<p>
 				<?php
-					// translators: %s: The list of deprecated plugins that are active.
+					// translators: %s: The list of affected template names.
 					printf(
 						__( 'Outdated page templates have been detected in your theme or a plugin. You should <strong>update the following templates to ensure compatibility</strong> with the Paid Memberships Pro plugin: <em><strong>%s</strong></em>. <a href="%s">Learn How To Fix This</a>', 'paid-memberships-pro' ),
 						implode( ', ', $affected_templates ),
-						'TODO: LINK TO BLOG POST'
+						'TODO: LINK TO BLOG POST' //TODO: LINK TO BLOG POST/ARTICLE
 					);
 				?>
 			</p>
