@@ -1107,29 +1107,29 @@ class PMProGateway_authorizenet extends PMProGateway
 	 */
 	public function update_subscription_info( $subscription ) {
 		$subscription_id = $subscription->get_subscription_transaction_id();
-		$loginname       = pmpro_getOption("loginname");
-		$transactionkey  = pmpro_getOption("transactionkey");
+		$loginname       = pmpro_getOption( 'loginname' );
+		$transactionkey  = pmpro_getOption( 'transactionkey' );
 
 		if( empty( $loginname ) || empty( $transactionkey ) ) {
 			return __( 'Authorize.net login credentials are not set.', 'paid-memberships-pro' );
 		}
 
-		$host = pmpro_getOption("gateway_environment") === 'live' ? "api.authorize.net" : "apitest.authorize.net";
+		$host = pmpro_getOption( 'gateway_environment' ) === 'live' ? 'api.authorize.net' : 'apitest.authorize.net';
 		$path = "/xml/v1/request.api";
 
 		// Build xml to post.
 		$content =
-				"<?xml version=\"1.0\" encoding=\"utf-8\"?>".
-				"<ARBGetSubscriptionRequest xmlns=\"AnetApi/xml/v1/schema/AnetApiSchema.xsd\">".
-				"<merchantAuthentication>".
-				"<name>" . $loginname . "</name>".
-				"<transactionKey>" . $transactionkey . "</transactionKey>".
-				"</merchantAuthentication>" .
-				"<subscriptionId>" . $subscription_id . "</subscriptionId>".
-				"</ARBGetSubscriptionRequest>";
+				'<?xml version="1.0" encoding="utf-8"?>'.
+				'<ARBGetSubscriptionRequest xmlns="AnetApi/xml/v1/schema/AnetApiSchema.xsd">'.
+				'<merchantAuthentication>'.
+				'<name>' . $loginname . '</name>'.
+				'<transactionKey>' . $transactionkey . '</transactionKey>'.
+				'</merchantAuthentication>' .
+				'<subscriptionId>' . $subscription_id . '</subscriptionId>'.
+				'</ARBGetSubscriptionRequest>';
 
 		// Send the xml via curl.
-		$response = $this->send_request_via_curl($host,$path,$content);
+		$response = $this->send_request_via_curl( $host, $path, $content );
 
 		// Make sure we have a response.
 		if ( ! $response ) {
@@ -1137,27 +1137,27 @@ class PMProGateway_authorizenet extends PMProGateway
 		}
 
 		// If the connection and send worked $response holds the return from Authorize.net.
-		list ($resultCode, $code, $text, $subscriptionId) = $this->parse_return($response);
-		$status = $this->substring_between($response,'<status>','</status>');
+		list ( $resultCode, $code, $text, $subscriptionId ) = $this->parse_return( $response );
+		$status = $this->substring_between( $response, '<status>', '</status>' );
 
 		// Make sure we have a good result.
 		if ( $resultCode !== 'Ok' && $code !== 'Ok' ) {
-			return __( 'Authorize.net error:', 'paid-memberships-pro' ) . ' ' . $response;
+			return __( 'Authorize.net error:', 'paid-memberships-pro' ) . ' ' . esc_html( $text );
 		}
 
 		// We have good data. Update the subscription.
 		$update_array = array(
-			'startdate' => $this->substring_between($response,'<startDate>','</startDate>') . ' 00:00:00',
+			'startdate' => $this->substring_between( $response, '<startDate>', '</startDate>' ) . ' 00:00:00',
 		);
-		if ( in_array( $this->substring_between($response,'<status>','</status>'), array( 'active', 'suspended' ) ) ) {
+		if ( in_array( $this->substring_between( $response, '<status>', '</status>' ), array( 'active', 'suspended' ) ) ) {
 			// Subscription is active.
 			$update_array['status'] = 'active';
 			$update_array['next_payment_date'] = null; // May need to calculate...
-			$update_array['billing_amount'] = $this->substring_between($response,'<amount>','</amount>');
-			$update_array['cycle_number']   = $this->substring_between($response,'<length>','</length>');
-			$update_array['cycle_period']   = rtrim( ucfirst( $this->substring_between($response,'<unit>','</unit>') ), 's' ); // months > Month.
-			$update_array['trial_amount']   = $this->substring_between($response,'<trialAmount>','</trialAmount>');
-			$update_array['trial_limit']    = $this->substring_between($response,'<trialOccurrences>','</trialOccurrences>');
+			$update_array['billing_amount'] = $this->substring_between( $response, '<amount>', '</amount>' );
+			$update_array['cycle_number']   = $this->substring_between( $response, '<length>', '</length>' );
+			$update_array['cycle_period']   = rtrim( ucfirst( $this->substring_between( $response, '<unit>', '</unit>' ) ), 's' ); // months > Month.
+			$update_array['trial_amount']   = $this->substring_between( $response, '<trialAmount>', '</trialAmount>' );
+			$update_array['trial_limit']    = $this->substring_between( $response, '<trialOccurrences>', '</trialOccurrences>' );
 
 			// $response doesn't have the next payment date, so we need to calculate it.
 			if ( strtotime( $update_array['startdate'] ) > time()) {
@@ -1189,29 +1189,29 @@ class PMProGateway_authorizenet extends PMProGateway
 	 */
 		function cancel_subscription( $subscription ) {
 		$subscription_id = $subscription->get_subscription_transaction_id();
-		$loginname       = pmpro_getOption("loginname");
-		$transactionkey  = pmpro_getOption("transactionkey");
+		$loginname       = pmpro_getOption( 'loginname' );
+		$transactionkey  = pmpro_getOption( 'transactionkey' );
 
 		if( empty( $loginname ) || empty( $transactionkey ) ) {
 			return false;
 		}
 
-		$host = pmpro_getOption("gateway_environment") === 'live' ? "api.authorize.net" : "apitest.authorize.net";
-		$path = "/xml/v1/request.api";
+		$host = pmpro_getOption( 'gateway_environment' ) === 'live' ? 'api.authorize.net' : 'apitest.authorize.net';
+		$path = '/xml/v1/request.api';
 
 		// Build xml to post.
 		$content =
-				"<?xml version=\"1.0\" encoding=\"utf-8\"?>".
-				"<ARBCancelSubscriptionRequest xmlns=\"AnetApi/xml/v1/schema/AnetApiSchema.xsd\">".
-				"<merchantAuthentication>".
-				"<name>" . $loginname . "</name>".
-				"<transactionKey>" . $transactionkey . "</transactionKey>".
-				"</merchantAuthentication>" .
-				"<subscriptionId>" . $subscription_id . "</subscriptionId>".
-				"</ARBCancelSubscriptionRequest>";
+				'<?xml version="1.0" encoding="utf-8"?>'.
+				'<ARBCancelSubscriptionRequest xmlns="AnetApi/xml/v1/schema/AnetApiSchema.xsd">'.
+				'<merchantAuthentication>'.
+				'<name>' . $loginname . '</name>'.
+				'<transactionKey>' . $transactionkey . '</transactionKey>'.
+				'</merchantAuthentication>' .
+				'<subscriptionId>' . $subscription_id . '</subscriptionId>'.
+				'</ARBCancelSubscriptionRequest>';
 
 		// Send the xml via curl.
-		$response = $this->send_request_via_curl($host,$path,$content);
+		$response = $this->send_request_via_curl( $host, $path, $content );
 
 		// Make sure we have a response.
 		if ( ! $response ) {
@@ -1219,7 +1219,7 @@ class PMProGateway_authorizenet extends PMProGateway
 		}
 
 		// Check if cancellation succeeded.
-		list ($resultCode, $code, $text, $subscriptionId) = $this->parse_return($response);
+		list ( $resultCode, $code, $text, $subscriptionId ) = $this->parse_return( $response );
 		return $resultCode == 'Ok' || $code == 'Ok';
 	}
 }
