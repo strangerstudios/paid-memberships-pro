@@ -18,21 +18,35 @@ if ( $current_user->ID ) {
 	$current_user->membership_level = pmpro_getMembershipLevelForUser($current_user->ID);
 }
 
-/*
-	Use the filter to add your gateway here if you want to show them a message on the confirmation page while their checkout is pending.
-	For example, when PayPal Standard is used, we need to wait for PayPal to send a message through IPN that the payment was accepted.
-	In the meantime, the order is in pending status and the confirmation page shows a message RE waiting.
-*/
-$gateways_with_pending_status = apply_filters('pmpro_gateways_with_pending_status', array('paypalstandard', 'twocheckout', 'gourl'));
-if ( ! pmpro_hasMembershipLevel() && ! in_array( pmpro_getGateway(), $gateways_with_pending_status ) ) {
-    // Logged in, but doesn't have a level
-    $redirect_url = pmpro_url( 'account' );
-    wp_redirect( $redirect_url );
-    exit;
-}
+// Get the most recent invoice for the current user.
+$pmpro_invoice = new MemberOrder();
+$pmpro_invoice->getLastMemberOrder( $current_user->ID, apply_filters( 'pmpro_confirmation_order_status', array( 'success', 'pending', 'token' ) ) );
 
-// If membership is a paying one, get invoice from DB
-if ( ! empty( $current_user->membership_level ) && ! pmpro_isLevelFree( $current_user->membership_level ) ) {
-    $pmpro_invoice = new MemberOrder();
-    $pmpro_invoice->getLastMemberOrder( $current_user->ID, apply_filters( "pmpro_confirmation_order_status", array( "success", "pending" ) ) );
+if ( ! in_array( $pmpro_invoice->status, array( 'pending', 'token' ) ) && empty( $current_user->membership_level ) ) {
+	// The user does not have a membership level (including pending checkouts).
+	// Redirect them to the account page.
+	$redirect_url = pmpro_url( 'account' );
+	wp_redirect( $redirect_url );
+	exit;
+} elseif ( ! empty( $current_user->membership_level ) && pmpro_isLevelFree( $current_user->membership_level ) ) {
+	// User checked out for a free level. We are not going to show the invoice on the confirmation page.
+	$pmpro_invoice = null;
+} elseif ( in_array( $pmpro_invoice->status, array( 'pending', 'token' ) ) ) {
+	// Enqueue PMPro Confirmation script.
+	wp_register_script(
+		'pmpro_confirmation',
+		plugins_url( 'js/pmpro-confirmation.js', PMPRO_BASE_FILE ),
+		array( 'jquery' ),
+		PMPRO_VERSION
+	);
+	wp_localize_script(
+		'pmpro_confirmation',
+		'pmpro',
+		array(
+			'restUrl' => get_rest_url(),
+			'nonce'   => wp_create_nonce( 'wp_rest' ),
+			'code'    => $pmpro_invoice->code,
+		)
+	);
+	wp_enqueue_script( 'pmpro_confirmation' );
 }

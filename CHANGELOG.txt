@@ -1,4 +1,30 @@
 == Changelog ==
+= 2.8 - 2022-05-05 =
+* FEATURE: Added refunds buttons for Stripe and Paypal Express orders. #1948 (@JarrydLong)
+* FEATURE: Released Beta version of Stripe Checkout. Add `define('PMPRO_STRIPE_CHECKOUT_BETA_ENABLED', true);` to your wp-config.php to enable this gateway during the beta. #1923 (@dlparker1005)
+* ENHANCEMENT: Introduced a new set of functions that handle cron-related tasks including: `pmpro_get_crons()` to get the list of PMPro registered crons. #1999 (@sc0ttkclark)
+* ENHANCEMENT: New filter `pmpro_registered_crons` which you can register new crons to be handled by PMPro. They show up in the PMPro Site Health info and are automatically scheduled when they need to be. #1999 (@sc0ttkclark)
+* ENHANCEMENT: Added an opt-in stats collection so we can get better insight on how people use Paid Memberships Pro. (@sc0ttkclark, @ideadude)
+* ENHANCEMENT: Added Formal German translation files. #1926
+* ENHANCEMENT: Tracking library conflicts in Site Health, e.g. when other plugins are loading gateway libraries at the same time as PMPro. (@dparker1005)
+* ENHANCEMENT: UI/UX improvements to the Orders admin area for list and single edit view. #2017 (@kimcoleman)
+* ENHANCEMENT: Improved the UI for email template variables reference on the Settings > Email Templates admin page. #2018 (@kimcoleman)
+* ENHANCEMENT: Various other UI improvements to the admin area. #2019 (@kimcoleman)
+* ENHANCEMENT: Improved block names, descriptions, keywords, and organization for discover and usability. #2011 (@kimcoleman)
+* ENHANCEMENT: Added "show_noaccess" as a setting on the Membership Required block for swapping in the appropriate content message. #2011 (@kimcoleman)
+* ENHANCEMENT: Added filter 'pmpro_braintree_transaction_sale_array' to allow adding or adjusting of the sale transaction method. #2006 (@andrewlimaza)
+* ENHANCEMENT: Moved the TOS input inside the label to support multiline i18n. #2002 (#mircobabini)
+* ENHANCEMENT: Added new action `pmpro_checkout_after_tos` to output content after the TOS. #2003 (@mircobabini)
+* ENHANCEMENT: Added filters to change gateway ipn/webhook logfile. #1996 (@mircobabini)
+* ENHANCEMENT: Added filter to perform actions during PPHttpPost() method of the PayPal gateways. #1992 (@mircobabini)
+* ENHANCEMENT: Added untranslated gateway identifiers to Site Health info. #1989 (@JarrydLong)
+* BUG FIX/ENHANCEMENT: Fixed escaping and localization for many strings across the codebase. #1976 (@mircobabini)
+* BUG FIX/ENHANCEMENT: Resolve admin area conflicts with other plugins using similar class names. #1991 (@sc0ttkclark)
+* BUG FIX: Crons are now automatically rescheduled if they disappear form the cron schedule. #1999 (@sc0ttkclark, @mircobabini)
+* BUG FIX: Resolved problems with PHP float precision and prevent passing along faulty floats to the gateway APIs. #1929 (@sc0ttkclark)
+* BUG FIX: Fixed issue where TOS setting was not saving when using the PayFast gateway. #1990 (@andrewlimaza)
+* BUG FIX: Fixed issue where the is_renewal() method didn't work during the pmpro_added_order hook. (@andrewlimaza)
+
 = 2.7.5 - 2022-03-01 =
 * ENHANCEMENT: Now sending "name" separate from the "description" when creating customers for Stripe checkouts. (@ideadude)
 * ENHANCEMENT: You can now search the members list on specific user table columns or user meta fields by using a colon in your search term. These queries are faster than the default queries. The format is meta_key:meta_value (no backticks). You can also use login, nicename, email, url, or display_name as the meta_key and the users table will be searched against the related column. (@ideadude)

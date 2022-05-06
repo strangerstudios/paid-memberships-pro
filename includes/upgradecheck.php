@@ -277,6 +277,15 @@ function pmpro_checkForUpgrades()
  		pmpro_db_delta();
  		pmpro_setOption( 'db_version', '2.71' );
  	}
+	
+	/**
+	 * Version 2.8
+	 * Default option for Wisdom tracking.
+	 */
+	if ( $pmpro_db_version < 2.8 ) {
+		pmpro_setOption('wisdom_opt_out', 1);
+		pmpro_setOption( 'db_version', '2.8' );
+	}
 }
 
 function pmpro_db_delta()

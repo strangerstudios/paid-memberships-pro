@@ -19,15 +19,23 @@
  export default registerBlockType(
      'pmpro/confirmation-page',
      {
-         title: __( 'Membership Confirmation Page', 'paid-memberships-pro' ),
-         description: __( 'Displays the member\'s Membership Confirmation after Membership Checkout.', 'paid-memberships-pro' ),
-         category: 'pmpro',
+         title: __( 'PMPro Page: Confirmation', 'paid-memberships-pro' ),
+         description: __( 'Dynamic page section that displays a confirmation message and purchase information for the active member immediately after membership registration and checkout.', 'paid-memberships-pro' ),
+         category: 'pmpro-pages',
          icon: {
-            background: '#2997c8',
-            foreground: '#ffffff',
+            background: '#FFFFFF',
+            foreground: '#1A688B',
             src: 'yes',
          },
-         keywords: [ __( 'pmpro', 'paid-memberships-pro' ) ],
+         keywords: [
+             __( 'member', 'paid-memberships-pro' ),
+             __( 'buy', 'paid-memberships-pro' ),
+             __( 'paid memberships pro', 'paid-memberships-pro' ),
+             __( 'pmpro', 'paid-memberships-pro' ),
+             __( 'purchase', 'paid-memberships-pro' ),
+             __( 'receipt', 'paid-memberships-pro' ),
+             __( 'success', 'paid-memberships-pro' ),
+         ],
          supports: {
          },
          attributes: {

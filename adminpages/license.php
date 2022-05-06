@@ -40,6 +40,7 @@ $allowed_pmpro_license_strings_html = array (
 if ( defined( 'PMPRO_DIR' ) ) {
 	require_once( PMPRO_DIR . '/adminpages/admin_header.php' );
 } ?>
+	<hr class="wp-header-end">
 	<div class="about-wrap">
 		<h2><?php esc_html_e('Paid Memberships Pro Support License', 'paid-memberships-pro' );?></h2>
 

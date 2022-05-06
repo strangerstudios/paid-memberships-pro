@@ -483,7 +483,7 @@ if ( empty( $default_gateway ) ) {
 				 * Allow adding text or more checkboxes after the Tos checkbox
                  * This is NOT intended to support multiple Tos checkboxes
 				 *
-				 * @since TBD
+				 * @since 2.8
 				 */
 				 do_action( "pmpro_checkout_after_tos" );
 				 ?>

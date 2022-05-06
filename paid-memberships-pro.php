@@ -3,7 +3,7 @@
  * Plugin Name: Paid Memberships Pro
  * Plugin URI: https://www.paidmembershipspro.com
  * Description: The most complete member management and membership subscriptions plugin for WordPress.
- * Version: 2.7.5
+ * Version: 2.8
  * Author: Paid Memberships Pro
  * Author URI: https://www.paidmembershipspro.com
  * Text Domain: paid-memberships-pro
@@ -16,7 +16,7 @@
  */
 
 // version constant
-define( 'PMPRO_VERSION', '2.7.5' );
+define( 'PMPRO_VERSION', '2.8' );
 define( 'PMPRO_USER_AGENT', 'Paid Memberships Pro v' . PMPRO_VERSION . '; ' . site_url() );
 define( 'PMPRO_MIN_PHP_VERSION', '5.6' );
 
@@ -40,6 +40,7 @@ if ( ! defined( 'PMPRO_LICENSE_SERVER' ) ) {
 	require_once( PMPRO_DIR . '/includes/license.php' );            // defines location of addons data and licenses
 }
 
+require_once( PMPRO_DIR . '/includes/crons.php' );                  // cron-related functionality
 require_once( PMPRO_DIR . '/scheduled/crons.php' );                 // crons for expiring members, sending expiration emails, etc
 
 require_once( PMPRO_DIR . '/classes/class.memberorder.php' );       // class to process and save orders
@@ -115,6 +116,11 @@ if ( version_compare( PHP_VERSION, '5.3.29', '>=' ) ) {
 	require_once( PMPRO_DIR . '/classes/gateways/class.pmprogateway_stripe.php' );
 	require_once( PMPRO_DIR . '/includes/lib/stripe-apple-pay/stripe-apple-pay.php' ); // rewrite rules to set up Apple Pay.
 }
+
+// Set up Wisdom tracking.
+require_once PMPRO_DIR . '/classes/class-pmpro-wisdom-integration.php';
+$wisdom_integration = PMPro_Wisdom_Integration::instance();
+$wisdom_integration->setup_wisdom();
 
 /*
 	Setup the DB and check for upgrades
@@ -200,25 +206,18 @@ add_filter( 'cron_schedules', 'pmpro_cron_schedules_monthly' );
 
 // activation
 function pmpro_activation() {
-	// schedule crons
-	pmpro_maybe_schedule_event( current_time( 'timestamp' ), 'hourly', 'pmpro_cron_expire_memberships' );
-	pmpro_maybe_schedule_event( current_time( 'timestamp' ) + 1, 'hourly', 'pmpro_cron_expiration_warnings' );
-	pmpro_maybe_schedule_event( current_time( 'timestamp' ), 'monthly', 'pmpro_cron_credit_card_expiring_warnings' );
-	pmpro_maybe_schedule_event( strtotime( '10:30:00' ) - ( get_option( 'gmt_offset' ) * HOUR_IN_SECONDS ), 'daily', 'pmpro_cron_admin_activity_email' );
-
+	pmpro_maybe_schedule_crons();
 	pmpro_set_capabilities_for_role( 'administrator', 'enable' );
-
 	do_action( 'pmpro_activation' );
 }
 
 // deactivation
-function pmpro_deactivation() {
+function pmpro_deactivation() {	
 	// remove crons
-	wp_clear_scheduled_hook( 'pmpro_cron_expiration_warnings' );
-	wp_clear_scheduled_hook( 'pmpro_cron_trial_ending_warnings' );
-	wp_clear_scheduled_hook( 'pmpro_cron_expire_memberships' );
-	wp_clear_scheduled_hook( 'pmpro_cron_credit_card_expiring_warnings' );
-	wp_clear_scheduled_hook( 'pmpro_cron_admin_activity_email' );
+	$crons = array_keys( pmpro_get_crons() );
+	foreach( $crons as $cron ) {
+		wp_clear_scheduled_hook( $cron );
+	}
 
 	// remove caps from admin role
 	pmpro_set_capabilities_for_role( 'administrator', 'disable' );

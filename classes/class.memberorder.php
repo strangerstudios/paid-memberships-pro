@@ -232,6 +232,12 @@
 				return $this->is_renewal;
 			}
 			
+			// Can't tell if this is a renewal without a timestamp.
+			if ( empty( $this->timestamp ) ) {
+				$this->is_renewal = false;
+				return $this->is_renewal;
+			}
+			
 			// Check the DB.
 			$sqlQuery = "SELECT `id`
 						 FROM $wpdb->pmpro_membership_orders
@@ -754,12 +760,15 @@
 			if(empty($this->gateway_environment))
 				$this->gateway_environment = pmpro_getOption("gateway_environment");
 			
-			if(empty($this->datetime) && empty($this->timestamp))
-				$this->datetime = date("Y-m-d H:i:s", time());
-			elseif(empty($this->datetime) && !empty($this->timestamp) && is_numeric($this->timestamp))
+			if( empty( $this->datetime ) && empty( $this->timestamp ) ) {
+				$this->timestamp = time();
+				$this->datetime = date("Y-m-d H:i:s", $this->timestamp);				
+			} elseif( empty( $this->datetime ) && ! empty( $this->timestamp ) && is_numeric( $this->timestamp ) ) {
 				$this->datetime = date("Y-m-d H:i:s", $this->timestamp);	//get datetime from timestamp
-			elseif(empty($this->datetime) && !empty($this->timestamp))
+			} elseif( empty( $this->datetime ) && ! empty( $this->timestamp ) ) {
 				$this->datetime = $this->timestamp;		//must have a datetime in it
+				$this->timestamp = strtotime( $this->datetime );	//fixing the timestamp
+			}				
 
 			if(empty($this->notes))
 				$this->notes = "";
@@ -1183,5 +1192,36 @@
 			$this->notes               = __( 'This is a test order used with the PMPro Email Templates addon.', 'paid-memberships-pro' );
 
 			return apply_filters( 'pmpro_test_order_data', $this );
+		}
+		
+		/**
+		 * Does this order have any billing address fields set?
+		 * @since 2.8
+		 * @return bool True if ANY billing address field is non-empty.
+		 *              False if ALL billing address fields are empty.
+		 */
+		function has_billing_address() {
+			// This is sometimes set.
+			if ( ! empty( $this->Address1 ) ) {
+				return true;
+			}
+			
+			// Avoid a warning if no billing object at all.
+			if ( empty( $this->billing ) ) {
+				return false;
+			}
+			
+			// Check billing fields.
+			if ( ! empty( $this->billing->name ) 
+				|| ! empty( $this->billing->street )
+				|| ! empty( $this->billing->city )
+				|| ! empty( $this->billing->state )
+				|| ! empty( $this->billing->country )
+				|| ! empty( $this->billing->zip )
+				|| ! empty( $this->billing->phone ) ) {
+				return true;
+			}
+		
+			return false;
 		}
 	} // End of Class
