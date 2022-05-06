@@ -36,7 +36,7 @@ add_action( 'init', __NAMESPACE__ . '\register_dynamic_block' );
  * @return string
  **/
 function render_dynamic_block( $attributes ) {
-	return pmpro_loadTemplate( 'levels', 'local', 'pages' );
+	return pmpro_render_page_template( 'levels' );
 }
 
 /**

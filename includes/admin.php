@@ -86,26 +86,40 @@ add_action( 'admin_init', 'pmpro_init_site_health_integration' );
 
 function pmpro_template_notices() {
 
+	//Only show this notice on PMPro admin pages
+	if ( ! isset( $_REQUEST['page'] ) || strpos( $_REQUEST['page'], 'pmpro' ) === false  ) {
+		return;
+	}
+
+	///TO DO docbloc
+	$hide_template_notices = apply_filters( 'pmpro_hide_template_version_notices', false );
+
+	if( $hide_template_notices ) {
+		return;
+	}
+	
 	$templates = pmpro_compare_template_versions();
 
-	$affected_template_string = "";
+	$affected_templates = array();
 
 	if( !empty( $templates ) ) {
 		foreach( $templates as $slug => $versions ) {
-			$affected_template_string .= "<li>".sprintf( __('%s - Core Version: %s, Your Version: %s.'), $slug, $versions['our_version'], $versions['your_version'] )."</li>";
+			$affected_templates[] = $slug;
 		}
 
 		?>
-		<div id="pmpro_notifications">		
-			<div class="pmpro_notification">
-				<button type="button" class="pmpro-notice-button notice-dismiss" value="20003"><span class="screen-reader-text">Dismiss this notice.</span></button>
-					<div class="pmpro_notification-general">
-				<h3><span class="dashicons dashicons-warning"></span> <?php _e('Paid Memberships Pro - Outdated Templates Detected', 'paid-memberships-pro'); ?></h3>
-				<p><?php _e( 'It looks like you are using outdated versions of templates  that may cause issues with the latest functionality of Paid Memberships Pro. Here\'s a list of affected templates:', 'paid-memberships-pro' ); ?></p>
-				<ul><?php echo $affected_template_string; ?></ul>
-				<p><a class="button button-primary" target="blank" href="#">Learn How To Fix This</a></p>			</div>
-		</div>
-		</div>
+		<div class="notice notice-warning">
+			<p>
+				<?php
+					// translators: %s: The list of deprecated plugins that are active.
+					printf(
+						__( 'Outdated page templates have been detected in your theme or a plugin. You should <strong>update the following templates to ensure compatibility</strong> with the Paid Memberships Pro plugin: <em><strong>%s</strong></em>. <a href="%s">Learn How To Fix This</a>', 'paid-memberships-pro' ),
+						implode( ', ', $affected_templates ),
+						'TODO: LINK TO BLOG POST'
+					);
+				?>
+			</p>
+			</div>
 		<?php
 	}	
 

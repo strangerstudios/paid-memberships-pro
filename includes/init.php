@@ -82,7 +82,7 @@ function pmpro_wp()
 				function pmpro_pages_shortcode($atts, $content=null, $code="")
 				{
 					global $pmpro_page_name;
-					$temp_content = pmpro_loadTemplate($pmpro_page_name, 'local', 'pages');
+					$temp_content = pmpro_render_page_template($pmpro_page_name );
 					return apply_filters("pmpro_pages_shortcode_" . $pmpro_page_name, $temp_content);
 				}
 				add_shortcode("pmpro_" . $pmpro_page_name, "pmpro_pages_shortcode");

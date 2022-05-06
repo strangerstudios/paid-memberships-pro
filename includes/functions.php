@@ -340,35 +340,30 @@ function pmpro_isLevelExpiringSoon( &$level ) {
  *
  * @since 1.8.9
  */
-function pmpro_loadTemplate( $page_name = null, $where = 'local', $type = 'pages', $ext = 'php', $plugin_dir = PMPRO_DIR, $plugin_slug = 'paid-memberships-pro', $load = true ) {
+function pmpro_loadTemplate( $page_name = null, $where = 'local', $type = 'pages', $ext = 'php' ) {
+
+	///TO DO: Version number?
+	_deprecated_function( __FUNCTION__, '3.0', 'pmpro_load_page_template()' );
+
 	// called from page handler shortcode
 	if ( is_null( $page_name ) ) {
 		global $pmpro_page_name;
 		$page_name = $pmpro_page_name;
 	}
 
-	if( $plugin_slug == 'paid-memberships-pro' ) {
-		//Core template being loaded
-		$pmpro_file_structure = 'paid-memberships-pro';
-	} else {
-		//An Add On is loading a template now
-		$pmpro_file_structure = 'paid-memberships-pro/$plugin_slug';
-	}
-	
-
 	if ( $where == 'local' ) {
 		// template paths in order of priority (array gets reversed)
 		$default_templates = array(
-			$plugin_dir . "/{$type}/{$page_name}.{$ext}", // default plugin path
-			get_template_directory() . "/{$pmpro_file_structure}/{$type}/{$page_name}.{$ext}", // parent theme
-			get_stylesheet_directory() . "/{$pmpro_file_structure}/{$type}/{$page_name}.{$ext}", // child / active theme
+			PMPRO_DIR . "/{$type}/{$page_name}.{$ext}", // default plugin path
+			get_template_directory() . "/paid-memberships-pro/{$type}/{$page_name}.{$ext}", // parent theme
+			get_stylesheet_directory() . "/paid-memberships-pro/{$type}/{$page_name}.{$ext}", // child / active theme
 		);
 	} elseif ( $where == 'url' ) {
 		// template paths in order of priority (array gets reversed)
 		$default_templates = array(
-			$plugin_dir . "/{$type}/{$page_name}.{$ext}", // default plugin path
-			get_template_directory_uri() . "/{$pmpro_file_structure}/{$type}/{$page_name}.{$ext}", // parent theme
-			get_stylesheet_directory_uri() . "/{$pmpro_file_structure}/{$type}/{$page_name}.{$ext}", // child / active theme
+			PMPRO_URL . "/{$type}/{$page_name}.{$ext}", // default plugin path
+			get_template_directory_uri() . "/paid-memberships-pro/{$type}/{$page_name}.{$ext}", // parent theme
+			get_stylesheet_directory_uri() . "/paid-memberships-pro/{$type}/{$page_name}.{$ext}", // child / active theme
 		);
 
 	}
@@ -386,15 +381,75 @@ function pmpro_loadTemplate( $page_name = null, $where = 'local', $type = 'pages
 	$templates = array_reverse( $templates );
 
 	// look for template file to include
-	if( $load ) {
-		ob_start();
-	}
+	ob_start();
 	foreach ( $templates as $template_path ) {
 		// If loading a local file, check if it exists first
 		if ( $where == 'url' || file_exists( $template_path ) ) {
+			include $template_path;
+			break;
+		}
+	}
+	$template = ob_get_clean();
+
+	// return template content
+	return $template;
+}
+
+function pmpro_load_page_template( $page_name = null, $plugin_dir = PMPRO_DIR, $plugin_slug = 'paid-memberships-pro' ) {
+	
+	// called from page handler shortcode
+	if ( is_null( $page_name ) ) {
+		global $pmpro_page_name;
+		$page_name = $pmpro_page_name;
+	}
+
+	if( $plugin_slug == 'paid-memberships-pro' ) {
+		//Core template being loaded
+		$pmpro_file_structure = 'paid-memberships-pro';
+		$type = 'pages';
+	} else {
+		//An Add On is loading a template now
+		$pmpro_file_structure = 'paid-memberships-pro/'.$plugin_slug;
+		$type = 'templates';
+	}	
+	
+	// template paths in order of priority (array gets reversed)
+	$default_templates = array(
+		$plugin_dir . "/{$type}/{$page_name}.php", // default plugin path
+		get_template_directory() . "/{$pmpro_file_structure}/{$type}/{$page_name}.php", // parent theme
+		get_stylesheet_directory() . "/{$pmpro_file_structure}/{$type}/{$page_name}.php", // child / active theme
+	);
+
+	///Needs docbloc
+	$templates = apply_filters( "pmpro_{$type}_custom_template_path", $default_templates, $page_name, $type, 'local', 'php' ); ///note that local and PHP are hardcoded for backwards compat
+
+	$user_templates = array_diff( $templates, $default_templates );
+	$allowed_default_templates = array_intersect( $templates, $default_templates );
+
+	// user specified a custom template path, so it has priority.
+	if ( ! empty( $user_templates ) ) {
+		$templates = array_merge($allowed_default_templates, $user_templates);
+	}
+
+	// last element included in the array is the most first one we try to load
+	$templates = array_reverse( $templates );
+
+	foreach ( $templates as $template_path ) {
+		// If loading a local file, check if it exists first
+		if ( file_exists( $template_path ) ) {
 			//Checks and records the current template version
 			$template_version = pmpro_get_template_version( $template_path, $type );
-			if( $template_version ) {
+
+			$mmpu_present = false;
+
+			if( strpos( $template_path, 'pmpro-multiple-memberships-per-user', 0 ) !== FALSE ) {
+				/**
+				 * MMPU is loading a template.
+				 * Don't record the version because we maintain these files
+				 */
+				$mmpu_present = true;
+			}
+			if( $template_version && !$mmpu_present ) {
 				pmpro_setOption( 'template_version_'.$page_name, $template_version['version'] );
 			}
 
@@ -402,11 +457,21 @@ function pmpro_loadTemplate( $page_name = null, $where = 'local', $type = 'pages
 			break;
 		}
 	}
-	if( $load ) {
-		$template = ob_get_clean();
-		// return template content
-		return $template;
-	}
+	
+	return $template_path;
+
+}
+
+function pmpro_render_page_template( $page_name = null, $plugin_dir = PMPRO_DIR, $plugin_slug = 'paid-memberships-pro' ) {
+
+	ob_start();
+
+	$template = pmpro_load_page_template( $page_name, $plugin_dir, $plugin_slug );
+
+	$template = ob_get_clean();
+
+	// return template content
+	return $template;
 }
 
 function pmpro_get_template_version( $path ) {
@@ -424,6 +489,7 @@ function pmpro_get_template_version( $path ) {
 
 function pmpro_get_template_versions() {
 
+	///To do docbloc for filter
 	$pages = apply_filters( 'pmpro_base_template_versions', array(
 		array( PMPRO_DIR => array( 'type' => 'pages', 'page' => 'account' ) ),
 		array( PMPRO_DIR => array( 'type' => 'pages', 'page' => 'billing' ) ),
@@ -487,12 +553,13 @@ function pmpro_compare_template_versions() {
 			if( !empty( $used_version ) ){
 				//Only compare if we have a used version number
 				$compared = version_compare( floatval( $used_version ), floatval( $actual_version ), "<");
+
 				if( $compared ) {
 					$affected_templates[$template_slug] = array( 'our_version' => $actual_version, 'your_version' => $used_version );
 				}
 			} else {
 				//No template headers present
-				// $affected_templates[$template_slug] = array( 'our_version' => $actual_version, 'your_version' => __('Unknown', 'paid-memberships-pro') );
+				//$affected_templates[$template_slug] = array( 'our_version' => $actual_version, 'your_version' => __('Unknown', 'paid-memberships-pro') );
 			}
 		}
 	}
