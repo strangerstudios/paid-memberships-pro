@@ -1142,9 +1142,7 @@ class PMProGateway_authorizenet extends PMProGateway
 
 		// Make sure we have a good result.
 		if ( $resultCode !== 'Ok' && $code !== 'Ok' ) {
-			d($response);
-			wp_die();
-			return __( 'Authorize.net error:', 'paid-memberships-pro' ) . ' ' . $text;
+			return __( 'Authorize.net error:', 'paid-memberships-pro' ) . ' ' . $response;
 		}
 
 		// We have good data. Update the subscription.
