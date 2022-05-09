@@ -759,7 +759,9 @@ h2.nav-tab-wrapper {
 #pmpro_report_sales .wp-list-table tfoot td {
 	font-size: 1.1rem;
 	font-weight: bold;
+    vertical-align: middle;
 }
+#pmpro_report_sales .wp-list-table thead th:last-child,
 #pmpro_report_sales .wp-list-table tbody td:last-child,
 #pmpro_report_sales .wp-list-table tfoot td:last-child {
 	text-align: right;
