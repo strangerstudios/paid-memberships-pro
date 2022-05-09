@@ -23,7 +23,7 @@ export default registerBlockType(
 	'pmpro/login-form',
 	{
 		title: __( 'Login Form', 'paid-memberships-pro' ),
-		description: __( 'Dynamic form that allows users to log in or recover a loast password. Logged in users can see a welcome message with the selected custom menu.', 'paid-memberships-pro' ),
+		description: __( 'Dynamic form that allows users to log in or recover a lost password. Logged in users can see a welcome message with the selected custom menu.', 'paid-memberships-pro' ),
 		category: 'pmpro',
 		icon: {
 			background: '#FFFFFF',

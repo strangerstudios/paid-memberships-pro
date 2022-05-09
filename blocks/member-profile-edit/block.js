@@ -17,7 +17,7 @@ export default registerBlockType(
 	'pmpro/member-profile-edit',
 	{
 		title: __( 'PMPro Page: Account Profile Edit', 'paid-memberships-pro' ),
-		description: __( 'Dynaimc form that allows the current logged in member to edit their default user profile information and any custom user profile fields.', 'paid-memberships-pro' ),
+		description: __( 'Dynamic form that allows the current logged in member to edit their default user profile information and any custom user profile fields.', 'paid-memberships-pro' ),
 		category: 'pmpro-pages',
 		icon: {
 			background: '#FFFFFF',
