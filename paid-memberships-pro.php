@@ -214,10 +214,7 @@ function pmpro_activation() {
 // deactivation
 function pmpro_deactivation() {	
 	// remove crons
-	$crons = array_keys( pmpro_get_crons() );
-	foreach( $crons as $cron ) {
-		wp_clear_scheduled_hook( $cron );
-	}
+	pmpro_clear_crons();
 
 	// remove caps from admin role
 	pmpro_set_capabilities_for_role( 'administrator', 'disable' );

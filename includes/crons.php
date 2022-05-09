@@ -76,6 +76,17 @@ function pmpro_maybe_schedule_crons() {
 }
 
 /**
+ * Clear all PMPro related crons.
+ * @since 2.8.1
+ */
+function pmpro_clear_crons() {	
+	$crons = array_keys( pmpro_get_crons() );
+	foreach( $crons as $cron ) {
+		wp_clear_scheduled_hook( $cron );
+	}
+}
+
+/**
  * Handle rescheduling Paid Memberships Pro crons when checking for ready cron tasks.
  *
  * @since 2.8
