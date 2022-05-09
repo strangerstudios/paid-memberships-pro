@@ -105,6 +105,10 @@ class PMPro_Site_Health {
 					'label' => __( 'Library Conflicts', 'paid-memberships-pro' ),
 					'value' => self::get_library_conflicts(),
 				],
+				'pmpro-addons-name-issues' => [
+					'label' => __( 'Add Ons Issues', 'paid-memberships-pro' ),
+					'value' => self::get_addons_name_issues(),
+				],
 			],
 		];
 
@@ -494,6 +498,19 @@ class PMPro_Site_Health {
 			$return_arr[ $library_name ] = implode( ' | ', $conflict_strings );
 		}
 		return $return_arr;
+	}
+
+	function get_addons_name_issues() {
+		// Get the current list of addons with the wrong name.
+		$wrong_name_addons = pmpro_searchWrongFolderNameAddons();
+
+		// Loop through all addons that have the wrong name.
+		$wrong_name_issues = array();
+		foreach ( $wrong_name_addons as $plugin_name => $addon ) {
+			$wrong_name_issues[] = "Found an instance of {$addon['Name']} installed into $plugin_name instead of {$addon['plugin']}";
+		}
+
+		return implode( " | \n", $wrong_name_issues );
 	}
 
 	/**

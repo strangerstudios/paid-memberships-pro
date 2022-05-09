@@ -65,6 +65,45 @@ function pmpro_getAddons() {
 }
 
 /**
+ * Search installed addons with wrong folder name.
+ *
+ * @since TBD
+ */
+function pmpro_searchWrongFolderNameAddons() {
+	// prepare
+	$installed_plugins = array();
+	foreach ( get_plugins() as $plugin_name => $plugin_data ) {
+		if ( false === strpos( $plugin_name, '/' ) ) {
+			continue;
+		}
+
+		list( $plugin_folder, $plugin_filename ) = explode( '/', $plugin_name, 2 );
+		$installed_plugins[ $plugin_name ] = array(
+			'plugin_folder'   => $plugin_folder,
+			'plugin_filename' => $plugin_filename,
+		);
+	}
+
+	$wrong_name_addons = array();
+	foreach ( pmpro_getAddons() as $addon ) {
+		list( $addon_folder, $addon_filename ) = explode( '/', $addon['plugin'], 2 );
+
+		// search for any installed plugin with:
+		// - folder name which starts with another addon's folder name
+		// - the same plugin file name
+		foreach ( $installed_plugins as $plugin_name => $plugin ) {
+			if ( $addon_folder !== $plugin['plugin_folder'] &&
+			     false !== stripos( $plugin['plugin_folder'], $addon_folder ) &&
+			     $addon_filename === $plugin['plugin_filename'] ) {
+				$wrong_name_addons[ $plugin_name ] = $addon;
+			}
+		}
+	}
+
+	return $wrong_name_addons;
+}
+
+/**
  * Find a PMPro addon by slug.
  *
  * @since 1.8.5
