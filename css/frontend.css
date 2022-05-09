@@ -76,6 +76,44 @@ fieldset[disabled] .pmpro_btn {
 	width: auto;
 }
 
+.pmpro-checkout-paypal-button-row {
+    height: 45px;
+    display: block;
+    vertical-align: top;
+    min-height: 30px;
+    max-height: 55px;
+}
+
+.pmpro-checkout-paypal-button-row .pmpro-checkout-paypal-button-submit {
+    width: 250px;
+    position: relative;
+    box-sizing: border-box;
+    border: none;
+    cursor: pointer;
+    overflow: hidden;
+    background: #ffc439;
+    color: #000;
+    display: inline-block;
+    text-align: center;
+    height: 100%;
+    border-radius: 4px;
+    padding: 7px;
+}
+
+.pmpro-checkout-paypal-button-row .pmpro-checkout-paypal-button-submit > .paypal-button-label-container {
+    display: block;
+    height: 22px;
+    margin: 0;
+}
+
+.pmpro-checkout-paypal-button-row .pmpro-checkout-paypal-button-submit > .paypal-button-label-container * {
+    vertical-align: middle;
+    height: 100%;
+    cursor: pointer;
+    font-size: 12px;
+    user-select: none;
+}
+
 input[type="button"]#discount_code_button,
 input[type="button"]#discount_code_button:hover,
 input[type="button"]#discount_code_button:focus,
