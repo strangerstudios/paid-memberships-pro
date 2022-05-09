@@ -5,14 +5,14 @@
  *
  * @see PMPro_Wisdom_Tracker
  *
- * @since TBD
+ * @since 2.8
  */
 class PMPro_Wisdom_Integration {
 
 	/**
 	 * The current object instance.
 	 *
-	 * @since TBD
+	 * @since 2.8
 	 *
 	 * @var self
 	 */
@@ -21,7 +21,7 @@ class PMPro_Wisdom_Integration {
 	/**
 	 * The plugin slug to use with Wisdom.
 	 *
-	 * @since TBD
+	 * @since 2.8
 	 *
 	 * @var string
 	 */
@@ -30,7 +30,7 @@ class PMPro_Wisdom_Integration {
 	/**
 	 * The plugin option to send to Wisdom.
 	 *
-	 * @since TBD
+	 * @since 2.8
 	 *
 	 * @var string
 	 */
@@ -39,7 +39,7 @@ class PMPro_Wisdom_Integration {
 	/**
 	 * The plugin settings pages to include Wisdom notices on.
 	 *
-	 * @since TBD
+	 * @since 2.8
 	 *
 	 * @var array
 	 */
@@ -56,7 +56,7 @@ class PMPro_Wisdom_Integration {
 	/**
 	 * The Wisdom Tracker object.
 	 *
-	 * @since TBD
+	 * @since 2.8
 	 *
 	 * @var PMPro_Wisdom_Tracker
 	 */
@@ -65,7 +65,7 @@ class PMPro_Wisdom_Integration {
 	/**
 	 * Set up and return the class instance.
 	 *
-	 * @since TBD
+	 * @since 2.8
 	 *
 	 * @return self
 	 */
@@ -87,7 +87,7 @@ class PMPro_Wisdom_Integration {
 	/**
 	 * Set up the Wisdom tracker.
 	 *
-	 * @since TBD
+	 * @since 2.8
 	 */
 	public function setup_wisdom() {
 		require_once PMPRO_DIR . '/classes/class-pmpro-wisdom-tracker.php';
@@ -123,7 +123,7 @@ class PMPro_Wisdom_Integration {
 	/**
 	 * When the Wisdom setting for tracking is changed, sync the plugin setting to match.
 	 *
-	 * @since TBD
+	 * @since 2.8
 	 *
 	 * @param array|null $old_value The old value of the option.
 	 * @param array      $value     The new value of the option.
@@ -136,7 +136,7 @@ class PMPro_Wisdom_Integration {
 	/**
 	 * When the plugin setting for tracking is changed, sync the Wisdom setting to match.
 	 *
-	 * @since TBD
+	 * @since 2.8
 	 *
 	 * @param array|null $old_value The old value of the option.
 	 * @param array      $value     The new value of the option.
@@ -162,7 +162,7 @@ class PMPro_Wisdom_Integration {
 	/**
 	 * Bypass local tracking for additional local URLs.
 	 *
-	 * @since TBD
+	 * @since 2.8
 	 *
 	 * @param bool $is_local Whether the site is recognized as a local site.
 	 *
@@ -210,18 +210,20 @@ class PMPro_Wisdom_Integration {
 	/**
 	 * Override the notice for the Wisdom Tracker opt-in.
 	 *
-	 * @since TBD
+	 * @since 2.8
 	 *
 	 * @return string
 	 */
 	public function override_notice() {
-		return __( 'Thank you for installing our plugin. We would like your permission to track its usage on your site. We will not record any sensitive data, only information regarding the WordPress environment and plugin settings. We will only use this information help us make improvements to the plugin and provide better support when you reach out. Tracking is completely optional.', 'paid-memberships-pro' );
+		$message = esc_html__( 'Share your usage data to help us improve Paid Memberships Pro. We use this data to analyze how our plugin is meeting your needs and identify new opportunities to help you create a thriving membership business. You can always visit the Advanced Settings and change this preference.', 'paid-memberships-pro' );
+		$link = '<a href="https://www.paidmembershipspro.com/privacy-policy/usage-tracking/" target="_blank" rel="nofollow noopener">' . esc_html__( 'Read more about what data we collect.', 'paid-memberships-pro' ) . '</a>';
+		return $message . ' ' . $link;
 	}
 
 	/**
 	 * Remove Wisdom notices from non-plugin screens.
 	 *
-	 * @since TBD
+	 * @since 2.8
 	 */
 	public function remove_wisdom_notices_from_non_plugin_screens() {
 		$settings_page = ! empty( $_GET['page'] ) ? sanitize_text_field( $_GET['page'] ) : '';
@@ -239,7 +241,7 @@ class PMPro_Wisdom_Integration {
 	/**
 	 * Add custom stats for the plugin to the data being tracked.
 	 *
-	 * @since TBD
+	 * @since 2.8
 	 *
 	 * @param array $stats The data to be sent to the Wisdom plugin site.
 	 *
@@ -264,7 +266,11 @@ class PMPro_Wisdom_Integration {
 		$stats['plugin_options_fields'] = array_merge( $stats['plugin_options_fields'], $this->get_gateway_info() );
 
 		// Levels info.
-		$stats['plugin_options_fields'] = array_merge( $stats['plugin_options_fields'], $this->get_levels_info() );
+		$levels_info = $this->get_levels_info();
+		$stats['plugin_options_fields']['pmpro_level_count']    = $levels_info['pmpro_level_count'];
+		$stats['plugin_options_fields']['pmpro_level_setups']   = $levels_info['pmpro_level_setups'];
+		$stats['plugin_options_fields']['pmpro_has_free_level'] = $levels_info['pmpro_has_free_level'];
+		$stats['plugin_options_fields']['pmpro_has_paid_level'] = $levels_info['pmpro_has_paid_level'];
 
 		// Members info.
 		$stats['plugin_options_fields']['pmpro_members_count']           = pmpro_getSignups( 'all time' );
@@ -274,9 +280,26 @@ class PMPro_Wisdom_Integration {
 		$stats['plugin_options_fields']['pmpro_orders_count'] = $wpdb->get_var( "SELECT COUNT(*) FROM `{$wpdb->pmpro_membership_orders}`" );
 
 		// Features.
+		$stats['plugin_options_fields']['pmpro_hide_toolbar']  = get_option( 'pmpro_hide_toolbar', 'No Value' );
+		$stats['plugin_options_fields']['pmpro_block_dashboard']  = get_option( 'pmpro_block_dashboard', 'No Value' );
 		$stats['plugin_options_fields']['pmpro_filterqueries']  = get_option( 'pmpro_filterqueries', 'No Value' );
 		$stats['plugin_options_fields']['pmpro_showexcerpts']   = get_option( 'pmpro_showexcerpts', 'No Value' );
 		$stats['plugin_options_fields']['pmpro_spamprotection'] = get_option( 'pmpro_spamprotection', 'No Value' );
+		$stats['plugin_options_fields']['pmpro_recaptcha'] = get_option( 'pmpro_recaptcha', 'No Value' );
+		$stats['plugin_options_fields']['pmpro_maxnotificationpriority'] = get_option( 'pmpro_maxnotificationpriority', 'No Value' );
+		$stats['plugin_options_fields']['pmpro_activity_email_frequency'] = get_option( 'pmpro_activity_email_frequency', 'No Value' );
+		$stats['plugin_options_fields']['pmpro_hideads'] = get_option( 'pmpro_hideads', 'No Value' );
+		$stats['plugin_options_fields']['pmpro_redirecttosubscription'] = get_option( 'pmpro_redirecttosubscription', 'No Value' );
+		$stats['plugin_options_fields']['pmpro_only_filter_pmpro_emails'] = get_option( 'pmpro_only_filter_pmpro_emails', 'No Value' );
+		$stats['plugin_options_fields']['pmpro_email_member_notification'] = get_option( 'pmpro_email_member_notification', 'No Value' );
+		$stats['plugin_options_fields']['pmpro_use_ssl'] = get_option( 'pmpro_pmpro_use_ssl', 'No Value' );
+		$ssl_seal = get_option( 'pmpro_sslseal', '' );
+		if ( ! empty( $ssl_seal ) ) {
+			$stats['plugin_options_fields']['pmpro_sslseal'] = 'Yes';
+		} else {
+			$stats['plugin_options_fields']['pmpro_sslseal'] = 'No';
+		}
+		$stats['plugin_options_fields']['pmpro_nuclear_HTTPS'] = get_option( 'pmpro_nuclear_HTTPS', 'No Value' );
 
 		// Add Ons.
 		$addons_info = $this->get_addons_info();
@@ -293,14 +316,13 @@ class PMPro_Wisdom_Integration {
 
 			$stats['plugin_options_fields'][ $option ] = $value;
 		}
-
 		return $stats;
 	}
 
 	/**
 	 * Get the gateway information to track.
 	 *
-	 * @since TBD
+	 * @since 2.8
 	 *
 	 * @return array The gateway information to track.
 	 */
@@ -361,64 +383,65 @@ class PMPro_Wisdom_Integration {
 	/**
 	 * Get the level information for all levels to track.
 	 *
-	 * @since TBD
+	 * @since 2.8
 	 *
 	 * @return array The level information for all levels to track.
 	 */
 	public function get_levels_info() {
-		$stats = [];
+		global $wpdb;
 
+		$stats = array(
+			'pmpro_level_setups'   => array(),
+			'pmpro_has_free_level' => 'no',
+			'pmpro_has_paid_level' => 'no',
+			'pmpro_level_count'    => 0,
+		);
+
+		// Get the levels.
 		$levels = pmpro_getAllLevels( true );
 
-		$stats['pmpro_levels_count'] = count( $levels );
+		// Update the level count.
+		$stats['pmpro_level_count'] = count( $levels );
 
-		$range_groups = [
-			'0'  => [
-				'range' => [ 0, 0 ],
-				'count' => 0,
-			],
-			'0.01_to_10'  => [
-				'range' => [ 0.01, 10 ],
-				'count' => 0,
-			],
-			'10.01_to_25' => [
-				'range' => [ 10.01, 25 ],
-				'count' => 0,
-			],
-		];
+		// Loop through the levels.
+		foreach ( $levels as $level_id => $level_data ) {
+			// Remove sensitive info.
+			unset( $level_data->name );
+			unset( $level_data->description );
+			unset( $level_data->confirmation );
 
-		$billing_amount_prices = wp_list_pluck( $levels, 'billing_amount' );
-		$billing_amount_prices = array_unique( $billing_amount_prices );
+			// Add Set Expiration Date/Subscription Delay info.
+			$level_data->set_expiration_date = get_option( 'pmprosed_' . $level_id , '' );
+			$level_data->subscription_delay  = get_option( 'pmpro_subscription_delay_' . $level_id , '' );
 
-		foreach ( $billing_amount_prices as $billing_amount_price ) {
-			foreach ( $range_groups as $key => $group ) {
-				// Zero price range handling.
-				if ( 0 === $group['range'][0] && 0 === $group['range'][1] && 0 === $billing_amount_price ) {
-					$range_groups[ $key ]['count'] ++;
+			// Add if a category is set.
+			$categories = $wpdb->get_col(
+				$wpdb->prepare(
+					"SELECT category_id
+					FROM $wpdb->pmpro_memberships_categories
+					WHERE membership_id = %d",
+					$level_id
+				)
+			);
+			$level_data->has_categories = ! empty( $categories ) ? 'yes' : 'no';
 
-					break;
-				}
+			// Add level info.
+			$stats['pmpro_level_setups'][ $level_id ] = $level_data;
 
-				// Check if price is within the range group constraints.
-				if ( $group['range'][0] <= $billing_amount_price && $billing_amount_price <= $group['range'][1] ) {
-					$range_groups[ $key ]['count'] ++;
-
-					break;
-				}
+			// Update whether or not we have a free/paid level yet.
+			if ( pmpro_isLevelFree( $level_data ) ) {
+				$stats['pmpro_has_free_level'] = 'yes';
+			} else {
+				$stats['pmpro_has_paid_level'] = 'yes';
 			}
 		}
-
-		foreach ( $range_groups as $key => $group ) {
-			$stats['pmpro_levels_price_ranges_' . $key ] = $group['count'];
-		}
-
 		return $stats;
 	}
 
 	/**
 	 * Get the list of Add Ons categorized by active, inactive, and update available.
 	 *
-	 * @since TBD
+	 * @since 2.8
 	 *
 	 * @return array The list of Add Ons categorized by active, inactive, and update available.
 	 */
@@ -453,7 +476,7 @@ class PMPro_Wisdom_Integration {
 
 			// Build array of Add Ons that have an update available.
 			if ( isset( $plugin_info->response[ $plugin_file ] ) ) {
-				$addons_update_available[] = $addon;
+				$addons_update_available[ $addon['Slug'] ] = $plugin_data['Version'];
 			}
 		}
 

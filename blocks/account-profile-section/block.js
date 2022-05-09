@@ -21,7 +21,7 @@
      'pmpro/account-profile-section',
      {
          title: __( 'PMPro Page: Account Profile View', 'paid-memberships-pro' ),
-         description: __( 'Dynamic page section that displays the member\'s profile as read-only information with a link to edit fields or their change password.', 'paid-memberships-pro' ),
+         description: __( 'Dynamic page section that displays the member\'s profile as read-only information with a link to edit fields or change their password.', 'paid-memberships-pro' ),
          category: 'pmpro-pages',
          icon: {
             background: '#FFFFFF',

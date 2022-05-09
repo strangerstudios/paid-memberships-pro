@@ -155,6 +155,21 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 		));
 
 		/**
+		 * Retrieve an order.
+		 * @since 2.8
+		 * Example: https://example.com/wp-json/pmpro/v1/order
+		 */
+		register_rest_route( $pmpro_namespace, '/order', 
+		array(
+			array(
+				'methods' => WP_REST_Server::READABLE,
+				'callback' => array( $this, 'pmpro_rest_api_get_order' ),
+				'permission_callback' => array( $this, 'pmpro_rest_api_get_permissions_check' )
+			),
+		));
+		add_filter( 'pmpro_rest_api_permissions', array( $this, 'pmpro_rest_api_permissions_get_order' ), 10, 2 );
+
+		/**
 		 * Get membership level after checkout options are applied.
 		 * @since 2.4
 		 * Example: https://example.com/wp-json/pmpro/v1/checkout_level
@@ -686,6 +701,51 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 		}
 
 		/**
+		 * Get an order.
+		 * @since 2.8
+		 * Example: https://example.com/wp-json/pmpro/v1/order
+		 */
+		function pmpro_rest_api_get_order( $request ) {
+			if ( ! class_exists( 'MemberOrder' ) ) {
+				return new WP_REST_Response( 'Paid Memberships Pro order class not found.', 404 );
+			}
+
+			$params = $request->get_params();
+			$code   = isset( $params['code'] ) ? sanitize_text_field( $params['code'] ) : null;
+
+			if ( empty( $code ) ) {
+				return new WP_REST_Response( 'No order code sent.', 400 );
+			}
+
+			return new WP_REST_Response( new MemberOrder( $code ), 200 );
+		}
+
+		/**
+		 * Make sure that users can GET their own orders.
+		 * @since 2.8
+		 */
+		function pmpro_rest_api_permissions_get_order( $permission, $request ) {
+			$method = $request->get_method();
+			$route  = $request->get_route();
+
+			// Check if the user does not have access but is trying to get an order.
+			if ( ! $permission && 'GET' === $method && '/pmpro/v1/order' === $route ) {
+				// Check if the order belongs to the user.
+				$params = $request->get_params();
+				$code   = isset( $params['code'] ) ? sanitize_text_field( $params['code'] ) : null;
+
+				if ( ! empty( $code ) ) {
+					$order = new MemberOrder( $code );
+
+					if ( $order->user_id == get_current_user_id() ) {
+						return true;
+					}
+				}
+			}
+			return $permission;
+		}
+
+		/**
 		 * Get a membership level at checkout.
 		 * Note: Not compatible with MMPU.
 		 * @since 2.4
@@ -876,6 +936,7 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 					`u`.`ID` AS `user_id`,
 					`u`.`user_email`,
 					`u`.`user_nicename`,
+					`o`.`membership_id`,
 					`o`.`billing_name`,
 					`o`.`billing_street`,
 					`o`.`billing_city`,
@@ -929,6 +990,7 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 				'/pmpro/v1/cancel_membership_level' => 'pmpro_edit_memberships',
 				'/pmpro/v1/membership_level' => true,
 				'/pmpro/v1/discount_code' => 'pmpro_discountcodes',
+				'/pmpro/v1/order' => 'pmpro_orders',
 				'/pmpro/v1/checkout_level' => true,
 				'/pmpro/v1/checkout_levels' => true,
 				'/pmpro/v1/me' => true,

@@ -7,7 +7,7 @@
  *
  * @link https://wisdomplugin.com/
  *
- * @since TBD
+ * @since 2.8
  */
 class PMPro_Wisdom_Tracker {
 
@@ -363,7 +363,7 @@ class PMPro_Wisdom_Tracker {
 		/**
 		 * Allow filtering the data to be sent to the Wisdom plugin site.
 		 *
-		 * @since TBD
+		 * @since 2.8
 		 *
 		 * @param array $body The data to be sent to the Wisdom plugin site.
 		 */
@@ -846,11 +846,11 @@ class PMPro_Wisdom_Tracker {
 			$notice_text = apply_filters( 'wisdom_notice_text_' . esc_attr( $this->plugin_name ), $notice_text ); ?>
 
 			<div class="notice notice-info updated put-dismiss-notice">
-				<p><?php echo '<strong>' . esc_html( $plugin_name ) . '</strong>'; ?></p>
-				<p><?php echo esc_html( $notice_text ); ?></p>
+				<h3><?php echo 'Enable Data Tracking For ' . esc_html( $plugin_name ) . '</strong>'; ?></h3>
+				<p><?php echo wp_kses_post( $notice_text ); ?></p>
 				<p>
-					<a href="<?php echo esc_url( $url_yes ); ?>" class="button-secondary"><?php _e( 'Allow', 'paid-memberships-pro' ); ?></a>
-					<a href="<?php echo esc_url( $url_no ); ?>" class="button-secondary"><?php _e( 'Do Not Allow', 'paid-memberships-pro' ); ?></a>
+					<a href="<?php echo esc_url( $url_yes ); ?>" class="button button-primary"><?php _e( 'Allow', 'paid-memberships-pro' ); ?></a>
+					<a href="<?php echo esc_url( $url_no ); ?>" class="button button-secondary"><?php _e( 'Do Not Allow', 'paid-memberships-pro' ); ?></a>
 				</p>
 			</div>
 			<?php
