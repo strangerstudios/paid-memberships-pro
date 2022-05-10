@@ -1,4 +1,8 @@
 == Changelog ==
+= 2.8.1 - 2022-05-10 =
+* BUG FIX/ENHANCEMENT: Fixed typos in some block descriptions. #2064 (@mircobabini)
+* BUG FIX: Fixed issue where the digest email cron and some others were running more often than intended. #2070 (@mircobabini)
+
 = 2.8 - 2022-05-05 =
 * FEATURE: Added refunds buttons for Stripe and Paypal Express orders. #1948 (@JarrydLong)
 * FEATURE: Released Beta version of Stripe Checkout. Add `define('PMPRO_STRIPE_CHECKOUT_BETA_ENABLED', true);` to your wp-config.php to enable this gateway during the beta. #1923 (@dlparker1005)

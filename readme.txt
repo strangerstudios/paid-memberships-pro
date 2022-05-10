@@ -4,7 +4,7 @@ Tags: memberships, members, subscriptions, ecommerce, user registration, member,
 Requires at least: 5.2
 Tested up to: 5.9.3
 Requires PHP: 5.6
-Stable tag: 2.8
+Stable tag: 2.8.1
 
 WordPress membership plugin: restrict content, accept member subscriptions with recurring payment. Includes user registration, login, & profile fields
 
@@ -156,6 +156,10 @@ Not sure? You can find out by doing a bit a research.
 9. Membership Account page, display all sections or show specific sections using shortcode attributes.
 
 == Changelog ==
+= 2.8.1 - 2022-05-10 =
+* BUG FIX/ENHANCEMENT: Fixed typos in some block descriptions. #2064 (@mircobabini)
+* BUG FIX: Fixed issue where the digest email cron and some others were running more often than intended. #2070 (@mircobabini)
+
 = 2.8 - 2022-05-05 =
 * FEATURE: Added refunds buttons for Stripe and Paypal Express orders. #1948 (@JarrydLong)
 * FEATURE: Released Beta version of Stripe Checkout. Add `define('PMPRO_STRIPE_CHECKOUT_BETA_ENABLED', true);` to your wp-config.php to enable this gateway during the beta. #1923 (@dlparker1005)
