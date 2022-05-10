@@ -2,14 +2,14 @@
 # This file is distributed under the same license as the Paid Memberships Pro plugin.
 msgid ""
 msgstr ""
-"Project-Id-Version: Paid Memberships Pro 2.8\n"
+"Project-Id-Version: Paid Memberships Pro 2.8.1\n"
 "Report-Msgid-Bugs-To: info@paidmembershipspro.com\n"
 "Last-Translator: Paid Memberships Pro <info@paidmembershipspro.com>\n"
 "Language-Team: Paid Memberships Pro <info@paidmembershipspro.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2022-05-05T20:37:10+00:00\n"
+"POT-Creation-Date: 2022-05-10T14:47:42+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.6.0\n"
 "X-Domain: paid-memberships-pro\n"
@@ -334,6 +334,7 @@ msgstr "WordPress.org"
 #: includes/profile.php:556
 #: includes/profile.php:557
 #: includes/profile.php:558
+#: shortcodes/pmpro_account.php:261
 msgid "N/A"
 msgstr "Nicht verfügbar"
 
@@ -591,6 +592,7 @@ msgstr "Zahlungsdienstleister &amp; SSL"
 #: adminpages/orders.php:1556
 #: includes/profile.php:478
 #: includes/profile.php:798
+#: shortcodes/pmpro_account.php:181
 msgid "Email"
 msgstr "E-Mail"
 
@@ -3456,6 +3458,7 @@ msgstr "%d Mitglieder gefunden."
 #: adminpages/emailtemplates.php:122
 #: adminpages/reports/login.php:183
 #: classes/class.memberorder.php:1012
+#: shortcodes/pmpro_account.php:180
 msgid "Username"
 msgstr "Benutzername"
 
@@ -4178,6 +4181,7 @@ msgstr "Ablaufdatum Jahr"
 #: adminpages/orders.php:1434
 #: includes/profile.php:455
 #: includes/profile.php:541
+#: shortcodes/pmpro_account.php:233
 msgid "Status"
 msgstr "Status"
 
@@ -4390,6 +4394,7 @@ msgstr "Vom Zahlungsdienstleister generiert. Hilfreich um Zahlungen zuzuordnen."
 #: adminpages/dashboard.php:297
 #: adminpages/orders.php:1435
 #: includes/profile.php:449
+#: shortcodes/pmpro_account.php:230
 msgid "Date"
 msgstr "Datum"
 
@@ -11320,6 +11325,8 @@ msgstr "Bestelldatum"
 #: adminpages/reports/login.php:185
 #: includes/profile.php:451
 #: includes/profile.php:536
+#: shortcodes/pmpro_account.php:231
+#: js/blocks.build.js:1
 msgid "Level"
 msgstr "Paket"
 
@@ -12485,6 +12492,7 @@ msgstr "Unten finden Sie Details zu Ihrem Mitgliedskonto. Eine Wilkommens-E-Mail
 #: pages/confirmation.php:138
 #: shortcodes/pmpro_account.php:247
 #: pages/confirmation.php:65
+#: shortcodes/pmpro_account.php:254
 msgid "Pending"
 msgstr "Ausstehend"
 
@@ -13177,6 +13185,7 @@ msgstr "Ändern"
 #: shortcodes/pmpro_account.php:92
 #: shortcodes/pmpro_account.php:93
 #: shortcodes/pmpro_account.php:158
+#: shortcodes/pmpro_account.php:165
 msgid "View all Membership Options"
 msgstr "Alle Mitgliedschafts-Optionen zeigen"
 
@@ -13188,6 +13197,7 @@ msgstr "Alle Mitgliedschafts-Optionen zeigen"
 #: shortcodes/pmpro_account.php:101
 #: shortcodes/pmpro_account.php:102
 #: shortcodes/pmpro_account.php:167
+#: shortcodes/pmpro_account.php:174
 msgid "My Account"
 msgstr "Mein Konto"
 
@@ -13199,6 +13209,7 @@ msgstr "Mein Konto"
 #: shortcodes/pmpro_account.php:112
 #: shortcodes/pmpro_account.php:113
 #: shortcodes/pmpro_account.php:191
+#: shortcodes/pmpro_account.php:198
 msgid "Edit Profile"
 msgstr "Profil editieren"
 
@@ -13216,6 +13227,7 @@ msgstr "Profil editieren"
 #: includes/profile.php:921
 #: includes/profile.php:920
 #: includes/profile.php:957
+#: shortcodes/pmpro_account.php:202
 msgid "Change Password"
 msgstr "Passwort ändern"
 
@@ -13227,6 +13239,7 @@ msgstr "Passwort ändern"
 #: shortcodes/pmpro_account.php:120
 #: shortcodes/pmpro_account.php:121
 #: shortcodes/pmpro_account.php:219
+#: shortcodes/pmpro_account.php:226
 msgid "Past Invoices"
 msgstr "Bisherige Rechnungen"
 
@@ -13236,6 +13249,7 @@ msgstr "Bisherige Rechnungen"
 #: shortcodes/pmpro_account.php:126
 #: shortcodes/pmpro_account.php:127
 #: shortcodes/pmpro_account.php:225
+#: shortcodes/pmpro_account.php:232
 msgid "Amount"
 msgstr "Betrag"
 
@@ -13247,6 +13261,7 @@ msgstr "Betrag"
 #: shortcodes/pmpro_account.php:154
 #: shortcodes/pmpro_account.php:155
 #: shortcodes/pmpro_account.php:264
+#: shortcodes/pmpro_account.php:271
 msgid "View All Invoices"
 msgstr "Alle Rechnungen anzeigen"
 
@@ -13258,6 +13273,7 @@ msgstr "Alle Rechnungen anzeigen"
 #: shortcodes/pmpro_account.php:161
 #: shortcodes/pmpro_account.php:162
 #: shortcodes/pmpro_account.php:271
+#: shortcodes/pmpro_account.php:278
 msgid "Member Links"
 msgstr "Mitglieder Links"
 
@@ -17533,6 +17549,7 @@ msgstr "Willkommen, %s"
 #: includes/menus.php:79
 #: includes/menus.php:169
 #: shortcodes/pmpro_account.php:198
+#: shortcodes/pmpro_account.php:205
 msgid "Log Out"
 msgstr "Abmelden"
 
@@ -17569,6 +17586,7 @@ msgstr "Schließen"
 #: pages/invoice.php:43
 #: shortcodes/pmpro_account.php:244
 #: adminpages/orders.php:1705
+#: shortcodes/pmpro_account.php:251
 msgid "Paid"
 msgstr "Bezahlt"
 
@@ -17769,6 +17787,7 @@ msgid "A member's Braintree subscription has expired at %s"
 msgstr "Das Braintree-Abonnement eines Mitglieds ist bei %s abgelaufen"
 
 #: shortcodes/pmpro_account.php:249
+#: shortcodes/pmpro_account.php:256
 msgid "Refunded"
 msgstr "Rückerstattet"
 
@@ -17951,6 +17970,7 @@ msgstr "Paket"
 #: js/blocks.build.js:790
 #: js/blocks.build.js:891
 #: blocks/checkout-button/block.js:71
+#: js/blocks.build.js:1
 msgid "Button Text"
 msgstr "Button Text"
 
@@ -17959,21 +17979,25 @@ msgstr "Button Text"
 #: js/blocks.build.js:807
 #: js/blocks.build.js:910
 #: blocks/checkout-button/block.js:82
+#: js/blocks.build.js:1
 msgid "CSS Class"
 msgstr "CSS Klasse"
 
 #: blocks/checkout-button/inspector.js:32
 #: js/blocks.build.js:892
+#: js/blocks.build.js:1
 msgid "Text for checkout button"
 msgstr "Text für die Schaltfläche „Buchen“"
 
 #: blocks/checkout-button/inspector.js:40
 #: js/blocks.build.js:901
+#: js/blocks.build.js:1
 msgid "The level to link to for checkout button"
 msgstr "Die Ebene, auf die für die Schaltfläche \"Buchen\" verlinkt werden soll"
 
 #: blocks/checkout-button/inspector.js:49
 #: js/blocks.build.js:911
+#: js/blocks.build.js:1
 msgid "Additional styling for checkout button"
 msgstr "Zusätzliches Styling für Buchungs-Schaltfläche"
 
@@ -18273,6 +18297,7 @@ msgid "Missing key."
 msgstr "Fehlender Schlüssel."
 
 #: shortcodes/pmpro_account.php:145
+#: shortcodes/pmpro_account.php:152
 msgctxt "A dash is shown when there is no expiration date."
 msgid "&#8212;"
 msgstr ""
@@ -19495,4 +19520,20 @@ msgstr ""
 #: blocks/membership/block.js:116
 #: blocks/membership/block.js:130
 msgid "Membership Required"
+msgstr ""
+
+#: blocks/account-profile-section/block.js:24
+msgid "Dynamic page section that displays the member's profile as read-only information with a link to edit fields or change their password."
+msgstr ""
+
+#: blocks/login/block.js:26
+msgid "Dynamic form that allows users to log in or recover a lost password. Logged in users can see a welcome message with the selected custom menu."
+msgstr ""
+
+#: blocks/member-profile-edit/block.js:20
+msgid "Dynamic form that allows the current logged in member to edit their default user profile information and any custom user profile fields."
+msgstr ""
+
+#: blocks/membership/block.js:42
+msgid "conditional"
 msgstr ""

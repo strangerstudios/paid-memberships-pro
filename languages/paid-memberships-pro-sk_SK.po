@@ -2,14 +2,14 @@
 # This file is distributed under the same license as the Paid Memberships Pro plugin.
 msgid ""
 msgstr ""
-"Project-Id-Version: Paid Memberships Pro 2.8\n"
+"Project-Id-Version: Paid Memberships Pro 2.8.1\n"
 "Report-Msgid-Bugs-To: info@paidmembershipspro.com\n"
 "Last-Translator: Paid Memberships Pro <info@paidmembershipspro.com>\n"
 "Language-Team: Paid Memberships Pro <info@paidmembershipspro.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2022-05-05T20:37:46+00:00\n"
+"POT-Creation-Date: 2022-05-10T14:48:22+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.6.0\n"
 "X-Domain: paid-memberships-pro\n"
@@ -221,6 +221,7 @@ msgstr ""
 #: adminpages/orders.php:1556
 #: includes/profile.php:478
 #: includes/profile.php:798
+#: shortcodes/pmpro_account.php:181
 msgid "Email"
 msgstr ""
 
@@ -1990,6 +1991,7 @@ msgstr ""
 #: adminpages/reports/login.php:183
 #: adminpages/emailtemplates.php:122
 #: classes/class.memberorder.php:1012
+#: shortcodes/pmpro_account.php:180
 msgid "Username"
 msgstr "Používateľské meno"
 
@@ -2499,6 +2501,7 @@ msgstr ""
 #: adminpages/orders.php:1434
 #: includes/profile.php:455
 #: includes/profile.php:541
+#: shortcodes/pmpro_account.php:233
 msgid "Status"
 msgstr ""
 
@@ -2675,6 +2678,7 @@ msgstr ""
 #: adminpages/orders.php:1342
 #: adminpages/orders.php:1435
 #: includes/profile.php:449
+#: shortcodes/pmpro_account.php:230
 msgid "Date"
 msgstr ""
 
@@ -5336,6 +5340,8 @@ msgstr "Vaše členstvo je <strong>aktívne</strong>."
 #: adminpages/orders.php:1429
 #: includes/profile.php:451
 #: includes/profile.php:536
+#: shortcodes/pmpro_account.php:231
+#: js/blocks.build.js:1
 msgid "Level"
 msgstr "Úroveň"
 
@@ -5406,6 +5412,7 @@ msgstr "Vaša prvá %d platba bude v cene %s."
 #: pages/account.php:50
 #: pages/account.php:46
 #: shortcodes/pmpro_account.php:167
+#: shortcodes/pmpro_account.php:174
 msgid "My Account"
 msgstr "Moj účet"
 
@@ -5413,6 +5420,7 @@ msgstr "Moj účet"
 #: pages/account.php:59
 #: pages/account.php:55
 #: shortcodes/pmpro_account.php:191
+#: shortcodes/pmpro_account.php:198
 msgid "Edit Profile"
 msgstr "Upraviť profil"
 
@@ -5428,6 +5436,7 @@ msgstr "Upraviť profil"
 #: includes/profile.php:917
 #: includes/profile.php:920
 #: includes/profile.php:957
+#: shortcodes/pmpro_account.php:202
 msgid "Change Password"
 msgstr "Zmeniť heslo"
 
@@ -5463,6 +5472,7 @@ msgstr "Upraviť fakturačné údaje"
 #: pages/account.php:129
 #: pages/account.php:125
 #: shortcodes/pmpro_account.php:219
+#: shortcodes/pmpro_account.php:226
 msgid "Past Invoices"
 msgstr "Predchádzajúce faktúry"
 
@@ -5470,6 +5480,7 @@ msgstr "Predchádzajúce faktúry"
 #: pages/account.php:144
 #: pages/account.php:140
 #: shortcodes/pmpro_account.php:264
+#: shortcodes/pmpro_account.php:271
 msgid "View All Invoices"
 msgstr "Zobraziť všetky faktúry"
 
@@ -5477,6 +5488,7 @@ msgstr "Zobraziť všetky faktúry"
 #: pages/account.php:150
 #: pages/account.php:146
 #: shortcodes/pmpro_account.php:271
+#: shortcodes/pmpro_account.php:278
 msgid "Member Links"
 msgstr "Členské linky"
 
@@ -6152,6 +6164,7 @@ msgstr "Nižšie sú uvedené informácie o vašom členskom účte, Uvítací e
 #: pages/confirmation.php:138
 #: shortcodes/pmpro_account.php:247
 #: pages/confirmation.php:65
+#: shortcodes/pmpro_account.php:254
 msgid "Pending"
 msgstr "Čakajúce"
 
@@ -6857,6 +6870,7 @@ msgstr ""
 #: includes/profile.php:556
 #: includes/profile.php:557
 #: includes/profile.php:558
+#: shortcodes/pmpro_account.php:261
 msgid "N/A"
 msgstr ""
 
@@ -12320,6 +12334,7 @@ msgstr ""
 #: includes/menus.php:79
 #: includes/menus.php:169
 #: shortcodes/pmpro_account.php:198
+#: shortcodes/pmpro_account.php:205
 msgid "Log Out"
 msgstr ""
 
@@ -12493,6 +12508,7 @@ msgstr ""
 #: pages/invoice.php:43
 #: shortcodes/pmpro_account.php:244
 #: adminpages/orders.php:1705
+#: shortcodes/pmpro_account.php:251
 msgid "Paid"
 msgstr ""
 
@@ -12840,14 +12856,17 @@ msgid "Change"
 msgstr ""
 
 #: shortcodes/pmpro_account.php:158
+#: shortcodes/pmpro_account.php:165
 msgid "View all Membership Options"
 msgstr ""
 
 #: shortcodes/pmpro_account.php:225
+#: shortcodes/pmpro_account.php:232
 msgid "Amount"
 msgstr ""
 
 #: shortcodes/pmpro_account.php:249
+#: shortcodes/pmpro_account.php:256
 msgid "Refunded"
 msgstr ""
 
@@ -13030,6 +13049,7 @@ msgstr ""
 #: js/blocks.build.js:790
 #: js/blocks.build.js:891
 #: blocks/checkout-button/block.js:71
+#: js/blocks.build.js:1
 msgid "Button Text"
 msgstr ""
 
@@ -13038,21 +13058,25 @@ msgstr ""
 #: js/blocks.build.js:807
 #: js/blocks.build.js:910
 #: blocks/checkout-button/block.js:82
+#: js/blocks.build.js:1
 msgid "CSS Class"
 msgstr ""
 
 #: blocks/checkout-button/inspector.js:32
 #: js/blocks.build.js:892
+#: js/blocks.build.js:1
 msgid "Text for checkout button"
 msgstr ""
 
 #: blocks/checkout-button/inspector.js:40
 #: js/blocks.build.js:901
+#: js/blocks.build.js:1
 msgid "The level to link to for checkout button"
 msgstr ""
 
 #: blocks/checkout-button/inspector.js:49
 #: js/blocks.build.js:911
+#: js/blocks.build.js:1
 msgid "Additional styling for checkout button"
 msgstr ""
 
@@ -13372,6 +13396,7 @@ msgid "Missing key."
 msgstr ""
 
 #: shortcodes/pmpro_account.php:145
+#: shortcodes/pmpro_account.php:152
 msgctxt "A dash is shown when there is no expiration date."
 msgid "&#8212;"
 msgstr ""
@@ -14778,4 +14803,20 @@ msgstr ""
 #: blocks/membership/block.js:116
 #: blocks/membership/block.js:130
 msgid "Membership Required"
+msgstr ""
+
+#: blocks/account-profile-section/block.js:24
+msgid "Dynamic page section that displays the member's profile as read-only information with a link to edit fields or change their password."
+msgstr ""
+
+#: blocks/login/block.js:26
+msgid "Dynamic form that allows users to log in or recover a lost password. Logged in users can see a welcome message with the selected custom menu."
+msgstr ""
+
+#: blocks/member-profile-edit/block.js:20
+msgid "Dynamic form that allows the current logged in member to edit their default user profile information and any custom user profile fields."
+msgstr ""
+
+#: blocks/membership/block.js:42
+msgid "conditional"
 msgstr ""
