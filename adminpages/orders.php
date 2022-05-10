@@ -1497,7 +1497,7 @@ if ( function_exists( 'pmpro_add_email_order_modal' ) ) {
 								'id'	 => sprintf(
 									// translators: %s is the Order ID.
 									__( 'ID: %s', 'paid-memberships-pro' ),
-									esc_attr( $order->id ),
+									esc_attr( $order->id )
 								),
 								'edit'   => sprintf(
 									'<a title="%1$s" href="%2$s">%3$s</a>',
