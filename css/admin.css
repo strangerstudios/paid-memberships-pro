@@ -634,6 +634,7 @@ tr.pmpro_settings_divider td {
 .pmpro_admin .pmpro_message {
 	background: #FFF;
 	border-left: 4px solid #FFF;
+	color: #3c434a;
 	margin-right: 15px;
 	padding: 15px;
 }
@@ -853,6 +854,9 @@ p.pmpro_meta_notice {
 }
 .memberships_page_pmpro-license .pmpro_icon {
 	margin-top: 20px;
+}
+.memberships_page_pmpro-license .about-wrap .about-text {
+	color: #3c434a;
 }
 
 /* misc */

@@ -268,7 +268,7 @@
 							<!-- For reference, removed the Yes - Free memberships only. option -->
 							<option value="2" <?php if( $recaptcha > 0 ) { ?>selected="selected"<?php } ?>><?php esc_html_e('Yes - All memberships.', 'paid-memberships-pro' );?></option>
 						</select>
-						<p class="description"><?php esc_html_e('A free reCAPTCHA key is required.', 'paid-memberships-pro' );?> <a href="https://www.google.com/recaptcha/admin/create"><?php esc_html_e('Click here to signup for reCAPTCHA', 'paid-memberships-pro' );?></a>.</p>
+						<p class="description"><?php esc_html_e('A free reCAPTCHA key is required.', 'paid-memberships-pro' );?> <a href="https://www.google.com/recaptcha/admin/create" target="_blank" rel="nofollow noopener"><?php esc_html_e('Click here to signup for reCAPTCHA', 'paid-memberships-pro' );?></a>.</p>
 					</td>
 				</tr>
 			</tbody>
@@ -513,7 +513,7 @@ if ( function_exists( 'pmpro_displayAds' ) && pmpro_displayAds() ) {
 						</p>
 						<p class="description">
 							<?php esc_html_e( 'Sharing non-sensitive membership site data helps us analyze how our plugin is meeting your needs and identify opportunities to improve. Read about what usage data is tracked:', 'paid-memberships-pro' ); ?>
-							<a href="https://www.paidmembershipspro.com/privacy-policy/usage-tracking/" title="<?php esc_attr_e( 'PaidMembershipsPro.com Usage Tracking', 'paid-memberships-pro' ); ?>"><?php esc_html_e( 'Paid Memberships Pro Usage Tracking', 'paid-memberships-pro' ); ?></a>.
+							<a href="https://www.paidmembershipspro.com/privacy-policy/usage-tracking/" title="<?php esc_attr_e( 'PaidMembershipsPro.com Usage Tracking', 'paid-memberships-pro' ); ?>" target="_blank" rel="nofollow noopener"><?php esc_html_e( 'Paid Memberships Pro Usage Tracking', 'paid-memberships-pro' ); ?></a>.
 						</p>
 					</td>
 				</tr>

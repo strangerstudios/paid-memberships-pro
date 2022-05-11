@@ -8,7 +8,7 @@
 /**
  * Get the list of registered crons for Paid Memberships Pro.
  *
- * @since TBD
+ * @since 2.8
  *
  * @return array The list of registered crons for Paid Memberships Pro.
  */
@@ -36,7 +36,7 @@ function pmpro_get_crons() {
 	/**
 	 * Allow filtering the list of registered crons for Paid Memberships Pro.
 	 *
-	 * @since TBD
+	 * @since 2.8
 	 *
 	 * @param array $crons The list of registered crons for Paid Memberships Pro.
 	 */
@@ -48,8 +48,8 @@ function pmpro_get_crons() {
 			$cron['timestamp'] = current_time( 'timestamp' );
 		}
 
-		if ( empty( $cron['recurrence'] ) ) {
-			$cron['recurrence'] = 'hourly';
+		if ( empty( $cron['interval'] ) ) {
+			$cron['interval'] = 'hourly';
 		}
 
 		if ( empty( $cron['args'] ) ) {
@@ -65,20 +65,31 @@ function pmpro_get_crons() {
 /**
  * Maybe schedule our registered crons.
  *
- * @since TBD
+ * @since 2.8
  */
 function pmpro_maybe_schedule_crons() {
 	$crons = pmpro_get_crons();
 
 	foreach ( $crons as $hook => $cron ) {
-		pmpro_maybe_schedule_event( $cron['timestamp'], $cron['recurrence'], $hook, $cron['args'] );
+		pmpro_maybe_schedule_event( $cron['timestamp'], $cron['interval'], $hook, $cron['args'] );
+	}
+}
+
+/**
+ * Clear all PMPro related crons.
+ * @since 2.8.1
+ */
+function pmpro_clear_crons() {	
+	$crons = array_keys( pmpro_get_crons() );
+	foreach( $crons as $cron ) {
+		wp_clear_scheduled_hook( $cron );
 	}
 }
 
 /**
  * Handle rescheduling Paid Memberships Pro crons when checking for ready cron tasks.
  *
- * @since TBD
+ * @since 2.8
  *
  * @param null|array[] $pre Array of ready cron tasks to return instead. Default null
  *                          to continue using results from _get_cron_array().
@@ -97,7 +108,7 @@ add_filter( 'pre_get_ready_cron_jobs', 'pmpro_handle_schedule_crons_on_cron_read
 /**
  * Schedule a periodic event unless one with the same hook is already scheduled.
  *
- * @since TBD
+ * @since 2.8
  *
  * @see  wp_schedule_event()
  * @link https://developer.wordpress.org/reference/functions/wp_schedule_event/

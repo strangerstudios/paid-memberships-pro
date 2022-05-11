@@ -1081,7 +1081,7 @@
 			/**
 			 * Allow performing actions using the http post request's response.
 			 *
-			 * @since TBD
+			 * @since 2.8
 			 *
 			 * @param array $httpParsedResponseAr The parsed response.
 			 * @param string $methodName_ The NVP API name.
@@ -1094,9 +1094,9 @@
 		/**
 		 * Refunds an order (only supports full amounts)
 		 *
-		 * @param bool    Status of the refund (default: false)
-		 * @param object  The Member Order Object
-		 * @since TBD
+		 * @param bool    $succes Status of the refund (default: false)
+		 * @param object  $morder The Member Order Object
+		 * @since 2.8
 		 * 
 		 * @return bool   Status of the processed refund
 		 */
@@ -1130,11 +1130,11 @@
 				$user = get_user_by( 'id', $morder->user_id );
 				//send an email to the member
 				$myemail = new PMProEmail();
-				$myemail->sendRefundedEmail( $user );
+				$myemail->sendRefundedEmail( $user, $morder );
 
 				//send an email to the admin
 				$myemail = new PMProEmail();
-				$myemail->sendRefundedAdminEmail( $user, $morder->membership_id );
+				$myemail->sendRefundedAdminEmail( $user, $morder );
 
 			} else {
 				//The refund failed, so lets return the gateway message

@@ -1066,7 +1066,7 @@ class PMProGateway_stripe extends PMProGateway {
 	/**
 	 * Register the cron we need for Stripe subscription updates.
 	 *
-	 * @since TBD
+	 * @since 2.8
 	 *
 	 * @param array $crons The list of registered crons for Paid Memberships Pro.
 	 *
@@ -1518,7 +1518,7 @@ class PMProGateway_stripe extends PMProGateway {
 	 * Show warning at checkout if Stripe Checkout is being used and
 	 * the last order is pending.
 	 *
-	 * @since TBD
+	 * @since 2.8
 	 *
 	 * @param bool $show Whether to show the default payment information fields.
 	 * @return bool
@@ -1551,7 +1551,7 @@ class PMProGateway_stripe extends PMProGateway {
 	/**
 	 * Instead of changeing membership levels, send users to Stripe to pay.
 	 *
-	 * @since TBD
+	 * @since 2.8
 	 *
 	 * @param int         $user_id ID of user who is checking out.
 	 * @param MemberOrder $morder  MemberOrder object for this checkout.
@@ -1652,9 +1652,23 @@ class PMProGateway_stripe extends PMProGateway {
 				'price'    => $recurring_payment_price->id,
 				'quantity' => 1,
 			);
-			$subscription_data = array(
-				'trial_period_days' => $stripe->calculate_trial_period_days( $morder ),
-			);
+			$subscription_data = array();
+
+			// Check if we can combine initial and recurring payments.
+			$filtered_trial_period_days = $stripe->calculate_trial_period_days( $morder );
+			if (
+				empty( $order->TrialBillingCycles ) && // Check if there is a trial period.
+				$filtered_trial_period_days === $stripe->calculate_trial_period_days( $morder, false ) && // Check if the trial period is the same as the filtered trial period.
+				( ! empty( $initial_payment_amount ) && $initial_payment_amount === $recurring_payment_amount ) // Check if the initial payment and recurring payment prices are the same.
+				) {
+				// We can combine the initial payment and the recurring payment.
+				array_shift( $line_items );
+				$payment_intent_data = null;
+			} else {
+				// We need to set the trial period days and send initial and recurring payments as separate line items.
+				$subscription_data['trial_period_days'] = $filtered_trial_period_days;
+			}
+
 			// Add application fee for Stripe Connect.
 			$application_fee_percentage = self::get_application_fee_percentage();
 			if ( ! empty( $application_fee_percentage ) ) {
@@ -1679,7 +1693,7 @@ class PMProGateway_stripe extends PMProGateway {
 		$checkout_session_params = array(
 			'customer' => $customer->id,
 			'line_items' => $line_items,
-			'mode' => empty( $subscription_data ) ? 'payment' : 'subscription',
+			'mode' => isset( $subscription_data ) ? 'subscription' : 'payment',
 			'automatic_tax' => $automatic_tax,
 			'tax_id_collection' => $tax_id_collection,
 			'billing_address_collection' => $billing_address_collection,
@@ -1718,7 +1732,7 @@ class PMProGateway_stripe extends PMProGateway {
 	 * If using Stripe Checkout, either redirect the user to the Stripe Customer
 	 * portal or set up our update billing page with the onsite payment fields.
 	 *
-	 * @since TBD
+	 * @since 2.8
 	 */
 	public static function pmpro_billing_preheader_stripe_checkout() {
 		if ( 'portal' === pmpro_getOption( 'stripe_update_billing_flow' ) ) {
@@ -2157,7 +2171,7 @@ class PMProGateway_stripe extends PMProGateway {
 	/**
 	 * Get the URL for a customer's Stripe Customer Portal.
 	 *
-	 * @since TBD
+	 * @since 2.8
 	 *
 	 * @param string $customer_id Customer to get the URL for.
 	 * @return string URL for customer portal, or empty String if not found.
@@ -2808,9 +2822,10 @@ class PMProGateway_stripe extends PMProGateway {
 	 * @since 2.7.0.
 	 *
 	 * @param MemberOrder $order to calculate trial period days for.
+	 * @param bool        $filtered whether to filter the result.
 	 * @return int trial period days.
 	 */
-	private function calculate_trial_period_days( $order ) {
+	private function calculate_trial_period_days( $order, $filtered = true ) {
 		// Use a trial period to set the first recurring payment date.
 		if ( $order->BillingPeriod == "Year" ) {
 			$trial_period_days = $order->BillingFrequency * 365;    //annual
@@ -2831,7 +2846,9 @@ class PMProGateway_stripe extends PMProGateway {
 		$order->ProfileStartDate = date_i18n( "Y-m-d\TH:i:s", strtotime( "+ " . $trial_period_days . " Day", current_time( "timestamp" ) ) );
 
 		//filter the start date
-		$order->ProfileStartDate = apply_filters( "pmpro_profile_start_date", $order->ProfileStartDate, $order );
+		if ( $filtered ) {
+			$order->ProfileStartDate = apply_filters( "pmpro_profile_start_date", $order->ProfileStartDate, $order );
+		}
 
 		//convert back to days
 		$trial_period_days = ceil( abs( strtotime( date_i18n( "Y-m-d\TH:i:s" ), current_time( "timestamp" ) ) - strtotime( $order->ProfileStartDate, current_time( "timestamp" ) ) ) / 86400 );
@@ -4715,9 +4732,9 @@ class PMProGateway_stripe extends PMProGateway {
 	/**
 	 * Refunds an order (only supports full amounts)
 	 *
-	 * @param bool    Status of the refund (default: false)
-	 * @param object  The Member Order Object
-	 * @since TBD
+	 * @param bool    $success Status of the refund (default: false)
+	 * @param object  $order The Member Order Object
+	 * @since 2.8
 	 * 
 	 * @return bool   Status of the processed refund
 	 */
@@ -4764,7 +4781,7 @@ class PMProGateway_stripe extends PMProGateway {
 			] );			
 
 			//Make sure we're refunding an order that was successful
-			if ( !in_array( $refund->status, pmpro_disallowed_refund_statuses() ) ) {
+			if ( $refund->status != 'failed' ) {
 				$order->status = 'refunded';	
 
 				$success = true;
@@ -4776,15 +4793,14 @@ class PMProGateway_stripe extends PMProGateway {
 				$user = get_user_by( 'id', $order->user_id );
 				//send an email to the member
 				$myemail = new PMProEmail();
-				$myemail->sendRefundedEmail( $user );
+				$myemail->sendRefundedEmail( $user, $order );
 
 				//send an email to the admin
 				$myemail = new PMProEmail();
-				$myemail->sendRefundedAdminEmail( $user, $order->membership_id );
+				$myemail->sendRefundedAdminEmail( $user, $order );
 
 			} else {
 				$order->notes = trim( $order->notes . ' ' . __('Admin: An error occured while attempting to process this refund.', 'paid-memberships-pro' ) );
-
 			}
 
 		} catch ( \Throwable $e ) {			

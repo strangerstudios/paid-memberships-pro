@@ -417,33 +417,39 @@
 
 			//We've got the right order	
 			if( !empty( $morder->id ) ) {
-
-				if( $morder->status == 'refunded' ) {
-					//Refunded already, don't do this again
-					$logstr .= sprintf( 'Webhook: Order ID %1$s with transaction ID %2$s was already in refund status.', $morder->id, $payment_transaction_id );
+				// Ingore orders already in refund status.
+				if( $morder->status == 'refunded' ) {					
+					$logstr .= sprintf( 'Webhook: Order ID %1$s with transaction ID %2$s was already in refund status.', $morder->id, $payment_transaction_id );									
 					pmpro_stripeWebhookExit();
 				}
-					
-				$morder->status = 'refunded';
-
-				// translators: %1$s is the date of the refund. %2$s is the transaction ID.				
-				$logstr .= sprintf( 'Webhook: Order ID %1$s successfully refunded on %2$s for transaction ID %3$s at the gateway.', $morder->id, date_i18n('Y-m-d H:i:s'), $payment_transaction_id );
-				//Add to order notes. 
 				
-				// translators: %1$s is the date of the refund. %2$s is the transaction ID.
+				// Handle partial refunds. Only updating the log and notes for now.
+				if ( $pmpro_stripe_event->data->object->amount_refunded < $pmpro_stripe_event->data->object->amount ) {
+					$logstr .= sprintf( 'Webhook: Order ID %1$s with transaction ID %2$s was partially refunded. The order will need to be updated in the WP dashboard.', $morder->id, $payment_transaction_id );
+					$morder->notes = trim( $morder->notes . ' ' . sprintf( 'Webhook: Order ID %1$s was partially refunded on %2$s for transaction ID %3$s at the gateway.', $morder->id, date_i18n('Y-m-d H:i:s'), $payment_transaction_id ) );
+					$morder->SaveOrder();
+					pmpro_stripeWebhookExit();
+				}
+				
+				// Full refund.	
+				$morder->status = 'refunded';
+				
+				$logstr .= sprintf( 'Webhook: Order ID %1$s successfully refunded on %2$s for transaction ID %3$s at the gateway.', $morder->id, date_i18n('Y-m-d H:i:s'), $payment_transaction_id );
+
+				// Add to order notes.
 				$morder->notes = trim( $morder->notes . ' ' . sprintf( 'Webhook: Order ID %1$s successfully refunded on %2$s for transaction ID %3$s at the gateway.', $morder->id, date_i18n('Y-m-d H:i:s'), $payment_transaction_id ) );
 
 				$morder->SaveOrder();
 
 				$user = get_user_by( 'email', $morder->Email );
 
-				//send an email to the member
+				// Send an email to the member.
 				$myemail = new PMProEmail();
-				$myemail->sendRefundedEmail( $user );
+				$myemail->sendRefundedEmail( $user, $morder );
 
-				//send an email to the admin
+				// Send an email to the admin.
 				$myemail = new PMProEmail();
-				$myemail->sendRefundedAdminEmail( $user, $morder->membership_id );
+				$myemail->sendRefundedAdminEmail( $user, $morder );
 
 				pmpro_stripeWebhookExit();
 			} else {
@@ -807,7 +813,7 @@
  * 7. Run pmpro_after_checkout.
  * 8. Send checkout emails.
  *
- * @since TBD
+ * @since 2.8
  *
  * @param MemberOrder $morder The order for the checkout being completed.
  * @return bool
@@ -937,7 +943,7 @@ function pmpro_stripe_webhook_change_membership_level( $morder ) {
 /**
  * Update order information from a Stripe payment method.
  *
- * @since TBD
+ * @since 2.8
  *
  * @param MemberOrder          $order            The order to update.
  * @param Stripe_PaymentMethod $payment_method   The payment method object.
