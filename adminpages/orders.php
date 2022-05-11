@@ -1447,7 +1447,7 @@ if ( function_exists( 'pmpro_add_email_order_modal' ) ) {
 				$order->getUser();
 				?>
 				<tr>
-					<td class="column-code has-row-actions">
+					<td class="column-code has-row-actions" data-colname="<?php esc_attr_e( 'Code', 'paid-memberships-pro' ); ?>">
 						<strong><a href="admin.php?page=pmpro-orders&order=<?php echo esc_attr( $order->id ); ?>"><?php echo esc_html( $order->code ); ?></a></strong>
 						<div class="row-actions">
 							<?php
@@ -1591,7 +1591,7 @@ if ( function_exists( 'pmpro_add_email_order_modal' ) ) {
 							?>
 						</div>
 					</td>
-					<td class="column-username">
+					<td class="column-username" data-colname="<?php esc_attr_e( 'User', 'paid-memberships-pro' ); ?>">
 						<?php $order->getUser(); ?>
 						<?php if ( ! empty( $order->user ) ) { ?>
 							<a href="user-edit.php?user_id=<?php echo esc_attr( $order->user->ID ); ?>"><?php echo esc_html( $order->user->user_login ); ?></a><br />
@@ -1603,7 +1603,7 @@ if ( function_exists( 'pmpro_add_email_order_modal' ) ) {
 						<?php } ?>
 					</td>
 					<?php do_action( 'pmpro_orders_extra_cols_body', $order ); ?>
-					<td class="column-level">
+					<td class="column-level" data-colname="<?php esc_attr_e( 'Level', 'paid-memberships-pro' ); ?>">
 						<?php
 							$level = pmpro_getLevel( $order->membership_id );
 							if ( ! empty( $level ) ) {
@@ -1615,8 +1615,8 @@ if ( function_exists( 'pmpro_add_email_order_modal' ) ) {
 							}
 						?>
 					</td>
-					<td class="column-total"><?php echo pmpro_escape_price( pmpro_formatPrice( $order->total ) ); ?></td>
-					<td class="column-billing">
+					<td class="column-total" data-colname="<?php esc_attr_e( 'Total', 'paid-memberships-pro' ); ?>"><?php echo pmpro_escape_price( pmpro_formatPrice( $order->total ) ); ?></td>
+					<td class="column-billing" data-colname="<?php esc_attr_e( 'Billing', 'paid-memberships-pro' ); ?>">
 						<?php
 							// Build our return variable.
 							$r = '';
@@ -1664,7 +1664,7 @@ if ( function_exists( 'pmpro_add_email_order_modal' ) ) {
 							echo $r;
 						?>
 					</td>
-					<td class="column-gateway">
+					<td class="column-gateway" data-colname="<?php esc_attr_e( 'Gateway', 'paid-memberships-pro' ); ?>">
 						<?php
 							if ( ! empty( $order->gateway ) ) {
 								if ( ! empty( $pmpro_gateways[$order->gateway] ) ) {
@@ -1680,7 +1680,7 @@ if ( function_exists( 'pmpro_add_email_order_modal' ) ) {
 							}
 						?>
 					</td>
-					<td class="column-transaction-ids">
+					<td class="column-transaction-ids" data-colname="<?php esc_attr_e( 'Transaction IDs', 'paid-memberships-pro' ); ?>">
 						<?php esc_html_e( 'Payment', 'paid-memberships-pro' ); ?>:
 						<?php
 						if ( ! empty( $order->payment_transaction_id ) ) {
@@ -1699,7 +1699,7 @@ if ( function_exists( 'pmpro_add_email_order_modal' ) ) {
 						}
 						?>
 					</td>
-					<td class="column-status">
+					<td class="column-status" data-colname="<?php esc_attr_e( 'Status', 'paid-memberships-pro' ); ?>">
 						<span class="pmpro_order-status pmpro_order-status-<?php esc_attr_e( $order->status ); ?>">
 							<?php if ( in_array( $order->status, array( 'success', 'cancelled' ) ) ) {
 								esc_html_e( 'Paid', 'paid-memberships-pro' );
@@ -1711,7 +1711,7 @@ if ( function_exists( 'pmpro_add_email_order_modal' ) ) {
 							<a href="<?php echo esc_url( add_query_arg( array( 'page' => 'pmpro-orders', 's' => $order->subscription_transaction_id ), admin_url( 'admin.php' ) ) ); ?>" title="<?php esc_attr_e( 'View all orders for this subscription', 'paid-memberships-pro' ); ?>" class="pmpro_order-renewal"><?php esc_html_e( 'Renewal', 'paid-memberships-pro' ); ?></a>
 						<?php } ?>
 					</td>
-					<td class="column-date">
+					<td class="column-date" data-colname="<?php esc_attr_e( 'Date', 'paid-memberships-pro' ); ?>">
 						<?php
 							 echo esc_html( sprintf(
 								// translators: %1$s is the date and %2$s is the time.
@@ -1721,7 +1721,7 @@ if ( function_exists( 'pmpro_add_email_order_modal' ) ) {
 							) ); ?>
 					</td>
 					<?php if ( ! empty( $pmpro_discount_codes ) ) { ?>
-						<td class="column-discount-code">
+						<td class="column-discount-code" data-colname="<?php esc_attr_e( 'Discount Code', 'paid-memberships-pro' ); ?>">
 							<?php if ( $order->getDiscountCode() ) { ?>
 								<a title="<?php esc_attr_e('edit', 'paid-memberships-pro' ); ?>" href="<?php echo esc_url( add_query_arg( array( 'page' => 'pmpro-discountcodes', 'edit' => $order->discount_code->id ), admin_url('admin.php' ) ) ); ?>">
 									<?php echo esc_html( $order->discount_code->code ); ?>
