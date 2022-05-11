@@ -95,87 +95,6 @@ function pmpro_getAddonBySlug( $slug ) {
 	return false;
 }
 
-/**
- * Get Add Ons by license type.
- *
- * @since 2.8.x
- *
- * @param array $license An array of license type for our Add Ons.
- * @param bool $include_hidden Optionally include hidden Add Ons in the return array.
- * @return array $addons An array of all plugin objects found or an empty array if none found.
- */
-function pmpro_get_addons_by_license_types( $license_types = array(), $include_hidden = false ) {
-	// Return if we don't have a license to search.
-	if ( empty( $license_types ) ) {
-		return array();
-	}
-
-	// Get all Add Ons. Return if empty.
-	$addons = pmpro_getAddons();
-	if ( empty( $addons ) ) {
-		return array();
-	}
-
-	// Note: Do we need to make sure that $license_types is an array here?
-
-	// Build our return array of Add On objects.
-	$license_addons = array();
-	foreach ( $addons as $addon ) {
-		if ( in_array( $addon['License'], $license_types ) ) {
-			if ( empty( $include_hidden ) && ! empty ( $addon['HideFromAddOnsList'] ) ) {
-				// This Add On is hidden, we shouldn't include it.
-				continue;
-			}
-
-			// Add the Add Ons to the return array.
-			$license_addons[ $addon['Slug'] ] = $addon;
-		}
-	}
-
-	return $license_addons;
-}
-
-/**
- * Get Add On information by category.
- *
- * @since 2.8.x
- *
- * @param string $category A single category we know to be represented by this function.
- * @param bool $include_hidden Optionally include hidden Add Ons in the return array.
- * @return array $addons An array of all plugin objects found or an empty array if none found.
- */
-function pmpro_get_addons_by_category( $category, $include_hidden = false ) {
-	// Return if we don't have a category to search.
-	if ( empty( $category ) ) {
-		return array();
-	}
-
-	// Get all Add Ons. Return if empty.
-	$addons = pmpro_getAddons();
-	if ( empty( $addons ) ) {
-		return array();
-	}
-
-	// Get all Add On Categories. Return if nothing in this category.
-	$addon_cats = pmpro_get_addon_categories();
-	if ( empty( $addon_cats ) || empty( $addon_cats[ $category ] ) ) {
-		return array();
-	}
-
-	// Build our return array of Add On objects.
-	$cat_addons = array();
-	foreach ( $addons as $addon ) {
-		if ( in_array( $addon['Slug'], $addon_cats[ $category ] ) ) {
-			if ( empty( $include_hidden ) && ! empty ( $addon['HideFromAddOnsList'] ) ) {
-				// This Add On is hidden, we shouldn't include it.
-				continue;
-			}
-
-			$cat_addons[ $addon['Slug'] ] = $addon;
-		}
-	}
-	return $cat_addons;
-}
 
 /**
  * Get the Add On slugs for each category we identify.
@@ -198,6 +117,23 @@ function pmpro_get_addon_categories() {
 }
 
 /**
+ * Get the Add On icon from the plugin slug.
+ *
+ * @since 2.8.x
+ *
+ * @param string $slug The identifying slug for the addon (typically the directory name).
+ * @return string $plugin_icon_src The src URL for the plugin icon.
+ */
+function pmpro_get_addon_icon( $slug ) {
+	if ( file_exists( PMPRO_DIR . '/images/add-ons/' . $slug . '.png' ) ) {
+		$plugin_icon_src = PMPRO_URL . '/images/add-ons/' . $slug . '.png';
+	} else {
+		$plugin_icon_src = PMPRO_URL . '/images/add-ons/default-icon.png';
+	}
+	return $plugin_icon_src;
+}
+
+/**
  * Infuse plugin update details when WordPress runs its update checker.
  *
  * @since 1.8.5
@@ -212,36 +148,37 @@ function pmpro_update_plugins_filter( $value ) {
 		return $value;
 	}
 
-	// get addon information
+	// Get Add On information
 	$addons = pmpro_getAddons();
 
-	// no addons?
+	// No Add Ons?
 	if ( empty( $addons ) ) {
 		return $value;
 	}
 
-	// check addons
+	// Check Add Ons
 	foreach ( $addons as $addon ) {
-		// skip wordpress.org plugins
+		// Skip for wordpress.org plugins
 		if ( empty( $addon['License'] ) || $addon['License'] == 'wordpress.org' ) {
 			continue;
 		}
 
-		// get data for plugin
+		// Get data for plugin
 		$plugin_file = $addon['Slug'] . '/' . $addon['Slug'] . '.php';
 		$plugin_file_abs = WP_PLUGIN_DIR . '/' . $plugin_file;
 
-		// couldn't find plugin, skip
+		// Couldn't find plugin? Skip
 		if ( ! file_exists( $plugin_file_abs ) ) {
 			continue;
 		} else {
 			$plugin_data = get_plugin_data( $plugin_file_abs, false, true );
 		}
 
-		// compare versions
+		// Compare versions
 		if ( version_compare( $plugin_data['Version'], $addon['Version'], '<' ) ) {
 			$value->response[ $plugin_file ] = pmpro_getPluginAPIObjectFromAddon( $addon );
 			$value->response[ $plugin_file ]->new_version = $addon['Version'];
+			$value->response[ $plugin_file ]->icons = array( 'default' => esc_url( pmpro_get_addon_icon( $addon['Slug'] ) ) );
 		} else {
 			$value->no_update[ $plugin_file ] = pmpro_getPluginAPIObjectFromAddon( $addon );
 		}

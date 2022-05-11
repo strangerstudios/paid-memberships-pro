@@ -57,12 +57,10 @@
 				<li><a data-toggle="view" data-search="view" data-view="free" href="#free"><?php esc_html_e( 'Free', 'paid-memberships-pro' ); ?></a></li>
 				<li><a data-toggle="view" data-search="view" data-view="premium" href="#premium"><?php esc_html_e( 'Premium', 'paid-memberships-pro' ); ?></a></li>
 			</ul>
-			<form class="search-form search-plugins" method="get">
-				<input type="hidden" name="tab" value="search">
+			<div class="search-form">
 				<label class="screen-reader-text" for="search-plugins"><?php esc_html_e( 'Search Add Ons', 'paid-memberships-pro' ); ?></label>
 				<input type="search" name="s" id="search-add-ons" data-search="content" class="wp-filter-search" placeholder="<?php esc_attr_e( 'Search Add Ons...', 'paid-memberships-pro' ); ?>">
-				<input type="submit" id="search-submit" class="button hide-if-js" value="<?php esc_attr_e( 'Search Add Ons', 'paid-memberships-pro' ); ?>">
-			</form>
+			</div>
 		</div> <!-- end wp-filter -->
 		<br class="clear">
 		<div id="pmpro-no-add-ons" class="notice notice-info notice-large inline" style="display: none;">
@@ -83,7 +81,7 @@
 					}
 
 					// Set the src of the icon for this Add On.
-					$addon['plugin_icon_src'] = esc_url( PMPRO_URL . '/images/add-ons/' . $addon['Slug'] . '.png' );
+					$addon['plugin_icon_src'] = esc_url( pmpro_get_addon_icon( $addon['Slug'] ) );
 
 					if ( empty( $addon['ShortName'] ) ) {
 						$addon['ShortName'] = $addon['Name'];
@@ -201,11 +199,15 @@
 								if ( ! empty( $license_label ) ) { ?>
 									<p class="add-on-license-type">
 										<?php
-											printf(
-												/* translators: %s - Add On license label. */
-												esc_html__( 'License: %s', 'paid-memberships-pro' ),
-												'<strong class="license-' . esc_attr( $addon['License'] ) . '">' . wp_kses_post( $license_label ) . '</strong>'
-											);
+											if ( in_array( $addon['License'], array( 'free', 'wordpress.org' ) ) ) {
+												echo '<strong class="license-' . esc_attr( $addon['License'] ) . '">' . wp_kses_post( $license_label ) . '</strong>';
+											} else {
+												printf(
+													/* translators: %s - Add On license label. */
+													esc_html__( 'License: %s', 'paid-memberships-pro' ),
+													'<strong class="license-' . esc_attr( $addon['License'] ) . '">' . wp_kses_post( $license_label ) . '</strong>'
+												);
+											}
 										?>
 									</p> <!-- end add-on-license-type -->
 							<?php } ?>
@@ -349,7 +351,7 @@
 					views.find('.addons-search').hide();
 
 					// Clear the search input, if full.
-					document.getElementById( 'search-add-ons' ).value = '';
+					jQuery( '#search-add-ons' ).value = '';
 
 					// update the URL
 					if ( history.pushState ) {
@@ -365,14 +367,6 @@
 						view_items.removeClass('search-hide').addClass('search-show');
 					}
 
-/*					var n = $( '.search-show' ).length;
-					console.log(n, "Hello, world!");
-					if ( n < 1 ) {
-						$( '#pmpro-no-add-ons' ).show();
-					} else {
-						$( '#pmpro-no-add-ons' ).hide();
-					}
-*/
 				});
 
 				// check if we should switch Add On content on page loads
