@@ -171,7 +171,7 @@
 		}
 
 		if( ! empty( $msgt ) && $ml_recurring && $ml_expiration ) {
-			$msgt .= ' <strong class="red">' . sprintf( __( 'WARNING: A level was set with both a recurring billing amount and an expiration date. You only need to set one of these unless you really want this membership to expire after a specific time period. For more information, <a target="_blank" rel="nofollow noopener" href="%s" rel="nofollow noopener">see our post here</a>.', 'paid-memberships-pro' ), 'https://www.paidmembershipspro.com/important-notes-on-recurring-billing-and-expiration-dates-for-membership-levels/?utm_source=plugin&utm_medium=pmpro-membershiplevels&utm_campaign=blog&utm_content=important-notes-on-recurring-billing-and-expiration-dates-for-membership-levels' ) . '</strong>';
+			$msgt .= ' <strong class="red">' . sprintf( __( 'WARNING: A level was set with both a recurring billing amount and an expiration date. You only need to set one of these unless you really want this membership to expire after a specific time period. For more information, <a target="_blank" rel="nofollow noopener" href="%s">see our post here</a>.', 'paid-memberships-pro' ), 'https://www.paidmembershipspro.com/important-notes-on-recurring-billing-and-expiration-dates-for-membership-levels/?utm_source=plugin&utm_medium=pmpro-membershiplevels&utm_campaign=blog&utm_content=important-notes-on-recurring-billing-and-expiration-dates-for-membership-levels' ) . '</strong>';
 
 			// turn success to errors
 			if( $page_msg > 0 ) {
@@ -776,7 +776,7 @@
 						),
 					);
 				?>
-				<p><?php echo sprintf( wp_kses( __( 'Protect access to posts, pages, and content sections with built-in PMPro features. If you want to protect more content types, <a href="%s">read our documentation on restricting content</a>.', 'paid-memberships-pro' ), $allowed_html ), 'https://www.paidmembershipspro.com/documentation/content-controls/?utm_source=plugin&utm_medium=pmpro-membershiplevels&utm_campaign=documentation&utm_content=pmpro-content-settings' ); ?></p>
+				<p><?php echo sprintf( wp_kses( __( 'Protect access to posts, pages, and content sections with built-in PMPro features. If you want to protect more content types, <a href="%s" rel="nofollow noopener" target="_blank">read our documentation on restricting content</a>.', 'paid-memberships-pro' ), $allowed_html ), 'https://www.paidmembershipspro.com/documentation/content-controls/?utm_source=plugin&utm_medium=pmpro-membershiplevels&utm_campaign=documentation&utm_content=pmpro-content-settings' ); ?></p>
 				<table class="form-table">
 					<tbody>
 						<tr class="membership_categories">
@@ -827,7 +827,7 @@
 						</tr>
 						<tr class="membership_posts">
 							<th scope="row" valign="top"><label><?php esc_html_e('Other Content Types', 'paid-memberships-pro' );?></label></th>
-							<td><p><?php echo sprintf( wp_kses( __( 'Protect access to other content including custom post types (CPTs), courses, events, products, communities, podcasts, and more. <a href="%s">Read our documentation on restricting content</a>.', 'paid-memberships-pro' ), $allowed_html ), 'https://www.paidmembershipspro.com/documentation/content-controls/?utm_source=plugin&utm_medium=pmpro-membershiplevels&utm_campaign=documentation&utm_content=pmpro-content-settings' ); ?></p></td>
+							<td><p><?php echo sprintf( wp_kses( __( 'Protect access to other content including custom post types (CPTs), courses, events, products, communities, podcasts, and more. <a href="%s" rel="nofollow noopener" target="_blank">Read our documentation on restricting content</a>.', 'paid-memberships-pro' ), $allowed_html ), 'https://www.paidmembershipspro.com/documentation/content-controls/?utm_source=plugin&utm_medium=pmpro-membershiplevels&utm_campaign=documentation&utm_content=pmpro-content-settings' ); ?></p></td>
 					</tbody>
 				</table>
 				<?php
@@ -987,7 +987,7 @@
 			<div class="pmpro-new-install">
 				<h2><?php esc_html_e( 'No Membership Levels Found', 'paid-memberships-pro' ); ?></h2>
 				<a href="<?php echo esc_url( admin_url( 'admin.php?page=pmpro-membershiplevels&edit=-1' ) ); ?>" class="button-primary"><?php esc_html_e( 'Create a Membership Level', 'paid-memberships-pro' ); ?></a>
-				<a href="https://www.paidmembershipspro.com/documentation/initial-plugin-setup/step-1-add-new-membership-level/?utm_source=plugin&utm_medium=pmpro-membershiplevels&utm_campaign=documentation&utm_content=step-1-add-new-membership-level" target="_blank" rel="noopener noreferrer" class="button"><?php esc_html_e( 'Video: Membership Levels', 'paid-memberships-pro' ); ?></a>
+				<a href="https://www.paidmembershipspro.com/documentation/initial-plugin-setup/step-1-add-new-membership-level/?utm_source=plugin&utm_medium=pmpro-membershiplevels&utm_campaign=documentation&utm_content=step-1-add-new-membership-level" target="_blank" rel="nofollow noopener" class="button"><?php esc_html_e( 'Video: Membership Levels', 'paid-memberships-pro' ); ?></a>
 			</div> <!-- end pmpro-new-install -->
 		<?php } else { ?>
 		<form id="posts-filter" method="get" action="">
