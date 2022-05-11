@@ -1711,8 +1711,7 @@ if ( function_exists( 'pmpro_add_email_order_modal' ) ) {
 							<a href="<?php echo esc_url( add_query_arg( array( 'page' => 'pmpro-orders', 's' => $order->subscription_transaction_id ), admin_url( 'admin.php' ) ) ); ?>" title="<?php esc_attr_e( 'View all orders for this subscription', 'paid-memberships-pro' ); ?>" class="pmpro_order-renewal"><?php esc_html_e( 'Renewal', 'paid-memberships-pro' ); ?></a>
 						<?php } ?>
 					</td>
-					<td class="
-						   ">
+					<td class="column-date">
 						<?php
 							 echo esc_html( sprintf(
 								// translators: %1$s is the date and %2$s is the time.
