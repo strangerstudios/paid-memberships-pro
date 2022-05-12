@@ -1497,7 +1497,7 @@ if ( function_exists( 'pmpro_add_email_order_modal' ) ) {
 								'id'	 => sprintf(
 									// translators: %s is the Order ID.
 									__( 'ID: %s', 'paid-memberships-pro' ),
-									esc_attr( $order->id ),
+									esc_attr( $order->id )
 								),
 								'edit'   => sprintf(
 									'<a title="%1$s" href="%2$s">%3$s</a>',
@@ -1717,7 +1717,7 @@ if ( function_exists( 'pmpro_add_email_order_modal' ) ) {
 								// translators: %1$s is the date and %2$s is the time.
 								__( '%1$s at %2$s', 'paid-memberships-pro' ),
 								esc_html( date_i18n( get_option( 'date_format' ), $order->getTimestamp() ) ),
-								esc_html( date_i18n( get_option( 'time_format' ), $order->getTimestamp() ) ),
+								esc_html( date_i18n( get_option( 'time_format' ), $order->getTimestamp() ) )
 							) ); ?>
 					</td>
 					<?php if ( ! empty( $pmpro_discount_codes ) ) { ?>
