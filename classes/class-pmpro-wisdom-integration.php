@@ -288,7 +288,7 @@ class PMPro_Wisdom_Integration {
 		$stats['plugin_options_fields']['pmpro_recaptcha'] = get_option( 'pmpro_recaptcha', 'No Value' );
 		$stats['plugin_options_fields']['pmpro_maxnotificationpriority'] = get_option( 'pmpro_maxnotificationpriority', 'No Value' );
 		$stats['plugin_options_fields']['pmpro_activity_email_frequency'] = get_option( 'pmpro_activity_email_frequency', 'No Value' );
-		$stats['plugin_options_fields']['pmpro_hideads'] = get_option( 'pmpro_hideads', 'No Value' );
+		$stats['plugin_options_fields']['pmpro_hideads'] = get_option( 'hideads', 'No Value' );
 		$stats['plugin_options_fields']['pmpro_redirecttosubscription'] = get_option( 'pmpro_redirecttosubscription', 'No Value' );
 		$stats['plugin_options_fields']['pmpro_only_filter_pmpro_emails'] = get_option( 'pmpro_only_filter_pmpro_emails', 'No Value' );
 		$stats['plugin_options_fields']['pmpro_email_member_notification'] = get_option( 'pmpro_email_member_notification', 'No Value' );
