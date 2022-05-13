@@ -83,7 +83,14 @@ function pmpro_shortcode_account($atts, $content=null, $code="")
 
 										$pmpro_member_action_links['cancel'] = sprintf( '<a id="pmpro_actionlink-cancel" href="%s">%s</a>', esc_url( add_query_arg( 'levelstocancel', $level->id, pmpro_url( 'cancel' ) ) ), esc_html__( 'Cancel', 'paid-memberships-pro' ) );
 
-										$pmpro_member_action_links = apply_filters( 'pmpro_member_action_links', $pmpro_member_action_links );
+										/**
+										 * Filter the member action links.
+										 *
+										 * @param array $pmpro_member_action_links Member action links.
+										 * @param int   $level->id The ID of the membership level.
+										 * @return array $pmpro_member_action_links Member action links.
+										 */
+										$pmpro_member_action_links = apply_filters( 'pmpro_member_action_links', $pmpro_member_action_links, $level->id );
 
 										$allowed_html = array(
 											'a' => array (

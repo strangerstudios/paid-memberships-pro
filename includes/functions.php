@@ -1951,7 +1951,9 @@ function pmpro_get_no_access_message( $content, $level_ids, $level_names = NULL 
 		$level_names = array();
 		foreach ( $level_ids as $key => $id ) {
 			$level_obj = pmpro_getLevel( $id );
-			$level_names[] = $level_obj->name;
+			if ( ! empty( $level_obj ) ) {
+				$level_names[] = $level_obj->name;
+			}
 		}
 	}
 
@@ -3148,7 +3150,7 @@ function pmpro_round_price( $price, $currency = '' ) {
  *
  * Does not format price, to do that, call pmpro_formatPrice().
  *
- * @since TBD
+ * @since 2.8
  *
  * @param int|float|string $amount   The amount to get price information for.
  * @param null|string      $currency The currency to use, defaults to current currency.
@@ -3168,7 +3170,7 @@ function pmpro_round_price_as_string( $amount, $currency = null ) {
 /**
  * Get the price information about the provided amount.
  *
- * @since TBD
+ * @since 2.8
  *
  * @param int|float|string $amount   The amount to get price information for.
  * @param null|string      $currency The currency to use, defaults to current currency.
@@ -3822,13 +3824,13 @@ function pmpro_doing_webhook( $gateway = null, $set = false ){
  *
  * @return void
  *
- * @since TBD
+ * @since 2.8
  */
 function pmpro_unhandled_webhook(){
 	/**
 	 * Allow hooking into after a webhook has been run but was not handled.
 	 *
-	 * @since TBD
+	 * @since 2.8
 	 *
 	 * @param string $gateway The gateway the webhook was not handled for.
 	 */
@@ -4104,7 +4106,7 @@ function pmpro_allowed_refunds( $order ) {
 	/**
 	 * Specify which gateways support refund functionality
 	 *
-	 * @since TBD
+	 * @since 2.8
 	 *
 	 * @param array $allowed_gateways A list of allowed gateways to work with refunds
 	 */
@@ -4145,7 +4147,7 @@ function pmpro_refund_order( $order ){
 	/**
 	 * Processes a refund for a specific gateway
 	 *
-	 * @since TBD
+	 * @since 2.8
 	 *
 	 * @param bool $success Default return value is false to determine if the refund was successfully processed. 
 	 * @param object $order The Member Order we want to refund.
@@ -4166,7 +4168,7 @@ function pmpro_disallowed_refund_statuses() {
 	/**
 	 * Allow filtering the list of statuses that can not be refunded from.
 	 *
-	 * @since TBD
+	 * @since 2.8
 	 *
 	 * @param array $disallowed_statuses The list of statuses that can not be refunded from.
 	 */

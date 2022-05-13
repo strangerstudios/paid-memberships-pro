@@ -315,7 +315,8 @@ if ( ! empty( $_REQUEST['save'] ) ) {
 		$day    = intval( $_POST['ts_day'] );
 		$hour   = intval( $_POST['ts_hour'] );
 		$minute = intval( $_POST['ts_minute'] );
-		$order->timestamp = $date = get_gmt_from_date( $year . '-' . $month . '-' . $day . ' ' . $hour . ':' . $minute . ':00' , 'U' );;
+		$date = get_gmt_from_date( $year . '-' . $month . '-' . $day . ' ' . $hour . ':' . $minute . ':00' , 'U' );
+		$order->timestamp = $date; // Passed 'U' to get_gmt_from_date() so that we get a Unix timesamp.
 	}
 
 	// affiliate stuff
@@ -415,7 +416,7 @@ if ( function_exists( 'pmpro_add_email_order_modal' ) ) {
 		$refund_text = esc_html(
 			sprintf(
 				// translators: %s is the Order Code.
-				__( 'Refunding an order is permanent and can affect active users. Are you sure you want to refund order %s?', 'paid-memberships-pro' ),
+				__( 'Refund order %s at the payment gateway. This action is permanent. The user and admin will receive an email confirmation after the refund is processed. Are you sure you want to refund this order?', 'paid-memberships-pro' ),
 				str_replace( "'", '', $order->code )
 			)
 		);
@@ -441,7 +442,7 @@ if ( function_exists( 'pmpro_add_email_order_modal' ) ) {
 		<?php
 			if( pmpro_allowed_refunds( $order ) ) {
 				printf(
-					'<a title="%1$s" href="%2$s" class="page-title-action">%3$s</a>',
+					'<a title="%1$s" href="%2$s" class="page-title-action pmpro-has-icon pmpro-has-icon-image-rotate">%3$s</a>',
 					esc_attr__( 'Refund', 'paid-memberships-pro' ),
 					esc_js( 'javascript:pmpro_askfirst(' . wp_json_encode( $refund_text ) . ', ' . wp_json_encode( $refund_nonce_url ) . '); void(0);' ),
 					esc_html__( 'Refund', 'paid-memberships-pro' )
@@ -1051,7 +1052,7 @@ if ( function_exists( 'pmpro_add_email_order_modal' ) ) {
 	<form id="posts-filter" method="get" action="">
 
 		<h1 class="wp-heading-inline"><?php esc_html_e( 'Orders', 'paid-memberships-pro' ); ?></h1>
-		<a href="<?php echo esc_url( add_query_arg( array( 'page' => 'pmpro-orders', 'order' => -1 ), admin_url( 'admin.php' ) ) ); ?>" class="page-title-action"><?php esc_html_e( 'Add New Order', 'paid-memberships-pro' ); ?></a>
+		<a href="<?php echo esc_url( add_query_arg( array( 'page' => 'pmpro-orders', 'order' => -1 ), admin_url( 'admin.php' ) ) ); ?>" class="page-title-action pmpro-has-icon pmpro-has-icon-plus"><?php esc_html_e( 'Add New Order', 'paid-memberships-pro' ); ?></a>
 
 		<?php
 		// build the export URL
@@ -1072,7 +1073,7 @@ if ( function_exists( 'pmpro_add_email_order_modal' ) ) {
 		);
 		$export_url = add_query_arg( $url_params, $export_url );
 		?>
-		<a target="_blank" href="<?php echo esc_url( $export_url ); ?>" class="page-title-action"><?php esc_html_e( 'Export to CSV', 'paid-memberships-pro' ); ?></a>
+		<a target="_blank" href="<?php echo esc_url( $export_url ); ?>" class="page-title-action pmpro-has-icon pmpro-has-icon-download"><?php esc_html_e( 'Export to CSV', 'paid-memberships-pro' ); ?></a>
 
 		<hr class="wp-header-end">
 
@@ -1474,7 +1475,7 @@ if ( function_exists( 'pmpro_add_email_order_modal' ) ) {
 							$refund_text = esc_html(
 								sprintf(
 									// translators: %s is the Order Code.
-									__( 'Refunding orders is permanent and can affect active users. Are you sure you want to refund order %s?', 'paid-memberships-pro' ),
+									__( 'Refund order %s at the payment gateway. This action is permanent. The user and admin will receive an email confirmation after the refund is processed. Are you sure you want to refund this order?', 'paid-memberships-pro' ),
 									str_replace( "'", '', $order->code )
 								)
 							);
@@ -1496,7 +1497,7 @@ if ( function_exists( 'pmpro_add_email_order_modal' ) ) {
 								'id'	 => sprintf(
 									// translators: %s is the Order ID.
 									__( 'ID: %s', 'paid-memberships-pro' ),
-									esc_attr( $order->id ),
+									esc_attr( $order->id )
 								),
 								'edit'   => sprintf(
 									'<a title="%1$s" href="%2$s">%3$s</a>',
@@ -1716,7 +1717,7 @@ if ( function_exists( 'pmpro_add_email_order_modal' ) ) {
 								// translators: %1$s is the date and %2$s is the time.
 								__( '%1$s at %2$s', 'paid-memberships-pro' ),
 								esc_html( date_i18n( get_option( 'date_format' ), $order->getTimestamp() ) ),
-								esc_html( date_i18n( get_option( 'time_format' ), $order->getTimestamp() ) ),
+								esc_html( date_i18n( get_option( 'time_format' ), $order->getTimestamp() ) )
 							) ); ?>
 					</td>
 					<?php if ( ! empty( $pmpro_discount_codes ) ) { ?>
