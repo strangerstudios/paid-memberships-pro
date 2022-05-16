@@ -289,11 +289,18 @@
 }
 .admin_page_pmpro-userfields .pmpro_userfield-group-actions button.is-destructive {
 	border: none;
-	background: auto;
-	padding: 1em 0 0 .5em;
-	color: red;
+	background: none;
+	color: #A00;
+	margin: .5em;
+	padding: 0;
+	text-decoration: underline;
 }
-
+.admin_page_pmpro-userfields .pmpro_userfield-group-actions button.is-destructive:hover {
+	border: none;
+	background: auto;
+	color: #A00;	
+	text-decoration: underline;
+}
 
 /* General User Fields Page Styles */
 .admin_page_pmpro-userfields .pmpro_userfield-inside label,
