@@ -347,21 +347,7 @@ function pmpro_userfields_prep_click_events() {
         } else {
             fieldoptions.hide();
         }
-    });
-    
-    // Toggle field levels based on membership setting.
-    jQuery('select[name=pmpro_userfields_field_membership]').on('change', function(event){
-        var fieldcontainer = jQuery(this).parents('.pmpro_userfield-group-field');
-        var fieldsettings = fieldcontainer.children('.pmpro_userfield-field-settings');
-        var fieldmembership = jQuery(this).val();
-        var fieldlevels = fieldsettings.find('div.pmpro_userfields-field-levels');        
-        
-        if( fieldmembership === 'yes' ) {
-            fieldlevels.show();
-        } else {
-            fieldlevels.hide();
-        }
-    });
+    });    
     
     // Save User Field Settings
 	jQuery('#pmpro_userfields_savesettings').unbind('click').on( 'click', function(event){
@@ -388,8 +374,7 @@ function pmpro_userfields_prep_click_events() {
                 let field_name = jQuery(this).find('input[name=pmpro_userfields_field_name]').val();
                 let field_type = jQuery(this).find('select[name=pmpro_userfields_field_type]').val();
                 let field_required = jQuery(this).find('select[name=pmpro_userfields_field_required]').val();
-                let field_readonly = jQuery(this).find('select[name=pmpro_userfields_field_readonly]').val();
-                let field_membership = jQuery(this).find('select[name=pmpro_userfields_field_membership]').val();
+                let field_readonly = jQuery(this).find('select[name=pmpro_userfields_field_readonly]').val();                
                 let field_profile = jQuery(this).find('select[name=pmpro_userfields_field_profile]').val();
                 let field_wrapper_class = jQuery(this).find('input[name=pmpro_userfields_field_class]').val();
                 let field_element_class = jQuery(this).find('input[name=pmpro_userfields_field_divclass]').val();

@@ -1397,27 +1397,6 @@ function pmpro_get_field_html( $field = null ) {
 
             <div class="pmpro_userfield-field-setting">
                 <label>
-                    <?php esc_html_e( 'Restrict Field for Membership Levels', 'paid-memberships-pro' ); ?><br />
-                    <select name="pmpro_userfields_field_membership">
-                        <option value="" <?php selected( $field_membership, '' );?>><?php esc_html_e( '[Inherit Group Setting]', 'paid-memberships-pro' ); ?></option>
-                        <option value="yes" <?php selected( $field_membership, 'yes' );?>><?php esc_html_e( 'Yes', 'paid-memberships-pro' );?></option>
-                        <option value="no" <?php selected( $field_membership, 'no' );?>><?php esc_html_e( 'No', 'paid-memberships-pro' );?></option>                                                
-                    </select>
-                    <div class="pmpro_checkbox_box pmpro_userfields-field-levels" style="<?php if ( count( $levels ) > 3 ) { ?>height: 90px; overflow: auto;<?php } ?><?php if( $field_membership != 'yes' ) { ?>display: none;<?php } ?>">
-						<?php foreach( $levels as $level ) { ?>
-							<div class="pmpro_clickable">
-                                <label>
-                                    <input type="checkbox" id="pmpro_userfields_field_levels_<?php echo esc_attr( $level->id); ?>" name="pmpro_userfields_field_levels[]" <?php checked( true, in_array( $level->id, $field_levels ) );?>>
-                                    <?php echo esc_html( $level->name ); ?>
-                                </label>
-                            </div>
-						<?php } ?>
-					</div>
-                </label>
-            </div> <!-- end pmpro_userfield-field-setting -->
-
-            <div class="pmpro_userfield-field-setting">
-                <label>
                     <?php esc_html_e( 'Show field on user profile?', 'paid-memberships-pro' ); ?><br />
                     <select name="pmpro_userfields_field_profile">
                         <option <?php selected( empty( $field_profile ), 0);?>><?php esc_html_e( '[Inherit Group Setting]', 'paid-memberships-pro' ); ?></option>
@@ -1428,21 +1407,23 @@ function pmpro_get_field_html( $field = null ) {
                 </label>                
             </div> <!-- end pmpro_userfield-field-setting -->
 
-            <div class="pmpro_userfield-field-setting">
-                <label>
-                    <?php esc_html_e( 'Field Wrapper Class', 'paid-memberships-pro' ); ?><br />
-                    <input type="text" name="pmpro_userfields_field_class" value="<?php echo esc_attr( $field_wrapper_class );?>" />
-                </label>
-                <span class="description"><?php esc_html_e( 'Assign a custom CSS selector to the field\'s wrapping div', 'paid-memberships-pro' ); ?>.</span>
-            </div> <!-- end pmpro_userfield-field-setting -->
+            <div class="pmpro_userfield-field-setting pmpro_userfield-field-setting-dual">
+                <div class="pmpro_userfield-field-setting">
+                    <label>
+                        <?php esc_html_e( 'Field Wrapper Class', 'paid-memberships-pro' ); ?><br />
+                        <input type="text" name="pmpro_userfields_field_class" value="<?php echo esc_attr( $field_wrapper_class );?>" />
+                    </label>
+                    <span class="description"><?php esc_html_e( 'Assign a custom CSS selector to the field\'s wrapping div', 'paid-memberships-pro' ); ?>.</span>
+                </div> <!-- end pmpro_userfield-field-setting -->
 
-            <div class="pmpro_userfield-field-setting">
-                <label>
-                    <?php esc_html_e( 'Field Element Class', 'paid-memberships-pro' ); ?><br />
-                    <input type="text" name="pmpro_userfields_field_divclass" value="<?php echo esc_attr( $field_element_class );?>" />
-                </label>                
-                <span class="description"><?php esc_html_e( 'Assign a custom CSS selector to the field', 'paid-memberships-pro' ); ?></span>
-            </div> <!-- end pmpro_userfield-field-setting -->
+                <div class="pmpro_userfield-field-setting">
+                    <label>
+                        <?php esc_html_e( 'Field Element Class', 'paid-memberships-pro' ); ?><br />
+                        <input type="text" name="pmpro_userfields_field_divclass" value="<?php echo esc_attr( $field_element_class );?>" />
+                    </label>                
+                    <span class="description"><?php esc_html_e( 'Assign a custom CSS selector to the field', 'paid-memberships-pro' ); ?></span>
+                </div> <!-- end pmpro_userfield-field-setting -->
+            </div> <!-- end pmpro_userfield-field-setting-dual -->
 
             <div class="pmpro_userfield-field-setting">
                 <label>
@@ -1555,15 +1536,8 @@ function pmpro_load_user_fields_from_settings() {
                 $options = false;
             }
             
-            // Figure out levels.
-            if ( $settings_field->membership === 'yes' ) {
-                $levels = $settings_field->levels;
-            } elseif ( $settings_field->membership === 'yes' ) {
-                $levels = false;
-            } else {
-                // Inherit from group.
-                $levels = $group->levels;
-            }
+            // Set field levels based on group.
+            $levels = $group->levels;
             
             $field = new PMPro_Field(
                 $settings_field->name,

@@ -307,6 +307,7 @@
 .admin_page_pmpro-userfields .pmpro_userfield-inside .description {
 	display: block;
 	margin: 3px 0;
+	width: 95%;	/* set similar to the width of input fields */
 }
 .admin_page_pmpro-userfields .pmpro_userfield-inside .description {
 	font-style: italic;
