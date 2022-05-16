@@ -97,7 +97,7 @@
 						<button id="pmpro_userfields_add_group" name="pmpro_userfields_add_group" class="button button-primary button-hero">
 							<?php
 								/* translators: a plus sign dashicon */
-								printf( esc_html__( '%s Add Group', 'paid-memberships-pro' ), '<span class="dashicons dashicons-plus"></span>' ); ?>
+								printf( esc_html__( '%s Add Field Group', 'paid-memberships-pro' ), '<span class="dashicons dashicons-plus"></span>' ); ?>
 						</button>
 					</p>
 
