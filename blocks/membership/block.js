@@ -39,7 +39,7 @@ const all_levels = [{ value: 0, label: "Non-Members" }].concat( pmpro.all_level_
          },
          keywords: [
             __( 'block visibility', 'paid-memberships-pro' ),
-            __( 'confitional', 'paid-memberships-pro' ),
+            __( 'conditional', 'paid-memberships-pro' ),
             __( 'content', 'paid-memberships-pro' ),
             __( 'hide', 'paid-memberships-pro' ),
             __( 'hidden', 'paid-memberships-pro' ),

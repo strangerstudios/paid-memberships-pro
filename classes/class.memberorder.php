@@ -232,6 +232,12 @@
 				return $this->is_renewal;
 			}
 			
+			// Can't tell if this is a renewal without a timestamp.
+			if ( empty( $this->timestamp ) ) {
+				$this->is_renewal = false;
+				return $this->is_renewal;
+			}
+			
 			// Check the DB.
 			$sqlQuery = "SELECT `id`
 						 FROM $wpdb->pmpro_membership_orders
@@ -754,12 +760,15 @@
 			if(empty($this->gateway_environment))
 				$this->gateway_environment = pmpro_getOption("gateway_environment");
 			
-			if(empty($this->datetime) && empty($this->timestamp))
-				$this->datetime = date("Y-m-d H:i:s", time());
-			elseif(empty($this->datetime) && !empty($this->timestamp) && is_numeric($this->timestamp))
+			if( empty( $this->datetime ) && empty( $this->timestamp ) ) {
+				$this->timestamp = time();
+				$this->datetime = date("Y-m-d H:i:s", $this->timestamp);				
+			} elseif( empty( $this->datetime ) && ! empty( $this->timestamp ) && is_numeric( $this->timestamp ) ) {
 				$this->datetime = date("Y-m-d H:i:s", $this->timestamp);	//get datetime from timestamp
-			elseif(empty($this->datetime) && !empty($this->timestamp))
+			} elseif( empty( $this->datetime ) && ! empty( $this->timestamp ) ) {
 				$this->datetime = $this->timestamp;		//must have a datetime in it
+				$this->timestamp = strtotime( $this->datetime );	//fixing the timestamp
+			}				
 
 			if(empty($this->notes))
 				$this->notes = "";

@@ -1066,7 +1066,7 @@ class PMProGateway_stripe extends PMProGateway {
 	/**
 	 * Register the cron we need for Stripe subscription updates.
 	 *
-	 * @since TBD
+	 * @since 2.8
 	 *
 	 * @param array $crons The list of registered crons for Paid Memberships Pro.
 	 *
@@ -1518,7 +1518,7 @@ class PMProGateway_stripe extends PMProGateway {
 	 * Show warning at checkout if Stripe Checkout is being used and
 	 * the last order is pending.
 	 *
-	 * @since TBD
+	 * @since 2.8
 	 *
 	 * @param bool $show Whether to show the default payment information fields.
 	 * @return bool
@@ -1551,7 +1551,7 @@ class PMProGateway_stripe extends PMProGateway {
 	/**
 	 * Instead of changeing membership levels, send users to Stripe to pay.
 	 *
-	 * @since TBD
+	 * @since 2.8
 	 *
 	 * @param int         $user_id ID of user who is checking out.
 	 * @param MemberOrder $morder  MemberOrder object for this checkout.
@@ -1732,7 +1732,7 @@ class PMProGateway_stripe extends PMProGateway {
 	 * If using Stripe Checkout, either redirect the user to the Stripe Customer
 	 * portal or set up our update billing page with the onsite payment fields.
 	 *
-	 * @since TBD
+	 * @since 2.8
 	 */
 	public static function pmpro_billing_preheader_stripe_checkout() {
 		if ( 'portal' === pmpro_getOption( 'stripe_update_billing_flow' ) ) {
@@ -2171,7 +2171,7 @@ class PMProGateway_stripe extends PMProGateway {
 	/**
 	 * Get the URL for a customer's Stripe Customer Portal.
 	 *
-	 * @since TBD
+	 * @since 2.8
 	 *
 	 * @param string $customer_id Customer to get the URL for.
 	 * @return string URL for customer portal, or empty String if not found.
@@ -4732,9 +4732,9 @@ class PMProGateway_stripe extends PMProGateway {
 	/**
 	 * Refunds an order (only supports full amounts)
 	 *
-	 * @param bool    Status of the refund (default: false)
-	 * @param object  The Member Order Object
-	 * @since TBD
+	 * @param bool    $success Status of the refund (default: false)
+	 * @param object  $order The Member Order Object
+	 * @since 2.8
 	 * 
 	 * @return bool   Status of the processed refund
 	 */
@@ -4781,7 +4781,7 @@ class PMProGateway_stripe extends PMProGateway {
 			] );			
 
 			//Make sure we're refunding an order that was successful
-			if ( !in_array( $refund->status, pmpro_disallowed_refund_statuses() ) ) {
+			if ( $refund->status != 'failed' ) {
 				$order->status = 'refunded';	
 
 				$success = true;
@@ -4793,15 +4793,14 @@ class PMProGateway_stripe extends PMProGateway {
 				$user = get_user_by( 'id', $order->user_id );
 				//send an email to the member
 				$myemail = new PMProEmail();
-				$myemail->sendRefundedEmail( $user );
+				$myemail->sendRefundedEmail( $user, $order );
 
 				//send an email to the admin
 				$myemail = new PMProEmail();
-				$myemail->sendRefundedAdminEmail( $user, $order->membership_id );
+				$myemail->sendRefundedAdminEmail( $user, $order );
 
 			} else {
 				$order->notes = trim( $order->notes . ' ' . __('Admin: An error occured while attempting to process this refund.', 'paid-memberships-pro' ) );
-
 			}
 
 		} catch ( \Throwable $e ) {			
