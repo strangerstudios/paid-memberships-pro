@@ -1244,10 +1244,12 @@ function pmpro_get_field_group_html( $group = null ) {
                     
 				</div>
                 
-                <?php 
-                    foreach ( $group->fields as $field ) {
-                        echo pmpro_get_field_html( $field );
-                    }
+                <?php
+					if ( ! empty( $group->fields ) ) {
+						foreach ( $group->fields as $field ) {
+							echo pmpro_get_field_html( $field );
+						}
+					}
                 ?>
                 
                 <!-- end pmpro_userfield-group-fields -->
