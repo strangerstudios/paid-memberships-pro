@@ -325,10 +325,16 @@ function pmpro_checkout_before_submit_button_fields() {
 }
 add_action( 'pmpro_checkout_before_submit_button', 'pmpro_checkout_before_submit_button_fields');
 
+// After tos fields.
+function pmpro_checkout_after_tos_fields() {
+	pmpro_display_fields_in_group( 'after_tos_fields', 'checkout' );
+}
+add_action( 'pmpro_checkout_after_tos_fields', 'pmpro_checkout_after_tos_fields' );
+
 /**
  * Update the fields at checkout.
  */
-function pmpro_after_checkout_save_fields( $user_id ) {
+function pmpro_after_checkout_save_fields( $user_id, $order ) {
 	global $pmpro_user_fields;
 
 	//any fields?
@@ -406,7 +412,7 @@ function pmpro_after_checkout_save_fields( $user_id ) {
 
 					//callback?
 					if(!empty($field->save_function))
-						call_user_func($field->save_function, $user_id, $field->name, $value);
+						call_user_func( $field->save_function, $user_id, $field->name, $value, $order );
 					else
 						update_user_meta($user_id, $field->meta_key, $value);
 				}
@@ -414,11 +420,11 @@ function pmpro_after_checkout_save_fields( $user_id ) {
 		}
 	}
 }
-add_action('pmpro_after_checkout', 'pmpro_after_checkout_save_fields');
-add_action('pmpro_before_send_to_paypal_standard', 'pmpro_after_checkout_save_fields');	//for paypal standard we need to do this just before sending the user to paypal
-add_action('pmpro_before_send_to_twocheckout', 'pmpro_after_checkout_save_fields', 20);	//for 2checkout we need to do this just before sending the user to 2checkout
-add_action('pmpro_before_send_to_gourl', 'pmpro_after_checkout_save_fields', 20);	//for the GoURL Bitcoin Gateway Add On
-add_action('pmpro_before_send_to_payfast', 'pmpro_after_checkout_save_fields', 20);	//for the Payfast Gateway Add On
+add_action( 'pmpro_after_checkout', 'pmpro_after_checkout_save_fields', 10, 2 );
+add_action( 'pmpro_before_send_to_paypal_standard', 'pmpro_after_checkout_save_fields', 20, 2 );	//for paypal standard we need to do this just before sending the user to paypal
+add_action( 'pmpro_before_send_to_twocheckout', 'pmpro_after_checkout_save_fields', 20, 2 );	//for 2checkout we need to do this just before sending the user to 2checkout
+add_action( 'pmpro_before_send_to_gourl', 'pmpro_after_checkout_save_fields', 20, 2 );	//for the GoURL Bitcoin Gateway Add On
+add_action( 'pmpro_before_send_to_payfast', 'pmpro_after_checkout_save_fields', 20, 2 );	//for the Payfast Gateway Add On
 
 /**
  * Require required fields.
