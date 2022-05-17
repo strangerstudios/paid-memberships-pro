@@ -203,6 +203,13 @@ jQuery(document).ready(function() {
 
 // Function to prep click events.
 function pmpro_userfields_prep_click_events() {
+	// Whenever we make a change, warn the user if they try to nagivate away.
+	function pmpro_userfields_made_a_change() {
+		window.onbeforeunload = function() {
+			return true;
+		};
+	}
+
     // Add group button.
 	jQuery('#pmpro_userfields_add_group').unbind('click').on( 'click', function(event){
         event.preventDefault();
@@ -223,6 +230,7 @@ function pmpro_userfields_prep_click_events() {
                 jQuery('#pmpro_userfields_add_group').parent('p').prev().find('h3').click();
 			}
 		})
+		pmpro_userfields_made_a_change();
     });
     
     // Delete group button.
@@ -237,6 +245,7 @@ function pmpro_userfields_prep_click_events() {
         }
     	if ( answer ) {
     		thegroup.remove();
+			pmpro_userfields_made_a_change();
     	}
     });
     
@@ -258,6 +267,7 @@ function pmpro_userfields_prep_click_events() {
             	thefields.append( response );
                 pmpro_userfields_prep_click_events();                
                 thefields.children().last().find('a.edit-field').click();
+				pmpro_userfields_made_a_change();
 			}
 		});
     });
@@ -274,7 +284,8 @@ function pmpro_userfields_prep_click_events() {
         }
     	if ( answer ) {
     		thefield.remove();
-    	}
+			pmpro_userfields_made_a_change();
+		}
     });
     
     // Toggle groups.    
@@ -348,10 +359,17 @@ function pmpro_userfields_prep_click_events() {
             fieldoptions.hide();
         }
     });    
+
+	// If we change a field, mark it as changed.
+	jQuery( '.pmpro_userfield-group input, .pmpro_userfield-group textarea, .pmpro_userfield-group select' ).on('change', function(event){
+		pmpro_userfields_made_a_change();
+	});
     
     // Save User Field Settings
 	jQuery('#pmpro_userfields_savesettings').unbind('click').on( 'click', function(event){
         ///event.preventDefault();
+		// We have saved, so we no longer need to warn user if they try to navigate away.
+		window.onbeforeunload = null;
 
         let field_groups = [];
 
