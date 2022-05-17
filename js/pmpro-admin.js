@@ -393,7 +393,7 @@ function pmpro_userfields_prep_click_events() {
                     'type': field_type,
                     'required': field_required,
                     'readonly': field_readonly,
-                    'membership': field_membership,
+                    'membership': field_levels,
                     'levels': field_levels,
                     'profile': field_profile,
                     'wrapper_class': field_wrapper_class,
