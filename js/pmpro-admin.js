@@ -203,26 +203,38 @@ jQuery(document).ready(function() {
 
 // Function to prep click events.
 function pmpro_userfields_prep_click_events() {
-    // Add group button.
-	jQuery('#pmpro_userfields_add_group').unbind('click').on( 'click', function(event){
-        event.preventDefault();
-                
-		let postData = {
+	// Cache what a blank user field and blank group look like to speed up
+	// button clicks to create fields and groups.
+	var pmpro_blank_group = '';
+	jQuery.ajax({
+		type: "GET",
+		data: {
 			action: 'pmpro_userfields_get_group',
             group_id: '',         
+		},
+		url: ajaxurl,
+		success: function( response ) {
+			pmpro_blank_group = response;
 		}
+	});
+	var pmpro_blank_field = '';
+	jQuery.ajax({
+		type: "GET",
+		data: {
+			action: 'pmpro_userfields_get_field',
+			field_id: '',
+		},
+		url: ajaxurl,
+		success: function( response ) {
+			pmpro_blank_field = response;
+		}
+	});
 
-		jQuery.ajax({
-			type: "GET",
-			data: postData,
-			url: ajaxurl,
-			success: function( response ) {
-                ///console.log( response );
-				jQuery('#pmpro_userfields_add_group').parent('p').before( response );                
-                pmpro_userfields_prep_click_events();
-                jQuery('#pmpro_userfields_add_group').parent('p').prev().find('h3').click();
-			}
-		})
+    // Add group button.
+	jQuery('#pmpro_userfields_add_group').unbind('click').on( 'click', function(event){
+        jQuery('#pmpro_userfields_add_group').parent('p').before( pmpro_blank_group );                
+        pmpro_userfields_prep_click_events();
+        jQuery('#pmpro_userfields_add_group').parent('p').prev().find('h3').click();
     });
     
     // Delete group button.
@@ -242,24 +254,10 @@ function pmpro_userfields_prep_click_events() {
     
     // Add field button.
 	jQuery('button[name="pmpro_userfields_add_field"]').unbind('click').on( 'click', function(event){
-        event.preventDefault();
-
-		let postData = {
-			action: 'pmpro_userfields_get_field',
-            field_id: '',
-		}
-
-		jQuery.ajax({
-			type: "GET",
-			data: postData,
-			url: ajaxurl,
-			success: function( response ) {
-			    var thefields = jQuery(event.target).closest('div.pmpro_userfield-group-actions').siblings('div.pmpro_userfield-group-fields');
-            	thefields.append( response );
-                pmpro_userfields_prep_click_events();                
-                thefields.children().last().find('a.edit-field').click();
-			}
-		});
+        var thefields = jQuery(event.target).closest('div.pmpro_userfield-group-actions').siblings('div.pmpro_userfield-group-fields');
+		thefields.append( pmpro_blank_field );
+		pmpro_userfields_prep_click_events();                
+		thefields.children().last().find('a.edit-field').click();
     });
     
     // Delete field button.
