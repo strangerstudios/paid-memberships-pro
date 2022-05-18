@@ -805,7 +805,7 @@
 							$uses = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM $wpdb->pmpro_discount_codes_uses WHERE code_id = %d", $code->id ) );
 							?>
 						<tr<?php if ( ! pmpro_check_discount_code_for_gateway_compatibility( $code->id ) ) { ?> class="pmpro_error"<?php } ?>>
-							<td class="column-code has-row-actions">
+							<td class="column-code has-row-actions" data-colname="<?php esc_attr_e( 'Code', 'paid-memberships-pro' ); ?>">
 								<strong><a title="<?php echo esc_attr( sprintf( __( 'Edit Code: %s', 'paid-memberships-pro' ), $code->code ) ); ?>" href="<?php echo esc_url( add_query_arg( array( 'page' => 'pmpro-discountcodes', 'edit' => $code->id ), admin_url('admin.php' ) ) ); ?>"><?php echo $code->code?></a></strong>
 								<div class="row-actions">
 									<?php
@@ -916,13 +916,13 @@
 									?>
 								</div>
 							</td>
-							<td class="column-starts">
+							<td class="column-starts" data-colname="<?php esc_attr_e( 'Starts', 'paid-memberships-pro' ); ?>">
 								<?php echo date_i18n(get_option('date_format'), $code->starts)?>
 							</td>
-							<td class="column-expires">
+							<td class="column-expires" data-colname="<?php esc_attr_e( 'Expires', 'paid-memberships-pro' ); ?>">
 								<?php echo date_i18n(get_option('date_format'), $code->expires)?>
 							</td>
-							<td class="column-uses">
+							<td class="column-uses" data-colname="<?php esc_attr_e( 'Uses', 'paid-memberships-pro' ); ?>">
 								<?php
 									if($code->uses > 0)
 										echo "<strong>" . (int)$uses . "</strong>/" . $code->uses;
@@ -930,7 +930,7 @@
 										echo "<strong>" . (int)$uses . "</strong>/unlimited";
 								?>
 							</td>
-							<td class="column-levels">
+							<td class="column-levels" data-colname="<?php esc_attr_e( 'Levels', 'paid-memberships-pro' ); ?>">
 								<?php
 									$sqlQuery = $wpdb->prepare("
 										SELECT l.id, l.name
