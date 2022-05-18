@@ -91,3 +91,15 @@ class PMProDivi{
 	}
 }
 new PMProDivi();
+
+/**
+ * Filter the element classess added to the no_access messages for improved appearance in Divi.
+ *
+ */
+function divi_pmpro_element_class( $class, $element ) {
+	if ( in_array( 'pmpro_content_message', $class ) ) {
+		$class[] = 'et_pb_row';
+	}
+	return $class;
+}
+add_action( 'pmpro_element_class', 'divi_pmpro_element_class', 10, 2 );
