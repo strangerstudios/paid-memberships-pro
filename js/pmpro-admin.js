@@ -285,7 +285,27 @@ function pmpro_userfields_prep_click_events() {
             buttonicon.addClass('dashicons-arrow-up');
             groupinside.show();
         }
-    });    
+    });
+
+    // Move group up.
+    jQuery('.pmpro_userfield-group-buttons-button-move-up').unbind('click').on( 'click', function(event){
+        var thegroup = jQuery(this).closest('.pmpro_userfield-group');
+        var thegroupprev = thegroup.prev('.pmpro_userfield-group');
+        if ( thegroupprev.length > 0 ) {
+            thegroup.insertBefore(thegroupprev);
+            pmpro_userfields_made_a_change();
+        }
+    });
+
+    // Move group down.
+    jQuery('.pmpro_userfield-group-buttons-button-move-down').unbind('click').on( 'click', function(event){
+        var thegroup = jQuery(this).closest('.pmpro_userfield-group');
+        var thegroupnext = thegroup.next('.pmpro_userfield-group');
+        if ( thegroupnext.length > 0 ) {
+            thegroup.insertAfter(thegroupnext);
+            pmpro_userfields_made_a_change();
+        }
+    });
     
     // Open field.
     jQuery('a.edit-field').unbind('click').on('click', function(event){
@@ -313,6 +333,26 @@ function pmpro_userfields_prep_click_events() {
         fieldcontainer.removeClass('pmpro_userfield-group-field-expand');
         fieldcontainer.addClass('pmpro_userfield-group-field-collapse');
         fieldsettings.hide();
+    });
+
+    // Move field up.
+    jQuery('.pmpro_userfield-field-buttons-button-move-up').unbind('click').on( 'click', function(event){
+        var thefield = jQuery(this).closest('.pmpro_userfield-group-field');
+        var thefieldprev = thefield.prev('.pmpro_userfield-group-field');
+        if ( thefieldprev.length > 0 ) {
+            thefield.insertBefore(thefieldprev);
+            pmpro_userfields_made_a_change();
+        }
+    });
+
+    // Move field down.
+    jQuery('.pmpro_userfield-field-buttons-button-move-down').unbind('click').on( 'click', function(event){
+        var thefield = jQuery(this).closest('.pmpro_userfield-group-field');
+        var thefieldnext = thefield.next('.pmpro_userfield-group-field');
+        if ( thefieldnext.length > 0 ) {
+            thefield.insertAfter(thefieldnext);
+            pmpro_userfields_made_a_change();
+        }
     });
     
     // Toggle field settings based on type.
