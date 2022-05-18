@@ -205,24 +205,9 @@ jQuery(document).ready(function() {
 function pmpro_userfields_prep_click_events() {
     // Add group button.
 	jQuery('#pmpro_userfields_add_group').unbind('click').on( 'click', function(event){
-        event.preventDefault();
-                
-		let postData = {
-			action: 'pmpro_userfields_get_group',
-            group_id: '',         
-		}
-
-		jQuery.ajax({
-			type: "GET",
-			data: postData,
-			url: ajaxurl,
-			success: function( response ) {
-                ///console.log( response );
-				jQuery('#pmpro_userfields_add_group').parent('p').before( response );                
-                pmpro_userfields_prep_click_events();
-                jQuery('#pmpro_userfields_add_group').parent('p').prev().find('h3').click();
-			}
-		})
+        jQuery('#pmpro_userfields_add_group').parent('p').before( pmpro.user_fields_blank_group );                
+        pmpro_userfields_prep_click_events();
+        jQuery('#pmpro_userfields_add_group').parent('p').prev().find('h3').click();
     });
     
     // Delete group button.
@@ -242,24 +227,10 @@ function pmpro_userfields_prep_click_events() {
     
     // Add field button.
 	jQuery('button[name="pmpro_userfields_add_field"]').unbind('click').on( 'click', function(event){
-        event.preventDefault();
-
-		let postData = {
-			action: 'pmpro_userfields_get_field',
-            field_id: '',
-		}
-
-		jQuery.ajax({
-			type: "GET",
-			data: postData,
-			url: ajaxurl,
-			success: function( response ) {
-			    var thefields = jQuery(event.target).closest('div.pmpro_userfield-group-actions').siblings('div.pmpro_userfield-group-fields');
-            	thefields.append( response );
-                pmpro_userfields_prep_click_events();                
-                thefields.children().last().find('a.edit-field').click();
-			}
-		});
+        var thefields = jQuery(event.target).closest('div.pmpro_userfield-group-actions').siblings('div.pmpro_userfield-group-fields');
+		thefields.append( pmpro.user_fields_blank_field );
+		pmpro_userfields_prep_click_events();                
+		thefields.children().last().find('a.edit-field').click();
     });
     
     // Delete field button.
