@@ -1244,10 +1244,12 @@ function pmpro_get_field_group_html( $group = null ) {
                     
 				</div>
                 
-                <?php 
-                    foreach ( $group->fields as $field ) {
-                        echo pmpro_get_field_html( $field );
-                    }
+                <?php
+					if ( ! empty( $group->fields ) ) {
+						foreach ( $group->fields as $field ) {
+							echo pmpro_get_field_html( $field );
+						}
+					}
                 ?>
                 
                 <!-- end pmpro_userfield-group-fields -->
@@ -1280,9 +1282,7 @@ function pmpro_get_field_html( $field = null ) {
         $field_name = $field->name;
         $field_type = $field->type;
         $field_required = $field->required;
-        $field_readonly = $field->readonly; 
-    	$field_membership = $field->membership;
-        $field_levels = $field->levels;
+        $field_readonly = $field->readonly;     	
         $field_profile = $field->profile;
         $field_wrapper_class = $field->wrapper_class;
         $field_element_class = $field->element_class;
@@ -1294,9 +1294,7 @@ function pmpro_get_field_html( $field = null ) {
         $field_name = '';
         $field_type = '';
         $field_required = false;
-        $field_readonly = false;        
-    	$field_membership = '';
-        $field_levels = array();
+        $field_readonly = false;
         $field_profile = '';
         $field_wrapper_class = '';
         $field_element_class = '';
@@ -1410,7 +1408,7 @@ function pmpro_get_field_html( $field = null ) {
             <div class="pmpro_userfield-field-setting pmpro_userfield-field-setting-dual">
                 <div class="pmpro_userfield-field-setting">
                     <label>
-                        <?php esc_html_e( 'Field Wrapper Class', 'paid-memberships-pro' ); ?><br />
+                        <?php esc_html_e( 'Field Wrapper Class (optional)', 'paid-memberships-pro' ); ?><br />
                         <input type="text" name="pmpro_userfields_field_class" value="<?php echo esc_attr( $field_wrapper_class );?>" />
                     </label>
                     <span class="description"><?php esc_html_e( 'Assign a custom CSS selector to the field\'s wrapping div', 'paid-memberships-pro' ); ?>.</span>
@@ -1418,7 +1416,7 @@ function pmpro_get_field_html( $field = null ) {
 
                 <div class="pmpro_userfield-field-setting">
                     <label>
-                        <?php esc_html_e( 'Field Element Class', 'paid-memberships-pro' ); ?><br />
+                        <?php esc_html_e( 'Field Element Class (optional)', 'paid-memberships-pro' ); ?><br />
                         <input type="text" name="pmpro_userfields_field_divclass" value="<?php echo esc_attr( $field_element_class );?>" />
                     </label>                
                     <span class="description"><?php esc_html_e( 'Assign a custom CSS selector to the field', 'paid-memberships-pro' ); ?></span>
@@ -1427,7 +1425,7 @@ function pmpro_get_field_html( $field = null ) {
 
             <div class="pmpro_userfield-field-setting">
                 <label>
-                    <?php esc_html_e( 'Hint', 'paid-memberships-pro' ); ?><br />
+                    <?php esc_html_e( 'Hint (optional)', 'paid-memberships-pro' ); ?><br />
                     <textarea name="pmpro_userfields_field_hint" /><?php echo esc_textarea( $field_hint );?></textarea>
                 </label>                
                 <span class="description"><?php esc_html_e( 'Descriptive text for users or admins submitting the field.', 'paid-memberships-pro' ); ?></span>
