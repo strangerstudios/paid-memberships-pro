@@ -1,3 +1,219 @@
+/* Setup Wizard Styles */
+.admin_page_pmpro-wizard #wpcontent {
+	padding-left: 0;
+}
+.pmpro-wizard .pmpro-wizard__header {
+	background: #FFF;
+	border-bottom: 1px solid #DDD;
+	padding: 1.5em 0 .25em 0;
+	margin-bottom: 2em;
+	text-align: center;
+}
+.pmpro-wizard .pmpro-wizard__header a.pmpro_logo {
+	display: inline-block;
+	max-width: 275px;
+}
+.pmpro-wizard .pmpro-wizard__header a.pmpro_logo img {
+	height: auto;
+	width: 100%;
+}
+.pmpro-stepper {
+	width: 100%;
+}
+.pmpro-stepper .pmpro-stepper__steps {
+	display: flex;
+	flex-direction: row;
+	justify-content: space-around;
+	margin: -1em .5em 0 .5em;
+}
+.pmpro-stepper .pmpro-stepper__step {
+	padding: 1em;
+	font-weight: 400;
+	position: relative;
+}
+.pmpro-stepper .pmpro-stepper__step-divider {
+	align-self: flex-start;
+	flex-grow: 1;
+	border-bottom: 1px solid #DDD;
+	margin-top: 2em;
+}
+.pmpro-stepper .pmpro-stepper__step-divider:last-child {
+	display: none;
+}
+.pmpro-stepper .pmpro-stepper__step .pmpro-stepper__step-label {
+	color: #666;
+	line-height: 24px;
+	font-size: 16px;
+}
+.pmpro-stepper .pmpro-stepper__step .pmpro-stepper__step-label a {
+	color: #666;
+	text-decoration: none;
+}
+.pmpro-stepper .pmpro-stepper__step-icon {
+	align-items: center;
+	background-color: #EEE;
+	border-radius: 50%;
+	color: #757575;
+	display: inline-flex;
+	font-size: 16px;
+	height: 24px;
+	justify-content: center;
+	margin-right: .25em;
+	min-width: 24px;
+	width: 24px;
+}
+.pmpro-stepper .pmpro-stepper__step.is-active .pmpro-stepper__step-icon {
+	background-color: #1A688B;
+	color: #FFF;
+	font-weight: 700;
+}
+.pmpro-stepper .pmpro-stepper__step.is-active .pmpro-stepper__step-label {
+  color: #1A688B;
+  font-weight: 700;
+}
+.pmpro-wizard .pmpro-wizard__container {
+	margin: 0 auto;
+	text-align: left;
+}
+.pmpro-wizard .pmpro-wizard__container > * {
+	margin-left: auto;
+	margin-right: auto;
+	max-width: 650px;
+}
+@media screen and (max-width: 782px) {
+	.pmpro-stepper .pmpro-stepper__step-label {
+		display: none;
+	}
+	.pmpro-wizard .pmpro-wizard__container {
+		padding-left: 1em;
+		padding-right: 1em;
+		margin-bottom: 3em;
+		margin-top: 0;
+	}
+}
+.pmpro-wizard__container .pmpro-wizard__step {
+	background: #FFF;
+	border: 1px solid #DDD;
+	border-radius: 4px;
+	box-shadow: 2px 2px 5px rgba( 0, 0, 0, 0.05 );
+}
+.pmpro-wizard__container .pmpro-wizard__step-header {
+	padding: 1em 2em;
+	text-align: center;
+}
+.pmpro-wizard__container .pmpro-wizard__step-header h1 {
+	font-size: 2em;
+	line-height: 1.2;
+	margin: 1em 0 0 0;
+}
+.pmpro-wizard__container .pmpro-wizard__step-header p {
+	color: #666;
+}
+.pmpro-wizard__container p,
+.pmpro-wizard__container label {
+	font-size: 18px;
+	line-height: 26px;
+}
+.pmpro-wizard__container .pmpro-wizard__section-title {
+	margin: 0 0 2em 0;
+}
+.pmpro-wizard__container .pmpro-wizard__field {
+	border-top: 1px solid #EEE;
+	padding: 2em;
+	text-align: left;
+}
+.pmpro-wizard__container p.pmpro-wizard__field-description {
+	font-size: 13px;
+	line-height: 20px;
+	margin: 0 0 .5em 0;
+}
+.pmpro-wizard__container .pmpro-wizard__label-block {
+	display: block;
+	margin-bottom: .25em;
+}
+.pmpro-wizard__container .pmpro-wizard__field input[type="text"] {
+	background-color: #FFF;
+	border: 1px solid #CCC;
+	font-size: 16px;
+	line-height: 1.5em;
+	margin: .25em 0;
+	padding: 0.5em;
+}
+.pmpro-wizard__container .pmpro-wizard__field select {
+	background-color: #FFF;
+	border: 1px solid #CCC;
+	border-radius: 4px;
+	display: inline-block;
+	font-size: 16px;
+	line-height: 1.5em;
+	padding: 0.5em 3.5em 0.5em 1em;
+	margin: 0;      
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
+	-webkit-appearance: none;
+	-moz-appearance: none;
+	background-image:
+		linear-gradient(45deg, transparent 50%, gray 50%),
+		linear-gradient(135deg, gray 50%, transparent 50%),
+		linear-gradient(to right, #CCC, #CCC);
+	background-position:
+		calc(100% - 20px) calc(1em + 2px),
+		calc(100% - 15px) calc(1em + 2px),
+		calc(100% - 2.5em) 0.5em;
+  background-size:
+		5px 5px,
+		5px 5px,
+		1px 1.5em;
+  background-repeat: no-repeat;
+}
+.pmpro-wizard__container .pmpro-wizard__field select:focus {
+	background-image:
+		linear-gradient(45deg, green 50%, transparent 50%),
+		linear-gradient(135deg, transparent 50%, green 50%),
+		linear-gradient(to right, #CCC, #CCC);
+	background-position:
+		calc(100% - 15px) 1em,
+		calc(100% - 20px) 1em,
+		calc(100% - 2.5em) 0.5em;
+	background-size:
+		5px 5px,
+		5px 5px,
+		1px 1.5em;
+	background-repeat: no-repeat;
+	border-color: #1A688B;
+	outline: 0;
+}
+.pmpro-wizard__container .pmpro-wizard__field select:-moz-focusring {
+	color: transparent;
+	text-shadow: 0 0 0 #000;
+}
+.pmpro-wizard__container .pmpro-wizard__field-block {
+	max-width: 100%;
+	width: 100%;
+}
+.pmpro-wizard__container .pmpro-wizard__field__checkbox-group {
+	display: flex;
+}
+.pmpro-wizard__container .pmpro-wizard__field__checkbox-group input[type="checkbox"] {
+	margin: .25em 1em 0 0;
+}
+
+.pmpro-wizard__container .pmpro_wizard__submit {
+	border-top: 1px solid #EEE;
+	margin: 0;
+	padding: 2em 0;
+	text-align: center;
+}
+.pmpro-wizard__container .pmpro-wizard__exit {
+	color: #666;
+	font-size: 14px;
+	margin-top: 2em;
+	text-align: center;
+}
+.pmpro-wizard__container .pmpro-wizard__exit a {
+	color: #666;
+}
 /* Metaboxes on Editor */
 #poststuff #pmpro_page_meta.postbox .postbox-header {
 	border-bottom-width: 0;
