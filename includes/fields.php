@@ -1572,13 +1572,15 @@ add_action( 'init', 'pmpro_load_user_fields_from_settings', 1 );
  * @return bool True if user is adding custom user fields with code.
  */
 function pmpro_has_coded_user_fields() {
-	global $pmpro_user_fields;
+	global $pmpro_user_fields, $pmprorh_registration_fields;
 
-	// Count the number of user fields that are saved in the database.
-	$num_db_fields = array_sum( array_map( function ($group) { return count( $group->fields ); }, pmpro_get_user_fields_settings() ) );
+	// Check if coded fields are being added using the PMPro Register Helper Add On active.
+	if ( ! empty( $pmprorh_registration_fields ) ) {
+		return true;
+	}
 
-	// Count the number of user fields that are saved in the global variable.
-	$num_global_fields = array_sum( array_map( 'count', $pmpro_user_fields ) );
-
+	// Check if coded fields are being added using the PMPro Register Helper Add On inactive.
+	$num_db_fields = array_sum( array_map( function ($group) { return count( $group->fields ); }, pmpro_get_user_fields_settings() ) ); // Fields from UI settings page.
+	$num_global_fields = array_sum( array_map( 'count', $pmpro_user_fields ) ); // Total loaded fields.
 	return $num_global_fields > $num_db_fields;
 }
