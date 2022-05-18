@@ -62,7 +62,7 @@
 	 */
 	function pmpro_userfields_save_widget() { ?>
 		<p class="submit">
-			<input id="pmpro_userfields_savesettings" name="savesettings" type="submit" class="button-primary" value="<?php esc_attr_e( 'Save All Settings', 'paid-memberships-pro' ); ?>" />
+			<input id="pmpro_userfields_savesettings" name="savesettings" type="submit" class="button-primary" value="<?php esc_attr_e( 'Save All Changes', 'paid-memberships-pro' ); ?>" disabled/>
 		</p>
 		<?php
 	}
