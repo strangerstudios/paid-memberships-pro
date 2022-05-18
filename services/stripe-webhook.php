@@ -973,7 +973,7 @@ function pmpro_stripe_webhook_populate_order_from_payment( $order, $payment_meth
 	}
 
 	// Add billing address information.
-	$morder->billing = new stdClass();
+	$order->billing = new stdClass();
 	$order->billing->name = empty( $payment_method->billing_details->name ) ? '' : $payment_method->billing_details->name;
 	$order->billing->street = empty( $payment_method->billing_details->address->line1 ) ? '' : $payment_method->billing_details->address->line1;
 	$order->billing->city = empty( $payment_method->billing_details->address->city ) ? '' : $payment_method->billing_details->address->city;
