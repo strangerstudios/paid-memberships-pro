@@ -180,15 +180,6 @@ class PMPro_Field
             $this->save_function = array($this, "saveDate");
         }
 
-		/**
-		 * Allow hooking into after field properties are set up.
-		 *
-		 * @since TBD
-		 *
-		 * @param PMPro_Field $field The field object.
-		 */
-		do_action( 'pmpro_field_set', $this );
-
 		return true;
 	}
 
@@ -821,25 +812,14 @@ class PMPro_Field
 		$r = $r_beginning . $r . $r_end;
 
 		/**
-		 * Allow hooking into the generated field HTML for a specific field type.
-		 *
-		 * @since TBD
-		 *
-		 * @param string      $r     The field HTML.
-		 * @param mixed       $value The field value.
-		 * @param PMPro_Field $field The field object.
-		 */
-		$r = apply_filters( "pmpro_field_get_html_{$this->type}", $r, $value, $this );
-
-		/**
-		 * Allow hooking into the generated field HTML.
+		 * Legacy filter to allow hooking into the generated field HTML.
 		 *
 		 * @since TBD
 		 *
 		 * @param string      $r     The field HTML.
 		 * @param PMPro_Field $field The field object.
 		 */
-		$r = apply_filters( 'pmpro_field_get_html', $r, $this );
+		$r = apply_filters( 'pmprorh_get_html', $r, $this );
 
 		return $r;
 	}
@@ -853,16 +833,6 @@ class PMPro_Field
 	 */
 	function getHTMLAttributes() {
 		$html = '';
-
-		/**
-		 * Allow filtering the HTML attributes before escaping.
-		 *
-		 * @since TBD
-		 *
-		 * @param array       $html_attributes The list of HTML attributes.
-		 * @param PMPro_Field $field           The field object.
-		 */
-		$this->html_attributes = apply_filters( 'pmpro_field_custom_html_attributes', $this->html_attributes, $this );
 
 		if ( ! empty( $this->html_attributes ) ) {
 			foreach ( $this->html_attributes as $name => $value ) {
@@ -1114,28 +1084,6 @@ class PMPro_Field
 		// Enforce string as output.
 		$output = (string) $output;
 
-		/**
-		 * Allow hooking the field display value for a specific field type.
-		 *
-		 * @since TBD
-		 *
-		 * @param string      $output The field display value to output.
-		 * @param mixed       $value  The raw value.
-		 * @param PMPro_Field $field  The field object.
-		 */
-		$output = apply_filters( "pmpro_field_display_value_{$this->type}", $output, $value, $this );
-
-		/**
-		 * Allow hooking the field display value.
-		 *
-		 * @since TBD
-		 *
-		 * @param string      $output The field display value to output.
-		 * @param mixed       $value  The raw value.
-		 * @param PMPro_Field $field  The field object.
-		 */
-		$output = apply_filters( 'pmpro_field_display_value', $output, $value, $this );
-
 		echo $output;
 	}
 	
@@ -1230,24 +1178,6 @@ class PMPro_Field
 				$filled = ! ( empty( $_REQUEST[$this->name] ) && empty( $_FILES[$this->name]['name'] ) && empty( $_REQUEST[$this->name.'_old'] ) );
 		}
 
-		/**
-		 * Allow hooking into whether the field is filled for a specific field type.
-		 *
-		 * @since TBD
-		 *
-		 * @param bool        $filled Whether the field is filled.
-		 * @param PMPro_Field $field  The field object.
-		 */
-		$filled = (bool) apply_filters( "pmpro_field_was_filled_if_needed_{$this->type}", $filled, $this );
-
-		/**
-		 * Allow hooking into whether the field is filled.
-		 *
-		 * @since TBD
-		 *
-		 * @param bool        $filled Whether the field is filled.
-		 * @param PMPro_Field $field  The field object.
-		 */
-		return (bool) apply_filters( 'pmpro_field_was_filled_if_needed', $filled, $this );
+		return $filled;
 	}
 }
