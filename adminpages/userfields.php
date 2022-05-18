@@ -37,6 +37,15 @@
 	 */
 	require_once( dirname(__FILE__) . '/admin_header.php' );
 
+	// Show warning if there are additional fields that are coded.
+	if ( pmpro_has_coded_user_fields() ) {
+		?>
+		<div class="notice notice-warning">
+			<p><?php esc_html_e( 'This website has additional user fields that are set up with code. Coded fields cannot be edited here and will show in addition to the fields set up on this page.', 'paid-memberships-pro' ); ?></p>
+		</div>
+		<?php
+	}
+
 	/**
 	 * Meta boxes for User Fields admin page.
 	 *

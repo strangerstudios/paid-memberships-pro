@@ -1563,3 +1563,22 @@ function pmpro_load_user_fields_from_settings() {
     }        
 }
 add_action( 'init', 'pmpro_load_user_fields_from_settings', 1 );
+
+/**
+ * Check if user is adding custom user fields with code.
+ *
+ * @since TBD
+ *
+ * @return bool True if user is adding custom user fields with code.
+ */
+function pmpro_has_coded_user_fields() {
+	global $pmpro_user_fields;
+
+	// Count the number of user fields that are saved in the database.
+	$num_db_fields = array_sum( array_map( function ($group) { return count( $group->fields ); }, pmpro_get_user_fields_settings() ) );
+
+	// Count the number of user fields that are saved in the global variable.
+	$num_global_fields = array_sum( array_map( 'count', $pmpro_user_fields ) );
+
+	return $num_global_fields > $num_db_fields;
+}
