@@ -1448,7 +1448,10 @@ function pmpro_get_field_html( $field = null ) {
             <div class="pmpro_userfield-field-actions">            
                 <button name="pmpro_userfields_close_field" class="button button-secondary pmpro_userfields_close_field">
                     <?php esc_html_e( 'Close Field', 'paid-memberships-pro' ); ?>
-                </button>            
+                </button> 
+				<button name="pmpro_userfields_delete_field" class="button button-secondary is-destructive">
+                    <?php _e( 'Delete Field', 'paid-memberships-pro' ); ?>
+                </button>           
             </div> <!-- end pmpro_userfield-field-actions -->
         </div> <!-- end pmpro_userfield-field-settings -->        
     </div> <!-- end pmpro_userfield-group-field -->
