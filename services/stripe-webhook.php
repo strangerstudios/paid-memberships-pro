@@ -16,9 +16,6 @@
 	global $logstr;
 	$logstr = "";
 
-	// Sets the PMPRO_DOING_WEBHOOK constant and fires the pmpro_doing_webhook action.
-	pmpro_doing_webhook( 'stripe', true );
-
 	//you can define a different # of seconds (define PMPRO_STRIPE_WEBHOOK_DELAY in your wp-config.php) if you need this webhook to delay more or less
 	if(!defined('PMPRO_STRIPE_WEBHOOK_DELAY'))
 		define('PMPRO_STRIPE_WEBHOOK_DELAY', 2);
@@ -33,6 +30,9 @@
 	if(!class_exists("Stripe\Stripe")) {
 		require_once( PMPRO_DIR . "/includes/lib/Stripe/init.php" );
 	}
+
+	// Sets the PMPRO_DOING_WEBHOOK constant and fires the pmpro_doing_webhook action.
+	pmpro_doing_webhook( 'stripe', true );
 
 	// retrieve the request's body and parse it as JSON
 	if(empty($_REQUEST['event_id']))
