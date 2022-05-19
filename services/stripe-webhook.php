@@ -687,62 +687,68 @@
 	}
 
 	// TODO Test this
-    // TODO docblock
-	function getOldOrderFromInvoiceEvent($pmpro_stripe_event)
-	{
-		//pause here to give PMPro a chance to finish checkout
-		sleep(PMPRO_STRIPE_WEBHOOK_DELAY);
+   	/**
+		* Get the Member's Order from a Stripe Event.
+		*
+		* @param Object $pmpro_stripe_event The Stripe Event object sent via webhook.
+		* @return PMPro_MemberOrder|bool Returns either the member order object linked to the Stripe Event data or false if no order is found.
+		*/
+	function getOldOrderFromInvoiceEvent( $pmpro_stripe_event ) {
+	
+		// Pause here to give PMPro a chance to finish checkout.
+		sleep( PMPRO_STRIPE_WEBHOOK_DELAY );
 
 		global $wpdb;
 
+		// Check if the Stripe event has a subscription ID available. (Most likely an older API version).
 		if ( ! empty( $pmpro_stripe_event->data->object->subscription ) ) {
             $subscription_id = $pmpro_stripe_event->data->object->subscription;
-        } else {
-            $subscription_id = $pmpro_stripe_event->data->object->id;
-        }
+		}
 
-		// Try to get the order ID from the subscription ID in the event.
-		$old_order_id = $wpdb->get_var(
-			$wpdb->prepare(
-				"
-					SELECT id
-					FROM $wpdb->pmpro_membership_orders
-					WHERE
-						subscription_transaction_id = %s
-						AND gateway = 'stripe'
-					ORDER BY timestamp DESC
-					LIMIT 1
-				",
-				$subscription_id
-			)
-		);
-
-		if(empty($old_order_id)){
+		// Try to get the subscription ID from the order ID.
+		if ( empty( $subscription_id ) ) {
 			// Try to get the order ID from the invoice ID in the event.
 			$invoice_id = $pmpro_stripe_event->data->object->invoice;
 
 			try {
-
 				$invoice = Stripe_Invoice::retrieve( $invoice_id );
-
-			} catch (Exception $e) {
-				error_log("Unable to fetch Stripe Invoice object: " . $e->getMessage());
+			} catch ( Exception $e ) {
+				error_log( 'Unable to fetch Stripe Invoice object: ' . $e->getMessage() );
 				$invoice = null;
 			}
 
-			if (isset( $invoice->subscription )) {
+			if ( isset( $invoice->subscription ) ) { 
 				$subscription_id = $invoice->subscription;
-				$old_order_id    = $wpdb->get_var( "SELECT id FROM $wpdb->pmpro_membership_orders WHERE (subscription_transaction_id = '" . $subscription_id . "' OR subscription_transaction_id = '"  . esc_sql($subscription_id) . "') AND gateway = 'stripe' ORDER BY timestamp DESC LIMIT 1" );
+			} else {
+				// Fall back to the Stripe event ID as a last resort.
+				$subscription_id = $pmpro_stripe_event->data->object->id;
 			}
+
+			// Try to get the order ID from the subscription ID in the event.
+			$old_order_id = $wpdb->get_var(
+				$wpdb->prepare(
+					"
+						SELECT id
+						FROM $wpdb->pmpro_membership_orders
+						WHERE
+							subscription_transaction_id = %s
+							AND gateway = 'stripe'
+						ORDER BY timestamp DESC
+						LIMIT 1
+					",
+					$subscription_id
+				)
+			);
 		}
 
 		// If we have an ID, get the associated MemberOrder.
-		if (!empty($old_order_id)) {
+		if ( ! empty( $old_order_id ) ) {
 
 			$old_order = new MemberOrder( $old_order_id );
 
-			if(isset($old_order->id) && ! empty($old_order->id))
+			if ( isset( $old_order->id ) && ! empty( $old_order->id ) ) {
 				return $old_order;
+			}	
 		}
 
 		return false;
