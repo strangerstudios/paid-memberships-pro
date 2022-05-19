@@ -15,8 +15,29 @@
 	if ( ! empty( $_REQUEST['savesettings'] ) ) {
 		// Check nonce.
 		check_admin_referer( 'savesettings', 'pmpro_userfields_nonce' );
-				
+
 		$groups = json_decode( stripslashes( $_REQUEST['pmpro_user_fields_settings'] ) );
+
+		// Sanitize everything.
+		foreach ( $groups as $group ) {
+			$group->name        = sanitize_text_field( $group->name );
+			$group->checkout    = 'yes' === $group->checkout ? 'yes' : 'no';
+			$group->profile     = 'yes' === $group->profile ? 'yes' : 'no';
+			$group->description = sanitize_text_field( $group->description );
+			$group->levels      = array_map( 'intval', $group->levels );
+			foreach ( $group->fields as $field ) {
+				$field->name          = sanitize_text_field( $field->name );
+				$field->label         = sanitize_text_field( $field->label );
+				$field->type          = sanitize_text_field( $field->type );
+				$field->required      = 'yes' === $field->required ? 'yes' : 'no';
+				$field->readonly      = 'yes' === $field->readonly ? 'yes' : 'no';
+				$field->profile       = sanitize_text_field( $field->profile );
+				$field->wrapper_class = sanitize_text_field( $field->wrapper_class );
+				$field->element_class = sanitize_text_field( $field->element_class );
+				$field->hint          = sanitize_textarea_field( $field->hint );
+				$field->options       = sanitize_textarea_field( $field->options );
+			}
+		}
 
 		// TODO: Do we want to sanitize the input here before being added to the DB?
 		update_option( 'pmpro_user_fields_settings', $groups, false );
