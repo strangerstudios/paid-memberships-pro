@@ -693,8 +693,7 @@
 		* @param Object $pmpro_stripe_event The Stripe Event object sent via webhook.
 		* @return PMPro_MemberOrder|bool Returns either the member order object linked to the Stripe Event data or false if no order is found.
 		*/
-	function getOldOrderFromInvoiceEvent( $pmpro_stripe_event ) {
-	
+	function getOldOrderFromInvoiceEvent( $pmpro_stripe_event ) {	
 		// Pause here to give PMPro a chance to finish checkout.
 		sleep( PMPRO_STRIPE_WEBHOOK_DELAY );
 
@@ -723,22 +722,24 @@
 				// Fall back to the Stripe event ID as a last resort.
 				$subscription_id = $pmpro_stripe_event->data->object->id;
 			}
-
-			// Try to get the order ID from the subscription ID in the event.
-			$old_order_id = $wpdb->get_var(
-				$wpdb->prepare(
-					"
-						SELECT id
-						FROM $wpdb->pmpro_membership_orders
-						WHERE
-							subscription_transaction_id = %s
-							AND gateway = 'stripe'
-						ORDER BY timestamp DESC
-						LIMIT 1
-					",
-					$subscription_id
-				)
-			);
+			
+			// Try to get the order ID from the subscription ID if we have one.			
+			if ( ! empty( $subscription_id ) ) {				
+				$old_order_id = $wpdb->get_var(
+					$wpdb->prepare(
+						"
+							SELECT id
+							FROM $wpdb->pmpro_membership_orders
+							WHERE
+								subscription_transaction_id = %s
+								AND gateway = 'stripe'
+							ORDER BY timestamp DESC
+							LIMIT 1
+						",
+						$subscription_id
+					)
+				);
+			}			
 		}
 
 		// If we have an ID, get the associated MemberOrder.
