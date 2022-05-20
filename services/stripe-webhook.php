@@ -179,7 +179,6 @@
 						$logstr .= "Could not find payment method for invoice " . $invoice->id . ".";
 						$payment_method = null;
 					}
-					$payment_method = null;
 					// Update payment method and billing address on order.
 					pmpro_stripe_webhook_populate_order_from_payment( $morder, $payment_method );				
 
