@@ -10,6 +10,7 @@
 * BUG FIX/ENHANCEMENT: Adding HTML to our no_access messages when using Divi to avoid display issues. #2080 (@kimcoleman)
 * BUG FIX/ENHANCEMENT: Fixed a warning on memberships report when using MMPU. #2104 (@mircobabini)
 * BUG FIX: Moved call to pmpro_doing_webhook in the Stripe webhook handler to make sure Stripe libraries are already loaded. #2101 (@mircobabini) 
+* BUG FIX/ENHANCEMENT: Avoiding duplicate DB calls when pmpro_license_isValid() is called with no key. This was happening on the plugins, update, and add ons pages in the dashboard. (@ideadude)
 * BUG FIX: Fixed issues where payment failed events were not being processed correctly in the Stripe webhook handler. #2100 (@andrewlimaza, @dparker1005, @ideadude)
 * BUG FIX: Fixed issue where recurring orders were not saving if a payment method could not be found. #2099 #2105 #2104 (@dparker1005, @ideadude)
 * BUG FIX: Fixed error on the orders page happening in some versions of PHP. #2075 (@mircobabini)
