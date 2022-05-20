@@ -468,7 +468,7 @@
 				</table>
 				<?php
 				/**
-				 * Allow adding form fields after the General Information section.
+				 * Allow adding form fields inside the General Information section.
 				 *
 				 * @since 2.5.10
 				 *
@@ -478,6 +478,17 @@
 				?>
 			</div> <!-- end pmpro_section_inside -->
 		</div> <!-- end pmpro_section -->
+
+		<?php
+		/**
+		 * Allow adding form fields after the General Information section.
+		 *
+		 * @since 2.5.10
+		 *
+		 * @param object $level The Membership Level object.
+		 */
+		do_action( 'pmpro_membership_level_before_billing_information', $level );
+		?>
 
 		<?php
 			if ( ! pmpro_isLevelFree( $level ) || $template === 'none' ) {
@@ -1196,38 +1207,90 @@
 		<div class="pmpro-popup-wrap">
 			<span id="pmpro-popup-inner">
 				<a class="pmproPopupCloseButton" href="#" title="<?php esc_attr_e( 'Close Popup', 'paid-memberships-pro' ); ?>"><span class="dashicons dashicons-no"></span></a>
-				<h1>What type of membership level do you want to create?</h1>
+				<h1><?php esc_html_e( 'What type of membership level do you want to create?', 'paid-memberships-pro' ); ?></h1>
 				<div class="pmpro_level_templates">
-					<a class="pmpro_level_template" href="<?php echo esc_url( add_query_arg( array( 'page' => 'pmpro-membershiplevels', 'edit' => -1, 'template' => 'free' ), admin_url( 'admin.php' ) ) ); ?>">
-						<span class="dashicons dashicons-awards"></span>
-						<span class="template"><?php esc_html_e( 'Free', 'paid-memberships-pro' ); ?></span>
-						<p><?php esc_html_e( 'A free membership level that never expires.', 'paid-memberships-pro' ); ?></p>
-					</a>
-					<a class="pmpro_level_template" href="<?php echo esc_url( add_query_arg( array( 'page' => 'pmpro-membershiplevels', 'edit' => -1, 'template' => 'monthly' ), admin_url( 'admin.php' ) ) ); ?>">
-						<span class="dashicons dashicons-calendar-alt"></span>
-						<span class="template"><?php esc_html_e( 'Monthly', 'paid-memberships-pro' ); ?></span>
-						<p><?php esc_html_e( 'Charge a recurring monthly subscription that never ends.', 'paid-memberships-pro' ); ?></p>
-					</a>
-					<a class="pmpro_level_template" href="<?php echo esc_url( add_query_arg( array( 'page' => 'pmpro-membershiplevels', 'edit' => -1, 'template' => 'annual' ), admin_url( 'admin.php' ) ) ); ?>">
-						<span class="dashicons dashicons-calendar"></span>
-						<span class="template"><?php esc_html_e( 'Annual', 'paid-memberships-pro' ); ?></span>
-						<p><?php esc_html_e( 'Charge a recurring annual subscription that never ends.', 'paid-memberships-pro' ); ?></p>
-					</a>
-					<a class="pmpro_level_template" href="<?php echo esc_url( add_query_arg( array( 'page' => 'pmpro-membershiplevels', 'edit' => -1, 'template' => 'onetime' ), admin_url( 'admin.php' ) ) ); ?>">
-						<span class="dashicons dashicons-money-alt"></span>
-						<span class="template"><?php esc_html_e( 'One Time', 'paid-memberships-pro' ); ?></span>
-						<p><?php esc_html_e( 'Charge a one-time payment for a fixed period.', 'paid-memberships-pro' ); ?></p>
-					</a>
-					<a class="pmpro_level_template" href="<?php echo esc_url( add_query_arg( array( 'page' => 'pmpro-membershiplevels', 'edit' => -1, 'template' => 'lifetime' ), admin_url( 'admin.php' ) ) ); ?>">
-						<span class="dashicons dashicons-admin-site"></span>
-						<span class="template"><?php esc_html_e( 'Lifetime', 'paid-memberships-pro' ); ?></span>
-						<p><?php esc_html_e( 'Charge a one-time payment for a level that never expires.', 'paid-memberships-pro' ); ?></p>
-					</a>
-					<a class="pmpro_level_template" href="<?php echo esc_url( add_query_arg( array( 'page' => 'pmpro-membershiplevels', 'edit' => -1, 'template' => 'none' ), admin_url( 'admin.php' ) ) ); ?>">
-						<span class="dashicons dashicons-admin-tools"></span>
-						<span class="template"><?php esc_html_e( 'Advanced', 'paid-memberships-pro' ); ?></span>
-						<p><?php esc_html_e( 'Show all settings. I want to create an advanced membership level.', 'paid-memberships-pro' ); ?></p>
-					</a>
+					<?php
+						$level_templates = array(
+							'free' => array(
+								'name' => __( 'Free', 'paid-memberships-pro' ),
+								'description' => __( 'A free membership level that never expires.', 'paid-memberships-pro' )
+							),
+							'monthly' => array(
+								'name' => __( 'Monthly', 'paid-memberships-pro' ),
+								'description' => __( 'Charge a recurring monthly subscription that never ends.', 'paid-memberships-pro' )
+							),
+							'annual' => array(
+								'name' => __( 'Annual', 'paid-memberships-pro' ),
+								'description' => __( 'Charge a recurring annual subscription that never ends.', 'paid-memberships-pro' )
+							),
+							'onetime' => array(
+								'name' => __( 'One Time', 'paid-memberships-pro' ),
+								'description' => __( 'Charge a one-time payment for a fixed period.', 'paid-memberships-pro' )
+							),
+							'lifetime' => array(
+								'name' => __( 'Lifetime', 'paid-memberships-pro' ),
+								'description' => __( 'Charge a one-time payment for a level that never expires.', 'paid-memberships-pro' )
+							),
+							'none' => array(
+								'name' => __( 'Advanced', 'paid-memberships-pro' ),
+								'description' => __( 'Show all settings. I want to create an advanced membership level.', 'paid-memberships-pro' )
+							),
+							'approvals' => array(
+								'name' => __( 'Approval', 'paid-memberships-pro' ),
+								'description' => __( 'Give admins the ability to approve or deny members.', 'paid-memberships-pro' ),
+								'external-link' => 'https://www.paidmembershipspro.com/add-ons/approval-process-membership/',
+							),
+							'gift' => array(
+								'name' => __( 'Gift', 'paid-memberships-pro' ),
+								'description' => __( 'Allow anyone to purchase a gift of membership.' ),
+								'external-link' => 'https://www.paidmembershipspro.com/add-ons/pmpro-gift-levels/',
+							),
+							'invite' => array(
+								'name' => __( 'Invite-Only', 'paid-memberships-pro' ),
+								'description' => __( 'Require an invite code for free or paid membership checkout.', 'paid-memberships-pro' ),
+								'external-link' => 'https://www.paidmembershipspro.com/add-ons/pmpro-invite-only-membership/',
+							),
+						);
+						/**
+						 * Filter to add or remove level templates from the Membership Levels > Add New popup.
+						 *
+						 * @since TBD
+						 *
+						 * @param $level_templates array An array of templates with name and description.
+						 *
+						 * @return $level_templates array An array of templates with name and description.
+						 */
+						$templates = apply_filters( 'pmpro_membershiplevels_templates', $level_templates );
+
+						foreach ( $templates as $key => $value ) {
+							// Build the selectors for the level item.
+							$classes = array();
+							$classes[] = 'pmpro_level_template';
+							if ( $key === 'approvals' && ! defined( 'PMPRO_APP_DIR' ) ) {
+								$classes[] = 'inactive';
+							} elseif ( $key === 'gift' && ! defined( 'PMPROGL_VERSION' ) ) {
+								$classes[] = 'inactive';
+							} elseif ( $key === 'invite' && ! defined( 'PMPROIO_CODES' ) ) {
+								$classes[] = 'inactive';
+							}
+							$class = implode( ' ', array_unique( $classes ) );
+
+							if ( in_array( 'inactive', $classes ) ) { ?>
+								<a class="<?php echo esc_attr( $class ); ?>" target="_blank" rel="nofollow noopener" href="<?php echo esc_url( $value['external-link'] ); ?>">
+									<span class="label"><?php esc_html_e( 'Add On', 'paid-memberships-pro' ); ?></span>
+									<span class="template"><?php echo esc_html( $value['name'] ); ?></span>
+									<p><?php echo esc_html( $value['description'] ); ?></p>
+								</a>
+								<?php
+							} else { ?>
+								<a class="<?php echo esc_attr( $class ); ?>" href="<?php echo esc_url( add_query_arg( array( 'page' => 'pmpro-membershiplevels', 'edit' => -1, 'template' => esc_attr( $key ) ), admin_url( 'admin.php' ) ) ); ?>">
+									<span class="template"><?php echo esc_html( $value['name'] ); ?></span>
+									<p><?php echo esc_html( $value['description'] ); ?></p>
+								</a>
+								<?php
+							}
+						}
+					?>
 				</div> <!-- end pmpro_level_templates -->
 			</span>
 		</div>
