@@ -160,7 +160,7 @@
 					$morder->gateway = $old_order->gateway;
 					$morder->gateway_environment = $old_order->gateway_environment;
 
-					// Update payment method and billing address on order.
+					// Find the payment intent.
 					$payment_intent_args = array(
 						'id'     => $invoice->payment_intent,
 						'expand' => array(
@@ -168,18 +168,20 @@
 						),
 					);
 					$payment_intent = \Stripe\PaymentIntent::retrieve( $payment_intent_args );
+					// Find the payment method.
 					if ( ! empty( $payment_intent->payment_method ) ) {
 						$payment_method = $payment_intent->payment_method;
 					} elseif( ! empty( $payment_intent->charges->data[0] ) ) {
 						// If we didn't get a payment method, check the charge.
 						$payment_method = $payment_intent->charges->data[0]->payment_method_details;
 					}					
-
-					if ( empty( $payment_method ) ) {
-						$logstr .= "Could not find payment method for invoice " . $invoice->id;
-						pmpro_stripeWebhookExit();
+					if ( empty( $payment_method ) ) {						
+						$logstr .= "Could not find payment method for invoice " . $invoice->id . ".";
+						$payment_method = null;
 					}
-					pmpro_stripe_webhook_populate_order_from_payment( $morder, $payment_method );
+					$payment_method = null;
+					// Update payment method and billing address on order.
+					pmpro_stripe_webhook_populate_order_from_payment( $morder, $payment_method );				
 
 					//save
 					$morder->status = "success";
@@ -244,20 +246,28 @@
 				$morder = new MemberOrder();
 				$morder->user_id = $user_id;
 
-				// Update payment method and billing address on order.
+				// Find the payment intent.
 		        $payment_intent_args = array(
 		          'id'     => $invoice->payment_intent,
 		          'expand' => array(
 		            'payment_method',
 		          ),
 		        );
-		        $payment_intent = \Stripe\PaymentIntent::retrieve( $payment_intent_args );
-		        $payment_method = $payment_intent->charges->data[0]->payment_method_details;
-		        if ( empty( $payment_method ) ) {
-		          $logstr .= "Could not find payment method for invoice " . $invoice->id;
-		          pmpro_stripeWebhookExit();
-		        }
-		        pmpro_stripe_webhook_populate_order_from_payment( $morder, $payment_method );
+		        $payment_intent = \Stripe\PaymentIntent::retrieve( $payment_intent_args );		        
+				// Find the payment method.
+				$payment_method = null;
+				if ( ! empty( $payment_intent->payment_method ) ) {
+					$payment_method = $payment_intent->payment_method;
+				} elseif( ! empty( $payment_intent->charges->data[0] ) ) {
+					// If we didn't get a payment method, check the charge.
+					$payment_method = $payment_intent->charges->data[0]->payment_method_details;
+				}
+				$payment_method = $payment_intent->charges->data[0]->payment_method_details;		        
+				if ( empty( $payment_method ) ) {		       	
+					$logstr .= "Could not find payment method for invoice " . $invoice->id;					
+				}
+				// Update payment method and billing address on order.
+				pmpro_stripe_webhook_populate_order_from_payment( $morder, $payment_method );
 
 				// Add invoice link to the order.
 				$morder->invoice_url = $pmpro_stripe_event->data->object->hosted_invoice_url;
@@ -296,8 +306,8 @@
 				$morder = new MemberOrder();
 				$morder->user_id = $user_id;
 				$morder->membership_id = $old_order->membership_id;
-
-				// Update payment method and billing address on order.
+				
+				// Find the payment intent.
 				$payment_intent_args = array(
 					'id'     => $pmpro_stripe_event->data->object->payment_intent,
 					'expand' => array(
@@ -305,11 +315,19 @@
 					),
 				);
 				$payment_intent = \Stripe\PaymentIntent::retrieve( $payment_intent_args );
-				if ( empty( $payment_intent->payment_method ) ) {
-					$logstr .= "Could not find payment method for charge " . $pmpro_stripe_event->data->object->id;
-					pmpro_stripeWebhookExit();
+				// Find the payment method.
+				$payment_method = null;
+				if ( ! empty( $payment_intent->payment_method ) ) {
+					$payment_method = $payment_intent->payment_method;
+				} elseif( ! empty( $payment_intent->charges->data[0] ) ) {
+					// If we didn't get a payment method, check the charge.
+					$payment_method = $payment_intent->charges->data[0]->payment_method_details;
+				}				
+				if ( empty( $payment_method ) ) {
+					$logstr .= "Could not find payment method for charge " . $pmpro_stripe_event->data->object->id . ".";
 				}
-				pmpro_stripe_webhook_populate_order_from_payment( $morder, $payment_intent->payment_method );
+				// Update payment method and billing address on order.
+				pmpro_stripe_webhook_populate_order_from_payment( $morder, $payment_method );
 
 				// Email the user and ask them to update their credit card information
 				$pmproemail = new PMProEmail();
@@ -484,6 +502,7 @@
 			}
 
 			// Get the payment method object for this checkout and set transaction and subscription ids.
+			$payment_method = null;
 			if ( $checkout_session->mode === 'payment' ) {
 				// User purchased a one-time payment level. Assign the charge ID to the order.
 				try {
@@ -523,13 +542,11 @@
 					// Could not get invoices. We just won't set a payment transaction ID.
 				}
 			}
-			// Make sure that we have payment and payment method objects.
+			// Update payment method and billing address on order.
 			if ( empty( $payment_method ) ) {
-				$logstr .= "Could not find payment method for Checkout Session " . $checkout_session->id;
-			} else {
-				// Update payment method and billing address on order.
-				pmpro_stripe_webhook_populate_order_from_payment( $order, $payment_method );
+				$logstr .= "Could not find payment method for Checkout Session " . $checkout_session->id . ".";				
 			}
+			pmpro_stripe_webhook_populate_order_from_payment( $order, $payment_method );
 
 			// Update the amounts paid.
 			global $pmpro_currency;
@@ -984,6 +1001,15 @@ function pmpro_stripe_webhook_populate_order_from_payment( $order, $payment_meth
 			$order->ExpirationDate = '';
 			$order->ExpirationDate_YdashM = '';
 		}
+	} else {
+		// Some defaults.
+		$order->payment_type = 'Stripe';
+		$order->cardtype = '';
+		$order->accountnumber = '';
+		$order->expirationmonth = '';
+		$order->expirationyear = '';
+		$order->ExpirationDate = '';
+		$order->ExpirationDate_YdashM = '';
 	}
 
 	// Add billing address information.
@@ -999,7 +1025,7 @@ function pmpro_stripe_webhook_populate_order_from_payment( $order, $payment_meth
 	$name_parts = empty( $payment_method->billing_details->name ) ? [] : pnp_split_full_name( $payment_method->billing_details->name );
 	$order->FirstName = empty( $nameparts['fname'] ) ? '' : $nameparts['fname'];
 	$order->LastName = empty( $nameparts['lname'] ) ? '' : $nameparts['lname'];
-	$order->Email = $wpdb->get_var("SELECT user_email FROM $wpdb->users WHERE ID = '" . $order->user_id . "' LIMIT 1");
+	$order->Email = $wpdb->get_var("SELECT user_email FROM $wpdb->users WHERE ID = '" . esc_sql( $order->user_id ) . "' LIMIT 1");
 	$order->Address1 = $order->billing->street;
 	$order->City = $order->billing->city;
 	$order->State = $order->billing->state;
