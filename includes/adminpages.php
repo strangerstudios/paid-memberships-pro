@@ -354,6 +354,10 @@ function pmpro_display_post_states( $post_states, $post ) {
 		$post_states['pmpro_levels_page'] = __( 'Membership Levels Page', 'paid-memberships-pro' );
 	}
 
+	if ( intval( $pmpro_pages['login'] ) === $post->ID ) {
+		$post_states['pmpro_login_page'] = __( 'Paid Memberships Pro Login Page', 'paid-memberships-pro' );
+	}
+
 	if ( intval( $pmpro_pages['member_profile_edit'] ) === $post->ID ) {
 		$post_states['pmpro_member_profile_edit_page'] = __( 'Member Profile Edit Page', 'paid-memberships-pro' );
 	}
