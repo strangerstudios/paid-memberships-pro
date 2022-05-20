@@ -168,7 +168,13 @@
 						),
 					);
 					$payment_intent = \Stripe\PaymentIntent::retrieve( $payment_intent_args );
-					$payment_method = $payment_intent->charges->data[0]->payment_method_details;
+					if ( ! empty( $payment_intent->payment_method ) ) {
+						$payment_method = $payment_intent->payment_method;
+					} elseif( ! empty( $payment_intent->charges->data[0] ) ) {
+						// If we didn't get a payment method, check the charge.
+						$payment_method = $payment_intent->charges->data[0]->payment_method_details;
+					}					
+
 					if ( empty( $payment_method ) ) {
 						$logstr .= "Could not find payment method for invoice " . $invoice->id;
 						pmpro_stripeWebhookExit();
