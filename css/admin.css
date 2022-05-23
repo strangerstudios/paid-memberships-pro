@@ -1,7 +1,8 @@
 /* Setup Wizard Styles */
-.admin_page_pmpro-wizard #wpcontent {
+.memberships_page_pmpro-wizard #wpcontent {
 	padding-left: 0;
 }
+
 .pmpro-wizard .pmpro-wizard__header {
 	background: #FFF;
 	border-bottom: 1px solid #DDD;
@@ -214,6 +215,47 @@
 .pmpro-wizard__container .pmpro-wizard__exit a {
 	color: #666;
 }
+
+.pmpro-wizard__col {
+	width: 45%;
+	display: inline-flex;
+	padding: 10px;
+	vertical-align: middle;
+}
+
+.pmpro-wizard__col .button {
+	width: 100%;
+	text-align: center;
+}
+
+.pmpro-wizard__subtitle {
+	font-size: 20px;
+	font-weight: bold;
+}
+
+.pmpro-wizard__col3 {
+	width: 29%;
+	display: inline-flex;
+	padding: 10px;
+}
+
+.pmpro-wizard__textbreak::before,
+.pmpro-wizard__textbreak::after {
+	background-color: #000;
+	content: "";
+	display: inline-block;
+	height: 1px;
+	vertical-align: middle;
+	width: 3%;
+	margin: 10px;
+}
+
+.pmpro-wizard__textbreak {
+	color: #000;
+	margin: 10px;
+	text-align: center;
+}
+
 /* Metaboxes on Editor */
 #poststuff #pmpro_page_meta.postbox .postbox-header {
 	border-bottom-width: 0;
