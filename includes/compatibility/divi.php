@@ -8,7 +8,8 @@ class PMProDivi{
 			add_filter( 'et_builder_get_parent_modules', array( $this, 'toggle' ) );
 			add_filter( 'et_pb_module_content', array( $this, 'restrict_content' ), 10, 4 );
 			add_filter( 'et_pb_all_fields_unprocessed_et_pb_row', array( $this, 'row_settings' ) );
-			add_filter( 'et_pb_all_fields_unprocessed_et_pb_section', array( $this, 'section_settings' ) );			
+			add_filter( 'et_pb_all_fields_unprocessed_et_pb_section', array( $this, 'section_settings' ) );
+			add_action( 'pmpro_element_class', array( __CLASS__, 'pmpro_element_class' ), 10, 2 );
 		}
 
 	}
@@ -89,17 +90,17 @@ class PMProDivi{
 	    	return '';
 	    }
 	}
+	
+	/**
+	 * Filter the element classess added to the no_access messages for improved appearance in Divi.
+	 * Hooked into pmpro_element_class.
+	 * @since 2.8.2	 
+	 */
+	public static function pmpro_element_class( $class, $element ) {
+		if ( in_array( 'pmpro_content_message', $class ) ) {
+			$class[] = 'et_pb_row';
+		}
+		return $class;
+	}
 }
 new PMProDivi();
-
-/**
- * Filter the element classess added to the no_access messages for improved appearance in Divi.
- *
- */
-function divi_pmpro_element_class( $class, $element ) {
-	if ( in_array( 'pmpro_content_message', $class ) ) {
-		$class[] = 'et_pb_row';
-	}
-	return $class;
-}
-add_action( 'pmpro_element_class', 'divi_pmpro_element_class', 10, 2 );
