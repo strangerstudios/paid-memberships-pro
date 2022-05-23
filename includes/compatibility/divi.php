@@ -8,10 +8,10 @@ class PMProDivi{
 			add_filter( 'et_builder_get_parent_modules', array( __CLASS__, 'toggle' ) );
 			add_filter( 'et_pb_module_content', array( __CLASS__, 'restrict_content' ), 10, 4 );
 			add_filter( 'et_pb_all_fields_unprocessed_et_pb_row', array( __CLASS__, 'row_settings' ) );
-			add_filter( 'et_pb_all_fields_unprocessed_et_pb_section', array( __CLASS__, 'section_settings' ) );
-			add_action( 'pmpro_element_class', array( __CLASS__, 'pmpro_element_class' ), 10, 2 );
+			add_filter( 'et_pb_all_fields_unprocessed_et_pb_section', array( __CLASS__, 'section_settings' ) );			
 		}
-
+		
+		add_action( 'pmpro_element_class', array( __CLASS__, 'pmpro_element_class' ), 10, 2 );
 	}
 
 	public static function toggle( $modules ) {
