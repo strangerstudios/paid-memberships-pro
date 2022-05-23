@@ -2,9 +2,9 @@
 Contributors: strangerstudios, kimannwall, andrewza, dlparker1005, paidmembershipspro
 Tags: memberships, members, subscriptions, ecommerce, user registration, member, membership, e-commerce, paypal, stripe, braintree, authorize.net, payflow, restrict access, restrict content, directory
 Requires at least: 5.2
-Tested up to: 5.9.3
+Tested up to: 6.0
 Requires PHP: 5.6
-Stable tag: 2.8.2
+Stable tag: 2.8.3
 
 WordPress membership plugin: restrict content, accept member subscriptions with recurring payment. Includes user registration, login, & profile fields
 
@@ -156,7 +156,13 @@ Not sure? You can find out by doing a bit a research.
 9. Membership Account page, display all sections or show specific sections using shortcode attributes.
 
 == Changelog ==
-= 2.8.1 - 2022-05-20 =
+= 2.8.3 - 2022-05-23 =
+* BUG FIX/ENHANCEMENT: Avoiding multiple DB queries related to license key checks when no license key is enabled.
+* BUG FIX: Fixed issue where some PayPal subscriptions had an extra 1 year trial when set up.
+* BUG FIX: Avoiding warnings about application fees when using Stripe legacy keys.
+* REFACTOR: Refactored recent updates to the Divi compatibility code to avoid issues for users who might be running a similar gist.
+
+= 2.8.2 - 2022-05-20 =
 * ENHANCEMENT: Now noting the chosen PMPro login page on the pages table in the dashboard. #2073 (@mircobabini)
 * ENHANCEMENT: Improved help text on the payment settings page when using Stripe legacy keys. Reminder to disconnect from Stripe if also using legacy keys. #2078 (@dparker1005)
 * BUG FIX/ENHANCEMENT: Fixed redirect issues that happened if the login page was trashed. #2077 (@andrewlimaza)
