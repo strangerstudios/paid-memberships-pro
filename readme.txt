@@ -156,7 +156,7 @@ Not sure? You can find out by doing a bit a research.
 9. Membership Account page, display all sections or show specific sections using shortcode attributes.
 
 == Changelog ==
-= 2.8.1 - 2022-05-20 =
+= 2.8.2 - 2022-05-20 =
 * ENHANCEMENT: Now noting the chosen PMPro login page on the pages table in the dashboard. #2073 (@mircobabini)
 * ENHANCEMENT: Improved help text on the payment settings page when using Stripe legacy keys. Reminder to disconnect from Stripe if also using legacy keys. #2078 (@dparker1005)
 * BUG FIX/ENHANCEMENT: Fixed redirect issues that happened if the login page was trashed. #2077 (@andrewlimaza)
