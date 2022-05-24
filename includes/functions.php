@@ -1327,9 +1327,9 @@ function pmpro_listCategories( $parent_id = 0, $level_categories = array() ) {
 /**
  * pmpro_toggleMembershipCategory() creates or deletes a linking entry between the membership level and post category tables.
  *
- * @param $level may either be the ID or name of the desired membership_level.
- * @param $category must be a valid post category ID.
- * @param $value
+ * @param int|string $level may either be the ID or name of the desired membership_level.
+ * @param int $category must be a valid post category ID.
+ * @param string $value
  *
  * @return string|true
  * Return values:
@@ -1368,8 +1368,8 @@ function pmpro_toggleMembershipCategory( $level, $category, $value ) {
  * pmpro_updateMembershipCategories() ensures that all those and only those categories given
  * are associated with the given membership level.
  *
- * @param $level is a valid membership level ID or name
- * @param $categories is an array of post category IDs
+ * @param int|string $level is a valid membership level ID or name
+ * @param array $categories is an array of post category IDs
  *
  * @return string|true
  * Return values:
@@ -1408,12 +1408,9 @@ function pmpro_updateMembershipCategories( $level, $categories ) {
 /**
  * pmpro_getMembershipCategories() returns the categories for a given level
  *
- * @param $level_id is a valid membership level ID
+ * @param int $level_id is a valid membership level ID
  *
- * @return bool
- * Return values:
- *		Success returns boolean true.
- *		Failure returns boolean false.
+ * @return array Database query result.
  */
 function pmpro_getMembershipCategories( $level_id ) {
 	$level_id = intval( $level_id );
@@ -1923,8 +1920,6 @@ function pmpro_text_limit( $text, $limit, $finish = '&hellip;' ) {
  * Filters the separator used between action navigation links.
  *
  * @since 2.3
- *
- * @param string $separator The separator used between action links.
  */
 function pmpro_actions_nav_separator() {
 	$separator = apply_filters( 'pmpro_actions_nav_separator', ' | ' );
@@ -2209,7 +2204,7 @@ function pmpro_getSpecificMembershipLevelForUser( $user_id, $level_id ) {
 /**
  * pmpro_getLevel() returns the level object for a level
  *
- * @param $level may be the level id or name
+ * @param int|string $level may be the level id or name
  *
  * @return false|object
  * Return values:
@@ -3176,7 +3171,7 @@ function pmpro_round_price_as_string( $amount, $currency = null ) {
  * @param int|float|string $amount   The amount to get price information for.
  * @param null|string      $currency The currency to use, defaults to current currency.
  *
- * @return array The price information about the provided amount.
+ * @return false|array The price information about the provided amount.
  */
 function pmpro_get_price_info( $amount, $currency = null ) {
 	if ( ! is_numeric( $amount ) ) {
@@ -3465,7 +3460,7 @@ function pmpro_getMemberOrdersByCheckoutID( $checkout_id ) {
  * Check that the test value is a member of a specific array for sanitization purposes.
  *
  * @param mixed $needle Value to be tested.
- * @param array $safe Array of safelist values.
+ * @param array $safelist Array of safelist values.
  * @since 1.9.3
  */
 function pmpro_sanitize_with_safelist( $needle, $safelist ) {
@@ -3939,7 +3934,7 @@ add_filter( 'wp_kses_allowed_html', 'pmpro_kses_allowed_html', 10, 2 );
  *
  * Useful for preparing to change method visibility from public to private.
  *
- * @param string $deprecation_notice_version to show.
+ * @param string $deprecated_notice_version to show.
  * @return bool
  */
 function pmpro_method_should_be_private( $deprecated_notice_version ) {
@@ -4007,8 +4002,9 @@ function pmpro_send_200_http_response() {
 /**
  * Returns formatted ISO-8601 date (Used for Zapier Native app.)
  * @since 2.6.6
- * @param $date date A valid date value.
+ * @param string $date A valid date value.
  * @return string The date in ISO-8601 format.
+ * @throws Exception
  */
 function pmpro_format_date_iso8601( $date ) {
 	$datetime = new DateTime( $date );
