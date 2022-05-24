@@ -1308,15 +1308,15 @@ function pmpro_listCategories( $parent_id = 0, $level_categories = array() ) {
 
 	if ( $cats ) {
 		foreach ( $cats as $cat ) {
-			$name = 'membershipcategory_' . $cat->term_id;
 			if ( ! empty( $level_categories ) ) {
 				$checked = checked( in_array( $cat->term_id, $level_categories ), true, false );
 			} else {
 				$checked = '';
 			} ?>
 			<div class="pmpro_clickable">
-				<input type="checkbox" name="<?php echo esc_attr( $name ); ?>" id="<?php echo esc_attr( $name ); ?>" value="yes" <?php echo esc_attr( $checked ); ?>>
-				<label for="<?php echo esc_attr( $name ); ?>"><?php echo esc_html( $cat->name ); ?></label>
+				<input type="checkbox" name="membershipcategory_<?php echo esc_attr( $cat->term_id ); ?>" id="membershipcategory_<?php echo esc_attr( $cat->term_id ); ?>" value="yes" <?php echo esc_attr( $checked ); ?>>
+				<label for="membershipcategory_<?php echo esc_attr( $cat->term_id ); ?>"><?php echo $cat->name; ?></label>
+				<?php pmpro_listCategories( $cat->term_id, $level_categories ); ?>
 			</div>
 			<?php
 		}

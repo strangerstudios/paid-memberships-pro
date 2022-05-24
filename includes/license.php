@@ -40,8 +40,11 @@ function pmpro_license_isValid($key = NULL, $type = NULL, $force = false) {
 
 	// No key? Clean up options and return false.
 	if ( empty( $key ) ) {
-		delete_option('pmpro_license_check');
-		add_option('pmpro_license_check', array('license'=>false, 'enddate'=>0), NULL, 'no');
+		$default_license_check = array( 'license'=>false, 'enddate'=>0 );
+		$pmpro_license_check = get_option( 'pmpro_license_check', false );
+		if ( $pmpro_license_check !== $default_license_check ) {			
+			update_option( 'pmpro_license_check', $default_license_check, 'no' );
+		}		
 		return false;
 	}
 

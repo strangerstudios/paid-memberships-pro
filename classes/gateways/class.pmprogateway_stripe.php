@@ -2228,17 +2228,17 @@ class PMProGateway_stripe extends PMProGateway {
 					<span class="pmpro_gateway-mode pmpro_gateway-mode-<?php echo $environment2; ?> <?php esc_attr_e( $connection_selector ); ?>">
 						<?php
 							echo ( $livemode ? esc_html__( 'Live Mode:', 'paid-memberships-pro' ) : esc_html__( 'Test Mode:', 'paid-memberships-pro' ) ) . ' ';
-							if ( self::has_connect_credentials( $environment ) ) {
-								esc_html_e( 'Connected', 'paid-memberships-pro' );
-							} elseif( $stripe_is_legacy_setup ) {
+							if ( $stripe_is_legacy_setup ) {
 								esc_html_e( 'Connected with Legacy Keys', 'paid-memberships-pro' );
+							} elseif( self::has_connect_credentials( $environment ) ) {
+								esc_html_e( 'Connected', 'paid-memberships-pro' );
 							} else {
 								esc_html_e( 'Not Connected', 'paid-memberships-pro' );
 							}
 						?>
 					</span>
 				</h2>
-				<?php if ( self::using_legacy_keys() ) { ?>
+				<?php if ( self::using_legacy_keys() && ! self::has_connect_credentials( $environment ) ) { ?>
 					<div class="notice notice-large notice-warning inline">
 						<p class="pmpro_stripe_webhook_notice">
 							<strong><?php esc_html_e( 'Your site is using legacy API keys to authenticate with Stripe.', 'paid-memberships-pro' ); ?></strong><br />
@@ -2251,6 +2251,13 @@ class PMProGateway_stripe extends PMProGateway {
 							}
 							?>
 							<a href="https://www.paidmembershipspro.com/gateway/stripe/switch-legacy-to-connect/?utm_source=plugin&utm_medium=pmpro-paymentsettings&utm_campaign=documentation&utm_content=switch-to-connect" target="_blank"><?php esc_html_e( 'Read the documentation on switching to Stripe Connect &raquo;', 'paid-memberships-pro' ); ?></a>
+						</p>
+					</div>
+				<?php } elseif ( self::using_legacy_keys() ) {  ?>
+					<div class="notice notice-large notice-warning inline">
+						<p class="pmpro_stripe_webhook_notice">
+							<strong><?php esc_html_e( 'Your site is using legacy API keys to authenticate with Stripe.', 'paid-memberships-pro' ); ?></strong><br />
+							<?php esc_html_e( 'In order to complete the transition to using Stripe legacy API keys, please click the "Disconnect from Stripe" button below.', 'paid-memberships-pro' ); ?><br />
 						</p>
 					</div>
 				<?php } ?>
@@ -3972,6 +3979,9 @@ class PMProGateway_stripe extends PMProGateway {
 	 */
 	public static function get_application_fee_percentage() {
 		pmpro_method_should_be_private( '2.7.0' );
+		if ( self::using_legacy_keys() ) {
+			return 0;
+		}
 		$application_fee_percentage = pmpro_license_isValid( null, pmpro_license_get_premium_types() ) ? 0 : 1;
 		$application_fee_percentage = apply_filters( 'pmpro_set_application_fee_percentage', $application_fee_percentage );
 		return round( floatval( $application_fee_percentage ), 2 );
