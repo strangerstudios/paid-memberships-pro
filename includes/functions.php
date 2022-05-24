@@ -4192,7 +4192,14 @@ function pmpro_maybe_send_wp_new_user_notification( $user_id, $level_id = null )
 }
 
 if ( ! function_exists( 'pmpro_recaptcha_get_html' ) ) {
-	function pmpro_recaptcha_get_html ($pubkey, $error = null, $use_ssl = false) {
+	/**
+	 * Print recaptcha html fields and logics
+	 *
+	 * @param string $pubkey
+	 *
+	 * @return void
+	 */
+	function pmpro_recaptcha_get_html( $pubkey ) {
 
 		// Figure out language.
 		$locale = get_locale();
@@ -4214,7 +4221,6 @@ if ( ! function_exists( 'pmpro_recaptcha_get_html' ) ) {
                 var pmpro_recaptcha_onSubmit = function(token) {
                     if ( pmpro_recaptcha_validated ) {
                         jQuery('#pmpro_form').submit();
-                        return;
                     } else {
                         jQuery.ajax({
                             url: '<?php echo esc_url( admin_url( 'admin-ajax.php' ) ); ?>',
@@ -4292,7 +4298,7 @@ if ( ! function_exists( 'pmpro_recaptcha_get_html' ) ) {
                         jQuery( '#pmpro_message' ).hide();
                         jQuery( '#pmpro_message_bottom' ).hide();
                     }
-                };
+                }
 
                 // Expiration callback.
                 function pmpro_recaptcha_expiredCallback() {
@@ -4329,9 +4335,15 @@ if ( ! function_exists( 'pmpro_recaptcha_get_html' ) ) {
 	}
 }
 
-//for templates using the old recaptcha_get_html
 if( ! function_exists( 'recaptcha_get_html' ) ) {
-	function recaptcha_get_html( $pubkey, $error = null, $use_ssl = false ) {
-		return pmpro_recaptcha_get_html( $pubkey, $error, $use_ssl );
+	/**
+	 * Legacy unprefixed for templates using the old recaptcha_get_html
+	 *
+	 * @param string $pubkey
+	 *
+	 * @return void
+	 */
+	function recaptcha_get_html( $pubkey ) {
+		pmpro_recaptcha_get_html( $pubkey );
 	}
 }
