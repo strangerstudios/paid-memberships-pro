@@ -498,7 +498,7 @@ if ( empty( $default_gateway ) ) {
 	<?php
 		global $recaptcha, $recaptcha_publickey;
 		if ( $recaptcha == 2 || $recaptcha == 1 ) {
-			echo pmpro_recaptcha_get_html($recaptcha_publickey, NULL, true);
+			pmpro_recaptcha_get_html($recaptcha_publickey);
 		}
 	?>
 	</div> <!-- end pmpro_captcha -->
