@@ -838,6 +838,12 @@
 
 			// Display the links.
 			foreach ( $pmpro_membershiplevels_page_action_links as $pmpro_membershiplevels_page_action_link ) {
+				
+				// Skip iteration if the values of the links isn't an array.
+				if ( ! is_array( $pmpro_membershiplevels_page_action_link ) ) {
+					break;
+				}
+
 				// Build the selectors for the checkbox list based on number of levels.
 				$classes = array();
 				$classes[] = 'page-title-action';
