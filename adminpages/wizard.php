@@ -183,19 +183,40 @@ if ( ! empty( $_REQUEST['step'] ) ) {
 						<input type="radio" name="gateway" value="stripe">
 						<?php esc_html_e( 'Stripe', 'paid-memberships-pro' ); ?>
 					</label>
+					<div class="pmpro-wizard__stripe admin_page_pmpro-paymentsettings" style="display:none;">
+						<p>Authenticate your Stripe account by selecting the button below:</p>
+						<p>
+							<a href='#' class='pmpro-stripe-connect'>
+								<span>Stripe Connect</span>
+							</a>
+						</p>
+					</div>
 				</div>
-				<div class="pmpro-wizard__field">
+				<!-- <div class="pmpro-wizard__field">
 					<label class="pmpro-wizard__label-block">
 						<input type="radio"  name="gateway" value="paypal-express">
 						<?php esc_html_e( 'PayPal Express', 'paid-memberships-pro' ); ?>
 					</label>
-				</div>
+				</div> -->
 				<div class="pmpro-wizard__field">
 					<label class="pmpro-wizard__label-block">
 						<input type="radio" name="gateway" value="other">
-						<?php esc_html_e( 'Other', 'paid-memberships-pro' ); ?>
+						<?php esc_html_e( 'Other/Setup Later', 'paid-memberships-pro' ); ?>
 					</label>
 				</div>
+				<script>
+					jQuery(document).ready(function(){
+						jQuery("input[name=gateway]").on('change', function(){
+							var radio_val = jQuery(this).val();
+
+							if ( radio_val == 'stripe' ) {
+								jQuery('.pmpro-wizard__stripe').show();
+							} else {
+								jQuery('.pmpro-wizard__stripe').hide();
+							}
+						});
+					});
+				</script>
 				<p class="pmpro_wizard__submit">
 					<input type="submit" onclick="window.location.href = '/wp-admin/admin.php?page=pmpro-wizard&step=advanced'; " class="button button-primary button-hero" value="<?php esc_attr_e( 'Submit and Continue', 'paid-memberships-pro' ); ?>" />
 				</p>
