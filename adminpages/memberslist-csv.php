@@ -97,56 +97,52 @@
 	else
 		$headers[] = 'Content-Disposition: attachment; filename="members_list.csv"';
 
-	//set default CSV file headers, using comma as delimiter
-	$csv_file_header = "id,username,firstname,lastname,email,billing firstname,billing lastname,address1,address2,city,state,zipcode,country,phone,membership,initial payment,fee,term,discount_code_id,discount_code,joined";
-
-	if($l == "oldmembers")
-		$csv_file_header .= ",ended";
-	else
-		$csv_file_header .= ",expires";
-
 	//these are the meta_keys for the fields (arrays are object, property. so e.g. $theuser->ID)
-	$default_columns = array(
-		array("theuser", "ID"),
-		array("theuser", "user_login"),
-		array("metavalues", "first_name"),
-		array("metavalues", "last_name"),
-		array("theuser", "user_email"),
-		array("metavalues", "pmpro_bfirstname"),
-		array("metavalues", "pmpro_blastname"),
-		array("metavalues", "pmpro_baddress1"),
-		array("metavalues", "pmpro_baddress2"),
-		array("metavalues", "pmpro_bcity"),
-		array("metavalues", "pmpro_bstate"),
-		array("metavalues", "pmpro_bzipcode"),
-		array("metavalues", "pmpro_bcountry"),
-		array("metavalues", "pmpro_bphone"),
-		array("theuser", "membership"),
-		array("theuser", "initial_payment"),
-		array("theuser", "billing_amount"),
-		array("theuser", "cycle_period"),
-		array("discount_code", "id"),
-		array("discount_code", "code")
-		//joindate and enddate are handled specifically below
-	);
+	$default_columns = [
+		'id' => [ 'theuser', 'ID' ],
+		'username' => [ 'theuser', 'user_login' ],
+		'firstname' => [ 'metavalues', 'first_name' ],
+		'lastname' => [ 'metavalues', 'last_name' ],
+		'email' => [ 'theuser', 'user_email' ],
+		'billing firstname' => [ 'metavalues', 'pmpro_bfirstname' ],
+		'billing lastname' => [ 'metavalues', 'pmpro_blastname' ],
+		'address1' => [ 'metavalues', 'pmpro_baddress1' ],
+		'address2' => [ 'metavalues', 'pmpro_baddress2' ],
+		'city' => [ 'metavalues', 'pmpro_bcity' ],
+		'state' => [ 'metavalues', 'pmpro_bstate' ],
+		'zipcode' => [ 'metavalues', 'pmpro_bzipcode' ],
+		'country' => [ 'metavalues', 'pmpro_bcountry' ],
+		'phone' => [ 'metavalues', 'pmpro_bphone' ],
+		'membership' => [ 'theuser', 'membership' ],
+		'initial payment' => [ 'theuser', 'initial_payment' ],
+		'fee' => [ 'theuser', 'billing_amount' ],
+		'term' => [ 'theuser', 'cycle_period' ],
+		'discount_code_id' => [ 'discount_code', 'id' ],
+		'discount_code' => [ 'discount_code', 'code' ],
+		'joined' => 'pmpro_populate_joined_date',
+	];
 
-	//filter
-	$default_columns = apply_filters("pmpro_members_list_csv_default_columns", $default_columns);
-
-	//set the preferred date format:
-	$dateformat = apply_filters("pmpro_memberslist_csv_dateformat","Y-m-d");
-
-	//any extra columns
-	$extra_columns = apply_filters("pmpro_members_list_csv_extra_columns", array());
-	if(!empty($extra_columns))
-	{
-		foreach($extra_columns as $heading => $callback)
-		{
-			$csv_file_header .= "," . $heading;
-		}
+	if ( $l === 'oldmembers' ) {
+		$default_columns['ended'] = 'pmpro_populate_end_date';
+	} else {
+		$default_columns['expires'] = 'pmpro_populate_end_date';
 	}
 
-	$csv_file_header = apply_filters("pmpro_members_list_csv_heading", $csv_file_header);
+	//filter
+	$default_columns = apply_filters( 'pmpro_members_list_csv_default_columns', $default_columns );
+
+	//set the preferred date format:
+	$dateformat = pmpro_get_csv_dateformat();
+
+	//any extra columns
+	$extra_columns = apply_filters( 'pmpro_members_list_csv_extra_columns', [] );
+
+	if ( ! empty( $extra_columns ) ) {
+		$default_columns = array_merge( $default_columns, $extra_columns );
+	}
+
+	$csv_file_header = join( ',', array_keys( $default_columns ) );
+	$csv_file_header = apply_filters( 'pmpro_members_list_csv_heading', $csv_file_header );
 	$csv_file_header .= "\n";
 
 	//generate SQL for list of users to process
@@ -423,42 +419,22 @@
 			unset($disSql);
 
 			//default columns
-			if(!empty($default_columns))
-			{
+			if ( ! empty( $default_columns ) ) {
 				$count = 0;
-				foreach($default_columns as $col)
-				{
-					//checking $object->property. note the double $$
-					$val = isset(${$col[0]}->{$col[1]}) ? ${$col[0]}->{$col[1]} : null;
-					array_push($csvoutput, pmpro_enclose($val));	//output the value
-				}
-			}
 
-			//joindate and enddate
-			array_push($csvoutput, pmpro_enclose(date($dateformat, $theuser->joindate)));
+				foreach ( $default_columns as $heading => $col ) {
+					if ( is_array( $col ) ) {
+						//checking $object->property. note the double $$
+						$val = isset(${$col[0]}->{$col[1]}) ? ${$col[0]}->{$col[1]} : null;
+					} elseif ( is_callable( $col ) ) {
+						$val = call_user_func( $col, $theuser, $heading, $l );
+					}
 
-			if($theuser->membership_id)
-			{
-				if($theuser->enddate)
-					array_push($csvoutput, pmpro_enclose(apply_filters("pmpro_memberslist_expires_column", date_i18n($dateformat, $theuser->enddate), $theuser)));
-				else
-					array_push($csvoutput, pmpro_enclose(apply_filters("pmpro_memberslist_expires_column", "Never", $theuser)));
-			}
-			elseif($l == "oldmembers" && $theuser->enddate)
-			{
-				array_push($csvoutput, pmpro_enclose(date($dateformat, $theuser->enddate)));
-			}
-			else
-				array_push($csvoutput, "N/A");
+					if ( empty( $val ) ) {
+						$val = null;
+					}
 
-			//any extra columns
-			if(!empty($extra_columns))
-			{
-				foreach($extra_columns as $heading => $callback)
-				{
-					$val = call_user_func($callback, $theuser, $heading);
-					$val = !empty($val) ? $val : null;
-					array_push( $csvoutput, pmpro_enclose($val) );
+					array_push( $csvoutput, pmpro_enclose( $val ) ); //output the value
 				}
 			}
 
@@ -535,8 +511,34 @@
 
 	exit;
 
-	function pmpro_enclose($s)
-	{
+	function pmpro_get_csv_dateformat() {
+		return apply_filters( 'pmpro_memberslist_csv_dateformat', 'Y-m-d' );
+	}
+
+	function pmpro_populate_joined_date( $the_user ) {
+		return date( pmpro_get_csv_dateformat(), $the_user->joindate );
+	}
+
+	function pmpro_populate_end_date( $the_user, $heading, $level_id ) {
+		$date_format = pmpro_get_csv_dateformat();
+
+		if ( $the_user->membership_id ) {
+			if ( $the_user->enddate ) {
+				return apply_filters(
+					'pmpro_memberslist_expires_column',
+					date_i18n( $date_format, $the_user->enddate ), $the_user
+				);
+			} else {
+				return apply_filters( 'pmpro_memberslist_expires_column', 'Never', $the_user );
+			}
+		} elseif( $level_id === 'oldmembers' && $the_user->enddate ) {
+			return date( $date_format, $the_user->enddate );
+		}
+
+		return 'N/A';
+	}
+
+	function pmpro_enclose( $s ) {
 		return "\"" . str_replace("\"", "\\\"", $s) . "\"";
 	}
 
