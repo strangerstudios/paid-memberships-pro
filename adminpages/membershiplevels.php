@@ -292,9 +292,18 @@
 			$level->name = NULL;
 			$level->description = NULL;
 			$level->confirmation = NULL;
+			$level->initial_payment = NULL;
+			$level->billing_amount = NULL;
+			$level->cycle_number = 1;
+			$level->cycle_period = 'Month';
+			$level->billing_limit = NULL;
+			$level->trial_amount = NULL;
+			$level->trial_limit = NULL;
+			$level->expiration_number = NULL;
+			$level->expiration_period = NULL;
 			$edit = -1;
 
-			// If we have a level template, set some defaults.
+			// If we have a level template, override and set some defaults.
 			if ( ! empty( $template ) && $template != 'none' ) {
 				if ( $template === 'free' ) {
 					$level->billing_amount = NULL;
@@ -347,16 +356,6 @@
 					$level->expiration_number = NULL;
 					$level->expiration_period = NULL;
 				}
-			} else {
-				$level->initial_payment = NULL;
-				$level->billing_amount = NULL;
-				$level->cycle_number = 1;
-				$level->cycle_period = 'Month';
-				$level->billing_limit = NULL;
-				$level->trial_amount = NULL;
-				$level->trial_limit = NULL;
-				$level->expiration_number = NULL;
-				$level->expiration_period = NULL;
 			}
 			$level = apply_filters( 'pmpro_membershiplevels_template_level', $level, $template );
 		}
