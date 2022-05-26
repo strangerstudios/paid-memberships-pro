@@ -382,10 +382,12 @@
 	padding: 25px;
 	position: relative;
 	text-decoration: none;
+	transition: transform .2s;
 }
-.memberships_page_pmpro-membershiplevels .pmpro_admin .pmpro_level_templates .pmpro_level_template:hover {
+.memberships_page_pmpro-membershiplevels .pmpro_admin .pmpro_level_templates .pmpro_level_template:not(.inactive):hover {
 	background: #FFF;
 	box-shadow: 1px 1px 3px #FAFAFA;
+	transform: scale(1.05);
 }
 .memberships_page_pmpro-membershiplevels .pmpro_admin .pmpro_level_templates .pmpro_level_template .dashicons {
 	display: none;
