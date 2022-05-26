@@ -184,12 +184,12 @@ if ( ! empty( $_REQUEST['step'] ) ) {
 						<?php esc_html_e( 'Stripe', 'paid-memberships-pro' ); ?>
 					</label>
 					<div class="pmpro-wizard__stripe admin_page_pmpro-paymentsettings" style="display:none;">
-						<p>Authenticate your Stripe account by selecting the button below:</p>
 						<p>
 							<a href='#' class='pmpro-stripe-connect'>
-								<span>Stripe Connect</span>
+								<span>Connect with Stripe</span>
 							</a>
 						</p>
+						<p style="font-size:12px;text-transform:italic;">If you do not already have a Stripe account, we recommend to set this up later.</p>
 					</div>
 				</div>
 				<!-- <div class="pmpro-wizard__field">
@@ -203,6 +203,9 @@ if ( ! empty( $_REQUEST['step'] ) ) {
 						<input type="radio" name="gateway" value="other">
 						<?php esc_html_e( 'Other/Setup Later', 'paid-memberships-pro' ); ?>
 					</label>
+				</div>
+				<div class="pmpro-wizard__field" style="background-color:#F7F7F7;">
+					<p><img src="<?php echo plugins_url( '/images/credit-card.svg', __DIR__ ); ?>" style="vertical-align:middle;"/> Payment gateways may be configured under "Payment Gateway & SSL Settings".</p>
 				</div>
 				<script>
 					jQuery(document).ready(function(){
