@@ -99,6 +99,15 @@ function pmpro_admin_enqueue_scripts() {
 		'jquery-ui-sortable',
 	], PMPRO_VERSION );
 
+    if ( ( isset( $_REQUEST['page'] ) && $_REQUEST['page'] == 'pmpro-wizard' ) && ( isset( $_REQUEST['step'] ) && $_REQUEST['step'] == 'done' ) ) {
+        wp_register_script( 'pmpro_confetti', plugins_url( 'js/pmpro-confetti.js', __DIR__ ), [
+                'jquery',
+            ], PMPRO_VERSION );
+
+        wp_enqueue_script( 'pmpro_confetti' );
+    }
+   
+
 	$all_levels                  = pmpro_getAllLevels( true, true );
 	$all_level_values_and_labels = [];
 

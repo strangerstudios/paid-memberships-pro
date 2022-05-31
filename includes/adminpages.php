@@ -6,6 +6,7 @@ function pmpro_getPMProCaps() {
 	$pmpro_caps = array(
 		//pmpro_memberships_menu //this controls viewing the menu itself
 		'pmpro_dashboard',
+		'pmpro_wizard',
 		'pmpro_membershiplevels',
 		'pmpro_pagesettings',
 		'pmpro_paymentsettings',
@@ -78,6 +79,11 @@ function pmpro_add_pages() {
 	if ( pmpro_isUpdateRequired() ) {
 		add_submenu_page( 'pmpro-dashboard', __( 'Updates Required', 'paid-memberships-pro' ), __( 'Updates Required', 'paid-memberships-pro' ), 'pmpro_updates', 'pmpro-updates', 'pmpro_updates' );
 	}
+
+	/// Show a wizard if PMPro isn't finished setting up.
+	// if ( ! pmpro_is_ready() ) {
+		add_submenu_page( 'pmpro-dashboard', __( 'Setup Wizard', 'paid-memberships-pro' ), __( 'Setup Wizard', 'paid-memberships-pro' ), 'pmpro_wizard', 'pmpro-wizard', 'pmpro_wizard' );
+	// }
 }
 add_action( 'admin_menu', 'pmpro_add_pages' );
 
@@ -257,6 +263,10 @@ function pmpro_dashboard() {
 	wp_enqueue_script( 'postbox' );
 
 	require_once( PMPRO_DIR . '/adminpages/dashboard.php' );
+}
+
+function pmpro_wizard() {
+	require_once( PMPRO_DIR . '/adminpages/wizard.php' );
 }
 
 function pmpro_membershiplevels() {
