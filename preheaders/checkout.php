@@ -589,8 +589,6 @@ if ( ! empty( $pmpro_confirmed ) ) {
 
 	// User is created and we are ready to give them a membership.
 	if ( $is_user_valid && 'pmpro_error' !== $pmpro_msgt ) {
-		do_action( 'pmpro_checkout_before_change_membership_level', $user_id, $morder );
-
 		//start date is NOW() but filterable below
 		$startdate = current_time( "mysql" );
 
