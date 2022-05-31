@@ -355,6 +355,16 @@
 					$level->trial_limit = NULL;
 					$level->expiration_number = NULL;
 					$level->expiration_period = NULL;
+				}  elseif ( $template === 'trial' ) {
+					$level->initial_payment = 0;
+					$level->billing_amount = 25;
+					$level->cycle_number = 1;
+					$level->cycle_period = 'Month';
+					$level->billing_limit = NULL;
+					$level->trial_amount = 0;
+					$level->trial_limit = 0;
+					$level->expiration_number = NULL;
+					$level->expiration_period = NULL;
 				}
 			}
 			$level = apply_filters( 'pmpro_membershiplevels_template_level', $level, $template );
@@ -480,9 +490,9 @@
 
 		<?php
 		/**
-		 * Allow adding form fields after the General Information section.
+		 * Allow adding form fields before the Billing Information section.
 		 *
-		 * @since 2.5.10
+		 * @since 2.9
 		 *
 		 * @param object $level The Membership Level object.
 		 */
@@ -769,6 +779,17 @@
 			</div> <!-- end pmpro_section_inside -->
 		</div> <!-- end pmpro_section -->
 
+		<?php
+		/**
+		 * Allow adding form fields before the Content Settings Information section.
+		 *
+		 * @since 2.9
+		 *
+		 * @param object $level The Membership Level object.
+		 */
+		do_action( 'pmpro_membership_level_before_content_settings', $level );
+		?>
+
 		<div id="content-settings" class="pmpro_section" data-visibility="shown" data-activated="true">
 			<div class="pmpro_section_toggle">
 				<button class="pmpro_section-toggle-button" type="button" aria-expanded="true">
@@ -790,7 +811,7 @@
 				<table class="form-table">
 					<tbody>
 						<tr class="membership_categories">
-							<th scope="row" valign="top"><label><?php esc_html_e('Categories', 'paid-memberships-pro' );?>:</label></th>
+							<th scope="row" valign="top"><label><?php esc_html_e('Categories', 'paid-memberships-pro' );?></label></th>
 							<td>
 								<p><?php esc_html_e( 'Select:', 'paid-memberships-pro' ); ?> <a id="pmpro-membership-categories-checklist-select-all" href="javascript:void(0);"><?php esc_html_e( 'All', 'paid-memberships-pro' ); ?></a> | <a id="pmpro-membership-categories-checklist-select-none" href="javascript:void(0);"><?php esc_html_e( 'None', 'paid-memberships-pro' ); ?></a></p>
 								<script type="text/javascript">
@@ -1243,6 +1264,10 @@
 								'name' => __( 'Lifetime', 'paid-memberships-pro' ),
 								'description' => __( 'Charge a one-time payment for a level that never expires.', 'paid-memberships-pro' )
 							),
+							'trial' => array(
+								'name' => __( 'Trial', 'paid-memberships-pro' ),
+								'description' => __( 'Trial membership that captures recurring payment info at checkout.', 'paid-memberships-pro' )
+							),
 							'none' => array(
 								'name' => __( 'Advanced', 'paid-memberships-pro' ),
 								'description' => __( 'Show all settings. I want to create an advanced membership level.', 'paid-memberships-pro' )
@@ -1256,12 +1281,7 @@
 								'name' => __( 'Gift', 'paid-memberships-pro' ),
 								'description' => __( 'Allow anyone to purchase a gift of membership.' ),
 								'external-link' => 'https://www.paidmembershipspro.com/add-ons/pmpro-gift-levels/',
-							),
-							'invite' => array(
-								'name' => __( 'Invite-Only', 'paid-memberships-pro' ),
-								'description' => __( 'Require an invite code for free or paid membership checkout.', 'paid-memberships-pro' ),
-								'external-link' => 'https://www.paidmembershipspro.com/add-ons/pmpro-invite-only-membership/',
-							),
+							)
 						);
 						/**
 						 * Filter to add or remove level templates from the Membership Levels > Add New popup.
