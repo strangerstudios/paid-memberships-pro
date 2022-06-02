@@ -1039,3 +1039,15 @@ button.pmpro_report_th_closed:before {
 		width: 0;
 	}
 }
+
+/* plugin update notice */
+.pmpro_plugin_update_notice {
+	background-color: #d54e21 !important;
+	padding: 10px !important;
+	color: #f9f9f9 !important;
+	margin-top: 10px !important;
+}
+
+.pmpro_plugin_update_notice + p:before {
+	display: none;
+}
