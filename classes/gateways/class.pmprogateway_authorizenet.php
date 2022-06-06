@@ -1187,7 +1187,7 @@ class PMProGateway_authorizenet extends PMProGateway
 	 *
 	 * @param PMPro_Subscription $subscription to cancel.
 	 */
-		function cancel_subscription( $subscription ) {
+	function cancel_subscription( $subscription ) {
 		$subscription_id = $subscription->get_subscription_transaction_id();
 		$loginname       = pmpro_getOption( 'loginname' );
 		$transactionkey  = pmpro_getOption( 'transactionkey' );
