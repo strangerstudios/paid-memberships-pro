@@ -2691,7 +2691,7 @@ class PMProGateway_stripe extends PMProGateway {
 		}
 
 		// Return the product ID.
-		return empty( $stripe_product_id ) ? null : $stripe_product_id;
+		return ! empty( $stripe_product_id ) ? $stripe_product_id : null;
 	}
 
 	/**
