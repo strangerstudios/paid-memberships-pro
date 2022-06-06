@@ -280,12 +280,12 @@ function pmpro_userfields_prep_click_events() {
             // closing
             buttonicon.removeClass('dashicons-arrow-up');
             buttonicon.addClass('dashicons-arrow-down');
-            groupinside.hide();
+            groupinside.slideUp();
         } else {
             // opening
             buttonicon.removeClass('dashicons-arrow-down');
             buttonicon.addClass('dashicons-arrow-up');
-            groupinside.show();
+            groupinside.slideDown();
         }
     });
 
