@@ -1245,12 +1245,7 @@ function pmpro_get_field_group_html( $group = null ) {
 			</ul>
 			
 			<div class="pmpro_userfield-group-fields">
-
-				<div class="pmpro_userfield-group-field pmpro_userfield-group-field-collapse">
-                    
-				</div>
-                
-                <?php
+				<?php
 					if ( ! empty( $group->fields ) ) {
 						foreach ( $group->fields as $field ) {
 							echo pmpro_get_field_html( $field );
@@ -1315,12 +1310,12 @@ function pmpro_get_field_html( $field = null ) {
         <ul class="pmpro_userfield-group-tbody">
             <li class="pmpro_userfield-group-column-order">
                 <div class="pmpro_userfield-group-buttons">
-                    <button type="button" aria-disabled="false" class="pmpro_userfield-group-buttons-button pmpro_userfield-group-buttons-button-move-up" aria-label="<?php esc_attr_e( 'Move up', 'paid-memberships-pro' ); ?>">
+                    <button type="button" aria-disabled="false" class="pmpro_userfield-group-buttons-button pmpro_userfield-field-buttons-button-move-up" aria-label="<?php esc_attr_e( 'Move up', 'paid-memberships-pro' ); ?>">
                         <span class="dashicons dashicons-arrow-up-alt2"></span>
                     </button>
                     <span class="pmpro_userfield-group-buttons-description"><?php esc_html_e( 'Move Field Up', 'paid-memberships-pro' ); ?></span>
 
-                    <button type="button" aria-disabled="false" class="pmpro_userfield-group-buttons-button pmpro_userfield-group-buttons-button-move-down" aria-label="<?php esc_attr_e( 'Move down', 'paid-memberships-pro' ); ?>">
+                    <button type="button" aria-disabled="false" class="pmpro_userfield-group-buttons-button pmpro_userfield-field-buttons-button-move-down" aria-label="<?php esc_attr_e( 'Move down', 'paid-memberships-pro' ); ?>">
                         <span class="dashicons dashicons-arrow-down-alt2"></span>
                     </button>
                     <span class="pmpro_userfield-group-buttons-description"><?php esc_html_e( 'Move Field Down', 'paid-memberships-pro' ); ?></span>
