@@ -2228,17 +2228,17 @@ class PMProGateway_stripe extends PMProGateway {
 					<span class="pmpro_gateway-mode pmpro_gateway-mode-<?php echo $environment2; ?> <?php esc_attr_e( $connection_selector ); ?>">
 						<?php
 							echo ( $livemode ? esc_html__( 'Live Mode:', 'paid-memberships-pro' ) : esc_html__( 'Test Mode:', 'paid-memberships-pro' ) ) . ' ';
-							if ( self::has_connect_credentials( $environment ) ) {
-								esc_html_e( 'Connected', 'paid-memberships-pro' );
-							} elseif( $stripe_is_legacy_setup ) {
+							if ( $stripe_is_legacy_setup ) {
 								esc_html_e( 'Connected with Legacy Keys', 'paid-memberships-pro' );
+							} elseif( self::has_connect_credentials( $environment ) ) {
+								esc_html_e( 'Connected', 'paid-memberships-pro' );
 							} else {
 								esc_html_e( 'Not Connected', 'paid-memberships-pro' );
 							}
 						?>
 					</span>
 				</h2>
-				<?php if ( self::using_legacy_keys() ) { ?>
+				<?php if ( self::using_legacy_keys() && ! self::has_connect_credentials( $environment ) ) { ?>
 					<div class="notice notice-large notice-warning inline">
 						<p class="pmpro_stripe_webhook_notice">
 							<strong><?php esc_html_e( 'Your site is using legacy API keys to authenticate with Stripe.', 'paid-memberships-pro' ); ?></strong><br />
@@ -2251,6 +2251,13 @@ class PMProGateway_stripe extends PMProGateway {
 							}
 							?>
 							<a href="https://www.paidmembershipspro.com/gateway/stripe/switch-legacy-to-connect/?utm_source=plugin&utm_medium=pmpro-paymentsettings&utm_campaign=documentation&utm_content=switch-to-connect" target="_blank"><?php esc_html_e( 'Read the documentation on switching to Stripe Connect &raquo;', 'paid-memberships-pro' ); ?></a>
+						</p>
+					</div>
+				<?php } elseif ( self::using_legacy_keys() ) {  ?>
+					<div class="notice notice-large notice-warning inline">
+						<p class="pmpro_stripe_webhook_notice">
+							<strong><?php esc_html_e( 'Your site is using legacy API keys to authenticate with Stripe.', 'paid-memberships-pro' ); ?></strong><br />
+							<?php esc_html_e( 'In order to complete the transition to using Stripe legacy API keys, please click the "Disconnect from Stripe" button below.', 'paid-memberships-pro' ); ?><br />
 						</p>
 					</div>
 				<?php } ?>
@@ -2641,30 +2648,50 @@ class PMProGateway_stripe extends PMProGateway {
 	 * @return string|null
 	 */
 	private function get_product_id_for_level( $level ) {
+		// Get the level object.
 		if ( ! is_a( $level, 'PMPro_Membership_Level' ) ) {
 			if ( is_numeric( $level ) ) {
 				$level = new PMPro_Membership_Level( $level );
 			}
 		}
 
+		// If we don't have a valid level, we can't get a product ID. Bail.
 		if ( empty( $level->ID ) ) {
-			// We do not have a valid level.
 			return;
 		}
 
+		// Get the product ID from the level based on the current gateway environment.
 		$gateway_environment = pmpro_getOption( 'gateway_environment' );
 		if ( $gateway_environment === 'sandbox' ) {
 			$stripe_product_id = $level->stripe_product_id_sandbox;
 		} else {
 			$stripe_product_id = $level->stripe_product_id;
 		}
+
+		// Check that the product ID exists in Stripe.
+		if ( ! empty( $stripe_product_id ) ) {
+			try {
+				$product = Stripe_Product::retrieve( $stripe_product_id );
+			} catch ( \Throwable $e ) {
+				// Assume no product found.
+			} catch ( \Exception $e ) {
+				// Assume no product found.
+			}
+
+			if ( empty( $product ) || empty( $product->active ) ) {
+				// There was an error retrieving the product or the product is archived.
+				// Let's try to create a new one below.
+				$stripe_product_id = null;
+			}
+		}
+
+		// If a valid product does not exist for this level, create one.
 		if ( empty( $stripe_product_id ) ) {
 			$stripe_product_id = $this->create_product_for_level( $level, $gateway_environment );
 		}
 
-		if ( ! empty( $stripe_product_id ) ) {
-			return $stripe_product_id;
-		}
+		// Return the product ID.
+		return ! empty( $stripe_product_id ) ? $stripe_product_id : null;
 	}
 
 	/**
@@ -3972,6 +3999,9 @@ class PMProGateway_stripe extends PMProGateway {
 	 */
 	public static function get_application_fee_percentage() {
 		pmpro_method_should_be_private( '2.7.0' );
+		if ( self::using_legacy_keys() ) {
+			return 0;
+		}
 		$application_fee_percentage = pmpro_license_isValid( null, pmpro_license_get_premium_types() ) ? 0 : 1;
 		$application_fee_percentage = apply_filters( 'pmpro_set_application_fee_percentage', $application_fee_percentage );
 		return round( floatval( $application_fee_percentage ), 2 );

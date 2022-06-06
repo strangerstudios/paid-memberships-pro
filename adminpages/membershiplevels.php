@@ -654,7 +654,32 @@
 				<tr class="membership_categories">
 					<th scope="row" valign="top"><label><?php esc_html_e('Categories', 'paid-memberships-pro' );?>:</label></th>
 					<td>
-						<?php pmpro_listCategories(0, $level->categories); ?>
+						<p><?php esc_html_e( 'Select:', 'paid-memberships-pro' ); ?> <a id="pmpro-membership-categories-checklist-select-all" href="javascript:void(0);"><?php esc_html_e( 'All', 'paid-memberships-pro' ); ?></a> | <a id="pmpro-membership-categories-checklist-select-none" href="javascript:void(0);"><?php esc_html_e( 'None', 'paid-memberships-pro' ); ?></a></p>
+						<script type="text/javascript">
+							jQuery('#pmpro-membership-categories-checklist-select-all').click(function(){
+								jQuery('#pmpro-membership-categories-checklist input').prop('checked', true);
+							});
+							jQuery('#pmpro-membership-categories-checklist-select-none').click(function(){
+								jQuery('#pmpro-membership-categories-checklist input').prop('checked', false);
+							});
+						</script>
+						<?php
+							$args = array(
+								'hide_empty' => false,
+							);
+							$cats = get_categories( apply_filters( 'pmpro_list_categories_args', $args ) );
+							// Build the selectors for the checkbox list based on number of levels.
+							$classes = array();
+							$classes[] = 'pmpro_checkbox_box';
+
+							if ( count( $cats ) > 5 ) {
+								$classes[] = 'pmpro_scrollable';
+							}
+							$class = implode( ' ', array_unique( $classes ) );
+						?>
+						<div id="pmpro-membership-categories-checklist" class="<?php echo esc_attr( $class ); ?>">
+							<?php pmpro_listCategories(0, $level->categories); ?>
+						</div>
 					</td>
 				</tr>
 			</tbody>

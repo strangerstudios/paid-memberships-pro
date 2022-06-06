@@ -2,9 +2,9 @@
 Contributors: strangerstudios, kimannwall, andrewza, dlparker1005, paidmembershipspro
 Tags: memberships, members, subscriptions, ecommerce, user registration, member, membership, e-commerce, paypal, stripe, braintree, authorize.net, payflow, restrict access, restrict content, directory
 Requires at least: 5.2
-Tested up to: 5.9.3
+Tested up to: 6.0
 Requires PHP: 5.6
-Stable tag: 2.8.1
+Stable tag: 2.8.3
 
 WordPress membership plugin: restrict content, accept member subscriptions with recurring payment. Includes user registration, login, & profile fields
 
@@ -156,6 +156,28 @@ Not sure? You can find out by doing a bit a research.
 9. Membership Account page, display all sections or show specific sections using shortcode attributes.
 
 == Changelog ==
+= 2.8.3 - 2022-05-23 =
+* BUG FIX/ENHANCEMENT: Avoiding multiple DB queries related to license key checks when no license key is enabled.
+* BUG FIX: Fixed issue where some PayPal subscriptions had an extra 1 year trial when set up.
+* BUG FIX: Avoiding warnings about application fees when using Stripe legacy keys.
+* REFACTOR: Refactored recent updates to the Divi compatibility code to avoid issues for users who might be running a similar gist.
+
+= 2.8.2 - 2022-05-20 =
+* ENHANCEMENT: Now noting the chosen PMPro login page on the pages table in the dashboard. #2073 (@mircobabini)
+* ENHANCEMENT: Improved help text on the payment settings page when using Stripe legacy keys. Reminder to disconnect from Stripe if also using legacy keys. #2078 (@dparker1005)
+* BUG FIX/ENHANCEMENT: Fixed redirect issues that happened if the login page was trashed. #2077 (@andrewlimaza)
+* BUG FIX/ENHANCEMENT: Tweaked display of long numbers in the sales report widget. #2071 (@mircobabini)
+* BUG FIX/ENHANCEMENT: Renamed the hideads field on the advanced settings page so adblockers don't block it. #2072 (@mircobabini)
+* BUG FIX/ENHANCEMENT: Fixed responsive display of various admin pages when viewed on smaller screens. #2079 (@kimcoleman)
+* BUG FIX/ENHANCEMENT: Fixed tracking of hideads feature via Wisdom. #2081 (@andrewlimaza)
+* BUG FIX/ENHANCEMENT: Adding HTML to our no_access messages when using Divi to avoid display issues. #2080 (@kimcoleman)
+* BUG FIX/ENHANCEMENT: Fixed a warning on memberships report when using MMPU. #2104 (@mircobabini)
+* BUG FIX: Moved call to pmpro_doing_webhook in the Stripe webhook handler to make sure Stripe libraries are already loaded. #2101 (@mircobabini) 
+* BUG FIX/ENHANCEMENT: Avoiding duplicate DB calls when pmpro_license_isValid() is called with no key. This was happening on the plugins, update, and add ons pages in the dashboard. (@ideadude)
+* BUG FIX: Fixed issues where payment failed events were not being processed correctly in the Stripe webhook handler. #2100 (@andrewlimaza, @dparker1005, @ideadude)
+* BUG FIX: Fixed issue where recurring orders were not saving if a payment method could not be found. #2099 #2105 #2104 (@dparker1005, @ideadude)
+* BUG FIX: Fixed error on the orders page happening in some versions of PHP. #2075 (@mircobabini)
+
 = 2.8.1 - 2022-05-10 =
 * BUG FIX/ENHANCEMENT: Fixed typos in some block descriptions. #2064 (@mircobabini)
 * BUG FIX: Fixed issue where the digest email cron and some others were running more often than intended. #2070 (@mircobabini)
