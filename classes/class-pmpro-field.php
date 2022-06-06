@@ -493,8 +493,8 @@ class PMPro_Field {
 			}
 			else
 			{
-				global $pmprorh_registration_fields;					
-				foreach($pmprorh_registration_fields as $checkout_box)
+				global $pmpro_user_fields;					
+				foreach($pmpro_user_fields as $checkout_box)
 				{
 					foreach($checkout_box as $field)
 					{
@@ -1064,7 +1064,7 @@ class PMPro_Field {
 
 	function getDependenciesJS()
 	{
-		global $pmprorh_registration_fields;
+		global $pmpro_user_fields;
 		//dependencies
 		if(!empty($this->depends))
 		{					
@@ -1080,7 +1080,7 @@ class PMPro_Field {
 					if ( empty( $depends_checkout_box ) ) {
 						continue;
 					}
-					foreach ( $pmprorh_registration_fields[ $depends_checkout_box ] as $field ) {
+					foreach ( $pmpro_user_fields[ $depends_checkout_box ] as $field ) {
 						if ( $field->type === 'checkbox_grouped' && $field->name === $field_id && ! empty( $field->options ) ) {
 							$field_id = $field_id . '_' . intval( array_search( $check['value'], array_keys( $field->options ) )+1 );
 						}
@@ -1304,8 +1304,8 @@ class PMPro_Field {
 	}
 
 	static function get_checkout_box_name_for_field( $field_name ) {
-		global $pmprorh_registration_fields;
-		foreach( $pmprorh_registration_fields as $checkout_box_name => $fields ) {
+		global $pmpro_user_fields;
+		foreach( $pmpro_user_fields as $checkout_box_name => $fields ) {
 			foreach($fields as $field) {
 				if( $field->name == $field_name ) {
 					return $checkout_box_name;
