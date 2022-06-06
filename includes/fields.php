@@ -605,10 +605,18 @@ function pmpro_show_user_fields_in_profile( $user, $withlocations = false ) {
 		{
 			$box = pmpro_get_field_group_by_name($where);
 
-			if ( !empty($box->label) )
-			{ ?>
-				<h3><?php echo $box->label; ?></h3><?php
-			} ?>
+			if ( !empty($box->label) ) {
+				?>
+				<h3><?php echo $box->label; ?></h3>
+				<?php
+				if ( ! empty( $box->description ) ) {
+					?>
+					<p><?php echo $box->description; ?></p>
+					<?php
+				}
+			}
+			?>
+			
 
 			<table class="form-table">
 			<?php
