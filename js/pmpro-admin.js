@@ -208,6 +208,7 @@ function pmpro_userfields_prep_click_events() {
 		window.onbeforeunload = function() {
 			return true;
 		};
+        jQuery('#pmpro_userfields_savesettings').prop("disabled", false);
 	}
 
     // Add group button.
