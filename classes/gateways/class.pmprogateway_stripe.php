@@ -2648,30 +2648,50 @@ class PMProGateway_stripe extends PMProGateway {
 	 * @return string|null
 	 */
 	private function get_product_id_for_level( $level ) {
+		// Get the level object.
 		if ( ! is_a( $level, 'PMPro_Membership_Level' ) ) {
 			if ( is_numeric( $level ) ) {
 				$level = new PMPro_Membership_Level( $level );
 			}
 		}
 
+		// If we don't have a valid level, we can't get a product ID. Bail.
 		if ( empty( $level->ID ) ) {
-			// We do not have a valid level.
 			return;
 		}
 
+		// Get the product ID from the level based on the current gateway environment.
 		$gateway_environment = pmpro_getOption( 'gateway_environment' );
 		if ( $gateway_environment === 'sandbox' ) {
 			$stripe_product_id = $level->stripe_product_id_sandbox;
 		} else {
 			$stripe_product_id = $level->stripe_product_id;
 		}
+
+		// Check that the product ID exists in Stripe.
+		if ( ! empty( $stripe_product_id ) ) {
+			try {
+				$product = Stripe_Product::retrieve( $stripe_product_id );
+			} catch ( \Throwable $e ) {
+				// Assume no product found.
+			} catch ( \Exception $e ) {
+				// Assume no product found.
+			}
+
+			if ( empty( $product ) || empty( $product->active ) ) {
+				// There was an error retrieving the product or the product is archived.
+				// Let's try to create a new one below.
+				$stripe_product_id = null;
+			}
+		}
+
+		// If a valid product does not exist for this level, create one.
 		if ( empty( $stripe_product_id ) ) {
 			$stripe_product_id = $this->create_product_for_level( $level, $gateway_environment );
 		}
 
-		if ( ! empty( $stripe_product_id ) ) {
-			return $stripe_product_id;
-		}
+		// Return the product ID.
+		return ! empty( $stripe_product_id ) ? $stripe_product_id : null;
 	}
 
 	/**
