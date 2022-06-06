@@ -1128,6 +1128,11 @@ use Braintree\WebhookNotification as Braintree_WebhookNotification;
 	 * @return string|null Error message is returned if update fails.
 	 */
 	public function update_subscription_info( $subscription ) {
+		// Make sure that we can access the API.
+		if ( ! self::$is_loaded ) {
+			return __( "Cannot access Braintree API.", 'paid-memberships-pro' );
+		}
+
 		// Get the subscription from Braintree
 		try {
 			$braintree_subscription = Braintree_Subscription::find( $subscription->get_subscription_transaction_id() );
