@@ -214,7 +214,7 @@ function pmpro_userfields_prep_click_events() {
 	jQuery('#pmpro_userfields_add_group').unbind('click').on( 'click', function(event){
         jQuery('#pmpro_userfields_add_group').parent('p').before( pmpro.user_fields_blank_group );                
         pmpro_userfields_prep_click_events();
-        jQuery('#pmpro_userfields_add_group').parent('p').prev().find('h3').click();
+        jQuery('#pmpro_userfields_add_group').parent('p').prev().find('input').focus().select();
         pmpro_userfields_made_a_change();
     });
     
@@ -238,8 +238,9 @@ function pmpro_userfields_prep_click_events() {
     jQuery('button[name="pmpro_userfields_add_field"]').unbind('click').on( 'click', function(event){
       var thefields = jQuery(event.target).closest('div.pmpro_userfield-group-actions').siblings('div.pmpro_userfield-group-fields');
       thefields.append( pmpro.user_fields_blank_field );
-      pmpro_userfields_prep_click_events();                
-      thefields.children().last().find('a.edit-field').click();
+      pmpro_userfields_prep_click_events();    
+      thefields.children().last().find('.edit-field').click();            
+      thefields.children().last().find('input[name="pmpro_userfields_field_label"]').focus().select();
       pmpro_userfields_made_a_change();
     });
     
