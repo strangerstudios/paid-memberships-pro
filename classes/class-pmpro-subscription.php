@@ -1052,6 +1052,14 @@ class PMPro_Subscription {
 			$this->enddate = '';
 		} elseif ( 'cancelled' === $this->status ) {
 			$this->next_payment_date = '';
+
+			// Mark incomplete orders as error since the subscription is no longer active.
+			$incomplete_orders = $this->get_orders( array( 'status' => array( 'token', 'pending', 'review' ) ) );
+			if ( ! empty( $incomplete_orders ) ) {
+				foreach ( $incomplete_orders as $order ) {
+					$last_subscription_order->updateStatus( 'error' );
+				}
+			}
 		}
 
 		// If the startdate is empty or later than the current time, set it to the current time.
@@ -1130,12 +1138,14 @@ class PMPro_Subscription {
 		}
 		$cancelled_subscription_ids[] = $this->id;
 
-		/** Mark the subscription as cancelled in the database without
-		 * syncing with the payment gateway. We want this subscription
+		/**
+		 * Mark the subscription as cancelled in the database before
+		 * cancelling in payment gateway. We want this subscription
 		 * to be cancelled in the database when the IPN/webhook hits
 		 * so that the user's membership is not cancelled.
 		 */
-		$this->mark_as_cancelled( false ); // False so that we don't sync with the gateway.
+		$this->status = 'cancelled';
+		$this->save();
 
 		// Cancel the subscription in the gateway.
 		$cancelled = false;
@@ -1178,31 +1188,6 @@ class PMPro_Subscription {
 		$this->save();
 
 		return $cancelled;
-	}
-
-	/**
-	 * Marks the subscription as cancelled in the database. Also marks
-	 * incomplete orders for this subscription as error.
-	 *
-	 * @since TBD
-	 *
-	 * @param bool $update Whether to update the subscription from the gateway.
-	 */
-	public function mark_as_cancelled( $update = true ) {
-		// Mark subscription as cancelled.
-		$this->status  = 'cancelled';
-		if ( $update ) {
-			$this->update();
-		}
-		$this->save();
-
-		// Mark incomplete orders as error.
-		$incomplete_orders = $this->get_orders( array( 'status' => array( 'token', 'pending', 'review' ) ) );
-		if ( ! empty( $incomplete_orders ) ) {
-			foreach ( $incomplete_orders as $order ) {
-				$last_subscription_order->updateStatus( 'error' );
-			}
-		}
 	}
 
 	/**
