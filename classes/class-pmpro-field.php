@@ -1,43 +1,255 @@
 <?php
-class PMPro_Field
-{
-	function __construct($name = NULL, $type = NULL, $attr = NULL)
-	{
-		$this->defaults();
+class PMPro_Field {
+	/**
+	 * The name of the field.
+	 *
+	 * This is the name attribute of the input field and may be automatically prefixed if needed.
+	 *
+	 * @since TBD
+	 *
+	 * @var string
+	 */
+	public $name = '';
 
-		if(!empty($name))
-			return $this->set($name, $type, $attr);
+	/**
+	 * The type of field that this is.
+	 *
+	 * @since TBD
+	 *
+	 * @var string
+	 */
+	public $type = '';
+
+	/**
+	 * The meta key for this field.
+	 *
+	 * Will be set to $name without any prefixes that are added.
+	 *
+	 * @since TBD
+	 *
+	 * @var string
+	 */
+	public $meta_key = '';
+
+	/**
+	 * The label of the field.
+	 *
+	 * This is the human-readable label displayed to the user.
+	 *
+	 * @since TBD
+	 *
+	 * @var string
+	 */
+	public $label = '';
+
+	/**
+	 * Whether the label should be shown.
+	 *
+	 * @since TBD
+	 *
+	 * @var bool
+	 */
+	public $showmainlabel = true;
+
+	/**
+	 * A hint to be displayed with the field.
+	 *
+	 * @since TBD
+	 *
+	 * @var string
+	 */
+	public $hint = '';
+
+	/**
+	 * The membership levels that this field should be displayed for.
+	 *
+	 * @since TBD
+	 *
+	 * @var array
+	 */
+	public $levels = array();
+
+	/**
+	 * Whether the field is required.
+	 *
+	 * @since TBD
+	 *
+	 * @var bool
+	 */
+	public $required = false;
+
+	/**
+	 * Whether the field should be shown as required if $required is set to true.
+	 *
+	 * @since TBD
+	 *
+	 * @var bool
+	 */
+	public $show_required = true;
+
+	/**
+	 * Where this field should be shown.
+	 *
+	 * Options are true, false, 'admin', 'only', and 'only_admin'.
+	 *
+	 * @since TBD
+	 *
+	 * @var mixed
+	 */
+	public $profile = true;
+
+	/**
+	 * Whether the field is readonly.
+	 *
+	 * @since TBD
+	 *
+	 * @var bool
+	 */
+	public $readonly = false;
+
+	/**
+	 * Array to define conditions when a field should be shown or hidden.
+	 *
+	 * @since TBD
+	 *
+	 * @var array
+	 */
+	public $depends = array();
+
+	/**
+	 * Whether the field value should be sanitized before saving.
+	 *
+	 * @since TBD
+	 *
+	 * @var bool
+	 */
+	public $sanitize = true;
+
+	/**
+	 * The ID to show for the field.
+	 *
+	 * @since TBD
+	 *
+	 * @var string
+	 */
+	public $id = '';
+
+	/**
+	 * Class for the input field.
+	 *
+	 * @since TBD
+	 *
+	 * @var string
+	 */
+	public $class = '';
+
+	/**
+	 * Class for the div wrapper for the input field.
+	 *
+	 * @since TBD
+	 *
+	 * @var string
+	 */
+	public $divclass = '';
+
+	/**
+	 * Whether this field should be included in a members list CSV export.
+	 *
+	 * @since TBD
+	 *
+	 * @var bool
+	 */
+	public $memberslistcsv = false;
+
+	/**
+	 * The save function that should be used for this field.
+	 *
+	 * null defaults to the default save function.
+	 *
+	 * @since TBD
+	 *
+	 * @var callable
+	 */
+	public $save_function = null;
+
+	/**
+	 * Whether this field should be shown when adding a member using
+	 * the PMPro Add Member Add On.
+	 *
+	 * @since TBD
+	 *
+	 * @var bool
+	 */
+	public $addmember = false;
+
+	/**
+	 * The size attribute when using a text input field type.
+	 *
+	 * @since TBD
+	 *
+	 * @var int
+	 */
+	public $size = 30;
+
+	/**
+	 * The number of rows to show when using a textarea field type.
+	 *
+	 * @since TBD
+	 *
+	 * @var int
+	 */
+	public $rows = 5;
+
+	/**
+	 * The number of columns to show when using a textarea field type.
+	 *
+	 * @since TBD
+	 *
+	 * @var int
+	 */
+	public $cols = 80;
+
+	/**
+	 * The options for a select, select2, multiselect, checkbox_grouped, or radio field type.
+	 *
+	 * @since TBD
+	 *
+	 * @var array
+	 */
+	public $options = array();
+
+	/**
+	 * Whether multiple options should be selectable when using a select, seelect2, or multiselect field type.
+	 *
+	 * @since TBD
+	 *
+	 * @var bool
+	 */
+	public $multiple = false;
+
+	/**
+	 * The text to show next to a checkbox when using a checkbox field type.
+	 *
+	 * @since TBD
+	 *
+	 * @var string
+	 */
+	public $text = '';
+
+	/**
+	 * The HTML to show for an HTML field type.
+	 *
+	 * @since TBD
+	 *
+	 * @var string
+	 */
+	public $html = '';
+
+	function __construct($name = NULL, $type = NULL, $attr = NULL) {
+		if ( ! empty( $name ) )
+			return $this->set( $name, $type, $attr );
 		else
 			return true;
-	}
-
-	function defaults() {
-
-		// create default setting variables
-		$this->addmember = false;
-		$this->id = null;
-		$this->label = null;
-		$this->levels = null;
-		$this->memberslistcsv = false;
-		$this->readonly = false;
-		$this->depends = array();
-		$this->showrequired = true;
-		$this->showmainlabel = true;
-		$this->divclass = null;
-		$this->hint = null;
-		$this->size = null;
-		$this->rows = 5;
-		$this->cols = 80;
-		$this->required = false;
-		$this->options = array();
-		$this->multiple = false;
-		$this->text = null;
-		$this->file = null;
-		$this->html = null;
-		$this->profile = null;
-		$this->just_profile = false;
-		$this->class = null;
-		$this->sanitize = true;
 	}
 
 	/*
@@ -54,7 +266,6 @@ class PMPro_Field
 	{
 		$this->name = $name;
 		$this->type = $type;
-		$this->attr = $attr;
 		
 		//set meta key
 		$this->meta_key = $this->name;
