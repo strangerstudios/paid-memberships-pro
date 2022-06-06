@@ -282,14 +282,14 @@ function pmpro_checkout_boxes_fields() {
 
 		if($n > 0) {
 			?>
-			<div id="pmpro_checkout_box-<?php echo $cb->name; ?>" class="pmpro_checkout">
+			<div id="pmpro_checkout_box-<?php echo esc_attr( $cb->name ); ?>" class="pmpro_checkout">
 				<hr />
 				<h3>
-					<span class="pmpro_checkout-h3-name"><?php echo $cb->label;?></span>
+					<span class="pmpro_checkout-h3-name"><?php echo esc_html( $cb->label );?></span>
 				</h3>
 				<div class="pmpro_checkout-fields">
 				<?php if(!empty($cb->description)) { ?>
-					<div class="pmpro_checkout_decription"><?php echo $cb->description; ?></div>
+					<div class="pmpro_checkout_decription"><?php echo esc_html( $cb->description ); ?></div>
 				<?php } ?>
 
 				<?php
@@ -607,11 +607,11 @@ function pmpro_show_user_fields_in_profile( $user, $withlocations = false ) {
 
 			if ( !empty($box->label) ) {
 				?>
-				<h3><?php echo $box->label; ?></h3>
+				<h3><?php echo esc_html( $box->label ); ?></h3>
 				<?php
 				if ( ! empty( $box->description ) ) {
 					?>
-					<p><?php echo $box->description; ?></p>
+					<p><?php echo esc_html( $box->description ); ?></p>
 					<?php
 				}
 			}
@@ -684,14 +684,14 @@ function pmpro_show_user_fields_in_frontend_profile( $user, $withlocations = fal
 			}
 			?>
 
-			<div class="pmpro_checkout_box-<?php echo $where; ?>">
+			<div class="pmpro_checkout_box-<?php echo esc_attr( $where ); ?>">
 				<?php if ( ! empty( $box->label ) ) { ?>
-					<h3><?php echo $box->label; ?></h3>
+					<h3><?php echo esc_html( $box->label ); ?></h3>
 				<?php } ?>
 
 				<div class="pmpro_member_profile_edit-fields">
 					<?php if ( ! empty( $box->description ) ) { ?>
-						<div class="pmpro_checkout_description"><?php echo $box->description; ?></div>
+						<div class="pmpro_checkout_description"><?php echo esc_html( $box->description ); ?></div>
 					<?php } ?>
 
 					<?php
