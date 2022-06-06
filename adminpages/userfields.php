@@ -39,7 +39,6 @@
 			}
 		}
 
-		// TODO: Do we want to sanitize the input here before being added to the DB?
 		update_option( 'pmpro_user_fields_settings', $groups, false );
 		
 		// Assume success.
