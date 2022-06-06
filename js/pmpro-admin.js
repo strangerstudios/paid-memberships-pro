@@ -245,7 +245,7 @@ function pmpro_userfields_prep_click_events() {
     });
     
     // Delete field button.
-    jQuery('.pmpro_userfield-field-options a.delete-field').unbind('click').on( 'click', function(event) {
+    jQuery('.pmpro_userfield-field-options a.delete-field, .pmpro_userfield-field-actions .is-destructive').unbind('click').on( 'click', function(event) {
         var thefield = jQuery(this).closest('.pmpro_userfield-group-field');
         var thelabel = thefield.find('input[name=pmpro_userfields_field_label]').val();
         var answer;
