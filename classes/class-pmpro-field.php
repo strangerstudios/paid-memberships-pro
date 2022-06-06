@@ -1086,11 +1086,11 @@ class PMPro_Field {
 						}
 					}
 
-					$checks[] = "((jQuery('#" . $field_id ."')".".is(':checkbox')) "
-					 ."? jQuery('#" . $field_id . ":checked').length > 0"
-					 .":(jQuery('#" . $field_id . "').val() == " . json_encode($check['value']) . " || jQuery.inArray( jQuery('#" . $field_id . "').val(), " . json_encode($check['value']) . ") > -1)) ||"."(jQuery(\"input:radio[name='".$check['id']."']:checked\").val() == ".json_encode($check['value'])." || jQuery.inArray(".json_encode($check['value']).", jQuery(\"input:radio[name='".$field_id."']:checked\").val()) > -1)";
+					$checks[] = "((jQuery('#" . esc_html( $field_id ) ."')".".is(':checkbox')) "
+					 ."? jQuery('#" . esc_html( $field_id ) . ":checked').length > 0"
+					 .":(jQuery('#" . esc_html( $field_id ) . "').val() == " . json_encode($check['value']) . " || jQuery.inArray( jQuery('#" . esc_html( $field_id ) . "').val(), " . json_encode($check['value']) . ") > -1)) ||"."(jQuery(\"input:radio[name='". esc_html( $check['id'] ) ."']:checked\").val() == ".json_encode($check['value'])." || jQuery.inArray(".json_encode($check['value']).", jQuery(\"input:radio[name='". esc_html( $field_id ) ."']:checked\").val()) > -1)";
 				
-					$binds[] = "#" . $field_id .",input:radio[name=". $field_id ."]";
+					$binds[] = "#" . esc_html( $field_id ) .",input:radio[name=". esc_html( $field_id ) ."]";
 				}				
 			}
 							
@@ -1099,31 +1099,31 @@ class PMPro_Field {
 			?>
 			<script>
 				//function to check and hide/show
-				function pmprorh_<?php echo $this->id;?>_hideshow()
+				function pmprorh_<?php echo esc_html( $this->id );?>_hideshow()
 				{						
 					if(
 						<?php echo implode(" && ", $checks); ?>
 					)
 					{
-						jQuery('#<?php echo $this->id;?>_tr').show();
-						jQuery('#<?php echo $this->id;?>_div').show();
-						jQuery('#<?php echo $this->id;?>').removeAttr('disabled');
+						jQuery('#<?php echo esc_html( $this->id );?>_tr').show();
+						jQuery('#<?php echo esc_html( $this->id );?>_div').show();
+						jQuery('#<?php echo esc_html( $this->id );?>').removeAttr('disabled');
 					}
 					else
 					{
-						jQuery('#<?php echo $this->id;?>_tr').hide();
-						jQuery('#<?php echo $this->id;?>_div').hide();
-						jQuery('#<?php echo $this->id;?>').attr('disabled', 'disabled');
+						jQuery('#<?php echo esc_html( $this->id );?>_tr').hide();
+						jQuery('#<?php echo esc_html( $this->id );?>_div').hide();
+						jQuery('#<?php echo esc_html( $this->id );?>').attr('disabled', 'disabled');
 					}
 				}
 				
 				jQuery(document).ready(function() {											
 						//run on page load
-						pmprorh_<?php echo $this->id;?>_hideshow();
+						pmprorh_<?php echo esc_html( $this->id );?>_hideshow();
 						
 						//and run when certain fields are changed
 						jQuery('<?php echo implode(',', $binds);?>').bind('click change keyup', function() {
-							pmprorh_<?php echo $this->id;?>_hideshow();
+							pmprorh_<?php echo esc_html( $this->id );?>_hideshow();
 						});
 				});
 			</script>
@@ -1207,9 +1207,9 @@ class PMPro_Field {
 		
 		$this->divclass .= " pmpro_checkout-field-" . $this->type;
 		?>
-		<div id="<?php echo $this->id;?>_div" class="pmpro_checkout-field<?php if(!empty($this->divclass)) echo ' ' . $this->divclass; ?>">
+		<div id="<?php echo esc_attr( $this->id );?>_div" class="pmpro_checkout-field<?php if(!empty($this->divclass)) echo ' ' . esc_attr( $this->divclass ); ?>">
 			<?php if(!empty($this->showmainlabel)) { ?>
-				<label for="<?php echo esc_attr($this->name);?>"><?php echo $this->label;?></label>
+				<label for="<?php echo esc_attr($this->name);?>"><?php echo wp_kses_post( $this->label );?></label>
 				<?php 
 					if(!empty($this->required) && !empty($this->showrequired) && $this->showrequired === 'label')
 					{
@@ -1222,7 +1222,7 @@ class PMPro_Field {
 			<?php } ?>
 			
 			<?php if(!empty($this->hint)) { ?>
-				<p><small class="lite"><?php echo $this->hint;?></small></p>
+				<p><small class="lite"><?php echo wp_kses_post( $this->hint );?></small></p>
 			<?php } ?>
 		</div>	
 		<?php
@@ -1249,10 +1249,10 @@ class PMPro_Field {
 		else
 			$value = "";				
 		?>
-		<tr id="<?php echo $this->id;?>_tr">
+		<tr id="<?php echo esc_attr( $this->id );?>_tr">
 			<th>
 				<?php if(!empty($this->showmainlabel)) { ?>
-					<label for="<?php echo esc_attr($this->name);?>"><?php echo $this->label;?></label>
+					<label for="<?php echo esc_attr($this->name);?>"><?php echo wp_kses_post( $this->label );?></label>
 				<?php } ?>
 			</th>
 			<td>
@@ -1263,7 +1263,7 @@ class PMPro_Field {
 						echo "<div>" . $this->displayValue($value) . "</div>";						
 				?>
 				<?php if(!empty($this->hint)) { ?>
-					<small class="lite"><?php echo $this->hint;?></small>
+					<small class="lite"><?php echo wp_kses_post( $this->hint );?></small>
 				<?php } ?>
 			</td>
 		</tr>			
@@ -1295,7 +1295,7 @@ class PMPro_Field {
 		// Enforce string as output.
 		$output = (string) $output;
 
-		echo $output;
+		echo esc_html( $output );
 	}
 	
 	//from: http://stackoverflow.com/questions/173400/php-arrays-a-good-way-to-check-if-an-array-is-associative-or-numeric/4254008#4254008

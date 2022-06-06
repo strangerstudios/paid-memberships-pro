@@ -282,14 +282,14 @@ function pmpro_checkout_boxes_fields() {
 
 		if($n > 0) {
 			?>
-			<div id="pmpro_checkout_box-<?php echo $cb->name; ?>" class="pmpro_checkout">
+			<div id="pmpro_checkout_box-<?php echo esc_attr( $cb->name ); ?>" class="pmpro_checkout">
 				<hr />
 				<h3>
-					<span class="pmpro_checkout-h3-name"><?php echo $cb->label;?></span>
+					<span class="pmpro_checkout-h3-name"><?php echo wp_kses_post( $cb->label );?></span>
 				</h3>
 				<div class="pmpro_checkout-fields">
 				<?php if(!empty($cb->description)) { ?>
-					<div class="pmpro_checkout_decription"><?php echo $cb->description; ?></div>
+					<div class="pmpro_checkout_decription"><?php echo wp_kses_post( $cb->description ); ?></div>
 				<?php } ?>
 
 				<?php
@@ -607,11 +607,11 @@ function pmpro_show_user_fields_in_profile( $user, $withlocations = false ) {
 
 			if ( !empty($box->label) ) {
 				?>
-				<h3><?php echo $box->label; ?></h3>
+				<h3><?php echo wp_kses_post( $box->label ); ?></h3>
 				<?php
 				if ( ! empty( $box->description ) ) {
 					?>
-					<p><?php echo $box->description; ?></p>
+					<p><?php echo wp_kses_post( $box->description ); ?></p>
 					<?php
 				}
 			}
@@ -686,12 +686,12 @@ function pmpro_show_user_fields_in_frontend_profile( $user, $withlocations = fal
 
 			<div class="pmpro_checkout_box-<?php echo $where; ?>">
 				<?php if ( ! empty( $box->label ) ) { ?>
-					<h3><?php echo $box->label; ?></h3>
+					<h3><?php echo wp_kses_post( $box->label ); ?></h3>
 				<?php } ?>
 
 				<div class="pmpro_member_profile_edit-fields">
 					<?php if ( ! empty( $box->description ) ) { ?>
-						<div class="pmpro_checkout_description"><?php echo $box->description; ?></div>
+						<div class="pmpro_checkout_description"><?php echo wp_kses_post( $box->description ); ?></div>
 					<?php } ?>
 
 					<?php
@@ -1223,7 +1223,7 @@ function pmpro_get_field_group_html( $group = null ) {
 				<div class="pmpro_userfield-field-setting">
 					<label>
                         <?php esc_html_e( 'Description (optional, visible to users)', 'paid-memberships-pro' ); ?><br />
-					    <textarea name="pmpro_userfields_group_description"><?php echo esc_html( $group_description );?></textarea>
+					    <textarea name="pmpro_userfields_group_description"><?php echo esc_textarea( $group_description );?></textarea>
                     </label>
 				</div> <!-- end pmpro_userfield-field-setting -->
 				
@@ -1330,7 +1330,7 @@ function pmpro_get_field_html( $field = null ) {
                 </div> <!-- end pmpro_userfield-group-buttons -->
             </li>
             <li class="pmpro_userfield-group-column-label">
-                <span class="pmpro_userfield-label"><?php echo esc_html( $field_label );?></span>
+                <span class="pmpro_userfield-label"><?php echo wp_kses_post( $field_label );?></span>
                 <div class="pmpro_userfield-field-options">
                     <a class="edit-field" title="<?php esc_attr_e( 'Edit field', 'paid-memberships-pro' ); ?>" href="javascript:void(0);"><?php esc_html_e( 'Edit', 'paid-memberships-pro' ); ?></a> |
                     <?php /*
