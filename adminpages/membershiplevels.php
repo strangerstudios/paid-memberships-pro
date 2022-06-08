@@ -136,24 +136,24 @@
 		);
 
 		// Was there an error inserting or updating?
-		if(empty($wpdb->last_error)) {		
+		if ( empty( $wpdb->last_error ) ) {		
 			$edit = false;
 			$msg = 1;
-			$msgt = __("Membership level added successfully.", 'paid-memberships-pro' );
+			$msgt = __( 'Membership level added successfully.', 'paid-memberships-pro' );
 		} else {
 			$msg = -1;
-			$msgt = __("Error adding membership level.", 'paid-memberships-pro' );
+			$msgt = __( 'Error adding membership level.', 'paid-memberships-pro' );
 		}
 
 		// Update saveid to insert id if this was a new level.
-		if($saveid < 1) {			
+		if ( $saveid < 1 ) {			
 			$saveid = $wpdb->insert_id;
 		}
 
 		// If we have a saveid, update categories.
 		if ( $saveid > 0 ) {
 			pmpro_updateMembershipCategories( $saveid, $ml_categories );
-			if( ! empty($wpdb->last_error)) {			
+			if ( ! empty( $wpdb->last_error ) ) {			
 				$msg = -2;
 				$msgt = __("Error updating membership level.", 'paid-memberships-pro' );
 			}
