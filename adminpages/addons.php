@@ -65,7 +65,7 @@
 		<br class="clear">
 		<div id="pmpro-no-add-ons" class="notice notice-info notice-large inline" style="display: none;">
 			<p>
-				<?php esc_html_e('No Add Ons found.', 'paid-memberships-pro' ); ?>
+				<?php esc_html_e( 'No Add Ons found.', 'paid-memberships-pro' ); ?>
 				<a href="admin.php?page=pmpro-addons"><?php esc_html_e( 'View All', 'paid-memberships-pro' ); ?></a>
 			</p>
 		</div>
@@ -149,7 +149,7 @@
 								<?php if ( ! empty( $addon['PluginURI'] ) ) { ?>
 									<a target="_blank" href="<?php echo esc_url( $plugin_link ); ?>">
 								<?php } ?>
-								<img src="<?php echo $addon['plugin_icon_src']; ?>" alt="<?php $addon['Name']; ?>">
+								<img src="<?php echo esc_url( $addon['plugin_icon_src'] ); ?>" alt="<?php esc_attr_e( $addon['Name'] ); ?>">
 								<?php if ( ! empty( $addon['PluginURI'] ) ) { ?>
 									</a>
 								<?php } ?>
@@ -158,7 +158,7 @@
 								<?php if ( ! empty( $addon['PluginURI'] ) ) { ?>
 									<a target="_blank" href="<?php echo esc_url( $plugin_link ); ?>">
 								<?php } ?>
-								<?php echo $addon['ShortName']; ?>
+								<?php esc_html_e( $addon['ShortName'] ); ?>
 								<?php if ( ! empty( $addon['PluginURI'] ) ) { ?>
 									</a>
 								<?php } ?>
@@ -171,7 +171,7 @@
 									if ( ! empty( $addon['Author'] && ! in_array( $addon['Author'], array( 'Paid Memberships Pro', 'Stranger Studios' ) ) ) ) {
 										$author = $addon['Author'];
 										if ( ! empty( $addon['AuthorURI'] ) )
-											$author = '<a href="' . $addon['AuthorURI'] . '">' . $addon['Author'] . '</a>';
+											$author = '<a href="' . esc_url( $addon['AuthorURI'] ) . '" target="_blank">' . esc_html( $addon['Author'] ) . '</a>';
 										$plugin_meta[] = sprintf( __( 'By %s' ), $author );
 									}
 									//$plugin_meta = apply_filters( 'plugin_row_meta', $plugin_meta, $plugin_file, $addon, $addon['status']);
@@ -298,7 +298,7 @@
 									}
 
 									if ( is_array( $action_button ) ) { ?>
-										<a href="<?php echo esc_attr( $action_button['url'] ); ?>" class="<?php echo esc_attr( $action_button['style'] ); ?>"><?php echo esc_html( $action_button['label'] ); ?></a>
+										<a href="<?php echo esc_url( $action_button['url'] ); ?>" class="<?php echo esc_attr( $action_button['style'] ); ?>"><?php echo esc_html( $action_button['label'] ); ?></a>
 									<?php } else {
 										echo $action_button;
 									}
@@ -403,4 +403,3 @@
 <?php
 	require_once(dirname(__FILE__) . "/admin_footer.php");
 	wp_print_request_filesystem_credentials_modal();
-?>
