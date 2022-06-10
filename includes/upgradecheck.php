@@ -548,6 +548,7 @@ function pmpro_db_delta()
 			PRIMARY KEY (`id`),
 			UNIQUE KEY `subscription_link` (`subscription_transaction_id`, `gateway_environment`, `gateway`),
 			KEY `user_id` (`user_id`),
+			KEY `next_payment_date` (`next_payment_date`),
 		);
 	";
 	dbDelta($sqlQuery);
