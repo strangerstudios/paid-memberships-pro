@@ -269,7 +269,7 @@ CREATE TABLE `wp_pmpro_subscriptions` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `subscription_link` (`subscription_transaction_id`, `gateway_environment`, `gateway`),
   KEY `user_id` (`user_id`),
-  KEY `next_payment_date` (`next_payment_date`),
+  KEY `next_payment_date` (`next_payment_date`)
 );
 
 -- --------------------------------------------------------
