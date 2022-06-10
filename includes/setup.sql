@@ -269,15 +269,6 @@ CREATE TABLE `wp_pmpro_subscriptions` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `subscription_link` (`subscription_transaction_id`, `gateway_environment`, `gateway`),
   KEY `user_id` (`user_id`),
-  KEY `membership_level_id` (`membership_level_id`),
-  KEY `gateway` (`gateway`),
-  KEY `gateway_environment` (`gateway_environment`),
-  KEY `subscription_transaction_id` (`subscription_transaction_id`),
-  KEY `status` (`status`),
-  KEY `startdate` (`startdate`),
-  KEY `enddate` (`enddate`),
-  KEY `next_payment_date` (`next_payment_date`),
-  KEY `modified` (`modified`)
 );
 
 -- --------------------------------------------------------
