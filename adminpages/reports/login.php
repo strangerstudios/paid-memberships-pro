@@ -108,84 +108,84 @@ function pmpro_report_login_page()
 		<?php _e('Visits, Views, and Logins Report', 'paid-memberships-pro');?>
 	</h1>
 	<a target="_blank" href="<?php echo esc_url( $csv_export_link ); ?>" class="page-title-action"><?php esc_html_e( 'Export to CSV', 'paid-memberships-pro' ); ?></a>		
-	<ul class="subsubsub">
-		<li>			
-			<?php echo esc_html_x( 'Show', 'Dropdown label, e.g. Show All Users', 'paid-memberships-pro' )?> <select name="l" onchange="jQuery('#posts-filter').submit();">
-
-				<option value="" <?php if(!$l) { ?>selected="selected"<?php } ?>><?php esc_html_e('All Users', 'paid-memberships-pro')?></option>
-				<option value="all" <?php if($l == "all") { ?>selected="selected"<?php } ?>><?php esc_html_e('All Levels', 'paid-memberships-pro')?></option>
-				<?php
-					$levels = $wpdb->get_results("SELECT id, name FROM $wpdb->pmpro_membership_levels ORDER BY name");
-					$levels = pmpro_sort_levels_by_order( $levels );
-					foreach($levels as $level)
-					{
-				?>
-					<option value="<?php echo esc_attr( $level->id ) ?>" <?php if($l == $level->id) { ?>selected="selected"<?php } ?>><?php echo esc_html( $level->name ); ?></option>
-
-				<?php
-					}
-				?>
-			</select>			
-		</li>
-	</ul>
 	<p class="search-box">
 		<label class="hidden" for="post-search-input"><?php echo esc_html_x( 'Search', 'Search form label', 'paid-memberships-pro')?> <?php if(empty($l)) esc_html_e( 'Users', 'paid-memberships-pro' ); else esc_html_e( 'Members', 'paid-memberships-pro' );?>:</label>
-
 		<input type="hidden" name="page" value="pmpro-reports" />		
 		<input type="hidden" name="report" value="login" />		
 		<input id="post-search-input" type="text" value="<?php echo esc_attr($s)?>" name="s"/>
 		<input class="button" type="submit" value="<?php esc_attr_e( 'Search Members', 'paid-memberships-pro' ) ?>"/>
 	</p>
-	<?php 
-		//some vars for the search					
-		if(isset($_REQUEST['pn']))
-			$pn = intval($_REQUEST['pn']);
-		else
-			$pn = 1;
-			
-		if(isset($_REQUEST['limit']))
-			$limit = intval($_REQUEST['limit']);
-		else
-			$limit = 15;
-		
-		$end = $pn * $limit;
-		$start = $end - $limit;				
-					
-		if($s)
-		{
-			$sqlQuery = "SELECT SQL_CALC_FOUND_ROWS u.ID, u.user_login, u.user_email, UNIX_TIMESTAMP(CONVERT_TZ(u.user_registered, '+00:00', @@global.time_zone)) as joindate, mu.membership_id, mu.initial_payment, mu.billing_amount, mu.cycle_period, mu.cycle_number, mu.billing_limit, mu.trial_amount, mu.trial_limit, UNIX_TIMESTAMP(CONVERT_TZ(mu.startdate, '+00:00', @@global.time_zone)) as startdate, UNIX_TIMESTAMP(CONVERT_TZ(mu.enddate, '+00:00', @@global.time_zone)) as enddate, m.name as membership FROM $wpdb->users u LEFT JOIN $wpdb->usermeta um ON u.ID = um.user_id LEFT JOIN $wpdb->pmpro_memberships_users mu ON u.ID = mu.user_id AND mu.status = 'active' LEFT JOIN $wpdb->pmpro_membership_levels m ON mu.membership_id = m.id WHERE (u.user_login LIKE '%" . esc_sql($s) . "%' OR u.user_email LIKE '%" . esc_sql($s) . "%' OR um.meta_value LIKE '%" . esc_sql($s) . "%') ";
-		
-			if($l == "all")
-				$sqlQuery .= " AND mu.status = 'active' AND mu.membership_id > 0 ";
-			elseif($l)
-				$sqlQuery .= " AND mu.membership_id = '" . esc_sql($l) . "' ";					
-				
-			$sqlQuery .= "GROUP BY u.ID ORDER BY user_registered DESC LIMIT $start, $limit";
-		}
-		else
-		{
-			$sqlQuery = "SELECT SQL_CALC_FOUND_ROWS u.ID, u.user_login, u.user_email, UNIX_TIMESTAMP(CONVERT_TZ(u.user_registered, '+00:00', @@global.time_zone)) as joindate, mu.membership_id, mu.initial_payment, mu.billing_amount, mu.cycle_period, mu.cycle_number, mu.billing_limit, mu.trial_amount, mu.trial_limit, UNIX_TIMESTAMP(CONVERT_TZ(mu.startdate, '+00:00', @@global.time_zone)) as startdate, UNIX_TIMESTAMP(CONVERT_TZ(mu.enddate, '+00:00', @@global.time_zone)) as enddate, m.name as membership FROM $wpdb->users u LEFT JOIN $wpdb->pmpro_memberships_users mu ON u.ID = mu.user_id AND mu.status = 'active' LEFT JOIN $wpdb->pmpro_membership_levels m ON mu.membership_id = m.id";
-			$sqlQuery .= " WHERE 1=1 ";
-			
-			if($l == "all")
-				$sqlQuery .= " AND mu.membership_id > 0  AND mu.status = 'active' ";
-			elseif($l)
-				$sqlQuery .= " AND mu.membership_id = '" . esc_sql($l) . "' ";
-			$sqlQuery .= "GROUP BY u.ID ORDER BY user_registered DESC LIMIT $start, $limit";
-		}
+	<div class="tablenav top">
+		<label for="l"><?php echo esc_html_x( 'Show', 'Dropdown label, e.g. Show All Users', 'paid-memberships-pro' ); ?></label>
+		<select name="l" onchange="jQuery('#posts-filter').submit();">
+			<option value="" <?php if(!$l) { ?>selected="selected"<?php } ?>><?php esc_html_e('All Users', 'paid-memberships-pro')?></option>
+			<option value="all" <?php if($l == "all") { ?>selected="selected"<?php } ?>><?php esc_html_e('All Levels', 'paid-memberships-pro')?></option>
+			<?php
+				$levels = $wpdb->get_results("SELECT id, name FROM $wpdb->pmpro_membership_levels ORDER BY name");
+				$levels = pmpro_sort_levels_by_order( $levels );
+				foreach($levels as $level)
+				{
+			?>
+				<option value="<?php echo esc_attr( $level->id ) ?>" <?php if($l == $level->id) { ?>selected="selected"<?php } ?>><?php echo esc_html( $level->name ); ?></option>
 
-		$sqlQuery = apply_filters("pmpro_members_list_sql", $sqlQuery);
-		
-		$theusers = $wpdb->get_results($sqlQuery);
-		$totalrows = $wpdb->get_var("SELECT FOUND_ROWS() as found_rows");
-		
-		if($theusers)
-		{
-		?>
-		<p class="clear"><?php echo strval($totalrows)?> <?php if(empty($l)) echo "users"; else echo "members";?> found.	
-		<?php		
-		}		
-	?>
+			<?php
+				}
+			?>
+		</select>
+		<div class="tablenav-pages one-page">
+			<?php
+				//some vars for the search
+				if(isset($_REQUEST['pn']))
+					$pn = intval($_REQUEST['pn']);
+				else
+					$pn = 1;
+					
+				if(isset($_REQUEST['limit']))
+					$limit = intval($_REQUEST['limit']);
+				else
+					$limit = 15;
+
+				$end = $pn * $limit;
+				$start = $end - $limit;
+
+				if($s)
+				{
+					$sqlQuery = "SELECT SQL_CALC_FOUND_ROWS u.ID, u.user_login, u.user_email, UNIX_TIMESTAMP(CONVERT_TZ(u.user_registered, '+00:00', @@global.time_zone)) as joindate, mu.membership_id, mu.initial_payment, mu.billing_amount, mu.cycle_period, mu.cycle_number, mu.billing_limit, mu.trial_amount, mu.trial_limit, UNIX_TIMESTAMP(CONVERT_TZ(mu.startdate, '+00:00', @@global.time_zone)) as startdate, UNIX_TIMESTAMP(CONVERT_TZ(mu.enddate, '+00:00', @@global.time_zone)) as enddate, m.name as membership FROM $wpdb->users u LEFT JOIN $wpdb->usermeta um ON u.ID = um.user_id LEFT JOIN $wpdb->pmpro_memberships_users mu ON u.ID = mu.user_id AND mu.status = 'active' LEFT JOIN $wpdb->pmpro_membership_levels m ON mu.membership_id = m.id WHERE (u.user_login LIKE '%" . esc_sql($s) . "%' OR u.user_email LIKE '%" . esc_sql($s) . "%' OR um.meta_value LIKE '%" . esc_sql($s) . "%') ";
+
+					if($l == "all")
+						$sqlQuery .= " AND mu.status = 'active' AND mu.membership_id > 0 ";
+					elseif($l)
+						$sqlQuery .= " AND mu.membership_id = '" . esc_sql($l) . "' ";
+
+					$sqlQuery .= "GROUP BY u.ID ORDER BY user_registered DESC LIMIT $start, $limit";
+				}
+				else
+				{
+					$sqlQuery = "SELECT SQL_CALC_FOUND_ROWS u.ID, u.user_login, u.user_email, UNIX_TIMESTAMP(CONVERT_TZ(u.user_registered, '+00:00', @@global.time_zone)) as joindate, mu.membership_id, mu.initial_payment, mu.billing_amount, mu.cycle_period, mu.cycle_number, mu.billing_limit, mu.trial_amount, mu.trial_limit, UNIX_TIMESTAMP(CONVERT_TZ(mu.startdate, '+00:00', @@global.time_zone)) as startdate, UNIX_TIMESTAMP(CONVERT_TZ(mu.enddate, '+00:00', @@global.time_zone)) as enddate, m.name as membership FROM $wpdb->users u LEFT JOIN $wpdb->pmpro_memberships_users mu ON u.ID = mu.user_id AND mu.status = 'active' LEFT JOIN $wpdb->pmpro_membership_levels m ON mu.membership_id = m.id";
+					$sqlQuery .= " WHERE 1=1 ";
+
+					if($l == "all")
+						$sqlQuery .= " AND mu.membership_id > 0  AND mu.status = 'active' ";
+					elseif($l)
+						$sqlQuery .= " AND mu.membership_id = '" . esc_sql($l) . "' ";
+					$sqlQuery .= "GROUP BY u.ID ORDER BY user_registered DESC LIMIT $start, $limit";
+				}
+
+				$sqlQuery = apply_filters("pmpro_members_list_sql", $sqlQuery);
+				
+				$theusers = $wpdb->get_results($sqlQuery);
+				$totalrows = $wpdb->get_var("SELECT FOUND_ROWS() as found_rows");
+
+				if($theusers)
+				{
+				?>
+				<span class="displaying-num"><?php echo strval($totalrows)?> <?php if(empty($l)) echo "users"; else echo "members";?> found.</span>
+				<?php
+				}
+			?>
+		</div>
+		<br class="clear" />
+	</div>
 	<table class="widefat">
 		<thead>
 			<tr class="thead">
@@ -206,22 +206,22 @@ function pmpro_report_login_page()
 				<th><?php esc_html_e('Views All Time', 'paid-memberships-pro')?></th>
 				<th><?php esc_html_e('Last Login', 'paid-memberships-pro')?></th>
 				<th><?php esc_html_e('Logins This Week', 'paid-memberships-pro')?></th>
-				<th><?php esc_html_e('Logins This Month', 'paid-memberships-pro')?></th>				
+				<th><?php esc_html_e('Logins This Month', 'paid-memberships-pro')?></th>
 				<th><?php esc_html_e('Logins This Year', 'paid-memberships-pro')?></th>
 				<th><?php esc_html_e('Logins All Time', 'paid-memberships-pro')?></th>
 			</tr>
 		</thead>
-		<tbody id="users" class="list:user user-list">	
-			<?php	
-				$count = 0;							
+		<tbody id="users" class="list:user user-list">
+			<?php
+				$count = 0;
 				foreach($theusers as $auser)
 				{
-					//get meta																					
-					$theuser = get_userdata($auser->ID);			
+					//get meta
+					$theuser = get_userdata($auser->ID);
 					$visits = pmpro_reports_get_values_for_user("visits", $auser->ID);
 					$views = pmpro_reports_get_values_for_user("views", $auser->ID);
 					$logins = pmpro_reports_get_values_for_user("logins", $auser->ID);
-					
+
 					if(empty($logins))
 						$logins = array("last"=>"N/A", "week"=>"N/A", "month"=>"N/A", "ytd"=>"N/A", "alltime"=>"N/A");
 					?>
@@ -234,17 +234,17 @@ function pmpro_report_login_page()
 										$userlink = '<a href="user-edit.php?user_id=' . $theuser->ID . '">' . $theuser->user_login . '</a>';
 										$userlink = apply_filters("pmpro_members_list_user_link", $userlink, $theuser);
 										echo $userlink;
-									?>																		
+									?>
 								</strong>
-							</td>										
+							</td>
 							<td>
 								<?php echo $theuser->display_name;?>
 							</td>
-							<td><?php echo $auser->membership?></td>												
+							<td><?php echo $auser->membership?></td>
 							<td><?php echo date_i18n( 'm/d/Y', strtotime( get_date_from_gmt( $theuser->user_registered ), current_time( 'timestamp' ) ) ); ?></td>
 
 							<td>
-								<?php 									
+								<?php
 									if($auser->enddate) 
 										echo date_i18n(get_option('date_format'), $auser->enddate);
 									else
@@ -268,7 +268,7 @@ function pmpro_report_login_page()
 						</tr>
 					<?php
 				}
-				
+
 				if(!$theusers)
 				{
 				?>
@@ -277,7 +277,7 @@ function pmpro_report_login_page()
 				</tr>
 				<?php
 				}
-			?>		
+			?>
 		</tbody>
 	</table>
 	</form>
@@ -392,7 +392,7 @@ function pmpro_reports_get_all_values($type) {
 			$allvalues['thismonth'] = $thismonth;
 			$update = true;
 		}
-				
+
 		if(!isset($allvalues['thisyear']) || $thisyear != $allvalues['thisyear'])
 		{
 			$allvalues['ytd'] = 0;
@@ -461,7 +461,7 @@ function pmpro_report_track_values($type, $user_id = NULL) {
 				$values['week'] = 1;
 				$values['thisweek'] = $thisweek;
 			}
-					
+
 			if($thismonth == $values['thismonth'])
 				$values['month'] = $values['month'] + 1;
 			else
@@ -469,15 +469,15 @@ function pmpro_report_track_values($type, $user_id = NULL) {
 				$values['month'] = 1;
 				$values['thismonth'] = $thismonth;
 			}
-					
+
 			if($thisyear == $values['thisyear'])
 				$values['ytd'] = $values['ytd'] + 1;
 			else
 			{
 				$values['ytd'] = 1;
 				$values['thisyear'] = $thisyear;
-			}		
-				
+			}
+
 			//update user data
 			update_user_meta($user_id, "pmpro_" . $type, $values);
 		}

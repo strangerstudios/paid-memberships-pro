@@ -44,6 +44,8 @@ function render_dynamic_block( $attributes, $content ) {
 	} else {
 		if ( pmpro_hasMembershipLevel( $attributes['levels'] ) ) {
 			return do_blocks( $content );
+		} elseif ( ! empty( $attributes['show_noaccess'] ) ) {
+			return pmpro_get_no_access_message( NULL, $attributes['levels'] );
 		}
 	}
 }
