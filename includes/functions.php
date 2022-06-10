@@ -1308,15 +1308,17 @@ function pmpro_listCategories( $parent_id = 0, $level_categories = array() ) {
 
 	if ( $cats ) {
 		foreach ( $cats as $cat ) {
-			$name = 'membershipcategory_' . $cat->term_id;
 			if ( ! empty( $level_categories ) ) {
 				$checked = checked( in_array( $cat->term_id, $level_categories ), true, false );
 			} else {
 				$checked = '';
-			}
-			echo "<ul><li class=membershipcategory><input type=checkbox name={$name} id={$name} value=yes {$checked}><label for={$name}>{$cat->name}</label>";
-			pmpro_listCategories( $cat->term_id, $level_categories );
-			echo '</li></ul>';
+			} ?>
+			<div class="pmpro_clickable">
+				<input type="checkbox" name="membershipcategory_<?php echo esc_attr( $cat->term_id ); ?>" id="membershipcategory_<?php echo esc_attr( $cat->term_id ); ?>" value="yes" <?php echo esc_attr( $checked ); ?>>
+				<label for="membershipcategory_<?php echo esc_attr( $cat->term_id ); ?>"><?php echo $cat->name; ?></label>
+				<?php pmpro_listCategories( $cat->term_id, $level_categories ); ?>
+			</div>
+			<?php
 		}
 	}
 }
@@ -1510,7 +1512,7 @@ function pmpro_getPaginationString( $page = 1, $totalitems = 0, $limit = 15, $ad
 	*/
 	$pagination = '';
 	if ( $lastpage > 1 ) {
-		$pagination .= '<div class="pmpro_pagination"';
+		$pagination .= '<span class="pmpro_pagination"';
 		if ( ! empty( $margin ) || ! empty( $padding ) ) {
 			$pagination .= ' style="';
 			if ( $margin ) {
@@ -1588,7 +1590,7 @@ function pmpro_getPaginationString( $page = 1, $totalitems = 0, $limit = 15, $ad
 		} else {
 			$pagination .= '<span class="disabled">next &raquo;</span>';
 		}
-		$pagination .= "</div>\n";
+		$pagination .= "</span>\n";
 	}
 
 	return $pagination;
@@ -1949,7 +1951,9 @@ function pmpro_get_no_access_message( $content, $level_ids, $level_names = NULL 
 		$level_names = array();
 		foreach ( $level_ids as $key => $id ) {
 			$level_obj = pmpro_getLevel( $id );
-			$level_names[] = $level_obj->name;
+			if ( ! empty( $level_obj ) ) {
+				$level_names[] = $level_obj->name;
+			}
 		}
 	}
 
@@ -3146,7 +3150,7 @@ function pmpro_round_price( $price, $currency = '' ) {
  *
  * Does not format price, to do that, call pmpro_formatPrice().
  *
- * @since TBD
+ * @since 2.8
  *
  * @param int|float|string $amount   The amount to get price information for.
  * @param null|string      $currency The currency to use, defaults to current currency.
@@ -3166,7 +3170,7 @@ function pmpro_round_price_as_string( $amount, $currency = null ) {
 /**
  * Get the price information about the provided amount.
  *
- * @since TBD
+ * @since 2.8
  *
  * @param int|float|string $amount   The amount to get price information for.
  * @param null|string      $currency The currency to use, defaults to current currency.
@@ -3435,25 +3439,6 @@ function pmpro_generatePages( $pages ) {
 	}
 
 	return $pages_created;
-}
-
-/**
- * Schedule a periodic event unless one with the same hook is already scheduled.
- *
- * @param int    $timestamp Timestamp for when to run the event.
- * @param string $recurrence How often the event should recur.
- * @param string $hook Action hook to execute when cron is run.
- * @param array  $args Optional. Arguments to pass to the hook's callback function.
- * @return false|void False when an event is not scheduled.
- * @since 1.8.7.3
- */
-function pmpro_maybe_schedule_event( $timestamp, $recurrence, $hook, $args = array() ) {
-	$next = wp_next_scheduled( $hook, $args );
-	if ( empty( $next ) ) {
-		return wp_schedule_event( $timestamp, $recurrence, $hook, $args );
-	} else {
-		return false;
-	}
 }
 
 /**
@@ -3839,13 +3824,13 @@ function pmpro_doing_webhook( $gateway = null, $set = false ){
  *
  * @return void
  *
- * @since TBD
+ * @since 2.8
  */
 function pmpro_unhandled_webhook(){
 	/**
 	 * Allow hooking into after a webhook has been run but was not handled.
 	 *
-	 * @since TBD
+	 * @since 2.8
 	 *
 	 * @param string $gateway The gateway the webhook was not handled for.
 	 */
@@ -4100,7 +4085,99 @@ function pmpro_get_ip() {
 }
 
 /**
- * Send the WP new user notification email, but also check our filter.
+ * Determines if this order can be refunded
+ * @param  object $order The order that we want to refund
+ * @return bool Returns a bool value based on if the order can be refunded
+ */
+function pmpro_allowed_refunds( $order ) { 
+
+	//If this isn't a valid order then lets not allow it
+	if( empty( $order ) || empty( $order->gateway ) || empty( $order->status ) || empty( $order->payment_transaction_id ) ) {
+		return false;
+	}	
+
+	//Orders with a 0 total shouldn't be able to be refunded
+	if( $order->total == 0 ){
+		return false;
+	}
+
+	$okay = false;
+
+	/**
+	 * Specify which gateways support refund functionality
+	 *
+	 * @since 2.8
+	 *
+	 * @param array $allowed_gateways A list of allowed gateways to work with refunds
+	 */
+	$allowed_gateways = apply_filters( 'pmpro_allowed_refunds_gateways', array( 'stripe', 'paypalexpress' ) );
+	//Only apply to these gateways
+	if( in_array( $order->gateway, $allowed_gateways, true ) ) {
+		$okay = true;
+	}
+	
+	$disallowed_statuses = pmpro_disallowed_refund_statuses();
+	//Don't allow pending orders to be refunded
+	if( in_array( $order->status, $disallowed_statuses, true ) ){
+		$okay = false;
+	}
+
+	$okay = apply_filters( 'pmpro_refund_allowed', $okay, $order );
+
+	return $okay;
+}
+
+
+/**
+ * Decides which filter should be used for the refund depending on gateway
+ * @param  object $order Member Order that we are refunding
+ * @return bool 	Returns a bool value based on if a refund was processed successfully or not
+ */
+function pmpro_refund_order( $order ){
+
+	if( empty( $order ) ){
+		return false;
+	}
+
+	//Not going to refund an order that has already been refunded
+	if( $order->status == 'refunded' ) {
+		return true; 
+	}
+
+	/**
+	 * Processes a refund for a specific gateway
+	 *
+	 * @since 2.8
+	 *
+	 * @param bool $success Default return value is false to determine if the refund was successfully processed. 
+	 * @param object $order The Member Order we want to refund.
+	 */
+	$success = apply_filters( 'pmpro_process_refund_'.$order->gateway, false, $order );
+	
+	return $success;
+
+}
+
+/**
+ * Returns an array of order statuses that do not qualify for a refund
+ * 
+ * @return array Returns an array of statuses that are not allowe to be refunded
+ */
+function pmpro_disallowed_refund_statuses() {
+
+	/**
+	 * Allow filtering the list of statuses that can not be refunded from.
+	 *
+	 * @since 2.8
+	 *
+	 * @param array $disallowed_statuses The list of statuses that can not be refunded from.
+	 */
+	$disallowed_statuses = apply_filters( 'pmpro_disallowed_refund_statuses', array( 'pending', 'refunded', 'review', 'token', 'error' ) );
+
+	return $disallowed_statuses;
+}
+
+/* Send the WP new user notification email, but also check our filter.
  * NOTE: includes/email.php has code to check for the related setting and
  *       filters on the pmpro_wp_new_user_notification hook.
  * @since 2.7.4
@@ -4111,4 +4188,5 @@ function pmpro_maybe_send_wp_new_user_notification( $user_id, $level_id = null )
 	if ( apply_filters( 'pmpro_wp_new_user_notification', true, $user_id, $level_id ) ) {
 		wp_new_user_notification( $user_id, null, 'both' );
 	}
+
 }

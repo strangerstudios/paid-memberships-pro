@@ -26,14 +26,21 @@ const {
      'pmpro/checkout-page',
      {
          title: __( 'Membership Checkout Form', 'paid-memberships-pro' ),
-         description: __( 'Displays the Membership Checkout form.', 'paid-memberships-pro' ),
+         description: __( 'Dynamic form that allows users to complete free registration or paid checkout for the selected membership level.', 'paid-memberships-pro' ),
          category: 'pmpro',
          icon: {
-            background: '#2997c8',
-            foreground: '#ffffff',
+            background: '#FFFFFF',
+            foreground: '#658B24',
             src: 'list-view',
          },
-         keywords: [ __( 'pmpro', 'paid-memberships-pro' ) ],
+         keywords: [
+             __( 'member', 'paid-memberships-pro' ),
+             __( 'paid memberships pro', 'paid-memberships-pro' ),
+             __( 'pmpro', 'paid-memberships-pro' ),
+             __( 'buy', 'paid-memberships-pro' ),
+             __( 'purchase', 'paid-memberships-pro' ),
+             __( 'sell', 'paid-memberships-pro' ),
+         ],
          supports: {
          },
          attributes: {

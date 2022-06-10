@@ -40,6 +40,10 @@ function pmpro_place_blocks_in_panel( $categories, $post_or_context ) {
 				'slug'  => 'pmpro',
 				'title' => __( 'Paid Memberships Pro', 'paid-memberships-pro' ),
 			),
+			array(
+				'slug'	=> 'pmpro-pages',
+				'title'	=> __( 'Paid Memberships Pro Pages', 'paid-memberships-pro' ),
+			),
 		)
 	);
 }
