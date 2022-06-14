@@ -101,7 +101,7 @@ class PMPro_Site_Health {
 					'label' => __( 'Membership Pages', 'paid-memberships-pro' ),
 					'value' => self::get_pmpro_pages(),
 				],
-        'pmpro-library-conflicts' => [
+        		'pmpro-library-conflicts' => [
 					'label' => __( 'Library Conflicts', 'paid-memberships-pro' ),
 					'value' => self::get_library_conflicts(),
 				],
@@ -269,6 +269,29 @@ class PMPro_Site_Health {
 		return wp_json_encode( $templates, JSON_PRETTY_PRINT );
 	}
 
+	public function recursive_template_scan($dir = __DIR__){
+		
+		$files = array();
+		
+		$files[$dir] = array();
+
+		$directories = array_values( array_diff( scandir( $dir ), ['.', '..'] ) );
+		
+		foreach( $directories as $directory ) {
+
+			if( is_dir( "$dir\\$directory" ) ) {
+				foreach( self::recursive_template_scan( "$dir\\$directory" ) as $key => $value ) {
+					$files[$key] = $value;
+				}
+			} else {
+				$files[$dir][] = "$directory";
+			}
+
+		}
+		
+		return $files;
+	}
+
 	private function get_custom_templates_from_path( $path ) {
 		require_once ABSPATH . 'wp-admin/includes/file.php';
 
@@ -293,22 +316,37 @@ class PMPro_Site_Health {
 			return new WP_Error( 'path-empty', __( 'Empty override folder -- no template overrides', 'paid-memberships-pro' ) );
 		}
 
-		$templates = [];
+		$templates = self::recursive_template_scan($path);
 
-		foreach ( $override_list as $template => $info ) {
-			$last_modified = $info['lastmod'] . ' ' . $info['time'];
+		$overridden_templates = array();
 
-			if ( isset( $info['lastmodunix'] ) ) {
-				$last_modified = date( 'Y-m-d H:i:s', $info['lastmodunix'] );
+		$template_versions = pmpro_compare_template_versions();
+		
+		if( ! empty( $templates ) ) {
+			foreach( $templates as $path => $file ) {
+
+				if( empty( $file ) ) {
+					$overridden_templates[$path] = '';	
+				} else {
+					foreach( $file as $f ) {
+
+						$file_without_ext = str_replace( ".php", "", $f );
+
+						if( ! empty( $template_versions[$file_without_ext] ) ) {
+							$versions = $template_versions[$file_without_ext];
+							
+							$overridden_templates[$path.'/'.$f] = sprintf( __( '%s - Core Version: %s, Your Version: %s', 'paid-memberships-pro' ), $versions['our_version'], $versions['your_version'] );	
+						} else {
+							$overridden_templates[$path.'/'.$f] = __( 'Unknown Version', 'paid-memberships-pro' );	
+						}
+						
+					}
+				}
+				
 			}
-
-			$templates[ $template ] = [
-				'last_updated' => $last_modified,
-				'path'         => str_replace( ABSPATH, '', $path ) . $template,
-			];
 		}
 
-		return $templates;
+		return $overridden_templates;
 	}
 
 	/**

@@ -625,6 +625,8 @@ function pmpro_compare_template_versions() {
 
 				if( $compared ) {
 					$affected_templates[$template_slug] = array( 'our_version' => $actual_version, 'your_version' => $used_version );
+				} else {
+					$affected_templates[$template_slug] = array( 'our_version' => $actual_version, 'your_version' => __( 'Unknown', 'paid-memberships-pro' ) );
 				}
 			}
 
@@ -4431,3 +4433,4 @@ function pmpro_maybe_send_wp_new_user_notification( $user_id, $level_id = null )
 	}
 
 }
+
