@@ -273,16 +273,16 @@
 		function __construct($id = NULL)
 		{
 
-
 			//set up the gateway
 			$this->setGateway(pmpro_getOption("gateway"));
 
 			//get data if an id was passed
-			if( $id ) {
-				if(is_numeric($id))
-					$morder = $this->getMemberOrderByID($id);
-				else
-					$morder = $this->getMemberOrderByCode($id);
+			if ( $id ) {
+				if ( is_numeric( $id ) ) {
+					$morder = $this->getMemberOrderByID( $id );
+				} else {
+					$morder = $this->getMemberOrderByCode( $id );
+				}
 			} else {
 				$morder = $this->getEmptyMemberOrder();	//blank constructor
 			}
@@ -303,11 +303,11 @@
 		 */
 		public function __get( $property ) {
 
-			if( $property == 'other_properties' ) {
+			if ( $property == 'other_properties' ) {
 				return; //We don't want the actual other_properties array to be changed
 			}
 
-			if( property_exists( $this, $property ) ) {
+			if ( property_exists( $this, $property ) ) {
 				return $this->{$property};
 			}
 
@@ -329,11 +329,11 @@
 		 */
 		public function __set( $property, $value ) {
 
-			if( $property == 'other_properties' ) {
+			if ( $property == 'other_properties' ) {
 				return; //We don't want the actual other_properties array to be changed
 			}
 
-			if( property_exists( $this, $property ) ) {
+			if ( property_exists( $this, $property ) ) {
 				
 				// Perform validation as needed here.
 				if ( is_int( $this->{$property} ) ) {
@@ -388,7 +388,7 @@
 					'id' => $args,
 				);
 
-			} else if ( is_string( $args ) ) {
+			} elseif ( is_string( $args ) ) {
 				// If it is a string but not numeric, we assume it's a string and should be a code.
 				$args = array(
 					'code' => $args,
@@ -1448,7 +1448,7 @@
 				do_action($after_action, $this);
 
 				//Lets only run this once the update has been run successfully.
-				if( $this->status !== $this->original_status ) {
+				if ( $this->status !== $this->original_status ) {
 				
 					/**
 					 * Runs when the order status changes
@@ -1458,7 +1458,7 @@
 					 * 
 					 * @since TBD
 					 */
-					do_action( 'pmpro_order_status_'.$this->status, $this, $this->original_status );
+					do_action( 'pmpro_order_status_' . $this->status, $this, $this->original_status );
 					
 					//Set the original status to the new status
 					$this->original_status = $this->status;
