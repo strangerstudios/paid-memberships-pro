@@ -295,7 +295,7 @@
 		/**
 		 * Get Magic Method
 		 *
-		 * @since TBA
+		 * @since TBD
 		 * 
 		 * @param string $property The property we want to get
 		 *
@@ -320,7 +320,7 @@
 		/**
 		 * Set Magic Method
 		 *
-		 * @since TBA
+		 * @since TBD
 		 * 
 		 * @param string $property The property we want to reference
 		 * @param string $value The value we want to set for $property
@@ -355,7 +355,7 @@
 		/**
 		 * Is Set Magic Method
 		 *
-		 * @since TBA
+		 * @since TBD
 		 * 
 		 * @param string $property The property we want to reference
 		 *
@@ -370,7 +370,7 @@
 		/**
 		 * Get a specific order by ID, code, or an array of arguments
 		 *
-		 * @since TBA
+		 * @since TBD
 		 * 
 		 * @param mixed $args Specify an order ID, code, or array of arguments to find an order for.
 		 *
@@ -419,7 +419,7 @@
 		/**
 		 * Get orders based on various parameters
 		 *
-		 * @since TBA
+		 * @since TBD
 		 * 
 		 * @param array $args Specify what you'd like to filter the query by
 		 *
