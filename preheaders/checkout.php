@@ -579,9 +579,16 @@ if ( ! empty( $pmpro_confirmed ) ) {
 		$user_id = $current_user->ID;
 	}
 
-	if ( ! empty( $user_id ) && ! is_wp_error( $user_id ) ) {
+	$is_user_valid = ! empty( $user_id ) && ! is_wp_error( $user_id );
+	if( $is_user_valid ) {
+		// If we have a valid user, perform any necessary actions before the membership is given.
+		// Currently being used by Stripe and PayPal Standard to send users offsite to pay.
+		// May set $pmpro_msgt if there's an error sending them to offiste gateway.
 		do_action( 'pmpro_checkout_before_change_membership_level', $user_id, $morder );
+	}
 
+	// User is created and we are ready to give them a membership.
+	if ( $is_user_valid && 'pmpro_error' !== $pmpro_msgt ) {
 		//start date is NOW() but filterable below
 		$startdate = current_time( "mysql" );
 

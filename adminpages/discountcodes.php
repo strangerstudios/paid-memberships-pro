@@ -357,7 +357,7 @@
 	}
 
 	if( ! empty( $pmpro_msg ) && ! empty( $expiration_warning_flag ) ) {
-		$pmpro_msg .= ' <strong>' . sprintf( __( 'WARNING: A level was set with both a recurring billing amount and an expiration date. You only need to set one of these unless you really want this membership to expire after a specific time period. For more information, <a target="_blank" href="%s">see our post here</a>.', 'paid-memberships-pro' ), 'https://www.paidmembershipspro.com/important-notes-on-recurring-billing-and-expiration-dates-for-membership-levels/?utm_source=plugin&utm_medium=pmpro-discountcodes&utm_campaign=blog&utm_content=important-notes-on-recurring-billing-and-expiration-dates-for-membership-levels' ) . '</strong>';
+		$pmpro_msg .= ' <strong>' . sprintf( __( 'WARNING: A level was set with both a recurring billing amount and an expiration date. You only need to set one of these unless you really want this membership to expire after a specific time period. For more information, <a target="_blank" rel="nofollow noopener" href="%s">see our post here</a>.', 'paid-memberships-pro' ), 'https://www.paidmembershipspro.com/important-notes-on-recurring-billing-and-expiration-dates-for-membership-levels/?utm_source=plugin&utm_medium=pmpro-discountcodes&utm_campaign=blog&utm_content=important-notes-on-recurring-billing-and-expiration-dates-for-membership-levels' ) . '</strong>';
 
 		if( $pmpro_msgt == 'success' ) {
 			$pmpro_msgt = 'warning';
@@ -640,9 +640,10 @@
 															'href' => array(),
 															'target' => array(),
 															'title' => array(),
+															'rel' => array(),
 														),
 													);
-													echo '<br />' . sprintf( wp_kses( __( 'Optional: Allow billing limits with Stripe using the <a href="%s" title="Paid Memberships Pro - Stripe Billing Limits Add On" target="_blank">Stripe Billing Limits Add On</a>.', 'paid-memberships-pro' ), $allowed_sbl_html ), 'https://www.paidmembershipspro.com/add-ons/pmpro-stripe-billing-limits/?utm_source=plugin&utm_medium=pmpro-membershiplevels&utm_campaign=add-ons&utm_content=stripe-billing-limits' ) . '</em></td></tr>';
+													echo '<br />' . sprintf( wp_kses( __( 'Optional: Allow billing limits with Stripe using the <a href="%s" title="Paid Memberships Pro - Stripe Billing Limits Add On" target="_blank" rel="nofollow nopopener">Stripe Billing Limits Add On</a>.', 'paid-memberships-pro' ), $allowed_sbl_html ), 'https://www.paidmembershipspro.com/add-ons/pmpro-stripe-billing-limits/?utm_source=plugin&utm_medium=pmpro-membershiplevels&utm_campaign=add-ons&utm_content=stripe-billing-limits' ) . '</em></td></tr>';
 											} ?>
 									<?php } ?>
 								</p>
@@ -732,11 +733,9 @@
 		</div>
 
 	<?php } else { ?>
-
+		<hr class="wp-header-end">
 		<h1 class="wp-heading-inline"><?php esc_html_e( 'Memberships Discount Codes', 'paid-memberships-pro' ); ?></h1>
 		<a href="admin.php?page=pmpro-discountcodes&edit=-1" class="page-title-action"><?php esc_html_e( 'Add New Discount Code', 'paid-memberships-pro' ); ?></a>
-		<hr class="wp-header-end">
-
 		<?php
 			$sqlQuery = "SELECT SQL_CALC_FOUND_ROWS *, UNIX_TIMESTAMP(CONVERT_TZ(starts, '+00:00', @@global.time_zone)) as starts, UNIX_TIMESTAMP(CONVERT_TZ(expires, '+00:00', @@global.time_zone)) as expires FROM $wpdb->pmpro_discount_codes ";
 			if( ! empty( $s ) ) {
@@ -756,16 +755,12 @@
 					<h2><?php esc_html_e( 'No Discount Codes Found', 'paid-memberships-pro' ); ?></h2>
 					<h4><?php esc_html_e( 'Discount codes allow you to override your membership level\'s default pricing.', 'paid-memberships-pro' ); ?></h4>
 					<a href="<?php echo esc_url( admin_url( 'admin.php?page=pmpro-discountcodes&edit=-1' ) ) ; ?>" class="button-primary"><?php esc_html_e( 'Create a Discount Code', 'paid-memberships-pro' );?></a>
-					<a href="<?php echo esc_url( 'https://www.paidmembershipspro.com/documentation/discount-codes/?utm_source=plugin&utm_medium=pmpro-discountcodes&utm_campaign=documentation&utm_content=discount-codes' ); ?>" target="_blank" class="button"><?php esc_html_e( 'Documentation: Discount Codes', 'paid-memberships-pro' ); ?></a>
+					<a href="<?php echo esc_url( 'https://www.paidmembershipspro.com/documentation/discount-codes/?utm_source=plugin&utm_medium=pmpro-discountcodes&utm_campaign=documentation&utm_content=discount-codes' ); ?>" target="_blank" rel="nofollow noopener" class="button"><?php esc_html_e( 'Documentation: Discount Codes', 'paid-memberships-pro' ); ?></a>
 				</div> <!-- end pmpro-new-install -->
 			<?php } else { ?>
 
 				<?php if(!empty($pmpro_msg)) { ?>
 					<div id="message" class="<?php if($pmpro_msgt == "success") echo "updated fade"; else echo "error"; ?>"><p><?php echo $pmpro_msg?></p></div>
-				<?php } ?>
-
-				<?php if ( ! empty( $codes ) ) { ?>
-					<p class="subsubsub"><?php printf( __( "%d discount codes found.", 'paid-memberships-pro' ), $totalrows ); ?></span></p>
 				<?php } ?>
 
 				<form id="posts-filter" method="get" action="">
@@ -777,24 +772,30 @@
 					</p>
 				</form>
 
-				<br class="clear" />
+				<div class="tablenav top">
+					<?php if ( ! empty( $codes ) ) { ?>
+						<div class="tablenav-pages one-page">
+							<span class="displaying-num"><?php printf( __( "%d discount codes found.", 'paid-memberships-pro' ), $totalrows ); ?></span>
+						</div>
+					<?php } ?>
+					<br class="clear" />
+				</div> <!-- end tablenav -->
 
-				<table class="widefat">
+				<table class="wp-list-table widefat fixed striped">
 				<thead>
 					<tr>
-						<th><?php esc_html_e('ID', 'paid-memberships-pro' );?></th>
-						<th><?php esc_html_e('Code', 'paid-memberships-pro' );?></th>
-						<th><?php esc_html_e('Starts', 'paid-memberships-pro' );?></th>
-						<th><?php esc_html_e('Expires', 'paid-memberships-pro' );?></th>
-						<th><?php esc_html_e('Uses', 'paid-memberships-pro' );?></th>
-						<th><?php esc_html_e('Levels', 'paid-memberships-pro' );?></th>
+						<th class="column-code"><?php esc_html_e('Code', 'paid-memberships-pro' );?></th>
+						<th class="column-starts"><?php esc_html_e('Starts', 'paid-memberships-pro' );?></th>
+						<th class="column-expires"><?php esc_html_e('Expires', 'paid-memberships-pro' );?></th>
+						<th class="column-uses"><?php esc_html_e('Uses', 'paid-memberships-pro' );?></th>
+						<th class="column-levels"><?php esc_html_e('Levels', 'paid-memberships-pro' );?></th>
 						<?php do_action("pmpro_discountcodes_extra_cols_header", $codes);?>
 					</tr>
 				</thead>
 				<tbody>
 					<?php if ( !empty( $s ) && empty( $codes ) ) { ?>
 					<tr>
-						<td colspan="6">
+						<td colspan="5">
 							<?php esc_html_e( 'Code not found.', 'paid-memberships-pro' ); ?>
 						</td>
 					</tr>
@@ -804,9 +805,8 @@
 							$uses = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM $wpdb->pmpro_discount_codes_uses WHERE code_id = %d", $code->id ) );
 							?>
 						<tr<?php if ( ! pmpro_check_discount_code_for_gateway_compatibility( $code->id ) ) { ?> class="pmpro_error"<?php } ?>>
-							<td><?php echo $code->id?></td>
-							<td class="has-row-actions">
-								<a title="<?php echo esc_attr( sprintf( __( 'Edit Code: %s', 'paid-memberships-pro' ), $code->code ) ); ?>" href="<?php echo esc_url( add_query_arg( array( 'page' => 'pmpro-discountcodes', 'edit' => $code->id ), admin_url('admin.php' ) ) ); ?>"><?php echo $code->code?></a>
+							<td class="column-code has-row-actions" data-colname="<?php esc_attr_e( 'Code', 'paid-memberships-pro' ); ?>">
+								<strong><a title="<?php echo esc_attr( sprintf( __( 'Edit Code: %s', 'paid-memberships-pro' ), $code->code ) ); ?>" href="<?php echo esc_url( add_query_arg( array( 'page' => 'pmpro-discountcodes', 'edit' => $code->id ), admin_url('admin.php' ) ) ); ?>"><?php echo $code->code?></a></strong>
 								<div class="row-actions">
 									<?php
 									$delete_text = esc_html(
@@ -830,6 +830,11 @@
 									);
 
 									$actions = [
+										'id'	 => sprintf(
+											// translators: %s is the Order ID.
+											__( 'ID: %s', 'paid-memberships-pro' ),
+											esc_attr( $code->id ),
+										),
 										'edit'   => sprintf(
 											'<a title="%1$s" href="%2$s">%3$s</a>',
 											esc_attr__( 'Edit', 'paid-memberships-pro' ),
@@ -911,13 +916,13 @@
 									?>
 								</div>
 							</td>
-							<td>
+							<td class="column-starts" data-colname="<?php esc_attr_e( 'Starts', 'paid-memberships-pro' ); ?>">
 								<?php echo date_i18n(get_option('date_format'), $code->starts)?>
 							</td>
-							<td>
+							<td class="column-expires" data-colname="<?php esc_attr_e( 'Expires', 'paid-memberships-pro' ); ?>">
 								<?php echo date_i18n(get_option('date_format'), $code->expires)?>
 							</td>
-							<td>
+							<td class="column-uses" data-colname="<?php esc_attr_e( 'Uses', 'paid-memberships-pro' ); ?>">
 								<?php
 									if($code->uses > 0)
 										echo "<strong>" . (int)$uses . "</strong>/" . $code->uses;
@@ -925,7 +930,7 @@
 										echo "<strong>" . (int)$uses . "</strong>/unlimited";
 								?>
 							</td>
-							<td>
+							<td class="column-levels" data-colname="<?php esc_attr_e( 'Levels', 'paid-memberships-pro' ); ?>">
 								<?php
 									$sqlQuery = $wpdb->prepare("
 										SELECT l.id, l.name
@@ -960,11 +965,17 @@
 				?>
 		</tbody>
 		</table>
-
-		<?php
-			$pagination_url = admin_url( "/admin.php?page=pmpro-discountcodes&s=" . $s );
-			echo pmpro_getPaginationString( $pn, $totalrows, $limit, 1, $pagination_url, "&limit=$limit&pn=" );
-		?>
+		<div class="tablenav bottom">
+			<div class="tablenav-pages">
+				<?php if ( ! empty( $codes ) ) { ?>
+					<span class="displaying-num"><?php printf( __( "%d discount codes found.", 'paid-memberships-pro' ), $totalrows ); ?></span>
+				<?php } ?>
+				<?php
+					$pagination_url = admin_url( "/admin.php?page=pmpro-discountcodes&s=" . $s );
+					echo pmpro_getPaginationString( $pn, $totalrows, $limit, 1, $pagination_url, "&limit=$limit&pn=" );
+				?>
+			</div>
+		</div>
 
 	<?php } ?>
 

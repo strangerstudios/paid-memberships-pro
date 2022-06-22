@@ -113,7 +113,7 @@ function pmpro_login_url_filter( $login_url='', $redirect='' ) {
 
 	// Check for a PMPro Login page.
 	$login_page_id = pmpro_getOption( 'login_page_id' );
-	if ( ! empty ( $login_page_id ) ) {
+	if ( ! empty ( $login_page_id ) && 'publish' === get_post_status( $login_page_id ) ) {
 		$login_page_permalink = get_permalink( $login_page_id );
 		// If the page or permalink is unavailable, don't override the url here.
 		if ( $login_page_permalink ) {
