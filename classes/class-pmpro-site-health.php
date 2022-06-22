@@ -81,6 +81,10 @@ class PMPro_Site_Health {
 					'label' => __( 'Discount Codes', 'paid-memberships-pro' ),
 					'value' => self::get_discount_codes(),
 				],
+				'pmpro-sessions'       => [
+					'label' => __( 'PHP Sessions', 'paid-memberships-pro' ),
+					'value' => self::test_sessions(),
+				],
 				'pmpro-membership-levels'    => [
 					'label' => __( 'Membership Levels', 'paid-memberships-pro' ),
 					'value' => self::get_levels(),
@@ -225,6 +229,35 @@ class PMPro_Site_Health {
 		}
 
 		return $environments[ $environment ] . ' [' . $environment . ']';
+	}
+
+	/**
+	 * Tests if PHP sessions are enabled
+	 *
+	 * @since TBD
+	 *
+	 * @return string The PHP Session data.
+	 */
+	public function test_sessions() {
+
+		$session_data = array();
+
+		$php_session_status = session_status();
+
+		if( $php_session_status ) {
+			$session_data['Session Satus'] = __( 'Active', 'paid-memberships-pro' );
+		} else {
+			$session_data['Session Satus'] = __( 'Inactive', 'paid-memberships-pro' );
+		}
+
+		if( defined( 'PANTHEON_SESSIONS_VERSION' ) ) {
+			$session_data['WP Native Sessions Plugin'] = __( 'Active', 'paid-memberships-pro' );
+		} else {
+			$session_data['WP Native Sessions Plugin'] = __( 'Not Found', 'paid-memberships-pro' );
+		}
+
+		return $session_data;
+
 	}
 
 	/**
