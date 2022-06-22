@@ -350,7 +350,7 @@
 
 				<tr>
 					<th scope="row" valign="top"><label for="name"><?php esc_html_e('Name', 'paid-memberships-pro' );?>:</label></th>
-					<td><input name="name" type="text" value="<?php echo esc_attr($level->name);?>" class="regular-text" required="required"/></td>
+					<td><input name="name" type="text" value="<?php echo esc_attr($level->name);?>" class="regular-text" required/></td>
 				</tr>
 
 				<tr>
