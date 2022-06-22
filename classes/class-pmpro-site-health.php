@@ -244,16 +244,14 @@ class PMPro_Site_Health {
 
 		$php_session_status = session_status();
 
-		if( $php_session_status ) {
-			$session_data['Session Satus'] = __( 'Active', 'paid-memberships-pro' );
+		if ( $php_session_status !== 0 || $php_session_status !== PHP_SESSIONS_DISABLED ) {
+			$session_data['session_status'] = __( 'Active', 'paid-memberships-pro' );
 		} else {
-			$session_data['Session Satus'] = __( 'Inactive', 'paid-memberships-pro' );
+			$session_data['session_status'] = __( 'Inactive', 'paid-memberships-pro' );
 		}
 
-		if( defined( 'PANTHEON_SESSIONS_VERSION' ) ) {
-			$session_data['WP Native Sessions Plugin'] = __( 'Active', 'paid-memberships-pro' );
-		} else {
-			$session_data['WP Native Sessions Plugin'] = __( 'Not Found', 'paid-memberships-pro' );
+		if ( defined( 'PANTHEON_SESSIONS_VERSION' ) ) {
+			$session_data['wp_native_sessions'] = __( 'Active', 'paid-memberships-pro' );
 		}
 
 		return $session_data;
