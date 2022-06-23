@@ -202,9 +202,11 @@ if ( $txn_type == "recurring_payment" ) {
 	$last_subscription_order = new MemberOrder();
 	if ( $last_subscription_order->getLastMemberOrderBySubscriptionTransactionID( $subscr_id ) ) {
 		//subscription payment, completed or failure?
+		$failed_payment_statuses = array( 'Failed', 'Voided', 'Denied', 'Expired' );
+
 		if ( $_POST['payment_status'] == "Completed" ) {
 			pmpro_ipnSaveOrder( $txn_id, $last_subscription_order );
-		} elseif ( $_POST['payment_status'] == "Failed" ) {
+		} elseif ( in_array( $_POST['payment_status'], $failed_payment_statuses ) ) {
 			pmpro_ipnFailedPayment( $last_subscription_order );
 		} else {
 			ipnlog( 'Payment status is ' . $_POST['payment_status'] . '.' );
