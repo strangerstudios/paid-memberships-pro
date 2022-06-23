@@ -4284,6 +4284,8 @@ function pmpro_maybe_send_wp_new_user_notification( $user_id, $level_id = null )
  * Replace dashes and spaces with underscores.
  * 
  * @since TBD
+ * 
+ * @param string $field_name The raw field name to be formatted.
  */
 function pmpro_format_field_name( $field_name ) {
 	$formatted_name = preg_replace( '/[\s-]+/', '_', $field_name );
@@ -4293,10 +4295,10 @@ function pmpro_format_field_name( $field_name ) {
 	 * 
 	 * @since TBD
 	 * 
-	 * @param $formatted_name The formatted field name (replaced spaces and dashes with underscores).
-	 * @param $field_name The original field name.
+	 * @param string $formatted_name The formatted field name (replaced spaces and dashes with underscores).
+	 * @param string $field_name The original field name.
 	 */
-	$formatted_name = apply_filters( 'pmpro_field_name_formatter', $formatted_name, $field_name );
+	$formatted_name = apply_filters( 'pmpro_formatted_field_name', $formatted_name, $field_name );
 
 	return $formatted_name;
 }
