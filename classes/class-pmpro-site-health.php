@@ -266,7 +266,7 @@ class PMPro_Site_Health {
 			];
 		}
 
-		return wp_json_encode( $templates, JSON_PRETTY_PRINT );
+		return $templates;
 	}
 
 	public function recursive_template_scan($dir = __DIR__){
@@ -332,6 +332,8 @@ class PMPro_Site_Health {
 
 						$file_without_ext = str_replace( ".php", "", $f );
 
+						$path = str_replace( ABSPATH, '', $path );
+						
 						if( ! empty( $template_versions[$file_without_ext] ) ) {
 							$versions = $template_versions[$file_without_ext];
 							
