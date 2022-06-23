@@ -330,16 +330,21 @@ class PMPro_Site_Health {
 				} else {
 					foreach( $file as $f ) {
 
-						$file_without_ext = str_replace( ".php", "", $f );
+						//Only PHP files should be shown in the list
+						if( strpos( $f, 'php' ) !== false ) {
 
-						$path = str_replace( ABSPATH, '', $path );
-						
-						if( ! empty( $template_versions[$file_without_ext] ) ) {
-							$versions = $template_versions[$file_without_ext];
-							
-							$overridden_templates[$path.'/'.$f] = sprintf( __( '%s - Core Version: %s, Your Version: %s', 'paid-memberships-pro' ), $versions['our_version'], $versions['your_version'] );	
-						} else {
-							$overridden_templates[$path.'/'.$f] = __( 'Unknown Version', 'paid-memberships-pro' );	
+							$file_without_ext = str_replace( ".php", "", $f );
+
+							$path = str_replace( ABSPATH, '', $path );
+
+							if( ! empty( $template_versions[$file_without_ext] ) ) {
+								$versions = $template_versions[$file_without_ext];
+								
+								$overridden_templates[$path."/".$f] = sprintf( __( 'Core Version: %s, Your Version: %s', 'paid-memberships-pro' ), $versions['our_version'], $versions['your_version'] );	
+							} else {
+								$overridden_templates[$path."/".$f] = __( 'Unknown Version', 'paid-memberships-pro' );	
+							}
+
 						}
 						
 					}
