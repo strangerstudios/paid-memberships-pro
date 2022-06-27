@@ -202,13 +202,12 @@ if ( $txn_type == "recurring_payment" ) {
 	$last_subscription_order = new MemberOrder();
 	if ( $last_subscription_order->getLastMemberOrderBySubscriptionTransactionID( $subscr_id ) ) {
 		
-		$failed_payment_statuses = array( 'Failed', 'Voided', 'Denied', 'Expired' );
 		/**
 		 * Payment statuses that should be treated as failures.
 		 * 
 		 * @param array List of statuses to be treated as failures.		 
 		 */
-		$failed_payment_statuses = apply_filters( 'pmpro_paypal_renewal_failed_statuses', $failed_payment_statuses );
+		$failed_payment_statuses = apply_filters( 'pmpro_paypal_renewal_failed_statuses', array( 'Failed', 'Voided', 'Denied', 'Expired' ) );
 
 		//subscription payment, completed or failure?
 		if ( $_POST['payment_status'] == "Completed" ) {
