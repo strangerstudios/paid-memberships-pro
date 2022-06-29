@@ -356,6 +356,13 @@ function pmpro_userfields_prep_click_events() {
             pmpro_userfields_made_a_change();
         }
     });
+
+    // Duplicate field.
+    jQuery('a.duplicate-field').unbind('click').on('click', function(event){
+        var thefield = jQuery(this).closest('.pmpro_userfield-group-field');
+        thefield.clone(true).insertAfter(thefield); // clone( true ) to clone event handlers.
+        pmpro_userfields_made_a_change();
+    });
     
     // Toggle field settings based on type.
     jQuery('select[name=pmpro_userfields_field_type]').on('change', function(event){
@@ -371,7 +378,17 @@ function pmpro_userfields_prep_click_events() {
         } else {
             fieldoptions.hide();
         }
-    });    
+    });
+
+    // Suggest name after leaving label field.
+    jQuery('input[name=pmpro_userfields_field_label]').on('focusout', function(event){
+        var fieldcontainer = jQuery(this).parents('.pmpro_userfield-group-field');
+        var fieldsettings = fieldcontainer.children('.pmpro_userfield-field-settings');
+        var fieldname = fieldsettings.find('input[name=pmpro_userfields_field_name]');
+        if ( ! fieldname.val() ) {
+            fieldname.val( jQuery(this).val().toLowerCase().replace(/\s/g, '_') );
+        }
+    });
 
 	// If we change a field, mark it as changed.
 	jQuery( '.pmpro_userfield-group input, .pmpro_userfield-group textarea, .pmpro_userfield-group select' ).on('change', function(event){
