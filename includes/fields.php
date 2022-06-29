@@ -454,7 +454,7 @@ function pmpro_registration_checks_for_user_fields( $okay ) {
                     continue;
                 }
                 
-                if ( ! pmpro_check_field_for_level( $field, "profile", $user_id ) ) {
+                if ( ! pmpro_check_field_for_level( $field ) ) {
                     continue;
                 }
 
@@ -550,7 +550,7 @@ function pmpro_paypalexpress_session_vars_for_user_fields() {
                     continue;
                 }
                 
-                if ( ! pmpro_check_field_for_level( $field, "profile", $user_id ) ) {
+                if ( ! pmpro_check_field_for_level( $field ) ) {
                     continue;
                 }
 
