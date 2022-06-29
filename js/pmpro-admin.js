@@ -378,7 +378,17 @@ function pmpro_userfields_prep_click_events() {
         } else {
             fieldoptions.hide();
         }
-    });    
+    });
+
+    // Suggest name after leaving label field.
+    jQuery('input[name=pmpro_userfields_field_label]').on('focusout', function(event){
+        var fieldcontainer = jQuery(this).parents('.pmpro_userfield-group-field');
+        var fieldsettings = fieldcontainer.children('.pmpro_userfield-field-settings');
+        var fieldname = fieldsettings.find('input[name=pmpro_userfields_field_name]');
+        if ( ! fieldname.val() ) {
+            fieldname.val( jQuery(this).val().toLowerCase().replace(/\s/g, '_') );
+        }
+    });
 
 	// If we change a field, mark it as changed.
 	jQuery( '.pmpro_userfield-group input, .pmpro_userfield-group textarea, .pmpro_userfield-group select' ).on('change', function(event){
