@@ -3476,6 +3476,45 @@ function pmpro_sanitize_with_safelist( $needle, $safelist ) {
 }
 
 /**
+ * Sanitizes the passed value.
+ * Default sanitizing for things like user fields.
+ *
+ * @param array|int|null|string|stdClass $value The value to sanitize
+ * @param PMPro_Field $field (optional) Field to check type.
+ *
+ * @return array|int|string|object     Sanitized value
+ */
+function pmpro_sanitize( $value, $field = null ) {
+
+	if ( is_array( $value ) ) {
+
+		foreach ( $value as $key => $val ) {
+			$value[ $key ] = pmpro_sanitize( $val );
+		}
+	}
+
+	if ( is_object( $value ) ) {
+
+		foreach ( $value as $key => $val ) {
+			$value->{$key} = pmpro_sanitize( $val );
+		}
+	}
+
+	if ( ! empty( $field ) && ! empty( $field->type ) && $field->type === 'textarea' ) {
+		$value = sanitize_textarea_field( $value );
+	} elseif ( ( ! is_array( $value ) ) && ctype_alpha( $value ) ||
+	     ( ( ! is_array( $value ) ) && strtotime( $value ) ) ||
+	     ( ( ! is_array( $value ) ) && is_string( $value ) ) ||
+	     ( ( ! is_array( $value ) ) && is_numeric( $value) )
+	) {
+
+		$value = sanitize_text_field( $value );
+	}
+
+	return $value;
+}
+
+/**
   * Return an array of allowed order statuses
   *
   * @since 1.9.3
@@ -3872,6 +3911,44 @@ function pmpro_kses( $original_string, $context = 'email' ) {
 }
 
 /**
+ * Replace last occurence of a string.
+ * From: http://stackoverflow.com/a/3835653/1154321
+ * @since 2.6
+ */
+if( ! function_exists("str_lreplace") ) {
+	function str_lreplace( $search, $replace, $subject ) {
+		$pos = strrpos( $subject, $search );
+
+		if( $pos !== false ) {
+			$subject = substr_replace( $subject, $replace, $pos, strlen( $search ) );
+		}
+
+		return $subject;
+	}
+}
+
+/**
+ * Get the last element of an array without affecting the array.
+ * From: http://www.php.net/manual/en/function.end.php#107733
+ * @since 2.6
+ */
+function pmpro_end( $array ) {
+	return end( $array );
+}
+
+/**
+ * Sort an array of objects by their order property.
+ * This function is meant to be used with the usort function.
+ * @since 2.6
+ */
+function pmpro_sort_by_order( $a, $b ) {
+	if ( $a->order == $b->order ) {
+        return 0;
+    }
+    return ( $a->order < $b->order ) ? -1 : 1;
+}
+
+/**
  * Filter the allowed HTML tags for PMPro contexts.
  *
  * @param array[]|string $allowed_html The allowed HTML tags.
@@ -4085,6 +4162,19 @@ function pmpro_get_ip() {
 }
 
 /**
+ * Get the last item of an array without affecting the internal array pointer.
+ * Going through the function keeps the original array from being updated.
+ * @since TBD
+ * @param  $array array The array to get the value of.
+ * @return mixed Whatever is the last element in the array.
+ * from: http://www.php.net/manual/en/function.end.php#107733
+ */
+function pmpro_array_end( $array ) {
+	return end( $array );
+}
+
+/*
+ * Send the WP new user notification email, but also check our filter.
  * Determines if this order can be refunded
  * @param  object $order The order that we want to refund
  * @return bool Returns a bool value based on if the order can be refunded
@@ -4188,5 +4278,4 @@ function pmpro_maybe_send_wp_new_user_notification( $user_id, $level_id = null )
 	if ( apply_filters( 'pmpro_wp_new_user_notification', true, $user_id, $level_id ) ) {
 		wp_new_user_notification( $user_id, null, 'both' );
 	}
-
 }

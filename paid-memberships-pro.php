@@ -45,6 +45,7 @@ require_once( PMPRO_DIR . '/scheduled/crons.php' );                 // crons for
 
 require_once( PMPRO_DIR . '/classes/class.memberorder.php' );       // class to process and save orders
 require_once( PMPRO_DIR . '/classes/class.pmproemail.php' );        // setup and filter emails sent by PMPro
+require_once( PMPRO_DIR . '/classes/class-pmpro-field.php' );
 require_once( PMPRO_DIR . '/classes/class-pmpro-levels.php' );
 require_once( PMPRO_DIR . '/classes/class-pmpro-admin-activity-email.php' );        // setup the admin activity email
 
@@ -70,6 +71,7 @@ require_once( PMPRO_DIR . '/includes/scripts.php' );                // enqueue f
 require_once( PMPRO_DIR . '/includes/content.php' );                // code to check for memebrship and protect content
 require_once( PMPRO_DIR . '/includes/compatibility.php' );          // code to support compatibility for popular page builders
 require_once( PMPRO_DIR . '/includes/email.php' );                  // code related to email
+require_once( PMPRO_DIR . '/includes/fields.php' );                  // user fields
 require_once( PMPRO_DIR . '/includes/recaptcha.php' );              // load recaptcha files if needed
 require_once( PMPRO_DIR . '/includes/cleanup.php' );                // clean things up when deletes happen, etc.
 require_once( PMPRO_DIR . '/includes/login.php' );                  // code to redirect away from login/register page

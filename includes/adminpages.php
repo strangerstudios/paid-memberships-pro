@@ -10,6 +10,7 @@ function pmpro_getPMProCaps() {
 		'pmpro_pagesettings',
 		'pmpro_paymentsettings',
 		'pmpro_emailsettings',
+		'pmpro_userfields',
 		'pmpro_emailtemplates',
 		'pmpro_advancedsettings',
 		'pmpro_addons',
@@ -70,6 +71,7 @@ function pmpro_add_pages() {
 	add_submenu_page( 'admin.php', __( 'Payment Settings', 'paid-memberships-pro' ), __( 'Payment Settings', 'paid-memberships-pro' ), 'pmpro_paymentsettings', 'pmpro-paymentsettings', 'pmpro_paymentsettings' );
 	add_submenu_page( 'admin.php', __( 'Email Settings', 'paid-memberships-pro' ), __( 'Email Settings', 'paid-memberships-pro' ), 'pmpro_emailsettings', 'pmpro-emailsettings', 'pmpro_emailsettings' );
 	add_submenu_page( 'admin.php', __( 'Email Templates', 'paid-memberships-pro' ), __( 'Email Templates', 'paid-memberships-pro' ), 'pmpro_emailtemplates', 'pmpro-emailtemplates', 'pmpro_emailtemplates' );
+	add_submenu_page( 'admin.php', __( 'User Fields', 'paid-memberships-pro' ), __( 'User Fields', 'paid-memberships-pro' ), 'pmpro_userfields', 'pmpro-userfields', 'pmpro_userfields' );
 	add_submenu_page( 'admin.php', __( 'Advanced Settings', 'paid-memberships-pro' ), __( 'Advanced Settings', 'paid-memberships-pro' ), 'pmpro_advancedsettings', 'pmpro-advancedsettings', 'pmpro_advancedsettings' );
 
 	add_action( 'load-' . $list_table_hook, 'pmpro_list_table_screen_options' );
@@ -273,6 +275,15 @@ function pmpro_paymentsettings() {
 
 function pmpro_emailsettings() {
 	require_once( PMPRO_DIR . '/adminpages/emailsettings.php' );
+}
+
+function pmpro_userfields() {
+	//ensure, that the needed javascripts been loaded to allow drag/drop, expand/collapse and hide/show of boxes
+	wp_enqueue_script( 'common' );
+	wp_enqueue_script( 'wp-lists' );
+	wp_enqueue_script( 'postbox' );
+	
+	require_once( PMPRO_DIR . '/adminpages/userfields.php' );
 }
 
 function pmpro_emailtemplates() {

@@ -136,6 +136,12 @@ function pmpro_dashboard_welcome_callback() { ?>
     					<?php } ?>
     				</li>
     			<?php } ?>
+
+				<?php if ( current_user_can( 'pmpro_userfields' ) ) { ?>
+				<li>
+					<a href="<?php echo add_query_arg( array( 'page' => 'pmpro-userfields' ), get_admin_url(null, 'admin.php' ) ); ?>"><i class="dashicons dashicons-id"></i> <?php echo esc_attr_e( 'Manage User Fields', 'paid-memberships-pro' ); ?></a>
+				</li>
+				<?php } ?>
     		</ul>
     		<h3><?php esc_html_e( 'Other Settings', 'paid-memberships-pro' ); ?></h3>
     		<ul>
