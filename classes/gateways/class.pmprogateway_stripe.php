@@ -1636,9 +1636,11 @@ class PMProGateway_stripe extends PMProGateway {
 
 			// Check if we can combine initial and recurring payments.
 			$filtered_trial_period_days = $stripe->calculate_trial_period_days( $morder );
+			$unfiltered_trial_period_days = $stripe->calculate_trial_period_days( $morder, false );
+
 			if (
 				empty( $morder->TrialBillingCycles ) && // Check if there is a trial period.
-				$filtered_trial_period_days === $stripe->calculate_trial_period_days( $morder, false ) && // Check if the trial period is the same as the filtered trial period.
+				$filtered_trial_period_days === $unfiltered_trial_period_days && // Check if the trial period is the same as the filtered trial period.
 				( ! empty( $initial_payment_amount ) && $initial_payment_amount === $recurring_payment_amount ) // Check if the initial payment and recurring payment prices are the same.
 				) {
 				// We can combine the initial payment and the recurring payment.
@@ -2833,32 +2835,25 @@ class PMProGateway_stripe extends PMProGateway {
 	 * @return int trial period days.
 	 */
 	private function calculate_trial_period_days( $order, $filtered = true ) {
-		// Use a trial period to set the first recurring payment date.
-		if ( $order->BillingPeriod == "Year" ) {
-			$trial_period_days = $order->BillingFrequency * 365;    //annual
-		} elseif ( $order->BillingPeriod == "Day" ) {
-			$trial_period_days = $order->BillingFrequency * 1;        //daily
-		} elseif ( $order->BillingPeriod == "Week" ) {
-			$trial_period_days = $order->BillingFrequency * 7;        //weekly
-		} else {
-			$trial_period_days = $order->BillingFrequency * 30;    //assume monthly
-		}
-
-		// For free trials, multiply the trial period for each additional free period.
+		// Check if we have a free trial period set.
 		if ( ! empty( $order->TrialBillingCycles ) && $order->TrialAmount == 0 ) {
-			$trial_period_days = $trial_period_days * ( $order->TrialBillingCycles + 1 );
+			// If so, we want to account for the trial period only while calculating the profile start date.
+			// We will then revert back to the original billing frequency after the calculation.
+			$original_billing_frequency = $order->BillingFrequency;
+			$order->BillingFrequency    = $order->BillingFrequency * ( $order->TrialBillingCycles + 1 );
 		}
 
-		//convert to a profile start date
-		$order->ProfileStartDate = date_i18n( "Y-m-d\TH:i:s", strtotime( "+ " . $trial_period_days . " Day", current_time( "timestamp" ) ) );
+		// Calculate the profile start date.
+		// Getting return value as Unix Timestamp so that we can calculate days more easily.
+		$profile_start_date = pmpro_calculate_profile_start_date( $order, 'U', $filtered );
 
-		//filter the start date
-		if ( $filtered ) {
-			$order->ProfileStartDate = apply_filters( "pmpro_profile_start_date", $order->ProfileStartDate, $order );
+		// Restore the original billing frequency if needed so that the rest of the checkout has the correct info.
+		if ( ! empty( $original_billing_frequency ) ) {
+			$order->BillingFrequency = $original_billing_frequency;
 		}
 
-		//convert back to days
-		$trial_period_days = ceil( abs( strtotime( date_i18n( "Y-m-d\TH:i:s" ), current_time( "timestamp" ) ) - strtotime( $order->ProfileStartDate, current_time( "timestamp" ) ) ) / 86400 );
+		// Convert to days. We are rounding up to ensure that customers get the full membership time that they are paying for.
+		$trial_period_days = ceil( abs( $profile_start_date - time() ) / 86400 );
 		return $trial_period_days;
 	}
 
