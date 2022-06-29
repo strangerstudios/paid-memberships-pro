@@ -356,6 +356,13 @@ function pmpro_userfields_prep_click_events() {
             pmpro_userfields_made_a_change();
         }
     });
+
+    // Duplicate field.
+    jQuery('a.duplicate-field').unbind('click').on('click', function(event){
+        var thefield = jQuery(this).closest('.pmpro_userfield-group-field');
+        thefield.clone(true).insertAfter(thefield); // clone( true ) to clone event handlers.
+        pmpro_userfields_made_a_change();
+    });
     
     // Toggle field settings based on type.
     jQuery('select[name=pmpro_userfields_field_type]').on('change', function(event){

@@ -1333,9 +1333,7 @@ function pmpro_get_field_html( $field = null ) {
                 <span class="pmpro_userfield-label"><?php echo esc_html( $field_label );?></span>
                 <div class="pmpro_userfield-field-options">
                     <a class="edit-field" title="<?php esc_attr_e( 'Edit field', 'paid-memberships-pro' ); ?>" href="javascript:void(0);"><?php esc_html_e( 'Edit', 'paid-memberships-pro' ); ?></a> |
-                    <?php /*
                     <a class="duplicate-field" title="<?php esc_attr_e( 'Duplicate field', 'paid-memberships-pro' ); ?>" href="javascript:void(0);"><?php esc_html_e( 'Duplicate', 'paid-memberships-pro' ); ?></a> |
-                    */ ?>
                     <a class="delete-field" title="<?php esc_attr_e( 'Delete field', 'paid-memberships-pro' ); ?>" href="javascript:void(0);"><?php esc_html_e( 'Delete', 'paid-memberships-pro' ); ?></a>
                 </div> <!-- end pmpro_userfield-group-options -->
             </li>
