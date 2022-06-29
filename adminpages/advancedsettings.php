@@ -352,10 +352,10 @@
 			<tbody>
 				<tr>
 					<th scope="row" valign="top">
-						<label for="hideads"><?php esc_html_e("Hide Ads From Members?", 'paid-memberships-pro' );?></label>
+						<label for="pmpro-hideads"><?php esc_html_e("Hide Ads From Members?", 'paid-memberships-pro' );?></label>
 					</th>
 					<td>
-						<select id="hideads" name="hideads" onchange="pmpro_updateHideAdsTRs();">
+						<select id="pmpro-hideads" name="hideads" onchange="pmpro_updateHideAdsTRs();">
 							<option value="0" <?php if(!$hideads) { ?>selected="selected"<?php } ?>><?php esc_html_e('No', 'paid-memberships-pro' );?></option>
 							<option value="1" <?php if($hideads == 1) { ?>selected="selected"<?php } ?>><?php esc_html_e('Hide Ads From All Members', 'paid-memberships-pro' );?></option>
 							<option value="2" <?php if($hideads == 2) { ?>selected="selected"<?php } ?>><?php esc_html_e('Hide Ads From Certain Members', 'paid-memberships-pro' );?></option>
@@ -534,7 +534,7 @@ if ( function_exists( 'pmpro_displayAds' ) && pmpro_displayAds() ) {
 			<script>
 				function pmpro_updateHideAdsTRs()
 				{
-					var hideads = jQuery('#hideads').val();
+					var hideads = jQuery('#pmpro-hideads').val();
 					if(hideads == 2)
 					{
 						jQuery('#hideadslevels_tr').show();

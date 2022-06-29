@@ -3,7 +3,7 @@
  * Plugin Name: Paid Memberships Pro
  * Plugin URI: https://www.paidmembershipspro.com
  * Description: The most complete member management and membership subscriptions plugin for WordPress.
- * Version: 2.8
+ * Version: 2.8.3
  * Author: Paid Memberships Pro
  * Author URI: https://www.paidmembershipspro.com
  * Text Domain: paid-memberships-pro
@@ -16,7 +16,7 @@
  */
 
 // version constant
-define( 'PMPRO_VERSION', '2.8' );
+define( 'PMPRO_VERSION', '2.8.3' );
 define( 'PMPRO_USER_AGENT', 'Paid Memberships Pro v' . PMPRO_VERSION . '; ' . site_url() );
 define( 'PMPRO_MIN_PHP_VERSION', '5.6' );
 
@@ -215,10 +215,7 @@ function pmpro_activation() {
 // deactivation
 function pmpro_deactivation() {	
 	// remove crons
-	$crons = array_keys( pmpro_get_crons() );
-	foreach( $crons as $cron ) {
-		wp_clear_scheduled_hook( $cron );
-	}
+	pmpro_clear_crons();
 
 	// remove caps from admin role
 	pmpro_set_capabilities_for_role( 'administrator', 'disable' );
