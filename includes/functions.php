@@ -4279,3 +4279,26 @@ function pmpro_maybe_send_wp_new_user_notification( $user_id, $level_id = null )
 		wp_new_user_notification( $user_id, null, 'both' );
 	}
 }
+
+/**
+ * Replace dashes and spaces with underscores.
+ * 
+ * @since TBD
+ * 
+ * @param string $field_name The raw field name to be formatted.
+ */
+function pmpro_format_field_name( $field_name ) {
+	$formatted_name = preg_replace( '/[\s-]+/', '_', $field_name );
+	
+	/**
+	 * Filter the formatted/output field names.
+	 * 
+	 * @since TBD
+	 * 
+	 * @param string $formatted_name The formatted field name (replaced spaces and dashes with underscores).
+	 * @param string $field_name The original field name.
+	 */
+	$formatted_name = apply_filters( 'pmpro_formatted_field_name', $formatted_name, $field_name );
+
+	return $formatted_name;
+}
