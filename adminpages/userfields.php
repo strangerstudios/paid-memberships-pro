@@ -26,7 +26,8 @@
 			$group->description = sanitize_text_field( $group->description );
 			$group->levels      = array_map( 'intval', $group->levels );
 			foreach ( $group->fields as $field ) {
-				$field->name          = sanitize_text_field( $field->name );
+				$field_name 		  = pmpro_format_field_name( $field->name ); //Replace spaces and dashes with underscores.
+				$field->name          = sanitize_text_field( $field_name );
 				$field->label         = sanitize_text_field( $field->label );
 				$field->type          = sanitize_text_field( $field->type );
 				$field->required      = 'yes' === $field->required ? 'yes' : 'no';
