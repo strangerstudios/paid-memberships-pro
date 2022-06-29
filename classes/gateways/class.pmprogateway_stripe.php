@@ -1637,7 +1637,7 @@ class PMProGateway_stripe extends PMProGateway {
 			// Check if we can combine initial and recurring payments.
 			$filtered_trial_period_days = $stripe->calculate_trial_period_days( $morder );
 			if (
-				empty( $order->TrialBillingCycles ) && // Check if there is a trial period.
+				empty( $morder->TrialBillingCycles ) && // Check if there is a trial period.
 				$filtered_trial_period_days === $stripe->calculate_trial_period_days( $morder, false ) && // Check if the trial period is the same as the filtered trial period.
 				( ! empty( $initial_payment_amount ) && $initial_payment_amount === $recurring_payment_amount ) // Check if the initial payment and recurring payment prices are the same.
 				) {
