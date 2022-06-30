@@ -544,10 +544,15 @@ function pmpro_getCancellations($period = null, $levels = 'all', $status = array
 	//make sure status is an array
 	if(!is_array($status))
 		$status = array($status);
-
+    
 	//check for a transient
 	$cache = get_transient( 'pmpro_report_memberships_cancellations' );
-	$hash = md5($period . $levels . implode(',', $status));
+	$hash = md5(
+		$period .
+		implode( ',', is_array( $levels ) ? $levels : array( $levels ) ) .
+		implode( ',', $status )
+	);
+
 	if( ! empty( $cache ) && ! empty( $cache[$hash] ) )
 		return $cache[$hash];
 
