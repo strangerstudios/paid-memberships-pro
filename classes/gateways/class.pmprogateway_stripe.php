@@ -2330,53 +2330,79 @@ class PMProGateway_stripe extends PMProGateway {
 				if ( $gateway_environment != $environment ) {
 					esc_html_e( 'The gateway environment has been changed. Please save this page to check webhooks for the selected environment.', 'paid-memberships-pro' );
 				} else {
-					?>
-					<table>
-						<thead>
-							<tr>
-								<th><?php esc_html_e( 'Event Type', 'paid-memberships-pro' ); ?></th>
-								<th><?php esc_html_e( 'Last Received', 'paid-memberships-pro' ); ?></th>
-								<th><?php esc_html_e( 'Status', 'paid-memberships-pro' ); ?></th>
-							</tr>
-						</thead>
-						<?php
-							$required_webhook_events = $this->webhook_events();
-							sort( $required_webhook_events );
-							foreach ( $required_webhook_events as $required_webhook_event ) {
-								$last_received = get_option( 'pmpro_stripe_webhook_last_received_' . $environment . '_' . $required_webhook_event );
+					$required_webhook_events = $this->webhook_events();
+					sort( $required_webhook_events );
 
-								$recently_sent = Stripe\Event::all(
-									array(
-										'limit' => 1,
-										'created' => array(
-											'lt' => time() - 60, // Ignore events created in the last 60 seconds in case we haven't processed them yet.
-										),
-										'type' => $required_webhook_event,
-									)
-								);
-								if ( ! empty( $recently_sent->data[0] ) ) {
-									if ( $last_received >= $recently_sent->data[0]->created ) {
-										$status = '<span style="color: green;">' . esc_html__( 'Received', 'paid-memberships-pro' ) . '</span>';
-									} else {
-										$status = '<span style="color: red;">' . esc_html__( 'Last Sent ', 'paid-memberships-pro' ) . date_i18n( get_option('date_format') . ' ' . get_option('time_format'), $recently_sent->data[0]->created ) . '</span>';
-									}
-								} else {
-									if ( ! empty( $last_received ) ) {
-										$status = '<span style="color: green;">' . esc_html__( 'Received', 'paid-memberships-pro' ) . '</span>';
-									} else {
-										$status = '<span style="color: grey;">' . esc_html__( 'Not Sent', 'paid-memberships-pro' ) . '</span>';
-									}
-								}
-								?>
-								<tr>
-									<td><?php echo $required_webhook_event; ?></td>
-									<td><?php echo empty( $last_received ) ? esc_html__( 'Never Received', 'paid-memberships-pro' ) : date_i18n( get_option('date_format') . ' ' . get_option('time_format'), $last_received ); ?></td>
-									<td><?php echo $status ?></td>
-								</tr>
-								<?php
+					$webhook_event_data = array();
+
+					$failed_webhooks = array();
+					$missing_webhooks = array();
+					$working_webhooks = array();
+
+					foreach ( $required_webhook_events as $required_webhook_event ) {
+						$event_data = array( 'name' => $required_webhook_event );
+
+						$last_received = get_option( 'pmpro_stripe_webhook_last_received_' . $environment . '_' . $required_webhook_event );
+						$event_data['last_received'] = empty( $last_received ) ? esc_html__( 'Never Received', 'paid-memberships-pro' ) : date_i18n( get_option('date_format') . ' ' . get_option('time_format'), $last_received );
+
+						$recently_sent = Stripe\Event::all(
+							array(
+								'limit' => 1,
+								'created' => array(
+									'lt' => time() - 60, // Ignore events created in the last 60 seconds in case we haven't finished processing them yet.
+								),
+								'type' => $required_webhook_event,
+							)
+						);
+						if ( ! empty( $recently_sent->data[0] ) ) {
+							if ( $last_received >= $recently_sent->data[0]->created ) {
+								$event_data['status'] =  '<span style="color: green;">' . esc_html__( 'Working', 'paid-memberships-pro' ) . '</span>';
+								$working_webhooks[] = $event_data;
+							} else {
+								$event_data['status'] = '<span style="color: red;">' . esc_html__( 'Last Sent ', 'paid-memberships-pro' ) . date_i18n( get_option('date_format') . ' ' . get_option('time_format'), $recently_sent->data[0]->created ) . '</span>';
+								$failed_webhooks[] = $event_data;
 							}
-						?>
-					</table>
+						} else {
+							if ( ! empty( $last_received ) ) {
+								$event_data['status'] = '<span style="color: green;">' . esc_html__( 'Working', 'paid-memberships-pro' ) . '</span>';
+								$working_webhooks[] = $event_data;
+							} else {
+								$event_data['status'] = '<span style="color: grey;">' . esc_html__( 'N/A', 'paid-memberships-pro' ) . '</span>';
+								$missing_webhooks[] = $event_data;
+							}
+						}
+					}
+					if ( ! empty( $failed_webhooks ) ) {
+						echo '<div class="notice error inline"><p>'. esc_html__( 'Some webhooks recently sent by Stripe have not been received by your website. [Link to documentation]', 'paid-memberships-pro' ) . '</p></div>';
+					} elseif ( ! empty( $missing_webhooks ) ) {
+						echo '<div class="notice inline"><p>'. esc_html__( 'Recent webhook attempts appear to have worked correctly, but there are some event types that have not been checked. [Link to documentation]', 'paid-memberships-pro' ) . '</p></div>';
+					} else {
+						echo '<div class="notice notice-success inline"><p>'. esc_html__( 'All webhooks appear to be working correctly.', 'paid-memberships-pro' ) . '</p></div>';
+					}
+					?>
+					<div class="widgets-holder-wrap pmpro_scrollable">
+						<table class="wp-list-table widefat striped fixed">
+							<thead>
+								<tr>
+									<th><?php esc_html_e( 'Event Type', 'paid-memberships-pro' ); ?></th>
+									<th><?php esc_html_e( 'Last Received', 'paid-memberships-pro' ); ?></th>
+									<th><?php esc_html_e( 'Status', 'paid-memberships-pro' ); ?></th>
+								</tr>
+							</thead>
+							<?php
+								$ordered_webhooks = array_merge( $failed_webhooks, $missing_webhooks, $working_webhooks );
+								foreach ( $ordered_webhooks as $webhook_event ) {
+									?>
+									<tr>
+										<td><?php echo $webhook_event['name']; ?></td>
+										<td><?php echo esc_html( $webhook_event['last_received'] ); ?></td>
+										<td><?php echo $webhook_event['status']; ?></td>
+									</tr>
+									<?php
+								}
+							?>
+						</table>
+					</div>
 					<?php
 				}
 				?>
