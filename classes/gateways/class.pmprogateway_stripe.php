@@ -2323,10 +2323,63 @@ class PMProGateway_stripe extends PMProGateway {
         </tr>
 		<tr class="gateway gateway_stripe_<?php echo $environment; ?>" <?php if ( $gateway != "stripe" || $gateway_environment != $environment ) { ?>style="display: none;"<?php } ?>>
             <th scope="row" valign="top">
-                <label><?php esc_html_e( 'Webhook', 'paid-memberships-pro' ); ?>:</label>
+                <label><?php esc_html_e( 'Webhook Status', 'paid-memberships-pro' ); ?>:</label>
             </th>
             <td>
-				<?php self::get_last_webhook_date( $environment ); ?>
+				<?php
+				if ( $gateway_environment != $environment ) {
+					esc_html_e( 'The gateway environment has been changed. Please save this page to check webhooks for the selected environment.', 'paid-memberships-pro' );
+				} else {
+					?>
+					<table>
+						<thead>
+							<tr>
+								<th><?php esc_html_e( 'Event Type', 'paid-memberships-pro' ); ?></th>
+								<th><?php esc_html_e( 'Last Received', 'paid-memberships-pro' ); ?></th>
+								<th><?php esc_html_e( 'Status', 'paid-memberships-pro' ); ?></th>
+							</tr>
+						</thead>
+						<?php
+							$required_webhook_events = $this->webhook_events();
+							sort( $required_webhook_events );
+							foreach ( $required_webhook_events as $required_webhook_event ) {
+								$last_received = get_option( 'pmpro_stripe_webhook_last_received_' . $environment . '_' . $required_webhook_event );
+
+								$recently_sent = Stripe\Event::all(
+									array(
+										'limit' => 1,
+										'created' => array(
+											'lt' => time() - 60, // Ignore events created in the last 60 seconds in case we haven't processed them yet.
+										),
+										'type' => $required_webhook_event,
+									)
+								);
+								if ( ! empty( $recently_sent->data[0] ) ) {
+									if ( $last_received >= $recently_sent->data[0]->created ) {
+										$status = '<span style="color: green;">' . esc_html__( 'Received', 'paid-memberships-pro' ) . '</span>';
+									} else {
+										$status = '<span style="color: red;">' . esc_html__( 'Last Sent ', 'paid-memberships-pro' ) . date_i18n( get_option('date_format') . ' ' . get_option('time_format'), $recently_sent->data[0]->created ) . '</span>';
+									}
+								} else {
+									if ( ! empty( $last_received ) ) {
+										$status = '<span style="color: green;">' . esc_html__( 'Received', 'paid-memberships-pro' ) . '</span>';
+									} else {
+										$status = '<span style="color: grey;">' . esc_html__( 'Not Sent', 'paid-memberships-pro' ) . '</span>';
+									}
+								}
+								?>
+								<tr>
+									<td><?php echo $required_webhook_event; ?></td>
+									<td><?php echo empty( $last_received ) ? esc_html__( 'Never Received', 'paid-memberships-pro' ) : date_i18n( get_option('date_format') . ' ' . get_option('time_format'), $last_received ); ?></td>
+									<td><?php echo $status ?></td>
+								</tr>
+								<?php
+							}
+						?>
+					</table>
+					<?php
+				}
+				?>
 				<p class="description"><?php esc_html_e( 'Webhook URL', 'paid-memberships-pro' ); ?>:
 				<code><?php echo esc_html( self::get_site_webhook_url() ); ?></code></p>
             </td>
