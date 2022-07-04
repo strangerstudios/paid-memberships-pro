@@ -278,9 +278,9 @@ class PMPro_Site_Health {
 		$directories = array_values( array_diff( scandir( $dir ), ['.', '..'] ) );
 		
 		foreach( $directories as $directory ) {
-
-			if( is_dir( "$dir\\$directory" ) ) {
-				foreach( self::recursive_template_scan( "$dir\\$directory" ) as $key => $value ) {
+			
+			if( is_dir( "$dir/$directory" ) ) {
+				foreach( self::recursive_template_scan( "$dir/$directory" ) as $key => $value ) {
 					$files[$key] = $value;
 				}
 			} else {
