@@ -188,7 +188,8 @@ if ( isset( $_REQUEST['page'] ) && $_REQUEST['page'] == 'pmpro-reports' ) {
  */
 function pmpro_maybe_show_upgrade_notices( $current_plugin_data, $update_data ) {
 	if ( isset( $update_data->upgrade_notice ) && strlen( trim( $update_data->upgrade_notice ) ) > 0 ) {
-		echo '<p class="pmpro_plugin_update_notice"><strong>' . esc_html( 'Important Upgrade Notice', 'paid-memberships-pro' ) . ':</strong> ' . strip_tags( $update_data->upgrade_notice ) . '</p>';
+		echo '<p class="pmpro_plugin_update_notice"><strong>' . esc_html( 'Important Upgrade Notice', 'paid-memberships-pro' ) . ':</strong> ' . esc_html( strip_tags( $update_data->upgrade_notice ) ) . '</p>';
+
 	}
 }
 $pmpro_path_from_plugins_dir_arr = explode( '/wp-content/plugins/', PMPRO_BASE_FILE );
