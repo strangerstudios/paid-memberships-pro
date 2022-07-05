@@ -133,3 +133,45 @@ function pmpro_updates_notice_complete() {
 </div>
 <?php
 }
+
+/**
+ * If there is an upgrade notice for updating PMPro to the latest version, show it.
+ *
+ * @since TBD
+ *
+ * @param array $current_plugin_data {
+ *     An array of plugin metadata.
+ *
+ *     @type string $name         The human-readable name of the plugin.
+ *     @type string $plugin_uri   Plugin URI.
+ *     @type string $version      Plugin version.
+ *     @type string $description  Plugin description.
+ *     @type string $author       Plugin author.
+ *     @type string $author_uri   Plugin author URI.
+ *     @type string $text_domain  Plugin text domain.
+ *     @type string $domain_path  Relative path to the plugin's .mo file(s).
+ *     @type bool   $network      Whether the plugin can only be activated network wide.
+ *     @type string $title        The human-readable title of the plugin.
+ *     @type string $author_name  Plugin author's name.
+ *     @type bool   $update       Whether there's an available update. Default null.
+ * }
+ * @param array $update_data {
+ *     An array of metadata about the available plugin update.
+ *
+ *     @type int    $id           Plugin ID.
+ *     @type string $slug         Plugin slug.
+ *     @type string $new_version  New plugin version.
+ *     @type string $url          Plugin URL.
+ *     @type string $package      Plugin update package URL.
+ * }
+ */
+function pmpro_maybe_show_upgrade_notices( $current_plugin_data, $update_data ) {
+	if ( isset( $update_data->upgrade_notice ) && strlen( trim( $update_data->upgrade_notice ) ) > 0 ) {
+		echo '<p class="pmpro_plugin_update_notice"><strong>' . esc_html( 'Important Upgrade Notice', 'paid-memberships-pro' ) . ':</strong> ' . esc_html( strip_tags( $update_data->upgrade_notice ) ) . '</p>';
+
+	}
+}
+$pmpro_path_from_plugins_dir_arr = explode( '/wp-content/plugins/', PMPRO_BASE_FILE );
+if ( ! empty( $pmpro_path_from_plugins_dir_arr ) ) {
+	add_action( 'in_plugin_update_message-' . end( $pmpro_path_from_plugins_dir_arr ), 'pmpro_maybe_show_upgrade_notices', 10, 2 );
+}
