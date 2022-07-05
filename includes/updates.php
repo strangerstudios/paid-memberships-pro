@@ -135,27 +135,6 @@ function pmpro_updates_notice_complete() {
 }
 
 /**
- * Show a notice if Better Logins Report Add On activated with version 2.0
- * This Add On has been merged into PMPro Core from 2.0
- * @since 2.0
- */
-function pmpro_show_notice_for_reports() {
-
-	if( ! function_exists( 'pmproblr_fixOptions' ) || ! current_user_can( 'activate_plugins' ) ) {
-		return;
-	}
-
-	?>
-    <div class="notice notice-warning">
-        <p><?php echo sprintf( __( 'You currently have the Better Login Reports Add On activated. This functionality has now been merged into Paid Memberships Pro. %s', 'paid-memberships-pro' ), "<br/><a href='". esc_url( admin_url( '/plugins.php?s=better%20logins%20report%20add%20on&plugin_status=inactive&pmpro-deactivate-reports=true' ) ) . "'>" . __( 'Please deactivate and remove this plugin.', 'paid-memberships-pro' ) . "</a>" ); ?></p>
-    </div>
-    <?php
-}
-if ( isset( $_REQUEST['page'] ) && $_REQUEST['page'] == 'pmpro-reports' ) {
-	add_action( 'admin_notices', 'pmpro_show_notice_for_reports', 20 );
-}
-
-/**
  * If there is an upgrade notice for updating PMPro to the latest version, show it.
  *
  * @since TBD
