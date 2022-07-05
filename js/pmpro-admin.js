@@ -469,7 +469,7 @@ function pmpro_userfields_prep_click_events() {
             field_groups.push( field_group );            
         });
         
-        console.log( field_groups );
+        // console.log( field_groups );
         jQuery('#pmpro_user_fields_settings').val( JSON.stringify( field_groups ) );        
         
         return true;

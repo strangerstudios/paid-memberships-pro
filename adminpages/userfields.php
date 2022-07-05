@@ -22,7 +22,7 @@
 		foreach ( $groups as $group ) {
 			$group->name        = sanitize_text_field( $group->name );
 			$group->checkout    = 'yes' === $group->checkout ? 'yes' : 'no';
-			$group->profile     = 'yes' === $group->profile ? 'yes' : 'no';
+			$group->profile     = sanitize_text_field( $group->profile );
 			$group->description = sanitize_text_field( $group->description );
 			$group->levels      = array_map( 'intval', $group->levels );
 			foreach ( $group->fields as $field ) {
