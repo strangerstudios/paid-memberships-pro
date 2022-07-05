@@ -644,6 +644,11 @@
 			$logstr .= "Order #" . $order->id . " for Checkout Session " . $checkout_session->id . " could not be processed.";
 			pmpro_stripeWebhookExit();
 		}
+
+		$logstr .= "Not handled event type = " . $pmpro_stripe_event->type;
+
+		pmpro_unhandled_webhook();
+		pmpro_stripeWebhookExit();
 	}
 	else
 	{

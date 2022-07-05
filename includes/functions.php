@@ -2208,7 +2208,7 @@ function pmpro_getSpecificMembershipLevelForUser( $user_id, $level_id ) {
 /**
  * pmpro_getLevel() returns the level object for a level
  *
- * @param $level may be the level id or name
+ * @param int|string|object $level may be the level id or name
  *
  * @return false|object
  * Return values:
