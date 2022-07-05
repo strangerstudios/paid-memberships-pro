@@ -155,19 +155,23 @@
 .pmpro_checkbox_box div,
 .checkbox_box div {
 	border-bottom: 1px solid #CCC;
-	padding: 3px;
+	padding: 4px;
+}
+.checkbox_box div:last-child {
+	border-bottom: none;
 }
 .pmpro_checkbox_box div:last-child,
 .checkbox_box div:last-child {
 	border-bottom: none;
 }
 .pmpro_checkbox_box .pmpro_clickable,
-.checkbox_box .clickable {
+.checkbox_box .clickable,
+.pmpro_userfield-group-header {
 	cursor: pointer;
 }
 .pmpro_checkbox_box .pmpro_clickable:hover,
 .checkbox_box .clickable:hover {
-	background: #FFC;
+	background: rgba( 255, 185, 0, 0.1 );
 }
 .pmpro_checkbox_box .pmpro_clickable {
 	align-items: center;
@@ -254,6 +258,16 @@
 	padding-left: 1.25em;
 	padding-right: 1.25em;
 }
+.pmpro_admin table.wp-list-table thead th.sortable,
+.pmpro_admin table.wp-list-table thead th.sorted {
+	padding-left: .65em;
+	padding-right: .65em;
+}
+.pmpro_admin table.wp-list-table thead th.sortable a,
+.pmpro_admin table.wp-list-table thead th.sorted a {
+	padding-left: 0.5em;
+	padding-right: 0.5em;
+}
 .pmpro_admin table.wp-list-table tbody td {
 	padding: 1.25em;
 }
@@ -306,6 +320,247 @@
 .admin_page_pmpro-paymentsettings .form-table select {
 	max-width: none;
 }
+
+/* Field Group Actions */
+.admin_page_pmpro-userfields button .dashicons {
+	vertical-align: middle;
+}
+.admin_page_pmpro-userfields .pmpro_userfield-group-buttons-button {
+	background: 0 0;
+	border: 0;
+	cursor: pointer;
+	flex-shrink: 0;
+	margin: 0;
+	padding: 0;
+}
+.admin_page_pmpro-userfields .pmpro_userfield-group-buttons-button:disabled {
+	color: #AAA;
+}
+.admin_page_pmpro-userfields .pmpro_userfield-group-buttons-description {
+	display: none;
+}
+.admin_page_pmpro-userfields .pmpro_userfield-group-buttons-button.dashicons {
+	vertical-align: middle;
+}
+.admin_page_pmpro-userfields .pmpro_userfield-group-field-expand .pmpro_userfield-group-buttons-button {
+	color: #FFF;
+}
+.admin_page_pmpro-userfields .pmpro_userfield-group-field-expand .pmpro_userfield-group-buttons-button:disabled {
+	color: #0071a1;
+}
+.admin_page_pmpro-userfields .pmpro_userfield-group-actions button.is-destructive {
+	border: none;
+	background: none;
+	color: #A00;
+	margin: .5em;
+	padding: 0;
+	text-decoration: underline;
+}
+.admin_page_pmpro-userfields .pmpro_userfield-group-actions button.is-destructive:hover {
+	border: none;
+	background: auto;
+	color: #A00;	
+	text-decoration: underline;
+}
+
+.admin_page_pmpro-userfields .pmpro_userfield-field-actions button.is-destructive {
+	border: none;
+	background: none;
+	color: #A00;
+	margin: 0 0 0 .5em;
+	padding: 0;
+	text-decoration: underline;
+}
+.admin_page_pmpro-userfields .pmpro_userfield-field-actions button.is-destructive:hover {
+	border: none;
+	background: auto;
+	color: #A00;	
+	text-decoration: underline;
+}
+
+/* General User Fields Page Styles */
+.admin_page_pmpro-userfields .pmpro_userfield-inside label,
+.admin_page_pmpro-userfields .pmpro_userfield-inside .description {
+	display: block;
+	margin: 3px 0;
+	width: 95%;	/* set similar to the width of input fields */
+}
+.admin_page_pmpro-userfields .pmpro_userfield-inside .description {
+	font-style: italic;
+}
+.admin_page_pmpro-userfields .pmpro_userfield-inside input[type=text],
+.admin_page_pmpro-userfields .pmpro_userfield-inside select,
+.admin_page_pmpro-userfields .pmpro_userfield-inside textarea {
+	width: 90%;
+}
+.admin_page_pmpro-userfields .pmpro_userfield-inside textarea {
+	height: 90px;
+}
+.admin_page_pmpro-userfields .pmpro_userfield-inside h3 {
+	margin: 0;
+	padding: 8px 12px;
+}
+.admin_page_pmpro-userfields .pmpro_userfield-group {
+	background: #FFF;
+	border: 1px solid #ccd0d4;
+	box-shadow: 0 1px 1px rgba(0, 0, 0, .04);
+	margin-bottom: 20px;
+}
+.admin_page_pmpro-userfields .pmpro_userfield-group-collapse .pmpro_userfield-inside {
+	display: none;
+}
+.admin_page_pmpro-userfields .pmpro_userfield-group-thead,
+.admin_page_pmpro-userfields .pmpro_userfield-group-tbody {
+	display: flex;
+	margin: 0;
+}
+.admin_page_pmpro-userfields .pmpro_userfield-group-thead {
+	background: #f5f5f5;
+	border-top: 3px solid #ccd0d4;
+}
+.admin_page_pmpro-userfields .pmpro_userfield-group-field-expand .pmpro_userfield-group-tbody {
+	background: #007cba;
+	color: #FFF;
+}
+.admin_page_pmpro-userfields .pmpro_userfield-group-thead li {
+	font-weight: bold;
+	padding: 8px 12px;
+}
+.admin_page_pmpro-userfields .pmpro_userfield-group-tbody li {
+	padding: 8px 12px;
+}
+.admin_page_pmpro-userfields li.pmpro_userfield-group-column-order {
+	flex: 1;
+}
+.admin_page_pmpro-userfields li.pmpro_userfield-group-column-label {
+	flex: 4;
+}
+.admin_page_pmpro-userfields li.pmpro_userfield-group-column-name {
+	flex: 2;
+}
+.admin_page_pmpro-userfields li.pmpro_userfield-group-column-type {
+	flex: 2;
+}
+.admin_page_pmpro-userfields .pmpro_userfield-group-tbody li.pmpro_userfield-group-column-label .pmpro_userfield-label {
+	display: block;
+	font-weight: bold;
+}
+.admin_page_pmpro-userfields .pmpro_userfield-group-field-collapse li.pmpro_userfield-group-column-label .pmpro_userfield-label {
+	margin-bottom: .2em;
+}
+
+.admin_page_pmpro-userfields .pmpro_userfield-group-field-expand li.pmpro_userfield-group-column-label,
+.admin_page_pmpro-userfields .pmpro_userfield-group-field-expand li.pmpro_userfield-group-column-name,
+.admin_page_pmpro-userfields .pmpro_userfield-group-field-expand li.pmpro_userfield-group-column-type {
+	display: none;
+}
+
+.admin_page_pmpro-userfields .pmpro_userfield-group-field .pmpro_userfield-group-options {
+	color: #DDD;
+	font-size: 13px;
+	left: -9999em;
+	position: relative;
+}
+.admin_page_pmpro-userfields .pmpro_userfield-group-field .pmpro_userfield-group-options a {
+	text-decoration: none;
+}
+.admin_page_pmpro-userfields .pmpro_userfield-group-field .pmpro_userfield-group-options a:hover {
+	text-decoration: underline;
+}
+.admin_page_pmpro-userfields .pmpro_userfield-group-field-collapse:hover .pmpro_userfield-group-options {
+	left: 0;
+}
+.admin_page_pmpro-userfields .pmpro_userfield-group-field-expand .pmpro_userfield-group-options {
+	display: none;
+}
+.admin_page_pmpro-userfields .pmpro_userfield-group-field-expand .pmpro_userfield-group-options a {
+	color: #FFF;
+}
+.admin_page_pmpro-userfields .pmpro_userfield-group-field {
+	border-bottom: 1px solid #ccd0d4;
+}
+.admin_page_pmpro-userfields .pmpro_userfield-group-header {
+	align-items: center;
+	background: #f5f5f5;
+	border-bottom: 1px solid #ccd0d4;
+	display: flex;
+	justify-content: space-between;
+	margin: 0;
+	padding: 8px 12px;
+}
+.admin_page_pmpro-userfields .pmpro_userfield-group-header h3 {
+	align-items: center;
+	display: flex;
+	flex-grow: 1;
+	margin: 0 0 0 12px;
+}
+.admin_page_pmpro-userfields .pmpro_userfield-group-header h3 label {
+	display: inline-block;
+	margin-right: 5px;
+}
+.admin_page_pmpro-userfields .pmpro_userfield-field-settings {
+	padding: 0 12px;
+}
+.admin_page_pmpro-userfields .pmpro_userfield-field-settings .pmpro_userfield-field-setting {
+	margin: 12px 0;
+}
+.admin_page_pmpro-userfields .pmpro_userfield-field-settings .pmpro_userfield-field-setting-dual {
+	column-count: 2;
+}
+.admin_page_pmpro-userfields .pmpro_userfield-field-settings .pmpro_userfield-field-setting-dual .pmpro_userfield-field-setting {
+    margin: 0;
+}
+.admin_page_pmpro-userfields .pmpro_userfield-field-settings .pmpro_userfield-field-setting-radio span {
+	display: inline-block;
+	margin-right: 12px;	
+}
+.admin_page_pmpro-userfields .pmpro_userfield-field-actions {	
+	width: 100%;
+	padding: 8px 12px;
+}
+.admin_page_pmpro-userfields .pmpro_userfield-group-actions {
+	background: #f5f5f5;
+	padding: 8px 12px;
+	text-align: center;
+}
+/*
+.admin_page_pmpro-userfields .pmpro_userfield-group-field-header {
+	align-items: center;
+	border-bottom: 1px solid #ccd0d4;
+	display: flex;
+	justify-content: space-between;
+	margin: 0;
+	padding: 8px 12px;
+}
+.admin_page_pmpro-userfields .pmpro_userfield-group-field-header .pmpro_userfield-group-field-header-field {
+	align-items: center;
+	display: flex;
+	flex-grow: 1;
+	margin: 0;
+}
+.admin_page_pmpro-userfields .pmpro_userfield-group-field-header  .pmpro_userfield-group-field-header-field label {
+	display: inline-block;
+	margin-right: 5px;
+}
+*/
+
+
+/** MOVE THIS LATER TO OTHER MEDIA QUERY AT BOTTOM **/
+@media (min-width: 1200px) {
+	.admin_page_pmpro-userfields .pmpro_userfield-group-header h3 input[type=text],
+	.admin_page_pmpro-userfields .pmpro_userfield-group-field-header .pmpro_userfield-group-field-header-field input[type=text] {
+		width: 500px;
+	}
+	.admin_page_pmpro-userfields .pmpro_userfield-field-settings {
+		display: flex;
+		flex-wrap: wrap;
+	}
+	.admin_page_pmpro-userfields .pmpro_userfield-field-setting {
+		flex: 50%;
+	}
+	.admin_page_pmpro-paymentsettings .pmpro-admin-secure-key {
+		-webkit-text-security: disc;
+	}
 
 .admin_page_pmpro-paymentsettings span.pmpro_gateway-mode {
 	border: 1px solid transparent;
@@ -452,6 +707,58 @@
 	-webkit-text-security: disc;
 }
 
+
+/* discount codes */
+.pmpro_discount_levels .pmpro_discount_level {
+	border: 1px solid #CCC;
+	margin: 15px 0;
+	padding: 10px;
+}
+.pmpro_discount_levels .pmpro_discount_level .pmpro_discount_levels_pricing {
+	background: #FFFFFF;
+	border: 1px solid #CCC;
+	margin: 10px 0 0 0;
+	padding: 0px 20px;
+}
+@media screen and (max-width: 960px) {
+	.admin_page_pmpro-discountcodes .pmpro_admin .wp-list-table thead {
+		display: none;
+	}
+	.admin_page_pmpro-discountcodes .pmpro_admin .wp-list-table tr td {
+		display: block;
+		padding: 8px 8px 8px 35%;
+		position: relative;
+		clear: both;
+		width: auto;
+	}
+	.admin_page_pmpro-discountcodes .pmpro_admin .wp-list-table tr td::before {
+		position: absolute;
+		left: 10px;
+		display: block;
+		overflow: hidden;
+		width: 32%;
+		content: attr(data-colname);
+		white-space: nowrap;
+		text-overflow: ellipsis;
+	}
+	.admin_page_pmpro-discountcodes .pmpro_admin .wp-list-table tr td:first-child {
+		padding-left: 8px;
+	}
+	.admin_page_pmpro-discountcodes .pmpro_admin .wp-list-table tr td:first-child::before {
+		content: '';
+		display: none;
+	}
+	.admin_page_pmpro-discountcodes .pmpro_admin .wp-list-table tr td .row-actions {
+		display: inline-block;
+		left: 0;
+		margin-left: 16px;
+		padding: 0;
+	}
+	.admin_page_pmpro-discountcodes .pmpro_admin .wp-list-table tr td .row-actions span a {
+		padding: 0;
+	}
+}
+
 /* advanced settings */
 .admin_page_pmpro-advancedsettings .form-table select:not(.admin_page_pmpro-advancedsettings .form-table select#tospage) {
 	max-width: none;
@@ -516,6 +823,44 @@ a.pmpro_order-renewal {
 	font-size: 14px;
 	font-weight: normal;
 	margin-left: 10px;
+}
+@media screen and (max-width: 960px) {
+	.memberships_page_pmpro-orders .pmpro_admin .wp-list-table thead {
+		display: none;
+	}
+	.memberships_page_pmpro-orders .pmpro_admin .wp-list-table tr td {
+		display: block;
+		padding: 8px 8px 8px 35%;
+		position: relative;
+		clear: both;
+		width: auto;
+	}
+	.memberships_page_pmpro-orders .pmpro_admin .wp-list-table tr td::before {
+		position: absolute;
+		left: 10px;
+		display: block;
+		overflow: hidden;
+		width: 32%;
+		content: attr(data-colname);
+		white-space: nowrap;
+		text-overflow: ellipsis;
+	}
+	.memberships_page_pmpro-orders .pmpro_admin .wp-list-table tr td:first-child {
+		padding-left: 8px;
+	}
+	.memberships_page_pmpro-orders .pmpro_admin .wp-list-table tr td:first-child::before {
+		content: '';
+		display: none;
+	}
+	.memberships_page_pmpro-orders .pmpro_admin .wp-list-table tr td .row-actions {
+		display: inline-block;
+		left: 0;
+		margin-left: 16px;
+		padding: 0;
+	}
+	.memberships_page_pmpro-orders .pmpro_admin .wp-list-table tr td .row-actions span a {
+		padding: 0;
+	}
 }
 
 /* members list */
@@ -618,19 +963,6 @@ tr.pmpro_error {
 }
 tr.pmpro_alert {
 	background-image: none;
-}
-
-/* discount levels */
-.pmpro_discount_levels .pmpro_discount_level {
-	border: 1px solid #CCC;
-	margin: 15px 0;
-	padding: 10px;
-}
-.pmpro_discount_levels .pmpro_discount_level .pmpro_discount_levels_pricing {
-	background: #FFFFFF;
-	border: 1px solid #CCC;
-	margin: 10px 0 0 0;
-	padding: 0px 20px;
 }
 
 /* pagination */
@@ -838,7 +1170,9 @@ h2.nav-tab-wrapper {
 #pmpro_report_sales .wp-list-table tfoot td {
 	font-size: 1.1rem;
 	font-weight: bold;
+	vertical-align: top;
 }
+#pmpro_report_sales .wp-list-table thead th:last-child,
 #pmpro_report_sales .wp-list-table tbody td:last-child,
 #pmpro_report_sales .wp-list-table tfoot td:last-child {
 	text-align: right;
@@ -936,6 +1270,9 @@ button.pmpro_report_th_closed:before {
 }
 .pmpro_admin p.text-center {
 	text-align: center;
+}
+.pmpro_admin p.text-right {
+	text-align: right;
 }
 
 /* new installation notices */

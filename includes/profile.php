@@ -646,41 +646,6 @@ add_action( 'in_admin_header', 'pmpro_membership_history_email_modal' );
 
 
 /**
- * Sanitizes the passed value.
- *
- * @param array|int|null|string|stdClass $value The value to sanitize
- *
- * @return array|int|string|object     Sanitized value
- */
-function pmpro_sanitize( $value ) {
-
-	if ( is_array( $value ) ) {
-
-		foreach ( $value as $key => $val ) {
-			$value[ $key ] = pmprorh_sanitize( $val );
-		}
-	}
-
-	if ( is_object( $value ) ) {
-
-		foreach ( $value as $key => $val ) {
-			$value->{$key} = pmprorh_sanitize( $val );
-		}
-	}
-
-	if ( ( ! is_array( $value ) ) && ctype_alpha( $value ) ||
-	     ( ( ! is_array( $value ) ) && strtotime( $value ) ) ||
-	     ( ( ! is_array( $value ) ) && is_string( $value ) ) ||
-	     ( ( ! is_array( $value ) ) && is_numeric( $value) )
-	) {
-
-		$value = sanitize_text_field( $value );
-	}
-
-	return $value;
-}
-
-/**
  * Display a frontend Member Profile Edit form and allow user to edit specific fields.
  *
  * @since 2.3

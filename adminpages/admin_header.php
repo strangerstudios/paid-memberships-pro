@@ -211,6 +211,7 @@
 			'pmpro-pagesettings',
 			'pmpro-paymentsettings',
 			'pmpro-emailsettings',
+			'pmpro-userfields',
 			'pmpro-emailtemplates',
 			'pmpro-advancedsettings',
 			'pmpro-addons',
@@ -247,7 +248,7 @@
 		<?php } ?>
 	</nav>
 
-	<?php if( $view == 'pmpro-membershiplevels' || $view == 'pmpro-discountcodes' || $view == 'pmpro-pagesettings' || $view == 'pmpro-paymentsettings' || $view == 'pmpro-emailsettings' || $view == 'pmpro-emailtemplates' || $view == 'pmpro-advancedsettings' ) { ?>
+	<?php if( $view == 'pmpro-membershiplevels' || $view == 'pmpro-discountcodes' || $view == 'pmpro-pagesettings' || $view == 'pmpro-paymentsettings' || $view == 'pmpro-emailsettings' || $view == 'pmpro-emailtemplates' || $view == 'pmpro-userfields' || $view == 'pmpro-advancedsettings' ) { ?>
 		<ul class="subsubsub">
 			<?php if(current_user_can('pmpro_membershiplevels')) { ?>
 				<li><a href="<?php echo esc_url( admin_url( 'admin.php?page=pmpro-membershiplevels' ) );?>" title="<?php _e('Membership Levels', 'paid-memberships-pro' );?>" class="<?php if($view == 'pmpro-membershiplevels') { ?>current<?php } ?>"><?php esc_html_e('Levels', 'paid-memberships-pro' );?></a>&nbsp;|&nbsp;</li>
@@ -271,6 +272,10 @@
 			
 			<?php if(current_user_can('pmpro_emailtemplates')) { ?>
 				<li><a href="<?php echo esc_url( admin_url( 'admin.php?page=pmpro-emailtemplates' ) );?>" title="<?php _e('Email Templates', 'paid-memberships-pro' );?>" class="<?php if($view == 'pmpro-emailtemplates') { ?>current<?php } ?>"><?php esc_html_e('Email Templates', 'paid-memberships-pro' );?></a>&nbsp;|&nbsp;</li>
+			<?php } ?>
+
+			<?php if ( current_user_can( 'pmpro_userfields' ) ) { ?>
+				<li><a href="<?php echo add_query_arg( array( 'page' => 'pmpro-userfields' ), get_admin_url(null, 'admin.php' ) ); ?>" title="<?php _e('User Fields', 'paid-memberships-pro' );?>" class="<?php if($view == 'pmpro-userfields') { ?>current<?php } ?>"><?php _e('User Fields', 'paid-memberships-pro' );?></a>&nbsp;|&nbsp;</li>
 			<?php } ?>
 
 			<?php if(current_user_can('pmpro_advancedsettings')) { ?>
