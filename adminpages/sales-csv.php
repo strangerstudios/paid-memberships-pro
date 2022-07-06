@@ -51,38 +51,27 @@ if ( empty( $sales_data ) ) {
 	die( __('Error finding report data. Make sure transients are working.', 'paid-memberships-pro' ) );
 }
 
-define('PMPRO_BENCHMARK', true);
-
-if (!defined('PMPRO_BENCHMARK'))
-	define('PMPRO_BENCHMARK', false);
-
-$start_memory = memory_get_usage(true);
-$start_time = microtime(true);
-
-if (true === PMPRO_BENCHMARK)
-{
-	error_log(str_repeat('-', 10) . date_i18n('Y-m-d H:i:s') . str_repeat('-', 10));
-}
-
-/**
- * Filter to set max number of sales records to process at a time
- * for the export (helps manage memory footprint)
- *
- * NOTE: Use the pmpro_before_orders_list_csv_export hook to increase memory "on-the-fly"
- *       Can reset with the pmpro_after_orders_list_csv_export hook
- *
- * @since TBD
- */
-//set the number of orders we'll load to try and protect ourselves from OOM errors
-$max_orders_per_loop = apply_filters( 'pmpro_set_max_sales_per_export_loop', 2000 );
-
 $headers   = array();
 $headers[] = "Content-Type: text/csv";
 $headers[] = "Cache-Control: max-age=0, no-cache, no-store";
 $headers[] = "Pragma: no-cache";
 $headers[] = "Connection: close";
 
-$filename = "sales-revenue.csv";
+// Generate a filename based on the params.
+$filename = $period . "_" . $type;
+if ( $period == 'daily' ) {
+	$filename .= '_' . date('M', strtotime( $year . '-' . $month . '-01' ) ) . $year;
+}
+if ( $period == 'monthly' ) {
+	$filename .= '_' . $year;
+}
+if ( ! empty( $l ) ) {
+	$filename .= "_level" . $l;
+}
+if ( ! empty( $discount_code ) ) {
+	$filename .= "_" . $discount_code;
+}
+$filename .= ".csv";
 /*
 	Insert logic here for building filename from $filter and other values.
 */
@@ -104,18 +93,7 @@ $default_columns = array(
 	array( "renewals", "renewals" ),
 );
 
-$default_columns = apply_filters( "pmpro_sales_report_csv_default_columns", $default_columns );
-$csv_file_header_array = apply_filters( "pmpro_sales_report_csv_export_header_array", $csv_file_header_array );
-$dateformat = apply_filters( 'pmpro_sales_report_csv_dateformat', get_option( 'date_format' ) . ' ' . get_option( 'time_format' ) );
-
-//any extra columns
-$extra_columns = apply_filters( "pmpro_sales_report_csv_extra_columns", array() );	//the original filter
-
-if ( ! empty( $extra_columns ) ) {
-	foreach ( $extra_columns as $heading => $callback ) {
-		$csv_file_header_array[] = $heading;
-	}
-}
+$dateformat = get_option( 'date_format' ) . ' ' . get_option( 'time_format' );
 
 $csv_file_header = implode( ',', $csv_file_header_array ) . "\n";
 
@@ -137,41 +115,14 @@ if ( empty( $orders_found ) ) {
 	pmpro_transmit_order_content( $csv_fh, $filename, $headers );
 }
 
-if (PMPRO_BENCHMARK)
-{
-	$pre_action_time = microtime(true);
-	$pre_action_memory = memory_get_usage(true);
-}
-
-do_action('pmpro_before_order_list_csv_export', $sales_data);
-
 $i_start    = 0;
-$i_limit    = 0;
+$i_limit    = 2000;
 $iterations = 1;
-
-if ( $orders_found >= $max_orders_per_loop ) {
-	$iterations = ceil( $orders_found / $max_orders_per_loop );
-	$i_limit    = $max_orders_per_loop;
-}
 
 $end        = 0;
 $time_limit = ini_get( 'max_execution_time' );
 
-if (PMPRO_BENCHMARK)
-{
-	error_log("PMPRO_BENCHMARK - Total records to process: {$orders_found}");
-	error_log("PMPRO_BENCHMARK - Will process {$iterations} iterations of max {$max_orders_per_loop} records per iteration.");
-	$pre_iteration_time = microtime(true);
-	$pre_iteration_memory = memory_get_usage(true);
-}
-
 for ( $ic = 1; $ic <= $iterations; $ic ++ ) {
-
-	if (PMPRO_BENCHMARK)
-	{
-		$start_iteration_time = microtime(true);
-		$start_iteration_memory = memory_get_usage(true);
-	}
 
 	// avoiding timeouts (modify max run-time for export)
 	if ( $end != 0 ) {
@@ -186,16 +137,6 @@ for ( $ic = 1; $ic <= $iterations; $ic ++ ) {
 	}
 
 	$start = current_time( 'timestamp' );
-
-	//increment starting position
-	if ( $ic > 1 ) {
-		$i_start += $max_orders_per_loop;
-	}
-
-	if ( PMPRO_BENCHMARK ) {
-		$pre_orderdata_time = microtime(true);
-		$pre_orderdata_memory = memory_get_usage(true);
-	}
 
 	foreach ( $sales_data as $sales ) {
 
@@ -229,20 +170,6 @@ for ( $ic = 1; $ic <= $iterations; $ic ++ ) {
 		$end = current_time( 'timestamp' );
 
 	} // end of foreach orders
-
-	if (PMPRO_BENCHMARK)
-	{
-		$after_data_time = microtime(true);
-		$after_data_memory = memory_get_peak_usage(true);
-
-		$time_processing_data = $after_data_time - $start_time;
-		$memory_processing_data = $after_data_memory - $start_memory;
-
-		list($sec, $usec) = explode('.', $time_processing_data);
-
-		error_log("PMPRO_BENCHMARK - Time processing data: {$sec}.{$usec} seconds");
-		error_log("PMPRO_BENCHMARK - Peak memory usage: " . number_format($memory_processing_data, false, '.', ',') . " bytes");
-	}
 
 	wp_cache_flush();
 }
@@ -305,7 +232,5 @@ function pmpro_transmit_order_content( $csv_fh, $filename, $headers = array() ) 
 		unlink( $filename );
 	}
 
-	//allow user to clean up after themselves
-	do_action( 'pmpro_after_order_csv_export' );
 	exit;
 }
