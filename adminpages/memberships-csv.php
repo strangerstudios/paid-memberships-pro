@@ -19,16 +19,16 @@ if ( true === PMPRO_BENCHMARK ) {
 }
 
 /**
- * Filter to set max number of order records to process at a time
+ * Filter to set max number of records to process at a time
  * for the export (helps manage memory footprint)
  *
- * NOTE: Use the pmpro_before_orders_list_csv_export hook to increase memory "on-the-fly"
- *       Can reset with the pmpro_after_orders_list_csv_export hook
+ * NOTE: Use the pmpro_before_membership_stats_csv_export hook to increase memory "on-the-fly"
+ *       Can reset with the pmpro_after_membership_stats_csv_export hook
  *
- * @since 1.8.9
+ * @since 2.9
  */
 // set the number of records we'll load to try and protect ourselves from OOM errors
-$max_record_loops = apply_filters( 'pmpro_set_max_records_per_export_loop', 2000 );
+$max_record_loops = apply_filters( 'pmpro_set_max_membership_stats_records_per_export_loop', 2000 );
 
 global $wpdb, $pmpro_currency_symbol;
 
@@ -256,19 +256,7 @@ $default_columns = array(
 	array( 'each_date', 'cancellations' ),
 );
 
-
-$default_columns = apply_filters( 'pmpro_membership_stats_csv_default_columns', $default_columns );
-$csv_file_header_array = apply_filters( 'pmpro_membership_stats_csv_export_header_array', $csv_file_header_array );
-$dateformat = apply_filters( 'pmpro_membership_stats_csv_dateformat', get_option( 'date_format' ) . ' ' . get_option( 'time_format' ) );
-
-// any extra columns
-$extra_columns = apply_filters( 'pmpro_membership_stats_csv_extra_columns', array() );    // the original filter
-
-if ( ! empty( $extra_columns ) ) {
-	foreach ( $extra_columns as $heading => $callback ) {
-		$csv_file_header_array[] = $heading;
-	}
-}
+$dateformat = get_option( 'date_format' ) . ' ' . get_option( 'time_format' );
 
 $csv_file_header = implode( ',', $csv_file_header_array ) . "\n";
 
@@ -336,12 +324,12 @@ for ( $ic = 1; $ic <= $iterations; $ic ++ ) {
 	}
 
 
-	// get the order list we should process
+	// get the user list we should process
 	$user_list = array_slice( $user_ids, $i_start, $max_record_loops );
 
 	if ( PMPRO_BENCHMARK ) {
-		$pre_orderdata_time   = microtime( true );
-		$pre_orderdata_memory = memory_get_usage( true );
+		$pre_data_time   = microtime( true );
+		$pre_data_memory = memory_get_usage( true );
 	}
 
 	foreach ( $dates as $each_date ) {
@@ -367,16 +355,6 @@ for ( $ic = 1; $ic <= $iterations; $ic ++ ) {
 						$val = null;
 				}
 				
-				array_push( $csvoutput, pmpro_enclose( $val ) );
-			}
-		}
-
-		// any extra columns
-		if ( ! empty( $extra_columns ) ) {
-			foreach ( $extra_columns as $heading => $callback ) {
-				$val = call_user_func( $callback, $order );
-				$val = ! empty( $val ) ? $val : null;
-
 				array_push( $csvoutput, pmpro_enclose( $val ) );
 			}
 		}
@@ -407,7 +385,7 @@ for ( $ic = 1; $ic <= $iterations; $ic ++ ) {
 		error_log( "PMPRO_BENCHMARK - Time processing data: {$sec}.{$usec} seconds" );
 		error_log( 'PMPRO_BENCHMARK - Peak memory usage: ' . number_format( $memory_processing_data, false, '.', ',' ) . ' bytes' );
 	}
-	$order_list = null;
+	$user_list = null;
 	wp_cache_flush();
 }
 pmpro_transmit_report_data( $csv_fh, $filename, $headers );
@@ -449,7 +427,7 @@ function pmpro_transmit_report_data( $csv_fh, $filename, $headers = array() ) {
 	if ( headers_sent() ) {
 		echo str_repeat( '-', 75 ) . "<br/>\n";
 		echo 'Please open a support case and paste in the warnings/errors you see above this text to\n ';
-		echo 'the <a href="http://paidmembershipspro.com/support/?utm_source=plugin&utm_medium=pmpro-orders-csv&utm_campaign=support" target="_blank">Paid Memberships Pro support forum</a><br/>\n';
+		echo 'the <a href="http://paidmembershipspro.com/support/?utm_source=plugin&utm_medium=pmpro-membership-stats-csv&utm_campaign=support" target="_blank">Paid Memberships Pro support forum</a><br/>\n';
 		echo str_repeat( '=', 75 ) . "<br/>\n";
 		echo file_get_contents( $filename );
 		echo str_repeat( '=', 75 ) . "<br/>\n";

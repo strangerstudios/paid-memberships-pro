@@ -19,19 +19,16 @@ if ( true === PMPRO_BENCHMARK ) {
 }
 
 /**
- * Filter to set max number of order records to process at a time
+ * Filter to set max number records to process at a time
  * for the export (helps manage memory footprint)
  *
- * NOTE: Use the pmpro_before_orders_list_csv_export hook to increase memory "on-the-fly"
- *       Can reset with the pmpro_after_orders_list_csv_export hook
+ * NOTE: Use the pmpro_before_visits_views_logins_csv_export hook to increase memory "on-the-fly"
+ *       Can reset with the pmpro_after_visits_views_logins_csv_export hook
  *
- * @since 1.8.9
+ * @since 2.9
  */
 // set the number of records we'll load to try and protect ourselves from OOM errors
-$max_record_loops = apply_filters( 'pmpro_set_max_records_per_export_loop', 2000 );
-
-global $wpdb;
-
+$max_record_loops = apply_filters( 'pmpro_set_max_visits_views_logins_records_per_export_loop', 2000 );
 global $wpdb;
 
 	// vars
@@ -150,19 +147,7 @@ $default_columns = array(
 	array( 'logins', 'alltime' ),
 );
 
-
-$default_columns = apply_filters( 'pmpro_visits_views_logins_csv_default_columns', $default_columns );
-$csv_file_header_array = apply_filters( 'pmpro_visits_views_logins_csv_export_header_array', $csv_file_header_array );
-$dateformat = apply_filters( 'pmpro_visits_views_logins_csv_dateformat', get_option( 'date_format' ) . ' ' . get_option( 'time_format' ) );
-
-// any extra columns
-$extra_columns = apply_filters( 'pmpro_visits_views_logins_csv_extra_columns', array() );    // the original filter
-
-if ( ! empty( $extra_columns ) ) {
-	foreach ( $extra_columns as $heading => $callback ) {
-		$csv_file_header_array[] = $heading;
-	}
-}
+$dateformat = get_option( 'date_format' ) . ' ' . get_option( 'time_format' );
 
 $csv_file_header = implode( ',', $csv_file_header_array ) . "\n";
 
@@ -230,12 +215,12 @@ for ( $ic = 1; $ic <= $iterations; $ic ++ ) {
 	}
 
 
-	// get the order list we should process
+	// get the user list we should process
 	$user_list = array_slice( $user_ids, $i_start, $max_record_loops );
 
 	if ( PMPRO_BENCHMARK ) {
-		$pre_orderdata_time   = microtime( true );
-		$pre_orderdata_memory = memory_get_usage( true );
+		$pre_data_time   = microtime( true );
+		$pre_data_memory = memory_get_usage( true );
 	}
 
 	foreach ( $theusers as $user ) {
@@ -275,23 +260,10 @@ for ( $ic = 1; $ic <= $iterations; $ic ++ ) {
 		} else {
 			$enddate = 'Never';
 		}
-
-		$enddate = apply_filters( 'pmpro_visits_views_logins_csv_expires_column', $enddate, $user );
 		
 		// Add joindate and enddate to the CSV export.
 		array_push( $csvoutput, pmpro_enclose( date_i18n( $dateformat, $user->joindate ) ) );
 		array_push( $csvoutput, $enddate ); // Don't pmpro_enclose, handled further up for date and not needed for strings.
-
-
-		// any extra columns
-		if ( ! empty( $extra_columns ) ) {
-			foreach ( $extra_columns as $heading => $callback ) {
-				$val = call_user_func( $callback, $order );
-				$val = ! empty( $val ) ? $val : null;
-
-				array_push( $csvoutput, pmpro_enclose( $val ) );
-			}
-		}
 
 		$line = implode( ',', $csvoutput ) . "\n";
 
@@ -319,7 +291,7 @@ for ( $ic = 1; $ic <= $iterations; $ic ++ ) {
 		error_log( "PMPRO_BENCHMARK - Time processing data: {$sec}.{$usec} seconds" );
 		error_log( 'PMPRO_BENCHMARK - Peak memory usage: ' . number_format( $memory_processing_data, false, '.', ',' ) . ' bytes' );
 	}
-	$order_list = null;
+	$user_list = null;
 	wp_cache_flush();
 }
 pmpro_transmit_report_data( $csv_fh, $filename, $headers );
@@ -361,7 +333,7 @@ function pmpro_transmit_report_data( $csv_fh, $filename, $headers = array() ) {
 	if ( headers_sent() ) {
 		echo str_repeat( '-', 75 ) . "<br/>\n";
 		echo 'Please open a support case and paste in the warnings/errors you see above this text to\n ';
-		echo 'the <a href="http://paidmembershipspro.com/support/?utm_source=plugin&utm_medium=pmpro-orders-csv&utm_campaign=support" target="_blank">Paid Memberships Pro support forum</a><br/>\n';
+		echo 'the <a href="http://paidmembershipspro.com/support/?utm_source=plugin&utm_medium=pmpro-visits-views-logins-csv&utm_campaign=support" target="_blank">Paid Memberships Pro support forum</a><br/>\n';
 		echo str_repeat( '=', 75 ) . "<br/>\n";
 		echo file_get_contents( $filename );
 		echo str_repeat( '=', 75 ) . "<br/>\n";

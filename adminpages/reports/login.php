@@ -104,7 +104,7 @@ function pmpro_report_login_page()
 	}
 ?>
 	<form id="posts-filter" method="get" action="">	
-	<h1>
+	<h1 class="wp-heading-inline">
 		<?php _e('Visits, Views, and Logins Report', 'paid-memberships-pro');?>
 	</h1>
 	<a target="_blank" href="<?php echo esc_url( $csv_export_link ); ?>" class="page-title-action"><?php esc_html_e( 'Export to CSV', 'paid-memberships-pro' ); ?></a>		

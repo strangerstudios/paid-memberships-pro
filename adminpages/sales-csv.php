@@ -108,11 +108,9 @@ $csv_fh = fopen( $filename, 'a' );
 //write the CSV header to the file
 fprintf( $csv_fh, '%s', $csv_file_header );
 
-$orders_found = count( $sales_data );
-
 // If no data found, just create an empty CSV - this is how other CSV functionality is handled.
-if ( empty( $orders_found ) ) {
-	pmpro_transmit_order_content( $csv_fh, $filename, $headers );
+if ( empty( count( $sales_data ) ) ) {
+	pmpro_transmit_report_data( $csv_fh, $filename, $headers );
 }
 
 $i_start    = 0;
@@ -149,16 +147,6 @@ for ( $ic = 1; $ic <= $iterations; $ic ++ ) {
 			}
 		}
 
-		//any extra columns
-		if ( ! empty( $extra_columns ) ) {
-			foreach ( $extra_columns as $heading => $callback ) {
-				$val = call_user_func( $callback, $order );
-				$val = ! empty( $val ) ? $val : null;
-
-				array_push( $csvoutput, pmpro_enclose( $val ) );
-			}
-		}
-
 		$line = implode( ',', $csvoutput ) . "\n";
 
 		//output
@@ -169,17 +157,17 @@ for ( $ic = 1; $ic <= $iterations; $ic ++ ) {
 
 		$end = current_time( 'timestamp' );
 
-	} // end of foreach orders
+	} // end of foreach sales_data
 
 	wp_cache_flush();
 }
-pmpro_transmit_order_content( $csv_fh, $filename, $headers );
+pmpro_transmit_report_data( $csv_fh, $filename, $headers );
 
 function pmpro_enclose( $s ) {
 	return "\"" . str_replace( "\"", "\\\"", $s ) . "\"";
 }
 
-function pmpro_transmit_order_content( $csv_fh, $filename, $headers = array() ) {
+function pmpro_transmit_report_data( $csv_fh, $filename, $headers = array() ) {
 
 	//close the temp file
 	fclose( $csv_fh );
@@ -197,7 +185,7 @@ function pmpro_transmit_order_content( $csv_fh, $filename, $headers = array() ) 
 	if ( headers_sent() ) {
 		echo str_repeat( '-', 75 ) . "<br/>\n";
 		echo 'Please open a support case and paste in the warnings/errors you see above this text to\n ';
-		echo 'the <a href="http://paidmembershipspro.com/support/?utm_source=plugin&utm_medium=pmpro-orders-csv&utm_campaign=support" target="_blank">Paid Memberships Pro support forum</a><br/>\n';
+		echo 'the <a href="http://paidmembershipspro.com/support/?utm_source=plugin&utm_medium=pmpro-sales-revenue-csv&utm_campaign=support" target="_blank">Paid Memberships Pro support forum</a><br/>\n';
 		echo str_repeat( "=", 75 ) . "<br/>\n";
 		echo file_get_contents( $filename );
 		echo str_repeat( "=", 75 ) . "<br/>\n";
