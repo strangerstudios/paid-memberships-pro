@@ -91,14 +91,16 @@ $headers[] = "Content-Disposition: attachment; filename={$filename};";
 
 $csv_file_header_array = array(
 	"date",
-	"value",
+	"total",
+	"new",
 	"renewals",
 );
 
 //these are the meta_keys for the fields (arrays are object, property. so e.g. $theuser->ID)
 $default_columns = array(
 	array( "date", "date" ),
-	array( "value", "value" ),
+	array( "total", "total" ),
+	array( "new", "new" ),
 	array( "renewals", "renewals" ),
 );
 

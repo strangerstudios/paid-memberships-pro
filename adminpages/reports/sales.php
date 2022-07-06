@@ -221,7 +221,7 @@ function pmpro_report_sales_page()
 	
 	//fill in blanks in dates
 	$cols = array();
-	$newdates = array();
+	$csvdata = array();
 	$total_in_period = 0;
 	$units_in_period = 0; // Used for averages.
 	
@@ -233,7 +233,7 @@ function pmpro_report_sales_page()
 		for($i = 1; $i <= $lastday; $i++)
 		{
 			$cols[$i] = array(0, 0);
-			$newdates[$i-1] = (object)array('date'=>$i, 'value'=>'', 'renewals'=>'');
+			$csvdata[$i-1] = (object)array('date'=>$i, 'total'=>'', 'new'=> '', 'renewals'=>'');
 			if ( ! $currently_in_period || $i < $day_of_month ) {
 				$units_in_period++;
 			}
@@ -242,7 +242,7 @@ function pmpro_report_sales_page()
 			{
 				if($date->date == $i) {
 					$cols[$i] = array( $date->value, $date->renewals );
-					$newdates[$i-1] = $date;
+					$csvdata[$i-1] = (object)array('date'=>$i, 'total'=>$date->value, 'new'=> $date->value - $date->renewals, 'renewals'=> $date->renewals);
 					if ( ! $currently_in_period || $i < $day_of_month ) {
 						$total_in_period += $date->value;
 					}
@@ -256,7 +256,7 @@ function pmpro_report_sales_page()
 		for($i = 1; $i < 13; $i++)
 		{
 			$cols[$i] = array(0, 0);
-			$newdates[$i-1] = (object)array('date'=>$i, 'value'=>'', 'renewals'=>'');
+			$csvdata[$i-1] = (object)array('date'=>$i, 'total'=>'', 'new'=> '', 'renewals'=>'');
 			if ( ! $currently_in_period || $i < $month_of_year ) {
 				$units_in_period++;
 			}
@@ -265,7 +265,7 @@ function pmpro_report_sales_page()
 			{
 				if($date->date == $i) {
 					$cols[$i] = array( $date->value, $date->renewals );
-					$newdates[$i-1] = $date;
+					$csvdata[$i-1] = (object)array('date'=>$i, 'total'=>$date->value, 'new'=> $date->value - $date->renewals, 'renewals'=> $date->renewals);
 					if ( ! $currently_in_period || $i < $month_of_year ) {
 						$total_in_period += $date->value;
 					}
@@ -288,7 +288,7 @@ function pmpro_report_sales_page()
 		for($i = $min; $i <= $max; $i++)
 		{
 			$cols[$i] = array(0, 0);
-			$newdates[$i-1] = (object)array('date'=>$i, 'value'=>'', 'renewals'=>'');
+			$csvdata[$i-1] = (object)array('date'=>$i, 'total'=>'', 'new'=> '', 'renewals'=>'');
 			if ( $i < $current_year ) {
 				$units_in_period++;
 			}
@@ -296,7 +296,7 @@ function pmpro_report_sales_page()
 			{
 				if($date->date == $i) {
 					$cols[$i] = array( $date->value, $date->renewals );
-					$newdates[$i-1] = $date;
+					$csvdata[$i-1] = (object)array('date'=>$i, 'total'=>$date->value, 'new'=> $date->value - $date->renewals, 'renewals'=> $date->renewals);
 					if ( $i < $current_year ) {
 						$total_in_period += $date->value;
 					}
@@ -313,7 +313,7 @@ function pmpro_report_sales_page()
 	// Save a transient for each combo of params. Expires in 1 hour.
 	$param_array = array( $period, $type, $month, $year, $l, $discount_code );
 	$param_hash = md5( implode( ' ', $param_array ) . PMPRO_VERSION );
-	set_transient( 'pmpro_sales_data_' . $param_hash, $newdates, HOUR_IN_SECONDS );
+	set_transient( 'pmpro_sales_data_' . $param_hash, $csvdata, HOUR_IN_SECONDS );
 
 	// Build CSV export link.
 	$args = array(
