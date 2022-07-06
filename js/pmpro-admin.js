@@ -720,3 +720,79 @@ jQuery(document).ready(function($) {
     }
 
 });
+
+// Add Ons Page Code.
+jQuery( document ).ready( function() {
+    // Hide the license banner.
+    jQuery('.pmproPopupCloseButton').click(function( e ) {
+        e.preventDefault();
+        jQuery('.pmpro-popup-overlay').hide();
+    });
+
+    jQuery('#pmpro-admin-add-ons-list .action-button .pmproAddOnActionButton').click(function( e ) {
+        e.preventDefault();
+
+        var button = jQuery(this);
+
+        // Make sure we only run once.
+        if ( button.hasClass('disabled') ) {
+            return;
+        }
+        button.addClass( 'disabled' );
+
+        // Pull the action that we are performing on this button.
+        var action = button.siblings('input[name="pmproAddOnAdminAction"]').val();
+
+        if ( 'license' === action ) {
+            // Get the add on name and the user's current license type and show banner.
+            document.getElementById( 'addon-name' ).innerHTML = button.siblings('input[name="pmproAddOnAdminName"]').val();
+            document.getElementById( 'addon-license' ).innerHTML = button.siblings('input[name="pmproAddOnAdminLicense"]').val();
+            jQuery('.pmpro-popup-overlay').show();
+            button.removeClass( 'disabled' );
+        } else {
+            // Update the button text.
+            if ( 'activate' === action ) {
+                button.html( 'Activating...' );
+            } else if ( 'install' === action ) {
+                button.html( 'Installing...' );
+            } else if ( 'update' === action ) {
+                button.html( 'Updating...' );
+            } else {
+                // Invalid action.
+                return;
+            }
+
+            // Run the action.
+            var actionUrl = button.siblings('input[name="pmproAddOnAdminActionUrl"]').val();
+            jQuery.ajax({
+                url: actionUrl,
+                type: 'GET',
+                success: function( response ) {
+                    // Note: We don't currently check if the action was actually successful or not.
+                    // Future dev work can parse the response and show a message to the user
+                    // if the action was not successful.
+                    if ( 'activate' === action ) {
+                        button.html( 'Activated' );
+                    } else if ( 'install' === action ) {
+                        button.html( 'Installed' );
+                    } else if ( 'update' === action ) {
+                        button.html( 'Updated' );
+                    }
+
+                    // Note: Future work can give the user the option to activate after installing
+                    // or updating if the add on was not already active.
+                },
+                error: function( response ) {
+                    if ( 'activate' === action ) {
+                        button.html( 'Could Not Activate.' );
+                    } else if ( 'install' === action ) {
+                        button.html( 'Cound Not Install.' );
+                    } else if ( 'update' === action ) {
+                        button.html( 'Could Not Update.' );
+                    }
+                }
+            });
+            
+        }
+    });
+});
