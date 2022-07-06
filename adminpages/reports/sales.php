@@ -218,7 +218,9 @@ function pmpro_report_sales_page()
 	$sqlQuery .= " GROUP BY date ORDER by date";
 
 	$dates = $wpdb->get_results($sqlQuery);
-		
+
+	set_transient( 'pmpro_sales_data', $dates, DAY_IN_SECONDS );
+	
 	//fill in blanks in dates
 	$cols = array();
 	$total_in_period = 0;
@@ -301,12 +303,18 @@ function pmpro_report_sales_page()
 	if ( 0 !== $units_in_period ) {
 		$average = $total_in_period / $units_in_period; // Not including this unit.
 	}
+
+	// Build CSV export link.
+	$csv_export_link = admin_url( 'admin-ajax.php' ) . '?action=sales_report_csv';
+	if ( $l ) {
+		$csv_export_link = add_query_arg( 'level', $l, $csv_export_link );
+	}
 	?>
 	<form id="posts-filter" method="get" action="">
-	<h1>
+	<h1 class="wp-heading-inline">
 		<?php _e('Sales and Revenue', 'paid-memberships-pro' );?>
 	</h1>
-
+	<a target="_blank" href="<?php echo esc_url( $csv_export_link ); ?>" class="page-title-action"><?php esc_html_e( 'Export to CSV', 'paid-memberships-pro' ); ?></a>
 	<div class="tablenav top">
 		<?php _e('Show', 'paid-memberships-pro' )?>
 		<select id="period" name="period">

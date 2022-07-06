@@ -93,11 +93,21 @@ function pmpro_report_login_page()
 	} else {
 		$l = "";
 	}
+
+	// Build CSV export link.
+	$csv_export_link = admin_url( 'admin-ajax.php' ) . '?action=login_report_csv';
+	if ( ! empty( $s ) ) {
+		$csv_export_link = add_query_arg( 's', $s, $csv_export_link );
+	}
+	if ( ! empty( $l ) ) {
+		$csv_export_link = add_query_arg( 'l', $l, $csv_export_link );
+	}
 ?>
 	<form id="posts-filter" method="get" action="">	
 	<h1>
 		<?php _e('Visits, Views, and Logins Report', 'paid-memberships-pro');?>
 	</h1>
+	<a target="_blank" href="<?php echo esc_url( $csv_export_link ); ?>" class="page-title-action"><?php esc_html_e( 'Export to CSV', 'paid-memberships-pro' ); ?></a>		
 	<p class="search-box">
 		<label class="hidden" for="post-search-input"><?php echo esc_html_x( 'Search', 'Search form label', 'paid-memberships-pro')?> <?php if(empty($l)) esc_html_e( 'Users', 'paid-memberships-pro' ); else esc_html_e( 'Members', 'paid-memberships-pro' );?>:</label>
 		<input type="hidden" name="page" value="pmpro-reports" />		
