@@ -235,29 +235,36 @@
 							</div> <!-- end status -->
 							<div class="action-button">
 								<?php
-									$action_button = array();
+									$action_button = array(
+										'url'   => '#',
+										'label' => '',
+										'style' => 'button',
+										'onclick' => '',
+									);
+
 									if ( ! empty( $addon['needs_update'] ) ) {
 										$action_button['label'] = __( 'Update Now', 'paid-memberships-pro' );
 										if ( empty( $addon['access'] ) ) {
 											// Can't update it. Popup.
-											$action_button['url'] = "javascript:upgradePopup( '" . $addon['ShortName'] . "', '" . ucwords( $addon['License' ] ) . "' );";
-											$action_button['style'] = 'button button-primary';
+											$action_button['onclick'] = "upgradePopup( '" . $addon['ShortName'] . "', '" . ucwords( $addon['License' ] ) . "' );";
 										} else {
-											$action_button['url'] = self_admin_url(
-													add_query_arg( array(
-														'plugin_status' => 'upgrade',
-													),
-													'plugins.php'
-												)
+											$action_button['url'] = wp_nonce_url(
+													self_admin_url(
+														add_query_arg( array(
+															'action' => 'upgrade-plugin',
+															'plugin' => $plugin_file,
+														),
+														'update.php'
+													)
+												),
+												'upgrade-plugin_' . $plugin_file
 											);
-											$action_button['style'] = 'button button-primary';
 										}
 									} elseif ( $addon['status'] === 'uninstalled' ) {
 										$action_button['label'] = __( 'Install', 'paid-memberships-pro' );
 										if ( empty( $addon['access'] ) ) {
 											// Can't install it. Popup.
-											$action_button['url'] = "javascript:upgradePopup( '" . $addon['ShortName'] . "', '" . ucwords( $addon['License' ] ) . "' );";
-											$action_button['style'] = 'button button-primary';
+											$action_button['onclick'] = "upgradePopup( '" . $addon['ShortName'] . "', '" . ucwords( $addon['License' ] ) . "' );";
 										} else {
 											$action_button['url'] = wp_nonce_url(
 												self_admin_url(
@@ -270,7 +277,6 @@
 												),
 												'install-plugin_' . $addon['Slug']
 											);
-											$action_button['style'] = 'button';
 										}
 									} elseif ( $addon['status'] === 'inactive' ) {
 										$action_button['label'] = __( 'Activate', 'paid-memberships-pro' );
@@ -285,20 +291,18 @@
 											),
 											'activate-plugin_' . $plugin_file
 										);
-										$action_button['style'] = 'button';
 									} elseif ( $addon['status'] === 'active' ) {
 										$actions = apply_filters( 'plugin_action_links_' . $plugin_file, array(), $plugin_file, $addon, $addon['status'] );
 										if ( ! empty( $actions ) ) {
 											$action_button = str_replace( '<a ', '<a class="button" ', $actions[0] );
 										} else {
 											$action_button['label'] = __( 'Active', 'paid-memberships-pro' );
-											$action_button['url'] = '#';
 											$action_button['style'] = 'button disabled';
 										}
 									}
 
 									if ( is_array( $action_button ) ) { ?>
-										<a href="<?php echo esc_url( $action_button['url'] ); ?>" class="<?php echo esc_attr( $action_button['style'] ); ?>"><?php echo esc_html( $action_button['label'] ); ?></a>
+										<a href="<?php echo esc_url( $action_button['url'] ); ?>" class="<?php echo esc_attr( $action_button['style'] ); ?>" onclick="<?php echo esc_attr( $action_button['onclick'] ); ?>"><?php echo esc_html( $action_button['label'] ); ?></a>
 									<?php } else {
 										echo $action_button;
 									}
