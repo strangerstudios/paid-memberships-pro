@@ -4,9 +4,51 @@ if ( ! function_exists( "current_user_can" ) || ( ! current_user_can( "manage_op
 	die( __( "You do not have permissions to perform this action.", 'paid-memberships-pro' ) );
 }
 
-$sales_data = get_transient( 'pmpro_sales_data' );
+//get values from form
+if(isset($_REQUEST['type']))
+	$type = sanitize_text_field($_REQUEST['type']);
+else
+	$type = "revenue";
+
+if($type == "sales")
+	$type_function = "COUNT";
+else
+	$type_function = "SUM";
+
+if(isset($_REQUEST['period']))
+	$period = sanitize_text_field($_REQUEST['period']);
+else
+	$period = "daily";
+
+if(isset($_REQUEST['month']))
+	$month = intval($_REQUEST['month']);
+else
+	$month = date_i18n("n", current_time('timestamp'));
+
+$thisyear = date_i18n("Y", current_time('timestamp'));
+if(isset($_REQUEST['year']))
+	$year = intval($_REQUEST['year']);
+else
+	$year = $thisyear;
+
+if(isset($_REQUEST['level']))
+	$l = intval($_REQUEST['level']);
+else
+	$l = "";
+
+if ( isset( $_REQUEST[ 'discount_code' ] ) ) {
+	$discount_code = intval( $_REQUEST[ 'discount_code' ] );
+} else {
+	$discount_code = '';
+}
+
+// Same param hash as found in reports/sales.php.
+$param_array = array( $period, $type, $month, $year, $l, $discount_code );
+$param_hash = md5( implode( ' ', $param_array ) . PMPRO_VERSION );
+$sales_data = get_transient( 'pmpro_sales_data_' . $param_hash );
 
 if ( empty( $sales_data ) ) {
+	die( __('Error finding report data. Make sure transients are working.', 'paid-memberships-pro' ) );
 }
 
 define('PMPRO_BENCHMARK', true);

@@ -218,11 +218,10 @@ function pmpro_report_sales_page()
 	$sqlQuery .= " GROUP BY date ORDER by date";
 
 	$dates = $wpdb->get_results($sqlQuery);
-
-	set_transient( 'pmpro_sales_data', $dates, DAY_IN_SECONDS );
 	
 	//fill in blanks in dates
 	$cols = array();
+	$newdates = array();
 	$total_in_period = 0;
 	$units_in_period = 0; // Used for averages.
 	
@@ -234,6 +233,7 @@ function pmpro_report_sales_page()
 		for($i = 1; $i <= $lastday; $i++)
 		{
 			$cols[$i] = array(0, 0);
+			$newdates[$i-1] = (object)array('date'=>$i, 'value'=>'', 'renewals'=>'');
 			if ( ! $currently_in_period || $i < $day_of_month ) {
 				$units_in_period++;
 			}
@@ -242,6 +242,7 @@ function pmpro_report_sales_page()
 			{
 				if($date->date == $i) {
 					$cols[$i] = array( $date->value, $date->renewals );
+					$newdates[$i-1] = $date;
 					if ( ! $currently_in_period || $i < $day_of_month ) {
 						$total_in_period += $date->value;
 					}
@@ -255,6 +256,7 @@ function pmpro_report_sales_page()
 		for($i = 1; $i < 13; $i++)
 		{
 			$cols[$i] = array(0, 0);
+			$newdates[$i-1] = (object)array('date'=>$i, 'value'=>'', 'renewals'=>'');
 			if ( ! $currently_in_period || $i < $month_of_year ) {
 				$units_in_period++;
 			}
@@ -263,6 +265,7 @@ function pmpro_report_sales_page()
 			{
 				if($date->date == $i) {
 					$cols[$i] = array( $date->value, $date->renewals );
+					$newdates[$i-1] = $date;
 					if ( ! $currently_in_period || $i < $month_of_year ) {
 						$total_in_period += $date->value;
 					}
@@ -284,6 +287,8 @@ function pmpro_report_sales_page()
 		$current_year = intval( date( 'Y' ) );
 		for($i = $min; $i <= $max; $i++)
 		{
+			$cols[$i] = array(0, 0);
+			$newdates[$i-1] = (object)array('date'=>$i, 'value'=>'', 'renewals'=>'');
 			if ( $i < $current_year ) {
 				$units_in_period++;
 			}
@@ -291,6 +296,7 @@ function pmpro_report_sales_page()
 			{
 				if($date->date == $i) {
 					$cols[$i] = array( $date->value, $date->renewals );
+					$newdates[$i-1] = $date;
 					if ( $i < $current_year ) {
 						$total_in_period += $date->value;
 					}
@@ -303,12 +309,23 @@ function pmpro_report_sales_page()
 	if ( 0 !== $units_in_period ) {
 		$average = $total_in_period / $units_in_period; // Not including this unit.
 	}
+	
+	// Save a transient for each combo of params. Expires in 1 hour.
+	$param_array = array( $period, $type, $month, $year, $l, $discount_code );
+	$param_hash = md5( implode( ' ', $param_array ) . PMPRO_VERSION );
+	set_transient( 'pmpro_sales_data_' . $param_hash, $newdates, HOUR_IN_SECONDS );
 
 	// Build CSV export link.
-	$csv_export_link = admin_url( 'admin-ajax.php' ) . '?action=sales_report_csv';
-	if ( $l ) {
-		$csv_export_link = add_query_arg( 'level', $l, $csv_export_link );
-	}
+	$args = array(
+		'action' => 'sales_report_csv',
+		'period' => $period,
+		'type' => $type,
+		'year' => $year,
+		'month' => $month,
+		'level' => $l,
+		'discount_code' => $discount_code
+	);
+	$csv_export_link = add_query_arg( $args, admin_url( 'admin-ajax.php' ) );
 	?>
 	<form id="posts-filter" method="get" action="">
 	<h1 class="wp-heading-inline">
