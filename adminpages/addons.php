@@ -71,9 +71,22 @@
 		</div>
 		<div id="pmpro-admin-add-ons-list">
 			<div class="list">
-				<?php foreach ( $all_visible_addons as $addon ) {
+				<?php
+				$installed_plugins = array_keys( get_plugins() );
+				foreach ( $all_visible_addons as $addon ) {
 					$plugin_file = $addon['Slug'] . '/' . $addon['Slug'] . '.php';
 					$plugin_file_abs = ABSPATH . 'wp-content/plugins/' . $plugin_file;
+
+					// Check in case the plugin is installed but has a different file name.
+					if ( ! file_exists( $plugin_file_abs ) ) {
+						foreach ( $installed_plugins as $installed_plugin ) {
+							if ( strpos( $installed_plugin, $addon['Slug'] . '/' ) !== false ) {
+								$plugin_file = $installed_plugin;
+								$plugin_file_abs = ABSPATH . 'wp-content/plugins/' . $plugin_file;
+								break;
+							}
+						}
+					}
 
 					// Make sure plugin value is set.
 					if ( empty( $addon['plugin'] ) ) {
