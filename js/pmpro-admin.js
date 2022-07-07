@@ -768,9 +768,21 @@ jQuery( document ).ready( function() {
                 url: actionUrl,
                 type: 'GET',
                 success: function( response ) {
-                    // Note: We don't currently check if the action was actually successful or not.
-                    // Future dev work can parse the response and show a message to the user
-                    // if the action was not successful.
+                    // Create an element that we can use jQuery to parse.
+                    var responseElement = jQuery( '<div></div>' ).html( response );
+
+                    // Check for errors.
+                    if ( 'activate' === action && responseElement.find('#message').hasClass('error') ) {
+                        button.html( 'Could not activate.' );
+                        return;
+                    } else if ( 'install' === action && 0 === responseElement.find('.button-primary').length ) {
+                        button.html( 'Could not install.' );
+                        return;
+                    } else if ( 'update' === action ) {
+                        // There is not a good way to check if an update worked. Assume that it did.
+                    }
+                                        
+                    // Show success message.
                     if ( 'activate' === action ) {
                         button.html( 'Activated' );
                     } else if ( 'install' === action ) {
@@ -779,8 +791,24 @@ jQuery( document ).ready( function() {
                         button.html( 'Updated' );
                     }
 
-                    // Note: Future work can give the user the option to activate after installing
-                    // or updating if the add on was not already active.
+                    // If user just installed, give them the option to activate.
+                    // TODO: Also give option to activate after update, but this is harder.
+                    if ( 'install' === action ) {
+                        var primaryButtons = responseElement.find('.button-primary');
+                        if ( primaryButtons.length > 0 ) {
+                            var activateButton = primaryButtons[0];
+                            var activateButtonHref = activateButton.getAttribute('href');
+                            if ( activateButtonHref ) {
+                                // Wait 1 second before showing the activate button.
+                                setTimeout( function() {
+                                    button.siblings('input[name="pmproAddOnAdminAction"]').val('activate');
+                                    button.siblings('input[name="pmproAddOnAdminActionUrl"]').val(activateButtonHref);
+                                    button.html( 'Activate' );
+                                    button.removeClass( 'disabled' );
+                                }, 1000 );
+                            }
+                        }
+                    }
                 },
                 error: function( response ) {
                     if ( 'activate' === action ) {
