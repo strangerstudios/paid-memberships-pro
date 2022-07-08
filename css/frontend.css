@@ -112,6 +112,7 @@ fieldset[disabled] .pmpro_btn {
     cursor: pointer;
     font-size: 12px;
     user-select: none;
+    display: inline;
 }
 
 input[type="button"]#discount_code_button,
