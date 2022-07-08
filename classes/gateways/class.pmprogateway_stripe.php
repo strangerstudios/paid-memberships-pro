@@ -2338,22 +2338,28 @@ class PMProGateway_stripe extends PMProGateway {
 					$failed_webhooks = array();
 					$missing_webhooks = array();
 					$working_webhooks = array();
-
+					// For sites that tracked "last webhook recieved" before we started tracking webhook events individually,
+					// we want to ignore events that were sent by Stripe before site was updated to start tracking individual events.
+					$legacy_last_webhook_recieved_timestamp = get_option( 'pmpro_stripe_last_webhook_received_' . $environment );
 					foreach ( $required_webhook_events as $required_webhook_event ) {
 						$event_data = array( 'name' => $required_webhook_event );
 
 						$last_received = get_option( 'pmpro_stripe_webhook_last_received_' . $environment . '_' . $required_webhook_event );
 						$event_data['last_received'] = empty( $last_received ) ? esc_html__( 'Never Received', 'paid-memberships-pro' ) : date_i18n( get_option('date_format') . ' ' . get_option('time_format'), $last_received );
 
-						$recently_sent = Stripe\Event::all(
-							array(
-								'limit' => 1,
-								'created' => array(
-									'lt' => time() - 60, // Ignore events created in the last 60 seconds in case we haven't finished processing them yet.
-								),
-								'type' => $required_webhook_event,
-							)
+						$event_query_arr = array(
+							'limit' => 1,
+							'created' => array(
+								'lt' => time() - 60, // Ignore events created in the last 60 seconds in case we haven't finished processing them yet.
+							),
+							'type' => $required_webhook_event,
 						);
+						if ( ! empty( $legacy_last_webhook_recieved_timestamp ) ) {
+							$event_query_arr['created']['gt'] = strtotime( $legacy_last_webhook_recieved_timestamp );
+						}
+
+
+						$recently_sent = Stripe\Event::all( $event_query_arr );
 						if ( ! empty( $recently_sent->data[0] ) ) {
 							if ( $last_received >= $recently_sent->data[0]->created ) {
 								$event_data['status'] =  '<span style="color: green;">' . esc_html__( 'Working', 'paid-memberships-pro' ) . '</span>';
@@ -4158,81 +4164,6 @@ class PMProGateway_stripe extends PMProGateway {
 	}
 
 	/**
-	 * Determine whether the webhook is working by checking for Stripe orders with invalid transaction IDs.
-	 *
-	 * @deprecated 2.7.0. Only deprecated for public use, will be changed to private non-static in a future version.
-	 *
-	 * @param string|null $gateway_environment to check webhooks for. Defaults to set gateway environment.
-	 * @return bool Whether the webhook is working.
-	 */
-	public static function webhook_is_working( $gateway_environment = null ) {
-		pmpro_method_should_be_private( '2.7.0' );
-		global $wpdb;
-
-		if ( empty( $gateway_environment ) ) {
-			$gateway_environment = pmpro_getOption( 'pmpro_gateway_environment' );
-		}
-
-		$last_webhook = get_option( 'pmpro_stripe_last_webhook_received_' . $gateway_environment );
-
-		if ( empty( $last_webhook ) ) {
-			// Probably never got a webhook event.
-			$last_webhook_safe = date( 'Y-m-d H:i:s', strtotime( '-5 years' ) );
-		} else {
-			// In case recurring order made after webhook event received.
-			$last_webhook_safe  = date( 'Y-m-d H:i:s', strtotime( $last_webhook . ' +5 minutes' ) );
-		}
-
-		$hour_before_now = date( 'Y-m-d H:i:s', strtotime( '-1 hour' ) );
-
-		$num_problem_orders = $wpdb->get_var(
-			$wpdb->prepare(
-				"
-					SELECT COUNT(*)
-					FROM `{$wpdb->pmpro_membership_orders}`
-					WHERE
-						`gateway` = 'stripe'
-						AND `gateway_environment` = %s
-						AND `subscription_transaction_id` <> '' 
-						AND `subscription_transaction_id` IS NOT NULL
-						AND `timestamp` > %s
-						AND `timestamp` < %s
-				",
-				$gateway_environment,
-				$last_webhook_safe,
-				$hour_before_now
-			)
-		);
-
-		return ( empty( $num_problem_orders ) );
-	}
-
-	/**
-	 * Get the date the last webhook was processed.
-	 * @param environment The gateway environment (live or sandbox) to check for.
-	 * @returns HTML with the date of the last webhook or an error message.
-	 * @since 2.6
-	 * @deprecated 2.7.0. Only deprecated for public use, will be changed to private non-static in a future version.
-	 */
-	public static function get_last_webhook_date( $environment = 'live' ) {
-		pmpro_method_should_be_private( '2.7.0' );
-		$last_webhook = get_option( 'pmpro_stripe_last_webhook_received_' . $environment );
-		if ( ! empty( $last_webhook ) ) {
-			echo '<p>' . esc_html__( 'Last webhook received at', 'paid-memberships-pro' ) . ': ' . esc_html( $last_webhook ) . ' GMT.</p>';
-		} else {
-			echo '<p>' . esc_html__( 'No webhooks have been received.', 'paid-memberships-pro' ) . '</p>';
-		}
-		if ( ! self::webhook_is_working( $environment ) ) {
-			echo '<div class="notice error inline"><p>';
-			echo esc_html__( 'Your webhook may not be working correctly.', 'paid-memberships-pro' );
-			echo ' <a target="_blank" href="https://www.paidmembershipspro.com/gateway/stripe/?utm_source=plugin&utm_medium=pmpro-paymentsettings&utm_campaign=gateways&utm_content=stripe-webhook#tab-gateway-setup">';
-			echo esc_html__( 'Click here for info on setting up your webhook with Stripe.', 'paid-memberships-pro' );
-			echo '</a>';
-			echo '</p></div>';
-		}
-	}
-
-	/**
 	 * @deprecated 2.7.0. Only deprecated for public use, will be changed to private in a future version.
 	 */
 	public function get_payment_intent( &$order ) {
@@ -5114,5 +5045,82 @@ class PMProGateway_stripe extends PMProGateway {
 		}
 
 		return $order->plan;
+	}
+
+	/**
+	 * Determine whether the webhook is working by checking for Stripe orders with invalid transaction IDs.
+	 *
+	 * @deprecated 2.7.0. Only deprecated for public use, will be changed to private non-static in a future version.
+	 * @deprecated TBD. Now fully deprecated.
+	 *
+	 * @param string|null $gateway_environment to check webhooks for. Defaults to set gateway environment.
+	 * @return bool Whether the webhook is working.
+	 */
+	public static function webhook_is_working( $gateway_environment = null ) {
+		_deprecated_function( __FUNCTION__, 'TBD' );
+		global $wpdb;
+
+		if ( empty( $gateway_environment ) ) {
+			$gateway_environment = pmpro_getOption( 'pmpro_gateway_environment' );
+		}
+
+		$last_webhook = get_option( 'pmpro_stripe_last_webhook_received_' . $gateway_environment );
+
+		if ( empty( $last_webhook ) ) {
+			// Probably never got a webhook event.
+			$last_webhook_safe = date( 'Y-m-d H:i:s', strtotime( '-5 years' ) );
+		} else {
+			// In case recurring order made after webhook event received.
+			$last_webhook_safe  = date( 'Y-m-d H:i:s', strtotime( $last_webhook . ' +5 minutes' ) );
+		}
+
+		$hour_before_now = date( 'Y-m-d H:i:s', strtotime( '-1 hour' ) );
+
+		$num_problem_orders = $wpdb->get_var(
+			$wpdb->prepare(
+				"
+					SELECT COUNT(*)
+					FROM `{$wpdb->pmpro_membership_orders}`
+					WHERE
+						`gateway` = 'stripe'
+						AND `gateway_environment` = %s
+						AND `subscription_transaction_id` <> '' 
+						AND `subscription_transaction_id` IS NOT NULL
+						AND `timestamp` > %s
+						AND `timestamp` < %s
+				",
+				$gateway_environment,
+				$last_webhook_safe,
+				$hour_before_now
+			)
+		);
+
+		return ( empty( $num_problem_orders ) );
+	}
+
+	/**
+	 * Get the date the last webhook was processed.
+	 * @param environment The gateway environment (live or sandbox) to check for.
+	 * @returns HTML with the date of the last webhook or an error message.
+	 * @since 2.6
+	 * @deprecated 2.7.0. Only deprecated for public use, will be changed to private non-static in a future version.
+	 * @deprecated TBD. Now fully deprecated.
+	 */
+	public static function get_last_webhook_date( $environment = 'live' ) {
+		_deprecated_function( __FUNCTION__, 'TBD' );
+		$last_webhook = get_option( 'pmpro_stripe_last_webhook_received_' . $environment );
+		if ( ! empty( $last_webhook ) ) {
+			echo '<p>' . esc_html__( 'Last webhook received at', 'paid-memberships-pro' ) . ': ' . esc_html( $last_webhook ) . ' GMT.</p>';
+		} else {
+			echo '<p>' . esc_html__( 'No webhooks have been received.', 'paid-memberships-pro' ) . '</p>';
+		}
+		if ( ! self::webhook_is_working( $environment ) ) {
+			echo '<div class="notice error inline"><p>';
+			echo esc_html__( 'Your webhook may not be working correctly.', 'paid-memberships-pro' );
+			echo ' <a target="_blank" href="https://www.paidmembershipspro.com/gateway/stripe/?utm_source=plugin&utm_medium=pmpro-paymentsettings&utm_campaign=gateways&utm_content=stripe-webhook#tab-gateway-setup">';
+			echo esc_html__( 'Click here for info on setting up your webhook with Stripe.', 'paid-memberships-pro' );
+			echo '</a>';
+			echo '</p></div>';
+		}
 	}
 }
