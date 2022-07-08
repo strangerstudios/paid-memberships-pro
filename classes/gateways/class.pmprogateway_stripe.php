@@ -2329,7 +2329,7 @@ class PMProGateway_stripe extends PMProGateway {
 				<?php
 				if ( $gateway_environment != $environment ) {
 					esc_html_e( 'The gateway environment has been changed. Please save this page to check webhooks for the selected environment.', 'paid-memberships-pro' );
-				} else {
+				} elseif ( ! empty( self::get_secretkey() ) ) {
 					$required_webhook_events = $this->webhook_events();
 					sort( $required_webhook_events );
 
