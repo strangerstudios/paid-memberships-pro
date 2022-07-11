@@ -4281,14 +4281,14 @@ function pmpro_maybe_send_wp_new_user_notification( $user_id, $level_id = null )
 }
 
 /**
- * Replace dashes and spaces with underscores.
+ * Replace all special characters with underscore, including spaces.
  * 
  * @since TBD
  * 
  * @param string $field_name The raw field name to be formatted.
  */
 function pmpro_format_field_name( $field_name ) {
-	$formatted_name = preg_replace( '/[\s-]+/', '_', $field_name );
+	$formatted_name = preg_replace( '/[^A-Za-z0-9\-]+/', '_', $field_name );
 	
 	/**
 	 * Filter the formatted/output field names.
