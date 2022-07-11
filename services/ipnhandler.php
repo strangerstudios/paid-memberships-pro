@@ -224,7 +224,7 @@ if ( $txn_type == "recurring_payment" ) {
 	pmpro_ipnExit();
 }
 
-if ( $txn_type == "recurring_payment_skipped" ) {
+if ( $txn_type == 'recurring_payment_skipped' || $txn_type == 'subscr_failed' ) {
 	$last_subscription_order = new MemberOrder();
 	if ( $last_subscription_order->getLastMemberOrderBySubscriptionTransactionID( $subscr_id ) ) {
 		// the payment failed
