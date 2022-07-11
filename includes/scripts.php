@@ -135,6 +135,8 @@ function pmpro_admin_enqueue_scripts() {
         'all_level_values_and_labels' => $all_level_values_and_labels,
         'user_fields_blank_group' => $empty_field_group_html,
         'user_fields_blank_field' => $empty_field_html,
+        // We want the core WP translation so we can check for it in JS.
+        'plugin_updated_successfully_text' => __( 'Plugin updated successfully.' ),
     ));
     wp_enqueue_script( 'pmpro_admin' );
 

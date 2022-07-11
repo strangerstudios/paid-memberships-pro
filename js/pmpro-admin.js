@@ -781,8 +781,9 @@ jQuery( document ).ready( function() {
                     } else if ( 'install' === action && 0 === responseElement.find('.button-primary').length ) {
                         button.html( 'Could not install.' );
                         return;
-                    } else if ( 'update' === action ) {
-                        // There is not a good way to check if an update worked. Assume that it did.
+                    } else if ( 'update' === action && -1 === responseElement.html().indexOf( '<p>' + pmpro.plugin_updated_successfully_text ) ) {
+                        button.html( 'Could not update.' );
+                        return;
                     }
 
                     // Add check mark.
