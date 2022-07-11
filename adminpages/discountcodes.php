@@ -833,7 +833,7 @@
 										'id'	 => sprintf(
 											// translators: %s is the Order ID.
 											__( 'ID: %s', 'paid-memberships-pro' ),
-											esc_attr( $code->id ),
+											esc_attr( $code->id )
 										),
 										'edit'   => sprintf(
 											'<a title="%1$s" href="%2$s">%3$s</a>',
