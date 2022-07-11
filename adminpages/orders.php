@@ -541,8 +541,10 @@ if ( function_exists( 'pmpro_add_email_order_modal' ) ) {
 					<?php
 						if ( in_array( 'user_id', $read_only_fields ) && $order_id > 0 ) {
 							echo esc_html( $order->user_id );
-						} else { ?>
-							<input id="user_id" name="user_id" type="text" value="<?php echo esc_attr( $order->user_id ); ?>" size="10" />
+						} else { 
+							$user_id = ! empty( $_REQUEST['user'] ) ? intval( $_REQUEST['user'] ) : $order->user_id;
+							?>
+							<input id="user_id" name="user_id" type="text" value="<?php echo esc_attr( $user_id ); ?>" size="10" />
 						<?php
 						}
 					?>
