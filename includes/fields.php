@@ -1470,7 +1470,7 @@ function pmpro_get_user_fields_settings() {
             'profile' => 'yes',
             'description' => '',
             'levels' => array(),
-			'fields' => array(),
+            'fields' => array(),
         )
     );
     
