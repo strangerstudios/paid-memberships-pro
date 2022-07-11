@@ -738,7 +738,7 @@ jQuery( document ).ready( function() {
         if ( button.hasClass('disabled') ) {
             return;
         }
-        button.addClass( 'disabled' );
+        button.addClass( 'disabled' );        
 
         // Pull the action that we are performing on this button.
         var action = button.siblings('input[name="pmproAddOnAdminAction"]').val();
@@ -750,7 +750,10 @@ jQuery( document ).ready( function() {
             jQuery('.pmpro-popup-overlay').show();
             button.removeClass( 'disabled' );
         } else {
-            // Update the button text.
+            // Remove checkmark if there.
+            button.removeClass( 'checkmarked' );
+            
+            // Update the button text.            
             if ( 'activate' === action ) {
                 button.html( 'Activating...' );
             } else if ( 'install' === action ) {
@@ -781,14 +784,17 @@ jQuery( document ).ready( function() {
                     } else if ( 'update' === action ) {
                         // There is not a good way to check if an update worked. Assume that it did.
                     }
+
+                    // Add check mark.
+                    button.addClass( 'checkmarked' );
                                         
                     // Show success message.
                     if ( 'activate' === action ) {
-                        button.html( 'Activated' );
+                        button.html( 'Activated' );                        
                     } else if ( 'install' === action ) {
-                        button.html( 'Installed' );
+                        button.html( 'Installed' );                        
                     } else if ( 'update' === action ) {
-                        button.html( 'Updated' );
+                        button.html( 'Updated' );                        
                     }
 
                     // If user just installed, give them the option to activate.

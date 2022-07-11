@@ -1116,6 +1116,12 @@ p.pmpro_meta_notice {
 #pmpro-admin-add-ons #pmpro-admin-add-ons-list .list .action-button .button:focus { }
 #pmpro-admin-add-ons #pmpro-admin-add-ons-list .list .action-button .button:focus { }
 
+/* Updated icon (check mark). */
+#pmpro-admin-add-ons #pmpro-admin-add-ons-list .list .action-button .button.checkmarked:before {
+	color: #68de7c;
+	content: "✓ ";
+}
+
 /* license */
 .memberships_page_pmpro-license h2 {
 	text-align: left;
