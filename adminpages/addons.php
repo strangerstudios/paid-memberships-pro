@@ -71,9 +71,22 @@
 		</div>
 		<div id="pmpro-admin-add-ons-list">
 			<div class="list">
-				<?php foreach ( $all_visible_addons as $addon ) {
+				<?php
+				$installed_plugins = array_keys( get_plugins() );
+				foreach ( $all_visible_addons as $addon ) {
 					$plugin_file = $addon['Slug'] . '/' . $addon['Slug'] . '.php';
 					$plugin_file_abs = ABSPATH . 'wp-content/plugins/' . $plugin_file;
+
+					// Check in case the plugin is installed but has a different file name.
+					if ( ! file_exists( $plugin_file_abs ) ) {
+						foreach ( $installed_plugins as $installed_plugin ) {
+							if ( strpos( $installed_plugin, $addon['Slug'] . '/' ) !== false ) {
+								$plugin_file = $installed_plugin;
+								$plugin_file_abs = ABSPATH . 'wp-content/plugins/' . $plugin_file;
+								break;
+							}
+						}
+					}
 
 					// Make sure plugin value is set.
 					if ( empty( $addon['plugin'] ) ) {
@@ -235,31 +248,43 @@
 							</div> <!-- end status -->
 							<div class="action-button">
 								<?php
-									$action_button = array();
+									$action_button = array(
+										'label' => '',
+										'style' => 'button pmproAddOnActionButton',
+										'hidden_fields' => array(),
+									);
+
 									if ( ! empty( $addon['needs_update'] ) ) {
 										$action_button['label'] = __( 'Update Now', 'paid-memberships-pro' );
 										if ( empty( $addon['access'] ) ) {
 											// Can't update it. Popup.
-											$action_button['url'] = "javascript:upgradePopup( '" . $addon['ShortName'] . "', '" . ucwords( $addon['License' ] ) . "' );";
-											$action_button['style'] = 'button button-primary';
+											$action_button['hidden_fields']['pmproAddOnAdminAction'] = 'license';
+											$action_button['hidden_fields']['pmproAddOnAdminName'] = $addon['ShortName'];
+											$action_button['hidden_fields']['pmproAddOnAdminLicense'] = ucwords( $addon['License' ] );
 										} else {
-											$action_button['url'] = self_admin_url(
-													add_query_arg( array(
-														'plugin_status' => 'upgrade',
-													),
-													'plugins.php'
-												)
+											$action_button['hidden_fields']['pmproAddOnAdminAction'] = 'update';
+											$action_button['hidden_fields']['pmproAddOnAdminActionUrl'] = wp_nonce_url(
+													self_admin_url(
+														add_query_arg( array(
+															'action' => 'upgrade-plugin',
+															'plugin' => $plugin_file,
+														),
+														'update.php'
+													)
+												),
+												'upgrade-plugin_' . $plugin_file
 											);
-											$action_button['style'] = 'button button-primary';
 										}
 									} elseif ( $addon['status'] === 'uninstalled' ) {
 										$action_button['label'] = __( 'Install', 'paid-memberships-pro' );
 										if ( empty( $addon['access'] ) ) {
-											// Can't install it. Popup.
-											$action_button['url'] = "javascript:upgradePopup( '" . $addon['ShortName'] . "', '" . ucwords( $addon['License' ] ) . "' );";
-											$action_button['style'] = 'button button-primary';
+											// Can't update it. Popup.
+											$action_button['hidden_fields']['pmproAddOnAdminAction'] = 'license';
+											$action_button['hidden_fields']['pmproAddOnAdminName'] = $addon['ShortName'];
+											$action_button['hidden_fields']['pmproAddOnAdminLicense'] = ucwords( $addon['License' ] );
 										} else {
-											$action_button['url'] = wp_nonce_url(
+											$action_button['hidden_fields']['pmproAddOnAdminAction'] = 'install';
+											$action_button['hidden_fields']['pmproAddOnAdminActionUrl'] = wp_nonce_url(
 												self_admin_url(
 													add_query_arg( array(
 														'action' => 'install-plugin',
@@ -270,11 +295,11 @@
 												),
 												'install-plugin_' . $addon['Slug']
 											);
-											$action_button['style'] = 'button';
 										}
 									} elseif ( $addon['status'] === 'inactive' ) {
 										$action_button['label'] = __( 'Activate', 'paid-memberships-pro' );
-										$action_button['url'] = wp_nonce_url(
+										$action_button['hidden_fields']['pmproAddOnAdminAction'] = 'activate';
+										$action_button['hidden_fields']['pmproAddOnAdminActionUrl'] = wp_nonce_url(
 											self_admin_url(
 												add_query_arg( array(
 													'action' => 'activate',
@@ -285,21 +310,28 @@
 											),
 											'activate-plugin_' . $plugin_file
 										);
-										$action_button['style'] = 'button';
 									} elseif ( $addon['status'] === 'active' ) {
 										$actions = apply_filters( 'plugin_action_links_' . $plugin_file, array(), $plugin_file, $addon, $addon['status'] );
 										if ( ! empty( $actions ) ) {
 											$action_button = str_replace( '<a ', '<a class="button" ', $actions[0] );
 										} else {
 											$action_button['label'] = __( 'Active', 'paid-memberships-pro' );
-											$action_button['url'] = '#';
-											$action_button['style'] = 'button disabled';
+											$action_button['style'] .= ' disabled';
 										}
 									}
 
-									if ( is_array( $action_button ) ) { ?>
-										<a href="<?php echo esc_url( $action_button['url'] ); ?>" class="<?php echo esc_attr( $action_button['style'] ); ?>"><?php echo esc_html( $action_button['label'] ); ?></a>
-									<?php } else {
+									if ( is_array( $action_button ) ) {
+										?>
+										<a class="<?php echo esc_attr( $action_button['style'] ); ?>" ><?php echo esc_html( $action_button['label'] ); ?></a>
+										<?php
+										if ( ! empty( $action_button['hidden_fields'] ) ) {
+											foreach ( $action_button['hidden_fields'] as $name => $value ) {
+												?>
+												<input type="hidden" name="<?php echo esc_attr( $name ); ?>" value="<?php echo esc_attr( $value ); ?>" />
+												<?php
+											}
+										}
+									} else {
 										echo $action_button;
 									}
 								?>
@@ -375,19 +407,6 @@
 			});
 		</script>
 	</div> <!-- end pmpro-admin-add-ons -->
-	<script>
-		jQuery( document ).ready( function() {
-			//jQuery('.pmpro-popup-overlay').show();
-			jQuery('.pmproPopupCloseButton').click(function() {
-				jQuery('.pmpro-popup-overlay').hide();
-			});
-		} );
-		function upgradePopup( name, license) {
-			document.getElementById( 'addon-name' ).innerHTML = name;
-			document.getElementById( 'addon-license' ).innerHTML = license;
-			jQuery('.pmpro-popup-overlay').show();
-		}
-	</script>
 	<div id="pmpro-popup" class="pmpro-popup-overlay">
 		<span class="pmpro-popup-helper"></span>
 		<div class="pmpro-popup-wrap">
