@@ -720,3 +720,114 @@ jQuery(document).ready(function($) {
     }
 
 });
+
+// Add Ons Page Code.
+jQuery( document ).ready( function() {
+    // Hide the license banner.
+    jQuery('.pmproPopupCloseButton').click(function( e ) {
+        e.preventDefault();
+        jQuery('.pmpro-popup-overlay').hide();
+    });
+
+    jQuery('#pmpro-admin-add-ons-list .action-button .pmproAddOnActionButton').click(function( e ) {
+        e.preventDefault();
+
+        var button = jQuery(this);
+
+        // Make sure we only run once.
+        if ( button.hasClass('disabled') ) {
+            return;
+        }
+        button.addClass( 'disabled' );        
+
+        // Pull the action that we are performing on this button.
+        var action = button.siblings('input[name="pmproAddOnAdminAction"]').val();
+
+        if ( 'license' === action ) {
+            // Get the add on name and the user's current license type and show banner.
+            document.getElementById( 'addon-name' ).innerHTML = button.siblings('input[name="pmproAddOnAdminName"]').val();
+            document.getElementById( 'addon-license' ).innerHTML = button.siblings('input[name="pmproAddOnAdminLicense"]').val();
+            jQuery('.pmpro-popup-overlay').show();
+            button.removeClass( 'disabled' );
+        } else {
+            // Remove checkmark if there.
+            button.removeClass( 'checkmarked' );
+            
+            // Update the button text.            
+            if ( 'activate' === action ) {
+                button.html( 'Activating...' );
+            } else if ( 'install' === action ) {
+                button.html( 'Installing...' );
+            } else if ( 'update' === action ) {
+                button.html( 'Updating...' );
+            } else {
+                // Invalid action.
+                return;
+            }
+
+            // Run the action.
+            var actionUrl = button.siblings('input[name="pmproAddOnAdminActionUrl"]').val();
+            jQuery.ajax({
+                url: actionUrl,
+                type: 'GET',
+                success: function( response ) {
+                    // Create an element that we can use jQuery to parse.
+                    var responseElement = jQuery( '<div></div>' ).html( response );
+
+                    // Check for errors.
+                    if ( 'activate' === action && responseElement.find('#message').hasClass('error') ) {
+                        button.html( 'Could not activate.' );
+                        return;
+                    } else if ( 'install' === action && 0 === responseElement.find('.button-primary').length ) {
+                        button.html( 'Could not install.' );
+                        return;
+                    } else if ( 'update' === action && -1 === responseElement.html().indexOf( '<p>' + pmpro.plugin_updated_successfully_text ) ) {
+                        button.html( 'Could not update.' );
+                        return;
+                    }
+
+                    // Add check mark.
+                    button.addClass( 'checkmarked' );
+                                        
+                    // Show success message.
+                    if ( 'activate' === action ) {
+                        button.html( 'Activated' );                        
+                    } else if ( 'install' === action ) {
+                        button.html( 'Installed' );                        
+                    } else if ( 'update' === action ) {
+                        button.html( 'Updated' );                        
+                    }
+
+                    // If user just installed, give them the option to activate.
+                    // TODO: Also give option to activate after update, but this is harder.
+                    if ( 'install' === action ) {
+                        var primaryButtons = responseElement.find('.button-primary');
+                        if ( primaryButtons.length > 0 ) {
+                            var activateButton = primaryButtons[0];
+                            var activateButtonHref = activateButton.getAttribute('href');
+                            if ( activateButtonHref ) {
+                                // Wait 1 second before showing the activate button.
+                                setTimeout( function() {
+                                    button.siblings('input[name="pmproAddOnAdminAction"]').val('activate');
+                                    button.siblings('input[name="pmproAddOnAdminActionUrl"]').val(activateButtonHref);
+                                    button.html( 'Activate' );
+                                    button.removeClass( 'disabled' );
+                                }, 1000 );
+                            }
+                        }
+                    }
+                },
+                error: function( response ) {
+                    if ( 'activate' === action ) {
+                        button.html( 'Could Not Activate.' );
+                    } else if ( 'install' === action ) {
+                        button.html( 'Cound Not Install.' );
+                    } else if ( 'update' === action ) {
+                        button.html( 'Could Not Update.' );
+                    }
+                }
+            });
+            
+        }
+    });
+});
