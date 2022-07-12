@@ -21,6 +21,10 @@
 	position: relative;
 	text-transform: uppercase;
 }
+.pmpro-block-element hr {
+	margin-bottom: 16px;
+	margin-top: 16px;
+}
 .pmpro-block-element .components-base-control {
 	margin-bottom: 16px;
 }
@@ -33,11 +37,11 @@
 
 /* Require Membership Block */
 .pmpro-block-require-membership-element {
+	background: rgba(237, 239, 240, 0.8);
 	border-bottom: 5px solid #8d96a0;
 	border-top: 5px solid #8d96a0;
 }
 .pmpro-block-require-membership-element .pmpro-block-title {
-	background: rgba(237, 239, 240, 0.8);
     color: #555d66;
     display: block;
     font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen-Sans, Ubuntu, Cantarell, Helvetica Neue, sans-serif;
@@ -46,23 +50,35 @@
     position: relative;
     text-transform: uppercase;
 }
-.pmpro-block-require-membership-element .components-panel__body {
-	background: rgba(237, 239, 240, 0);
-	border-bottom: 0;
+.pmpro-block-require-membership-element .components-panel__body,
+.pmpro-block-require-membership-element .components-panel__body.is-opened {
+	background: rgba(237, 239, 240, 0.8);
+	border-bottom: none;
 	border-top: none;
-	border-left: 5px solid rgba(237, 239, 240, 0.8);
-	border-bottom: 5px solid rgba(237, 239, 240, 0.8);
-	padding-top: 0;
-	height: 200px;
-	overflow: auto;
+}
+.pmpro-block-require-membership-element .pmpro-block-inspector-scrollable {
+	border: 1px solid #CCC;
+	margin: 0px 16px 16px 16px;
 }
 .pmpro-block-require-membership-element .block-editor-inner-blocks {
-	padding-left: 16px;
-	padding-right: 16px;
+	background-color: #FFF;
+	padding: 16px;
 }
 .pmpro-block-inspector-scrollable {
-	height: 200px;
+	height: 170px;
 	overflow: auto;
+}
+.pmpro-block-inspector-scrollable::-webkit-scrollbar {
+	background-color: #c3c4c7;
+	width: 8px;
+	height: 8px;
+}
+.pmpro-block-inspector-scrollable::-webkit-scrollbar-thumb {
+	background: #2c3338;
+	border-radius: 5px;
+}
+.pmpro-block-inspector-scrollable .components-base-control.components-checkbox-control {
+	margin-bottom: 5px;
 }
 
 /* Checkout Button Block */

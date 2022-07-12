@@ -2,23 +2,589 @@
 	class MemberOrder
 	{	
 		/**
+		 * The Member Order ID
+		 *
+		 * @since 2.9
+		 *
+		 * @var int
+		 */
+		private $id = 0;
+
+		/**
+		 * The Member Order Identifier, also used as invoie number
+		 *
+		 * @since 2.9
+		 *
+		 * @var string
+		 */
+		private $code = '';
+
+		/**
+		 * User ID
+		 *
+		 * @since 2.9
+		 *
+		 * @var int
+		 */
+		private $user_id = 0;
+
+		/**
+		 * Level ID
+		 *
+		 * @since 2.9
+		 *
+		 * @var int
+		 */
+		private $membership_id = 0;
+
+		/**
+		 * Session ID
+		 *
+		 * @since 2.9
+		 *
+		 * @var string
+		 */
+		private $session_id = '';
+
+		/**
+		 * PayPal Token 
+		 *
+		 * @since 2.9
+		 *
+		 * @var string
+		 */
+		private $paypal_token = '';
+
+		/**
+		 * Contain a billing address object
+		 *
+		 * @since 2.9
+		 *
+		 * @var object
+		 */
+		private $billing = '';
+
+		/**
+		 * Subtotal value
+		 *
+		 * @since 2.9
+		 *
+		 * @var float
+		 */
+		private $subtotal = 0.00;
+
+		/**
+		 * Tax Amount
+		 *
+		 * @since 2.9
+		 *
+		 * @var float
+		 */
+		private $tax = 0.00;
+
+		/**
+		 * Discount Code Amount
+		 *
+		 * @since 2.9
+		 *
+		 * @var float
+		 */
+		private $couponamount = 0.00;
+
+		/**
+		 * Certificate ID - Notice of deprecation started in 1.8.10. Should no longer be used.
+		 *
+		 * @since 2.9
+		 *
+		 * @var string
+		 *
+		 * @deprecated 1.8.10
+		 */
+		private $certificate_id = '';
+
+		/**
+		 * Certificate Amount - Notice of deprecation started in 1.8.10. Should no longer be used.
+		 *
+		 * @since 2.9
+		 *
+		 * @var string
+		 *
+		 * @deprecated 1.8.10
+		 */
+		private $certificateamount = '';
+
+		/**
+		 * Total order amount
+		 *
+		 * @since 2.9
+		 *
+		 * @var float
+		 */
+		private $total = 0.00;
+
+		/**
+		 * The gateway name or label used (Stripe, Check etc)
+		 *
+		 * @since 2.9
+		 *
+		 * @var string
+		 */
+		private $payment_type = '';
+
+		/**
+		 * The Card Type used (Visa etc)
+		 *
+		 * @since 2.9
+		 *
+		 * @var string
+		 */
+		private $cardtype = '';
+
+		/**
+		 * Account or Card Number (only shows last 4 digits)
+		 *
+		 * @since 2.9
+		 *
+		 * @var string
+		 */
+		private $accountnumber = '';
+
+		/**
+		 * Card Expiration Month (02)
+		 *
+		 * @since 2.9
+		 *
+		 * @var string
+		 */
+		private $expirationmonth = '';
+
+		/**
+		 * Expiration Year (22)
+		 *
+		 * @since 2.9
+		 *
+		 * @var string
+		 */
+		private $expirationyear = '';
+
+		/**
+		 * The Order Status
+		 *
+		 * @since 2.9
+		 *
+		 * @var string
+		 */
+		private $status = '';
+
+		/**
+		 * The Gateway identifier (stripe, paypalexpress etc)
+		 *
+		 * @since 2.9
+		 *
+		 * @var string
+		 */
+		private $gateway = '';
+
+		/**
+		 * The Gateway Environment (live, sandbox)
+		 *
+		 * @since 2.9
+		 *
+		 * @var string
+		 */
+		private $gateway_environment = '';
+
+		/**
+		 * The payment Transaction ID
+		 *
+		 * @since 2.9
+		 *
+		 * @var string
+		 */
+		private $payment_transaction_id = '';
+
+		/**
+		 * The Subscription Transaction ID
+		 *
+		 * @since 2.9
+		 *
+		 * @var string
+		 */
+		private $subscription_transaction_id = '';
+
+		/**
+		 * The time the order was created (UTC YYYY-MM-DD HH:MM:SS)
+		 *
+		 * @since 2.9
+		 *
+		 * @var string
+		 */
+		private $timestamp = '';
+
+		/**
+		 * The Affiliate ID 
+		 *
+		 * @since 2.9
+		 *
+		 * @var int
+		 */
+		private $affiliate_id = 0;
+
+		/**
+		 * The Affiliate Sub ID
+		 *
+		 * @since 2.9
+		 *
+		 * @var string
+		 */
+		private $affiliate_subid = '';
+
+		/**
+		 * The Order notes
+		 *
+		 * @since 2.9
+		 *
+		 * @var string
+		 */
+		private $notes = '';
+
+		/**
+		 * The Checkout ID - used to track multiple orders during a single checkout
+		 *
+		 * @since 2.9
+		 *
+		 * @var string
+		 */
+		private $checkout_id = '';	
+
+		/**
+		 * Defines an array of optionally used properties
+		 *
+		 * @since 2.9
+		 *
+		 * @var array
+		 */
+		private $other_properties = array();	
+
+
+		/**
 		 * Constructor
 		 */
 		function __construct($id = NULL)
 		{
+
 			//set up the gateway
 			$this->setGateway(pmpro_getOption("gateway"));
 
 			//get data if an id was passed
-			if($id)
-			{
-				if(is_numeric($id))
-					return $this->getMemberOrderByID($id);
-				else
-					return $this->getMemberOrderByCode($id);
+			if ( $id ) {
+				if ( is_numeric( $id ) ) {
+					$morder = $this->getMemberOrderByID( $id );
+				} else {
+					$morder = $this->getMemberOrderByCode( $id );
+				}
+			} else {
+				$morder = $this->getEmptyMemberOrder();	//blank constructor
 			}
-			else
-				return $this->getEmptyMemberOrder();	//blank constructor
+
+			$this->original_status = $this->status;
+
+			return $morder;
+		}
+		
+		/**
+		 * Get Magic Method
+		 *
+		 * @since 2.9
+		 * 
+		 * @param string $property The property we want to get
+		 *
+		 * @return mixed|null
+		 */
+		public function __get( $property ) {
+
+			if ( $property == 'other_properties' ) {
+				return; //We don't want the actual other_properties array to be changed
+			}
+
+			if ( property_exists( $this, $property ) ) {
+				return $this->{$property};
+			}
+
+			if ( isset( $this->other_properties[ $property ] ) ) {
+				return $this->other_properties[ $property ];
+			}
+
+		}
+
+		/**
+		 * Set Magic Method
+		 *
+		 * @since 2.9
+		 * 
+		 * @param string $property The property we want to reference
+		 * @param string $value The value we want to set for $property
+		 *
+		 * @return mixed|null
+		 */
+		public function __set( $property, $value ) {
+
+			if ( $property == 'other_properties' ) {
+				return; //We don't want the actual other_properties array to be changed
+			}
+
+			if ( property_exists( $this, $property ) ) {
+				
+				// Perform validation as needed here.
+				if ( is_int( $this->{$property} ) ) {
+					$value = (int) $value;
+				} elseif ( is_float( $this->{$property} ) ) {
+					$value = (float) $value;
+				}
+				
+				$this->{$property} = $value;
+
+			} else {
+
+				$this->other_properties[ $property ] = $value;
+
+			}
+
+		}
+
+		/**
+		 * Is Set Magic Method
+		 *
+		 * @since 2.9
+		 * 
+		 * @param string $property The property we want to reference
+		 *
+		 * @return bool
+		 */
+		public function __isset( $property ) {
+
+			return property_exists( $this, $property ) || isset( $this->other_properties[ $property ] );
+	
+		}
+		
+		/**
+		 * Get a specific order by ID, code, or an array of arguments
+		 *
+		 * @since 2.9
+		 * 
+		 * @param mixed $args Specify an order ID, code, or array of arguments to find an order for.
+		 *
+		 */
+		public static function get_order( $args = NULL ) {
+
+			// At least one argument is required.
+			if ( empty( $args ) ) {
+				return null;
+			}
+
+			if ( is_numeric( $args ) ) {
+				// If its numeric we assume you're trying to get an ID.
+				$args = array(
+					'id' => $args,
+				);
+
+			} elseif ( is_string( $args ) ) {
+				// If it is a string but not numeric, we assume it's a string and should be a code.
+				$args = array(
+					'code' => $args,
+				);
+			}
+
+			// Invalid arguments.
+			if ( ! is_array( $args ) ) {
+				return null;
+			}
+
+			// Force returning of one order.
+			$args['limit'] = 1;
+
+			// Get the orders using query arguments.
+			$orders = self::get_orders( $args );
+
+			// Check if we found any orders.
+			if ( empty( $orders ) ) {
+				return null;
+			}
+
+			// Get the first order in the array.
+			return reset( $orders );
+
+		}
+
+		/**
+		 * Get orders based on various parameters
+		 *
+		 * @since 2.9
+		 * 
+		 * @param array $args Specify what you'd like to filter the query by
+		 *
+		 */
+		public static function get_orders( array $args = array() ) {
+
+			global $wpdb;
+
+			$sql_query = "SELECT `id` FROM `$wpdb->pmpro_membership_orders`";
+
+			$prepared = array();
+			$where    = array();
+
+			$orderby  = isset( $args['orderby'] ) ? $args['orderby'] : '`timestamp` DESC';
+			$limit    = isset( $args['limit'] ) ? (int) $args['limit'] : 100;
+
+			// Detect unsupported orderby usage (in the future we may support better syntax).
+			if ( $orderby !== preg_replace( '/[^a-zA-Z0-9\s,`]/', ' ', $orderby ) ) {
+				return array();
+			}
+
+			/*
+			 * Now filter the query based on the arguments provided.
+			 *
+			 * isset( $arg ) && null !== $arg is meant to deal with $args['arg'] = null usage
+			 * while still supporting $args['arg'] = ''.
+			 */
+
+			// Filter by ID(s).
+			if ( isset( $args['id'] ) && null !== $args['id'] ) {
+				if ( ! is_array( $args['id'] ) ) {
+					$where[]    = 'id = %d';
+					$prepared[] = $args['id'];
+				} else {
+					$where[]  = 'id IN ( ' . implode( ', ', array_fill( 0, count( $args['id'] ), '%d' ) ) . ' )';
+					$prepared = array_merge( $prepared, $args['id'] );
+				}
+			}
+
+			// Filter by user ID(s).
+			if ( isset( $args['user_id'] ) && null !== $args['user_id'] ) {
+				if ( ! is_array( $args['user_id'] ) ) {
+					$where[]    = 'user_id = %d';
+					$prepared[] = $args['user_id'];
+				} else {
+					$where[]  = 'user_id IN ( ' . implode( ', ', array_fill( 0, count( $args['user_id'] ), '%d' ) ) . ' )';
+					$prepared = array_merge( $prepared, $args['user_id'] );
+				}
+			}
+
+			// Filter by membership level ID(s).
+			if ( isset( $args['membership_level_id'] ) && null !== $args['membership_level_id'] ) {
+				if ( ! is_array( $args['membership_level_id'] ) ) {
+					$where[]    = 'membership_level_id = %d';
+					$prepared[] = $args['membership_level_id'];
+				} else {
+					$where[]  = 'membership_level_id IN ( ' . implode( ', ', array_fill( 0, count( $args['membership_level_id'] ), '%d' ) ) . ' )';
+					$prepared = array_merge( $prepared, $args['membership_level_id'] );
+				}
+			}
+
+			// Filter by status(es).
+			if ( isset( $args['status'] ) && null !== $args['status'] ) {
+				if ( ! is_array( $args['status'] ) ) {
+					$where[]    = 'status = %s';
+					$prepared[] = $args['status'];
+				} else {
+					$where[]  = 'status IN ( ' . implode( ', ', array_fill( 0, count( $args['status'] ), '%s' ) ) . ' )';
+					$prepared = array_merge( $prepared, $args['status'] );
+				}
+			}
+
+			// Filter by subscription transaction ID(s).
+			if ( isset( $args['subscription_transaction_id'] ) && null !== $args['subscription_transaction_id'] ) {
+				if ( ! is_array( $args['subscription_transaction_id'] ) ) {
+					$where[]    = 'subscription_transaction_id = %s';
+					$prepared[] = $args['subscription_transaction_id'];
+				} else {
+					$where[]  = 'subscription_transaction_id IN ( ' . implode( ', ', array_fill( 0, count( $args['subscription_transaction_id'] ), '%s' ) ) . ' )';
+					$prepared = array_merge( $prepared, $args['subscription_transaction_id'] );
+				}
+			}
+
+			// Filter by gateway(s).
+			if ( isset( $args['gateway'] ) && null !== $args['gateway'] ) {
+				if ( ! is_array( $args['gateway'] ) ) {
+					$where[]    = 'gateway = %s';
+					$prepared[] = $args['gateway'];
+				} else {
+					$where[]  = 'gateway IN ( ' . implode( ', ', array_fill( 0, count( $args['gateway'] ), '%s' ) ) . ' )';
+					$prepared = array_merge( $prepared, $args['gateway'] );
+				}
+			}
+
+			// Filter by gateway environment(s).
+			if ( isset( $args['gateway_environment'] ) && null !== $args['gateway_environment'] ) {
+				if ( ! is_array( $args['gateway_environment'] ) ) {
+					$where[]    = 'gateway_environment = %s';
+					$prepared[] = $args['gateway_environment'];
+				} else {
+					$where[]  = 'gateway_environment IN ( ' . implode( ', ', array_fill( 0, count( $args['gateway_environment'] ), '%s' ) ) . ' )';
+					$prepared = array_merge( $prepared, $args['gateway_environment'] );
+				}
+			}
+
+			// Filter by billing amount(s).
+			if ( isset( $args['total'] ) && null !== $args['total'] ) {
+				if ( ! is_array( $args['total'] ) ) {
+					$where[]    = 'total = %f';
+					$prepared[] = $args['total'];
+				} else {
+					$where[]  = 'total IN ( ' . implode( ', ', array_fill( 0, count( $args['total'] ), '%f' ) ) . ' )';
+					$prepared = array_merge( $prepared, $args['total'] );
+				}
+			}
+
+			// Filter by payment transaction ID
+			if ( isset( $args['payment_transaction_id'] ) && null !== $args['payment_transaction_id'] ) {
+				if ( ! is_array( $args['payment_transaction_id'] ) ) {
+					$where[]    = 'payment_transaction_id = %s';
+					$prepared[] = $args['payment_transaction_id'];
+				} else {
+					$where[]  = 'payment_transaction_id IN ( ' . implode( ', ', array_fill( 0, count( $args['payment_transaction_id'] ), '%f' ) ) . ' )';
+					$prepared = array_merge( $prepared, $args['payment_transaction_id'] );
+				}
+			}
+
+			// Maybe filter the data.
+			if ( $where ) {
+				$sql_query .= ' WHERE ' . implode( ' AND ', $where );
+			}
+
+			// Handle the order of data.
+			$sql_query .= ' ORDER BY ' . $orderby;
+
+			// Maybe limit the data.
+			if ( $limit ) {
+				$sql_query .= ' LIMIT %d';
+				$prepared[] = $limit;
+			}
+
+			// Maybe prepare the query.
+			if ( $prepared ) {
+				$sql_query = $wpdb->prepare( $sql_query, $prepared );
+			}
+
+			$member_order_ids = $wpdb->get_col( $sql_query );
+
+			if ( empty( $member_order_ids ) ) {
+				return array();
+			}
+
+			$member_orders = array();
+
+			foreach ( $member_order_ids as $member_order_id ) {
+				$morder = new MemberOrder( $member_order_id );
+
+				// Make sure the subscription object is valid.
+				if ( ! empty( $morder->id ) ) {
+					$member_orders[] = $morder;
+				}
+			}
+
+			return $member_orders;
+
 		}
 
 		/**
@@ -228,6 +794,12 @@
 			
 			// Can't tell if this is a renewal without a user.
 			if ( empty( $this->user_id ) ) {
+				$this->is_renewal = false;
+				return $this->is_renewal;
+			}
+			
+			// Can't tell if this is a renewal without a timestamp.
+			if ( empty( $this->timestamp ) ) {
 				$this->is_renewal = false;
 				return $this->is_renewal;
 			}
@@ -703,13 +1275,11 @@
 			$this->certificateamount = "";
 
 			//calculate total
-			if(!empty($this->total))
+			if ( ! empty( $this->total ) ) {
 				$total = $this->total;
-			elseif ( ! isset( $this->total ) || $this->total === '' ) {
+			} else {
 				$total = (float)$amount + (float)$tax;
 				$this->total = $total;
-			} else {
-				$total = 0;
 			}
 			
 			//these fix some warnings/notices
@@ -754,12 +1324,15 @@
 			if(empty($this->gateway_environment))
 				$this->gateway_environment = pmpro_getOption("gateway_environment");
 			
-			if(empty($this->datetime) && empty($this->timestamp))
-				$this->datetime = date("Y-m-d H:i:s", time());
-			elseif(empty($this->datetime) && !empty($this->timestamp) && is_numeric($this->timestamp))
+			if( empty( $this->datetime ) && empty( $this->timestamp ) ) {
+				$this->timestamp = time();
+				$this->datetime = date("Y-m-d H:i:s", $this->timestamp);				
+			} elseif( empty( $this->datetime ) && ! empty( $this->timestamp ) && is_numeric( $this->timestamp ) ) {
 				$this->datetime = date("Y-m-d H:i:s", $this->timestamp);	//get datetime from timestamp
-			elseif(empty($this->datetime) && !empty($this->timestamp))
+			} elseif( empty( $this->datetime ) && ! empty( $this->timestamp ) ) {
 				$this->datetime = $this->timestamp;		//must have a datetime in it
+				$this->timestamp = strtotime( $this->datetime );	//fixing the timestamp
+			}				
 
 			if(empty($this->notes))
 				$this->notes = "";
@@ -871,6 +1444,24 @@
 				if(empty($this->id))
 					$this->id = $wpdb->insert_id;
 				do_action($after_action, $this);
+
+				//Lets only run this once the update has been run successfully.
+				if ( $this->status !== $this->original_status ) {
+				
+					/**
+					 * Runs when the order status changes
+					 *
+					 * @param $this object The current member order object
+					 * @param $original_status The original status before changing to the new status
+					 * 
+					 * @since 2.9
+					 */
+					do_action( 'pmpro_order_status_' . $this->status, $this, $this->original_status );
+					
+					//Set the original status to the new status
+					$this->original_status = $this->status;
+				}
+
 				return $this->getMemberOrderByID($this->id);
 			}
 			else
@@ -1183,5 +1774,36 @@
 			$this->notes               = __( 'This is a test order used with the PMPro Email Templates addon.', 'paid-memberships-pro' );
 
 			return apply_filters( 'pmpro_test_order_data', $this );
+		}
+		
+		/**
+		 * Does this order have any billing address fields set?
+		 * @since 2.8
+		 * @return bool True if ANY billing address field is non-empty.
+		 *              False if ALL billing address fields are empty.
+		 */
+		function has_billing_address() {
+			// This is sometimes set.
+			if ( ! empty( $this->Address1 ) ) {
+				return true;
+			}
+			
+			// Avoid a warning if no billing object at all.
+			if ( empty( $this->billing ) ) {
+				return false;
+			}
+			
+			// Check billing fields.
+			if ( ! empty( $this->billing->name ) 
+				|| ! empty( $this->billing->street )
+				|| ! empty( $this->billing->city )
+				|| ! empty( $this->billing->state )
+				|| ! empty( $this->billing->country )
+				|| ! empty( $this->billing->zip )
+				|| ! empty( $this->billing->phone ) ) {
+				return true;
+			}
+		
+			return false;
 		}
 	} // End of Class

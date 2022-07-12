@@ -81,6 +81,10 @@ class PMPro_Site_Health {
 					'label' => __( 'Discount Codes', 'paid-memberships-pro' ),
 					'value' => self::get_discount_codes(),
 				],
+				'pmpro-sessions'       => [
+					'label' => __( 'PHP Sessions', 'paid-memberships-pro' ),
+					'value' => self::test_sessions(),
+				],
 				'pmpro-membership-levels'    => [
 					'label' => __( 'Membership Levels', 'paid-memberships-pro' ),
 					'value' => self::get_levels(),
@@ -100,7 +104,11 @@ class PMPro_Site_Health {
 				'pmpro-pages' => [
 					'label' => __( 'Membership Pages', 'paid-memberships-pro' ),
 					'value' => self::get_pmpro_pages(),
-				]
+				],
+				'pmpro-library-conflicts' => [
+					'label' => __( 'Library Conflicts', 'paid-memberships-pro' ),
+					'value' => self::get_library_conflicts(),
+				],
 			],
 		];
 
@@ -187,14 +195,17 @@ class PMPro_Site_Health {
 
 			if ( $legacy ) {
 				$gateway_text .= ' (' . __( 'Legacy Keys', 'paid-memberships-pro' ) . ')';
+				return $gateway_text . ' [' . $gateway . ':legacy-keys]';
 			}
 
 			if ( $connect ) {
 				$gateway_text .= ' (' . __( 'Stripe Connect', 'paid-memberships-pro' ) . ')';
+				return $gateway_text . ' [' . $gateway . ':stripe-connect]';
 			}
+
 		}
 
-		return $gateway_text;
+		return $gateway_text . ' [' . $gateway . ']';
 	}
 
 	/**
@@ -217,7 +228,34 @@ class PMPro_Site_Health {
 			return sprintf( __( '%s (environment not registered)', 'paid-memberships-pro' ), $environment );
 		}
 
-		return $environments[ $environment ];
+		return $environments[ $environment ] . ' [' . $environment . ']';
+	}
+
+	/**
+	 * Tests if PHP sessions are enabled
+	 *
+	 * @since 2.9
+	 *
+	 * @return string The PHP Session data.
+	 */
+	public function test_sessions() {
+
+		$session_data = array();
+
+		$php_session_status = session_status();
+
+		if ( $php_session_status !== 0 || $php_session_status !== PHP_SESSIONS_DISABLED ) {
+			$session_data['session_status'] = __( 'Active', 'paid-memberships-pro' );
+		} else {
+			$session_data['session_status'] = __( 'Inactive', 'paid-memberships-pro' );
+		}
+
+		if ( defined( 'PANTHEON_SESSIONS_VERSION' ) ) {
+			$session_data['wp_native_sessions'] = __( 'Active', 'paid-memberships-pro' );
+		}
+
+		return $session_data;
+
 	}
 
 	/**
@@ -313,18 +351,7 @@ class PMPro_Site_Health {
 		$cron_times = [];
 
 		// These are our crons.
-		$expected_crons = [
-			'pmpro_cron_expire_memberships',
-			'pmpro_cron_expiration_warnings',
-			'pmpro_cron_credit_card_expiring_warnings',
-			'pmpro_cron_admin_activity_email',
-		];
-
-		$gateway = pmpro_getOption( 'gateway' );
-
-		if ( 'stripe' === $gateway ) {
-			$expected_crons[] = 'pmpro_cron_stripe_subscription_updates';
-		}
+		$expected_crons = array_keys( pmpro_get_crons() );
 
 		// Find any of our crons and when their next run is.
 		if ( $crons ) {
@@ -366,7 +393,7 @@ class PMPro_Site_Health {
 		global $pmpro_pages;
 
 		$page_information = array();
-		
+
 		if( !empty( $pmpro_pages ) ){
 
 			foreach( $pmpro_pages as $key => $val ){
@@ -470,6 +497,37 @@ class PMPro_Site_Health {
 	}
 
 	/**
+	 * Get library conflicts.
+	 *
+	 * @since 2.8
+	 *
+	 * @return string|string[] The member page information
+	 */
+	function get_library_conflicts() {
+		// Get the current list of library conflicts.
+		$library_conflicts = get_option( 'pmpro_library_conflicts' );
+
+		// If there are no library conflicts, return a message.
+		if ( empty( $library_conflicts ) ) {
+			return __( 'No library conflicts detected.', 'paid-memberships-pro' );
+		}
+
+		// Format data to be displayed in site health.
+		$return_arr = array();
+
+		// Loop through all libraries that have conflicts.
+		foreach ( $library_conflicts as $library_name => $conflicting_plugins ) {
+			$conflict_strings = array();
+			// Loop through all plugins that have conflicts with this library.
+			foreach ( $conflicting_plugins as $conflicting_plugin_path => $conflicting_plugin_data ) {
+				$conflict_strings[] = 'v' . $conflicting_plugin_data['version'] . ' (' . $conflicting_plugin_data['timestamp'] . ')' . ' - ' . $conflicting_plugin_path;
+			}
+			$return_arr[ $library_name ] = implode( ' | ', $conflict_strings );
+		}
+		return $return_arr;
+	}
+
+	/**
 	 * Get the constants site health information.
 	 *
 	 * @since 2.6.4
@@ -541,5 +599,4 @@ class PMPro_Site_Health {
 
 		return $constants_formatted;
 	}
-
 }

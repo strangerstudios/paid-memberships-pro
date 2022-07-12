@@ -36,10 +36,13 @@ $payment_status         = pmpro_getParam( "payment_status", "POST" );
 $payment_amount         = pmpro_getParam( "payment_amount", "POST" );
 $payment_currency       = pmpro_getParam( "payment_currency", "POST" );
 $receiver_email         = pmpro_getParam( "receiver_email", "POST", '', 'sanitize_email' );
+$refund_amount         = pmpro_getParam( "refund_amount", "POST" );
 $business_email         = pmpro_getParam( "business", "POST", '', 'sanitize_email'  );
 $payer_email            = pmpro_getParam( "payer_email", "POST", '', 'sanitize_email'  );
 $recurring_payment_id   = pmpro_getParam( "recurring_payment_id", "POST" );
 $profile_status         = strtolower( pmpro_getParam( "profile_status", "POST" ) );
+$payment_status 		= strtolower( pmpro_getParam( "payment_status", "POST" ) );
+$parent_txn_id  		= pmpro_getParam( "parent_txn_id", "POST" );
 
 if ( empty( $subscr_id ) ) {
 	$subscr_id = $recurring_payment_id;
@@ -198,10 +201,18 @@ if ( $txn_type == "web_accept" && ! empty( $item_number ) ) {
 if ( $txn_type == "recurring_payment" ) {
 	$last_subscription_order = new MemberOrder();
 	if ( $last_subscription_order->getLastMemberOrderBySubscriptionTransactionID( $subscr_id ) ) {
+		
+		/**
+		 * Payment statuses that should be treated as failures.
+		 * 
+		 * @param array List of statuses to be treated as failures.		 
+		 */
+		$failed_payment_statuses = apply_filters( 'pmpro_paypal_renewal_failed_statuses', array( 'Failed', 'Voided', 'Denied', 'Expired' ) );
+
 		//subscription payment, completed or failure?
 		if ( $_POST['payment_status'] == "Completed" ) {
 			pmpro_ipnSaveOrder( $txn_id, $last_subscription_order );
-		} elseif ( $_POST['payment_status'] == "Failed" ) {
+		} elseif ( in_array( $_POST['payment_status'], $failed_payment_statuses ) ) {
 			pmpro_ipnFailedPayment( $last_subscription_order );
 		} else {
 			ipnlog( 'Payment status is ' . $_POST['payment_status'] . '.' );
@@ -213,7 +224,7 @@ if ( $txn_type == "recurring_payment" ) {
 	pmpro_ipnExit();
 }
 
-if ( $txn_type == "recurring_payment_skipped" ) {
+if ( $txn_type == 'recurring_payment_skipped' || $txn_type == 'subscr_failed' ) {
 	$last_subscription_order = new MemberOrder();
 	if ( $last_subscription_order->getLastMemberOrderBySubscriptionTransactionID( $subscr_id ) ) {
 		// the payment failed
@@ -372,11 +383,54 @@ if ( $txn_type == "subscr_cancel" ) {
 	}
 }
 
-// Order Refunded (PayPal Express)
-if( '' === $txn_type && 'Refunded' === $payment_status ) {
-	ipnlog( 'Refund for this payment: ' . print_r( $_POST, true ) );
+if ( strtolower( $payment_status ) === 'refunded' ) {
+	$payment_transaction_id = $parent_txn_id;
 
-	pmpro_ipnExit();
+	if ( $payment_transaction_id ) {
+		$morder = new MemberOrder();
+		$morder->getMemberOrderByPaymentTransactionID( $payment_transaction_id );
+		
+		// Make sure we found a matching order.
+		if ( empty( $morder ) || empty( $morder->id ) ) {
+			ipnlog( sprintf( 'IPN: Order refunded on %1$s for transaction ID %2$s at the gateway, but we could not find a matching order.', date_i18n('Y-m-d H:i:s'), $payment_transaction_id ) );			
+			pmpro_ipnExit();
+		}
+			
+		// Ignore orders already in refund status.
+		if( $morder->status == 'refunded' ) {				
+			$logstr .= sprintf( 'IPN: Order ID %1$s with transaction ID %2$s was already in refund status.', $morder->id, $payment_transaction_id );
+			pmpro_ipnExit();
+		}
+		
+		// Handle partial refunds. Only updating the log and notes for now.
+		if ( abs( (float)$_POST['mc_gross'] ) < (float)$morder->total ) {				
+			ipnlog( sprintf( 'IPN: Order was partially refunded on %1$s for transaction ID %2$s at the gateway. The order will need to be updated in the WP dashboard.', date_i18n('Y-m-d H:i:s'), $payment_transaction_id ) );
+			$morder->notes = trim( $morder->notes . ' ' . sprintf( 'IPN: Order was partially refunded on %1$s for transaction ID %2$s at the gateway. The order will need to be updated in the WP dashboard.', date_i18n('Y-m-d H:i:s'), $payment_transaction_id ) );
+			$morder->SaveOrder();
+			pmpro_ipnExit();
+		}
+
+		// Full refund.
+		$morder->status = 'refunded';
+
+		// translators: %1$s is the date. %2$s is the transaction ID.
+		$morder->notes = trim( $morder->notes .' '. sprintf( 'IPN: Order successfully refunded on %1$s for transaction ID %2$s at the gateway.', date_i18n('Y-m-d H:i:s'), $payment_transaction_id ) );
+
+		ipnlog( sprintf( 'IPN: Order successfully refunded on %1$s for transaction ID %2$s at the gateway.', date_i18n('Y-m-d H:i:s'), $payment_transaction_id ) );
+
+		$user = get_user_by( 'email', $morder->Email );
+
+		// Send an email to the member.
+		$myemail = new PMProEmail();
+		$myemail->sendRefundedEmail( $user, $morder );
+
+		// Send an email to the admin.
+		$myemail = new PMProEmail();
+		$myemail->sendRefundedAdminEmail( $user, $morder );
+
+		$morder->SaveOrder();
+		pmpro_ipnExit();		
+	}
 }
 
 //Other

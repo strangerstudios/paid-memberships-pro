@@ -22,10 +22,10 @@ function pmpro_notifications() {
 		?>
 		<div class="pmpro_notification" id="<?php echo $notification->id; ?>">
 		<?php if ( $notification->dismissable ) { ?>
-			<button type="button" class="pmpro-notice-button notice-dismiss" value="<?php echo $notification->id; ?>"><span class="screen-reader-text"><?php esc_html_e( 'Dismiss this notice.', 'paid-memberships-pro' ); ?></span></button>
+			<button type="button" class="pmpro-notice-button notice-dismiss" value="<?php echo esc_attr( $notification->id ); ?>"><span class="screen-reader-text"><?php esc_html_e( 'Dismiss this notice.', 'paid-memberships-pro' ); ?></span></button>
 		<?php } ?>
 			<div class="pmpro_notification-<?php echo $notification->type; ?>">
-				<h3><span class="dashicons dashicons-<?php esc_attr_e( $notification->dashicon ); ?>"></span> <?php esc_html_e( $notification->title ); ?></h3>
+				<h3><span class="dashicons dashicons-<?php esc_attr_e( $notification->dashicon ); ?>"></span> <?php echo esc_html( $notification->title ); ?></h3>
 				<?php 
 					$allowed_html = array (
 						'a' => array (
@@ -548,9 +548,10 @@ add_action( 'wp_ajax_pmpro_hide_notice', 'pmpro_hide_notice' );
 /**
  * Show Powered by Paid Memberships Pro comment (only visible in source) in the footer.
  */
-function pmpro_link() { ?>
-Memberships powered by Paid Memberships Pro v<?php echo PMPRO_VERSION; ?>.
-<?php }
+function pmpro_link() {
+	?>Memberships powered by Paid Memberships Pro v<?php echo PMPRO_VERSION; ?>.<?php
+}
+
 function pmpro_footer_link() {
 	if ( ! pmpro_getOption( 'hide_footer_link' ) ) { ?>
 		<!-- <?php echo pmpro_link()?> -->

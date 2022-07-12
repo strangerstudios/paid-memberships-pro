@@ -67,7 +67,7 @@ function pmpro_pages_metabox_nav_links() {
 					</label>
 					<input type="hidden" class="menu-item-type" name="menu-item[-1][menu-item-type]" value="custom">
 					<input type="hidden" class="menu-item-type-name" name="menu-item[-1][menu-item-type]" value="custom">
-					<input type="hidden" class="menu-item-title" name="menu-item[-1][menu-item-title]" value="<?php _e( 'Log In', 'paid-memberships-pro'); ?>">
+					<input type="hidden" class="menu-item-title" name="menu-item[-1][menu-item-title]" value="<?php esc_attr_e( 'Log In', 'paid-memberships-pro'); ?>">
 					<input type="hidden" class="menu-item-url" name="menu-item[-1][menu-item-url]" value="#">
 					<input type="hidden" class="menu-item-classes" name="menu-item[-1][menu-item-classes]" value="menu-item-type-pmpro-login">
 				</li>
@@ -76,7 +76,7 @@ function pmpro_pages_metabox_nav_links() {
 						<input type="checkbox" class="menu-item-checkbox" name="menu-item[-2][menu-item-object-id]" value="-2"> <?php _e( 'Log Out', 'paid-memberships-pro'); ?>
 					</label>
 					<input type="hidden" class="menu-item-type" name="menu-item[-2][menu-item-type]" value="custom">
-					<input type="hidden" class="menu-item-title" name="menu-item[-2][menu-item-title]" value="<?php _e( 'Log Out', 'paid-memberships-pro'); ?>">
+					<input type="hidden" class="menu-item-title" name="menu-item[-2][menu-item-title]" value="<?php esc_attr_e( 'Log Out', 'paid-memberships-pro'); ?>">
 					<input type="hidden" class="menu-item-url" name="menu-item[-2][menu-item-url]" value="#">
 					<input type="hidden" class="menu-item-classes" name="menu-item[-2][menu-item-classes]" value="menu-item-type-pmpro-logout">
 				</li>
