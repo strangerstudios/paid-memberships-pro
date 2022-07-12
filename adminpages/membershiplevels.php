@@ -410,9 +410,14 @@
 			);
 		?>
 		</h1>
-		<a title="<?php esc_attr_e( 'View at Checkout', 'paid-memberships-pro' ); ?>" href="<?php echo esc_url( pmpro_url( 'checkout', '?level=' . $level->id, 'https' ) ) ?>" target="_blank" class="page-title-action"><?php esc_html_e( 'View at Checkout', 'paid-memberships-pro' ); ?></a>
-		<a title="<?php esc_attr_e( 'View Members', 'paid-memberships-pro' ); ?>" href="<?php echo esc_url( add_query_arg( array( 'page' => 'pmpro-memberslist', 'l' => $level->id ), admin_url( 'admin.php' ) ) ); ?>" target="_blank" class="page-title-action"><?php esc_html_e( 'View Members', 'paid-memberships-pro' ); ?></a>
-		<a title="<?php esc_attr_e( 'View Orders', 'paid-memberships-pro' ); ?>" href="<?php echo esc_url( add_query_arg( array( 'page' => 'pmpro-orders', 'l' => $level->id, 'filter' => 'within-a-level' ), admin_url( 'admin.php' ) ) ); ?>" target="_blank" class="page-title-action"><?php esc_html_e( 'View Orders', 'paid-memberships-pro' ); ?></a>
+		<?php 
+			$view_checkout_url = pmpro_url( 'checkout', '?level=' . $level->id, 'https' );
+			$view_orders_url = add_query_arg( array( 'page' => 'pmpro-orders', 'l' => $level->id, 'filter' => 'within-a-level' ), admin_url( 'admin.php' ) );
+			$view_members_url = add_query_arg( array( 'page' => 'pmpro-memberslist', 'l' => $level->id ), admin_url( 'admin.php' ) );
+		?>
+		<a title="<?php esc_attr_e( 'View at Checkout', 'paid-memberships-pro' ); ?>" href="<?php echo esc_url( $view_checkout_url );?>" target="_blank" class="page-title-action"><?php esc_html_e( 'View at Checkout', 'paid-memberships-pro' ); ?></a>
+		<a title="<?php esc_attr_e( 'View Members', 'paid-memberships-pro' ); ?>" href="<?php echo esc_url( $view_members_url ); ?>" target="_blank" class="page-title-action"><?php esc_html_e( 'View Members', 'paid-memberships-pro' ); ?></a>	
+		<a title="<?php esc_attr_e( 'View Orders', 'paid-memberships-pro' ); ?>" href="<?php echo esc_url( $view_orders_url ); ?>" target="_blank" class="page-title-action"><?php esc_html_e( 'View Orders', 'paid-memberships-pro' ); ?></a>
 	<?php } else { ?>
 		<h1 class="wp-heading-inline"><?php esc_html_e( 'Add New Membership Level', 'paid-memberships-pro' ); ?></h1>
 	<?php } ?>
@@ -861,11 +866,11 @@
 						</tr>
 						<tr class="membership_posts">
 							<th scope="row" valign="top"><label><?php esc_html_e('Single Posts', 'paid-memberships-pro' );?></label></th>
-							<td><p><?php echo sprintf( wp_kses( __( '<a href="%1$s">Add</a> or <a href="%2$s">edit</a> a single post to protect it.', 'paid-memberships-pro' ), $allowed_html ), esc_url( admin_url( 'post-new.php') ), esc_url( admin_url( 'edit.php') ) ); ?></p></td>
+							<td><p><?php echo sprintf( wp_kses( __( '<a target="_blank" href="%1$s">Add</a> or <a href="%2$s">edit</a> a single post to protect it.', 'paid-memberships-pro' ), $allowed_html ), esc_url( admin_url( 'post-new.php') ), esc_url( admin_url( 'edit.php') ) ); ?></p></td>
 						</tr>
 						<tr class="membership_posts">
 							<th scope="row" valign="top"><label><?php esc_html_e('Single Pages', 'paid-memberships-pro' );?></label></th>
-							<td><p><?php echo sprintf( wp_kses( __( '<a href="%1$s">Add</a> or <a href="%2$s">edit</a> a single page to protect it.', 'paid-memberships-pro' ), $allowed_html ), esc_url( add_query_arg( array( 'post_type' => 'page' ), admin_url( 'post-new.php' ) ) ), esc_url( add_query_arg( array( 'post_type' => 'page' ), admin_url( 'edit.php' ) ) ) ); ?></p></td>
+							<td><p><?php echo sprintf( wp_kses( __( '<a target="_blank" href="%1$s">Add</a> or <a href="%2$s">edit</a> a single page to protect it.', 'paid-memberships-pro' ), $allowed_html ), esc_url( add_query_arg( array( 'post_type' => 'page' ), admin_url( 'post-new.php' ) ) ), esc_url( add_query_arg( array( 'post_type' => 'page' ), admin_url( 'edit.php' ) ) ) ); ?></p></td>
 						</tr>
 						<tr class="membership_posts">
 							<th scope="row" valign="top"><label><?php esc_html_e('Other Content Types', 'paid-memberships-pro' );?></label></th>
@@ -1051,11 +1056,11 @@
 
 			// Add New Level link
 			$pmpro_membershiplevels_page_action_links['add-new'] = array(
-				'url' => add_query_arg( array( 'page' => 'pmpro-membershiplevels', 'edit' => -1 ), admin_url( 'admin.php' ) ),
+				'url' => 'javascript:addLevel();',
 				'name' => __( 'Add New Level', 'paid-memberships-pro' ),
-				'icon' => 'plus',
+				'icon' => 'plus'
 			);
-
+			
 			/**
 			 * Filter the Membership Levels page title action links.
 			 *
@@ -1073,7 +1078,7 @@
 					continue;
 				}
 
-				// Build the selectors for the checkbox list based on number of levels.
+				// Figure out CSS classes for the links.
 				$classes = array();
 				$classes[] = 'page-title-action';
 				if ( ! empty( $pmpro_membershiplevels_page_action_link['icon'] ) ) {
@@ -1083,13 +1088,18 @@
 				if ( ! empty( $pmpro_membershiplevels_page_action_link['classes'] ) ) {
 					$classes[] = $pmpro_membershiplevels_page_action_link['classes'];
 				}
-				$class = implode( ' ', array_unique( $classes ) ); ?>
-				<a class="<?php echo esc_attr( $class ); ?>" href="<?php echo esc_url( $pmpro_membershiplevels_page_action_link['url'] ); ?>"><?php echo esc_html( $pmpro_membershiplevels_page_action_link['name'] ); ?></a>
+				$class = implode( ' ', array_unique( $classes ) );
+				
+				// Allow some JS for the URL. Otherwise esc_url.
+				$allowed_js_in_urls = array( 'javascript:addLevel();', 'javascript:void(0);' );
+				if ( ! in_array( $pmpro_membershiplevels_page_action_link['url'], $allowed_js_in_urls ) ) {
+					$pmpro_membershiplevels_page_action_link['url'] = esc_url( $pmpro_membershiplevels_page_action_link['url'] );
+				}
+				?>				
+				<a class="<?php echo esc_attr( $class ); ?>" href="<?php echo $pmpro_membershiplevels_page_action_link['url']; ?>"><?php echo esc_html( $pmpro_membershiplevels_page_action_link['name'] ); ?></a>
 				<?php
 			}
-		?>
-
-		<a href="javascript:addLevel();" class="page-title-action"><?php esc_html_e( 'Add New Level', 'paid-memberships-pro' ); ?></a>
+		?>		
 
 		<?php if(empty($_REQUEST['s']) && count($reordered_levels) > 1) { ?>
 		    <p><?php esc_html_e('Drag and drop membership levels to reorder them on the Levels page.', 'paid-memberships-pro' ); ?></p>
