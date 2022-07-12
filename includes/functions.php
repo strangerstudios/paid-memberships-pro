@@ -1316,8 +1316,8 @@ function pmpro_listCategories( $parent_id = 0, $level_categories = array() ) {
 			<div class="pmpro_clickable">
 				<input type="checkbox" name="membershipcategory_<?php echo esc_attr( $cat->term_id ); ?>" id="membershipcategory_<?php echo esc_attr( $cat->term_id ); ?>" value="yes" <?php echo esc_attr( $checked ); ?>>
 				<label for="membershipcategory_<?php echo esc_attr( $cat->term_id ); ?>"><?php echo $cat->name; ?></label>
-				<?php pmpro_listCategories( $cat->term_id, $level_categories ); ?>
 			</div>
+			<?php pmpro_listCategories( $cat->term_id, $level_categories ); ?>
 			<?php
 		}
 	}
