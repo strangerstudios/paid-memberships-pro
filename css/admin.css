@@ -1119,7 +1119,12 @@ p.pmpro_meta_notice {
 /* Updated icon (check mark). */
 #pmpro-admin-add-ons #pmpro-admin-add-ons-list .list .action-button .button.checkmarked:before {
 	color: #68de7c;
-	content: "✓ ";
+	content: "\f147";
+	display: inline-block;
+	font: normal 20px/1 'dashicons';
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+	vertical-align: middle;
 }
 
 /* license */
