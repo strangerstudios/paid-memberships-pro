@@ -156,6 +156,29 @@ Not sure? You can find out by doing a bit a research.
 9. Membership Account page, display all sections or show specific sections using shortcode attributes.
 
 == Changelog ==
+= 2.9 - 2022-07-?? =
+* FEATURE: Added a "User Fields" tab to the settings page. You can now add "Register Helper" style fields through the WP admin dashboard without code. (@ideadude, @kimcoleman, @dparker1005)
+* FEATURE: The "Add Ons" tab has a new look, with better browsing and searching. (@kimcoleman)
+* FEATURE: Added support for level templates to more easily allow admins to create popular types of levels. (@kimcoleman)
+* FEATURE: Added a CSV export option to the built-in reports. (@andrewlimaza, @JarryLong)
+* ENHANCEMENT: Redesigned the Add/Edit Membership Level screen to focus on the applicable settings for the type of level. (@kimcoleman)
+* ENHANCEMENT: Testing PHP sessions in site health now. (@JarrydLong)
+* ENHANCEMENT: Fixed doc block for the pmpro_getLevel() function. (@eighty20results)
+* ENHANCEMENT: Showing a notice on the PMPro settings pages if the next update for PMPro has an "update notice" section in the readme for that version. (@dparker1005)
+* ENHANCEMENT: Removed the odd line break from the "Powered by Paid Memberships Pro" HTML comment. (@mircobabini)
+* ENHANCEMENT: Added filter pmpro_membershiplevels_page_action_links to add/modify buttons on the Settings > Membership Levels admin page. (@kimcoleman)
+* ENHANCEMENT: Added pmpro_unhandled_webhook action that is thrown when a webhook or IPN handler encounters a webhook that isn't processed by PMPro. You can use this hook to log these cases for debugging purposes. (@mircobabini)
+* ENHANCEMENT: Disabled the credit card options for the Stripe gateway. Instead, it now says "We accept all major credit cards". (@mircobabini)
+* BUG FIX/ENHANCEMENT: Added the pmpro_calculate_profile_start_date() function, which is used in all built-in gateways now. This fixes some issues with inconsistencies for subscriptions with multiple month billing periods. (@dparker1005, @messica)
+* BUG FIX/ENHANCEMENT: Now handling the subscr_failed IPN message for PayPal. This message is now sent sometimes instead of the "recurring_payment_skipped" one. (@andrewlimaza)
+* BUG FIX/ENHANCEMENT: The PayPal IPN handler is now treating "Voided", "Denied", and "Expired" payment statuses similar to "Failed". (@JarrydLong)
+* BUG FIX/ENHANCEMENT: Now requiring a name when adding/editing a level. (@JarrydLong)
+* BUG FIX/ENHANCEMENT: Updates to the level save logic to avoid some edge case issues. (@ideadude)
+* BUG FIX/ENHANCEMENT: Removed some trailing commas in arrays that were breaking PHP 5.6 users. (@mircobabini)
+* BUG FIX: Fixed "No such product" bug that happened sometimes when checking out with Stripe. We catch this now and create the products when they are missing. (@dparker1005)
+* REFACTOR: Removed update notice RE Better Login Reports being merged into core PMPro (which happened a few years ago). Now using the general deprecation notices RE old add ons. (@JarrydLong)
+* REFACTOR: Refactored the MemberOrder class a bit to avoid PHP 8+ warnings. (@JarrydLong)
+
 = 2.8.3 - 2022-05-23 =
 * BUG FIX/ENHANCEMENT: Avoiding multiple DB queries related to license key checks when no license key is enabled.
 * BUG FIX: Fixed issue where some PayPal subscriptions had an extra 1 year trial when set up.
