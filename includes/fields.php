@@ -1572,7 +1572,7 @@ add_action( 'init', 'pmpro_load_user_fields_from_settings', 1 );
 /**
  * Check if user is adding custom user fields with code.
  *
- * @since TBD
+ * @since 2.9
  *
  * @return bool True if user is adding custom user fields with code.
  */

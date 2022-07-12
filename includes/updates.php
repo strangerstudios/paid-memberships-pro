@@ -137,7 +137,7 @@ function pmpro_updates_notice_complete() {
 /**
  * If there is an upgrade notice for updating PMPro to the latest version, show it.
  *
- * @since TBD
+ * @since 2.9
  *
  * @param array $current_plugin_data {
  *     An array of plugin metadata.

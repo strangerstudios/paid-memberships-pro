@@ -4164,7 +4164,7 @@ function pmpro_get_ip() {
 /**
  * Get the last item of an array without affecting the internal array pointer.
  * Going through the function keeps the original array from being updated.
- * @since TBD
+ * @since 2.9
  * @param  $array array The array to get the value of.
  * @return mixed Whatever is the last element in the array.
  * from: http://www.php.net/manual/en/function.end.php#107733
@@ -4283,7 +4283,7 @@ function pmpro_maybe_send_wp_new_user_notification( $user_id, $level_id = null )
 /**
  * Replace all special characters with underscore, including spaces.
  * 
- * @since TBD
+ * @since 2.9
  * 
  * @param string $field_name The raw field name to be formatted.
  */
@@ -4293,7 +4293,7 @@ function pmpro_format_field_name( $field_name ) {
 	/**
 	 * Filter the formatted/output field names.
 	 * 
-	 * @since TBD
+	 * @since 2.9
 	 * 
 	 * @param string $formatted_name The formatted field name (replaced spaces and dashes with underscores).
 	 * @param string $field_name The original field name.

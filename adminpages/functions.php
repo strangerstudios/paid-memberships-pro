@@ -486,7 +486,7 @@ function pmpro_edit_level_templates() {
 	/**
 	 * Filter to add or remove level templates from the Membership Levels > Add New popup.
 	 *
-	 * @since TBD
+	 * @since 2.9
 	 *
 	 * @param $level_templates array An array of templates with name and description.
 	 *

@@ -57,7 +57,7 @@ jQuery(document).ready(function() {
 function pmpro_admin_prep_click_events() {
 	/*
 	 * Toggle content within the settings sections boxes.
-	 * @since TBD
+	 * @since 2.9
 	 */
 	jQuery( 'button.pmpro_section-toggle-button' ).on( 'click', function(event){
 		event.preventDefault();

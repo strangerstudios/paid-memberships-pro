@@ -234,7 +234,7 @@ class PMPro_Site_Health {
 	/**
 	 * Tests if PHP sessions are enabled
 	 *
-	 * @since TBD
+	 * @since 2.9
 	 *
 	 * @return string The PHP Session data.
 	 */

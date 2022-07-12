@@ -5,7 +5,7 @@ class PMPro_Field {
 	 *
 	 * This is the name attribute of the input field and may be automatically prefixed if needed.
 	 *
-	 * @since TBD
+	 * @since 2.9
 	 *
 	 * @var string
 	 */
@@ -14,7 +14,7 @@ class PMPro_Field {
 	/**
 	 * The type of field that this is.
 	 *
-	 * @since TBD
+	 * @since 2.9
 	 *
 	 * @var string
 	 */
@@ -25,7 +25,7 @@ class PMPro_Field {
 	 *
 	 * Will be set to $name without any prefixes that are added.
 	 *
-	 * @since TBD
+	 * @since 2.9
 	 *
 	 * @var string
 	 */
@@ -36,7 +36,7 @@ class PMPro_Field {
 	 *
 	 * This is the human-readable label displayed to the user.
 	 *
-	 * @since TBD
+	 * @since 2.9
 	 *
 	 * @var string
 	 */
@@ -45,7 +45,7 @@ class PMPro_Field {
 	/**
 	 * Whether the label should be shown.
 	 *
-	 * @since TBD
+	 * @since 2.9
 	 *
 	 * @var bool
 	 */
@@ -54,7 +54,7 @@ class PMPro_Field {
 	/**
 	 * A hint to be displayed with the field.
 	 *
-	 * @since TBD
+	 * @since 2.9
 	 *
 	 * @var string
 	 */
@@ -63,7 +63,7 @@ class PMPro_Field {
 	/**
 	 * The membership levels that this field should be displayed for.
 	 *
-	 * @since TBD
+	 * @since 2.9
 	 *
 	 * @var array
 	 */
@@ -72,7 +72,7 @@ class PMPro_Field {
 	/**
 	 * Whether the field is required.
 	 *
-	 * @since TBD
+	 * @since 2.9
 	 *
 	 * @var bool
 	 */
@@ -81,7 +81,7 @@ class PMPro_Field {
 	/**
 	 * Whether the field should be shown as required if $required is set to true.
 	 *
-	 * @since TBD
+	 * @since 2.9
 	 *
 	 * @var bool
 	 */
@@ -92,7 +92,7 @@ class PMPro_Field {
 	 *
 	 * Options are true, false, 'admin', 'only', and 'only_admin'.
 	 *
-	 * @since TBD
+	 * @since 2.9
 	 *
 	 * @var mixed
 	 */
@@ -101,7 +101,7 @@ class PMPro_Field {
 	/**
 	 * Whether the field is readonly.
 	 *
-	 * @since TBD
+	 * @since 2.9
 	 *
 	 * @var bool
 	 */
@@ -110,7 +110,7 @@ class PMPro_Field {
 	/**
 	 * Array to define conditions when a field should be shown or hidden.
 	 *
-	 * @since TBD
+	 * @since 2.9
 	 *
 	 * @var array
 	 */
@@ -119,7 +119,7 @@ class PMPro_Field {
 	/**
 	 * Whether the field value should be sanitized before saving.
 	 *
-	 * @since TBD
+	 * @since 2.9
 	 *
 	 * @var bool
 	 */
@@ -128,7 +128,7 @@ class PMPro_Field {
 	/**
 	 * The ID to show for the field.
 	 *
-	 * @since TBD
+	 * @since 2.9
 	 *
 	 * @var string
 	 */
@@ -137,7 +137,7 @@ class PMPro_Field {
 	/**
 	 * Class for the input field.
 	 *
-	 * @since TBD
+	 * @since 2.9
 	 *
 	 * @var string
 	 */
@@ -146,7 +146,7 @@ class PMPro_Field {
 	/**
 	 * Class for the div wrapper for the input field.
 	 *
-	 * @since TBD
+	 * @since 2.9
 	 *
 	 * @var string
 	 */
@@ -155,7 +155,7 @@ class PMPro_Field {
 	/**
 	 * Whether this field should be included in a members list CSV export.
 	 *
-	 * @since TBD
+	 * @since 2.9
 	 *
 	 * @var bool
 	 */
@@ -166,7 +166,7 @@ class PMPro_Field {
 	 *
 	 * null defaults to the default save function.
 	 *
-	 * @since TBD
+	 * @since 2.9
 	 *
 	 * @var callable
 	 */
@@ -176,7 +176,7 @@ class PMPro_Field {
 	 * Whether this field should be shown when adding a member using
 	 * the PMPro Add Member Add On.
 	 *
-	 * @since TBD
+	 * @since 2.9
 	 *
 	 * @var bool
 	 */
@@ -185,7 +185,7 @@ class PMPro_Field {
 	/**
 	 * The size attribute when using a text input field type.
 	 *
-	 * @since TBD
+	 * @since 2.9
 	 *
 	 * @var int
 	 */
@@ -194,7 +194,7 @@ class PMPro_Field {
 	/**
 	 * The number of rows to show when using a textarea field type.
 	 *
-	 * @since TBD
+	 * @since 2.9
 	 *
 	 * @var int
 	 */
@@ -203,7 +203,7 @@ class PMPro_Field {
 	/**
 	 * The number of columns to show when using a textarea field type.
 	 *
-	 * @since TBD
+	 * @since 2.9
 	 *
 	 * @var int
 	 */
@@ -212,7 +212,7 @@ class PMPro_Field {
 	/**
 	 * The options for a select, select2, multiselect, checkbox_grouped, or radio field type.
 	 *
-	 * @since TBD
+	 * @since 2.9
 	 *
 	 * @var array
 	 */
@@ -221,7 +221,7 @@ class PMPro_Field {
 	/**
 	 * Whether multiple options should be selectable when using a select, seelect2, or multiselect field type.
 	 *
-	 * @since TBD
+	 * @since 2.9
 	 *
 	 * @var bool
 	 */
@@ -230,7 +230,7 @@ class PMPro_Field {
 	/**
 	 * The text to show next to a checkbox when using a checkbox field type.
 	 *
-	 * @since TBD
+	 * @since 2.9
 	 *
 	 * @var string
 	 */
@@ -239,7 +239,7 @@ class PMPro_Field {
 	/**
 	 * The HTML to show for an HTML field type.
 	 *
-	 * @since TBD
+	 * @since 2.9
 	 *
 	 * @var string
 	 */
@@ -1025,7 +1025,7 @@ class PMPro_Field {
 		/**
 		 * Legacy filter to allow hooking into the generated field HTML.
 		 *
-		 * @since TBD
+		 * @since 2.9
 		 *
 		 * @param string      $r     The field HTML.
 		 * @param PMPro_Field $field The field object.

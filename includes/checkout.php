@@ -3,7 +3,7 @@
 /**
  * Calculate the profile start date to be sent to the payment gateway.
  *
- * @since TBD
+ * @since 2.9
  *
  * @param MemberOrder $order       The order to calculate the start date for.
  * @param string      $date_format The format to use when formatting the profile start date.
@@ -24,7 +24,7 @@ function pmpro_calculate_profile_start_date( $order, $date_format, $filter = tru
 		 * YYYY-MM-DD HH:MM:SS is not 100% necessary, but we should transition add ons and custom code
 		 * to use that format in case we update this code in the future.
 		 *
-		 * @since TBD
+		 * @since 1.4
 		 *
 		 * @param string $profile_start_date The profile start date in UTC YYYY-MM-DD HH:MM:SS format.
 		 * @param MemberOrder $order         The order that the profile start date is being calculated for.
