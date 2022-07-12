@@ -97,7 +97,9 @@
 .pmpro_banner .pmpro_meta a.pmpro_license_tag.pmpro_license_tag-invalid:before {
 	content: "\f335";
 }
-
+.pmpro_admin .subsubsub {
+	margin-bottom: 15px;
+}
 .pmpro_admin .pmpro_wp-notice-fix {
 	height: 1px;
 	line-height: 1px;
@@ -275,6 +277,63 @@
 	color: #999;
 }
 
+/* Settings pages sections styles */
+.pmpro_admin .pmpro_section {
+	background: #FFF;
+	border: 1px solid #E0E0E0;
+	border-bottom: none;
+	margin: 15px 0;
+}
+.pmpro_admin .pmpro_section .pmpro_section_toggle {
+	border-bottom: 1px solid #E0E0E0;
+	margin: 0;
+}
+.pmpro_admin .pmpro_section .pmpro_section_toggle button {
+	align-items: center;
+	-webkit-appearance: none;
+	background: none;
+	border: none;
+	box-shadow: none;
+	box-sizing: border-box;
+	color: #1E1E1E;
+	cursor: pointer;
+	font-size: 18px;
+	font-weight: 500;
+	height: auto;
+	margin: 0;
+	outline: none;
+	padding: 16px 48px 16px 16px;
+	position: relative;
+	text-align: left;
+	text-decoration: none;
+	width: 100%;
+}
+.pmpro_admin .pmpro_section .pmpro_section_toggle button:hover {
+	background-color: #FAFAFA;
+}
+.pmpro_admin .pmpro_section .pmpro_section_toggle button .dashicons {
+	position: absolute;
+	right: 16px;
+	top: 50%;
+	transform: translateY(-50%);
+	color: #1E1E1E;
+	fill: currentColor;
+	transition: color .1s ease-in-out;;
+}
+.pmpro_admin .pmpro_section .pmpro_section_inside {
+	border-bottom: 1px solid #E0E0E0; 
+	padding: 1em;
+}
+.pmpro_admin .pmpro_section .pmpro_section_inside > *:first-child {
+	margin-top: 0;
+}
+.pmpro_admin .pmpro_section .pmpro_section_inside p {
+	font-size: 14px;
+}
+.pmpro_admin .pmpro_section .pmpro_section_inside .form-table {
+	margin-top: 0;
+}
+
 /* levels */
 .memberships_page_pmpro-membershiplevels .pmpro_admin #posts-filter p.search-box {
 	margin: 2em 0 1em 0;
@@ -314,6 +373,61 @@
 }
 .memberships_page_pmpro-membershiplevels .pmpro_admin tr.membership_categories ul {
 	margin-left: 25px;
+}
+.memberships_page_pmpro-membershiplevels .pmpro_admin .pmpro_level_templates {
+	display: grid;
+	grid-template-columns: 1fr 1fr 1fr;
+	grid-gap: 15px;
+}
+.memberships_page_pmpro-membershiplevels .pmpro_admin .pmpro_level_templates .pmpro_level_template { 
+	background: #FAFAFA;
+	border-radius: 10px;
+	border: 1px solid #E0E0E0;
+	padding: 25px;
+	position: relative;
+	text-decoration: none;
+	transition: transform .2s;
+}
+.memberships_page_pmpro-membershiplevels .pmpro_admin .pmpro_level_templates .pmpro_level_template:not(.inactive):hover {
+	background: #FFF;
+	box-shadow: 1px 1px 3px #FAFAFA;
+	transform: scale(1.05);
+}
+.memberships_page_pmpro-membershiplevels .pmpro_admin .pmpro_level_templates .pmpro_level_template .dashicons {
+	display: none;
+	font-size: 4rem;
+	height: auto;
+	width: auto;
+}
+.memberships_page_pmpro-membershiplevels .pmpro_admin .pmpro_level_templates .pmpro_level_template .template {
+	display: block;
+	font-size: 26px;
+	font-weight: 700;
+	margin-bottom: 15px;
+}
+.memberships_page_pmpro-membershiplevels .pmpro_admin .pmpro_level_templates .pmpro_level_template p {
+	color: #1E1E1E;
+	font-weight: 400;
+	margin: 0;
+}
+.memberships_page_pmpro-membershiplevels .pmpro_admin .pmpro_level_templates .pmpro_level_template.inactive,
+.memberships_page_pmpro-membershiplevels .pmpro_admin .pmpro_level_templates .pmpro_level_template.inactive p {
+	color: #999;
+}
+.memberships_page_pmpro-membershiplevels .pmpro_admin .pmpro_level_templates .pmpro_level_template.inactive .label {
+	background-color: #999;
+	border-bottom-left-radius: 5px;
+	border-bottom-right-radius: 5px;
+	color: #FFF;
+	font-size: 11px;
+	font-weight: bold;
+	left: 10px;
+	text-align: center;
+	padding: 2px 6px;
+	position: absolute;
+	text-transform: uppercase;
+	top: 0;
+	width: auto;
 }
 
 /* payment settings */
