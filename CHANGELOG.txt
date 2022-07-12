@@ -12,6 +12,7 @@
 * ENHANCEMENT: Added filter pmpro_membershiplevels_page_action_links to add/modify buttons on the Settings > Membership Levels admin page. (@kimcoleman)
 * ENHANCEMENT: Added pmpro_unhandled_webhook action that is thrown when a webhook or IPN handler encounters a webhook that isn't processed by PMPro. You can use this hook to log these cases for debugging purposes. (@mircobabini)
 * ENHANCEMENT: Disabled the credit card options for the Stripe gateway. Instead, it now says "We accept all major credit cards". (@mircobabini)
+* ENHANCEMENT: Added a pmpro_order_status_{status} hook that is fired whenever an order's status changes. Passes the $status, $order, and $original_status as params. (@JarryLong)
 * BUG FIX/ENHANCEMENT: Added the pmpro_calculate_profile_start_date() function, which is used in all built-in gateways now. This fixes some issues with inconsistencies for subscriptions with multiple month billing periods. (@dparker1005, @messica)
 * BUG FIX/ENHANCEMENT: Now handling the subscr_failed IPN message for PayPal. This message is now sent sometimes instead of the "recurring_payment_skipped" one. (@andrewlimaza)
 * BUG FIX/ENHANCEMENT: The PayPal IPN handler is now treating "Voided", "Denied", and "Expired" payment statuses similar to "Failed". (@JarrydLong)
