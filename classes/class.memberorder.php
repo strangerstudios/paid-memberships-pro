@@ -1275,13 +1275,11 @@
 			$this->certificateamount = "";
 
 			//calculate total
-			if(!empty($this->total))
+			if ( ! empty( $this->total ) ) {
 				$total = $this->total;
-			elseif ( ! isset( $this->total ) || $this->total === '' ) {
+			} else {
 				$total = (float)$amount + (float)$tax;
 				$this->total = $total;
-			} else {
-				$total = 0;
 			}
 			
 			//these fix some warnings/notices
