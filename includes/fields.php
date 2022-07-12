@@ -1464,12 +1464,13 @@ function pmpro_get_field_html( $field = null ) {
  */
 function pmpro_get_user_fields_settings() {
     $default_user_fields_settings = array(
-        array(
+        (object) array(
             'name' => 'More Information',
             'checkout' => 'yes',
             'profile' => 'yes',
             'description' => '',
-            'levels' => array()            
+            'levels' => array(),
+            'fields' => array(),
         )
     );
     
