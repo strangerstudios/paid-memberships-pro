@@ -171,7 +171,7 @@
 			$msgt .= ' <strong class="red">' . sprintf( __( 'WARNING: A level was set with both a recurring billing amount and an expiration date. You only need to set one of these unless you really want this membership to expire after a specific time period. For more information, <a target="_blank" rel="nofollow noopener" href="%s">see our post here</a>.', 'paid-memberships-pro' ), 'https://www.paidmembershipspro.com/important-notes-on-recurring-billing-and-expiration-dates-for-membership-levels/?utm_source=plugin&utm_medium=pmpro-membershiplevels&utm_campaign=blog&utm_content=important-notes-on-recurring-billing-and-expiration-dates-for-membership-levels' ) . '</strong>';
 
 			// turn success to errors
-			if( $page_msg > 0 ) {
+			if ( ! empty( $page_msg ) && $page_msg > 0 ) {
 				$page_msg = 0 - $page_msg;
 			}
 		}
@@ -1104,15 +1104,6 @@
 		<?php if(empty($_REQUEST['s']) && count($reordered_levels) > 1) { ?>
 		    <p><?php esc_html_e('Drag and drop membership levels to reorder them on the Levels page.', 'paid-memberships-pro' ); ?></p>
 	    <?php } ?>
-
-		<?php
-			// Show the settings page message.
-			if ( ! empty( $page_msg ) ) { ?>
-				<div class="inline notice notice-large <?php echo $page_msg > 0 ? 'notice-success' : 'notice-error'; ?>">
-					<p><?php echo $page_msgt; ?></p>
-				</div>
-			<?php }
-		?>
 
 	    <?php
 	    	//going to capture the output of this table so we can filter it
