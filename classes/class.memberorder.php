@@ -309,7 +309,7 @@
 		 * 
 		 * @param string $property The property we want to get
 		 *
-		 * @return mixed|null
+		 * @return mixed|void
 		 */
 		public function __get( $property ) {
 
