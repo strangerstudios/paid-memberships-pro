@@ -3461,7 +3461,7 @@ function pmpro_getMemberOrdersByCheckoutID( $checkout_id ) {
  * Check that the test value is a member of a specific array for sanitization purposes.
  *
  * @param mixed $needle Value to be tested.
- * @param array $safe Array of safelist values.
+ * @param array $safelist Array of safelist values.
  * @since 1.9.3
  */
 function pmpro_sanitize_with_safelist( $needle, $safelist ) {
