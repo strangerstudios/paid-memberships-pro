@@ -963,12 +963,12 @@ function pmpro_cancelMembershipLevel( $cancel_level, $user_id = null, $old_level
  * $level may either be the ID or name of the desired membership_level.
  * If $user_id is omitted, the value will be retrieved from $current_user.
  *
- * @param int    $level ID of level to set as new level, use 0 to cancel membership
- * @param int    $user_id ID of the user to change levels for
- * @param string $old_level_status The status to set for the row in the memberships users table. (e.g. inactive, cancelled, admin_cancelled, expired) Defaults to 'inactive'.
- * @param int    $cancel_level If set cancel just this one level instead of all active levels (to support Multiple Memberships per User)
+ * @param int|array $level ID of level to set as new level, use 0 to cancel membership
+ * @param int       $user_id ID of the user to change levels for
+ * @param string    $old_level_status The status to set for the row in the memberships users table. (e.g. inactive, cancelled, admin_cancelled, expired) Defaults to 'inactive'.
+ * @param int       $cancel_level If set cancel just this one level instead of all active levels (to support Multiple Memberships per User)
  *
- * @return bool|null
+ * @return bool|void
  * Return values:
  *      Success returns boolean true.
  *      Failure returns boolean false.
