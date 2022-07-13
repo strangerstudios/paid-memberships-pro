@@ -1327,9 +1327,9 @@ function pmpro_listCategories( $parent_id = 0, $level_categories = array() ) {
 /**
  * pmpro_toggleMembershipCategory() creates or deletes a linking entry between the membership level and post category tables.
  *
- * @param $level may either be the ID or name of the desired membership_level.
- * @param $category must be a valid post category ID.
- * @param $value
+ * @param int $level may either be the ID or name of the desired membership_level.
+ * @param int $category must be a valid post category ID.
+ * @param bool $value
  *
  * @return string|true
  * Return values:
@@ -1368,8 +1368,8 @@ function pmpro_toggleMembershipCategory( $level, $category, $value ) {
  * pmpro_updateMembershipCategories() ensures that all those and only those categories given
  * are associated with the given membership level.
  *
- * @param $level is a valid membership level ID or name
- * @param $categories is an array of post category IDs
+ * @param string|int $level is a valid membership level ID or name
+ * @param int[] $categories is an array of post category IDs
  *
  * @return string|true
  * Return values:
@@ -1408,12 +1408,9 @@ function pmpro_updateMembershipCategories( $level, $categories ) {
 /**
  * pmpro_getMembershipCategories() returns the categories for a given level
  *
- * @param $level_id is a valid membership level ID
+ * @param int $level_id is a valid membership level ID
  *
- * @return bool
- * Return values:
- *		Success returns boolean true.
- *		Failure returns boolean false.
+ * @return int[]
  */
 function pmpro_getMembershipCategories( $level_id ) {
 	$level_id = intval( $level_id );
@@ -1923,8 +1920,6 @@ function pmpro_text_limit( $text, $limit, $finish = '&hellip;' ) {
  * Filters the separator used between action navigation links.
  *
  * @since 2.3
- *
- * @param string $separator The separator used between action links.
  */
 function pmpro_actions_nav_separator() {
 	$separator = apply_filters( 'pmpro_actions_nav_separator', ' | ' );
@@ -2086,7 +2081,7 @@ function pmpro_getMembershipLevelForUser( $user_id = null, $force = false ) {
  * pmpro_getMembershipLevelsForUser() returns the membership levels for a user
  *
  * If $user_id is omitted, the value will be retrieved from $current_user.
- * By default it only includes actvie memberships.
+ * By default it only includes active memberships.
  *
  * @return array|false
  * Return values:
@@ -2337,6 +2332,7 @@ function pmpro_are_any_visible_levels() {
  * or in the post options, then this will return the first level found.
  * @param int $level_id (optional) Pass a level ID to force that level.
  * @param string $discount_code (optional) Pass a discount code to force that code.
+ * @return mixed|void
  */
 function pmpro_getLevelAtCheckout( $level_id = null, $discount_code = null ) {
 	global $pmpro_level, $wpdb, $post;
@@ -3176,7 +3172,7 @@ function pmpro_round_price_as_string( $amount, $currency = null ) {
  * @param int|float|string $amount   The amount to get price information for.
  * @param null|string      $currency The currency to use, defaults to current currency.
  *
- * @return array The price information about the provided amount.
+ * @return array|false The price information about the provided amount.
  */
 function pmpro_get_price_info( $amount, $currency = null ) {
 	if ( ! is_numeric( $amount ) ) {
@@ -3247,7 +3243,7 @@ function pmpro_get_price_info( $amount, $currency = null ) {
  *
  * @since  2.0.2
  */
-function pmpro_filter_price_for_text_field( $price, $currency = null ) {
+function pmpro_filter_price_for_text_field( $price ) {
 	global $pmpro_currency, $pmpro_currencies;
 
 	// We always want to cast to float
@@ -4016,7 +4012,7 @@ add_filter( 'wp_kses_allowed_html', 'pmpro_kses_allowed_html', 10, 2 );
  *
  * Useful for preparing to change method visibility from public to private.
  *
- * @param string $deprecation_notice_version to show.
+ * @param string $deprecated_notice_version to show.
  * @return bool
  */
 function pmpro_method_should_be_private( $deprecated_notice_version ) {
@@ -4084,8 +4080,9 @@ function pmpro_send_200_http_response() {
 /**
  * Returns formatted ISO-8601 date (Used for Zapier Native app.)
  * @since 2.6.6
- * @param $date date A valid date value.
+ * @param string $date date A valid date value.
  * @return string The date in ISO-8601 format.
+ * @throws Exception
  */
 function pmpro_format_date_iso8601( $date ) {
 	$datetime = new DateTime( $date );
