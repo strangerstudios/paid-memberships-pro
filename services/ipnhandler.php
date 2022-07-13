@@ -151,10 +151,17 @@ if ( $txn_type == "subscr_payment" ) {
 
 		pmpro_ipnExit();
 	} else {
+		/**
+		 * Payment statuses that should be treated as failures.
+		 *
+		 * @param array List of statuses to be treated as failures.
+		 */
+		$failed_payment_statuses = apply_filters( 'pmpro_paypal_renewal_failed_statuses', array( 'Failed', 'Voided', 'Denied', 'Expired' ) );
+
 		//subscription payment, completed or failure?
 		if ( $_POST['payment_status'] == "Completed" ) {
 			pmpro_ipnSaveOrder( $txn_id, $last_subscription_order );
-		} elseif ( $_POST['payment_status'] == "Failed" ) {
+		} elseif ( in_array( $_POST['payment_status'], $failed_payment_statuses ) ) {
 			pmpro_ipnFailedPayment( $last_subscription_order );
 		} else {
 			ipnlog( 'Payment status is ' . $_POST['payment_status'] . '.' );
