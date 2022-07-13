@@ -234,19 +234,19 @@ if ( $txn_type == "recurring_payment" ) {
 	pmpro_ipnExit();
 }
 
-$is_suspended = ( $txn_type == 'recurring_payment_suspended_due_to_max_failed_payment' && 'suspended' == $profile_status );
-
 /**
  * IPN Txn Types that should be treated as failures.
  *
  * @param array List of txn types to be treated as failures.
  */
 $failed_payment_txn_types = apply_filters( 'pmpro_paypal_renewal_failed_txn_types', array(
+	'recurring_payment_suspended_due_to_max_failed_payment', // && 'suspended' == $profile_status
+	'recurring_payment_suspended',
 	'recurring_payment_skipped',
 	'subscr_failed'
 ) );
 
-if ( $is_suspended || in_array( $txn_type, $failed_payment_txn_types ) ) {
+if ( in_array( $txn_type, $failed_payment_txn_types ) ) {
 	$last_subscription_order = new MemberOrder();
 	if ( $last_subscription_order->getLastMemberOrderBySubscriptionTransactionID( $subscr_id ) ) {
 		// the payment failed
