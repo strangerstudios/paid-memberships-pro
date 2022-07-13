@@ -822,7 +822,8 @@ if ( ! function_exists( 'formatPhone' ) ) {
 }
 
 function pmpro_showRequiresMembershipMessage() {
-	// TODO $current_user $post_membership_levels_names are undefined variables
+    global $current_user, $post_membership_levels_names;
+
 	// get the correct message
 	if ( is_feed() ) {
 		$content = pmpro_getOption( 'rsstext' );
