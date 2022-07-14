@@ -80,7 +80,7 @@
 		 *
 		 * @var float
 		 */
-		private $tax = 0.00;
+		private $tax = null;
 
 		/**
 		 * Discount Code Amount
