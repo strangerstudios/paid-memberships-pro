@@ -56,9 +56,12 @@ if ( ! pmpro_ipnCheckReceiverEmail( array( strtolower( $receiver_email ), strtol
 
 /*
 	PayPal Standard
-	- we will get txn_type subscr_signup and subscr_payment (or subscr_eot or subscr_failed)
+	- we will get txn_type subscr_signup and subscr_payment (or subscr_eot or subscr_failed or subscr_cancel)
 	- subscr_signup (if amount1 = 0, then we need to update membership, else ignore and wait for payment. create invoice for $0 with just subscr_id)
 	- subscr_payment (check if we should update membership, add invoice for amount with subscr_id and payment_id)
+	- subscr_eot (usually sent for every subscription that doesn't have recurring activated, at the end)
+	- subscr_failed (usually sent if a recurring payment fails)
+	- subscr_cancel (sent on recurring payment profile cancellation)
 	- web_accept for 1-time payment only
 
 	PayPal Express
@@ -148,10 +151,17 @@ if ( $txn_type == "subscr_payment" ) {
 
 		pmpro_ipnExit();
 	} else {
+		/**
+		 * Payment statuses that should be treated as failures.
+		 *
+		 * @param array List of statuses to be treated as failures.
+		 */
+		$failed_payment_statuses = apply_filters( 'pmpro_paypal_renewal_failed_statuses', array( 'Failed', 'Voided', 'Denied', 'Expired' ) );
+
 		//subscription payment, completed or failure?
 		if ( $_POST['payment_status'] == "Completed" ) {
 			pmpro_ipnSaveOrder( $txn_id, $last_subscription_order );
-		} elseif ( $_POST['payment_status'] == "Failed" ) {
+		} elseif ( in_array( $_POST['payment_status'], $failed_payment_statuses ) ) {
 			pmpro_ipnFailedPayment( $last_subscription_order );
 		} else {
 			ipnlog( 'Payment status is ' . $_POST['payment_status'] . '.' );
@@ -224,19 +234,19 @@ if ( $txn_type == "recurring_payment" ) {
 	pmpro_ipnExit();
 }
 
-if ( $txn_type == 'recurring_payment_skipped' || $txn_type == 'subscr_failed' ) {
-	$last_subscription_order = new MemberOrder();
-	if ( $last_subscription_order->getLastMemberOrderBySubscriptionTransactionID( $subscr_id ) ) {
-		// the payment failed
-		pmpro_ipnFailedPayment( $last_subscription_order );
-	} else {
-		ipnlog( "ERROR: Couldn't find last order for this recurring payment (" . $subscr_id . ")." );
-	}
+/**
+ * IPN Txn Types that should be treated as failures.
+ *
+ * @param array List of txn types to be treated as failures.
+ */
+$failed_payment_txn_types = apply_filters( 'pmpro_paypal_renewal_failed_txn_types', array(
+	'recurring_payment_suspended_due_to_max_failed_payment', // && 'suspended' == $profile_status
+	'recurring_payment_suspended',
+	'recurring_payment_skipped',
+	'subscr_failed'
+) );
 
-	pmpro_ipnExit();
-}
-
-if ( $txn_type == "recurring_payment_suspended_due_to_max_failed_payment" && 'suspended' == $profile_status ) {
+if ( in_array( $txn_type, $failed_payment_txn_types ) ) {
 	$last_subscription_order = new MemberOrder();
 	if ( $last_subscription_order->getLastMemberOrderBySubscriptionTransactionID( $subscr_id ) ) {
 		// the payment failed
