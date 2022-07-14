@@ -866,11 +866,11 @@
 						</tr>
 						<tr class="membership_posts">
 							<th scope="row" valign="top"><label><?php esc_html_e('Single Posts', 'paid-memberships-pro' );?></label></th>
-							<td><p><?php echo sprintf( wp_kses( __( '<a target="_blank" href="%1$s">Add</a> or <a href="%2$s">edit</a> a single post to protect it.', 'paid-memberships-pro' ), $allowed_html ), esc_url( admin_url( 'post-new.php') ), esc_url( admin_url( 'edit.php') ) ); ?></p></td>
+							<td><p><?php echo sprintf( wp_kses( __( '<a target="_blank" href="%1$s">Add</a> or <a target="_blank" href="%2$s">edit</a> a single post to protect it.', 'paid-memberships-pro' ), $allowed_html ), esc_url( admin_url( 'post-new.php') ), esc_url( admin_url( 'edit.php') ) ); ?></p></td>
 						</tr>
 						<tr class="membership_posts">
 							<th scope="row" valign="top"><label><?php esc_html_e('Single Pages', 'paid-memberships-pro' );?></label></th>
-							<td><p><?php echo sprintf( wp_kses( __( '<a target="_blank" href="%1$s">Add</a> or <a href="%2$s">edit</a> a single page to protect it.', 'paid-memberships-pro' ), $allowed_html ), esc_url( add_query_arg( array( 'post_type' => 'page' ), admin_url( 'post-new.php' ) ) ), esc_url( add_query_arg( array( 'post_type' => 'page' ), admin_url( 'edit.php' ) ) ) ); ?></p></td>
+							<td><p><?php echo sprintf( wp_kses( __( '<a target="_blank" href="%1$s">Add</a> or <a target="_blank" href="%2$s">edit</a> a single page to protect it.', 'paid-memberships-pro' ), $allowed_html ), esc_url( add_query_arg( array( 'post_type' => 'page' ), admin_url( 'post-new.php' ) ) ), esc_url( add_query_arg( array( 'post_type' => 'page' ), admin_url( 'edit.php' ) ) ) ); ?></p></td>
 						</tr>
 						<tr class="membership_posts">
 							<th scope="row" valign="top"><label><?php esc_html_e('Other Content Types', 'paid-memberships-pro' );?></label></th>
