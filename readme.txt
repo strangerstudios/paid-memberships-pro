@@ -156,7 +156,7 @@ Not sure? You can find out by doing a bit a research.
 9. Membership Account page, display all sections or show specific sections using shortcode attributes.
 
 == Changelog ==
-= 2.9 - 2022-07-?? =
+= 2.9 - 2022-07-18 =
 * FEATURE: Added a "User Fields" tab to the settings page. You can now add "Register Helper" style fields through the WP admin dashboard without code. (@ideadude, @kimcoleman, @dparker1005)
 * FEATURE: The "Add Ons" tab has a new look, with better browsing and searching. (@kimcoleman)
 * FEATURE: Added support for level templates to more easily allow admins to create popular types of levels. (@kimcoleman)
