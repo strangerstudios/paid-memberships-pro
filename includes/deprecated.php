@@ -115,7 +115,7 @@ function pmpro_register_helper_deprecated() {
 		}
 	}
 }
-add_action( 'plugins_loaded', 'pmpro_register_helper_deprecated', 20 );
+add_action( 'wp', 'pmpro_register_helper_deprecated', 20 );
 
 // Check if installed, deactivate it and show a notice now.
 function pmpro_check_for_deprecated_add_ons() {
