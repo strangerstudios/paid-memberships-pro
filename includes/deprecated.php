@@ -59,6 +59,14 @@ add_action( 'init', 'pmpro_admin_init_redirect_old_menu_items' );
  * Old Register Helper functions and classes.
  */
 function pmpro_register_helper_deprecated() {
+	// Activated plugins run after plugins_loaded. Bail to be safe.
+	// IMPORTANT NOTE: This works when activating RH,
+	// but fails if you have RH custom code and activate a different plugin.
+	// We need to keep RH from ever being activated.
+	if ( pmpro_activating_plugin() ) {
+		return;
+	}
+	
 	// PMProRH_Field class
 	if ( ! class_exists( 'PMProRH_Field' ) ) {
 		class PMProRH_Field extends PMPro_Field {

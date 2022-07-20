@@ -4302,3 +4302,40 @@ function pmpro_format_field_name( $field_name ) {
 
 	return $formatted_name;
 }
+
+/**
+ * Are we activating a plugin?
+ * @since 2.9.1
+ * @param string $plugin A specific plugin to check for (optional).
+ * @return bool True if we are activating a plugin, otherwise false.
+ */
+function pmpro_activating_plugin( $plugin = null ) {
+	if ( ! is_admin() ) {
+		return false;
+	}
+	
+	if ( empty( $_REQUEST['action'] ) ) {
+		return false;	
+	}
+	
+	if ( $_REQUEST['action'] !== 'activate'
+		&& $_REQUEST['action'] !== 'activate-selected' ) {
+		return false;
+	}
+	
+	// Not checking for a specific plugin, and activating something.
+	if ( empty( $plugin ) ) {
+		return true;
+	}
+	
+	// Check if the specified plugin isn't one being activated.
+	if ( ! empty( $_REQUEST['plugin'] ) && $_REQUEST['plugin'] !== $plugin ) {
+		return false;
+	}
+	if ( ! empty( $_REQUEST['checked'] ) && ! in_array( $plugin, (array)$_REQUEST['checked'] ) ) {
+		return false;
+	}
+	
+	// Must be activating the $plugin specified.
+	return true;
+}
