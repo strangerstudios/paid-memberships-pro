@@ -744,7 +744,7 @@ class PMPro_Field {
 					$this->select2options = 'placeholder: "' . esc_attr($this->placeholder) . '"';
 				}
 			} else {
-				$r .= 'placeholder="' . __('Choose one or more.', 'pmpro-register-helper') . '" ';
+				$r .= 'placeholder="' . __('Choose one or more.', 'paid-memberships-pro') . '" ';
 			}				
 			if(!empty($this->class))
 				$r .= 'class="' . $this->class . '" ';
@@ -908,9 +908,9 @@ class PMPro_Field {
 			if(!empty($value))
 			{
 				if( ! empty( $this->file['fullurl'] ) ) {										
-					$r_end .= '<span class="pmprorh_file_' . $this->name . '_name">' . sprintf(__('Current File: %s', 'pmpro-register-helper' ), '<a target="_blank" href="' . $this->file['fullurl'] . '">' . basename($value) . '</a>' ) . '</span>';
+					$r_end .= '<span class="pmprorh_file_' . $this->name . '_name">' . sprintf(__('Current File: %s', 'paid-memberships-pro' ), '<a target="_blank" href="' . $this->file['fullurl'] . '">' . basename($value) . '</a>' ) . '</span>';
 				} else {
-					$r_end .= sprintf(__('Current File: %s', 'pmpro-register-helper' ), basename($value) );
+					$r_end .= sprintf(__('Current File: %s', 'paid-memberships-pro' ), basename($value) );
 				}
 
 				// Allow user to delete the uploaded file if we know the full location. 
@@ -919,8 +919,8 @@ class PMPro_Field {
 					if ( $this->allow_delete === true || 
 						( $this->allow_delete === 'admins' || $this->allow_delete === 'only_admin' && current_user_can( 'manage_options', $current_user->ID ) )
 					) {
-						$r_end .= '&nbsp;&nbsp;<button class="pmprorh_delete_restore_file" id="pmprorh_delete_file_' . $this->name . '_button" onclick="return false;">' . __( '[delete]', 'pmpro-register-helper' ) . '</button>';
-					$r_end .= '<button class="pmprorh_delete_restore_file" id="pmprorh_cancel_delete_file_' . $this->name . '_button" style="display: none;" onclick="return false;">' . __( '[restore]', 'pmpro-register-helper' ) . '</button>';
+						$r_end .= '&nbsp;&nbsp;<button class="pmprorh_delete_restore_file" id="pmprorh_delete_file_' . $this->name . '_button" onclick="return false;">' . __( '[delete]', 'paid-memberships-pro' ) . '</button>';
+					$r_end .= '<button class="pmprorh_delete_restore_file" id="pmprorh_cancel_delete_file_' . $this->name . '_button" style="display: none;" onclick="return false;">' . __( '[restore]', 'paid-memberships-pro' ) . '</button>';
 					$r_end .= '<input id="pmprorh_delete_file_' . $this->name . '_field" name="pmprorh_delete_file_' . $this->name . '_field" type="hidden" value="0" />';
 					}
 				}
