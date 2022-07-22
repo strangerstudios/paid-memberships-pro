@@ -658,15 +658,24 @@ class PMPro_Field {
 		}
 		elseif($this->type == "number")
 		{
-			$r = '<input type="number"  min="0" step="1" pattern="\d+" id="' . $this->id . '" name="' . $this->name . '" value="' . esc_attr($value) . '" ';
+			$r = '<input type="number" pattern="\d+" id="' . $this->id . '" name="' . $this->name . '" value="' . esc_attr($value) . '" ';
 			if(!empty($this->size))
 				$r .= 'size="' . $this->size . '" ';
 			if(!empty($this->class))
 				$r .= 'class="' . $this->class . '" ';
 			if(!empty($this->readonly))
 				$r .= 'readonly="readonly" ';
-			if(!empty($this->html_attributes))
-				$r .= $this->getHTMLAttributes();
+			if ( empty( $this->html_attributes ) ) {
+				$this->html_attributes = array();
+			}
+			// If custom values not available set the defaults
+			if ( ! array_key_exists( 'min', $this->html_attributes ) ) {
+				$this->html_attributes['min'] = '0';
+			}
+			if ( ! array_key_exists( 'step', $this->html_attributes ) ) {
+				$this->html_attributes['step'] = '1';
+			}
+			$r .= $this->getHTMLAttributes();			
 			$r .= ' />';				
 		}
 		elseif($this->type == "password")
