@@ -80,7 +80,7 @@ function pmpro_register_helper_deprecated() {
 		}
 	}
 	
-	// pmpro_add_user_taxonomy
+	// pmprorh_add_user_taxonomy
 	if ( ! function_exists( 'pmprorh_add_user_taxonomy' ) ) {
 		function pmprorh_add_user_taxonomy( $name, $name_plural ) {
 			return pmpro_add_user_taxonomy( $name, $name_plural );
