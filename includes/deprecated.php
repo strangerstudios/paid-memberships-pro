@@ -67,7 +67,7 @@ function pmpro_register_helper_deprecated() {
 	}
 	
 	// pmprorh_add_registration_field function
-	if ( ! function_exists( 'pmprorh_add_registration_field' ) ) {
+	if ( ! function_exists( 'pmprorh_add_registration_field' ) ) {		
 		function pmprorh_add_registration_field( $where, $field ) {
 			return pmpro_add_user_field( $where, $field );
 		}

@@ -115,6 +115,15 @@ class PMPro_Field {
 	 * @var array
 	 */
 	public $depends = array();
+	
+	/**
+	 * Flag to determine if depends conditions should be ANDed or ORed together.
+	 *
+	 * @since 2.9.1
+	 *
+	 * @var bool
+	 */
+	public $depends_or = false;
 
 	/**
 	 * Whether the field value should be sanitized before saving.
@@ -1093,24 +1102,35 @@ class PMPro_Field {
 					$binds[] = "#" . esc_html( $field_id ) .",input:radio[name=". esc_html( $field_id ) ."]";
 				}				
 			}
-							
-			if(!empty($checks) && !empty($binds))
-			{
+										
+			if(!empty($checks) && !empty($binds)) {
 			?>
 			<script>
 				//function to check and hide/show
-				function pmprorh_<?php echo esc_html( $this->id );?>_hideshow()
-				{						
-					if(
-						<?php echo implode(" && ", $checks); ?>
-					)
-					{
+				function pmprorh_<?php echo esc_html( $this->id );?>_hideshow() {						
+					let checks = [];
+					<?php
+					foreach( $checks as $check ) {
+					?>
+					checks.push(<?php echo $check?>);
+					<?php
+					}
+					
+					if ( $this->depends_or ) {
+					?>
+						let show = checks.indexOf(true) > -1;
+					<?php
+					} else {
+					?>
+						let show = checks.indexOf(false) === -1;
+					<?php
+					}
+					?>				
+					if(show) {
 						jQuery('#<?php echo esc_html( $this->id );?>_tr').show();
 						jQuery('#<?php echo esc_html( $this->id );?>_div').show();
 						jQuery('#<?php echo esc_html( $this->id );?>').removeAttr('disabled');
-					}
-					else
-					{
+					} else {
 						jQuery('#<?php echo esc_html( $this->id );?>_tr').hide();
 						jQuery('#<?php echo esc_html( $this->id );?>_div').hide();
 						jQuery('#<?php echo esc_html( $this->id );?>').attr('disabled', 'disabled');
@@ -1226,7 +1246,7 @@ class PMPro_Field {
 			<?php } ?>
 		</div>	
 		<?php
-		
+
 		$this->getDependenciesJS();
 	}
 	
