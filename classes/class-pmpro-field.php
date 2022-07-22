@@ -1171,23 +1171,23 @@ class PMPro_Field {
 			} elseif(!empty($current_user->ID) && metadata_exists("user", $current_user->ID, $this->meta_key)) {
 				$meta = get_user_meta($current_user->ID, $this->meta_key, true);
 				$value = $meta;
-			} elseif(!empty($this->value))
+			} elseif(isset($this->value)) {
 				$value = $this->value;
-			else
+			} else {
 				$value = "";
-		} elseif(isset($_REQUEST[$this->name]))
+			}
+		} elseif(isset($_REQUEST[$this->name])) {
 			$value = $_REQUEST[$this->name];
-		elseif(isset($_SESSION[$this->name]))
-		{
+		} elseif(isset($_SESSION[$this->name])) {
 			//file or value?
 			if(is_array($_SESSION[$this->name]) && !empty($_SESSION[$this->name]['name']))
 			{
 				$_FILES[$this->name] = $_SESSION[$this->name];
 				$this->file = $_SESSION[$this->name]['name'];
 				$value = $_SESSION[$this->name]['name'];
-			}
-			else
+			} else {
 				$value = $_SESSION[$this->name];
+			}
 		}
 		elseif(!empty($current_user->ID) && metadata_exists("user", $current_user->ID, $this->meta_key))
 		{				
@@ -1196,21 +1196,23 @@ class PMPro_Field {
 			{
 				$this->file = get_user_meta($current_user->ID, $this->meta_key, true);
 				$value = $this->file['filename'];
+			} else {
+				$value = $meta;
 			}
-			else
-				$value = $meta;									
 		} elseif ( ! empty( $current_user->ID ) ) {
 			$userdata = get_userdata( $current_user->ID );
 			if ( ! empty( $userdata->{$this->name} ) ) {
 				$value = $userdata->{$this->name};
+			} elseif(isset($this->value)) {
+				$value = $this->value;
 			} else {
 				$value = '';
 			}
-		}
-		elseif(!empty($this->value))
+		} elseif(isset($this->value)) {
 			$value = $this->value;
-		else
+		} else {
 			$value = "";
+		}
 
 		//update class value for div and field element
 		$this->class .= " " . pmpro_getClassForField($this->name);
