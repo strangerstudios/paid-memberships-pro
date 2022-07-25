@@ -1623,7 +1623,7 @@ require_once( dirname( __FILE__ ) . '/admin_header.php' ); ?>
 
 							if ( ! empty( $order->payment_type ) ) {
 								if ( in_array( $order->payment_type, array( 'PayPal Standard', 'PayPal Express' ) ) ) {
-									$r .= esc_html( 'PayPal', 'paid-memberships-pro' );
+									$r .= esc_html__( 'PayPal', 'paid-memberships-pro' );
 								} else {
 									$r .= esc_html( ucwords( $order->payment_type ) );
 								}
@@ -1657,7 +1657,7 @@ require_once( dirname( __FILE__ ) . '/admin_header.php' ); ?>
 
 							// If this column is completely empty, set $r to a dash.
 							if ( empty( $r ) ) {
-								$r .= esc_html( '&#8212;', 'paid-memberships-pro' );
+								$r .= esc_html__( '&#8212;', 'paid-memberships-pro' );
 							}
 
 							// Echo the data for this column.
