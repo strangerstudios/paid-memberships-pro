@@ -406,7 +406,7 @@
 			echo sprintf(
 				// translators: %s is the Level ID.
 				__( 'Edit Level ID: %s', 'paid-memberships-pro' ),
-				esc_attr( $level->id ),
+				esc_attr( $level->id )
 			);
 		?>
 		</h1>
