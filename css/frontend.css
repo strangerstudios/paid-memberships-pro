@@ -128,6 +128,19 @@ form.pmpro_form .pmpro_checkout-field-checkbox label {
 	display: inline-block;
 	width: auto;
 }
+form.pmpro_form .pmpro_checkout-field-checkbox_grouped ul {
+	list-style: none;
+	margin-left: 0;
+	padding-left: 0;
+}
+form.pmpro_form .pmpro_checkout-field-checkbox_grouped li {
+	list-style: none;
+	margin-left: 0;
+	padding-left: 0;
+}
+form.pmpro_form .pmpro_checkout-field-radio-item {
+	margin-bottom: 0;
+}
 form.pmpro_form .pmpro_checkout-field-radio-item label {
 	cursor: pointer;
 	display: inline-block;
@@ -185,13 +198,13 @@ form.pmpro_form #pmpro_processing_message {
 	text-align: left;
 }
 
-/* Lot Password Frontend Form */
+/* Lost Password Frontend Form */
 form.pmpro_form .pmpro_lost_password-fields div {
 	margin: 0 0 1em 0;
 }
 
 /* Member Profile Edit Frontend Form */
-form.pmpro_form .pmpro_member_profile_edit-fields div {
+form.pmpro_form .pmpro_member_profile_edit-fields > div {
 	margin: 0 0 1em 0;
 }
 
