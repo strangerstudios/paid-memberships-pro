@@ -6,8 +6,8 @@
 		die( __( 'You do not have permissions to perform this action.', 'paid-memberships-pro' ) );
 	}
 
-	// Get all levels regardless of visibility.	
-	$levels = pmpro_getAllLevels( false, true );
+	// Get all levels regardless of visibility.
+	$levels = pmpro_sort_levels_by_order( pmpro_getAllLevels( true, true ) );
 
 	/**
 	 * Save fields if form was submitted.
