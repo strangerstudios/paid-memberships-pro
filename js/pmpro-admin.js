@@ -425,7 +425,7 @@ function pmpro_userfields_prep_click_events() {
         var fieldsettings = fieldcontainer.children('.pmpro_userfield-field-settings');
         var fieldname = fieldsettings.find('input[name=pmpro_userfields_field_name]');
         if ( ! fieldname.val() ) {
-            fieldname.val( jQuery(this).val().toLowerCase().replace(/\s/g, '_') );
+            fieldname.val( jQuery(this).val().toLowerCase().replace(/[^a-z0-9]/gi, '_') );
         }
     });
 
