@@ -417,10 +417,7 @@ class PMPro_Field {
 
 		// Convert all terms in the value submitted to slugs.
 		$new_values = array();
-		if ( ! is_array( $value ) ) {
-			$value = explode( '', $value );
-		}
-		foreach ( $value as $term ) {
+		foreach ( (array)$value as $term ) {
 			if ( is_numeric( $term ) ) {
 				$term_object = get_term_by( 'ID', $term, $taxonomy );
 				$new_values[] = $term_object->name;
@@ -772,6 +769,7 @@ class PMPro_Field {
 		{
 			$count = 0;
 			$r = '';
+			$r .= '<div class="pmpro_checkout-field-radio-items">';
 			foreach($this->options as $ovalue => $option)
 			{
 				$count++;
@@ -789,6 +787,7 @@ class PMPro_Field {
 				$r .= '<label class="pmprorh_radio_label" for="pmprorh_field_' . $this->name . $count . '">' . $option . '</label> &nbsp; ';
 				$r .= '</div> <!-- end pmpro_checkout-field-radio-item -->';
 			}
+			$r .= '</div> <!-- end pmpro_checkout-field-radio-items -->';
 		}
 		elseif($this->type == "checkbox")
 		{
@@ -819,7 +818,7 @@ class PMPro_Field {
 					$class = $this->class;
 				}
 
-			    $r .= sprintf( '<li style="list-style: none;"><span class="pmprorh_checkbox_span">' );
+			    $r .= sprintf( '<li><span class="pmprorh_checkbox_span">' );
 				$r .= sprintf(
                     '<input name="%1$s[]" type="checkbox" value="%2$s" id="%3$s" class="%4$s" %5$s %6$s %7$s />',
                      $this->name,
