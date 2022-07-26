@@ -549,6 +549,10 @@
 .admin_page_pmpro-userfields li.pmpro_userfield-group-column-label {
 	flex: 4;
 }
+.admin_page_pmpro-userfields li.pmpro_userfield-group-column-label .pmpro_userfield-field-options {
+	color: #999;
+}
+
 .admin_page_pmpro-userfields li.pmpro_userfield-group-column-name {
 	flex: 2;
 }
