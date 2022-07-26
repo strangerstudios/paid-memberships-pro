@@ -379,7 +379,7 @@ class PMPro_Field {
 		}
 		elseif($this->type == "checkbox")
 		{
-			if(!isset($this->text))
+			if ( ! isset( $this->text ) || $this->text === '' )
 			{
 				$this->text = $this->label;
 				$this->showmainlabel = false;
