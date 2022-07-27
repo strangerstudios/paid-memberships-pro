@@ -1561,6 +1561,7 @@ function pmpro_load_user_fields_from_settings() {
                     'hint' => $settings_field->hint,
                     'options' => $options,
                     'levels' => $levels,
+                    'memberslistcsv' => true,
                 )
             );
             pmpro_add_user_field( $group->name, $field );
