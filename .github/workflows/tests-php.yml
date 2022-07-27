@@ -1,5 +1,4 @@
 name: 'Codeception Tests'
-on: workflow_dispatch
 on:
   pull_request:
     paths:
