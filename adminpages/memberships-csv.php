@@ -246,14 +246,14 @@ $headers[] = "Content-Disposition: attachment; filename={$filename};";
 $csv_file_header_array = array(
 	'date',
 	'signups',
-	'cancellations',	
+	'cancellations'
 );
 
 // These are the meta_keys for the fields (arrays are object, property. so e.g. $theuser->ID) - Date items are manually handled further down.
 $default_columns = array(
 	array( 'each_date', 'date' ),
 	array( 'each_date', 'signups' ),
-	array( 'each_date', 'cancellations' ),
+	array( 'each_date', 'cancellations' )
 );
 
 $dateformat = get_option( 'date_format' ) . ' ' . get_option( 'time_format' );

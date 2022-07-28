@@ -251,7 +251,7 @@
 									$action_button = array(
 										'label' => '',
 										'style' => 'button pmproAddOnActionButton',
-										'hidden_fields' => array(),
+										'hidden_fields' => array()
 									);
 
 									if ( ! empty( $addon['needs_update'] ) ) {
@@ -267,7 +267,7 @@
 													self_admin_url(
 														add_query_arg( array(
 															'action' => 'upgrade-plugin',
-															'plugin' => $plugin_file,
+															'plugin' => $plugin_file
 														),
 														'update.php'
 													)
@@ -288,9 +288,9 @@
 												self_admin_url(
 													add_query_arg( array(
 														'action' => 'install-plugin',
-														'plugin' => $addon['Slug'],
+														'plugin' => $addon['Slug']
 													),
-													'update.php',
+													'update.php'
 													)
 												),
 												'install-plugin_' . $addon['Slug']
@@ -303,9 +303,9 @@
 											self_admin_url(
 												add_query_arg( array(
 													'action' => 'activate',
-													'plugin' => $plugin_file,
+													'plugin' => $plugin_file
 												),
-												'plugins.php',
+												'plugins.php'
 												)
 											),
 											'activate-plugin_' . $plugin_file

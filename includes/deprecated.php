@@ -59,6 +59,11 @@ add_action( 'init', 'pmpro_admin_init_redirect_old_menu_items' );
  * Old Register Helper functions and classes.
  */
 function pmpro_register_helper_deprecated() {
+	// Activated plugins run after plugins_loaded. Bail to be safe.	
+	if ( pmpro_activating_plugin( 'pmpro-register-helper/pmpro-register-helper.php' ) ) {
+		return;
+	}
+	
 	// PMProRH_Field class
 	if ( ! class_exists( 'PMProRH_Field' ) ) {
 		class PMProRH_Field extends PMPro_Field {
@@ -67,7 +72,7 @@ function pmpro_register_helper_deprecated() {
 	}
 	
 	// pmprorh_add_registration_field function
-	if ( ! function_exists( 'pmprorh_add_registration_field' ) ) {
+	if ( ! function_exists( 'pmprorh_add_registration_field' ) ) {		
 		function pmprorh_add_registration_field( $where, $field ) {
 			return pmpro_add_user_field( $where, $field );
 		}
@@ -77,6 +82,13 @@ function pmpro_register_helper_deprecated() {
 	if ( ! function_exists( 'pmprorh_add_checkout_box' ) ) {
 		function pmprorh_add_checkout_box( $name, $label = NULL, $description = '', $order = NULL ) {
 			return pmpro_add_field_group( $name, $label, $description, $order );
+		}
+	}
+	
+	// pmprorh_add_user_taxonomy
+	if ( ! function_exists( 'pmprorh_add_user_taxonomy' ) ) {
+		function pmprorh_add_user_taxonomy( $name, $name_plural ) {
+			return pmpro_add_user_taxonomy( $name, $name_plural );
 		}
 	}
 	

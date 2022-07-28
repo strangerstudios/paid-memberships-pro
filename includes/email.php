@@ -284,7 +284,7 @@ function pmpro_email_templates_send_test() {
 
 	//setup test email
 	$test_email = new PMProEmail();
-	$test_email->to = sanitize_email( $_REQUEST['email'] );
+	$test_email->email = sanitize_email( $_REQUEST['email'] );
 	$test_email->template = sanitize_text_field( str_replace('email_', '', $_REQUEST['template']) );
 
 	//add filter to change recipient

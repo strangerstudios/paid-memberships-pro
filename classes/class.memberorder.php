@@ -376,6 +376,21 @@
 			return property_exists( $this, $property ) || isset( $this->other_properties[ $property ] );
 	
 		}
+
+		/**
+		 * Unset Magic Method.
+		 *
+		 * @since TBD
+		 * 
+		 * @param string $property The property we want to unset.
+		 */
+		public function __unset( $property ) {
+			if ( property_exists( $this, $property ) ) {
+				unset( $this->{$property} );
+			} else {
+				unset( $this->other_properties[ $property ] );
+			}
+		}
 		
 		/**
 		 * Get a specific order by ID, code, or an array of arguments

@@ -401,13 +401,15 @@ if ( ! empty( $_REQUEST['save'] ) ) {
 	}
 }
 
-require_once( dirname( __FILE__ ) . '/admin_header.php' );
+require_once( dirname( __FILE__ ) . '/admin_header.php' ); ?>
 
-if ( function_exists( 'pmpro_add_email_order_modal' ) ) {
-	// Load the email order modal.
-	pmpro_add_email_order_modal();
-}
+<hr class="wp-header-end">
 
+<?php
+	if ( function_exists( 'pmpro_add_email_order_modal' ) ) {
+		// Load the email order modal.
+		pmpro_add_email_order_modal();
+	}
 ?>
 
 <?php if ( ! empty( $order ) ) { ?>
@@ -449,7 +451,6 @@ if ( function_exists( 'pmpro_add_email_order_modal' ) ) {
 				);
 			}
 		?>
-	<hr class="wp-header-end">	
 	<?php } else { ?>
 		<h1 class="wp-heading-inline"><?php esc_html_e( 'New Order', 'paid-memberships-pro' ); ?></h1>
 	<?php } ?>
@@ -1077,9 +1078,6 @@ if ( function_exists( 'pmpro_add_email_order_modal' ) ) {
 		?>
 		<a target="_blank" href="<?php echo esc_url( $export_url ); ?>" class="page-title-action pmpro-has-icon pmpro-has-icon-download"><?php esc_html_e( 'Export to CSV', 'paid-memberships-pro' ); ?></a>
 
-		<hr class="wp-header-end">
-
-
 		<?php if ( ! empty( $pmpro_msg ) ) { ?>
 			<div id="message" class="
 			<?php
@@ -1625,7 +1623,7 @@ if ( function_exists( 'pmpro_add_email_order_modal' ) ) {
 
 							if ( ! empty( $order->payment_type ) ) {
 								if ( in_array( $order->payment_type, array( 'PayPal Standard', 'PayPal Express' ) ) ) {
-									$r .= esc_html( 'PayPal', 'paid-memberships-pro' );
+									$r .= esc_html__( 'PayPal', 'paid-memberships-pro' );
 								} else {
 									$r .= esc_html( ucwords( $order->payment_type ) );
 								}
@@ -1659,7 +1657,7 @@ if ( function_exists( 'pmpro_add_email_order_modal' ) ) {
 
 							// If this column is completely empty, set $r to a dash.
 							if ( empty( $r ) ) {
-								$r .= esc_html( '&#8212;', 'paid-memberships-pro' );
+								$r .= esc_html__( '&#8212;', 'paid-memberships-pro' );
 							}
 
 							// Echo the data for this column.

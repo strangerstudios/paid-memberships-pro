@@ -1026,8 +1026,8 @@ function pmpro_stripe_webhook_populate_order_from_payment( $order, $payment_meth
 	$order->billing->phone = empty( $payment_method->billing_details->phone ) ? '' : $payment_method->billing_details->phone;
 
 	$name_parts = empty( $payment_method->billing_details->name ) ? [] : pnp_split_full_name( $payment_method->billing_details->name );
-	$order->FirstName = empty( $nameparts['fname'] ) ? '' : $nameparts['fname'];
-	$order->LastName = empty( $nameparts['lname'] ) ? '' : $nameparts['lname'];
+	$order->FirstName = empty( $name_parts['fname'] ) ? '' : $name_parts['fname'];
+	$order->LastName = empty( $name_parts['lname'] ) ? '' : $name_parts['lname'];
 	$order->Email = $wpdb->get_var("SELECT user_email FROM $wpdb->users WHERE ID = '" . esc_sql( $order->user_id ) . "' LIMIT 1");
 	$order->Address1 = $order->billing->street;
 	$order->City = $order->billing->city;
