@@ -82,7 +82,7 @@ $csv_file_header_array = array(
 	"date",
 	"total",
 	"new",
-	"renewals",
+	"renewals"
 );
 
 //these are the meta_keys for the fields (arrays are object, property. so e.g. $theuser->ID)
@@ -90,7 +90,7 @@ $default_columns = array(
 	array( "date", "date" ),
 	array( "total", "total" ),
 	array( "new", "new" ),
-	array( "renewals", "renewals" ),
+	array( "renewals", "renewals" )
 );
 
 $dateformat = get_option( 'date_format' ) . ' ' . get_option( 'time_format' );

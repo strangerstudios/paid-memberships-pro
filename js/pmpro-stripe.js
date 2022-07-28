@@ -68,6 +68,11 @@ jQuery( document ).ready( function( $ ) {
 		pmpro_require_billing = pmproStripe.pmpro_require_billing;
 	}
 	$( '.pmpro_form' ).submit( function( event ) {
+		// If there is no "level" input, then this is not a checkout form. Return.
+		if ( $( 'input[name="level"]' ).length === 0 ) {
+			return;
+		}
+
 		var name, address;
 
 		// Prevent the form from submitting with the default action.

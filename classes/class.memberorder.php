@@ -80,7 +80,7 @@
 		 *
 		 * @var float
 		 */
-		private $tax = 0.00;
+		private $tax = null;
 
 		/**
 		 * Discount Code Amount
@@ -276,6 +276,16 @@
 			//set up the gateway
 			$this->setGateway(pmpro_getOption("gateway"));
 
+			//set up the billing address structure
+			$this->billing = new stdClass();
+			$this->billing->name = '';
+			$this->billing->street = '';
+			$this->billing->city = '';
+			$this->billing->state = '';
+			$this->billing->zip = '';
+			$this->billing->country = '';
+			$this->billing->phone = '';
+
 			//get data if an id was passed
 			if ( $id ) {
 				if ( is_numeric( $id ) ) {
@@ -299,7 +309,7 @@
 		 * 
 		 * @param string $property The property we want to get
 		 *
-		 * @return mixed|null
+		 * @return mixed|void
 		 */
 		public function __get( $property ) {
 

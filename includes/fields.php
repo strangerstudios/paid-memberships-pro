@@ -107,16 +107,16 @@ function pmpro_add_user_taxonomy( $name, $name_plural ) {
 		'name' => ucwords( $name ),
 		'singular_name' => ucwords( $name ),
 		'menu_name' => ucwords( $name_plural ),
-		'search_items' => sprintf( __( 'Search %s', 'pmpro-register-helper' ), ucwords( $name_plural ) ),
-		'popular_items' => sprintf( __( 'Popular %s', 'pmpro-register-helper' ), ucwords( $name_plural ) ),
-		'all_items' => sprintf( __( 'All %s', 'pmpro-register-helper' ), ucwords( $name_plural ) ),
-		'edit_item' => sprintf( __( 'Edit %s', 'pmpro-register-helper' ), ucwords( $name ) ),
-		'update_item' => sprintf( __( 'Update %s', 'pmpro-register-helper' ), ucwords( $name ) ),
-		'add_new_item' => sprintf( __( 'Add New %s', 'pmpro-register-helper' ), ucwords( $name ) ),
-		'new_item_name' => sprintf( __( 'New %s Name', 'pmpro-register-helper' ), ucwords( $name ) ),
-		'separate_items_with_commas' => sprintf( __( 'Separate %s with commas', 'pmpro-register-helper' ), $name_plural ),
-		'add_or_remove_items' => sprintf( __( 'Add or remove %s', 'pmpro-register-helper' ), $name_plural ),
-		'choose_from_most_used' => sprintf( __( 'Choose from the most popular %s', 'pmpro-register-helper' ), $name_plural ),
+		'search_items' => sprintf( __( 'Search %s', 'paid-memberships-pro' ), ucwords( $name_plural ) ),
+		'popular_items' => sprintf( __( 'Popular %s', 'paid-memberships-pro' ), ucwords( $name_plural ) ),
+		'all_items' => sprintf( __( 'All %s', 'paid-memberships-pro' ), ucwords( $name_plural ) ),
+		'edit_item' => sprintf( __( 'Edit %s', 'paid-memberships-pro' ), ucwords( $name ) ),
+		'update_item' => sprintf( __( 'Update %s', 'paid-memberships-pro' ), ucwords( $name ) ),
+		'add_new_item' => sprintf( __( 'Add New %s', 'paid-memberships-pro' ), ucwords( $name ) ),
+		'new_item_name' => sprintf( __( 'New %s Name', 'paid-memberships-pro' ), ucwords( $name ) ),
+		'separate_items_with_commas' => sprintf( __( 'Separate %s with commas', 'paid-memberships-pro' ), $name_plural ),
+		'add_or_remove_items' => sprintf( __( 'Add or remove %s', 'paid-memberships-pro' ), $name_plural ),
+		'choose_from_most_used' => sprintf( __( 'Choose from the most popular %s', 'paid-memberships-pro' ), $name_plural ),
 	);
 	
 	/**
@@ -478,7 +478,7 @@ function pmpro_registration_checks_for_user_fields( $okay ) {
 						if((!$filetype['type'] || !$filetype['ext'] ) && !current_user_can( 'unfiltered_upload' ))
 						{
 							if($okay)	//only want to update message if there is no previous error
-								pmpro_setMessage(sprintf(__("Sorry, the file type for %s is not permitted for security reasons.", "pmprorh"), $_FILES[$field->name]['name']), "pmpro_error");
+								pmpro_setMessage(sprintf(__("Sorry, the file type for %s is not permitted for security reasons.", "paid-memberships-pro"), $_FILES[$field->name]['name']), "pmpro_error");
 							return false;
 						}
 						else
@@ -487,7 +487,7 @@ function pmpro_registration_checks_for_user_fields( $okay ) {
 							if(!empty($field->ext) && !in_array($filetype['ext'], $field->ext))
 							{
 								if($okay)	//only want to update message if there is no previous error
-									pmpro_setMessage(sprintf(__("Sorry, the file type for %s is not permitted for security reasons.", "pmprorh"), $_FILES[$field->name]['name']), "pmpro_error");
+									pmpro_setMessage(sprintf(__("Sorry, the file type for %s is not permitted for security reasons.", "paid-memberships-pro"), $_FILES[$field->name]['name']), "pmpro_error");
 								return false;
 							}
 						}
@@ -513,10 +513,10 @@ function pmpro_registration_checks_for_user_fields( $okay ) {
 		$pmpro_error_fields = array_merge((array)$pmpro_error_fields, $required);
 
 		if( count( $required ) == 1 ) {
-			$pmpro_msg = sprintf( __( 'The %s field is required.', 'pmpro-register-helper' ),  implode(", ", $required_labels) );
+			$pmpro_msg = sprintf( __( 'The %s field is required.', 'paid-memberships-pro' ),  implode(", ", $required_labels) );
 			$pmpro_msgt = 'pmpro_error';
 		} else {
-			$pmpro_msg = sprintf( __( 'The %s fields are required.', 'pmpro-register-helper' ),  implode(", ", $required_labels) );
+			$pmpro_msg = sprintf( __( 'The %s fields are required.', 'paid-memberships-pro' ),  implode(", ", $required_labels) );
 			$pmpro_msgt = 'pmpro_error';
 		}
 
@@ -805,7 +805,7 @@ function pmpro_add_member_admin_save_user_fields( $uid = null, $user = null ) {
 		global $pmpro_msgt;
 		global $pmpro_msg;
 
-		$pmpro_msg = __("Unable to add/update PMPro Register Helper registration fields for this member", "pmprorh");
+		$pmpro_msg = __("Unable to add/update user fields for this member", "paid-memberships-pro");
 		$pmpro_msgt = "pmpro_error";
 
 		return false;
@@ -1561,6 +1561,7 @@ function pmpro_load_user_fields_from_settings() {
                     'hint' => $settings_field->hint,
                     'options' => $options,
                     'levels' => $levels,
+                    'memberslistcsv' => true,
                 )
             );
             pmpro_add_user_field( $group->name, $field );

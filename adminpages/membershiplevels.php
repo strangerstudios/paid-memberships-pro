@@ -171,7 +171,7 @@
 			$msgt .= ' <strong class="red">' . sprintf( __( 'WARNING: A level was set with both a recurring billing amount and an expiration date. You only need to set one of these unless you really want this membership to expire after a specific time period. For more information, <a target="_blank" rel="nofollow noopener" href="%s">see our post here</a>.', 'paid-memberships-pro' ), 'https://www.paidmembershipspro.com/important-notes-on-recurring-billing-and-expiration-dates-for-membership-levels/?utm_source=plugin&utm_medium=pmpro-membershiplevels&utm_campaign=blog&utm_content=important-notes-on-recurring-billing-and-expiration-dates-for-membership-levels' ) . '</strong>';
 
 			// turn success to errors
-			if( $page_msg > 0 ) {
+			if ( ! empty( $page_msg ) && $page_msg > 0 ) {
 				$page_msg = 0 - $page_msg;
 			}
 		}
@@ -406,7 +406,7 @@
 			echo sprintf(
 				// translators: %s is the Level ID.
 				__( 'Edit Level ID: %s', 'paid-memberships-pro' ),
-				esc_attr( $level->id ),
+				esc_attr( $level->id )
 			);
 		?>
 		</h1>
@@ -866,11 +866,11 @@
 						</tr>
 						<tr class="membership_posts">
 							<th scope="row" valign="top"><label><?php esc_html_e('Single Posts', 'paid-memberships-pro' );?></label></th>
-							<td><p><?php echo sprintf( wp_kses( __( '<a target="_blank" href="%1$s">Add</a> or <a href="%2$s">edit</a> a single post to protect it.', 'paid-memberships-pro' ), $allowed_html ), esc_url( admin_url( 'post-new.php') ), esc_url( admin_url( 'edit.php') ) ); ?></p></td>
+							<td><p><?php echo sprintf( wp_kses( __( '<a target="_blank" href="%1$s">Add</a> or <a target="_blank" href="%2$s">edit</a> a single post to protect it.', 'paid-memberships-pro' ), $allowed_html ), esc_url( admin_url( 'post-new.php') ), esc_url( admin_url( 'edit.php') ) ); ?></p></td>
 						</tr>
 						<tr class="membership_posts">
 							<th scope="row" valign="top"><label><?php esc_html_e('Single Pages', 'paid-memberships-pro' );?></label></th>
-							<td><p><?php echo sprintf( wp_kses( __( '<a target="_blank" href="%1$s">Add</a> or <a href="%2$s">edit</a> a single page to protect it.', 'paid-memberships-pro' ), $allowed_html ), esc_url( add_query_arg( array( 'post_type' => 'page' ), admin_url( 'post-new.php' ) ) ), esc_url( add_query_arg( array( 'post_type' => 'page' ), admin_url( 'edit.php' ) ) ) ); ?></p></td>
+							<td><p><?php echo sprintf( wp_kses( __( '<a target="_blank" href="%1$s">Add</a> or <a target="_blank" href="%2$s">edit</a> a single page to protect it.', 'paid-memberships-pro' ), $allowed_html ), esc_url( add_query_arg( array( 'post_type' => 'page' ), admin_url( 'post-new.php' ) ) ), esc_url( add_query_arg( array( 'post_type' => 'page' ), admin_url( 'edit.php' ) ) ) ); ?></p></td>
 						</tr>
 						<tr class="membership_posts">
 							<th scope="row" valign="top"><label><?php esc_html_e('Other Content Types', 'paid-memberships-pro' );?></label></th>
@@ -1104,15 +1104,6 @@
 		<?php if(empty($_REQUEST['s']) && count($reordered_levels) > 1) { ?>
 		    <p><?php esc_html_e('Drag and drop membership levels to reorder them on the Levels page.', 'paid-memberships-pro' ); ?></p>
 	    <?php } ?>
-
-		<?php
-			// Show the settings page message.
-			if ( ! empty( $page_msg ) ) { ?>
-				<div class="inline notice notice-large <?php echo $page_msg > 0 ? 'notice-success' : 'notice-error'; ?>">
-					<p><?php echo $page_msgt; ?></p>
-				</div>
-			<?php }
-		?>
 
 	    <?php
 	    	//going to capture the output of this table so we can filter it

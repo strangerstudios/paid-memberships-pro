@@ -115,6 +115,15 @@ class PMPro_Field {
 	 * @var array
 	 */
 	public $depends = array();
+	
+	/**
+	 * Flag to determine if depends conditions should be ANDed or ORed together.
+	 *
+	 * @since 2.9.1
+	 *
+	 * @var bool
+	 */
+	public $depends_or = false;
 
 	/**
 	 * Whether the field value should be sanitized before saving.
@@ -649,15 +658,24 @@ class PMPro_Field {
 		}
 		elseif($this->type == "number")
 		{
-			$r = '<input type="number"  min="0" step="1" pattern="\d+" id="' . $this->id . '" name="' . $this->name . '" value="' . esc_attr($value) . '" ';
+			$r = '<input type="number" pattern="\d+" id="' . $this->id . '" name="' . $this->name . '" value="' . esc_attr($value) . '" ';
 			if(!empty($this->size))
 				$r .= 'size="' . $this->size . '" ';
 			if(!empty($this->class))
 				$r .= 'class="' . $this->class . '" ';
 			if(!empty($this->readonly))
 				$r .= 'readonly="readonly" ';
-			if(!empty($this->html_attributes))
-				$r .= $this->getHTMLAttributes();
+			if ( empty( $this->html_attributes ) ) {
+				$this->html_attributes = array();
+			}
+			// If custom values not available set the defaults
+			if ( ! array_key_exists( 'min', $this->html_attributes ) ) {
+				$this->html_attributes['min'] = '0';
+			}
+			if ( ! array_key_exists( 'step', $this->html_attributes ) ) {
+				$this->html_attributes['step'] = '1';
+			}
+			$r .= $this->getHTMLAttributes();			
 			$r .= ' />';				
 		}
 		elseif($this->type == "password")
@@ -744,7 +762,7 @@ class PMPro_Field {
 					$this->select2options = 'placeholder: "' . esc_attr($this->placeholder) . '"';
 				}
 			} else {
-				$r .= 'placeholder="' . __('Choose one or more.', 'pmpro-register-helper') . '" ';
+				$r .= 'placeholder="' . __('Choose one or more.', 'paid-memberships-pro') . '" ';
 			}				
 			if(!empty($this->class))
 				$r .= 'class="' . $this->class . '" ';
@@ -908,9 +926,9 @@ class PMPro_Field {
 			if(!empty($value))
 			{
 				if( ! empty( $this->file['fullurl'] ) ) {										
-					$r_end .= '<span class="pmprorh_file_' . $this->name . '_name">' . sprintf(__('Current File: %s', 'pmpro-register-helper' ), '<a target="_blank" href="' . $this->file['fullurl'] . '">' . basename($value) . '</a>' ) . '</span>';
+					$r_end .= '<span class="pmprorh_file_' . $this->name . '_name">' . sprintf(__('Current File: %s', 'paid-memberships-pro' ), '<a target="_blank" href="' . $this->file['fullurl'] . '">' . basename($value) . '</a>' ) . '</span>';
 				} else {
-					$r_end .= sprintf(__('Current File: %s', 'pmpro-register-helper' ), basename($value) );
+					$r_end .= sprintf(__('Current File: %s', 'paid-memberships-pro' ), basename($value) );
 				}
 
 				// Allow user to delete the uploaded file if we know the full location. 
@@ -919,8 +937,8 @@ class PMPro_Field {
 					if ( $this->allow_delete === true || 
 						( $this->allow_delete === 'admins' || $this->allow_delete === 'only_admin' && current_user_can( 'manage_options', $current_user->ID ) )
 					) {
-						$r_end .= '&nbsp;&nbsp;<button class="pmprorh_delete_restore_file" id="pmprorh_delete_file_' . $this->name . '_button" onclick="return false;">' . __( '[delete]', 'pmpro-register-helper' ) . '</button>';
-					$r_end .= '<button class="pmprorh_delete_restore_file" id="pmprorh_cancel_delete_file_' . $this->name . '_button" style="display: none;" onclick="return false;">' . __( '[restore]', 'pmpro-register-helper' ) . '</button>';
+						$r_end .= '&nbsp;&nbsp;<button class="pmprorh_delete_restore_file" id="pmprorh_delete_file_' . $this->name . '_button" onclick="return false;">' . __( '[delete]', 'paid-memberships-pro' ) . '</button>';
+					$r_end .= '<button class="pmprorh_delete_restore_file" id="pmprorh_cancel_delete_file_' . $this->name . '_button" style="display: none;" onclick="return false;">' . __( '[restore]', 'paid-memberships-pro' ) . '</button>';
 					$r_end .= '<input id="pmprorh_delete_file_' . $this->name . '_field" name="pmprorh_delete_file_' . $this->name . '_field" type="hidden" value="0" />';
 					}
 				}
@@ -1093,24 +1111,35 @@ class PMPro_Field {
 					$binds[] = "#" . esc_html( $field_id ) .",input:radio[name=". esc_html( $field_id ) ."]";
 				}				
 			}
-							
-			if(!empty($checks) && !empty($binds))
-			{
+										
+			if(!empty($checks) && !empty($binds)) {
 			?>
 			<script>
 				//function to check and hide/show
-				function pmprorh_<?php echo esc_html( $this->id );?>_hideshow()
-				{						
-					if(
-						<?php echo implode(" && ", $checks); ?>
-					)
-					{
+				function pmprorh_<?php echo esc_html( $this->id );?>_hideshow() {						
+					let checks = [];
+					<?php
+					foreach( $checks as $check ) {
+					?>
+					checks.push(<?php echo $check?>);
+					<?php
+					}
+					
+					if ( $this->depends_or ) {
+					?>
+						let show = checks.indexOf(true) > -1;
+					<?php
+					} else {
+					?>
+						let show = checks.indexOf(false) === -1;
+					<?php
+					}
+					?>				
+					if(show) {
 						jQuery('#<?php echo esc_html( $this->id );?>_tr').show();
 						jQuery('#<?php echo esc_html( $this->id );?>_div').show();
 						jQuery('#<?php echo esc_html( $this->id );?>').removeAttr('disabled');
-					}
-					else
-					{
+					} else {
 						jQuery('#<?php echo esc_html( $this->id );?>_tr').hide();
 						jQuery('#<?php echo esc_html( $this->id );?>_div').hide();
 						jQuery('#<?php echo esc_html( $this->id );?>').attr('disabled', 'disabled');
@@ -1151,23 +1180,23 @@ class PMPro_Field {
 			} elseif(!empty($current_user->ID) && metadata_exists("user", $current_user->ID, $this->meta_key)) {
 				$meta = get_user_meta($current_user->ID, $this->meta_key, true);
 				$value = $meta;
-			} elseif(!empty($this->value))
+			} elseif(isset($this->value)) {
 				$value = $this->value;
-			else
+			} else {
 				$value = "";
-		} elseif(isset($_REQUEST[$this->name]))
+			}
+		} elseif(isset($_REQUEST[$this->name])) {
 			$value = $_REQUEST[$this->name];
-		elseif(isset($_SESSION[$this->name]))
-		{
+		} elseif(isset($_SESSION[$this->name])) {
 			//file or value?
 			if(is_array($_SESSION[$this->name]) && !empty($_SESSION[$this->name]['name']))
 			{
 				$_FILES[$this->name] = $_SESSION[$this->name];
 				$this->file = $_SESSION[$this->name]['name'];
 				$value = $_SESSION[$this->name]['name'];
-			}
-			else
+			} else {
 				$value = $_SESSION[$this->name];
+			}
 		}
 		elseif(!empty($current_user->ID) && metadata_exists("user", $current_user->ID, $this->meta_key))
 		{				
@@ -1176,21 +1205,23 @@ class PMPro_Field {
 			{
 				$this->file = get_user_meta($current_user->ID, $this->meta_key, true);
 				$value = $this->file['filename'];
+			} else {
+				$value = $meta;
 			}
-			else
-				$value = $meta;									
 		} elseif ( ! empty( $current_user->ID ) ) {
 			$userdata = get_userdata( $current_user->ID );
 			if ( ! empty( $userdata->{$this->name} ) ) {
 				$value = $userdata->{$this->name};
+			} elseif(isset($this->value)) {
+				$value = $this->value;
 			} else {
 				$value = '';
 			}
-		}
-		elseif(!empty($this->value))
+		} elseif(isset($this->value)) {
 			$value = $this->value;
-		else
+		} else {
 			$value = "";
+		}
 
 		//update class value for div and field element
 		$this->class .= " " . pmpro_getClassForField($this->name);
@@ -1226,7 +1257,7 @@ class PMPro_Field {
 			<?php } ?>
 		</div>	
 		<?php
-		
+
 		$this->getDependenciesJS();
 	}
 	

@@ -449,8 +449,8 @@ function pmpro_userfields_prep_click_events() {
             let group_description = jQuery(this).find('textarea[name=pmpro_userfields_group_description]').val();
 
             // Get level ids.            
-            let group_levels = [];
-            jQuery('input[name="pmpro_userfields_group_membership[]"]:checked').each(function(){
+            let group_levels = [];            
+            jQuery(this).find('input[name="pmpro_userfields_group_membership[]"]:checked').each(function(){
                 group_levels.push(parseInt(jQuery(this).attr('id').replace('pmpro_userfields_group_membership_', '')));
             });
             

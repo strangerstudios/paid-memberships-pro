@@ -30,10 +30,10 @@ $allowed_pmpro_license_strings_html = array (
 	'a' => array (
 		'href' => array(),
 		'target' => array(),
-		'title' => array(),
+		'title' => array()
 	),
 	'strong' => array(),
-	'em' => array(),
+	'em' => array()
 );
 
 // HTML for license settings page.
