@@ -931,11 +931,21 @@ class PMProGateway_stripe extends PMProGateway {
 		// Check whether we have a Stripe Customer.
 		if ( ! empty( $customer ) ) {
 			// Get the link to edit the customer.
-			echo '<hr>';
-			echo '<a target="_blank" href="' . esc_url( 'https://dashboard.stripe.com/' . ( pmpro_getOption( 'gateway_environment' ) == 'sandbox' ? 'test/' : '' ) . 'customers/' . $customer->id ) . '">' . esc_html__( 'Edit customer in Stripe', 'paid-memberships-pro' ) . '</a>';
-			if ( ! empty( $user->pmpro_stripe_updates ) && is_array( $user->pmpro_stripe_updates ) ) {
-				$stripe->user_profile_fields_subscription_updates( $user, $customer );
-			}
+			?>
+			<table class="form-table">
+				<tr>
+					<th><?php esc_html_e( 'Stripe Customer', 'paid-memberships-pro' ); ?></th>
+					<td>
+						<a target="_blank" href="<?php echo esc_url( 'https://dashboard.stripe.com/' . ( pmpro_getOption( 'gateway_environment' ) == 'sandbox' ? 'test/' : '' ) . 'customers/' . $customer->id ); ?>"><?php esc_html_e( 'Edit customer in Stripe', 'paid-memberships-pro' ); ?></a>
+					</td>
+				</tr>
+			</table>
+			<?php
+				if ( ! empty( $user->pmpro_stripe_updates ) && is_array( $user->pmpro_stripe_updates ) ) {
+					$stripe->user_profile_fields_subscription_updates( $user, $customer );
+				}
+			?>
+			<?php
 		}
 	}
 

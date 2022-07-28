@@ -6,8 +6,8 @@
 		die( __( 'You do not have permissions to perform this action.', 'paid-memberships-pro' ) );
 	}
 
-	// Get all levels regardless of visibility.	
-	$levels = pmpro_getAllLevels( false, true );
+	// Get all levels regardless of visibility.
+	$levels = pmpro_sort_levels_by_order( pmpro_getAllLevels( true, true ) );
 
 	/**
 	 * Save fields if form was submitted.
@@ -108,8 +108,8 @@
 	}
 
 	?>		
-	<h1 class="wp-heading-inline"><?php esc_html_e( 'User Fields', 'paid-memberships-pro' ); ?></h1>
 	<hr class="wp-header-end">
+	<h1 class="wp-heading-inline"><?php esc_html_e( 'User Fields', 'paid-memberships-pro' ); ?></h1>
 
 	<div id="poststuff">
 		<div id="post-body" class="metabox-holder columns-2">

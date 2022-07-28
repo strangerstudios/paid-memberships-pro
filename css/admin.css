@@ -549,6 +549,10 @@
 .admin_page_pmpro-userfields li.pmpro_userfield-group-column-label {
 	flex: 4;
 }
+.admin_page_pmpro-userfields li.pmpro_userfield-group-column-label .pmpro_userfield-field-options {
+	color: #999;
+}
+
 .admin_page_pmpro-userfields li.pmpro_userfield-group-column-name {
 	flex: 2;
 }
@@ -1207,14 +1211,30 @@ p.pmpro_meta_notice {
 }
 
 /* license */
+.memberships_page_pmpro-license .pmpro_admin .nav-tab-wrapper {
+	margin-bottom: 10px;
+}
 .memberships_page_pmpro-license h2 {
 	text-align: left;
 }
 .memberships_page_pmpro-license .pmpro_icon {
 	margin-top: 20px;
 }
+.memberships_page_pmpro-license .about-wrap {
+	margin-left: 0;
+}
 .memberships_page_pmpro-license .about-wrap .about-text {
 	color: #3c434a;
+}
+.memberships_page_pmpro-license .form-table td {
+	padding-left: 0;
+}
+.memberships_page_pmpro-license .form-table label {
+	display: block;
+	font-size: 16px;
+	font-weight: bold;
+	line-height: 1.5;
+	margin-bottom: 5px;
 }
 
 /* misc */

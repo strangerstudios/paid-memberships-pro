@@ -557,9 +557,9 @@ function pmpro_getLevelsCost( &$levels, $tags = true, $short = false ) {
 	// trial part - not as detailed as the single-level counterpart. Could be improved in the future.
 	if ( $trialperiods > 0 ) {
 		if ( $trialperiods == 1 ) {
-			$r .= __( 'Trial pricing has been applied to the first payment.', 'mmpu' );
+			$r .= __( 'Trial pricing has been applied to the first payment.', 'paid-memberships-pro' );
 		} else {
-			$r .= sprintf( __( 'Trial pricing has been applied to the first %d payments.', 'mmpu' ), $trialperiods );
+			$r .= sprintf( __( 'Trial pricing has been applied to the first %d payments.', 'paid-memberships-pro' ), $trialperiods );
 		}
 	}
 

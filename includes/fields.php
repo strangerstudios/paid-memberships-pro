@@ -1167,8 +1167,8 @@ function pmpro_get_field_group_html( $group = null ) {
     }
     
     // Other vars
-    $levels = pmpro_getAllLevels( false, true );
-	
+	$levels = pmpro_sort_levels_by_order( pmpro_getAllLevels( true, true ) );
+
     // Render field group HTML.
     ?>
     <div class="pmpro_userfield-group">
@@ -1272,7 +1272,7 @@ function pmpro_get_field_group_html( $group = null ) {
 						printf( esc_html__( '%s Add Field', 'paid-memberships-pro' ), '<span class="dashicons dashicons-plus"></span>' ); ?>
 				</button>
                 <button name="pmpro_userfields_delete_group" class="button button-secondary is-destructive">
-                    <?php _e( 'Delete This Group', 'paid-memberships-pro' ); ?>
+                    <?php esc_html_e( 'Delete Group', 'paid-memberships-pro' ); ?>
                 </button>
 			</div> <!-- end pmpro_userfield-group-actions -->
 
@@ -1311,9 +1311,9 @@ function pmpro_get_field_html( $field = null ) {
         $field_options = '';
     }
     
-    // Other vars
-    $levels = pmpro_getAllLevels( false, true );    
-    ?>
+	// Other vars
+	$levels = pmpro_sort_levels_by_order( pmpro_getAllLevels( true, true ) );
+	?>
     <div class="pmpro_userfield-group-field pmpro_userfield-group-field-collapse">
         <ul class="pmpro_userfield-group-tbody">
             <li class="pmpro_userfield-group-column-order">
