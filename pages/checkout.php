@@ -5,7 +5,7 @@
  * See documentation for how to override the PMPro templates.
  * @link https://www.paidmembershipspro.com/documentation/templates/
  *
- * @version 2.0
+ * @version 2.0.1
  *
  * @author Paid Memberships Pro
  */

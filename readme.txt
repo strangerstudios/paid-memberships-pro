@@ -2,9 +2,9 @@
 Contributors: strangerstudios, kimannwall, andrewza, dlparker1005, paidmembershipspro
 Tags: memberships, members, subscriptions, ecommerce, user registration, member, membership, e-commerce, paypal, stripe, braintree, authorize.net, payflow, restrict access, restrict content, directory
 Requires at least: 5.2
-Tested up to: 6.0
+Tested up to: 6.0.1
 Requires PHP: 5.6
-Stable tag: 2.9
+Stable tag: 2.9.1
 
 WordPress membership plugin: restrict content, accept member subscriptions with recurring payment. Includes user registration, login, & profile fields
 
@@ -156,6 +156,16 @@ Not sure? You can find out by doing a bit a research.
 9. Membership Account page, display all sections or show specific sections using shortcode attributes.
 
 == Changelog ==
+= 2.9.1 - 2022-07-28 =
+* ENHANCEMENT: Enhanced doc blocks for some functions in includes/functions.php.
+* BUG FIX/ENHANCEMENT: Fixed localization of a few strings.
+* BUG FIX/ENHANCEMENT: Added unset magic method to the MemberOrder class to avoid warnings, e.g. in the REST API endpoints, which remove some data from orders before output. #2177 (@dparker1005)
+* BUG FIX/ENHANCEMENT: Removed unused local variable name_parts. #2170 (@mircobabini)
+* BUG FIX/ENHANCEMENT: Fixed CSS/UI issues in the mobile view of some dashboard pages. #2174 #2175 (@kimcoleman)
+* BUG FIX/ENHANCEMENT: Now filtering the confirmation URL when using Stripe Checkout. #2178 (@dparker1005)
+* BUG FIX/ENHANCEMENT: Removed some trailing commas that were throwing errors for some users on old versions of PHP. (@ideadude, @andrewlimaza)
+* BUG FIX: Fixed fatal error when reactivating the Register Helper plugin. #2173 (@ideadude, @JarrydLong)
+
 = 2.9 - 2022-07-18 =
 * FEATURE: Added a "User Fields" tab to the settings page. You can now add "Register Helper" style fields through the WP admin dashboard without code. (@ideadude, @kimcoleman, @dparker1005)
 * FEATURE: The "Add Ons" tab has a new look, with better browsing and searching. (@kimcoleman)
