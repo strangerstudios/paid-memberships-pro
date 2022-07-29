@@ -7,7 +7,9 @@
 * BUG FIX/ENHANCEMENT: Fixed CSS/UI issues in the mobile view of some dashboard pages. #2174 #2175 (@kimcoleman)
 * BUG FIX/ENHANCEMENT: Now filtering the confirmation URL when using Stripe Checkout. #2178 (@dparker1005)
 * BUG FIX/ENHANCEMENT: Removed some trailing commas that were throwing errors for some users on old versions of PHP. (@ideadude, @andrewlimaza)
+* BUG FIX/ENHANCEMENT: User fields added through settings are now included in the members list CSV export by default as intended.
 * BUG FIX: Fixed fatal error when reactivating the Register Helper plugin. #2173 (@ideadude, @JarrydLong)
+* BUG FIX: Fixed issue with saving group levels when you have more than one group.
 
 = 2.9 - 2022-07-18 =
 * FEATURE: Added a "User Fields" tab to the settings page. You can now add "Register Helper" style fields through the WP admin dashboard without code. (@ideadude, @kimcoleman, @dparker1005)

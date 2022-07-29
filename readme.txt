@@ -35,8 +35,8 @@ Users can select a membership level, complete checkout, and immediately become m
 * Frontend Profile Editing
 * Membership Account Dashboard
 * Membership Invoices and Billing Information Pages
-* [Custom User Profile and Registration Form Fields](https://www.paidmembershipspro.com/add-ons/pmpro-register-helper-add-checkout-and-profile-fields/)
-* [Custom Member Emails](https://www.paidmembershipspro.com/documentation/member-communications/customizing-email-templates/)
+* Custom User Profile and Registration Form Fields
+* Custom Member Emails
 * Restrict WP Dashboard Access
 * Hide the WP Toolbar
 
@@ -165,6 +165,8 @@ Not sure? You can find out by doing a bit a research.
 * BUG FIX/ENHANCEMENT: Now filtering the confirmation URL when using Stripe Checkout. #2178 (@dparker1005)
 * BUG FIX/ENHANCEMENT: Removed some trailing commas that were throwing errors for some users on old versions of PHP. (@ideadude, @andrewlimaza)
 * BUG FIX: Fixed fatal error when reactivating the Register Helper plugin. #2173 (@ideadude, @JarrydLong)
+* BUG FIX: Fixed fatal error when reactivating the Register Helper plugin. #2173 (@ideadude, @JarrydLong)
+* BUG FIX: Fixed issue with saving group levels when you have more than one group.
 
 = 2.9 - 2022-07-18 =
 * FEATURE: Added a "User Fields" tab to the settings page. You can now add "Register Helper" style fields through the WP admin dashboard without code. (@ideadude, @kimcoleman, @dparker1005)
