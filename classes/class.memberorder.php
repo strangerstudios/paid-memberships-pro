@@ -380,7 +380,7 @@
 		/**
 		 * Unset Magic Method.
 		 *
-		 * @since TBD
+		 * @since 2.9.1
 		 * 
 		 * @param string $property The property we want to unset.
 		 */
