@@ -875,3 +875,4 @@ function pmpro_report_sales_delete_transients()
 }
 add_action("pmpro_after_checkout", "pmpro_report_sales_delete_transients");
 add_action("pmpro_updated_order", "pmpro_report_sales_delete_transients");
+add_action("pmpro_added_order", "pmpro_report_sales_delete_transients");
