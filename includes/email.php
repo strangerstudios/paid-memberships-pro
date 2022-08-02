@@ -301,7 +301,7 @@ function pmpro_email_templates_send_test() {
 	$test_user->membership_level = array_pop( $all_levels );
 
 	//add notice to email body
-	add_filter('pmpro_email_body', 'pmpro_email_templates_test_body', 10, 2);
+	add_filter('pmpro_email_body', 'pmpro_email_templates_test_body', 100000, 2);
 
 	//force the template
 	add_filter('pmpro_email_filter', 'pmpro_email_templates_test_template', 5, 1);
