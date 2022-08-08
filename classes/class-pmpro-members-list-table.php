@@ -81,7 +81,7 @@ class PMPro_Members_List_Table extends WP_List_Table {
 			'address'			=> 'Billing Address',
 			'membership'		=> 'Level',
 			'membership_id'		=> 'Level ID',
-			'fee'				=> 'Fee',
+			'fee'				=> 'Subscription',
 			'joindate'			=> 'Registered',
 			'startdate'			=> 'Start Date',
 			'enddate'			=> 'End Date',
