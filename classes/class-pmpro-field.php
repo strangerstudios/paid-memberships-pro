@@ -85,7 +85,7 @@ class PMPro_Field {
 	 *
 	 * @var bool
 	 */
-	public $show_required = true;
+	public $showrequired = true;
 
 	/**
 	 * Where this field should be shown.
