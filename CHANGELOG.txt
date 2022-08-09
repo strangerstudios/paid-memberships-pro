@@ -1,6 +1,7 @@
 == Changelog ==
 = 2.9.2 - 2022-08-09 =
 * BUG FIX: Fixed issue where user fields set as "required" weren't being styled as required on the checkout page. #2180 (@ipokkel)
+* BUG FIX: Now showing the new level templates even if you click on the link in the dashboard or on a fresh install's levels page. #2181 (@kimwhite)
 
 = 2.9.1 - 2022-07-28 =
 * ENHANCEMENT: Enhanced doc blocks for some functions in includes/functions.php.
