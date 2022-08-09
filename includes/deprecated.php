@@ -126,6 +126,13 @@ function pmpro_register_helper_deprecated() {
 			return pmpro_array_end( $array );
 		}
 	}
+	
+	// pmprorh_sanitize function
+	if ( ! function_exists( 'pmprorh_sanitize' ) ) {
+		function pmprorh_sanitize( $value, $field = null  ) {
+			return pmpro_sanitize( $value, $field );
+		}
+	}
 }
 add_action( 'plugins_loaded', 'pmpro_register_helper_deprecated', 20 );
 

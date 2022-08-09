@@ -618,7 +618,7 @@ class PMPro_Field {
     {
         if ( isset( $this->sanitize ) && true === $this->sanitize ) {
 
-	        $value = pmprorh_sanitize( $value, $this );
+	        $value = pmpro_sanitize( $value, $this );
         }
 
     	$meta_key = str_replace("pmprorhprefix_", "", $name);
