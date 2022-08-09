@@ -1088,7 +1088,7 @@
 		/**
 		 * Refunds an order (only supports full amounts)
 		 *
-		 * @param bool    $succes Status of the refund (default: false)
+		 * @param bool    $success Status of the refund (default: false)
 		 * @param object  $morder The Member Order Object
 		 * @since 2.8
 		 * 
