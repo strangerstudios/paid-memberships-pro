@@ -23,6 +23,12 @@ require_once( 'invoice-page/block.php' );
 require_once( 'levels-page/block.php' );
 require_once( 'membership/block.php' );
 require_once( 'member-profile-edit/block.php' );
+require_once( 'single-level/block.php' );
+require_once( 'single-level-name/block.php' );
+require_once( 'single-level-description/block.php' );
+require_once( 'single-level-price/block.php' );
+require_once( 'single-level-expiration/block.php' );
+require_once( 'single-level-checkout/block.php' );
 require_once( 'login/block.php' );
 
 /**

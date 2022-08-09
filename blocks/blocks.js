@@ -20,6 +20,12 @@ import './invoice-page/block.js';
 import './levels-page/block.js';
 import './membership/block.js';
 import './member-profile-edit/block.js';
+import './single-level/block.js';
+import './single-level-name/block.js';
+import './single-level-description/block.js';
+import './single-level-price/block.js';
+import './single-level-checkout/block.js';
+import './single-level-expiration/block.js';
 import './login/block.js';
 
 ( function() {
