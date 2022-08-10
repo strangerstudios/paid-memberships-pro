@@ -11,9 +11,10 @@
 function pmpro_init_check_for_deprecated_filters() {
 	global $wp_filter;
 	
+	// NOTE: Array is mapped new filter => old filter.
 	$pmpro_map_deprecated_filters = array(
-		'pmpro_getfile_extension_blocklist'    => 'pmpro_getfile_extension_blacklist',
-		'pmprorh_section_header'			   => 'pmpro_default_field_group_label',
+		'pmpro_getfile_extension_blocklist' => 'pmpro_getfile_extension_blacklist',
+		'pmpro_default_field_group_label'   => 'pmprorh_section_header',
 	);
 	
 	foreach ( $pmpro_map_deprecated_filters as $new => $old ) {
