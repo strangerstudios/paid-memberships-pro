@@ -1035,7 +1035,7 @@
 		<?php if( empty( $s ) && count( $reordered_levels ) === 0 ) { ?>
 			<div class="pmpro-new-install">
 				<h2><?php esc_html_e( 'No Membership Levels Found', 'paid-memberships-pro' ); ?></h2>
-				<a href="<?php echo esc_url( admin_url( 'admin.php?page=pmpro-membershiplevels&edit=-1' ) ); ?>" class="button-primary"><?php esc_html_e( 'Create a Membership Level', 'paid-memberships-pro' ); ?></a>
+				<a href="javascript:addLevel();" class="button-primary"><?php esc_html_e( 'Create a Membership Level', 'paid-memberships-pro' ); ?></a>
 				<a href="https://www.paidmembershipspro.com/documentation/initial-plugin-setup/step-1-add-new-membership-level/?utm_source=plugin&utm_medium=pmpro-membershiplevels&utm_campaign=documentation&utm_content=step-1-add-new-membership-level" target="_blank" rel="nofollow noopener" class="button"><?php esc_html_e( 'Video: Membership Levels', 'paid-memberships-pro' ); ?></a>
 			</div> <!-- end pmpro-new-install -->
 		<?php } else { ?>
@@ -1278,10 +1278,11 @@
 			jQuery('.pmproPopupCloseButton').click(function() {
 				jQuery('.pmpro-popup-overlay').hide();
 			});
+			<?php if( ! empty( $_REQUEST['showpopup'] ) ) { ?>addLevel();<?php } ?>
 		} );
 		function addLevel() {
 			jQuery('.pmpro-popup-overlay').show();
-		}
+		}		
 	</script>
 	<div id="pmpro-popup" class="pmpro-popup-overlay">
 		<span class="pmpro-popup-helper"></span>
