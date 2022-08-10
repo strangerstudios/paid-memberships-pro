@@ -4,7 +4,7 @@ Tags: memberships, members, subscriptions, ecommerce, user registration, member,
 Requires at least: 5.2
 Tested up to: 6.0.1
 Requires PHP: 5.6
-Stable tag: 2.9.1
+Stable tag: 2.9.2
 
 WordPress membership plugin: restrict content, accept member subscriptions with recurring payment. Includes user registration, login, & profile fields
 
@@ -156,6 +156,15 @@ Not sure? You can find out by doing a bit a research.
 9. Membership Account page, display all sections or show specific sections using shortcode attributes.
 
 == Changelog ==
+= 2.9.2 - 2022-08-10 =
+* BUG FIX/ENHANCEMENT: Now correctly deprecating the pmprorh_section_header() function. We accidentally had it reversed and throwing a warning when using the new pmpro_default_field_group_label() function. (@kimcoleman)
+* BUG FIX/ENHANCEMENT: When saving user fields, now making sure that the group name is not blank and unique. Blank or duplicate group names could cause other issues, e.g. with required fields or fields being shown multiple times at checkout. #2187 (@ideadude)
+* BUG FIX/ENHANCEMENT: Fixed issue where the sales report widget cache was not being updated when new orders came in.
+* BUG FIX/ENHANCEMENT: Better error handling in the PayPal IPN handler. #2194 (@mircobabini)
+* BUG FIX: Fixed issue where user fields set as "required" weren't being styled as required on the checkout page. #2180 (@ipokkel)
+* BUG FIX: Now showing the new level templates even if you click on the link in the dashboard or on a fresh install's levels page. #2181 (@kimwhite)
+* BUG FIX: Fixed issues where pmprorh_sanitize was being called instead of the new pmpro_sanitize, causing issues with date fields and others at checkout. #2182
+
 = 2.9.1 - 2022-07-28 =
 * ENHANCEMENT: Enhanced doc blocks for some functions in includes/functions.php.
 * BUG FIX/ENHANCEMENT: Fixed localization of a few strings.
