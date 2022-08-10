@@ -1,5 +1,6 @@
 == Changelog ==
 = 2.9.2 - 2022-08-09 =
+* BUG FIX/ENHANCEMENT: When saving user fields, now making sure that the group name is not blank and unique. Blank or duplicate group names could cause other issues, e.g. with required fields or fields being shown multiple times at checkout. #2187 (@ideadude)
 * BUG FIX: Fixed issue where user fields set as "required" weren't being styled as required on the checkout page. #2180 (@ipokkel)
 
 = 2.9.1 - 2022-07-28 =

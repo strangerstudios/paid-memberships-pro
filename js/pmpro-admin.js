@@ -441,9 +441,25 @@ function pmpro_userfields_prep_click_events() {
 		window.onbeforeunload = null;
 
         let field_groups = [];
+        let group_names = [];
+        let default_group_name = 'More Information';
 
 		jQuery('.pmpro_userfield-group').each(function(index, value) {
             let group_name = jQuery(this).find('input[name=pmpro_userfields_group_name]').val();
+            
+            // Make sure name is not blank.
+            if ( group_name.length === 0 ) {
+                group_name = default_group_name;
+            }
+            // Make sure name is unique.
+            let count = 1;
+            while ( group_names.includes( group_name ) ) {
+                count++;
+                group_name = group_name.replace( /\(0-9*\)/, '' );
+                group_name = group_name + ' (' + String( count ) + ')';                
+            }
+            group_names.push( group_name );
+            
             let group_checkout = jQuery(this).find('select[name=pmpro_userfields_group_checkout]').val();
             let group_profile = jQuery(this).find('select[name=pmpro_userfields_group_profile]').val();
             let group_description = jQuery(this).find('textarea[name=pmpro_userfields_group_description]').val();
