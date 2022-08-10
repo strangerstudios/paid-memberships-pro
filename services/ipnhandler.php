@@ -274,11 +274,11 @@ if ( $txn_type == 'recurring_payment_profile_cancel' || $txn_type == 'recurring_
 			//if the initial payment failed, cancel with status error instead of cancelled
 			if ( $initial_payment_status === "failed" ) {
 				$last_subscription_order->updateStatus('error');
+				ipnlog( "Errored membership without user. Subscription transaction id = " . $recurring_payment_id . "." );
 			} else {
 				$last_subscription_order->updateStatus('cancelled');
+				ipnlog( "ERROR: Could not cancel membership. No user attached to order #" . $last_subscription_order->id . " with subscription transaction id = " . $recurring_payment_id . "." );
 			}
-
-			ipnlog( "ERROR: Could not cancel membership. No user attached to order #" . $last_subscription_order->id . " with subscription transaction id = " . $recurring_payment_id . "." );
 		} else {
 			/*
 				We want to make sure this is a cancel originating from PayPal and not one already handled by PMPro.
