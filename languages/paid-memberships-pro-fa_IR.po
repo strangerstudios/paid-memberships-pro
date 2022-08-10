@@ -2,14 +2,14 @@
 # This file is distributed under the same license as the Paid Memberships Pro plugin.
 msgid ""
 msgstr ""
-"Project-Id-Version: Paid Memberships Pro 2.9.1\n"
+"Project-Id-Version: Paid Memberships Pro 2.9.2\n"
 "Report-Msgid-Bugs-To: info@paidmembershipspro.com\n"
 "Last-Translator: Paid Memberships Pro <info@paidmembershipspro.com>\n"
 "Language-Team: Paid Memberships Pro <info@paidmembershipspro.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2022-07-29T02:59:12+00:00\n"
+"POT-Creation-Date: 2022-08-10T17:54:18+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.6.0\n"
 "X-Domain: paid-memberships-pro\n"
@@ -13516,12 +13516,14 @@ msgstr ""
 #. translators: 1: the old hook name, 2: the new or replacement hook name
 #: includes/deprecated.php:21
 #: includes/deprecated.php:22
+#: includes/deprecated.php:23
 msgid "The %1$s hook has been deprecated in Paid Memberships Pro. Please use the %2$s hook instead."
 msgstr ""
 
 #. translators: %s: The list of deprecated plugins that are active.
 #: includes/deprecated.php:107
 #: includes/deprecated.php:186
+#: includes/deprecated.php:194
 msgid "Some Add Ons are now merged into the Paid Memberships Pro core plugin. The features of the following plugins are now included in PMPro by default. You should <strong>delete these unnecessary plugins</strong> from your site: <em><strong>%s</strong></em>."
 msgstr ""
 
@@ -17280,6 +17282,7 @@ msgstr ""
 
 #: adminpages/addons.php:414
 #: adminpages/membershiplevels.php:1290
+#: adminpages/membershiplevels.php:1291
 msgid "Close Popup"
 msgstr ""
 
@@ -17415,10 +17418,12 @@ msgid "Protect access to other content including custom post types (CPTs), cours
 msgstr ""
 
 #: adminpages/membershiplevels.php:1291
+#: adminpages/membershiplevels.php:1292
 msgid "What type of membership level do you want to create?"
 msgstr ""
 
 #: adminpages/membershiplevels.php:1309
+#: adminpages/membershiplevels.php:1310
 msgid "Add On"
 msgstr ""
 
