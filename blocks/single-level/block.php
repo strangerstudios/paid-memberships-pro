@@ -38,6 +38,6 @@ function register_dynamic_block() {
  **/
 function render_dynamic_block( $attributes, $content ) {
 
-	return do_blocks( $content );
+   return do_blocks( $content );
 
 }

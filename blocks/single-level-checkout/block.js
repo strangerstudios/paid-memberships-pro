@@ -7,8 +7,8 @@
  /**
   * Internal block libraries
   */
- const { __ } = wp.i18n;
- const {
+const { __ } = wp.i18n;
+const {
     registerBlockType
 } = wp.blocks;
 const {
@@ -21,25 +21,29 @@ const {
     InnerBlocks,
     useBlockProps, 
 } = wp.blockEditor;
+const {
+    dispatch,
+    select
+} = wp.data;
 
 const all_levels = [{ value: 0, label: "Non-Members" }].concat( pmpro.all_level_values_and_labels );
 
  /**
   * Register block
   */
- export default registerBlockType(
-     'pmpro/single-level-checkout',
-     {
-         title: __( 'Level Checkout Button', 'paid-memberships-pro' ),
-         description: __( 'Nest blocks within this wrapper to control the inner block visibility by membership level or for non-members only.', 'paid-memberships-pro' ),
-         category: 'pmpro',
-         icon: {
+export default registerBlockType(
+    'pmpro/single-level-checkout',
+    {
+        title: __( 'Level Checkout Button', 'paid-memberships-pro' ),
+        description: __( 'Nest blocks within this wrapper to control the inner block visibility by membership level or for non-members only.', 'paid-memberships-pro' ),
+        category: 'pmpro',
+        icon: {
             background: '#FFFFFF',
             foreground: '#1A688B',
             src: 'visibility',
-         },
-         parent: ['pmpro/single-level'],
-         keywords: [
+        },
+        parent: ['pmpro/single-level'],
+        keywords: [
             __( 'block visibility', 'paid-memberships-pro' ),
             __( 'conditional', 'paid-memberships-pro' ),
             __( 'content', 'paid-memberships-pro' ),
@@ -49,62 +53,45 @@ const all_levels = [{ value: 0, label: "Non-Members" }].concat( pmpro.all_level_
             __( 'pmpro', 'paid-memberships-pro' ),
             __( 'private', 'paid-memberships-pro' ),
             __( 'restrict', 'paid-memberships-pro' ),
-         ],
-         attributes: {
-             levels: {
-                 type: 'array',
-                 default:[]
-             },
-             uid: {
-                 type: 'string',
-                 default:'',
-             },
-             show_noaccess: {
-                 type: 'boolean',
-                 default: false,
-             },
-         },
-         // parent: ['pmpro/checkout-button'],
+        ],
+        attributes: {
+            levels: {
+                type: 'array',
+                default: []
+            },
+            selected_level: {
+                type: 'string',
+                default:''
+            },
+        },
+        edit: props => {
+            
+            const { attributes: { levels, selected_level }, setAttributes, isSelected } = props; 
 
-         edit: props => {
-              return (
-        <div { ...useBlockProps() }>
-            <InnerBlocks
-                template={ [
-                    [ 'core/heading', { level: 2, content: 'Example Nested Block Template' } ],
-                    [ 'core/paragraph', { content: 'Lorem ipsum dolor sit amet labore cras venenatis.' } ],
-                    [ 'core/columns', {},
-                        [
-                            [ 'core/column', {}, [
-                                    [ 'core/heading', { level: 3, content: 'Sub Heading 1' } ],
-                                    [ 'core/paragraph', { content: 'Lorem ipsum dolor sit amet id erat aliquet diam ullamcorper tempus massa eleifend vivamus.' } ],
-                                ]
-                            ],
-                            [ 'core/column', {}, [
-                                    [ 'core/heading', { level: 3, content: 'Sub Heading 2' } ],
-                                    [ 'core/paragraph', { content: 'Morbi augue cursus quam pulvinar eget volutpat suspendisse dictumst mattis id.' } ],
-                                ]
-                            ],
-                        ]
-                    ],
-                ] }
-                allowedBlocks={ [
-                    'core/column',
-                    'core/columns',
-                    'core/heading',
-                    'core/paragraph',
-                ] }
-            />
-        </div>
-    );
-         },
-         save: props => {
-           const {  className } = props;
-        		 return (
-                        <div { ...useBlockProps.save() }>
-                            <InnerBlocks.Content />
-                        </div>
-                    );
-        	},
-       }
- );
+            var parent = select('core/block-editor').getBlockParents(props.clientId);
+            const parentAtts = select('core/block-editor').getBlockAttributes(parent);
+
+            setAttributes( {selected_level: parentAtts.selected_level } );
+
+            const level_name = pmpro.all_levels[selected_level].name;
+
+            return ( 
+                <div { ...useBlockProps() }>
+                    { level_name }
+                </div>
+            );
+        },
+        save: props => {
+            
+            const {  className } = props;
+            
+            const blockProps = useBlockProps.save();
+
+            return (
+                <div { ...blockProps }>
+                    <InnerBlocks.Content />
+                </div>
+            );
+        },
+    }
+);
