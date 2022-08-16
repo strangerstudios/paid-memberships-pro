@@ -37,6 +37,19 @@ function register_dynamic_block() {
  * @return string
  **/
 function render_dynamic_block( $attributes, $content ) {
-	return "Expiration text is here";
-	return do_blocks( $content );
+	
+	global $pmpro_levels;
+
+    $selected_level = ( ! empty( $attributes['selected_level'] ) ) ? intval( $attributes['selected_level'] ) : 0;
+
+    if( $selected_level === 0 ) {
+        return;
+    }
+
+    if( ! empty( $pmpro_levels[$selected_level] ) ) {
+
+        return trim( pmpro_no_quotes( pmpro_getLevelExpiration( $pmpro_levels[$selected_level] ) ) );
+
+    }
+
 }

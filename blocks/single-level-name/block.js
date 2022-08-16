@@ -57,7 +57,10 @@ export default registerBlockType(
                 type: 'array',
                 default: []
             },
-           
+            selected_level: {
+                type: 'string',
+                default: ''
+            }
         },
         edit: props => {
             
