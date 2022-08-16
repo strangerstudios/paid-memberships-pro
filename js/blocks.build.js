@@ -1562,10 +1562,10 @@ const {
   InnerBlocks,
   useBlockProps
 } = wp.blockEditor;
-const all_levels = [{
-  value: 0,
-  label: "Non-Members"
-}].concat(pmpro.all_level_values_and_labels);
+const {
+  dispatch,
+  select
+} = wp.data;
 /**
  * Register block
  */
@@ -1586,42 +1586,34 @@ const all_levels = [{
       type: 'array',
       default: []
     },
-    uid: {
+    selected_level: {
       type: 'string',
       default: ''
-    },
-    show_noaccess: {
-      type: 'boolean',
-      default: false
     }
   },
-  // parent: ['pmpro/checkout-button'],
   edit: props => {
-    return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", useBlockProps(), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(InnerBlocks, {
-      template: [['core/heading', {
-        level: 2,
-        content: 'Example Nested Block Template'
-      }], ['core/paragraph', {
-        content: 'Lorem ipsum dolor sit amet labore cras venenatis.'
-      }], ['core/columns', {}, [['core/column', {}, [['core/heading', {
-        level: 3,
-        content: 'Sub Heading 1'
-      }], ['core/paragraph', {
-        content: 'Lorem ipsum dolor sit amet id erat aliquet diam ullamcorper tempus massa eleifend vivamus.'
-      }]]], ['core/column', {}, [['core/heading', {
-        level: 3,
-        content: 'Sub Heading 2'
-      }], ['core/paragraph', {
-        content: 'Morbi augue cursus quam pulvinar eget volutpat suspendisse dictumst mattis id.'
-      }]]]]]],
-      allowedBlocks: ['core/column', 'core/columns', 'core/heading', 'core/paragraph']
-    }));
+    const {
+      attributes: {
+        levels,
+        selected_level
+      },
+      setAttributes,
+      isSelected
+    } = props;
+    var parent = select('core/block-editor').getBlockParents(props.clientId);
+    const parentAtts = select('core/block-editor').getBlockAttributes(parent);
+    setAttributes({
+      selected_level: parentAtts.selected_level
+    });
+    const level_name = pmpro.all_levels[parentAtts.selected_level].name;
+    return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", useBlockProps(), level_name);
   },
   save: props => {
     const {
       className
     } = props;
-    return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", useBlockProps.save(), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(InnerBlocks.Content, null));
+    const blockProps = useBlockProps.save();
+    return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", blockProps, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(InnerBlocks.Content, null));
   }
 }));
 
@@ -1667,10 +1659,10 @@ const {
   InnerBlocks,
   useBlockProps
 } = wp.blockEditor;
-const all_levels = [{
-  value: 0,
-  label: "Non-Members"
-}].concat(pmpro.all_level_values_and_labels);
+const {
+  dispatch,
+  select
+} = wp.data;
 /**
  * Register block
  */
@@ -1691,42 +1683,34 @@ const all_levels = [{
       type: 'array',
       default: []
     },
-    uid: {
+    selected_level: {
       type: 'string',
       default: ''
-    },
-    show_noaccess: {
-      type: 'boolean',
-      default: false
     }
   },
-  // parent: ['pmpro/checkout-button'],
   edit: props => {
-    return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", useBlockProps(), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(InnerBlocks, {
-      template: [['core/heading', {
-        level: 2,
-        content: 'Example Nested Block Template'
-      }], ['core/paragraph', {
-        content: 'Lorem ipsum dolor sit amet labore cras venenatis.'
-      }], ['core/columns', {}, [['core/column', {}, [['core/heading', {
-        level: 3,
-        content: 'Sub Heading 1'
-      }], ['core/paragraph', {
-        content: 'Lorem ipsum dolor sit amet id erat aliquet diam ullamcorper tempus massa eleifend vivamus.'
-      }]]], ['core/column', {}, [['core/heading', {
-        level: 3,
-        content: 'Sub Heading 2'
-      }], ['core/paragraph', {
-        content: 'Morbi augue cursus quam pulvinar eget volutpat suspendisse dictumst mattis id.'
-      }]]]]]],
-      allowedBlocks: ['core/column', 'core/columns', 'core/heading', 'core/paragraph']
-    }));
+    const {
+      attributes: {
+        levels,
+        selected_level
+      },
+      setAttributes,
+      isSelected
+    } = props;
+    var parent = select('core/block-editor').getBlockParents(props.clientId);
+    const parentAtts = select('core/block-editor').getBlockAttributes(parent);
+    setAttributes({
+      selected_level: parentAtts.selected_level
+    });
+    const level_name = pmpro.all_levels_formatted_text[parentAtts.selected_level].description;
+    return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", useBlockProps(), level_name);
   },
   save: props => {
     const {
       className
     } = props;
-    return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", useBlockProps.save(), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(InnerBlocks.Content, null));
+    const blockProps = useBlockProps.save();
+    return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", blockProps, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(InnerBlocks.Content, null));
   }
 }));
 
@@ -1772,10 +1756,10 @@ const {
   InnerBlocks,
   useBlockProps
 } = wp.blockEditor;
-const all_levels = [{
-  value: 0,
-  label: "Non-Members"
-}].concat(pmpro.all_level_values_and_labels);
+const {
+  dispatch,
+  select
+} = wp.data;
 /**
  * Register block
  */
@@ -1796,42 +1780,34 @@ const all_levels = [{
       type: 'array',
       default: []
     },
-    uid: {
+    selected_level: {
       type: 'string',
       default: ''
-    },
-    show_noaccess: {
-      type: 'boolean',
-      default: false
     }
   },
-  // parent: ['pmpro/checkout-button'],
   edit: props => {
-    return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", useBlockProps(), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(InnerBlocks, {
-      template: [['core/heading', {
-        level: 2,
-        content: 'Example Nested Block Template'
-      }], ['core/paragraph', {
-        content: 'Lorem ipsum dolor sit amet labore cras venenatis.'
-      }], ['core/columns', {}, [['core/column', {}, [['core/heading', {
-        level: 3,
-        content: 'Sub Heading 1'
-      }], ['core/paragraph', {
-        content: 'Lorem ipsum dolor sit amet id erat aliquet diam ullamcorper tempus massa eleifend vivamus.'
-      }]]], ['core/column', {}, [['core/heading', {
-        level: 3,
-        content: 'Sub Heading 2'
-      }], ['core/paragraph', {
-        content: 'Morbi augue cursus quam pulvinar eget volutpat suspendisse dictumst mattis id.'
-      }]]]]]],
-      allowedBlocks: ['core/column', 'core/columns', 'core/heading', 'core/paragraph']
-    }));
+    const {
+      attributes: {
+        levels,
+        selected_level
+      },
+      setAttributes,
+      isSelected
+    } = props;
+    var parent = select('core/block-editor').getBlockParents(props.clientId);
+    const parentAtts = select('core/block-editor').getBlockAttributes(parent);
+    setAttributes({
+      selected_level: parentAtts.selected_level
+    });
+    const formatted_expiration = pmpro.all_levels_formatted_text[parentAtts.selected_level].formatted_expiration;
+    return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", useBlockProps(), formatted_expiration);
   },
   save: props => {
     const {
       className
     } = props;
-    return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", useBlockProps.save(), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(InnerBlocks.Content, null));
+    const blockProps = useBlockProps.save();
+    return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", blockProps, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(InnerBlocks.Content, null));
   }
 }));
 
@@ -1877,10 +1853,10 @@ const {
   InnerBlocks,
   useBlockProps
 } = wp.blockEditor;
-const all_levels = [{
-  value: 0,
-  label: "Non-Members"
-}].concat(pmpro.all_level_values_and_labels);
+const {
+  dispatch,
+  select
+} = wp.data;
 /**
  * Register block
  */
@@ -1900,25 +1876,31 @@ const all_levels = [{
     levels: {
       type: 'array',
       default: []
-    },
-    uid: {
-      type: 'string',
-      default: ''
-    },
-    show_noaccess: {
-      type: 'boolean',
-      default: false
     }
   },
-  // parent: ['pmpro/checkout-button'],
   edit: props => {
-    return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", useBlockProps(), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(InnerBlocks.Content, null));
+    const {
+      attributes: {
+        levels,
+        selected_level
+      },
+      setAttributes,
+      isSelected
+    } = props;
+    var parent = select('core/block-editor').getBlockParents(props.clientId);
+    const parentAtts = select('core/block-editor').getBlockAttributes(parent);
+    setAttributes({
+      selected_level: parentAtts.selected_level
+    });
+    const level_name = pmpro.all_levels_formatted_text[parentAtts.selected_level].name;
+    return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", useBlockProps(), level_name);
   },
   save: props => {
     const {
       className
     } = props;
-    return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", useBlockProps.save(), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(InnerBlocks.Content, null));
+    const blockProps = useBlockProps.save();
+    return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", blockProps, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(InnerBlocks.Content, null));
   }
 }));
 
@@ -1964,10 +1946,10 @@ const {
   InnerBlocks,
   useBlockProps
 } = wp.blockEditor;
-const all_levels = [{
-  value: 0,
-  label: "Non-Members"
-}].concat(pmpro.all_level_values_and_labels);
+const {
+  dispatch,
+  select
+} = wp.data;
 /**
  * Register block
  */
@@ -1988,42 +1970,34 @@ const all_levels = [{
       type: 'array',
       default: []
     },
-    uid: {
+    selected_level: {
       type: 'string',
       default: ''
-    },
-    show_noaccess: {
-      type: 'boolean',
-      default: false
     }
   },
-  // parent: ['pmpro/checkout-button'],
   edit: props => {
-    return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", useBlockProps(), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(InnerBlocks, {
-      template: [['core/heading', {
-        level: 2,
-        content: 'Example Nested Block Template'
-      }], ['core/paragraph', {
-        content: 'Lorem ipsum dolor sit amet labore cras venenatis.'
-      }], ['core/columns', {}, [['core/column', {}, [['core/heading', {
-        level: 3,
-        content: 'Sub Heading 1'
-      }], ['core/paragraph', {
-        content: 'Lorem ipsum dolor sit amet id erat aliquet diam ullamcorper tempus massa eleifend vivamus.'
-      }]]], ['core/column', {}, [['core/heading', {
-        level: 3,
-        content: 'Sub Heading 2'
-      }], ['core/paragraph', {
-        content: 'Morbi augue cursus quam pulvinar eget volutpat suspendisse dictumst mattis id.'
-      }]]]]]],
-      allowedBlocks: ['core/column', 'core/columns', 'core/heading', 'core/paragraph']
-    }));
+    const {
+      attributes: {
+        levels,
+        selected_level
+      },
+      setAttributes,
+      isSelected
+    } = props;
+    var parent = select('core/block-editor').getBlockParents(props.clientId);
+    const parentAtts = select('core/block-editor').getBlockAttributes(parent);
+    setAttributes({
+      selected_level: parentAtts.selected_level
+    });
+    const formatted_price = pmpro.all_levels_formatted_text[parentAtts.selected_level].formatted_price;
+    return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", useBlockProps(), formatted_price);
   },
   save: props => {
     const {
       className
     } = props;
-    return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", useBlockProps.save(), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(InnerBlocks.Content, null));
+    const blockProps = useBlockProps.save();
+    return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", blockProps, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(InnerBlocks.Content, null));
   }
 }));
 
@@ -2069,17 +2043,18 @@ const {
   InnerBlocks,
   useBlockProps
 } = wp.blockEditor;
-const all_levels = [{
-  value: 0,
-  label: "Non-Members"
-}].concat(pmpro.all_level_values_and_labels);
+const {
+  dispatch,
+  select
+} = wp.data;
+const all_levels = pmpro.all_level_values_and_labels;
 /**
  * Register block
  */
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (registerBlockType('pmpro/single-level', {
   title: __('Single Membership Level', 'paid-memberships-pro'),
-  description: __('Nest blocks within this wrapper to control the inner block visibility by membership level or for non-members only.', 'paid-memberships-pro'),
+  description: __('Holds single membership level parts', 'paid-memberships-pro'),
   category: 'pmpro',
   icon: {
     background: '#FFFFFF',
@@ -2096,16 +2071,86 @@ const all_levels = [{
       type: 'string',
       default: ''
     },
-    show_noaccess: {
-      type: 'boolean',
-      default: false
+    selected_level: {
+      type: 'string',
+      default: ''
     }
   },
-  // parent: ['pmpro/checkout-button'],
   edit: props => {
-    return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", useBlockProps(), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(InnerBlocks, {
+    const {
+      attributes: {
+        levels,
+        uid,
+        selected_level
+      },
+      setAttributes,
+      isSelected
+    } = props; // console.log(props);
+    // console.log(props.clientId);
+
+    var children = select('core/block-editor').getBlocksByClientId(props.clientId); //[0].innerBlocks;
+    // console.log(children);
+
+    children.forEach(function (child) {
+      dispatch('core/block-editor').updateBlockAttributes(child.clientId, {
+        selected_level: selected_level
+      });
+    });
+    setAttributes({
+      selected_level: selected_level,
+      levels: all_levels
+    });
+
+    if (uid == '') {
+      var rand = Math.random() + "";
+      setAttributes({
+        uid: rand
+      });
+    } // Build an array of checkboxes for each level.
+
+
+    var checkboxes = all_levels.map(function (level) {
+      function setLevelsAttribute(nowChecked) {
+        if (nowChecked && !levels.some(levelID => levelID == level.value)) {
+          // Add the level.
+          const newLevels = levels.slice();
+          newLevels.push(level.value + '');
+          setAttributes({
+            levels: newLevels
+          });
+        } else if (!nowChecked && levels.some(levelID => levelID == level.value)) {
+          // Remove the level.
+          const newLevels = levels.filter(levelID => levelID != level.value);
+          setAttributes({
+            levels: newLevels
+          });
+        }
+      }
+    });
+    return [isSelected && (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(InspectorControls, null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(PanelBody, null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("p", null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("strong", null, __('Select a Membership Level', 'paid-memberships-pro'))), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(SelectControl, {
+      value: selected_level,
+      help: __("Select a level.", "paid-memberships-pro"),
+      options: all_levels,
+      onChange: selected_level => setAttributes({
+        selected_level
+      })
+    }))), isSelected && (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
+      className: "pmpro-block-require-membership-element"
+    }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("span", {
+      className: "pmpro-block-title"
+    }, __('Individual Membership Level', 'paid-memberships-pro')), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
+      class: "pmpro-block-inspector-scrollable"
+    }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(PanelBody, null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(SelectControl, {
+      value: selected_level,
+      help: __("Select a level.", "paid-memberships-pro"),
+      options: all_levels,
+      onChange: selected_level => setAttributes({
+        selected_level
+      })
+    }))), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(InnerBlocks, {
+      templateLock: false,
       template: [['pmpro/single-level-name', {
-        level: 2,
+        selected_level: selected_level,
         content: 'Example Nested Block Template'
       }], ['pmpro/single-level-price', {
         level: 2,
@@ -2120,14 +2165,36 @@ const all_levels = [{
         level: 2,
         content: 'Example Nested Block Template'
       }]]
-    }));
+    })), !isSelected && (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
+      className: "pmpro-block-require-membership-element"
+    }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("span", {
+      className: "pmpro-block-title"
+    }, __('Membership Level', 'paid-memberships-pro')), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(InnerBlocks, {
+      templateLock: false,
+      template: [['pmpro/single-level-name', {
+        selected_level: selected_level,
+        content: 'Example Nested Block Template'
+      }], ['pmpro/single-level-price', {
+        level: 2,
+        content: 'Example Nested Block Template'
+      }], ['pmpro/single-level-expiration', {
+        level: 2,
+        content: 'Example Nested Block Template'
+      }], ['pmpro/single-level-description', {
+        level: 2,
+        content: 'Example Nested Block Template'
+      }], ['pmpro/single-level-checkout', {
+        level: 2,
+        content: 'Example Nested Block Template'
+      }]]
+    }))];
   },
-  save: props => {
-    const {
-      className
-    } = props;
-    return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", useBlockProps.save(), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(InnerBlocks.Content, null));
+
+  save() {
+    const blockProps = useBlockProps.save();
+    return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", blockProps, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(InnerBlocks.Content, null));
   }
+
 }));
 
 /***/ }),

@@ -26,7 +26,7 @@ const {
     select
 } = wp.data;
 
-const all_levels = [{ value: 0, label: "Non-Members" }].concat( pmpro.all_level_values_and_labels );
+const all_levels = pmpro.all_level_values_and_labels;
 
 
 
@@ -79,7 +79,8 @@ const all_levels = [{ value: 0, label: "Non-Members" }].concat( pmpro.all_level_
             children.forEach(function(child){
                 dispatch('core/block-editor').updateBlockAttributes(child.clientId, {selected_level: selected_level})
             });
-                    setAttributes({ selected_level: selected_level, levels: all_levels });
+            
+            setAttributes({ selected_level: selected_level, levels: all_levels });
 
              if( uid=='' ) {
                var rand = Math.random()+"";
@@ -128,22 +129,22 @@ const all_levels = [{ value: 0, label: "Non-Members" }].concat( pmpro.all_level_
                   </PanelBody>
                   </div>
                   <InnerBlocks templateLock = { false } template={ [
-                        [ 'pmpro/single-level-name', { level: 2, content: 'Example Nested Block Template' } ],
-                        // [ 'pmpro/single-level-price', { level: 2, content: 'Example Nested Block Template' } ],
-                        // [ 'pmpro/single-level-expiration', { level: 2, content: 'Example Nested Block Template' } ],
+                        [ 'pmpro/single-level-name', { selected_level: selected_level, content: 'Example Nested Block Template' } ],
+                        [ 'pmpro/single-level-price', { level: 2, content: 'Example Nested Block Template' } ],
+                        [ 'pmpro/single-level-expiration', { level: 2, content: 'Example Nested Block Template' } ],
                         [ 'pmpro/single-level-description', { level: 2, content: 'Example Nested Block Template' } ],
-                        // [ 'pmpro/single-level-checkout', { level: 2, content: 'Example Nested Block Template' } ],
+                        [ 'pmpro/single-level-checkout', { level: 2, content: 'Example Nested Block Template' } ],
                     ] }
                   />
                 </div>,
                 ! isSelected && <div className="pmpro-block-require-membership-element" >
                   <span className="pmpro-block-title">{ __( 'Membership Level', 'paid-memberships-pro' ) }</span>
-                  <InnerBlocks templateLock={ false } template={ [
-                        [ 'pmpro/single-level-name', { } ],
-                        // [ 'pmpro/single-level-price', { level: 2, content: 'Example Nested Block Template' } ],
-                        // [ 'pmpro/single-level-expiration', { level: 2, content: 'Example Nested Block Template' } ],
+                  <InnerBlocks templateLock = { false } template = { [
+                       [ 'pmpro/single-level-name', { selected_level: selected_level, content: 'Example Nested Block Template' } ],
+                        [ 'pmpro/single-level-price', { level: 2, content: 'Example Nested Block Template' } ],
+                        [ 'pmpro/single-level-expiration', { level: 2, content: 'Example Nested Block Template' } ],
                         [ 'pmpro/single-level-description', { level: 2, content: 'Example Nested Block Template' } ],
-                        // [ 'pmpro/single-level-checkout', { level: 2, content: 'Example Nested Block Template' } ],
+                        [ 'pmpro/single-level-checkout', { level: 2, content: 'Example Nested Block Template' } ],
                     ] }
                   />
                 </div>,

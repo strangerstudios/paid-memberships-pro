@@ -26,8 +26,6 @@ const {
     select
 } = wp.data;
 
-const all_levels = [{ value: 0, label: "Non-Members" }].concat( pmpro.all_level_values_and_labels );
-
  /**
   * Register block
   */
@@ -73,7 +71,7 @@ export default registerBlockType(
 
             setAttributes( {selected_level: parentAtts.selected_level } );
 
-            const level_name = pmpro.all_levels[selected_level].name;
+            const level_name = pmpro.all_levels_formatted_text[parentAtts.selected_level].description;
 
             return ( 
                 <div { ...useBlockProps() }>

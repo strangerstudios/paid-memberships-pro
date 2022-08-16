@@ -26,8 +26,6 @@ const {
     select
 } = wp.data;
 
-const all_levels = [{ value: 0, label: "Non-Members" }].concat( pmpro.all_level_values_and_labels );
-
  /**
   * Register block
   */
@@ -59,10 +57,7 @@ export default registerBlockType(
                 type: 'array',
                 default: []
             },
-            selected_level: {
-                type: 'string',
-                default:''
-            },
+           
         },
         edit: props => {
             
@@ -72,8 +67,8 @@ export default registerBlockType(
             const parentAtts = select('core/block-editor').getBlockAttributes(parent);
 
             setAttributes( {selected_level: parentAtts.selected_level } );
-
-            const level_name = pmpro.all_levels[selected_level].name;
+   
+            const level_name = pmpro.all_levels_formatted_text[parentAtts.selected_level].name;
 
             return ( 
                 <div { ...useBlockProps() }>
