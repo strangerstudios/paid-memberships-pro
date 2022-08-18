@@ -383,10 +383,16 @@
 			
 			if(!$user)
 				return false;
-				
-			$confirmation_in_email = get_pmpro_membership_level_meta( $user->membership_level->id, 'confirmation_in_email', true );
+
+			if ( empty( $invoice->membership_id ) ) {
+				return false;
+			}
+
+			$membership_level = pmpro_getSpecificMembershipLevelForUser($user->ID, $invoice->membership_id);
+
+			$confirmation_in_email = get_pmpro_membership_level_meta( $membership_level->id, 'confirmation_in_email', true );
 			if ( ! empty( $confirmation_in_email ) ) {
-				$confirmation_message = $user->membership_level->confirmation;
+				$confirmation_message = $membership_level->confirmation;
 			} else {
 				$confirmation_message = '';
 			}
@@ -401,10 +407,10 @@
 								"user_login" => $user->user_login,
 								"sitename" => get_option("blogname"),
 								"siteemail" => pmpro_getOption("from_email"),
-								"membership_id" => $user->membership_level->id,
-								"membership_level_name" => $user->membership_level->name,
+								"membership_id" => $membership_level->id,
+								"membership_level_name" => $membership_level->name,
 								"membership_level_confirmation_message" => $confirmation_message,
-								"membership_cost" => pmpro_getLevelCost($user->membership_level),								
+								"membership_cost" => pmpro_getLevelCost($membership_level),								
 								"login_link" => pmpro_login_url(),
 								"login_url" => pmpro_login_url(),
 								"display_name" => $user->display_name,
@@ -413,17 +419,17 @@
 			
 			// Figure out which template to use.
 			if ( empty( $this->template ) ) {
-				if( ! empty( $invoice ) && ! pmpro_isLevelFree( $user->membership_level ) ) {
+				if( ! empty( $invoice ) && ! pmpro_isLevelFree( $membership_level ) ) {
 					if( $invoice->gateway == "paypalexpress") {
 						$this->template = "checkout_express";
 					} elseif( $invoice->gateway == "check" ) {
 						$this->template = "checkout_check";						
-					} elseif( pmpro_isLevelTrial( $user->membership_level ) ) {
+					} elseif( pmpro_isLevelTrial( $membership_level ) ) {
 						$this->template = "checkout_trial";
 					} else {
 						$this->template = "checkout_paid";
 					}										
-				} elseif( pmpro_isLevelFree( $user->membership_level ) ) {
+				} elseif( pmpro_isLevelFree( $membership_level ) ) {
 					$this->template = "checkout_free";					
 				} else {
 					$this->template = "checkout_freetrial";					
@@ -498,9 +504,15 @@
 			
 			if(!$user)
 				return false;
+
+			if ( empty( $invoice->membership_id ) ) {
+				return false;
+			}
+
+			$membership_level = pmpro_getSpecificMembershipLevelForUser($user->ID, $invoice->membership_id);
 			
 			$this->email = get_bloginfo("admin_email");
-			$this->subject = sprintf(__("Member checkout for %s at %s", 'paid-memberships-pro' ), $user->membership_level->name, get_option("blogname"));	
+			$this->subject = sprintf(__("Member checkout for %s at %s", 'paid-memberships-pro' ), $membership_level->name, get_option("blogname"));	
 			
 			$this->data = array(
 								"subject" => $this->subject, 
@@ -508,9 +520,9 @@
 								"user_login" => $user->user_login,
 								"sitename" => get_option("blogname"),
 								"siteemail" => pmpro_getOption("from_email"),
-								"membership_id" => $user->membership_level->id,
-								"membership_level_name" => $user->membership_level->name,
-								"membership_cost" => pmpro_getLevelCost($user->membership_level),								
+								"membership_id" => $membership_level->id,
+								"membership_level_name" => $membership_level->name,
+								"membership_cost" => pmpro_getLevelCost($membership_level),								
 								"login_link" => pmpro_login_url(),
 								"login_url" => pmpro_login_url(),
 								"display_name" => $user->display_name,
@@ -519,17 +531,17 @@
 			
 			// Figure out which template to use.
 			if ( empty( $this->template ) ) {
-				if( ! empty( $invoice ) && ! pmpro_isLevelFree( $user->membership_level ) ) {
+				if( ! empty( $invoice ) && ! pmpro_isLevelFree( $membership_level ) ) {
 					if( $invoice->gateway == "paypalexpress") {
 						$this->template = "checkout_express_admin";
 					} elseif( $invoice->gateway == "check" ) {
 						$this->template = "checkout_check_admin";						
-					} elseif( pmpro_isLevelTrial( $user->membership_level ) ) {
+					} elseif( pmpro_isLevelTrial( $membership_level ) ) {
 						$this->template = "checkout_trial_admin";
 					} else {
 						$this->template = "checkout_paid_admin";
 					}										
-				} elseif( pmpro_isLevelFree( $user->membership_level ) ) {
+				} elseif( pmpro_isLevelFree( $membership_level ) ) {
 					$this->template = "checkout_free_admin";					
 				} else {
 					$this->template = "checkout_freetrial_admin";					
@@ -596,6 +608,12 @@
 			
 			if(!$user || !$invoice)
 				return false;
+
+			if ( empty( $invoice->membership_id ) ) {
+				return false;
+			}
+
+			$membership_level = pmpro_getSpecificMembershipLevelForUser($user->ID, $invoice->membership_id);
 			
 			$this->email = $user->user_email;
 			$this->subject = sprintf(__("Your billing information has been updated at %s", "paid-memberships-pro"), get_option("blogname"));
@@ -606,8 +624,8 @@
 								"user_login" => $user->user_login,
 								"sitename" => get_option("blogname"),
 								"siteemail" => pmpro_getOption("from_email"),
-								"membership_id" => $user->membership_level->id,
-								"membership_level_name" => $user->membership_level->name,
+								"membership_id" => $membership_level->id,
+								"membership_level_name" => $membership_level->name,
 								"display_name" => $user->display_name,
 								"user_email" => $user->user_email,																	
 								"billing_name" => $invoice->billing->name,
@@ -647,6 +665,12 @@
 			if(!$user || !$invoice)
 				return false;
 			
+			if ( empty( $invoice->membership_id ) ) {
+				return false;
+			}
+
+			$membership_level = pmpro_getSpecificMembershipLevelForUser($user->ID, $invoice->membership_id);
+			
 			$this->email = get_bloginfo("admin_email");
 			$this->subject = sprintf(__("Billing information has been updated for %s at %s", "paid-memberships-pro"), $user->user_login, get_option("blogname"));
 			
@@ -656,8 +680,8 @@
 								"user_login" => $user->user_login,
 								"sitename" => get_option("blogname"),
 								"siteemail" => pmpro_getOption("from_email"),
-								"membership_id" => $user->membership_level->id,
-								"membership_level_name" => $user->membership_level->name,
+								"membership_id" => $membership_level->id,
+								"membership_level_name" => $membership_level->name,
 								"display_name" => $user->display_name,
 								"user_email" => $user->user_email,																	
 								"billing_name" => $invoice->billing->name,
@@ -797,6 +821,12 @@
 			if(!$user || !$invoice)
 				return false;
 			
+			if ( empty( $invoice->membership_id ) ) {
+				return false;
+			}
+
+			$membership_level = pmpro_getSpecificMembershipLevelForUser($user->ID, $invoice->membership_id);
+			
 			$this->email = $user->user_email;
 			$this->subject = sprintf(__("Credit card on file expiring soon at %s", "paid-memberships-pro"), get_option("blogname"));
 			
@@ -806,8 +836,8 @@
 								"user_login" => $user->user_login,
 								"sitename" => get_option("blogname"),
 								"siteemail" => pmpro_getOption("from_email"),
-								"membership_id" => $user->membership_level->id,
-								"membership_level_name" => $user->membership_level->name,
+								"membership_id" => $membership_level->id,
+								"membership_level_name" => $membership_level->name,
 								"display_name" => $user->display_name,
 								"user_email" => $user->user_email,									
 								"billing_name" => $invoice->billing->name,
@@ -847,7 +877,11 @@
 			if(!$user || !$invoice)
 				return false;
 			
-			$user->membership_level = pmpro_getMembershipLevelForUser($user->ID);
+			if ( empty( $invoice->membership_id ) ) {
+				return false;
+			}
+
+			$membership_level = pmpro_getSpecificMembershipLevelForUser($user->ID, $invoice->membership_id);
 			
 			$this->email = $user->user_email;
 			$this->subject = sprintf(__("Invoice for %s membership", "paid-memberships-pro"), get_option("blogname"));
@@ -858,8 +892,8 @@
 								"user_login" => $user->user_login,
 								"sitename" => get_option("blogname"),
 								"siteemail" => pmpro_getOption("from_email"),
-								"membership_id" => $user->membership_level->id,
-								"membership_level_name" => $user->membership_level->name,
+								"membership_id" => $membership_level->id,
+								"membership_level_name" => $membership_level->name,
 								"display_name" => $user->display_name,
 								"user_email" => $user->user_email,	
 								"invoice_id" => $invoice->code,
@@ -911,7 +945,7 @@
 			return $this->sendEmail();
 		}
 		
-		function sendTrialEndingEmail($user = NULL)
+		function sendTrialEndingEmail( $user = NULL, $membership_id = NULL )
 		{
 			global $current_user, $wpdb;
 			if(!$user)
@@ -921,12 +955,12 @@
 				return false;
 			
 			//make sure we have the current membership level data
-			/*$user->membership_level = $wpdb->get_row("SELECT l.id AS ID, l.name AS name, UNIX_TIMESTAMP(CONVERT_TZ(mu.startdate, '+00:00', @@global.time_zone)) as startdate, mu.billing_amount, mu.cycle_number, mu.cycle_period, mu.trial_amount, mu.trial_limit
-														FROM {$wpdb->pmpro_membership_levels} AS l
-														JOIN {$wpdb->pmpro_memberships_users} AS mu ON (l.id = mu.membership_id)
-														WHERE mu.user_id = " . $user->ID . "
-														LIMIT 1");*/
-			$user->membership_level = pmpro_getMembershipLevelForUser($user->ID);
+			if ( empty( $membership_id ) ) {
+				$membership_level = pmpro_getMembershipLevelForUser($user->ID);
+			} else {
+				$membership_level = pmpro_getMembershipLevelForUser($user->ID, $membership_id);
+			}
+
 						
 			$this->email = $user->user_email;
 			$this->subject = sprintf(__("Your trial at %s is ending soon", "paid-memberships-pro"), get_option("blogname"));
@@ -936,19 +970,19 @@
 				"name" => $user->display_name, 
 				"user_login" => $user->user_login,
 				"sitename" => get_option("blogname"), 				
-				"membership_id" => $user->membership_level->id,
-				"membership_level_name" => $user->membership_level->name, 
+				"membership_id" => $membership_level->id,
+				"membership_level_name" => $membership_level->name, 
 				"siteemail" => pmpro_getOption("from_email"), 
 				"login_link" => pmpro_login_url(),
 				"login_url" => pmpro_login_url(),
 				"display_name" => $user->display_name, 
 				"user_email" => $user->user_email, 
-				"billing_amount" => pmpro_formatPrice($user->membership_level->billing_amount), 
-				"cycle_number" => $user->membership_level->cycle_number, 
-				"cycle_period" => $user->membership_level->cycle_period, 
-				"trial_amount" => pmpro_formatPrice($user->membership_level->trial_amount), 
-				"trial_limit" => $user->membership_level->trial_limit,
-				"trial_end" => date_i18n(get_option('date_format'), strtotime(date_i18n("m/d/Y", $user->membership_level->startdate) . " + " . $user->membership_level->trial_limit . " " . $user->membership_level->cycle_period), current_time("timestamp"))
+				"billing_amount" => pmpro_formatPrice($membership_level->billing_amount), 
+				"cycle_number" => $membership_level->cycle_number, 
+				"cycle_period" => $membership_level->cycle_period, 
+				"trial_amount" => pmpro_formatPrice($membership_level->trial_amount), 
+				"trial_limit" => $membership_level->trial_limit,
+				"trial_end" => date_i18n(get_option('date_format'), strtotime(date_i18n("m/d/Y", $membership_level->startdate) . " + " . $membership_level->trial_limit . " " . $membership_level->cycle_period), current_time("timestamp"))
 			);
 
 			$this->template = apply_filters("pmpro_email_template", "trial_ending", $this);
@@ -956,7 +990,7 @@
 			return $this->sendEmail();
 		}
 		
-		function sendMembershipExpiredEmail($user = NULL)
+		function sendMembershipExpiredEmail( $user = NULL, $membership_id = NULL )
 		{
 			global $current_user, $wpdb;
 			if(!$user)
@@ -964,7 +998,7 @@
 			
 			if(!$user)
 				return false;						
-						
+
 			$this->email = $user->user_email;
 			$this->subject = sprintf(__("Your membership at %s has ended", "paid-memberships-pro"), get_option("blogname"));			
 
@@ -975,7 +1009,7 @@
 			return $this->sendEmail();
 		}
 		
-		function sendMembershipExpiringEmail($user = NULL)
+		function sendMembershipExpiringEmail( $user = NULL, $membership_id = NULL )
 		{
 			global $current_user, $wpdb;
 			if(!$user)
@@ -984,18 +1018,16 @@
 			if(!$user)
 				return false;
 			
-			//make sure we have the current membership level data
-			/*$user->membership_level = $wpdb->get_row("SELECT l.id AS ID, l.name AS name, UNIX_TIMESTAMP(CONVERT_TZ(mu.enddate, '+00:00', @@global.time_zone)) as enddate
-														FROM {$wpdb->pmpro_membership_levels} AS l
-														JOIN {$wpdb->pmpro_memberships_users} AS mu ON (l.id = mu.membership_id)
-														WHERE mu.user_id = " . $user->ID . "
-														LIMIT 1");*/
-			$user->membership_level = pmpro_getMembershipLevelForUser($user->ID);
+			if ( empty( $membership_id ) ) {
+				$membership_level = pmpro_getMembershipLevelForUser($user->ID);
+			} else {
+				$membership_level = pmpro_getMembershipLevelForUser($user->ID, $membership_id);
+			}
 						
 			$this->email = $user->user_email;
 			$this->subject = sprintf(__("Your membership at %s will end soon", "paid-memberships-pro"), get_option("blogname"));
 
-			$this->data = array("subject" => $this->subject, "name" => $user->display_name, "user_login" => $user->user_login, "sitename" => get_option("blogname"), "membership_id" => $user->membership_level->id, "membership_level_name" => $user->membership_level->name, "siteemail" => pmpro_getOption("from_email"), "login_link" => pmpro_login_url(), "login_url" => pmpro_login_url(), "enddate" => date_i18n(get_option('date_format'), $user->membership_level->enddate), "display_name" => $user->display_name, "user_email" => $user->user_email);
+			$this->data = array("subject" => $this->subject, "name" => $user->display_name, "user_login" => $user->user_login, "sitename" => get_option("blogname"), "membership_id" => $membership_level->id, "membership_level_name" => $membership_level->name, "siteemail" => pmpro_getOption("from_email"), "login_link" => pmpro_login_url(), "login_url" => pmpro_login_url(), "enddate" => date_i18n(get_option('date_format'), $membership_level->enddate), "display_name" => $user->display_name, "user_email" => $user->user_email);
 
 			$this->template = apply_filters("pmpro_email_template", "membership_expiring", $this);
 
