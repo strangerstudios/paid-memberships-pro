@@ -2169,6 +2169,50 @@ class PMProGateway_stripe extends PMProGateway {
 	 * @return string URL for customer portal, or empty String if not found.
 	 */
 	public function get_customer_portal_url( $customer_id ) {
+		// Before we can send the user to the customer portal,
+		// we need to have a portal configuration.
+		$portal_configurations = array();
+		try {
+			// Get all active portal configurations.
+			$portal_configurations = Stripe\BillingPortal\Configuration::all( array( 'active' => true, 'limit' => 100 ) );
+		} catch( Exception $e ) {
+			// Error getting portal configurations.
+			return '';
+		}
+
+		// Check if one of the portal configurations is default.
+		foreach ( $portal_configurations as $portal_configuration ) {
+			if ( $portal_configuration->is_default ) {
+				$portal_configuration_id = $portal_configuration->id;
+				break;
+			}
+		}
+
+		// If we still don't have a portal configuration, create one.
+		if ( empty( $portal_configuration_id ) ) {
+			$portal_configuration_params = array(
+				'business_profile' => array(
+					'headline' => esc_html__( 'Manage billing', 'woocommerce-gateway-stripe' ),
+				),
+				'features' => array(
+					'customer_update' => array( 'enabled' => true, 'allowed_updates' => array( 'address', 'phone', 'tax_id' ) ),
+					'invoice_history' => array( 'enabled' => true ),
+					'payment_method_update' => array( 'enabled' => true ),
+					'subscription_cancel' => array( 'enabled' => true ),
+				),
+			);
+			try {
+				$portal_configuration = Stripe\BillingPortal\Configuration::create( $portal_configuration_params );
+			} catch( Exception $e ) {
+				// Error creating portal configuration.
+				return '';
+			}
+
+			if ( ! empty( $portal_configuration ) ) {
+				$portal_configuration_id = $portal_configuration->id;
+			}
+		}
+
 		try {
 			$session = \Stripe\BillingPortal\Session::create([
 				'customer' => $customer_id,
