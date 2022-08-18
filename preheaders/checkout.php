@@ -435,6 +435,78 @@ if ( $submit && $pmpro_msgt != "pmpro_error" ) {
 				}
 			}
 
+			// Do we need to create a user account?
+			if ( ! $current_user->ID ) {
+				// Yes, create user.
+
+				//first name
+				if ( ! empty( $_REQUEST['first_name'] ) ) {
+					$first_name = $_REQUEST['first_name'];
+				} else {
+					$first_name = $bfirstname;
+				}
+				//last name
+				if ( ! empty( $_REQUEST['last_name'] ) ) {
+					$last_name = $_REQUEST['last_name'];
+				} else {
+					$last_name = $blastname;
+				}
+
+				//insert user
+				$new_user_array = apply_filters( 'pmpro_checkout_new_user_array', array(
+						"user_login" => $username,
+						"user_pass"  => $password,
+						"user_email" => $bemail,
+						"first_name" => $first_name,
+						"last_name"  => $last_name
+					)
+				);
+
+				$user_id = apply_filters( 'pmpro_new_user', '', $new_user_array );
+				if ( empty( $user_id ) ) {
+					$user_id = wp_insert_user( $new_user_array );
+				}
+
+				if ( empty( $user_id ) || is_wp_error( $user_id ) ) {
+					$e_msg = '';
+
+					if ( is_wp_error( $user_id ) ) {
+						$e_msg = $user_id->get_error_message();
+					}
+
+					$pmpro_msg  = __( "There was an error setting up your account. Please contact us.", 'paid-memberships-pro' ) . sprintf( " %s", $e_msg ); // Dirty 'don't break translation hack.
+					$pmpro_msgt = "pmpro_error";
+				} elseif ( apply_filters( 'pmpro_setup_new_user', true, $user_id, $new_user_array, $pmpro_level ) ) {
+
+					pmpro_maybe_send_wp_new_user_notification( $user_id, $pmpro_level->id );
+
+					$wpuser = get_userdata( $user_id );
+					$wpuser->set_role( get_option( 'default_role', 'subscriber' ) );
+
+					/**
+					 * Allow hooking before the user authentication process when setting up new user.
+					 *
+					 * @since 2.5.10
+					 *
+					 * @param int $user_id The user ID that is being setting up.
+					 */
+					do_action( 'pmpro_checkout_before_user_auth', $user_id );
+
+
+					//okay, log them in to WP
+					$creds                  = array();
+					$creds['user_login']    = $new_user_array['user_login'];
+					$creds['user_password'] = $new_user_array['user_pass'];
+					$creds['remember']      = true;
+					$user                   = wp_signon( $creds, false );
+					//setting some cookies
+					wp_set_current_user( $user_id, $username );
+					wp_set_auth_cookie( $user_id, true, apply_filters( 'pmpro_checkout_signon_secure', force_ssl_admin() ) );
+				}
+			} else {
+				$user_id = $current_user->ID;
+			}
+
 			//no errors yet
 			if ( $pmpro_msgt != "pmpro_error" ) {
 				do_action( 'pmpro_checkout_before_processing' );
@@ -485,6 +557,11 @@ if ( empty( $morder ) ) {
 	$morder = false;
 }
 
+// Make sure that we have a User ID to avoid a warning.
+if ( empty( $user_id ) && ! empty( $current_user->ID ) ) {
+	$user_id = $current_user->ID;
+}
+
 //Hook to check payment confirmation or replace it. If we get an array back, pull the values (morder) out
 $pmpro_confirmed_data = apply_filters( 'pmpro_checkout_confirmed', $pmpro_confirmed, $morder );
 
@@ -502,93 +579,9 @@ if ( ! empty( $pmpro_confirmed ) ) {
 	//just in case this hasn't been set yet
 	$submit = true;
 
-	//do we need to create a user account?
-	if ( ! $current_user->ID ) {
-		/*
-			create user
-		*/
-		if ( version_compare( $wp_version, "3.1" ) < 0 ) {
-			require_once( ABSPATH . WPINC . '/registration.php' );
-		}    //need this for WP versions before 3.1
+	do_action( 'pmpro_checkout_before_change_membership_level', $user_id, $morder );
 
-		//first name
-		if ( ! empty( $_REQUEST['first_name'] ) ) {
-			$first_name = $_REQUEST['first_name'];
-		} else {
-			$first_name = $bfirstname;
-		}
-		//last name
-		if ( ! empty( $_REQUEST['last_name'] ) ) {
-			$last_name = $_REQUEST['last_name'];
-		} else {
-			$last_name = $blastname;
-		}
-
-		//insert user
-		$new_user_array = apply_filters( 'pmpro_checkout_new_user_array', array(
-				"user_login" => $username,
-				"user_pass"  => $password,
-				"user_email" => $bemail,
-				"first_name" => $first_name,
-				"last_name"  => $last_name
-			)
-		);
-
-		$user_id = apply_filters( 'pmpro_new_user', '', $new_user_array );
-		if ( empty( $user_id ) ) {
-			$user_id = wp_insert_user( $new_user_array );
-		}
-
-		if ( empty( $user_id ) || is_wp_error( $user_id ) ) {
-			$e_msg = '';
-
-			if ( is_wp_error( $user_id ) ) {
-				$e_msg = $user_id->get_error_message();
-			}
-
-			$pmpro_msg  = __( "Your payment was accepted, but there was an error setting up your account. Please contact us.", 'paid-memberships-pro' ) . sprintf( " %s", $e_msg ); // Dirty 'don't break translation hack.
-			$pmpro_msgt = "pmpro_error";
-		} elseif ( apply_filters( 'pmpro_setup_new_user', true, $user_id, $new_user_array, $pmpro_level ) ) {
-
-			pmpro_maybe_send_wp_new_user_notification( $user_id, $pmpro_level->id );
-			
-			$wpuser = get_userdata( $user_id );
-			$wpuser->set_role( get_option( 'default_role', 'subscriber' ) );
-
-			/**
-			 * Allow hooking before the user authentication process when setting up new user.
-			 *
-			 * @since 2.5.10
-			 *
-			 * @param int $user_id The user ID that is being setting up.
-			 */
-			do_action( 'pmpro_checkout_before_user_auth', $user_id );
-
-
-			//okay, log them in to WP
-			$creds                  = array();
-			$creds['user_login']    = $new_user_array['user_login'];
-			$creds['user_password'] = $new_user_array['user_pass'];
-			$creds['remember']      = true;
-			$user                   = wp_signon( $creds, false );
-			//setting some cookies
-			wp_set_current_user( $user_id, $username );
-			wp_set_auth_cookie( $user_id, true, apply_filters( 'pmpro_checkout_signon_secure', force_ssl_admin() ) );
-		}
-	} else {
-		$user_id = $current_user->ID;
-	}
-
-	$is_user_valid = ! empty( $user_id ) && ! is_wp_error( $user_id );
-	if( $is_user_valid ) {
-		// If we have a valid user, perform any necessary actions before the membership is given.
-		// Currently being used by Stripe and PayPal Standard to send users offsite to pay.
-		// May set $pmpro_msgt if there's an error sending them to offiste gateway.
-		do_action( 'pmpro_checkout_before_change_membership_level', $user_id, $morder );
-	}
-
-	// User is created and we are ready to give them a membership.
-	if ( $is_user_valid && 'pmpro_error' !== $pmpro_msgt ) {
+	if ( 'pmpro_error' !== $pmpro_msgt ) {
 		//start date is NOW() but filterable below
 		$startdate = current_time( "mysql" );
 
