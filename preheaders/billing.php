@@ -7,9 +7,6 @@ if ( ! is_user_logged_in() ) {
 	$billing_url = pmpro_url( 'billing' );
     wp_redirect( add_query_arg( 'redirect_to', urlencode( $billing_url ), pmpro_login_url() ) );
     exit;
-} else {
-    // Get the current user's membership level. 
-    $current_user->membership_level = pmpro_getMembershipLevelForUser( $current_user->ID );
 }
 
 //need to be secure?
