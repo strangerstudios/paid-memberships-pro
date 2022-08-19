@@ -71,7 +71,10 @@ export default registerBlockType(
 
             setAttributes( {selected_level: parentAtts.selected_level } );
 
-            const formatted_price = pmpro.all_levels_formatted_text[parentAtts.selected_level].formatted_price;
+            let formatted_price = 'Level Price Placeholder';
+            if (pmpro.all_levels_formatted_text[parentAtts.selected_level] !== undefined) {
+                formatted_price = pmpro.all_levels_formatted_text[parentAtts.selected_level].formatted_price;
+            }
 
             return ( 
                 <div { ...useBlockProps() }>
@@ -79,17 +82,18 @@ export default registerBlockType(
                 </div>
             );
         },
-        save: props => {
-            
-            const {  className } = props;
-            
+        save: ( props ) => {
+                        
             const blockProps = useBlockProps.save();
 
-            return (
-                <div { ...blockProps }>
-                    <InnerBlocks.Content />
-                </div>
-            );
+            let formatted_price = 'Level Price Placeholder';
+            if (pmpro.all_levels_formatted_text[props.attributes.selected_level] !== undefined) {
+                formatted_price = pmpro.all_levels_formatted_text[props.attributes.selected_level].formatted_price;
+            }
+            
+            return <div {...blockProps}>
+                {formatted_price}
+            </div>;
         },
     }
 );

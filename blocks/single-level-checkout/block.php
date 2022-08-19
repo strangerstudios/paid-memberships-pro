@@ -37,5 +37,19 @@ function register_dynamic_block() {
  * @return string
  **/
 function render_dynamic_block( $attributes, $content ) {
-	return do_blocks( $content );
+
+	$text      = 'Buy Now';
+    $level     = null;
+    $css_class = 'pmpro_btn';
+
+    if ( ! empty( $attributes['selected_level'] ) ) {
+        $level = $attributes['selected_level'];
+    } else {
+        $level = null;
+    }
+
+    $text = __( 'Buy Now', 'paid-memberships-pro' );
+    
+    return( "<span class=\"" . pmpro_get_element_class( 'span_pmpro_checkout_button' ) . "\">" . pmpro_getCheckoutButton( $level, $text, $css_class ) . "</span>" );
+    
 }

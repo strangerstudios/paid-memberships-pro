@@ -1691,9 +1691,15 @@ const {
     return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", useBlockProps(), level_description);
   },
 
-  save() {
+  save(props) {
     const blockProps = useBlockProps.save();
-    return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", blockProps, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(InnerBlocks.Content, null));
+    let level_description = 'Level Description Placeholder';
+
+    if (pmpro.all_levels[props.attributes.selected_level] !== undefined) {
+      level_description = pmpro.all_levels[props.attributes.selected_level].description;
+    }
+
+    return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", blockProps, level_description);
   }
 
 }));
@@ -1777,12 +1783,18 @@ const {
       formatted_expiration = pmpro.all_levels_formatted_text[parentAtts.selected_level].formatted_expiration;
     }
 
-    return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", useBlockProps(), formatted_expiration, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(InnerBlocks, null));
+    return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", useBlockProps(), formatted_expiration);
   },
 
-  save() {
+  save(props) {
     const blockProps = useBlockProps.save();
-    return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", blockProps, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(InnerBlocks.Content, null));
+    let formatted_expiration = 'Expiration Placeholder';
+
+    if (pmpro.all_levels_formatted_text[props.attributes.selected_level] !== undefined) {
+      formatted_expiration = pmpro.all_levels_formatted_text[props.attributes.selected_level].formatted_expiration;
+    }
+
+    return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", blockProps, formatted_expiration);
   }
 
 }));
@@ -1868,12 +1880,16 @@ const {
 
     return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", useBlockProps(), level_name);
   },
-
-  save() {
+  save: props => {
     const blockProps = useBlockProps.save();
-    return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", blockProps, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(InnerBlocks.Content, null));
-  }
+    let level_name = 'Level Name Placeholder';
 
+    if (pmpro.all_levels_formatted_text[props.attributes.selected_level] !== undefined) {
+      level_name = pmpro.all_levels_formatted_text[props.attributes.selected_level].name;
+    }
+
+    return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", blockProps, level_name);
+  }
 }));
 
 /***/ }),
@@ -1970,11 +1986,14 @@ const {
     return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", useBlockProps(), formatted_price);
   },
   save: props => {
-    const {
-      className
-    } = props;
     const blockProps = useBlockProps.save();
-    return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", blockProps, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(InnerBlocks.Content, null));
+    let formatted_price = 'Level Price Placeholder';
+
+    if (pmpro.all_levels_formatted_text[props.attributes.selected_level] !== undefined) {
+      formatted_price = pmpro.all_levels_formatted_text[props.attributes.selected_level].formatted_price;
+    }
+
+    return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", blockProps, formatted_price);
   }
 }));
 
@@ -2106,25 +2125,7 @@ const all_levels = [{
       onChange: selected_level => setAttributes({
         selected_level
       })
-    }))), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(InnerBlocks, {
-      templateLock: false,
-      template: [['pmpro/single-level-name', {
-        selected_level: selected_level,
-        content: 'Example Nested Block Template'
-      }], ['pmpro/single-level-price', {
-        level: 2,
-        content: 'Example Nested Block Template'
-      }], ['pmpro/single-level-expiration', {
-        level: 2,
-        content: 'Example Nested Block Template'
-      }], ['pmpro/single-level-description', {
-        level: 2,
-        content: 'Example Nested Block Template'
-      }], ['pmpro/single-level-checkout', {
-        level: 2,
-        content: 'Example Nested Block Template'
-      }]]
-    })), !isSelected && (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
+    })))), !isSelected && (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
       className: "pmpro-block-require-membership-element"
     }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("span", {
       className: "pmpro-block-title"

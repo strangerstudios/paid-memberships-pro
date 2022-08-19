@@ -38,17 +38,6 @@ function register_dynamic_block() {
  **/
 function render_dynamic_block( $attributes, $content ) {
 
-    global $pmpro_levels;
-
-    $selected_level = ( ! empty( $attributes['selected_level'] ) ) ? intval( $attributes['selected_level'] ) : 0;
-
-    if( $selected_level === 0 ) {
-        return;
-    }
-
-    if( ! empty( $pmpro_levels[$selected_level] ) ) {
-
-        return $pmpro_levels[$selected_level]->name;
-
-    }
+    return do_blocks( $content );
+    
 }

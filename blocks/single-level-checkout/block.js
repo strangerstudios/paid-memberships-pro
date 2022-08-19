@@ -1,5 +1,5 @@
 /**
- * Block: PMPro Single Membership
+ * Block: Single Level Checkout Button
  *
  *
  */
@@ -12,17 +12,10 @@ const {
     registerBlockType
 } = wp.blocks;
 const {
-    PanelBody,
-    CheckboxControl,
-    SelectControl,
-} = wp.components;
-const {
-    InspectorControls,
     InnerBlocks,
     useBlockProps, 
 } = wp.blockEditor;
 const {
-    dispatch,
     select
 } = wp.data;
 
@@ -64,14 +57,17 @@ export default registerBlockType(
         },
         edit: props => {
             
-            const { attributes: { levels, selected_level }, setAttributes, isSelected } = props; 
+            const { setAttributes } = props; 
 
             var parent = select('core/block-editor').getBlockParents(props.clientId);
             const parentAtts = select('core/block-editor').getBlockAttributes(parent);
 
-            setAttributes( {selected_level: parentAtts.selected_level } );
-
-            const level_name = pmpro.all_levels[parentAtts.selected_level].name;
+            setAttributes({ selected_level: parentAtts.selected_level });
+            
+            let level_name = 'Checkout Button?';
+            if (pmpro.all_levels[parentAtts.selected_level] !== undefined) {
+                level_name = pmpro.all_levels[parentAtts.selected_level].name;
+            }
 
             return ( 
                 <div { ...useBlockProps() }>
@@ -79,12 +75,10 @@ export default registerBlockType(
                 </div>
             );
         },
-        save: props => {
-            
-            const {  className } = props;
-            
+        save() {
+                        
             const blockProps = useBlockProps.save();
-
+            
             return (
                 <div { ...blockProps }>
                     <InnerBlocks.Content />

@@ -37,19 +37,7 @@ function register_dynamic_block() {
  * @return string
  **/
 function render_dynamic_block( $attributes, $content ) {
-	    
-    global $pmpro_levels;
 
-    $selected_level = ( ! empty( $attributes['selected_level'] ) ) ? intval( $attributes['selected_level'] ) : 0;
-
-    if( $selected_level === 0 ) {
-        return;
-    }
-
-    if( ! empty( $pmpro_levels[$selected_level] ) ) {
-
-        return trim( pmpro_no_quotes( pmpro_getLevelCost( $pmpro_levels[$selected_level], array( '"', "'", "\n", "\r" ) ) ) );
-
-    }
+    return do_blocks( $content );
 
 }
