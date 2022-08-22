@@ -232,7 +232,7 @@ function pmpro_display_fields_in_group( $group, $scope = 'checkout' ) {
                 continue;
             }
             
-            if ( $scope == 'checkout ' ) {
+            if ( $scope == 'checkout' ) {
                 if( ! isset( $field->profile ) || $field->profile !== 'only' && $field->profile !== 'only_admin' ) {
     				$field->displayAtCheckout();
     			}
