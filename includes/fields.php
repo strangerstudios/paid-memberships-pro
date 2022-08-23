@@ -254,7 +254,7 @@ add_action( 'pmpro_checkout_after_username', 'pmpro_checkout_after_username_fiel
 function pmpro_checkout_after_password_fields() {
 	pmpro_display_fields_in_group( 'after_password', 'checkout' );
 }
-add_action( 'pmpro_checkout_after_passwor', 'pmpro_checkout_after_password_fields' );
+add_action( 'pmpro_checkout_after_password', 'pmpro_checkout_after_password_fields' );
 
 //after_email
 function pmpro_checkout_after_email_fields() {
