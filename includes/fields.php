@@ -37,7 +37,28 @@ function pmpro_is_field( $var ) {
  */
 function pmpro_add_user_field( $where, $field ) {
 	global $pmpro_user_fields;
-	if(empty($pmpro_user_fields[$where])) {
+	
+    /**
+     * Filter the group to add the field to.
+     * 
+     * @since 2.9.3
+     * 
+     * @param string $where The name of the group to add the field to.
+     * @param PMProField $field The field being added.
+     */
+    $where = apply_filters( 'pmpro_add_user_field_where', $where, $field );
+    
+    /**
+     * Filter the field to add.
+     * 
+     * @since 2.9.3
+     *             
+     * @param PMProField $field The field being added.
+     * @param string $where The name of the group to add the field to.
+     */
+    $field = apply_filters( 'pmpro_add_user_field', $field, $where );
+    
+    if(empty($pmpro_user_fields[$where])) {
 		$pmpro_user_fields[$where] = array();
 	}
 	if ( ! empty( $field ) && pmpro_is_field( $field ) ) {
