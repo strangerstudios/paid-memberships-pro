@@ -1125,25 +1125,17 @@ function pmpro_cron_delete_tmp() {
 }
 add_action( 'pmpro_cron_delete_tmp', 'pmpro_cron_delete_tmp' );
 
-// Code for the user fields settings page.
-/**
- * Get user fields from settings.
- */
-function pmpro_get_user_fields_from_settings() {
-    
-}
-
 /**
  * Get user fields from global.
+ * @since 2.9.3
  */
 function pmpro_get_user_fields() {
-    
+    global $pmpro_user_fields;
+        
+    return (array)$pmpro_user_fields;
 }
 
-/**
- * Save user fields settings to DB.
- */
-  
+// Code for the user fields settings page.
 /**
  * Get field group HTML for settings.
  */
