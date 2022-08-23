@@ -24,7 +24,8 @@ function pmpro_handle_subscription_cancellation_at_gateway( $subscription_transa
 	$user = get_userdata( $subscription->get_user_id() );
 	if ( empty( $user ) ) {
 		// The user for this subscription does not exist. Let's just set the subscription status to cancelled.
-		$subscription->mark_as_cancelled();
+		$subscription->set( 'status', 'cancelled' );
+		$subscription->save();
 		return 'ERROR: Could not cancel membership. No user attached to subscription #' . $subscription->get_id() . ' with subscription transaction id = ' . $subscription_transaction_id . '.';
 	}
 
@@ -47,7 +48,8 @@ function pmpro_handle_subscription_cancellation_at_gateway( $subscription_transa
 	}
 
 	// Mark the PMPro_Subscription as cancelled.
-	$subscription->mark_as_cancelled();
+	$subscription->set( 'status', 'cancelled' );
+	$subscription->save();
 
 	// Check to see if the user has the membership level associated with this subscription.
 	if ( ! pmpro_hasMembershipLevel( $subscription->get_membership_level_id(), $user->ID ) ) {
