@@ -4288,6 +4288,7 @@ function pmpro_maybe_send_wp_new_user_notification( $user_id, $level_id = null )
  */
 function pmpro_format_field_name( $field_name ) {
 	$formatted_name = preg_replace( '/[^A-Za-z0-9\-]+/', '_', $field_name );
+	$formatted_name = trim( $formatted_name, '_' );
 	
 	/**
 	 * Filter the formatted/output field names.
