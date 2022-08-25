@@ -266,7 +266,7 @@ function pmpro_dashboard() {
 }
 
 function pmpro_wizard() {
-	require_once( PMPRO_DIR . '/adminpages/wizard.php' );
+	require_once( PMPRO_DIR . '/adminpages/wizard/wizard.php' );
 }
 
 function pmpro_membershiplevels() {
