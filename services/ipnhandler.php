@@ -727,8 +727,7 @@ function pmpro_ipnChangeMembershipLevel( $txn_id, &$morder ) {
 			$invoice = null;
 		}
 
-		$user                   = get_userdata( $morder->user_id );
-		$user->membership_level = $morder->membership_level;        //make sure they have the right level info
+		$user = get_userdata( $morder->user_id );
 
 		//send email to member
 		$pmproemail = new PMProEmail();
@@ -758,7 +757,6 @@ function pmpro_ipnFailedPayment( $last_order ) {
 	$morder->membership_id = $last_order->membership_id;
 
 	$user                   = new WP_User( $last_order->user_id );
-	$user->membership_level = pmpro_getMembershipLevelForUser( $user->ID );
 
 	//add billing information if appropriate
 	if ( $last_order->gateway == "paypal" )        //website payments pro
