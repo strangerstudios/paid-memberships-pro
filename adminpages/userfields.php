@@ -28,14 +28,14 @@
 			foreach ( $group->fields as $field ) {
 				$field_name 		  = pmpro_format_field_name( $field->name ); //Replace spaces and dashes with underscores.
 				$field->name          = sanitize_text_field( $field_name );
-				$field->label         = sanitize_text_field( $field->label );
+				$field->label         = wp_kses_post( $field->label );
 				$field->type          = sanitize_text_field( $field->type );
 				$field->required      = 'yes' === $field->required ? 'yes' : 'no';
 				$field->readonly      = 'yes' === $field->readonly ? 'yes' : 'no';
 				$field->profile       = sanitize_text_field( $field->profile );
 				$field->wrapper_class = sanitize_text_field( $field->wrapper_class );
 				$field->element_class = sanitize_text_field( $field->element_class );
-				$field->hint          = sanitize_textarea_field( $field->hint );
+				$field->hint          = wp_kses_post( $field->hint );
 				$field->options       = sanitize_textarea_field( $field->options );
 			}
 		}
