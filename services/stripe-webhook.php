@@ -853,18 +853,14 @@
  * @return bool
  */
 function pmpro_stripe_webhook_change_membership_level( $morder ) {
-
-	global $wpdb, $pmpro_level, $discount_code;
+	global $wpdb, $pmpro_level, $discount_code, $discount_code_id;
 
 	// We need to pull the checkout level and fields data from the order.
 	$checkout_level_arr = get_pmpro_membership_order_meta( $morder->id, 'checkout_level', true );
 	$pmpro_level = (object) $checkout_level_arr;
 
-	// Set $discount_code.
-	$discount_code_arr = get_pmpro_membership_order_meta( $morder->id, 'discount_code', true );
-	if ( ! empty( $discount_code_arr ) ) {
-		$discount_code = (object) $discount_code_arr;
-	}
+	// Set $discount_code_id.
+	$discount_code = get_pmpro_membership_order_meta( $morder->id, 'checkout_discount_code', true );
 	
 	// Set $_REQUEST.
 	$checkout_request_vars = get_pmpro_membership_order_meta( $morder->id, 'checkout_request_vars', true );
@@ -886,15 +882,6 @@ function pmpro_stripe_webhook_change_membership_level( $morder ) {
 
 	//filter the enddate (documented in preheaders/checkout.php)
 	$enddate = apply_filters( "pmpro_checkout_end_date", $enddate, $morder->user_id, $pmpro_level, $startdate );
-
-	//get discount code
-	if ( ! empty( $discount_code ) ) {
-		//update membership level
-		$discount_code_id = $discount_code->id;
-	} else {
-		$discount_code_id = "";
-	}
-
 
 	//custom level to change user to
 	$custom_level = array(
@@ -925,18 +912,22 @@ function pmpro_stripe_webhook_change_membership_level( $morder ) {
 		$morder->saveOrder();
 
 		//add discount code use
-		if ( ! empty( $discount_code ) && ! empty( $use_discount_code ) ) {
-
-			$wpdb->query(
-				$wpdb->prepare(
-					"INSERT INTO {$wpdb->pmpro_discount_codes_uses} 
-						( code_id, user_id, order_id, timestamp ) 
-						VALUES( %d, %d, %s, %s )",
-					$discount_code_id),
-					$morder->user_id,
-					$morder->id,
-					current_time( 'mysql' )
+		if ( ! empty( $discount_code ) ) {
+			$discount_code_id = $wpdb->get_var( "SELECT id FROM $wpdb->pmpro_discount_codes WHERE code = '" . esc_sql( $discount_code ) . "' LIMIT 1" );
+			if ( ! empty( $discount_code_id ) ) {
+				$wpdb->query(
+					$wpdb->prepare(
+						"INSERT INTO {$wpdb->pmpro_discount_codes_uses} 
+							( code_id, user_id, order_id, timestamp ) 
+							VALUES( %d, %d, %s, %s )",
+						$discount_code_id,
+						$morder->user_id,
+						$morder->id,
+						current_time( 'mysql' )
+					)	
 				);
+				do_action( 'pmpro_discount_code_used', $discount_code_id, $user_id, $morder->id );
+			}
 		}
 
 		//save first and last name fields

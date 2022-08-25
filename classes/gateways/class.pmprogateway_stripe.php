@@ -1548,7 +1548,7 @@ class PMProGateway_stripe extends PMProGateway {
 	 */
 	static function pmpro_checkout_before_change_membership_level($user_id, $morder)
 	{
-		global $pmpro_level, $discount_code, $discount_code_id, $wpdb, $pmpro_currency;
+		global $pmpro_level, $discount_code, $wpdb, $pmpro_currency;
 
 		//if no order, no need to pay
 		if ( empty( $morder ) || $morder->gateway != 'stripe' ) {
@@ -1572,8 +1572,7 @@ class PMProGateway_stripe extends PMProGateway {
 		update_pmpro_membership_order_meta( $morder->id, 'checkout_level', $pmpro_level_arr );
 
 		// Save the discount code.
-		$pmpro_discount_code_arr = (array) $discount_code;
-		update_pmpro_membership_order_meta( $morder->id, 'checkout_discount_code', $pmpro_discount_code_arr );
+		update_pmpro_membership_order_meta( $morder->id, 'checkout_discount_code', $discount_code );
 
 		// Time to send the user to pay with Stripe!
 		$stripe = new PMProGateway_stripe();
