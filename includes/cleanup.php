@@ -1,17 +1,27 @@
 <?php
+
 /*
 	Clean things up when deletes happen, etc. (This stuff needs a better home.)
 */
 // deleting a user? remove their account info.
 function pmpro_delete_user( $user_id = null ) {
 
-	// changing their membership level to 0 will cancel any subscription and remove their membership level entry
-	// we don't remove the orders because it would affect reporting
-	if ( pmpro_changeMembershipLevel( 0, $user_id ) ) {
-		// okay
-	} else {
-		// okay, guessing they didn't have a level
+	//Disable any active subscriptions that are associated with the account
+	if( isset( $_REQUEST['pmpro_delete_active_subscriptions'] ) && 
+		$_REQUEST['pmpro_delete_active_subscriptions'] == '1' ) {
+		if ( pmpro_changeMembershipLevel( 0, $user_id ) ) {
+			// okay
+		} else {
+			// okay, guessing they didn't have a level
+		}
 	}
+
+	//Remove all membership history for this user from the pmpro_memberships_users table
+	if( isset( $_REQUEST['pmpro_delete_member_history'] ) && 
+		$_REQUEST['pmpro_delete_member_history'] == '1' ) {
+		pmpro_delete_membership_history( $user_id );
+	}	
+	
 }
 add_action( 'delete_user', 'pmpro_delete_user' );
 add_action( 'wpmu_delete_user', 'pmpro_delete_user' );
@@ -36,14 +46,22 @@ function pmpro_delete_user_form_notice( $current_user, $userids ) {
 		<div class="notice notice-error inline">
 			<?php
 			if ( count( $userids ) > 1 ) {
-				_e( '<p><strong>Warning:</strong> One or more users for deletion have an active membership level. Deleting a user will also cancel their membership and recurring subscription.</p>', 'paid-memberships-pro' );
+				_e( '<p><strong>Warning:</strong> One or more users for deletion have an active membership level.</p>', 'paid-memberships-pro' );
 			} else {
-				_e( '<p><strong>Warning:</strong> This user has an active membership level. Deleting a user will also cancel their membership and recurring subscription.</p>', 'paid-memberships-pro' );
+				_e( '<p><strong>Warning:</strong> This user has an active membership level.</p>', 'paid-memberships-pro' );
 			}
 			?>
 		</div>
 		<?php
 	}
+
+	?>
+	<div class='pmpro_delete_user_actions'>
+		<p><input type='checkbox' name='pmpro_delete_active_subscriptions' id='pmpro_delete_active_subscriptions' value='1' /><label for='pmpro_delete_active_subscriptions'><?php _e('Delete Active Subscription(s)', 'paid-memberships-pro' ); ?></label></p>
+		<p><input type='checkbox' name='pmpro_delete_member_history' id='pmpro_delete_member_history' value='1' /><label for='pmpro_delete_member_history'><?php _e('Delete Membership History', 'paid-memberships-pro' ); ?></label></p>
+	</div>
+	<?php
+
 }
 add_action( 'delete_user_form', 'pmpro_delete_user_form_notice', 10, 2 );
 
@@ -68,3 +86,13 @@ function pmpro_delete_post( $post_id = null ) {
 	);
 }
 add_action( 'delete_post', 'pmpro_delete_post' );
+
+function pmpro_delete_membership_history( $user_id ) {
+	global $wpdb;
+	$wpdb->delete( 
+		$wpdb->pmpro_memberships_users, 
+		array( 'user_id' => $user_id ), 
+		array( '%d' )
+	);
+	// we don't remove the orders because it would affect reporting
+}
