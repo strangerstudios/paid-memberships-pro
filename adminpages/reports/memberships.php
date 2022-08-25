@@ -321,11 +321,27 @@ function pmpro_report_memberships_page()
 		}
 	}
 
+	// Build CSV export link.
+	$csv_export_link = admin_url( 'admin-ajax.php' );
+
+	$csv_export_link = add_query_arg( array(
+		'action' => 'membership_stats_csv',
+		'type' => $type,
+		'period' => $period,
+		'month' => $month,
+		'year' => $year,
+		'discount_code' => $discount_code,
+		'startdate' => $startdate,
+		'enddate' => $enddate,
+		'level' => $l
+	), $csv_export_link );
+
 	?>
 	<form id="posts-filter" method="get" action="">
-	<h1>
+	<h1 class="wp-heading-inline">
 		<?php _e('Membership Stats', 'paid-memberships-pro' );?>
 	</h1>
+   <a target="_blank" href="<?php echo esc_url( $csv_export_link ); ?>" class="page-title-action"><?php esc_html_e( 'Export to CSV', 'paid-memberships-pro' ); ?></a>
 	<div class="tablenav top">
 		<?php _e('Show', 'paid-memberships-pro' )?>
 		<select id="period" name="period">
@@ -544,10 +560,15 @@ function pmpro_getCancellations($period = null, $levels = 'all', $status = array
 	//make sure status is an array
 	if(!is_array($status))
 		$status = array($status);
-
+    
 	//check for a transient
 	$cache = get_transient( 'pmpro_report_memberships_cancellations' );
-	$hash = md5($period . $levels . implode(',', $status));
+	$hash = md5(
+		$period .
+		implode( ',', is_array( $levels ) ? $levels : array( $levels ) ) .
+		implode( ',', $status )
+	);
+
 	if( ! empty( $cache ) && ! empty( $cache[$hash] ) )
 		return $cache[$hash];
 

@@ -218,9 +218,10 @@ function pmpro_report_sales_page()
 	$sqlQuery .= " GROUP BY date ORDER by date";
 
 	$dates = $wpdb->get_results($sqlQuery);
-		
+	
 	//fill in blanks in dates
 	$cols = array();
+	$csvdata = array();
 	$total_in_period = 0;
 	$units_in_period = 0; // Used for averages.
 	
@@ -232,6 +233,7 @@ function pmpro_report_sales_page()
 		for($i = 1; $i <= $lastday; $i++)
 		{
 			$cols[$i] = array(0, 0);
+			$csvdata[$i-1] = (object)array('date'=>$i, 'total'=>'', 'new'=> '', 'renewals'=>'');
 			if ( ! $currently_in_period || $i < $day_of_month ) {
 				$units_in_period++;
 			}
@@ -240,6 +242,7 @@ function pmpro_report_sales_page()
 			{
 				if($date->date == $i) {
 					$cols[$i] = array( $date->value, $date->renewals );
+					$csvdata[$i-1] = (object)array('date'=>$i, 'total'=>$date->value, 'new'=> $date->value - $date->renewals, 'renewals'=> $date->renewals);
 					if ( ! $currently_in_period || $i < $day_of_month ) {
 						$total_in_period += $date->value;
 					}
@@ -253,6 +256,7 @@ function pmpro_report_sales_page()
 		for($i = 1; $i < 13; $i++)
 		{
 			$cols[$i] = array(0, 0);
+			$csvdata[$i-1] = (object)array('date'=>$i, 'total'=>'', 'new'=> '', 'renewals'=>'');
 			if ( ! $currently_in_period || $i < $month_of_year ) {
 				$units_in_period++;
 			}
@@ -261,6 +265,7 @@ function pmpro_report_sales_page()
 			{
 				if($date->date == $i) {
 					$cols[$i] = array( $date->value, $date->renewals );
+					$csvdata[$i-1] = (object)array('date'=>$i, 'total'=>$date->value, 'new'=> $date->value - $date->renewals, 'renewals'=> $date->renewals);
 					if ( ! $currently_in_period || $i < $month_of_year ) {
 						$total_in_period += $date->value;
 					}
@@ -282,6 +287,8 @@ function pmpro_report_sales_page()
 		$current_year = intval( date( 'Y' ) );
 		for($i = $min; $i <= $max; $i++)
 		{
+			$cols[$i] = array(0, 0);
+			$csvdata[$i-1] = (object)array('date'=>$i, 'total'=>'', 'new'=> '', 'renewals'=>'');
 			if ( $i < $current_year ) {
 				$units_in_period++;
 			}
@@ -289,6 +296,7 @@ function pmpro_report_sales_page()
 			{
 				if($date->date == $i) {
 					$cols[$i] = array( $date->value, $date->renewals );
+					$csvdata[$i-1] = (object)array('date'=>$i, 'total'=>$date->value, 'new'=> $date->value - $date->renewals, 'renewals'=> $date->renewals);
 					if ( $i < $current_year ) {
 						$total_in_period += $date->value;
 					}
@@ -301,12 +309,29 @@ function pmpro_report_sales_page()
 	if ( 0 !== $units_in_period ) {
 		$average = $total_in_period / $units_in_period; // Not including this unit.
 	}
+	
+	// Save a transient for each combo of params. Expires in 1 hour.
+	$param_array = array( $period, $type, $month, $year, $l, $discount_code );
+	$param_hash = md5( implode( ' ', $param_array ) . PMPRO_VERSION );
+	set_transient( 'pmpro_sales_data_' . $param_hash, $csvdata, HOUR_IN_SECONDS );
+
+	// Build CSV export link.
+	$args = array(
+		'action' => 'sales_report_csv',
+		'period' => $period,
+		'type' => $type,
+		'year' => $year,
+		'month' => $month,
+		'level' => $l,
+		'discount_code' => $discount_code
+	);
+	$csv_export_link = add_query_arg( $args, admin_url( 'admin-ajax.php' ) );
 	?>
 	<form id="posts-filter" method="get" action="">
-	<h1>
+	<h1 class="wp-heading-inline">
 		<?php _e('Sales and Revenue', 'paid-memberships-pro' );?>
 	</h1>
-
+	<a target="_blank" href="<?php echo esc_url( $csv_export_link ); ?>" class="page-title-action"><?php esc_html_e( 'Export to CSV', 'paid-memberships-pro' ); ?></a>
 	<div class="tablenav top">
 		<?php _e('Show', 'paid-memberships-pro' )?>
 		<select id="period" name="period">
@@ -850,3 +875,4 @@ function pmpro_report_sales_delete_transients()
 }
 add_action("pmpro_after_checkout", "pmpro_report_sales_delete_transients");
 add_action("pmpro_updated_order", "pmpro_report_sales_delete_transients");
+add_action("pmpro_added_order", "pmpro_report_sales_delete_transients");

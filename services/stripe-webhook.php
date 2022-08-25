@@ -16,9 +16,6 @@
 	global $logstr;
 	$logstr = "";
 
-	// Sets the PMPRO_DOING_WEBHOOK constant and fires the pmpro_doing_webhook action.
-	pmpro_doing_webhook( 'stripe', true );
-
 	//you can define a different # of seconds (define PMPRO_STRIPE_WEBHOOK_DELAY in your wp-config.php) if you need this webhook to delay more or less
 	if(!defined('PMPRO_STRIPE_WEBHOOK_DELAY'))
 		define('PMPRO_STRIPE_WEBHOOK_DELAY', 2);
@@ -33,6 +30,9 @@
 	if(!class_exists("Stripe\Stripe")) {
 		require_once( PMPRO_DIR . "/includes/lib/Stripe/init.php" );
 	}
+
+	// Sets the PMPRO_DOING_WEBHOOK constant and fires the pmpro_doing_webhook action.
+	pmpro_doing_webhook( 'stripe', true );
 
 	// retrieve the request's body and parse it as JSON
 	if(empty($_REQUEST['event_id']))
@@ -160,7 +160,7 @@
 					$morder->gateway = $old_order->gateway;
 					$morder->gateway_environment = $old_order->gateway_environment;
 
-					// Update payment method and billing address on order.
+					// Find the payment intent.
 					$payment_intent_args = array(
 						'id'     => $invoice->payment_intent,
 						'expand' => array(
@@ -168,11 +168,19 @@
 						),
 					);
 					$payment_intent = \Stripe\PaymentIntent::retrieve( $payment_intent_args );
-					if ( empty( $payment_intent->payment_method ) ) {
-						$logstr .= "Could not find payment method for invoice " . $invoice->id;
-						pmpro_stripeWebhookExit();
+					// Find the payment method.
+					$payment_method = null;
+					if ( ! empty( $payment_intent->payment_method ) ) {
+						$payment_method = $payment_intent->payment_method;
+					} elseif( ! empty( $payment_intent->charges->data[0] ) ) {
+						// If we didn't get a payment method, check the charge.
+						$payment_method = $payment_intent->charges->data[0]->payment_method_details;
+					}					
+					if ( empty( $payment_method ) ) {						
+						$logstr .= "Could not find payment method for invoice " . $invoice->id . ".";						
 					}
-					pmpro_stripe_webhook_populate_order_from_payment( $morder, $payment_intent->payment_method );
+					// Update payment method and billing address on order.
+					pmpro_stripe_webhook_populate_order_from_payment( $morder, $payment_method );				
 
 					//save
 					$morder->status = "success";
@@ -237,20 +245,27 @@
 				$morder = new MemberOrder();
 				$morder->user_id = $user_id;
 
-				// Update payment method and billing address on order.
+				// Find the payment intent.
 		        $payment_intent_args = array(
 		          'id'     => $invoice->payment_intent,
 		          'expand' => array(
 		            'payment_method',
 		          ),
 		        );
-		        $payment_intent = \Stripe\PaymentIntent::retrieve( $payment_intent_args );
-		        $payment_method = $payment_intent->charges->data[0]->payment_method_details;
-		        if ( empty( $payment_method ) ) {
-		          $logstr .= "Could not find payment method for invoice " . $invoice->id;
-		          pmpro_stripeWebhookExit();
-		        }
-		        pmpro_stripe_webhook_populate_order_from_payment( $morder, $payment_method );
+		        $payment_intent = \Stripe\PaymentIntent::retrieve( $payment_intent_args );		        
+				// Find the payment method.
+				$payment_method = null;
+				if ( ! empty( $payment_intent->payment_method ) ) {
+					$payment_method = $payment_intent->payment_method;
+				} elseif( ! empty( $payment_intent->charges->data[0] ) ) {
+					// If we didn't get a payment method, check the charge.
+					$payment_method = $payment_intent->charges->data[0]->payment_method_details;
+				}
+				if ( empty( $payment_method ) ) {		       	
+					$logstr .= "Could not find payment method for invoice " . $invoice->id;					
+				}
+				// Update payment method and billing address on order.
+				pmpro_stripe_webhook_populate_order_from_payment( $morder, $payment_method );
 
 				// Add invoice link to the order.
 				$morder->invoice_url = $pmpro_stripe_event->data->object->hosted_invoice_url;
@@ -289,8 +304,8 @@
 				$morder = new MemberOrder();
 				$morder->user_id = $user_id;
 				$morder->membership_id = $old_order->membership_id;
-
-				// Update payment method and billing address on order.
+				
+				// Find the payment intent.
 				$payment_intent_args = array(
 					'id'     => $pmpro_stripe_event->data->object->payment_intent,
 					'expand' => array(
@@ -298,11 +313,19 @@
 					),
 				);
 				$payment_intent = \Stripe\PaymentIntent::retrieve( $payment_intent_args );
-				if ( empty( $payment_intent->payment_method ) ) {
-					$logstr .= "Could not find payment method for charge " . $pmpro_stripe_event->data->object->id;
-					pmpro_stripeWebhookExit();
+				// Find the payment method.
+				$payment_method = null;
+				if ( ! empty( $payment_intent->payment_method ) ) {
+					$payment_method = $payment_intent->payment_method;
+				} elseif( ! empty( $payment_intent->charges->data[0] ) ) {
+					// If we didn't get a payment method, check the charge.
+					$payment_method = $payment_intent->charges->data[0]->payment_method_details;
+				}				
+				if ( empty( $payment_method ) ) {
+					$logstr .= "Could not find payment method for charge " . $pmpro_stripe_event->data->object->id . ".";
 				}
-				pmpro_stripe_webhook_populate_order_from_payment( $morder, $payment_intent->payment_method );
+				// Update payment method and billing address on order.
+				pmpro_stripe_webhook_populate_order_from_payment( $morder, $payment_method );
 
 				// Email the user and ask them to update their credit card information
 				$pmproemail = new PMProEmail();
@@ -402,6 +425,7 @@
 			}
 
 			// Get the payment method object for this checkout and set transaction and subscription ids.
+			$payment_method = null;
 			if ( $checkout_session->mode === 'payment' ) {
 				// User purchased a one-time payment level. Assign the charge ID to the order.
 				try {
@@ -441,13 +465,11 @@
 					// Could not get invoices. We just won't set a payment transaction ID.
 				}
 			}
-			// Make sure that we have payment and payment method objects.
+			// Update payment method and billing address on order.
 			if ( empty( $payment_method ) ) {
-				$logstr .= "Could not find payment method for Checkout Session " . $checkout_session->id;
-			} else {
-				// Update payment method and billing address on order.
-				pmpro_stripe_webhook_populate_order_from_payment( $order, $payment_method );
+				$logstr .= "Could not find payment method for Checkout Session " . $checkout_session->id . ".";				
 			}
+			pmpro_stripe_webhook_populate_order_from_payment( $order, $payment_method );
 
 			// Update the amounts paid.
 			global $pmpro_currency;
@@ -547,6 +569,11 @@
 			$logstr .= "Order #" . $order->id . " for Checkout Session " . $checkout_session->id . " could not be processed.";
 			pmpro_stripeWebhookExit();
 		}
+
+		$logstr .= "Not handled event type = " . $pmpro_stripe_event->type;
+
+		pmpro_unhandled_webhook();
+		pmpro_stripeWebhookExit();
 	}
 	else
 	{
@@ -612,62 +639,69 @@
 	}
 
 	// TODO Test this
-    // TODO docblock
-	function getOldOrderFromInvoiceEvent($pmpro_stripe_event)
-	{
-		//pause here to give PMPro a chance to finish checkout
-		sleep(PMPRO_STRIPE_WEBHOOK_DELAY);
+   	/**
+		* Get the Member's Order from a Stripe Event.
+		*
+		* @param Object $pmpro_stripe_event The Stripe Event object sent via webhook.
+		* @return PMPro_MemberOrder|bool Returns either the member order object linked to the Stripe Event data or false if no order is found.
+		*/
+	function getOldOrderFromInvoiceEvent( $pmpro_stripe_event ) {	
+		// Pause here to give PMPro a chance to finish checkout.
+		sleep( PMPRO_STRIPE_WEBHOOK_DELAY );
 
 		global $wpdb;
 
+		// Check if the Stripe event has a subscription ID available. (Most likely an older API version).
 		if ( ! empty( $pmpro_stripe_event->data->object->subscription ) ) {
             $subscription_id = $pmpro_stripe_event->data->object->subscription;
-        } else {
-            $subscription_id = $pmpro_stripe_event->data->object->id;
-        }
+		}
 
-		// Try to get the order ID from the subscription ID in the event.
-		$old_order_id = $wpdb->get_var(
-			$wpdb->prepare(
-				"
-					SELECT id
-					FROM $wpdb->pmpro_membership_orders
-					WHERE
-						subscription_transaction_id = %s
-						AND gateway = 'stripe'
-					ORDER BY timestamp DESC
-					LIMIT 1
-				",
-				$subscription_id
-			)
-		);
-
-		if(empty($old_order_id)){
+		// Try to get the subscription ID from the order ID.
+		if ( empty( $subscription_id ) ) {
 			// Try to get the order ID from the invoice ID in the event.
 			$invoice_id = $pmpro_stripe_event->data->object->invoice;
 
 			try {
-
 				$invoice = Stripe_Invoice::retrieve( $invoice_id );
-
-			} catch (Exception $e) {
-				error_log("Unable to fetch Stripe Invoice object: " . $e->getMessage());
+			} catch ( Exception $e ) {
+				error_log( 'Unable to fetch Stripe Invoice object: ' . $e->getMessage() );
 				$invoice = null;
 			}
 
-			if (isset( $invoice->subscription )) {
+			if ( isset( $invoice->subscription ) ) { 
 				$subscription_id = $invoice->subscription;
-				$old_order_id    = $wpdb->get_var( "SELECT id FROM $wpdb->pmpro_membership_orders WHERE (subscription_transaction_id = '" . $subscription_id . "' OR subscription_transaction_id = '"  . esc_sql($subscription_id) . "') AND gateway = 'stripe' ORDER BY timestamp DESC LIMIT 1" );
+			} else {
+				// Fall back to the Stripe event ID as a last resort.
+				$subscription_id = $pmpro_stripe_event->data->object->id;
 			}
+			
+			// Try to get the order ID from the subscription ID if we have one.			
+			if ( ! empty( $subscription_id ) ) {				
+				$old_order_id = $wpdb->get_var(
+					$wpdb->prepare(
+						"
+							SELECT id
+							FROM $wpdb->pmpro_membership_orders
+							WHERE
+								subscription_transaction_id = %s
+								AND gateway = 'stripe'
+							ORDER BY timestamp DESC
+							LIMIT 1
+						",
+						$subscription_id
+					)
+				);
+			}			
 		}
 
 		// If we have an ID, get the associated MemberOrder.
-		if (!empty($old_order_id)) {
+		if ( ! empty( $old_order_id ) ) {
 
 			$old_order = new MemberOrder( $old_order_id );
 
-			if(isset($old_order->id) && ! empty($old_order->id))
+			if ( isset( $old_order->id ) && ! empty( $old_order->id ) ) {
 				return $old_order;
+			}	
 		}
 
 		return false;
@@ -744,18 +778,14 @@
  * @return bool
  */
 function pmpro_stripe_webhook_change_membership_level( $morder ) {
-
-	global $wpdb, $pmpro_level, $discount_code;
+	global $wpdb, $pmpro_level, $discount_code, $discount_code_id;
 
 	// We need to pull the checkout level and fields data from the order.
 	$checkout_level_arr = get_pmpro_membership_order_meta( $morder->id, 'checkout_level', true );
 	$pmpro_level = (object) $checkout_level_arr;
 
-	// Set $discount_code.
-	$discount_code_arr = get_pmpro_membership_order_meta( $morder->id, 'discount_code', true );
-	if ( ! empty( $discount_code_arr ) ) {
-		$discount_code = (object) $discount_code_arr;
-	}
+	// Set $discount_code_id.
+	$discount_code = get_pmpro_membership_order_meta( $morder->id, 'checkout_discount_code', true );
 	
 	// Set $_REQUEST.
 	$checkout_request_vars = get_pmpro_membership_order_meta( $morder->id, 'checkout_request_vars', true );
@@ -777,15 +807,6 @@ function pmpro_stripe_webhook_change_membership_level( $morder ) {
 
 	//filter the enddate (documented in preheaders/checkout.php)
 	$enddate = apply_filters( "pmpro_checkout_end_date", $enddate, $morder->user_id, $pmpro_level, $startdate );
-
-	//get discount code
-	if ( ! empty( $discount_code ) ) {
-		//update membership level
-		$discount_code_id = $discount_code->id;
-	} else {
-		$discount_code_id = "";
-	}
-
 
 	//custom level to change user to
 	$custom_level = array(
@@ -816,18 +837,22 @@ function pmpro_stripe_webhook_change_membership_level( $morder ) {
 		$morder->saveOrder();
 
 		//add discount code use
-		if ( ! empty( $discount_code ) && ! empty( $use_discount_code ) ) {
-
-			$wpdb->query(
-				$wpdb->prepare(
-					"INSERT INTO {$wpdb->pmpro_discount_codes_uses} 
-						( code_id, user_id, order_id, timestamp ) 
-						VALUES( %d, %d, %s, %s )",
-					$discount_code_id),
-					$morder->user_id,
-					$morder->id,
-					current_time( 'mysql' )
+		if ( ! empty( $discount_code ) ) {
+			$discount_code_id = $wpdb->get_var( "SELECT id FROM $wpdb->pmpro_discount_codes WHERE code = '" . esc_sql( $discount_code ) . "' LIMIT 1" );
+			if ( ! empty( $discount_code_id ) ) {
+				$wpdb->query(
+					$wpdb->prepare(
+						"INSERT INTO {$wpdb->pmpro_discount_codes_uses} 
+							( code_id, user_id, order_id, timestamp ) 
+							VALUES( %d, %d, %s, %s )",
+						$discount_code_id,
+						$morder->user_id,
+						$morder->id,
+						current_time( 'mysql' )
+					)	
 				);
+				do_action( 'pmpro_discount_code_used', $discount_code_id, $user_id, $morder->id );
+			}
 		}
 
 		//save first and last name fields
@@ -895,10 +920,19 @@ function pmpro_stripe_webhook_populate_order_from_payment( $order, $payment_meth
 			$order->ExpirationDate = '';
 			$order->ExpirationDate_YdashM = '';
 		}
+	} else {
+		// Some defaults.
+		$order->payment_type = 'Stripe';
+		$order->cardtype = '';
+		$order->accountnumber = '';
+		$order->expirationmonth = '';
+		$order->expirationyear = '';
+		$order->ExpirationDate = '';
+		$order->ExpirationDate_YdashM = '';
 	}
 
 	// Add billing address information.
-	$morder->billing = new stdClass();
+	$order->billing = new stdClass();
 	$order->billing->name = empty( $payment_method->billing_details->name ) ? '' : $payment_method->billing_details->name;
 	$order->billing->street = empty( $payment_method->billing_details->address->line1 ) ? '' : $payment_method->billing_details->address->line1;
 	$order->billing->city = empty( $payment_method->billing_details->address->city ) ? '' : $payment_method->billing_details->address->city;
@@ -908,9 +942,9 @@ function pmpro_stripe_webhook_populate_order_from_payment( $order, $payment_meth
 	$order->billing->phone = empty( $payment_method->billing_details->phone ) ? '' : $payment_method->billing_details->phone;
 
 	$name_parts = empty( $payment_method->billing_details->name ) ? [] : pnp_split_full_name( $payment_method->billing_details->name );
-	$order->FirstName = empty( $nameparts['fname'] ) ? '' : $nameparts['fname'];
-	$order->LastName = empty( $nameparts['lname'] ) ? '' : $nameparts['lname'];
-	$order->Email = $wpdb->get_var("SELECT user_email FROM $wpdb->users WHERE ID = '" . $order->user_id . "' LIMIT 1");
+	$order->FirstName = empty( $name_parts['fname'] ) ? '' : $name_parts['fname'];
+	$order->LastName = empty( $name_parts['lname'] ) ? '' : $name_parts['lname'];
+	$order->Email = $wpdb->get_var("SELECT user_email FROM $wpdb->users WHERE ID = '" . esc_sql( $order->user_id ) . "' LIMIT 1");
 	$order->Address1 = $order->billing->street;
 	$order->City = $order->billing->city;
 	$order->State = $order->billing->state;

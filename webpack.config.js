@@ -7,7 +7,7 @@ module.exports = {
 		index: path.resolve( __dirname, 'blocks', 'blocks.js' ),
 	},
 	output: {
-		path: path.resolve( __dirname, 'js' ),
+		path: path.resolve( __dirname, 'js/blocks' ),
 		filename: 'blocks.build.js'
 	}
 };

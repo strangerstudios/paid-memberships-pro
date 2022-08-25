@@ -559,9 +559,9 @@ function pmpro_getLevelsCost( &$levels, $tags = true, $short = false ) {
 	// trial part - not as detailed as the single-level counterpart. Could be improved in the future.
 	if ( $trialperiods > 0 ) {
 		if ( $trialperiods == 1 ) {
-			$r .= __( 'Trial pricing has been applied to the first payment.', 'mmpu' );
+			$r .= __( 'Trial pricing has been applied to the first payment.', 'paid-memberships-pro' );
 		} else {
-			$r .= sprintf( __( 'Trial pricing has been applied to the first %d payments.', 'mmpu' ), $trialperiods );
+			$r .= sprintf( __( 'Trial pricing has been applied to the first %d payments.', 'paid-memberships-pro' ), $trialperiods );
 		}
 	}
 
@@ -824,7 +824,8 @@ if ( ! function_exists( 'formatPhone' ) ) {
 }
 
 function pmpro_showRequiresMembershipMessage() {
-	// TODO $current_user $post_membership_levels_names are undefined variables
+    global $current_user, $post_membership_levels_names;
+
 	// get the correct message
 	if ( is_feed() ) {
 		$content = pmpro_getOption( 'rsstext' );
@@ -965,12 +966,12 @@ function pmpro_cancelMembershipLevel( $cancel_level, $user_id = null, $old_level
  * $level may either be the ID or name of the desired membership_level.
  * If $user_id is omitted, the value will be retrieved from $current_user.
  *
- * @param int    $level ID of level to set as new level, use 0 to cancel membership
- * @param int    $user_id ID of the user to change levels for
- * @param string $old_level_status The status to set for the row in the memberships users table. (e.g. inactive, cancelled, admin_cancelled, expired) Defaults to 'inactive'.
- * @param int    $cancel_level If set cancel just this one level instead of all active levels (to support Multiple Memberships per User)
+ * @param int|array $level ID of level to set as new level, use 0 to cancel membership
+ * @param int       $user_id ID of the user to change levels for
+ * @param string    $old_level_status The status to set for the row in the memberships users table. (e.g. inactive, cancelled, admin_cancelled, expired) Defaults to 'inactive'.
+ * @param int       $cancel_level If set cancel just this one level instead of all active levels (to support Multiple Memberships per User)
  *
- * @return bool|null
+ * @return bool|void
  * Return values:
  *      Success returns boolean true.
  *      Failure returns boolean false.
@@ -1310,15 +1311,17 @@ function pmpro_listCategories( $parent_id = 0, $level_categories = array() ) {
 
 	if ( $cats ) {
 		foreach ( $cats as $cat ) {
-			$name = 'membershipcategory_' . $cat->term_id;
 			if ( ! empty( $level_categories ) ) {
 				$checked = checked( in_array( $cat->term_id, $level_categories ), true, false );
 			} else {
 				$checked = '';
-			}
-			echo "<ul><li class=membershipcategory><input type=checkbox name={$name} id={$name} value=yes {$checked}><label for={$name}>{$cat->name}</label>";
-			pmpro_listCategories( $cat->term_id, $level_categories );
-			echo '</li></ul>';
+			} ?>
+			<div class="pmpro_clickable">
+				<input type="checkbox" name="membershipcategory_<?php echo esc_attr( $cat->term_id ); ?>" id="membershipcategory_<?php echo esc_attr( $cat->term_id ); ?>" value="yes" <?php echo esc_attr( $checked ); ?>>
+				<label for="membershipcategory_<?php echo esc_attr( $cat->term_id ); ?>"><?php echo $cat->name; ?></label>
+			</div>
+			<?php pmpro_listCategories( $cat->term_id, $level_categories ); ?>
+			<?php
 		}
 	}
 }
@@ -1326,9 +1329,9 @@ function pmpro_listCategories( $parent_id = 0, $level_categories = array() ) {
 /**
  * pmpro_toggleMembershipCategory() creates or deletes a linking entry between the membership level and post category tables.
  *
- * @param $level may either be the ID or name of the desired membership_level.
- * @param $category must be a valid post category ID.
- * @param $value
+ * @param int $level may either be the ID or name of the desired membership_level.
+ * @param int $category must be a valid post category ID.
+ * @param bool $value
  *
  * @return string|true
  * Return values:
@@ -1367,8 +1370,8 @@ function pmpro_toggleMembershipCategory( $level, $category, $value ) {
  * pmpro_updateMembershipCategories() ensures that all those and only those categories given
  * are associated with the given membership level.
  *
- * @param $level is a valid membership level ID or name
- * @param $categories is an array of post category IDs
+ * @param string|int $level is a valid membership level ID or name
+ * @param int[] $categories is an array of post category IDs
  *
  * @return string|true
  * Return values:
@@ -1407,12 +1410,9 @@ function pmpro_updateMembershipCategories( $level, $categories ) {
 /**
  * pmpro_getMembershipCategories() returns the categories for a given level
  *
- * @param $level_id is a valid membership level ID
+ * @param int $level_id is a valid membership level ID
  *
- * @return bool
- * Return values:
- *		Success returns boolean true.
- *		Failure returns boolean false.
+ * @return int[]
  */
 function pmpro_getMembershipCategories( $level_id ) {
 	$level_id = intval( $level_id );
@@ -1922,8 +1922,6 @@ function pmpro_text_limit( $text, $limit, $finish = '&hellip;' ) {
  * Filters the separator used between action navigation links.
  *
  * @since 2.3
- *
- * @param string $separator The separator used between action links.
  */
 function pmpro_actions_nav_separator() {
 	$separator = apply_filters( 'pmpro_actions_nav_separator', ' | ' );
@@ -2085,7 +2083,7 @@ function pmpro_getMembershipLevelForUser( $user_id = null, $force = false ) {
  * pmpro_getMembershipLevelsForUser() returns the membership levels for a user
  *
  * If $user_id is omitted, the value will be retrieved from $current_user.
- * By default it only includes actvie memberships.
+ * By default it only includes active memberships.
  *
  * @return array|false
  * Return values:
@@ -2208,7 +2206,7 @@ function pmpro_getSpecificMembershipLevelForUser( $user_id, $level_id ) {
 /**
  * pmpro_getLevel() returns the level object for a level
  *
- * @param $level may be the level id or name
+ * @param int|string|object $level may be the level id or name
  *
  * @return false|object
  * Return values:
@@ -2336,6 +2334,7 @@ function pmpro_are_any_visible_levels() {
  * or in the post options, then this will return the first level found.
  * @param int $level_id (optional) Pass a level ID to force that level.
  * @param string $discount_code (optional) Pass a discount code to force that code.
+ * @return mixed|void
  */
 function pmpro_getLevelAtCheckout( $level_id = null, $discount_code = null ) {
 	global $pmpro_level, $wpdb, $post;
@@ -3175,7 +3174,7 @@ function pmpro_round_price_as_string( $amount, $currency = null ) {
  * @param int|float|string $amount   The amount to get price information for.
  * @param null|string      $currency The currency to use, defaults to current currency.
  *
- * @return array The price information about the provided amount.
+ * @return array|false The price information about the provided amount.
  */
 function pmpro_get_price_info( $amount, $currency = null ) {
 	if ( ! is_numeric( $amount ) ) {
@@ -3246,7 +3245,7 @@ function pmpro_get_price_info( $amount, $currency = null ) {
  *
  * @since  2.0.2
  */
-function pmpro_filter_price_for_text_field( $price, $currency = null ) {
+function pmpro_filter_price_for_text_field( $price ) {
 	global $pmpro_currency, $pmpro_currencies;
 
 	// We always want to cast to float
@@ -3464,7 +3463,7 @@ function pmpro_getMemberOrdersByCheckoutID( $checkout_id ) {
  * Check that the test value is a member of a specific array for sanitization purposes.
  *
  * @param mixed $needle Value to be tested.
- * @param array $safe Array of safelist values.
+ * @param array $safelist Array of safelist values.
  * @since 1.9.3
  */
 function pmpro_sanitize_with_safelist( $needle, $safelist ) {
@@ -3476,12 +3475,53 @@ function pmpro_sanitize_with_safelist( $needle, $safelist ) {
 }
 
 /**
+ * Sanitizes the passed value.
+ * Default sanitizing for things like user fields.
+ *
+ * @param array|int|null|string|stdClass $value The value to sanitize
+ * @param PMPro_Field $field (optional) Field to check type.
+ *
+ * @return array|int|string|object     Sanitized value
+ */
+function pmpro_sanitize( $value, $field = null ) {
+
+	if ( is_array( $value ) ) {
+
+		foreach ( $value as $key => $val ) {
+			$value[ $key ] = pmpro_sanitize( $val );
+		}
+	}
+
+	if ( is_object( $value ) ) {
+
+		foreach ( $value as $key => $val ) {
+			$value->{$key} = pmpro_sanitize( $val );
+		}
+	}
+
+	if ( ! empty( $field ) && ! empty( $field->type ) && $field->type === 'textarea' ) {
+		$value = sanitize_textarea_field( $value );
+	} elseif ( ( ! is_array( $value ) ) && ctype_alpha( $value ) ||
+	     ( ( ! is_array( $value ) ) && strtotime( $value ) ) ||
+	     ( ( ! is_array( $value ) ) && is_string( $value ) ) ||
+	     ( ( ! is_array( $value ) ) && is_numeric( $value) )
+	) {
+
+		$value = sanitize_text_field( $value );
+	}
+
+	return $value;
+}
+
+/**
   * Return an array of allowed order statuses
   *
   * @since 1.9.3
   */
 function pmpro_getOrderStatuses( $force = false ) {
 	global $pmpro_order_statuses;
+
+	$statuses = array();
 
 	if ( ! isset( $pmpro_order_statuses ) || $force ) {
 		global $wpdb;
@@ -3872,6 +3912,44 @@ function pmpro_kses( $original_string, $context = 'email' ) {
 }
 
 /**
+ * Replace last occurence of a string.
+ * From: http://stackoverflow.com/a/3835653/1154321
+ * @since 2.6
+ */
+if( ! function_exists("str_lreplace") ) {
+	function str_lreplace( $search, $replace, $subject ) {
+		$pos = strrpos( $subject, $search );
+
+		if( $pos !== false ) {
+			$subject = substr_replace( $subject, $replace, $pos, strlen( $search ) );
+		}
+
+		return $subject;
+	}
+}
+
+/**
+ * Get the last element of an array without affecting the array.
+ * From: http://www.php.net/manual/en/function.end.php#107733
+ * @since 2.6
+ */
+function pmpro_end( $array ) {
+	return end( $array );
+}
+
+/**
+ * Sort an array of objects by their order property.
+ * This function is meant to be used with the usort function.
+ * @since 2.6
+ */
+function pmpro_sort_by_order( $a, $b ) {
+	if ( $a->order == $b->order ) {
+        return 0;
+    }
+    return ( $a->order < $b->order ) ? -1 : 1;
+}
+
+/**
  * Filter the allowed HTML tags for PMPro contexts.
  *
  * @param array[]|string $allowed_html The allowed HTML tags.
@@ -3938,7 +4016,7 @@ add_filter( 'wp_kses_allowed_html', 'pmpro_kses_allowed_html', 10, 2 );
  *
  * Useful for preparing to change method visibility from public to private.
  *
- * @param string $deprecation_notice_version to show.
+ * @param string $deprecated_notice_version to show.
  * @return bool
  */
 function pmpro_method_should_be_private( $deprecated_notice_version ) {
@@ -4006,8 +4084,9 @@ function pmpro_send_200_http_response() {
 /**
  * Returns formatted ISO-8601 date (Used for Zapier Native app.)
  * @since 2.6.6
- * @param $date date A valid date value.
+ * @param string $date date A valid date value.
  * @return string The date in ISO-8601 format.
+ * @throws Exception
  */
 function pmpro_format_date_iso8601( $date ) {
 	$datetime = new DateTime( $date );
@@ -4085,6 +4164,19 @@ function pmpro_get_ip() {
 }
 
 /**
+ * Get the last item of an array without affecting the internal array pointer.
+ * Going through the function keeps the original array from being updated.
+ * @since 2.9
+ * @param  $array array The array to get the value of.
+ * @return mixed Whatever is the last element in the array.
+ * from: http://www.php.net/manual/en/function.end.php#107733
+ */
+function pmpro_array_end( $array ) {
+	return end( $array );
+}
+
+/*
+ * Send the WP new user notification email, but also check our filter.
  * Determines if this order can be refunded
  * @param  object $order The order that we want to refund
  * @return bool Returns a bool value based on if the order can be refunded
@@ -4188,5 +4280,64 @@ function pmpro_maybe_send_wp_new_user_notification( $user_id, $level_id = null )
 	if ( apply_filters( 'pmpro_wp_new_user_notification', true, $user_id, $level_id ) ) {
 		wp_new_user_notification( $user_id, null, 'both' );
 	}
+}
 
+/**
+ * Replace all special characters with underscore, including spaces.
+ * 
+ * @since 2.9
+ * 
+ * @param string $field_name The raw field name to be formatted.
+ */
+function pmpro_format_field_name( $field_name ) {
+	$formatted_name = preg_replace( '/[^A-Za-z0-9\-]+/', '_', $field_name );
+	
+	/**
+	 * Filter the formatted/output field names.
+	 * 
+	 * @since 2.9
+	 * 
+	 * @param string $formatted_name The formatted field name (replaced spaces and dashes with underscores).
+	 * @param string $field_name The original field name.
+	 */
+	$formatted_name = apply_filters( 'pmpro_formatted_field_name', $formatted_name, $field_name );
+
+	return $formatted_name;
+}
+
+/**
+ * Are we activating a plugin?
+ * @since 2.9.1
+ * @param string $plugin A specific plugin to check for (optional).
+ * @return bool True if we are activating a plugin, otherwise false.
+ */
+function pmpro_activating_plugin( $plugin = null ) {
+	if ( ! is_admin() ) {
+		return false;
+	}
+	
+	if ( empty( $_REQUEST['action'] ) ) {
+		return false;	
+	}
+	
+	if ( $_REQUEST['action'] !== 'activate'
+		&& $_REQUEST['action'] !== 'activate-selected' ) {
+		return false;
+	}
+	
+	// Not checking for a specific plugin, and activating something.
+	if ( empty( $plugin ) ) {
+		return true;
+	}
+	
+	// Check if the specified plugin isn't one being activated.
+	if ( ! empty( $_REQUEST['plugin'] ) && $_REQUEST['plugin'] !== $plugin ) {
+		return false;
+	}
+	if ( ! empty( $_REQUEST['checked'] ) && ! in_array( $plugin, (array)$_REQUEST['checked'] ) ) {
+		return false;
+	}
+	
+	// Must be activating the $plugin specified.
+	return true;
 }
