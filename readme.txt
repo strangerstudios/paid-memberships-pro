@@ -4,7 +4,7 @@ Tags: memberships, members, subscriptions, ecommerce, user registration, member,
 Requires at least: 5.2
 Tested up to: 6.0.1
 Requires PHP: 5.6
-Stable tag: 2.9.2
+Stable tag: 2.9.3
 
 WordPress membership plugin: restrict content, accept member subscriptions with recurring payment. Includes user registration, login, & profile fields
 
@@ -156,6 +156,14 @@ Not sure? You can find out by doing a bit a research.
 9. Membership Account page, display all sections or show specific sections using shortcode attributes.
 
 == Changelog ==
+= 2.9.3 - 2022-08-25 =
+* ENHANCEMENT: Added pmpro_add_user_field_where( $where, $field ) and pmpro_add_user_field( $field, $where ) filters.
+* BUG FIX/ENHANCEMENT: Added MMPU support for some emails so correct level information is shown. #2200 (@dparker1005)
+* BUG FIX/ENHANCEMENT: The pmpro_checkout_box-{groupname} id given to checkout box divs is now sanitized to avoid spaces and special characters there. #2209 (@dparker1005)
+* BUG FIX/ENHANCEMENT: Trimming underscores off the front/back of suggested group names in the user field settings. #2209 (@dparker1005)
+* BUG FIX: Fixed issues with fields showing in some checkout checkbox/group locations. #2204 #2205 (@ipokkel)
+* BUG FIX: Fixed issue where discount code uses weren't being tracked when using the Stripe Checkout beta. #2196 (@dparker)
+
 = 2.9.2 - 2022-08-10 =
 * BUG FIX/ENHANCEMENT: Now correctly deprecating the pmprorh_section_header() function. We accidentally had it reversed and throwing a warning when using the new pmpro_default_field_group_label() function. (@kimcoleman)
 * BUG FIX/ENHANCEMENT: When saving user fields, now making sure that the group name is not blank and unique. Blank or duplicate group names could cause other issues, e.g. with required fields or fields being shown multiple times at checkout. #2187 (@ideadude)
