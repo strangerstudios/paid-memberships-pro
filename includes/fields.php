@@ -1478,7 +1478,7 @@ function pmpro_get_field_html( $field = null ) {
 function pmpro_get_user_fields_settings() {
     $default_user_fields_settings = array(
         (object) array(
-            'name' => 'More Information',
+            'name' => __( 'More Information', 'paid-memberships-pro' ),
             'checkout' => 'yes',
             'profile' => 'yes',
             'description' => '',
