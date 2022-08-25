@@ -913,7 +913,7 @@ function pmpro_stripe_webhook_change_membership_level( $morder ) {
 
 		//add discount code use
 		if ( ! empty( $discount_code ) ) {
-			$discount_code_id = $discount_code_id = $wpdb->get_var( "SELECT id FROM $wpdb->pmpro_discount_codes WHERE code = '" . esc_sql( $discount_code ) . "' LIMIT 1" );
+			$discount_code_id = $wpdb->get_var( "SELECT id FROM $wpdb->pmpro_discount_codes WHERE code = '" . esc_sql( $discount_code ) . "' LIMIT 1" );
 			if ( ! empty( $discount_code_id ) ) {
 				$wpdb->query( "INSERT INTO $wpdb->pmpro_discount_codes_uses (code_id, user_id, order_id, timestamp) VALUES('" . $discount_code_id . "', '" . $morder->user_id . "', '" . intval( $morder->id ) . "', '" . current_time( "mysql" ) . "')" );
 				do_action( 'pmpro_discount_code_used', $discount_code_id, $user_id, $morder->id );
