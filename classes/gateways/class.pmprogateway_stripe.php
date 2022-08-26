@@ -262,15 +262,12 @@ class PMProGateway_stripe extends PMProGateway {
 			'tax_state',
 			'tax_rate',
 			'stripe_payment_request_button',
+			'stripe_payment_flow', // 'onsite' or 'checkout'
+			'stripe_update_billing_flow', // 'onsite' or 'portal'
+			'stripe_checkout_billing_address', //'auto' or 'required'
+			'stripe_tax', // 'no', 'inclusive', 'exclusive'
+			'stripe_tax_id_collection_enabled', // '0', '1'
 		);
-
-		if ( self::stripe_checkout_beta_enabled() ) {
-			$options[] = 'stripe_payment_flow'; // 'onsite' or 'checkout'
-			$options[] = 'stripe_update_billing_flow'; // 'onsite' or 'portal'
-			$options[] = 'stripe_checkout_billing_address'; //'auto' or 'required'
-			$options[] = 'stripe_tax'; // 'no', 'inclusive', 'exclusive'
-			$options[] = 'stripe_tax_id_collection_enabled'; // '0', '1'
-		}
 
 		return $options;
 	}
@@ -498,10 +495,6 @@ class PMProGateway_stripe extends PMProGateway {
 					echo ' style="display: none;"';
 				}
 				echo '><th>&nbsp;</th><td><p class="description">' . sprintf( wp_kses( __( 'Optional: Offer PayPal Express as an option at checkout using the <a target="_blank" href="%s" title="Paid Memberships Pro - Add PayPal Express Option at Checkout Add On">Add PayPal Express Add On</a>.', 'paid-memberships-pro' ), $allowed_appe_html ), 'https://www.paidmembershipspro.com/add-ons/pmpro-add-paypal-express-option-checkout/?utm_source=plugin&utm_medium=pmpro-paymentsettings&utm_campaign=add-ons&utm_content=pmpro-add-paypal-express-option-checkout' ) . '</p></td></tr>';
-		}
-		if ( ! self::stripe_checkout_beta_enabled() ) {
-			// Don't show Stripe Checkout settings if the beta is not enabled.
-			return;
 		}
 		?>
 		<tr class="pmpro_settings_divider gateway gateway_stripe" <?php if ( $gateway != "stripe" ) { ?>style="display: none;"<?php } ?>>		
@@ -1485,9 +1478,12 @@ class PMProGateway_stripe extends PMProGateway {
 	 * Check if the user has opted into the Stripe Checkout beta.
 	 *
 	 * @return bool
+	 *
+	 * @deprecated TBD
 	 */
 	public static function stripe_checkout_beta_enabled() {
-		return ( defined( 'PMPRO_STRIPE_CHECKOUT_BETA_ENABLED' ) && PMPRO_STRIPE_CHECKOUT_BETA_ENABLED );
+		_deprecated_function( __FUNCTION__, 'TBD' );
+		return true;
 	}
 
 	/**
@@ -1496,11 +1492,6 @@ class PMProGateway_stripe extends PMProGateway {
 	 * @return bool
 	 */
 	public static function using_stripe_checkout() {
-		// While Stripe Checkout is in beta, only enable it if the constant is set.
-		if ( ! self::stripe_checkout_beta_enabled() ) {
-			return false;
-		}
-
 		return 'checkout' === pmpro_getOption( 'stripe_payment_flow' );
 	}
 
