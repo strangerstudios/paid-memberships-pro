@@ -406,6 +406,104 @@ class PMProGateway_stripe extends PMProGateway {
 				<code><?php echo self::get_site_webhook_url(); ?></code></p>
 			</td>
 		</tr>
+		<tr class="pmpro_settings_divider gateway gateway_stripe_<?php echo $stripe->gateway_environment; ?>" <?php if ( $gateway != "stripe" ) { ?>style="display: none;"<?php } ?>>
+			<td colspan="2">
+				<hr />
+				<h2><?php esc_html_e( 'Webhook Status', 'paid-memberships-pro' ); ?></h2>
+			</td>
+		</tr>
+		<tr class="gateway gateway_stripe_<?php echo $stripe->gateway_environment; ?>" <?php if ( $gateway != "stripe" ) { ?>style="display: none;"<?php } ?>>
+            <th scope="row" valign="top">
+            </th>
+            <td>
+				<?php
+				if ( ! empty( self::get_secretkey() ) ) {
+					$required_webhook_events = $stripe->webhook_events();
+					sort( $required_webhook_events );
+
+					$webhook_event_data = array();
+
+					$failed_webhooks = array();
+					$missing_webhooks = array();
+					$working_webhooks = array();
+					// For sites that tracked "last webhook recieved" before we started tracking webhook events individually,
+					// we want to ignore events that were sent by Stripe before site was updated to start tracking individual events.
+					$legacy_last_webhook_recieved_timestamp = get_option( 'pmpro_stripe_last_webhook_received_' . $stripe->gateway_environment );
+					foreach ( $required_webhook_events as $required_webhook_event ) {
+						$event_data = array( 'name' => $required_webhook_event );
+
+						$last_received = get_option( 'pmpro_stripe_webhook_last_received_' . $stripe->gateway_environment . '_' . $required_webhook_event );
+						$event_data['last_received'] = empty( $last_received ) ? esc_html__( 'Never Received', 'paid-memberships-pro' ) : date_i18n( get_option('date_format') . ' ' . get_option('time_format'), $last_received );
+
+						$event_query_arr = array(
+							'limit' => 1,
+							'created' => array(
+								'lt' => time() - 60, // Ignore events created in the last 60 seconds in case we haven't finished processing them yet.
+							),
+							'type' => $required_webhook_event,
+						);
+						if ( ! empty( $legacy_last_webhook_recieved_timestamp ) ) {
+							$event_query_arr['created']['gt'] = strtotime( $legacy_last_webhook_recieved_timestamp );
+						}
+
+
+						$recently_sent = Stripe\Event::all( $event_query_arr );
+						if ( ! empty( $recently_sent->data[0] ) ) {
+							if ( $last_received >= $recently_sent->data[0]->created ) {
+								$event_data['status'] =  '<span style="color: green;">' . esc_html__( 'Working', 'paid-memberships-pro' ) . '</span>';
+								$working_webhooks[] = $event_data;
+							} else {
+								$event_data['status'] = '<span style="color: red;">' . esc_html__( 'Last Sent ', 'paid-memberships-pro' ) . date_i18n( get_option('date_format') . ' ' . get_option('time_format'), $recently_sent->data[0]->created ) . '</span>';
+								$failed_webhooks[] = $event_data;
+							}
+						} else {
+							if ( ! empty( $last_received ) ) {
+								$event_data['status'] = '<span style="color: green;">' . esc_html__( 'Working', 'paid-memberships-pro' ) . '</span>';
+								$working_webhooks[] = $event_data;
+							} else {
+								$event_data['status'] = '<span style="color: grey;">' . esc_html__( 'N/A', 'paid-memberships-pro' ) . '</span>';
+								$missing_webhooks[] = $event_data;
+							}
+						}
+					}
+					if ( ! empty( $failed_webhooks ) ) {
+						echo '<div class="notice error inline"><p>'. esc_html__( 'Some webhooks recently sent by Stripe have not been received by your website. Please ensure that you have a webhook set up in Stripe for the Webhook URL shown below with all of the listed event types active. To test an event type again, please resend the most recent webhook event of that type from the Stripe webhook settings page or wait for it to be sent again in the future.', 'paid-memberships-pro' ) . '</p></div>';
+					} elseif ( ! empty( $missing_webhooks ) ) {
+						echo '<div class="notice inline"><p>'. esc_html__( 'Recent webhook attempts appear to have worked correctly, but there are some event types that have not been checked. Those event types will be checked as they are sent by Stripe. In the meantime, please ensure that you have a webhook set up in Stripe for the Webhook URL shown below with all of the listed event types active.', 'paid-memberships-pro' ) . '</p></div>';
+					} else {
+						echo '<div class="notice notice-success inline"><p>'. esc_html__( 'All webhooks appear to be working correctly.', 'paid-memberships-pro' ) . '</p></div>';
+					}
+					?>
+					<div class="widgets-holder-wrap pmpro_scrollable">
+						<table class="wp-list-table widefat striped fixed">
+							<thead>
+								<tr>
+									<th><?php esc_html_e( 'Event Type', 'paid-memberships-pro' ); ?></th>
+									<th><?php esc_html_e( 'Last Received', 'paid-memberships-pro' ); ?></th>
+									<th><?php esc_html_e( 'Status', 'paid-memberships-pro' ); ?></th>
+								</tr>
+							</thead>
+							<?php
+								$ordered_webhooks = array_merge( $failed_webhooks, $missing_webhooks, $working_webhooks );
+								foreach ( $ordered_webhooks as $webhook_event ) {
+									?>
+									<tr>
+										<td><?php echo $webhook_event['name']; ?></td>
+										<td><?php echo esc_html( $webhook_event['last_received'] ); ?></td>
+										<td><?php echo $webhook_event['status']; ?></td>
+									</tr>
+									<?php
+								}
+							?>
+						</table>
+					</div>
+					<?php
+				}
+				?>
+				<p class="description"><?php esc_html_e( 'Webhook URL', 'paid-memberships-pro' ); ?>:
+				<code><?php echo esc_html( self::get_site_webhook_url() ); ?></code></p>
+            </td>
+        </tr>
 		<tr class="pmpro_settings_divider gateway gateway_stripe" <?php if ( $gateway != "stripe" ) { ?>style="display: none;"<?php } ?>>
 			<td colspan="2">
 				<hr />
@@ -2302,101 +2400,6 @@ class PMProGateway_stripe extends PMProGateway {
 				<input type='hidden' name='<?php echo $environment; ?>_stripe_connect_secretkey' id='<?php echo $environment; ?>_stripe_connect_secretkey' value='<?php echo esc_attr( $values[ $environment . '_stripe_connect_secretkey'] ) ?>'/>
 				<input type='hidden' name='<?php echo $environment; ?>_stripe_connect_publishablekey' id='<?php echo $environment; ?>_stripe_connect_publishablekey' value='<?php echo esc_attr( $values[ $environment . '_stripe_connect_publishablekey'] ) ?>'/>
 			</td>
-        </tr>
-		<tr class="gateway gateway_stripe_<?php echo $environment; ?>" <?php if ( $gateway != "stripe" || $gateway_environment != $environment ) { ?>style="display: none;"<?php } ?>>
-            <th scope="row" valign="top">
-                <label><?php esc_html_e( 'Webhook Status', 'paid-memberships-pro' ); ?>:</label>
-            </th>
-            <td>
-				<?php
-				if ( $gateway_environment != $environment ) {
-					esc_html_e( 'The gateway environment has been changed. Please save this page to check webhooks for the selected environment.', 'paid-memberships-pro' );
-				} elseif ( ! empty( self::get_secretkey() ) ) {
-					$required_webhook_events = $this->webhook_events();
-					sort( $required_webhook_events );
-
-					$webhook_event_data = array();
-
-					$failed_webhooks = array();
-					$missing_webhooks = array();
-					$working_webhooks = array();
-					// For sites that tracked "last webhook recieved" before we started tracking webhook events individually,
-					// we want to ignore events that were sent by Stripe before site was updated to start tracking individual events.
-					$legacy_last_webhook_recieved_timestamp = get_option( 'pmpro_stripe_last_webhook_received_' . $environment );
-					foreach ( $required_webhook_events as $required_webhook_event ) {
-						$event_data = array( 'name' => $required_webhook_event );
-
-						$last_received = get_option( 'pmpro_stripe_webhook_last_received_' . $environment . '_' . $required_webhook_event );
-						$event_data['last_received'] = empty( $last_received ) ? esc_html__( 'Never Received', 'paid-memberships-pro' ) : date_i18n( get_option('date_format') . ' ' . get_option('time_format'), $last_received );
-
-						$event_query_arr = array(
-							'limit' => 1,
-							'created' => array(
-								'lt' => time() - 60, // Ignore events created in the last 60 seconds in case we haven't finished processing them yet.
-							),
-							'type' => $required_webhook_event,
-						);
-						if ( ! empty( $legacy_last_webhook_recieved_timestamp ) ) {
-							$event_query_arr['created']['gt'] = strtotime( $legacy_last_webhook_recieved_timestamp );
-						}
-
-
-						$recently_sent = Stripe\Event::all( $event_query_arr );
-						if ( ! empty( $recently_sent->data[0] ) ) {
-							if ( $last_received >= $recently_sent->data[0]->created ) {
-								$event_data['status'] =  '<span style="color: green;">' . esc_html__( 'Working', 'paid-memberships-pro' ) . '</span>';
-								$working_webhooks[] = $event_data;
-							} else {
-								$event_data['status'] = '<span style="color: red;">' . esc_html__( 'Last Sent ', 'paid-memberships-pro' ) . date_i18n( get_option('date_format') . ' ' . get_option('time_format'), $recently_sent->data[0]->created ) . '</span>';
-								$failed_webhooks[] = $event_data;
-							}
-						} else {
-							if ( ! empty( $last_received ) ) {
-								$event_data['status'] = '<span style="color: green;">' . esc_html__( 'Working', 'paid-memberships-pro' ) . '</span>';
-								$working_webhooks[] = $event_data;
-							} else {
-								$event_data['status'] = '<span style="color: grey;">' . esc_html__( 'N/A', 'paid-memberships-pro' ) . '</span>';
-								$missing_webhooks[] = $event_data;
-							}
-						}
-					}
-					if ( ! empty( $failed_webhooks ) ) {
-						echo '<div class="notice error inline"><p>'. esc_html__( 'Some webhooks recently sent by Stripe have not been received by your website. Please ensure that you have a webhook set up in Stripe for the Webhook URL shown below with all of the listed event types active. To test an event type again, please resend the most recent webhook event of that type from the Stripe webhook settings page or wait for it to be sent again in the future.', 'paid-memberships-pro' ) . '</p></div>';
-					} elseif ( ! empty( $missing_webhooks ) ) {
-						echo '<div class="notice inline"><p>'. esc_html__( 'Recent webhook attempts appear to have worked correctly, but there are some event types that have not been checked. Those event types will be checked as they are sent by Stripe. In the meantime, please ensure that you have a webhook set up in Stripe for the Webhook URL shown below with all of the listed event types active.', 'paid-memberships-pro' ) . '</p></div>';
-					} else {
-						echo '<div class="notice notice-success inline"><p>'. esc_html__( 'All webhooks appear to be working correctly.', 'paid-memberships-pro' ) . '</p></div>';
-					}
-					?>
-					<div class="widgets-holder-wrap pmpro_scrollable">
-						<table class="wp-list-table widefat striped fixed">
-							<thead>
-								<tr>
-									<th><?php esc_html_e( 'Event Type', 'paid-memberships-pro' ); ?></th>
-									<th><?php esc_html_e( 'Last Received', 'paid-memberships-pro' ); ?></th>
-									<th><?php esc_html_e( 'Status', 'paid-memberships-pro' ); ?></th>
-								</tr>
-							</thead>
-							<?php
-								$ordered_webhooks = array_merge( $failed_webhooks, $missing_webhooks, $working_webhooks );
-								foreach ( $ordered_webhooks as $webhook_event ) {
-									?>
-									<tr>
-										<td><?php echo $webhook_event['name']; ?></td>
-										<td><?php echo esc_html( $webhook_event['last_received'] ); ?></td>
-										<td><?php echo $webhook_event['status']; ?></td>
-									</tr>
-									<?php
-								}
-							?>
-						</table>
-					</div>
-					<?php
-				}
-				?>
-				<p class="description"><?php esc_html_e( 'Webhook URL', 'paid-memberships-pro' ); ?>:
-				<code><?php echo esc_html( self::get_site_webhook_url() ); ?></code></p>
-            </td>
         </tr>
 		<?php
 	}
