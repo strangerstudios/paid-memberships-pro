@@ -188,6 +188,7 @@ class PMProGateway_stripe extends PMProGateway {
 
 		add_action( 'pmpro_payment_option_fields', array( 'PMProGateway_stripe', 'pmpro_set_up_apple_pay' ), 10, 2 );
 		add_action( 'init', array( 'PMProGateway_stripe', 'clear_saved_subscriptions' ) );
+		add_action( 'pmpro_billing_preheader', array( 'PMProGateway_stripe', 'pmpro_billing_preheader_stripe_customer_portal' ), 5 );
 
 		// Stripe Connect functions.
 		add_action( 'admin_init', array( 'PMProGateway_stripe', 'stripe_connect_save_options' ) );
@@ -1795,43 +1796,13 @@ class PMProGateway_stripe extends PMProGateway {
 	}
 
 	/**
-	 * If using Stripe Checkout, either redirect the user to the Stripe Customer
-	 * portal or set up our update billing page with the onsite payment fields.
+	 * User has not been sent to the Customer Portal, so we need to disable
+	 * Stripe Checkout for this page load and show the default update billing
+	 * fields.
 	 *
 	 * @since 2.8
 	 */
 	public static function pmpro_billing_preheader_stripe_checkout() {
-		if ( 'portal' === pmpro_getOption( 'stripe_update_billing_flow' ) ) {
-			// Send user to Stripe Customer Portal.
-			$user_order = new MemberOrder();
-			$user_order->getLastMemberOrder( null, array( 'success', 'pending' ) );
-
-			// Check whether the user's most recent order is a Stripe subscription.
-			if ( empty( $user_order->gateway ) || 'stripe' !== $user_order->gateway ) {
-				$error = __( 'Last order was not charged with Stripe.', 'paid-memberships-pro' );
-			}
-
-			if ( empty( $error ) ) {
-				$stripe = new PMProGateway_stripe();
-				$customer = $stripe->get_customer_for_user( $user_order->user_id );
-				if ( empty( $customer->id ) ) {
-					$error = __( 'Could not get Stripe customer for user.', 'paid-memberships-pro' );
-				}
-			}
-
-			if ( empty( $error ) ) {
-				$customer_portal_url = $stripe->get_customer_portal_url( $customer->id );
-				if ( ! empty( $customer_portal_url ) ) {
-					wp_redirect( $customer_portal_url );
-					exit;
-				}
-				$error = __( 'Could not get Customer Portal URL. This feature may not be set up in Stripe.', 'paid-memberships-pro' );
-			}
-
-			// There must have been an error while getting the customer portal URL. Show an error and let user update
-			// their billing info onsite.
-			pmpro_setMessage( $error . ' ' . __( 'Please contact the site administrator.', 'paid-memberships-pro' ), 'pmpro_alert', true );
-		}
 		// Disable Stripe Checkout functionality for the rest of this page load.
 		add_filter( 'pmpro_include_cardtype_field', array(
 			'PMProGateway_stripe',
@@ -1844,6 +1815,44 @@ class PMProGateway_stripe extends PMProGateway {
 			'pmpro_include_payment_information_fields'
 		), 15 );
 		add_filter( 'option_pmpro_stripe_payment_flow', '__return_false' ); // Disable Stripe Checkout for rest of page load.
+	}
+
+	/**
+	 * Send the user to the Stripe Customer Portal if the customer portal is enabled.
+	 *
+	 * @since TBD.
+	 */
+	public static function pmpro_billing_preheader_stripe_customer_portal() {
+		if ( 'portal' === pmpro_getOption( 'stripe_update_billing_flow' ) ) {
+			// Get current user.
+			$user = wp_get_current_user();
+			if ( empty( $user->ID ) ) {
+				$error = __( 'User is not logged in.', 'paid-memberships-pro' );
+			}
+
+			if ( empty( $error ) ) {
+				// Get the Stripe Customer.
+				$stripe = new PMProGateway_stripe();
+				$customer = $stripe->get_customer_for_user( $user->ID );
+				if ( empty( $customer->id ) ) {
+					$error = __( 'Could not get Stripe customer for user.', 'paid-memberships-pro' );
+				}
+			}
+
+			if ( empty( $error ) ) {
+				// Send the user to the customer portal.
+				$customer_portal_url = $stripe->get_customer_portal_url( $customer->id );
+				if ( ! empty( $customer_portal_url ) ) {
+					wp_redirect( $customer_portal_url );
+					exit;
+				}
+				$error = __( 'Could not get Customer Portal URL. This feature may not be set up in Stripe.', 'paid-memberships-pro' );
+			}
+
+			// There must have been an error while getting the customer portal URL. Show an error and let user update
+			// their billing info onsite.
+			pmpro_setMessage( $error . ' ' . __( 'Please contact the site administrator.', 'paid-memberships-pro' ), 'pmpro_alert', true );
+		}
 	}
 
 	/****************************************
