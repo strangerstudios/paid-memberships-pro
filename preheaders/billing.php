@@ -274,7 +274,7 @@ if ($submit) {
             $pmpro_msg = sprintf(__('Information updated. <a href="%s">&laquo; back to my account</a>', 'paid-memberships-pro' ), pmpro_url("account"));
             $pmpro_msgt = "pmpro_success";
 			
-			do_action( 'pmpro_after_update_billing', $current_user->ID, $morder );
+			do_action( 'pmpro_after_update_billing', $current_user->ID, !empty( $morder ) ? $morder : null );
         } else {
 			/**
 			 * Allow running code when the update fails.
