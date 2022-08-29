@@ -958,7 +958,7 @@
 			if ( empty( $membership_id ) ) {
 				$membership_level = pmpro_getMembershipLevelForUser($user->ID);
 			} else {
-				$membership_level = pmpro_getMembershipLevelForUser($user->ID, $membership_id);
+				$membership_level = pmpro_getSpecificMembershipLevelForUser($user->ID, $membership_id);
 			}
 
 						
@@ -1021,7 +1021,7 @@
 			if ( empty( $membership_id ) ) {
 				$membership_level = pmpro_getMembershipLevelForUser($user->ID);
 			} else {
-				$membership_level = pmpro_getMembershipLevelForUser($user->ID, $membership_id);
+				$membership_level = pmpro_getSpecificMembershipLevelForUser($user->ID, $membership_id);
 			}
 						
 			$this->email = $user->user_email;
