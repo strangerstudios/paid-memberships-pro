@@ -99,12 +99,12 @@
 			if($pmpro_stripe_event->data->object->amount_due > 0)
 			{
 				//do we have this order yet? (check status too)
-				$order = getOrderFromInvoiceEvent($pmpro_stripe_event);
+				$order = new MemberOrder();
+				$order->getMemberOrderByPaymentTransactionID( $pmpro_stripe_event->data->object->id );
 
 				//no? create it
 				if(empty($order->id))
 				{				
-					//last order for this subscription //getOldOrderFromInvoiceEvent($pmpro_stripe_event);
 					$old_order = new MemberOrder();
 					$old_order->getLastMemberOrderBySubscriptionTransactionID($pmpro_stripe_event->data->object->subscription);
 					
@@ -234,12 +234,17 @@
 			}
 		}
 		elseif($pmpro_stripe_event->type == "invoice.payment_action_required") {
-			// TODO: Test subs with SCA.
-			$old_order = getOldOrderFromInvoiceEvent($pmpro_stripe_event);
+			$invoice = $pmpro_stripe_event->data->object;
+
+			// Get the last order for this invoice's subscription.
+			if ( ! empty( $invoice->subscription ) ) {
+				$old_order = new MemberOrder();
+				$old_order->getLastMemberOrderBySubscriptionTransactionID( $invoice->subscription );
+			}
+
 			if( ! empty( $old_order ) && ! empty( $old_order->id ) ) {
 				$user_id = $old_order->user_id;
 				$user = get_userdata($user_id);
-        		$invoice = $pmpro_stripe_event->data->object;
 
 				// Prep order for emails.
 				$morder = new MemberOrder();
@@ -268,7 +273,7 @@
 				pmpro_stripe_webhook_populate_order_from_payment( $morder, $payment_method );
 
 				// Add invoice link to the order.
-				$morder->invoice_url = $pmpro_stripe_event->data->object->hosted_invoice_url;
+				$morder->invoice_url = $invoice->hosted_invoice_url;
 
 				// Email the user and ask them to authenticate their payment.
 				$pmproemail = new PMProEmail();
@@ -286,13 +291,36 @@
 			{
 				$logstr .= "Could not find the related subscription for event with ID #" . $pmpro_stripe_event->id . ".";
 				if(!empty($pmpro_stripe_event->data->object->customer))
-					$logstr .= " Customer ID #" . $pmpro_stripe_event->data->object->customer . ".";
+					$logstr .= " Customer ID #" . $invoice->customer . ".";
 				pmpro_stripeWebhookExit();
 			}
 		} elseif($pmpro_stripe_event->type == "charge.failed") {
-			//last order for this subscription
-			$old_order = getOldOrderFromInvoiceEvent($pmpro_stripe_event);
+			$charge = $pmpro_stripe_event->data->object;
 
+			// Get the invoice for this charge if it exists.
+			if ( ! empty( $charge->invoice ) ) {
+				try {
+					$invoice = Stripe_Invoice::retrieve( $charge->invoice );
+				} catch ( Exception $e ) {
+					error_log( 'Unable to fetch Stripe Invoice object: ' . $e->getMessage() );
+					$invoice = null;
+				}
+			}
+
+			// If we have an invoice, try to get the subscription ID from it.
+			if ( ! empty( $invoice ) ) {
+				$subscription_id = $invoice->subscription;
+			} else {
+				$subscription_id = null;
+			}
+
+			// If we have a subscription ID, get the last order for that subscription.
+			if ( ! empty( $subscription_id ) ) {
+				$old_order = new MemberOrder();
+				$old_order->getLastMemberOrderBySubscriptionTransactionID( $subscription_id );
+			}
+
+			// If we have an old order, email the user that their payment failed.
 			if( ! empty( $old_order ) && ! empty( $old_order->id ) )
 			{
 				do_action("pmpro_subscription_payment_failed", $old_order);
@@ -349,7 +377,8 @@
 		elseif($pmpro_stripe_event->type == "customer.subscription.deleted")
 		{
 			//for one of our users? if they still have a membership for the same level, cancel it
-			$old_order = getOldOrderFromInvoiceEvent($pmpro_stripe_event);
+			$old_order = new MemberOrder();
+			$old_order->getLastMemberOrderBySubscriptionTransactionID( $pmpro_stripe_event->data->object->id );
 
 			if( ! empty( $old_order ) && ! empty( $old_order->id ) ) {
 				$user_id = $old_order->user_id;
@@ -713,14 +742,17 @@
 			return false;
 	}
 
-	// TODO Test this
    	/**
 		* Get the Member's Order from a Stripe Event.
+		*
+		* @deprecated TBD
 		*
 		* @param Object $pmpro_stripe_event The Stripe Event object sent via webhook.
 		* @return PMPro_MemberOrder|bool Returns either the member order object linked to the Stripe Event data or false if no order is found.
 		*/
 	function getOldOrderFromInvoiceEvent( $pmpro_stripe_event ) {	
+		_deprecated_function( __FUNCTION__, 'TBD' );
+
 		// Pause here to give PMPro a chance to finish checkout.
 		sleep( PMPRO_STRIPE_WEBHOOK_DELAY );
 
@@ -782,8 +814,12 @@
 		return false;
 	}
 
-	function getOrderFromInvoiceEvent($pmpro_stripe_event)
-	{
+	/**
+	 * @deprecated TBD
+	 */
+	function getOrderFromInvoiceEvent($pmpro_stripe_event) {
+		_deprecated_function( __FUNCTION__, 'TBD' );
+
 		//pause here to give PMPro a chance to finish checkout
 		sleep(PMPRO_STRIPE_WEBHOOK_DELAY);
 
