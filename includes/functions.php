@@ -4338,3 +4338,93 @@ function pmpro_activating_plugin( $plugin = null ) {
 	// Must be activating the $plugin specified.
 	return true;
 }
+
+
+/**
+ * Is the current site a production or staging site?
+ * 
+ * @since TBD
+ * @return bool True if we believe this is a production site
+ */
+function pmpro_is_production_site() {
+
+	/**
+	 * Check if the WP_ENVIRONMENT_TYPE is set and not in production
+	 */
+	if( defined( 'WP_ENVIRONMENT_TYPE' ) && WP_ENVIRONMENT_TYPE !== 'production' ) {
+		return false;
+	}
+
+	return true;
+
+}
+
+/**
+ * Save the current site URL to a PMPro option
+ *
+ * @since TBD
+ * @return bool If true, site URL was saved. If false, site URL exists
+ */
+function pmpro_save_siteurl() {
+
+	$site_url = get_site_url();
+
+	return pmpro_setOption( 'site_url', $site_url );
+
+}
+
+/**
+ * Compare the stored site URL with the current site URL
+ *
+ * @since TBD
+ * @return bool True if the stored and current URL match
+ */
+function pmpro_compare_siteurl() {
+
+	$site_url = get_site_url();
+
+	$current_url = pmpro_getOption( 'site_url' );
+
+	if( empty( $current_url ) ) {
+		return false;
+	}
+
+	if( $site_url !== $current_url ) {
+		return false;
+	}
+
+	return true;
+
+}
+
+/**
+ * Determine if the site is in pause mode or not
+ *
+ * @since TBD
+ * @return bool True if the the site is in pause mode
+ */
+function pmpro_get_pause_mode() {
+
+	$pause_mode = pmpro_getOption( 'pause_mode' );
+	
+	//We haven't saved the option or it isn't in pause mode
+	if( empty( $pause_mode ) || $pause_mode === false ) {
+		return false;
+	}
+
+	return true;
+
+}
+
+/**
+ * Set the pause mode status
+ *
+ * @param $state bool true or false if in pause mode state
+ * @since TBD
+ * @return bool True if the option has been updated
+ */
+function pmpro_set_pause_mode( $state ) {
+
+	return pmpro_setOption( 'pause_mode', $state );
+
+}

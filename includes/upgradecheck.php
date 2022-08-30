@@ -296,6 +296,15 @@ function pmpro_checkForUpgrades()
 		pmpro_maybe_schedule_crons();
 		pmpro_setOption( 'db_version', '2.81' );
 	}
+
+	/**
+	 * Version 2.9.4
+	 * Check the current domain and store it
+	 */
+	if ( $pmpro_db_version < 2.94 ) {
+		pmpro_save_siteurl();
+		pmpro_setOption( 'db_version', '2.94' );
+	}
 }
 
 function pmpro_db_delta()

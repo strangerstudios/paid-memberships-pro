@@ -109,6 +109,18 @@ class PMPro_Site_Health {
 					'label' => __( 'Library Conflicts', 'paid-memberships-pro' ),
 					'value' => self::get_library_conflicts(),
 				],
+				'pmpro-current-site-url' => [
+					'label' => __( 'Current Site URL', 'paid-memberships-pro' ),
+					'value' => self::get_current_site_url(),
+				],
+				'pmpro-recorded-site-url' => [
+					'label' => __( 'Recorded Site URL', 'paid-memberships-pro' ),
+					'value' => self::get_recorded_site_url(),
+				],
+				'pmpro-pause-mode' => [
+					'label' => __( 'Pause Mode', 'paid-memberships-pro' ),
+					'value' => self::get_pause_mode_state(),
+				],
 			],
 		];
 
@@ -598,5 +610,48 @@ class PMPro_Site_Health {
 		}
 
 		return $constants_formatted;
+	}
+
+	/**
+	 * Gets the current site URL
+	 *
+	 * @since TBD
+	 *
+	 * @return string 
+	 */
+	public function get_current_site_url() {
+
+		return get_site_url();
+
+	}
+	/**
+	 * Gets the recorded site URL
+	 *
+	 * @since TBD
+	 *
+	 * @return string 
+	 */
+	public function get_recorded_site_url() {
+
+		return pmpro_getOption( 'site_url' );
+
+	}
+	/**
+	 * Get the pause mode state
+	 *
+	 * @since TBD
+	 *
+	 * @return string What state is pause mode in 
+	 */
+	public function get_pause_mode_state() {
+
+		$pause_mode = pmpro_get_pause_mode();
+
+		if( $pause_mode ) {
+			return __( 'Enabled', 'paid-memberships-pro' );
+		}
+
+		return __( 'Disabled', 'paid-memberships-pro' );
+
 	}
 }
