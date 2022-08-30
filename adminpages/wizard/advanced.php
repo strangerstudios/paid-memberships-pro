@@ -15,7 +15,7 @@ $wisdom_tracking = pmpro_getOption( 'wisdom_opt_out', true );
 			<label class="pmpro-wizard__label-block">
 				<?php esc_html_e( 'Filter searches and archives?', 'paid-memberships-pro' ); ?>
 			</label>
-			<select name="filter_queries" id="filter_queries" class="pmpro-wizard__field-block">
+			<select name="filterqueries" id="filterqueries" class="pmpro-wizard__field-block">
 				<option value="0" <?php selected( 0, $filter_queries, true ); ?>><?php esc_html_e( 'No - Non-members will see restricted posts/pages in searches and archives.', 'paid-memberships-pro' ); ?></option>
 				<option value="1" <?php selected( 1, $filter_queries, true ); ?>><?php esc_html_e( 'Yes - Only members will see restricted posts/pages in searches and archives.', 'paid-memberships-pro' ); ?></option>
 			</select><br><br>
@@ -24,7 +24,7 @@ $wisdom_tracking = pmpro_getOption( 'wisdom_opt_out', true );
 			<label class="pmpro-wizard__label-block">
 				<?php esc_html_e( 'Show excerpts to non-members?', 'paid-memberships-pro' ); ?>
 			</label>
-			<select name="show_excerpts" id="show_excerpts" class="pmpro-wizard__field-block">
+			<select name="showexcerpts" id="showexcerpts" class="pmpro-wizard__field-block">
 				<option value="0" <?php selected( 0, $show_excerpts, true ); ?>><?php esc_html_e( 'No - Hide excerpts.', 'paid-memberships-pro' ); ?></option>
 				<option value="1" <?php selected( 1, $show_excerpts, true ); ?>><?php esc_html_e( 'Yes - Show excerpts.', 'paid-memberships-pro' ); ?></option>
 			</select>

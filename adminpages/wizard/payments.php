@@ -50,7 +50,7 @@
 					</label>
 				</div>
 				<div class="pmpro-wizard__field" style="background-color:#F7F7F7;">
-					<p><img src="<?php echo plugins_url( '/images/credit-card.svg', __DIR__ ); ?>" style="vertical-align:middle;"/> Payment gateways may be configured under "Payment Gateway & SSL Settings".</p>
+					<p><img src="<?php echo plugins_url( '/images/credit-card.svg', dirname( __DIR__ ) ); ?>" style="vertical-align:middle;"/> Payment gateways may be configured under "Payment Gateway & SSL Settings".</p>
 				</div>
 				<script>
 					jQuery(document).ready(function(){

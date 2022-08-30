@@ -3,6 +3,21 @@
 $pmpro_license_key = get_option( 'pmpro_license_key' );
 $site_type         = get_option( 'pmpro_site_type' );
 $collect_payments   = get_option( 'pmpro_wizard_collect_payments' );
+
+// Check if we should allow page generation or not.
+global $pmpro_pages;
+	if ( $pmpro_pages['account'] ||
+		$pmpro_pages['billing'] ||
+		$pmpro_pages['cancel'] ||
+		$pmpro_pages['checkout'] ||
+		$pmpro_pages['confirmation'] ||
+		$pmpro_pages['invoice'] ||
+		$pmpro_pages['levels'] ||
+		$pmpro_pages['member_profile_edit'] ) { 
+			$member_pages_exist = true;
+	} else {
+		$member_pages_exist = false;
+	}
 ?>
 
 <div class="pmpro-wizard__step pmpro-wizard__step-1">
@@ -30,10 +45,14 @@ $collect_payments   = get_option( 'pmpro_wizard_collect_payments' );
 					</div>
 					<div class="pmpro-wizard__field">
 						<label class="pmpro-wizard__label-block">
-							<input type="checkbox" name="createpages" id="createpages" value="1">
-							<label for="createpages"><?php esc_html_e( 'Generate the required plugin pages for me.', 'paid-memberships-pro' ); ?></label><br><br>
-							<input type="checkbox" name="collect_payments" id="collect_payments" value="1" <?php checked( true, $collect_payments, true ); ?>>
-							<label for="collect_payments"><?php esc_html_e( 'Will you be collecting payments for your memberships?', 'paid-memberships-pro' ); ?></label><br/>
+							<input type="checkbox" name="createpages" id="createpages" value="1" <?php disabled( true, $member_pages_exist); ?>>
+							<label for="createpages"><?php esc_html_e( 'Yes, generate the required plugin pages for me.', 'paid-memberships-pro' ); ?></label><br/>
+							<?php if ( $member_pages_exist ) {
+								echo '<span style="font-size:12px;">' . esc_html__( 'We detected you have pages assigned for Paid Memberships Pro, this option is disabled.', 'paid-memberships-pro' ) . '</span>';
+							} ?>
+							<br><br>
+							<input type="checkbox" name="collect_payments" id="collect_payments" value="1" <?php checked( true, $collect_payments ); ?>>
+							<label for="collect_payments"><?php esc_html_e( 'Yes, I will be collecting payments for your memberships?', 'paid-memberships-pro' ); ?></label><br/>
 						</label>
 					</div>
 					<div class="pmpro-wizard__field">
@@ -42,12 +61,6 @@ $collect_payments   = get_option( 'pmpro_wizard_collect_payments' );
 						</label>
 						<p class="pmpro-wizard__field-description"><?php esc_html_e( 'An annual support license is recommended for websites running Paid Memberships Pro.', 'paid-memberships-pro' ); ?> <a href="https://www.paidmembershipspro.com/pricing/?utm_source=plugin&utm_medium=pmpro-wizard&utm_campaign=pricing&utm_content=view-plans-pricing" target="_blank" rel="noopener noreferrer"><?php esc_html_e( 'View Plans and Pricing', 'paid-memberships-pro' ); ?></a></p>
 						<input type="text" name="pmpro_license_key" id="pmpro_license_key" class="pmpro-wizard__field-block" value="<?php esc_attr_e( $pmpro_license_key ); ?>">
-						<?php
-							// Determine if there's a license key already entered before using the Wizard. Show a message.
-						if ( ! empty( $pmpro_license_key ) && pmpro_license_isValid( $pmpro_license_key, null, true ) ) {
-							echo '<strong>' . esc_html__( 'Congrats! We have detected a valid license key.', 'paid-memberships-pro' ) . '</strong>';
-						}
-						?>
 					</div>
 					<p class="pmpro_wizard__submit">
 						<?php wp_nonce_field( 'pmpro_wizard_step_1_nonce', 'pmpro_wizard_step_1_nonce' ); ?>

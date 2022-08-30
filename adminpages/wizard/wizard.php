@@ -1,12 +1,13 @@
 <?php
 /**
- * The Setup Wizard mockup page for Paid Memberships Pro
+ * Setup Wizard containing file that handles logic and loading of templates.
  */
 if ( ! empty( $_REQUEST['step'] ) ) {
-	$active_step = $_REQUEST['step'];
+	$active_step = sanitize_text_field( $_REQUEST['step'] );
 } else {
 	$active_step = 'general';
 }
+
 ?>
 <div class="pmpro-wizard">
 	<div style="background-image: url('/wp-content/plugins/paid-memberships-pro/images/bg_icons-white.png');background-repeat: repeat;background-size: 50%;position: absolute; top: 0; left: 0; width: 100%;height: 100vh;opacity: .5; z-index: -1;"></div>
@@ -22,6 +23,7 @@ if ( ! empty( $_REQUEST['step'] ) ) {
 						'advanced' => __( 'Advanced', 'paid-memberships-pro' ),
 						'done' => __( 'All Set!', 'paid-memberships-pro' ),
 					);
+
 					$count = 0;
 					foreach ( $setup_steps as $setup_step => $name ) {
 						// Build the selectors for the step based on wizard flow.
@@ -50,18 +52,16 @@ if ( ! empty( $_REQUEST['step'] ) ) {
 	</div>
 
 	<div class="pmpro-wizard__container">
-		<?php if ( $active_step === 'general' ) {
-				include "step-1.php";
-		 } elseif ( $active_step === 'memberships' ) { 
-				include "step-2.php";
-			} elseif ( $active_step === 'payments' ) {
-				include "step-3.php";
-		 } elseif ( $active_step == 'advanced' ) {
-				include "step-4.php";
-		} elseif ( $active_step == 'done' ) {
-			include "step-5.php";
-		} ?>
-		<p class="pmpro-wizard__exit"><a href=""><?php esc_html_e( 'Exit Wizard and Return to Dashboard', 'paid-memberships-pro' ); ?></a></p>
+		<?php
+			// Load the wizard page template based on the current step.
+			if ( $setup_steps[$active_step] ) {
+				include $active_step . '.php';
+			} else {
+				include 'general.php';
+			}
+			
+		?>
+		<p class="pmpro-wizard__exit"><a href="#"><?php esc_html_e( 'Exit Wizard and Return to Dashboard', 'paid-memberships-pro' ); ?></a></p>
 	</div> <!-- end pmpro-wizard__container -->
 </div> <!-- end pmpro-wizard -->
 <?php

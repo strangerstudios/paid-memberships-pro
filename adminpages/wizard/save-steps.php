@@ -20,6 +20,7 @@ function pmpro_init_save_wizard_data() {
 	 * Step 1 - Update settings and generate anything we may need based off settings.
 	 */
 	if ( $_REQUEST['wizard-action'] == 'step-1' ) {
+		
 
 		/// Throw a nonce error.
 		if ( ! wp_verify_nonce( $_REQUEST['pmpro_wizard_step_1_nonce'], 'pmpro_wizard_step_1_nonce' ) ) {
@@ -33,6 +34,8 @@ function pmpro_init_save_wizard_data() {
 		if ( ! empty( $_REQUEST['pmpro_license_key'] ) ) {
 			update_option( 'pmpro_license_key', sanitize_text_field( $_REQUEST['pmpro_license_key'] ), false );
 		}
+
+	
 
 		// Generate pages
 		if ( ! empty( $_REQUEST['createpages'] ) ) {
@@ -235,15 +238,30 @@ function pmpro_init_save_wizard_data() {
 		}
 
 		// Get the data and store it in an option.
-		$filter_queries = ! empty( $_REQUEST['filter_queries'] ) ? sanitize_text_field( $_REQUEST['filter_queries'] ) : 0;
-		$show_excerpts = ! empty( $_REQUEST['show_excerpts'] ) ? sanitize_text_field( $_REQUEST['show_excerpts'] ) : 0;
-		$spam_protection = ! empty( $_REQUEST['spam_protection'] ) ? sanitize_text_field( $_REQUEST['spam_protection'] ) : 0;
+		$filterqueries = ! empty( $_REQUEST['filterqueries'] ) ? sanitize_text_field( $_REQUEST['filterqueries'] ) : 0;
+		$showexcerpts = ! empty( $_REQUEST['showexcerpts'] ) ? sanitize_text_field( $_REQUEST['showexcerpts'] ) : 0;
+		$spamprotection = ! empty( $_REQUEST['spamprotection'] ) ? sanitize_text_field( $_REQUEST['spamprotection'] ) : 0;
 		$wisdom_opt_in = ! empty( $_REQUEST['wisdom_opt_in'] ) ? sanitize_text_field( $_REQUEST['wisdom_opt_in'] ) : 1; //Reversed logic here for the Wisdom Tracker, Advanced Settings does it differently. If selected, option is 0 otherwise option is 1;
 
-		/// Update the options.
-		
+		// Updated the options. Set the values as above to cater for cases where the REQUEST variables are empty for blank checkboxes.
+		pmpro_setOption( 'filterqueries', $filterqueries );
+		pmpro_setOption( 'showexcerpts', $showexcerpts );
+		pmpro_setOption( 'spamprotection', $spamprotection );
+		pmpro_setOption( 'wisdom_opt_out', $wisdom_opt_in );
 		
 
+		// Redirect to next step
+		$next_step = add_query_arg(
+			array(
+				'page' => 'pmpro-wizard',
+				'step' => 'done',
+			),
+			admin_url( 'admin.php' )
+		);
+
+		/// Remove the option? or set it to complete?
+		// delete_option( 'pmpro_wizard_step' );
+		wp_redirect( $next_step );
 	}
 
 	/**
@@ -251,6 +269,7 @@ function pmpro_init_save_wizard_data() {
 	 */
 	if ( $_REQUEST['wizard-action'] == 'step-5' ) {
 		// Do stuff
+		delete_option( 'pmpro_wizard_collect_payments' );
 	}
 
 }
