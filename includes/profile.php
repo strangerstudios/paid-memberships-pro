@@ -417,18 +417,21 @@ function pmpro_membership_history_profile_fields( $user ) {
 	global $wpdb;
 
 	//Show all invoices for user
-	$invoices = $wpdb->get_results("SELECT mo.*, UNIX_TIMESTAMP(mo.timestamp) as timestamp, du.code_id as code_id FROM $wpdb->pmpro_membership_orders mo LEFT JOIN $wpdb->pmpro_discount_codes_uses du ON mo.id = du.order_id WHERE mo.user_id = '$user->ID' ORDER BY mo.timestamp DESC");	
+	$invoices = $wpdb->get_results( $wpdb->prepare( "SELECT mo.*, UNIX_TIMESTAMP(mo.timestamp) as timestamp, du.code_id as code_id FROM $wpdb->pmpro_membership_orders mo LEFT JOIN $wpdb->pmpro_discount_codes_uses du ON mo.id = du.order_id WHERE mo.user_id = %s ORDER BY mo.timestamp DESC", $user->ID ) );
 
-	$levelshistory = $wpdb->get_results("SELECT * FROM $wpdb->pmpro_memberships_users WHERE user_id = '$user->ID' ORDER BY id DESC");
+	$subscriptions = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM $wpdb->pmpro_subscriptions WHERE user_id = %s ORDER BY startdate DESC", $user->ID ) );
+
+	$levelshistory = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM $wpdb->pmpro_memberships_users WHERE user_id = %s ORDER BY id DESC", $user->ID ) );
 	
-	$totalvalue = $wpdb->get_var("SELECT SUM(total) FROM $wpdb->pmpro_membership_orders WHERE user_id = '$user->ID' AND status NOT IN('token','review','pending','error','refunded')");
+	$totalvalue = $wpdb->get_var( $wpdb->prepare( "SELECT SUM(total) FROM $wpdb->pmpro_membership_orders WHERE user_id = %s AND status NOT IN('token','review','pending','error','refunded')", $user->ID ) );
 
-	if ( $invoices || $levelshistory ) { ?>
+	if ( $invoices || $subscriptions || $levelshistory ) { ?>
 		<hr />
 		<h3><?php esc_html_e( 'Member History', 'paid-memberships-pro' ); ?></h3>
 		<p><strong><?php esc_html_e( 'Total Paid', 'paid-memberships-pro' ); ?></strong> <?php echo pmpro_formatPrice( $totalvalue ); ?></p>
 		<ul id="member-history-filters" class="subsubsub">
 			<li id="member-history-filters-orders"><a href="javascript:void(0);" class="current orders tab"><?php esc_html_e( 'Order History', 'paid-memberships-pro' ); ?></a> <span>(<?php echo count( $invoices ); ?>)</span></li>
+			<li id="member-history-filters-subscriptions">| <a href="javascript:void(0);" class="tab"><?php esc_html_e( 'Subscription History', 'paid-memberships-pro' ); ?></a> <span>(<?php echo count( $subscriptions ); ?>)</span></li>
 			<li id="member-history-filters-memberships">| <a href="javascript:void(0);" class="tab"><?php esc_html_e( 'Membership Levels History', 'paid-memberships-pro' ); ?></a> <span>(<?php echo count( $levelshistory ); ?>)</span></li>
 		</ul>
 		<br class="clear" />
@@ -550,6 +553,54 @@ function pmpro_membership_history_profile_fields( $user ) {
 		<?php } ?>
 		</div> <!-- end #member-history-invoices -->
 		<?php
+			// Build the selectors for the subscription history list based on history count.
+			$subscriptions_classes = array();
+			$subscriptions_classes[] = "widgets-holder-wrap";
+			if ( ! empty( $subscriptions ) && count( $subscriptions ) > 2 ) {
+				$subscriptions_classes[] = "pmpro_scrollable";
+			}
+			$subscriptions_class = implode( ' ', array_unique( $subscriptions_classes ) );
+		?>
+		<div id="member-history-subscriptions" class="<?php echo esc_attr( $subscriptions_class ); ?>" style="display: none;">
+		<?php if ( $subscriptions ) { ?>
+			<table class="wp-list-table widefat striped fixed" width="100%" cellpadding="0" cellspacing="0" border="0">
+			<thead>
+				<tr>
+					<th><?php esc_html_e( 'Date', 'paid-memberships-pro' ); ?></th>
+					<th><?php esc_html_e( 'Subscription Transaction ID', 'paid-memberships-pro' ); ?></th>
+					<th><?php esc_html_e( 'Level', 'paid-memberships-pro' ); ?></th>
+					<th><?php esc_html_e( 'Gateway', 'paid-memberships-pro' ); ?>
+					<th><?php esc_html_e( 'Gateway Environment', 'paid-memberships-pro' ); ?></th>
+					<th><?php esc_html_e( 'Next Payment Date', 'paid-memberships-pro' ); ?></th>
+					<th><?php esc_html_e( 'Ended', 'paid-memberships-pro' ); ?></th>
+					<th><?php esc_html_e( 'Status', 'paid-memberships-pro' ); ?></th>
+				</tr>
+			</thead>
+			<tbody>
+			<?php
+				foreach ( $subscriptions as $subscription ) { 
+					$level = pmpro_getLevel( $subscription->membership_level_id );
+					?>
+					<tr>
+						<td><?php echo esc_html( $subscription->startdate ); ?></td>
+						<td><a href="<?php echo ( esc_url( add_query_arg( array( 'page' => 'pmpro-orders', 's' => $subscription->subscription_transaction_id ), admin_url('admin.php' ) ) ) ); ?>"><?php echo esc_html( $subscription->subscription_transaction_id ); ?></a></td>
+						<td><?php if ( ! empty( $level ) ) { echo esc_html( $level->name ); } else { esc_html_e( 'N/A', 'paid-memberships-pro'); } ?></td>
+						<td><?php echo esc_html( $subscription->gateway ); ?>
+						<td><?php echo esc_html( $subscription->gateway_environment ); ?>
+						<td><?php echo esc_html( $subscription->next_payment_date ); ?>
+						<td><?php echo esc_html( $subscription->enddate ); ?>
+						<td><?php echo esc_html( $subscription->status ); ?>
+					</tr>
+					<?php
+				}
+			?>
+			</tbody>
+			</table>
+			<?php } else { 
+				esc_html_e( 'No subscriptions found.', 'paid-memberships-pro' );
+			} ?>
+		</div>
+		<?php
 			// Build the selectors for the membership levels history list based on history count.
 			$levelshistory_classes = array();
 			$levelshistory_classes[] = "widgets-holder-wrap";
@@ -633,11 +684,18 @@ function pmpro_membership_history_profile_fields( $user ) {
 					if(tab == 'orders')
 					{
 						jQuery('#member-history-memberships').hide();
+						jQuery('#member-history-subscriptions').hide();
 						jQuery('#member-history-orders').show();
+					}
+					else if (tab == 'subscriptions' ) {
+						jQuery('#member-history-memberships').hide();
+						jQuery('#member-history-subscriptions').show();
+						jQuery('#member-history-orders').hide();
 					}
 					else
 					{
 						jQuery('div#member-history-orders').hide();
+						jQuery('#member-history-subscriptions').hide();
 						jQuery('#member-history-memberships').show();
 
 						<?php if ( count( $levelshistory ) > 5 ) { ?>

@@ -47,6 +47,7 @@ require_once( PMPRO_DIR . '/classes/class.memberorder.php' );       // class to 
 require_once( PMPRO_DIR . '/classes/class.pmproemail.php' );        // setup and filter emails sent by PMPro
 require_once( PMPRO_DIR . '/classes/class-pmpro-field.php' );
 require_once( PMPRO_DIR . '/classes/class-pmpro-levels.php' );
+require_once( PMPRO_DIR . '/classes/class-pmpro-subscription.php' );
 require_once( PMPRO_DIR . '/classes/class-pmpro-admin-activity-email.php' );        // setup the admin activity email
 
 require_once( PMPRO_DIR . '/includes/filters.php' );                // filters, hacks, etc, moved into the plugin
@@ -84,6 +85,7 @@ require_once( PMPRO_DIR . '/includes/checkout.php' );		        // Common functio
 require_once( PMPRO_DIR . '/includes/xmlrpc.php' );                 // xmlrpc methods
 require_once( PMPRO_DIR . '/includes/rest-api.php' );               // rest API endpoints
 require_once( PMPRO_DIR . '/includes/widgets.php' );                // widgets for PMPro
+require_once( PMPRO_DIR . '/includes/gateway-request-handlers.php' ); // gateway request handlers
 
 require_once( PMPRO_DIR . '/classes/class-pmpro-site-health.php' ); // Site Health information.
 

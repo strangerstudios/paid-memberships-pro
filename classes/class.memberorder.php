@@ -1368,6 +1368,11 @@
 				$pmpro_checkout_id = $this->checkout_id;
 			}
 
+			// Deprecating cancelled status with subscriptions table update. Change to success.
+			if ( $this->status == 'cancelled' ) {
+				$this->status = 'success';
+			}
+
 			//build query
 			if(!empty($this->id))
 			{
@@ -1470,6 +1475,10 @@
 					$this->id = $wpdb->insert_id;
 				do_action($after_action, $this);
 
+				// Create a subscription if we need to.
+				$this->maybe_create_subscription_for_order();
+
+
 				//Lets only run this once the update has been run successfully.
 				if ( $this->status !== $this->original_status ) {
 				
@@ -1528,6 +1537,12 @@
 			if(empty($this->id))
 				return false;
 
+			if ( 'cancelled' === $newstatus ) {
+				// Only cancel subscription, not order.
+				return $this->cancel();
+			}
+
+			$this->status = $newstatus;
 			$this->sqlQuery = "UPDATE $wpdb->pmpro_membership_orders SET status = '" . esc_sql($newstatus) . "' WHERE id = '" . $this->id . "' LIMIT 1";
 			
 			do_action('pmpro_update_order', $this);
@@ -1564,79 +1579,18 @@
 		}
 
 		/**
-		 * Cancel an order and call the cancel step of the gateway class if needed.
+		 * Call the cancel step of the order's subscription if needed.
 		 */
-		function cancel() {
-			global $wpdb;
-			
-			//only need to cancel on the gateway if there is a subscription id
-			if(empty($this->subscription_transaction_id)) {
-				//just mark as cancelled
-				$this->updateStatus("cancelled");
-				return true;
-			} else {
-				//get some data
-				$order_user = get_userdata($this->user_id);
-
-				//cancel orders for the same subscription
-				//Note: We do this early to avoid race conditions if and when the
-				//gateway send the cancel webhook after cancelling the subscription.				
-				$sqlQuery = $wpdb->prepare(
-					"UPDATE $wpdb->pmpro_membership_orders 
-						SET `status` = 'cancelled' 
-						WHERE user_id = %d 
-							AND membership_id = %d 
-							AND gateway = %s 
-							AND gateway_environment = %s 
-							AND subscription_transaction_id = %s 
-							AND `status` IN('success', '') ",					
-					$this->user_id,
-					$this->membership_id,
-					$this->gateway,
-					$this->gateway_environment,
-					$this->subscription_transaction_id
-				);
-				do_action('pmpro_update_order', $this);
-				$wpdb->query($sqlQuery);
-				do_action('pmpro_updated_order', $this);
-				
-				//cancel the gateway subscription first
-				if (is_object($this->Gateway)) {
-					$result = $this->Gateway->cancel( $this );
-				} else {
-					$result = false;
+		function cancel() {			
+			// Only need to cancel on the gateway if there is a subscription id.
+			if ( ! empty( $this->subscription_transaction_id ) ) {
+				$subscription = PMPro_Subscription::get_subscription_from_subscription_transaction_id( $this->subscription_transaction_id, $this->gateway, $this->gateway_environment );
+				if ( ! empty( $subscription ) ) {
+					return $subscription->cancel_at_gateway();
 				}
-
-				if($result == false) {
-					//there was an error, but cancel the order no matter what
-					$this->updateStatus("cancelled");
-
-					//we should probably notify the admin
-					$pmproemail = new PMProEmail();
-					$pmproemail->template = "subscription_cancel_error";
-					$pmproemail->data = array("body"=>"<p>" . sprintf(__("There was an error canceling the subscription for user with ID=%s. You will want to check your payment gateway to see if their subscription is still active.", 'paid-memberships-pro' ), strval($this->user_id)) . "</p><p>Error: " . $this->error . "</p>");
-					$pmproemail->data["body"] .= '<p>' . __('User Email', 'paid-memberships-pro') . ': ' . $order_user->user_email . '</p>';
-					$pmproemail->data["body"] .= '<p>' . __('Username', 'paid-memberships-pro') . ': ' . $order_user->user_login . '</p>';
-					$pmproemail->data["body"] .= '<p>' . __('User Display Name', 'paid-memberships-pro') . ': ' . $order_user->display_name . '</p>';
-					$pmproemail->data["body"] .= '<p>' . __('Order', 'paid-memberships-pro') . ': ' . $this->code . '</p>';
-					$pmproemail->data["body"] .= '<p>' . __('Gateway', 'paid-memberships-pro') . ': ' . $this->gateway . '</p>';
-					$pmproemail->data["body"] .= '<p>' . __('Subscription Transaction ID', 'paid-memberships-pro') . ': ' . $this->subscription_transaction_id . '</p>';
-					$pmproemail->data["body"] .= '<hr />';
-					$pmproemail->data["body"] .= '<p>' . __('Edit User', 'paid-memberships-pro') . ': ' . esc_url( add_query_arg( 'user_id', $this->user_id, self_admin_url( 'user-edit.php' ) ) ) . '</p>';
-					$pmproemail->data["body"] .= '<p>' . __('Edit Order', 'paid-memberships-pro') . ': ' . esc_url( add_query_arg( array( 'page' => 'pmpro-orders', 'order' => $this->id ), admin_url('admin.php' ) ) ) . '</p>';
-					$pmproemail->sendEmail(get_bloginfo("admin_email"));
-				} else {
-					//Note: status would have been set to cancelled by the gateway class. So we don't have to update it here.
-
-					//remove billing numbers in pmpro_memberships_users if the membership is still active					
-					$sqlQuery = "UPDATE $wpdb->pmpro_memberships_users SET initial_payment = 0, billing_amount = 0, cycle_number = 0 WHERE user_id = '" . $this->user_id . "' AND membership_id = '" . $this->membership_id . "' AND status = 'active'";
-					$wpdb->query($sqlQuery);
-				}
-				
-				
-				
-				return $result;
 			}
+				
+			return true;
 		}
 
 		/**
@@ -1800,7 +1754,71 @@
 
 			return apply_filters( 'pmpro_test_order_data', $this );
 		}
-		
+
+		/**
+		 * If a subscription does not already exist for this order, create one.
+		 *
+		 * @return bool True if a subscription was created, false if not.
+		 */
+		private function maybe_create_subscription_for_order() {
+			global $pmpro_level;
+
+			// Make sure that this order is a part of a subscription.
+			if ( empty( $this->subscription_transaction_id ) ) {
+				// No subscription transaction ID, so we don't need to create a subscription.
+				return false;
+			}
+
+			// Make sure that this order has been completed.
+			if ( 'success' !== $this->status ) {
+				// The order is not complete, so we shouldn't create a subscription yet.
+				return false;
+			}
+
+			$get_subscription_args = array(
+				'subscription_transaction_id' => $this->subscription_transaction_id,
+				'gateway'                     => $this->gateway,
+				'gateway_environment'  	      => $this->gateway_environment,
+			);
+			$existing_subscription = PMPro_Subscription::get_subscription( $get_subscription_args );
+			if ( ! empty( $existing_subscription ) ) {
+				// We already have a subscription for this order, so we don't need to create a new one.
+				return false;
+			}
+
+			if ( isset( $pmpro_level ) ) {
+				// We are processing a checkout. Get the level from the checkout.
+				$subscription_level = $this->getMembershipLevelAtCheckout();
+			} else {
+				// Not at checkout. Get the level from the database.
+				$subscription_level = $this->getMembershipLevel();
+			}
+
+			if ( empty( $subscription_level ) ) {
+				// We couldn't get level information, so we shouldn't create a subscription.
+				return false;
+			}
+
+			$create_subscription_args = array(
+				'user_id'                     => $this->user_id,
+				'membership_level_id'  		  => $this->membership_id,
+				'gateway'                     => $this->gateway,
+				'gateway_environment'  	      => $this->gateway_environment,
+				'subscription_transaction_id' => $this->subscription_transaction_id,
+				'status'                      => 'active',
+				'billing_amount'              => empty( $subscription_level->billing_amount ) ? 0.00 : $subscription_level->billing_amount,
+				'cycle_number'                => empty( $subscription_level->cycle_number ) ? 0 : $subscription_level->cycle_number,
+				'cycle_period'                => empty( $subscription_level->cycle_period ) ? 'Month' : $subscription_level->cycle_period,
+				'billing_limit'               => empty( $subscription_level->billing_limit ) ? 0 : $subscription_level->billing_limit,
+				'trial_amount'                => empty( $subscription_level->trial_amount ) ? 0.00 : $subscription_level->trial_amount,
+				'trial_limit'                 => empty( $subscription_level->trial_limit ) ? 0 : $subscription_level->trial_limit,
+				'next_payment_date'           => empty( $this->ProfileStartDate ) ? '' : $this->ProfileStartDate,
+			);
+
+			$new_subscription = PMPro_Subscription::create( $create_subscription_args );
+			return ! empty( $new_subscription );
+		}
+
 		/**
 		 * Does this order have any billing address fields set?
 		 * @since 2.8

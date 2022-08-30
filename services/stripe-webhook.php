@@ -376,84 +376,8 @@
 		}
 		elseif($pmpro_stripe_event->type == "customer.subscription.deleted")
 		{
-			//for one of our users? if they still have a membership for the same level, cancel it
-			$old_order = new MemberOrder();
-			$old_order->getLastMemberOrderBySubscriptionTransactionID( $pmpro_stripe_event->data->object->id );
-
-			if( ! empty( $old_order ) && ! empty( $old_order->id ) ) {
-				$user_id = $old_order->user_id;
-				$user = get_userdata($user_id);
-								
-				/**
-				 * Array of Stripe.com subscription IDs and the timestamp when they were configured as 'preservable'
-				 */
-				$preserve = get_user_meta( $user_id, 'pmpro_stripe_dont_cancel', true );
-				
-				// Asume we should cancel the membership
-				$cancel_membership = true;
-				
-				// Grab the subscription ID from the webhook
-				if ( !empty( $pmpro_stripe_event->data->object ) && 'subscription' == $pmpro_stripe_event->data->object->object ) {
-					
-					$subscr = $pmpro_stripe_event->data->object;
-					
-					// Check if there's a sub ID to look at (from the webhook)
-					// If it's in the list of preservable subscription IDs, don't delete it
-					if ( is_array( $preserve ) && in_array( $subscr->id, array_keys( $preserve ) ) ) {
-						
-						$logstr       .= "Stripe subscription ({$subscr->id}) has been flagged during Subscription Update (in user profile). Will NOT cancel the membership for {$user->display_name} ({$user->user_email})!\n";
-						$cancel_membership = false;
-						
-					}
-				}
-				
-				if(!empty($user->ID) && true === $cancel_membership ) {
-					do_action( "pmpro_stripe_subscription_deleted", $user->ID );
-					
-					if ( $old_order->status == "cancelled" ) {
-						$logstr .= "We've already processed this cancellation. Probably originated from WP/PMPro. (Order #{$old_order->id}, Subscription Transaction ID #{$old_order->subscription_transaction_id})\n";
-					} else if ( ! pmpro_hasMembershipLevel( $old_order->membership_id, $user->ID ) ) {
-						$logstr .= "This user has a different level than the one associated with this order. Their membership was probably changed by an admin or through an upgrade/downgrade. (Order #{$old_order->id}, Subscription Transaction ID #{$old_order->subscription_transaction_id})\n";
-					} else {
-						//if the initial payment failed, cancel with status error instead of cancelled					
-						pmpro_cancelMembershipLevel( $old_order->membership_id, $old_order->user_id, 'cancelled' );
-						
-						$logstr .= "Cancelled membership for user with id = {$old_order->user_id}. Subscription transaction id = {$old_order->subscription_transaction_id}.\n";
-						
-						//send an email to the member
-						$myemail = new PMProEmail();
-						$myemail->sendCancelEmail( $user, $old_order->membership_id );
-						
-						//send an email to the admin
-						$myemail = new PMProEmail();
-						$myemail->sendCancelAdminEmail( $user, $old_order->membership_id );
-					}
-					
-					// Try to delete the usermeta entry as it's (probably) stale
-					if ( isset( $preserve[$old_order->subscription_transaction_id])) {
-						unset( $preserve[$old_order->subscription_transaction_id]);
-						update_user_meta( $user_id, 'pmpro_stripe_dont_cancel', $preserve );
-					}
-					
-					$logstr .= "Subscription deleted for user ID #" . $user->ID . ". Event ID #" . $pmpro_stripe_event->id . ".";
-					pmpro_stripeWebhookExit();
-				} else {
-					$logstr .= "Stripe tells us they deleted the subscription, but for some reason we must ignore it. ";
-					
-					if ( false === $cancel_membership ) {
-						$logstr .= "The subscription has been flagged as one to not delete the user membership for.\n ";
-					} else {
-						$logstr .= "Perhaps we could not find a user here for that subscription. ";
-					}
-					
-					$logstr .= "Could also be a subscription managed by a different app or plugin. Event ID # {$pmpro_stripe_event->id}.";
-					pmpro_stripeWebhookExit();
-				}
-				
-			} else {
-				$logstr .= "Stripe tells us a subscription is deleted, but we could not find the order for that subscription. Could be a subscription managed by a different app or plugin. Event ID #" . $pmpro_stripe_event->id . ".";
-				pmpro_stripeWebhookExit();
-			}
+			$logstr .= pmpro_handle_subscription_cancellation_at_gateway( $pmpro_stripe_event->data->object->id, 'stripe', $livemode ? 'live' : 'sandbox' );
+			pmpro_stripeWebhookExit();
 		}
 		elseif( $pmpro_stripe_event->type == "charge.refunded" )
 		{			

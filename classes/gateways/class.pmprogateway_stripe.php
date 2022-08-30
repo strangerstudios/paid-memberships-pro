@@ -2160,6 +2160,47 @@ class PMProGateway_stripe extends PMProGateway {
 	}
 
 	/**
+	 * Pull subscription info from Stripe.
+	 *
+	 * @param PMPro_Subscription $subscription to pull data for.
+	 *
+	 * @return string|null Error message is returned if update fails.
+	 */
+	public function update_subscription_info( $subscription ) {
+		try {
+			$stripe_subscription = Stripe_Subscription::retrieve( $subscription->get_subscription_transaction_id() );
+		} catch ( \Throwable $e ) {
+			// Assume no subscription found.
+			return $e->getMessage();
+		} catch ( \Exception $e ) {
+			// Assume no subscription found.
+			return $e->getMessage();
+		}
+
+		if ( ! empty( $stripe_subscription ) ) {
+			$update_array = array(
+				'startdate' => date( 'Y-m-d H:i:s', intval( $stripe_subscription->created ) ),
+			);
+			if ( in_array( $stripe_subscription->status, array( 'trialing', 'active' ) ) ) {
+				// Subscription is active.
+				$update_array['status'] = 'active';
+				$update_array['next_payment_date'] = date( 'Y-m-d H:i:s', intval( $stripe_subscription->current_period_end ) );
+				if ( ! empty( $stripe_subscription->items->data[0]->price ) ) {
+					$stripe_subscription_price = $stripe_subscription->items->data[0]->price;
+					$update_array['billing_amount'] = $this->convert_unit_amount_to_price( $stripe_subscription_price->unit_amount );
+					$update_array['cycle_number']   = $stripe_subscription_price->recurring->interval_count;
+					$update_array['cycle_period']   = ucfirst( $stripe_subscription_price->recurring->interval );
+				}
+			} else {
+				// Subscription is no longer active.
+				$update_array['status'] = 'cancelled';
+				$update_array['enddate'] = date( 'Y-m-d H:i:s', intval( $stripe_subscription->ended_at ) );
+			}
+			$subscription->set( $update_array );
+		}
+	}
+
+	/**
 	 * Get the URL for a customer's Stripe Customer Portal.
 	 *
 	 * @since 2.8
@@ -2609,6 +2650,28 @@ class PMProGateway_stripe extends PMProGateway {
 		}
 
 		return $price_info['amount_flat'];
+	}
+
+	/**
+	 * Convert a unit amount (price in cents) into a decimal price.
+	 *
+	 * @param integer $unit_amount to be converted.
+	 * @return float
+	 */
+	private function convert_unit_amount_to_price( $unit_amount ) {
+		global $pmpro_currencies, $pmpro_currency;
+		$currency_unit_multiplier = 100; // ie 100 cents per USD.
+
+		// Account for zero-decimal currencies like the Japanese Yen.
+		if (
+			is_array( $pmpro_currencies[ $pmpro_currency ] ) &&
+			isset( $pmpro_currencies[ $pmpro_currency ]['decimals'] ) &&
+			$pmpro_currencies[ $pmpro_currency ]['decimals'] == 0 
+		) {
+			$currency_unit_multiplier = 1;
+		}
+
+		return floatval( $unit_amount / $currency_unit_multiplier );
 	}
 
 	/**
@@ -3618,6 +3681,30 @@ class PMProGateway_stripe extends PMProGateway {
 	}
 
 	/**
+	 * Cancels a subscription in Stripe.
+	 *
+	 * @param PMPro_Subscription $subscription to cancel.
+	 */
+	function cancel_subscription( $subscription ) {
+		try {
+			$stripe_subscription = Stripe_Subscription::retrieve( $subscription->get_subscription_transaction_id() );
+		} catch ( \Throwable $e ) {
+			//assume no subscription found
+			return false;
+		} catch ( \Exception $e ) {
+			//assume no subscription found
+			return false;
+		}
+
+		$success = false;
+		if ( $this->cancelSubscriptionAtGateway( $stripe_subscription ) ) {
+			$success = true;
+		}
+		$this->update_subscription_info( $subscription );
+		return $success;
+	}
+
+	/**
 	 * Helper method to cancel a subscription at Stripe and also clear up any upaid invoices.
 	 *
 	 * @since 1.8
@@ -3788,8 +3875,36 @@ class PMProGateway_stripe extends PMProGateway {
 		}
 
 		$this->setup_intent = $setup_intent;
+	}
 
-		return true;
+	public function get_next_payment_date( &$subscription ) {
+		// Get most recent order for this subscription.
+		$morder = $subscription->get_last_order();
+		if ( ! is_a( $morder, 'MemberOrder' ) || empty( $morder->timestamp ) ) {
+			// No valid order found.
+			return '0000-00-00 00:00:00';
+		}
+	
+		//check if this is a Stripe order with a subscription transaction id
+		if ( ! empty( $morder->id ) && ! empty( $morder->subscription_transaction_id ) && $morder->gateway == "stripe" ) {
+			//get the subscription and return the current_period end or false
+			$stripe_subscription = $morder->Gateway->getSubscription( $morder );
+
+			if ( ! empty( $stripe_subscription ) ) {
+				$customer = $morder->Gateway->getCustomer();
+				if ( ! $customer->delinquent && ! empty ( $stripe_subscription->current_period_end ) ) {
+					$timestamp = $stripe_subscription->current_period_end;
+				} elseif ( $customer->delinquent && ! empty( $stripe_subscription->current_period_start ) ) {
+					$timestamp = $stripe_subscription->current_period_start;
+				}
+			}
+		}
+
+		if ( empty( $timestamp ) ) {
+			return '0000-00-00 00:00:00';
+		} else {
+			return date( 'Y-m-d H:i:s', $timestamp );
+		}
 	}
 
 	/**

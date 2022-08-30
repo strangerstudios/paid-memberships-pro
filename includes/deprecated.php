@@ -10,23 +10,32 @@
  */
 function pmpro_init_check_for_deprecated_filters() {
 	global $wp_filter;
-	
-	// NOTE: Array is mapped new filter => old filter.
+
+	// Deprecated filter name => new filter name (or null if there is no alternative).
 	$pmpro_map_deprecated_filters = array(
-		'pmpro_getfile_extension_blocklist' => 'pmpro_getfile_extension_blacklist',
+		'pmpro_getfile_extension_blacklist' => 'pmpro_getfile_extension_blocklist',
 		'pmpro_default_field_group_label'   => 'pmprorh_section_header',
+		'pmpro_stripe_subscription_deleted' => null,
+		'pmpro_subscription_cancelled'      => null,
 	);
 	
-	foreach ( $pmpro_map_deprecated_filters as $new => $old ) {
+	foreach ( $pmpro_map_deprecated_filters as $old => $new ) {
 		if ( has_filter( $old ) ) {
-			/* translators: 1: the old hook name, 2: the new or replacement hook name */
-			trigger_error( sprintf( esc_html__( 'The %1$s hook has been deprecated in Paid Memberships Pro. Please use the %2$s hook instead.', 'paid-memberships-pro' ), $old, $new ) );
-			
-			// Add filters back using the new tag.
-			foreach( $wp_filter[$old]->callbacks as $priority => $callbacks ) {
-				foreach( $callbacks as $callback ) {
-					add_filter( $new, $callback['function'], $priority, $callback['accepted_args'] ); 
+			if ( ! empty( $new ) ) {
+				// We have an alternative filter. Let's show an error message and forward to that new filter.
+				/* translators: 1: the old hook name, 2: the new or replacement hook name */
+				trigger_error( sprintf( esc_html__( 'The %1$s hook has been deprecated in Paid Memberships Pro. Please use the %2$s hook instead.', 'paid-memberships-pro' ), $old, $new ) );
+				
+				// Add filters back using the new tag.
+				foreach( $wp_filter[$old]->callbacks as $priority => $callbacks ) {
+					foreach( $callbacks as $callback ) {
+						add_filter( $new, $callback['function'], $priority, $callback['accepted_args'] ); 
+					}
 				}
+			} else {
+				// We don't have an alternative filter. Let's just show an error message.
+				/* translators: 1: the old hook name */
+				trigger_error( sprintf( esc_html__( 'The %1$s hook has been deprecated in Paid Memberships Pro and may not be available in future versions.', 'paid-memberships-pro' ), $old ) );
 			}
 		}
 	}

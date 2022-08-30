@@ -5,7 +5,7 @@ namespace PMPro\Test_Support\Factories;
 use WP_UnitTest_Factory_For_Thing as Test_Factory;
 use WP_UnitTest_Generator_Sequence as Test_Sequence;
 
-class PMPro_LevelFactory extends Test_Factory {
+class PMPro_SubscriptionFactory extends Test_Factory {
 
 	/**
 	 * The DB column formats.
@@ -15,20 +15,22 @@ class PMPro_LevelFactory extends Test_Factory {
 	 * @var string[]
 	 */
 	private $_format = [
-		'id'                => '%d',
-		'name'              => '%s',
-		'description'       => '%s',
-		'confirmation'      => '%s',
-		'initial_payment'   => '%f',
-		'billing_amount'    => '%f',
-		'cycle_number'      => '%d',
-		'cycle_period'      => '%s',
-		'billing_limit'     => '%d',
-		'trial_amount'      => '%f',
-		'trial_limit'       => '%d',
-		'expiration_number' => '%d',
-		'expiration_period' => '%s',
-		'allow_signups'     => '%d',
+		'id'                          => '%d',
+		'user_id'                     => '%d',
+		'membership_level_id'         => '%d',
+		'gateway'                     => '%s',
+		'gateway_environment'         => '%s',
+		'subscription_transaction_id' => '%s',
+		'status'                      => '%s',
+		'startdate'                   => '%s',
+		'enddate'                     => '%s',
+		'next_payment_date'           => '%s',
+		'billing_amount'              => '%f',
+		'cycle_number'                => '%d',
+		'cycle_period'                => '%s',
+		'billing_limit'               => '%d',
+		'trial_amount'                => '%f',
+		'trial_limit'                 => '%d',
 	];
 
 	/**
@@ -50,23 +52,25 @@ class PMPro_LevelFactory extends Test_Factory {
 
 		global $wpdb;
 
-		$this->_table = $wpdb->pmpro_membership_levels;
+		$this->_table = $wpdb->pmpro_subscriptions;
 
 		$this->default_generation_definitions = [
-			'id'                => '',
-			'name'              => new Test_Sequence( 'Level name %s' ),
-			'description'       => new Test_Sequence( 'Level description %s' ),
-			'confirmation'      => '',
-			'initial_payment'   => 1,
-			'billing_amount'    => 1,
-			'cycle_number'      => 1,
-			'cycle_period'      => new Test_Sequence( 'Level cycle period %s' ),
-			'billing_limit'     => 0,
-			'trial_amount'      => 0,
-			'trial_limit'       => 0,
-			'expiration_number' => 0,
-			'expiration_period' => '',
-			'allow_signups'     => 1,
+			'id'                          => 0,
+			'user_id'                     => 0,
+			'membership_level_id'         => 0,
+			'gateway'                     => 'check',
+			'gateway_environment'         => 'sandbox',
+			'subscription_transaction_id' => new Test_Sequence( 'sub_%s' ),
+			'status'                      => 'active',
+			'startdate'                   => gmdate( 'Y-m-d H:i:s' ),
+			'enddate'                     => '',
+			'next_payment_date'           => gmdate( 'Y-m-d H:i:s', strtotime( '+1 year' ) ),
+			'billing_amount'              => 0,
+			'cycle_number'                => 0,
+			'cycle_period'                => 'Month',
+			'billing_limit'               => 0,
+			'trial_amount'                => 0,
+			'trial_limit'                => 0,
 		];
 	}
 
