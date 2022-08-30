@@ -4,7 +4,7 @@ Tags: memberships, members, subscriptions, ecommerce, user registration, member,
 Requires at least: 5.2
 Tested up to: 6.0.1
 Requires PHP: 5.6
-Stable tag: 2.9.3
+Stable tag: 2.9.4
 
 WordPress membership plugin: restrict content, accept member subscriptions with recurring payment. Includes user registration, login, & profile fields
 
@@ -156,6 +156,14 @@ Not sure? You can find out by doing a bit a research.
 9. Membership Account page, display all sections or show specific sections using shortcode attributes.
 
 == Changelog ==
+= 2.9.4 - 2022-08-30 =
+* BUG FIX/ENHANCEMENT: Added MMPU compatibility for some crons. #2211 (@dparker1005)
+* BUG FIX/ENHANCEMENT: The default "More Information" group name/label is now translatable. #2214 (@mircobabini)
+* BUG FIX/ENHANCEMENT: Added JavaScript code to prevent duplicate clicking of the cancel button. #2216 (@mircobabini)
+* BUG FIX/ENHANCEMENT: Fixed PHP notice on the update billing page. #2219 (@mircobabini)
+* BUG FIX/ENHANCEMENT: Avoiding line breaks in very long labels for checkbox fields. #2221 (@mircobabini)
+* BUG FIX: Fixed issue with processing customer.subscription.deleted webhook events from Stripe with newer versions of PHP. #2217 (@dparker1005)
+
 = 2.9.3 - 2022-08-25 =
 * ENHANCEMENT: Added pmpro_add_user_field_where( $where, $field ) and pmpro_add_user_field( $field, $where ) filters.
 * BUG FIX/ENHANCEMENT: Added MMPU support for some emails so correct level information is shown. #2200 (@dparker1005)
