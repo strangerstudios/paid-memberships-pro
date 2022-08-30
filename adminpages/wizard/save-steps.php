@@ -14,7 +14,7 @@ function pmpro_init_save_wizard_data() {
 	// Clear things up on the completed page.
 	if ( $_REQUEST['page'] === 'done' ) {
 		delete_option( 'pmpro_wizard_collect_payments' );
-		update_option( 'pmpro_wizard_step', true ); // Update it to be completed as we've reached this page.
+		update_option( 'pmpro_wizard_step', 'done' ); // Update it to be completed as we've reached this page.
 	}
 
 	// Only run the code on submit.
