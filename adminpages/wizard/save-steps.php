@@ -11,6 +11,12 @@ function pmpro_init_save_wizard_data() {
 		return;
 	}
 
+	// Clear things up on the completed page.
+	if ( $_REQUEST['page'] === 'done' ) {
+		delete_option( 'pmpro_wizard_collect_payments' );
+		update_option( 'pmpro_wizard_step', true ); // Update it to be completed as we've reached this page.
+	}
+
 	// Only run the code on submit.
 	if ( empty( $_REQUEST['submit'] ) ) {
 		return;
@@ -264,13 +270,7 @@ function pmpro_init_save_wizard_data() {
 		wp_redirect( $next_step );
 	}
 
-	/**
-	 * Final Step, completed. ///MIGHT NOT NEED THIS.
-	 */
-	if ( $_REQUEST['wizard-action'] == 'step-5' ) {
-		// Do stuff
-		delete_option( 'pmpro_wizard_collect_payments' );
-	}
+	// Final step is handled further up as no form submission is needed, but rather clean things up on page load.
 
 }
 add_action( 'admin_init', 'pmpro_init_save_wizard_data' );
