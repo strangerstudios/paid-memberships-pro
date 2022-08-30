@@ -25,16 +25,22 @@
 				<div class="pmpro-wizard__field">
 					<h2 class="pmpro-wizard__section-title"><?php esc_html_e( 'Configure Your Payment Gateway', 'paid-memberships-pro' ); ?></h2>
 					<label class="pmpro-wizard__label-block">
-						<input type="radio" name="gateway" value="stripe">
+						<input type="radio" name="gateway" value="stripe" <?php checked( 'stripe' === pmpro_getOption( 'gateway', true ) ); ?>>
 						<?php esc_html_e( 'Stripe', 'paid-memberships-pro' ); ?>
 					</label>
 					<div class="pmpro-wizard__stripe admin_page_pmpro-paymentsettings" style="display:none;">
-						<p>
-							<a href='#' class='pmpro-stripe-connect'>
-								<span>Connect with Stripe</span>
-							</a>
-						</p>
-						<p style="font-size:12px;text-transform:italic;">If you do not already have a Stripe account, we recommend to set this up later.</p>
+					<p style="font-size:12px;text-transform:italic;"><?php esc_html_e( 'After clicking "Submit and Continue", you will be redirected to Stripe to finish connecting PMPro to your Stripe account. If you do not already have a Stripe account and do not want to set one up at this time, please select "Other/Setup Later" instead.', 'paid-memberships-pro' ); ?></p>
+					<p style="font-size:12px;text-transform:italic;">
+						<?php
+						$allowed_webhook_message_html = array(
+							'a' => array(
+								'href'   => array(),
+								'target' => array(),
+							),
+						);
+						printf( wp_kses( __( 'After connecting to Stripe, it is important to <a href="%s" target="_blank">set up your Stripe webhooks</a> to make sure that PMPro is notified of events that happen in Stripe.', 'paid-memberships-pro' ), $allowed_webhook_message_html ), 'https://www.paidmembershipspro.com/gateway/stripe/setup/#webhook' );
+						?>
+					</p>
 					</div>
 				</div>
 				<!-- <div class="pmpro-wizard__field">
