@@ -120,18 +120,12 @@ const all_levels = [{ value: 0, label: "Non-Members" }].concat( pmpro.all_level_
                   </PanelBody>
                   </div>
                   <InnerBlocks
-                      renderAppender={ () => (
-                        <InnerBlocks.ButtonBlockAppender />
-                      ) }
                       templateLock={ false }
                   />
                 </div>,
                 ! isSelected && <div className="pmpro-block-require-membership-element" >
                   <span className="pmpro-block-title">{ __( 'Membership Required', 'paid-memberships-pro' ) }</span>
                   <InnerBlocks
-                      renderAppender={ () => (
-                        <InnerBlocks.ButtonBlockAppender />
-                      ) }
                       templateLock={ false }
                   />
                 </div>,

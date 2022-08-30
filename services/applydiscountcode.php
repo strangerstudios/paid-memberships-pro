@@ -135,21 +135,34 @@
 			<?php
 			$html = [];
 
-			$html[] = wp_kses_post( sprintf( __( 'The <strong>%s</strong> code has been applied to your order.', 'paid-memberships-pro' ), $discount_code ) );
+			$html[] = '<p class="' . pmpro_get_element_class( 'pmpro_level_discount_applied' ) . '">' . wp_kses_post( sprintf( __( 'The <strong>%s</strong> code has been applied to your order.', 'paid-memberships-pro' ), $discount_code ) ) . '</div>';
 
 			if ( count( $code_levels ) <= 1 ) {
 				$code_level = empty( $code_levels ) ? null : $code_levels[0];
 
-				$html[] = pmpro_getLevelCost( $code_level );
-				$html[] = pmpro_getLevelExpiration( $code_level );
+				$level_cost_text = pmpro_getLevelCost( $code_level );
+				if ( ! empty( $level_cost_text ) ) {
+					$html[] = '<div class="' . pmpro_get_element_class( 'pmpro_level_cost_text' ) . '">' . wpautop( $level_cost_text ) . '</div>';
+				}
+
+				$level_expiration_text = pmpro_getLevelExpiration( $code_level );
+				if ( ! empty( $level_expiration_text ) ) {
+					$html[] = '<div class="' . pmpro_get_element_class( 'pmpro_level_expiration_text' ) . '">' . wpautop( $level_expiration_text ) . '</div>';
+				}
 			} else {
-				$html[] = pmpro_getLevelsCost( $code_levels );
-				$html[] = pmpro_getLevelsExpiration( $code_levels );
+				$levels_cost_text = pmpro_getLevelsCost( $code_levels );
+				if ( ! empty( $levels_cost_text ) ) {
+					$html[] = '<div class="' . pmpro_get_element_class( 'pmpro_level_cost_text' ) . '">' . wpautop( $levels_cost_text ) . '</div>';
+				}
+
+				$levels_expiration_text = pmpro_getLevelsExpiration( $code_levels );
+				if ( ! empty( $levels_expiration_text ) ) {
+					$html[] = '<div class="' . pmpro_get_element_class( 'pmpro_level_expiration_text' ) . '">' . wpautop( $levels_expiration_text ) . '</div>';
+				}
 			}
 
 			$html = array_filter( $html );
 			$html = implode( "\n\n", $html );
-			$html = wpautop( $html );
 			?>
 				jQuery('#pmpro_level_cost').html( <?php echo wp_json_encode( wp_kses_post( $html ) ); ?> );
 			<?php

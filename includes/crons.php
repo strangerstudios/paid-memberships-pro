@@ -28,6 +28,10 @@ function pmpro_get_crons() {
 			'interval'  => 'daily',
 			'timestamp' => strtotime( '10:30:00' ) - ( get_option( 'gmt_offset' ) * HOUR_IN_SECONDS ),
 		],
+		'pmpro_cron_delete_tmp'          => [
+			'interval'  => 'daily',
+			'timestamp' => strtotime( '10:30:00' ) - ( get_option( 'gmt_offset' ) * HOUR_IN_SECONDS ),
+		],
 		'pmpro_license_check_key'                  => [
 			'interval' => 'monthly',
 		],
