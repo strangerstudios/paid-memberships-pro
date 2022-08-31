@@ -131,6 +131,19 @@
 				return false;
 			}
 
+			$send_member_emails_admin = apply_filters( 'pmpro_send_member_emails_admin', true );
+
+			if( pmpro_get_pause_mode() && $send_member_emails_admin ) {
+				//Check if it's a member email and send it to the admin instead
+				if ( strpos( $this->template, 'admin' ) !== false ) {
+					//Admin template, do nothing
+				} else {
+					//Member template, send to admin
+					$this->email = get_bloginfo( 'admin_email' );
+					$this->subject = __('Redirected: ', 'paid-memberships-pro').$this->subject;
+				}
+			}
+
 			$this->email = apply_filters("pmpro_email_recipient", $temail->email, $this);
 			$this->from = apply_filters("pmpro_email_sender", $temail->from, $this);
 			$this->fromname = apply_filters("pmpro_email_sender_name", $temail->fromname, $this);
