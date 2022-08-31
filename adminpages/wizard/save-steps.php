@@ -218,8 +218,10 @@ function pmpro_init_save_wizard_data() {
 			return;
 		}
 
-		$pmpro_currency = sanitize_text_field( $_REQUEST['currency'] );		
-		pmpro_setOption( 'currency', $pmpro_currency );
+		if ( ! empty( $_REQUEST['currency'] ) ) {
+			$pmpro_currency = sanitize_text_field( $_REQUEST['currency'] );
+			pmpro_setOption( 'currency', $pmpro_currency );
+		}
 
 		$next_step = add_query_arg(
 			array(
@@ -228,6 +230,22 @@ function pmpro_init_save_wizard_data() {
 			),
 			admin_url( 'admin.php' )
 		);
+
+		// If Stripe is not already set up, and the user wants to use Stripe, then redirect them to Stripe Connect.
+		$environment = apply_filters( 'pmpro_wizard_stripe_environment', 'live' );
+		if ( ! empty( $_REQUEST['gateway'] ) && 'stripe' === $_REQUEST['gateway'] && ! PMProGateway_Stripe::has_connect_credentials( $environment ) && ! PMProGateway_Stripe::using_legacy_keys() ) {
+			$connect_url_base = apply_filters( 'pmpro_stripe_connect_url', 'https://connect.paidmembershipspro.com' );
+			$connect_url = add_query_arg(
+				array(
+					'action' => 'authorize',
+					'gateway_environment' => $environment,
+					'return_url' => rawurlencode( $next_step ),
+				),
+				$connect_url_base
+			);
+			wp_redirect( $connect_url );
+			exit;
+		}
 
 		// Save the step should they come back at a later stage.
 		// update_option( 'pmpro_wizard_step', '4' );

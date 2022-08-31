@@ -1331,7 +1331,12 @@ class PMProGateway_stripe extends PMProGateway {
 			delete_option( 'pmpro_stripe_secretkey' );
 			delete_option( 'pmpro_stripe_publishablekey' );
 
-			wp_redirect( admin_url( 'admin.php?page=pmpro-paymentsettings' ) );
+			unset( $_GET['pmpro_stripe_connected'] );
+			unset( $_GET['pmpro_stripe_connected_environment'] );
+			unset( $_GET['pmpro_stripe_user_id'] );
+			unset( $_GET['pmpro_stripe_access_token'] );
+
+			wp_redirect( admin_url( sprintf( 'admin.php?%s', http_build_query( $_GET ) ) ) );
 			exit;
 		}
 
