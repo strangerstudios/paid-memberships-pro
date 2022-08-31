@@ -65,7 +65,8 @@ global $pmpro_pages;
 					<p class="pmpro_wizard__submit">
 						<?php wp_nonce_field( 'pmpro_wizard_step_1_nonce', 'pmpro_wizard_step_1_nonce' ); ?>
 						<input type="hidden" name="wizard-action" value="step-1"/>
-						<input type="submit" name="submit" class="button button-primary button-hero" value="<?php esc_attr_e( 'Submit and Continue', 'paid-memberships-pro' ); ?>" />
+						<input type="submit" name="submit" class="button button-primary button-hero" value="<?php esc_attr_e( 'Submit and Continue', 'paid-memberships-pro' ); ?>" /><br/>
+						<span class="pmpro_wizard__skip" onclick="window.location.href='/wp-admin/admin.php?page=pmpro-wizard&step=payments';"><?php esc_html_e( 'Skip', 'paid-memberships-pro' ); ?></span>
 					</p>
 				</form>
 			</div> <!-- end pmpro-wizard__step-1 -->

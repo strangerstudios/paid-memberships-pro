@@ -1,9 +1,9 @@
 <?php
 /**
- * Step 2 file content. [Memberships]
+ * Step 3 file content. [Memberships]
  */
 ?>
-<div class="pmpro-wizard__step pmpro-wizard__step-2">
+<div class="pmpro-wizard__step pmpro-wizard__step-3">
 				<div class="pmpro-wizard__step-header">
 					<h1><?php esc_html_e( 'Membership Levels', 'paid-memberships-pro' ); ?></h1>
 					<p><?php esc_html_e( 'Set up free and paid membership levels from this wizard. You can set up more membership levels with additional settings later.', 'paid-memberships-pro' ); ?></p>
@@ -58,12 +58,13 @@
 					</div>
 				</div>
 				<div class="pmpro-wizard__field" style="background:#F7F7F7;">
-					<p><img src="<?php echo esc_url( plugins_url( 'images/lock.svg', dirname( __DIR__ ) ) ); ?>" style="vertical-align:top"/> <?php esc_html_e( 'Content restriction settings may be set after the setup wizard.', 'paid-memberships-pro' ); ?></p>
+					<p><img src="<?php echo esc_url( PMPRO_URL . '/images/lock.svg' ); ?>" style="vertical-align:top"/> <?php esc_html_e( 'Content restriction settings may be set after the setup wizard.', 'paid-memberships-pro' ); ?></p>
 				</div>
 				<p class="pmpro_wizard__submit">
-					<?php wp_nonce_field( 'pmpro_wizard_step_2_nonce', 'pmpro_wizard_step_2_nonce' ); ?>
-					<input type="hidden" name="wizard-action" value="step-2"/>
-					<input type="submit" name="submit" class="button button-primary button-hero" value="<?php esc_attr_e( 'Submit and Continue', 'paid-memberships-pro' ); ?>" />
+					<?php wp_nonce_field( 'pmpro_wizard_step_3_nonce', 'pmpro_wizard_step_3_nonce' ); ?>
+					<input type="hidden" name="wizard-action" value="step-3"/>
+					<input type="submit" name="submit" class="button button-primary button-hero" value="<?php esc_attr_e( 'Submit and Continue', 'paid-memberships-pro' ); ?>" /><br/>
+					<span class="pmpro_wizard__skip" onclick="window.location.href='/wp-admin/admin.php?page=pmpro-wizard&step=advanced';"><?php esc_html_e( 'Skip', 'paid-memberships-pro' ); ?></span>
 				</p>
 				</form>
-			</div> <!-- end pmpro-wizard__step-2 -->
+			</div> <!-- end pmpro-wizard__step-3 -->

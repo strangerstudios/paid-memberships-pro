@@ -9,9 +9,9 @@
 		$addon_list = $addon_cats['popular'];
 	}
 
-	$test = pmpro_getAddonBySlug( 'pmpro-approvals');
+	// Did they choose collect payments? If so, show a nudge to complete the gateway setup.
+	$configure_payment = pmpro_getOption( 'wizard_collect_payment', true );
 
-	// var_dump( $test );
 ?>
 <div class="pmpro-wizard__step pmpro-wizard__step-4">
 				<div class="pmpro-wizard__step-header">
@@ -48,8 +48,18 @@
 						<?php esc_html_e( 'Add more features to your membership site.', 'paid-memberships-pro' ); ?></p>
 					</div>
 					<div class="pmpro-wizard__col">
-						<a href="#" target="_blank" class="button button-primary button-hero"><?php esc_html_e( 'View available Add Ons', 'paid-memberships-pro' ); ?></a>
+						<a href="<?php echo esc_url( admin_url( 'admin.php?page=pmpro-addons' ) ); ?>" class="button button-primary button-hero"><?php esc_html_e( 'View available Add Ons', 'paid-memberships-pro' ); ?></a>
 					</div>
+
+					<?php if ( $configure_payment ) { ?>
+						<div class="pmpro-wizard__col">
+							<p><span class="pmpro-wizard__subtitle"><?php esc_html_e( 'Payments', 'paid-memberships-pro' ); ?></span><br>
+							<?php esc_html_e( 'Finish configuring your payment gateway.', 'paid-memberships-pro' ); ?></p>
+						</div>
+						<div class="pmpro-wizard__col">
+							<a href="<?php echo esc_url( admin_url( 'admin.php?page=pmpro-paymentsettings' ) ); ?>" class="button button-hero"><?php esc_html_e( 'View settings', 'paid-memberships-pro' ); ?></a>
+						</div>
+					<?php } ?>
 
 					<div class="pmpro-wizard__col">
 						<p><span class="pmpro-wizard__subtitle"><?php esc_html_e( 'Documentation', 'paid-memberships-pro' ); ?></span><br>
@@ -58,7 +68,6 @@
 					<div class="pmpro-wizard__col">
 						<a href="https://www.paidmembershipspro.com/documentation/" target="_blank" class="button button-hero"><?php esc_html_e( 'View docs', 'paid-memberships-pro' ); ?></a>
 					</div>
-					<p style="text-align:center;"><?php _e( sprintf( "Need Help getting started? %s", "<a href='https://www.paidmembershipspro.com/documentation/initial-plugin-setup/' target='_blank'>" . esc_html__( 'click here', 'paid-memberships-pro' ) . "</a>"), 'paid-memberships-pro' ); ?></p>
 				</div>
 				<script>
 					jQuery(document).ready(function(){

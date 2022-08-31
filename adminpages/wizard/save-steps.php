@@ -81,17 +81,17 @@ function pmpro_init_save_wizard_data() {
 
 		// Figure out if we have to skip over step 3 or not.
 		if ( ! empty( $_REQUEST['collect_payments'] ) ) {
-			$collect_payments_settings = true;
+			pmpro_setOption( 'wizard_collect_payment', true );
+			$step = 'payments';
 		} else {
-			$collect_payments_settings = false;
+			pmpro_setOption( 'wizard_collect_payment', false );
+			$step = 'memberships';
 		}
-
-		update_option( 'pmpro_wizard_collect_payments', $collect_payments_settings );
 
 		$next_step = add_query_arg(
 			array(
 				'page' => 'pmpro-wizard',
-				'step' => 'memberships',
+				'step' => $step,
 			),
 			admin_url( 'admin.php' )
 		);
@@ -102,12 +102,58 @@ function pmpro_init_save_wizard_data() {
 	}
 
 	/**
-	 * Memberships Step
+	 * Payment Settings Step
 	 */
 	if ( $_REQUEST['wizard-action'] == 'step-2' ) {
-		global $wpdb;
 
 		if ( ! wp_verify_nonce( $_REQUEST['pmpro_wizard_step_2_nonce'], 'pmpro_wizard_step_2_nonce' ) ) {
+			return;
+		}
+
+		if ( ! empty( $_REQUEST['currency'] ) ) {
+			$pmpro_currency = sanitize_text_field( $_REQUEST['currency'] );
+			pmpro_setOption( 'currency', $pmpro_currency );
+		}
+
+		$next_step = add_query_arg(
+			array(
+				'page' => 'pmpro-wizard',
+				'step' => 'memberships',
+			),
+			admin_url( 'admin.php' )
+		);
+
+		// If Stripe is not already set up, and the user wants to use Stripe, then redirect them to Stripe Connect.
+		$environment = apply_filters( 'pmpro_wizard_stripe_environment', 'test' );
+		if ( ! empty( $_REQUEST['gateway'] ) && 'stripe' === $_REQUEST['gateway'] && ! PMProGateway_Stripe::has_connect_credentials( $environment ) && ! PMProGateway_Stripe::using_legacy_keys() ) {
+			$connect_url_base = apply_filters( 'pmpro_stripe_connect_url', 'https://connect.paidmembershipspro.com' );
+			$connect_url = add_query_arg(
+				array(
+					'action' => 'authorize',
+					'gateway_environment' => $environment,
+					'return_url' => rawurlencode( $next_step ),
+				),
+				$connect_url_base
+			);
+			wp_redirect( $connect_url );
+			exit;
+		}
+
+		// Save the step should they come back at a later stage.
+		// update_option( 'pmpro_wizard_step', '4' );
+		wp_redirect( $next_step );
+
+	}
+
+
+
+	/**
+	 * Memberships Step
+	 */
+	if ( $_REQUEST['wizard-action'] == 'step-3' ) {
+		global $wpdb;
+
+		if ( ! wp_verify_nonce( $_REQUEST['pmpro_wizard_step_3_nonce'], 'pmpro_wizard_step_3_nonce' ) ) {
 			return;
 		}
 
@@ -186,18 +232,10 @@ function pmpro_init_save_wizard_data() {
 			}
 		}
 
-        $collect_payments = get_option( 'pmpro_wizard_collect_payments' );
-
-        if ( $collect_payments ) {
-            $step = 'payments';
-        } else {
-            $step = 'advanced';
-        }
-
 		$next_step = add_query_arg(
 			array(
 				'page' => 'pmpro-wizard',
-				'step' => $step,
+				'step' => 'advanced',
 			),
 			admin_url( 'admin.php' )
 		);
@@ -208,50 +246,6 @@ function pmpro_init_save_wizard_data() {
 
 		// Now we can redirect to the next step we might need.
 	} // End of step 2.
-
-	/**
-	 * Payment Settings Step
-	 */
-	if ( $_REQUEST['wizard-action'] == 'step-3' ) {
-
-		if ( ! wp_verify_nonce( $_REQUEST['pmpro_wizard_step_3_nonce'], 'pmpro_wizard_step_3_nonce' ) ) {
-			return;
-		}
-
-		if ( ! empty( $_REQUEST['currency'] ) ) {
-			$pmpro_currency = sanitize_text_field( $_REQUEST['currency'] );
-			pmpro_setOption( 'currency', $pmpro_currency );
-		}
-
-		$next_step = add_query_arg(
-			array(
-				'page' => 'pmpro-wizard',
-				'step' => 'advanced',
-			),
-			admin_url( 'admin.php' )
-		);
-
-		// If Stripe is not already set up, and the user wants to use Stripe, then redirect them to Stripe Connect.
-		$environment = apply_filters( 'pmpro_wizard_stripe_environment', 'live' );
-		if ( ! empty( $_REQUEST['gateway'] ) && 'stripe' === $_REQUEST['gateway'] && ! PMProGateway_Stripe::has_connect_credentials( $environment ) && ! PMProGateway_Stripe::using_legacy_keys() ) {
-			$connect_url_base = apply_filters( 'pmpro_stripe_connect_url', 'https://connect.paidmembershipspro.com' );
-			$connect_url = add_query_arg(
-				array(
-					'action' => 'authorize',
-					'gateway_environment' => $environment,
-					'return_url' => rawurlencode( $next_step ),
-				),
-				$connect_url_base
-			);
-			wp_redirect( $connect_url );
-			exit;
-		}
-
-		// Save the step should they come back at a later stage.
-		// update_option( 'pmpro_wizard_step', '4' );
-		wp_redirect( $next_step );
-
-	}
 
 	/**
 	 * Advanced Settings Step

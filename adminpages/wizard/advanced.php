@@ -51,7 +51,8 @@ $wisdom_tracking = pmpro_getOption( 'wisdom_opt_out', true );
 		<p class="pmpro_wizard__submit">
 			<?php wp_nonce_field( 'pmpro_wizard_step_4_nonce', 'pmpro_wizard_step_4_nonce' ); ?>
 			<input type="hidden" name="wizard-action" id="wizard-action" value="step-4"/>
-			<input type="submit" name="submit" class="button button-primary button-hero" value="<?php esc_attr_e( 'Submit and Continue', 'paid-memberships-pro' ); ?>" />
+			<input type="submit" name="submit" class="button button-primary button-hero" value="<?php esc_attr_e( 'Submit and Continue', 'paid-memberships-pro' ); ?>" /><br/>
+			<span class="pmpro_wizard__skip" onclick="window.location.href='/wp-admin/admin.php?page=pmpro-wizard&step=done';"><?php esc_html_e( 'Skip', 'paid-memberships-pro' ); ?></span>
 		</p>
 	</form>
 </div> <!-- end pmpro-wizard__step-4 -->

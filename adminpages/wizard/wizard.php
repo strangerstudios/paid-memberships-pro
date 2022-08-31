@@ -18,8 +18,8 @@ if ( ! empty( $_REQUEST['step'] ) ) {
 				<?php
 					$setup_steps = array(
 						'general' => __( 'General Info', 'paid-memberships-pro' ),
-						'memberships' => __( 'Memberships', 'paid-memberships-pro' ),
 						'payments' => __( 'Payments', 'paid-memberships-pro' ),
+						'memberships' => __( 'Memberships', 'paid-memberships-pro' ),
 						'advanced' => __( 'Advanced', 'paid-memberships-pro' ),
 						'done' => __( 'All Set!', 'paid-memberships-pro' ),
 					);
@@ -61,7 +61,7 @@ if ( ! empty( $_REQUEST['step'] ) ) {
 			}
 			
 		?>
-		<p class="pmpro-wizard__exit"><a href="#"><?php esc_html_e( 'Exit Wizard and Return to Dashboard', 'paid-memberships-pro' ); ?></a></p>
+		<p class="pmpro-wizard__exit"><a href="<?php echo esc_url( admin_url( '/admin.php?page=pmpro-dashboard' ) ); ?>"><?php esc_html_e( 'Exit Wizard and Return to Dashboard', 'paid-memberships-pro' ); ?></a></p>
 	</div> <!-- end pmpro-wizard__container -->
 </div> <!-- end pmpro-wizard -->
 <?php

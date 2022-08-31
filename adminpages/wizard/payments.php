@@ -1,4 +1,4 @@
-<div class="pmpro-wizard__step pmpro-wizard__step-3">
+<div class="pmpro-wizard__step pmpro-wizard__step-2">
 				<div class="pmpro-wizard__step-header">
 					<h1><?php esc_html_e( 'Payment Settings', 'paid-memberships-pro' ); ?></h1>
 				</div>
@@ -56,7 +56,7 @@
 					</label>
 				</div>
 				<div class="pmpro-wizard__field" style="background-color:#F7F7F7;">
-					<p><img src="<?php echo plugins_url( '/images/credit-card.svg', dirname( __DIR__ ) ); ?>" style="vertical-align:middle;"/> Payment gateways may be configured under "Payment Gateway & SSL Settings".</p>
+					<p><img src="<?php echo esc_url( PMPRO_URL . '/images/credit-card.svg' ); ?>" style="vertical-align:middle;"/> Payment gateways may be configured under "Payment Gateway & SSL Settings".</p>
 				</div>
 				<script>
 					jQuery(document).ready(function(){
@@ -72,9 +72,10 @@
 					});
 				</script>
 				<p class="pmpro_wizard__submit">
-					<?php wp_nonce_field( 'pmpro_wizard_step_3_nonce', 'pmpro_wizard_step_3_nonce' ); ?>
-					<input type="hidden" name="wizard-action" value="step-3"/>
-					<input type="submit" name="submit" class="button button-primary button-hero" value="<?php esc_attr_e( 'Submit and Continue', 'paid-memberships-pro' ); ?>" />
+					<?php wp_nonce_field( 'pmpro_wizard_step_2_nonce', 'pmpro_wizard_step_2_nonce' ); ?>
+					<input type="hidden" name="wizard-action" value="step-2"/>
+					<input type="submit" name="submit" class="button button-primary button-hero" value="<?php esc_attr_e( 'Submit and Continue', 'paid-memberships-pro' ); ?>" /><br/>
+					<span class="pmpro_wizard__skip" onclick="window.location.href='/wp-admin/admin.php?page=pmpro-wizard&step=memberships';"><?php esc_html_e( 'Skip', 'paid-memberships-pro' ); ?></span>
 				</p>
 				</form>
-			</div> <!-- end pmpro-wizard__step-3 -->
+			</div> <!-- end pmpro-wizard__step-2 -->
