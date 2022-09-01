@@ -67,7 +67,8 @@ function pmpro_get_capability_defs($role)
         'pmpro_orders',
         'pmpro_orderscsv',
         'pmpro_discountcodes',
-        'pmpro_updates',
+        'pmpro_userfields',
+        'pmpro_updates'
     );
 
     return apply_filters( "pmpro_assigned_{$role}_capabilities", $cap_array);

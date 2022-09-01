@@ -9,7 +9,7 @@ define('PMPRO_BENCHMARK', true);
 if (!defined('PMPRO_BENCHMARK'))
 	define('PMPRO_BENCHMARK', false);
 
-$start_memory = memory_get_usage(true);;
+$start_memory = memory_get_usage(true);
 $start_time = microtime(true);
 
 if (true === PMPRO_BENCHMARK)

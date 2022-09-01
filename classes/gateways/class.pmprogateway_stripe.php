@@ -261,7 +261,6 @@ class PMProGateway_stripe extends PMProGateway {
 			'use_ssl',
 			'tax_state',
 			'tax_rate',
-			'accepted_credit_cards',
 			'stripe_payment_request_button',
 		);
 
@@ -842,18 +841,13 @@ class PMProGateway_stripe extends PMProGateway {
 		//global vars
 		global $pmpro_requirebilling, $pmpro_show_discount_code, $discount_code, $CardType, $AccountNumber, $ExpirationMonth, $ExpirationYear;
 
-		//get accepted credit cards
-		$pmpro_accepted_credit_cards        = pmpro_getOption( "accepted_credit_cards" );
-		$pmpro_accepted_credit_cards        = explode( ",", $pmpro_accepted_credit_cards );
-		$pmpro_accepted_credit_cards_string = pmpro_implodeToEnglish( $pmpro_accepted_credit_cards );
-
 		//include ours
 		?>
         <div id="pmpro_payment_information_fields" class="<?php echo pmpro_get_element_class( 'pmpro_checkout', 'pmpro_payment_information_fields' ); ?>"
 		     <?php if ( ! $pmpro_requirebilling || apply_filters( "pmpro_hide_payment_information_fields", false ) ) { ?>style="display: none;"<?php } ?>>
             <h3>
                 <span class="<?php echo pmpro_get_element_class( 'pmpro_checkout-h3-name' ); ?>"><?php esc_html_e( 'Payment Information', 'paid-memberships-pro' ); ?></span>
-                <span class="<?php echo pmpro_get_element_class( 'pmpro_checkout-h3-msg' ); ?>"><?php printf( esc_html__( 'We Accept %s', 'paid-memberships-pro' ), $pmpro_accepted_credit_cards_string ); ?></span>
+                <span class="<?php echo pmpro_get_element_class( 'pmpro_checkout-h3-msg' ); ?>"><?php esc_html_e( 'We accept all major credit cards', 'paid-memberships-pro' ); ?></span>
             </h3>
 			<?php $sslseal = pmpro_getOption( "sslseal" ); ?>
 			<?php if ( ! empty( $sslseal ) ) { ?>
@@ -869,22 +863,8 @@ class PMProGateway_stripe extends PMProGateway {
 			}
 		?>
                 <div class="pmpro_checkout-fields<?php if ( ! empty( $sslseal ) ) { ?> pmpro_checkout-fields-leftcol<?php } ?>">
-					<?php
-					$pmpro_include_cardtype_field = apply_filters( 'pmpro_include_cardtype_field', false );
-					if ( $pmpro_include_cardtype_field ) { ?>
-                        <div class="<?php echo pmpro_get_element_class( 'pmpro_checkout-field pmpro_payment-card-type', 'pmpro_payment-card-type' ); ?>">
-                            <label for="CardType"><?php esc_html_e( 'Card Type', 'paid-memberships-pro' ); ?></label>
-                            <select id="CardType" class="<?php echo pmpro_get_element_class( 'CardType' ); ?>">
-								<?php foreach ( $pmpro_accepted_credit_cards as $cc ) { ?>
-                                    <option value="<?php echo esc_attr( $cc ) ?>"
-									<?php if ( $CardType === $cc ) { ?>selected="selected"<?php } ?>><?php echo esc_html( $cc ); ?></option>
-								<?php } ?>
-                            </select>
-                        </div>
-					<?php } else { ?>
-                        <input type="hidden" id="CardType" name="CardType"
-                               value="<?php echo esc_attr( $CardType ); ?>"/>
-					<?php } ?>
+                    <input type="hidden" id="CardType" name="CardType"
+                           value="<?php echo esc_attr( $CardType ); ?>"/>
                     <div class="<?php echo pmpro_get_element_class( 'pmpro_checkout-field pmpro_payment-account-number', 'pmpro_payment-account-number' ); ?>">
                         <label for="AccountNumber"><?php esc_html_e( 'Card Number', 'paid-memberships-pro' ); ?></label>
                         <div id="AccountNumber"></div>
@@ -951,11 +931,21 @@ class PMProGateway_stripe extends PMProGateway {
 		// Check whether we have a Stripe Customer.
 		if ( ! empty( $customer ) ) {
 			// Get the link to edit the customer.
-			echo '<hr>';
-			echo '<a target="_blank" href="' . esc_url( 'https://dashboard.stripe.com/' . ( pmpro_getOption( 'gateway_environment' ) == 'sandbox' ? 'test/' : '' ) . 'customers/' . $customer->id ) . '">' . esc_html__( 'Edit customer in Stripe', 'paid-memberships-pro' ) . '</a>';
-			if ( ! empty( $user->pmpro_stripe_updates ) && is_array( $user->pmpro_stripe_updates ) ) {
-				$stripe->user_profile_fields_subscription_updates( $user, $customer );
-			}
+			?>
+			<table class="form-table">
+				<tr>
+					<th><?php esc_html_e( 'Stripe Customer', 'paid-memberships-pro' ); ?></th>
+					<td>
+						<a target="_blank" href="<?php echo esc_url( 'https://dashboard.stripe.com/' . ( pmpro_getOption( 'gateway_environment' ) == 'sandbox' ? 'test/' : '' ) . 'customers/' . $customer->id ); ?>"><?php esc_html_e( 'Edit customer in Stripe', 'paid-memberships-pro' ); ?></a>
+					</td>
+				</tr>
+			</table>
+			<?php
+				if ( ! empty( $user->pmpro_stripe_updates ) && is_array( $user->pmpro_stripe_updates ) ) {
+					$stripe->user_profile_fields_subscription_updates( $user, $customer );
+				}
+			?>
+			<?php
 		}
 	}
 
@@ -1341,7 +1331,12 @@ class PMProGateway_stripe extends PMProGateway {
 			delete_option( 'pmpro_stripe_secretkey' );
 			delete_option( 'pmpro_stripe_publishablekey' );
 
-			wp_redirect( admin_url( 'admin.php?page=pmpro-paymentsettings' ) );
+			unset( $_GET['pmpro_stripe_connected'] );
+			unset( $_GET['pmpro_stripe_connected_environment'] );
+			unset( $_GET['pmpro_stripe_user_id'] );
+			unset( $_GET['pmpro_stripe_access_token'] );
+
+			wp_redirect( admin_url( sprintf( 'admin.php?%s', http_build_query( $_GET ) ) ) );
 			exit;
 		}
 
@@ -1558,7 +1553,7 @@ class PMProGateway_stripe extends PMProGateway {
 	 */
 	static function pmpro_checkout_before_change_membership_level($user_id, $morder)
 	{
-		global $pmpro_level, $discount_code, $discount_code_id, $wpdb, $pmpro_currency;
+		global $pmpro_level, $discount_code, $wpdb, $pmpro_currency;
 
 		//if no order, no need to pay
 		if ( empty( $morder ) || $morder->gateway != 'stripe' ) {
@@ -1582,8 +1577,7 @@ class PMProGateway_stripe extends PMProGateway {
 		update_pmpro_membership_order_meta( $morder->id, 'checkout_level', $pmpro_level_arr );
 
 		// Save the discount code.
-		$pmpro_discount_code_arr = (array) $discount_code;
-		update_pmpro_membership_order_meta( $morder->id, 'checkout_discount_code', $pmpro_discount_code_arr );
+		update_pmpro_membership_order_meta( $morder->id, 'checkout_discount_code', $discount_code );
 
 		// Time to send the user to pay with Stripe!
 		$stripe = new PMProGateway_stripe();
@@ -1656,9 +1650,11 @@ class PMProGateway_stripe extends PMProGateway {
 
 			// Check if we can combine initial and recurring payments.
 			$filtered_trial_period_days = $stripe->calculate_trial_period_days( $morder );
+			$unfiltered_trial_period_days = $stripe->calculate_trial_period_days( $morder, false );
+
 			if (
-				empty( $order->TrialBillingCycles ) && // Check if there is a trial period.
-				$filtered_trial_period_days === $stripe->calculate_trial_period_days( $morder, false ) && // Check if the trial period is the same as the filtered trial period.
+				empty( $morder->TrialBillingCycles ) && // Check if there is a trial period.
+				$filtered_trial_period_days === $unfiltered_trial_period_days && // Check if the trial period is the same as the filtered trial period.
 				( ! empty( $initial_payment_amount ) && $initial_payment_amount === $recurring_payment_amount ) // Check if the initial payment and recurring payment prices are the same.
 				) {
 				// We can combine the initial payment and the recurring payment.
@@ -1701,7 +1697,7 @@ class PMProGateway_stripe extends PMProGateway {
 				'address' => 'auto',
 				'name' => 'auto'
 			),
-			'success_url' =>  add_query_arg( 'level', $morder->membership_level->id, pmpro_url("confirmation" ) ),
+			'success_url' => apply_filters( 'pmpro_confirmation_url', add_query_arg( 'level', $morder->membership_level->id, pmpro_url("confirmation" ) ), $user_id, $pmpro_level ),
 			'cancel_url' =>  add_query_arg( 'level', $morder->membership_level->id, pmpro_url("checkout" ) ),
 		);
 		if ( ! empty( $subscription_data ) ) {
@@ -2648,30 +2644,50 @@ class PMProGateway_stripe extends PMProGateway {
 	 * @return string|null
 	 */
 	private function get_product_id_for_level( $level ) {
+		// Get the level object.
 		if ( ! is_a( $level, 'PMPro_Membership_Level' ) ) {
 			if ( is_numeric( $level ) ) {
 				$level = new PMPro_Membership_Level( $level );
 			}
 		}
 
+		// If we don't have a valid level, we can't get a product ID. Bail.
 		if ( empty( $level->ID ) ) {
-			// We do not have a valid level.
 			return;
 		}
 
+		// Get the product ID from the level based on the current gateway environment.
 		$gateway_environment = pmpro_getOption( 'gateway_environment' );
 		if ( $gateway_environment === 'sandbox' ) {
 			$stripe_product_id = $level->stripe_product_id_sandbox;
 		} else {
 			$stripe_product_id = $level->stripe_product_id;
 		}
+
+		// Check that the product ID exists in Stripe.
+		if ( ! empty( $stripe_product_id ) ) {
+			try {
+				$product = Stripe_Product::retrieve( $stripe_product_id );
+			} catch ( \Throwable $e ) {
+				// Assume no product found.
+			} catch ( \Exception $e ) {
+				// Assume no product found.
+			}
+
+			if ( empty( $product ) || empty( $product->active ) ) {
+				// There was an error retrieving the product or the product is archived.
+				// Let's try to create a new one below.
+				$stripe_product_id = null;
+			}
+		}
+
+		// If a valid product does not exist for this level, create one.
 		if ( empty( $stripe_product_id ) ) {
 			$stripe_product_id = $this->create_product_for_level( $level, $gateway_environment );
 		}
 
-		if ( ! empty( $stripe_product_id ) ) {
-			return $stripe_product_id;
-		}
+		// Return the product ID.
+		return ! empty( $stripe_product_id ) ? $stripe_product_id : null;
 	}
 
 	/**
@@ -2833,32 +2849,25 @@ class PMProGateway_stripe extends PMProGateway {
 	 * @return int trial period days.
 	 */
 	private function calculate_trial_period_days( $order, $filtered = true ) {
-		// Use a trial period to set the first recurring payment date.
-		if ( $order->BillingPeriod == "Year" ) {
-			$trial_period_days = $order->BillingFrequency * 365;    //annual
-		} elseif ( $order->BillingPeriod == "Day" ) {
-			$trial_period_days = $order->BillingFrequency * 1;        //daily
-		} elseif ( $order->BillingPeriod == "Week" ) {
-			$trial_period_days = $order->BillingFrequency * 7;        //weekly
-		} else {
-			$trial_period_days = $order->BillingFrequency * 30;    //assume monthly
-		}
-
-		// For free trials, multiply the trial period for each additional free period.
+		// Check if we have a free trial period set.
 		if ( ! empty( $order->TrialBillingCycles ) && $order->TrialAmount == 0 ) {
-			$trial_period_days = $trial_period_days * ( $order->TrialBillingCycles + 1 );
+			// If so, we want to account for the trial period only while calculating the profile start date.
+			// We will then revert back to the original billing frequency after the calculation.
+			$original_billing_frequency = $order->BillingFrequency;
+			$order->BillingFrequency    = $order->BillingFrequency * ( $order->TrialBillingCycles + 1 );
 		}
 
-		//convert to a profile start date
-		$order->ProfileStartDate = date_i18n( "Y-m-d\TH:i:s", strtotime( "+ " . $trial_period_days . " Day", current_time( "timestamp" ) ) );
+		// Calculate the profile start date.
+		// Getting return value as Unix Timestamp so that we can calculate days more easily.
+		$profile_start_date = pmpro_calculate_profile_start_date( $order, 'U', $filtered );
 
-		//filter the start date
-		if ( $filtered ) {
-			$order->ProfileStartDate = apply_filters( "pmpro_profile_start_date", $order->ProfileStartDate, $order );
+		// Restore the original billing frequency if needed so that the rest of the checkout has the correct info.
+		if ( ! empty( $original_billing_frequency ) ) {
+			$order->BillingFrequency = $original_billing_frequency;
 		}
 
-		//convert back to days
-		$trial_period_days = ceil( abs( strtotime( date_i18n( "Y-m-d\TH:i:s" ), current_time( "timestamp" ) ) - strtotime( $order->ProfileStartDate, current_time( "timestamp" ) ) ) / 86400 );
+		// Convert to days. We are rounding up to ensure that customers get the full membership time that they are paying for.
+		$trial_period_days = ceil( abs( $profile_start_date - time() ) / 86400 );
 		return $trial_period_days;
 	}
 

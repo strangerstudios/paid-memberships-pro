@@ -447,10 +447,9 @@ function pmpro_membership_history_profile_fields( $user ) {
 			<thead>
 				<tr>
 					<th><?php esc_html_e( 'Date', 'paid-memberships-pro' ); ?></th>
-					<th><?php esc_html_e( 'Invoice ID', 'paid-memberships-pro' ); ?></th>
+					<th><?php esc_html_e( 'Code', 'paid-memberships-pro' ); ?></th>
 					<th><?php esc_html_e( 'Level', 'paid-memberships-pro' ); ?></th>
-					<th><?php esc_html_e( 'Level ID', 'paid-memberships-pro' ); ?>
-					<th><?php esc_html_e( 'Total Billed', 'paid-memberships-pro' ); ?></th>
+					<th><?php esc_html_e( 'Total', 'paid-memberships-pro' ); ?></th>
 					<th><?php esc_html_e( 'Discount Code', 'paid-memberships-pro' ); ?></th>
 					<th><?php esc_html_e( 'Status', 'paid-memberships-pro' ); ?></th>
 					<?php do_action('pmpromh_orders_extra_cols_header');?>
@@ -462,10 +461,26 @@ function pmpro_membership_history_profile_fields( $user ) {
 					$level = pmpro_getLevel( $invoice->membership_id );
 					?>
 					<tr>
-						<td><?php echo date_i18n( get_option( 'date_format'), $invoice->timestamp ); ?></td>
+						<td>
+							<?php
+								echo esc_html( sprintf(
+									// translators: %1$s is the date and %2$s is the time.
+									__( '%1$s at %2$s', 'paid-memberships-pro' ),
+									esc_html( date_i18n( get_option( 'date_format' ), $invoice->timestamp ) ),
+									esc_html( date_i18n( get_option( 'time_format' ), $invoice->timestamp ) )
+								) );
+							?>
+						</td>
 						<td class="order_code column-order_code has-row-actions">
-							<a href="<?php echo esc_url( add_query_arg( array( 'page' => 'pmpro-orders', 'order' => $invoice->id ), admin_url( 'admin.php' ) ) ); ?>"><?php echo esc_html( $invoice->code ); ?></a><br />
+							<strong><a href="<?php echo esc_url( add_query_arg( array( 'page' => 'pmpro-orders', 'order' => $invoice->id ), admin_url( 'admin.php' ) ) ); ?>"><?php echo esc_html( $invoice->code ); ?></a></strong>
 							<div class="row-actions">
+								<span class="id">
+									<?php echo sprintf(
+										// translators: %s is the Order ID.
+										__( 'ID: %s', 'paid-memberships-pro' ),
+										esc_attr( $invoice->id )
+									); ?>
+								</span> |
 								<span class="edit">
 									<a title="<?php esc_attr_e( 'Edit', 'paid-memberships-pro' ); ?>" href="<?php echo esc_url( add_query_arg( array( 'page' => 'pmpro-orders', 'order' => $invoice->id ), admin_url('admin.php' ) ) ); ?>"><?php esc_html_e( 'Edit', 'paid-memberships-pro' ); ?></a>
 								</span> |
@@ -480,12 +495,21 @@ function pmpro_membership_history_profile_fields( $user ) {
 								<?php } ?>
 							</div> <!-- end .row-actions -->
 						</td>
-						<td><?php if ( ! empty( $level ) ) { echo $level->name; } else { _e( 'N/A', 'paid-memberships-pro'); } ?></td>
-						<td><?php if ( ! empty( $level ) ) { echo $level->id; } else { _e( 'N/A', 'paid-memberships-pro'); } ?></td>
+						<td>
+							<?php
+								if ( ! empty( $level ) ) {
+									echo esc_html( $level->name );
+								} elseif ( $invoice->membership_id > 0 ) { ?>
+									[<?php esc_html_e( 'deleted', 'paid-memberships-pro' ); ?>]
+								<?php } else {
+									esc_html_e( '&#8212;', 'paid-memberships-pro' );
+								}
+							?>
+						</td>
 						<td><?php echo pmpro_formatPrice( $invoice->total ); ?></td>
 						<td><?php 
 							if ( empty( $invoice->code_id ) ) {
-								echo '-';
+								esc_html_e( '&#8212;', 'paid-memberships-pro' );
 							} else {
 								$discountQuery = "SELECT c.code FROM $wpdb->pmpro_discount_codes c WHERE c.id = ".$invoice->code_id." LIMIT 1";
 								$discount_code = $wpdb->get_row( $discountQuery );
@@ -495,9 +519,16 @@ function pmpro_membership_history_profile_fields( $user ) {
 						<td>
 							<?php
 								if ( empty( $invoice->status ) ) {
-									echo '-';
-								} else {
-									echo esc_html( $invoice->status );
+									esc_html_e( '&#8212;', 'paid-memberships-pro' );
+								} else { ?>
+									<span class="pmpro_order-status pmpro_order-status-<?php esc_attr_e( $invoice->status ); ?>">
+										<?php if ( in_array( $invoice->status, array( 'success', 'cancelled' ) ) ) {
+											esc_html_e( 'Paid', 'paid-memberships-pro' );
+										} else {
+											esc_html_e( ucwords( $invoice->status ) );
+										} ?>
+									</span>
+									<?php
 								}
 							?>
 						</td>
@@ -644,41 +675,6 @@ function pmpro_membership_history_email_modal() {
 add_action( 'in_admin_header', 'pmpro_membership_history_email_modal' );
 
 
-
-/**
- * Sanitizes the passed value.
- *
- * @param array|int|null|string|stdClass $value The value to sanitize
- *
- * @return array|int|string|object     Sanitized value
- */
-function pmpro_sanitize( $value ) {
-
-	if ( is_array( $value ) ) {
-
-		foreach ( $value as $key => $val ) {
-			$value[ $key ] = pmprorh_sanitize( $val );
-		}
-	}
-
-	if ( is_object( $value ) ) {
-
-		foreach ( $value as $key => $val ) {
-			$value->{$key} = pmprorh_sanitize( $val );
-		}
-	}
-
-	if ( ( ! is_array( $value ) ) && ctype_alpha( $value ) ||
-	     ( ( ! is_array( $value ) ) && strtotime( $value ) ) ||
-	     ( ( ! is_array( $value ) ) && is_string( $value ) ) ||
-	     ( ( ! is_array( $value ) ) && is_numeric( $value) )
-	) {
-
-		$value = sanitize_text_field( $value );
-	}
-
-	return $value;
-}
 
 /**
  * Display a frontend Member Profile Edit form and allow user to edit specific fields.

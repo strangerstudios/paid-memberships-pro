@@ -528,7 +528,7 @@ $pmpro_email_templates_defaults = array(
 
 <p>Log in to your WordPress admin here: !!login_url!!</p>', 'paid-memberships-pro' ),
 		'help_text' => __( 'This email is sent to the admin as confirmation of a refunded payment. The email is sent after your membership site receives notification of a successful payment refund through your gateway.', 'paid-memberships-pro' )
-	),
+	)
 );
 
 // add SCA payment action required emails if we're using PMPro 2.1 or later

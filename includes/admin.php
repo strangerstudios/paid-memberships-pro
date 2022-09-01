@@ -2,7 +2,8 @@
 /*
 	Admin code.
 */
-
+// Wizard pre-header
+include( PMPRO_DIR . '/adminpages/wizard/save-steps.php' );
 require_once( PMPRO_DIR . '/includes/lib/SendWP/sendwp.php' );
 /**
  * Redirect to Dashboard tab if the user hasn't been there yet.
@@ -78,8 +79,10 @@ function pmpro_block_dashboard() {
  * @since 2.6.2
  */
 function pmpro_init_site_health_integration() {
+
 	$site_health = PMPro_Site_Health::init();
 	$site_health->hook();
 }
 
 add_action( 'admin_init', 'pmpro_init_site_health_integration' );
+

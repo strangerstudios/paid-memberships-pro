@@ -11,8 +11,10 @@
 function pmpro_init_check_for_deprecated_filters() {
 	global $wp_filter;
 	
+	// NOTE: Array is mapped new filter => old filter.
 	$pmpro_map_deprecated_filters = array(
-		'pmpro_getfile_extension_blocklist'    => 'pmpro_getfile_extension_blacklist',
+		'pmpro_getfile_extension_blocklist' => 'pmpro_getfile_extension_blacklist',
+		'pmpro_default_field_group_label'   => 'pmprorh_section_header',
 	);
 	
 	foreach ( $pmpro_map_deprecated_filters as $new => $old ) {
@@ -54,6 +56,87 @@ function pmpro_admin_init_redirect_old_menu_items() {
 }
 add_action( 'init', 'pmpro_admin_init_redirect_old_menu_items' );
 
+/**
+ * Old Register Helper functions and classes.
+ */
+function pmpro_register_helper_deprecated() {
+	// Activated plugins run after plugins_loaded. Bail to be safe.	
+	if ( pmpro_activating_plugin( 'pmpro-register-helper/pmpro-register-helper.php' ) ) {
+		return;
+	}
+	
+	// PMProRH_Field class
+	if ( ! class_exists( 'PMProRH_Field' ) ) {
+		class PMProRH_Field extends PMPro_Field {
+			// Just do what PMPro_Field does.
+		}
+	}
+	
+	// pmprorh_add_registration_field function
+	if ( ! function_exists( 'pmprorh_add_registration_field' ) ) {		
+		function pmprorh_add_registration_field( $where, $field ) {
+			return pmpro_add_user_field( $where, $field );
+		}
+	}
+	
+	// pmprorh_add_checkout_box function
+	if ( ! function_exists( 'pmprorh_add_checkout_box' ) ) {
+		function pmprorh_add_checkout_box( $name, $label = NULL, $description = '', $order = NULL ) {
+			return pmpro_add_field_group( $name, $label, $description, $order );
+		}
+	}
+	
+	// pmprorh_add_user_taxonomy
+	if ( ! function_exists( 'pmprorh_add_user_taxonomy' ) ) {
+		function pmprorh_add_user_taxonomy( $name, $name_plural ) {
+			return pmpro_add_user_taxonomy( $name, $name_plural );
+		}
+	}
+	
+	// pmprorh_getCheckoutBoxByName function
+	if ( ! function_exists( 'pmprorh_getCheckoutBoxByName' ) ) {
+		function pmprorh_getCheckoutBoxByName( $name ) {
+			return pmpro_get_field_group_by_name( $name );
+		}
+	}
+	
+	// pmprorh_getCSVFields function
+	if ( ! function_exists( 'pmprorh_getCSVFields' ) ) {
+		function pmprorh_getCSVFields() {
+			return pmpro_get_user_fields_for_csv();
+		}
+	}
+	
+	// pmprorh_getProfileFields function
+	if ( ! function_exists( 'pmprorh_getProfileFields' ) ) {
+		function pmprorh_getProfileFields( $user_id, $withlocations = false  ) {
+			return pmpro_get_user_fields_for_profile( $user_id, $withlocations );
+		}
+	}
+	
+	// pmprorh_checkFieldForLevel function
+	if ( ! function_exists( 'pmprorh_checkFieldForLevel' ) ) {
+		function pmprorh_checkFieldForLevel( $field, $scope = 'default', $args = NULL ) {
+			return pmpro_check_field_for_level( $field, $scope, $args );
+		}
+	}
+	
+	// pmprorh_end function
+	if ( ! function_exists( 'pmprorh_end' ) ) {
+		function pmprorh_end( $array ) {
+			return pmpro_array_end( $array );
+		}
+	}
+	
+	// pmprorh_sanitize function
+	if ( ! function_exists( 'pmprorh_sanitize' ) ) {
+		function pmprorh_sanitize( $value, $field = null  ) {
+			return pmpro_sanitize( $value, $field );
+		}
+	}
+}
+add_action( 'plugins_loaded', 'pmpro_register_helper_deprecated', 20 );
+
 // Check if installed, deactivate it and show a notice now.
 function pmpro_check_for_deprecated_add_ons() {
 
@@ -69,6 +152,10 @@ function pmpro_check_for_deprecated_add_ons() {
 		'pmpro-email-templates-addon' => array(
 			'file' => 'pmpro-email-templates.php',
 			'label' => 'Email Templates'
+		),
+		'pmpro-better-logins-report' => array(
+			'file' => 'pmpro-better-logins-report.php',
+			'label' => 'Better Logins Report'
 		)
 	);
 	

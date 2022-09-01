@@ -460,10 +460,7 @@
 		{
 			$order->payment_type = "PayPal Express";
 			$order->cardtype = "";
-			$order->ProfileStartDate = date_i18n("Y-m-d\TH:i:s", strtotime("+ " . $order->BillingFrequency . " " . $order->BillingPeriod));
-			$order->ProfileStartDate = apply_filters("pmpro_profile_start_date", $order->ProfileStartDate, $order);
-			// Convert to UTC for PayPal...
-			$order->ProfileStartDate = get_gmt_from_date( $order->ProfileStartDate, 'Y-m-d\TH:i:s\Z' );
+			$order->ProfileStartDate = pmpro_calculate_profile_start_date( $order, 'Y-m-d\TH:i:s\Z' );
 
 			return $this->setExpressCheckout($order);
 		}
@@ -477,10 +474,7 @@
 		{
 			if(pmpro_isLevelRecurring($order->membership_level))
 			{
-				$order->ProfileStartDate = date_i18n("Y-m-d\TH:i:s", strtotime("+ " . $order->BillingFrequency . " " . $order->BillingPeriod, current_time("timestamp")));
-				$order->ProfileStartDate = apply_filters("pmpro_profile_start_date", $order->ProfileStartDate, $order);
-				// Convert to UTC for PayPal...
-				$order->ProfileStartDate = get_gmt_from_date( $order->ProfileStartDate, 'Y-m-d\TH:i:s\Z' );
+				$order->ProfileStartDate = pmpro_calculate_profile_start_date( $order, 'Y-m-d\TH:i:s\Z' );
 				return $this->subscribe($order);
 			}
 			else
@@ -1094,7 +1088,7 @@
 		/**
 		 * Refunds an order (only supports full amounts)
 		 *
-		 * @param bool    $succes Status of the refund (default: false)
+		 * @param bool    $success Status of the refund (default: false)
 		 * @param object  $morder The Member Order Object
 		 * @since 2.8
 		 * 

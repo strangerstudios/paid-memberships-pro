@@ -31,7 +31,7 @@
 .pmpro-block-element .components-base-control .components-select-control {
 	height: auto;
 }
-..pmpro-block-element .components-base-control .components-base-control__label {
+.pmpro-block-element .components-base-control .components-base-control__label {
 	display: block;
 }
 
