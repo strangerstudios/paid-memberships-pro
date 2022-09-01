@@ -219,7 +219,7 @@ class PMPro_Membership_Level{
             array( '%d' )
         );
         
-        if( $deleted_membership_users > 0 ) {
+        if( $deleted_membership_users !== false ) {
             $r3 = true;
         }
             
