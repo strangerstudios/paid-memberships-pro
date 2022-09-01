@@ -81,11 +81,15 @@ function pmpro_add_pages() {
 	if ( pmpro_isUpdateRequired() ) {
 		add_submenu_page( 'pmpro-dashboard', __( 'Updates Required', 'paid-memberships-pro' ), __( 'Updates Required', 'paid-memberships-pro' ), 'pmpro_updates', 'pmpro-updates', 'pmpro_updates' );
 	}
-
-	/// Show a wizard if PMPro isn't finished setting up.
-	// if ( ! pmpro_is_ready() ) {
-		add_submenu_page( 'pmpro-dashboard', __( 'Setup Wizard', 'paid-memberships-pro' ), __( 'Setup Wizard', 'paid-memberships-pro' ), 'pmpro_wizard', 'pmpro-wizard', 'pmpro_wizard' );
-	// }
+	
+	//Logic added here in order to always reach this page if PMPro is setup. ?page=pmpro-wizard is always reachable should people want to rerun through the Setup Wizard.
+	if ( pmpro_show_setup_wizard_link() ) {
+		$wizard_location = 'pmpro-dashboard';		
+	} else {
+		$wizard_location = 'admin.php';
+	}
+	
+	add_submenu_page( $wizard_location, __( 'Setup Wizard', 'paid-memberships-pro' ), __( 'Setup Wizard', 'paid-memberships-pro' ), 'pmpro_wizard', 'pmpro-wizard', 'pmpro_wizard' );
 }
 add_action( 'admin_menu', 'pmpro_add_pages' );
 

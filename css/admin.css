@@ -3,6 +3,11 @@
 	padding-left: 0;
 }
 
+/* If wizard is loading under admin.php */
+.admin_page_pmpro-wizard #wpcontent {
+	padding-left: 0;
+}
+
 .pmpro-wizard .pmpro-wizard__header {
 	background: #FFF;
 	border-bottom: 1px solid #DDD;

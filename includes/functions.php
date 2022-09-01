@@ -2880,6 +2880,26 @@ function pmpro_is_ready() {
 }
 
 /**
+ * Display the Setup Wizard links.
+ * 
+ * @since TBD
+ * 
+ * @return bool $show Whether or not the Setup Wizard link should show.
+ */
+function pmpro_show_setup_wizard_link() {
+	global $pmpro_ready;
+
+	// If PMPro isn't ready AND the wizard hasn't completed yet.
+	if ( ! $pmpro_ready && get_option( 'pmpro_wizard_step' ) !== 'done' ) {
+		$show = true;
+	} else {
+		$show = false;
+	}
+
+	return $show;
+}
+
+/**
  * Display Invoice Price Data with Parts
  *
  * @param object $pmpro_invoice The full order object.

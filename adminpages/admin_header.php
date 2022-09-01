@@ -249,7 +249,7 @@
 			<a href="<?php echo esc_url( admin_url( 'admin.php?page=pmpro-license' ) );?>" class="nav-tab<?php if($view == 'pmpro-license') { ?> nav-tab-active<?php } ?>"><?php esc_html_e('License', 'paid-memberships-pro' );?></a>
 		<?php } ?>
 
-		<?php if(current_user_can('pmpro_wizard') ) { ?>
+		<?php if ( current_user_can('pmpro_wizard' ) && pmpro_show_setup_wizard_link() ) { ?>
 			<a href="<?php echo esc_url( admin_url( 'admin.php?page=pmpro-wizard' ) );?>" class="nav-tab<?php if($view == 'pmpro-wizard') { ?> nav-tab-active<?php } ?>"><?php esc_html_e('Setup Wizard', 'paid-memberships-pro' );?></a>
 		<?php } ?>
 	</nav>
