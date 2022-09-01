@@ -53,7 +53,7 @@ if(isset($_REQUEST['levelstocancel']) && $_REQUEST['levelstocancel'] !== 'all') 
 				}
 			?>
 			<div class="<?php echo pmpro_get_element_class( 'pmpro_actionlinks' ); ?>">
-				<a class="<?php echo pmpro_get_element_class( 'pmpro_btn pmpro_btn-submit pmpro_yeslink yeslink', 'pmpro_btn-submit' ); ?>" href="<?php echo esc_url( pmpro_url( "cancel", "?levelstocancel=" . esc_attr($_REQUEST['levelstocancel']) . "&confirm=true" ) ) ?>"><?php esc_html_e('Yes, cancel this membership', 'paid-memberships-pro' );?></a>
+				<a class="<?php echo pmpro_get_element_class( 'pmpro_btn pmpro_btn-submit pmpro_yeslink yeslink', 'pmpro_btn-submit' ); ?>" href="<?php echo esc_url( pmpro_url( "cancel", "?levelstocancel=" . esc_attr($_REQUEST['levelstocancel']) . "&confirm=true" ) ) ?>" onclick="this.classList.add('disabled');"><?php esc_html_e('Yes, cancel this membership', 'paid-memberships-pro' );?></a>
 				<a class="<?php echo pmpro_get_element_class( 'pmpro_btn pmpro_btn-cancel pmpro_nolink nolink', 'pmpro_btn-cancel' ); ?>" href="<?php echo esc_url( pmpro_url( "account" ) ) ?>"><?php esc_html_e('No, keep this membership', 'paid-memberships-pro' );?></a>
 			</div>
 			<?php
