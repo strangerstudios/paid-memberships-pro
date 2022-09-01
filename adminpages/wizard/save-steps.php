@@ -13,7 +13,7 @@ function pmpro_init_save_wizard_data() {
 
 	// Clear things up on the completed page.
 	if ( $_REQUEST['page'] === 'done' ) {
-		delete_option( 'pmpro_wizard_collect_payments' );
+		delete_option( 'pmpro_wizard_collect_payment' );
 		update_option( 'pmpro_wizard_step', 'done' ); // Update it to be completed as we've reached this page.
 	}
 
@@ -95,9 +95,8 @@ function pmpro_init_save_wizard_data() {
 			),
 			admin_url( 'admin.php' )
 		);
-
-		// Save the step should they come back at a later stage.
-		// update_option( 'pmpro_wizard_step', '2' );
+		// Before redirecting to next step, save the step we're redirecting to.
+		update_option( 'pmpro_wizard_step', $step, false );
 		wp_redirect( $next_step );
 	}
 
@@ -140,7 +139,7 @@ function pmpro_init_save_wizard_data() {
 		}
 
 		// Save the step should they come back at a later stage.
-		// update_option( 'pmpro_wizard_step', '4' );
+		update_option( 'pmpro_wizard_step', 'memberships', false );
 		wp_redirect( $next_step );
 
 	}
@@ -241,7 +240,7 @@ function pmpro_init_save_wizard_data() {
 		);
 
 		// Save the step should they come back at a later stage.
-		// update_option( 'pmpro_wizard_step', '3' );
+		update_option( 'pmpro_wizard_step', 'advanced', false );
 		wp_redirect( $next_step );
 
 		// Now we can redirect to the next step we might need.
@@ -277,8 +276,8 @@ function pmpro_init_save_wizard_data() {
 			admin_url( 'admin.php' )
 		);
 
-		/// Remove the option? or set it to complete?
-		// delete_option( 'pmpro_wizard_step' );
+		// Set option to complete right before redirect (in case something goes wrong or they quit during this process for some reason.)
+		update_option( 'pmpro_wizard_step', 'done', false );
 		wp_redirect( $next_step );
 	}
 
