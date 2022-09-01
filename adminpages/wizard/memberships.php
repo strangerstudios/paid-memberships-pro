@@ -2,11 +2,13 @@
 /**
  * Step 3 file content. [Memberships]
  */
+// Get option for collecting payments
+$collecting_payment = get_option( 'pmpro_wizard_collect_payment' );
 ?>
 <div class="pmpro-wizard__step pmpro-wizard__step-3">
 				<div class="pmpro-wizard__step-header">
 					<h1><?php esc_html_e( 'Membership Levels', 'paid-memberships-pro' ); ?></h1>
-					<p><?php esc_html_e( 'Set up free and paid membership levels from this wizard. You can set up more membership levels with additional settings later.', 'paid-memberships-pro' ); ?></p>
+					<p><?php esc_html_e( 'Set up various membership levels from this wizard. You can set up more membership levels with additional settings later.', 'paid-memberships-pro' ); ?></p>
 				</div>
 				<form action="" method="post">
 				<div class="pmpro-wizard__field">
@@ -23,7 +25,8 @@
 						</div>
 					</div>
 				</div>
-				<div class="pmpro-wizard__field">
+				<?php if ( $collecting_payment ) { ?>
+				<div class="pmpro-wizard__field">	
 					<div class="pmpro-wizard__field__checkbox-group">
 						<input type="checkbox" id="pmpro-wizard__paid-level" name="pmpro-wizard__paid-level" value="1">
 						<div class="pmpro-wizard__field__checkbox-content">
@@ -57,6 +60,7 @@
 						</div>
 					</div>
 				</div>
+				<?php } ?>
 				<div class="pmpro-wizard__field" style="background:#F7F7F7;">
 					<p><img src="<?php echo esc_url( PMPRO_URL . '/images/lock.svg' ); ?>" style="vertical-align:top"/> <?php esc_html_e( 'Content restriction settings may be set after the setup wizard.', 'paid-memberships-pro' ); ?></p>
 				</div>
