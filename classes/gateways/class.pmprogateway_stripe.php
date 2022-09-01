@@ -313,10 +313,10 @@ class PMProGateway_stripe extends PMProGateway {
 					self::update_webhook_events();
 				}
 			}
-
-			// Break the country cache in case new credentials were saved.
-			delete_transient( 'pmpro_stripe_account_country' );
 		}
+
+		// Break the country cache in case we switched accounts.
+		delete_transient( 'pmpro_stripe_account_country' );
 
 		?>
 			<tr class="pmpro_settings_divider gateway gateway_stripe" <?php if ( $gateway != "stripe" ) { ?>style="display: none;"<?php } ?>>
@@ -3988,6 +3988,19 @@ class PMProGateway_stripe extends PMProGateway {
 		}
 		$application_fee_percentage = pmpro_license_isValid( null, pmpro_license_get_premium_types() ) ? 0 : 1;
 		$application_fee_percentage = apply_filters( 'pmpro_set_application_fee_percentage', $application_fee_percentage );
+
+		// Some countries do not allow us to use application fees. If we are in one of those
+		// countries, we should set the percentage to 0. This is a temporary fix until we
+		// have a better solution or until all countries allow us to use application fees.
+		$countries_to_disable_application_fees = array(
+			'IN', // India.
+			'MX', // Mexico.
+			'MY', // Malaysia.
+		);
+		if ( in_array( self::get_account_country(), $countries_to_disable_application_fees ) ) {
+			$application_fee_percentage = 0;
+		}
+
 		return round( floatval( $application_fee_percentage ), 2 );
 	}
 
