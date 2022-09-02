@@ -33,6 +33,8 @@ add_action( 'wpmu_delete_user', 'pmpro_delete_user' );
  * @param int[]   $userids      Array of IDs for users being deleted.
  */
 function pmpro_delete_user_form_notice( $current_user, $userids ) {
+
+	global $wpdb;
 	// Check if any users for deletion have an an active membership level.
 	foreach ( $userids as $user_id ) {
 		$userids_have_levels = pmpro_hasMembershipLevel( null, $user_id );
@@ -41,6 +43,10 @@ function pmpro_delete_user_form_notice( $current_user, $userids ) {
 		}
 	}
 
+	?>
+	<div class='pmpro_delete_user_actions'>
+		<p><?php _e( 'What should be done with the PMPro Membership data for these users?', 'paid-memberships-pro' ); ?></p>
+	<?php
 	// Show a notice if users for deletion have an an active membership level.
 	if ( ! empty( $userids_have_levels ) ) { ?>
 		<div class="notice notice-error inline">
@@ -52,13 +58,17 @@ function pmpro_delete_user_form_notice( $current_user, $userids ) {
 			}
 			?>
 		</div>
+		<p><input type='checkbox' name='pmpro_delete_active_subscriptions' id='pmpro_delete_active_subscriptions' value='1' /><label for='pmpro_delete_active_subscriptions'><?php _e('Cancel any related membership levels first. This may trigger cancellations at the gateway or other third party services.', 'paid-memberships-pro' ); ?></label></p>
 		<?php
-	}
+		}
+		$member_history = $wpdb->get_var( "SELECT COUNT(*) as members FROM $wpdb->pmpro_memberships_users WHERE user_id IN (".implode(",",$userids ) .")" );
 
-	?>
-	<div class='pmpro_delete_user_actions'>
-		<p><input type='checkbox' name='pmpro_delete_active_subscriptions' id='pmpro_delete_active_subscriptions' value='1' /><label for='pmpro_delete_active_subscriptions'><?php _e('Delete Active Subscription(s)', 'paid-memberships-pro' ); ?></label></p>
-		<p><input type='checkbox' name='pmpro_delete_member_history' id='pmpro_delete_member_history' value='1' /><label for='pmpro_delete_member_history'><?php _e('Delete Membership History', 'paid-memberships-pro' ); ?></label></p>
+		if( intval( $member_history ) > 0 ) {
+			?>
+			<p><input type='checkbox' name='pmpro_delete_member_history' id='pmpro_delete_member_history' value='1' /><label for='pmpro_delete_member_history'><?php _e('Delete any related membership history. Order history will be retained.', 'paid-memberships-pro' ); ?></label></p>
+			<?php
+		}
+		?>
 	</div>
 	<?php
 
