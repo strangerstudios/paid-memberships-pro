@@ -6,5 +6,10 @@
 	define('WP_USE_THEMES', false);
 	require('../../../../wp-load.php');	
 
+	//Don't let anything run if PMPro is paused
+	if( pmpro_is_paused() ) {
+		return;
+	}
+	
 	//this function is defined in /scheduled/crons.php
 	pmpro_cron_trial_ending_warnings();

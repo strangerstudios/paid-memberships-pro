@@ -302,7 +302,7 @@ function pmpro_checkForUpgrades()
 	 * Check the current domain and store it
 	 */
 	if ( $pmpro_db_version < 2.94 ) {
-		pmpro_save_siteurl();
+		pmpro_setOption( 'last_known_url', get_site_url() );
 		pmpro_setOption( 'db_version', '2.94' );
 	}
 }

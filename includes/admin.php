@@ -85,58 +85,59 @@ function pmpro_init_site_health_integration() {
 add_action( 'admin_init', 'pmpro_init_site_health_integration' );
 
 /**
- * Compare stored and current site URL
+ * Compare stored and current site URL and decide if we should go into pause mode
  *
  * @since TBD
  */
 function pmpro_site_url_check() {
 
-	// Can the current user view the dashboard?
-	if ( current_user_can( 'manage_options' ) ) {
+	//Checking if a stored site URL exists on first time installs
+	if( empty( pmpro_getOption( 'last_known_url' ) ) ) {
+		pmpro_setOption( 'last_known_url', get_site_url() );
+	}
 
-		//Checking if a stored site URL exists on first time installs
-		if( empty( pmpro_getOption( 'site_url' ) ) ) {
-			pmpro_setOption( 'site_url', get_site_url() );
-		}
+	//The WP_ENVIRONMENT_TYPE has been changed, we should pause everything
+	if( ! pmpro_is_production_site() ) {
+		//Site URL's don't match - enable pause mode
+		pmpro_setOption( 'pause_mode', true );
+	}
 
-		//We're attempting to reactivate all services.
-		if( ! empty( $_REQUEST['pmpro-reactivate-services'] ) ) {			
-			pmpro_save_siteurl();
-			pmpro_set_pause_mode( false );
-			pmpro_maybe_schedule_crons();
-		}
-
-		//The WP_ENVIRONMENT_TYPE has been changed, we should pause everything
-		if( ! pmpro_is_production_site() ) {
+	if( ! pmpro_is_paused() ){
+		//We aren't paused, check if the domains match
+		if( ! pmpro_compare_siteurl() ) {
 			//Site URL's don't match - enable pause mode
-			pmpro_set_pause_mode( true );
-			//Clear all crons in pause mode
-			pmpro_clear_crons();
-		}
-
-		if( ! pmpro_get_pause_mode() ){
-			//We aren't paused, check if the domains match
-			if( ! pmpro_compare_siteurl() ) {
-				//Site URL's don't match - enable pause mode
-				pmpro_set_pause_mode( true );
-				//Clear all crons in pause mode
-				pmpro_clear_crons();
-			} else {
-				//Site URL's do match - disable pause mode
-				pmpro_set_pause_mode( false );
-				//Reschedule crons
-				pmpro_maybe_schedule_crons();
-			}
+			pmpro_setOption( 'pause_mode', true );				
 		} else {
-			//We are paused, show a notice.
-			add_action( 'admin_notices', 'pmpro_pause_mode_notice' );
+			//Site URL's do match - disable pause mode
+			pmpro_setOption( 'pause_mode', false );				
 		}
-
+	} else {
+		//We are paused, show a notice.
+		add_action( 'admin_notices', 'pmpro_pause_mode_notice' );
 	}
 
 }
+add_action( 'init', 'pmpro_site_url_check' );
 add_action( 'admin_init', 'pmpro_site_url_check' );
 
+/**
+ * Allows a user to deactivate pause mode and update the last known URL
+ *
+ * @since TBD
+ */
+function pmpro_handle_pause_mode_actions() {
+
+	// Can the current user view the dashboard?
+	if ( current_user_can( 'pmpro_manage_pause_mode' ) ) {
+		//We're attempting to reactivate all services.
+		if( ! empty( $_REQUEST['pmpro-reactivate-services'] ) ) {			
+			pmpro_setOption( 'last_known_url', get_site_url() );
+			pmpro_setOption( 'pause_mode', false );			
+		}
+	}
+
+}
+add_action( 'admin_init', 'pmpro_handle_pause_mode_actions' );
 /**
  * Display a notice about pause mode being enabled
  *
@@ -144,21 +145,25 @@ add_action( 'admin_init', 'pmpro_site_url_check' );
  */
 function pmpro_pause_mode_notice() {
 
-	if( pmpro_get_pause_mode() ) {
+	if( pmpro_is_paused() ) {
 
 		?>
 		<div class="notice notice-error">
 		<p>
-			<?php
+			<?php				
 				// translators: %s: Contains the URL to a blog post
 				printf(
 					__( '<strong>Warning:</strong> We have detected that your site URL has changed. All cron jobs and automated services have been disabled. Read more about this <a href="%s">here</a>', 'paid-memberships-pro' ), 'BLOG_POST_URL'
 				);
 			?>
 		</p>
+		<?php if ( current_user_can( 'pmpro_manage_pause_mode' ) ) { ?>
 		<p>
 			<a href='<?php echo admin_url( '?pmpro-reactivate-services=true' ); ?>' class='button'><?php _e( 'Update my primary domain and reactivate all services', 'paid-memberships-pro' ); ?></a>
 		</p>
+		<?php } else { ?>
+			<p><?php _e( 'Only users with the <code>pmpro_manage_pause_mode</code> capability are able to deactivate pause mode.', 'paid-memberships-pro' ); ?></p>
+		<?php } ?>
     	</div>
 		<?php
 	}

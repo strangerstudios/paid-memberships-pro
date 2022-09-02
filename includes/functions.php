@@ -4360,20 +4360,6 @@ function pmpro_is_production_site() {
 }
 
 /**
- * Save the current site URL to a PMPro option
- *
- * @since TBD
- * @return bool If true, site URL was saved. If false, site URL exists
- */
-function pmpro_save_siteurl() {
-
-	$site_url = get_site_url();
-
-	return pmpro_setOption( 'site_url', $site_url );
-
-}
-
-/**
  * Compare the stored site URL with the current site URL
  *
  * @since TBD
@@ -4383,7 +4369,7 @@ function pmpro_compare_siteurl() {
 
 	$site_url = get_site_url();
 
-	$current_url = pmpro_getOption( 'site_url' );
+	$current_url = pmpro_getOption( 'last_known_url' );
 
 	if( empty( $current_url ) ) {
 		return false;
@@ -4403,7 +4389,7 @@ function pmpro_compare_siteurl() {
  * @since TBD
  * @return bool True if the the site is in pause mode
  */
-function pmpro_get_pause_mode() {
+function pmpro_is_paused() {
 
 	$pause_mode = pmpro_getOption( 'pause_mode' );
 	
