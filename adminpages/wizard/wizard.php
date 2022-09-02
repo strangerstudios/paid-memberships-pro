@@ -5,7 +5,7 @@
 if ( empty( $_REQUEST['step'] ) ) {
 	$previous_step = get_option( 'pmpro_wizard_step' );
 	$active_step = sanitize_text_field( $previous_step );
-} elseif ( ! empty( $_REQUEST['step'] ) && empty( $active_step ) ) {
+} elseif ( ! empty( $_REQUEST['step'] ) ) {
 	$active_step = sanitize_text_field( $_REQUEST['step'] );
 } else {
 	$active_step = 'general';
@@ -43,7 +43,7 @@ if ( empty( $_REQUEST['step'] ) ) {
 								<span class="pmpro-stepper__step-number"><?php echo esc_html( $count ); ?></span>
 							</div>
 							<span class="pmpro-stepper__step-label">
-								<?php echo esc_html( $name ); ?>
+								<a href="/wp-admin/admin.php?page=pmpro-wizard&step=<?php echo esc_attr( $setup_step ); ?>"><?php echo esc_html( $name ); ?></a>
 							</span>
 						</div>
 						<div class="pmpro-stepper__step-divider"></div>

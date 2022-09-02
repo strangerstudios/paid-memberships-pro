@@ -2,7 +2,7 @@
 // Variables that may exist prior to running the Setup Wizard.
 $pmpro_license_key = get_option( 'pmpro_license_key' );
 $site_type         = get_option( 'pmpro_site_type' );
-$collect_payments   = get_option( 'pmpro_wizard_collect_payments' );
+$collect_payment   = get_option( 'pmpro_wizard_collect_payment' );
 
 // Check if we should allow page generation or not.
 global $pmpro_pages;
@@ -51,7 +51,7 @@ global $pmpro_pages;
 								echo '<span style="font-size:12px;">' . esc_html__( 'We detected you have pages assigned for Paid Memberships Pro, this option is disabled.', 'paid-memberships-pro' ) . '</span>';
 							} ?>
 							<br><br>
-							<input type="checkbox" name="collect_payments" id="collect_payments" value="1" <?php checked( true, $collect_payments ); ?>>
+							<input type="checkbox" name="collect_payments" id="collect_payments" value="1" <?php checked( true, $collect_payment ); ?>>
 							<label for="collect_payments"><?php esc_html_e( 'Yes, I will be collecting payments for your memberships?', 'paid-memberships-pro' ); ?></label><br/>
 						</label>
 					</div>
