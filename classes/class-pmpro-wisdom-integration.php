@@ -169,7 +169,7 @@ class PMPro_Wisdom_Integration {
 	 * @return bool Whether the site is recognized as a local site.
 	 */
 	public function bypass_local_tracking( $is_local = false ) {
-		if ( true === $is_local || 'production' !== wp_get_environment_type() ) {
+		if ( true === $is_local || ( function_exists( 'wp_get_environment_type' ) && 'production' !== wp_get_environment_type() ) ) {
 			return $is_local;
 		}
 
