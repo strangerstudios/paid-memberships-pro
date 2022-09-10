@@ -24,7 +24,7 @@ function pmpro_notifications() {
 		<?php if ( $notification->dismissable ) { ?>
 			<button type="button" class="pmpro-notice-button notice-dismiss" value="<?php echo esc_attr( $notification->id ); ?>"><span class="screen-reader-text"><?php esc_html_e( 'Dismiss this notice.', 'paid-memberships-pro' ); ?></span></button>
 		<?php } ?>
-			<div class="pmpro_notification-icon"><span class="dashicons dashicons-<?php esc_attr_e( $notification->dashicon ); ?>"></span></div>
+			<div class="pmpro_notification-icon"><span class="dashicons dashicons-<?php echo esc_attr( $notification->dashicon ); ?>"></span></div>
 			<div class="pmpro_notification-content">
 				<h3><?php echo esc_html( $notification->title ); ?></h3>
 				<?php 
