@@ -701,7 +701,7 @@ function pmpro_show_user_fields_in_frontend_profile( $user, $withlocations = fal
 
 			// Bail if there are no fields to show on the front-end profile.
 			if ( ! $show_fields ) {
-				return;
+				continue;
 			}
 			?>
 
