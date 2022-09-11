@@ -142,7 +142,7 @@ jQuery(document).ready(function(){
 		jQuery( '.pmpro_required' ).closest( '.pmpro_checkout-field' ).append( '<span class="pmpro_asterisk"> <abbr title="Required Field">*</abbr></span>' );
 	}
 
-	//add required to required fields
+	//move asterisk for some field types
 	if ( jQuery( '.pmpro_checkout-field-radio' ).find( ".pmpro_asterisk" ) ) {
 		jQuery( '.pmpro_checkout-field-radio' ).find( ".pmpro_asterisk" ).remove();
 		jQuery( '.pmpro_checkout-field-radio' ).find( 'label' ).first().append( '<span class="pmpro_asterisk"> <abbr title="Required Field">*</abbr></span>' );
