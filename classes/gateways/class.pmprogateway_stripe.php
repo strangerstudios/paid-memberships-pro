@@ -1792,14 +1792,15 @@ class PMProGateway_stripe extends PMProGateway {
 			// The user tried to confirm a setup intent. This means that there was no initial
 			// payment needed for this chekout (otherwise there would be a payment intent instead),
 			// and that the subscription needed authorization before being created.
-			$setup_intent = $this->process_setup_intent( $order->setup_intent_id );
-			if ( is_string( $setup_intent ) ) {
-				$order->error      = __( 'Error processing setup intent.', 'paid-memberships-pro' ) . ' ' . $setup_intent;
+			$setup_intent = $this->get_setup_intent( $order );
+			if ( 'succeeded' === $setup_intent->status ) {
+				// Subscription should now be active. Let's get its ID to save to the MemberOrder.
+				$subscription_transaction_id = $setup_intent->metadata->subscription_id;
+			} else {
+				$order->error      = __( 'Error processing setup intent.', 'paid-memberships-pro' ) . ' ' . $setup_intent->last_setup_error->message;
 				$order->shorterror = $order->error;
 				return false;
 			}
-			// Subscription should now be active. Let's get its ID to save to the MemberOrder.
-			$subscription_transaction_id = $setup_intent->metadata->subscription_id;
 		} else {
 			// User has either just submitted the checkout form or tried to confirm their
 			// payment intent.
