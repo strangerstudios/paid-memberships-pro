@@ -2,14 +2,14 @@
 # This file is distributed under the same license as the Paid Memberships Pro plugin.
 msgid ""
 msgstr ""
-"Project-Id-Version: Paid Memberships Pro 2.9.3\n"
+"Project-Id-Version: Paid Memberships Pro 2.9.4\n"
 "Report-Msgid-Bugs-To: info@paidmembershipspro.com\n"
 "Last-Translator: Paid Memberships Pro <info@paidmembershipspro.com>\n"
 "Language-Team: Paid Memberships Pro <info@paidmembershipspro.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2022-08-30T18:45:42+00:00\n"
+"POT-Creation-Date: 2022-09-17T15:32:21+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.6.0\n"
 "X-Domain: paid-memberships-pro\n"
@@ -8863,6 +8863,8 @@ msgstr "Stripe meldet einen Fehler bei der Erstellung des Kunden-Satzes:"
 #: classes/gateways/class.pmprogateway_stripe.php:4542
 #: classes/gateways/class.pmprogateway_stripe.php:4536
 #: classes/gateways/class.pmprogateway_stripe.php:4541
+#: classes/gateways/class.pmprogateway_stripe.php:4549
+#: classes/gateways/class.pmprogateway_stripe.php:4554
 msgid "Error getting subscription with Stripe:"
 msgstr "Fehler beim Anlegen des Abonnements in Stripe:"
 
@@ -8914,6 +8916,8 @@ msgstr "Fehler beim Anlegen des Abonnements in Stripe:"
 #: classes/gateways/class.pmprogateway_stripe.php:4643
 #: classes/gateways/class.pmprogateway_stripe.php:4637
 #: classes/gateways/class.pmprogateway_stripe.php:4642
+#: classes/gateways/class.pmprogateway_stripe.php:4650
+#: classes/gateways/class.pmprogateway_stripe.php:4655
 msgid "Error creating plan with Stripe:"
 msgstr "Fehler beim Erstellen eines Tarifs mit Stripe:"
 
@@ -8959,6 +8963,8 @@ msgstr "Fehler beim Erstellen eines Tarifs mit Stripe:"
 #: classes/gateways/class.pmprogateway_stripe.php:4674
 #: classes/gateways/class.pmprogateway_stripe.php:4688
 #: classes/gateways/class.pmprogateway_stripe.php:4687
+#: classes/gateways/class.pmprogateway_stripe.php:4686
+#: classes/gateways/class.pmprogateway_stripe.php:4700
 msgid "Error subscribing customer to plan with Stripe:"
 msgstr "Stripe meldet einen Fehler beim Einrichten des Abos für den Kunden:"
 
@@ -9080,6 +9086,8 @@ msgstr "Konnte den Kunden nicht finden."
 #: classes/gateways/class.pmprogateway_stripe.php:4893
 #: classes/gateways/class.pmprogateway_stripe.php:4886
 #: classes/gateways/class.pmprogateway_stripe.php:4892
+#: classes/gateways/class.pmprogateway_stripe.php:4899
+#: classes/gateways/class.pmprogateway_stripe.php:4905
 msgid "Error: "
 msgstr "Fehler:"
 
@@ -9100,6 +9108,7 @@ msgstr "Fehler:"
 #: classes/gateways/class.pmprogateway_stripe.php:4899
 #: classes/gateways/class.pmprogateway_stripe.php:4907
 #: classes/gateways/class.pmprogateway_stripe.php:4906
+#: classes/gateways/class.pmprogateway_stripe.php:4919
 #, php-format
 msgid "Error: Unkown error while refunding charge #%s"
 msgstr "Fehler: Unbekannter Fehler bei der Erstattung der Zahlung Nummer%s"
@@ -16894,6 +16903,7 @@ msgstr "<strong>Fehler:</strong> PMPro konnte die Verbindung zur Stripe-API nich
 #: classes/gateways/class.pmprogateway_stripe.php:4139
 #: classes/gateways/class.pmprogateway_stripe.php:4147
 #: classes/gateways/class.pmprogateway_stripe.php:4146
+#: classes/gateways/class.pmprogateway_stripe.php:4159
 msgid "Last webhook received at"
 msgstr "Letzter Webhook erhalten am"
 
@@ -16905,6 +16915,7 @@ msgstr "Letzter Webhook erhalten am"
 #: classes/gateways/class.pmprogateway_stripe.php:4141
 #: classes/gateways/class.pmprogateway_stripe.php:4149
 #: classes/gateways/class.pmprogateway_stripe.php:4148
+#: classes/gateways/class.pmprogateway_stripe.php:4161
 msgid "No webhooks have been received."
 msgstr "Es wurden keine Webhooks empfangen."
 
@@ -16916,6 +16927,7 @@ msgstr "Es wurden keine Webhooks empfangen."
 #: classes/gateways/class.pmprogateway_stripe.php:4145
 #: classes/gateways/class.pmprogateway_stripe.php:4153
 #: classes/gateways/class.pmprogateway_stripe.php:4152
+#: classes/gateways/class.pmprogateway_stripe.php:4165
 msgid "Your webhook may not be working correctly."
 msgstr "Ihr Webhook funktioniert möglicherweise nicht ordnungsgemäß."
 
@@ -16927,6 +16939,7 @@ msgstr "Ihr Webhook funktioniert möglicherweise nicht ordnungsgemäß."
 #: classes/gateways/class.pmprogateway_stripe.php:4147
 #: classes/gateways/class.pmprogateway_stripe.php:4155
 #: classes/gateways/class.pmprogateway_stripe.php:4154
+#: classes/gateways/class.pmprogateway_stripe.php:4167
 msgid "Click here for info on setting up your webhook with Stripe."
 msgstr "Klicken Sie hier, um Informationen zum Einrichten Ihres Webhook mit Stripe zu erhalten."
 
@@ -18519,6 +18532,7 @@ msgstr "Aktuelles Passwort"
 #: includes/profile.php:932
 #: includes/profile.php:937
 #: includes/profile.php:944
+#: classes/class-pmpro-field.php:1254
 msgid "Required Field"
 msgstr "Pflichtfeld"
 
@@ -19774,6 +19788,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_paypalexpress.php:1122
 #: classes/gateways/class.pmprogateway_stripe.php:4806
 #: classes/gateways/class.pmprogateway_stripe.php:4805
+#: classes/gateways/class.pmprogateway_stripe.php:4818
 msgid "Admin: Order successfully refunded on %1$s for transaction ID %2$s by %3$s."
 msgstr ""
 
@@ -20092,6 +20107,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:4810
 #: classes/gateways/class.pmprogateway_stripe.php:4818
 #: classes/gateways/class.pmprogateway_stripe.php:4817
+#: classes/gateways/class.pmprogateway_stripe.php:4830
 msgid "Admin: An error occured while attempting to process this refund."
 msgstr ""
 
@@ -20103,6 +20119,8 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:4824
 #: classes/gateways/class.pmprogateway_stripe.php:4821
 #: classes/gateways/class.pmprogateway_stripe.php:4823
+#: classes/gateways/class.pmprogateway_stripe.php:4834
+#: classes/gateways/class.pmprogateway_stripe.php:4836
 msgid "Admin: There was a problem processing the refund"
 msgstr ""
 
@@ -20813,19 +20831,24 @@ msgid "%s Add Field Group"
 msgstr ""
 
 #: classes/class-pmpro-field.php:762
+#: classes/class-pmpro-field.php:766
 msgid "Choose one or more."
 msgstr ""
 
 #: classes/class-pmpro-field.php:928
 #: classes/class-pmpro-field.php:930
+#: classes/class-pmpro-field.php:932
+#: classes/class-pmpro-field.php:934
 msgid "Current File: %s"
 msgstr ""
 
 #: classes/class-pmpro-field.php:939
+#: classes/class-pmpro-field.php:943
 msgid "[delete]"
 msgstr ""
 
 #: classes/class-pmpro-field.php:940
+#: classes/class-pmpro-field.php:944
 msgid "[restore]"
 msgstr ""
 
