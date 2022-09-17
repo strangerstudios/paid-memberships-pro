@@ -2,9 +2,9 @@
 Contributors: strangerstudios, kimannwall, andrewza, dlparker1005, paidmembershipspro
 Tags: memberships, members, subscriptions, ecommerce, user registration, member, membership, e-commerce, paypal, stripe, braintree, authorize.net, payflow, restrict access, restrict content, directory
 Requires at least: 5.2
-Tested up to: 6.0.1
+Tested up to: 6.0.2
 Requires PHP: 5.6
-Stable tag: 2.9.4
+Stable tag: 2.9.6
 
 WordPress membership plugin: restrict content, accept member subscriptions with recurring payment. Includes user registration, login, & profile fields
 
@@ -156,6 +156,18 @@ Not sure? You can find out by doing a bit a research.
 9. Membership Account page, display all sections or show specific sections using shortcode attributes.
 
 == Changelog ==
+= 2.9.5 - 2022-09-17 =
+* ENHANCEMENT: Added Select2/Autocomplete as a field type in the user field settings. #2237 (@kimcoleman)
+* ENHANCEMENT: Improving our in-app notification styling. #2234 (@kimcoleman)
+* BUG FIX/ENHANCEMENT: Now skipping Secure Customer Authentication (SCA) for Stripe subscriptions at checkout with a $0 initial payment. This fixes issues where SCA failure would orphan active subscriptions. Recurring payments are working fine without this additional check.
+* BUG FIX/ENHANCEMENT: Improved CSS for frontend form fields.
+* BUG FIX/ENHANCEMENT: Fixed placement of required field asterisks for certain field types. #2231 (@kimcoleman)
+* BUG FIX/ENHANCEMENT: Fixed display of the CVV popup. #2224 (@dparker1005)
+* BUG FIX: Fixed application fee issue that happened when users in some countries tried to use Stripe Connect. #2228 (@dparker1005)
+* BUG FIX: Fixed case where user fields wouldn't show for users if earlier fields/groups were only for admins. #2233 (@kimcoleman)
+* BUG FIX: Fixed fatal error for older versions of WordPress missing the wp_get_environment_type() function. #2236 (@mircobabini)
+* BUG FIX: Fixed issue where PMPro memberships were sometimes not cancelled when a subscription was cancelled in Stripe. #2217 (@dparker1005)
+
 = 2.9.4 - 2022-08-30 =
 * BUG FIX/ENHANCEMENT: Added MMPU compatibility for some crons. #2211 (@dparker1005)
 * BUG FIX/ENHANCEMENT: The default "More Information" group name/label is now translatable. #2214 (@mircobabini)
