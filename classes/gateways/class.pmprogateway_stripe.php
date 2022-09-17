@@ -1787,113 +1787,83 @@ class PMProGateway_stripe extends PMProGateway {
 
 		$payment_transaction_id = '';
 		$subscription_transaction_id = '';
-
-		if ( ! empty( $order->setup_intent_id ) ){
-			// The user tried to confirm a setup intent. This means that there was no initial
-			// payment needed for this chekout (otherwise there would be a payment intent instead),
-			// and that the subscription needed authorization before being created.
-			$setup_intent = $this->process_setup_intent( $order->setup_intent_id );
-			if ( is_string( $setup_intent ) ) {
-				$order->error      = __( 'Error processing setup intent.', 'paid-memberships-pro' ) . ' ' . $setup_intent;
+		
+		// User has either just submitted the checkout form or tried to confirm their
+		// payment intent.
+		$customer = null; // This will be used to create the subscription later.
+		if ( ! empty( $order->payment_intent_id ) ) {
+			// User has just tried to confirm their payment intent. We need to make sure that it was
+			// confirmed successfully, and then try to create their subscription if needed.
+			$payment_intent = $this->process_payment_intent( $order->payment_intent_id );
+			if ( is_string( $payment_intent ) ) {
+				$order->error      = __( 'Error processing payment intent.', 'paid-memberships-pro' ) . ' ' . $payment_intent;
 				$order->shorterror = $order->error;
 				return false;
 			}
-			// Subscription should now be active. Let's get its ID to save to the MemberOrder.
-			$subscription_transaction_id = $setup_intent->metadata->subscription_id;
+			// Payment should now be processed.
+			$payment_transaction_id = $payment_intent->charges->data[0]->id;
+
+			// Note the customer so that we can create a subscription if needed..
+			$customer = $payment_intent->customer;
 		} else {
-			// User has either just submitted the checkout form or tried to confirm their
-			// payment intent.
-			$customer = null; // This will be used to create the subscription later.
-			if ( ! empty( $order->payment_intent_id ) ) {
-				// User has just tried to confirm their payment intent. We need to make sure that it was
-				// confirmed successfully, and then try to create their subscription if needed.
-				$payment_intent = $this->process_payment_intent( $order->payment_intent_id );
-				if ( is_string( $payment_intent ) ) {
-					$order->error      = __( 'Error processing payment intent.', 'paid-memberships-pro' ) . ' ' . $payment_intent;
-					$order->shorterror = $order->error;
-					return false;
-				}
-				// Payment should now be processed.
-				$payment_transaction_id = $payment_intent->charges->data[0]->id;
-
-				// Note the customer so that we can create a subscription if needed..
-				$customer = $payment_intent->customer;
-			} else {
-				// We have not yet tried to process this checkout.
-				// Make sure we have a customer with a payment method.
-				$customer = $this->update_customer_at_checkout( $order );
-				if ( empty( $customer ) ) {
-					// There was an issue creating/updating the Stripe customer.
-					// $order will have an error message, so we don't need to add one.
-					return false;
-				}
-
-				$payment_method = $this->get_payment_method( $order );
-				if ( empty( $payment_method ) ) {
-					// There was an issue getting the payment method.
-					$order->error      = __( 'Error retrieving payment method.', 'paid-memberships-pro' ) . empty( $order->error ) ? '' : ' ' . $order->error;
-					$order->shorterror = $order->error;
-					return false;
-				}
-
-				$customer = $this->set_default_payment_method_for_customer( $customer, $payment_method );
-				if ( is_string( $customer ) ) {
-					// There was an issue updating the default payment method.
-					$order->error      = __( 'Error updating default payment method.', 'paid-memberships-pro' ) . ' ' . $customer;
-					$order->shorterror = $order->error;
-					return false;
-				}
-
-				// Save customer in $order for create_payment_intent().
-				// This will likely be removed as we rework payment processing.
-				$order->stripe_customer = $customer;
-
-				// Process the charges.
-				$charges_processed = $this->process_charges( $order );
-				if ( ! empty( $order->error ) ) {
-					// There was an error processing charges.
-					// $order has an error message, so we don't need to add one.
-					return false;
-				}
-
-				// If we needed to charge an initial payment, it was successful.
-				if ( ! empty( $order->stripe_payment_intent->charges->data[0]->id ) ) {
-					$payment_transaction_id = $order->stripe_payment_intent->charges->data[0]->id;
-				}
+			// We have not yet tried to process this checkout.
+			// Make sure we have a customer with a payment method.
+			$customer = $this->update_customer_at_checkout( $order );
+			if ( empty( $customer ) ) {
+				// There was an issue creating/updating the Stripe customer.
+				// $order will have an error message, so we don't need to add one.
+				return false;
 			}
 
-			// Create a subscription if we need to.
-			if ( pmpro_isLevelRecurring( $order->membership_level ) ) {
-				$subscription = $this->create_subscription_for_customer_from_order( $customer->id, $order );
-				if ( empty( $subscription ) ) {
-					// There was an issue creating the subscription. Order will have error message.
-					$order->error      = __( 'Error creating subscription for customer.', 'paid-memberships-pro' ) . ' ' . $order->error;
-					$order->shorterror = $order->error;
-					return false;
-				}
-				$order->stripe_subscription = $subscription;
-				$setup_intent = $subscription->pending_setup_intent;
+			$payment_method = $this->get_payment_method( $order );
+			if ( empty( $payment_method ) ) {
+				// There was an issue getting the payment method.
+				$order->error      = __( 'Error retrieving payment method.', 'paid-memberships-pro' ) . empty( $order->error ) ? '' : ' ' . $order->error;
+				$order->shorterror = $order->error;
+				return false;
+			}
 
-				if ( ! empty( $setup_intent->status ) && 'requires_action' === $setup_intent->status ) {
-					// We will need to reload the page to authenticate, so save the subscription ID in the setup intent
-					// so that we don't lose it.
-					$setup_intent = $this->add_subscription_id_to_setup_intent( $setup_intent, $subscription->id );
-					if ( is_string( $setup_intent ) ) {
-						$order->error      = $setup_intent;
-						$order->shorterror = $order->error;
-						return false;
-					}
-					$order->stripe_setup_intent = $setup_intent;
-					$order->errorcode = true;
-					$order->error     = __( 'Customer authentication is required to finish setting up your subscription. Please complete the verification steps issued by your payment provider.', 'paid-memberships-pro' );
+			$customer = $this->set_default_payment_method_for_customer( $customer, $payment_method );
+			if ( is_string( $customer ) ) {
+				// There was an issue updating the default payment method.
+				$order->error      = __( 'Error updating default payment method.', 'paid-memberships-pro' ) . ' ' . $customer;
+				$order->shorterror = $order->error;
+				return false;
+			}
 
-					return false;
-				}
+			// Save customer in $order for create_payment_intent().
+			// This will likely be removed as we rework payment processing.
+			$order->stripe_customer = $customer;
 
-				// Successfully created a subscription.
-				$subscription_transaction_id = $subscription->id;
+			// Process the charges.
+			$charges_processed = $this->process_charges( $order );
+			if ( ! empty( $order->error ) ) {
+				// There was an error processing charges.
+				// $order has an error message, so we don't need to add one.
+				return false;
+			}
+
+			// If we needed to charge an initial payment, it was successful.
+			if ( ! empty( $order->stripe_payment_intent->charges->data[0]->id ) ) {
+				$payment_transaction_id = $order->stripe_payment_intent->charges->data[0]->id;
 			}
 		}
+
+		// Create a subscription if we need to.
+		if ( pmpro_isLevelRecurring( $order->membership_level ) ) {
+			$subscription = $this->create_subscription_for_customer_from_order( $customer->id, $order );
+			if ( empty( $subscription ) ) {
+				// There was an issue creating the subscription. Order will have error message.
+				$order->error      = __( 'Error creating subscription for customer.', 'paid-memberships-pro' ) . ' ' . $order->error;
+				$order->shorterror = $order->error;
+				return false;
+			}
+			$order->stripe_subscription = $subscription;				
+
+			// Successfully created a subscription.
+			$subscription_transaction_id = $subscription->id;
+		}
+		
 		// All charges have been processed and all subscriptions have been created.
 		$order->payment_transaction_id = $payment_transaction_id;
 		$order->subscription_transaction_id = $subscription_transaction_id;
