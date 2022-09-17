@@ -10,6 +10,7 @@
 * BUG FIX: Fixed case where user fields wouldn't show for users if earlier fields/groups were only for admins. #2233 (@kimcoleman)
 * BUG FIX: Fixed fatal error for older versions of WordPress missing the wp_get_environment_type() function. #2236 (@mircobabini)
 * BUG FIX: Fixed issue where PMPro memberships were sometimes not cancelled when a subscription was cancelled in Stripe. #2217 (@dparker1005)
+* BUG FIX: Fixed fatal error that was preventing the weekly (opt in) data tracking from running. #2242 (@ideadude)
 
 = 2.9.4 - 2022-08-30 =
 * BUG FIX/ENHANCEMENT: Added MMPU compatibility for some crons. #2211 (@dparker1005)
