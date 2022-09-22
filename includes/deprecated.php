@@ -213,7 +213,7 @@ add_action( 'admin_notices', 'pmpro_check_for_deprecated_add_ons' );
  * or choose a new gateway.
  */
 function pmpro_check_for_deprecated_gateways() {
-	$undeprecated_gateways = (array)pmpro_getOption( 'undeprecated_gateways' );
+	$undeprecated_gateways = explode( ',', pmpro_getOption( 'undeprecated_gateways' ) );
 	$default_gateway = pmpro_getOption( 'gateway' );
 
 	$deprecated_gateways = array( 'twocheckout', 'cybersource', 'paypal' );
