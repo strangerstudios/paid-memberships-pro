@@ -287,3 +287,33 @@ CREATE TABLE `wp_pmpro_subscriptionmeta` (
   KEY `pmpro_subscription_id` (`pmpro_subscription_id`),
   KEY `meta_key` (`meta_key`)
 );
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `wp_pmpro_groups`
+--
+
+CREATE TABLE `wp_pmpro_groups` (
+	`id` int unsigned NOT NULL AUTO_INCREMENT,
+	`name` varchar(255) NOT NULL,
+	`allow_multiple_selections` tinyint NOT NULL DEFAULT '1',
+	`displayorder` int,
+	PRIMARY KEY (`id`),
+	KEY `name` (`name`)
+);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `wp_pmpro_membership_levels_groups`
+--
+
+CREATE TABLE `wp_pmpro_membership_levels_groups` (
+	`id` int unsigned NOT NULL AUTO_INCREMENT,
+	`level` int unsigned NOT NULL DEFAULT '0',
+	`group` int unsigned NOT NULL DEFAULT '0',
+	PRIMARY KEY (`id`),
+	KEY `level` (`level`),
+	KEY `group` (`group`)
+);
