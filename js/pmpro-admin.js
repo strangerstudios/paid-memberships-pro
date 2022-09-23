@@ -886,3 +886,13 @@ jQuery( document ).ready( function() {
         }
     });
 });
+
+/**
+ * Edit levels page.
+ */
+jQuery(document).ready(function() {
+	jQuery( '.pmpro-level-settings-show-edit-group' ).on( 'click', function() {
+        jQuery( this ).hide();
+        jQuery( this ).parent().siblings( 'form' ).show();
+	});
+});

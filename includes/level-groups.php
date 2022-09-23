@@ -55,25 +55,19 @@ function pmpro_get_level_group( $group_id ) {
  *
  * @param string $name The name of the group.
  * @param bool   $allow_multiple_levels Whether or not to allow multiple levels to be selected from this group.
- * @param int    $display_order The display order of the group.
  *
  * @return int|false The id of the new group or false if the group could not be created.
  */
-function pmpro_create_level_group( $name, $allow_multiple_levels = true, $display_order = null ) {
+function pmpro_create_level_group( $name, $allow_multiple_levels = true ) {
 	global $wpdb;
-
-	if ( null === $display_order ) {
-		$display_order = $wpdb->get_var( "SELECT MAX(displayorder) FROM $wpdb->pmpro_groups" ) + 1;
-	}
 
 	$result = $wpdb->insert(
 		$wpdb->pmpro_groups,
 		array(
 			'name' => $name,
 			'allow_multiple_selections' => (int) $allow_multiple_levels,
-			'displayorder' => (int) $display_order,
 		),
-		array( '%s', '%d', '$d' )
+		array( '%s', '%d' )
 	);
 
 	return empty( $result ) ? false : $wpdb->insert_id;
@@ -87,27 +81,20 @@ function pmpro_create_level_group( $name, $allow_multiple_levels = true, $displa
  * @param int    $id The id of the group to edit.
  * @param string $name The name of the group.
  * @param bool   $allow_multiple_levels Whether or not to allow multiple levels to be selected from this group.
- * @param int    $display_order The display order of the group.
  *
  * @return bool True if the group was edited, false otherwise.
  */
-function pmpro_edit_level_group( $id, $name, $allow_multiple_levels = true, $display_order = null ) {
+function pmpro_edit_level_group( $id, $name, $allow_multiple_levels = true ) {
 	global $wpdb;
-
-	if ( null === $display_order ) {
-		$display_order = $wpdb->get_var( "SELECT MAX(displayorder) FROM $wpdb->pmpro_groups" ) + 1;
-	}
 
 	$result = $wpdb->update(
 		$wpdb->pmpro_groups,
 		array(
 			'name' => $name,
 			'allow_multiple_selections' => (int) $allow_multiple_levels,
-			'displayorder' => (int) $display_order,
 		),
 		array( 'id' => $id ),
 		array( '%s', '%d', '$d' ),
-		array( '%d' )
 	);
 
 	return ! empty( $result );
@@ -124,6 +111,12 @@ function pmpro_edit_level_group( $id, $name, $allow_multiple_levels = true, $dis
  */
 function pmpro_delete_level_group( $id ) {
 	global $wpdb;
+
+	// Make sure that there are no levels in this group.
+	$levels_in_group = pmpro_get_level_ids_for_group( $id );
+	if ( ! empty( $levels_in_group ) ) {
+		return false;
+	}
 
 	$result = $wpdb->delete(
 		$wpdb->pmpro_groups,
