@@ -1080,7 +1080,38 @@ function pmpro_give_membership_level( $level, $user_id ) {
 
 	// Cancel all membership levels for this user in the same level group if only one level per group is allowed.
 	$pmpro_giving_level = true;
-	// TODO: Call `pmpro_remove_membership_level()` for each level to remove.
+	$level_group_id = pmpro_get_group_id_for_level( $level_id );
+	$level_group = pmpro_get_level_group( $level_group_id );
+	if ( ! empty( $level_group) && empty( $level_group->allow_multiple_selections ) ) {
+		// Get all levels in the group.
+		$levels_in_group = pmpro_get_levels_for_group( $level_group->id );
+		$group_level_ids = array_map( 
+			function( $level ) {
+				return $level->id;
+			}, 
+			$levels_in_group
+		);
+
+		// Get all levels for the user.
+		$membership_levels = pmpro_getMembershipLevelsForUser( $user_id );
+		$membership_ids    = array_map( 
+			function( $level ) {
+				return $level->id;
+			}, 
+			$membership_levels
+		);
+
+		// Get the intersection of the two arrays.
+		$levels_to_cancel = array_intersect( $group_level_ids, $membership_ids );
+
+		// Cancel the levels.
+		foreach ( $levels_to_cancel as $level_to_cancel ) {
+			if ( $level_to_cancel != $level_id ) {
+				pmpro_remove_membership_level( $level_to_cancel, $user_id, 'changed' );
+			}
+		}
+	}
+	
 	unset( $pmpro_giving_level );
 
 	// Insert current membership
@@ -1216,7 +1247,7 @@ function pmpro_remove_membership_level( $level_id, $user_id, $status = 'inactive
 	}
 
 	// Remove the membership level.
-	$sql = "UPDATE $wpdb->pmpro_memberships_users SET `status`='$status', `enddate`='" . esc_sql( current_time( 'mysql' ) ) . "' WHERE `id`=" . esc_sql( $level_id );
+	$sql = "UPDATE $wpdb->pmpro_memberships_users SET `status`='$status', `enddate`='" . esc_sql( current_time( 'mysql' ) ) . "' WHERE `user_id` = '" . esc_sql( $user_id ) . "' AND `membership_id` = '" . esc_sql( $level_id ) . "'";
 	if ( ! $wpdb->query( $sql ) ) {
 		$pmpro_error = __( 'Error interacting with database', 'paid-memberships-pro' ) . ': ' . ( $wpdb->last_error ? $wpdb->last_error : 'unavailable' );
 		return false;

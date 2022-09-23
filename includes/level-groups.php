@@ -7,10 +7,10 @@
  *
  * @return array
  */
-function pmprommpu_get_groups() {
+function pmpro_get_level_groups() {
 	global $wpdb;
 
-	$groups = $wpdb->get_results( 'SELECT * FROM $wpdb->pmpro_groups ORDER BY id' );
+	$groups = $wpdb->get_results( "SELECT * FROM $wpdb->pmpro_groups ORDER BY id" );
 	$to_return = array();
 	foreach ( $groups as $group ) {
 		$to_return[ $group->id ] = $group;
@@ -32,6 +32,23 @@ function pmprommpu_get_groups() {
 }
 
 /**
+ * Get data for a level group.
+ *
+ * @since TBD
+ *
+ * @param int $group_id The ID of the group to get data for.
+ * @return object|bool The group data, or false if the group doesn't exist.
+ */
+function pmpro_get_level_group( $group_id ) {
+	$all_groups = pmpro_get_level_groups();
+	if ( ! empty( $all_groups[ $group_id ] ) ) {
+		return $all_groups[ $group_id ];
+	} else {
+		return false;
+	}
+}
+
+/**
  * Create a level group.
  *
  * @since TBD
@@ -46,7 +63,7 @@ function pmpro_create_level_group( $name, $allow_multiple_levels = true, $displa
 	global $wpdb;
 
 	if ( null === $display_order ) {
-		$display_order = $wpdb->get_var( 'SELECT MAX(displayorder) FROM $wpdb->pmpro_groups' ) + 1;
+		$display_order = $wpdb->get_var( "SELECT MAX(displayorder) FROM $wpdb->pmpro_groups" ) + 1;
 	}
 
 	$result = $wpdb->insert(
@@ -78,7 +95,7 @@ function pmpro_edit_level_group( $id, $name, $allow_multiple_levels = true, $dis
 	global $wpdb;
 
 	if ( null === $display_order ) {
-		$display_order = $wpdb->get_var( 'SELECT MAX(displayorder) FROM $wpdb->pmpro_groups' ) + 1;
+		$display_order = $wpdb->get_var( "SELECT MAX(displayorder) FROM $wpdb->pmpro_groups" ) + 1;
 	}
 
 	$result = $wpdb->update(
@@ -146,12 +163,12 @@ function pmpro_add_level_to_group( $level_id, $group_id ) {
  * @param int $level_id The id of the level to get the group for.
  * @return int|false The id of the group the level is in or false if the level is not in a group.
  */
-function pmpro_get_group_for_level( $level_id ) {
+function pmpro_get_group_id_for_level( $level_id ) {
 	global $wpdb;
 
 	$level_id = intval( $level_id );
 
-	$group_id = $wpdb->get_var( 'SELECT `group` FROM $wpdb->pmpro_membership_levels_groups WHERE `level` = $level_id LIMIT 1' );
+	$group_id = $wpdb->get_var( "SELECT `group` FROM $wpdb->pmpro_membership_levels_groups WHERE `level` = $level_id LIMIT 1" );
 
 	return empty( $group_id ) ? false : $group_id;
 }
@@ -169,7 +186,7 @@ function pmpro_get_levels_for_group( $group_id ) {
 
 	$group_id = intval( $group_id );
 
-	$levels = $wpdb->get_results( 'SELECT * FROM $wpdb->pmpro_membership_levels WHERE id IN ( SELECT level FROM $wpdb->pmpro_membership_levels_groups WHERE `group` = $group_id )' );
+	$levels = $wpdb->get_results( "SELECT * FROM $wpdb->pmpro_membership_levels WHERE id IN ( SELECT level FROM $wpdb->pmpro_membership_levels_groups WHERE `group` = $group_id )" );
 
 	return empty( $levels ) ? array() : $levels;
 }
