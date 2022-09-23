@@ -164,7 +164,7 @@ function pmpro_update_level_group_order() {
 	foreach ( $level_group_order as $level_group_id ) {
 		$level_group = pmpro_get_level_group( $level_group_id );
 		if ( ! empty( $level_group ) ) {
-			pmpro_edit_level_group( $level_group_id, $level_group->name, $level_group->displayorder, $count );
+			pmpro_edit_level_group( $level_group_id, $level_group->name, $level_group->allow_multiple_selections, $count );
 		}
 		$count++;
 	}
