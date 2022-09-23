@@ -1064,7 +1064,15 @@
 		        });
 		    </script>
 			<?php
-		}		
+		}
+
+		// Fix orphaned levels.
+		foreach ( $reoredered_levels as $reordered_level ) {
+			if ( empty( pmpro_get_group_id_for_level( $level->id ) ) ) {
+				pmpro_add_level_to_group( $level->id, $level_groups[0]->id );
+			}
+		}
+
 		?>
 		<hr class="wp-header-end">
 		<?php if( empty( $s ) && count( $reordered_levels ) === 0 ) { ?>
