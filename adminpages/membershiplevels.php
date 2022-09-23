@@ -10,6 +10,7 @@
 	//some vars
 	$gateway = pmpro_getOption("gateway");
     $pmpro_level_order = pmpro_getOption('level_order');
+	$level_groups = pmpro_get_level_groups();
 
 	global $pmpro_stripe_error, $pmpro_braintree_error, $pmpro_payflow_error, $pmpro_twocheckout_error, $wp_version;
 
@@ -179,6 +180,11 @@
 		// Update the Level Meta to Add Confirmation Message to Email.
 		if ( isset( $ml_confirmation_in_email ) ) {
 			update_pmpro_membership_level_meta( $saveid, 'confirmation_in_email', $ml_confirmation_in_email );
+		}
+
+		// Update the level group.
+		if ( ! empty( $_REQUEST['level_group'] ) ) {
+			pmpro_add_level_to_group( $saveid, (int) $_REQUEST['level_group'] );
 		}
 
 		do_action("pmpro_save_membership_level", $saveid);
@@ -448,6 +454,20 @@
 						<tr>
 							<th scope="row" valign="top"><label for="name"><?php esc_html_e('Name', 'paid-memberships-pro' );?></label></th>
 							<td><input name="name" type="text" value="<?php echo esc_attr($level->name);?>" class="regular-text" required/></td>
+						</tr>
+						<tr>
+							<th scope="row" valign="top"><label for="level_group"><?php esc_html_e('Group', 'paid-memberships-pro' );?></label></th>
+							<td>
+								<select name="level_group" id="level_group">
+									<?php
+										$current_group = pmpro_get_group_id_for_level( $level->id );
+										foreach ( $level_groups as $level_group ) {
+											?>
+											<option value="<?php echo esc_attr( $level_group->id ); ?>" <?php selected( $level_group->id, $current_group ); ?>><?php echo esc_html( $level_group->name ); ?></option>
+											<?php
+										}
+									?>
+								</select>
 						</tr>
 						<tr>
 							<th scope="row" valign="top"><label for="description"><?php esc_html_e('Description', 'paid-memberships-pro' );?></label></th>
