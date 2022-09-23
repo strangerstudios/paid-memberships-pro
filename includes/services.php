@@ -146,6 +146,33 @@ function pmpro_update_level_order() {
 }
 add_action('wp_ajax_pmpro_update_level_order', 'pmpro_update_level_order');
 
+function pmpro_update_level_group_order() {
+	// only admins can get this
+	if ( ! function_exists( 'current_user_can' ) || ( ! current_user_can( 'manage_options' ) && ! current_user_can( 'pmpro_membershiplevels' ) ) ) {
+		die( __( 'You do not have permissions to perform this action.', 'paid-memberships-pro' ) );
+	}
+
+	$level_group_order = null;
+	
+	if ( isset( $_REQUEST['level_group_order'] ) && is_array( $_REQUEST['level_group_order'] ) ) {
+		$level_group_order = array_map( 'intval', $_REQUEST['level_group_order'] );
+	} else if ( isset( $_REQUEST['level_group_order'] ) ) {
+		$level_group_order = explode(',', sanitize_text_field( $_REQUEST['level_group_order'] ) );
+	}
+
+	$count = 1;
+	foreach ( $level_group_order as $level_group_id ) {
+		$level_group = pmpro_get_level_group( $level_group_id );
+		if ( ! empty( $level_group ) ) {
+			pmpro_edit_level_group( $level_group_id, $level_group->name, $level_group->displayorder, $count );
+		}
+		$count++;
+	}
+
+	exit;
+}
+add_action('wp_ajax_pmpro_update_level_group_order', 'pmpro_update_level_group_order');
+
 // User fields AJAX.
 /**
  * Callback to draw a field group.
