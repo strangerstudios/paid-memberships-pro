@@ -430,6 +430,8 @@
 	width: auto;
 }
 
+table.pmprommpu_levels tr.remove_level td {background: #F2DEDE; }
+
 /* payment settings */
 .admin_page_pmpro-paymentsettings .form-table select {
 	max-width: none;
