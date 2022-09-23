@@ -280,11 +280,8 @@
 
 	$level_templates = pmpro_edit_level_templates();
 
-	// Get level groups and put them in order.
-	$level_groups = pmpro_get_level_groups();
-	usort( $level_groups, function ( $a, $b ) {
-		return (int)$a->displayorder - (int)$b->displayorder;
-	} );
+	// Get level groups in order.
+	$level_groups = pmpro_get_level_groups_in_order();
 	
 	// Show the settings to edit a membership level.
 	if ( $edit ) {

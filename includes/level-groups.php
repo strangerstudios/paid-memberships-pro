@@ -32,6 +32,22 @@ function pmpro_get_level_groups() {
 }
 
 /**
+ * Return an array of all level groups in order.
+ *
+ * @since TBD
+ *
+ * @return array
+ */
+function pmpro_get_level_groups_in_order() {
+	$level_groups = pmpro_get_level_groups();
+	usort( $level_groups, function ( $a, $b ) {
+		return (int) $a->displayorder - (int) $b->displayorder;
+	} );
+
+	return $level_groups;
+}
+
+/**
  * Get data for a level group.
  *
  * @since TBD
