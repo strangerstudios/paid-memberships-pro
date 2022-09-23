@@ -55,19 +55,26 @@ function pmpro_get_level_group( $group_id ) {
  *
  * @param string $name The name of the group.
  * @param bool   $allow_multiple_levels Whether or not to allow multiple levels to be selected from this group.
+ * @param int    $displayorder The display order for the group.
  *
  * @return int|false The id of the new group or false if the group could not be created.
  */
-function pmpro_create_level_group( $name, $allow_multiple_levels = true ) {
+function pmpro_create_level_group( $name, $allow_multiple_levels = true, $displayorder = null ) {
 	global $wpdb;
+
+	if ( empty( $displayorder ) ) {
+		$displayorder = $wpdb->get_var( "SELECT MAX(displayorder) FROM $wpdb->pmpro_groups LIMIT 1" );
+		$displayorder = intval( $displayorder ) + 1;
+	}
 
 	$result = $wpdb->insert(
 		$wpdb->pmpro_groups,
 		array(
 			'name' => $name,
 			'allow_multiple_selections' => (int) $allow_multiple_levels,
+			'displayorder' => (int) $displayorder,
 		),
-		array( '%s', '%d' )
+		array( '%s', '%d', '%d' )
 	);
 
 	return empty( $result ) ? false : $wpdb->insert_id;
@@ -81,20 +88,27 @@ function pmpro_create_level_group( $name, $allow_multiple_levels = true ) {
  * @param int    $id The id of the group to edit.
  * @param string $name The name of the group.
  * @param bool   $allow_multiple_levels Whether or not to allow multiple levels to be selected from this group.
+ * @param int    $displayorder The display order of the group.
  *
  * @return bool True if the group was edited, false otherwise.
  */
-function pmpro_edit_level_group( $id, $name, $allow_multiple_levels = true ) {
+function pmpro_edit_level_group( $id, $name, $allow_multiple_levels = true, $displayorder = null ) {
 	global $wpdb;
+
+	if ( empty( $displayorder ) ) {
+		$displayorder = $wpdb->get_var( "SELECT MAX(displayorder) FROM $wpdb->pmpro_groups LIMIT 1" );
+		$displayorder = intval( $displayorder ) + 1;
+	}
 
 	$result = $wpdb->update(
 		$wpdb->pmpro_groups,
 		array(
 			'name' => $name,
 			'allow_multiple_selections' => (int) $allow_multiple_levels,
+			'displayorder' => (int) $displayorder,
 		),
 		array( 'id' => $id ),
-		array( '%s', '%d', '$d' ),
+		array( '%s', '%d', '%d', '%d' ),
 	);
 
 	return ! empty( $result );

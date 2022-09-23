@@ -263,7 +263,8 @@
 		$group_id = (int) $_REQUEST['group_id'];
 		$group_name = sanitize_text_field( $_REQUEST['group_name'] );
 		$allow_multi = empty( $_REQUEST['allow_multiple_selections'] ) ? 0 : 1;
-		pmpro_edit_level_group( $group_id, $group_name, $allow_multi );
+		$displayorder = (int) $_REQUEST['displayorder'];
+		pmpro_edit_level_group( $group_id, $group_name, $allow_multi, $displayorder );
 	} elseif ( $action === 'add_group' ) {
 		// Add a new group.
 		$group_name = sanitize_text_field( $_REQUEST['group_name'] );
@@ -278,7 +279,12 @@
 	require_once(dirname(__FILE__) . "/admin_header.php");
 
 	$level_templates = pmpro_edit_level_templates();
+
+	// Get level groups and put them in order.
 	$level_groups = pmpro_get_level_groups();
+	usort( $level_groups, function ( $a, $b ) {
+		return (int)$a->displayorder - (int)$b->displayorder;
+	} );
 	
 	// Show the settings to edit a membership level.
 	if ( $edit ) {
@@ -1067,7 +1073,7 @@
 		}
 
 		// Fix orphaned levels.
-		foreach ( $reoredered_levels as $reordered_level ) {
+		foreach ( $reordered_levels as $reordered_level ) {
 			if ( empty( pmpro_get_group_id_for_level( $level->id ) ) ) {
 				pmpro_add_level_to_group( $level->id, $level_groups[0]->id );
 			}
@@ -1198,6 +1204,7 @@
 							<input type="hidden" name="action" value="edit_group" />
 							<?php wp_nonce_field('edit_group', 'pmpro_membershiplevels_nonce'); ?>
 							<input type="hidden" name="group_id" value="<?php echo esc_attr( $level_group->id ); ?>" />
+							<input type="hidden" name="displayorder" value="<?php echo esc_attr( $level_group->displayorder ); ?>" />
 							<label for="group_name"><?php esc_html_e( 'Group Name', 'paid-memberships-pro' ) ?></label><input type="text" name="group_name" value="<?php echo esc_attr( $level_group->name ); ?>" /><br/>
 							<label for="allow_multiple_selections"><?php esc_html_e( 'Allow users to purchase multiple levels from this group?', 'paid-memberships-pro' ) ?></label><input type="checkbox" name="allow_multiple_selections" value="1" <?php checked( $level_group->allow_multiple_selections ); ?> /><br/>
 							<input type="submit" value="<?php esc_attr_e( 'Save', 'paid-memberships-pro' ); ?>" />
