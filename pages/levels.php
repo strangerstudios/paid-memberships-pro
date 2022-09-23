@@ -32,7 +32,7 @@ foreach ( $level_groups as $level_group ) {
 		?>
 		<h2><?php echo esc_html( $level_group->name ); ?></h2>
 		<?php
-		if ( ! empty( $level_groups->allow_multiple_selections ) ) {
+		if ( ! empty( $level_group->allow_multiple_selections ) ) {
 			?>
 			<p><?php esc_html_e( 'You may select multiple levels from this group.', 'paid-memberships-pro' ); ?></p>
 			<?php
@@ -41,10 +41,6 @@ foreach ( $level_groups as $level_group ) {
 			<p><?php esc_html_e( 'You may select only one level from this group.', 'paid-memberships-pro' ); ?></p>
 			<?php
 		}
-	} elseif ( ! empty( $level_groups->allow_multiple_selections ) ) {
-		?>
-		<p><?php esc_html_e( 'You may select multiple levels.', 'paid-memberships-pro' ); ?></p>
-		<?php
 	}
 	
 	?>
