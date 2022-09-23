@@ -190,3 +190,21 @@ function pmpro_get_levels_for_group( $group_id ) {
 
 	return empty( $levels ) ? array() : $levels;
 }
+
+/**
+ * Get the level IDs for a given group.
+ *
+ * @since TBD
+ *
+ * @param int $group_id The id of the group to get the levels for.
+ * @return array An array of membership level IDs.
+ */
+function pmpro_get_level_ids_for_group( $group_id ) {
+	global $wpdb;
+
+	$group_id = intval( $group_id );
+
+	$levels = $wpdb->get_col( "SELECT level FROM $wpdb->pmpro_membership_levels_groups WHERE `group` = $group_id" );
+
+	return empty( $levels ) ? array() : $levels;
+}
