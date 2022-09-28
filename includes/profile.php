@@ -171,9 +171,19 @@ function pmpro_membership_level_profile_fields($user)
 							<tr class="old_levels_delsettings_tr_template remove_level">
 								<td></td>
 								<td colspan="3">
-									<label for="send_admin_change_email"><input value="1" id="send_admin_change_email" name="send_admin_change_email[]" type="checkbox"><?php esc_html_e( 'Send the user an email about this change.', 'paid-memberships-pro' ); ?></label><br>
-									<label for="cancel_subscription"><input value="1" id="cancel_subscription" name="cancel_subscription[]" type="checkbox"><?php esc_html_e( "Cancel this user's subscription at the gateway.", 'paid-memberships-pro' ); ?></label>
-									<label for="refund_last_subscription"><input value="1" id="refund_last_subscription" name="refund_last_subscription" type="checkbox" > <?php esc_html_e("Refund this user's most recent order (TODO: RECODE FOR MMPU).", 'paid-memberships-pro' ); ?></label>
+									<label for="send_admin_change_email"><input value="<?php echo esc_attr( $level->id ); ?>" id="send_admin_change_email" name="send_admin_change_email[]" type="checkbox"><?php esc_html_e( 'Send the user an email about this change. (Do we still want this?)', 'paid-memberships-pro' ); ?></label><br>
+									<label for="cancel_subscription"><input value="<?php echo esc_attr( $level->id ); ?>" id="cancel_subscription" name="cancel_subscription[]" type="checkbox"><?php esc_html_e( "Cancel this user's subscription at the gateway.", 'paid-memberships-pro' ); ?></label>
+									<?php
+									// Check if we are able to refund the user's last order for this level.
+									$order_args = array(
+										'user_id' => $user->ID,
+										'membership_level_id' => $level->id,
+										'status' => 'success',
+									);
+									$last_order = MemberOrder::get_order( $order_args );
+									$allows_refunds = pmpro_allowed_refunds( $last_order );
+									?>
+									<label for="refund_last_payment"><input value="<?php echo esc_attr( $level->id ); ?>" id="refund_last_payment" name="refund_last_payment[]" type="checkbox"<?php disabled( ! $allows_refunds ); ?>> <?php esc_html_e("Refund this user's most recent order.", "paid-memberships-pro" ); ?></label>
 								</td>
 							</tr>
 							<?php
@@ -342,7 +352,31 @@ function pmpro_membership_level_profile_fields_update() {
 	$old_levels = pmpro_getMembershipLevelsForUser($user_id);
 	if(array_key_exists('remove_levels_id', $_REQUEST)) {
 		foreach($_REQUEST['remove_levels_id'] as $arraykey => $leveltodel) {
+			// Check if we should cancel the subscription.
+			if ( ! empty( $_REQUEST['cancel_suscription'] ) && in_array( $leveltodel, $_REQUEST['cancel_suscription'] ) ) {
+				add_filter('pmpro_cancel_previous_subscriptions', 'pmpro_cancel_previous_subscriptions_false');
+			}
+
+			// Cancel the membership.
 			pmpro_cancelMembershipLevel($leveltodel, $user_id, 'admin_cancelled');
+
+			// Remove the filter.
+			remove_filter('pmpro_cancel_previous_subscriptions', 'pmpro_cancel_previous_subscriptions_false');
+
+			// Check if we should refund the last payment for this level.
+			if ( ! empty( $_REQUEST['refund_last_payment'] ) && in_array( $leveltodel, $_REQUEST['refund_last_payment'] ) ) {
+				// Get the last order for this level.
+				$order_args = array(
+					'user_id' => $user_id,
+					'membership_id' => $leveltodel,
+					'status' => 'success',
+				);
+				$last_order = MemberOrder::get_order( $order_args );
+				if ( pmpro_allowed_refunds( $last_order ) ) {
+					pmpro_refund_order( $last_order );
+				}
+			}
+
 			$droppedlevels[] = $leveltodel;
 		}
 	}
