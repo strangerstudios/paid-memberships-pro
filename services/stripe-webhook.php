@@ -902,6 +902,12 @@ function pmpro_stripe_webhook_change_membership_level( $morder ) {
 	$checkout_request_vars = get_pmpro_membership_order_meta( $morder->id, 'checkout_request_vars', true );
 	$_REQUEST = array_merge( $_REQUEST, $checkout_request_vars );
 
+	// Set $_FILES.
+	$checkout_files = get_pmpro_membership_order_meta( $morder->id, 'checkout_files', true );
+	if ( ! empty( $checkout_files ) ) {
+		$_FILES = array_merge( $_FILES, $checkout_files );
+	}
+
 	// Run the pmpro_checkout_before_change_membership_level action in case add ons need to set up.
 	remove_action(  'pmpro_checkout_before_change_membership_level', array('PMProGateway_stripe', 'pmpro_checkout_before_change_membership_level'), 10, 2 );
 	do_action( 'pmpro_checkout_before_change_membership_level', $morder->user_id, $morder );
