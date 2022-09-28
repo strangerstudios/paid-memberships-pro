@@ -498,10 +498,10 @@
 			// Filter by membership level ID(s).
 			if ( isset( $args['membership_level_id'] ) && null !== $args['membership_level_id'] ) {
 				if ( ! is_array( $args['membership_level_id'] ) ) {
-					$where[]    = 'membership_level_id = %d';
+					$where[]    = 'membership_id = %d';
 					$prepared[] = $args['membership_level_id'];
 				} else {
-					$where[]  = 'membership_level_id IN ( ' . implode( ', ', array_fill( 0, count( $args['membership_level_id'] ), '%d' ) ) . ' )';
+					$where[]  = 'membership_id IN ( ' . implode( ', ', array_fill( 0, count( $args['membership_level_id'] ), '%d' ) ) . ' )';
 					$prepared = array_merge( $prepared, $args['membership_level_id'] );
 				}
 			}
