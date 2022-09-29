@@ -369,7 +369,7 @@ class PMPro_Members_List_Table extends WP_List_Table {
 		}
 
 		if ( ! $count ) {
-			$sqlQuery .= ' GROUP BY u.ID ';
+			$sqlQuery .= ' GROUP BY u.ID, mu.membership_id ';
 
 			$sqlQuery .= " ORDER BY $orderby $order ";
 
