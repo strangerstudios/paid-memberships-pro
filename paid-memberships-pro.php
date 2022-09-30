@@ -67,6 +67,7 @@ require_once( PMPRO_DIR . '/includes/menus.php' );                  // custom me
 require_once( PMPRO_DIR . '/includes/notifications.php' );          // check for notifications at PMPro, shown in PMPro settings
 require_once( PMPRO_DIR . '/includes/init.php' );                   // code run during init, set_current_user, and wp hooks
 require_once( PMPRO_DIR . '/includes/scripts.php' );                // enqueue frontend and admin JS and CSS
+require_once( PMPRO_DIR . '/includes/terms.php' );                  // allow restricting terms by membership level
 
 require_once( PMPRO_DIR . '/includes/content.php' );                // code to check for memebrship and protect content
 require_once( PMPRO_DIR . '/includes/compatibility.php' );          // code to support compatibility for popular page builders

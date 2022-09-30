@@ -50,9 +50,13 @@ function pmpro_has_membership_access($post_id = NULL, $user_id = NULL, $return_m
 	
 	if(isset($mypost->post_type) && $mypost->post_type == "post")
 	{
-		$post_categories = wp_get_post_categories($mypost->ID);
+		// Get the categories for this post.
+		$post_terms = wp_get_post_categories( $mypost->ID );
 
-		if(!$post_categories)
+		// Get the tags for this post.
+		$post_terms = array_merge( $post_terms, wp_get_post_tags( $mypost->ID, array('fields' => 'ids' ) ) );
+
+		if( ! $post_terms )
 		{
 			//just check for entries in the memberships_pages table
 			$sqlQuery = "SELECT m.id, m.name FROM $wpdb->pmpro_memberships_pages mp LEFT JOIN $wpdb->pmpro_membership_levels m ON mp.membership_id = m.id WHERE mp.page_id = '" . $mypost->ID . "'";
@@ -60,7 +64,7 @@ function pmpro_has_membership_access($post_id = NULL, $user_id = NULL, $return_m
 		else
 		{
 			//are any of the post categories associated with membership levels? also check the memberships_pages table
-			$sqlQuery = "(SELECT m.id, m.name FROM $wpdb->pmpro_memberships_categories mc LEFT JOIN $wpdb->pmpro_membership_levels m ON mc.membership_id = m.id WHERE mc.category_id IN(" . implode(",", $post_categories) . ") AND m.id IS NOT NULL) UNION (SELECT m.id, m.name FROM $wpdb->pmpro_memberships_pages mp LEFT JOIN $wpdb->pmpro_membership_levels m ON mp.membership_id = m.id WHERE mp.page_id = '" . $mypost->ID . "')";
+			$sqlQuery = "(SELECT m.id, m.name FROM $wpdb->pmpro_memberships_categories mc LEFT JOIN $wpdb->pmpro_membership_levels m ON mc.membership_id = m.id WHERE mc.category_id IN(" . implode(",", $post_terms) . ") AND m.id IS NOT NULL) UNION (SELECT m.id, m.name FROM $wpdb->pmpro_memberships_pages mp LEFT JOIN $wpdb->pmpro_membership_levels m ON mp.membership_id = m.id WHERE mp.page_id = '" . $mypost->ID . "')";
 		}
 	}
 	else
