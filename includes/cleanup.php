@@ -30,7 +30,8 @@ add_action( 'wpmu_delete_user', 'pmpro_delete_user' );
  * Show a notice on the Delete User form so admin knows that membership and subscriptions will be cancelled.
  *
  * @param WP_User $current_user WP_User object for the current user.
- * @param int[]   $userids      Array of IDs for users being deleted.
+ * @param array   $userids      Array of IDs for users being deleted.
+ * @since TBD
  */
 function pmpro_delete_user_form_notice( $current_user, $userids ) {
 
@@ -45,7 +46,7 @@ function pmpro_delete_user_form_notice( $current_user, $userids ) {
 
 	?>
 	<div class='pmpro_delete_user_actions'>
-		<p><?php _e( 'What should be done with the PMPro Membership data for these users?', 'paid-memberships-pro' ); ?></p>
+		<p><?php esc_html_e( 'What should be done with the PMPro Membership data for these users?', 'paid-memberships-pro' ); ?></p>
 	<?php
 	// Show a notice if users for deletion have an an active membership level.
 	if ( ! empty( $userids_have_levels ) ) { ?>
@@ -61,11 +62,11 @@ function pmpro_delete_user_form_notice( $current_user, $userids ) {
 		<p><input type='checkbox' name='pmpro_delete_active_subscriptions' id='pmpro_delete_active_subscriptions' value='1' /><label for='pmpro_delete_active_subscriptions'><?php _e('Cancel any related membership levels first. This may trigger cancellations at the gateway or other third party services.', 'paid-memberships-pro' ); ?></label></p>
 		<?php
 		}
-		$member_history = $wpdb->get_var( "SELECT COUNT(*) as members FROM $wpdb->pmpro_memberships_users WHERE user_id IN (".implode(",",$userids ) .")" );
+		$member_history = $wpdb->get_var( "SELECT COUNT(*) as members FROM $wpdb->pmpro_memberships_users WHERE user_id IN (" . implode( "," , $userids ) . ")" );
 
-		if( intval( $member_history ) > 0 ) {
+		if ( intval( $member_history ) > 0 ) {
 			?>
-			<p><input type='checkbox' name='pmpro_delete_member_history' id='pmpro_delete_member_history' value='1' /><label for='pmpro_delete_member_history'><?php _e('Delete any related membership history. Order history will be retained.', 'paid-memberships-pro' ); ?></label></p>
+			<p><input type='checkbox' name='pmpro_delete_member_history' id='pmpro_delete_member_history' value='1' /><label for='pmpro_delete_member_history'><?php esc_html_e('Delete any related membership history. Order history will be retained.', 'paid-memberships-pro' ); ?></label></p>
 			<?php
 		}
 		?>
@@ -97,6 +98,12 @@ function pmpro_delete_post( $post_id = null ) {
 }
 add_action( 'delete_post', 'pmpro_delete_post' );
 
+/**
+ * Delete all membership data for a specific user from the membership users table.
+ *
+ * @param int $user_id The WordPress user ID.
+ * @since TBD
+ */
 function pmpro_delete_membership_history( $user_id ) {
 	global $wpdb;
 	$wpdb->delete( 
