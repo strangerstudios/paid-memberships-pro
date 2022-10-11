@@ -1,5 +1,4 @@
 <?php
-
 /*
 	Clean things up when deletes happen, etc. (This stuff needs a better home.)
 */
@@ -59,7 +58,7 @@ function pmpro_delete_user_form_notice( $current_user, $userids ) {
 			}
 			?>
 		</div>
-		<p><input type='checkbox' name='pmpro_delete_active_subscriptions' id='pmpro_delete_active_subscriptions' value='1' /><label for='pmpro_delete_active_subscriptions'><?php _e('Cancel any related membership levels first. This may trigger cancellations at the gateway or other third party services.', 'paid-memberships-pro' ); ?></label></p>
+		<p><input type='checkbox' name='pmpro_delete_active_subscriptions' id='pmpro_delete_active_subscriptions' value='1' /><label for='pmpro_delete_active_subscriptions'><?php esc_html_e('Cancel any related membership levels first. This may trigger cancellations at the gateway or other third party services.', 'paid-memberships-pro' ); ?></label></p>
 		<?php
 		}
 		$member_history = $wpdb->get_var( "SELECT COUNT(*) as members FROM $wpdb->pmpro_memberships_users WHERE user_id IN (" . implode( "," , $userids ) . ")" );
