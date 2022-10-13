@@ -117,7 +117,6 @@ function pmpro_site_url_check() {
 	}
 
 }
-add_action( 'init', 'pmpro_site_url_check' );
 add_action( 'admin_init', 'pmpro_site_url_check' );
 
 /**
