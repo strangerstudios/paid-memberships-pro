@@ -954,12 +954,76 @@ function pmpro_hasMembershipLevel( $levels = null, $user_id = null ) {
 }
 
 /**
- * Wrapper for pmpro_changeMembershipLevel to cancel one level.
+ * Remove a membership level from a user.
  *
  * @since 1.8.11
+ *
+ * @param int $level_id ID of the level to remove.
+ * @param int $user_id ID of the user to remove the level from.
+ * @param string $status Status to set the membership to.
+ *
+ * @return bool True if the level was removed, false otherwise.
  */
-function pmpro_cancelMembershipLevel( $cancel_level, $user_id = null, $old_level_status = 'inactive' ) {
-	return pmpro_changeMembershipLevel( 0, $user_id, $old_level_status, $cancel_level );
+function pmpro_cancelMembershipLevel( $level_id, $user_id = null, $status = 'inactive' ) {
+	global $current_user, $wpdb, $pmpro_error, $pmpro_giving_level;
+
+	// If we weren't passed a user ID, use the current user.
+	if ( empty( $user_id ) && ! empty( $current_user->ID ) ) {
+		$user_id = $current_user->ID;
+	} elseif ( empty( $user_id ) ) {
+		$pmpro_error = __( 'User ID not found.', 'paid-memberships-pro' );
+		return false;
+	}
+
+	// Set old user levels to be used in the pmpro_do_action_after_all_membership_level_changes() function.
+	pmpro_set_old_user_levels( $user_id );
+
+	// If we are not giving the user a new level, run the before change membership action.
+	if ( empty( $pmpro_giving_level ) ) {
+		/**
+		 * Action to run before the membership level changes.
+		 *
+		 * @param int $level_id ID of the level changed to.
+		 * @param int $user_id ID of the user changed.
+		 * @param int $cancel_level ID of the level being cancelled if specified.
+		 */
+		do_action( 'pmpro_before_change_membership_level', 0, $user_id, pmpro_getMembershipLevelsForUser( $user_id ), $level_id );
+	}
+
+	// Remove the membership level.
+	$sql = "UPDATE $wpdb->pmpro_memberships_users SET `status`='$status', `enddate`='" . esc_sql( current_time( 'mysql' ) ) . "' WHERE `user_id` = '" . esc_sql( $user_id ) . "' AND `membership_id` = '" . esc_sql( $level_id ) . "'";
+	if ( ! $wpdb->query( $sql ) ) {
+		$pmpro_error = __( 'Error interacting with database', 'paid-memberships-pro' ) . ': ' . ( $wpdb->last_error ? $wpdb->last_error : 'unavailable' );
+		return false;
+	}
+
+	// Check if we should cancel the user's subscription.
+	if ( apply_filters( 'pmpro_cancel_previous_subscriptions', true ) ) {
+		$active_subscriptions = PMPro_Subscription::get_subscriptions_for_user( $user_id, $level_id );
+		foreach ( $active_subscriptions as $subscription ) {
+			if ( ! $subscription->cancel_at_gateway() ) {
+				$pmpro_error = __( 'Error cancelling subscription at gateway.', 'paid-memberships-pro' );
+				return false;
+			}
+		}
+	}
+
+	// If we are not giving the user a new level, clear the level cache for this user and run the change membership action.
+	if ( empty( $pmpro_giving_level ) ) {
+		// Clear the level cache for this user.
+		pmpro_clear_level_cache_for_user( $user_id );
+
+		/**
+		 * Action to run after the membership level changes.
+		 *
+		 * @param int $level_id ID of the level changed to.
+		 * @param int $user_id ID of the user changed.
+		 * @param int $cancel_level ID of the level being cancelled if specified.
+		 */
+		do_action( 'pmpro_after_change_membership_level', 0, $user_id, $level_id );
+	}
+
+	return true;
 }
 
 /**
@@ -980,7 +1044,7 @@ function pmpro_cancelMembershipLevel( $cancel_level, $user_id = null, $old_level
  *		No change returns null.
  */
 function pmpro_changeMembershipLevel( $level, $user_id = null, $old_level_status = 'inactive', $cancel_level = null ) {
-	global $current_user, $pmpro_error;
+	global $current_user, $pmpro_error, $wpdb, $pmpro_giving_level;
 
 	if ( empty( $user_id ) ) {
 		$user_id = $current_user->ID;
@@ -1000,44 +1064,28 @@ function pmpro_changeMembershipLevel( $level, $user_id = null, $old_level_status
 	 */
 	$level = apply_filters( 'pmpro_change_level', $level, $user_id, $old_level_status, $cancel_level );
 
-	// Execute level changes.
-	if ( ! empty( $level ) ) {
-		$success = pmpro_give_membership_level( $level, $user_id );
-	} elseif ( ! empty( $cancel_level ) ) {
-		$success = pmpro_remove_membership_level( $cancel_level, $user_id, $old_level_status );
-	} else {
-		// Remove all of the user's current membership levels.
+	// Check if we are trying to cancel a single level (Deprecated).
+	if ( empty( $level ) && ! empty( $cancel_level ) ) {
+		_doing_it_wrong( __FUNCTION__, __( 'The $cancel_level parameter is deprecated. Use pmpro_cancelMembershipLevel() instead.', 'paid-memberships-pro' ), 'TBD' );
+		return pmpro_cancelMembershipLevel( $cancel_level, $user_id, $old_level_status );
+	}
+
+	// Check if we are trying to cancel all levels (Deprecated).
+	if ( empty( $level ) && empty( $cancel_level ) ) {
+		_doing_it_wrong( __FUNCTION__, __( 'The pmpro_cancelMembershipLevel() function should be used to cancel membership levels.', 'paid-memberships-pro' ), 'TBD' );
 		$membership_levels = pmpro_getMembershipLevelsForUser( $user_id );
 		$success = true;
 		foreach ( $membership_levels as $membership_level ) {
-			$deletion_success = pmpro_remove_membership_level( $membership_level->id, $user_id, $old_level_status );
+			$deletion_success = pmpro_cancelMembershipLevel( $membership_level->id, $user_id, $old_level_status );
 			if ( ! $deletion_success ) {
 				$success = false;
 			}
 		}
+		return $success;
 	}
 
-	return $success;
-}
-
-/**
- * Give a membership level to a user.
- *
- * @param int|array $level ID of the level to give or an array of level data.
- * @param int $user_id ID of the user to give the level to.
- */
-function pmpro_give_membership_level( $level, $user_id ) {
-	global $wpdb, $pmpro_error, $pmpro_giving_level;
-
-	// Make sure user id is int for security.
-	$user_id = intval( $user_id );
-
-	// Check that we have a level.
-	if ( empty( $level ) ) {
-		return;
-	}
-
-	// Check if they are changing their membership level.
+	// Now we know that we are actually adding a level.
+	// Check if they they already have the membership level that we are changing them to.
 	if ( ! is_array( $level ) && pmpro_hasMembershipLevel( $level, $user_id ) ) {
 		return;
 	}
@@ -1046,7 +1094,7 @@ function pmpro_give_membership_level( $level, $user_id ) {
 	if ( is_array( $level ) ) {
 		// We have a custom level. Make sure that it is valid.
 		if ( empty( $level['membership_id'] ) ) {
-			$pmpro_error = __( 'No membership_id specified in pmpro_give_membership_level.', 'paid-memberships-pro' );
+			$pmpro_error = __( 'No membership_id specified in pmpro_changeMembershipLevel().', 'paid-memberships-pro' );
 			return false;
 		}
 		$level_id = (int) $level['membership_id'];
@@ -1055,7 +1103,7 @@ function pmpro_give_membership_level( $level, $user_id ) {
 		$level_id = (int) $level; 
 	} else {
 		// Invalid level passed.
-		$pmpro_error = __( 'Invalid level parameter passed to pmpro_give_membership_level.', 'paid-memberships-pro' );
+		$pmpro_error = __( 'Invalid level parameter passed to pmpro_changeMembershipLevel().', 'paid-memberships-pro' );
 		return false;
 	}
 
@@ -1085,21 +1133,11 @@ function pmpro_give_membership_level( $level, $user_id ) {
 	if ( ! empty( $level_group) && empty( $level_group->allow_multiple_selections ) ) {
 		// Get all levels in the group.
 		$levels_in_group = pmpro_get_levels_for_group( $level_group->id );
-		$group_level_ids = array_map( 
-			function( $level ) {
-				return $level->id;
-			}, 
-			$levels_in_group
-		);
+		$group_level_ids = wp_list_pluck( $levels_in_group, 'id' );
 
 		// Get all levels for the user.
 		$membership_levels = pmpro_getMembershipLevelsForUser( $user_id );
-		$membership_ids    = array_map( 
-			function( $level ) {
-				return $level->id;
-			}, 
-			$membership_levels
-		);
+		$membership_ids    = wp_list_pluck( $membership_levels, 'id' );
 
 		// Get the intersection of the two arrays.
 		$levels_to_cancel = array_intersect( $group_level_ids, $membership_ids );
@@ -1107,13 +1145,13 @@ function pmpro_give_membership_level( $level, $user_id ) {
 		// Cancel the levels.
 		foreach ( $levels_to_cancel as $level_to_cancel ) {
 			if ( $level_to_cancel != $level_id ) {
-				pmpro_remove_membership_level( $level_to_cancel, $user_id, 'changed' );
+				$pmpro_giving_level = true; // Make sure that we don't run level change actions again.
+				pmpro_cancelMembershipLevel( $level_to_cancel, $user_id, 'changed' );
+				unset( $pmpro_giving_level );
 			}
 		}
 	}
 	
-	unset( $pmpro_giving_level );
-
 	// Insert current membership
 	if ( ! empty( $level ) ) {
 		// make sure the dates are in good formats
@@ -1215,69 +1253,6 @@ function pmpro_give_membership_level( $level, $user_id ) {
 	 * @param int $cancel_level ID of the level being cancelled if specified.
 	 */
 	do_action( 'pmpro_after_change_membership_level', $level_id, $user_id, null );
-
-	return true;
-}
-
-/**
- * Remove a membership level from a user.
- *
- * @param int $level_id ID of the level to remove.
- * @param int $user_id ID of the user to remove the level from.
- * @param string $status Status to set the membership to.
- *
- * @return bool True if the level was removed, false otherwise.
- */
-function pmpro_remove_membership_level( $level_id, $user_id, $status = 'inactive' ) {
-	global $wpdb, $pmpro_giving_level;
-
-	// Set old user levels to be used in the pmpro_do_action_after_all_membership_level_changes() function.
-	pmpro_set_old_user_levels( $user_id );
-
-	// If we are not giving the user a new level, run the before change membership action.
-	if ( empty( $pmpro_giving_level ) ) {
-		/**
-		 * Action to run before the membership level changes.
-		 *
-		 * @param int $level_id ID of the level changed to.
-		 * @param int $user_id ID of the user changed.
-		 * @param int $cancel_level ID of the level being cancelled if specified.
-		 */
-		do_action( 'pmpro_before_change_membership_level', 0, $user_id, pmpro_getMembershipLevelsForUser( $user_id ), $level_id );
-	}
-
-	// Remove the membership level.
-	$sql = "UPDATE $wpdb->pmpro_memberships_users SET `status`='$status', `enddate`='" . esc_sql( current_time( 'mysql' ) ) . "' WHERE `user_id` = '" . esc_sql( $user_id ) . "' AND `membership_id` = '" . esc_sql( $level_id ) . "'";
-	if ( ! $wpdb->query( $sql ) ) {
-		$pmpro_error = __( 'Error interacting with database', 'paid-memberships-pro' ) . ': ' . ( $wpdb->last_error ? $wpdb->last_error : 'unavailable' );
-		return false;
-	}
-
-	// Check if we should cancel the user's subscription.
-	if ( apply_filters( 'pmpro_cancel_previous_subscriptions', true ) ) {
-		$active_subscriptions = PMPro_Subscription::get_subscriptions_for_user( $user_id, $level_id );
-		foreach ( $active_subscriptions as $subscription ) {
-			if ( ! $subscription->cancel_at_gateway() ) {
-				$pmpro_error = __( 'Error cancelling subscription at gateway.', 'paid-memberships-pro' );
-				return false;
-			}
-		}
-	}
-
-	// If we are not giving the user a new level, clear the level cache for this user and run the change membership action.
-	if ( empty( $pmpro_giving_level ) ) {
-		// Clear the level cache for this user.
-		pmpro_clear_level_cache_for_user( $user_id );
-
-		/**
-		 * Action to run after the membership level changes.
-		 *
-		 * @param int $level_id ID of the level changed to.
-		 * @param int $user_id ID of the user changed.
-		 * @param int $cancel_level ID of the level being cancelled if specified.
-		 */
-		do_action( 'pmpro_after_change_membership_level', 0, $user_id, $level_id );
-	}
 
 	return true;
 }
