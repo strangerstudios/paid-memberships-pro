@@ -301,7 +301,7 @@ function pmpro_checkForUpgrades()
 	}
 
 	/**
-	 * Version 2.10 - referencing 2.95 though
+	 * Version 2.10 - referencing 2.100 though
 	 * Keep Stripe application fees at 1% 
 	 */
 	if ( $pmpro_db_version < 2.100 ) {
