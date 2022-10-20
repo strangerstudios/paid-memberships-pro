@@ -3960,7 +3960,7 @@ class PMProGateway_stripe extends PMProGateway {
 		//These are percentage values 0%, 1% and 2%
 		
 		$stripe_app_fee = pmpro_getOption( 'stripe_app_fee' );
-		if ( $stripe_app_fee === FALSE ) {
+		if ( ! empty( $stripe_app_fee ) ) {
 			$adjusted_stripe_app_fee = intval( $stripe_app_fee );
 		} else {
 			$adjusted_stripe_app_fee = 2;
