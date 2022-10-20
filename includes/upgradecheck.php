@@ -5,14 +5,17 @@
 function pmpro_checkForUpgrades()
 {
 	$pmpro_db_version = pmpro_getOption("db_version");
-
 	//if we can't find the DB tables, reset db_version to 0
 	global $wpdb;
 	$wpdb->hide_errors();
+	$fresh_install = false;
 	$wpdb->pmpro_membership_levels = $wpdb->prefix . 'pmpro_membership_levels';
 	$table_exists = $wpdb->query("SHOW TABLES LIKE '" . $wpdb->pmpro_membership_levels . "'");
-	if(!$table_exists)
-		$pmpro_db_version = 0;
+	
+	if ( ! $table_exists ) {
+		$pmpro_db_version = 0;	
+		$fresh_install = true;	
+	}
 
 	//default options
 	if(!$pmpro_db_version) {
@@ -295,6 +298,17 @@ function pmpro_checkForUpgrades()
 		pmpro_clear_crons();
 		pmpro_maybe_schedule_crons();
 		pmpro_setOption( 'db_version', '2.81' );
+	}
+
+	/**
+	 * Version 2.10 - referencing 2.95 though
+	 * Keep Stripe application fees at 1% 
+	 */
+	if ( $pmpro_db_version < 3.0 ) {
+		if( $fresh_install === FALSE ) {
+			pmpro_setOption( 'stripe_app_fee', 1 ); //1%	
+		}
+		pmpro_setOption( 'db_version', '3' );
 	}
 }
 

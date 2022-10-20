@@ -3956,7 +3956,18 @@ class PMProGateway_stripe extends PMProGateway {
 		if ( self::using_legacy_keys() ) {
 			return 0;
 		}
-		$application_fee_percentage = pmpro_license_isValid( null, pmpro_license_get_premium_types() ) ? 0 : 1;
+
+		//These are percentage values 0%, 1% and 2%
+		
+		$stripe_app_fee = pmpro_getOption( 'stripe_app_fee' );
+		if ( $stripe_app_fee === FALSE ) {
+			$adjusted_stripe_app_fee = intval( $stripe_app_fee );
+		} else {
+			$adjusted_stripe_app_fee = 2;
+		}
+
+		$application_fee_percentage = pmpro_license_isValid( null, pmpro_license_get_premium_types() ) ? 0 : $adjusted_stripe_app_fee;	
+
 		$application_fee_percentage = apply_filters( 'pmpro_set_application_fee_percentage', $application_fee_percentage );
 
 		// Some countries do not allow us to use application fees. If we are in one of those
