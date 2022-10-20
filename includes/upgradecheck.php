@@ -304,11 +304,11 @@ function pmpro_checkForUpgrades()
 	 * Version 2.10 - referencing 2.95 though
 	 * Keep Stripe application fees at 1% 
 	 */
-	if ( $pmpro_db_version < 3.0 ) {
+	if ( $pmpro_db_version < 2.100 ) {
 		if( $fresh_install === FALSE ) {
 			pmpro_setOption( 'stripe_app_fee', 1 ); //1%	
 		}
-		pmpro_setOption( 'db_version', '3' );
+		pmpro_setOption( 'db_version', '2.100' );
 	}
 }
 
