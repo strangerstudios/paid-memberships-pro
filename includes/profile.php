@@ -425,7 +425,7 @@ function pmpro_membership_level_profile_fields_update() {
 		foreach($curlevels as $thelev) { $curlevids[] = $thelev->ID; }
 		foreach($_REQUEST['new_levels_level'] as $newkey => $leveltoadd) {
 			if(! in_array($leveltoadd, $curlevids)) {
-				$result = pmpro_give_membership_level($leveltoadd, $user_id);
+				$result = pmpro_changeMembershipLevel($leveltoadd, $user_id);
 
 				$doweexpire = $_REQUEST['new_levels_expires'][$newkey];
 				if(!empty($doweexpire)) { // we're going to expire.
