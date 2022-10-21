@@ -97,9 +97,17 @@ function pmpro_site_url_check() {
 	}
 
 	//The WP_ENVIRONMENT_TYPE has been changed, we should pause everything
-	if( ! pmpro_is_production_site() ) {
+	//But only if we're not forcing pause mode to be turned off
+	//local forces the WP_ENVIRONMENT_TYPE to be set to local
+	if( ! pmpro_is_production_site() && ! pmpro_getOption( 'pause_mode_override' ) ) {
 		//Site URL's don't match - enable pause mode
 		pmpro_setOption( 'pause_mode', true );
+	}
+
+	if ( ! pmpro_is_production_site() && ! empty( $_REQUEST['pmpro-reactivate-services'] ) ) {
+		//We're on a staging site but want to activate services
+		pmpro_setOption( 'pause_mode_override', true ); 
+		pmpro_setOption( 'pause_mode', false );	
 	}
 
 	if( ! pmpro_is_paused() ){
