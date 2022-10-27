@@ -145,6 +145,13 @@ function pmpro_report_sales_page()
 		$discount_code = '';
 	}
 
+	if ( isset( $_REQUEST[ 'timeframe' ] ) ) {
+		$timeframe = intval( $_REQUEST[ 'timeframe' ] );
+	} else {
+		$timeframe = 0;
+	}
+
+
 	$currently_in_period = false;
 
 	//calculate start date and how to group dates returned from DB
@@ -169,6 +176,22 @@ function pmpro_report_sales_page()
 		$currently_in_period = true;
 	}
 
+	if ( $timeframe !== 0 ) {
+
+		$todays_date = current_time( 'mysql' );
+
+		if( $timeframe === 7 || $timeframe === 30 ) {
+			$timeframe_string = 'DAY';
+		} else {
+			$timeframe_string = 'MONTH';
+		}
+
+		$startdate = date( 'Y-m-d', strtotime( $todays_date .' -'.$timeframe.' '.$timeframe_string ) );
+		$enddate = current_time( 'mysql' );
+
+	}
+
+	
 	//testing or live data
 	$gateway_environment = pmpro_getOption("gateway_environment");
 
@@ -179,6 +202,7 @@ function pmpro_report_sales_page()
 
 	//get data
 	$sqlQuery = "SELECT date,
+					MONTH( mo1timestamp ) as month, 
 				 	$type_function(mo1total) as value,
 				 	$type_function( IF( mo2id IS NOT NULL, mo1total, NULL ) ) as renewals
 				 FROM ";
@@ -186,6 +210,7 @@ function pmpro_report_sales_page()
 	$sqlQuery .= "SELECT $date_function( DATE_ADD( mo1.timestamp, INTERVAL $tz_offset SECOND ) ) as date,
 					    mo1.id as mo1id,
 						mo1.total as mo1total,
+						mo1.timestamp as mo1timestamp, 
 						mo2.id as mo2id
 				 FROM $wpdb->pmpro_membership_orders mo1
 				 	LEFT JOIN $wpdb->pmpro_membership_orders mo2 ON mo1.user_id = mo2.user_id
@@ -218,91 +243,157 @@ function pmpro_report_sales_page()
 	$sqlQuery .= " GROUP BY date ORDER by date";
 
 	$dates = $wpdb->get_results($sqlQuery);
-	
+
 	//fill in blanks in dates
 	$cols = array();
 	$csvdata = array();
 	$total_in_period = 0;
 	$units_in_period = 0; // Used for averages.
 	
-	if($period == "daily")
-	{
-		$lastday = date_i18n("t", strtotime($startdate, current_time("timestamp")));
+	$lastday = date_i18n("t", strtotime($startdate, current_time("timestamp")));
 		$day_of_month = intval( date( 'j' ) );
-		
-		for($i = 1; $i <= $lastday; $i++)
-		{
-			$cols[$i] = array(0, 0);
-			$csvdata[$i-1] = (object)array('date'=>$i, 'total'=>'', 'new'=> '', 'renewals'=>'');
-			if ( ! $currently_in_period || $i < $day_of_month ) {
-				$units_in_period++;
+
+	if( $timeframe !== 0 ) {
+		//Display the data how we need it for that specific timeframe
+	
+		$date_by_month = array();
+		foreach( $dates as $date ) {
+
+			if( ! empty( $date_by_month[$date->month] ) ) {
+				$date_by_month[$date->month][] = $date;
+			} else {
+				$date_by_month[$date->month] = array( $date );
 			}
 			
-			foreach($dates as $date)
-			{
-				if($date->date == $i) {
-					$cols[$i] = array( $date->value, $date->renewals );
-					$csvdata[$i-1] = (object)array('date'=>$i, 'total'=>$date->value, 'new'=> $date->value - $date->renewals, 'renewals'=> $date->renewals);
-					if ( ! $currently_in_period || $i < $day_of_month ) {
-						$total_in_period += $date->value;
-					}
-				}	
-			}
 		}
-	}
-	elseif($period == "monthly")
-	{
-		$month_of_year = intval( date( 'n' ) );
-		for($i = 1; $i < 13; $i++)
-		{
-			$cols[$i] = array(0, 0);
-			$csvdata[$i-1] = (object)array('date'=>$i, 'total'=>'', 'new'=> '', 'renewals'=>'');
-			if ( ! $currently_in_period || $i < $month_of_year ) {
-				$units_in_period++;
+
+		ksort( $date_by_month);
+
+		$todays_day = date( 'd', current_time( 'timestamp' ) );
+		$todays_month = date( 'n', current_time( 'timestamp' ) );
+
+		foreach( $date_by_month as $month_no => $date_data ) {
+
+			$days_in_this_month = cal_days_in_month( CAL_GREGORIAN, intval( $month_no ), date('Y',current_time('timestamp')) );
+
+			if( $month_no == $todays_month ) {
+				//Only count up to todays day
+				$days_in_this_month = $todays_day;
 			}
 
-			foreach($dates as $date)
+			for( $i = 1; $i <= $days_in_this_month; $i++ ) {
+
+				$cols[sprintf( "%d-%d", $month_no, $i )] = array(0, 0);
+				$csvdata[sprintf( "%d-%d", $month_no, $i-1 )] = (object)array('date'=>$i, 'total'=>'', 'new'=> '', 'renewals'=>'');
+				if ( ! $currently_in_period || $i < $day_of_month ) {
+					$units_in_period++;
+				}
+				
+				foreach($date_data as $date){
+					if($date->date == $i) {
+						$cols[sprintf( "%d-%d", $month_no, $i )] = array( $date->value, $date->renewals );
+						$csvdata[sprintf( "%d-%d", $month_no, $i-1 )] = (object)array('date'=>$i, 'total'=>$date->value, 'new'=> $date->value - $date->renewals, 'renewals'=> $date->renewals);
+						if ( ! $currently_in_period || $i < $day_of_month ) {
+							$total_in_period += $date->value;
+						}
+					}	
+				}
+			}
+
+		}
+
+		if( $timeframe === 12 ) {
+			//Take the last 365 days
+			$count_back = 365;
+		} else {
+			//Take the last x amount of days in the timeframe
+			$count_back = $timeframe;
+		}
+
+		$cols = array_slice($cols, -$count_back, $count_back, true);
+
+		// var_dump($cols);
+
+	} else {
+
+		if( $period == "daily" ) {
+			
+
+			for( $i = 1; $i <= $lastday; $i++ ) {
+
+				$cols[$i] = array(0, 0);
+				$csvdata[$i-1] = (object)array('date'=>$i, 'total'=>'', 'new'=> '', 'renewals'=>'');
+				if ( ! $currently_in_period || $i < $day_of_month ) {
+					$units_in_period++;
+				}
+				
+				foreach($dates as $date)
+				{
+					if($date->date == $i) {
+						$cols[$i] = array( $date->value, $date->renewals );
+						$csvdata[$i-1] = (object)array('date'=>$i, 'total'=>$date->value, 'new'=> $date->value - $date->renewals, 'renewals'=> $date->renewals);
+						if ( ! $currently_in_period || $i < $day_of_month ) {
+							$total_in_period += $date->value;
+						}
+					}	
+				}
+			}
+		}
+		elseif($period == "monthly")
+		{
+			$month_of_year = intval( date( 'n' ) );
+			for($i = 1; $i < 13; $i++)
 			{
-				if($date->date == $i) {
-					$cols[$i] = array( $date->value, $date->renewals );
-					$csvdata[$i-1] = (object)array('date'=>$i, 'total'=>$date->value, 'new'=> $date->value - $date->renewals, 'renewals'=> $date->renewals);
-					if ( ! $currently_in_period || $i < $month_of_year ) {
-						$total_in_period += $date->value;
+				$cols[$i] = array(0, 0);
+				$csvdata[$i-1] = (object)array('date'=>$i, 'total'=>'', 'new'=> '', 'renewals'=>'');
+				if ( ! $currently_in_period || $i < $month_of_year ) {
+					$units_in_period++;
+				}
+
+				foreach($dates as $date)
+				{
+					if($date->date == $i) {
+						$cols[$i] = array( $date->value, $date->renewals );
+						$csvdata[$i-1] = (object)array('date'=>$i, 'total'=>$date->value, 'new'=> $date->value - $date->renewals, 'renewals'=> $date->renewals);
+						if ( ! $currently_in_period || $i < $month_of_year ) {
+							$total_in_period += $date->value;
+						}
 					}
 				}
 			}
 		}
-	}
-	else //annual
-	{
-		//get min and max years
-		$min = 9999;
-		$max = 0;
-		foreach($dates as $date)
+		else //annual
 		{
-			$min = min($min, $date->date);
-			$max = max($max, $date->date);
-		}
-
-		$current_year = intval( date( 'Y' ) );
-		for($i = $min; $i <= $max; $i++)
-		{
-			$cols[$i] = array(0, 0);
-			$csvdata[$i-1] = (object)array('date'=>$i, 'total'=>'', 'new'=> '', 'renewals'=>'');
-			if ( $i < $current_year ) {
-				$units_in_period++;
-			}
+			//get min and max years
+			$min = 9999;
+			$max = 0;
 			foreach($dates as $date)
 			{
-				if($date->date == $i) {
-					$cols[$i] = array( $date->value, $date->renewals );
-					$csvdata[$i-1] = (object)array('date'=>$i, 'total'=>$date->value, 'new'=> $date->value - $date->renewals, 'renewals'=> $date->renewals);
-					if ( $i < $current_year ) {
-						$total_in_period += $date->value;
+				$min = min($min, $date->date);
+				$max = max($max, $date->date);
+			}
+
+			$current_year = intval( date( 'Y' ) );
+			for($i = $min; $i <= $max; $i++)
+			{
+				$cols[$i] = array(0, 0);
+				$csvdata[$i-1] = (object)array('date'=>$i, 'total'=>'', 'new'=> '', 'renewals'=>'');
+				if ( $i < $current_year ) {
+					$units_in_period++;
+				}
+				foreach($dates as $date)
+				{
+					if($date->date == $i) {
+						$cols[$i] = array( $date->value, $date->renewals );
+						$csvdata[$i-1] = (object)array('date'=>$i, 'total'=>$date->value, 'new'=> $date->value - $date->renewals, 'renewals'=> $date->renewals);
+						if ( $i < $current_year ) {
+							$total_in_period += $date->value;
+						}
 					}
 				}
 			}
 		}
+
 	}
 	
 	$average = 0;
@@ -344,6 +435,12 @@ function pmpro_report_sales_page()
 			<option value="sales" <?php selected($type, "sales");?>><?php esc_html_e('Sales', 'paid-memberships-pro' );?></option>
 		</select>
 		<span id="for"><?php esc_html_e('for', 'paid-memberships-pro' )?></span>
+		<select id="timeframe" name="timeframe">
+			<option value='0' <?php selected( $timeframe, '0' ); ?>><?php esc_html_e( 'A Specific Month', 'paid-memberships-pro' ); ?></option>
+			<option value='7' <?php selected( $timeframe, '7' ); ?>><?php esc_html_e( 'Last 7 Days', 'paid-memberships-pro' ); ?></option>
+			<option value='30' <?php selected( $timeframe, '30' ); ?>><?php esc_html_e( 'Last 30 Days', 'paid-memberships-pro' ); ?></option>
+			<option value='12' <?php selected( $timeframe, '12' ); ?>><?php esc_html_e( 'Last 12 Months', 'paid-memberships-pro' ); ?></option>
+		</select>
 		<select id="month" name="month">
 			<?php for($i = 1; $i < 13; $i++) { ?>
 				<option value="<?php echo esc_attr( $i );?>" <?php selected($month, $i);?>><?php echo esc_html(date_i18n("F", mktime(0, 0, 0, $i, 2)));?></option>
@@ -367,7 +464,7 @@ function pmpro_report_sales_page()
 			<?php
 				}
 			?>
-		</select>
+		</select>		
 		<?php
 		$sqlQuery = "SELECT SQL_CALC_FOUND_ROWS * FROM $wpdb->pmpro_discount_codes ";
 		$sqlQuery .= "ORDER BY id DESC ";
@@ -395,6 +492,9 @@ function pmpro_report_sales_page()
 			jQuery('#period').change(function() {
 				pmpro_ShowMonthOrYear();
 			});
+			jQuery('#timeframe').change(function() {
+				pmpro_HideMonthOrYear();
+			});
 		});
 
 		function pmpro_ShowMonthOrYear()
@@ -420,7 +520,25 @@ function pmpro_report_sales_page()
 			}
 		}
 
+		function pmpro_HideMonthOrYear() {
+
+			var timeframe = jQuery('#timeframe').val();
+			if( timeframe == '7' || timeframe == '30' || timeframe == '12' ) {
+				jQuery('#for').hide();
+				jQuery('#month').hide();
+				jQuery('#year').hide();
+				jQuery('#period').hide();
+			} else {
+				jQuery('#for').show();
+				jQuery('#month').show();
+				jQuery('#year').show();
+				jQuery('#period').show();
+			}
+			
+		}
+
 		pmpro_ShowMonthOrYear();
+		pmpro_HideMonthOrYear();
 
 		//draw the chart
 		google.charts.load('current', {'packages':['corechart']});
