@@ -145,6 +145,14 @@ function pmpro_report_sales_page()
 		$discount_code = '';
 	}
 
+	if ( isset( $_REQUEST[ 'show_parts' ] ) ) {
+		$new_renewals = sanitize_text_field( $_REQUEST[ 'show_parts' ] );
+	} else {
+		$new_renewals = 'new_renewals';
+	}
+
+	
+
 	$currently_in_period = false;
 
 	//calculate start date and how to group dates returned from DB
@@ -380,6 +388,11 @@ function pmpro_report_sales_page()
 			<?php } ?>
 		</select>
 		<?php } ?>
+		<select id="show_parts" name="show_parts">
+			<option value='new_renewals' <?php selected( $new_renewals, 'new_renewals' ); ?> ><?php esc_html_e( 'Show New and Renewals', 'paid-memberships-pro' ); ?></option>
+			<option value='only_new' <?php selected( $new_renewals, 'only_new' ); ?> ><?php esc_html_e( 'Show Only New', 'paid-memberships-pro' ); ?></option>
+			<option value='only_renewals' <?php selected( $new_renewals, 'only_renewals' ); ?> ><?php esc_html_e( 'Show Only Renewals', 'paid-memberships-pro' ); ?></option>
+		</select>
 		<input type="hidden" name="page" value="pmpro-reports" />
 		<input type="hidden" name="report" value="sales" />
 		<input type="submit" class="button action" value="<?php esc_attr_e('Generate Report', 'paid-memberships-pro' );?>" />
@@ -429,8 +442,12 @@ function pmpro_report_sales_page()
 			var dataTable = new google.visualization.DataTable();
 			dataTable.addColumn('string', <?php echo wp_json_encode( esc_html( $date_function ) ); ?>);
 			dataTable.addColumn({type: 'string', role: 'tooltip', 'p': {'html': true}});
-			dataTable.addColumn('number', <?php echo wp_json_encode( esc_html__( 'Renewals', 'paid-memberships-pro' ) ); ?>);
+			<?php if( $new_renewals == 'new_renewals' || $new_renewals == 'only_renewals' ) { ?>
+				dataTable.addColumn('number', <?php echo wp_json_encode( esc_html__( 'Renewals', 'paid-memberships-pro' ) ); ?>);
+			<?php } ?>
+			<?php if( $new_renewals == 'new_renewals' || $new_renewals == 'only_new' ) { ?>
 			dataTable.addColumn('number', <?php echo wp_json_encode( esc_html( sprintf( __( 'New %s', 'paid-memberships-pro' ), ucwords( $type ) ) ) ); ?>);
+			<?php } ?>
 			<?php if ( $type === 'sales' ) { ?>
 				dataTable.addColumn('number', <?php echo wp_json_encode( esc_html( sprintf( __( 'Average: %s', 'paid-memberships-pro' ), number_format_i18n( $average, 2 ) ) ) ); ?>);
 			<?php } else { ?>
@@ -465,8 +482,8 @@ function pmpro_report_sales_page()
 								<?php echo wp_json_encode( (int) $value[0] - $value[1] ); ?>,
 								<?php echo wp_json_encode( (int) $value[0] ); ?>,
 							<?php } else { ?>
-								<?php echo wp_json_encode( pmpro_escape_price( pmpro_formatPrice( $value[1] ) ) ); ?>,
-								<?php echo wp_json_encode( pmpro_escape_price( pmpro_formatPrice( $value[0] - $value[1] ) ) ); ?>,
+								<?php if( $new_renewals == 'new_renewals' || $new_renewals == 'only_renewals' ) { echo wp_json_encode( pmpro_escape_price( pmpro_formatPrice( $value[1] ) ) ).','; } ?>
+								<?php if( $new_renewals == 'new_renewals' || $new_renewals == 'only_new' ) {  echo wp_json_encode( pmpro_escape_price( pmpro_formatPrice( $value[0] - $value[1] ) ) ); } ?>,
 								<?php echo wp_json_encode( pmpro_escape_price( pmpro_formatPrice( $value[0] ) ) ); ?>,
 							<?php } ?>
 						),
@@ -475,9 +492,9 @@ function pmpro_report_sales_page()
 							<?php echo wp_json_encode( (int) $value[0] - $value[1] ); ?>,
 							<?php echo wp_json_encode( (int) $average ); ?>,
 						<?php } else { ?>
-							<?php echo wp_json_encode( pmpro_round_price( $value[1] ) ); ?>,
-							<?php echo wp_json_encode( pmpro_round_price( $value[0] - $value[1] ) ); ?>,
-							<?php echo wp_json_encode( pmpro_round_price( $average ) ); ?>,
+							<?php if( $new_renewals == 'new_renewals' || $new_renewals == 'only_renewals' ) { echo wp_json_encode( pmpro_round_price( $value[1] ) ).','; } ?>
+							<?php if( $new_renewals == 'new_renewals' || $new_renewals == 'only_new' ) {echo wp_json_encode( pmpro_round_price( $value[0] - $value[1] ) ).','; } ?>
+							<?php if( $new_renewals != '1' ) { echo wp_json_encode( pmpro_round_price( $average ) ); } ?>,
 						<?php } ?>
 					],
 				<?php } ?>
@@ -537,7 +554,7 @@ function pmpro_report_sales_page()
 						} ?>
 					},
 				},
-				isStacked: true,
+				isStacked: false,
 			};
 
 			var chart = new google.visualization.ColumnChart(document.getElementById('chart_div'));
@@ -548,12 +565,15 @@ function pmpro_report_sales_page()
 			return '<div style="padding:15px; font-size: 14px; line-height: 20px; color: #000000;">' +
 				'<strong>' + period + '</strong><br/>' +
 				'<ul style="margin-bottom: 0px;">' +
+				<?php if( $new_renewals == 'new_renewals' || $new_renewals == 'only_new' ) { ?>
 				'<li><span style="margin-right: 3px;">' +
 				<?php echo wp_json_encode( esc_html__( 'New:', 'paid-memberships-pro' ) ); ?> +
 				'</span>' + notRenewals + '</li>' +
-				'<li><span style="margin-right: 3px;">' +
+				<?php } ?>
+				<?php if( $new_renewals == 'new_renewals' || $new_renewals == 'only_renewals' ) { ?>'<li><span style="margin-right: 3px;">' +
 				<?php echo wp_json_encode( esc_html__( 'Renewals:', 'paid-memberships-pro' ) ); ?> +
 				'</span>' + renewals + '</li>' +
+				<?php } ?>
 				'<li style="border-top: 1px solid #CCC; margin-bottom: 0px; margin-top: 8px; padding-top: 8px;"><span style="margin-right: 3px;">' +
 				<?php echo wp_json_encode( esc_html__( 'Total:', 'paid-memberships-pro' ) ); ?> +
 				'</span>' + total + '</li>' + '</ul>' + '</div>';
