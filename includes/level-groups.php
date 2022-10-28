@@ -24,7 +24,7 @@ function pmpro_get_level_groups() {
 			foreach ( $levels as $level ) {
 				pmpro_add_level_to_group( $level->id, $group_id );
 			}
-			return array( $group_id => array( 'name' => 'Main Group', 'allow_multiple_selections' => 0, 'displayorder' => 0 ) );
+			return array( $group_id => (object) array( 'id' => $group_id, 'name' => 'Main Group', 'allow_multiple_selections' => 0, 'displayorder' => 0 ) );
 		}
 	}
 

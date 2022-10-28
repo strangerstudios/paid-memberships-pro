@@ -1092,8 +1092,8 @@
 
 		// Fix orphaned levels.
 		foreach ( $reordered_levels as $reordered_level ) {
-			if ( empty( pmpro_get_group_id_for_level( $level->id ) )  && ! empty( $level_groups[0]->id ) ) {
-				pmpro_add_level_to_group( $level->id, $level_groups[0]->id );
+			if ( empty( pmpro_get_group_id_for_level( $reordered_level->id ) )  && ! empty( $level_groups ) ) {
+				pmpro_add_level_to_group( $reordered_level->id, reset( $level_groups )->id );
 			}
 		}
 
