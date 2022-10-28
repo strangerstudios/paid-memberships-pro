@@ -145,13 +145,6 @@ function pmpro_report_sales_page()
 		$discount_code = '';
 	}
 
-	if ( isset( $_REQUEST[ 'timeframe' ] ) ) {
-		$timeframe = intval( $_REQUEST[ 'timeframe' ] );
-	} else {
-		$timeframe = 0;
-	}
-
-
 	$currently_in_period = false;
 
 	//calculate start date and how to group dates returned from DB
@@ -484,9 +477,6 @@ function pmpro_report_sales_page()
 			jQuery('#period').change(function() {
 				pmpro_ShowMonthOrYear();
 			});
-			jQuery('#timeframe').change(function() {
-				pmpro_HideMonthOrYear();
-			});
 		});
 
 		function pmpro_ShowMonthOrYear()
@@ -512,25 +502,7 @@ function pmpro_report_sales_page()
 			}
 		}
 
-		function pmpro_HideMonthOrYear() {
-
-			var timeframe = jQuery('#timeframe').val();
-			if( timeframe == '7' || timeframe == '30' || timeframe == '12' ) {
-				jQuery('#for').hide();
-				jQuery('#month').hide();
-				jQuery('#year').hide();
-				jQuery('#period').hide();
-			} else {
-				jQuery('#for').show();
-				jQuery('#month').show();
-				jQuery('#year').show();
-				jQuery('#period').show();
-			}
-			
-		}
-
 		pmpro_ShowMonthOrYear();
-		pmpro_HideMonthOrYear();
 
 		//draw the chart
 		google.charts.load('current', {'packages':['corechart']});
