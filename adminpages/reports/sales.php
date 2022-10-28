@@ -168,28 +168,30 @@ function pmpro_report_sales_page()
 		$enddate = strval(intval($year)+1) . '-01-01';
 		$date_function = 'MONTH';
 		$currently_in_period = ( intval( date( 'Y' ) ) == $year );
-	}
-	else
-	{
-		$startdate = '1970-01-01';	//all time
-		$date_function = 'YEAR';
-		$currently_in_period = true;
-	}
-
-	if ( $timeframe !== 0 ) {
+	} else if ( $period === '7days' || $period === '30days' || $period === '12months' ) {
 
 		$todays_date = current_time( 'mysql' );
 
-		if( $timeframe === 7 || $timeframe === 30 ) {
+		if( $period === '7days' || $period === '30days' ) {
 			$timeframe_string = 'DAY';
+			$date_function = 'DAY';
+			if( $period == '7days' ) { $timeframe = 7; }
+			if( $period == '30days' ) { $timeframe = 30; }
 		} else {
 			$timeframe_string = 'MONTH';
+			$date_function = 'MONTH';
+			$timeframe = 12;
 		}
 
 		$startdate = date( 'Y-m-d', strtotime( $todays_date .' -'.$timeframe.' '.$timeframe_string ) );
 		$enddate = current_time( 'mysql' );
+		$currently_in_period = ( intval( date( 'Y' ) ) == $year && intval( date( 'n' ) ) == $month );
 
-	}
+	} else {
+		$startdate = '1970-01-01';	//all time
+		$date_function = 'YEAR';
+		$currently_in_period = true;
+	}	
 
 	
 	//testing or live data
@@ -253,7 +255,7 @@ function pmpro_report_sales_page()
 	$lastday = date_i18n("t", strtotime($startdate, current_time("timestamp")));
 		$day_of_month = intval( date( 'j' ) );
 
-	if( $timeframe !== 0 ) {
+	if( $period === '7days' || $period === '30days' || $period === '12months' ) {
 		//Display the data how we need it for that specific timeframe
 	
 		$date_by_month = array();
@@ -302,7 +304,7 @@ function pmpro_report_sales_page()
 
 		}
 
-		if( $timeframe === 12 ) {
+		if( $period === '12months' ) {
 			//Take the last 365 days
 			$count_back = 365;
 		} else {
@@ -312,90 +314,83 @@ function pmpro_report_sales_page()
 
 		$cols = array_slice($cols, -$count_back, $count_back, true);
 
-		// var_dump($cols);
+	} else if( $period == "daily" ) {
+		
+		for( $i = 1; $i <= $lastday; $i++ ) {
 
-	} else {
-
-		if( $period == "daily" ) {
+			$cols[$i] = array(0, 0);
+			$csvdata[$i-1] = (object)array('date'=>$i, 'total'=>'', 'new'=> '', 'renewals'=>'');
+			if ( ! $currently_in_period || $i < $day_of_month ) {
+				$units_in_period++;
+			}
 			
-
-			for( $i = 1; $i <= $lastday; $i++ ) {
-
-				$cols[$i] = array(0, 0);
-				$csvdata[$i-1] = (object)array('date'=>$i, 'total'=>'', 'new'=> '', 'renewals'=>'');
-				if ( ! $currently_in_period || $i < $day_of_month ) {
-					$units_in_period++;
-				}
-				
-				foreach($dates as $date)
-				{
-					if($date->date == $i) {
-						$cols[$i] = array( $date->value, $date->renewals );
-						$csvdata[$i-1] = (object)array('date'=>$i, 'total'=>$date->value, 'new'=> $date->value - $date->renewals, 'renewals'=> $date->renewals);
-						if ( ! $currently_in_period || $i < $day_of_month ) {
-							$total_in_period += $date->value;
-						}
-					}	
-				}
-			}
-		}
-		elseif($period == "monthly")
-		{
-			$month_of_year = intval( date( 'n' ) );
-			for($i = 1; $i < 13; $i++)
-			{
-				$cols[$i] = array(0, 0);
-				$csvdata[$i-1] = (object)array('date'=>$i, 'total'=>'', 'new'=> '', 'renewals'=>'');
-				if ( ! $currently_in_period || $i < $month_of_year ) {
-					$units_in_period++;
-				}
-
-				foreach($dates as $date)
-				{
-					if($date->date == $i) {
-						$cols[$i] = array( $date->value, $date->renewals );
-						$csvdata[$i-1] = (object)array('date'=>$i, 'total'=>$date->value, 'new'=> $date->value - $date->renewals, 'renewals'=> $date->renewals);
-						if ( ! $currently_in_period || $i < $month_of_year ) {
-							$total_in_period += $date->value;
-						}
-					}
-				}
-			}
-		}
-		else //annual
-		{
-			//get min and max years
-			$min = 9999;
-			$max = 0;
 			foreach($dates as $date)
 			{
-				$min = min($min, $date->date);
-				$max = max($max, $date->date);
+				if($date->date == $i) {
+					$cols[$i] = array( $date->value, $date->renewals );
+					$csvdata[$i-1] = (object)array('date'=>$i, 'total'=>$date->value, 'new'=> $date->value - $date->renewals, 'renewals'=> $date->renewals);
+					if ( ! $currently_in_period || $i < $day_of_month ) {
+						$total_in_period += $date->value;
+					}
+				}	
+			}
+		}
+	}
+	elseif($period == "monthly")
+	{
+		$month_of_year = intval( date( 'n' ) );
+		for($i = 1; $i < 13; $i++)
+		{
+			$cols[$i] = array(0, 0);
+			$csvdata[$i-1] = (object)array('date'=>$i, 'total'=>'', 'new'=> '', 'renewals'=>'');
+			if ( ! $currently_in_period || $i < $month_of_year ) {
+				$units_in_period++;
 			}
 
-			$current_year = intval( date( 'Y' ) );
-			for($i = $min; $i <= $max; $i++)
+			foreach($dates as $date)
 			{
-				$cols[$i] = array(0, 0);
-				$csvdata[$i-1] = (object)array('date'=>$i, 'total'=>'', 'new'=> '', 'renewals'=>'');
-				if ( $i < $current_year ) {
-					$units_in_period++;
-				}
-				foreach($dates as $date)
-				{
-					if($date->date == $i) {
-						$cols[$i] = array( $date->value, $date->renewals );
-						$csvdata[$i-1] = (object)array('date'=>$i, 'total'=>$date->value, 'new'=> $date->value - $date->renewals, 'renewals'=> $date->renewals);
-						if ( $i < $current_year ) {
-							$total_in_period += $date->value;
-						}
+				if($date->date == $i) {
+					$cols[$i] = array( $date->value, $date->renewals );
+					$csvdata[$i-1] = (object)array('date'=>$i, 'total'=>$date->value, 'new'=> $date->value - $date->renewals, 'renewals'=> $date->renewals);
+					if ( ! $currently_in_period || $i < $month_of_year ) {
+						$total_in_period += $date->value;
 					}
 				}
 			}
 		}
-
 	}
-	
+	else //annual
+	{
+		//get min and max years
+		$min = 9999;
+		$max = 0;
+		foreach($dates as $date)
+		{
+			$min = min($min, $date->date);
+			$max = max($max, $date->date);
+		}
+
+		$current_year = intval( date( 'Y' ) );
+		for($i = $min; $i <= $max; $i++)
+		{
+			$cols[$i] = array(0, 0);
+			$csvdata[$i-1] = (object)array('date'=>$i, 'total'=>'', 'new'=> '', 'renewals'=>'');
+			if ( $i < $current_year ) {
+				$units_in_period++;
+			}
+			foreach($dates as $date)
+			{
+				if($date->date == $i) {
+					$cols[$i] = array( $date->value, $date->renewals );
+					$csvdata[$i-1] = (object)array('date'=>$i, 'total'=>$date->value, 'new'=> $date->value - $date->renewals, 'renewals'=> $date->renewals);
+					if ( $i < $current_year ) {
+						$total_in_period += $date->value;
+					}
+				}
+			}
+		}
+	}
+
 	$average = 0;
 	if ( 0 !== $units_in_period ) {
 		$average = $total_in_period / $units_in_period; // Not including this unit.
@@ -429,18 +424,15 @@ function pmpro_report_sales_page()
 			<option value="daily" <?php selected($period, "daily");?>><?php esc_html_e('Daily', 'paid-memberships-pro' );?></option>
 			<option value="monthly" <?php selected($period, "monthly");?>><?php esc_html_e('Monthly', 'paid-memberships-pro' );?></option>
 			<option value="annual" <?php selected($period, "annual");?>><?php esc_html_e('Annual', 'paid-memberships-pro' );?></option>
+			<option value='7days' <?php selected( $period, '7days' ); ?>><?php esc_html_e( 'Last 7 Days', 'paid-memberships-pro' ); ?></option>
+			<option value='30days' <?php selected( $period, '30days' ); ?>><?php esc_html_e( 'Last 30 Days', 'paid-memberships-pro' ); ?></option>
+			<option value='12months' <?php selected( $period, '12months' ); ?>><?php esc_html_e( 'Last 12 Months', 'paid-memberships-pro' ); ?></option>
 		</select>
 		<select name="type">
 			<option value="revenue" <?php selected($type, "revenue");?>><?php esc_html_e('Revenue', 'paid-memberships-pro' );?></option>
 			<option value="sales" <?php selected($type, "sales");?>><?php esc_html_e('Sales', 'paid-memberships-pro' );?></option>
 		</select>
-		<span id="for"><?php esc_html_e('for', 'paid-memberships-pro' )?></span>
-		<select id="timeframe" name="timeframe">
-			<option value='0' <?php selected( $timeframe, '0' ); ?>><?php esc_html_e( 'A Specific Month', 'paid-memberships-pro' ); ?></option>
-			<option value='7' <?php selected( $timeframe, '7' ); ?>><?php esc_html_e( 'Last 7 Days', 'paid-memberships-pro' ); ?></option>
-			<option value='30' <?php selected( $timeframe, '30' ); ?>><?php esc_html_e( 'Last 30 Days', 'paid-memberships-pro' ); ?></option>
-			<option value='12' <?php selected( $timeframe, '12' ); ?>><?php esc_html_e( 'Last 12 Months', 'paid-memberships-pro' ); ?></option>
-		</select>
+		<span id="for"><?php esc_html_e('for', 'paid-memberships-pro' )?></span>		
 		<select id="month" name="month">
 			<?php for($i = 1; $i < 13; $i++) { ?>
 				<option value="<?php echo esc_attr( $i );?>" <?php selected($month, $i);?>><?php echo esc_html(date_i18n("F", mktime(0, 0, 0, $i, 2)));?></option>
