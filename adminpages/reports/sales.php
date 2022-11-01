@@ -312,7 +312,7 @@ function pmpro_report_sales_page()
 			}
 		}
 	}
-	
+
 	$average = 0;
 	if ( 0 !== $units_in_period ) {
 		$average = $total_in_period / $units_in_period; // Not including this unit.
@@ -482,8 +482,8 @@ function pmpro_report_sales_page()
 								<?php echo wp_json_encode( (int) $value[0] - $value[1] ); ?>,
 								<?php echo wp_json_encode( (int) $value[0] ); ?>,
 							<?php } else { ?>
-								<?php if( $new_renewals == 'new_renewals' || $new_renewals == 'only_renewals' ) { echo wp_json_encode( pmpro_escape_price( pmpro_formatPrice( $value[1] ) ) ).','; } ?>
-								<?php if( $new_renewals == 'new_renewals' || $new_renewals == 'only_new' ) {  echo wp_json_encode( pmpro_escape_price( pmpro_formatPrice( $value[0] - $value[1] ) ) ); } ?>,
+								<?php echo wp_json_encode( pmpro_escape_price( pmpro_formatPrice( $value[1] ) ) ); ?>,
+								<?php echo wp_json_encode( pmpro_escape_price( pmpro_formatPrice( $value[0] - $value[1] ) ) ); ?>,								
 								<?php echo wp_json_encode( pmpro_escape_price( pmpro_formatPrice( $value[0] ) ) ); ?>,
 							<?php } ?>
 						),
@@ -494,12 +494,11 @@ function pmpro_report_sales_page()
 						<?php } else { ?>
 							<?php if( $new_renewals == 'new_renewals' || $new_renewals == 'only_renewals' ) { echo wp_json_encode( pmpro_round_price( $value[1] ) ).','; } ?>
 							<?php if( $new_renewals == 'new_renewals' || $new_renewals == 'only_new' ) {echo wp_json_encode( pmpro_round_price( $value[0] - $value[1] ) ).','; } ?>
-							<?php if( $new_renewals != '1' ) { echo wp_json_encode( pmpro_round_price( $average ) ); } ?>,
+							<?php echo wp_json_encode( pmpro_round_price( $average ) ); ?>,
 						<?php } ?>
 					],
 				<?php } ?>
 			]);
-
 			var options = {
 				title: pmpro_report_title_sales(),
 				titlePosition: 'top',
@@ -540,13 +539,13 @@ function pmpro_report_sales_page()
 				},
 				seriesType: 'bars',
 				series: {
-					2: {
+					<?php if( $new_renewals == 'new_renewals' ) { echo 2; } else { echo 1; } ?> : {
 						type: 'line',
 						color: '#B00000',
 						enableInteractivity: false,
 						lineDashStyle: [4, 1], 
 					},
-					1: {<?php
+					<?php if( $new_renewals == 'new_renewals' ) { echo 1; } else { echo 2; } ?>: {<?php
 						if ( $type === 'sales') {
 							echo "color: '#0099C6'"; // Lighter Blue for "Sales" chart.
 						} else {
