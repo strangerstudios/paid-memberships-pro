@@ -7,6 +7,17 @@
 			$this->email = $this->from = $this->fromname = $this->subject = $this->template = $this->data = $this->body = NULL;
 		}					
 		
+		/**
+		 * Send an email to a member or admin. Uses the wp_mail function.
+		 *
+		 * @param string $email The user's email that should receive the email.
+		 * @param string $from The from address which the email is being sent.
+		 * @param string $fromname The from name which the email is being sent.
+		 * @param string $subject The subject line for the email.
+		 * @param string $template The email templates name.
+		 * @param array $data The data associated with the email and it's contents.
+		 * 
+		 */
 		function sendEmail($email = NULL, $from = NULL, $fromname = NULL, $subject = NULL, $template = NULL, $data = NULL)
 		{			
 			//if values were passed
@@ -171,6 +182,12 @@
 			}
 		}
 		
+		/**
+		 * Send the level cancelled email to the member.
+		 *
+		 * @param object $user The WordPress user object.
+		 * @param int $old_level_id The level ID of the level that was cancelled.
+		 */
 		function sendCancelEmail($user = NULL, $old_level_id = NULL)
 		{
 			global $wpdb, $current_user;
@@ -184,11 +201,11 @@
 			$this->subject = sprintf(__('Your membership at %s has been CANCELLED', 'paid-memberships-pro'), get_option("blogname"));
 
 			$this->data = array(
-				"user_email" => $user->user_email, 
-				"display_name" => $user->display_name, 
-				"user_login" => $user->user_login, 
-				"sitename" => get_option("blogname"), 
-				"siteemail" => pmpro_getOption("from_email"),
+				'user_email' => $user->user_email, 
+				'display_name' => $user->display_name, 
+				'user_login' => $user->user_login, 
+				'sitename' => get_option( 'blogname' ), 
+				'siteemail' => pmpro_getOption( 'from_email' ),
 				'levels_url' => pmpro_url( 'levels' )
 			);
 
@@ -206,6 +223,12 @@
 			return $this->sendEmail();
 		}
 		
+		/**
+		 * Send the level cancelled email to the admin.
+		 *
+		 * @param object $user The WordPress user object of the member.
+		 * @param int $old_level_id The level ID of the level that was cancelled.
+		 */
 		function sendCancelAdminEmail($user = NULL, $old_level_id = NULL)
 		{
 			global $wpdb, $current_user;
@@ -258,6 +281,12 @@
 			return $this->sendEmail();
 		}
 
+		/**
+		 * Send the refunded email to the member.
+		 *
+		 * @param object $user The WordPress user object.
+		 * @param MemberOrder $invoice The order object that is associated with the refund.
+		 */
 		function sendRefundedEmail( $user = NULL, $invoice = NULL ) {
 			global $wpdb, $current_user;
 			if ( ! $user ) {
@@ -325,6 +354,12 @@
 			return $this->sendEmail();
 		}
 		
+		/**
+		 * Send the refunded email to the member.
+		 *
+		 * @param object $user The WordPress user object.
+		 * @param MemberOrder $invoice The order object that is associated with the refund.
+		 */
 		function sendRefundedAdminEmail( $user = NULL, $invoice = NULL ) {
 			global $wpdb, $current_user;
 			if ( ! $user ) {
@@ -394,6 +429,12 @@
 			return $this->sendEmail();
 		}
 		
+		/**
+		 * Send the member a confirmation checkout email after succesfully purchasing a membership level.
+		 *
+		 * @param object $user The WordPress user object.
+		 * @param MemberOrder $invoice The order object that is associated with the checkout.
+		 */
 		function sendCheckoutEmail($user = NULL, $invoice = NULL)
 		{
 			global $wpdb, $current_user, $discount_code;
@@ -516,6 +557,12 @@
 			return $this->sendEmail();
 		}
 		
+		/**
+		 * Send the admin a confirmation checkout email after the member succesfully purchases a membership level.
+		 *
+		 * @param object $user The WordPress user object.
+		 * @param MemberOrder $invoice The order object that is associated with the checkout.
+		 */
 		function sendCheckoutAdminEmail($user = NULL, $invoice = NULL)
 		{
 			global $wpdb, $current_user, $discount_code;
@@ -621,6 +668,12 @@
 			return $this->sendEmail();
 		}
 		
+		/**
+		 * Send the member a confirmation email when updating their billing details
+		 *
+		 * @param object $user The WordPress user object.
+		 * @param MemberOrder $invoice The order object that is associated to the member.
+		 */
 		function sendBillingEmail($user = NULL, $invoice = NULL)
 		{
 			global $current_user;
@@ -678,6 +731,12 @@
 			return $this->sendEmail();
 		}
 		
+		/**
+		 * Send the admin a confirmation email when a member updatestheir billing details
+		 *
+		 * @param object $user The WordPress user object.
+		 * @param MemberOrder $invoice The order object that is associated to the member.
+		 */
 		function sendBillingAdminEmail($user = NULL, $invoice = NULL)
 		{
 			global $current_user;
@@ -735,6 +794,12 @@
 			return $this->sendEmail();
 		}
 		
+		/**
+		 * Send the member an email when their recurring payment has failed.
+		 *
+		 * @param object $user The WordPress user object.
+		 * @param MemberOrder $invoice The order object that is associated to the member.
+		 */
 		function sendBillingFailureEmail($user = NULL, $invoice = NULL)
 		{
 			global $current_user;
@@ -788,6 +853,12 @@
 			return $this->sendEmail();
 		}				
 		
+		/**
+		 * Send the admin an email when their recurring payment has failed.
+		 *
+		 * @param object $user The WordPress user object.
+		 * @param MemberOrder $invoice The order object that is associated to the member.
+		 */
 		function sendBillingFailureAdminEmail($email, $invoice = NULL)
 		{		
 			if(!$invoice)			
@@ -837,6 +908,12 @@
 			return $this->sendEmail();
 		}
 		
+		/**
+		 * Send the member an email when their credit card is expiring soon.
+		 *
+		 * @param object $user The WordPress user object.
+		 * @param MemberOrder $invoice The order object that is associated to the member.
+		 */
 		function sendCreditCardExpiringEmail($user = NULL, $invoice = NULL)
 		{
 			global $current_user;
@@ -895,6 +972,12 @@
 			return $this->sendEmail();
 		}
 		
+		/**
+		 * Send the member an email when their recurring payment has succeeded.
+		 *
+		 * @param object $user The WordPress user object.
+		 * @param MemberOrder $invoice The order object that is associated to the member.
+		 */
 		function sendInvoiceEmail($user = NULL, $invoice = NULL)
 		{
 			global $wpdb, $current_user;
@@ -973,6 +1056,12 @@
 			return $this->sendEmail();
 		}
 		
+		/**
+		 * Send the member an email when their trial is ending soon.
+		 *
+		 * @param object $user The WordPress user object.
+		 * @param int $membership_id The member's membership level ID.
+		 */
 		function sendTrialEndingEmail( $user = NULL, $membership_id = NULL )
 		{
 			global $current_user, $wpdb;
@@ -1019,6 +1108,7 @@
 			return $this->sendEmail();
 		}
 		
+		
 		function sendMembershipExpiredEmail( $user = NULL, $membership_id = NULL )
 		{
 			global $current_user, $wpdb;
@@ -1038,6 +1128,12 @@
 			return $this->sendEmail();
 		}
 		
+		/**
+		 * Send the member an email when their membership has ended.
+		 *
+		 * @param object $user The WordPress user object.
+		 * @param int $membership_id The member's membership level ID.
+		 */
 		function sendMembershipExpiringEmail( $user = NULL, $membership_id = NULL )
 		{
 			global $current_user, $wpdb;
@@ -1077,6 +1173,11 @@
 			return $this->sendEmail();
 		}
 		
+		/**
+		 * Send an email to the member when an admin has changed their membership level.
+		 *
+		 * @param object $user The WordPress user object.
+		 */
 		function sendAdminChangeEmail($user = NULL)
 		{
 			global $current_user, $wpdb;
@@ -1135,6 +1236,11 @@
 			return $this->sendEmail();
 		}
 		
+		/**
+		 * Send an email to the admin when an admin has changed a member's membership level.
+		 *
+		 * @param object $user The WordPress user object.
+		 */
 		function sendAdminChangeAdminEmail($user = NULL)
 		{
 			global $current_user, $wpdb;
@@ -1249,6 +1355,14 @@
 			return $this->sendEmail();
 		}
 
+		/**
+		 * Send the Payment Action is required email to a member. This is used for Stripe payments.
+		 *
+		 * @param object $user
+		 * @param MemberOrder $order 
+		 * @param string $invoice_url The link to the invoice that is generated by Stripe.
+		 * @return void
+		 */
 		function sendPaymentActionRequiredEmail($user = NULL, $order = NULL, $invoice_url = NULL)
 		{
 			global $wpdb, $current_user;
@@ -1288,6 +1402,14 @@
 			return $this->sendEmail();
 		}
 
+		/**
+		 * Send the Payment Action is required email to the admin when a member's payment requires the payment action intent. This is used for Stripe payments.
+		 *
+		 * @param object $user
+		 * @param MemberOrder $order 
+		 * @param string $invoice_url The link to the invoice that is generated by Stripe.
+		 * @return void
+		 */
 		function sendPaymentActionRequiredAdminEmail($user = NULL, $order = NULL, $invoice_url = NULL)
 		{
 			global $wpdb, $current_user;
