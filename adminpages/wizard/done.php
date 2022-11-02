@@ -7,7 +7,7 @@
 	// Get Add On recommendations based on site type.
 	$addon_cats = pmpro_get_addon_categories();
 	
-	if ( $addon_cats[$site_type] ) {
+	if ( ! empty( $addon_cats[$site_type] ) && $addon_cats[$site_type] ) {
 		$addon_list = $addon_cats[$site_type];
 	} else {
 		$addon_list = $addon_cats['popular'];
