@@ -399,6 +399,10 @@ class PMPro_Field {
             //use the save date function
             $this->save_function = array($this, "saveDate");
         }
+		elseif ( $this->type == 'hidden' ) {
+			// Don't show the label for the hidden field.
+			$this->showmainlabel = false;
+		}
 
 		return true;
 	}
@@ -818,7 +822,7 @@ class PMPro_Field {
 			if(!empty($this->html_attributes))
 				$r .= $this->getHTMLAttributes();		
 			$r .= ' /> ';
-			$r .= '<label class="pmprorh_checkbox_label" for="' . $this->name . '">' . $this->text . '</label> &nbsp; ';
+			$r .= '<label class="pmprorh_checkbox_label" for="' . $this->name . '">' . $this->text . '</label>';
 			$r .= '<input type="hidden" name="'.$this->name.'_checkbox" value="1" />';	//extra field so we can track unchecked boxes
 		}
 		
@@ -1017,6 +1021,9 @@ class PMPro_Field {
         }
         elseif($this->type == "readonly")
 		{				
+			if ( empty( $value ) ) {
+				$value = '&#8212;';
+			}
 			$r = $value;
 		}
 		else
@@ -1239,13 +1246,15 @@ class PMPro_Field {
 		?>
 		<div id="<?php echo esc_attr( $this->id );?>_div" class="pmpro_checkout-field<?php if(!empty($this->divclass)) echo ' ' . esc_attr( $this->divclass ); ?>">
 			<?php if(!empty($this->showmainlabel)) { ?>
-				<label for="<?php echo esc_attr($this->name);?>"><?php echo wp_kses_post( $this->label );?></label>
-				<?php 
-					if(!empty($this->required) && !empty($this->showrequired) && $this->showrequired === 'label')
-					{
-					?><span class="pmprorh_asterisk"> <abbr title="Required Field">*</abbr></span><?php
-					}
-				?>
+				<label for="<?php echo esc_attr($this->name);?>">
+					<?php echo wp_kses_post( $this->label );?>
+					<?php 
+						if(!empty($this->required) && !empty($this->showrequired) && $this->showrequired === 'label')
+						{
+						?><span class="pmpro_asterisk"> <abbr title="<?php esc_attr_e( 'Required Field' ,'paid-memberships-pro' ); ?>">*</abbr></span><?php
+						}
+					?>
+				</label>
 				<?php $this->display($value); ?>
 			<?php } else { ?>
 				<?php $this->display($value); ?>

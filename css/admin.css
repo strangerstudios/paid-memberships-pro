@@ -1461,6 +1461,11 @@ tr.pmpro_settings_divider td {
 
 /* notifications */
 #pmpro_notifications .pmpro_notification {
+	background: #FFF;
+	border: 1px solid #ccd0d4;
+	box-shadow: 0 1px 4px rgba( 0, 0, 0, 0.15 );
+	display: flex;
+	margin: 1em 0;
 	position: relative;
 }
 
@@ -1480,26 +1485,79 @@ tr.pmpro_settings_divider td {
 	padding: 15px;
 }
 
+#pmpro_notifications .pmpro_notification .notice-dismiss:before {
+	content: "\f335";
+}
+
+#pmpro_notifications .pmpro_notification-icon {
+	border-left-width: 4px;
+	border-left-style: solid;
+	padding: 15px 10px;
+}
+
+#pmpro_notifications .pmpro_notification-icon .dashicons {
+	font-size: 30px;
+	height: 30px;
+	width: 30px;
+}
+
+#pmpro_notifications .pmpro_notification-content {
+	color: #111;
+	padding: 20px 25px;
+}
+
+#pmpro_notifications .pmpro_notification-general .pmpro_notification-icon {
+	background-color: #E8EEE0;
+	border-left-color: #658B24;
+	color: #567533;
+}
+
+#pmpro_notifications .pmpro_notification-error .pmpro_notification-icon {
+	background-color: #FBF6F7;
+	border-left-color: #721C24;
+	color: #721C24;
+}
+
 #pmpro_notifications .pmpro_notification h3 {
-	font-size: 24px;
-	font-weight: 400;
+	font-size: 18px;
+	font-weight: 700;
+	line-height: 25px;
 	margin: 0;
 }
 
 #pmpro_notifications .pmpro_notification p {
-	margin: 1em 0 0 0;
+	font-size: 14px;
+	line-height: 22px;
+	margin: 15px 0 0 0;
+	max-width: 65em;
 }
 
 #pmpro_notifications .pmpro_notification .button {
+	border-radius: 4px;
+	font-size: 14px;
 	margin-right: 5px;
 }
-
-#pmpro_notifications .pmpro_notification .pmpro_notification-general h3 {
-	color: #658B24;
+#pmpro_notifications .pmpro_notification-general h3 {
+	color: #567533;
 }
-
-#pmpro_notifications .pmpro_notification .pmpro_notification-error h3 {
-	color: #DC3232;
+#pmpro_notifications .pmpro_notification-general .button {
+	background-color: #567533;
+	border-color: #456227;
+	color: #FFF;
+}
+#pmpro_notifications .pmpro_notification-general .button:hover {
+	background-color: #456227;
+}
+#pmpro_notifications .pmpro_notification-error h3 {
+	color: #721C24;
+}
+#pmpro_notifications .pmpro_notification-error .button {
+	background-color: #721C24;
+	border-color: #711B23;
+	color: #FFF;
+}
+#pmpro_notifications .pmpro_notification-error .button:hover {
+	background-color: #600027;
 }
 
 /* highlighted trs */
