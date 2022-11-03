@@ -35,9 +35,9 @@ global $pmpro_pages;
 							<option value=""><?php esc_html_e( '-- Select --', 'paid-memberships-pro' ); ?></option>
 							<?php
 							$site_types = pmpro_wizard_get_site_types();
-							foreach ( $site_types as $sale_type => $name ) {
+							foreach ( $site_types as $site_type_key => $name ) {
 								?>
-								<option value="<?php echo esc_attr( $sale_type ); ?>" <?php selected( $sale_type, $site_type ); ?>><?php echo esc_html( $name ); ?></option>
+								<option value="<?php echo esc_attr( $site_type_key ); ?>" <?php selected( $site_type_key, $site_type ); ?>><?php echo esc_html( $name ); ?></option>
 								<?php
 							}
 							?>
