@@ -2,7 +2,7 @@
 	$site_type = get_option( 'pmpro_site_type', true );
 
 	if ( empty( $site_type ) ) {
-		$site_type = __( 'general', 'paid-memberships-pro' );
+		$site_type = 'general';
 	}
 	// Get Add On recommendations based on site type.
 	$addon_cats = pmpro_get_addon_categories();
