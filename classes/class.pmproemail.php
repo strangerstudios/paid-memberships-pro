@@ -1036,6 +1036,8 @@
 		
 		function sendAdminChangeEmail($user = NULL)
 		{
+			_deprecated_function( __FUNCTION__, 'TBD' );
+
 			global $current_user, $wpdb;
 			if(!$user)
 				$user = $current_user;
@@ -1081,6 +1083,8 @@
 		
 		function sendAdminChangeAdminEmail($user = NULL)
 		{
+			_deprecated_function( __FUNCTION__, 'TBD' );
+
 			global $current_user, $wpdb;
 			if(!$user)
 				$user = $current_user;

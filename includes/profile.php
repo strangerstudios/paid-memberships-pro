@@ -171,7 +171,6 @@ function pmpro_membership_level_profile_fields($user)
 							<tr class="old_levels_delsettings_tr_template remove_level">
 								<td></td>
 								<td colspan="3">
-									<label for="send_admin_change_email"><input value="<?php echo esc_attr( $level->id ); ?>" id="send_admin_change_email" name="send_admin_change_email[]" type="checkbox"><?php esc_html_e( 'Send the user an email about this change. (Do we still want this?)', 'paid-memberships-pro' ); ?></label><br>
 									<label for="cancel_subscription"><input value="<?php echo esc_attr( $level->id ); ?>" id="cancel_subscription" name="cancel_subscription[]" type="checkbox"><?php esc_html_e( "Cancel this user's subscription at the gateway.", 'paid-memberships-pro' ); ?></label>
 									<?php
 									// Check if we are able to refund the user's last order for this level.
