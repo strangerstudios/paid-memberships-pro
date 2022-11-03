@@ -11,6 +11,28 @@ if ( empty( $_REQUEST['step'] ) ) {
 	$active_step = 'general';
 }
 
+/**
+ * Helper function to get all site types and their human-readable labels.
+ * Can only be used within the wizard.
+ *
+ * @since TBD.
+ *
+ * @return array
+ */
+function pmpro_wizard_get_site_types() {
+	// These values will all be escaped when displayed.
+	return array(
+		'association'       => __( 'Association', 'paid-memberships-pro' ),
+		'community'         => __( 'Community', 'paid-memberships-pro' ),
+		'courses'           => __( 'Courses', 'paid-memberships-pro' ),
+		'digital_downloads' => __( 'Digital Downloads', 'paid-memberships-pro' ),
+		'directory'         => __( 'Directory/Profiles', 'paid-memberships-pro' ),
+		'physical_products' => __( 'Physical Products', 'paid-memberships-pro' ),
+		'premium_content'   => __( 'Premium Content', 'paid-memberships-pro' ),
+		'other'             => __( 'Other', 'paid-memberships-pro' ),
+	);
+}
+
 ?>
 <div class="pmpro-wizard">
 	<div style="background-image: url('/wp-content/plugins/paid-memberships-pro/images/bg_icons-white.png');background-repeat: repeat;background-size: 50%;position: absolute; top: 0; left: 0; width: 100%;height: 100vh;opacity: .5; z-index: -1;"></div>
