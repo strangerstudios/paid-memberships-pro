@@ -43,6 +43,14 @@ function pmpro_delete_user_form_notice( $current_user, $userids ) {
 		}
 	}
 
+	$member_history = $wpdb->get_var( "SELECT COUNT(*) as members FROM $wpdb->pmpro_memberships_users WHERE user_id IN (" . implode( "," , $userids ) . ")" );
+
+	// Make sure that there is actually PMPro content to delete for these users.
+	if ( empty( $userids_have_levels ) && empty( $member_history ) ) {
+		// No PMPro content to delete, so we don't need to add anything to the form.
+		return;
+	}
+
 	?>
 	<div class='pmpro_delete_user_actions'>
 		<p><?php esc_html_e( 'What should be done with the PMPro Membership data for these users?', 'paid-memberships-pro' ); ?></p>
@@ -52,23 +60,23 @@ function pmpro_delete_user_form_notice( $current_user, $userids ) {
 		<div class="notice notice-error inline">
 			<?php
 			if ( count( $userids ) > 1 ) {
-				echo  '<p><strong>' . esc_html__( 'Warning', 'paid-memberships-pro' ) . ':</strong>' . esc_html__( 'One or more users for deletion have an active membership level.', 'paid-memberships-pro' ) . '</p>';
+				echo  '<p><strong>' . esc_html__( 'Warning', 'paid-memberships-pro' ) . ': </strong>' . esc_html__( 'One or more users for deletion have an active membership level.', 'paid-memberships-pro' ) . '</p>';
 			} else {
-				echo  '<p><strong>' . esc_html__( 'Warning', 'paid-memberships-pro' ) . ':</strong>' . esc_html__( 'This user has an active membership level.', 'paid-memberships-pro' ) . '</p>';
+				echo  '<p><strong>' . esc_html__( 'Warning', 'paid-memberships-pro' ) . ': </strong>' . esc_html__( 'This user has an active membership level.', 'paid-memberships-pro' ) . '</p>';
 			}
 			?>
 		</div>
 		<p><input type='checkbox' name='pmpro_delete_active_subscriptions' id='pmpro_delete_active_subscriptions' value='1' /><label for='pmpro_delete_active_subscriptions'><?php esc_html_e('Cancel any related membership levels first. This may trigger cancellations at the gateway or other third party services.', 'paid-memberships-pro' ); ?></label></p>
 		<?php
-		}
-		$member_history = $wpdb->get_var( "SELECT COUNT(*) as members FROM $wpdb->pmpro_memberships_users WHERE user_id IN (" . implode( "," , $userids ) . ")" );
+	}
+		
 
-		if ( intval( $member_history ) > 0 ) {
-			?>
-			<p><input type='checkbox' name='pmpro_delete_member_history' id='pmpro_delete_member_history' value='1' /><label for='pmpro_delete_member_history'><?php esc_html_e('Delete any related membership history. Order history will be retained.', 'paid-memberships-pro' ); ?></label></p>
-			<?php
-		}
+	if ( intval( $member_history ) > 0 ) {
 		?>
+		<p><input type='checkbox' name='pmpro_delete_member_history' id='pmpro_delete_member_history' value='1' /><label for='pmpro_delete_member_history'><?php esc_html_e('Delete any related membership history. Order history will be retained.', 'paid-memberships-pro' ); ?></label></p>
+		<?php
+	}
+	?>
 	</div>
 	<?php
 
