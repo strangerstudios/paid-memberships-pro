@@ -16,6 +16,7 @@
 	// Did they choose collect payments? If so, show a nudge to complete the gateway setup.
 	$configure_payment = pmpro_getOption( 'wizard_collect_payment', true );
 
+	$site_types = pmpro_wizard_get_site_types();
 ?>
 <div class="pmpro-wizard__step pmpro-wizard__step-4">
 				<div class="pmpro-wizard__step-header">
@@ -24,7 +25,14 @@
 				</div>
 				<div class="pmpro-wizard__field"> <!-- Recommended icons -->
 					<h1><?php esc_html_e( "What's next?", 'paid-memberships-pro' ); ?></h1>
-					<p><?php _e( sprintf( "You indicated you're building a %s membership site. Here are some recommended Add Ons for your business.", "<strong>$site_type</strong>" ), 'paid-memberships-pro' ); ?></p>
+					<p>
+						<?php
+						if ( isset( $site_types[ $site_type ] ) ) {
+							echo sprintf( esc_html__( "You indicated you're building a %s membership site.", 'paid-memberships-pro' ), '<strong>' . esc_html( $site_types[ $site_type ] ) . '</strong>' ) . ' ';
+						}
+						esc_html_e( 'Here are some recommended Add Ons for your business.', 'paid-memberships-pro' );
+						?>
+					</p>
 					<div style="text-align:center;">
 					<?php
 						// Get some Add On recommendations and only show 3.
