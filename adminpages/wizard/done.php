@@ -20,10 +20,10 @@
 <div class="pmpro-wizard__step pmpro-wizard__step-4">
 				<div class="pmpro-wizard__step-header">
 					<h1><?php esc_html_e( 'Setup Complete', 'paid-memberships-pro' ); ?></h1>
-					<p><strong>Congratulations!</strong> Your membership site is ready.</p>
+					<p><strong><?php esc_html_e( 'Congratulations!', 'paid-memberships-pro' ); ?></strong> <?php esc_html_e( 'Your membership site is ready.', 'paid-memberships-pro' ); ?></p>
 				</div>
 				<div class="pmpro-wizard__field"> <!-- Recommended icons -->
-					<h1>What's next?</h1>
+					<h1><?php esc_html_e( "What's next?", 'paid-memberships-pro' ); ?></h1>
 					<p><?php _e( sprintf( "You indicated you're building a %s membership site. Here are some recommended Add Ons for your business.", "<strong>$site_type</strong>" ), 'paid-memberships-pro' ); ?></p>
 					<div style="text-align:center;">
 					<?php
