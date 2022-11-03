@@ -52,7 +52,7 @@ function pmpro_delete_user_form_notice( $current_user, $userids ) {
 		<div class="notice notice-error inline">
 			<?php
 			if ( count( $userids ) > 1 ) {
-				_e( '<p><strong>Warning:</strong> One or more users for deletion have an active membership level.</p>', 'paid-memberships-pro' );
+				echo  '<p><strong>' . esc_html__( 'Warning', 'paid-memberships-pro' ) . ':</strong>' . esc_html__( 'One or more users for deletion have an active membership level.', 'paid-memberships-pro' ) . '</p>';
 			} else {
 				_e( '<p><strong>Warning:</strong> This user has an active membership level.</p>', 'paid-memberships-pro' );
 			}
