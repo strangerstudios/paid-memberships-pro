@@ -173,6 +173,11 @@
 		
 		function sendCancelEmail($user = NULL, $old_level_id = NULL)
 		{
+			// If an array is passed for $old_level_id, throw doing it wrong warning.
+			if ( is_array( $old_level_id ) ) {
+				_doing_it_wrong( __FUNCTION__, __( 'The $old_level_id parameter should be an integer, not an array.', 'paid-memberships-pro' ), 'TBD' );
+			}
+
 			global $wpdb, $current_user;
 			if(!$user)
 				$user = $current_user;
@@ -201,6 +206,11 @@
 		
 		function sendCancelAdminEmail($user = NULL, $old_level_id = NULL)
 		{
+			// If an array is passed for $old_level_id, throw doing it wrong warning.
+			if ( is_array( $old_level_id ) ) {
+				_doing_it_wrong( __FUNCTION__, __( 'The $old_level_id parameter should be an integer, not an array.', 'paid-memberships-pro' ), 'TBD' );
+			}
+
 			global $wpdb, $current_user;
 			if(!$user)
 				$user = $current_user;
@@ -1033,7 +1043,7 @@
 
 			return $this->sendEmail();
 		}
-		
+
 		function sendAdminChangeEmail($user = NULL)
 		{
 			_deprecated_function( __FUNCTION__, 'TBD' );
