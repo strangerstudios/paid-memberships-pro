@@ -1061,8 +1061,10 @@ function pmpro_stripe_webhook_populate_order_from_payment( $order, $payment_meth
 		$order->LastName = empty( $name_parts['lname'] ) ? '' : $name_parts['lname'];
 	} else {
 		// No billing address in the payment method, let's try to get it from the customer.
-		$customer = Stripe_Customer::retrieve( $customer_id );
-		if ( ! empty( $customer->address->line1 ) ) {
+		if ( ! empty( $customer_id ) ) {
+			$customer = Stripe_Customer::retrieve( $customer_id );
+		}
+		if ( ! empty( $customer ) && ! empty( $customer->address->line1 ) ) {
 			$order->billing = new stdClass();
 			$order->billing->name = empty( $customer->name ) ? '' : $customer->name;
 			$order->billing->street = empty( $customer->address->line1 ) ? '' : $customer->address->line1;
