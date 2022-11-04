@@ -1418,7 +1418,7 @@ function pmpro_get_field_html( $field = null ) {
                 <label>
                     <?php esc_html_e( 'Show field on user profile?', 'paid-memberships-pro' ); ?><br />
                     <select name="pmpro_userfields_field_profile">
-                        <option <?php selected( empty( $field_profile ), 0);?>><?php esc_html_e( '[Inherit Group Setting]', 'paid-memberships-pro' ); ?></option>
+                        <option value="" <?php selected( empty( $field_profile ), 0);?>><?php esc_html_e( '[Inherit Group Setting]', 'paid-memberships-pro' ); ?></option>
                         <option value="yes" <?php selected( $field_profile, 'yes' );?>><?php esc_html_e( 'Yes', 'paid-memberships-pro' ); ?></option>
                         <option value="admins" <?php selected( $field_profile, 'admins' );?>><?php esc_html_e( 'Yes (only admins)', 'paid-memberships-pro' ); ?></option>
                         <option value="no" <?php selected( $field_profile, 'no' );?>><?php esc_html_e( 'No', 'paid-memberships-pro' ); ?></option>
@@ -1527,6 +1527,8 @@ function pmpro_load_user_fields_from_settings() {
         
         foreach ( $group->fields as $settings_field ) {
             // Figure out field profile from settings and group profile.
+			// Check if $settings_field->profile begins and ends with brakcets.
+			$bracketed = 
             if ( empty( $settings_field->profile ) || $settings_field->profile === '[Inherit Group Setting]' ) {
                 $profile = $group_profile;
             } else {
