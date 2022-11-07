@@ -181,7 +181,7 @@
 						$logstr .= "Could not find payment method for invoice " . $invoice->id . ".";						
 					}
 					// Update payment method and billing address on order.
-					pmpro_stripe_webhook_populate_order_from_payment( $morder, $payment_method, $payment_intent->customer, $old_order );				
+					pmpro_stripe_webhook_populate_order_from_payment( $morder, $payment_method, $payment_intent->customer );				
 
 					//save
 					$morder->status = "success";
@@ -271,7 +271,7 @@
 					$logstr .= "Could not find payment method for invoice " . $invoice->id;					
 				}
 				// Update payment method and billing address on order.
-				pmpro_stripe_webhook_populate_order_from_payment( $morder, $payment_method, $payment_intent->customer, $old_order );
+				pmpro_stripe_webhook_populate_order_from_payment( $morder, $payment_method, $payment_intent->customer );
 
 				// Add invoice link to the order.
 				$morder->invoice_url = $invoice->hosted_invoice_url;
@@ -354,7 +354,7 @@
 					$logstr .= "Could not find payment method for charge " . $pmpro_stripe_event->data->object->id . ".";
 				}
 				// Update payment method and billing address on order.
-				pmpro_stripe_webhook_populate_order_from_payment( $morder, $payment_method, $payment_intent->customer, $old_order );
+				pmpro_stripe_webhook_populate_order_from_payment( $morder, $payment_method, $payment_intent->customer );
 
 				// Email the user and ask them to update their credit card information
 				$pmproemail = new PMProEmail();
@@ -1010,9 +1010,8 @@ function pmpro_stripe_webhook_change_membership_level( $morder ) {
  * @param MemberOrder          $order            The order to update.
  * @param Stripe_PaymentMethod $payment_method   The payment method object.
  * @param string               $customer_id      The Stripe customer to try to pull a billing address from if not on the payment method.
- * @param MemberOrder          $old_order        The old order to pull a billing address from if not availale in the payment method or customer.
  */
-function pmpro_stripe_webhook_populate_order_from_payment( $order, $payment_method, $customer_id = null, $old_order = null ) {
+function pmpro_stripe_webhook_populate_order_from_payment( $order, $payment_method, $customer_id = null ) {
 	global $wpdb;
 
 	// Fill the "Payment Type" and credit card fields.
@@ -1078,12 +1077,8 @@ function pmpro_stripe_webhook_populate_order_from_payment( $order, $payment_meth
 			$order->FirstName = empty( $name_parts['fname'] ) ? '' : $name_parts['fname'];
 			$order->LastName = empty( $name_parts['lname'] ) ? '' : $name_parts['lname'];
 		} else {
-			// No billing address in the customer, let's try to get it from the old order.
-			if ( ! empty( $old_order->billing ) ) {
-				$order->billing = $old_order->billing;
-				$order->FirstName = $old_order->FirstName;
-				$order->LastName = $old_order->LastName;
-			}
+			// No billing address in the customer, let's try to get it from the old order or from user meta.
+			$order->find_billing_address();
 		}
 	}
 	$order->Email = $wpdb->get_var("SELECT user_email FROM $wpdb->users WHERE ID = '" . esc_sql( $order->user_id ) . "' LIMIT 1");
