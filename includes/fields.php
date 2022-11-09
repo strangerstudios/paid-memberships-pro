@@ -1527,8 +1527,6 @@ function pmpro_load_user_fields_from_settings() {
         
         foreach ( $group->fields as $settings_field ) {
             // Figure out field profile from settings and group profile.
-			// Check if $settings_field->profile begins and ends with brakcets.
-			$bracketed = 
             if ( empty( $settings_field->profile ) || $settings_field->profile === '[Inherit Group Setting]' ) {
                 $profile = $group_profile;
             } else {
