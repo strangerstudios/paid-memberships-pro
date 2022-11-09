@@ -143,6 +143,16 @@
 }
 
 /**
+ * Clickable Items
+ */
+.pmpro_clickable {
+	cursor: pointer;
+}
+.js .postbox.pmpro_clickable h3 {
+	cursor: pointer;
+}
+
+/**
  * Checkbox Boxes
  *
  * Note: We will eventually remove the non-prefixed class names here. They are still in some Add Ons.
@@ -1305,15 +1315,49 @@ h2.nav-tab-wrapper {
 .memberships_page_pmpro-reports .pmpro_admin .nav-tab-wrapper {
 	margin-bottom: 10px;
 }
+.pmpro_report-filters {
+	background: #FAFAFA;
+	border: 1px solid #DADADA;
+	border-radius: 6px;
+	box-shadow: 1px 1px 5px rgb(0 0 0 / 12%);
+	margin: 1em 0 2em 0;
+	padding: 1.25em;
+}
+.pmpro_report-filters h3 {
+	margin: 0 0 .75em 0;
+	padding: 0;
+}
+.pmpro_report-filters .tablenav.top  {
+	align-items: center;
+	display: flex;
+	flex-wrap: wrap;
+	gap: .5em;
+	margin: 0;
+	padding: 0;
+}
+
+/* Reports individual page view styles */
+#pmpro_report_login_data thead tr th {
+	background-color: #1A688B;
+	color: #FFF;
+	font-weight: bold;
+}
+#pmpro_report_login_data thead tr.thead-sub th {
+	background-color: initial;
+	color: initial;
+	font-size: 12px;
+	font-weight: normal;
+	word-spacing: 100vw;
+}
+#pmpro_report_login_data thead th,
+#pmpro_report_login_data tbody td {
+	padding-left: 4px;
+	padding-right: 4px;
+}
+/* Reports widgets view styles */
 .pmpro_report-holder table.wp-list-table thead th,
 .pmpro_report-holder table.wp-list-table tbody td {
 	padding: 8px 10px;
-}
-.pmpro_clickable {
-	cursor: pointer;
-}
-.js .postbox.pmpro_clickable h3 {
-	cursor: pointer;
 }
 #pmpro_report_login .wp-list-table tbody td,
 #pmpro_report_memberships .wp-list-table tbody tr.pmpro_report_tr td,

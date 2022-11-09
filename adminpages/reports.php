@@ -15,9 +15,38 @@ require_once( dirname( __FILE__ ) . '/admin_header.php' ); ?>
 <?php
 // View a single report if requested.
 if ( ! empty( $_REQUEST[ 'report' ] ) ) {
-	//view a single report
-	$report = sanitize_text_field( $_REQUEST[ 'report' ] );
-	call_user_func( 'pmpro_report_' . $report . '_page' ); ?>
+
+	$pieces = array_chunk( $pmpro_reports, ceil( count( $pmpro_reports ) / 2 ), true );
+	foreach ( $pieces[0] as $report => $title ) {
+		add_meta_box(
+			'pmpro_report_' . $report,
+			$title,
+			'pmpro_report_' . $report . '_widget',
+			'memberships_page_pmpro-reports',
+			'advanced'
+		);
+	}
+	
+	foreach ( $pieces[1] as $report => $title ) {
+		add_meta_box(
+			'pmpro_report_' . $report,
+			$title,
+			'pmpro_report_' . $report . '_widget',
+			'memberships_page_pmpro-reports',
+			'side'
+		);
+	}
+
+	?>
+	<ul class="subsubsub">
+		<li><a href="<?php echo esc_url( admin_url( 'admin.php?page=pmpro-membershiplevels' ) );?>" title="<?php _e('Membership Levels', 'paid-memberships-pro' );?>" class="<?php if($view == 'pmpro-membershiplevels') { ?>current<?php } ?>"><?php esc_html_e('Levels', 'paid-memberships-pro' );?></a>&nbsp;|&nbsp;</li>
+	</ul>
+	<br class="clear" />
+	<?php 
+		// View a single report
+		$report = sanitize_text_field( $_REQUEST[ 'report' ] );
+		call_user_func( 'pmpro_report_' . $report . '_page' );
+	?>
 	<p><a class="button button-primary" href="<?php echo esc_url( admin_url( 'admin.php?page=pmpro-reports' ) );?>"><?php esc_html_e( 'Back to Reports Dashboard', 'paid-memberships-pro' ); ?></a></p>
 
 	<?php
