@@ -78,19 +78,21 @@ if ( empty( $default_gateway ) ) {
 						$levels = pmpro_getMembershipLevelsForUser( $current_user->ID );
 
 						// Loop through the levels and see if any are in the same group as the level being purchased.
-						foreach ( $levels as $level ) {
-							// If this is the level that the user is purchasing, continue.
-							if ( $level->id == $pmpro_level->id ) {
-								continue;
-							}
+						if ( ! empty( $levels ) ) {
+							foreach ( $levels as $level ) {
+								// If this is the level that the user is purchasing, continue.
+								if ( $level->id == $pmpro_level->id ) {
+									continue;
+								}
 
-							// If this level is not in the same group, continue.
-							if ( pmpro_get_group_id_for_level( $level->id ) != $group_id ) {
-								continue;
-							}
+								// If this level is not in the same group, continue.
+								if ( pmpro_get_group_id_for_level( $level->id ) != $group_id ) {
+									continue;
+								}
 
-							// If we made it this far, the user is going to lose this level after checkout.
-							printf( ' ' . esc_html__( 'Your current membership level of %s will be removed when you complete your purchase.', 'paid-memberships-pro' ), '<strong>' . esc_html( $level->name ) . '</strong>' );
+								// If we made it this far, the user is going to lose this level after checkout.
+								printf( ' ' . esc_html__( 'Your current membership level of %s will be removed when you complete your purchase.', 'paid-memberships-pro' ), '<strong>' . esc_html( $level->name ) . '</strong>' );
+							}
 						}
 					}
 					?>
