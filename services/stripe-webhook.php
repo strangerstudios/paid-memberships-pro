@@ -9,6 +9,7 @@
 	use Stripe\PaymentIntent as Stripe_PaymentIntent;
 	use Stripe\Charge as Stripe_Charge;
 	use Stripe\PaymentMethod as Stripe_PaymentMethod;
+	use Stripe\Customer as Stripe_Customer;
 
 	global $isapage;
 	$isapage = true;
@@ -180,7 +181,7 @@
 						$logstr .= "Could not find payment method for invoice " . $invoice->id . ".";						
 					}
 					// Update payment method and billing address on order.
-					pmpro_stripe_webhook_populate_order_from_payment( $morder, $payment_method );				
+					pmpro_stripe_webhook_populate_order_from_payment( $morder, $payment_method, $payment_intent->customer );				
 
 					//save
 					$morder->status = "success";
@@ -270,7 +271,7 @@
 					$logstr .= "Could not find payment method for invoice " . $invoice->id;					
 				}
 				// Update payment method and billing address on order.
-				pmpro_stripe_webhook_populate_order_from_payment( $morder, $payment_method );
+				pmpro_stripe_webhook_populate_order_from_payment( $morder, $payment_method, $payment_intent->customer );
 
 				// Add invoice link to the order.
 				$morder->invoice_url = $invoice->hosted_invoice_url;
@@ -353,7 +354,7 @@
 					$logstr .= "Could not find payment method for charge " . $pmpro_stripe_event->data->object->id . ".";
 				}
 				// Update payment method and billing address on order.
-				pmpro_stripe_webhook_populate_order_from_payment( $morder, $payment_method );
+				pmpro_stripe_webhook_populate_order_from_payment( $morder, $payment_method, $payment_intent->customer );
 
 				// Email the user and ask them to update their credit card information
 				$pmproemail = new PMProEmail();
@@ -573,7 +574,7 @@
 			if ( empty( $payment_method ) ) {
 				$logstr .= "Could not find payment method for Checkout Session " . $checkout_session->id . ".";				
 			}
-			pmpro_stripe_webhook_populate_order_from_payment( $order, $payment_method );
+			pmpro_stripe_webhook_populate_order_from_payment( $order, $payment_method, $subscription->customer );
 
 			// Update the amounts paid.
 			global $pmpro_currency;
@@ -1014,8 +1015,9 @@ function pmpro_stripe_webhook_change_membership_level( $morder ) {
  *
  * @param MemberOrder          $order            The order to update.
  * @param Stripe_PaymentMethod $payment_method   The payment method object.
+ * @param string               $customer_id      The Stripe customer to try to pull a billing address from if not on the payment method.
  */
-function pmpro_stripe_webhook_populate_order_from_payment( $order, $payment_method ) {
+function pmpro_stripe_webhook_populate_order_from_payment( $order, $payment_method, $customer_id = null ) {
 	global $wpdb;
 
 	// Fill the "Payment Type" and credit card fields.
@@ -1048,19 +1050,43 @@ function pmpro_stripe_webhook_populate_order_from_payment( $order, $payment_meth
 		$order->ExpirationDate_YdashM = '';
 	}
 
-	// Add billing address information.
-	$order->billing = new stdClass();
-	$order->billing->name = empty( $payment_method->billing_details->name ) ? '' : $payment_method->billing_details->name;
-	$order->billing->street = empty( $payment_method->billing_details->address->line1 ) ? '' : $payment_method->billing_details->address->line1;
-	$order->billing->city = empty( $payment_method->billing_details->address->city ) ? '' : $payment_method->billing_details->address->city;
-	$order->billing->state = empty( $payment_method->billing_details->address->state ) ? '' : $payment_method->billing_details->address->state;
-	$order->billing->zip = empty( $payment_method->billing_details->address->postal_code ) ? '' : $payment_method->billing_details->address->postal_code;
-	$order->billing->country = empty( $payment_method->billing_details->address->country ) ? '' : $payment_method->billing_details->address->country;
-	$order->billing->phone = empty( $payment_method->billing_details->phone ) ? '' : $payment_method->billing_details->phone;
+	// Check if we have a billing address in the payment method.
+	if ( ! empty( $payment_method ) && ! empty( $payment_method->billing_details ) && ! empty( $payment_method->billing_details->address ) && ! empty( $payment_method->billing_details->address->line1 ) ) {
+		$order->billing = new stdClass();
+		$order->billing->name = empty( $payment_method->billing_details->name ) ? '' : $payment_method->billing_details->name;
+		$order->billing->street = empty( $payment_method->billing_details->address->line1 ) ? '' : $payment_method->billing_details->address->line1;
+		$order->billing->city = empty( $payment_method->billing_details->address->city ) ? '' : $payment_method->billing_details->address->city;
+		$order->billing->state = empty( $payment_method->billing_details->address->state ) ? '' : $payment_method->billing_details->address->state;
+		$order->billing->zip = empty( $payment_method->billing_details->address->postal_code ) ? '' : $payment_method->billing_details->address->postal_code;
+		$order->billing->country = empty( $payment_method->billing_details->address->country ) ? '' : $payment_method->billing_details->address->country;
+		$order->billing->phone = empty( $payment_method->billing_details->phone ) ? '' : $payment_method->billing_details->phone;
 
-	$name_parts = empty( $payment_method->billing_details->name ) ? [] : pnp_split_full_name( $payment_method->billing_details->name );
-	$order->FirstName = empty( $name_parts['fname'] ) ? '' : $name_parts['fname'];
-	$order->LastName = empty( $name_parts['lname'] ) ? '' : $name_parts['lname'];
+		$name_parts = empty( $payment_method->billing_details->name ) ? [] : pnp_split_full_name( $payment_method->billing_details->name );
+		$order->FirstName = empty( $name_parts['fname'] ) ? '' : $name_parts['fname'];
+		$order->LastName = empty( $name_parts['lname'] ) ? '' : $name_parts['lname'];
+	} else {
+		// No billing address in the payment method, let's try to get it from the customer.
+		if ( ! empty( $customer_id ) ) {
+			$customer = Stripe_Customer::retrieve( $customer_id );
+		}
+		if ( ! empty( $customer ) && ! empty( $customer->address ) && ! empty( $customer->address->line1 ) ) {
+			$order->billing = new stdClass();
+			$order->billing->name = empty( $customer->name ) ? '' : $customer->name;
+			$order->billing->street = empty( $customer->address->line1 ) ? '' : $customer->address->line1;
+			$order->billing->city = empty( $customer->address->city ) ? '' : $customer->address->city;
+			$order->billing->state = empty( $customer->address->state ) ? '' : $customer->address->state;
+			$order->billing->zip = empty( $customer->address->postal_code ) ? '' : $customer->address->postal_code;
+			$order->billing->country = empty( $customer->address->country ) ? '' : $customer->address->country;
+			$order->billing->phone = empty( $customer->phone ) ? '' : $customer->phone;
+
+			$name_parts = empty( $customer->name ) ? [] : pnp_split_full_name( $customer->name );
+			$order->FirstName = empty( $name_parts['fname'] ) ? '' : $name_parts['fname'];
+			$order->LastName = empty( $name_parts['lname'] ) ? '' : $name_parts['lname'];
+		} else {
+			// No billing address in the customer, let's try to get it from the old order or from user meta.
+			$order->find_billing_address();
+		}
+	}
 	$order->Email = $wpdb->get_var("SELECT user_email FROM $wpdb->users WHERE ID = '" . esc_sql( $order->user_id ) . "' LIMIT 1");
 	$order->Address1 = $order->billing->street;
 	$order->City = $order->billing->city;
