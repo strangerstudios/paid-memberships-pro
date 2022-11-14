@@ -156,7 +156,7 @@ Not sure? You can find out by doing a bit a research.
 9. Membership Account page, display all sections or show specific sections using shortcode attributes.
 
 == Changelog ==
-= 2.9.6 - 2022-11-11 =
+= 2.9.6 - 2022-11-14 =
 ENHANCEMENT: Added content restriction settings to Elementor "containers". #2254 (Thanks, @Minebomber)
 ENHANCEMENT: Added !!levels_url!! to all email templates by default. #2263 (@andrewlimaza)
 ENHANCEMENT: Added docblocks to all methods of the PMProEmail class. #2263 (@andrewlimaza)
