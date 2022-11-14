@@ -166,7 +166,7 @@ BUG FIX/ENHANCEMENT: Fixed issue where the billing address wasn't being sent to 
 BUG FIX/ENHANCEMENT: Fixed the $user_id parameter passed to the pmpro_discount_code_used action hook in the Stripe Webhook handler. #2273 (@mircobabini)
 BUG FIX/ENHANCEMENT: The required field asterisk now appears correctly if a hint is used on a textarea, select, or other user field. #2274 (@ideadude)
 BUG FIX/ENHANCEMENT: Avoiding fatal errors that occurred when trying to use Stripe Connect in countries that don't allow an application fee. The fee is set to 0% for these users/countries. #2228 (@dparker1005)
-BUG FIX/ENHANCEMENT: Fixed CSS in the CVV/CVV popup window. #2224 (@dparker)
+BUG FIX/ENHANCEMENT: Fixed CSS in the CVV/CVV popup window. #2224 (@dparker1005)
 BUG FIX/ENHANCEMENT: Now pulling the billing address from the Stripe Customer record or a previous order if the billing address isn't available in the Payment Method object passed to webhook calls. #2272 (@dparker1005)
 BUG FIX/ENHANCEMENT: Fixed CSS for the new level popup to no longer rely on selectors that broke when certain translations were used in the WP dashboard. #2276 (@kimcoleman)
 BUG FIX/ENHANCEMENT: Fixed trial wording for custom trials where the initial payment was > $0. #2277 (@andrewlimaza)
