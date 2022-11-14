@@ -53,14 +53,14 @@ function pmpro_save_checkout_data_to_order( $order ) {
 	unset( $request_vars['password'] );
 	unset( $request_vars['password2'] );
 	unset( $request_vars['password2_copy'] );
-	update_pmpro_membership_order_meta( $order->id, 'checkout_request_vars', $request_vars );
+	update_pmpro_membership_order_meta( $order->id, 'checkout_request_vars', array_map( 'sanitize_text_field', $request_vars ) );
 
 	// Save the checkout level.
 	$pmpro_level_arr = (array) $pmpro_level;
-	update_pmpro_membership_order_meta( $order->id, 'checkout_level', $pmpro_level_arr );
+	update_pmpro_membership_order_meta( $order->id, 'checkout_level', array_map( 'sanitize_text_field', $pmpro_level_arr ) );
 
 	// Save the discount code.
-	update_pmpro_membership_order_meta( $order->id, 'checkout_discount_code', $discount_code );
+	update_pmpro_membership_order_meta( $order->id, 'checkout_discount_code', sanitize_text_field( $discount_code ) );
 
 	// Save any files that were uploaded.
 	if ( ! empty( $_FILES ) ) {
@@ -86,7 +86,7 @@ function pmpro_save_checkout_data_to_order( $order ) {
 			// Add the file to the array.
 			$files[ $arr_key ] = $file;
 		}
-		update_pmpro_membership_order_meta( $order->id, 'checkout_files', $files );
+		update_pmpro_membership_order_meta( $order->id, 'checkout_files', array_map( 'sanitize_text_field', $files ) );
 	}
 }
 
