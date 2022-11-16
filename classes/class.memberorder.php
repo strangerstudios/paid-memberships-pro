@@ -498,10 +498,10 @@
 			// Filter by membership level ID(s).
 			if ( isset( $args['membership_level_id'] ) && null !== $args['membership_level_id'] ) {
 				if ( ! is_array( $args['membership_level_id'] ) ) {
-					$where[]    = 'membership_level_id = %d';
+					$where[]    = 'membership_id = %d';
 					$prepared[] = $args['membership_level_id'];
 				} else {
-					$where[]  = 'membership_level_id IN ( ' . implode( ', ', array_fill( 0, count( $args['membership_level_id'] ), '%d' ) ) . ' )';
+					$where[]  = 'membership_id IN ( ' . implode( ', ', array_fill( 0, count( $args['membership_level_id'] ), '%d' ) ) . ' )';
 					$prepared = array_merge( $prepared, $args['membership_level_id'] );
 				}
 			}
@@ -1723,7 +1723,7 @@
 					$this->Address1    = get_user_meta( $this->user_id, "pmpro_baddress1", true );
 					$this->City        = get_user_meta( $this->user_id, "pmpro_bcity", true );
 					$this->State       = get_user_meta( $this->user_id, "pmpro_bstate", true );
-					$this->Zip         = get_user_meta( $this->user_id, "pmpro_bzip", true );
+					$this->Zip         = get_user_meta( $this->user_id, "pmpro_bzipcode", true );
 					$this->CountryCode = get_user_meta( $this->user_id, "pmpro_bcountry", true );
 					$this->PhoneNumber = get_user_meta( $this->user_id, "pmpro_bphone", true );
 					$this->Email       = $wpdb->get_var("SELECT user_email FROM $wpdb->users WHERE ID = '" . $this->user_id . "' LIMIT 1");

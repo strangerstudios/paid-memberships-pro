@@ -18,7 +18,11 @@ class PMPro_Elementor {
         array(
             'element' => 'section',
             'action'  => 'section_advanced',
-        )
+		),
+		array(
+			'element' => 'container',
+			'action'  => 'section_layout'
+		)
     );
     public $section_name = 'pmpro_elementor_section';
 

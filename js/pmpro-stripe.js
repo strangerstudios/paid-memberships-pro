@@ -81,14 +81,14 @@ jQuery( document ).ready( function( $ ) {
 		// Double check in case a discount code made the level free.
 		if ( typeof pmpro_require_billing === 'undefined' || pmpro_require_billing ) {
 			// Get the data needed to create a payment method for this checkout.
-			if ( pmproStripe.verifyAddress ) {
+			if ( $( '#baddress1' ).length ) {
 				address = {
-					line1: $( '#baddress1' ).val(),
-					line2: $( '#baddress2' ).val(),
-					city: $( '#bcity' ).val(),
-					state: $( '#bstate' ).val(),
-					postal_code: $( '#bzipcode' ).val(),
-					country: $( '#bcountry' ).val(),
+					line1: $( '#baddress1' ).length ? $( '#baddress1' ).val() : '',
+					line2: $( '#baddress2' ).length ? $( '#baddress2' ).val() : '',
+					city: $( '#bcity' ).length ? $( '#bcity' ).val() : '',
+					state: $( '#bstate' ).length ? $( '#bstate' ).val() : '',
+					postal_code: $( '#bzipcode' ).length ? $( '#bzipcode' ).val() : '',
+					country: $( '#bcountry' ).length ? $( '#bcountry' ).val() : '',
 				}
 			}
 

@@ -147,6 +147,14 @@ jQuery(document).ready(function(){
 		jQuery( '.pmpro_checkout-field-radio' ).find( ".pmpro_asterisk" ).remove();
 		jQuery( '.pmpro_checkout-field-radio' ).find( 'label' ).first().append( '<span class="pmpro_asterisk"> <abbr title="Required Field">*</abbr></span>' );
 	}
+    
+    //move asterisk before hint <p>'s
+    jQuery( 'span.pmpro_asterisk' ).each(function() {
+        var prev = jQuery(this).prev();
+        if ( prev.is('p') ) {
+            jQuery(this).insertBefore(prev);
+        }
+    });
 
 	//unhighlight error fields when the user edits them
 	jQuery('.pmpro_error').bind("change keyup input", function() {
