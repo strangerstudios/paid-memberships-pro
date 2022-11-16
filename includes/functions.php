@@ -447,7 +447,7 @@ function pmpro_getLevelCost( &$level, $tags = true, $short = false ) {
 
 	// trial part
 	if ( $level->trial_limit ) {
-		if ( (float)$level->trial_amount > 0 ) {
+		if ( (float)$level->trial_amount == 0 ) {
 			if ( $level->trial_limit == '1' ) {
 				$r .= ' ' . __( 'After your initial payment, your first payment is Free.', 'paid-memberships-pro' );
 			} else {

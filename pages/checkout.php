@@ -10,7 +10,7 @@
  * @author Paid Memberships Pro
  */
 
-global $gateway, $pmpro_review, $skip_account_fields, $pmpro_paypal_token, $wpdb, $current_user, $pmpro_msg, $pmpro_msgt, $pmpro_requirebilling, $pmpro_level, $pmpro_levels, $tospage, $pmpro_show_discount_code, $pmpro_error_fields;
+global $gateway, $pmpro_review, $skip_account_fields, $pmpro_paypal_token, $wpdb, $current_user, $pmpro_msg, $pmpro_msgt, $pmpro_requirebilling, $pmpro_level, $pmpro_levels, $tospage, $pmpro_show_discount_code, $pmpro_error_fields, $pmpro_default_country;
 global $discount_code, $username, $password, $password2, $bfirstname, $blastname, $baddress1, $baddress2, $bcity, $bstate, $bzipcode, $bcountry, $bphone, $bemail, $bconfirmemail, $CardType, $AccountNumber, $ExpirationMonth,$ExpirationYear;
 
 /**
@@ -333,7 +333,7 @@ if ( empty( $default_gateway ) ) {
 						</select>
 					</div> <!-- end pmpro_checkout-field-bcountry -->
 				<?php } else { ?>
-					<input type="hidden" name="bcountry" value="US" />
+					<input type="hidden" name="bcountry" value="<?php esc_attr( $pmpro_default_country ) ?>" />
 				<?php } ?>
 			<div class="<?php echo pmpro_get_element_class( 'pmpro_checkout-field pmpro_checkout-field-bphone', 'pmpro_checkout-field-bphone' ); ?>">
 				<label for="bphone"><?php esc_html_e('Phone', 'paid-memberships-pro' );?></label>
