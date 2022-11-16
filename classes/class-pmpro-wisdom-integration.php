@@ -169,7 +169,7 @@ class PMPro_Wisdom_Integration {
 	 * @return bool Whether the site is recognized as a local site.
 	 */
 	public function bypass_local_tracking( $is_local = false ) {
-		if ( true === $is_local || 'production' !== wp_get_environment_type() ) {
+		if ( true === $is_local || ( function_exists( 'wp_get_environment_type' ) && 'production' !== wp_get_environment_type() ) ) {
 			return $is_local;
 		}
 
@@ -446,6 +446,9 @@ class PMPro_Wisdom_Integration {
 	 * @return array The list of Add Ons categorized by active, inactive, and update available.
 	 */
 	public function get_addons_info() {
+		// This file only is usually only required when is_admin().
+		require_once( PMPRO_DIR . '/includes/addons.php' );
+		
 		// Build the list of Add Ons data to track.
 		$addons      = pmpro_getAddons();
 		$plugin_info = get_site_transient( 'update_plugins' );
