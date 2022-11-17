@@ -14,276 +14,195 @@ function pmpro_membership_level_profile_fields($user)
 	global $wpdb;
 	$user->membership_level = pmpro_getMembershipLevelForUser($user->ID);
 
-	$levels = $wpdb->get_results( "SELECT * FROM {$wpdb->pmpro_membership_levels}", OBJECT );
 	$groups = pmpro_get_level_groups_in_order();
-
-	// Add group ID to each level.
-	foreach ( $levels as $level ) {
-		$level->group_id = pmpro_get_group_id_for_level( $level->id );
+	if( empty ( $groups ) ) {
+		return '';
 	}
 
-	if(!$levels)
-		return "";
+	// Get all membership levels for this user.
+	$user_levels = pmpro_getMembershipLevelsForUser($user->ID);
 
 	?>
 	<h3><?php esc_html_e("Membership Levels", 'paid-memberships-pro' ); ?></h3>
+	<table class="form-table">
 	<?php
 		$show_membership_level = true;
 		$show_membership_level = apply_filters("pmpro_profile_show_membership_level", $show_membership_level, $user);
 		if($show_membership_level) {
-			?>
-			<table class="wp-list-table widefat fixed pmprommpu_levels" width="100%" cellpadding="0" cellspacing="0" border="0">
-			<thead>
-				<tr>
-					<th><?php esc_html_e( 'Groups', 'paid-memberships-pro' ); ?></th>
-					<th><?php esc_html_e( 'Membership Level', 'paid-memberships-pro' ) ?></th>
-					<th><?php esc_html_e( 'Expiration', 'paid-memberships-pro' ) ?></th>
-					<th>&nbsp;</th>
-				</tr>
-			</thead>
-			<tbody>
-			<?php
-				//get levels and groups
-				$currentlevels = pmpro_getMembershipLevelsForUser($user->ID);
+			foreach ( $groups as $group ) {
+				// Get all the levels in this group.
+				$levels_in_group = pmpro_get_levels_for_group( $group->id );
+				if ( empty( $levels_in_group ) ) {
+					continue;
+				}
 
-				//some other vars
-				$current_day = date("j", current_time('timestamp'));
-				$current_month = date("M", current_time('timestamp'));
-				$current_year = date("Y", current_time('timestamp'));
+				// Get all the levels in this group that the user has.
+				$user_level_ids_in_group = array();
+				$user_levels_in_group    = array();
+				foreach ( $levels_in_group as $level ) {
+					foreach ( $user_levels as $user_level ) {
+						if ( $level->id === $user_level->id ) {
+							$user_level_ids_in_group[]          = $level->id;
+							$user_levels_in_group[ $level->id ] = $user_level;
+						}
+					}
+				}
 
-				ob_start();
+				// Set up the <tr> for this group.
 				?>
-				<tr id="new_levels_tr_template" class="new_levels_tr">
-					<td>
-						<select class="new_levels_group" name="new_levels_group[]">
-							<option value="">-- <?php _e("Choose a Group", 'paid-memberships-pro');?> --</option>
-							<?php foreach($groups as $group) { ?>
-								<option value="<?php echo $group->id;?>"><?php echo $group->name;?></option>
-							<?php } ?>
-						</select>
-					</td>
-					<td>
-						<em><?php _e('Choose a group first.', 'paid-memberships-pro');?></em>
-					</td>
+				<tr>
+					<th><?php echo esc_html( $group->name ); ?></th>
 					<td>
 						<?php
-							//default enddate values
-							$end_date = false;
-							$selected_expires_day = $current_day;
-							$selected_expires_month = date("m");
-							$selected_expires_year = (int)$current_year + 1;
-						?>
-						<select class="expires new_levels_expires" name="new_levels_expires[]">
-							<option value="0" <?php if(!$end_date) { ?>selected="selected"<?php } ?>><?php _e("No", 'paid-memberships-pro');?></option>
-							<option value="1" <?php if($end_date) { ?>selected="selected"<?php } ?>><?php _e("Yes", 'paid-memberships-pro');?></option>
-						</select>
-						<span class="expires_date new_levels_expires_date" <?php if(!$end_date) { ?>style="display: none;"<?php } ?>>
-							on
-							<select name="new_levels_expires_month[]">
+						// We are going to show different UIs depending on if users can have multiple levels from the group.
+						if  ( empty( $group->allow_multiple_selections ) ) {
+							// If the user somehow has multiple levels from this group, show a warning that non-selected levels will be removed on save.
+							if ( count( $user_level_ids_in_group ) > 1 ) {
+								?>
+								<div class="pmpro_admin">
+									<p class="pmpro_message pmpro_error">
+										<?php
+										esc_html_e( 'The user has multiple levels from this group. Saving this profile will remove all levels besides for the one selected below. The user\'s current levels from this group are:', 'paid-memberships-pro' );
+										echo ' ' . esc_html( implode( ', ', wp_list_pluck( $user_levels_in_group, 'name' ) ) );
+										?>
+									</p>
+									<br>
+								</div>
 								<?php
-									for($i = 1; $i < 13; $i++)
-									{
-									?>
-									<option value="<?php echo $i?>" <?php if($i == $selected_expires_month) { ?>selected="selected"<?php } ?>><?php echo date("M", strtotime($i . "/15/" . $current_year, current_time("timestamp")))?></option>
-									<?php
+							}
+							
+							// Users can only have one level from this group.
+							$shown_level = null;
+							?>
+							<select name="pmpro_group_level_select_<?php echo esc_attr( $group->id ) ?>" class="pmpro_group_level_select">
+								<option value="0"><?php esc_html_e( 'None', 'paid-memberships-pro' ); ?></option>
+								<?php
+								foreach ( $levels_in_group as $level ) {
+									if ( in_array( $level->id, $user_level_ids_in_group ) && empty( $shown_level ) ) {
+										$shown_level = pmpro_getSpecificMembershipLevelForUser( $user->ID, $level->id );
 									}
+									?>
+									<option value="<?php echo esc_attr( $level->id ); ?>" <?php selected( ! empty( $shown_level ) && $level->id == $shown_level->id ); ?>><?php echo esc_html( $level->name ); ?></option>
+									<?php
+								}
 								?>
 							</select>
-							<input name="new_levels_expires_day[]" type="text" size="2" value="<?php echo $selected_expires_day?>" />
-							<input name="new_levels_expires_year[]" type="text" size="4" value="<?php echo $selected_expires_year?>" />
-						</span>
-					</td>
-					<td><a class="remove_level" href="javascript:void(0);"><?php _e('Remove', 'paid-memberships-pro');?></a></td>
-				</tr>
-				<?php
-				$new_level_template_html = preg_replace('/\n\t+/', '', ob_get_contents());
-				ob_end_clean();
-
-				//set group for each level
-				for($i = 0; $i < count($currentlevels); $i++) {
-					$currentlevels[$i]->group = pmpro_get_group_id_for_level( $currentlevels[$i]->id );
-				}
-
-				//loop through all groups in order and show levels if the user has any currently
-				foreach( $groups as $group ) {
-					$group_levels = pmpro_get_level_ids_for_group($group->id);
-					if ( ! empty( $group_levels ) && pmpro_hasMembershipLevel( $group_levels, $user->ID ) ) {
-						//user has at least one of these levels, so let's show them
-						foreach($currentlevels as $level) {
-							if($level->group == $group->id) {
-							?>
-							<tr>
-								<td width="25%"><?php echo $group->name;?></td>
-								<td width="25%">
-									<?php
-										echo $level->name;
-									?>
-									<input class="membership_level_id" type="hidden" name="membership_levels[]" value="<?php echo esc_attr($level->id);?>" />
-								</td>
-								<td width="25%">
-								<?php
-									$show_expiration = true;
-									$show_expiration = apply_filters("pmpro_profile_show_expiration", $show_expiration, $user);
-									if($show_expiration)
-									{
-										//is there an end date?
-										$end_date = !empty($level->enddate);
-
-										//some vars for the dates
-										if($end_date)
-											$selected_expires_day = date("j", $level->enddate);
-										else
-											$selected_expires_day = $current_day;
-
-										if($end_date)
-											$selected_expires_month = date("m", $level->enddate);
-										else
-											$selected_expires_month = date("m");
-
-										if($end_date)
-											$selected_expires_year = date("Y", $level->enddate);
-										else
-											$selected_expires_year = (int)$current_year + 1;
-									}
-									?>
-									<select class="expires" name="expires[]">
-										<option value="0" <?php if(!$end_date) { ?>selected="selected"<?php } ?>><?php _e("No", 'paid-memberships-pro');?></option>
-										<option value="1" <?php if($end_date) { ?>selected="selected"<?php } ?>><?php _e("Yes", 'paid-memberships-pro');?></option>
-									</select>
-									<span class="expires_date" <?php if(!$end_date) { ?>style="display: none;"<?php } ?>>
-										on
-										<select name="expires_month[]">
-											<?php
-												for($i = 1; $i < 13; $i++)
-												{
-												?>
-												<option value="<?php echo $i?>" <?php if($i == $selected_expires_month) { ?>selected="selected"<?php } ?>><?php echo date("M", strtotime($i . "/15/" . $current_year, current_time("timestamp")))?></option>
-												<?php
-												}
-											?>
-										</select>
-										<input name="expires_day[]" type="text" size="2" value="<?php echo $selected_expires_day?>" />
-										<input name="expires_year[]" type="text" size="4" value="<?php echo $selected_expires_year?>" />
-									</span>
-								</td>
-								<td width="25%"><a class="remove_level" href="javascript:void(0);"><?php _e('Remove', 'paid-memberships-pro');?></a></td>
-							</tr>
-							<tr class="old_levels_delsettings_tr_template remove_level">
-								<td></td>
-								<td colspan="3">
-									<label for="cancel_subscription"><input value="<?php echo esc_attr( $level->id ); ?>" id="cancel_subscription" name="cancel_subscription[]" type="checkbox"><?php esc_html_e( "Cancel this user's subscription at the gateway.", 'paid-memberships-pro' ); ?></label>
-									<?php
-									// Check if we are able to refund the user's last order for this level.
-									$order_args = array(
-										'user_id' => $user->ID,
-										'membership_level_id' => $level->id,
-										'status' => 'success',
-									);
-									$last_order = MemberOrder::get_order( $order_args );
-									$allows_refunds = pmpro_allowed_refunds( $last_order );
-									?>
-									<label for="refund_last_payment"><input value="<?php echo esc_attr( $level->id ); ?>" id="refund_last_payment" name="refund_last_payment[]" type="checkbox"<?php disabled( ! $allows_refunds ); ?>> <?php esc_html_e("Refund this user's most recent order.", "paid-memberships-pro" ); ?></label>
-								</td>
-							</tr>
 							<?php
+							// Show checkbox to set whether the membership expires if a level is selected.
+							$current_level_expires = false;
+							$enddate_to_show = date( 'Y-m-d H:i', strtotime( '+1 year' ) );
+							if ( ! empty( $shown_level ) ) {
+								$current_level_expires = ! empty( $shown_level->enddate );
+								$enddate_to_show = ! empty( $shown_level->enddate ) ? date( 'Y-m-d H:i', $shown_level->enddate ) : $enddate_to_show;
 							}
-						}
-					}
-				}
-			?>
-			<tr>
-				<td colspan="4"><a href="javascript:void(0);" class="add_level">+ <?php _e('Add Level', 'paid-memberships-pro');?></a></td>
-			</tr>
-			</tbody>
-			</table>
-			<script type="text/javascript">
-				//vars with levels and groups
-				var alllevels = <?php echo json_encode( $levels );?>;
-				var allgroups = <?php echo json_encode( $groups );?>;
-				var delsettingsrow = jQuery(".old_levels_delsettings_tr_template").first().detach();
-				jQuery(".old_levels_delsettings_tr_template").detach();
-
-				var new_level_template_html = '<?php echo $new_level_template_html; ?>';
-
-				//update levels when a group dropdown changes
-				function updateLevelSelect(e) {
-					var groupselect = jQuery(e.target);
-					var leveltd = groupselect.parent().next('td');
-					var group_id = groupselect.val();
-
-					leveltd.html('');
-
-					//group chosen?
-					if(group_id.length > 0) {
-						//add level select
-						var levelselect = jQuery('<select class="new_levels_level" name="new_levels_level[]"></select>').appendTo(leveltd);
-						levelselect.append('<option value="">-- ' + <?php echo json_encode(__('Choose a Level', 'paid-memberships-pro'));?> + ' --</option>');
-						for (var i = 0; i < alllevels.length; i++) {
-							if ( group_id == alllevels[i].group_id ) {
-								levelselect.append('<option value="'+alllevels[i].id+'">'+alllevels[i].name+'</option>');
+							?>
+							<p <?php if ( empty( $shown_level ) ) { echo 'style="display: none"'; } ?>>
+								<input type="checkbox" name="pmpro_membership_levels[<?php echo esc_attr( ! empty( $shown_level ) ? $shown_level->id : '' ); ?>][expires]" value="1" class="pmpro_expires_checkbox" <?php checked( $current_level_expires ); ?> />
+								<?php esc_html_e( 'Expires', 'paid-memberships-pro' ); ?>
+								<input type="datetime-local" name="pmpro_membership_levels[<?php echo esc_attr( !  empty( $shown_level ) ? $shown_level->id : '' ); ?>][expiration]" value="<?php echo esc_attr( $enddate_to_show ); ?>" <?php if ( ! $current_level_expires ) { echo 'style="display: none"'; } ?>>
+							</p>
+							<?php
+							// Loop through all levels again and create hidden fields for each.
+							foreach ( $levels_in_group as $level ) {
+								$name_prefix = 'pmpro_membership_levels[' . $level->id . ']';
+								?>
+								<input type="hidden" name="<?php echo esc_attr( $name_prefix ); ?>[id]" value="<?php echo esc_attr( $level->id ); ?>" />
+								<input type="hidden" name="<?php echo esc_attr( $name_prefix ); ?>[has_level]" class="pmpro_has_level_hidden" value="<?php echo ( ! empty( $shown_level ) && $shown_level->id == $level->id ) ? 1 : 0; ?>" />
+								<?php
 							}
+						} else {
+							// Users can have multiple levels from this group.
+							?>
+							<table>
+								<thead>
+									<tr>
+										<th><?php esc_html_e( 'Level', 'paid-memberships-pro' ); ?></th>
+										<th><?php esc_html_e( 'Expiration', 'paid-memberships-pro' ); ?></th>
+									</tr>
+								</thead>
+								<?php
+								foreach ( $levels_in_group as $level ) {
+									$checked = in_array( $level->id, $user_level_ids_in_group );
+									$name_prefix = 'pmpro_membership_levels[' . $level->id . ']';
+									?>
+									<tr>
+										<td>
+											<label for="<?php echo esc_attr( $name_prefix ); ?>[has_level]">
+												<input type="checkbox" name="<?php echo esc_attr( $name_prefix ) ?>[has_level]" id="pmpro_membership_level_checkbox_<?php echo esc_attr( $level->id ); ?>" class="pmpro_has_level_checkbox" value="1" <?php checked( $checked ); ?> />
+												<input type="hidden" name="<?php echo esc_attr( $name_prefix ); ?>[id]" value="<?php echo esc_attr( $level->id ); ?>" />
+												<?php echo esc_html( $level->name ); ?>
+											</label>
+										</td>
+										<td>
+											<?php
+											// Get the expiration date to show for this level.
+											$enddate_to_show = date( 'Y-m-d H:i', strtotime( '+1 year' ) );
+											$has_enddate = false;
+											if ( ! empty( $user_levels_in_group[ $level->id ] ) ) {
+												$has_enddate = ! empty( $user_levels_in_group[ $level->id ]->enddate );
+												$enddate_to_show = $has_enddate ? date( 'Y-m-d H:i', $user_levels_in_group[ $level->id ]->enddate ) : $enddate_to_show;
+											}
+											?>
+											<input type="checkbox" name="<?php echo esc_attr( $name_prefix ) ?>[expires]" class="pmpro_expires_checkbox" value="1" <?php checked( $has_enddate ); ?> <?php if ( ! $checked ) { echo 'style="display: none"'; } ?> />
+											<input type="datetime-local" name="<?php echo esc_attr( $name_prefix ) ?>[expiration]" value="<?php echo esc_attr( $enddate_to_show ); ?>" <?php if ( ! $has_enddate ) { echo 'style="display: none"'; } ?>>
+										</td>
+									</tr>
+									<?php								
+								}
+								?>
+							</table>
+							<?php
 						}
-					} else {
-						leveltd.html('<em>' + <?php echo json_encode(__('Choose a group first.', 'paid-memberships-pro'));?> + '</em>');
-					}
-				}
+					// Close the <tr> and <td>.
+					?>
+					</td>
+				</tr>
+				<script>
+					jQuery( document ).ready( function() {
+						// Show/hide the expiration date field when the level select is changed.
+						jQuery( '.pmpro_group_level_select' ).on( 'change', function() {
+							// Set all sibling hidden fields to 0.
+							jQuery( this ).siblings( '.pmpro_has_level_hidden' ).val( 0 );
+							if ( jQuery( this ).val() > 0 ) {
+								// Set the hidden field for the selected level to 1.
+								jQuery( 'input[name="pmpro_membership_levels[' + jQuery( this ).val() + '][has_level]"' ).val( 1 );
 
-				//remove level
-				function removeLevel(e) {
-					var removelink = jQuery(e.target);
-					var removetr = removelink.closest('tr');
+								// Update the names for the expires and expiration fields.
+								jQuery( this ).next( 'p' ).find( 'input[type="checkbox"]' ).attr( 'name', 'pmpro_membership_levels[' + jQuery( this ).val() + '][expires]' );
+								jQuery( this ).next( 'p' ).find( 'input[type="datetime-local"]' ).attr( 'name', 'pmpro_membership_levels[' + jQuery( this ).val() + '][expiration]' );
 
-					if(removetr.hasClass('new_levels_tr')) {
-						//new level? just delete the row
-						removetr.remove();
-					} else if(removetr.hasClass('remove_level')) {
-						removetr.removeClass('remove_level');
-						removelink.html(<?php echo json_encode(__('Remove', 'paid-memberships-pro'));?>);
-						removelink.next('input').remove();
-						removetr.nextAll('.old_levels_delsettings_tr_template').first().remove();
-					} else {
-						//existing level? red it out and add to be removed
-						removetr.addClass('remove_level');
-						removelink.html(<?php echo json_encode(__('Undo', 'paid-memberships-pro'));?>);
-						var olevelid = removelink.closest('tr').find('input.membership_level_id').val();
-						jQuery('<input type="hidden" name="remove_levels_id[]" value="'+olevelid+'">').insertAfter(removelink);
-						removetr.after(delsettingsrow.clone());
-					}
-				}
+								// Show the expiration fields.
+								jQuery( this ).next( 'p' ).show();
+							} else {
+								// Hide the expiration fields.
+								jQuery( this ).next( 'p' ).hide();
+							}
+						} );
 
-				//bindings
-				function pmprommpu_updateBindings() {
-					//hide/show expiration dates
-					jQuery('select.expires').unbind('change.pmprommpu');
-					jQuery('select.expires').bind('change.pmprommpu', function() {
-						if(jQuery(this).val() == 1)
-							jQuery(this).next('span.expires_date').show();
-						else
-							jQuery(this).next('span.expires_date').hide();
-					});
+						// Show/hide the expiration date field when the checkbox is clicked.
+						jQuery( '.pmpro_expires_checkbox' ).on( 'change', function() {
+							if ( jQuery( this ).is( ':checked' ) ) {
+								jQuery( this ).next( 'input' ).show();
+							} else {
+								jQuery( this ).next( 'input' ).hide();
+							}
+						} );
 
-					//update level selects when groups are updated
-					jQuery('select.new_levels_group').unbind('change.pmprommpu');
-					jQuery('select.new_levels_group').bind('change.pmprommpu', updateLevelSelect);
-
-					//remove buttons
-					jQuery('a.remove_level').unbind('click.pmprommpu');
-					jQuery('a.remove_level').bind('click.pmprommpu', removeLevel);
-
-					//clone new level tr
-					jQuery('a.add_level').unbind('click.pmprommpu');
-					jQuery('a.add_level').bind('click.pmprommpu', function() {
-						var newleveltr = jQuery('a.add_level').closest('tbody').append(new_level_template_html);
-						pmprommpu_updateBindings();
-					});
-				}
-
-				//on load
-				jQuery(document).ready(function() {
-					pmprommpu_updateBindings();
-				});
-			</script>
-			<?php
+						// Show/hide the expiration date fields when the "has level" checkbox is toggled.
+						jQuery( '.pmpro_has_level_checkbox' ).on( 'change', function() {
+							if ( jQuery( this ).is( ':checked' ) ) {
+								jQuery( this ).parent().parent().next().find('.pmpro_expires_checkbox').show();
+								if ( jQuery( this ).parent().parent().next().find('.pmpro_expires_checkbox').is( ':checked' ) ) {
+									jQuery( this ).parent().parent().next().find('.pmpro_expires_checkbox').next( 'input' ).show();
+								}
+							} else {
+								jQuery( this ).parent().parent().next().find('input').hide();
+							}
+						} );
+					} );
+				</script>
+				<?php
+			}
 		}
 
 		$tospage_id = pmpro_getOption( 'tospage' );
@@ -317,8 +236,8 @@ function pmpro_membership_level_profile_fields($user)
 		<?php
 		}
 		?>
-</table>
-<?php
+	</table>
+	<?php
 	do_action("pmpro_after_membership_level_profile_fields", $user);
 }
 
@@ -336,126 +255,95 @@ function pmpro_membership_level_profile_fields_update() {
 	global $wpdb, $current_user;
 	wp_get_current_user();
 
-	if(!empty($_REQUEST['user_id'])) {
-		$user_id = $_REQUEST['user_id'];
-	} else {
-		$user_id = $current_user->ID;
-	}
+	$user_id = empty( $_REQUEST['user_id'] ) ? $current_user->ID : $_REQUEST['user_id'];
 
-	$membership_level_capability = apply_filters("pmpro_edit_member_capability", "manage_options");
-	if(!current_user_can($membership_level_capability))
+	$membership_level_capability = apply_filters( 'pmpro_edit_member_capability', 'manage_options' );
+	if ( ! current_user_can( $membership_level_capability ) ) {
 		return false;
+	}
 
-	// OK. First, we're going to remove them from any levels that they should be dropped from - and keep an array of the levels we're dropping (so we don't adjust expiration later)
-	$droppedlevels = array();
-	$old_levels = pmpro_getMembershipLevelsForUser($user_id);
-	if(array_key_exists('remove_levels_id', $_REQUEST)) {
-		foreach($_REQUEST['remove_levels_id'] as $arraykey => $leveltodel) {
-			// Check if we should cancel the subscription.
-			if ( ! empty( $_REQUEST['cancel_suscription'] ) && in_array( $leveltodel, $_REQUEST['cancel_suscription'] ) ) {
-				add_filter('pmpro_cancel_previous_subscriptions', 'pmpro_cancel_previous_subscriptions_false');
+	// Get the user's current membership levels.
+	$user_levels = pmpro_getMembershipLevelsForUser( $user_id );
+	$user_level_ids = wp_list_pluck( $user_levels, 'id' );
+
+	// Set up some arrays to hold level changes.
+	$levels_to_remove = array(); // Array of IDs.
+	$levels_to_add    = array(); // Array of IDs.
+	$levels_to_update = array(); // Associative array of IDs and expiration dates.
+
+	// Get the data submitted from the profile.
+	if ( empty ( $_REQUEST['pmpro_membership_levels'] ) ) {
+		return false;
+	}
+	$submitted_levels = $_REQUEST['pmpro_membership_levels']; // Key is level ID, value is array of user selections.
+
+	// Loop through the submitted levels.
+	foreach ( $submitted_levels as $submitted_level => $submitted_level_data ) {
+		// Get the data for the level.
+		$selected   = ! empty( $submitted_level_data['has_level'] );
+		$expiration = ( ! empty( $submitted_level_data['expires'] ) && ! empty( $submitted_level_data['expiration'] ) ) ? $submitted_level_data['expiration'] : null;
+	
+		if ( ! $selected && in_array( $submitted_level, $user_level_ids ) ) {
+			// Level was removed.
+			$levels_to_remove[] = $submitted_level;
+		} elseif ( $selected && ! in_array( $submitted_level, $user_level_ids ) ) {
+			// Level was added.
+			$levels_to_add[] = $submitted_level;
+
+			// We may also need to update the expiration date.
+			if ( ! empty( $expiration ) ) {
+				$levels_to_update[ $submitted_level ] = $expiration;
 			}
+		} elseif ( $selected && in_array( $submitted_level, $user_level_ids ) ) {
+			// User may have changed the expiration date. Let's check.
+			$current_expiration = pmpro_getMembershipLevelForUser( $user_id, $submitted_level )->enddate;
 
-			// Cancel the membership.
-			pmpro_cancelMembershipLevel($leveltodel, $user_id, 'admin_cancelled');
-
-			// Remove the filter.
-			remove_filter('pmpro_cancel_previous_subscriptions', 'pmpro_cancel_previous_subscriptions_false');
-
-			// Check if we should refund the last payment for this level.
-			if ( ! empty( $_REQUEST['refund_last_payment'] ) && in_array( $leveltodel, $_REQUEST['refund_last_payment'] ) ) {
-				// Get the last order for this level.
-				$order_args = array(
-					'user_id' => $user_id,
-					'membership_id' => $leveltodel,
-					'status' => 'success',
-				);
-				$last_order = MemberOrder::get_order( $order_args );
-				if ( pmpro_allowed_refunds( $last_order ) ) {
-					pmpro_refund_order( $last_order );
-				}
+			if ( $current_expiration != strtotime( $expiration ) ) {
+				// Update the expiration date.
+				$levels_to_update[ $submitted_level ] = $expiration;
 			}
-
-			$droppedlevels[] = $leveltodel;
 		}
 	}
 
-	// Next, let's update the expiration on any existing levels - as long as the level isn't in one of the ones we dropped them from.
-	if(array_key_exists('expires', $_REQUEST)) {
-		foreach($_REQUEST['expires'] as $expkey => $doesitexpire) {
-			$thislevel = $_REQUEST['membership_levels'][$expkey];
-			if(!in_array($thislevel, $droppedlevels)) { // we don't change expiry for a level we've dropped.
-				if(!empty($doesitexpire)) { // we're going to expire.
-					//update the expiration date
-					$expiration_date = intval($_REQUEST['expires_year'][$expkey]) . "-" . str_pad(intval($_REQUEST['expires_month'][$expkey]), 2, "0", STR_PAD_LEFT) . "-" . str_pad(intval($_REQUEST['expires_day'][$expkey]), 2, "0", STR_PAD_LEFT);
-
-					$wpdb->update(
-						$wpdb->pmpro_memberships_users,
-						array( 'enddate' => $expiration_date ),
-						array(
-							'status' => 'active',
-							'membership_id' => $thislevel,
-							'user_id' => $user_id ), // Where clause
-						array( '%s' ),  // format for data
-						array( '%s', '%d', '%d' ) // format for where clause
-					);
-
-				} else { // No expiration for me!
-					$wpdb->update(
-						$wpdb->pmpro_memberships_users,
-						array( 'enddate' => NULL ),
-						array(
-							'status' => 'active',
-							'membership_id' => $thislevel,
-							'user_id' => $user_id
-						),
-						array( NULL ),
-						array( '%s', '%d', '%d' )
-					);
-
-				}
-			}
-		}
+	// Finally, we need to execute the level changes.
+	// Remove levels.
+	foreach ( $levels_to_remove as $level_to_remove ) {
+		pmpro_cancelMembershipLevel( $level_to_remove, $user_id, 'admin_changed' );
 	}
-	// Finally, we'll add any new levels requested. First, we'll try it without forcing, and then if need be, we'll force it (but then we'll know to give a warning about it.)
-	if(array_key_exists('new_levels_level', $_REQUEST)) {
-		$curlevels = pmpro_getMembershipLevelsForUser($user_id); // have to do it again, because we've made changes since above.
-		$curlevids = array();
-		foreach($curlevels as $thelev) { $curlevids[] = $thelev->ID; }
-		foreach($_REQUEST['new_levels_level'] as $newkey => $leveltoadd) {
-			if(! in_array($leveltoadd, $curlevids)) {
-				$result = pmpro_changeMembershipLevel($leveltoadd, $user_id);
 
-				$doweexpire = $_REQUEST['new_levels_expires'][$newkey];
-				if(!empty($doweexpire)) { // we're going to expire.
-					//update the expiration date
-					$expiration_date = intval($_REQUEST['new_levels_expires_year'][$newkey]) . "-" . str_pad(intval($_REQUEST['new_levels_expires_month'][$newkey]), 2, "0", STR_PAD_LEFT) . "-" . str_pad(intval($_REQUEST['new_levels_expires_day'][$newkey]), 2, "0", STR_PAD_LEFT);
+	// Add levels.
+	foreach ( $levels_to_add as $level_to_add ) {
+		pmpro_changeMembershipLevel( $level_to_add, $user_id, 'admin_changed' );
+	}
 
-					$wpdb->update(
-						$wpdb->pmpro_memberships_users,
-						array( 'enddate' => $expiration_date ),
-						array(
-							'status' => 'active',
-							'membership_id' => $leveltoadd,
-							'user_id' => $user_id ), // Where clause
-						array( '%s' ),  // format for data
-						array( '%s', '%d', '%d' ) // format for where clause
-					);
-
-				} else { // No expiration for me!
-					$wpdb->update(
-						$wpdb->pmpro_memberships_users,
-						array( 'enddate' => NULL ),
-						array(
-							'status' => 'active',
-							'membership_id' => $leveltoadd,
-							'user_id' => $user_id
-						),
-						array( NULL ),
-						array( '%s', '%d', '%d' )
-					);
-				}
-			}
+	// Update levels.
+	foreach ( $levels_to_update as $level_to_update => $expiration ) {
+		if ( empty( $expiration ) ) {
+			// Set level to not expire.
+			$wpdb->update(
+				$wpdb->pmpro_memberships_users,
+				array( 'enddate' => NULL ),
+				array(
+					'status' => 'active',
+					'membership_id' => $level_to_update,
+					'user_id' => $user_id
+				),
+				array( NULL ),
+				array( '%s', '%d', '%d' )
+			);
+		} else {
+			// Set expiration date for level.
+			$wpdb->update(
+				$wpdb->pmpro_memberships_users,
+				array( 'enddate' => date( 'Y-m-d H:i:s', strtotime( $expiration ) ) ),
+				array(
+					'status' => 'active',
+					'membership_id' => $level_to_update,
+					'user_id' => $user_id
+				),
+				array( '%s' ),
+				array( '%s', '%d', '%d' )
+			);
 		}
 	}
 }
