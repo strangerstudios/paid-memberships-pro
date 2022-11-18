@@ -91,17 +91,74 @@ function pmpro_membership_level_profile_fields($user)
 							// Show checkbox to set whether the membership expires if a level is selected.
 							$current_level_expires = false;
 							$enddate_to_show = date( 'Y-m-d H:i', strtotime( '+1 year' ) );
+							$shown_level_name_prefix = 'pmpro_membership_levels[]';
 							if ( ! empty( $shown_level ) ) {
 								$current_level_expires = ! empty( $shown_level->enddate );
 								$enddate_to_show = ! empty( $shown_level->enddate ) ? date( 'Y-m-d H:i', $shown_level->enddate ) : $enddate_to_show;
+								$shown_level_name_prefix = 'pmpro_membership_levels[' . $shown_level->id . ']';
 							}
 							?>
 							<p <?php if ( empty( $shown_level ) ) { echo 'style="display: none"'; } ?>>
-								<input type="checkbox" name="pmpro_membership_levels[<?php echo esc_attr( ! empty( $shown_level ) ? $shown_level->id : '' ); ?>][expires]" value="1" class="pmpro_expires_checkbox" <?php checked( $current_level_expires ); ?> />
+								<input type="checkbox" name="<?php echo esc_attr( $shown_level_name_prefix ); ?>[expires]" value="1" class="pmpro_expires_checkbox" <?php checked( $current_level_expires ); ?> />
 								<?php esc_html_e( 'Expires', 'paid-memberships-pro' ); ?>
-								<input type="datetime-local" name="pmpro_membership_levels[<?php echo esc_attr( !  empty( $shown_level ) ? $shown_level->id : '' ); ?>][expiration]" value="<?php echo esc_attr( $enddate_to_show ); ?>" <?php if ( ! $current_level_expires ) { echo 'style="display: none"'; } ?>>
+								<input type="datetime-local" name="<?php echo esc_attr( $shown_level_name_prefix ); ?>[expiration]" value="<?php echo esc_attr( $enddate_to_show ); ?>" <?php if ( ! $current_level_expires ) { echo 'style="display: none"'; } ?>>
 							</p>
 							<?php
+							// If we have a shown level, we want to show some subscription data.
+							if ( ! empty( $shown_level ) ) {
+								$subscriptions = PMPro_Subscription::get_subscriptions_for_user( $user->ID, $shown_level->id );
+								if ( ! empty( $subscriptions ) ) {
+									$subscription = $subscriptions[0];
+									$billing_amount = $subscription->get_billing_amount();
+									$cycle_number   = $subscription->get_cycle_number();
+									$cycle_period   = $subscription->get_cycle_period();
+
+									$cost_text = esc_html__( 'Subscription', 'paid-memberships-pro' ) . ': ';
+									if ( $cycle_number == 1 ) {
+										$cost_text .= sprintf( esc_html__( '%1$s per %2$s', 'paid-memberships-pro' ), pmpro_formatPrice( $billing_amount ), $cycle_period );
+									} else {
+										$cost_text .= sprintf( esc_html__( '%1$s every %2$s %3$ss', 'paid-memberships-pro' ), pmpro_formatPrice( $billing_amount ), $cycle_number, $cycle_period );
+									}
+									?>
+									<p><?php echo esc_html( $cost_text ); ?></p>
+									<?php
+									// If the user has more than 1 subscription, show a warning message.
+									if ( count( $subscriptions ) > 1 ) {
+										?>
+										<div class="pmpro_admin">
+											<p class="pmpro_message pmpro_error">
+												<?php
+												esc_html_e( 'The user has multiple active subscriptions for this level. Old payment subscriptions should be cancelled using the Member History tool below.', 'paid-memberships-pro' );
+												?>
+											</p>
+											<br>
+										</div>
+										<?php
+									}
+									// If the user changes levels, we are going to want to show a cancel subscription dropdown.
+									?>
+									<label for="<?php echo esc_attr( $shown_level_name_prefix ); ?>[subscription_action]" style="display: none">
+										<select name="<?php echo esc_attr( $shown_level_name_prefix ); ?>[subscription_action]">
+											<option value="cancel"><?php esc_html_e( 'Cancel payment subscription (Reccomended)', 'paid-memberships-pro' ); ?></option>
+											<option value="keep"><?php esc_html_e( 'Keep subscription active', 'paid-memberships-pro' ); ?></option>
+										</select>
+									</label>
+									<br/>
+									<?php
+								}
+
+								// Check if we can refund the last order for this level.
+								$last_order = new MemberOrder();
+								$last_order->getLastMemberOrder( $user->ID, array( 'success', 'refunded' ), $shown_level->id );
+								if ( pmpro_allowed_refunds( $last_order ) ) {
+									?>
+									<label for="<?php echo esc_attr( $shown_level_name_prefix ); ?>[refund]" style="display: none">
+										<input type="checkbox" name="<?php echo esc_attr( $shown_level_name_prefix ); ?>[refund]" value="1" />
+										<?php printf( esc_html( 'Refund the last payment (%s).', 'paid-memberships-pro' ), pmpro_formatPrice( $last_order->total ) ); ?>
+									</label>
+									<?php
+								}
+							}
 							// Loop through all levels again and create hidden fields for each.
 							foreach ( $levels_in_group as $level ) {
 								$name_prefix = 'pmpro_membership_levels[' . $level->id . ']';
@@ -109,6 +166,20 @@ function pmpro_membership_level_profile_fields($user)
 								<input type="hidden" name="<?php echo esc_attr( $name_prefix ); ?>[id]" value="<?php echo esc_attr( $level->id ); ?>" />
 								<input type="hidden" name="<?php echo esc_attr( $name_prefix ); ?>[has_level]" class="pmpro_has_level_hidden" value="<?php echo ( ! empty( $shown_level ) && $shown_level->id == $level->id ) ? 1 : 0; ?>" />
 								<?php
+								// Let's also check if the user has an active subscription for this level. If they do and it's not the shown level, we'll show a warning message.
+								$subscriptions = PMPro_Subscription::get_subscriptions_for_user( $user->ID, $level->id );
+								if ( ! empty( $subscriptions ) && ( empty( $shown_level ) || $shown_level->id != $level->id ) ) {
+									?>
+									<div class="pmpro_admin">
+										<p class="pmpro_message pmpro_error">
+											<?php
+											printf( esc_html__( 'The user has an active subscription for the %s level. The subscription should be cancelled using the Member History tool below.', 'paid-memberships-pro' ), esc_html( $level->name ) );
+											?>
+										</p>
+										<br>
+									</div>
+									<?php
+								}
 							}
 						} else {
 							// Users can have multiple levels from this group.
@@ -118,17 +189,18 @@ function pmpro_membership_level_profile_fields($user)
 									<tr>
 										<th><?php esc_html_e( 'Level', 'paid-memberships-pro' ); ?></th>
 										<th><?php esc_html_e( 'Expiration', 'paid-memberships-pro' ); ?></th>
+										<th><?php esc_html_e( 'Subscription', 'paid-memberships-pro' ); ?></th>
 									</tr>
 								</thead>
 								<?php
 								foreach ( $levels_in_group as $level ) {
-									$checked = in_array( $level->id, $user_level_ids_in_group );
+									$has_level = in_array( $level->id, $user_level_ids_in_group );
 									$name_prefix = 'pmpro_membership_levels[' . $level->id . ']';
 									?>
 									<tr>
 										<td>
 											<label for="<?php echo esc_attr( $name_prefix ); ?>[has_level]">
-												<input type="checkbox" name="<?php echo esc_attr( $name_prefix ) ?>[has_level]" id="pmpro_membership_level_checkbox_<?php echo esc_attr( $level->id ); ?>" class="pmpro_has_level_checkbox" value="1" <?php checked( $checked ); ?> />
+												<input type="checkbox" name="<?php echo esc_attr( $name_prefix ) ?>[has_level]" id="pmpro_membership_level_checkbox_<?php echo esc_attr( $level->id ); ?>" class="pmpro_has_level_checkbox" value="1" <?php checked( $has_level ); ?> />
 												<input type="hidden" name="<?php echo esc_attr( $name_prefix ); ?>[id]" value="<?php echo esc_attr( $level->id ); ?>" />
 												<?php echo esc_html( $level->name ); ?>
 											</label>
@@ -143,8 +215,81 @@ function pmpro_membership_level_profile_fields($user)
 												$enddate_to_show = $has_enddate ? date( 'Y-m-d H:i', $user_levels_in_group[ $level->id ]->enddate ) : $enddate_to_show;
 											}
 											?>
-											<input type="checkbox" name="<?php echo esc_attr( $name_prefix ) ?>[expires]" class="pmpro_expires_checkbox" value="1" <?php checked( $has_enddate ); ?> <?php if ( ! $checked ) { echo 'style="display: none"'; } ?> />
+											<input type="checkbox" name="<?php echo esc_attr( $name_prefix ) ?>[expires]" class="pmpro_expires_checkbox" value="1" <?php checked( $has_enddate ); ?> <?php if ( ! $has_level ) { echo 'style="display: none"'; } ?> />
 											<input type="datetime-local" name="<?php echo esc_attr( $name_prefix ) ?>[expiration]" value="<?php echo esc_attr( $enddate_to_show ); ?>" <?php if ( ! $has_enddate ) { echo 'style="display: none"'; } ?>>
+										</td>
+										<td class="pmpro_levels_subscription_data">
+											<?php
+											// If the user has  this level and they have a subscription for the level, let's show the subscription amount.
+											if  ( $has_level  ) {
+												$subscriptions = PMPro_Subscription::get_subscriptions_for_user( $user->ID, $level->id );
+												if ( ! empty( $subscriptions ) ) {
+													// If the user has more than 1 subscription, show a warning message.
+													if ( count( $subscriptions ) > 1 ) {
+														?>
+														<div class="pmpro_admin">
+															<p class="pmpro_message pmpro_error">
+																<?php
+																esc_html_e( 'The user has multiple active subscriptions for this level. Old payment subscriptions should be cancelled using the Member History tool below.', 'paid-memberships-pro' );
+																?>
+															</p>
+															<br>
+														</div>
+														<?php
+													}
+													$subscription = $subscriptions[0];
+													$billing_amount = $subscription->get_billing_amount();
+													$cycle_number   = $subscription->get_cycle_number();
+													$cycle_period   = $subscription->get_cycle_period();
+
+													if ( $cycle_number == 1 ) {
+														$cost_text = sprintf( esc_html__( '%1$s per %2$s', 'paid-memberships-pro' ), pmpro_formatPrice( $billing_amount ), $cycle_period );
+													} else {
+														$cost_text = sprintf( esc_html__( '%1$s every %2$s %3$ss', 'paid-memberships-pro' ), pmpro_formatPrice( $billing_amount ), $cycle_number, $cycle_period );
+													}
+													?>
+													<p><?php echo esc_html( $cost_text ); ?></p>
+													<label for="<?php echo esc_attr( $name_prefix ); ?>[subscription_action]" style="display: none">
+														<select name="<?php echo esc_attr( $name_prefix ); ?>[subscription_action]">
+															<option value="cancel"><?php esc_html_e( 'Cancel payment subscription (Reccomended)', 'paid-memberships-pro' ); ?></option>
+															<option value="keep"><?php esc_html_e( 'Keep subscription active', 'paid-memberships-pro' ); ?></option>
+														</select>
+													</label>
+													<br/>
+													<?php
+												} else {
+													?>
+													<p><?php esc_html_e( 'No subscription found.', 'paid-memberships-pro' ); ?></p>
+													<?php
+												}
+												// Check if we can refund the last order for this level.
+												$last_order = new MemberOrder();
+												$last_order->getLastMemberOrder( $user->ID, array( 'success', 'refunded' ), $level->id );
+												if ( pmpro_allowed_refunds( $last_order ) ) {
+													?>
+													<label for="<?php echo esc_attr( $name_prefix ); ?>[refund]" style="display: none">
+														<input type="checkbox" name="<?php echo esc_attr( $name_prefix ); ?>[refund]" value="1" />
+														<?php printf( esc_html( 'Refund the last payment (%s).', 'paid-memberships-pro' ), pmpro_formatPrice( $last_order->total ) ); ?>
+													</label>
+													<?php
+												}
+											} else {
+												// If the user doesn't have this level but has a subscription for the level, we should warn them.
+												$subscriptions = PMPro_Subscription::get_subscriptions_for_user( $user->ID, $level->id );
+												if ( ! empty( $subscriptions ) ) {
+													?>
+													<div class="pmpro_admin">
+															<p class="pmpro_message pmpro_error">
+																<?php
+																esc_html_e( 'The user has a subscription for this level, but does not have a membership for this level. Old payment subscriptions should be cancelled using the Member History tool below.', 'paid-memberships-pro' );
+																?>
+															</p>
+															<br>
+														</div>
+													<?php
+												}
+											}
+											?>
 										</td>
 									</tr>
 									<?php								
@@ -163,6 +308,13 @@ function pmpro_membership_level_profile_fields($user)
 						jQuery( '.pmpro_group_level_select' ).on( 'change', function() {
 							// Set all sibling hidden fields to 0.
 							jQuery( this ).siblings( '.pmpro_has_level_hidden' ).val( 0 );
+
+							// Show/hide the "level change" options.
+							jQuery( this ).siblings( 'label' ).show();
+							jQuery( 'label[for="pmpro_membership_levels[' + jQuery( this ).val() + '][subscription_action]"' ).hide();
+							jQuery( 'label[for="pmpro_membership_levels[' + jQuery( this ).val() + '][refund]"' ).hide();
+
+							// Update fields for the current level.
 							if ( jQuery( this ).val() > 0 ) {
 								// Set the hidden field for the selected level to 1.
 								jQuery( 'input[name="pmpro_membership_levels[' + jQuery( this ).val() + '][has_level]"' ).val( 1 );
@@ -188,15 +340,22 @@ function pmpro_membership_level_profile_fields($user)
 							}
 						} );
 
-						// Show/hide the expiration date fields when the "has level" checkbox is toggled.
+						// Show/hide the expiration date and subscription fields when the "has level" checkbox is toggled.
 						jQuery( '.pmpro_has_level_checkbox' ).on( 'change', function() {
 							if ( jQuery( this ).is( ':checked' ) ) {
+								// Show  the expiration checkbox.
 								jQuery( this ).parent().parent().next().find('.pmpro_expires_checkbox').show();
 								if ( jQuery( this ).parent().parent().next().find('.pmpro_expires_checkbox').is( ':checked' ) ) {
+									// Show the expiration date field.
 									jQuery( this ).parent().parent().next().find('.pmpro_expires_checkbox').next( 'input' ).show();
 								}
+								// Hide the subscription cancel fields.
+								jQuery( this ).parent().parent().next().next().find('label').hide();
 							} else {
+								// Hide the expiration fields.
 								jQuery( this ).parent().parent().next().find('input').hide();
+								// Show the subscription cancel fields.
+								jQuery( this ).parent().parent().next().next().find('label').show();
 							}
 						} );
 					} );
@@ -267,7 +426,7 @@ function pmpro_membership_level_profile_fields_update() {
 	$user_level_ids = wp_list_pluck( $user_levels, 'id' );
 
 	// Set up some arrays to hold level changes.
-	$levels_to_remove = array(); // Array of IDs.
+	$levels_to_remove = array(); // Associative array of IDs and whether to cancel the associated subscription.
 	$levels_to_add    = array(); // Array of IDs.
 	$levels_to_update = array(); // Associative array of IDs and expiration dates.
 
@@ -285,7 +444,17 @@ function pmpro_membership_level_profile_fields_update() {
 	
 		if ( ! $selected && in_array( $submitted_level, $user_level_ids ) ) {
 			// Level was removed.
-			$levels_to_remove[] = $submitted_level;
+			$levels_to_remove[ $submitted_level ] = empty( $submitted_level_data['subscription_action'] ) || 'cancel' === $submitted_level_data['subscription_action'];
+
+			// Refund the order if needed.
+			if ( ! empty( $submitted_level_data['refund'] ) ) {
+				$last_order = new MemberOrder();
+				$last_order->getLastMemberOrder( $user_id, array( 'success', 'refunded' ), $submitted_level );
+				if ( ! empty( $last_order ) ) {
+					pmpro_refund_order( $last_order );
+				}
+			}
+
 		} elseif ( $selected && ! in_array( $submitted_level, $user_level_ids ) ) {
 			// Level was added.
 			$levels_to_add[] = $submitted_level;
@@ -307,8 +476,13 @@ function pmpro_membership_level_profile_fields_update() {
 
 	// Finally, we need to execute the level changes.
 	// Remove levels.
-	foreach ( $levels_to_remove as $level_to_remove ) {
+	foreach ( $levels_to_remove as $level_to_remove => $cancel_subscription ) {
+		if ( empty( $cancel_subscription ) ) {
+			// Cancel the subscription.
+			add_filter( 'pmpro_cancel_previous_subscriptions', 'pmpro_cancel_previous_subscriptions_false' );
+		}
 		pmpro_cancelMembershipLevel( $level_to_remove, $user_id, 'admin_changed' );
+		remove_filter( 'pmpro_cancel_previous_subscriptions', 'pmpro_cancel_previous_subscriptions_false' );
 	}
 
 	// Add levels.
