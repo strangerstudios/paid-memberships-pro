@@ -333,7 +333,7 @@ if ( empty( $default_gateway ) ) {
 						</select>
 					</div> <!-- end pmpro_checkout-field-bcountry -->
 				<?php } else { ?>
-					<input type="hidden" name="bcountry" value="<?php esc_attr( $pmpro_default_country ) ?>" />
+					<input type="hidden" name="bcountry" id="bcountry" value="<?php esc_attr( $pmpro_default_country ) ?>" />
 				<?php } ?>
 			<div class="<?php echo pmpro_get_element_class( 'pmpro_checkout-field pmpro_checkout-field-bphone', 'pmpro_checkout-field-bphone' ); ?>">
 				<label for="bphone"><?php esc_html_e('Phone', 'paid-memberships-pro' );?></label>
