@@ -49,7 +49,7 @@ function pmpro_compatibility_checker() {
 		[
 			'file' 		  => 'avada.php',
 			'check_type'  => 'constant',
-			'check_value' => 'AVADA_VERSION'
+			'check_value' => 'FUSION_BUILDER_VERSION'
 		]
 	];
 
