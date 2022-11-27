@@ -188,7 +188,7 @@ function pmpro_report_login_page()
 			<br class="clear" />
 		</div> <!-- end tablenav -->
 	<?php } ?>	
-	<table id="pmpro_report_login_data" class="widefat fixed striped">
+	<table id="pmpro_report_login_data" class="widefat striped">
 		<thead>
 			<tr>
 				<th colspan="4"></th>
@@ -197,7 +197,7 @@ function pmpro_report_login_page()
 				<th colspan="5"><?php esc_html_e( 'Logins', 'paid-memberships-pro' ); ?></th>
 			</tr>
 			<tr class="thead-sub">
-				<th><?php esc_html_e( 'User', 'paid-memberships-pro' ); ?></th>	
+				<th><?php esc_html_e( 'User', 'paid-memberships-pro' ); ?></th>
 				<th><?php esc_html_e( 'Level', 'paid-memberships-pro' ); ?></th>	
 				<th><?php esc_html_e( 'Joined', 'paid-memberships-pro' ); ?></th>
 				<th><?php esc_html_e( 'Expires', 'paid-memberships-pro' ); ?></th>

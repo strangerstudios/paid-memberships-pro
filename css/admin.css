@@ -1312,15 +1312,15 @@ h2.nav-tab-wrapper {
 }
 
 /* reports */
-.memberships_page_pmpro-reports .pmpro_admin .nav-tab-wrapper {
-	margin-bottom: 10px;
+.memberships_page_pmpro-reports .dashboard-widgets-wrap {
+	margin-top: 1em;
 }
 .pmpro_report-filters {
 	background: #FAFAFA;
 	border: 1px solid #DADADA;
 	border-radius: 6px;
 	box-shadow: 1px 1px 5px rgb(0 0 0 / 12%);
-	margin: 1em 0 2em 0;
+	margin: 1em 0;
 	padding: 1.25em;
 }
 .pmpro_report-filters h3 {
