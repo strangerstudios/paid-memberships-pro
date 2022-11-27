@@ -103,6 +103,69 @@ function pmpro_report_sales_widget() {
 <?php
 }
 
+function pmpro_report_sales_data( $args ){
+
+	global $wpdb;
+
+	$type_function = ! empty( $args['type_function'] ) ? $args['type_function'] : '';
+	$date_function = ! empty( $args['date_function'] ) ? $args['date_function'] : '';
+	$discount_code = ! empty( $args['discount_code'] ) ? $args['discount_code'] : '';
+	$startdate = ! empty( $args['startdate'] ) ? $args['startdate'] : '';
+	$enddate = ! empty( $args['enddate'] ) ? $args['enddate'] : '';
+
+	//testing or live data
+	$gateway_environment = pmpro_getOption("gateway_environment");
+
+	// Get the estimated second offset to convert from GMT time to local.This is not perfect as daylight
+	// savings time can come and go in the middle of a month, but it's a tradeoff that we are making
+	// for performance so that we don't need to go through each order manually to calculate the local time.
+	$tz_offset = strtotime( $startdate ) - strtotime( get_gmt_from_date( $startdate . " 00:00:00" ) );
+
+ 	$sqlQuery = "SELECT date,
+					MONTH( mo1timestamp ) as month, 
+				 	$type_function(mo1total) as value,
+				 	$type_function( IF( mo2id IS NOT NULL, mo1total, NULL ) ) as renewals
+				 FROM ";
+	$sqlQuery .= "(";	// Sub query.
+	$sqlQuery .= "SELECT $date_function( DATE_ADD( mo1.timestamp, INTERVAL $tz_offset SECOND ) ) as date,
+					    mo1.id as mo1id,
+						mo1.total as mo1total,
+						mo1.timestamp as mo1timestamp, 
+						mo2.id as mo2id
+				 FROM $wpdb->pmpro_membership_orders mo1
+				 	LEFT JOIN $wpdb->pmpro_membership_orders mo2 ON mo1.user_id = mo2.user_id
+                        AND mo2.total > 0
+                        AND mo2.status NOT IN('refunded', 'review', 'token', 'error')                                            
+                        AND mo2.timestamp < mo1.timestamp
+                        AND mo2.gateway_environment = '" . esc_sql( $gateway_environment ) . "' ";
+
+	if ( ! empty( $discount_code ) ) {
+		$sqlQuery .= "LEFT JOIN $wpdb->pmpro_discount_codes_uses dc ON mo1.id = dc.order_id ";
+	}
+
+	$sqlQuery .= "WHERE mo1.total > 0
+					AND mo1.timestamp >= DATE_ADD( '$startdate' , INTERVAL - $tz_offset SECOND )
+					AND mo1.status NOT IN('refunded', 'review', 'token', 'error')
+					AND mo1.gateway_environment = '" . esc_sql( $gateway_environment ) . "' ";
+
+	if(!empty($enddate))
+		$sqlQuery .= "AND mo1.timestamp <= DATE_ADD( '$enddate 23:59:59' , INTERVAL - $tz_offset SECOND )";
+
+	if(!empty($l))
+		$sqlQuery .= "AND mo1.membership_id IN(" . esc_sql( $l ) . ") ";
+
+	if ( ! empty( $discount_code ) ) {
+		$sqlQuery .= "AND dc.code_id = '" . esc_sql( $discount_code ) . "' ";
+	}
+
+	$sqlQuery .= " GROUP BY mo1.id ";
+	$sqlQuery .= ") t1";
+	$sqlQuery .= " GROUP BY date ORDER by date";
+
+	return $wpdb->get_results( $sqlQuery );
+
+}
+
 function pmpro_report_sales_page()
 {
 	global $wpdb, $pmpro_currency_symbol, $pmpro_currency, $pmpro_currencies;
@@ -151,15 +214,20 @@ function pmpro_report_sales_page()
 		$new_renewals = 'new_renewals';
 	}
 
-	
+	if ( isset( $_REQUEST['compare_period'] ) ) {
+		$compare_period = 1;
+		$previous_year = date( 'Y', strtotime( $year.'-'.$month.'-01'.' - 1 YEAR' ) );
+	} else {
+		$previous_startdate = $previous_enddate = $previous_year = $compare_period = 0;	
+	}
 
 	$currently_in_period = false;
 
 	//calculate start date and how to group dates returned from DB
-	if($period == "daily")
-	{
+	if( $period == "daily" ) {		
 		$startdate = $year . '-' . substr("0" . $month, strlen($month) - 1, 2) . '-01';
 		$enddate = $year . '-' . substr("0" . $month, strlen($month) - 1, 2) . '-' . date_i18n('t', strtotime( $startdate ) );
+		
 		$date_function = 'DAY';
 		$currently_in_period = ( intval( date( 'Y' ) ) == $year && intval( date( 'n' ) ) == $month );
 	}
@@ -192,60 +260,39 @@ function pmpro_report_sales_page()
 		$startdate = '1970-01-01';	//all time
 		$date_function = 'YEAR';
 		$currently_in_period = true;
-	}	
+	}		
 
-	
-	//testing or live data
-	$gateway_environment = pmpro_getOption("gateway_environment");
+	if( $compare_period ) {
+		$previous_startdate = $previous_year . '-' . substr("0" . $month, strlen($month) - 1, 2) . '-01';
+		$previous_enddate = $previous_year . '-' . substr("0" . $month, strlen($month) - 1, 2) . '-' . date_i18n('t', strtotime( $previous_startdate ) );
 
-	// Get the estimated second offset to convert from GMT time to local.This is not perfect as daylight
-	// savings time can come and go in the middle of a month, but it's a tradeoff that we are making
-	// for performance so that we don't need to go through each order manually to calculate the local time.
-	$tz_offset = strtotime( $startdate ) - strtotime( get_gmt_from_date( $startdate . " 00:00:00" ) );
+		//Remove - just for testing
+		//
+		$previous_startdate = 2022 . '-' . substr("0" . 8, strlen(8) - 1, 2) . '-01';
+		$previous_enddate = 2022 . '-' . substr("0" . 8, strlen(8) - 1, 2) . '-' . date_i18n('t', strtotime( $previous_startdate ) );
+
+	} 
 
 	//get data
-	$sqlQuery = "SELECT date,
-					MONTH( mo1timestamp ) as month, 
-				 	$type_function(mo1total) as value,
-				 	$type_function( IF( mo2id IS NOT NULL, mo1total, NULL ) ) as renewals
-				 FROM ";
-	$sqlQuery .= "(";	// Sub query.
-	$sqlQuery .= "SELECT $date_function( DATE_ADD( mo1.timestamp, INTERVAL $tz_offset SECOND ) ) as date,
-					    mo1.id as mo1id,
-						mo1.total as mo1total,
-						mo1.timestamp as mo1timestamp, 
-						mo2.id as mo2id
-				 FROM $wpdb->pmpro_membership_orders mo1
-				 	LEFT JOIN $wpdb->pmpro_membership_orders mo2 ON mo1.user_id = mo2.user_id
-                        AND mo2.total > 0
-                        AND mo2.status NOT IN('refunded', 'review', 'token', 'error')                                            
-                        AND mo2.timestamp < mo1.timestamp
-                        AND mo2.gateway_environment = '" . esc_sql( $gateway_environment ) . "' ";
+	$args = array(
+		'type_function' => $type_function,
+		'date_function' => $date_function,
+		'discount_code' => $discount_code,
+		'startdate' => $startdate,
+		'enddate' => $enddate
+	);
 
-	if ( ! empty( $discount_code ) ) {
-		$sqlQuery .= "LEFT JOIN $wpdb->pmpro_discount_codes_uses dc ON mo1.id = dc.order_id ";
+	$dates = pmpro_report_sales_data( $args );
+
+	if ( $compare_period ) {
+
+		$args['startdate'] = $previous_startdate;
+		$args['enddate'] = $previous_enddate;
+
+		$previous_period_dates = pmpro_report_sales_data( $args );
+
 	}
 
-	$sqlQuery .= "WHERE mo1.total > 0
-					AND mo1.timestamp >= DATE_ADD( '$startdate' , INTERVAL - $tz_offset SECOND )
-					AND mo1.status NOT IN('refunded', 'review', 'token', 'error')
-					AND mo1.gateway_environment = '" . esc_sql( $gateway_environment ) . "' ";
-
-	if(!empty($enddate))
-		$sqlQuery .= "AND mo1.timestamp <= DATE_ADD( '$enddate 23:59:59' , INTERVAL - $tz_offset SECOND )";
-
-	if(!empty($l))
-		$sqlQuery .= "AND mo1.membership_id IN(" . esc_sql( $l ) . ") ";
-
-	if ( ! empty( $discount_code ) ) {
-		$sqlQuery .= "AND dc.code_id = '" . esc_sql( $discount_code ) . "' ";
-	}
-
-	$sqlQuery .= " GROUP BY mo1.id ";
-	$sqlQuery .= ") t1";
-	$sqlQuery .= " GROUP BY date ORDER by date";
-
-	$dates = $wpdb->get_results($sqlQuery);
 
 	//fill in blanks in dates
 	$cols = array();
@@ -316,10 +363,10 @@ function pmpro_report_sales_page()
 		$cols = array_slice($cols, -$count_back, $count_back, true);
 
 	} else if( $period == "daily" ) {
-		
+
 		for( $i = 1; $i <= $lastday; $i++ ) {
 
-			$cols[$i] = array(0, 0);
+			$cols[$i] = array(0, 0, 0, 0);
 			$csvdata[$i-1] = (object)array('date'=>$i, 'total'=>'', 'new'=> '', 'renewals'=>'');
 			if ( ! $currently_in_period || $i < $day_of_month ) {
 				$units_in_period++;
@@ -328,35 +375,74 @@ function pmpro_report_sales_page()
 			foreach($dates as $date)
 			{
 				if($date->date == $i) {
-					$cols[$i] = array( $date->value, $date->renewals );
+					$cols[$i][0] = $date->value;
+					$cols[$i][1] = $date->renewals;
 					$csvdata[$i-1] = (object)array('date'=>$i, 'total'=>$date->value, 'new'=> $date->value - $date->renewals, 'renewals'=> $date->renewals);
 					if ( ! $currently_in_period || $i < $day_of_month ) {
 						$total_in_period += $date->value;
 					}
 				}	
 			}
+
+			if( $compare_period ) {
+
+				foreach($previous_period_dates as $prev_date) {
+					
+					if($prev_date->date == $i) {
+						$cols[$i][2] = $prev_date->value;
+						$cols[$i][3] = $prev_date->renewals;
+						// $csvdata[$i-1] = (object)array('date'=>$i, 'total'=>$date->value, 'new'=> $date->value - $date->renewals, 'renewals'=> $date->renewals);
+						if ( ! $currently_in_period || $i < $day_of_month ) {
+							$total_in_period += $prev_date->value;
+						}
+					}	
+				}
+
+			}
+			
+
 		}
+
+		
+		
 	}
 	elseif($period == "monthly")
 	{
 		$month_of_year = intval( date( 'n' ) );
 		for($i = 1; $i < 13; $i++)
 		{
-			$cols[$i] = array(0, 0);
+			$cols[$i] = array(0, 0, 0, 0);
 			$csvdata[$i-1] = (object)array('date'=>$i, 'total'=>'', 'new'=> '', 'renewals'=>'');
-			if ( ! $currently_in_period || $i < $month_of_year ) {
+			if ( ! $currently_in_period || $i < $day_of_month ) {
 				$units_in_period++;
 			}
-
+			
 			foreach($dates as $date)
 			{
 				if($date->date == $i) {
-					$cols[$i] = array( $date->value, $date->renewals );
+					$cols[$i][0] = $date->value;
+					$cols[$i][1] = $date->renewals;
 					$csvdata[$i-1] = (object)array('date'=>$i, 'total'=>$date->value, 'new'=> $date->value - $date->renewals, 'renewals'=> $date->renewals);
-					if ( ! $currently_in_period || $i < $month_of_year ) {
+					if ( ! $currently_in_period || $i < $day_of_month ) {
 						$total_in_period += $date->value;
 					}
+				}	
+			}
+
+			if( $compare_period ) {
+
+				foreach($previous_period_dates as $prev_date) {
+					
+					if($prev_date->date == $i) {
+						$cols[$i][2] = $prev_date->value;
+						$cols[$i][3] = $prev_date->renewals;
+						// $csvdata[$i-1] = (object)array('date'=>$i, 'total'=>$date->value, 'new'=> $date->value - $date->renewals, 'renewals'=> $date->renewals);
+						if ( ! $currently_in_period || $i < $day_of_month ) {
+							$total_in_period += $prev_date->value;
+						}
+					}	
 				}
+
 			}
 		}
 	}
@@ -374,20 +460,38 @@ function pmpro_report_sales_page()
 		$current_year = intval( date( 'Y' ) );
 		for($i = $min; $i <= $max; $i++)
 		{
-			$cols[$i] = array(0, 0);
+			$cols[$i] = array(0, 0, 0, 0);
 			$csvdata[$i-1] = (object)array('date'=>$i, 'total'=>'', 'new'=> '', 'renewals'=>'');
-			if ( $i < $current_year ) {
+			if ( ! $currently_in_period || $i < $day_of_month ) {
 				$units_in_period++;
 			}
+			
 			foreach($dates as $date)
 			{
 				if($date->date == $i) {
-					$cols[$i] = array( $date->value, $date->renewals );
+					$cols[$i][0] = $date->value;
+					$cols[$i][1] = $date->renewals;
 					$csvdata[$i-1] = (object)array('date'=>$i, 'total'=>$date->value, 'new'=> $date->value - $date->renewals, 'renewals'=> $date->renewals);
-					if ( $i < $current_year ) {
+					if ( ! $currently_in_period || $i < $day_of_month ) {
 						$total_in_period += $date->value;
 					}
+				}	
+			}
+
+			if( $compare_period ) {
+
+				foreach($previous_period_dates as $prev_date) {
+					
+					if($prev_date->date == $i) {
+						$cols[$i][2] = $prev_date->value;
+						$cols[$i][3] = $prev_date->renewals;
+						// $csvdata[$i-1] = (object)array('date'=>$i, 'total'=>$date->value, 'new'=> $date->value - $date->renewals, 'renewals'=> $date->renewals);
+						if ( ! $currently_in_period || $i < $day_of_month ) {
+							$total_in_period += $prev_date->value;
+						}
+					}	
 				}
+
 			}
 		}
 	}
@@ -419,6 +523,7 @@ function pmpro_report_sales_page()
 		<?php _e('Sales and Revenue', 'paid-memberships-pro' );?>
 	</h1>
 	<a target="_blank" href="<?php echo esc_url( $csv_export_link ); ?>" class="page-title-action"><?php esc_html_e( 'Export to CSV', 'paid-memberships-pro' ); ?></a>
+	<input type='checkbox' id='compare_period' name='compare_period' <?php checked( 1, $compare_period ); ?> /><label for='compare_period'><?php esc_html_e( 'Compare to Previous Period', 'paid-memberships-pro' ); ?></label>
 	<div class="tablenav top">
 		<?php _e('Show', 'paid-memberships-pro' )?>
 		<select id="period" name="period">
@@ -530,11 +635,18 @@ function pmpro_report_sales_page()
 			<?php if( $new_renewals == 'new_renewals' || $new_renewals == 'only_new' ) { ?>
 			dataTable.addColumn('number', <?php echo wp_json_encode( esc_html( sprintf( __( 'New %s', 'paid-memberships-pro' ), ucwords( $type ) ) ) ); ?>);
 			<?php } ?>
+			<?php if( $compare_period && $type != 'sales' ) { ?>
+				dataTable.addColumn('number', 'New - Previous Period');
+				dataTable.addColumn('number', 'Renewals - Previous Period');
+			<?php } ?>
+
 			<?php if ( $type === 'sales' ) { ?>
 				dataTable.addColumn('number', <?php echo wp_json_encode( esc_html( sprintf( __( 'Average: %s', 'paid-memberships-pro' ), number_format_i18n( $average, 2 ) ) ) ); ?>);
 			<?php } else { ?>
 				dataTable.addColumn('number', <?php echo wp_json_encode( sprintf( esc_html__( 'Average: %s', 'paid-memberships-pro' ), pmpro_escape_price( html_entity_decode( pmpro_formatPrice( $average ) ) ) ) ); ?>);
 			<?php } ?>
+
+			
 			dataTable.addRows([
 				<?php foreach($cols as $date => $value) { ?>
 					[
@@ -568,6 +680,9 @@ function pmpro_report_sales_page()
 								<?php echo wp_json_encode( pmpro_escape_price( pmpro_formatPrice( $value[0] - $value[1] ) ) ); ?>,								
 								<?php echo wp_json_encode( pmpro_escape_price( pmpro_formatPrice( $value[0] ) ) ); ?>,
 							<?php } ?>
+							<?php echo $compare_period; //Are we comparing to the previous period ?>,
+							<?php echo wp_json_encode( pmpro_round_price( $value[2] - $value[3] ) ); //previous period new ?>,
+							<?php echo wp_json_encode( pmpro_round_price( $value[3] ) ); //previous period renewal ?>
 						),
 						<?php if ( $type === 'sales' ) { ?>
 							<?php echo wp_json_encode( (int) $value[1] ); ?>,
@@ -576,11 +691,49 @@ function pmpro_report_sales_page()
 						<?php } else { ?>
 							<?php if( $new_renewals == 'new_renewals' || $new_renewals == 'only_renewals' ) { echo wp_json_encode( pmpro_round_price( $value[1] ) ).','; } ?>
 							<?php if( $new_renewals == 'new_renewals' || $new_renewals == 'only_new' ) {echo wp_json_encode( pmpro_round_price( $value[0] - $value[1] ) ).','; } ?>
+							<?php if( $compare_period && ( $new_renewals == 'new_renewals' || $new_renewals == 'only_renewals' ) ) { echo wp_json_encode( pmpro_round_price( $value[3] ) ).','; } ?>
+							<?php if( $compare_period && ( $new_renewals == 'new_renewals' || $new_renewals == 'only_new' ) ) {echo wp_json_encode( pmpro_round_price( $value[2] - $value[3] ) ).','; } ?>
 							<?php echo wp_json_encode( pmpro_round_price( $average ) ); ?>,
 						<?php } ?>
 					],
 				<?php } ?>
 			]);
+
+			<?php 
+
+			$series = array();
+
+			//Current - New and Renewals
+			//This must be set to 1 to start the series
+			$series[1] = array(
+				'color' => ( $type === 'sales' ) ? '#0099C6' : '#5EC16C'
+			);
+
+			if( $compare_period ) {
+
+				if( $new_renewals == 'new_renewals' || $new_renewals == 'only_new' ) {
+					//Compare - New
+					$series[] = array(
+						'color' => '#2271b1'
+					);
+				}
+
+				if( $new_renewals == 'new_renewals' || $new_renewals == 'only_renewals' ) {
+					//Compare - Renewals
+					$series[] = array(
+						'color' => '#3fb122'
+					);
+				}
+
+			}
+			//Average series should always be last
+			$series[] = array(
+				'type' => 'line',
+				'color' => '#B00000',
+				'enableInteractivity' => false,
+				'lineDashStyle' => [4,1]
+			)
+			?>
 			var options = {
 				title: pmpro_report_title_sales(),
 				titlePosition: 'top',
@@ -620,21 +773,7 @@ function pmpro_report_sales_page()
 					},
 				},
 				seriesType: 'bars',
-				series: {
-					<?php if( $new_renewals == 'new_renewals' ) { echo 2; } else { echo 1; } ?> : {
-						type: 'line',
-						color: '#B00000',
-						enableInteractivity: false,
-						lineDashStyle: [4, 1], 
-					},
-					<?php if( $new_renewals == 'new_renewals' ) { echo 1; } else { echo 2; } ?>: {<?php
-						if ( $type === 'sales') {
-							echo "color: '#0099C6'"; // Lighter Blue for "Sales" chart.
-						} else {
-							echo "color: '#5EC16C'"; // Lighter Green for "Revenue" chart.
-						} ?>
-					},
-				},
+				series: <?php echo wp_json_encode( $series ); ?>,
 				isStacked: false,
 			};
 
@@ -642,22 +781,48 @@ function pmpro_report_sales_page()
 			chart.draw(dataTable, options);
 		}
 
-		function createCustomHTMLContent(period, renewals, notRenewals, total) {
-			return '<div style="padding:15px; font-size: 14px; line-height: 20px; color: #000000;">' +
+		function createCustomHTMLContent( period, renewals, notRenewals, total, compare = false, compare_new = false, compare_renewal = false ) {
+
+			var content_string = '';
+
+			content_string +  '<div style="padding:15px; font-size: 14px; line-height: 20px; color: #000000;">' +
 				'<strong>' + period + '</strong><br/>' +
 				'<ul style="margin-bottom: 0px;">' +
 				<?php if( $new_renewals == 'new_renewals' || $new_renewals == 'only_new' ) { ?>
-				'<li><span style="margin-right: 3px;">' +
-				<?php echo wp_json_encode( esc_html__( 'New:', 'paid-memberships-pro' ) ); ?> +
-				'</span>' + notRenewals + '</li>' +
+					content_string +  '<li><span style="margin-right: 3px;">' +
+					<?php echo wp_json_encode( esc_html__( 'New:', 'paid-memberships-pro' ) ); ?> +
+					'</span>' + notRenewals + '</li>';
 				<?php } ?>
-				<?php if( $new_renewals == 'new_renewals' || $new_renewals == 'only_renewals' ) { ?>'<li><span style="margin-right: 3px;">' +
-				<?php echo wp_json_encode( esc_html__( 'Renewals:', 'paid-memberships-pro' ) ); ?> +
-				'</span>' + renewals + '</li>' +
+				<?php if( $new_renewals == 'new_renewals' || $new_renewals == 'only_renewals' ) { ?>
+					content_string +  '<li><span style="margin-right: 3px;">' +
+					<?php echo wp_json_encode( esc_html__( 'Renewals:', 'paid-memberships-pro' ) ); ?> +
+					'</span>' + renewals + '</li>';
 				<?php } ?>
-				'<li style="border-top: 1px solid #CCC; margin-bottom: 0px; margin-top: 8px; padding-top: 8px;"><span style="margin-right: 3px;">' +
-				<?php echo wp_json_encode( esc_html__( 'Total:', 'paid-memberships-pro' ) ); ?> +
-				'</span>' + total + '</li>' + '</ul>' + '</div>';
+
+				if( compare ) {
+					<?php if( $new_renewals == 'new_renewals' || $new_renewals == 'only_new' ) { ?>
+						content_string +'<li><span style="margin-right: 3px;">' +
+						<?php echo wp_json_encode( esc_html__( 'Previous Period - New:', 'paid-memberships-pro' ) ); ?> +
+						'</span>' + compare_new + '</li>';
+					<?php } ?>
+					<?php if( $new_renewals == 'new_renewals' || $new_renewals == 'only_renewals' ) { ?>
+						content_string +  '<li><span style="margin-right: 3px;">' +
+						<?php echo wp_json_encode( esc_html__( 'Previous Period - Renewals:', 'paid-memberships-pro' ) ); ?> +
+						'</span>' + compare_renewal + '</li>';
+					<?php } ?>
+				}
+				content_string +  '<li style="border-top: 1px solid #CCC; margin-bottom: 0px; margin-top: 8px; padding-top: 8px;"><span style="margin-right: 3px;">' +
+					<?php echo wp_json_encode( esc_html__( 'Current Period Total:', 'paid-memberships-pro' ) ); ?> +
+				'</span>' + total + '</li>';
+
+				if( compare ) {
+					content_string +  '<li style="border-top: 1px solid #CCC; margin-bottom: 0px; margin-top: 8px; padding-top: 8px;"><span style="margin-right: 3px;">' +
+					<?php echo wp_json_encode( esc_html__( 'Previous Period Total:', 'paid-memberships-pro' ) ); ?> +
+				'</span>' + total + '</li>';
+				}
+				 content_string +  '</ul>' + '</div>';
+
+				return content_string;
 		}
 		function pmpro_report_title_sales() {
 			<?php
