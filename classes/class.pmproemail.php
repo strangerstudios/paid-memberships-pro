@@ -37,8 +37,6 @@
 		public $body;
 
 
-		function __construct() {
-		}					
 		
 		function sendEmail($email = NULL, $from = NULL, $fromname = NULL, $subject = NULL, $template = NULL, $data = NULL)
 		{			
