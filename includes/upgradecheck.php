@@ -277,6 +277,25 @@ function pmpro_checkForUpgrades()
  		pmpro_db_delta();
  		pmpro_setOption( 'db_version', '2.71' );
  	}
+	
+	/**
+	 * Version 2.8
+	 * Default option for Wisdom tracking.
+	 */
+	if ( $pmpro_db_version < 2.8 ) {
+		pmpro_setOption('wisdom_opt_out', 1);
+		pmpro_setOption( 'db_version', '2.8' );
+	}
+	
+	/**
+	 * Version 2.8.1
+	 * Reload crons to get correct intervals.
+	 */
+	if ( $pmpro_db_version < 2.81 ) {
+		pmpro_clear_crons();
+		pmpro_maybe_schedule_crons();
+		pmpro_setOption( 'db_version', '2.81' );
+	}
 }
 
 function pmpro_db_delta()

@@ -108,4 +108,5 @@ import './login/block.js';
 	L5.33,4.91L9.46,3.96z"/>
 </svg>;
 	wp.blocks.updateCategory( 'pmpro', { icon: PMProSVG } );
+	wp.blocks.updateCategory( 'pmpro-pages', { icon: PMProSVG } );
 } )();

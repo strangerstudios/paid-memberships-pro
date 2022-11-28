@@ -115,19 +115,6 @@ form.pmpro_form label,
 	margin: 0;
 	text-align: left;
 }
-form.pmpro_form #pmpro_payment_information_fields .pmpro_checkout-fields label {
-	display: block;
-	float: none;
-	max-width: initial;
-	min-width: initial;
-	text-align: left;
-	width: auto;
-}
-form.pmpro_form .pmpro_checkout-field-checkbox label {
-	cursor: pointer;
-	display: inline-block;
-	width: auto;
-}
 form.pmpro_form label.pmpro_label-inline {
 	display: inline-block;
 }
@@ -137,27 +124,6 @@ form.pmpro_form label.pmpro_clickable {
 form.pmpro_form .pmpro_asterisk abbr {
 	border: none;
 	text-decoration: none;
-}
-form.pmpro_form input[type=checkbox]#tos {
-	width: auto;
-}
-form.pmpro_form .input,
-form.pmpro_form textarea,
-form.pmpro_form select,
-#loginform input[type=text],
-#loginform input[type=password] {
-	display: inline-block;
-	max-width: 90%;
-	min-height: 1.5rem;
-}
-form.pmpro_form .pmpro_checkout-field-bcity_state_zip .input,
-form.pmpro_form .pmpro_checkout-field-bcity_state_zip select {
-	max-width: 30%;
-}
-form.pmpro_form .pmpro_payment-cvv .input,
-form.pmpro_form .pmpro_payment-discount-code .input,
-form.pmpro_form #other_discount_code.input {
-	max-width: 40%;
 }
 form.pmpro_form .lite {
 	color: #666;
@@ -177,13 +143,98 @@ form.pmpro_form #pmpro_processing_message {
 	text-align: left;
 }
 
-/* Lot Password Frontend Form */
+/** General Field Types **/
+form.pmpro_form input[type=text],
+form.pmpro_form input[type=password],
+form.pmpro_form input[type=email],
+form.pmpro_form input[type=number],
+form.pmpro_form textarea,
+form.pmpro_form select,
+#loginform input[type=text],
+#loginform input[type=password] {
+	display: inline-block;
+	max-width: 90%;
+	min-height: 1.5rem;
+}
+
+/** Checkbox-specific field type **/
+form.pmpro_form .pmpro_checkout-field-checkbox label {
+	cursor: pointer;
+	display: inline;
+	width: auto;
+}
+form.pmpro_form .pmpro_checkout-field-checkbox input[type=checkbox] {
+	opacity: 1;
+}
+form.pmpro_form .pmpro_checkout-field-checkbox_grouped ul {
+	list-style: none;
+	margin-left: 0;
+	padding-left: 0;
+}
+form.pmpro_form .pmpro_checkout-field-checkbox_grouped li {
+	list-style: none;
+	margin-left: 0;
+	padding-left: 0;
+}
+
+/** Radio-specific field type **/
+form.pmpro_form .pmpro_checkout-fields .pmpro_checkout-field-radio-item {
+	margin-bottom: 0;
+}
+form.pmpro_form .pmpro_checkout-field-radio-item label {
+	cursor: pointer;
+	display: inline-block;
+	width: auto;
+}
+form.pmpro_form .pmpro_checkout-field-radio-item input[type=radio] {
+	opacity: 1;
+}
+
+/** Select-specific field type **/
+form.pmpro_form .pmpro_checkout-field-select select {
+	min-width: 50%;
+}
+
+/** Date-specific field type **/
+form.pmpro_form .pmpro_checkout-field-date select {
+	max-width: unset;
+	width: unset;
+}
+form.pmpro_form .pmpro_checkout-field-date input[type=text] {
+	margin-left: 5px;
+	max-width: unset;
+	width: unset;
+}
+
+/** Membership Checkout and Billing-specific Fields **/
+form.pmpro_form #pmpro_payment_information_fields .pmpro_checkout-fields label {
+	display: block;
+	float: none;
+	max-width: initial;
+	min-width: initial;
+	text-align: left;
+	width: auto;
+}
+form.pmpro_form .pmpro_checkout-field-bcity_state_zip .input,
+form.pmpro_form .pmpro_checkout-field-bcity_state_zip select {
+	max-width: 30%;
+}
+form.pmpro_form .pmpro_payment-cvv .input,
+form.pmpro_form .pmpro_payment-discount-code .input,
+form.pmpro_form #other_discount_code.input {
+	max-width: 40%;
+}
+form.pmpro_form input[type=checkbox]#tos {
+	width: auto;
+}
+
+/* Lost Password Frontend Form */
 form.pmpro_form .pmpro_lost_password-fields div {
 	margin: 0 0 1em 0;
 }
 
 /* Member Profile Edit Frontend Form */
-form.pmpro_form .pmpro_member_profile_edit-fields div {
+form.pmpro_form .pmpro_member_profile_edit-fields > div {
 	margin: 0 0 1em 0;
 }
 

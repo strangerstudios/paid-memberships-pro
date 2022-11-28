@@ -108,13 +108,11 @@
 
 	<form action="" method="post" enctype="multipart/form-data">
 		<?php wp_nonce_field('savesettings', 'pmpro_paymentsettings_nonce');?>
-
+		<hr class="wp-header-end">
         <h1 class="wp-heading-inline"><?php esc_html_e( 'Payment Gateway', 'paid-memberships-pro' );?> &amp; <?php esc_html_e( 'SSL Settings', 'paid-memberships-pro' ); ?></h1>
-        <hr class="wp-header-end">
-
 		<p><?php			
-			$gateway_settings_link = '<a title="' . esc_html__( 'Paid Memberships Pro - Payment Gateway Settings', 'paid-memberships-pro' ) . '" target="_blank" href="https://www.paidmembershipspro.com/documentation/admin/payment-ssl-settings/?utm_source=plugin&utm_medium=pmpro-paymentsettings&utm_campaign=documentation&utm_content=payment-gateway-settings">' . esc_html__( 'Payment Gateway Settings', 'paid-memberships-pro' ) . '</a>';
-			$ssl_settings_link = '<a title="' . esc_html__( 'Paid Memberships Pro - SSL Settings', 'paid-memberships-pro' ) . '" target="_blank" href="https://www.paidmembershipspro.com/documentation/initial-plugin-setup/ssl/?utm_source=plugin&utm_medium=pmpro-paymentsettings&utm_campaign=documentation&utm_content=ssl&utm_term=link1">' . esc_html__( 'SSL', 'paid-memberships-pro' ) . '</a>';
+			$gateway_settings_link = '<a title="' . esc_html__( 'Paid Memberships Pro - Payment Gateway Settings', 'paid-memberships-pro' ) . '" target="_blank" rel="nofollow noopener" href="https://www.paidmembershipspro.com/documentation/admin/payment-ssl-settings/?utm_source=plugin&utm_medium=pmpro-paymentsettings&utm_campaign=documentation&utm_content=payment-gateway-settings">' . esc_html__( 'Payment Gateway Settings', 'paid-memberships-pro' ) . '</a>';
+			$ssl_settings_link = '<a title="' . esc_html__( 'Paid Memberships Pro - SSL Settings', 'paid-memberships-pro' ) . '" target="_blank" rel="nofollow noopener" href="https://www.paidmembershipspro.com/documentation/initial-plugin-setup/ssl/?utm_source=plugin&utm_medium=pmpro-paymentsettings&utm_campaign=documentation&utm_content=ssl&utm_term=link1">' . esc_html__( 'SSL', 'paid-memberships-pro' ) . '</a>';
 			// translators: %s and %s: Links to Payment Gateway Settings and SSL Settings docs.
 			printf( esc_html__('Learn more about %s and %s.', 'paid-memberships-pro' ), $gateway_settings_link, $ssl_settings_link );
 		?></p>
@@ -222,7 +220,7 @@
 					<p class="description"><?php esc_html_e( 'Not all currencies will be supported by every gateway. Please check with your gateway.', 'paid-memberships-pro' ); ?></p>
 				</td>
 			</tr>
-			<tr class="gateway gateway_ <?php echo esc_attr(pmpro_getClassesForPaymentSettingsField("accepted_credit_cards"));?>" <?php if(!empty($gateway) && $gateway != "authorizenet" && $gateway != "paypal" && $gateway != "stripe" && $gateway != "payflowpro" && $gateway != "braintree" && $gateway != "twocheckout" && $gateway != "cybersource") { ?>style="display: none;"<?php } ?>>
+			<tr class="gateway gateway_ <?php echo esc_attr(pmpro_getClassesForPaymentSettingsField("accepted_credit_cards"));?>" <?php if(!empty($gateway) && $gateway != "authorizenet" && $gateway != "paypal" && $gateway != "payflowpro" && $gateway != "braintree" && $gateway != "twocheckout" && $gateway != "cybersource") { ?>style="display: none;"<?php } ?>>
 				<th scope="row" valign="top">
 					<label for="creditcards"><?php esc_html_e('Accepted Credit Card Types', 'paid-memberships-pro' );?></label>
 				</th>
@@ -247,7 +245,7 @@
 					<input type="text" id="tax_rate" name="tax_rate" size="10" value="<?php echo esc_attr($tax_rate)?>" class="small-text" /> (<?php _e('decimal, e.g. "0.06"', 'paid-memberships-pro' );?>)					
 					<p class="description">
 						<?php
-							$filter_link = '<a target="_blank" href="https://www.paidmembershipspro.com/non-us-taxes-paid-memberships-pro/?utm_source=plugin&utm_medium=pmpro-paymentsettings&utm_campaign=blog&utm_content=non-us-taxes-paid-memberships-pro">pmpro_tax filter</a>';
+							$filter_link = '<a target="_blank" rel="nofollow noopener" href="https://www.paidmembershipspro.com/non-us-taxes-paid-memberships-pro/?utm_source=plugin&utm_medium=pmpro-paymentsettings&utm_campaign=blog&utm_content=non-us-taxes-paid-memberships-pro">pmpro_tax filter</a>';
 							// translators: %s: A link to the docs for the pmpro_tax filter.
 							printf( __('US only. If values are given, tax will be applied for any members ordering from the selected state. For non-US or more complex tax rules, use the %s.', 'paid-memberships-pro' ), $filter_link );
 						?>
@@ -294,7 +292,7 @@
 					<textarea id="sslseal" name="sslseal" rows="3" cols="50" class="large-text"><?php echo stripslashes(esc_textarea($sslseal))?></textarea>
 					<p class="description">
 						<?php
-							$ssl_certificate_link = '<a target="_blank" href="https://www.paidmembershipspro.com/documentation/initial-plugin-setup/ssl/?utm_source=plugin&utm_medium=pmpro-paymentsettings&utm_campaign=documentation&utm_content=ssl&utm_term=link2">' . esc_html__( 'SSL Certificate', 'paid-memberships-pro' ) . '</a>';
+							$ssl_certificate_link = '<a target="_blank" rel="nofollow noopener" href="https://www.paidmembershipspro.com/documentation/initial-plugin-setup/ssl/?utm_source=plugin&utm_medium=pmpro-paymentsettings&utm_campaign=documentation&utm_content=ssl&utm_term=link2">' . esc_html__( 'SSL Certificate', 'paid-memberships-pro' ) . '</a>';
 							// translators: %s: Link to SSL Certificate docs.
 							printf( esc_html__('Your %s must be installed by your web host. Use this field to display your seal or other trusted merchant images. This field does not accept JavaScript.', 'paid-memberships-pro' ), $ssl_certificate_link );
 						?>

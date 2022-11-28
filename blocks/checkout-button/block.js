@@ -29,17 +29,20 @@ export default registerBlockType(
      'pmpro/checkout-button',
      {
          title: __( 'Membership Checkout Button', 'paid-memberships-pro' ),
-         description: __( 'Displays a button-styled link to Membership Checkout for the specified level.', 'paid-memberships-pro' ),
+         description: __( 'Inserts a button that links directly to membership checkout for the selected level.', 'paid-memberships-pro' ),
          category: 'pmpro',
          icon: {
-            background: '#2997c8',
-            foreground: '#ffffff',
+            background: '#FFFFFF',
+            foreground: '#658B24',
             src: 'migrate',
          },
-         keywords: [ 
-             __( 'pmpro', 'paid-memberships-pro' ), 
+         keywords: [
              __( 'buy', 'paid-memberships-pro' ),
              __( 'level', 'paid-memberships-pro' ),
+             __( 'member', 'paid-memberships-pro' ),
+             __( 'paid memberships pro', 'paid-memberships-pro' ),
+             __( 'pmpro', 'paid-memberships-pro' ),
+             __( 'purchase', 'paid-memberships-pro' ),
          ],
          supports: {
          },

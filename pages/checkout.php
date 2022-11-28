@@ -5,12 +5,12 @@
  * See documentation for how to override the PMPro templates.
  * @link https://www.paidmembershipspro.com/documentation/templates/
  *
- * @version 2.0
+ * @version 2.0.1
  *
  * @author Paid Memberships Pro
  */
 
-global $gateway, $pmpro_review, $skip_account_fields, $pmpro_paypal_token, $wpdb, $current_user, $pmpro_msg, $pmpro_msgt, $pmpro_requirebilling, $pmpro_level, $pmpro_levels, $tospage, $pmpro_show_discount_code, $pmpro_error_fields;
+global $gateway, $pmpro_review, $skip_account_fields, $pmpro_paypal_token, $wpdb, $current_user, $pmpro_msg, $pmpro_msgt, $pmpro_requirebilling, $pmpro_level, $pmpro_levels, $tospage, $pmpro_show_discount_code, $pmpro_error_fields, $pmpro_default_country;
 global $discount_code, $username, $password, $password2, $bfirstname, $blastname, $baddress1, $baddress2, $bcity, $bstate, $bzipcode, $bcountry, $bphone, $bemail, $bconfirmemail, $CardType, $AccountNumber, $ExpirationMonth,$ExpirationYear;
 
 /**
@@ -64,7 +64,7 @@ if ( empty( $default_gateway ) ) {
 				<?php if(count($pmpro_levels) > 1) { ?><span class="<?php echo pmpro_get_element_class( 'pmpro_checkout-h3-msg' ); ?>"><a href="<?php echo esc_url( pmpro_url( "levels" ) ); ?>"><?php esc_html_e('change', 'paid-memberships-pro' );?></a></span><?php } ?>
 			</h3>
 			<div class="<?php echo pmpro_get_element_class( 'pmpro_checkout-fields' ); ?>">
-				<p>
+				<p class="<?php echo pmpro_get_element_class( 'pmpro_level_name_text' );?>">
 					<?php printf(__('You have selected the <strong>%s</strong> membership level.', 'paid-memberships-pro' ), $pmpro_level->name);?>
 				</p>
 
@@ -76,17 +76,37 @@ if ( empty( $default_gateway ) ) {
 					 * @param object $pmpro_level The PMPro Level object.
 					 */
 					$level_description = apply_filters('pmpro_level_description', $pmpro_level->description, $pmpro_level);
-					if(!empty($level_description))
-						echo $level_description;
+					if ( ! empty( $level_description ) ) { ?>
+						<div class="<?php echo pmpro_get_element_class( 'pmpro_level_description_text' );?>">
+							<?php echo $level_description; ?>
+						</div>
+						<?php
+					}
 				?>
 
 				<div id="pmpro_level_cost">
 					<?php if($discount_code && pmpro_checkDiscountCode($discount_code)) { ?>
 						<?php printf(__('<p class="' . pmpro_get_element_class( 'pmpro_level_discount_applied' ) . '">The <strong>%s</strong> code has been applied to your order.</p>', 'paid-memberships-pro' ), $discount_code);?>
 					<?php } ?>
-					<?php echo wpautop(pmpro_getLevelCost($pmpro_level)); ?>
-					<?php echo wpautop(pmpro_getLevelExpiration($pmpro_level)); ?>
-				</div>
+
+					<?php
+						$level_cost_text = pmpro_getLevelCost( $pmpro_level );
+						if ( ! empty( $level_cost_text ) ) { ?>
+							<div class="<?php echo pmpro_get_element_class( 'pmpro_level_cost_text' );?>">
+								<?php echo wpautop( $level_cost_text ); ?>
+							</div>
+						<?php }
+					?>
+
+					<?php
+						$level_expiration_text = pmpro_getLevelExpiration( $pmpro_level );
+						if ( ! empty( $level_expiration_text ) ) { ?>
+							<div class="<?php echo pmpro_get_element_class( 'pmpro_level_expiration_text' );?>">
+								<?php echo wpautop( $level_expiration_text ); ?>
+							</div>
+						<?php }
+					?>
+				</div> <!-- end #pmpro_level_cost -->
 
 				<?php do_action("pmpro_checkout_after_level_cost"); ?>
 
@@ -313,7 +333,7 @@ if ( empty( $default_gateway ) ) {
 						</select>
 					</div> <!-- end pmpro_checkout-field-bcountry -->
 				<?php } else { ?>
-					<input type="hidden" name="bcountry" value="US" />
+					<input type="hidden" name="bcountry" value="<?php esc_attr( $pmpro_default_country ) ?>" />
 				<?php } ?>
 			<div class="<?php echo pmpro_get_element_class( 'pmpro_checkout-field pmpro_checkout-field-bphone', 'pmpro_checkout-field-bphone' ); ?>">
 				<label for="bphone"><?php esc_html_e('Phone', 'paid-memberships-pro' );?></label>
@@ -482,7 +502,7 @@ if ( empty( $default_gateway ) ) {
 				 * Allow adding text or more checkboxes after the Tos checkbox
                  * This is NOT intended to support multiple Tos checkboxes
 				 *
-				 * @since TBD
+				 * @since 2.8
 				 */
 				 do_action( "pmpro_checkout_after_tos" );
 				 ?>

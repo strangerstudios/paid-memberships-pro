@@ -305,8 +305,7 @@
 				if($authorization_id)
 				{
 					$this->void($order, $authorization_id);
-					$order->ProfileStartDate = date_i18n("Y-m-d\TH:i:s", strtotime("+ " . $order->BillingFrequency . " " . $order->BillingPeriod, current_time("timestamp")));
-					$order->ProfileStartDate = apply_filters("pmpro_profile_start_date", $order->ProfileStartDate, $order);
+					$order->ProfileStartDate = pmpro_calculate_profile_start_date( $order, 'Y-m-d\TH:i:s' );
 					return $this->subscribe($order);
 				}
 				else
@@ -324,8 +323,7 @@
 					//set up recurring billing
 					if(pmpro_isLevelRecurring($order->membership_level))
 					{
-						$order->ProfileStartDate = date_i18n("Y-m-d\TH:i:s", strtotime("+ " . $order->BillingFrequency . " " . $order->BillingPeriod, current_time("timestamp")));
-						$order->ProfileStartDate = apply_filters("pmpro_profile_start_date", $order->ProfileStartDate, $order);
+						$order->ProfileStartDate = pmpro_calculate_profile_start_date( $order, 'Y-m-d\TH:i:s' );
 						if($this->subscribe($order))
 						{
 							return true;
@@ -902,7 +900,7 @@
 			/**
 			 * Allow performing actions using the http post request's response.
 			 *
-			 * @since TBD
+			 * @since 2.8
 			 *
 			 * @param array $httpParsedResponseAr The parsed response.
 			 * @param string $methodName_ The NVP API name.

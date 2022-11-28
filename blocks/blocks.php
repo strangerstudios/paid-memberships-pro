@@ -40,6 +40,10 @@ function pmpro_place_blocks_in_panel( $categories, $post_or_context ) {
 				'slug'  => 'pmpro',
 				'title' => __( 'Paid Memberships Pro', 'paid-memberships-pro' ),
 			),
+			array(
+				'slug'	=> 'pmpro-pages',
+				'title'	=> __( 'Paid Memberships Pro Pages', 'paid-memberships-pro' ),
+			),
 		)
 	);
 }
@@ -60,7 +64,7 @@ function pmpro_block_editor_scripts() {
 	// Enqueue the bundled block JS file.
 	wp_enqueue_script(
 		'pmpro-blocks-editor-js',
-		plugins_url( 'js/blocks.build.js', PMPRO_BASE_FILE ),
+		plugins_url( 'js/blocks/blocks.build.js', PMPRO_BASE_FILE ),
 		[
 			'wp-i18n',
 			'wp-element',

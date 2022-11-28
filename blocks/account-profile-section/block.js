@@ -20,15 +20,21 @@
  export default registerBlockType(
      'pmpro/account-profile-section',
      {
-         title: __( 'Membership Account: Profile', 'paid-memberships-pro' ),
-         description: __( 'Displays the member\'s profile information.', 'paid-memberships-pro' ),
-         category: 'pmpro',
+         title: __( 'PMPro Page: Account Profile View', 'paid-memberships-pro' ),
+         description: __( 'Dynamic page section that displays the member\'s profile as read-only information with a link to edit fields or change their password.', 'paid-memberships-pro' ),
+         category: 'pmpro-pages',
          icon: {
-            background: '#2997c8',
-            foreground: '#ffffff',
+            background: '#FFFFFF',
+            foreground: '#1A688B',
             src: 'admin-users',
          },
-         keywords: [ __( 'pmpro', 'paid-memberships-pro' ) ],
+         keywords: [
+             __( 'fields', 'paid-memberships-pro' ),
+             __( 'member', 'paid-memberships-pro' ),
+             __( 'paid memberships pro', 'paid-memberships-pro' ),
+             __( 'pmpro', 'paid-memberships-pro' ),
+             __( 'user', 'paid-memberships-pro' ),
+         ],
          supports: {
          },
          attributes: {

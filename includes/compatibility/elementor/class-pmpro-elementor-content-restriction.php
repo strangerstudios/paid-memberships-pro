@@ -12,6 +12,7 @@ class PMPro_Elementor_Content_Restriction extends PMPro_Elementor {
 		// Filter elementor render_content hook
 		add_action( 'elementor/widget/render_content', array( $this, 'pmpro_elementor_render_content' ), 10, 2 );
 		add_action( 'elementor/frontend/section/should_render', array( $this, 'pmpro_elementor_should_render' ), 10, 2 );
+		add_action( 'elementor/frontend/container/should_render', array( $this, 'pmpro_elementor_should_render' ), 10, 2 );
 
 	}
 

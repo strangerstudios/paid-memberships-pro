@@ -21,15 +21,29 @@
  export default registerBlockType(
      'pmpro/account-page',
      {
-         title: __( 'Membership Account Page', 'paid-memberships-pro' ),
-         description: __( 'Displays the sections of the Membership Account page as selected below.', 'paid-memberships-pro' ),
-         category: 'pmpro',
+         title: __( 'PMPro Page: Account (Full)', 'paid-memberships-pro' ),
+         description: __( 'Dynamic page section to display the selected sections of the Membership Account page including Memberships, Profile, Invoices, and Member Links. These sections can also be added via separate blocks.', 'paid-memberships-pro' ),
+         category: 'pmpro-pages',
          icon: {
-            background: '#2997c8',
-            foreground: '#ffffff',
+            background: '#FFFFFF',
+            foreground: '#1A688B',
             src: 'admin-users',
          },
-         keywords: [ __( 'pmpro', 'paid-memberships-pro' ) ],
+         keywords: [
+             __( 'account', 'paid-memberships-pro' ),
+             __( 'billing', 'paid-memberships-pro' ),
+             __( 'invoice', 'paid-memberships-pro' ),
+             __( 'links', 'paid-memberships-pro' ),
+             __( 'member', 'paid-memberships-pro' ),
+             __( 'order', 'paid-memberships-pro' ),
+             __( 'paid memberships pro', 'paid-memberships-pro' ),
+             __( 'pmpro', 'paid-memberships-pro' ),
+             __( 'profile', 'paid-memberships-pro' ),
+             __( 'purchases', 'paid-memberships-pro' ),
+             __( 'quick link', 'paid-memberships-pro' ),
+             __( 'receipt', 'paid-memberships-pro' ),
+             __( 'user', 'paid-memberships-pro' ),
+         ],
          supports: {
          },
          attributes: {

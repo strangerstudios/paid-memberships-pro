@@ -8,14 +8,17 @@ global $pmpro_reports;
 /**
 * Load the Paid Memberships Pro dashboard-area header
 */
-require_once( dirname( __FILE__ ) . '/admin_header.php' );
+require_once( dirname( __FILE__ ) . '/admin_header.php' ); ?>
 
+<hr class="wp-header-end">
+
+<?php
 // View a single report if requested.
 if ( ! empty( $_REQUEST[ 'report' ] ) ) {
 	//view a single report
 	$report = sanitize_text_field( $_REQUEST[ 'report' ] );
 	call_user_func( 'pmpro_report_' . $report . '_page' ); ?>
-	<a class="button button-primary" href="<?php echo esc_url( admin_url( 'admin.php?page=pmpro-reports' ) );?>"><?php esc_html_e( 'Back to Reports Dashboard', 'paid-memberships-pro' ); ?></a>
+	<p><a class="button button-primary" href="<?php echo esc_url( admin_url( 'admin.php?page=pmpro-reports' ) );?>"><?php esc_html_e( 'Back to Reports Dashboard', 'paid-memberships-pro' ); ?></a></p>
 
 	<?php
 } else {
