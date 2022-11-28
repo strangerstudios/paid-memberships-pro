@@ -27,7 +27,7 @@
 		public $template;
 
 		/**
-		 * @var string
+		 * @var array
 		 */
 		public $data;
 
