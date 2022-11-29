@@ -213,7 +213,13 @@ add_action( 'admin_notices', 'pmpro_check_for_deprecated_add_ons' );
  * or choose a new gateway.
  */
 function pmpro_check_for_deprecated_gateways() {
-	$undeprecated_gateways = explode( ',', pmpro_getOption( 'undeprecated_gateways' ) );
+	$undeprecated_gateways = pmpro_getOption( 'undeprecated_gateways' );
+	if ( empty( $undeprecated_gateways ) ) {
+		$undeprecated_gateways = array();
+	} elseif ( is_string( $undeprecated_gateways ) ) {
+		// pmpro_setOption turns this into a comma separated string
+		$undeprecated_gateways = explode( ',', $undeprecated_gateways );
+	}
 	$default_gateway = pmpro_getOption( 'gateway' );
 
 	$deprecated_gateways = array( 'twocheckout', 'cybersource', 'paypal' );
