@@ -259,7 +259,7 @@
 					?>
 					<div class="<?php echo pmpro_get_element_class( 'pmpro_checkout-field pmpro_checkout-field-bcountry', 'pmpro_checkout-field-bcountry' ); ?>">
 						<label for="bcountry"><?php esc_html_e('Country', 'paid-memberships-pro' );?></label>
-						<select name="bcountry" class="<?php echo pmpro_get_element_class( '', 'bcountry' );?>">
+						<select name="bcountry" id="bcountry" class="<?php echo pmpro_get_element_class( '', 'bcountry' );?>">
 							<?php
 								global $pmpro_countries, $pmpro_default_country;
 								foreach($pmpro_countries as $abbr => $country)
