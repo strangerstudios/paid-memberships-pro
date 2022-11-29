@@ -416,7 +416,7 @@ class PMProGateway_stripe extends PMProGateway {
 				<h2><?php esc_html_e( 'Webhook Status', 'paid-memberships-pro' ); ?></h2>
 			</td>
 		</tr>
-		<tr class="gateway gateway_stripe_<?php echo $stripe->gateway_environment; ?>" <?php if ( $gateway != "stripe" ) { ?>style="display: none;"<?php } ?>>
+		<tr class="gateway gateway_stripe_<?php echo esc_attr( $stripe->gateway_environment ); ?>" <?php if ( $gateway != "stripe" ) { ?>style="display: none;"<?php } ?>>
             <th scope="row" valign="top">
             </th>
             <td>
