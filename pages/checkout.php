@@ -290,7 +290,7 @@ if ( empty( $default_gateway ) ) {
 							if($state_dropdowns === true || $state_dropdowns == "names") {
 								global $pmpro_states;
 								?>
-								<select name="bstate" class="<?php echo pmpro_get_element_class( '', 'bstate' ); ?>">
+								<select id="bstate" name="bstate" class="<?php echo pmpro_get_element_class( '', 'bstate' ); ?>">
 									<option value="">--</option>
 									<?php
 										foreach($pmpro_states as $ab => $st) { ?>
@@ -300,7 +300,7 @@ if ( empty( $default_gateway ) ) {
 							<?php } elseif($state_dropdowns == "abbreviations") {
 								global $pmpro_states_abbreviations;
 								?>
-								<select name="bstate" class="<?php echo pmpro_get_element_class( '', 'bstate' ); ?>">
+								<select id="bstate" name="bstate" class="<?php echo pmpro_get_element_class( '', 'bstate' ); ?>">
 									<option value="">--</option>
 									<?php
 										foreach($pmpro_states_abbreviations as $ab)
