@@ -188,6 +188,7 @@ class PMProGateway_stripe extends PMProGateway {
 
 		add_action( 'pmpro_payment_option_fields', array( 'PMProGateway_stripe', 'pmpro_set_up_apple_pay' ), 10, 2 );
 		add_action( 'init', array( 'PMProGateway_stripe', 'clear_saved_subscriptions' ) );
+		add_action( 'pmpro_billing_preheader', array( 'PMProGateway_stripe', 'pmpro_billing_preheader_stripe_customer_portal' ), 5 );
 
 		// Stripe Connect functions.
 		add_action( 'admin_init', array( 'PMProGateway_stripe', 'stripe_connect_save_options' ) );
@@ -262,15 +263,12 @@ class PMProGateway_stripe extends PMProGateway {
 			'tax_state',
 			'tax_rate',
 			'stripe_payment_request_button',
+			'stripe_payment_flow', // 'onsite' or 'checkout'
+			'stripe_update_billing_flow', // 'onsite' or 'portal'
+			'stripe_checkout_billing_address', //'auto' or 'required'
+			'stripe_tax', // 'no', 'inclusive', 'exclusive'
+			'stripe_tax_id_collection_enabled', // '0', '1'
 		);
-
-		if ( self::stripe_checkout_beta_enabled() ) {
-			$options[] = 'stripe_payment_flow'; // 'onsite' or 'checkout'
-			$options[] = 'stripe_update_billing_flow'; // 'onsite' or 'portal'
-			$options[] = 'stripe_checkout_billing_address'; //'auto' or 'required'
-			$options[] = 'stripe_tax'; // 'no', 'inclusive', 'exclusive'
-			$options[] = 'stripe_tax_id_collection_enabled'; // '0', '1'
-		}
 
 		return $options;
 	}
@@ -416,9 +414,9 @@ class PMProGateway_stripe extends PMProGateway {
 			</td>
 		</tr>
 		<tr class="gateway gateway_stripe_<?php echo esc_attr( $stripe->gateway_environment ); ?>" <?php if ( $gateway != "stripe" ) { ?>style="display: none;"<?php } ?>>
-            <th scope="row" valign="top">
-            </th>
-            <td>
+    	<th scope="row" valign="top">
+      </th>
+      <td>
 				<?php
 				if ( ! empty( self::get_secretkey() ) ) {
 					$required_webhook_events = $stripe->webhook_events();
@@ -519,7 +517,31 @@ class PMProGateway_stripe extends PMProGateway {
 		</tr>
 		<tr class="gateway gateway_stripe" <?php if ( $gateway != "stripe" ) { ?>style="display: none;"<?php } ?>>
 			<th scope="row" valign="top">
-				<label for="stripe_billingaddress"><?php esc_html_e( 'Show Billing Address Fields', 'paid-memberships-pro' ); ?>:</label>
+				<label for="stripe_payment_flow"><?php esc_html_e( 'Payment Flow', 'paid-memberships-pro' ); ?>:</label>
+			</th>
+			<td>
+				<select id="stripe_payment_flow" name="stripe_payment_flow">
+					<option value="onsite" <?php selected( $values['stripe_payment_flow'], 'onsite' ); ?>><?php esc_html_e( 'Accept payments on this site', 'paid-memberships-pro' ); ?></option>
+					<option value="checkout" <?php selected( $values['stripe_payment_flow'], 'checkout' ); ?>><?php esc_html_e( 'Accept payments in Stripe (Stripe Checkout)', 'paid-memberships-pro' ); ?></option>
+				</select>
+				<p class="description"><?php esc_html_e( 'Embed the payment information fields on your Membership Checkout page or use the Stripe-hosted payment page (Stripe Checkout). If using Stripe Checkout, be sure that all webhook events listed above are set up in Stripe.', 'paid-memberships-pro' ); ?>
+			</td>
+		</tr>
+		<tr class="gateway gateway_stripe" <?php if ( $gateway != "stripe" ) { ?>style="display: none;"<?php } ?>>
+			<th scope="row" valign="top">
+				<label for="stripe_update_billing_flow"><?php esc_html_e( 'Update Billing Flow', 'paid-memberships-pro' ); ?>:</label>
+			</th>
+			<td>
+				<select id="stripe_update_billing_flow" name="stripe_update_billing_flow">
+					<option value="onsite"><?php esc_html_e( 'Update billing on this site', 'paid-memberships-pro' ); ?></option>
+					<option value="portal" <?php if ( $values['stripe_update_billing_flow'] === 'portal' ) { ?>selected="selected"<?php } ?>><?php esc_html_e( 'Update billing in the Stripe Customer Portal', 'paid-memberships-pro' ); ?></option>
+				</select>
+				<p class="description"><?php esc_html_e( 'Embed the billing information fields on your Membership Billing page or use the Stripe Customer Portal hosted by Stripe.', 'paid-memberships-pro' ); ?></p>
+			</td>
+		</tr>
+		<tr class="gateway gateway_stripe" <?php if ( $gateway != "stripe" ) { ?>style="display: none;"<?php } ?>>
+			<th scope="row" valign="top">
+				<label for="stripe_billingaddress"><?php esc_html_e( 'Show Billing Address Fields in PMPro Checkout Form', 'paid-memberships-pro' ); ?>:</label>
 			</th>
 			<td>
 				<select id="stripe_billingaddress" name="stripe_billingaddress">
@@ -533,7 +555,7 @@ class PMProGateway_stripe extends PMProGateway {
 		</tr>
 		<tr class="gateway gateway_stripe" <?php if ( $gateway != "stripe" ) { ?>style="display: none;"<?php } ?>>
 			<th scope="row" valign="top">
-				<label for="stripe_payment_request_button"><?php esc_html_e( 'Enable Payment Request Button', 'paid-memberships-pro' ); ?>:</label>
+				<label for="stripe_payment_request_button"><?php esc_html_e( 'Show Payment Request Button for On-Site Payments', 'paid-memberships-pro' ); ?>:</label>
 			</th>
 			<td>
 				<select id="stripe_payment_request_button" name="stripe_payment_request_button">
@@ -583,61 +605,6 @@ class PMProGateway_stripe extends PMProGateway {
 					?>
 			</td>
 		</tr>
-		<?php if ( ! function_exists( 'pmproappe_pmpro_valid_gateways' ) ) {
-				$allowed_appe_html = array (
-					'a' => array (
-						'href' => array(),
-						'target' => array(),
-						'title' => array(),
-					),
-				);
-				echo '<tr class="gateway gateway_stripe"';
-				if ( $gateway != "stripe" ) {
-					echo ' style="display: none;"';
-				}
-				echo '><th>&nbsp;</th><td><p class="description">' . sprintf( wp_kses( __( 'Optional: Offer PayPal Express as an option at checkout using the <a target="_blank" href="%s" title="Paid Memberships Pro - Add PayPal Express Option at Checkout Add On">Add PayPal Express Add On</a>.', 'paid-memberships-pro' ), $allowed_appe_html ), 'https://www.paidmembershipspro.com/add-ons/pmpro-add-paypal-express-option-checkout/?utm_source=plugin&utm_medium=pmpro-paymentsettings&utm_campaign=add-ons&utm_content=pmpro-add-paypal-express-option-checkout' ) . '</p></td></tr>';
-		}
-		if ( ! self::stripe_checkout_beta_enabled() ) {
-			// Don't show Stripe Checkout settings if the beta is not enabled.
-			return;
-		}
-		?>
-		<tr class="pmpro_settings_divider gateway gateway_stripe" <?php if ( $gateway != "stripe" ) { ?>style="display: none;"<?php } ?>>		
-			<td colspan="2">
-				<hr />
-				<h2><?php esc_html_e( 'Stripe Checkout Settings (Beta)', 'paid-memberships-pro' ); ?></h2>
-				<div class="notice notice-large notice-warning inline">
-					<p>
-						<strong><?php esc_html_e( 'Stripe Checkout is currently in beta and not recommended for use on live sites.', 'paid-memberships-pro' ); ?></strong><br />
-						<?php esc_html_e( 'Stripe Checkout is a secure, Stripe-hosted payment page that lets you collect payments quickly. The offsite, conversion-optimized payment form works across devices, removes friction with real-time card validation, and has built-in error messaging. This gateway option relies heavily on the webhooks sent by Stripe. Your Stripe webhooks must be properly configured before enabling Stripe Checkout.', 'paid-memberships-pro' );
-					?></p>
-				</div>
-			</td>
-		</tr>
-		<tr class="gateway gateway_stripe" <?php if ( $gateway != "stripe" ) { ?>style="display: none;"<?php } ?>>
-			<th scope="row" valign="top">
-				<label for="stripe_payment_flow"><?php esc_html_e( 'Payment Flow', 'paid-memberships-pro' ); ?>:</label>
-			</th>
-			<td>
-				<select id="stripe_payment_flow" name="stripe_payment_flow">
-					<option value="onsite" <?php selected( $values['stripe_payment_flow'], 'onsite' ); ?>><?php esc_html_e( 'Accept payments on this site', 'paid-memberships-pro' ); ?></option>
-					<option value="checkout" <?php selected( $values['stripe_payment_flow'], 'checkout' ); ?>><?php esc_html_e( 'Accept payments in Stripe (Stripe Checkout)', 'paid-memberships-pro' ); ?></option>
-				</select>
-				<p class="description"><?php esc_html_e( 'Embed the payment information fields on your Membership Checkout page or use the Stripe-hosted payment page (Stripe Checkout).', 'paid-memberships-pro' ); ?>
-			</td>
-		</tr>
-		<tr class="gateway gateway_stripe" <?php if ( $gateway != "stripe" ) { ?>style="display: none;"<?php } ?>>
-			<th scope="row" valign="top">
-				<label for="stripe_update_billing_flow"><?php esc_html_e( 'Update Billing Flow', 'paid-memberships-pro' ); ?>:</label>
-			</th>
-			<td>
-				<select id="stripe_update_billing_flow" name="stripe_update_billing_flow">
-					<option value="onsite"><?php esc_html_e( 'Update billing on this site', 'paid-memberships-pro' ); ?></option>
-					<option value="portal" <?php if ( $values['stripe_update_billing_flow'] === 'portal' ) { ?>selected="selected"<?php } ?>><?php esc_html_e( 'Update billing in the Stripe Customer Portal', 'paid-memberships-pro' ); ?></option>
-				</select>
-				<p class="description"><?php esc_html_e( 'Embed the billing information fields on your Membership Billing page or use the Stripe Customer Portal hosted by Stripe.', 'paid-memberships-pro' ); ?></p>
-			</td>
-		</tr>
 		<tr class="gateway gateway_stripe" <?php if ( $gateway != "stripe" ) { ?>style="display: none;"<?php } ?>>
 			<th scope="row" valign="top">
 				<label for="stripe_checkout_billing_address"><?php esc_html_e( 'Collect Billing Address in Stripe Checkout', 'paid-memberships-pro' ); ?>:</label>
@@ -651,7 +618,7 @@ class PMProGateway_stripe extends PMProGateway {
 		</tr>
 		<tr class="gateway gateway_stripe" <?php if ( $gateway != "stripe" ) { ?>style="display: none;"<?php } ?>>
 			<th scope="row" valign="top">
-				<label for="stripe_tax"><?php esc_html_e( 'Stripe Tax', 'paid-memberships-pro' ); ?>:</label>
+				<label for="stripe_tax"><?php esc_html_e( 'Calculate Tax in Stripe Checkout', 'paid-memberships-pro' ); ?>:</label>
 			</th>
 			<td>
 				<select id="stripe_tax" name="stripe_tax">
@@ -673,7 +640,7 @@ class PMProGateway_stripe extends PMProGateway {
 		</tr>
 		<tr class="gateway gateway_stripe gateway_stripe_checkout_fields" <?php if ( $gateway != "stripe"  ) { ?>style="display: none;"<?php } ?>>
 			<th scope="row" valign="top">
-				<label for="stripe_tax_id_collection_enabled"><?php esc_html_e( 'Collect Tax IDs', 'paid-memberships-pro' ); ?>:</label>
+				<label for="stripe_tax_id_collection_enabled"><?php esc_html_e( 'Collect Tax IDs in Stripe Checkout', 'paid-memberships-pro' ); ?>:</label>
 			</th>
 			<td>
 				<select id="stripe_tax_id_collection_enabled" name="stripe_tax_id_collection_enabled">
@@ -683,7 +650,20 @@ class PMProGateway_stripe extends PMProGateway {
 				<p class="description"><?php esc_html_e( 'Tax IDs are only collected if you have enabled Stripe Tax. Stripe only performs automatic validation for ABN, EU VAT, and GB VAT numbers. You must verify that provided tax IDs are valid during the Session for all other numbers.', 'paid-memberships-pro' ); ?></p>
 			</td>
 		</tr>
-		<?php
+		<?php if ( ! function_exists( 'pmproappe_pmpro_valid_gateways' ) ) {
+				$allowed_appe_html = array (
+					'a' => array (
+						'href' => array(),
+						'target' => array(),
+						'title' => array(),
+					),
+				);
+				echo '<tr class="gateway gateway_stripe"';
+				if ( $gateway != "stripe" ) {
+					echo ' style="display: none;"';
+				}
+				echo '><th>&nbsp;</th><td><p class="description">' . sprintf( wp_kses( __( 'Optional: Offer PayPal Express as an option at checkout using the <a target="_blank" href="%s" title="Paid Memberships Pro - Add PayPal Express Option at Checkout Add On">Add PayPal Express Add On</a>.', 'paid-memberships-pro' ), $allowed_appe_html ), 'https://www.paidmembershipspro.com/add-ons/pmpro-add-paypal-express-option-checkout/?utm_source=plugin&utm_medium=pmpro-paymentsettings&utm_campaign=add-ons&utm_content=pmpro-add-paypal-express-option-checkout' ) . '</p></td></tr>';
+		}
 	}
 
 	/**
@@ -1583,9 +1563,12 @@ class PMProGateway_stripe extends PMProGateway {
 	 * Check if the user has opted into the Stripe Checkout beta.
 	 *
 	 * @return bool
+	 *
+	 * @deprecated TBD
 	 */
 	public static function stripe_checkout_beta_enabled() {
-		return ( defined( 'PMPRO_STRIPE_CHECKOUT_BETA_ENABLED' ) && PMPRO_STRIPE_CHECKOUT_BETA_ENABLED );
+		_deprecated_function( __FUNCTION__, 'TBD' );
+		return true;
 	}
 
 	/**
@@ -1594,11 +1577,6 @@ class PMProGateway_stripe extends PMProGateway {
 	 * @return bool
 	 */
 	public static function using_stripe_checkout() {
-		// While Stripe Checkout is in beta, only enable it if the constant is set.
-		if ( ! self::stripe_checkout_beta_enabled() ) {
-			return false;
-		}
-
 		return 'checkout' === pmpro_getOption( 'stripe_payment_flow' );
 	}
 
@@ -1845,43 +1823,13 @@ class PMProGateway_stripe extends PMProGateway {
 	}
 
 	/**
-	 * If using Stripe Checkout, either redirect the user to the Stripe Customer
-	 * portal or set up our update billing page with the onsite payment fields.
+	 * User has not been sent to the Customer Portal, so we need to disable
+	 * Stripe Checkout for this page load and show the default update billing
+	 * fields.
 	 *
 	 * @since 2.8
 	 */
 	public static function pmpro_billing_preheader_stripe_checkout() {
-		if ( 'portal' === pmpro_getOption( 'stripe_update_billing_flow' ) ) {
-			// Send user to Stripe Customer Portal.
-			$user_order = new MemberOrder();
-			$user_order->getLastMemberOrder( null, array( 'success', 'pending' ) );
-
-			// Check whether the user's most recent order is a Stripe subscription.
-			if ( empty( $user_order->gateway ) || 'stripe' !== $user_order->gateway ) {
-				$error = __( 'Last order was not charged with Stripe.', 'paid-memberships-pro' );
-			}
-
-			if ( empty( $error ) ) {
-				$stripe = new PMProGateway_stripe();
-				$customer = $stripe->get_customer_for_user( $user_order->user_id );
-				if ( empty( $customer->id ) ) {
-					$error = __( 'Could not get Stripe customer for user.', 'paid-memberships-pro' );
-				}
-			}
-
-			if ( empty( $error ) ) {
-				$customer_portal_url = $stripe->get_customer_portal_url( $customer->id );
-				if ( ! empty( $customer_portal_url ) ) {
-					wp_redirect( $customer_portal_url );
-					exit;
-				}
-				$error = __( 'Could not get Customer Portal URL. This feature may not be set up in Stripe.', 'paid-memberships-pro' );
-			}
-
-			// There must have been an error while getting the customer portal URL. Show an error and let user update
-			// their billing info onsite.
-			pmpro_setMessage( $error . ' ' . __( 'Please contact the site administrator.', 'paid-memberships-pro' ), 'pmpro_alert', true );
-		}
 		// Disable Stripe Checkout functionality for the rest of this page load.
 		add_filter( 'pmpro_include_cardtype_field', array(
 			'PMProGateway_stripe',
@@ -1894,6 +1842,44 @@ class PMProGateway_stripe extends PMProGateway {
 			'pmpro_include_payment_information_fields'
 		), 15 );
 		add_filter( 'option_pmpro_stripe_payment_flow', '__return_false' ); // Disable Stripe Checkout for rest of page load.
+	}
+
+	/**
+	 * Send the user to the Stripe Customer Portal if the customer portal is enabled.
+	 *
+	 * @since TBD.
+	 */
+	public static function pmpro_billing_preheader_stripe_customer_portal() {
+		if ( 'portal' === pmpro_getOption( 'stripe_update_billing_flow' ) ) {
+			// Get current user.
+			$user = wp_get_current_user();
+			if ( empty( $user->ID ) ) {
+				$error = __( 'User is not logged in.', 'paid-memberships-pro' );
+			}
+
+			if ( empty( $error ) ) {
+				// Get the Stripe Customer.
+				$stripe = new PMProGateway_stripe();
+				$customer = $stripe->get_customer_for_user( $user->ID );
+				if ( empty( $customer->id ) ) {
+					$error = __( 'Could not get Stripe customer for user.', 'paid-memberships-pro' );
+				}
+			}
+
+			if ( empty( $error ) ) {
+				// Send the user to the customer portal.
+				$customer_portal_url = $stripe->get_customer_portal_url( $customer->id );
+				if ( ! empty( $customer_portal_url ) ) {
+					wp_redirect( $customer_portal_url );
+					exit;
+				}
+				$error = __( 'Could not get Customer Portal URL. This feature may not be set up in Stripe.', 'paid-memberships-pro' );
+			}
+
+			// There must have been an error while getting the customer portal URL. Show an error and let user update
+			// their billing info onsite.
+			pmpro_setMessage( $error . ' ' . __( 'Please contact the site administrator.', 'paid-memberships-pro' ), 'pmpro_alert', true );
+		}
 	}
 
 	/****************************************
@@ -3389,13 +3375,10 @@ class PMProGateway_stripe extends PMProGateway {
 			'customer.subscription.deleted',
 			'charge.failed',
       		'charge.refunded',
+			'checkout.session.completed',
+			'checkout.session.async_payment_succeeded',
+			'checkout.session.async_payment_failed',
 		);
-
-		if ( self::using_stripe_checkout() ) {
-			$events[] = 'checkout.session.completed';
-			$events[] = 'checkout.session.async_payment_succeeded';
-			$events[] = 'checkout.session.async_payment_failed';
-		}
 
 		return apply_filters( 'pmpro_stripe_webhook_events', $events );
 	}
