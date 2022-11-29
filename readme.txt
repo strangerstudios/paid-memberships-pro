@@ -156,6 +156,13 @@ Not sure? You can find out by doing a bit a research.
 9. Membership Account page, display all sections or show specific sections using shortcode attributes.
 
 == Changelog ==
+= 2.9.7 - 2022-11-30 =
+* BUG FIX/ENHANCEMENT: Added compatibility for the Avada theme. Protected content is now editable. #2285 (@andrewlimaza)
+* BUG FIX: Avoiding sprintf issues during cron runs. This caused issues where the expiring soon emails were being sent out multiple times. #2290 (@dparker1005)
+* BUG FIX: Adding id parameters to billing address fields to avoid Stripe errors when checking out with the show address fields option set to true. #2284 (@ipokkel)
+* BUG FIX: Adding id parameters to billing address fields to avoid Stripe errors when updating billing with the show address fields option set to true. #2289 (@dparker1005)
+* BUG FIX: Fixed issue with subscription profile start dates when using Authorize.net and custom code that alters start dates. #2280 (@dparker1005)
+
 = 2.9.6 - 2022-11-14 =
 ENHANCEMENT: Added content restriction settings to Elementor "containers". #2254 (Thanks, @Minebomber)
 ENHANCEMENT: Added !!levels_url!! to all email templates by default. #2263 (@andrewlimaza)
