@@ -701,7 +701,7 @@ function pmpro_show_user_fields_in_frontend_profile( $user, $withlocations = fal
 
 			// Bail if there are no fields to show on the front-end profile.
 			if ( ! $show_fields ) {
-				return;
+				continue;
 			}
 			?>
 
@@ -1380,7 +1380,8 @@ function pmpro_get_field_html( $field = null ) {
                         <option value="textarea" <?php selected( $field_type, 'textarea' ); ?>><?php esc_html_e( 'Text Area', 'paid-memberships-pro' ); ?></option>
                         <option value="checkbox" <?php selected( $field_type, 'checkbox' ); ?>><?php esc_html_e( 'Checkbox', 'paid-memberships-pro' ); ?></option>
                         <option value="radio" <?php selected( $field_type, 'radio' ); ?>><?php esc_html_e( 'Radio', 'paid-memberships-pro' ); ?></option>
-                        <option value="select" <?php selected( $field_type, 'select' ); ?>><?php esc_html_e( 'Select', 'paid-memberships-pro' ); ?></option>
+                        <option value="select" <?php selected( $field_type, 'select' ); ?>><?php esc_html_e( 'Select / Dropdown', 'paid-memberships-pro' ); ?></option>
+                        <option value="select2" <?php selected( $field_type, 'select2' ); ?>><?php esc_html_e( 'Select2 / Autocomplete', 'paid-memberships-pro' ); ?></option>
                         <option value="multiselect" <?php selected( $field_type, 'multiselect' ); ?>><?php esc_html_e( 'Multi Select', 'paid-memberships-pro' ); ?></option>
                         <option value="file" <?php selected( $field_type, 'file' ); ?>><?php esc_html_e( 'File', 'paid-memberships-pro' ); ?></option>
                         <option value="number" <?php selected( $field_type, 'number' ); ?>><?php esc_html_e( 'Number', 'paid-memberships-pro' ); ?></option>
@@ -1417,7 +1418,7 @@ function pmpro_get_field_html( $field = null ) {
                 <label>
                     <?php esc_html_e( 'Show field on user profile?', 'paid-memberships-pro' ); ?><br />
                     <select name="pmpro_userfields_field_profile">
-                        <option <?php selected( empty( $field_profile ), 0);?>><?php esc_html_e( '[Inherit Group Setting]', 'paid-memberships-pro' ); ?></option>
+                        <option value="" <?php selected( empty( $field_profile ), 0);?>><?php esc_html_e( '[Inherit Group Setting]', 'paid-memberships-pro' ); ?></option>
                         <option value="yes" <?php selected( $field_profile, 'yes' );?>><?php esc_html_e( 'Yes', 'paid-memberships-pro' ); ?></option>
                         <option value="admins" <?php selected( $field_profile, 'admins' );?>><?php esc_html_e( 'Yes (only admins)', 'paid-memberships-pro' ); ?></option>
                         <option value="no" <?php selected( $field_profile, 'no' );?>><?php esc_html_e( 'No', 'paid-memberships-pro' ); ?></option>
@@ -1478,7 +1479,7 @@ function pmpro_get_field_html( $field = null ) {
 function pmpro_get_user_fields_settings() {
     $default_user_fields_settings = array(
         (object) array(
-            'name' => 'More Information',
+            'name' => __( 'More Information', 'paid-memberships-pro' ),
             'checkout' => 'yes',
             'profile' => 'yes',
             'description' => '',
@@ -1542,7 +1543,7 @@ function pmpro_load_user_fields_from_settings() {
             }
             
             // Figure out options.
-            $option_types = array( 'radio', 'select', 'multiselect' );
+            $option_types = array( 'radio', 'select', 'select2', 'multiselect' );
             if ( in_array( $settings_field->type, $option_types ) ) {
                 $options = array();
                 $settings_options = explode( "\n", $settings_field->options );

@@ -58,8 +58,8 @@ const all_levels = [{ value: 0, label: "Non-Members" }].concat( pmpro.all_level_
                  default:'',
              },
              show_noaccess: {
-                 type: 'boolean',
-                 default: false,
+                 type: 'string',
+                 default: '0',
              },
          },
          edit: props => {

@@ -40,7 +40,7 @@ function pmpro_cron_expire_memberships()
 			$pmproemail = new PMProEmail();
 			$euser = get_userdata($e->user_id);
 			if ( ! empty( $euser ) ) {
-				$pmproemail->sendMembershipExpiredEmail($euser);
+				$pmproemail->sendMembershipExpiredEmail( $euser, $e->membership_id );
 
 				if(current_user_can('manage_options')) {
 					printf(__("Membership expired email sent to %s. ", 'paid-memberships-pro' ), $euser->user_email);
@@ -81,7 +81,7 @@ function pmpro_cron_expiration_warnings()
  				um.meta_value AS notice
  			FROM {$wpdb->pmpro_memberships_users} AS mu
  			  LEFT JOIN {$wpdb->usermeta} AS um ON um.user_id = mu.user_id
-            	AND um.meta_key = %s
+            	AND um.meta_key = CONCAT( 'pmpro_expiration_notice_', mu.membership_id )
 			WHERE ( um.meta_value IS NULL OR DATE_ADD(um.meta_value, INTERVAL %d DAY) < %s )
 				AND ( mu.status = 'active' )
  			    AND ( mu.enddate IS NOT NULL )
@@ -90,7 +90,6 @@ function pmpro_cron_expiration_warnings()
  			    AND ( mu.membership_id <> 0 OR mu.membership_id <> NULL )
 			ORDER BY mu.enddate
 			",
-		"pmpro_expiration_notice",
 		$pmpro_email_days_before_expiration,
 		$today,
 		$interval_start,
@@ -111,7 +110,7 @@ function pmpro_cron_expiration_warnings()
 			$pmproemail = new PMProEmail();
 			$euser = get_userdata($e->user_id);
 			if ( ! empty( $euser ) ) {
-				$pmproemail->sendMembershipExpiringEmail($euser);
+				$pmproemail->sendMembershipExpiringEmail( $euser, $e->membership_id);
 
 				if(current_user_can('manage_options')) {
 					printf(__("Membership expiring email sent to %s. ", 'paid-memberships-pro' ), $euser->user_email);
@@ -122,10 +121,10 @@ function pmpro_cron_expiration_warnings()
 		}
 
 		//delete all user meta for this key to prevent duplicate user meta rows
-		delete_user_meta($e->user_id, "pmpro_expiration_notice");
+		delete_user_meta( $e->user_id, 'pmpro_expiration_notice' );
 
 		//update user meta so we don't email them again
-		update_user_meta($e->user_id, "pmpro_expiration_notice", $today);
+		update_user_meta( $e->user_id, 'pmpro_expiration_notice_' . $e->membership_id, $today );
 	}
 }
 
@@ -220,10 +219,14 @@ function pmpro_cron_credit_card_expiring_warnings()
 	Commented out as of version 1.7.2 since this caused issues on some sites
 	and doesn't take into account the many "custom trial" solutions that are
 	in the wild (e.g. some trials are actually a delay of the subscription start date)
+
+	@deprecated TBD
 */
 //add_action("pmpro_cron_trial_ending_warnings", "pmpro_cron_trial_ending_warnings");
 function pmpro_cron_trial_ending_warnings()
 {
+	_deprecated_function( 'pmpro_cron_trial_ending_warnings', 'TBD' );
+
 	global $wpdb;
 
 	//clean up errors in the memberships_users table that could cause problems
