@@ -1,5 +1,7 @@
 <?php
 
+// File generated from our OpenAPI spec
+
 namespace Stripe\Service;
 
 class SubscriptionItemService extends \Stripe\Service\AbstractService
@@ -12,7 +14,7 @@ class SubscriptionItemService extends \Stripe\Service\AbstractService
      *
      * @throws \Stripe\Exception\ApiErrorException if the request fails
      *
-     * @return \Stripe\Collection
+     * @return \Stripe\Collection<\Stripe\SubscriptionItem>
      */
     public function all($params = null, $opts = null)
     {
@@ -23,7 +25,7 @@ class SubscriptionItemService extends \Stripe\Service\AbstractService
      * For the specified subscription item, returns a list of summary objects. Each
      * object in the list provides usage information that’s been summarized from
      * multiple usage records and over a subscription billing period (e.g., 15 usage
-     * records in the billing plan’s month of September).
+     * records in the month of September).
      *
      * The list is sorted in reverse-chronological order (newest first). The first list
      * item represents the most current usage period that hasn’t ended yet. Since new
@@ -37,7 +39,7 @@ class SubscriptionItemService extends \Stripe\Service\AbstractService
      *
      * @throws \Stripe\Exception\ApiErrorException if the request fails
      *
-     * @return \Stripe\Collection
+     * @return \Stripe\Collection<\Stripe\UsageRecordSummary>
      */
     public function allUsageRecordSummaries($parentId, $params = null, $opts = null)
     {

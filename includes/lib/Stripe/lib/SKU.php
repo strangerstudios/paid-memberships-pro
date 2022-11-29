@@ -1,5 +1,7 @@
 <?php
 
+// File generated from our OpenAPI spec
+
 namespace Stripe;
 
 /**
@@ -11,9 +13,6 @@ namespace Stripe;
  * red</code> version of that shirt.
  *
  * Can also be used to manage inventory.
- *
- * Related guide: <a href="https://stripe.com/docs/orders">Tax, Shipping, and
- * Inventory</a>.
  *
  * @property string $id Unique identifier for the object.
  * @property string $object String representing the object's type. Objects of the same type share the same value.
