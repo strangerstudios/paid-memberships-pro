@@ -7,17 +7,17 @@ if ( ! function_exists( 'current_user_can' ) || ( ! current_user_can( 'manage_op
 $subscription = PMPro_Subscription::get_subscription( empty( $_REQUEST['id'] ) ? null : sanitize_text_field( $_REQUEST['id'] ) );
 
 // Process syncing with gateway.
-if ( ! empty( $subscription ) && ! empty( $_REQUEST['update'] ) ) {
+if ( ! empty( $subscription ) && ! empty( $_REQUEST['update'] ) && check_admin_referer( 'update', 'pmpro_subscriptions_nonce' ) ) {
 	$subscription->update();
 }
 
 // Process cancelling a subscription.
-if ( ! empty( $subscription ) && ! empty( $_REQUEST['cancel'] ) ) {
+if ( ! empty( $subscription ) && ! empty( $_REQUEST['cancel'] ) && check_admin_referer( 'cancel', 'pmpro_subscriptions_nonce' ) ) {
 	$subscription->cancel_at_gateway();
 }
 
 // Process moving a subscription to a new level.
-if ( ! empty( $subscription ) && ! empty( $_REQUEST['change-level'] ) && is_numeric( $_REQUEST['change-level'] ) ) {
+if ( ! empty( $subscription ) && ! empty( $_REQUEST['change-level'] ) && is_numeric( $_REQUEST['change-level'] ) && check_admin_referer( 'change-level', 'pmpro_subscriptions_nonce' ) ) {
 	$subscription->set( 'membership_level_id', sanitize_text_field( $_REQUEST['change-level'] ) );
 	$subscription->save();
 }
@@ -44,8 +44,8 @@ if ( empty( $subscription ) ) {
 	$sub_membership_level      = pmpro_getLevel( $sub_membership_level_id );
 	$sub_membership_level_name = empty( $sub_membership_level ) ? '' : $sub_membership_level->name;
 	?>
-	<a href="<?php echo ( esc_url( add_query_arg( array( 'page' => 'pmpro-subscriptions', 'id' => $subscription->get_id(), 'update' => '1' ), admin_url('admin.php' ) ) ) ); ?>" title="<?php esc_attr_e( 'Sync With Gateway', 'paid-memberships-pro' ); ?>" class="page-title-action"><?php esc_html_e( 'Sync With Gateway', 'paid-memberships-pro' ); ?></a>
-	<a href="<?php echo ( esc_url( add_query_arg( array( 'page' => 'pmpro-subscriptions', 'id' => $subscription->get_id(), 'cancel' => '1' ), admin_url('admin.php' ) ) ) ); ?>" title="<?php esc_attr_e( 'Cancel Subscription', 'paid-memberships-pro' ); ?>" class="page-title-action" <?php if ( 'active' != $subscription->get_status() ) { echo 'style="display: none"'; } ?> onclick="return confirm('<?php esc_html_e( 'Are you sure that you would like to cancel this payment subscription? This will not cancel the corresponding membership level.', 'paid-memberships-pro' ); ?>')"><?php esc_html_e( 'Cancel Subscription', 'paid-memberships-pro' ); ?></a>
+	<a href="<?php echo ( esc_url( wp_nonce_url( add_query_arg( array( 'page' => 'pmpro-subscriptions', 'id' => $subscription->get_id(), 'update' => '1' ), admin_url('admin.php' ) ), 'update', 'pmpro_subscriptions_nonce'  ) ) ); ?>" title="<?php esc_attr_e( 'Sync With Gateway', 'paid-memberships-pro' ); ?>" class="page-title-action"><?php esc_html_e( 'Sync With Gateway', 'paid-memberships-pro' ); ?></a>
+	<a href="<?php echo ( esc_url( wp_nonce_url( add_query_arg( array( 'page' => 'pmpro-subscriptions', 'id' => $subscription->get_id(), 'cancel' => '1' ), admin_url('admin.php' ) ), 'cancel', 'pmpro_subscriptions_nonce'  ) ) ); ?>" title="<?php esc_attr_e( 'Cancel Subscription', 'paid-memberships-pro' ); ?>" class="page-title-action" <?php if ( 'active' != $subscription->get_status() ) { echo 'style="display: none"'; } ?> onclick="return confirm('<?php esc_html_e( 'Are you sure that you would like to cancel this payment subscription? This will not cancel the corresponding membership level.', 'paid-memberships-pro' ); ?>')"><?php esc_html_e( 'Cancel Subscription', 'paid-memberships-pro' ); ?></a>
 	<h2><?php esc_html_e( 'Subscription Information', 'paid-memberships-pro' ); ?></h2>
 	<table class="form-table">
 		<tbody>
@@ -98,6 +98,7 @@ if ( empty( $subscription ) ) {
 									}
 									?>
 								</select>
+								<?php wp_nonce_field( 'change-level', 'pmpro_subscriptions_nonce' ); ?>
 								<input type="submit" value="<?php esc_attr_e( 'Update Subscription Level', 'paid-memberships-pro' ); ?>" />
 							</form>
 						</div>
