@@ -3,7 +3,11 @@
 	Clean things up when deletes happen, etc. (This stuff needs a better home.)
 */
 // deleting a user? remove their account info.
-function pmpro_delete_user( $user_id = null ) {
+function pmpro_delete_user( $user_id ) {
+
+	if( empty( $user_id ) ) {
+		return;
+	}
 
 	//Disable any active subscriptions that are associated with the account
 	if( isset( $_REQUEST['pmpro_delete_active_subscriptions'] ) && 
@@ -43,13 +47,17 @@ function pmpro_delete_user_form_notice( $current_user, $userids ) {
 		}
 	}
 
-	$member_history = $wpdb->get_var( "SELECT COUNT(*) as members FROM $wpdb->pmpro_memberships_users WHERE user_id IN (" . implode( "," , $userids ) . ")" );
+	$prepare_member_history = $wpdb->prepare( "SELECT COUNT(*) as members FROM $wpdb->pmpro_memberships_users WHERE user_id IN (%s)", implode( "," , $userids ) );
+
+	$member_history = $wpdb->get_var( $prepare_member_history );
 
 	// Make sure that there is actually PMPro content to delete for these users.
 	if ( empty( $userids_have_levels ) && empty( $member_history ) ) {
 		// No PMPro content to delete, so we don't need to add anything to the form.
 		return;
 	}
+
+	$allowed_html = array( 'strong' => array() );
 
 	?>
 	<div class='pmpro_delete_user_actions'>
@@ -60,9 +68,9 @@ function pmpro_delete_user_form_notice( $current_user, $userids ) {
 		<div class="notice notice-error inline">
 			<?php
 			if ( count( $userids ) > 1 ) {
-				echo  '<p><strong>' . esc_html__( 'Warning', 'paid-memberships-pro' ) . ': </strong>' . esc_html__( 'One or more users for deletion have an active membership level.', 'paid-memberships-pro' ) . '</p>';
+				echo '<p>' . wp_kses( __( '<strong>Warning:</strong> One or more users for deletion have an active membership level.', 'paid-memberships-pro' ), $allowed_html ) . '</p>' ;
 			} else {
-				echo  '<p><strong>' . esc_html__( 'Warning', 'paid-memberships-pro' ) . ': </strong>' . esc_html__( 'This user has an active membership level.', 'paid-memberships-pro' ) . '</p>';
+				echo  '<p>' . wp_kses( __( '<strong>Warning:</strong> This user has an active membership level.', 'paid-memberships-pro' ), $allowed_html ) . '</p>';
 			}
 			?>
 		</div>
@@ -112,6 +120,11 @@ add_action( 'delete_post', 'pmpro_delete_post' );
  * @since TBD
  */
 function pmpro_delete_membership_history( $user_id ) {
+
+	if( empty( $user_id ) ) {
+		return;
+	}
+	
 	global $wpdb;
 	$wpdb->delete( 
 		$wpdb->pmpro_memberships_users, 
