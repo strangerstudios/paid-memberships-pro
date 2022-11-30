@@ -2,14 +2,14 @@
 # This file is distributed under the same license as the Paid Memberships Pro plugin.
 msgid ""
 msgstr ""
-"Project-Id-Version: Paid Memberships Pro 2.9.6\n"
+"Project-Id-Version: Paid Memberships Pro 2.9.7\n"
 "Report-Msgid-Bugs-To: info@paidmembershipspro.com\n"
 "Last-Translator: Paid Memberships Pro <info@paidmembershipspro.com>\n"
 "Language-Team: Paid Memberships Pro <info@paidmembershipspro.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2022-11-11T20:29:59+00:00\n"
+"POT-Creation-Date: 2022-11-30T16:54:13+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.7.1\n"
 "X-Domain: paid-memberships-pro\n"
@@ -11397,6 +11397,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_paypal.php:302
 #: classes/gateways/class.pmprogateway_paypal.php:314
 #: classes/gateways/class.pmprogateway_payflowpro.php:172
+#: classes/gateways/class.pmprogateway_authorizenet.php:160
 msgid "Unknown error: Authorization failed."
 msgstr ""
 
@@ -11458,6 +11459,9 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_payflowpro.php:194
 #: classes/gateways/class.pmprogateway_payflowpro.php:199
 #: classes/gateways/class.pmprogateway_paypal.php:336
+#: classes/gateways/class.pmprogateway_authorizenet.php:182
+#: classes/gateways/class.pmprogateway_authorizenet.php:187
+#: classes/gateways/class.pmprogateway_authorizenet.php:204
 msgid "Unknown error: Payment failed."
 msgstr ""
 
@@ -11476,6 +11480,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_cybersource.php:115
 #: classes/gateways/class.pmprogateway_cybersource.php:208
 #: classes/gateways/class.pmprogateway_cybersource.php:229
+#: classes/gateways/class.pmprogateway_authorizenet.php:188
 msgid "A partial payment was made that we could not void. Please contact the site owner immediately to correct this."
 msgstr ""
 
@@ -11563,6 +11568,8 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_authorizenet.php:912
 #: classes/gateways/class.pmprogateway_authorizenet.php:929
 #: classes/gateways/class.pmprogateway_authorizenet.php:930
+#: classes/gateways/class.pmprogateway_authorizenet.php:856
+#: classes/gateways/class.pmprogateway_authorizenet.php:857
 msgid "Could not connect to Authorize.net"
 msgstr ""
 
@@ -21380,6 +21387,7 @@ msgstr ""
 #: scheduled/crons.php:109
 #: scheduled/crons.php:117
 #: scheduled/crons.php:116
+#: scheduled/crons.php:114
 #, php-format
 msgid "Membership expiring email sent to %s. "
 msgstr ""
@@ -21396,6 +21404,7 @@ msgstr ""
 #: scheduled/crons.php:193
 #: scheduled/crons.php:206
 #: scheduled/crons.php:205
+#: scheduled/crons.php:201
 #, php-format
 msgid "Credit card expiring email sent to %s. "
 msgstr ""
@@ -21413,6 +21422,7 @@ msgstr ""
 #: scheduled/crons.php:251
 #: scheduled/crons.php:266
 #: scheduled/crons.php:265
+#: scheduled/crons.php:259
 #, php-format
 msgid "Trial ending email sent to %s. "
 msgstr ""
