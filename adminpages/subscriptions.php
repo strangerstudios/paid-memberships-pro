@@ -39,24 +39,6 @@ if ( empty( $subscription ) ) {
 	?>
 	<a href="<?php echo ( esc_url( add_query_arg( array( 'page' => 'pmpro-subscriptions', 'id' => $subscription->get_id(), 'update' => '1' ), admin_url('admin.php' ) ) ) ); ?>" title="<?php esc_attr_e( 'Sync With Gateway', 'paid-memberships-pro' ); ?>" class="page-title-action"><?php esc_html_e( 'Sync With Gateway', 'paid-memberships-pro' ); ?></a>
 	<a href="<?php echo ( esc_url( add_query_arg( array( 'page' => 'pmpro-subscriptions', 'id' => $subscription->get_id(), 'cancel' => '1' ), admin_url('admin.php' ) ) ) ); ?>" title="<?php esc_attr_e( 'Cancel Subscription', 'paid-memberships-pro' ); ?>" class="page-title-action" <?php if ( 'active' != $subscription->get_status() ) { echo 'style="display: none"'; } ?> onclick="return confirm('<?php esc_html_e( 'Are you sure that you would like to cancel this payment subscription? This will not cancel the corresponding membership level.', 'paid-memberships-pro' ); ?>')"><?php esc_html_e( 'Cancel Subscription', 'paid-memberships-pro' ); ?></a>
-	<h2><?php esc_html_e( 'Payment Gateway Information', 'paid-memberships-pro' ); ?></h2>
-	<table class="form-table">
-		<tbody>
-			<tr>
-				<th scope="row"><?php esc_html_e( 'Subscription ID', 'paid-memberships-pro' ); ?></th>
-				<td><?php echo esc_html( $subscription->get_subscription_transaction_id() ); ?></td>
-			</tr>
-			<tr>
-				<th scope="row"><?php esc_html_e( 'Gateway', 'paid-memberships-pro' ); ?></th>
-				<td><?php echo esc_html( $subscription->get_gateway() ); ?></td>
-			</tr>
-			<tr>
-				<th scope="row"><?php esc_html_e( 'Gateway Environment', 'paid-memberships-pro' ); ?></th>
-				<td><?php echo esc_html( $subscription->get_gateway_environment() ); ?></td>
-			</tr>
-		</tbody>
-	</table>
-	<hr/>
 	<h2><?php esc_html_e( 'Subscription Information', 'paid-memberships-pro' ); ?></h2>
 	<table class="form-table">
 		<tbody>
@@ -99,6 +81,24 @@ if ( empty( $subscription ) ) {
 					}
 					?>
 				</td>
+			</tr>
+		</tbody>
+	</table>
+	<hr/>
+	<h2><?php esc_html_e( 'Payment Gateway Information', 'paid-memberships-pro' ); ?></h2>
+	<table class="form-table">
+		<tbody>
+			<tr>
+				<th scope="row"><?php esc_html_e( 'Subscription ID', 'paid-memberships-pro' ); ?></th>
+				<td><?php echo esc_html( $subscription->get_subscription_transaction_id() ); ?></td>
+			</tr>
+			<tr>
+				<th scope="row"><?php esc_html_e( 'Gateway', 'paid-memberships-pro' ); ?></th>
+				<td><?php echo esc_html( $subscription->get_gateway() ); ?></td>
+			</tr>
+			<tr>
+				<th scope="row"><?php esc_html_e( 'Gateway Environment', 'paid-memberships-pro' ); ?></th>
+				<td><?php echo esc_html( $subscription->get_gateway_environment() ); ?></td>
 			</tr>
 		</tbody>
 	</table>
