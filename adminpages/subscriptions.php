@@ -16,6 +16,12 @@ if ( ! empty( $subscription ) && ! empty( $_REQUEST['cancel'] ) ) {
 	$subscription->cancel_at_gateway();
 }
 
+// Process moving a subscription to a new level.
+if ( ! empty( $subscription ) && ! empty( $_REQUEST['change-level'] ) && is_numeric( $_REQUEST['change-level'] ) ) {
+	$subscription->set( 'membership_level_id', sanitize_text_field( $_REQUEST['change-level'] ) );
+	$subscription->save();
+}
+
 require_once( dirname( __FILE__ ) . '/admin_header.php' );
 
 ?>
@@ -34,7 +40,8 @@ if ( empty( $subscription ) ) {
 	$sub_user = get_userdata( $subscription->get_user_id() );
 	$sub_username = empty( $sub_user ) ? '' : $sub_user->user_login;
 
-	$sub_membership_level = pmpro_getLevel( $subscription->get_membership_level_id() );
+	$sub_membership_level_id   = $subscription->get_membership_level_id();
+	$sub_membership_level      = pmpro_getLevel( $sub_membership_level_id );
 	$sub_membership_level_name = empty( $sub_membership_level ) ? '' : $sub_membership_level->name;
 	?>
 	<a href="<?php echo ( esc_url( add_query_arg( array( 'page' => 'pmpro-subscriptions', 'id' => $subscription->get_id(), 'update' => '1' ), admin_url('admin.php' ) ) ) ); ?>" title="<?php esc_attr_e( 'Sync With Gateway', 'paid-memberships-pro' ); ?>" class="page-title-action"><?php esc_html_e( 'Sync With Gateway', 'paid-memberships-pro' ); ?></a>
@@ -48,7 +55,64 @@ if ( empty( $subscription ) ) {
 			</tr>
 			<tr>
 				<th scope="row"><?php esc_html_e( 'Membership Level', 'paid-memberships-pro' ); ?></th>
-				<td><?php echo esc_html( $sub_membership_level_name ); ?></td>
+				<td>
+					<?php
+					// Firstly, we want to show the membership level that the subscription is for.
+					echo esc_html( $sub_membership_level_name );
+
+					// If the subscription is active and the user has membership levels other than the one that the subscription is for, we should
+					// give the option to move the subcription to another user level.
+					if ( 'active' == $subscription->get_status() ) {
+						// Get all of the user's membership levels.
+						$user_membership_levels = pmpro_getMembershipLevelsForUser( $subscription->get_user_id() );
+
+						// If the user has a level other than the one that the subscription is for, show a link to show settings to move sub to new level.
+						$user_level_ids = empty( $user_membership_levels ) ? array() : wp_list_pluck( $user_membership_levels, 'id' );
+						if ( ! empty( array_diff( $user_level_ids, array( $sub_membership_level_id ) ) ) ) {
+							echo ' ';
+							?>
+							<a id="pmpro-show-change-subscription-level"><?php esc_html_e( 'Change', 'paid-memberships-pro' ); ?></a>
+							<?php
+						}
+
+						// If the user does not have the level that this subscription is for, show a warning.
+						if ( ! in_array( $sub_membership_level_id, $user_level_ids ) ) {
+							?>
+							<p class="description"><?php esc_html_e( 'This user does not have the membership level that this subscription is for.', 'paid-memberships-pro' ); ?></p>
+							<?php
+						}
+
+						// Show a dropdown and save button to change the subscription level that shows when the link is clicked.
+						?>
+						<div id="pmpro-change-subscription-level" style="display: none;">
+							<form action="" method="post">
+								<select name="change-level">
+									<?php
+									foreach ( $user_membership_levels as $user_membership_level ) {
+										if ( $user_membership_level->id == $sub_membership_level_id ) {
+											continue;
+										}
+										?>
+										<option value="<?php echo esc_attr( $user_membership_level->id ); ?>" <?php selected( $user_membership_level->id, $sub_membership_level_id ); ?>><?php echo esc_html( $user_membership_level->name ); ?></option>
+										<?php
+									}
+									?>
+								</select>
+								<input type="submit" value="<?php esc_attr_e( 'Update Subscription Level', 'paid-memberships-pro' ); ?>" />
+							</form>
+						</div>
+						<script>
+							jQuery(document).ready(function() {
+								jQuery('#pmpro-show-change-subscription-level').click(function() {
+									jQuery('#pmpro-change-subscription-level').show();
+									jQuery(this).hide();
+								});
+							});
+						</script>
+						<?php
+					}
+					?>
+				</td>
 			</tr>
 			<tr>
 				<th scope="row"><?php esc_html_e( 'Status', 'paid-memberships-pro' ); ?></th>
