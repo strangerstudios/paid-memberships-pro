@@ -72,7 +72,7 @@ class PMProGateway_stripe extends PMProGateway {
 
 			$pmpro_stripe_error = true;
 			$msg                = - 1;
-			$msgt               = sprintf( __( "The Stripe Gateway requires PHP 5.3.29 or greater. We recommend upgrading to PHP %s or greater. Ask your host to upgrade.", "paid-memberships-pro" ), PMPRO_PHP_MIN_VERSION );
+			$msgt               = sprintf( __( "The Stripe Gateway requires PHP 5.3.29 or greater. We recommend upgrading to PHP %s or greater. Ask your host to upgrade.", "paid-memberships-pro" ), PMPRO_MIN_PHP_VERSION );
 
 			if ( ! is_admin() ) {
 				pmpro_setMessage( $msgt, "pmpro_error" );
