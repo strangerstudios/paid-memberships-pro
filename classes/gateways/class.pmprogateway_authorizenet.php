@@ -918,16 +918,15 @@ class PMProGateway_authorizenet extends PMProGateway
 			{
 				$order->status = "error";
 				$order->errorcode = $resultCode;
-				$order->error = $message;
+				$order->error = $text;
 				$order->shorterror = $text;
 			}
 		}
 		else
 		{
 			$order->status = "error";
-			$order->errorcode = $resultCode;
-			$order->error = $message;
-			$order->shorterror = $text;
+			$order->error = __("Could not connect to Authorize.net", 'paid-memberships-pro' );
+			$order->shorterror = __("Could not connect to Authorize.net", 'paid-memberships-pro' );
 		}
 	}
 
@@ -980,7 +979,6 @@ class PMProGateway_authorizenet extends PMProGateway
 			error_reporting(E_ERROR);
 			fputs($fp, "POST $path  HTTP/1.1\r\n");
 			fputs($fp, $header.$content);
-			fwrite($fp, $out);
 			$response = "";
 			while (!feof($fp))
 			{
