@@ -57,6 +57,7 @@ function pmpro_get_capability_defs($role)
         'pmpro_pagesettings',
         'pmpro_paymentsettings',
         'pmpro_emailsettings',
+        'pmpro_emailtemplates',
         'pmpro_advancedsettings',
         'pmpro_addons',
         'pmpro_memberslist',
@@ -65,6 +66,7 @@ function pmpro_get_capability_defs($role)
         'pmpro_orders',
         'pmpro_orderscsv',
         'pmpro_discountcodes',
+        'pmpro_userfields',
         'pmpro_updates',
     );
 

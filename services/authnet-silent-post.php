@@ -14,7 +14,8 @@
 
 	global $wpdb;
 
-	define( 'PMPRO_DOING_WEBHOOK', 'authnet' );
+	// Sets the PMPRO_DOING_WEBHOOK constant and fires the pmpro_doing_webhook action.
+	pmpro_doing_webhook( 'authnet', true );
 
 	//some code taken from http://www.merchant-account-services.org/blog/handling-authorizenet-arb-subscription-failures/
 	// Flag if this is an ARB transaction. Set to false by default.
@@ -48,7 +49,8 @@
 	if(defined('PMPRO_AUTHNET_SILENT_POST_DEBUG') && PMPRO_AUTHNET_SILENT_POST_DEBUG === "log")
 	{
 		//file
-		$loghandle = fopen(dirname(__FILE__) . "/../logs/authnet-silent-post.txt", "a+");
+		$logfile = apply_filters( 'pmpro_authnet_silent_post_logfile', dirname( __FILE__ ) . "/../logs/authnet-silent-post.txt" );
+		$loghandle = fopen( $logfile, "a+" );
 		fwrite($loghandle, $logstr);
 		fclose($loghandle);
 	} elseif(defined('PMPRO_AUTHNET_SILENT_POST_DEBUG') && false !== PMPRO_AUTHNET_SILENT_POST_DEBUG) {
@@ -57,7 +59,7 @@
 		else
 			$log_email = get_option("admin_email");
 			
-		wp_mail($log_email, "Authorize.net Silent Post From " . get_option("blogname"), nl2br($logstr));
+		wp_mail( $log_email, "Authorize.net Silent Post From " . get_option( "blogname" ), nl2br( esc_html( $logstr ) ) );
 	}	
 
 	// If it is an ARB transaction, do something with it
@@ -103,6 +105,7 @@
 				$morder->Zip = $fields['x_zip'];
 				$morder->PhoneNumber = $fields['x_phone'];
 
+				$morder->billing = new stdClass();
 				$morder->billing->name = $fields['x_first_name'] . " " . $fields['x_last_name'];
 				$morder->billing->street = $fields['x_address'];
 				$morder->billing->city = $fields['x_city'];
@@ -143,6 +146,9 @@
 			//prep this order for the failure emails
 			$morder = new MemberOrder();
 			$morder->user_id = $user_id;
+			$morder->membership_id = $old_order->membership_id;
+			
+			$morder->billing = new stdClass();
 			$morder->billing->name = $fields['x_first_name'] . " " . $fields['x_last_name'];
 			$morder->billing->street = $fields['x_address'];
 			$morder->billing->city = $fields['x_city'];

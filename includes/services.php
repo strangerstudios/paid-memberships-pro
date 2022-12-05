@@ -69,6 +69,34 @@ function pmpro_wp_ajax_orders_csv()
 }
 add_action('wp_ajax_orders_csv', 'pmpro_wp_ajax_orders_csv');
 
+
+/**
+ * Handles the Visits, Views and Logins Export
+ */
+function pmpro_wp_ajax_login_report_csv() {
+	require_once(dirname(__FILE__) . "/../adminpages/login-csv.php");	
+	exit;	
+}
+add_action('wp_ajax_login_report_csv', 'pmpro_wp_ajax_login_report_csv');
+
+/**
+ * Handles the Sales Export
+ */
+function pmpro_wp_ajax_sales_report_csv() {
+	require_once(dirname(__FILE__) . "/../adminpages/sales-csv.php");	
+	exit;	
+}
+add_action('wp_ajax_sales_report_csv', 'pmpro_wp_ajax_sales_report_csv');
+
+/**
+ * Handles the Membership Stats Export
+ */
+function pmpro_wp_ajax_membership_stats_csv() {
+	require_once(dirname(__FILE__) . "/../adminpages/memberships-csv.php");	
+	exit;	
+}
+add_action('wp_ajax_membership_stats_csv', 'pmpro_wp_ajax_membership_stats_csv');
+
 /**
  * Load the Orders print view.
  *
@@ -86,7 +114,12 @@ add_action('wp_ajax_pmpro_orders_print_view', 'pmpro_orders_print_view');
  * @since 1.8.6
  */
 function pmpro_get_order_json() {
-	$order_id = $_REQUEST['order_id'];
+	// only admins can get this
+	if ( ! function_exists( 'current_user_can' ) || ( ! current_user_can( 'manage_options' ) && ! current_user_can( 'pmpro_orders' ) ) ) {
+		die( __( 'You do not have permissions to perform this action.', 'paid-memberships-pro' ) );
+	}
+	
+	$order_id = intval( $_REQUEST['order_id'] );
 	$order = new MemberOrder($order_id);
 	echo json_encode($order);
 	exit;
@@ -94,7 +127,11 @@ function pmpro_get_order_json() {
 add_action('wp_ajax_pmpro_get_order_json', 'pmpro_get_order_json');
 
 function pmpro_update_level_order() {
-	
+	// only admins can get this
+	if ( ! function_exists( 'current_user_can' ) || ( ! current_user_can( 'manage_options' ) && ! current_user_can( 'pmpro_membershiplevels' ) ) ) {
+		die( __( 'You do not have permissions to perform this action.', 'paid-memberships-pro' ) );
+	}
+
 	$level_order = null;
 	
 	if ( isset( $_REQUEST['level_order'] ) && is_array( $_REQUEST['level_order'] ) ) {
@@ -108,3 +145,22 @@ function pmpro_update_level_order() {
     exit;
 }
 add_action('wp_ajax_pmpro_update_level_order', 'pmpro_update_level_order');
+
+// User fields AJAX.
+/**
+ * Callback to draw a field group.
+ */
+function pmpro_userfields_get_group_ajax() {	
+	echo pmpro_get_field_group_html();
+    exit;
+}
+add_action( 'wp_ajax_pmpro_userfields_get_group', 'pmpro_userfields_get_group_ajax' );
+ 
+/**
+ * Callback to draw a field.
+ */
+function pmpro_userfields_get_field_ajax() {
+ 	echo pmpro_get_field_html();
+	exit;
+}
+add_action( 'wp_ajax_pmpro_userfields_get_field', 'pmpro_userfields_get_field_ajax' );

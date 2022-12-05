@@ -50,7 +50,7 @@
 
 			var code_level;
 			code_level = false;
-			
+
 			//filter to insert your own code. Not MMPU compatible.
 			<?php do_action('pmpro_applydiscountcode_return_js', $discount_code, $discount_code_id, empty( $level_ids ) ? null : $level_ids[0], false); ?>
 		</script>
@@ -61,7 +61,14 @@
 
 	// Okay, send back new price info.
 	// Find levels whose price this code changed...
-	$sqlQuery = "SELECT l.id, cl.*, l.name, l.description, l.allow_signups FROM $wpdb->pmpro_discount_codes_levels cl LEFT JOIN $wpdb->pmpro_membership_levels l ON cl.level_id = l.id LEFT JOIN $wpdb->pmpro_discount_codes dc ON dc.id = cl.code_id WHERE dc.code = '" . $discount_code . "' AND cl.level_id IN (" . implode( ',', $level_ids ) . ")";
+	$sqlQuery = "
+		SELECT l.id, cl.*, l.name, l.description, l.allow_signups 
+		FROM $wpdb->pmpro_discount_codes_levels cl 
+			LEFT JOIN $wpdb->pmpro_membership_levels l
+				ON cl.level_id = l.id 
+			LEFT JOIN $wpdb->pmpro_discount_codes dc
+				ON dc.id = cl.code_id WHERE dc.code = '" . $discount_code . "'
+				AND cl.level_id IN (" . implode( ',', $level_ids ) . ")";
 	$code_levels = $wpdb->get_results($sqlQuery);
 
 	// ... and then get prices for the remaining levels.
@@ -94,7 +101,7 @@
 			$combined_level->billing_amount = $combined_level->billing_amount + $code_level->billing_amount;
 		}
 	}
-	
+
 
 	?>
 	<script>
@@ -117,7 +124,7 @@
 		}
 
 		jQuery('#other_discount_code_tr').hide();
-		jQuery('#other_discount_code_p').html('<a id="other_discount_code_a" href="javascript:void(0);"><?php _e('Click here to change your discount code', 'paid-memberships-pro' );?></a>.');
+		jQuery('#other_discount_code_p').html('<a id="other_discount_code_a" href="javascript:void(0);"><?php esc_html_e('Click here to change your discount code', 'paid-memberships-pro' );?></a>.');
 		jQuery('#other_discount_code_p').show();
 
 		jQuery('#other_discount_code_a').click(function() {
@@ -126,16 +133,39 @@
 		});
 
 			<?php
+			$html = [];
+
+			$html[] = '<p class="' . pmpro_get_element_class( 'pmpro_level_discount_applied' ) . '">' . wp_kses_post( sprintf( __( 'The <strong>%s</strong> code has been applied to your order.', 'paid-memberships-pro' ), $discount_code ) ) . '</div>';
+
 			if ( count( $code_levels ) <= 1 ) {
 				$code_level = empty( $code_levels ) ? null : $code_levels[0];
-				?>
-				jQuery('#pmpro_level_cost').html('<p><?php printf(__('The <strong>%s</strong> code has been applied to your order.', 'paid-memberships-pro' ), $discount_code);?></p><p><?php echo pmpro_no_quotes(pmpro_getLevelCost( $code_level, array('"', "'", "\n", "\r")))?><?php echo pmpro_no_quotes(pmpro_getLevelExpiration( $code_level, array('"', "'", "\n", "\r")))?></p>');
-				<?php
+
+				$level_cost_text = pmpro_getLevelCost( $code_level );
+				if ( ! empty( $level_cost_text ) ) {
+					$html[] = '<div class="' . pmpro_get_element_class( 'pmpro_level_cost_text' ) . '">' . wpautop( $level_cost_text ) . '</div>';
+				}
+
+				$level_expiration_text = pmpro_getLevelExpiration( $code_level );
+				if ( ! empty( $level_expiration_text ) ) {
+					$html[] = '<div class="' . pmpro_get_element_class( 'pmpro_level_expiration_text' ) . '">' . wpautop( $level_expiration_text ) . '</div>';
+				}
 			} else {
-				?>
-				jQuery('#pmpro_level_cost').html('<p><?php printf(__('The <strong>%s</strong> code has been applied to your order.', 'paid-memberships-pro' ), $discount_code);?></p><p><?php echo pmpro_no_quotes(pmpro_getLevelsCost($code_levels), array('"', "'", "\n", "\r"))?><?php echo pmpro_no_quotes(pmpro_getLevelsExpiration($code_levels), array('"', "'", "\n", "\r"))?></p>');
-				<?php
+				$levels_cost_text = pmpro_getLevelsCost( $code_levels );
+				if ( ! empty( $levels_cost_text ) ) {
+					$html[] = '<div class="' . pmpro_get_element_class( 'pmpro_level_cost_text' ) . '">' . wpautop( $levels_cost_text ) . '</div>';
+				}
+
+				$levels_expiration_text = pmpro_getLevelsExpiration( $code_levels );
+				if ( ! empty( $levels_expiration_text ) ) {
+					$html[] = '<div class="' . pmpro_get_element_class( 'pmpro_level_expiration_text' ) . '">' . wpautop( $levels_expiration_text ) . '</div>';
+				}
 			}
+
+			$html = array_filter( $html );
+			$html = implode( "\n\n", $html );
+			?>
+				jQuery('#pmpro_level_cost').html( <?php echo wp_json_encode( wp_kses_post( $html ) ); ?> );
+			<?php
 
 			//tell gateway javascripts whether or not to fire (e.g. no Stripe on free levels)
 			if(pmpro_areLevelsFree($code_levels))

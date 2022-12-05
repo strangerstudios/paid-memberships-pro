@@ -2,7 +2,7 @@
 /*
 	This file handles the support licensing control for Paid Memberships Pro
 	and PMPro addons.
-	
+
 	How it works:
 	- All source code and resource files bundled with this plugin are licensed under the GPLv2 license unless otherwise noted (e.g. included third-party libraries).
 	- An additional "support license" can be purchased at https://www.paidmembershipspro.com/pricing/
@@ -16,48 +16,73 @@
 
 /*
 	Developers, add this line to your wp-config.php to remove PMPro license nags even if no license has been purchased.
-	
+
 	define('PMPRO_LICENSE_NAG', false);	//consider purchasing a license at https://www.paidmembershipspro.com/pricing/
 */
 
 /*
 	Constants
 */
-define('PMPRO_LICENSE_SERVER', 'https://license.paidmembershipspro.com/');
+define('PMPRO_LICENSE_SERVER', 'https://license.paidmembershipspro.com/v2/');
 
-/*
-	Check license.
-*/
-function pmpro_license_isValid($key = NULL, $type = NULL, $force = false) {		
-	//check cache first
-	$pmpro_license_check = get_option('pmpro_license_check', false);
-	if(empty($force) && $pmpro_license_check !== false && $pmpro_license_check['enddate'] > current_time('timestamp'))
-	{
-		if(empty($type))
-			return true;
-		elseif($type == $pmpro_license_check['license'])
-			return true;
-		else
-			return false;
-	}
-	
-	//get key and site url
-	if(empty($key))
+/**
+ * Check if a license key is valid.
+ * @param string $key   The key to check.
+ * @param string|array $type  If passed will also check that the key is this type.
+ * @param bool   $force If true, will check key against the PMPro server.
+ * @return bool True if valid, false if not.
+ */
+function pmpro_license_isValid($key = NULL, $type = NULL, $force = false) {
+	// Get key from options if non passed in.
+	if( empty( $key ) ) {
 		$key = get_option("pmpro_license_key", "");
-	
-	//no key
-	if(!empty($key)) 
-	{
-		return pmpro_license_check_key($key);
 	}
-	else
-	{
-		//no key
-		delete_option('pmpro_license_check');
-		add_option('pmpro_license_check', array('license'=>false, 'enddate'=>0), NULL, 'no');
-	
+
+	// No key? Clean up options and return false.
+	if ( empty( $key ) ) {
+		$default_license_check = array( 'license'=>false, 'enddate'=>0 );
+		$pmpro_license_check = get_option( 'pmpro_license_check', false );
+		if ( $pmpro_license_check !== $default_license_check ) {			
+			update_option( 'pmpro_license_check', $default_license_check, 'no' );
+		}		
 		return false;
 	}
+
+	// If force was passed in, let's check with the server.
+	if ( $force ) {
+		$pmpro_license_check = pmpro_license_check_key( $key );
+	}
+
+	// Get license check value from options.
+	$pmpro_license_check = get_option( 'pmpro_license_check', false );
+
+	// No license info from server?
+	if ( empty( $pmpro_license_check ) ) {
+		return false;
+	}
+
+	// Server check errored out?
+	if ( is_wp_error( $pmpro_license_check ) ) {
+		return false;
+	}
+
+	// Check if 30 days past the end date. (We only run the cron every 30 days.)
+	if ( $pmpro_license_check['enddate'] < ( current_time( 'timestamp' ) - 86400*31 ) ) {
+		return false;
+	}
+
+	// Check if a specific type.
+	if ( ! empty( $type ) ) {
+		$type = (array)$type;
+
+		if ( ! in_array( $pmpro_license_check['license'], $type, true ) ) {
+
+			return false;
+		}
+	}
+
+	// If we got here, we should be good.
+	return true;
 }
 
 /*
@@ -65,74 +90,102 @@ function pmpro_license_isValid($key = NULL, $type = NULL, $force = false) {
 */
 //activation
 function pmpro_license_activation() {
-	pmpro_maybe_schedule_event(current_time('timestamp'), 'monthly', 'pmpro_license_check_key');
+	pmpro_maybe_schedule_event( current_time( 'timestamp' ), 'monthly', 'pmpro_license_check_key' );
 }
-register_activation_hook(__FILE__, 'pmpro_activation');
+add_action( 'activate_paid-memberships-pro', 'pmpro_license_activation' );
 
 //deactivation
 function pmpro_license_deactivation() {
-	wp_clear_scheduled_hook('pmpro_license_check_key');
+	wp_clear_scheduled_hook( 'pmpro_license_check_key' );
 }
-register_deactivation_hook(__FILE__, 'pmpro_deactivation');
+add_action( 'deactivate_paid-memberships-pro', 'pmpro_license_deactivation' );
 
-//check keys with PMPro once a month
+/**
+ * Check a key against the PMPro license server.
+ * Runs via cron every month.
+ * @param string          The key to check.
+ * @return array|WP_Error Returns an array with the key and enddate
+ *                        or WP_Error if invalid or there was an error.
+ */
 function pmpro_license_check_key($key = NULL) {
-	//get key
-	if(empty($key))
-		$key = get_option('pmpro_license_key');
-	
-	//key? check with server
-	if(!empty($key))
-	{
-		//check license server
-		$url = add_query_arg(array('license'=>$key, 'domain'=>site_url()), PMPRO_LICENSE_SERVER);
+	global $pmpro_license_error;
 
-        /**
-         * Filter to change the timeout for this wp_remote_get() request.
-         *
-         * @since 1.8.5.1
-         *
-         * @param int $timeout The number of seconds before the request times out
-         */
-        $timeout = apply_filters("pmpro_license_check_key_timeout", 5);
-
-        $r = wp_remote_get($url, array("timeout" => $timeout));
-
-        //test response
-        if(is_wp_error($r)) {
-            //error
-            pmpro_setMessage("Could not connect to the PMPro License Server to check key Try again later.", "error");
-        }
-        elseif(!empty($r) && $r['response']['code'] == 200)
-		{
-			$r = json_decode($r['body']);
-						
-			if($r->active == 1)
-			{
-				//valid key save enddate
-				if(!empty($r->enddate))
-					$enddate = strtotime($r->enddate, current_time('timestamp'));
-				else
-					$enddate = strtotime("+1 Year", current_time("timestamp"));
-					
-				delete_option('pmpro_license_check');
-				add_option('pmpro_license_check', array('license'=>$r->license, 'enddate'=>$enddate), NULL, 'no');		
-				return true;
-			}
-			elseif(!empty($r->error))
-			{
-				//invalid key
-				global $pmpro_license_error;
-				$pmpro_license_error = $r->error;
-				
-				delete_option('pmpro_license_check');
-				add_option('pmpro_license_check', array('license'=>false, 'enddate'=>0), NULL, 'no');
-                
-			}
-		}	
+	// Get key from options if non passed in.
+	if( empty( $key ) ) {
+		$key = get_option("pmpro_license_key", "");
 	}
 
-    //no key or there was an error
-    return false;
+	// No key? Return error.
+	if ( empty ( $key ) ) {
+		return new WP_Error ( 'no_key', __( 'Missing key.', 'paid-memberships-pro' ) );
+	}
+
+	/**
+     * Filter to change the timeout for this wp_remote_get() request.
+     *
+     * @since 1.8.5.1
+     *
+     * @param int $timeout The number of seconds before the request times out
+     */
+    $timeout = apply_filters( 'pmpro_license_check_key_timeout', 5 );
+
+	$url = add_query_arg(array('license'=>$key, 'domain'=>site_url()), PMPRO_LICENSE_SERVER);
+    $r = wp_remote_get( $url, array( "timeout" => $timeout ) );
+
+    // Trouble connecting?
+    if( is_wp_error( $r ) ) {
+		// Connection error.
+		return new WP_Error( 'connection_error', $r->get_error_message() );
+    }
+
+	// Bad response code?
+	if ( $r['response']['code'] !== 200 ) {
+		return new WP_Error( 'bad_response_code', esc_html( sprintf( __( 'Bad response code %s.', 'paid-memberships-pro' ), $r['response']['code'] ) ) );
+
+	}
+
+    // Process the response.
+	$r = json_decode($r['body']);
+	if( $r->active == 1 ) {
+		// Get end date. If none, let's set it 1 year out.
+		if( ! empty( $r->enddate ) ) {
+			$enddate = strtotime( $r->enddate, current_time( 'timestamp' ) );
+		} else {
+			$enddate = strtotime( '+1 Year', current_time( 'timestamp' ) );
+		}
+
+		$license_check = array( 'license' => $r->license, 'enddate' => $enddate );
+		update_option( 'pmpro_license_check', $license_check, 'no' );
+
+		return $license_check;
+	} elseif ( ! empty( $r->error ) ) {
+		// Invalid key. Let's clear out the option.
+		update_option( 'pmpro_license_check', array('license'=>false, 'enddate'=>0), 'no' );
+
+		return new WP_Error( 'invalid_key', $r->error );
+	} else {
+		// Unknown error. We should maybe clear out the option, but we're not.
+		return new WP_Error( 'unknown_error', __( 'Unknown error.', 'paid-memberships-pro' ) );
+	}
 }
 add_action('pmpro_license_check_key', 'pmpro_license_check_key');
+
+/**
+ * Check if a license type is "premium"
+ * @since 2.7.4
+ * @param string $type The license type for an add on for license key.
+ * @return bool True if the type is for a paid PMPro membership, false if not.
+ */
+function pmpro_license_type_is_premium( $type ) {
+	$premium_types = pmpro_license_get_premium_types();
+	return in_array( strtolower( $type ), $premium_types, true );
+}
+
+/**
+ * Get array of premium license types.
+ * @since 2.7.4
+ * @return array Premium types.
+ */
+function pmpro_license_get_premium_types() {
+	return array( 'standard', 'plus', 'builder' );
+}

@@ -10,6 +10,8 @@ function pmpro_getPMProCaps() {
 		'pmpro_pagesettings',
 		'pmpro_paymentsettings',
 		'pmpro_emailsettings',
+		'pmpro_userfields',
+		'pmpro_emailtemplates',
 		'pmpro_advancedsettings',
 		'pmpro_addons',
 		'pmpro_memberslist',
@@ -68,6 +70,8 @@ function pmpro_add_pages() {
 	add_submenu_page( 'admin.php', __( 'Page Settings', 'paid-memberships-pro' ), __( 'Page Settings', 'paid-memberships-pro' ), 'pmpro_pagesettings', 'pmpro-pagesettings', 'pmpro_pagesettings' );
 	add_submenu_page( 'admin.php', __( 'Payment Settings', 'paid-memberships-pro' ), __( 'Payment Settings', 'paid-memberships-pro' ), 'pmpro_paymentsettings', 'pmpro-paymentsettings', 'pmpro_paymentsettings' );
 	add_submenu_page( 'admin.php', __( 'Email Settings', 'paid-memberships-pro' ), __( 'Email Settings', 'paid-memberships-pro' ), 'pmpro_emailsettings', 'pmpro-emailsettings', 'pmpro_emailsettings' );
+	add_submenu_page( 'admin.php', __( 'Email Templates', 'paid-memberships-pro' ), __( 'Email Templates', 'paid-memberships-pro' ), 'pmpro_emailtemplates', 'pmpro-emailtemplates', 'pmpro_emailtemplates' );
+	add_submenu_page( 'admin.php', __( 'User Fields', 'paid-memberships-pro' ), __( 'User Fields', 'paid-memberships-pro' ), 'pmpro_userfields', 'pmpro-userfields', 'pmpro_userfields' );
 	add_submenu_page( 'admin.php', __( 'Advanced Settings', 'paid-memberships-pro' ), __( 'Advanced Settings', 'paid-memberships-pro' ), 'pmpro_advancedsettings', 'pmpro-advancedsettings', 'pmpro_advancedsettings' );
 
 	add_action( 'load-' . $list_table_hook, 'pmpro_list_table_screen_options' );
@@ -91,6 +95,7 @@ function pmpro_parent_file( $parent_file ) {
 		'pmpro-pagesettings',
 		'pmpro-paymentsettings',
 		'pmpro-emailsettings',
+		'pmpro-emailtemplates',
 		'pmpro-advancedsettings',
 	);
 	
@@ -130,7 +135,7 @@ function pmpro_admin_bar_menu() {
 		array(
 			'id' => 'paid-memberships-pro',
 			'title' => __( '<span class="ab-icon"></span>Memberships', 'paid-memberships-pro' ),
-			'href' => get_admin_url( NULL, '/admin.php?page=' . $top_menu_page )
+			'href' => admin_url( '/admin.php?page=' . $top_menu_page )
 		) 
 	);
 
@@ -141,7 +146,7 @@ function pmpro_admin_bar_menu() {
 				'id' => 'pmpro-dashboard',
 				'parent' => 'paid-memberships-pro',
 				'title' => __( 'Dashboard', 'paid-memberships-pro' ),
-				'href' => get_admin_url( NULL, '/admin.php?page=pmpro-dashboard' ) 
+				'href' => admin_url( '/admin.php?page=pmpro-dashboard' ) 
 			)
 		);
 	}
@@ -153,7 +158,7 @@ function pmpro_admin_bar_menu() {
 				'id' => 'pmpro-members-list',
 				'parent' => 'paid-memberships-pro',
 				'title' => __( 'Members', 'paid-memberships-pro' ),
-				'href' => get_admin_url( NULL, '/admin.php?page=pmpro-memberslist' )
+				'href' => admin_url( '/admin.php?page=pmpro-memberslist' )
 			)
 		);
 	}
@@ -165,7 +170,7 @@ function pmpro_admin_bar_menu() {
 				'id' => 'pmpro-orders',
 				'parent' => 'paid-memberships-pro',
 				'title' => __( 'Orders', 'paid-memberships-pro' ),
-				'href' => get_admin_url( NULL, '/admin.php?page=pmpro-orders' )
+				'href' => admin_url( '/admin.php?page=pmpro-orders' )
 			)
 		);
 	}
@@ -177,7 +182,7 @@ function pmpro_admin_bar_menu() {
 				'id' => 'pmpro-reports',
 				'parent' => 'paid-memberships-pro',
 				'title' => __( 'Reports', 'paid-memberships-pro' ),
-				'href' => get_admin_url( NULL, '/admin.php?page=pmpro-reports' )
+				'href' => admin_url( '/admin.php?page=pmpro-reports' )
 			)
 		);
 	}
@@ -189,7 +194,7 @@ function pmpro_admin_bar_menu() {
 				'id' => 'pmpro-membership-levels',
 				'parent' => 'paid-memberships-pro',
 				'title' => __( 'Settings', 'paid-memberships-pro' ),
-				'href' => get_admin_url( NULL, '/admin.php?page=pmpro-membershiplevels' )
+				'href' => admin_url( '/admin.php?page=pmpro-membershiplevels' )
 			)
 		);
 	}
@@ -201,7 +206,7 @@ function pmpro_admin_bar_menu() {
 				'id' => 'pmpro-addons',
 				'parent' => 'paid-memberships-pro',
 				'title' => __( 'Add Ons', 'paid-memberships-pro' ),
-				'href' => get_admin_url( NULL, '/admin.php?page=pmpro-addons' )
+				'href' => admin_url( '/admin.php?page=pmpro-addons' )
 			)
 		);
 	}
@@ -220,7 +225,7 @@ function pmpro_admin_bar_menu() {
 				'id' => 'pmpro-license',
 				'parent' => 'paid-memberships-pro',
 				'title' => __( '<span style="color: ' . $span_color . '; line-height: 26px;">License</span>', 'paid-memberships-pro' ),
-				'href' => get_admin_url( NULL, '/admin.php?page=pmpro-license' )
+				'href' => admin_url( '/admin.php?page=pmpro-license' )
 			)
 		);
 	}
@@ -270,6 +275,19 @@ function pmpro_paymentsettings() {
 
 function pmpro_emailsettings() {
 	require_once( PMPRO_DIR . '/adminpages/emailsettings.php' );
+}
+
+function pmpro_userfields() {
+	//ensure, that the needed javascripts been loaded to allow drag/drop, expand/collapse and hide/show of boxes
+	wp_enqueue_script( 'common' );
+	wp_enqueue_script( 'wp-lists' );
+	wp_enqueue_script( 'postbox' );
+	
+	require_once( PMPRO_DIR . '/adminpages/userfields.php' );
+}
+
+function pmpro_emailtemplates() {
+	require_once( PMPRO_DIR . '/adminpages/emailtemplates.php' );
 }
 
 function pmpro_advancedsettings() {
@@ -347,6 +365,10 @@ function pmpro_display_post_states( $post_states, $post ) {
 		$post_states['pmpro_levels_page'] = __( 'Membership Levels Page', 'paid-memberships-pro' );
 	}
 
+	if ( intval( $pmpro_pages['login'] ) === $post->ID ) {
+		$post_states['pmpro_login_page'] = __( 'Paid Memberships Pro Login Page', 'paid-memberships-pro' );
+	}
+
 	if ( intval( $pmpro_pages['member_profile_edit'] ) === $post->ID ) {
 		$post_states['pmpro_member_profile_edit_page'] = __( 'Member Profile Edit Page', 'paid-memberships-pro' );
 	}
@@ -392,7 +414,7 @@ function pmpro_add_action_links( $links ) {
 	}
 
 	$new_links = array(
-		'<a href="' . get_admin_url( NULL, 'admin.php?page=' . $top_menu_page ) . '">Settings</a>',
+		'<a href="' . admin_url( 'admin.php?page=' . $top_menu_page ) . '">Settings</a>',
 	);
 	return array_merge( $new_links, $links );
 }

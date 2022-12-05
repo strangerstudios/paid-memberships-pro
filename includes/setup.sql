@@ -45,7 +45,7 @@ CREATE TABLE `wp_pmpro_discount_codes_levels` (
   `trial_amount` decimal(18,8) NOT NULL DEFAULT '0.00',
   `trial_limit` int(11) NOT NULL DEFAULT '0',
   `expiration_number` int(10) unsigned NOT NULL,
-  `expiration_period` enum('Day','Week','Month','Year') NOT NULL,
+  `expiration_period` enum('Hour','Day','Week','Month','Year') NOT NULL,
   PRIMARY KEY (`code_id`,`level_id`),
   KEY `initial_payment` (`initial_payment`)
 );
@@ -87,7 +87,7 @@ CREATE TABLE `wp_pmpro_membership_levels` (
   `trial_limit` int(11) NOT NULL DEFAULT '0',
   `allow_signups` tinyint(4) NOT NULL DEFAULT '1',
   `expiration_number` int(10) unsigned NOT NULL,
-  `expiration_period` enum('Day','Week','Month','Year') NOT NULL,
+  `expiration_period` enum('Hour','Day','Week','Month','Year') NOT NULL,
   PRIMARY KEY (`id`),
   KEY `allow_signups` (`allow_signups`),
   KEY `initial_payment` (`initial_payment`),
@@ -193,7 +193,7 @@ CREATE TABLE `wp_pmpro_memberships_categories` (
   `membership_id` int(11) unsigned NOT NULL,
   `category_id` int(11) unsigned NOT NULL,
   `modified` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  UNIQUE KEY `membership_category` (`membership_id`,`category_id`),
+  PRIMARY KEY (`membership_id`,`category_id`),
   UNIQUE KEY `category_membership` (`category_id`,`membership_id`)
 );
 
@@ -207,7 +207,7 @@ CREATE TABLE `wp_pmpro_memberships_pages` (
   `membership_id` int(11) unsigned NOT NULL,
   `page_id` int(11) unsigned NOT NULL,
   `modified` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  UNIQUE KEY `category_membership` (`page_id`,`membership_id`),
+  PRIMARY KEY (`page_id`,`membership_id`),
   UNIQUE KEY `membership_page` (`membership_id`,`page_id`)
 );
 

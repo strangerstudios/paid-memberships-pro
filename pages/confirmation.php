@@ -1,3 +1,15 @@
+<?php
+/**
+ * Template: Confirmation
+ *
+ * See documentation for how to override the PMPro templates.
+ * @link https://www.paidmembershipspro.com/documentation/templates/
+ *
+ * @version 2.0
+ *
+ * @author Paid Memberships Pro
+ */
+?>
 <div class="<?php echo pmpro_get_element_class( 'pmpro_confirmation_wrap' ); ?>">
 <?php
 	global $wpdb, $current_user, $pmpro_invoice, $pmpro_msg, $pmpro_msgt;
@@ -46,37 +58,41 @@
 	<h3>
 		<?php printf(__('Invoice #%s on %s', 'paid-memberships-pro' ), $pmpro_invoice->code, date_i18n(get_option('date_format'), $pmpro_invoice->getTimestamp()));?>
 	</h3>
-	<a class="<?php echo pmpro_get_element_class( 'pmpro_a-print' ); ?>" href="javascript:window.print()"><?php _e('Print', 'paid-memberships-pro' );?></a>
+	<a class="<?php echo pmpro_get_element_class( 'pmpro_a-print' ); ?>" href="javascript:window.print()"><?php esc_html_e('Print', 'paid-memberships-pro' );?></a>
 	<ul>
 		<?php do_action("pmpro_invoice_bullets_top", $pmpro_invoice); ?>
-		<li><strong><?php _e('Account', 'paid-memberships-pro' );?>:</strong> <?php echo esc_html( $current_user->display_name );?> (<?php echo esc_html( $current_user->user_email );?>)</li>
-		<li><strong><?php _e('Membership Level', 'paid-memberships-pro' );?>:</strong> <?php echo esc_html( $current_user->membership_level->name);?></li>
-		<?php if($current_user->membership_level->enddate) { ?>
-			<li><strong><?php _e('Membership Expires', 'paid-memberships-pro' );?>:</strong> <?php echo date_i18n(get_option('date_format'), $current_user->membership_level->enddate)?></li>
+		<li><strong><?php esc_html_e('Account', 'paid-memberships-pro' );?>:</strong> <?php echo esc_html( $current_user->display_name );?> (<?php echo esc_html( $current_user->user_email );?>)</li>
+		<li><strong><?php esc_html_e('Membership Level', 'paid-memberships-pro' );?>:</strong> <?php echo esc_html( $pmpro_invoice->membership_level->name);?> <?php if ( in_array( $pmpro_invoice->status, array( 'pending', 'token' ) ) ) { echo ' (' . esc_html__( 'Pending', 'paid-memberships-pro' ) . ')'; }?></li>
+		<?php if( ! empty( $current_user->membership_level->enddate ) && ! in_array( $pmpro_invoice->status, array( 'pending', 'token' ) ) ) { ?>
+			<li><strong><?php esc_html_e('Membership Expires', 'paid-memberships-pro' );?>:</strong> <?php echo date_i18n(get_option('date_format'), $current_user->membership_level->enddate)?></li>
 		<?php } ?>
 		<?php if($pmpro_invoice->getDiscountCode()) { ?>
-			<li><strong><?php _e('Discount Code', 'paid-memberships-pro' );?>:</strong> <?php echo esc_html( $pmpro_invoice->discount_code->code );?></li>
+			<li><strong><?php esc_html_e('Discount Code', 'paid-memberships-pro' );?>:</strong> <?php echo esc_html( $pmpro_invoice->discount_code->code );?></li>
 		<?php } ?>
 		<?php do_action("pmpro_invoice_bullets_bottom", $pmpro_invoice); ?>
 	</ul>
 	<hr />
 	<div class="<?php echo pmpro_get_element_class( 'pmpro_invoice_details' ); ?>">
-		<?php if(!empty($pmpro_invoice->billing->name)) { ?>
+		<?php if(!empty($pmpro_invoice->billing->street)) { ?>
 			<div class="<?php echo pmpro_get_element_class( 'pmpro_invoice-billing-address' ); ?>">
-				<strong><?php _e('Billing Address', 'paid-memberships-pro' );?></strong>
-				<p><?php echo esc_html( $pmpro_invoice->billing->name );?><br />
-				<?php echo esc_html( $pmpro_invoice->billing->street );?><br />
-				<?php if($pmpro_invoice->billing->city && $pmpro_invoice->billing->state) { ?>
-					<?php echo esc_html( $pmpro_invoice->billing->city );?>, <?php echo esc_html( $pmpro_invoice->billing->state );?> <?php echo esc_html( $pmpro_invoice->billing->zip );?> <?php echo esc_html( $pmpro_invoice->billing->country );?><br />
-				<?php } ?>
-				<?php echo formatPhone($pmpro_invoice->billing->phone)?>
+				<strong><?php esc_html_e('Billing Address', 'paid-memberships-pro' );?></strong>
+				<p>
+					<span class="<?php echo pmpro_get_element_class( 'pmpro_invoice-field-billing_name' ); ?>"><?php echo $pmpro_invoice->billing->name; ?></span>
+					<span class="<?php echo pmpro_get_element_class( 'pmpro_invoice-field-billing_street' ); ?>"><?php echo $pmpro_invoice->billing->street; ?></span>
+					<?php if ( $pmpro_invoice->billing->city && $pmpro_invoice->billing->state ) { ?>
+						<span class="<?php echo pmpro_get_element_class( 'pmpro_invoice-field-billing_city' ); ?>"><?php echo $pmpro_invoice->billing->city; ?></span>
+						<span class="<?php echo pmpro_get_element_class( 'pmpro_invoice-field-billing_state' ); ?>"><?php echo $pmpro_invoice->billing->state; ?></span>
+						<span class="<?php echo pmpro_get_element_class( 'pmpro_invoice-field-billing_zip' ); ?>"><?php echo $pmpro_invoice->billing->zip; ?></span>
+						<span class="<?php echo pmpro_get_element_class( 'pmpro_invoice-field-billing_country' ); ?>"><?php echo $pmpro_invoice->billing->country; ?></span>
+					<?php } ?>
+					<span class="<?php echo pmpro_get_element_class( 'pmpro_invoice-field-billing_phone' ); ?>"><?php echo formatPhone($pmpro_invoice->billing->phone); ?></span>
 				</p>
 			</div> <!-- end pmpro_invoice-billing-address -->
 		<?php } ?>
 
 		<?php if ( ! empty( $pmpro_invoice->accountnumber ) || ! empty( $pmpro_invoice->payment_type ) ) { ?>
 			<div class="<?php echo pmpro_get_element_class( 'pmpro_invoice-payment-method' ); ?>">
-				<strong><?php _e('Payment Method', 'paid-memberships-pro' );?></strong>
+				<strong><?php esc_html_e('Payment Method', 'paid-memberships-pro' );?></strong>
 				<?php if($pmpro_invoice->accountnumber) { ?>
 					<p><?php echo esc_html( ucwords( $pmpro_invoice->cardtype ) ); ?> <?php _e('ending in', 'paid-memberships-pro' );?> <?php echo esc_html( last4($pmpro_invoice->accountnumber ) );?>
 					<br />
@@ -88,21 +104,16 @@
 		<?php } ?>
 
 		<div class="<?php echo pmpro_get_element_class( 'pmpro_invoice-total' ); ?>">
-			<strong><?php _e('Total Billed', 'paid-memberships-pro' );?></strong>
-			<p><?php if($pmpro_invoice->total != '0.00') { ?>
-				<?php if(!empty($pmpro_invoice->tax)) { ?>
-					<?php _e('Subtotal', 'paid-memberships-pro' );?>: <?php echo pmpro_formatPrice($pmpro_invoice->subtotal);?><br />
-					<?php _e('Tax', 'paid-memberships-pro' );?>: <?php echo pmpro_formatPrice($pmpro_invoice->tax);?><br />
-					<?php if(!empty($pmpro_invoice->couponamount)) { ?>
-						<?php _e('Coupon', 'paid-memberships-pro' );?>: (<?php echo pmpro_formatPrice($pmpro_invoice->couponamount);?>)<br />
-					<?php } ?>
-					<strong><?php _e('Total', 'paid-memberships-pro' );?>: <?php echo pmpro_formatPrice($pmpro_invoice->total);?></strong>
-				<?php } else { ?>
-					<?php echo pmpro_formatPrice($pmpro_invoice->total);?>
-				<?php } ?>
-			<?php } else { ?>
-				<small class="<?php echo pmpro_get_element_class( 'pmpro_grey' ); ?>"><?php echo esc_html( pmpro_formatPrice(0) );?></small>
-			<?php } ?></p>
+			<strong><?php esc_html_e('Total Billed', 'paid-memberships-pro' );?></strong>
+			<p>
+				<?php
+					if ( (float)$pmpro_invoice->total > 0 ) {
+						echo pmpro_get_price_parts( $pmpro_invoice, 'span' );
+					} else {
+						echo pmpro_escape_price( pmpro_formatPrice(0) );
+					}
+				?>
+			</p>
 		</div> <!-- end pmpro_invoice-total -->
 
 	</div> <!-- end pmpro_invoice -->
@@ -123,15 +134,19 @@
 		echo wp_kses_post( $confirmation_message );
 	?>
 	<ul>
-		<li><strong><?php _e('Account', 'paid-memberships-pro' );?>:</strong> <?php echo esc_html( $current_user->display_name );?> (<?php echo esc_html( $current_user->user_email );?>)</li>
-		<li><strong><?php _e('Membership Level', 'paid-memberships-pro' );?>:</strong> <?php if(!empty($current_user->membership_level)) echo esc_html( $current_user->membership_level->name ); else _e("Pending", 'paid-memberships-pro' );?></li>
+		<li><strong><?php esc_html_e('Account', 'paid-memberships-pro' );?>:</strong> <?php echo esc_html( $current_user->display_name );?> (<?php echo esc_html( $current_user->user_email );?>)</li>
+		<li><strong><?php esc_html_e('Membership Level', 'paid-memberships-pro' );?>:</strong> <?php if(!empty($current_user->membership_level)) echo esc_html( $current_user->membership_level->name ); else esc_html_e("Pending", 'paid-memberships-pro' );?></li>
+		<?php if( !empty( $current_user->membership_level->expiration_period ) && $current_user->membership_level->expiration_period == 'Hour' && apply_filters( 'pmpro_confirmation_display_hour_expiration', true, $current_user ) ){ ?>
+		<li><strong><?php esc_html_e('Expires In', 'paid-memberships-pro' );?>:</strong> <?php echo esc_html( $current_user->membership_level->expiration_number . ' ' . pmpro_translate_billing_period( $current_user->membership_level->expiration_period, $current_user->membership_level->expiration_number ) ); ?></li>
+		<?php }
+		?>
 	</ul>
 <?php
 	}
 ?>
 <p class="<?php echo pmpro_get_element_class( 'pmpro_actions_nav' ); ?>">
 	<?php if ( ! empty( $current_user->membership_level ) ) { ?>
-		<a href="<?php echo pmpro_url( 'account' ); ?>"><?php _e( 'View Your Membership Account &rarr;', 'paid-memberships-pro' ); ?></a>
+		<a href="<?php echo esc_url( pmpro_url( 'account' ) ); ?>"><?php esc_html_e( 'View Your Membership Account &rarr;', 'paid-memberships-pro' ); ?></a>
 	<?php } else { ?>
 		<?php _e( 'If your account is not activated within a few minutes, please contact the site owner.', 'paid-memberships-pro' ); ?>
 	<?php } ?>

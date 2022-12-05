@@ -1,6 +1,6 @@
 {
   "name": "paid-memberships-pro",
-  "version": "2.3.0",
+  "version": "2.9.6",
   "description": "WordPress Membership Plugin",
   "main": "webpack.config.js",
   "directories": {
@@ -22,6 +22,6 @@
   "author": "Stranger Studios",
   "license": "GPL-2.0",
   "devDependencies": {
-    "@wordpress/scripts": "^7.2.0"
+    "@wordpress/scripts": "^23.7.2"
   }
 }

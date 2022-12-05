@@ -27,8 +27,12 @@ require_once( 'login/block.php' );
 
 /**
  * Add PMPro block category
+ * This callback is used with the block_categories (pre 5.8)
+ * and block_categories_all (5.8+) filters. In the first filter,
+ * the second parameter is a $post, in the latter it's a $context.
+ * We don't use the second parameter yet though.
  */
-function pmpro_place_blocks_in_panel( $categories, $post ) {
+function pmpro_place_blocks_in_panel( $categories, $post_or_context ) {
 	return array_merge(
 		$categories,
 		array(
@@ -36,10 +40,22 @@ function pmpro_place_blocks_in_panel( $categories, $post ) {
 				'slug'  => 'pmpro',
 				'title' => __( 'Paid Memberships Pro', 'paid-memberships-pro' ),
 			),
+			array(
+				'slug'	=> 'pmpro-pages',
+				'title'	=> __( 'Paid Memberships Pro Pages', 'paid-memberships-pro' ),
+			),
 		)
 	);
 }
-add_filter( 'block_categories', 'pmpro_place_blocks_in_panel', 10, 2 );
+
+// Use the correct filter based on WP version.
+if ( function_exists( 'get_default_block_categories' ) ) {
+	// 5.8+, context is 2nd parameter.
+	add_filter( 'block_categories_all', 'pmpro_place_blocks_in_panel', 10, 2 );
+} else {
+	// Pre-5.8, post is 2nd parameter.
+	add_filter( 'block_categories', 'pmpro_place_blocks_in_panel', 10, 2 );
+}
 
 /**
  * Enqueue block editor only JavaScript and CSS
@@ -48,8 +64,16 @@ function pmpro_block_editor_scripts() {
 	// Enqueue the bundled block JS file.
 	wp_enqueue_script(
 		'pmpro-blocks-editor-js',
-		plugins_url( 'js/blocks.build.js', PMPRO_BASE_FILE ),
-		array('wp-i18n', 'wp-element', 'wp-blocks', 'wp-components', 'wp-api', 'wp-editor', 'pmpro_admin'),
+		plugins_url( 'js/blocks/blocks.build.js', PMPRO_BASE_FILE ),
+		[
+			'wp-i18n',
+			'wp-element',
+			'wp-blocks',
+			'wp-components',
+			'wp-api',
+			'wp-block-editor',
+			'pmpro_admin',
+		],
 		PMPRO_VERSION
 	);
 

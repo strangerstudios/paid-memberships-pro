@@ -5,9 +5,28 @@
 function pmpro_page_meta() {
 	global $post, $wpdb;
 	$membership_levels = pmpro_getAllLevels( true, true );
+	$membership_levels = pmpro_sort_levels_by_order( $membership_levels );
 	$page_levels = $wpdb->get_col( "SELECT membership_id FROM {$wpdb->pmpro_memberships_pages} WHERE page_id = '" . intval( $post->ID ) . "'" );
-?>
-    <ul id="membershipschecklist" class="list:category categorychecklist form-no-clear">
+
+	// Build the selectors for the #memberships list based on level count.
+	$pmpro_memberships_checklist_classes = array( 'list:category', 'categorychecklist', 'form-no-clear');
+	if ( count( $membership_levels ) > 9 ) {
+		$pmpro_memberships_checklist_classes[] = "pmpro_scrollable";
+	}
+	$pmpro_memberships_checklist_classes = implode( ' ', array_unique( $pmpro_memberships_checklist_classes ) );
+
+	if ( count( $membership_levels ) > 1 ) { ?>
+		<p><?php esc_html_e( 'Select:', 'paid-memberships-pro' ); ?> <a id="pmpro-memberships-checklist-select-all" href="javascript:void(0);"><?php esc_html_e( 'All', 'paid-memberships-pro' ); ?></a> | <a id="pmpro-memberships-checklist-select-none" href="javascript:void(0);"><?php esc_html_e( 'None', 'paid-memberships-pro' ); ?></a></p>
+		<script type="text/javascript">
+			jQuery('#pmpro-memberships-checklist-select-all').click(function(){
+				jQuery('#pmpro-memberships-checklist input').prop('checked', true);
+			});
+			jQuery('#pmpro-memberships-checklist-select-none').click(function(){
+				jQuery('#pmpro-memberships-checklist input').prop('checked', false);
+			});
+		</script>
+	<?php } ?>
+    <ul id="pmpro-memberships-checklist" class="<?php echo esc_attr( $pmpro_memberships_checklist_classes ); ?>">
     <input type="hidden" name="pmpro_noncename" id="pmpro_noncename" value="<?php echo esc_attr( wp_create_nonce( plugin_basename(__FILE__) ) )?>" />
 	<?php
 		$in_member_cat = false;
@@ -37,7 +56,8 @@ function pmpro_page_meta() {
 		<p class="pmpro_meta_notice">* <?php _e("This post is already protected for this level because it is within a category that requires membership.", 'paid-memberships-pro' );?></p>
 	<?php
 		}
-
+	?>
+	<?php
 		do_action( 'pmpro_after_require_membership_metabox', $post );
 	?>
 <?php
@@ -128,11 +148,11 @@ function pmpro_taxonomy_meta( $term ) {
 	if( ! empty( $protectedlevels ) ) {
 	?>
 	<tr class="form-field">
-		<th scope="row" valign="top"><?php _e( 'Membership Levels', 'paid-memberships-pro' ); ?></label></th>
+		<th scope="row" valign="top"><?php esc_html_e( 'Membership Levels', 'paid-memberships-pro' ); ?></label></th>
 		<td>
 			<p><strong>
 				<?php echo implode(', ',$protectedlevels); ?></strong></p>
-			<p class="description"><?php _e( 'Only members of these levels will be able to view posts in this category.', 'paid-memberships-pro' ); ?></p>
+			<p class="description"><?php esc_html_e( 'Only members of these levels will be able to view posts in this category.', 'paid-memberships-pro' ); ?></p>
 		</td>
 	</tr>
 	<?php

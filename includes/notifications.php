@@ -20,12 +20,13 @@ function pmpro_notifications() {
 		
 		// Okay show the notification.
 		?>
-		<div class="pmpro_notification" id="<?php echo $notification->id; ?>">
+		<div class="pmpro_notification pmpro_notification-<?php echo esc_attr( $notification->type ); ?>" id="<?php echo esc_attr( $notification->id ); ?>">
 		<?php if ( $notification->dismissable ) { ?>
-			<button type="button" class="pmpro-notice-button notice-dismiss" value="<?php echo $notification->id; ?>"><span class="screen-reader-text"><?php esc_html_e( 'Dismiss this notice.', 'paid-memberships-pro' ); ?></span></button>
+			<button type="button" class="pmpro-notice-button notice-dismiss" value="<?php echo esc_attr( $notification->id ); ?>"><span class="screen-reader-text"><?php esc_html_e( 'Dismiss this notice.', 'paid-memberships-pro' ); ?></span></button>
 		<?php } ?>
-			<div class="pmpro_notification-<?php echo $notification->type; ?>">
-				<h3><span class="dashicons dashicons-<?php esc_attr_e( $notification->dashicon ); ?>"></span> <?php esc_html_e( $notification->title ); ?></h3>
+			<div class="pmpro_notification-icon"><span class="dashicons dashicons-<?php echo esc_attr( $notification->dashicon ); ?>"></span></div>
+			<div class="pmpro_notification-content">
+				<h3><?php echo esc_html( $notification->title ); ?></h3>
 				<?php 
 					$allowed_html = array (
 						'a' => array (
@@ -44,11 +45,13 @@ function pmpro_notifications() {
 							'class' => array(),
 						),
 						'br' => array(),
+						'strike' => array(),
+						'strong' => array(),
 					);
 					echo wp_kses( $notification->content, $allowed_html );
 				?>
-			</div>
-		</div>
+			</div> <!-- end pmpro_notification-content -->
+		</div> <!-- end pmpro_notification -->
 		<?php		
 	}
 	
@@ -434,14 +437,17 @@ function pmpro_notification_test_pmpro_setting( $data ) {
 
 /**
  * PMPro site URL test.
- * @param string $string String to look for in the site URL
+ * @param string $string String or array of strings to look for in the site URL
  * @returns bool true if the string shows up in the site URL
  */
-function pmpro_notification_test_site_url_match( $string ) {
+function pmpro_notification_test_site_url_match( $string ) {	
 	if ( ! empty( $string ) ) {
-		if ( strpos( get_bloginfo( 'url' ), $string ) !== false ) {
-			return true;
-		}
+		$strings_to_check = (array) $string;
+		foreach( $strings_to_check as $check ) {
+			if ( strpos( get_bloginfo( 'url' ), $check ) !== false ) {
+				return true;
+			}
+		}		
 	}
 	return false;
 }
@@ -544,9 +550,10 @@ add_action( 'wp_ajax_pmpro_hide_notice', 'pmpro_hide_notice' );
 /**
  * Show Powered by Paid Memberships Pro comment (only visible in source) in the footer.
  */
-function pmpro_link() { ?>
-Memberships powered by Paid Memberships Pro v<?php echo PMPRO_VERSION; ?>.
-<?php }
+function pmpro_link() {
+	?>Memberships powered by Paid Memberships Pro v<?php echo PMPRO_VERSION; ?>.<?php
+}
+
 function pmpro_footer_link() {
 	if ( ! pmpro_getOption( 'hide_footer_link' ) ) { ?>
 		<!-- <?php echo pmpro_link()?> -->
