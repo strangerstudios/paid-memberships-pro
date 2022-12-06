@@ -2,14 +2,14 @@
 # This file is distributed under the same license as the Paid Memberships Pro plugin.
 msgid ""
 msgstr ""
-"Project-Id-Version: Paid Memberships Pro 2.9.6\n"
+"Project-Id-Version: Paid Memberships Pro 2.9.7\n"
 "Report-Msgid-Bugs-To: info@paidmembershipspro.com\n"
 "Last-Translator: Paid Memberships Pro <info@paidmembershipspro.com>\n"
 "Language-Team: Paid Memberships Pro <info@paidmembershipspro.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2022-11-11T20:30:38+00:00\n"
+"POT-Creation-Date: 2022-11-30T16:54:51+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.7.1\n"
 "X-Domain: paid-memberships-pro\n"
@@ -4521,6 +4521,7 @@ msgstr "Faktura for bestillingsnummer:"
 #: classes/gateways/class.pmprogateway_paypal.php:315
 #: classes/gateways/class.pmprogateway_payflowpro.php:172
 #: classes/gateways/class.pmprogateway_paypal.php:314
+#: classes/gateways/class.pmprogateway_authorizenet.php:160
 msgid "Unknown error: Authorization failed."
 msgstr "Autorisasjon for betalingen feilet av ukjent årsak."
 
@@ -4554,6 +4555,9 @@ msgstr "Autorisasjon for betalingen feilet av ukjent årsak."
 #: classes/gateways/class.pmprogateway_payflowpro.php:194
 #: classes/gateways/class.pmprogateway_payflowpro.php:199
 #: classes/gateways/class.pmprogateway_paypal.php:336
+#: classes/gateways/class.pmprogateway_authorizenet.php:182
+#: classes/gateways/class.pmprogateway_authorizenet.php:187
+#: classes/gateways/class.pmprogateway_authorizenet.php:204
 msgid "Unknown error: Payment failed."
 msgstr "Betalingen feilet av ukjent årsak."
 
@@ -4565,6 +4569,7 @@ msgstr "Betalingen feilet av ukjent årsak."
 #: classes/gateways/class.pmprogateway_authorizenet.php:246
 #: classes/gateways/class.pmprogateway_check.php:270
 #: classes/gateways/class.pmprogateway_cybersource.php:209
+#: classes/gateways/class.pmprogateway_authorizenet.php:188
 msgid "A partial payment was made that we could not void. Please contact the site owner immediately to correct this."
 msgstr "En delbetaling hadde blitt fullført som vi ikke klarte å slette. Vennligst ta øyeblikkelig kontakt med eieren av denne websiden for å få rettet på problemet."
 
@@ -4613,6 +4618,8 @@ msgstr "For å integrere med Authorize.net, må du konfigurere Silent Post URL�
 #: classes/gateways/class.pmprogateway_authorizenet.php:910
 #: classes/gateways/class.pmprogateway_authorizenet.php:914
 #: classes/gateways/class.pmprogateway_authorizenet.php:915
+#: classes/gateways/class.pmprogateway_authorizenet.php:856
+#: classes/gateways/class.pmprogateway_authorizenet.php:857
 msgid "Could not connect to Authorize.net"
 msgstr "Feil: Kunne ikke koble oss til Authorize.net"
 
@@ -7186,6 +7193,7 @@ msgstr "Vi har sendt melding til %s om at medlemsperioden er avsluttet."
 #: scheduled/crons.php:88
 #: scheduled/crons.php:117
 #: scheduled/crons.php:116
+#: scheduled/crons.php:114
 #, php-format
 msgid "Membership expiring email sent to %s. "
 msgstr "Vi har sendt melding til %s om at medlemsperioden er i ferd med å utgå"
@@ -7194,6 +7202,7 @@ msgstr "Vi har sendt melding til %s om at medlemsperioden er i ferd med å utgå
 #: scheduled/crons.php:164
 #: scheduled/crons.php:206
 #: scheduled/crons.php:205
+#: scheduled/crons.php:201
 #, php-format
 msgid "Credit card expiring email sent to %s. "
 msgstr "Vi har sendt melding om ugyldig kredittkort til %s"
@@ -7202,6 +7211,7 @@ msgstr "Vi har sendt melding om ugyldig kredittkort til %s"
 #: scheduled/crons.php:220
 #: scheduled/crons.php:266
 #: scheduled/crons.php:265
+#: scheduled/crons.php:259
 #, php-format
 msgid "Trial ending email sent to %s. "
 msgstr "E-post om avsluttet prøveperiode ble sendt til %s"

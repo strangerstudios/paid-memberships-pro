@@ -5,7 +5,7 @@
  * See documentation for how to override the PMPro templates.
  * @link https://www.paidmembershipspro.com/documentation/templates/
  *
- * @version 2.0.1
+ * @version 2.0.2
  *
  * @author Paid Memberships Pro
  */
@@ -320,7 +320,7 @@ if ( empty( $default_gateway ) ) {
 							if($state_dropdowns === true || $state_dropdowns == "names") {
 								global $pmpro_states;
 								?>
-								<select name="bstate" class="<?php echo pmpro_get_element_class( '', 'bstate' ); ?>">
+								<select id="bstate" name="bstate" class="<?php echo pmpro_get_element_class( '', 'bstate' ); ?>">
 									<option value="">--</option>
 									<?php
 										foreach($pmpro_states as $ab => $st) { ?>
@@ -330,7 +330,7 @@ if ( empty( $default_gateway ) ) {
 							<?php } elseif($state_dropdowns == "abbreviations") {
 								global $pmpro_states_abbreviations;
 								?>
-								<select name="bstate" class="<?php echo pmpro_get_element_class( '', 'bstate' ); ?>">
+								<select id="bstate" name="bstate" class="<?php echo pmpro_get_element_class( '', 'bstate' ); ?>">
 									<option value="">--</option>
 									<?php
 										foreach($pmpro_states_abbreviations as $ab)
@@ -363,7 +363,7 @@ if ( empty( $default_gateway ) ) {
 						</select>
 					</div> <!-- end pmpro_checkout-field-bcountry -->
 				<?php } else { ?>
-					<input type="hidden" name="bcountry" value="<?php esc_attr( $pmpro_default_country ) ?>" />
+					<input type="hidden" name="bcountry" id="bcountry" value="<?php esc_attr( $pmpro_default_country ) ?>" />
 				<?php } ?>
 			<div class="<?php echo pmpro_get_element_class( 'pmpro_checkout-field pmpro_checkout-field-bphone', 'pmpro_checkout-field-bphone' ); ?>">
 				<label for="bphone"><?php esc_html_e('Phone', 'paid-memberships-pro' );?></label>

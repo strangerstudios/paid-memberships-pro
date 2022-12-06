@@ -42,10 +42,8 @@ function pmpro_cron_expire_memberships()
 			if ( ! empty( $euser ) ) {
 				$pmproemail->sendMembershipExpiredEmail( $euser, $e->membership_id );
 
-				if(current_user_can('manage_options')) {
-					printf(__("Membership expired email sent to %s. ", 'paid-memberships-pro' ), $euser->user_email);
-				} else {
-					echo ". ";
+				if ( WP_DEBUG ) {
+					error_log( sprintf(__("Membership expired email sent to %s. ", 'paid-memberships-pro' ), $euser->user_email) );
 				}
 			}
 		}
@@ -112,10 +110,8 @@ function pmpro_cron_expiration_warnings()
 			if ( ! empty( $euser ) ) {
 				$pmproemail->sendMembershipExpiringEmail( $euser, $e->membership_id);
 
-				if(current_user_can('manage_options')) {
-					printf(__("Membership expiring email sent to %s. ", 'paid-memberships-pro' ), $euser->user_email);
-				} else {
-					echo ". ";
+				if ( WP_DEBUG ) {
+					error_log( sprintf( __("Membership expiring email sent to %s. ", 'paid-memberships-pro' ), $euser->user_email) );
 				}
 			}
 		}
@@ -201,10 +197,8 @@ function pmpro_cron_credit_card_expiring_warnings()
 				$pmproemail = new PMProEmail();
 				$pmproemail->sendCreditCardExpiringEmail($euser,$last_order);
 
-				if(current_user_can('manage_options')) {
-					printf(__("Credit card expiring email sent to %s. ", 'paid-memberships-pro' ), $euser->user_email);
-				} else {
-					echo ". ";
+				if ( WP_DEBUG ) {
+					error_log( sprintf( __("Credit card expiring email sent to %s. ", 'paid-memberships-pro' ), $euser->user_email) );
 				}
 			}
 
@@ -261,10 +255,8 @@ function pmpro_cron_trial_ending_warnings()
 			if ( ! empty( $euser ) ) {
 				$pmproemail->sendTrialEndingEmail($euser);
 
-				if(current_user_can('manage_options')) {
-					printf(__("Trial ending email sent to %s. ", 'paid-memberships-pro' ), $euser->user_email);
-				} else {
-					echo ". ";
+				if ( WP_DEBUG ) {
+					error_log( sprintf( __("Trial ending email sent to %s. ", 'paid-memberships-pro' ), $euser->user_email) );
 				}
 			}
 		}

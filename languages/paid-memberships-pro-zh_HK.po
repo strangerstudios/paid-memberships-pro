@@ -2,14 +2,14 @@
 # This file is distributed under the same license as the Paid Memberships Pro plugin.
 msgid ""
 msgstr ""
-"Project-Id-Version: Paid Memberships Pro 2.9.6\n"
+"Project-Id-Version: Paid Memberships Pro 2.9.7\n"
 "Report-Msgid-Bugs-To: info@paidmembershipspro.com\n"
 "Last-Translator: Paid Memberships Pro <info@paidmembershipspro.com>\n"
 "Language-Team: Paid Memberships Pro <info@paidmembershipspro.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2022-11-11T20:30:57+00:00\n"
+"POT-Creation-Date: 2022-11-30T16:55:10+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.7.1\n"
 "X-Domain: paid-memberships-pro\n"
@@ -6564,6 +6564,7 @@ msgstr "訂購的發票#: "
 #: classes/gateways/class.pmprogateway_paypal.php:315
 #: classes/gateways/class.pmprogateway_payflowpro.php:172
 #: classes/gateways/class.pmprogateway_paypal.php:314
+#: classes/gateways/class.pmprogateway_authorizenet.php:160
 msgid "Unknown error: Authorization failed."
 msgstr "不常見的問題: 許可有錯."
 
@@ -6615,6 +6616,9 @@ msgstr "不常見的問題: 許可有錯."
 #: classes/gateways/class.pmprogateway_payflowpro.php:194
 #: classes/gateways/class.pmprogateway_payflowpro.php:199
 #: classes/gateways/class.pmprogateway_paypal.php:336
+#: classes/gateways/class.pmprogateway_authorizenet.php:182
+#: classes/gateways/class.pmprogateway_authorizenet.php:187
+#: classes/gateways/class.pmprogateway_authorizenet.php:204
 msgid "Unknown error: Payment failed."
 msgstr "不常見的問題: 付款有錯."
 
@@ -6630,6 +6634,7 @@ msgstr "不常見的問題: 付款有錯."
 #: classes/gateways/class.pmprogateway_authorizenet.php:246
 #: classes/gateways/class.pmprogateway_check.php:270
 #: classes/gateways/class.pmprogateway_cybersource.php:209
+#: classes/gateways/class.pmprogateway_authorizenet.php:188
 msgid "A partial payment was made that we could not void. Please contact the site owner immediately to correct this."
 msgstr "有些付款已經做下了半部分我們不能取消. 請您馬上通告網站的業主來修理這個事故."
 
@@ -6699,6 +6704,8 @@ msgstr "要完全配合了Authorize.net, 你需要設定無聲文章URL到"
 #: classes/gateways/class.pmprogateway_authorizenet.php:908
 #: classes/gateways/class.pmprogateway_authorizenet.php:914
 #: classes/gateways/class.pmprogateway_authorizenet.php:915
+#: classes/gateways/class.pmprogateway_authorizenet.php:856
+#: classes/gateways/class.pmprogateway_authorizenet.php:857
 msgid "Could not connect to Authorize.net"
 msgstr "不能同Authorize.net相連"
 
@@ -11521,6 +11528,7 @@ msgstr "會籍已經是到期日有電郵已經寄出到 %s. "
 #: scheduled/crons.php:100
 #: scheduled/crons.php:117
 #: scheduled/crons.php:116
+#: scheduled/crons.php:114
 #, php-format
 msgid "Membership expiring email sent to %s. "
 msgstr "會籍已經是靠近到期日有電郵已經寄出到 %s. "
@@ -11534,6 +11542,7 @@ msgstr "會籍已經是靠近到期日有電郵已經寄出到 %s. "
 #: scheduled/crons.php:176
 #: scheduled/crons.php:206
 #: scheduled/crons.php:205
+#: scheduled/crons.php:201
 #, php-format
 msgid "Credit card expiring email sent to %s. "
 msgstr "信用卡已經是靠近到期日有電郵已經寄出到 %s. "
@@ -11548,6 +11557,7 @@ msgstr "信用卡已經是靠近到期日有電郵已經寄出到 %s. "
 #: scheduled/crons.php:232
 #: scheduled/crons.php:266
 #: scheduled/crons.php:265
+#: scheduled/crons.php:259
 #, php-format
 msgid "Trial ending email sent to %s. "
 msgstr "試用期滿了有電郵已經寄出到 %s. "
