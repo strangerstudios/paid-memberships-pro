@@ -1753,22 +1753,19 @@ class PMProGateway_stripe extends PMProGateway {
 	 * @since 2.8
 	 */
 	public static function pmpro_billing_preheader_stripe_checkout() {
+		global $pmpro_billing_order;
+
+		// If the order being updated is not a Stripe order, bail.
+		if ( empty( $pmpro_billing_order ) || 'stripe' !== $pmpro_billing_order->gateway ) {
+			return;
+		}
+
 		if ( 'portal' === pmpro_getOption( 'stripe_update_billing_flow' ) ) {
 			// Send user to Stripe Customer Portal.
-			$user_order = new MemberOrder();
-			$user_order->getLastMemberOrder( null, array( 'success', 'pending' ) );
-
-			// Check whether the user's most recent order is a Stripe subscription.
-			if ( empty( $user_order->gateway ) || 'stripe' !== $user_order->gateway ) {
-				$error = __( 'Last order was not charged with Stripe.', 'paid-memberships-pro' );
-			}
-
-			if ( empty( $error ) ) {
-				$stripe = new PMProGateway_stripe();
-				$customer = $stripe->get_customer_for_user( $user_order->user_id );
-				if ( empty( $customer->id ) ) {
-					$error = __( 'Could not get Stripe customer for user.', 'paid-memberships-pro' );
-				}
+			$stripe = new PMProGateway_stripe();
+			$customer = $stripe->get_customer_for_user( $pmpro_billing_order->user_id );
+			if ( empty( $customer->id ) ) {
+				$error = __( 'Could not get Stripe customer for user.', 'paid-memberships-pro' );
 			}
 
 			if ( empty( $error ) ) {
