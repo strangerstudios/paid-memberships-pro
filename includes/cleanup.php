@@ -5,12 +5,12 @@
 // deleting a user? remove their account info.
 function pmpro_delete_user( $user_id ) {
 
-	if( empty( $user_id ) ) {
-		return;
+	if ( empty( $user_id ) ) {
+		return false;
 	}
 
 	//Disable any active subscriptions that are associated with the account
-	if( isset( $_REQUEST['pmpro_delete_active_subscriptions'] ) && 
+	if ( isset( $_REQUEST['pmpro_delete_active_subscriptions'] ) && 
 		$_REQUEST['pmpro_delete_active_subscriptions'] == '1' ) {
 		if ( pmpro_changeMembershipLevel( 0, $user_id ) ) {
 			// okay
@@ -20,7 +20,7 @@ function pmpro_delete_user( $user_id ) {
 	}
 
 	//Remove all membership history for this user from the pmpro_memberships_users table
-	if( isset( $_REQUEST['pmpro_delete_member_history'] ) && 
+	if ( isset( $_REQUEST['pmpro_delete_member_history'] ) && 
 		$_REQUEST['pmpro_delete_member_history'] == '1' ) {
 		pmpro_delete_membership_history( $user_id );
 	}	
@@ -121,8 +121,8 @@ add_action( 'delete_post', 'pmpro_delete_post' );
  */
 function pmpro_delete_membership_history( $user_id ) {
 
-	if( empty( $user_id ) ) {
-		return;
+	if ( empty( $user_id ) ) {
+		return false;
 	}
 	
 	global $wpdb;
