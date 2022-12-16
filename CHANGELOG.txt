@@ -1,4 +1,32 @@
 == Changelog ==
+= 2.9.7 - 2022-11-30 =
+* BUG FIX/ENHANCEMENT: Added compatibility for the Avada theme. Protected content is now editable. #2285 (@andrewlimaza)
+* BUG FIX: Avoiding sprintf issues during cron runs. This caused issues where the expiring soon emails were being sent out multiple times. #2290 (@dparker1005)
+* BUG FIX: Adding id parameters to billing address fields to avoid Stripe errors when checking out with the show address fields option set to true. #2284 (@ipokkel)
+* BUG FIX: Adding id parameters to billing address fields to avoid Stripe errors when updating billing with the show address fields option set to true. #2289 (@dparker1005)
+* BUG FIX: Fixed issue with subscription profile start dates when using Authorize.net and custom code that alters start dates. #2280 (@dparker1005)
+* BUG FIX: Fixed warning that happened with some MySQL versions when setting a user's expiration to 'No' from the edit user page. #2291 (@andrewlimaza)
+
+= 2.9.6 - 2022-11-14 =
+ENHANCEMENT: Added content restriction settings to Elementor "containers". #2254 (Thanks, @Minebomber)
+ENHANCEMENT: Added !!levels_url!! to all email templates by default. #2263 (@andrewlimaza)
+ENHANCEMENT: Added docblocks to all methods of the PMProEmail class. #2263 (@andrewlimaza)
+ENHANCEMENT: Now allowing strong, code, em, br, p, and a tags in field descriptions. #2246 (@andrewlimaza)
+BUG FIX/ENHANCEMENT: Fixed message show when editing an existing level. #2245 (@mircobabini)
+BUG FIX/ENHANCEMENT: Fixed issue where the billing address wasn't being sent to Stripe if it was added to checkout via an add on or other custom code. #2271 (@dparker1005)
+BUG FIX/ENHANCEMENT: Fixed the $user_id parameter passed to the pmpro_discount_code_used action hook in the Stripe Webhook handler. #2273 (@mircobabini)
+BUG FIX/ENHANCEMENT: The required field asterisk now appears correctly if a hint is used on a textarea, select, or other user field. #2274 (@ideadude)
+BUG FIX/ENHANCEMENT: Avoiding fatal errors that occurred when trying to use Stripe Connect in countries that don't allow an application fee. The fee is set to 0% for these users/countries. #2228 (@dparker1005)
+BUG FIX/ENHANCEMENT: Fixed CSS in the CVV/CVV popup window. #2224 (@dparker1005)
+BUG FIX/ENHANCEMENT: Now pulling the billing address from the Stripe Customer record or a previous order if the billing address isn't available in the Payment Method object passed to webhook calls. #2272 (@dparker1005)
+BUG FIX/ENHANCEMENT: Fixed CSS for the new level popup to no longer rely on selectors that broke when certain translations were used in the WP dashboard. #2276 (@kimcoleman)
+BUG FIX/ENHANCEMENT: Fixed trial wording for custom trials where the initial payment was > $0. #2277 (@andrewlimaza)
+BUG FIX: Fixed bug where file type fields weren't uploaded or saved properly when using Stripe Checkout. #2251 (@dparker1005)
+BUG FIX: Fixed an issue where the dropdown "What should users without access see?" for the Require Membership Block would reset on each page load. #2243 (@andrewlimaza)
+BUG FIX: Fixed issue where user fields were not showing on the profile sometimes when they should have been. #2270 (@dparker1005)
+BUG FIX: Fixed the $MemberOrder->get_orders method query so it works when a 'membership_level_id' arg is passed in. #2251 (@dparker1005)
+BUG FIX: Fixed issue where the billing zipcode was not pulled from user meta correctly when using the $MemberOrder->find_billing_address() method. #2275 (@mircobabini)
+
 = 2.9.5 - 2022-09-17 =
 * ENHANCEMENT: Added Select2/Autocomplete as a field type in the user field settings. #2237 (@kimcoleman)
 * ENHANCEMENT: Improving our in-app notification styling. #2234 (@kimcoleman)

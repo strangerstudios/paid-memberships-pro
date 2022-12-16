@@ -5,7 +5,7 @@
  * See documentation for how to override the PMPro templates.
  * @link https://www.paidmembershipspro.com/documentation/templates/
  *
- * @version 2.0
+ * @version 2.0.1
  *
  * @author Paid Memberships Pro
  */
@@ -213,7 +213,7 @@
 									{
 										global $pmpro_states;
 									?>
-									<select name="bstate" class="<?php echo pmpro_get_element_class( '', 'bstate' ); ?>">
+									<select id="bstate" name="bstate" class="<?php echo pmpro_get_element_class( '', 'bstate' ); ?>">
 										<option value="">--</option>
 										<?php
 											foreach($pmpro_states as $ab => $st)
@@ -228,7 +228,7 @@
 									{
 										global $pmpro_states_abbreviations;
 									?>
-										<select name="bstate" class="<?php echo pmpro_get_element_class( '', 'bstate' ); ?>">
+										<select id="bstate" name="bstate" class="<?php echo pmpro_get_element_class( '', 'bstate' ); ?>">
 											<option value="">--</option>
 											<?php
 												foreach($pmpro_states_abbreviations as $ab)
@@ -259,7 +259,7 @@
 					?>
 					<div class="<?php echo pmpro_get_element_class( 'pmpro_checkout-field pmpro_checkout-field-bcountry', 'pmpro_checkout-field-bcountry' ); ?>">
 						<label for="bcountry"><?php esc_html_e('Country', 'paid-memberships-pro' );?></label>
-						<select name="bcountry" class="<?php echo pmpro_get_element_class( '', 'bcountry' );?>">
+						<select id="bcountry" name="bcountry" class="<?php echo pmpro_get_element_class( '', 'bcountry' );?>">
 							<?php
 								global $pmpro_countries, $pmpro_default_country;
 								foreach($pmpro_countries as $abbr => $country)

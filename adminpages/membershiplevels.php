@@ -147,7 +147,12 @@
 		if ( empty( $wpdb->last_error ) ) {		
 			$edit = false;
 			$msg = 1;
-			$msgt = __( 'Membership level added successfully.', 'paid-memberships-pro' );
+
+			if ( ! empty( $saveid ) ) {
+				$msgt = __( 'Membership level updated successfully.', 'paid-memberships-pro' );
+			} else {
+				$msgt = __( 'Membership level added successfully.', 'paid-memberships-pro' );
+			}
 		} else {
 			$msg = -1;
 			$msgt = __( 'Error adding membership level.', 'paid-memberships-pro' );
@@ -1142,7 +1147,7 @@
 						$delete_text = esc_html(
 							sprintf(
 								// translators: %s is the Level Name.
-								__( 'Are you sure you want to delete membership level %s? All subscriptions will be cancelled.', 'paid-memberships-pro' ),
+								__( "Are you sure you want to delete membership level %s? Any gateway subscriptions or third-party connections with a member's account will remain active.", 'paid-memberships-pro' ),
 								$level->name
 							)
 						);

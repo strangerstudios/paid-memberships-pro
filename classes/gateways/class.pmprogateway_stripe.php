@@ -16,7 +16,7 @@ use Stripe\StripeClient as Stripe_Client; // Used for deleting webhook as of 2.4
 use Stripe\Account as Stripe_Account;
 use Stripe\Checkout\Session as Stripe_Checkout_Session;
 
-define( "PMPRO_STRIPE_API_VERSION", "2020-03-02" );
+define( "PMPRO_STRIPE_API_VERSION", "2022-11-15" );
 
 //include pmprogateway
 require_once( dirname( __FILE__ ) . "/class.pmprogateway.php" );
@@ -188,6 +188,7 @@ class PMProGateway_stripe extends PMProGateway {
 
 		add_action( 'pmpro_payment_option_fields', array( 'PMProGateway_stripe', 'pmpro_set_up_apple_pay' ), 10, 2 );
 		add_action( 'init', array( 'PMProGateway_stripe', 'clear_saved_subscriptions' ) );
+		add_action( 'pmpro_billing_preheader', array( 'PMProGateway_stripe', 'pmpro_billing_preheader_stripe_customer_portal' ), 5 );
 
 		// Stripe Connect functions.
 		add_action( 'admin_init', array( 'PMProGateway_stripe', 'stripe_connect_save_options' ) );
@@ -262,15 +263,12 @@ class PMProGateway_stripe extends PMProGateway {
 			'tax_state',
 			'tax_rate',
 			'stripe_payment_request_button',
+			'stripe_payment_flow', // 'onsite' or 'checkout'
+			'stripe_update_billing_flow', // 'onsite' or 'portal'
+			'stripe_checkout_billing_address', //'auto' or 'required'
+			'stripe_tax', // 'no', 'inclusive', 'exclusive'
+			'stripe_tax_id_collection_enabled', // '0', '1'
 		);
-
-		if ( self::stripe_checkout_beta_enabled() ) {
-			$options[] = 'stripe_payment_flow'; // 'onsite' or 'checkout'
-			$options[] = 'stripe_update_billing_flow'; // 'onsite' or 'portal'
-			$options[] = 'stripe_checkout_billing_address'; //'auto' or 'required'
-			$options[] = 'stripe_tax'; // 'no', 'inclusive', 'exclusive'
-			$options[] = 'stripe_tax_id_collection_enabled'; // '0', '1'
-		}
 
 		return $options;
 	}
@@ -409,6 +407,104 @@ class PMProGateway_stripe extends PMProGateway {
 				<code><?php echo self::get_site_webhook_url(); ?></code></p>
 			</td>
 		</tr>
+		<tr class="pmpro_settings_divider gateway gateway_stripe_<?php echo $stripe->gateway_environment; ?>" <?php if ( $gateway != "stripe" ) { ?>style="display: none;"<?php } ?>>
+			<td colspan="2">
+				<hr />
+				<h2><?php esc_html_e( 'Webhook Status', 'paid-memberships-pro' ); ?></h2>
+			</td>
+		</tr>
+		<tr class="gateway gateway_stripe_<?php echo esc_attr( $stripe->gateway_environment ); ?>" <?php if ( $gateway != "stripe" ) { ?>style="display: none;"<?php } ?>>
+    	<th scope="row" valign="top">
+      </th>
+      <td>
+				<?php
+				if ( ! empty( self::get_secretkey() ) ) {
+					$required_webhook_events = $stripe->webhook_events();
+					sort( $required_webhook_events );
+
+					$webhook_event_data = array();
+
+					$failed_webhooks = array();
+					$missing_webhooks = array();
+					$working_webhooks = array();
+					// For sites that tracked "last webhook recieved" before we started tracking webhook events individually,
+					// we want to ignore events that were sent by Stripe before site was updated to start tracking individual events.
+					$legacy_last_webhook_recieved_timestamp = get_option( 'pmpro_stripe_last_webhook_received_' . $stripe->gateway_environment );
+					foreach ( $required_webhook_events as $required_webhook_event ) {
+						$event_data = array( 'name' => $required_webhook_event );
+
+						$last_received = get_option( 'pmpro_stripe_webhook_last_received_' . $stripe->gateway_environment . '_' . $required_webhook_event );
+						$event_data['last_received'] = empty( $last_received ) ? esc_html__( 'Never Received', 'paid-memberships-pro' ) : date_i18n( get_option('date_format') . ' ' . get_option('time_format'), $last_received );
+
+						$event_query_arr = array(
+							'limit' => 1,
+							'created' => array(
+								'lt' => time() - 60, // Ignore events created in the last 60 seconds in case we haven't finished processing them yet.
+							),
+							'type' => $required_webhook_event,
+						);
+						if ( ! empty( $legacy_last_webhook_recieved_timestamp ) ) {
+							$event_query_arr['created']['gt'] = strtotime( $legacy_last_webhook_recieved_timestamp );
+						}
+
+
+						$recently_sent = Stripe\Event::all( $event_query_arr );
+						if ( ! empty( $recently_sent->data[0] ) ) {
+							if ( $last_received >= $recently_sent->data[0]->created ) {
+								$event_data['status'] =  '<span style="color: green;">' . esc_html__( 'Working', 'paid-memberships-pro' ) . '</span>';
+								$working_webhooks[] = $event_data;
+							} else {
+								$event_data['status'] = '<span style="color: red;">' . esc_html__( 'Last Sent ', 'paid-memberships-pro' ) . date_i18n( get_option('date_format') . ' ' . get_option('time_format'), $recently_sent->data[0]->created ) . '</span>';
+								$failed_webhooks[] = $event_data;
+							}
+						} else {
+							if ( ! empty( $last_received ) ) {
+								$event_data['status'] = '<span style="color: green;">' . esc_html__( 'Working', 'paid-memberships-pro' ) . '</span>';
+								$working_webhooks[] = $event_data;
+							} else {
+								$event_data['status'] = '<span style="color: grey;">' . esc_html__( 'N/A', 'paid-memberships-pro' ) . '</span>';
+								$missing_webhooks[] = $event_data;
+							}
+						}
+					}
+					if ( ! empty( $failed_webhooks ) ) {
+						echo '<div class="notice error inline"><p>'. esc_html__( 'Some webhooks recently sent by Stripe have not been received by your website. Please ensure that you have a webhook set up in Stripe for the Webhook URL shown below with all of the listed event types active. To test an event type again, please resend the most recent webhook event of that type from the Stripe webhook settings page or wait for it to be sent again in the future.', 'paid-memberships-pro' ) . '</p></div>';
+					} elseif ( ! empty( $missing_webhooks ) ) {
+						echo '<div class="notice inline"><p>'. esc_html__( 'Recent webhook attempts appear to have worked correctly, but there are some event types that have not been checked. Those event types will be checked as they are sent by Stripe. In the meantime, please ensure that you have a webhook set up in Stripe for the Webhook URL shown below with all of the listed event types active.', 'paid-memberships-pro' ) . '</p></div>';
+					} else {
+						echo '<div class="notice notice-success inline"><p>'. esc_html__( 'All webhooks appear to be working correctly.', 'paid-memberships-pro' ) . '</p></div>';
+					}
+					?>
+					<div class="widgets-holder-wrap pmpro_scrollable">
+						<table class="wp-list-table widefat striped fixed">
+							<thead>
+								<tr>
+									<th><?php esc_html_e( 'Event Type', 'paid-memberships-pro' ); ?></th>
+									<th><?php esc_html_e( 'Last Received', 'paid-memberships-pro' ); ?></th>
+									<th><?php esc_html_e( 'Status', 'paid-memberships-pro' ); ?></th>
+								</tr>
+							</thead>
+							<?php
+								$ordered_webhooks = array_merge( $failed_webhooks, $missing_webhooks, $working_webhooks );
+								foreach ( $ordered_webhooks as $webhook_event ) {
+									?>
+									<tr>
+										<td><?php echo $webhook_event['name']; ?></td>
+										<td><?php echo esc_html( $webhook_event['last_received'] ); ?></td>
+										<td><?php echo $webhook_event['status']; ?></td>
+									</tr>
+									<?php
+								}
+							?>
+						</table>
+					</div>
+					<?php
+				}
+				?>
+				<p class="description"><?php esc_html_e( 'Webhook URL', 'paid-memberships-pro' ); ?>:
+				<code><?php echo esc_html( self::get_site_webhook_url() ); ?></code></p>
+            </td>
+        </tr>
 		<tr class="pmpro_settings_divider gateway gateway_stripe" <?php if ( $gateway != "stripe" ) { ?>style="display: none;"<?php } ?>>
 			<td colspan="2">
 				<hr />
@@ -421,7 +517,31 @@ class PMProGateway_stripe extends PMProGateway {
 		</tr>
 		<tr class="gateway gateway_stripe" <?php if ( $gateway != "stripe" ) { ?>style="display: none;"<?php } ?>>
 			<th scope="row" valign="top">
-				<label for="stripe_billingaddress"><?php esc_html_e( 'Show Billing Address Fields', 'paid-memberships-pro' ); ?>:</label>
+				<label for="stripe_payment_flow"><?php esc_html_e( 'Payment Flow', 'paid-memberships-pro' ); ?>:</label>
+			</th>
+			<td>
+				<select id="stripe_payment_flow" name="stripe_payment_flow">
+					<option value="onsite" <?php selected( $values['stripe_payment_flow'], 'onsite' ); ?>><?php esc_html_e( 'Accept payments on this site', 'paid-memberships-pro' ); ?></option>
+					<option value="checkout" <?php selected( $values['stripe_payment_flow'], 'checkout' ); ?>><?php esc_html_e( 'Accept payments in Stripe (Stripe Checkout)', 'paid-memberships-pro' ); ?></option>
+				</select>
+				<p class="description"><?php esc_html_e( 'Embed the payment information fields on your Membership Checkout page or use the Stripe-hosted payment page (Stripe Checkout). If using Stripe Checkout, be sure that all webhook events listed above are set up in Stripe.', 'paid-memberships-pro' ); ?>
+			</td>
+		</tr>
+		<tr class="gateway gateway_stripe" <?php if ( $gateway != "stripe" ) { ?>style="display: none;"<?php } ?>>
+			<th scope="row" valign="top">
+				<label for="stripe_update_billing_flow"><?php esc_html_e( 'Update Billing Flow', 'paid-memberships-pro' ); ?>:</label>
+			</th>
+			<td>
+				<select id="stripe_update_billing_flow" name="stripe_update_billing_flow">
+					<option value="onsite"><?php esc_html_e( 'Update billing on this site', 'paid-memberships-pro' ); ?></option>
+					<option value="portal" <?php if ( $values['stripe_update_billing_flow'] === 'portal' ) { ?>selected="selected"<?php } ?>><?php esc_html_e( 'Update billing in the Stripe Customer Portal', 'paid-memberships-pro' ); ?></option>
+				</select>
+				<p class="description"><?php esc_html_e( 'Embed the billing information fields on your Membership Billing page or use the Stripe Customer Portal hosted by Stripe.', 'paid-memberships-pro' ); ?></p>
+			</td>
+		</tr>
+		<tr class="gateway gateway_stripe" <?php if ( $gateway != "stripe" ) { ?>style="display: none;"<?php } ?>>
+			<th scope="row" valign="top">
+				<label for="stripe_billingaddress"><?php esc_html_e( 'Show Billing Address Fields in PMPro Checkout Form', 'paid-memberships-pro' ); ?>:</label>
 			</th>
 			<td>
 				<select id="stripe_billingaddress" name="stripe_billingaddress">
@@ -435,7 +555,7 @@ class PMProGateway_stripe extends PMProGateway {
 		</tr>
 		<tr class="gateway gateway_stripe" <?php if ( $gateway != "stripe" ) { ?>style="display: none;"<?php } ?>>
 			<th scope="row" valign="top">
-				<label for="stripe_payment_request_button"><?php esc_html_e( 'Enable Payment Request Button', 'paid-memberships-pro' ); ?>:</label>
+				<label for="stripe_payment_request_button"><?php esc_html_e( 'Show Payment Request Button for On-Site Payments', 'paid-memberships-pro' ); ?>:</label>
 			</th>
 			<td>
 				<select id="stripe_payment_request_button" name="stripe_payment_request_button">
@@ -485,61 +605,6 @@ class PMProGateway_stripe extends PMProGateway {
 					?>
 			</td>
 		</tr>
-		<?php if ( ! function_exists( 'pmproappe_pmpro_valid_gateways' ) ) {
-				$allowed_appe_html = array (
-					'a' => array (
-						'href' => array(),
-						'target' => array(),
-						'title' => array(),
-					),
-				);
-				echo '<tr class="gateway gateway_stripe"';
-				if ( $gateway != "stripe" ) {
-					echo ' style="display: none;"';
-				}
-				echo '><th>&nbsp;</th><td><p class="description">' . sprintf( wp_kses( __( 'Optional: Offer PayPal Express as an option at checkout using the <a target="_blank" href="%s" title="Paid Memberships Pro - Add PayPal Express Option at Checkout Add On">Add PayPal Express Add On</a>.', 'paid-memberships-pro' ), $allowed_appe_html ), 'https://www.paidmembershipspro.com/add-ons/pmpro-add-paypal-express-option-checkout/?utm_source=plugin&utm_medium=pmpro-paymentsettings&utm_campaign=add-ons&utm_content=pmpro-add-paypal-express-option-checkout' ) . '</p></td></tr>';
-		}
-		if ( ! self::stripe_checkout_beta_enabled() ) {
-			// Don't show Stripe Checkout settings if the beta is not enabled.
-			return;
-		}
-		?>
-		<tr class="pmpro_settings_divider gateway gateway_stripe" <?php if ( $gateway != "stripe" ) { ?>style="display: none;"<?php } ?>>		
-			<td colspan="2">
-				<hr />
-				<h2><?php esc_html_e( 'Stripe Checkout Settings (Beta)', 'paid-memberships-pro' ); ?></h2>
-				<div class="notice notice-large notice-warning inline">
-					<p>
-						<strong><?php esc_html_e( 'Stripe Checkout is currently in beta and not recommended for use on live sites.', 'paid-memberships-pro' ); ?></strong><br />
-						<?php esc_html_e( 'Stripe Checkout is a secure, Stripe-hosted payment page that lets you collect payments quickly. The offsite, conversion-optimized payment form works across devices, removes friction with real-time card validation, and has built-in error messaging. This gateway option relies heavily on the webhooks sent by Stripe. Your Stripe webhooks must be properly configured before enabling Stripe Checkout.', 'paid-memberships-pro' );
-					?></p>
-				</div>
-			</td>
-		</tr>
-		<tr class="gateway gateway_stripe" <?php if ( $gateway != "stripe" ) { ?>style="display: none;"<?php } ?>>
-			<th scope="row" valign="top">
-				<label for="stripe_payment_flow"><?php esc_html_e( 'Payment Flow', 'paid-memberships-pro' ); ?>:</label>
-			</th>
-			<td>
-				<select id="stripe_payment_flow" name="stripe_payment_flow">
-					<option value="onsite" <?php selected( $values['stripe_payment_flow'], 'onsite' ); ?>><?php esc_html_e( 'Accept payments on this site', 'paid-memberships-pro' ); ?></option>
-					<option value="checkout" <?php selected( $values['stripe_payment_flow'], 'checkout' ); ?>><?php esc_html_e( 'Accept payments in Stripe (Stripe Checkout)', 'paid-memberships-pro' ); ?></option>
-				</select>
-				<p class="description"><?php esc_html_e( 'Embed the payment information fields on your Membership Checkout page or use the Stripe-hosted payment page (Stripe Checkout).', 'paid-memberships-pro' ); ?>
-			</td>
-		</tr>
-		<tr class="gateway gateway_stripe" <?php if ( $gateway != "stripe" ) { ?>style="display: none;"<?php } ?>>
-			<th scope="row" valign="top">
-				<label for="stripe_update_billing_flow"><?php esc_html_e( 'Update Billing Flow', 'paid-memberships-pro' ); ?>:</label>
-			</th>
-			<td>
-				<select id="stripe_update_billing_flow" name="stripe_update_billing_flow">
-					<option value="onsite"><?php esc_html_e( 'Update billing on this site', 'paid-memberships-pro' ); ?></option>
-					<option value="portal" <?php if ( $values['stripe_update_billing_flow'] === 'portal' ) { ?>selected="selected"<?php } ?>><?php esc_html_e( 'Update billing in the Stripe Customer Portal', 'paid-memberships-pro' ); ?></option>
-				</select>
-				<p class="description"><?php esc_html_e( 'Embed the billing information fields on your Membership Billing page or use the Stripe Customer Portal hosted by Stripe.', 'paid-memberships-pro' ); ?></p>
-			</td>
-		</tr>
 		<tr class="gateway gateway_stripe" <?php if ( $gateway != "stripe" ) { ?>style="display: none;"<?php } ?>>
 			<th scope="row" valign="top">
 				<label for="stripe_checkout_billing_address"><?php esc_html_e( 'Collect Billing Address in Stripe Checkout', 'paid-memberships-pro' ); ?>:</label>
@@ -553,7 +618,7 @@ class PMProGateway_stripe extends PMProGateway {
 		</tr>
 		<tr class="gateway gateway_stripe" <?php if ( $gateway != "stripe" ) { ?>style="display: none;"<?php } ?>>
 			<th scope="row" valign="top">
-				<label for="stripe_tax"><?php esc_html_e( 'Stripe Tax', 'paid-memberships-pro' ); ?>:</label>
+				<label for="stripe_tax"><?php esc_html_e( 'Calculate Tax in Stripe Checkout', 'paid-memberships-pro' ); ?>:</label>
 			</th>
 			<td>
 				<select id="stripe_tax" name="stripe_tax">
@@ -575,7 +640,7 @@ class PMProGateway_stripe extends PMProGateway {
 		</tr>
 		<tr class="gateway gateway_stripe gateway_stripe_checkout_fields" <?php if ( $gateway != "stripe"  ) { ?>style="display: none;"<?php } ?>>
 			<th scope="row" valign="top">
-				<label for="stripe_tax_id_collection_enabled"><?php esc_html_e( 'Collect Tax IDs', 'paid-memberships-pro' ); ?>:</label>
+				<label for="stripe_tax_id_collection_enabled"><?php esc_html_e( 'Collect Tax IDs in Stripe Checkout', 'paid-memberships-pro' ); ?>:</label>
 			</th>
 			<td>
 				<select id="stripe_tax_id_collection_enabled" name="stripe_tax_id_collection_enabled">
@@ -585,7 +650,20 @@ class PMProGateway_stripe extends PMProGateway {
 				<p class="description"><?php esc_html_e( 'Tax IDs are only collected if you have enabled Stripe Tax. Stripe only performs automatic validation for ABN, EU VAT, and GB VAT numbers. You must verify that provided tax IDs are valid during the Session for all other numbers.', 'paid-memberships-pro' ); ?></p>
 			</td>
 		</tr>
-		<?php
+		<?php if ( ! function_exists( 'pmproappe_pmpro_valid_gateways' ) ) {
+				$allowed_appe_html = array (
+					'a' => array (
+						'href' => array(),
+						'target' => array(),
+						'title' => array(),
+					),
+				);
+				echo '<tr class="gateway gateway_stripe"';
+				if ( $gateway != "stripe" ) {
+					echo ' style="display: none;"';
+				}
+				echo '><th>&nbsp;</th><td><p class="description">' . sprintf( wp_kses( __( 'Optional: Offer PayPal Express as an option at checkout using the <a target="_blank" href="%s" title="Paid Memberships Pro - Add PayPal Express Option at Checkout Add On">Add PayPal Express Add On</a>.', 'paid-memberships-pro' ), $allowed_appe_html ), 'https://www.paidmembershipspro.com/add-ons/pmpro-add-paypal-express-option-checkout/?utm_source=plugin&utm_medium=pmpro-paymentsettings&utm_campaign=add-ons&utm_content=pmpro-add-paypal-express-option-checkout' ) . '</p></td></tr>';
+		}
 	}
 
 	/**
@@ -1485,9 +1563,12 @@ class PMProGateway_stripe extends PMProGateway {
 	 * Check if the user has opted into the Stripe Checkout beta.
 	 *
 	 * @return bool
+	 *
+	 * @deprecated TBD
 	 */
 	public static function stripe_checkout_beta_enabled() {
-		return ( defined( 'PMPRO_STRIPE_CHECKOUT_BETA_ENABLED' ) && PMPRO_STRIPE_CHECKOUT_BETA_ENABLED );
+		_deprecated_function( __FUNCTION__, 'TBD' );
+		return true;
 	}
 
 	/**
@@ -1496,11 +1577,6 @@ class PMProGateway_stripe extends PMProGateway {
 	 * @return bool
 	 */
 	public static function using_stripe_checkout() {
-		// While Stripe Checkout is in beta, only enable it if the constant is set.
-		if ( ! self::stripe_checkout_beta_enabled() ) {
-			return false;
-		}
-
 		return 'checkout' === pmpro_getOption( 'stripe_payment_flow' );
 	}
 
@@ -1573,6 +1649,33 @@ class PMProGateway_stripe extends PMProGateway {
 
 		// Save the discount code.
 		update_pmpro_membership_order_meta( $morder->id, 'checkout_discount_code', $discount_code );
+	
+		// Save any files that were uploaded.
+		if ( ! empty( $_FILES ) ) {
+			$files = array();
+			foreach ( $_FILES as $arr_key => $file ) {
+				// Move the file to the uploads/pmpro-register-helper/tmp directory.
+				// Check for a register helper directory in wp-content.
+				$upload_dir = wp_upload_dir();
+				$pmprorh_dir = $upload_dir['basedir'] . "/pmpro-register-helper/tmp/";
+
+				// Create the dir and subdir if needed
+				if( ! is_dir( $pmprorh_dir ) ) {
+					wp_mkdir_p( $pmprorh_dir );
+				}
+
+				// Move file
+				$new_filename = $pmprorh_dir . basename( $file['tmp_name'] );
+				move_uploaded_file($file['tmp_name'], $new_filename);
+
+				// Update location of file
+				$file['tmp_name'] = $new_filename;
+
+				// Add the file to the array.
+				$files[ $arr_key ] = $file;
+			}
+			update_pmpro_membership_order_meta( $morder->id, 'checkout_files', $files );
+		}
 
 		// Time to send the user to pay with Stripe!
 		$stripe = new PMProGateway_stripe();
@@ -1701,6 +1804,11 @@ class PMProGateway_stripe extends PMProGateway {
 			$checkout_session_params['payment_intent_data'] = $payment_intent_data;
 		}
 
+		// For one-time payments, make sure that we create an invoice.
+		if ( empty( $subscription_data ) ) {
+			$checkout_session_params['invoice_creation']['enabled'] = true;
+		}
+
 		try {
 			$checkout_session = Stripe_Checkout_Session::create( $checkout_session_params );
 		} catch ( Throwable $th ) {
@@ -1720,43 +1828,13 @@ class PMProGateway_stripe extends PMProGateway {
 	}
 
 	/**
-	 * If using Stripe Checkout, either redirect the user to the Stripe Customer
-	 * portal or set up our update billing page with the onsite payment fields.
+	 * User has not been sent to the Customer Portal, so we need to disable
+	 * Stripe Checkout for this page load and show the default update billing
+	 * fields.
 	 *
 	 * @since 2.8
 	 */
 	public static function pmpro_billing_preheader_stripe_checkout() {
-		if ( 'portal' === pmpro_getOption( 'stripe_update_billing_flow' ) ) {
-			// Send user to Stripe Customer Portal.
-			$user_order = new MemberOrder();
-			$user_order->getLastMemberOrder( null, array( 'success', 'pending' ) );
-
-			// Check whether the user's most recent order is a Stripe subscription.
-			if ( empty( $user_order->gateway ) || 'stripe' !== $user_order->gateway ) {
-				$error = __( 'Last order was not charged with Stripe.', 'paid-memberships-pro' );
-			}
-
-			if ( empty( $error ) ) {
-				$stripe = new PMProGateway_stripe();
-				$customer = $stripe->get_customer_for_user( $user_order->user_id );
-				if ( empty( $customer->id ) ) {
-					$error = __( 'Could not get Stripe customer for user.', 'paid-memberships-pro' );
-				}
-			}
-
-			if ( empty( $error ) ) {
-				$customer_portal_url = $stripe->get_customer_portal_url( $customer->id );
-				if ( ! empty( $customer_portal_url ) ) {
-					wp_redirect( $customer_portal_url );
-					exit;
-				}
-				$error = __( 'Could not get Customer Portal URL. This feature may not be set up in Stripe.', 'paid-memberships-pro' );
-			}
-
-			// There must have been an error while getting the customer portal URL. Show an error and let user update
-			// their billing info onsite.
-			pmpro_setMessage( $error . ' ' . __( 'Please contact the site administrator.', 'paid-memberships-pro' ), 'pmpro_alert', true );
-		}
 		// Disable Stripe Checkout functionality for the rest of this page load.
 		add_filter( 'pmpro_include_cardtype_field', array(
 			'PMProGateway_stripe',
@@ -1769,6 +1847,44 @@ class PMProGateway_stripe extends PMProGateway {
 			'pmpro_include_payment_information_fields'
 		), 15 );
 		add_filter( 'option_pmpro_stripe_payment_flow', '__return_false' ); // Disable Stripe Checkout for rest of page load.
+	}
+
+	/**
+	 * Send the user to the Stripe Customer Portal if the customer portal is enabled.
+	 *
+	 * @since TBD.
+	 */
+	public static function pmpro_billing_preheader_stripe_customer_portal() {
+		if ( 'portal' === pmpro_getOption( 'stripe_update_billing_flow' ) ) {
+			// Get current user.
+			$user = wp_get_current_user();
+			if ( empty( $user->ID ) ) {
+				$error = __( 'User is not logged in.', 'paid-memberships-pro' );
+			}
+
+			if ( empty( $error ) ) {
+				// Get the Stripe Customer.
+				$stripe = new PMProGateway_stripe();
+				$customer = $stripe->get_customer_for_user( $user->ID );
+				if ( empty( $customer->id ) ) {
+					$error = __( 'Could not get Stripe customer for user.', 'paid-memberships-pro' );
+				}
+			}
+
+			if ( empty( $error ) ) {
+				// Send the user to the customer portal.
+				$customer_portal_url = $stripe->get_customer_portal_url( $customer->id );
+				if ( ! empty( $customer_portal_url ) ) {
+					wp_redirect( $customer_portal_url );
+					exit;
+				}
+				$error = __( 'Could not get Customer Portal URL. This feature may not be set up in Stripe.', 'paid-memberships-pro' );
+			}
+
+			// There must have been an error while getting the customer portal URL. Show an error and let user update
+			// their billing info onsite.
+			pmpro_setMessage( $error . ' ' . __( 'Please contact the site administrator.', 'paid-memberships-pro' ), 'pmpro_alert', true );
+		}
 	}
 
 	/****************************************
@@ -2138,6 +2254,50 @@ class PMProGateway_stripe extends PMProGateway {
 	 * @return string URL for customer portal, or empty String if not found.
 	 */
 	public function get_customer_portal_url( $customer_id ) {
+		// Before we can send the user to the customer portal,
+		// we need to have a portal configuration.
+		$portal_configurations = array();
+		try {
+			// Get all active portal configurations.
+			$portal_configurations = Stripe\BillingPortal\Configuration::all( array( 'active' => true, 'limit' => 100 ) );
+		} catch( Exception $e ) {
+			// Error getting portal configurations.
+			return '';
+		}
+
+		// Check if one of the portal configurations is default.
+		foreach ( $portal_configurations as $portal_configuration ) {
+			if ( $portal_configuration->is_default ) {
+				$portal_configuration_id = $portal_configuration->id;
+				break;
+			}
+		}
+
+		// If we still don't have a portal configuration, create one.
+		if ( empty( $portal_configuration_id ) ) {
+			$portal_configuration_params = array(
+				'business_profile' => array(
+					'headline' => esc_html__( 'Manage billing', 'woocommerce-gateway-stripe' ),
+				),
+				'features' => array(
+					'customer_update' => array( 'enabled' => true, 'allowed_updates' => array( 'address', 'phone', 'tax_id' ) ),
+					'invoice_history' => array( 'enabled' => true ),
+					'payment_method_update' => array( 'enabled' => true ),
+					'subscription_cancel' => array( 'enabled' => true ),
+				),
+			);
+			try {
+				$portal_configuration = Stripe\BillingPortal\Configuration::create( $portal_configuration_params );
+			} catch( Exception $e ) {
+				// Error creating portal configuration.
+				return '';
+			}
+
+			if ( ! empty( $portal_configuration ) ) {
+				$portal_configuration_id = $portal_configuration->id;
+			}
+		}
+
 		try {
 			$session = \Stripe\BillingPortal\Session::create([
 				'customer' => $customer_id,
@@ -2281,16 +2441,6 @@ class PMProGateway_stripe extends PMProGateway {
 				<input type='hidden' name='<?php echo $environment; ?>_stripe_connect_secretkey' id='<?php echo $environment; ?>_stripe_connect_secretkey' value='<?php echo esc_attr( $values[ $environment . '_stripe_connect_secretkey'] ) ?>'/>
 				<input type='hidden' name='<?php echo $environment; ?>_stripe_connect_publishablekey' id='<?php echo $environment; ?>_stripe_connect_publishablekey' value='<?php echo esc_attr( $values[ $environment . '_stripe_connect_publishablekey'] ) ?>'/>
 			</td>
-        </tr>
-		<tr class="gateway gateway_stripe_<?php echo $environment; ?>" <?php if ( $gateway != "stripe" || $gateway_environment != $environment ) { ?>style="display: none;"<?php } ?>>
-            <th scope="row" valign="top">
-                <label><?php esc_html_e( 'Webhook', 'paid-memberships-pro' ); ?>:</label>
-            </th>
-            <td>
-				<?php self::get_last_webhook_date( $environment ); ?>
-				<p class="description"><?php esc_html_e( 'Webhook URL', 'paid-memberships-pro' ); ?>:
-				<code><?php echo esc_html( self::get_site_webhook_url() ); ?></code></p>
-            </td>
         </tr>
 		<?php
 	}
@@ -3230,13 +3380,10 @@ class PMProGateway_stripe extends PMProGateway {
 			'customer.subscription.deleted',
 			'charge.failed',
       		'charge.refunded',
+			'checkout.session.completed',
+			'checkout.session.async_payment_succeeded',
+			'checkout.session.async_payment_failed',
 		);
-
-		if ( self::using_stripe_checkout() ) {
-			$events[] = 'checkout.session.completed';
-			$events[] = 'checkout.session.async_payment_succeeded';
-			$events[] = 'checkout.session.async_payment_failed';
-		}
 
 		return apply_filters( 'pmpro_stripe_webhook_events', $events );
 	}
@@ -4074,81 +4221,6 @@ class PMProGateway_stripe extends PMProGateway {
 		return pmpro_getOption( 'gateway_environment' ) === 'live'
 			? pmpro_getOption( 'live_stripe_connect_user_id' )
 			: pmpro_getOption( 'sandbox_stripe_connect_user_id' );
-	}
-
-	/**
-	 * Determine whether the webhook is working by checking for Stripe orders with invalid transaction IDs.
-	 *
-	 * @deprecated 2.7.0. Only deprecated for public use, will be changed to private non-static in a future version.
-	 *
-	 * @param string|null $gateway_environment to check webhooks for. Defaults to set gateway environment.
-	 * @return bool Whether the webhook is working.
-	 */
-	public static function webhook_is_working( $gateway_environment = null ) {
-		pmpro_method_should_be_private( '2.7.0' );
-		global $wpdb;
-
-		if ( empty( $gateway_environment ) ) {
-			$gateway_environment = pmpro_getOption( 'pmpro_gateway_environment' );
-		}
-
-		$last_webhook = get_option( 'pmpro_stripe_last_webhook_received_' . $gateway_environment );
-
-		if ( empty( $last_webhook ) ) {
-			// Probably never got a webhook event.
-			$last_webhook_safe = date( 'Y-m-d H:i:s', strtotime( '-5 years' ) );
-		} else {
-			// In case recurring order made after webhook event received.
-			$last_webhook_safe  = date( 'Y-m-d H:i:s', strtotime( $last_webhook . ' +5 minutes' ) );
-		}
-
-		$hour_before_now = date( 'Y-m-d H:i:s', strtotime( '-1 hour' ) );
-
-		$num_problem_orders = $wpdb->get_var(
-			$wpdb->prepare(
-				"
-					SELECT COUNT(*)
-					FROM `{$wpdb->pmpro_membership_orders}`
-					WHERE
-						`gateway` = 'stripe'
-						AND `gateway_environment` = %s
-						AND `subscription_transaction_id` <> '' 
-						AND `subscription_transaction_id` IS NOT NULL
-						AND `timestamp` > %s
-						AND `timestamp` < %s
-				",
-				$gateway_environment,
-				$last_webhook_safe,
-				$hour_before_now
-			)
-		);
-
-		return ( empty( $num_problem_orders ) );
-	}
-
-	/**
-	 * Get the date the last webhook was processed.
-	 * @param environment The gateway environment (live or sandbox) to check for.
-	 * @returns HTML with the date of the last webhook or an error message.
-	 * @since 2.6
-	 * @deprecated 2.7.0. Only deprecated for public use, will be changed to private non-static in a future version.
-	 */
-	public static function get_last_webhook_date( $environment = 'live' ) {
-		pmpro_method_should_be_private( '2.7.0' );
-		$last_webhook = get_option( 'pmpro_stripe_last_webhook_received_' . $environment );
-		if ( ! empty( $last_webhook ) ) {
-			echo '<p>' . esc_html__( 'Last webhook received at', 'paid-memberships-pro' ) . ': ' . esc_html( $last_webhook ) . ' GMT.</p>';
-		} else {
-			echo '<p>' . esc_html__( 'No webhooks have been received.', 'paid-memberships-pro' ) . '</p>';
-		}
-		if ( ! self::webhook_is_working( $environment ) ) {
-			echo '<div class="notice error inline"><p>';
-			echo esc_html__( 'Your webhook may not be working correctly.', 'paid-memberships-pro' );
-			echo ' <a target="_blank" href="https://www.paidmembershipspro.com/gateway/stripe/?utm_source=plugin&utm_medium=pmpro-paymentsettings&utm_campaign=gateways&utm_content=stripe-webhook#tab-gateway-setup">';
-			echo esc_html__( 'Click here for info on setting up your webhook with Stripe.', 'paid-memberships-pro' );
-			echo '</a>';
-			echo '</p></div>';
-		}
 	}
 
 	/**
@@ -5033,5 +5105,82 @@ class PMProGateway_stripe extends PMProGateway {
 		}
 
 		return $order->plan;
+	}
+
+	/**
+	 * Determine whether the webhook is working by checking for Stripe orders with invalid transaction IDs.
+	 *
+	 * @deprecated 2.7.0. Only deprecated for public use, will be changed to private non-static in a future version.
+	 * @deprecated TBD. Now fully deprecated.
+	 *
+	 * @param string|null $gateway_environment to check webhooks for. Defaults to set gateway environment.
+	 * @return bool Whether the webhook is working.
+	 */
+	public static function webhook_is_working( $gateway_environment = null ) {
+		_deprecated_function( __FUNCTION__, 'TBD' );
+		global $wpdb;
+
+		if ( empty( $gateway_environment ) ) {
+			$gateway_environment = pmpro_getOption( 'pmpro_gateway_environment' );
+		}
+
+		$last_webhook = get_option( 'pmpro_stripe_last_webhook_received_' . $gateway_environment );
+
+		if ( empty( $last_webhook ) ) {
+			// Probably never got a webhook event.
+			$last_webhook_safe = date( 'Y-m-d H:i:s', strtotime( '-5 years' ) );
+		} else {
+			// In case recurring order made after webhook event received.
+			$last_webhook_safe  = date( 'Y-m-d H:i:s', strtotime( $last_webhook . ' +5 minutes' ) );
+		}
+
+		$hour_before_now = date( 'Y-m-d H:i:s', strtotime( '-1 hour' ) );
+
+		$num_problem_orders = $wpdb->get_var(
+			$wpdb->prepare(
+				"
+					SELECT COUNT(*)
+					FROM `{$wpdb->pmpro_membership_orders}`
+					WHERE
+						`gateway` = 'stripe'
+						AND `gateway_environment` = %s
+						AND `subscription_transaction_id` <> '' 
+						AND `subscription_transaction_id` IS NOT NULL
+						AND `timestamp` > %s
+						AND `timestamp` < %s
+				",
+				$gateway_environment,
+				$last_webhook_safe,
+				$hour_before_now
+			)
+		);
+
+		return ( empty( $num_problem_orders ) );
+	}
+
+	/**
+	 * Get the date the last webhook was processed.
+	 * @param environment The gateway environment (live or sandbox) to check for.
+	 * @returns HTML with the date of the last webhook or an error message.
+	 * @since 2.6
+	 * @deprecated 2.7.0. Only deprecated for public use, will be changed to private non-static in a future version.
+	 * @deprecated TBD. Now fully deprecated.
+	 */
+	public static function get_last_webhook_date( $environment = 'live' ) {
+		_deprecated_function( __FUNCTION__, 'TBD' );
+		$last_webhook = get_option( 'pmpro_stripe_last_webhook_received_' . $environment );
+		if ( ! empty( $last_webhook ) ) {
+			echo '<p>' . esc_html__( 'Last webhook received at', 'paid-memberships-pro' ) . ': ' . esc_html( $last_webhook ) . ' GMT.</p>';
+		} else {
+			echo '<p>' . esc_html__( 'No webhooks have been received.', 'paid-memberships-pro' ) . '</p>';
+		}
+		if ( ! self::webhook_is_working( $environment ) ) {
+			echo '<div class="notice error inline"><p>';
+			echo esc_html__( 'Your webhook may not be working correctly.', 'paid-memberships-pro' );
+			echo ' <a target="_blank" href="https://www.paidmembershipspro.com/gateway/stripe/?utm_source=plugin&utm_medium=pmpro-paymentsettings&utm_campaign=gateways&utm_content=stripe-webhook#tab-gateway-setup">';
+			echo esc_html__( 'Click here for info on setting up your webhook with Stripe.', 'paid-memberships-pro' );
+			echo '</a>';
+			echo '</p></div>';
+		}
 	}
 }

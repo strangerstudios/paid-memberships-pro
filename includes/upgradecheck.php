@@ -300,6 +300,15 @@ function pmpro_checkForUpgrades()
 		pmpro_setOption( 'db_version', '2.81' );
 	}
 
+  /**
+	 * Version 2.9.4
+	 * Check the current domain and store it
+	 */
+	if ( $pmpro_db_version < 2.94 ) {
+		pmpro_setOption( 'last_known_url', get_site_url() );
+		pmpro_setOption( 'db_version', '2.94' );
+	}
+
 	/**
 	 * Version 2.10 - referencing 2.100 though
 	 * Keep Stripe application fees at 1% 
@@ -309,7 +318,6 @@ function pmpro_checkForUpgrades()
 			pmpro_setOption( 'stripe_app_fee', 1 ); //1%	
 		}
 		pmpro_setOption( 'db_version', '2.100' );
-	}
 }
 
 function pmpro_db_delta()
