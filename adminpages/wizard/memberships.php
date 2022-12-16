@@ -35,7 +35,7 @@ $collecting_payment = get_option( 'pmpro_wizard_collect_payment' );
 				</label>
 				<div>
 					<label><?php esc_html_e( 'Level Name', 'paid-memberships-pro' ); ?></label>
-					<input type="text" id="pmpro-wizard__paid-level-name" name="pmpro-wizard__paid-level-name" placeholder="<?php esc_attr_e( 'Paid', 'paid-memberships-pro' ); ?>"/>
+					<input type="text" id="pmpro-wizard__paid-level-name" name="pmpro-wizard__paid-level-name" placeholder="<?php esc_attr_e( 'Premium', 'paid-memberships-pro' ); ?>"/>
 				</div>
 				<div>
 					<label><?php esc_html_e( 'Fee', 'paid-memberships-pro' ); ?></label>

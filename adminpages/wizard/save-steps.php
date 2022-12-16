@@ -178,7 +178,7 @@ function pmpro_init_save_wizard_data() {
 
 		if ( ! empty( $_REQUEST['pmpro-wizard__paid-level'] ) ) {
 
-			$paid_level_name = ! empty( $_REQUEST['pmpro-wizard__paid-level-name'] ) ? sanitize_text_field( $_REQUEST['pmpro-wizard__paid-level-name'] ) :  sanitize_text_field( __( 'Paid', 'paid-memberships-pro' ) );
+			$paid_level_name = ! empty( $_REQUEST['pmpro-wizard__paid-level-name'] ) ? sanitize_text_field( $_REQUEST['pmpro-wizard__paid-level-name'] ) :  sanitize_text_field( __( 'Premium', 'paid-memberships-pro' ) );
 			$amount          = ! empty( $_REQUEST['pmpro-wizard__paid-level-amount'] ) ? floatval( $_REQUEST['pmpro-wizard__paid-level-amount'] ) : 10.00;
 			$period          = ! empty( $_REQUEST['cycle_period'] ) ? sanitize_text_field( $_REQUEST['cycle_period'] ) : 'Month';
 

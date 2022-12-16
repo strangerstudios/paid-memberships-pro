@@ -78,7 +78,7 @@
 			<?php esc_html_e( 'Not sure where to start, take a look at our documentation.', 'paid-memberships-pro' ); ?></p>
 		</div>
 		<div class="pmpro-wizard__col">
-			<a href="https://www.paidmembershipspro.com/documentation/" target="_blank" class="button button-hero"><?php esc_html_e( 'View docs', 'paid-memberships-pro' ); ?></a>
+			<a href="https://www.paidmembershipspro.com/documentation/?utm_source=plugin&utm_medium=setup-wizard&utm_campaign=wizard-done&utm_content=view-docs" target="_blank" class="button button-hero"><?php esc_html_e( 'View docs', 'paid-memberships-pro' ); ?></a>
 		</div>
 	</div>
 	<script>
