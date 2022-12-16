@@ -2890,7 +2890,7 @@ function pmpro_show_setup_wizard_link() {
 	global $pmpro_ready;
 
 	// If PMPro isn't ready AND the wizard hasn't completed yet.
-	if ( ! $pmpro_ready && get_option( 'pmpro_wizard_step' ) !== 'done' ) {
+	if ( ! $pmpro_ready && pmpro_getOption( 'wizard_step' ) !== 'done' ) {
 		$show = true;
 	} else {
 		$show = false;
