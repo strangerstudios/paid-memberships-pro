@@ -1064,6 +1064,8 @@
 		 */
 		function sendTrialEndingEmail( $user = NULL, $membership_id = NULL )
 		{
+			_deprecated_function( 'sendTrialEndingEmail', 'TBD' );
+
 			global $current_user, $wpdb;
 			if(!$user)
 				$user = $current_user;

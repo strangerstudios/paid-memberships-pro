@@ -3,7 +3,7 @@
  * Plugin Name: Paid Memberships Pro
  * Plugin URI: https://www.paidmembershipspro.com
  * Description: The most complete member management and membership subscriptions plugin for WordPress.
- * Version: 2.9.6
+ * Version: 2.9.7
  * Author: Paid Memberships Pro
  * Author URI: https://www.paidmembershipspro.com
  * Text Domain: paid-memberships-pro
@@ -16,7 +16,7 @@
  */
 
 // version constant
-define( 'PMPRO_VERSION', '2.9.6' );
+define( 'PMPRO_VERSION', '2.9.7' );
 define( 'PMPRO_USER_AGENT', 'Paid Memberships Pro v' . PMPRO_VERSION . '; ' . site_url() );
 define( 'PMPRO_MIN_PHP_VERSION', '5.6' );
 
@@ -107,9 +107,7 @@ if ( version_compare( PHP_VERSION, '5.4.45', '>=' ) ) {
 require_once( PMPRO_DIR . '/classes/class-pmpro-discount-codes.php' ); // loaded by memberorder class when needed
 
 require_once( PMPRO_DIR . '/classes/gateways/class.pmprogateway_check.php' );
-require_once( PMPRO_DIR . '/classes/gateways/class.pmprogateway_cybersource.php' );
 require_once( PMPRO_DIR . '/classes/gateways/class.pmprogateway_payflowpro.php' );
-require_once( PMPRO_DIR . '/classes/gateways/class.pmprogateway_paypal.php' );
 require_once( PMPRO_DIR . '/classes/gateways/class.pmprogateway_paypalexpress.php' );
 require_once( PMPRO_DIR . '/classes/gateways/class.pmprogateway_paypalstandard.php' );
 
@@ -170,12 +168,10 @@ function pmpro_gateways() {
 		'check'             => __( 'Pay by Check', 'paid-memberships-pro' ),
 		'stripe'            => __( 'Stripe', 'paid-memberships-pro' ),
 		'paypalexpress'     => __( 'PayPal Express', 'paid-memberships-pro' ),
-		'paypal'            => __( 'PayPal Website Payments Pro', 'paid-memberships-pro' ),
 		'payflowpro'        => __( 'PayPal Payflow Pro/PayPal Pro', 'paid-memberships-pro' ),
 		'paypalstandard'    => __( 'PayPal Standard', 'paid-memberships-pro' ),
 		'authorizenet'      => __( 'Authorize.net', 'paid-memberships-pro' ),
 		'braintree'         => __( 'Braintree Payments', 'paid-memberships-pro' ),
-		'cybersource'       => __( 'Cybersource', 'paid-memberships-pro' ),
 	);
 
 	if ( pmpro_onlyFreeLevels() ) {

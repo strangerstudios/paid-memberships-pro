@@ -1,5 +1,7 @@
 <?php
 
+// File generated from our OpenAPI spec
+
 namespace Stripe\Service\Radar;
 
 class EarlyFraudWarningService extends \Stripe\Service\AbstractService
@@ -12,7 +14,7 @@ class EarlyFraudWarningService extends \Stripe\Service\AbstractService
      *
      * @throws \Stripe\Exception\ApiErrorException if the request fails
      *
-     * @return \Stripe\Collection
+     * @return \Stripe\Collection<\Stripe\Radar\EarlyFraudWarning>
      */
     public function all($params = null, $opts = null)
     {
