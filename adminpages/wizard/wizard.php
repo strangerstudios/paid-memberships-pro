@@ -3,7 +3,7 @@
  * Setup Wizard containing file that handles logic and loading of templates.
  */
 if ( empty( $_REQUEST['step'] ) ) {
-	$previous_step = get_option( 'pmpro_wizard_step' );
+	$previous_step = pmpro_getOption( 'wizard_step' );
 	$active_step = sanitize_text_field( $previous_step );
 } elseif ( ! empty( $_REQUEST['step'] ) ) {
 	$active_step = sanitize_text_field( $_REQUEST['step'] );

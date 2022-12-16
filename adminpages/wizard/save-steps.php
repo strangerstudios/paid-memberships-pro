@@ -13,7 +13,7 @@ function pmpro_init_save_wizard_data() {
 	// Clear things up on the completed page.
 	if ( ! empty( $_REQUEST['step'] ) && $_REQUEST['step'] === 'done' ) {
 		delete_option( 'pmpro_wizard_collect_payment' );
-		update_option( 'pmpro_wizard_step', 'done' ); // Update it to be completed as we've reached this page.
+		pmpro_setOption( 'wizard_step', 'done' ); // Update it to be completed as we've reached this page.
 	}
 
 	// Only run the code on submit.
@@ -32,11 +32,11 @@ function pmpro_init_save_wizard_data() {
 		}
 
 		// Save the type of membership site. May be saved as "Blank"?
-		update_option( 'pmpro_site_type', sanitize_text_field( $_REQUEST['membership_site_type'] ), false );
+		pmpro_setOption( 'site_type', sanitize_text_field( $_REQUEST['membership_site_type'] ) );
 
 		// Update license key value
 		if ( ! empty( $_REQUEST['pmpro_license_key'] ) ) {
-			update_option( 'pmpro_license_key', sanitize_text_field( $_REQUEST['pmpro_license_key'] ), false );
+			pmpro_setOption( 'license_key', sanitize_text_field( $_REQUEST['pmpro_license_key'] ) );
 		}
 
 		// Generate pages
@@ -92,7 +92,7 @@ function pmpro_init_save_wizard_data() {
 			admin_url( 'admin.php' )
 		);
 		// Before redirecting to next step, save the step we're redirecting to.
-		update_option( 'pmpro_wizard_step', $step, false );
+		pmpro_setOption( 'wizard_step', $step );
 		wp_redirect( $next_step );
 	}
 
@@ -135,7 +135,7 @@ function pmpro_init_save_wizard_data() {
 		}
 
 		// Save the step should they come back at a later stage.
-		update_option( 'pmpro_wizard_step', 'memberships', false );
+		pmpro_setOption( 'wizard_step', 'memberships' );
 		wp_redirect( $next_step );
 
 	}
@@ -234,7 +234,7 @@ function pmpro_init_save_wizard_data() {
 		);
 
 		// Save the step should they come back at a later stage.
-		update_option( 'pmpro_wizard_step', 'advanced', false );
+		pmpro_setOption( 'wizard_step', 'advanced' );
 		wp_redirect( $next_step );
 
 		// Now we can redirect to the next step we might need.
@@ -271,7 +271,7 @@ function pmpro_init_save_wizard_data() {
 		);
 
 		// Set option to complete right before redirect (in case something goes wrong or they quit during this process for some reason.)
-		update_option( 'pmpro_wizard_step', 'done', false );
+		pmpro_setOption( 'wizard_step', 'done' );
 		wp_redirect( $next_step );
 	}
 

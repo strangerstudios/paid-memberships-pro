@@ -1,5 +1,5 @@
 <?php
-	$site_type = get_option( 'pmpro_site_type', true );
+	$site_type = pmpro_getOption( 'site_type', true );
 
 	if ( empty( $site_type ) ) {
 		$site_type = 'general';
