@@ -1,3 +1,6 @@
+/** 
+ * @see https://github.com/CoderZ90/confetti 
+ **/
 var confetti = {
     maxCount: 200,		//set max confetti count
     speed: 8,			//set the particle animation speed
