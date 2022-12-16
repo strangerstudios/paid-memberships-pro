@@ -25,9 +25,8 @@ function pmpro_init_save_wizard_data() {
 	 * Step 1 - Update settings and generate anything we may need based off settings.
 	 */
 	if ( $_REQUEST['wizard-action'] == 'step-1' ) {
-		
 
-		/// Throw a nonce error.
+		// Verify the nonce for step 1
 		if ( ! wp_verify_nonce( $_REQUEST['pmpro_wizard_step_1_nonce'], 'pmpro_wizard_step_1_nonce' ) ) {
 			return;
 		}
@@ -39,8 +38,6 @@ function pmpro_init_save_wizard_data() {
 		if ( ! empty( $_REQUEST['pmpro_license_key'] ) ) {
 			update_option( 'pmpro_license_key', sanitize_text_field( $_REQUEST['pmpro_license_key'] ), false );
 		}
-
-	
 
 		// Generate pages
 		if ( ! empty( $_REQUEST['createpages'] ) ) {
@@ -131,7 +128,7 @@ function pmpro_init_save_wizard_data() {
 					'gateway_environment' => $environment,
 					'return_url' => rawurlencode( $next_step ),
 				),
-				$connect_url_base
+				esc_url( $connect_url_base )
 			);
 			wp_redirect( $connect_url );
 			exit;
@@ -142,8 +139,6 @@ function pmpro_init_save_wizard_data() {
 		wp_redirect( $next_step );
 
 	}
-
-
 
 	/**
 	 * Memberships Step
@@ -161,7 +156,7 @@ function pmpro_init_save_wizard_data() {
 		// If free level option is enabled, then get data.
 		if ( ! empty( $_REQUEST['pmpro-wizard__free-level'] ) ) {
 
-			$free_level_name = ! empty( $_REQUEST['pmpro-wizard__free-level-name'] ) ? sanitize_text_field( $_REQUEST['pmpro-wizard__free-level-name'] ) : 'Free';
+			$free_level_name = ! empty( $_REQUEST['pmpro-wizard__free-level-name'] ) ? sanitize_text_field( $_REQUEST['pmpro-wizard__free-level-name'] ) : sanitize_text_field( __( 'Free', 'paid-memberships-pro' ) );
 
 			$levels_array['free'] = array(
 				'id'                => -1,
@@ -183,7 +178,7 @@ function pmpro_init_save_wizard_data() {
 
 		if ( ! empty( $_REQUEST['pmpro-wizard__paid-level'] ) ) {
 
-			$paid_level_name = ! empty( $_REQUEST['pmpro-wizard__paid-level-name'] ) ? sanitize_text_field( $_REQUEST['pmpro-wizard__paid-level-name'] ) : 'Paid';
+			$paid_level_name = ! empty( $_REQUEST['pmpro-wizard__paid-level-name'] ) ? sanitize_text_field( $_REQUEST['pmpro-wizard__paid-level-name'] ) :  sanitize_text_field( __( 'Paid', 'paid-memberships-pro' ) );
 			$amount          = ! empty( $_REQUEST['pmpro-wizard__paid-level-amount'] ) ? floatval( $_REQUEST['pmpro-wizard__paid-level-amount'] ) : 10.00;
 			$period          = ! empty( $_REQUEST['cycle_period'] ) ? sanitize_text_field( $_REQUEST['cycle_period'] ) : 'Month';
 

@@ -19,8 +19,6 @@ $wisdom_tracking = pmpro_getOption( 'wisdom_opt_out', true );
 				<option value="0" <?php selected( 0, $filter_queries); ?>><?php esc_html_e( 'No - Non-members will see restricted posts/pages in searches and archives.', 'paid-memberships-pro' ); ?></option>
 				<option value="1" <?php selected( 1, $filter_queries ); ?>><?php esc_html_e( 'Yes - Only members will see restricted posts/pages in searches and archives.', 'paid-memberships-pro' ); ?></option>
 			</select><br><br>
-		<!-- </div>
-		<div class="pmpro-wizard__field"> -->
 			<label class="pmpro-wizard__label-block">
 				<?php esc_html_e( 'Show excerpts to non-members?', 'paid-memberships-pro' ); ?>
 			</label>
