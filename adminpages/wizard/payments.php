@@ -55,7 +55,7 @@
 					</label>
 				</div>
 				<div class="pmpro-wizard__field" style="background-color:#F7F7F7;">
-					<p><img src="<?php echo esc_url( PMPRO_URL . '/images/credit-card.svg' ); ?>" style="vertical-align:middle;"/><?php esc_html_e( 'Payment gateways may be configured under "Payment Gateway & SSL Settings".', 'paid-memberships-pro' ); ?></p>
+					<p><img src="<?php echo esc_url( PMPRO_URL . '/images/credit-card.svg' ); ?>" style="vertical-align:middle;"/> <?php esc_html_e( 'Payment gateways may be configured under "Payment Gateway & SSL Settings".', 'paid-memberships-pro' ); ?></p>
 				</div>
 				<script>
 					jQuery(document).ready(function(){
