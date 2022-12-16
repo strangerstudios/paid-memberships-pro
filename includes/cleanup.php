@@ -47,9 +47,9 @@ function pmpro_delete_user_form_notice( $current_user, $userids ) {
 		}
 	}
 
-	$prepare_member_history = $wpdb->prepare( "SELECT COUNT(*) as members FROM $wpdb->pmpro_memberships_users WHERE user_id IN (%s)", implode( "," , $userids ) );
+	$sqlQuery = $wpdb->prepare( "SELECT COUNT(*) as members FROM $wpdb->pmpro_memberships_users WHERE user_id IN (%s)", implode( "," , $userids ) );
 
-	$member_history = $wpdb->get_var( $prepare_member_history );
+	$member_history = $wpdb->get_var( $sqlQuery );
 
 	// Make sure that there is actually PMPro content to delete for these users.
 	if ( empty( $userids_have_levels ) && empty( $member_history ) ) {
