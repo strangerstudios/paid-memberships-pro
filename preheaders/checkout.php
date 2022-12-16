@@ -441,7 +441,8 @@ if ( $submit && $pmpro_msgt != "pmpro_error" ) {
 
 				//first name
 				if ( ! empty( $_REQUEST['first_name'] ) ) {
-					$first_name = $_REQUEST['first_name'];
+					$first_name = sanitize_text_field( $_REQUEST['first_name'] );
+
 				} else {
 					$first_name = $bfirstname;
 				}
