@@ -562,7 +562,6 @@ class PMProGateway_authorizenet extends PMProGateway
 
 		if(!empty($order->TrialBillingPeriod) && $order->TrialBillingPeriod != $order->BillingPeriod)
 		{
-			echo "F";
 			return false;
 		}
 

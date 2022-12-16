@@ -213,21 +213,32 @@ add_action( 'admin_notices', 'pmpro_check_for_deprecated_add_ons' );
 
 /**
  * The 2Checkout gateway was deprecated in v2.6.
- * This code will add it back if it was the selected gateway.
- * In future versions, we will remove the 2Checkout code entirely.
- * And you will have to use a stand alone add on for 2Checkout support
+ * Cybersource was deprecated in TBD.
+ * PayPal Website Payments Pro was deprecated in TBD.
+ *
+ * This code will add it back those gateways if it was the selected gateway.
+ * In future versions, we will remove gateway code entirely.
+ * And you will have to use a stand alone add on for those gateways
  * or choose a new gateway.
  */
 function pmpro_check_for_deprecated_gateways() {
-	$undprepcated_gateways = (array)pmpro_getOption( 'undeprecated_gateways' );
+	$undeprecated_gateways = pmpro_getOption( 'undeprecated_gateways' );
+	if ( empty( $undeprecated_gateways ) ) {
+		$undeprecated_gateways = array();
+	} elseif ( is_string( $undeprecated_gateways ) ) {
+		// pmpro_setOption turns this into a comma separated string
+		$undeprecated_gateways = explode( ',', $undeprecated_gateways );
+	}
 	$default_gateway = pmpro_getOption( 'gateway' );
-	
-	if ( $default_gateway === 'twocheckout' || in_array( 'twocheckout', $undprepcated_gateways ) ) {
-		require_once( PMPRO_DIR . '/classes/gateways/class.pmprogateway_twocheckout.php' );
-		
-		if ( ! in_array( 'twocheckout', $undprepcated_gateways ) ) {
-			$undeprecated_gateways[] = 'twocheckout';
-			pmpro_setOption( 'undeprecated_gateways', $undeprecated_gateways );
+
+	$deprecated_gateways = array( 'twocheckout', 'cybersource', 'paypal' );
+	foreach ( $deprecated_gateways as $deprecated_gateway ) {
+		if ( $default_gateway === $deprecated_gateway || in_array( $deprecated_gateway, $undeprecated_gateways ) ) {
+			require_once( PMPRO_DIR . '/classes/gateways/class.pmprogateway_' . $deprecated_gateway . '.php' );
+			if ( ! in_array( $deprecated_gateway, $undeprecated_gateways ) ) {
+				$undeprecated_gateways[] = $deprecated_gateway;
+				pmpro_setOption( 'undeprecated_gateways', $undeprecated_gateways );
+			}
 		}
 	}
 }

@@ -213,10 +213,14 @@ function pmpro_cron_credit_card_expiring_warnings()
 	Commented out as of version 1.7.2 since this caused issues on some sites
 	and doesn't take into account the many "custom trial" solutions that are
 	in the wild (e.g. some trials are actually a delay of the subscription start date)
+
+	@deprecated TBD
 */
 //add_action("pmpro_cron_trial_ending_warnings", "pmpro_cron_trial_ending_warnings");
 function pmpro_cron_trial_ending_warnings()
 {
+	_deprecated_function( 'pmpro_cron_trial_ending_warnings', 'TBD' );
+
 	global $wpdb;
 
 	//clean up errors in the memberships_users table that could cause problems
