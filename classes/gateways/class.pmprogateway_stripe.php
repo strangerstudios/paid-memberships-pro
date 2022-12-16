@@ -1804,6 +1804,11 @@ class PMProGateway_stripe extends PMProGateway {
 			$checkout_session_params['payment_intent_data'] = $payment_intent_data;
 		}
 
+		// For one-time payments, make sure that we create an invoice.
+		if ( empty( $subscription_data ) ) {
+			$checkout_session_params['invoice_creation']['enabled'] = true;
+		}
+
 		try {
 			$checkout_session = Stripe_Checkout_Session::create( $checkout_session_params );
 		} catch ( Throwable $th ) {
