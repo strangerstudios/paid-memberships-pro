@@ -332,21 +332,20 @@ function pmpro_membership_level_profile_fields_update()
 				$expiration_date = $expiration_date ." ".$_REQUEST['expires_hour'].":00:00";
 			}
 		}
-		
-		$sqlQuery = "UPDATE $wpdb->pmpro_memberships_users SET enddate = '" . $expiration_date . "' WHERE status = 'active' AND membership_id = '" . intval($_REQUEST['membership_level']) . "' AND user_id = '" . $user_ID . "' LIMIT 1";
+				$sqlQuery = $wpdb->prepare( "UPDATE $wpdb->pmpro_memberships_users SET enddate = %s WHERE status = 'active' AND membership_id = %d AND user_id = %d LIMIT 1", $expiration_date, intval($_REQUEST['membership_level']), $user_ID );
 		if($wpdb->query($sqlQuery))
 			$expiration_changed = true;
 	}
 	elseif(isset($_REQUEST['expires']))
 	{
 		// Already blank? have to check for null or '0000-00-00 00:00:00' here.
-		$sqlQuery = "SELECT user_id FROM $wpdb->pmpro_memberships_users WHERE (enddate IS NULL OR enddate = '0000-00-00 00:00:00') AND status = 'active' AND user_id = '" . $user_ID . "' LIMIT 1";
+		$sqlQuery = $wpdb->prepare( "SELECT user_id FROM $wpdb->pmpro_memberships_users WHERE (enddate IS NULL OR enddate = '0000-00-00 00:00:00') AND status = 'active' AND user_id = %d LIMIT 1", $user_ID );
 		$blank = $wpdb->get_var($sqlQuery);
 
 		if(empty($blank))
 		{
 			//null out the expiration
-			$sqlQuery = "UPDATE $wpdb->pmpro_memberships_users SET enddate = NULL WHERE status = 'active' AND membership_id = '" . intval($_REQUEST['membership_level']) . "' AND user_id = '" . $user_ID . "' LIMIT 1";
+			$sqlQuery = $wpdb->prepare( "UPDATE $wpdb->pmpro_memberships_users SET enddate = NULL WHERE status = 'active' AND membership_id = %d AND user_id = %d LIMIT 1", intval($_REQUEST['membership_level']), $user_ID );
 			if($wpdb->query($sqlQuery))
 				$expiration_changed = true;
 		}
@@ -417,11 +416,11 @@ function pmpro_membership_history_profile_fields( $user ) {
 	global $wpdb;
 
 	//Show all invoices for user
-	$invoices = $wpdb->get_results("SELECT mo.*, UNIX_TIMESTAMP(mo.timestamp) as timestamp, du.code_id as code_id FROM $wpdb->pmpro_membership_orders mo LEFT JOIN $wpdb->pmpro_discount_codes_uses du ON mo.id = du.order_id WHERE mo.user_id = '$user->ID' ORDER BY mo.timestamp DESC");	
+	$invoices = $wpdb->get_results( $wpdb->prepare( "SELECT mo.*, UNIX_TIMESTAMP(mo.timestamp) as timestamp, du.code_id as code_id FROM $wpdb->pmpro_membership_orders mo LEFT JOIN $wpdb->pmpro_discount_codes_uses du ON mo.id = du.order_id WHERE mo.user_id = %d ORDER BY mo.timestamp DESC", $user->ID ));
 
-	$levelshistory = $wpdb->get_results("SELECT * FROM $wpdb->pmpro_memberships_users WHERE user_id = '$user->ID' ORDER BY id DESC");
+	$levelshistory = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM $wpdb->pmpro_memberships_users WHERE user_id = %d ORDER BY id DESC", $user->ID ) );
 	
-	$totalvalue = $wpdb->get_var("SELECT SUM(total) FROM $wpdb->pmpro_membership_orders WHERE user_id = '$user->ID' AND status NOT IN('token','review','pending','error','refunded')");
+	$totalvalue = $wpdb->get_var( $wpdb->prepare( "SELECT SUM(total) FROM $wpdb->pmpro_membership_orders WHERE user_id = %d AND status NOT IN('token','review','pending','error','refunded')", $user->ID ) );
 
 	if ( $invoices || $levelshistory ) { ?>
 		<hr />
@@ -511,9 +510,9 @@ function pmpro_membership_history_profile_fields( $user ) {
 							if ( empty( $invoice->code_id ) ) {
 								esc_html_e( '&#8212;', 'paid-memberships-pro' );
 							} else {
-								$discountQuery = "SELECT c.code FROM $wpdb->pmpro_discount_codes c WHERE c.id = ".$invoice->code_id." LIMIT 1";
+								$discountQuery = $wpdb->prepare( "SELECT c.code FROM $wpdb->pmpro_discount_codes c WHERE c.id = $d LIMIT 1", $invoice->code_id );
 								$discount_code = $wpdb->get_row( $discountQuery );
-								echo '<a href="admin.php?page=pmpro-discountcodes&edit='.$invoice->code_id.'">'. esc_attr( $discount_code->code ) . '</a>';
+								echo '<a href="admin.php?page=pmpro-discountcodes&edit=' . esc_attr( $invoice->code_id ). '">'. esc_attr( $discount_code->code ) . '</a>';
 							}
 						?></td>
 						<td>
