@@ -2188,10 +2188,11 @@ function pmpro_getMembershipLevelsForUser( $user_id = null, $include_inactive = 
 	 **/
 	$cache_key = 'user_' . $user_id . '_levels' . ( $include_inactive ? '_all' : '_active' );
     $levels = wp_cache_get( $cache_key, 'pmpro' );
-
 	if ( $levels === false ) {
-
+		// Use this for the SQL query so we can use wpdb->prepare.
+		$include_inactive = $include_inactive ? '' : ' ';
 		$levels = $wpdb->get_results(
+			$wpdb->prepare(
 			"SELECT
 				l.id AS ID,
 				l.id as id,
@@ -2213,9 +2214,13 @@ function pmpro_getMembershipLevelsForUser( $user_id = null, $include_inactive = 
 				UNIX_TIMESTAMP(CONVERT_TZ(enddate, '+00:00', @@global.time_zone)) as enddate
 			FROM {$wpdb->pmpro_membership_levels} AS l
 			JOIN {$wpdb->pmpro_memberships_users} AS mu ON (l.id = mu.membership_id)
-			WHERE mu.user_id = $user_id" . ( $include_inactive ? '' : " AND mu.status = 'active'
-			GROUP BY ID" )
+			WHERE mu.user_id = %d" . ( "%d AND mu.status = 'active'
+			GROUP BY ID" ),
+			$user_id,
+			$include_inactive
+			)
 		);
+
 		wp_cache_set( $cache_key, $levels, 'pmpro', 3600 );
 	}
 
