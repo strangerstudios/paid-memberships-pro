@@ -183,7 +183,7 @@ function pmpro_report_sales_page()
 				 	$type_function( IF( mo2id IS NOT NULL, mo1total, NULL ) ) as renewals
 				 FROM ";
 	$sqlQuery .= "(";	// Sub query.
-	$sqlQuery .= "SELECT $date_function( DATE_ADD( mo1.timestamp, INTERVAL $tz_offset SECOND ) ) as date,
+	$sqlQuery .= "SELECT $date_function( DATE_ADD( mo1.timestamp, INTERVAL " . esc_sql( $tz_offset ) . " SECOND ) ) as date,
 					    mo1.id as mo1id,
 						mo1.total as mo1total,
 						mo2.id as mo2id
@@ -199,12 +199,12 @@ function pmpro_report_sales_page()
 	}
 
 	$sqlQuery .= "WHERE mo1.total > 0
-					AND mo1.timestamp >= DATE_ADD( '$startdate' , INTERVAL - $tz_offset SECOND )
+					AND mo1.timestamp >= DATE_ADD( '" . esc_sql( $startdate ) . "' , INTERVAL - " . esc_sql( $tz_offset ) . " SECOND )
 					AND mo1.status NOT IN('refunded', 'review', 'token', 'error')
 					AND mo1.gateway_environment = '" . esc_sql( $gateway_environment ) . "' ";
 
 	if(!empty($enddate))
-		$sqlQuery .= "AND mo1.timestamp <= DATE_ADD( '$enddate 23:59:59' , INTERVAL - $tz_offset SECOND )";
+		$sqlQuery .= "AND mo1.timestamp <= DATE_ADD( '" . esc_sql( $enddate ) . " 23:59:59' , INTERVAL - " . esc_sql( $tz_offset ) . " SECOND )";
 
 	if(!empty($l))
 		$sqlQuery .= "AND mo1.membership_id IN(" . esc_sql( $l ) . ") ";
@@ -638,7 +638,7 @@ function pmpro_getSales( $period = 'all time', $levels = 'all', $type = 'all' ) 
 	$sqlQuery .= "GROUP BY mo1.id ";
 
 	// We want the count of rows produced, so update the query.
-	$sqlQuery = "SELECT COUNT(*) FROM (" . $sqlQuery . ") as t1";
+	$sqlQuery = "SELECT COUNT(*) FROM (" . esc_sql( $sqlQuery ) . ") as t1";
 
 	$sales = $wpdb->get_var($sqlQuery);
 
@@ -687,11 +687,11 @@ function pmpro_get_prices_paid( $period, $count = NULL ) {
 
 	// Build query.
 	global $wpdb;
-	$sql_query = "SELECT ROUND(total,8) as rtotal, COUNT(*) as num FROM $wpdb->pmpro_membership_orders WHERE total > 0 AND status NOT IN('refunded', 'review', 'token', 'error') AND timestamp >= '" . $startdate . "' AND gateway_environment = '" . esc_sql( $gateway_environment ) . "' ";
+	$sql_query = "SELECT ROUND(total,8) as rtotal, COUNT(*) as num FROM $wpdb->pmpro_membership_orders WHERE total > 0 AND status NOT IN('refunded', 'review', 'token', 'error') AND timestamp >= '" . esc_sql( $startdate ) . "' AND gateway_environment = '" . esc_sql( $gateway_environment ) . "' ";
 
 	// Restrict by level.
 	if ( ! empty( $levels ) ) {
-		$sql_query .= 'AND membership_id IN(' . $levels . ') ';
+		$sql_query .= 'AND membership_id IN(' . esc_sql( $levels ) . ') ';
 	}
 
 	$sql_query .= ' GROUP BY rtotal ORDER BY num DESC ';
@@ -816,7 +816,7 @@ function pmpro_getRevenue( $period, $levels = NULL, $type = 'all' ) {
 
 	// Restrict by level.
 	if(!empty($levels))
-		$sqlQuery .= "AND mo1.membership_id IN(" . $levels . ") ";
+		$sqlQuery .= "AND mo1.membership_id IN(" . esc_sql( $levels ) . ") ";
 		
 	// Filter to renewals or new orders only. 	
 	if ( $type == 'renewals' ) {
@@ -829,7 +829,7 @@ function pmpro_getRevenue( $period, $levels = NULL, $type = 'all' ) {
 	$sqlQuery .= "GROUP BY mo1.id ";
 	
 	// Want the total across the orders found.
-	$sqlQuery = "SELECT SUM(total) FROM(" . $sqlQuery . ") as t1";
+	$sqlQuery = "SELECT SUM(total) FROM(" . esc_sql( $sqlQuery ) . ") as t1";
 	
 	$revenue = pmpro_round_price( $wpdb->get_var($sqlQuery) );
 
@@ -861,7 +861,7 @@ function pmpro_get_revenue_between_dates( $start_date, $end_date = '', $level_id
 		$sql_query .= " AND timestamp <= '" . esc_sql( $end_date ) . " 23:59:59'";
 	}
 	if ( ! empty( $level_ids ) ) {
-		$sql_query .= ' AND membership_id IN(' . implode( ', ', $levels ) . ') ';
+		$sql_query .= ' AND membership_id IN(' . implode( ', ', array_map( 'esc_sql', $levels ) ) . ') '; 
 	}
 	return $wpdb->get_var($sql_query);
 }
