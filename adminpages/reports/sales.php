@@ -829,7 +829,7 @@ function pmpro_getRevenue( $period, $levels = NULL, $type = 'all' ) {
 	$sqlQuery .= "GROUP BY mo1.id ";
 	
 	// Want the total across the orders found.
-	$sqlQuery = "SELECT SUM(total) FROM(" . esc_sql( $sqlQuery ) . ") as t1";
+	$sqlQuery = "SELECT SUM(total) FROM(" . $sqlQuery . ") as t1";
 	
 	$revenue = pmpro_round_price( $wpdb->get_var($sqlQuery) );
 
