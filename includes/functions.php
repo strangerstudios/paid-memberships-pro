@@ -902,14 +902,7 @@ function pmpro_hasMembershipLevel( $levels = null, $user_id = null ) {
 			} elseif ( in_array( '-L', $levels ) || in_array( '-l', $levels ) ) {
 				$return = ( empty( $user_id ) || $user_id != $current_user->ID );       // -L, not logged in users
 			} elseif ( in_array( 'E', $levels ) || in_array( 'e', $levels ) ) {
-				$sql = $wpdb->prepare( 
-					"SELECT id 
-					FROM $wpdb->pmpro_memberships_users 
-					WHERE user_id = %d 
-					AND status = 'expired' 
-					LIMIT 1", 
-					$user_id 
-				);
+				$sql = "SELECT id FROM $wpdb->pmpro_memberships_users WHERE user_id = " . esc_sql( $user_id ) . " AND status ='expired' LIMIT 1";
 				$expired = $wpdb->get_var( $sql );                                    // E, expired members
 				$return = ! empty( $expired );
 			}
@@ -1093,13 +1086,9 @@ function pmpro_changeMembershipLevel( $level, $user_id = null, $old_level_status
 
 	if ( $old_levels && $pmpro_deactivate_old_levels ) {
 		foreach ( $old_levels as $old_level ) {
-			$sql = $wpdb->prepare(
-				"UPDATE $wpdb->pmpro_memberships_users SET `status` = %s, `enddate` = %s WHERE `id` = %d",
-				$old_level_status,
-				current_time( 'mysql' ),
-				$old_level->subscription_id
 
-			);
+			$sql = "UPDATE $wpdb->pmpro_memberships_users SET `status`='$old_level_status', `enddate`='" . esc_sql( current_time( 'mysql' ) ) . "' WHERE `id`=" . esc_sql( $old_level->subscription_id );
+
 			if ( ! $wpdb->query( $sql ) ) {
 				$pmpro_error = __( 'Error interacting with database', 'paid-memberships-pro' ) . ': ' . ( $wpdb->last_error ? $wpdb->last_error : 'unavailable' );
 
@@ -1112,19 +1101,7 @@ function pmpro_changeMembershipLevel( $level, $user_id = null, $old_level_status
 	if ( ! empty( $cancel_level ) ) {
 		$pmpro_cancel_previous_subscriptions = true;    // don't filter cause we're doing just the one
 
-		$other_order_ids = $wpdb->get_col( 
-			$wpdb->prepare( 
-				"SELECT id
-				FROM $wpdb->pmpro_membership_orders
-				WHERE user_id = %d
-				AND status = 'success'
-				AND membership_id = %d
-				ORDER BY id DESC
-				LIMIT 1",
-				$user_id,
-				$cancel_level 
-			) 
-		);
+		$other_order_ids = $wpdb->get_col( "SELECT id FROM $wpdb->pmpro_membership_orders WHERE user_id = '" . esc_sql( $user_id ) . "' AND status = 'success' AND membership_id = '" . esc_sql( $cancel_level ) . "' ORDER BY id DESC LIMIT 1" );
 	} else {
 		$pmpro_cancel_previous_subscriptions = true;
 		if ( isset( $_REQUEST['cancel_membership'] ) && $_REQUEST['cancel_membership'] == false ) {
@@ -1133,15 +1110,12 @@ function pmpro_changeMembershipLevel( $level, $user_id = null, $old_level_status
 		$pmpro_cancel_previous_subscriptions = apply_filters( 'pmpro_cancel_previous_subscriptions', $pmpro_cancel_previous_subscriptions );
 
 		$other_order_ids = $wpdb->get_col(
-			$wpdb->prepare(
-				"SELECT id, IF(subscription_transaction_id = '', CONCAT('UNIQUE_SUB_ID_', id), subscription_transaction_id) as unique_sub_id
-				FROM $wpdb->pmpro_membership_orders
-				WHERE user_id = %d
-				AND status = 'success'
-				GROUP BY unique_sub_id
-				ORDER BY id DESC",
-				$user_id
-			)
+			"SELECT id, IF(subscription_transaction_id = '', CONCAT('UNIQUE_SUB_ID_', id), subscription_transaction_id) as unique_sub_id
+											FROM $wpdb->pmpro_membership_orders
+											WHERE user_id = '" . esc_sql( $user_id ) . "'
+												AND status = 'success'
+											GROUP BY unique_sub_id
+											ORDER BY id DESC"
 		);
 	}
 
@@ -1368,33 +1342,19 @@ function pmpro_toggleMembershipCategory( $level, $category, $value ) {
 
 	if ( ( $level = intval( $level ) ) <= 0 ) {
 		$safe = addslashes( $level );
-		if ( ( $level = intval( $wpdb->get_var( $wpdb->prepare( "SELECT id FROM {$wpdb->pmpro_membership_levels} WHERE name = %s LIMIT 1", $safe  ) ) ) <= 0 ) ) {
+		if ( ( $level = intval( $wpdb->get_var( "SELECT id FROM {$wpdb->pmpro_membership_levels} WHERE name = '" . esc_sql( $safe ) . "' LIMIT 1" ) ) ) <= 0 ) {
 			return __( 'Membership level not found.', 'paid-memberships-pro' );
 		}
 	}
 
 	if ( $value ) {
-		$sql = $wpdb->prepare(
-			"REPLACE INTO {$wpdb->pmpro_memberships_categories} (`membership_id`,`category_id`) 
-			VALUES (%s,%s)",
-			$level,
-			$category
-		);
-
+		$sql = "REPLACE INTO {$wpdb->pmpro_memberships_categories} (`membership_id`,`category_id`) VALUES ('" . esc_sql( $level ) . "','" . esc_sql( $category ) . "')";
 		$wpdb->query( $sql );
 		if ( $wpdb->last_error ) {
 			return $wpdb->last_error;
 		}
 	} else {
-		$sql = $wpdb->prepare( "
-			DELETE FROM {$wpdb->pmpro_memberships_categories}
-			WHERE `membership_id` = %s
-			AND `category_id` = %s
-			LIMIT 1",
-			$level,
-			$category 
-			);
-
+		$sql = "DELETE FROM {$wpdb->pmpro_memberships_categories} WHERE `membership_id` = '" . esc_sql( $level ) . "' AND `category_id` = '" . esc_sql( $category ). "' LIMIT 1";
 		$wpdb->query( $sql );
 		if ( $wpdb->last_error ) {
 			return $wpdb->last_error;
@@ -1420,15 +1380,14 @@ function pmpro_updateMembershipCategories( $level, $categories ) {
 	global $wpdb;
 
 	if ( ! is_numeric( $level ) ) {
-		$level = $wpdb->get_var( $wpdb->prepare( "SELECT id FROM {$wpdb->pmpro_membership_levels} WHERE name = %s LIMIT 1", $level ) );
+		$level = $wpdb->get_var( "SELECT id FROM $wpdb->pmpro_membership_levels WHERE name = '" . esc_sql( $level ) . "' LIMIT 1" );
 		if ( empty( $level ) ) {
 			return __( 'Membership level not found.', 'paid-memberships-pro' );
 		}
 	}
 
 	// remove all existing links...
-	$sqlQuery = $wpdb->prepare( "DELETE FROM $wpdb->pmpro_memberships_categories WHERE `membership_id` = %s", $level );
-
+	$sqlQuery = "DELETE FROM $wpdb->pmpro_memberships_categories WHERE `membership_id` = '" . esc_sql( $level ) . "'";
 	$wpdb->query( $sqlQuery );
 	if ( $wpdb->last_error ) {
 		return $wpdb->last_error;
@@ -1457,15 +1416,11 @@ function pmpro_getMembershipCategories( $level_id ) {
 	$level_id = intval( $level_id );
 
 	global $wpdb;
-
-	$categories = $wpdb->get_col( 
-					$wpdb->prepare( 
-						"SELECT c.category_id 
-						FROM {$wpdb->pmpro_memberships_categories} AS c 
-						WHERE c.membership_id = %d", 
-						$level_id 
-					) 
-				);
+	$categories = $wpdb->get_col(
+		"SELECT c.category_id
+										FROM {$wpdb->pmpro_memberships_categories} AS c
+										WHERE c.membership_id = '" . esc_sql( $level_id ) . "'"
+	);
 
 	return $categories;
 }
@@ -1657,7 +1612,7 @@ function pmpro_calculateInitialPaymentRevenue( $s = null, $l = null ) {
 	// query to sum initial payments
 	$sqlQuery = "SELECT SUM(initial_payment) FROM $wpdb->pmpro_memberships_users WHERE `status` = 'active' ";
 	if ( ! empty( $user_ids_query ) ) {
-		$sqlQuery .= 'AND user_id IN(' . array_map( 'esc_sql', $user_ids_query ) . ') ';
+		$sqlQuery .= 'AND user_id IN(' . $user_ids_query . ') ';
 	}
 
 	$total = $wpdb->get_var( $sqlQuery );
@@ -1789,14 +1744,7 @@ function pmpro_getDiscountCode( $seed = null ) {
 	while ( empty( $code ) ) {
 		$scramble = md5( AUTH_KEY . microtime() . $seed . SECURE_AUTH_KEY . $count );
 		$code = substr( $scramble, 0, 10 );
-		$check = $wpdb->get_var( 
-			$wpdb->prepare( 
-				"SELECT code 
-				FROM $wpdb->pmpro_discount_codes 
-				WHERE code = %s LIMIT 1",
-				$code
-				) 
-			);
+		$check = $wpdb->get_var( "SELECT code FROM $wpdb->pmpro_discount_codes WHERE code = '" . esc_sql( $code ) . "' LIMIT 1" );
 		if ( $check || is_numeric( $code ) ) {
 			$code = null;
 		}
@@ -1821,12 +1769,7 @@ function pmpro_checkDiscountCode( $code, $level_id = null, $return_errors = fals
 
 	// get code from db
 	if ( ! $error ) {
-
-		$dbcode = $wpdb->get_row( $wpdb->prepare( 
-			"SELECT *, UNIX_TIMESTAMP(CONVERT_TZ(starts, '+00:00', @@global.time_zone)) as starts, UNIX_TIMESTAMP(CONVERT_TZ(expires, '+00:00', @@global.time_zone)) as expires 
-			FROM $wpdb->pmpro_discount_codes WHERE code = %s LIMIT 1",
-			$code
-		) );
+		$dbcode = $wpdb->get_row( "SELECT *, UNIX_TIMESTAMP(CONVERT_TZ(starts, '+00:00', @@global.time_zone)) as starts, UNIX_TIMESTAMP(CONVERT_TZ(expires, '+00:00', @@global.time_zone)) as expires FROM $wpdb->pmpro_discount_codes WHERE code ='" . esc_sql( $code ) . "' LIMIT 1" );
 
 		// did we find it?
 		if ( empty( $dbcode->id ) ) {
@@ -1859,14 +1802,7 @@ function pmpro_checkDiscountCode( $code, $level_id = null, $return_errors = fals
 	// have we run out of uses?
 	if ( ! $error ) {
 		if ( $dbcode->uses > 0 ) {
-			$used = $wpdb->get_var( 
-				$wpdb->prepare( 
-					"SELECT COUNT(*) 
-					FROM $wpdb->pmpro_discount_codes_uses 
-					WHERE code_id = %s",
-					$dbcode->id
-				) 
-			);
+			$used = $wpdb->get_var( "SELECT COUNT(*) FROM $wpdb->pmpro_discount_codes_uses WHERE code_id = '" . esc_sql( $dbcode->id ) . "'" );
 			if ( $used >= $dbcode->uses ) {
 				$error = __( 'This discount code is no longer valid.', 'paid-memberships-pro' );
 			}
@@ -1884,19 +1820,7 @@ function pmpro_checkDiscountCode( $code, $level_id = null, $return_errors = fals
 			} else {
 				$level_id = intval( $level_id );
 			}
-			$code_level = $wpdb->get_row( 
-				$wpdb->prepare(
-					"SELECT l.id, cl.*, l.name, l.description, l.allow_signups 
-					FROM $wpdb->pmpro_discount_codes_levels cl 
-					LEFT JOIN $wpdb->pmpro_membership_levels l 
-					ON cl.level_id = l.id 
-					WHERE cl.code_id = %d 
-					AND cl.level_id IN (%d) 
-					LIMIT 1",
-					$dbcode->id,
-					$level_id
-				)
-			);
+			$code_level = $wpdb->get_row( "SELECT l.id, cl.*, l.name, l.description, l.allow_signups FROM $wpdb->pmpro_discount_codes_levels cl LEFT JOIN $wpdb->pmpro_membership_levels l ON cl.level_id = l.id WHERE cl.code_id = '" . esc_sql( $dbcode->id ) . "' AND cl.level_id IN (" . esc_sql( $level_id ) . ") LIMIT 1" );
 
 			if ( empty( $code_level ) ) {
 				$error = __( 'This discount code does not apply to this membership level.', 'paid-memberships-pro' );
@@ -2188,11 +2112,10 @@ function pmpro_getMembershipLevelsForUser( $user_id = null, $include_inactive = 
 	 **/
 	$cache_key = 'user_' . $user_id . '_levels' . ( $include_inactive ? '_all' : '_active' );
     $levels = wp_cache_get( $cache_key, 'pmpro' );
+
 	if ( $levels === false ) {
-		// Use this for the SQL query so we can use wpdb->prepare.
-		$include_inactive = $include_inactive ? '' : ' ';
+
 		$levels = $wpdb->get_results(
-			$wpdb->prepare(
 			"SELECT
 				l.id AS ID,
 				l.id as id,
@@ -2214,13 +2137,9 @@ function pmpro_getMembershipLevelsForUser( $user_id = null, $include_inactive = 
 				UNIX_TIMESTAMP(CONVERT_TZ(enddate, '+00:00', @@global.time_zone)) as enddate
 			FROM {$wpdb->pmpro_membership_levels} AS l
 			JOIN {$wpdb->pmpro_memberships_users} AS mu ON (l.id = mu.membership_id)
-			WHERE mu.user_id = %d" . ( "%d AND mu.status = 'active'
-			GROUP BY ID" ),
-			$user_id,
-			$include_inactive
-			)
+			WHERE mu.user_id = $user_id" . ( $include_inactive ? '' : " AND mu.status = 'active'
+			GROUP BY ID" )
 		);
-
 		wp_cache_set( $cache_key, $levels, 'pmpro', 3600 );
 	}
 
@@ -2306,25 +2225,11 @@ function pmpro_getLevel( $level ) {
 			return $pmpro_levels[ $level_id ];
 		} else {
 			global $wpdb;
-			$pmpro_levels[ $level_id ] = $wpdb->get_row( $wpdb->prepare(
-				"SELECT * 
-				FROM $wpdb->pmpro_membership_levels 
-				WHERE id = %d 
-				LIMIT 1",
-				$level_id 
-				) 
-			);
+			$pmpro_levels[ $level_id ] = $wpdb->get_row( "SELECT * FROM $wpdb->pmpro_membership_levels WHERE id = '" . esc_sql( $level_id ) . "' LIMIT 1" );
 		}
 	} else {
 		global $wpdb;
-		$level_obj = $wpdb->get_row( $wpdb->prepare( 
-			"SELECT * 
-			FROM $wpdb->pmpro_membership_levels 
-			WHERE name = %s 
-			LIMIT 1",
-			$level
-			)
-		);
+		$level_obj = $wpdb->get_row( "SELECT * FROM $wpdb->pmpro_membership_levels WHERE name = '" . esc_sql( $level ) . "' LIMIT 1" );
 
 		if ( ! empty( $level_obj ) ) {
 			$level_id = $level_obj->id;
@@ -2472,14 +2377,7 @@ function pmpro_getLevelAtCheckout( $level_id = null, $discount_code = null ) {
 
 	// what level are they purchasing? (discount code passed)
 	if ( ! empty( $level_id ) && ! empty( $discount_code ) ) {
-		$discount_code_id = $wpdb->get_var( 
-			$wpdb->prepare( 
-				"SELECT id 
-				FROM $wpdb->pmpro_discount_codes 
-				WHERE code = %s LIMIT 1",
-				$discount_code 
-				) 
-			);
+		$discount_code_id = $wpdb->get_var( "SELECT id FROM $wpdb->pmpro_discount_codes WHERE code = '" . esc_sql( $discount_code ) . "' LIMIT 1" );
 
 		// check code
 		global $pmpro_checkout_level_ids; // Set by MMPU.
@@ -2489,31 +2387,12 @@ function pmpro_getLevelAtCheckout( $level_id = null, $discount_code = null ) {
 			$code_check = pmpro_checkDiscountCode( $discount_code, $level_id, true );
 		}
 		if ( $code_check[0] != false ) {
-			$sqlQuery = $wpdb->prepare( 
-				"SELECT l.id, cl.*, l.name, l.description, l.allow_signups, l.confirmation 
-				FROM $wpdb->pmpro_discount_codes_levels cl 
-				LEFT JOIN $wpdb->pmpro_membership_levels l 
-				ON cl.level_id = l.id 
-				LEFT JOIN $wpdb->pmpro_discount_codes dc 
-				ON dc.id = cl.code_id 
-				WHERE dc.code = %s 
-				AND cl.level_id = %d 
-				LIMIT 1", 
-				$discount_code, 
-				$level_id 
-			);
+			$sqlQuery    = "SELECT l.id, cl.*, l.name, l.description, l.allow_signups, l.confirmation FROM $wpdb->pmpro_discount_codes_levels cl LEFT JOIN $wpdb->pmpro_membership_levels l ON cl.level_id = l.id LEFT JOIN $wpdb->pmpro_discount_codes dc ON dc.id = cl.code_id WHERE dc.code = '" . esc_sql( $discount_code ) . "' AND cl.level_id = '" . esc_sql( $level_id ) . "' LIMIT 1";
 			$pmpro_level = $wpdb->get_row( $sqlQuery );
 
 			// if the discount code doesn't adjust the level, let's just get the straight level
 			if ( empty( $pmpro_level ) ) {
-				$pmpro_level = $wpdb->get_row( 
-					$wpdb->prepare( 
-						"SELECT * 
-						FROM $wpdb->pmpro_membership_levels 
-						WHERE id = %s LIMIT 1", 
-						$level_id 
-					) 
-				);
+				$pmpro_level = $wpdb->get_row( "SELECT * FROM $wpdb->pmpro_membership_levels WHERE id = '" . esc_sql( $level_id ) . "' LIMIT 1" );
 			}
 
 			// filter adjustments to the level
@@ -2527,16 +2406,7 @@ function pmpro_getLevelAtCheckout( $level_id = null, $discount_code = null ) {
 
 	// what level are they purchasing? (no discount code)
 	if ( empty( $pmpro_level ) && ! empty( $level_id ) ) {
-		$pmpro_level = $wpdb->get_row( 
-			$wpdb->prepare( 
-				"SELECT * 
-				FROM $wpdb->pmpro_membership_levels 
-				WHERE id = %s 
-				AND allow_signups = 1 
-				LIMIT 1", 
-				$level_id 
-			) 
-		);
+		$pmpro_level = $wpdb->get_row( "SELECT * FROM $wpdb->pmpro_membership_levels WHERE id = '" . esc_sql( $level_id ) . "' AND allow_signups = 1 LIMIT 1" );
 	}
 
 	// filter the level (for upgrades, etc)
@@ -2681,25 +2551,9 @@ if ( ! function_exists( 'pmpro_getMemberStartdate' ) ) {
 			global $wpdb;
 
 			if ( ! empty( $level_id ) ) {
-				$sqlQuery = $wpdb->prepare( 
-					"SELECT UNIX_TIMESTAMP(CONVERT_TZ(startdate, '+00:00', @@global.time_zone)) 
-					FROM $wpdb->pmpro_memberships_users 
-					WHERE status = 'active' 
-					AND membership_id IN(%s) 
-					AND user_id = %d 
-					ORDER BY id LIMIT 1",
-					$level_id,
-					$user_id 
-				);
+				$sqlQuery = "SELECT UNIX_TIMESTAMP(CONVERT_TZ(startdate, '+00:00', @@global.time_zone)) FROM $wpdb->pmpro_memberships_users WHERE status = 'active' AND membership_id IN(" . esc_sql( $level_id ) . ") AND user_id = '" . $user_id . "' ORDER BY id LIMIT 1";
 			} else {
-				$sqlQuery = $wpdb->prepare(
-					"SELECT UNIX_TIMESTAMP(CONVERT_TZ(startdate, '+00:00', @@global.time_zone)) 
-					FROM $wpdb->pmpro_memberships_users 
-					WHERE status = 'active' 
-					AND user_id = %d
-					ORDER BY id LIMIT 1",
-					$user_id 
-				);
+				$sqlQuery = "SELECT UNIX_TIMESTAMP(CONVERT_TZ(startdate, '+00:00', @@global.time_zone)) FROM $wpdb->pmpro_memberships_users WHERE status = 'active' AND user_id = '" . esc_sql( $user_id ) . "' ORDER BY id LIMIT 1";
 			}
 
 			$startdate = apply_filters( 'pmpro_member_startdate', $wpdb->get_var( $sqlQuery ), $user_id, $level_id );
