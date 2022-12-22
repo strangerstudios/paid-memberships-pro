@@ -638,7 +638,7 @@ function pmpro_getSales( $period = 'all time', $levels = 'all', $type = 'all' ) 
 	$sqlQuery .= "GROUP BY mo1.id ";
 
 	// We want the count of rows produced, so update the query.
-	$sqlQuery = "SELECT COUNT(*) FROM (" . esc_sql( $sqlQuery ) . ") as t1";
+	$sqlQuery = "SELECT COUNT(*) FROM (" . $sqlQuery  . ") as t1";
 
 	$sales = $wpdb->get_var($sqlQuery);
 
