@@ -612,8 +612,8 @@ function pmpro_getCancellations($period = null, $levels = 'all', $status = array
 		SELECT COUNT( DISTINCT mu1.user_id )
 		FROM {$wpdb->pmpro_memberships_users} AS mu1
 		WHERE mu1.status IN('" . implode( "','", array_map( 'esc_sql', $status ) ) . "')
-			AND mu1.enddate >= '" . esc_sql( $startdate ) . "'
-			AND mu1.enddate <= " . esc_sql( $enddate )  . "
+			AND mu1.enddate >= '" . $startdate . "'
+			AND mu1.enddate <= " . $enddate . "
 		";
 
 	//restrict by level
