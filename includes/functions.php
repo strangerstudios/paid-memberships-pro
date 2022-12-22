@@ -2473,7 +2473,7 @@ function pmpro_getLevelAtCheckout( $level_id = null, $discount_code = null ) {
 	// what level are they purchasing? (discount code passed)
 	if ( ! empty( $level_id ) && ! empty( $discount_code ) ) {
 		$discount_code_id = $wpdb->get_var( 
-			$wpbd->prepare( 
+			$wpdb->prepare( 
 				"SELECT id 
 				FROM $wpdb->pmpro_discount_codes 
 				WHERE code = %s LIMIT 1",
