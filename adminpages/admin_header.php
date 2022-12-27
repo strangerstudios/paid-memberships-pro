@@ -155,7 +155,7 @@
         $msgt = sprintf(__("The Braintree Gateway requires PHP 5.4.45 or greater. We recommend upgrading to PHP %s or greater. Ask your host to upgrade.", "paid-memberships-pro" ), PMPRO_MIN_PHP_VERSION );
     }
 
-	//if no errors yet, let's check and bug them if < our PMPRO_PHP_MIN_VERSION
+	//if no errors yet, let's check and bug them if < our PMPRO_MIN_PHP_VERSION
 	if( empty($msgt) && version_compare( PHP_VERSION, PMPRO_MIN_PHP_VERSION, '<' ) ) {
 		$msg = 1;
 		$msgt = sprintf(__("We recommend upgrading to PHP %s or greater. Ask your host to upgrade.", "paid-memberships-pro" ), PMPRO_MIN_PHP_VERSION );

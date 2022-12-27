@@ -904,7 +904,7 @@ function pmpro_hasMembershipLevel( $levels = null, $user_id = null ) {
 			} elseif ( in_array( '-L', $levels ) || in_array( '-l', $levels ) ) {
 				$return = ( empty( $user_id ) || $user_id != $current_user->ID );       // -L, not logged in users
 			} elseif ( in_array( 'E', $levels ) || in_array( 'e', $levels ) ) {
-				$sql = "SELECT id FROM $wpdb->pmpro_memberships_users WHERE user_id=$user_id AND status='expired' LIMIT 1";
+				$sql = "SELECT id FROM $wpdb->pmpro_memberships_users WHERE user_id = " . esc_sql( $user_id ) . " AND status ='expired' LIMIT 1";
 				$expired = $wpdb->get_var( $sql );                                    // E, expired members
 				$return = ! empty( $expired );
 			}
@@ -1344,19 +1344,19 @@ function pmpro_toggleMembershipCategory( $level, $category, $value ) {
 
 	if ( ( $level = intval( $level ) ) <= 0 ) {
 		$safe = addslashes( $level );
-		if ( ( $level = intval( $wpdb->get_var( "SELECT id FROM {$wpdb->pmpro_membership_levels} WHERE name = '$safe' LIMIT 1" ) ) ) <= 0 ) {
+		if ( ( $level = intval( $wpdb->get_var( "SELECT id FROM {$wpdb->pmpro_membership_levels} WHERE name = '" . esc_sql( $safe ) . "' LIMIT 1" ) ) ) <= 0 ) {
 			return __( 'Membership level not found.', 'paid-memberships-pro' );
 		}
 	}
 
 	if ( $value ) {
-		$sql = "REPLACE INTO {$wpdb->pmpro_memberships_categories} (`membership_id`,`category_id`) VALUES ('$level','$category')";
+		$sql = "REPLACE INTO {$wpdb->pmpro_memberships_categories} (`membership_id`,`category_id`) VALUES ('" . esc_sql( $level ) . "','" . esc_sql( $category ) . "')";
 		$wpdb->query( $sql );
 		if ( $wpdb->last_error ) {
 			return $wpdb->last_error;
 		}
 	} else {
-		$sql = "DELETE FROM {$wpdb->pmpro_memberships_categories} WHERE `membership_id` = '$level' AND `category_id` = '$category' LIMIT 1";
+		$sql = "DELETE FROM {$wpdb->pmpro_memberships_categories} WHERE `membership_id` = '" . esc_sql( $level ) . "' AND `category_id` = '" . esc_sql( $category ). "' LIMIT 1";
 		$wpdb->query( $sql );
 		if ( $wpdb->last_error ) {
 			return $wpdb->last_error;
@@ -4342,7 +4342,6 @@ function pmpro_activating_plugin( $plugin = null ) {
 	return true;
 }
 
-
 /**
  * Is the current site a production or staging site?
  * 
@@ -4350,7 +4349,6 @@ function pmpro_activating_plugin( $plugin = null ) {
  * @return bool True if we believe this is a production site
  */
 function pmpro_is_production_site() {
-
 	/**
 	 * Check if the WP_ENVIRONMENT_TYPE is set and not in production
 	 */
@@ -4359,7 +4357,6 @@ function pmpro_is_production_site() {
 	}
 
 	return true;
-
 }
 
 /**
@@ -4369,7 +4366,6 @@ function pmpro_is_production_site() {
  * @return bool True if the stored and current URL match
  */
 function pmpro_compare_siteurl() {
-
 	$site_url = get_site_url();
 
 	$current_url = pmpro_getOption( 'last_known_url' );
@@ -4383,7 +4379,6 @@ function pmpro_compare_siteurl() {
 	}
 
 	return true;
-
 }
 
 /**
@@ -4393,7 +4388,6 @@ function pmpro_compare_siteurl() {
  * @return bool True if the the site is in pause mode
  */
 function pmpro_is_paused() {
-
 	$pause_mode = pmpro_getOption( 'pause_mode' );
 	
 	//We haven't saved the option or it isn't in pause mode
@@ -4402,7 +4396,6 @@ function pmpro_is_paused() {
 	}
 
 	return true;
-
 }
 
 /**
@@ -4413,7 +4406,5 @@ function pmpro_is_paused() {
  * @return bool True if the option has been updated
  */
 function pmpro_set_pause_mode( $state ) {
-
 	return pmpro_setOption( 'pause_mode', $state );
-
 }
