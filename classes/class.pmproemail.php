@@ -473,7 +473,6 @@
 								'membership_cost' => pmpro_getLevelCost($membership_level),								
 								'login_link' => pmpro_login_url(),
 								'login_url' => pmpro_login_url(),
-								'display_name' => $user->display_name,
 								'user_email' => $user->user_email,	
 								'levels_url' => pmpro_url( 'levels' )							
 							);						
