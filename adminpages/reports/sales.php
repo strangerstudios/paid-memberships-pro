@@ -861,7 +861,7 @@ function pmpro_get_revenue_between_dates( $start_date, $end_date = '', $level_id
 		$sql_query .= " AND timestamp <= '" . esc_sql( $end_date ) . " 23:59:59'";
 	}
 	if ( ! empty( $level_ids ) ) {
-		$sql_query .= ' AND membership_id IN(' . implode( ', ', $levels ) . ') ';
+		$sql_query .= ' AND membership_id IN(' . implode( ', ', $level_ids ) . ') ';
 	}
 	return $wpdb->get_var($sql_query);
 }

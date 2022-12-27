@@ -410,6 +410,9 @@
 		$morder = new MemberOrder();
 		$morder->user_id = $last_order->user_id;
 
+		// get the user
+		$user = get_userdata( $morder->user_id );
+
 		// Email the user and ask them to update their credit card information
 		$pmproemail = new PMProEmail();
 		$pmproemail->sendBillingFailureEmail($user, $morder);

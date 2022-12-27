@@ -44,7 +44,7 @@
 		<h1 class="wp-heading-inline"><?php esc_html_e( 'Add Ons', 'paid-memberships-pro' ); ?></h1>
 		<p class="pmpro-admin-add-ons-refresh">
 			<?php printf(__('Last checked on %s at %s.', 'paid-memberships-pro' ), date_i18n(get_option('date_format'), $addons_timestamp), date_i18n(get_option('time_format'), $addons_timestamp));?> &nbsp;
-			<a class="button" href="<?php echo esc_url( admin_url("admin.php?page=pmpro-addons&force-check=1&view=" . $view) );?>"><?php esc_html_e('Check Again', 'paid-memberships-pro' ); ?></a>
+			<a class="button" href="<?php echo esc_url( admin_url("admin.php?page=pmpro-addons&force-check=1") );?>"><?php esc_html_e('Check Again', 'paid-memberships-pro' ); ?></a>
 		</p>
 		<?php
 			pmpro_showMessage();
