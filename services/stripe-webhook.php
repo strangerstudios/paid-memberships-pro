@@ -45,6 +45,9 @@
 		if ( ! empty( $post_event ) ) {
 			$event_id = sanitize_text_field($post_event->id);
 			$livemode = ! empty( $post_event->livemode );
+		} else {
+			// No event data passed in body, so use current environment.
+			$livemode = pmpro_getOption( 'gateway_environment' ) === 'live';
 		}
 	}
 	else
