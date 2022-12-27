@@ -70,7 +70,7 @@ use Braintree\WebhookNotification as Braintree_WebhookNotification;
 			if ( version_compare( PHP_VERSION, '5.4.45', '<' )) {
 
 				$msg = -1;
-				$msgt = sprintf(__("The Braintree Gateway requires PHP 5.4.45 or greater. We recommend upgrading to PHP %s or greater. Ask your host to upgrade.", "paid-memberships-pro" ), PMPRO_PHP_MIN_VERSION );
+				$msgt = sprintf(__("The Braintree Gateway requires PHP 5.4.45 or greater. We recommend upgrading to PHP %s or greater. Ask your host to upgrade.", "paid-memberships-pro" ), PMPRO_MIN_PHP_VERSION );
 
 				pmpro_setMessage( $msgt, "pmpro_error" );
 				return false;
