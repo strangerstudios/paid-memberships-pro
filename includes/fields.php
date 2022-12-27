@@ -731,7 +731,7 @@ function pmpro_show_user_fields_in_frontend_profile( $user, $withlocations = fal
 		<div class="pmpro_member_profile_edit-fields">
 			<?php
 				 // Cycle through groups.
-				foreach( $fields as $field ) {
+				foreach( $profile_fields as $field ) {
 					if ( pmpro_is_field( $field ) && $field->profile !== 'only_admin' ) {
 						$field->displayAtCheckout( $user->ID );
 					}

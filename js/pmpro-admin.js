@@ -876,7 +876,7 @@ jQuery( document ).ready( function() {
                     if ( 'activate' === action ) {
                         button.html( 'Could Not Activate.' );
                     } else if ( 'install' === action ) {
-                        button.html( 'Cound Not Install.' );
+                        button.html( 'Could Not Install.' );
                     } else if ( 'update' === action ) {
                         button.html( 'Could Not Update.' );
                     }
