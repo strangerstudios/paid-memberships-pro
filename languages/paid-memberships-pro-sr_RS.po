@@ -2,14 +2,14 @@
 # This file is distributed under the same license as the Paid Memberships Pro plugin.
 msgid ""
 msgstr ""
-"Project-Id-Version: Paid Memberships Pro 2.9.7\n"
+"Project-Id-Version: Paid Memberships Pro 2.9.8\n"
 "Report-Msgid-Bugs-To: info@paidmembershipspro.com\n"
 "Last-Translator: Paid Memberships Pro <info@paidmembershipspro.com>\n"
 "Language-Team: Paid Memberships Pro <info@paidmembershipspro.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2022-11-30T16:55:02+00:00\n"
+"POT-Creation-Date: 2022-12-27T19:50:25+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.7.1\n"
 "X-Domain: paid-memberships-pro\n"
@@ -400,6 +400,8 @@ msgstr "Trenutni Nivo"
 #: adminpages/membershiplevels.php:824
 #: classes/class.pmproemail.php:1197
 #: classes/class.pmproemail.php:1260
+#: classes/class.pmproemail.php:1204
+#: classes/class.pmproemail.php:1267
 msgid "None"
 msgstr "Nijedan"
 
@@ -849,6 +851,14 @@ msgstr "Članstvo ističe"
 #: classes/class.pmproemail.php:653
 #: classes/class.pmproemail.php:1040
 #: classes/class.pmproemail.php:1042
+#: classes/class.pmproemail.php:531
+#: classes/class.pmproemail.php:537
+#: classes/class.pmproemail.php:543
+#: classes/class.pmproemail.php:654
+#: classes/class.pmproemail.php:660
+#: classes/class.pmproemail.php:1047
+#: classes/class.pmproemail.php:1049
+#: includes/profile.php:452
 msgid "Discount Code"
 msgstr "Kod za Popust"
 
@@ -984,6 +994,7 @@ msgstr "Kupon"
 #: adminpages/orders.php:770
 #: includes/functions.php:2932
 #: includes/profile.php:452
+#: includes/profile.php:451
 msgid "Total"
 msgstr "Ukupno"
 
@@ -1015,6 +1026,7 @@ msgstr "Ukupno"
 #: includes/fields.php:1374
 #: includes/fields.php:1387
 #: includes/fields.php:1388
+#: includes/profile.php:448
 msgid "Date"
 msgstr "Datum"
 
@@ -1092,6 +1104,8 @@ msgstr "Vaše članstvo je <strong>aktivno</strong>."
 #: adminpages/reports/login.php:195
 #: includes/profile.php:567
 #: js/blocks/blocks.build.js:1
+#: includes/profile.php:450
+#: includes/profile.php:566
 msgid "Level"
 msgstr "Nivo"
 
@@ -1146,6 +1160,7 @@ msgstr "Moj Nalog"
 #: adminpages/reports/login.php:193
 #: classes/class.memberorder.php:1619
 #: pages/checkout.php:154
+#: classes/class.memberorder.php:1621
 msgid "Username"
 msgstr "Korisničko Ime"
 
@@ -1177,6 +1192,8 @@ msgstr "Korisničko Ime"
 #: adminpages/orders.php:442
 #: includes/profile.php:493
 #: includes/profile.php:794
+#: includes/profile.php:492
+#: includes/profile.php:793
 msgid "Email"
 msgstr ""
 
@@ -1199,6 +1216,8 @@ msgstr "Uredi Profil"
 #: shortcodes/pmpro_account.php:202
 #: includes/profile.php:916
 #: includes/profile.php:953
+#: includes/profile.php:915
+#: includes/profile.php:952
 msgid "Change Password"
 msgstr "Promijnite Lozinku"
 
@@ -1413,6 +1432,7 @@ msgstr "Platite sa Paypal"
 #: includes/profile.php:795
 #: includes/profile.php:791
 #: pages/checkout.php:254
+#: includes/profile.php:790
 msgid "First Name"
 msgstr "Ime"
 
@@ -1427,6 +1447,7 @@ msgstr "Ime"
 #: includes/profile.php:796
 #: includes/profile.php:792
 #: pages/checkout.php:258
+#: includes/profile.php:791
 msgid "Last Name"
 msgstr "Prezime"
 
@@ -1731,6 +1752,7 @@ msgstr "Ispod su detalji o Vašem nalogu i račun za Vašu prvu člansku fakturu
 #: includes/profile.php:473
 #: adminpages/orders.php:441
 #: includes/profile.php:488
+#: includes/profile.php:487
 msgid "Print"
 msgstr "Štampaj"
 
@@ -1844,6 +1866,8 @@ msgstr "Ažuriraj"
 #: includes/profile.php:830
 #: includes/profile.php:954
 #: adminpages/membershiplevels.php:940
+#: includes/profile.php:829
+#: includes/profile.php:953
 msgid "Cancel"
 msgstr "Otkaži"
 
@@ -1948,6 +1972,7 @@ msgstr "&larr; Vratite se na Naslovnu"
 #: classes/class.memberorder.php:1001
 #: classes/class.memberorder.php:1010
 #: classes/class.memberorder.php:1617
+#: classes/class.memberorder.php:1619
 #, php-format
 msgid "There was an error canceling the subscription for user with ID=%s. You will want to check your payment gateway to see if their subscription is still active."
 msgstr "Deslia se greška prilikom otkazivanja pretplateza korisnika sa ID=%s. Trebali bi da provjerite da li je pretplata još uvijek aktivna."
@@ -2024,6 +2049,11 @@ msgstr "Vaša potvrda članstva za %s"
 #: classes/class.pmproemail.php:1049
 #: classes/class.pmproemail.php:1227
 #: classes/class.pmproemail.php:1290
+#: classes/class.pmproemail.php:551
+#: classes/class.pmproemail.php:670
+#: classes/class.pmproemail.php:1056
+#: classes/class.pmproemail.php:1234
+#: classes/class.pmproemail.php:1297
 #, php-format
 msgid "This membership will expire on %s."
 msgstr "Ovo članstvo će da istekne %s."
@@ -2070,6 +2100,7 @@ msgstr "Faktura za  %s članstvo"
 #: classes/class.pmproemail.php:932
 #: classes/class.pmproemail.php:966
 #: classes/class.pmproemail.php:1083
+#: classes/class.pmproemail.php:1090
 #, php-format
 msgid "Your trial at %s is ending soon"
 msgstr "Vaša proba na %s se uskoro završava"
@@ -2081,6 +2112,7 @@ msgstr "Vaša proba na %s se uskoro završava"
 #: classes/class.pmproemail.php:969
 #: classes/class.pmproemail.php:1003
 #: classes/class.pmproemail.php:1122
+#: classes/class.pmproemail.php:1129
 #, php-format
 msgid "Your membership at %s has ended"
 msgstr "Vaše članstvo na %s je isteklo"
@@ -2092,6 +2124,7 @@ msgstr "Vaše članstvo na %s je isteklo"
 #: classes/class.pmproemail.php:996
 #: classes/class.pmproemail.php:1028
 #: classes/class.pmproemail.php:1153
+#: classes/class.pmproemail.php:1160
 #, php-format
 msgid "Your membership at %s will end soon"
 msgstr "Vaše članstvo na %s uskoro ističe"
@@ -2103,6 +2136,7 @@ msgstr "Vaše članstvo na %s uskoro ističe"
 #: classes/class.pmproemail.php:1026
 #: classes/class.pmproemail.php:1058
 #: classes/class.pmproemail.php:1202
+#: classes/class.pmproemail.php:1209
 #, php-format
 msgid "Your membership at %s has been changed"
 msgstr "Vaše članstvo na %s je promijenjeno"
@@ -2123,6 +2157,8 @@ msgstr "Vaše članstvo na %s je promijenjeno"
 #: classes/class.pmproemail.php:1108
 #: classes/class.pmproemail.php:1220
 #: classes/class.pmproemail.php:1283
+#: classes/class.pmproemail.php:1227
+#: classes/class.pmproemail.php:1290
 #, php-format
 msgid "The new level is %s."
 msgstr "Novi nivo je %s."
@@ -2149,6 +2185,7 @@ msgstr "Ovo članstvo nema rok za isticanje"
 #: classes/class.pmproemail.php:1071
 #: classes/class.pmproemail.php:1103
 #: classes/class.pmproemail.php:1265
+#: classes/class.pmproemail.php:1272
 #, php-format
 msgid "Membership for %s at %s has been changed"
 msgstr "Članstvo za %s na%s je promijenjeno"
@@ -2314,6 +2351,9 @@ msgstr "Članstvo"
 #: classes/gateways/class.pmprogateway_authorizenet.php:915
 #: classes/gateways/class.pmprogateway_authorizenet.php:856
 #: classes/gateways/class.pmprogateway_authorizenet.php:857
+#: classes/gateways/class.pmprogateway_authorizenet.php:855
+#: classes/gateways/class.pmprogateway_authorizenet.php:927
+#: classes/gateways/class.pmprogateway_authorizenet.php:928
 msgid "Could not connect to Authorize.net"
 msgstr "Neupjeh prilikom uspostavljanja veze sa Authorize.net"
 
@@ -3224,6 +3264,7 @@ msgstr "Greška prilikom saviranja narudžbe."
 #: classes/class.memberorder.php:1621
 #: includes/fields.php:1249
 #: includes/fields.php:1262
+#: classes/class.memberorder.php:1623
 msgid "Order"
 msgstr "Narudžba"
 
@@ -3272,6 +3313,7 @@ msgstr "Ovo će da generiše kada sačuvate."
 #: adminpages/dashboard.php:298
 #: adminpages/orders.php:476
 #: includes/profile.php:450
+#: includes/profile.php:449
 msgid "Code"
 msgstr "Kod"
 
@@ -3512,6 +3554,8 @@ msgstr "Godina Isteka"
 #: adminpages/orders.php:852
 #: includes/profile.php:454
 #: includes/profile.php:572
+#: includes/profile.php:453
+#: includes/profile.php:571
 msgid "Status"
 msgstr "Status"
 
@@ -3533,6 +3577,7 @@ msgstr "Status"
 #: adminpages/orders.php:1667
 #: adminpages/orders.php:879
 #: classes/class.memberorder.php:1622
+#: classes/class.memberorder.php:1624
 msgid "Gateway"
 msgstr "Prolaz za Plaćanje"
 
@@ -3638,6 +3683,7 @@ msgstr "Generisano..."
 #: classes/class.memberorder.php:1016
 #: adminpages/orders.php:934
 #: classes/class.memberorder.php:1623
+#: classes/class.memberorder.php:1625
 msgid "Subscription Transaction ID"
 msgstr "ID Transakcije za Pretplatu"
 
@@ -3805,6 +3851,7 @@ msgstr "Transakcijski ID"
 #: adminpages/dashboard.php:327
 #: adminpages/dashboard.php:342
 #: includes/profile.php:503
+#: includes/profile.php:502
 msgid "deleted"
 msgstr "obrisano"
 
@@ -3960,6 +4007,7 @@ msgstr "Završen"
 #: adminpages/advancedsettings.php:338
 #: includes/profile.php:551
 #: includes/profile.php:582
+#: includes/profile.php:581
 msgid "Never"
 msgstr "Nikad"
 
@@ -4749,6 +4797,7 @@ msgstr "Dodaj Novi Kod Za Popust"
 #: includes/profile.php:497
 #: includes/profile.php:537
 #: includes/profile.php:568
+#: includes/profile.php:567
 msgid "Start Date"
 msgstr "Datum Početka"
 
@@ -5502,6 +5551,7 @@ msgstr "Prolaz za Plaćanje mora biti uspostavljen prije nego što ijedna naplat
 #: classes/class.pmproemail.php:1033
 #: classes/class.pmproemail.php:1065
 #: classes/class.pmproemail.php:1222
+#: classes/class.pmproemail.php:1229
 msgid "Your membership has been cancelled."
 msgstr "Vaša pretplata je otkazana."
 
@@ -5746,6 +5796,7 @@ msgstr ""
 #: includes/profile.php:589
 #: classes/class.pmproemail.php:306
 #: classes/class.pmproemail.php:379
+#: includes/profile.php:586
 msgid "N/A"
 msgstr ""
 
@@ -6448,6 +6499,7 @@ msgstr ""
 #: includes/fields.php:1348
 #: adminpages/membershiplevels.php:1171
 #: adminpages/membershiplevels.php:1181
+#: includes/profile.php:484
 msgid "Edit"
 msgstr ""
 
@@ -6705,6 +6757,7 @@ msgstr ""
 #: adminpages/emailtemplates.php:132
 #: classes/class.memberorder.php:1011
 #: classes/class.memberorder.php:1618
+#: classes/class.memberorder.php:1620
 msgid "User Email"
 msgstr ""
 
@@ -7483,6 +7536,7 @@ msgstr ""
 #: classes/class.memberorder.php:1009
 #: classes/class.memberorder.php:1018
 #: classes/class.memberorder.php:1625
+#: classes/class.memberorder.php:1627
 msgid "Edit User"
 msgstr ""
 
@@ -7494,6 +7548,7 @@ msgstr ""
 #: includes/profile.php:411
 #: includes/profile.php:389
 #: includes/profile.php:429
+#: includes/profile.php:428
 msgid "Total Paid"
 msgstr ""
 
@@ -7838,6 +7893,9 @@ msgstr ""
 #: includes/profile.php:505
 #: includes/profile.php:512
 #: includes/profile.php:522
+#: includes/profile.php:504
+#: includes/profile.php:511
+#: includes/profile.php:521
 msgid "&#8212;"
 msgstr ""
 
@@ -7845,6 +7903,7 @@ msgstr ""
 #: classes/class.memberorder.php:1004
 #: classes/class.memberorder.php:1013
 #: classes/class.memberorder.php:1620
+#: classes/class.memberorder.php:1622
 msgid "User Display Name"
 msgstr ""
 
@@ -7854,6 +7913,7 @@ msgstr ""
 #: classes/class.memberorder.php:1019
 #: adminpages/orders.php:440
 #: classes/class.memberorder.php:1626
+#: classes/class.memberorder.php:1628
 msgid "Edit Order"
 msgstr ""
 
@@ -7861,6 +7921,7 @@ msgstr ""
 #: classes/class.memberorder.php:1183
 #: classes/class.memberorder.php:1192
 #: classes/class.memberorder.php:1799
+#: classes/class.memberorder.php:1801
 msgid "This is a test order used with the PMPro Email Templates addon."
 msgstr ""
 
@@ -7870,6 +7931,7 @@ msgstr ""
 #: classes/class.pmproemail.php:503
 #: classes/class.pmproemail.php:515
 #: classes/class.pmproemail.php:582
+#: classes/class.pmproemail.php:588
 msgid "Member checkout for %s at %s"
 msgstr ""
 
@@ -7879,6 +7941,7 @@ msgstr ""
 #: classes/class.pmproemail.php:601
 #: classes/class.pmproemail.php:619
 #: classes/class.pmproemail.php:693
+#: classes/class.pmproemail.php:700
 msgid "Your billing information has been updated at %s"
 msgstr ""
 
@@ -7888,6 +7951,7 @@ msgstr ""
 #: classes/class.pmproemail.php:651
 #: classes/class.pmproemail.php:675
 #: classes/class.pmproemail.php:756
+#: classes/class.pmproemail.php:763
 msgid "Billing information has been updated for %s at %s"
 msgstr ""
 
@@ -7897,6 +7961,7 @@ msgstr ""
 #: classes/class.pmproemail.php:703
 #: classes/class.pmproemail.php:727
 #: classes/class.pmproemail.php:815
+#: classes/class.pmproemail.php:822
 msgid "Membership payment failed at %s"
 msgstr ""
 
@@ -7906,6 +7971,7 @@ msgstr ""
 #: classes/class.pmproemail.php:752
 #: classes/class.pmproemail.php:776
 #: classes/class.pmproemail.php:871
+#: classes/class.pmproemail.php:878
 msgid "Membership payment failed For %s at %s"
 msgstr ""
 
@@ -7915,6 +7981,7 @@ msgstr ""
 #: classes/class.pmproemail.php:801
 #: classes/class.pmproemail.php:831
 #: classes/class.pmproemail.php:933
+#: classes/class.pmproemail.php:940
 msgid "Credit card on file expiring soon at %s"
 msgstr ""
 
@@ -7924,6 +7991,7 @@ msgstr ""
 #: classes/class.pmproemail.php:853
 #: classes/class.pmproemail.php:887
 #: classes/class.pmproemail.php:997
+#: classes/class.pmproemail.php:1004
 msgid "Invoice for %s membership"
 msgstr ""
 
@@ -7942,6 +8010,8 @@ msgstr ""
 #: classes/class.pmproemail.php:1119
 #: classes/class.pmproemail.php:1231
 #: classes/class.pmproemail.php:1294
+#: classes/class.pmproemail.php:1238
+#: classes/class.pmproemail.php:1301
 msgid "This membership does not expire."
 msgstr ""
 
@@ -7951,6 +8021,7 @@ msgstr ""
 #: classes/class.pmproemail.php:1078
 #: classes/class.pmproemail.php:1110
 #: classes/class.pmproemail.php:1285
+#: classes/class.pmproemail.php:1292
 msgid "Membership has been cancelled."
 msgstr ""
 
@@ -7960,6 +8031,7 @@ msgstr ""
 #: classes/class.pmproemail.php:1118
 #: classes/class.pmproemail.php:1150
 #: classes/class.pmproemail.php:1325
+#: classes/class.pmproemail.php:1332
 msgid "Invoice for order #: "
 msgstr ""
 
@@ -7969,6 +8041,7 @@ msgstr ""
 #: classes/class.pmproemail.php:1168
 #: classes/class.pmproemail.php:1200
 #: classes/class.pmproemail.php:1384
+#: classes/class.pmproemail.php:1391
 msgid "Payment action required for your %s membership"
 msgstr ""
 
@@ -7978,6 +8051,7 @@ msgstr ""
 #: classes/class.pmproemail.php:1206
 #: classes/class.pmproemail.php:1238
 #: classes/class.pmproemail.php:1431
+#: classes/class.pmproemail.php:1438
 msgid "Payment action required: membership for %s at %s"
 msgstr ""
 
@@ -11678,6 +11752,7 @@ msgstr ""
 #: includes/profile.php:851
 #: includes/profile.php:891
 #: includes/profile.php:887
+#: includes/profile.php:886
 msgid "New passwords do not match."
 msgstr ""
 
@@ -11687,6 +11762,7 @@ msgstr ""
 #: includes/profile.php:847
 #: includes/profile.php:887
 #: includes/profile.php:883
+#: includes/profile.php:882
 msgid "Please complete all fields."
 msgstr ""
 
@@ -11720,6 +11796,7 @@ msgstr ""
 #: includes/profile.php:899
 #: includes/profile.php:939
 #: includes/profile.php:935
+#: includes/profile.php:934
 msgid "New Password"
 msgstr ""
 
@@ -11731,6 +11808,7 @@ msgstr ""
 #: includes/profile.php:902
 #: includes/profile.php:942
 #: includes/profile.php:938
+#: includes/profile.php:937
 msgid "Strength Indicator"
 msgstr ""
 
@@ -11740,6 +11818,7 @@ msgstr ""
 #: includes/profile.php:906
 #: includes/profile.php:946
 #: includes/profile.php:942
+#: includes/profile.php:941
 msgid "Confirm New Password"
 msgstr ""
 
@@ -11848,6 +11927,7 @@ msgstr ""
 #: includes/profile.php:452
 #: includes/profile.php:535
 #: includes/profile.php:566
+#: includes/profile.php:565
 msgid "Level ID"
 msgstr ""
 
@@ -11857,6 +11937,7 @@ msgstr ""
 #: includes/profile.php:498
 #: includes/profile.php:538
 #: includes/profile.php:569
+#: includes/profile.php:568
 msgid "Date Modified"
 msgstr ""
 
@@ -11866,6 +11947,7 @@ msgstr ""
 #: includes/profile.php:499
 #: includes/profile.php:539
 #: includes/profile.php:570
+#: includes/profile.php:569
 msgid "End Date"
 msgstr ""
 
@@ -11875,6 +11957,7 @@ msgstr ""
 #: includes/profile.php:500
 #: includes/profile.php:540
 #: includes/profile.php:571
+#: includes/profile.php:570
 msgid "Level Cost"
 msgstr ""
 
@@ -11949,6 +12032,7 @@ msgstr ""
 #: adminpages/orders.php:1705
 #: shortcodes/pmpro_account.php:251
 #: includes/profile.php:526
+#: includes/profile.php:525
 msgid "Paid"
 msgstr ""
 
@@ -11988,18 +12072,21 @@ msgstr ""
 #: includes/profile.php:410
 #: includes/profile.php:388
 #: includes/profile.php:428
+#: includes/profile.php:427
 msgid "Member History"
 msgstr ""
 
 #: includes/profile.php:413
 #: includes/profile.php:391
 #: includes/profile.php:431
+#: includes/profile.php:430
 msgid "Order History"
 msgstr ""
 
 #: includes/profile.php:414
 #: includes/profile.php:392
 #: includes/profile.php:432
+#: includes/profile.php:431
 msgid "Membership Levels History"
 msgstr ""
 
@@ -12008,6 +12095,7 @@ msgstr ""
 #: includes/profile.php:475
 #: includes/profile.php:515
 #: includes/profile.php:546
+#: includes/profile.php:545
 msgid "No membership orders found."
 msgstr ""
 
@@ -12016,6 +12104,7 @@ msgstr ""
 #: includes/profile.php:542
 #: includes/profile.php:582
 #: includes/profile.php:613
+#: includes/profile.php:612
 msgid "No membership history found."
 msgstr ""
 
@@ -12024,6 +12113,7 @@ msgstr ""
 #: includes/profile.php:652
 #: includes/profile.php:692
 #: includes/profile.php:688
+#: includes/profile.php:687
 msgid "Log in to edit your profile."
 msgstr ""
 
@@ -12032,6 +12122,7 @@ msgstr ""
 #: includes/profile.php:687
 #: includes/profile.php:727
 #: includes/profile.php:723
+#: includes/profile.php:722
 msgid "Please enter a display name."
 msgstr ""
 
@@ -12040,6 +12131,7 @@ msgstr ""
 #: includes/profile.php:697
 #: includes/profile.php:737
 #: includes/profile.php:733
+#: includes/profile.php:732
 msgid "Please enter an email address."
 msgstr ""
 
@@ -12048,6 +12140,7 @@ msgstr ""
 #: includes/profile.php:699
 #: includes/profile.php:739
 #: includes/profile.php:735
+#: includes/profile.php:734
 msgid "The email address isn&#8217;t correct."
 msgstr ""
 
@@ -12056,6 +12149,7 @@ msgstr ""
 #: includes/profile.php:703
 #: includes/profile.php:743
 #: includes/profile.php:739
+#: includes/profile.php:738
 msgid "This email is already registered, please choose another one."
 msgstr ""
 
@@ -12064,6 +12158,7 @@ msgstr ""
 #: includes/profile.php:730
 #: includes/profile.php:770
 #: includes/profile.php:766
+#: includes/profile.php:765
 msgid "Your profile has been updated."
 msgstr ""
 
@@ -12072,6 +12167,7 @@ msgstr ""
 #: includes/profile.php:757
 #: includes/profile.php:797
 #: includes/profile.php:793
+#: includes/profile.php:792
 msgid "Display name publicly as"
 msgstr ""
 
@@ -12080,6 +12176,7 @@ msgstr ""
 #: includes/profile.php:770
 #: includes/profile.php:810
 #: includes/profile.php:806
+#: includes/profile.php:805
 msgid "Site administrators must use the WordPress dashboard to update their email address."
 msgstr ""
 
@@ -12088,6 +12185,7 @@ msgstr ""
 #: includes/profile.php:793
 #: includes/profile.php:833
 #: includes/profile.php:829
+#: includes/profile.php:828
 msgid "Update Profile"
 msgstr ""
 
@@ -12096,6 +12194,7 @@ msgstr ""
 #: includes/profile.php:849
 #: includes/profile.php:889
 #: includes/profile.php:885
+#: includes/profile.php:884
 msgid "Please enter your current password."
 msgstr ""
 
@@ -12104,6 +12203,7 @@ msgstr ""
 #: includes/profile.php:853
 #: includes/profile.php:893
 #: includes/profile.php:889
+#: includes/profile.php:888
 msgid "Your current password is incorrect."
 msgstr ""
 
@@ -12112,6 +12212,7 @@ msgstr ""
 #: includes/profile.php:864
 #: includes/profile.php:904
 #: includes/profile.php:900
+#: includes/profile.php:899
 msgid "Your password has been updated."
 msgstr ""
 
@@ -12120,6 +12221,7 @@ msgstr ""
 #: includes/profile.php:894
 #: includes/profile.php:934
 #: includes/profile.php:930
+#: includes/profile.php:929
 msgid "Current Password"
 msgstr ""
 
@@ -12138,6 +12240,8 @@ msgstr ""
 #: includes/profile.php:937
 #: includes/profile.php:944
 #: classes/class-pmpro-field.php:1254
+#: includes/profile.php:931
+#: includes/profile.php:943
 msgid "Required Field"
 msgstr ""
 
@@ -13741,6 +13845,7 @@ msgstr ""
 #: adminpages/discountcodes.php:835
 #: adminpages/orders.php:1499
 #: includes/profile.php:480
+#: includes/profile.php:479
 msgid "ID: %s"
 msgstr ""
 
@@ -13854,6 +13959,7 @@ msgstr ""
 #. translators: %1$s is the date and %2$s is the time.
 #: adminpages/orders.php:1718
 #: includes/profile.php:468
+#: includes/profile.php:467
 msgid "%1$s at %2$s"
 msgstr ""
 
