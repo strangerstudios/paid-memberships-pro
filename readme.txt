@@ -4,7 +4,7 @@ Tags: memberships, members, subscriptions, ecommerce, user registration, member,
 Requires at least: 5.2
 Tested up to: 6.1.1
 Requires PHP: 5.6
-Stable tag: 2.9.7
+Stable tag: 2.9.8
 
 WordPress membership plugin: restrict content, accept member subscriptions with recurring payment. Includes user registration, login, & profile fields
 
@@ -156,6 +156,16 @@ Not sure? You can find out by doing a bit a research.
 9. Membership Account page, display all sections or show specific sections using shortcode attributes.
 
 == Changelog ==
+= 2.9.8 - 2022-12-27 =
+* SECURITY: Updated many queries to use $wpdb->prepare and esc_sql for better security. In almost all of these cases, the variables uses in the queries were escaped earlier or otherwise trusted, but it's good practice to escape in the query anyway to be extra safe and avoid issues when code is updated in the future. #2312 (@andrewlimaza, @ideadude)
+* BUG FIX/ENHANCEMENT: Fixed some notices in the Authorize.net Gateway class. #2295 (@mircobabini)
+* BUG FIX/ENHANCEMENT: Fixed HTML in the nl_NL email templates. #2300 (@mircobabini)
+* BUG FIX/ENHANCEMENT: Added the !!membership_level_confirmation_message!! var to admin checkout emails. #2305 (@dparker1005)
+* BUG FIX/ENHANCEMENT: Fixed typo "could" in error message shown when an Add On cannot be installed. #2313 (@kimcoleman)
+* ENHANCEMENT: Removed duplicate "display_name" definition in the PMPro Email class. #2297 (@mircobabini)
+* ENHANCEMENT: Fixed PMPRO_MIN_PHP_VERSION constant name in a few places. #2298 (@mircobabini)
+* ENHANCEMENT: Including the PMPro Akismet and MailPoet icons for use on the Add Ons page. #2307 #2309 (@andrewlimaza)
+
 = 2.9.7 - 2022-11-30 =
 * BUG FIX/ENHANCEMENT: Added compatibility for the Avada theme. Protected content is now editable. #2285 (@andrewlimaza)
 * BUG FIX: Avoiding sprintf issues during cron runs. This caused issues where the expiring soon emails were being sent out multiple times. #2290 (@dparker1005)
@@ -286,7 +296,7 @@ BUG FIX: Fixed issue where the billing zipcode was not pulled from user meta cor
 
 = 2.8 - 2022-05-05 =
 * FEATURE: Added refunds buttons for Stripe and Paypal Express orders. #1948 (@JarrydLong)
-* FEATURE: Released Beta version of Stripe Checkout. Add `define('PMPRO_STRIPE_CHECKOUT_BETA_ENABLED', true);` to your wp-config.php to enable this gateway during the beta. #1923 (@dlparker1005)
+* FEATURE: Released Beta version of Stripe Checkout. Add `define('PMPRO_STRIPE_CHECKOUT_BETA_ENABLED', true);` to your wp-config.php to enable this gateway during the beta. #1923 (@dparker1005)
 * ENHANCEMENT: Introduced a new set of functions that handle cron-related tasks including: `pmpro_get_crons()` to get the list of PMPro registered crons. #1999 (@sc0ttkclark)
 * ENHANCEMENT: New filter `pmpro_registered_crons` which you can register new crons to be handled by PMPro. They show up in the PMPro Site Health info and are automatically scheduled when they need to be. #1999 (@sc0ttkclark)
 * ENHANCEMENT: Added an opt-in stats collection so we can get better insight on how people use Paid Memberships Pro. (@sc0ttkclark, @ideadude)
