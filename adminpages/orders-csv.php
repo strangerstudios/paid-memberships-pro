@@ -222,11 +222,11 @@ if ( ! empty( $s ) ) {
 	$fields = apply_filters( "pmpro_orders_search_fields", $fields );
 
 	foreach ( $fields as $field ) {
-		$sqlQuery .= " OR " . $field . " LIKE '%" . esc_sql( $s ) . "%' ";
+		$sqlQuery .= " OR " . esc_sql( $field ) . " LIKE '%" . esc_sql( $s ) . "%' ";
 	}
 
 	$sqlQuery .= ") ";
-	$sqlQuery .= "AND " . $condition . " ";
+	$sqlQuery .= "AND " . esc_sql( $condition ) . " ";
 	$sqlQuery .= "GROUP BY o.id ORDER BY o.id DESC, o.timestamp DESC ";
 
 } else {
@@ -236,11 +236,11 @@ if ( ! empty( $s ) ) {
 		$sqlQuery .= "LEFT JOIN $wpdb->pmpro_discount_codes_uses dc ON o.id = dc.order_id ";
 	}
 
-	$sqlQuery .= "WHERE " . $condition . ' ORDER BY o.id DESC, o.timestamp DESC ';
+	$sqlQuery .= "WHERE " . esc_sql( $condition ) . ' ORDER BY o.id DESC, o.timestamp DESC ';
 }
 
 if ( ! empty( $start ) && ! empty( $limit ) ) {
-	$sqlQuery .= "LIMIT $start, $limit";
+	$sqlQuery .= "LIMIT " . esc_sql( $start ) . "," . esc_sql( $limit );
 }
 
 $headers   = array();

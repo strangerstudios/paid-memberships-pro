@@ -902,7 +902,7 @@ function pmpro_hasMembershipLevel( $levels = null, $user_id = null ) {
 			} elseif ( in_array( '-L', $levels ) || in_array( '-l', $levels ) ) {
 				$return = ( empty( $user_id ) || $user_id != $current_user->ID );       // -L, not logged in users
 			} elseif ( in_array( 'E', $levels ) || in_array( 'e', $levels ) ) {
-				$sql = "SELECT id FROM $wpdb->pmpro_memberships_users WHERE user_id=$user_id AND status='expired' LIMIT 1";
+				$sql = "SELECT id FROM $wpdb->pmpro_memberships_users WHERE user_id = " . esc_sql( $user_id ) . " AND status ='expired' LIMIT 1";
 				$expired = $wpdb->get_var( $sql );                                    // E, expired members
 				$return = ! empty( $expired );
 			}
@@ -1342,19 +1342,19 @@ function pmpro_toggleMembershipCategory( $level, $category, $value ) {
 
 	if ( ( $level = intval( $level ) ) <= 0 ) {
 		$safe = addslashes( $level );
-		if ( ( $level = intval( $wpdb->get_var( "SELECT id FROM {$wpdb->pmpro_membership_levels} WHERE name = '$safe' LIMIT 1" ) ) ) <= 0 ) {
+		if ( ( $level = intval( $wpdb->get_var( "SELECT id FROM {$wpdb->pmpro_membership_levels} WHERE name = '" . esc_sql( $safe ) . "' LIMIT 1" ) ) ) <= 0 ) {
 			return __( 'Membership level not found.', 'paid-memberships-pro' );
 		}
 	}
 
 	if ( $value ) {
-		$sql = "REPLACE INTO {$wpdb->pmpro_memberships_categories} (`membership_id`,`category_id`) VALUES ('$level','$category')";
+		$sql = "REPLACE INTO {$wpdb->pmpro_memberships_categories} (`membership_id`,`category_id`) VALUES ('" . esc_sql( $level ) . "','" . esc_sql( $category ) . "')";
 		$wpdb->query( $sql );
 		if ( $wpdb->last_error ) {
 			return $wpdb->last_error;
 		}
 	} else {
-		$sql = "DELETE FROM {$wpdb->pmpro_memberships_categories} WHERE `membership_id` = '$level' AND `category_id` = '$category' LIMIT 1";
+		$sql = "DELETE FROM {$wpdb->pmpro_memberships_categories} WHERE `membership_id` = '" . esc_sql( $level ) . "' AND `category_id` = '" . esc_sql( $category ). "' LIMIT 1";
 		$wpdb->query( $sql );
 		if ( $wpdb->last_error ) {
 			return $wpdb->last_error;

@@ -904,16 +904,15 @@
 				return false;
 
 			//build query
-			$this->sqlQuery = "SELECT id FROM $wpdb->pmpro_membership_orders WHERE user_id = '" . $user_id . "' ";
+			$this->sqlQuery = "SELECT id FROM $wpdb->pmpro_membership_orders WHERE user_id = '" . esc_sql( $user_id ) . "' ";
 			if(!empty($status) && is_array($status)) {
-				$status = array_map( 'esc_sql', $status );
-				$this->sqlQuery .= "AND status IN('" . implode("','", $status) . "') ";
+				$this->sqlQuery .= "AND status IN('" . implode("','", array_map( 'esc_sql', $status ) ) . "') ";
 			} elseif(!empty($status)) {
 				$this->sqlQuery .= "AND status = '" . esc_sql($status) . "' ";
 			}
 
 			if(!empty($membership_id))
-				$this->sqlQuery .= "AND membership_id = '" . $membership_id . "' ";
+				$this->sqlQuery .= "AND membership_id = '" . esc_sql( $membership_id ) . "' ";
 
 			if(!empty($gateway))
 				$this->sqlQuery .= "AND gateway = '" . esc_sql($gateway) . "' ";

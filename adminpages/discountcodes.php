@@ -739,12 +739,12 @@
 		<?php
 			$sqlQuery = "SELECT SQL_CALC_FOUND_ROWS *, UNIX_TIMESTAMP(CONVERT_TZ(starts, '+00:00', @@global.time_zone)) as starts, UNIX_TIMESTAMP(CONVERT_TZ(expires, '+00:00', @@global.time_zone)) as expires FROM $wpdb->pmpro_discount_codes ";
 			if( ! empty( $s ) ) {
-				$sqlQuery .= "WHERE code LIKE '%$s%' ";
+				$sqlQuery .= "WHERE code LIKE '%" . esc_sql( $s ) . "%' ";
 			}
 
 			$sqlQuery .= "ORDER BY id DESC ";
 
-			$sqlQuery .= "LIMIT $start, $limit ";
+			$sqlQuery .= "LIMIT " . esc_sql( $start ) . "," .  esc_sql( $limit );
 
 			$codes = $wpdb->get_results($sqlQuery, OBJECT);
 
