@@ -130,6 +130,11 @@ function pmpro_member_shortcode($atts, $content=null, $code='')
 		else
 			$r = pmpro_escape_price( pmpro_formatPrice($r) );
 	}
+	
+	//Check for arrays to reformat them.
+	if ( is_array( $r ) ) {
+		$r = implode( ', ', $r );
+	}
 
 	/** 
 	 * Filter
