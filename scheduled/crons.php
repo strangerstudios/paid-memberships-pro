@@ -233,13 +233,13 @@ function pmpro_cron_trial_ending_warnings()
 	WHERE
 		mu.status = 'active' AND mu.trial_limit IS NOT NULL AND mu.trial_limit > 0 AND
 		(
-			(cycle_period = 'Day' AND DATE_ADD(mu.startdate, INTERVAL mu.trial_limit Day) <= DATE_ADD('" . esc_sql( $today ) . "', INTERVAL " . $pmpro_email_days_before_trial_end . " Day)) OR
-			(cycle_period = 'Week' AND DATE_ADD(mu.startdate, INTERVAL mu.trial_limit Week) <= DATE_ADD('" . esc_sql( $today ) . "', INTERVAL " . $pmpro_email_days_before_trial_end . " Day)) OR
-			(cycle_period = 'Month' AND DATE_ADD(mu.startdate, INTERVAL mu.trial_limit Month) <= DATE_ADD('" . esc_sql( $today ) . "', INTERVAL " . $pmpro_email_days_before_trial_end . " Day)) OR
-			(cycle_period = 'Year' AND DATE_ADD(mu.startdate, INTERVAL mu.trial_limit Year) <= DATE_ADD('" . esc_sql( $today ) . "', INTERVAL " . $pmpro_email_days_before_trial_end . " Day))
+			(cycle_period = 'Day' AND DATE_ADD(mu.startdate, INTERVAL mu.trial_limit Day) <= DATE_ADD('" . esc_sql( $today ) . "', INTERVAL " . esc_sql( $pmpro_email_days_before_trial_end ) . " Day)) OR
+			(cycle_period = 'Week' AND DATE_ADD(mu.startdate, INTERVAL mu.trial_limit Week) <= DATE_ADD('" . esc_sql( $today ) . "', INTERVAL " . esc_sql( $pmpro_email_days_before_trial_end ) . " Day)) OR
+			(cycle_period = 'Month' AND DATE_ADD(mu.startdate, INTERVAL mu.trial_limit Month) <= DATE_ADD('" . esc_sql( $today ) . "', INTERVAL " . esc_sql( $pmpro_email_days_before_trial_end ) . " Day)) OR
+			(cycle_period = 'Year' AND DATE_ADD(mu.startdate, INTERVAL mu.trial_limit Year) <= DATE_ADD('" . esc_sql( $today ) . "', INTERVAL " . esc_sql( $pmpro_email_days_before_trial_end ) . " Day))
 		)
 
-		AND (um.meta_value IS NULL OR um.meta_value = '' OR DATE_ADD(um.meta_value, INTERVAL " . $pmpro_email_days_before_trial_end . " Day) <= '" . $today . "')
+		AND (um.meta_value IS NULL OR um.meta_value = '' OR DATE_ADD(um.meta_value, INTERVAL " . esc_sql( $pmpro_email_days_before_trial_end ) . " Day) <= '" . esc_sql( $today ) . "')
 	ORDER BY mu.startdate";
 
 	$trial_ending_soon = $wpdb->get_results($sqlQuery);
