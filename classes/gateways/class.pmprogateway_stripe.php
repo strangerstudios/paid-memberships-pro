@@ -1194,7 +1194,7 @@ class PMProGateway_stripe extends PMProGateway {
 					$last_order->Gateway->cancelSubscriptionAtGateway( $subscription, true );
 
 					//Stripe was probably going to cancel this subscription 7 days past the payment failure (maybe just one hour, use a filter for sure)
-					$memberships_users_row = $wpdb->get_row( "SELECT * FROM $wpdb->pmpro_memberships_users WHERE user_id = '" . $current_user->ID . "' AND membership_id = '" . $level_to_cancel . "' AND status = 'active' LIMIT 1" );
+					$memberships_users_row = $wpdb->get_row( "SELECT * FROM $wpdb->pmpro_memberships_users WHERE user_id = '" . esc_sql( $current_user->ID ) . "' AND membership_id = '" . esc_sql( $level_to_cancel ) . "' AND status = 'active' LIMIT 1" );
 
 					if ( ! empty( $memberships_users_row ) && ( empty( $memberships_users_row->enddate ) || $memberships_users_row->enddate == '0000-00-00 00:00:00' ) ) {
 						/**
