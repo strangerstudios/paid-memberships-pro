@@ -29,7 +29,7 @@ function pmpro_shortcode_account($atts, $content=null, $code="")
 	$order->getLastMemberOrder();
 	$mylevels = pmpro_getMembershipLevelsForUser();
 	$pmpro_levels = pmpro_getAllLevels(false, true); // just to be sure - include only the ones that allow signups
-	$invoices = $wpdb->get_results("SELECT *, UNIX_TIMESTAMP(CONVERT_TZ(timestamp, '+00:00', @@global.time_zone)) as timestamp FROM $wpdb->pmpro_membership_orders WHERE user_id = '$current_user->ID' AND status NOT IN('review', 'token', 'error') ORDER BY timestamp DESC LIMIT 6");
+	$invoices = $wpdb->get_results("SELECT *, UNIX_TIMESTAMP(CONVERT_TZ(timestamp, '+00:00', @@global.time_zone)) as timestamp FROM $wpdb->pmpro_membership_orders WHERE user_id = '" . esc_sql( $current_user->ID ) . "' AND status NOT IN('review', 'token', 'error') ORDER BY timestamp DESC LIMIT 6");
 	?>
 	<div id="pmpro_account">
 		<?php if(in_array('membership', $sections) || in_array('memberships', $sections)) { ?>
