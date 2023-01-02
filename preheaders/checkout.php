@@ -702,7 +702,16 @@ if ( ! empty( $pmpro_confirmed ) ) {
 					$code_order_id = "";
 				}
 
-				$wpdb->query( "INSERT INTO $wpdb->pmpro_discount_codes_uses (code_id, user_id, order_id, timestamp) VALUES('" . $discount_code_id . "', '" . $user_id . "', '" . intval( $code_order_id ) . "', '" . current_time( "mysql" ) . "')" );
+				$sqlQuery = $wpdb->prepare(
+					"INSERT INTO $wpdb->pmpro_discount_codes_uses (code_id, user_id, order_id, timestamp) 
+					VALUES('%s', '%d', '%d', '%s')",
+					$discount_code_id,
+					$user_id,
+					$code_order_id,
+					current_time( 'mysql' )
+					);
+
+				$wpdb->query( $sqlQuery );
 
 				do_action( 'pmpro_discount_code_used', $discount_code_id, $user_id, $code_order_id );
 			}
