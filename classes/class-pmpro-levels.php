@@ -84,7 +84,7 @@ class PMPro_Membership_Level{
     function get_membership_level_categories( $id ) {
         global $wpdb;
 
-        $dblc = $wpdb->get_results( "SELECT * FROM $wpdb->pmpro_memberships_categories WHERE membership_id = " . $id . "", ARRAY_A );
+        $dblc = $wpdb->get_results( "SELECT * FROM $wpdb->pmpro_memberships_categories WHERE membership_id = " . esc_sql( $id ) . "", ARRAY_A );
 
         $category_array = array();
 
