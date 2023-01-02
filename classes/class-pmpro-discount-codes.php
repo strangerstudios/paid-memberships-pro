@@ -138,7 +138,7 @@ class PMPro_Discount_Code{
         // Get the discount code by code, then call function
         $id = intval( $id );
 
-        $code = $wpdb->get_var("SELECT code FROM $wpdb->pmpro_discount_codes WHERE `id` =" . $id );
+        $code = $wpdb->get_var( $wpdb->prepare( "SELECT code FROM $wpdb->pmpro_discount_codes WHERE `id` = %d", $id ) );
 
         return $this->get_discount_code_by_code( $code );
 
@@ -151,7 +151,7 @@ class PMPro_Discount_Code{
         // See if code exists;
         if ( isset( $this->code ) && ! empty( $this->code ) ) {
             // see if row exists.
-            $results = $wpdb->get_row( "SELECT * FROM $wpdb->pmpro_discount_codes WHERE code = '" . $this->code . "' LIMIT 1" );
+            $results = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM $wpdb->pmpro_discount_codes WHERE code = '%s' LIMIT 1" ), $this->code );
 
             if ( $results ) {
 
