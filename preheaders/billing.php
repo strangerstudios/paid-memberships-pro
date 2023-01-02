@@ -207,7 +207,7 @@ if ($submit) {
         $pmpro_msg = __("All good!", 'paid-memberships-pro' );
 
         //change this
-        $order_id = $wpdb->get_var("SELECT id FROM $wpdb->pmpro_membership_orders WHERE user_id = '" . $current_user->ID . "' AND membership_id = '" . $current_user->membership_level->ID . "' AND status = 'success' ORDER BY id DESC LIMIT 1");
+        $order_id = $wpdb->get_var("SELECT id FROM $wpdb->pmpro_membership_orders WHERE user_id = '" . esc_sql( $current_user->ID ) . "' AND membership_id = '" . esc_sql( $current_user->membership_level->ID ) . "' AND status = 'success' ORDER BY id DESC LIMIT 1");
         if ($order_id) {
             $morder = new MemberOrder($order_id);
 
