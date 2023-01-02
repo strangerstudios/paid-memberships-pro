@@ -1048,7 +1048,7 @@ function pmpro_add_user_fields_to_email( $email ) {
 	if(!empty($email) && strpos($email->template, "checkout") !== false && strpos($email->template, "admin") !== false)
 	{
 		//get the user_id from the email
-		$user_id = $wpdb->get_var("SELECT ID FROM $wpdb->users WHERE user_email = '" . $email->data['user_email'] . "' LIMIT 1");
+		$user_id = $wpdb->get_var("SELECT ID FROM $wpdb->users WHERE user_email = '" . esc_sql( $email->data['user_email'] ) . "' LIMIT 1");
 
 		if(!empty($user_id))
 		{
