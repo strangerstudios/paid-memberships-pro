@@ -149,7 +149,7 @@ if ( $webhookNotification->kind === Braintree_WebhookNotification::SUBSCRIPTION_
 	if (! empty( $transaction->billing_details) ) {
 		$morder->FirstName = $transaction->billing_details->first_name;
 		$morder->LastName  = $transaction->billing_details->last_name;
-		$morder->Email     = $wpdb->get_var( "SELECT user_email FROM $wpdb->users WHERE ID = '" . $old_order->user_id . "' LIMIT 1" );
+		$morder->Email     = $wpdb->get_var( "SELECT user_email FROM $wpdb->users WHERE ID = '" . esc_sql( $old_order->user_id ) . "' LIMIT 1" );
 		$morder->Address1  = $transaction->billing_details->street_address;
 		$morder->City      = $transaction->billing_details->locality;
 		$morder->State     = $transaction->billing_details->region;
