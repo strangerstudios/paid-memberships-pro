@@ -46,7 +46,7 @@ if(isset($_REQUEST['levelstocancel']) && $_REQUEST['levelstocancel'] !== 'all') 
 				}
 				else
 				{
-					$level_names = $wpdb->get_col("SELECT name FROM $wpdb->pmpro_membership_levels WHERE id IN('" . implode("','", $old_level_ids) . "')");
+					$level_names = $wpdb->get_col("SELECT name FROM $wpdb->pmpro_membership_levels WHERE id IN('" . implode("','", array_map( 'esc_sql', $old_level_ids ) ) . "')");
 					?>
 					<p><?php printf(_n('Are you sure you want to cancel your %s membership?', 'Are you sure you want to cancel your %s memberships?', count($level_names), 'paid-memberships-pro'), pmpro_implodeToEnglish($level_names)); ?></p>
 					<?php
