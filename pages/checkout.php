@@ -51,7 +51,7 @@ if ( empty( $default_gateway ) ) {
 	<?php } ?>
 
 	<?php if($pmpro_review) { ?>
-		<p><?php esc_html_e('Almost done. Review the membership information and pricing below then <strong>click the "Complete Payment" button</strong> to finish your order.', 'paid-memberships-pro' );?></p>
+		<p><?php echo wp_kses( __( 'Almost done. Review the membership information and pricing below then <strong>click the "Complete Payment" button</strong> to finish your order.', 'paid-memberships-pro' ), array( 'strong' => array() ) ); ?></p>
 	<?php } ?>
 
 	<?php
