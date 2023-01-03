@@ -1395,7 +1395,7 @@ function pmpro_get_field_html( $field = null ) {
             <div class="pmpro_userfield-field-setting pmpro_userfield-field-setting-dual">
                 <div class="pmpro_userfield-field-setting">
                     <label>
-                        <?php esc_html_e( 'Required?', 'paid-memberships-pro' ); ?><br />
+                        <?php esc_html_e( 'Required at Checkout?', 'paid-memberships-pro' ); ?><br />
                         <select name="pmpro_userfields_field_required">
                             <option value="no" <?php selected( $field_required, 'no' );?>><?php esc_html_e( 'No', 'paid-memberships-pro' ); ?></option>
                             <option value="yes" <?php selected( $field_required, 'yes' );?>><?php esc_html_e( 'Yes', 'paid-memberships-pro' ); ?></option>
