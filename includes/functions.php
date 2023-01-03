@@ -155,7 +155,7 @@ function pmpro_url( $page = null, $querystring = '', $scheme = null ) {
 
 	if ( ! empty( $url ) ) {
 
-		$url = esc_url_raw( add_query_arg( $query_args, $url ) );
+		$url = add_query_arg( $query_args, $url );
 
 		// figure out scheme
 		if ( is_ssl() ) {
@@ -168,7 +168,7 @@ function pmpro_url( $page = null, $querystring = '', $scheme = null ) {
 	 */
 	$url = apply_filters( 'pmpro_url', $url, $page, $querystring, $scheme );
 
-	return $url;
+	return esc_url_raw( $url );
 }
 
 function pmpro_isLevelFree( &$level ) {
