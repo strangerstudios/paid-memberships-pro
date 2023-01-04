@@ -1283,6 +1283,13 @@
 			jQuery('.pmproPopupCloseButton').click(function() {
 				jQuery('.pmpro-popup-overlay').hide();
 			});
+			    // Hide the popup banner if "ESC" is pressed.
+			jQuery(document).keyup(function (e) {
+				if (e.key === 'Escape') {
+					jQuery('.pmpro-popup-overlay').hide();
+				}
+			});
+
 			<?php if( ! empty( $_REQUEST['showpopup'] ) ) { ?>addLevel();<?php } ?>
 		} );
 		function addLevel() {
