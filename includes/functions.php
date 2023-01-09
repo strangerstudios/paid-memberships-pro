@@ -2454,14 +2454,16 @@ function pmpro_getCheckoutButton( $level_id, $button_text = null, $classes = nul
 		// get level
 		$level = pmpro_getLevel( $level_id );
 
+		$level_id = intval( $level_id );
+
 		if( ! empty( $level ) ) {
 
 			// default button text with name field for replacement
 			if ( empty( $button_text ) ) {
-				$button_text = __( 'Sign Up for !!name!! Now', 'paid-memberships-pro' );
+				$button_text = esc_html__( 'Sign Up for !!name!! Now', 'paid-memberships-pro' );
 			}
 
-			// replace vars
+			// replace vars - this will be escaped when outputting (see below).
 			$replacements = array(
 				'!!id!!' => $level->id,
 				'!!name!!' => $level->name,
@@ -2482,7 +2484,7 @@ function pmpro_getCheckoutButton( $level_id, $button_text = null, $classes = nul
 	}
 
 	if ( empty( $button_text ) ) {
-		$button_text = __( 'Sign Up Now', 'paid-memberships-pro' );
+		$button_text = esc_html__( 'Sign Up Now', 'paid-memberships-pro' );
 	}
 
 	if ( empty( $classes ) ) {
@@ -2490,9 +2492,9 @@ function pmpro_getCheckoutButton( $level_id, $button_text = null, $classes = nul
 	}
 
 	if ( ! empty( $level_id ) ) {
-		$r = '<a href="' . pmpro_url( 'checkout', '?level=' . $level_id ) . '" class="' . $classes . '">' . $button_text . '</a>';
+		$r = '<a href="' . pmpro_url( 'checkout', '?level=' . $level_id ) . '" class="' . esc_attr( $classes ) . '">' . wp_kses_post( $button_text ) . '</a>';
 	} else {
-		$r = '<a href="' . pmpro_url( 'checkout' ) . '" class="' . $classes . '">' . $button_text . '</a>';
+		$r = '<a href="' . pmpro_url( 'checkout' ) . '" class="' . esc_attr( $classes ) . '">' . wp_kses_post( $button_text ) . '</a>';
 	}
 
 	return $r;
