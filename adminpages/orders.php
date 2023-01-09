@@ -1380,7 +1380,8 @@ require_once( dirname( __FILE__ ) . '/admin_header.php' ); ?>
 			}
 			$sqlQuery .= ') ';
 
-			$sqlQuery .= 'AND ' . esc_sql( $condition ) . ' ';
+			//Not escaping here because we escape the values in the condition statement
+			$sqlQuery .= 'AND ' . $condition . ' ';
 
 			$sqlQuery .= 'GROUP BY o.id ORDER BY o.id DESC, o.timestamp DESC ';
 		} else {
@@ -1389,8 +1390,8 @@ require_once( dirname( __FILE__ ) . '/admin_header.php' ); ?>
 			if ( $filter === 'with-discount-code' ) {
 				$sqlQuery .= "LEFT JOIN $wpdb->pmpro_discount_codes_uses dc ON o.id = dc.order_id ";
 			}
-
-			$sqlQuery .= "WHERE " . esc_sql( $condition ) . ' ORDER BY o.id DESC, o.timestamp DESC ';
+			//Not escaping here because we escape the values in the condition statement
+			$sqlQuery .= "WHERE " . $condition . ' ORDER BY o.id DESC, o.timestamp DESC ';
 		}
 
 		$sqlQuery .= "LIMIT " . esc_sql( $start ) . "," . esc_sql( $limit );
