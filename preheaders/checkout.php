@@ -133,7 +133,7 @@ if ( isset( $_REQUEST['blastname'] ) ) {
 	$blastname = "";
 }
 if ( isset( $_REQUEST['fullname'] ) ) {
-	$fullname = $_REQUEST['fullname'];
+	$fullname = sanitize_text_field( $_REQUEST['fullname'] );
 }        //honeypot for spammers
 if ( isset( $_REQUEST['baddress1'] ) ) {
 	$baddress1 = sanitize_text_field( stripslashes( $_REQUEST['baddress1'] ) );
