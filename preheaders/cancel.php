@@ -10,8 +10,12 @@
 	}
 
 	// Get the level IDs they are requesting to cancel from the ?levelstocancel param.
-	if ( ! empty( $_REQUEST['levelstocancel'] ) ) {
-		$requested_ids = $_REQUEST['levelstocancel'];
+	if ( ! empty( $_REQUEST['levelstocancel'] ) && $_REQUEST['levelstocancel'] === 'all' ) {
+		$requested_ids = 'all';
+	} elseif ( ! empty( $_REQUEST['levelstocancel'] ) ) {		
+		// A single ID could be passed, or a few like 1+2+3.
+		$requested_ids = str_replace(array(' ', '%20'), '+', $_REQUEST['levelstocancel'] );
+		$requested_ids = preg_replace("/[^0-9\+]/", "", $requested_ids );
 	}
 
 	// Redirection logic.
@@ -35,12 +39,7 @@
 	}
 
 	//check if a level was passed in to cancel specifically
-	if ( ! empty ( $requested_ids ) && $requested_ids != 'all' ) {
-		//convert spaces back to +
-		$requested_ids = str_replace(array(' ', '%20'), '+', $requested_ids );
-
-		//get the ids
-		$requested_ids = preg_replace("/[^0-9\+]/", "", $requested_ids );
+	if ( ! empty ( $requested_ids ) && $requested_ids != 'all' ) {		
 		$old_level_ids = array_map( 'intval', explode( "+", $requested_ids ) );
 
 		// Make sure the user has the level they are trying to cancel.
