@@ -2615,10 +2615,24 @@ function pmpro_setMessage( $message, $type, $force = false ) {
 function pmpro_showMessage() {
 	global $pmpro_msg, $pmpro_msgt;
 
-	if ( ! empty( $pmpro_msg ) ) {
+	$allowed_html = array (
+		'a' => array (
+			'href' => array(),
+			'target' => array(),
+			'title' => array(),
+		),		
+		'em' => array(),
+		'p' => array(),
+		'span' => array(
+			'class' => array(),
+		),
+		'strong' => array(),
+	);
+
+	if ( ! empty( $pmpro_msg ) ) {		
 		?>
-		<div class="<?php echo pmpro_get_element_class( 'pmpro_msg ' . $pmpro_msgt, $pmpro_msgt ); ?>">
-			<p><?php echo $pmpro_msg; ?></p>
+		<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_msg ' . $pmpro_msgt, $pmpro_msgt ) ); ?>">
+			<p><?php echo wp_kses( $pmpro_msg, $allowed_html ); ?></p>
 		</div>
 		<?php
 	}
