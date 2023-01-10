@@ -513,13 +513,13 @@ if ( ! empty( $pmpro_confirmed ) ) {
 
 		//first name
 		if ( ! empty( $_REQUEST['first_name'] ) ) {
-			$first_name = $_REQUEST['first_name'];
+			$first_name = sanitize_text_field( $_REQUEST['first_name'] );
 		} else {
 			$first_name = $bfirstname;
 		}
 		//last name
 		if ( ! empty( $_REQUEST['last_name'] ) ) {
-			$last_name = $_REQUEST['last_name'];
+			$last_name = sanitize_text_field( $_REQUEST['last_name'] );
 		} else {
 			$last_name = $blastname;
 		}
