@@ -444,7 +444,8 @@ class PMPro_Members_List_Table extends WP_List_Table {
 			$custom_field_num_arr = explode( 'custom_field_', $column_name );
 			$custom_field_num     = $custom_field_num_arr[1];
 			if ( is_numeric( $custom_field_num ) && isset( $matches[1][ intval( $custom_field_num ) ] ) ) {
-				echo( $matches[1][ intval( $custom_field_num ) ] );
+				// If the escaping here breaks your old column body, use the new filters.
+				echo( wp_kses_post( $matches[1][ intval( $custom_field_num ) ] ) );
 			}
 		} else {
 			// The preferred ways of doing things.
@@ -662,7 +663,7 @@ class PMPro_Members_List_Table extends WP_List_Table {
 					foreach($levels as $level)
 					{
 				?>
-					<option value="<?php echo esc_attr( $level->id ) ?>" <?php if($l == $level->id) { ?>selected="selected"<?php } ?>><?php echo $level->name?></option>
+					<option value="<?php echo esc_attr( $level->id ) ?>" <?php if($l == $level->id) { ?>selected="selected"<?php } ?>><?php echo esc_html( $level->name )?></option>
 				<?php
 					}
 				?>
