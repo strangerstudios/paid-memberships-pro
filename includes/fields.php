@@ -1604,3 +1604,43 @@ function pmpro_has_coded_user_fields() {
 	$num_global_fields = array_sum( array_map( 'count', $pmpro_user_fields ) ); // Total loaded fields.
 	return $num_global_fields > $num_db_fields;
 }
+
+/**
+ * Gets the label(s) for a passed user field value.
+ *
+ * @since TBD
+ *
+ * @param string $field_name  The name of the field that the value belongs to.
+ * @param string|array $field_value The value to get the label for.
+ *
+ * @return string|array The label(s) for the passed value. Will be same type as $field_value.
+ */
+function pmpro_get_label_for_user_field_value( $field_name, $field_value ) {
+	global $pmpro_user_fields;
+	foreach ( $pmpro_user_fields as $user_field_group ) { // Loop through each user field group.
+		foreach ( $user_field_group as $user_field ) { // Loop through each user field in the group.
+			// Check if this is a user field with an associative array of values.
+			if (
+				pmpro_is_field( $user_field ) && // Make sure that we have a valid user field.
+				$user_field->name == $field_name &&   // Check if this is the user field that we are displaying.
+				! empty( $user_field->options ) && // Check if this user field has $options set.
+				is_array( $user_field->options ) && // Make sure that $options is an array.
+				array_keys( $user_field->options ) !== range( 0, count( $user_field->options ) - 1 ) // Check if $options is an associative array.
+			) {
+				// Replace meta values with their corresponding labels.
+				if ( is_array( $field_value ) ) {
+					foreach ( $field_value as $key => $value ) {
+						if ( isset( $user_field->options[ $value ] ) ) {
+							$field_value[ $key ] = $user_field->options[ $value ];
+						}
+					}
+				} else {
+					if ( isset( $user_field->options[ $field_value ] ) ) {
+						$field_value = $user_field->options[ $field_value ];
+					}
+				}
+			}
+		}
+	}
+	return $field_value;
+}
