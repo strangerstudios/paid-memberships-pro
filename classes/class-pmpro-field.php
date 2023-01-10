@@ -1093,7 +1093,7 @@ class PMPro_Field {
 		if(!empty($this->depends))
 		{					
 			//build the checks
-			$checks = array();
+			$checks_escaped = array();
 			foreach($this->depends as $check)
 			{
 				if(!empty($check['id']))
@@ -1110,7 +1110,7 @@ class PMPro_Field {
 						}
 					}
 
-					$checks[] = "((jQuery('#" . esc_html( $field_id ) ."')".".is(':checkbox')) "
+					$checks_escaped[] = "((jQuery('#" . esc_html( $field_id ) ."')".".is(':checkbox')) "
 					 ."? jQuery('#" . esc_html( $field_id ) . ":checked').length > 0"
 					 .":(jQuery('#" . esc_html( $field_id ) . "').val() == " . json_encode($check['value']) . " || jQuery.inArray( jQuery('#" . esc_html( $field_id ) . "').val(), " . json_encode($check['value']) . ") > -1)) ||"."(jQuery(\"input:radio[name='". esc_html( $check['id'] ) ."']:checked\").val() == ".json_encode($check['value'])." || jQuery.inArray(".json_encode($check['value']).", jQuery(\"input:radio[name='". esc_html( $field_id ) ."']:checked\").val()) > -1)";
 				
@@ -1118,16 +1118,16 @@ class PMPro_Field {
 				}				
 			}
 										
-			if(!empty($checks) && !empty($binds)) {
+			if(!empty($checks_escaped) && !empty($binds)) {
 			?>
 			<script>
 				//function to check and hide/show
 				function pmprorh_<?php echo esc_html( $this->id );?>_hideshow() {						
 					let checks = [];
 					<?php
-					foreach( $checks as $check ) {
+					foreach( $checks_escaped as $check_escaped ) {
 					?>
-					checks.push(<?php echo $check?>);
+					checks.push(<?php echo $check_escaped;?>);
 					<?php
 					}
 					
