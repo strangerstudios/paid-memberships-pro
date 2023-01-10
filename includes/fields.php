@@ -705,7 +705,7 @@ function pmpro_show_user_fields_in_frontend_profile( $user, $withlocations = fal
 			}
 			?>
 
-			<div class="pmpro_checkout_box-<?php echo $where; ?>">
+			<div class="pmpro_checkout_box-<?php echo sanitize_title( $where ); ?>">
 				<?php if ( ! empty( $box->label ) ) { ?>
 					<h3><?php echo wp_kses_post( $box->label ); ?></h3>
 				<?php } ?>
@@ -724,7 +724,7 @@ function pmpro_show_user_fields_in_frontend_profile( $user, $withlocations = fal
 						}
 					?>
 				</div> <!-- end pmpro_member_profile_edit-fields -->
-			</div> <!-- end pmpro_checkout_box_$where -->
+			</div> <!-- end pmpro_checkout_box-name -->
 			<?php
 		}
 	} elseif ( ! empty( $profile_fields ) ) { ?>
