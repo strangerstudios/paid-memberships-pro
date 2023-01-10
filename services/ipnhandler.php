@@ -816,7 +816,7 @@ function pmpro_ipnSaveOrder( $txn_id, $last_order ) {
 	global $wpdb;
 
 	//check that txn_id has not been previously processed
-	$old_txn = $wpdb->get_var( "SELECT payment_transaction_id FROM $wpdb->pmpro_membership_orders WHERE payment_transaction_id = '" . $txn_id . "' LIMIT 1" );
+	$old_txn = $wpdb->get_var( $wpdb->prepare( "SELECT payment_transaction_id FROM $wpdb->pmpro_membership_orders WHERE payment_transaction_id = %s LIMIT 1", $txn_id ) );
 
 	if ( empty( $old_txn ) ) {
 		//save order
