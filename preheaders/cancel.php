@@ -6,7 +6,7 @@
 
 	// Get the level IDs they are requesting to cancel using the old ?level param.
 	if ( ! empty( $_REQUEST['level'] ) && empty( $_REQUEST['levelstocancel'] ) ) {
-		$requested_ids = $_REQUEST['level'];
+		$requested_ids = intval( $_REQUEST['level'] );
 	}
 
 	// Get the level IDs they are requesting to cancel from the ?levelstocancel param.
