@@ -121,13 +121,11 @@
 
 					$user_id = $old_order->user_id;
 					$user = get_userdata($user_id);
-					$user->membership_level = pmpro_getMembershipLevelForUser($user_id);
-
-					if(empty($user))
-					{
+					if ( empty( $user ) ) {
 						$logstr .= "Couldn't find the old order's user. Order ID = " . $old_order->id . ".";
 						pmpro_stripeWebhookExit();
 					}
+					$user->membership_level = pmpro_getMembershipLevelForUser($user_id);
 
 					$invoice = $pmpro_stripe_event->data->object;
 
@@ -249,6 +247,10 @@
 			if( ! empty( $old_order ) && ! empty( $old_order->id ) ) {
 				$user_id = $old_order->user_id;
 				$user = get_userdata($user_id);
+				if ( empty( $user ) ) {
+					$logstr .= "Couldn't find the old order's user. Order ID = " . $old_order->id . ".";
+					pmpro_stripeWebhookExit();
+				}
 
 				// Prep order for emails.
 				$morder = new MemberOrder();
@@ -331,6 +333,10 @@
 
 				$user_id = $old_order->user_id;
 				$user = get_userdata($user_id);
+				if ( empty( $user ) ) {
+					$logstr .= "Couldn't find the old order's user. Order ID = " . $old_order->id . ".";
+					pmpro_stripeWebhookExit();
+				}
 
 				//prep this order for the failure emails
 				$morder = new MemberOrder();
@@ -387,6 +393,10 @@
 			if( ! empty( $old_order ) && ! empty( $old_order->id ) ) {
 				$user_id = $old_order->user_id;
 				$user = get_userdata($user_id);
+				if ( empty( $user ) ) {
+					$logstr .= "Couldn't find the old order's user. Order ID = " . $old_order->id . ".";
+					pmpro_stripeWebhookExit();
+				}
 								
 				/**
 				 * Array of Stripe.com subscription IDs and the timestamp when they were configured as 'preservable'
@@ -498,6 +508,10 @@
 				$morder->SaveOrder();
 
 				$user = get_user_by( 'email', $morder->Email );
+				if ( empty( $user ) ) {
+					$logstr .= "Couldn't find the old order's user. Order ID = " . $old_order->id . ".";
+					pmpro_stripeWebhookExit();
+				}
 
 				// Send an email to the member.
 				$myemail = new PMProEmail();
