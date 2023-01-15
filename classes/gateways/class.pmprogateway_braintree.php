@@ -998,7 +998,8 @@ use Braintree\WebhookNotification as Braintree_WebhookNotification;
 			if ( isset( $_POST['bt_payload']) && isset( $_POST['bt_payload']) ) {
 
 				try {
-					$webhookNotification = Braintree_WebhookNotification::parse( $_POST['bt_signature'], $_POST['bt_payload'] );
+					// Note: Braintree needs the raw data.
+					$webhookNotification = Braintree_WebhookNotification::parse( $_POST['bt_signature'], $_POST['bt_payload'] ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 					if ( Braintree_WebhookNotification::SUBSCRIPTION_CANCELED === $webhookNotification->kind ) {
 					    // Return, we're already processing the cancellation
 					    return true;

@@ -260,7 +260,7 @@ class PMPro_Wisdom_Tracker {
 		}
 		$body['marketing_method'] = $this->marketing;
 
-		$body['server'] = isset( $_SERVER['SERVER_SOFTWARE'] ) ? $_SERVER['SERVER_SOFTWARE'] : '';
+		$body['server'] = isset( $_SERVER['SERVER_SOFTWARE'] ) ? sanitize_text_field( $_SERVER['SERVER_SOFTWARE'] ) : '';
 
 		// Extra PHP fields
 		$body['memory_limit']        = ini_get( 'memory_limit' );
@@ -1092,7 +1092,7 @@ class PMPro_Wisdom_Tracker {
 	public function goodbye_form_callback() {
 		check_ajax_referer( 'wisdom_goodbye_form', 'security' );
 		if ( isset( $_POST['values'] ) ) {
-			$values = json_encode( wp_unslash( $_POST['values'] ) );
+			$values = json_encode( wp_unslash( sanitize_text_field( $_POST['values'] ) ) );
 			update_option( 'wisdom_deactivation_reason_' . $this->plugin_name, $values );
 		}
 		if ( isset( $_POST['details'] ) ) {

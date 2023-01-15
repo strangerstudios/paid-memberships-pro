@@ -10,7 +10,7 @@ global $wpdb;
 $now = current_time( 'timestamp' );
 
 if ( isset( $_REQUEST['s'] ) ) {
-	$s = sanitize_text_field( trim( $_REQUEST['s'] ) );
+	$s = trim( sanitize_text_field( $_REQUEST['s'] ) );
 } else {
 	$s = '';
 }
@@ -291,7 +291,7 @@ if ( ! empty( $_REQUEST['save'] ) ) {
 	}
 
 	if ( ! in_array( 'status', $read_only_fields ) && isset( $_POST['status'] ) ) {
-		$order->status = pmpro_sanitize_with_safelist( $_POST['status'], pmpro_getOrderStatuses() );
+		$order->status = pmpro_sanitize_with_safelist( $_POST['status'], pmpro_getOrderStatuses() ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 	}
 	if ( ! in_array( 'gateway', $read_only_fields ) && isset( $_POST['gateway'] ) ) {
 		$order->gateway = sanitize_text_field( $_POST['gateway'] );

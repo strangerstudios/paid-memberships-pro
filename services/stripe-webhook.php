@@ -980,13 +980,13 @@ function pmpro_stripe_webhook_change_membership_level( $morder ) {
 		if ( ! empty( $_POST['first_name'] ) ) {
 			$old_firstname = get_user_meta( $morder->user_id, "first_name", true );
 			if ( empty( $old_firstname ) ) {
-				update_user_meta( $morder->user_id, "first_name", $_POST['first_name'] );
+				update_user_meta( $morder->user_id, "first_name", stripslashes( sanitize_text_field( $_POST['first_name'] ) ) );
 			}
 		}
 		if ( ! empty( $_POST['last_name'] ) ) {
 			$old_lastname = get_user_meta( $morder->user_id, "last_name", true );
 			if ( empty( $old_lastname ) ) {
-				update_user_meta( $morder->user_id, "last_name", $_POST['last_name'] );
+				update_user_meta( $morder->user_id, "last_name", stripslashes( sanitize_text_field( $_POST['last_name'] ) ) );
 			}
 		}
 

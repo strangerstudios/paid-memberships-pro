@@ -984,7 +984,7 @@ class PMProGateway_stripe extends PMProGateway {
 			$update = array();
 
 			//all updates have these values
-			$update['when']           = pmpro_sanitize_with_safelist( $_POST['updates_when'][ $i ], array(
+			$update['when']           = pmpro_sanitize_with_safelist( sanitize_text_field( $_POST['updates_when'][ $i ] ), array(
 				'now',
 				'payment',
 				'date'
@@ -1297,14 +1297,14 @@ class PMProGateway_stripe extends PMProGateway {
 
 		// Change current gateway to Stripe
 		pmpro_setOption( 'gateway', 'stripe' );
-		pmpro_setOption( 'gateway_environment', $_REQUEST['pmpro_stripe_connected_environment'] );
+		pmpro_setOption( 'gateway_environment', $_REQUEST['pmpro_stripe_connected_environment'] ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 
 		$error = '';
 		if (
 			'false' === $_REQUEST['pmpro_stripe_connected']
 			&& isset( $_REQUEST['error_message'] )
 		) {
-			$error = $_REQUEST['error_message'];
+			$error = sanitize_text_field( $_REQUEST['error_message'] );
 		} elseif (
 			'false' === $_REQUEST['pmpro_stripe_connected']
 			|| ! isset( $_REQUEST['pmpro_stripe_publishable_key'] )
@@ -1316,14 +1316,14 @@ class PMProGateway_stripe extends PMProGateway {
 			// Update keys.
 			if ( $_REQUEST['pmpro_stripe_connected_environment'] === 'live' ) {
 				// Update live keys.
-				pmpro_setOption( 'live_stripe_connect_user_id', $_REQUEST['pmpro_stripe_user_id'] );
-				pmpro_setOption( 'live_stripe_connect_secretkey', $_REQUEST['pmpro_stripe_access_token'] );
-				pmpro_setOption( 'live_stripe_connect_publishablekey', $_REQUEST['pmpro_stripe_publishable_key'] );
+				pmpro_setOption( 'live_stripe_connect_user_id', $_REQUEST['pmpro_stripe_user_id'] ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+				pmpro_setOption( 'live_stripe_connect_secretkey', $_REQUEST['pmpro_stripe_access_token'] ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+				pmpro_setOption( 'live_stripe_connect_publishablekey', $_REQUEST['pmpro_stripe_publishable_key'] ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 			} else {
 				// Update sandbox keys.
-				pmpro_setOption( 'sandbox_stripe_connect_user_id', $_REQUEST['pmpro_stripe_user_id'] );
-				pmpro_setOption( 'sandbox_stripe_connect_secretkey', $_REQUEST['pmpro_stripe_access_token'] );
-				pmpro_setOption( 'sandbox_stripe_connect_publishablekey', $_REQUEST['pmpro_stripe_publishable_key'] );
+				pmpro_setOption( 'sandbox_stripe_connect_user_id', $_REQUEST['pmpro_stripe_user_id'] ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+				pmpro_setOption( 'sandbox_stripe_connect_secretkey', $_REQUEST['pmpro_stripe_access_token'] ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+				pmpro_setOption( 'sandbox_stripe_connect_publishablekey', $_REQUEST['pmpro_stripe_publishable_key'] ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 			}
 
 
@@ -1376,10 +1376,17 @@ class PMProGateway_stripe extends PMProGateway {
 			$message = sprintf(
 				/* translators: %s Error Message */
 				__( '<strong>Error:</strong> PMPro could not disconnect from the Stripe API. Reason: %s', 'paid-memberships-pro' ),
-				esc_html( $_REQUEST['error_message'] )
+				sanitize_text_field( $_REQUEST['error_message'] )
 			);
 
-			printf( '<div class="%1$s"><p>%2$s</p></div>', esc_attr( $class ), $message );
+			$allowed_html = array(
+				'div' => array(
+					'class' => array(),
+				),
+				'p'   => array(),
+				'strong' => array(),
+			);
+			echo wp_kses( sprintf( '<div class="%1$s"><p>%2$s</p></div>', $class, $message ), $allowed_html );
 
 		}
 
@@ -3887,7 +3894,7 @@ class PMProGateway_stripe extends PMProGateway {
 		pmpro_method_should_be_private( '2.7.0' );
 		try {
 			$create = Stripe_ApplePayDomain::create([
-				'domain_name' => $_SERVER['HTTP_HOST'],
+				'domain_name' => sanitize_text_field( $_SERVER['HTTP_HOST'] ),
 			]);
 		} catch (\Throwable $th) {
 			//throw $th;

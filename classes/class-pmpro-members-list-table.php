@@ -217,7 +217,7 @@ class PMPro_Members_List_Table extends WP_List_Table {
 			$l = false;
 		}
 		if(isset($_REQUEST['s']))
-			$s = sanitize_text_field(trim($_REQUEST['s']));
+			$s = trim( sanitize_text_field( $_REQUEST['s'] ) );
 		else
 			$s = "";
 		?>
@@ -255,7 +255,7 @@ class PMPro_Members_List_Table extends WP_List_Table {
 
 		$search_key = false;
 		if( isset( $_REQUEST['s'] ) ) {
-			$s = sanitize_text_field( trim( $_REQUEST['s'] ) );
+			$s = trim( sanitize_text_field( $_REQUEST['s'] ) );
 		} else {
 			$s = '';
 		}
@@ -272,7 +272,7 @@ class PMPro_Members_List_Table extends WP_List_Table {
 
 		// some vars for ordering
 		if(isset($_REQUEST['orderby'])) {
-			$orderby = $this->sanitize_orderby( $_REQUEST['orderby'] );
+			$orderby = $this->sanitize_orderby( sanitize_text_field( $_REQUEST['orderby'] ) );
 			if( $_REQUEST['order'] == 'asc' ) {
 				$order = 'ASC';
 			} else {

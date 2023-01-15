@@ -14,9 +14,9 @@
 		$requested_ids = 'all';
 	} elseif ( ! empty( $_REQUEST['levelstocancel'] ) ) {		
 		// A single ID could be passed, or a few like 1+2+3.
-		$requested_ids = str_replace(array(' ', '%20'), '+', $_REQUEST['levelstocancel'] );
+		$requested_ids = str_replace(array(' ', '%20'), '+', sanitize_text_field( $_REQUEST['levelstocancel'] ) );
 		$requested_ids = preg_replace("/[^0-9\+]/", "", $requested_ids );
-	}
+	}	
 
 	// Redirection logic.
 	if ( ! is_user_logged_in() ) {

@@ -277,7 +277,7 @@ function pmpro_membership_level_profile_fields_update()
 	wp_get_current_user();
 
 	if(!empty($_REQUEST['user_id']))
-		$user_ID = $_REQUEST['user_id'];
+		$user_ID = intval( $_REQUEST['user_id'] );
 
 	$membership_level_capability = apply_filters("pmpro_edit_member_capability", "manage_options");
 	if(!current_user_can($membership_level_capability))
@@ -327,9 +327,9 @@ function pmpro_membership_level_profile_fields_update()
 		$expiration_date = intval($_REQUEST['expires_year']) . "-" . str_pad(intval($_REQUEST['expires_month']), 2, "0", STR_PAD_LEFT) . "-" . str_pad(intval($_REQUEST['expires_day']), 2, "0", STR_PAD_LEFT);
 		if( !empty( $_REQUEST['expires_hour'] ) ){
 			if( !empty( $_REQUEST['expires_minute'] ) ){
-				$expiration_date = $expiration_date ." ".$_REQUEST['expires_hour'].":".$_REQUEST['expires_minute'].":00";
+				$expiration_date = $expiration_date . " " . intval($_REQUEST['expires_hour']) . ":" . intval($_REQUEST['expires_minute']) .":00";
 			} else{
-				$expiration_date = $expiration_date ." ".$_REQUEST['expires_hour'].":00:00";
+				$expiration_date = $expiration_date . " " . intval($_REQUEST['expires_hour']) . ":00:00";
 			}
 		}
 				$sqlQuery = $wpdb->prepare( "UPDATE $wpdb->pmpro_memberships_users SET enddate = %s WHERE status = 'active' AND membership_id = %d AND user_id = %d LIMIT 1", $expiration_date, intval($_REQUEST['membership_level']), $user_ID );
@@ -689,10 +689,10 @@ function pmpro_member_profile_edit_form() {
 	}
 
 	// Saving profile updates.
-	if ( isset( $_POST['action'] ) && $_POST['action'] == 'update-profile' && $current_user->ID == $_POST['user_id'] && wp_verify_nonce( $_POST['update_user_nonce'], 'update-user_' . $current_user->ID ) ) {
+	if ( isset( $_POST['action'] ) && $_POST['action'] == 'update-profile' && $current_user->ID == $_POST['user_id'] && wp_verify_nonce( sanitize_key( $_POST['update_user_nonce'] ), 'update-user_' . $current_user->ID ) ) {
 		$update           = true;
 		$user     		  = new stdClass;
-		$user->ID         = $_POST[ 'user_id' ];
+		$user->ID         = intval( $_POST[ 'user_id' ] );
 		do_action( 'pmpro_personal_options_update', $user->ID );
 	} else {
 		$update = false;
@@ -855,7 +855,7 @@ function pmpro_change_password_process() {
 	}
 
 	// Check the nonce.
-	if ( ! wp_verify_nonce( $_POST['change_password_user_nonce'], 'change-password-user_' . $current_user->ID ) ) {
+	if ( ! wp_verify_nonce( sanitize_key( $_POST['change_password_user_nonce'] ), 'change-password-user_' . $current_user->ID ) ) {
 		return;
 	}
 

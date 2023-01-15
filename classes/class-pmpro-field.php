@@ -454,13 +454,13 @@ class PMPro_Field {
 	function saveFile($user_id, $name, $value)
 	{			
 		//setup some vars
-		$file = $_FILES[$name];
+		$file = sanitize_text_field( $_FILES[$name] );
 		$user = get_userdata($user_id);
 		$meta_key = str_replace("pmprorhprefix_", "", $name);
 
 		// deleting?
 		if( isset( $_REQUEST['pmprorh_delete_file_' . $name . '_field'] ) ) {
-			$delete_old_file_name = $_REQUEST['pmprorh_delete_file_' . $name . '_field'];
+			$delete_old_file_name = sanitize_text_field( $_REQUEST['pmprorh_delete_file_' . $name . '_field'] );
 			if ( ! empty( $delete_old_file_name ) ) {
 				$old_file_meta = get_user_meta( $user->ID, $meta_key, true );					
 				if ( 
@@ -1192,16 +1192,16 @@ class PMPro_Field {
 				$value = "";
 			}
 		} elseif(isset($_REQUEST[$this->name])) {
-			$value = $_REQUEST[$this->name];
+			$value = pmpro_sanitize( $_REQUEST[$this->name], $this );
 		} elseif(isset($_SESSION[$this->name])) {
 			//file or value?
 			if(is_array($_SESSION[$this->name]) && !empty($_SESSION[$this->name]['name']))
 			{
 				$_FILES[$this->name] = $_SESSION[$this->name];
-				$this->file = $_SESSION[$this->name]['name'];
-				$value = $_SESSION[$this->name]['name'];
+				$this->file = pmpro_sanitize( $_SESSION[$this->name]['name'], $this );
+				$value = pmpro_sanitize( $_SESSION[$this->name]['name'], $this );
 			} else {
-				$value = $_SESSION[$this->name];
+				$value = pmpro_sanitize( $_SESSION[$this->name], $this );
 			}
 		}
 		elseif(!empty($current_user->ID) && metadata_exists("user", $current_user->ID, $this->meta_key))
@@ -1422,7 +1422,7 @@ class PMPro_Field {
 			case 'text':
 			case 'textarea':
 			case 'number':
-				$filled = ( isset( $_REQUEST[$this->name] ) && '' !== trim( $_REQUEST[$this->name] ) );
+				$filled = ( isset( $_REQUEST[$this->name] ) && '' !== trim( $_REQUEST[$this->name] ) ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 				break;
 			default:
 				$filled = ! ( empty( $_REQUEST[$this->name] ) && empty( $_FILES[$this->name]['name'] ) && empty( $_REQUEST[$this->name.'_old'] ) );

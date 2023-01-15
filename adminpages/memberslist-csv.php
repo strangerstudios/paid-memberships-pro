@@ -37,7 +37,7 @@
 	//get users (search input field)
 	$search_key = false;
 	if( isset( $_REQUEST['s'] ) ) {
-		$s = sanitize_text_field( trim( $_REQUEST['s'] ) );
+		$s = trim( sanitize_text_field( $_REQUEST['s'] ) );
 	} else {
 		$s = '';
 	}

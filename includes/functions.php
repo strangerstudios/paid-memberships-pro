@@ -86,14 +86,15 @@ function pmpro_getOption( $s, $force = false ) {
 	}
 }
 
-function pmpro_setOption( $s, $v = null, $sanitize_function = 'sanitize_text_field', $autoload = false ) {
-	// no value is given, set v to the p var
+function pmpro_setOption( $s, $v = null, $sanitize_function = 'sanitize_text_field', $autoload = false ) {		
 	if ( $v === null && isset( $_POST[ $s ] ) ) {
+		// phpcs:disable WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 		if ( is_array( $_POST[ $s ] ) ) {
 			$v = array_map( $sanitize_function, $_POST[ $s ] );
 		} else {
 			$v = call_user_func( $sanitize_function, $_POST[ $s ] );
 		}
+		// phpcs:enable WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 	}
 
 	if ( is_array( $v ) ) {
@@ -1969,7 +1970,7 @@ function pmpro_get_no_access_message( $content, $level_ids, $level_names = NULL 
 	$pmpro_content_message_post = '</div>';
 
 	$sr_search = array( '!!levels!!', '!!referrer!!', '!!login_url!!', '!!login_page_url!!', '!!levels_url!!', '!!levels_page_url!!' );
-	$sr_replace = array( pmpro_implodeToEnglish( $level_names ), urlencode( site_url( $_SERVER['REQUEST_URI'] ) ), esc_url( pmpro_login_url() ), esc_url( pmpro_login_url() ), esc_url( pmpro_url( 'levels' ) ), esc_url( pmpro_url( 'levels' ) ) );
+	$sr_replace = array( pmpro_implodeToEnglish( $level_names ), urlencode( site_url( esc_url_raw( $_SERVER['REQUEST_URI'] ) ) ), esc_url( pmpro_login_url() ), esc_url( pmpro_login_url() ), esc_url( pmpro_url( 'levels' ) ), esc_url( pmpro_url( 'levels' ) ) );
 
 	// Get the correct message to show at the bottom.
 	if ( is_feed() ) {
@@ -2372,7 +2373,7 @@ function pmpro_getLevelAtCheckout( $level_id = null, $discount_code = null ) {
 
 	// default to discount code passed in
 	if ( empty( $discount_code ) && ! empty( $_REQUEST['discount_code'] ) ) {
-		$discount_code = preg_replace( '/[^A-Za-z0-9\-]/', '', $_REQUEST['discount_code'] );
+		$discount_code = preg_replace( '/[^A-Za-z0-9\-]/', '', sanitize_text_field( $_REQUEST['discount_code'] ) );
 	}
 
 	// what level are they purchasing? (discount code passed)
@@ -2721,6 +2722,7 @@ add_filter( 'pmpro_element_class', 'pmpro_get_field_class', 10, 2 );
  * Get a var from $_GET or $_POST.
  */
 function pmpro_getParam( $index, $method = 'REQUEST', $default = '', $sanitize_function = 'sanitize_text_field' ) {
+	// phpcs:disable WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 	if ( $method == 'REQUEST' ) {
 		if ( ! empty( $_REQUEST[ $index ] ) ) {
 			return call_user_func( $sanitize_function, $_REQUEST[ $index ] );
@@ -2734,6 +2736,7 @@ function pmpro_getParam( $index, $method = 'REQUEST', $default = '', $sanitize_f
 			return call_user_func( $sanitize_function, $_GET[ $index ] );
 		}
 	}
+	// phpcs:enable WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 
 	return $default;
 }
@@ -3301,7 +3304,7 @@ function pmpro_filter_price_for_text_field( $price ) {
 function pmpro_getGateway() {
 	// grab from param or options
 	if ( ! empty( $_REQUEST['gateway'] ) ) {
-		$gateway = $_REQUEST['gateway'];        // gateway passed as param
+		$gateway = sanitize_text_field( $_REQUEST['gateway'] );        // gateway passed as param
 	} elseif ( ! empty( $_REQUEST['review'] ) ) {
 		$gateway = 'paypalexpress';             // if review param assume paypalexpress
 	} else {
@@ -4159,7 +4162,7 @@ function pmpro_get_ip() {
 			 * addresses. The first one is the original client. It can't be
 			 * trusted for authenticity, but we don't need to for this purpose.
 			 */
-			$address_chain = explode( ',', $_SERVER[ $header ] );
+			$address_chain = explode( ',', sanitize_text_field( $_SERVER[ $header ] ) );
 			$client_ip     = trim( $address_chain[0] );
 
 			break;

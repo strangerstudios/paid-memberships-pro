@@ -12,12 +12,14 @@
 global $pmpro_msg, $pmpro_msgt, $pmpro_confirm, $current_user, $wpdb;
 
 if(isset($_REQUEST['levelstocancel']) && $_REQUEST['levelstocancel'] !== 'all') {
+	// Odd input format here (1+2+3). These values are sanitized.
+	// phpcs:disable WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 	//convert spaces back to +
 	$_REQUEST['levelstocancel'] = str_replace(array(' ', '%20'), '+', $_REQUEST['levelstocancel']);
 
 	//get the ids
 	$old_level_ids = array_map('intval', explode("+", preg_replace("/[^0-9al\+]/", "", $_REQUEST['levelstocancel'])));
-
+	// phpcs:enable WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 } elseif(isset($_REQUEST['levelstocancel']) && $_REQUEST['levelstocancel'] == 'all') {
 	$old_level_ids = 'all';
 } else {
@@ -52,8 +54,8 @@ if(isset($_REQUEST['levelstocancel']) && $_REQUEST['levelstocancel'] !== 'all') 
 					<?php
 				}
 			?>
-			<div class="<?php echo pmpro_get_element_class( 'pmpro_actionlinks' ); ?>">
-				<a class="<?php echo pmpro_get_element_class( 'pmpro_btn pmpro_btn-submit pmpro_yeslink yeslink', 'pmpro_btn-submit' ); ?>" href="<?php echo esc_url( pmpro_url( "cancel", "?levelstocancel=" . esc_attr($_REQUEST['levelstocancel']) . "&confirm=true" ) ) ?>" onclick="this.classList.add('disabled');"><?php esc_html_e('Yes, cancel this membership', 'paid-memberships-pro' );?></a>
+			<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_actionlinks' ) ); ?>">
+				<a class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_btn pmpro_btn-submit pmpro_yeslink yeslink', 'pmpro_btn-submit' ) ); ?>" href="<?php echo esc_url( pmpro_url( "cancel", "?levelstocancel=" . esc_attr( sanitize_text_field( $_REQUEST['levelstocancel'] ) ) . "&confirm=true" ) ) ?>" onclick="this.classList.add('disabled');"><?php esc_html_e('Yes, cancel this membership', 'paid-memberships-pro' );?></a>
 				<a class="<?php echo pmpro_get_element_class( 'pmpro_btn pmpro_btn-cancel pmpro_nolink nolink', 'pmpro_btn-cancel' ); ?>" href="<?php echo esc_url( pmpro_url( "account" ) ) ?>"><?php esc_html_e('No, keep this membership', 'paid-memberships-pro' );?></a>
 			</div>
 			<?php
