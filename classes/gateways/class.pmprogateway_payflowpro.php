@@ -228,7 +228,7 @@
 			// $nvpStr .= "&NOTIFYURL=" . urlencode( add_query_arg( 'action', 'ipnhandler', admin_url('admin-ajax.php') ) );
 			//$nvpStr .= "&L_BILLINGTYPE0=RecurringPayments&L_BILLINGAGREEMENTDESCRIPTION0=" . $order->PaymentAmount;
 
-			$nvpStr .= "&CUSTIP=" . $_SERVER['REMOTE_ADDR'] . "&INVNUM=" . $order->code;
+			$nvpStr .= "&CUSTIP=" . pmpro_get_ip() . "&INVNUM=" . $order->code;
 
 			//credit card fields
 			if($order->cardtype == "American Express")
@@ -338,7 +338,7 @@
 			// $nvpStr .= "&NOTIFYURL=" . urlencode( add_query_arg( 'action', 'ipnhandler', admin_url('admin-ajax.php') ) );
 			//$nvpStr .= "&L_BILLINGTYPE0=RecurringPayments&L_BILLINGAGREEMENTDESCRIPTION0=" . $order->PaymentAmount;
 
-			$nvpStr .= "&CUSTIP=" . $_SERVER['REMOTE_ADDR'] . "&INVNUM=" . $order->code;
+			$nvpStr .= "&CUSTIP=" . pmpro_get_ip() . "&INVNUM=" . $order->code;
 
 			if(!empty($order->accountnumber))
 				$nvpStr .= "&ACCT=" . $order->accountnumber . "&EXPDATE=" . $order->expirationmonth . substr($order->expirationyear, 2, 2) . "&CVV2=" . $order->CVV2;
@@ -425,7 +425,7 @@
 			$nvpStr .= "&PAYPERIOD=" . $payperiod;
 			$nvpStr .= "&FREQUENCY=" . $order->BillingFrequency;
 
-			$nvpStr .= "&CUSTIP=" . $_SERVER['REMOTE_ADDR']; // . "&INVNUM=" . $order->code;
+			$nvpStr .= "&CUSTIP=" . pmpro_get_ip(); // . "&INVNUM=" . $order->code;
 
 			//if billing cycles are defined
 			if(!empty($order->TotalBillingCycles))
@@ -538,7 +538,7 @@
 
 			$nvpStr .= "&PROFILENAME=" . urlencode( apply_filters( 'pmpro_paypal_level_description', substr($order->membership_level->name . " at " . get_bloginfo("name"), 0, 127), $order->membership_level->name, $order, get_bloginfo("name")) );
 
-			$nvpStr .= "&CUSTIP=" . $_SERVER['REMOTE_ADDR']; // . "&INVNUM=" . $order->code;
+			$nvpStr .= "&CUSTIP=" . pmpro_get_ip(); // . "&INVNUM=" . $order->code;
 
 			if(!empty($order->accountnumber))
 				$nvpStr .= "&ACCT=" . $order->accountnumber . "&EXPDATE=" . $order->expirationmonth . substr($order->expirationyear, 2, 2) . "&CVV2=" . $order->CVV2;

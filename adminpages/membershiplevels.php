@@ -147,7 +147,12 @@
 		if ( empty( $wpdb->last_error ) ) {		
 			$edit = false;
 			$msg = 1;
-			$msgt = __( 'Membership level added successfully.', 'paid-memberships-pro' );
+
+			if ( ! empty( $saveid ) ) {
+				$msgt = __( 'Membership level updated successfully.', 'paid-memberships-pro' );
+			} else {
+				$msgt = __( 'Membership level added successfully.', 'paid-memberships-pro' );
+			}
 		} else {
 			$msg = -1;
 			$msgt = __( 'Error adding membership level.', 'paid-memberships-pro' );
@@ -942,7 +947,7 @@
 	{
 		$sqlQuery = "SELECT * FROM $wpdb->pmpro_membership_levels ";
 		if($s)
-			$sqlQuery .= "WHERE name LIKE '%$s%' ";
+			$sqlQuery .= "WHERE name LIKE '%" . esc_sql( $s ) . "%' ";
 			$sqlQuery .= "ORDER BY id ASC";
 
 			$levels = $wpdb->get_results($sqlQuery, OBJECT);

@@ -454,13 +454,13 @@ class PMPro_Field {
 	function saveFile($user_id, $name, $value)
 	{			
 		//setup some vars
-		$file = $_FILES[$name];
+		$file = sanitize_text_field( $_FILES[$name] );
 		$user = get_userdata($user_id);
 		$meta_key = str_replace("pmprorhprefix_", "", $name);
 
 		// deleting?
 		if( isset( $_REQUEST['pmprorh_delete_file_' . $name . '_field'] ) ) {
-			$delete_old_file_name = $_REQUEST['pmprorh_delete_file_' . $name . '_field'];
+			$delete_old_file_name = sanitize_text_field( $_REQUEST['pmprorh_delete_file_' . $name . '_field'] );
 			if ( ! empty( $delete_old_file_name ) ) {
 				$old_file_meta = get_user_meta( $user->ID, $meta_key, true );					
 				if ( 
@@ -1093,7 +1093,7 @@ class PMPro_Field {
 		if(!empty($this->depends))
 		{					
 			//build the checks
-			$checks = array();
+			$checks_escaped = array();
 			foreach($this->depends as $check)
 			{
 				if(!empty($check['id']))
@@ -1110,7 +1110,7 @@ class PMPro_Field {
 						}
 					}
 
-					$checks[] = "((jQuery('#" . esc_html( $field_id ) ."')".".is(':checkbox')) "
+					$checks_escaped[] = "((jQuery('#" . esc_html( $field_id ) ."')".".is(':checkbox')) "
 					 ."? jQuery('#" . esc_html( $field_id ) . ":checked').length > 0"
 					 .":(jQuery('#" . esc_html( $field_id ) . "').val() == " . json_encode($check['value']) . " || jQuery.inArray( jQuery('#" . esc_html( $field_id ) . "').val(), " . json_encode($check['value']) . ") > -1)) ||"."(jQuery(\"input:radio[name='". esc_html( $check['id'] ) ."']:checked\").val() == ".json_encode($check['value'])." || jQuery.inArray(".json_encode($check['value']).", jQuery(\"input:radio[name='". esc_html( $field_id ) ."']:checked\").val()) > -1)";
 				
@@ -1118,16 +1118,16 @@ class PMPro_Field {
 				}				
 			}
 										
-			if(!empty($checks) && !empty($binds)) {
+			if(!empty($checks_escaped) && !empty($binds)) {
 			?>
 			<script>
 				//function to check and hide/show
 				function pmprorh_<?php echo esc_html( $this->id );?>_hideshow() {						
 					let checks = [];
 					<?php
-					foreach( $checks as $check ) {
+					foreach( $checks_escaped as $check_escaped ) {
 					?>
-					checks.push(<?php echo $check?>);
+					checks.push(<?php echo $check_escaped;?>);
 					<?php
 					}
 					
@@ -1192,16 +1192,16 @@ class PMPro_Field {
 				$value = "";
 			}
 		} elseif(isset($_REQUEST[$this->name])) {
-			$value = $_REQUEST[$this->name];
+			$value = pmpro_sanitize( $_REQUEST[$this->name], $this );
 		} elseif(isset($_SESSION[$this->name])) {
 			//file or value?
 			if(is_array($_SESSION[$this->name]) && !empty($_SESSION[$this->name]['name']))
 			{
 				$_FILES[$this->name] = $_SESSION[$this->name];
-				$this->file = $_SESSION[$this->name]['name'];
-				$value = $_SESSION[$this->name]['name'];
+				$this->file = pmpro_sanitize( $_SESSION[$this->name]['name'], $this );
+				$value = pmpro_sanitize( $_SESSION[$this->name]['name'], $this );
 			} else {
-				$value = $_SESSION[$this->name];
+				$value = pmpro_sanitize( $_SESSION[$this->name], $this );
 			}
 		}
 		elseif(!empty($current_user->ID) && metadata_exists("user", $current_user->ID, $this->meta_key))
@@ -1422,7 +1422,7 @@ class PMPro_Field {
 			case 'text':
 			case 'textarea':
 			case 'number':
-				$filled = ( isset( $_REQUEST[$this->name] ) && '' !== trim( $_REQUEST[$this->name] ) );
+				$filled = ( isset( $_REQUEST[$this->name] ) && '' !== trim( $_REQUEST[$this->name] ) ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 				break;
 			default:
 				$filled = ! ( empty( $_REQUEST[$this->name] ) && empty( $_FILES[$this->name]['name'] ) && empty( $_REQUEST[$this->name.'_old'] ) );

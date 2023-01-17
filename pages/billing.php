@@ -5,7 +5,7 @@
  * See documentation for how to override the PMPro templates.
  * @link https://www.paidmembershipspro.com/documentation/templates/
  *
- * @version 2.0
+ * @version 2.0.1
  *
  * @author Paid Memberships Pro
  */
@@ -213,7 +213,7 @@
 									{
 										global $pmpro_states;
 									?>
-									<select name="bstate" class="<?php echo pmpro_get_element_class( '', 'bstate' ); ?>">
+									<select id="bstate" name="bstate" class="<?php echo pmpro_get_element_class( '', 'bstate' ); ?>">
 										<option value="">--</option>
 										<?php
 											foreach($pmpro_states as $ab => $st)
@@ -228,7 +228,7 @@
 									{
 										global $pmpro_states_abbreviations;
 									?>
-										<select name="bstate" class="<?php echo pmpro_get_element_class( '', 'bstate' ); ?>">
+										<select id="bstate" name="bstate" class="<?php echo pmpro_get_element_class( '', 'bstate' ); ?>">
 											<option value="">--</option>
 											<?php
 												foreach($pmpro_states_abbreviations as $ab)
@@ -259,7 +259,7 @@
 					?>
 					<div class="<?php echo pmpro_get_element_class( 'pmpro_checkout-field pmpro_checkout-field-bcountry', 'pmpro_checkout-field-bcountry' ); ?>">
 						<label for="bcountry"><?php esc_html_e('Country', 'paid-memberships-pro' );?></label>
-						<select name="bcountry" class="<?php echo pmpro_get_element_class( '', 'bcountry' );?>">
+						<select id="bcountry" name="bcountry" class="<?php echo pmpro_get_element_class( '', 'bcountry' );?>">
 							<?php
 								global $pmpro_countries, $pmpro_default_country;
 								foreach($pmpro_countries as $abbr => $country)
@@ -415,7 +415,7 @@
 							?>
 							<div class="<?php echo pmpro_get_element_class( 'pmpro_checkout-field pmpro_payment-cvv', 'pmpro_payment-cvv' ); ?>">
 								<label for="CVV"><?php esc_html_e('CVV', 'paid-memberships-pro' );?></label>
-								<input id="CVV" name="CVV" type="text" size="4" value="<?php if(!empty($_REQUEST['CVV'])) { echo esc_attr($_REQUEST['CVV']); }?>" class="<?php echo pmpro_get_element_class( 'input', 'CVV ');?>" />  <small>(<a href="javascript:void(0);" onclick="javascript:window.open('<?php echo pmpro_https_filter($cvv_template); ?>','cvv','toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=yes, resizable=yes, width=600, height=475');"><?php esc_html_e("what's this?", 'paid-memberships-pro' );?></a>)</small>
+								<input id="CVV" name="CVV" type="text" size="4" value="<?php if(!empty($_REQUEST['CVV'])) { echo esc_attr( sanitize_text_field( $_REQUEST['CVV'] ) ); }?>" class="<?php echo pmpro_get_element_class( 'input', 'CVV ');?>" />  <small>(<a href="javascript:void(0);" onclick="javascript:window.open('<?php echo pmpro_https_filter($cvv_template); ?>','cvv','toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=yes, resizable=yes, width=600, height=475');"><?php esc_html_e("what's this?", 'paid-memberships-pro' );?></a>)</small>
 							</div>
 						<?php } ?>
 					</div> <!-- end pmpro_checkout-fields -->
@@ -478,7 +478,7 @@
 			printf( __( "You do not have an active membership. <a href='%s'>Register here.</a>", 'paid-memberships-pro' ), $url );
 		} else {
 			$url = pmpro_url( 'levels' );
-			printf( __( "You do not have an active membership. <a href='%s'>Choose a membership level.</a>", 'paid-memberships-pro' ), $url );
+			printf( __( "You do not have an active membership. <a href='%s'>Choose a membership level.</a>", 'paid-memberships-pro' ), esc_url( $url ) );
 		}
 	} else { ?>
 		<p><?php esc_html_e("This subscription is not recurring. So you don't need to update your billing information.", 'paid-memberships-pro' );?></p>

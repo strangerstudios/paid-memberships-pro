@@ -122,10 +122,11 @@ add_filter( 'pmpro_besecure', 'pmpro_check_site_url_for_https' );
 //capturing case where a user links to https admin without admin over https
 function pmpro_admin_https_handler() {
 	if( ! empty( $_SERVER['HTTPS'] ) ) {
-		if( $_SERVER['HTTPS'] && strtolower( $_SERVER['HTTPS'] ) != 'off' && strtolower( $_SERVER['HTTPS'] ) != 'false' && is_admin() ) {
+		$https = esc_url_raw( $_SERVER['HTTPS'] );
+		if( strtolower( $https ) != 'off' && strtolower( $https ) != 'false' && is_admin() ) {
 			if( substr( get_option( 'siteurl' ), 0, 5 ) == 'http:' && ! force_ssl_admin() ) {
 				//need to redirect to non https
-				wp_safe_redirect( 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'] );
+				wp_safe_redirect( esc_url_raw( 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'] ) );
 				exit;
 			}
 		}

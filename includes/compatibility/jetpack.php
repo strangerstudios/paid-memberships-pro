@@ -23,7 +23,7 @@ function pmpro_jetpack_sso_handle_login() {
 		return;
 	}
 
-	$action = isset( $_REQUEST['action'] ) ? $_REQUEST['action'] : 'login';
+	$action = isset( $_REQUEST['action'] ) ? sanitize_text_field( $_REQUEST['action'] ) : 'login';
 
 	do_action( 'login_init' );
 }

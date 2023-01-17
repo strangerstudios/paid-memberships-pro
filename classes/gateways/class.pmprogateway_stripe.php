@@ -406,7 +406,7 @@ class PMProGateway_stripe extends PMProGateway {
 					}
 				?>
 				<p class="description"><?php esc_html_e( 'Webhook URL', 'paid-memberships-pro' ); ?>:
-				<code><?php echo self::get_site_webhook_url(); ?></code></p>
+				<code><?php echo esc_url( self::get_site_webhook_url() ); ?></code></p>
 			</td>
 		</tr>
 		<tr class="pmpro_settings_divider gateway gateway_stripe" <?php if ( $gateway != "stripe" ) { ?>style="display: none;"<?php } ?>>
@@ -417,7 +417,7 @@ class PMProGateway_stripe extends PMProGateway {
 		</tr>
 		<tr class="gateway gateway_stripe" <?php if ( $gateway != "stripe" ) { ?>style="display: none;"<?php } ?>>
 			<th><?php esc_html_e( 'Stripe API Version', 'paid-memberships-pro' ); ?>:</th>
-			<td><code><?php echo PMPRO_STRIPE_API_VERSION; ?></code></td>
+			<td><code><?php echo esc_html( PMPRO_STRIPE_API_VERSION ); ?></code></td>
 		</tr>
 		<tr class="gateway gateway_stripe" <?php if ( $gateway != "stripe" ) { ?>style="display: none;"<?php } ?>>
 			<th scope="row" valign="top">
@@ -466,18 +466,18 @@ class PMProGateway_stripe extends PMProGateway {
 							),
 						);
 						if ( empty($_SERVER['HTTPS']) || $_SERVER['HTTPS'] === "off" ) {
-							$payment_request_error = sprintf( wp_kses( __( 'This webpage is being served over HTTP, but the Stripe Payment Request Button will only work on pages being served over HTTPS. To resolve this, you must <a target="_blank" href="%s" title="Configuring WordPress to Always Use HTTPS/SSL">set up WordPress to always use HTTPS</a>.', 'paid-memberships-pro' ), $allowed_payment_request_error_html ), 'https://www.paidmembershipspro.com/configuring-wordpress-always-use-httpsssl/?utm_source=plugin&utm_medium=pmpro-paymentsettings&utm_campaign=blog&utm_content=configure-https' );
+							$payment_request_error_escaped = sprintf( wp_kses( __( 'This webpage is being served over HTTP, but the Stripe Payment Request Button will only work on pages being served over HTTPS. To resolve this, you must <a target="_blank" href="%s" title="Configuring WordPress to Always Use HTTPS/SSL">set up WordPress to always use HTTPS</a>.', 'paid-memberships-pro' ), $allowed_payment_request_error_html ), 'https://www.paidmembershipspro.com/configuring-wordpress-always-use-httpsssl/?utm_source=plugin&utm_medium=pmpro-paymentsettings&utm_campaign=blog&utm_content=configure-https' );
 						} elseif ( self::using_legacy_keys() && substr( $values['stripe_publishablekey'], 0, 8 ) !== "pk_live_" && substr( $values['stripe_publishablekey'], 0, 8 ) !== "pk_test_" ) {
-							$payment_request_error = sprintf( wp_kses( __( 'It looks like you are using an older Stripe publishable key. In order to use the Payment Request Button feature, you will need to update your API key, which will be prefixed with "pk_live_" or "pk_test_". <a target="_blank" href="%s" title="Stripe Dashboard API Key Settings">Log in to your Stripe Dashboard to roll your publishable key</a>.', 'paid-memberships-pro' ), $allowed_payment_request_error_html ), 'https://dashboard.stripe.com/account/apikeys' );
+							$payment_request_error_escaped = sprintf( wp_kses( __( 'It looks like you are using an older Stripe publishable key. In order to use the Payment Request Button feature, you will need to update your API key, which will be prefixed with "pk_live_" or "pk_test_". <a target="_blank" href="%s" title="Stripe Dashboard API Key Settings">Log in to your Stripe Dashboard to roll your publishable key</a>.', 'paid-memberships-pro' ), $allowed_payment_request_error_html ), 'https://dashboard.stripe.com/account/apikeys' );
 						} elseif ( self::using_legacy_keys() && substr( $values['stripe_secretkey'], 0, 8 ) !== "sk_live_" && substr( $values['stripe_secretkey'], 0, 8 ) !== "sk_test_" ) {
-							$payment_request_error = sprintf( wp_kses( __( 'It looks like you are using an older Stripe secret key. In order to use the Payment Request Button feature, you will need to update your API key, which will be prefixed with "sk_live_" or "sk_test_". <a target="_blank" href="%s" title="Stripe Dashboard API Key Settings">Log in to your Stripe Dashboard to roll your secret key</a>.', 'paid-memberships-pro' ), $allowed_payment_request_error_html ), 'https://dashboard.stripe.com/account/apikeys' );
+							$payment_request_error_escaped = sprintf( wp_kses( __( 'It looks like you are using an older Stripe secret key. In order to use the Payment Request Button feature, you will need to update your API key, which will be prefixed with "sk_live_" or "sk_test_". <a target="_blank" href="%s" title="Stripe Dashboard API Key Settings">Log in to your Stripe Dashboard to roll your secret key</a>.', 'paid-memberships-pro' ), $allowed_payment_request_error_html ), 'https://dashboard.stripe.com/account/apikeys' );
 						} elseif ( ! $stripe->pmpro_does_apple_pay_domain_exist() ) {
-							$payment_request_error = sprintf( wp_kses( __( 'Your domain could not be registered with Apple to enable Apple Pay. Please try <a target="_blank" href="%s" title="Apple Pay Settings Page in Stripe">registering your domain manually from the Apple Pay settings page in Stripe</a>.', 'paid-memberships-pro' ), $allowed_payment_request_error_html ), 'https://dashboard.stripe.com/settings/payments/apple_pay' );
+							$payment_request_error_escaped = sprintf( wp_kses( __( 'Your domain could not be registered with Apple to enable Apple Pay. Please try <a target="_blank" href="%s" title="Apple Pay Settings Page in Stripe">registering your domain manually from the Apple Pay settings page in Stripe</a>.', 'paid-memberships-pro' ), $allowed_payment_request_error_html ), 'https://dashboard.stripe.com/settings/payments/apple_pay' );
 						}
-						if ( ! empty( $payment_request_error ) ) {
+						if ( ! empty( $payment_request_error_escaped ) ) {
 							?>
 							<div class="notice error inline">
-								<p id="pmpro_stripe_payment_request_button_notice"><?php echo( $payment_request_error ); ?></p>
+								<p id="pmpro_stripe_payment_request_button_notice"><?php echo( $payment_request_error_escaped ); ?></p>
 							</div>
 							<?php
 						}
@@ -604,22 +604,22 @@ class PMProGateway_stripe extends PMProGateway {
 			$r = array(
 				'success' => false,
 				'notice' => 'error',
-				'message' => $message,
-				'response' => $update_webhook_response
+				'message' => esc_html( $message ),
+				'response' => esc_html( $update_webhook_response )
 			);
 		} else {
 			$r = array(
 				'success' => true,
 				'notice' => 'notice-success',
-				'message' => __( 'Your webhook is enabled.', 'paid-memberships-pro' ),
-				'response' => $update_webhook_response
+				'message' => esc_html__( 'Your webhook is enabled.', 'paid-memberships-pro' ),
+				'response' => esc_html( $update_webhook_response )
 			);
 		}
 
 		if ( $silent ) {
 			return $r;
 		} else {
-			echo json_encode( $r );
+			echo json_encode( $r );	// Values escaped above.
 			exit;
 		}
 	}
@@ -648,16 +648,16 @@ class PMProGateway_stripe extends PMProGateway {
 				$r = array(
 					'success' => false,
 					'notice' => 'error',
-					'message' => $message,
+					'message' => esc_html( $message ),
 				);
 			}
-			$r['response'] = $delete_webhook_response;
+			$r['response'] = esc_html( $delete_webhook_response );
 		}
 
 		if ( $silent ) {
 			return $r;
 		} else {
-			echo json_encode( $r );
+			echo json_encode( $r );	// Values escaped above.
 			exit;
 		}
 	}
@@ -672,11 +672,11 @@ class PMProGateway_stripe extends PMProGateway {
 			// Webhook was successfully deleted. Now make a new one.
 			$r = self::wp_ajax_pmpro_stripe_create_webhook( true );
 			if ( ! $r['success'] ) {
-				$r['message'] = __( 'Webhook creation failed. Please refresh and try again.', 'paid-memberships-pro' );
+				$r['message'] = esc_html__( 'Webhook creation failed. Please refresh and try again.', 'paid-memberships-pro' );
 			}
 		}
 
-		echo json_encode( $r );
+		echo json_encode( $r ); // Values escaped above.
 		exit;
 	}
 
@@ -843,21 +843,21 @@ class PMProGateway_stripe extends PMProGateway {
 
 		//include ours
 		?>
-        <div id="pmpro_payment_information_fields" class="<?php echo pmpro_get_element_class( 'pmpro_checkout', 'pmpro_payment_information_fields' ); ?>"
+        <div id="pmpro_payment_information_fields" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout', 'pmpro_payment_information_fields' ) ); ?>"
 		     <?php if ( ! $pmpro_requirebilling || apply_filters( "pmpro_hide_payment_information_fields", false ) ) { ?>style="display: none;"<?php } ?>>
             <h3>
-                <span class="<?php echo pmpro_get_element_class( 'pmpro_checkout-h3-name' ); ?>"><?php esc_html_e( 'Payment Information', 'paid-memberships-pro' ); ?></span>
-                <span class="<?php echo pmpro_get_element_class( 'pmpro_checkout-h3-msg' ); ?>"><?php esc_html_e( 'We accept all major credit cards', 'paid-memberships-pro' ); ?></span>
+                <span class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout-h3-name' ) ); ?>"><?php esc_html_e( 'Payment Information', 'paid-memberships-pro' ); ?></span>
+                <span class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout-h3-msg' ) ); ?>"><?php esc_html_e( 'We accept all major credit cards', 'paid-memberships-pro' ); ?></span>
             </h3>
 			<?php $sslseal = pmpro_getOption( "sslseal" ); ?>
 			<?php if ( ! empty( $sslseal ) ) { ?>
-            <div class="<?php echo pmpro_get_element_class( 'pmpro_checkout-fields-display-seal' ); ?>">
+            <div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout-fields-display-seal' ) ); ?>">
 				<?php } ?>
 		<?php
 			if ( pmpro_getOption( 'stripe_payment_request_button' ) ) { ?>
-				<div class="<?php echo pmpro_get_element_class( 'pmpro_checkout-field pmpro_checkout-field-payment-request-button', 'pmpro_checkout-field-payment-request-button' ); ?>">
+				<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout-field pmpro_checkout-field-payment-request-button', 'pmpro_checkout-field-payment-request-button' ) ); ?>">
 					<div id="payment-request-button"><!-- Alternate payment method will be inserted here. --></div>
-					<h4 class="<?php echo pmpro_get_element_class( 'pmpro_checkout-field pmpro_payment-credit-card', 'pmpro_payment-credit-card' ); ?>"><?php esc_html_e( 'Pay with Credit Card', 'paid-memberships-pro' ); ?></h4>
+					<h4 class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout-field pmpro_payment-credit-card', 'pmpro_payment-credit-card' ) ); ?>"><?php esc_html_e( 'Pay with Credit Card', 'paid-memberships-pro' ); ?></h4>
 				</div>
 				<?php
 			}
@@ -865,36 +865,36 @@ class PMProGateway_stripe extends PMProGateway {
                 <div class="pmpro_checkout-fields<?php if ( ! empty( $sslseal ) ) { ?> pmpro_checkout-fields-leftcol<?php } ?>">
                     <input type="hidden" id="CardType" name="CardType"
                            value="<?php echo esc_attr( $CardType ); ?>"/>
-                    <div class="<?php echo pmpro_get_element_class( 'pmpro_checkout-field pmpro_payment-account-number', 'pmpro_payment-account-number' ); ?>">
+                    <div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout-field pmpro_payment-account-number', 'pmpro_payment-account-number' ) ); ?>">
                         <label for="AccountNumber"><?php esc_html_e( 'Card Number', 'paid-memberships-pro' ); ?></label>
                         <div id="AccountNumber"></div>
                     </div>
-                    <div class="<?php echo pmpro_get_element_class( 'pmpro_checkout-field pmpro_payment-expiration', 'pmpro_payment-expiration' ); ?>">
+                    <div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout-field pmpro_payment-expiration', 'pmpro_payment-expiration' ) ); ?>">
                         <label for="Expiry"><?php esc_html_e( 'Expiration Date', 'paid-memberships-pro' ); ?></label>
                         <div id="Expiry"></div>
                     </div>
 					<?php
 					$pmpro_show_cvv = apply_filters( "pmpro_show_cvv", true );
 					if ( $pmpro_show_cvv ) { ?>
-                        <div class="<?php echo pmpro_get_element_class( 'pmpro_checkout-field pmpro_payment-cvv', 'pmpro_payment-cvv' ); ?>">
+                        <div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout-field pmpro_payment-cvv', 'pmpro_payment-cvv' ) ); ?>">
                             <label for="CVV"><?php esc_html_e( 'CVC', 'paid-memberships-pro' ); ?></label>
                             <div id="CVV"></div>
                         </div>
 					<?php } ?>
 					<?php if ( $pmpro_show_discount_code ) { ?>
-                        <div class="<?php echo pmpro_get_element_class( 'pmpro_checkout-field pmpro_payment-discount-code', 'pmpro_payment-discount-code' ); ?>">
+                        <div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout-field pmpro_payment-discount-code', 'pmpro_payment-discount-code' ) ); ?>">
                             <label for="discount_code"><?php esc_html_e( 'Discount Code', 'paid-memberships-pro' ); ?></label>
-                            <input class="<?php echo pmpro_get_element_class( 'input pmpro_alter_price', 'discount_code' ); ?>"
+                            <input class="<?php echo esc_attr( pmpro_get_element_class( 'input pmpro_alter_price', 'discount_code' ) ); ?>"
                                    id="discount_code" name="discount_code" type="text" size="10"
                                    value="<?php echo esc_attr( $discount_code ) ?>"/>
                             <input type="button" id="discount_code_button" name="discount_code_button"
                                    value="<?php esc_attr_e( 'Apply', 'paid-memberships-pro' ); ?>"/>
-                            <p id="discount_code_message" class="<?php echo pmpro_get_element_class( 'pmpro_message' ); ?>" style="display: none;"></p>
+                            <p id="discount_code_message" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_message' ) ); ?>" style="display: none;"></p>
                         </div>
 					<?php } ?>
                 </div> <!-- end pmpro_checkout-fields -->
 				<?php if ( ! empty( $sslseal ) ) { ?>
-                <div class="<?php echo pmpro_get_element_class( 'pmpro_checkout-fields-rightcol pmpro_sslseal', 'pmpro_sslseal' ); ?>"><?php echo stripslashes( $sslseal ); ?></div>
+                <div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout-fields-rightcol pmpro_sslseal', 'pmpro_sslseal' ) ); ?>"><?php echo stripslashes( $sslseal ); ?></div>
             </div> <!-- end pmpro_checkout-fields-display-seal -->
 		<?php } ?>
         </div> <!-- end pmpro_payment_information_fields -->
@@ -984,7 +984,7 @@ class PMProGateway_stripe extends PMProGateway {
 			$update = array();
 
 			//all updates have these values
-			$update['when']           = pmpro_sanitize_with_safelist( $_POST['updates_when'][ $i ], array(
+			$update['when']           = pmpro_sanitize_with_safelist( sanitize_text_field( $_POST['updates_when'][ $i ] ), array(
 				'now',
 				'payment',
 				'date'
@@ -1297,14 +1297,14 @@ class PMProGateway_stripe extends PMProGateway {
 
 		// Change current gateway to Stripe
 		pmpro_setOption( 'gateway', 'stripe' );
-		pmpro_setOption( 'gateway_environment', $_REQUEST['pmpro_stripe_connected_environment'] );
+		pmpro_setOption( 'gateway_environment', $_REQUEST['pmpro_stripe_connected_environment'] ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 
 		$error = '';
 		if (
 			'false' === $_REQUEST['pmpro_stripe_connected']
 			&& isset( $_REQUEST['error_message'] )
 		) {
-			$error = $_REQUEST['error_message'];
+			$error = sanitize_text_field( $_REQUEST['error_message'] );
 		} elseif (
 			'false' === $_REQUEST['pmpro_stripe_connected']
 			|| ! isset( $_REQUEST['pmpro_stripe_publishable_key'] )
@@ -1316,14 +1316,14 @@ class PMProGateway_stripe extends PMProGateway {
 			// Update keys.
 			if ( $_REQUEST['pmpro_stripe_connected_environment'] === 'live' ) {
 				// Update live keys.
-				pmpro_setOption( 'live_stripe_connect_user_id', $_REQUEST['pmpro_stripe_user_id'] );
-				pmpro_setOption( 'live_stripe_connect_secretkey', $_REQUEST['pmpro_stripe_access_token'] );
-				pmpro_setOption( 'live_stripe_connect_publishablekey', $_REQUEST['pmpro_stripe_publishable_key'] );
+				pmpro_setOption( 'live_stripe_connect_user_id', $_REQUEST['pmpro_stripe_user_id'] ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+				pmpro_setOption( 'live_stripe_connect_secretkey', $_REQUEST['pmpro_stripe_access_token'] ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+				pmpro_setOption( 'live_stripe_connect_publishablekey', $_REQUEST['pmpro_stripe_publishable_key'] ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 			} else {
 				// Update sandbox keys.
-				pmpro_setOption( 'sandbox_stripe_connect_user_id', $_REQUEST['pmpro_stripe_user_id'] );
-				pmpro_setOption( 'sandbox_stripe_connect_secretkey', $_REQUEST['pmpro_stripe_access_token'] );
-				pmpro_setOption( 'sandbox_stripe_connect_publishablekey', $_REQUEST['pmpro_stripe_publishable_key'] );
+				pmpro_setOption( 'sandbox_stripe_connect_user_id', $_REQUEST['pmpro_stripe_user_id'] ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+				pmpro_setOption( 'sandbox_stripe_connect_secretkey', $_REQUEST['pmpro_stripe_access_token'] ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+				pmpro_setOption( 'sandbox_stripe_connect_publishablekey', $_REQUEST['pmpro_stripe_publishable_key'] ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 			}
 
 
@@ -1376,10 +1376,17 @@ class PMProGateway_stripe extends PMProGateway {
 			$message = sprintf(
 				/* translators: %s Error Message */
 				__( '<strong>Error:</strong> PMPro could not disconnect from the Stripe API. Reason: %s', 'paid-memberships-pro' ),
-				esc_html( $_REQUEST['error_message'] )
+				sanitize_text_field( $_REQUEST['error_message'] )
 			);
 
-			printf( '<div class="%1$s"><p>%2$s</p></div>', esc_attr( $class ), $message );
+			$allowed_html = array(
+				'div' => array(
+					'class' => array(),
+				),
+				'p'   => array(),
+				'strong' => array(),
+			);
+			echo wp_kses( sprintf( '<div class="%1$s"><p>%2$s</p></div>', $class, $message ), $allowed_html );
 
 		}
 
@@ -1573,6 +1580,33 @@ class PMProGateway_stripe extends PMProGateway {
 
 		// Save the discount code.
 		update_pmpro_membership_order_meta( $morder->id, 'checkout_discount_code', $discount_code );
+	
+		// Save any files that were uploaded.
+		if ( ! empty( $_FILES ) ) {
+			$files = array();
+			foreach ( $_FILES as $arr_key => $file ) {
+				// Move the file to the uploads/pmpro-register-helper/tmp directory.
+				// Check for a register helper directory in wp-content.
+				$upload_dir = wp_upload_dir();
+				$pmprorh_dir = $upload_dir['basedir'] . "/pmpro-register-helper/tmp/";
+
+				// Create the dir and subdir if needed
+				if( ! is_dir( $pmprorh_dir ) ) {
+					wp_mkdir_p( $pmprorh_dir );
+				}
+
+				// Move file
+				$new_filename = $pmprorh_dir . basename( $file['tmp_name'] );
+				move_uploaded_file($file['tmp_name'], $new_filename);
+
+				// Update location of file
+				$file['tmp_name'] = $new_filename;
+
+				// Add the file to the array.
+				$files[ $arr_key ] = $file;
+			}
+			update_pmpro_membership_order_meta( $morder->id, 'checkout_files', $files );
+		}
 
 		// Time to send the user to pay with Stripe!
 		$stripe = new PMProGateway_stripe();
@@ -2180,13 +2214,13 @@ class PMProGateway_stripe extends PMProGateway {
 		}
 
 		?>
-		<tr class="pmpro_settings_divider gateway gateway_stripe_<?php echo $environment; ?>"
+		<tr class="pmpro_settings_divider gateway gateway_stripe_<?php echo esc_attr( $environment ); ?>"
 		    <?php if ( $gateway != "stripe" || $gateway_environment != $environment ) { ?>style="display: none;"<?php } ?>>
             <td colspan="2">
 				<hr />
 				<h2>
 					<?php esc_html_e( 'Stripe Connect Settings', 'paid-memberships-pro' ); ?>
-					<span class="pmpro_gateway-mode pmpro_gateway-mode-<?php echo $environment2; ?> <?php esc_attr_e( $connection_selector ); ?>">
+					<span class="pmpro_gateway-mode pmpro_gateway-mode-<?php echo esc_attr( $environment2 ); ?> <?php echo esc_attr( $connection_selector ); ?>">
 						<?php
 							echo ( $livemode ? esc_html__( 'Live Mode:', 'paid-memberships-pro' ) : esc_html__( 'Test Mode:', 'paid-memberships-pro' ) ) . ' ';
 							if ( $stripe_is_legacy_setup ) {
@@ -2224,7 +2258,7 @@ class PMProGateway_stripe extends PMProGateway {
 				<?php } ?>
             </td>
         </tr>
-		<tr class="gateway gateway_stripe_<?php echo $environment; ?>" <?php if ( $gateway != "stripe" || $gateway_environment != $environment ) { ?>style="display: none;"<?php } ?>>
+		<tr class="gateway gateway_stripe_<?php echo esc_attr( $environment ); ?>" <?php if ( $gateway != "stripe" || $gateway_environment != $environment ) { ?>style="display: none;"<?php } ?>>
             <th scope="row" valign="top">
                 <label><?php esc_html_e( 'Stripe Connection:', 'paid-memberships-pro' ); ?></label>
             </th>
@@ -2277,12 +2311,12 @@ class PMProGateway_stripe extends PMProGateway {
 						echo ' <a href="https://www.paidmembershipspro.com/gateway/stripe/?utm_source=plugin&utm_medium=pmpro-paymentsettings&utm_campaign=gateways&utm_content=stripe-fees#tab-fees" target="_blank" rel="noopener noreferrer">' . esc_html__( 'Learn More &raquo;', 'paid-memberships-pro' ) . '</a>';
 					?>
 				</p>
-				<input type='hidden' name='<?php echo $environment; ?>_stripe_connect_user_id' id='<?php echo $environment; ?>_stripe_connect_user_id' value='<?php echo esc_attr( $values[ $environment . '_stripe_connect_user_id'] ) ?>'/>
-				<input type='hidden' name='<?php echo $environment; ?>_stripe_connect_secretkey' id='<?php echo $environment; ?>_stripe_connect_secretkey' value='<?php echo esc_attr( $values[ $environment . '_stripe_connect_secretkey'] ) ?>'/>
-				<input type='hidden' name='<?php echo $environment; ?>_stripe_connect_publishablekey' id='<?php echo $environment; ?>_stripe_connect_publishablekey' value='<?php echo esc_attr( $values[ $environment . '_stripe_connect_publishablekey'] ) ?>'/>
+				<input type='hidden' name='<?php echo esc_attr( $environment ); ?>_stripe_connect_user_id' id='<?php echo esc_attr( $environment ); ?>_stripe_connect_user_id' value='<?php echo esc_attr( $values[ $environment . '_stripe_connect_user_id'] ) ?>'/>
+				<input type='hidden' name='<?php echo esc_attr( $environment ); ?>_stripe_connect_secretkey' id='<?php echo esc_attr( $environment ); ?>_stripe_connect_secretkey' value='<?php echo esc_attr( $values[ $environment . '_stripe_connect_secretkey'] ) ?>'/>
+				<input type='hidden' name='<?php echo esc_attr( $environment ); ?>_stripe_connect_publishablekey' id='<?php echo esc_attr( $environment ); ?>_stripe_connect_publishablekey' value='<?php echo esc_attr( $values[ $environment . '_stripe_connect_publishablekey'] ) ?>'/>
 			</td>
         </tr>
-		<tr class="gateway gateway_stripe_<?php echo $environment; ?>" <?php if ( $gateway != "stripe" || $gateway_environment != $environment ) { ?>style="display: none;"<?php } ?>>
+		<tr class="gateway gateway_stripe_<?php echo esc_attr( $environment ); ?>" <?php if ( $gateway != "stripe" || $gateway_environment != $environment ) { ?>style="display: none;"<?php } ?>>
             <th scope="row" valign="top">
                 <label><?php esc_html_e( 'Webhook', 'paid-memberships-pro' ); ?>:</label>
             </th>
@@ -3106,9 +3140,9 @@ class PMProGateway_stripe extends PMProGateway {
 									<?php
 									for ( $i = 1; $i < 13; $i ++ ) {
 										?>
-                                        <option value="<?php echo str_pad( $i, 2, '0', STR_PAD_LEFT ); ?>"
+                                        <option value="<?php echo esc_attr( str_pad( $i, 2, '0', STR_PAD_LEFT ) ); ?>"
 										        <?php if ( ! empty( $update['date_month'] ) && $update['date_month'] == $i ) { ?>selected="selected"<?php } ?>>
-											<?php echo date_i18n( 'M', strtotime( $i . '/15/' . $current_year ) ); ?>
+											<?php echo esc_html( date_i18n( 'M', strtotime( $i . '/15/' . $current_year ) ) ); ?>
 										</option>
 										<?php
 									}
@@ -3125,7 +3159,7 @@ class PMProGateway_stripe extends PMProGateway {
 							</span>
                                 <span class="updates_billing"
 								      <?php if ( $update['when'] == "now" ) { ?>style="display: none;"<?php } ?>>
-								<?php echo $pmpro_currency_symbol; ?><input name="updates_billing_amount[]" type="text"
+								<?php echo esc_html( $pmpro_currency_symbol ); ?><input name="updates_billing_amount[]" type="text"
                                                                            size="10"
                                                                            value="<?php echo esc_attr( $update['billing_amount'] ); ?>"
 																		   readonly/>
@@ -3860,7 +3894,7 @@ class PMProGateway_stripe extends PMProGateway {
 		pmpro_method_should_be_private( '2.7.0' );
 		try {
 			$create = Stripe_ApplePayDomain::create([
-				'domain_name' => $_SERVER['HTTP_HOST'],
+				'domain_name' => sanitize_text_field( $_SERVER['HTTP_HOST'] ),
 			]);
 		} catch (\Throwable $th) {
 			//throw $th;

@@ -123,36 +123,36 @@ if ( isset( $_REQUEST['order_id'] ) ) {
 	$order_id = "";
 }
 if ( isset( $_REQUEST['bfirstname'] ) ) {
-	$bfirstname = sanitize_text_field( stripslashes( $_REQUEST['bfirstname'] ) );
+	$bfirstname = stripslashes( sanitize_text_field( $_REQUEST['bfirstname'] ) );
 } else {
 	$bfirstname = "";
 }
 if ( isset( $_REQUEST['blastname'] ) ) {
-	$blastname = sanitize_text_field( stripslashes( $_REQUEST['blastname'] ) );
+	$blastname = stripslashes( sanitize_text_field( $_REQUEST['blastname'] ) );
 } else {
 	$blastname = "";
 }
 if ( isset( $_REQUEST['fullname'] ) ) {
-	$fullname = $_REQUEST['fullname'];
+	$fullname = sanitize_text_field( $_REQUEST['fullname'] );
 }        //honeypot for spammers
 if ( isset( $_REQUEST['baddress1'] ) ) {
-	$baddress1 = sanitize_text_field( stripslashes( $_REQUEST['baddress1'] ) );
+	$baddress1 = stripslashes( sanitize_text_field( $_REQUEST['baddress1'] ) );
 } else {
 	$baddress1 = "";
 }
 if ( isset( $_REQUEST['baddress2'] ) ) {
-	$baddress2 = sanitize_text_field( stripslashes( $_REQUEST['baddress2'] ) );
+	$baddress2 = stripslashes( sanitize_text_field( $_REQUEST['baddress2'] ) );
 } else {
 	$baddress2 = "";
 }
 if ( isset( $_REQUEST['bcity'] ) ) {
-	$bcity = sanitize_text_field( stripslashes( $_REQUEST['bcity'] ) );
+	$bcity = stripslashes( sanitize_text_field( $_REQUEST['bcity'] ) );
 } else {
 	$bcity = "";
 }
 
 if ( isset( $_REQUEST['bstate'] ) ) {
-	$bstate = sanitize_text_field( stripslashes( $_REQUEST['bstate'] ) );
+	$bstate = stripslashes( sanitize_text_field( $_REQUEST['bstate'] ) );
 } else {
 	$bstate = "";
 }
@@ -169,22 +169,22 @@ if ( ! empty( $bstate ) ) {
 }
 
 if ( isset( $_REQUEST['bzipcode'] ) ) {
-	$bzipcode = sanitize_text_field( stripslashes( $_REQUEST['bzipcode'] ) );
+	$bzipcode = stripslashes( sanitize_text_field( $_REQUEST['bzipcode'] ) );
 } else {
 	$bzipcode = "";
 }
 if ( isset( $_REQUEST['bcountry'] ) ) {
-	$bcountry = sanitize_text_field( stripslashes( $_REQUEST['bcountry'] ) );
+	$bcountry = stripslashes( sanitize_text_field( $_REQUEST['bcountry'] ) );
 } else {
 	$bcountry = "";
 }
 if ( isset( $_REQUEST['bphone'] ) ) {
-	$bphone = sanitize_text_field( stripslashes( $_REQUEST['bphone'] ) );
+	$bphone = stripslashes( sanitize_text_field( $_REQUEST['bphone'] ) );
 } else {
 	$bphone = "";
 }
 if ( isset ( $_REQUEST['bemail'] ) ) {
-	$bemail = sanitize_email( stripslashes( $_REQUEST['bemail'] ) );
+	$bemail = stripslashes( sanitize_email( $_REQUEST['bemail'] ) );
 } elseif ( is_user_logged_in() ) {
 	$bemail = $current_user->user_email;
 } else {
@@ -193,7 +193,7 @@ if ( isset ( $_REQUEST['bemail'] ) ) {
 if ( isset( $_REQUEST['bconfirmemail_copy'] ) ) {
 	$bconfirmemail = $bemail;
 } elseif ( isset( $_REQUEST['bconfirmemail'] ) ) {
-	$bconfirmemail = sanitize_email( stripslashes( $_REQUEST['bconfirmemail'] ) );
+	$bconfirmemail = stripslashes( sanitize_email( $_REQUEST['bconfirmemail'] ) );
 } elseif ( is_user_logged_in() ) {
 	$bconfirmemail = $current_user->user_email;
 } else {
@@ -228,7 +228,7 @@ if ( isset( $_REQUEST['CVV'] ) ) {
 }
 
 if ( isset( $_REQUEST['discount_code'] ) ) {
-	$discount_code = preg_replace( "/[^A-Za-z0-9\-]/", "", $_REQUEST['discount_code'] );
+	$discount_code = preg_replace( "/[^A-Za-z0-9\-]/", "", sanitize_text_field( $_REQUEST['discount_code'] ) );
 } else {
 	$discount_code = "";
 }
@@ -237,6 +237,9 @@ if ( isset( $_REQUEST['username'] ) ) {
 } else {
 	$username = "";
 }
+
+// Note: We can't sanitize the passwords. They get hashed when saved.
+// phpcs:disable WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 if ( isset( $_REQUEST['password'] ) ) {
 	$password = $_REQUEST['password'];
 } else {
@@ -249,6 +252,8 @@ if ( isset( $_REQUEST['password2_copy'] ) ) {
 } else {
 	$password2 = "";
 }
+// phpcs:enable WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+
 if ( isset( $_REQUEST['tos'] ) ) {
 	$tos = intval( $_REQUEST['tos'] );
 } else {
@@ -398,11 +403,13 @@ if ( $submit && $pmpro_msgt != "pmpro_error" ) {
 				global $recaptcha_privatekey;
 
 				if ( isset( $_POST["recaptcha_challenge_field"] ) ) {
-					//using older recaptcha lib
+					// Using older recaptcha lib. Google needs the raw POST data.
+					// phpcs:disable WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 					$resp = recaptcha_check_answer( $recaptcha_privatekey,
-						$_SERVER["REMOTE_ADDR"],
+						pmpro_get_ip(),
 						$_POST["recaptcha_challenge_field"],
 						$_POST["recaptcha_response_field"] );
+					// phpcs:enable WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 
 					$recaptcha_valid  = $resp->is_valid;
 					$recaptcha_errors = $resp->error;
@@ -413,7 +420,7 @@ if ( $submit && $pmpro_msgt != "pmpro_error" ) {
 					// pmpro_recaptcha_validated session variable, which is checked
 					// earlier. We should remove/refactor this code.
 					$reCaptcha = new pmpro_ReCaptcha( $recaptcha_privatekey );
-					$resp      = $reCaptcha->verifyResponse( $_SERVER["REMOTE_ADDR"], $_POST["g-recaptcha-response"] );
+					$resp      = $reCaptcha->verifyResponse( pmpro_get_ip(), $_POST["g-recaptcha-response"] ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 
 					$recaptcha_valid  = $resp->success;
 					$recaptcha_errors = $resp->errorCodes;
@@ -513,13 +520,13 @@ if ( ! empty( $pmpro_confirmed ) ) {
 
 		//first name
 		if ( ! empty( $_REQUEST['first_name'] ) ) {
-			$first_name = $_REQUEST['first_name'];
+			$first_name = sanitize_text_field( $_REQUEST['first_name'] );
 		} else {
 			$first_name = $bfirstname;
 		}
 		//last name
 		if ( ! empty( $_REQUEST['last_name'] ) ) {
-			$last_name = $_REQUEST['last_name'];
+			$last_name = sanitize_text_field( $_REQUEST['last_name'] );
 		} else {
 			$last_name = $blastname;
 		}
@@ -702,7 +709,13 @@ if ( ! empty( $pmpro_confirmed ) ) {
 					$code_order_id = "";
 				}
 
-				$wpdb->query( "INSERT INTO $wpdb->pmpro_discount_codes_uses (code_id, user_id, order_id, timestamp) VALUES('" . $discount_code_id . "', '" . $user_id . "', '" . intval( $code_order_id ) . "', '" . current_time( "mysql" ) . "')" );
+				$wpdb->query( $wpdb->prepare(
+					"INSERT INTO $wpdb->pmpro_discount_codes_uses (code_id, user_id, order_id, timestamp) VALUES(%d, %d, %d, %s)",
+					$discount_code_id,
+					$user_id,
+					$code_order_id,
+					current_time( "mysql" )
+				) );
 
 				do_action( 'pmpro_discount_code_used', $discount_code_id, $user_id, $code_order_id );
 			}

@@ -139,7 +139,7 @@ function pmpro_report_login_page()
 			elseif($l)
 				$sqlQuery .= " AND mu.membership_id = '" . esc_sql($l) . "' ";
 
-			$sqlQuery .= "GROUP BY u.ID ORDER BY user_registered DESC LIMIT $start, $limit";
+			$sqlQuery .= "GROUP BY u.ID ORDER BY user_registered DESC LIMIT " . esc_sql( $start ) . "," . esc_sql( $limit );
 		}
 		else
 		{
@@ -150,7 +150,7 @@ function pmpro_report_login_page()
 				$sqlQuery .= " AND mu.membership_id > 0  AND mu.status = 'active' ";
 			elseif($l)
 				$sqlQuery .= " AND mu.membership_id = '" . esc_sql($l) . "' ";
-			$sqlQuery .= "GROUP BY u.ID ORDER BY user_registered DESC LIMIT $start, $limit";
+			$sqlQuery .= "GROUP BY u.ID ORDER BY user_registered DESC LIMIT " . esc_sql( $start ) . "," . esc_sql( $limit );
 		}
 
 		$sqlQuery = apply_filters("pmpro_members_list_sql", $sqlQuery);

@@ -6,22 +6,21 @@
 	else
 		$view = "";
 
+	if ( ! empty( $_REQUEST['edit'] ) ) {
+		$edit_level = intval( $_REQUEST['edit'] );
+	} else {
+		$edit_level = false;
+	}
+
 	global $pmpro_ready, $msg, $msgt;
 	///$pmpro_ready = pmpro_is_ready();
 	if(!$pmpro_ready)
 	{
-		global $pmpro_level_ready, $pmpro_gateway_ready, $pmpro_pages_ready;
-		if(!isset($edit))
-		{
-			if(isset($_REQUEST['edit']))
-				$edit = intval($_REQUEST['edit']);
-			else
-				$edit = false;
-		}
+		global $pmpro_level_ready, $pmpro_gateway_ready, $pmpro_pages_ready;		
 
 		if(empty($msg))
 			$msg = -1;
-		if(empty($pmpro_level_ready) && empty($edit) && $view != "pmpro-membershiplevels")
+		if(empty($pmpro_level_ready) && empty($edit_level) && $view != "pmpro-membershiplevels")
 			$msgt .= " <a href=\"" . admin_url('admin.php?page=pmpro-membershiplevels&edit=-1') . "\">" . __("Add a membership level to get started.", 'paid-memberships-pro' ) . "</a>";
 		elseif($pmpro_level_ready && !$pmpro_pages_ready && $view != "pmpro-pagesettings")
 			$msgt .= " <strong>" . __( 'Next step:', 'paid-memberships-pro' ) . "</strong> <a href=\"" . admin_url('admin.php?page=pmpro-pagesettings') . "\">" . __("Set up the membership pages", 'paid-memberships-pro' ) . "</a>.";
@@ -37,9 +36,9 @@
 	{
 		$msg = -1;
 		$msgt = __("The billing details for some of your membership levels is not supported by Stripe.", 'paid-memberships-pro' );
-		if($view == "pmpro-membershiplevels" && !empty($_REQUEST['edit']) && $_REQUEST['edit'] > 0)
+		if($view == "pmpro-membershiplevels" && !empty($edit_level) && $edit_level > 0)
 		{
-			if(!pmpro_checkLevelForStripeCompatibility($_REQUEST['edit']))
+			if(!pmpro_checkLevelForStripeCompatibility($edit_level))
 			{
 				global $pmpro_stripe_error;
 				$pmpro_stripe_error = true;
@@ -57,9 +56,9 @@
 	{
 		$msg = -1;
 		$msgt = __("The billing details for some of your membership levels is not supported by Payflow.", 'paid-memberships-pro' );
-		if($view == "pmpro-membershiplevels" && !empty($_REQUEST['edit']) && $_REQUEST['edit'] > 0)
+		if($view == "pmpro-membershiplevels" && !empty($edit_level) && $edit_level > 0)
 		{
-			if(!pmpro_checkLevelForPayflowCompatibility($_REQUEST['edit']))
+			if(!pmpro_checkLevelForPayflowCompatibility($edit_level))
 			{
 				global $pmpro_payflow_error;
 				$pmpro_payflow_error = true;
@@ -81,9 +80,9 @@
 			$msg  = - 1;
 			$msgt = __( "The billing details for some of your membership levels is not supported by Braintree.", 'paid-memberships-pro' );
 		}
-		if($view == "pmpro-membershiplevels" && !empty($_REQUEST['edit']) && $_REQUEST['edit'] > 0)
+		if($view == "pmpro-membershiplevels" && !empty($edit_level) && $edit_level > 0)
 		{
-			if(!pmpro_checkLevelForBraintreeCompatibility($_REQUEST['edit']))
+			if(!pmpro_checkLevelForBraintreeCompatibility($edit_level))
 			{
 
 				// Don't overwrite existing messages
@@ -107,9 +106,9 @@
 	{
 		$msg = -1;
 		$msgt = __("The billing details for some of your membership levels is not supported by TwoCheckout.", 'paid-memberships-pro' );
-		if($view == "pmpro-membershiplevels" && !empty($_REQUEST['edit']) && $_REQUEST['edit'] > 0)
+		if($view == "pmpro-membershiplevels" && !empty($edit_level) && $edit_level > 0)
 		{
-			if(!pmpro_checkLevelForTwoCheckoutCompatibility($_REQUEST['edit']))
+			if(!pmpro_checkLevelForTwoCheckoutCompatibility($edit_level))
 			{
 				global $pmpro_twocheckout_error;
 				$pmpro_twocheckout_error = true;
@@ -127,8 +126,8 @@
 	if ( ! pmpro_check_discount_code_for_gateway_compatibility() ) {
 		$msg = -1;
 		$msgt = __( 'The billing details for some of your discount codes are not supported by your gateway.', 'paid-memberships-pro' );
-		if ( $view == 'pmpro-discountcodes' && ! empty($_REQUEST['edit']) && $_REQUEST['edit'] > 0 ) {
-			if ( ! pmpro_check_discount_code_for_gateway_compatibility( $_REQUEST['edit'] ) ) {
+		if ( $view == 'pmpro-discountcodes' && ! empty($edit_level) && $edit_level > 0 ) {
+			if ( ! pmpro_check_discount_code_for_gateway_compatibility( $edit_level ) ) {
 				$msg = -1;
 				$msgt = __( 'The billing details for this discount code are not supported by your gateway.', 'paid-memberships-pro' );
 			}
@@ -155,7 +154,7 @@
         $msgt = sprintf(__("The Braintree Gateway requires PHP 5.4.45 or greater. We recommend upgrading to PHP %s or greater. Ask your host to upgrade.", "paid-memberships-pro" ), PMPRO_MIN_PHP_VERSION );
     }
 
-	//if no errors yet, let's check and bug them if < our PMPRO_PHP_MIN_VERSION
+	//if no errors yet, let's check and bug them if < our PMPRO_MIN_PHP_VERSION
 	if( empty($msgt) && version_compare( PHP_VERSION, PMPRO_MIN_PHP_VERSION, '<' ) ) {
 		$msg = 1;
 		$msgt = sprintf(__("We recommend upgrading to PHP %s or greater. Ask your host to upgrade.", "paid-memberships-pro" ), PMPRO_MIN_PHP_VERSION );
@@ -166,7 +165,7 @@
 		<div id="message" class="<?php if($msg > 0) echo "updated fade"; else echo "error"; ?>"><p><?php echo $msgt?></p></div>
 	<?php } ?>
 
-<div class="wrap pmpro_admin">
+<div class="wrap pmpro_admin <?php echo 'pmpro_admin-' . esc_attr( $view ); ?>">
 	<div class="pmpro_banner">
 		<a class="pmpro_logo" title="Paid Memberships Pro - Membership Plugin for WordPress" target="_blank" rel="noopener noreferrer" href="https://www.paidmembershipspro.com/?utm_source=plugin&utm_medium=pmpro-admin-header&utm_campaign=homepage"><img src="<?php echo esc_url( PMPRO_URL . '/images/Paid-Memberships-Pro.png' ); ?>" width="350" height="75" border="0" alt="Paid Memberships Pro(c) - All Rights Reserved" /></a>
 		<div class="pmpro_meta">

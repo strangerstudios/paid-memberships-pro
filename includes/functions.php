@@ -86,14 +86,15 @@ function pmpro_getOption( $s, $force = false ) {
 	}
 }
 
-function pmpro_setOption( $s, $v = null, $sanitize_function = 'sanitize_text_field', $autoload = false ) {
-	// no value is given, set v to the p var
+function pmpro_setOption( $s, $v = null, $sanitize_function = 'sanitize_text_field', $autoload = false ) {		
 	if ( $v === null && isset( $_POST[ $s ] ) ) {
+		// phpcs:disable WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 		if ( is_array( $_POST[ $s ] ) ) {
 			$v = array_map( $sanitize_function, $_POST[ $s ] );
 		} else {
 			$v = call_user_func( $sanitize_function, $_POST[ $s ] );
 		}
+		// phpcs:enable WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 	}
 
 	if ( is_array( $v ) ) {
@@ -445,7 +446,7 @@ function pmpro_getLevelCost( &$level, $tags = true, $short = false ) {
 
 	// trial part
 	if ( $level->trial_limit ) {
-		if ( (float)$level->trial_amount > 0 ) {
+		if ( (float)$level->trial_amount == 0 ) {
 			if ( $level->trial_limit == '1' ) {
 				$r .= ' ' . __( 'After your initial payment, your first payment is Free.', 'paid-memberships-pro' );
 			} else {
@@ -902,7 +903,7 @@ function pmpro_hasMembershipLevel( $levels = null, $user_id = null ) {
 			} elseif ( in_array( '-L', $levels ) || in_array( '-l', $levels ) ) {
 				$return = ( empty( $user_id ) || $user_id != $current_user->ID );       // -L, not logged in users
 			} elseif ( in_array( 'E', $levels ) || in_array( 'e', $levels ) ) {
-				$sql = "SELECT id FROM $wpdb->pmpro_memberships_users WHERE user_id=$user_id AND status='expired' LIMIT 1";
+				$sql = "SELECT id FROM $wpdb->pmpro_memberships_users WHERE user_id = " . esc_sql( $user_id ) . " AND status ='expired' LIMIT 1";
 				$expired = $wpdb->get_var( $sql );                                    // E, expired members
 				$return = ! empty( $expired );
 			}
@@ -1342,19 +1343,19 @@ function pmpro_toggleMembershipCategory( $level, $category, $value ) {
 
 	if ( ( $level = intval( $level ) ) <= 0 ) {
 		$safe = addslashes( $level );
-		if ( ( $level = intval( $wpdb->get_var( "SELECT id FROM {$wpdb->pmpro_membership_levels} WHERE name = '$safe' LIMIT 1" ) ) ) <= 0 ) {
+		if ( ( $level = intval( $wpdb->get_var( "SELECT id FROM {$wpdb->pmpro_membership_levels} WHERE name = '" . esc_sql( $safe ) . "' LIMIT 1" ) ) ) <= 0 ) {
 			return __( 'Membership level not found.', 'paid-memberships-pro' );
 		}
 	}
 
 	if ( $value ) {
-		$sql = "REPLACE INTO {$wpdb->pmpro_memberships_categories} (`membership_id`,`category_id`) VALUES ('$level','$category')";
+		$sql = "REPLACE INTO {$wpdb->pmpro_memberships_categories} (`membership_id`,`category_id`) VALUES ('" . esc_sql( $level ) . "','" . esc_sql( $category ) . "')";
 		$wpdb->query( $sql );
 		if ( $wpdb->last_error ) {
 			return $wpdb->last_error;
 		}
 	} else {
-		$sql = "DELETE FROM {$wpdb->pmpro_memberships_categories} WHERE `membership_id` = '$level' AND `category_id` = '$category' LIMIT 1";
+		$sql = "DELETE FROM {$wpdb->pmpro_memberships_categories} WHERE `membership_id` = '" . esc_sql( $level ) . "' AND `category_id` = '" . esc_sql( $category ). "' LIMIT 1";
 		$wpdb->query( $sql );
 		if ( $wpdb->last_error ) {
 			return $wpdb->last_error;
@@ -1969,7 +1970,7 @@ function pmpro_get_no_access_message( $content, $level_ids, $level_names = NULL 
 	$pmpro_content_message_post = '</div>';
 
 	$sr_search = array( '!!levels!!', '!!referrer!!', '!!login_url!!', '!!login_page_url!!', '!!levels_url!!', '!!levels_page_url!!' );
-	$sr_replace = array( pmpro_implodeToEnglish( $level_names ), urlencode( site_url( $_SERVER['REQUEST_URI'] ) ), esc_url( pmpro_login_url() ), esc_url( pmpro_login_url() ), esc_url( pmpro_url( 'levels' ) ), esc_url( pmpro_url( 'levels' ) ) );
+	$sr_replace = array( pmpro_implodeToEnglish( $level_names ), urlencode( site_url( esc_url_raw( $_SERVER['REQUEST_URI'] ) ) ), esc_url( pmpro_login_url() ), esc_url( pmpro_login_url() ), esc_url( pmpro_url( 'levels' ) ), esc_url( pmpro_url( 'levels' ) ) );
 
 	// Get the correct message to show at the bottom.
 	if ( is_feed() ) {
@@ -2372,7 +2373,7 @@ function pmpro_getLevelAtCheckout( $level_id = null, $discount_code = null ) {
 
 	// default to discount code passed in
 	if ( empty( $discount_code ) && ! empty( $_REQUEST['discount_code'] ) ) {
-		$discount_code = preg_replace( '/[^A-Za-z0-9\-]/', '', $_REQUEST['discount_code'] );
+		$discount_code = preg_replace( '/[^A-Za-z0-9\-]/', '', sanitize_text_field( $_REQUEST['discount_code'] ) );
 	}
 
 	// what level are they purchasing? (discount code passed)
@@ -2454,14 +2455,16 @@ function pmpro_getCheckoutButton( $level_id, $button_text = null, $classes = nul
 		// get level
 		$level = pmpro_getLevel( $level_id );
 
+		$level_id = intval( $level_id );
+
 		if( ! empty( $level ) ) {
 
 			// default button text with name field for replacement
 			if ( empty( $button_text ) ) {
-				$button_text = __( 'Sign Up for !!name!! Now', 'paid-memberships-pro' );
+				$button_text = esc_html__( 'Sign Up for !!name!! Now', 'paid-memberships-pro' );
 			}
 
-			// replace vars
+			// replace vars - this will be escaped when outputting (see below).
 			$replacements = array(
 				'!!id!!' => $level->id,
 				'!!name!!' => $level->name,
@@ -2482,7 +2485,7 @@ function pmpro_getCheckoutButton( $level_id, $button_text = null, $classes = nul
 	}
 
 	if ( empty( $button_text ) ) {
-		$button_text = __( 'Sign Up Now', 'paid-memberships-pro' );
+		$button_text = esc_html__( 'Sign Up Now', 'paid-memberships-pro' );
 	}
 
 	if ( empty( $classes ) ) {
@@ -2490,9 +2493,9 @@ function pmpro_getCheckoutButton( $level_id, $button_text = null, $classes = nul
 	}
 
 	if ( ! empty( $level_id ) ) {
-		$r = '<a href="' . pmpro_url( 'checkout', '?level=' . $level_id ) . '" class="' . $classes . '">' . $button_text . '</a>';
+		$r = '<a href="' . pmpro_url( 'checkout', '?level=' . $level_id ) . '" class="' . esc_attr( $classes ) . '">' . wp_kses_post( $button_text ) . '</a>';
 	} else {
-		$r = '<a href="' . pmpro_url( 'checkout' ) . '" class="' . $classes . '">' . $button_text . '</a>';
+		$r = '<a href="' . pmpro_url( 'checkout' ) . '" class="' . esc_attr( $classes ) . '">' . wp_kses_post( $button_text ) . '</a>';
 	}
 
 	return $r;
@@ -2613,10 +2616,24 @@ function pmpro_setMessage( $message, $type, $force = false ) {
 function pmpro_showMessage() {
 	global $pmpro_msg, $pmpro_msgt;
 
-	if ( ! empty( $pmpro_msg ) ) {
+	$allowed_html = array (
+		'a' => array (
+			'href' => array(),
+			'target' => array(),
+			'title' => array(),
+		),		
+		'em' => array(),
+		'p' => array(),
+		'span' => array(
+			'class' => array(),
+		),
+		'strong' => array(),
+	);
+
+	if ( ! empty( $pmpro_msg ) ) {		
 		?>
-		<div class="<?php echo pmpro_get_element_class( 'pmpro_msg ' . $pmpro_msgt, $pmpro_msgt ); ?>">
-			<p><?php echo $pmpro_msg; ?></p>
+		<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_msg ' . $pmpro_msgt, $pmpro_msgt ) ); ?>">
+			<p><?php echo wp_kses( $pmpro_msg, $allowed_html ); ?></p>
 		</div>
 		<?php
 	}
@@ -2705,6 +2722,7 @@ add_filter( 'pmpro_element_class', 'pmpro_get_field_class', 10, 2 );
  * Get a var from $_GET or $_POST.
  */
 function pmpro_getParam( $index, $method = 'REQUEST', $default = '', $sanitize_function = 'sanitize_text_field' ) {
+	// phpcs:disable WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 	if ( $method == 'REQUEST' ) {
 		if ( ! empty( $_REQUEST[ $index ] ) ) {
 			return call_user_func( $sanitize_function, $_REQUEST[ $index ] );
@@ -2718,6 +2736,7 @@ function pmpro_getParam( $index, $method = 'REQUEST', $default = '', $sanitize_f
 			return call_user_func( $sanitize_function, $_GET[ $index ] );
 		}
 	}
+	// phpcs:enable WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 
 	return $default;
 }
@@ -3285,7 +3304,7 @@ function pmpro_filter_price_for_text_field( $price ) {
 function pmpro_getGateway() {
 	// grab from param or options
 	if ( ! empty( $_REQUEST['gateway'] ) ) {
-		$gateway = $_REQUEST['gateway'];        // gateway passed as param
+		$gateway = sanitize_text_field( $_REQUEST['gateway'] );        // gateway passed as param
 	} elseif ( ! empty( $_REQUEST['review'] ) ) {
 		$gateway = 'paypalexpress';             // if review param assume paypalexpress
 	} else {
@@ -4143,7 +4162,7 @@ function pmpro_get_ip() {
 			 * addresses. The first one is the original client. It can't be
 			 * trusted for authenticity, but we don't need to for this purpose.
 			 */
-			$address_chain = explode( ',', $_SERVER[ $header ] );
+			$address_chain = explode( ',', sanitize_text_field( $_SERVER[ $header ] ) );
 			$client_ip     = trim( $address_chain[0] );
 
 			break;

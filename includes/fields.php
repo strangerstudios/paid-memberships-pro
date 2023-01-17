@@ -705,7 +705,7 @@ function pmpro_show_user_fields_in_frontend_profile( $user, $withlocations = fal
 			}
 			?>
 
-			<div class="pmpro_checkout_box-<?php echo $where; ?>">
+			<div class="pmpro_checkout_box-<?php echo sanitize_title( $where ); ?>">
 				<?php if ( ! empty( $box->label ) ) { ?>
 					<h3><?php echo wp_kses_post( $box->label ); ?></h3>
 				<?php } ?>
@@ -724,14 +724,14 @@ function pmpro_show_user_fields_in_frontend_profile( $user, $withlocations = fal
 						}
 					?>
 				</div> <!-- end pmpro_member_profile_edit-fields -->
-			</div> <!-- end pmpro_checkout_box_$where -->
+			</div> <!-- end pmpro_checkout_box-name -->
 			<?php
 		}
 	} elseif ( ! empty( $profile_fields ) ) { ?>
 		<div class="pmpro_member_profile_edit-fields">
 			<?php
 				 // Cycle through groups.
-				foreach( $fields as $field ) {
+				foreach( $profile_fields as $field ) {
 					if ( pmpro_is_field( $field ) && $field->profile !== 'only_admin' ) {
 						$field->displayAtCheckout( $user->ID );
 					}
@@ -1395,7 +1395,7 @@ function pmpro_get_field_html( $field = null ) {
             <div class="pmpro_userfield-field-setting pmpro_userfield-field-setting-dual">
                 <div class="pmpro_userfield-field-setting">
                     <label>
-                        <?php esc_html_e( 'Required?', 'paid-memberships-pro' ); ?><br />
+                        <?php esc_html_e( 'Required at Checkout?', 'paid-memberships-pro' ); ?><br />
                         <select name="pmpro_userfields_field_required">
                             <option value="no" <?php selected( $field_required, 'no' );?>><?php esc_html_e( 'No', 'paid-memberships-pro' ); ?></option>
                             <option value="yes" <?php selected( $field_required, 'yes' );?>><?php esc_html_e( 'Yes', 'paid-memberships-pro' ); ?></option>
@@ -1418,7 +1418,7 @@ function pmpro_get_field_html( $field = null ) {
                 <label>
                     <?php esc_html_e( 'Show field on user profile?', 'paid-memberships-pro' ); ?><br />
                     <select name="pmpro_userfields_field_profile">
-                        <option <?php selected( empty( $field_profile ), 0);?>><?php esc_html_e( '[Inherit Group Setting]', 'paid-memberships-pro' ); ?></option>
+                        <option value="" <?php selected( empty( $field_profile ), 0);?>><?php esc_html_e( '[Inherit Group Setting]', 'paid-memberships-pro' ); ?></option>
                         <option value="yes" <?php selected( $field_profile, 'yes' );?>><?php esc_html_e( 'Yes', 'paid-memberships-pro' ); ?></option>
                         <option value="admins" <?php selected( $field_profile, 'admins' );?>><?php esc_html_e( 'Yes (only admins)', 'paid-memberships-pro' ); ?></option>
                         <option value="no" <?php selected( $field_profile, 'no' );?>><?php esc_html_e( 'No', 'paid-memberships-pro' ); ?></option>
