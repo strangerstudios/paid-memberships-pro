@@ -388,10 +388,6 @@ function pmpro_report_sales_page()
 					if($prev_date->date == $i) {
 						$cols[$i][2] = $prev_date->value;
 						$cols[$i][3] = $prev_date->renewals;
-						// $csvdata[$i-1] = (object)array('date'=>$i, 'total'=>$date->value, 'new'=> $date->value - $date->renewals, 'renewals'=> $date->renewals);
-						if ( ! $currently_in_period || $i < $day_of_month ) {
-							$total_in_period += $prev_date->value;
-						}
 					}	
 				}
 
@@ -433,10 +429,6 @@ function pmpro_report_sales_page()
 					if($prev_date->date == $i) {
 						$cols[$i][2] = $prev_date->value;
 						$cols[$i][3] = $prev_date->renewals;
-						// $csvdata[$i-1] = (object)array('date'=>$i, 'total'=>$date->value, 'new'=> $date->value - $date->renewals, 'renewals'=> $date->renewals);
-						if ( ! $currently_in_period || $i < $day_of_month ) {
-							$total_in_period += $prev_date->value;
-						}
 					}	
 				}
 
@@ -482,10 +474,6 @@ function pmpro_report_sales_page()
 					if($prev_date->date == $i) {
 						$cols[$i][2] = $prev_date->value;
 						$cols[$i][3] = $prev_date->renewals;
-						// $csvdata[$i-1] = (object)array('date'=>$i, 'total'=>$date->value, 'new'=> $date->value - $date->renewals, 'renewals'=> $date->renewals);
-						if ( ! $currently_in_period || $i < $day_of_month ) {
-							$total_in_period += $prev_date->value;
-						}
 					}	
 				}
 
@@ -647,12 +635,15 @@ function pmpro_report_sales_page()
 				// Data for new sales or revenue (bar chart).
 				dataTable.addColumn('number', <?php echo wp_json_encode( esc_html( sprintf( __( 'New %s', 'paid-memberships-pro' ), ucwords( $type ) ) ) ); ?>);
 			<?php } ?>
-	
-			// Data for comparison period new sales or revenue (line chart).
-			dataTable.addColumn('number', <?php echo wp_json_encode( esc_html( sprintf( __( 'Previous Period: New %s', 'paid-memberships-pro' ), ucwords( $type ) ) ) ); ?>);
 
-			// Data for comparison period renewal sales or revenue (line chart).
-			dataTable.addColumn('number', <?php echo wp_json_encode( esc_html( sprintf( __( 'Previous Period: Renewal %s', 'paid-memberships-pro' ), ucwords( $type ) ) ) ); ?>);
+			<?php if ( $compare_period && in_array( $new_renewals, array( 'new_renewals', 'only_new' ) ) ) { ?>
+				// Data for comparison period new sales or revenue (line chart).
+				dataTable.addColumn('number', <?php echo wp_json_encode( esc_html( sprintf( __( 'Previous Period: New %s', 'paid-memberships-pro' ), ucwords( $type ) ) ) ); ?>);
+			<?php } ?>
+			<?php if ( $compare_period && in_array( $new_renewals, array( 'new_renewals', 'only_renewals' ) ) ) { ?>
+				// Data for comparison period renewal sales or revenue (line chart).
+				dataTable.addColumn('number', <?php echo wp_json_encode( esc_html( sprintf( __( 'Previous Period: Renewal %s', 'paid-memberships-pro' ), ucwords( $type ) ) ) ); ?>);
+			<?php } ?>
 
 			// Average sales or revenue data (line chart).
 			<?php if ( $type === 'sales' ) { ?>
@@ -769,11 +760,16 @@ function pmpro_report_sales_page()
 								echo wp_json_encode( pmpro_round_price( $value[0] - $value[1] ) ).',';
 							}
 
-							// Previous period renewal revenue.
-							echo wp_json_encode( pmpro_round_price( $value[3] ) ).',';
+							if ( $compare_period && in_array( $new_renewals, array( 'new_renewals', 'only_renewals' ) ) ) {
+								// Previous period renewal revenue.
+								echo wp_json_encode( pmpro_round_price( $value[3] ) ).',';
+							}
 
-							// Previous period new revenue.
-							echo wp_json_encode( pmpro_round_price( $value[2] - $value[3] ) ).',';
+							if ( $compare_period && in_array( $new_renewals, array( 'new_renewals', 'only_new' ) ) ) {
+								// Previous period new revenue.
+								echo wp_json_encode( pmpro_round_price( $value[2] - $value[3] ) ).',';
+							}
+
 						}
 						// Average sales or revenue data (line chart).
 						echo wp_json_encode( pmpro_round_price( $average ) ).','; ?>
@@ -809,38 +805,20 @@ function pmpro_report_sales_page()
 				);
 			}
 
-			// Previous Period Renewal Sales/Revenue.
-			if ( in_array( $new_renewals, array( 'new_renewals', 'only_renewals' ) ) ) {
+			// Previous Period New Sales/Revenue.
+			if ( $compare_period && in_array( $new_renewals, array( 'new_renewals', 'only_new' ) ) ) {
 				$series[] = array(
 					'color' => '#999999',
 					'pointsVisible' => true,
-					'type' => 'line'
-				);
-			} else {
-				$series[] = array(
-					'color' => '#999999',
-					'dataOpacity' => '0.0',
-					'enableInteractivity' => false,
-					'pointsVisible' => false,
-					'visibleInLegend' => false,
 					'type' => 'line'
 				);
 			}
 
-			// Previous Period New Sales/Revenue.
-			if ( in_array( $new_renewals, array( 'new_renewals', 'only_new' ) ) ) {
+			// Previous Period Renewal Sales/Revenue.
+			if ( $compare_period && in_array( $new_renewals, array( 'new_renewals', 'only_renewals' ) ) ) {
 				$series[] = array(
 					'color' => '#666666',
 					'pointsVisible' => true,
-					'type' => 'line'
-				);
-			} else {
-				$series[] = array(
-					'color' => '#666666',
-					'dataOpacity' => '0.0',
-					'enableInteractivity' => false,
-					'pointsVisible' => false,
-					'visibleInLegend' => false,
 					'type' => 'line'
 				);
 			}
@@ -956,8 +934,6 @@ function pmpro_report_sales_page()
 
 	</form>
 	<?php
-	print_r( $compare_period );
-	print_r( $new_renewals );
 }
 
 /*
