@@ -429,7 +429,7 @@ function pmpro_after_checkout_save_fields( $user_id, $order ) {
 				//update user meta
 				if(isset($value))
 				{
-					if ( isset( $field->sanitize ) && true === $field->sanitize ) {
+					if ( ! empty( $field->sanitize ) ) {
 						$value = pmpro_sanitize( $value, $field );
                     }
 
@@ -796,44 +796,35 @@ function pmpro_add_member_admin_fields( $user = null, $user_id = null)
     }
 }
 add_action( 'pmpro_add_member_fields', 'pmpro_add_member_admin_fields', 10, 2 );
-// Save the fields.
+
+/**
+ * Save user fields on the Add Member Admin form.
+ * Hooks into pmpro_add_member_added.
+ * @since 2.9
+ * @param int $uid The user ID.
+ * @param object $user The user object.
+ * @return void
+ */
 function pmpro_add_member_admin_save_user_fields( $uid = null, $user = null ) {
-	/**
-	 * BUG: Incorrectly assumed that the user_login $_REQUEST[] variable exists
-	 *
-	 * @since 1.3
-	 */
+	global $pmpro_user_fields;
+	
+	// Use the ID from the $user object if passed in.
 	if ( ! empty( $user ) && is_object( $user ) ) {
 		$user_id = $user->ID;
 	}
 
+	// Otherwise, let's use the $uid passed in.
 	if ( !empty( $uid ) && ( empty( $user ) || !is_object( $user ) ) ) {
 		$user_id = $uid;
 	}
 
-	if ( empty($uid) && ( empty( $user ) || !is_object( $user ) ) ) {
-
-		$user_login = isset( $_REQUEST['user_login'] ) ? sanitize_user( $_REQUEST['user_login'] ) : null;
-
-		if (!empty($user_login)) {
-			$user_id = get_user_by('login', sanitize_user( $_REQUEST['user_login'] ) )->ID;
-		}
-
-	}
-
 	// check whether the user login variable contains something useful
-	if (empty($user_id)) {
+	if (empty($user_id)) {		
 
-		global $pmpro_msgt;
-		global $pmpro_msg;
-
-		$pmpro_msg = __("Unable to add/update user fields for this member", "paid-memberships-pro");
-		$pmpro_msgt = "pmpro_error";
+		pmpro_setMessage( __( 'Unable to add/update user fields for this member', 'paid-memberships-pro' ), 'pmpro_error' );
 
 		return false;
 	}
-
-    global $pmpro_user_fields;
 
     $addmember_fields = array();
     if(!empty($pmpro_user_fields))
@@ -862,7 +853,7 @@ function pmpro_add_member_admin_save_user_fields( $uid = null, $user = null ) {
             {
 	            // Sanitize by default, or not. Some fields may have custom save functions/etc.
 				// phpcs:disable WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
-				if ( isset( $field->sanitize ) && true === $field->sanitize ) {
+				if ( ! empty( $field->sanitize ) && isset( $_POST[ $field->name ] ) ) {
 		            $value = pmpro_sanitize( $_POST[ $field->name ], $field );
 	            } elseif( isset($_POST[$field->name]) ) {
 	                $value = $_POST[ $field->name ];
@@ -895,7 +886,6 @@ function pmpro_add_member_admin_save_user_fields( $uid = null, $user = null ) {
 			}
         }
     }
-
 }
 add_action( 'pmpro_add_member_added', 'pmpro_add_member_admin_save_user_fields', 10, 2 );
 
@@ -1006,7 +996,7 @@ function pmpro_save_user_fields_in_profile( $user_id )
 			{
 				// Sanitize by default, or not. Some fields may have custom save functions/etc.
 				// phpcs:disable WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
-				if ( isset( $_POST[ $field->name ] ) && isset( $field->sanitize ) && true === $field->sanitize ) {
+				if ( ! empty( $field->sanitize ) && isset( $_POST[ $field->name ] ) ) {
 					$value = pmpro_sanitize( $_POST[ $field->name ], $field );
 				} elseif( isset($_POST[$field->name]) ) {
 				    $value = $_POST[ $field->name ];
