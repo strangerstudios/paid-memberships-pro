@@ -1316,7 +1316,7 @@ h2.nav-tab-wrapper {
 	margin-top: 1em;
 }
 .pmpro_report-filters {
-	background: #FAFAFA;
+	background-color: #FAFAFA;
 	border: 1px solid #DADADA;
 	border-radius: 6px;
 	box-shadow: 1px 1px 5px rgb(0 0 0 / 12%);
@@ -1332,6 +1332,7 @@ h2.nav-tab-wrapper {
 	display: flex;
 	flex-wrap: wrap;
 	gap: .5em;
+	height: auto;
 	margin: 0;
 	padding: 0;
 }
@@ -1425,9 +1426,12 @@ button.pmpro_report_th_closed:before {
 }
 .pmpro_chart_area {
 	background-color: #FFF;
+	border: 1px solid #DADADA;
+	border-radius: 6px;
+	box-shadow: 1px 1px 5px rgb(0 0 0 / 12%);
 	clear: both;
-	margin: 0 0 40px 0;
-	padding: 0px 10px 10px 10px;
+	margin: 1em 0;
+	padding: 0 1.25em;
 }
 .pmpro_chart_area rect[stroke-opacity] {
 	stroke-width: 0 !important;
