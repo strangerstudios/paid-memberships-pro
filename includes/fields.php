@@ -382,7 +382,8 @@ function pmpro_after_checkout_save_fields( $user_id, $order ) {
 				//assume no value
 				$value = NULL;
 
-				//where are we getting the value from?
+				// Where are we getting the value from? We sanitize $value right after this.
+				// phpcs:disable WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 				if(isset($_REQUEST[$field->name]))
 				{
 					//request
@@ -423,6 +424,7 @@ function pmpro_after_checkout_save_fields( $user_id, $order ) {
 					//file
 					$value = $_FILES[$field->name]['name'];
 				}
+				// phpcs:enable WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 
 				//update user meta
 				if(isset($value))
@@ -484,22 +486,22 @@ function pmpro_registration_checks_for_user_fields( $okay ) {
                 }
 
 				if(isset($_REQUEST[$field->name]))
-					$value = $_REQUEST[$field->name];
+					$value = pmpro_sanitize( $_REQUEST[$field->name], $field ); //phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 				elseif(isset($_FILES[$field->name]))
 				{
-					$value = $_FILES[$field->name]['name'];
+					$value = sanitize_file_name( $_FILES[$field->name]['name'] );
 
 					//handle empty file but the user already has a file
 					if(empty($value) && !empty($_REQUEST[$field->name . "_old"]))
-						$value = $_REQUEST[$field->name . "_old"];
+						$value = sanitize_file_name( $_REQUEST[$field->name . "_old"] );
 					elseif(!empty($value))
 					{
 						//check extension against allowed extensions
-						$filetype = wp_check_filetype_and_ext($_FILES[$field->name]['tmp_name'], $_FILES[$field->name]['name']);
+						$filetype = wp_check_filetype_and_ext( sanitize_file_name( $_FILES[$field->name]['tmp_name'] ), sanitize_file_name( $_FILES[$field->name]['name'] ) );
 						if((!$filetype['type'] || !$filetype['ext'] ) && !current_user_can( 'unfiltered_upload' ))
 						{
 							if($okay)	//only want to update message if there is no previous error
-								pmpro_setMessage(sprintf(__("Sorry, the file type for %s is not permitted for security reasons.", "paid-memberships-pro"), $_FILES[$field->name]['name']), "pmpro_error");
+								pmpro_setMessage( sprintf( __( "Sorry, the file type for %s is not permitted for security reasons.", "paid-memberships-pro"), sanitize_file_name( $_FILES[$field->name]['name'] ) ), "pmpro_error");
 							return false;
 						}
 						else
@@ -508,7 +510,7 @@ function pmpro_registration_checks_for_user_fields( $okay ) {
 							if(!empty($field->ext) && !in_array($filetype['ext'], $field->ext))
 							{
 								if($okay)	//only want to update message if there is no previous error
-									pmpro_setMessage(sprintf(__("Sorry, the file type for %s is not permitted for security reasons.", "paid-memberships-pro"), $_FILES[$field->name]['name']), "pmpro_error");
+									pmpro_setMessage( sprintf( __( "Sorry, the file type for %s is not permitted for security reasons.", "paid-memberships-pro"), sanitize_file_name( $_FILES[$field->name]['name'] ) ), "pmpro_error");
 								return false;
 							}
 						}
@@ -575,10 +577,9 @@ function pmpro_paypalexpress_session_vars_for_user_fields() {
                     continue;
                 }
 
-                if(isset($_REQUEST[$field->name]))
-					$_SESSION[$field->name] = $_REQUEST[$field->name];
-				elseif(isset($_FILES[$field->name]))
-				{
+                if( isset( $_REQUEST[$field->name] ) ) {
+					$_SESSION[$field->name] = pmpro_sanitize( $_REQUEST[$field->name], $field ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+				} elseif ( isset( $_FILES[$field->name] ) ) {
 					/*
 						We need to save the file somewhere and save values in $_SESSION
 					*/
@@ -594,14 +595,14 @@ function pmpro_paypalexpress_session_vars_for_user_fields() {
 					}
 
 					//move file
-					$new_filename = $pmprorh_dir . basename($_FILES[$field->name]['tmp_name']);
-					move_uploaded_file($_FILES[$field->name]['tmp_name'], $new_filename);
+					$new_filename = $pmprorh_dir . basename( sanitize_file_name( $_FILES[$field->name]['tmp_name'] ) );
+					move_uploaded_file( sanitize_file_name( $_FILES[$field->name]['tmp_name'] ), $new_filename );
 
 					//update location of file
 					$_FILES[$field->name]['tmp_name'] = $new_filename;
 
 					//save file info in session
-					$_SESSION[$field->name] = $_FILES[$field->name];
+					$_SESSION[$field->name] = sanitize_text_field( $_FILES[$field->name] );
 				}
 			}
 		}
@@ -812,10 +813,10 @@ function pmpro_add_member_admin_save_user_fields( $uid = null, $user = null ) {
 
 	if ( empty($uid) && ( empty( $user ) || !is_object( $user ) ) ) {
 
-		$user_login = isset( $_REQUEST['user_login'] ) ? $_REQUEST['user_login'] : null;
+		$user_login = isset( $_REQUEST['user_login'] ) ? sanitize_user( $_REQUEST['user_login'] ) : null;
 
 		if (!empty($user_login)) {
-			$user_id = get_user_by('login', $_REQUEST['user_login'])->ID;
+			$user_id = get_user_by('login', sanitize_user( $_REQUEST['user_login'] ) )->ID;
 		}
 
 	}
@@ -859,14 +860,16 @@ function pmpro_add_member_admin_save_user_fields( $uid = null, $user = null ) {
         {
             if(pmpro_is_field($field) && isset($_POST[$field->name]) || isset($_FILES[$field->name]))
             {
-	            if ( isset( $field->sanitize ) && true === $field->sanitize ) {
-
+	            // Sanitize by default, or not. Some fields may have custom save functions/etc.
+				// phpcs:disable WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+				if ( isset( $field->sanitize ) && true === $field->sanitize ) {
 		            $value = pmpro_sanitize( $_POST[ $field->name ], $field );
 	            } elseif( isset($_POST[$field->name]) ) {
 	                $value = $_POST[ $field->name ];
                 } else {
                 	$value = $_FILES[$field->name];
                 }
+				// phpcs:enable WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 
                 //callback?
                 if(!empty($field->save_function))
@@ -1001,6 +1004,8 @@ function pmpro_save_user_fields_in_profile( $user_id )
 
 			if(isset($_POST[$field->name]) || isset($_FILES[$field->name]))
 			{
+				// Sanitize by default, or not. Some fields may have custom save functions/etc.
+				// phpcs:disable WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 				if ( isset( $_POST[ $field->name ] ) && isset( $field->sanitize ) && true === $field->sanitize ) {
 					$value = pmpro_sanitize( $_POST[ $field->name ], $field );
 				} elseif( isset($_POST[$field->name]) ) {
@@ -1008,6 +1013,7 @@ function pmpro_save_user_fields_in_profile( $user_id )
                 } else {
                 	$value = $_FILES[$field->name];
                 }
+				// phpcs:enable WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 
 				//callback?
 				if(!empty($field->save_function))
