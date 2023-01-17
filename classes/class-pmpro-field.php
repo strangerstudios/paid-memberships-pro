@@ -454,7 +454,7 @@ class PMPro_Field {
 	function saveFile($user_id, $name, $value)
 	{			
 		//setup some vars
-		$file = sanitize_text_field( $_FILES[$name] );
+		$file = array_map( 'sanitize_text_field', $_FILES[$name] );
 		$user = get_userdata($user_id);
 		$meta_key = str_replace("pmprorhprefix_", "", $name);
 
@@ -482,10 +482,9 @@ class PMPro_Field {
 		if(empty($file['name'])) {
 			return;
 		}
-
+		
 		//check extension against allowed extensions
-		$filetype = wp_check_filetype_and_ext($file['tmp_name'], $file['name']);
-
+		$filetype = wp_check_filetype_and_ext($file['tmp_name'], $file['name']);		
 		if((!$filetype['type'] || !$filetype['ext'] ) && !current_user_can( 'unfiltered_upload' ))
 		{			
 			//we throw an error earlier, but this just bails on the upload just in case
