@@ -584,6 +584,12 @@ function pmpro_paypalexpress_session_vars_for_user_fields() {
 						We need to save the file somewhere and save values in $_SESSION
 					*/
 
+					// Make sure file was uploaded.
+					if ( ! is_uploaded_file( sanitize_file_name( $_FILES[$field->name]['tmp_name'] ) ) ) {
+						// File might be spoofed. Skip it.
+						contine;
+					}
+
 					//check for a register helper directory in wp-content
 					$upload_dir = wp_upload_dir();
 					$pmprorh_dir = $upload_dir['basedir'] . "/pmpro-register-helper/tmp/";

@@ -462,6 +462,7 @@ class PMPro_Field {
 		if( isset( $_REQUEST['pmprorh_delete_file_' . $name . '_field'] ) ) {
 			$delete_old_file_name = sanitize_text_field( $_REQUEST['pmprorh_delete_file_' . $name . '_field'] );
 			if ( ! empty( $delete_old_file_name ) ) {
+				// Use what's saved in user meta so we don't delete any old file.
 				$old_file_meta = get_user_meta( $user->ID, $meta_key, true );					
 				if ( 
 					! empty( $old_file_meta ) && 
@@ -528,6 +529,12 @@ class PMPro_Field {
 			}
 		}
 		
+		// Make sure file was uploaded.
+		if ( ! is_uploaded_file( $file['tmp_name'] ) ) {
+			pmpro_setMessage( sprintf( __( 'Sorry, the file %s was not uploaded.', 'pmpro' ), $file['name'] ), 'pmpro_error' );
+			return false;
+		}
+
 		/*
 			save file in uploads
 		*/
@@ -563,7 +570,7 @@ class PMPro_Field {
 			
 			//let's not expect more than 50 files with the same name
 			if($count > 50)
-				die("Error uploading file. Too many files with the same name.");									
+				die("Error uploading file. Too many files with the same name.");
 		}
 
 		//save file
