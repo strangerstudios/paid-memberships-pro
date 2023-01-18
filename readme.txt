@@ -156,7 +156,7 @@ Not sure? You can find out by doing a bit a research.
 9. Membership Account page, display all sections or show specific sections using shortcode attributes.
 
 == Changelog ==
-= 2.9.9 - 2022-01-18 =
+= 2.9.9 - 2023-01-18 =
 * SECURITY: Updated sanitization, escaping, and other security-related code across the plugin.
 * ENHANCEMENT: When using expirations on levels, the default date is now +1 year again. #2328 (@dparker1005)
 * ENHANCEMENT: Now showing option labels instead of values when displaying multiselect type fields using the pmpro_member shortcode. #2327 #2314 (@dparker1005, @ideadude)
