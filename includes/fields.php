@@ -587,7 +587,7 @@ function pmpro_paypalexpress_session_vars_for_user_fields() {
 					// Make sure file was uploaded.
 					if ( ! is_uploaded_file( sanitize_file_name( $_FILES[$field->name]['tmp_name'] ) ) ) {
 						// File might be spoofed. Skip it.
-						contine;
+						continue;
 					}
 
 					//check for a register helper directory in wp-content
