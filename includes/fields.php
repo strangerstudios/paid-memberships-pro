@@ -608,7 +608,7 @@ function pmpro_paypalexpress_session_vars_for_user_fields() {
 					$_FILES[$field->name]['tmp_name'] = $new_filename;
 
 					//save file info in session
-					$_SESSION[$field->name] = sanitize_text_field( $_FILES[$field->name] );
+					$_SESSION[$field->name] = array_map( 'sanitize_text_field', $_FILES[$field->name] );
 				}
 			}
 		}
