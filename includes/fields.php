@@ -497,7 +497,7 @@ function pmpro_registration_checks_for_user_fields( $okay ) {
 					elseif(!empty($value))
 					{
 						//check extension against allowed extensions
-						$filetype = wp_check_filetype_and_ext( sanitize_file_name( $_FILES[$field->name]['tmp_name'] ), sanitize_file_name( $_FILES[$field->name]['name'] ) );
+						$filetype = wp_check_filetype_and_ext( sanitize_text_field( $_FILES[$field->name]['tmp_name'] ), sanitize_file_name( $_FILES[$field->name]['name'] ) );
 						if((!$filetype['type'] || !$filetype['ext'] ) && !current_user_can( 'unfiltered_upload' ))
 						{
 							if($okay)	//only want to update message if there is no previous error
@@ -585,9 +585,8 @@ function pmpro_paypalexpress_session_vars_for_user_fields() {
 					*/
 
 					// Make sure file was uploaded.
-					if ( ! is_uploaded_file( sanitize_file_name( $_FILES[$field->name]['tmp_name'] ) ) ) {
-						// File might be spoofed. Skip it.
-						continue;
+					if ( ! is_uploaded_file( sanitize_text_field( $_FILES[$field->name]['tmp_name'] ) ) ) {						
+                        continue;
 					}
 
 					//check for a register helper directory in wp-content
@@ -601,8 +600,8 @@ function pmpro_paypalexpress_session_vars_for_user_fields() {
 					}
 
 					//move file
-					$new_filename = $pmprorh_dir . basename( sanitize_file_name( $_FILES[$field->name]['tmp_name'] ) );
-					move_uploaded_file( sanitize_file_name( $_FILES[$field->name]['tmp_name'] ), $new_filename );
+					$new_filename = $pmprorh_dir . basename( sanitize_file_name( $_FILES[$field->name]['name'] ) );
+					move_uploaded_file( sanitize_text_field( $_FILES[$field->name]['tmp_name'] ), $new_filename );
 
 					//update location of file
 					$_FILES[$field->name]['tmp_name'] = $new_filename;

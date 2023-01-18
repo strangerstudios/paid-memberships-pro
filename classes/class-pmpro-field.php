@@ -527,13 +527,7 @@ class PMPro_Field {
 				pmpro_setMessage(sprintf(__("Sorry, the file type for %s is not permitted for security reasons.", "pmpro"), $file['name']), "pmpro_error");
 				return false;
 			}
-		}
-		
-		// Make sure file was uploaded.
-		if ( ! is_uploaded_file( $file['tmp_name'] ) ) {
-			pmpro_setMessage( sprintf( __( 'Sorry, the file %s was not uploaded.', 'pmpro' ), $file['name'] ), 'pmpro_error' );
-			return false;
-		}
+		}		
 
 		/*
 			save file in uploads
@@ -581,6 +575,12 @@ class PMPro_Field {
 		}
 		else
 		{
+			// Make sure file was uploaded.
+			if ( ! is_uploaded_file( $file['tmp_name'] ) ) {
+				pmpro_setMessage( sprintf( __( 'Sorry, the file %s was not uploaded.', 'pmpro' ), $file['name'] ), 'pmpro_error' );
+				return false;
+			}
+			
 			//it was just uploaded
 			move_uploaded_file($file['tmp_name'], $pmprorh_dir . $filename);				
 		}
