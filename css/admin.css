@@ -256,10 +256,6 @@
 }
 
 /* General admin-area tables styles */
-.pmpro_admin table.wp-list-table thead th {
-	padding-left: 1.25em;
-	padding-right: 1.25em;
-}
 .pmpro_admin table.wp-list-table thead th.sortable,
 .pmpro_admin table.wp-list-table thead th.sorted {
 	padding-left: .65em;
@@ -270,11 +266,17 @@
 	padding-left: 0.5em;
 	padding-right: 0.5em;
 }
-.pmpro_admin table.wp-list-table tbody td {
-	padding: 1.25em;
-}
 .pmpro_admin table.wp-list-table .row-actions {
 	color: #999;
+}
+@media only screen and (min-width: 1200px) {
+	.pmpro_admin table.wp-list-table thead th {
+		padding-left: 1.25em;
+		padding-right: 1.25em;
+	}
+	.pmpro_admin table.wp-list-table tbody td {
+		padding: 1.25em;
+	}
 }
 
 /* Settings pages sections styles */
@@ -803,7 +805,7 @@
 	margin: 10px 0 0 0;
 	padding: 0px 20px;
 }
-@media only screen and (max-width: 960px) {
+@media only screen and (max-width: 782px) {
 	.pmpro_admin-pmpro-discountcodes .wp-list-table thead {
 		display: none;
 	}
@@ -814,27 +816,10 @@
 		clear: both;
 		width: auto;
 	}
-	.pmpro_admin-pmpro-discountcodes .wp-list-table tr td::before {
-		position: absolute;
-		left: 10px;
-		display: block;
-		overflow: hidden;
-		width: 32%;
-		content: attr(data-colname);
-		white-space: nowrap;
-		text-overflow: ellipsis;
-	}
-	.pmpro_admin-pmpro-discountcodes .wp-list-table tr td:first-child {
-		padding-left: 8px;
-	}
-	.pmpro_admin-pmpro-discountcodes .wp-list-table tr td:first-child::before {
-		content: '';
-		display: none;
-	}
 	.pmpro_admin-pmpro-discountcodes .wp-list-table tr td .row-actions {
 		display: inline-block;
 		left: 0;
-		margin-left: 16px;
+		margin-left: 0px;
 		padding: 0;
 	}
 	.pmpro_admin-pmpro-discountcodes .wp-list-table tr td .row-actions span a {
@@ -907,7 +892,7 @@ a.pmpro_order-renewal {
 	font-weight: normal;
 	margin-left: 10px;
 }
-@media only screen and (max-width: 960px) {
+@media only screen and (max-width: 782px) {
 	.pmpro_admin-pmpro-orders .wp-list-table thead {
 		display: none;
 	}
@@ -918,27 +903,10 @@ a.pmpro_order-renewal {
 		clear: both;
 		width: auto;
 	}
-	.pmpro_admin-pmpro-orders .wp-list-table tr td::before {
-		position: absolute;
-		left: 10px;
-		display: block;
-		overflow: hidden;
-		width: 32%;
-		content: attr(data-colname);
-		white-space: nowrap;
-		text-overflow: ellipsis;
-	}
-	.pmpro_admin-pmpro-orders .wp-list-table tr td:first-child {
-		padding-left: 8px;
-	}
-	.pmpro_admin-pmpro-orders .wp-list-table tr td:first-child::before {
-		content: '';
-		display: none;
-	}
 	.pmpro_admin-pmpro-orders .wp-list-table tr td .row-actions {
 		display: inline-block;
 		left: 0;
-		margin-left: 16px;
+		margin-left: 0px;
 		padding: 0;
 	}
 	.pmpro_admin-pmpro-orders .wp-list-table tr td .row-actions span a {
