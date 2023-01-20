@@ -223,6 +223,8 @@ function pmpro_report_sales_page()
 	if( $period == "daily" ) {
 		// Set up the report unit to use.
 		$report_unit = 'DAY';
+		$axis_date_format = 'd';
+		$tooltip_date_format = get_option( 'date_format' );
 
 		// Set up the start and end dates.
 		$startdate = $year . '-' . substr("0" . $month, strlen($month) - 1, 2) . '-01';
@@ -234,6 +236,8 @@ function pmpro_report_sales_page()
 	} elseif($period == "monthly") {
 		// Set up the report unit to use.
 		$report_unit = 'MONTH';
+		$axis_date_format = 'M';
+		$tooltip_date_format = 'F Y';
 
 		// Set up the start and end dates.
 		$startdate = $year . '-01-01';
@@ -247,9 +251,13 @@ function pmpro_report_sales_page()
 		if( $period === '7days' || $period === '30days' ) {
 			$report_unit = 'DAY';
 			$timeframe = ( $period === '7days' ) ? 7 : 30;
+			$axis_date_format = 'd';
+			$tooltip_date_format = get_option( 'date_format' );
 		} else {
 			$report_unit = 'MONTH';
 			$timeframe = 12;
+			$axis_date_format = 'M';
+			$tooltip_date_format = 'F Y';
 		}
 
 		// Set up the start and end dates.
@@ -258,6 +266,8 @@ function pmpro_report_sales_page()
 	} else {
 		// Set up the report unit to use.
 		$report_unit = 'YEAR';
+		$axis_date_format = 'Y';
+		$tooltip_date_format = 'Y';
 
 		// Set up the start and end dates.
 		$startdate = '1970-01-01';	//all time
@@ -447,13 +457,13 @@ function pmpro_report_sales_page()
 	// For the row data, we need to initialize this with the dates being reported and some other info.
 	foreach ( $dates as $date => $data ) {
 		$google_chart_row_data[ $date ] = array(); // Will have array keys 'date', 'tooltip', and a nested array 'data'.
-		$google_chart_row_data[ $date ][ 'date' ] = $date;
+		$google_chart_row_data[ $date ][ 'date' ] = date_i18n( $axis_date_format, strtotime( $date ) );
 
 		// Build the tooltip.
 		$google_chart_row_data[ $date ][ 'tooltip' ] = '<div style="padding:15px; font-size: 14px; line-height: 20px; color: #000000;">'; // Set up div.
 		// Add the date.
 		$google_chart_row_data[ $date ][ 'tooltip' ] .= '<strong>';
-		$google_chart_row_data[ $date ][ 'tooltip' ] .= $date;
+		$google_chart_row_data[ $date ][ 'tooltip' ] .= date_i18n( $tooltip_date_format, strtotime( $date ) );
 		$google_chart_row_data[ $date ][ 'tooltip' ] .= '</strong><br />';
 		// Set up a UL for the data.
 		$google_chart_row_data[ $date ][ 'tooltip' ] .= '<ul style="margin-bottom: 0px;">';
