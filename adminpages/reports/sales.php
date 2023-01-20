@@ -108,7 +108,7 @@ function pmpro_report_sales_data( $args ){
 	global $wpdb;
 
 	$type_function = ! empty( $args['type_function'] ) ? $args['type_function'] : '';
-	$date_function = ! empty( $args['date_function'] ) ? $args['date_function'] : '';
+	$report_unit = ! empty( $args['report_unit'] ) ? $args['report_unit'] : '';
 	$discount_code = ! empty( $args['discount_code'] ) ? $args['discount_code'] : '';
 	$startdate = ! empty( $args['startdate'] ) ? $args['startdate'] : '';
 	$enddate = ! empty( $args['enddate'] ) ? $args['enddate'] : '';
@@ -122,22 +122,27 @@ function pmpro_report_sales_data( $args ){
 	$tz_offset = strtotime( $startdate ) - strtotime( get_gmt_from_date( $startdate . " 00:00:00" ) );
 
  	$sqlQuery = "SELECT date,
-					MONTH( mo1timestamp ) as month, 
 				 	$type_function(mo1total) as value,
 				 	$type_function( IF( mo2id IS NOT NULL, mo1total, NULL ) ) as renewals
 				 FROM ";
 	$sqlQuery .= "(";	// Sub query.
-	$sqlQuery .= "SELECT $date_function( DATE_ADD( mo1.timestamp, INTERVAL " . esc_sql( $tz_offset ) . " SECOND ) ) as date,
-					    mo1.id as mo1id,
-						mo1.total as mo1total,
-						mo1.timestamp as mo1timestamp, 
-						mo2.id as mo2id
-				 FROM $wpdb->pmpro_membership_orders mo1
-				 	LEFT JOIN $wpdb->pmpro_membership_orders mo2 ON mo1.user_id = mo2.user_id
-                        AND mo2.total > 0
-                        AND mo2.status NOT IN('refunded', 'review', 'token', 'error')                                            
-                        AND mo2.timestamp < mo1.timestamp
-                        AND mo2.gateway_environment = '" . esc_sql( $gateway_environment ) . "' ";
+	if ( $report_unit == 'DAY' ) {
+		$sqlQuery .= "SELECT DATE( DATE_ADD( mo1.timestamp, INTERVAL " . esc_sql( $tz_offset ) . " SECOND ) ) as date,";
+	} elseif ( $report_unit == 'MONTH' ) {
+		$sqlQuery .= "SELECT DATE_FORMAT( DATE_ADD( mo1.timestamp, INTERVAL " . esc_sql( $tz_offset ) . " SECOND ), '%Y-%m' ) as date,";
+	} else {
+		$sqlQuery .= "SELECT YEAR( DATE_ADD( mo1.timestamp, INTERVAL " . esc_sql( $tz_offset ) . " SECOND ) ) as date,";
+	}
+	$sqlQuery .= "mo1.id as mo1id,
+					mo1.total as mo1total,
+					mo1.timestamp as mo1timestamp, 
+					mo2.id as mo2id
+				FROM $wpdb->pmpro_membership_orders mo1
+				LEFT JOIN $wpdb->pmpro_membership_orders mo2 ON mo1.user_id = mo2.user_id
+					AND mo2.total > 0
+					AND mo2.status NOT IN('refunded', 'review', 'token', 'error')                                            
+					AND mo2.timestamp < mo1.timestamp
+					AND mo2.gateway_environment = '" . esc_sql( $gateway_environment ) . "' ";
 
 	if ( ! empty( $discount_code ) ) {
 		$sqlQuery .= "LEFT JOIN $wpdb->pmpro_discount_codes_uses dc ON mo1.id = dc.order_id ";
@@ -214,283 +219,337 @@ function pmpro_report_sales_page()
 		$new_renewals = 'new_renewals';
 	}
 
-	if ( isset( $_REQUEST['compare_period'] ) ) {
-		$compare_period = 1;
-		$previous_year = date( 'Y', strtotime( $year.'-'.$month.'-01'.' - 1 YEAR' ) );
-	} else {
-		$previous_startdate = $previous_enddate = $previous_year = $compare_period = 0;	
-	}
-
-	$currently_in_period = false;
-
 	//calculate start date and how to group dates returned from DB
-	if( $period == "daily" ) {		
+	if( $period == "daily" ) {
+		// Set up the report unit to use.
+		$report_unit = 'DAY';
+
+		// Set up the start and end dates.
 		$startdate = $year . '-' . substr("0" . $month, strlen($month) - 1, 2) . '-01';
 		$enddate = $year . '-' . substr("0" . $month, strlen($month) - 1, 2) . '-' . date_i18n('t', strtotime( $startdate ) );
-		
-		$date_function = 'DAY';
-		$currently_in_period = ( intval( date( 'Y' ) ) == $year && intval( date( 'n' ) ) == $month );
-	}
-	elseif($period == "monthly")
-	{
+
+		// Set up the compare period. Comparing to same month last year.
+		$compare_startdate = date( 'Y-m-d', strtotime( $startdate . ' -1 year' ) );
+		$compare_enddate = date( 'Y-m-d', strtotime( $enddate . ' -1 year' ) );
+	} elseif($period == "monthly") {
+		// Set up the report unit to use.
+		$report_unit = 'MONTH';
+
+		// Set up the start and end dates.
 		$startdate = $year . '-01-01';
 		$enddate = strval(intval($year)+1) . '-01-01';
-		$date_function = 'MONTH';
-		$currently_in_period = ( intval( date( 'Y' ) ) == $year );
+		
+		// Set up the compare period.
+		$compare_startdate = date( 'Y-m-d', strtotime( $startdate . ' -1 year' ) );
+		$compare_enddate = date( 'Y-m-d', strtotime( $enddate . ' -1 year' ) );
 	} else if ( $period === '7days' || $period === '30days' || $period === '12months' ) {
-
-		$todays_date = current_time( 'mysql' );
-
+		// Set up the report unit to use.
 		if( $period === '7days' || $period === '30days' ) {
-			$timeframe_string = 'DAY';
-			$date_function = 'DAY';
-			if( $period == '7days' ) { $timeframe = 7; }
-			if( $period == '30days' ) { $timeframe = 30; }
+			$report_unit = 'DAY';
+			$timeframe = ( $period === '7days' ) ? 7 : 30;
 		} else {
-			$timeframe_string = 'MONTH';
-			$date_function = 'MONTH';
+			$report_unit = 'MONTH';
 			$timeframe = 12;
 		}
 
-		$startdate = date( 'Y-m-d', strtotime( $todays_date .' -'.$timeframe.' '.$timeframe_string ) );
-		$enddate = current_time( 'mysql' );
-		$currently_in_period = ( intval( date( 'Y' ) ) == $year && intval( date( 'n' ) ) == $month );
-
+		// Set up the start and end dates.
+		$startdate   = date( 'Y-m-d', strtotime( current_time( 'mysql' ) .' -'.$timeframe.' '.$report_unit ) );
+		$enddate     = current_time( 'mysql' );
 	} else {
+		// Set up the report unit to use.
+		$report_unit = 'YEAR';
+
+		// Set up the start and end dates.
 		$startdate = '1970-01-01';	//all time
-		$date_function = 'YEAR';
 		$enddate = current_time( 'mysql' );
-		$currently_in_period = true;
 	}		
 
-	if( $compare_period ) {
-		$previous_startdate = $previous_year . '-' . substr("0" . $month, strlen($month) - 1, 2) . '-01';
-		$previous_enddate = $previous_year . '-' . substr("0" . $month, strlen($month) - 1, 2) . '-' . date_i18n('t', strtotime( $previous_startdate ) );
-
-		//Remove - just for testing
-		//
-		$previous_startdate = 2022 . '-' . substr("0" . 8, strlen(8) - 1, 2) . '-01';
-		$previous_enddate = 2022 . '-' . substr("0" . 8, strlen(8) - 1, 2) . '-' . date_i18n('t', strtotime( $previous_startdate ) );
-
-	} 
-
-	//get data
-	$args = array(
+	// Get the data.
+	$report_data_args = array(
 		'type_function' => $type_function,
-		'date_function' => $date_function,
+		'report_unit' => $report_unit,
 		'discount_code' => $discount_code,
 		'startdate' => $startdate,
 		'enddate' => $enddate
 	);
+	$dates = pmpro_report_sales_data( $report_data_args );
+	// Set the array keys to the dates.
+	$dates = array_combine( wp_list_pluck( $dates, 'date' ), $dates );
+	
+	// Get the compare period data if we need it.
+	if ( ! empty( $compare_startdate ) && ! empty( $compare_enddate ) ) {
+		$report_data_args['startdate'] = $compare_startdate;
+		$report_data_args['enddate'] = $compare_enddate;
 
-	$dates = pmpro_report_sales_data( $args );
-
-	if ( $compare_period ) {
-		$args['startdate'] = $previous_startdate;
-		$args['enddate'] = $previous_enddate;
-
-		$previous_period_dates = pmpro_report_sales_data( $args );
+		$previous_period_dates = pmpro_report_sales_data( $report_data_args );
+		// Set the array keys to the dates.
+		$previous_period_dates = array_combine( wp_list_pluck( $previous_period_dates, 'date' ), $previous_period_dates );
 	}
 
-	//fill in blanks in dates
-	$cols = array();
+	// Set up variable to hold CSV data.
 	$csvdata = array();
+
+	// Set up variables to calculate average sales/revenue.
 	$total_in_period = 0;
-	$units_in_period = 0; // Used for averages.
-	
-	$lastday = date_i18n("t", strtotime($startdate, current_time("timestamp")));
-		$day_of_month = intval( date( 'j' ) );
+	$units_in_period = 0;
 
-	if( $period === '7days' || $period === '30days' || $period === '12months' ) {
-		//Display the data how we need it for that specific timeframe
-	
-		$date_by_month = array();
-		foreach( $dates as $date ) {
-
-			if( ! empty( $date_by_month[$date->month] ) ) {
-				$date_by_month[$date->month][] = $date;
-			} else {
-				$date_by_month[$date->month] = array( $date );
-			}
-			
-		}
-
-		ksort( $date_by_month);
-
-		$todays_day = date( 'd', current_time( 'timestamp' ) );
-		$todays_month = date( 'n', current_time( 'timestamp' ) );
-
-		foreach( $date_by_month as $month_no => $date_data ) {
-
-			$days_in_this_month = cal_days_in_month( CAL_GREGORIAN, intval( $month_no ), date('Y',current_time('timestamp')) );
-
-			if( $month_no == $todays_month ) {
-				//Only count up to todays day
-				$days_in_this_month = $todays_day;
+	// Fill in missing dates and merge compare data if available.
+	if ( $report_unit == 'DAY' ) {
+		// Loop through all the dates in this report period.
+		$loop_timestamp_index = strtotime( $startdate );
+		$loop_end_timestamp = strtotime( $enddate );
+		while ( $loop_timestamp_index <= $loop_end_timestamp ) {
+			// If we don't have data for this date, add it.
+			$loop_date = date( 'Y-m-d', $loop_timestamp_index );
+			if ( ! isset( $dates[ $loop_date ] ) ) {
+				$dates[ $loop_date ] = (object) array(
+					'date' => $loop_date,
+					'value' => 0,
+					'renewals' => 0,
+				);
 			}
 
-			for( $i = 1; $i <= $days_in_this_month; $i++ ) {
-
-				$cols[sprintf( "%d-%d", $month_no, $i )] = array(0, 0);
-				$csvdata[sprintf( "%d-%d", $month_no, $i-1 )] = (object)array('date'=>$i, 'total'=>'', 'new'=> '', 'renewals'=>'');
-				if ( ! $currently_in_period || $i < $day_of_month ) {
-					$units_in_period++;
-				}
-				
-				foreach($date_data as $date){
-					if($date->date == $i) {
-						$cols[sprintf( "%d-%d", $month_no, $i )] = array( $date->value, $date->renewals );
-						$csvdata[sprintf( "%d-%d", $month_no, $i-1 )] = (object)array('date'=>$i, 'total'=>$date->value, 'new'=> $date->value - $date->renewals, 'renewals'=> $date->renewals);
-						if ( ! $currently_in_period || $i < $day_of_month ) {
-							$total_in_period += $date->value;
-						}
-					}	
+			// If we have a compare period, add info for the date that we are comparing to as well.
+			if ( ! empty( $previous_period_dates ) ) {
+				$compare_date = date( 'Y-m-d', strtotime( $loop_date . ' -1 year' ) );
+				if ( isset( $previous_period_dates[ $compare_date ] ) ) {
+					$dates[ $loop_date ]->compare_value = $previous_period_dates[ $compare_date ]->value;
+					$dates[ $loop_date ]->compare_renewals = $previous_period_dates[ $compare_date ]->renewals;
+				} else {
+					$dates[ $loop_date ]->compare_value = 0;
+					$dates[ $loop_date ]->compare_renewals = 0;
 				}
 			}
 
-		}
-
-		if( $period === '12months' ) {
-			//Take the last 365 days
-			$count_back = 365;
-		} else {
-			//Take the last x amount of days in the timeframe
-			$count_back = $timeframe;
-		}
-
-		$cols = array_slice($cols, -$count_back, $count_back, true);
-
-	} else if( $period == "daily" ) {
-
-		for( $i = 1; $i <= $lastday; $i++ ) {
-
-			$cols[$i] = array(0, 0, 0, 0);
-			$csvdata[$i-1] = (object)array('date'=>$i, 'total'=>'', 'new'=> '', 'renewals'=>'');
-			if ( ! $currently_in_period || $i < $day_of_month ) {
-				$units_in_period++;
-			}
-			
-			foreach($dates as $date)
-			{
-				if($date->date == $i) {
-					$cols[$i][0] = $date->value;
-					$cols[$i][1] = $date->renewals;
-					$csvdata[$i-1] = (object)array('date'=>$i, 'total'=>$date->value, 'new'=> $date->value - $date->renewals, 'renewals'=> $date->renewals);
-					if ( ! $currently_in_period || $i < $day_of_month ) {
-						$total_in_period += $date->value;
-					}
-				}	
-			}
-
-			if( $compare_period ) {
-
-				foreach($previous_period_dates as $prev_date) {
-					
-					if($prev_date->date == $i) {
-						$cols[$i][2] = $prev_date->value;
-						$cols[$i][3] = $prev_date->renewals;
-					}	
+			// If the date is today or in the past, update the variables for averaging.
+			if ( $loop_date <= date( 'Y-m-d' ) ) {
+				if ( $new_renewals == 'new_renewals' ) {
+					$total_in_period += $dates[ $loop_date ]->value;
+				} elseif ( $new_renewals == 'only_new' ) {
+					$total_in_period += $dates[ $loop_date ]->value - $dates[ $loop_date ]->renewals;
+				} elseif ( $new_renewals == 'only_renewals' ) {
+					$total_in_period += $dates[ $loop_date ]->renewals;
 				}
-
+				$units_in_period += 1;
 			}
-			
 
+			// Add to CSV data.
+			$csvdata[ $loop_date ] = (object) array(
+				'date'     => $loop_date,
+				'total'    => $dates[ $loop_date ]->value,
+				'new'      => $dates[ $loop_date ]->value - $dates[ $loop_date ]->renewals,
+				'renewals' => $dates[ $loop_date ]->renewals,
+			);
+
+			// Increment the loop timestamp.
+			$loop_timestamp_index = strtotime( '+1 day', $loop_timestamp_index );
 		}
-
-		
-		
-	}
-	elseif($period == "monthly")
-	{
-		$month_of_year = intval( date( 'n' ) );
-		for($i = 1; $i < 13; $i++)
-		{
-			$cols[$i] = array(0, 0, 0, 0);
-			$csvdata[$i-1] = (object)array('date'=>$i, 'total'=>'', 'new'=> '', 'renewals'=>'');
-			if ( ! $currently_in_period || $i < $day_of_month ) {
-				$units_in_period++;
-			}
-			
-			foreach($dates as $date)
-			{
-				if($date->date == $i) {
-					$cols[$i][0] = $date->value;
-					$cols[$i][1] = $date->renewals;
-					$csvdata[$i-1] = (object)array('date'=>$i, 'total'=>$date->value, 'new'=> $date->value - $date->renewals, 'renewals'=> $date->renewals);
-					if ( ! $currently_in_period || $i < $day_of_month ) {
-						$total_in_period += $date->value;
-					}
-				}	
+	} elseif ( $report_unit == 'MONTH' ) {
+		// Loop through all the months in this report period.
+		$loop_timestamp_index = strtotime( $startdate );
+		$loop_end_timestamp = strtotime( $enddate );
+		while ( $loop_timestamp_index <= $loop_end_timestamp ) {
+			// If we don't have data for this month, add it.
+			$loop_date = date( 'Y-m', $loop_timestamp_index );
+			if ( ! isset( $dates[ $loop_date ] ) ) {
+				$dates[ $loop_date ] = (object) array(
+					'date' => $loop_date,
+					'value' => 0,
+					'renewals' => 0,
+				);
 			}
 
-			if( $compare_period ) {
-
-				foreach($previous_period_dates as $prev_date) {
-					
-					if($prev_date->date == $i) {
-						$cols[$i][2] = $prev_date->value;
-						$cols[$i][3] = $prev_date->renewals;
-					}	
+			// If we have a compare period, add info for the month that we are comparing to as well.
+			if ( ! empty( $previous_period_dates ) ) {
+				$compare_date = date( 'Y-m', strtotime( $loop_date . ' -1 year' ) );
+				if ( isset( $previous_period_dates[ $compare_date ] ) ) {
+					$dates[ $loop_date ]->compare_value = $previous_period_dates[ $compare_date ]->value;
+					$dates[ $loop_date ]->compare_renewals = $previous_period_dates[ $compare_date ]->renewals;
+				} else {
+					$dates[ $loop_date ]->compare_value = 0;
+					$dates[ $loop_date ]->compare_renewals = 0;
 				}
-
-			}
-		}
-	}
-	else //annual
-	{
-		//get min and max years
-		$min = 9999;
-		$max = 0;
-		foreach($dates as $date)
-		{
-			$min = min($min, $date->date);
-			$max = max($max, $date->date);
-		}
-
-		$current_year = intval( date( 'Y' ) );
-		for($i = $min; $i <= $max; $i++)
-		{
-			$cols[$i] = array(0, 0, 0, 0);
-			$csvdata[$i-1] = (object)array('date'=>$i, 'total'=>'', 'new'=> '', 'renewals'=>'');
-			if ( ! $currently_in_period || $i < $day_of_month ) {
-				$units_in_period++;
-			}
-			
-			foreach($dates as $date)
-			{
-				if($date->date == $i) {
-					$cols[$i][0] = $date->value;
-					$cols[$i][1] = $date->renewals;
-					$csvdata[$i-1] = (object)array('date'=>$i, 'total'=>$date->value, 'new'=> $date->value - $date->renewals, 'renewals'=> $date->renewals);
-					if ( ! $currently_in_period || $i < $day_of_month ) {
-						$total_in_period += $date->value;
-					}
-				}	
 			}
 
-			if( $compare_period ) {
-
-				foreach($previous_period_dates as $prev_date) {
-					
-					if($prev_date->date == $i) {
-						$cols[$i][2] = $prev_date->value;
-						$cols[$i][3] = $prev_date->renewals;
-					}	
+			// If the month is this month or in the past, update the variables for averaging.
+			if ( $loop_date <= date( 'Y-m' ) ) {
+				if ( $new_renewals == 'new_renewals' ) {
+					$total_in_period += $dates[ $loop_date ]->value;
+				} elseif ( $new_renewals == 'only_new' ) {
+					$total_in_period += $dates[ $loop_date ]->value - $dates[ $loop_date ]->renewals;
+				} elseif ( $new_renewals == 'only_renewals' ) {
+					$total_in_period += $dates[ $loop_date ]->renewals;
 				}
-
+				$units_in_period += 1;
 			}
+
+			// Add to CSV data.
+			$csvdata[ $loop_date ] = (object) array(
+				'date'     => $loop_date,
+				'total'    => $dates[ $loop_date ]->value,
+				'new'      => $dates[ $loop_date ]->value - $dates[ $loop_date ]->renewals,
+				'renewals' => $dates[ $loop_date ]->renewals,
+			);
+
+			// Increment the loop timestamp.
+			$loop_timestamp_index = strtotime( '+1 month', $loop_timestamp_index );
+		}
+	} elseif ( $report_unit == 'YEAR' ) {
+		// Loop through all the years since the first year that we have data for.
+		$start_year = min( array_keys( $dates ) );
+		$end_year   = date( 'Y' );
+		for ( $year = $start_year; $year <= $end_year; $year++ ) {
+			// If we don't have data for this year, add it.
+			if ( ! isset( $dates[ $year ] ) ) {
+				$dates[ $year ] = (object) array(
+					'date' => $year,
+					'value' => 0,
+					'renewals' => 0,
+				);
+			}
+
+			// If the year is this year or in the past, update the variables for averaging.
+			if ( $year <= date( 'Y' ) ) {
+				if ( $new_renewals == 'new_renewals' ) {
+					$total_in_period += $dates[ $year ]->value;
+				} elseif ( $new_renewals == 'only_new' ) {
+					$total_in_period += $dates[ $year ]->value - $dates[ $year ]->renewals;
+				} elseif ( $new_renewals == 'only_renewals' ) {
+					$total_in_period += $dates[ $year ]->renewals;
+				}
+				$units_in_period += 1;
+			}
+
+			// Add to CSV data.
+			$csvdata[ $year ] = (object) array(
+				'date'     => $year,
+				'total'    => $dates[ $year ]->value,
+				'new'      => $dates[ $year ]->value - $dates[ $year ]->renewals,
+				'renewals' => $dates[ $year ]->renewals,
+			);
 		}
 	}
 
-	$average = 0;
-	if ( 0 !== $units_in_period ) {
-		$average = $total_in_period / $units_in_period; // Not including this unit.
-	}
+	// Order $dates by date.
+	ksort( $dates );
 	
 	// Save a transient for each combo of params. Expires in 1 hour.
 	$param_array = array( $period, $type, $month, $year, $l, $discount_code );
 	$param_hash = md5( implode( ' ', $param_array ) . PMPRO_VERSION );
 	set_transient( 'pmpro_sales_data_' . $param_hash, $csvdata, HOUR_IN_SECONDS );
+
+	// Here, we're goign to build data for the Google Chart.
+	// We are doing the calculations up here so that we don't need to weave them into the JS to display the chart.
+	$google_chart_column_labels = array();
+	$google_chart_row_data = array();
+	$google_chart_series_styles = array();
+
+	// For the row data, we need to initialize this with the dates being reported and some other info.
+	foreach ( $dates as $date => $data ) {
+		$google_chart_row_data[ $date ] = array(); // Will have array keys 'date', 'tooltip', and a nested array 'data'.
+		$google_chart_row_data[ $date ][ 'date' ] = $date;
+
+		// Build the tooltip.
+		$google_chart_row_data[ $date ][ 'tooltip' ] = '<div style="padding:15px; font-size: 14px; line-height: 20px; color: #000000;">'; // Set up div.
+		// Add the date.
+		$google_chart_row_data[ $date ][ 'tooltip' ] .= '<strong>';
+		$google_chart_row_data[ $date ][ 'tooltip' ] .= $date;
+		$google_chart_row_data[ $date ][ 'tooltip' ] .= '</strong><br />';
+		// Set up a UL for the data.
+		$google_chart_row_data[ $date ][ 'tooltip' ] .= '<ul style="margin-bottom: 0px;">';
+		// Maybe add renewal sales data.
+		if ( in_array( $new_renewals, array( 'only_renewals', 'new_renewals' ) ) ) {
+			$google_chart_row_data[ $date ][ 'tooltip' ] .= '<li><span style="margin-right: 3px;">' . sprintf( __( 'Renewals: %s', 'paid-memberships-pro' ), $type === 'sales' ? $data->renewals : pmpro_formatPrice( $data->renewals ) ) . '</li>';
+		}
+		// Maybe add new sales data.
+		if ( in_array( $new_renewals, array( 'only_new', 'new_renewals' ) ) ) {
+			$google_chart_row_data[ $date ][ 'tooltip' ] .= '<li><span style="margin-right: 3px;">' . sprintf( __( 'New: %s', 'paid-memberships-pro' ), $type === 'sales' ? $data->value - $data->renewals : pmpro_formatPrice( $data->value - $data->renewals ) ) . '</li>';
+		}
+		// Maybe add total sales data.
+		if ( $new_renewals === 'new_renewals' ) {
+			$google_chart_row_data[ $date ][ 'tooltip' ] .= '<li style="border-top: 1px solid #CCC; margin-bottom: 0px; margin-top: 8px; padding-top: 8px;">' . sprintf( __( 'Total: %s', 'paid-memberships-pro' ), $type === 'sales' ? $data->value : pmpro_formatPrice( $data->value ) ) . '</li>';
+		}
+		// Maybe add compare to previous period data.
+		if ( ! empty( $previous_period_dates ) ) {
+			if ( $new_renewals === 'new_renewals' ) {
+				$google_chart_row_data[ $date ][ 'tooltip' ] .= '<li style="border-top: 1px solid #CCC; margin-bottom: 0px; margin-top: 8px; padding-top: 8px;">' . sprintf( __( 'Previous Period: %s', 'paid-memberships-pro' ), $type === 'sales' ? $data->compare_value : pmpro_formatPrice( $data->compare_value ) ) . '</li>';
+			} elseif ( $new_renewals === 'only_new') {
+				$google_chart_row_data[ $date ][ 'tooltip' ] .= '<li style="border-top: 1px solid #CCC; margin-bottom: 0px; margin-top: 8px; padding-top: 8px;">' . sprintf( __( 'Previous Period: %s', 'paid-memberships-pro' ), $type === 'sales' ? $data->compare_value - $data->compare_renewals : pmpro_formatPrice( $data->compare_value - $data->compare_renewals ) ) . '</li>';
+			} elseif ( $new_renewals === 'only_renewals') {
+				$google_chart_row_data[ $date ][ 'tooltip' ] .= '<li style="border-top: 1px solid #CCC; margin-bottom: 0px; margin-top: 8px; padding-top: 8px;">' . sprintf( __( 'Previous Period: %s', 'paid-memberships-pro' ), $type === 'sales' ? $data->compare_renewals : pmpro_formatPrice( $data->compare_renewals ) ) . '</li>';
+			}
+		}
+		// Close the UL and div.
+		$google_chart_row_data[ $date ][ 'tooltip' ] .= '</ul></div>';
+
+		// Set up the data array.
+		$google_chart_row_data[ $date ][ 'data' ] = array();
+	}
+
+	// For now are 4 columns/data points that we may need to create:
+	// 1. Renewal sales/revenue
+	// 2. New signups/revenue
+	// 3. Compare to previous period
+	// 4. Average sales/revenue in period
+
+	// Renewal sales/revenue
+	if ( in_array( $new_renewals, array( 'only_renewals', 'new_renewals' ) ) ) {
+		$google_chart_column_labels[] = sprintf( __( 'Renewal %s', 'paid-memberships-pro' ), $type === 'sales' ? __( 'Signups', 'paid-memberships-pro' ) : __( 'Revenue', 'paid-memberships-pro' ) );
+		foreach ( $dates as $date => $data ) {
+			$google_chart_row_data[ $date ]['data'][] = (int) $data->renewals;
+		}
+		$google_chart_series_styles[] = array(
+			'color' => ( $type === 'sales' ) ? '#006699' : '#31825D',
+		);
+	}
+
+	// New signups/revenue
+	if ( in_array( $new_renewals, array( 'only_new', 'new_renewals' ) ) ) {
+		$google_chart_column_labels[] = sprintf( __( 'New %s', 'paid-memberships-pro' ), $type === 'sales' ? __( 'Signups', 'paid-memberships-pro' ) : __( 'Revenue', 'paid-memberships-pro' ) );
+		foreach ( $dates as $date => $data ) {
+			$google_chart_row_data[ $date ]['data'][] = (int) ( $data->value - $data->renewals );
+		}
+		$google_chart_series_styles[] = array(
+			'color' => ( $type === 'sales' ) ? '#0099C6' : '#5EC16C',
+		);
+	}
+
+	// Compare to previous period
+	if ( ! empty( $previous_period_dates ) ) {
+		$google_chart_column_labels[] = __( 'Previous Period', 'paid-memberships-pro' );
+		foreach ( $dates as $date => $data ) {
+			if ( $new_renewals === 'new_renewals' ) {
+				$google_chart_row_data[ $date ]['data'][] = (int) $data->compare_value;
+			} elseif ( $new_renewals === 'only_new') {
+				$google_chart_row_data[ $date ]['data'][] = (int) ( $data->compare_value - $data->compare_renewals );
+			} elseif ( $new_renewals === 'only_renewals') {
+				$google_chart_row_data[ $date ]['data'][] = (int) $data->compare_renewals;
+			}
+		}
+		$google_chart_series_styles[] = array(
+			'color' => '#999999',
+			'pointsVisible' => true,
+			'type' => 'line'
+		);
+	}
+
+	// Average sales/revenue in period
+	$google_chart_column_labels[] = sprintf( __( 'Average %s', 'paid-memberships-pro' ), $type === 'sales' ? __( 'Signups', 'paid-memberships-pro' ) : __( 'Revenue', 'paid-memberships-pro' ) );
+	$average = 0;
+	if ( 0 !== $units_in_period ) {
+		$average = (int) $total_in_period / $units_in_period; // Not including this unit.
+	}
+	foreach ( $dates as $date => $data ) {
+		$google_chart_row_data[ $date ]['data'][] = $average;
+	}
+	$google_chart_series_styles[] = array(
+		'type' => 'line',
+		'color' => '#B00000',
+		'enableInteractivity' => false,
+		'lineDashStyle' => [4,1]
+	);
+
+	// We now have all the data for the chart! Let's start building output.
 
 	// Build CSV export link.
 	$args = array(
@@ -567,7 +626,6 @@ function pmpro_report_sales_page()
 				<option value='only_new' <?php selected( $new_renewals, 'only_new' ); ?> ><?php esc_html_e( 'Show Only New', 'paid-memberships-pro' ); ?></option>
 				<option value='only_renewals' <?php selected( $new_renewals, 'only_renewals' ); ?> ><?php esc_html_e( 'Show Only Renewals', 'paid-memberships-pro' ); ?></option>
 			</select>
-			<label for='compare_period'><input type='checkbox' id='compare_period' name='compare_period' <?php checked( 1, $compare_period ); ?> /><?php esc_html_e( 'Compare to Previous Period', 'paid-memberships-pro' ); ?></label>
 			<input type="hidden" name="page" value="pmpro-reports" />
 			<input type="hidden" name="report" value="sales" />
 			<input type="submit" class="button button-primary action" value="<?php esc_attr_e('Generate Report', 'paid-memberships-pro' );?>" />
@@ -618,219 +676,31 @@ function pmpro_report_sales_page()
 			var dataTable = new google.visualization.DataTable();
 			
 			// Date
-			dataTable.addColumn('string', <?php echo wp_json_encode( esc_html( $date_function ) ); ?>);
+			dataTable.addColumn('string', <?php echo wp_json_encode( esc_html( $report_unit ) ); ?>);
 
 			// Tooltip
 			dataTable.addColumn({type: 'string', role: 'tooltip', 'p': {'html': true}});
 
-			<?php if ( $new_renewals === 'only_renewals' ) { ?>
-				// Data for renewal sales or revenue (bar chart).
-				dataTable.addColumn('number', <?php echo wp_json_encode( esc_html__( 'Renewals', 'paid-memberships-pro' ) ); ?>);
-			<?php } elseif ( $new_renewals === 'only_new' ) { ?>
-				// Data for new sales or revenue (bar chart).
-				dataTable.addColumn('number', <?php echo wp_json_encode( esc_html( sprintf( __( 'New %s', 'paid-memberships-pro' ), ucwords( $type ) ) ) ); ?>);
-			<?php } else { ?>
-				// Data for renewal sales or revenue (bar chart).
-				dataTable.addColumn('number', <?php echo wp_json_encode( esc_html__( 'Renewals', 'paid-memberships-pro' ) ); ?>);
-
-				// Data for new sales or revenue (bar chart).
-				dataTable.addColumn('number', <?php echo wp_json_encode( esc_html( sprintf( __( 'New %s', 'paid-memberships-pro' ), ucwords( $type ) ) ) ); ?>);
-			<?php } ?>
-
-			<?php if ( $compare_period && in_array( $new_renewals, array( 'new_renewals', 'only_new' ) ) ) { ?>
-				// Data for comparison period new sales or revenue (line chart).
-				dataTable.addColumn('number', <?php echo wp_json_encode( esc_html( sprintf( __( 'Previous Period: New %s', 'paid-memberships-pro' ), ucwords( $type ) ) ) ); ?>);
-			<?php } ?>
-			<?php if ( $compare_period && in_array( $new_renewals, array( 'new_renewals', 'only_renewals' ) ) ) { ?>
-				// Data for comparison period renewal sales or revenue (line chart).
-				dataTable.addColumn('number', <?php echo wp_json_encode( esc_html( sprintf( __( 'Previous Period: Renewal %s', 'paid-memberships-pro' ), ucwords( $type ) ) ) ); ?>);
-			<?php } ?>
-
-			// Average sales or revenue data (line chart).
-			<?php if ( $type === 'sales' ) { ?>
-				dataTable.addColumn('number', <?php echo wp_json_encode( esc_html( sprintf( __( 'Average: %s', 'paid-memberships-pro' ), number_format_i18n( $average, 2 ) ) ) ); ?>);
-			<?php } else { ?>
-				dataTable.addColumn('number', <?php echo wp_json_encode( sprintf( esc_html__( 'Average: %s', 'paid-memberships-pro' ), pmpro_escape_price( html_entity_decode( pmpro_formatPrice( $average ) ) ) ) ); ?>);
-			<?php } ?>
+			<?php
+			foreach ( $google_chart_column_labels as $label ) {
+				echo "dataTable.addColumn('number', " . wp_json_encode( esc_html( $label ) ) . ");";
+			} 
+			?>
 
 			dataTable.addRows([
-				<?php foreach($cols as $date => $value) { ?>
+				<?php foreach( $google_chart_row_data as $chart_row_data ) { ?>
 					[
+						<?php echo wp_json_encode( esc_html( $chart_row_data['date'] ) ); ?>,
+						<?php echo wp_json_encode( wp_kses( $chart_row_data['tooltip'], 'post' ) ); ?>,
 						<?php
-							$date_value = $date;
-
-							if ( $period === 'monthly' ) {
-								$date_value = date_i18n( 'M', mktime( 0, 0, 0, $date, 2 ) );
-							}
-
-							echo wp_json_encode( esc_html( $date_value ) );
-						?>,
-						createCustomHTMLContent(
-							<?php
-								$date_value = $date;
-
-								if ( $period === 'monthly' ) {
-									$date_value = date_i18n( 'F', mktime( 0, 0, 0, $date, 2 ) );
-								} elseif ( $period === 'daily' ) {
-									$date_value = date_i18n( get_option( 'date_format' ), strtotime( $year . '-' . $month . '-' . $date ) );
-								}
-								// period
-								echo wp_json_encode( esc_html( $date_value ) );
-							?>,
-							<?php if ( $type === 'sales' ) { ?>
-								<?php
-									// Current period renewal sales (renewals).
-									echo wp_json_encode( (int) $value[1] );
-								?>,
-								<?php
-									// Current period new sales (notRenewals).
-									echo wp_json_encode( (int) $value[0] - $value[1] );
-								?>,
-								<?php
-									// Current period total sales for view (total).
-									echo wp_json_encode( (int) $value[0] );
-								?>,
-							<?php } else {
-								if ( in_array( $new_renewals, array( 'new_renewals', 'only_renewals' ) ) ) {
-									// Current period renewal revenue (renewals).
-									echo wp_json_encode( pmpro_escape_price( pmpro_formatPrice( $value[1] ) ) );
-								} else {
-									echo 'false';
-								} ?>,
-								<?php
-								if ( in_array( $new_renewals, array( 'new_renewals', 'only_new' ) ) ) {
-									// Current period new revenue (notRenewals).
-									echo wp_json_encode( pmpro_escape_price( pmpro_formatPrice( $value[0] - $value[1] ) ) );
-								} else {
-									echo 'false';
-								} ?>,
-								<?php
-								if ( $new_renewals == 'new_renewals' ) {
-									// Current period total revenue for view (total).
-									// Only shown if showing new and renewal revenue.
-									echo wp_json_encode( pmpro_escape_price( pmpro_formatPrice( $value[0] ) ) );
-								} else {
-									echo 'false';
-								} ?>,
-								<?php
-									// Are we showing a compare period? (compare)
-									echo wp_json_encode( $compare_period );
-								?>,
-								<?php
-								if ( $compare_period && in_array( $new_renewals, array( 'new_renewals', 'only_new' ) ) ) {
-									// Previous period new revenue (compare_new).
-									echo wp_json_encode( pmpro_escape_price( pmpro_formatPrice( $value[2] - $value[3] ) ) );
-								} else {
-									echo 'false';
-								} ?>,
-								<?php
-								if ( $compare_period && in_array( $new_renewals, array( 'new_renewals', 'only_renewals' ) ) ) {
-									// Previous period renewal revenue (compare_renewal).
-									echo wp_json_encode( pmpro_escape_price( pmpro_formatPrice( $value[3] ) ) );
-								} else {
-									echo 'false';
-								} ?>
-							<?php } ?>
-						),
-						<?php
-						if ( $type === 'sales' ) {
-							// Current period renewal sales.
-							echo wp_json_encode( (int) $value[1] ).',';
-
-							// Current period new sales.
-							echo wp_json_encode( (int) $value[0] - $value[1] ).',';
-
-							// Previous period renewal sales.
-							echo wp_json_encode( (int) $value[3] ).',';
-
-							// Previous period new sales.
-							//echo wp_json_encode( (int) $value[2] - $value[3] ).',';
-							echo wp_json_encode( (int) '0' ).',';
-						} else {
-							if ( $new_renewals == 'only_renewals' ) {
-								// Current period renewal revenue.
-								echo wp_json_encode( pmpro_round_price( $value[1] ) ).',';
-							} elseif ( $new_renewals == 'only_new' ) {
-								// Current period new revenue.
-								echo wp_json_encode( pmpro_round_price( $value[0] - $value[1] ) ).',';
-							} else {
-								// Current period renewal revenue.
-								echo wp_json_encode( pmpro_round_price( $value[1] ) ).',';
-
-								// Current period new revenue.
-								echo wp_json_encode( pmpro_round_price( $value[0] - $value[1] ) ).',';
-							}
-
-							if ( $compare_period && in_array( $new_renewals, array( 'new_renewals', 'only_renewals' ) ) ) {
-								// Previous period renewal revenue.
-								echo wp_json_encode( pmpro_round_price( $value[3] ) ).',';
-							}
-
-							if ( $compare_period && in_array( $new_renewals, array( 'new_renewals', 'only_new' ) ) ) {
-								// Previous period new revenue.
-								echo wp_json_encode( pmpro_round_price( $value[2] - $value[3] ) ).',';
-							}
-
-						}
-						// Average sales or revenue data (line chart).
-						echo wp_json_encode( pmpro_round_price( $average ) ).','; ?>
+						echo implode( ',', $chart_row_data['data'] ) . ',';
+						?>
 					],
 				<?php } ?>
 			]);
 
 			<?php
-			// Set the series data. There are 5 plotted data points: renewal, new, prev. renewal, prev. new, average.
-			// We hide data points later based on the report settings using the hideColumns function.
-			$series = array();
-
-			// Data formatting for showing Renewal and New Sales/Revenue for current period.
-			if ( $new_renewals === 'only_renewals' ) {
-				// Renewal only
-				$series[] = array(
-					'color' => ( $type === 'sales' ) ? '#006699' : '#31825D'
-				);
-			} elseif ( $new_renewals === 'only_new' ) {
-				// New only
-				$series[] = array(
-					'color' => ( $type === 'sales' ) ? '#0099C6' : '#5EC16C',
-				);
-			} else {
-				// Renewal
-				$series[] = array(
-					'color' => ( $type === 'sales' ) ? '#006699' : '#31825D'
-				);
-
-				// New
-				$series[] = array(
-					'color' => ( $type === 'sales' ) ? '#0099C6' : '#5EC16C',
-				);
-			}
-
-			// Previous Period New Sales/Revenue.
-			if ( $compare_period && in_array( $new_renewals, array( 'new_renewals', 'only_new' ) ) ) {
-				$series[] = array(
-					'color' => '#999999',
-					'pointsVisible' => true,
-					'type' => 'line'
-				);
-			}
-
-			// Previous Period Renewal Sales/Revenue.
-			if ( $compare_period && in_array( $new_renewals, array( 'new_renewals', 'only_renewals' ) ) ) {
-				$series[] = array(
-					'color' => '#666666',
-					'pointsVisible' => true,
-					'type' => 'line'
-				);
-			}
-
-			// Last: Average series is a line chart.
-			$series[] = array(
-				'type' => 'line',
-				'color' => '#B00000',
-				'enableInteractivity' => false,
-				'lineDashStyle' => [4,1]
-			);
+			// Set the series data.
 			?>
 			var options = {
 				title: pmpro_report_title_sales(),
@@ -864,7 +734,7 @@ function pmpro_report_sales_page()
 					},
 				},
 				seriesType: 'bars',
-				series: <?php echo wp_json_encode( $series ); ?>,
+				series: <?php echo wp_json_encode( $google_chart_series_styles ); ?>,
 				<?php if ( $new_renewals === 'new_renewals' ) { ?>
 					isStacked: true,
 				<?php } ?>
