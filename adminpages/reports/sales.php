@@ -348,7 +348,7 @@ function pmpro_report_sales_page()
 		// Loop through all the months in this report period.
 		$loop_timestamp_index = strtotime( $startdate );
 		$loop_end_timestamp = strtotime( $enddate );
-		while ( $loop_timestamp_index <= $loop_end_timestamp ) {
+		while ( $loop_timestamp_index < $loop_end_timestamp ) {
 			// If we don't have data for this month, add it.
 			$loop_date = date( 'Y-m', $loop_timestamp_index );
 			if ( ! isset( $dates[ $loop_date ] ) ) {
