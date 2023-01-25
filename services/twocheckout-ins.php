@@ -3,13 +3,8 @@
 	//define('PMPRO_INS_DEBUG', true);
 
 	//in case the file is loaded directly
-	if(!defined("ABSPATH"))
-	{
-		global $isapage;
-		$isapage = true;
-
-		define('WP_USE_THEMES', false);
-		require_once(dirname(__FILE__) . '/../../../../wp-load.php');
+	if( ! defined( 'ABSPATH' ) ) {
+		exit;
 	}
 
 	// Require TwoCheckout class
@@ -17,8 +12,9 @@
 		require_once(PMPRO_DIR . "/includes/lib/Twocheckout/Twocheckout.php");
 
 	//some globals
-	global $wpdb, $gateway_environment, $logstr;
+	global $wpdb, $gateway_environment, $logstr, $isapage;
 	$logstr = "";	//will put debug info here and write to inslog.txt
+	$isapage = true;
 
 	// Sets the PMPRO_DOING_WEBHOOK constant and fires the pmpro_doing_webhook action.
 	pmpro_doing_webhook( 'twocheckout', true );

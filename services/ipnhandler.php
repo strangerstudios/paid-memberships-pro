@@ -1,19 +1,16 @@
 <?php
 //in case the file is loaded directly
-if ( ! defined( "ABSPATH" ) ) {
-	global $isapage;
-	$isapage = true;
-
-	define( 'WP_USE_THEMES', false );
-	require_once( dirname( __FILE__ ) . '/../../../../wp-load.php' );
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
 }
 
 //uncomment to log requests in logs/ipn.txt
 //define('PMPRO_IPN_DEBUG', true);
 
 //some globals
-global $wpdb, $gateway_environment, $logstr;
+global $wpdb, $gateway_environment, $logstr, $isapage;
 $logstr = "";    //will put debug info here and write to ipnlog.txt
+$isapage = true;
 
 // Sets the PMPRO_DOING_WEBHOOK constant and fires the pmpro_doing_webhook action.
 pmpro_doing_webhook( 'paypal', true );
