@@ -112,6 +112,7 @@ add_action('wp_ajax_pmpro_orders_print_view', 'pmpro_orders_print_view');
  * Get order JSON.
  *
  * @since 1.8.6
+ * @since 2.9.10 - Only returns a subset of data. Only email is really used.
  */
 function pmpro_get_order_json() {
 	// only admins can get this
@@ -121,7 +122,16 @@ function pmpro_get_order_json() {
 	
 	$order_id = intval( $_REQUEST['order_id'] );
 	$order = new MemberOrder($order_id);
-	echo json_encode($order);
+		
+	$r = array(
+		'id' => (int)$order->id,
+		'user_id' => (int)$order->user_id,
+		'membership_id' => (int)$order->membership_id,
+		'code' => sanitize_text_field( $order->code ),
+		'Email' => sanitize_email( $order->Email ),		
+	);
+	
+	echo wp_json_encode($r);
 	exit;
 }
 add_action('wp_ajax_pmpro_get_order_json', 'pmpro_get_order_json');
