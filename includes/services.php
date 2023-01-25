@@ -127,7 +127,7 @@ function pmpro_get_order_json() {
 		'id' => (int)$order->id,
 		'user_id' => (int)$order->user_id,
 		'membership_id' => (int)$order->membership_id,
-		'code' => sanitize_text_field( $order->code ),
+		'code' => esc_html( $order->code ),
 		'Email' => sanitize_email( $order->Email ),		
 	);
 	
