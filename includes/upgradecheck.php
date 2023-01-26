@@ -305,6 +305,18 @@ function pmpro_checkForUpgrades()
 		pmpro_setOption( 'last_known_url', get_site_url() );
 		pmpro_setOption( 'db_version', '2.94' );
 	}
+
+	/**
+	 * Version 2.10
+	 * We are increasing Stripe application fee, but if the site is already being
+	 * charged at 1%, we want to let them keep that fee.
+	 */
+	if ( $pmpro_db_version < 2.95 ) { // 2.95 since 2.10 would be lower than previous update.
+		require_once( PMPRO_DIR . "/includes/updates/upgrade_2_10.php" );
+		pmpro_upgrade_2_10();
+		pmpro_setOption( 'db_version', '2.95' );
+	}
+
 }
 
 function pmpro_db_delta()
