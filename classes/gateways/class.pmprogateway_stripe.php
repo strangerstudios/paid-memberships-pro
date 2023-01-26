@@ -4108,8 +4108,6 @@ class PMProGateway_stripe extends PMProGateway {
 		if ( self::using_legacy_keys() ) {
 			return 0;
 		}
-		$application_fee_percentage = pmpro_license_isValid( null, pmpro_license_get_premium_types() ) ? 0 : 1;
-		$application_fee_percentage = apply_filters( 'pmpro_set_application_fee_percentage', $application_fee_percentage );
 
 		// Some countries do not allow us to use application fees. If we are in one of those
 		// countries, we should set the percentage to 0. This is a temporary fix until we
@@ -4120,8 +4118,18 @@ class PMProGateway_stripe extends PMProGateway {
 			'MY', // Malaysia.
 		);
 		if ( in_array( self::get_account_country(), $countries_to_disable_application_fees ) ) {
-			$application_fee_percentage = 0;
+			return 0;
 		}
+
+		// Check if we specified a reduced application fee for this website.
+		$application_fee_percentage = pmpro_getOption( 'stripe_connect_reduced_application_fee' );
+		if ( empty( $application_fee_percentage ) ) {
+			$application_fee_percentage = 2; // 2% is the default.
+		}
+
+		// Check if we have a valid license key.
+		$application_fee_percentage = pmpro_license_isValid( null, pmpro_license_get_premium_types() ) ? 0 : $application_fee_percentage;
+		$application_fee_percentage = apply_filters( 'pmpro_set_application_fee_percentage', $application_fee_percentage );
 
 		return round( floatval( $application_fee_percentage ), 2 );
 	}
