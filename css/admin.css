@@ -624,13 +624,17 @@ span.pmpro_wizard__skip:hover {
 	padding-left: 0.5em;
 	padding-right: 0.5em;
 }
-
-.pmpro_admin table.wp-list-table tbody td {
-	padding: 1.25em;
-}
-
 .pmpro_admin table.wp-list-table .row-actions {
 	color: #999;
+}
+@media only screen and (min-width: 1200px) {
+	.pmpro_admin table.wp-list-table thead th {
+		padding-left: 1.25em;
+		padding-right: 1.25em;
+	}
+	.pmpro_admin table.wp-list-table tbody td {
+		padding: 1.25em;
+	}
 }
 
 /* Settings pages sections styles */
@@ -1234,8 +1238,7 @@ span.pmpro_wizard__skip:hover {
 	margin: 10px 0 0 0;
 	padding: 0px 20px;
 }
-
-@media only screen and (max-width: 960px) {
+@media only screen and (max-width: 782px) {
 	.pmpro_admin-pmpro-discountcodes .wp-list-table thead {
 		display: none;
 	}
@@ -1271,7 +1274,7 @@ span.pmpro_wizard__skip:hover {
 	.pmpro_admin-pmpro-discountcodes .wp-list-table tr td .row-actions {
 		display: inline-block;
 		left: 0;
-		margin-left: 16px;
+		margin-left: 0px;
 		padding: 0;
 	}
 
@@ -1355,7 +1358,7 @@ a.pmpro_order-renewal {
 	margin-left: 10px;
 }
 
-@media only screen and (max-width: 960px) {
+@media only screen and (max-width: 782px) {
 	.pmpro_admin-pmpro-orders .wp-list-table thead {
 		display: none;
 	}
@@ -1391,7 +1394,7 @@ a.pmpro_order-renewal {
 	.pmpro_admin-pmpro-orders .wp-list-table tr td .row-actions {
 		display: inline-block;
 		left: 0;
-		margin-left: 16px;
+		margin-left: 0px;
 		padding: 0;
 	}
 

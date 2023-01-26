@@ -93,7 +93,7 @@ if ( $txn_type == "subscr_signup" ) {
 
 			//Check that the corresponding order has a $0 initial payment as well
 			if ( (float) $amount != (float) $morder->total ) {
-				ipnlog( "ERROR: PayPal subscription #" . $_POST['subscr_id'] . " initial payment amount (" . $amount . ") is not the same as the PMPro order #" . $morder->code . " (" . $morder->total . ")." );
+				ipnlog( "ERROR: PayPal subscription #" . $subscr_id . " initial payment amount (" . $amount . ") is not the same as the PMPro order #" . $morder->code . " (" . $morder->total . ")." );
 			} else {
 				//update membership
 				if ( pmpro_ipnChangeMembershipLevel( $txn_id, $morder ) ) {
@@ -117,7 +117,7 @@ if ( $txn_type == "subscr_payment" ) {
 	$last_subscription_order = new MemberOrder();
 	if ( $last_subscription_order->getLastMemberOrderBySubscriptionTransactionID( $subscr_id ) == false ) {
 		//first payment, get order
-		$morder = new MemberOrder( $_POST['item_number'] );
+		$morder = new MemberOrder( sanitize_text_field( $_POST['item_number'] ) );
 
 		//No order?
 		if ( empty( $morder ) || empty( $morder->id ) ) {
@@ -128,7 +128,7 @@ if ( $txn_type == "subscr_payment" ) {
 			$morder->getUser();
 
 			//Check that the corresponding order has the same amount as what we're getting from PayPal
-			$amount = $_POST['mc_gross'];
+			$amount = sanitize_text_field( $_POST['mc_gross'] );
 			
 			//Adjust gross for tax if provided
 			if( !empty($_POST['tax']) ) {
@@ -138,7 +138,7 @@ if ( $txn_type == "subscr_payment" ) {
 			}
 			
 			if ( (float) $amount != (float) $morder->total ) {
-				ipnlog( "ERROR: PayPal transaction #" . $_POST['tnx_id'] . " amount (" . $amount . ") is not the same as the PMPro order #" . $morder->code . " (" . $morder->total . ")." );
+				ipnlog( "ERROR: PayPal transaction #" . $txn_id . " amount (" . $amount . ") is not the same as the PMPro order #" . $morder->code . " (" . $morder->total . ")." );
 			} else {
 				//update membership
 				if ( pmpro_ipnChangeMembershipLevel( $txn_id, $morder ) ) {
@@ -159,12 +159,12 @@ if ( $txn_type == "subscr_payment" ) {
 		$failed_payment_statuses = apply_filters( 'pmpro_paypal_renewal_failed_statuses', array( 'Failed', 'Voided', 'Denied', 'Expired' ) );
 
 		//subscription payment, completed or failure?
-		if ( $_POST['payment_status'] == "Completed" ) {
+		if ( $payment_status == "Completed" ) {
 			pmpro_ipnSaveOrder( $txn_id, $last_subscription_order );
-		} elseif ( in_array( $_POST['payment_status'], $failed_payment_statuses ) ) {
+		} elseif ( in_array( $payment_status, $failed_payment_statuses ) ) {
 			pmpro_ipnFailedPayment( $last_subscription_order );
 		} else {
-			ipnlog( 'Payment status is ' . $_POST['payment_status'] . '.' );
+			ipnlog( 'Payment status is ' . $payment_status . '.' );
 		}
 
 		pmpro_ipnExit();
@@ -185,7 +185,7 @@ if ( $txn_type == "web_accept" && ! empty( $item_number ) ) {
 		$morder->getUser();
 
 		//Check that the corresponding order has the same amount
-		$amount = $_POST['mc_gross'];
+		$amount = sanitize_text_field( $_POST['mc_gross'] );
 		
 		//Adjust gross for tax if provided
 		if(!empty($_POST['tax']) ) {
@@ -193,7 +193,7 @@ if ( $txn_type == "web_accept" && ! empty( $item_number ) ) {
 		}
 
 		if ( (float) $amount != (float) $morder->total ) {
-			ipnlog( "ERROR: PayPal transaction #" . $_POST['txn_id'] . " amount (" . $amount . ") is not the same as the PMPro order #" . $morder->code . " (" . $morder->total . ")." );
+			ipnlog( "ERROR: PayPal transaction #" . $txn_id . " amount (" . $amount . ") is not the same as the PMPro order #" . $morder->code . " (" . $morder->total . ")." );
 		} else {
 			//update membership
 			if ( pmpro_ipnChangeMembershipLevel( $txn_id, $morder ) ) {
@@ -220,12 +220,12 @@ if ( $txn_type == "recurring_payment" ) {
 		$failed_payment_statuses = apply_filters( 'pmpro_paypal_renewal_failed_statuses', array( 'Failed', 'Voided', 'Denied', 'Expired' ) );
 
 		//subscription payment, completed or failure?
-		if ( $_POST['payment_status'] == "Completed" ) {
+		if ( $payment_status == "Completed" ) {
 			pmpro_ipnSaveOrder( $txn_id, $last_subscription_order );
-		} elseif ( in_array( $_POST['payment_status'], $failed_payment_statuses ) ) {
+		} elseif ( in_array( $payment_status, $failed_payment_statuses ) ) {
 			pmpro_ipnFailedPayment( $last_subscription_order );
 		} else {
-			ipnlog( 'Payment status is ' . $_POST['payment_status'] . '.' );
+			ipnlog( 'Payment status is ' . $payment_status . '.' );
 		}
 	} else {
 		ipnlog( "ERROR: Couldn't find last order for this recurring payment (" . $subscr_id . ")." );
@@ -601,13 +601,13 @@ function pmpro_ipnCheckReceiverEmail( $email ) {
 		return true;
 	} else {
 		if ( ! empty( $_POST['receiver_email'] ) ) {
-			$receiver_email = $_POST['receiver_email'];
+			$receiver_email = sanitize_text_field( $_POST['receiver_email'] );
 		} else {
 			$receiver_email = "N/A";
 		}
 
 		if ( ! empty( $_POST['business'] ) ) {
-			$business = $_POST['business'];
+			$business = sanitize_text_field( $_POST['business'] );
 		} else {
 			$business = "N/A";
 		}
@@ -682,7 +682,7 @@ function pmpro_ipnChangeMembershipLevel( $txn_id, &$morder ) {
 		$morder->status                 = "success";
 		$morder->payment_transaction_id = $txn_id;
 		if ( ! empty( $_POST['subscr_id'] ) ) {
-			$morder->subscription_transaction_id = $_POST['subscr_id'];
+			$morder->subscription_transaction_id = sanitize_text_field( $_POST['subscr_id'] );
 		} else {
 			$morder->subscription_transaction_id = "";
 		}
@@ -707,13 +707,13 @@ function pmpro_ipnChangeMembershipLevel( $txn_id, &$morder ) {
 		if ( ! empty( $_POST['first_name'] ) ) {
 			$old_firstname = get_user_meta( $morder->user_id, "first_name", true );
 			if ( empty( $old_firstname ) ) {
-				update_user_meta( $morder->user_id, "first_name", $_POST['first_name'] );
+				update_user_meta( $morder->user_id, "first_name", sanitize_text_field( $_POST['first_name'] ) );
 			}
 		}
 		if ( ! empty( $_POST['last_name'] ) ) {
 			$old_lastname = get_user_meta( $morder->user_id, "last_name", true );
 			if ( empty( $old_lastname ) ) {
-				update_user_meta( $morder->user_id, "last_name", $_POST['last_name'] );
+				update_user_meta( $morder->user_id, "last_name", sanitize_text_field( $_POST['last_name'] ) );
 			}
 		}
 
@@ -764,12 +764,12 @@ function pmpro_ipnFailedPayment( $last_order ) {
 	if ( $last_order->gateway == "paypal" )        //website payments pro
 	{
 		$morder->billing = new stdClass();
-		$morder->billing->name    = $_POST['address_name'];
-		$morder->billing->street  = $_POST['address_street'];
-		$morder->billing->city    = $_POST['address_city '];
-		$morder->billing->state   = $_POST['address_state'];
-		$morder->billing->zip     = $_POST['address_zip'];
-		$morder->billing->country = $_POST['address_country_code'];
+		$morder->billing->name    = sanitize_text_field( $_POST['address_name'] );
+		$morder->billing->street  = sanitize_text_field( $_POST['address_street'] );
+		$morder->billing->city    = sanitize_text_field( $_POST['address_city '] );
+		$morder->billing->state   = sanitize_text_field( $_POST['address_state'] );
+		$morder->billing->zip     = sanitize_text_field( $_POST['address_zip'] );
+		$morder->billing->country = sanitize_text_field( $_POST['address_country_code'] );
 		$morder->billing->phone   = get_user_meta( $morder->user_id, "pmpro_bphone", true );
 
 		//get CC info that is on file
@@ -816,7 +816,7 @@ function pmpro_ipnSaveOrder( $txn_id, $last_order ) {
 	global $wpdb;
 
 	//check that txn_id has not been previously processed
-	$old_txn = $wpdb->get_var( "SELECT payment_transaction_id FROM $wpdb->pmpro_membership_orders WHERE payment_transaction_id = '" . $txn_id . "' LIMIT 1" );
+	$old_txn = $wpdb->get_var( $wpdb->prepare( "SELECT payment_transaction_id FROM $wpdb->pmpro_membership_orders WHERE payment_transaction_id = %s LIMIT 1", $txn_id ) );
 
 	if ( empty( $old_txn ) ) {
 		//save order
@@ -837,14 +837,14 @@ function pmpro_ipnSaveOrder( $txn_id, $last_order ) {
 		if ( false !== stripos( $last_order->gateway, "paypal" ) ) {
 
 			if ( isset( $_POST['mc_gross'] ) && ! empty( $_POST['mc_gross'] ) ) {
-				$morder->InitialPayment = $_POST['mc_gross'];    //not the initial payment, but the class is expecting that
-				$morder->PaymentAmount  = $_POST['mc_gross'];
+				$morder->InitialPayment = sanitize_text_field( $_POST['mc_gross'] );    //not the initial payment, but the class is expecting that
+				$morder->PaymentAmount  = sanitize_text_field( $_POST['mc_gross'] );
 			} elseif ( isset( $_POST['amount'] ) && ! empty( $_POST['amount'] ) ) {
-				$morder->InitialPayment = $_POST['amount'];    //not the initial payment, but the class is expecting that
-				$morder->PaymentAmount  = $_POST['amount'];
+				$morder->InitialPayment = sanitize_text_field( $_POST['amount'] );    //not the initial payment, but the class is expecting that
+				$morder->PaymentAmount  = sanitize_text_field( $_POST['amount'] );
 			} elseif ( isset( $_POST['payment_gross'] )  && ! empty( $_POST['payment_gross' ] ) ) {
-				$morder->InitialPayment = $_POST['payment_gross'];    //not the initial payment, but the class is expecting that
-				$morder->PaymentAmount  = $_POST['payment_gross'];
+				$morder->InitialPayment = sanitize_text_field( $_POST['payment_gross'] );    //not the initial payment, but the class is expecting that
+				$morder->PaymentAmount  = sanitize_text_field( $_POST['payment_gross'] );
 			}
 			
 			//check for tax
@@ -859,9 +859,9 @@ function pmpro_ipnSaveOrder( $txn_id, $last_order ) {
 			}
 		}
 
-		$morder->FirstName = $_POST['first_name'];
-		$morder->LastName  = $_POST['last_name'];
-		$morder->Email     = $_POST['payer_email'];
+		$morder->FirstName = sanitize_text_field( $_POST['first_name'] );
+		$morder->LastName  = sanitize_text_field( $_POST['last_name'] );
+		$morder->Email     = sanitize_text_field( $_POST['payer_email'] );
 
 		$morder->find_billing_address();
 
@@ -878,7 +878,7 @@ function pmpro_ipnSaveOrder( $txn_id, $last_order ) {
 
 		//figure out timestamp or default to none (today)
 		if ( ! empty( $_POST['payment_date'] ) ) {
-			$morder->timestamp = strtotime( $_POST['payment_date'] );
+			$morder->timestamp = strtotime( sanitize_text_field( $_POST['payment_date'] ) );
 		}
 
 		// Save the event ID for the last processed user/IPN (in case we want to be able to replay IPN requests)

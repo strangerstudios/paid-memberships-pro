@@ -133,29 +133,29 @@
 		if($saved && $edit > 0)
 		{
 			//get the submitted values
-			$all_levels_a = $_REQUEST['all_levels'];
+			$all_levels_a = array_map( 'intval', $_REQUEST['all_levels'] );
 			if(!empty($_REQUEST['levels']))
-				$levels_a = $_REQUEST['levels'];
+				$levels_a = array_map( 'intval', $_REQUEST['levels'] );
 			else
 				$levels_a = array();
-			$initial_payment_a = $_REQUEST['initial_payment'];
+			$initial_payment_a = array_map( 'sanitize_text_field', $_REQUEST['initial_payment'] );
 
 			if(!empty($_REQUEST['recurring']))
-				$recurring_a = $_REQUEST['recurring'];
-			$billing_amount_a = $_REQUEST['billing_amount'];
-			$cycle_number_a = $_REQUEST['cycle_number'];
-			$cycle_period_a = $_REQUEST['cycle_period'];
-			$billing_limit_a = $_REQUEST['billing_limit'];
+				$recurring_a = array_map( 'intval', $_REQUEST['recurring'] );
+			$billing_amount_a = array_map( 'sanitize_text_field', $_REQUEST['billing_amount'] );
+			$cycle_number_a = array_map( 'intval', $_REQUEST['cycle_number'] );
+			$cycle_period_a = array_map( 'sanitize_text_field', $_REQUEST['cycle_period'] );
+			$billing_limit_a = array_map( 'intval', $_REQUEST['billing_limit'] );
 
 			if(!empty($_REQUEST['custom_trial']))
-				$custom_trial_a = $_REQUEST['custom_trial'];
-			$trial_amount_a = $_REQUEST['trial_amount'];
-			$trial_limit_a = $_REQUEST['trial_limit'];
+				$custom_trial_a = array_map( 'intval', $_REQUEST['custom_trial'] );
+			$trial_amount_a = array_map( 'sanitize_text_field', $_REQUEST['trial_amount'] );
+			$trial_limit_a = array_map( 'intval', $_REQUEST['trial_limit'] );
 
 			if(!empty($_REQUEST['expiration']))
-				$expiration_a = $_REQUEST['expiration'];
-			$expiration_number_a = $_REQUEST['expiration_number'];
-			$expiration_period_a = $_REQUEST['expiration_period'];
+				$expiration_a = array_map( 'intval', $_REQUEST['expiration'] );
+			$expiration_number_a = array_map( 'intval', $_REQUEST['expiration_number'] );
+			$expiration_period_a = array_map( 'sanitize_text_field', $_REQUEST['expiration_period'] );
 
 			//clear the old rows
 			$wpdb->delete($wpdb->pmpro_discount_codes_levels, array('code_id' => $edit), array('%d'));

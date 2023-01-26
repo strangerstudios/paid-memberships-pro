@@ -4,7 +4,7 @@ Tags: memberships, members, subscriptions, ecommerce, user registration, member,
 Requires at least: 5.2
 Tested up to: 6.1.1
 Requires PHP: 5.6
-Stable tag: 2.9.8
+Stable tag: 2.9.10
 
 WordPress membership plugin: restrict content, accept member subscriptions with recurring payment. Includes user registration, login, & profile fields
 
@@ -156,6 +156,23 @@ Not sure? You can find out by doing a bit a research.
 9. Membership Account page, display all sections or show specific sections using shortcode attributes.
 
 == Changelog ==
+= 2.9.10 - 2023-01-25 =
+* ENHANCEMENT: Much nicer thumbnail for one of our add ons. #2338 (@kimcoleman)
+* ENHANCEMENT: Adding some other missing add on thumbnails. #2339 (@kimcoleman)
+* BUG FIX/ENHANCEMENT: Updated the orders and discount code tables in the dashboard to display better on small screens. #2334 (@kimcoleman)
+* BUG FIX: Fixed issue with some widgets, e.g. the login widget, introduced in 2.9.9. #2335 (@jarrydlong)
+* BUG FIX: Fixed issue where Invoice Emails would fail to send from the orders page of the dashboard. #2340 (@ideadude)
+
+= 2.9.9 - 2023-01-18 =
+* SECURITY: Updated sanitization, escaping, and other security-related code across the plugin.
+* ENHANCEMENT: When using expirations on levels, the default date is now +1 year again. #2328 (@dparker1005)
+* ENHANCEMENT: Now showing option labels instead of values when displaying multiselect type fields using the pmpro_member shortcode. #2327 #2314 (@dparker1005, @ideadude)
+* ENHANCEMENT: Updated the user fields UI to say "Required at Checkout?", which more accurately describes the behavior. Note: we don't require these fields on profile updates because it can interfere with core user updates and other plugins. #2320 (@kimcoleman)
+* BUG FIX/ENHANCEMENT: Fixed warning in cases where users were deleted or otherwise not found when processing Stripe webhooks. #2331 (@dparker1005)
+* BUG FIX/ENHANCEMENT: Fixed some issues in notifications and messages related to previous escaping updates. #2321 (@dparker1005)
+* BUG FIX/ENHANCEMENT: The pmpro_checkout_box-{groupname} class given to divs on the frontend user profile is now sanitized to avoid spaces and special characters there. #2319 (@kimcoleman)
+* BUG FIX: Fixed issues with CSV exports when filtered within a date range. #2315 (@jarrydlong)
+
 = 2.9.8 - 2022-12-27 =
 * SECURITY: Updated many queries to use $wpdb->prepare and esc_sql for better security. In almost all of these cases, the variables uses in the queries were escaped earlier or otherwise trusted, but it's good practice to escape in the query anyway to be extra safe and avoid issues when code is updated in the future. #2312 (@andrewlimaza, @ideadude)
 * BUG FIX/ENHANCEMENT: Fixed some notices in the Authorize.net Gateway class. #2295 (@mircobabini)
