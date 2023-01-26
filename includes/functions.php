@@ -3662,6 +3662,7 @@ function pmpro_show_discount_code() {
 	global $post, $gateway, $wpdb, $besecure, $discount_code, $discount_code_id, $pmpro_level, $pmpro_levels, $pmpro_msg, $pmpro_msgt, $pmpro_review, $skip_account_fields, $pmpro_paypal_token, $pmpro_show_discount_code, $pmpro_error_fields, $pmpro_required_billing_fields, $pmpro_required_user_fields, $wp_version, $current_user, $pmpro_requirebilling, $tospage, $username, $password, $password2, $bfirstname, $blastname, $baddress1, $baddress2, $bcity, $bstate, $bzipcode, $bcountry, $bphone, $bemail, $bconfirmemail, $CardType, $AccountNumber, $ExpirationMonth, $ExpirationYear, $pmpro_states, $recaptcha, $recaptcha_privatekey, $CVV;
 
 	$morder                   = new MemberOrder();
+	$morder->user_id          = $current_user->ID;
 	$morder->membership_id    = $pmpro_level->id;
 	$morder->membership_name  = $pmpro_level->name;
 	$morder->discount_code    = $discount_code;
