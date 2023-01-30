@@ -524,7 +524,7 @@ class PMPro_Field {
 			//check for specific extensions anyway
 			if(!empty($ext) && !in_array($filetype['ext'], $ext))
 			{
-				pmpro_setMessage(sprintf(__("Sorry, the file type for %s is not permitted for security reasons.", "pmpro"), $file['name']), "pmpro_error");
+				pmpro_setMessage(sprintf(__("Sorry, the file type for %s is not permitted for security reasons.", "paid-memberships-pro"), $file['name']), "pmpro_error");
 				return false;
 			}
 		}		
@@ -564,7 +564,7 @@ class PMPro_Field {
 			
 			//let's not expect more than 50 files with the same name
 			if($count > 50)
-				die("Error uploading file. Too many files with the same name.");
+				die( __( "Error uploading file. Too many files with the same name.", "paid-memberships-pro" ) );
 		}
 
 		//save file
@@ -577,7 +577,7 @@ class PMPro_Field {
 		{
 			// Make sure file was uploaded.
 			if ( ! is_uploaded_file( $file['tmp_name'] ) ) {
-				pmpro_setMessage( sprintf( __( 'Sorry, the file %s was not uploaded.', 'pmpro' ), $file['name'] ), 'pmpro_error' );
+				pmpro_setMessage( sprintf( __( 'Sorry, the file %s was not uploaded.', 'paid-memberships-pro' ), $file['name'] ), 'pmpro_error' );
 				return false;
 			}
 			
