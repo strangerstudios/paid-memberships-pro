@@ -5,8 +5,7 @@
 	}
 
 	//vars
-	global $wpdb, $isapage;
-	$isapage = true;
+	global $wpdb;
 	if(!empty($_REQUEST['code']))
 	{
 		$discount_code = preg_replace( "/[^A-Za-z0-9\-]/", "", sanitize_text_field( $_REQUEST['code'] ) );

@@ -12,9 +12,8 @@
 		require_once(PMPRO_DIR . "/includes/lib/Twocheckout/Twocheckout.php");
 
 	//some globals
-	global $wpdb, $gateway_environment, $logstr, $isapage;
+	global $wpdb, $gateway_environment, $logstr;
 	$logstr = "";	//will put debug info here and write to inslog.txt
-	$isapage = true;
 
 	// Sets the PMPRO_DOING_WEBHOOK constant and fires the pmpro_doing_webhook action.
 	pmpro_doing_webhook( 'twocheckout', true );

@@ -8,9 +8,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 //define('PMPRO_IPN_DEBUG', true);
 
 //some globals
-global $wpdb, $gateway_environment, $logstr, $isapage;
+global $wpdb, $gateway_environment, $logstr;
 $logstr = "";    //will put debug info here and write to ipnlog.txt
-$isapage = true;
 
 // Sets the PMPRO_DOING_WEBHOOK constant and fires the pmpro_doing_webhook action.
 pmpro_doing_webhook( 'paypal', true );

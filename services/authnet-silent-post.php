@@ -4,9 +4,8 @@
 		exit;
 	}
 	
-	global $lostr, $wpdb, $isapage;
+	global $lostr, $wpdb;
 	$logstr = '';
-	$isapage = true;
 
 	// Sets the PMPRO_DOING_WEBHOOK constant and fires the pmpro_doing_webhook action.
 	pmpro_doing_webhook( 'authnet', true );
