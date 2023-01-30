@@ -668,7 +668,7 @@
 			if(!$id)
 				return false;
 
-			$dbobj = $wpdb->get_row("SELECT * FROM $wpdb->pmpro_membership_orders WHERE id = '$id' LIMIT 1");
+			$dbobj = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM $wpdb->pmpro_membership_orders WHERE id = %d LIMIT 1", $id ) );
 
 			if($dbobj)
 			{
@@ -702,7 +702,7 @@
 				$this->Address1 = $this->billing->street;
 
 				//get email from user_id
-				$this->Email = $wpdb->get_var("SELECT user_email FROM $wpdb->users WHERE ID = '" . $this->user_id . "' LIMIT 1");
+				$this->Email = $wpdb->get_var( $wpdb->prepare( "SELECT user_email FROM $wpdb->users WHERE ID = %d LIMIT 1", $this->user_id ) );
 
 				$this->subtotal = $dbobj->subtotal;
 				$this->tax = $dbobj->tax;
@@ -904,14 +904,15 @@
 				return false;
 
 			//build query
-			$this->sqlQuery = "SELECT id FROM $wpdb->pmpro_membership_orders WHERE user_id = '" . $user_id . "' ";
-			if(!empty($status) && is_array($status))
-				$this->sqlQuery .= "AND status IN('" . implode("','", $status) . "') ";
-			elseif(!empty($status))
+			$this->sqlQuery = "SELECT id FROM $wpdb->pmpro_membership_orders WHERE user_id = '" . esc_sql( $user_id ) . "' ";
+			if(!empty($status) && is_array($status)) {
+				$this->sqlQuery .= "AND status IN('" . implode("','", array_map( 'esc_sql', $status ) ) . "') ";
+			} elseif(!empty($status)) {
 				$this->sqlQuery .= "AND status = '" . esc_sql($status) . "' ";
+			}
 
 			if(!empty($membership_id))
-				$this->sqlQuery .= "AND membership_id = '" . $membership_id . "' ";
+				$this->sqlQuery .= "AND membership_id = '" . esc_sql( $membership_id ) . "' ";
 
 			if(!empty($gateway))
 				$this->sqlQuery .= "AND gateway = '" . esc_sql($gateway) . "' ";
@@ -933,7 +934,7 @@
 		function getMemberOrderByCode($code)
 		{
 			global $wpdb;
-			$id = $wpdb->get_var("SELECT id FROM $wpdb->pmpro_membership_orders WHERE code = '" . $code . "' LIMIT 1");
+			$id = $wpdb->get_var( $wpdb->prepare( "SELECT id FROM $wpdb->pmpro_membership_orders WHERE code = %s LIMIT 1", $code ) );
 			if($id)
 				return $this->getMemberOrderByID($id);
 			else
@@ -950,7 +951,7 @@
 				return false;
 
 			global $wpdb;
-			$id = $wpdb->get_var("SELECT id FROM $wpdb->pmpro_membership_orders WHERE payment_transaction_id = '" . esc_sql($payment_transaction_id) . "' LIMIT 1");
+			$id = $wpdb->get_var( $wpdb->prepare( "SELECT id FROM $wpdb->pmpro_membership_orders WHERE payment_transaction_id = %s LIMIT 1", $payment_transaction_id ) );
 			if($id)
 				return $this->getMemberOrderByID($id);
 			else
@@ -967,7 +968,7 @@
 				return false;
 
 			global $wpdb;
-			$id = $wpdb->get_var("SELECT id FROM $wpdb->pmpro_membership_orders WHERE subscription_transaction_id = '" . esc_sql($subscription_transaction_id) . "' ORDER BY id DESC LIMIT 1");
+			$id = $wpdb->get_var( $wpdb->prepare( "SELECT id FROM $wpdb->pmpro_membership_orders WHERE subscription_transaction_id = %s ORDER BY id DESC LIMIT 1", $subscription_transaction_id ) );
 
 			if($id)
 				return $this->getMemberOrderByID($id);
@@ -981,7 +982,7 @@
 		function getMemberOrderByPayPalToken($token)
 		{
 			global $wpdb;
-			$id = $wpdb->get_var("SELECT id FROM $wpdb->pmpro_membership_orders WHERE paypal_token = '" . $token . "' LIMIT 1");
+			$id = $wpdb->get_var( $wpdb->prepare( "SELECT id FROM $wpdb->pmpro_membership_orders WHERE paypal_token = %s LIMIT 1", $token ) );
 			if($id)
 				return $this->getMemberOrderByID($id);
 			else
@@ -1000,7 +1001,7 @@
 				return $this->discount_code;
 
 			global $wpdb;
-			$this->discount_code = $wpdb->get_row("SELECT dc.* FROM $wpdb->pmpro_discount_codes dc LEFT JOIN $wpdb->pmpro_discount_codes_uses dcu ON dc.id = dcu.code_id WHERE dcu.order_id = '" . $this->id . "' LIMIT 1");
+			$this->discount_code = $wpdb->get_row( $wpdb->prepare( "SELECT dc.* FROM $wpdb->pmpro_discount_codes dc LEFT JOIN $wpdb->pmpro_discount_codes_uses dcu ON dc.id = dcu.code_id WHERE dcu.order_id = %d LIMIT 1", $this->id ) );
 
 			//filter @since v1.7.14
 			$this->discount_code = apply_filters("pmpro_order_discount_code", $this->discount_code, $this);
@@ -1070,7 +1071,7 @@
 				return $this->user;
 
 			
-			$this->user = $wpdb->get_row("SELECT * FROM $wpdb->users WHERE ID = '" . $this->user_id . "' LIMIT 1");
+			$this->user = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM $wpdb->users WHERE ID = %d LIMIT 1", $this->user_id ) );
 			
 			// Fix the timestamp for local time 
 			if ( ! empty( $this->user ) && ! empty( $this->user->user_registered ) ) {
@@ -1096,7 +1097,8 @@
 			//check if there is an entry in memberships_users first
 			if(!empty($this->user_id))
 			{
-				$this->membership_level = $wpdb->get_row("SELECT l.id as level_id, l.name, l.description, l.allow_signups, l.expiration_number, l.expiration_period, mu.*, UNIX_TIMESTAMP(CONVERT_TZ(mu.startdate, '+00:00', @@global.time_zone)) as startdate, UNIX_TIMESTAMP(CONVERT_TZ(mu.enddate, '+00:00', @@global.time_zone)) as enddate, l.name, l.description, l.allow_signups FROM $wpdb->pmpro_membership_levels l LEFT JOIN $wpdb->pmpro_memberships_users mu ON l.id = mu.membership_id WHERE mu.status = 'active' AND l.id = '" . $this->membership_id . "' AND mu.user_id = '" . $this->user_id . "' LIMIT 1");
+				$sqlQuery = $wpdb->prepare( "SELECT l.id as level_id, l.name, l.description, l.allow_signups, l.expiration_number, l.expiration_period, mu.*, UNIX_TIMESTAMP(CONVERT_TZ(mu.startdate, '+00:00', @@global.time_zone)) as startdate, UNIX_TIMESTAMP(CONVERT_TZ(mu.enddate, '+00:00', @@global.time_zone)) as enddate, l.name, l.description, l.allow_signups FROM $wpdb->pmpro_membership_levels l LEFT JOIN $wpdb->pmpro_memberships_users mu ON l.id = mu.membership_id WHERE mu.status = 'active' AND l.id = %d AND mu.user_id = %d LIMIT 1", $this->membership_id, $this->user_id );
+				$this->membership_level = $wpdb->get_row( $sqlQuery );
 
 				//fix the membership level id
 				if(!empty($this->membership_level->level_id))
@@ -1111,7 +1113,7 @@
 				else
 					$discount_code = $this->discount_code;
 
-				$sqlQuery = "SELECT l.id, cl.*, l.name, l.description, l.allow_signups FROM $wpdb->pmpro_discount_codes_levels cl LEFT JOIN $wpdb->pmpro_membership_levels l ON cl.level_id = l.id LEFT JOIN $wpdb->pmpro_discount_codes dc ON dc.id = cl.code_id WHERE dc.code = '" . $discount_code . "' AND cl.level_id = '" . $this->membership_id . "' LIMIT 1";
+				$sqlQuery = $wpdb->prepare( "SELECT l.id, cl.*, l.name, l.description, l.allow_signups FROM $wpdb->pmpro_discount_codes_levels cl LEFT JOIN $wpdb->pmpro_membership_levels l ON cl.level_id = l.id LEFT JOIN $wpdb->pmpro_discount_codes dc ON dc.id = cl.code_id WHERE dc.code = %s AND cl.level_id = %d LIMIT 1", $discount_code, $this->membership_id );
 
 				$this->membership_level = $wpdb->get_row($sqlQuery);
 			}
@@ -1119,7 +1121,7 @@
 			//just get the info from the membership table	(sigh, I really need to standardize the column names for membership_id/level_id) but we're checking if we got the information already or not
 			if(empty($this->membership_level->membership_id) && empty($this->membership_level->level_id))
 			{
-				$this->membership_level = $wpdb->get_row("SELECT l.* FROM $wpdb->pmpro_membership_levels l WHERE l.id = '" . $this->membership_id . "' LIMIT 1");
+				$this->membership_level = $wpdb->get_row( $wpdb->prepare( "SELECT l.* FROM $wpdb->pmpro_membership_levels l WHERE l.id = %d LIMIT 1", $this->membership_id ) );
 			}
 			
 			// Round prices to avoid extra decimals.
@@ -1257,7 +1259,7 @@
 			}
 
 			global $wpdb;
-			$this->sqlQuery = "UPDATE $wpdb->pmpro_membership_orders SET timestamp = '" . $date . "' WHERE id = '" . $this->id . "' LIMIT 1";
+			$this->sqlQuery = $wpdb->prepare( "UPDATE $wpdb->pmpro_membership_orders SET timestamp = %s WHERE id = %d LIMIT 1", $date, $this->id );
 
 			do_action('pmpro_update_order', $this);
 			if($wpdb->query($this->sqlQuery) !== "false") {
@@ -1518,7 +1520,7 @@
 				$scramble = md5( AUTH_KEY . microtime() . SECURE_AUTH_KEY . $count );
 				$code = substr( $scramble, 0, 10 );
 				$code = apply_filters( 'pmpro_random_code', $code, $this );	//filter
-				$check = $wpdb->get_var( "SELECT id FROM $wpdb->pmpro_membership_orders WHERE code = '$code' LIMIT 1" );
+				$check = $wpdb->get_var( $wpdb->prepare( "SELECT id FROM $wpdb->pmpro_membership_orders WHERE code = %s LIMIT 1", $code ) );
 				if( $check || is_numeric( $code ) ) {
 					$code = NULL;
 				}
@@ -1530,12 +1532,12 @@
 		/**
 		 * Update the status of the order in the database.
 		 */
-		function updateStatus($newstatus)
-		{
+		function updateStatus( $newstatus ) {
 			global $wpdb;
 
-			if(empty($this->id))
+			if( empty( $this->id ) ) {
 				return false;
+			}				
 
 			if ( 'cancelled' === $newstatus ) {
 				// Only cancel subscription, not order.
@@ -1543,15 +1545,14 @@
 			}
 
 			$this->status = $newstatus;
-			$this->sqlQuery = "UPDATE $wpdb->pmpro_membership_orders SET status = '" . esc_sql($newstatus) . "' WHERE id = '" . $this->id . "' LIMIT 1";
+			$this->sqlQuery = $wpdb->prepare( "UPDATE $wpdb->pmpro_membership_orders SET status = %s WHERE id = %d LIMIT 1", $newstatus, $this->id );			
 			
-			do_action('pmpro_update_order', $this);
-			if($wpdb->query($this->sqlQuery) !== false){
-				$this->status = $newstatus;
+			do_action( 'pmpro_update_order', $this );
+			if ( $wpdb->query( $this->sqlQuery ) !== false ) {
 				do_action('pmpro_updated_order', $this);
 				
 				return true;
-			}else{
+			} else {
 				return false;
 			}
 		}
@@ -1662,7 +1663,7 @@
 					$this->Zip         = $last_subscription_order->billing->zip;
 					$this->CountryCode = $last_subscription_order->billing->country;
 					$this->PhoneNumber = $last_subscription_order->billing->phone;
-					$this->Email       = $wpdb->get_var("SELECT user_email FROM $wpdb->users WHERE ID = '" . $this->user_id . "' LIMIT 1");
+					$this->Email       = $wpdb->get_var( $wpdb->prepare( "SELECT user_email FROM $wpdb->users WHERE ID = %d LIMIT 1", $this->user_id ) );
 
 					$this->billing          = new stdClass();
 					$this->billing->name    = $last_subscription_order->billing->name;
@@ -1680,7 +1681,7 @@
 					$this->Zip         = get_user_meta( $this->user_id, "pmpro_bzipcode", true );
 					$this->CountryCode = get_user_meta( $this->user_id, "pmpro_bcountry", true );
 					$this->PhoneNumber = get_user_meta( $this->user_id, "pmpro_bphone", true );
-					$this->Email       = $wpdb->get_var("SELECT user_email FROM $wpdb->users WHERE ID = '" . $this->user_id . "' LIMIT 1");
+					$this->Email       = $wpdb->get_var( $wpdb->prepare( "SELECT user_email FROM $wpdb->users WHERE ID = %d LIMIT 1", $this->user_id ) );
 
 					$this->billing          = new stdClass();
 					$this->billing->name    = get_user_meta( $this->user_id, "pmpro_bfirstname", true ) . " " . get_user_meta( $this->user_id, "pmpro_blastname", true ) ;
@@ -1703,7 +1704,7 @@
 				return false;
 
 			global $wpdb;
-			$this->sqlQuery = "DELETE FROM $wpdb->pmpro_membership_orders WHERE id = '" . $this->id . "' LIMIT 1";
+			$this->sqlQuery = $wpdb->prepare( "DELETE FROM $wpdb->pmpro_membership_orders WHERE id = %d LIMIT 1", $this->id );
 			if($wpdb->query($this->sqlQuery) !== false)
 			{
 				do_action("pmpro_delete_order", $this->id, $this);

@@ -111,7 +111,7 @@ function pmpro_get_addon_categories() {
 		'community' => array( 'pmpro-approvals', 'pmpro-bbpress', 'pmpro-buddypress', 'pmpro-discord-add-on', 'pmpro-email-confirmation', 'pmpro-import-users-from-csv', 'pmpro-invite-only' ),
 		'courses' => array( 'pmpro-courses', 'pmpro-goals', 'pmpro-member-badges', 'pmpro-multiple-memberships-per-user', 'pmpro-user-pages' ),
 		'directory' => array( 'basic-user-avatars', 'pmpro-member-badges', 'pmpro-member-directory', 'pmpro-membership-maps' ),
-		'products' => array( 'pmpro-gift-levels', 'pmpro-shipping', 'pmpro-woocommerce' ),
+		'products' => array( 'MailPoet-Paid-Memberships-Pro-Add-on', 'pmpro-akismet', 'pmpro-gift-levels', 'pmpro-shipping', 'pmpro-woocommerce' ),
 		'content' => array( 'pmpro-addon-packages', 'pmpro-cpt', 'pmpro-series', 'seriously-simple-podcasting', 'pmpro-user-pages' ),
 	);
 }

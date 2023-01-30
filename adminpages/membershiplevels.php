@@ -985,7 +985,7 @@
 	{
 		$sqlQuery = "SELECT * FROM $wpdb->pmpro_membership_levels ";
 		if($s)
-			$sqlQuery .= "WHERE name LIKE '%$s%' ";
+			$sqlQuery .= "WHERE name LIKE '%" . esc_sql( $s ) . "%' ";
 			$sqlQuery .= "ORDER BY id ASC";
 
 			$levels = $wpdb->get_results($sqlQuery, OBJECT);
