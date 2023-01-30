@@ -6,6 +6,7 @@
 /**
  * Check if we have set the $isapage variable,
  * and if so prevents WP from sending a 404.
+ * @since 2.10 This is only used by the services/getfile.php script now.
  */
 function pmpro_status_filter( $s ) {
 	global $isapage;
