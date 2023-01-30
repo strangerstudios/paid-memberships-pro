@@ -4,7 +4,7 @@ Tags: memberships, members, subscriptions, ecommerce, user registration, member,
 Requires at least: 5.2
 Tested up to: 6.1.1
 Requires PHP: 5.6
-Stable tag: 2.9.10
+Stable tag: 2.9.11
 
 WordPress membership plugin: restrict content, accept member subscriptions with recurring payment. Includes user registration, login, & profile fields
 
@@ -156,6 +156,9 @@ Not sure? You can find out by doing a bit a research.
 9. Membership Account page, display all sections or show specific sections using shortcode attributes.
 
 == Changelog ==
+= 2.9.11 - 2023-01-27
+* BUG FIX: Fixed issue introduced in 2.9.9 where recurring_payment IPN transactions in PayPal were not being processed yet. If you have recurring subscription with PayPal Standard or PayPal Express, you will need to resend those transactions to make sure completed (and in some cases failed) recurring orders were processed on your site. More information here: https://www.paidmembershipspro.com/pmpro-update-2-9-11/
+
 = 2.9.10 - 2023-01-25 =
 * ENHANCEMENT: Much nicer thumbnail for one of our add ons. #2338 (@kimcoleman)
 * ENHANCEMENT: Adding some other missing add on thumbnails. #2339 (@kimcoleman)
