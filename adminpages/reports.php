@@ -22,27 +22,29 @@ if ( ! empty( $_REQUEST[ 'report' ] ) ) {
 
 	<?php
 } else {
-	$pieces = array_chunk( $pmpro_reports, ceil( count( $pmpro_reports ) / 2 ), true );
-	foreach ( $pieces[0] as $report => $title ) {
-		add_meta_box(
-			'pmpro_report_' . $report,
-			$title,
-			'pmpro_report_' . $report . '_widget',
-			'memberships_page_pmpro-reports',
-			'advanced'
-		);
-	}
-	
-	foreach ( $pieces[1] as $report => $title ) {
-		add_meta_box(
-			'pmpro_report_' . $report,
-			$title,
-			'pmpro_report_' . $report . '_widget',
-			'memberships_page_pmpro-reports',
-			'side'
-		);
-	}
-	
+    if( ! empty( $pmpro_reports ) ) {
+        $pieces = array_chunk( $pmpro_reports, ceil( count( $pmpro_reports ) / 2 ), true );
+        foreach ( $pieces[0] as $report => $title ) {
+            add_meta_box(
+                'pmpro_report_' . $report,
+                $title,
+                'pmpro_report_' . $report . '_widget',
+                'memberships_page_pmpro-reports',
+                'advanced'
+            );
+        }
+
+        foreach ( $pieces[1] as $report => $title ) {
+            add_meta_box(
+                'pmpro_report_' . $report,
+                $title,
+                'pmpro_report_' . $report . '_widget',
+                'memberships_page_pmpro-reports',
+                'side'
+            );
+        }
+    }
+
 	?>
 	<form id="pmpro-reports-form" method="post" action="admin-post.php">
 
