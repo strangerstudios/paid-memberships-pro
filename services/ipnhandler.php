@@ -28,11 +28,10 @@ $item_name              = pmpro_getParam( "item_name", "POST" );
 $item_number            = pmpro_getParam( "item_number", "POST" );
 $initial_payment_txn_id = pmpro_getParam( "initial_payment_txn_id", "POST" );
 $initial_payment_status = strtolower( pmpro_getParam( "initial_payment_status", "POST" ) );
-$payment_status         = pmpro_getParam( "payment_status", "POST" );
 $payment_amount         = pmpro_getParam( "payment_amount", "POST" );
 $payment_currency       = pmpro_getParam( "payment_currency", "POST" );
 $receiver_email         = pmpro_getParam( "receiver_email", "POST", '', 'sanitize_email' );
-$refund_amount         = pmpro_getParam( "refund_amount", "POST" );
+$refund_amount          = pmpro_getParam( "refund_amount", "POST" );
 $business_email         = pmpro_getParam( "business", "POST", '', 'sanitize_email'  );
 $payer_email            = pmpro_getParam( "payer_email", "POST", '', 'sanitize_email'  );
 $recurring_payment_id   = pmpro_getParam( "recurring_payment_id", "POST" );
@@ -153,9 +152,10 @@ if ( $txn_type == "subscr_payment" ) {
 		 * @param array List of statuses to be treated as failures.
 		 */
 		$failed_payment_statuses = apply_filters( 'pmpro_paypal_renewal_failed_statuses', array( 'Failed', 'Voided', 'Denied', 'Expired' ) );
+		$failed_payment_statuses = array_map( 'strtolower', $failed_payment_statuses );
 
 		//subscription payment, completed or failure?
-		if ( $payment_status == "Completed" ) {
+		if ( $payment_status == "completed" ) {
 			pmpro_ipnSaveOrder( $txn_id, $last_subscription_order );
 		} elseif ( in_array( $payment_status, $failed_payment_statuses ) ) {
 			pmpro_ipnFailedPayment( $last_subscription_order );
@@ -214,9 +214,10 @@ if ( $txn_type == "recurring_payment" ) {
 		 * @param array List of statuses to be treated as failures.		 
 		 */
 		$failed_payment_statuses = apply_filters( 'pmpro_paypal_renewal_failed_statuses', array( 'Failed', 'Voided', 'Denied', 'Expired' ) );
+		$failed_payment_statuses = array_map( 'strtolower', $failed_payment_statuses );
 
 		//subscription payment, completed or failure?
-		if ( $payment_status == "Completed" ) {
+		if ( $payment_status == "completed" ) {
 			pmpro_ipnSaveOrder( $txn_id, $last_subscription_order );
 		} elseif ( in_array( $payment_status, $failed_payment_statuses ) ) {
 			pmpro_ipnFailedPayment( $last_subscription_order );

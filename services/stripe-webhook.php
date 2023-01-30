@@ -90,7 +90,7 @@
 		pmpro_send_200_http_response();
 
 		// Log that we have successfully received a webhook from Stripe.
-		update_option( 'pmpro_stripe_last_webhook_received_' . ( $livemode ? 'live' : 'sandbox' ), date( 'Y-m-d H:i:s' ) );
+		update_option( 'pmpro_stripe_webhook_last_received_' . ( $livemode ? 'live' : 'sandbox' ) . '_' . $pmpro_stripe_event->type, $pmpro_stripe_event->created );
 
 		//check what kind of event it is
 		if($pmpro_stripe_event->type == "invoice.payment_succeeded")
