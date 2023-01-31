@@ -10,7 +10,9 @@
 					'target' => [],
 					'rel'    => [],
 				],
-				'p' => [],
+				'p' => [
+					'class'  => [],
+				],
 			]
 		),
 		'https://wordpress.org/support/plugin/paid-memberships-pro/reviews/?filter=5#new-post',
