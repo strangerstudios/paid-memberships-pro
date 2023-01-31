@@ -191,20 +191,76 @@ class PMPro_Wisdom_Integration {
 			return true;
 		}
 
-		$tlds_to_check = [
-			'.local',
-			'.test',
-		];
+		if (
+			// localhost
+			$this->host_starts_with( $host, 'localhost' ) ||
 
-		foreach ( $tlds_to_check as $tld ) {
-			$minus_tld = strlen( $host ) - strlen( $tld );
+			// domains starting with
+			$this->host_starts_with( $host, 'stage' ) ||
+			$this->host_starts_with( $host, 'staging' ) ||
 
-			if ( $minus_tld === strpos( $host, $tld ) ) {
-				return true;
-			}
+			// subdomains
+			$this->host_starts_with( $host, 'dev.' ) ||
+			$this->host_starts_with( $host, 'test.' ) ||
+			$this->host_starts_with( $host, 'testing.' ) ||
+
+			// local tlds
+			$this->host_ends_with( $host, '.test' ) ||
+			$this->host_ends_with( $host, '.local' ) ||
+
+			// common testing/staging tlds and third party hosts
+			$this->host_ends_with( $host, '.bigscoots-staging.com' ) ||
+			$this->host_ends_with( $host, '.closte.com' ) ||
+			$this->host_ends_with( $host, '.cloudwaysapp.com' ) ||
+			$this->host_ends_with( $host, '.e.wpstage.net' ) ||
+			$this->host_ends_with( $host, '.kinsta.cloud' ) ||
+			$this->host_ends_with( $host, '.onrocket.site' ) ||
+			$this->host_ends_with( $host, '.pantheonsite.io' ) ||
+			$this->host_ends_with( $host, '.pressdns.com' ) ||
+			$this->host_ends_with( $host, '.runcloud.link' ) ||
+			$this->host_ends_with( $host, '.servebolt.com' ) ||
+			$this->host_ends_with( $host, '.sg-host.com' ) ||
+			$this->host_ends_with( $host, '.stacks.run' ) ||
+			$this->host_ends_with( $host, '.wpengine.com' )
+		) {
+			return true;
 		}
 
 		return $is_local;
+	}
+
+	/**
+	 * PHP8.0 str_starts_with() polyfill.
+	 *
+	 * @param string $haystack
+	 * @param string $needle
+	 *
+	 * @return bool
+	 */
+	protected function host_starts_with( $haystack, $needle ) {
+		return 0 === strncmp( $haystack, $needle, \strlen( $needle ) );
+	}
+
+	/**
+	 * PHP8.0 str_starts_with() polyfill.
+	 *
+	 * @param string $haystack
+	 * @param string $needle
+	 *
+	 * @return bool
+	 */
+	protected function host_ends_with( $haystack, $needle ) {
+		if ( '' === $needle || $needle === $haystack ) {
+			return true;
+		}
+
+		if ( '' === $haystack ) {
+			return false;
+		}
+
+		$needleLength = \strlen( $needle );
+
+		return $needleLength <= \strlen( $haystack ) && 0 === substr_compare( $haystack, $needle, - $needleLength );
 	}
 
 	/**
