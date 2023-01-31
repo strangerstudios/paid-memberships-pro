@@ -34,7 +34,7 @@ class PMPro_Wisdom_Integration {
 	 *
 	 * @var string
 	 */
-	public $plugin_option = 'pmpro_wisdom_opt_out';
+	public $plugin_option = 'wisdom_opt_out';
 
 	/**
 	 * The plugin settings pages to include Wisdom notices on.
