@@ -34,14 +34,16 @@ if ( ! empty( $_REQUEST[ 'report' ] ) ) {
             );
         }
 
-        foreach ( $pieces[1] as $report => $title ) {
-            add_meta_box(
-                'pmpro_report_' . $report,
-                $title,
-                'pmpro_report_' . $report . '_widget',
-                'memberships_page_pmpro-reports',
-                'side'
-            );
+        if( ! empty( $pieces[1] ) ) {
+	        foreach ( $pieces[1] as $report => $title ) {
+		        add_meta_box(
+			        'pmpro_report_' . $report,
+			        $title,
+			        'pmpro_report_' . $report . '_widget',
+			        'memberships_page_pmpro-reports',
+			        'side'
+		        );
+	        }
         }
     }
 
