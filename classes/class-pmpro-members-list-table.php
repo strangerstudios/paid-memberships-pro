@@ -72,19 +72,19 @@ class PMPro_Members_List_Table extends WP_List_Table {
 	 */
 	public function get_columns() {
 		$columns = array(
-			'username'			=> 'Username',
-			'ID'				=> 'ID',
-			'first_name'		=> 'First Name',
-			'last_name'			=> 'Last Name',
-			'display_name'		=> 'Display Name',
-			'user_email'		=> 'Email',
-			'address'			=> 'Billing Address',
-			'membership'		=> 'Level',
-			'membership_id'		=> 'Level ID',
-			'fee'				=> 'Fee',
-			'joindate'			=> 'Registered',
-			'startdate'			=> 'Start Date',
-			'enddate'			=> 'End Date',
+			'username'      => __( 'Username', 'paid-memberships-pro' ),
+			'ID'            => __( 'ID', 'paid-memberships-pro' ),
+			'first_name'    => __( 'First Name', 'paid-memberships-pro' ),
+			'last_name'     => __( 'Last Name', 'paid-memberships-pro' ),
+			'display_name'  => __( 'Display Name', 'paid-memberships-pro' ),
+			'user_email'    => __( 'Email', 'paid-memberships-pro' ),
+			'address'       => __( 'Billing Address', 'paid-memberships-pro' ),
+			'membership'    => __( 'Level', 'paid-memberships-pro' ),
+			'membership_id' => __( 'Level ID', 'paid-memberships-pro' ),
+			'fee'           => __( 'Fee', 'paid-memberships-pro' ),
+			'joindate'      => __( 'Registered', 'paid-memberships-pro' ),
+			'startdate'     => __( 'Start Date', 'paid-memberships-pro' ),
+			'enddate'       => __( 'End Date', 'paid-memberships-pro' ),
 		);
 
 		if ( isset( $_REQUEST['l'] ) ) {
@@ -94,11 +94,11 @@ class PMPro_Members_List_Table extends WP_List_Table {
 		}
 
 		if ( 'oldmembers' === $l ) {
-			$columns['enddate'] = 'Ended';
+			$columns['enddate'] = __( 'Ended', 'paid-memberships-pro' );
 		} elseif ( 'expired' === $l ) {
-			$columns['enddate'] = 'Expired';
+			$columns['enddate'] = __( 'Expired', 'paid-memberships-pro' );
 		} elseif ( 'cancelled' === $l ) {
-			$columns['enddate'] = 'Cancelled';
+			$columns['enddate'] = __( 'Cancelled', 'paid-memberships-pro' );
 		}
 
 		// Should be deprecated in favor of "pmpro_manage_memberslist_columns".
@@ -589,9 +589,9 @@ class PMPro_Members_List_Table extends WP_List_Table {
 				$fee .= pmpro_escape_price( pmpro_formatPrice( $item['billing_amount'] ) );
 				$fee .= esc_html__( ' per ', 'paid-memberships-pro' );
 				if ( $item['cycle_number'] > 1 ) {
-					$fee .= $item['cycle_number'] . " " . $item['cycle_period'] . "s";
+					$fee .= $item['cycle_number'] . " " . pmpro_translate_billing_period( $item['cycle_period'], $item['cycle_number'] );
 				} else {
-					$fee .= $item['cycle_period'];
+					$fee .= pmpro_translate_billing_period( $item['cycle_period'], 1 );
 				}
 			}
 		}
@@ -635,9 +635,9 @@ class PMPro_Members_List_Table extends WP_List_Table {
 	public function column_enddate( $item ) {
 		$user_object = get_userdata( $item['ID'] );
 		if ( 0 == $item['enddate'] ) {
-			return __( apply_filters( 'pmpro_memberslist_expires_column', 'Never', $user_object ), 'paid-memberships-pro');
+			return apply_filters( 'pmpro_memberslist_expires_column', __( 'Never', 'paid-memberships-pro' ), $user_object );
 		} else {
-			return apply_filters( 'pmpro_memberslist_expires_column', date_i18n( get_option('date_format'), $item['enddate'] ), $user_object );
+			return apply_filters( 'pmpro_memberslist_expires_column', date_i18n( get_option( 'date_format' ), $item['enddate'] ), $user_object );
 		}
 	}
 
@@ -655,7 +655,7 @@ class PMPro_Members_List_Table extends WP_List_Table {
 			} else {
 				$l = false;
 			}
-			_e('Show', 'paid-memberships-pro' );?>
+			esc_html_e('Show', 'paid-memberships-pro' );?>
 			<select name="l" onchange="jQuery('#current-page-selector').val('1'); jQuery('#member-list-form').submit();">
 				<option value="" <?php if(!$l) { ?>selected="selected"<?php } ?>><?php esc_html_e('All Levels', 'paid-memberships-pro' );?></option>
 				<?php

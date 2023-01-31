@@ -18,7 +18,7 @@ $pmpro_reports['login'] = __('Visits, Views, and Logins', 'paid-memberships-pro'
 function pmpro_report_login_widget() {
 	global $wpdb;
 	$now = current_time('timestamp');
-	
+
 	$visits = pmpro_reports_get_all_values('visits');
 	$views = pmpro_reports_get_all_values('views');
 	$logins = pmpro_reports_get_all_values('logins');
@@ -78,13 +78,13 @@ function pmpro_report_login_widget() {
 function pmpro_report_login_page()
 {
 	global $wpdb;
-	
+
 	//vars
 	if(!empty($_REQUEST['s']))
 		$s = sanitize_text_field( $_REQUEST['s'] );
 	else
 		$s = "";
-		
+
 	if(!empty($_REQUEST['l'])) {
 		if($_REQUEST['l'] == 'all')
 			$l = 'all';
@@ -103,15 +103,15 @@ function pmpro_report_login_page()
 		$csv_export_link = add_query_arg( 'l', $l, $csv_export_link );
 	}
 ?>
-	<form id="posts-filter" method="get" action="">	
+	<form id="posts-filter" method="get" action="">
 	<h1 class="wp-heading-inline">
 		<?php _e('Visits, Views, and Logins Report', 'paid-memberships-pro');?>
 	</h1>
-	<a target="_blank" href="<?php echo esc_url( $csv_export_link ); ?>" class="page-title-action"><?php esc_html_e( 'Export to CSV', 'paid-memberships-pro' ); ?></a>		
+	<a target="_blank" href="<?php echo esc_url( $csv_export_link ); ?>" class="page-title-action"><?php esc_html_e( 'Export to CSV', 'paid-memberships-pro' ); ?></a>
 	<p class="search-box">
 		<label class="hidden" for="post-search-input"><?php echo esc_html_x( 'Search', 'Search form label', 'paid-memberships-pro')?> <?php if(empty($l)) esc_html_e( 'Users', 'paid-memberships-pro' ); else esc_html_e( 'Members', 'paid-memberships-pro' );?>:</label>
-		<input type="hidden" name="page" value="pmpro-reports" />		
-		<input type="hidden" name="report" value="login" />		
+		<input type="hidden" name="page" value="pmpro-reports" />
+		<input type="hidden" name="report" value="login" />
 		<input id="post-search-input" type="text" value="<?php echo esc_attr($s)?>" name="s"/>
 		<input class="button" type="submit" value="<?php esc_attr_e( 'Search Members', 'paid-memberships-pro' ) ?>"/>
 	</p>
@@ -139,7 +139,7 @@ function pmpro_report_login_page()
 					$pn = intval($_REQUEST['pn']);
 				else
 					$pn = 1;
-					
+
 				if(isset($_REQUEST['limit']))
 					$limit = intval($_REQUEST['limit']);
 				else
@@ -172,7 +172,7 @@ function pmpro_report_login_page()
 				}
 
 				$sqlQuery = apply_filters("pmpro_members_list_sql", $sqlQuery);
-				
+
 				$theusers = $wpdb->get_results($sqlQuery);
 				$totalrows = $wpdb->get_var("SELECT FOUND_ROWS() as found_rows");
 
@@ -190,18 +190,18 @@ function pmpro_report_login_page()
 		<thead>
 			<tr class="thead">
 				<th><?php esc_html_e('ID', 'paid-memberships-pro')?></th>
-				<th><?php esc_html_e('Username', 'paid-memberships-pro')?></th>	
+				<th><?php esc_html_e('Username', 'paid-memberships-pro')?></th>
 				<th><?php esc_html_e('Name', 'paid-memberships-pro')?></th>
-				<th><?php esc_html_e('Level', 'paid-memberships-pro')?></th>	
+				<th><?php esc_html_e('Level', 'paid-memberships-pro')?></th>
 				<th><?php esc_html_e('Joined', 'paid-memberships-pro')?></th>
 				<th><?php esc_html_e('Expires', 'paid-memberships-pro')?></th>
 				<th><?php esc_html_e('Last Visit', 'paid-memberships-pro')?></th>
 				<th><?php esc_html_e('Visits This Week', 'paid-memberships-pro')?></th>
-				<th><?php esc_html_e('Visits This Month', 'paid-memberships-pro')?></th>				
+				<th><?php esc_html_e('Visits This Month', 'paid-memberships-pro')?></th>
 				<th><?php esc_html_e('Visits This Year', 'paid-memberships-pro')?></th>
 				<th><?php esc_html_e('Visits All Time', 'paid-memberships-pro')?></th>
 				<th><?php esc_html_e('Views This Week', 'paid-memberships-pro')?></th>
-				<th><?php esc_html_e('Views This Month', 'paid-memberships-pro')?></th>				
+				<th><?php esc_html_e('Views This Month', 'paid-memberships-pro')?></th>
 				<th><?php esc_html_e('Views This Year', 'paid-memberships-pro')?></th>
 				<th><?php esc_html_e('Views All Time', 'paid-memberships-pro')?></th>
 				<th><?php esc_html_e('Last Login', 'paid-memberships-pro')?></th>
@@ -223,7 +223,13 @@ function pmpro_report_login_page()
 					$logins = pmpro_reports_get_values_for_user("logins", $auser->ID);
 
 					if(empty($logins))
-						$logins = array("last"=>"N/A", "week"=>"N/A", "month"=>"N/A", "ytd"=>"N/A", "alltime"=>"N/A");
+						$logins = array(
+							"last"    => __( "N/A", "paid-memberships-pro" ),
+							"week"    => __( "N/A", "paid-memberships-pro" ),
+							"month"   => __( "N/A", "paid-memberships-pro" ),
+							"ytd"     => __( "N/A", "paid-memberships-pro" ),
+							"alltime" => __( "N/A", "paid-memberships-pro" )
+						);
 					?>
 						<tr <?php if($count++ % 2 == 0) { ?>class="alternate"<?php } ?>>
 							<td><?php echo $theuser->ID?></td>
@@ -245,17 +251,17 @@ function pmpro_report_login_page()
 
 							<td>
 								<?php
-									if($auser->enddate) 
+									if($auser->enddate)
 										echo date_i18n(get_option('date_format'), $auser->enddate);
 									else
-										echo "Never";
+										echo __( "Never", "paid-memberships-pro" );
 								?>
 							</td>
 							<td><?php if(!empty($visits['last'])) echo $visits['last'];?></td>
 							<td><?php if(!empty($visits['week']) && pmpro_isDateThisWeek($visits['last'])) echo $visits['week'];?></td>
 							<td><?php if(!empty($visits['month']) && pmpro_isDateThisMonth($visits['last'])) echo $visits['month'];?></td>
 							<td><?php if(!empty($visits['ytd']) && pmpro_isDateThisYear($visits['last'])) echo $visits['ytd'];?></td>
-							<td><?php if(!empty($visits['alltime'])) echo $visits['alltime'];?></td>							
+							<td><?php if(!empty($visits['alltime'])) echo $visits['alltime'];?></td>
 							<td><?php if(!empty($views['week']) && pmpro_isDateThisWeek($views['last'])) echo $views['week'];?></td>
 							<td><?php if(!empty($views['month']) && pmpro_isDateThisMonth($views['last'])) echo $views['month'];?></td>
 							<td><?php if(!empty($views['ytd']) && pmpro_isDateThisYear($views['last'])) echo $views['ytd'];?></td>
@@ -339,7 +345,7 @@ function pmpro_reports_get_values_for_user($type, $user_id = NULL) {
 			$values['thismonth'] = $thismonth;
 			$update = true;
 		}
-				
+
 		if(!isset($values['thisyear']) || $thisyear != $values['thisyear'])
 		{
 			$values['ytd'] = 0;
@@ -360,7 +366,7 @@ function pmpro_reports_get_all_values($type) {
 	if(empty($type))
 		return false;
 
-	$allvalues = get_option("pmpro_" . $type);	
+	$allvalues = get_option("pmpro_" . $type);
 	if(empty($allvalues))
 		$allvalues = array("today"=>0, "thisdate"=>NULL, "week"=>0, "thisweek"=>NULL, "month"=>0, "thismonth"=> NULL, "ytd"=>0, "thisyear"=>NULL, "alltime"=>0);
 	else
@@ -453,7 +459,7 @@ function pmpro_report_track_values($type, $user_id = NULL) {
 			//track for user
 			$values['last'] = date(get_option("date_format"), $now);
 			$values['alltime'] = $values['alltime'] + 1;
-			
+
 			if($thisweek == $values['thisweek'])
 				$values['week'] = $values['week'] + 1;
 			else
@@ -486,8 +492,8 @@ function pmpro_report_track_values($type, $user_id = NULL) {
 	//track cumulative stats
 	$allvalues = pmpro_reports_get_all_values($type);
 
-	$allvalues['alltime'] = $allvalues['alltime'] + 1;	
-	
+	$allvalues['alltime'] = $allvalues['alltime'] + 1;
+
 	if($thisdate == $allvalues['thisdate'])
 		$allvalues['today'] = $allvalues['today'] + 1;
 	else
@@ -495,7 +501,7 @@ function pmpro_report_track_values($type, $user_id = NULL) {
 		$allvalues['today'] = 1;
 		$allvalues['thisdate'] = $thisdate;
 	}
-	
+
 	if($thisweek == $allvalues['thisweek'])
 		$allvalues['week'] = $allvalues['week'] + 1;
 	else
@@ -503,7 +509,7 @@ function pmpro_report_track_values($type, $user_id = NULL) {
 		$allvalues['week'] = 1;
 		$allvalues['thisweek'] = $thisweek;
 	}
-	
+
 	if($thismonth == $allvalues['thismonth'])
 		$allvalues['month'] = $allvalues['month'] + 1;
 	else
@@ -511,7 +517,7 @@ function pmpro_report_track_values($type, $user_id = NULL) {
 		$allvalues['month'] = 1;
 		$allvalues['thismonth'] = $thismonth;
 	}
-	
+
 	if($thisyear == $allvalues['thisyear'])
 		$allvalues['ytd'] = $allvalues['ytd'] + 1;
 	else
@@ -525,7 +531,7 @@ function pmpro_report_track_values($type, $user_id = NULL) {
 
 //track visits
 function pmpro_report_login_wp_visits() {
-	pmpro_report_track_values("visits");	
+	pmpro_report_track_values("visits");
 }
 add_action("wp", "pmpro_report_login_wp_visits");
 
@@ -545,6 +551,6 @@ add_action("wp_head", "pmpro_report_login_wp_views");
 
 //track logins
 function pmpro_report_login_wp_login($user_login, $user) {
-	pmpro_report_track_values("logins", $user->ID);	
+	pmpro_report_track_values("logins", $user->ID);
 }
 add_action("wp_login", "pmpro_report_login_wp_login", 10 ,2);
