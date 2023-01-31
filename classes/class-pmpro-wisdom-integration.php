@@ -130,7 +130,7 @@ class PMPro_Wisdom_Integration {
 	 */
 	public function sync_wisdom_setting_to_plugin( $old_value, $value ) {
 		$opt_out = ! empty( $value[ $this->plugin_slug ] ) ? 0 : 1;		
-		pmpro_setOption( $this->plugin_option, $opt_out );
+		update_option( $this->plugin_option, $opt_out );
 	}
 
 	/**
