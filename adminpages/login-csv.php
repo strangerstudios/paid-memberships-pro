@@ -258,7 +258,7 @@ for ( $ic = 1; $ic <= $iterations; $ic ++ ) {
 		if ( $user->enddate ) {
 			$enddate = pmpro_enclose( date_i18n( $dateformat, $user->joindate ) );
 		} else {
-			$enddate = 'Never';
+			$enddate = __( 'Never', 'paid-memberships-pro' );
 		}
 		
 		// Add joindate and enddate to the CSV export.
