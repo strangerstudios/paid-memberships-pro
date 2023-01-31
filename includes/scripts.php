@@ -111,6 +111,19 @@ function pmpro_admin_enqueue_scripts() {
     wp_enqueue_style( 'select2', plugins_url('css/select2.min.css', dirname(__FILE__)), '', '4.0.3', 'screen' );
     wp_enqueue_script( 'select2' );
 
+
+    if ( ( isset( $_REQUEST['page'] ) && $_REQUEST['page'] == 'pmpro-wizard' ) && ( isset( $_REQUEST['step'] ) && $_REQUEST['step'] == 'done' ) ) {
+        wp_register_script( 'pmpro_confetti', plugins_url( 'js/pmpro-confetti.js', __DIR__ ), [
+                'jquery',
+            ], PMPRO_VERSION );
+
+        wp_enqueue_script( 'pmpro_confetti' );
+    }
+   
+
+	$all_levels                  = pmpro_getAllLevels( true, true );
+	$all_level_values_and_labels = [];
+
     // Enqueue pmpro-admin.js.
     wp_register_script( 'pmpro_admin',
                         plugins_url( 'js/pmpro-admin.js', dirname(__FILE__) ),

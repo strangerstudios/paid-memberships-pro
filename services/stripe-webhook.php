@@ -1,4 +1,10 @@
 <?php
+	// in case the file is loaded directly
+	if( ! defined( 'ABSPATH' ) ) {
+		exit;
+	}
+	
+	// min php requirement for this script
 	if ( version_compare( PHP_VERSION, '5.3.29', '<' )) {
 		return;
 	}
@@ -11,22 +17,11 @@
 	use Stripe\PaymentMethod as Stripe_PaymentMethod;
 	use Stripe\Customer as Stripe_Customer;
 
-	global $isapage;
-	$isapage = true;
-
-	global $logstr;
-	$logstr = "";
+	global $logstr;	
 
 	//you can define a different # of seconds (define PMPRO_STRIPE_WEBHOOK_DELAY in your wp-config.php) if you need this webhook to delay more or less
 	if(!defined('PMPRO_STRIPE_WEBHOOK_DELAY'))
-		define('PMPRO_STRIPE_WEBHOOK_DELAY', 2);
-
-	//in case the file is loaded directly
-	if(!defined("ABSPATH"))
-	{
-		define('WP_USE_THEMES', false);
-		require_once(dirname(__FILE__) . '/../../../../wp-load.php');
-	}
+		define('PMPRO_STRIPE_WEBHOOK_DELAY', 2);	
 
 	if(!class_exists("Stripe\Stripe")) {
 		require_once( PMPRO_DIR . "/includes/lib/Stripe/init.php" );
@@ -95,7 +90,7 @@
 		pmpro_send_200_http_response();
 
 		// Log that we have successfully received a webhook from Stripe.
-		update_option( 'pmpro_stripe_last_webhook_received_' . ( $livemode ? 'live' : 'sandbox' ), date( 'Y-m-d H:i:s' ) );
+		update_option( 'pmpro_stripe_webhook_last_received_' . ( $livemode ? 'live' : 'sandbox' ) . '_' . $pmpro_stripe_event->type, $pmpro_stripe_event->created );
 
 		//check what kind of event it is
 		if($pmpro_stripe_event->type == "invoice.payment_succeeded")

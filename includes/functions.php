@@ -2899,6 +2899,26 @@ function pmpro_is_ready() {
 }
 
 /**
+ * Display the Setup Wizard links.
+ * 
+ * @since TBD
+ * 
+ * @return bool $show Whether or not the Setup Wizard link should show.
+ */
+function pmpro_show_setup_wizard_link() {
+	global $pmpro_ready;
+
+	// If PMPro isn't ready AND the wizard hasn't completed yet.
+	if ( ! $pmpro_ready && pmpro_getOption( 'wizard_step' ) !== 'done' ) {
+		$show = true;
+	} else {
+		$show = false;
+	}
+
+	return $show;
+}
+
+/**
  * Display Invoice Price Data with Parts
  *
  * @param object $pmpro_invoice The full order object.
@@ -3681,6 +3701,7 @@ function pmpro_show_discount_code() {
 	global $post, $gateway, $wpdb, $besecure, $discount_code, $discount_code_id, $pmpro_level, $pmpro_levels, $pmpro_msg, $pmpro_msgt, $pmpro_review, $skip_account_fields, $pmpro_paypal_token, $pmpro_show_discount_code, $pmpro_error_fields, $pmpro_required_billing_fields, $pmpro_required_user_fields, $wp_version, $current_user, $pmpro_requirebilling, $tospage, $username, $password, $password2, $bfirstname, $blastname, $baddress1, $baddress2, $bcity, $bstate, $bzipcode, $bcountry, $bphone, $bemail, $bconfirmemail, $CardType, $AccountNumber, $ExpirationMonth, $ExpirationYear, $pmpro_states, $recaptcha, $recaptcha_privatekey, $CVV;
 
 	$morder                   = new MemberOrder();
+	$morder->user_id          = $current_user->ID;
 	$morder->membership_id    = $pmpro_level->id;
 	$morder->membership_name  = $pmpro_level->name;
 	$morder->discount_code    = $discount_code;
@@ -4356,4 +4377,71 @@ function pmpro_activating_plugin( $plugin = null ) {
 	
 	// Must be activating the $plugin specified.
 	return true;
+}
+
+/**
+ * Is the current site a production or staging site?
+ * 
+ * @since TBD
+ * @return bool True if we believe this is a production site
+ */
+function pmpro_is_production_site() {
+	/**
+	 * Check if the WP_ENVIRONMENT_TYPE is set and not in production
+	 */
+	if( defined( 'WP_ENVIRONMENT_TYPE' ) && WP_ENVIRONMENT_TYPE !== 'production' ) {
+		return false;
+	}
+
+	return true;
+}
+
+/**
+ * Compare the stored site URL with the current site URL
+ *
+ * @since TBD
+ * @return bool True if the stored and current URL match
+ */
+function pmpro_compare_siteurl() {
+	$site_url = get_site_url();
+
+	$current_url = pmpro_getOption( 'last_known_url' );
+
+	if( empty( $current_url ) ) {
+		return false;
+	}
+
+	if( $site_url !== $current_url ) {
+		return false;
+	}
+
+	return true;
+}
+
+/**
+ * Determine if the site is in pause mode or not
+ *
+ * @since TBD
+ * @return bool True if the the site is in pause mode
+ */
+function pmpro_is_paused() {
+	$pause_mode = pmpro_getOption( 'pause_mode' );
+	
+	//We haven't saved the option or it isn't in pause mode
+	if( empty( $pause_mode ) || $pause_mode === false ) {
+		return false;
+	}
+
+	return true;
+}
+
+/**
+ * Set the pause mode status
+ *
+ * @param $state bool true or false if in pause mode state
+ * @since TBD
+ * @return bool True if the option has been updated
+ */
+function pmpro_set_pause_mode( $state ) {
+	return pmpro_setOption( 'pause_mode', $state );
 }

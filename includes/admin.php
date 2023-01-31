@@ -2,7 +2,8 @@
 /*
 	Admin code.
 */
-
+// Wizard pre-header
+include( PMPRO_DIR . '/adminpages/wizard/save-steps.php' );
 require_once( PMPRO_DIR . '/includes/lib/SendWP/sendwp.php' );
 /**
  * Redirect to Dashboard tab if the user hasn't been there yet.
@@ -78,8 +79,103 @@ function pmpro_block_dashboard() {
  * @since 2.6.2
  */
 function pmpro_init_site_health_integration() {
+
 	$site_health = PMPro_Site_Health::init();
 	$site_health->hook();
 }
 
 add_action( 'admin_init', 'pmpro_init_site_health_integration' );
+
+/**
+ * Compare stored and current site URL and decide if we should go into pause mode
+ *
+ * @since TBD
+ */
+function pmpro_site_url_check() {
+
+	//Checking if a stored site URL exists on first time installs
+	if( empty( pmpro_getOption( 'last_known_url' ) ) ) {
+		pmpro_setOption( 'last_known_url', get_site_url() );
+	}
+
+	//The WP_ENVIRONMENT_TYPE has been changed, we should pause everything
+	//But only if we're not forcing pause mode to be turned off
+	//local forces the WP_ENVIRONMENT_TYPE to be set to local
+	if( ! pmpro_is_production_site() && ! pmpro_getOption( 'pause_mode_override' ) ) {
+		//Site URL's don't match - enable pause mode
+		pmpro_setOption( 'pause_mode', true );
+	}
+
+	if ( ! pmpro_is_production_site() && ! empty( $_REQUEST['pmpro-reactivate-services'] ) ) {
+		//We're on a staging site but want to activate services
+		pmpro_setOption( 'pause_mode_override', true ); 
+		pmpro_setOption( 'pause_mode', false );	
+	}
+
+	if( ! pmpro_is_paused() ){
+		//We aren't paused, check if the domains match
+		if( ! pmpro_compare_siteurl() ) {
+			//Site URL's don't match - enable pause mode
+			pmpro_setOption( 'pause_mode', true );				
+		} else {
+			//Site URL's do match - disable pause mode
+			pmpro_setOption( 'pause_mode', false );				
+		}
+	} else {
+		//We are paused, show a notice.
+		add_action( 'admin_notices', 'pmpro_pause_mode_notice' );
+	}
+
+}
+add_action( 'admin_init', 'pmpro_site_url_check' );
+
+/**
+ * Allows a user to deactivate pause mode and update the last known URL
+ *
+ * @since TBD
+ */
+function pmpro_handle_pause_mode_actions() {
+
+	// Can the current user view the dashboard?
+	if ( current_user_can( 'pmpro_manage_pause_mode' ) ) {
+		//We're attempting to reactivate all services.
+		if( ! empty( $_REQUEST['pmpro-reactivate-services'] ) ) {			
+			pmpro_setOption( 'last_known_url', get_site_url() );
+			pmpro_setOption( 'pause_mode', false );			
+		}
+	}
+
+}
+add_action( 'admin_init', 'pmpro_handle_pause_mode_actions' );
+/**
+ * Display a notice about pause mode being enabled
+ *
+ * @since TBD
+ */
+function pmpro_pause_mode_notice() {
+
+	if( pmpro_is_paused() ) {
+
+		?>
+		<div class="notice notice-error">
+		<p>
+			<?php				
+				// translators: %s: Contains the URL to a blog post
+				printf(
+					__( '<strong>Warning:</strong> We have detected that your site URL has changed. All cron jobs and automated services have been disabled. Read more about this <a href="%s">here</a>', 'paid-memberships-pro' ), 'BLOG_POST_URL'
+				);
+			?>
+		</p>
+		<?php if ( current_user_can( 'pmpro_manage_pause_mode' ) ) { ?>
+		<p>
+			<a href='<?php echo admin_url( '?pmpro-reactivate-services=true' ); ?>' class='button'><?php _e( 'Update my primary domain and reactivate all services', 'paid-memberships-pro' ); ?></a>
+		</p>
+		<?php } else { ?>
+			<p><?php _e( 'Only users with the <code>pmpro_manage_pause_mode</code> capability are able to deactivate pause mode.', 'paid-memberships-pro' ); ?></p>
+		<?php } ?>
+    	</div>
+		<?php
+	}
+
+}
+
