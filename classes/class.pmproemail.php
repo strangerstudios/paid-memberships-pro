@@ -473,7 +473,6 @@
 								'membership_cost' => pmpro_getLevelCost($membership_level),								
 								'login_link' => pmpro_login_url(),
 								'login_url' => pmpro_login_url(),
-								'display_name' => $user->display_name,
 								'user_email' => $user->user_email,	
 								'levels_url' => pmpro_url( 'levels' )							
 							);						
@@ -577,6 +576,13 @@
 			}
 
 			$membership_level = pmpro_getSpecificMembershipLevelForUser($user->ID, $invoice->membership_id);
+
+			$confirmation_in_email = get_pmpro_membership_level_meta( $membership_level->id, 'confirmation_in_email', true );
+			if ( ! empty( $confirmation_in_email ) ) {
+				$confirmation_message = $membership_level->confirmation;
+			} else {
+				$confirmation_message = '';
+			}
 			
 			$this->email = get_bloginfo("admin_email");
 			$this->subject = sprintf(__("Member checkout for %s at %s", 'paid-memberships-pro' ), $membership_level->name, get_option("blogname"));	
@@ -589,6 +595,7 @@
 								'siteemail' => pmpro_getOption( 'from_email' ),
 								'membership_id' => $membership_level->id,
 								'membership_level_name' => $membership_level->name,
+								'membership_level_confirmation_message' => $confirmation_message,
 								'membership_cost' => pmpro_getLevelCost($membership_level),								
 								'login_link' => pmpro_login_url(),
 								'login_url' => pmpro_login_url(),
@@ -1064,6 +1071,8 @@
 		 */
 		function sendTrialEndingEmail( $user = NULL, $membership_id = NULL )
 		{
+			_deprecated_function( 'sendTrialEndingEmail', 'TBD' );
+
 			global $current_user, $wpdb;
 			if(!$user)
 				$user = $current_user;

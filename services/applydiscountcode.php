@@ -1,20 +1,15 @@
-<?php
-	global $isapage;
-	$isapage = true;
-
+<?php	
 	//in case the file is loaded directly
-	if(!defined("ABSPATH"))
-	{
-		define('WP_USE_THEMES', false);
-		require_once(dirname(__FILE__) . '/../../../../wp-load.php');
+	if( ! defined( 'ABSPATH' ) ) {
+		exit;
 	}
 
 	//vars
 	global $wpdb;
 	if(!empty($_REQUEST['code']))
 	{
-		$discount_code = preg_replace("/[^A-Za-z0-9\-]/", "", $_REQUEST['code']);
-		$discount_code_id = $wpdb->get_var("SELECT id FROM $wpdb->pmpro_discount_codes WHERE code = '" . $discount_code . "' LIMIT 1");
+		$discount_code = preg_replace( "/[^A-Za-z0-9\-]/", "", sanitize_text_field( $_REQUEST['code'] ) );
+		$discount_code_id = $wpdb->get_var( $wpdb->prepare( "SELECT id FROM $wpdb->pmpro_discount_codes WHERE code = %s LIMIT 1", $discount_code ) );
 	}
 	else
 	{
@@ -23,7 +18,7 @@
 	}
 
 	if ( ! empty( $_REQUEST['level'] ) ) {
-		$level_str = $_REQUEST['level'];
+		$level_str = sanitize_text_field( $_REQUEST['level'] );
 		$level_str = str_replace( ' ', '+', $level_str ); // If val passed via URL, + would be converted to space.
 		$level_ids = array_map( 'intval', explode( '+', $level_str ) );
 	} else {
@@ -31,7 +26,7 @@
 	}
 
 	if(!empty($_REQUEST['msgfield']))
-		$msgfield = preg_replace("/[^A-Za-z0-9\_\-]/", "", $_REQUEST['msgfield']);
+		$msgfield = preg_replace("/[^A-Za-z0-9\_\-]/", "", sanitize_text_field( $_REQUEST['msgfield'] ) );
 	else
 		$msgfield = NULL;
 
@@ -67,8 +62,8 @@
 			LEFT JOIN $wpdb->pmpro_membership_levels l
 				ON cl.level_id = l.id 
 			LEFT JOIN $wpdb->pmpro_discount_codes dc
-				ON dc.id = cl.code_id WHERE dc.code = '" . $discount_code . "'
-				AND cl.level_id IN (" . implode( ',', $level_ids ) . ")";
+				ON dc.id = cl.code_id WHERE dc.code = '" . esc_sql( $discount_code ) . "'
+				AND cl.level_id IN (" . implode( ',', array_map( 'esc_sql', $level_ids ) ) . ")";
 	$code_levels = $wpdb->get_results($sqlQuery);
 
 	// ... and then get prices for the remaining levels.
@@ -77,7 +72,7 @@
 		$levels_found[] = intval( $code_level->level_id );
 	}
 	if ( ! empty( array_diff( $level_ids, $levels_found ) ) ) {
-		$sqlQuery = "SELECT * FROM $wpdb->pmpro_membership_levels WHERE id IN (" . implode( ',', array_diff( $level_ids, $levels_found ) ) . ")";
+		$sqlQuery = "SELECT * FROM $wpdb->pmpro_membership_levels WHERE id IN (" . implode( ',', array_map( 'esc_sql', array_diff( $level_ids, $levels_found ) ) ) . ")";
 		$code_levels = array_merge( $code_levels, $wpdb->get_results($sqlQuery) );
 	}
 

@@ -6,7 +6,7 @@ if ( ! function_exists( 'current_user_can' ) || ( ! current_user_can( 'manage_op
 
 //updating license?
 if ( ! empty( $_REQUEST['pmpro-verify-submit'] ) ) {
-	$key = preg_replace("/[^a-zA-Z0-9]/", "", $_REQUEST['pmpro-license-key']);
+	$key = preg_replace("/[^a-zA-Z0-9]/", "", sanitize_text_field( $_REQUEST['pmpro-license-key'] ) );
 	
 	// Check key.
 	$pmpro_license_check = pmpro_license_check_key( $key );

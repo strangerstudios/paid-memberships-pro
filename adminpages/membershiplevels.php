@@ -947,7 +947,7 @@
 	{
 		$sqlQuery = "SELECT * FROM $wpdb->pmpro_membership_levels ";
 		if($s)
-			$sqlQuery .= "WHERE name LIKE '%$s%' ";
+			$sqlQuery .= "WHERE name LIKE '%" . esc_sql( $s ) . "%' ";
 			$sqlQuery .= "ORDER BY id ASC";
 
 			$levels = $wpdb->get_results($sqlQuery, OBJECT);
@@ -1147,7 +1147,7 @@
 						$delete_text = esc_html(
 							sprintf(
 								// translators: %s is the Level Name.
-								__( 'Are you sure you want to delete membership level %s? All subscriptions will be cancelled.', 'paid-memberships-pro' ),
+								__( "Are you sure you want to delete membership level %s? Any gateway subscriptions or third-party connections with a member's account will remain active.", 'paid-memberships-pro' ),
 								$level->name
 							)
 						);
@@ -1283,6 +1283,14 @@
 			jQuery('.pmproPopupCloseButton').click(function() {
 				jQuery('.pmpro-popup-overlay').hide();
 			});
+			
+			// Hide the popup banner if "ESC" is pressed.
+			jQuery(document).keyup(function (e) {
+				if (e.key === 'Escape') {
+					jQuery('.pmpro-popup-overlay').hide();
+				}
+			});
+
 			<?php if( ! empty( $_REQUEST['showpopup'] ) ) { ?>addLevel();<?php } ?>
 		} );
 		function addLevel() {

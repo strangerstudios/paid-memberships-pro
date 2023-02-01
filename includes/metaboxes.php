@@ -79,7 +79,7 @@ function pmpro_page_save( $post_id ) {
 	}
 
 	// Verify the nonce.
-	if ( ! wp_verify_nonce( $_POST['pmpro_noncename'], plugin_basename( __FILE__ ) ) ) {
+	if ( ! wp_verify_nonce( sanitize_key( $_POST['pmpro_noncename'] ), plugin_basename( __FILE__ ) ) ) {
 		return $post_id;
 	}
 
@@ -101,7 +101,7 @@ function pmpro_page_save( $post_id ) {
 
 	// OK, we're authenticated. We need to find and save the data.
 	if( ! empty( $_POST['page_levels'] ) ) {
-		$mydata = $_POST['page_levels'];
+		$mydata = array_map( 'intval', $_POST['page_levels'] );
 	} else {
 		$mydata = NULL;
 	}
@@ -130,32 +130,3 @@ if ( is_admin() ) {
 	add_action( 'admin_menu', 'pmpro_page_meta_wrapper' );
 	add_action( 'save_post', 'pmpro_page_save' );
 }
-
-/**
- * Show membership level restrictions on category edit.
- */
-function pmpro_taxonomy_meta( $term ) {
-	global $membership_levels, $post, $wpdb;
-
-	$protectedlevels = array();
-	foreach( $membership_levels as $level ) {
-		$protectedlevel = $wpdb->get_col( "SELECT category_id FROM $wpdb->pmpro_memberships_categories WHERE membership_id = '" . intval( $level->id ) . "' AND category_id = '" . intval( $term->term_id ) . "'" );
-		if( ! empty( $protectedlevel ) ) {
-			$protectedlevels[] .= '<a target="_blank" href="admin.php?page=pmpro-membershiplevels&edit=' . intval( $level->id ) . '">' . esc_html( $level->name ) . '</a>';
-		}
-	}
-	
-	if( ! empty( $protectedlevels ) ) {
-	?>
-	<tr class="form-field">
-		<th scope="row" valign="top"><?php esc_html_e( 'Membership Levels', 'paid-memberships-pro' ); ?></label></th>
-		<td>
-			<p><strong>
-				<?php echo implode(', ',$protectedlevels); ?></strong></p>
-			<p class="description"><?php esc_html_e( 'Only members of these levels will be able to view posts in this category.', 'paid-memberships-pro' ); ?></p>
-		</td>
-	</tr>
-	<?php
-	}
-}
-add_action( 'category_edit_form_fields', 'pmpro_taxonomy_meta', 10, 2 );

@@ -5,7 +5,7 @@
  * See documentation for how to override the PMPro templates.
  * @link https://www.paidmembershipspro.com/documentation/templates/
  *
- * @version 2.0.1
+ * @version 2.0.2
  *
  * @author Paid Memberships Pro
  */
@@ -51,7 +51,7 @@ if ( empty( $default_gateway ) ) {
 	<?php } ?>
 
 	<?php if($pmpro_review) { ?>
-		<p><?php esc_html_e('Almost done. Review the membership information and pricing below then <strong>click the "Complete Payment" button</strong> to finish your order.', 'paid-memberships-pro' );?></p>
+		<p><?php echo wp_kses( __( 'Almost done. Review the membership information and pricing below then <strong>click the "Complete Payment" button</strong> to finish your order.', 'paid-memberships-pro' ), array( 'strong' => array() ) ); ?></p>
 	<?php } ?>
 
 	<?php
@@ -210,7 +210,7 @@ if ( empty( $default_gateway ) ) {
 	</div> <!-- end pmpro_user_fields -->
 	<?php } elseif($current_user->ID && !$pmpro_review) { ?>
 		<div id="pmpro_account_loggedin" class="<?php echo pmpro_get_element_class( 'pmpro_message pmpro_alert', 'pmpro_account_loggedin' ); ?>">
-			<?php printf(__('You are logged in as <strong>%s</strong>. If you would like to use a different account for this membership, <a href="%s">log out now</a>.', 'paid-memberships-pro' ), $current_user->user_login, wp_logout_url($_SERVER['REQUEST_URI'])); ?>
+			<?php printf(__('You are logged in as <strong>%s</strong>. If you would like to use a different account for this membership, <a href="%s">log out now</a>.', 'paid-memberships-pro' ), $current_user->user_login, wp_logout_url( esc_url_raw( $_SERVER['REQUEST_URI'] ) ) ); ?>
 		</div> <!-- end pmpro_account_loggedin -->
 	<?php } ?>
 
@@ -290,7 +290,7 @@ if ( empty( $default_gateway ) ) {
 							if($state_dropdowns === true || $state_dropdowns == "names") {
 								global $pmpro_states;
 								?>
-								<select name="bstate" class="<?php echo pmpro_get_element_class( '', 'bstate' ); ?>">
+								<select id="bstate" name="bstate" class="<?php echo pmpro_get_element_class( '', 'bstate' ); ?>">
 									<option value="">--</option>
 									<?php
 										foreach($pmpro_states as $ab => $st) { ?>
@@ -300,7 +300,7 @@ if ( empty( $default_gateway ) ) {
 							<?php } elseif($state_dropdowns == "abbreviations") {
 								global $pmpro_states_abbreviations;
 								?>
-								<select name="bstate" class="<?php echo pmpro_get_element_class( '', 'bstate' ); ?>">
+								<select id="bstate" name="bstate" class="<?php echo pmpro_get_element_class( '', 'bstate' ); ?>">
 									<option value="">--</option>
 									<?php
 										foreach($pmpro_states_abbreviations as $ab)
@@ -333,7 +333,7 @@ if ( empty( $default_gateway ) ) {
 						</select>
 					</div> <!-- end pmpro_checkout-field-bcountry -->
 				<?php } else { ?>
-					<input type="hidden" name="bcountry" value="<?php esc_attr( $pmpro_default_country ) ?>" />
+					<input type="hidden" name="bcountry" id="bcountry" value="<?php esc_attr( $pmpro_default_country ) ?>" />
 				<?php } ?>
 			<div class="<?php echo pmpro_get_element_class( 'pmpro_checkout-field pmpro_checkout-field-bphone', 'pmpro_checkout-field-bphone' ); ?>">
 				<label for="bphone"><?php esc_html_e('Phone', 'paid-memberships-pro' );?></label>
@@ -442,7 +442,7 @@ if ( empty( $default_gateway ) ) {
 					if($pmpro_show_cvv) { ?>
 					<div class="<?php echo pmpro_get_element_class( 'pmpro_checkout-field pmpro_payment-cvv', 'pmpro_payment-cvv' ); ?>">
 						<label for="CVV"><?php esc_html_e('Security Code (CVC)', 'paid-memberships-pro' );?></label>
-						<input id="CVV" name="CVV" type="text" size="4" value="<?php if(!empty($_REQUEST['CVV'])) { echo esc_attr($_REQUEST['CVV']); }?>" class="<?php echo pmpro_get_element_class( 'input', 'CVV' ); ?>" />  <small>(<a href="javascript:void(0);" onclick="javascript:window.open('<?php echo pmpro_https_filter(PMPRO_URL); ?>/pages/popup-cvv.html','cvv','toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=yes, resizable=yes, width=600, height=475');"><?php esc_html_e("what's this?", 'paid-memberships-pro' );?></a>)</small>
+						<input id="CVV" name="CVV" type="text" size="4" value="<?php if(!empty($_REQUEST['CVV'])) { echo esc_attr( sanitize_text_field( $_REQUEST['CVV'] ) ); }?>" class="<?php echo pmpro_get_element_class( 'input', 'CVV' ); ?>" />
 					</div>
 				<?php } ?>
 				<?php if($pmpro_show_discount_code) { ?>

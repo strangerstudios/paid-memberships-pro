@@ -2,9 +2,9 @@
 Contributors: strangerstudios, kimannwall, andrewza, dlparker1005, paidmembershipspro
 Tags: memberships, members, subscriptions, ecommerce, user registration, member, membership, e-commerce, paypal, stripe, braintree, authorize.net, payflow, restrict access, restrict content, directory
 Requires at least: 5.2
-Tested up to: 6.1
+Tested up to: 6.1.1
 Requires PHP: 5.6
-Stable tag: 2.9.6
+Stable tag: 2.9.11
 
 WordPress membership plugin: restrict content, accept member subscriptions with recurring payment. Includes user registration, login, & profile fields
 
@@ -156,6 +156,66 @@ Not sure? You can find out by doing a bit a research.
 9. Membership Account page, display all sections or show specific sections using shortcode attributes.
 
 == Changelog ==
+* FEATURE: Added Setup Wizard
+* FEATURE: Stripe Checkout and Stripe Customer Portal integrations are now fully released. Increased Stripe fee to 2% for newly connected sites.
+* ENHANCEMENT: Now "pausing" some PMPro functionality when on a staging site or the site URL changes.
+* ENHANCEMENT: Categories and tags can now be restricted directly from their respective settings pages.
+* ENHANCEMENT: Updated Stripe webhook checker to check each event type separately.
+* ENHANCEMENT: Admins will now be given the choice to delete a user's membership history when deleting a user.
+* ENHANCEMENT: Stripe Checkout now creates Invoices for one-time payments.
+* ENHANCEMENT: Updated Stripe library to version 10.0.
+* ENHANCEMENT: Excluding more dev/staging-related subdomains and TLDs from Wisdom tracking.
+* ENHANCEMENT: Added the add class attribute to the "rate us" notice in the footer of PMPro pages. You can use this to hide the notice.
+* BUG FIX/ENHANCEMENT: WordPress users will now be created before payments are charged at checkout.
+* BUG FIX/ENHANCEMENT: No longer cancelling subscriptions for users with a membership level when the level is deleted.
+* BUG FIX/ENHANCEMENT: Removed the "What's This?" text from the CVV field.
+* BUG FIX/ENHANCEMENT: Fixed error thrown if all pmpro_reports were unset.
+* BUG FIX/ENHANCEMENT: Fixed localization issues with the Members List table in the dashboard and several other areas.
+* BUG FIX/ENHANCEMENT: Fixed issue where usage tracking was disabled, even if you clicked the "allow" button in the notice. Double check that this is set how you'd like at Memberships > Settings > Advanced Settings > Enable Tracking.
+* BUG FIX: Fixed issue where "Visits, Views, and Logins" report may not show up on some setups.
+* BUG FIX: Fixed issue where invoice emails were not sending due to issues with the pmpro_get_order_json() function.
+* REFACTOR: Deprecating CyberSource and PayPal Website Payments Pro gateways.
+* REFACTOR: Marking "trial ending" cron as deprecated.
+* REFACTOR: Removed the ability to direct access the scripts in the /crons/ and /services/ directories. Only the getfile.php script can be accessed this way when activated.
+
+= 2.9.11 - 2023-01-27
+* BUG FIX: Fixed issue introduced in 2.9.9 where recurring_payment IPN transactions in PayPal were not being processed yet. If you have recurring subscription with PayPal Standard or PayPal Express, you will need to resend those transactions to make sure completed (and in some cases failed) recurring orders were processed on your site. More information here: https://www.paidmembershipspro.com/pmpro-update-2-9-11/
+
+= 2.9.10 - 2023-01-25 =
+* ENHANCEMENT: Much nicer thumbnail for one of our add ons. #2338 (@kimcoleman)
+* ENHANCEMENT: Adding some other missing add on thumbnails. #2339 (@kimcoleman)
+* BUG FIX/ENHANCEMENT: Updated the orders and discount code tables in the dashboard to display better on small screens. #2334 (@kimcoleman)
+* BUG FIX: Fixed issue with some widgets, e.g. the login widget, introduced in 2.9.9. #2335 (@jarrydlong)
+* BUG FIX: Fixed issue where Invoice Emails would fail to send from the orders page of the dashboard. #2340 (@ideadude)
+
+= 2.9.9 - 2023-01-18 =
+* SECURITY: Updated sanitization, escaping, and other security-related code across the plugin.
+* ENHANCEMENT: When using expirations on levels, the default date is now +1 year again. #2328 (@dparker1005)
+* ENHANCEMENT: Now showing option labels instead of values when displaying multiselect type fields using the pmpro_member shortcode. #2327 #2314 (@dparker1005, @ideadude)
+* ENHANCEMENT: Updated the user fields UI to say "Required at Checkout?", which more accurately describes the behavior. Note: we don't require these fields on profile updates because it can interfere with core user updates and other plugins. #2320 (@kimcoleman)
+* BUG FIX/ENHANCEMENT: Fixed warning in cases where users were deleted or otherwise not found when processing Stripe webhooks. #2331 (@dparker1005)
+* BUG FIX/ENHANCEMENT: Fixed some issues in notifications and messages related to previous escaping updates. #2321 (@dparker1005)
+* BUG FIX/ENHANCEMENT: The pmpro_checkout_box-{groupname} class given to divs on the frontend user profile is now sanitized to avoid spaces and special characters there. #2319 (@kimcoleman)
+* BUG FIX: Fixed issues with CSV exports when filtered within a date range. #2315 (@jarrydlong)
+
+= 2.9.8 - 2022-12-27 =
+* SECURITY: Updated many queries to use $wpdb->prepare and esc_sql for better security. In almost all of these cases, the variables uses in the queries were escaped earlier or otherwise trusted, but it's good practice to escape in the query anyway to be extra safe and avoid issues when code is updated in the future. #2312 (@andrewlimaza, @ideadude)
+* BUG FIX/ENHANCEMENT: Fixed some notices in the Authorize.net Gateway class. #2295 (@mircobabini)
+* BUG FIX/ENHANCEMENT: Fixed HTML in the nl_NL email templates. #2300 (@mircobabini)
+* BUG FIX/ENHANCEMENT: Added the !!membership_level_confirmation_message!! var to admin checkout emails. #2305 (@dparker1005)
+* BUG FIX/ENHANCEMENT: Fixed typo "could" in error message shown when an Add On cannot be installed. #2313 (@kimcoleman)
+* ENHANCEMENT: Removed duplicate "display_name" definition in the PMPro Email class. #2297 (@mircobabini)
+* ENHANCEMENT: Fixed PMPRO_MIN_PHP_VERSION constant name in a few places. #2298 (@mircobabini)
+* ENHANCEMENT: Including the PMPro Akismet and MailPoet icons for use on the Add Ons page. #2307 #2309 (@andrewlimaza)
+
+= 2.9.7 - 2022-11-30 =
+* BUG FIX/ENHANCEMENT: Added compatibility for the Avada theme. Protected content is now editable. #2285 (@andrewlimaza)
+* BUG FIX: Avoiding sprintf issues during cron runs. This caused issues where the expiring soon emails were being sent out multiple times. #2290 (@dparker1005)
+* BUG FIX: Adding id parameters to billing address fields to avoid Stripe errors when checking out with the show address fields option set to true. #2284 (@ipokkel)
+* BUG FIX: Adding id parameters to billing address fields to avoid Stripe errors when updating billing with the show address fields option set to true. #2289 (@dparker1005)
+* BUG FIX: Fixed issue with subscription profile start dates when using Authorize.net and custom code that alters start dates. #2280 (@dparker1005)
+* BUG FIX: Fixed warning that happened with some MySQL versions when setting a user's expiration to 'No' from the edit user page. #2291 (@andrewlimaza)
+
 = 2.9.6 - 2022-11-14 =
 ENHANCEMENT: Added content restriction settings to Elementor "containers". #2254 (Thanks, @Minebomber)
 ENHANCEMENT: Added !!levels_url!! to all email templates by default. #2263 (@andrewlimaza)
@@ -278,7 +338,7 @@ BUG FIX: Fixed issue where the billing zipcode was not pulled from user meta cor
 
 = 2.8 - 2022-05-05 =
 * FEATURE: Added refunds buttons for Stripe and Paypal Express orders. #1948 (@JarrydLong)
-* FEATURE: Released Beta version of Stripe Checkout. Add `define('PMPRO_STRIPE_CHECKOUT_BETA_ENABLED', true);` to your wp-config.php to enable this gateway during the beta. #1923 (@dlparker1005)
+* FEATURE: Released Beta version of Stripe Checkout. Add `define('PMPRO_STRIPE_CHECKOUT_BETA_ENABLED', true);` to your wp-config.php to enable this gateway during the beta. #1923 (@dparker1005)
 * ENHANCEMENT: Introduced a new set of functions that handle cron-related tasks including: `pmpro_get_crons()` to get the list of PMPro registered crons. #1999 (@sc0ttkclark)
 * ENHANCEMENT: New filter `pmpro_registered_crons` which you can register new crons to be handled by PMPro. They show up in the PMPro Site Health info and are automatically scheduled when they need to be. #1999 (@sc0ttkclark)
 * ENHANCEMENT: Added an opt-in stats collection so we can get better insight on how people use Paid Memberships Pro. (@sc0ttkclark, @ideadude)

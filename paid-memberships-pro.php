@@ -3,20 +3,20 @@
  * Plugin Name: Paid Memberships Pro
  * Plugin URI: https://www.paidmembershipspro.com
  * Description: The most complete member management and membership subscriptions plugin for WordPress.
- * Version: 2.9.6
+ * Version: 2.9.11-2.10RC1
  * Author: Paid Memberships Pro
  * Author URI: https://www.paidmembershipspro.com
  * Text Domain: paid-memberships-pro
  * Domain Path: /languages
  */
 /**
- * Copyright 2011-2022	Stranger Studios
+ * Copyright 2011-2023	Stranger Studios
  * (email : info@paidmembershipspro.com)
  * GPLv2 Full license details in license.txt
  */
 
 // version constant
-define( 'PMPRO_VERSION', '2.9.6' );
+define( 'PMPRO_VERSION', '2.9.11-2.10RC1' );
 define( 'PMPRO_USER_AGENT', 'Paid Memberships Pro v' . PMPRO_VERSION . '; ' . site_url() );
 define( 'PMPRO_MIN_PHP_VERSION', '5.6' );
 
@@ -68,6 +68,7 @@ require_once( PMPRO_DIR . '/includes/menus.php' );                  // custom me
 require_once( PMPRO_DIR . '/includes/notifications.php' );          // check for notifications at PMPro, shown in PMPro settings
 require_once( PMPRO_DIR . '/includes/init.php' );                   // code run during init, set_current_user, and wp hooks
 require_once( PMPRO_DIR . '/includes/scripts.php' );                // enqueue frontend and admin JS and CSS
+require_once( PMPRO_DIR . '/includes/terms.php' );                  // allow restricting terms by membership level
 
 require_once( PMPRO_DIR . '/includes/content.php' );                // code to check for memebrship and protect content
 require_once( PMPRO_DIR . '/includes/compatibility.php' );          // code to support compatibility for popular page builders
@@ -109,9 +110,7 @@ if ( version_compare( PHP_VERSION, '5.4.45', '>=' ) ) {
 require_once( PMPRO_DIR . '/classes/class-pmpro-discount-codes.php' ); // loaded by memberorder class when needed
 
 require_once( PMPRO_DIR . '/classes/gateways/class.pmprogateway_check.php' );
-require_once( PMPRO_DIR . '/classes/gateways/class.pmprogateway_cybersource.php' );
 require_once( PMPRO_DIR . '/classes/gateways/class.pmprogateway_payflowpro.php' );
-require_once( PMPRO_DIR . '/classes/gateways/class.pmprogateway_paypal.php' );
 require_once( PMPRO_DIR . '/classes/gateways/class.pmprogateway_paypalexpress.php' );
 require_once( PMPRO_DIR . '/classes/gateways/class.pmprogateway_paypalstandard.php' );
 
@@ -172,12 +171,10 @@ function pmpro_gateways() {
 		'check'             => __( 'Pay by Check', 'paid-memberships-pro' ),
 		'stripe'            => __( 'Stripe', 'paid-memberships-pro' ),
 		'paypalexpress'     => __( 'PayPal Express', 'paid-memberships-pro' ),
-		'paypal'            => __( 'PayPal Website Payments Pro', 'paid-memberships-pro' ),
 		'payflowpro'        => __( 'PayPal Payflow Pro/PayPal Pro', 'paid-memberships-pro' ),
 		'paypalstandard'    => __( 'PayPal Standard', 'paid-memberships-pro' ),
 		'authorizenet'      => __( 'Authorize.net', 'paid-memberships-pro' ),
 		'braintree'         => __( 'Braintree Payments', 'paid-memberships-pro' ),
-		'cybersource'       => __( 'Cybersource', 'paid-memberships-pro' ),
 	);
 
 	if ( pmpro_onlyFreeLevels() ) {

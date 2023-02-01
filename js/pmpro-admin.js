@@ -784,6 +784,13 @@ jQuery( document ).ready( function() {
         jQuery('.pmpro-popup-overlay').hide();
     });
 
+    // Hide the popup banner if "ESC" is pressed.
+    jQuery(document).keyup(function (e) {
+        if (e.key === 'Escape') {
+            jQuery('.pmpro-popup-overlay').hide();
+        }
+    });
+
     jQuery('#pmpro-admin-add-ons-list .action-button .pmproAddOnActionButton').click(function( e ) {
         e.preventDefault();
 
@@ -876,7 +883,7 @@ jQuery( document ).ready( function() {
                     if ( 'activate' === action ) {
                         button.html( 'Could Not Activate.' );
                     } else if ( 'install' === action ) {
-                        button.html( 'Cound Not Install.' );
+                        button.html( 'Could Not Install.' );
                     } else if ( 'update' === action ) {
                         button.html( 'Could Not Update.' );
                     }

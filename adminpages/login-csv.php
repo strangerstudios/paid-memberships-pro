@@ -83,7 +83,7 @@ if ( $s ) {
 	} elseif ( $l ) {
 		$sqlQuery .= " AND mu.membership_id = '" . esc_sql( $l ) . "' ";
 	}
-	$sqlQuery .= "GROUP BY u.ID ORDER BY user_registered DESC LIMIT $start, $limit";
+	$sqlQuery .= "GROUP BY u.ID ORDER BY user_registered DESC LIMIT " . esc_sql( $start ) . "," . esc_sql( $limit );
 }
 
 		$sqlQuery = apply_filters( 'pmpro_visits_views_logins_csv_sql', $sqlQuery );
@@ -258,7 +258,7 @@ for ( $ic = 1; $ic <= $iterations; $ic ++ ) {
 		if ( $user->enddate ) {
 			$enddate = pmpro_enclose( date_i18n( $dateformat, $user->joindate ) );
 		} else {
-			$enddate = 'Never';
+			$enddate = __( 'Never', 'paid-memberships-pro' );
 		}
 		
 		// Add joindate and enddate to the CSV export.

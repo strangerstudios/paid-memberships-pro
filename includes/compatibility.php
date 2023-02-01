@@ -46,6 +46,11 @@ function pmpro_compatibility_checker() {
 			'check_type'  => 'class',
 			'check_value' => 'Jetpack',
 		],
+		[
+			'file' 		  => 'avada.php',
+			'check_type'  => 'constant',
+			'check_value' => 'FUSION_BUILDER_VERSION'
+		]
 	];
 
 	foreach ( $compat_checks as $value ) {

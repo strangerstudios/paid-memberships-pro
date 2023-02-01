@@ -10,7 +10,7 @@ global $wpdb;
 $now = current_time( 'timestamp' );
 
 if ( isset( $_REQUEST['s'] ) ) {
-	$s = sanitize_text_field( trim( $_REQUEST['s'] ) );
+	$s = trim( sanitize_text_field( $_REQUEST['s'] ) );
 } else {
 	$s = '';
 }
@@ -291,7 +291,7 @@ if ( ! empty( $_REQUEST['save'] ) ) {
 	}
 
 	if ( ! in_array( 'status', $read_only_fields ) && isset( $_POST['status'] ) ) {
-		$order->status = pmpro_sanitize_with_safelist( $_POST['status'], pmpro_getOrderStatuses() );
+		$order->status = pmpro_sanitize_with_safelist( $_POST['status'], pmpro_getOrderStatuses() ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 	}
 	if ( ! in_array( 'gateway', $read_only_fields ) && isset( $_POST['gateway'] ) ) {
 		$order->gateway = sanitize_text_field( $_POST['gateway'] );
@@ -1380,6 +1380,7 @@ require_once( dirname( __FILE__ ) . '/admin_header.php' ); ?>
 			}
 			$sqlQuery .= ') ';
 
+			//Not escaping here because we escape the values in the condition statement
 			$sqlQuery .= 'AND ' . $condition . ' ';
 
 			$sqlQuery .= 'GROUP BY o.id ORDER BY o.id DESC, o.timestamp DESC ';
@@ -1389,11 +1390,11 @@ require_once( dirname( __FILE__ ) . '/admin_header.php' ); ?>
 			if ( $filter === 'with-discount-code' ) {
 				$sqlQuery .= "LEFT JOIN $wpdb->pmpro_discount_codes_uses dc ON o.id = dc.order_id ";
 			}
-
+			//Not escaping here because we escape the values in the condition statement
 			$sqlQuery .= "WHERE " . $condition . ' ORDER BY o.id DESC, o.timestamp DESC ';
 		}
 
-		$sqlQuery .= "LIMIT $start, $limit";
+		$sqlQuery .= "LIMIT " . esc_sql( $start ) . "," . esc_sql( $limit );
 
 		$order_ids = $wpdb->get_col( $sqlQuery );
 
