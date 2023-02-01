@@ -35,7 +35,7 @@ function pmpro_wizard_get_site_types() {
 
 ?>
 <div class="pmpro-wizard">
-	<div style="background-image: url('/wp-content/plugins/paid-memberships-pro/images/bg_icons-white.png');background-repeat: repeat;background-size: 50%;position: absolute; top: 0; left: 0; width: 100%;height: 100vh;opacity: .5; z-index: -1;"></div>
+	<div class="pmpro-wizard__background"></div>
 	<div class="pmpro-wizard__header">
 		<a class="pmpro_logo" title="Paid Memberships Pro - Membership Plugin for WordPress" target="_blank" rel="noopener noreferrer" href="https://www.paidmembershipspro.com/?utm_source=plugin&utm_medium=pmpro-admin-header&utm_campaign=homepage"><img src="<?php echo esc_url( PMPRO_URL . '/images/Paid-Memberships-Pro.png' ); ?>" width="350" height="75" border="0" alt="Paid Memberships Pro(c) - All Rights Reserved" /></a>
 		<div class="pmpro-stepper">
@@ -79,7 +79,7 @@ function pmpro_wizard_get_site_types() {
 	<div class="pmpro-wizard__container">
 		<?php
 			// Load the wizard page template based on the current step.
-			if ( $setup_steps[$active_step] ) {
+			if ( ! empty( $active_step ) && $setup_steps[$active_step] ) {
 				include $active_step . '.php';
 			} else {
 				include 'general.php';
