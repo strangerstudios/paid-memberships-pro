@@ -156,26 +156,28 @@ add_action( 'admin_init', 'pmpro_handle_pause_mode_actions' );
  */
 function pmpro_pause_mode_notice() {
 
-	if( pmpro_is_paused() ) {
-
-		?>
-		<div class="notice notice-error">
-		<p>
-			<?php				
-				// translators: %s: Contains the URL to a blog post
-				printf(
-					__( '<strong>Warning:</strong> We have detected that your site URL has changed. All cron jobs and automated services have been disabled. Read more about this <a href="%s">here</a>', 'paid-memberships-pro' ), 'BLOG_POST_URL'
-				);
-			?>
-		</p>
-		<?php if ( current_user_can( 'pmpro_manage_pause_mode' ) ) { ?>
-		<p>
-			<a href='<?php echo admin_url( '?pmpro-reactivate-services=true' ); ?>' class='button'><?php _e( 'Update my primary domain and reactivate all services', 'paid-memberships-pro' ); ?></a>
-		</p>
-		<?php } else { ?>
-			<p><?php _e( 'Only users with the <code>pmpro_manage_pause_mode</code> capability are able to deactivate pause mode.', 'paid-memberships-pro' ); ?></p>
-		<?php } ?>
-    	</div>
+	if ( pmpro_is_paused() ) { ?>
+		<div class="notice notice-error pmpro_notification pmpro_notification-error">
+			<div class="pmpro_notification-icon">
+				<span class="dashicons dashicons-warning"></span>
+			</div>
+			<div class="pmpro_notification-content">
+				<h3><?php esc_html_e( 'Site URL Change Detected', 'paid-memberships-pro' ); ?></h3>
+				<p><?php
+					// translators: %s: Contains the URL to a blog post
+					printf(
+						__( '<strong>Warning:</strong> We have detected that your site URL has changed. All cron jobs and automated services have been disabled.', 'paid-memberships-pro' ), ''
+					);
+				?></p>
+				<?php if ( current_user_can( 'pmpro_manage_pause_mode' ) ) { ?>
+				<p>
+					<a href='<?php echo admin_url( '?pmpro-reactivate-services=true' ); ?>' class='button'><?php _e( 'Update my primary domain and reactivate all services', 'paid-memberships-pro' ); ?></a>
+				</p>
+				<?php } else { ?>
+					<p><?php _e( 'Only users with the <code>pmpro_manage_pause_mode</code> capability are able to deactivate pause mode.', 'paid-memberships-pro' ); ?></p>
+				<?php } ?>
+				</div>
+		</div>
 		<?php
 	}
 
