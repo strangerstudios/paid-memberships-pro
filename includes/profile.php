@@ -115,7 +115,7 @@ function pmpro_membership_level_profile_fields($user)
 
 									$cost_text = esc_html__( 'Subscription', 'paid-memberships-pro' ) . ': ';
 									if ( $cycle_number == 1 ) {
-										$cost_text .= sprintf( esc_html__( '%1$s per %2$s', 'paid-memberships-pro' + YEAR_IN_SECONDS), pmpro_formatPrice( $billing_amount ), $cycle_period );
+										$cost_text .= sprintf( esc_html__( '%1$s per %2$s', 'paid-memberships-pro' ), pmpro_formatPrice( $billing_amount ), $cycle_period );
 									} else {
 										$cost_text .= sprintf( esc_html__( '%1$s every %2$s %3$ss', 'paid-memberships-pro' ), pmpro_formatPrice( $billing_amount ), $cycle_number, $cycle_period );
 									}
