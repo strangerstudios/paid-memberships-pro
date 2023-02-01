@@ -27,6 +27,13 @@
 		$template = false;
 	}
 
+	// Check if we are editing a group.
+	if ( isset( $_REQUEST['edit_group'] ) ) {
+		$edit_group = intval($_REQUEST['edit_group']);
+	} else {
+		$edit_group = false;
+	}
+
 	if(isset($_REQUEST['s']))
 		$s = sanitize_text_field($_REQUEST['s']);
 	else
@@ -263,18 +270,18 @@
 			$page_msg = -3;
 			$page_msgt = __("Error deleting membership level.", 'paid-memberships-pro' );
 		}
-	} elseif ( $action === 'edit_group' ) {
-		// Save the group.
-		$group_id = (int) $_REQUEST['group_id'];
-		$group_name = sanitize_text_field( $_REQUEST['group_name'] );
+	} elseif ( $action === 'save_group' ) { 
+		$group_id = (int) $_REQUEST['saveid'];
+		$group_name = sanitize_text_field( $_REQUEST['name'] );
 		$allow_multi = empty( $_REQUEST['allow_multiple_selections'] ) ? 0 : 1;
 		$displayorder = (int) $_REQUEST['displayorder'];
-		pmpro_edit_level_group( $group_id, $group_name, $allow_multi, $displayorder );
-	} elseif ( $action === 'add_group' ) {
-		// Add a new group.
-		$group_name = sanitize_text_field( $_REQUEST['group_name'] );
-		$allow_multi = empty( $_REQUEST['allow_multiple_selections'] ) ? 0 : 1;
-		pmpro_create_level_group( $group_name, $allow_multi );
+		if ( $group_id > 0 ) {
+			// Save the group.
+			pmpro_edit_level_group( $group_id, $group_name, $allow_multi, $displayorder );
+		} else {
+			// Add a new group.
+			pmpro_create_level_group( $group_name, $allow_multi );
+		}
 	} elseif ( $action === 'delete_group' ) {
 		// Delete a group.
 		$group_id = (int) $_REQUEST['group_id'];
@@ -980,9 +987,64 @@
 	</form>
 
 	<?php
-	}
-	else
-	{
+	} elseif ( $edit_group ) {
+		// Creating or editing a group.
+		// If we are editing an existing group, current group data.
+		if ( intval( $edit_group ) > 0 ) {
+			$group = pmpro_get_level_group( $edit_group );
+		}
+
+		// If we don't have a group, create a new one.
+		if ( empty( $group ) ) {
+			$group = new stdClass();
+			$group->id = 0;
+			$group->name = '';
+			$group->displayorder = 0;
+			$group->allow_multiple_selections = false;
+		}
+
+		// Set up the UI.
+		?>
+		<hr class="wp-header-end">
+		<h1 class="wp-heading-inline">
+		<?php if ( ! empty( $group->id) ) { 
+			echo sprintf(
+				// translators: %s is the group ID.
+				esc_html__( 'Edit Group ID: %s', 'paid-memberships-pro' ),
+				esc_attr( $group->id )
+			);
+		 } else { 
+			esc_html_e( 'Add New Group', 'paid-memberships-pro' );
+		 } ?>
+		</h1>
+		<form action="<?php esc_attr_e( add_query_arg( 'page', 'pmpro-membershiplevels' , admin_url( 'admin.php') ) ) ?>" method="post" enctype="multipart/form-data">
+		<input name="saveid" type="hidden" value="<?php echo esc_attr( $edit_group ); ?>" />
+		<input type="hidden" name="action" value="save_group" />
+		<input type="hidden" name="displayorder" value="<?php echo esc_attr( $group->displayorder ); ?>" />
+		<?php wp_nonce_field('save_group', 'pmpro_membershiplevels_nonce'); ?>
+		<div id="general-information" class="pmpro_section">
+			<div class="pmpro_section_inside">
+		 		<table class="form-table">
+					<tbody>
+		 				<tr>
+							<th scope="row" valign="top"><label for="name"><?php esc_html_e('Name', 'paid-memberships-pro' );?></label></th>
+							<td><input id="name" name="name" type="text" size="60" value="<?php echo esc_attr( $group->name ); ?>" /></td>
+						</tr>
+						<tr>
+							<th scope="row" valign="top"><label for="allow_multiple_selections"><?php esc_html_e('Allow Multiple Selections', 'paid-memberships-pro' );?></label></th>
+							<td><input id="allow_multiple_selections" name="allow_multiple_selections" type="checkbox" value="1" <?php checked( $group->allow_multiple_selections, true ); ?> /></td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+		<p class="submit">
+			<input name="save" type="submit" class="button button-primary" value="<?php esc_attr_e('Save Group', 'paid-memberships-pro' ); ?>" />
+			<input name="cancel" type="button" class="button" value="<?php esc_attr_e('Cancel', 'paid-memberships-pro' ); ?>" onclick="location.href='<?php echo esc_url( add_query_arg( 'page', 'pmpro-membershiplevels' , admin_url( 'admin.php') ) ); ?>';" />
+		</p>
+		</form>
+		<?php
+	} else {
 		$sqlQuery = "SELECT * FROM $wpdb->pmpro_membership_levels ";
 		if($s)
 			$sqlQuery .= "WHERE name LIKE '%" . esc_sql( $s ) . "%' ";
@@ -1135,7 +1197,7 @@
 
 				// Add New Group link
 				$pmpro_membershiplevels_page_action_links['add-new-group'] = array(
-					'url' => 'javascript:addGroup();',
+					'url' => add_query_arg( array( 'edit_group' => '-1' ), admin_url( 'admin.php?page=pmpro-membershiplevels' ) ),
 					'name' => __( 'Add New Group', 'paid-memberships-pro' ),
 					'icon' => 'plus'
 				);
@@ -1170,7 +1232,7 @@
 					$class = implode( ' ', array_unique( $classes ) );
 					
 					// Allow some JS for the URL. Otherwise esc_url.
-					$allowed_js_in_urls = array( 'javascript:addLevel();', 'javascript:addGroup();', 'javascript:void(0);' );
+					$allowed_js_in_urls = array( 'javascript:addLevel();', 'javascript:void(0);' );
 					if ( ! in_array( $pmpro_membershiplevels_page_action_link['url'], $allowed_js_in_urls ) ) {
 						$pmpro_membershiplevels_page_action_link['url'] = esc_url( $pmpro_membershiplevels_page_action_link['url'] );
 					}
@@ -1178,16 +1240,6 @@
 					<a class="<?php echo esc_attr( $class ); ?>" href="<?php echo $pmpro_membershiplevels_page_action_link['url']; ?>"><?php echo esc_html( $pmpro_membershiplevels_page_action_link['name'] ); ?></a>
 					<?php
 				}
-
-				?>
-				<form id="pmpro-edit-level-add-group" action="" method="post" enctype="multipart/form-data" style="display:none">
-					<input type="hidden" name="action" value="add_group" />
-					<?php wp_nonce_field('add_group', 'pmpro_membershiplevels_nonce'); ?>
-					<label for="group_name"><?php esc_html_e( 'Group Name', 'paid-memberships-pro' ) ?></label><input type="text" name="group_name" value="<?php esc_attr_e( 'New Group', 'paid-memberships-pro' ) ?>" /><br/>
-					<label for="allow_multiple_selections"><?php esc_html_e( 'Allow users to purchase multiple levels from this group?', 'paid-memberships-pro' ) ?></label><input type="checkbox" name="allow_multiple_selections" value="1" checked /><br/>
-					<input type="submit" value="<?php esc_attr_e( 'Save', 'paid-memberships-pro' ); ?>" />
-				</form>
-				<?php
 
 				if(empty($_REQUEST['s']) && count($reordered_levels) > 1) {
 					?><p><?php esc_html_e('Drag and drop membership levels to reorder them on the Levels page.', 'paid-memberships-pro' ); ?></p><?php
@@ -1206,7 +1258,7 @@
 							<input type="hidden" class="pmpro-level-settings-group-id" value="<?php echo esc_attr( $level_group->id ); ?>" />
 							<h2>
 								<?php echo esc_html( $level_group->name ) ?>
-								<button class="pmpro-level-settings-show-edit-group"><?php esc_html_e( 'Edit Group', 'paid-memberships-pro' ) ?></button>
+								<a href="<?php echo esc_url( add_query_arg( array( 'edit_group' => $level_group->id ), admin_url( 'admin.php?page=pmpro-membershiplevels' ) ) ); ?>" ><button><?php esc_html_e( 'Edit Group', 'paid-memberships-pro' ) ?></button></a>
 								<?php
 									if ( empty( $group_levels_to_show) ) {
 										// Show a button to delete the group.
@@ -1224,15 +1276,6 @@
 								<?php
 							}
 							?>
-							<form action="" method="post" enctype="multipart/form-data" style="display:none">
-								<input type="hidden" name="action" value="edit_group" />
-								<?php wp_nonce_field('edit_group', 'pmpro_membershiplevels_nonce'); ?>
-								<input type="hidden" name="group_id" value="<?php echo esc_attr( $level_group->id ); ?>" />
-								<input type="hidden" name="displayorder" value="<?php echo esc_attr( $level_group->displayorder ); ?>" />
-								<label for="group_name"><?php esc_html_e( 'Group Name', 'paid-memberships-pro' ) ?></label><input type="text" name="group_name" value="<?php echo esc_attr( $level_group->name ); ?>" /><br/>
-								<label for="allow_multiple_selections"><?php esc_html_e( 'Allow users to purchase multiple levels from this group?', 'paid-memberships-pro' ) ?></label><input type="checkbox" name="allow_multiple_selections" value="1" <?php checked( $level_group->allow_multiple_selections ); ?> /><br/>
-								<input type="submit" value="<?php esc_attr_e( 'Save', 'paid-memberships-pro' ); ?>" />
-							</form>
 							<table class="widefat membership-levels">
 								<thead>
 									<tr>
@@ -1391,9 +1434,6 @@
 				} );
 				function addLevel() {
 					jQuery('.pmpro-popup-overlay').show();
-				}
-				function addGroup() {
-					jQuery('#pmpro-edit-level-add-group').show();
 				}
 				// Hide the popup banner if "ESC" is pressed.
 				jQuery(document).keyup(function (e) {
