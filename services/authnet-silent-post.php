@@ -1,18 +1,11 @@
 <?php
-	global $isapage;
-	$isapage = true;
-
-	global $lostr;
-	$logstr = '';
-
 	//in case the file is loaded directly
-	if(!defined("ABSPATH"))
-	{
-		define('WP_USE_THEMES', false);
-		require_once(dirname(__FILE__) . '/../../../../wp-load.php');
+	if( ! defined( 'ABSPATH' ) ) {
+		exit;
 	}
-
-	global $wpdb;
+	
+	global $lostr, $wpdb;
+	$logstr = '';
 
 	// Sets the PMPRO_DOING_WEBHOOK constant and fires the pmpro_doing_webhook action.
 	pmpro_doing_webhook( 'authnet', true );

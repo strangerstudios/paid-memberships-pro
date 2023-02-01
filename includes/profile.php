@@ -115,7 +115,7 @@ function pmpro_membership_level_profile_fields($user)
 
 									$cost_text = esc_html__( 'Subscription', 'paid-memberships-pro' ) . ': ';
 									if ( $cycle_number == 1 ) {
-										$cost_text .= sprintf( esc_html__( '%1$s per %2$s', 'paid-memberships-pro' ), pmpro_formatPrice( $billing_amount ), $cycle_period );
+										$cost_text .= sprintf( esc_html__( '%1$s per %2$s', 'paid-memberships-pro' + YEAR_IN_SECONDS), pmpro_formatPrice( $billing_amount ), $cycle_period );
 									} else {
 										$cost_text .= sprintf( esc_html__( '%1$s every %2$s %3$ss', 'paid-memberships-pro' ), pmpro_formatPrice( $billing_amount ), $cycle_number, $cycle_period );
 									}
@@ -414,7 +414,7 @@ function pmpro_membership_level_profile_fields_update() {
 	global $wpdb, $current_user;
 	wp_get_current_user();
 
-	$user_id = empty( $_REQUEST['user_id'] ) ? $current_user->ID : $_REQUEST['user_id'];
+	$user_id = empty( $_REQUEST['user_id'] ) ? intval( $current_user->ID ) : intval( $_REQUEST['user_id'] );
 
 	$membership_level_capability = apply_filters( 'pmpro_edit_member_capability', 'manage_options' );
 	if ( ! current_user_can( $membership_level_capability ) ) {
@@ -873,10 +873,10 @@ function pmpro_member_profile_edit_form() {
 	}
 
 	// Saving profile updates.
-	if ( isset( $_POST['action'] ) && $_POST['action'] == 'update-profile' && $current_user->ID == $_POST['user_id'] && wp_verify_nonce( $_POST['update_user_nonce'], 'update-user_' . $current_user->ID ) ) {
+	if ( isset( $_POST['action'] ) && $_POST['action'] == 'update-profile' && $current_user->ID == $_POST['user_id'] && wp_verify_nonce( sanitize_key( $_POST['update_user_nonce'] ), 'update-user_' . $current_user->ID ) ) {
 		$update           = true;
 		$user     		  = new stdClass;
-		$user->ID         = $_POST[ 'user_id' ];
+		$user->ID         = intval( $_POST[ 'user_id' ] );
 		do_action( 'pmpro_personal_options_update', $user->ID );
 	} else {
 		$update = false;
@@ -1039,7 +1039,7 @@ function pmpro_change_password_process() {
 	}
 
 	// Check the nonce.
-	if ( ! wp_verify_nonce( $_POST['change_password_user_nonce'], 'change-password-user_' . $current_user->ID ) ) {
+	if ( ! wp_verify_nonce( sanitize_key( $_POST['change_password_user_nonce'] ), 'change-password-user_' . $current_user->ID ) ) {
 		return;
 	}
 

@@ -307,6 +307,18 @@ function pmpro_checkForUpgrades()
 	}
 
 	/**
+	 * Version 2.10
+	 * We are increasing Stripe application fee, but if the site is already being
+	 * charged at 1%, we want to let them keep that fee.
+	 * We are also fixing the pmpro_wisdom_opt_out option.
+	 */
+	if ( $pmpro_db_version < 2.95 ) { // 2.95 since 2.10 would be lower than previous update.
+		require_once( PMPRO_DIR . "/includes/updates/upgrade_2_10.php" );
+		pmpro_upgrade_2_10();
+		pmpro_setOption( 'db_version', '2.95' );		
+	}
+
+	/**
 	 * Version 3.0
 	 * Running pmpro_db_delta to add subscription and subscription meta tables.
 	 */

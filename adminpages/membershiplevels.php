@@ -1394,7 +1394,13 @@
 				}
 				function addGroup() {
 					jQuery('#pmpro-edit-level-add-group').show();
-				}			
+				}
+				// Hide the popup banner if "ESC" is pressed.
+				jQuery(document).keyup(function (e) {
+					if (e.key === 'Escape') {
+						jQuery('.pmpro-popup-overlay').hide();
+					}
+				});
 			</script>
 			<div id="pmpro-popup" class="pmpro-popup-overlay">
 				<span class="pmpro-popup-helper"></span>

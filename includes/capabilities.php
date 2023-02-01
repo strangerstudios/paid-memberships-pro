@@ -52,6 +52,7 @@ function pmpro_get_capability_defs($role)
     $cap_array = array(
         'pmpro_memberships_menu',
         'pmpro_dashboard',
+        'pmpro_wizard',
         'pmpro_membershiplevels',
         'pmpro_edit_memberships',
         'pmpro_pagesettings',
