@@ -1,4 +1,27 @@
 == Changelog ==
+= 2.10 - 2023-02-01 =
+* FEATURE: Added Setup Wizard
+* FEATURE: Stripe Checkout and Stripe Customer Portal integrations are now fully released. Increased Stripe fee to 2% for newly connected sites.
+* ENHANCEMENT: Now "pausing" some PMPro functionality when on a staging site or the site URL changes.
+* ENHANCEMENT: Categories and tags can now be restricted directly from their respective settings pages.
+* ENHANCEMENT: Updated Stripe webhook checker to check each event type separately.
+* ENHANCEMENT: Admins will now be given the choice to delete a user's membership history when deleting a user.
+* ENHANCEMENT: Stripe Checkout now creates Invoices for one-time payments.
+* ENHANCEMENT: Updated Stripe library to version 10.0.
+* ENHANCEMENT: Excluding more dev/staging-related subdomains and TLDs from Wisdom tracking.
+* ENHANCEMENT: Added the add class attribute to the "rate us" notice in the footer of PMPro pages. You can use this to hide the notice.
+* BUG FIX/ENHANCEMENT: WordPress users will now be created before payments are charged at checkout.
+* BUG FIX/ENHANCEMENT: No longer cancelling subscriptions for users with a membership level when the level is deleted.
+* BUG FIX/ENHANCEMENT: Removed the "What's This?" text from the CVV field.
+* BUG FIX/ENHANCEMENT: Fixed error thrown if all pmpro_reports were unset.
+* BUG FIX/ENHANCEMENT: Fixed localization issues with the Members List table in the dashboard and several other areas.
+* BUG FIX/ENHANCEMENT: Fixed issue where usage tracking was disabled, even if you clicked the "allow" button in the notice. Double check that this is set how you'd like at Memberships > Settings > Advanced Settings > Enable Tracking.
+* BUG FIX: Fixed issue where "Visits, Views, and Logins" report may not show up on some setups.
+* BUG FIX: Fixed issue where invoice emails were not sending due to issues with the pmpro_get_order_json() function.
+* REFACTOR: Deprecating CyberSource and PayPal Website Payments Pro gateways.
+* REFACTOR: Marking "trial ending" cron as deprecated.
+* REFACTOR: Removed the ability to direct access the scripts in the /crons/ and /services/ directories. Only the getfile.php script can be accessed this way when activated.
+
 = 2.9.11 - 2023-01-27
 * BUG FIX: Fixed issue introduced in 2.9.9 where recurring_payment IPN transactions in PayPal were not being processed yet. If you have recurring subscription with PayPal Standard or PayPal Express, you will need to resend those transactions to make sure completed (and in some cases failed) recurring orders were processed on your site. More information here: https://www.paidmembershipspro.com/pmpro-update-2-9-11/
 
