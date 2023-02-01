@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2023-02-01T01:57:32+00:00\n"
+"POT-Creation-Date: 2023-02-01T04:10:57+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.7.1\n"
 "X-Domain: paid-memberships-pro\n"
@@ -82,6 +82,8 @@ msgstr "Non disponi dei permessi necessari per eseguire l’operazione."
 #: adminpages/admin_header.php:243
 #: includes/adminpages.php:58
 #: includes/adminpages.php:218
+#: includes/adminpages.php:60
+#: includes/adminpages.php:220
 msgid "Add Ons"
 msgstr "Add On"
 
@@ -723,6 +725,7 @@ msgstr "Questo contenuto è riservato ai soli membri. Visita il sito e accedi/re
 #: adminpages/admin_header.php:287
 #: adminpages/wizard/advanced.php:11
 #: includes/adminpages.php:76
+#: includes/adminpages.php:78
 msgid "Advanced Settings"
 msgstr "Avanzate"
 
@@ -2341,6 +2344,7 @@ msgstr "elimina"
 #: adminpages/admin_header.php:270
 #: adminpages/admin_header.php:275
 #: includes/adminpages.php:73
+#: includes/adminpages.php:75
 msgid "Email Settings"
 msgstr "Emails"
 
@@ -4444,6 +4448,8 @@ msgstr "Invia E-mail"
 #: includes/adminpages.php:54
 #: adminpages/admin_header.php:231
 #: includes/adminpages.php:182
+#: includes/adminpages.php:57
+#: includes/adminpages.php:184
 msgid "Orders"
 msgstr "Ordini"
 
@@ -8404,6 +8410,7 @@ msgstr "Paga con 2Checkout"
 #: includes/adminpages.php:49
 #: adminpages/wizard/wizard.php:47
 #: includes/adminpages.php:50
+#: includes/adminpages.php:52
 msgid "Memberships"
 msgstr "Memberships"
 
@@ -8424,6 +8431,7 @@ msgstr "Memberships"
 #: adminpages/admin_header.php:262
 #: adminpages/admin_header.php:267
 #: includes/adminpages.php:71
+#: includes/adminpages.php:73
 msgid "Page Settings"
 msgstr "Pagine"
 
@@ -8439,6 +8447,7 @@ msgstr "Pagine"
 #: includes/adminpages.php:71
 #: adminpages/wizard/payments.php:3
 #: includes/adminpages.php:72
+#: includes/adminpages.php:74
 msgid "Payment Settings"
 msgstr "Pagamento"
 
@@ -8457,6 +8466,8 @@ msgstr "Pagamento"
 #: adminpages/admin_header.php:235
 #: includes/adminpages.php:56
 #: includes/adminpages.php:194
+#: includes/adminpages.php:58
+#: includes/adminpages.php:196
 msgid "Reports"
 msgstr "Rapporti"
 
@@ -8476,6 +8487,7 @@ msgstr "Rapporti"
 #: adminpages/admin_header.php:258
 #: adminpages/admin_header.php:263
 #: includes/adminpages.php:70
+#: includes/adminpages.php:72
 msgid "Discount Codes"
 msgstr "Codici Sconto"
 
@@ -8483,6 +8495,7 @@ msgstr "Codici Sconto"
 #: includes/adminpages.php:79
 #: includes/adminpages.php:81
 #: includes/adminpages.php:82
+#: includes/adminpages.php:84
 msgid "Updates Required"
 msgstr "Aggiornamenti Richiesti"
 
@@ -8492,6 +8505,7 @@ msgstr "Aggiornamenti Richiesti"
 #: includes/adminpages.php:135
 #: includes/adminpages.php:137
 #: includes/adminpages.php:147
+#: includes/adminpages.php:149
 msgid "<span class=\"ab-icon\"></span>Memberships"
 msgstr "<span class=\"ab-icon\"></span>Sottoscrizioni"
 
@@ -8502,6 +8516,7 @@ msgstr "<span class=\"ab-icon\"></span>Sottoscrizioni"
 #: includes/adminpages.php:418
 #: includes/adminpages.php:429
 #: includes/adminpages.php:443
+#: includes/adminpages.php:445
 msgid "Docs"
 msgstr "Docs"
 
@@ -8512,6 +8527,7 @@ msgstr "Docs"
 #: includes/adminpages.php:418
 #: includes/adminpages.php:429
 #: includes/adminpages.php:443
+#: includes/adminpages.php:445
 msgid "View PMPro Documentation"
 msgstr "Visualizza la documentazione di PMPro"
 
@@ -8522,6 +8538,7 @@ msgstr "Visualizza la documentazione di PMPro"
 #: includes/adminpages.php:419
 #: includes/adminpages.php:430
 #: includes/adminpages.php:444
+#: includes/adminpages.php:446
 msgid "Support"
 msgstr "Supporto"
 
@@ -8532,6 +8549,7 @@ msgstr "Supporto"
 #: includes/adminpages.php:419
 #: includes/adminpages.php:430
 #: includes/adminpages.php:444
+#: includes/adminpages.php:446
 msgid "Visit Customer Support Forum"
 msgstr "Visita il Forum del Supporto Clienti"
 
@@ -12305,6 +12323,8 @@ msgstr ""
 #: adminpages/admin_header.php:223
 #: includes/adminpages.php:53
 #: includes/adminpages.php:158
+#: includes/adminpages.php:55
+#: includes/adminpages.php:160
 msgid "Dashboard"
 msgstr ""
 
@@ -12321,6 +12341,8 @@ msgstr ""
 #: adminpages/reports/logins.php:112
 #: includes/adminpages.php:54
 #: includes/adminpages.php:170
+#: includes/adminpages.php:56
+#: includes/adminpages.php:172
 msgid "Members"
 msgstr ""
 
@@ -12333,6 +12355,8 @@ msgstr ""
 #: adminpages/admin_header.php:239
 #: includes/adminpages.php:57
 #: includes/adminpages.php:206
+#: includes/adminpages.php:59
+#: includes/adminpages.php:208
 msgid "Settings"
 msgstr ""
 
@@ -12342,6 +12366,7 @@ msgstr ""
 #: includes/adminpages.php:66
 #: adminpages/admin_header.php:247
 #: includes/adminpages.php:67
+#: includes/adminpages.php:69
 msgid "License"
 msgstr ""
 
@@ -12360,6 +12385,7 @@ msgstr ""
 #: adminpages/admin_header.php:274
 #: adminpages/admin_header.php:279
 #: includes/adminpages.php:74
+#: includes/adminpages.php:76
 msgid "Email Templates"
 msgstr ""
 
@@ -13514,6 +13540,7 @@ msgstr ""
 #: includes/adminpages.php:362
 #: includes/adminpages.php:373
 #: includes/adminpages.php:387
+#: includes/adminpages.php:389
 msgid "Member Profile Edit Page"
 msgstr ""
 
@@ -15249,6 +15276,8 @@ msgstr ""
 #: includes/adminpages.php:227
 #: includes/adminpages.php:67
 #: includes/adminpages.php:237
+#: includes/adminpages.php:69
+#: includes/adminpages.php:239
 msgid "<span style=\"color: "
 msgstr ""
 
@@ -15260,12 +15289,14 @@ msgstr ""
 #: blocks/account-page/block.js:73
 #: includes/adminpages.php:341
 #: includes/adminpages.php:355
+#: includes/adminpages.php:357
 msgid "Membership Account Page"
 msgstr ""
 
 #: includes/adminpages.php:334
 #: includes/adminpages.php:345
 #: includes/adminpages.php:359
+#: includes/adminpages.php:361
 msgid "Membership Billing Information Page"
 msgstr ""
 
@@ -15277,12 +15308,14 @@ msgstr ""
 #: blocks/cancel-page/block.js:45
 #: includes/adminpages.php:349
 #: includes/adminpages.php:363
+#: includes/adminpages.php:365
 msgid "Membership Cancel Page"
 msgstr ""
 
 #: includes/adminpages.php:342
 #: includes/adminpages.php:353
 #: includes/adminpages.php:367
+#: includes/adminpages.php:369
 msgid "Membership Checkout Page"
 msgstr ""
 
@@ -15294,6 +15327,7 @@ msgstr ""
 #: blocks/confirmation-page/block.js:47
 #: includes/adminpages.php:357
 #: includes/adminpages.php:371
+#: includes/adminpages.php:373
 msgid "Membership Confirmation Page"
 msgstr ""
 
@@ -15302,12 +15336,14 @@ msgstr ""
 #: js/blocks.build.js:1206
 #: includes/adminpages.php:361
 #: includes/adminpages.php:375
+#: includes/adminpages.php:377
 msgid "Membership Invoice Page"
 msgstr ""
 
 #: includes/adminpages.php:354
 #: includes/adminpages.php:365
 #: includes/adminpages.php:379
+#: includes/adminpages.php:381
 msgid "Membership Levels Page"
 msgstr ""
 
@@ -15315,6 +15351,7 @@ msgstr ""
 #: includes/adminpages.php:380
 #: includes/adminpages.php:391
 #: includes/adminpages.php:405
+#: includes/adminpages.php:407
 msgid "Members Per Page"
 msgstr ""
 
@@ -20412,6 +20449,7 @@ msgstr ""
 #: includes/adminpages.php:358
 #: includes/adminpages.php:369
 #: includes/adminpages.php:383
+#: includes/adminpages.php:385
 msgid "Paid Memberships Pro Login Page"
 msgstr ""
 
@@ -20494,6 +20532,7 @@ msgstr ""
 #: adminpages/userfields.php:113
 #: adminpages/admin_header.php:283
 #: includes/adminpages.php:75
+#: includes/adminpages.php:77
 msgid "User Fields"
 msgstr ""
 
@@ -21173,6 +21212,7 @@ msgstr ""
 
 #: adminpages/admin_header.php:252
 #: includes/adminpages.php:92
+#: includes/adminpages.php:94
 msgid "Setup Wizard"
 msgstr ""
 
@@ -21529,14 +21569,17 @@ msgid "User is not logged in."
 msgstr ""
 
 #: includes/admin.php:165
+#: includes/admin.php:167
 msgid "<strong>Warning:</strong> We have detected that your site URL has changed. All cron jobs and automated services have been disabled. Read more about this <a href=\"%s\">here</a>"
 msgstr ""
 
 #: includes/admin.php:171
+#: includes/admin.php:173
 msgid "Update my primary domain and reactivate all services"
 msgstr ""
 
 #: includes/admin.php:174
+#: includes/admin.php:176
 msgid "Only users with the <code>pmpro_manage_pause_mode</code> capability are able to deactivate pause mode."
 msgstr ""
 
@@ -21562,4 +21605,12 @@ msgstr ""
 
 #: preheaders/checkout.php:484
 msgid "There was an error setting up your account. Please contact us."
+msgstr ""
+
+#: adminpages/wizard/general.php:49
+msgid "Yes, generate the required plugin pages for me. (Recommended)"
+msgstr ""
+
+#: adminpages/wizard/general.php:55
+msgid "Yes, I will be collecting payments for my memberships?"
 msgstr ""
