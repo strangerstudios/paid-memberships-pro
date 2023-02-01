@@ -662,7 +662,7 @@ class PMPro_Subscription {
 	 *
 	 * @return bool True if the subscription was saved, false if not.
 	 */
-	private function update() {
+	public function update() {
 		global $pmpro_level;
 
 		// Update the start date to the date of the first order for this subscription if it
