@@ -295,13 +295,13 @@
 	text-align: center;
 }
 
-span.pmpro_wizard__skip {
+a.pmpro_wizard__skip {
 	color: #666;
 	text-decoration: underline;
 	font-size: 13px;
 }
 
-span.pmpro_wizard__skip:hover {
+a.pmpro_wizard__skip:hover {
 	cursor: pointer;
 }
 

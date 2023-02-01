@@ -65,7 +65,7 @@ function pmpro_wizard_get_site_types() {
 								<span class="pmpro-stepper__step-number"><?php echo esc_html( $count ); ?></span>
 							</div>
 							<span class="pmpro-stepper__step-label">
-								<a href="/wp-admin/admin.php?page=pmpro-wizard&step=<?php echo esc_attr( $setup_step ); ?>"><?php echo esc_html( $name ); ?></a>
+								<a href="<?php echo esc_url( admin_url( 'admin.php?page=pmpro-wizard&step=' . $setup_step ) );?>"><?php echo esc_html( $name ); ?></a>								
 							</span>
 						</div>
 						<div class="pmpro-stepper__step-divider"></div>

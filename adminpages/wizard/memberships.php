@@ -68,7 +68,7 @@ $collecting_payment = pmpro_getOption( 'wizard_collect_payment' );
 		<?php wp_nonce_field( 'pmpro_wizard_step_3_nonce', 'pmpro_wizard_step_3_nonce' ); ?>
 		<input type="hidden" name="wizard-action" value="step-3"/>
 		<input type="submit" name="submit" class="button button-primary button-hero" value="<?php esc_attr_e( 'Submit and Continue', 'paid-memberships-pro' ); ?>" /><br/>
-		<span class="pmpro_wizard__skip" onclick="window.location.href='/wp-admin/admin.php?page=pmpro-wizard&step=advanced';"><?php esc_html_e( 'Skip', 'paid-memberships-pro' ); ?></span>
+		<a class="pmpro_wizard__skip" href="<?php echo esc_url( admin_url( 'admin.php?page=pmpro-wizard&step=advanced' ) );?>"><?php esc_html_e( 'Skip', 'paid-memberships-pro' ); ?></a>
 	</p>
 	</form>
 </div> <!-- end pmpro-wizard__step-3 -->

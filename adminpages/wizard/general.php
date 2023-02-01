@@ -46,13 +46,13 @@ global $pmpro_pages;
 		<div class="pmpro-wizard__field">
 			<label class="pmpro-wizard__label-block">
 				<input type="checkbox" name="createpages" id="createpages" value="1" <?php disabled( true, $member_pages_exist); ?>>
-				<label for="createpages"><?php esc_html_e( 'Yes, generate the required plugin pages for me.', 'paid-memberships-pro' ); ?></label><br/>
+				<label for="createpages"><?php esc_html_e( 'Yes, generate the required plugin pages for me. (Recommended)', 'paid-memberships-pro' ); ?></label><br/>
 				<?php if ( $member_pages_exist ) {
 					echo '<span style="font-size:12px;">' . esc_html__( 'We detected you have pages assigned for Paid Memberships Pro, this option is disabled.', 'paid-memberships-pro' ) . '</span>';
 				} ?>
 				<br><br>
 				<input type="checkbox" name="collect_payments" id="collect_payments" value="1" <?php checked( true, $collect_payment ); ?>>
-				<label for="collect_payments"><?php esc_html_e( 'Yes, I will be collecting payments for your memberships?', 'paid-memberships-pro' ); ?></label><br/>
+				<label for="collect_payments"><?php esc_html_e( 'Yes, I will be collecting payments for my memberships?', 'paid-memberships-pro' ); ?></label><br/>
 			</label>
 		</div>
 		<div class="pmpro-wizard__field">
@@ -66,7 +66,7 @@ global $pmpro_pages;
 			<?php wp_nonce_field( 'pmpro_wizard_step_1_nonce', 'pmpro_wizard_step_1_nonce' ); ?>
 			<input type="hidden" name="wizard-action" value="step-1"/>
 			<input type="submit" name="submit" class="button button-primary button-hero" value="<?php esc_attr_e( 'Submit and Continue', 'paid-memberships-pro' ); ?>" /><br/>
-			<span class="pmpro_wizard__skip" onclick="window.location.href='/wp-admin/admin.php?page=pmpro-wizard&step=payments';"><?php esc_html_e( 'Skip', 'paid-memberships-pro' ); ?></span>
+			<a class="pmpro_wizard__skip" href="<?php echo esc_url( admin_url( 'admin.php?page=pmpro-wizard&step=payments' ) );?>"><?php esc_html_e( 'Skip', 'paid-memberships-pro' ); ?></a>
 		</p>
 	</form>
 </div> <!-- end pmpro-wizard__step-1 -->
