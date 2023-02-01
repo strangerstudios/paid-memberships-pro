@@ -37,7 +37,7 @@
 	//get users (search input field)
 	$search_key = false;
 	if( isset( $_REQUEST['s'] ) ) {
-		$s = sanitize_text_field( trim( $_REQUEST['s'] ) );
+		$s = trim( sanitize_text_field( $_REQUEST['s'] ) );
 	} else {
 		$s = '';
 	}
@@ -435,21 +435,20 @@
 			}
 
 			//joindate and enddate
-			array_push($csvoutput, pmpro_enclose(date($dateformat, $theuser->joindate)));
+			array_push($csvoutput, pmpro_enclose(date_i18n($dateformat, $theuser->joindate)));
 
 			if($theuser->membership_id)
 			{
 				if($theuser->enddate)
 					array_push($csvoutput, pmpro_enclose(apply_filters("pmpro_memberslist_expires_column", date_i18n($dateformat, $theuser->enddate), $theuser)));
 				else
-					array_push($csvoutput, pmpro_enclose(apply_filters("pmpro_memberslist_expires_column", "Never", $theuser)));
+					array_push($csvoutput, pmpro_enclose(apply_filters("pmpro_memberslist_expires_column", __('Never', 'paid-memberships-pro'), $theuser)));
 			}
-			elseif($l == "oldmembers" && $theuser->enddate)
-			{
-				array_push($csvoutput, pmpro_enclose(date($dateformat, $theuser->enddate)));
+			elseif($l == "oldmembers" && $theuser->enddate) {
+				array_push($csvoutput, pmpro_enclose(date_i18n($dateformat, $theuser->enddate)));
+			} else {
+				array_push($csvoutput, __('N/A', 'paid-memberships-pro'));
 			}
-			else
-				array_push($csvoutput, "N/A");
 
 			//any extra columns
 			if(!empty($extra_columns))

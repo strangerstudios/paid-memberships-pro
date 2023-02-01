@@ -58,7 +58,7 @@ function pmpro_getClassForField( $field ) {
 function pmpro_admin_init_redirect_old_menu_items() {	
 	if ( is_admin()
 		&& ! empty( $_REQUEST['page'] ) && $_REQUEST['page'] == 'pmpro_license_settings'
-		&& basename( $_SERVER['SCRIPT_NAME'] ) == 'options-general.php' ) {
+		&& basename( sanitize_text_field( $_SERVER['SCRIPT_NAME'] ) ) == 'options-general.php' ) {
 		wp_safe_redirect( admin_url( 'admin.php?page=pmpro-license' ) );
 		exit;
 	}
@@ -191,7 +191,7 @@ function pmpro_check_for_deprecated_add_ons() {
 	// If any deprecated add ons are active, show warning.
 	if ( is_array( $deprecated_active ) && ! empty( $deprecated_active ) ) {
 		// Only show on certain pages.
-		if ( ! isset( $_REQUEST['page'] ) || strpos( $_REQUEST['page'], 'pmpro' ) === false  ) {
+		if ( ! isset( $_REQUEST['page'] ) || strpos( sanitize_text_field( $_REQUEST['page'] ), 'pmpro' ) === false  ) {
 			return;
 		}
 		?>

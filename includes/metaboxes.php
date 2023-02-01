@@ -79,7 +79,7 @@ function pmpro_page_save( $post_id ) {
 	}
 
 	// Verify the nonce.
-	if ( ! wp_verify_nonce( $_POST['pmpro_noncename'], plugin_basename( __FILE__ ) ) ) {
+	if ( ! wp_verify_nonce( sanitize_key( $_POST['pmpro_noncename'] ), plugin_basename( __FILE__ ) ) ) {
 		return $post_id;
 	}
 
@@ -101,7 +101,7 @@ function pmpro_page_save( $post_id ) {
 
 	// OK, we're authenticated. We need to find and save the data.
 	if( ! empty( $_POST['page_levels'] ) ) {
-		$mydata = $_POST['page_levels'];
+		$mydata = array_map( 'intval', $_POST['page_levels'] );
 	} else {
 		$mydata = NULL;
 	}

@@ -7,6 +7,11 @@ function pmpro_cron_expire_memberships()
 {
 	global $wpdb;
 
+	//Don't let anything run if PMPro is paused
+	if( pmpro_is_paused() ) {
+		return;
+	}
+
 	//clean up errors in the memberships_users table that could cause problems
 	pmpro_cleanup_memberships_users_table();
 
@@ -57,6 +62,11 @@ add_action("pmpro_cron_expiration_warnings", "pmpro_cron_expiration_warnings");
 function pmpro_cron_expiration_warnings()
 {
 	global $wpdb;
+
+	//Don't let anything run if PMPro is paused
+	if( pmpro_is_paused() ) {
+		return;
+	}
 
 	//clean up errors in the memberships_users table that could cause problems
 	pmpro_cleanup_memberships_users_table();
@@ -131,6 +141,11 @@ add_action("pmpro_cron_credit_card_expiring_warnings", "pmpro_cron_credit_card_e
 function pmpro_cron_credit_card_expiring_warnings()
 {
 	global $wpdb;
+
+	//Don't let anything run if PMPro is paused
+	if( pmpro_is_paused() ) {
+		return;
+	}
 
 	//clean up errors in the memberships_users table that could cause problems
 	pmpro_cleanup_memberships_users_table();
@@ -223,6 +238,11 @@ function pmpro_cron_trial_ending_warnings()
 
 	global $wpdb;
 
+	//Don't let anything run if PMPro is paused
+	if( pmpro_is_paused() ) {
+		return;
+	}
+
 	//clean up errors in the memberships_users table that could cause problems
 	pmpro_cleanup_memberships_users_table();
 
@@ -272,6 +292,11 @@ function pmpro_cron_trial_ending_warnings()
 
 add_action( 'pmpro_cron_admin_activity_email', 'pmpro_cron_admin_activity_email' );
 function pmpro_cron_admin_activity_email() {
+	//Don't let anything run if PMPro is paused
+	if( pmpro_is_paused() ) {
+		return;
+	}
+	
 	$frequency = pmpro_getOption( 'activity_email_frequency' );
 	if ( empty( $frequency ) ) {
 		$frequency = 'week';

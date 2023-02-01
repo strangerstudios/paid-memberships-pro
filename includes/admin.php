@@ -2,12 +2,15 @@
 /*
 	Admin code.
 */
-
+// Wizard pre-header
+include( PMPRO_DIR . '/adminpages/wizard/save-steps.php' );
 require_once( PMPRO_DIR . '/includes/lib/SendWP/sendwp.php' );
+
 /**
- * Redirect to Dashboard tab if the user hasn't been there yet.
+ * Redirect to Setup Wizard if the user hasn't been there yet.
  *
  * @since 1.10
+ * @since 2.10 Redirects to the Setup Wizard instead.
  */
 function pmpro_admin_init_redirect_to_dashboard() {
 	// Can the current user view the dashboard?
@@ -19,7 +22,7 @@ function pmpro_admin_init_redirect_to_dashboard() {
 	$pmpro_dashboard_version = get_option( 'pmpro_dashboard_version', 0 );
 	if ( version_compare( $pmpro_dashboard_version, PMPRO_VERSION ) < 0 ) {
 		update_option( 'pmpro_dashboard_version', PMPRO_VERSION, 'no' );
-		wp_redirect( admin_url( 'admin.php?page=pmpro-dashboard' ) );
+		wp_redirect( admin_url( 'admin.php?page=pmpro-wizard' ) );
 		exit;
 	}
 }
@@ -78,6 +81,7 @@ function pmpro_block_dashboard() {
  * @since 2.6.2
  */
 function pmpro_init_site_health_integration() {
+
 	$site_health = PMPro_Site_Health::init();
 	$site_health->hook();
 }
@@ -176,3 +180,4 @@ function pmpro_pause_mode_notice() {
 	}
 
 }
+

@@ -1,23 +1,26 @@
 <?php
 /**
  * Get array of PMPro Capabilities
+ * Used below to figure out which page to have the main Membership menu link to.
+ * The order is important. The first cap the user has is used.
  */
 function pmpro_getPMProCaps() {
 	$pmpro_caps = array(
 		//pmpro_memberships_menu //this controls viewing the menu itself
-		'pmpro_dashboard',
+		'pmpro_dashboard',				
+		'pmpro_memberslist',
+		'pmpro_orders',
+		'pmpro_reports',				
 		'pmpro_membershiplevels',
+		'pmpro_discountcodes',
 		'pmpro_pagesettings',
 		'pmpro_paymentsettings',
-		'pmpro_emailsettings',
-		'pmpro_userfields',
+		'pmpro_emailsettings',		
 		'pmpro_emailtemplates',
+		'pmpro_userfields',
 		'pmpro_advancedsettings',
 		'pmpro_addons',
-		'pmpro_memberslist',
-		'pmpro_reports',
-		'pmpro_orders',
-		'pmpro_discountcodes',
+		'pmpro_wizard',		
 		'pmpro_updates'
 	);
 
@@ -80,6 +83,15 @@ function pmpro_add_pages() {
 	if ( pmpro_isUpdateRequired() ) {
 		add_submenu_page( 'pmpro-dashboard', __( 'Updates Required', 'paid-memberships-pro' ), __( 'Updates Required', 'paid-memberships-pro' ), 'pmpro_updates', 'pmpro-updates', 'pmpro_updates' );
 	}
+	
+	//Logic added here in order to always reach this page if PMPro is setup. ?page=pmpro-wizard is always reachable should people want to rerun through the Setup Wizard.
+	if ( pmpro_show_setup_wizard_link() ) {
+		$wizard_location = 'pmpro-dashboard';
+	} else {
+		$wizard_location = 'admin.php';	// Registers the page, but doesn't show up in menu.
+	}
+	
+	add_submenu_page( $wizard_location, __( 'Setup Wizard', 'paid-memberships-pro' ), __( 'Setup Wizard', 'paid-memberships-pro' ), 'pmpro_wizard', 'pmpro-wizard', 'pmpro_wizard' );
 }
 add_action( 'admin_menu', 'pmpro_add_pages' );
 
@@ -259,6 +271,10 @@ function pmpro_dashboard() {
 	wp_enqueue_script( 'postbox' );
 
 	require_once( PMPRO_DIR . '/adminpages/dashboard.php' );
+}
+
+function pmpro_wizard() {
+	require_once( PMPRO_DIR . '/adminpages/wizard/wizard.php' );
 }
 
 function pmpro_membershiplevels() {

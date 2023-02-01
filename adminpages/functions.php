@@ -388,7 +388,7 @@ function pmpro_add_email_order_modal() {
 	if ( ! empty( $_REQUEST['email'] ) && ! empty( $_REQUEST['order'] ) ) {
 		$email = new PMProEmail();
 		$user  = get_user_by( 'email', sanitize_email( $_REQUEST['email'] ) );
-		$order = new MemberOrder( $_REQUEST['order'] );
+		$order = new MemberOrder( intval( $_REQUEST['order'] ) );
 		if ( ! empty( $user ) && ! empty( $order ) && $email->sendBillableInvoiceEmail( $user, $order ) ) { ?>
 			<div class="notice notice-success is-dismissible">
 				<p><?php esc_html_e( 'Invoice emailed successfully.', 'paid-memberships-pro' ); ?></p>
@@ -432,6 +432,18 @@ function pmpro_add_email_order_modal() {
 	</div>
 	<?php
 }
+
+/**
+
+ * Remove all WordPress admin notifications from our Wizard area as it's distracting.
+ */
+function pmpro_wizard_remove_admin_notices() {
+	if ( ! empty( $_REQUEST['page'] ) && $_REQUEST['page'] == 'pmpro-wizard' ) {
+		remove_all_actions( 'admin_notices' );
+		remove_all_actions( 'all_admin_notices' );
+	}
+}
+add_action( 'in_admin_header', 'pmpro_wizard_remove_admin_notices');
 
 /**
  * Get the available level templates.

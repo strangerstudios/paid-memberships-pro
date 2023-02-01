@@ -1,19 +1,14 @@
-<?php
-	global $isapage;
-	$isapage = true;
-
+<?php	
 	//in case the file is loaded directly
-	if(!defined("ABSPATH"))
-	{
-		define('WP_USE_THEMES', false);
-		require_once(dirname(__FILE__) . '/../../../../wp-load.php');
+	if( ! defined( 'ABSPATH' ) ) {
+		exit;
 	}
 
 	//vars
 	global $wpdb;
 	if(!empty($_REQUEST['code']))
 	{
-		$discount_code = preg_replace("/[^A-Za-z0-9\-]/", "", $_REQUEST['code']);
+		$discount_code = preg_replace( "/[^A-Za-z0-9\-]/", "", sanitize_text_field( $_REQUEST['code'] ) );
 		$discount_code_id = $wpdb->get_var( $wpdb->prepare( "SELECT id FROM $wpdb->pmpro_discount_codes WHERE code = %s LIMIT 1", $discount_code ) );
 	}
 	else
@@ -23,7 +18,7 @@
 	}
 
 	if ( ! empty( $_REQUEST['level'] ) ) {
-		$level_str = $_REQUEST['level'];
+		$level_str = sanitize_text_field( $_REQUEST['level'] );
 		$level_str = str_replace( ' ', '+', $level_str ); // If val passed via URL, + would be converted to space.
 		$level_ids = array_map( 'intval', explode( '+', $level_str ) );
 	} else {
@@ -31,7 +26,7 @@
 	}
 
 	if(!empty($_REQUEST['msgfield']))
-		$msgfield = preg_replace("/[^A-Za-z0-9\_\-]/", "", $_REQUEST['msgfield']);
+		$msgfield = preg_replace("/[^A-Za-z0-9\_\-]/", "", sanitize_text_field( $_REQUEST['msgfield'] ) );
 	else
 		$msgfield = NULL;
 
