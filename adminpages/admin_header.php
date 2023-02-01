@@ -207,6 +207,7 @@
 			'pmpro-memberslist',
 			'pmpro-reports',
 			'pmpro-orders',
+			'pmpro-subscriptions',
 			'pmpro-discountcodes',
 			'pmpro-pagesettings',
 			'pmpro-paymentsettings',
