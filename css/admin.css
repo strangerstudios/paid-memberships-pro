@@ -149,6 +149,24 @@
 	font-size: 18px;
 }
 
+/* Footer */
+.pmpro-rate-us a {
+	font-weight: bold;
+	text-decoration: none;
+}
+
+.pmpro-rate-us a:hover {
+	border-bottom: 1px solid;
+}
+.pmpro-rate-us .dashicons {
+	color: #ffb900;
+	display: inline-block;
+	font-size: 14px;
+	height: 16px;
+	line-height: inherit;
+	width: 16px;
+}
+
 /* Scollable Boxes */
 .pmpro_scrollable {
 	background-color: #FFFFFF;
@@ -1233,6 +1251,7 @@ tr.pmpro_settings_divider td {
 	border-radius: 4px;
 	font-size: 14px;
 	margin-right: 5px;
+	white-space: break-spaces;
 }
 .pmpro_notification-general h3 {
 	color: #567533;
@@ -1260,9 +1279,6 @@ tr.pmpro_settings_divider td {
 }
 
 /* Setup Wizard Styles */
-/*.admin_page_pmpro-wizard .notice {
-	display: none;
-}*/
 .memberships_page_pmpro-wizard #wpcontent {
 	padding-left: 0;
 }
@@ -1376,19 +1392,6 @@ tr.pmpro_settings_divider td {
 	margin-left: auto;
 	margin-right: auto;
 	max-width: 650px;
-}
-
-@media screen and (max-width: 782px) {
-	.pmpro-stepper .pmpro-stepper__step-label {
-		display: none;
-	}
-
-	.pmpro-wizard .pmpro-wizard__container {
-		padding-left: 1em;
-		padding-right: 1em;
-		margin-bottom: 3em;
-		margin-top: 0;
-	}
 }
 
 .pmpro-wizard__container .pmpro-wizard__step {
@@ -1547,12 +1550,26 @@ tr.pmpro_settings_divider td {
 .pmpro-wizard__subtitle {
 	font-size: 20px;
 	font-weight: bold;
+	line-height: 26px;
 }
 
-.pmpro-wizard__col3 {
-	width: 29%;
-	display: inline-flex;
-	padding: 10px;
+.pmpro-wizard__addons {
+	display: grid;
+	grid-gap: 20px;
+	grid-template-columns: 1fr 1fr 1fr;
+	margin-bottom: 20px;
+}
+
+.pmpro-wizard__addons > * {
+	text-align: center;
+}
+
+.pmpro-wizard__addons img {
+	border-radius: 50%;
+	box-shadow: 0px 0px 5px rgba( 0, 0, 0, 0.2 );
+	display: block;
+	margin: 15px auto;
+	max-width: 120px;
 }
 
 .pmpro-wizard__textbreak::before,
@@ -1580,6 +1597,29 @@ a.pmpro_wizard__skip {
 
 a.pmpro_wizard__skip:hover {
 	cursor: pointer;
+}
+
+@media screen and (max-width: 782px) {
+	.pmpro-stepper .pmpro-stepper__step-label {
+		display: none;
+	}
+
+	.pmpro-wizard .pmpro-wizard__container {
+		padding-left: 1em;
+		padding-right: 1em;
+		margin-bottom: 3em;
+		margin-top: 0;
+	}
+
+	.pmpro-wizard__addons,
+	.pmpro-wizard__col {
+		display: block;
+		width: 100%;
+	}
+
+	.pmpro-wizard__addons > * {
+		margin-bottom: 40px;
+	}
 }
 
 /* highlighted trs */
@@ -1987,6 +2027,17 @@ button.pmpro_report_th_closed:before {
 
 .pmpro_admin #pmpro_dashboard_welcome ul li a .dashicons {
 	color: #82878c;
+}
+
+#pmpro_dashboard_news_updates ul li {
+	font-size: 14px;
+	line-height: 20px;
+	margin: 15px 0;
+}
+
+#pmpro_dashboard_news_updates ul li a {
+	display: block;
+	text-decoration: underline;
 }
 
 .pmpro_admin p.text-center {
