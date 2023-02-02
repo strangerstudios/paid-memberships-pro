@@ -155,9 +155,34 @@ add_action( 'admin_init', 'pmpro_handle_pause_mode_actions' );
  * @since TBD
  */
 function pmpro_pause_mode_notice() {
+	global $current_user;
+	if ( isset( $_REQUEST[ 'show_pause_notification' ] ) ) {
+		$pmpro_show_pause_notification = $_REQUEST[ 'show_pause_notification' ];
+	} else {
+		$pmpro_show_pause_notification = false;
+	}
 
-	if ( pmpro_is_paused() ) { ?>
-		<div class="notice notice-error pmpro_notification pmpro_notification-error">
+	// Remove notice from dismissed user meta if URL parameter is set.
+	$archived_notifications = get_user_meta( $current_user->ID, 'pmpro_archived_notifications', true );
+	if ( ! is_array( $archived_notifications ) ) {
+		$archived_notifications = array();
+	}
+
+	if ( array_key_exists( 'hide_pause_notification', $archived_notifications ) ) {
+		$show_notice = false;
+		if ( ! empty( $pmpro_show_pause_notification ) && $pmpro_show_pause_notification === '1' ) {
+			unset( $archived_notifications['hide_pause_notification'] );
+			update_user_meta( $current_user->ID, 'pmpro_archived_notifications', $archived_notifications );
+			$show_notice = true;
+		}
+	} else {
+		$show_notice = true;
+	}
+
+	if ( pmpro_is_paused() && ! empty( $show_notice ) ) {
+		// Site is paused. Show the notice. ?>
+		<div id="hide_pause_notification" class="notice notice-error pmpro_notification pmpro_notification-error">
+			<button type="button" class="pmpro-notice-button notice-dismiss" value="hide_pause_notification"><span class="screen-reader-text"><?php esc_html_e( 'Dismiss this notice.', 'paid-memberships-pro' ); ?></span></button>
 			<div class="pmpro_notification-icon">
 				<span class="dashicons dashicons-warning"></span>
 			</div>
@@ -180,6 +205,4 @@ function pmpro_pause_mode_notice() {
 		</div>
 		<?php
 	}
-
 }
-

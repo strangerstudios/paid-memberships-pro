@@ -21,7 +21,8 @@ function pmpro_getPMProCaps() {
 		'pmpro_advancedsettings',
 		'pmpro_addons',
 		'pmpro_wizard',		
-		'pmpro_updates'
+		'pmpro_updates',
+		'pmpro_manage_pause_mode'
 	);
 
 	return $pmpro_caps;
@@ -241,6 +242,19 @@ function pmpro_admin_bar_menu() {
 			)
 		);
 	}
+
+	$strong_color = '#FFB900';
+	if ( pmpro_is_paused() ) {
+		$wp_admin_bar->add_menu(
+			array(
+				'id' => 'pmpro-paused',
+				'parent' => 'paid-memberships-pro',
+				'title' => __( '<strong style="color: ' . $strong_color . '; line-height: 26px;">Paused</span>', 'paid-memberships-pro' ),
+				'href' => admin_url( '/admin.php?page=pmpro-dashboard&show_pause_notification=1' )
+			)
+		);
+	}
+
 }
 add_action( 'admin_bar_menu', 'pmpro_admin_bar_menu', 1000);
 
