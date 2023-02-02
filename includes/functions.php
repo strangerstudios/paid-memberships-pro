@@ -342,8 +342,7 @@ function pmpro_isLevelExpiringSoon( &$level ) {
  */
 function pmpro_loadTemplate( $page_name = null, $where = 'local', $type = 'pages', $ext = 'php' ) {
 
-	///TO DO: Version number?
-	_deprecated_function( __FUNCTION__, '3.0', 'pmpro_load_page_template()' );
+	_deprecated_function( __FUNCTION__, 'TBD', 'pmpro_load_page_template()' );
 
 	// called from page handler shortcode
 	if ( is_null( $page_name ) ) {
