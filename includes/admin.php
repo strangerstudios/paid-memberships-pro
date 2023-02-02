@@ -96,25 +96,11 @@ add_action( 'admin_init', 'pmpro_init_site_health_integration' );
 function pmpro_site_url_check() {
 
 	//Checking if a stored site URL exists on first time installs
-	if( empty( pmpro_getOption( 'last_known_url' ) ) ) {
+	if ( empty( pmpro_getOption( 'last_known_url' ) ) ) {
 		pmpro_setOption( 'last_known_url', get_site_url() );
 	}
 
-	//The WP_ENVIRONMENT_TYPE has been changed, we should pause everything
-	//But only if we're not forcing pause mode to be turned off
-	//local forces the WP_ENVIRONMENT_TYPE to be set to local
-	if( ! pmpro_is_production_site() && ! pmpro_getOption( 'pause_mode_override' ) ) {
-		//Site URL's don't match - enable pause mode
-		pmpro_setOption( 'pause_mode', true );
-	}
-
-	if ( ! pmpro_is_production_site() && ! empty( $_REQUEST['pmpro-reactivate-services'] ) ) {
-		//We're on a staging site but want to activate services
-		pmpro_setOption( 'pause_mode_override', true ); 
-		pmpro_setOption( 'pause_mode', false );	
-	}
-
-	if( ! pmpro_is_paused() ){
+	if ( ! pmpro_is_paused() ) {
 		//We aren't paused, check if the domains match
 		if( ! pmpro_compare_siteurl() ) {
 			//Site URL's don't match - enable pause mode
