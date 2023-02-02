@@ -87,7 +87,6 @@
 	display: inline-block;
 	margin: 0 0 0 10px;
 }
-
 .pmpro_banner .pmpro_meta a.pmpro_license_tag {
 	font-weight: bold;
 	text-decoration: none;
@@ -116,6 +115,23 @@
 
 .pmpro_banner .pmpro_meta a.pmpro_license_tag.pmpro_license_tag-invalid:before {
 	content: "\f335";
+}
+
+.pmpro_banner .pmpro_meta .pmpro_paused_tag {
+	color: #ffb900;
+	font-weight: bold;
+	text-decoration: none;
+}
+
+.pmpro_banner .pmpro_meta .pmpro_paused_tag:before {
+	content: "\f534";
+	display: inline-block;
+	font: 400 16px/1 dashicons;
+	left: 0;
+	padding-right: 3px;
+	position: relative;
+	text-decoration: none;
+	vertical-align: text-bottom;
 }
 
 .pmpro_admin .subsubsub {
