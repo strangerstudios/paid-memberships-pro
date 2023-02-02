@@ -434,18 +434,6 @@ function pmpro_add_email_order_modal() {
 }
 
 /**
-
- * Remove all WordPress admin notifications from our Wizard area as it's distracting.
- */
-function pmpro_wizard_remove_admin_notices() {
-	if ( ! empty( $_REQUEST['page'] ) && $_REQUEST['page'] == 'pmpro-wizard' ) {
-		remove_all_actions( 'admin_notices' );
-		remove_all_actions( 'all_admin_notices' );
-	}
-}
-add_action( 'in_admin_header', 'pmpro_wizard_remove_admin_notices');
-
-/**
  * Get the available level templates.
  * 
  * @return array $level_templates An associative array of level templates and their attributes.
