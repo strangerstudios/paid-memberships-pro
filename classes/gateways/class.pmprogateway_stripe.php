@@ -2444,7 +2444,13 @@ class PMProGateway_stripe extends PMProGateway {
 						if ( pmpro_license_isValid( null, pmpro_license_get_premium_types() ) ) {
 							esc_html_e( 'Note: You have a valid license and are not charged additional platform fees for payment processing.', 'paid-memberships-pro');
 						} else {
-							esc_html_e( 'Note: You are using the free Stripe payment gateway integration. This includes an additional 1% fee for payment processing. This fee is removed by activating a premium PMPro license.', 'paid-memberships-pro');
+							// TODO: Maybe eventually update this logic to call get_application_fee_percentage() instead.
+							// Not making that change yet as it is currently marked as "deprecated for public use".
+							$application_fee_percentage = pmpro_getOption( 'stripe_connect_reduced_application_fee' );
+							if ( empty( $application_fee_percentage ) ) {
+								$application_fee_percentage = 2; // 2% is the default.
+							}
+							echo esc_html( sprintf( __( 'Note: You are using the free Stripe payment gateway integration. This includes an additional %s fee for payment processing. This fee is removed by activating a premium PMPro license.', 'paid-memberships-pro' ), intval( $application_fee_percentage ) . '%' ) );
 						}
 						echo ' <a href="https://www.paidmembershipspro.com/gateway/stripe/?utm_source=plugin&utm_medium=pmpro-paymentsettings&utm_campaign=gateways&utm_content=stripe-fees#tab-fees" target="_blank" rel="noopener noreferrer">' . esc_html__( 'Learn More &raquo;', 'paid-memberships-pro' ) . '</a>';
 					?>
