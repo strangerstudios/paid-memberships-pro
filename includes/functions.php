@@ -462,6 +462,7 @@ function pmpro_load_page_template( $page_name = null, $plugin_dir = PMPRO_DIR, $
 				/**
 				 * MMPU is loading a template.
 				 * Don't record the version because we maintain these files
+				 * TODO: Remove this check when MMPU is merged into core.
 				 */
 				$mmpu_present = true;
 			}
