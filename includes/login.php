@@ -324,6 +324,10 @@ function pmpro_login_forms_handler( $show_menu = true, $show_logout_link = true,
 				$message = __( 'Unknown username. Check again or try your email address.', 'paid-memberships-pro' );
 				$msgt = 'pmpro_error';
 				break;
+			case 'invalid_email' :
+				$message = __( 'Unknown email address. Check again or try your username.', 'paid-memberships-pro' );
+				$msgt = 'pmpro_error';
+				break;
 			case 'empty_username':
 				$message = __( 'Empty username. Please enter your username and try again.', 'paid-memberships-pro' );
 				$msgt = 'pmpro_error';
