@@ -1003,6 +1003,9 @@
 			$group->allow_multiple_selections = false;
 		}
 
+		// Check if we have any MMPU incompatible Add Ons.
+		$mmpu_incompatible_add_ons = pmpro_get_mmpu_incompatible_add_ons();
+
 		// Set up the UI.
 		?>
 		<hr class="wp-header-end">
@@ -1017,6 +1020,25 @@
 			esc_html_e( 'Add New Group', 'paid-memberships-pro' );
 		 } ?>
 		</h1>
+		<?php
+		if ( ! empty( $mmpu_incompatible_add_ons ) ) {
+			?>
+			<div class="pmpro_error">
+				<p>
+					<?php
+					echo sprintf(
+						// translators: %s is the list of incompatible add ons.
+						esc_html__( 'The following add ons are not compatible with "Multiple Memberships Per User" setups: %s', 'paid-memberships-pro' ),
+						esc_html( implode( ', ', $mmpu_incompatible_add_ons ) )
+					);
+					echo '<br />';
+					esc_html_e( 'You should not have multiple level groups or a  group that allows users to have multiple levels from the group while those Add Ons are active.', 'paid-memberships-pro' );
+					?>
+				</p>
+			</div>
+			<?php
+		}
+		?>
 		<form action="<?php esc_attr_e( add_query_arg( 'page', 'pmpro-membershiplevels' , admin_url( 'admin.php') ) ) ?>" method="post" enctype="multipart/form-data">
 		<input name="saveid" type="hidden" value="<?php echo esc_attr( $edit_group ); ?>" />
 		<input type="hidden" name="action" value="save_group" />
@@ -1164,6 +1186,22 @@
 			}
 		}
 
+		// Check if we have any MMPU incompatible Add Ons.
+		$mmpu_incompatible_add_ons = pmpro_get_mmpu_incompatible_add_ons();
+
+		// Check if the current setup has multiple level groups or a group that allows a user to have multiple levels.
+		$is_mmpu_setup = false;
+		if ( count( $level_groups ) > 1 ) {
+			$is_mmpu_setup = true;
+		} else {
+			foreach ( $level_groups as $level_group ) {
+				if ( $level_group->allow_multiple_selections ) {
+					$is_mmpu_setup = true;
+					break;
+				}
+			}
+		}
+
 		?>
 		<hr class="wp-header-end">
 		<?php if( empty( $s ) && count( $reordered_levels ) === 0 ) { ?>
@@ -1183,8 +1221,25 @@
 			</form>
 
 			<h1 class="wp-heading-inline"><?php esc_html_e( 'Membership Levels', 'paid-memberships-pro' ); ?></h1>
-
 			<?php
+				if ( ! empty( $mmpu_incompatible_add_ons ) && $is_mmpu_setup ) {
+					?>
+					<div class="pmpro_error">
+						<p>
+							<?php
+							echo sprintf(
+								// translators: %s is the list of incompatible add ons.
+								esc_html__( 'The following add ons are not compatible with "Multiple Memberships Per User" setups: %s', 'paid-memberships-pro' ),
+								esc_html( implode( ', ', $mmpu_incompatible_add_ons ) )
+							);
+							echo '<br />';
+							esc_html_e( 'You should not have multiple level groups or a  group that allows users to have multiple levels from the group while those Add Ons are active.', 'paid-memberships-pro' );
+							?>
+						</p>
+					</div>
+					<?php
+				}
+
 				// Build the page action links to return.
 				$pmpro_membershiplevels_page_action_links = array();
 

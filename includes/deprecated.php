@@ -649,6 +649,17 @@ function pmpro_multiple_memberships_per_user_deprecated() {
 }
 add_action( 'plugins_loaded', 'pmpro_multiple_memberships_per_user_deprecated', 20 );
 
+/**
+ * Check for active Add Ons that are not yet MMPU compatible.
+ *
+ * @since TBD
+ * @return array[string] Add On names that are not yet MMPU compatible.
+ */
+function pmpro_get_mmpu_incompatible_add_ons() {
+	// Add ons will use this filter to add their own names if they are not yet MMPU compatible.
+	return apply_filters( 'pmpro_mmpu_incompatible_add_ons', array() );
+}
+
 // Check if installed, deactivate it and show a notice now.
 function pmpro_check_for_deprecated_add_ons() {
 
