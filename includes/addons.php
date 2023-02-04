@@ -105,7 +105,7 @@ function pmpro_getAddonBySlug( $slug ) {
  */
 function pmpro_get_addon_categories() {
 	return array(
-		'popular' => array( 'pmpro-advanced-levels-shortcode', 'pmpro-register-helper', 'pmpro-woocommerce', 'pmpro-courses', 'pmpro-member-directory', 'pmpro-subscription-delays', 'pmpro-roles', 'pmpro-add-paypal-express', 'pmpro-set-expiration-dates' ),
+		'popular' => array( 'pmpro-advanced-levels-shortcode', 'pmpro-woocommerce', 'pmpro-courses', 'pmpro-member-directory', 'pmpro-subscription-delays', 'pmpro-roles', 'pmpro-add-paypal-express', 'pmpro-set-expiration-dates' ),
 		'association' => array( 'basic-user-avatars', 'pmpro-add-member-admin', 'pmpro-add-name-to-checkout', 'pmpro-approvals', 'pmpro-donations', 'pmpro-events', 'pmpro-import-users-from-csv', 'pmpro-member-directory', 'pmpro-membership-manager-role', 'pmpro-pay-by-check', 'pmpro-set-expiration-dates', 'pmpro-sponsored-members' ),
 		'coaching' => array( 'pmpro-affiliates', 'pmpro-courses', 'pmpro-gift-levels', 'pmpro-member-badges', 'pmpro-membership-card', 'pmpro-user-pages' ),
 		'community' => array( 'pmpro-approvals', 'pmpro-bbpress', 'pmpro-buddypress', 'pmpro-discord-add-on', 'pmpro-email-confirmation', 'pmpro-import-users-from-csv', 'pmpro-invite-only' ),
