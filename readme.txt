@@ -158,7 +158,7 @@ Not sure? You can find out by doing a bit a research.
 == Changelog ==
 * FEATURE: Added Setup Wizard
 * FEATURE: Stripe Checkout and Stripe Customer Portal integrations are now fully released. Increased Stripe fee to 2% for newly connected sites.
-* ENHANCEMENT: Now "pausing" some PMPro functionality when on a staging site or the site URL changes.
+* ENHANCEMENT: Now "pausing" some PMPro functionality when the site URL changes.
 * ENHANCEMENT: Categories and tags can now be restricted directly from their respective settings pages.
 * ENHANCEMENT: Updated Stripe webhook checker to check each event type separately.
 * ENHANCEMENT: Admins will now be given the choice to delete a user's membership history when deleting a user.

@@ -21,7 +21,8 @@ function pmpro_getPMProCaps() {
 		'pmpro_advancedsettings',
 		'pmpro_addons',
 		'pmpro_wizard',		
-		'pmpro_updates'
+		'pmpro_updates',
+		'pmpro_manage_pause_mode'
 	);
 
 	return $pmpro_caps;

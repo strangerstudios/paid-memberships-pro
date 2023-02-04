@@ -96,25 +96,11 @@ add_action( 'admin_init', 'pmpro_init_site_health_integration' );
 function pmpro_site_url_check() {
 
 	//Checking if a stored site URL exists on first time installs
-	if( empty( pmpro_getOption( 'last_known_url' ) ) ) {
+	if ( empty( pmpro_getOption( 'last_known_url' ) ) ) {
 		pmpro_setOption( 'last_known_url', get_site_url() );
 	}
 
-	//The WP_ENVIRONMENT_TYPE has been changed, we should pause everything
-	//But only if we're not forcing pause mode to be turned off
-	//local forces the WP_ENVIRONMENT_TYPE to be set to local
-	if( ! pmpro_is_production_site() && ! pmpro_getOption( 'pause_mode_override' ) ) {
-		//Site URL's don't match - enable pause mode
-		pmpro_setOption( 'pause_mode', true );
-	}
-
-	if ( ! pmpro_is_production_site() && ! empty( $_REQUEST['pmpro-reactivate-services'] ) ) {
-		//We're on a staging site but want to activate services
-		pmpro_setOption( 'pause_mode_override', true ); 
-		pmpro_setOption( 'pause_mode', false );	
-	}
-
-	if( ! pmpro_is_paused() ){
+	if ( ! pmpro_is_paused() ) {
 		//We aren't paused, check if the domains match
 		if( ! pmpro_compare_siteurl() ) {
 			//Site URL's don't match - enable pause mode
@@ -155,30 +141,56 @@ add_action( 'admin_init', 'pmpro_handle_pause_mode_actions' );
  * @since TBD
  */
 function pmpro_pause_mode_notice() {
-
-	if( pmpro_is_paused() ) {
-
-		?>
-		<div class="notice notice-error">
-		<p>
-			<?php				
-				// translators: %s: Contains the URL to a blog post
-				printf(
-					__( '<strong>Warning:</strong> We have detected that your site URL has changed. All cron jobs and automated services have been disabled. Read more about this <a href="%s">here</a>', 'paid-memberships-pro' ), 'BLOG_POST_URL'
-				);
-			?>
-		</p>
-		<?php if ( current_user_can( 'pmpro_manage_pause_mode' ) ) { ?>
-		<p>
-			<a href='<?php echo admin_url( '?pmpro-reactivate-services=true' ); ?>' class='button'><?php _e( 'Update my primary domain and reactivate all services', 'paid-memberships-pro' ); ?></a>
-		</p>
-		<?php } else { ?>
-			<p><?php _e( 'Only users with the <code>pmpro_manage_pause_mode</code> capability are able to deactivate pause mode.', 'paid-memberships-pro' ); ?></p>
-		<?php } ?>
-    	</div>
-		<?php
+	global $current_user;
+	if ( isset( $_REQUEST[ 'show_pause_notification' ] ) ) {
+		$pmpro_show_pause_notification = $_REQUEST[ 'show_pause_notification' ];
+	} else {
+		$pmpro_show_pause_notification = false;
 	}
 
+	// Remove notice from dismissed user meta if URL parameter is set.
+	$archived_notifications = get_user_meta( $current_user->ID, 'pmpro_archived_notifications', true );
+	if ( ! is_array( $archived_notifications ) ) {
+		$archived_notifications = array();
+	}
+
+	if ( array_key_exists( 'hide_pause_notification', $archived_notifications ) ) {
+		$show_notice = false;
+		if ( ! empty( $pmpro_show_pause_notification ) && $pmpro_show_pause_notification === '1' ) {
+			unset( $archived_notifications['hide_pause_notification'] );
+			update_user_meta( $current_user->ID, 'pmpro_archived_notifications', $archived_notifications );
+			$show_notice = true;
+		}
+	} else {
+		$show_notice = true;
+	}
+
+	if ( pmpro_is_paused() && ! empty( $show_notice ) ) {
+		// Site is paused. Show the notice. ?>
+		<div id="hide_pause_notification" class="notice notice-error pmpro_notification pmpro_notification-error">
+			<button type="button" class="pmpro-notice-button notice-dismiss" value="hide_pause_notification"><span class="screen-reader-text"><?php esc_html_e( 'Dismiss this notice.', 'paid-memberships-pro' ); ?></span></button>
+			<div class="pmpro_notification-icon">
+				<span class="dashicons dashicons-warning"></span>
+			</div>
+			<div class="pmpro_notification-content">
+				<h3><?php esc_html_e( 'Site URL Change Detected', 'paid-memberships-pro' ); ?></h3>
+				<p><?php
+					// translators: %s: Contains the URL to a blog post
+					printf(
+						__( '<strong>Warning:</strong> We have detected that your site URL has changed. All cron jobs and automated services have been disabled.', 'paid-memberships-pro' ), ''
+					);
+				?></p>
+				<?php if ( current_user_can( 'pmpro_manage_pause_mode' ) ) { ?>
+				<p>
+					<a href='<?php echo admin_url( '?pmpro-reactivate-services=true' ); ?>' class='button'><?php _e( 'Update my primary domain and reactivate all services', 'paid-memberships-pro' ); ?></a>
+				</p>
+				<?php } else { ?>
+					<p><?php _e( 'Only users with the <code>pmpro_manage_pause_mode</code> capability are able to deactivate pause mode.', 'paid-memberships-pro' ); ?></p>
+				<?php } ?>
+				</div>
+		</div>
+		<?php
+	}
 }
 
 /**

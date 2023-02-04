@@ -1929,7 +1929,7 @@ class PMProGateway_stripe extends PMProGateway {
 				return false;
 			}
 			// Payment should now be processed.
-			$payment_transaction_id = $payment_intent->charges->data[0]->id;
+			$payment_transaction_id = $payment_intent->latest_charge;
 
 			// Note the customer so that we can create a subscription if needed..
 			$customer = $payment_intent->customer;
@@ -1972,8 +1972,8 @@ class PMProGateway_stripe extends PMProGateway {
 			}
 
 			// If we needed to charge an initial payment, it was successful.
-			if ( ! empty( $order->stripe_payment_intent->charges->data[0]->id ) ) {
-				$payment_transaction_id = $order->stripe_payment_intent->charges->data[0]->id;
+			if ( ! empty( $order->stripe_payment_intent->latest_charge ) ) {
+				$payment_transaction_id = $order->stripe_payment_intent->latest_charge;
 			}
 		}
 
@@ -4095,7 +4095,7 @@ class PMProGateway_stripe extends PMProGateway {
 	public function clean_up( &$order ) {
     pmpro_method_should_be_private( '2.7.0' );
 		if ( ! empty( $order->stripe_payment_intent ) && 'succeeded' == $order->stripe_payment_intent->status ) {
-			$order->payment_transaction_id = $order->stripe_payment_intent->charges->data[0]->id;
+			$order->payment_transaction_id = $order->stripe_payment_intent->latest_charge;
 		}
 
 		if ( empty( $order->subscription_transaction_id ) && ! empty( $order->stripe_subscription ) ) {
