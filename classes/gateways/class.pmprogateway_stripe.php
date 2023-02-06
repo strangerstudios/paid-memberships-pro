@@ -1817,7 +1817,7 @@ class PMProGateway_stripe extends PMProGateway {
 		}
 
 		// For one-time payments, make sure that we create an invoice.
-		if ( empty( $subscription_data ) ) {
+		if ( $checkout_session_params['mode'] === 'payment' ) {
 			$checkout_session_params['invoice_creation']['enabled'] = true;
 		}
 
