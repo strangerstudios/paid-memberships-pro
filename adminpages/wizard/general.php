@@ -4,6 +4,10 @@ $pmpro_license_key = pmpro_getOption( 'license_key' );
 $site_type         = pmpro_getOption( 'site_type' );
 $collect_payment   = pmpro_getOption( 'wizard_collect_payment' );
 
+
+// Delete the redirect option if we're on the wizard page.
+delete_option( 'pmpro_wizard_redirect' );
+	
 // Check if we should allow page generation or not.
 global $pmpro_pages;
 	if ( $pmpro_pages['account'] ||
