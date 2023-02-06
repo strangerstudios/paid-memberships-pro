@@ -215,7 +215,7 @@ function pmpro_lostpassword_url( $redirect = '' ) {
 		return wp_lostpassword_url( $redirect );
 	}
 
-	$args = array( 'action' => 'lostpassword' );
+	$args = array( 'action' => 'reset_pass' );
     if ( ! empty( $redirect ) ) {
         $args['redirect_to'] = urlencode( $redirect );
     }
@@ -315,13 +315,18 @@ function pmpro_login_forms_handler( $show_menu = true, $show_logout_link = true,
 	$message = '';
 	$msgt = 'pmpro_alert';
 	if ( isset( $_GET['action'] ) ) {
+		$username = isset( $_GET['username'] ) ? esc_html( $_GET['username'] ) : '';
 		switch ( sanitize_text_field( $_GET['action'] ) ) {
 			case 'failed':
 				$message = __( 'There was a problem with your username or password.', 'paid-memberships-pro' );
 				$msgt = 'pmpro_error';
 				break;
 			case 'invalid_username':
-				$message = __( 'Unknown username. Check again or try your email address.', 'paid-memberships-pro' );
+				$message =sprintf(
+				/* translators: %s: User name. */
+				__( '<strong>Error:</strong> The username <strong>%s</strong> is not registered on this site. If you are unsure of your username, try your email address instead.', 'paid-memberships-pro' ),
+				$username
+				);
 				$msgt = 'pmpro_error';
 				break;
 			case 'invalid_email' :
@@ -329,21 +334,28 @@ function pmpro_login_forms_handler( $show_menu = true, $show_logout_link = true,
 				$msgt = 'pmpro_error';
 				break;
 			case 'empty_username':
-				$message = __( 'Empty username. Please enter your username and try again.', 'paid-memberships-pro' );
+				$message = __( '<strong>Error:</strong> The username field is empty.', 'paid-memberships-pro');
 				$msgt = 'pmpro_error';
 				break;
 			case 'empty_password':
-				$message = __( 'Empty password. Please enter your password and try again.', 'paid-memberships-pro' );
+				$message = __( '<strong>Error:</strong> The password field is empty.', 'paid-memberships-pro' );
 				$msgt = 'pmpro_error';
 				break;
 			case 'incorrect_password':
-				$message = __( 'The password you entered for the user is incorrect. Please try again.', 'paid-memberships-pro' );
+				$message = sprintf(
+				/* translators: %s: User name. */
+				__( '<strong>Error:</strong> The password you entered for the username %s is incorrect.', 'paid-memberships-pro' ),
+				'<strong>' . $username . '</strong>'
+			) .
+			' <a href="' . pmpro_lostpassword_url() . '">' .
+			__( 'Lost your password?' ) .
+			'</a>';
 				$msgt = 'pmpro_error';
 				break;
 			case 'recovered':
 				$message = __( 'Check your email for the confirmation link.', 'paid-memberships-pro' );
 				break;
-			case 'confirmaction':
+			case 'confirmation':
 				// Check if we are processing a confirmaction for a Data Request.
 				$request_id = pmpro_confirmaction_handler();
 				$message = _wp_privacy_account_request_confirmed_message( $request_id );
@@ -863,7 +875,7 @@ add_filter( 'wp_new_user_notification_email', 'pmpro_password_reset_email_filter
 
 	// For some reason, WP core doesn't recognize this error.
 	if ( ! empty( $username ) && empty( $password ) ) {
-		$user = new WP_Error( 'invalid_username', __( 'There was a problem with your username or password.', 'paid-memberships-pro' ) );
+		$user = new WP_Error( 'empty_password',__( '<strong>Error:</strong> The password field is empty.', 'paid-memberships-pro' ) );
 	}
 
 	// check what page the login attempt is coming from
@@ -874,7 +886,11 @@ add_filter( 'wp_new_user_notification_email', 'pmpro_password_reset_email_filter
 		$error = $user->get_error_code();
 
 		if ( $error ) {
-				wp_redirect( add_query_arg( 'action', urlencode( $error ), pmpro_login_url() ) );
+				$error_args = array(
+					'action' => urlencode( $error ),
+					'username' => sanitize_text_field( $username )
+				);
+				wp_redirect( add_query_arg( $error_args, pmpro_login_url() ) );
 			} else {
 				wp_redirect( pmpro_login_url() );
 			}
