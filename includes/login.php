@@ -348,7 +348,7 @@ function pmpro_login_forms_handler( $show_menu = true, $show_logout_link = true,
 				'<strong>' . $username . '</strong>'
 			) .
 			' <a href="' . pmpro_lostpassword_url() . '">' .
-			__( 'Lost your password?' ) .
+			__( 'Lost your password?', 'paid-memberships-pro' ) .
 			'</a>';
 				$msgt = 'pmpro_error';
 				break;
