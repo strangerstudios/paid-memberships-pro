@@ -16,8 +16,10 @@ function pmpro_checkForUpgrades()
 
 	//default options
 	if(!$pmpro_db_version) {
+		pmpro_setOption( 'wizard_redirect', true ); // This is for defaulting to the wizard on first activation.
 		require_once(PMPRO_DIR . "/includes/updates/upgrade_1.php");
 		$pmpro_db_version = pmpro_upgrade_1();
+
 	}
 
 	//upgrading from early early versions of PMPro

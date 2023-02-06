@@ -18,10 +18,8 @@ function pmpro_admin_init_redirect_to_dashboard() {
 		return;
 	}
 
-	// Check if we should redirect to the dashboard
-	$pmpro_dashboard_version = get_option( 'pmpro_dashboard_version', 0 );
-	if ( version_compare( $pmpro_dashboard_version, PMPRO_VERSION ) < 0 ) {
-		update_option( 'pmpro_dashboard_version', PMPRO_VERSION, 'no' );
+	// Check if we should redirect to the wizard. This should only happen on new installs and once.
+	if ( pmpro_getOption( 'wizard_redirect', true ) ) {
 		wp_redirect( admin_url( 'admin.php?page=pmpro-wizard' ) );
 		exit;
 	}
