@@ -1263,32 +1263,36 @@ tr.pmpro_settings_divider td {
 	max-width: 65em;
 }
 
-.pmpro_notification .button, .pmpro_notification .button-secondary {
+.pmpro_notification .button {
 	border-radius: 4px;
 	font-size: 14px;
 	margin-right: 5px;
 	white-space: break-spaces;
 }
+.pmpro_notification .button-dismiss {
+	border-color: #C3C4C7;
+	color: #50575E;
+}
 .pmpro_notification-general h3 {
 	color: #567533;
 }
-.pmpro_notification-general .button {
+.pmpro_notification-general .button:not(.button-dismiss) {
 	background-color: #567533;
 	border-color: #456227;
 	color: #FFF;
 }
-.pmpro_notification-general .button:hover {
+.pmpro_notification-general .button:hover:not(.button-dismiss) {
 	background-color: #456227;
 }
 .pmpro_notification-error h3 {
 	color: #721C24;
 }
-.pmpro_notification-error .button {
+.pmpro_notification-error .button:not(.button-dismiss) {
 	background-color: #721C24;
 	border-color: #711B23;
 	color: #FFF;
 }
-.pmpro_notification-error .button:hover {
+.pmpro_notification-error .button:hover:not(.button-dismiss) {
 	background-color: #600027;
 	border-color: #600027;
 	color: #FFF;
