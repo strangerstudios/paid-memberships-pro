@@ -1799,6 +1799,7 @@ class PMProGateway_stripe extends PMProGateway {
 		$checkout_session_params = array(
 			'customer' => $customer->id,
 			'line_items' => $line_items,
+			// $subscription_data is only set if level is recurring. Could be empty though.
 			'mode' => isset( $subscription_data ) ? 'subscription' : 'payment',
 			'automatic_tax' => $automatic_tax,
 			'tax_id_collection' => $tax_id_collection,
