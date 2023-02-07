@@ -960,8 +960,7 @@ function pmpro_stripe_webhook_change_membership_level( $morder ) {
 	);
 
 	global $pmpro_error;
-	if ( ! empty( $pmpro_error ) ) {
-		echo $pmpro_error;
+	if ( ! empty( $pmpro_error ) ) {		
 		ipnlog( $pmpro_error );
 	}
 
