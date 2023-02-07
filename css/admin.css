@@ -1263,7 +1263,7 @@ tr.pmpro_settings_divider td {
 	max-width: 65em;
 }
 
-.pmpro_notification .button {
+.pmpro_notification .button, .pmpro_notification .button-secondary {
 	border-radius: 4px;
 	font-size: 14px;
 	margin-right: 5px;
