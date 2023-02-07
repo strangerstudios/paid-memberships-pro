@@ -134,6 +134,7 @@ function pmpro_handle_pause_mode_actions() {
 
 }
 add_action( 'admin_init', 'pmpro_handle_pause_mode_actions' );
+
 /**
  * Display a notice about pause mode being enabled
  *
@@ -142,7 +143,7 @@ add_action( 'admin_init', 'pmpro_handle_pause_mode_actions' );
 function pmpro_pause_mode_notice() {
 	global $current_user;
 	if ( isset( $_REQUEST[ 'show_pause_notification' ] ) ) {
-		$pmpro_show_pause_notification = $_REQUEST[ 'show_pause_notification' ];
+		$pmpro_show_pause_notification = (bool)$_REQUEST['show_pause_notification'];
 	} else {
 		$pmpro_show_pause_notification = false;
 	}
@@ -155,7 +156,7 @@ function pmpro_pause_mode_notice() {
 
 	if ( array_key_exists( 'hide_pause_notification', $archived_notifications ) ) {
 		$show_notice = false;
-		if ( ! empty( $pmpro_show_pause_notification ) && $pmpro_show_pause_notification === '1' ) {
+		if ( ! empty( $pmpro_show_pause_notification ) ) {
 			unset( $archived_notifications['hide_pause_notification'] );
 			update_user_meta( $current_user->ID, 'pmpro_archived_notifications', $archived_notifications );
 			$show_notice = true;
