@@ -8,6 +8,30 @@
 	//vars
 	global $wpdb, $pmpro_currency_symbol, $pmpro_stripe_error, $pmpro_braintree_error, $pmpro_payflow_error, $pmpro_twocheckout_error, $pmpro_pages, $gateway;
 
+
+	global $discountcode_list_table;
+	// Query, filter, and sort the data.
+	$discountcode_list_table = new PMPro_Discount_Code_List_Table();
+
+	$discountcode_list_table->prepare_items();
+
+	require_once dirname( __DIR__ ) . '/adminpages/admin_header.php';
+
+	// Render the List Table.
+	?>
+	<hr class="wp-header-end">
+	<h1 class="wp-heading-inline"><?php esc_html_e( 'Memberships Discount Codes', 'paid-memberships-pro' ); ?></h1>
+	<a href="admin.php?page=pmpro-discountcodes&edit=-1" class="page-title-action"><?php esc_html_e( 'Add New Discount Code', 'paid-memberships-pro' ); ?></a>		
+	<form id="member-list-form" method="get">
+		<input type="hidden" name="page" value="pmpro-discountcodes" />
+		<?php
+			$discountcode_list_table->search_box( __( 'Search', 'paid-memberships-pro' ), 'paid-memberships-pro' );
+			$discountcode_list_table->display();
+		?>
+	</form>
+
+	<?php
+
 	$now = current_time( 'timestamp' );
 
 	if(isset($_REQUEST['edit']))
@@ -732,7 +756,7 @@
 			</form>
 		</div>
 
-	<?php } else { ?>
+	<?php } else { //here ?>
 		<hr class="wp-header-end">
 		<h1 class="wp-heading-inline"><?php esc_html_e( 'Memberships Discount Codes', 'paid-memberships-pro' ); ?></h1>
 		<a href="admin.php?page=pmpro-discountcodes&edit=-1" class="page-title-action"><?php esc_html_e( 'Add New Discount Code', 'paid-memberships-pro' ); ?></a>
