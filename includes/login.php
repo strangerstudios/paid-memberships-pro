@@ -315,7 +315,7 @@ function pmpro_login_forms_handler( $show_menu = true, $show_logout_link = true,
 	$message = '';
 	$msgt = 'pmpro_alert';
 	if ( isset( $_GET['action'] ) ) {
-		$username = isset( $_GET['username'] ) ? esc_html( $_GET['username'] ) : '';
+		$username = isset( $_GET['username'] ) ? sanitize_text_field( $_GET['username'] ) : '';
 		switch ( sanitize_text_field( $_GET['action'] ) ) {
 			case 'failed':
 				$message = __( 'There was a problem with your username or password.', 'paid-memberships-pro' );
