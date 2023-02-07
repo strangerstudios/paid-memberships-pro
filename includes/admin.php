@@ -19,7 +19,8 @@ function pmpro_admin_init_redirect_to_dashboard() {
 	}
 
 	// Check if we should redirect to the wizard. This should only happen on new installs and once.
-	if ( pmpro_getOption( 'wizard_redirect', true ) ) {
+	if ( pmpro_getOption( 'wizard_redirect', true ) ) {		
+		delete_option( 'pmpro_wizard_redirect' );	// Deleting right away to avoid redirect loops.
 		wp_redirect( admin_url( 'admin.php?page=pmpro-wizard' ) );
 		exit;
 	}
