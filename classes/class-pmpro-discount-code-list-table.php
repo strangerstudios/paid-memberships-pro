@@ -168,6 +168,7 @@ class PMPro_Discount_Code_List_Table extends WP_List_Table {
 		else
 			$s = "";
 		
+			
 		esc_html_e( 'No discount codes found.', 'paid-memberships-pro' );
 
 	}
