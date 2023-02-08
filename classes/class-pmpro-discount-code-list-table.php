@@ -80,6 +80,7 @@ class PMPro_Discount_Code_List_Table extends WP_List_Table {
 
 		$columns = array(
             'id'        => __( 'ID', 'paid-memberships-pro' ),
+			//We cant use 'code' as is because it formats the column as code
 			'discount_code' => __( 'Code', 'paid-memberships-pro' ),
 			'starts'    => __( 'Starts', 'paid-memberships-pro' ),
 			'expires'   => __( 'Expires', 'paid-memberships-pro' ),
@@ -213,8 +214,7 @@ class PMPro_Discount_Code_List_Table extends WP_List_Table {
 
 			if( isset( $_REQUEST['orderby'] ) ) {
 				$orderby = sanitize_text_field( $_REQUEST['orderby'] );
-
-				//We cant use 'code' as is because it formats the column as code
+				
 				if( $orderby == 'discount_code' ) {
 					$orderby = 'code';
 				}
@@ -235,7 +235,6 @@ class PMPro_Discount_Code_List_Table extends WP_List_Table {
 			$sqlQuery .= "LIMIT " . esc_sql( $start ) . "," .  esc_sql( $limit );
 		}
 
-		// $sqlQuery = apply_filters("pmpro_discount_code_list_sql", $sqlQuery);
 		if( $count ) {
 			$sql_table_data = $wpdb->get_var( $sqlQuery );
 		} else {

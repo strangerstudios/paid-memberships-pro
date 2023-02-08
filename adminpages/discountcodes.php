@@ -4,16 +4,10 @@
 	{
 		die(__("You do not have permissions to perform this action.", 'paid-memberships-pro' ));
 	}
-
-	//vars
+	
 	global $wpdb, $pmpro_currency_symbol, $pmpro_stripe_error, $pmpro_braintree_error, $pmpro_payflow_error, $pmpro_twocheckout_error, $pmpro_pages, $gateway;	
 
 	require_once dirname( __DIR__ ) . '/adminpages/admin_header.php';
-
-	// Render the List Table.
-	?>
-
-	<?php
 
 	$now = current_time( 'timestamp' );
 
@@ -42,13 +36,6 @@
 	else
 		$s = "";
 
-	//some vars for the search
-	if ( isset( $_REQUEST['pn'] ) ) {
-		$pn = intval( $_REQUEST['pn'] );
-	} else {
-		$pn = 1;
-	}
-
 	if ( isset( $_REQUEST['limit'] ) ) {
 		$limit = intval( $_REQUEST['limit'] );
 	} else {
@@ -62,9 +49,6 @@
 		 */
 		$limit = apply_filters( 'pmpro_discount_codes_per_page', 15 );
 	}
-
-	$end   = $pn * $limit;
-	$start = $end - $limit;
 
 	//check nonce for saving codes
 	if (!empty($saveid) && (empty($_REQUEST['pmpro_discountcodes_nonce']) || !check_admin_referer('save', 'pmpro_discountcodes_nonce'))) {
@@ -744,20 +728,10 @@
 		<h1 class="wp-heading-inline"><?php esc_html_e( 'Memberships Discount Codes', 'paid-memberships-pro' ); ?></h1>
 		<a href="admin.php?page=pmpro-discountcodes&edit=-1" class="page-title-action"><?php esc_html_e( 'Add New Discount Code', 'paid-memberships-pro' ); ?></a>
 		<?php
-			$sqlQuery = "SELECT SQL_CALC_FOUND_ROWS *, UNIX_TIMESTAMP(CONVERT_TZ(starts, '+00:00', @@global.time_zone)) as starts, UNIX_TIMESTAMP(CONVERT_TZ(expires, '+00:00', @@global.time_zone)) as expires FROM $wpdb->pmpro_discount_codes ";
-			if( ! empty( $s ) ) {
-				$sqlQuery .= "WHERE code LIKE '%" . esc_sql( $s ) . "%' ";
-			}
+		
+			$totalrows = $wpdb->get_var( "SELECT COUNT( DISTINCT id ) FROM $wpdb->pmpro_discount_codes" );
 
-			$sqlQuery .= "ORDER BY id DESC ";
-
-			$sqlQuery .= "LIMIT " . esc_sql( $start ) . "," .  esc_sql( $limit );
-
-			$codes = $wpdb->get_results($sqlQuery, OBJECT);
-
-			$totalrows = $wpdb->get_var( "SELECT FOUND_ROWS() as found_rows" );
-
-			if( empty( $s ) && empty( $codes ) ) { ?>
+			if( empty( $s ) && empty( $totalrows ) ) { ?>
 				<div class="pmpro-new-install">
 					<h2><?php esc_html_e( 'No Discount Codes Found', 'paid-memberships-pro' ); ?></h2>
 					<h4><?php esc_html_e( 'Discount codes allow you to override your membership level\'s default pricing.', 'paid-memberships-pro' ); ?></h4>
@@ -775,16 +749,17 @@
 				global $discountcode_list_table;
 				$discountcode_list_table = new PMPro_Discount_Code_List_Table();
 				$discountcode_list_table->prepare_items();
+				
 				?>
-				<form id="posts-filter" method="get" action="">
-				<?php
-					$discountcode_list_table->search_box( __( 'Search', 'paid-memberships-pro' ), 'paid-memberships-pro' );
-					$discountcode_list_table->display();
-				?>
+				<form id="discount-code-list-form" method="get">
+					<input type="hidden" name="page" value="pmpro-discountcodes" />
+					<?php
+						$discountcode_list_table->search_box( __( 'Search', 'paid-memberships-pro' ), 'paid-memberships-pro' );
+						$discountcode_list_table->display();
+					?>
 				</form>
-			<?php } ?>
-	<?php } ?>
+				<?php
+			}
+		}
 
-<?php
-	require_once(dirname(__FILE__) . "/admin_footer.php");
-?>
+		require_once(dirname(__FILE__) . "/admin_footer.php");
