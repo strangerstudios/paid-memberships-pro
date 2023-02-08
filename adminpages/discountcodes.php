@@ -739,7 +739,7 @@
 			</form>
 		</div>
 
-	<?php } else { //here ?>
+	<?php } else { ?>
 		<hr class="wp-header-end">
 		<h1 class="wp-heading-inline"><?php esc_html_e( 'Memberships Discount Codes', 'paid-memberships-pro' ); ?></h1>
 		<a href="admin.php?page=pmpro-discountcodes&edit=-1" class="page-title-action"><?php esc_html_e( 'Add New Discount Code', 'paid-memberships-pro' ); ?></a>
