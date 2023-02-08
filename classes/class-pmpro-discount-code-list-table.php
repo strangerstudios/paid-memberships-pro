@@ -77,13 +77,34 @@ class PMPro_Discount_Code_List_Table extends WP_List_Table {
 	 * @return array
 	 */
 	public function get_columns() {
+
 		$columns = array(
             'id'        => __( 'ID', 'paid-memberships-pro' ),
-			'code'      => __( 'Code', 'paid-memberships-pro' ),
+			'discount_code' => __( 'Code', 'paid-memberships-pro' ),
 			'starts'    => __( 'Starts', 'paid-memberships-pro' ),
 			'expires'   => __( 'Expires', 'paid-memberships-pro' ),
             'uses'      => __( 'Uses', 'paid-memberships-pro' ),
+			'levels'      => __( 'Levels', 'paid-memberships-pro' ),
 		);
+
+		// Re-implementing old hook, will be deprecated.
+		ob_start();
+		do_action( 'pmpro_discountcodes_extra_cols_header' );
+		$extra_cols = ob_get_clean();
+		preg_match_all( '/<th>(.*?)<\/th>/s', $extra_cols, $matches );
+		$custom_field_num = 0;
+		foreach ( $matches[1] as $match ) {
+			$columns[ 'custom_field_' . $custom_field_num ] = $match;
+			$custom_field_num++;
+		}
+
+		// Shortcut for editing columns in default discount code list location.
+		$current_screen = get_current_screen();
+		if ( ! empty( $current_screen ) && strpos( $current_screen->id, "pmpro-discountcodes" ) !== false ) {
+			$columns = apply_filters( 'pmpro_manage_memberslist_columns', $columns );
+		}
+
+
 		return $columns;
 	}
 
@@ -94,9 +115,7 @@ class PMPro_Discount_Code_List_Table extends WP_List_Table {
 	 */
 	public function get_hidden_columns() {
 		
-		return array(
-			// 'used'
-		);
+		return array();
 		
 	}
 
@@ -122,7 +141,7 @@ class PMPro_Discount_Code_List_Table extends WP_List_Table {
 		 */
 		$sortable_columns = array(
 			'id' => array( 'id', false ),
-			'code' => array( 'code', false ),
+			'discount_code' => array( 'discount_code', false ),
 			'starts' => array( 'starts', false ),
 			'expires' => array( 'expires', false ),
 			'uses' => array( 'uses', false ),
@@ -148,15 +167,9 @@ class PMPro_Discount_Code_List_Table extends WP_List_Table {
 			$s = trim( sanitize_text_field( $_REQUEST['s'] ) );
 		else
 			$s = "";
-		?>
-		<p>
-			<?php _e( 'No discount codes found.', 'paid-memberships-pro' ); ?>
-			<?php if ( $l ) { ?>
-				<a href="<?php echo esc_url( add_query_arg( array( 'page' => 'pmpro-discountcodes', 's' => $s ) ) ); ?>"><?php esc_html_e( 'Search all levels', 'paid-memberships-pro' );?></a>
-			<?php } ?>
-		</p>
 		
-		<?php
+		esc_html_e( 'No discount codes found.', 'paid-memberships-pro' );
+
 	}
 
 	/**
@@ -199,6 +212,12 @@ class PMPro_Discount_Code_List_Table extends WP_List_Table {
 
 			if( isset( $_REQUEST['orderby'] ) ) {
 				$orderby = sanitize_text_field( $_REQUEST['orderby'] );
+
+				//We cant use 'code' as is because it formats the column as code
+				if( $orderby == 'discount_code' ) {
+					$orderby = 'code';
+				}
+
 			} else {
 				$orderby = 'id';
 			}
@@ -238,7 +257,7 @@ class PMPro_Discount_Code_List_Table extends WP_List_Table {
 
 		$allowed_orderbys = array(
 			'id' 		=> 'id',
-			'code' 		=> 'code',
+			'discount_code'	=> 'code', //discount_code
 			'starts' 	=> 'starts',
 			'finishes' 	=> 'finishes',
 			'used' 		=> 'uses', //Order by how many have actually been used
@@ -263,120 +282,141 @@ class PMPro_Discount_Code_List_Table extends WP_List_Table {
 	 */
 	public function column_default( $item, $column_name ) {
 		
-		return $item[ $column_name ];
+		$item = (array) apply_filters( 'pmpro_discount_code_list_item', (object) $item );
+
+		if ( isset( $item[ $column_name ] ) ) {
+			// If the user is adding content via the "pmpro_members_list_user" filter.
+			echo( esc_html( $item[ $column_name ] ) );
+		} elseif ( 0 === strpos( $column_name, 'custom_field_' ) ) {
+			// If the user is adding content via the "pmpro_discountcodes_extra_cols_body" hook.
+			// Re-implementing old hook, will be deprecated.			
+			ob_start();
+			do_action( 'pmpro_discountcodes_extra_cols_body', $item );
+			$extra_cols = ob_get_clean();
+			preg_match_all( '/<td>(.*?)<\/td>/s', $extra_cols, $matches );
+			$custom_field_num_arr = explode( 'custom_field_', $column_name );
+			$custom_field_num     = $custom_field_num_arr[1];
+			if ( is_numeric( $custom_field_num ) && isset( $matches[1][ intval( $custom_field_num ) ] ) ) {
+				// If the escaping here breaks your old column body, use the new filters.
+				echo( wp_kses_post( $matches[1][ intval( $custom_field_num ) ] ) );
+			}
+		} else {
+			// The preferred ways of doing things.
+			do_action( 'pmpro_manage_discount_code_list_custom_column', $column_name, $item['ID'] );
+		}
 		
 	}
 
-	public function column_code( $item ) {
+	public function column_discount_code( $item ) {
 
 		?>
 		<strong><a title="<?php echo esc_attr( sprintf( __( 'Edit Code: %s', 'paid-memberships-pro' ), $item['id'] ) ); ?>" href="<?php echo esc_url( add_query_arg( array( 'page' => 'pmpro-discountcodes', 'edit' => $item['id'] ), admin_url('admin.php' ) ) ); ?>"><?php echo $item['code']; ?></a></strong>
 		<div class="row-actions">
 		<?php
-		$delete_text = esc_html(
-			sprintf(
-				// translators: %s is the Discount Code.
-				__( 'Are you sure you want to delete the %s discount code? The subscriptions for existing users will not change, but new users will not be able to use this code anymore.', 'paid-memberships-pro' ),
-				$item['code']
-			)
-		);
-
-		$delete_nonce_url = wp_nonce_url(
-			add_query_arg(
-				[
-					'page'   => 'pmpro-discountcodes',
-					'delete' => $item['id'],
-				],
-				admin_url( 'admin.php' )
-			),
-			'delete',
-			'pmpro_discountcodes_nonce'
-		);
-
-		$actions = [
-			'id'	 => sprintf(
-				// translators: %s is the Order ID.
-				__( 'ID: %s', 'paid-memberships-pro' ),
-				esc_attr( $item['id'] )
-			),
-			'edit'   => sprintf(
-				'<a title="%1$s" href="%2$s">%3$s</a>',
-				esc_attr__( 'Edit', 'paid-memberships-pro' ),
-				esc_url(
-					add_query_arg(
-						[
-							'page' => 'pmpro-discountcodes',
-							'edit' => $item['id'],
-						],
-						admin_url( 'admin.php' )
-					)
-				),
-				esc_html__( 'Edit', 'paid-memberships-pro' )
-			),
-			'copy'   => sprintf(
-				'<a title="%1$s" href="%2$s">%3$s</a>',
-				esc_attr__( 'Copy', 'paid-memberships-pro' ),
-				esc_url(
-					add_query_arg(
-						[
-							'page' => 'pmpro-discountcodes',
-							'edit' => - 1,
-							'copy' => $item['id'],
-						],
-						admin_url( 'admin.php' )
-					)
-				),
-				esc_html__( 'Copy', 'paid-memberships-pro' )
-			),
-			'delete' => sprintf(
-				'<a title="%1$s" href="%2$s">%3$s</a>',
-				esc_attr__( 'Delete', 'paid-memberships-pro' ),
-				'javascript:pmpro_askfirst(\'' . esc_js( $delete_text ) . '\', \'' . esc_js( $delete_nonce_url ) . '\'); void(0);',
-				esc_html__( 'Delete', 'paid-memberships-pro' )
-			),
-		];
-
-		if ( 0 < (int) $item['uses'] ) {
-			$actions['orders'] = sprintf(
-				'<a title="%1$s" href="%2$s">%3$s</a>',
-				esc_attr__( 'View Orders', 'paid-memberships-pro' ),
-				esc_url(
-					add_query_arg(
-						[
-							'page'          => 'pmpro-orders',
-							'discount-code' => $item['id'],
-							'filter'        => 'with-discount-code',
-						],
-						admin_url( 'admin.php' )
-					)
-				),
-				esc_html__( 'Orders', 'paid-memberships-pro' )
+			$delete_text = esc_html(
+				sprintf(
+					// translators: %s is the Discount Code.
+					__( 'Are you sure you want to delete the %s discount code? The subscriptions for existing users will not change, but new users will not be able to use this code anymore.', 'paid-memberships-pro' ),
+					$item['code']
+				)
 			);
-		}
 
-		/**
-		 * Filter the extra actions for this discount code.
-		 *
-		 * @since 2.6.2
-		 *
-		 * @param array  $actions The list of actions.
-		 * @param object $code    The discount code data.
-		 */
-		$actions = apply_filters( 'pmpro_discountcodes_row_actions', $actions, $item );
-
-		$actions_html = [];
-
-		foreach ( $actions as $action => $link ) {
-			$actions_html[] = sprintf(
-				'<span class="%1$s">%2$s</span>',
-				esc_attr( $action ),
-				$link
+			$delete_nonce_url = wp_nonce_url(
+				add_query_arg(
+					[
+						'page'   => 'pmpro-discountcodes',
+						'delete' => $item['id'],
+					],
+					admin_url( 'admin.php' )
+				),
+				'delete',
+				'pmpro_discountcodes_nonce'
 			);
-		}
 
-		if ( ! empty( $actions_html ) ) {
-			echo implode( ' | ', $actions_html );
-		}
+			$actions = [
+				'id'	 => sprintf(
+					// translators: %s is the Order ID.
+					__( 'ID: %s', 'paid-memberships-pro' ),
+					esc_attr( $item['id'] )
+				),
+				'edit'   => sprintf(
+					'<a title="%1$s" href="%2$s">%3$s</a>',
+					esc_attr__( 'Edit', 'paid-memberships-pro' ),
+					esc_url(
+						add_query_arg(
+							[
+								'page' => 'pmpro-discountcodes',
+								'edit' => $item['id'],
+							],
+							admin_url( 'admin.php' )
+						)
+					),
+					esc_html__( 'Edit', 'paid-memberships-pro' )
+				),
+				'copy'   => sprintf(
+					'<a title="%1$s" href="%2$s">%3$s</a>',
+					esc_attr__( 'Copy', 'paid-memberships-pro' ),
+					esc_url(
+						add_query_arg(
+							[
+								'page' => 'pmpro-discountcodes',
+								'edit' => - 1,
+								'copy' => $item['id'],
+							],
+							admin_url( 'admin.php' )
+						)
+					),
+					esc_html__( 'Copy', 'paid-memberships-pro' )
+				),
+				'delete' => sprintf(
+					'<a title="%1$s" href="%2$s">%3$s</a>',
+					esc_attr__( 'Delete', 'paid-memberships-pro' ),
+					'javascript:pmpro_askfirst(\'' . esc_js( $delete_text ) . '\', \'' . esc_js( $delete_nonce_url ) . '\'); void(0);',
+					esc_html__( 'Delete', 'paid-memberships-pro' )
+				),
+			];
+
+			if ( 0 < (int) $item['uses'] ) {
+				$actions['orders'] = sprintf(
+					'<a title="%1$s" href="%2$s">%3$s</a>',
+					esc_attr__( 'View Orders', 'paid-memberships-pro' ),
+					esc_url(
+						add_query_arg(
+							[
+								'page'          => 'pmpro-orders',
+								'discount-code' => $item['id'],
+								'filter'        => 'with-discount-code',
+							],
+							admin_url( 'admin.php' )
+						)
+					),
+					esc_html__( 'Orders', 'paid-memberships-pro' )
+				);
+			}
+
+			/**
+			 * Filter the extra actions for this discount code.
+			 *
+			 * @since TBD
+			 *
+			 * @param array  $actions The list of actions.
+			 * @param object $code    The discount code data.
+			 */
+			$actions = apply_filters( 'pmpro_discountcodes_row_actions', $actions, $item );
+
+			$actions_html = [];
+
+			foreach ( $actions as $action => $link ) {
+				$actions_html[] = sprintf(
+					'<span class="%1$s">%2$s</span>',
+					esc_attr( $action ),
+					$link
+				);
+			}
+
+			if ( ! empty( $actions_html ) ) {
+				echo implode( ' | ', $actions_html );
+			}
 		?>
 		</div>
 		<?php
@@ -396,14 +436,43 @@ class PMPro_Discount_Code_List_Table extends WP_List_Table {
 
 	public function column_starts( $item ) {
 
-		return date_i18n(get_option('date_format'), $item['starts'] );
+		return date_i18n( get_option( 'date_format' ), $item['starts'] );
 
 	}
 
 	public function column_expires( $item ) {
 
-		return date_i18n(get_option('date_format'), $item['expires'] );
+		return date_i18n( get_option( 'date_format' ), $item['expires'] );
 		
+	}
+
+	public function column_levels( $item ) {
+
+		global $wpdb, $pmpro_pages;
+
+		$sqlQuery = $wpdb->prepare("
+			SELECT l.id, l.name
+			FROM $wpdb->pmpro_membership_levels l
+			LEFT JOIN $wpdb->pmpro_discount_codes_levels cl
+			ON l.id = cl.level_id
+			WHERE cl.code_id = %d",
+			esc_sql( $item['id'] )
+		);
+		$levels = $wpdb->get_results($sqlQuery);
+
+		$level_names = array();
+		foreach( $levels as $level ) {
+			if ( ! empty( $pmpro_pages['checkout'] ) ) {
+				$level_names[] = '<a title="' . pmpro_url( 'checkout', '?level=' . $level->id . '&discount_code=' . $item['id']) . '" target="_blank" href="' . pmpro_url( 'checkout', '?level=' . $level->id . '&discount_code=' . intval( $item['id'] ) ) . '">' . $level->name . '</a>';
+			} else {
+				$level_names[] = $level->name;
+			}
+		}
+		if( $level_names ) {
+			echo implode( ', ', $level_names );
+		} else {
+			echo __( 'None', 'paid-memberships-pro' );
+		}
 	}
 	
 }
