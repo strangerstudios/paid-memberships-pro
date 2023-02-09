@@ -467,8 +467,8 @@ class PMPro_Wisdom_Integration {
 			unset( $level_data->confirmation );
 
 			// Add Set Expiration Date/Subscription Delay info.
-			$level_data->set_expiration_date = get_option( 'pmprosed_' . $level_id , '' );
-			$level_data->subscription_delay  = get_option( 'pmpro_subscription_delay_' . $level_id , '' );
+			$level_data->set_expiration_date = get_option( 'pmprosed_' . $level_id );
+			$level_data->subscription_delay  = get_option( 'pmpro_subscription_delay_' . $level_id );
 
 			// Add if a category is set.
 			$categories = $wpdb->get_col(
