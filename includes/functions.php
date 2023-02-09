@@ -2915,7 +2915,10 @@ function pmpro_show_setup_wizard_link() {
 		$show = false;
 	}
 
-	return $show;
+	/**
+	 * Filter to determine if the Setup Wizard link should show. Allows you to bypass whether or not to show the link.
+	 */
+	return apply_filters( 'pmpro_show_setup_wizard_link', $show );
 }
 
 /**
