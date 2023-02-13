@@ -65,7 +65,37 @@ if ( empty( $default_gateway ) ) {
 			</h3>
 			<div class="<?php echo pmpro_get_element_class( 'pmpro_checkout-fields' ); ?>">
 				<p class="<?php echo pmpro_get_element_class( 'pmpro_level_name_text' );?>">
-					<?php printf(__('You have selected the <strong>%s</strong> membership level.', 'paid-memberships-pro' ), $pmpro_level->name);?>
+					<?php
+					// Tell the user which level they are signing up for.
+					printf(__('You have selected the <strong>%s</strong> membership level.', 'paid-memberships-pro' ), $pmpro_level->name);
+
+					// If a level will be removed with this purchase, let them know that too.
+					// First off, get the group for this level and check if it allows a user to have multiple levels.
+					$group_id = pmpro_get_group_id_for_level( $pmpro_level->id );
+					$group    = pmpro_get_level_group( $group_id );
+					if ( ! empty( $group ) && empty( $group->allow_multiple_selections ) ) {
+						// Get all of the user's current membership levels.
+						$levels = pmpro_getMembershipLevelsForUser( $current_user->ID );
+
+						// Loop through the levels and see if any are in the same group as the level being purchased.
+						if ( ! empty( $levels ) ) {
+							foreach ( $levels as $level ) {
+								// If this is the level that the user is purchasing, continue.
+								if ( $level->id == $pmpro_level->id ) {
+									continue;
+								}
+
+								// If this level is not in the same group, continue.
+								if ( pmpro_get_group_id_for_level( $level->id ) != $group_id ) {
+									continue;
+								}
+
+								// If we made it this far, the user is going to lose this level after checkout.
+								printf( ' ' . esc_html__( 'Your current membership level of %s will be removed when you complete your purchase.', 'paid-memberships-pro' ), '<strong>' . esc_html( $level->name ) . '</strong>' );
+							}
+						}
+					}
+					?>
 				</p>
 
 				<?php

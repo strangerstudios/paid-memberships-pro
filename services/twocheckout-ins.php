@@ -482,14 +482,14 @@
 		do_action( 'pmpro_subscription_recurring_stopped', $morder );
     do_action( 'pmpro_subscription_recuring_stopped', $morder );    // Keeping the mispelled version in case. Will deprecate.
     
-		$worked = pmpro_changeMembershipLevel( false, $morder->user->ID , 'inactive');
+		$worked = pmpro_cancelMembershipLevel( $morder->membership_level->id, $morder->user->ID, 'inactive' );
 		if( $worked === true ) {
 			//$pmpro_msg = __("Your membership has been cancelled.", 'paid-memberships-pro' );
 			//$pmpro_msgt = "pmpro_success";
 
 			//send an email to the member
 			$myemail = new PMProEmail();
-			$myemail->sendCancelEmail();
+			$myemail->sendCancelEmail( $morder->user, $morder->membership_level->id );
 
 			//send an email to the admin
 			$myemail = new PMProEmail();

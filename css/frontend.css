@@ -665,11 +665,13 @@ li.pmpro_more {
 /*---------------------------------------
 	Membership Levels
 ---------------------------------------*/
-#pmpro_levels_table { }
-#pmpro_levels_table td:nth-child(1) {
+.pmpro_levels_table { 
+	width: 100%;
+}
+.pmpro_levels_table td:nth-child(1) {
 	min-width: 200px;
 }
-#pmpro_levels_table .pmpro_btn {
+.pmpro_levels_table .pmpro_btn {
 	display: block;
 }
 /*---------------------------------------
@@ -748,7 +750,7 @@ li.pmpro_more {
 }
 @media (max-width:768px) {
 	#pmpro_account #pmpro_account-membership .pmpro_table td:nth-child(1),
-	#pmpro_levels_table td:nth-child(1) {
+	.pmpro_levels_table td:nth-child(1) {
 		min-width: unset;
 	}
 	.pmpro_checkout h3 span.pmpro_checkout-h3-name {

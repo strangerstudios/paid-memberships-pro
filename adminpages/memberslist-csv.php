@@ -359,7 +359,7 @@
 			LEFT JOIN {$wpdb->pmpro_membership_levels} m ON mu.membership_id = m.id
 			{$former_member_join}
 			WHERE u.ID BETWEEN %d AND %d AND mu.membership_id > 0 {$filter} {$search}
-			GROUP BY u.ID
+			GROUP BY u.ID, mu.membership_id
 			ORDER BY u.ID",
 				$first_uid,
 				$last_uid

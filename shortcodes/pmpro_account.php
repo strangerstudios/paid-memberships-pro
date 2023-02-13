@@ -25,8 +25,6 @@ function pmpro_shortcode_account($atts, $content=null, $code="")
 	ob_start();
 
 	//if a member is logged in, show them some info here (1. past invoices. 2. billing information with button to update.)
-	$order = new MemberOrder();
-	$order->getLastMemberOrder();
 	$mylevels = pmpro_getMembershipLevelsForUser();
 	$pmpro_levels = pmpro_getAllLevels(false, true); // just to be sure - include only the ones that allow signups
 	$invoices = $wpdb->get_results("SELECT *, UNIX_TIMESTAMP(CONVERT_TZ(timestamp, '+00:00', @@global.time_zone)) as timestamp FROM $wpdb->pmpro_membership_orders WHERE user_id = '$current_user->ID' AND status NOT IN('review', 'token', 'error') ORDER BY timestamp DESC LIMIT 6");
@@ -72,9 +70,12 @@ function pmpro_shortcode_account($atts, $content=null, $code="")
 											$pmpro_member_action_links['renew'] = sprintf( '<a id="pmpro_actionlink-renew" href="%s">%s</a>', esc_url( add_query_arg( 'level', $level->id, pmpro_url( 'checkout', '', 'https' ) ) ), esc_html__( 'Renew', 'paid-memberships-pro' ) );
 										}
 
+										$order = new MemberOrder();
+										$order->getLastMemberOrder( $current_user->ID, 'success', $level->id );
 										if((isset($order->status) && $order->status == "success") && (isset($order->gateway) && in_array($order->gateway, array("authorizenet", "paypal", "stripe", "braintree", "payflow", "cybersource"))) && pmpro_isLevelRecurring($level)) {
-											$pmpro_member_action_links['update-billing'] = sprintf( '<a id="pmpro_actionlink-update-billing" href="%s">%s</a>', pmpro_url( 'billing', '', 'https' ), esc_html__( 'Update Billing Info', 'paid-memberships-pro' ) );
+											$pmpro_member_action_links['update-billing'] = sprintf( '<a id="pmpro_actionlink-update-billing" href="%s">%s</a>', pmpro_url( 'billing', 'order_id=' . $order->id, 'https' ), esc_html__( 'Update Billing Info', 'paid-memberships-pro' ) );
 										}
+										unset( $order );
 
 										//To do: Only show CHANGE link if this level is in a group that has upgrade/downgrade rules
 										if(count($pmpro_levels) > 1 && !defined("PMPRO_DEFAULT_LEVEL")) {
