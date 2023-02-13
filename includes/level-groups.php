@@ -168,9 +168,6 @@ function pmpro_delete_level_group( $id ) {
 function pmpro_add_level_to_group( $level_id, $group_id ) {
 	global $wpdb;
 
-	$level_id = intval( $level_id );
-	$group_id = intval( $group_id );
-
 	// Remove the level from its current group.
 	$wpdb->delete( $wpdb->pmpro_membership_levels_groups, array( 'level' => $level_id ) );
 
