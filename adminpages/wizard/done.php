@@ -33,7 +33,7 @@
 			esc_html_e( 'Here are some recommended Add Ons for your business.', 'paid-memberships-pro' );
 			?>
 		</p>
-		<div style="text-align:center;">
+		<div class="pmpro-wizard__addons">
 		<?php
 			// Get some Add On recommendations and only show 3.
 			$random_addon = array_rand( $addon_list, 3 );
@@ -41,19 +41,25 @@
 				$addon_slug = $addon_list[$key];
 				$addon = pmpro_getAddonBySlug( $addon_slug );
 
-				$title = str_replace( 'Paid Memberships Pro - ', '', $addon['Title'] );
+				// Get the shortened name otherwise set to name.
+				if ( ! empty( $addon['ShortName'] ) ) {
+					$title = $addon['ShortName'];
+				} else {
+					$title = str_replace( 'Paid Memberships Pro - ', '', $addon['Title'] );
+				}
 				$link = $addon['PluginURI'];
 				$icon = pmpro_get_addon_icon( $addon_slug );
 				?>
 				<div class="pmpro-wizard__col3">
-				<p><a href="<?php echo esc_url( $link ); ?>" target='_blank' rel='nofollow'><img src="<?php echo esc_url( $icon ); ?>" width="70%"/><br>
-				<strong><?php esc_html_e( $title ); ?></strong></a>
-				</p>
-			</div>
+					<a href="<?php echo esc_url( $link ); ?>" target='_blank' rel='nofollow'>
+						<img src="<?php echo esc_url( $icon ); ?>" />
+						<span class="pmpro-wizard__subtitle"><?php esc_html_e( $title ); ?></span>
+					</a>
+				</div>
 				<?php
 			}
 		?>
-		</div> <!-- end of center alignment -->	
+		</div> <!-- end .pmpro-wizard__addons -->
 		<p class="pmpro-wizard__textbreak"><?php esc_html_e( 'OR', 'paid-memberships-pro' ); ?></p>
 		<div class="pmpro-wizard__col">
 			<p><span class="pmpro-wizard__subtitle"><?php esc_html_e( 'More functionality', 'paid-memberships-pro' ); ?></span><br>
@@ -75,7 +81,7 @@
 
 		<div class="pmpro-wizard__col">
 			<p><span class="pmpro-wizard__subtitle"><?php esc_html_e( 'Documentation', 'paid-memberships-pro' ); ?></span><br>
-			<?php esc_html_e( 'Not sure where to start, take a look at our documentation.', 'paid-memberships-pro' ); ?></p>
+			<?php esc_html_e( 'Not sure where to start? Take a look at our documentation.', 'paid-memberships-pro' ); ?></p>
 		</div>
 		<div class="pmpro-wizard__col">
 			<a href="https://www.paidmembershipspro.com/documentation/?utm_source=plugin&utm_medium=setup-wizard&utm_campaign=wizard-done&utm_content=view-docs" target="_blank" class="button button-hero"><?php esc_html_e( 'View docs', 'paid-memberships-pro' ); ?></a>

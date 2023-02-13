@@ -10,6 +10,7 @@ function pmpro_init_save_wizard_data() {
 	if ( empty( $_REQUEST['page'] ) || $_REQUEST['page'] !== 'pmpro-wizard' ) {
 		return;
 	}
+
 	// Clear things up on the completed page.
 	if ( ! empty( $_REQUEST['step'] ) && $_REQUEST['step'] === 'done' ) {
 		delete_option( 'pmpro_wizard_collect_payment' );

@@ -1,310 +1,3 @@
-/* Setup Wizard Styles */
-.memberships_page_pmpro-wizard #wpcontent {
-	padding-left: 0;
-}
-
-/* If wizard is loading under admin.php */
-.admin_page_pmpro-wizard #wpcontent {
-	padding-left: 0;
-}
-
-.pmpro-wizard .pmpro-wizard__header {
-	background: #FFF;
-	border-bottom: 1px solid #DDD;
-	padding: 1.5em 0 .25em 0;
-	margin-bottom: 2em;
-	text-align: center;
-}
-
-.pmpro-wizard .pmpro-wizard__header a.pmpro_logo {
-	display: inline-block;
-	max-width: 275px;
-}
-
-.pmpro-wizard .pmpro-wizard__header a.pmpro_logo img {
-	height: auto;
-	width: 100%;
-}
-
-.pmpro-stepper {
-	width: 100%;
-}
-
-.pmpro-stepper .pmpro-stepper__steps {
-	display: flex;
-	flex-direction: row;
-	justify-content: space-around;
-	margin: -1em .5em 0 .5em;
-}
-
-.pmpro-stepper .pmpro-stepper__step {
-	padding: 1em;
-	font-weight: 400;
-	position: relative;
-}
-
-.pmpro-stepper .pmpro-stepper__step-divider {
-	align-self: flex-start;
-	flex-grow: 1;
-	border-bottom: 1px solid #DDD;
-	margin-top: 2em;
-}
-
-.pmpro-stepper .pmpro-stepper__step-divider:last-child {
-	display: none;
-}
-
-.pmpro-stepper .pmpro-stepper__step .pmpro-stepper__step-label {
-	color: #666;
-	line-height: 24px;
-	font-size: 16px;
-}
-
-.pmpro-stepper .pmpro-stepper__step .pmpro-stepper__step-label a {
-	color: #666;
-	text-decoration: none;
-}
-
-.pmpro-stepper .pmpro-stepper__step-icon {
-	align-items: center;
-	background-color: #EEE;
-	border-radius: 50%;
-	color: #757575;
-	display: inline-flex;
-	font-size: 16px;
-	height: 24px;
-	justify-content: center;
-	margin-right: .25em;
-	min-width: 24px;
-	width: 24px;
-}
-
-.pmpro-stepper .pmpro-stepper__step.is-active .pmpro-stepper__step-icon {
-	background-color: #1A688B;
-	color: #FFF;
-	font-weight: 700;
-}
-
-.pmpro-stepper .pmpro-stepper__step.is-active .pmpro-stepper__step-label {
-	color: #1A688B;
-	font-weight: 700;
-}
-
-.pmpro-wizard .pmpro-wizard__container {
-	margin: 0 auto;
-	text-align: left;
-}
-
-.pmpro-wizard .pmpro-wizard__container>* {
-	margin-left: auto;
-	margin-right: auto;
-	max-width: 650px;
-}
-
-@media screen and (max-width: 782px) {
-	.pmpro-stepper .pmpro-stepper__step-label {
-		display: none;
-	}
-
-	.pmpro-wizard .pmpro-wizard__container {
-		padding-left: 1em;
-		padding-right: 1em;
-		margin-bottom: 3em;
-		margin-top: 0;
-	}
-}
-
-.pmpro-wizard__container .pmpro-wizard__step {
-	background: #FFF;
-	border: 1px solid #DDD;
-	border-radius: 4px;
-	box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.05);
-}
-
-.pmpro-wizard__container .pmpro-wizard__step-header {
-	padding: 1em 2em;
-	text-align: center;
-}
-
-.pmpro-wizard__container .pmpro-wizard__step-header h1 {
-	font-size: 2em;
-	line-height: 1.2;
-	margin: 1em 0 0 0;
-}
-
-.pmpro-wizard__container .pmpro-wizard__step-header p {
-	color: #666;
-}
-
-.pmpro-wizard__container p,
-.pmpro-wizard__container label {
-	font-size: 18px;
-	line-height: 26px;
-}
-
-.pmpro-wizard__container .pmpro-wizard__section-title {
-	margin: 0 0 2em 0;
-}
-
-.pmpro-wizard__container .pmpro-wizard__field {
-	border-top: 1px solid #EEE;
-	padding: 2em;
-	text-align: left;
-}
-
-.pmpro-wizard__container p.pmpro-wizard__field-description {
-	font-size: 13px;
-	line-height: 20px;
-	margin: 0 0 .5em 0;
-}
-
-.pmpro-wizard__container .pmpro-wizard__label-block {
-	display: block;
-	margin-bottom: .25em;
-}
-
-.pmpro-wizard__container .pmpro-wizard__field input[type="text"] {
-	background-color: #FFF;
-	border: 1px solid #CCC;
-	font-size: 16px;
-	line-height: 1.5em;
-	margin: .25em 0;
-	padding: 0.5em;
-}
-
-.pmpro-wizard__container .pmpro-wizard__field select {
-	background-color: #FFF;
-	border: 1px solid #CCC;
-	border-radius: 4px;
-	display: inline-block;
-	font-size: 16px;
-	line-height: 1.5em;
-	padding: 0.5em 3.5em 0.5em 1em;
-	margin: 0;
-	-webkit-box-sizing: border-box;
-	-moz-box-sizing: border-box;
-	box-sizing: border-box;
-	-webkit-appearance: none;
-	-moz-appearance: none;
-	background-image:
-		linear-gradient(45deg, transparent 50%, gray 50%),
-		linear-gradient(135deg, gray 50%, transparent 50%),
-		linear-gradient(to right, #CCC, #CCC);
-	background-position:
-		calc(100% - 20px) calc(1em + 2px),
-		calc(100% - 15px) calc(1em + 2px),
-		calc(100% - 2.5em) 0.5em;
-	background-size:
-		5px 5px,
-		5px 5px,
-		1px 1.5em;
-	background-repeat: no-repeat;
-}
-
-.pmpro-wizard__container .pmpro-wizard__field select:focus {
-	background-image:
-		linear-gradient(45deg, green 50%, transparent 50%),
-		linear-gradient(135deg, transparent 50%, green 50%),
-		linear-gradient(to right, #CCC, #CCC);
-	background-position:
-		calc(100% - 15px) 1em,
-		calc(100% - 20px) 1em,
-		calc(100% - 2.5em) 0.5em;
-	background-size:
-		5px 5px,
-		5px 5px,
-		1px 1.5em;
-	background-repeat: no-repeat;
-	border-color: #1A688B;
-	outline: 0;
-}
-
-.pmpro-wizard__container .pmpro-wizard__field select:-moz-focusring {
-	color: transparent;
-	text-shadow: 0 0 0 #000;
-}
-
-.pmpro-wizard__container .pmpro-wizard__field-block {
-	max-width: 100%;
-	width: 100%;
-}
-
-.pmpro-wizard__container .pmpro-wizard__field__checkbox-group {
-	display: flex;
-}
-
-.pmpro-wizard__container .pmpro-wizard__field__checkbox-group input[type="checkbox"] {
-	margin: .25em 1em 0 0;
-}
-
-.pmpro-wizard__container .pmpro_wizard__submit {
-	border-top: 1px solid #EEE;
-	margin: 0;
-	padding: 2em 0;
-	text-align: center;
-}
-
-.pmpro-wizard__container .pmpro-wizard__exit {
-	color: #666;
-	font-size: 14px;
-	margin-top: 2em;
-	text-align: center;
-}
-
-.pmpro-wizard__container .pmpro-wizard__exit a {
-	color: #666;
-}
-
-.pmpro-wizard__col {
-	width: 45%;
-	display: inline-flex;
-	padding: 10px;
-	vertical-align: middle;
-}
-
-.pmpro-wizard__col .button {
-	width: 100%;
-	text-align: center;
-}
-
-.pmpro-wizard__subtitle {
-	font-size: 20px;
-	font-weight: bold;
-}
-
-.pmpro-wizard__col3 {
-	width: 29%;
-	display: inline-flex;
-	padding: 10px;
-}
-
-.pmpro-wizard__textbreak::before,
-.pmpro-wizard__textbreak::after {
-	background-color: #000;
-	content: "";
-	display: inline-block;
-	height: 1px;
-	vertical-align: middle;
-	width: 3%;
-	margin: 10px;
-}
-
-.pmpro-wizard__textbreak {
-	color: #000;
-	margin: 10px;
-	text-align: center;
-}
-
-a.pmpro_wizard__skip {
-	color: #666;
-	text-decoration: underline;
-	font-size: 13px;
-}
-
-a.pmpro_wizard__skip:hover {
-	cursor: pointer;
-}
-
 /* Metaboxes on Editor */
 #poststuff #pmpro_page_meta.postbox .postbox-header {
 	border-bottom-width: 0;
@@ -394,7 +87,6 @@ a.pmpro_wizard__skip:hover {
 	display: inline-block;
 	margin: 0 0 0 10px;
 }
-
 .pmpro_banner .pmpro_meta a.pmpro_license_tag {
 	font-weight: bold;
 	text-decoration: none;
@@ -423,6 +115,23 @@ a.pmpro_wizard__skip:hover {
 
 .pmpro_banner .pmpro_meta a.pmpro_license_tag.pmpro_license_tag-invalid:before {
 	content: "\f335";
+}
+
+.pmpro_banner .pmpro_meta .pmpro_paused_tag {
+	color: #ffb900;
+	font-weight: bold;
+	text-decoration: none;
+}
+
+.pmpro_banner .pmpro_meta .pmpro_paused_tag:before {
+	content: "\f534";
+	display: inline-block;
+	font: 400 16px/1 dashicons;
+	left: 0;
+	padding-right: 3px;
+	position: relative;
+	text-decoration: none;
+	vertical-align: text-bottom;
 }
 
 .pmpro_admin .subsubsub {
@@ -454,6 +163,24 @@ a.pmpro_wizard__skip:hover {
 .pmpro_admin h2,
 .pmpro_admin h3 {
 	font-size: 18px;
+}
+
+/* Footer */
+.pmpro-rate-us a {
+	font-weight: bold;
+	text-decoration: none;
+}
+
+.pmpro-rate-us a:hover {
+	border-bottom: 1px solid;
+}
+.pmpro-rate-us .dashicons {
+	color: #ffb900;
+	display: inline-block;
+	font-size: 14px;
+	height: 16px;
+	line-height: inherit;
+	width: 16px;
 }
 
 /* Scollable Boxes */
@@ -1463,16 +1190,17 @@ tr.pmpro_settings_divider td {
 }
 
 /* notifications */
-#pmpro_notifications .pmpro_notification {
-	background: #FFF;
+.pmpro_notification {
+	background-color: #FFF;
 	border: 1px solid #ccd0d4;
 	box-shadow: 0 1px 4px rgba( 0, 0, 0, 0.15 );
 	display: flex;
-	margin: 1em 0;
+	margin: 1em 1em 1em 0;
+	padding: 0;
 	position: relative;
 }
 
-#pmpro_notifications .pmpro_notification .pmpro_notification-general {
+.pmpro_notification .pmpro_notification-general {
 	background: #FFF;
 	border-left: 4px solid #658B24;
 	box-shadow: 0 1px 1px 0 rgba(0, 0, 0, .1);
@@ -1480,7 +1208,7 @@ tr.pmpro_settings_divider td {
 	padding: 15px;
 }
 
-#pmpro_notifications .pmpro_notification .pmpro_notification-error {
+.pmpro_notification .pmpro_notification-error {
 	background: #FFF;
 	border-left: 4px solid #DC3232;
 	box-shadow: 0 1px 1px 0 rgba(0, 0, 0, .1);
@@ -1488,79 +1216,430 @@ tr.pmpro_settings_divider td {
 	padding: 15px;
 }
 
-#pmpro_notifications .pmpro_notification .notice-dismiss:before {
+.pmpro_notification .notice-dismiss:before {
 	content: "\f335";
 }
 
-#pmpro_notifications .pmpro_notification-icon {
+.pmpro_notification-icon {
 	border-left-width: 4px;
 	border-left-style: solid;
 	padding: 15px 10px;
 }
 
-#pmpro_notifications .pmpro_notification-icon .dashicons {
+.pmpro_notification-icon .dashicons {
 	font-size: 30px;
 	height: 30px;
 	width: 30px;
 }
 
-#pmpro_notifications .pmpro_notification-content {
+.pmpro_notification-content {
 	color: #111;
 	padding: 20px 25px;
 }
 
-#pmpro_notifications .pmpro_notification-general .pmpro_notification-icon {
+.pmpro_notification-general .pmpro_notification-icon {
 	background-color: #E8EEE0;
 	border-left-color: #658B24;
 	color: #567533;
 }
 
-#pmpro_notifications .pmpro_notification-error .pmpro_notification-icon {
+.pmpro_notification-error .pmpro_notification-icon {
 	background-color: #FBF6F7;
 	border-left-color: #721C24;
 	color: #721C24;
 }
 
-#pmpro_notifications .pmpro_notification h3 {
+.pmpro_notification h3 {
 	font-size: 18px;
 	font-weight: 700;
 	line-height: 25px;
 	margin: 0;
 }
 
-#pmpro_notifications .pmpro_notification p {
+.pmpro_notification p {
 	font-size: 14px;
 	line-height: 22px;
 	margin: 15px 0 0 0;
 	max-width: 65em;
 }
 
-#pmpro_notifications .pmpro_notification .button {
+.pmpro_notification .button {
 	border-radius: 4px;
 	font-size: 14px;
 	margin-right: 5px;
+	white-space: break-spaces;
 }
-#pmpro_notifications .pmpro_notification-general h3 {
+.pmpro_notification .button-dismiss {
+	border-color: #C3C4C7;
+	color: #50575E;
+}
+.pmpro_notification-general h3 {
 	color: #567533;
 }
-#pmpro_notifications .pmpro_notification-general .button {
+.pmpro_notification-general .button:not(.button-dismiss) {
 	background-color: #567533;
 	border-color: #456227;
 	color: #FFF;
 }
-#pmpro_notifications .pmpro_notification-general .button:hover {
+.pmpro_notification-general .button:hover:not(.button-dismiss) {
 	background-color: #456227;
 }
-#pmpro_notifications .pmpro_notification-error h3 {
+.pmpro_notification-error h3 {
 	color: #721C24;
 }
-#pmpro_notifications .pmpro_notification-error .button {
+.pmpro_notification-error .button:not(.button-dismiss) {
 	background-color: #721C24;
 	border-color: #711B23;
 	color: #FFF;
 }
-#pmpro_notifications .pmpro_notification-error .button:hover {
+.pmpro_notification-error .button:hover:not(.button-dismiss) {
 	background-color: #600027;
+	border-color: #600027;
+	color: #FFF;
+}
+
+/* Setup Wizard Styles */
+.memberships_page_pmpro-wizard #wpcontent {
+	padding-left: 0;
+}
+
+/* If wizard is loading under admin.php */
+.admin_page_pmpro-wizard #wpcontent {
+	padding-left: 0;
+}
+
+.pmpro-wizard .pmpro-wizard__background {
+	background-image: url(../images/bg_icons-white.png);
+	background-repeat: repeat;
+	background-size: 50%;
+	left: 0;
+	min-height: 100%;
+	opacity: .4;
+	position: absolute;
+	top: 0;
+	width: 100%;
+	z-index: -1;
+}
+
+.pmpro-wizard .pmpro-wizard__header {
+	background: #FFF;
+	border-bottom: 1px solid #DDD;
+	padding: 1.5em 0 .25em 0;
+	margin-bottom: 2em;
+	text-align: center;
+}
+
+.pmpro-wizard .pmpro-wizard__header a.pmpro_logo {
+	display: inline-block;
+	max-width: 275px;
+}
+
+.pmpro-wizard .pmpro-wizard__header a.pmpro_logo img {
+	height: auto;
+	width: 100%;
+}
+
+.pmpro-stepper {
+	width: 100%;
+}
+
+.pmpro-stepper .pmpro-stepper__steps {
+	display: flex;
+	flex-direction: row;
+	justify-content: space-around;
+	margin: -1em .5em 0 .5em;
+}
+
+.pmpro-stepper .pmpro-stepper__step {
+	padding: 1em;
+	font-weight: 400;
+	position: relative;
+}
+
+.pmpro-stepper .pmpro-stepper__step-divider {
+	align-self: flex-start;
+	flex-grow: 1;
+	border-bottom: 1px solid #DDD;
+	margin-top: 2em;
+}
+
+.pmpro-stepper .pmpro-stepper__step-divider:last-child {
+	display: none;
+}
+
+.pmpro-stepper .pmpro-stepper__step .pmpro-stepper__step-label {
+	color: #666;
+	line-height: 24px;
+	font-size: 16px;
+}
+
+.pmpro-stepper .pmpro-stepper__step .pmpro-stepper__step-label a {
+	color: #666;
+	text-decoration: none;
+}
+
+.pmpro-stepper .pmpro-stepper__step-icon {
+	align-items: center;
+	background-color: #EEE;
+	border-radius: 50%;
+	color: #757575;
+	display: inline-flex;
+	font-size: 16px;
+	height: 24px;
+	justify-content: center;
+	margin-right: .25em;
+	min-width: 24px;
+	width: 24px;
+}
+
+.pmpro-stepper .pmpro-stepper__step.is-active .pmpro-stepper__step-icon {
+	background-color: #1A688B;
+	color: #FFF;
+	font-weight: 700;
+}
+
+.pmpro-stepper .pmpro-stepper__step.is-active .pmpro-stepper__step-label {
+	color: #1A688B;
+	font-weight: 700;
+}
+
+.pmpro-wizard .pmpro-wizard__container {
+	margin: 0 auto;
+	text-align: left;
+}
+
+.pmpro-wizard .pmpro-wizard__container>* {
+	margin-left: auto;
+	margin-right: auto;
+	max-width: 650px;
+}
+
+.pmpro-wizard__container .pmpro-wizard__step {
+	background: #FFF;
+	border: 1px solid #DDD;
+	border-radius: 4px;
+	box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.05);
+}
+
+.pmpro-wizard__container .pmpro-wizard__step-header {
+	padding: 1em 2em;
+	text-align: center;
+}
+
+.pmpro-wizard__container .pmpro-wizard__step-header h1 {
+	font-size: 2em;
+	line-height: 1.2;
+	margin: 1em 0 0 0;
+}
+
+.pmpro-wizard__container .pmpro-wizard__step-header p {
+	color: #666;
+}
+
+.pmpro-wizard__container p,
+.pmpro-wizard__container label {
+	font-size: 18px;
+	line-height: 26px;
+}
+
+.pmpro-wizard__container .pmpro-wizard__section-title {
+	margin: 0 0 2em 0;
+}
+
+.pmpro-wizard__container .pmpro-wizard__field {
+	border-top: 1px solid #EEE;
+	padding: 2em;
+	text-align: left;
+}
+
+.pmpro-wizard__container p.pmpro-wizard__field-description {
+	font-size: 13px;
+	line-height: 20px;
+	margin: 0 0 .5em 0;
+}
+
+.pmpro-wizard__container .pmpro-wizard__label-block {
+	display: block;
+	margin-bottom: .25em;
+}
+
+.pmpro-wizard__container .pmpro-wizard__field input[type="text"] {
+	background-color: #FFF;
+	border: 1px solid #CCC;
+	font-size: 16px;
+	line-height: 1.5em;
+	margin: .25em 0;
+	padding: 0.5em;
+}
+
+.pmpro-wizard__container .pmpro-wizard__field select {
+	background-color: #FFF;
+	border: 1px solid #CCC;
+	border-radius: 4px;
+	display: inline-block;
+	font-size: 16px;
+	line-height: 1.5em;
+	padding: 0.5em 3.5em 0.5em 1em;
+	margin: 0;
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
+	-webkit-appearance: none;
+	-moz-appearance: none;
+	background-image:
+		linear-gradient(45deg, transparent 50%, gray 50%),
+		linear-gradient(135deg, gray 50%, transparent 50%),
+		linear-gradient(to right, #CCC, #CCC);
+	background-position:
+		calc(100% - 20px) calc(1em + 2px),
+		calc(100% - 15px) calc(1em + 2px),
+		calc(100% - 2.5em) 0.5em;
+	background-size:
+		5px 5px,
+		5px 5px,
+		1px 1.5em;
+	background-repeat: no-repeat;
+}
+
+.pmpro-wizard__container .pmpro-wizard__field select:focus {
+	background-image:
+		linear-gradient(45deg, green 50%, transparent 50%),
+		linear-gradient(135deg, transparent 50%, green 50%),
+		linear-gradient(to right, #CCC, #CCC);
+	background-position:
+		calc(100% - 15px) 1em,
+		calc(100% - 20px) 1em,
+		calc(100% - 2.5em) 0.5em;
+	background-size:
+		5px 5px,
+		5px 5px,
+		1px 1.5em;
+	background-repeat: no-repeat;
+	border-color: #1A688B;
+	outline: 0;
+}
+
+.pmpro-wizard__container .pmpro-wizard__field select:-moz-focusring {
+	color: transparent;
+	text-shadow: 0 0 0 #000;
+}
+
+.pmpro-wizard__container .pmpro-wizard__field-block {
+	max-width: 100%;
+	width: 100%;
+}
+
+.pmpro-wizard__container .pmpro-wizard__field__checkbox-group {
+	display: flex;
+}
+
+.pmpro-wizard__container .pmpro-wizard__field__checkbox-group input[type="checkbox"] {
+	margin: .25em 1em 0 0;
+}
+
+.pmpro-wizard__container .pmpro_wizard__submit {
+	border-top: 1px solid #EEE;
+	margin: 0;
+	padding: 2em 0;
+	text-align: center;
+}
+
+.pmpro-wizard__container .pmpro-wizard__exit {
+	color: #666;
+	font-size: 14px;
+	margin-top: 2em;
+	text-align: center;
+}
+
+.pmpro-wizard__container .pmpro-wizard__exit a {
+	color: #666;
+}
+
+.pmpro-wizard__col {
+	width: 45%;
+	display: inline-flex;
+	padding: 10px;
+	vertical-align: middle;
+}
+
+.pmpro-wizard__col .button {
+	width: 100%;
+	text-align: center;
+}
+
+.pmpro-wizard__subtitle {
+	font-size: 20px;
+	font-weight: bold;
+	line-height: 26px;
+}
+
+.pmpro-wizard__addons {
+	display: grid;
+	grid-gap: 20px;
+	grid-template-columns: 1fr 1fr 1fr;
+	margin-bottom: 20px;
+}
+
+.pmpro-wizard__addons > * {
+	text-align: center;
+}
+
+.pmpro-wizard__addons img {
+	border-radius: 50%;
+	box-shadow: 0px 0px 5px rgba( 0, 0, 0, 0.2 );
+	display: block;
+	margin: 15px auto;
+	max-width: 120px;
+}
+
+.pmpro-wizard__textbreak::before,
+.pmpro-wizard__textbreak::after {
+	background-color: #000;
+	content: "";
+	display: inline-block;
+	height: 1px;
+	vertical-align: middle;
+	width: 3%;
+	margin: 10px;
+}
+
+.pmpro-wizard__textbreak {
+	color: #000;
+	margin: 10px;
+	text-align: center;
+}
+
+a.pmpro_wizard__skip {
+	color: #666;
+	text-decoration: underline;
+	font-size: 13px;
+}
+
+a.pmpro_wizard__skip:hover {
+	cursor: pointer;
+}
+
+@media screen and (max-width: 782px) {
+	.pmpro-stepper .pmpro-stepper__step-label {
+		display: none;
+	}
+
+	.pmpro-wizard .pmpro-wizard__container {
+		padding-left: 1em;
+		padding-right: 1em;
+		margin-bottom: 3em;
+		margin-top: 0;
+	}
+
+	.pmpro-wizard__addons,
+	.pmpro-wizard__col {
+		display: block;
+		width: 100%;
+	}
+
+	.pmpro-wizard__addons > * {
+		margin-bottom: 40px;
+	}
 }
 
 /* highlighted trs */
@@ -1968,6 +2047,17 @@ button.pmpro_report_th_closed:before {
 
 .pmpro_admin #pmpro_dashboard_welcome ul li a .dashicons {
 	color: #82878c;
+}
+
+#pmpro_dashboard_news_updates ul li {
+	font-size: 14px;
+	line-height: 20px;
+	margin: 15px 0;
+}
+
+#pmpro_dashboard_news_updates ul li a {
+	display: block;
+	text-decoration: underline;
 }
 
 .pmpro_admin p.text-center {

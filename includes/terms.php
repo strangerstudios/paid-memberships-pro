@@ -15,7 +15,7 @@ function pmpro_term_add_form_fields() {
 	$term_levels = array();
 
 	// Build the selectors for the #memberships list based on level count.
-	$pmpro_memberships_checklist_classes = array( 'list:category', 'categorychecklist', 'form-no-clear');
+	$pmpro_memberships_checklist_classes = array( 'pmpro_checkbox_box', 'list:category', 'categorychecklist', 'form-no-clear');
 	if ( count( $membership_levels ) > 9 ) {
 		$pmpro_memberships_checklist_classes[] = 'pmpro_scrollable';
 	}
@@ -25,8 +25,7 @@ function pmpro_term_add_form_fields() {
 	?>
 	<div class="form-field">
 		<label><?php _e( 'Require Membership', 'paid-memberships-pro' ); ?></label>
-		<?php
-		if ( count( $membership_levels ) > 1 ) { ?>
+		<?php if ( count( $membership_levels ) > 1 ) { ?>
 			<p><?php esc_html_e( 'Select:', 'paid-memberships-pro' ); ?> <a id="pmpro-memberships-checklist-select-all" href="javascript:void(0);"><?php esc_html_e( 'All', 'paid-memberships-pro' ); ?></a> | <a id="pmpro-memberships-checklist-select-none" href="javascript:void(0);"><?php esc_html_e( 'None', 'paid-memberships-pro' ); ?></a></p>
 			<script type="text/javascript">
 				jQuery('#pmpro-memberships-checklist-select-all').click(function(){
@@ -37,22 +36,19 @@ function pmpro_term_add_form_fields() {
 				});
 			</script>
 		<?php } ?>
-		<ul id="pmpro-memberships-checklist" class="<?php echo esc_attr( $pmpro_memberships_checklist_classes ); ?>">
-		<input type="hidden" name="pmpro_noncename" id="pmpro_noncename" value="<?php echo esc_attr( wp_create_nonce( plugin_basename(__FILE__) ) )?>" />
-		<?php
-		$in_member_cat = false;
-		foreach ( $membership_levels as $level ) {
-			?>
-			<li id="membership-level-<?php echo esc_attr( $level->id ); ?>">
-				<label class="selectit">
-					<input id="in-membership-level-<?php echo esc_attr( $level->id ); ?>" type="checkbox" <?php if ( in_array( $level->id, $term_levels ) ) { ?>checked="checked"<?php } ?> name="pmpro_term_restrictions[]" value="<?php echo esc_attr( $level->id ) ;?>" />
-					<?php echo esc_html( $level->name ); ?>
-				</label>
-			</li>
+		<div id="pmpro-memberships-checklist" class="<?php echo esc_attr( $pmpro_memberships_checklist_classes ); ?>">
+			<input type="hidden" name="pmpro_noncename" id="pmpro_noncename" value="<?php echo esc_attr( wp_create_nonce( plugin_basename(__FILE__) ) )?>" />
 			<?php
-		}
-		?>
-		</ul>
+				$in_member_cat = false;
+				foreach ( $membership_levels as $level ) { ?>
+					<div id="membership-level-<?php echo esc_attr( $level->id ); ?>" class="pmpro_clickable">
+						<input id="in-membership-level-<?php echo esc_attr( $level->id ); ?>" type="checkbox" <?php if ( in_array( $level->id, $term_levels ) ) { ?>checked="checked"<?php } ?> name="pmpro_term_restrictions[]" value="<?php echo esc_attr( $level->id ) ;?>" />
+						<label for="in-membership-level-<?php echo esc_attr( $level->id ); ?>"><?php echo esc_html( $level->name ); ?></label>
+					</div>
+					<?php
+				}
+			?>
+		</div>
 	</div>
 	<?php
 }
@@ -77,7 +73,7 @@ function pmpro_term_edit_form_fields( $term ) {
 	$term_levels = $wpdb->get_col( "SELECT membership_id FROM $wpdb->pmpro_memberships_categories WHERE category_id = '" . intval( $term->term_id ) . "'" );
 
 	// Build the selectors for the #memberships list based on level count.
-	$pmpro_memberships_checklist_classes = array( 'list:category', 'categorychecklist', 'form-no-clear');
+	$pmpro_memberships_checklist_classes = array( 'pmpro_checkbox_box', 'list:category', 'categorychecklist', 'form-no-clear');
 	if ( count( $membership_levels ) > 9 ) {
 		$pmpro_memberships_checklist_classes[] = 'pmpro_scrollable';
 	}
@@ -99,22 +95,19 @@ function pmpro_term_edit_form_fields( $term ) {
 					});
 				</script>
 			<?php } ?>
-			<ul id="pmpro-memberships-checklist" class="<?php echo esc_attr( $pmpro_memberships_checklist_classes ); ?>">
+			<div id="pmpro-memberships-checklist" class="<?php echo esc_attr( $pmpro_memberships_checklist_classes ); ?>">
 				<input type="hidden" name="pmpro_noncename" id="pmpro_noncename" value="<?php echo esc_attr( wp_create_nonce( plugin_basename(__FILE__) ) )?>" />
 				<?php
-				$in_member_cat = false;
-				foreach ( $membership_levels as $level ) {
-					?>
-					<li id="membership-level-<?php echo esc_attr( $level->id ); ?>">
-						<label class="selectit">
+					$in_member_cat = false;
+					foreach ( $membership_levels as $level ) { ?>
+						<div id="membership-level-<?php echo esc_attr( $level->id ); ?>" class="pmpro_clickable">
 							<input id="in-membership-level-<?php echo esc_attr( $level->id ); ?>" type="checkbox" <?php if ( in_array( $level->id, $term_levels ) ) { ?>checked="checked"<?php } ?> name="pmpro_term_restrictions[]" value="<?php echo esc_attr( $level->id ) ;?>" />
-							<?php echo esc_html( $level->name ); ?>
-						</label>
-					</li>
-					<?php
-				}
+							<label for="in-membership-level-<?php echo esc_attr( $level->id ); ?>"><?php esc_html_e( $level->name ); ?></label>
+						</div>
+						<?php
+					}
 				?>
-			</ul>
+			</div>
 		</td>
 	</tr>
 	<?php

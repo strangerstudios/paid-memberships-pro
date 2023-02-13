@@ -4383,23 +4383,6 @@ function pmpro_activating_plugin( $plugin = null ) {
 }
 
 /**
- * Is the current site a production or staging site?
- * 
- * @since TBD
- * @return bool True if we believe this is a production site
- */
-function pmpro_is_production_site() {
-	/**
-	 * Check if the WP_ENVIRONMENT_TYPE is set and not in production
-	 */
-	if( defined( 'WP_ENVIRONMENT_TYPE' ) && WP_ENVIRONMENT_TYPE !== 'production' ) {
-		return false;
-	}
-
-	return true;
-}
-
-/**
  * Compare the stored site URL with the current site URL
  *
  * @since TBD

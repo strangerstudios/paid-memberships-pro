@@ -1799,6 +1799,7 @@ class PMProGateway_stripe extends PMProGateway {
 		$checkout_session_params = array(
 			'customer' => $customer->id,
 			'line_items' => $line_items,
+			// $subscription_data is only set if level is recurring. Could be empty though.
 			'mode' => isset( $subscription_data ) ? 'subscription' : 'payment',
 			'automatic_tax' => $automatic_tax,
 			'tax_id_collection' => $tax_id_collection,
@@ -1817,7 +1818,7 @@ class PMProGateway_stripe extends PMProGateway {
 		}
 
 		// For one-time payments, make sure that we create an invoice.
-		if ( empty( $subscription_data ) ) {
+		if ( $checkout_session_params['mode'] === 'payment' ) {
 			$checkout_session_params['invoice_creation']['enabled'] = true;
 		}
 
@@ -1929,7 +1930,7 @@ class PMProGateway_stripe extends PMProGateway {
 				return false;
 			}
 			// Payment should now be processed.
-			$payment_transaction_id = $payment_intent->charges->data[0]->id;
+			$payment_transaction_id = $payment_intent->latest_charge;
 
 			// Note the customer so that we can create a subscription if needed..
 			$customer = $payment_intent->customer;
@@ -1972,8 +1973,8 @@ class PMProGateway_stripe extends PMProGateway {
 			}
 
 			// If we needed to charge an initial payment, it was successful.
-			if ( ! empty( $order->stripe_payment_intent->charges->data[0]->id ) ) {
-				$payment_transaction_id = $order->stripe_payment_intent->charges->data[0]->id;
+			if ( ! empty( $order->stripe_payment_intent->latest_charge ) ) {
+				$payment_transaction_id = $order->stripe_payment_intent->latest_charge;
 			}
 		}
 
@@ -2485,7 +2486,13 @@ class PMProGateway_stripe extends PMProGateway {
 						if ( pmpro_license_isValid( null, pmpro_license_get_premium_types() ) ) {
 							esc_html_e( 'Note: You have a valid license and are not charged additional platform fees for payment processing.', 'paid-memberships-pro');
 						} else {
-							esc_html_e( 'Note: You are using the free Stripe payment gateway integration. This includes an additional 1% fee for payment processing. This fee is removed by activating a premium PMPro license.', 'paid-memberships-pro');
+							$application_fee_percentage = self::get_application_fee_percentage();
+							if ( ! empty( $application_fee_percentage ) ) {
+								echo sprintf( esc_html__( 'Note: You are using the free Stripe payment gateway integration. This includes an additional %s fee for payment processing. This fee is removed by activating a premium PMPro license.', 'paid-memberships-pro' ), intval( $application_fee_percentage ) . '%' );
+							} else {
+								esc_html_e( 'Note: You are using the free Stripe payment gateway integration. There is no additional fee for payment processing above what Stripe charges.', 'paid-memberships-pro' );
+							}
+							
 						}
 						echo ' <a href="https://www.paidmembershipspro.com/gateway/stripe/?utm_source=plugin&utm_medium=pmpro-paymentsettings&utm_campaign=gateways&utm_content=stripe-fees#tab-fees" target="_blank" rel="noopener noreferrer">' . esc_html__( 'Learn More &raquo;', 'paid-memberships-pro' ) . '</a>';
 					?>
@@ -4210,7 +4217,7 @@ class PMProGateway_stripe extends PMProGateway {
 	public function clean_up( &$order ) {
     pmpro_method_should_be_private( '2.7.0' );
 		if ( ! empty( $order->stripe_payment_intent ) && 'succeeded' == $order->stripe_payment_intent->status ) {
-			$order->payment_transaction_id = $order->stripe_payment_intent->charges->data[0]->id;
+			$order->payment_transaction_id = $order->stripe_payment_intent->latest_charge;
 		}
 
 		if ( empty( $order->subscription_transaction_id ) && ! empty( $order->stripe_subscription ) ) {

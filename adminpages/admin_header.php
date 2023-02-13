@@ -173,6 +173,18 @@
 			<a target="_blank" rel="noopener noreferrer" href="https://www.paidmembershipspro.com/documentation/?utm_source=plugin&utm_medium=pmpro-admin-header&utm_campaign=documentation"><?php esc_html_e('Documentation', 'paid-memberships-pro' ); ?></a>
 			<a target="_blank" href="https://www.paidmembershipspro.com/pricing/?utm_source=plugin&utm_medium=pmpro-admin-header&utm_campaign=pricing&utm_content=get-support"><?php esc_html_e('Get Support', 'paid-memberships-pro' );?></a>
 
+			<?php
+				// Show notice if paused.
+				if ( pmpro_is_paused() ) {
+					// Link to reactivate the notification about pause mode if has cap.
+					if ( current_user_can( 'pmpro_manage_pause_mode' ) ) { ?>
+						<a class="pmpro_paused_tag" href="<?php echo esc_url( add_query_arg( array( 'page' => 'pmpro-dashboard', 'show_pause_notification' => '1' ), admin_url( 'admin.php' ) ) ); ?>"><?php esc_html_e( 'Paused', 'paid-memberships-pro' ); ?></a>
+					<?php } else { ?>
+						<span class="pmpro_paused_tag"><?php esc_html_e( 'Paused', 'paid-memberships-pro' ); ?></span>
+					<?php }
+				}
+			?>
+
 			<?php if ( pmpro_license_isValid( null, pmpro_license_get_premium_types() ) ) { ?>
 				<?php printf(__( '<a class="pmpro_license_tag pmpro_license_tag-valid" href="%s">Valid License</a>', 'paid-memberships-pro' ), admin_url( 'admin.php?page=pmpro-license' ) ); ?>				
 			<?php } elseif ( ! defined( 'PMPRO_LICENSE_NAG' ) || PMPRO_LICENSE_NAG == true ) { ?>
