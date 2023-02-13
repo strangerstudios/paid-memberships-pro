@@ -994,7 +994,8 @@ function pmpro_cancelMembershipLevel( $level_id, $user_id = null, $status = 'ina
 	// Remove the membership level.	
 	$cols_set = array( 'status'=> $status, 'enddate' => current_time( 'mysql' ) );
 	$cols_where = array( 'user_id' => $user_id, 'membership_id' => $level_id );
-	if ( ! $wpdb->update( $wpdb->pmpro_memberships_users, $cols_set, $cols_where ) ) {
+	$cols_format = array( '%s', '%s');
+	if ( $wpdb->update( $wpdb->pmpro_memberships_users, $cols_set, $cols_where, $cols_format ) === false ) {
 		$pmpro_error = __( 'Error interacting with database', 'paid-memberships-pro' ) . ': ' . ( $wpdb->last_error ? $wpdb->last_error : 'unavailable' );
 		return false;
 	}
