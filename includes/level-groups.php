@@ -205,10 +205,9 @@ function pmpro_get_group_id_for_level( $level_id ) {
  */
 function pmpro_get_levels_for_group( $group_id ) {
 	global $wpdb;
-
-	$group_id = intval( $group_id );
-
-	$levels = $wpdb->get_results( "SELECT * FROM $wpdb->pmpro_membership_levels WHERE id IN ( SELECT level FROM $wpdb->pmpro_membership_levels_groups WHERE `group` = $group_id )" );
+	
+	$sqlQuery = $wpdb->prepare( "SELECT * FROM $wpdb->pmpro_membership_levels WHERE id IN ( SELECT level FROM $wpdb->pmpro_membership_levels_groups WHERE `group` = %d )", $group_id );
+	$levels = $wpdb->get_results( $sqlQuery );
 
 	return empty( $levels ) ? array() : $levels;
 }
@@ -223,10 +222,9 @@ function pmpro_get_levels_for_group( $group_id ) {
  */
 function pmpro_get_level_ids_for_group( $group_id ) {
 	global $wpdb;
-
-	$group_id = intval( $group_id );
-
-	$levels = $wpdb->get_col( "SELECT level FROM $wpdb->pmpro_membership_levels_groups WHERE `group` = $group_id" );
+	
+	$sqlQuery = $wpdb->prepare( "SELECT level FROM $wpdb->pmpro_membership_levels_groups WHERE `group` = %d", $group_id );
+	$levels = $wpdb->get_col( $sqlQuery );
 
 	return empty( $levels ) ? array() : $levels;
 }
