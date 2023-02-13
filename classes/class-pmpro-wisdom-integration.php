@@ -178,9 +178,14 @@ class PMPro_Wisdom_Integration {
 		$url       = strtolower( trim( $url ) );
 		$url_parts = parse_url( $url );
 		$host      = ! empty( $url_parts['host'] ) ? $url_parts['host'] : false;
+		$port      = ! empty( $url_parts['port'] ) ? $url_parts['port'] : false;
 
 		if ( empty( $host ) ) {
 			return $is_local;
+		}
+
+		if( 8888 === $port ){
+			return true;
 		}
 
 		if ( 'localhost' === $host ) {
