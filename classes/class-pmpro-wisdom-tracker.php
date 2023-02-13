@@ -788,19 +788,9 @@ class PMPro_Wisdom_Tracker {
 			return;
 		}
 
-		// @credit EDD
 		// Don't bother asking user to opt in if they're in local dev
-		$is_local = false;
-		if ( stristr( network_site_url( '/' ), '.dev' ) !== false || stristr( network_site_url( '/' ), 'localhost' ) !== false || stristr( network_site_url( '/' ), ':8888' ) !== false ) {
-			$is_local = true;
-		}
+		$is_local = apply_filters( 'wisdom_is_local_' . $this->plugin_name, false );
 
-		// PMPRO MODIFICATION
-		if ( ! $is_local && stristr( network_site_url( '/' ), '.local' ) !== false ) {
-			//$is_local = true;
-		}
-
-		$is_local = apply_filters( 'wisdom_is_local_' . $this->plugin_name, $is_local );
 		if ( $is_local ) {
 			$this->update_block_notice();
 
