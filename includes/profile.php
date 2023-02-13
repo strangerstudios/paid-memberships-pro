@@ -434,7 +434,16 @@ function pmpro_membership_level_profile_fields_update() {
 	if ( empty ( $_REQUEST['pmpro_membership_levels'] ) ) {
 		return false;
 	}
-	$submitted_levels = $_REQUEST['pmpro_membership_levels']; // Key is level ID, value is array of user selections.
+	
+	// Key is level ID, value is array of user selections. Sanitize input.
+	$submitted_levels = array();
+	// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+	foreach( $_REQUEST['pmpro_membership_levels'] as $key => $values ) {
+		$key = intval( $key );
+		$values = array_map( 'sanitize_text_field', $values );
+		$submitted_levels[$key] = $values;
+	}	
+	$submitted_levels = $_REQUEST['pmpro_membership_levels'];
 
 	// Loop through the submitted levels.
 	foreach ( $submitted_levels as $submitted_level => $submitted_level_data ) {
