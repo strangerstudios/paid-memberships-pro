@@ -170,7 +170,7 @@ class PMPro_Wisdom_Integration {
 	 */
 	public function bypass_local_tracking( $is_local = false ) {
 		if ( true === $is_local || ( function_exists( 'wp_get_environment_type' ) && 'production' !== wp_get_environment_type() ) ) {
-			return $is_local;
+			return true;
 		}
 
 		$url = network_site_url( '/' );
