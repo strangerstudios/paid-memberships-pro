@@ -188,10 +188,9 @@ function pmpro_add_level_to_group( $level_id, $group_id ) {
  */
 function pmpro_get_group_id_for_level( $level_id ) {
 	global $wpdb;
-
-	$level_id = intval( $level_id );
-
-	$group_id = $wpdb->get_var( "SELECT `group` FROM $wpdb->pmpro_membership_levels_groups WHERE `level` = $level_id LIMIT 1" );
+	
+	$sqlQuery = $wpdb->prepare( "SELECT `group` FROM $wpdb->pmpro_membership_levels_groups WHERE `level` = %d LIMIT 1", $level_id );
+	$group_id = $wpdb->get_var( $sqlQuery );
 
 	return empty( $group_id ) ? false : $group_id;
 }
