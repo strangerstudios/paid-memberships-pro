@@ -174,11 +174,11 @@ function pmpro_pause_mode_notice() {
 			</div>
 			<div class="pmpro_notification-content">
 				<h3><?php esc_html_e( 'Site URL Change Detected', 'paid-memberships-pro' ); ?></h3>
-				<p><?php _e( '<strong>Warning:</strong> We have detected that your site URL has changed. All cron jobs and automated services have been disabled.', 'paid-memberships-pro' ); ?></p>
+				<p><?php printf( __( '<strong>Warning:</strong> We have detected that your site URL has changed. All PMPro-related cron jobs and automated services have been disabled. Paid Memberships Pro considers %s to be the site URL.', 'paid-memberships-pro' ), '<code>' . esc_url( pmpro_getOption( 'last_known_url' ) ) . '</code>' ); ?></p>
 				<?php if ( current_user_can( 'pmpro_manage_pause_mode' ) ) { ?>
 				<p>
-					<a href='<?php echo admin_url( '?pmpro-reactivate-services=true' ); ?>' class='button'><?php esc_html_e( 'Update my primary domain and reactivate all services', 'paid-memberships-pro' ); ?></a>
-					<a href='#' id="hide_pause_notification_button" class='button button-dismiss' value="hide_pause_notification"><?php esc_html_e( 'Dismiss notice and keep all services paused', 'paid-memberships-pro' ); ?></a>
+					<a href='#' id="hide_pause_notification_button" class='button' value="hide_pause_notification"><?php esc_html_e( 'Dismiss notice and keep all services paused', 'paid-memberships-pro' ); ?></a>
+					<a href='<?php echo admin_url( '?pmpro-reactivate-services=true' ); ?>' class='button button-secondary'><?php esc_html_e( 'Update my primary domain and reactivate all services', 'paid-memberships-pro' ); ?></a>
 				</p>
 				<?php } else { ?>
 					<p><?php _e( 'Only users with the <code>pmpro_manage_pause_mode</code> capability are able to deactivate pause mode.', 'paid-memberships-pro' ); ?></p>

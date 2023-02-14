@@ -1190,7 +1190,8 @@ tr.pmpro_settings_divider td {
 }
 
 /* notifications */
-.pmpro_notification {
+.pmpro_notification,
+.notice.pmpro_notification {
 	background-color: #FFF;
 	border: 1px solid #ccd0d4;
 	box-shadow: 0 1px 4px rgba( 0, 0, 0, 0.15 );
@@ -1269,30 +1270,30 @@ tr.pmpro_settings_divider td {
 	margin-right: 5px;
 	white-space: break-spaces;
 }
-.pmpro_notification .button-dismiss {
+.pmpro_notification .button-secondary {
 	border-color: #C3C4C7;
 	color: #50575E;
 }
 .pmpro_notification-general h3 {
 	color: #567533;
 }
-.pmpro_notification-general .button:not(.button-dismiss) {
+.pmpro_notification-general .button:not(.button-secondary) {
 	background-color: #567533;
 	border-color: #456227;
 	color: #FFF;
 }
-.pmpro_notification-general .button:hover:not(.button-dismiss) {
+.pmpro_notification-general .button:hover:not(.button-secondary) {
 	background-color: #456227;
 }
 .pmpro_notification-error h3 {
 	color: #721C24;
 }
-.pmpro_notification-error .button:not(.button-dismiss) {
+.pmpro_notification-error .button:not(.button-secondary) {
 	background-color: #721C24;
 	border-color: #711B23;
 	color: #FFF;
 }
-.pmpro_notification-error .button:hover:not(.button-dismiss) {
+.pmpro_notification-error .button:hover:not(.button-secondary) {
 	background-color: #600027;
 	border-color: #600027;
 	color: #FFF;
