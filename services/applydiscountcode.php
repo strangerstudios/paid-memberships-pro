@@ -68,7 +68,7 @@
 				ON cl.level_id = l.id 
 			LEFT JOIN $wpdb->pmpro_discount_codes dc
 				ON dc.id = cl.code_id WHERE dc.code = '" . esc_sql( $discount_code ) . "'
-				AND cl.level_id IN (" . implode( ',', array_map( 'esc_sql', $level_ids ) ) . ")";
+				AND cl.level_id IN (" . implode( ',', array_map( 'intval', $level_ids ) ) . ")";
 	$code_levels = $wpdb->get_results($sqlQuery);
 
 	// ... and then get prices for the remaining levels.
@@ -77,7 +77,7 @@
 		$levels_found[] = intval( $code_level->level_id );
 	}
 	if ( ! empty( array_diff( $level_ids, $levels_found ) ) ) {
-		$sqlQuery = "SELECT * FROM $wpdb->pmpro_membership_levels WHERE id IN (" . implode( ',', array_map( 'esc_sql', array_diff( $level_ids, $levels_found ) ) ) . ")";
+		$sqlQuery = "SELECT * FROM $wpdb->pmpro_membership_levels WHERE id IN (" . implode( ',', array_map( 'intval', array_diff( $level_ids, $levels_found ) ) ) . ")";
 		$code_levels = array_merge( $code_levels, $wpdb->get_results($sqlQuery) );
 	}
 

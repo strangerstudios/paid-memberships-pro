@@ -744,7 +744,7 @@
 
 			$sqlQuery .= "ORDER BY id DESC ";
 
-			$sqlQuery .= "LIMIT " . esc_sql( $start ) . "," .  esc_sql( $limit );
+			$sqlQuery .= "LIMIT " . (int) $start . "," .  (int) $limit;
 
 			$codes = $wpdb->get_results($sqlQuery, OBJECT);
 

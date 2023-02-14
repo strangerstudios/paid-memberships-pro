@@ -83,7 +83,7 @@ if ( $s ) {
 	} elseif ( $l ) {
 		$sqlQuery .= " AND mu.membership_id = '" . esc_sql( $l ) . "' ";
 	}
-	$sqlQuery .= "GROUP BY u.ID ORDER BY user_registered DESC LIMIT " . esc_sql( $start ) . "," . esc_sql( $limit );
+	$sqlQuery .= "GROUP BY u.ID ORDER BY user_registered DESC LIMIT " . (int) $start . "," . (int) $limit;
 }
 
 		$sqlQuery = apply_filters( 'pmpro_visits_views_logins_csv_sql', $sqlQuery );

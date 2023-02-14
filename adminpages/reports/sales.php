@@ -183,7 +183,7 @@ function pmpro_report_sales_page()
 				 	$type_function( IF( mo2id IS NOT NULL, mo1total, NULL ) ) as renewals
 				 FROM ";
 	$sqlQuery .= "(";	// Sub query.
-	$sqlQuery .= "SELECT $date_function( DATE_ADD( mo1.timestamp, INTERVAL " . esc_sql( $tz_offset ) . " SECOND ) ) as date,
+	$sqlQuery .= "SELECT $date_function( DATE_ADD( mo1.timestamp, INTERVAL " . (int) $tz_offset . " SECOND ) ) as date,
 					    mo1.id as mo1id,
 						mo1.total as mo1total,
 						mo2.id as mo2id
@@ -199,15 +199,15 @@ function pmpro_report_sales_page()
 	}
 
 	$sqlQuery .= "WHERE mo1.total > 0
-					AND mo1.timestamp >= DATE_ADD( '" . esc_sql( $startdate ) . "' , INTERVAL - " . esc_sql( $tz_offset ) . " SECOND )
+					AND mo1.timestamp >= DATE_ADD( '" . esc_sql( $startdate ) . "' , INTERVAL - " . (int) $tz_offset . " SECOND )
 					AND mo1.status NOT IN('refunded', 'review', 'token', 'error')
 					AND mo1.gateway_environment = '" . esc_sql( $gateway_environment ) . "' ";
 
 	if(!empty($enddate))
-		$sqlQuery .= "AND mo1.timestamp <= DATE_ADD( '" . esc_sql( $enddate ) . " 23:59:59' , INTERVAL - " . esc_sql( $tz_offset ) . " SECOND )";
+		$sqlQuery .= "AND mo1.timestamp <= DATE_ADD( '" . esc_sql( $enddate ) . " 23:59:59' , INTERVAL - " . (int) $tz_offset . " SECOND )";
 
 	if(!empty($l))
-		$sqlQuery .= "AND mo1.membership_id IN(" . esc_sql( $l ) . ") ";
+		$sqlQuery .= "AND mo1.membership_id IN(" . $l . ") "; // $l is already escaped for SQL. See declaration.
 
 	if ( ! empty( $discount_code ) ) {
 		$sqlQuery .= "AND dc.code_id = '" . esc_sql( $discount_code ) . "' ";
@@ -624,7 +624,11 @@ function pmpro_getSales( $period = 'all time', $levels = 'all', $type = 'all' ) 
 
 	// Restrict by level.
 	if( ! empty( $levels ) && $levels != 'all' ) {
-		$sqlQuery .= "AND mo1.membership_id IN(" . esc_sql( $levels ) . ") ";
+		// If $levels is a string, convert to an array.
+		if ( ! is_array( $levels ) ) {
+			$levels = explode( ',', $levels );
+		}
+		$sqlQuery .= "AND mo1.membership_id IN(" . implode( ',', array_map( 'intval', $levels ) ) . ") ";
 	}		
 	
 	// Filter to renewals or new orders only. 	
@@ -688,11 +692,6 @@ function pmpro_get_prices_paid( $period, $count = NULL ) {
 	// Build query.
 	global $wpdb;
 	$sql_query = "SELECT ROUND(total,8) as rtotal, COUNT(*) as num FROM $wpdb->pmpro_membership_orders WHERE total > 0 AND status NOT IN('refunded', 'review', 'token', 'error') AND timestamp >= '" . esc_sql( $startdate ) . "' AND gateway_environment = '" . esc_sql( $gateway_environment ) . "' ";
-
-	// Restrict by level.
-	if ( ! empty( $levels ) ) {
-		$sql_query .= 'AND membership_id IN(' . esc_sql( $levels ) . ') ';
-	}
 
 	$sql_query .= ' GROUP BY rtotal ORDER BY num DESC ';
 
@@ -815,8 +814,13 @@ function pmpro_getRevenue( $period, $levels = NULL, $type = 'all' ) {
 					AND mo1.gateway_environment = '" . esc_sql( $gateway_environment ) . "' ";
 
 	// Restrict by level.
-	if(!empty($levels))
-		$sqlQuery .= "AND mo1.membership_id IN(" . esc_sql( $levels ) . ") ";
+	if ( ! empty( $levels ) ) {
+		// If $levels is a string, convert to array.`
+		if ( ! is_array( $levels ) ) {
+			$levels = explode( ',', $levels );
+		}
+		$sqlQuery .= "AND mo1.membership_id IN(" . implode( ',', array_map( 'intval', $levels ) ) . ") ";
+	}
 		
 	// Filter to renewals or new orders only. 	
 	if ( $type == 'renewals' ) {
@@ -861,7 +865,7 @@ function pmpro_get_revenue_between_dates( $start_date, $end_date = '', $level_id
 		$sql_query .= " AND timestamp <= '" . esc_sql( $end_date ) . " 23:59:59'";
 	}
 	if ( ! empty( $level_ids ) ) {
-		$sql_query .= ' AND membership_id IN(' . implode( ', ', array_map( 'esc_sql', $level_ids ) ) . ') '; 
+		$sql_query .= ' AND membership_id IN(' . implode( ', ', array_map( 'intval', $level_ids ) ) . ') '; 
 	}
 	return $wpdb->get_var($sql_query);
 }
