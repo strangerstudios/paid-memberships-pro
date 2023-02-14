@@ -55,7 +55,7 @@ global $pmpro_pages;
 		<div class="pmpro-wizard__field">
 			<label class="pmpro-wizard__label-block" for="collect_payments">
 				<input type="checkbox" name="collect_payments" id="collect_payments" value="1" <?php checked( true, $collect_payment ); ?>>
-				<?php esc_html_e( 'Yes, I will be collecting payments for my memberships?', 'paid-memberships-pro' ); ?>
+				<?php esc_html_e( 'Yes, I will be collecting payments for my memberships.', 'paid-memberships-pro' ); ?>
 			</label>
 		</div>
 		<div class="pmpro-wizard__field">
