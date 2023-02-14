@@ -529,11 +529,12 @@ function pmpro_getSignups($period = false, $levels = 'all')
 
 	//restrict by level
 	if(!empty($levels) && $levels != 'all') {
-		// If $levels is a string, convert to array.
+		// Let's make sure that each ID inside of $levels is an integer.
 		if ( ! is_array( $levels ) ) {
 			$levels = explode( ',', $levels );
 		}
-		$sqlQuery .= "AND mu.membership_id IN(" . implode( ',', array_map( 'intval', $levels ) ) . ") ";
+		$levels = implode( ',', array_map( 'intval', $levels ) );
+		$sqlQuery .= "AND mu.membership_id IN(" . $levels . ") ";
 	}
 
 	$signups = $wpdb->get_var($sqlQuery);
@@ -623,14 +624,12 @@ function pmpro_getCancellations($period = null, $levels = 'all', $status = array
 
 	//restrict by level
 	if(!empty($levels) && $levels != 'all') {
-
-		// the levels provided wasn't in array form
+		// Let's make sure that each ID inside of $levels is an integer.
 		if ( ! is_array($levels) ) {
-
-			$levels = array($levels);
+			$levels = explode( ',', $levels );
 		}
-
-		$sqlQuery .= "AND mu1.membership_id IN(" . implode( ',', array_map( 'intval', $levels ) ) . ") ";
+		$levels = implode( ',', array_map( 'intval', $levels ) );
+		$sqlQuery .= "AND mu1.membership_id IN(" . $levels . ") ";
 	}
 
 	/**

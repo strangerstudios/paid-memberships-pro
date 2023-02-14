@@ -624,11 +624,12 @@ function pmpro_getSales( $period = 'all time', $levels = 'all', $type = 'all' ) 
 
 	// Restrict by level.
 	if( ! empty( $levels ) && $levels != 'all' ) {
-		// If $levels is a string, convert to an array.
-		if ( ! is_array( $levels ) ) {
+		// Let's make sure that each ID inside of $levels is an integer.
+		if ( ! is_array($levels) ) {
 			$levels = explode( ',', $levels );
 		}
-		$sqlQuery .= "AND mo1.membership_id IN(" . implode( ',', array_map( 'intval', $levels ) ) . ") ";
+		$levels = implode( ',', array_map( 'intval', $levels ) );
+		$sqlQuery .= "AND mo1.membership_id IN(" . $levels . ") ";
 	}		
 	
 	// Filter to renewals or new orders only. 	
@@ -815,11 +816,12 @@ function pmpro_getRevenue( $period, $levels = NULL, $type = 'all' ) {
 
 	// Restrict by level.
 	if ( ! empty( $levels ) ) {
-		// If $levels is a string, convert to array.`
-		if ( ! is_array( $levels ) ) {
+		// Let's make sure that each ID inside of $levels is an integer.
+		if ( ! is_array($levels) ) {
 			$levels = explode( ',', $levels );
 		}
-		$sqlQuery .= "AND mo1.membership_id IN(" . implode( ',', array_map( 'intval', $levels ) ) . ") ";
+		$levels = implode( ',', array_map( 'intval', $levels ) );
+		$sqlQuery .= "AND mo1.membership_id IN(" . $levels . ") ";
 	}
 		
 	// Filter to renewals or new orders only. 	
