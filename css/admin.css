@@ -1452,10 +1452,18 @@ tr.pmpro_settings_divider td {
 	text-align: left;
 }
 
+.pmpro-wizard__container .pmpro-wizard__field-alt {
+	background-color: #F7F7F7;
+}
+
+.pmpro-wizard__container .pmpro-wizard__field-alt img {
+	vertical-align: middle;
+}
+
 .pmpro-wizard__container p.pmpro-wizard__field-description {
-	font-size: 13px;
+	font-size: 14px;
 	line-height: 20px;
-	margin: 0 0 .5em 0;
+	margin: .5em 0;
 }
 
 .pmpro-wizard__container .pmpro-wizard__label-block {
@@ -1611,8 +1619,10 @@ tr.pmpro_settings_divider td {
 
 a.pmpro_wizard__skip {
 	color: #666;
-	text-decoration: underline;
+	display: inline-block;
 	font-size: 13px;
+	margin-top: 10px;
+	text-decoration: underline;
 }
 
 a.pmpro_wizard__skip:hover {
