@@ -95,6 +95,7 @@ function pmpro_init_save_wizard_data() {
 		// Before redirecting to next step, save the step we're redirecting to.
 		pmpro_setOption( 'wizard_step', $step );
 		wp_redirect( $next_step );
+		exit;
 	}
 
 	/**
@@ -138,7 +139,7 @@ function pmpro_init_save_wizard_data() {
 		// Save the step should they come back at a later stage.
 		pmpro_setOption( 'wizard_step', 'memberships' );
 		wp_redirect( $next_step );
-
+		exit;
 	}
 
 	/**
