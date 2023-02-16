@@ -19,7 +19,7 @@ $level_groups  = pmpro_get_level_groups_in_order();
 if($pmpro_msg)
 {
 ?>
-<div class="<?php echo pmpro_get_element_class( 'pmpro_message ' . $pmpro_msgt, $pmpro_msgt ); ?>"><?php echo $pmpro_msg?></div>
+<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_message ' . $pmpro_msgt, $pmpro_msgt ) ); ?>"><?php echo wp_kses_post( $pmpro_msg ); ?></div>
 <?php
 }
 foreach ( $level_groups as $level_group ) {
@@ -44,7 +44,7 @@ foreach ( $level_groups as $level_group ) {
 	}
 	
 	?>
-	<table class="<?php echo pmpro_get_element_class( 'pmpro_table pmpro_levels_table pmpro_checkout', 'pmpro_levels_table' ); ?>">
+	<table class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_table pmpro_levels_table pmpro_checkout', 'pmpro_levels_table' ) ); ?>">
 	<thead>
 	<tr>
 		<th><?php esc_html_e('Level', 'paid-memberships-pro' );?></th>
@@ -67,32 +67,32 @@ foreach ( $level_groups as $level_group ) {
 			$has_any_level = $has_level ?: $has_any_level;
 		?>
 		<tr class="<?php if($count++ % 2 == 0) { ?>odd<?php } ?><?php if( $has_level ) { ?> active<?php } ?>">
-			<td><?php echo $has_level ? "<strong>{$level->name}</strong>" : $level->name?></td>
+			<td><?php echo $has_level ? '<strong>' . esc_html( $level->name ) . '</strong>' : esc_html( $level->name )?></td>
 			<td>
 				<?php
 					$cost_text = pmpro_getLevelCost($level, true, true); 
 					$expiration_text = pmpro_getLevelExpiration($level);
 					if(!empty($cost_text) && !empty($expiration_text))
-						echo $cost_text . "<br />" . $expiration_text;
+						echo esc_html( $cost_text ) . "<br />" . esc_html( $expiration_text );
 					elseif(!empty($cost_text))
-						echo $cost_text;
+						echo esc_html( $cost_text );
 					elseif(!empty($expiration_text))
-						echo $expiration_text;
+						echo esc_html( $expiration_text );
 				?>
 			</td>
 			<td>
 			<?php if ( ! $has_level ) { ?>                	
-				<a class="<?php echo pmpro_get_element_class( 'pmpro_btn pmpro_btn-select', 'pmpro_btn-select' ); ?>" href="<?php echo esc_url( pmpro_url( "checkout", "?level=" . $level->id, "https" ) ) ?>"><?php esc_html_e('Select', 'paid-memberships-pro' );?></a>
+				<a class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_btn pmpro_btn-select', 'pmpro_btn-select' ) ); ?>" href="<?php echo esc_url( pmpro_url( "checkout", "?level=" . $level->id, "https" ) ) ?>"><?php esc_html_e('Select', 'paid-memberships-pro' );?></a>
 			<?php } else { ?>      
 				<?php
 					//if it's a one-time-payment level, offer a link to renew	
 					if( pmpro_isLevelExpiringSoon( $user_level ) && $level->allow_signups ) {
 						?>
-							<a class="<?php echo pmpro_get_element_class( 'pmpro_btn pmpro_btn-select', 'pmpro_btn-select' ); ?>" href="<?php echo esc_url( pmpro_url( "checkout", "?level=" . $level->id, "https" ) ) ?>"><?php esc_html_e('Renew', 'paid-memberships-pro' );?></a>
+							<a class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_btn pmpro_btn-select', 'pmpro_btn-select' ) ); ?>" href="<?php echo esc_url( pmpro_url( "checkout", "?level=" . $level->id, "https" ) ) ?>"><?php esc_html_e('Renew', 'paid-memberships-pro' );?></a>
 						<?php
 					} else {
 						?>
-							<a class="<?php echo pmpro_get_element_class( 'pmpro_btn disabled', 'pmpro_btn' ); ?>" href="<?php echo esc_url( pmpro_url( "account" ) ) ?>"><?php esc_html_e('Your&nbsp;Level', 'paid-memberships-pro' );?></a>
+							<a class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_btn disabled', 'pmpro_btn' ) ); ?>" href="<?php echo esc_url( pmpro_url( "account" ) ) ?>"><?php esc_html_e('Your&nbsp;Level', 'paid-memberships-pro' );?></a>
 						<?php
 					}
 				?>
@@ -105,7 +105,7 @@ foreach ( $level_groups as $level_group ) {
 	</tbody>
 	</table>
 <?php } ?>
-<p class="<?php echo pmpro_get_element_class( 'pmpro_actions_nav' ); ?>">
+<p class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_actions_nav' ) ); ?>">
 	<?php if( $has_any_level ) { ?>
 		<a href="<?php echo esc_url( pmpro_url("account" ) ) ?>" id="pmpro_levels-return-account">&larr; <?php esc_html_e('Return to Your Account', 'paid-memberships-pro' );?></a>
 	<?php } else { ?>

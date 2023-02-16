@@ -44,15 +44,18 @@ global $pmpro_pages;
 			</select>
 		</div>
 		<div class="pmpro-wizard__field">
-			<label class="pmpro-wizard__label-block">
+			<label class="pmpro-wizard__label-block" for="createpages">
 				<input type="checkbox" name="createpages" id="createpages" value="1" <?php disabled( true, $member_pages_exist); ?>>
-				<label for="createpages"><?php esc_html_e( 'Yes, generate the required plugin pages for me. (Recommended)', 'paid-memberships-pro' ); ?></label><br/>
-				<?php if ( $member_pages_exist ) {
-					echo '<span style="font-size:12px;">' . esc_html__( 'We detected you have pages assigned for Paid Memberships Pro, this option is disabled.', 'paid-memberships-pro' ) . '</span>';
-				} ?>
-				<br><br>
+				<?php esc_html_e( 'Yes, generate the required plugin pages for me. (Recommended)', 'paid-memberships-pro' ); ?>
+			</label>
+			<?php if ( $member_pages_exist ) {
+				echo '<p class="pmpro-wizard__field-description">' . esc_html__( 'We detected you have pages assigned for Paid Memberships Pro, this option is disabled.', 'paid-memberships-pro' ) . '</p>';
+			} ?>
+		</div>
+		<div class="pmpro-wizard__field">
+			<label class="pmpro-wizard__label-block" for="collect_payments">
 				<input type="checkbox" name="collect_payments" id="collect_payments" value="1" <?php checked( true, $collect_payment ); ?>>
-				<label for="collect_payments"><?php esc_html_e( 'Yes, I will be collecting payments for my memberships?', 'paid-memberships-pro' ); ?></label><br/>
+				<?php esc_html_e( 'Yes, I will be collecting payments for my memberships.', 'paid-memberships-pro' ); ?>
 			</label>
 		</div>
 		<div class="pmpro-wizard__field">

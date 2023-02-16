@@ -192,7 +192,7 @@ class PMPro_Admin_Activity_Email extends PMProEmail {
 												ON dc.id = dcu.code_id
 											LEFT JOIN $wpdb->pmpro_membership_orders mo
 												ON dcu.order_id = mo.id
-											WHERE dcu.order_id IN(" . implode(",", array_map( 'esc_sql', $order_ids_with_discount_code ) ) . ")
+											WHERE dcu.order_id IN(" . implode(",", array_map( 'intval', $order_ids_with_discount_code ) ) . ")
 											  AND mo.status NOT IN('refunded', 'review', 'token', 'error')
 												AND mo.gateway_environment = '" . esc_sql( $gateway_environment ) . "'
 											GROUP BY dc.code

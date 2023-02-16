@@ -141,9 +141,9 @@ if ( empty( $filter ) || $filter === 'all' ) {
 
 	$condition = "o.timestamp BETWEEN '" . esc_sql( $start_date ) . "' AND '" . esc_sql( $end_date ) . "'";
 } elseif ( $filter == 'within-a-level' ) {
-	$condition = 'o.membership_id = ' . esc_sql( $l );
+	$condition = 'o.membership_id = ' . (int) $l ;
 } elseif ( $filter == 'with-discount-code' ) {
-	$condition = 'dc.code_id = ' . esc_sql( $discount_code );
+	$condition = 'dc.code_id = ' . (int) $discount_code;
 } elseif ( $filter == 'within-a-status' ) {
 	$condition = "o.status = '" . esc_sql( $status ) . "' ";
 } elseif ( $filter == 'only-paid' ) {
@@ -1394,7 +1394,7 @@ require_once( dirname( __FILE__ ) . '/admin_header.php' ); ?>
 			$sqlQuery .= "WHERE " . $condition . ' ORDER BY o.id DESC, o.timestamp DESC ';
 		}
 
-		$sqlQuery .= "LIMIT " . esc_sql( $start ) . "," . esc_sql( $limit );
+		$sqlQuery .= "LIMIT " . (int) $start . "," . (int) $limit;
 
 		$order_ids = $wpdb->get_col( $sqlQuery );
 

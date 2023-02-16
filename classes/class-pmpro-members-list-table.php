@@ -324,7 +324,7 @@ class PMPro_Members_List_Table extends WP_List_Table {
 			if ( ! empty( $search_key ) ) {
 				// If there's a colon in the search string, make the search smarter.
 				if( in_array( $search_key, array( 'login', 'nicename', 'email', 'url', 'display_name' ), true ) ) {
-					$key_column = 'u.user_' . esc_sql( $search_key );
+					$key_column = 'u.user_' . $search_key; // All search key options above are safe for use in a query.
 					$search_query = " AND $key_column LIKE '%" . esc_sql( $s ) . "%' ";
 				} elseif ( $search_key === 'discount' || $search_key === 'discount_code' || $search_key === 'dc' ) {
 					$user_ids = $wpdb->get_col( "SELECT dcu.user_id FROM $wpdb->pmpro_discount_codes_uses dcu LEFT JOIN $wpdb->pmpro_discount_codes dc ON dcu.code_id = dc.id WHERE dc.code = '" . esc_sql( $s ) . "'" );
@@ -363,7 +363,7 @@ class PMPro_Members_List_Table extends WP_List_Table {
 		} elseif ( 'cancelled' === $l ) {
 			$sqlQuery .= " AND mu.status IN('cancelled', 'admin_cancelled') AND mu2.status IS NULL ";
 		} elseif ( $l ) {
-			$sqlQuery .= " AND mu.status = 'active' AND mu.membership_id = '" . esc_sql( $l ) . "' ";
+			$sqlQuery .= " AND mu.status = 'active' AND mu.membership_id = '" . (int) $l . "' ";
 		} else {
 			$sqlQuery .= " AND mu.status = 'active' ";
 		}

@@ -159,7 +159,7 @@
 		if ( ! empty( $search_key ) ) {
 			// If there's a colon in the search string, make the search smarter.
 			if( in_array( $search_key, array( 'login', 'nicename', 'email', 'url', 'display_name' ), true ) ) {
-				$key_column = 'u.user_' . esc_sql( $search_key );
+				$key_column = 'u.user_' . $search_key; // All options for $search_key are safe for use in a query.
 				$search = " AND $key_column LIKE '%" . esc_sql( $s ) . "%' ";
 			} elseif ( $search_key === 'discount' || $search_key === 'discount_code' || $search_key === 'dc' ) {
 				$user_ids = $wpdb->get_col( "SELECT dcu.user_id FROM $wpdb->pmpro_discount_codes_uses dcu LEFT JOIN $wpdb->pmpro_discount_codes dc ON dcu.code_id = dc.id WHERE dc.code = '" . esc_sql( $s ) . "'" );
@@ -220,7 +220,7 @@
 
 	//records for active users with the requested membership level
 	// elseif($l)
-	$filter = ( (is_null($filter) && is_numeric($l)) ? " AND mu.status = 'active' AND mu.membership_id = " . esc_sql($l) . " " : $filter);
+	$filter = ( (is_null($filter) && is_numeric($l)) ? " AND mu.status = 'active' AND mu.membership_id = " . (int) $l . " " : $filter);
 
 	//any active users
 	// else

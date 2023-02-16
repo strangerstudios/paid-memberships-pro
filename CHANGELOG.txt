@@ -18,9 +18,12 @@
 * BUG FIX/ENHANCEMENT: Fixed issue where usage tracking was disabled, even if you clicked the "allow" button in the notice. Double check that this is set how you'd like at Memberships > Settings > Advanced Settings > Enable Tracking.
 * BUG FIX: Fixed issue where "Visits, Views, and Logins" report may not show up on some setups.
 * BUG FIX: Fixed issue where invoice emails were not sending due to issues with the pmpro_get_order_json() function.
+* BUG FIX: Fix for fatal error on site health check page if login/password is required for ftp account. #2374 (Thanks, @freax on GitHub)
 * REFACTOR: Deprecating CyberSource and PayPal Website Payments Pro gateways.
 * REFACTOR: Marking "trial ending" cron as deprecated.
 * REFACTOR: Removed the ability to direct access the scripts in the /crons/ and /services/ directories. Only the getfile.php script can be accessed this way when activated.
+= 2.9.12 - 2023-02-16 =
+* SECURITY: Updated sanitization, escaping, and other security-related code across the plugin.
 
 = 2.9.11 - 2023-01-27
 * BUG FIX: Fixed issue introduced in 2.9.9 where recurring_payment IPN transactions in PayPal were not being processed yet. If you have recurring subscription with PayPal Standard or PayPal Express, you will need to resend those transactions to make sure completed (and in some cases failed) recurring orders were processed on your site. More information here: https://www.paidmembershipspro.com/pmpro-update-2-9-11/
