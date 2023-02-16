@@ -159,16 +159,6 @@ class PMPro_Discount_Code_List_Table extends WP_List_Table {
 	 * @return void
 	 */
 	public function no_items() {
-		if ( isset( $_REQUEST['l'] ) ) {
-			$l = sanitize_text_field( $_REQUEST['l'] );
-		} else {
-			$l = false;
-		}
-		if(isset($_REQUEST['s']))
-			$s = trim( sanitize_text_field( $_REQUEST['s'] ) );
-		else
-			$s = "";
-		
 			
 		esc_html_e( 'No discount codes found.', 'paid-memberships-pro' );
 
@@ -307,6 +297,13 @@ class PMPro_Discount_Code_List_Table extends WP_List_Table {
 		
 	}
 
+	/**
+	 * Render the columns discount code value
+	 *
+	 * @param array  $item
+	 *
+	 * @return mixed
+	 */
 	public function column_discount_code( $item ) {
 
 		?>
@@ -422,30 +419,60 @@ class PMPro_Discount_Code_List_Table extends WP_List_Table {
 		<?php
 	}
 
+	/**
+	 * Render the discount uses value
+	 *
+	 * @param array  $item
+	 *
+	 * @return mixed
+	 */
 	public function column_uses( $item ) {
 		
 		global $wpdb;
 		
 		$uses = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM $wpdb->pmpro_discount_codes_uses WHERE code_id = %d", esc_sql( $item['id'] ) ) );
 
-		$max_uses_string = ( $item['uses'] > 0 ) ? $item['uses'] : __( 'unlimited', 'paid-memberships-pro' );
-
-		return "<strong>$uses</strong>/".$max_uses_string;
+		if( $item['uses'] > 0 ) {
+			echo "<strong>" . (int)$uses . "</strong>/" . $item->uses;
+		} else {
+			echo "<strong>" . (int)$uses . "</strong>/" . __( 'unlimited', 'paid-memberships-pro' );
+		}
 
 	}
 
+	/**
+	 * Render the discount codes start value
+	 *
+	 * @param array  $item
+	 *
+	 * @return mixed
+	 */
 	public function column_starts( $item ) {
 
 		return date_i18n( get_option( 'date_format' ), $item['starts'] );
 
 	}
 
+	/**
+	 * Render the discount codes expiration value
+	 *
+	 * @param array  $item
+	 *
+	 * @return mixed
+	 */
 	public function column_expires( $item ) {
 
 		return date_i18n( get_option( 'date_format' ), $item['expires'] );
 		
 	}
 
+	/**
+	 * Render the level that the discount code applies to
+	 *
+	 * @param array  $item
+	 *
+	 * @return mixed
+	 */
 	public function column_levels( $item ) {
 
 		global $wpdb, $pmpro_pages;
