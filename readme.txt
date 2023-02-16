@@ -2,9 +2,9 @@
 Contributors: strangerstudios, kimannwall, andrewza, dlparker1005, paidmembershipspro
 Tags: memberships, members, subscriptions, ecommerce, user registration, member, membership, e-commerce, paypal, stripe, braintree, authorize.net, payflow, restrict access, restrict content, directory
 Requires at least: 5.2
-Tested up to: 6.1.1
+Tested up to: 6.2
 Requires PHP: 5.6
-Stable tag: 2.9.11
+Stable tag: 2.9.12
 
 WordPress membership plugin: restrict content, accept member subscriptions with recurring payment. Includes user registration, login, & profile fields
 
@@ -156,6 +156,7 @@ Not sure? You can find out by doing a bit a research.
 9. Membership Account page, display all sections or show specific sections using shortcode attributes.
 
 == Changelog ==
+= 2.10 - 2023-02-01 =
 * FEATURE: Added Setup Wizard
 * FEATURE: Stripe Checkout and Stripe Customer Portal integrations are now fully released. Increased Stripe fee to 2% for newly connected sites.
 * ENHANCEMENT: Now "pausing" some PMPro functionality when the site URL changes.
@@ -177,6 +178,9 @@ Not sure? You can find out by doing a bit a research.
 * REFACTOR: Deprecating CyberSource and PayPal Website Payments Pro gateways.
 * REFACTOR: Marking "trial ending" cron as deprecated.
 * REFACTOR: Removed the ability to direct access the scripts in the /crons/ and /services/ directories. Only the getfile.php script can be accessed this way when activated.
+
+= 2.9.12 - 2023-02-16 =
+* SECURITY: Updated sanitization, escaping, and other security-related code across the plugin.
 
 = 2.9.11 - 2023-01-27
 * BUG FIX: Fixed issue introduced in 2.9.9 where recurring_payment IPN transactions in PayPal were not being processed yet. If you have recurring subscription with PayPal Standard or PayPal Express, you will need to resend those transactions to make sure completed (and in some cases failed) recurring orders were processed on your site. More information here: https://www.paidmembershipspro.com/pmpro-update-2-9-11/

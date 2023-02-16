@@ -1026,6 +1026,18 @@ require_once( dirname( __FILE__ ) . '/admin_header.php' ); ?>
 				'status'          => $status,
 			);
 			$export_url = add_query_arg( $url_params, $export_url );
+			//Not escaping here because we escape the values in the condition statement
+			$sqlQuery .= "WHERE " . $condition . ' ORDER BY o.id DESC, o.timestamp DESC ';
+		}
+
+		$sqlQuery .= "LIMIT " . (int) $start . "," . (int) $limit;
+
+		$order_ids = $wpdb->get_col( $sqlQuery );
+
+		$totalrows = $wpdb->get_var( 'SELECT FOUND_ROWS() as found_rows' );
+
+		if ( $order_ids ) {
+
 			?>
 			<a target="_blank" href="<?php echo esc_url( $export_url ); ?>" class="page-title-action pmpro-has-icon pmpro-has-icon-download"><?php esc_html_e( 'Export to CSV', 'paid-memberships-pro' ); ?></a>
 

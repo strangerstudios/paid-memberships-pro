@@ -2,14 +2,14 @@
 # This file is distributed under the same license as the Paid Memberships Pro plugin.
 msgid ""
 msgstr ""
-"Project-Id-Version: Paid Memberships Pro 2.9.11-2.10RC1\n"
+"Project-Id-Version: Paid Memberships Pro 2.9.12\n"
 "Report-Msgid-Bugs-To: info@paidmembershipspro.com\n"
 "Last-Translator: Paid Memberships Pro <info@paidmembershipspro.com>\n"
 "Language-Team: Paid Memberships Pro <info@paidmembershipspro.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2023-02-01T04:10:29+00:00\n"
+"POT-Creation-Date: 2023-02-16T16:54:33+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.7.1\n"
 "X-Domain: paid-memberships-pro\n"
@@ -87,6 +87,9 @@ msgstr "Sie haben keine Berechtigung für diesen Vorgang."
 #: includes/adminpages.php:218
 #: includes/adminpages.php:60
 #: includes/adminpages.php:220
+#: adminpages/admin_header.php:256
+#: includes/adminpages.php:61
+#: includes/adminpages.php:221
 msgid "Add Ons"
 msgstr "Add-Ons"
 
@@ -128,6 +131,8 @@ msgstr "Nochmal überprüfen"
 #: adminpages/membershiplevels.php:824
 #: includes/terms.php:30
 #: includes/terms.php:92
+#: includes/terms.php:29
+#: includes/terms.php:88
 msgid "All"
 msgstr "Alle"
 
@@ -575,6 +580,7 @@ msgstr "Wir empfehlen ein Upgrade auf PHP %s oder höher. Bitten Sie Ihren Hoste
 #: adminpages/admin_header.php:173
 #: adminpages/admin_header.php:174
 #: adminpages/wizard/done.php:77
+#: adminpages/wizard/done.php:83
 msgid "Documentation"
 msgstr "Dokumentation"
 
@@ -636,6 +642,8 @@ msgstr "Support bekommen"
 #: adminpages/admin_header.php:259
 #: adminpages/wizard/memberships.php:10
 #: adminpages/wizard/save-steps.php:70
+#: adminpages/admin_header.php:271
+#: adminpages/wizard/save-steps.php:71
 msgid "Membership Levels"
 msgstr "Pakete"
 
@@ -653,6 +661,7 @@ msgstr "Pakete"
 #: adminpages/admin_header.php:263
 #: adminpages/admin_header.php:262
 #: adminpages/admin_header.php:267
+#: adminpages/admin_header.php:279
 msgid "Pages"
 msgstr "Seiten"
 
@@ -666,6 +675,7 @@ msgstr "Seiten"
 #: adminpages/admin_header.php:267
 #: adminpages/admin_header.php:266
 #: adminpages/admin_header.php:271
+#: adminpages/admin_header.php:283
 msgid "Payment Gateway &amp; SSL"
 msgstr "Zahlungsdienstleister &amp; SSL"
 
@@ -725,6 +735,7 @@ msgstr "E-Mail"
 #: adminpages/admin_header.php:287
 #: adminpages/functions.php:481
 #: adminpages/wizard/wizard.php:48
+#: adminpages/admin_header.php:299
 msgid "Advanced"
 msgstr "Erweitert"
 
@@ -808,6 +819,8 @@ msgstr "Diese Inhalte sind nur für angemeldete Benutzer sichtbar. Bitte melden 
 #: adminpages/wizard/advanced.php:11
 #: includes/adminpages.php:76
 #: includes/adminpages.php:78
+#: adminpages/admin_header.php:299
+#: includes/adminpages.php:79
 msgid "Advanced Settings"
 msgstr "Erweiterte Einstellungen"
 
@@ -1731,6 +1744,8 @@ msgstr "Start Datum"
 #: classes/gateways/class.pmprogateway_stripe.php:873
 #: pages/checkout.php:413
 #: classes/gateways/class.pmprogateway_stripe.php:951
+#: pages/billing.php:382
+#: pages/checkout.php:427
 msgid "Expiration Date"
 msgstr "Ablaufdatum"
 
@@ -1972,6 +1987,7 @@ msgstr "Gesamtbetrag"
 #: classes/gateways/class.pmprogateway_stripe.php:3100
 #: classes/gateways/class.pmprogateway_stripe.php:3107
 #: classes/gateways/class.pmprogateway_stripe.php:3235
+#: classes/gateways/class.pmprogateway_stripe.php:3242
 msgid "Day(s)"
 msgstr "Tag(e)"
 
@@ -2043,6 +2059,7 @@ msgstr "Tag(e)"
 #: classes/gateways/class.pmprogateway_stripe.php:3102
 #: classes/gateways/class.pmprogateway_stripe.php:3109
 #: classes/gateways/class.pmprogateway_stripe.php:3237
+#: classes/gateways/class.pmprogateway_stripe.php:3244
 msgid "Month(s)"
 msgstr "Monat(e)"
 
@@ -2114,6 +2131,7 @@ msgstr "Monat(e)"
 #: classes/gateways/class.pmprogateway_stripe.php:3101
 #: classes/gateways/class.pmprogateway_stripe.php:3108
 #: classes/gateways/class.pmprogateway_stripe.php:3236
+#: classes/gateways/class.pmprogateway_stripe.php:3243
 msgid "Week(s)"
 msgstr "Woche(n)"
 
@@ -2186,6 +2204,7 @@ msgstr "Woche(n)"
 #: classes/gateways/class.pmprogateway_stripe.php:3103
 #: classes/gateways/class.pmprogateway_stripe.php:3110
 #: classes/gateways/class.pmprogateway_stripe.php:3238
+#: classes/gateways/class.pmprogateway_stripe.php:3245
 msgid "Year(s)"
 msgstr "Jahr(e)"
 
@@ -2463,6 +2482,7 @@ msgstr "Wählen Sie diese Option, wenn der Zugang ablaufen soll."
 #: adminpages/membershiplevels.php:576
 #: adminpages/membershiplevels.php:744
 #: adminpages/membershiplevels.php:749
+#: pages/confirmation.php:142
 msgid "Expires In"
 msgstr "Läuft ab in"
 
@@ -2620,6 +2640,7 @@ msgstr "Endet"
 #: adminpages/admin_header.php:255
 #: adminpages/admin_header.php:254
 #: adminpages/admin_header.php:259
+#: adminpages/admin_header.php:271
 msgid "Levels"
 msgstr "Pakete"
 
@@ -2759,6 +2780,8 @@ msgstr "löschen"
 #: adminpages/admin_header.php:275
 #: includes/adminpages.php:73
 #: includes/adminpages.php:75
+#: adminpages/admin_header.php:287
+#: includes/adminpages.php:76
 msgid "Email Settings"
 msgstr "E-Mail Einstellungen"
 
@@ -3127,6 +3150,7 @@ msgstr "Zahlungs-Einstellungen"
 #: classes/gateways/class.pmprogateway_stripe.php:3159
 #: classes/gateways/class.pmprogateway_stripe.php:3166
 #: classes/gateways/class.pmprogateway_stripe.php:3294
+#: classes/gateways/class.pmprogateway_stripe.php:3301
 msgid "per"
 msgstr "pro"
 
@@ -3456,6 +3480,7 @@ msgstr "Paket speichern"
 #: includes/profile.php:829
 #: includes/profile.php:953
 #: pages/cancel.php:98
+#: pages/billing.php:445
 msgid "Cancel"
 msgstr "Stornieren"
 
@@ -3568,6 +3593,7 @@ msgstr "Pakete mit der Maus verschieben, um sie auf der Pakete-Seite zu sortiere
 #: adminpages/orders.php:841
 #: adminpages/membershiplevels.php:1123
 #: pages/cancel.php:73
+#: pages/billing.php:103
 msgid "Expiration"
 msgstr "Gültig bis"
 
@@ -3902,6 +3928,7 @@ msgstr "%d Mitglieder gefunden."
 #: classes/class.memberorder.php:1621
 #: adminpages/reports/logins.php:193
 #: classes/class-pmpro-members-list-table.php:75
+#: pages/checkout.php:158
 msgid "Username"
 msgstr "Benutzername"
 
@@ -3962,6 +3989,8 @@ msgstr "Nachname"
 #: adminpages/orders.php:571
 #: pages/checkout.php:250
 #: classes/class-pmpro-members-list-table.php:81
+#: pages/billing.php:163
+#: pages/checkout.php:264
 msgid "Billing Address"
 msgstr "Rechnungsadresse"
 
@@ -4562,6 +4591,8 @@ msgstr "z.B. PayPal Express, PayPal Standard, Kreditkarte."
 #: pages/billing.php:338
 #: adminpages/orders.php:799
 #: pages/checkout.php:398
+#: pages/billing.php:339
+#: pages/checkout.php:412
 msgid "Card Type"
 msgstr "Kreditkarte"
 
@@ -4937,6 +4968,7 @@ msgstr "Vom Zahlungsdienstleister generiert. Hilfreich um Zahlungen zuzuordnen."
 #: adminpages/orders.php:1436
 #: adminpages/orders.php:1715
 #: includes/fields.php:1389
+#: pages/invoice.php:124
 msgid "Date"
 msgstr "Datum"
 
@@ -5073,6 +5105,9 @@ msgstr "E-Mail senden"
 #: includes/adminpages.php:182
 #: includes/adminpages.php:57
 #: includes/adminpages.php:184
+#: adminpages/admin_header.php:244
+#: includes/adminpages.php:58
+#: includes/adminpages.php:185
 msgid "Orders"
 msgstr "Bestellungen"
 
@@ -5328,6 +5363,7 @@ msgstr "Benutzer"
 #: js/blocks.build.js:1086
 #: blocks/checkout-button/block.js:76
 #: blocks/checkout-page/block.js:62
+#: pages/confirmation.php:140
 msgid "Membership Level"
 msgstr "Paket"
 
@@ -5519,6 +5555,7 @@ msgstr "Ihre Seiteneinstellungen wurden aktualisiert."
 #: adminpages/pagesettings.php:92
 #: adminpages/pagesettings.php:111
 #: adminpages/wizard/save-steps.php:64
+#: adminpages/wizard/save-steps.php:65
 msgid "Membership Account"
 msgstr "Mitgliedskonto"
 
@@ -5529,6 +5566,7 @@ msgstr "Mitgliedskonto"
 #: adminpages/pagesettings.php:93
 #: adminpages/pagesettings.php:112
 #: adminpages/wizard/save-steps.php:65
+#: adminpages/wizard/save-steps.php:66
 msgid "Membership Billing"
 msgstr "Zahlungsinformationen"
 
@@ -5539,6 +5577,7 @@ msgstr "Zahlungsinformationen"
 #: adminpages/pagesettings.php:94
 #: adminpages/pagesettings.php:113
 #: adminpages/wizard/save-steps.php:66
+#: adminpages/wizard/save-steps.php:67
 msgid "Membership Cancel"
 msgstr "Konto löschen"
 
@@ -5549,6 +5588,7 @@ msgstr "Konto löschen"
 #: adminpages/pagesettings.php:95
 #: adminpages/pagesettings.php:114
 #: adminpages/wizard/save-steps.php:67
+#: adminpages/wizard/save-steps.php:68
 msgid "Membership Checkout"
 msgstr "Checkout"
 
@@ -5559,6 +5599,7 @@ msgstr "Checkout"
 #: adminpages/pagesettings.php:96
 #: adminpages/pagesettings.php:115
 #: adminpages/wizard/save-steps.php:68
+#: adminpages/wizard/save-steps.php:69
 msgid "Membership Confirmation"
 msgstr "Bestätigung"
 
@@ -5569,6 +5610,7 @@ msgstr "Bestätigung"
 #: adminpages/pagesettings.php:97
 #: adminpages/pagesettings.php:116
 #: adminpages/wizard/save-steps.php:69
+#: adminpages/wizard/save-steps.php:70
 msgid "Membership Invoice"
 msgstr "Rechnung"
 
@@ -6071,6 +6113,7 @@ msgstr "Mehrwertsteuer"
 #: pages/billing.php:179
 #: adminpages/paymentsettings.php:239
 #: pages/billing.php:181
+#: pages/billing.php:182
 msgid "optional"
 msgstr "optional"
 
@@ -6973,6 +7016,9 @@ msgstr "Ihre Mitgliedschaftsbestätigung für %s"
 #: adminpages/orders.php:1438
 #: adminpages/orders.php:1725
 #: classes/gateways/class.pmprogateway_stripe.php:964
+#: pages/checkout.php:123
+#: pages/checkout.php:129
+#: pages/checkout.php:464
 msgid "Discount Code"
 msgstr "Rabattcode"
 
@@ -7317,6 +7363,8 @@ msgstr "Diese Mitgliedschaft läuft nicht ab"
 #: classes/class.pmproemail.php:1269
 #: includes/terms.php:30
 #: includes/terms.php:92
+#: includes/terms.php:29
+#: includes/terms.php:88
 msgid "None"
 msgstr "Kein"
 
@@ -7792,6 +7840,7 @@ msgstr "Um Braintree vollständig zu integrieren, stellen Sie Ihre Web Hook URL 
 #: classes/gateways/class.pmprogateway_stripe.php:849
 #: pages/checkout.php:386
 #: classes/gateways/class.pmprogateway_stripe.php:927
+#: pages/checkout.php:400
 msgid "Payment Information"
 msgstr "Zahlungsinformationen"
 
@@ -7841,6 +7890,7 @@ msgstr "Zahlungsinformationen"
 #: classes/gateways/class.pmprogateway_braintree.php:462
 #: classes/gateways/class.pmprogateway_stripe.php:856
 #: pages/checkout.php:387
+#: pages/checkout.php:401
 #, php-format
 msgid "We Accept %s"
 msgstr "Wir aktzeptieren %s"
@@ -7906,6 +7956,8 @@ msgstr "Wir aktzeptieren %s"
 #: classes/gateways/class.pmprogateway_stripe.php:869
 #: pages/checkout.php:409
 #: classes/gateways/class.pmprogateway_stripe.php:947
+#: pages/billing.php:378
+#: pages/checkout.php:423
 msgid "Card Number"
 msgstr "Kartennummer"
 
@@ -7958,6 +8010,7 @@ msgstr "Kartennummer"
 #: pages/billing.php:410
 #: classes/gateways/class.pmprogateway_braintree.php:510
 #: pages/billing.php:417
+#: pages/billing.php:418
 msgid "CVV"
 msgstr "Kartenprüfwert"
 
@@ -8017,6 +8070,7 @@ msgstr "Kartenprüfwert"
 #: classes/gateways/class.pmprogateway_braintree.php:511
 #: pages/billing.php:418
 #: pages/checkout.php:445
+#: pages/billing.php:419
 msgid "what's this?"
 msgstr "Was ist das?"
 
@@ -8078,6 +8132,8 @@ msgstr "Was ist das?"
 #: pages/checkout.php:127
 #: pages/checkout.php:452
 #: classes/gateways/class.pmprogateway_stripe.php:969
+#: pages/checkout.php:131
+#: pages/checkout.php:466
 msgid "Apply"
 msgstr "Übernehmen"
 
@@ -8438,6 +8494,7 @@ msgstr "Anbieter"
 #: classes/gateways/class.pmprogateway_payflowpro.php:125
 #: pages/checkout.php:143
 #: pages/checkout.php:163
+#: pages/checkout.php:167
 msgid "Password"
 msgstr "Passwort"
 
@@ -8658,6 +8715,7 @@ msgstr "Diese URL wird an PayPal für alle neuen Zahlungen und Anmeldungen weite
 #: classes/gateways/class.pmprogateway_paypalexpress.php:497
 #: pages/checkout.php:238
 #: classes/gateways/class.pmprogateway_paypalexpress.php:499
+#: pages/checkout.php:252
 msgid "Check Out with PayPal"
 msgstr "Zahlung mit PayPal abschließen"
 
@@ -8693,6 +8751,7 @@ msgstr "Zahlung mit PayPal abschließen"
 #: classes/gateways/class.pmprogateway_paypalexpress.php:502
 #: pages/checkout.php:558
 #: classes/gateways/class.pmprogateway_paypalexpress.php:504
+#: pages/checkout.php:576
 msgid "Submit and Check Out"
 msgstr "Zahlung bestätigen"
 
@@ -8733,6 +8792,7 @@ msgstr "Zahlung bestätigen"
 #: classes/gateways/class.pmprogateway_paypalexpress.php:502
 #: pages/checkout.php:558
 #: classes/gateways/class.pmprogateway_paypalexpress.php:504
+#: pages/checkout.php:576
 msgid "Submit and Confirm"
 msgstr "Senden und Bestätigen"
 
@@ -9052,6 +9112,7 @@ msgstr "Um Stripe vollständig zu integrieren, stellen Sie Ihre Web Hook URL auf
 #: classes/gateways/class.pmprogateway_stripe.php:655
 #: pages/checkout.php:424
 #: pages/checkout.php:444
+#: pages/checkout.php:458
 msgid "Security Code (CVC)"
 msgstr "Kartenprüfnummer (CVC)"
 
@@ -9096,6 +9157,7 @@ msgstr "%1$sHinweis:%2$s Abonnement %3$s%4$s%5$s konnte bei Stripe nicht gefunde
 #: classes/gateways/class.pmprogateway_stripe.php:3109
 #: classes/gateways/class.pmprogateway_stripe.php:3116
 #: classes/gateways/class.pmprogateway_stripe.php:3244
+#: classes/gateways/class.pmprogateway_stripe.php:3251
 msgid "Subscription Updates"
 msgstr "Abonnement-Updates"
 
@@ -9190,6 +9252,8 @@ msgstr "Mit Abonnement-Updates können Sie die Abonnementwerte des Mitglieds zu 
 #: classes/gateways/class.pmprogateway_stripe.php:3114
 #: classes/gateways/class.pmprogateway_stripe.php:3121
 #: classes/gateways/class.pmprogateway_stripe.php:3249
+#: classes/gateways/class.pmprogateway_stripe.php:3256
+#: pages/billing.php:443
 msgid "Update"
 msgstr "Aktualisieren"
 
@@ -9280,6 +9344,8 @@ msgstr "Stripe meldet einen Fehler bei der Erstellung des Kunden-Satzes:"
 #: classes/gateways/class.pmprogateway_stripe.php:4558
 #: classes/gateways/class.pmprogateway_stripe.php:4611
 #: classes/gateways/class.pmprogateway_stripe.php:4616
+#: classes/gateways/class.pmprogateway_stripe.php:4618
+#: classes/gateways/class.pmprogateway_stripe.php:4623
 msgid "Error getting subscription with Stripe:"
 msgstr "Fehler beim Anlegen des Abonnements in Stripe:"
 
@@ -9341,6 +9407,8 @@ msgstr "Fehler beim Anlegen des Abonnements in Stripe:"
 #: classes/gateways/class.pmprogateway_stripe.php:4659
 #: classes/gateways/class.pmprogateway_stripe.php:4712
 #: classes/gateways/class.pmprogateway_stripe.php:4717
+#: classes/gateways/class.pmprogateway_stripe.php:4719
+#: classes/gateways/class.pmprogateway_stripe.php:4724
 msgid "Error creating plan with Stripe:"
 msgstr "Fehler beim Erstellen eines Tarifs mit Stripe:"
 
@@ -9396,6 +9464,8 @@ msgstr "Fehler beim Erstellen eines Tarifs mit Stripe:"
 #: classes/gateways/class.pmprogateway_stripe.php:4704
 #: classes/gateways/class.pmprogateway_stripe.php:4748
 #: classes/gateways/class.pmprogateway_stripe.php:4762
+#: classes/gateways/class.pmprogateway_stripe.php:4755
+#: classes/gateways/class.pmprogateway_stripe.php:4769
 msgid "Error subscribing customer to plan with Stripe:"
 msgstr "Stripe meldet einen Fehler beim Einrichten des Abos für den Kunden:"
 
@@ -9427,6 +9497,7 @@ msgstr "Stripe meldet einen Fehler beim Einrichten des Abos für den Kunden:"
 #: classes/gateways/class.pmprogateway_stripe.php:3512
 #: classes/gateways/class.pmprogateway_stripe.php:3519
 #: classes/gateways/class.pmprogateway_stripe.php:3644
+#: classes/gateways/class.pmprogateway_stripe.php:3651
 msgid "Could not cancel the old subscription. Updates have not been processed."
 msgstr "Die alte Mitgliedschaft konnte nicht gekündigt werden. Aktualisierungen wurden nicht durchgeführt."
 
@@ -9466,6 +9537,7 @@ msgstr "Die alte Mitgliedschaft konnte nicht gekündigt werden. Aktualisierungen
 #: classes/gateways/class.pmprogateway_stripe.php:2136
 #: classes/gateways/class.pmprogateway_stripe.php:2143
 #: classes/gateways/class.pmprogateway_stripe.php:2237
+#: classes/gateways/class.pmprogateway_stripe.php:2238
 msgid "Could not cancel old subscription."
 msgstr "Das alte Abonnement konnte nicht storniert werden."
 
@@ -9502,6 +9574,7 @@ msgstr "Das alte Abonnement konnte nicht storniert werden."
 #: classes/gateways/class.pmprogateway_stripe.php:2152
 #: classes/gateways/class.pmprogateway_stripe.php:2159
 #: classes/gateways/class.pmprogateway_stripe.php:2253
+#: classes/gateways/class.pmprogateway_stripe.php:2254
 msgid "Could not find the customer."
 msgstr "Konnte den Kunden nicht finden."
 
@@ -9539,6 +9612,8 @@ msgstr "Konnte den Kunden nicht finden."
 #: classes/gateways/class.pmprogateway_stripe.php:4909
 #: classes/gateways/class.pmprogateway_stripe.php:4961
 #: classes/gateways/class.pmprogateway_stripe.php:4967
+#: classes/gateways/class.pmprogateway_stripe.php:4968
+#: classes/gateways/class.pmprogateway_stripe.php:4974
 msgid "Error: "
 msgstr "Fehler:"
 
@@ -9564,6 +9639,7 @@ msgstr "Fehler:"
 #: classes/gateways/class.pmprogateway_stripe.php:4916
 #: classes/gateways/class.pmprogateway_stripe.php:4923
 #: classes/gateways/class.pmprogateway_stripe.php:4981
+#: classes/gateways/class.pmprogateway_stripe.php:4988
 #, php-format
 msgid "Error: Unkown error while refunding charge #%s"
 msgstr "Fehler: Unbekannter Fehler bei der Erstattung der Zahlung Nummer%s"
@@ -9703,6 +9779,7 @@ msgstr "Sie müssen einen gültigen PMPro Plus-Lizenzschlüssel unter Einstellun
 #: adminpages/wizard/wizard.php:47
 #: includes/adminpages.php:50
 #: includes/adminpages.php:52
+#: includes/adminpages.php:53
 msgid "Memberships"
 msgstr "Mitgliedschaften"
 
@@ -9723,6 +9800,8 @@ msgstr "Mitgliedschaften"
 #: adminpages/admin_header.php:267
 #: includes/adminpages.php:71
 #: includes/adminpages.php:73
+#: adminpages/admin_header.php:279
+#: includes/adminpages.php:74
 msgid "Page Settings"
 msgstr "Seiten Einstellungen"
 
@@ -9739,6 +9818,7 @@ msgstr "Seiten Einstellungen"
 #: adminpages/wizard/payments.php:3
 #: includes/adminpages.php:72
 #: includes/adminpages.php:74
+#: includes/adminpages.php:75
 msgid "Payment Settings"
 msgstr "Zahlungs-Einstellungen"
 
@@ -9759,6 +9839,9 @@ msgstr "Zahlungs-Einstellungen"
 #: includes/adminpages.php:194
 #: includes/adminpages.php:58
 #: includes/adminpages.php:196
+#: adminpages/admin_header.php:248
+#: includes/adminpages.php:59
+#: includes/adminpages.php:197
 msgid "Reports"
 msgstr "Berichte"
 
@@ -9779,6 +9862,8 @@ msgstr "Berichte"
 #: adminpages/admin_header.php:263
 #: includes/adminpages.php:70
 #: includes/adminpages.php:72
+#: adminpages/admin_header.php:275
+#: includes/adminpages.php:73
 msgid "Discount Codes"
 msgstr "Gutscheincodes"
 
@@ -9787,6 +9872,7 @@ msgstr "Gutscheincodes"
 #: includes/adminpages.php:81
 #: includes/adminpages.php:82
 #: includes/adminpages.php:84
+#: includes/adminpages.php:85
 msgid "Updates Required"
 msgstr "Aktualisierung benötigt"
 
@@ -9797,6 +9883,7 @@ msgstr "Aktualisierung benötigt"
 #: includes/adminpages.php:137
 #: includes/adminpages.php:147
 #: includes/adminpages.php:149
+#: includes/adminpages.php:150
 msgid "<span class=\"ab-icon\"></span>Memberships"
 msgstr "<span class=\"ab-icon\"></span>Mitgliedschaften"
 
@@ -9808,6 +9895,7 @@ msgstr "<span class=\"ab-icon\"></span>Mitgliedschaften"
 #: includes/adminpages.php:429
 #: includes/adminpages.php:443
 #: includes/adminpages.php:445
+#: includes/adminpages.php:446
 msgid "Docs"
 msgstr "Dokumentationen"
 
@@ -9819,6 +9907,7 @@ msgstr "Dokumentationen"
 #: includes/adminpages.php:429
 #: includes/adminpages.php:443
 #: includes/adminpages.php:445
+#: includes/adminpages.php:446
 msgid "View PMPro Documentation"
 msgstr "PMPro-Dokumentation anzeigen"
 
@@ -9830,6 +9919,7 @@ msgstr "PMPro-Dokumentation anzeigen"
 #: includes/adminpages.php:430
 #: includes/adminpages.php:444
 #: includes/adminpages.php:446
+#: includes/adminpages.php:447
 msgid "Support"
 msgstr "Support"
 
@@ -9841,6 +9931,7 @@ msgstr "Support"
 #: includes/adminpages.php:430
 #: includes/adminpages.php:444
 #: includes/adminpages.php:446
+#: includes/adminpages.php:447
 msgid "Visit Customer Support Forum"
 msgstr "Support Forum besuchen"
 
@@ -12204,6 +12295,7 @@ msgstr "Dieser Artikel ist für dieses Paket bereits geschützt, weil er in eine
 #: includes/metaboxes.php:127
 #: includes/terms.php:27
 #: includes/terms.php:89
+#: includes/terms.php:85
 msgid "Require Membership"
 msgstr "Mitgliedschaft erforderlich"
 
@@ -12395,6 +12487,7 @@ msgstr "Bestelldatum"
 #: pages/cancel.php:72
 #: adminpages/reports/logins.php:195
 #: classes/class-pmpro-members-list-table.php:82
+#: pages/invoice.php:126
 msgid "Level"
 msgstr "Paket"
 
@@ -12661,6 +12754,7 @@ msgstr "%s pro %s."
 #: pages/billing.php:63
 #: pages/billing.php:89
 #: pages/billing.php:90
+#: pages/billing.php:91
 msgid "Duration"
 msgstr "Zeitraum"
 
@@ -12675,6 +12769,7 @@ msgstr "Zeitraum"
 #: pages/billing.php:81
 #: pages/billing.php:128
 #: pages/billing.php:130
+#: pages/billing.php:131
 msgid "Your payment subscription is managed by PayPal. Please <a href=\"http://www.paypal.com\">login to PayPal here</a> to update your billing information."
 msgstr "Ihre Zahlungen werden von PayPal abgewickelt. Sie können sich <a href=\"http://www.paypal.com\">hier bei PayPal einloggen</a> um Ihre Zahlungsinformationen zu aktualisieren."
 
@@ -12710,6 +12805,8 @@ msgstr "Ihre Zahlungen werden von PayPal abgewickelt. Sie können sich <a href=\
 #: pages/checkout.php:254
 #: includes/profile.php:790
 #: classes/class-pmpro-members-list-table.php:77
+#: pages/billing.php:167
+#: pages/checkout.php:268
 msgid "First Name"
 msgstr "Vorname"
 
@@ -12745,6 +12842,8 @@ msgstr "Vorname"
 #: pages/checkout.php:258
 #: includes/profile.php:791
 #: classes/class-pmpro-members-list-table.php:78
+#: pages/billing.php:171
+#: pages/checkout.php:272
 msgid "Last Name"
 msgstr "Nachname"
 
@@ -12774,6 +12873,8 @@ msgstr "Nachname"
 #: pages/checkout.php:242
 #: pages/billing.php:176
 #: pages/checkout.php:262
+#: pages/billing.php:177
+#: pages/checkout.php:276
 msgid "Address 1"
 msgstr "Adresse 1"
 
@@ -12803,6 +12904,8 @@ msgstr "Adresse 1"
 #: pages/checkout.php:246
 #: pages/billing.php:180
 #: pages/checkout.php:266
+#: pages/billing.php:181
+#: pages/checkout.php:280
 msgid "Address 2"
 msgstr "Adresse 2"
 
@@ -12832,6 +12935,8 @@ msgstr "Adresse 2"
 #: pages/checkout.php:253
 #: pages/billing.php:191
 #: pages/checkout.php:273
+#: pages/billing.php:192
+#: pages/checkout.php:287
 msgid "City"
 msgstr "Ort"
 
@@ -12861,6 +12966,8 @@ msgstr "Ort"
 #: pages/checkout.php:257
 #: pages/billing.php:195
 #: pages/checkout.php:277
+#: pages/billing.php:196
+#: pages/checkout.php:291
 msgid "State"
 msgstr "Bundesland"
 
@@ -12890,6 +12997,8 @@ msgstr "Bundesland"
 #: pages/checkout.php:261
 #: pages/billing.php:199
 #: pages/checkout.php:281
+#: pages/billing.php:200
+#: pages/checkout.php:295
 msgid "Postal Code"
 msgstr "Postleitzahl"
 
@@ -12919,6 +13028,8 @@ msgstr "Postleitzahl"
 #: pages/checkout.php:266
 #: pages/billing.php:208
 #: pages/checkout.php:286
+#: pages/billing.php:209
+#: pages/checkout.php:300
 msgid "City, State Zip"
 msgstr "Ort, Bundesland"
 
@@ -12948,6 +13059,8 @@ msgstr "Ort, Bundesland"
 #: pages/checkout.php:303
 #: pages/billing.php:261
 #: pages/checkout.php:323
+#: pages/billing.php:262
+#: pages/checkout.php:337
 msgid "Country"
 msgstr "Land"
 
@@ -12977,6 +13090,8 @@ msgstr "Land"
 #: pages/checkout.php:319
 #: pages/billing.php:287
 #: pages/checkout.php:339
+#: pages/billing.php:288
+#: pages/checkout.php:353
 msgid "Phone"
 msgstr "Telefon"
 
@@ -13017,6 +13132,9 @@ msgstr "Telefon"
 #: pages/billing.php:298
 #: pages/checkout.php:184
 #: pages/checkout.php:354
+#: pages/billing.php:299
+#: pages/checkout.php:188
+#: pages/checkout.php:368
 msgid "Email Address"
 msgstr "E-Mail Adresse"
 
@@ -13046,6 +13164,8 @@ msgstr "E-Mail Adresse"
 #: pages/checkout.php:341
 #: pages/billing.php:302
 #: pages/checkout.php:361
+#: pages/billing.php:303
+#: pages/checkout.php:375
 msgid "Confirm Email"
 msgstr "E-Mail bestätigen"
 
@@ -13063,6 +13183,7 @@ msgstr "E-Mail bestätigen"
 #: pages/billing.php:270
 #: pages/billing.php:321
 #: pages/billing.php:325
+#: pages/billing.php:326
 msgid "Credit Card Information"
 msgstr "Kreditkarten Informationen"
 
@@ -13080,6 +13201,7 @@ msgstr "Kreditkarten Informationen"
 #: pages/billing.php:271
 #: pages/billing.php:322
 #: pages/billing.php:326
+#: pages/billing.php:327
 #, php-format
 msgid "We accept %s"
 msgstr "Wir aktzeptieren %s"
@@ -13102,6 +13224,7 @@ msgstr "Wir aktzeptieren %s"
 #: pages/billing.php:422
 #: pages/billing.php:467
 #: pages/billing.php:484
+#: pages/billing.php:486
 msgid "This subscription is not recurring. So you don't need to update your billing information."
 msgstr "Keine weiteren Zahlungen erforderlich. Ihre Zahlungsinformationen müssen daher nicht aktualisiert werden."
 
@@ -13239,6 +13362,7 @@ msgstr "Klicken Sie hier, um Ihren Gutscheincode ändern"
 #: pages/checkout.php:84
 #: pages/checkout.php:97
 #: pages/checkout.php:117
+#: pages/checkout.php:121
 msgid "Click here to enter your discount code"
 msgstr "Klicken Sie hier, um Ihren Gutscheincode einzugeben"
 
@@ -13252,6 +13376,7 @@ msgstr "Klicken Sie hier, um Ihren Gutscheincode einzugeben"
 #: pages/checkout.php:84
 #: pages/checkout.php:97
 #: pages/checkout.php:117
+#: pages/checkout.php:121
 msgid "Do you have a discount code?"
 msgstr "Haben Sie einen Gutscheincode?"
 
@@ -13266,6 +13391,7 @@ msgstr "Haben Sie einen Gutscheincode?"
 #: pages/checkout.php:185
 #: pages/checkout.php:129
 #: pages/checkout.php:149
+#: pages/checkout.php:153
 msgid "Account Information"
 msgstr "Konto Informationen"
 
@@ -13279,6 +13405,7 @@ msgstr "Konto Informationen"
 #: pages/checkout.php:186
 #: pages/checkout.php:130
 #: pages/checkout.php:150
+#: pages/checkout.php:154
 msgid "Already have an account?"
 msgstr "Sie haben schon einen Konto?"
 
@@ -13292,6 +13419,7 @@ msgstr "Sie haben schon einen Konto?"
 #: pages/checkout.php:186
 #: pages/checkout.php:130
 #: pages/checkout.php:150
+#: pages/checkout.php:154
 msgid "Log in here"
 msgstr "Hier einloggen"
 
@@ -13306,6 +13434,7 @@ msgstr "Hier einloggen"
 #: pages/checkout.php:212
 #: pages/checkout.php:151
 #: pages/checkout.php:171
+#: pages/checkout.php:175
 msgid "Confirm Password"
 msgstr "Passwort bestätigen"
 
@@ -13320,6 +13449,7 @@ msgstr "Passwort bestätigen"
 #: pages/checkout.php:239
 #: pages/checkout.php:172
 #: pages/checkout.php:192
+#: pages/checkout.php:196
 msgid "Confirm Email Address"
 msgstr "E-Mail Adresse bestätigen"
 
@@ -13334,6 +13464,7 @@ msgstr "E-Mail Adresse bestätigen"
 #: pages/checkout.php:258
 #: pages/checkout.php:185
 #: pages/checkout.php:205
+#: pages/checkout.php:209
 msgid "Full Name"
 msgstr "Vollständiger Name"
 
@@ -13348,6 +13479,7 @@ msgstr "Vollständiger Name"
 #: pages/checkout.php:259
 #: pages/checkout.php:186
 #: pages/checkout.php:206
+#: pages/checkout.php:210
 msgid "LEAVE THIS BLANK"
 msgstr "DIESES FELD LEER LASSEN"
 
@@ -13362,6 +13494,7 @@ msgstr "DIESES FELD LEER LASSEN"
 #: pages/checkout.php:283
 #: pages/checkout.php:193
 #: pages/checkout.php:213
+#: pages/checkout.php:226
 #, php-format
 msgid "You are logged in as <strong>%s</strong>. If you would like to use a different account for this membership, <a href=\"%s\">log out now</a>."
 msgstr "Sie sind eingeloggt als <strong>%s</strong>. Wenn Sie für diese Mitgliedschaft einen anderen Konto verwenden wollen, <a href=\"%s\">ausloggen</a>."
@@ -13377,6 +13510,7 @@ msgstr "Sie sind eingeloggt als <strong>%s</strong>. Wenn Sie für diese Mitglie
 #: pages/checkout.php:299
 #: pages/checkout.php:209
 #: pages/checkout.php:229
+#: pages/checkout.php:243
 msgid "Choose your Payment Method"
 msgstr "Wählen Sie Ihre Zahlungsmethode"
 
@@ -13392,6 +13526,7 @@ msgstr "Wählen Sie Ihre Zahlungsmethode"
 #: pages/checkout.php:308
 #: pages/checkout.php:214
 #: pages/checkout.php:234
+#: pages/checkout.php:248
 msgid "Check Out with a Credit Card Here"
 msgstr "Mit Kreditkarte bezahlen"
 
@@ -13411,6 +13546,7 @@ msgstr "Mit Kreditkarte bezahlen"
 #: pages/checkout.php:476
 #: pages/checkout.php:478
 #: pages/checkout.php:498
+#: pages/checkout.php:515
 #, php-format
 msgid "I agree to the %s"
 msgstr "Ich stimme der %s zu"
@@ -13431,6 +13567,7 @@ msgstr "Ich stimme der %s zu"
 #: pages/checkout.php:514
 #: pages/checkout.php:526
 #: pages/checkout.php:546
+#: pages/checkout.php:564
 msgid "Complete Payment"
 msgstr "Zahlung abschließen"
 
@@ -13450,6 +13587,7 @@ msgstr "Zahlung abschließen"
 #: pages/checkout.php:536
 #: pages/checkout.php:548
 #: pages/checkout.php:568
+#: pages/checkout.php:586
 msgid "Processing..."
 msgstr "wird bearbeitet..."
 
@@ -13515,6 +13653,7 @@ msgstr "Drucken"
 #: pages/confirmation.php:64
 #: pages/confirmation.php:137
 #: pages/invoice.php:37
+#: pages/confirmation.php:139
 msgid "Account"
 msgstr "Konto"
 
@@ -13543,6 +13682,7 @@ msgstr "Zugang endet am"
 #: pages/confirmation.php:95
 #: pages/invoice.php:85
 #: pages/billing.php:98
+#: pages/billing.php:99
 msgid "Payment Method"
 msgstr "Zahlungsmethode"
 
@@ -13557,6 +13697,7 @@ msgstr "Zahlungsmethode"
 #: pages/confirmation.php:97
 #: pages/invoice.php:87
 #: pages/billing.php:100
+#: pages/billing.php:101
 msgid "ending in"
 msgstr "endet: "
 
@@ -13578,6 +13719,7 @@ msgstr "endet: "
 #: pages/invoice.php:97
 #: pages/invoice.php:125
 #: includes/profile.php:453
+#: pages/invoice.php:127
 msgid "Total Billed"
 msgstr "Summe"
 
@@ -13599,6 +13741,7 @@ msgstr "Gutschein"
 #: pages/confirmation.php:100
 #: pages/confirmation.php:103
 #: pages/confirmation.php:125
+#: pages/confirmation.php:127
 #, php-format
 msgid "Below are details about your membership account. A welcome email has been sent to %s."
 msgstr "Unten finden Sie Details zu Ihrem Mitgliedskonto. Eine Wilkommens-E-Mail wurde an %s gesendet."
@@ -13612,6 +13755,7 @@ msgstr "Unten finden Sie Details zu Ihrem Mitgliedskonto. Eine Wilkommens-E-Mail
 #: shortcodes/pmpro_account.php:247
 #: pages/confirmation.php:65
 #: shortcodes/pmpro_account.php:254
+#: pages/confirmation.php:140
 msgid "Pending"
 msgstr "Ausstehend"
 
@@ -13630,6 +13774,10 @@ msgstr "Ausstehend"
 #: pages/invoice.php:155
 #: pages/billing.php:127
 #: pages/billing.php:133
+#: pages/billing.php:128
+#: pages/billing.php:134
+#: pages/confirmation.php:151
+#: pages/invoice.php:157
 msgid "View Your Membership Account &rarr;"
 msgstr "Ihr Mitgliedskonto anzeigen &rarr;"
 
@@ -13639,6 +13787,7 @@ msgstr "Ihr Mitgliedskonto anzeigen &rarr;"
 #: pages/confirmation.php:123
 #: pages/confirmation.php:126
 #: pages/confirmation.php:151
+#: pages/confirmation.php:153
 msgid "If your account is not activated within a few minutes, please contact the site owner."
 msgstr "Wenn Ihr Konto nicht innerhalb der nächsten Minuten aktiviert wird, kontaktieren Sie bitte den Betreiber der Seite."
 
@@ -13647,6 +13796,7 @@ msgstr "Wenn Ihr Konto nicht innerhalb der nächsten Minuten aktiviert wird, kon
 #: pages/invoice.php:106
 #: pages/invoice.php:108
 #: pages/invoice.php:123
+#: pages/invoice.php:125
 msgid "Invoice #"
 msgstr "Rechnungs-Nr."
 
@@ -13655,6 +13805,7 @@ msgstr "Rechnungs-Nr."
 #: pages/invoice.php:132
 #: pages/invoice.php:134
 #: pages/invoice.php:149
+#: pages/invoice.php:151
 msgid "No invoices found."
 msgstr "Keine Rechnungen gefunden."
 
@@ -13663,6 +13814,7 @@ msgstr "Keine Rechnungen gefunden."
 #: pages/invoice.php:143
 #: pages/invoice.php:145
 #: pages/invoice.php:157
+#: pages/invoice.php:159
 msgid "&larr; View All Invoices"
 msgstr "&larr; alle Rechnungen anzeigen"
 
@@ -13679,6 +13831,7 @@ msgstr "&larr; alle Rechnungen anzeigen"
 #: adminpages/functions.php:457
 #: adminpages/wizard/memberships.php:23
 #: adminpages/wizard/save-steps.php:159
+#: adminpages/wizard/save-steps.php:161
 msgid "Free"
 msgstr "Kostenlos"
 
@@ -14457,6 +14610,7 @@ msgstr "Betrag"
 #: shortcodes/pmpro_account.php:155
 #: shortcodes/pmpro_account.php:264
 #: shortcodes/pmpro_account.php:271
+#: shortcodes/pmpro_account.php:273
 msgid "View All Invoices"
 msgstr "Alle Rechnungen anzeigen"
 
@@ -14469,6 +14623,7 @@ msgstr "Alle Rechnungen anzeigen"
 #: shortcodes/pmpro_account.php:162
 #: shortcodes/pmpro_account.php:271
 #: shortcodes/pmpro_account.php:278
+#: shortcodes/pmpro_account.php:280
 msgid "Member Links"
 msgstr "Mitglieder Links"
 
@@ -15251,11 +15406,13 @@ msgstr "Bitte bearbeiten Sie Ihre Rabattcodes"
 
 #: adminpages/admin_header.php:177
 #: adminpages/admin_header.php:178
+#: adminpages/admin_header.php:189
 msgid "<a class=\"pmpro_license_tag pmpro_license_tag-valid\" href=\"%s\">Valid License</a>"
 msgstr "<a class=\"pmpro_license_tag pmpro_license_tag-valid\" href=\"%s\">Gültige Lizenz</a>"
 
 #: adminpages/admin_header.php:179
 #: adminpages/admin_header.php:180
+#: adminpages/admin_header.php:191
 msgid "<a class=\"pmpro_license_tag pmpro_license_tag-invalid\" href=\"%s\">No License</a>"
 msgstr "<a class=\"pmpro_license_tag pmpro_license_tag-invalid\" href=\"%s\">Keine Lizenz</a>"
 
@@ -15270,6 +15427,9 @@ msgstr "<a class=\"pmpro_license_tag pmpro_license_tag-invalid\" href=\"%s\">Kei
 #: includes/adminpages.php:158
 #: includes/adminpages.php:55
 #: includes/adminpages.php:160
+#: adminpages/admin_header.php:236
+#: includes/adminpages.php:56
+#: includes/adminpages.php:161
 msgid "Dashboard"
 msgstr "Dashboard"
 
@@ -15287,6 +15447,9 @@ msgstr "Dashboard"
 #: includes/adminpages.php:170
 #: includes/adminpages.php:56
 #: includes/adminpages.php:172
+#: adminpages/admin_header.php:240
+#: includes/adminpages.php:57
+#: includes/adminpages.php:173
 msgid "Members"
 msgstr "Mitglieder"
 
@@ -15301,6 +15464,9 @@ msgstr "Mitglieder"
 #: includes/adminpages.php:206
 #: includes/adminpages.php:59
 #: includes/adminpages.php:208
+#: adminpages/admin_header.php:252
+#: includes/adminpages.php:60
+#: includes/adminpages.php:209
 msgid "Settings"
 msgstr "Einstellungen"
 
@@ -15311,6 +15477,8 @@ msgstr "Einstellungen"
 #: adminpages/admin_header.php:247
 #: includes/adminpages.php:67
 #: includes/adminpages.php:69
+#: adminpages/admin_header.php:260
+#: includes/adminpages.php:70
 msgid "License"
 msgstr "Lizenz"
 
@@ -15318,6 +15486,7 @@ msgstr "Lizenz"
 #: adminpages/admin_header.php:267
 #: adminpages/admin_header.php:266
 #: adminpages/admin_header.php:271
+#: adminpages/admin_header.php:283
 msgid "Payment Gateway &amp; SSL Settings"
 msgstr "Zahlungs-Gateway &amp; SSL-Einstellungen"
 
@@ -15330,6 +15499,8 @@ msgstr "Zahlungs-Gateway &amp; SSL-Einstellungen"
 #: adminpages/admin_header.php:279
 #: includes/adminpages.php:74
 #: includes/adminpages.php:76
+#: adminpages/admin_header.php:291
+#: includes/adminpages.php:77
 msgid "Email Templates"
 msgstr "E-Mail-Vorlagen"
 
@@ -15574,6 +15745,7 @@ msgstr "<strong>Thank you!</strong> A valid <strong>%s</strong> license key has 
 #: adminpages/dashboard.php:187
 #: adminpages/dashboard.php:193
 #: adminpages/wizard/general.php:62
+#: adminpages/wizard/general.php:65
 msgid "An annual support license is recommended for websites running Paid Memberships Pro."
 msgstr "Für Websites, die Paid Memberships Pro verwenden, wird eine jährliche Support-Lizenz empfohlen."
 
@@ -16242,6 +16414,7 @@ msgstr "Letztes Jahr"
 #: adminpages/pagesettings.php:105
 #: adminpages/pagesettings.php:119
 #: adminpages/wizard/save-steps.php:72
+#: adminpages/wizard/save-steps.php:73
 msgid "Your Profile"
 msgstr "Ihr Profil"
 
@@ -16253,6 +16426,9 @@ msgstr "Ihr Profil"
 #: includes/menus.php:160
 #: adminpages/pagesettings.php:118
 #: adminpages/wizard/save-steps.php:71
+#: adminpages/wizard/save-steps.php:72
+#: includes/login.php:498
+#: includes/login.php:734
 msgid "Log In"
 msgstr "Log In"
 
@@ -16350,6 +16526,7 @@ msgstr "Fügen Sie den Shortcode %s oder den Block Log In Form ein."
 #: includes/adminpages.php:373
 #: includes/adminpages.php:387
 #: includes/adminpages.php:389
+#: includes/adminpages.php:390
 msgid "Member Profile Edit Page"
 msgstr "Mitgliedsprofil bearbeiten Seite"
 
@@ -17131,6 +17308,7 @@ msgstr "Fehler beim Erstellen des Tarifs mit PayPal."
 #: classes/gateways/class.pmprogateway_stripe.php:2215
 #: classes/gateways/class.pmprogateway_stripe.php:2222
 #: classes/gateways/class.pmprogateway_stripe.php:2360
+#: classes/gateways/class.pmprogateway_stripe.php:2361
 msgid "Stripe Connect Settings"
 msgstr "Stripe Connect Settings"
 
@@ -17144,6 +17322,7 @@ msgstr "Stripe Connect Settings"
 #: classes/gateways/class.pmprogateway_stripe.php:2218
 #: classes/gateways/class.pmprogateway_stripe.php:2225
 #: classes/gateways/class.pmprogateway_stripe.php:2363
+#: classes/gateways/class.pmprogateway_stripe.php:2364
 msgid "Live Mode:"
 msgstr "Live-Modus:"
 
@@ -17161,6 +17340,7 @@ msgstr "Live-Modus:"
 #: classes/gateways/class.pmprogateway_stripe.php:2222
 #: classes/gateways/class.pmprogateway_stripe.php:2229
 #: classes/gateways/class.pmprogateway_stripe.php:2367
+#: classes/gateways/class.pmprogateway_stripe.php:2368
 msgid "Connected"
 msgstr "Verbunden"
 
@@ -17177,6 +17357,7 @@ msgstr "Verbunden"
 #: classes/gateways/class.pmprogateway_stripe.php:2224
 #: classes/gateways/class.pmprogateway_stripe.php:2231
 #: classes/gateways/class.pmprogateway_stripe.php:2369
+#: classes/gateways/class.pmprogateway_stripe.php:2370
 msgid "Not Connected"
 msgstr "Nicht verbunden"
 
@@ -17200,6 +17381,8 @@ msgstr "Nicht verbunden"
 #: classes/gateways/class.pmprogateway_stripe.php:2254
 #: classes/gateways/class.pmprogateway_stripe.php:2377
 #: classes/gateways/class.pmprogateway_stripe.php:2392
+#: classes/gateways/class.pmprogateway_stripe.php:2378
+#: classes/gateways/class.pmprogateway_stripe.php:2393
 msgid "Your site is using legacy API keys to authenticate with Stripe."
 msgstr "Ihre Website verwendet ältere API-Schlüssel zur Authentifizierung bei Stripe."
 
@@ -17213,6 +17396,7 @@ msgstr "Ihre Website verwendet ältere API-Schlüssel zur Authentifizierung bei 
 #: classes/gateways/class.pmprogateway_stripe.php:2236
 #: classes/gateways/class.pmprogateway_stripe.php:2243
 #: classes/gateways/class.pmprogateway_stripe.php:2381
+#: classes/gateways/class.pmprogateway_stripe.php:2382
 msgid "Use the \"Connect with Stripe\" button below to securely authenticate with your Stripe account using Stripe Connect. Log in with the current Stripe account used for this site so that existing subscriptions are not affected by the update."
 msgstr "Verwenden Sie die Schaltfläche \"Mit Stripe verbinden\", um sich mit Stripe Connect sicher bei Ihrem Stripe-Konto zu authentifizieren. Melden Sie sich mit dem aktuellen Stripe-Konto an, das für diese Website verwendet wird, damit vorhandene Abonnements nicht von der Aktualisierung betroffen sind."
 
@@ -17230,6 +17414,7 @@ msgstr "Verwenden Sie die Schaltfläche \"Mit Stripe verbinden\", um sich mit St
 #: classes/gateways/class.pmprogateway_stripe.php:2256
 #: classes/gateways/class.pmprogateway_stripe.php:2263
 #: classes/gateways/class.pmprogateway_stripe.php:2401
+#: classes/gateways/class.pmprogateway_stripe.php:2402
 msgid "Stripe Connection:"
 msgstr "Stripe-Verbindung:"
 
@@ -17247,6 +17432,7 @@ msgstr "Stripe-Verbindung:"
 #: classes/gateways/class.pmprogateway_stripe.php:2272
 #: classes/gateways/class.pmprogateway_stripe.php:2279
 #: classes/gateways/class.pmprogateway_stripe.php:2417
+#: classes/gateways/class.pmprogateway_stripe.php:2418
 msgid "Disconnect From Stripe"
 msgstr "Verbindung zu Stripe trennen"
 
@@ -17261,6 +17447,7 @@ msgstr "Verbindung zu Stripe trennen"
 #: classes/gateways/class.pmprogateway_stripe.php:2276
 #: classes/gateways/class.pmprogateway_stripe.php:2283
 #: classes/gateways/class.pmprogateway_stripe.php:2421
+#: classes/gateways/class.pmprogateway_stripe.php:2422
 msgid "This will disconnect your site from Stripe. Users will not be able to complete membership checkout or update their billing information. Existing subscriptions will not be affected at the gateway, but new recurring orders will not be created in this site."
 msgstr "Dadurch wird Ihre Website von Stripe getrennt. Benutzer können den Checkout der Mitgliedschaft nicht abschließen oder ihre Rechnungsinformationen aktualisieren. Bestehende Abonnements sind am Gateway nicht betroffen, aber neue wiederkehrende Bestellungen werden auf dieser Website nicht erstellt."
 
@@ -17278,6 +17465,7 @@ msgstr "Dadurch wird Ihre Website von Stripe getrennt. Benutzer können den Chec
 #: classes/gateways/class.pmprogateway_stripe.php:2293
 #: classes/gateways/class.pmprogateway_stripe.php:2300
 #: classes/gateways/class.pmprogateway_stripe.php:2438
+#: classes/gateways/class.pmprogateway_stripe.php:2439
 msgid "Connect with Stripe"
 msgstr "Mit Stripe verbinden"
 
@@ -17292,6 +17480,7 @@ msgstr "Mit Stripe verbinden"
 #: classes/gateways/class.pmprogateway_stripe.php:2300
 #: classes/gateways/class.pmprogateway_stripe.php:2307
 #: classes/gateways/class.pmprogateway_stripe.php:2445
+#: classes/gateways/class.pmprogateway_stripe.php:2446
 msgid "Note: You have a valid license and are not charged additional platform fees for payment processing."
 msgstr "Hinweis: Sie haben eine gültige Lizenz und es fallen keine zusätzlichen Plattformgebühren für die Zahlungsabwicklung an."
 
@@ -17358,6 +17547,7 @@ msgstr "﻿Webhook URL"
 #: classes/gateways/class.pmprogateway_stripe.php:2218
 #: classes/gateways/class.pmprogateway_stripe.php:2225
 #: classes/gateways/class.pmprogateway_stripe.php:2363
+#: classes/gateways/class.pmprogateway_stripe.php:2364
 msgid "Test Mode:"
 msgstr "Test Modus:"
 
@@ -17371,6 +17561,7 @@ msgstr "Test Modus:"
 #: classes/gateways/class.pmprogateway_stripe.php:2238
 #: classes/gateways/class.pmprogateway_stripe.php:2245
 #: classes/gateways/class.pmprogateway_stripe.php:2383
+#: classes/gateways/class.pmprogateway_stripe.php:2384
 msgid "Use the \"Connect with Stripe\" button below to securely authenticate with your Stripe account using Stripe Connect in test mode."
 msgstr "Verwenden Sie die Schaltfläche \"Mit Stripe verbinden\" unten, um sich mit Stripe Connect im Testmodus sicher bei Ihrem Stripe-Konto zu authentifizieren."
 
@@ -17385,6 +17576,7 @@ msgstr "Verwenden Sie die Schaltfläche \"Mit Stripe verbinden\" unten, um sich 
 #: classes/gateways/class.pmprogateway_stripe.php:2278
 #: classes/gateways/class.pmprogateway_stripe.php:2285
 #: classes/gateways/class.pmprogateway_stripe.php:2423
+#: classes/gateways/class.pmprogateway_stripe.php:2424
 msgid "This will disconnect your site from Stripe in test mode only."
 msgstr "Dadurch wird Ihre Website nur im Testmodus von Stripe getrennt."
 
@@ -17687,6 +17879,7 @@ msgstr "Fehler: %s"
 #: classes/gateways/class.pmprogateway_stripe.php:3837
 #: classes/gateways/class.pmprogateway_stripe.php:3844
 #: classes/gateways/class.pmprogateway_stripe.php:3969
+#: classes/gateways/class.pmprogateway_stripe.php:3976
 msgid "Customer authentication is required to complete this transaction. Please complete the verification steps issued by your payment provider."
 msgstr "Zum Abschließen dieser Transaktion ist eine Kundenauthentifizierung erforderlich. Bitte führen Sie die von Ihrem Zahlungsanbieter ausgestellten Überprüfungsschritte aus."
 
@@ -17721,6 +17914,9 @@ msgstr "Zum Abschließen dieser Transaktion ist eine Kundenauthentifizierung erf
 #: classes/gateways/class.pmprogateway_stripe.php:3142
 #: classes/gateways/class.pmprogateway_stripe.php:3179
 #: classes/gateways/class.pmprogateway_stripe.php:3989
+#: classes/gateways/class.pmprogateway_stripe.php:3149
+#: classes/gateways/class.pmprogateway_stripe.php:3186
+#: classes/gateways/class.pmprogateway_stripe.php:3996
 msgid "Customer authentication is required to finish setting up your subscription. Please complete the verification steps issued by your payment provider."
 msgstr "Die Kundenauthentifizierung ist erforderlich, um die Einrichtung Ihres Abonnements abzuschließen. Bitte führen Sie die von Ihrem Zahlungsanbieter ausgestellten Überprüfungsschritte aus."
 
@@ -17769,6 +17965,7 @@ msgstr "<strong>Fehler:</strong> PMPro konnte die Verbindung zur Stripe-API nich
 #: classes/gateways/class.pmprogateway_stripe.php:4156
 #: classes/gateways/class.pmprogateway_stripe.php:4163
 #: classes/gateways/class.pmprogateway_stripe.php:5182
+#: classes/gateways/class.pmprogateway_stripe.php:5189
 msgid "Last webhook received at"
 msgstr "Letzter Webhook erhalten am"
 
@@ -17785,6 +17982,7 @@ msgstr "Letzter Webhook erhalten am"
 #: classes/gateways/class.pmprogateway_stripe.php:4158
 #: classes/gateways/class.pmprogateway_stripe.php:4165
 #: classes/gateways/class.pmprogateway_stripe.php:5184
+#: classes/gateways/class.pmprogateway_stripe.php:5191
 msgid "No webhooks have been received."
 msgstr "Es wurden keine Webhooks empfangen."
 
@@ -17801,6 +17999,7 @@ msgstr "Es wurden keine Webhooks empfangen."
 #: classes/gateways/class.pmprogateway_stripe.php:4162
 #: classes/gateways/class.pmprogateway_stripe.php:4169
 #: classes/gateways/class.pmprogateway_stripe.php:5188
+#: classes/gateways/class.pmprogateway_stripe.php:5195
 msgid "Your webhook may not be working correctly."
 msgstr "Ihr Webhook funktioniert möglicherweise nicht ordnungsgemäß."
 
@@ -17817,6 +18016,7 @@ msgstr "Ihr Webhook funktioniert möglicherweise nicht ordnungsgemäß."
 #: classes/gateways/class.pmprogateway_stripe.php:4164
 #: classes/gateways/class.pmprogateway_stripe.php:4171
 #: classes/gateways/class.pmprogateway_stripe.php:5190
+#: classes/gateways/class.pmprogateway_stripe.php:5197
 msgid "Click here for info on setting up your webhook with Stripe."
 msgstr "Klicken Sie hier, um Informationen zum Einrichten Ihres Webhook mit Stripe zu erhalten."
 
@@ -17828,6 +18028,8 @@ msgstr "Klicken Sie hier, um Informationen zum Einrichten Ihres Webhook mit Stri
 #: includes/adminpages.php:237
 #: includes/adminpages.php:69
 #: includes/adminpages.php:239
+#: includes/adminpages.php:70
+#: includes/adminpages.php:240
 msgid "<span style=\"color: "
 msgstr ""
 
@@ -17840,6 +18042,7 @@ msgstr ""
 #: includes/adminpages.php:341
 #: includes/adminpages.php:355
 #: includes/adminpages.php:357
+#: includes/adminpages.php:358
 msgid "Membership Account Page"
 msgstr "Mitgliedskontoseite"
 
@@ -17847,6 +18050,7 @@ msgstr "Mitgliedskontoseite"
 #: includes/adminpages.php:345
 #: includes/adminpages.php:359
 #: includes/adminpages.php:361
+#: includes/adminpages.php:362
 msgid "Membership Billing Information Page"
 msgstr "Seite mit Informationen zur Abrechnung von Mitgliedschaften"
 
@@ -17859,6 +18063,7 @@ msgstr "Seite mit Informationen zur Abrechnung von Mitgliedschaften"
 #: includes/adminpages.php:349
 #: includes/adminpages.php:363
 #: includes/adminpages.php:365
+#: includes/adminpages.php:366
 msgid "Membership Cancel Page"
 msgstr "Seite Mitgliedschaft kündigen"
 
@@ -17866,6 +18071,7 @@ msgstr "Seite Mitgliedschaft kündigen"
 #: includes/adminpages.php:353
 #: includes/adminpages.php:367
 #: includes/adminpages.php:369
+#: includes/adminpages.php:370
 msgid "Membership Checkout Page"
 msgstr "Mitgliedschaft Checkout-Seite"
 
@@ -17878,6 +18084,7 @@ msgstr "Mitgliedschaft Checkout-Seite"
 #: includes/adminpages.php:357
 #: includes/adminpages.php:371
 #: includes/adminpages.php:373
+#: includes/adminpages.php:374
 msgid "Membership Confirmation Page"
 msgstr "Mitgliedschaft Bestätigungsseite"
 
@@ -17887,6 +18094,7 @@ msgstr "Mitgliedschaft Bestätigungsseite"
 #: includes/adminpages.php:361
 #: includes/adminpages.php:375
 #: includes/adminpages.php:377
+#: includes/adminpages.php:378
 msgid "Membership Invoice Page"
 msgstr "Mitgliedschaft Rechnungsseite"
 
@@ -17894,6 +18102,7 @@ msgstr "Mitgliedschaft Rechnungsseite"
 #: includes/adminpages.php:365
 #: includes/adminpages.php:379
 #: includes/adminpages.php:381
+#: includes/adminpages.php:382
 msgid "Membership Levels Page"
 msgstr "Seite der Mitgliedschaftsebenen"
 
@@ -17902,6 +18111,7 @@ msgstr "Seite der Mitgliedschaftsebenen"
 #: includes/adminpages.php:391
 #: includes/adminpages.php:405
 #: includes/adminpages.php:407
+#: includes/adminpages.php:408
 msgid "Members Per Page"
 msgstr "Mitglieder pro Seite"
 
@@ -19094,12 +19304,15 @@ msgstr "Passwort vergessen"
 #: includes/login.php:296
 #: includes/login.php:523
 #: includes/login.php:699
+#: includes/login.php:540
+#: includes/login.php:716
 msgid "Reset Password"
 msgstr "Passwort zurücksetzen"
 
 #: includes/login.php:320
 #: includes/login.php:861
 #: includes/login.php:862
+#: includes/login.php:322
 msgid "There was a problem with your username or password."
 msgstr "Es ist ein Problem mit Ihrem Benutzernamen oder Kennwort aufgetreten."
 
@@ -19120,50 +19333,62 @@ msgid "The password you entered for the user is incorrect. Please try again."
 msgstr "Das Kennwort, das Sie für den Benutzer eingegeben haben, ist falsch. Bitte versuchen Sie es erneut."
 
 #: includes/login.php:340
+#: includes/login.php:357
 msgid "Check your email for the confirmation link."
 msgstr "Bitte überprüfen Sie Ihren Posteingang. Sie haben eine E-Mail mit Bestätigungslink erhalten."
 
 #: includes/login.php:355
+#: includes/login.php:372
 msgid "You are now logged out."
 msgstr "Sie haben sich erfolgreich abgemeldet."
 
 #: includes/login.php:359
+#: includes/login.php:376
 msgid "There was a problem logging you out."
 msgstr "Es ist ein Problem beim Abmelden aufgetreten."
 
 #: includes/login.php:370
+#: includes/login.php:387
 msgid "Check your email for a link to reset your password."
 msgstr "Überprüfen Sie Ihre E-Mail. Wir haben Ihnen einen Link gesendet, um Ihr Passwort zurückzusetzen."
 
 #: includes/login.php:373
+#: includes/login.php:390
 msgid "There was an unexpected error regarding your email. Please try again"
 msgstr "Es ist ein unerwarteter Fehler in Bezug auf Ihre E-Mail aufgetreten. Bitte versuchen Sie es erneut"
 
 #: includes/login.php:383
+#: includes/login.php:400
 msgid "Your reset password key is invalid."
 msgstr "Ihr Kennwortschlüssel zum Zurücksetzen ist ungültig."
 
 #: includes/login.php:387
+#: includes/login.php:404
 msgid "Your reset password key is expired, please request a new key from the password reset page."
 msgstr "Ihr Kennwortschlüssel zum Zurücksetzen ist abgelaufen, bitte fordern Sie einen neuen Schlüssel von der Seite zum Zurücksetzen des Kennworts an."
 
 #: includes/login.php:399
+#: includes/login.php:416
 msgid "Your password has successfully been updated."
 msgstr "Ihr Kennwort wurde erfolgreich aktualisiert."
 
 #: includes/login.php:403
+#: includes/login.php:420
 msgid "There was a problem updating your password"
 msgstr "Beim Aktualisieren Ihres Kennworts ist ein Problem aufgetreten."
 
 #: includes/login.php:417
+#: includes/login.php:434
 msgid "There is no account with that username or email address."
 msgstr "Es gibt kein Konto mit diesem Benutzernamen oder dieser E-Mail-Adresse."
 
 #: includes/login.php:421
+#: includes/login.php:438
 msgid "Please enter a valid username."
 msgstr "Bitte geben Sie einen gültigen Benutzernamen ein."
 
 #: includes/login.php:425
+#: includes/login.php:442
 msgid "You've entered an invalid email address."
 msgstr "Sie haben eine ungültige E-Mail-Adresse eingegeben."
 
@@ -19173,6 +19398,7 @@ msgstr "Sie haben eine ungültige E-Mail-Adresse eingegeben."
 #: includes/profile.php:891
 #: includes/profile.php:887
 #: includes/profile.php:886
+#: includes/login.php:446
 msgid "New passwords do not match."
 msgstr "Die neuen Passwörter stimmen nicht überein."
 
@@ -19182,30 +19408,37 @@ msgstr "Die neuen Passwörter stimmen nicht überein."
 #: includes/profile.php:887
 #: includes/profile.php:883
 #: includes/profile.php:882
+#: includes/login.php:450
 msgid "Please complete all fields."
 msgstr "Bitte füllen Sie alle Felder aus."
 
 #: includes/login.php:437
+#: includes/login.php:454
 msgid "The email could not be sent. This site may not be correctly configured to send emails."
 msgstr "Die E-Mail konnte nicht gesendet werden. Diese Website ist möglicherweise nicht ordnungsgemäß für das Senden von E-Mails konfiguriert."
 
 #: includes/login.php:503
+#: includes/login.php:520
 msgid "Password Reset"
 msgstr "Passwort zurücksetzen"
 
 #: includes/login.php:508
+#: includes/login.php:525
 msgid "Please enter your username or email address. You will receive a link to create a new password via email."
 msgstr "Bitte geben Sie Ihre E-Mail-Adresse hier ein. Sie bekommen eine E-Mail zugesandt, mit deren Hilfe Sie ein neues Passwort erstellen können."
 
 #: includes/login.php:533
+#: includes/login.php:550
 msgid "You are already signed in."
 msgstr "Sie sind bereits angemeldet."
 
 #: includes/login.php:568
+#: includes/login.php:585
 msgid "Username or Email Address"
 msgstr "Nutzername oder E-Mail Adresse"
 
 #: includes/login.php:573
+#: includes/login.php:590
 msgid "Get New Password"
 msgstr "Neues Passwort anfordern"
 
@@ -19215,6 +19448,7 @@ msgstr "Neues Passwort anfordern"
 #: includes/profile.php:939
 #: includes/profile.php:935
 #: includes/profile.php:934
+#: includes/login.php:705
 msgid "New Password"
 msgstr "Neues Passwort"
 
@@ -19226,6 +19460,7 @@ msgstr "Neues Passwort"
 #: includes/profile.php:942
 #: includes/profile.php:938
 #: includes/profile.php:937
+#: includes/login.php:707
 msgid "Strength Indicator"
 msgstr "Passwortstärke-Anzeiger"
 
@@ -19235,29 +19470,35 @@ msgstr "Passwortstärke-Anzeiger"
 #: includes/profile.php:946
 #: includes/profile.php:942
 #: includes/profile.php:941
+#: includes/login.php:711
 msgid "Confirm New Password"
 msgstr "Neues Passwort bestätigen"
 
 #: includes/login.php:724
+#: includes/login.php:741
 msgid "Join Now"
 msgstr "Registrieren"
 
 #: includes/login.php:726
+#: includes/login.php:743
 msgid "Register"
 msgstr "Registrieren"
 
 #: includes/login.php:731
+#: includes/login.php:748
 msgid "Lost Password?"
 msgstr "Passwort vergessen?"
 
 #: includes/login.php:809
 #: includes/login.php:810
+#: includes/login.php:827
 msgid "Invalid Request"
 msgstr "﻿Ungültige Anfrage"
 
 #. translators: a generated link to the user's account or profile page
 #: includes/login.php:933
 #: includes/login.php:934
+#: includes/login.php:956
 msgid "Welcome, %s"
 msgstr "Willkommen, %s"
 
@@ -19268,6 +19509,7 @@ msgstr "Willkommen, %s"
 #: shortcodes/pmpro_account.php:198
 #: shortcodes/pmpro_account.php:205
 #: includes/login.php:968
+#: includes/login.php:990
 msgid "Log Out"
 msgstr "Abmelden"
 
@@ -19285,6 +19527,7 @@ msgid "Log In Widget - PMPro"
 msgstr "Log In Widget - PMPro"
 
 #: includes/notifications.php:25
+#: includes/admin.php:171
 msgid "Dismiss this notice."
 msgstr "Diesen Hinweis ausblenden."
 
@@ -19506,24 +19749,28 @@ msgstr "Passen Sie dieses Menü pro Ebene mit dem <a href=\"%s\" title=\"Paid Me
 
 #: pages/billing.php:136
 #: pages/billing.php:138
+#: pages/billing.php:139
 msgid "Your billing information cannot be updated at this time."
 msgstr "Ihre Rechnungsinformationen können derzeit nicht aktualisiert werden."
 
 #: pages/billing.php:458
 #: shortcodes/pmpro_account.php:68
 #: pages/billing.php:475
+#: pages/billing.php:477
 msgid "Your membership is not active. <a href='%s'>Renew now.</a>"
 msgstr "Ihre Mitgliedschaft ist nicht aktiv. <a href='%s'>Jetzt erneuern.</a>"
 
 #: pages/billing.php:461
 #: shortcodes/pmpro_account.php:71
 #: pages/billing.php:478
+#: pages/billing.php:480
 msgid "You do not have an active membership. <a href='%s'>Register here.</a>"
 msgstr "Sie haben keine aktive Mitgliedschaft. <a href='%s'>Hier Registrieren.</a>"
 
 #: pages/billing.php:464
 #: shortcodes/pmpro_account.php:74
 #: pages/billing.php:481
+#: pages/billing.php:483
 msgid "You do not have an active membership. <a href='%s'>Choose a membership level.</a>"
 msgstr "Sie haben keine aktive Mitgliedschaft. <a href='%s'>Wählen Sie ein Mitgliedschafts-Paket aus.</a>"
 
@@ -19534,6 +19781,7 @@ msgstr ""
 
 #: pages/checkout.php:95
 #: pages/checkout.php:115
+#: pages/checkout.php:119
 msgid "Click here to change your discount code."
 msgstr "Klicken Sie hier, um Ihren Rabattcode zu ändern."
 
@@ -19941,6 +20189,7 @@ msgstr "Erfahren Sie mehr über <a title=\"Paid Memberships Pro - Payment Gatewa
 #: classes/gateways/class.pmprogateway_stripe.php:2220
 #: classes/gateways/class.pmprogateway_stripe.php:2227
 #: classes/gateways/class.pmprogateway_stripe.php:2365
+#: classes/gateways/class.pmprogateway_stripe.php:2366
 msgid "Connected with Legacy Keys"
 msgstr "Verbunden mit Legacy-Schlüsseln"
 
@@ -19955,6 +20204,7 @@ msgstr "Verbunden mit Legacy-Schlüsseln"
 #: classes/gateways/class.pmprogateway_stripe.php:2233
 #: classes/gateways/class.pmprogateway_stripe.php:2240
 #: classes/gateways/class.pmprogateway_stripe.php:2378
+#: classes/gateways/class.pmprogateway_stripe.php:2379
 msgid "You can continue to use the legacy API keys or choose to upgrade to our new Stripe Connect solution below."
 msgstr "Sie können weiterhin die Legacy-API-Schlüssel verwenden oder ein Upgrade auf unsere neue Stripe Connect-Lösung durchführen."
 
@@ -19969,6 +20219,7 @@ msgstr "Sie können weiterhin die Legacy-API-Schlüssel verwenden oder ein Upgra
 #: classes/gateways/class.pmprogateway_stripe.php:2241
 #: classes/gateways/class.pmprogateway_stripe.php:2248
 #: classes/gateways/class.pmprogateway_stripe.php:2386
+#: classes/gateways/class.pmprogateway_stripe.php:2387
 msgid "Read the documentation on switching to Stripe Connect &raquo;"
 msgstr "Lesen Sie die Dokumentation zum Umstieg auf Stripe Connect &raquo;"
 
@@ -20022,6 +20273,7 @@ msgstr "%s (Gateway nicht registriert)"
 #: classes/class-pmpro-site-health.php:197
 #: classes/class-pmpro-site-health.php:209
 #: classes/class-pmpro-wisdom-integration.php:401
+#: classes/class-pmpro-wisdom-integration.php:406
 msgid "Legacy Keys"
 msgstr "Legacy-Schlüssel"
 
@@ -20031,6 +20283,7 @@ msgstr "Legacy-Schlüssel"
 #: classes/class-pmpro-site-health.php:202
 #: classes/class-pmpro-site-health.php:214
 #: classes/class-pmpro-wisdom-integration.php:406
+#: classes/class-pmpro-wisdom-integration.php:411
 msgid "Stripe Connect"
 msgstr "Stripe Connect"
 
@@ -20220,6 +20473,7 @@ msgstr ""
 #: adminpages/addons.php:417
 #: adminpages/dashboard.php:194
 #: adminpages/wizard/general.php:62
+#: adminpages/wizard/general.php:65
 msgid "View Plans and Pricing"
 msgstr ""
 
@@ -20702,11 +20956,13 @@ msgstr ""
 
 #: classes/class-pmpro-wisdom-integration.php:218
 #: classes/class-pmpro-wisdom-integration.php:274
+#: classes/class-pmpro-wisdom-integration.php:279
 msgid "Share your usage data to help us improve Paid Memberships Pro. We use this data to analyze how our plugin is meeting your needs and identify new opportunities to help you create a thriving membership business. You can always visit the Advanced Settings and change this preference."
 msgstr ""
 
 #: classes/class-pmpro-wisdom-integration.php:219
 #: classes/class-pmpro-wisdom-integration.php:275
+#: classes/class-pmpro-wisdom-integration.php:280
 msgid "Read more about what data we collect."
 msgstr ""
 
@@ -20715,6 +20971,7 @@ msgid "We can't detect any product information. This is most probably because yo
 msgstr ""
 
 #: classes/class-pmpro-wisdom-tracker.php:840
+#: classes/class-pmpro-wisdom-tracker.php:838
 msgid "Thank you for installing our %1$s. We would like to track its usage on your site. We don't record any sensitive data, only information regarding the WordPress environment and %1$s settings, which we will use to help us make improvements to the %1$s. Tracking is completely optional."
 msgstr ""
 
@@ -20723,74 +20980,92 @@ msgid "Thank you for installing our %1$s. We'd like your permission to track its
 msgstr ""
 
 #: classes/class-pmpro-wisdom-tracker.php:852
+#: classes/class-pmpro-wisdom-tracker.php:850
 msgid "Allow"
 msgstr ""
 
 #: classes/class-pmpro-wisdom-tracker.php:853
+#: classes/class-pmpro-wisdom-tracker.php:851
 msgid "Do Not Allow"
 msgstr ""
 
 #: classes/class-pmpro-wisdom-tracker.php:888
+#: classes/class-pmpro-wisdom-tracker.php:886
 msgid "Thank you for opting in to tracking. Would you like to receive occasional news about this %s, including details of new features and special offers?"
 msgstr ""
 
 #: classes/class-pmpro-wisdom-tracker.php:895
+#: classes/class-pmpro-wisdom-tracker.php:893
 msgid "Yes Please"
 msgstr ""
 
 #: classes/class-pmpro-wisdom-tracker.php:896
+#: classes/class-pmpro-wisdom-tracker.php:894
 msgid "No Thank You"
 msgstr ""
 
 #: classes/class-pmpro-wisdom-tracker.php:929
+#: classes/class-pmpro-wisdom-tracker.php:927
 msgid "Sorry to see you go"
 msgstr ""
 
 #: classes/class-pmpro-wisdom-tracker.php:930
+#: classes/class-pmpro-wisdom-tracker.php:928
 msgid "Before you deactivate the plugin, would you quickly give us your reason for doing so?"
 msgstr ""
 
 #: classes/class-pmpro-wisdom-tracker.php:932
+#: classes/class-pmpro-wisdom-tracker.php:930
 msgid "Set up is too difficult"
 msgstr ""
 
 #: classes/class-pmpro-wisdom-tracker.php:933
+#: classes/class-pmpro-wisdom-tracker.php:931
 msgid "Lack of documentation"
 msgstr ""
 
 #: classes/class-pmpro-wisdom-tracker.php:934
+#: classes/class-pmpro-wisdom-tracker.php:932
 msgid "Not the features I wanted"
 msgstr ""
 
 #: classes/class-pmpro-wisdom-tracker.php:935
+#: classes/class-pmpro-wisdom-tracker.php:933
 msgid "Found a better plugin"
 msgstr ""
 
 #: classes/class-pmpro-wisdom-tracker.php:936
+#: classes/class-pmpro-wisdom-tracker.php:934
 msgid "Installed by mistake"
 msgstr ""
 
 #: classes/class-pmpro-wisdom-tracker.php:937
+#: classes/class-pmpro-wisdom-tracker.php:935
 msgid "Only required temporarily"
 msgstr ""
 
 #: classes/class-pmpro-wisdom-tracker.php:938
+#: classes/class-pmpro-wisdom-tracker.php:936
 msgid "Didn't work"
 msgstr ""
 
 #: classes/class-pmpro-wisdom-tracker.php:940
+#: classes/class-pmpro-wisdom-tracker.php:938
 msgid "Details (optional)"
 msgstr ""
 
 #: classes/class-pmpro-wisdom-tracker.php:983
+#: classes/class-pmpro-wisdom-tracker.php:981
 msgid "Submitting form"
 msgstr ""
 
 #: classes/class-pmpro-wisdom-tracker.php:1052
+#: classes/class-pmpro-wisdom-tracker.php:1050
 msgid "Submit and Deactivate"
 msgstr ""
 
 #: classes/class-pmpro-wisdom-tracker.php:1052
+#: classes/class-pmpro-wisdom-tracker.php:1050
 msgid "Just Deactivate"
 msgstr ""
 
@@ -20827,6 +21102,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_paypalexpress.php:1124
 #: classes/gateways/class.pmprogateway_stripe.php:4822
 #: classes/gateways/class.pmprogateway_stripe.php:4880
+#: classes/gateways/class.pmprogateway_stripe.php:4887
 msgid "Admin: Order successfully refunded on %1$s for transaction ID %2$s by %3$s."
 msgstr ""
 
@@ -21030,6 +21306,8 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:1746
 #: classes/gateways/class.pmprogateway_stripe.php:1828
 #: classes/gateways/class.pmprogateway_stripe.php:1832
+#: classes/gateways/class.pmprogateway_stripe.php:1829
+#: classes/gateways/class.pmprogateway_stripe.php:1833
 msgid "Could not create checkout session. "
 msgstr ""
 
@@ -21047,6 +21325,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:1770
 #: classes/gateways/class.pmprogateway_stripe.php:1777
 #: classes/gateways/class.pmprogateway_stripe.php:1882
+#: classes/gateways/class.pmprogateway_stripe.php:1883
 msgid "Could not get Stripe customer for user."
 msgstr ""
 
@@ -21056,6 +21335,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:1780
 #: classes/gateways/class.pmprogateway_stripe.php:1787
 #: classes/gateways/class.pmprogateway_stripe.php:1893
+#: classes/gateways/class.pmprogateway_stripe.php:1894
 msgid "Could not get Customer Portal URL. This feature may not be set up in Stripe."
 msgstr ""
 
@@ -21065,6 +21345,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:1785
 #: classes/gateways/class.pmprogateway_stripe.php:1792
 #: classes/gateways/class.pmprogateway_stripe.php:1898
+#: classes/gateways/class.pmprogateway_stripe.php:1899
 msgid "Please contact the site administrator."
 msgstr ""
 
@@ -21081,6 +21362,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:1826
 #: classes/gateways/class.pmprogateway_stripe.php:1833
 #: classes/gateways/class.pmprogateway_stripe.php:1927
+#: classes/gateways/class.pmprogateway_stripe.php:1928
 msgid "Error processing payment intent."
 msgstr ""
 
@@ -21098,6 +21380,8 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:2091
 #: classes/gateways/class.pmprogateway_stripe.php:1949
 #: classes/gateways/class.pmprogateway_stripe.php:2185
+#: classes/gateways/class.pmprogateway_stripe.php:1950
+#: classes/gateways/class.pmprogateway_stripe.php:2186
 msgid "Error retrieving payment method."
 msgstr ""
 
@@ -21115,6 +21399,8 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:2099
 #: classes/gateways/class.pmprogateway_stripe.php:1957
 #: classes/gateways/class.pmprogateway_stripe.php:2193
+#: classes/gateways/class.pmprogateway_stripe.php:1958
+#: classes/gateways/class.pmprogateway_stripe.php:2194
 msgid "Error updating default payment method."
 msgstr ""
 
@@ -21125,6 +21411,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:1884
 #: classes/gateways/class.pmprogateway_stripe.php:1891
 #: classes/gateways/class.pmprogateway_stripe.php:1985
+#: classes/gateways/class.pmprogateway_stripe.php:1986
 msgid "Error creating subscription for customer."
 msgstr ""
 
@@ -21135,6 +21422,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:2098
 #: classes/gateways/class.pmprogateway_stripe.php:2105
 #: classes/gateways/class.pmprogateway_stripe.php:2199
+#: classes/gateways/class.pmprogateway_stripe.php:2200
 msgid "Error updating payment method for subscription."
 msgstr ""
 
@@ -21157,6 +21445,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:2304
 #: classes/gateways/class.pmprogateway_stripe.php:2311
 #: classes/gateways/class.pmprogateway_stripe.php:2449
+#: classes/gateways/class.pmprogateway_stripe.php:2456
 msgid "Learn More &raquo;"
 msgstr ""
 
@@ -21168,6 +21457,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:2521
 #: classes/gateways/class.pmprogateway_stripe.php:2528
 #: classes/gateways/class.pmprogateway_stripe.php:2656
+#: classes/gateways/class.pmprogateway_stripe.php:2663
 msgid "Error updating customer record with Stripe."
 msgstr ""
 
@@ -21179,6 +21469,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:2532
 #: classes/gateways/class.pmprogateway_stripe.php:2539
 #: classes/gateways/class.pmprogateway_stripe.php:2667
+#: classes/gateways/class.pmprogateway_stripe.php:2674
 msgid "Error creating customer record with Stripe."
 msgstr ""
 
@@ -21190,6 +21481,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:2830
 #: classes/gateways/class.pmprogateway_stripe.php:2837
 #: classes/gateways/class.pmprogateway_stripe.php:2965
+#: classes/gateways/class.pmprogateway_stripe.php:2972
 msgid "Could not create price."
 msgstr ""
 
@@ -21201,6 +21493,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:2883
 #: classes/gateways/class.pmprogateway_stripe.php:2890
 #: classes/gateways/class.pmprogateway_stripe.php:3018
+#: classes/gateways/class.pmprogateway_stripe.php:3025
 msgid "Cannot find product for membership level."
 msgstr ""
 
@@ -21212,6 +21505,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:2889
 #: classes/gateways/class.pmprogateway_stripe.php:2896
 #: classes/gateways/class.pmprogateway_stripe.php:3024
+#: classes/gateways/class.pmprogateway_stripe.php:3031
 msgid "Cannot get price."
 msgstr ""
 
@@ -21223,6 +21517,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:3039
 #: classes/gateways/class.pmprogateway_stripe.php:3046
 #: classes/gateways/class.pmprogateway_stripe.php:3174
+#: classes/gateways/class.pmprogateway_stripe.php:3181
 msgid "Cannot reuse an old setup intent."
 msgstr ""
 
@@ -21242,6 +21537,8 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:3082
 #: classes/gateways/class.pmprogateway_stripe.php:3208
 #: classes/gateways/class.pmprogateway_stripe.php:3210
+#: classes/gateways/class.pmprogateway_stripe.php:3215
+#: classes/gateways/class.pmprogateway_stripe.php:3217
 msgid "Error adding metadata to setup intent."
 msgstr ""
 
@@ -21253,6 +21550,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:3110
 #: classes/gateways/class.pmprogateway_stripe.php:3117
 #: classes/gateways/class.pmprogateway_stripe.php:3245
+#: classes/gateways/class.pmprogateway_stripe.php:3252
 msgid "Subscription updates will be deprecated in a future version of PMPro, though your existing subscription updates will still trigger as expected. We now instead recommend updating the subscription directly in Stripe."
 msgstr ""
 
@@ -21264,6 +21562,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:3175
 #: classes/gateways/class.pmprogateway_stripe.php:3182
 #: classes/gateways/class.pmprogateway_stripe.php:3310
+#: classes/gateways/class.pmprogateway_stripe.php:3317
 msgid "Remove"
 msgstr ""
 
@@ -21276,6 +21575,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:4827
 #: classes/gateways/class.pmprogateway_stripe.php:4834
 #: classes/gateways/class.pmprogateway_stripe.php:4892
+#: classes/gateways/class.pmprogateway_stripe.php:4899
 msgid "Admin: An error occured while attempting to process this refund."
 msgstr ""
 
@@ -21297,6 +21597,8 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:4840
 #: classes/gateways/class.pmprogateway_stripe.php:4896
 #: classes/gateways/class.pmprogateway_stripe.php:4898
+#: classes/gateways/class.pmprogateway_stripe.php:4903
+#: classes/gateways/class.pmprogateway_stripe.php:4905
 msgid "Admin: There was a problem processing the refund"
 msgstr ""
 
@@ -21388,21 +21690,27 @@ msgstr ""
 
 #: includes/login.php:652
 #: includes/login.php:661
+#: includes/login.php:669
+#: includes/login.php:678
 msgid "Your password reset link appears to be invalid. Please request a new link below."
 msgstr ""
 
 #: includes/login.php:654
 #: includes/login.php:663
+#: includes/login.php:671
+#: includes/login.php:680
 msgid "Your password reset link has expired. Please request a new link below."
 msgstr ""
 
 #: includes/login.php:1000
 #: includes/login.php:1001
+#: includes/login.php:1023
 msgid "Missing request ID."
 msgstr ""
 
 #: includes/login.php:1004
 #: includes/login.php:1005
+#: includes/login.php:1027
 msgid "Missing confirm key."
 msgstr ""
 
@@ -21412,6 +21720,8 @@ msgstr ""
 #: adminpages/membershiplevels.php:824
 #: includes/terms.php:30
 #: includes/terms.php:92
+#: includes/terms.php:29
+#: includes/terms.php:88
 msgid "Select:"
 msgstr ""
 
@@ -21773,6 +22083,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:2248
 #: classes/gateways/class.pmprogateway_stripe.php:2255
 #: classes/gateways/class.pmprogateway_stripe.php:2393
+#: classes/gateways/class.pmprogateway_stripe.php:2394
 msgid "In order to complete the transition to using Stripe legacy API keys, please click the \"Disconnect from Stripe\" button below."
 msgstr ""
 
@@ -21780,6 +22091,7 @@ msgstr ""
 #: includes/adminpages.php:369
 #: includes/adminpages.php:383
 #: includes/adminpages.php:385
+#: includes/adminpages.php:386
 msgid "Paid Memberships Pro Login Page"
 msgstr ""
 
@@ -21794,6 +22106,7 @@ msgstr ""
 #: adminpages/addons.php:58
 #: adminpages/wizard/memberships.php:38
 #: adminpages/wizard/save-steps.php:181
+#: adminpages/wizard/save-steps.php:183
 msgid "Premium"
 msgstr ""
 
@@ -21863,6 +22176,8 @@ msgstr ""
 #: adminpages/admin_header.php:283
 #: includes/adminpages.php:75
 #: includes/adminpages.php:77
+#: adminpages/admin_header.php:295
+#: includes/adminpages.php:78
 msgid "User Fields"
 msgstr ""
 
@@ -22528,6 +22843,7 @@ msgid "Once Monthly"
 msgstr ""
 
 #: classes/class-pmpro-wisdom-tracker.php:843
+#: classes/class-pmpro-wisdom-tracker.php:841
 msgid "Thank you for installing our %1$s. We'd like your permission to track its usage on your site and subscribe you to our newsletter. We won\\'t record any sensitive data, only information regarding the WordPress environment and %1$s settings, which we will use to help us make improvements to the %1$s. Tracking is completely optional."
 msgstr ""
 
@@ -22543,6 +22859,8 @@ msgstr ""
 #: adminpages/admin_header.php:252
 #: includes/adminpages.php:92
 #: includes/adminpages.php:94
+#: adminpages/admin_header.php:264
+#: includes/adminpages.php:95
 msgid "Setup Wizard"
 msgstr ""
 
@@ -22591,6 +22909,7 @@ msgstr ""
 #: adminpages/wizard/general.php:68
 #: adminpages/wizard/memberships.php:70
 #: adminpages/wizard/payments.php:76
+#: adminpages/wizard/general.php:71
 msgid "Submit and Continue"
 msgstr ""
 
@@ -22598,6 +22917,7 @@ msgstr ""
 #: adminpages/wizard/general.php:69
 #: adminpages/wizard/memberships.php:71
 #: adminpages/wizard/payments.php:77
+#: adminpages/wizard/general.php:72
 msgid "Skip"
 msgstr ""
 
@@ -22626,31 +22946,38 @@ msgid "Here are some recommended Add Ons for your business."
 msgstr ""
 
 #: adminpages/wizard/done.php:57
+#: adminpages/wizard/done.php:63
 msgid "OR"
 msgstr ""
 
 #: adminpages/wizard/done.php:59
+#: adminpages/wizard/done.php:65
 msgid "More functionality"
 msgstr ""
 
 #: adminpages/wizard/done.php:60
+#: adminpages/wizard/done.php:66
 msgid "Add more features to your membership site."
 msgstr ""
 
 #: adminpages/wizard/done.php:63
+#: adminpages/wizard/done.php:69
 msgid "View available Add Ons"
 msgstr ""
 
 #: adminpages/wizard/done.php:68
 #: adminpages/wizard/wizard.php:46
+#: adminpages/wizard/done.php:74
 msgid "Payments"
 msgstr ""
 
 #: adminpages/wizard/done.php:69
+#: adminpages/wizard/done.php:75
 msgid "Finish configuring your payment gateway."
 msgstr ""
 
 #: adminpages/wizard/done.php:72
+#: adminpages/wizard/done.php:78
 msgid "View settings"
 msgstr ""
 
@@ -22659,6 +22986,7 @@ msgid "Not sure where to start, take a look at our documentation."
 msgstr ""
 
 #: adminpages/wizard/done.php:81
+#: adminpages/wizard/done.php:87
 msgid "View docs"
 msgstr ""
 
@@ -22687,6 +23015,7 @@ msgid "Yes, generate the required plugin pages for me."
 msgstr ""
 
 #: adminpages/wizard/general.php:51
+#: adminpages/wizard/general.php:52
 msgid "We detected you have pages assigned for Paid Memberships Pro, this option is disabled."
 msgstr ""
 
@@ -22695,6 +23024,7 @@ msgid "Yes, I will be collecting payments for your memberships?"
 msgstr ""
 
 #: adminpages/wizard/general.php:60
+#: adminpages/wizard/general.php:63
 msgid "Enter Your Support License Key (optional)"
 msgstr ""
 
@@ -22885,6 +23215,7 @@ msgid "Collect Tax IDs in Stripe Checkout"
 msgstr ""
 
 #: classes/gateways/class.pmprogateway_stripe.php:1874
+#: classes/gateways/class.pmprogateway_stripe.php:1875
 msgid "User is not logged in."
 msgstr ""
 
@@ -22895,11 +23226,13 @@ msgstr ""
 
 #: includes/admin.php:171
 #: includes/admin.php:173
+#: includes/admin.php:181
 msgid "Update my primary domain and reactivate all services"
 msgstr ""
 
 #: includes/admin.php:174
 #: includes/admin.php:176
+#: includes/admin.php:184
 msgid "Only users with the <code>pmpro_manage_pause_mode</code> capability are able to deactivate pause mode."
 msgstr ""
 
@@ -22933,4 +23266,73 @@ msgstr ""
 
 #: adminpages/wizard/general.php:55
 msgid "Yes, I will be collecting payments for my memberships?"
+msgstr ""
+
+#. translators: $1$s - Paid Memberships Pro plugin name; $2$s - WP.org review link.
+#: adminpages/admin_footer.php:6
+msgid "<p class=\"pmpro-rate-us\">Please <a href=\"%1$s\" target=\"_blank\" rel=\"noopener noreferrer\">rate us %2$s on WordPress.org</a> to help others find %3$s. Thank you from the %4$s team!</p>"
+msgstr ""
+
+#: adminpages/admin_header.php:181
+#: adminpages/admin_header.php:183
+msgid "Paused"
+msgstr ""
+
+#: adminpages/wizard/done.php:84
+msgid "Not sure where to start? Take a look at our documentation."
+msgstr ""
+
+#: adminpages/wizard/general.php:58
+msgid "Yes, I will be collecting payments for my memberships."
+msgstr ""
+
+#: classes/gateways/class.pmprogateway_stripe.php:2450
+msgid "Note: You are using the free Stripe payment gateway integration. This includes an additional %s fee for payment processing. This fee is removed by activating a premium PMPro license."
+msgstr ""
+
+#: classes/gateways/class.pmprogateway_stripe.php:2452
+msgid "Note: You are using the free Stripe payment gateway integration. There is no additional fee for payment processing above what Stripe charges."
+msgstr ""
+
+#: includes/admin.php:176
+msgid "Site URL Change Detected"
+msgstr ""
+
+#: includes/admin.php:177
+msgid "<strong>Warning:</strong> We have detected that your site URL has changed. All PMPro-related cron jobs and automated services have been disabled. Paid Memberships Pro considers %s to be the site URL."
+msgstr ""
+
+#: includes/admin.php:180
+msgid "Dismiss notice and keep all services paused"
+msgstr ""
+
+#. translators: %s: User name.
+#: includes/login.php:328
+msgid "<strong>Error:</strong> The username <strong>%s</strong> is not registered on this site. If you are unsure of your username, try your email address instead."
+msgstr ""
+
+#: includes/login.php:334
+msgid "Unknown email address. Check again or try your username."
+msgstr ""
+
+#: includes/login.php:338
+msgid "<strong>Error:</strong> The username field is empty."
+msgstr ""
+
+#: includes/login.php:342
+#: includes/login.php:879
+msgid "<strong>Error:</strong> The password field is empty."
+msgstr ""
+
+#. translators: %s: User name.
+#: includes/login.php:348
+msgid "<strong>Error:</strong> The password you entered for the username %s is incorrect."
+msgstr ""
+
+#: includes/login.php:352
+msgid "Lost your password?"
+msgstr ""
+
+#: pages/checkout.php:91
+msgid "The %s code has been applied to your order."
 msgstr ""

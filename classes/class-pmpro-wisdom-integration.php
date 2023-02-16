@@ -170,7 +170,7 @@ class PMPro_Wisdom_Integration {
 	 */
 	public function bypass_local_tracking( $is_local = false ) {
 		if ( true === $is_local || ( function_exists( 'wp_get_environment_type' ) && 'production' !== wp_get_environment_type() ) ) {
-			return $is_local;
+			return true;
 		}
 
 		$url = network_site_url( '/' );
@@ -178,9 +178,14 @@ class PMPro_Wisdom_Integration {
 		$url       = strtolower( trim( $url ) );
 		$url_parts = parse_url( $url );
 		$host      = ! empty( $url_parts['host'] ) ? $url_parts['host'] : false;
+		$port      = ! empty( $url_parts['port'] ) ? $url_parts['port'] : false;
 
 		if ( empty( $host ) ) {
 			return $is_local;
+		}
+
+		if( 8888 === $port ){
+			return true;
 		}
 
 		if ( 'localhost' === $host ) {

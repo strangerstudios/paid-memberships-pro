@@ -162,6 +162,7 @@
 						'id'     => $invoice->payment_intent,
 						'expand' => array(
 							'payment_method',
+							'latest_charge',
 						),
 					);
 					$payment_intent = \Stripe\PaymentIntent::retrieve( $payment_intent_args );
@@ -169,9 +170,9 @@
 					$payment_method = null;
 					if ( ! empty( $payment_intent->payment_method ) ) {
 						$payment_method = $payment_intent->payment_method;
-					} elseif( ! empty( $payment_intent->charges->data[0] ) ) {
+					} elseif( ! empty( $payment_intent->latest_charge ) ) {
 						// If we didn't get a payment method, check the charge.
-						$payment_method = $payment_intent->charges->data[0]->payment_method_details;
+						$payment_method = $payment_intent->latest_charge->payment_method_details;
 					}					
 					if ( empty( $payment_method ) ) {						
 						$logstr .= "Could not find payment method for invoice " . $invoice->id . ".";						
@@ -256,6 +257,7 @@
 		          'id'     => $invoice->payment_intent,
 		          'expand' => array(
 		            'payment_method',
+					'latest_charge',
 		          ),
 		        );
 		        $payment_intent = \Stripe\PaymentIntent::retrieve( $payment_intent_args );		        
@@ -263,9 +265,9 @@
 				$payment_method = null;
 				if ( ! empty( $payment_intent->payment_method ) ) {
 					$payment_method = $payment_intent->payment_method;
-				} elseif( ! empty( $payment_intent->charges->data[0] ) ) {
+				} elseif( ! empty( $payment_intent->latest_charge ) ) {
 					// If we didn't get a payment method, check the charge.
-					$payment_method = $payment_intent->charges->data[0]->payment_method_details;
+					$payment_method = $payment_intent->latest_charge->payment_method_details;
 				}
 				if ( empty( $payment_method ) ) {		       	
 					$logstr .= "Could not find payment method for invoice " . $invoice->id;					
@@ -343,16 +345,18 @@
 					'id'     => $pmpro_stripe_event->data->object->payment_intent,
 					'expand' => array(
 						'payment_method',
+						'latest_charge',
 					),
 				);
 				$payment_intent = \Stripe\PaymentIntent::retrieve( $payment_intent_args );
 				// Find the payment method.
-				$payment_method = null;
+				$payment_method = null;				
+				
 				if ( ! empty( $payment_intent->payment_method ) ) {
 					$payment_method = $payment_intent->payment_method;
-				} elseif( ! empty( $payment_intent->charges->data[0] ) ) {
+				} elseif( ! empty( $payment_intent->latest_charge ) ) {
 					// If we didn't get a payment method, check the charge.
-					$payment_method = $payment_intent->charges->data[0]->payment_method_details;
+					$payment_method = $payment_intent->latest_charge->payment_method_details;
 				}				
 				if ( empty( $payment_method ) ) {
 					$logstr .= "Could not find payment method for charge " . $pmpro_stripe_event->data->object->id . ".";
@@ -550,10 +554,11 @@
 						'id'     => $checkout_session->payment_intent,
 						'expand' => array(
 							'payment_method',
+							'latest_charge',
 						),
 					);
 					$payment_intent = \Stripe\PaymentIntent::retrieve( $payment_intent_args );
-					$order->payment_transaction_id = $payment_intent->charges->data[0]->id;
+					$order->payment_transaction_id = $payment_intent->latest_charge;
 					if ( ! empty( $payment_intent->payment_method ) ) {
 						$payment_method = $payment_intent->payment_method;
 					}
@@ -955,8 +960,7 @@ function pmpro_stripe_webhook_change_membership_level( $morder ) {
 	);
 
 	global $pmpro_error;
-	if ( ! empty( $pmpro_error ) ) {
-		echo $pmpro_error;
+	if ( ! empty( $pmpro_error ) ) {		
 		ipnlog( $pmpro_error );
 	}
 

@@ -775,6 +775,11 @@ class PMPro_Wisdom_Tracker {
 		if ( ! $is_time ) {
 			return false;
 		}
+		
+		// Don't display on the PMPro Advanced Settings page.
+		if ( ! empty( $_REQUEST['page'] ) && $_REQUEST['page'] === 'pmpro-advancedsettings' ) {
+		   return false;
+	   	}
 
 		// Check whether to block the notice, e.g. because we're in a local environment
 		// wisdom_block_notice works the same as wisdom_allow_tracking, an array of plugin names
@@ -788,19 +793,9 @@ class PMPro_Wisdom_Tracker {
 			return;
 		}
 
-		// @credit EDD
 		// Don't bother asking user to opt in if they're in local dev
-		$is_local = false;
-		if ( stristr( network_site_url( '/' ), '.dev' ) !== false || stristr( network_site_url( '/' ), 'localhost' ) !== false || stristr( network_site_url( '/' ), ':8888' ) !== false ) {
-			$is_local = true;
-		}
+		$is_local = apply_filters( 'wisdom_is_local_' . $this->plugin_name, false );
 
-		// PMPRO MODIFICATION
-		if ( ! $is_local && stristr( network_site_url( '/' ), '.local' ) !== false ) {
-			//$is_local = true;
-		}
-
-		$is_local = apply_filters( 'wisdom_is_local_' . $this->plugin_name, $is_local );
 		if ( $is_local ) {
 			$this->update_block_notice();
 
@@ -808,6 +803,9 @@ class PMPro_Wisdom_Tracker {
 			if ( $this->marketing ) {
 				$this->set_can_collect_email( false );
 			}
+		} elseif ( get_option( 'pmpro_wisdom_opt_out' ) !== false ) {			
+			// Option already set in PMPro Wizard or Advanced Settings page.
+			$this->update_block_notice();
 		} else {
 			// Display the notice requesting permission to track
 			// Retrieve current plugin information

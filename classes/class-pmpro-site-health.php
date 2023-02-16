@@ -318,7 +318,7 @@ class PMPro_Site_Health {
 
 		WP_Filesystem();
 
-		if ( ! $wp_filesystem ) {
+        if ( ! $wp_filesystem || ! is_object($wp_filesystem) || ( is_wp_error($wp_filesystem->errors) && $wp_filesystem->errors->has_errors() ) ) {
 			return new WP_Error( 'access-denied', __( 'Unable to verify', 'paid-memberships-pro' ) );
 		}
 
@@ -489,7 +489,7 @@ class PMPro_Site_Health {
 
 		WP_Filesystem();
 
-		if ( ! $wp_filesystem ) {
+        if ( ! $wp_filesystem || ! is_object($wp_filesystem) || ( is_wp_error($wp_filesystem->errors) && $wp_filesystem->errors->has_errors() ) ) {
 			return __( 'Unable to access .htaccess file', 'paid-memberships-pro' );
 		}
 
