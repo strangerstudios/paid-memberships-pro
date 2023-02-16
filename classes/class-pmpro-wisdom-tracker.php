@@ -775,6 +775,11 @@ class PMPro_Wisdom_Tracker {
 		if ( ! $is_time ) {
 			return false;
 		}
+		
+		// Don't display on the PMPro Advanced Settings page.
+		if ( ! empty( $_REQUEST['page'] ) && $_REQUEST['page'] === 'pmpro-advancedsettings' ) {
+		   return false;
+	   	}
 
 		// Check whether to block the notice, e.g. because we're in a local environment
 		// wisdom_block_notice works the same as wisdom_allow_tracking, an array of plugin names
@@ -798,7 +803,7 @@ class PMPro_Wisdom_Tracker {
 			if ( $this->marketing ) {
 				$this->set_can_collect_email( false );
 			}
-		} elseif ( pmpro_getOption( 'wisdom_opt_out' ) !== '' ) {			
+		} elseif ( get_option( 'pmpro_wisdom_opt_out' ) !== false ) {			
 			// Option already set in PMPro Wizard or Advanced Settings page.
 			$this->update_block_notice();
 		} else {
