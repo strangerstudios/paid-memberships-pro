@@ -51,11 +51,6 @@ function pmpro_checkLevelForStripeCompatibility($level = NULL)
 			if(is_numeric($level))
 				$level = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM $wpdb->pmpro_membership_levels WHERE id = %d LIMIT 1" , $level ) );
 
-			// Check if this level uses billing limits.
-			if ( ( $level->billing_limit > 0 ) && ! function_exists( 'pmprosbl_plugin_row_meta' ) ) {
-				return false;
-			}
-
 			// Check if this level has a billing period longer than 1 year.
 			if ( 
 				( $level->cycle_period === 'Year' && $level->cycle_number > 1 ) ||
@@ -241,12 +236,6 @@ function pmpro_check_discount_code_level_for_gateway_compatibility( $discount_co
 
 		// Check this discount code level for gateway compatibility
 		if ( $gateway == 'stripe' ) {
-			// Check if this code level has a billing limit.
-			if ( ( intval( $discount_code_level->billing_limit ) > 0 ) && ! function_exists( 'pmprosbl_plugin_row_meta' ) ) {
-				global $pmpro_stripe_error;
-				$pmpro_stripe_error = true;
-				return false;
-			}
 			// Check if this code level has a billing period longer than 1 year.
 			if ( 
 				( $discount_code_level->cycle_period === 'Year' && intval( $discount_code_level->cycle_number ) > 1 ) ||

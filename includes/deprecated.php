@@ -650,6 +650,44 @@ function pmpro_multiple_memberships_per_user_deprecated() {
 add_action( 'plugins_loaded', 'pmpro_multiple_memberships_per_user_deprecated', 20 );
 
 /**
+ * Old Stripe Billing Limits functions.
+ */
+function pmpro_stripe_billing_limits_deprecated() {
+	if ( ! function_exists( 'pmprosbl_pmpro_added_order' ) ) {
+		function pmprosbl_pmpro_added_order() {
+			_deprecated_function( __FUNCTION__, 'TBD' );
+		}
+	}
+
+	if ( ! function_exists( 'pmprosbl_pmpro_stripe_subscription_deleted' ) ) {
+		function pmprosbl_pmpro_stripe_subscription_deleted() {
+			_deprecated_function( __FUNCTION__, 'TBD' );
+		}
+	}
+
+	if ( ! function_exists( 'pmprosbl_is_billing_limit_reached' ) ) {
+		function pmprosbl_is_billing_limit_reached( $order ) {
+			_deprecated_function( __FUNCTION__, 'TBD' );
+
+			// Get the subscription for this order.
+			$subscription = $order->get_subscription();
+			if ( empty( $subscription ) ) {
+				return false;
+			}
+
+			return $subscription->billing_limit_reached();
+		}
+	}
+
+	if ( ! function_exists( 'pmprosbl_plugin_row_meta' ) ) {
+		function pmprosbl_plugin_row_meta() {
+			_deprecated_function( __FUNCTION__, 'TBD' );
+		}
+	}
+}
+add_action( 'plugins_loaded', 'pmpro_stripe_billing_limits_deprecated', 20 );
+
+/**
  * Check for active Add Ons that are not yet MMPU compatible.
  *
  * @since TBD
@@ -683,6 +721,10 @@ function pmpro_check_for_deprecated_add_ons() {
 		'pmpro-multiple-memberships-per-user' => array(
 			'file' => 'pmpro-multiple-memberships-per-user.php',
 			'label' => 'Multiple Memberships Per User'
+		),
+		'pmpro-stripe-billing-limits' => array(
+			'file' => 'pmpro-stripe-billing-limits.php',
+			'label' => 'Stripe Billing Limits'
 		),
 	);
 	

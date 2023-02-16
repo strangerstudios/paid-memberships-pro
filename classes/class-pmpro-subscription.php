@@ -1268,6 +1268,31 @@ class PMPro_Subscription {
 		delete_pmpro_subscription_meta( $this->id, 'has_default_migration_data' );
 	}
 
+	/**
+	 * Check if the billing limit has been reached for this subscription.
+	 *
+	 * @since TBD
+	 *
+	 * @return bool False if there is not a billing limit or if the billing limit has not yet been reached. True otherwise.
+	 */
+	public function billing_limit_reached() {
+		// If there is no billing limit, then we can't have reached it.
+		if ( empty( $this->billing_limit ) ) {
+			return false;
+		}
+
+		// Billing limits do not include the initial order.
+		// With this in mind, get the last [billing_limit+1] successful orders for this subscription.
+		$orders_args = array(
+			'limit'  => $this->billing_limit + 1,
+			'status' => 'success',
+		);
+		$orders = $this->get_orders( $orders_args );
+
+		// Check if we have reached the billing limit.
+		return count( $orders ) >= $this->billing_limit + 1;
+	}
+
 } // end of class
 
 // @todo Move this into another location outside of the bottom of the class file.

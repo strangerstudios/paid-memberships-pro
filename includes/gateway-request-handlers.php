@@ -51,6 +51,11 @@ function pmpro_handle_subscription_cancellation_at_gateway( $subscription_transa
 	$subscription->set( 'status', 'cancelled' );
 	$subscription->save();
 
+	// Check if the billing limit has been reached.
+	if ( $subscription->billing_limit_reached() ) {
+		return 'The billing limit has been reached. No membership cancellation is needed. ( Subscription Transaction ID #' . $subscription_transaction_id . ')';
+	}
+
 	// Check to see if the user has the membership level associated with this subscription.
 	if ( ! pmpro_hasMembershipLevel( $subscription->get_membership_level_id(), $user->ID ) ) {
 		return 'The user no longer has the membership level associated with this subscription. No membership cancellation is needed. ( Subscription Transaction ID #' . $subscription_transaction_id . ')';
