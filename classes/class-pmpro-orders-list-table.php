@@ -53,26 +53,7 @@ class PMPro_Orders_List_Table extends WP_List_Table {
 
 		$this->_column_headers = array($columns, $hidden, $sortable);
 
-        $data = $this->sql_table_data();
-
-        // function usort_reorder($a,$b){
-            
-        //     $orderby = (!empty($_REQUEST['orderby'])) ? $_REQUEST['orderby'] : 'id'; //If no sort, default to title
-        //     $order = (!empty($_REQUEST['order'])) ? $_REQUEST['order'] : 'asc'; //If no order, default to asc
-        //     $result = strcmp($a[$orderby], $b[$orderby]); //Determine sort order
-        //     return ($order==='asc') ? $result : -$result; //Send final sort direction to usort
-        //   }
-        // usort($data, 'usort_reorder');
-  
-        // $current_page = $this->get_pagenum();
-  
-        // $total_items = count($data);
-  
-        //  $data = array_slice($data,(($current_page-1)*$per_page),$per_page);
-  
-        $this->items = $data;
-
-		// $this->items = $this->sql_table_data();
+		$this->items = $this->sql_table_data();
 
 		$items_per_page = $this->get_items_per_page( 'orders_per_page' );
 		$total_items = $this->sql_table_data( true );
@@ -140,9 +121,7 @@ class PMPro_Orders_List_Table extends WP_List_Table {
 	 */
 	public function get_hidden_columns() {
 		
-		return array(
-            'order_status_hidden'
-        );
+		return array();
 		
 	}
 
@@ -167,7 +146,7 @@ class PMPro_Orders_List_Table extends WP_List_Table {
 		 * column name_in_list_table => columnname in the db
 		 */
 		$sortable_columns = array(
-			'order_id' => array( 'order_id', false ),
+			'order_id' => array( 'order_id', true ),
 			'level' => array( 'level', false ),
 			'total' => array( 'total', false ),
 			'order_status' => array( 'order_status', false ),
