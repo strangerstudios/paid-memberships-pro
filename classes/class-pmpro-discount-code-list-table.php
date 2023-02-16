@@ -228,7 +228,18 @@ class PMPro_Discount_Code_List_Table extends WP_List_Table {
 		if( $count ) {
 			$sql_table_data = $wpdb->get_var( $sqlQuery );
 		} else {
-			$sql_table_data = $wpdb->get_results( $sqlQuery, ARRAY_A );
+			$discount_code_results = $wpdb->get_results( $sqlQuery, ARRAY_A );
+
+			$discount_data = array();
+			//PR is still in draft - should look at joining this instead of doing an extra query.
+			//This will help with sorting by amount of times the code has been used
+			foreach( $discount_code_results as $discount_code_result ) {
+				$uses = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM $wpdb->pmpro_discount_codes_uses WHERE code_id = %d", esc_sql( $discount_code_result['id'] ) ) );
+
+				$discount_data[] = array_merge( $discount_code_result, array( 'used' => $uses ) );
+			}
+
+			$sql_table_data = $discount_data;
 			
 		}
 
@@ -247,10 +258,10 @@ class PMPro_Discount_Code_List_Table extends WP_List_Table {
 
 		$allowed_orderbys = array(
 			'id' 		=> 'id',
-			'discount_code'	=> 'code', //discount_code
+			'discount_code'	=> 'code',
 			'starts' 	=> 'starts',
 			'finishes' 	=> 'finishes',
-			'used' 		=> 'uses', //Order by how many have actually been used
+			'uses' 		=> 'uses',
 		);
 
 	 	if ( ! empty( $allowed_orderbys[$orderby] ) ) {
@@ -430,12 +441,12 @@ class PMPro_Discount_Code_List_Table extends WP_List_Table {
 		
 		global $wpdb;
 		
-		$uses = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM $wpdb->pmpro_discount_codes_uses WHERE code_id = %d", esc_sql( $item['id'] ) ) );
+		
 
 		if( $item['uses'] > 0 ) {
-			echo "<strong>" . (int)$uses . "</strong>/" . $item->uses;
+			echo "<strong>" . (int)$item['used'] . "</strong>/" . $item->uses;
 		} else {
-			echo "<strong>" . (int)$uses . "</strong>/" . __( 'unlimited', 'paid-memberships-pro' );
+			echo "<strong>" . (int)$item['used'] . "</strong>/" . __( 'unlimited', 'paid-memberships-pro' );
 		}
 
 	}
