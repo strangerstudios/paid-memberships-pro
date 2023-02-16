@@ -178,6 +178,7 @@ Not sure? You can find out by doing a bit a research.
 * REFACTOR: Deprecating CyberSource and PayPal Website Payments Pro gateways.
 * REFACTOR: Marking "trial ending" cron as deprecated.
 * REFACTOR: Removed the ability to direct access the scripts in the /crons/ and /services/ directories. Only the getfile.php script can be accessed this way when activated.
+
 = 2.9.12 - 2023-02-16 =
 * SECURITY: Updated sanitization, escaping, and other security-related code across the plugin.
 
