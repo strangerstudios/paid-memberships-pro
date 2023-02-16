@@ -73,11 +73,11 @@ foreach ( $level_groups as $level_group ) {
 					$cost_text = pmpro_getLevelCost($level, true, true); 
 					$expiration_text = pmpro_getLevelExpiration($level);
 					if(!empty($cost_text) && !empty($expiration_text))
-						echo esc_html( $cost_text ) . "<br />" . esc_html( $expiration_text );
+						echo wp_kses_post( $cost_text . "<br />" . $expiration_text );
 					elseif(!empty($cost_text))
-						echo esc_html( $cost_text );
+						echo wp_kses_post( $cost_text );
 					elseif(!empty($expiration_text))
-						echo esc_html( $expiration_text );
+						echo wp_kses_post( $expiration_text );
 				?>
 			</td>
 			<td>
