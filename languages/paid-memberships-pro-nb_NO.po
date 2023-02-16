@@ -2,14 +2,14 @@
 # This file is distributed under the same license as the Paid Memberships Pro plugin.
 msgid ""
 msgstr ""
-"Project-Id-Version: Paid Memberships Pro 2.9.9\n"
+"Project-Id-Version: Paid Memberships Pro 2.9.12\n"
 "Report-Msgid-Bugs-To: info@paidmembershipspro.com\n"
 "Last-Translator: Paid Memberships Pro <info@paidmembershipspro.com>\n"
 "Language-Team: Paid Memberships Pro <info@paidmembershipspro.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2023-01-25T06:22:43+00:00\n"
+"POT-Creation-Date: 2023-02-16T15:38:24+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.7.1\n"
 "X-Domain: paid-memberships-pro\n"
@@ -1169,6 +1169,8 @@ msgstr "Startdato"
 #: classes/gateways/class.pmprogateway_stripe.php:893
 #: classes/gateways/class.pmprogateway_stripe.php:873
 #: pages/checkout.php:413
+#: pages/billing.php:382
+#: pages/checkout.php:427
 msgid "Expiration Date"
 msgstr "Utløpsdato"
 
@@ -1536,6 +1538,7 @@ msgstr "Kryss av for å definere når medlemskapet utløper"
 #: adminpages/membershiplevels.php:576
 #: adminpages/membershiplevels.php:744
 #: adminpages/membershiplevels.php:749
+#: pages/confirmation.php:142
 msgid "Expires In"
 msgstr "Utløper om"
 
@@ -2138,6 +2141,7 @@ msgstr "Lagre nivået"
 #: includes/profile.php:829
 #: includes/profile.php:953
 #: pages/cancel.php:98
+#: pages/billing.php:445
 msgid "Cancel"
 msgstr "Avbryt"
 
@@ -2193,6 +2197,7 @@ msgstr "Bruk “dra og slipp” prinsippet for å endre rekkefølgen på nivåen
 #: adminpages/orders.php:841
 #: adminpages/membershiplevels.php:1123
 #: pages/cancel.php:73
+#: pages/billing.php:103
 msgid "Expiration"
 msgstr "Utløpsdato"
 
@@ -2401,6 +2406,7 @@ msgstr "funnet %d medlemmer"
 #: classes/class.memberorder.php:1619
 #: pages/checkout.php:154
 #: classes/class.memberorder.php:1621
+#: pages/checkout.php:158
 msgid "Username"
 msgstr "Brukernavn"
 
@@ -2428,6 +2434,8 @@ msgstr "Etternavn"
 #: adminpages/orders.php:568
 #: adminpages/orders.php:571
 #: pages/checkout.php:250
+#: pages/billing.php:163
+#: pages/checkout.php:264
 msgid "Billing Address"
 msgstr "Fakturadresse"
 
@@ -2816,6 +2824,8 @@ msgstr "f.eks. PayPal Express, PayPal standard, kredittkort."
 #: classes/gateways/class.pmprogateway_stripe.php:876
 #: adminpages/orders.php:799
 #: pages/checkout.php:398
+#: pages/billing.php:339
+#: pages/checkout.php:412
 msgid "Card Type"
 msgstr "Korttype"
 
@@ -3079,6 +3089,7 @@ msgstr "Opprettet av betalingsformidlingstjenesten. Kan brukes for å kryssrefer
 #: adminpages/orders.php:1436
 #: adminpages/orders.php:1715
 #: includes/fields.php:1389
+#: pages/invoice.php:124
 msgid "Date"
 msgstr "Dato"
 
@@ -3312,6 +3323,7 @@ msgstr "Bruker"
 #: js/blocks.build.js:1086
 #: blocks/checkout-button/block.js:76
 #: blocks/checkout-page/block.js:62
+#: pages/confirmation.php:140
 msgid "Membership Level"
 msgstr "Type medlemskap"
 
@@ -3839,6 +3851,7 @@ msgstr "Salgsskatt (US)"
 #: adminpages/paymentsettings.php:241
 #: pages/billing.php:181
 #: adminpages/paymentsettings.php:239
+#: pages/billing.php:182
 msgid "optional"
 msgstr "valgfritt"
 
@@ -4427,6 +4440,9 @@ msgstr "Bekreftelse på medlemskap i %s"
 #: includes/profile.php:452
 #: adminpages/orders.php:1438
 #: adminpages/orders.php:1725
+#: pages/checkout.php:123
+#: pages/checkout.php:129
+#: pages/checkout.php:464
 msgid "Discount Code"
 msgstr "Rabattkode"
 
@@ -4825,6 +4841,7 @@ msgstr "For å fullføre integreringen av Braintree sine betalingstjenester, pas
 #: classes/gateways/class.pmprogateway_braintree.php:462
 #: classes/gateways/class.pmprogateway_stripe.php:856
 #: pages/checkout.php:387
+#: pages/checkout.php:401
 #, php-format
 msgid "We Accept %s"
 msgstr "Vi aksepterer følgende %s"
@@ -4846,6 +4863,7 @@ msgstr "Vi aksepterer følgende %s"
 #: adminpages/orders.php:679
 #: classes/gateways/class.pmprogateway_stripe.php:849
 #: pages/checkout.php:386
+#: pages/checkout.php:400
 msgid "Payment Information"
 msgstr "Betalingsinformasjon"
 
@@ -4867,6 +4885,8 @@ msgstr "Betalingsinformasjon"
 #: classes/gateways/class.pmprogateway_stripe.php:889
 #: classes/gateways/class.pmprogateway_stripe.php:869
 #: pages/checkout.php:409
+#: pages/billing.php:378
+#: pages/checkout.php:423
 msgid "Card Number"
 msgstr "Kortnummer"
 
@@ -4902,6 +4922,8 @@ msgstr "hva er dette?"
 #: classes/gateways/class.pmprogateway_stripe.php:891
 #: pages/checkout.php:127
 #: pages/checkout.php:452
+#: pages/checkout.php:131
+#: pages/checkout.php:466
 msgid "Apply"
 msgstr "Godta"
 
@@ -5052,6 +5074,7 @@ msgstr "Selger"
 #: classes/gateways/class.pmprogateway_payflowpro.php:125
 #: pages/checkout.php:143
 #: pages/checkout.php:163
+#: pages/checkout.php:167
 msgid "Password"
 msgstr "Passord"
 
@@ -5189,6 +5212,7 @@ msgstr "Denne URL’en blir sendt til PayPal hver gang det skjer en betaling ell
 #: classes/gateways/class.pmprogateway_paypalexpress.php:497
 #: pages/checkout.php:238
 #: classes/gateways/class.pmprogateway_paypalexpress.php:499
+#: pages/checkout.php:252
 msgid "Check Out with PayPal"
 msgstr "Betal med Paypal"
 
@@ -5208,6 +5232,7 @@ msgstr "Betal med Paypal"
 #: classes/gateways/class.pmprogateway_paypalexpress.php:502
 #: pages/checkout.php:558
 #: classes/gateways/class.pmprogateway_paypalexpress.php:504
+#: pages/checkout.php:576
 msgid "Submit and Check Out"
 msgstr "Lagre og betal"
 
@@ -5230,6 +5255,7 @@ msgstr "Lagre og betal"
 #: classes/gateways/class.pmprogateway_paypalexpress.php:502
 #: pages/checkout.php:558
 #: classes/gateways/class.pmprogateway_paypalexpress.php:504
+#: pages/checkout.php:576
 msgid "Submit and Confirm"
 msgstr "Lagre og bekreft"
 
@@ -5437,6 +5463,7 @@ msgstr "Abonnementsoppdateringer, lar deg endre abonnementsverdiene for brukeren
 #: classes/gateways/class.pmprogateway_stripe.php:3087
 #: classes/gateways/class.pmprogateway_stripe.php:3114
 #: classes/gateways/class.pmprogateway_stripe.php:3121
+#: pages/billing.php:443
 msgid "Update"
 msgstr "Oppdater"
 
@@ -6523,6 +6550,7 @@ msgstr "Logg ut"
 #: adminpages/orders.php:1430
 #: adminpages/orders.php:1607
 #: pages/cancel.php:72
+#: pages/invoice.php:126
 msgid "Level"
 msgstr "Kurs"
 
@@ -6553,6 +6581,7 @@ msgstr "%s per %s."
 #: pages/billing.php:42
 #: pages/billing.php:89
 #: pages/billing.php:90
+#: pages/billing.php:91
 msgid "Duration"
 msgstr "Varighet"
 
@@ -6560,6 +6589,7 @@ msgstr "Varighet"
 #: pages/billing.php:52
 #: pages/billing.php:128
 #: pages/billing.php:130
+#: pages/billing.php:131
 msgid "Your payment subscription is managed by PayPal. Please <a href=\"http://www.paypal.com\">login to PayPal here</a> to update your billing information."
 msgstr "Din innbetaling blir håndtert av PayPal. <a href=«http://www.paypal.com»>Bruk PayPal</a> for å oppdatere betalingsinformasjonen din."
 
@@ -6576,6 +6606,8 @@ msgstr "Din innbetaling blir håndtert av PayPal. <a href=«http://www.paypal.co
 #: includes/profile.php:791
 #: pages/checkout.php:254
 #: includes/profile.php:790
+#: pages/billing.php:167
+#: pages/checkout.php:268
 msgid "First Name"
 msgstr "Fornavn"
 
@@ -6592,6 +6624,8 @@ msgstr "Fornavn"
 #: includes/profile.php:792
 #: pages/checkout.php:258
 #: includes/profile.php:791
+#: pages/billing.php:171
+#: pages/checkout.php:272
 msgid "Last Name"
 msgstr "Etternavn"
 
@@ -6602,6 +6636,8 @@ msgstr "Etternavn"
 #: pages/checkout.php:242
 #: pages/billing.php:176
 #: pages/checkout.php:262
+#: pages/billing.php:177
+#: pages/checkout.php:276
 msgid "Address 1"
 msgstr "Adresse 1"
 
@@ -6612,6 +6648,8 @@ msgstr "Adresse 1"
 #: pages/checkout.php:246
 #: pages/billing.php:180
 #: pages/checkout.php:266
+#: pages/billing.php:181
+#: pages/checkout.php:280
 msgid "Address 2"
 msgstr "Adresse 2"
 
@@ -6622,6 +6660,8 @@ msgstr "Adresse 2"
 #: pages/checkout.php:253
 #: pages/billing.php:191
 #: pages/checkout.php:273
+#: pages/billing.php:192
+#: pages/checkout.php:287
 msgid "City"
 msgstr "Sted/By"
 
@@ -6632,6 +6672,8 @@ msgstr "Sted/By"
 #: pages/checkout.php:257
 #: pages/billing.php:195
 #: pages/checkout.php:277
+#: pages/billing.php:196
+#: pages/checkout.php:291
 msgid "State"
 msgstr "Fylke"
 
@@ -6642,6 +6684,8 @@ msgstr "Fylke"
 #: pages/checkout.php:261
 #: pages/billing.php:199
 #: pages/checkout.php:281
+#: pages/billing.php:200
+#: pages/checkout.php:295
 msgid "Postal Code"
 msgstr "Postnummer"
 
@@ -6652,6 +6696,8 @@ msgstr "Postnummer"
 #: pages/checkout.php:266
 #: pages/billing.php:208
 #: pages/checkout.php:286
+#: pages/billing.php:209
+#: pages/checkout.php:300
 msgid "City, State Zip"
 msgstr "Sted/By, Postnummer"
 
@@ -6662,6 +6708,8 @@ msgstr "Sted/By, Postnummer"
 #: pages/checkout.php:303
 #: pages/billing.php:261
 #: pages/checkout.php:323
+#: pages/billing.php:262
+#: pages/checkout.php:337
 msgid "Country"
 msgstr "Land"
 
@@ -6672,6 +6720,8 @@ msgstr "Land"
 #: pages/checkout.php:319
 #: pages/billing.php:287
 #: pages/checkout.php:339
+#: pages/billing.php:288
+#: pages/checkout.php:353
 msgid "Phone"
 msgstr "Telefon"
 
@@ -6685,6 +6735,9 @@ msgstr "Telefon"
 #: pages/billing.php:298
 #: pages/checkout.php:184
 #: pages/checkout.php:354
+#: pages/billing.php:299
+#: pages/checkout.php:188
+#: pages/checkout.php:368
 msgid "Email Address"
 msgstr "E-post-adresse"
 
@@ -6695,6 +6748,8 @@ msgstr "E-post-adresse"
 #: pages/checkout.php:341
 #: pages/billing.php:302
 #: pages/checkout.php:361
+#: pages/billing.php:303
+#: pages/checkout.php:375
 msgid "Confirm Email"
 msgstr "Bekreft e-post-adresse"
 
@@ -6702,6 +6757,7 @@ msgstr "Bekreft e-post-adresse"
 #: pages/billing.php:231
 #: pages/billing.php:321
 #: pages/billing.php:325
+#: pages/billing.php:326
 msgid "Credit Card Information"
 msgstr "Kredittkortinformasjon"
 
@@ -6709,6 +6765,7 @@ msgstr "Kredittkortinformasjon"
 #: pages/billing.php:232
 #: pages/billing.php:322
 #: pages/billing.php:326
+#: pages/billing.php:327
 #, php-format
 msgid "We accept %s"
 msgstr "Vi aksepterer følgende korttyper %s"
@@ -6718,6 +6775,7 @@ msgstr "Vi aksepterer følgende korttyper %s"
 #: pages/billing.php:467
 #: pages/billing.php:477
 #: pages/billing.php:484
+#: pages/billing.php:486
 msgid "This subscription is not recurring. So you don't need to update your billing information."
 msgstr "Dette abonnementet har ikke periodiske betalinger, derfor trenger du ikke oppdatere betalingsinformasjonen din."
 
@@ -6804,6 +6862,7 @@ msgstr "Klikk her for å endre din rabattkode"
 #: pages/checkout.php:74
 #: pages/checkout.php:97
 #: pages/checkout.php:117
+#: pages/checkout.php:121
 msgid "Do you have a discount code?"
 msgstr "Har du en rabattkode?"
 
@@ -6811,6 +6870,7 @@ msgstr "Har du en rabattkode?"
 #: pages/checkout.php:74
 #: pages/checkout.php:97
 #: pages/checkout.php:117
+#: pages/checkout.php:121
 msgid "Click here to enter your discount code"
 msgstr "Klikk her for å legge til din rabattkode"
 
@@ -6818,6 +6878,7 @@ msgstr "Klikk her for å legge til din rabattkode"
 #: pages/checkout.php:175
 #: pages/checkout.php:129
 #: pages/checkout.php:149
+#: pages/checkout.php:153
 msgid "Account Information"
 msgstr "Kontoinformasjon"
 
@@ -6825,6 +6886,7 @@ msgstr "Kontoinformasjon"
 #: pages/checkout.php:176
 #: pages/checkout.php:130
 #: pages/checkout.php:150
+#: pages/checkout.php:154
 msgid "Already have an account?"
 msgstr "Har du allerede en konto?"
 
@@ -6832,6 +6894,7 @@ msgstr "Har du allerede en konto?"
 #: pages/checkout.php:176
 #: pages/checkout.php:130
 #: pages/checkout.php:150
+#: pages/checkout.php:154
 msgid "Log in here"
 msgstr "Logg inn her"
 
@@ -6839,6 +6902,7 @@ msgstr "Logg inn her"
 #: pages/checkout.php:202
 #: pages/checkout.php:151
 #: pages/checkout.php:171
+#: pages/checkout.php:175
 msgid "Confirm Password"
 msgstr "Bekreft passord"
 
@@ -6846,6 +6910,7 @@ msgstr "Bekreft passord"
 #: pages/checkout.php:229
 #: pages/checkout.php:172
 #: pages/checkout.php:192
+#: pages/checkout.php:196
 msgid "Confirm Email Address"
 msgstr "Bekreft e-post-adresse"
 
@@ -6853,6 +6918,7 @@ msgstr "Bekreft e-post-adresse"
 #: pages/checkout.php:248
 #: pages/checkout.php:185
 #: pages/checkout.php:205
+#: pages/checkout.php:209
 msgid "Full Name"
 msgstr "Fullt navn"
 
@@ -6860,6 +6926,7 @@ msgstr "Fullt navn"
 #: pages/checkout.php:249
 #: pages/checkout.php:186
 #: pages/checkout.php:206
+#: pages/checkout.php:210
 msgid "LEAVE THIS BLANK"
 msgstr "LA FELTET VÆRE TOMT"
 
@@ -6867,6 +6934,7 @@ msgstr "LA FELTET VÆRE TOMT"
 #: pages/checkout.php:273
 #: pages/checkout.php:193
 #: pages/checkout.php:213
+#: pages/checkout.php:226
 #, php-format
 msgid "You are logged in as <strong>%s</strong>. If you would like to use a different account for this membership, <a href=\"%s\">log out now</a>."
 msgstr "Du er nå logget på som <strong>%s</strong>. Hvis du ønsker å logge deg på med en annen konto, <a href=\"%s\">logg ut nå</a>."
@@ -6875,6 +6943,7 @@ msgstr "Du er nå logget på som <strong>%s</strong>. Hvis du ønsker å logge d
 #: pages/checkout.php:289
 #: pages/checkout.php:209
 #: pages/checkout.php:229
+#: pages/checkout.php:243
 msgid "Choose your Payment Method"
 msgstr "Velg betalingsmetode"
 
@@ -6882,6 +6951,7 @@ msgstr "Velg betalingsmetode"
 #: pages/checkout.php:298
 #: pages/checkout.php:214
 #: pages/checkout.php:234
+#: pages/checkout.php:248
 msgid "Check Out with a Credit Card Here"
 msgstr "Betal med et kredittkort"
 
@@ -6891,6 +6961,7 @@ msgstr "Betal med et kredittkort"
 #: pages/billing.php:410
 #: pages/billing.php:417
 #: classes/gateways/class.pmprogateway_braintree.php:510
+#: pages/billing.php:418
 msgid "CVV"
 msgstr "CCV"
 
@@ -6902,6 +6973,8 @@ msgstr "CCV"
 #: pages/billing.php:418
 #: classes/gateways/class.pmprogateway_braintree.php:511
 #: pages/checkout.php:445
+#: pages/billing.php:419
+#: pages/checkout.php:459
 msgid "what's this?"
 msgstr "hva er dette?"
 
@@ -6910,6 +6983,7 @@ msgstr "hva er dette?"
 #: pages/checkout.php:476
 #: pages/checkout.php:478
 #: pages/checkout.php:498
+#: pages/checkout.php:515
 #, php-format
 msgid "I agree to the %s"
 msgstr "Jeg har lest og godtar %s"
@@ -6919,6 +6993,7 @@ msgstr "Jeg har lest og godtar %s"
 #: pages/checkout.php:514
 #: pages/checkout.php:526
 #: pages/checkout.php:546
+#: pages/checkout.php:564
 msgid "Complete Payment"
 msgstr "Fullfør betaling"
 
@@ -6927,6 +7002,7 @@ msgstr "Fullfør betaling"
 #: pages/checkout.php:536
 #: pages/checkout.php:548
 #: pages/checkout.php:568
+#: pages/checkout.php:586
 msgid "Processing..."
 msgstr "Prosesserer.."
 
@@ -6995,6 +7071,7 @@ msgstr "Skriv ut"
 #: pages/confirmation.php:64
 #: pages/confirmation.php:137
 #: pages/invoice.php:37
+#: pages/confirmation.php:139
 msgid "Account"
 msgstr "Konto"
 
@@ -7012,6 +7089,7 @@ msgstr "Medlemskapet utløper"
 #: pages/confirmation.php:95
 #: pages/invoice.php:85
 #: pages/billing.php:98
+#: pages/billing.php:99
 msgid "Payment Method"
 msgstr "Betalingsinformasjon"
 
@@ -7025,6 +7103,7 @@ msgstr "Betalingsinformasjon"
 #: pages/invoice.php:125
 #: includes/profile.php:413
 #: includes/profile.php:453
+#: pages/invoice.php:127
 msgid "Total Billed"
 msgstr "Totalsum belastet"
 
@@ -7035,11 +7114,13 @@ msgstr "Totalsum belastet"
 #: pages/confirmation.php:97
 #: pages/invoice.php:87
 #: pages/billing.php:100
+#: pages/billing.php:101
 msgid "ending in"
 msgstr "kort som slutter på"
 
 #: pages/confirmation.php:97
 #: pages/confirmation.php:125
+#: pages/confirmation.php:127
 #, php-format
 msgid "Below are details about your membership account. A welcome email has been sent to %s."
 msgstr "Under finner du detaljer om medlemsskapet ditt. En e-post med en kort velkomment har allerede blitt sendt til %s."
@@ -7058,12 +7139,17 @@ msgstr "Avventer"
 #: pages/invoice.php:155
 #: pages/billing.php:127
 #: pages/billing.php:133
+#: pages/billing.php:128
+#: pages/billing.php:134
+#: pages/confirmation.php:151
+#: pages/invoice.php:157
 msgid "View Your Membership Account &rarr;"
 msgstr "Se kontoen for medlemskapet ditt &rarr;"
 
 # @ pmpro
 #: pages/confirmation.php:115
 #: pages/confirmation.php:151
+#: pages/confirmation.php:153
 msgid "If your account is not activated within a few minutes, please contact the site owner."
 msgstr "Hvis medlomskontoen din ikke aktiveres i løpet av et par minutter, så ta kontakt med eieren av disse sidene."
 
@@ -7082,18 +7168,21 @@ msgstr "Rabattkode"
 # @ pmpro
 #: pages/invoice.php:108
 #: pages/invoice.php:123
+#: pages/invoice.php:125
 msgid "Invoice #"
 msgstr "Faktura #"
 
 # @ pmpro
 #: pages/invoice.php:134
 #: pages/invoice.php:149
+#: pages/invoice.php:151
 msgid "No invoices found."
 msgstr "Ingen fakturaer funnet"
 
 # @ pmpro
 #: pages/invoice.php:145
 #: pages/invoice.php:157
+#: pages/invoice.php:159
 msgid "&larr; View All Invoices"
 msgstr "&larr; Se alle fakturaer"
 
@@ -7533,6 +7622,7 @@ msgstr "Beløp"
 #: shortcodes/pmpro_account.php:155
 #: shortcodes/pmpro_account.php:264
 #: shortcodes/pmpro_account.php:271
+#: shortcodes/pmpro_account.php:273
 msgid "View All Invoices"
 msgstr "Se alle fakturaer"
 
@@ -7540,6 +7630,7 @@ msgstr "Se alle fakturaer"
 #: shortcodes/pmpro_account.php:162
 #: shortcodes/pmpro_account.php:271
 #: shortcodes/pmpro_account.php:278
+#: shortcodes/pmpro_account.php:280
 msgid "Member Links"
 msgstr "Lenker for medlemmer"
 
@@ -7704,6 +7795,7 @@ msgstr "Lenker for medlemmer"
 #: shortcodes/pmpro_account.php:247
 #: pages/confirmation.php:65
 #: shortcodes/pmpro_account.php:254
+#: pages/confirmation.php:140
 #~ msgid "Pending"
 #~ msgstr "Ventende"
 
@@ -13605,6 +13697,7 @@ msgstr ""
 
 #: pages/billing.php:136
 #: pages/billing.php:138
+#: pages/billing.php:139
 msgid "Your billing information cannot be updated at this time."
 msgstr ""
 
@@ -13612,6 +13705,7 @@ msgstr ""
 #: shortcodes/pmpro_account.php:68
 #: pages/billing.php:468
 #: pages/billing.php:475
+#: pages/billing.php:477
 msgid "Your membership is not active. <a href='%s'>Renew now.</a>"
 msgstr ""
 
@@ -13619,6 +13713,7 @@ msgstr ""
 #: shortcodes/pmpro_account.php:71
 #: pages/billing.php:471
 #: pages/billing.php:478
+#: pages/billing.php:480
 msgid "You do not have an active membership. <a href='%s'>Register here.</a>"
 msgstr ""
 
@@ -13626,6 +13721,7 @@ msgstr ""
 #: shortcodes/pmpro_account.php:74
 #: pages/billing.php:474
 #: pages/billing.php:481
+#: pages/billing.php:483
 msgid "You do not have an active membership. <a href='%s'>Choose a membership level.</a>"
 msgstr ""
 
@@ -13646,11 +13742,13 @@ msgstr ""
 
 #: pages/checkout.php:95
 #: pages/checkout.php:115
+#: pages/checkout.php:119
 msgid "Click here to change your discount code."
 msgstr ""
 
 #: pages/checkout.php:424
 #: pages/checkout.php:444
+#: pages/checkout.php:458
 msgid "Security Code (CVC)"
 msgstr ""
 
@@ -16710,4 +16808,8 @@ msgstr ""
 
 #: includes/fields.php:1399
 msgid "Required at Checkout?"
+msgstr ""
+
+#: pages/checkout.php:91
+msgid "The %s code has been applied to your order."
 msgstr ""
