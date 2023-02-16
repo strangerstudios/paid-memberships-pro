@@ -33,10 +33,10 @@ function pmpro_shortcode_account($atts, $content=null, $code="")
 	?>
 	<div id="pmpro_account">
 		<?php if(in_array('membership', $sections) || in_array('memberships', $sections)) { ?>
-			<div id="pmpro_account-membership" class="<?php echo pmpro_get_element_class( 'pmpro_box', 'pmpro_account-membership' ); ?>">
+			<div id="pmpro_account-membership" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_box', 'pmpro_account-membership' ) ); ?>">
 
 				<h3><?php esc_html_e("My Memberships", 'paid-memberships-pro' );?></h3>
-				<table class="<?php echo pmpro_get_element_class( 'pmpro_table' ); ?>" width="100%" cellpadding="0" cellspacing="0" border="0">
+				<table class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_table' ) ); ?>" width="100%" cellpadding="0" cellspacing="0" border="0">
 					<thead>
 						<tr>
 							<th><?php esc_html_e("Level", 'paid-memberships-pro' );?></th>
@@ -65,13 +65,13 @@ function pmpro_shortcode_account($atts, $content=null, $code="")
 							// Show the correct checkout link.
 							if ( ! empty( $level ) && ! empty( $level->allow_signups ) ) {
 								$url = pmpro_url( 'checkout', '?level=' . $level->id );
-								printf( __( "Your membership is not active. <a href='%s'>Renew now.</a>", 'paid-memberships-pro' ), $url );
+								echo wp_kses( sprintf( __( "Your membership is not active. <a href='%s'>Renew now.</a>", 'paid-memberships-pro' ), $url ), array( 'a' => array( 'href' => array() ) ) );
 							} elseif ( ! empty( $default_level_id ) ) {
 								$url = pmpro_url( 'checkout', '?level=' . $default_level_id );
-								printf( __( "You do not have an active membership. <a href='%s'>Register here.</a>", 'paid-memberships-pro' ), $url );
+								echo wp_kses( sprintf( __( "You do not have an active membership. <a href='%s'>Register here.</a>", 'paid-memberships-pro' ), $url ), array( 'a' => array( 'href' => array() ) ) );
 							} else {
 								$url = pmpro_url( 'levels' );
-								printf( __( "You do not have an active membership. <a href='%s'>Choose a membership level.</a>", 'paid-memberships-pro' ), $url );
+								echo wp_kses( sprintf( __( "You do not have an active membership. <a href='%s'>Choose a membership level.</a>", 'paid-memberships-pro' ), $url ), array( 'a' => array( 'href' => array() ) ) );
 							}
 							?>
 							</td>
@@ -81,9 +81,9 @@ function pmpro_shortcode_account($atts, $content=null, $code="")
 								foreach($mylevels as $level) {
 							?>
 							<tr>
-								<td class="<?php echo pmpro_get_element_class( 'pmpro_account-membership-levelname' ); ?>">
-									<?php echo $level->name?>
-									<div class="<?php echo pmpro_get_element_class( 'pmpro_actionlinks' ); ?>">
+								<td class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_account-membership-levelname' ) ); ?>">
+									<?php echo esc_html( $level->name ); ?>
+									<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_actionlinks' ) ); ?>">
 										<?php do_action("pmpro_member_action_links_before"); ?>
 
 										<?php
@@ -129,10 +129,10 @@ function pmpro_shortcode_account($atts, $content=null, $code="")
 										<?php do_action("pmpro_member_action_links_after"); ?>
 									</div> <!-- end pmpro_actionlinks -->
 								</td>
-								<td class="<?php echo pmpro_get_element_class( 'pmpro_account-membership-levelfee' ); ?>">
-									<p><?php echo pmpro_getLevelCost($level, true, true);?></p>
+								<td class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_account-membership-levelfee' ) ); ?>">
+									<p><?php echo wp_kses_post( pmpro_getLevelCost($level, true, true) );?></p>
 								</td>
-								<td class="<?php echo pmpro_get_element_class( 'pmpro_account-membership-expiration' ); ?>">
+								<td class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_account-membership-expiration' ) ); ?>">
 									<?php
 										$expiration_text = '<p>';
 										if ( $level->enddate ) {
@@ -152,7 +152,7 @@ function pmpro_shortcode_account($atts, $content=null, $code="")
 											$expiration_text .= esc_html_x( '&#8212;', 'A dash is shown when there is no expiration date.', 'paid-memberships-pro' );
 										}
 										$expiration_text .= '</p>';
-										echo apply_filters( 'pmpro_account_membership_expiration_text', $expiration_text, $level );
+										echo wp_kses_post( apply_filters( 'pmpro_account_membership_expiration_text', $expiration_text, $level ) );
 									?>
 								</td>
 							</tr>
@@ -161,7 +161,7 @@ function pmpro_shortcode_account($atts, $content=null, $code="")
 					</tbody>
 				</table>
 				<?php //Todo: If there are multiple levels defined that aren't all in the same group defined as upgrades/downgrades ?>
-				<div class="<?php echo pmpro_get_element_class( 'pmpro_actionlinks' ); ?>">
+				<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_actionlinks' ) ); ?>">
 					<a id="pmpro_actionlink-levels" href="<?php echo esc_url( pmpro_url( "levels" ) ) ?>"><?php esc_html_e("View all Membership Options", 'paid-memberships-pro' );?></a>
 				</div>
 
@@ -169,11 +169,11 @@ function pmpro_shortcode_account($atts, $content=null, $code="")
 		<?php } ?>
 
 		<?php if(in_array('profile', $sections)) { ?>
-			<div id="pmpro_account-profile" class="<?php echo pmpro_get_element_class( 'pmpro_box', 'pmpro_account-profile' ); ?>">
+			<div id="pmpro_account-profile" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_box', 'pmpro_account-profile' ) ); ?>">
 				<?php wp_get_current_user(); ?>
 				<h3><?php esc_html_e("My Account", 'paid-memberships-pro' );?></h3>
 				<?php if($current_user->user_firstname) { ?>
-					<p><?php echo $current_user->user_firstname?> <?php echo $current_user->user_lastname?></p>
+					<p><?php echo esc_html( $current_user->user_firstname );?> <?php echo esc_html( $current_user->user_lastname );?></p>
 				<?php } ?>
 				<ul>
 					<?php do_action('pmpro_account_bullets_top');?>
@@ -181,7 +181,7 @@ function pmpro_shortcode_account($atts, $content=null, $code="")
 					<li><strong><?php esc_html_e("Email", 'paid-memberships-pro' );?>:</strong> <?php echo esc_html( $current_user->user_email ); ?></li>
 					<?php do_action('pmpro_account_bullets_bottom');?>
 				</ul>
-				<div class="<?php echo pmpro_get_element_class( 'pmpro_actionlinks' ); ?>">
+				<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_actionlinks' ) ); ?>">
 					<?php
 						// Get the edit profile and change password links if 'Member Profile Edit Page' is set.
 						if ( ! empty( pmpro_getOption( 'member_profile_edit_page_id' ) ) ) {
@@ -222,9 +222,9 @@ function pmpro_shortcode_account($atts, $content=null, $code="")
 		<?php } ?>
 
 		<?php if(in_array('invoices', $sections) && !empty($invoices)) { ?>
-		<div id="pmpro_account-invoices" class="<?php echo pmpro_get_element_class( 'pmpro_box', 'pmpro_account-invoices' ); ?>">
+		<div id="pmpro_account-invoices" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_box', 'pmpro_account-invoices' ) ); ?>">
 			<h3><?php esc_html_e("Past Invoices", 'paid-memberships-pro' );?></h3>
-			<table class="<?php echo pmpro_get_element_class( 'pmpro_table' ); ?>" width="100%" cellpadding="0" cellspacing="0" border="0">
+			<table class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_table' ) ); ?>" width="100%" cellpadding="0" cellspacing="0" border="0">
 				<thead>
 					<tr>
 						<th><?php esc_html_e("Date", 'paid-memberships-pro' ); ?></th>
@@ -248,19 +248,21 @@ function pmpro_shortcode_account($atts, $content=null, $code="")
 						$invoice->getMembershipLevel();
 
 						if ( in_array( $invoice->status, array( '', 'success', 'cancelled' ) ) ) {
-						    $display_status = __( 'Paid', 'paid-memberships-pro' );
+						    $display_status = esc_html__( 'Paid', 'paid-memberships-pro' );
 						} elseif ( $invoice->status == 'pending' ) {
 						    // Some Add Ons set status to pending.
-						    $display_status = __( 'Pending', 'paid-memberships-pro' );
+						    $display_status = esc_html__( 'Pending', 'paid-memberships-pro' );
 						} elseif ( $invoice->status == 'refunded' ) {
-						    $display_status = __( 'Refunded', 'paid-memberships-pro' );
+						    $display_status = esc_html__( 'Refunded', 'paid-memberships-pro' );
 						}
 						?>
-						<tr id="pmpro_account-invoice-<?php echo $invoice->code; ?>">
-							<td><a href="<?php echo esc_url( pmpro_url( "invoice", "?invoice=" . $invoice->code ) ) ?>"><?php echo date_i18n(get_option("date_format"), $invoice->getTimestamp())?></a></td>
-							<td><?php if(!empty($invoice->membership_level)) echo $invoice->membership_level->name; else echo __("N/A", 'paid-memberships-pro' );?></td>
-							<td><?php echo pmpro_escape_price( pmpro_formatPrice($invoice->total) ); ?></td>
-							<td><?php echo $display_status; ?></td>
+						<tr id="pmpro_account-invoice-<?php echo esc_attr( $invoice->code ); ?>">
+							<td><a href="<?php echo esc_url( pmpro_url( "invoice", "?invoice=" . $invoice->code ) ) ?>"><?php echo esc_html( date_i18n(get_option("date_format"), $invoice->getTimestamp()) )?></a></td>
+							<td><?php if(!empty($invoice->membership_level)) echo esc_html( $invoice->membership_level->name ); else echo esc_html__("N/A", 'paid-memberships-pro' );?></td>
+							<td><?php
+								//phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+								echo pmpro_escape_price( pmpro_formatPrice($invoice->total) ); ?></td>
+							<td><?php echo esc_html( $display_status ); ?></td>
 						</tr>
 						<?php
 					}
@@ -268,13 +270,13 @@ function pmpro_shortcode_account($atts, $content=null, $code="")
 				</tbody>
 			</table>
 			<?php if($count == 6) { ?>
-				<div class="<?php echo pmpro_get_element_class( 'pmpro_actionlinks' ); ?>"><a id="pmpro_actionlink-invoices" href="<?php echo esc_url( pmpro_url( "invoice" ) ); ?>"><?php esc_html_e("View All Invoices", 'paid-memberships-pro' );?></a></div>
+				<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_actionlinks' ) ); ?>"><a id="pmpro_actionlink-invoices" href="<?php echo esc_url( pmpro_url( "invoice" ) ); ?>"><?php esc_html_e("View All Invoices", 'paid-memberships-pro' );?></a></div>
 			<?php } ?>
 		</div> <!-- end pmpro_account-invoices -->
 		<?php } ?>
 
 		<?php if(in_array('links', $sections) && (has_filter('pmpro_member_links_top') || has_filter('pmpro_member_links_bottom'))) { ?>
-		<div id="pmpro_account-links" class="<?php echo pmpro_get_element_class( 'pmpro_box', 'pmpro_account-links' ); ?>">
+		<div id="pmpro_account-links" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_box', 'pmpro_account-links' ) ); ?>">
 			<h3><?php esc_html_e("Member Links", 'paid-memberships-pro' );?></h3>
 			<ul>
 				<?php

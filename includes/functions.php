@@ -903,7 +903,7 @@ function pmpro_hasMembershipLevel( $levels = null, $user_id = null ) {
 			} elseif ( in_array( '-L', $levels ) || in_array( '-l', $levels ) ) {
 				$return = ( empty( $user_id ) || $user_id != $current_user->ID );       // -L, not logged in users
 			} elseif ( in_array( 'E', $levels ) || in_array( 'e', $levels ) ) {
-				$sql = "SELECT id FROM $wpdb->pmpro_memberships_users WHERE user_id = " . esc_sql( $user_id ) . " AND status ='expired' LIMIT 1";
+				$sql = "SELECT id FROM $wpdb->pmpro_memberships_users WHERE user_id = " . (int) $user_id . " AND status ='expired' LIMIT 1";
 				$expired = $wpdb->get_var( $sql );                                    // E, expired members
 				$return = ! empty( $expired );
 			}
@@ -1088,7 +1088,7 @@ function pmpro_changeMembershipLevel( $level, $user_id = null, $old_level_status
 	if ( $old_levels && $pmpro_deactivate_old_levels ) {
 		foreach ( $old_levels as $old_level ) {
 
-			$sql = "UPDATE $wpdb->pmpro_memberships_users SET `status`='$old_level_status', `enddate`='" . esc_sql( current_time( 'mysql' ) ) . "' WHERE `id`=" . esc_sql( $old_level->subscription_id );
+			$sql = "UPDATE $wpdb->pmpro_memberships_users SET `status`='$old_level_status', `enddate`='" . esc_sql( current_time( 'mysql' ) ) . "' WHERE `id`=" . (int) $old_level->subscription_id;
 
 			if ( ! $wpdb->query( $sql ) ) {
 				$pmpro_error = __( 'Error interacting with database', 'paid-memberships-pro' ) . ': ' . ( $wpdb->last_error ? $wpdb->last_error : 'unavailable' );
@@ -1821,7 +1821,7 @@ function pmpro_checkDiscountCode( $code, $level_id = null, $return_errors = fals
 			} else {
 				$level_id = intval( $level_id );
 			}
-			$code_level = $wpdb->get_row( "SELECT l.id, cl.*, l.name, l.description, l.allow_signups FROM $wpdb->pmpro_discount_codes_levels cl LEFT JOIN $wpdb->pmpro_membership_levels l ON cl.level_id = l.id WHERE cl.code_id = '" . esc_sql( $dbcode->id ) . "' AND cl.level_id IN (" . esc_sql( $level_id ) . ") LIMIT 1" );
+			$code_level = $wpdb->get_row( "SELECT l.id, cl.*, l.name, l.description, l.allow_signups FROM $wpdb->pmpro_discount_codes_levels cl LEFT JOIN $wpdb->pmpro_membership_levels l ON cl.level_id = l.id WHERE cl.code_id = '" . esc_sql( $dbcode->id ) . "' AND cl.level_id IN (" . $level_id . ") LIMIT 1" ); // $level_id is already escaped above.
 
 			if ( empty( $code_level ) ) {
 				$error = __( 'This discount code does not apply to this membership level.', 'paid-memberships-pro' );
@@ -2493,9 +2493,9 @@ function pmpro_getCheckoutButton( $level_id, $button_text = null, $classes = nul
 	}
 
 	if ( ! empty( $level_id ) ) {
-		$r = '<a href="' . pmpro_url( 'checkout', '?level=' . $level_id ) . '" class="' . esc_attr( $classes ) . '">' . wp_kses_post( $button_text ) . '</a>';
+		$r = '<a href="' . esc_url( pmpro_url( 'checkout', '?level=' . $level_id ) ) . '" class="' . esc_attr( $classes ) . '">' . wp_kses_post( $button_text ) . '</a>';
 	} else {
-		$r = '<a href="' . pmpro_url( 'checkout' ) . '" class="' . esc_attr( $classes ) . '">' . wp_kses_post( $button_text ) . '</a>';
+		$r = '<a href="' . esc_url( pmpro_url( 'checkout' ) ) . '" class="' . esc_attr( $classes ) . '">' . wp_kses_post( $button_text ) . '</a>';
 	}
 
 	return $r;
@@ -2554,7 +2554,7 @@ if ( ! function_exists( 'pmpro_getMemberStartdate' ) ) {
 			global $wpdb;
 
 			if ( ! empty( $level_id ) ) {
-				$sqlQuery = "SELECT UNIX_TIMESTAMP(CONVERT_TZ(startdate, '+00:00', @@global.time_zone)) FROM $wpdb->pmpro_memberships_users WHERE status = 'active' AND membership_id IN(" . esc_sql( $level_id ) . ") AND user_id = '" . $user_id . "' ORDER BY id LIMIT 1";
+				$sqlQuery = "SELECT UNIX_TIMESTAMP(CONVERT_TZ(startdate, '+00:00', @@global.time_zone)) FROM $wpdb->pmpro_memberships_users WHERE status = 'active' AND membership_id IN(" . (int) $level_id . ") AND user_id = '" . $user_id . "' ORDER BY id LIMIT 1";
 			} else {
 				$sqlQuery = "SELECT UNIX_TIMESTAMP(CONVERT_TZ(startdate, '+00:00', @@global.time_zone)) FROM $wpdb->pmpro_memberships_users WHERE status = 'active' AND user_id = '" . esc_sql( $user_id ) . "' ORDER BY id LIMIT 1";
 			}
