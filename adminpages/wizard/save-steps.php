@@ -251,10 +251,10 @@ function pmpro_init_save_wizard_data() {
 		}
 
 		// Get the data and store it in an option.
-		$filterqueries = ! empty( $_REQUEST['filterqueries'] ) ? sanitize_text_field( $_REQUEST['filterqueries'] ) : 0;
-		$showexcerpts = ! empty( $_REQUEST['showexcerpts'] ) ? sanitize_text_field( $_REQUEST['showexcerpts'] ) : 0;
-		$spamprotection = ! empty( $_REQUEST['spamprotection'] ) ? sanitize_text_field( $_REQUEST['spamprotection'] ) : 0;
-		$wisdom_opt_out = isset( $_REQUEST['wisdom_opt_out'] ) ? sanitize_text_field( $_REQUEST['wisdom_opt_out'] ) : 1; //Reversed logic here for the Wisdom Tracker as initially coded.
+		$filterqueries = ! empty( $_REQUEST['filterqueries'] ) ? intval( $_REQUEST['filterqueries'] ) : 0;
+		$showexcerpts = ! empty( $_REQUEST['showexcerpts'] ) ? intval( $_REQUEST['showexcerpts'] ) : 0;
+		$spamprotection = ! empty( $_REQUEST['spamprotection'] ) ? intval( $_REQUEST['spamprotection'] ) : 0;
+		$wisdom_opt_out = ! empty( $_REQUEST['wisdom_opt_out'] ) ? intval( $_REQUEST['wisdom_opt_out'] ) : 0;
 
 		// Updated the options. Set the values as above to cater for cases where the REQUEST variables are empty for blank checkboxes.
 		pmpro_setOption( 'filterqueries', $filterqueries );
