@@ -2,14 +2,14 @@
 # This file is distributed under the same license as the Paid Memberships Pro plugin.
 msgid ""
 msgstr ""
-"Project-Id-Version: Paid Memberships Pro 2.9.9\n"
+"Project-Id-Version: Paid Memberships Pro 2.9.12\n"
 "Report-Msgid-Bugs-To: info@paidmembershipspro.com\n"
 "Last-Translator: Paid Memberships Pro <info@paidmembershipspro.com>\n"
 "Language-Team: Paid Memberships Pro <info@paidmembershipspro.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2023-01-25T06:22:19+00:00\n"
+"POT-Creation-Date: 2023-02-16T15:37:59+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.7.1\n"
 "X-Domain: paid-memberships-pro\n"
@@ -1687,6 +1687,8 @@ msgstr "Start Datum"
 #: pages/billing.php:381
 #: classes/gateways/class.pmprogateway_stripe.php:873
 #: pages/checkout.php:413
+#: pages/billing.php:382
+#: pages/checkout.php:427
 msgid "Expiration Date"
 msgstr "Ablaufdatum"
 
@@ -2415,6 +2417,7 @@ msgstr "Wählen Sie diese Option, wenn der Zugang ablaufen soll."
 #: adminpages/membershiplevels.php:576
 #: adminpages/membershiplevels.php:744
 #: adminpages/membershiplevels.php:749
+#: pages/confirmation.php:142
 msgid "Expires In"
 msgstr "Läuft ab in"
 
@@ -3401,6 +3404,7 @@ msgstr "Paket speichern"
 #: includes/profile.php:829
 #: includes/profile.php:953
 #: pages/cancel.php:98
+#: pages/billing.php:445
 msgid "Cancel"
 msgstr "Stornieren"
 
@@ -3513,6 +3517,7 @@ msgstr "Pakete mit der Maus verschieben, um sie auf der Pakete-Seite zu sortiere
 #: adminpages/orders.php:841
 #: adminpages/membershiplevels.php:1123
 #: pages/cancel.php:73
+#: pages/billing.php:103
 msgid "Expiration"
 msgstr "Gültig bis"
 
@@ -3842,6 +3847,7 @@ msgstr "%d Mitglieder gefunden."
 #: classes/class.memberorder.php:1619
 #: pages/checkout.php:154
 #: classes/class.memberorder.php:1621
+#: pages/checkout.php:158
 msgid "Username"
 msgstr "Benutzername"
 
@@ -3901,6 +3907,8 @@ msgstr "Nachname"
 #: pages/billing.php:162
 #: adminpages/orders.php:571
 #: pages/checkout.php:250
+#: pages/billing.php:163
+#: pages/checkout.php:264
 msgid "Billing Address"
 msgstr "Rechnungsadresse"
 
@@ -4488,6 +4496,8 @@ msgstr "z.B. PayPal Express, PayPal Standard, Kreditkarte."
 #: pages/billing.php:338
 #: adminpages/orders.php:799
 #: pages/checkout.php:398
+#: pages/billing.php:339
+#: pages/checkout.php:412
 msgid "Card Type"
 msgstr "Kreditkarte"
 
@@ -4860,6 +4870,7 @@ msgstr "Vom Zahlungsdienstleister generiert. Hilfreich um Zahlungen zuzuordnen."
 #: adminpages/orders.php:1436
 #: adminpages/orders.php:1715
 #: includes/fields.php:1389
+#: pages/invoice.php:124
 msgid "Date"
 msgstr "Datum"
 
@@ -5248,6 +5259,7 @@ msgstr "Benutzer"
 #: js/blocks.build.js:1086
 #: blocks/checkout-button/block.js:76
 #: blocks/checkout-page/block.js:62
+#: pages/confirmation.php:140
 msgid "Membership Level"
 msgstr "Paket"
 
@@ -5985,6 +5997,7 @@ msgstr "Mehrwertsteuer"
 #: pages/billing.php:179
 #: adminpages/paymentsettings.php:239
 #: pages/billing.php:181
+#: pages/billing.php:182
 msgid "optional"
 msgstr "optional"
 
@@ -6868,6 +6881,9 @@ msgstr "Ihre Mitgliedschaftsbestätigung für %s"
 #: includes/profile.php:452
 #: adminpages/orders.php:1438
 #: adminpages/orders.php:1725
+#: pages/checkout.php:123
+#: pages/checkout.php:129
+#: pages/checkout.php:464
 msgid "Discount Code"
 msgstr "Rabattcode"
 
@@ -7671,6 +7687,7 @@ msgstr "Um Braintree vollständig zu integrieren, stellen Sie Ihre Web Hook URL 
 #: adminpages/orders.php:679
 #: classes/gateways/class.pmprogateway_stripe.php:849
 #: pages/checkout.php:386
+#: pages/checkout.php:400
 msgid "Payment Information"
 msgstr "Zahlungsinformationen"
 
@@ -7720,6 +7737,7 @@ msgstr "Zahlungsinformationen"
 #: classes/gateways/class.pmprogateway_braintree.php:462
 #: classes/gateways/class.pmprogateway_stripe.php:856
 #: pages/checkout.php:387
+#: pages/checkout.php:401
 #, php-format
 msgid "We Accept %s"
 msgstr "Wir aktzeptieren %s"
@@ -7784,6 +7802,8 @@ msgstr "Wir aktzeptieren %s"
 #: pages/billing.php:377
 #: classes/gateways/class.pmprogateway_stripe.php:869
 #: pages/checkout.php:409
+#: pages/billing.php:378
+#: pages/checkout.php:423
 msgid "Card Number"
 msgstr "Kartennummer"
 
@@ -7836,6 +7856,7 @@ msgstr "Kartennummer"
 #: pages/billing.php:410
 #: classes/gateways/class.pmprogateway_braintree.php:510
 #: pages/billing.php:417
+#: pages/billing.php:418
 msgid "CVV"
 msgstr "Kartenprüfwert"
 
@@ -7895,6 +7916,8 @@ msgstr "Kartenprüfwert"
 #: classes/gateways/class.pmprogateway_braintree.php:511
 #: pages/billing.php:418
 #: pages/checkout.php:445
+#: pages/billing.php:419
+#: pages/checkout.php:459
 msgid "what's this?"
 msgstr "Was ist das?"
 
@@ -7955,6 +7978,8 @@ msgstr "Was ist das?"
 #: classes/gateways/class.pmprogateway_stripe.php:891
 #: pages/checkout.php:127
 #: pages/checkout.php:452
+#: pages/checkout.php:131
+#: pages/checkout.php:466
 msgid "Apply"
 msgstr "Übernehmen"
 
@@ -8314,6 +8339,7 @@ msgstr "Anbieter"
 #: classes/gateways/class.pmprogateway_payflowpro.php:125
 #: pages/checkout.php:143
 #: pages/checkout.php:163
+#: pages/checkout.php:167
 msgid "Password"
 msgstr "Passwort"
 
@@ -8534,6 +8560,7 @@ msgstr "Diese URL wird an PayPal für alle neuen Zahlungen und Anmeldungen weite
 #: classes/gateways/class.pmprogateway_paypalexpress.php:497
 #: pages/checkout.php:238
 #: classes/gateways/class.pmprogateway_paypalexpress.php:499
+#: pages/checkout.php:252
 msgid "Check Out with PayPal"
 msgstr "Zahlung mit PayPal abschließen"
 
@@ -8569,6 +8596,7 @@ msgstr "Zahlung mit PayPal abschließen"
 #: classes/gateways/class.pmprogateway_paypalexpress.php:502
 #: pages/checkout.php:558
 #: classes/gateways/class.pmprogateway_paypalexpress.php:504
+#: pages/checkout.php:576
 msgid "Submit and Check Out"
 msgstr "Zahlung bestätigen"
 
@@ -8609,6 +8637,7 @@ msgstr "Zahlung bestätigen"
 #: classes/gateways/class.pmprogateway_paypalexpress.php:502
 #: pages/checkout.php:558
 #: classes/gateways/class.pmprogateway_paypalexpress.php:504
+#: pages/checkout.php:576
 msgid "Submit and Confirm"
 msgstr "Senden und Bestätigen"
 
@@ -8919,6 +8948,7 @@ msgstr "Um Stripe vollständig zu integrieren, stellen Sie Ihre Web Hook URL auf
 #: classes/gateways/class.pmprogateway_stripe.php:655
 #: pages/checkout.php:424
 #: pages/checkout.php:444
+#: pages/checkout.php:458
 msgid "Security Code (CVC)"
 msgstr "Kartenprüfnummer (CVC)"
 
@@ -9055,6 +9085,7 @@ msgstr "Mit Abonnement-Updates können Sie die Abonnementwerte des Mitglieds zu 
 #: classes/gateways/class.pmprogateway_stripe.php:3087
 #: classes/gateways/class.pmprogateway_stripe.php:3114
 #: classes/gateways/class.pmprogateway_stripe.php:3121
+#: pages/billing.php:443
 msgid "Update"
 msgstr "Aktualisieren"
 
@@ -12205,6 +12236,7 @@ msgstr "Bestelldatum"
 #: adminpages/orders.php:1430
 #: adminpages/orders.php:1607
 #: pages/cancel.php:72
+#: pages/invoice.php:126
 msgid "Level"
 msgstr "Paket"
 
@@ -12471,6 +12503,7 @@ msgstr "%s pro %s."
 #: pages/billing.php:63
 #: pages/billing.php:89
 #: pages/billing.php:90
+#: pages/billing.php:91
 msgid "Duration"
 msgstr "Zeitraum"
 
@@ -12485,6 +12518,7 @@ msgstr "Zeitraum"
 #: pages/billing.php:81
 #: pages/billing.php:128
 #: pages/billing.php:130
+#: pages/billing.php:131
 msgid "Your payment subscription is managed by PayPal. Please <a href=\"http://www.paypal.com\">login to PayPal here</a> to update your billing information."
 msgstr "Ihre Zahlungen werden von PayPal abgewickelt. Sie können sich <a href=\"http://www.paypal.com\">hier bei PayPal einloggen</a> um Ihre Zahlungsinformationen zu aktualisieren."
 
@@ -12519,6 +12553,8 @@ msgstr "Ihre Zahlungen werden von PayPal abgewickelt. Sie können sich <a href=\
 #: includes/profile.php:791
 #: pages/checkout.php:254
 #: includes/profile.php:790
+#: pages/billing.php:167
+#: pages/checkout.php:268
 msgid "First Name"
 msgstr "Vorname"
 
@@ -12553,6 +12589,8 @@ msgstr "Vorname"
 #: includes/profile.php:792
 #: pages/checkout.php:258
 #: includes/profile.php:791
+#: pages/billing.php:171
+#: pages/checkout.php:272
 msgid "Last Name"
 msgstr "Nachname"
 
@@ -12582,6 +12620,8 @@ msgstr "Nachname"
 #: pages/checkout.php:242
 #: pages/billing.php:176
 #: pages/checkout.php:262
+#: pages/billing.php:177
+#: pages/checkout.php:276
 msgid "Address 1"
 msgstr "Adresse 1"
 
@@ -12611,6 +12651,8 @@ msgstr "Adresse 1"
 #: pages/checkout.php:246
 #: pages/billing.php:180
 #: pages/checkout.php:266
+#: pages/billing.php:181
+#: pages/checkout.php:280
 msgid "Address 2"
 msgstr "Adresse 2"
 
@@ -12640,6 +12682,8 @@ msgstr "Adresse 2"
 #: pages/checkout.php:253
 #: pages/billing.php:191
 #: pages/checkout.php:273
+#: pages/billing.php:192
+#: pages/checkout.php:287
 msgid "City"
 msgstr "Ort"
 
@@ -12669,6 +12713,8 @@ msgstr "Ort"
 #: pages/checkout.php:257
 #: pages/billing.php:195
 #: pages/checkout.php:277
+#: pages/billing.php:196
+#: pages/checkout.php:291
 msgid "State"
 msgstr "Bundesland"
 
@@ -12698,6 +12744,8 @@ msgstr "Bundesland"
 #: pages/checkout.php:261
 #: pages/billing.php:199
 #: pages/checkout.php:281
+#: pages/billing.php:200
+#: pages/checkout.php:295
 msgid "Postal Code"
 msgstr "Postleitzahl"
 
@@ -12727,6 +12775,8 @@ msgstr "Postleitzahl"
 #: pages/checkout.php:266
 #: pages/billing.php:208
 #: pages/checkout.php:286
+#: pages/billing.php:209
+#: pages/checkout.php:300
 msgid "City, State Zip"
 msgstr "Ort, Bundesland"
 
@@ -12756,6 +12806,8 @@ msgstr "Ort, Bundesland"
 #: pages/checkout.php:303
 #: pages/billing.php:261
 #: pages/checkout.php:323
+#: pages/billing.php:262
+#: pages/checkout.php:337
 msgid "Country"
 msgstr "Land"
 
@@ -12785,6 +12837,8 @@ msgstr "Land"
 #: pages/checkout.php:319
 #: pages/billing.php:287
 #: pages/checkout.php:339
+#: pages/billing.php:288
+#: pages/checkout.php:353
 msgid "Phone"
 msgstr "Telefon"
 
@@ -12825,6 +12879,9 @@ msgstr "Telefon"
 #: pages/billing.php:298
 #: pages/checkout.php:184
 #: pages/checkout.php:354
+#: pages/billing.php:299
+#: pages/checkout.php:188
+#: pages/checkout.php:368
 msgid "Email Address"
 msgstr "E-Mail Adresse"
 
@@ -12854,6 +12911,8 @@ msgstr "E-Mail Adresse"
 #: pages/checkout.php:341
 #: pages/billing.php:302
 #: pages/checkout.php:361
+#: pages/billing.php:303
+#: pages/checkout.php:375
 msgid "Confirm Email"
 msgstr "E-Mail bestätigen"
 
@@ -12871,6 +12930,7 @@ msgstr "E-Mail bestätigen"
 #: pages/billing.php:270
 #: pages/billing.php:321
 #: pages/billing.php:325
+#: pages/billing.php:326
 msgid "Credit Card Information"
 msgstr "Kreditkarten Informationen"
 
@@ -12888,6 +12948,7 @@ msgstr "Kreditkarten Informationen"
 #: pages/billing.php:271
 #: pages/billing.php:322
 #: pages/billing.php:326
+#: pages/billing.php:327
 #, php-format
 msgid "We accept %s"
 msgstr "Wir aktzeptieren %s"
@@ -12910,6 +12971,7 @@ msgstr "Wir aktzeptieren %s"
 #: pages/billing.php:422
 #: pages/billing.php:467
 #: pages/billing.php:484
+#: pages/billing.php:486
 msgid "This subscription is not recurring. So you don't need to update your billing information."
 msgstr "Keine weiteren Zahlungen erforderlich. Ihre Zahlungsinformationen müssen daher nicht aktualisiert werden."
 
@@ -13046,6 +13108,7 @@ msgstr "Klicken Sie hier, um Ihren Gutscheincode ändern"
 #: pages/checkout.php:84
 #: pages/checkout.php:97
 #: pages/checkout.php:117
+#: pages/checkout.php:121
 msgid "Click here to enter your discount code"
 msgstr "Klicken Sie hier, um Ihren Gutscheincode einzugeben"
 
@@ -13059,6 +13122,7 @@ msgstr "Klicken Sie hier, um Ihren Gutscheincode einzugeben"
 #: pages/checkout.php:84
 #: pages/checkout.php:97
 #: pages/checkout.php:117
+#: pages/checkout.php:121
 msgid "Do you have a discount code?"
 msgstr "Haben Sie einen Gutscheincode?"
 
@@ -13073,6 +13137,7 @@ msgstr "Haben Sie einen Gutscheincode?"
 #: pages/checkout.php:185
 #: pages/checkout.php:129
 #: pages/checkout.php:149
+#: pages/checkout.php:153
 msgid "Account Information"
 msgstr "Konto Informationen"
 
@@ -13086,6 +13151,7 @@ msgstr "Konto Informationen"
 #: pages/checkout.php:186
 #: pages/checkout.php:130
 #: pages/checkout.php:150
+#: pages/checkout.php:154
 msgid "Already have an account?"
 msgstr "Sie haben schon einen Konto?"
 
@@ -13099,6 +13165,7 @@ msgstr "Sie haben schon einen Konto?"
 #: pages/checkout.php:186
 #: pages/checkout.php:130
 #: pages/checkout.php:150
+#: pages/checkout.php:154
 msgid "Log in here"
 msgstr "Hier einloggen"
 
@@ -13113,6 +13180,7 @@ msgstr "Hier einloggen"
 #: pages/checkout.php:212
 #: pages/checkout.php:151
 #: pages/checkout.php:171
+#: pages/checkout.php:175
 msgid "Confirm Password"
 msgstr "Passwort bestätigen"
 
@@ -13127,6 +13195,7 @@ msgstr "Passwort bestätigen"
 #: pages/checkout.php:239
 #: pages/checkout.php:172
 #: pages/checkout.php:192
+#: pages/checkout.php:196
 msgid "Confirm Email Address"
 msgstr "E-Mail Adresse bestätigen"
 
@@ -13141,6 +13210,7 @@ msgstr "E-Mail Adresse bestätigen"
 #: pages/checkout.php:258
 #: pages/checkout.php:185
 #: pages/checkout.php:205
+#: pages/checkout.php:209
 msgid "Full Name"
 msgstr "Vollständiger Name"
 
@@ -13155,6 +13225,7 @@ msgstr "Vollständiger Name"
 #: pages/checkout.php:259
 #: pages/checkout.php:186
 #: pages/checkout.php:206
+#: pages/checkout.php:210
 msgid "LEAVE THIS BLANK"
 msgstr "DIESES FELD LEER LASSEN"
 
@@ -13169,6 +13240,7 @@ msgstr "DIESES FELD LEER LASSEN"
 #: pages/checkout.php:283
 #: pages/checkout.php:193
 #: pages/checkout.php:213
+#: pages/checkout.php:226
 #, php-format
 msgid "You are logged in as <strong>%s</strong>. If you would like to use a different account for this membership, <a href=\"%s\">log out now</a>."
 msgstr "Sie sind eingeloggt als <strong>%s</strong>. Wenn Sie für diese Mitgliedschaft einen anderen Konto verwenden wollen, <a href=\"%s\">ausloggen</a>."
@@ -13184,6 +13256,7 @@ msgstr "Sie sind eingeloggt als <strong>%s</strong>. Wenn Sie für diese Mitglie
 #: pages/checkout.php:299
 #: pages/checkout.php:209
 #: pages/checkout.php:229
+#: pages/checkout.php:243
 msgid "Choose your Payment Method"
 msgstr "Wählen Sie Ihre Zahlungsmethode"
 
@@ -13199,6 +13272,7 @@ msgstr "Wählen Sie Ihre Zahlungsmethode"
 #: pages/checkout.php:308
 #: pages/checkout.php:214
 #: pages/checkout.php:234
+#: pages/checkout.php:248
 msgid "Check Out with a Credit Card Here"
 msgstr "Mit Kreditkarte bezahlen"
 
@@ -13218,6 +13292,7 @@ msgstr "Mit Kreditkarte bezahlen"
 #: pages/checkout.php:476
 #: pages/checkout.php:478
 #: pages/checkout.php:498
+#: pages/checkout.php:515
 #, php-format
 msgid "I agree to the %s"
 msgstr "Ich stimme der %s zu"
@@ -13238,6 +13313,7 @@ msgstr "Ich stimme der %s zu"
 #: pages/checkout.php:514
 #: pages/checkout.php:526
 #: pages/checkout.php:546
+#: pages/checkout.php:564
 msgid "Complete Payment"
 msgstr "Zahlung abschließen"
 
@@ -13257,6 +13333,7 @@ msgstr "Zahlung abschließen"
 #: pages/checkout.php:536
 #: pages/checkout.php:548
 #: pages/checkout.php:568
+#: pages/checkout.php:586
 msgid "Processing..."
 msgstr "wird bearbeitet..."
 
@@ -13322,6 +13399,7 @@ msgstr "Drucken"
 #: pages/confirmation.php:64
 #: pages/confirmation.php:137
 #: pages/invoice.php:37
+#: pages/confirmation.php:139
 msgid "Account"
 msgstr "Konto"
 
@@ -13350,6 +13428,7 @@ msgstr "Zugang endet am"
 #: pages/confirmation.php:95
 #: pages/invoice.php:85
 #: pages/billing.php:98
+#: pages/billing.php:99
 msgid "Payment Method"
 msgstr "Zahlungsmethode"
 
@@ -13364,6 +13443,7 @@ msgstr "Zahlungsmethode"
 #: pages/confirmation.php:97
 #: pages/invoice.php:87
 #: pages/billing.php:100
+#: pages/billing.php:101
 msgid "ending in"
 msgstr "endet: "
 
@@ -13385,6 +13465,7 @@ msgstr "endet: "
 #: pages/invoice.php:97
 #: pages/invoice.php:125
 #: includes/profile.php:453
+#: pages/invoice.php:127
 msgid "Total Billed"
 msgstr "Summe"
 
@@ -13405,6 +13486,7 @@ msgstr "Gutschein"
 #: pages/confirmation.php:100
 #: pages/confirmation.php:103
 #: pages/confirmation.php:125
+#: pages/confirmation.php:127
 #, php-format
 msgid "Below are details about your membership account. A welcome email has been sent to %s."
 msgstr "Unten finden Sie Details zu Ihrem Mitgliedskonto. Eine Wilkommens-E-Mail wurde an %s gesendet."
@@ -13418,6 +13500,7 @@ msgstr "Unten finden Sie Details zu Ihrem Mitgliedskonto. Eine Wilkommens-E-Mail
 #: shortcodes/pmpro_account.php:247
 #: pages/confirmation.php:65
 #: shortcodes/pmpro_account.php:254
+#: pages/confirmation.php:140
 msgid "Pending"
 msgstr "Ausstehend"
 
@@ -13436,6 +13519,10 @@ msgstr "Ausstehend"
 #: pages/invoice.php:155
 #: pages/billing.php:127
 #: pages/billing.php:133
+#: pages/billing.php:128
+#: pages/billing.php:134
+#: pages/confirmation.php:151
+#: pages/invoice.php:157
 msgid "View Your Membership Account &rarr;"
 msgstr "Ihr Mitgliedskonto anzeigen &rarr;"
 
@@ -13445,6 +13532,7 @@ msgstr "Ihr Mitgliedskonto anzeigen &rarr;"
 #: pages/confirmation.php:123
 #: pages/confirmation.php:126
 #: pages/confirmation.php:151
+#: pages/confirmation.php:153
 msgid "If your account is not activated within a few minutes, please contact the site owner."
 msgstr "Wenn Ihr Konto nicht innerhalb der nächsten Minuten aktiviert wird, kontaktieren Sie bitte den Betreiber der Seite."
 
@@ -13453,6 +13541,7 @@ msgstr "Wenn Ihr Konto nicht innerhalb der nächsten Minuten aktiviert wird, kon
 #: pages/invoice.php:106
 #: pages/invoice.php:108
 #: pages/invoice.php:123
+#: pages/invoice.php:125
 msgid "Invoice #"
 msgstr "Rechnungs-Nr."
 
@@ -13461,6 +13550,7 @@ msgstr "Rechnungs-Nr."
 #: pages/invoice.php:132
 #: pages/invoice.php:134
 #: pages/invoice.php:149
+#: pages/invoice.php:151
 msgid "No invoices found."
 msgstr "Keine Rechnungen gefunden."
 
@@ -13469,6 +13559,7 @@ msgstr "Keine Rechnungen gefunden."
 #: pages/invoice.php:143
 #: pages/invoice.php:145
 #: pages/invoice.php:157
+#: pages/invoice.php:159
 msgid "&larr; View All Invoices"
 msgstr "&larr; alle Rechnungen anzeigen"
 
@@ -14244,6 +14335,7 @@ msgstr "Betrag"
 #: shortcodes/pmpro_account.php:155
 #: shortcodes/pmpro_account.php:264
 #: shortcodes/pmpro_account.php:271
+#: shortcodes/pmpro_account.php:273
 msgid "View All Invoices"
 msgstr "Alle Rechnungen anzeigen"
 
@@ -14256,6 +14348,7 @@ msgstr "Alle Rechnungen anzeigen"
 #: shortcodes/pmpro_account.php:162
 #: shortcodes/pmpro_account.php:271
 #: shortcodes/pmpro_account.php:278
+#: shortcodes/pmpro_account.php:280
 msgid "Member Links"
 msgstr "Mitglieder Links"
 
@@ -19174,24 +19267,28 @@ msgstr "Passen Sie dieses Menü pro Ebene mit dem <a href=\"%s\" title=\"Paid Me
 
 #: pages/billing.php:136
 #: pages/billing.php:138
+#: pages/billing.php:139
 msgid "Your billing information cannot be updated at this time."
 msgstr "Ihre Rechnungsinformationen können derzeit nicht aktualisiert werden."
 
 #: pages/billing.php:458
 #: shortcodes/pmpro_account.php:68
 #: pages/billing.php:475
+#: pages/billing.php:477
 msgid "Your membership is not active. <a href='%s'>Renew now.</a>"
 msgstr "Ihre Mitgliedschaft ist nicht aktiv. <a href='%s'>Jetzt erneuern.</a>"
 
 #: pages/billing.php:461
 #: shortcodes/pmpro_account.php:71
 #: pages/billing.php:478
+#: pages/billing.php:480
 msgid "You do not have an active membership. <a href='%s'>Register here.</a>"
 msgstr "Sie haben keine aktive Mitgliedschaft. <a href='%s'>Hier Registrieren.</a>"
 
 #: pages/billing.php:464
 #: shortcodes/pmpro_account.php:74
 #: pages/billing.php:481
+#: pages/billing.php:483
 msgid "You do not have an active membership. <a href='%s'>Choose a membership level.</a>"
 msgstr "Sie haben keine aktive Mitgliedschaft. <a href='%s'>Wählen Sie ein Mitgliedschafts-Paket aus.</a>"
 
@@ -19202,6 +19299,7 @@ msgstr ""
 
 #: pages/checkout.php:95
 #: pages/checkout.php:115
+#: pages/checkout.php:119
 msgid "Click here to change your discount code."
 msgstr "Klicken Sie hier, um Ihren Rabattcode zu ändern."
 
@@ -22069,4 +22167,8 @@ msgstr ""
 
 #: includes/fields.php:1399
 msgid "Required at Checkout?"
+msgstr ""
+
+#: pages/checkout.php:91
+msgid "The %s code has been applied to your order."
 msgstr ""
