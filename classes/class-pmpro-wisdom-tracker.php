@@ -798,7 +798,8 @@ class PMPro_Wisdom_Tracker {
 			if ( $this->marketing ) {
 				$this->set_can_collect_email( false );
 			}
-		} elseif ( false !== pmpro_getOption( 'wisdom_opt_out' ) ) {
+		} elseif ( pmpro_getOption( 'wisdom_opt_out' ) !== '' ) {			
+			// Option already set in PMPro Wizard or Advanced Settings page.
 			$this->update_block_notice();
 		} else {
 			// Display the notice requesting permission to track
