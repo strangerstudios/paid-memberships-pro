@@ -32,8 +32,8 @@
 			echo "<span class='pmpro_wizard_stripe-connected'>" . esc_html__( 'We have detected you previously connected to Stripe, to change your Stripe account please adjust it in the "Payment Gateway & SSL" settings.', 'paid-memberships-pro' ) . "</span>";
 		} else { ?>
 			<div class="pmpro-wizard__stripe admin_page_pmpro-paymentsettings" <?php if ( 'stripe' !== pmpro_getOption( 'gateway', true ) ) { echo 'style="display:none;"'; } ?>>
-			<p style="font-size:12px;text-transform:italic;"><?php esc_html_e( 'After clicking "Submit and Continue", you will be redirected to Stripe to finish connecting PMPro to your Stripe account. If you do not already have a Stripe account and do not want to set one up at this time, please select "Other/Setup Later" instead.', 'paid-memberships-pro' ); ?></p>
-			<p style="font-size:12px;text-transform:italic;">
+			<p class="pmpro-wizard__field-description"><?php esc_html_e( 'After clicking "Submit and Continue", you will be redirected to Stripe to finish connecting PMPro to your Stripe account. If you do not already have a Stripe account and do not want to set one up at this time, please select "Other/Setup Later" instead.', 'paid-memberships-pro' ); ?></p>
+			<p class="pmpro-wizard__field-description">
 				<?php
 				$allowed_webhook_message_html = array(
 					'a' => array(
@@ -54,8 +54,8 @@
 			<?php esc_html_e( 'Other/Setup Later', 'paid-memberships-pro' ); ?>
 		</label>
 	</div>
-	<div class="pmpro-wizard__field" style="background-color:#F7F7F7;">
-		<p><img src="<?php echo esc_url( PMPRO_URL . '/images/credit-card.svg' ); ?>" style="vertical-align:middle;"/> <?php esc_html_e( 'Payment gateways may be configured under "Payment Gateway & SSL Settings".', 'paid-memberships-pro' ); ?></p>
+	<div class="pmpro-wizard__field pmpro-wizard__field-alt">
+		<p><img src="<?php echo esc_url( PMPRO_URL . '/images/credit-card.svg' ); ?>" /> <?php esc_html_e( 'Payment gateways may be configured under "Payment Gateway & SSL Settings".', 'paid-memberships-pro' ); ?></p>
 	</div>
 	<script>
 		jQuery(document).ready(function(){

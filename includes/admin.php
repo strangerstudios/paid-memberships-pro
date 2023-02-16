@@ -18,10 +18,9 @@ function pmpro_admin_init_redirect_to_dashboard() {
 		return;
 	}
 
-	// Check if we should redirect to the dashboard
-	$pmpro_dashboard_version = get_option( 'pmpro_dashboard_version', 0 );
-	if ( version_compare( $pmpro_dashboard_version, PMPRO_VERSION ) < 0 ) {
-		update_option( 'pmpro_dashboard_version', PMPRO_VERSION, 'no' );
+	// Check if we should redirect to the wizard. This should only happen on new installs and once.
+	if ( pmpro_getOption( 'wizard_redirect', true ) ) {		
+		delete_option( 'pmpro_wizard_redirect' );	// Deleting right away to avoid redirect loops.
 		wp_redirect( admin_url( 'admin.php?page=pmpro-wizard' ) );
 		exit;
 	}
@@ -135,6 +134,7 @@ function pmpro_handle_pause_mode_actions() {
 
 }
 add_action( 'admin_init', 'pmpro_handle_pause_mode_actions' );
+
 /**
  * Display a notice about pause mode being enabled
  *
@@ -143,7 +143,7 @@ add_action( 'admin_init', 'pmpro_handle_pause_mode_actions' );
 function pmpro_pause_mode_notice() {
 	global $current_user;
 	if ( isset( $_REQUEST[ 'show_pause_notification' ] ) ) {
-		$pmpro_show_pause_notification = $_REQUEST[ 'show_pause_notification' ];
+		$pmpro_show_pause_notification = (bool)$_REQUEST['show_pause_notification'];
 	} else {
 		$pmpro_show_pause_notification = false;
 	}
@@ -156,7 +156,7 @@ function pmpro_pause_mode_notice() {
 
 	if ( array_key_exists( 'hide_pause_notification', $archived_notifications ) ) {
 		$show_notice = false;
-		if ( ! empty( $pmpro_show_pause_notification ) && $pmpro_show_pause_notification === '1' ) {
+		if ( ! empty( $pmpro_show_pause_notification ) ) {
 			unset( $archived_notifications['hide_pause_notification'] );
 			update_user_meta( $current_user->ID, 'pmpro_archived_notifications', $archived_notifications );
 			$show_notice = true;
@@ -174,15 +174,11 @@ function pmpro_pause_mode_notice() {
 			</div>
 			<div class="pmpro_notification-content">
 				<h3><?php esc_html_e( 'Site URL Change Detected', 'paid-memberships-pro' ); ?></h3>
-				<p><?php
-					// translators: %s: Contains the URL to a blog post
-					printf(
-						__( '<strong>Warning:</strong> We have detected that your site URL has changed. All cron jobs and automated services have been disabled.', 'paid-memberships-pro' ), ''
-					);
-				?></p>
+				<p><?php printf( __( '<strong>Warning:</strong> We have detected that your site URL has changed. All PMPro-related cron jobs and automated services have been disabled. Paid Memberships Pro considers %s to be the site URL.', 'paid-memberships-pro' ), '<code>' . esc_url( pmpro_getOption( 'last_known_url' ) ) . '</code>' ); ?></p>
 				<?php if ( current_user_can( 'pmpro_manage_pause_mode' ) ) { ?>
 				<p>
-					<a href='<?php echo admin_url( '?pmpro-reactivate-services=true' ); ?>' class='button'><?php _e( 'Update my primary domain and reactivate all services', 'paid-memberships-pro' ); ?></a>
+					<a href='#' id="hide_pause_notification_button" class='button' value="hide_pause_notification"><?php esc_html_e( 'Dismiss notice and keep all services paused', 'paid-memberships-pro' ); ?></a>
+					<a href='<?php echo admin_url( '?pmpro-reactivate-services=true' ); ?>' class='button button-secondary'><?php esc_html_e( 'Update my primary domain and reactivate all services', 'paid-memberships-pro' ); ?></a>
 				</p>
 				<?php } else { ?>
 					<p><?php _e( 'Only users with the <code>pmpro_manage_pause_mode</code> capability are able to deactivate pause mode.', 'paid-memberships-pro' ); ?></p>
