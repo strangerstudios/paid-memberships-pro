@@ -1,0 +1,6 @@
+[codespell]
+skip=./.git,./languages,./tests/_data,./includes/lib/Stripe/data/ca-certificates.crt,./js/corechart.js,./js/jsapi.js
+check-hidden=
+check-filenames=
+builtin=clear,rare,informal,usage,code,names
+ignore-words-list=master,thead,ons
