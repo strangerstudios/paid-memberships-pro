@@ -1,5 +1,5 @@
 == Changelog ==
-= 2.10 - 2023-02-01 =
+= 2.10 - 2023-02-20 =
 * FEATURE: Added Setup Wizard
 * FEATURE: Stripe Checkout and Stripe Customer Portal integrations are now fully released. Increased Stripe fee to 2% for newly connected sites.
 * ENHANCEMENT: Now "pausing" some PMPro functionality when the site URL changes.
@@ -22,6 +22,7 @@
 * REFACTOR: Deprecating CyberSource and PayPal Website Payments Pro gateways.
 * REFACTOR: Marking "trial ending" cron as deprecated.
 * REFACTOR: Removed the ability to direct access the scripts in the /crons/ and /services/ directories. Only the getfile.php script can be accessed this way when activated.
+
 = 2.9.12 - 2023-02-16 =
 * SECURITY: Updated sanitization, escaping, and other security-related code across the plugin.
 
