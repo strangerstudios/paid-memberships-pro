@@ -4428,3 +4428,284 @@ function pmpro_is_paused() {
 function pmpro_set_pause_mode( $state ) {
 	return pmpro_setOption( 'pause_mode', $state );
 }
+
+
+/**
+ * Builds the order list query and export URL's based on the current search and order
+ *
+ * @param $count bool true or false if returning the current count or total records
+ * @since TBD
+ * @return array Contains the query string and export URL
+ */
+function pmpro_orderslist_query( $count = false ) {
+
+	global $wpdb;
+
+	$now = current_time( 'timestamp' );
+
+	if ( isset( $_REQUEST['s'] ) ) {
+		$s = trim( sanitize_text_field( $_REQUEST['s'] ) );
+	} else {
+		$s = '';
+	}
+	
+	if ( isset( $_REQUEST['l'] ) ) {
+		$l = intval( $_REQUEST['l'] );
+	} else {
+		$l = false;
+	}
+	
+	if ( isset( $_REQUEST['discount-code'] ) ) {
+		$discount_code = intval( $_REQUEST['discount-code'] );
+	} else {
+		$discount_code = false;
+	}
+	
+	if ( isset( $_REQUEST['start-month'] ) ) {
+		$start_month = intval( $_REQUEST['start-month'] );
+	} else {
+		$start_month = '1';
+	}
+	
+	if ( isset( $_REQUEST['start-day'] ) ) {
+		$start_day = intval( $_REQUEST['start-day'] );
+	} else {
+		$start_day = '1';
+	}
+	
+	if ( isset( $_REQUEST['start-year'] ) ) {
+		$start_year = intval( $_REQUEST['start-year'] );
+	} else {
+		$start_year = date( 'Y', $now );
+	}
+	
+	if ( isset( $_REQUEST['end-month'] ) ) {
+		$end_month = intval( $_REQUEST['end-month'] );
+	} else {
+		$end_month = date( 'n', $now );
+	}
+	
+	if ( isset( $_REQUEST['end-day'] ) ) {
+		$end_day = intval( $_REQUEST['end-day'] );
+	} else {
+		$end_day = date( 'j', $now );
+	}
+	
+	if ( isset( $_REQUEST['end-year'] ) ) {
+		$end_year = intval( $_REQUEST['end-year'] );
+	} else {
+		$end_year = date( 'Y', $now );
+	}
+	
+	if ( isset( $_REQUEST['predefined-date'] ) ) {
+		$predefined_date = sanitize_text_field( $_REQUEST['predefined-date'] );
+	} else {
+		$predefined_date = 'This Month';
+	}
+	
+	if ( isset( $_REQUEST['status'] ) ) {
+		$status = sanitize_text_field( $_REQUEST['status'] );
+	} else {
+		$status = '';
+	}
+	
+	if ( isset( $_REQUEST['filter'] ) ) {
+		$filter = sanitize_text_field( $_REQUEST['filter'] );
+	} else {
+		$filter = 'all';
+	}
+	
+	// some vars for the search
+	if ( isset( $_REQUEST['paged'] ) ) {
+		$pn = intval( $_REQUEST['paged'] );
+	} else {
+		$pn = 1;
+	}
+	
+	if ( isset( $_REQUEST['limit'] ) ) {
+		$limit = intval( $_REQUEST['limit'] );
+	} else {
+		/**
+		 * Filter to set the default number of items to show per page
+		 * on the Orders page in the admin.
+		 *
+		 * @since 1.8.4.5
+		 *
+		 * @param int $limit The number of items to show per page.
+		 */
+		$limit = apply_filters( 'pmpro_orders_per_page', 15 );
+	}
+	
+	$end   = $pn * $limit;
+	$start = $end - $limit;
+	
+	// filters
+	if ( empty( $filter ) || $filter === 'all' ) {
+		$condition = '1=1';
+		$filter    = 'all';
+	} elseif ( $filter == 'within-a-date-range' ) {
+		$start_date = $start_year . '-' . $start_month . '-' . $start_day;
+		$end_date   = $end_year . '-' . $end_month . '-' . $end_day;
+	
+		// add times to dates
+		$start_date = $start_date . ' 00:00:00';
+		$end_date   = $end_date . ' 23:59:59';
+	
+		$condition = "o.timestamp BETWEEN '" . esc_sql( $start_date ) . "' AND '" . esc_sql( $end_date ) . "'";
+	} elseif ( $filter == 'predefined-date-range' ) {
+		if ( $predefined_date == 'Last Month' ) {
+			$start_date = date( 'Y-m-d', strtotime( 'first day of last month', $now ) );
+			$end_date   = date( 'Y-m-d', strtotime( 'last day of last month', $now ) );
+		} elseif ( $predefined_date == 'This Month' ) {
+			$start_date = date( 'Y-m-d', strtotime( 'first day of this month', $now ) );
+			$end_date   = date( 'Y-m-d', strtotime( 'last day of this month', $now ) );
+		} elseif ( $predefined_date == 'This Year' ) {
+			$year       = date( 'Y', $now );
+			$start_date = date( 'Y-m-d', strtotime( "first day of January $year", $now ) );
+			$end_date   = date( 'Y-m-d', strtotime( "last day of December $year", $now ) );
+		} elseif ( $predefined_date == 'Last Year' ) {
+			$year       = date( 'Y', $now ) - 1;
+			$start_date = date( 'Y-m-d', strtotime( "first day of January $year", $now ) );
+			$end_date   = date( 'Y-m-d', strtotime( "last day of December $year", $now ) );
+		}
+	
+		// add times to dates
+		$start_date = $start_date . ' 00:00:00';
+		$end_date   = $end_date . ' 23:59:59';
+	
+		$condition = "o.timestamp BETWEEN '" . esc_sql( $start_date ) . "' AND '" . esc_sql( $end_date ) . "'";
+	} elseif ( $filter == 'within-a-level' ) {
+		$condition = 'o.membership_id = ' . esc_sql( $l );
+	} elseif ( $filter == 'with-discount-code' ) {
+		$condition = 'dc.code_id = ' . esc_sql( $discount_code );
+	} elseif ( $filter == 'within-a-status' ) {
+		$condition = "o.status = '" . esc_sql( $status ) . "' ";
+	} elseif ( $filter == 'only-paid' ) {
+		$condition = "o.total > 0";
+	} elseif( $filter == 'only-free' ) {
+		$condition = "o.total = 0";
+	}
+	
+	$condition = apply_filters( 'pmpro_admin_orders_query_condition', $condition, $filter );
+
+	$orderby = '';
+
+	if( ! empty( $_REQUEST['order'] ) && ! empty( $_REQUEST['orderby'] ) ) {
+
+		$order = strtoupper( esc_sql( $_REQUEST['order'] ) );
+		$orderby = esc_sql( $_REQUEST['orderby'] );
+
+		if( $orderby == 'order_id' ) {
+			$orderby = 'id';
+		} else if( $orderby == 'order_status' ) {
+			$orderby = 'status';
+		} else if( $orderby == 'total' ) {
+			$orderby = 'total';
+		} else if( $orderby = 'level' ) {
+			$orderby = 'membership_id';
+		} else if( $orderby == 'date' ) {
+			$orderby = 'timestamp';
+		}
+
+		$order_query = "ORDER BY $orderby $order";
+	} else {
+		$order_query = 'ORDER BY o.id DESC';
+	}
+
+	if ( $s ) {
+		$sqlQuery = "SELECT SQL_CALC_FOUND_ROWS o.id FROM $wpdb->pmpro_membership_orders o LEFT JOIN $wpdb->users u ON o.user_id = u.ID LEFT JOIN $wpdb->pmpro_membership_levels l ON o.membership_id = l.id ";
+
+		$join_with_usermeta = apply_filters( 'pmpro_orders_search_usermeta', false );
+		if ( $join_with_usermeta ) {
+			$sqlQuery .= "LEFT JOIN $wpdb->usermeta um ON o.user_id = um.user_id ";
+		}
+
+		if ( $filter === 'with-discount-code' ) {
+			$sqlQuery .= "LEFT JOIN $wpdb->pmpro_discount_codes_uses dc ON o.id = dc.order_id ";
+		}
+
+		$sqlQuery .= 'WHERE (1=2 ';
+
+		$fields = array(
+			'o.id',
+			'o.code',
+			'o.billing_name',
+			'o.billing_street',
+			'o.billing_city',
+			'o.billing_state',
+			'o.billing_zip',
+			'o.billing_phone',
+			'o.payment_type',
+			'o.cardtype',
+			'o.accountnumber',
+			'o.status',
+			'o.gateway',
+			'o.gateway_environment',
+			'o.payment_transaction_id',
+			'o.subscription_transaction_id',
+			'u.user_login',
+			'u.user_email',
+			'u.display_name',
+			'l.name',
+		);
+
+		if ( $join_with_usermeta ) {
+			$fields[] = 'um.meta_value';
+		}
+
+		$fields = apply_filters( 'pmpro_orders_search_fields', $fields );
+
+		foreach ( $fields as $field ) {
+			$sqlQuery .= ' OR ' . esc_sql( $field ) . " LIKE '%" . esc_sql( $s ) . "%' ";
+		}
+		$sqlQuery .= ') ';
+
+		//Not escaping here because we escape the values in the condition statement
+		$sqlQuery .= 'AND ' . $condition . ' ';
+
+		$sqlQuery .= 'GROUP BY o.id ORDER BY o.id DESC, o.timestamp DESC ';
+	} else {
+		$sqlQuery = "SELECT SQL_CALC_FOUND_ROWS o.id FROM $wpdb->pmpro_membership_orders o ";
+
+		if ( $filter === 'with-discount-code' ) {
+			$sqlQuery .= "LEFT JOIN $wpdb->pmpro_discount_codes_uses dc ON o.id = dc.order_id ";
+		}
+		//Not escaping here because we escape the values in the condition statement
+		$sqlQuery .= "WHERE " . $condition . ' ' . $order_query . ' , o.timestamp DESC ';
+	}
+
+	if( ! $count ) {
+		$sqlQuery .= "LIMIT " . esc_sql( $start ) . "," . esc_sql( $limit );
+	}
+
+	// Get all the gateways so we can reference their name later.
+	$pmpro_gateways = pmpro_gateways();
+
+	// Get the value for whether to show discount codes or now.
+	if ( $wpdb->get_var( "SELECT id FROM $wpdb->pmpro_discount_codes LIMIT 1" ) ) {
+		$pmpro_discount_codes = true;
+	} else {
+		$pmpro_discount_codes = false;
+	}        
+
+	$export_url = admin_url( 'admin-ajax.php?action=orders_csv' );
+
+	$url_params = array(
+		'filter'          => $filter,
+		's'               => $s,
+		'l'               => $l,
+		'start-month'     => $start_month,
+		'start-day'       => $start_day,
+		'start-year'      => $start_year,
+		'end-month'       => $end_month,
+		'end-day'         => $end_day,
+		'end-year'        => $end_year,
+		'predefined-date' => $predefined_date,
+		'discount-code'	  => $discount_code,
+		'status'          => $status,
+	);
+
+	$export_url = add_query_arg( $url_params, $export_url );
+
+	return array( 'sql_query' => $sqlQuery, 'export_url' => $export_url );
+}

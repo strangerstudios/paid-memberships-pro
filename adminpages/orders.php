@@ -48,6 +48,8 @@ if ( ! empty( $_REQUEST['refund'] ) ) {
 	}
 }
 
+$now = current_time( 'timestamp' );
+
 $thisyear = date( 'Y', $now );
 
 // this array stores fields that should be read only
@@ -909,132 +911,15 @@ require_once( dirname( __FILE__ ) . '/admin_header.php' ); ?>
 
 		<?php
 
-			global $orders_list_table, $wpdb;	
+		global $orders_list_table, $wpdb;			
 
-			$now = current_time( 'timestamp' );
+		$orders_list_query = pmpro_orderslist_query();
 
-			if ( isset( $_REQUEST['s'] ) ) {
-				$s = trim( sanitize_text_field( $_REQUEST['s'] ) );
-			} else {
-				$s = '';
-			}
-			
-			if ( isset( $_REQUEST['l'] ) ) {
-				$l = intval( $_REQUEST['l'] );
-			} else {
-				$l = false;
-			}
-			
-			if ( isset( $_REQUEST['discount-code'] ) ) {
-				$discount_code = intval( $_REQUEST['discount-code'] );
-			} else {
-				$discount_code = false;
-			}
-			
-			if ( isset( $_REQUEST['start-month'] ) ) {
-				$start_month = intval( $_REQUEST['start-month'] );
-			} else {
-				$start_month = '1';
-			}
-			
-			if ( isset( $_REQUEST['start-day'] ) ) {
-				$start_day = intval( $_REQUEST['start-day'] );
-			} else {
-				$start_day = '1';
-			}
-			
-			if ( isset( $_REQUEST['start-year'] ) ) {
-				$start_year = intval( $_REQUEST['start-year'] );
-			} else {
-				$start_year = date( 'Y', $now );
-			}
-			
-			if ( isset( $_REQUEST['end-month'] ) ) {
-				$end_month = intval( $_REQUEST['end-month'] );
-			} else {
-				$end_month = date( 'n', $now );
-			}
-			
-			if ( isset( $_REQUEST['end-day'] ) ) {
-				$end_day = intval( $_REQUEST['end-day'] );
-			} else {
-				$end_day = date( 'j', $now );
-			}
-			
-			if ( isset( $_REQUEST['end-year'] ) ) {
-				$end_year = intval( $_REQUEST['end-year'] );
-			} else {
-				$end_year = date( 'Y', $now );
-			}
-			
-			if ( isset( $_REQUEST['predefined-date'] ) ) {
-				$predefined_date = sanitize_text_field( $_REQUEST['predefined-date'] );
-			} else {
-				$predefined_date = 'This Month';
-			}
-			
-			if ( isset( $_REQUEST['status'] ) ) {
-				$status = sanitize_text_field( $_REQUEST['status'] );
-			} else {
-				$status = '';
-			}
-			
-			if ( isset( $_REQUEST['filter'] ) ) {
-				$filter = sanitize_text_field( $_REQUEST['filter'] );
-			} else {
-				$filter = 'all';
-			}
-			
-			// some vars for the search
-			if ( isset( $_REQUEST['paged'] ) ) {
-				$pn = intval( $_REQUEST['paged'] );
-			} else {
-				$pn = 1;
-			}
-			
-			if ( isset( $_REQUEST['limit'] ) ) {
-				$limit = intval( $_REQUEST['limit'] );
-			} else {
-				/**
-				 * Filter to set the default number of items to show per page
-				 * on the Orders page in the admin.
-				 *
-				 * @since 1.8.4.5
-				 *
-				 * @param int $limit The number of items to show per page.
-				 */
-				$limit = apply_filters( 'pmpro_orders_per_page', 15 );
-			}
-			
-			$end   = $pn * $limit;
-			$start = $end - $limit;
-				
-			// build the export URL
-			$export_url = admin_url( 'admin-ajax.php?action=orders_csv' );
-			$url_params = array(
-				'filter'          => $filter,
-				's'               => $s,
-				'l'               => $l,
-				'start-month'     => $start_month,
-				'start-day'       => $start_day,
-				'start-year'      => $start_year,
-				'end-month'       => $end_month,
-				'end-day'         => $end_day,
-				'end-year'        => $end_year,
-				'predefined-date' => $predefined_date,
-				'discount-code'	  => $discount_code,
-				'status'          => $status,
-			);
-			$export_url = add_query_arg( $url_params, $export_url );
-			//Not escaping here because we escape the values in the condition statement
-			$sqlQuery .= "WHERE " . $condition . ' ORDER BY o.id DESC, o.timestamp DESC ';
-		}
-
-		$sqlQuery .= "LIMIT " . (int) $start . "," . (int) $limit;
+		$sqlQuery = $orders_list_query['sql_query'];
+		
+		$export_url = $orders_list_query['export_url'];
 
 		$order_ids = $wpdb->get_col( $sqlQuery );
-
-		$totalrows = $wpdb->get_var( 'SELECT FOUND_ROWS() as found_rows' );
 
 		if ( $order_ids ) {
 
@@ -1062,6 +947,6 @@ require_once( dirname( __FILE__ ) . '/admin_header.php' ); ?>
 			?>
 	</form>
 	
-<?php } ?>
+<?php } }?>
 <?php
 require_once( dirname( __FILE__ ) . '/admin_footer.php' );
