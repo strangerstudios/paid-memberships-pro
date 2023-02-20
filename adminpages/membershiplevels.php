@@ -1519,7 +1519,7 @@
 										$disabled_button = empty( $group_levels_to_show) ? '' : 'disabled=disabled';
 										$disabled_message = empty( $group_levels_to_show) ? '' : '<span class="description"><em>' . __( 'Move levels to another group to enable group deletion.', 'paid-memberships-pro' ) . '</em></span>';
 									?>
-									<button <?php echo esc_attr( $disabled_button ); ?> class="button is-destructive pmpro-has-icon pmpro-has-icon-trash" href="<?php echo esc_url( wp_nonce_url( admin_url( 'admin.php?page=pmpro-membershiplevels&group_id=' . $level_group->id . '&action=delete_group' ), 'delete_group', 'pmpro_membershiplevels_nonce' ) ); ?>" ><?php esc_html_e( 'Delete Group', 'paid-memberships-pro' ) ?></button>
+									<a <?php echo esc_attr( $disabled_button ); ?> class="button is-destructive pmpro-has-icon pmpro-has-icon-trash" href="<?php echo esc_url( wp_nonce_url( admin_url( 'admin.php?page=pmpro-membershiplevels&group_id=' . $level_group->id . '&action=delete_group' ), 'delete_group', 'pmpro_membershiplevels_nonce' ) ); ?>" ><?php esc_html_e( 'Delete Group', 'paid-memberships-pro' ) ?></a>
 									<?php echo wp_kses_post( $disabled_message ); ?>
 								</div>
 							</div> <!-- end .pmpro_section_inside -->
