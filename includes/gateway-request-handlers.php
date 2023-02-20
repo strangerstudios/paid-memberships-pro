@@ -102,6 +102,18 @@ function pmpro_handle_subscription_cancellation_at_gateway( $subscription_transa
 					'%d',
 				]
 			);
+
+			// Clear the user's membership level cache.
+			pmpro_clear_level_cache_for_user( $user->ID );
+
+			// Send email to member.
+			$myemail = new PMProEmail();
+			$myemail->sendCancelOnNextPaymentDateEmail( $user, $subscription->get_membership_level_id() );
+
+			// Send email to admin.
+			$myemail = new PMProEmail();
+			$myemail->sendCancelOnNextPaymentDateAdminEmail( $user, $subscription->get_membership_level_id() );
+
 			return 'Cancelled membership for user with id = ' . $user->ID . '. Subscription transaction id = ' . $subscription_transaction_id . '. Membership extended to next payment date.';
 		}
 	}

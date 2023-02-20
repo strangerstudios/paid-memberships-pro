@@ -104,13 +104,34 @@
 					]
 				);
 
+				// Clear the level cache for this user.
+				pmpro_clear_level_cache_for_user( $current_user->ID );
+
 				// Cancel the subscriptions.
 				foreach ( $subscriptions as $sub ) {
 					$sub->cancel_at_gateway();
 				}
+
+				// Send an email to the member.
+				$myemail = new PMProEmail();
+				$myemail->sendCancelOnNextPaymentDateEmail( $current_user, $old_level_id );
+
+				// Send an email to the admin.
+				$myemail = new PMProEmail();
+				$myemail->sendCancelOnNextPaymentDateAdminEmail( $current_user, $old_level_id );
 			} else {
 				$one_worked = pmpro_cancelMembershipLevel($old_level_id, $current_user->ID, 'cancelled');
 				$worked = $worked && $one_worked !== false;
+
+				if ( $one_worked ) {
+					// Send an email to the member.
+					$myemail = new PMProEmail();
+					$myemail->sendCancelEmail( $current_user, $old_level_id );
+
+					// Send an email to the admin.
+					$myemail = new PMProEmail();
+					$myemail->sendCancelAdminEmail( $current_user, $old_level_id );
+				}
 			}
 		}
         
@@ -128,17 +149,6 @@
 				}
 			}
 			$pmpro_msgt = "pmpro_success";
-
-			// Send a cancellation email for each cancelled level.
-			foreach ( $old_level_ids as $old_level_id ) {
-				// Send an email to the user.
-				$pmproemail = new PMProEmail();
-				$pmproemail->sendCancelEmail( $current_user, $old_level_id );
-
-				// Send an an email to the admin.
-				$pmproemail = new PMProEmail();
-				$pmproemail->sendCancelAdminEmail( $current_user, $old_level_id );
-			}
 		} else {
 			global $pmpro_error;
 			$pmpro_msg = $pmpro_error;
