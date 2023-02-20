@@ -28,6 +28,14 @@
 	-moz-osx-font-smoothing: grayscale;
 }
 
+.pmpro_admin .pmpro-has-icon-edit:before {
+	content: "\f464";
+}
+
+.pmpro_admin .pmpro-has-icon-trash:before {
+	content: "\f182";
+}
+
 .pmpro_admin .pmpro-has-icon-printer:before {
 	content: "\f193";
 }
@@ -367,17 +375,23 @@
 /* Settings pages sections styles */
 .pmpro_admin .pmpro_section {
 	background: #FFF;
-	border: 1px solid #E0E0E0;
+	border: 1px solid #CCD0D4;
 	border-bottom: none;
 	margin: 15px 0;
 }
 
 .pmpro_admin .pmpro_section .pmpro_section_toggle {
-	border-bottom: 1px solid #E0E0E0;
+	border-bottom: 1px solid #CCD0D4;
 	margin: 0;
 }
 
-.pmpro_admin .pmpro_section .pmpro_section_toggle button {
+.pmpro_admin .pmpro_section .pmpro_section_toggle {
+	display: flex;
+}
+.pmpro_admin .pmpro_section .pmpro_section_toggle:hover {
+	background-color: #FAFAFA;
+}
+.pmpro_admin .pmpro_section .pmpro_section_toggle button.pmpro_section-toggle-button {
 	align-items: center;
 	-webkit-appearance: none;
 	background: none;
@@ -386,23 +400,21 @@
 	box-sizing: border-box;
 	color: #1E1E1E;
 	cursor: pointer;
+	display: flex;
+	flex-grow: 1;
 	font-size: 18px;
 	font-weight: 500;
 	height: auto;
+	justify-content: space-between;
 	margin: 0;
 	outline: none;
 	padding: 16px 48px 16px 16px;
 	position: relative;
 	text-align: left;
 	text-decoration: none;
-	width: 100%;
 }
 
-.pmpro_admin .pmpro_section .pmpro_section_toggle button:hover {
-	background-color: #FAFAFA;
-}
-
-.pmpro_admin .pmpro_section .pmpro_section_toggle button .dashicons {
+.pmpro_admin .pmpro_section .pmpro_section_toggle button.pmpro_section-toggle-button .dashicons {
 	position: absolute;
 	right: 16px;
 	top: 50%;
@@ -413,21 +425,78 @@
 	;
 }
 
+.pmpro_admin .pmpro_section .pmpro_section-sort {
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+	padding: 14px 0 14px 16px;
+}
+
+.pmpro_admin .pmpro_section .pmpro_section-sort .pmpro_section-sort-button {
+	background: 0 0;
+	border: 0;
+	cursor: pointer;
+	flex-shrink: 0;
+	margin: 0;
+	padding: 0;
+}
+
+.pmpro_admin .pmpro_section .pmpro_section-sort .pmpro_section-sort-button .dashicons {
+	font-size: 14px;
+	height: 14px;
+	width: 14px;
+}
+
+.pmpro_admin .pmpro_section .pmpro_section-sort .pmpro_section-sort-button:disabled {
+	color: #AAA;
+}
+
+.pmpro_admin .pmpro_section .pmpro_section-sort .pmpro_section-sort-button-description {
+	display: none;
+}
+
 .pmpro_admin .pmpro_section .pmpro_section_inside {
-	border-bottom: 1px solid #E0E0E0;
+	border-bottom: 1px solid #CCD0D4;
 	padding: 1em;
 }
 
-.pmpro_admin .pmpro_section .pmpro_section_inside>*:first-child {
+.pmpro_admin .pmpro_section .pmpro_section_inside > *:first-child {
 	margin-top: 0;
 }
 
 .pmpro_admin .pmpro_section .pmpro_section_inside p {
 	font-size: 14px;
 }
+.pmpro_admin .pmpro_section .pmpro_section_inside.bleed > * {
+	margin-right: 16px;
+	margin-left: 16px;
+}
+.pmpro_admin .pmpro_section .pmpro_section_inside.bleed > *:first-child {
+	margin-top: 16px;
+}
 
 .pmpro_admin .pmpro_section .pmpro_section_inside .form-table {
 	margin-top: 0;
+}
+
+.pmpro_admin .pmpro_section .pmpro_section_actions {
+	align-items: center;
+	background-color: #f5f5f5;
+	display: flex;
+	flex-wrap: wrap;
+	gap: 1em;
+	margin: 1em -1em -1em -1em;
+	padding: 1em;
+}
+
+/* buttons */
+.pmpro_admin .button-hero .dashicons {
+	vertical-align: middle;
+}
+
+.pmpro_admin .pmpro_section .button.is-destructive {
+	border-color: #AA0000;
+	color: #AA0000;
 }
 
 /* levels */
@@ -444,16 +513,16 @@
 	font-weight: bold;
 }
 
-.pmpro_admin-pmpro-membershiplevels .membership-levels tr {
-	background: #fff;
+.pmpro_admin-pmpro-membershiplevels .membership-levels tr td {
+	background: #f6f7f7;
 }
 
-.pmpro_admin-pmpro-membershiplevels .membership-levels tr.alternate {
-	background: #f1f1f1;
+.pmpro_admin-pmpro-membershiplevels .membership-levels tr.alternate td {
+	background: #FFF;
 }
 
-.pmpro_admin-pmpro-membershiplevels .membership-levels tr.ui-sortable-handle {
-	border: 1px solid #2997C8;
+.pmpro_admin-pmpro-membershiplevels .membership-levels tr.ui-sortable-helper {
+	border: 2px solid #2997C8;
 	cursor: move;
 }
 
@@ -551,10 +620,6 @@ table.pmprommpu_levels tr.remove_level td {background: #F2DEDE; }
 }
 
 /* Field Group Actions */
-.pmpro_admin-pmpro-userfields button .dashicons {
-	vertical-align: middle;
-}
-
 .pmpro_admin-pmpro-userfields .pmpro_userfield-group-buttons-button {
 	background: 0 0;
 	border: 0;
@@ -570,10 +635,6 @@ table.pmprommpu_levels tr.remove_level td {background: #F2DEDE; }
 
 .pmpro_admin-pmpro-userfields .pmpro_userfield-group-buttons-description {
 	display: none;
-}
-
-.pmpro_admin-pmpro-userfields .pmpro_userfield-group-buttons-button.dashicons {
-	vertical-align: middle;
 }
 
 .pmpro_admin-pmpro-userfields .pmpro_userfield-group-field-expand .pmpro_userfield-group-buttons-button {
