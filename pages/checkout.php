@@ -493,14 +493,15 @@ if ( empty( $default_gateway ) ) {
 	 * Hook to run formatting filters before displaying the content of your "Terms of Service" page at checkout.
 	 *
 	 * @since 2.4.1
+	 * @since 2.10.1 We escape the content BEFORE the filter, so it can be overridden.
 	 *
 	 * @param string $pmpro_tos_content The content of the post assigned as the Terms of Service page.
 	 * @param string $tospage The post assigned as the Terms of Service page.
 	 *
 	 * @return string $pmpro_tos_content
 	 */
-	$pmpro_tos_content = apply_filters( 'pmpro_tos_content', do_shortcode( $tospage->post_content ), $tospage );
-	echo wp_kses_post( $pmpro_tos_content );
+	$pmpro_tos_content = apply_filters( 'pmpro_tos_content', wp_kses_post( do_shortcode( $tospage->post_content ) ), $tospage );
+	echo $pmpro_tos_content; //phpcs:ignore Content escaped above, but filtering allowed.
 ?>
 				</div> <!-- end pmpro_license -->
 				<?php
