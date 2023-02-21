@@ -2,14 +2,14 @@
 # This file is distributed under the same license as the Paid Memberships Pro plugin.
 msgid ""
 msgstr ""
-"Project-Id-Version: Paid Memberships Pro 2.10\n"
+"Project-Id-Version: Paid Memberships Pro 2.10.1\n"
 "Report-Msgid-Bugs-To: info@paidmembershipspro.com\n"
 "Last-Translator: Paid Memberships Pro <info@paidmembershipspro.com>\n"
 "Language-Team: Paid Memberships Pro <info@paidmembershipspro.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2023-02-20T20:32:28+00:00\n"
+"POT-Creation-Date: 2023-02-21T16:57:11+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.7.1\n"
 "X-Domain: paid-memberships-pro\n"
@@ -5627,6 +5627,7 @@ msgstr ""
 #: paid-memberships-pro.php:173
 #: paid-memberships-pro.php:176
 #: paid-memberships-pro.php:174
+#: paid-memberships-pro.php:179
 msgid "Authorize.net"
 msgstr ""
 
@@ -5699,6 +5700,7 @@ msgstr ""
 #: paid-memberships-pro.php:174
 #: paid-memberships-pro.php:177
 #: paid-memberships-pro.php:175
+#: paid-memberships-pro.php:180
 msgid "Braintree Payments"
 msgstr ""
 
@@ -6063,6 +6065,7 @@ msgstr ""
 #: paid-memberships-pro.php:167
 #: paid-memberships-pro.php:170
 #: paid-memberships-pro.php:169
+#: paid-memberships-pro.php:174
 msgid "Pay by Check"
 msgstr ""
 
@@ -6347,6 +6350,7 @@ msgstr ""
 #: pages/checkout.php:558
 #: classes/gateways/class.pmprogateway_paypalexpress.php:504
 #: pages/checkout.php:576
+#: pages/checkout.php:577
 msgid "Submit and Check Out"
 msgstr ""
 
@@ -6376,6 +6380,7 @@ msgstr ""
 #: pages/checkout.php:558
 #: classes/gateways/class.pmprogateway_paypalexpress.php:504
 #: pages/checkout.php:576
+#: pages/checkout.php:577
 msgid "Submit and Confirm"
 msgstr ""
 
@@ -6421,6 +6426,7 @@ msgstr ""
 #: paid-memberships-pro.php:169
 #: paid-memberships-pro.php:172
 #: paid-memberships-pro.php:171
+#: paid-memberships-pro.php:176
 msgid "PayPal Express"
 msgstr ""
 
@@ -6475,6 +6481,7 @@ msgstr ""
 #: paid-memberships-pro.php:172
 #: paid-memberships-pro.php:175
 #: paid-memberships-pro.php:173
+#: paid-memberships-pro.php:178
 msgid "PayPal Standard"
 msgstr ""
 
@@ -6500,6 +6507,7 @@ msgstr ""
 #: adminpages/wizard/payments.php:29
 #: classes/gateways/class.pmprogateway_stripe.php:235
 #: paid-memberships-pro.php:170
+#: paid-memberships-pro.php:175
 msgid "Stripe"
 msgstr ""
 
@@ -8746,6 +8754,7 @@ msgstr "Thanh toán với Thẻ tín dung ở đây"
 #: pages/checkout.php:478
 #: pages/checkout.php:498
 #: pages/checkout.php:515
+#: pages/checkout.php:516
 #, php-format
 msgid "I agree to the %s"
 msgstr "Tôi đồng ý với %s"
@@ -8760,6 +8769,7 @@ msgstr "Tôi đồng ý với %s"
 #: pages/checkout.php:526
 #: pages/checkout.php:546
 #: pages/checkout.php:564
+#: pages/checkout.php:565
 msgid "Complete Payment"
 msgstr "Hoàn thành thanh toán"
 
@@ -8773,6 +8783,7 @@ msgstr "Hoàn thành thanh toán"
 #: pages/checkout.php:548
 #: pages/checkout.php:568
 #: pages/checkout.php:586
+#: pages/checkout.php:587
 msgid "Processing..."
 msgstr "Đang xử lý..."
 
@@ -9059,6 +9070,7 @@ msgstr "&larr; Trở lại trang chủ"
 #: paid-memberships-pro.php:166
 #: paid-memberships-pro.php:169
 #: paid-memberships-pro.php:168
+#: paid-memberships-pro.php:173
 msgid "Testing Only"
 msgstr "Thủ nghiệm"
 
@@ -9071,6 +9083,7 @@ msgstr "Thủ nghiệm"
 #: paid-memberships-pro.php:171
 #: paid-memberships-pro.php:174
 #: paid-memberships-pro.php:172
+#: paid-memberships-pro.php:177
 msgid "PayPal Payflow Pro/PayPal Pro"
 msgstr ""
 
@@ -9524,6 +9537,7 @@ msgstr "Mã %s đã được áp dụng cho đơn hàng của bạn."
 #: services/applydiscountcode.php:86
 #: services/applydiscountcode.php:138
 #: services/applydiscountcode.php:133
+#: pages/checkout.php:91
 #, php-format
 msgid "The <strong>%s</strong> code has been applied to your order."
 msgstr "Mã <strong>%s</strong> đã được áp dụng cho đơn hàng của bạn."
@@ -16221,6 +16235,7 @@ msgstr ""
 #: paid-memberships-pro.php:173
 #: paid-memberships-pro.php:179
 #: paid-memberships-pro.php:182
+#: paid-memberships-pro.php:184
 msgid "Default"
 msgstr ""
 
@@ -16796,6 +16811,7 @@ msgstr ""
 #: paid-memberships-pro.php:195
 #: paid-memberships-pro.php:201
 #: paid-memberships-pro.php:204
+#: paid-memberships-pro.php:206
 msgid "Once a month"
 msgstr ""
 

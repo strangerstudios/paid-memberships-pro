@@ -2,14 +2,14 @@
 # This file is distributed under the same license as the Paid Memberships Pro plugin.
 msgid ""
 msgstr ""
-"Project-Id-Version: Paid Memberships Pro 2.10\n"
+"Project-Id-Version: Paid Memberships Pro 2.10.1\n"
 "Report-Msgid-Bugs-To: info@paidmembershipspro.com\n"
 "Last-Translator: Paid Memberships Pro <info@paidmembershipspro.com>\n"
 "Language-Team: Paid Memberships Pro <info@paidmembershipspro.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2023-02-20T20:32:23+00:00\n"
+"POT-Creation-Date: 2023-02-21T16:57:06+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.7.1\n"
 "X-Domain: paid-memberships-pro\n"
@@ -6916,6 +6916,7 @@ msgstr "En delbetalning har gjorts som vi inte kunde stoppa. Kontakta webbplatse
 #: paid-memberships-pro.php:173
 #: paid-memberships-pro.php:176
 #: paid-memberships-pro.php:174
+#: paid-memberships-pro.php:179
 msgid "Authorize.net"
 msgstr "Authorize.net"
 
@@ -7010,6 +7011,7 @@ msgstr "%s gateway är beroende av tillägget %s PHP. Vänligen aktivera det ell
 #: paid-memberships-pro.php:174
 #: paid-memberships-pro.php:177
 #: paid-memberships-pro.php:175
+#: paid-memberships-pro.php:180
 msgid "Braintree Payments"
 msgstr "Braintree betalningar"
 
@@ -7595,6 +7597,7 @@ msgstr "Kunde inte hitta prenumerationen."
 #: paid-memberships-pro.php:167
 #: paid-memberships-pro.php:170
 #: paid-memberships-pro.php:169
+#: paid-memberships-pro.php:174
 msgid "Pay by Check"
 msgstr "Betala med Check"
 
@@ -7930,6 +7933,7 @@ msgstr "Betala med PayPal"
 #: pages/checkout.php:558
 #: classes/gateways/class.pmprogateway_paypalexpress.php:504
 #: pages/checkout.php:576
+#: pages/checkout.php:577
 msgid "Submit and Check Out"
 msgstr "Skicka och Betala"
 
@@ -7969,6 +7973,7 @@ msgstr "Skicka och Betala"
 #: pages/checkout.php:558
 #: classes/gateways/class.pmprogateway_paypalexpress.php:504
 #: pages/checkout.php:576
+#: pages/checkout.php:577
 msgid "Submit and Confirm"
 msgstr "Skicka in och bekräfta"
 
@@ -8024,6 +8029,7 @@ msgstr "Vänligen kontakta webbplatsen eller avbryt din prenumeration från PayP
 #: paid-memberships-pro.php:169
 #: paid-memberships-pro.php:172
 #: paid-memberships-pro.php:171
+#: paid-memberships-pro.php:176
 msgid "PayPal Express"
 msgstr "PayPal Express"
 
@@ -8085,6 +8091,7 @@ msgstr "PayPal Token förlorades."
 #: paid-memberships-pro.php:172
 #: paid-memberships-pro.php:175
 #: paid-memberships-pro.php:173
+#: paid-memberships-pro.php:178
 msgid "PayPal Standard"
 msgstr "PayPal Standard"
 
@@ -8120,6 +8127,7 @@ msgstr "Här är dina IPN URL för referens. Du ska INTE konfigurera detta i din
 #: adminpages/wizard/payments.php:29
 #: classes/gateways/class.pmprogateway_stripe.php:235
 #: paid-memberships-pro.php:170
+#: paid-memberships-pro.php:175
 msgid "Stripe"
 msgstr "Stripe"
 
@@ -11230,6 +11238,7 @@ msgstr "Betala med kreditkort här"
 #: pages/checkout.php:478
 #: pages/checkout.php:498
 #: pages/checkout.php:515
+#: pages/checkout.php:516
 #, php-format
 msgid "I agree to the %s"
 msgstr "Jag godkänner %s"
@@ -11250,6 +11259,7 @@ msgstr "Jag godkänner %s"
 #: pages/checkout.php:526
 #: pages/checkout.php:546
 #: pages/checkout.php:564
+#: pages/checkout.php:565
 msgid "Complete Payment"
 msgstr "Fullfölj betalning"
 
@@ -11269,6 +11279,7 @@ msgstr "Fullfölj betalning"
 #: pages/checkout.php:548
 #: pages/checkout.php:568
 #: pages/checkout.php:586
+#: pages/checkout.php:587
 msgid "Processing..."
 msgstr "Bearbetar…"
 
@@ -11558,6 +11569,7 @@ msgstr "&larr; Tillbaka till startsidan"
 #: paid-memberships-pro.php:166
 #: paid-memberships-pro.php:169
 #: paid-memberships-pro.php:168
+#: paid-memberships-pro.php:173
 msgid "Testing Only"
 msgstr "Endast för test"
 
@@ -11574,6 +11586,7 @@ msgstr "Endast för test"
 #: paid-memberships-pro.php:171
 #: paid-memberships-pro.php:174
 #: paid-memberships-pro.php:172
+#: paid-memberships-pro.php:177
 msgid "PayPal Payflow Pro/PayPal Pro"
 msgstr "PayPal Payflow Pro / PayPal Pro"
 
@@ -11599,6 +11612,7 @@ msgstr "Cybersource"
 #: paid-memberships-pro.php:195
 #: paid-memberships-pro.php:201
 #: paid-memberships-pro.php:204
+#: paid-memberships-pro.php:206
 msgid "Once a month"
 msgstr "En gång i månaden"
 
@@ -12129,6 +12143,7 @@ msgstr "Koden %s har lagts till på din beställning."
 #: services/applydiscountcode.php:97
 #: services/applydiscountcode.php:138
 #: services/applydiscountcode.php:133
+#: pages/checkout.php:91
 #, php-format
 msgid "The <strong>%s</strong> code has been applied to your order."
 msgstr "Rabattkoden <strong>%s</strong> har lagts till på din beställning."
@@ -18644,6 +18659,7 @@ msgstr ""
 #: paid-memberships-pro.php:173
 #: paid-memberships-pro.php:179
 #: paid-memberships-pro.php:182
+#: paid-memberships-pro.php:184
 msgid "Default"
 msgstr ""
 
