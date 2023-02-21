@@ -2,14 +2,14 @@
 # This file is distributed under the same license as the Paid Memberships Pro plugin.
 msgid ""
 msgstr ""
-"Project-Id-Version: Paid Memberships Pro 2.9.12\n"
+"Project-Id-Version: Paid Memberships Pro 2.10.1\n"
 "Report-Msgid-Bugs-To: info@paidmembershipspro.com\n"
 "Last-Translator: Paid Memberships Pro <info@paidmembershipspro.com>\n"
 "Language-Team: Paid Memberships Pro <info@paidmembershipspro.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2023-02-16T16:54:46+00:00\n"
+"POT-Creation-Date: 2023-02-21T16:56:40+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.7.1\n"
 "X-Domain: paid-memberships-pro\n"
@@ -5996,6 +5996,7 @@ msgstr "Osaline makse sooritati, mida me ei suutnud vältida. Palun võtke kohes
 #: paid-memberships-pro.php:173
 #: paid-memberships-pro.php:176
 #: paid-memberships-pro.php:174
+#: paid-memberships-pro.php:179
 msgid "Authorize.net"
 msgstr "Authorize.net"
 
@@ -6070,6 +6071,7 @@ msgstr "Ei saanud ühendust Authorize.net-iga"
 #: paid-memberships-pro.php:174
 #: paid-memberships-pro.php:177
 #: paid-memberships-pro.php:175
+#: paid-memberships-pro.php:180
 msgid "Braintree Payments"
 msgstr "Braintree Maksed"
 
@@ -6460,6 +6462,7 @@ msgstr "Ei suutnud leida tellimust."
 #: paid-memberships-pro.php:167
 #: paid-memberships-pro.php:170
 #: paid-memberships-pro.php:169
+#: paid-memberships-pro.php:174
 msgid "Pay by Check"
 msgstr "Maksa tšeki alusel"
 
@@ -6748,6 +6751,7 @@ msgstr "Välju PayPal-iga"
 #: pages/checkout.php:558
 #: classes/gateways/class.pmprogateway_paypalexpress.php:504
 #: pages/checkout.php:576
+#: pages/checkout.php:577
 msgid "Submit and Check Out"
 msgstr "Esitada ja välju"
 
@@ -6778,6 +6782,7 @@ msgstr "Esitada ja välju"
 #: pages/checkout.php:558
 #: classes/gateways/class.pmprogateway_paypalexpress.php:504
 #: pages/checkout.php:576
+#: pages/checkout.php:577
 msgid "Submit and Confirm"
 msgstr "Esita ja kinnita"
 
@@ -6824,6 +6829,7 @@ msgstr "Palun võtke ühendust saidi omanikuga või tühistage tellimus PayPal-i
 #: paid-memberships-pro.php:169
 #: paid-memberships-pro.php:172
 #: paid-memberships-pro.php:171
+#: paid-memberships-pro.php:176
 msgid "PayPal Express"
 msgstr "PayPal Express"
 
@@ -6879,6 +6885,7 @@ msgstr "PayPal'i Token läks kaduma."
 #: paid-memberships-pro.php:172
 #: paid-memberships-pro.php:175
 #: paid-memberships-pro.php:173
+#: paid-memberships-pro.php:178
 msgid "PayPal Standard"
 msgstr "PayPal Standard"
 
@@ -6906,6 +6913,7 @@ msgstr "Siin on sinu IPN URL viiteks. Te EI TOHIKS seda lisada oma PayPal seadet
 #: adminpages/wizard/payments.php:29
 #: classes/gateways/class.pmprogateway_stripe.php:235
 #: paid-memberships-pro.php:170
+#: paid-memberships-pro.php:175
 msgid "Stripe"
 msgstr "Stripe"
 
@@ -9337,6 +9345,7 @@ msgstr "Registreeruge välja krediit kaardiga siit"
 #: pages/checkout.php:478
 #: pages/checkout.php:498
 #: pages/checkout.php:515
+#: pages/checkout.php:516
 #, php-format
 msgid "I agree to the %s"
 msgstr "Olen nõus, et %s"
@@ -9352,6 +9361,7 @@ msgstr "Olen nõus, et %s"
 #: pages/checkout.php:526
 #: pages/checkout.php:546
 #: pages/checkout.php:564
+#: pages/checkout.php:565
 msgid "Complete Payment"
 msgstr "Täielik/Lõpetage makse"
 
@@ -9366,6 +9376,7 @@ msgstr "Täielik/Lõpetage makse"
 #: pages/checkout.php:548
 #: pages/checkout.php:568
 #: pages/checkout.php:586
+#: pages/checkout.php:587
 msgid "Processing..."
 msgstr "Töötlemine..."
 
@@ -9639,6 +9650,7 @@ msgstr "&larr; Tagasi avalehele"
 #: paid-memberships-pro.php:166
 #: paid-memberships-pro.php:169
 #: paid-memberships-pro.php:168
+#: paid-memberships-pro.php:173
 msgid "Testing Only"
 msgstr "Katsetan ainult"
 
@@ -9652,6 +9664,7 @@ msgstr "Katsetan ainult"
 #: paid-memberships-pro.php:171
 #: paid-memberships-pro.php:174
 #: paid-memberships-pro.php:172
+#: paid-memberships-pro.php:177
 msgid "PayPal Payflow Pro/PayPal Pro"
 msgstr "PayPal Payflow Pro/PayPal Pro"
 
@@ -10121,6 +10134,7 @@ msgstr "Kood %s on lisatud teie tellimusele."
 #: services/applydiscountcode.php:86
 #: services/applydiscountcode.php:138
 #: services/applydiscountcode.php:133
+#: pages/checkout.php:91
 #, php-format
 msgid "The <strong>%s</strong> code has been applied to your order."
 msgstr "Kood <strong>%s</strong> on lisatud teie tellimusele."
@@ -16748,6 +16762,7 @@ msgstr ""
 #: paid-memberships-pro.php:173
 #: paid-memberships-pro.php:179
 #: paid-memberships-pro.php:182
+#: paid-memberships-pro.php:184
 msgid "Default"
 msgstr ""
 
@@ -17323,6 +17338,7 @@ msgstr ""
 #: paid-memberships-pro.php:195
 #: paid-memberships-pro.php:201
 #: paid-memberships-pro.php:204
+#: paid-memberships-pro.php:206
 msgid "Once a month"
 msgstr ""
 

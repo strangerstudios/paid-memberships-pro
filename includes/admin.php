@@ -90,7 +90,7 @@ add_action( 'admin_init', 'pmpro_init_site_health_integration' );
 /**
  * Compare stored and current site URL and decide if we should go into pause mode
  *
- * @since TBD
+ * @since 2.10
  */
 function pmpro_site_url_check() {
 
@@ -119,7 +119,7 @@ add_action( 'admin_init', 'pmpro_site_url_check' );
 /**
  * Allows a user to deactivate pause mode and update the last known URL
  *
- * @since TBD
+ * @since 2.10
  */
 function pmpro_handle_pause_mode_actions() {
 
@@ -138,7 +138,7 @@ add_action( 'admin_init', 'pmpro_handle_pause_mode_actions' );
 /**
  * Display a notice about pause mode being enabled
  *
- * @since TBD
+ * @since 2.10
  */
 function pmpro_pause_mode_notice() {
 	global $current_user;

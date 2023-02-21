@@ -1576,10 +1576,10 @@ class PMProGateway_stripe extends PMProGateway {
 	 *
 	 * @return bool
 	 *
-	 * @deprecated TBD
+	 * @deprecated 2.10
 	 */
 	public static function stripe_checkout_beta_enabled() {
-		_deprecated_function( __FUNCTION__, 'TBD' );
+		_deprecated_function( __FUNCTION__, '2.10' );
 		return true;
 	}
 
@@ -1881,7 +1881,7 @@ class PMProGateway_stripe extends PMProGateway {
 	/**
 	 * Send the user to the Stripe Customer Portal if the customer portal is enabled.
 	 *
-	 * @since TBD.
+	 * @since 2.10.
 	 */
 	public static function pmpro_billing_preheader_stripe_customer_portal() {
 		if ( 'portal' === pmpro_getOption( 'stripe_update_billing_flow' ) ) {
@@ -5258,13 +5258,13 @@ class PMProGateway_stripe extends PMProGateway {
 	 * Determine whether the webhook is working by checking for Stripe orders with invalid transaction IDs.
 	 *
 	 * @deprecated 2.7.0. Only deprecated for public use, will be changed to private non-static in a future version.
-	 * @deprecated TBD. Now fully deprecated.
+	 * @deprecated 2.10. Now fully deprecated.
 	 *
 	 * @param string|null $gateway_environment to check webhooks for. Defaults to set gateway environment.
 	 * @return bool Whether the webhook is working.
 	 */
 	public static function webhook_is_working( $gateway_environment = null ) {
-		_deprecated_function( __FUNCTION__, 'TBD' );
+		_deprecated_function( __FUNCTION__, '2.10' );
 		global $wpdb;
 
 		if ( empty( $gateway_environment ) ) {
@@ -5311,10 +5311,10 @@ class PMProGateway_stripe extends PMProGateway {
 	 * @returns HTML with the date of the last webhook or an error message.
 	 * @since 2.6
 	 * @deprecated 2.7.0. Only deprecated for public use, will be changed to private non-static in a future version.
-	 * @deprecated TBD. Now fully deprecated.
+	 * @deprecated 2.10. Now fully deprecated.
 	 */
 	public static function get_last_webhook_date( $environment = 'live' ) {
-		_deprecated_function( __FUNCTION__, 'TBD' );
+		_deprecated_function( __FUNCTION__, '2.10' );
 		$last_webhook = get_option( 'pmpro_stripe_last_webhook_received_' . $environment );
 		if ( ! empty( $last_webhook ) ) {
 			echo '<p>' . esc_html__( 'Last webhook received at', 'paid-memberships-pro' ) . ': ' . esc_html( $last_webhook ) . ' GMT.</p>';

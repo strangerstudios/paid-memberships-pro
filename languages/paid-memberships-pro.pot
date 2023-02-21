@@ -2,14 +2,14 @@
 # This file is distributed under the same license as the Paid Memberships Pro plugin.
 msgid ""
 msgstr ""
-"Project-Id-Version: Paid Memberships Pro 2.9.12\n"
+"Project-Id-Version: Paid Memberships Pro 2.10.1\n"
 "Report-Msgid-Bugs-To: info@paidmembershipspro.com\n"
 "Last-Translator: Paid Memberships Pro <info@paidmembershipspro.com>\n"
 "Language-Team: Paid Memberships Pro <info@paidmembershipspro.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2023-02-16T16:54:17+00:00\n"
+"POT-Creation-Date: 2023-02-21T16:56:10+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.7.1\n"
 "X-Domain: paid-memberships-pro\n"
@@ -3520,7 +3520,7 @@ msgstr ""
 
 #: adminpages/wizard/payments.php:29
 #: classes/gateways/class.pmprogateway_stripe.php:235
-#: paid-memberships-pro.php:170
+#: paid-memberships-pro.php:175
 msgid "Stripe"
 msgstr ""
 
@@ -4302,7 +4302,7 @@ msgid "A partial payment was made that we could not void. Please contact the sit
 msgstr ""
 
 #: classes/gateways/class.pmprogateway_authorizenet.php:55
-#: paid-memberships-pro.php:174
+#: paid-memberships-pro.php:179
 msgid "Authorize.net"
 msgstr ""
 
@@ -4351,7 +4351,7 @@ msgid "Problem accessing the Braintree Gateway. Please verify your PMPro Payment
 msgstr ""
 
 #: classes/gateways/class.pmprogateway_braintree.php:258
-#: paid-memberships-pro.php:175
+#: paid-memberships-pro.php:180
 msgid "Braintree Payments"
 msgstr ""
 
@@ -4472,7 +4472,7 @@ msgid "Error getting subscription with Braintree:"
 msgstr ""
 
 #: classes/gateways/class.pmprogateway_check.php:49
-#: paid-memberships-pro.php:169
+#: paid-memberships-pro.php:174
 msgid "Pay by Check"
 msgstr ""
 
@@ -4880,7 +4880,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_paypal.php:287
 #: classes/gateways/class.pmprogateway_paypalexpress.php:504
 #: classes/gateways/class.pmprogateway_paypalstandard.php:246
-#: pages/checkout.php:576
+#: pages/checkout.php:577
 msgid "Submit and Check Out"
 msgstr ""
 
@@ -4888,7 +4888,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_paypalexpress.php:504
 #: classes/gateways/class.pmprogateway_paypalstandard.php:246
 #: classes/gateways/class.pmprogateway_twocheckout.php:212
-#: pages/checkout.php:576
+#: pages/checkout.php:577
 msgid "Submit and Confirm"
 msgstr ""
 
@@ -4899,7 +4899,7 @@ msgid "Please contact the site owner or cancel your subscription from within Pay
 msgstr ""
 
 #: classes/gateways/class.pmprogateway_paypalexpress.php:95
-#: paid-memberships-pro.php:171
+#: paid-memberships-pro.php:176
 msgid "PayPal Express"
 msgstr ""
 
@@ -4932,7 +4932,7 @@ msgid "Admin: There was a problem processing a refund for transaction ID %1$s. G
 msgstr ""
 
 #: classes/gateways/class.pmprogateway_paypalstandard.php:71
-#: paid-memberships-pro.php:173
+#: paid-memberships-pro.php:178
 msgid "PayPal Standard"
 msgstr ""
 
@@ -8877,7 +8877,8 @@ msgid "You have selected the <strong>%s</strong> membership level."
 msgstr ""
 
 #: pages/checkout.php:91
-msgid "The %s code has been applied to your order."
+#: services/applydiscountcode.php:133
+msgid "The <strong>%s</strong> code has been applied to your order."
 msgstr ""
 
 #: pages/checkout.php:119
@@ -8936,15 +8937,15 @@ msgstr ""
 msgid "Security Code (CVC)"
 msgstr ""
 
-#: pages/checkout.php:515
+#: pages/checkout.php:516
 msgid "I agree to the %s"
 msgstr ""
 
-#: pages/checkout.php:564
+#: pages/checkout.php:565
 msgid "Complete Payment"
 msgstr ""
 
-#: pages/checkout.php:586
+#: pages/checkout.php:587
 msgid "Processing..."
 msgstr ""
 
@@ -9028,19 +9029,19 @@ msgstr ""
 msgid "Return to Home"
 msgstr ""
 
-#: paid-memberships-pro.php:168
+#: paid-memberships-pro.php:173
 msgid "Testing Only"
 msgstr ""
 
-#: paid-memberships-pro.php:172
+#: paid-memberships-pro.php:177
 msgid "PayPal Payflow Pro/PayPal Pro"
 msgstr ""
 
-#: paid-memberships-pro.php:179
+#: paid-memberships-pro.php:184
 msgid "Default"
 msgstr ""
 
-#: paid-memberships-pro.php:201
+#: paid-memberships-pro.php:206
 msgid "Once a month"
 msgstr ""
 
@@ -9173,10 +9174,6 @@ msgstr ""
 
 #: services/applydiscountcode.php:122
 msgid "Click here to change your discount code"
-msgstr ""
-
-#: services/applydiscountcode.php:133
-msgid "The <strong>%s</strong> code has been applied to your order."
 msgstr ""
 
 #: services/authnet-silent-post.php:171

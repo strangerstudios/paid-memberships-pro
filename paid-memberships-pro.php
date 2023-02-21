@@ -3,7 +3,7 @@
  * Plugin Name: Paid Memberships Pro
  * Plugin URI: https://www.paidmembershipspro.com
  * Description: The most complete member management and membership subscriptions plugin for WordPress.
- * Version: 2.9.12
+ * Version: 2.10.1
  * Author: Paid Memberships Pro
  * Author URI: https://www.paidmembershipspro.com
  * Text Domain: paid-memberships-pro
@@ -16,7 +16,7 @@
  */
 
 // version constant
-define( 'PMPRO_VERSION', '2.9.12' );
+define( 'PMPRO_VERSION', '2.10.1' );
 define( 'PMPRO_USER_AGENT', 'Paid Memberships Pro v' . PMPRO_VERSION . '; ' . site_url() );
 define( 'PMPRO_MIN_PHP_VERSION', '5.6' );
 
@@ -52,6 +52,11 @@ require_once( PMPRO_DIR . '/classes/class-pmpro-admin-activity-email.php' );    
 
 require_once( PMPRO_DIR . '/includes/filters.php' );                // filters, hacks, etc, moved into the plugin
 require_once( PMPRO_DIR . '/includes/reports.php' );                // load reports for admin (reports may also include tracking code, etc)
+
+require_once( PMPRO_DIR . '/adminpages/reports/logins.php' );		// load the Logins report
+require_once( PMPRO_DIR . '/adminpages/reports/memberships.php' );		// load the Memberships report
+require_once( PMPRO_DIR . '/adminpages/reports/sales.php' );		// load the Sales report
+
 require_once( PMPRO_DIR . '/includes/admin.php' );                  // admin notices and functionality
 require_once( PMPRO_DIR . '/includes/adminpages.php' );             // dashboard pages
 require_once( PMPRO_DIR . '/classes/class-pmpro-members-list-table.php' ); // Members List
