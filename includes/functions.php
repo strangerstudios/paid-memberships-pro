@@ -2901,7 +2901,7 @@ function pmpro_is_ready() {
 /**
  * Display the Setup Wizard links.
  * 
- * @since TBD
+ * @since 2.10
  * 
  * @return bool $show Whether or not the Setup Wizard link should show.
  */
@@ -4382,7 +4382,7 @@ function pmpro_activating_plugin( $plugin = null ) {
 /**
  * Compare the stored site URL with the current site URL
  *
- * @since TBD
+ * @since 2.10
  * @return bool True if the stored and current URL match
  */
 function pmpro_compare_siteurl() {
@@ -4404,7 +4404,7 @@ function pmpro_compare_siteurl() {
 /**
  * Determine if the site is in pause mode or not
  *
- * @since TBD
+ * @since 2.10
  * @return bool True if the the site is in pause mode
  */
 function pmpro_is_paused() {
@@ -4422,7 +4422,7 @@ function pmpro_is_paused() {
  * Set the pause mode status
  *
  * @param $state bool true or false if in pause mode state
- * @since TBD
+ * @since 2.10
  * @return bool True if the option has been updated
  */
 function pmpro_set_pause_mode( $state ) {

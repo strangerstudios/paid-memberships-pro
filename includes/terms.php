@@ -3,7 +3,7 @@
 /**
  * Show checkboxes to restrict content when creating a new term.
  *
- * @since TBD
+ * @since 2.10
  */
 function pmpro_term_add_form_fields() {
 	// Get all membership levels.
@@ -58,7 +58,7 @@ add_action( 'post_tag_add_form_fields', 'pmpro_term_add_form_fields' );
 /**
  * Show checkboxes to restrict content when editing a term.
  *
- * @since TBD
+ * @since 2.10
  *
  * @param WP_Term $term The term object.
  */
@@ -118,7 +118,7 @@ add_action( 'post_tag_edit_form_fields', 'pmpro_term_edit_form_fields', 10, 2 );
 /**
  * Save checkboxes to restrict categories and tags when saving a term.
  *
- * @since TBD
+ * @since 2.10
  *
  * @param int $term_id The ID of the term being saved.
  */

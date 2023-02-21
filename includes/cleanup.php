@@ -34,7 +34,7 @@ add_action( 'wpmu_delete_user', 'pmpro_delete_user' );
  *
  * @param WP_User $current_user WP_User object for the current user.
  * @param array   $userids      Array of IDs for users being deleted.
- * @since TBD
+ * @since 2.10
  */
 function pmpro_delete_user_form_notice( $current_user, $userids ) {
 
@@ -117,7 +117,7 @@ add_action( 'delete_post', 'pmpro_delete_post' );
  * Delete all membership data for a specific user from the membership users table.
  *
  * @param int $user_id The WordPress user ID.
- * @since TBD
+ * @since 2.10
  */
 function pmpro_delete_membership_history( $user_id ) {
 
