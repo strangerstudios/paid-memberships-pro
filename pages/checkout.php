@@ -500,7 +500,7 @@ if ( empty( $default_gateway ) ) {
 	 * @return string $pmpro_tos_content
 	 */
 	$pmpro_tos_content = apply_filters( 'pmpro_tos_content', do_shortcode( $tospage->post_content ), $tospage );
-	echo wp_kses_post( $pmpro_tos_content );
+    echo wp_kses( $pmpro_tos_content, array( 'script' => array() ) );
 ?>
 				</div> <!-- end pmpro_license -->
 				<?php
