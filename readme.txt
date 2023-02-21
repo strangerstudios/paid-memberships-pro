@@ -4,7 +4,7 @@ Tags: memberships, members, subscriptions, ecommerce, user registration, member,
 Requires at least: 5.2
 Tested up to: 6.2
 Requires PHP: 5.6
-Stable tag: 2.10
+Stable tag: 2.10.1
 
 WordPress membership plugin: restrict content, accept member subscriptions with recurring payment. Includes user registration, login, & profile fields
 
@@ -156,6 +156,11 @@ Not sure? You can find out by doing a bit a research.
 9. Membership Account page, display all sections or show specific sections using shortcode attributes.
 
 == Changelog ==
+= 2.10.1 - 2023-02-21 =
+* BUG FIX/ENHANCEMENT: Changed how reports are loaded to avoid fatal errors if PMPro had an incomplete update.
+* BUG FIX/ENHANCEMENT: Fixed escaping of the discount code message to allow the strong tag.
+* BUG FIX/ENHANCEMENT: Now running the pmpro_tos_content filter AFTER the TOS page content is escaped. This could be used to override that escaping if needed. See: https://gist.github.com/ideadude/2ce102d7fd554172e4e2a98d80e74352
+
 = 2.10 - 2023-02-20 =
 * FEATURE: Added Setup Wizard
 * FEATURE: Stripe Checkout and Stripe Customer Portal integrations are now fully released. Increased Stripe fee to 2% for newly connected sites.
