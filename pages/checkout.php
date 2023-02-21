@@ -88,7 +88,7 @@ if ( empty( $default_gateway ) ) {
 					<?php if($discount_code && pmpro_checkDiscountCode($discount_code)) { ?>
 						<?php
 							echo '<p class="' . esc_attr( pmpro_get_element_class( 'pmpro_level_discount_applied' ) ) . '">';
-							echo esc_html( sprintf( __( 'The %s code has been applied to your order.', 'paid-memberships-pro' ), '<strong>' . $discount_code . '</strong>' ) );
+							echo wp_kses( sprintf( __( 'The <strong>%s</strong> code has been applied to your order.', 'paid-memberships-pro' ), $discount_code ), array( 'strong' => array() ) );
 							echo '</p>';
 						?>
 					<?php } ?>
