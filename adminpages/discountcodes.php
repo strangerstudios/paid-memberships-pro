@@ -731,7 +731,9 @@
 		
 			$totalrows = $wpdb->get_var( "SELECT COUNT( DISTINCT id ) FROM $wpdb->pmpro_discount_codes" );
 
+
 			if( empty( $s ) && empty( $totalrows ) ) { ?>
+
 				<div class="pmpro-new-install">
 					<h2><?php esc_html_e( 'No Discount Codes Found', 'paid-memberships-pro' ); ?></h2>
 					<h4><?php esc_html_e( 'Discount codes allow you to override your membership level\'s default pricing.', 'paid-memberships-pro' ); ?></h4>

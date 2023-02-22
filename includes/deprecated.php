@@ -204,8 +204,8 @@ add_action( 'admin_notices', 'pmpro_check_for_deprecated_add_ons' );
 
 /**
  * The 2Checkout gateway was deprecated in v2.6.
- * Cybersource was deprecated in TBD.
- * PayPal Website Payments Pro was deprecated in TBD.
+ * Cybersource was deprecated in 2.10.
+ * PayPal Website Payments Pro was deprecated in 2.10.
  *
  * This code will add it back those gateways if it was the selected gateway.
  * In future versions, we will remove gateway code entirely.
