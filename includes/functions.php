@@ -4437,7 +4437,7 @@ function pmpro_set_pause_mode( $state ) {
  * @since TBD
  * @return array Contains the query string and export URL
  */
-function pmpro_orderslist_query( $count = false ) {
+function pmpro_orderslist_query( $count = false, $limit = 15 ) {
 
 	global $wpdb;
 
@@ -4521,21 +4521,7 @@ function pmpro_orderslist_query( $count = false ) {
 	} else {
 		$pn = 1;
 	}
-	
-	if ( isset( $_REQUEST['limit'] ) ) {
-		$limit = intval( $_REQUEST['limit'] );
-	} else {
-		/**
-		 * Filter to set the default number of items to show per page
-		 * on the Orders page in the admin.
-		 *
-		 * @since 1.8.4.5
-		 *
-		 * @param int $limit The number of items to show per page.
-		 */
-		$limit = apply_filters( 'pmpro_orders_per_page', 15 );
-	}
-	
+
 	$end   = $pn * $limit;
 	$start = $end - $limit;
 	
@@ -4590,11 +4576,11 @@ function pmpro_orderslist_query( $count = false ) {
 
 	$orderby = '';
 
-	if( ! empty( $_REQUEST['order'] ) && ! empty( $_REQUEST['orderby'] ) ) {
+	if( ! empty( $_REQUEST['order'] ) && ! empty( $_REQUEST['orderby'] ) && ! $count ) {
 
 		$order = strtoupper( esc_sql( $_REQUEST['order'] ) );
-		$orderby = esc_sql( $_REQUEST['orderby'] );
-var_dump($orderby);
+		$orderby = ( $_REQUEST['orderby'] );
+
 		if( $orderby == 'order_id' ) {
 			$orderby = 'id';
 		} else if( $orderby == 'order_status' ) {
@@ -4606,10 +4592,10 @@ var_dump($orderby);
 		} else if( $orderby == 'timestamp' ) {
 			$orderby = 'timestamp';
 		}
-var_dump($orderby);
-		$order_query = "ORDER BY $orderby $order";
+
+		$order_query = "ORDER BY `$orderby` $order";
 	} else {
-		$order_query = 'ORDER BY o.id DESC';
+		$order_query = 'ORDER BY id DESC';
 	}
 
 	if ( $s ) {
@@ -4665,7 +4651,7 @@ var_dump($orderby);
 
 		$sqlQuery .= 'GROUP BY o.id ORDER BY o.id DESC, o.timestamp DESC ';
 	} else {
-		$sqlQuery = "SELECT SQL_CALC_FOUND_ROWS o.id, CASE WHEN o.status = 'success' THEN 'Paid' WHEN o.status = 'pending' THEN 'Paid' ELSE 'Cancelled' END as status_label FROM $wpdb->pmpro_membership_orders o LEFT JOIN $wpdb->pmpro_membership_levels ml ON o.membership_id = ml.id ";
+		$sqlQuery = "SELECT SQL_CALC_FOUND_ROWS o.id, CASE WHEN o.status = 'success' THEN 'Paid' WHEN o.status = 'cancelled' THEN 'Paid' ELSE 'Cancelled' END as `status_label` FROM $wpdb->pmpro_membership_orders o LEFT JOIN $wpdb->pmpro_membership_levels ml ON o.membership_id = ml.id ";
 		
 		if ( $filter === 'with-discount-code' ) {
 			$sqlQuery .= "LEFT JOIN $wpdb->pmpro_discount_codes_uses dc ON o.id = dc.order_id ";
@@ -4673,7 +4659,7 @@ var_dump($orderby);
 		//Not escaping here because we escape the values in the condition statement
 		$sqlQuery .= "WHERE " . $condition . ' ' . $order_query . ' ';
 	}
-var_dump($sqlQuery);
+	var_dump($sqlQuery);
 	if( ! $count ) {
 		$sqlQuery .= "LIMIT " . esc_sql( $start ) . "," . esc_sql( $limit );
 	}

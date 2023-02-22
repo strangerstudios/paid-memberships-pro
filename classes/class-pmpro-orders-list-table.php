@@ -53,11 +53,22 @@ class PMPro_Orders_List_Table extends WP_List_Table {
 
 		$this->_column_headers = array($columns, $hidden, $sortable);
 
-		$this->items = $this->sql_table_data();
+        $items_per_page = $this->get_items_per_page( 'orders_per_page' );
+        /**
+         * Filter to set the default number of items to show per page
+         * on the Orders page in the admin.
+         *
+         * @since 1.8.4.5
+         *
+         * @param int $limit The number of items to show per page.
+         */
+        $limit = apply_filters( 'pmpro_orders_per_page', $items_per_page );
+        
+		$this->items = $this->sql_table_data( false, $items_per_page );
+		
+		$total_items = $this->sql_table_data( true, $items_per_page );
 
-		$items_per_page = $this->get_items_per_page( 'orders_per_page' );
-		$total_items = $this->sql_table_data( true );
-		$this->set_pagination_args(
+        $this->set_pagination_args(
 			array(
 				'total_items' => $total_items,
 				'per_page'    => $items_per_page,
@@ -181,7 +192,7 @@ class PMPro_Orders_List_Table extends WP_List_Table {
         $sqlQuery = $orders_list_query['sql_query'];
 
 		if(  $count ) {
-			$sql_table_data = $wpdb->get_var( $sqlQuery );            
+			$sql_table_data = $wpdb->get_var( $sqlQuery );                   
 		} else {
             
 			$order_ids = $wpdb->get_col( $sqlQuery );
