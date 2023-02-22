@@ -112,6 +112,7 @@ function pmpro_report_sales_data( $args ){
 	$discount_code = ! empty( $args['discount_code'] ) ? $args['discount_code'] : '';
 	$startdate = ! empty( $args['startdate'] ) ? $args['startdate'] : '';
 	$enddate = ! empty( $args['enddate'] ) ? $args['enddate'] : '';
+	$l = ! empty( $args['l'] ) ? (int) $args['l'] : '';
 
 	//testing or live data
 	$gateway_environment = pmpro_getOption("gateway_environment");
@@ -157,7 +158,7 @@ function pmpro_report_sales_data( $args ){
 		$sqlQuery .= "AND mo1.timestamp <= DATE_ADD( '" . esc_sql( $enddate ) . " 23:59:59' , INTERVAL - " . esc_sql( $tz_offset ) . " SECOND )";
 
 	if(!empty($l))
-		$sqlQuery .= "AND mo1.membership_id IN(" . esc_sql( $l ) . ") ";
+		$sqlQuery .= "AND mo1.membership_id IN(" . $l . ") "; // $l is already escaped. See declaration.
 
 	if ( ! empty( $discount_code ) ) {
 		$sqlQuery .= "AND dc.code_id = '" . esc_sql( $discount_code ) . "' ";
@@ -280,7 +281,8 @@ function pmpro_report_sales_page()
 		'report_unit' => $report_unit,
 		'discount_code' => $discount_code,
 		'startdate' => $startdate,
-		'enddate' => $enddate
+		'enddate' => $enddate,
+		'l' => $l,
 	);
 	$dates = pmpro_report_sales_data( $report_data_args );
 	// Set the array keys to the dates.
