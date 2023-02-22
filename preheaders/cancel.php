@@ -76,13 +76,16 @@
 			$pmpro_msg = __("Your membership has been cancelled.", 'paid-memberships-pro' );
 			$pmpro_msgt = "pmpro_success";
 
-			//send an email to the member
-			$myemail = new PMProEmail();
-			$myemail->sendCancelEmail($current_user, $old_level_ids);
+			// Send a cancellation email for each cancelled level.
+			foreach ( $old_level_ids as $old_level_id ) {
+				// Send an email to the user.
+				$pmproemail = new PMProEmail();
+				$pmproemail->sendCancelEmail( $current_user, $old_level_id );
 
-			//send an email to the admin
-			$myemail = new PMProEmail();
-			$myemail->sendCancelAdminEmail($current_user, $old_level_ids);
+				// Send an an email to the admin.
+				$pmproemail = new PMProEmail();
+				$pmproemail->sendCancelAdminEmail( $current_user, $old_level_id );
+			}
 		} else {
 			global $pmpro_error;
 			$pmpro_msg = $pmpro_error;

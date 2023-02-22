@@ -454,7 +454,7 @@ class PMPro_Field {
 	function saveFile($user_id, $name, $value)
 	{			
 		//setup some vars
-		$file = sanitize_text_field( $_FILES[$name] );
+		$file = array_map( 'sanitize_text_field', $_FILES[$name] );
 		$user = get_userdata($user_id);
 		$meta_key = str_replace("pmprorhprefix_", "", $name);
 
@@ -462,6 +462,7 @@ class PMPro_Field {
 		if( isset( $_REQUEST['pmprorh_delete_file_' . $name . '_field'] ) ) {
 			$delete_old_file_name = sanitize_text_field( $_REQUEST['pmprorh_delete_file_' . $name . '_field'] );
 			if ( ! empty( $delete_old_file_name ) ) {
+				// Use what's saved in user meta so we don't delete any old file.
 				$old_file_meta = get_user_meta( $user->ID, $meta_key, true );					
 				if ( 
 					! empty( $old_file_meta ) && 
@@ -482,10 +483,9 @@ class PMPro_Field {
 		if(empty($file['name'])) {
 			return;
 		}
-
+		
 		//check extension against allowed extensions
-		$filetype = wp_check_filetype_and_ext($file['tmp_name'], $file['name']);
-
+		$filetype = wp_check_filetype_and_ext($file['tmp_name'], $file['name']);		
 		if((!$filetype['type'] || !$filetype['ext'] ) && !current_user_can( 'unfiltered_upload' ))
 		{			
 			//we throw an error earlier, but this just bails on the upload just in case
@@ -524,11 +524,11 @@ class PMPro_Field {
 			//check for specific extensions anyway
 			if(!empty($ext) && !in_array($filetype['ext'], $ext))
 			{
-				pmpro_setMessage(sprintf(__("Sorry, the file type for %s is not permitted for security reasons.", "pmpro"), $file['name']), "pmpro_error");
+				pmpro_setMessage(sprintf(__("Sorry, the file type for %s is not permitted for security reasons.", "paid-memberships-pro"), $file['name']), "pmpro_error");
 				return false;
 			}
-		}
-		
+		}		
+
 		/*
 			save file in uploads
 		*/
@@ -564,9 +564,9 @@ class PMPro_Field {
 			
 			//let's not expect more than 50 files with the same name
 			if($count > 50)
-				die("Error uploading file. Too many files with the same name.");									
+				die( __( "Error uploading file. Too many files with the same name.", "paid-memberships-pro" ) );
 		}
-					
+
 		//save file
 		if(strpos($file['tmp_name'], $upload_dir['basedir']) !== false)
 		{
@@ -575,6 +575,12 @@ class PMPro_Field {
 		}
 		else
 		{
+			// Make sure file was uploaded.
+			if ( ! is_uploaded_file( $file['tmp_name'] ) ) {
+				pmpro_setMessage( sprintf( __( 'Sorry, the file %s was not uploaded.', 'paid-memberships-pro' ), $file['name'] ), 'pmpro_error' );
+				return false;
+			}
+			
 			//it was just uploaded
 			move_uploaded_file($file['tmp_name'], $pmprorh_dir . $filename);				
 		}
@@ -600,6 +606,13 @@ class PMPro_Field {
 		// Get the full uploads directory URL we want to save files to.
 		$upload_path = content_url( '/uploads' . $upload_dir );
 
+		// Swap slashes for Windows
+		$pmprorh_dir = str_replace( "\\", "/", $pmprorh_dir );
+		$upload_path = str_replace( "\\", "/", $upload_path );
+		if ( ! empty( $preview_file ) && ! is_wp_error( $preview_file ) ) {
+			$preview_file['path'] = str_replace( "\\", "/", $preview_file['path'] );
+		}
+
 		$file_meta_value_array = array(
 			'original_filename'	=> $file['name'],
 			'filename'			=> $filename,
@@ -612,7 +625,7 @@ class PMPro_Field {
 			$file_meta_value_array['previewpath'] = $preview_file['path'];
 			$file_meta_value_array['previewurl'] = $upload_path . $preview_file['file'];			
 		}
-
+		
 		//save filename in usermeta
 		update_user_meta($user_id, $meta_key, $file_meta_value_array );			
 	}

@@ -52,6 +52,7 @@ function pmpro_get_capability_defs($role)
     $cap_array = array(
         'pmpro_memberships_menu',
         'pmpro_dashboard',
+        'pmpro_wizard',
         'pmpro_membershiplevels',
         'pmpro_edit_memberships',
         'pmpro_pagesettings',
@@ -65,9 +66,11 @@ function pmpro_get_capability_defs($role)
         'pmpro_reports',
         'pmpro_orders',
         'pmpro_orderscsv',
+        'pmpro_subscriptions',
         'pmpro_discountcodes',
         'pmpro_userfields',
         'pmpro_updates',
+        'pmpro_manage_pause_mode'
     );
 
     return apply_filters( "pmpro_assigned_{$role}_capabilities", $cap_array);

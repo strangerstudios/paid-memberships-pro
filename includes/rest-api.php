@@ -717,7 +717,37 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 				return new WP_REST_Response( 'No order code sent.', 400 );
 			}
 
-			return new WP_REST_Response( new MemberOrder( $code ), 200 );
+			// Build the order object to return.
+			// Need to do this because the order object now has private properties.
+			$order = new MemberOrder( $code );
+			$order_data_to_return = new stdClass();
+			if ( ! empty( $order->id ) ) {
+				$order_data_to_return->id = $order->id;
+				$order_data_to_return->code = $order->code;
+				$order_data_to_return->user_id = $order->user_id;
+				$order_data_to_return->membership_id = $order->membership_id;
+				$order_data_to_return->billing = $order->billing;
+				$order_data_to_return->subtotal = $order->subtotal;
+				$order_data_to_return->tax = $order->tax;
+				$order_data_to_return->total = $order->total;
+				$order_data_to_return->payment_type = $order->payment_type;
+				$order_data_to_return->cardtype = $order->cardtype;
+				$order_data_to_return->accountnumber = $order->accountnumber;
+				$order_data_to_return->expirationmonth = $order->expirationmonth;
+				$order_data_to_return->expirationyear = $order->expirationyear;
+				$order_data_to_return->status = $order->status;
+				$order_data_to_return->gateway = $order->gateway;
+				$order_data_to_return->gateway_environment = $order->gateway_environment;
+				$order_data_to_return->payment_transaction_id = $order->payment_transaction_id;
+				$order_data_to_return->subscription_transaction_id = $order->subscription_transaction_id;
+				$order_data_to_return->timestamp = $order->timestamp;
+				$order_data_to_return->affiliate_id = $order->affiliate_id;
+				$order_data_to_return->affiliate_subid = $order->affiliate_subid;
+				$order_data_to_return->notes = $order->notes;
+				$order_data_to_return->checkout_id = $order->checkout_id;
+			}
+
+			return new WP_REST_Response( $order_data_to_return, 200 );
 		}
 
 		/**

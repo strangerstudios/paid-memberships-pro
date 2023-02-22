@@ -58,10 +58,11 @@ class PMPro_Widget_Member_Login extends WP_Widget {
 
 		<?php
 			// Display the widget if there is anything to show.			
-			$content = pmpro_login_forms_handler( $show_menu, $show_logout_link, $display_if_logged_in, 'widget', false );			
-			if ( ! empty( $content ) ) {
+			$content_escaped = pmpro_login_forms_handler( $show_menu, $show_logout_link, $display_if_logged_in, 'widget', false );			
+			if ( ! empty( $content_escaped ) ) {
 				echo wp_kses_post( $before_widget );
-				echo wp_kses_post( $content );
+				// phpcs:ignore Content has been escaped on each section within the pmpro_login_forms_handler function
+				echo $content_escaped;
 				echo wp_kses_post( $after_widget );
 			}
 		?>

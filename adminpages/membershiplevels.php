@@ -27,6 +27,20 @@
 		$template = false;
 	}
 
+	// Get the level group if passed in the URL.
+	if ( isset( $_REQUEST['level_group'] ) ) {
+		$current_group = sanitize_text_field( $_REQUEST['level_group'] );
+	} else {
+		$current_group = false;
+	}
+
+	// Check if we are editing a group.
+	if ( isset( $_REQUEST['edit_group'] ) ) {
+		$edit_group = intval($_REQUEST['edit_group']);
+	} else {
+		$edit_group = false;
+	}
+
 	if(isset($_REQUEST['s']))
 		$s = sanitize_text_field($_REQUEST['s']);
 	else
@@ -186,6 +200,11 @@
 			update_pmpro_membership_level_meta( $saveid, 'confirmation_in_email', $ml_confirmation_in_email );
 		}
 
+		// Update the level group.
+		if ( ! empty( $_REQUEST['level_group'] ) ) {
+			pmpro_add_level_to_group( $saveid, (int) $_REQUEST['level_group'] );
+		}
+
 		do_action("pmpro_save_membership_level", $saveid);
 	}
 	elseif($action == "delete_membership_level")
@@ -258,11 +277,30 @@
 			$page_msg = -3;
 			$page_msgt = __("Error deleting membership level.", 'paid-memberships-pro' );
 		}
+	} elseif ( $action === 'save_group' ) { 
+		$group_id = (int) $_REQUEST['saveid'];
+		$group_name = sanitize_text_field( $_REQUEST['name'] );
+		$allow_multi = empty( $_REQUEST['allow_multiple_selections'] ) ? 0 : 1;
+		$displayorder = (int) $_REQUEST['displayorder'];
+		if ( $group_id > 0 ) {
+			// Save the group.
+			pmpro_edit_level_group( $group_id, $group_name, $allow_multi, $displayorder );
+		} else {
+			// Add a new group.
+			pmpro_create_level_group( $group_name, $allow_multi );
+		}
+	} elseif ( $action === 'delete_group' ) {
+		// Delete a group.
+		$group_id = (int) $_REQUEST['group_id'];
+		pmpro_delete_level_group( $group_id );
 	}
 
 	require_once(dirname(__FILE__) . "/admin_header.php");
 
 	$level_templates = pmpro_edit_level_templates();
+
+	// Get level groups in order.
+	$level_groups = pmpro_get_level_groups_in_order();
 	
 	// Show the settings to edit a membership level.
 	if ( $edit ) {
@@ -453,6 +491,22 @@
 						<tr>
 							<th scope="row" valign="top"><label for="name"><?php esc_html_e('Name', 'paid-memberships-pro' );?></label></th>
 							<td><input name="name" type="text" value="<?php echo esc_attr($level->name);?>" class="regular-text" required/></td>
+						</tr>
+						<tr>
+							<th scope="row" valign="top"><label for="level_group"><?php esc_html_e('Group', 'paid-memberships-pro' );?></label></th>
+							<td>
+								<select name="level_group" id="level_group">
+									<?php
+										if ( empty( $current_group ) ) {
+											$current_group = pmpro_get_group_id_for_level( $level->id );
+										}
+										foreach ( $level_groups as $level_group ) {
+											?>
+											<option value="<?php echo esc_attr( $level_group->id ); ?>" <?php selected( $level_group->id, $current_group ); ?>><?php echo esc_html( $level_group->name ); ?></option>
+											<?php
+										}
+									?>
+								</select>
 						</tr>
 						<tr>
 							<th scope="row" valign="top"><label for="description"><?php esc_html_e('Description', 'paid-memberships-pro' );?></label></th>
@@ -942,9 +996,89 @@
 	</form>
 
 	<?php
-	}
-	else
-	{
+	} elseif ( $edit_group ) {
+		// Creating or editing a group.
+		// If we are editing an existing group, current group data.
+		if ( intval( $edit_group ) > 0 ) {
+			$group = pmpro_get_level_group( $edit_group );
+		}
+
+		// If we don't have a group, create a new one.
+		if ( empty( $group ) ) {
+			$group = new stdClass();
+			$group->id = 0;
+			$group->name = '';
+			$group->displayorder = 0;
+			$group->allow_multiple_selections = false;
+		}
+
+		// Check if we have any MMPU incompatible Add Ons.
+		$mmpu_incompatible_add_ons = pmpro_get_mmpu_incompatible_add_ons();
+
+		// Set up the UI.
+		?>
+		<hr class="wp-header-end">
+		<h1 class="wp-heading-inline">
+		<?php if ( ! empty( $group->id) ) { 
+			echo sprintf(
+				// translators: %s is the group ID.
+				esc_html__( 'Edit Group ID: %s', 'paid-memberships-pro' ),
+				esc_attr( $group->id )
+			);
+		 } else { 
+			esc_html_e( 'Add New Group', 'paid-memberships-pro' );
+		 } ?>
+		</h1>
+		<?php
+		if ( ! empty( $mmpu_incompatible_add_ons ) ) {
+			?>
+			<div class="pmpro_error">
+				<p>
+					<?php
+					echo sprintf(
+						// translators: %s is the list of incompatible add ons.
+						esc_html__( 'The following add ons are not compatible with "Multiple Memberships Per User" setups: %s', 'paid-memberships-pro' ),
+						esc_html( implode( ', ', $mmpu_incompatible_add_ons ) )
+					);
+					echo '<br />';
+					esc_html_e( 'You should not have multiple level groups or a  group that allows users to have multiple levels from the group while those Add Ons are active.', 'paid-memberships-pro' );
+					?>
+				</p>
+			</div>
+			<?php
+		}
+		?>
+		<form action="<?php esc_attr_e( add_query_arg( 'page', 'pmpro-membershiplevels' , admin_url( 'admin.php') ) ) ?>" method="post" enctype="multipart/form-data">
+		<input name="saveid" type="hidden" value="<?php echo esc_attr( $edit_group ); ?>" />
+		<input type="hidden" name="action" value="save_group" />
+		<input type="hidden" name="displayorder" value="<?php echo esc_attr( $group->displayorder ); ?>" />
+		<?php wp_nonce_field('save_group', 'pmpro_membershiplevels_nonce'); ?>
+		<div id="general-information" class="pmpro_section">
+			<div class="pmpro_section_inside">
+		 		<table class="form-table">
+					<tbody>
+		 				<tr>
+							<th scope="row" valign="top"><label for="name"><?php esc_html_e('Name', 'paid-memberships-pro' );?></label></th>
+							<td><input id="name" name="name" type="text" size="60" value="<?php echo esc_attr( $group->name ); ?>" /></td>
+						</tr>
+						<tr>
+							<th scope="row" valign="top"><label for="allow_multiple_selections"><?php esc_html_e('Allow Multiple Selections', 'paid-memberships-pro' );?></label></th>
+							<td>
+								<input id="allow_multiple_selections" name="allow_multiple_selections" type="checkbox" value="1" <?php checked( $group->allow_multiple_selections, true ); ?> />
+								<label for="allow_multiple_selections"><?php esc_html_e( 'Allow users to choose multiple levels from this group. Leave unchecked to only allow users to hold one level in this group.', 'paid-memberships-pro' ); ?>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+		<p class="submit">
+			<input name="save" type="submit" class="button button-primary" value="<?php esc_attr_e('Save Group', 'paid-memberships-pro' ); ?>" />
+			<input name="cancel" type="button" class="button" value="<?php esc_attr_e('Cancel', 'paid-memberships-pro' ); ?>" onclick="location.href='<?php echo esc_url( add_query_arg( 'page', 'pmpro-membershiplevels' , admin_url( 'admin.php') ) ); ?>';" />
+		</p>
+		</form>
+		<?php
+	} else {
 		$sqlQuery = "SELECT * FROM $wpdb->pmpro_membership_levels ";
 		if($s)
 			$sqlQuery .= "WHERE name LIKE '%" . esc_sql( $s ) . "%' ";
@@ -1005,6 +1139,7 @@
 		            };
 
 		            $("table.membership-levels tbody").sortable({
+		                axis: "y",
 		                helper: fixHelper,
 		                placeholder: 'testclass',
 		                forcePlaceholderSize: true,
@@ -1031,10 +1166,60 @@
 		                $.post(ajaxurl, data, function(response) {
 		                });
 		            }
+
+					$('.pmpro_section-sort-button-move-up').click(function(){
+						var current = $(this).closest('.pmpro_section');
+						current.prev().before(current);
+						update_level_group_order();
+					});
+					$('.pmpro_section-sort-button-move-down').click(function(){
+						var current = $(this).closest('.pmpro_section');
+						current.next().after(current);
+						update_level_group_order();
+					});
+
+					function update_level_group_order(event, ui) {
+						level_group_order = [];
+						$(".pmpro_section").each(function() {
+							level_group_order.push(parseInt( $(".pmpro-level-settings-group-id", this).val()));
+						});
+
+						data = {
+							action: 'pmpro_update_level_group_order',
+							level_group_order: level_group_order
+						};
+
+						$.post(ajaxurl, data, function(response) {
+						});
+					}
 		        });
 		    </script>
 			<?php
+		}
+
+		// Fix orphaned levels.
+		foreach ( $reordered_levels as $reordered_level ) {
+			if ( empty( pmpro_get_group_id_for_level( $reordered_level->id ) )  && ! empty( $level_groups ) ) {
+				pmpro_add_level_to_group( $reordered_level->id, reset( $level_groups )->id );
 			}
+		}
+
+		// Check if we have any MMPU incompatible Add Ons.
+		$mmpu_incompatible_add_ons = pmpro_get_mmpu_incompatible_add_ons();
+
+		// Check if the current setup has multiple level groups or a group that allows a user to have multiple levels.
+		$is_mmpu_setup = false;
+		if ( count( $level_groups ) > 1 ) {
+			$is_mmpu_setup = true;
+		} else {
+			foreach ( $level_groups as $level_group ) {
+				if ( $level_group->allow_multiple_selections ) {
+					$is_mmpu_setup = true;
+					break;
+				}
+			}
+		}
+
 		?>
 		<hr class="wp-header-end">
 		<?php if( empty( $s ) && count( $reordered_levels ) === 0 ) { ?>
@@ -1044,293 +1229,377 @@
 				<a href="https://www.paidmembershipspro.com/documentation/initial-plugin-setup/step-1-add-new-membership-level/?utm_source=plugin&utm_medium=pmpro-membershiplevels&utm_campaign=documentation&utm_content=step-1-add-new-membership-level" target="_blank" rel="nofollow noopener" class="button"><?php esc_html_e( 'Video: Membership Levels', 'paid-memberships-pro' ); ?></a>
 			</div> <!-- end pmpro-new-install -->
 		<?php } else { ?>
-		<form id="posts-filter" method="get" action="">
-			<p class="search-box">
-				<label class="screen-reader-text" for="post-search-input"><?php esc_html_e('Search Levels', 'paid-memberships-pro' );?></label>
-				<input type="hidden" name="page" value="pmpro-membershiplevels" />
-				<input id="post-search-input" type="text" value="<?php echo esc_attr($s); ?>" name="s" size="30" />
-				<input class="button" type="submit" value="<?php esc_attr_e('Search Levels', 'paid-memberships-pro' );?>" id="search-submit" />
-			</p>
-		</form>
+			<form id="posts-filter" method="get" action="">
+				<p class="search-box">
+					<label class="screen-reader-text" for="post-search-input"><?php esc_html_e('Search Levels', 'paid-memberships-pro' );?></label>
+					<input type="hidden" name="page" value="pmpro-membershiplevels" />
+					<input id="post-search-input" type="text" value="<?php echo esc_attr($s); ?>" name="s" size="30" />
+					<input class="button" type="submit" value="<?php esc_attr_e('Search Levels', 'paid-memberships-pro' );?>" id="search-submit" />
+				</p>
+			</form>
 
-		<h1 class="wp-heading-inline"><?php esc_html_e( 'Membership Levels', 'paid-memberships-pro' ); ?></h1>
-
-		<?php
-			// Build the page action links to return.
-			$pmpro_membershiplevels_page_action_links = array();
-
-			// Add New Level link
-			$pmpro_membershiplevels_page_action_links['add-new'] = array(
-				'url' => 'javascript:addLevel();',
-				'name' => __( 'Add New Level', 'paid-memberships-pro' ),
-				'icon' => 'plus'
-			);
-			
-			/**
-			 * Filter the Membership Levels page title action links.
-			 *
-			 * @param array $pmpro_membershiplevels_page_action_links Page action links.
-			 * @return array $pmpro_membershiplevels_page_action_links Page action links.
-			 */
-			$pmpro_membershiplevels_page_action_links = apply_filters( 'pmpro_membershiplevels_page_action_links', $pmpro_membershiplevels_page_action_links );
-
-			// Display the links.
-			foreach ( $pmpro_membershiplevels_page_action_links as $pmpro_membershiplevels_page_action_link ) {
-				
-				// If the value is not an array, assume it's a string of HTML.
-				if ( ! is_array( $pmpro_membershiplevels_page_action_link ) ) {
-					echo $pmpro_membershiplevels_page_action_link;
-					continue;
-				}
-
-				// Figure out CSS classes for the links.
-				$classes = array();
-				$classes[] = 'page-title-action';
-				if ( ! empty( $pmpro_membershiplevels_page_action_link['icon'] ) ) {
-					$classes[] = 'pmpro-has-icon';
-					$classes[] = 'pmpro-has-icon-' . esc_attr( $pmpro_membershiplevels_page_action_link['icon'] );
-				}
-				if ( ! empty( $pmpro_membershiplevels_page_action_link['classes'] ) ) {
-					$classes[] = $pmpro_membershiplevels_page_action_link['classes'];
-				}
-				$class = implode( ' ', array_unique( $classes ) );
-				
-				// Allow some JS for the URL. Otherwise esc_url.
-				$allowed_js_in_urls = array( 'javascript:addLevel();', 'javascript:void(0);' );
-				if ( ! in_array( $pmpro_membershiplevels_page_action_link['url'], $allowed_js_in_urls ) ) {
-					$pmpro_membershiplevels_page_action_link['url'] = esc_url( $pmpro_membershiplevels_page_action_link['url'] );
-				}
-				?>				
-				<a class="<?php echo esc_attr( $class ); ?>" href="<?php echo $pmpro_membershiplevels_page_action_link['url']; ?>"><?php echo esc_html( $pmpro_membershiplevels_page_action_link['name'] ); ?></a>
-				<?php
-			}
-		?>		
-
-		<?php if(empty($_REQUEST['s']) && count($reordered_levels) > 1) { ?>
-		    <p><?php esc_html_e('Drag and drop membership levels to reorder them on the Levels page.', 'paid-memberships-pro' ); ?></p>
-	    <?php } ?>
-
-	    <?php
-	    	//going to capture the output of this table so we can filter it
-	    	ob_start();
-	    ?>
-	    <table class="widefat membership-levels">
-		<thead>
-			<tr>
-				<th><?php esc_html_e('ID', 'paid-memberships-pro' );?></th>
-				<th><?php esc_html_e('Name', 'paid-memberships-pro' );?></th>
-				<th><?php esc_html_e('Billing Details', 'paid-memberships-pro' );?></th>
-				<th><?php esc_html_e('Expiration', 'paid-memberships-pro' );?></th>
-				<th><?php esc_html_e('Allow Signups', 'paid-memberships-pro' );?></th>
-				<?php do_action( 'pmpro_membership_levels_table_extra_cols_header', $reordered_levels ); ?>
-			</tr>
-		</thead>
-		<tbody>
-			<?php if ( !empty( $s ) && empty( $reordered_levels ) ) { ?>
-			<tr class="alternate">
-				<td colspan="5">
-					<?php esc_html_e( 'No Membership Levels Found', 'paid-memberships-pro' ); ?>
-				</td>
-			</tr>
-			<?php } ?>
+			<h1 class="wp-heading-inline"><?php esc_html_e( 'Membership Levels', 'paid-memberships-pro' ); ?></h1>
 			<?php
-				$count = 0;
-				foreach($reordered_levels as $level)
-				{
-			?>
-			<tr class="<?php if($count++ % 2 == 1) { ?>alternate<?php } ?> <?php if(!$level->allow_signups) { ?>pmpro_gray<?php } ?> <?php if(!pmpro_checkLevelForStripeCompatibility($level) || !pmpro_checkLevelForBraintreeCompatibility($level) || !pmpro_checkLevelForPayflowCompatibility($level) || !pmpro_checkLevelForTwoCheckoutCompatibility($level)) { ?>pmpro_error<?php } ?>">
-				<td><?php echo $level->id?></td>
-				<td class="level_name has-row-actions">
-					<span class="level-name"><a href="<?php echo esc_url( add_query_arg( array( 'page' => 'pmpro-membershiplevels', 'edit' => $level->id ), admin_url( 'admin.php' ) ) ); ?>"><?php echo esc_html( $level->name ); ?></a></span>
-					<div class="row-actions">
-						<?php
-						$delete_text = esc_html(
-							sprintf(
-								// translators: %s is the Level Name.
-								__( 'Are you sure you want to delete membership level %s? All subscriptions will be cancelled.', 'paid-memberships-pro' ),
-								$level->name
-							)
-						);
-
-						$delete_nonce_url = wp_nonce_url(
-							add_query_arg(
-								[
-									'page'   => 'pmpro-membershiplevels',
-									'action' => 'delete_membership_level',
-									'deleteid' => $level->id,
-								],
-								admin_url( 'admin.php' )
-							),
-							'delete_membership_level',
-							'pmpro_membershiplevels_nonce'
-						);
-
-						$actions = [
-							'edit'   => sprintf(
-								'<a title="%1$s" href="%2$s">%3$s</a>',
-								esc_attr__( 'Edit', 'paid-memberships-pro' ),
-								esc_url(
-									add_query_arg(
-										[
-											'page' => 'pmpro-membershiplevels',
-											'edit' => $level->id,
-										],
-										admin_url( 'admin.php' )
-									)
-								),
-								esc_html__( 'Edit', 'paid-memberships-pro' )
-							),
-							'copy'   => sprintf(
-								'<a title="%1$s" href="%2$s">%3$s</a>',
-								esc_attr__( 'Copy', 'paid-memberships-pro' ),
-								esc_url(
-									add_query_arg(
-										[
-											'page' => 'pmpro-membershiplevels',
-											'edit' => - 1,
-											'copy' => $level->id,
-										],
-										admin_url( 'admin.php' )
-									)
-								),
-								esc_html__( 'Copy', 'paid-memberships-pro' )
-							),
-							'delete' => sprintf(
-								'<a title="%1$s" href="%2$s">%3$s</a>',
-								esc_attr__( 'Delete', 'paid-memberships-pro' ),
-								'javascript:pmpro_askfirst(\'' . esc_js( $delete_text ) . '\', \'' . esc_js( $delete_nonce_url ) . '\'); void(0);',
-								esc_html__( 'Delete', 'paid-memberships-pro' )
-							),
-						];
-
-						/**
-						 * Filter the extra actions for this level.
-						 *
-						 * @since 2.6.2
-						 *
-						 * @param array  $actions The list of actions.
-						 * @param object $level   The membership level data.
-						 */
-						$actions = apply_filters( 'pmpro_membershiplevels_row_actions', $actions, $level );
-
-						$actions_html = [];
-
-						foreach ( $actions as $action => $link ) {
-							$actions_html[] = sprintf(
-								'<span class="%1$s">%2$s</span>',
-								esc_attr( $action ),
-								$link
-							);
-						}
-
-						if ( ! empty( $actions_html ) ) {
-							echo implode( ' | ', $actions_html );
-						}
-						?>
-					</div>
-				</td>
-				<td>
-					<?php if(pmpro_isLevelFree($level)) { ?>
-						<?php _e('FREE', 'paid-memberships-pro' );?>
-					<?php } else { ?>
-						<?php echo str_replace( 'The price for membership is', '', pmpro_getLevelCost($level)); ?>
-					<?php } ?>
-				</td>
-				<td>
-					<?php if(!pmpro_isLevelExpiring($level)) { ?>
-						--
-					<?php } else { ?>
-						<?php _e('After', 'paid-memberships-pro' );?> <?php echo $level->expiration_number?> <?php echo sornot($level->expiration_period,$level->expiration_number)?>
-					<?php } ?>
-				</td>
-				<td><?php
-					if($level->allow_signups) {
-						if ( ! empty( $pmpro_pages['checkout'] ) ) {
-							?><a target="_blank" href="<?php echo esc_url( add_query_arg( 'level', $level->id, pmpro_url("checkout") ) );?>"><?php esc_html_e('Yes', 'paid-memberships-pro' );?></a><?php
-						} else {
-							_e('Yes', 'paid-memberships-pro' );
-						}
-					} else {
-						_e('No', 'paid-memberships-pro' );
-					}
-					?></td>
-				<?php do_action( 'pmpro_membership_levels_table_extra_cols_body', $level ); ?>
-			</tr>
-			<?php
-				}
-			?>
-		</tbody>
-		</table>
-
-	<?php
-		$table_html = ob_get_clean();
-
-		/**
-		 * Filter to change the Membership Levels table
-		 * @since 1.8.10
-		 *
-		 * @param string $table_html HTML of the membership levels table
-		 * @param array $reordered_levels Array of membership levels
-		 */
-		$table_html = apply_filters('pmpro_membership_levels_table', $table_html, $reordered_levels);
-
-		echo $table_html;
-	}
-	?>
-
-	<script>
-		jQuery( document ).ready( function() {
-			jQuery('.pmproPopupCloseButton').click(function() {
-				jQuery('.pmpro-popup-overlay').hide();
-			});
-			<?php if( ! empty( $_REQUEST['showpopup'] ) ) { ?>addLevel();<?php } ?>
-		} );
-		function addLevel() {
-			jQuery('.pmpro-popup-overlay').show();
-		}		
-	</script>
-	<div id="pmpro-popup" class="pmpro-popup-overlay">
-		<span class="pmpro-popup-helper"></span>
-		<div class="pmpro-popup-wrap">
-			<span id="pmpro-popup-inner">
-				<a class="pmproPopupCloseButton" href="#" title="<?php esc_attr_e( 'Close Popup', 'paid-memberships-pro' ); ?>"><span class="dashicons dashicons-no"></span></a>
-				<h1><?php esc_html_e( 'What type of membership level do you want to create?', 'paid-memberships-pro' ); ?></h1>
-				<div class="pmpro_level_templates">
-					<?php
-						foreach ( $level_templates as $key => $value ) {
-							// Build the selectors for the level item.
-							$classes = array();
-							$classes[] = 'pmpro_level_template';
-							if ( $key === 'approvals' && ! defined( 'PMPRO_APP_DIR' ) ) {
-								$classes[] = 'inactive';
-							} elseif ( $key === 'gift' && ! defined( 'PMPROGL_VERSION' ) ) {
-								$classes[] = 'inactive';
-							} elseif ( $key === 'invite' && ! defined( 'PMPROIO_CODES' ) ) {
-								$classes[] = 'inactive';
-							}
-							$class = implode( ' ', array_unique( $classes ) );
-
-							if ( in_array( 'inactive', $classes ) ) { ?>
-								<a class="<?php echo esc_attr( $class ); ?>" target="_blank" rel="nofollow noopener" href="<?php echo esc_url( $value['external-link'] ); ?>">
-									<span class="label"><?php esc_html_e( 'Add On', 'paid-memberships-pro' ); ?></span>
-									<span class="template"><?php echo esc_html( $value['name'] ); ?></span>
-									<p><?php echo esc_html( $value['description'] ); ?></p>
-								</a>
-								<?php
-							} else { ?>
-								<a class="<?php echo esc_attr( $class ); ?>" href="<?php echo esc_url( add_query_arg( array( 'page' => 'pmpro-membershiplevels', 'edit' => -1, 'template' => esc_attr( $key ) ), admin_url( 'admin.php' ) ) ); ?>">
-									<span class="template"><?php echo esc_html( $value['name'] ); ?></span>
-									<p><?php echo esc_html( $value['description'] ); ?></p>
-								</a>
-								<?php
-							}
-						}
+				if ( ! empty( $mmpu_incompatible_add_ons ) && $is_mmpu_setup ) {
 					?>
-				</div> <!-- end pmpro_level_templates -->
-			</span>
-		</div>
-	</div> <!-- end pmpro-popup -->
-	<?php } ?>
+					<div class="pmpro_error">
+						<p>
+							<?php
+							echo sprintf(
+								// translators: %s is the list of incompatible add ons.
+								esc_html__( 'The following add ons are not compatible with "Multiple Memberships Per User" setups: %s', 'paid-memberships-pro' ),
+								esc_html( implode( ', ', $mmpu_incompatible_add_ons ) )
+							);
+							echo '<br />';
+							esc_html_e( 'You should not have multiple level groups or a  group that allows users to have multiple levels from the group while those Add Ons are active.', 'paid-memberships-pro' );
+							?>
+						</p>
+					</div>
+					<?php
+				}
+
+				// Build the page action links to return.
+				$pmpro_membershiplevels_page_action_links = array();
+
+				// Add New Level link
+				$pmpro_membershiplevels_page_action_links['add-new'] = array(
+					'url' => 'javascript:addLevel();',
+					'name' => __( 'Add New Level', 'paid-memberships-pro' ),
+					'icon' => 'plus'
+				);
+
+				// Add New Group link
+				$pmpro_membershiplevels_page_action_links['add-new-group'] = array(
+					'url' => add_query_arg( array( 'edit_group' => '-1' ), admin_url( 'admin.php?page=pmpro-membershiplevels' ) ),
+					'name' => __( 'Add New Group', 'paid-memberships-pro' ),
+					'icon' => 'plus'
+				);
+
+				/**
+				 * Filter the Membership Levels page title action links.
+				 *
+				 * @param array $pmpro_membershiplevels_page_action_links Page action links.
+				 * @return array $pmpro_membershiplevels_page_action_links Page action links.
+				 */
+				$pmpro_membershiplevels_page_action_links = apply_filters( 'pmpro_membershiplevels_page_action_links', $pmpro_membershiplevels_page_action_links );
+
+				// Display the links.
+				foreach ( $pmpro_membershiplevels_page_action_links as $pmpro_membershiplevels_page_action_link ) {
+					
+					// If the value is not an array, assume it's a string of HTML.
+					if ( ! is_array( $pmpro_membershiplevels_page_action_link ) ) {
+						echo $pmpro_membershiplevels_page_action_link;
+						continue;
+					}
+
+					// Figure out CSS classes for the links.
+					$classes = array();
+					$classes[] = 'page-title-action';
+					if ( ! empty( $pmpro_membershiplevels_page_action_link['icon'] ) ) {
+						$classes[] = 'pmpro-has-icon';
+						$classes[] = 'pmpro-has-icon-' . esc_attr( $pmpro_membershiplevels_page_action_link['icon'] );
+					}
+					if ( ! empty( $pmpro_membershiplevels_page_action_link['classes'] ) ) {
+						$classes[] = $pmpro_membershiplevels_page_action_link['classes'];
+					}
+					$class = implode( ' ', array_unique( $classes ) );
+					
+					// Allow some JS for the URL. Otherwise esc_url.
+					$allowed_js_in_urls = array( 'javascript:addLevel();', 'javascript:void(0);' );
+					if ( ! in_array( $pmpro_membershiplevels_page_action_link['url'], $allowed_js_in_urls ) ) {
+						$pmpro_membershiplevels_page_action_link['url'] = esc_url( $pmpro_membershiplevels_page_action_link['url'] );
+					}
+					?>				
+					<a class="<?php echo esc_attr( $class ); ?>" href="<?php echo $pmpro_membershiplevels_page_action_link['url']; ?>"><?php echo esc_html( $pmpro_membershiplevels_page_action_link['name'] ); ?></a>
+					<?php
+				}
+
+				if(empty($_REQUEST['s']) && count($reordered_levels) > 1) { ?>
+					<p><?php esc_html_e('Drag and drop membership levels to reorder them on the Levels page.', 'paid-memberships-pro' ); ?></p>
+					<?php
+				} 
+				?><div id="pmpro-edit-levels-groups"><?php
+					foreach ( $level_groups as $level_group ) {
+						$group_level_ids = pmpro_get_level_ids_for_group( $level_group->id );
+						$group_levels_to_show = array();
+						foreach ( $reordered_levels as $reordered_level ) {
+							if ( in_array( $reordered_level->id, $group_level_ids ) ) {
+								$group_levels_to_show[] = $reordered_level;
+							}
+						}
+						$section_visibility = 'shown';
+						$section_activated = 'true';
+						?>
+						<div id="pmpro-level-settings-group-div-<?php echo esc_attr( $level_group->id ); ?>" class="pmpro_section" data-visibility="<?php echo esc_attr( $section_visibility ); ?>" data-activated="<?php echo esc_attr( $section_activated ); ?>">
+							<div class="pmpro_section_toggle">
+								<div class="pmpro_section-sort">
+									<button type="button" aria-disabled="false" class="pmpro_section-sort-button pmpro_section-sort-button-move-up" aria-label="<?php esc_attr_e( 'Move up', 'paid-memberships-pro' ); ?>">
+										<span class="dashicons dashicons-arrow-up-alt2"></span>
+									</button>
+									<span class="pmpro_section-sort-button-description"><?php esc_html_e( 'Move Group Up', 'paid-memberships-pro' ); ?></span>
+
+									<button type="button" aria-disabled="false" class="pmpro_section-sort-button pmpro_section-sort-button-move-down" aria-label="<?php esc_attr_e( 'Move down', 'paid-memberships-pro' ); ?>">
+										<span class="dashicons dashicons-arrow-down-alt2"></span>
+									</button>
+									<span id="pmpro_section-sort-button-description-2" class="pmpro_section-sort-button-description"><?php esc_html_e( 'Move Group Down', 'paid-memberships-pro' ); ?></span>
+								</div> <!-- end pmpro_section-sort -->
+								<button class="pmpro_section-toggle-button" type="button" aria-expanded="<?php echo $section_visibility === 'hidden' ? 'false' : 'true'; ?>">
+									<span class="dashicons dashicons-arrow-<?php echo $section_visibility === 'hidden' ? 'down' : 'up'; ?>-alt2"></span>
+									<input type="hidden" class="pmpro-level-settings-group-id" value="<?php echo esc_attr( $level_group->id ); ?>" />
+									<?php echo esc_html( $level_group->name ) ?>
+								</button>
+							</div>
+							<div class="pmpro_section_inside">
+								<p>
+									<?php
+										if ( $level_group->allow_multiple_selections ) {
+											esc_html_e( 'Users can choose multiple levels from this group.', 'paid-memberships-pro' );
+										} else {
+											esc_html_e( 'Users can only choose one level from this group.', 'paid-memberships-pro' );
+										}
+									?>
+								</p>
+								<table class="widefat membership-levels">
+									<thead>
+										<tr>
+											<th><?php esc_html_e('ID', 'paid-memberships-pro' );?></th>
+											<th><?php esc_html_e('Name', 'paid-memberships-pro' );?></th>
+											<th><?php esc_html_e('Billing Details', 'paid-memberships-pro' );?></th>
+											<th><?php esc_html_e('Expiration', 'paid-memberships-pro' );?></th>
+											<th><?php esc_html_e('Allow Signups', 'paid-memberships-pro' );?></th>
+											<?php do_action( 'pmpro_membership_levels_table_extra_cols_header', $reordered_levels ); ?>
+										</tr>
+									</thead>
+									<tbody>
+										<?php if ( empty( $s ) && empty( $group_levels_to_show ) ) { ?>
+										<tr class="alternate">
+											<td colspan="5">
+												<?php esc_html_e( 'No Membership Levels Found', 'paid-memberships-pro' ); ?>
+											</td>
+										</tr>
+										<?php } ?>
+										<?php
+											$count = 0;
+											foreach($group_levels_to_show as $level) {
+										?>
+										<tr class="<?php if($count++ % 2 == 1) { ?>alternate<?php } ?> <?php if(!$level->allow_signups) { ?>pmpro_gray<?php } ?> <?php if(!pmpro_checkLevelForStripeCompatibility($level) || !pmpro_checkLevelForBraintreeCompatibility($level) || !pmpro_checkLevelForPayflowCompatibility($level) || !pmpro_checkLevelForTwoCheckoutCompatibility($level)) { ?>pmpro_error<?php } ?>">
+											<td><?php echo $level->id?></td>
+											<td class="level_name has-row-actions">
+												<span class="level-name"><a href="<?php echo esc_url( add_query_arg( array( 'page' => 'pmpro-membershiplevels', 'edit' => $level->id ), admin_url( 'admin.php' ) ) ); ?>"><?php echo esc_html( $level->name ); ?></a></span>
+												<div class="row-actions">
+													<?php
+													$delete_text = esc_html(
+														sprintf(
+															// translators: %s is the Level Name.
+															__( "Are you sure you want to delete membership level %s? Any gateway subscriptions or third-party connections with a member's account will remain active.", 'paid-memberships-pro' ),
+															$level->name
+														)
+													);
+
+													$delete_nonce_url = wp_nonce_url(
+														add_query_arg(
+															[
+																'page'   => 'pmpro-membershiplevels',
+																'action' => 'delete_membership_level',
+																'deleteid' => $level->id,
+															],
+															admin_url( 'admin.php' )
+														),
+														'delete_membership_level',
+														'pmpro_membershiplevels_nonce'
+													);
+
+													$actions = [
+														'edit'   => sprintf(
+															'<a title="%1$s" href="%2$s">%3$s</a>',
+															esc_attr__( 'Edit', 'paid-memberships-pro' ),
+															esc_url(
+																add_query_arg(
+																	[
+																		'page' => 'pmpro-membershiplevels',
+																		'edit' => $level->id,
+																	],
+																	admin_url( 'admin.php' )
+																)
+															),
+															esc_html__( 'Edit', 'paid-memberships-pro' )
+														),
+														'copy'   => sprintf(
+															'<a title="%1$s" href="%2$s">%3$s</a>',
+															esc_attr__( 'Copy', 'paid-memberships-pro' ),
+															esc_url(
+																add_query_arg(
+																	[
+																		'page' => 'pmpro-membershiplevels',
+																		'edit' => - 1,
+																		'copy' => $level->id,
+																	],
+																	admin_url( 'admin.php' )
+																)
+															),
+															esc_html__( 'Copy', 'paid-memberships-pro' )
+														),
+														'delete' => sprintf(
+															'<a title="%1$s" href="%2$s">%3$s</a>',
+															esc_attr__( 'Delete', 'paid-memberships-pro' ),
+															'javascript:pmpro_askfirst(\'' . esc_js( $delete_text ) . '\', \'' . esc_js( $delete_nonce_url ) . '\'); void(0);',
+															esc_html__( 'Delete', 'paid-memberships-pro' )
+														),
+													];
+
+													/**
+													 * Filter the extra actions for this level.
+													 *
+													 * @since 2.6.2
+													 *
+													 * @param array  $actions The list of actions.
+													 * @param object $level   The membership level data.
+													 */
+													$actions = apply_filters( 'pmpro_membershiplevels_row_actions', $actions, $level );
+
+													$actions_html = [];
+
+													foreach ( $actions as $action => $link ) {
+														$actions_html[] = sprintf(
+															'<span class="%1$s">%2$s</span>',
+															esc_attr( $action ),
+															$link
+														);
+													}
+
+													if ( ! empty( $actions_html ) ) {
+														echo implode( ' | ', $actions_html );
+													}
+													?>
+												</div>
+											</td>
+											<td>
+												<?php if(pmpro_isLevelFree($level)) { ?>
+													<?php _e('FREE', 'paid-memberships-pro' );?>
+												<?php } else { ?>
+													<?php echo str_replace( 'The price for membership is', '', pmpro_getLevelCost($level)); ?>
+												<?php } ?>
+											</td>
+											<td>
+												<?php if(!pmpro_isLevelExpiring($level)) { ?>
+													--
+												<?php } else { ?>
+													<?php _e('After', 'paid-memberships-pro' );?> <?php echo $level->expiration_number?> <?php echo sornot($level->expiration_period,$level->expiration_number)?>
+												<?php } ?>
+											</td>
+											<td><?php
+												if($level->allow_signups) {
+													if ( ! empty( $pmpro_pages['checkout'] ) ) {
+														?><a target="_blank" href="<?php echo esc_url( add_query_arg( 'level', $level->id, pmpro_url("checkout") ) );?>"><?php esc_html_e('Yes', 'paid-memberships-pro' );?></a><?php
+													} else {
+														_e('Yes', 'paid-memberships-pro' );
+													}
+												} else {
+													_e('No', 'paid-memberships-pro' );
+												}
+												?></td>
+											<?php do_action( 'pmpro_membership_levels_table_extra_cols_body', $level ); ?>
+										</tr>
+										<?php
+											}
+										?>
+									</tbody>
+								</table>
+								<p class="text-center">
+									<a class="button button-primary button-hero" href="javascript:addLevel(<?php echo esc_js( $level_group->id ); ?>);">
+										<?php
+											/* translators: a plus sign dashicon */
+											printf( esc_html__( '%s Add New Level', 'paid-memberships-pro' ), '<span class="dashicons dashicons-plus"></span>' ); ?>
+									</a>
+								</p>
+								<div class="pmpro_section_actions">
+									<a class="button-secondary pmpro-has-icon pmpro-has-icon-edit" href="<?php echo esc_url( add_query_arg( array( 'edit_group' => $level_group->id ), admin_url( 'admin.php?page=pmpro-membershiplevels' ) ) ); ?>" ><?php esc_html_e( 'Edit Group', 'paid-memberships-pro' ) ?></a>
+									<?php
+										// Show a button to delete the group (disabled if there are levels in group).
+										$disabled_button = empty( $group_levels_to_show) ? '' : 'disabled=disabled';
+										$disabled_message = empty( $group_levels_to_show) ? '' : '<span class="description"><em>' . __( 'Move levels to another group to enable group deletion.', 'paid-memberships-pro' ) . '</em></span>';
+									?>
+									<a <?php echo esc_attr( $disabled_button ); ?> class="button is-destructive pmpro-has-icon pmpro-has-icon-trash" href="<?php echo esc_url( wp_nonce_url( admin_url( 'admin.php?page=pmpro-membershiplevels&group_id=' . $level_group->id . '&action=delete_group' ), 'delete_group', 'pmpro_membershiplevels_nonce' ) ); ?>" ><?php esc_html_e( 'Delete Group', 'paid-memberships-pro' ) ?></a>
+									<?php echo wp_kses_post( $disabled_message ); ?>
+								</div>
+							</div> <!-- end .pmpro_section_inside -->
+						</div> <!-- end .pmpro_section -->
+					<?php }  // Close group loop ?>
+				</div>
+				<p class="text-center">
+					<a class="button button-secondary button-hero" href="<?php echo esc_url( add_query_arg( array( 'edit_group' => '-1' ), admin_url( 'admin.php?page=pmpro-membershiplevels' ) ) ); ?>">
+						<?php
+							/* translators: a plus sign dashicon */
+							printf( esc_html__( '%s Add New Group', 'paid-memberships-pro' ), '<span class="dashicons dashicons-plus"></span>' ); ?>
+					</a>
+				</p>
+			<script>
+				jQuery( document ).ready( function() {
+					jQuery('.pmproPopupCloseButton').click(function() {
+						jQuery('.pmpro-popup-overlay').hide();
+					});
+					<?php if( ! empty( $_REQUEST['showpopup'] ) ) { ?>addLevel();<?php } ?>
+				} );
+				function addLevel( group_id ) {
+					if ( typeof group_id !== undefined ) {
+						jQuery('a.pmpro_level_template').each(function(){
+							this.href += '&level_group=' + group_id;
+						});
+					}
+					jQuery('.pmpro-popup-overlay').show();
+				}
+				// Hide the popup banner if "ESC" is pressed.
+				jQuery(document).keyup(function (e) {
+					if (e.key === 'Escape') {
+						jQuery('.pmpro-popup-overlay').hide();
+					}
+				});
+			</script>
+			<div id="pmpro-popup" class="pmpro-popup-overlay">
+				<span class="pmpro-popup-helper"></span>
+				<div class="pmpro-popup-wrap">
+					<span id="pmpro-popup-inner">
+						<a class="pmproPopupCloseButton" href="#" title="<?php esc_attr_e( 'Close Popup', 'paid-memberships-pro' ); ?>"><span class="dashicons dashicons-no"></span></a>
+						<h1><?php esc_html_e( 'What type of membership level do you want to create?', 'paid-memberships-pro' ); ?></h1>
+						<div class="pmpro_level_templates">
+							<?php
+								foreach ( $level_templates as $key => $value ) {
+									// Build the selectors for the level item.
+									$classes = array();
+									$classes[] = 'pmpro_level_template';
+									if ( $key === 'approvals' && ! defined( 'PMPRO_APP_DIR' ) ) {
+										$classes[] = 'inactive';
+									} elseif ( $key === 'gift' && ! defined( 'PMPROGL_VERSION' ) ) {
+										$classes[] = 'inactive';
+									} elseif ( $key === 'invite' && ! defined( 'PMPROIO_CODES' ) ) {
+										$classes[] = 'inactive';
+									}
+									$class = implode( ' ', array_unique( $classes ) );
+
+									if ( in_array( 'inactive', $classes ) ) { ?>
+										<a class="<?php echo esc_attr( $class ); ?>" target="_blank" rel="nofollow noopener" href="<?php echo esc_url( $value['external-link'] ); ?>">
+											<span class="label"><?php esc_html_e( 'Add On', 'paid-memberships-pro' ); ?></span>
+											<span class="template"><?php echo esc_html( $value['name'] ); ?></span>
+											<p><?php echo esc_html( $value['description'] ); ?></p>
+										</a>
+										<?php
+									} else { ?>
+										<a class="<?php echo esc_attr( $class ); ?>" href="<?php echo esc_url( add_query_arg( array( 'page' => 'pmpro-membershiplevels', 'edit' => -1, 'template' => esc_attr( $key ) ), admin_url( 'admin.php' ) ) ); ?>">
+											<span class="template"><?php echo esc_html( $value['name'] ); ?></span>
+											<p><?php echo esc_html( $value['description'] ); ?></p>
+										</a>
+										<?php
+									}
+								}
+							?>
+						</div> <!-- end pmpro_level_templates -->
+					</span>
+				</div>
+			</div> <!-- end pmpro-popup -->
+			<?php 
+		}
+	}
+?>
 
 <?php
 	require_once(dirname(__FILE__) . "/admin_footer.php");
