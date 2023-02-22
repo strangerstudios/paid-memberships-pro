@@ -444,7 +444,7 @@ class PMPro_Discount_Code_List_Table extends WP_List_Table {
 		
 
 		if( $item['uses'] > 0 ) {
-			echo "<strong>" . (int)$item['used'] . "</strong>/" . $item->uses;
+			echo "<strong>" . (int)$item['used'] . "</strong>/" . (int)$item['uses'];
 		} else {
 			echo "<strong>" . (int)$item['used'] . "</strong>/" . __( 'unlimited', 'paid-memberships-pro' );
 		}
