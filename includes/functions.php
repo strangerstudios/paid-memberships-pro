@@ -4594,19 +4594,19 @@ function pmpro_orderslist_query( $count = false ) {
 
 		$order = strtoupper( esc_sql( $_REQUEST['order'] ) );
 		$orderby = esc_sql( $_REQUEST['orderby'] );
-
+var_dump($orderby);
 		if( $orderby == 'order_id' ) {
 			$orderby = 'id';
 		} else if( $orderby == 'order_status' ) {
-			$orderby = 'status';
+			$orderby = 'status_label';
 		} else if( $orderby == 'total' ) {
 			$orderby = 'total';
-		} else if( $orderby = 'level' ) {
-			$orderby = 'membership_id';
-		} else if( $orderby == 'date' ) {
+		} else if( $orderby == 'level' ) {
+			$orderby = 'name';
+		} else if( $orderby == 'timestamp' ) {
 			$orderby = 'timestamp';
 		}
-
+var_dump($orderby);
 		$order_query = "ORDER BY $orderby $order";
 	} else {
 		$order_query = 'ORDER BY o.id DESC';
@@ -4665,15 +4665,15 @@ function pmpro_orderslist_query( $count = false ) {
 
 		$sqlQuery .= 'GROUP BY o.id ORDER BY o.id DESC, o.timestamp DESC ';
 	} else {
-		$sqlQuery = "SELECT SQL_CALC_FOUND_ROWS o.id FROM $wpdb->pmpro_membership_orders o ";
-
+		$sqlQuery = "SELECT SQL_CALC_FOUND_ROWS o.id, CASE WHEN o.status = 'success' THEN 'Paid' WHEN o.status = 'pending' THEN 'Paid' ELSE 'Cancelled' END as status_label FROM $wpdb->pmpro_membership_orders o LEFT JOIN $wpdb->pmpro_membership_levels ml ON o.membership_id = ml.id ";
+		
 		if ( $filter === 'with-discount-code' ) {
 			$sqlQuery .= "LEFT JOIN $wpdb->pmpro_discount_codes_uses dc ON o.id = dc.order_id ";
 		}
 		//Not escaping here because we escape the values in the condition statement
-		$sqlQuery .= "WHERE " . $condition . ' ' . $order_query . ' , o.timestamp DESC ';
+		$sqlQuery .= "WHERE " . $condition . ' ' . $order_query . ' ';
 	}
-
+var_dump($sqlQuery);
 	if( ! $count ) {
 		$sqlQuery .= "LIMIT " . esc_sql( $start ) . "," . esc_sql( $limit );
 	}

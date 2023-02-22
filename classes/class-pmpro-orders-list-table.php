@@ -150,7 +150,7 @@ class PMPro_Orders_List_Table extends WP_List_Table {
 			'level' => array( 'level', false ),
 			'total' => array( 'total', false ),
 			'order_status' => array( 'order_status', false ),
-			'date' => array( 'usdatees', false ),
+			'date' => array( 'timestamp', false ),
 		);		
 		return $sortable_columns;
 	}
@@ -185,7 +185,8 @@ class PMPro_Orders_List_Table extends WP_List_Table {
 		} else {
             
 			$order_ids = $wpdb->get_col( $sqlQuery );
-
+            $wpdb->show_errors();
+            $wpdb->print_error();
             $order_data = array();
 
             foreach ( $order_ids as $order_id ) {
@@ -198,29 +199,12 @@ class PMPro_Orders_List_Table extends WP_List_Table {
 
             }
 
-            if( ! empty( $_REQUEST['orderby'] ) && $_REQUEST['orderby'] == 'order_status' ) { 
-                usort( $order_data, array( $this, "order_status" ));
-            }
-
             $sql_table_data = $order_data;
 			
 		}
 
 		return $sql_table_data;
 	}
-
-    /**
-	 * Handles the order status sorting in conjunction with usort
-	 *
-	 * @since TBD
-	 *
-	 * @return void
-	 */
-    function order_status($a, $b){
-
-        return strcmp( $a->status, $b->status);
-
-    }
 
     /**
 	 * Add extra markup in the toolbars before or after the list
@@ -856,9 +840,9 @@ class PMPro_Orders_List_Table extends WP_List_Table {
             echo '<a href="user-edit.php?user_id='.esc_attr( $item->user->ID ).'">'.esc_html( $item->user->user_login ).'</a><br />';
             echo esc_html( $item->user->user_email );
          } elseif ( $item->user_id > 0 ) {
-            echo '['. esc_html_e( 'deleted', 'paid-memberships-pro' ) . ']';
+            echo '['. esc_html__( 'deleted', 'paid-memberships-pro' ) . ']';
         } else {
-            echo '['. esc_html_e( 'none', 'paid-memberships-pro' ) . ']';
+            echo '['. esc_html__( 'none', 'paid-memberships-pro' ) . ']';
         }
     }
 
@@ -986,8 +970,8 @@ class PMPro_Orders_List_Table extends WP_List_Table {
 	 */
     public function column_transaction_ids( $item ) {
 
-        esc_html_e( 'Payment', 'paid-memberships-pro' );
-
+        esc_html_e( 'Payment', 'paid-memberships-pro' ); ?>:
+        <?php
         if ( ! empty( $item->payment_transaction_id ) ) {
             echo esc_html( $item->payment_transaction_id );
         } else {
@@ -995,12 +979,14 @@ class PMPro_Orders_List_Table extends WP_List_Table {
         }
         ?>
         <br/>
-        <?php esc_html_e( 'Subscription', 'paid-memberships-pro' ).':';
+        <?php esc_html_e( 'Subscription', 'paid-memberships-pro' ); ?>:
+        <?php
         if ( ! empty( $item->subscription_transaction_id ) ) {
             echo esc_html( $item->subscription_transaction_id );
         } else {
             esc_html_e( 'N/A', 'paid-memberships-pro' );
         }
+        
         
     }
 
@@ -1011,7 +997,8 @@ class PMPro_Orders_List_Table extends WP_List_Table {
 	 *
 	 * @return string
 	 */
-    public function column_order_status( $item ) {
+    public function column_order_status( $item ) {     
+        
         ?>
         <span class="pmpro_order-status pmpro_order-status-<?php esc_attr_e( $item->status ); ?>">
             <?php if ( in_array( $item->status, array( 'success', 'cancelled' ) ) ) {
@@ -1022,7 +1009,7 @@ class PMPro_Orders_List_Table extends WP_List_Table {
         </span>
         <?php if ( $item->is_renewal() ) { ?>
             <a href="<?php echo esc_url( add_query_arg( array( 'page' => 'pmpro-orders', 's' => $item->subscription_transaction_id ), admin_url( 'admin.php' ) ) ); ?>" title="<?php esc_attr_e( 'View all orders for this subscription', 'paid-memberships-pro' ); ?>" class="pmpro_order-renewal"><?php esc_html_e( 'Renewal', 'paid-memberships-pro' ); ?></a>
-        <?php } 
+        <?php }
     }
 
     /**
