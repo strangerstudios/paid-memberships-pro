@@ -4581,16 +4581,8 @@ function pmpro_orderslist_query( $count = false, $limit = 15 ) {
 		$order = strtoupper( esc_sql( $_REQUEST['order'] ) );
 		$orderby = ( $_REQUEST['orderby'] );
 
-		if( $orderby == 'order_id' ) {
-			$orderby = 'id';
-		} else if( $orderby == 'order_status' ) {
-			$orderby = 'status_label';
-		} else if( $orderby == 'total' ) {
+		if( $orderby == 'total' ) {
 			$orderby = 'total + 0'; //This pads the number and allows it to sort correctly
-		} else if( $orderby == 'level' ) {
-			$orderby = 'name';
-		} else if( $orderby == 'timestamp' ) {
-			$orderby = 'timestamp';
 		}
 
 		$order_query = "ORDER BY $orderby $order";
@@ -4663,7 +4655,7 @@ function pmpro_orderslist_query( $count = false, $limit = 15 ) {
 		//Not escaping here because we escape the values in the condition statement
 		$sqlQuery .= "WHERE " . $condition . ' ' . $order_query . ' ';
 	}
-	var_dump($sqlQuery);
+	
 	if( ! $count ) {
 		$sqlQuery .= "LIMIT " . esc_sql( $start ) . "," . esc_sql( $limit );
 	}

@@ -157,10 +157,10 @@ class PMPro_Orders_List_Table extends WP_List_Table {
 		 * column name_in_list_table => columnname in the db
 		 */
 		$sortable_columns = array(
-			'order_id' => array( 'order_id', true ),
-			'level' => array( 'level', false ),
+			'order_id' => array( 'id', true ),
+			'level' => array( 'name', false ),
 			'total' => array( 'total', false ),
-			'order_status' => array( 'order_status', false ),
+			'order_status' => array( 'status_label', false ),
 			'date' => array( 'timestamp', false ),
 		);		
 		return $sortable_columns;
@@ -208,8 +208,7 @@ class PMPro_Orders_List_Table extends WP_List_Table {
 		} else {
             
 			$order_ids = $wpdb->get_col( $sqlQuery );
-            $wpdb->show_errors();
-            $wpdb->print_error();
+
             $order_data = array();
 
             foreach ( $order_ids as $order_id ) {
