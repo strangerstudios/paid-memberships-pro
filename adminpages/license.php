@@ -6,7 +6,7 @@ if ( ! function_exists( 'current_user_can' ) || ( ! current_user_can( 'manage_op
 
 //updating license?
 if ( ! empty( $_REQUEST['pmpro-verify-submit'] ) ) {
-	$key = preg_replace("/[^a-zA-Z0-9]/", "", $_REQUEST['pmpro-license-key']);
+	$key = preg_replace("/[^a-zA-Z0-9]/", "", sanitize_text_field( $_REQUEST['pmpro-license-key'] ) );
 	
 	// Check key.
 	$pmpro_license_check = pmpro_license_check_key( $key );
@@ -30,10 +30,10 @@ $allowed_pmpro_license_strings_html = array (
 	'a' => array (
 		'href' => array(),
 		'target' => array(),
-		'title' => array(),
+		'title' => array()
 	),
 	'strong' => array(),
-	'em' => array(),
+	'em' => array()
 );
 
 // HTML for license settings page.
@@ -41,9 +41,8 @@ if ( defined( 'PMPRO_DIR' ) ) {
 	require_once( PMPRO_DIR . '/adminpages/admin_header.php' );
 } ?>
 	<hr class="wp-header-end">
+	<h1 class="wp-heading-inline"><?php esc_html_e('Paid Memberships Pro Support License', 'paid-memberships-pro' );?></h1>
 	<div class="about-wrap">
-		<h2><?php esc_html_e('Paid Memberships Pro Support License', 'paid-memberships-pro' );?></h2>
-
 		<div class="about-text">
 			<?php if ( is_wp_error( $pmpro_license_check ) ) { ?>
 				<p class="pmpro_message pmpro_error"><strong><?php echo esc_html( sprintf( __( 'There was an issue validating your license key: %s', 'paid-memberships-pro' ), $pmpro_license_check->get_error_message() ) );?></strong> <?php echo wp_kses( sprintf( __('Visit the PMPro <a href="%s" target="_blank">Membership Account</a> page to confirm that your account is active and to find your license key.', 'paid-memberships-pro' ), 'https://www.paidmembershipspro.com/login/?redirect_to=%2Fmembership-account%2F%3Futm_source%3Dplugin%26utm_medium%3Dpmpro-license%26utm_campaign%3Dmembership-account%26utm_content%3Dkey-not-valid' ), $allowed_pmpro_license_strings_html );?></p>
@@ -62,6 +61,7 @@ if ( defined( 'PMPRO_DIR' ) ) {
 				<tbody>
 					<tr id="pmpro-settings-key-box">
 						<td>
+							<label for="pmpro-license-key"><?php esc_html_e( 'License Key', 'paid-memberships-pro' ); ?></label>
 							<input type="text" name="pmpro-license-key" id="pmpro-license-key" value="<?php echo esc_attr($key);?>" placeholder="<?php _e('Enter license key here...', 'paid-memberships-pro' );?>" size="40" />
 							<?php wp_nonce_field( 'pmpro-key-nonce', 'pmpro-key-nonce' ); ?>
 							<?php submit_button( __( 'Validate Key', 'paid-memberships-pro' ), 'primary', 'pmpro-verify-submit', false ); ?>

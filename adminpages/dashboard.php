@@ -110,7 +110,7 @@ function pmpro_dashboard_welcome_callback() { ?>
     			<?php if ( current_user_can( 'pmpro_membershiplevels' ) ) { ?>
     				<li>
     					<?php if ( empty( $pmpro_level_ready ) ) { ?>
-    						<a href="<?php echo esc_url( admin_url( 'admin.php?page=pmpro-membershiplevels&edit=-1' ) );?>"><i class="dashicons dashicons-admin-users"></i> <?php esc_html_e( 'Create a Membership Level', 'paid-memberships-pro' ); ?></a>
+    						<a href="<?php echo esc_url( admin_url( 'admin.php?page=pmpro-membershiplevels&showpopup=1' ) );?>"><i class="dashicons dashicons-admin-users"></i> <?php esc_html_e( 'Create a Membership Level', 'paid-memberships-pro' ); ?></a>
     					<?php } else { ?>
     						<a href="<?php echo esc_url( admin_url( 'admin.php?page=pmpro-membershiplevels' ) );?>"><i class="dashicons dashicons-admin-users"></i> <?php esc_html_e( 'View Membership Levels', 'paid-memberships-pro' ); ?></a>
     					<?php } ?>
@@ -136,6 +136,12 @@ function pmpro_dashboard_welcome_callback() { ?>
     					<?php } ?>
     				</li>
     			<?php } ?>
+
+				<?php if ( current_user_can( 'pmpro_userfields' ) ) { ?>
+				<li>
+					<a href="<?php echo add_query_arg( array( 'page' => 'pmpro-userfields' ), get_admin_url(null, 'admin.php' ) ); ?>"><i class="dashicons dashicons-id"></i> <?php esc_attr_e( 'Manage User Fields', 'paid-memberships-pro' ); ?></a>
+				</li>
+				<?php } ?>
     		</ul>
     		<h3><?php esc_html_e( 'Other Settings', 'paid-memberships-pro' ); ?></h3>
     		<ul>
@@ -256,7 +262,7 @@ function pmpro_dashboard_report_recent_members_callback() {
     							if($auser->enddate)
     								echo apply_filters("pmpro_memberslist_expires_column", date_i18n(get_option('date_format'), $auser->enddate), $auser);
     							else
-    								echo __(apply_filters("pmpro_memberslist_expires_column", "Never", $auser), "pmpro");
+    								echo apply_filters("pmpro_memberslist_expires_column", __('Never', 'paid-memberships-pro'), $auser);
     						?>
     					</td>
     				</tr>
@@ -396,10 +402,10 @@ function pmpro_dashboard_news_updates_callback() {
 	        <?php foreach ( $rss_items as $item ) : ?>
 	            <li>
 	                <a href="<?php echo esc_url( $item->get_permalink() ); ?>"
-	                    title="<?php printf( __( 'Posted %s', 'paid-memberships-pro' ), $item->get_date( get_option( 'date_format' ) ) ); ?>">
+	                    title="<?php printf( __( 'Posted %s', 'paid-memberships-pro' ), date_i18n( get_option( 'date_format' ), $item->get_date( 'U' ) ) ); ?>">
 	                    <?php echo esc_html( $item->get_title() ); ?>
 	                </a>
-					<?php echo esc_html( $item->get_date( get_option( 'date_format' ) ) ); ?>
+					<?php echo esc_html( date_i18n( get_option( 'date_format' ), $item->get_date( 'U' ) ) ); ?>
 	            </li>
 	        <?php endforeach; ?>
 	    <?php endif; ?>

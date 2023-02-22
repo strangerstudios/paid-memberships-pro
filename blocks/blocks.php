@@ -64,7 +64,7 @@ function pmpro_block_editor_scripts() {
 	// Enqueue the bundled block JS file.
 	wp_enqueue_script(
 		'pmpro-blocks-editor-js',
-		plugins_url( 'js/blocks.build.js', PMPRO_BASE_FILE ),
+		plugins_url( 'js/blocks/blocks.build.js', PMPRO_BASE_FILE ),
 		[
 			'wp-i18n',
 			'wp-element',

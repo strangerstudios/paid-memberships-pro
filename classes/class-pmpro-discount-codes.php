@@ -197,9 +197,9 @@ class PMPro_Discount_Code{
             $after_action = 'pmpro_added_discount_code';
 
             $this->sqlQuery = "INSERT INTO $wpdb->pmpro_discount_codes ( `code`, `starts`, `expires`, `uses` ) 
-                               VALUES ('" . $this->code . "',
-                                       '" . $this->starts ."',
-                                       '" . $this->expires ."',
+                               VALUES ('" . esc_sql( $this->code ) . "',
+                                       '" . esc_sql( $this->starts ) ."',
+                                       '" . esc_sql( $this->expires ) ."',
                                        " . intval( $this->uses ) ."
                                )";                      
         } else {
@@ -208,11 +208,11 @@ class PMPro_Discount_Code{
             $after_action = 'pmpro_updated_discount_code';
 
             $this->sqlQuery = "UPDATE $wpdb->pmpro_discount_codes
-                                SET  `code` = '" . $this->code ."',
-                                    `starts` = '" . $this->starts . "',
-                                    `expires` = '" . $this->expires . "',
+                                SET  `code` = '" . esc_sql( $this->code ) ."',
+                                    `starts` = '" . esc_sql( $this->starts ) . "',
+                                    `expires` = '" . esc_sql( $this->expires ) . "',
                                     `uses` = " . intval( $this->uses ) . "
-                                WHERE code = '" . $this->code . "'
+                                WHERE code = '" . esc_sql( $this->code ) . "'
                                 LIMIT 1";
         }
 
@@ -254,12 +254,12 @@ class PMPro_Discount_Code{
                         " . floatval( $initial_payment ) . ",
                         " . floatval( $billing_amount ) . ",
                         " . intval( $cycle_number ) . ",
-                        '" . $cycle_period . "',
+                        '" . esc_sql( $cycle_period ) . "',
                         " . intval( $billing_limit ) . ",
                         " . floatval( $trial_amount ) . ",
                         " . intval( $trial_limit ) . ",
                         " . intval( $expiration_number ) . ",
-                        '" . $expiration_period . "'
+                        '" . esc_sql( $expiration_period ) . "'
                 )";                
                 
                 // Run the query here.

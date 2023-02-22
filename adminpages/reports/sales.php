@@ -183,7 +183,7 @@ function pmpro_report_sales_page()
 				 	$type_function( IF( mo2id IS NOT NULL, mo1total, NULL ) ) as renewals
 				 FROM ";
 	$sqlQuery .= "(";	// Sub query.
-	$sqlQuery .= "SELECT $date_function( DATE_ADD( mo1.timestamp, INTERVAL $tz_offset SECOND ) ) as date,
+	$sqlQuery .= "SELECT $date_function( DATE_ADD( mo1.timestamp, INTERVAL " . (int) $tz_offset . " SECOND ) ) as date,
 					    mo1.id as mo1id,
 						mo1.total as mo1total,
 						mo2.id as mo2id
@@ -199,15 +199,15 @@ function pmpro_report_sales_page()
 	}
 
 	$sqlQuery .= "WHERE mo1.total > 0
-					AND mo1.timestamp >= DATE_ADD( '$startdate' , INTERVAL - $tz_offset SECOND )
+					AND mo1.timestamp >= DATE_ADD( '" . esc_sql( $startdate ) . "' , INTERVAL - " . (int) $tz_offset . " SECOND )
 					AND mo1.status NOT IN('refunded', 'review', 'token', 'error')
 					AND mo1.gateway_environment = '" . esc_sql( $gateway_environment ) . "' ";
 
 	if(!empty($enddate))
-		$sqlQuery .= "AND mo1.timestamp <= DATE_ADD( '$enddate 23:59:59' , INTERVAL - $tz_offset SECOND )";
+		$sqlQuery .= "AND mo1.timestamp <= DATE_ADD( '" . esc_sql( $enddate ) . " 23:59:59' , INTERVAL - " . (int) $tz_offset . " SECOND )";
 
 	if(!empty($l))
-		$sqlQuery .= "AND mo1.membership_id IN(" . esc_sql( $l ) . ") ";
+		$sqlQuery .= "AND mo1.membership_id IN(" . $l . ") "; // $l is already escaped for SQL. See declaration.
 
 	if ( ! empty( $discount_code ) ) {
 		$sqlQuery .= "AND dc.code_id = '" . esc_sql( $discount_code ) . "' ";
@@ -218,9 +218,10 @@ function pmpro_report_sales_page()
 	$sqlQuery .= " GROUP BY date ORDER by date";
 
 	$dates = $wpdb->get_results($sqlQuery);
-		
+	
 	//fill in blanks in dates
 	$cols = array();
+	$csvdata = array();
 	$total_in_period = 0;
 	$units_in_period = 0; // Used for averages.
 	
@@ -232,6 +233,7 @@ function pmpro_report_sales_page()
 		for($i = 1; $i <= $lastday; $i++)
 		{
 			$cols[$i] = array(0, 0);
+			$csvdata[$i-1] = (object)array('date'=>$i, 'total'=>'', 'new'=> '', 'renewals'=>'');
 			if ( ! $currently_in_period || $i < $day_of_month ) {
 				$units_in_period++;
 			}
@@ -240,6 +242,7 @@ function pmpro_report_sales_page()
 			{
 				if($date->date == $i) {
 					$cols[$i] = array( $date->value, $date->renewals );
+					$csvdata[$i-1] = (object)array('date'=>$i, 'total'=>$date->value, 'new'=> $date->value - $date->renewals, 'renewals'=> $date->renewals);
 					if ( ! $currently_in_period || $i < $day_of_month ) {
 						$total_in_period += $date->value;
 					}
@@ -253,6 +256,7 @@ function pmpro_report_sales_page()
 		for($i = 1; $i < 13; $i++)
 		{
 			$cols[$i] = array(0, 0);
+			$csvdata[$i-1] = (object)array('date'=>$i, 'total'=>'', 'new'=> '', 'renewals'=>'');
 			if ( ! $currently_in_period || $i < $month_of_year ) {
 				$units_in_period++;
 			}
@@ -261,6 +265,7 @@ function pmpro_report_sales_page()
 			{
 				if($date->date == $i) {
 					$cols[$i] = array( $date->value, $date->renewals );
+					$csvdata[$i-1] = (object)array('date'=>$i, 'total'=>$date->value, 'new'=> $date->value - $date->renewals, 'renewals'=> $date->renewals);
 					if ( ! $currently_in_period || $i < $month_of_year ) {
 						$total_in_period += $date->value;
 					}
@@ -282,6 +287,8 @@ function pmpro_report_sales_page()
 		$current_year = intval( date( 'Y' ) );
 		for($i = $min; $i <= $max; $i++)
 		{
+			$cols[$i] = array(0, 0);
+			$csvdata[$i-1] = (object)array('date'=>$i, 'total'=>'', 'new'=> '', 'renewals'=>'');
 			if ( $i < $current_year ) {
 				$units_in_period++;
 			}
@@ -289,6 +296,7 @@ function pmpro_report_sales_page()
 			{
 				if($date->date == $i) {
 					$cols[$i] = array( $date->value, $date->renewals );
+					$csvdata[$i-1] = (object)array('date'=>$i, 'total'=>$date->value, 'new'=> $date->value - $date->renewals, 'renewals'=> $date->renewals);
 					if ( $i < $current_year ) {
 						$total_in_period += $date->value;
 					}
@@ -301,12 +309,29 @@ function pmpro_report_sales_page()
 	if ( 0 !== $units_in_period ) {
 		$average = $total_in_period / $units_in_period; // Not including this unit.
 	}
+	
+	// Save a transient for each combo of params. Expires in 1 hour.
+	$param_array = array( $period, $type, $month, $year, $l, $discount_code );
+	$param_hash = md5( implode( ' ', $param_array ) . PMPRO_VERSION );
+	set_transient( 'pmpro_sales_data_' . $param_hash, $csvdata, HOUR_IN_SECONDS );
+
+	// Build CSV export link.
+	$args = array(
+		'action' => 'sales_report_csv',
+		'period' => $period,
+		'type' => $type,
+		'year' => $year,
+		'month' => $month,
+		'level' => $l,
+		'discount_code' => $discount_code
+	);
+	$csv_export_link = add_query_arg( $args, admin_url( 'admin-ajax.php' ) );
 	?>
 	<form id="posts-filter" method="get" action="">
-	<h1>
+	<h1 class="wp-heading-inline">
 		<?php _e('Sales and Revenue', 'paid-memberships-pro' );?>
 	</h1>
-
+	<a target="_blank" href="<?php echo esc_url( $csv_export_link ); ?>" class="page-title-action"><?php esc_html_e( 'Export to CSV', 'paid-memberships-pro' ); ?></a>
 	<div class="tablenav top">
 		<?php _e('Show', 'paid-memberships-pro' )?>
 		<select id="period" name="period">
@@ -599,7 +624,12 @@ function pmpro_getSales( $period = 'all time', $levels = 'all', $type = 'all' ) 
 
 	// Restrict by level.
 	if( ! empty( $levels ) && $levels != 'all' ) {
-		$sqlQuery .= "AND mo1.membership_id IN(" . esc_sql( $levels ) . ") ";
+		// Let's make sure that each ID inside of $levels is an integer.
+		if ( ! is_array($levels) ) {
+			$levels = explode( ',', $levels );
+		}
+		$levels = implode( ',', array_map( 'intval', $levels ) );
+		$sqlQuery .= "AND mo1.membership_id IN(" . $levels . ") ";
 	}		
 	
 	// Filter to renewals or new orders only. 	
@@ -613,7 +643,7 @@ function pmpro_getSales( $period = 'all time', $levels = 'all', $type = 'all' ) 
 	$sqlQuery .= "GROUP BY mo1.id ";
 
 	// We want the count of rows produced, so update the query.
-	$sqlQuery = "SELECT COUNT(*) FROM (" . $sqlQuery . ") as t1";
+	$sqlQuery = "SELECT COUNT(*) FROM (" . $sqlQuery  . ") as t1";
 
 	$sales = $wpdb->get_var($sqlQuery);
 
@@ -662,12 +692,7 @@ function pmpro_get_prices_paid( $period, $count = NULL ) {
 
 	// Build query.
 	global $wpdb;
-	$sql_query = "SELECT ROUND(total,8) as rtotal, COUNT(*) as num FROM $wpdb->pmpro_membership_orders WHERE total > 0 AND status NOT IN('refunded', 'review', 'token', 'error') AND timestamp >= '" . $startdate . "' AND gateway_environment = '" . esc_sql( $gateway_environment ) . "' ";
-
-	// Restrict by level.
-	if ( ! empty( $levels ) ) {
-		$sql_query .= 'AND membership_id IN(' . $levels . ') ';
-	}
+	$sql_query = "SELECT ROUND(total,8) as rtotal, COUNT(*) as num FROM $wpdb->pmpro_membership_orders WHERE total > 0 AND status NOT IN('refunded', 'review', 'token', 'error') AND timestamp >= '" . esc_sql( $startdate ) . "' AND gateway_environment = '" . esc_sql( $gateway_environment ) . "' ";
 
 	$sql_query .= ' GROUP BY rtotal ORDER BY num DESC ';
 
@@ -790,8 +815,14 @@ function pmpro_getRevenue( $period, $levels = NULL, $type = 'all' ) {
 					AND mo1.gateway_environment = '" . esc_sql( $gateway_environment ) . "' ";
 
 	// Restrict by level.
-	if(!empty($levels))
+	if ( ! empty( $levels ) ) {
+		// Let's make sure that each ID inside of $levels is an integer.
+		if ( ! is_array($levels) ) {
+			$levels = explode( ',', $levels );
+		}
+		$levels = implode( ',', array_map( 'intval', $levels ) );
 		$sqlQuery .= "AND mo1.membership_id IN(" . $levels . ") ";
+	}
 		
 	// Filter to renewals or new orders only. 	
 	if ( $type == 'renewals' ) {
@@ -836,7 +867,7 @@ function pmpro_get_revenue_between_dates( $start_date, $end_date = '', $level_id
 		$sql_query .= " AND timestamp <= '" . esc_sql( $end_date ) . " 23:59:59'";
 	}
 	if ( ! empty( $level_ids ) ) {
-		$sql_query .= ' AND membership_id IN(' . implode( ', ', $levels ) . ') ';
+		$sql_query .= ' AND membership_id IN(' . implode( ', ', array_map( 'intval', $level_ids ) ) . ') '; 
 	}
 	return $wpdb->get_var($sql_query);
 }
@@ -850,3 +881,4 @@ function pmpro_report_sales_delete_transients()
 }
 add_action("pmpro_after_checkout", "pmpro_report_sales_delete_transients");
 add_action("pmpro_updated_order", "pmpro_report_sales_delete_transients");
+add_action("pmpro_added_order", "pmpro_report_sales_delete_transients");

@@ -210,7 +210,7 @@ function pmpro_sortable_column_query( $query ) {
 
 		if ( ! empty( $order ) ) {
 			$query->query_from .= " LEFT JOIN $wpdb->pmpro_memberships_users AS pmpro_mu ON $wpdb->users.ID = pmpro_mu.user_id AND pmpro_mu.status = 'active' LEFT JOIN $wpdb->pmpro_membership_levels AS pmpro_ml ON pmpro_mu.membership_id = pmpro_ml.id";
-			$query->query_orderby = "ORDER BY pmpro_ml.name " . esc_sql( $order ) . ", $wpdb->users.user_registered";
+			$query->query_orderby = "ORDER BY pmpro_ml.name " . $order . ", $wpdb->users.user_registered"; // All options for $order listed in safelist above are safe for use in a query.
 		}
 	}
 }

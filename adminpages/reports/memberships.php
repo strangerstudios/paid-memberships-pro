@@ -148,11 +148,11 @@ function pmpro_report_memberships_page()
 
 	if(isset($_REQUEST['level'])) {
 		if( $_REQUEST['level'] == 'paid-levels' ) {
-			$l = pmpro_report_get_levels( 'paid' );
+			$l = pmpro_report_get_levels( 'paid' ); // String of ints and commas. Already escaped for SQL.
 		}elseif( $_REQUEST['level'] == 'free-levels' ) {
-			$l = pmpro_report_get_levels( 'free' );
+			$l = pmpro_report_get_levels( 'free' ); // String of ints and commas. Already escaped for SQL.
 		}else{
-			$l = intval($_REQUEST['level']);
+			$l = intval($_REQUEST['level']); // Escaping for SQL.
 		}
 	} else {
 		$l = "";
@@ -208,7 +208,7 @@ function pmpro_report_memberships_page()
 	}
 
 	if ( ! empty( $l ) ) {
-		$sqlQuery .= "AND mu.membership_id IN(" . esc_sql( $l ) . ") ";
+		$sqlQuery .= "AND mu.membership_id IN(" . $l . ") "; // $l is already escaped for SQL. See declaration.
 	}
 
 	if ( ! empty( $discount_code ) ) {
@@ -288,7 +288,7 @@ function pmpro_report_memberships_page()
 
 		//restrict by level
 		if ( ! empty( $l ) ) {
-			$sqlQuery .= "AND mu1.membership_id IN(" . esc_sql( $l ) . ") ";
+			$sqlQuery .= "AND mu1.membership_id IN(" . $l . ") "; // $l is already escaped for SQL. See declaration.
 		}
 
 		if ( ! empty( $discount_code ) ) {
@@ -321,11 +321,27 @@ function pmpro_report_memberships_page()
 		}
 	}
 
+	// Build CSV export link.
+	$csv_export_link = admin_url( 'admin-ajax.php' );
+
+	$csv_export_link = add_query_arg( array(
+		'action' => 'membership_stats_csv',
+		'type' => $type,
+		'period' => $period,
+		'month' => $month,
+		'year' => $year,
+		'discount_code' => $discount_code,
+		'startdate' => $startdate,
+		'enddate' => $enddate,
+		'level' => $l
+	), $csv_export_link );
+
 	?>
 	<form id="posts-filter" method="get" action="">
-	<h1>
+	<h1 class="wp-heading-inline">
 		<?php _e('Membership Stats', 'paid-memberships-pro' );?>
 	</h1>
+   <a target="_blank" href="<?php echo esc_url( $csv_export_link ); ?>" class="page-title-action"><?php esc_html_e( 'Export to CSV', 'paid-memberships-pro' ); ?></a>
 	<div class="tablenav top">
 		<?php _e('Show', 'paid-memberships-pro' )?>
 		<select id="period" name="period">
@@ -512,8 +528,14 @@ function pmpro_getSignups($period = false, $levels = 'all')
 	$sqlQuery = "SELECT COUNT(DISTINCT mu.user_id) FROM $wpdb->pmpro_memberships_users mu WHERE mu.startdate >= '" . esc_sql( $startdate ) . "' ";
 
 	//restrict by level
-	if(!empty($levels) && $levels != 'all')
-		$sqlQuery .= "AND mu.membership_id IN(" . esc_sql( $levels ) . ") ";
+	if(!empty($levels) && $levels != 'all') {
+		// Let's make sure that each ID inside of $levels is an integer.
+		if ( ! is_array( $levels ) ) {
+			$levels = explode( ',', $levels );
+		}
+		$levels = implode( ',', array_map( 'intval', $levels ) );
+		$sqlQuery .= "AND mu.membership_id IN(" . $levels . ") ";
+	}
 
 	$signups = $wpdb->get_var($sqlQuery);
 
@@ -597,19 +619,17 @@ function pmpro_getCancellations($period = null, $levels = 'all', $status = array
 		FROM {$wpdb->pmpro_memberships_users} AS mu1
 		WHERE mu1.status IN('" . implode( "','", array_map( 'esc_sql', $status ) ) . "')
 			AND mu1.enddate >= '" . $startdate . "'
-			AND mu1.enddate <= " . $enddate  . "
+			AND mu1.enddate <= " . $enddate . "
 		";
 
 	//restrict by level
 	if(!empty($levels) && $levels != 'all') {
-
-		// the levels provided wasn't in array form
+		// Let's make sure that each ID inside of $levels is an integer.
 		if ( ! is_array($levels) ) {
-
-			$levels = array($levels);
+			$levels = explode( ',', $levels );
 		}
-
-		$sqlQuery .= "AND mu1.membership_id IN(" . implode( ',', array_map( 'esc_sql', $levels ) ) . ") ";
+		$levels = implode( ',', array_map( 'intval', $levels ) );
+		$sqlQuery .= "AND mu1.membership_id IN(" . $levels . ") ";
 	}
 
 	/**

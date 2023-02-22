@@ -1,23 +1,28 @@
 <?php
 /**
  * Get array of PMPro Capabilities
+ * Used below to figure out which page to have the main Membership menu link to.
+ * The order is important. The first cap the user has is used.
  */
 function pmpro_getPMProCaps() {
 	$pmpro_caps = array(
 		//pmpro_memberships_menu //this controls viewing the menu itself
-		'pmpro_dashboard',
+		'pmpro_dashboard',				
+		'pmpro_memberslist',
+		'pmpro_orders',
+		'pmpro_reports',				
 		'pmpro_membershiplevels',
+		'pmpro_discountcodes',
 		'pmpro_pagesettings',
 		'pmpro_paymentsettings',
-		'pmpro_emailsettings',
+		'pmpro_emailsettings',		
 		'pmpro_emailtemplates',
+		'pmpro_userfields',
 		'pmpro_advancedsettings',
 		'pmpro_addons',
-		'pmpro_memberslist',
-		'pmpro_reports',
-		'pmpro_orders',
-		'pmpro_discountcodes',
-		'pmpro_updates'
+		'pmpro_subscriptions',
+		'pmpro_updates',
+		'pmpro_manage_pause_mode'
 	);
 
 	return $pmpro_caps;
@@ -51,6 +56,9 @@ function pmpro_add_pages() {
 	add_submenu_page( 'pmpro-dashboard', __( 'Dashboard', 'paid-memberships-pro' ), __( 'Dashboard', 'paid-memberships-pro' ), 'pmpro_dashboard', 'pmpro-dashboard', 'pmpro_dashboard' );
 	$list_table_hook = add_submenu_page( 'pmpro-dashboard', __( 'Members', 'paid-memberships-pro' ), __( 'Members', 'paid-memberships-pro' ), 'pmpro_memberslist', 'pmpro-memberslist', 'pmpro_memberslist' );
 	add_submenu_page( 'pmpro-dashboard', __( 'Orders', 'paid-memberships-pro' ), __( 'Orders', 'paid-memberships-pro' ), 'pmpro_orders', 'pmpro-orders', 'pmpro_orders' );
+	if ( isset( $_REQUEST['page'] ) && $_REQUEST['page'] == 'pmpro-subscriptions' ) {
+		add_submenu_page( 'pmpro-dashboard', __( 'Subscriptions', 'paid-memberships-pro' ), __( 'Subscriptions', 'paid-memberships-pro' ), 'pmpro_subscriptions', 'pmpro-subscriptions', 'pmpro_subscriptions' );
+	}
 	add_submenu_page( 'pmpro-dashboard', __( 'Reports', 'paid-memberships-pro' ), __( 'Reports', 'paid-memberships-pro' ), 'pmpro_reports', 'pmpro-reports', 'pmpro_reports' );
 	add_submenu_page( 'pmpro-dashboard', __( 'Settings', 'paid-memberships-pro' ), __( 'Settings', 'paid-memberships-pro' ), 'pmpro_membershiplevels', 'pmpro-membershiplevels', 'pmpro_membershiplevels' );
 	add_submenu_page( 'pmpro-dashboard', __( 'Add Ons', 'paid-memberships-pro' ), __( 'Add Ons', 'paid-memberships-pro' ), 'pmpro_addons', 'pmpro-addons', 'pmpro_addons' );
@@ -70,6 +78,7 @@ function pmpro_add_pages() {
 	add_submenu_page( 'admin.php', __( 'Payment Settings', 'paid-memberships-pro' ), __( 'Payment Settings', 'paid-memberships-pro' ), 'pmpro_paymentsettings', 'pmpro-paymentsettings', 'pmpro_paymentsettings' );
 	add_submenu_page( 'admin.php', __( 'Email Settings', 'paid-memberships-pro' ), __( 'Email Settings', 'paid-memberships-pro' ), 'pmpro_emailsettings', 'pmpro-emailsettings', 'pmpro_emailsettings' );
 	add_submenu_page( 'admin.php', __( 'Email Templates', 'paid-memberships-pro' ), __( 'Email Templates', 'paid-memberships-pro' ), 'pmpro_emailtemplates', 'pmpro-emailtemplates', 'pmpro_emailtemplates' );
+	add_submenu_page( 'admin.php', __( 'User Fields', 'paid-memberships-pro' ), __( 'User Fields', 'paid-memberships-pro' ), 'pmpro_userfields', 'pmpro-userfields', 'pmpro_userfields' );
 	add_submenu_page( 'admin.php', __( 'Advanced Settings', 'paid-memberships-pro' ), __( 'Advanced Settings', 'paid-memberships-pro' ), 'pmpro_advancedsettings', 'pmpro-advancedsettings', 'pmpro_advancedsettings' );
 
 	add_action( 'load-' . $list_table_hook, 'pmpro_list_table_screen_options' );
@@ -78,6 +87,15 @@ function pmpro_add_pages() {
 	if ( pmpro_isUpdateRequired() ) {
 		add_submenu_page( 'pmpro-dashboard', __( 'Updates Required', 'paid-memberships-pro' ), __( 'Updates Required', 'paid-memberships-pro' ), 'pmpro_updates', 'pmpro-updates', 'pmpro_updates' );
 	}
+	
+	//Logic added here in order to always reach this page if PMPro is setup. ?page=pmpro-wizard is always reachable should people want to rerun through the Setup Wizard.
+	if ( pmpro_show_setup_wizard_link() ) {
+		$wizard_location = 'pmpro-dashboard';
+	} else {
+		$wizard_location = 'admin.php';	// Registers the page, but doesn't show up in menu.
+	}
+	
+	add_submenu_page( $wizard_location, __( 'Setup Wizard', 'paid-memberships-pro' ), __( 'Setup Wizard', 'paid-memberships-pro' ), 'pmpro_wizard', 'pmpro-wizard', 'pmpro_wizard' );
 }
 add_action( 'admin_menu', 'pmpro_add_pages' );
 
@@ -259,6 +277,10 @@ function pmpro_dashboard() {
 	require_once( PMPRO_DIR . '/adminpages/dashboard.php' );
 }
 
+function pmpro_wizard() {
+	require_once( PMPRO_DIR . '/adminpages/wizard/wizard.php' );
+}
+
 function pmpro_membershiplevels() {
 	require_once( PMPRO_DIR . '/adminpages/membershiplevels.php' );
 }
@@ -275,6 +297,15 @@ function pmpro_emailsettings() {
 	require_once( PMPRO_DIR . '/adminpages/emailsettings.php' );
 }
 
+function pmpro_userfields() {
+	//ensure, that the needed javascripts been loaded to allow drag/drop, expand/collapse and hide/show of boxes
+	wp_enqueue_script( 'common' );
+	wp_enqueue_script( 'wp-lists' );
+	wp_enqueue_script( 'postbox' );
+	
+	require_once( PMPRO_DIR . '/adminpages/userfields.php' );
+}
+
 function pmpro_emailtemplates() {
 	require_once( PMPRO_DIR . '/adminpages/emailtemplates.php' );
 }
@@ -289,6 +320,10 @@ function pmpro_addons() {
 
 function pmpro_orders() {
 	require_once( PMPRO_DIR . '/adminpages/orders.php' );
+}
+
+function pmpro_subscriptions() {
+	require_once( PMPRO_DIR . '/adminpages/subscriptions.php' );
 }
 
 function pmpro_license_settings_page() {
