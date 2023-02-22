@@ -193,7 +193,7 @@ class PMPro_Discount_Code_List_Table extends WP_List_Table {
 		if ( $count ) {
 			$sqlQuery = "SELECT COUNT( DISTINCT id ) FROM $wpdb->pmpro_discount_codes ";
 		} else {
-			$sqlQuery = "SELECT SQL_CALC_FOUND_ROWS *, UNIX_TIMESTAMP(CONVERT_TZ(starts, '+00:00', @@global.time_zone)) as starts, UNIX_TIMESTAMP(CONVERT_TZ(expires, '+00:00', @@global.time_zone)) as expires FROM $wpdb->pmpro_discount_codes ";
+			$sqlQuery = "SELECT SQL_CALC_FOUND_ROWS *, UNIX_TIMESTAMP(CONVERT_TZ(starts, '+00:00', @@global.time_zone)) as starts, UNIX_TIMESTAMP(CONVERT_TZ(expires, '+00:00', @@global.time_zone)) as expires, (SELECT COUNT(*) FROM $wpdb->pmpro_discount_codes_uses WHERE code_id = do.id) as used FROM $wpdb->pmpro_discount_codes as do ";
 		}
 
 		if ( ! empty( $s ) ) {
@@ -207,6 +207,10 @@ class PMPro_Discount_Code_List_Table extends WP_List_Table {
 				
 				if( $orderby == 'discount_code' ) {
 					$orderby = 'code';
+				}
+
+				if( $orderby == 'uses' ) {
+					$orderby = 'used';
 				}
 
 			} else {
@@ -228,19 +232,7 @@ class PMPro_Discount_Code_List_Table extends WP_List_Table {
 		if( $count ) {
 			$sql_table_data = $wpdb->get_var( $sqlQuery );
 		} else {
-			$discount_code_results = $wpdb->get_results( $sqlQuery, ARRAY_A );
-
-			$discount_data = array();
-			//PR is still in draft - should look at joining this instead of doing an extra query.
-			//This will help with sorting by amount of times the code has been used
-			foreach( $discount_code_results as $discount_code_result ) {
-				$uses = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM $wpdb->pmpro_discount_codes_uses WHERE code_id = %d", esc_sql( $discount_code_result['id'] ) ) );
-
-				$discount_data[] = array_merge( $discount_code_result, array( 'used' => $uses ) );
-			}
-
-			$sql_table_data = $discount_data;
-			
+			$sql_table_data = $wpdb->get_results( $sqlQuery, ARRAY_A );
 		}
 
 		return $sql_table_data;
@@ -441,8 +433,6 @@ class PMPro_Discount_Code_List_Table extends WP_List_Table {
 		
 		global $wpdb;
 		
-		
-
 		if( $item['uses'] > 0 ) {
 			echo "<strong>" . (int)$item['used'] . "</strong>/" . $item->uses;
 		} else {
