@@ -187,8 +187,20 @@ class PMPro_Orders_List_Table extends WP_List_Table {
 	private function sql_table_data( $count = false ) {
 
         global $wpdb;
+        
+        $items_per_page = $this->get_items_per_page( 'orders_per_page' );
+        /**
+         * Filter to set the default number of items to show per page
+         * on the Orders page in the admin.
+         *
+         * @since 1.8.4.5
+         *
+         * @param int $limit The number of items to show per page.
+         */
+        $limit = apply_filters( 'pmpro_orders_per_page', $items_per_page );
 
-		$orders_list_query = pmpro_orderslist_query( $count );	
+		$orders_list_query = pmpro_orderslist_query( $count, $limit );
+        	
         $sqlQuery = $orders_list_query['sql_query'];
 
 		if(  $count ) {
@@ -308,19 +320,16 @@ class PMPro_Orders_List_Table extends WP_List_Table {
                 $filter = 'all';
             }
     
-            if ( isset( $_REQUEST['limit'] ) ) {
-                $limit = intval( $_REQUEST['limit'] );
-            } else {
-                /**
-                 * Filter to set the default number of items to show per page
-                 * on the Orders page in the admin.
-                 *
-                 * @since 1.8.4.5
-                 *
-                 * @param int $limit The number of items to show per page.
-                 */
-                $limit = apply_filters( 'pmpro_orders_per_page', 15 );
-            }
+            $items_per_page = $this->get_items_per_page( 'orders_per_page' );
+            /**
+             * Filter to set the default number of items to show per page
+             * on the Orders page in the admin.
+             *
+             * @since 1.8.4.5
+             *
+             * @param int $limit The number of items to show per page.
+             */
+            $limit = apply_filters( 'pmpro_orders_per_page', $items_per_page );
 
             $end   = $pn * $limit;
             $start = $end - $limit;
