@@ -660,9 +660,14 @@ function pmpro_get_mmpu_incompatible_add_ons() {
 	return apply_filters( 'pmpro_mmpu_incompatible_add_ons', array() );
 }
 
-// Check if installed, deactivate it and show a notice now.
-function pmpro_check_for_deprecated_add_ons() {
-
+/**
+ * Get a list of deprecated PMPro Add Ons.
+ *
+ * @since TBD
+ *
+ * @return array Add Ons that are deprecated.
+ */
+function pmpro_get_deprecated_add_ons() {
 	$deprecated = array(
 		'pmpro-member-history' => array(
 			'file' => 'pmpro-member-history.php',
@@ -690,8 +695,14 @@ function pmpro_check_for_deprecated_add_ons() {
 	
 	// If the list is empty or not an array, just bail.
 	if ( empty( $deprecated ) || ! is_array( $deprecated ) ) {
-		return;
+		return array();
 	}
+	return $deprecated;
+}
+
+// Check if installed, deactivate it and show a notice now.
+function pmpro_check_for_deprecated_add_ons() {
+	$deprecated = pmpro_get_deprecated_add_ons();
 	
 	$deprecated_active = array();
 	foreach( $deprecated as $key => $values ) {
@@ -728,6 +739,28 @@ function pmpro_check_for_deprecated_add_ons() {
 	}
 }
 add_action( 'admin_notices', 'pmpro_check_for_deprecated_add_ons' );
+
+/**
+ * Remove the "Activate" link on the plugins page for deprecated add ons.
+ *
+ * @since TBD
+ *
+ * @param array  $actions An array of plugin action links.
+ * @param string $plugin_file Path to the plugin file relative to the plugins directory.
+ * @return array $actions An array of plugin action links.
+ */
+function pmpro_deprecated_add_ons_action_links( $actions, $plugin_file ) {
+	$deprecated = pmpro_get_deprecated_add_ons();
+	
+	foreach( $deprecated as $key => $values ) {
+		if ( $plugin_file == $key . '/' . $values['file'] ) {
+			unset( $actions['activate'] );
+		}
+	}
+	
+	return $actions;
+}
+add_filter( 'plugin_action_links', 'pmpro_deprecated_add_ons_action_links', 10, 2 );
 
 /**
  * The 2Checkout gateway was deprecated in v2.6.
