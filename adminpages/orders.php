@@ -911,44 +911,28 @@ require_once( dirname( __FILE__ ) . '/admin_header.php' ); ?>
 		<h1 class="wp-heading-inline"><?php esc_html_e( 'Orders', 'paid-memberships-pro' ); ?></h1>
 		<a href="<?php echo esc_url( add_query_arg( array( 'page' => 'pmpro-orders', 'order' => -1 ), admin_url( 'admin.php' ) ) ); ?>" class="page-title-action pmpro-has-icon pmpro-has-icon-plus"><?php esc_html_e( 'Add New Order', 'paid-memberships-pro' ); ?></a>
 
-		<?php
+		<a target="_blank" href="<?php echo esc_url( $export_url ); ?>" class="page-title-action pmpro-has-icon pmpro-has-icon-download"><?php esc_html_e( 'Export to CSV', 'paid-memberships-pro' ); ?></a>
 
-		global $orders_list_table, $wpdb;			
-
-		$orders_list_query = pmpro_orderslist_query();
-
-		$sqlQuery = $orders_list_query['sql_query'];
-		
-		$export_url = $orders_list_query['export_url'];
-
-		$order_ids = $wpdb->get_col( $sqlQuery );
-
-		if ( $order_ids ) {
-
+		<?php if ( ! empty( $pmpro_msg ) ) { ?>
+			<div id="message" class="
+			<?php
+			if ( $pmpro_msgt == 'success' ) {
+				echo 'updated fade';
+			} else {
+				echo 'error';
+			}
 			?>
-			<a target="_blank" href="<?php echo esc_url( $export_url ); ?>" class="page-title-action pmpro-has-icon pmpro-has-icon-download"><?php esc_html_e( 'Export to CSV', 'paid-memberships-pro' ); ?></a>
+			"><p><?php echo $pmpro_msg; ?></p></div>
+		<?php }
 
-			<?php if ( ! empty( $pmpro_msg ) ) { ?>
-				<div id="message" class="
-				<?php
-				if ( $pmpro_msgt == 'success' ) {
-					echo 'updated fade';
-				} else {
-					echo 'error';
-				}
-				?>
-				"><p><?php echo $pmpro_msg; ?></p></div>
-			<?php }
+		$orders_list_table = new PMPro_Orders_List_Table();
+		$orders_list_table->prepare_items();
 
-			$orders_list_table = new PMPro_Orders_List_Table();
-			$orders_list_table->prepare_items();
+		$orders_list_table->search_box( __( 'Search Orders', 'paid-memberships-pro' ), 'paid-memberships-pro' );
+		$orders_list_table->display();
 
-			$orders_list_table->search_box( __( 'Search Orders', 'paid-memberships-pro' ), 'paid-memberships-pro' );
-			$orders_list_table->display();
-
-			?>
+		?>
 	</form>
-	
-<?php } }?>
-<?php
+<?php }
+
 require_once( dirname( __FILE__ ) . '/admin_footer.php' );

@@ -4590,10 +4590,25 @@ function pmpro_orderslist_query( $count = false, $limit = 15 ) {
 		$order_query = 'ORDER BY id DESC';
 	}
 
+	$paid_string = __( 'Paid', 'paid-memberships-pro' );
+	$cancelled_string = __( 'Cancelled', 'paid-memberships-pro' );
+	$refunded_string = __( 'Refunded', 'paid-memberships-pro' );
+	$token_string = __( 'Token', 'paid-memberships-pro' );
+	$review_string = __( 'Review', 'paid-memberships-pro' );
+	$pending_string = __( 'Pending', 'paid-memberships-pro' );
+
+	if( $count ) {
+		$calculation_function = 'COUNT(*), ';
+	} else {
+		$calculation_function = 'SQL_CALC_FOUND_ROWS';
+	}
+
+	$sqlQuery = "SELECT $calculation_function o.id, CASE WHEN o.status = 'success' THEN 'Paid' WHEN o.status = 'cancelled' THEN '$paid_string' WHEN o.status = 'refunded' THEN '$refunded_string' WHEN o.status = 'token' THEN '$token_string' WHEN o.status = 'review' THEN '$review_string' WHEN o.status = 'pending' THEN '$pending_string' ELSE '$cancelled_string' END as `status_label` FROM $wpdb->pmpro_membership_orders o LEFT JOIN $wpdb->pmpro_membership_levels ml ON o.membership_id = ml.id LEFT JOIN $wpdb->users u ON o.user_id = u.ID ";
+
 	if ( $s ) {
-		$sqlQuery = "SELECT SQL_CALC_FOUND_ROWS o.id FROM $wpdb->pmpro_membership_orders o LEFT JOIN $wpdb->users u ON o.user_id = u.ID LEFT JOIN $wpdb->pmpro_membership_levels l ON o.membership_id = l.id ";
 
 		$join_with_usermeta = apply_filters( 'pmpro_orders_search_usermeta', false );
+		
 		if ( $join_with_usermeta ) {
 			$sqlQuery .= "LEFT JOIN $wpdb->usermeta um ON o.user_id = um.user_id ";
 		}
@@ -4624,7 +4639,7 @@ function pmpro_orderslist_query( $count = false, $limit = 15 ) {
 			'u.user_login',
 			'u.user_email',
 			'u.display_name',
-			'l.name',
+			'ml.name',
 		);
 
 		if ( $join_with_usermeta ) {
@@ -4641,23 +4656,18 @@ function pmpro_orderslist_query( $count = false, $limit = 15 ) {
 		//Not escaping here because we escape the values in the condition statement
 		$sqlQuery .= 'AND ' . $condition . ' ';
 
-		$sqlQuery .= 'GROUP BY o.id ORDER BY o.id DESC, o.timestamp DESC ';
+		if( $count ) {
+			// $sqlQuery .= 'GROUP BY o.id ORDER BY o.id DESC, o.timestamp DESC ';
+		}
+
 	} else {
 
-		$paid_string = __( 'Paid', 'paid-memberships-pro' );
-		$cancelled_string = __( 'Cancelled', 'paid-memberships-pro' );
-		$refunded_string = __( 'Refunded', 'paid-memberships-pro' );
-		$token_string = __( 'Token', 'paid-memberships-pro' );
-		$review_string = __( 'Review', 'paid-memberships-pro' );
-		$pending_string = __( 'Pending', 'paid-memberships-pro' );
-
-		$sqlQuery = "SELECT SQL_CALC_FOUND_ROWS o.id, CASE WHEN o.status = 'success' THEN 'Paid' WHEN o.status = 'cancelled' THEN '$paid_string' WHEN o.status = 'refunded' THEN '$refunded_string' WHEN o.status = 'token' THEN '$token_string' WHEN o.status = 'review' THEN '$review_string' WHEN o.status = 'pending' THEN '$pending_string' ELSE '$cancelled_string' END as `status_label` FROM $wpdb->pmpro_membership_orders o LEFT JOIN $wpdb->pmpro_membership_levels ml ON o.membership_id = ml.id ";
-		
 		if ( $filter === 'with-discount-code' ) {
 			$sqlQuery .= "LEFT JOIN $wpdb->pmpro_discount_codes_uses dc ON o.id = dc.order_id ";
 		}
 		//Not escaping here because we escape the values in the condition statement
 		$sqlQuery .= "WHERE " . $condition . ' ' . $order_query . ' ';
+
 	}
 	
 	if( ! $count ) {

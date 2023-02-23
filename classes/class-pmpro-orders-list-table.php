@@ -193,13 +193,10 @@ class PMPro_Orders_List_Table extends WP_List_Table {
         $sqlQuery = $orders_list_query['sql_query'];
 
 		if(  $count ) {
-			$sql_table_data = $wpdb->get_var( $sqlQuery );                   
+			$sql_table_data = $wpdb->get_var( $sqlQuery );    
 		} else {
-            
 			$order_ids = $wpdb->get_col( $sqlQuery );
-
             $order_data = array();
-
             foreach ( $order_ids as $order_id ) {
 				$order            = new MemberOrder();
 				$order->nogateway = true;
@@ -207,11 +204,8 @@ class PMPro_Orders_List_Table extends WP_List_Table {
 				$order->getUser();
 
                 $order_data[] = $order;
-
             }
-
             $sql_table_data = $order_data;
-			
 		}
 
 		return $sql_table_data;
