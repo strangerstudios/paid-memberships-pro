@@ -866,8 +866,8 @@ class PMPro_Orders_List_Table extends WP_List_Table {
         $level = pmpro_getLevel( $item->membership_id );
         if ( ! empty( $level ) ) {
             echo esc_html( $level->name );
-        } elseif ( $order->membership_id > 0 ) {
-            echo '['. esc_html_e( 'deleted', 'paid-memberships-pro' ).']';
+        } elseif ( $item->membership_id > 0 ) {
+            echo '['. esc_html( 'deleted', 'paid-memberships-pro' ).']';
         } else {
             esc_html_e( '&#8212;', 'paid-memberships-pro' );
         }
