@@ -4596,6 +4596,7 @@ function pmpro_orderslist_query( $count = false, $limit = 15 ) {
 	$token_string = __( 'Token', 'paid-memberships-pro' );
 	$review_string = __( 'Review', 'paid-memberships-pro' );
 	$pending_string = __( 'Pending', 'paid-memberships-pro' );
+	$error_string = __( 'Error', 'paid-memberships-pro' );
 
 	if( $count ) {
 		$calculation_function = 'COUNT(*), ';
@@ -4603,7 +4604,7 @@ function pmpro_orderslist_query( $count = false, $limit = 15 ) {
 		$calculation_function = 'SQL_CALC_FOUND_ROWS';
 	}
 
-	$sqlQuery = "SELECT $calculation_function o.id, CASE WHEN o.status = 'success' THEN 'Paid' WHEN o.status = 'cancelled' THEN '$paid_string' WHEN o.status = 'refunded' THEN '$refunded_string' WHEN o.status = 'token' THEN '$token_string' WHEN o.status = 'review' THEN '$review_string' WHEN o.status = 'pending' THEN '$pending_string' ELSE '$cancelled_string' END as `status_label` FROM $wpdb->pmpro_membership_orders o LEFT JOIN $wpdb->pmpro_membership_levels ml ON o.membership_id = ml.id LEFT JOIN $wpdb->users u ON o.user_id = u.ID ";
+	$sqlQuery = "SELECT $calculation_function o.id, CASE WHEN o.status = 'success' THEN 'Paid' WHEN o.status = 'cancelled' THEN '$paid_string' WHEN o.status = 'refunded' THEN '$refunded_string' WHEN o.status = 'token' THEN '$token_string' WHEN o.status = 'review' THEN '$review_string' WHEN o.status = 'pending' THEN '$pending_string' WHEN o.status = 'error' THEN '$error_string' ELSE '$cancelled_string' END as `status_label` FROM $wpdb->pmpro_membership_orders o LEFT JOIN $wpdb->pmpro_membership_levels ml ON o.membership_id = ml.id LEFT JOIN $wpdb->users u ON o.user_id = u.ID ";
 
 	if ( $s ) {
 
