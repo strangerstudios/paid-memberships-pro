@@ -184,22 +184,11 @@ class PMPro_Orders_List_Table extends WP_List_Table {
 	 *
 	 * @return Array|integer if $count parameter = true
 	 */
-	private function sql_table_data( $count = false ) {
+	private function sql_table_data( $count = false, $limit = 15 ) {
 
         global $wpdb;
-        
-        $items_per_page = $this->get_items_per_page( 'orders_per_page' );
-        /**
-         * Filter to set the default number of items to show per page
-         * on the Orders page in the admin.
-         *
-         * @since 1.8.4.5
-         *
-         * @param int $limit The number of items to show per page.
-         */
-        $limit = apply_filters( 'pmpro_orders_per_page', $items_per_page );
 
-		$orders_list_query = pmpro_orderslist_query( $count, $limit );
+        $orders_list_query = pmpro_orderslist_query( $count, $limit );
         	
         $sqlQuery = $orders_list_query['sql_query'];
 

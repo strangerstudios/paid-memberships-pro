@@ -4,6 +4,8 @@ if ( ! function_exists( 'current_user_can' ) || ( ! current_user_can( 'manage_op
 	die( __( 'You do not have permissions to perform this action.', 'paid-memberships-pro' ) );
 }
 
+global $wpdb;
+
 // deleting?
 if ( ! empty( $_REQUEST['delete'] ) ) {
 	// Check nonce for deleting.

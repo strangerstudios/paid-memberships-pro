@@ -4646,8 +4646,12 @@ function pmpro_orderslist_query( $count = false, $limit = 15 ) {
 
 		$paid_string = __( 'Paid', 'paid-memberships-pro' );
 		$cancelled_string = __( 'Cancelled', 'paid-memberships-pro' );
+		$refunded_string = __( 'Refunded', 'paid-memberships-pro' );
+		$token_string = __( 'Token', 'paid-memberships-pro' );
+		$review_string = __( 'Review', 'paid-memberships-pro' );
+		$pending_string = __( 'Pending', 'paid-memberships-pro' );
 
-		$sqlQuery = "SELECT SQL_CALC_FOUND_ROWS o.id, CASE WHEN o.status = 'success' THEN 'Paid' WHEN o.status = 'cancelled' THEN '$paid_string' ELSE '$cancelled_string' END as `status_label` FROM $wpdb->pmpro_membership_orders o LEFT JOIN $wpdb->pmpro_membership_levels ml ON o.membership_id = ml.id ";
+		$sqlQuery = "SELECT SQL_CALC_FOUND_ROWS o.id, CASE WHEN o.status = 'success' THEN 'Paid' WHEN o.status = 'cancelled' THEN '$paid_string' WHEN o.status = 'refunded' THEN '$refunded_string' WHEN o.status = 'token' THEN '$token_string' WHEN o.status = 'review' THEN '$review_string' WHEN o.status = 'pending' THEN '$pending_string' ELSE '$cancelled_string' END as `status_label` FROM $wpdb->pmpro_membership_orders o LEFT JOIN $wpdb->pmpro_membership_levels ml ON o.membership_id = ml.id ";
 		
 		if ( $filter === 'with-discount-code' ) {
 			$sqlQuery .= "LEFT JOIN $wpdb->pmpro_discount_codes_uses dc ON o.id = dc.order_id ";
