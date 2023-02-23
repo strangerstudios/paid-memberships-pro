@@ -162,6 +162,7 @@
 						'id'     => $invoice->payment_intent,
 						'expand' => array(
 							'payment_method',
+							'latest_charge',
 						),
 					);
 					$payment_intent = \Stripe\PaymentIntent::retrieve( $payment_intent_args );
@@ -169,9 +170,9 @@
 					$payment_method = null;
 					if ( ! empty( $payment_intent->payment_method ) ) {
 						$payment_method = $payment_intent->payment_method;
-					} elseif( ! empty( $payment_intent->charges->data[0] ) ) {
+					} elseif( ! empty( $payment_intent->latest_charge ) ) {
 						// If we didn't get a payment method, check the charge.
-						$payment_method = $payment_intent->charges->data[0]->payment_method_details;
+						$payment_method = $payment_intent->latest_charge->payment_method_details;
 					}					
 					if ( empty( $payment_method ) ) {						
 						$logstr .= "Could not find payment method for invoice " . $invoice->id . ".";						
@@ -256,6 +257,7 @@
 		          'id'     => $invoice->payment_intent,
 		          'expand' => array(
 		            'payment_method',
+					'latest_charge',
 		          ),
 		        );
 		        $payment_intent = \Stripe\PaymentIntent::retrieve( $payment_intent_args );		        
@@ -263,9 +265,9 @@
 				$payment_method = null;
 				if ( ! empty( $payment_intent->payment_method ) ) {
 					$payment_method = $payment_intent->payment_method;
-				} elseif( ! empty( $payment_intent->charges->data[0] ) ) {
+				} elseif( ! empty( $payment_intent->latest_charge ) ) {
 					// If we didn't get a payment method, check the charge.
-					$payment_method = $payment_intent->charges->data[0]->payment_method_details;
+					$payment_method = $payment_intent->latest_charge->payment_method_details;
 				}
 				if ( empty( $payment_method ) ) {		       	
 					$logstr .= "Could not find payment method for invoice " . $invoice->id;					
@@ -343,16 +345,18 @@
 					'id'     => $pmpro_stripe_event->data->object->payment_intent,
 					'expand' => array(
 						'payment_method',
+						'latest_charge',
 					),
 				);
 				$payment_intent = \Stripe\PaymentIntent::retrieve( $payment_intent_args );
 				// Find the payment method.
-				$payment_method = null;
+				$payment_method = null;				
+				
 				if ( ! empty( $payment_intent->payment_method ) ) {
 					$payment_method = $payment_intent->payment_method;
-				} elseif( ! empty( $payment_intent->charges->data[0] ) ) {
+				} elseif( ! empty( $payment_intent->latest_charge ) ) {
 					// If we didn't get a payment method, check the charge.
-					$payment_method = $payment_intent->charges->data[0]->payment_method_details;
+					$payment_method = $payment_intent->latest_charge->payment_method_details;
 				}				
 				if ( empty( $payment_method ) ) {
 					$logstr .= "Could not find payment method for charge " . $pmpro_stripe_event->data->object->id . ".";
@@ -550,10 +554,11 @@
 						'id'     => $checkout_session->payment_intent,
 						'expand' => array(
 							'payment_method',
+							'latest_charge',
 						),
 					);
 					$payment_intent = \Stripe\PaymentIntent::retrieve( $payment_intent_args );
-					$order->payment_transaction_id = $payment_intent->charges->data[0]->id;
+					$order->payment_transaction_id = $payment_intent->latest_charge;
 					if ( ! empty( $payment_intent->payment_method ) ) {
 						$payment_method = $payment_intent->payment_method;
 					}
@@ -758,13 +763,13 @@
    	/**
 		* Get the Member's Order from a Stripe Event.
 		*
-		* @deprecated TBD
+		* @deprecated 2.10
 		*
 		* @param Object $pmpro_stripe_event The Stripe Event object sent via webhook.
 		* @return PMPro_MemberOrder|bool Returns either the member order object linked to the Stripe Event data or false if no order is found.
 		*/
 	function getOldOrderFromInvoiceEvent( $pmpro_stripe_event ) {	
-		_deprecated_function( __FUNCTION__, 'TBD' );
+		_deprecated_function( __FUNCTION__, '2.10' );
 
 		// Pause here to give PMPro a chance to finish checkout.
 		sleep( PMPRO_STRIPE_WEBHOOK_DELAY );
@@ -828,10 +833,10 @@
 	}
 
 	/**
-	 * @deprecated TBD
+	 * @deprecated 2.10
 	 */
 	function getOrderFromInvoiceEvent($pmpro_stripe_event) {
-		_deprecated_function( __FUNCTION__, 'TBD' );
+		_deprecated_function( __FUNCTION__, '2.10' );
 
 		//pause here to give PMPro a chance to finish checkout
 		sleep(PMPRO_STRIPE_WEBHOOK_DELAY);
@@ -955,8 +960,7 @@ function pmpro_stripe_webhook_change_membership_level( $morder ) {
 	);
 
 	global $pmpro_error;
-	if ( ! empty( $pmpro_error ) ) {
-		echo $pmpro_error;
+	if ( ! empty( $pmpro_error ) ) {		
 		ipnlog( $pmpro_error );
 	}
 

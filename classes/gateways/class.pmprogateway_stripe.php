@@ -1576,10 +1576,10 @@ class PMProGateway_stripe extends PMProGateway {
 	 *
 	 * @return bool
 	 *
-	 * @deprecated TBD
+	 * @deprecated 2.10
 	 */
 	public static function stripe_checkout_beta_enabled() {
-		_deprecated_function( __FUNCTION__, 'TBD' );
+		_deprecated_function( __FUNCTION__, '2.10' );
 		return true;
 	}
 
@@ -1799,6 +1799,7 @@ class PMProGateway_stripe extends PMProGateway {
 		$checkout_session_params = array(
 			'customer' => $customer->id,
 			'line_items' => $line_items,
+			// $subscription_data is only set if level is recurring. Could be empty though.
 			'mode' => isset( $subscription_data ) ? 'subscription' : 'payment',
 			'automatic_tax' => $automatic_tax,
 			'tax_id_collection' => $tax_id_collection,
@@ -1817,7 +1818,7 @@ class PMProGateway_stripe extends PMProGateway {
 		}
 
 		// For one-time payments, make sure that we create an invoice.
-		if ( empty( $subscription_data ) ) {
+		if ( $checkout_session_params['mode'] === 'payment' ) {
 			$checkout_session_params['invoice_creation']['enabled'] = true;
 		}
 
@@ -1864,7 +1865,7 @@ class PMProGateway_stripe extends PMProGateway {
 	/**
 	 * Send the user to the Stripe Customer Portal if the customer portal is enabled.
 	 *
-	 * @since TBD.
+	 * @since 2.10.
 	 */
 	public static function pmpro_billing_preheader_stripe_customer_portal() {
 		if ( 'portal' === pmpro_getOption( 'stripe_update_billing_flow' ) ) {
@@ -2444,7 +2445,13 @@ class PMProGateway_stripe extends PMProGateway {
 						if ( pmpro_license_isValid( null, pmpro_license_get_premium_types() ) ) {
 							esc_html_e( 'Note: You have a valid license and are not charged additional platform fees for payment processing.', 'paid-memberships-pro');
 						} else {
-							esc_html_e( 'Note: You are using the free Stripe payment gateway integration. This includes an additional 1% fee for payment processing. This fee is removed by activating a premium PMPro license.', 'paid-memberships-pro');
+							$application_fee_percentage = self::get_application_fee_percentage();
+							if ( ! empty( $application_fee_percentage ) ) {
+								echo sprintf( esc_html__( 'Note: You are using the free Stripe payment gateway integration. This includes an additional %s fee for payment processing. This fee is removed by activating a premium PMPro license.', 'paid-memberships-pro' ), intval( $application_fee_percentage ) . '%' );
+							} else {
+								esc_html_e( 'Note: You are using the free Stripe payment gateway integration. There is no additional fee for payment processing above what Stripe charges.', 'paid-memberships-pro' );
+							}
+							
 						}
 						echo ' <a href="https://www.paidmembershipspro.com/gateway/stripe/?utm_source=plugin&utm_medium=pmpro-paymentsettings&utm_campaign=gateways&utm_content=stripe-fees#tab-fees" target="_blank" rel="noopener noreferrer">' . esc_html__( 'Learn More &raquo;', 'paid-memberships-pro' ) . '</a>';
 					?>
@@ -5120,13 +5127,13 @@ class PMProGateway_stripe extends PMProGateway {
 	 * Determine whether the webhook is working by checking for Stripe orders with invalid transaction IDs.
 	 *
 	 * @deprecated 2.7.0. Only deprecated for public use, will be changed to private non-static in a future version.
-	 * @deprecated TBD. Now fully deprecated.
+	 * @deprecated 2.10. Now fully deprecated.
 	 *
 	 * @param string|null $gateway_environment to check webhooks for. Defaults to set gateway environment.
 	 * @return bool Whether the webhook is working.
 	 */
 	public static function webhook_is_working( $gateway_environment = null ) {
-		_deprecated_function( __FUNCTION__, 'TBD' );
+		_deprecated_function( __FUNCTION__, '2.10' );
 		global $wpdb;
 
 		if ( empty( $gateway_environment ) ) {
@@ -5173,10 +5180,10 @@ class PMProGateway_stripe extends PMProGateway {
 	 * @returns HTML with the date of the last webhook or an error message.
 	 * @since 2.6
 	 * @deprecated 2.7.0. Only deprecated for public use, will be changed to private non-static in a future version.
-	 * @deprecated TBD. Now fully deprecated.
+	 * @deprecated 2.10. Now fully deprecated.
 	 */
 	public static function get_last_webhook_date( $environment = 'live' ) {
-		_deprecated_function( __FUNCTION__, 'TBD' );
+		_deprecated_function( __FUNCTION__, '2.10' );
 		$last_webhook = get_option( 'pmpro_stripe_last_webhook_received_' . $environment );
 		if ( ! empty( $last_webhook ) ) {
 			echo '<p>' . esc_html__( 'Last webhook received at', 'paid-memberships-pro' ) . ': ' . esc_html( $last_webhook ) . ' GMT.</p>';

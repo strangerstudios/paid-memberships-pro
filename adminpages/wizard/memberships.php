@@ -61,8 +61,8 @@ $collecting_payment = pmpro_getOption( 'wizard_collect_payment' );
 		</div>
 	</div>
 	<?php } ?>
-	<div class="pmpro-wizard__field" style="background:#F7F7F7;">
-		<p><img src="<?php echo esc_url( PMPRO_URL . '/images/lock.svg' ); ?>" style="vertical-align:top"/> <?php esc_html_e( 'Content restriction settings may be set after the setup wizard.', 'paid-memberships-pro' ); ?></p>
+	<div class="pmpro-wizard__field pmpro-wizard__field-alt">
+		<p><img src="<?php echo esc_url( PMPRO_URL . '/images/lock.svg' ); ?>" /> <?php esc_html_e( 'Content restriction settings may be set after the setup wizard.', 'paid-memberships-pro' ); ?></p>
 	</div>
 	<p class="pmpro_wizard__submit">
 		<?php wp_nonce_field( 'pmpro_wizard_step_3_nonce', 'pmpro_wizard_step_3_nonce' ); ?>

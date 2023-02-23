@@ -9,4 +9,5 @@
  *
  * @author Paid Memberships Pro
  */
+// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 echo pmpro_shortcode_account('');
