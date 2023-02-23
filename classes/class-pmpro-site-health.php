@@ -562,7 +562,7 @@ class PMPro_Site_Health {
 		// Format data to be displayed in site health.
 		$return_arr = array();
 		foreach ( $outdated_templates as $template_name => $template_data ) {
-			$return_arr[ $template_name ] = esc_html( 'Default version: ' . $template_data['default_version'] . ' | Loaded version: ' . $template_data['loaded_version'] . ' | Loaded path: ' . $template_data['loaded_path'] );
+			$return_arr[ $template_name ] = __( 'Default version' ) . ': ' . $template_data['default_version'] . ' | ' . __( 'Loaded version' ) . ': ' . $template_data['loaded_version'] . ' | ' . __( 'Loaded path' ) . ': ' . $template_data['loaded_path'];
 		}
 		return $return_arr;
 	}
