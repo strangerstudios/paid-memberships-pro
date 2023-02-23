@@ -4437,7 +4437,7 @@ function pmpro_set_pause_mode( $state ) {
  * @since TBD
  * @return array Contains the query string and export URL
  */
-function pmpro_orderslist_query( $count = false, $limit = 15 ) {
+function pmpro_orderslist_query( $count = false ) {
 
 	global $wpdb;
 
@@ -4521,6 +4521,19 @@ function pmpro_orderslist_query( $count = false, $limit = 15 ) {
 	} else {
 		$pn = 1;
 	}
+
+	$orders_list_table = new PMPro_Orders_List_Table();
+
+	$items_per_page = $orders_list_table->get_items_per_page( 'orders_per_page' );
+	/**
+	 * Filter to set the default number of items to show per page
+	 * on the Orders page in the admin.
+	 *
+	 * @since 1.8.4.5
+	 *
+	 * @param int $limit The number of items to show per page.
+	 */
+	$limit = apply_filters( 'pmpro_orders_per_page', $items_per_page );
 
 	$end   = $pn * $limit;
 	$start = $end - $limit;

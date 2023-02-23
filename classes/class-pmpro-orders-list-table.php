@@ -62,11 +62,10 @@ class PMPro_Orders_List_Table extends WP_List_Table {
          *
          * @param int $limit The number of items to show per page.
          */
-        $limit = apply_filters( 'pmpro_orders_per_page', $items_per_page );
+        $items_per_page = apply_filters( 'pmpro_orders_per_page', $items_per_page );
         
-		$this->items = $this->sql_table_data( false, $items_per_page );
-		
-		$total_items = $this->sql_table_data( true, $items_per_page );
+		$this->items = $this->sql_table_data( false );		
+		$total_items = $this->sql_table_data( true );
 
         $this->set_pagination_args(
 			array(

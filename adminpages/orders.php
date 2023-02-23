@@ -904,7 +904,12 @@ require_once( dirname( __FILE__ ) . '/admin_header.php' ); ?>
 
 	</form>
 
-<?php } else { ?>
+<?php } else { 
+
+	$orders_list_query = pmpro_orderslist_query();
+	$export_url = $orders_list_query['export_url'];
+
+	?>
 
 	<form id="posts-filter" method="GET">
 		<input type="hidden" name="page" value="pmpro-orders" />
@@ -924,10 +929,8 @@ require_once( dirname( __FILE__ ) . '/admin_header.php' ); ?>
 			?>
 			"><p><?php echo $pmpro_msg; ?></p></div>
 		<?php }
-
 		$orders_list_table = new PMPro_Orders_List_Table();
 		$orders_list_table->prepare_items();
-
 		$orders_list_table->search_box( __( 'Search Orders', 'paid-memberships-pro' ), 'paid-memberships-pro' );
 		$orders_list_table->display();
 
