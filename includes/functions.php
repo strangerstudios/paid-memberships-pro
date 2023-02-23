@@ -333,19 +333,17 @@ function pmpro_isLevelExpiringSoon( &$level ) {
 }
 
 /**
- * Loads a template from one of the default paths (PMPro plugin or theme), or from filtered path
+ * Get the template path that should be loaded for a given page.
+ *
+ * @since TBD
  *
  * @param null   $page_name - Name of the page/template
  * @param string $where - `local` or `url` (whether to load from FS or over http)
  * @param string $type - Type of template (valid: 'email' or 'pages', 'adminpages', 'preheader')
  * @param string $ext - File extension ('php', 'html', 'htm', etc)
- * @return string - The HTML for the template.
- *
- * TODO - Allow localized template files to be loaded?
- *
- * @since 1.8.9
+ * @return string|null - The HTML for the template or null if not found.
  */
-function pmpro_loadTemplate( $page_name = null, $where = 'local', $type = 'pages', $ext = 'php' ) {
+function pmpro_get_template_path_to_load( $page_name = null, $where = 'local', $type = 'pages', $ext = 'php' ) {
 	// called from page handler shortcode
 	if ( is_null( $page_name ) ) {
 		global $pmpro_page_name;
@@ -382,17 +380,41 @@ function pmpro_loadTemplate( $page_name = null, $where = 'local', $type = 'pages
 	$templates = array_reverse( $templates );
 
 	// look for template file to include
-	ob_start();
 	foreach ( $templates as $template_path ) {
 		// If loading a local file, check if it exists first
 		if ( $where == 'url' || file_exists( $template_path ) ) {
-			include $template_path;
-			break;
+			return $template_path;
 		}
+	}
+
+	return null;
+}
+
+/**
+ * Loads a template from one of the default paths (PMPro plugin or theme), or from filtered path
+ *
+ * @param null   $page_name - Name of the page/template
+ * @param string $where - `local` or `url` (whether to load from FS or over http)
+ * @param string $type - Type of template (valid: 'email' or 'pages', 'adminpages', 'preheader')
+ * @param string $ext - File extension ('php', 'html', 'htm', etc)
+ * @return string - The HTML for the template.
+ *
+ * TODO - Allow localized template files to be loaded?
+ *
+ * @since 1.8.9
+ */
+function pmpro_loadTemplate( $page_name = null, $where = 'local', $type = 'pages', $ext = 'php' ) {
+	// Get the path of the template to load.
+	$path = pmpro_get_template_path_to_load( $page_name, $where, $type, $ext );
+
+	// If the template exists, load it.
+	ob_start();
+	if ( ! empty( $path ) && file_exists( $path ) ) {
+		include $path;
 	}
 	$template = ob_get_clean();
 
-	// return template content
+	// Return template content.
 	return $template;
 }
 
@@ -4466,4 +4488,70 @@ function pmpro_is_paused() {
  */
 function pmpro_set_pause_mode( $state ) {
 	return pmpro_setOption( 'pause_mode', $state );
+}
+
+/**
+ * Get the version of a page template at a given path.
+ *
+ * @since TBD
+ *
+ * @param string $path Path to the page template.
+ * @return string|null Version of the page template, or null if not found.
+ */
+function pmpro_get_version_for_page_template_at_path( $path ) {
+	if ( ! file_exists( $path ) ) {
+		return null;
+	}
+
+	$file_header_data = get_file_data( $path, array( 'version' => 'version' ) );
+	return empty( $file_header_data['version'] ) ? null : $file_header_data['version'];
+}
+
+/**
+ * List all outdated page templates being used.
+ *
+ * @since TBD
+ *
+ * @return array List of outdated page templates.
+ */
+function pmpro_get_outdated_page_templates() {
+	// Create a $template => $path array of all default page templates.
+	$default_templates = array(
+		'account' => PMPRO_DIR . '/pages/account.php',
+		'billing' => PMPRO_DIR . '/pages/billing.php',
+		'cancel' => PMPRO_DIR . '/pages/cancel.php',
+		'checkout' => PMPRO_DIR . '/pages/checkout.php',
+		'confirmation' => PMPRO_DIR . '/pages/confirmation.php',
+		'invoice' => PMPRO_DIR . '/pages/invoice.php',
+		'levels' => PMPRO_DIR . '/pages/levels.php',
+		'login' => PMPRO_DIR . '/pages/login.php',
+		'member_profile_edit' => PMPRO_DIR . '/pages/member_profile_edit.php',
+	);
+
+	// Filter $default_templates so that Add Ons can add their own templates.
+	$default_templates = apply_filters( 'pmpro_default_page_templates', $default_templates );
+
+	// Loop through each template. For each, get the version for the default template and
+	// compare it to the version for the template that is actually being loaded. If the
+	// version for the template that is actually being loaded is older, add it to an
+	// $outdated_templates array.
+	$outdated_templates = array(); // Array of $template => array( 'default_version' => $default_version, 'loaded_version' => $loaded_version, 'loaded_path' => $loaded_path ).
+	foreach ( $default_templates as $template => $path ) {
+		// Get the version for the default template.
+		$default_version = pmpro_get_version_for_page_template_at_path( $path );
+
+		// Get the version for the template that is actually being loaded.
+		$loaded_path = pmpro_get_template_path_to_load( $template );
+		$loaded_version = pmpro_get_version_for_page_template_at_path( $loaded_path );
+
+		// If either version is null or the loaded version is older than the default version, add it to the $outdated_templates array.
+		if ( is_null( $default_version ) || is_null( $loaded_version ) || version_compare( $loaded_version, $default_version, '<' ) ) {
+			$outdated_templates[ $template ] = array(
+				'default_version' => $default_version,
+				'loaded_version' => $loaded_version,
+				'loaded_path' => $loaded_path,
+			);
+		}
+	}
+	return $outdated_templates;
 }
