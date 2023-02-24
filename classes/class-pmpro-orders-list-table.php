@@ -588,6 +588,21 @@ class PMPro_Orders_List_Table extends WP_List_Table {
                         jQuery('#from').hide();
                         jQuery('#to').hide();
                         jQuery('#filterby').hide();
+                    }  else {
+                        jQuery('#start-month').hide();
+                        jQuery('#start-day').hide();
+                        jQuery('#start-year').hide();
+                        jQuery('#end-month').hide();
+                        jQuery('#end-day').hide();
+                        jQuery('#end-year').hide();
+                        jQuery('#predefined-date').hide();
+                        jQuery('#status').hide();
+                        jQuery('#l').hide();
+                        jQuery('#discount-code').hide();
+                        jQuery('#submit').show();
+                        jQuery('#from').hide();
+                        jQuery('#to').hide();
+                        jQuery('#filterby').hide();
                     }
                 }
 
