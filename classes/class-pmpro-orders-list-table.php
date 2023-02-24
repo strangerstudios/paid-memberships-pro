@@ -612,9 +612,9 @@ class PMPro_Orders_List_Table extends WP_List_Table {
 
 		$allowed_orderbys = array(
 			'order_id' 		=> 'id',
-			'level'	        => 'membership_id',
+			'level'	        => 'name',
 			'total' 	    => 'total',
-			'status' 	    => 'status',
+			'status' 	    => 'status_label',
 			'date' 		    => 'timestamp',
 		);
 
