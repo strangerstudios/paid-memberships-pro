@@ -203,7 +203,7 @@ class PMPro_Orders_List_Table extends WP_List_Table {
 				$order->getUser();
 
                 $order_data[] = $order;
-            }
+            }            
             $sql_table_data = $order_data;
 		}
 
@@ -637,27 +637,28 @@ class PMPro_Orders_List_Table extends WP_List_Table {
 	 */
 	public function column_default( $item, $column_name ) {
 		
-		$item = (array) apply_filters( 'pmpro_order_list_user', (object) $item );
-		if ( isset( $item[ $column_name ] ) ) {
-			// If the user is adding content via the "pmpro_order_list_user" filter.
-			echo( esc_html( $item[ $column_name ] ) );
+        $column_item = (array) apply_filters( 'pmpro_order_list_item', $item );
+
+		if ( isset( $column_item[ $column_name ] ) ) {
+			// If the user is adding content via the "pmpro_order_list_item" filter.
+			echo( esc_html( $column_item[ $column_name ] ) );
 		} elseif ( 0 === strpos( $column_name, 'custom_field_' ) ) {
-			// If the user is adding content via the "pmpro_memberslist_extra_cols_body" hook.
-			// Re-implementing old hook, will be deprecated.
-			$user_object = get_userdata( $item['ID'] );
-			ob_start();
-			do_action( 'pmpro_orders_extra_cols_body', $user_object );
-			$extra_cols = ob_get_clean();
+			// If the user is adding content via the "pmpro_orders_extra_cols_body" hook.
+			// Re-implementing old hook, will be deprecated.			
+			ob_start();            
+			do_action( 'pmpro_orders_extra_cols_body', $item );
+			$extra_cols = ob_get_clean();            
 			preg_match_all( '/<td>(.*?)<\/td>/s', $extra_cols, $matches );
+            
 			$custom_field_num_arr = explode( 'custom_field_', $column_name );
-			$custom_field_num     = $custom_field_num_arr[1];
+			$custom_field_num     = $custom_field_num_arr[1];			
 			if ( is_numeric( $custom_field_num ) && isset( $matches[1][ intval( $custom_field_num ) ] ) ) {
 				// If the escaping here breaks your old column body, use the new filters.
 				echo( wp_kses_post( $matches[1][ intval( $custom_field_num ) ] ) );
 			}
 		} else {
 			// The preferred ways of doing things.
-			do_action( 'pmpro_manage_orderlist_custom_column', $column_name, $item['ID'] );
+			do_action( 'pmpro_manage_orderlist_custom_column', $column_name, $item->id );
 		}
 		
 	}

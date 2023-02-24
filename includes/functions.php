@@ -4583,6 +4583,8 @@ function pmpro_orderslist_query( $count = false ) {
 		$condition = "o.total > 0";
 	} elseif( $filter == 'only-free' ) {
 		$condition = "o.total = 0";
+	} else {
+		$condition = "";
 	}
 	
 	$condition = apply_filters( 'pmpro_admin_orders_query_condition', $condition, $filter );
