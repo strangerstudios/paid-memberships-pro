@@ -180,11 +180,12 @@ class PMPro_Discount_Code_List_Table extends WP_List_Table {
 		}
 
 		// some vars for pagination
-		if(isset($_REQUEST['paged']))
-			$pn = intval($_REQUEST['paged']);
-		else
+		if( isset( $_REQUEST['paged'] ) ) {
+			$pn = intval( $_REQUEST['paged'] );
+		} else {
 			$pn = 1;
-
+		}
+		
 		$limit = $this->get_items_per_page( 'discount_codes_per_page' );
 
 		$end = $pn * $limit;
