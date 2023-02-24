@@ -141,7 +141,7 @@ class PMPro_Discount_Code_List_Table extends WP_List_Table {
 		 * column name_in_list_table => columnname in the db
 		 */
 		$sortable_columns = array(
-			'id' => array( 'id', false ),
+			'id' => array( 'id', true ),
 			'discount_code' => array( 'code', false ),
 			'starts' => array( 'starts', false ),
 			'expires' => array( 'expires', false ),
