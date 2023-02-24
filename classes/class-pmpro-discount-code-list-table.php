@@ -142,10 +142,10 @@ class PMPro_Discount_Code_List_Table extends WP_List_Table {
 		 */
 		$sortable_columns = array(
 			'id' => array( 'id', false ),
-			'discount_code' => array( 'discount_code', false ),
+			'discount_code' => array( 'code', false ),
 			'starts' => array( 'starts', false ),
 			'expires' => array( 'expires', false ),
-			'uses' => array( 'uses', false ),
+			'uses' => array( 'used', false ),
 		);
 		
 		return $sortable_columns;
@@ -205,15 +205,6 @@ class PMPro_Discount_Code_List_Table extends WP_List_Table {
 
 			if( isset( $_REQUEST['orderby'] ) ) {
 				$orderby = sanitize_text_field( $_REQUEST['orderby'] );
-				
-				if( $orderby == 'discount_code' ) {
-					$orderby = 'code';
-				}
-
-				if( $orderby == 'uses' ) {
-					$orderby = 'used';
-				}
-
 			} else {
 				$orderby = 'id';
 			}
