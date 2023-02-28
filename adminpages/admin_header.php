@@ -178,9 +178,9 @@
 				if ( pmpro_is_paused() ) {
 					// Link to reactivate the notification about pause mode if has cap.
 					if ( current_user_can( 'pmpro_manage_pause_mode' ) ) { ?>
-						<a class="pmpro_paused_tag" href="<?php echo esc_url( add_query_arg( array( 'page' => 'pmpro-dashboard', 'show_pause_notification' => '1' ), admin_url( 'admin.php' ) ) ); ?>"><?php esc_html_e( 'Paused', 'paid-memberships-pro' ); ?></a>
+						<a class="pmpro_paused_tag" href="<?php echo esc_url( add_query_arg( array( 'page' => 'pmpro-dashboard', 'show_pause_notification' => '1' ), admin_url( 'admin.php' ) ) ); ?>"><?php esc_html_e( 'Crons Disabled', 'paid-memberships-pro' ); ?></a>
 					<?php } else { ?>
-						<span class="pmpro_paused_tag"><?php esc_html_e( 'Paused', 'paid-memberships-pro' ); ?></span>
+						<span class="pmpro_paused_tag"><?php esc_html_e( 'Crons Disabled', 'paid-memberships-pro' ); ?></span>
 					<?php }
 				}
 			?>

@@ -4386,10 +4386,15 @@ function pmpro_activating_plugin( $plugin = null ) {
  * @return bool True if the stored and current URL match
  */
 function pmpro_compare_siteurl() {
-	$site_url = get_site_url();
-
+	$site_url = get_site_url( null, '', 'https' ); // Always get the https version of the site URL.=
 	$current_url = pmpro_getOption( 'last_known_url' );
-	
+
+	// If the current URL is http://, change it to https:// for backwards compatibility.
+	if ( 'http://' === substr( $current_url, 0, 7 ) ) {
+		$current_url = 'https://' . substr( $current_url, 7 );
+		pmpro_setOption( 'last_known_url', $current_url );
+	}
+
 	// If we don't have a current URL yet, set it to the site URL.
 	if ( empty( $current_url ) ) {
 		pmpro_setOption( 'last_known_url', $site_url );
@@ -4411,8 +4416,7 @@ function pmpro_is_paused() {
 		return true;
 	}
 
-	// Other pause conditions can eventually be added here.
-
+	// We should never filter this function. We will never change this function to do anything else without lots and lots of discussion and thought.
 	return false;
 }
 
