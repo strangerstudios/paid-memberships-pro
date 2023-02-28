@@ -2,14 +2,14 @@
 # This file is distributed under the same license as the Paid Memberships Pro plugin.
 msgid ""
 msgstr ""
-"Project-Id-Version: Paid Memberships Pro 2.10.1\n"
+"Project-Id-Version: Paid Memberships Pro 2.10.2\n"
 "Report-Msgid-Bugs-To: info@paidmembershipspro.com\n"
 "Last-Translator: Paid Memberships Pro <info@paidmembershipspro.com>\n"
 "Language-Team: Paid Memberships Pro <info@paidmembershipspro.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2023-02-21T16:56:21+00:00\n"
+"POT-Creation-Date: 2023-02-28T18:21:03+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.7.1\n"
 "X-Domain: paid-memberships-pro\n"
@@ -14939,6 +14939,7 @@ msgstr ""
 
 #: includes/notifications.php:25
 #: includes/admin.php:171
+#: includes/admin.php:154
 msgid "Dismiss this notice."
 msgstr ""
 
@@ -19108,12 +19109,14 @@ msgstr ""
 #: includes/admin.php:171
 #: includes/admin.php:173
 #: includes/admin.php:181
+#: includes/admin.php:164
 msgid "Update my primary domain and reactivate all services"
 msgstr ""
 
 #: includes/admin.php:174
 #: includes/admin.php:176
 #: includes/admin.php:184
+#: includes/admin.php:167
 msgid "Only users with the <code>pmpro_manage_pause_mode</code> capability are able to deactivate pause mode."
 msgstr ""
 
@@ -19176,14 +19179,17 @@ msgid "Note: You are using the free Stripe payment gateway integration. There is
 msgstr ""
 
 #: includes/admin.php:176
+#: includes/admin.php:159
 msgid "Site URL Change Detected"
 msgstr ""
 
 #: includes/admin.php:177
+#: includes/admin.php:160
 msgid "<strong>Warning:</strong> We have detected that your site URL has changed. All PMPro-related cron jobs and automated services have been disabled. Paid Memberships Pro considers %s to be the site URL."
 msgstr ""
 
 #: includes/admin.php:180
+#: includes/admin.php:163
 msgid "Dismiss notice and keep all services paused"
 msgstr ""
 
@@ -19216,4 +19222,12 @@ msgstr ""
 
 #: pages/checkout.php:91
 msgid "The %s code has been applied to your order."
+msgstr ""
+
+#: adminpages/admin_header.php:181
+msgid "Services Paused"
+msgstr ""
+
+#: adminpages/admin_header.php:183
+msgid "Crons Disabled"
 msgstr ""
