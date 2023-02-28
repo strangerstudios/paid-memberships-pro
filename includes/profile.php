@@ -109,18 +109,8 @@ function pmpro_membership_level_profile_fields($user)
 								$subscriptions = PMPro_Subscription::get_subscriptions_for_user( $user->ID, $shown_level->id );
 								if ( ! empty( $subscriptions ) ) {
 									$subscription = $subscriptions[0];
-									$billing_amount = $subscription->get_billing_amount();
-									$cycle_number   = $subscription->get_cycle_number();
-									$cycle_period   = $subscription->get_cycle_period();
-
-									$cost_text = esc_html__( 'Subscription', 'paid-memberships-pro' ) . ': ';
-									if ( $cycle_number == 1 ) {
-										$cost_text .= sprintf( esc_html__( '%1$s per %2$s', 'paid-memberships-pro' ), pmpro_formatPrice( $billing_amount ), $cycle_period );
-									} else {
-										$cost_text .= sprintf( esc_html__( '%1$s every %2$s %3$ss', 'paid-memberships-pro' ), pmpro_formatPrice( $billing_amount ), $cycle_number, $cycle_period );
-									}
 									?>
-									<p><?php echo esc_html( $cost_text ); ?></p>
+									<p><?php echo esc_html__( 'Subscription', 'paid-memberships-pro' ) . ': ' . esc_html( $subscription->get_cost_text() ); ?></p>
 									<?php
 									// If the user has more than 1 subscription, show a warning message.
 									if ( count( $subscriptions ) > 1 ) {
@@ -238,17 +228,8 @@ function pmpro_membership_level_profile_fields($user)
 														<?php
 													}
 													$subscription = $subscriptions[0];
-													$billing_amount = $subscription->get_billing_amount();
-													$cycle_number   = $subscription->get_cycle_number();
-													$cycle_period   = $subscription->get_cycle_period();
-
-													if ( $cycle_number == 1 ) {
-														$cost_text = sprintf( esc_html__( '%1$s per %2$s', 'paid-memberships-pro' ), pmpro_formatPrice( $billing_amount ), $cycle_period );
-													} else {
-														$cost_text = sprintf( esc_html__( '%1$s every %2$s %3$ss', 'paid-memberships-pro' ), pmpro_formatPrice( $billing_amount ), $cycle_number, $cycle_period );
-													}
 													?>
-													<p><?php echo esc_html( $cost_text ); ?></p>
+													<p><?php echo esc_html( $subscription->get_cost_text() ); ?></p>
 													<label for="<?php echo esc_attr( $name_prefix ); ?>[subscription_action]" style="display: none">
 														<select name="<?php echo esc_attr( $name_prefix ); ?>[subscription_action]">
 															<option value="cancel"><?php esc_html_e( 'Cancel payment subscription (Reccomended)', 'paid-memberships-pro' ); ?></option>
