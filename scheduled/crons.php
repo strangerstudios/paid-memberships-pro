@@ -152,6 +152,8 @@ function pmpro_cron_credit_card_expiring_warnings()
 
 	$next_month_date = date("Y-m-01", strtotime("+2 months", current_time("timestamp")));
 
+	//This needs to be reworked after removing reference to user meta
+	
 	$sqlQuery = "SELECT mu.user_id
 					FROM  $wpdb->pmpro_memberships_users mu
 						LEFT JOIN $wpdb->usermeta um1 ON mu.user_id = um1.user_id
@@ -217,8 +219,6 @@ function pmpro_cron_credit_card_expiring_warnings()
 				}
 			}
 
-			//update user meta so we don't email them again
-			update_user_meta($euser->ID, "pmpro_credit_card_expiring_warning", $euser->pmpro_ExpirationYear . "-" . $euser->pmpro_ExpirationMonth . "-01");
 		}
 	}
 }

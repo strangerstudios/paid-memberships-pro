@@ -108,13 +108,8 @@
 				$morder->billing->phone = $fields['x_phone'];
 
 				//get CC info that is on file
-				$morder->cardtype = get_user_meta($user_id, "pmpro_CardType", true);
-				$morder->accountnumber = hideCardNumber(get_user_meta($user_id, "pmpro_AccountNumber", true), false);
-				$morder->expirationmonth = get_user_meta($user_id, "pmpro_ExpirationMonth", true);
-				$morder->expirationyear = get_user_meta($user_id, "pmpro_ExpirationYear", true);
-				$morder->ExpirationDate = $morder->expirationmonth . $morder->expirationyear;
-				$morder->ExpirationDate_YdashM = $morder->expirationyear . "-" . $morder->expirationmonth;
-
+				//Removed code that referenced user meta here
+				
 				//save
 				$morder->status = "success";
 				$morder->saveOrder();
@@ -151,10 +146,7 @@
 			$morder->billing->phone = $fields['x_phone'];
 
 			//get CC info that is on file
-			$morder->cardtype = get_user_meta($user_id, "pmpro_CardType", true);
-			$morder->accountnumber = hideCardNumber(get_user_meta($user_id, "pmpro_AccountNumber", true), false);
-			$morder->expirationmonth = get_user_meta($user_id, "pmpro_ExpirationMonth", true);
-			$morder->expirationyear = get_user_meta($user_id, "pmpro_ExpirationYear", true);
+			//Removed code that referenced user meta here
 
 			// Email the user and ask them to update their credit card information
 			$pmproemail = new PMProEmail();

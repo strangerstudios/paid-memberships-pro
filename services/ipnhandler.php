@@ -672,10 +672,7 @@ function pmpro_ipnFailedPayment( $last_order ) {
 		$morder->billing->phone   = get_user_meta( $morder->user_id, "pmpro_bphone", true );
 
 		//get CC info that is on file
-		$morder->cardtype        = get_user_meta( $morder->user_id, "pmpro_CardType", true );
-		$morder->accountnumber   = hideCardNumber( get_user_meta( $morder->user_id, "pmpro_AccountNumber", true ), false );
-		$morder->expirationmonth = get_user_meta( $morder->user_id, "pmpro_ExpirationMonth", true );
-		$morder->expirationyear  = get_user_meta( $morder->user_id, "pmpro_ExpirationYear", true );
+		//Removed code that referenced user meta here
 	} elseif ( $last_order->gateway == "paypalexpress" ) {
 		$morder->billing = new stdClass();
 
@@ -688,10 +685,7 @@ function pmpro_ipnFailedPayment( $last_order ) {
 		$morder->billing->phone   = $last_order->billing->phone;
 
 		//get CC info that is on file
-		$morder->cardtype        = get_user_meta( $morder->user_id, "pmpro_CardType", true );
-		$morder->accountnumber   = hideCardNumber( get_user_meta( $morder->user_id, "pmpro_AccountNumber", true ), false );
-		$morder->expirationmonth = get_user_meta( $morder->user_id, "pmpro_ExpirationMonth", true );
-		$morder->expirationyear  = get_user_meta( $morder->user_id, "pmpro_ExpirationYear", true );
+		//Removed code that referenced user meta here
 	}
 
 	// Email the user and ask them to update their credit card information
@@ -767,12 +761,7 @@ function pmpro_ipnSaveOrder( $txn_id, $last_order ) {
 		//get card info if appropriate
 		if ( $last_order->gateway == "paypal" ) {   //website payments pro
 			//get CC info that is on file
-			$morder->cardtype              = get_user_meta( $last_order->user_id, "pmpro_CardType", true );
-			$morder->accountnumber         = hideCardNumber( get_user_meta( $last_order->user_id, "pmpro_AccountNumber", true ), false );
-			$morder->expirationmonth       = get_user_meta( $last_order->user_id, "pmpro_ExpirationMonth", true );
-			$morder->expirationyear        = get_user_meta( $last_order->user_id, "pmpro_ExpirationYear", true );
-			$morder->ExpirationDate        = $morder->expirationmonth . $morder->expirationyear;
-			$morder->ExpirationDate_YdashM = $morder->expirationyear . "-" . $morder->expirationmonth;
+			//Removed code that referenced user meta here
 		}
 
 		//figure out timestamp or default to none (today)
