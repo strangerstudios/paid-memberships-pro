@@ -1,4 +1,8 @@
 == Changelog ==
+= 2.10.2 - 2023-02-28 =
+* BUG FIX: Fixed issue where the "Site URL Changed" message would show up on sites where the site_url wasn't actually changed. We are now ignoring the scheme (http/https) when checking.
+* REFACTOR: Removed the pmpro_is_paused option and deprecated the pmpro_set_pause_mode() function. Now checking specifically for site_url changes in real time during admin_init. We no longer intend to expand on the "pause mode" concept or otherwise try to align with the WP_ENVIRONMENT_TYPE values.
+
 = 2.10.1 - 2023-02-21 =
 * BUG FIX/ENHANCEMENT: Changed how reports are loaded to avoid fatal errors if PMPro had an incomplete update.
 * BUG FIX/ENHANCEMENT: Fixed escaping of the discount code message to allow the strong tag.
