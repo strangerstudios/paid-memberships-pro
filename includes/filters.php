@@ -22,8 +22,8 @@ function pmpro_checkout_level_extend_memberships( $level ) {
 		}
 
 		// calculate days left
-		$todays_date = current_time( 'timestamp' );
-		$expiration_date = $user_level->enddate;
+		$todays_date = strtotime( current_time( 'Y-m-d' ) );
+		$expiration_date = strtotime( date( 'Y-m-d', $user_level->enddate ) );
 		$time_left = $expiration_date - $todays_date;
 
 		// time left?
@@ -158,9 +158,13 @@ function pmpro_required_billing_fields_stripe_lite( $fields ) {
 
 // copy other discount code to discount code if latter is not set
 if ( empty( $_REQUEST['discount_code'] ) && ! empty( $_REQUEST['other_discount_code'] ) ) {
-	$_REQUEST['discount_code'] = $_REQUEST['other_discount_code'];
-	$_POST['discount_code'] = $_POST['other_discount_code'];
-	$_GET['discount_code'] = $_GET['other_discount_code'];
+	$_REQUEST['discount_code'] = sanitize_text_field( $_REQUEST['other_discount_code'] );
+}
+if ( empty( $_POST['discount_code'] ) && ! empty( $_POST['other_discount_code'] ) ) {
+	$_POST['discount_code'] = sanitize_text_field( $_POST['other_discount_code'] );	
+}
+if ( empty( $_GET['discount_code'] ) && ! empty( $_GET['other_discount_code'] ) ) {
+	$_GET['discount_code'] = sanitize_text_field( $_GET['other_discount_code'] );	
 }
 
 // apply all the_content filters to confirmation messages for levels
@@ -194,13 +198,14 @@ function pmpro_pmpro_subscribe_order_startdate_limit( $order, $gateway ) {
 		$one_year_out = strtotime( '+1 Year', current_time( 'timestamp' ) );
 		$two_years_out = strtotime( '+2 Year', current_time( 'timestamp' ) );
 		$one_year_out_date = date_i18n( 'Y-m-d', $one_year_out ) . 'T0:0:0';
+		$days_past = floor( ( $original_start_date - $one_year_out ) / DAY_IN_SECONDS );
 		if ( ! empty( $order->ProfileStartDate ) && $order->ProfileStartDate > $one_year_out_date ) {
 			// try to squeeze into the trial
-			if ( empty( $order->TrialBillingPeriod ) ) {
+			if ( empty( $order->TrialBillingPeriod ) && $days_past > 0 ) {
 				// update the order
 				$order->TrialAmount = 0;
 				$order->TrialBillingPeriod = 'Day';
-				$order->TrialBillingFrequency = min( 365, strtotime( $order->ProfileStartDate, current_time( 'timestamp' ) ) );
+				$order->TrialBillingFrequency = min( 365, $days_past );
 				$order->TrialBillingCycles = 1;
 			}
 

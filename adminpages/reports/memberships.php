@@ -31,25 +31,7 @@ function pmpro_report_memberships_widget() {
 	global $wpdb;
 
 	//get levels to show stats on first 3
-	$pmpro_levels = pmpro_getAllLevels(true, true);
-
-	$pmpro_level_order = pmpro_getOption('level_order');
-
-	if(!empty($pmpro_level_order))
-	{
-		$order = explode(',',$pmpro_level_order);
-
-		//reorder array
-		$reordered_levels = array();
-		foreach($order as $level_id) {
-			foreach($pmpro_levels as $key=>$level) {
-				if($level_id == $level->id)
-					$reordered_levels[$key] = $pmpro_levels[$key];
-			}
-		}
-
-		$pmpro_levels = $reordered_levels;
-	}
+	$pmpro_levels = pmpro_sort_levels_by_order( pmpro_getAllLevels(true, true) );
 
 	$pmpro_levels = apply_filters( 'pmpro_report_levels', $pmpro_levels );
 ?>
@@ -58,8 +40,8 @@ function pmpro_report_memberships_widget() {
 	<thead>
 		<tr>
 			<th scope="col">&nbsp;</th>
-			<th scope="col"><?php _e('Signups', 'paid-memberships-pro' ); ?></th>
-			<th scope="col"><?php _e('All Cancellations', 'paid-memberships-pro' ); ?></th>
+			<th scope="col"><?php esc_html_e('Signups', 'paid-memberships-pro' ); ?></th>
+			<th scope="col"><?php esc_html_e('All Cancellations', 'paid-memberships-pro' ); ?></th>
 		</tr>
 	</thead>
 	<?php
@@ -78,15 +60,15 @@ function pmpro_report_memberships_widget() {
 			<tr class="pmpro_report_tr">
 				<th scope="row">
 					<?php if ( empty( $signups ) && empty( $cancellations) ) { ?>
-						<?php echo $report_name; ?>
+						<?php echo esc_html($report_name); ?>
 					<?php } else { ?>
 						<button class="pmpro_report_th pmpro_report_th_closed">
-							<?php echo $report_name; ?>
+							<?php echo esc_html($report_name); ?>
 						</button>
 					<?php } ?>
 				</th>
-				<td><?php echo $signups; ?></td>
-				<td><?php echo $cancellations; ?></td>
+				<td><?php echo esc_html($signups); ?></td>
+				<td><?php echo esc_html($cancellations); ?></td>
 			</tr>
 			<?php
 				//level stats
@@ -97,9 +79,9 @@ function pmpro_report_memberships_widget() {
 					if($count++ >= $max_level_count) break;
 			?>
 				<tr class="pmpro_report_tr_sub" style="display: none;">
-					<th scope="row">- <?php echo $level->name;?></th>
-					<td><?php echo number_format_i18n(pmpro_getSignups($report_type, $level->id)); ?></td>
-					<td><?php echo number_format_i18n(pmpro_getCancellations($report_type, $level->id)); ?></td>
+					<th scope="row">- <?php echo esc_html($level->name);?></th>
+					<td><?php echo esc_html(number_format_i18n(pmpro_getSignups($report_type, $level->id))); ?></td>
+					<td><?php echo esc_html(number_format_i18n(pmpro_getCancellations($report_type, $level->id))); ?></td>
 				</tr>
 			<?php
 				}
@@ -111,7 +93,7 @@ function pmpro_report_memberships_widget() {
 	</table>
 	<?php if ( function_exists( 'pmpro_report_memberships_page' ) ) { ?>
 		<p class="pmpro_report-button">
-			<a class="button button-primary" href="<?php echo admin_url( 'admin.php?page=pmpro-reports&report=memberships' ); ?>"><?php _e('Details', 'paid-memberships-pro' );?></a>
+			<a class="button button-primary" href="<?php echo esc_url(admin_url( 'admin.php?page=pmpro-reports&report=memberships')); ?>"><?php esc_html_e('Details', 'paid-memberships-pro' );?></a>
 		</p>
 	<?php } ?>
 </span>
@@ -120,7 +102,7 @@ function pmpro_report_memberships_widget() {
 		jQuery('.pmpro_report_th ').click(function(event) {
 			//prevent form submit onclick
 			event.preventDefault();
-			 
+
 			//toggle sub rows
 			jQuery(this).closest('tbody').find('.pmpro_report_tr_sub').toggle();
 
@@ -166,11 +148,11 @@ function pmpro_report_memberships_page()
 
 	if(isset($_REQUEST['level'])) {
 		if( $_REQUEST['level'] == 'paid-levels' ) {
-			$l = pmpro_report_get_levels( 'paid' );
+			$l = pmpro_report_get_levels( 'paid' ); // String of ints and commas. Already escaped for SQL.
 		}elseif( $_REQUEST['level'] == 'free-levels' ) {
-			$l = pmpro_report_get_levels( 'free' );
+			$l = pmpro_report_get_levels( 'free' ); // String of ints and commas. Already escaped for SQL.
 		}else{
-			$l = intval($_REQUEST['level']);
+			$l = intval($_REQUEST['level']); // Escaping for SQL.
 		}
 	} else {
 		$l = "";
@@ -197,7 +179,7 @@ function pmpro_report_memberships_page()
 	}
 	elseif($period == "annual")
 	{
-		$startdate = '1960-01-01';	//all time
+		$startdate = '1970-01-01';	//all time
 		$enddate = strval(intval($year)+1) . '-01-01';
 		$date_function = 'YEAR';
 	}
@@ -207,8 +189,8 @@ function pmpro_report_memberships_page()
 
 	//get data
 	if (
-		$type === "signup_v_cancel" || 
-		$type === "signup_v_expiration" || 
+		$type === "signup_v_cancel" ||
+		$type === "signup_v_expiration" ||
 		$type === "signup_v_all"
 	) {
 		$sqlQuery = "SELECT $date_function(mu.startdate) as date, COUNT(DISTINCT mu.user_id) as signups
@@ -226,7 +208,7 @@ function pmpro_report_memberships_page()
 	}
 
 	if ( ! empty( $l ) ) {
-		$sqlQuery .= "AND mu.membership_id IN(" . esc_sql( $l ) . ") ";
+		$sqlQuery .= "AND mu.membership_id IN(" . $l . ") "; // $l is already escaped for SQL. See declaration.
 	}
 
 	if ( ! empty( $discount_code ) ) {
@@ -301,12 +283,12 @@ function pmpro_report_memberships_page()
 		else
 			$sqlQuery .= "WHERE mu1.status IN('inactive','expired','cancelled','admin_cancelled') ";
 
-		$sqlQuery .= "AND mu1.startdate >= '" . esc_sql( $startdate ) . "'
-		AND mu1.startdate < '" . esc_sql( $enddate ) . "' ";
+		$sqlQuery .= "AND mu1.enddate >= '" . esc_sql( $startdate ) . "'
+		AND mu1.enddate < '" . esc_sql( $enddate ) . "' ";
 
 		//restrict by level
 		if ( ! empty( $l ) ) {
-			$sqlQuery .= "AND mu1.membership_id IN(" . esc_sql( $l ) . ") ";
+			$sqlQuery .= "AND mu1.membership_id IN(" . $l . ") "; // $l is already escaped for SQL. See declaration.
 		}
 
 		if ( ! empty( $discount_code ) ) {
@@ -339,69 +321,85 @@ function pmpro_report_memberships_page()
 		}
 	}
 
+	// Build CSV export link.
+	$csv_export_link = admin_url( 'admin-ajax.php' );
+
+	$csv_export_link = add_query_arg( array(
+		'action' => 'membership_stats_csv',
+		'type' => $type,
+		'period' => $period,
+		'month' => $month,
+		'year' => $year,
+		'discount_code' => $discount_code,
+		'startdate' => $startdate,
+		'enddate' => $enddate,
+		'level' => $l
+	), $csv_export_link );
+
 	?>
 	<form id="posts-filter" method="get" action="">
-	<h1>
+	<h1 class="wp-heading-inline">
 		<?php _e('Membership Stats', 'paid-memberships-pro' );?>
 	</h1>
-	<ul class="subsubsub">
-		<li>
-			<?php _e('Show', 'paid-memberships-pro' )?>
-			<select id="period" name="period">
-				<option value="daily" <?php selected($period, "daily");?>><?php _e('Daily', 'paid-memberships-pro' );?></option>
-				<option value="monthly" <?php selected($period, "monthly");?>><?php _e('Monthly', 'paid-memberships-pro' );?></option>
-				<option value="annual" <?php selected($period, "annual");?>><?php _e('Annual', 'paid-memberships-pro' );?></option>
-			</select>
-			<select id="type" name="type">
-				<option value="signup_v_all" <?php selected($type, "signup_v_all");?>><?php _e('Signups vs. All Cancellations', 'paid-memberships-pro' );?></option>
-				<option value="signup_v_cancel" <?php selected($type, "signup_v_cancel");?>><?php _e('Signups vs. Cancellations', 'paid-memberships-pro' );?></option>
-				<option value="signup_v_expiration" <?php selected($type, "signup_v_expiration");?>><?php _e('Signups vs. Expirations', 'paid-memberships-pro' );?></option>
-			</select>
-			<span id="for"><?php _e('for', 'paid-memberships-pro' )?></span>
-			<select id="month" name="month">
-				<?php for($i = 1; $i < 13; $i++) { ?>
-					<option value="<?php echo $i;?>" <?php selected($month, $i);?>><?php echo date_i18n("F", mktime(0, 0, 0, $i, 2));?></option>
-				<?php } ?>
-			</select>
-			<select id="year" name="year">
-				<?php for($i = $thisyear; $i > 2007; $i--) { ?>
-					<option value="<?php echo $i;?>" <?php selected($year, $i);?>><?php echo $i;?></option>
-				<?php } ?>
-			</select>
-			<span id="for"><?php _e('for', 'paid-memberships-pro' )?></span>
-			<select name="level">
-				<option value="" <?php if(!$l) { ?>selected="selected"<?php } ?>><?php _e('All Levels', 'paid-memberships-pro' );?></option>
-				<option value="paid-levels" <?php if(isset($_REQUEST['level']) && $_REQUEST['level'] == "paid-levels"){?> selected="selected" <?php }?>><?php _e( 'All Paid Levels', 'paid-memberships-pro' ); ?></option>
-				<option value="free-levels" <?php if(isset($_REQUEST['level']) && $_REQUEST['level'] == "free-levels"){?> selected="selected" <?php }?>><?php _e( 'All Free Levels', 'paid-memberships-pro' ); ?></option>
-				<?php
-					$levels = $wpdb->get_results("SELECT id, name FROM $wpdb->pmpro_membership_levels ORDER BY name");
-					foreach($levels as $level)
-					{
-				?>
-					<option value="<?php echo $level->id?>" <?php if($l == $level->id) { ?>selected="selected"<?php } ?>><?php echo $level->name?></option>
-				<?php
-					}
-
-				?>
-
-			</select>
-			<?php
-			$sqlQuery = "SELECT SQL_CALC_FOUND_ROWS * FROM $wpdb->pmpro_discount_codes ";
-			$sqlQuery .= "ORDER BY id DESC ";
-			$codes = $wpdb->get_results($sqlQuery, OBJECT);
-			if ( ! empty( $codes ) ) { ?>
-			<select id="discount_code" name="discount_code">
-				<option value="" <?php if ( empty( $discount_code ) ) { ?>selected="selected"<?php } ?>><?php _e('All Codes', 'paid-memberships-pro' );?></option>
-				<?php foreach ( $codes as $code ) { ?>
-					<option value="<?php echo $code->id; ?>" <?php selected( $discount_code, $code->id ); ?>><?php echo $code->code; ?></option>
-				<?php } ?>
-			</select>
+   <a target="_blank" href="<?php echo esc_url( $csv_export_link ); ?>" class="page-title-action"><?php esc_html_e( 'Export to CSV', 'paid-memberships-pro' ); ?></a>
+	<div class="tablenav top">
+		<?php _e('Show', 'paid-memberships-pro' )?>
+		<select id="period" name="period">
+			<option value="daily" <?php selected($period, "daily");?>><?php esc_html_e('Daily', 'paid-memberships-pro' );?></option>
+			<option value="monthly" <?php selected($period, "monthly");?>><?php esc_html_e('Monthly', 'paid-memberships-pro' );?></option>
+			<option value="annual" <?php selected($period, "annual");?>><?php esc_html_e('Annual', 'paid-memberships-pro' );?></option>
+		</select>
+		<select id="type" name="type">
+			<option value="signup_v_all" <?php selected($type, "signup_v_all");?>><?php esc_html_e('Signups vs. All Cancellations', 'paid-memberships-pro' );?></option>
+			<option value="signup_v_cancel" <?php selected($type, "signup_v_cancel");?>><?php esc_html_e('Signups vs. Cancellations', 'paid-memberships-pro' );?></option>
+			<option value="signup_v_expiration" <?php selected($type, "signup_v_expiration");?>><?php esc_html_e('Signups vs. Expirations', 'paid-memberships-pro' );?></option>
+		</select>
+		<span id="for"><?php esc_html_e('for', 'paid-memberships-pro' )?></span>
+		<select id="month" name="month">
+			<?php for($i = 1; $i < 13; $i++) { ?>
+				<option value="<?php echo esc_attr($i);?>" <?php selected($month, $i);?>><?php echo esc_html(date_i18n("F", mktime(0, 0, 0, $i, 2)));?></option>
 			<?php } ?>
-			<input type="hidden" name="page" value="pmpro-reports" />
-			<input type="hidden" name="report" value="memberships" />
-			<input type="submit" class="button" value="<?php _e('Generate Report', 'paid-memberships-pro' );?>" />
-		</li>
-	</ul>
+		</select>
+		<select id="year" name="year">
+			<?php for($i = $thisyear; $i > 2007; $i--) { ?>
+				<option value="<?php echo esc_attr($i);?>" <?php selected($year, $i);?>><?php echo esc_html($i);?></option>
+			<?php } ?>
+		</select>
+		<span id="for"><?php esc_html_e('for', 'paid-memberships-pro' )?></span>
+		<select name="level">
+			<option value="" <?php if(!$l) { ?>selected="selected"<?php } ?>><?php esc_html_e('All Levels', 'paid-memberships-pro' );?></option>
+			<option value="paid-levels" <?php if(isset($_REQUEST['level']) && $_REQUEST['level'] === "paid-levels"){?> selected="selected" <?php }?>><?php esc_html_e( 'All Paid Levels', 'paid-memberships-pro' ); ?></option>
+			<option value="free-levels" <?php if(isset($_REQUEST['level']) && $_REQUEST['level'] === "free-levels"){?> selected="selected" <?php }?>><?php esc_html_e( 'All Free Levels', 'paid-memberships-pro' ); ?></option>
+			<?php
+				$levels = $wpdb->get_results("SELECT id, name FROM $wpdb->pmpro_membership_levels ORDER BY name");
+				$levels = pmpro_sort_levels_by_order( $levels );
+				foreach($levels as $level)
+				{
+			?>
+				<option value="<?php echo esc_attr($level->id)?>" <?php if($l == $level->id) { ?>selected="selected"<?php } ?>><?php echo esc_html($level->name);?></option>
+			<?php
+				}
+
+			?>
+
+		</select>
+		<?php
+		$sqlQuery = "SELECT SQL_CALC_FOUND_ROWS * FROM $wpdb->pmpro_discount_codes ";
+		$sqlQuery .= "ORDER BY id DESC ";
+		$codes = $wpdb->get_results($sqlQuery, OBJECT);
+		if ( ! empty( $codes ) ) { ?>
+		<select id="discount_code" name="discount_code">
+			<option value="" <?php if ( empty( $discount_code ) ) { ?>selected="selected"<?php } ?>><?php esc_html_e('All Codes', 'paid-memberships-pro' );?></option>
+			<?php foreach ( $codes as $code ) { ?>
+				<option value="<?php echo esc_attr($code->id); ?>" <?php selected( $discount_code, $code->id ); ?>><?php echo esc_html($code->code); ?></option>
+			<?php } ?>
+		</select>
+		<?php } ?>
+		<input type="hidden" name="page" value="pmpro-reports" />
+		<input type="hidden" name="report" value="memberships" />
+		<input type="submit" class="button" value="<?php esc_attr_e('Generate Report', 'paid-memberships-pro' );?>" />
+		<br class="clear" />
+	</div>
 
 	<div id="chart_div" style="clear: both; width: 100%; height: 500px;"></div>
 
@@ -445,23 +443,23 @@ function pmpro_report_memberships_page()
 
 			var data = google.visualization.arrayToDataTable([
 			<?php if ( $type === "signup_v_all" ) : // Signups vs. all cancellations ?>
-			  ['<?php echo $date_function;?>', 'Signups', 'All Cancellations'],
+			  ['<?php echo esc_html($date_function);?>', 'Signups', 'All Cancellations'],
 			  <?php foreach($dates as $key => $value) { ?>
-				['<?php if($period == "monthly") echo date_i18n("M", mktime(0,0,0,$value->date,2)); else if($period == "daily") echo $key; else echo $value->date;?>', <?php echo $value->signups; ?>, <?php echo $value->cancellations; ?>],
+				['<?php if($period == "monthly") echo esc_html(date_i18n("M", mktime(0,0,0,$value->date,2))); else if($period == "daily") echo esc_html($key); else echo esc_html($value->date);?>', <?php echo esc_html($value->signups); ?>, <?php echo esc_html($value->cancellations); ?>],
 			  <?php } ?>
 			<?php endif; ?>
 
 			<?php if ( $type === "signup_v_cancel" ) : // Signups vs. cancellations ?>
-			  ['<?php echo $date_function;?>', 'Signups', 'Cancellations'],
+			  ['<?php echo esc_html($date_function);?>', 'Signups', 'Cancellations'],
 			  <?php foreach($dates as $key => $value) { ?>
-				['<?php if($period == "monthly") echo date_i18n("M", mktime(0,0,0,$value->date,2)); else if($period == "daily") echo $key; else echo $value->date;?>', <?php echo $value->signups; ?>, <?php echo $value->cancellations; ?>],
+				['<?php if($period == "monthly") echo esc_html(date_i18n("M", mktime(0,0,0,$value->date,2))); else if($period == "daily") echo esc_html($key); else echo esc_html($value->date);?>', <?php echo esc_html($value->signups); ?>, <?php echo esc_html($value->cancellations); ?>],
 			  <?php } ?>
 			<?php endif; ?>
 
 			<?php if ( $type === "signup_v_expiration" ) : // Signups vs. expirations ?>
-			  ['<?php echo $date_function;?>', 'Signups', 'Expirations'],
+			  ['<?php echo esc_html($date_function);?>', 'Signups', 'Expirations'],
 			  <?php foreach($dates as $key => $value) { ?>
-				['<?php if($period == "monthly") echo date_i18n("M", mktime(0,0,0,$value->date,2)); else if($period == "daily") echo $key; else echo $value->date;?>', <?php echo $value->signups; ?>, <?php echo $value->cancellations; ?>],
+				['<?php if($period == "monthly") echo esc_html(date_i18n("M", mktime(0,0,0,$value->date,2))); else if($period == "daily") echo esc_html($key); else echo esc_html($value->date);?>', <?php echo esc_html($value->signups); ?>, <?php echo esc_html($value->cancellations); ?>],
 			  <?php } ?>
 			<?php endif; ?>
 
@@ -476,7 +474,7 @@ function pmpro_report_memberships_page()
 				  textStyle: {color: '#555555', fontSize: '12', italic: false}
 			  },
 			  hAxis: {
-				  title: '<?php echo $date_function;?>',
+				  title: '<?php echo esc_html($date_function);?>',
 				  textStyle: {color: '#555555', fontSize: '12', italic: false},
 				  titleTextStyle: {color: '#555555', fontSize: '20', bold: true, italic: false},
 				  maxAlternation: 1
@@ -521,7 +519,7 @@ function pmpro_getSignups($period = false, $levels = 'all')
 	elseif( $period == 'this year')
 		$startdate = date_i18n( 'Y' ) . '-01-01';
 	else
-		$startdate = '';
+		$startdate = '1970-01-01';
 
 
 	//build query
@@ -530,8 +528,14 @@ function pmpro_getSignups($period = false, $levels = 'all')
 	$sqlQuery = "SELECT COUNT(DISTINCT mu.user_id) FROM $wpdb->pmpro_memberships_users mu WHERE mu.startdate >= '" . esc_sql( $startdate ) . "' ";
 
 	//restrict by level
-	if(!empty($levels) && $levels != 'all')
-		$sqlQuery .= "AND mu.membership_id IN(" . esc_sql( $levels ) . ") ";
+	if(!empty($levels) && $levels != 'all') {
+		// Let's make sure that each ID inside of $levels is an integer.
+		if ( ! is_array( $levels ) ) {
+			$levels = explode( ',', $levels );
+		}
+		$levels = implode( ',', array_map( 'intval', $levels ) );
+		$sqlQuery .= "AND mu.membership_id IN(" . $levels . ") ";
+	}
 
 	$signups = $wpdb->get_var($sqlQuery);
 
@@ -562,10 +566,15 @@ function pmpro_getCancellations($period = null, $levels = 'all', $status = array
 	//make sure status is an array
 	if(!is_array($status))
 		$status = array($status);
-
+    
 	//check for a transient
 	$cache = get_transient( 'pmpro_report_memberships_cancellations' );
-	$hash = md5($period . $levels . implode(',', $status));
+	$hash = md5(
+		$period .
+		implode( ',', is_array( $levels ) ? $levels : array( $levels ) ) .
+		implode( ',', $status )
+	);
+
 	if( ! empty( $cache ) && ! empty( $cache[$hash] ) )
 		return $cache[$hash];
 
@@ -610,19 +619,17 @@ function pmpro_getCancellations($period = null, $levels = 'all', $status = array
 		FROM {$wpdb->pmpro_memberships_users} AS mu1
 		WHERE mu1.status IN('" . implode( "','", array_map( 'esc_sql', $status ) ) . "')
 			AND mu1.enddate >= '" . $startdate . "'
-			AND mu1.enddate <= " . $enddate  . "
+			AND mu1.enddate <= " . $enddate . "
 		";
 
 	//restrict by level
 	if(!empty($levels) && $levels != 'all') {
-
-		// the levels provided wasn't in array form
+		// Let's make sure that each ID inside of $levels is an integer.
 		if ( ! is_array($levels) ) {
-
-			$levels = array($levels);
+			$levels = explode( ',', $levels );
 		}
-
-		$sqlQuery .= "AND mu1.membership_id IN(" . implode( ',', array_map( 'esc_sql', $levels ) ) . ") ";
+		$levels = implode( ',', array_map( 'intval', $levels ) );
+		$sqlQuery .= "AND mu1.membership_id IN(" . $levels . ") ";
 	}
 
 	/**
@@ -693,8 +700,9 @@ function pmpro_report_memberships_delete_transients()
 	delete_transient("pmpro_report_memberships_cancellations");
 	delete_transient("pmpro_report_memberships_signups");
 }
-add_action("pmpro_after_checkout", "pmpro_report_memberships_delete_transients");
 add_action("pmpro_updated_order", "pmpro_report_memberships_delete_transients");
+add_action("pmpro_after_checkout", "pmpro_report_memberships_delete_transients");
+add_action("pmpro_after_change_membership_level", "pmpro_report_memberships_delete_transients");
 
 
 /**

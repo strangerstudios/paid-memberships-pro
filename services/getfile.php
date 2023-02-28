@@ -23,13 +23,21 @@
 	require_once(dirname(__FILE__) . '/../classes/class.mimetype.php');
 	
 	global $wpdb;
-	
-	$uri = $_SERVER['REQUEST_URI'];
-	if($uri[0] == "/")
-		$uri = substr($uri, 1, strlen($uri) - 1);
+
+	// Get the file path.
+	$uri = sanitize_text_field( $_SERVER['REQUEST_URI'] );
+
+	// Remove the query string from the path.
+	$uri_parts = explode( '?', $uri );
+	$uri       = $uri_parts[0];
+
+	// Take the / off of the 
+	if ( '/' === $uri[0] ) {
+		$uri = substr( $uri, 1, strlen( $uri ) - 1 );
+	}
 	
 	// decode the file in case it's encoded.
-	$uri = urldecode($uri);
+	$uri = urldecode( $uri );
 	
 	/*
 		Remove ../-like strings from the URI.
@@ -116,11 +124,11 @@
 		
 		//guess scheme and add host back to uri
 		if(is_ssl())
-			$uri = "https://" . $_SERVER['HTTP_HOST'] . "/" . $uri;
+			$uri = "https://" . sanitize_text_field( $_SERVER['HTTP_HOST'] ) . "/" . $uri;
 		else
-			$uri = "http://" . $_SERVER['HTTP_HOST'] . "/" . $uri;
+			$uri = "http://" . sanitize_text_field( $_SERVER['HTTP_HOST'] )	 . "/" . $uri;
 				
-		wp_safe_redirect($uri);
+		wp_safe_redirect( $uri );
 		exit;
 	}
 		

@@ -3,13 +3,8 @@
 	//define('PMPRO_INS_DEBUG', true);
 
 	//in case the file is loaded directly
-	if(!defined("ABSPATH"))
-	{
-		global $isapage;
-		$isapage = true;
-
-		define('WP_USE_THEMES', false);
-		require_once(dirname(__FILE__) . '/../../../../wp-load.php');
+	if( ! defined( 'ABSPATH' ) ) {
+		exit;
 	}
 
 	// Require TwoCheckout class
@@ -19,6 +14,9 @@
 	//some globals
 	global $wpdb, $gateway_environment, $logstr;
 	$logstr = "";	//will put debug info here and write to inslog.txt
+
+	// Sets the PMPRO_DOING_WEBHOOK constant and fires the pmpro_doing_webhook action.
+	pmpro_doing_webhook( 'twocheckout', true );
 
 	//validate?
 	if( ! pmpro_twocheckoutValidate() ) {
@@ -175,6 +173,8 @@
 	//Other
 	//if we got here, this is a different kind of txn
 	inslog("The PMPro INS handler does not process this type of message. message_type = " . $message_type);
+
+	pmpro_unhandled_webhook();
 	pmpro_twocheckoutExit();
 
 	/*
@@ -192,7 +192,7 @@
 	function pmpro_twocheckoutExit($redirect = false)
 	{
 		global $logstr;
-		//echo $logstr;
+		//echo esc_html( $logstr );
 
 		$logstr = var_export($_REQUEST, true) . "Logged On: " . date_i18n("m/d/Y H:i:s") . "\n" . $logstr . "\n-------------\n";
 
@@ -200,7 +200,8 @@
 		if(defined('PMPRO_INS_DEBUG') && PMPRO_INS_DEBUG === "log")
 		{
 			//file
-			$loghandle = fopen(dirname(__FILE__) . "/../logs/ipn.txt", "a+");
+			$logfile = apply_filters( 'pmpro_twocheckout_ins_logfile', dirname( __FILE__ ) . "/../logs/ipn.txt" );
+			$loghandle = fopen( $logfile, "a+" );
 			fwrite($loghandle, $logstr);
 			fclose($loghandle);
 		}
@@ -212,7 +213,7 @@
 			else
 				$log_email = get_option("admin_email");
 
-			wp_mail($log_email, get_option("blogname") . " 2Checkout INS Log", nl2br($logstr));
+			wp_mail( $log_email, get_option( "blogname" ) . " 2Checkout INS Log", nl2br( esc_html( $logstr ) ) );
 		}
 
 		if(!empty($redirect))
@@ -244,7 +245,7 @@
 		else if( empty ( $check['response_code'] ) )
 			$r = false;	//Invalid response
 		else
-			$r = $check['response_code'];
+			$r = $check['response_code'] === 'Success';
 
 		/**
 		 * Filter if an twocheckout request is valid or not.
@@ -256,7 +257,7 @@
 		 */
 		$r = apply_filters('pmpro_twocheckout_validate', $r, $check);
 
-		return $check['response_code'] === 'Success';
+		return $r;
 	}
 
 	/*
@@ -264,14 +265,38 @@
 	*/
 	function pmpro_insChangeMembershipLevel($txn_id, &$morder)
 	{
+		global $wpdb;
 		$recurring = pmpro_getParam( 'recurring', 'POST' );
+
+		// Get discount code.
+		$morder->getDiscountCode();
+		if ( ! empty( $morder->discount_code ) ) {
+			// Update membership level
+			$morder->getMembershipLevel(true);
+			$discount_code_id = $morder->discount_code->id;
+		} else {
+			$discount_code_id = "";
+		}
+
+		// If this is an initial payment...
+		if ( empty( pmpro_getParam( 'message_type', 'REQUEST' ) ) || pmpro_getParam( 'message_type', 'REQUEST' ) === 'ORDER_CREATED' ) {
+			// Apply discount code level changes.
+			if ( ! empty( $discount_code_id ) ) {
+				$sqlQuery                 = "SELECT l.id, cl.*, l.name, l.description, l.allow_signups, l.confirmation FROM $wpdb->pmpro_discount_codes_levels cl LEFT JOIN $wpdb->pmpro_membership_levels l ON cl.level_id = l.id LEFT JOIN $wpdb->pmpro_discount_codes dc ON dc.id = cl.code_id WHERE dc.id = '" . esc_sql( $discount_code_id ) . "' AND cl.level_id = '" . esc_sql( $morder->membership_level->level_id ) . "' LIMIT 1";
+				$morder->membership_level = $wpdb->get_row( $sqlQuery );
+			}
+	
+			// Extend membership if renewal.
+			// Added manually because pmpro_checkout_level filter is not run.
+			$morder->membership_level = pmpro_checkout_level_extend_memberships( $morder->membership_level );
+		}
 
 		//filter for level
 		$morder->membership_level = apply_filters("pmpro_inshandler_level", $morder->membership_level, $morder->user_id);
 
 		//set the start date to current_time('mysql') but allow filters (documented in preheaders/checkout.php)
 		$startdate = apply_filters("pmpro_checkout_start_date", "'" . current_time('mysql') . "'", $morder->user_id, $morder->membership_level);
-
+		
 		//fix expiration date
 		if(!empty($morder->membership_level->expiration_number))
 		{
@@ -284,19 +309,6 @@
 
 		//filter the enddate (documented in preheaders/checkout.php)
 		$enddate = apply_filters("pmpro_checkout_end_date", $enddate, $morder->user_id, $morder->membership_level, $startdate);
-
-		//get discount code
-		$morder->getDiscountCode();
-		if(!empty($morder->discount_code))
-		{
-			//update membership level
-			$morder->getMembershipLevel(true);
-			$discount_code_id = $morder->discount_code->id;
-		}
-		else
-			$discount_code_id = "";
-
-		
 
 		//custom level to change user to
 		$custom_level = array(
@@ -316,7 +328,7 @@
 		global $pmpro_error;
 		if(!empty($pmpro_error))
 		{
-			echo $pmpro_error;
+			echo esc_html( $pmpro_error );
 			inslog($pmpro_error);
 		}
 
@@ -333,7 +345,7 @@
 			//add discount code use
 			if(!empty($discount_code) && !empty($use_discount_code))
 			{
-				$wpdb->query("INSERT INTO $wpdb->pmpro_discount_codes_uses (code_id, user_id, order_id, timestamp) VALUES('" . $discount_code_id . "', '" . $morder->user_id . "', '" . $morder->id . "', '" . current_time('mysql') . "')");
+				$wpdb->query("INSERT INTO $wpdb->pmpro_discount_codes_uses (code_id, user_id, order_id, timestamp) VALUES('" . esc_sql( $discount_code_id ) . "', '" . esc_sql( $morder->user_id ) . "', '" . esc_sql( $morder->id ) . "', '" . current_time('mysql') . "')");
 			}
 
 			//save first and last name fields
@@ -393,6 +405,9 @@
 		$morder = new MemberOrder();
 		$morder->user_id = $last_order->user_id;
 
+		// get the user
+		$user = get_userdata( $morder->user_id );
+
 		// Email the user and ask them to update their credit card information
 		$pmproemail = new PMProEmail();
 		$pmproemail->sendBillingFailureEmail($user, $morder);
@@ -414,7 +429,7 @@
 		global $wpdb;
 
 		//check that txn_id has not been previously processed
-		$old_txn = $wpdb->get_var("SELECT payment_transaction_id FROM $wpdb->pmpro_membership_orders WHERE payment_transaction_id = '" . $txn_id . "' LIMIT 1");
+		$old_txn = $wpdb->get_var("SELECT payment_transaction_id FROM $wpdb->pmpro_membership_orders WHERE payment_transaction_id = '" . esc_sql( $txn_id ) . "' LIMIT 1");
 
 		if( empty( $old_txn ) ) {
 
@@ -427,6 +442,9 @@
 			$morder->InitialPayment = sanitize_text_field($_POST['item_list_amount_1']);	//not the initial payment, but the class is expecting that
 			$morder->PaymentAmount = sanitize_text_field($_POST['item_list_amount_1']);
 			$morder->datetime = sanitize_text_field($_POST['timestamp']);
+
+			//Assume no tax for now. Add ons will handle it later.
+			$morder->tax = 0;
 
 			$morder->FirstName = sanitize_text_field($_POST['customer_first_name']);
 			$morder->LastName = sanitize_text_field($_POST['customer_last_name']);

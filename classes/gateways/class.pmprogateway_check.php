@@ -99,16 +99,16 @@
 		<tr class="pmpro_settings_divider gateway gateway_check" <?php if($gateway != "check") { ?>style="display: none;"<?php } ?>>
 			<td colspan="2">
 				<hr />
-				<h3><?php _e('Pay by Check Settings', 'paid-memberships-pro' ); ?></h3>
+				<h3><?php esc_html_e('Pay by Check Settings', 'paid-memberships-pro' ); ?></h3>
 			</td>
 		</tr>
 		<tr class="gateway gateway_check" <?php if($gateway != "check") { ?>style="display: none;"<?php } ?>>
 			<th scope="row" valign="top">
-				<label for="instructions"><?php _e('Instructions', 'paid-memberships-pro' );?></label>					
+				<label for="instructions"><?php esc_html_e('Instructions', 'paid-memberships-pro' );?></label>					
 			</th>
 			<td>
 				<textarea id="instructions" name="instructions" rows="3" cols="50" class="large-text"><?php echo wpautop(  wp_unslash( $values['instructions'] ) ); ?></textarea>
-				<p class="description"><?php _e('Who to write the check out to. Where to mail it. Shown on checkout, confirmation, and invoice pages.', 'paid-memberships-pro' );?></p>
+				<p class="description"><?php esc_html_e('Who to write the check out to. Where to mail it. Shown on checkout, confirmation, and invoice pages.', 'paid-memberships-pro' );?></p>
 			</td>
 		</tr>	
 		<?php
@@ -150,7 +150,7 @@
 
 			if($gateway == "check" && !pmpro_isLevelFree($pmpro_level)) {
 				$instructions = pmpro_getOption("instructions");
-				echo '<div class="pmpro_check_instructions">' . wpautop(wp_unslash( $instructions )) . '</div>';
+				echo '<div class="' . pmpro_get_element_class( 'pmpro_check_instructions' ) . '">' . wpautop(wp_unslash( $instructions )) . '</div>';
 			}
 		}
 
@@ -176,7 +176,7 @@
 					if(!pmpro_isLevelTrial($order->membership_level))
 					{
 						//subscription will start today with a 1 period trial
-						$order->ProfileStartDate = date_i18n("Y-m-d") . "T0:0:0";
+						$order->ProfileStartDate = date_i18n("Y-m-d\TH:i:s");
 						$order->TrialBillingPeriod = $order->BillingPeriod;
 						$order->TrialBillingFrequency = $order->BillingFrequency;													
 						$order->TrialBillingCycles = 1;
@@ -189,7 +189,7 @@
 					elseif($order->InitialPayment == 0 && $order->TrialAmount == 0)
 					{
 						//it has a trial, but the amount is the same as the initial payment, so we can squeeze it in there
-						$order->ProfileStartDate = date_i18n("Y-m-d") . "T0:0:0";														
+						$order->ProfileStartDate = date_i18n("Y-m-d\TH:i:s");														
 						$order->TrialBillingCycles++;
 						
 						//add a billing cycle to make up for the trial, if applicable
@@ -199,7 +199,7 @@
 					else
 					{
 						//add a period to the start date to account for the initial payment
-						$order->ProfileStartDate = date_i18n("Y-m-d", strtotime("+ " . $order->BillingFrequency . " " . $order->BillingPeriod, current_time("timestamp"))) . "T0:0:0";
+						$order->ProfileStartDate = date_i18n("Y-m-d\TH:i:s", strtotime("+ " . $order->BillingFrequency . " " . $order->BillingPeriod, current_time("timestamp")));
 					}
 					
 					$order->ProfileStartDate = apply_filters("pmpro_profile_start_date", $order->ProfileStartDate, $order);
@@ -223,7 +223,7 @@
 						if(!pmpro_isLevelTrial($order->membership_level))
 						{
 							//subscription will start today with a 1 period trial
-							$order->ProfileStartDate = date_i18n("Y-m-d") . "T0:0:0";
+							$order->ProfileStartDate = date_i18n("Y-m-d\TH:i:s");
 							$order->TrialBillingPeriod = $order->BillingPeriod;
 							$order->TrialBillingFrequency = $order->BillingFrequency;													
 							$order->TrialBillingCycles = 1;
@@ -236,7 +236,7 @@
 						elseif($order->InitialPayment == 0 && $order->TrialAmount == 0)
 						{
 							//it has a trial, but the amount is the same as the initial payment, so we can squeeze it in there
-							$order->ProfileStartDate = date_i18n("Y-m-d") . "T0:0:0";														
+							$order->ProfileStartDate = date_i18n("Y-m-d\TH:i:s");														
 							$order->TrialBillingCycles++;
 							
 							//add a billing cycle to make up for the trial, if applicable
@@ -246,7 +246,7 @@
 						else
 						{
 							//add a period to the start date to account for the initial payment
-							$order->ProfileStartDate = date_i18n("Y-m-d", strtotime("+ " . $order->BillingFrequency . " " . $order->BillingPeriod, current_time("timestamp"))) . "T0:0:0";
+							$order->ProfileStartDate = date_i18n("Y-m-d\TH:i:s", strtotime("+ " . $order->BillingFrequency . " " . $order->BillingPeriod, current_time("timestamp")));
 						}
 						
 						$order->ProfileStartDate = apply_filters("pmpro_profile_start_date", $order->ProfileStartDate, $order);

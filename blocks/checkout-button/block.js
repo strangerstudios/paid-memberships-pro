@@ -8,8 +8,6 @@
 /**
  * Block dependencies
  */
-import './editor.css';
-import classnames from 'classnames';
 import Inspector from './inspector';
 
 /**
@@ -18,16 +16,11 @@ import Inspector from './inspector';
 const { __ } = wp.i18n;
 const {
     registerBlockType,
-    BlockControls,
 } = wp.blocks;
 const {
-    PanelBody,
     TextControl,
     SelectControl,
 } = wp.components;
-const {
-    InspectorControls,
-} = wp.editor;
 
 /**
  * Register block
@@ -36,17 +29,20 @@ export default registerBlockType(
      'pmpro/checkout-button',
      {
          title: __( 'Membership Checkout Button', 'paid-memberships-pro' ),
-         description: __( 'Displays a button-styled link to Membership Checkout for the specified level.', 'paid-memberships-pro' ),
+         description: __( 'Inserts a button that links directly to membership checkout for the selected level.', 'paid-memberships-pro' ),
          category: 'pmpro',
          icon: {
-            background: '#2997c8',
-            foreground: '#ffffff',
+            background: '#FFFFFF',
+            foreground: '#658B24',
             src: 'migrate',
          },
-         keywords: [ 
-             __( 'pmpro', 'paid-memberships-pro' ), 
+         keywords: [
              __( 'buy', 'paid-memberships-pro' ),
              __( 'level', 'paid-memberships-pro' ),
+             __( 'member', 'paid-memberships-pro' ),
+             __( 'paid memberships pro', 'paid-memberships-pro' ),
+             __( 'pmpro', 'paid-memberships-pro' ),
+             __( 'purchase', 'paid-memberships-pro' ),
          ],
          supports: {
          },
@@ -67,20 +63,17 @@ export default registerBlockType(
              const { attributes: { text, level, css_class}, className, setAttributes, isSelected } = props;
              return [
                 isSelected && <Inspector { ...{ setAttributes, ...props} } />,
-                <div
-                    className={ className }
-                >
+                <div className={ className }>
                   <a class={css_class} >{text}</a>
                 </div>,
-                isSelected && <div>
-                  <br/>
+                isSelected && <div className="pmpro-block-element">
                    <TextControl
                        label={ __( 'Button Text', 'paid-memberships-pro' ) }
                        value={ text }
                        onChange={ text => setAttributes( { text } ) }
                    />
                    <SelectControl
-                       label={ __( 'Level ID', 'paid-memberships-pro' ) }
+                       label={ __( 'Membership Level', 'paid-memberships-pro' ) }
                        value={ level }
                        onChange={ level => setAttributes( { level } ) }
                        options={ window.pmpro.all_level_values_and_labels }

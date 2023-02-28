@@ -7,6 +7,7 @@ function pmpro_init() {
 	require_once(PMPRO_DIR . '/includes/countries.php');
 	require_once(PMPRO_DIR . '/includes/states.php');
 	require_once(PMPRO_DIR . '/includes/currencies.php');
+	require_once(PMPRO_DIR . '/includes/email-templates.php');
 
 	global $pmpro_pages, $pmpro_core_pages, $pmpro_ready, $pmpro_currencies, $pmpro_currency, $pmpro_currency_symbol;
 	$pmpro_pages = array();
@@ -17,6 +18,8 @@ function pmpro_init() {
 	$pmpro_pages["confirmation"] = pmpro_getOption("confirmation_page_id");
 	$pmpro_pages["invoice"] = pmpro_getOption("invoice_page_id");
 	$pmpro_pages["levels"] = pmpro_getOption("levels_page_id");
+	$pmpro_pages["login"] = pmpro_getOption("login_page_id");
+	$pmpro_pages["member_profile_edit"] = pmpro_getOption("member_profile_edit_page_id");
 
 	//save this in case we want a clean version of the array with just the core pages
 	$pmpro_core_pages = $pmpro_pages;
@@ -67,7 +70,7 @@ function pmpro_wp()
 		//run the appropriate preheader function
 		foreach($pmpro_core_pages as $pmpro_page_name => $pmpro_page_id)
 		{
-			if(!empty($post->post_content) && strpos($post->post_content, "[pmpro_" . $pmpro_page_name . "]") !== false)
+			if(!empty($post->post_content) && ( strpos($post->post_content, "[pmpro_" . $pmpro_page_name . "]") !== false || has_block( 'pmpro/' . $pmpro_page_name . '-page', $post ) ) )
 			{
 				//preheader
 				require_once(PMPRO_DIR . "/preheaders/" . $pmpro_page_name . ".php");
@@ -87,13 +90,16 @@ function pmpro_wp()
 			}
 			elseif(!empty($pmpro_page_id) && is_page($pmpro_page_id))
 			{
+				//add class to body
+				$pmpro_body_classes[] = "pmpro-" . str_replace("_", "-", $pmpro_page_name);
+
 				//shortcode has params, but we still want to load the preheader
 				require_once(PMPRO_DIR . "/preheaders/" . $pmpro_page_name . ".php");
 			}
 		}
 	}
 }
-add_action("wp", "pmpro_wp", 1);
+add_action("wp", "pmpro_wp", 2);
 
 /*
 	Add PMPro page names to the BODY class.
@@ -174,7 +180,6 @@ function pmpro_manage_users_columns($columns) {
 
 function pmpro_sortable_column($columns)
 {
-	// $columns['pmpro_membership_level'] = ['level', 'desc'];
 	$columns['pmpro_membership_level'] = array( 'level', 'desc' );
 	return $columns;
 }
@@ -187,7 +192,7 @@ function pmpro_manage_users_custom_column($column_data, $column_name, $user_id) 
         if(!empty($levels)) {
             foreach($levels as $key => $level)
                 $level_names[] = $level->name;
-            $column_data = implode(',', $level_names);
+            $column_data = implode(', ', $level_names);
         }
         else
             $column_data = __('None', 'paid-memberships-pro' );
@@ -195,16 +200,19 @@ function pmpro_manage_users_custom_column($column_data, $column_name, $user_id) 
     return $column_data;
 }
 
-function pmpro_sortable_column_query($query) {
+function pmpro_sortable_column_query( $query ) {
     global $wpdb;
 
 	$vars = $query->query_vars;
 
-	if($vars['orderby'] == 'level'){
-		$query->query_from .= " LEFT JOIN {$wpdb->prefix}pmpro_memberships_users AS pmpro_mu ON {$wpdb->prefix}users.ID = pmpro_mu.user_id AND pmpro_mu.status = 'active'";
-		$query->query_orderby = "ORDER BY pmpro_mu.membership_id " . $vars['order'] . ", {$wpdb->prefix}users.user_registered";
-	}
+	if ( $vars['orderby'] == 'level' ){
+		$order = pmpro_sanitize_with_safelist( $vars['order'], array( 'asc', 'desc', 'ASC', 'DESC' ) );
 
+		if ( ! empty( $order ) ) {
+			$query->query_from .= " LEFT JOIN $wpdb->pmpro_memberships_users AS pmpro_mu ON $wpdb->users.ID = pmpro_mu.user_id AND pmpro_mu.status = 'active' LEFT JOIN $wpdb->pmpro_membership_levels AS pmpro_ml ON pmpro_mu.membership_id = pmpro_ml.id";
+			$query->query_orderby = "ORDER BY pmpro_ml.name " . $order . ", $wpdb->users.user_registered"; // All options for $order listed in safelist above are safe for use in a query.
+		}
+	}
 }
 
 add_filter('manage_users_columns', 'pmpro_manage_users_columns');

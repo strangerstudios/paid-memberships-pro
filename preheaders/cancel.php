@@ -4,33 +4,48 @@
 
 	global $wpdb, $current_user, $pmpro_msg, $pmpro_msgt, $pmpro_confirm, $pmpro_error;
 
-	//get level information for current user
-	if($current_user->ID)
-		$current_user->membership_level = pmpro_getMembershipLevelForUser($current_user->ID);
-
-	//if no user or membership level, redirect to levels page
-	if(!isset($current_user->membership_level->ID)) {
-		wp_redirect(pmpro_url("levels"));
-		exit;
+	// Get the level IDs they are requesting to cancel using the old ?level param.
+	if ( ! empty( $_REQUEST['level'] ) && empty( $_REQUEST['levelstocancel'] ) ) {
+		$requested_ids = intval( $_REQUEST['level'] );
 	}
 
-	//using the old ?level param?
-	if(!empty($_REQUEST['level']) && empty($_REQUEST['levelstocancel'])) {
-		$_REQUEST['levelstocancel'] = $_REQUEST['level'];
+	// Get the level IDs they are requesting to cancel from the ?levelstocancel param.
+	if ( ! empty( $_REQUEST['levelstocancel'] ) && $_REQUEST['levelstocancel'] === 'all' ) {
+		$requested_ids = 'all';
+	} elseif ( ! empty( $_REQUEST['levelstocancel'] ) ) {		
+		// A single ID could be passed, or a few like 1+2+3.
+		$requested_ids = str_replace(array(' ', '%20'), '+', sanitize_text_field( $_REQUEST['levelstocancel'] ) );
+		$requested_ids = preg_replace("/[^0-9\+]/", "", $requested_ids );
+	}	
+
+	// Redirection logic.
+	if ( ! is_user_logged_in() ) {
+		if ( ! empty( $requested_ids ) ) {
+			$redirect = add_query_arg( 'levelstocancel', $requested_ids, pmpro_url( 'cancel' ) );
+		} else {
+			$redirect = pmpro_url( 'cancel' );
+		}
+		// Redirect non-user to the login page; pass the Cancel page with specific ?levelstocancel as the redirect_to query arg.
+		wp_redirect( add_query_arg( 'redirect_to', urlencode( $redirect ), pmpro_login_url() ) );
+		exit;
+	} else {
+		// Get the membership level for the current user.
+		$current_user->membership_level = pmpro_getMembershipLevelForUser( $current_user->ID) ;
+		// If user has no membership level, redirect to levels page.
+		if ( ! isset( $current_user->membership_level->ID ) ) {
+			wp_redirect( pmpro_url( 'levels' ) );
+			exit;
+		}
 	}
 
 	//check if a level was passed in to cancel specifically
-	if(!empty($_REQUEST['levelstocancel']) && $_REQUEST['levelstocancel'] != 'all') {
-		//convert spaces back to +
-		$_REQUEST['levelstocancel'] = str_replace(array(' ', '%20'), '+', $_REQUEST['levelstocancel']);
-		
-		//get the ids
-		$requested_ids = preg_replace("/[^0-9\+]/", "", $_REQUEST['levelstocancel']);
+	if ( ! empty ( $requested_ids ) && $requested_ids != 'all' ) {		
 		$old_level_ids = array_map( 'intval', explode( "+", $requested_ids ) );
-		
-		//make sure the user has their old level
-		if(!pmpro_hasMembershipLevel($old_level_ids)) {
-			wp_redirect(pmpro_url("levels"));
+
+		// Make sure the user has the level they are trying to cancel.
+		if ( ! pmpro_hasMembershipLevel( $old_level_ids ) ) {
+			// If they don't have the level, return to Membership Account.
+			wp_redirect( pmpro_url( 'account' ) );
 			exit;
 		}
 	} else {
@@ -47,15 +62,16 @@
         if(!empty($old_level_ids)) {
         	$worked = true;
 			foreach($old_level_ids as $old_level_id) {
-				$worked = $worked && pmpro_cancelMembershipLevel($old_level_id, $current_user->ID, 'cancelled');
+				$one_worked = pmpro_cancelMembershipLevel($old_level_id, $current_user->ID, 'cancelled');
+				$worked = $worked && $one_worked !== false;
 			}
         }
 		else {
-			$old_level_ids = $wpdb->get_col("SELECT DISTINCT(membership_id) FROM $wpdb->pmpro_memberships_users WHERE user_id = '" . $current_user->ID . "' AND status = 'active'");
+			$old_level_ids = $wpdb->get_col( $wpdb->prepare( "SELECT DISTINCT(membership_id) FROM $wpdb->pmpro_memberships_users WHERE user_id = %d AND status = 'active'", $current_user->ID ) );
 			$worked = pmpro_changeMembershipLevel(0, $current_user->ID, 'cancelled');
 		}
         
-		if($worked === true && empty($pmpro_error))
+		if($worked != false && empty($pmpro_error))
 		{
 			$pmpro_msg = __("Your membership has been cancelled.", 'paid-memberships-pro' );
 			$pmpro_msgt = "pmpro_success";

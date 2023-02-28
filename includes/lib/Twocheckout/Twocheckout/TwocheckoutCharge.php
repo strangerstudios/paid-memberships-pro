@@ -12,10 +12,10 @@ class Twocheckout_Charge extends Twocheckout
             echo '<input type="hidden" name="'.htmlspecialchars($key, ENT_QUOTES, 'UTF-8').'" value="'.htmlspecialchars($value, ENT_QUOTES, 'UTF-8').'"/>';
         }
         if ($type == 'auto') {
-            echo '<input type="submit" value="Click here if you are not redirected automatically" /></form>';
+            echo '<input type="submit" value="' . esc_attr__( 'Click here if you are not redirected automatically.', 'paid-memberships-pro' ) . '" /></form>';
             echo '<script type="text/javascript">document.getElementById("2checkout").submit();</script>';
         } else {
-            echo '<input type="submit" value="'.$type.'" />';
+            echo '<input type="submit" value="'.esc_attr($type).'" />';
             echo '</form>';
         }
     }
@@ -26,11 +26,11 @@ class Twocheckout_Charge extends Twocheckout
 
         foreach ($params as $key => $value)
         {
-            echo '<input type="hidden" name="'.$key.'" value="'.$value.'"/>';
+            echo '<input type="hidden" name="'.$key.'" value="'.esc_attr($value).'"/>';
         }
 
         if ($type == 'auto') {
-            echo '<input type="submit" value="Click here if the payment form does not open automatically." /></form>';
+            echo '<input type="submit" value="' . esc_attr__( 'Click here if the payment form does not open automatically.', 'paid-memberships-pro' ) . '" /></form>';
             echo '<script type="text/javascript">
                     function submitForm() {
                         document.getElementById("tco_lightbox").style.display = "block";
@@ -39,7 +39,7 @@ class Twocheckout_Charge extends Twocheckout
                     setTimeout("submitForm()", 2000);
                   </script>';
         } else {
-            echo '<input type="submit" value="'.$type.'" />';
+            echo '<input type="submit" value="'.esc_attr($type).'" />';
             echo '</form>';
         }
 

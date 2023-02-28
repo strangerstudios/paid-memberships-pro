@@ -104,27 +104,16 @@ input[type="button"]#other_discount_code_button:focus {
 /*---------------------------------------
 	Forms
 ---------------------------------------*/
-form.pmpro_form .pmpro_checkout-fields div {
+form.pmpro_form .pmpro_checkout-fields div,
+#loginform p {
 	margin: 0 0 1em 0;
 }
-form.pmpro_form label {
+form.pmpro_form label,
+#loginform label {
 	font-weight: 700;
 	display: block;
 	margin: 0;
 	text-align: left;
-}
-form.pmpro_form #pmpro_payment_information_fields .pmpro_checkout-fields label {
-	display: block;
-	float: none;
-	max-width: initial;
-	min-width: initial;
-	text-align: left;
-	width: auto;
-}
-form.pmpro_form .pmpro_checkout-field-checkbox label {
-	cursor: pointer;
-	display: inline-block;
-	width: auto;
 }
 form.pmpro_form label.pmpro_label-inline {
 	display: inline-block;
@@ -136,14 +125,95 @@ form.pmpro_form .pmpro_asterisk abbr {
 	border: none;
 	text-decoration: none;
 }
-form.pmpro_form input[type=checkbox]#tos {
-	width: auto;
+form.pmpro_form .lite {
+	color: #666;
 }
-form.pmpro_form .input,
+form.pmpro_form .pmpro_captcha div {
+	clear: none;
+	margin: 0;
+}
+form.pmpro_form .pmpro_submit {
+	margin-top: 1em;
+}
+form.pmpro_form #pmpro_processing_message {
+	color: #999;
+	display: block;
+	font-style: italic;
+	margin: 1em 0 0 0;
+	text-align: left;
+}
+
+/** General Field Types **/
+form.pmpro_form input[type=text],
+form.pmpro_form input[type=password],
+form.pmpro_form input[type=email],
+form.pmpro_form input[type=number],
 form.pmpro_form textarea,
-form.pmpro_form select {
+form.pmpro_form select,
+#loginform input[type=text],
+#loginform input[type=password] {
 	display: inline-block;
 	max-width: 90%;
+	min-height: 1.5rem;
+}
+
+/** Checkbox-specific field type **/
+form.pmpro_form .pmpro_checkout-field-checkbox label {
+	cursor: pointer;
+	display: inline;
+	width: auto;
+}
+form.pmpro_form .pmpro_checkout-field-checkbox input[type=checkbox] {
+	opacity: 1;
+}
+form.pmpro_form .pmpro_checkout-field-checkbox_grouped ul {
+	list-style: none;
+	margin-left: 0;
+	padding-left: 0;
+}
+form.pmpro_form .pmpro_checkout-field-checkbox_grouped li {
+	list-style: none;
+	margin-left: 0;
+	padding-left: 0;
+}
+
+/** Radio-specific field type **/
+form.pmpro_form .pmpro_checkout-fields .pmpro_checkout-field-radio-item {
+	margin-bottom: 0;
+}
+form.pmpro_form .pmpro_checkout-field-radio-item label {
+	cursor: pointer;
+	display: inline-block;
+	width: auto;
+}
+form.pmpro_form .pmpro_checkout-field-radio-item input[type=radio] {
+	opacity: 1;
+}
+
+/** Select-specific field type **/
+form.pmpro_form .pmpro_checkout-field-select select {
+	min-width: 50%;
+}
+
+/** Date-specific field type **/
+form.pmpro_form .pmpro_checkout-field-date select {
+	max-width: unset;
+	width: unset;
+}
+form.pmpro_form .pmpro_checkout-field-date input[type=text] {
+	margin-left: 5px;
+	max-width: unset;
+	width: unset;
+}
+
+/** Membership Checkout and Billing-specific Fields **/
+form.pmpro_form #pmpro_payment_information_fields .pmpro_checkout-fields label {
+	display: block;
+	float: none;
+	max-width: initial;
+	min-width: initial;
+	text-align: left;
+	width: auto;
 }
 form.pmpro_form .pmpro_checkout-field-bcity_state_zip .input,
 form.pmpro_form .pmpro_checkout-field-bcity_state_zip select {
@@ -154,23 +224,34 @@ form.pmpro_form .pmpro_payment-discount-code .input,
 form.pmpro_form #other_discount_code.input {
 	max-width: 40%;
 }
-form.pmpro_form .lite {
-	color: #666;
+form.pmpro_form input[type=checkbox]#tos {
+	width: auto;
 }
-form.pmpro_form .pmpro_captcha div {
-	clear: none;
-	margin: 0;
+
+/* Lost Password Frontend Form */
+form.pmpro_form .pmpro_lost_password-fields div {
+	margin: 0 0 1em 0;
 }
-form.pmpro_form .pmpro_submit{
-	margin-top: 1em;
-	text-align: right;
+
+/* Member Profile Edit Frontend Form */
+form.pmpro_form .pmpro_member_profile_edit-fields > div {
+	margin: 0 0 1em 0;
 }
-form.pmpro_form #pmpro_processing_message {
-	color: #999;
-	display: block;
-	font-style: italic;
-	margin: 1em 0 0 0;
-	text-align: right;
+
+/* Change Password Frontend Form */
+form.pmpro_form .pmpro_change_password-fields div {
+	margin: 0 0 1em 0;
+}
+
+/* Password Strength Meter on Frontend Forms */
+.pmpro_reset_password_wrap form.pmpro_form #pass-strength-result,
+form.pmpro_form .pmpro_change_password-fields #pass-strength-result {
+	display: inline-block;
+	max-width: 150px;
+}
+.pmpro_reset_password_wrap form.pmpro_form .lite,
+form.pmpro_form .pmpro_change_password-fields .lite {
+	margin-top: 10px;
 }
 
 /*--------------------------------------------------
@@ -220,8 +301,9 @@ textarea.pmpro_error {
 	border-color: #faebcc;
 	color: #8a6d3b;
 }
-.pmpro_content_message a {
-	margin: 5px 5px 0 0;
+.pmpro_content_message a,
+.pmpro_content_message a:link {
+	margin: 10px 10px 0 0;
 }
 .pmpro_message a {
 	color: #245269;
@@ -242,10 +324,36 @@ input.pmpro_error {
 select.pmpro_error {
 	background-image: none;
 }
+.pmpro_message p:last-child {
+	margin-bottom: 0;
+}
 
 #pmpro_message_bottom {
 	margin-bottom: 1em;
 }
+
+/*---------------------------------------
+	Display Price Parts
+---------------------------------------*/
+.pmpro_price_part_span {
+	display: block;
+}
+.pmpro_price_part-total {
+	border-top: 1px solid #CCC;
+	margin-top: 5px;
+	padding-top: 5px;
+}
+.pmpro_price_part_label:after {
+	content: ": ";
+}
+.pmpro_price_part_sub {
+	font-size: 75%;
+}
+span.pmpro_price_part_sub:before {
+	content: "\2022";
+	padding-right: 5px;
+}
+
 /*---------------------------------------
 	Membership Checkout
 ---------------------------------------*/
@@ -272,12 +380,20 @@ select.pmpro_error {
 	display: grid;
 	-ms-grid-columns: 3fr 1em 1fr;
 	grid-template-columns: 3fr 1fr;
-	grid-gap: 1em;
+	grid-column-gap: 1em;
+	grid-template-areas:
+		"leftcol rightcol";
+}
+#pmpro_payment_information_fields .pmpro_checkout-fields-display-seal .pmpro_checkout-fields-leftcol {
+	grid-area: leftcol;
+}
+#pmpro_payment_information_fields .pmpro_checkout-fields-display-seal .pmpro_checkout-fields-rightcol {
+	grid-area: rightcol;
 }
 #pmpro_license {
 	background: #FFF;
 	border: 1px solid #CCC;
-	color: #666;
+	color: #333;
 	height: 200px;
 	margin: 3px;
 	overflow: auto;
@@ -285,16 +401,27 @@ select.pmpro_error {
 }
 
 /* Stripe gateway Membership Checkout specific styles. */
+.pmpro_checkout_gateway-stripe form.pmpro_form #pmpro_payment_information_fields .pmpro_checkout-field-payment-request-button {
+	grid-area: paymentrequestbutton;
+}
+.pmpro_checkout_gateway-stripe form.pmpro_form #pmpro_payment_information_fields .pmpro_checkout-field-payment-request-button h4 {
+	margin-top: 1em;
+}
+.pmpro_checkout_gateway-stripe form.pmpro_form #pmpro_payment_information_fields .pmpro_checkout-fields-display-seal  {
+	grid-template-areas:
+		"paymentrequestbutton rightcol"
+		"leftcol rightcol";
+}
 .pmpro_checkout_gateway-stripe form.pmpro_form #pmpro_payment_information_fields .pmpro_checkout-fields,
 .pmpro_billing_gateway-stripe form.pmpro_form #pmpro_payment_information_fields .pmpro_checkout-fields {
 	display: -ms-grid;
 	display: grid;
 	-ms-grid-rows: auto 1em auto 1em auto;
-	    grid-template-areas:
+	grid-template-areas:
 		"AccountNumber AccountNumber"
 		"Expiry CVV"
 		"DiscountCode DiscountCode";
-	grid-gap: 1em;
+	grid-column-gap: 1em;
 	-ms-grid-columns: 1fr 1em 1fr;
 	grid-template-columns: 1fr 1fr;
 }
@@ -361,6 +488,17 @@ select.pmpro_error {
 	padding-right: 10px;
 }
 
+.pmpro_invoice-field-billing_name,
+.pmpro_invoice-field-billing_street,
+.pmpro_invoice-field-billing_country,
+.pmpro_invoice-field-billing_phone {
+	display: block;
+}
+
+.pmpro_invoice-field-billing_city:after {
+	content: ',';
+}
+
 /*---------------------------------------
 	Membership Account
 ---------------------------------------*/
@@ -397,7 +535,6 @@ select.pmpro_error {
 
 .pmpro_actionlinks a {
 	display: inline-block;
-	margin-right: .5rem;
 	text-decoration: none;
 }
 .pmpro_actionlinks a:last-child {
@@ -412,6 +549,119 @@ li.pmpro_more {
 	padding-left: 0;
 	text-align: center;
 }
+
+/*---------------------------------------
+	Membership Billing Page
+---------------------------------------*/
+.pmpro_billing_wrap {
+	margin-bottom: 1em;
+}
+
+/*---------------------------------------
+	Log In and Password Reset Pages
+---------------------------------------*/
+.pmpro_login_wrap,
+.pmpro_lost_password_wrap,
+.pmpro_reset_password_wrap {
+	margin-bottom: 1em;
+}
+
+/*---------------------------------------
+	This section based on similar rules
+	in wp-admin/css/forms.css
+---------------------------------------*/
+#pass-strength-result {
+	background-color: #eee;
+	border: 1px solid #ddd;
+	color: #23282d;
+	margin: -1px 1px 5px;
+	padding: 3px 5px;
+	text-align: center;
+	width: 25em;
+	box-sizing: border-box;
+	opacity: 0;
+}
+
+#pass-strength-result.short {
+	background-color: #f1adad;
+	border-color: #e35b5b;
+	opacity: 1;
+}
+
+#pass-strength-result.bad {
+	background-color: #fbc5a9;
+	border-color: #f78b53;
+	opacity: 1;
+}
+
+#pass-strength-result.good {
+	background-color: #ffe399;
+	border-color: #ffc733;
+	opacity: 1;
+}
+
+#pass-strength-result.strong {
+	background-color: #c1e1b9;
+	border-color: #83c373;
+	opacity: 1;
+}
+
+.pass1.short, .pass1-text.short {
+	border-color: #e35b5b;
+}
+
+.pass1.bad, .pass1-text.bad {
+	border-color: #f78b53;
+}
+
+.pass1.good, .pass1-text.good {
+	border-color: #ffc733;
+}
+
+.pass1.strong, .pass1-text.strong {
+	border-color: #83c373;
+}
+
+.pw-weak {
+	display: none;
+}
+
+.indicator-hint {
+	padding-top: 8px;
+}
+
+.wp-pwd [type="text"],
+.wp-pwd [type="password"] {
+	margin-bottom: 0;
+	/* Same height as the buttons */
+	min-height: 30px;
+}
+
+/* Hide the Edge "reveal password" native button */
+.wp-pwd input::-ms-reveal {
+	display: none;
+}
+
+.pass1-text,
+.show-password #pass1 {
+	display: none;
+}
+
+.pass1-text::-ms-clear {
+	display: none;
+}
+
+.show-password #pass1-text {
+	display: inline-block;
+}
+
+/*---------------------------------------
+	Member Profile Edit Page
+---------------------------------------*/
+.pmpro_member_profile_edit_wrap,
+.pmpro_change_password_wrap {
+	margin-bottom: 1em;
+}
 /*---------------------------------------
 	Membership Levels
 ---------------------------------------*/
@@ -425,6 +675,24 @@ li.pmpro_more {
 /*---------------------------------------
 	Misc
 ---------------------------------------*/
+.pmpro_actions_nav {
+	text-align: center;
+}
+.pmpro_actions_nav-left {
+	display: block;
+	float: left;
+	width: 48%;
+	text-align: left;
+}
+.pmpro_actions_nav-right {
+	display: block;
+	float: right;
+	width: 48%;
+	text-align: right;
+}
+.pmpro-levels .pmpro_actions_nav {
+	text-align: left;
+}
 .pmpro_a-right {
 	float: right;
 	font-size: 11px;
@@ -468,6 +736,16 @@ li.pmpro_more {
 /*---------------------------------------
 	Responsive Styles
 ---------------------------------------*/
+@media only screen and (min-width: 1160px) {
+	.pmpro_checkout_gateway-stripe form.pmpro_form #pmpro_payment_information_fields #payment-request-button {
+		max-width: 50%;
+	}
+}
+@media only screen and (min-width: 960px) and (max-width: 1160px) {
+	.pmpro_checkout_gateway-stripe form.pmpro_form #pmpro_payment_information_fields #payment-request-button {
+		max-width: 50%;
+	}
+}
 @media (max-width:768px) {
 	#pmpro_account #pmpro_account-membership .pmpro_table td:nth-child(1),
 	#pmpro_levels_table td:nth-child(1) {
@@ -480,8 +758,16 @@ li.pmpro_more {
 		display: block;
 		margin-bottom: 1em;
 	}
-	form.pmpro_form input[type=text].input, form.pmpro_form input[type=password].input {
+	form.pmpro_form input[type=text].input,
+	form.pmpro_form input[type=password].input,
+	.pmpro_login_wrap form#loginform input[type=text].input,
+	.pmpro_login_wrap form#loginform input[type=password].input {
 		width: 90%;
+	}
+	/* Password Strength Meter on Frontend Forms */
+	.pmpro_reset_password_wrap form.pmpro_form #pass-strength-result,
+	form.pmpro_form .pmpro_change_password-fields #pass-strength-result {
+		max-width: 90%;
 	}
 	form.pmpro_form input[type=text]#other_discount_code, form.pmpro_form input[type=text]#CVV, form.pmpro_form input[type=text]#discount_code {
 		width: 40%;
@@ -489,7 +775,8 @@ li.pmpro_more {
 	#pmpro_payment_information_fields .pmpro_checkout-fields-display-seal {
 		display: block;
 	}
-	form.pmpro_form .pmpro_btn {
+	form.pmpro_form .pmpro_btn,
+	.pmpro_login_wrap #loginform input[type=submit] {
 		display: block;
 		width: 100%;
 	}

@@ -8,38 +8,45 @@ global $pmpro_reports;
 /**
 * Load the Paid Memberships Pro dashboard-area header
 */
-require_once( dirname( __FILE__ ) . '/admin_header.php' );
+require_once( dirname( __FILE__ ) . '/admin_header.php' ); ?>
 
+<hr class="wp-header-end">
+
+<?php
 // View a single report if requested.
 if ( ! empty( $_REQUEST[ 'report' ] ) ) {
 	//view a single report
 	$report = sanitize_text_field( $_REQUEST[ 'report' ] );
 	call_user_func( 'pmpro_report_' . $report . '_page' ); ?>
-	<hr />
-	<a class="button button-primary" href="<?php echo admin_url("admin.php?page=pmpro-reports");?>"><?php _e( 'Back to Reports Dashboard', 'paid-memberships-pro' ); ?></a>
+	<p><a class="button button-primary" href="<?php echo esc_url( admin_url( 'admin.php?page=pmpro-reports' ) );?>"><?php esc_html_e( 'Back to Reports Dashboard', 'paid-memberships-pro' ); ?></a></p>
+
 	<?php
 } else {
-	$pieces = array_chunk( $pmpro_reports, ceil( count( $pmpro_reports ) / 2 ), true );
-	foreach ( $pieces[0] as $report => $title ) {
-		add_meta_box(
-			'pmpro_report_' . $report,
-			$title,
-			'pmpro_report_' . $report . '_widget',
-			'memberships_page_pmpro-reports',
-			'advanced'
-		);
-	}
-	
-	foreach ( $pieces[1] as $report => $title ) {
-		add_meta_box(
-			'pmpro_report_' . $report,
-			$title,
-			'pmpro_report_' . $report . '_widget',
-			'memberships_page_pmpro-reports',
-			'side'
-		);
-	}
-	
+    if( ! empty( $pmpro_reports ) ) {
+        $pieces = array_chunk( $pmpro_reports, ceil( count( $pmpro_reports ) / 2 ), true );
+        foreach ( $pieces[0] as $report => $title ) {
+            add_meta_box(
+                'pmpro_report_' . $report,
+                $title,
+                'pmpro_report_' . $report . '_widget',
+                'memberships_page_pmpro-reports',
+                'advanced'
+            );
+        }
+
+        if( ! empty( $pieces[1] ) ) {
+	        foreach ( $pieces[1] as $report => $title ) {
+		        add_meta_box(
+			        'pmpro_report_' . $report,
+			        $title,
+			        'pmpro_report_' . $report . '_widget',
+			        'memberships_page_pmpro-reports',
+			        'side'
+		        );
+	        }
+        }
+    }
+
 	?>
 	<form id="pmpro-reports-form" method="post" action="admin-post.php">
 

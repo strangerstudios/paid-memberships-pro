@@ -105,6 +105,9 @@ function pmpro_member_shortcode($atts, $content=null, $code='')
 		//wp_users column
 		$user = get_userdata($user_id);
 		$r = $user->{$field};
+	} elseif( $field == 'avatar' ) {
+		// Get the user's avatar.
+		$r = get_avatar( $user_id );
 	} else {
 		//assume user meta
 		$r = get_user_meta($user_id, $field, true);
@@ -125,7 +128,15 @@ function pmpro_member_shortcode($atts, $content=null, $code='')
 		if(empty($r) || $r == '0.00')
 			$r = '';
 		else
-			$r = pmpro_formatPrice($r);
+			$r = pmpro_escape_price( pmpro_formatPrice($r) );
+	}
+
+	// If this is a user field with an associative array of options, get the label(s) for the value(s).
+	$r = pmpro_get_label_for_user_field_value( $field, $r );
+
+	//Check for arrays to reformat them.
+	if ( is_array( $r ) ) {
+		$r = implode( ', ', $r );
 	}
 
 	/** 

@@ -4,31 +4,14 @@
  * Displays the Membership Cancel page.
  *
  */
- /**
-  * Block dependencies
-  */
- import './editor.css';
- import classnames from 'classnames';
+
  /**
   * Internal block libraries
   */
  const { __ } = wp.i18n;
  const {
-    registerBlockType,
-    AlignmentToolbar,
-    BlockControls,
-    BlockAlignmentToolbar,
+    registerBlockType
 } = wp.blocks;
-const {
-    PanelBody,
-    PanelRow,
-    TextControl,
-} = wp.components;
-
-const {
-    RichText,
-    InspectorControls,
-} = wp.editor;
 
  /**
   * Register block
@@ -36,25 +19,30 @@ const {
  export default registerBlockType(
      'pmpro/cancel-page',
      {
-         title: __( 'Membership Cancel Page', 'paid-memberships-pro' ),
-         description: __( 'Generates the Membership Cancel page.', 'paid-memberships-pro' ),
-         category: 'pmpro',
+         title: __( 'PMPro Page: Cancel', 'paid-memberships-pro' ),
+         description: __( 'Dynamic page section where members can cancel their membership and active subscription if applicable.', 'paid-memberships-pro' ),
+         category: 'pmpro-pages',
          icon: {
-            background: '#2997c8',
-            foreground: '#ffffff',
+            background: '#FFFFFF',
+            foreground: '#1A688B',
             src: 'no',
          },
-         keywords: [ __( 'pmpro', 'paid-memberships-pro' ) ],
+         keywords: [
+             __( 'member', 'paid-memberships-pro' ),
+             __( 'paid memberships pro', 'paid-memberships-pro' ),
+             __( 'payment method', 'paid-memberships-pro' ),
+             __( 'pmpro', 'paid-memberships-pro' ),
+             __( 'terminate', 'paid-memberships-pro' ),
+         ],
          supports: {
          },
          attributes: {
          },
-         edit: props => {
-             const { className } = props;
+         edit(){
              return [
-                 <div className={ className }>
-                   <span>Paid Memberships Pro</span>
-                   <span>Membership Cancel Page</span>
+                 <div className="pmpro-block-element">
+                   <span className="pmpro-block-title">{ __( 'Paid Memberships Pro', 'paid-memberships-pro' ) }</span>
+                   <span className="pmpro-block-subtitle">{ __( 'Membership Cancel Page', 'paid-memberships-pro' ) }</span>
                  </div>
             ];
          },

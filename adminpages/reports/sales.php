@@ -37,12 +37,12 @@ function pmpro_report_sales_widget() {
 	#pmpro_report_sales tbody td:last-child {text-align: right; }
 </style>
 <span id="pmpro_report_sales" class="pmpro_report-holder">
-	<table class="wp-list-table widefat fixed striped">
+	<table class="wp-list-table widefat fixed">
 	<thead>
 		<tr>
 			<th scope="col">&nbsp;</th>
-			<th scope="col"><?php _e('Sales', 'paid-memberships-pro' ); ?></th>
-			<th scope="col"><?php _e('Revenue', 'paid-memberships-pro' ); ?></th>
+			<th scope="col"><?php esc_html_e('Sales', 'paid-memberships-pro' ); ?></th>
+			<th scope="col"><?php esc_html_e('Revenue', 'paid-memberships-pro' ); ?></th>
 		</tr>
 	</thead>
 	<?php
@@ -57,34 +57,33 @@ function pmpro_report_sales_widget() {
 		//sale prices stats
 		$count = 0;
 		$max_prices_count = apply_filters( 'pmpro_admin_reports_max_sale_prices', 5 );
-		$prices = pmpro_get_prices_paid( $report_type, $max_prices_count );	
+		$prices = pmpro_get_prices_paid( $report_type, $max_prices_count );
 		?>
 		<tbody>
 			<tr class="pmpro_report_tr">
 				<th scope="row">
 					<?php if( ! empty( $prices ) ) { ?>
-						<button class="pmpro_report_th pmpro_report_th_closed"><?php echo $report_name; ?></button>
+						<button class="pmpro_report_th pmpro_report_th_closed"><?php echo esc_html($report_name); ?></button>
 					<?php } else { ?>
-						<?php echo $report_name; ?>
+						<?php echo esc_html($report_name); ?>
 					<?php } ?>
 				</th>
-				<td><?php echo number_format_i18n( pmpro_getSales( $report_type ) ); ?></td>
-				<td><?php echo pmpro_formatPrice( pmpro_getRevenue( $report_type ) ); ?></td>
+				<td><?php echo esc_html( number_format_i18n( pmpro_getSales( $report_type, null, 'all' ) ) ); ?></td>
+				<td><?php echo pmpro_escape_price( pmpro_formatPrice( pmpro_getRevenue( $report_type ) ) ); ?></td>
 			</tr>
 			<?php
 				//sale prices stats
 				$count = 0;
 				$max_prices_count = apply_filters( 'pmpro_admin_reports_max_sale_prices', 5 );
-				$prices = pmpro_get_prices_paid( $report_type, $max_prices_count );
 				foreach ( $prices as $price => $quantity ) {
 					if ( $count++ >= $max_prices_count ) {
 						break;
 					}
 			?>
 				<tr class="pmpro_report_tr_sub" style="display: none;">
-					<th scope="row">- <?php echo pmpro_formatPrice( $price );?></th>
-					<td><?php echo number_format_i18n( $quantity ); ?></td>
-					<td><?php echo pmpro_formatPrice( $price * $quantity ); ?></td>
+					<th scope="row">- <?php echo pmpro_escape_price( pmpro_formatPrice( $price ) );?></th>
+					<td><?php echo esc_html( number_format_i18n( $quantity['total'] ) ); ?></td>
+					<td><?php echo pmpro_escape_price( pmpro_formatPrice( $price * $quantity['total'] ) ); ?></td>
 				</tr>
 			<?php
 			}
@@ -96,7 +95,7 @@ function pmpro_report_sales_widget() {
 	</table>
 	<?php if ( function_exists( 'pmpro_report_sales_page' ) ) { ?>
 		<p class="pmpro_report-button">
-			<a class="button button-primary" href="<?php echo admin_url( 'admin.php?page=pmpro-reports&report=sales' ); ?>"><?php _e('Details', 'paid-memberships-pro' );?></a>
+			<a class="button button-primary" href="<?php echo esc_url( admin_url( 'admin.php?page=pmpro-reports&report=sales' ) ); ?>"><?php esc_html_e('Details', 'paid-memberships-pro' );?></a>
 		</p>
 	<?php } ?>
 </span>
@@ -152,7 +151,7 @@ function pmpro_report_sales_page()
 	if($period == "daily")
 	{
 		$startdate = $year . '-' . substr("0" . $month, strlen($month) - 1, 2) . '-01';
-		$enddate = $year . '-' . substr("0" . $month, strlen($month) - 1, 2) . '-31';
+		$enddate = $year . '-' . substr("0" . $month, strlen($month) - 1, 2) . '-' . date_i18n('t', strtotime( $startdate ) );
 		$date_function = 'DAY';
 		$currently_in_period = ( intval( date( 'Y' ) ) == $year && intval( date( 'n' ) ) == $month );
 	}
@@ -165,7 +164,7 @@ function pmpro_report_sales_page()
 	}
 	else
 	{
-		$startdate = '1960-01-01';	//all time
+		$startdate = '1970-01-01';	//all time
 		$date_function = 'YEAR';
 		$currently_in_period = true;
 	}
@@ -173,31 +172,56 @@ function pmpro_report_sales_page()
 	//testing or live data
 	$gateway_environment = pmpro_getOption("gateway_environment");
 
+	// Get the estimated second offset to convert from GMT time to local.This is not perfect as daylight
+	// savings time can come and go in the middle of a month, but it's a tradeoff that we are making
+	// for performance so that we don't need to go through each order manually to calculate the local time.
+	$tz_offset = strtotime( $startdate ) - strtotime( get_gmt_from_date( $startdate . " 00:00:00" ) );
+
 	//get data
-	$sqlQuery = "SELECT $date_function(o.timestamp) as date, $type_function(o.total) as value FROM $wpdb->pmpro_membership_orders o ";
+	$sqlQuery = "SELECT date,
+				 	$type_function(mo1total) as value,
+				 	$type_function( IF( mo2id IS NOT NULL, mo1total, NULL ) ) as renewals
+				 FROM ";
+	$sqlQuery .= "(";	// Sub query.
+	$sqlQuery .= "SELECT $date_function( DATE_ADD( mo1.timestamp, INTERVAL " . (int) $tz_offset . " SECOND ) ) as date,
+					    mo1.id as mo1id,
+						mo1.total as mo1total,
+						mo2.id as mo2id
+				 FROM $wpdb->pmpro_membership_orders mo1
+				 	LEFT JOIN $wpdb->pmpro_membership_orders mo2 ON mo1.user_id = mo2.user_id
+                        AND mo2.total > 0
+                        AND mo2.status NOT IN('refunded', 'review', 'token', 'error')                                            
+                        AND mo2.timestamp < mo1.timestamp
+                        AND mo2.gateway_environment = '" . esc_sql( $gateway_environment ) . "' ";
 
 	if ( ! empty( $discount_code ) ) {
-		$sqlQuery .= "LEFT JOIN $wpdb->pmpro_discount_codes_uses dc ON o.id = dc.order_id ";
+		$sqlQuery .= "LEFT JOIN $wpdb->pmpro_discount_codes_uses dc ON mo1.id = dc.order_id ";
 	}
 
-	$sqlQuery .= "WHERE o.total > 0 AND o.timestamp >= '" . esc_sql( $startdate ) . "' AND o.status NOT IN('refunded', 'review', 'token', 'error') AND o.gateway_environment = '" . esc_sql( $gateway_environment ) . "' ";
+	$sqlQuery .= "WHERE mo1.total > 0
+					AND mo1.timestamp >= DATE_ADD( '" . esc_sql( $startdate ) . "' , INTERVAL - " . (int) $tz_offset . " SECOND )
+					AND mo1.status NOT IN('refunded', 'review', 'token', 'error')
+					AND mo1.gateway_environment = '" . esc_sql( $gateway_environment ) . "' ";
 
 	if(!empty($enddate))
-		$sqlQuery .= "AND o.timestamp <= '" . esc_sql( $enddate ) . "' ";
+		$sqlQuery .= "AND mo1.timestamp <= DATE_ADD( '" . esc_sql( $enddate ) . " 23:59:59' , INTERVAL - " . (int) $tz_offset . " SECOND )";
 
 	if(!empty($l))
-		$sqlQuery .= "AND o.membership_id IN(" . esc_sql( $l ) . ") ";
+		$sqlQuery .= "AND mo1.membership_id IN(" . $l . ") "; // $l is already escaped for SQL. See declaration.
 
 	if ( ! empty( $discount_code ) ) {
 		$sqlQuery .= "AND dc.code_id = '" . esc_sql( $discount_code ) . "' ";
 	}
 
-	$sqlQuery .= " GROUP BY date ORDER BY date ";
+	$sqlQuery .= " GROUP BY mo1.id ";
+	$sqlQuery .= ") t1";
+	$sqlQuery .= " GROUP BY date ORDER by date";
 
 	$dates = $wpdb->get_results($sqlQuery);
-
+	
 	//fill in blanks in dates
 	$cols = array();
+	$csvdata = array();
 	$total_in_period = 0;
 	$units_in_period = 0; // Used for averages.
 	
@@ -208,7 +232,8 @@ function pmpro_report_sales_page()
 		
 		for($i = 1; $i <= $lastday; $i++)
 		{
-			$cols[$i] = 0;
+			$cols[$i] = array(0, 0);
+			$csvdata[$i-1] = (object)array('date'=>$i, 'total'=>'', 'new'=> '', 'renewals'=>'');
 			if ( ! $currently_in_period || $i < $day_of_month ) {
 				$units_in_period++;
 			}
@@ -216,7 +241,8 @@ function pmpro_report_sales_page()
 			foreach($dates as $date)
 			{
 				if($date->date == $i) {
-					$cols[$i] = $date->value;
+					$cols[$i] = array( $date->value, $date->renewals );
+					$csvdata[$i-1] = (object)array('date'=>$i, 'total'=>$date->value, 'new'=> $date->value - $date->renewals, 'renewals'=> $date->renewals);
 					if ( ! $currently_in_period || $i < $day_of_month ) {
 						$total_in_period += $date->value;
 					}
@@ -229,7 +255,8 @@ function pmpro_report_sales_page()
 		$month_of_year = intval( date( 'n' ) );
 		for($i = 1; $i < 13; $i++)
 		{
-			$cols[$i] = 0;
+			$cols[$i] = array(0, 0);
+			$csvdata[$i-1] = (object)array('date'=>$i, 'total'=>'', 'new'=> '', 'renewals'=>'');
 			if ( ! $currently_in_period || $i < $month_of_year ) {
 				$units_in_period++;
 			}
@@ -237,7 +264,8 @@ function pmpro_report_sales_page()
 			foreach($dates as $date)
 			{
 				if($date->date == $i) {
-					$cols[$i] = $date->value;
+					$cols[$i] = array( $date->value, $date->renewals );
+					$csvdata[$i-1] = (object)array('date'=>$i, 'total'=>$date->value, 'new'=> $date->value - $date->renewals, 'renewals'=> $date->renewals);
 					if ( ! $currently_in_period || $i < $month_of_year ) {
 						$total_in_period += $date->value;
 					}
@@ -259,13 +287,16 @@ function pmpro_report_sales_page()
 		$current_year = intval( date( 'Y' ) );
 		for($i = $min; $i <= $max; $i++)
 		{
+			$cols[$i] = array(0, 0);
+			$csvdata[$i-1] = (object)array('date'=>$i, 'total'=>'', 'new'=> '', 'renewals'=>'');
 			if ( $i < $current_year ) {
 				$units_in_period++;
 			}
 			foreach($dates as $date)
 			{
 				if($date->date == $i) {
-					$cols[$i] = $date->value;
+					$cols[$i] = array( $date->value, $date->renewals );
+					$csvdata[$i-1] = (object)array('date'=>$i, 'total'=>$date->value, 'new'=> $date->value - $date->renewals, 'renewals'=> $date->renewals);
 					if ( $i < $current_year ) {
 						$total_in_period += $date->value;
 					}
@@ -278,43 +309,61 @@ function pmpro_report_sales_page()
 	if ( 0 !== $units_in_period ) {
 		$average = $total_in_period / $units_in_period; // Not including this unit.
 	}
+	
+	// Save a transient for each combo of params. Expires in 1 hour.
+	$param_array = array( $period, $type, $month, $year, $l, $discount_code );
+	$param_hash = md5( implode( ' ', $param_array ) . PMPRO_VERSION );
+	set_transient( 'pmpro_sales_data_' . $param_hash, $csvdata, HOUR_IN_SECONDS );
+
+	// Build CSV export link.
+	$args = array(
+		'action' => 'sales_report_csv',
+		'period' => $period,
+		'type' => $type,
+		'year' => $year,
+		'month' => $month,
+		'level' => $l,
+		'discount_code' => $discount_code
+	);
+	$csv_export_link = add_query_arg( $args, admin_url( 'admin-ajax.php' ) );
 	?>
 	<form id="posts-filter" method="get" action="">
-	<h1>
+	<h1 class="wp-heading-inline">
 		<?php _e('Sales and Revenue', 'paid-memberships-pro' );?>
 	</h1>
-
+	<a target="_blank" href="<?php echo esc_url( $csv_export_link ); ?>" class="page-title-action"><?php esc_html_e( 'Export to CSV', 'paid-memberships-pro' ); ?></a>
 	<div class="tablenav top">
 		<?php _e('Show', 'paid-memberships-pro' )?>
 		<select id="period" name="period">
-			<option value="daily" <?php selected($period, "daily");?>><?php _e('Daily', 'paid-memberships-pro' );?></option>
-			<option value="monthly" <?php selected($period, "monthly");?>><?php _e('Monthly', 'paid-memberships-pro' );?></option>
-			<option value="annual" <?php selected($period, "annual");?>><?php _e('Annual', 'paid-memberships-pro' );?></option>
+			<option value="daily" <?php selected($period, "daily");?>><?php esc_html_e('Daily', 'paid-memberships-pro' );?></option>
+			<option value="monthly" <?php selected($period, "monthly");?>><?php esc_html_e('Monthly', 'paid-memberships-pro' );?></option>
+			<option value="annual" <?php selected($period, "annual");?>><?php esc_html_e('Annual', 'paid-memberships-pro' );?></option>
 		</select>
 		<select name="type">
-			<option value="revenue" <?php selected($type, "revenue");?>><?php _e('Revenue', 'paid-memberships-pro' );?></option>
-			<option value="sales" <?php selected($type, "sales");?>><?php _e('Sales', 'paid-memberships-pro' );?></option>
+			<option value="revenue" <?php selected($type, "revenue");?>><?php esc_html_e('Revenue', 'paid-memberships-pro' );?></option>
+			<option value="sales" <?php selected($type, "sales");?>><?php esc_html_e('Sales', 'paid-memberships-pro' );?></option>
 		</select>
-		<span id="for"><?php _e('for', 'paid-memberships-pro' )?></span>
+		<span id="for"><?php esc_html_e('for', 'paid-memberships-pro' )?></span>
 		<select id="month" name="month">
 			<?php for($i = 1; $i < 13; $i++) { ?>
-				<option value="<?php echo $i;?>" <?php selected($month, $i);?>><?php echo date_i18n("F", mktime(0, 0, 0, $i, 2));?></option>
+				<option value="<?php echo esc_attr( $i );?>" <?php selected($month, $i);?>><?php echo esc_html(date_i18n("F", mktime(0, 0, 0, $i, 2)));?></option>
 			<?php } ?>
 		</select>
 		<select id="year" name="year">
 			<?php for($i = $thisyear; $i > 2007; $i--) { ?>
-				<option value="<?php echo $i;?>" <?php selected($year, $i);?>><?php echo $i;?></option>
+				<option value="<?php echo esc_attr( $i );?>" <?php selected($year, $i);?>><?php echo esc_html( $i );?></option>
 			<?php } ?>
 		</select>
-		<span id="for"><?php _e('for', 'paid-memberships-pro' )?></span>
+		<span id="for"><?php esc_html_e('for', 'paid-memberships-pro' )?></span>
 		<select id="level" name="level">
-			<option value="" <?php if(!$l) { ?>selected="selected"<?php } ?>><?php _e('All Levels', 'paid-memberships-pro' );?></option>
+			<option value="" <?php if(!$l) { ?>selected="selected"<?php } ?>><?php esc_html_e('All Levels', 'paid-memberships-pro' );?></option>
 			<?php
 				$levels = $wpdb->get_results("SELECT id, name FROM $wpdb->pmpro_membership_levels ORDER BY name");
+				$levels = pmpro_sort_levels_by_order( $levels );
 				foreach($levels as $level)
 				{
 			?>
-				<option value="<?php echo $level->id?>" <?php if($l == $level->id) { ?>selected="selected"<?php } ?>><?php echo $level->name?></option>
+				<option value="<?php echo esc_attr( $level->id ); ?>" <?php if($l == $level->id) { ?>selected="selected"<?php } ?>><?php echo esc_html( $level->name); ?></option>
 			<?php
 				}
 			?>
@@ -325,18 +374,21 @@ function pmpro_report_sales_page()
 		$codes = $wpdb->get_results($sqlQuery, OBJECT);
 		if ( ! empty( $codes ) ) { ?>
 		<select id="discount_code" name="discount_code">
-			<option value="" <?php if ( empty( $discount_code ) ) { ?>selected="selected"<?php } ?>><?php _e('All Codes', 'paid-memberships-pro' );?></option>
+			<option value="" <?php if ( empty( $discount_code ) ) { ?>selected="selected"<?php } ?>><?php esc_html_e('All Codes', 'paid-memberships-pro' );?></option>
 			<?php foreach ( $codes as $code ) { ?>
-				<option value="<?php echo $code->id; ?>" <?php selected( $discount_code, $code->id ); ?>><?php echo $code->code; ?></option>
+				<option value="<?php echo esc_attr( $code->id ); ?>" <?php selected( $discount_code, $code->id ); ?>><?php echo esc_html( $code->code ); ?></option>
 			<?php } ?>
 		</select>
 		<?php } ?>
 		<input type="hidden" name="page" value="pmpro-reports" />
 		<input type="hidden" name="report" value="sales" />
-		<input type="submit" class="button action" value="<?php _e('Generate Report', 'paid-memberships-pro' );?>" />
+		<input type="submit" class="button action" value="<?php esc_attr_e('Generate Report', 'paid-memberships-pro' );?>" />
+		<br class="clear" />
 	</div>
-	<div id="chart_div" style="clear: both; width: 100%; height: 500px;"></div>
-	<p>* <?php _e( 'Average line calculated using data prior to current day, month, or year.', 'paid-memberships-pro' ); ?></p>
+	<div class="pmpro_chart_area">
+		<div id="chart_div"></div>
+		<div class="pmpro_chart_description"><p><center><em><?php esc_html_e( 'Average line calculated using data prior to current day, month, or year.', 'paid-memberships-pro' ); ?></em></center></p></div>
+	</div>
 	<script>
 		//update month/year when period dropdown is changed
 		jQuery(document).ready(function() {
@@ -374,78 +426,149 @@ function pmpro_report_sales_page()
 		google.charts.load('current', {'packages':['corechart']});
 		google.charts.setOnLoadCallback(drawVisualization);
 		function drawVisualization() {
-
-			var data = google.visualization.arrayToDataTable([
-				[
-					{ label: '<?php echo $date_function;?>' },
-					{ label: '<?php echo ucwords($type);?>' },
-					{ label: '<?php _e( 'Average*', 'paid-memberships-pro' );?>' },
-				],
+			var dataTable = new google.visualization.DataTable();
+			dataTable.addColumn('string', <?php echo wp_json_encode( esc_html( $date_function ) ); ?>);
+			dataTable.addColumn({type: 'string', role: 'tooltip', 'p': {'html': true}});
+			dataTable.addColumn('number', <?php echo wp_json_encode( esc_html__( 'Renewals', 'paid-memberships-pro' ) ); ?>);
+			dataTable.addColumn('number', <?php echo wp_json_encode( esc_html( sprintf( __( 'New %s', 'paid-memberships-pro' ), ucwords( $type ) ) ) ); ?>);
+			<?php if ( $type === 'sales' ) { ?>
+				dataTable.addColumn('number', <?php echo wp_json_encode( esc_html( sprintf( __( 'Average: %s', 'paid-memberships-pro' ), number_format_i18n( $average, 2 ) ) ) ); ?>);
+			<?php } else { ?>
+				dataTable.addColumn('number', <?php echo wp_json_encode( sprintf( esc_html__( 'Average: %s', 'paid-memberships-pro' ), pmpro_escape_price( html_entity_decode( pmpro_formatPrice( $average ) ) ) ) ); ?>);
+			<?php } ?>
+			dataTable.addRows([
 				<?php foreach($cols as $date => $value) { ?>
-					['<?php
-						if($period == "monthly") {
-							echo date_i18n("M", mktime(0,0,0,$date,2));
-						} else {
-						echo $date;
-					} ?>', <?php echo pmpro_round_price( $value );?>, <?php echo pmpro_round_price( $average );?>],
+					[
+						<?php
+							$date_value = $date;
+
+							if ( $period === 'monthly' ) {
+								$date_value = date_i18n( 'M', mktime( 0, 0, 0, $date, 2 ) );
+							}
+
+							echo wp_json_encode( esc_html( $date_value ) );
+						?>,
+						createCustomHTMLContent(
+							<?php
+								$date_value = $date;
+
+								if ( $period === 'monthly' ) {
+									$date_value = date_i18n( 'F', mktime( 0, 0, 0, $date, 2 ) );
+								} elseif ( $period === 'daily' ) {
+									$date_value = date_i18n( get_option( 'date_format' ), strtotime( $year . '-' . $month . '-' . $date ) );
+								}
+
+								echo wp_json_encode( esc_html( $date_value ) );
+							?>,
+							<?php if ( $type === 'sales' ) { ?>
+								<?php echo wp_json_encode( (int) $value[1] ); ?>,
+								<?php echo wp_json_encode( (int) $value[0] - $value[1] ); ?>,
+								<?php echo wp_json_encode( (int) $value[0] ); ?>,
+							<?php } else { ?>
+								<?php echo wp_json_encode( pmpro_escape_price( pmpro_formatPrice( $value[1] ) ) ); ?>,
+								<?php echo wp_json_encode( pmpro_escape_price( pmpro_formatPrice( $value[0] - $value[1] ) ) ); ?>,
+								<?php echo wp_json_encode( pmpro_escape_price( pmpro_formatPrice( $value[0] ) ) ); ?>,
+							<?php } ?>
+						),
+						<?php if ( $type === 'sales' ) { ?>
+							<?php echo wp_json_encode( (int) $value[1] ); ?>,
+							<?php echo wp_json_encode( (int) $value[0] - $value[1] ); ?>,
+							<?php echo wp_json_encode( (int) $average ); ?>,
+						<?php } else { ?>
+							<?php echo wp_json_encode( pmpro_round_price( $value[1] ) ); ?>,
+							<?php echo wp_json_encode( pmpro_round_price( $value[0] - $value[1] ) ); ?>,
+							<?php echo wp_json_encode( pmpro_round_price( $average ) ); ?>,
+						<?php } ?>
+					],
 				<?php } ?>
 			]);
 
 			var options = {
+				title: pmpro_report_title_sales(),
+				titlePosition: 'top',
+				titleTextStyle: {
+					color: '#555555',
+				},
+				legend: {position: 'bottom'},
 				colors: ['<?php
 					if ( $type === 'sales') {
-						echo '#0099c6'; // Blue for "Sales" chart.
+						echo '#006699'; // Blue for "Sales" chart.
 					} else {
-						echo '#51a351'; // Green for "Revenue" chart.
+						echo '#31825D'; // Green for "Revenue" chart.
 					}
 				?>'],
-				chartArea: {width: '90%'},
+				chartArea: {
+					width: '90%',
+				},
+				focusTarget: 'category',
+				tooltip: {
+					isHtml: true
+				},
 				hAxis: {
-					title: '<?php echo $date_function;?>',
-					textStyle: {color: '#555555', fontSize: '12', italic: false},
-					titleTextStyle: {color: '#555555', fontSize: '20', bold: true, italic: false},
-					maxAlternation: 1
+					textStyle: {
+						color: '#555555',
+						fontSize: '12',
+						italic: false,
+					},
 				},
 				vAxis: {
 					<?php if ( $type === 'sales') { ?>
 						format: '0',
 					<?php } ?>
-					textStyle: {color: '#555555', fontSize: '12', italic: false},
+					textStyle: {
+						color: '#555555',
+						fontSize: '12',
+						italic: false,
+					},
 				},
 				seriesType: 'bars',
-				series: {1: {type: 'line', color: 'red'}},
-				legend: {position: 'none'},
+				series: {
+					2: {
+						type: 'line',
+						color: '#B00000',
+						enableInteractivity: false,
+						lineDashStyle: [4, 1], 
+					},
+					1: {<?php
+						if ( $type === 'sales') {
+							echo "color: '#0099C6'"; // Lighter Blue for "Sales" chart.
+						} else {
+							echo "color: '#5EC16C'"; // Lighter Green for "Revenue" chart.
+						} ?>
+					},
+				},
+				isStacked: true,
 			};
 
+			var chart = new google.visualization.ColumnChart(document.getElementById('chart_div'));
+			chart.draw(dataTable, options);
+		}
+
+		function createCustomHTMLContent(period, renewals, notRenewals, total) {
+			return '<div style="padding:15px; font-size: 14px; line-height: 20px; color: #000000;">' +
+				'<strong>' + period + '</strong><br/>' +
+				'<ul style="margin-bottom: 0px;">' +
+				'<li><span style="margin-right: 3px;">' +
+				<?php echo wp_json_encode( esc_html__( 'New:', 'paid-memberships-pro' ) ); ?> +
+				'</span>' + notRenewals + '</li>' +
+				'<li><span style="margin-right: 3px;">' +
+				<?php echo wp_json_encode( esc_html__( 'Renewals:', 'paid-memberships-pro' ) ); ?> +
+				'</span>' + renewals + '</li>' +
+				'<li style="border-top: 1px solid #CCC; margin-bottom: 0px; margin-top: 8px; padding-top: 8px;"><span style="margin-right: 3px;">' +
+				<?php echo wp_json_encode( esc_html__( 'Total:', 'paid-memberships-pro' ) ); ?> +
+				'</span>' + total + '</li>' + '</ul>' + '</div>';
+		}
+		function pmpro_report_title_sales() {
 			<?php
-				if($type != "sales")
-				{	
-					$decimals = isset( $pmpro_currencies[ $pmpro_currency ]['decimals'] ) ? (int) $pmpro_currencies[ $pmpro_currency ]['decimals'] : 2;
-					
-					$decimal_separator = isset( $pmpro_currencies[ $pmpro_currency ]['decimal_separator'] ) ? $pmpro_currencies[ $pmpro_currency ]['decimal_separator'] : '.';
-					
-					$thousands_separator = isset( $pmpro_currencies[ $pmpro_currency ]['thousands_separator'] ) ? $pmpro_currencies[ $pmpro_currency ]['thousands_separator'] : ',';
-					
-					if ( pmpro_getCurrencyPosition() == 'right' ) {
-						$position = "suffix";
-					} else {
-						$position = "prefix";
-					}
-					?>
-					var formatter = new google.visualization.NumberFormat({
-						<?php echo $position;?>: '<?php echo html_entity_decode($pmpro_currency_symbol); ?>',
-						'decimalSymbol': '<?php echo html_entity_decode( $decimal_separator ); ?>',
-						'fractionDigits': <?php echo intval( $decimals ); ?>,
-						'groupingSymbol': '<?php echo html_entity_decode( $thousands_separator ); ?>',
-					});
-					formatter.format(data, 1);
-					formatter.format(data, 2);
-					<?php
+				if ( ! empty( $month ) && $period === 'daily' ) {
+					$date = date_i18n( 'F', mktime(0, 0, 0, $month, 2) ) . ' ' . $year;
+				} elseif( ! empty( $year ) && $period === 'monthly'  ) {
+					$date = $year;
+				} else {
+					$date = __( 'All Time', 'paid-memberships-pro' );
 				}
 			?>
-
-			var chart = new google.visualization.ComboChart(document.getElementById('chart_div'));
-			chart.draw(data, options);
+			return <?php echo wp_json_encode( esc_html( sprintf( __( '%s %s for %s', 'paid-memberships-pro' ), ucwords( $period ), ucwords( $type ), ucwords( $date ) ) ) ); ?>;
 		}
 	</script>
 
@@ -458,12 +581,12 @@ function pmpro_report_sales_page()
 */
 
 //get sales
-function pmpro_getSales($period, $levels = NULL)
-{
+function pmpro_getSales( $period = 'all time', $levels = 'all', $type = 'all' ) {	
 	//check for a transient
 	$cache = get_transient( 'pmpro_report_sales' );
-	if(!empty($cache) && !empty($cache[$period]) && !empty($cache[$period][$levels]))
-		return $cache[$period][$levels];
+	$param_hash = md5( $period . ' ' . $type . PMPRO_VERSION );
+	if(!empty($cache) && isset($cache[$param_hash]) && isset($cache[$param_hash][$levels]))
+		return $cache[$param_hash][$levels];
 
 	//a sale is an order with status NOT IN('refunded', 'review', 'token', 'error') with a total > 0
 	if($period == "today")
@@ -473,27 +596,64 @@ function pmpro_getSales($period, $levels = NULL)
 	elseif($period == "this year")
 		$startdate = date_i18n("Y", current_time('timestamp')) . "-01-01";
 	else
-		$startdate = "";
+		$startdate = date_i18n("Y-m-d", 0);
 
 	$gateway_environment = pmpro_getOption("gateway_environment");
 
-	//build query
-	global $wpdb;
-	$sqlQuery = "SELECT COUNT(*) FROM $wpdb->pmpro_membership_orders WHERE total > 0 AND status NOT IN('refunded', 'review', 'token', 'error') AND timestamp >= '" . esc_sql( $startdate ) . "' AND gateway_environment = '" . esc_sql( $gateway_environment ) . "' ";
+	// Convert from local to UTC.
+	$startdate = get_gmt_from_date( $startdate );
 
-	//restrict by level
-	if(!empty($levels))
-		$sqlQuery .= "AND membership_id IN(" . esc_sql( $levels ) . ") ";
+	// Build the query.
+	global $wpdb;
+	$sqlQuery = "SELECT mo1.id FROM $wpdb->pmpro_membership_orders mo1 ";
+	
+	// Need to join on older orders if we're looking for renewals or new sales.
+	if ( $type !== 'all' ) {
+		$sqlQuery .= "LEFT JOIN $wpdb->pmpro_membership_orders mo2 ON mo1.user_id = mo2.user_id
+                        AND mo2.total > 0
+                        AND mo2.status NOT IN('refunded', 'review', 'token', 'error')                                            
+                        AND mo2.timestamp < mo1.timestamp
+                        AND mo2.gateway_environment = '" . esc_sql( $gateway_environment ) . "' ";
+	}
+	
+	// Get valid orders within the time frame.
+	$sqlQuery .= "WHERE mo1.total > 0
+				 	AND mo1.status NOT IN('refunded', 'review', 'token', 'error')
+					AND mo1.timestamp >= '" . esc_sql( $startdate ) . "'
+					AND mo1.gateway_environment = '" . esc_sql( $gateway_environment ) . "' ";									
+
+	// Restrict by level.
+	if( ! empty( $levels ) && $levels != 'all' ) {
+		// Let's make sure that each ID inside of $levels is an integer.
+		if ( ! is_array($levels) ) {
+			$levels = explode( ',', $levels );
+		}
+		$levels = implode( ',', array_map( 'intval', $levels ) );
+		$sqlQuery .= "AND mo1.membership_id IN(" . $levels . ") ";
+	}		
+	
+	// Filter to renewals or new orders only. 	
+	if ( $type == 'renewals' ) {
+		$sqlQuery .= "AND mo2.id IS NOT NULL ";
+	} elseif ( $type == 'new' ) {
+		$sqlQuery .= "AND mo2.id IS NULL ";
+	}
+
+	// Group so we get one mo1 order per row.
+	$sqlQuery .= "GROUP BY mo1.id ";
+
+	// We want the count of rows produced, so update the query.
+	$sqlQuery = "SELECT COUNT(*) FROM (" . $sqlQuery  . ") as t1";
 
 	$sales = $wpdb->get_var($sqlQuery);
 
 	//save in cache
-	if(!empty($cache) && !empty($cache[$period]))
-		$cache[$period][$levels] = $sales;
-	elseif(!empty($cache))
-		$cache[$period] = array($levels => $sales);
+	if(!empty($cache) && isset($cache[$param_hash])) {
+		$cache[$param_hash][$levels] = (int)$sales;
+	} elseif(!empty($cache))
+		$cache[$param_hash] = array($levels => $sales);
 	else
-		$cache = array($period => array($levels => $sales));
+		$cache = array($param_hash => array($levels => $sales));
 
 	set_transient( 'pmpro_report_sales', $cache, 3600*24 );
 
@@ -503,13 +663,15 @@ function pmpro_getSales($period, $levels = NULL)
 /**
  * Gets an array of all prices paid in a time period
  *
- * @param  string $period time period to query.
+ * @param  string $period Time period to query (today, this month, this year, all time)
+ * @param  int    $count  Number of prices to query and return.
  */
 function pmpro_get_prices_paid( $period, $count = NULL ) {
 	// Check for a transient.
 	$cache = get_transient( 'pmpro_report_prices_paid' );
-	if ( ! empty( $cache ) && ! empty( $cache[ $period . $count ] ) ) {
-		return $cache[ $period . $count ];
+	$param_hash = md5( $period . $count . PMPRO_VERSION );
+	if ( ! empty( $cache ) && ! empty( $cache[$param_hash] ) ) {
+		return $cache[$param_hash];
 	}
 
 	// A sale is an order with status NOT IN('refunded', 'review', 'token', 'error') with a total > 0.
@@ -520,19 +682,17 @@ function pmpro_get_prices_paid( $period, $count = NULL ) {
 	} elseif ( 'this year' === $period ) {
 		$startdate = date_i18n( 'Y', current_time( 'timestamp' ) ) . '-01-01';
 	} else {
-		$startdate = '';
+		$startdate = '1970-01-01';
 	}
+
+	// Convert from local to UTC.
+	$startdate = get_gmt_from_date( $startdate );
 
 	$gateway_environment = pmpro_getOption( 'gateway_environment' );
 
 	// Build query.
 	global $wpdb;
-	$sql_query = "SELECT ROUND(total,8) as rtotal, COUNT(*) as num FROM $wpdb->pmpro_membership_orders WHERE total > 0 AND status NOT IN('refunded', 'review', 'token', 'error') AND timestamp >= '" . $startdate . "' AND gateway_environment = '" . esc_sql( $gateway_environment ) . "' ";
-
-	// Restrict by level.
-	if ( ! empty( $levels ) ) {
-		$sql_query .= 'AND membership_id IN(' . $levels . ') ';
-	}
+	$sql_query = "SELECT ROUND(total,8) as rtotal, COUNT(*) as num FROM $wpdb->pmpro_membership_orders WHERE total > 0 AND status NOT IN('refunded', 'review', 'token', 'error') AND timestamp >= '" . esc_sql( $startdate ) . "' AND gateway_environment = '" . esc_sql( $gateway_environment ) . "' ";
 
 	$sql_query .= ' GROUP BY rtotal ORDER BY num DESC ';
 
@@ -545,9 +705,55 @@ function pmpro_get_prices_paid( $period, $count = NULL ) {
 	$prices_formatted = array();
 	foreach ( $prices as $price ) {
 		if ( isset( $price->rtotal ) ) {
-			$sql_query                         = "SELECT COUNT(*) FROM $wpdb->pmpro_membership_orders WHERE ROUND(total, 8) = '" . esc_sql( $price->rtotal ) . "' AND status NOT IN('refunded', 'review', 'token', 'error') AND timestamp >= '" . esc_sql( $startdate ) . "' AND gateway_environment = '" . esc_sql( $gateway_environment ) . "' ";
-			$sales                             = $wpdb->get_var( $sql_query );
-			$prices_formatted[ $price->rtotal ] = $sales;
+			// Total sales.
+			$sql_query = "SELECT COUNT(*)
+						  FROM $wpdb->pmpro_membership_orders
+						  WHERE ROUND(total, 8) = '" . esc_sql( $price->rtotal ) . "'
+						  	AND status NOT IN('refunded', 'review', 'token', 'error')
+							AND timestamp >= '" . esc_sql( $startdate ) . "'
+							AND gateway_environment = '" . esc_sql( $gateway_environment ) . "' ";
+			$total = $wpdb->get_var( $sql_query );
+			
+			/* skipping this until we figure out how to make it performant
+			// New sales.
+			$sql_query = "SELECT mo1.id
+						  FROM $wpdb->pmpro_membership_orders mo1
+						  	LEFT JOIN $wpdb->pmpro_membership_orders mo2
+								ON mo1.user_id = mo2.user_id
+								AND mo2.total > 0
+								AND mo2.status NOT IN('refunded', 'review', 'token', 'error')
+								AND mo2.timestamp < mo1.timestamp
+								AND mo1.gateway_environment = '" . esc_sql( $gateway_environment ) . "'
+						   WHERE ROUND(mo1.total, 8) = '" . esc_sql( $price->rtotal ) . "'
+						  	AND mo1.status NOT IN('refunded', 'review', 'token', 'error')
+							AND mo1.timestamp >= '" . esc_sql( $startdate ) . "'
+							AND mo1.gateway_environment = '" . esc_sql( $gateway_environment ) . "'
+							AND mo2.id IS NULL
+						  GROUP BY mo1.id ";
+			$sql_query = "SELECT COUNT(*) FROM (" . $sql_query . ") as t1";			
+			$new = $wpdb->get_var( $sql_query );
+			
+			// Renewals.			
+			$sql_query = "SELECT mo1.id
+						  FROM $wpdb->pmpro_membership_orders mo1
+						  	LEFT JOIN $wpdb->pmpro_membership_orders mo2
+								ON mo1.user_id = mo2.user_id
+								AND mo2.total > 0
+								AND mo2.status NOT IN('refunded', 'review', 'token', 'error')
+								AND mo2.timestamp < mo1.timestamp
+								AND mo1.gateway_environment = '" . esc_sql( $gateway_environment ) . "'
+						   WHERE ROUND(mo1.total, 8) = '" . esc_sql( $price->rtotal ) . "'
+						  	AND mo1.status NOT IN('refunded', 'review', 'token', 'error')
+							AND mo1.timestamp >= '" . esc_sql( $startdate ) . "'
+							AND mo1.gateway_environment = '" . esc_sql( $gateway_environment ) . "'
+							AND mo2.id IS NOT NULL
+						  GROUP BY mo1.id ";
+			$sql_query = "SELECT COUNT(*) FROM (" . $sql_query . ") as t1";			
+			$renewals = $wpdb->get_var( $sql_query );
+			
+			$prices_formatted[ $price->rtotal ] = array( 'total' => $total, 'new' => $new, 'renewals' => $renewals );
+			*/
+			$prices_formatted[ $price->rtotal ] = array( 'total' => $total );
 		}
 	}
 
@@ -555,9 +761,9 @@ function pmpro_get_prices_paid( $period, $count = NULL ) {
 
 	// Save in cache.
 	if ( ! empty( $cache ) ) {
-		$cache[ $period . $count ] = $prices_formatted;
+		$cache[$param_hash] = $prices_formatted;
 	} else {
-		$cache = array( $period . $count => $prices_formatted );
+		$cache = array($param_hash => $prices_formatted );
 	}
 
 	set_transient( 'pmpro_report_prices_paid', $cache, 3600 * 24 );
@@ -566,12 +772,12 @@ function pmpro_get_prices_paid( $period, $count = NULL ) {
 }
 
 //get revenue
-function pmpro_getRevenue($period, $levels = NULL)
-{
+function pmpro_getRevenue( $period, $levels = NULL, $type = 'all' ) {
 	//check for a transient
 	$cache = get_transient("pmpro_report_revenue");
-	if(!empty($cache) && !empty($cache[$period]) && !empty($cache[$period][$levels]))
-		return $cache[$period][$levels];
+	$param_hash = md5( $period . ' ' . $type . PMPRO_VERSION );
+	if(!empty($cache) && isset($cache[$param_hash]) && isset($cache[$param_hash][$levels]))
+		return $cache[$param_hash][$levels];
 
 	//a sale is an order with status NOT IN('refunded', 'review', 'token', 'error')
 	if($period == "today")
@@ -581,31 +787,89 @@ function pmpro_getRevenue($period, $levels = NULL)
 	elseif($period == "this year")
 		$startdate = date_i18n("Y", current_time('timestamp')) . "-01-01";
 	else
-		$startdate = "";
+		$startdate = date_i18n("Y-m-d", 0);
+
+	// Convert from local to UTC.
+	$startdate = get_gmt_from_date( $startdate );
 
 	$gateway_environment = pmpro_getOption("gateway_environment");
 
-	//build query
+	// Build query.
 	global $wpdb;
-	$sqlQuery = "SELECT SUM(total) FROM $wpdb->pmpro_membership_orders WHERE status NOT IN('refunded', 'review', 'token', 'error') AND timestamp >= '" . esc_sql( $startdate ) . "' AND gateway_environment = '" . esc_sql( $gateway_environment ) . "' ";
+	$sqlQuery = "SELECT mo1.total as total
+				 FROM $wpdb->pmpro_membership_orders mo1 ";
 
-	//restrict by level
-	if(!empty($levels))
-		$sqlQuery .= "AND membership_id IN(" . $levels . ") ";
+	// Need to join on older orders if we're looking for renewals or new sales.			
+	if ( $type != 'all' ) {
+		$sqlQuery .= "LEFT JOIN $wpdb->pmpro_membership_orders mo2
+					 	ON mo1.user_id = mo2.user_id
+						AND mo2.total > 0
+						AND mo2.status NOT IN('refunded', 'review', 'token', 'error')
+						AND mo2.timestamp < mo1.end_timestamp
+						AND mo2.gateway_environment = '" . esc_sql( $gateway_environment ) . "' ";
+	}
+	
+	// Get valid orders within the timeframe.		 
+	$sqlQuery .= "WHERE mo1.status NOT IN('refunded', 'review', 'token', 'error')
+				 	AND mo1.timestamp >= '" . esc_sql( $startdate ) . "'
+					AND mo1.gateway_environment = '" . esc_sql( $gateway_environment ) . "' ";
 
-	$revenue = $wpdb->get_var($sqlQuery);
+	// Restrict by level.
+	if ( ! empty( $levels ) ) {
+		// Let's make sure that each ID inside of $levels is an integer.
+		if ( ! is_array($levels) ) {
+			$levels = explode( ',', $levels );
+		}
+		$levels = implode( ',', array_map( 'intval', $levels ) );
+		$sqlQuery .= "AND mo1.membership_id IN(" . $levels . ") ";
+	}
+		
+	// Filter to renewals or new orders only. 	
+	if ( $type == 'renewals' ) {
+		$sqlQuery .= "AND mo2.id IS NOT NULL ";
+	} elseif ( $type == 'new' ) {
+		$sqlQuery .= "AND mo2.id IS NULL ";
+	}
+
+	// Group so we get one mo1 order per row.
+	$sqlQuery .= "GROUP BY mo1.id ";
+	
+	// Want the total across the orders found.
+	$sqlQuery = "SELECT SUM(total) FROM(" . $sqlQuery . ") as t1";
+	
+	$revenue = pmpro_round_price( $wpdb->get_var($sqlQuery) );
 
 	//save in cache
-	if(!empty($cache) && !empty($cache[$period]))
-		$cache[$period][$levels] = $revenue;
+	if(!empty($cache) && !empty($cache[$param_hash]))
+		$cache[$param_hash][$levels] = $revenue;
 	elseif(!empty($cache))
-		$cache[$period] = array($levels => $revenue);
+		$cache[$param_hash] = array($levels => $revenue);
 	else
-		$cache = array($period => array($levels => $revenue));
+		$cache = array($param_hash => array($levels => $revenue));
 
 	set_transient("pmpro_report_revenue", $cache, 3600*24);
 
 	return $revenue;
+}
+
+/**
+ * Get revenue between dates.
+ *
+ * @param  string $start_date to track revenue from.
+ * @param  string $end_date to track revenue until. Defaults to current date. YYYY-MM-DD format.
+ * @param  array  $level_ids to include in report. Defaults to all.
+ * @return float  revenue.
+ */
+function pmpro_get_revenue_between_dates( $start_date, $end_date = '', $level_ids = null ) {
+	global $wpdb;
+	$sql_query = "SELECT SUM(total) FROM $wpdb->pmpro_membership_orders WHERE status NOT IN('refunded', 'review', 'token', 'error') AND timestamp >= '" . esc_sql( $start_date ) . " 00:00:00'";
+	if ( ! empty( $end_date ) ) {
+		$sql_query .= " AND timestamp <= '" . esc_sql( $end_date ) . " 23:59:59'";
+	}
+	if ( ! empty( $level_ids ) ) {
+		$sql_query .= ' AND membership_id IN(' . implode( ', ', array_map( 'intval', $level_ids ) ) . ') '; 
+	}
+	return $wpdb->get_var($sql_query);
 }
 
 //delete transients when an order goes through
@@ -617,3 +881,4 @@ function pmpro_report_sales_delete_transients()
 }
 add_action("pmpro_after_checkout", "pmpro_report_sales_delete_transients");
 add_action("pmpro_updated_order", "pmpro_report_sales_delete_transients");
+add_action("pmpro_added_order", "pmpro_report_sales_delete_transients");

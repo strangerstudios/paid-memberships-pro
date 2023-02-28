@@ -7,27 +7,17 @@
  /**
   * Block dependencies
   */
- import './editor.css';
- import classnames from 'classnames';
  import Inspector from './inspector';
  /**
   * Internal block libraries
   */
  const { __ } = wp.i18n;
  const {
-    registerBlockType,
-    AlignmentToolbar,
-    BlockControls,
-    BlockAlignmentToolbar,
+    registerBlockType
 } = wp.blocks;
 const {
-    PanelBody,
     SelectControl,
 } = wp.components;
-
-const {
-    InspectorControls,
-} = wp.editor;
 
  /**
   * Register block
@@ -36,14 +26,21 @@ const {
      'pmpro/checkout-page',
      {
          title: __( 'Membership Checkout Form', 'paid-memberships-pro' ),
-         description: __( 'Displays the Membership Checkout form.', 'paid-memberships-pro' ),
+         description: __( 'Dynamic form that allows users to complete free registration or paid checkout for the selected membership level.', 'paid-memberships-pro' ),
          category: 'pmpro',
          icon: {
-            background: '#2997c8',
-            foreground: '#ffffff',
+            background: '#FFFFFF',
+            foreground: '#658B24',
             src: 'list-view',
          },
-         keywords: [ __( 'pmpro', 'paid-memberships-pro' ) ],
+         keywords: [
+             __( 'member', 'paid-memberships-pro' ),
+             __( 'paid memberships pro', 'paid-memberships-pro' ),
+             __( 'pmpro', 'paid-memberships-pro' ),
+             __( 'buy', 'paid-memberships-pro' ),
+             __( 'purchase', 'paid-memberships-pro' ),
+             __( 'sell', 'paid-memberships-pro' ),
+         ],
          supports: {
          },
          attributes: {
@@ -57,9 +54,10 @@ const {
              const { attributes: { pmpro_default_level }, className, setAttributes, isSelected } = props;
              return [
                 isSelected && <Inspector { ...{ setAttributes, ...props} } />,
-                <div className={ className }>
-                  <span>Paid Memberships Pro</span>
-                  <span>Membership Checkout Form</span>
+                <div className="pmpro-block-element">
+                  <span className="pmpro-block-title">{ __( 'Paid Memberships Pro', 'paid-memberships-pro' ) }</span>
+                  <span className="pmpro-block-subtitle">{ __( 'Membership Checkout Form', 'paid-memberships-pro' ) }</span>
+                  <hr />
                   <SelectControl
                       label={ __( 'Membership Level', 'paid-memberships-pro' ) }
                       value={ pmpro_default_level }

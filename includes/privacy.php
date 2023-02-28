@@ -32,7 +32,7 @@ add_action( 'admin_init', 'pmpro_add_privacy_policy_content' );
  */
 function pmpro_register_personal_data_erasers( $erasers = array() ) {
 	$erasers[] = array(
- 		'eraser_friendly_name' => __( 'Paid Memberships Pro Data' ),
+ 		'eraser_friendly_name' => __( 'Paid Memberships Pro Data', 'paid-memberships-pro' ),
  		'callback'             => 'pmpro_personal_data_eraser',
  	);
 
@@ -106,7 +106,7 @@ function pmpro_personal_data_eraser( $email_address, $page = 1 ) {
  */
 function pmpro_register_personal_data_exporters( $exporters ) {
 	$exporters[] = array(
-		'exporter_friendly_name' => __( 'Paid Memberships Pro Data' ),
+		'exporter_friendly_name' => __( 'Paid Memberships Pro Data', 'paid-memberships-pro' ),
 		'callback'               => 'pmpro_personal_data_exporter',
 	);
 
@@ -157,7 +157,7 @@ function pmpro_personal_data_exporter( $email_address, $page = 1 ) {
 
 		$data_to_export[] = array(
 			'group_id'    => 'pmpro_user_data',
-			'group_label' => __( 'Paid Memberships Pro User Data' ),
+			'group_label' => __( 'Paid Memberships Pro User Data', 'paid-memberships-pro' ),
 			'item_id'     => "user-{$user->ID}",
 			'data'        => $user_meta_data_to_export,
 		);
@@ -206,7 +206,7 @@ function pmpro_personal_data_exporter( $email_address, $page = 1 ) {
 
 			$data_to_export[] = array(
 				'group_id'    => 'pmpro_membership_history',
-				'group_label' => __( 'Paid Memberships Pro Membership History' ),
+				'group_label' => __( 'Paid Memberships Pro Membership History', 'paid-memberships-pro' ),
 				'item_id'     => "memberships_users-{$item->id}",
 				'data'        => $history_data_to_export,
 			);
@@ -235,7 +235,7 @@ function pmpro_personal_data_exporter( $email_address, $page = 1 ) {
 				),
 				array(
 					'name' => __( 'Order Date', 'paid-memberships-pro' ),
-					'value' => date( get_option( 'date_format' ), $order->timestamp ),
+					'value' => date( get_option( 'date_format' ), $order->getTimestamp() ),
 				),
 				array(
 					'name' => __( 'Level', 'paid-memberships-pro' ),
@@ -330,7 +330,7 @@ function pmpro_personal_data_exporter( $email_address, $page = 1 ) {
 			
 			$data_to_export[] = array(
 				'group_id'    => 'pmpro_order_history',
-				'group_label' => __( 'Paid Memberships Pro Order History' ),
+				'group_label' => __( 'Paid Memberships Pro Order History', 'paid-memberships-pro' ),
 				'item_id'     => "membership_order-{$order->id}",
 				'data'        => $order_data_to_export,
 			);
@@ -495,6 +495,7 @@ function pmpro_after_checkout_update_consent( $user_id, $order ) {
 add_action( 'pmpro_after_checkout', 'pmpro_after_checkout_update_consent', 10, 2 );
 add_action( 'pmpro_before_send_to_paypal_standard', 'pmpro_after_checkout_update_consent', 10, 2);
 add_action( 'pmpro_before_send_to_twocheckout', 'pmpro_after_checkout_update_consent', 10, 2);
+add_action( 'pmpro_before_send_to_payfast', 'pmpro_after_checkout_update_consent', 10, 2 );
 
 /**
  * Convert a consent entry into a English sentence.
@@ -509,7 +510,7 @@ function pmpro_consent_to_text( $entry ) {
 	$user = get_userdata( $entry['user_id'] );
 	$post = get_post( $entry['post_id'] );
 
-	$s = sprintf( __('%s agreed to %s (ID #%d, last modified %s) on %s.' ),
+	$s = sprintf( __( '%s agreed to %s (ID #%d, last modified %s) on %s.', 'paid-memberships-pro' ),
 				  $user->display_name,
 				  $post->post_title,
 				  $post->ID,

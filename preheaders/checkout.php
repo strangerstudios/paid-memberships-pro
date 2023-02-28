@@ -123,36 +123,36 @@ if ( isset( $_REQUEST['order_id'] ) ) {
 	$order_id = "";
 }
 if ( isset( $_REQUEST['bfirstname'] ) ) {
-	$bfirstname = sanitize_text_field( stripslashes( $_REQUEST['bfirstname'] ) );
+	$bfirstname = stripslashes( sanitize_text_field( $_REQUEST['bfirstname'] ) );
 } else {
 	$bfirstname = "";
 }
 if ( isset( $_REQUEST['blastname'] ) ) {
-	$blastname = sanitize_text_field( stripslashes( $_REQUEST['blastname'] ) );
+	$blastname = stripslashes( sanitize_text_field( $_REQUEST['blastname'] ) );
 } else {
 	$blastname = "";
 }
 if ( isset( $_REQUEST['fullname'] ) ) {
-	$fullname = $_REQUEST['fullname'];
+	$fullname = sanitize_text_field( $_REQUEST['fullname'] );
 }        //honeypot for spammers
 if ( isset( $_REQUEST['baddress1'] ) ) {
-	$baddress1 = sanitize_text_field( stripslashes( $_REQUEST['baddress1'] ) );
+	$baddress1 = stripslashes( sanitize_text_field( $_REQUEST['baddress1'] ) );
 } else {
 	$baddress1 = "";
 }
 if ( isset( $_REQUEST['baddress2'] ) ) {
-	$baddress2 = sanitize_text_field( stripslashes( $_REQUEST['baddress2'] ) );
+	$baddress2 = stripslashes( sanitize_text_field( $_REQUEST['baddress2'] ) );
 } else {
 	$baddress2 = "";
 }
 if ( isset( $_REQUEST['bcity'] ) ) {
-	$bcity = sanitize_text_field( stripslashes( $_REQUEST['bcity'] ) );
+	$bcity = stripslashes( sanitize_text_field( $_REQUEST['bcity'] ) );
 } else {
 	$bcity = "";
 }
 
 if ( isset( $_REQUEST['bstate'] ) ) {
-	$bstate = sanitize_text_field( stripslashes( $_REQUEST['bstate'] ) );
+	$bstate = stripslashes( sanitize_text_field( $_REQUEST['bstate'] ) );
 } else {
 	$bstate = "";
 }
@@ -169,22 +169,22 @@ if ( ! empty( $bstate ) ) {
 }
 
 if ( isset( $_REQUEST['bzipcode'] ) ) {
-	$bzipcode = sanitize_text_field( stripslashes( $_REQUEST['bzipcode'] ) );
+	$bzipcode = stripslashes( sanitize_text_field( $_REQUEST['bzipcode'] ) );
 } else {
 	$bzipcode = "";
 }
 if ( isset( $_REQUEST['bcountry'] ) ) {
-	$bcountry = sanitize_text_field( stripslashes( $_REQUEST['bcountry'] ) );
+	$bcountry = stripslashes( sanitize_text_field( $_REQUEST['bcountry'] ) );
 } else {
 	$bcountry = "";
 }
 if ( isset( $_REQUEST['bphone'] ) ) {
-	$bphone = sanitize_text_field( stripslashes( $_REQUEST['bphone'] ) );
+	$bphone = stripslashes( sanitize_text_field( $_REQUEST['bphone'] ) );
 } else {
 	$bphone = "";
 }
 if ( isset ( $_REQUEST['bemail'] ) ) {
-	$bemail = sanitize_email( stripslashes( $_REQUEST['bemail'] ) );
+	$bemail = stripslashes( sanitize_email( $_REQUEST['bemail'] ) );
 } elseif ( is_user_logged_in() ) {
 	$bemail = $current_user->user_email;
 } else {
@@ -193,7 +193,7 @@ if ( isset ( $_REQUEST['bemail'] ) ) {
 if ( isset( $_REQUEST['bconfirmemail_copy'] ) ) {
 	$bconfirmemail = $bemail;
 } elseif ( isset( $_REQUEST['bconfirmemail'] ) ) {
-	$bconfirmemail = sanitize_email( stripslashes( $_REQUEST['bconfirmemail'] ) );
+	$bconfirmemail = stripslashes( sanitize_email( $_REQUEST['bconfirmemail'] ) );
 } elseif ( is_user_logged_in() ) {
 	$bconfirmemail = $current_user->user_email;
 } else {
@@ -228,7 +228,7 @@ if ( isset( $_REQUEST['CVV'] ) ) {
 }
 
 if ( isset( $_REQUEST['discount_code'] ) ) {
-	$discount_code = preg_replace( "/[^A-Za-z0-9\-]/", "", $_REQUEST['discount_code'] );
+	$discount_code = preg_replace( "/[^A-Za-z0-9\-]/", "", sanitize_text_field( $_REQUEST['discount_code'] ) );
 } else {
 	$discount_code = "";
 }
@@ -237,18 +237,23 @@ if ( isset( $_REQUEST['username'] ) ) {
 } else {
 	$username = "";
 }
+
+// Note: We can't sanitize the passwords. They get hashed when saved.
+// phpcs:disable WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 if ( isset( $_REQUEST['password'] ) ) {
-	$password = sanitize_text_field($_REQUEST['password']);
+	$password = $_REQUEST['password'];
 } else {
 	$password = "";
 }
 if ( isset( $_REQUEST['password2_copy'] ) ) {
 	$password2 = $password;
 } elseif ( isset( $_REQUEST['password2'] ) ) {
-	$password2 = sanitize_text_field($_REQUEST['password2']);
+	$password2 = $_REQUEST['password2'];
 } else {
 	$password2 = "";
 }
+// phpcs:enable WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+
 if ( isset( $_REQUEST['tos'] ) ) {
 	$tos = intval( $_REQUEST['tos'] );
 } else {
@@ -393,23 +398,29 @@ if ( $submit && $pmpro_msgt != "pmpro_error" ) {
 		if ( $pmpro_msgt != "pmpro_error" ) {
 			//check recaptcha first
 			global $recaptcha, $recaptcha_validated;
-			if ( ! $skip_account_fields && ( $recaptcha == 2 || ( $recaptcha == 1 && pmpro_isLevelFree( $pmpro_level ) ) ) ) {
+			if (  $recaptcha == 2 || ( $recaptcha == 1 && pmpro_isLevelFree( $pmpro_level ) ) ) {
 
 				global $recaptcha_privatekey;
 
 				if ( isset( $_POST["recaptcha_challenge_field"] ) ) {
-					//using older recaptcha lib
+					// Using older recaptcha lib. Google needs the raw POST data.
+					// phpcs:disable WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 					$resp = recaptcha_check_answer( $recaptcha_privatekey,
-						$_SERVER["REMOTE_ADDR"],
+						pmpro_get_ip(),
 						$_POST["recaptcha_challenge_field"],
 						$_POST["recaptcha_response_field"] );
+					// phpcs:enable WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 
 					$recaptcha_valid  = $resp->is_valid;
 					$recaptcha_errors = $resp->error;
 				} else {
 					//using newer recaptcha lib
+					// NOTE: In practice, we don't execute this code because
+					// we use AJAX to send the data back to the server and set the
+					// pmpro_recaptcha_validated session variable, which is checked
+					// earlier. We should remove/refactor this code.
 					$reCaptcha = new pmpro_ReCaptcha( $recaptcha_privatekey );
-					$resp      = $reCaptcha->verifyResponse( $_SERVER["REMOTE_ADDR"], $_POST["g-recaptcha-response"] );
+					$resp      = $reCaptcha->verifyResponse( pmpro_get_ip(), $_POST["g-recaptcha-response"] ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 
 					$recaptcha_valid  = $resp->success;
 					$recaptcha_errors = $resp->errorCodes;
@@ -431,6 +442,78 @@ if ( $submit && $pmpro_msgt != "pmpro_error" ) {
 				}
 			}
 
+			// Do we need to create a user account?
+			if ( ! $current_user->ID ) {
+				// Yes, create user.
+
+				//first name
+				if ( ! empty( $_REQUEST['first_name'] ) ) {
+					$first_name = sanitize_text_field( $_REQUEST['first_name'] );
+				} else {
+					$first_name = $bfirstname;
+				}
+				//last name
+				if ( ! empty( $_REQUEST['last_name'] ) ) {
+					$last_name = sanitize_text_field( $_REQUEST['last_name'] );
+				} else {
+					$last_name = $blastname;
+				}
+
+				//insert user
+				$new_user_array = apply_filters( 'pmpro_checkout_new_user_array', array(
+						"user_login" => $username,
+						"user_pass"  => $password,
+						"user_email" => $bemail,
+						"first_name" => $first_name,
+						"last_name"  => $last_name
+					)
+				);
+
+				$user_id = apply_filters( 'pmpro_new_user', '', $new_user_array );
+				if ( empty( $user_id ) ) {
+					$user_id = wp_insert_user( $new_user_array );
+				}
+
+				if ( empty( $user_id ) || is_wp_error( $user_id ) ) {
+					$e_msg = '';
+
+					if ( is_wp_error( $user_id ) ) {
+						$e_msg = $user_id->get_error_message();
+					}
+
+					$pmpro_msg  = __( "There was an error setting up your account. Please contact us.", 'paid-memberships-pro' ) . sprintf( " %s", $e_msg ); // Dirty 'don't break translation hack.
+					$pmpro_msgt = "pmpro_error";
+				} elseif ( apply_filters( 'pmpro_setup_new_user', true, $user_id, $new_user_array, $pmpro_level ) ) {
+
+					pmpro_maybe_send_wp_new_user_notification( $user_id, $pmpro_level->id );
+
+					$wpuser = get_userdata( $user_id );
+					$wpuser->set_role( get_option( 'default_role', 'subscriber' ) );
+
+					/**
+					 * Allow hooking before the user authentication process when setting up new user.
+					 *
+					 * @since 2.5.10
+					 *
+					 * @param int $user_id The user ID that is being setting up.
+					 */
+					do_action( 'pmpro_checkout_before_user_auth', $user_id );
+
+
+					//okay, log them in to WP
+					$creds                  = array();
+					$creds['user_login']    = $new_user_array['user_login'];
+					$creds['user_password'] = $new_user_array['user_pass'];
+					$creds['remember']      = true;
+					$user                   = wp_signon( $creds, false );
+					//setting some cookies
+					wp_set_current_user( $user_id, $username );
+					wp_set_auth_cookie( $user_id, true, apply_filters( 'pmpro_checkout_signon_secure', force_ssl_admin() ) );
+				}
+			} else {
+				$user_id = $current_user->ID;
+			}
+
 			//no errors yet
 			if ( $pmpro_msgt != "pmpro_error" ) {
 				do_action( 'pmpro_checkout_before_processing' );
@@ -446,16 +529,24 @@ if ( $submit && $pmpro_msgt != "pmpro_error" ) {
 						$pmpro_msgt      = "pmpro_success";
 						$pmpro_confirmed = true;
 					} else {
+						/**
+						 * Allow running code when processing fails.
+						 *
+						 * @since 2.7
+						 * @param MemberOrder $morder The order object used at checkout.
+						 */
+						do_action( 'pmpro_checkout_processing_failed', $morder );
+
+						// Make sure we have an error message.
 						$pmpro_msg = !empty( $morder->error ) ? $morder->error : null;
 						if ( empty( $pmpro_msg ) ) {
 							$pmpro_msg = __( "Unknown error generating account. Please contact us to set up your membership.", 'paid-memberships-pro' );
 						}
-						
 						if ( ! empty( $morder->error_type ) ) {
 							$pmpro_msgt = $morder->error_type;
 						} else {
 							$pmpro_msgt = "pmpro_error";
-						}						
+						}
 					}
 
 				} else // !$pmpro_requirebilling
@@ -471,6 +562,11 @@ if ( $submit && $pmpro_msgt != "pmpro_error" ) {
 //make sure we have at least an empty morder here to avoid a warning
 if ( empty( $morder ) ) {
 	$morder = false;
+}
+
+// Make sure that we have a User ID to avoid a warning.
+if ( empty( $user_id ) && ! empty( $current_user->ID ) ) {
+	$user_id = $current_user->ID;
 }
 
 //Hook to check payment confirmation or replace it. If we get an array back, pull the values (morder) out
@@ -490,86 +586,9 @@ if ( ! empty( $pmpro_confirmed ) ) {
 	//just in case this hasn't been set yet
 	$submit = true;
 
-	//do we need to create a user account?
-	if ( ! $current_user->ID ) {
-		/*
-			create user
-		*/
-		if ( version_compare( $wp_version, "3.1" ) < 0 ) {
-			require_once( ABSPATH . WPINC . '/registration.php' );
-		}    //need this for WP versions before 3.1
+	do_action( 'pmpro_checkout_before_change_membership_level', $user_id, $morder );
 
-		//first name
-		if ( ! empty( $_REQUEST['first_name'] ) ) {
-			$first_name = $_REQUEST['first_name'];
-		} else {
-			$first_name = $bfirstname;
-		}
-		//last name
-		if ( ! empty( $_REQUEST['last_name'] ) ) {
-			$last_name = $_REQUEST['last_name'];
-		} else {
-			$last_name = $blastname;
-		}
-
-		//insert user
-		$new_user_array = apply_filters( 'pmpro_checkout_new_user_array', array(
-				"user_login" => $username,
-				"user_pass"  => $password,
-				"user_email" => $bemail,
-				"first_name" => $first_name,
-				"last_name"  => $last_name
-			)
-		);
-
-		$user_id = apply_filters( 'pmpro_new_user', '', $new_user_array );
-		if ( empty( $user_id ) ) {
-			$user_id = wp_insert_user( $new_user_array );
-		}
-
-		if ( empty( $user_id ) || is_wp_error( $user_id ) ) {
-			$e_msg = '';
-
-			if ( is_wp_error( $user_id ) ) {
-				$e_msg = $user_id->get_error_message();
-			}
-
-			$pmpro_msg  = __( "Your payment was accepted, but there was an error setting up your account. Please contact us.", 'paid-memberships-pro' ) . sprintf( " %s", $e_msg ); // Dirty 'don't break translation hack.
-			$pmpro_msgt = "pmpro_error";
-		} elseif ( apply_filters( 'pmpro_setup_new_user', true, $user_id, $new_user_array, $pmpro_level ) ) {
-
-			//check pmpro_wp_new_user_notification filter before sending the default WP email
-			if ( apply_filters( "pmpro_wp_new_user_notification", true, $user_id, $pmpro_level->id ) ) {
-				if ( version_compare( $wp_version, "4.3.0" ) >= 0 ) {
-					wp_new_user_notification( $user_id, null, 'both' );
-				} else {
-					wp_new_user_notification( $user_id, $new_user_array['user_pass'] );
-				}
-			}
-
-			$wpuser = get_userdata( $user_id );
-
-			//make the user a subscriber
-			$wpuser->set_role( get_option( 'default_role', 'subscriber' ) );
-
-			//okay, log them in to WP
-			$creds                  = array();
-			$creds['user_login']    = $new_user_array['user_login'];
-			$creds['user_password'] = $new_user_array['user_pass'];
-			$creds['remember']      = true;
-			$user                   = wp_signon( $creds, false );
-
-			//setting some cookies
-			wp_set_current_user( $user_id, $username );
-			wp_set_auth_cookie( $user_id, true, apply_filters( 'pmpro_checkout_signon_secure', force_ssl_admin() ) );
-		}
-	} else {
-		$user_id = $current_user->ID;
-	}
-
-	if ( ! empty( $user_id ) && ! is_wp_error( $user_id ) ) {
-		do_action( 'pmpro_checkout_before_change_membership_level', $user_id, $morder );
-
+	if ( 'pmpro_error' !== $pmpro_msgt ) {
 		//start date is NOW() but filterable below
 		$startdate = current_time( "mysql" );
 
@@ -586,7 +605,11 @@ if ( ! empty( $pmpro_confirmed ) ) {
 
 		//calculate the end date
 		if ( ! empty( $pmpro_level->expiration_number ) ) {
-			$enddate =  date_i18n( "Y-m-d", strtotime( "+ " . $pmpro_level->expiration_number . " " . $pmpro_level->expiration_period, current_time( "timestamp" ) ) );
+			if( $pmpro_level->expiration_period == 'Hour' ){
+				$enddate =  date( "Y-m-d H:i:s", strtotime( "+ " . $pmpro_level->expiration_number . " " . $pmpro_level->expiration_period, current_time( "timestamp" ) ) );
+			} else {
+				$enddate =  date( "Y-m-d 23:59:59", strtotime( "+ " . $pmpro_level->expiration_number . " " . $pmpro_level->expiration_period, current_time( "timestamp" ) ) );
+			}
 		} else {
 			$enddate = "NULL";
 		}
@@ -604,7 +627,13 @@ if ( ! empty( $pmpro_confirmed ) ) {
 		$enddate = apply_filters( "pmpro_checkout_end_date", $enddate, $user_id, $pmpro_level, $startdate );
 
 		//check code before adding it to the order
-		$code_check = pmpro_checkDiscountCode( $discount_code, $pmpro_level->id, true );
+		global $pmpro_checkout_level_ids; // Set by MMPU.
+		if ( isset( $pmpro_checkout_level_ids ) ) {
+			$code_check = pmpro_checkDiscountCode( $discount_code, $pmpro_checkout_level_ids, true );
+		} else {
+			$code_check = pmpro_checkDiscountCode( $discount_code, $pmpro_level->id, true );
+		}
+
 		if ( $code_check[0] == false ) {
 			//error
 			$pmpro_msg  = $code_check[1];
@@ -616,8 +645,8 @@ if ( ! empty( $pmpro_confirmed ) ) {
 			//all okay
 			$use_discount_code = true;
 		}
-		
-		//update membership_user table.		
+
+		//update membership_user table.
 		if ( ! empty( $discount_code ) && ! empty( $use_discount_code ) ) {
 			$discount_code_id = $wpdb->get_var( "SELECT id FROM $wpdb->pmpro_discount_codes WHERE code = '" . esc_sql( $discount_code ) . "' LIMIT 1" );
 		} else {
@@ -673,42 +702,69 @@ if ( ! empty( $pmpro_confirmed ) ) {
 					$code_order_id = "";
 				}
 
-				$wpdb->query( "INSERT INTO $wpdb->pmpro_discount_codes_uses (code_id, user_id, order_id, timestamp) VALUES('" . $discount_code_id . "', '" . $user_id . "', '" . intval( $code_order_id ) . "', '" . current_time( "mysql" ) . "')" );
+				$wpdb->query( $wpdb->prepare(
+					"INSERT INTO $wpdb->pmpro_discount_codes_uses (code_id, user_id, order_id, timestamp) VALUES(%d, %d, %d, %s)",
+					$discount_code_id,
+					$user_id,
+					$code_order_id,
+					current_time( "mysql" )
+				) );
+
+				do_action( 'pmpro_discount_code_used', $discount_code_id, $user_id, $code_order_id );
 			}
 
 			//save billing info ect, as user meta
 			$meta_keys   = array(
-				"pmpro_bfirstname",
-				"pmpro_blastname",
-				"pmpro_baddress1",
-				"pmpro_baddress2",
-				"pmpro_bcity",
-				"pmpro_bstate",
-				"pmpro_bzipcode",
-				"pmpro_bcountry",
-				"pmpro_bphone",
-				"pmpro_bemail",
 				"pmpro_CardType",
 				"pmpro_AccountNumber",
 				"pmpro_ExpirationMonth",
-				"pmpro_ExpirationYear"
+				"pmpro_ExpirationYear",
 			);
 			$meta_values = array(
-				$bfirstname,
-				$blastname,
-				$baddress1,
-				$baddress2,
-				$bcity,
-				$bstate,
-				$bzipcode,
-				$bcountry,
-				$bphone,
-				$bemail,
 				$CardType,
 				hideCardNumber( $AccountNumber ),
 				$ExpirationMonth,
-				$ExpirationYear
+				$ExpirationYear,
 			);
+
+			// Check if firstname and last name fields are set.
+			if ( ! empty( $bfirstname ) || ! empty( $blastname ) ) {
+				$meta_keys = array_merge( $meta_keys, array(
+					"pmpro_bfirstname",
+					"pmpro_blastname",
+				) );
+
+				$meta_values = array_merge( $meta_values, array(
+					$bfirstname,
+					$blastname,
+				) );
+			}
+
+			// Check if billing details are available, if not adjust the arrays.
+			if ( ! empty( $baddress1 ) ) {
+				$meta_keys = array_merge( $meta_keys, array(
+					"pmpro_baddress1",
+					"pmpro_baddress2",
+					"pmpro_bcity",
+					"pmpro_bstate",
+					"pmpro_bzipcode",
+					"pmpro_bcountry",
+					"pmpro_bphone",
+					"pmpro_bemail",
+				) );
+
+				$meta_values = array_merge( $meta_values, array(
+					$baddress1,
+					$baddress2,
+					$bcity,
+					$bstate,
+					$bzipcode,
+					$bcountry,
+					$bphone,
+					$bemail,
+				) );
+			}
+
 			pmpro_replaceUserMeta( $user_id, $meta_keys, $meta_values );
 
 			//save first and last name fields
@@ -725,6 +781,10 @@ if ( ! empty( $pmpro_confirmed ) ) {
 				}
 			}
 
+			if( $pmpro_level->expiration_period == 'Hour' ){
+				update_user_meta( $user_id, 'pmpro_disable_notifications', true );
+			}
+
 			//show the confirmation
 			$ordersaved = true;
 
@@ -732,8 +792,8 @@ if ( ! empty( $pmpro_confirmed ) ) {
 			do_action( "pmpro_after_checkout", $user_id, $morder );    //added $morder param in v2.0
 
 			$sendemails = apply_filters( "pmpro_send_checkout_emails", true);
-	
-			if($sendemails) { // Send the e-mails only if the flag is set to true
+
+			if($sendemails) { // Send the emails only if the flag is set to true
 
 				//setup some values for the emails
 				if ( ! empty( $morder ) ) {
@@ -778,7 +838,7 @@ if ( empty( $submit ) ) {
 	//show message if the payment gateway is not setup yet
 	if ( $pmpro_requirebilling && ! pmpro_getOption( "gateway", true ) ) {
 		if ( pmpro_isAdmin() ) {
-			$pmpro_msg = sprintf( __( 'You must <a href="%s">set up a Payment Gateway</a> before any payments will be processed.', 'paid-memberships-pro' ), get_admin_url( null, '/admin.php?page=pmpro-paymentsettings' ) );
+			$pmpro_msg = sprintf( __( 'You must <a href="%s">set up a Payment Gateway</a> before any payments will be processed.', 'paid-memberships-pro' ), admin_url( '/admin.php?page=pmpro-paymentsettings' ) );
 		} else {
 			$pmpro_msg = __( "A Payment Gateway must be set up before any payments will be processed.", 'paid-memberships-pro' );
 		}

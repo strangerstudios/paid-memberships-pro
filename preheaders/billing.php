@@ -2,15 +2,18 @@
 
 global $wpdb, $current_user, $pmpro_msg, $pmpro_msgt, $bfirstname, $blastname, $baddress1, $baddress2, $bcity, $bstate, $bzipcode, $bcountry, $bphone, $bemail, $bconfirmemail, $CardType, $AccountNumber, $ExpirationMonth, $ExpirationYear, $pmpro_requirebilling;
 
-if (! is_user_logged_in()) {	
-	wp_redirect(pmpro_url('levels'));
-	exit();
+// Redirect non-user to the login page; pass the Billing page as the redirect_to query arg.
+if ( ! is_user_logged_in() ) {
+	$billing_url = pmpro_url( 'billing' );
+    wp_redirect( add_query_arg( 'redirect_to', urlencode( $billing_url ), pmpro_login_url() ) );
+    exit;
 } else {
-	$current_user->membership_level = pmpro_getMembershipLevelForUser($current_user->ID);
+    // Get the current user's membership level. 
+    $current_user->membership_level = pmpro_getMembershipLevelForUser( $current_user->ID );
 }
 
 //need to be secure?
-global $besecure, $gateway, $show_paypal_link;
+global $besecure, $gateway, $show_paypal_link, $show_check_payment_instructions;
 $user_order = new MemberOrder();
 $user_order->getLastMemberOrder( null, array( 'success', 'pending' ) );
 if (empty($user_order->gateway)) {
@@ -25,6 +28,8 @@ if (empty($user_order->gateway)) {
         //$besecure = false;
         $show_paypal_link = true;
     }
+} elseif( $user_order->gateway == 'check' ) {
+    $show_check_payment_instructions = true;
 } else {
     //$besecure = true;
     $besecure = pmpro_getOption("use_ssl");
@@ -34,7 +39,11 @@ if (empty($user_order->gateway)) {
 $pmpro_requirebilling = true;
 
 // Set the gateway, ideally using the gateway used to pay for the last order (if it exists)
-$gateway = !empty( $user_order->gateway ) ? $user_order->gateway : pmpro_getOption("gateway");
+if ( ! empty( $user_order->gateway ) ) {
+    $gateway = $user_order->gateway;
+} else {
+    $gateway = NULL;
+}
 
 //enqueue some scripts
 wp_enqueue_script( 'jquery.creditCardValidator', plugins_url( '/js/jquery.creditCardValidator.js', dirname( __FILE__ ) ), array( 'jquery' ) );
@@ -149,6 +158,40 @@ if ($submit) {
         }
     }
 	
+	// Check reCAPTCHA if needed.
+	global $recaptcha, $recaptcha_validated;
+	if (  $recaptcha == 2 || ( $recaptcha == 1 && pmpro_isLevelFree( $pmpro_level ) ) ) {
+		global $recaptcha_privatekey;
+		if ( isset( $_POST["recaptcha_challenge_field"] ) ) {
+			//using older recaptcha lib
+			$resp = recaptcha_check_answer( $recaptcha_privatekey,
+				pmpro_get_ip(),
+				sanitize_text_field( $_POST["recaptcha_challenge_field"] ),
+				sanitize_text_field( $_POST["recaptcha_response_field"] )
+            );
+
+			$recaptcha_valid  = $resp->is_valid;
+			$recaptcha_errors = $resp->error;
+		} else {
+			//using newer recaptcha lib
+			// NOTE: In practice, we don't execute this code because
+			// we use AJAX to send the data back to the server and set the
+			// pmpro_recaptcha_validated session variable, which is checked
+			// earlier. We should remove/refactor this code.
+			$reCaptcha = new pmpro_ReCaptcha( $recaptcha_privatekey );
+			$resp      = $reCaptcha->verifyResponse( pmpro_get_ip(), sanitize_text_field( $_POST["g-recaptcha-response"] ) );
+
+			$recaptcha_valid  = $resp->success;
+			$recaptcha_errors = $resp->errorCodes;
+		}
+		if ( ! $recaptcha_valid ) {
+			$pmpro_msg  = sprintf( __( "reCAPTCHA failed. (%s) Please try again.", 'paid-memberships-pro' ), $recaptcha_errors );
+			$pmpro_msgt = "pmpro_error";
+		} else {			
+			pmpro_set_session_var( 'pmpro_recaptcha_validated', true );
+		}
+	}
+	
     if (!empty($missing_billing_field)) {
         $pmpro_msg = __("Please complete all required fields.", 'paid-memberships-pro' );
         $pmpro_msgt = "pmpro_error";
@@ -158,7 +201,9 @@ if ($submit) {
     } elseif (!is_email($bemail)) {
         $pmpro_msg = __("The email address entered is in an invalid format. Please try again.", 'paid-memberships-pro' );
         $pmpro_msgt = "pmpro_error";
-    } else {
+    } elseif ( $pmpro_msgt == 'pmpro_error' ) {
+		// Something else threw an error, maybe reCAPTCHA.		
+	} else {
         //all good. update billing info.
         $pmpro_msg = __("All good!", 'paid-memberships-pro' );
 
@@ -229,8 +274,19 @@ if ($submit) {
             //message
             $pmpro_msg = sprintf(__('Information updated. <a href="%s">&laquo; back to my account</a>', 'paid-memberships-pro' ), pmpro_url("account"));
             $pmpro_msgt = "pmpro_success";
+			
+			do_action( 'pmpro_after_update_billing', $current_user->ID, !empty( $morder ) ? $morder : null );
         } else {
-            $pmpro_msg = $morder->error;
+			/**
+			 * Allow running code when the update fails.
+			 *
+			 * @since 2.7
+			 * @param MemberOrder $morder The order for the sub being updated.
+			 */
+			do_action( 'pmpro_update_billing_failed', $morder );
+			
+			// Make sure we have an error message.
+			$pmpro_msg = $morder->error;
 
             if (!$pmpro_msg)
                 $pmpro_msg = __("Error updating billing information.", 'paid-memberships-pro' );

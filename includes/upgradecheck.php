@@ -16,6 +16,7 @@ function pmpro_checkForUpgrades()
 
 	//default options
 	if(!$pmpro_db_version) {
+		pmpro_setOption( 'wizard_redirect', true ); // This is for defaulting to the wizard on first activation.
 		require_once(PMPRO_DIR . "/includes/updates/upgrade_1.php");
 		$pmpro_db_version = pmpro_upgrade_1();
 	}
@@ -135,7 +136,7 @@ function pmpro_checkForUpgrades()
 
 	//fix subscription ids on stripe orders
 	require_once(PMPRO_DIR . "/includes/updates/upgrade_1_8_6_9.php");	//need to include this for AJAX calls
-	if($pmpro_db_version < 1.869) {		
+	if($pmpro_db_version < 1.869) {
 		$pmpro_db_version = pmpro_upgrade_1_8_6_9();
 	}
 
@@ -144,27 +145,27 @@ function pmpro_checkForUpgrades()
 		require_once(PMPRO_DIR . "/includes/updates/upgrade_1_8_7.php");
 		$pmpro_db_version = pmpro_upgrade_1_8_7();
 	}
-	
+
 	/*
 		v1.8.8
 		* Running the cron job cleanup again.
 		* Fixing old $0 Stripe orders.
 		* Fixing old Authorize.net orders with empty status.
-	*/	
+	*/
 	require_once(PMPRO_DIR . "/includes/updates/upgrade_1_8_8.php");
-	if($pmpro_db_version < 1.88) {		
-		$pmpro_db_version = pmpro_upgrade_1_8_8();			
+	if($pmpro_db_version < 1.88) {
+		$pmpro_db_version = pmpro_upgrade_1_8_8();
 	}
-	
+
 	/*
 		v1.8.9.1
 		* Fixing Stripe orders where user_id/membership_id = 0
 		* Updated in v1.9.2.2 to check for namespace compatibility first,
 		  since the Stripe class isn't loaded for PHP < 5.3.29
-	*/	
+	*/
 	if (version_compare( PHP_VERSION, '5.3.29', '>=' )) {
 		require_once(PMPRO_DIR . "/includes/updates/upgrade_1_8_9_1.php");
-		if($pmpro_db_version < 1.891) {			
+		if($pmpro_db_version < 1.891) {
 			$pmpro_db_version = pmpro_upgrade_1_8_9_1();
 		}
 	} elseif($pmpro_db_version < 1.891) {
@@ -177,18 +178,18 @@ function pmpro_checkForUpgrades()
 	*/
 	if($pmpro_db_version < 1.892) {
 		pmpro_db_delta();
-		
+
 		$pmpro_db_version = 1.892;
 		pmpro_setOption("db_version", "1.892");
 	}
 
 	/*
 		v1.8.9.3 (db v1.91)
-		* Fixing incorrect start and end dates.	
+		* Fixing incorrect start and end dates.
 	*/
 	require_once(PMPRO_DIR . "/includes/updates/upgrade_1_8_9_3.php");
 	if($pmpro_db_version < 1.91) {
-		$pmpro_db_version = pmpro_upgrade_1_8_9_3();			
+		$pmpro_db_version = pmpro_upgrade_1_8_9_3();
 	}
 
 	/*
@@ -198,7 +199,7 @@ function pmpro_checkForUpgrades()
 	*/
 	if($pmpro_db_version < 1.92) {
 		pmpro_db_delta();
-		
+
 		$pmpro_db_version = 1.92;
 		pmpro_setOption("db_version", "1.92");
 	}
@@ -210,16 +211,16 @@ function pmpro_checkForUpgrades()
 	*/
 	if($pmpro_db_version < 1.93) {
 		pmpro_db_delta();
-		
+
 		$pmpro_db_version = 1.93;
 		pmpro_setOption("db_version", "1.93");
 	}
 
-	require_once( PMPRO_DIR . "/includes/updates/upgrade_1_9_4.php" );	
+	require_once( PMPRO_DIR . "/includes/updates/upgrade_1_9_4.php" );
 	if($pmpro_db_version < 1.94) {
 		$pmpro_db_version = pmpro_upgrade_1_9_4();
 	}
-	
+
 	if($pmpro_db_version < 1.944) {
 		pmpro_cleanup_memberships_users_table();
 		$pmpro_db_version = '1.944';
@@ -231,6 +232,91 @@ function pmpro_checkForUpgrades()
 
 		$pmpro_db_version = 2.1;
 		pmpro_setOption( 'db_version', '2.1' );
+	}
+
+	if ( $pmpro_db_version < 2.3 ) {
+		pmpro_maybe_schedule_event( strtotime( '10:30:00' ) - ( get_option( 'gmt_offset' ) * HOUR_IN_SECONDS ), 'daily', 'pmpro_cron_admin_activity_email' );
+		pmpro_setOption( 'db_version', '2.3' );
+	}
+
+	/**
+	 * Version 2.4
+	 * Fixing subscription_transaction_id
+	 * for orders created through a Stripe Update.
+	 */
+	require_once( PMPRO_DIR . "/includes/updates/upgrade_2_4.php" );
+ 	if($pmpro_db_version < 2.4) {
+ 		$pmpro_db_version = pmpro_upgrade_2_4();
+ 	}
+
+	/**
+	 * Version 2.5
+	 * Running pmpro_db_delta to install the ordermeta table.
+	 */
+	if( $pmpro_db_version < 2.5 ) {
+		pmpro_db_delta();
+		$pmpro_db_version = 2.5;
+		pmpro_setOption( 'db_version', '2.5' );
+	}
+
+	/**
+	 * Version 2.6
+	 * Running pmpro_db_delta to update column types to bigint/etc
+	 */
+	require_once( PMPRO_DIR . "/includes/updates/upgrade_2_6.php" );
+	if( $pmpro_db_version < 2.6 ) {
+		pmpro_db_delta();
+		$pmpro_db_version = pmpro_upgrade_2_6();
+		pmpro_setOption( 'db_version', '2.6' );
+	}
+
+	/**
+	 * Version 2.7.1
+	 * Running pmpro_db_delta to fix the primary key in a couple tables.
+	 */
+	 if( $pmpro_db_version < 2.71 ) {
+ 		pmpro_db_delta();
+ 		pmpro_setOption( 'db_version', '2.71' );
+ 	}
+	
+	/**
+	 * Version 2.8
+	 * Default option for Wisdom tracking.
+	 */
+	if ( $pmpro_db_version < 2.8 ) {
+		pmpro_setOption('wisdom_opt_out', 1);
+		pmpro_setOption( 'db_version', '2.8' );
+	}
+	
+	/**
+	 * Version 2.8.1
+	 * Reload crons to get correct intervals.
+	 */
+	if ( $pmpro_db_version < 2.81 ) {
+		pmpro_clear_crons();
+		pmpro_maybe_schedule_crons();
+		pmpro_setOption( 'db_version', '2.81' );
+	}
+
+	/**
+	 * Version 2.9.4
+	 * Check the current domain and store it
+	 */
+	if ( $pmpro_db_version < 2.94 ) {
+		pmpro_setOption( 'last_known_url', get_site_url() );
+		pmpro_setOption( 'db_version', '2.94' );
+	}
+
+	/**
+	 * Version 2.10
+	 * We are increasing Stripe application fee, but if the site is already being
+	 * charged at 1%, we want to let them keep that fee.
+	 * We are also fixing the pmpro_wisdom_opt_out option.
+	 */
+	if ( $pmpro_db_version < 2.95 ) { // 2.95 since 2.10 would be lower than previous update.
+		require_once( PMPRO_DIR . "/includes/updates/upgrade_2_10.php" );
+		pmpro_upgrade_2_10();
+		pmpro_setOption( 'db_version', '2.95' );		
 	}
 }
 
@@ -249,6 +335,7 @@ function pmpro_db_delta()
 	$wpdb->pmpro_discount_codes_levels = $wpdb->prefix . 'pmpro_discount_codes_levels';
 	$wpdb->pmpro_discount_codes_uses = $wpdb->prefix . 'pmpro_discount_codes_uses';
 	$wpdb->pmpro_membership_levelmeta = $wpdb->prefix . 'pmpro_membership_levelmeta';
+	$wpdb->pmpro_membership_ordermeta = $wpdb->prefix . 'pmpro_membership_ordermeta';
 
 	//wp_pmpro_membership_levels
 	$sqlQuery = "
@@ -266,8 +353,8 @@ function pmpro_db_delta()
 		  `trial_limit` int(11) NOT NULL DEFAULT '0',
 		  `allow_signups` tinyint(4) NOT NULL DEFAULT '1',
 		  `expiration_number` int(10) unsigned NOT NULL,
-		  `expiration_period` enum('Day','Week','Month','Year') NOT NULL,
-		  PRIMARY KEY (`id`),
+		  `expiration_period` enum('Hour','Day','Week','Month','Year') NOT NULL,
+		  PRIMARY KEY  (`id`),
 		  KEY `allow_signups` (`allow_signups`),
 		  KEY `initial_payment` (`initial_payment`),
 		  KEY `name` (`name`)
@@ -278,10 +365,10 @@ function pmpro_db_delta()
 	//wp_pmpro_membership_orders
 	$sqlQuery = "
 		CREATE TABLE `" . $wpdb->pmpro_membership_orders . "` (
-		  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+		  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
 		  `code` varchar(32) NOT NULL,
 		  `session_id` varchar(64) NOT NULL DEFAULT '',
-		  `user_id` int(11) unsigned NOT NULL DEFAULT '0',
+		  `user_id` bigint(20) unsigned NOT NULL DEFAULT '0',
 		  `membership_id` int(11) unsigned NOT NULL DEFAULT '0',
 		  `paypal_token` varchar(64) NOT NULL DEFAULT '',
 		  `billing_name` varchar(128) NOT NULL DEFAULT '',
@@ -294,7 +381,7 @@ function pmpro_db_delta()
 		  `subtotal` varchar(16) NOT NULL DEFAULT '',
 		  `tax` varchar(16) NOT NULL DEFAULT '',
 		  `couponamount` varchar(16) NOT NULL DEFAULT '',
-		  `checkout_id` int(11) NOT NULL DEFAULT '0',
+		  `checkout_id` bigint(20) NOT NULL DEFAULT '0',
 		  `certificate_id` int(11) NOT NULL DEFAULT '0',
 		  `certificateamount` varchar(16) NOT NULL DEFAULT '',
 		  `total` varchar(16) NOT NULL DEFAULT '',
@@ -312,7 +399,7 @@ function pmpro_db_delta()
 		  `affiliate_id` varchar(32) NOT NULL,
 		  `affiliate_subid` varchar(32) NOT NULL,
 		  `notes` TEXT NOT NULL,
-		  PRIMARY KEY (`id`),
+		  PRIMARY KEY  (`id`),
 		  UNIQUE KEY `code` (`code`),
 		  KEY `session_id` (`session_id`),
 		  KEY `user_id` (`user_id`),
@@ -334,9 +421,9 @@ function pmpro_db_delta()
 	$sqlQuery = "
 		CREATE TABLE `" . $wpdb->pmpro_memberships_categories . "` (
 		  `membership_id` int(11) unsigned NOT NULL,
-		  `category_id` int(11) unsigned NOT NULL,
+		  `category_id` bigint(20) unsigned NOT NULL,
 		  `modified` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-		  UNIQUE KEY `membership_category` (`membership_id`,`category_id`),
+		  PRIMARY KEY (`membership_id`,`category_id`),
 		  UNIQUE KEY `category_membership` (`category_id`,`membership_id`)
 		);
 	";
@@ -346,9 +433,9 @@ function pmpro_db_delta()
 	$sqlQuery = "
 		CREATE TABLE `" . $wpdb->pmpro_memberships_pages . "` (
 		  `membership_id` int(11) unsigned NOT NULL,
-		  `page_id` int(11) unsigned NOT NULL,
+		  `page_id` bigint(20) unsigned NOT NULL,
 		  `modified` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-		  UNIQUE KEY `category_membership` (`page_id`,`membership_id`),
+		  PRIMARY KEY (`page_id`,`membership_id`),
 		  UNIQUE KEY `membership_page` (`membership_id`,`page_id`)
 		);
 	";
@@ -358,9 +445,9 @@ function pmpro_db_delta()
 	$sqlQuery = "
 		CREATE TABLE `" . $wpdb->pmpro_memberships_users . "` (
 		   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
-		   `user_id` int(11) unsigned NOT NULL,
+		   `user_id` bigint(20) unsigned NOT NULL,
 		   `membership_id` int(11) unsigned NOT NULL,
-		   `code_id` int(11) unsigned NOT NULL,
+		   `code_id` bigint(20) unsigned NOT NULL,
 		   `initial_payment` decimal(18,8) NOT NULL,
 		   `billing_amount` decimal(18,8) NOT NULL,
 		   `cycle_number` int(11) NOT NULL,
@@ -372,7 +459,7 @@ function pmpro_db_delta()
 		   `startdate` datetime NOT NULL,
 		   `enddate` datetime DEFAULT NULL,
 		   `modified` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-		   PRIMARY KEY (`id`),
+		   PRIMARY KEY  (`id`),
 		   KEY `membership_id` (`membership_id`),
 		   KEY `modified` (`modified`),
 		   KEY `code_id` (`code_id`),
@@ -386,12 +473,12 @@ function pmpro_db_delta()
 	//wp_pmpro_discount_codes
 	$sqlQuery = "		
 		CREATE TABLE `" . $wpdb->pmpro_discount_codes . "` (
-		  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+		  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
 		  `code` varchar(32) NOT NULL,
 		  `starts` date NOT NULL,
 		  `expires` date NOT NULL,
 		  `uses` int(11) NOT NULL,
-		  PRIMARY KEY (`id`),
+		  PRIMARY KEY  (`id`),
 		  UNIQUE KEY `code` (`code`),
 		  KEY `starts` (`starts`),
 		  KEY `expires` (`expires`)
@@ -402,7 +489,7 @@ function pmpro_db_delta()
 	//wp_pmpro_discount_codes_levels
 	$sqlQuery = "		
 		CREATE TABLE `" . $wpdb->pmpro_discount_codes_levels . "` (
-		  `code_id` int(11) unsigned NOT NULL,
+		  `code_id` bigint(20) unsigned NOT NULL,
 		  `level_id` int(11) unsigned NOT NULL,
 		  `initial_payment` decimal(18,8) NOT NULL DEFAULT '0.00',
 		  `billing_amount` decimal(18,8) NOT NULL DEFAULT '0.00',
@@ -412,8 +499,8 @@ function pmpro_db_delta()
 		  `trial_amount` decimal(18,8) NOT NULL DEFAULT '0.00',
 		  `trial_limit` int(11) NOT NULL DEFAULT '0',
 		  `expiration_number` int(10) unsigned NOT NULL,
-		  `expiration_period` enum('Day','Week','Month','Year') NOT NULL,
-		  PRIMARY KEY (`code_id`,`level_id`),
+		  `expiration_period` enum('Hour','Day','Week','Month','Year') NOT NULL,
+		  PRIMARY KEY  (`code_id`,`level_id`),
 		  KEY `initial_payment` (`initial_payment`)
 		);
 	";
@@ -422,12 +509,12 @@ function pmpro_db_delta()
 	//wp_pmpro_discount_codes_uses
 	$sqlQuery = "		
 		CREATE TABLE `" . $wpdb->pmpro_discount_codes_uses . "` (		  
-		  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-		  `code_id` int(10) unsigned NOT NULL,
-		  `user_id` int(10) unsigned NOT NULL,
-		  `order_id` int(10) unsigned NOT NULL,
+		  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+		  `code_id` bigint(20) unsigned NOT NULL,
+		  `user_id` bigint(20) unsigned NOT NULL,
+		  `order_id` bigint(20) unsigned NOT NULL,
 		  `timestamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-		  PRIMARY KEY (`id`),
+		  PRIMARY KEY  (`id`),
 		  KEY `user_id` (`user_id`),
 		  KEY `timestamp` (`timestamp`)
 		);
@@ -437,12 +524,26 @@ function pmpro_db_delta()
 	//pmpro_membership_levelmeta
 	$sqlQuery = "
 		CREATE TABLE `" . $wpdb->pmpro_membership_levelmeta . "` (
-		  `meta_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-		  `pmpro_membership_level_id` int(10) unsigned NOT NULL,
+		  `meta_id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+		  `pmpro_membership_level_id` int(11) unsigned NOT NULL,
 		  `meta_key` varchar(255) NOT NULL,
 		  `meta_value` longtext,
 		  PRIMARY KEY (`meta_id`),
 		  KEY `pmpro_membership_level_id` (`pmpro_membership_level_id`),
+		  KEY `meta_key` (`meta_key`)
+		);
+	";
+	dbDelta($sqlQuery);
+
+	//pmpro_membership_ordermeta
+	$sqlQuery = "
+		CREATE TABLE `" . $wpdb->pmpro_membership_ordermeta . "` (
+		  `meta_id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+		  `pmpro_membership_order_id` int(11) unsigned NOT NULL,
+		  `meta_key` varchar(255) NOT NULL,
+		  `meta_value` longtext,
+		  PRIMARY KEY (`meta_id`),
+		  KEY `pmpro_membership_order_id` (`pmpro_membership_order_id`),
 		  KEY `meta_key` (`meta_key`)
 		);
 	";
