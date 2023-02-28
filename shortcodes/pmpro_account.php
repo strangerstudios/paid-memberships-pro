@@ -70,12 +70,27 @@ function pmpro_shortcode_account($atts, $content=null, $code="")
 											$pmpro_member_action_links['renew'] = sprintf( '<a id="pmpro_actionlink-renew" href="%s">%s</a>', esc_url( add_query_arg( 'level', $level->id, pmpro_url( 'checkout', '', 'https' ) ) ), esc_html__( 'Renew', 'paid-memberships-pro' ) );
 										}
 
-										$order = new MemberOrder();
-										$order->getLastMemberOrder( $current_user->ID, 'success', $level->id );
-										if((isset($order->status) && $order->status == "success") && (isset($order->gateway) && in_array($order->gateway, array("authorizenet", "paypal", "stripe", "braintree", "payflow", "cybersource"))) && pmpro_isLevelRecurring($level)) {
-											$pmpro_member_action_links['update-billing'] = sprintf( '<a id="pmpro_actionlink-update-billing" href="%s">%s</a>', pmpro_url( 'billing', 'order_id=' . $order->id, 'https' ), esc_html__( 'Update Billing Info', 'paid-memberships-pro' ) );
+										// Check if we should show the update billing link.
+										// First, check if there is an active subscription for this level.
+										$subscriptions =  PMPro_Subscription::get_subscriptions_for_user( $current_user->ID, $level->id );
+										if ( ! empty( $subscriptions) ) {
+											// Let's get the first. There should not be more than one.
+											$subscription = $subscriptions[0];
+
+											// Check if this subscription is for the default gateaway (we can currently only update billing info for the default gateway).
+											if ( $subscription->get_gateway() == pmpro_getOption( 'gateway' ) ) {
+												// Check if the gateway supports updating billing info.
+												$gateway_obj = $subscription->get_gateway_object();
+												if ( ! empty( $gateway_obj) && method_exists( $gateway_obj, 'supportsPaymentMethodUpdates' ) && ! empty( $gateway_obj->supportsPaymentMethodUpdates() ) ) {
+													// Get the newest order for this subscription so that we can build the update billing link.
+													$newest_orders = $subscription->get_orders( array( 'limit' => 1 ) );
+													if ( ! empty( $newest_orders ) ) {
+														$order = $newest_orders[0];
+														$pmpro_member_action_links['update-billing'] = sprintf( '<a id="pmpro_actionlink-update-billing" href="%s">%s</a>', pmpro_url( 'billing', 'order_id=' . $order->id, 'https' ), esc_html__( 'Update Billing Info', 'paid-memberships-pro' ) );
+													}
+												}
+											}
 										}
-										unset( $order );
 
 										//To do: Only show CHANGE link if this level is in a group that has upgrade/downgrade rules
 										if(count($pmpro_levels) > 1 && !defined("PMPRO_DEFAULT_LEVEL")) {
