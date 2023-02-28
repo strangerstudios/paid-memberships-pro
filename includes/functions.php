@@ -4386,19 +4386,22 @@ function pmpro_activating_plugin( $plugin = null ) {
  * @return bool True if the stored and current URL match
  */
 function pmpro_compare_siteurl() {
-	$site_url = get_site_url();
-
+	$site_url = get_site_url( null, '', 'https' ); // Always get the https version of the site URL.=
 	$current_url = pmpro_getOption( 'last_known_url' );
 
-	if( empty( $current_url ) ) {
-		return false;
+	// If the current URL is http://, change it to https:// for backwards compatibility.
+	if ( 'http://' === substr( $current_url, 0, 7 ) ) {
+		$current_url = 'https://' . substr( $current_url, 7 );
+		pmpro_setOption( 'last_known_url', $current_url );
 	}
 
-	if( $site_url !== $current_url ) {
-		return false;
+	// If we don't have a current URL yet, set it to the site URL.
+	if ( empty( $current_url ) ) {
+		pmpro_setOption( 'last_known_url', $site_url );
+		$current_url = $site_url;
 	}
 
-	return true;
+	return ( $site_url === $current_url );
 }
 
 /**
@@ -4408,14 +4411,13 @@ function pmpro_compare_siteurl() {
  * @return bool True if the the site is in pause mode
  */
 function pmpro_is_paused() {
-	$pause_mode = pmpro_getOption( 'pause_mode' );
-	
-	//We haven't saved the option or it isn't in pause mode
-	if( empty( $pause_mode ) || $pause_mode === false ) {
-		return false;
+	// If the current site URL is different than the last known URL, then we are in pause mode.
+	if ( ! pmpro_compare_siteurl() ) {
+		return true;
 	}
 
-	return true;
+	// We should never filter this function. We will never change this function to do anything else without lots and lots of discussion and thought.
+	return false;
 }
 
 /**
@@ -4423,8 +4425,10 @@ function pmpro_is_paused() {
  *
  * @param $state bool true or false if in pause mode state
  * @since 2.10
+ * @deprecated TBD No longer using `pmpro_pause_mode` option
  * @return bool True if the option has been updated
  */
 function pmpro_set_pause_mode( $state ) {
+	_deprecated_function( __FUNCTION__, 'TBD' );
 	return pmpro_setOption( 'pause_mode', $state );
 }

@@ -93,26 +93,10 @@ add_action( 'admin_init', 'pmpro_init_site_health_integration' );
  * @since 2.10
  */
 function pmpro_site_url_check() {
-
-	//Checking if a stored site URL exists on first time installs
-	if ( empty( pmpro_getOption( 'last_known_url' ) ) ) {
-		pmpro_setOption( 'last_known_url', get_site_url() );
-	}
-
-	if ( ! pmpro_is_paused() ) {
-		//We aren't paused, check if the domains match
-		if( ! pmpro_compare_siteurl() ) {
-			//Site URL's don't match - enable pause mode
-			pmpro_setOption( 'pause_mode', true );				
-		} else {
-			//Site URL's do match - disable pause mode
-			pmpro_setOption( 'pause_mode', false );				
-		}
-	} else {
+	if ( pmpro_is_paused() ) {
 		//We are paused, show a notice.
 		add_action( 'admin_notices', 'pmpro_pause_mode_notice' );
 	}
-
 }
 add_action( 'admin_init', 'pmpro_site_url_check' );
 
@@ -127,8 +111,7 @@ function pmpro_handle_pause_mode_actions() {
 	if ( current_user_can( 'pmpro_manage_pause_mode' ) ) {
 		//We're attempting to reactivate all services.
 		if( ! empty( $_REQUEST['pmpro-reactivate-services'] ) ) {			
-			pmpro_setOption( 'last_known_url', get_site_url() );
-			pmpro_setOption( 'pause_mode', false );			
+			delete_option( 'pmpro_last_known_url' );
 		}
 	}
 
