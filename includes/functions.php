@@ -4389,17 +4389,15 @@ function pmpro_compare_siteurl() {
 	$site_url = get_site_url( null, '', 'https' ); // Always get the https version of the site URL.=
 	$current_url = pmpro_getOption( 'last_known_url' );
 
-	// If the current URL is http://, change it to https:// for backwards compatibility.
-	if ( 'http://' === substr( $current_url, 0, 7 ) ) {
-		$current_url = 'https://' . substr( $current_url, 7 );
-		pmpro_setOption( 'last_known_url', $current_url );
-	}
-
 	// If we don't have a current URL yet, set it to the site URL.
 	if ( empty( $current_url ) ) {
 		pmpro_setOption( 'last_known_url', $site_url );
 		$current_url = $site_url;
 	}
+
+	// We don't want to consider scheme, so just force https for this check.
+	$site_url = str_replace( 'http://', 'https://', $site_url );
+	$current_url = str_replace( 'http://', 'https://', $current_url );	
 
 	return ( $site_url === $current_url );
 }
