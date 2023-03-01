@@ -277,7 +277,18 @@ if ( ! empty( $_REQUEST['save'] ) ) {
 	if ( ! in_array( 'payment_type', $read_only_fields ) && isset( $_POST['payment_type'] ) ) {
 		$order->payment_type = sanitize_text_field( $_POST['payment_type'] );
 	}
-
+	if ( ! in_array( 'cardtype', $read_only_fields ) && isset( $_POST['cardtype'] ) ) {
+		$order->cardtype = sanitize_text_field( $_POST['cardtype'] );
+	}
+	if ( ! in_array( 'accountnumber', $read_only_fields ) && isset( $_POST['accountnumber'] ) ) {
+		$order->accountnumber = sanitize_text_field( $_POST['accountnumber'] );
+	}
+	if ( ! in_array( 'expirationmonth', $read_only_fields ) && isset( $_POST['expirationmonth'] ) ) {
+		$order->expirationmonth = sanitize_text_field( $_POST['expirationmonth'] );
+	}
+	if ( ! in_array( 'expirationyear', $read_only_fields ) && isset( $_POST['expirationyear'] ) ) {
+		$order->expirationyear = sanitize_text_field( $_POST['expirationyear'] );
+	}
 	if ( ! in_array( 'status', $read_only_fields ) && isset( $_POST['status'] ) ) {
 		$order->status = pmpro_sanitize_with_safelist( $_POST['status'], pmpro_getOrderStatuses() ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 	}
