@@ -136,11 +136,12 @@ function pmpro_cron_expiration_warnings()
 
 /*
 	Credit Card Expiring Warnings
+	@deprecated TBD
 */
-add_action("pmpro_cron_credit_card_expiring_warnings", "pmpro_cron_credit_card_expiring_warnings");
-function pmpro_cron_credit_card_expiring_warnings()
-{
+function pmpro_cron_credit_card_expiring_warnings() {
 	global $wpdb;
+
+	_deprecated_function( __FUNCTION__, 'TBD' );
 
 	//Don't let anything run if PMPro is paused
 	if( pmpro_is_paused() ) {
@@ -151,9 +152,7 @@ function pmpro_cron_credit_card_expiring_warnings()
 	pmpro_cleanup_memberships_users_table();
 
 	$next_month_date = date("Y-m-01", strtotime("+2 months", current_time("timestamp")));
-
-	//This needs to be reworked after removing reference to user meta
-	
+			
 	$sqlQuery = "SELECT mu.user_id
 					FROM  $wpdb->pmpro_memberships_users mu
 						LEFT JOIN $wpdb->usermeta um1 ON mu.user_id = um1.user_id
