@@ -671,8 +671,8 @@ function pmpro_ipnFailedPayment( $last_order ) {
 		$morder->billing->country = sanitize_text_field( $_POST['address_country_code'] );
 		$morder->billing->phone   = get_user_meta( $morder->user_id, "pmpro_bphone", true );
 
-		//get CC info that is on file
-		//Removed code that referenced user meta here
+		//Updates this order with the most recent orders payment method information and saves it. 
+		pmpro_update_order_with_recent_payment_method( $morder );
 	} elseif ( $last_order->gateway == "paypalexpress" ) {
 		$morder->billing = new stdClass();
 
@@ -683,9 +683,9 @@ function pmpro_ipnFailedPayment( $last_order ) {
 		$morder->billing->zip     = $last_order->billing->zip;
 		$morder->billing->country = $last_order->billing->country;
 		$morder->billing->phone   = $last_order->billing->phone;
-
-		//get CC info that is on file
-		//Removed code that referenced user meta here
+		
+		//Updates this order with the most recent orders payment method information and saves it. 
+		pmpro_update_order_with_recent_payment_method( $morder );
 	}
 
 	// Email the user and ask them to update their credit card information
@@ -760,8 +760,8 @@ function pmpro_ipnSaveOrder( $txn_id, $last_order ) {
 
 		//get card info if appropriate
 		if ( $last_order->gateway == "paypal" ) {   //website payments pro
-			//get CC info that is on file
-			//Removed code that referenced user meta here
+			//Updates this order with the most recent orders payment method information and saves it. 
+			pmpro_update_order_with_recent_payment_method( $morder );
 		}
 
 		//figure out timestamp or default to none (today)

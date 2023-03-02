@@ -179,8 +179,8 @@ if ( $webhookNotification->kind === Braintree_WebhookNotification::SUBSCRIPTION_
 	$morder->PhoneNumber = $old_order->billing->phone;
 	$morder->billing->phone   = $old_order->billing->phone;
 	
-	//get CC info that is on file
-	//Removed code that referenced user meta here
+	//Updates this order with the most recent orders payment method information and saves it. 
+	pmpro_update_order_with_recent_payment_method( $morder );
 	
 	//save
 	$morder->status = "success";
@@ -273,8 +273,8 @@ if ( $webhookNotification->kind === Braintree_WebhookNotification::SUBSCRIPTION_
 	
 	$morder->billing->phone = $old_order->billing->phone;
 	
-	//get CC info that is on file
-	//Removed code that referenced user meta here
+	//Updates this order with the most recent orders payment method information and saves it. 
+	pmpro_update_order_with_recent_payment_method( $morder );
 	
 	// Email the user and ask them to update their credit card information
 	$pmproemail = new \PMProEmail();
@@ -356,8 +356,8 @@ if ( $webhookNotification->kind === Braintree_WebhookNotification::SUBSCRIPTION_
 	
 	$morder->billing->phone = $old_order->billing->phone;
 	
-	//get CC info that is on file
-	//Removed code that referenced user meta here
+	//Updates this order with the most recent orders payment method information and saves it. 
+	pmpro_update_order_with_recent_payment_method( $morder );
 	
 	// Email the user and ask them to update their credit card information
 	$pmproemail = new \PMProEmail();
