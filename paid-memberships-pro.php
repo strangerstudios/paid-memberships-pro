@@ -53,9 +53,10 @@ require_once( PMPRO_DIR . '/classes/class-pmpro-admin-activity-email.php' );    
 require_once( PMPRO_DIR . '/includes/filters.php' );                // filters, hacks, etc, moved into the plugin
 require_once( PMPRO_DIR . '/includes/reports.php' );                // load reports for admin (reports may also include tracking code, etc)
 
-require_once( PMPRO_DIR . '/adminpages/reports/logins.php' );		// load the Logins report
-require_once( PMPRO_DIR . '/adminpages/reports/memberships.php' );		// load the Memberships report
-require_once( PMPRO_DIR . '/adminpages/reports/sales.php' );		// load the Sales report
+require_once( PMPRO_DIR . '/adminpages/reports/logins.php' );			 // load the Logins report
+require_once( PMPRO_DIR . '/adminpages/reports/memberships.php' );		 // load the Memberships report
+require_once( PMPRO_DIR . '/adminpages/reports/members-per-level.php' ); // load the Members Per Level report
+require_once( PMPRO_DIR . '/adminpages/reports/sales.php' );			 // load the Sales report
 
 require_once( PMPRO_DIR . '/includes/admin.php' );                  // admin notices and functionality
 require_once( PMPRO_DIR . '/includes/adminpages.php' );             // dashboard pages
