@@ -906,8 +906,10 @@ add_filter( 'authenticate', 'pmpro_authenticate_username_password', 30, 3);
  *
  * @since 2.3
  *
+ * @param string $username The username of the user trying to log in.
+ * @param WP_Error|null $error Error object. Added in 2.10.
  */
-function pmpro_login_failed( $username, $error ) {
+function pmpro_login_failed( $username, $error = null ) {
 
 	$login_page = pmpro_getOption( 'login_page_id' );
 	if ( empty( $login_page ) ) {
