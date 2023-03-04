@@ -157,7 +157,7 @@ Not sure? You can find out by doing a bit a research.
 
 == Changelog ==
 = 2.10.3 - 2023-03-02 =
-* BUG FIX: Fixed issue with alternative login methods that call the wp_failed_login hook with only 1 parameter.
+* BUG FIX: Fixed issue with alternative login methods that call the wp_login_failed hook with only 1 parameter.
 
 = 2.10.2 - 2023-02-28 =
 * BUG FIX: Fixed issue where the "Site URL Changed" message would show up on sites where the site_url wasn't actually changed. We are now ignoring the scheme (http/https) when checking.
