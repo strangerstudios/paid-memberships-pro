@@ -408,7 +408,7 @@ class PMPro_Field {
 	}
 
 	// Save function for users table field.
-	function saveUsersTable( $user_id, $name, $value ) {
+	static function saveUsersTable( $user_id, $name, $value ) {
 		// Special sanitization needed for certain user fields.
 		if ( $name === 'user_url' ) {
 			$value = esc_url_raw( $value );
@@ -422,7 +422,7 @@ class PMPro_Field {
 	}
 
 	// Save function for user taxonomy field.
-	function saveTermRelationshipsTable( $user_id, $name, $value ) {
+	static function saveTermRelationshipsTable( $user_id, $name, $value ) {
 		// Get the taxonomy to save for.
 		if ( isset( $this->taxonomy ) ) {
 			$taxonomy = $this->taxonomy;
@@ -451,7 +451,7 @@ class PMPro_Field {
 	}
 
 	//save function for files
-	function saveFile($user_id, $name, $value)
+	static function saveFile($user_id, $name, $value)
 	{			
 		//setup some vars
 		$file = array_map( 'sanitize_text_field', $_FILES[$name] );
@@ -631,7 +631,7 @@ class PMPro_Field {
 	}
 
     //fix date then update user meta
-    function saveDate($user_id, $name, $value)
+    static function saveDate($user_id, $name, $value)
     {
         if ( isset( $this->sanitize ) && true === $this->sanitize ) {
 
