@@ -2447,7 +2447,7 @@ class PMProGateway_stripe extends PMProGateway {
 						} else {
 							$application_fee_percentage = self::get_application_fee_percentage();
 							if ( ! empty( $application_fee_percentage ) ) {
-								echo sprintf( esc_html__( 'Note: You are using the free Stripe payment gateway integration. This includes an additional %s fee for payment processing. This fee is removed by activating a premium PMPro license.', 'paid-memberships-pro' ), intval( $application_fee_percentage ) . '%' );
+								echo esc_html__( sprintf( 'Note: You are using the free Stripe payment gateway integration. This includes an additional %s fee for payment processing. This fee is removed by activating a premium PMPro license.', intval( $application_fee_percentage ) . '%', 'paid-memberships-pro' ) );
 							} else {
 								esc_html_e( 'Note: You are using the free Stripe payment gateway integration. There is no additional fee for payment processing above what Stripe charges.', 'paid-memberships-pro' );
 							}
