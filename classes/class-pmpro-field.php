@@ -730,10 +730,10 @@ class PMPro_Field {
 				$r .= '<option value="' . 
 					
 					
-					($ovalue) . '" ';
+					trim( $ovalue ) . '" ';
 				if(!empty($this->multiple) && in_array($ovalue, $value))
 					$r .= 'selected="selected" ';
-				elseif($ovalue == $value)
+				elseif( trim( $ovalue ) == trim( $value ) )
 					$r .= 'selected="selected" ';
 				$r .= '>' . $option . "</option>\n";
 			}
