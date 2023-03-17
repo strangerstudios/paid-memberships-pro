@@ -156,6 +156,10 @@ function pmpro_check_for_deprecated_add_ons() {
 		'pmpro-better-logins-report' => array(
 			'file' => 'pmpro-better-logins-report.php',
 			'label' => 'Better Logins Report'
+		),
+		'pmpro-register-helper' => array(
+			'file' => 'pmpro-register-helper.php',
+			'label' => 'Register Helper'
 		)
 	);
 	
