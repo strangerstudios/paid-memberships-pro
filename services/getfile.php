@@ -25,7 +25,7 @@
 	global $wpdb;
 
 	// Get the file path.
-	$uri = sanitize_text_field( $_SERVER['REQUEST_URI'] );
+	$uri = sanitize_url( $_SERVER['REQUEST_URI'] );
 
 	// Remove the query string from the path.
 	$uri_parts = explode( '?', $uri );
