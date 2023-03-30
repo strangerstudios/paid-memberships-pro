@@ -906,8 +906,10 @@ add_filter( 'authenticate', 'pmpro_authenticate_username_password', 30, 3);
  *
  * @since 2.3
  *
+ * @param string $username The username of the user trying to log in.
+ * @param WP_Error|null $error Error object. Added in 2.10.
  */
-function pmpro_login_failed( $username, $error ) {
+function pmpro_login_failed( $username, $error = null ) {
 
 	$login_page = pmpro_getOption( 'login_page_id' );
 	if ( empty( $login_page ) ) {
@@ -923,8 +925,14 @@ function pmpro_login_failed( $username, $error ) {
 
 	if ( $referrer && ! strstr( $referrer, 'wp-login' ) && ! strstr( $referrer, 'wp-admin' ) ) {
 		if ( ! strstr( $referrer, '?login=failed') ) {
-			$error_code = $error->get_error_code();
-			wp_redirect( add_query_arg( array( 'action'=> $error_code, 'username' => sanitize_text_field( $username ), 'redirect_to' => urlencode( $redirect_to ) ), pmpro_login_url() ) );		
+			// If an error was passed, get the code from there.
+			if ( is_wp_error( $error ) ) {
+				$error_code = $error->get_error_code();
+			} else {
+				$error_code = 'failed';
+			}
+			
+			wp_redirect( add_query_arg( array( 'action'=> $error_code, 'username' => sanitize_text_field( $username ), 'redirect_to' => urlencode( $redirect_to ) ), pmpro_login_url() ) );	
 		} else {
 			wp_redirect( add_query_arg( 'action', 'loggedout', pmpro_login_url() ) );
 		}
