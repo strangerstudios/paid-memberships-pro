@@ -4,7 +4,7 @@ Tags: memberships, members, subscriptions, ecommerce, user registration, member,
 Requires at least: 5.2
 Tested up to: 6.2
 Requires PHP: 5.6
-Stable tag: 2.10.1
+Stable tag: 2.10.3
 
 WordPress membership plugin: restrict content, accept member subscriptions with recurring payment. Includes user registration, login, & profile fields
 
@@ -156,6 +156,13 @@ Not sure? You can find out by doing a bit a research.
 9. Membership Account page, display all sections or show specific sections using shortcode attributes.
 
 == Changelog ==
+= 2.10.3 - 2023-03-02 =
+* BUG FIX: Fixed issue with alternative login methods that call the wp_login_failed hook with only 1 parameter.
+
+= 2.10.2 - 2023-02-28 =
+* BUG FIX: Fixed issue where the "Site URL Changed" message would show up on sites where the site_url wasn't actually changed. We are now ignoring the scheme (http/https) when checking.
+* REFACTOR: Removed the pmpro_is_paused option and deprecated the pmpro_set_pause_mode() function. Now checking specifically for site_url changes in real time during admin_init. We no longer intend to expand on the "pause mode" concept or otherwise try to align with the WP_ENVIRONMENT_TYPE values.
+
 = 2.10.1 - 2023-02-21 =
 * BUG FIX/ENHANCEMENT: Changed how reports are loaded to avoid fatal errors if PMPro had an incomplete update.
 * BUG FIX/ENHANCEMENT: Fixed escaping of the discount code message to allow the strong tag.
