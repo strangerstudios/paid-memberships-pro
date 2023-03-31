@@ -137,8 +137,14 @@ function pmpro_register_helper_deprecated() {
 }
 add_action( 'plugins_loaded', 'pmpro_register_helper_deprecated', 20 );
 
-// Check if installed, deactivate it and show a notice now.
-function pmpro_check_for_deprecated_add_ons() {
+/**
+ * Get a list of deprecated PMPro Add Ons.
+ *
+ * @since TBD
+ *
+ * @return array Add Ons that are deprecated.
+ */
+function pmpro_get_deprecated_add_ons() {
 
 	$deprecated = array(
 		'pmpro-member-history' => array(
@@ -163,10 +169,14 @@ function pmpro_check_for_deprecated_add_ons() {
 	
 	// If the list is empty or not an array, just bail.
 	if ( empty( $deprecated ) || ! is_array( $deprecated ) ) {
-		return;
+		return array();
 	}
-	
-	$deprecated_active = array();
+	return $deprecated;
+}
+
+// Check if installed, deactivate it and show a notice now.
+function pmpro_check_for_deprecated_add_ons() {
+	$deprecated = pmpro_get_deprecated_add_ons();
 	foreach( $deprecated as $key => $values ) {
 		$path = '/' . $key . '/' . $values['file'];
 		if ( file_exists( WP_PLUGIN_DIR . $path ) ) {
@@ -180,7 +190,7 @@ function pmpro_check_for_deprecated_add_ons() {
 	}
 
 	// If any deprecated add ons are active, show warning.
-	if ( is_array( $deprecated_active ) && ! empty( $deprecated_active ) ) {
+	if ( ! empty( $deprecated_active ) && is_array( $deprecated_active ) ) {
 		// Only show on certain pages.
 		if ( ! isset( $_REQUEST['page'] ) || strpos( sanitize_text_field( $_REQUEST['page'] ), 'pmpro' ) === false  ) {
 			return;
@@ -201,6 +211,28 @@ function pmpro_check_for_deprecated_add_ons() {
 	}
 }
 add_action( 'admin_notices', 'pmpro_check_for_deprecated_add_ons' );
+
+/**
+ * Remove the "Activate" link on the plugins page for deprecated add ons.
+ *
+ * @since TBD
+ *
+ * @param array  $actions An array of plugin action links.
+ * @param string $plugin_file Path to the plugin file relative to the plugins directory.
+ * @return array $actions An array of plugin action links.
+ */
+ function pmpro_deprecated_add_ons_action_links( $actions, $plugin_file ) {
+	$deprecated = pmpro_get_deprecated_add_ons();
+
+	foreach( $deprecated as $key => $values ) {
+		if ( $plugin_file == $key . '/' . $values['file'] ) {
+			unset( $actions['activate'] );
+		}
+	}
+
+	return $actions;
+}
+add_filter( 'plugin_action_links', 'pmpro_deprecated_add_ons_action_links', 10, 2 );
 
 /**
  * The 2Checkout gateway was deprecated in v2.6.
