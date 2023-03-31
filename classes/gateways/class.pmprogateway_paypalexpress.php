@@ -283,10 +283,12 @@
 					$username = trim(sanitize_text_field($_REQUEST['username']));
 				else
 					$username = "";
-				if(isset($_REQUEST['password']))
-					$password = $_REQUEST['password'];
-				else
+				if(isset($_REQUEST['password'])) {
+					// Can't sanitize the password. Be careful.
+					$password = $_REQUEST['password']; //phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+				} else {
 					$password = "";
+				}
 				if(isset($_REQUEST['bemail']))
 					$bemail = sanitize_email($_REQUEST['bemail']);
 				else

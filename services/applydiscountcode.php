@@ -1,12 +1,7 @@
-<?php
-	global $isapage;
-	$isapage = true;
-
+<?php	
 	//in case the file is loaded directly
-	if(!defined("ABSPATH"))
-	{
-		define('WP_USE_THEMES', false);
-		require_once(dirname(__FILE__) . '/../../../../wp-load.php');
+	if( ! defined( 'ABSPATH' ) ) {
+		exit;
 	}
 
 	//vars
@@ -40,13 +35,13 @@
 	if($codecheck[0] == false)
 	{
 		//uh oh. show code error
-		echo pmpro_no_quotes($codecheck[1]);
+		echo esc_html( pmpro_no_quotes($codecheck[1]) );
 		?>
 		<script>
-			jQuery('#<?php echo $msgfield?>').show();
-			jQuery('#<?php echo $msgfield?>').removeClass('pmpro_success');
-			jQuery('#<?php echo $msgfield?>').addClass('pmpro_error');
-			jQuery('#<?php echo $msgfield?>').addClass('pmpro_discount_code_msg');
+			jQuery('#<?php echo esc_attr( $msgfield ); ?>').show();
+			jQuery('#<?php echo esc_attr( $msgfield ); ?>').removeClass('pmpro_success');
+			jQuery('#<?php echo esc_attr( $msgfield ); ?>').addClass('pmpro_error');
+			jQuery('#<?php echo esc_attr( $msgfield ); ?>').addClass('pmpro_discount_code_msg');
 
 			var code_level;
 			code_level = false;
@@ -68,7 +63,7 @@
 				ON cl.level_id = l.id 
 			LEFT JOIN $wpdb->pmpro_discount_codes dc
 				ON dc.id = cl.code_id WHERE dc.code = '" . esc_sql( $discount_code ) . "'
-				AND cl.level_id IN (" . implode( ',', array_map( 'esc_sql', $level_ids ) ) . ")";
+				AND cl.level_id IN (" . implode( ',', array_map( 'intval', $level_ids ) ) . ")";
 	$code_levels = $wpdb->get_results($sqlQuery);
 
 	// ... and then get prices for the remaining levels.
@@ -77,7 +72,7 @@
 		$levels_found[] = intval( $code_level->level_id );
 	}
 	if ( ! empty( array_diff( $level_ids, $levels_found ) ) ) {
-		$sqlQuery = "SELECT * FROM $wpdb->pmpro_membership_levels WHERE id IN (" . implode( ',', array_map( 'esc_sql', array_diff( $level_ids, $levels_found ) ) ) . ")";
+		$sqlQuery = "SELECT * FROM $wpdb->pmpro_membership_levels WHERE id IN (" . implode( ',', array_map( 'intval', array_diff( $level_ids, $levels_found ) ) ) . ")";
 		$code_levels = array_merge( $code_levels, $wpdb->get_results($sqlQuery) );
 	}
 
@@ -90,7 +85,7 @@
 		$code_levels = apply_filters("pmpro_discount_code_level", $code_levels, $discount_code_id);
 	}
 
-	printf(__("The %s code has been applied to your order. ", 'paid-memberships-pro' ), $discount_code);
+	echo esc_html( sprintf( __( "The %s code has been applied to your order. ", 'paid-memberships-pro' ), $discount_code ) );
 
 	$combined_level = null;
 	foreach ( $code_levels as $code_level ) {
@@ -107,19 +102,19 @@
 	<script>
 		var code_level = <?php echo json_encode($combined_level); ?>;
 
-		jQuery('#<?php echo $msgfield?>').show();
-		jQuery('#<?php echo $msgfield?>').removeClass('pmpro_error');
-		jQuery('#<?php echo $msgfield?>').addClass('pmpro_success');
-		jQuery('#<?php echo $msgfield?>').addClass('pmpro_discount_code_msg');
+		jQuery('#<?php echo esc_attr( $msgfield ); ?>').show();
+		jQuery('#<?php echo esc_attr( $msgfield ); ?>').removeClass('pmpro_error');
+		jQuery('#<?php echo esc_attr( $msgfield ); ?>').addClass('pmpro_success');
+		jQuery('#<?php echo esc_attr( $msgfield ); ?>').addClass('pmpro_discount_code_msg');
 
 		if (jQuery("#discount_code").length) {
-			jQuery('#discount_code').val('<?php echo $discount_code?>');
+			jQuery('#discount_code').val('<?php echo esc_attr( $discount_code );?>');
 		} else {
 			jQuery('<input>').attr({
 				type: 'hidden',
 				id: 'discount_code',
 				name: 'discount_code',
-				value: '<?php echo $discount_code?>'
+				value: '<?php echo esc_attr( $discount_code );?>'
 			}).appendTo('#pmpro_form');
 		}
 

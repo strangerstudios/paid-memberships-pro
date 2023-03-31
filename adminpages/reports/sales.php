@@ -282,7 +282,7 @@ function pmpro_report_sales_page()
 		'discount_code' => $discount_code,
 		'startdate' => $startdate,
 		'enddate' => $enddate,
- 		'l' => $l,
+		'l' => $l,
 	);
 	$dates = pmpro_report_sales_data( $report_data_args );
 	// Set the array keys to the dates.
@@ -867,7 +867,12 @@ function pmpro_getSales( $period = 'all time', $levels = 'all', $type = 'all' ) 
 
 	// Restrict by level.
 	if( ! empty( $levels ) && $levels != 'all' ) {
-		$sqlQuery .= "AND mo1.membership_id IN(" . esc_sql( $levels ) . ") ";
+		// Let's make sure that each ID inside of $levels is an integer.
+		if ( ! is_array($levels) ) {
+			$levels = explode( ',', $levels );
+		}
+		$levels = implode( ',', array_map( 'intval', $levels ) );
+		$sqlQuery .= "AND mo1.membership_id IN(" . $levels . ") ";
 	}		
 	
 	// Filter to renewals or new orders only. 	
@@ -931,11 +936,6 @@ function pmpro_get_prices_paid( $period, $count = NULL ) {
 	// Build query.
 	global $wpdb;
 	$sql_query = "SELECT ROUND(total,8) as rtotal, COUNT(*) as num FROM $wpdb->pmpro_membership_orders WHERE total > 0 AND status NOT IN('refunded', 'review', 'token', 'error') AND timestamp >= '" . esc_sql( $startdate ) . "' AND gateway_environment = '" . esc_sql( $gateway_environment ) . "' ";
-
-	// Restrict by level.
-	if ( ! empty( $levels ) ) {
-		$sql_query .= 'AND membership_id IN(' . esc_sql( $levels ) . ') ';
-	}
 
 	$sql_query .= ' GROUP BY rtotal ORDER BY num DESC ';
 
@@ -1058,8 +1058,14 @@ function pmpro_getRevenue( $period, $levels = NULL, $type = 'all' ) {
 					AND mo1.gateway_environment = '" . esc_sql( $gateway_environment ) . "' ";
 
 	// Restrict by level.
-	if(!empty($levels))
-		$sqlQuery .= "AND mo1.membership_id IN(" . esc_sql( $levels ) . ") ";
+	if ( ! empty( $levels ) ) {
+		// Let's make sure that each ID inside of $levels is an integer.
+		if ( ! is_array($levels) ) {
+			$levels = explode( ',', $levels );
+		}
+		$levels = implode( ',', array_map( 'intval', $levels ) );
+		$sqlQuery .= "AND mo1.membership_id IN(" . $levels . ") ";
+	}
 		
 	// Filter to renewals or new orders only. 	
 	if ( $type == 'renewals' ) {
@@ -1104,7 +1110,7 @@ function pmpro_get_revenue_between_dates( $start_date, $end_date = '', $level_id
 		$sql_query .= " AND timestamp <= '" . esc_sql( $end_date ) . " 23:59:59'";
 	}
 	if ( ! empty( $level_ids ) ) {
-		$sql_query .= ' AND membership_id IN(' . implode( ', ', array_map( 'esc_sql', $level_ids ) ) . ') '; 
+		$sql_query .= ' AND membership_id IN(' . implode( ', ', array_map( 'intval', $level_ids ) ) . ') '; 
 	}
 	return $wpdb->get_var($sql_query);
 }

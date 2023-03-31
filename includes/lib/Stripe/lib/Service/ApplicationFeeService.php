@@ -1,5 +1,7 @@
 <?php
 
+// File generated from our OpenAPI spec
+
 namespace Stripe\Service;
 
 class ApplicationFeeService extends \Stripe\Service\AbstractService
@@ -13,7 +15,7 @@ class ApplicationFeeService extends \Stripe\Service\AbstractService
      *
      * @throws \Stripe\Exception\ApiErrorException if the request fails
      *
-     * @return \Stripe\Collection
+     * @return \Stripe\Collection<\Stripe\ApplicationFee>
      */
     public function all($params = null, $opts = null)
     {
@@ -33,7 +35,7 @@ class ApplicationFeeService extends \Stripe\Service\AbstractService
      *
      * @throws \Stripe\Exception\ApiErrorException if the request fails
      *
-     * @return \Stripe\Collection
+     * @return \Stripe\Collection<\Stripe\ApplicationFeeRefund>
      */
     public function allRefunds($parentId, $params = null, $opts = null)
     {

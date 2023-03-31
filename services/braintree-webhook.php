@@ -7,14 +7,9 @@
 
 use Braintree\WebhookNotification as Braintree_WebhookNotification;
 
-// If loading directly, make sure we return a 200 HTTP status
-global $isapage;
-$isapage = true;
-
 //in case the file is loaded directly
-if ( ! defined( "ABSPATH" ) ) {
-	define( 'WP_USE_THEMES', false );
-	require_once( dirname( __FILE__ ) . '/../../../../wp-load.php' );
+if( ! defined( 'ABSPATH' ) ) {
+	exit;
 }
 
 //globals

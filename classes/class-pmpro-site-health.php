@@ -109,6 +109,18 @@ class PMPro_Site_Health {
 					'label' => __( 'Library Conflicts', 'paid-memberships-pro' ),
 					'value' => self::get_library_conflicts(),
 				],
+				'pmpro-current-site-url' => [
+					'label' => __( 'Current Site URL', 'paid-memberships-pro' ),
+					'value' => get_site_url(),
+				],
+				'pmpro-recorded-site-url' => [
+					'label' => __( 'Last Known Site URL', 'paid-memberships-pro' ),
+					'value' => pmpro_getOption( 'last_known_url' ),
+				],
+				'pmpro-pause-mode' => [
+					'label' => __( 'Pause Mode', 'paid-memberships-pro' ),
+					'value' => self::get_pause_mode_state(),
+				],
 			],
 		];
 
@@ -306,7 +318,7 @@ class PMPro_Site_Health {
 
 		WP_Filesystem();
 
-		if ( ! $wp_filesystem ) {
+        if ( ! $wp_filesystem || ! is_object($wp_filesystem) || ( is_wp_error($wp_filesystem->errors) && $wp_filesystem->errors->has_errors() ) ) {
 			return new WP_Error( 'access-denied', __( 'Unable to verify', 'paid-memberships-pro' ) );
 		}
 
@@ -477,7 +489,7 @@ class PMPro_Site_Health {
 
 		WP_Filesystem();
 
-		if ( ! $wp_filesystem ) {
+        if ( ! $wp_filesystem || ! is_object($wp_filesystem) || ( is_wp_error($wp_filesystem->errors) && $wp_filesystem->errors->has_errors() ) ) {
 			return __( 'Unable to access .htaccess file', 'paid-memberships-pro' );
 		}
 
@@ -598,5 +610,24 @@ class PMPro_Site_Health {
 		}
 
 		return $constants_formatted;
+	}
+
+	/**
+	 * Get the pause mode state
+	 *
+	 * @since 2.10
+	 *
+	 * @return string What state is pause mode in 
+	 */
+	public function get_pause_mode_state() {
+
+		$pause_mode = pmpro_is_paused();
+
+		if( $pause_mode ) {
+			return __( 'Enabled', 'paid-memberships-pro' );
+		}
+
+		return __( 'Disabled', 'paid-memberships-pro' );
+
 	}
 }

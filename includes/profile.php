@@ -56,7 +56,7 @@ function pmpro_membership_level_profile_fields($user)
 
 			$selected_expires_day =  date( 'j', $end_date ? $user->membership_level->enddate : current_time('timestamp') );
 			$selected_expires_month =  date( 'm', $end_date ? $user->membership_level->enddate : current_time('timestamp') );
-			$selected_expires_year =  date( 'Y', $end_date ? $user->membership_level->enddate : current_time('timestamp') );
+			$selected_expires_year =  date( 'Y', $end_date ? $user->membership_level->enddate : current_time('timestamp') + YEAR_IN_SECONDS);
 			$selected_expires_hour = date( 'H', $end_date ? $user->membership_level->enddate : current_time('timestamp') );
 
 			$selected_expires_minute = date( 'i', $end_date ? $user->membership_level->enddate : current_time('timestamp') );

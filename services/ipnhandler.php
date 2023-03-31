@@ -1,11 +1,7 @@
 <?php
 //in case the file is loaded directly
-if ( ! defined( "ABSPATH" ) ) {
-	global $isapage;
-	$isapage = true;
-
-	define( 'WP_USE_THEMES', false );
-	require_once( dirname( __FILE__ ) . '/../../../../wp-load.php' );
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
 }
 
 //uncomment to log requests in logs/ipn.txt
@@ -32,11 +28,10 @@ $item_name              = pmpro_getParam( "item_name", "POST" );
 $item_number            = pmpro_getParam( "item_number", "POST" );
 $initial_payment_txn_id = pmpro_getParam( "initial_payment_txn_id", "POST" );
 $initial_payment_status = strtolower( pmpro_getParam( "initial_payment_status", "POST" ) );
-$payment_status         = pmpro_getParam( "payment_status", "POST" );
 $payment_amount         = pmpro_getParam( "payment_amount", "POST" );
 $payment_currency       = pmpro_getParam( "payment_currency", "POST" );
 $receiver_email         = pmpro_getParam( "receiver_email", "POST", '', 'sanitize_email' );
-$refund_amount         = pmpro_getParam( "refund_amount", "POST" );
+$refund_amount          = pmpro_getParam( "refund_amount", "POST" );
 $business_email         = pmpro_getParam( "business", "POST", '', 'sanitize_email'  );
 $payer_email            = pmpro_getParam( "payer_email", "POST", '', 'sanitize_email'  );
 $recurring_payment_id   = pmpro_getParam( "recurring_payment_id", "POST" );
@@ -157,9 +152,10 @@ if ( $txn_type == "subscr_payment" ) {
 		 * @param array List of statuses to be treated as failures.
 		 */
 		$failed_payment_statuses = apply_filters( 'pmpro_paypal_renewal_failed_statuses', array( 'Failed', 'Voided', 'Denied', 'Expired' ) );
+		$failed_payment_statuses = array_map( 'strtolower', $failed_payment_statuses );
 
 		//subscription payment, completed or failure?
-		if ( $payment_status == "Completed" ) {
+		if ( $payment_status == "completed" ) {
 			pmpro_ipnSaveOrder( $txn_id, $last_subscription_order );
 		} elseif ( in_array( $payment_status, $failed_payment_statuses ) ) {
 			pmpro_ipnFailedPayment( $last_subscription_order );
@@ -218,9 +214,10 @@ if ( $txn_type == "recurring_payment" ) {
 		 * @param array List of statuses to be treated as failures.		 
 		 */
 		$failed_payment_statuses = apply_filters( 'pmpro_paypal_renewal_failed_statuses', array( 'Failed', 'Voided', 'Denied', 'Expired' ) );
+		$failed_payment_statuses = array_map( 'strtolower', $failed_payment_statuses );
 
 		//subscription payment, completed or failure?
-		if ( $payment_status == "Completed" ) {
+		if ( $payment_status == "completed" ) {
 			pmpro_ipnSaveOrder( $txn_id, $last_subscription_order );
 		} elseif ( in_array( $payment_status, $failed_payment_statuses ) ) {
 			pmpro_ipnFailedPayment( $last_subscription_order );
@@ -240,7 +237,6 @@ if ( $txn_type == "recurring_payment" ) {
  * @param array List of txn types to be treated as failures.
  */
 $failed_payment_txn_types = apply_filters( 'pmpro_paypal_renewal_failed_txn_types', array(
-	'recurring_payment_suspended_due_to_max_failed_payment', // && 'suspended' == $profile_status
 	'recurring_payment_suspended',
 	'recurring_payment_skipped',
 	'subscr_failed'
@@ -259,7 +255,7 @@ if ( in_array( $txn_type, $failed_payment_txn_types ) ) {
 }
 
 // Recurring Payment Profile Cancelled or Failed (PayPal Express)
-if ( $txn_type == 'recurring_payment_profile_cancel' || $txn_type == 'recurring_payment_failed' ) {
+if ( $txn_type == 'recurring_payment_profile_cancel' || $txn_type == 'recurring_payment_failed' || $txn_type == 'recurring_payment_suspended_due_to_max_failed_payment' ) {
 	//find last order
 	$last_subscription_order = new MemberOrder();
 	if ( $last_subscription_order->getLastMemberOrderBySubscriptionTransactionID( $recurring_payment_id ) == false ) {

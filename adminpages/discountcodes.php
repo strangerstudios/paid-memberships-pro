@@ -744,7 +744,7 @@
 
 			$sqlQuery .= "ORDER BY id DESC ";
 
-			$sqlQuery .= "LIMIT " . esc_sql( $start ) . "," .  esc_sql( $limit );
+			$sqlQuery .= "LIMIT " . (int) $start . "," .  (int) $limit;
 
 			$codes = $wpdb->get_results($sqlQuery, OBJECT);
 
@@ -927,7 +927,7 @@
 									if($code->uses > 0)
 										echo "<strong>" . (int)$uses . "</strong>/" . $code->uses;
 									else
-										echo "<strong>" . (int)$uses . "</strong>/unlimited";
+										echo "<strong>" . (int)$uses . "</strong>/" . __( 'unlimited', 'paid-memberships-pro' );
 								?>
 							</td>
 							<td class="column-levels" data-colname="<?php esc_attr_e( 'Levels', 'paid-memberships-pro' ); ?>">
@@ -953,7 +953,7 @@
 									if( $level_names ) {
 										echo implode( ', ', $level_names );
 									} else {
-										echo 'None';
+										echo __( 'None', 'paid-memberships-pro' );
 									}
 								?>
 							</td>
