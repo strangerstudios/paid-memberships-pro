@@ -459,13 +459,13 @@ function pmpro_report_sales_page()
 	// For the row data, we need to initialize this with the dates being reported and some other info.
 	foreach ( $dates as $date => $data ) {
 		$google_chart_row_data[ $date ] = array(); // Will have array keys 'date', 'tooltip', and a nested array 'data'.
-		$google_chart_row_data[ $date ][ 'date' ] = date_i18n( $axis_date_format, strtotime( $date ) );
+		$google_chart_row_data[ $date ][ 'date' ] = is_numeric( $date ) ? $date : date_i18n( $axis_date_format, strtotime( $date ) ); // is_numeric() check for YEAR report unit.
 
 		// Build the tooltip.
 		$google_chart_row_data[ $date ][ 'tooltip' ] = '<div style="padding:15px; font-size: 14px; line-height: 20px; color: #000000;">'; // Set up div.
 		// Add the date.
 		$google_chart_row_data[ $date ][ 'tooltip' ] .= '<strong>';
-		$google_chart_row_data[ $date ][ 'tooltip' ] .= date_i18n( $tooltip_date_format, strtotime( $date ) );
+		$google_chart_row_data[ $date ][ 'tooltip' ] .= is_numeric( $date ) ? $date : date_i18n( $tooltip_date_format, strtotime( $date ) );
 		$google_chart_row_data[ $date ][ 'tooltip' ] .= '</strong><br />';
 		// Set up a UL for the data.
 		$google_chart_row_data[ $date ][ 'tooltip' ] .= '<ul style="margin-bottom: 0px;">';
