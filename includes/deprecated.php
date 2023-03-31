@@ -161,7 +161,7 @@ function pmpro_check_for_deprecated_add_ons() {
 			'file' => 'pmpro-register-helper.php',
 			'label' => 'Register Helper',
 			// TODO: Update link to Gist to a real blog post.
-			'message' => 'The "allow specific emails and usernames" feature was not merged into the core PMPro plugin. If this is a feature that was being used on this website, it can be added again using this code recipe: <a href="https://gist.github.com/dparker1005/7c2e90ed4d29f6923734bad6e53a2856" target="_blank">https://gist.github.com/dparker1005/7c2e90ed4d29f6923734bad6e53a2856</a>'
+			'message' => __( 'The "allow specific emails and usernames" feature was not merged into the core PMPro plugin. If this is a feature that was being used on this website, it can be added again using this code recipe', 'paid-memberships-pro' ) . ': <a href="https://gist.github.com/dparker1005/7c2e90ed4d29f6923734bad6e53a2856" target="_blank">https://gist.github.com/dparker1005/7c2e90ed4d29f6923734bad6e53a2856</a>'
 		)
 	);
 	
