@@ -159,7 +159,9 @@ function pmpro_check_for_deprecated_add_ons() {
 		),
 		'pmpro-register-helper' => array(
 			'file' => 'pmpro-register-helper.php',
-			'label' => 'Register Helper'
+			'label' => 'Register Helper',
+			// TODO: Update link to Gist to a real blog post.
+			'message' => 'The "allow specific emails and usernames" feature was not merged into the core PMPro plugin. If this is a feature that was being used on this website, it can be added again using this code recipe: <a href="https://gist.github.com/dparker1005/7c2e90ed4d29f6923734bad6e53a2856" target="_blank">https://gist.github.com/dparker1005/7c2e90ed4d29f6923734bad6e53a2856</a>'
 		)
 	);
 	
@@ -171,10 +173,14 @@ function pmpro_check_for_deprecated_add_ons() {
 	}
 	
 	$deprecated_active = array();
+	$has_messages = false;
 	foreach( $deprecated as $key => $values ) {
 		$path = '/' . $key . '/' . $values['file'];
 		if ( file_exists( WP_PLUGIN_DIR . $path ) ) {
-			$deprecated_active[] = $values['label'];
+			$deprecated_active[] = $values;
+			if ( ! empty( $values['message'] ) ) {
+				$has_messages = true;
+			}
 
 			// Try to deactivate it if it's enabled.
 			if ( is_plugin_active( plugin_basename( $path ) ) ) {
@@ -194,13 +200,49 @@ function pmpro_check_for_deprecated_add_ons() {
 		<p>
 			<?php
 				// translators: %s: The list of deprecated plugins that are active.
-				printf(
-					__( 'Some Add Ons are now merged into the Paid Memberships Pro core plugin. The features of the following plugins are now included in PMPro by default. You should <strong>delete these unnecessary plugins</strong> from your site: <em><strong>%s</strong></em>.', 'paid-memberships-pro' ),
-					implode( ', ', $deprecated_active )
+				echo wp_kses(
+					sprintf(
+						__( 'Some Add Ons are now merged into the Paid Memberships Pro core plugin. The features of the following plugins are now included in PMPro by default. You should <strong>delete these unnecessary plugins</strong> from your site: <em><strong>%s</strong></em>.', 'paid-memberships-pro' ),
+						implode( ', ', wp_list_pluck( $deprecated_active, 'label' ) )
+					),
+					array(
+						'strong' => array(),
+						'em' => array(),
+					)
 				);
 			?>
 		</p>
-    	</div>
+		<?php
+		// If there are any messages, show them.
+		if ( $has_messages ) {
+			?>
+			<ul>
+				<?php
+				foreach( $deprecated_active as $deprecated ) {
+					if ( empty( $deprecated['message'] ) ) {
+						continue;
+					}
+					?>
+					<li>
+						<strong><?php echo esc_html( $deprecated['label'] ); ?></strong>:
+						<?php
+						echo wp_kses(
+							$deprecated['message'],
+							array(
+								'a' => array(
+								'href' => array(),
+							) )
+						);
+						?>
+					</li>
+					<?php
+				}
+				?>
+			</ul>
+			<?php
+		}
+		?>
+		</div>
 		<?php
 	}
 }
