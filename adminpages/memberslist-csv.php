@@ -435,8 +435,8 @@
 			}
 
 			//joindate and enddate
-			array_push($csvoutput, pmpro_enclose(date_i18n($dateformat, $theuser->joindate)));
 			array_push($csvoutput, pmpro_enclose(date_i18n($dateformat, $theuser->user_registered)));
+			array_push($csvoutput, pmpro_enclose(date_i18n($dateformat, $theuser->joindate)));			
 
 			if($theuser->membership_id)
 			{
