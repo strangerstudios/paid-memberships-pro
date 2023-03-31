@@ -1350,9 +1350,19 @@ class PMPro_Field {
 		echo esc_html( $output );
 	}
 	
-	//from: http://stackoverflow.com/questions/173400/php-arrays-a-good-way-to-check-if-an-array-is-associative-or-numeric/4254008#4254008
-	function is_assoc($array) {			
-		return (bool)count(array_filter(array_keys($array), 'is_string'));
+	/**
+	 * Defining associative as integer array keys incrementing from 0.
+	 * 
+	 * Based off of https://stackoverflow.com/a/173479.
+	 *
+	 * @param array $array The array to check if it is associative.
+	 * @return bool True if the array is associative, false otherwise.
+	 */
+	function is_assoc( $array ) {
+		if ( empty( $array ) ) {
+			return false;
+		}
+		return array_keys( $array ) !== range( 0, count( $array ) - 1) ;
 	}
 
 	static function get_checkout_box_name_for_field( $field_name ) {
