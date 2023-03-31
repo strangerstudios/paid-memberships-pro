@@ -98,7 +98,7 @@
 		$headers[] = 'Content-Disposition: attachment; filename="members_list.csv"';
 
 	//set default CSV file headers, using comma as delimiter
-	$csv_file_header = "id,username,firstname,lastname,email,billing firstname,billing lastname,address1,address2,city,state,zipcode,country,phone,membership,initial payment,fee,term,discount_code_id,discount_code,joined";
+	$csv_file_header = "id,username,firstname,lastname,email,billing firstname,billing lastname,address1,address2,city,state,zipcode,country,phone,membership,initial payment,fee,term,discount_code_id,discount_code,joined,user_registered";
 
 	if($l == "oldmembers")
 		$csv_file_header .= ",ended";
@@ -435,6 +435,7 @@
 			}
 
 			//joindate and enddate
+			array_push($csvoutput, pmpro_enclose(date_i18n($dateformat, $theuser->joindate)));
 			array_push($csvoutput, pmpro_enclose(date_i18n($dateformat, $theuser->user_registered)));
 
 			if($theuser->membership_id)
