@@ -1260,6 +1260,31 @@ function pmpro_changeMembershipLevel( $level, $user_id = null, $old_level_status
 }
 
 /**
+ * Give a user a membership level.
+ *
+ * @since TBD
+ *
+ * @param int $level_id ID of the level to give the user.
+ * @param int $user_id ID of the user to give the level to. Defaults to current user.
+ */
+function pmpro_give_membership( $level_id, $user_id = null ) {
+	return pmpro_changeMembershipLevel( $level_id, $user_id );
+}
+
+/**
+ * Remove a user's membership level.
+ *
+ * @since TBD
+ *
+ * @param int $level_id ID of the level to remove from the user.
+ * @param int $user_id ID of the user to remove the level from. Defaults to current user.
+ * @param string $status Status to set the membership to. Defaults to 'inactive'.
+ */
+function pmpro_remove_membership( $level_id, $user_id = null, $status = 'inactive' ) {
+	return pmpro_cancelMembershipLevel( $level_id, $user_id, $status );
+}
+
+/**
  * Set old user levels to be used in the pmpro_do_action_after_all_membership_level_changes() function.
  *
  * @param int $user_id ID of the user to set the old levels for.
