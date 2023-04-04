@@ -302,6 +302,20 @@ function pmpro_membership_level_profile_fields($user)
 					?>
 					</td>
 				</tr>
+				<?php
+				// Hidden row to be shown when a change is made. This is used to show the "send membership change email" option.
+				?>
+				<tr id="pmpro_level_change_options" style="display: none;">
+					<th>
+						<?php esc_html_e( 'Membership Change Options', 'paid-memberships-pro' ); ?>
+					</th>
+					<td>
+						<label for="pmpro_send_change_email">
+							<input type="checkbox" id="pmpro_send_change_email" name="pmpro_send_change_email" value="1" />
+							<?php esc_html_e( 'Send membership change email to member.', 'paid-memberships-pro' ); ?>
+						</label>
+					</td>
+				</tr>
 				<script>
 					jQuery( document ).ready( function() {
 						// Show/hide the expiration date field when the level select is changed.
@@ -329,6 +343,9 @@ function pmpro_membership_level_profile_fields($user)
 								// Hide the expiration fields.
 								jQuery( this ).next( 'p' ).hide();
 							}
+
+							// Show the "level change" options.
+							jQuery( '#pmpro_level_change_options' ).show();
 						} );
 
 						// Show/hide the expiration date field when the checkbox is clicked.
@@ -338,6 +355,9 @@ function pmpro_membership_level_profile_fields($user)
 							} else {
 								jQuery( this ).next( 'input' ).hide();
 							}
+
+							// Show the "level change" options.
+							jQuery( '#pmpro_level_change_options' ).show();
 						} );
 
 						// Show/hide the expiration date and subscription fields when the "has level" checkbox is toggled.
@@ -357,6 +377,9 @@ function pmpro_membership_level_profile_fields($user)
 								// Show the subscription cancel fields.
 								jQuery( this ).parent().parent().next().next().find('label').show();
 							}
+
+							// Show the "level change" options.
+							jQuery( '#pmpro_level_change_options' ).show();
 						} );
 					} );
 				</script>
@@ -527,6 +550,21 @@ function pmpro_membership_level_profile_fields_update() {
 				array( '%s' ),
 				array( '%s', '%d', '%d' )
 			);
+		}
+	}
+
+	// If any level changes were made and the admin wants to send an email, do it.
+	if ( ! empty( $levels_to_add ) || ! empty( $levels_to_remove ) || ! empty( $levels_to_update ) ) {
+		if ( ! empty( $_REQUEST['pmpro_send_change_email'] ) ) {
+			$edited_user = get_userdata( $user_id );
+
+			// Send an email to the user.
+			$myemail = new PMProEmail();
+			$myemail->sendAdminChangeEmail( $edited_user );
+
+			// Send an email to the admin.
+			$myemail = new PMProEmail();
+			$myemail->sendAdminChangeAdminEmail( $edited_user );
 		}
 	}
 }
