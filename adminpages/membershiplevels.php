@@ -1069,6 +1069,8 @@
 			/**
 			 * Filter the Membership Levels page title action links.
 			 *
+			 * @since 2.9
+			 *
 			 * @param array $pmpro_membershiplevels_page_action_links Page action links.
 			 * @return array $pmpro_membershiplevels_page_action_links Page action links.
 			 */
@@ -1078,8 +1080,11 @@
 			foreach ( $pmpro_membershiplevels_page_action_links as $pmpro_membershiplevels_page_action_link ) {
 				
 				// If the value is not an array, assume it's a string of HTML.
+				// Passing a string is not the intended use of this filter, but we
+				// are handling it here for backwards compatibility
+				// and for developers who expect the filter to work differently.
 				if ( ! is_array( $pmpro_membershiplevels_page_action_link ) ) {
-					echo $pmpro_membershiplevels_page_action_link;
+					echo esc_html( $pmpro_membershiplevels_page_action_link );
 					continue;
 				}
 
