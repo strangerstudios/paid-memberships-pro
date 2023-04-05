@@ -311,3 +311,32 @@ function pmpro_cron_admin_activity_email() {
 		$pmproemail->sendAdminActivity();
 	}
 }
+
+add_action( 'pmpro_cron_spam_pending', 'pmpro_cron_spam_pending' );
+function pmpro_cron_spam_pending() {
+	// Determine how many seconds need to pass for a checkout to be considered abandoned.
+	$seconds_until_abandoned = apply_filters( 'pmpro_spam_pending_seconds_until_deletion', 24 * HOUR_IN_SECONDS );
+
+	// Get all user IDs that have been pending for more than $hours hours.
+	$user_ids = get_users(
+		array(
+			'meta_key'     => 'pmpro_spam_pending',
+			'meta_value'   => current_time( 'timestamp' ) - $seconds_until_abandoned,
+			'meta_compare' => '<',
+			'fields'       => 'ID',
+		)
+	);
+
+	// Make sure that we can delete users.
+	if ( ! function_exists( 'wp_delete_user' ) ) {
+		require_once( ABSPATH . 'wp-admin/includes/user.php' );
+	}
+
+	// Loop through the users and delete them.
+	foreach ( $user_ids as $user_id ) {
+		// Add a filter to give custom code a chance to bail.
+		if ( apply_filters( 'pmpro_spam_pending_delete_user', true, $user_id ) ) {
+			wp_delete_user( $user_id );
+		}
+	}
+}
