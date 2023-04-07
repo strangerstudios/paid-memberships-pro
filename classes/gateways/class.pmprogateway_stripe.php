@@ -4835,6 +4835,7 @@ class PMProGateway_stripe extends PMProGateway {
 	 * @return bool   Status of the processed refund
 	 */
 	public static function process_refund( $success, $order ) {
+		global $current_user;
 
 		//default to using the payment id from the order
 		if ( !empty( $order->payment_transaction_id ) ) {
@@ -4854,8 +4855,6 @@ class PMProGateway_stripe extends PMProGateway {
 				$transaction_id = $invoice->charge;
 			}
 		}
-
-		$success = false;
 
 		//attempt refund
 		try {
@@ -4879,12 +4878,8 @@ class PMProGateway_stripe extends PMProGateway {
 			//Make sure we're refunding an order that was successful
 			if ( $refund->status != 'failed' ) {
 				$order->status = 'refunded';	
-
-				$success = true;
-			
-				global $current_user;
-
-				$order->notes = trim( $order->notes.' '.sprintf( __('Admin: Order successfully refunded on %1$s for transaction ID %2$s by %3$s.', 'paid-memberships-pro' ), date_i18n('Y-m-d H:i:s'), $transaction_id, $current_user->display_name ) );	
+				$order->notes = trim( $order->notes.' '.sprintf( __('Admin: Order successfully refunded on %1$s for transaction ID %2$s by %3$s.', 'paid-memberships-pro' ), date_i18n('Y-m-d H:i:s'), $transaction_id, $current_user->display_name ) );
+				$order->saveOrder();
 
 				$user = get_user_by( 'id', $order->user_id );
 				//send an email to the member
@@ -4895,19 +4890,18 @@ class PMProGateway_stripe extends PMProGateway {
 				$myemail = new PMProEmail();
 				$myemail->sendRefundedAdminEmail( $user, $order );
 
-			} else {
-				$order->notes = trim( $order->notes . ' ' . __('Admin: An error occured while attempting to process this refund.', 'paid-memberships-pro' ) );
+				return true;
 			}
 
+			// Refund failed.
+			$order->notes = trim( $order->notes . ' ' . __('Admin: An error occured while attempting to process this refund.', 'paid-memberships-pro' ) );
 		} catch ( \Throwable $e ) {			
 			$order->notes = trim( $order->notes . ' ' . __( 'Admin: There was a problem processing the refund', 'paid-memberships-pro' ) . ' ' . $e->getMessage() );	
 		} catch ( \Exception $e ) {
 			$order->notes = trim( $order->notes . ' ' . __( 'Admin: There was a problem processing the refund', 'paid-memberships-pro' ) . ' ' . $e->getMessage() );
-		}		
-
+		}
 		$order->saveOrder();
-
-		return $success;
+		return false;
 	}
 
 	/**
