@@ -723,10 +723,10 @@ class PMPro_Field {
 				$r .= '<option value="' . 
 					
 					
-					($ovalue) . '" ';
+					trim( $ovalue ) . '" ';
 				if(!empty($this->multiple) && in_array($ovalue, $value))
 					$r .= 'selected="selected" ';
-				elseif($ovalue == $value)
+				elseif ( ! empty( $ovalue ) && is_string( $value ) && trim( $ovalue ) == trim( $value ) )
 					$r .= 'selected="selected" ';
 				$r .= '>' . $option . "</option>\n";
 			}
@@ -749,7 +749,7 @@ class PMPro_Field {
 			foreach($this->options as $ovalue => $option)
 			{
 				$r .= '<option value="' . esc_attr($ovalue) . '" ';
-				if(in_array($ovalue, $value))
+				if(in_array( trim( $ovalue ), $value ) )
 					$r .= 'selected="selected" ';
 				$r .= '>' . $option . "</option>\n";
 			}
@@ -781,7 +781,7 @@ class PMPro_Field {
 			foreach($this->options as $ovalue => $option)
 			{
 				$r .= '<option value="' . esc_attr($ovalue) . '" ';
-				if(in_array($ovalue, $value))
+				if( in_array( trim( $ovalue ), $value ) )
 					$r .= 'selected="selected" ';
 				$r .= '>' . $option . '</option>';
 			}
@@ -803,7 +803,7 @@ class PMPro_Field {
 				$count++;
 				$r .= '<div class="pmpro_checkout-field-radio-item">';
 				$r .= '<input type="radio" id="pmprorh_field_' . $this->name . $count . '" name="' . $this->name . '" value="' . esc_attr($ovalue) . '" ';
-				if(!empty($ovalue) && $ovalue == $value)
+				if(!empty($ovalue) && is_string($value) && trim( $ovalue ) == trim( $value ) )
 					$r .= 'checked="checked"';
 				if(!empty($this->class))
 				$r .= 'class="' . $this->class . '" ';
