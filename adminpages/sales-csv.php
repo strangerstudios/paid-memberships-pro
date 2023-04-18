@@ -36,7 +36,7 @@ if(isset($_REQUEST['level']))
 else
 	$l = "";
 
-if ( isset( $_REQUEST[ 'discount_code' ] ) ) {
+if ( isset( $_REQUEST[ 'discount_code' ] ) && ! empty( $_REQUEST['discount_code'] ) ) {
 	$discount_code = intval( $_REQUEST[ 'discount_code' ] );
 } else {
 	$discount_code = '';
