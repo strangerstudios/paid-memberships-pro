@@ -123,23 +123,26 @@ function pmpro_report_sales_page()
 	else
 		$period = "daily";
 
-	if(isset($_REQUEST['month']))
+	if ( ! empty( $_REQUEST['month'] ) ) {
 		$month = intval($_REQUEST['month']);
-	else
+	} else {
 		$month = date_i18n("n", current_time('timestamp'));
+	}
 
 	$thisyear = date_i18n("Y", current_time('timestamp'));
-	if(isset($_REQUEST['year']))
+	if( ! empty( $_REQUEST['year'] ) ) {
 		$year = intval($_REQUEST['year']);
-	else
+	} else {
 		$year = $thisyear;
+	}
 
-	if(isset($_REQUEST['level']))
+	if( ! empty( $_REQUEST['level'] ) ) {
 		$l = intval($_REQUEST['level']);
-	else
+	} else {
 		$l = "";
+	}
 
-	if ( isset( $_REQUEST[ 'discount_code' ] ) ) {
+	if ( ! empty( $_REQUEST[ 'discount_code' ] ) ) {
 		$discount_code = intval( $_REQUEST[ 'discount_code' ] );
 	} else {
 		$discount_code = '';
