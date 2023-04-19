@@ -226,7 +226,7 @@ add_action( 'admin_notices', 'pmpro_check_for_deprecated_add_ons' );
 
 	foreach( $deprecated as $key => $values ) {
 		if ( $plugin_file == $key . '/' . $values['file'] ) {
-			unset( $actions['activate'] );
+			$actions['activate'] = esc_html__( 'Deprecated', 'paid-memberships-pro' );
 		}
 	}
 
