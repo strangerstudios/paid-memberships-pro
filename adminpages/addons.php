@@ -355,10 +355,34 @@
 					var filter = $(this).data('search');
 					var filter_items = $(`[data-search-${filter}]`);
 					var search_val = $(this).val();
+					var searchTerms = search_val.toLowerCase().split(' ');
 
-					if ( search_val != '' ) {
+					if ( search_val != '' && search_val.length > 3 ) {
 						filter_items.addClass('search-hide');
-						$(`[data-search-${filter}*="${search_val.toLowerCase()}"]`).removeClass('search-hide');
+
+						// Strip out empty space at end of searchTerms
+						if (searchTerms[searchTerms.length - 1] === '') {
+							searchTerms.pop();
+						}
+
+						$(`[data-search-${filter}]`).filter(function() {
+						const searchValue = $(this).attr(`data-search-${filter}`).toLowerCase();
+						let match = false;
+						for (const term of searchTerms) {
+							
+							// Make sure we only continue if the search phrase is 3 characters or more. This is for the multiple words that someone may use for searching.
+							if ( term.length < 3 ) {
+								break;
+							}
+
+							if (searchValue.includes(term)) {
+							match = true;
+							break;
+							}
+						}
+						return match;
+						}).removeClass('search-hide');
+
 					} else {
 						filter_items.removeClass('search-hide');
 						jQuery('.addons-search').hide();
