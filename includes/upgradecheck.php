@@ -318,6 +318,15 @@ function pmpro_checkForUpgrades()
 		pmpro_upgrade_2_10();
 		pmpro_setOption( 'db_version', '2.95' );		
 	}
+
+	/**
+	 * Version 2.11
+	 * Unless we push this feature to 3.0, implementing pretty permalinks for checkout so we need to flush the rewrite rules.
+	 */
+	if ( $pmpro_db_version < 2.96 ) { // 2.96 since 2.11 would be lower than previous update.
+		flush_rewrite_rules();
+		pmpro_setOption( 'db_version', '2.96' );		
+	}
 }
 
 function pmpro_db_delta()

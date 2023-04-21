@@ -2336,7 +2336,7 @@ function pmpro_are_any_visible_levels() {
  * @return mixed|void
  */
 function pmpro_getLevelAtCheckout( $level_id = null, $discount_code = null ) {
-	global $pmpro_level, $wpdb, $post;
+	global $pmpro_level, $wpdb, $post, $wp_query;
 
 	// reset pmpro_level
 	$pmpro_level = null;
@@ -2344,6 +2344,29 @@ function pmpro_getLevelAtCheckout( $level_id = null, $discount_code = null ) {
 	// default to level passed in via URL
 	if ( empty( $level_id ) && ! empty( $_REQUEST['level'] ) ) {
 		$level_id = intval( $_REQUEST['level'] );
+	}
+
+	// If a pretty permalink was used, grab the level from the URL.
+	if ( empty( $level_id ) && ! empty( $wp_query->query_vars['pmpro_checkout_level'] ) ) {
+		$all_levels = pmpro_getAllLevels( false, false );
+
+		// If the level is a number, check if we have a level with that ID.
+		if ( is_numeric( $wp_query->query_vars['pmpro_checkout_level'] ) ) {
+			if ( ! empty( $all_levels[ $wp_query->query_vars['pmpro_checkout_level'] ] ) ) {
+				$level_id = $wp_query->query_vars['pmpro_checkout_level'];
+			}
+		}
+
+		// If we still don't have a level, check if we have a level with that name.
+		if ( empty( $level_id ) ) {
+			$lowercase_query_var = strtolower( $wp_query->query_vars['pmpro_checkout_level'] );
+			foreach ( $all_levels as $level ) {
+				if ( strtolower( urlencode( $level->name ) ) === $lowercase_query_var ) {
+					$level_id = $level->id;
+					break;
+				}
+			}
+		}
 	}
 
 	// no level, check for a default level in the custom fields for this post
