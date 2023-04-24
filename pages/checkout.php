@@ -536,8 +536,7 @@ if ( empty( $default_gateway ) ) {
 	<?php
 		$recaptcha = pmpro_getOption("recaptcha");
 		if ( $recaptcha == 2 || $recaptcha == 1 ) {
-			//phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-			echo pmpro_recaptcha_get_html();
+			pmpro_recaptcha_get_html();
 		}
 	?>
 	</div> <!-- end pmpro_captcha -->

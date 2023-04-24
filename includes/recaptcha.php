@@ -1,7 +1,6 @@
 <?php
 /**
- * Preps the ReCAPTCHA library if needed and sets up our JS
- * code to validate the ReCAPTCHA on form submission.
+ * Sets up our JS code to validate ReCAPTCHA on form submission if needed.
  */
 function pmpro_init_recaptcha() {
 	// If ReCAPTCHA is not enabled, don't do anything.
@@ -76,14 +75,14 @@ function pmpro_recaptcha_get_html() {
 	// Check which version of ReCAPTCHA we are using.
 	$recaptcha_version = pmpro_getOption( 'recaptcha_version' ); 
 	if( $recaptcha_version == '3_invisible' ) { ?>
-		<div class="g-recaptcha" data-sitekey="<?php echo $recaptcha_publickey;?>" data-size="invisible" data-callback="onSubmit"></div>
+		<div class="g-recaptcha" data-sitekey="<?php echo esc_attr( $recaptcha_publickey );?>" data-size="invisible" data-callback="onSubmit"></div>
 			<script type="text/javascript"
-				src="https://www.google.com/recaptcha/api.js?onload=pmpro_recaptcha_onloadCallback&hl=<?php echo $lang;?>&render=explicit" async defer>
+				src="https://www.google.com/recaptcha/api.js?onload=pmpro_recaptcha_onloadCallback&hl=<?php echo esc_attr( $lang );?>&render=explicit" async defer>
 			</script>
 	<?php } else { ?>
-		<div class="g-recaptcha" data-callback="pmpro_recaptcha_validatedCallback" data-expired-callback="pmpro_recaptcha_expiredCallback" data-sitekey="<?php echo $recaptcha_publickey;?>"></div>
+		<div class="g-recaptcha" data-callback="pmpro_recaptcha_validatedCallback" data-expired-callback="pmpro_recaptcha_expiredCallback" data-sitekey="<?php echo esc_attr( $recaptcha_publickey );?>"></div>
 		<script type="text/javascript"
-			src="https://www.google.com/recaptcha/api.js?hl=<?php echo $lang;?>">
+			src="https://www.google.com/recaptcha/api.js?hl=<?php echo esc_attr( $lang );?>">
 		</script>
 	<?php }				
 }
