@@ -17,26 +17,36 @@
 	$configure_payment = pmpro_getOption( 'wizard_collect_payment', true );
 
 	$site_types = pmpro_wizard_get_site_types();
+	$site_type_hubs = pmpro_wizard_get_site_type_hubs();
 ?>
 <div class="pmpro-wizard__step pmpro-wizard__step-4">
 	<div class="pmpro-wizard__step-header">
 		<h1><?php esc_html_e( 'Setup Complete', 'paid-memberships-pro' ); ?></h1>
-		<p><strong><?php esc_html_e( 'Congratulations!', 'paid-memberships-pro' ); ?></strong> <?php esc_html_e( 'Your membership site is ready.', 'paid-memberships-pro' ); ?></p>
+		<p><strong><?php esc_html_e( 'Congratulations!', 'paid-memberships-pro' ); ?></strong> <a href="<?php echo esc_url( admin_url( '/admin.php?page=pmpro-membershiplevels' ) ); ?>"><?php esc_html_e( 'Your membership site is ready.', 'paid-memberships-pro' ); ?></a></p>
 	</div>
 	<div class="pmpro-wizard__field"> <!-- Recommended icons -->
-		<h1><?php esc_html_e( "What's next?", 'paid-memberships-pro' ); ?></h1>
+		<h2 class="pmpro-wizard__section-title"><?php esc_html_e( "What's next?", 'paid-memberships-pro' ); ?></h2>
 		<p>
 			<?php
 			if ( isset( $site_types[ $site_type ] ) ) {
-				echo sprintf( esc_html__( "You indicated you're building a %s membership site.", 'paid-memberships-pro' ), '<strong>' . esc_html( $site_types[ $site_type ] ) . '</strong>' ) . ' ';
+				echo sprintf( esc_html__( "In step 1, you chose the %s site type.", 'paid-memberships-pro' ), '<strong>' . esc_html( $site_types[ $site_type ] ) . '</strong>' ) . ' ';
+				echo sprintf(
+					/* translators: %s: URL to the PMPro use case hub for the chosen site type */
+					esc_html__( 'Check out the %s, which guides you through next steps for your unique project.', 'paid-memberships-pro' ),
+					'<a href="' . esc_url( $site_type_hubs[ $site_type ] ) . '" target="_blank"><strong>' . esc_html( $site_types[ $site_type ] ) . ' ' . esc_html__( 'hub', 'paid-memberships-pro' ) . '</strong></a>'
+				);
 			}
+			?>
+		</p>
+		<p>
+			<?php
 			esc_html_e( 'Here are some recommended Add Ons for your business.', 'paid-memberships-pro' );
 			?>
 		</p>
 		<div class="pmpro-wizard__addons">
 		<?php
-			// Get some Add On recommendations and only show 3.
-			$random_addon = array_rand( $addon_list, 3 );
+			// Get some Add On recommendations and only show 4.
+			$random_addon = array_rand( $addon_list, 4 );
 			foreach( $random_addon as $key ) {
 				$addon_slug = $addon_list[$key];
 				$addon = pmpro_getAddonBySlug( $addon_slug );
@@ -49,11 +59,27 @@
 				}
 				$link = $addon['PluginURI'];
 				$icon = pmpro_get_addon_icon( $addon_slug );
+				if ( $addon['License'] == 'free' ) {
+					$license_label = __( 'Free Add On', 'paid-memberships-pro' );
+				} elseif( $addon['License'] == 'standard' ) {
+					$license_label = __( 'Standard Add On', 'paid-memberships-pro' );
+				} elseif( $addon['License'] == 'plus' ) {
+					$license_label = __( 'Plus Add On', 'paid-memberships-pro' );
+				} elseif( $addon['License'] == 'builder' ) {
+					$license_label = __( 'Builder Add On', 'paid-memberships-pro' );
+				} elseif( $addon['License'] == 'wordpress.org' ) {
+					$license_label = __( 'Free Plugin', 'paid-memberships-pro' );
+				} else {
+					$license_label = false;
+				}
 				?>
-				<div class="pmpro-wizard__col3">
+				<div class="pmpro-wizard__addon">
 					<a href="<?php echo esc_url( $link ); ?>" target='_blank' rel='nofollow'>
 						<img src="<?php echo esc_url( $icon ); ?>" />
-						<span class="pmpro-wizard__subtitle"><?php esc_html_e( $title ); ?></span>
+						<div>
+							<span><?php esc_html_e( $title ); ?></span>
+							<small><?php esc_html_e( $license_label ); ?></small>
+						</div>
 					</a>
 				</div>
 				<?php
@@ -80,8 +106,11 @@
 		<?php } ?>
 
 		<div class="pmpro-wizard__col">
-			<p><span class="pmpro-wizard__subtitle"><?php esc_html_e( 'Documentation', 'paid-memberships-pro' ); ?></span><br>
-			<?php esc_html_e( 'Not sure where to start? Take a look at our documentation.', 'paid-memberships-pro' ); ?></p>
+			<p>
+				<span class="pmpro-wizard__subtitle"><?php esc_html_e( 'Documentation', 'paid-memberships-pro' ); ?></span><br>
+				<?php esc_html_e( 'Not sure where to start? Take a look at our documentation.', 'paid-memberships-pro' ); ?><br />
+				<small><?php esc_html_e( 'Free membership account required.', 'paid-memberships-pro' ); ?></small>
+			</p>
 		</div>
 		<div class="pmpro-wizard__col">
 			<a href="https://www.paidmembershipspro.com/documentation/?utm_source=plugin&utm_medium=setup-wizard&utm_campaign=wizard-done&utm_content=view-docs" target="_blank" class="button button-hero"><?php esc_html_e( 'View docs', 'paid-memberships-pro' ); ?></a>

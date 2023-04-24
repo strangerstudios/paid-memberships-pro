@@ -61,7 +61,7 @@ add_meta_box(
  * Load the Paid Memberships Pro dashboard-area header
  */
 require_once( dirname( __FILE__ ) . '/admin_header.php' ); ?>
-
+<hr class="wp-header-end">
 <form id="pmpro-dashboard-form" method="post" action="admin-post.php">
 
 	<div class="dashboard-widgets-wrap">

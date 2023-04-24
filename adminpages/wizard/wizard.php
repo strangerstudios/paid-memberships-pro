@@ -4,7 +4,11 @@
  */
 if ( empty( $_REQUEST['step'] ) ) {
 	$previous_step = pmpro_getOption( 'wizard_step' );
-	$active_step = sanitize_text_field( $previous_step );
+	if ( ! empty( $previous_step ) ) {
+		$active_step = sanitize_text_field( $previous_step );
+	} else {
+		$active_step = 'general';
+	}
 } elseif ( ! empty( $_REQUEST['step'] ) ) {
 	$active_step = sanitize_text_field( $_REQUEST['step'] );
 } else {
@@ -22,14 +26,37 @@ if ( empty( $_REQUEST['step'] ) ) {
 function pmpro_wizard_get_site_types() {
 	// These values will all be escaped when displayed.
 	return array(
-		'association'       => __( 'Association', 'paid-memberships-pro' ),
-		'community'         => __( 'Community', 'paid-memberships-pro' ),
-		'courses'           => __( 'Courses', 'paid-memberships-pro' ),
-		'digital_downloads' => __( 'Digital Downloads', 'paid-memberships-pro' ),
-		'directory'         => __( 'Directory/Profiles', 'paid-memberships-pro' ),
-		'physical_products' => __( 'Physical Products', 'paid-memberships-pro' ),
-		'premium_content'   => __( 'Premium Content', 'paid-memberships-pro' ),
-		'other'             => __( 'Other', 'paid-memberships-pro' ),
+		'association'		=> __( 'Association', 'paid-memberships-pro' ),
+		'premium_content'	=> __( 'Blog/News', 'paid-memberships-pro' ),
+		'community'			=> __( 'Community', 'paid-memberships-pro' ),
+		'courses'			=> __( 'Courses', 'paid-memberships-pro' ),
+		'directory'			=> __( 'Directory/Listings', 'paid-memberships-pro' ),
+		'newsletter'		=> __( 'Paid Newsletter', 'paid-memberships-pro' ),
+		'podcast'			=> __( 'Podcast', 'paid-memberships-pro' ),
+		'video'				=> __( 'Video', 'paid-memberships-pro' ),
+		'other'				=> __( 'Other', 'paid-memberships-pro' ),
+	);
+}
+
+/**
+ * Helper function to get the hub links based on site type.
+ * Can only be used within the wizard.
+ *
+ * @since TBD.
+ *
+ * @return array
+ */
+function pmpro_wizard_get_site_type_hubs() {
+	// These values will all be escaped when displayed.
+	return array(
+		'association'		=> 'https://www.paidmembershipspro.com/associations/hub/?utm_source=plugin&utm_medium=setup-wizard&utm_campaign=wizard-done&utm_content=use-case-hub',
+		'premium_content'	=> 'https://www.paidmembershipspro.com/restrict-access-wordpress/?utm_source=plugin&utm_medium=setup-wizard&utm_campaign=wizard-done&utm_content=use-case-hub',
+		'community'			=> 'https://www.paidmembershipspro.com/build-a-community/?utm_source=plugin&utm_medium=setup-wizard&utm_campaign=wizard-done&utm_content=use-case-hub',
+		'courses'			=> 'https://www.paidmembershipspro.com/courses/hub/?utm_source=plugin&utm_medium=setup-wizard&utm_campaign=wizard-done&utm_content=use-case-hub',
+		'directory'			=> 'https://www.paidmembershipspro.com/add-ons/member-directory/?utm_source=plugin&utm_medium=setup-wizard&utm_campaign=wizard-done&utm_content=use-case-hub',
+		'newsletter'		=> 'https://www.paidmembershipspro.com/paid-newsletters/hub/?utm_source=plugin&utm_medium=setup-wizard&utm_campaign=wizard-done&utm_content=use-case-hub',
+		'podcast'			=> 'https://www.paidmembershipspro.com/new-castos-private-podcasting/?utm_source=plugin&utm_medium=setup-wizard&utm_campaign=wizard-done&utm_content=use-case-hub',
+		'video'				=> 'https://www.paidmembershipspro.com/sell-videos-online/hub/?utm_source=plugin&utm_medium=setup-wizard&utm_campaign=wizard-done&utm_content=use-case-hub',
 	);
 }
 

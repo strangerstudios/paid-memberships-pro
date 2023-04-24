@@ -65,7 +65,7 @@ function pmpro_add_pages() {
 	if ( pmpro_license_isValid( $key, NULL ) ) {
 		$span_color = '#33FF00';
 	} else {
-		$span_color = '#FF3333';
+		$span_color = '#FCD34D';
 	}
 	add_submenu_page( 'pmpro-dashboard', __( 'License', 'paid-memberships-pro' ), __( '<span style="color: ' . $span_color . '">License</span>', 'paid-memberships-pro' ), 'manage_options', 'pmpro-license', 'pmpro_license_settings_page' );
 
@@ -231,7 +231,7 @@ function pmpro_admin_bar_menu() {
 		if ( pmpro_license_isValid( $key, NULL ) ) {
 			$span_color = '#33FF00';
 		} else {
-			$span_color = '#FF3333';
+			$span_color = '#FCD34D';
 		}
 		$wp_admin_bar->add_menu(
 			array(

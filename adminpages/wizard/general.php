@@ -50,6 +50,8 @@ global $pmpro_pages;
 			</label>
 			<?php if ( $member_pages_exist ) {
 				echo '<p class="pmpro-wizard__field-description">' . esc_html__( 'We detected you have pages assigned for Paid Memberships Pro, this option is disabled.', 'paid-memberships-pro' ) . '</p>';
+			} else {
+				echo '<p class="pmpro-wizard__field-description">' . esc_html__( 'We will automatically create frontend pages for your levels, checkout, account management, and more.', 'paid-memberships-pro' ) . '</p>';
 			} ?>
 		</div>
 		<div class="pmpro-wizard__field">

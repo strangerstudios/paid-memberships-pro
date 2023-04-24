@@ -8,7 +8,7 @@ $collecting_payment = pmpro_getOption( 'wizard_collect_payment' );
 <div class="pmpro-wizard__step pmpro-wizard__step-3">
 	<div class="pmpro-wizard__step-header">
 		<h1><?php esc_html_e( 'Membership Levels', 'paid-memberships-pro' ); ?></h1>
-		<p><?php esc_html_e( 'Set up various membership levels from this wizard. You can set up more membership levels with additional settings later.', 'paid-memberships-pro' ); ?></p>
+		<p><?php esc_html_e( 'Set up your first membership levels from this wizard. You can set up more membership levels with additional settings later.', 'paid-memberships-pro' ); ?></p>
 	</div>
 	<form action="" method="post">
 	<div class="pmpro-wizard__field">
@@ -62,7 +62,17 @@ $collecting_payment = pmpro_getOption( 'wizard_collect_payment' );
 	</div>
 	<?php } ?>
 	<div class="pmpro-wizard__field pmpro-wizard__field-alt">
-		<p><img src="<?php echo esc_url( PMPRO_URL . '/images/lock.svg' ); ?>" /> <?php esc_html_e( 'Content restriction settings may be set after the setup wizard.', 'paid-memberships-pro' ); ?></p>
+		<p>
+			<img src="<?php echo esc_url( PMPRO_URL . '/images/lock.svg' ); ?>" />
+			<?php esc_html_e( 'Content restrictions are configured after initial setup.', 'paid-memberships-pro' ); ?>
+			<?php
+				echo sprintf(
+					/* translators: %s: URL to the PMPro documentation page on content restriction */
+					esc_html__( 'Learn more about %s.', 'paid-memberships-pro' ),
+					'<a href="' . esc_url( 'https://www.paidmembershipspro.com/restrict-access-wordpress/?utm_source=plugin&utm_medium=setup-wizard&utm_campaign=wizard-memberships&utm_content=restrict-content' ) . '" target="_blank">' . esc_html__( 'restricting WordPress content here', 'paid-memberships-pro' ) . '</a>'
+				);
+			?>
+		</p>
 	</div>
 	<p class="pmpro_wizard__submit">
 		<?php wp_nonce_field( 'pmpro_wizard_step_3_nonce', 'pmpro_wizard_step_3_nonce' ); ?>

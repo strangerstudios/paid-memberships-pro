@@ -2,7 +2,8 @@
 // Get options.
 $filter_queries = pmpro_getOption( 'filterqueries', true );
 $show_excerpts = pmpro_getOption( 'showexcerpts', true );
-$spam_protection = pmpro_getOption( 'spamprotection', true );
+$hide_toolbar = pmpro_getOption( 'hide_toolbar', true );
+$block_dashboard = pmpro_getOption( 'block_dashboard', true );
 $wisdom_tracking = pmpro_getOption( 'wisdom_opt_out', true );
 ?>
 <div class="pmpro-wizard__step pmpro-wizard__step-4">
@@ -28,13 +29,15 @@ $wisdom_tracking = pmpro_getOption( 'wisdom_opt_out', true );
 			</select>
 		</div>
 		<div class="pmpro-wizard__field">
-			<label class="pmpro-wizard__label-block">
-				<input type="checkbox" name="spamprotection" id="spamprotection" value="2" <?php checked( 2, $spam_protection ); ?>>
-				<?php esc_html_e( 'Enable Spam Protection', 'paid-memberships-pro' ); ?>
+			<label class="pmpro-wizard__label-block" for="block_dashboard">
+				<input type="checkbox" name="block_dashboard" id="block_dashboard" value="yes" <?php checked( $block_dashboard, 'yes' ); ?> />
+				<?php esc_html_e( 'Block all users with the Subscriber role from accessing the Dashboard.', 'paid-memberships-pro' ); ?>
+			</label><br><br>
+			<label class="pmpro-wizard__label-block" for="hide_toolbar">
+				<input type="checkbox" name="hide_toolbar" id="hide_toolbar" value="yes" <?php checked( $hide_toolbar, 'yes' ); ?> />
+				<?php esc_html_e( 'Hide the Toolbar from all users with the Subscriber role.', 'paid-memberships-pro' ); ?>
 			</label>
-			<p class="pmpro-wizard__field-description"><?php esc_html_e( 'Block IPs from checkout if there are more than 10 failures within 15 minutes.', 'paid-memberships-pro' ); ?></p>
 		</div>
-		
 		<div class="pmpro-wizard__field">
 			<label class="pmpro-wizard__label-block">
 				<?php esc_html_e( 'Enable Tracking?', 'paid-memberships-pro' ); ?>

@@ -211,7 +211,6 @@
 			});
 		});
 	</script>
-	<h2 class="pmpro_wp-notice-fix">&nbsp;</h2>
 	<?php
 		$settings_tabs = array(
 			'pmpro-dashboard',

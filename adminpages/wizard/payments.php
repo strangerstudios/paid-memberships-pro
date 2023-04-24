@@ -29,7 +29,7 @@
 			<?php esc_html_e( 'Stripe', 'paid-memberships-pro' ); ?>
 		</label>
 		<?php if ( PMProGateway_Stripe::has_connect_credentials( apply_filters( 'pmpro_wizard_stripe_environment', 'live' ) ) ) {
-			echo "<span class='pmpro_wizard_stripe-connected'>" . esc_html__( 'We have detected you previously connected to Stripe, to change your Stripe account please adjust it in the "Payment Gateway & SSL" settings.', 'paid-memberships-pro' ) . "</span>";
+			echo "<p class='pmpro-wizard__field-description'><span class='pmpro_wizard_stripe-connected'>" . esc_html__( 'We have detected you previously connected to Stripe, to change your Stripe account please adjust it in the "Payment Gateway & SSL" settings.', 'paid-memberships-pro' ) . "</span></p>";
 		} else { ?>
 			<div class="pmpro-wizard__stripe admin_page_pmpro-paymentsettings" <?php if ( 'stripe' !== pmpro_getOption( 'gateway', true ) ) { echo 'style="display:none;"'; } ?>>
 			<p class="pmpro-wizard__field-description"><?php esc_html_e( 'After clicking "Submit and Continue", you will be redirected to Stripe to finish connecting PMPro to your Stripe account. If you do not already have a Stripe account and do not want to set one up at this time, please select "Other/Setup Later" instead.', 'paid-memberships-pro' ); ?></p>

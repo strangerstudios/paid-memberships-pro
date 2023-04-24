@@ -57,18 +57,12 @@ if ( defined( 'PMPRO_DIR' ) ) {
 			<?php } ?>
 
 			<form action="" method="post">
-			<table class="form-table">
-				<tbody>
-					<tr id="pmpro-settings-key-box">
-						<td>
-							<label for="pmpro-license-key"><?php esc_html_e( 'License Key', 'paid-memberships-pro' ); ?></label>
-							<input type="text" name="pmpro-license-key" id="pmpro-license-key" value="<?php echo esc_attr($key);?>" placeholder="<?php _e('Enter license key here...', 'paid-memberships-pro' );?>" size="40" />
-							<?php wp_nonce_field( 'pmpro-key-nonce', 'pmpro-key-nonce' ); ?>
-							<?php submit_button( __( 'Validate Key', 'paid-memberships-pro' ), 'primary', 'pmpro-verify-submit', false ); ?>
-						</td>
-					</tr>
-				</tbody>
-			</table>
+				<label for="pmpro-license-key"><?php esc_html_e( 'License Key', 'paid-memberships-pro' ); ?></label>
+				<div id="pmpro-settings-key-box">
+					<input type="text" name="pmpro-license-key" id="pmpro-license-key" value="<?php echo esc_attr($key);?>" placeholder="<?php _e('Enter license key here...', 'paid-memberships-pro' );?>" size="40" />
+					<?php wp_nonce_field( 'pmpro-key-nonce', 'pmpro-key-nonce' ); ?>
+					<?php submit_button( __( 'Validate Key', 'paid-memberships-pro' ), 'primary', 'pmpro-verify-submit', false ); ?>
+				</div>
 			</form>
 
 			<p>
@@ -91,7 +85,7 @@ if ( defined( 'PMPRO_DIR' ) ) {
 			<img class="pmpro_icon alignright" src="<?php echo PMPRO_URL?>/images/Paid-Memberships-Pro_icon.png" border="0" alt="Paid Memberships Pro(c) - All Rights Reserved" />			
 
 			<?php
-				echo '<p>' . sprintf( wp_kses( __( 'Paid Memberships Pro and our Add Ons are distributed under the <a href="%s" title="GPLv2 license" target="_blank">GPLv2 license</a>. This means, among other things, that you may use the software on this site or any other site free of charge.', 'paid-memberships-pro' ), $allowed_pmpro_license_strings_html ), 'https://www.paidmembershipspro.com/features/paid-memberships-pro-is-100-gpl/?utm_source=plugin&utm_medium=pmpro-license&utm_campaign=documentation&utm_content=gpl' ) . '</p>';
+				echo '<p>' . sprintf( wp_kses( __( 'Paid Memberships Pro and our Add Ons are distributed under the <a href="%s" target="_blank">GPLv2 license</a>. This means, among other things, that you may use the software on this site or any other site free of charge.', 'paid-memberships-pro' ), $allowed_pmpro_license_strings_html ), 'https://www.paidmembershipspro.com/features/paid-memberships-pro-is-100-gpl/?utm_source=plugin&utm_medium=pmpro-license&utm_campaign=documentation&utm_content=gpl' ) . '</p>';
 			?>
 
 			<?php
