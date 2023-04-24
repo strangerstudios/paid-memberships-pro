@@ -397,51 +397,18 @@ if ( $submit && $pmpro_msgt != "pmpro_error" ) {
 		//only continue if there are no other errors yet
 		if ( $pmpro_msgt != "pmpro_error" ) {
 			//check recaptcha first
-			global $recaptcha, $recaptcha_validated;
+			$recaptcha = pmpro_getOption("recaptcha");
 			if (  $recaptcha == 2 || ( $recaptcha == 1 && pmpro_isLevelFree( $pmpro_level ) ) ) {
-
-				global $recaptcha_privatekey;
-
-				if ( isset( $_POST["recaptcha_challenge_field"] ) ) {
-					// Using older recaptcha lib. Google needs the raw POST data.
-					// phpcs:disable WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
-					$resp = recaptcha_check_answer( $recaptcha_privatekey,
-						pmpro_get_ip(),
-						$_POST["recaptcha_challenge_field"],
-						$_POST["recaptcha_response_field"] );
-					// phpcs:enable WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
-
-					$recaptcha_valid  = $resp->is_valid;
-					$recaptcha_errors = $resp->error;
-				} else {
-					//using newer recaptcha lib
-					// NOTE: In practice, we don't execute this code because
-					// we use AJAX to send the data back to the server and set the
-					// pmpro_recaptcha_validated session variable, which is checked
-					// earlier. We should remove/refactor this code.
-					$reCaptcha = new pmpro_ReCaptcha( $recaptcha_privatekey );
-					$resp      = $reCaptcha->verifyResponse( pmpro_get_ip(), $_POST["g-recaptcha-response"] ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
-
-					$recaptcha_valid  = $resp->success;
-					$recaptcha_errors = $resp->errorCodes;
-				}
-
-				if ( ! $recaptcha_valid ) {
-					$pmpro_msg  = sprintf( __( "reCAPTCHA failed. (%s) Please try again.", 'paid-memberships-pro' ), $recaptcha_errors );
+				$recaptcha_validated = pmpro_recaptcha_is_validated(); // Returns true if validated, string error message if not.
+				if ( is_string( $recaptcha_validated ) ) {
+					$pmpro_msg  = sprintf( __( "reCAPTCHA failed. (%s) Please try again.", 'paid-memberships-pro' ), $recaptcha_validated );
 					$pmpro_msgt = "pmpro_error";
-				} else {
-					// Your code here to handle a successful verification
-					if ( $pmpro_msgt != "pmpro_error" ) {
-						$pmpro_msg = "All good!";
-					}
-					pmpro_set_session_var( 'pmpro_recaptcha_validated', true );
-				}
-			} else {
-				if ( $pmpro_msgt != "pmpro_error" ) {
-					$pmpro_msg = "All good!";
 				}
 			}
+		}
 
+		// Only continue if there are no other errors yet
+		if ( $pmpro_msgt != "pmpro_error" ) {
 			// Do we need to create a user account?
 			if ( ! $current_user->ID ) {
 				// Yes, create user.

@@ -68,6 +68,13 @@ jQuery( document ).ready( function( $ ) {
 		pmpro_require_billing = pmproStripe.pmpro_require_billing;
 	}
 	$( '.pmpro_form' ).submit( function( event ) {
+
+		// If default is already being prevented, don't try to initiate the payment process.
+		// Likely caused by ReCAPTCHA failing.
+		if ( event.isDefaultPrevented() ) {
+			return;
+		}
+
 		// If there is no "level" input, then this is not a checkout form. Return.
 		if ( $( 'input[name="level"]' ).length === 0 ) {
 			return;
