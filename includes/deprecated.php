@@ -145,7 +145,23 @@ add_action( 'plugins_loaded', 'pmpro_register_helper_deprecated', 20 );
  * @return array Add Ons that are deprecated.
  */
 function pmpro_get_deprecated_add_ons() {
+	global $wpdb;
 
+	// Check if the RH restrict by username or email feature was being used.
+	static $pmpro_register_helper_restricting_by_email_or_username = null;
+	if ( ! isset( $pmpro_register_helper_restricting_by_email_or_username ) ) {
+		$sqlQuery = "SELECT option_value FROM $wpdb->options WHERE option_name LIKE 'pmpro_level_%_restrict_emails' OR option_name LIKE 'pmpro_level_%_restrict_usernames' AND option_value <> '' LIMIT 1";
+		$pmpro_register_helper_restricting_by_email_or_username = $wpdb->get_var( $sqlQuery );	
+	}
+
+	// If the RH restrict by username or email feature was being used, set the message.
+	if ( $pmpro_register_helper_restricting_by_email_or_username ) {
+		$pmpro_register_helper_message = sprintf( __( 'Restricting members by username or email was not merged into Paid Memberships Pro. If this feature was being used, a <a href="%s" target="_blank">code recipe</a> will be needed to continue using this functionality.', 'paid-memberships-pro' ), 'https://www.paidmembershipspro.com/restrict-membership-signup-by-email-or-username/' );
+	} else {
+		$pmpro_register_helper_message = '';
+	}
+	
+	// Set the array of deprecated Add Ons.
 	$deprecated = array(
 		'pmpro-member-history' => array(
 			'file' => 'pmpro-member-history.php',
@@ -166,7 +182,7 @@ function pmpro_get_deprecated_add_ons() {
 		'pmpro-register-helper' => array(
 			'file' => 'pmpro-register-helper.php',
 			'label' => 'Register Helper',
-			'message' => sprintf( __( 'Restricting members by username or email was not merged into Paid Memberships Pro. If this feature was being used, a <a href="%s" target="_blank">code recipe</a> will be needed to continue using this functionality.', 'paid-memberships-pro' ), 'https://www.paidmembershipspro.com/restrict-membership-signup-by-email-or-username/' )
+			'message' => $pmpro_register_helper_message
 		)
 	);
 	
@@ -183,7 +199,7 @@ function pmpro_get_deprecated_add_ons() {
 // Check if installed, deactivate it and show a notice now.
 function pmpro_check_for_deprecated_add_ons() {
 	$deprecated = pmpro_get_deprecated_add_ons();
-  $deprecated_active = array();
+  	$deprecated_active = array();
 	$has_messages = false;
 	foreach( $deprecated as $key => $values ) {
 		$path = '/' . $key . '/' . $values['file'];
