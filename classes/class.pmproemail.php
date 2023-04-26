@@ -73,6 +73,10 @@
 			//load the template			
 			$locale = apply_filters("plugin_locale", get_locale(), "paid-memberships-pro");
 
+			if( empty ($this->data['header_name'] ) ) {
+				$this->data['header_name'] = $this->data['name'];
+			}
+
 			if( empty( $this->data['body'] ) && ! empty( pmpro_getOption( 'email_' . $this->template . '_body' ) ) )
 				$this->body = pmpro_getOption( 'email_' . $this->template . '_body' );
 			elseif(file_exists(get_stylesheet_directory() . "/paid-memberships-pro/email/" . $locale . "/" . $this->template . ".html"))
@@ -242,7 +246,8 @@
 			$this->subject = sprintf(__("Membership for %s at %s has been CANCELLED", 'paid-memberships-pro'), $user->user_login, get_option("blogname"));			
 
 			$this->data = array(
-				'user_login' => $user->user_login, 
+				'header_name' => $this->get_admin_name( $this->email ),
+				'user_login' => $user->user_login,
 				'user_email' => $user->user_email, 
 				'display_name' => $user->display_name, 
 				'sitename' => get_option( 'blogname' ), 
@@ -461,8 +466,9 @@
 			$this->subject = sprintf(__("Your membership confirmation for %s", 'paid-memberships-pro' ), get_option("blogname"));	
 			
 			$this->data = array(
-								'subject' => $this->subject, 
-								'name' => $user->display_name, 
+								'subject' => $this->subject,
+								'header_name' => $user->display_name,
+								'name' => $user->display_name,
 								'display_name' => $user->display_name,
 								'user_login' => $user->user_login,
 								'sitename' => get_option('blogname'),
@@ -588,7 +594,8 @@
 			$this->subject = sprintf(__("Member checkout for %s at %s", 'paid-memberships-pro' ), $membership_level->name, get_option("blogname"));	
 			
 			$this->data = array(
-								'subject' => $this->subject, 
+								'subject' => $this->subject,
+								'header_name' => $this->get_admin_name( $this->email ),
 								'name' => $user->display_name, 
 								'user_login' => $user->user_login,
 								'sitename' => get_option( 'blogname' ),
@@ -700,8 +707,9 @@
 			$this->subject = sprintf(__("Your billing information has been updated at %s", "paid-memberships-pro"), get_option("blogname"));
 
 			$this->data = array(
-								'subject' => $this->subject, 
-								'name' => $user->display_name, 
+								'subject' => $this->subject,
+								'header_name' => $user->display_name,
+								'name' => $user->display_name,
 								'user_login' => $user->user_login,
 								'sitename' => get_option( 'blogname' ),
 								'siteemail' => pmpro_getOption( 'from_email' ),
@@ -763,8 +771,9 @@
 			$this->subject = sprintf(__("Billing information has been updated for %s at %s", "paid-memberships-pro"), $user->user_login, get_option("blogname"));
 			
 			$this->data = array(
-								'subject' => $this->subject, 
-								'name' => $user->display_name, 
+								'subject' => $this->subject,
+								'header_name' => $this->get_admin_name( $this->email ),
+								'name' => $user->display_name,
 								'user_login' => $user->user_login,
 								'sitename' => get_option( 'blogname' ),
 								'siteemail' => pmpro_getOption( 'from_email' ),
@@ -822,8 +831,9 @@
 			$this->subject = sprintf(__("Membership payment failed at %s", "paid-memberships-pro"), get_option("blogname"));
 			
 			$this->data = array(
-								'subject' => $this->subject, 
-								'name' => $user->display_name, 
+								'subject' => $this->subject,
+								'header_name' => $user->display_name,
+								'name' => $user->display_name,
 								'user_login' => $user->user_login,
 								'sitename' => get_option( 'blogname' ),
 								'siteemail' => pmpro_getOption( 'from_email' ),
@@ -878,7 +888,8 @@
 			$this->subject = sprintf(__("Membership payment failed For %s at %s", "paid-memberships-pro"), $user->display_name, get_option("blogname"));
 			
 			$this->data = array(
-								'subject' => $this->subject, 
+								'subject' => $this->subject,
+								'header_name' => $this->get_admin_name( $email ),
 								'name' => 'Admin', 
 								'user_login' => $user->user_login,
 								'sitename' => get_option( 'blogname' ),
@@ -914,7 +925,7 @@
 
 			return $this->sendEmail();
 		}
-		
+
 		/**
 		 * Send the member an email when their credit card is expiring soon.
 		 *
@@ -940,8 +951,9 @@
 			$this->subject = sprintf(__("Credit card on file expiring soon at %s", "paid-memberships-pro"), get_option("blogname"));
 			
 			$this->data = array(
-								'subject' => $this->subject, 
-								'name' => $user->display_name, 
+								'subject' => $this->subject,
+								'header_name' => $user->display_name,
+								'name' => $user->display_name,
 								'user_login' => $user->user_login,
 								'sitename' => get_option( 'blogname' ),
 								'siteemail' => pmpro_getOption( 'from_email' ),
@@ -1004,7 +1016,8 @@
 			$this->subject = sprintf(__("Invoice for %s membership", "paid-memberships-pro"), get_option("blogname"));
 
 			$this->data = array(
-								'subject' => $this->subject, 
+								'subject' => $this->subject,
+								'header_name' => $user->display_name,
 								'name' => $user->display_name,
 								'user_login' => $user->user_login,
 								'sitename' => get_option( 'blogname' ),
@@ -1092,7 +1105,8 @@
 			$this->subject = sprintf(__("Your trial at %s is ending soon", "paid-memberships-pro"), get_option("blogname"));
 
 			$this->data = array(
-				'subject' => $this->subject, 
+				'subject' => $this->subject,
+				'header_name' => $user->display_name,
 				'name' => $user->display_name, 
 				'user_login' => $user->user_login,
 				'sitename' => get_option( 'blogname' ), 				
@@ -1162,8 +1176,9 @@
 			$this->subject = sprintf(__("Your membership at %s will end soon", "paid-memberships-pro"), get_option("blogname"));
 
 			$this->data = array(
-				'subject' => $this->subject, 
-				'name' => $user->display_name, 
+				'subject' => $this->subject,
+				'header_name' => $user->display_name,
+				'name' => $user->display_name,
 				'user_login' => $user->user_login, 
 				'sitename' => get_option('blogname'), 
 				'membership_id' => $membership_level->id, 
@@ -1211,7 +1226,8 @@
 			$this->subject = sprintf(__("Your membership at %s has been changed", "paid-memberships-pro"), get_option("blogname"));
 
 			$this->data = array(
-				'subject' => $this->subject, 
+				'subject' => $this->subject,
+				'header_name' => $user->display_name,
 				'name' => $user->display_name, 
 				'display_name' => $user->display_name, 
 				'user_login' => $user->user_login, 
@@ -1274,10 +1290,10 @@
 			$this->subject = sprintf(__("Membership for %s at %s has been changed", "paid-memberships-pro"), $user->user_login, get_option("blogname"));
 
 			$this->data = array(
-				'subject' => $this->subject, 
-				'name' => $this->get_admin_name($this->email),
-				'display_name' => $this->get_admin_name($this->email),
-				'related_user_name' => $user->display_name,
+				'subject' => $this->subject,
+				'header_name' => $this->get_admin_name( $this->email ),
+				'name' =>$user->display_name,
+				'display_name' => $user->display_name,
 				'user_login' => $user->user_login, 
 				'user_email' => $user->user_email, 
 				'sitename' => get_option('blogname'), 
@@ -1398,8 +1414,9 @@
 			$this->template = apply_filters("pmpro_email_template", $this->template, $this);
 
 			$this->data = array(
-				'subject' => $this->subject, 
-				'name' => $user->display_name, 
+				'subject' => $this->subject,
+				'header_name' => $user->display_name,
+				'name' => $user->display_name,
 				'display_name' => $user->display_name,
 				'user_login' => $user->user_login,
 				'sitename' => get_option( 'blogname' ),
@@ -1445,8 +1462,9 @@
 			$this->template = apply_filters("pmpro_email_template", $this->template, $this);
 
 			$this->data = array(
-				'subject' => $this->subject, 
-				'name' => $user->display_name, 
+				'subject' => $this->subject,
+				'header_name' => $this->get_admin_name( $this->email ),
+				'name' => $user->display_name,
 				'display_name' => $user->display_name,
 				'user_login' => $user->user_login,
 				'sitename' => get_option('blogname'),
