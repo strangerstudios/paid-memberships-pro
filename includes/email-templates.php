@@ -44,7 +44,7 @@ $pmpro_email_templates_defaults = array(
 	'admin_change_admin'       => array(
 		'subject'     => __( "Membership for !!user_login!! at !!sitename!! has been changed", 'paid-memberships-pro' ),
 		'description' => __('Admin Change (admin)', 'paid-memberships-pro'),
-		'body' => __( '<p>An administrator at !!sitename!! has changed a membership level for !!name!!.</p>
+		'body' => __( '<p>An administrator at !!sitename!! has changed a membership level for !!related_user_name!!.</p>
 
 <p>!!membership_change!!</p>
 

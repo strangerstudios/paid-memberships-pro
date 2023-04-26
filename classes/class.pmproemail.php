@@ -1005,7 +1005,7 @@
 
 			$this->data = array(
 								'subject' => $this->subject, 
-								'name' => $user->display_name, 
+								'name' => $user->display_name,
 								'user_login' => $user->user_login,
 								'sitename' => get_option( 'blogname' ),
 								'siteemail' => pmpro_getOption( 'from_email' ),
@@ -1275,14 +1275,15 @@
 
 			$this->data = array(
 				'subject' => $this->subject, 
-				'name' => $user->display_name, 
-				'display_name' => $user->display_name, 
+				'name' => $this->get_admin_name($this->email),
+				'display_name' => $this->get_admin_name($this->email),
+				'related_user_name' => $user->display_name,
 				'user_login' => $user->user_login, 
 				'user_email' => $user->user_email, 
 				'sitename' => get_option('blogname'), 
 				'membership_id' => $membership_level_id, 
 				'membership_level_name' => $membership_level_name,
-				'siteemail' => get_bloginfo('admin_email'), 
+				'siteemail' => $this->email,
 				'login_link' => pmpro_login_url(), 
 				'login_url' => pmpro_login_url(),
 				'levels_url' => pmpro_url( 'levels' )
@@ -1458,4 +1459,16 @@
 						
 			return $this->sendEmail();
 		}
+
+		/**
+		 * Gets the admin user name.
+		 *
+		 * @param string $email The admin email address.
+		 * @return string The admin user display name.
+		 */
+		private function get_admin_name($email) {
+			$admin = get_user_by('email', $email );
+			return $admin ? $admin->display_name : 'admin';
+		}
+
 	}
