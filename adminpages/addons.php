@@ -346,49 +346,62 @@
 		</div> <!-- end pmpro-admin-add-ons-list -->
 		<script>
 			jQuery(document).ready( function($) {
-				$('[data-search]').keyup(function() {
-					var views = $( '.addons-search' ).closest( '.filter-links' );
-					views.find( 'li a' ).removeClass( 'current' );
-					$('.addons-search a').addClass( 'current' );
-					$('.addons-search').show();
 
-					var filter = $(this).data('search');
-					var filter_items = $(`[data-search-${filter}]`);
-					var search_val = $(this).val();
-					var searchTerms = search_val.toLowerCase().split(' ');
+				/**
+				 * Catches native clear search form event and run custom code.
+				 */
+				$('[data-search]').on('search', () => {
+					clearSearch($( '.addons-search' ))
+				});
 
-					if ( search_val != '' && search_val.length > 3 ) {
-						filter_items.addClass('search-hide');
+				/**
+				 * Clear search.
+				 */
+				const clearSearch = ($addonsSearch) => {
+					$('#pmpro-no-add-ons').hide();
+					$addonsSearch.hide();
+					const current = location.hash.split("#")[1] || 'all';
+					$( `.filter-links li a[href="#${current}"` ).trigger('click');
+				};
 
-						// Strip out empty space at end of searchTerms
-						if (searchTerms[searchTerms.length - 1] === '') {
-							searchTerms.pop();
-						}
+				/**
+				 * Add-on search.
+				 */
+				$('[data-search]').on('keyup', (ev) => {
+					const MIN_SEARCH_LENGTH = 3;
+					const $input = $(ev.currentTarget);
+					const searchTerms = $input.val().toLowerCase().split( ' ' ).filter( term => term !== '' && term.length > MIN_SEARCH_LENGTH );
 
-						$(`[data-search-${filter}]`).filter(function() {
-						const searchValue = $(this).attr(`data-search-${filter}`).toLowerCase();
-						let match = false;
-						for (const term of searchTerms) {
-							
-							// Make sure we only continue if the search phrase is 3 characters or more. This is for the multiple words that someone may use for searching.
-							if ( term.length < 3 ) {
-								break;
-							}
+					$addonsSearch = $( '.addons-search' );
 
-							if (searchValue.includes(term)) {
-							match = true;
-							break;
-							}
-						}
-						return match;
-						}).removeClass('search-hide');
+					if (searchTerms.length === 0) {
+						clearSearch($( '.addons-search' ));
+						return;
+					}
 
-					} else {
-						filter_items.removeClass('search-hide');
-						jQuery('.addons-search').hide();
+					$addonsSearch.closest( '.filter-links' ).find( 'li a' ).removeClass( 'current' );
+					$addonsSearch.addClass( 'current' ).show();
+
+					const filter = $input.data('search');
+					const $allItemsArray = $(`[data-search-${filter}]`);
+					$allItemsArray.hide();
+
+					const fiteredItems = $allItemsArray.filter((index,element) => {
+						const addonsSearchableDescription = $(element).data(`search-${filter}`).toLowerCase();
+						return searchTerms.some((term) => addonsSearchableDescription.includes(term));
+					});
+
+					if( fiteredItems.length > 0 ) {
+						fiteredItems.show();
+						$('#pmpro-no-add-ons').hide();
+					 } else {
+						$('#pmpro-no-add-ons').show();
 					}
 				});
 
+				/**
+				 * Handles clicks on filter addons links.
+				 */
 				$('.filter-links li a' ).click( function(e) {
 					// don't want to jump to #
 					e.preventDefault();
@@ -417,10 +430,10 @@
 					}
 
 					if ( view_val != '' ) {
-						view_items.addClass('search-hide');
-						$(`[data-search-${view}*="${view_val.toLowerCase()}"]`).removeClass('search-hide').addClass('search-show');
+						view_items.hide();
+						$(`[data-search-${view}*="${view_val.toLowerCase()}"]`).show();
 					} else {
-						view_items.removeClass('search-hide').addClass('search-show');
+						view_items.show();
 					}
 
 				});
