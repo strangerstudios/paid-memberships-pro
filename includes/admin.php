@@ -173,6 +173,48 @@ function pmpro_pause_mode_notice() {
 }
 
 /**
+ * Maybe display a notice about spam protection being disabled.
+ *
+ * @since TBD
+ */
+function pmpro_spamprotection_notice() {
+	global $current_user;
+
+	// If spam protection is enabled, we are not on a PMPro settings page, or we are on the PMPro advanced settings page, don't show the notice.
+	if (
+		pmpro_getOption( 'spamprotection' ) ||
+		! isset( $_REQUEST['page'] ) ||
+		( isset( $_REQUEST['page'] ) && 'pmpro-' !== substr( $_REQUEST['page'], 0, 6 ) ) ||
+		( isset( $_REQUEST['page'] ) && 'pmpro-advancedsettings' === $_REQUEST['page'] )
+	) {
+		return;
+	}
+
+	// Get notifications that have been archived.
+	$archived_notifications = get_user_meta( $current_user->ID, 'pmpro_archived_notifications', true );
+
+	// If the user hasn't dismissed the notice, show it.
+	if ( ! is_array( $archived_notifications ) || ! array_key_exists( 'hide_spamprotection_notification', $archived_notifications ) ) {
+		?>
+		<div id="hide_spamprotection_notification" class="notice notice-error pmpro_notification pmpro_notification-error">
+			<button type="button" class="pmpro-notice-button notice-dismiss" value="hide_spamprotection_notification"><span class="screen-reader-text"><?php esc_html_e( 'Dismiss this notice.', 'paid-memberships-pro' ); ?></span></button>
+			<div class="pmpro_notification-icon">
+				<span class="dashicons dashicons-warning"></span>
+			</div>
+			<div class="pmpro_notification-content">
+				<h3><?php esc_html_e( 'Spam Protection Disabled', 'paid-memberships-pro' ); ?></h3>
+				<p><?php esc_html_e( 'Spam protection is currently disabled. This is not recommended. Please enable spam protection on the Advanced Settings page.', 'paid-memberships-pro' ); ?></p>
+				<p>
+					<a href='<?php echo admin_url( 'admin.php?page=pmpro-advancedsettings' ); ?>' class='button button-secondary'><?php esc_html_e( 'Go to Advanced Settings', 'paid-memberships-pro' ); ?></a>
+				</p>
+			</div>
+		</div>
+		<?php
+	}
+}
+add_action( 'admin_notices', 'pmpro_spamprotection_notice' );
+
+/**
  * Remove all WordPress admin notifications from our Wizard area as it's distracting.
  */
 function pmpro_wizard_remove_admin_notices() {

@@ -534,12 +534,13 @@ class PMPro_Field {
 		*/
 		//check for a register helper directory in wp-content
 		$upload_dir = wp_upload_dir();
-		$pmprorh_dir = $upload_dir['basedir'] . "/pmpro-register-helper/" . $user->user_login . "/";
+		$dir_path = $upload_dir['basedir'] . "/pmpro-register-helper/" . $user->user_login . "/";
+		$dir_url  = $upload_dir['baseurl'] . "/pmpro-register-helper/" . $user->user_login . "/";
 		
 		//create the dir and subdir if needed
-		if(!is_dir($pmprorh_dir))
+		if(!is_dir($dir_path))
 		{
-			wp_mkdir_p($pmprorh_dir);
+			wp_mkdir_p($dir_path);
 		}
 					
 		//if we already have a file for this field, delete it
@@ -553,7 +554,7 @@ class PMPro_Field {
 		$filename = sanitize_file_name( $file['name'] );
 		$count = 0;
 					
-		while(file_exists($pmprorh_dir . $filename))
+		while(file_exists($dir_path . $filename))
 		{
 			if($count)
 				$filename = str_lreplace("-" . $count . "." . $filetype['ext'], "-" . strval($count+1) . "." . $filetype['ext'], $filename);
@@ -567,11 +568,14 @@ class PMPro_Field {
 				die( __( "Error uploading file. Too many files with the same name.", "paid-memberships-pro" ) );
 		}
 
+		$file_path = $dir_path . $filename;
+		$file_url = $dir_url . $filename;
+
 		//save file
 		if(strpos($file['tmp_name'], $upload_dir['basedir']) !== false)
 		{
 			//was uploaded and saved to $_SESSION
-			rename($file['tmp_name'], $pmprorh_dir . $filename);			
+			rename($file['tmp_name'], $file_path);			
 		}
 		else
 		{
@@ -582,33 +586,22 @@ class PMPro_Field {
 			}
 			
 			//it was just uploaded
-			move_uploaded_file($file['tmp_name'], $pmprorh_dir . $filename);				
+			move_uploaded_file($file['tmp_name'], $file_path);				
 		}
 		
 		// If file is an image, save a preview thumbnail.
 		if ( $filetype && 0 === strpos( $filetype['type'], 'image/' ) ) {
-			$preview_file = wp_get_image_editor( $pmprorh_dir . $filename );
+			$preview_file = wp_get_image_editor( $file_path );
 			if ( ! is_wp_error( $preview_file ) ) {
 				$preview_file->resize( 200, NULL, false );
 				$preview_file->generate_filename( 'pmprorh_preview' );
 				$preview_file = $preview_file->save();
 			}
 		}
-		
-		// Our folder in the uploads directory that we want to save files to.
-		$upload_dir = '/pmpro-register-helper/' . $user->user_login . '/';
-
-		// If multisite, prefix the directory with the current blog ID specific folder.
-		if ( is_multisite() ) {
-			$upload_dir = '/sites/' . get_current_blog_id() . $upload_dir;
-		}
-
-		// Get the full uploads directory URL we want to save files to.
-		$upload_path = content_url( '/uploads' . $upload_dir );
 
 		// Swap slashes for Windows
-		$pmprorh_dir = str_replace( "\\", "/", $pmprorh_dir );
-		$upload_path = str_replace( "\\", "/", $upload_path );
+		$file_path = str_replace( "\\", "/", $file_path );
+		$file_url = str_replace( "\\", "/", $file_url );
 		if ( ! empty( $preview_file ) && ! is_wp_error( $preview_file ) ) {
 			$preview_file['path'] = str_replace( "\\", "/", $preview_file['path'] );
 		}
@@ -616,14 +609,14 @@ class PMPro_Field {
 		$file_meta_value_array = array(
 			'original_filename'	=> $file['name'],
 			'filename'			=> $filename,
-			'fullpath'			=> $pmprorh_dir . $filename,
-			'fullurl'			=> $upload_path . $filename,
+			'fullpath'			=> $file_path,
+			'fullurl'			=> $file_url,
 			'size'				=> $file['size'],
 		);
 
 		if ( ! empty( $preview_file ) && ! is_wp_error( $preview_file ) ) {
 			$file_meta_value_array['previewpath'] = $preview_file['path'];
-			$file_meta_value_array['previewurl'] = $upload_path . $preview_file['file'];			
+			$file_meta_value_array['previewurl'] = $dir_url .  $preview_file['file'];
 		}
 		
 		//save filename in usermeta
@@ -730,10 +723,10 @@ class PMPro_Field {
 				$r .= '<option value="' . 
 					
 					
-					($ovalue) . '" ';
+					trim( $ovalue ) . '" ';
 				if(!empty($this->multiple) && in_array($ovalue, $value))
 					$r .= 'selected="selected" ';
-				elseif($ovalue == $value)
+				elseif ( ! empty( $ovalue ) && is_string( $value ) && trim( $ovalue ) == trim( $value ) )
 					$r .= 'selected="selected" ';
 				$r .= '>' . $option . "</option>\n";
 			}
@@ -756,7 +749,7 @@ class PMPro_Field {
 			foreach($this->options as $ovalue => $option)
 			{
 				$r .= '<option value="' . esc_attr($ovalue) . '" ';
-				if(in_array($ovalue, $value))
+				if(in_array( trim( $ovalue ), $value ) )
 					$r .= 'selected="selected" ';
 				$r .= '>' . $option . "</option>\n";
 			}
@@ -788,7 +781,7 @@ class PMPro_Field {
 			foreach($this->options as $ovalue => $option)
 			{
 				$r .= '<option value="' . esc_attr($ovalue) . '" ';
-				if(in_array($ovalue, $value))
+				if( in_array( trim( $ovalue ), $value ) )
 					$r .= 'selected="selected" ';
 				$r .= '>' . $option . '</option>';
 			}
@@ -810,7 +803,7 @@ class PMPro_Field {
 				$count++;
 				$r .= '<div class="pmpro_checkout-field-radio-item">';
 				$r .= '<input type="radio" id="pmprorh_field_' . $this->name . $count . '" name="' . $this->name . '" value="' . esc_attr($ovalue) . '" ';
-				if(!empty($ovalue) && $ovalue == $value)
+				if(!empty($ovalue) && is_string($value) && trim( $ovalue ) == trim( $value ) )
 					$r .= 'checked="checked"';
 				if(!empty($this->class))
 				$r .= 'class="' . $this->class . '" ';
@@ -1350,9 +1343,19 @@ class PMPro_Field {
 		echo esc_html( $output );
 	}
 	
-	//from: http://stackoverflow.com/questions/173400/php-arrays-a-good-way-to-check-if-an-array-is-associative-or-numeric/4254008#4254008
-	function is_assoc($array) {			
-		return (bool)count(array_filter(array_keys($array), 'is_string'));
+	/**
+	 * Defining associative as integer array keys incrementing from 0.
+	 * 
+	 * Based off of https://stackoverflow.com/a/173479.
+	 *
+	 * @param array $array The array to check if it is associative.
+	 * @return bool True if the array is associative, false otherwise.
+	 */
+	function is_assoc( $array ) {
+		if ( empty( $array ) ) {
+			return false;
+		}
+		return array_keys( $array ) !== range( 0, count( $array ) - 1) ;
 	}
 
 	static function get_checkout_box_name_for_field( $field_name ) {
