@@ -385,13 +385,13 @@
 					const $allItemsArray = $(`[data-search-${filter}]`);
 					$allItemsArray.hide();
 
-					const fiteredItems = $allItemsArray.filter((index,element) => {
+					const filteredItems = $allItemsArray.filter((index,element) => {
 						const addonsSearchableDescription = $(element).data(`search-${filter}`).toLowerCase();
 						return searchTerms.some((term) => addonsSearchableDescription.includes(term));
 					});
 
-					if( fiteredItems.length > 0 ) {
-						fiteredItems.show();
+					if( filteredItems.length > 0 ) {
+						filteredItems.show();
 						$('#pmpro-no-add-ons').hide();
 					 } else {
 						$('#pmpro-no-add-ons').show();
