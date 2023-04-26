@@ -1463,6 +1463,7 @@
 		/**
 		 * Gets the admin user name.
 		 *
+		 * @since TBD
 		 * @param string $email The admin email address.
 		 * @return string The admin user display name.
 		 */
