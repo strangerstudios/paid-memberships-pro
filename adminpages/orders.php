@@ -502,7 +502,7 @@ require_once( dirname( __FILE__ ) . '/admin_header.php' ); ?>
 						} else {
 							$timestamp = current_time( 'timestamp' );
 						}
-
+						
 						$year   = date( 'Y', $timestamp );
 						$month  = date( 'n', $timestamp );
 						$day    = date( 'j', $timestamp );

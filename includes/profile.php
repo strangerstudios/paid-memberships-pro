@@ -416,7 +416,7 @@ function pmpro_membership_history_profile_fields( $user ) {
 	global $wpdb;
 
 	//Show all invoices for user
-	$invoices = $wpdb->get_results( $wpdb->prepare( "SELECT mo.*, UNIX_TIMESTAMP(mo.timestamp) as timestamp, du.code_id as code_id FROM $wpdb->pmpro_membership_orders mo LEFT JOIN $wpdb->pmpro_discount_codes_uses du ON mo.id = du.order_id WHERE mo.user_id = %d ORDER BY mo.timestamp DESC", $user->ID ));
+	$invoices = $wpdb->get_results( $wpdb->prepare( "SELECT mo.*, UNIX_TIMESTAMP(mo.timestamp) as timestamp, du.code_id as code_id, mo.timestamp as order_timestamp FROM $wpdb->pmpro_membership_orders mo LEFT JOIN $wpdb->pmpro_discount_codes_uses du ON mo.id = du.order_id WHERE mo.user_id = %d ORDER BY mo.timestamp DESC", $user->ID ));
 
 	$levelshistory = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM $wpdb->pmpro_memberships_users WHERE user_id = %d ORDER BY id DESC", $user->ID ) );
 	
@@ -462,11 +462,14 @@ function pmpro_membership_history_profile_fields( $user ) {
 					<tr>
 						<td>
 							<?php
+
+								$order_timestamp = strtotime( $invoice->order_timestamp );
+								
 								echo esc_html( sprintf(
 									// translators: %1$s is the date and %2$s is the time.
 									__( '%1$s at %2$s', 'paid-memberships-pro' ),
-									esc_html( date_i18n( get_option( 'date_format' ), $invoice->timestamp ) ),
-									esc_html( date_i18n( get_option( 'time_format' ), $invoice->timestamp ) )
+									esc_html( date_i18n( get_option( 'date_format' ), $order_timestamp ) ),
+									esc_html( date_i18n( get_option( 'time_format' ), $order_timestamp ) )
 								) );
 							?>
 						</td>
