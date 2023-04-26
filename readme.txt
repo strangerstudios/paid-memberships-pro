@@ -4,7 +4,7 @@ Tags: memberships, members, subscriptions, ecommerce, user registration, member,
 Requires at least: 5.2
 Tested up to: 6.2
 Requires PHP: 5.6
-Stable tag: 2.10.3
+Stable tag: 2.10.4
 
 WordPress membership plugin: restrict content, accept member subscriptions with recurring payment. Includes user registration, login, & profile fields
 
@@ -156,6 +156,26 @@ Not sure? You can find out by doing a bit a research.
 9. Membership Account page, display all sections or show specific sections using shortcode attributes.
 
 == Changelog ==
+= 2.10.4 - 2023-04-26 =
+* ENHANCEMENT: The spam protection setting is now enabled by default for new installs. #2421 (@dparker1005)
+* ENHANCEMENT: Now showing a dismissable notice if the spam protection setting is not enabled. #2422 (@dparker1005)
+* BUG FIX/ENHANCEMENT: Now trimming the whitespace around values for dropdown/etc fields to ensure consistent results. #2410 (@JarrydLong)
+* BUG FIX/ENHANCEMENT: Now setting the Stripe payment method per subscription instead of using the default payment method when using the update billing form. #2412 (@dparker1005)
+* BUG FIX/ENHANCEMENT: Marking the Register Helper plugin as deprecated. More info here: https://www.paidmembershipspro.com/register-helper-add-on-deprecated/
+* BUG FIX/ENHANCEMENT: Removed the "activate" link from the plugins page for deprecated Add Ons. #2424 (@dparker1005)
+* BUG FIX/ENHANCEMENT: No longer links added through incorrect use of the pmpro_membershiplevels_page_action_links filter. #2431 (@dparker1005)
+* BUG FIX/ENHANCEMENT: Fixed warning when updating billing with Stripe. #2420 (@mircobabini)
+* BUG FIX: Updated the PayPal IPN handler to cancel memberships when the maximum number of retries have failed for a subscription paymenet. Previously, some of these subscriptions would get stuck in a "suspended" status, which did not trigger the PMPro membership to cancel. #2407 (@dparker1005)
+* BUG FIX: Fixed where file user fields save their files on multisite setups. #2406 (@dparker1005)
+* BUG FIX: Fixed PHP8 compatibility issues with our visit tracking cookie. #2414 (@dparker1005, @JarrydLong)
+* BUG FIX: Fixed PHP8 compatibility issues in the Braintree library. #2418 (@dparker1005)
+* BUG FIX: Fixed issue where taxonomy user fields were not saving correctly in the database. #2423 (@dparker1005)
+* BUG FIX: Fixed issue where the views, visits, and logins CSV report would only include the first page of data. #2436 (@dparker1005)
+* BUG FIX: Fixed issue where the "Account Information" section of checkout would still show up even if the user was just created. #2437 (@dparker1005)
+* BUG FIX: Fixed race condition issue where duplicate refund emails were sometimes sent when using the Stripe gateway. #2438 (@dparker1005)
+* BUG FIX: Fixed timezone offset issue when filtering orders by date range. #2440 (@mircobabini)
+* BUG FIX: Fixed the "transient error" issues happening with some reports in the dashboard. #2443 (@JarrydLong, @ideadude)
+
 = 2.10.3 - 2023-03-02 =
 * BUG FIX: Fixed issue with alternative login methods that call the wp_login_failed hook with only 1 parameter.
 
