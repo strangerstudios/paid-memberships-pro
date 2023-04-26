@@ -73,10 +73,6 @@
 			//load the template			
 			$locale = apply_filters("plugin_locale", get_locale(), "paid-memberships-pro");
 
-			if( empty ($this->data['header_name'] ) ) {
-				$this->data['header_name'] = $this->data['name'];
-			}
-
 			if( empty( $this->data['body'] ) && ! empty( pmpro_getOption( 'email_' . $this->template . '_body' ) ) )
 				$this->body = pmpro_getOption( 'email_' . $this->template . '_body' );
 			elseif(file_exists(get_stylesheet_directory() . "/paid-memberships-pro/email/" . $locale . "/" . $this->template . ".html"))
@@ -126,6 +122,11 @@
 				
 			//filter for data
 			$this->data = apply_filters("pmpro_email_data", $this->data, $this);	//filter
+
+			// Handle backwards compatibility for the new !!header_name!! variable.
+			if( empty ($this->data['header_name'] ) && ! empty( $this->data['name'] ) ) {
+				$this->data['header_name'] = $this->data['name'];
+			}
 			
 			//swap data into body and subject line
 			if(is_array($this->data))
@@ -206,7 +207,8 @@
 
 			$this->data = array(
 				'user_email' => $user->user_email, 
-				'display_name' => $user->display_name, 
+				'display_name' => $user->display_name,
+				'header_name' => $user->display_name,
 				'user_login' => $user->user_login, 
 				'sitename' => get_option( 'blogname' ), 
 				'siteemail' => pmpro_getOption( 'from_email' ),
@@ -318,6 +320,7 @@
 				'user_login' => $user->user_login,
 				'user_email' => $user->user_email,
 				'display_name' => $user->display_name,
+				'header_name' => $user->display_name,
 				'sitename' => get_option('blogname'),
 				'siteemail' => pmpro_getOption('from_email'),
 				'login_link' => pmpro_login_url(),
@@ -391,6 +394,7 @@
 				'user_login' => $user->user_login,
 				'user_email' => $user->user_email,
 				'display_name' => $user->display_name,
+				'header_name' => $this->get_admin_name( $this->email ),
 				'sitename' => get_option('blogname'),
 				'siteemail' => pmpro_getOption('from_email'),
 				'login_link' => pmpro_login_url(),
@@ -1144,7 +1148,7 @@
 			$this->email = $user->user_email;
 			$this->subject = sprintf(__("Your membership at %s has ended", "paid-memberships-pro"), get_option("blogname"));			
 
-			$this->data = array("subject" => $this->subject, "name" => $user->display_name, "user_login" => $user->user_login, "sitename" => get_option("blogname"), "siteemail" => pmpro_getOption("from_email"), "login_link" => pmpro_login_url(), "login_url" => pmpro_login_url(), "display_name" => $user->display_name, "user_email" => $user->user_email, "levels_link" => pmpro_url("levels"), "levels_url" => pmpro_url("levels"));
+			$this->data = array("subject" => $this->subject, "name" => $user->display_name, "user_login" => $user->user_login, "header_name" => $user->display_name, "sitename" => get_option("blogname"), "siteemail" => pmpro_getOption("from_email"), "login_link" => pmpro_login_url(), "login_url" => pmpro_login_url(), "display_name" => $user->display_name, "user_email" => $user->user_email, "levels_link" => pmpro_url("levels"), "levels_url" => pmpro_url("levels"));
 
 			$this->template = apply_filters("pmpro_email_template", "membership_expired", $this);
 
