@@ -370,8 +370,7 @@
 				$('[data-search]').on('keyup', (ev) => {
 					const MIN_SEARCH_LENGTH = 3;
 					const $input = $(ev.currentTarget);
-					const searchTerms = $input.val().toLowerCase().split( ' ' ).filter( term => term !== '' && term.length > MIN_SEARCH_LENGTH );
-
+					const searchTerms = $input.val().toLowerCase().split( ' ' ).filter( term => term !== '' && term.length >= MIN_SEARCH_LENGTH );
 					$addonsSearch = $( '.addons-search' );
 
 					if (searchTerms.length === 0) {
