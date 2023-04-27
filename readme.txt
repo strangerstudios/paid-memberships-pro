@@ -4,7 +4,7 @@ Tags: memberships, members, subscriptions, ecommerce, user registration, member,
 Requires at least: 5.2
 Tested up to: 6.2
 Requires PHP: 5.6
-Stable tag: 2.10.4
+Stable tag: 2.10.5
 
 WordPress membership plugin: restrict content, accept member subscriptions with recurring payment. Includes user registration, login, & profile fields
 
@@ -156,6 +156,11 @@ Not sure? You can find out by doing a bit a research.
 9. Membership Account page, display all sections or show specific sections using shortcode attributes.
 
 == Changelog ==
+= 2.10.5 - 2023-04-27 =
+* BUG FIX/ENHANCEMENT: Fixed issue where the date/time of orders in the Member History table were sometimes off based on timezone. #2552 (@JarrydLong, @dparker1005)
+* BUG FIX: Fixed issue where checkouts for subscriptions with a $0 initial payment were failing with Stripe. #2454 (@dparker1005)
+* BUG FIX: Fixed the error that would occur if the AUTH_KEY and SECURE_AUTH_KEY constants were not set (e.g. with Local by Flywheel). #2451 (@JarrydLong)
+
 = 2.10.4 - 2023-04-26 =
 * ENHANCEMENT: The spam protection setting is now enabled by default for new installs. #2421 (@dparker1005)
 * ENHANCEMENT: Now showing a dismissable notice if the spam protection setting is not enabled. #2422 (@dparker1005)
