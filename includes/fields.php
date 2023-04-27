@@ -161,6 +161,9 @@ function pmpro_add_user_taxonomy( $name, $name_plural ) {
 	$pmpro_user_taxonomy_args = apply_filters( 'pmpro_user_taxonomy_args', $pmpro_user_taxonomy_args, $name );
 	register_taxonomy( $safe_name, 'user', $pmpro_user_taxonomy_args );
 
+	// Update the labels after the args are filtered.
+	$pmpro_user_taxonomy_labels = $pmpro_user_taxonomy_args['labels'];
+
 	/**
 	 * Add admin page for the registered user taxonomies.
 	 */
