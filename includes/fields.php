@@ -108,8 +108,6 @@ function pmpro_add_field_group( $name, $label = NULL, $description = '', $order 
  *
  */
 function pmpro_add_user_taxonomy( $name, $name_plural ) {
-	global $pmpro_user_taxonomies;
-
 	// Sanitize the taxonomy $name and make sure it is less than 32 characters.
 	$safe_name = sanitize_key( $name );
 	if ( strlen( $safe_name ) > 32 ) {
@@ -174,7 +172,7 @@ function pmpro_add_user_taxonomy( $name, $name_plural ) {
 	} );
 
 	/**
-	 * Update parent file name to fix the selected menu issue for a user taaxonomy.
+	 * Update parent file name to fix the selected menu issue for a user taxonomy.
 	 */
 	add_filter( 'parent_file', function ( $parent_file ) use ( $safe_name ) {
 		global $submenu_file;
