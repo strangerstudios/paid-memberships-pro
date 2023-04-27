@@ -615,7 +615,7 @@ class PMPro_Site_Health {
 	/**
 	 * Get the pause mode state
 	 *
-	 * @since TBD
+	 * @since 2.10
 	 *
 	 * @return string What state is pause mode in 
 	 */

@@ -1780,8 +1780,17 @@ function pmpro_getDiscountCode( $seed = null ) {
 	static $count = 0;
 	$count++;
 
+	if( defined( 'AUTH_KEY' ) && defined( 'SECURE_AUTH_KEY' ) ) {
+		$auth_code = AUTH_KEY;
+		$secure_auth_code = SECURE_AUTH_KEY;
+	} else {
+		//Generate our own random string and hash it
+		$auth_code = md5( rand() );
+		$secure_auth_code = md5( rand() );
+	}
+
 	while ( empty( $code ) ) {
-		$scramble = md5( AUTH_KEY . microtime() . $seed . SECURE_AUTH_KEY . $count );
+		$scramble = md5( $auth_code . microtime() . $seed . $secure_auth_code . $count );
 		$code = substr( $scramble, 0, 10 );
 		$check = $wpdb->get_var( "SELECT code FROM $wpdb->pmpro_discount_codes WHERE code = '" . esc_sql( $code ) . "' LIMIT 1" );
 		if ( $check || is_numeric( $code ) ) {
@@ -2939,7 +2948,7 @@ function pmpro_is_ready() {
 /**
  * Display the Setup Wizard links.
  * 
- * @since TBD
+ * @since 2.10
  * 
  * @return bool $show Whether or not the Setup Wizard link should show.
  */
@@ -4421,49 +4430,51 @@ function pmpro_activating_plugin( $plugin = null ) {
 /**
  * Compare the stored site URL with the current site URL
  *
- * @since TBD
+ * @since 2.10
  * @return bool True if the stored and current URL match
  */
 function pmpro_compare_siteurl() {
-	$site_url = get_site_url();
-
+	$site_url = get_site_url( null, '', 'https' ); // Always get the https version of the site URL.=
 	$current_url = pmpro_getOption( 'last_known_url' );
 
-	if( empty( $current_url ) ) {
-		return false;
+	// If we don't have a current URL yet, set it to the site URL.
+	if ( empty( $current_url ) ) {
+		pmpro_setOption( 'last_known_url', $site_url );
+		$current_url = $site_url;
 	}
 
-	if( $site_url !== $current_url ) {
-		return false;
-	}
+	// We don't want to consider scheme, so just force https for this check.
+	$site_url = str_replace( 'http://', 'https://', $site_url );
+	$current_url = str_replace( 'http://', 'https://', $current_url );	
 
-	return true;
+	return ( $site_url === $current_url );
 }
 
 /**
  * Determine if the site is in pause mode or not
  *
- * @since TBD
+ * @since 2.10
  * @return bool True if the the site is in pause mode
  */
 function pmpro_is_paused() {
-	$pause_mode = pmpro_getOption( 'pause_mode' );
-	
-	//We haven't saved the option or it isn't in pause mode
-	if( empty( $pause_mode ) || $pause_mode === false ) {
-		return false;
+	// If the current site URL is different than the last known URL, then we are in pause mode.
+	if ( ! pmpro_compare_siteurl() ) {
+		return true;
 	}
 
-	return true;
+	// We should never filter this function. We will never change this function to do anything else without lots and lots of discussion and thought.
+	return false;
 }
 
 /**
  * Set the pause mode status
  *
  * @param $state bool true or false if in pause mode state
- * @since TBD
+ * @since 2.10
+ * @deprecated TBD No longer using `pmpro_pause_mode` option
  * @return bool True if the option has been updated
  */
 function pmpro_set_pause_mode( $state ) {
+	_deprecated_function( __FUNCTION__, 'TBD' );
 	return pmpro_setOption( 'pause_mode', $state );
 }
