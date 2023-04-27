@@ -462,9 +462,6 @@ function pmpro_membership_history_profile_fields( $user ) {
 					<tr>
 						<td>
 							<?php
-
-								$order_timestamp = strtotime( $invoice->order_timestamp );
-								
 								echo esc_html( sprintf(
 									// translators: %1$s is the date and %2$s is the time.
 									__( '%1$s at %2$s', 'paid-memberships-pro' ),
