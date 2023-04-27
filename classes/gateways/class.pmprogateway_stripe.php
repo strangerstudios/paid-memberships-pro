@@ -1967,6 +1967,25 @@ class PMProGateway_stripe extends PMProGateway {
 			// If we needed to charge an initial payment, it was successful.
 			if ( ! empty( $order->stripe_payment_intent->latest_charge ) ) {
 				$payment_transaction_id = $order->stripe_payment_intent->latest_charge;
+			} else {
+				// If we haven't charged a payment, the payment method will not be attached to the customer.
+				// Attach it now.
+				try {
+					$payment_method->attach(
+						array(
+							'customer' => $customer->id,
+						)
+					);
+				} catch ( \Stripe\Error $e ) {
+					$order->error = $e->getMessage();
+					return false;
+				} catch ( \Throwable $e ) {
+					$order->error = $e->getMessage();
+					return false;
+				} catch ( \Exception $e ) {
+					$order->error = $e->getMessage();
+					return false;
+				}
 			}
 		}
 
