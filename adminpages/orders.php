@@ -501,8 +501,7 @@ require_once( dirname( __FILE__ ) . '/admin_header.php' ); ?>
 							$timestamp = $order->getTimestamp();
 						} else {
 							$timestamp = current_time( 'timestamp' );
-						}
-
+						}						
 						$year   = date( 'Y', $timestamp );
 						$month  = date( 'n', $timestamp );
 						$day    = date( 'j', $timestamp );
