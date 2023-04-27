@@ -465,8 +465,8 @@ function pmpro_membership_history_profile_fields( $user ) {
 								echo esc_html( sprintf(
 									// translators: %1$s is the date and %2$s is the time.
 									__( '%1$s at %2$s', 'paid-memberships-pro' ),
-									esc_html( date_i18n( get_option( 'date_format' ), $order_timestamp ) ),
-									esc_html( date_i18n( get_option( 'time_format' ), $order_timestamp ) )
+									esc_html( date_i18n( get_option( 'date_format' ), strtotime( get_date_from_gmt( $invoice->timestamp ) ) ) ),
+									esc_html( date_i18n( get_option( 'time_format' ), strtotime( get_date_from_gmt( $invoice->timestamp ) ) ) )
 								) );
 							?>
 						</td>
