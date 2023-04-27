@@ -135,18 +135,20 @@ function pmpro_report_memberships_page()
 	else
 		$period = "monthly";
 
-	if(isset($_REQUEST['month']))
+	if( ! empty( $_REQUEST['month'] ) ) {
 		$month = intval($_REQUEST['month']);
-	else
+	} else {
 		$month = date_i18n("n");
+	}
 
 	$thisyear = date_i18n("Y");
-	if(isset($_REQUEST['year']))
+	if( ! empty( $_REQUEST['year'] ) ) {
 		$year = intval($_REQUEST['year']);
-	else
+	} else {
 		$year = date_i18n("Y");
+	}
 
-	if(isset($_REQUEST['level'])) {
+	if( ! empty( $_REQUEST['level'] ) ) {
 		if( $_REQUEST['level'] == 'paid-levels' ) {
 			$l = pmpro_report_get_levels( 'paid' ); // String of ints and commas. Already escaped for SQL.
 		}elseif( $_REQUEST['level'] == 'free-levels' ) {
@@ -158,7 +160,7 @@ function pmpro_report_memberships_page()
 		$l = "";
 	}
 
-	if ( isset( $_REQUEST[ 'discount_code' ] ) ) {
+	if ( ! empty( $_REQUEST[ 'discount_code' ] ) ) {
 		$discount_code = intval( $_REQUEST[ 'discount_code' ] );
 	} else {
 		$discount_code = '';

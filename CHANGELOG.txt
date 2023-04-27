@@ -1,4 +1,29 @@
 == Changelog ==
+= 2.10.5 - 2023-04-27 =
+* BUG FIX/ENHANCEMENT: Fixed issue where the date/time of orders in the Member History table were sometimes off based on timezone. #2552 (@JarrydLong, @dparker1005)
+* BUG FIX: Fixed issue where checkouts for subscriptions with a $0 initial payment were failing with Stripe. #2454 (@dparker1005)
+* BUG FIX: Fixed the error that would occur if the AUTH_KEY and SECURE_AUTH_KEY constants were not set (e.g. with Local by Flywheel). #2451 (@JarrydLong)
+
+= 2.10.4 - 2023-04-26 =
+* ENHANCEMENT: The spam protection setting is now enabled by default for new installs. #2421 (@dparker1005)
+* ENHANCEMENT: Now showing a dismissible notice if the spam protection setting is not enabled. #2422 (@dparker1005)
+* BUG FIX/ENHANCEMENT: Now trimming the whitespace around values for dropdown/etc fields to ensure consistent results. #2410 (@JarrydLong)
+* BUG FIX/ENHANCEMENT: Now setting the Stripe payment method per subscription instead of using the default payment method when using the update billing form. #2412 (@dparker1005)
+* BUG FIX/ENHANCEMENT: Marking the Register Helper plugin as deprecated. More info here: https://www.paidmembershipspro.com/register-helper-add-on-deprecated/
+* BUG FIX/ENHANCEMENT: Removed the "activate" link from the plugins page for deprecated Add Ons. #2424 (@dparker1005)
+* BUG FIX/ENHANCEMENT: No longer links added through incorrect use of the pmpro_membershiplevels_page_action_links filter. #2431 (@dparker1005)
+* BUG FIX/ENHANCEMENT: Fixed warning when updating billing with Stripe. #2420 (@mircobabini)
+* BUG FIX: Updated the PayPal IPN handler to cancel memberships when the maximum number of retries have failed for a subscription payment. Previously, some of these subscriptions would get stuck in a "suspended" status, which did not trigger the PMPro membership to cancel. #2407 (@dparker1005)
+* BUG FIX: Fixed where file user fields save their files on multisite setups. #2406 (@dparker1005)
+* BUG FIX: Fixed PHP8 compatibility issues with our visit tracking cookie. #2414 (@dparker1005, @JarrydLong)
+* BUG FIX: Fixed PHP8 compatibility issues in the Braintree library. #2418 (@dparker1005)
+* BUG FIX: Fixed issue where taxonomy user fields were not saving correctly in the database. #2423 (@dparker1005)
+* BUG FIX: Fixed issue where the views, visits, and logins CSV report would only include the first page of data. #2436 (@dparker1005)
+* BUG FIX: Fixed issue where the "Account Information" section of checkout would still show up even if the user was just created. #2437 (@dparker1005)
+* BUG FIX: Fixed race condition issue where duplicate refund emails were sometimes sent when using the Stripe gateway. #2438 (@dparker1005)
+* BUG FIX: Fixed timezone offset issue when filtering orders by date range. #2440 (@mircobabini)
+* BUG FIX: Fixed the "transient error" issues happening with some reports in the dashboard. #2443 (@JarrydLong, @ideadude)
+
 = 2.10.3 - 2023-03-02 =
 * BUG FIX: Fixed issue with alternative login methods that call the wp_login_failed hook with only 1 parameter.
 
@@ -304,7 +329,7 @@ BUG FIX: Fixed issue where the billing zipcode was not pulled from user meta cor
 = 2.6.4 - 2021-11-02 =
 * ENHANCEMENT: Now including some information from the htaccess file in Site Health, including whether a getfile.php script is defined or if caching is being used. (@sc0ttkclark)
 * ENHANCEMENT: Now including some of the PMPro-related PHP constants in the Site Health. (@sc0ttkclark)
-* ENHNACEMENT: Now including the minimum PHP version (5.6 currently) in the readme.txt so it's shared on the WordPress.org page. (@sc0ttkclark)
+* ENHANCEMENT: Now including the minimum PHP version (5.6 currently) in the readme.txt so it's shared on the WordPress.org page. (@sc0ttkclark)
 * ENHANCEMENT: Added scrollable classes to the member history shown on user profile edit page in the dashboard. (@kimcoleman)
 * BUG FIX/ENHANCEMENT: Now sending a 200 OK status message early when the Stripe webhook is running to avoid timeout issues. We may use this new pmpro_send_200_http_response in the other webhook/IPN handlers later on. (@dparker1005)
 * BUG FIX/EHNANCEMENT: Removed the "fee" info from the edit user page. This was often misleading. The fee is still shown on the members list and frontend account page. Future updates will include work to make sure the fee is more accurate in cases where subscriptions or levels are being changed by admins after checkout. (@ideadude)
