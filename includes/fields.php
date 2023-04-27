@@ -125,21 +125,21 @@ function pmpro_add_user_taxonomy( $name, $name_plural ) {
 	}
 
 	$pmpro_user_taxonomy_labels = array(
-		'name' => ucwords( $name ),
-		'singular_name' => ucwords( $name ),
-		'menu_name' => ucwords( $name_plural ),
-		'search_items' => sprintf( __( 'Search %s', 'paid-memberships-pro' ), ucwords( $name_plural ) ),
-		'popular_items' => sprintf( __( 'Popular %s', 'paid-memberships-pro' ), ucwords( $name_plural ) ),
-		'all_items' => sprintf( __( 'All %s', 'paid-memberships-pro' ), ucwords( $name_plural ) ),
-		'edit_item' => sprintf( __( 'Edit %s', 'paid-memberships-pro' ), ucwords( $name ) ),
-		'update_item' => sprintf( __( 'Update %s', 'paid-memberships-pro' ), ucwords( $name ) ),
-		'add_new_item' => sprintf( __( 'Add New %s', 'paid-memberships-pro' ), ucwords( $name ) ),
-		'new_item_name' => sprintf( __( 'New %s Name', 'paid-memberships-pro' ), ucwords( $name ) ),
+		'name'                       => ucwords( $name ),
+		'singular_name'              => ucwords( $name ),
+		'menu_name'                  => ucwords( $name_plural ),
+		'search_items'               => sprintf( __( 'Search %s', 'paid-memberships-pro' ), ucwords( $name_plural ) ),
+		'popular_items'              => sprintf( __( 'Popular %s', 'paid-memberships-pro' ), ucwords( $name_plural ) ),
+		'all_items'                  => sprintf( __( 'All %s', 'paid-memberships-pro' ), ucwords( $name_plural ) ),
+		'edit_item'                  => sprintf( __( 'Edit %s', 'paid-memberships-pro' ), ucwords( $name ) ),
+		'update_item'                => sprintf( __( 'Update %s', 'paid-memberships-pro' ), ucwords( $name ) ),
+		'add_new_item'               => sprintf( __( 'Add New %s', 'paid-memberships-pro' ), ucwords( $name ) ),
+		'new_item_name'              => sprintf( __( 'New %s Name', 'paid-memberships-pro' ), ucwords( $name ) ),
 		'separate_items_with_commas' => sprintf( __( 'Separate %s with commas', 'paid-memberships-pro' ), $name_plural ),
-		'add_or_remove_items' => sprintf( __( 'Add or remove %s', 'paid-memberships-pro' ), $name_plural ),
-		'choose_from_most_used' => sprintf( __( 'Choose from the most popular %s', 'paid-memberships-pro' ), $name_plural ),
+		'add_or_remove_items'        => sprintf( __( 'Add or remove %s', 'paid-memberships-pro' ), $name_plural ),
+		'choose_from_most_used'      => sprintf( __( 'Choose from the most popular %s', 'paid-memberships-pro' ), $name_plural ),
 	);
-	
+
 	/**
 	 * Filter the args passed to the user taxonomy created.
 	 *
@@ -147,10 +147,10 @@ function pmpro_add_user_taxonomy( $name, $name_plural ) {
 	 *
 	 */
 	$pmpro_user_taxonomy_args = apply_filters( 'pmpro_user_taxonomy_args', array(
-			'public' => false,
-			'labels' => $pmpro_user_taxonomy_labels,
-			'rewrite' => false,
-			'show_ui' => true,
+			'public'       => false,
+			'labels'       => $pmpro_user_taxonomy_labels,
+			'rewrite'      => false,
+			'show_ui'      => true,
 			'capabilities' => array(
 				'manage_terms' => 'edit_users',
 				'edit_terms'   => 'edit_users',
@@ -164,7 +164,7 @@ function pmpro_add_user_taxonomy( $name, $name_plural ) {
 	/**
 	 * Add admin page for the registered user taxonomies.
 	 */
-	add_action( 'admin_menu', function() use ( $pmpro_user_taxonomy_labels, $safe_name ) {
+	add_action( 'admin_menu', function () use ( $pmpro_user_taxonomy_labels, $safe_name ) {
 		add_users_page(
 			esc_attr( $pmpro_user_taxonomy_labels['menu_name'] ),
 			esc_attr( $pmpro_user_taxonomy_labels['menu_name'] ),
@@ -176,15 +176,16 @@ function pmpro_add_user_taxonomy( $name, $name_plural ) {
 	/**
 	 * Update parent file name to fix the selected menu issue for a user taaxonomy.
 	 */
-	add_filter( 'parent_file', function( $parent_file ) use ( $safe_name ) {
+	add_filter( 'parent_file', function ( $parent_file ) use ( $safe_name ) {
 		global $submenu_file;
 		if (
-			isset($_GET['taxonomy']) &&
+			isset( $_GET['taxonomy'] ) &&
 			$_GET['taxonomy'] == $safe_name &&
 			$submenu_file == 'edit-tags.php?taxonomy=' . $safe_name
 		) {
 			$parent_file = 'users.php';
 		}
+
 		return $parent_file;
 	} );
 }
