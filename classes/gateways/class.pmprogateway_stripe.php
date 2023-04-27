@@ -447,9 +447,13 @@ class PMProGateway_stripe extends PMProGateway {
 							$event_query_arr['created']['gt'] = strtotime( $legacy_last_webhook_recieved_timestamp );
 						}
 
+						try {
+							$recently_sent = Stripe\Event::all( $event_query_arr );
+						} catch ( Exception $e ) {
+							$recently_sent = $e->getMessage();
+						} 
 
-						$recently_sent = Stripe\Event::all( $event_query_arr );
-						if ( ! empty( $recently_sent->data[0] ) ) {
+						if ( ! is_string( $recently_sent ) && ! empty( $recently_sent->data[0] ) ) {
 							if ( $last_received >= $recently_sent->data[0]->created ) {
 								$event_data['status'] =  '<span style="color: green;">' . esc_html__( 'Working', 'paid-memberships-pro' ) . '</span>';
 								$working_webhooks[] = $event_data;
@@ -457,6 +461,10 @@ class PMProGateway_stripe extends PMProGateway {
 								$event_data['status'] = '<span style="color: red;">' . esc_html__( 'Last Sent ', 'paid-memberships-pro' ) . date_i18n( get_option('date_format') . ' ' . get_option('time_format'), $recently_sent->data[0]->created ) . '</span>';
 								$failed_webhooks[] = $event_data;
 							}
+						} elseif ( is_string( $recently_sent ) ) {
+							// An error was returned from the Stripe API. Show it.
+							$event_data['status'] = '<span style="color: red;">' . esc_html__( 'Error: ', 'paid-memberships-pro' ) . $recently_sent . '</span>';
+							$failed_webhooks[] = $event_data;
 						} else {
 							if ( ! empty( $last_received ) ) {
 								$event_data['status'] = '<span style="color: green;">' . esc_html__( 'Working', 'paid-memberships-pro' ) . '</span>';
