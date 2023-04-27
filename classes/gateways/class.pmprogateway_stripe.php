@@ -1764,14 +1764,6 @@ class PMProGateway_stripe extends PMProGateway {
 				return false;
 			}
 
-			$customer = $this->set_default_payment_method_for_customer( $customer, $payment_method );
-			if ( is_string( $customer ) ) {
-				// There was an issue updating the default payment method.
-				$order->error      = __( 'Error updating default payment method.', 'paid-memberships-pro' ) . ' ' . $customer;
-				$order->shorterror = $order->error;
-				return false;
-			}
-
 			// Save customer in $order for create_payment_intent().
 			// This will likely be removed as we rework payment processing.
 			$order->stripe_customer = $customer;
@@ -1787,6 +1779,25 @@ class PMProGateway_stripe extends PMProGateway {
 			// If we needed to charge an initial payment, it was successful.
 			if ( ! empty( $order->stripe_payment_intent->latest_charge ) ) {
 				$payment_transaction_id = $order->stripe_payment_intent->latest_charge;
+			} else {
+				// If we haven't charged a payment, the payment method will not be attached to the customer.
+				// Attach it now.
+				try {
+					$payment_method->attach(
+						array(
+							'customer' => $customer->id,
+						)
+					);
+				} catch ( \Stripe\Error $e ) {
+					$order->error = $e->getMessage();
+					return false;
+				} catch ( \Throwable $e ) {
+					$order->error = $e->getMessage();
+					return false;
+				} catch ( \Exception $e ) {
+					$order->error = $e->getMessage();
+					return false;
+				}
 			}
 		}
 
@@ -1985,6 +1996,12 @@ class PMProGateway_stripe extends PMProGateway {
 	 * @since 1.4
 	 */
 	public function update( &$order ) {
+		// Make sure the order has a subscription_transaction_id.
+		if ( empty( $order->subscription_transaction_id ) ) {
+			$order->error  = __( 'No subscription transaction ID.', 'paid-memberships-pro' );
+			return false;
+		}
+
 		$customer = $this->update_customer_at_checkout( $order );
 		if ( empty( $customer ) ) {
 			// There was an issue creating/updating the Stripe customer.
@@ -2000,17 +2017,38 @@ class PMProGateway_stripe extends PMProGateway {
 			return false;
 		}
 
-		$customer = $this->set_default_payment_method_for_customer( $customer, $payment_method );
-		if ( is_string( $customer ) ) {
-			// There was an issue updating the default payment method.
-			$order->error      = __( "Error updating default payment method.", 'paid-memberships-pro' ) . " " . $customer;
-			$order->shorterror = $order->error;
+		// Attach the customer to the payment method.
+		try {
+			$payment_method->attach(
+				array(
+					'customer' => $customer->id,
+				)
+			);
+		} catch ( \Stripe\Error $e ) {
+			$order->error = $e->getMessage();
+			return false;
+		} catch ( \Throwable $e ) {
+			$order->error = $e->getMessage();
+			return false;
+		} catch ( \Exception $e ) {
+			$order->error = $e->getMessage();
 			return false;
 		}
 
-		if ( ! $this->update_payment_method_for_subscriptions( $order ) ) {
-			$order->error      = __( "Error updating payment method for subscription.", 'paid-memberships-pro' );
-			$order->shorterror = $order->error;
+		// Update the subscription.
+		$subscription_args = array(
+			'default_payment_method' => $order->payment_method_id,
+		);
+		try {
+			Stripe_Subscription::update( $order->subscription_transaction_id, $subscription_args );
+		} catch ( \Stripe\Error $e ) {
+			$order->error = $e->getMessage();
+			return false;
+		} catch ( \Throwable $e ) {
+			$order->error = $e->getMessage();
+			return false;
+		} catch ( \Exception $e ) {
+			$order->error = $e->getMessage();
 			return false;
 		}
 
@@ -2550,34 +2588,6 @@ class PMProGateway_stripe extends PMProGateway {
 	}
 
 	/**
-	 * Sets the default Payment Method for a Customer in Stripe.
-	 *
-	 * @param Stripe_Customer $customer to update default payment method for.
-	 * @param Stripe_PaymentMethod $payment_method to set as default.
-	 * @return Stripe_Customer|string error message.
-	 */
-	private function set_default_payment_method_for_customer( $customer, $payment_method ) {
-		if ( ! empty( $customer->invoice_settings->default_payment_method ) && $customer->invoice_settings->default_payment_method === $payment_method->id ) {
-			// Payment method already correct, no need to update.
-			return $customer;
-		}
-
-		try {
-			$payment_method->attach( [ 'customer' => $customer->id ] );
-			$customer->invoice_settings->default_payment_method = $payment_method->id;
-			$customer->save();
-		} catch ( Stripe\Error\Base $e ) {
-			return $e->getMessage();
-		} catch ( \Throwable $e ) {
-			return $e->getMessage();
-		} catch ( \Exception $e ) {
-			return $e->getMessage();
-		}
-
-		return $customer;
-	}
-
-	/**
 	 * Convert a price to a positive integer in cents (or 0 for a free price)
 	 * representing how much to charge. This is how Stripe wants us to send price amounts.
 	 *
@@ -2626,8 +2636,8 @@ class PMProGateway_stripe extends PMProGateway {
 	 */
 	private function get_subscription( $subscription_id ) {
 		try {
-			$customer = Stripe_Subscription::retrieve( $subscription_id );
-			return $customer;
+			$subscription = Stripe_Subscription::retrieve( $subscription_id );
+			return $subscription;
 		} catch ( \Throwable $e ) {
 			// Assume no subscription found.
 		} catch ( \Exception $e ) {
@@ -2898,11 +2908,18 @@ class PMProGateway_stripe extends PMProGateway {
 			return false;
 		}
 
+		// Make sure we have a payment method on the order.
+		if ( empty( $order->payment_method_id ) ) {
+			$order->error = esc_html__( 'Cannot find payment method.', 'paid-memberships-pro' );
+			return false;
+		}
+
 		$trial_period_days = $this->calculate_trial_period_days( $order );
 
 		try {
 			$subscription_params = array(
 				'customer'          => $customer_id,
+				'default_payment_method' => $order->payment_method_id,
 				'items'             => array(
 					array( 'price' => $price->id ),
 				),
@@ -3269,25 +3286,26 @@ class PMProGateway_stripe extends PMProGateway {
 		// get all subscriptions
 		if ( ! empty( $customer->subscriptions ) ) {
 			$subscriptions = $customer->subscriptions->all();
+
+			foreach( $subscriptions as $subscription ) {
+				// check if cancelled or expired
+				if ( in_array( $subscription->status, array( 'canceled', 'incomplete', 'incomplete_expired' ) ) ) {
+					continue;
+				}
+
+				// check if we have a related order for it
+				$one_order = new MemberOrder();
+				$one_order->getLastMemberOrderBySubscriptionTransactionID( $subscription->id );
+				if ( empty( $one_order ) || empty( $one_order->id ) ) {
+					continue;
+				}
+
+				// update the payment method
+				$subscription->default_payment_method = $customer->invoice_settings->default_payment_method;
+				$subscription->save();
+			}
 		}
 
-		foreach( $subscriptions as $subscription ) {
-			// check if cancelled or expired
-			if ( in_array( $subscription->status, array( 'canceled', 'incomplete', 'incomplete_expired' ) ) ) {
-				continue;
-			}
-
-			// check if we have a related order for it
-			$one_order = new MemberOrder();
-			$one_order->getLastMemberOrderBySubscriptionTransactionID( $subscription->id );
-			if ( empty( $one_order ) || empty( $one_order->id ) ) {
-				continue;
-			}
-
-			// update the payment method
-			$subscription->default_payment_method = $customer->invoice_settings->default_payment_method;
-			$subscription->save();
-		}
 		return true;
 	}
 
