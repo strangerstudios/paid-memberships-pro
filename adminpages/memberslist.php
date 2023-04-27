@@ -9,10 +9,10 @@ require_once dirname( __DIR__ ) . '/adminpages/admin_header.php';
 // Build CSV export link.
 $csv_export_link = admin_url( 'admin-ajax.php' ) . '?action=memberslist_csv';
 if ( isset( $_REQUEST['s'] ) ) {
-	$csv_export_link .= '&s=' . esc_attr( sanitize_text_field( trim( $_REQUEST['s'] ) ) );
+	$csv_export_link .= '&s=' . esc_attr( trim( sanitize_text_field( $_REQUEST['s'] ) ) );
 }
 if ( isset( $_REQUEST['l'] ) ) {
-	$csv_export_link .= '&l=' . sanitize_text_field( trim( $_REQUEST['l'] ) );
+	$csv_export_link .= '&l=' . trim( sanitize_text_field( $_REQUEST['l'] ) );
 }
 
 // Render the List Table.

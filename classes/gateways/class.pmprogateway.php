@@ -210,7 +210,7 @@
 			//this looks different for each gateway, but generally an array of some sort
 			return array();
 		}
-		
+
 		function getTransactionStatus(&$order)
 		{			
 			//this looks different for each gateway, but generally an array of some sort

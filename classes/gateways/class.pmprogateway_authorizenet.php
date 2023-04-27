@@ -151,36 +151,7 @@ class PMProGateway_authorizenet extends PMProGateway
 			if($this->authorize($order))
 			{
 				$this->void($order);
-				if(!pmpro_isLevelTrial($order->membership_level))
-				{
-					//subscription will start today with a 1 period trial
-					$order->ProfileStartDate = date_i18n("Y-m-d\TH:i:s");
-					$order->TrialBillingPeriod = $order->BillingPeriod;
-					$order->TrialBillingFrequency = $order->BillingFrequency;
-					$order->TrialBillingCycles = 1;
-					$order->TrialAmount = 0;
-
-					//add a billing cycle to make up for the trial, if applicable
-					if(!empty($order->TotalBillingCycles))
-						$order->TotalBillingCycles++;
-				}
-				elseif($order->InitialPayment == 0 && $order->TrialAmount == 0)
-				{
-					//it has a trial, but the amount is the same as the initial payment, so we can squeeze it in there
-					$order->ProfileStartDate = date_i18n("Y-m-d\TH:i:s");
-					$order->TrialBillingCycles++;
-
-					//add a billing cycle to make up for the trial, if applicable
-					if(!empty($order->TotalBillingCycles))
-						$order->TotalBillingCycles++;
-				}
-				else
-				{
-					//add a period to the start date to account for the initial payment
-					$order->ProfileStartDate = date_i18n("Y-m-d\TH:i:s", strtotime("+ " . $order->BillingFrequency . " " . $order->BillingPeriod, current_time("timestamp")));
-				}
-
-				$order->ProfileStartDate = apply_filters("pmpro_profile_start_date", $order->ProfileStartDate, $order);
+				$order->ProfileStartDate = pmpro_calculate_profile_start_date( $order, 'Y-m-d\TH:i:s' );
 				return $this->subscribe($order);
 			}
 			else
@@ -198,36 +169,7 @@ class PMProGateway_authorizenet extends PMProGateway
 				//set up recurring billing
 				if(pmpro_isLevelRecurring($order->membership_level))
 				{
-					if(!pmpro_isLevelTrial($order->membership_level))
-					{
-						//subscription will start today with a 1 period trial
-						$order->ProfileStartDate = date_i18n("Y-m-d\TH:i:s");
-						$order->TrialBillingPeriod = $order->BillingPeriod;
-						$order->TrialBillingFrequency = $order->BillingFrequency;
-						$order->TrialBillingCycles = 1;
-						$order->TrialAmount = 0;
-
-						//add a billing cycle to make up for the trial, if applicable
-						if(!empty($order->TotalBillingCycles))
-							$order->TotalBillingCycles++;
-					}
-					elseif($order->InitialPayment == 0 && $order->TrialAmount == 0)
-					{
-						//it has a trial, but the amount is the same as the initial payment, so we can squeeze it in there
-						$order->ProfileStartDate = date_i18n("Y-m-d\TH:i:s");
-						$order->TrialBillingCycles++;
-
-						//add a billing cycle to make up for the trial, if applicable
-						if(!empty($order->TotalBillingCycles))
-							$order->TotalBillingCycles++;
-					}
-					else
-					{
-						//add a period to the start date to account for the initial payment
-						$order->ProfileStartDate = date_i18n("Y-m-d\TH:i:s", strtotime("+ " . $order->BillingFrequency . " " . $order->BillingPeriod, current_time("timestamp")));
-					}
-
-					$order->ProfileStartDate = apply_filters("pmpro_profile_start_date", $order->ProfileStartDate, $order);
+					$order->ProfileStartDate = pmpro_calculate_profile_start_date( $order, 'Y-m-d\TH:i:s' );
 					if($this->subscribe($order))
 					{
 						return true;
@@ -620,7 +562,6 @@ class PMProGateway_authorizenet extends PMProGateway
 
 		if(!empty($order->TrialBillingPeriod) && $order->TrialBillingPeriod != $order->BillingPeriod)
 		{
-			echo "F";
 			return false;
 		}
 
@@ -976,16 +917,15 @@ class PMProGateway_authorizenet extends PMProGateway
 			{
 				$order->status = "error";
 				$order->errorcode = $resultCode;
-				$order->error = $message;
+				$order->error = $text;
 				$order->shorterror = $text;
 			}
 		}
 		else
 		{
 			$order->status = "error";
-			$order->errorcode = $resultCode;
-			$order->error = $message;
-			$order->shorterror = $text;
+			$order->error = __("Could not connect to Authorize.net", 'paid-memberships-pro' );
+			$order->shorterror = __("Could not connect to Authorize.net", 'paid-memberships-pro' );
 		}
 	}
 
@@ -1038,7 +978,6 @@ class PMProGateway_authorizenet extends PMProGateway
 			error_reporting(E_ERROR);
 			fputs($fp, "POST $path  HTTP/1.1\r\n");
 			fputs($fp, $header.$content);
-			fwrite($fp, $out);
 			$response = "";
 			while (!feof($fp))
 			{
@@ -1096,5 +1035,130 @@ class PMProGateway_authorizenet extends PMProGateway
 			$end_position = strpos($haystack,$end);
 			return substr($haystack,$start_position,$end_position-$start_position);
 		}
+	}
+
+	/**
+	 * Pull subscription info from Authorize.net.
+	 *
+	 * @param PMPro_Subscription $subscription to pull data for.
+	 *
+	 * @return string|null Error message is returned if update fails.
+	 */
+	public function update_subscription_info( $subscription ) {
+		$subscription_id = $subscription->get_subscription_transaction_id();
+		$loginname       = pmpro_getOption( 'loginname' );
+		$transactionkey  = pmpro_getOption( 'transactionkey' );
+
+		if( empty( $loginname ) || empty( $transactionkey ) ) {
+			return __( 'Authorize.net login credentials are not set.', 'paid-memberships-pro' );
+		}
+
+		$host = pmpro_getOption( 'gateway_environment' ) === 'live' ? 'api.authorize.net' : 'apitest.authorize.net';
+		$path = '/xml/v1/request.api';
+
+		// Build xml to post.
+		$content =
+				'<?xml version="1.0" encoding="utf-8"?>'.
+				'<ARBGetSubscriptionRequest xmlns="AnetApi/xml/v1/schema/AnetApiSchema.xsd">'.
+				'<merchantAuthentication>'.
+				'<name>' . $loginname . '</name>'.
+				'<transactionKey>' . $transactionkey . '</transactionKey>'.
+				'</merchantAuthentication>' .
+				'<subscriptionId>' . $subscription_id . '</subscriptionId>'.
+				'</ARBGetSubscriptionRequest>';
+
+		// Send the xml via curl.
+		$response = $this->send_request_via_curl( $host, $path, $content );
+
+		// Make sure we have a response.
+		if ( ! $response ) {
+			return __( 'Authorize.net connection failure.', 'paid-memberships-pro' );
+		}
+
+		// If the connection and send worked $response holds the return from Authorize.net.
+		list ( $resultCode, $code, $text, $subscriptionId ) = $this->parse_return( $response );
+		$status = $this->substring_between( $response, '<status>', '</status>' );
+
+		// Make sure we have a good result.
+		if ( $resultCode !== 'Ok' && $code !== 'Ok' ) {
+			return __( 'Authorize.net error:', 'paid-memberships-pro' ) . ' ' . esc_html( $text );
+		}
+
+		// We have good data. Update the subscription.
+		$update_array = array(
+			'startdate' => $this->substring_between( $response, '<startDate>', '</startDate>' ) . ' 00:00:00',
+		);
+		if ( in_array( $this->substring_between( $response, '<status>', '</status>' ), array( 'active', 'suspended' ) ) ) {
+			// Subscription is active.
+			$update_array['status'] = 'active';
+			$update_array['next_payment_date'] = null; // May need to calculate...
+			$update_array['billing_amount'] = $this->substring_between( $response, '<amount>', '</amount>' );
+			$update_array['cycle_number']   = $this->substring_between( $response, '<length>', '</length>' );
+			$update_array['cycle_period']   = rtrim( ucfirst( $this->substring_between( $response, '<unit>', '</unit>' ) ), 's' ); // months > Month.
+			$update_array['trial_amount']   = $this->substring_between( $response, '<trialAmount>', '</trialAmount>' );
+			$update_array['trial_limit']    = $this->substring_between( $response, '<trialOccurrences>', '</trialOccurrences>' );
+
+			// $response doesn't have the next payment date, so we need to calculate it.
+			if ( strtotime( $update_array['startdate'] ) > time()) {
+				// The first recurring payment has not yet been made. Use the start date.
+				$update_array['next_payment_date'] = $update_array['startdate'];
+			} else {
+				// Recurring payments have been made. Calculate the next payment date.
+				$newest_orders = $subscription->get_orders( array( 'limit' => 1 ) );
+				if ( ! empty( $newest_orders ) ) {
+					// Get the most recent order.
+					$newest_order = current( $newest_orders );
+
+					// Calculate the next payment date.
+					$this->next_payment_date = date_i18n( 'Y-m-d H:i:s', strtotime( '+ ' . $update_array['cycle_number'] . ' ' . $update_array['cycle_period'], $newest_order->getTimestamp( true ) ) );
+				}
+			}
+		} else {
+			// Subscription is no longer active.
+			// Can't fill subscription end date, info not present in $response.
+			$update_array['status'] = 'cancelled';
+		}
+		$subscription->set( $update_array );
+	}
+
+	/**
+	 * Cancels a subscription in Authorize.net.
+	 *
+	 * @param PMPro_Subscription $subscription to cancel.
+	 */
+	function cancel_subscription( $subscription ) {
+		$subscription_id = $subscription->get_subscription_transaction_id();
+		$loginname       = pmpro_getOption( 'loginname' );
+		$transactionkey  = pmpro_getOption( 'transactionkey' );
+
+		if( empty( $loginname ) || empty( $transactionkey ) ) {
+			return false;
+		}
+
+		$host = pmpro_getOption( 'gateway_environment' ) === 'live' ? 'api.authorize.net' : 'apitest.authorize.net';
+		$path = '/xml/v1/request.api';
+
+		// Build xml to post.
+		$content =
+				'<?xml version="1.0" encoding="utf-8"?>'.
+				'<ARBCancelSubscriptionRequest xmlns="AnetApi/xml/v1/schema/AnetApiSchema.xsd">'.
+				'<merchantAuthentication>'.
+				'<name>' . $loginname . '</name>'.
+				'<transactionKey>' . $transactionkey . '</transactionKey>'.
+				'</merchantAuthentication>' .
+				'<subscriptionId>' . $subscription_id . '</subscriptionId>'.
+				'</ARBCancelSubscriptionRequest>';
+
+		// Send the xml via curl.
+		$response = $this->send_request_via_curl( $host, $path, $content );
+
+		// Make sure we have a response.
+		if ( ! $response ) {
+			return false;
+		}
+
+		// Check if cancellation succeeded.
+		list ( $resultCode, $code, $text, $subscriptionId ) = $this->parse_return( $response );
+		return $resultCode == 'Ok' || $code == 'Ok';
 	}
 }

@@ -1,4 +1,10 @@
 <?php
+	// in case the file is loaded directly
+	if( ! defined( 'ABSPATH' ) ) {
+		exit;
+	}
+	
+	// min php requirement for this script
 	if ( version_compare( PHP_VERSION, '5.3.29', '<' )) {
 		return;
 	}
@@ -9,23 +15,13 @@
 	use Stripe\PaymentIntent as Stripe_PaymentIntent;
 	use Stripe\Charge as Stripe_Charge;
 	use Stripe\PaymentMethod as Stripe_PaymentMethod;
+	use Stripe\Customer as Stripe_Customer;
 
-	global $isapage;
-	$isapage = true;
-
-	global $logstr;
-	$logstr = "";
+	global $logstr;	
 
 	//you can define a different # of seconds (define PMPRO_STRIPE_WEBHOOK_DELAY in your wp-config.php) if you need this webhook to delay more or less
 	if(!defined('PMPRO_STRIPE_WEBHOOK_DELAY'))
-		define('PMPRO_STRIPE_WEBHOOK_DELAY', 2);
-
-	//in case the file is loaded directly
-	if(!defined("ABSPATH"))
-	{
-		define('WP_USE_THEMES', false);
-		require_once(dirname(__FILE__) . '/../../../../wp-load.php');
-	}
+		define('PMPRO_STRIPE_WEBHOOK_DELAY', 2);	
 
 	if(!class_exists("Stripe\Stripe")) {
 		require_once( PMPRO_DIR . "/includes/lib/Stripe/init.php" );
@@ -44,6 +40,9 @@
 		if ( ! empty( $post_event ) ) {
 			$event_id = sanitize_text_field($post_event->id);
 			$livemode = ! empty( $post_event->livemode );
+		} else {
+			// No event data passed in body, so use current environment.
+			$livemode = pmpro_getOption( 'gateway_environment' ) === 'live';
 		}
 	}
 	else
@@ -91,7 +90,7 @@
 		pmpro_send_200_http_response();
 
 		// Log that we have successfully received a webhook from Stripe.
-		update_option( 'pmpro_stripe_last_webhook_received_' . ( $livemode ? 'live' : 'sandbox' ), date( 'Y-m-d H:i:s' ) );
+		update_option( 'pmpro_stripe_webhook_last_received_' . ( $livemode ? 'live' : 'sandbox' ) . '_' . $pmpro_stripe_event->type, $pmpro_stripe_event->created );
 
 		//check what kind of event it is
 		if($pmpro_stripe_event->type == "invoice.payment_succeeded")
@@ -99,12 +98,12 @@
 			if($pmpro_stripe_event->data->object->amount_due > 0)
 			{
 				//do we have this order yet? (check status too)
-				$order = getOrderFromInvoiceEvent($pmpro_stripe_event);
+				$order = new MemberOrder();
+				$order->getMemberOrderByPaymentTransactionID( $pmpro_stripe_event->data->object->id );
 
 				//no? create it
 				if(empty($order->id))
 				{				
-					//last order for this subscription //getOldOrderFromInvoiceEvent($pmpro_stripe_event);
 					$old_order = new MemberOrder();
 					$old_order->getLastMemberOrderBySubscriptionTransactionID($pmpro_stripe_event->data->object->subscription);
 					
@@ -118,11 +117,11 @@
 					$user_id = $old_order->user_id;
 					$user = get_userdata($user_id);
 
-					if(empty($user))
-					{
+					if ( empty( $user ) ) {
 						$logstr .= "Couldn't find the old order's user. Order ID = " . $old_order->id . ".";
 						pmpro_stripeWebhookExit();
 					}
+					$user->membership_level = pmpro_getMembershipLevelForUser($user_id);
 
 					$invoice = $pmpro_stripe_event->data->object;
 
@@ -164,6 +163,7 @@
 						'id'     => $invoice->payment_intent,
 						'expand' => array(
 							'payment_method',
+							'latest_charge',
 						),
 					);
 					$payment_intent = \Stripe\PaymentIntent::retrieve( $payment_intent_args );
@@ -171,15 +171,15 @@
 					$payment_method = null;
 					if ( ! empty( $payment_intent->payment_method ) ) {
 						$payment_method = $payment_intent->payment_method;
-					} elseif( ! empty( $payment_intent->charges->data[0] ) ) {
+					} elseif( ! empty( $payment_intent->latest_charge ) ) {
 						// If we didn't get a payment method, check the charge.
-						$payment_method = $payment_intent->charges->data[0]->payment_method_details;
+						$payment_method = $payment_intent->latest_charge->payment_method_details;
 					}					
 					if ( empty( $payment_method ) ) {						
 						$logstr .= "Could not find payment method for invoice " . $invoice->id . ".";						
 					}
 					// Update payment method and billing address on order.
-					pmpro_stripe_webhook_populate_order_from_payment( $morder, $payment_method );				
+					pmpro_stripe_webhook_populate_order_from_payment( $morder, $payment_method, $payment_intent->customer );				
 
 					//save
 					$morder->status = "success";
@@ -233,12 +233,21 @@
 			}
 		}
 		elseif($pmpro_stripe_event->type == "invoice.payment_action_required") {
-			// TODO: Test subs with SCA.
-			$old_order = getOldOrderFromInvoiceEvent($pmpro_stripe_event);
+			$invoice = $pmpro_stripe_event->data->object;
+
+			// Get the last order for this invoice's subscription.
+			if ( ! empty( $invoice->subscription ) ) {
+				$old_order = new MemberOrder();
+				$old_order->getLastMemberOrderBySubscriptionTransactionID( $invoice->subscription );
+			}
+
 			if( ! empty( $old_order ) && ! empty( $old_order->id ) ) {
 				$user_id = $old_order->user_id;
 				$user = get_userdata($user_id);
-        		$invoice = $pmpro_stripe_event->data->object;
+				if ( empty( $user ) ) {
+					$logstr .= "Couldn't find the old order's user. Order ID = " . $old_order->id . ".";
+					pmpro_stripeWebhookExit();
+				}
 
 				// Prep order for emails.
 				$morder = new MemberOrder();
@@ -249,6 +258,7 @@
 		          'id'     => $invoice->payment_intent,
 		          'expand' => array(
 		            'payment_method',
+					'latest_charge',
 		          ),
 		        );
 		        $payment_intent = \Stripe\PaymentIntent::retrieve( $payment_intent_args );		        
@@ -256,18 +266,18 @@
 				$payment_method = null;
 				if ( ! empty( $payment_intent->payment_method ) ) {
 					$payment_method = $payment_intent->payment_method;
-				} elseif( ! empty( $payment_intent->charges->data[0] ) ) {
+				} elseif( ! empty( $payment_intent->latest_charge ) ) {
 					// If we didn't get a payment method, check the charge.
-					$payment_method = $payment_intent->charges->data[0]->payment_method_details;
+					$payment_method = $payment_intent->latest_charge->payment_method_details;
 				}
 				if ( empty( $payment_method ) ) {		       	
 					$logstr .= "Could not find payment method for invoice " . $invoice->id;					
 				}
 				// Update payment method and billing address on order.
-				pmpro_stripe_webhook_populate_order_from_payment( $morder, $payment_method );
+				pmpro_stripe_webhook_populate_order_from_payment( $morder, $payment_method, $payment_intent->customer );
 
 				// Add invoice link to the order.
-				$morder->invoice_url = $pmpro_stripe_event->data->object->hosted_invoice_url;
+				$morder->invoice_url = $invoice->hosted_invoice_url;
 
 				// Email the user and ask them to authenticate their payment.
 				$pmproemail = new PMProEmail();
@@ -285,19 +295,46 @@
 			{
 				$logstr .= "Could not find the related subscription for event with ID #" . $pmpro_stripe_event->id . ".";
 				if(!empty($pmpro_stripe_event->data->object->customer))
-					$logstr .= " Customer ID #" . $pmpro_stripe_event->data->object->customer . ".";
+					$logstr .= " Customer ID #" . $invoice->customer . ".";
 				pmpro_stripeWebhookExit();
 			}
 		} elseif($pmpro_stripe_event->type == "charge.failed") {
-			//last order for this subscription
-			$old_order = getOldOrderFromInvoiceEvent($pmpro_stripe_event);
+			$charge = $pmpro_stripe_event->data->object;
 
+			// Get the invoice for this charge if it exists.
+			if ( ! empty( $charge->invoice ) ) {
+				try {
+					$invoice = Stripe_Invoice::retrieve( $charge->invoice );
+				} catch ( Exception $e ) {
+					error_log( 'Unable to fetch Stripe Invoice object: ' . $e->getMessage() );
+					$invoice = null;
+				}
+			}
+
+			// If we have an invoice, try to get the subscription ID from it.
+			if ( ! empty( $invoice ) ) {
+				$subscription_id = $invoice->subscription;
+			} else {
+				$subscription_id = null;
+			}
+
+			// If we have a subscription ID, get the last order for that subscription.
+			if ( ! empty( $subscription_id ) ) {
+				$old_order = new MemberOrder();
+				$old_order->getLastMemberOrderBySubscriptionTransactionID( $subscription_id );
+			}
+
+			// If we have an old order, email the user that their payment failed.
 			if( ! empty( $old_order ) && ! empty( $old_order->id ) )
 			{
 				do_action("pmpro_subscription_payment_failed", $old_order);
 
 				$user_id = $old_order->user_id;
 				$user = get_userdata($user_id);
+				if ( empty( $user ) ) {
+					$logstr .= "Couldn't find the old order's user. Order ID = " . $old_order->id . ".";
+					pmpro_stripeWebhookExit();
+				}
 
 				//prep this order for the failure emails
 				$morder = new MemberOrder();
@@ -309,22 +346,24 @@
 					'id'     => $pmpro_stripe_event->data->object->payment_intent,
 					'expand' => array(
 						'payment_method',
+						'latest_charge',
 					),
 				);
 				$payment_intent = \Stripe\PaymentIntent::retrieve( $payment_intent_args );
 				// Find the payment method.
-				$payment_method = null;
+				$payment_method = null;				
+				
 				if ( ! empty( $payment_intent->payment_method ) ) {
 					$payment_method = $payment_intent->payment_method;
-				} elseif( ! empty( $payment_intent->charges->data[0] ) ) {
+				} elseif( ! empty( $payment_intent->latest_charge ) ) {
 					// If we didn't get a payment method, check the charge.
-					$payment_method = $payment_intent->charges->data[0]->payment_method_details;
+					$payment_method = $payment_intent->latest_charge->payment_method_details;
 				}				
 				if ( empty( $payment_method ) ) {
 					$logstr .= "Could not find payment method for charge " . $pmpro_stripe_event->data->object->id . ".";
 				}
 				// Update payment method and billing address on order.
-				pmpro_stripe_webhook_populate_order_from_payment( $morder, $payment_method );
+				pmpro_stripe_webhook_populate_order_from_payment( $morder, $payment_method, $payment_intent->customer );
 
 				// Email the user and ask them to update their credit card information
 				$pmproemail = new PMProEmail();
@@ -347,83 +386,8 @@
 		}
 		elseif($pmpro_stripe_event->type == "customer.subscription.deleted")
 		{
-			//for one of our users? if they still have a membership for the same level, cancel it
-			$old_order = getOldOrderFromInvoiceEvent($pmpro_stripe_event);
-
-			if( ! empty( $old_order ) && ! empty( $old_order->id ) ) {
-				$user_id = $old_order->user_id;
-				$user = get_userdata($user_id);
-								
-				/**
-				 * Array of Stripe.com subscription IDs and the timestamp when they were configured as 'preservable'
-				 */
-				$preserve = get_user_meta( $user_id, 'pmpro_stripe_dont_cancel', true );
-				
-				// Asume we should cancel the membership
-				$cancel_membership = true;
-				
-				// Grab the subscription ID from the webhook
-				if ( !empty( $pmpro_stripe_event->data->object ) && 'subscription' == $pmpro_stripe_event->data->object->object ) {
-					
-					$subscr = $pmpro_stripe_event->data->object;
-					
-					// Check if there's a sub ID to look at (from the webhook)
-					// If it's in the list of preservable subscription IDs, don't delete it
-					if ( is_array( $preserve ) && in_array( $subscr->id, array_keys( $preserve ) ) ) {
-						
-						$logstr       .= "Stripe subscription ({$subscr->id}) has been flagged during Subscription Update (in user profile). Will NOT cancel the membership for {$user->display_name} ({$user->user_email})!\n";
-						$cancel_membership = false;
-						
-					}
-				}
-				
-				if(!empty($user->ID) && true === $cancel_membership ) {
-					do_action( "pmpro_stripe_subscription_deleted", $user->ID );
-					
-					if ( $old_order->status == "cancelled" ) {
-						$logstr .= "We've already processed this cancellation. Probably originated from WP/PMPro. (Order #{$old_order->id}, Subscription Transaction ID #{$old_order->subscription_transaction_id})\n";
-					} else if ( ! pmpro_hasMembershipLevel( $old_order->membership_id, $user->ID ) ) {
-						$logstr .= "This user has a different level than the one associated with this order. Their membership was probably changed by an admin or through an upgrade/downgrade. (Order #{$old_order->id}, Subscription Transaction ID #{$old_order->subscription_transaction_id})\n";
-					} else {
-						//if the initial payment failed, cancel with status error instead of cancelled					
-						pmpro_cancelMembershipLevel( $old_order->membership_id, $old_order->user_id, 'cancelled' );
-						
-						$logstr .= "Cancelled membership for user with id = {$old_order->user_id}. Subscription transaction id = {$old_order->subscription_transaction_id}.\n";
-						
-						//send an email to the member
-						$myemail = new PMProEmail();
-						$myemail->sendCancelEmail( $user, $old_order->membership_id );
-						
-						//send an email to the admin
-						$myemail = new PMProEmail();
-						$myemail->sendCancelAdminEmail( $user, $old_order->membership_id );
-					}
-					
-					// Try to delete the usermeta entry as it's (probably) stale
-					if ( isset( $preserve[$old_order->subscription_transaction_id])) {
-						unset( $preserve[$old_order->subscription_transaction_id]);
-						update_user_meta( $user_id, 'pmpro_stripe_dont_cancel', $preserve );
-					}
-					
-					$logstr .= "Subscription deleted for user ID #" . $user->ID . ". Event ID #" . $pmpro_stripe_event->id . ".";
-					pmpro_stripeWebhookExit();
-				} else {
-					$logstr .= "Stripe tells us they deleted the subscription, but for some reason we must ignore it. ";
-					
-					if ( false === $cancel_membership ) {
-						$logstr .= "The subscription has been flagged as one to not delete the user membership for.\n ";
-					} else {
-						$logstr .= "Perhaps we could not find a user here for that subscription. ";
-					}
-					
-					$logstr .= "Could also be a subscription managed by a different app or plugin. Event ID # {$pmpro_stripe_event->id}.";
-					pmpro_stripeWebhookExit();
-				}
-				
-			} else {
-				$logstr .= "Stripe tells us a subscription is deleted, but we could not find the order for that subscription. Could be a subscription managed by a different app or plugin. Event ID #" . $pmpro_stripe_event->id . ".";
-				pmpro_stripeWebhookExit();
-			}
+			$logstr .= pmpro_handle_subscription_cancellation_at_gateway( $pmpro_stripe_event->data->object->id, 'stripe', $livemode ? 'live' : 'sandbox' );
+			pmpro_stripeWebhookExit();
 		}
 		elseif( $pmpro_stripe_event->type == "charge.refunded" )
 		{			
@@ -464,6 +428,10 @@
 				$morder->SaveOrder();
 
 				$user = get_user_by( 'email', $morder->Email );
+				if ( empty( $user ) ) {
+					$logstr .= "Couldn't find the old order's user. Order ID = " . $old_order->id . ".";
+					pmpro_stripeWebhookExit();
+				}
 
 				// Send an email to the member.
 				$myemail = new PMProEmail();
@@ -507,10 +475,11 @@
 						'id'     => $checkout_session->payment_intent,
 						'expand' => array(
 							'payment_method',
+							'latest_charge',
 						),
 					);
 					$payment_intent = \Stripe\PaymentIntent::retrieve( $payment_intent_args );
-					$order->payment_transaction_id = $payment_intent->charges->data[0]->id;
+					$order->payment_transaction_id = $payment_intent->latest_charge;
 					if ( ! empty( $payment_intent->payment_method ) ) {
 						$payment_method = $payment_intent->payment_method;
 					}
@@ -543,7 +512,7 @@
 			if ( empty( $payment_method ) ) {
 				$logstr .= "Could not find payment method for Checkout Session " . $checkout_session->id . ".";				
 			}
-			pmpro_stripe_webhook_populate_order_from_payment( $order, $payment_method );
+			pmpro_stripe_webhook_populate_order_from_payment( $order, $payment_method, $subscription->customer );
 
 			// Update the amounts paid.
 			global $pmpro_currency;
@@ -712,14 +681,17 @@
 			return false;
 	}
 
-	// TODO Test this
    	/**
 		* Get the Member's Order from a Stripe Event.
+		*
+		* @deprecated 2.10
 		*
 		* @param Object $pmpro_stripe_event The Stripe Event object sent via webhook.
 		* @return PMPro_MemberOrder|bool Returns either the member order object linked to the Stripe Event data or false if no order is found.
 		*/
 	function getOldOrderFromInvoiceEvent( $pmpro_stripe_event ) {	
+		_deprecated_function( __FUNCTION__, '2.10' );
+
 		// Pause here to give PMPro a chance to finish checkout.
 		sleep( PMPRO_STRIPE_WEBHOOK_DELAY );
 
@@ -781,8 +753,12 @@
 		return false;
 	}
 
-	function getOrderFromInvoiceEvent($pmpro_stripe_event)
-	{
+	/**
+	 * @deprecated 2.10
+	 */
+	function getOrderFromInvoiceEvent($pmpro_stripe_event) {
+		_deprecated_function( __FUNCTION__, '2.10' );
+
 		//pause here to give PMPro a chance to finish checkout
 		sleep(PMPRO_STRIPE_WEBHOOK_DELAY);
 
@@ -865,6 +841,12 @@ function pmpro_stripe_webhook_change_membership_level( $morder ) {
 	$checkout_request_vars = get_pmpro_membership_order_meta( $morder->id, 'checkout_request_vars', true );
 	$_REQUEST = array_merge( $_REQUEST, $checkout_request_vars );
 
+	// Set $_FILES.
+	$checkout_files = get_pmpro_membership_order_meta( $morder->id, 'checkout_files', true );
+	if ( ! empty( $checkout_files ) ) {
+		$_FILES = array_merge( $_FILES, $checkout_files );
+	}
+
 	// Run the pmpro_checkout_before_change_membership_level action in case add ons need to set up.
 	remove_action(  'pmpro_checkout_before_change_membership_level', array('PMProGateway_stripe', 'pmpro_checkout_before_change_membership_level'), 10, 2 );
 	do_action( 'pmpro_checkout_before_change_membership_level', $morder->user_id, $morder );
@@ -899,8 +881,7 @@ function pmpro_stripe_webhook_change_membership_level( $morder ) {
 	);
 
 	global $pmpro_error;
-	if ( ! empty( $pmpro_error ) ) {
-		echo $pmpro_error;
+	if ( ! empty( $pmpro_error ) ) {		
 		ipnlog( $pmpro_error );
 	}
 
@@ -925,7 +906,7 @@ function pmpro_stripe_webhook_change_membership_level( $morder ) {
 						current_time( 'mysql' )
 					)	
 				);
-				do_action( 'pmpro_discount_code_used', $discount_code_id, $user_id, $morder->id );
+				do_action( 'pmpro_discount_code_used', $discount_code_id, $morder->user_id, $morder->id );
 			}
 		}
 
@@ -933,13 +914,13 @@ function pmpro_stripe_webhook_change_membership_level( $morder ) {
 		if ( ! empty( $_POST['first_name'] ) ) {
 			$old_firstname = get_user_meta( $morder->user_id, "first_name", true );
 			if ( empty( $old_firstname ) ) {
-				update_user_meta( $morder->user_id, "first_name", $_POST['first_name'] );
+				update_user_meta( $morder->user_id, "first_name", stripslashes( sanitize_text_field( $_POST['first_name'] ) ) );
 			}
 		}
 		if ( ! empty( $_POST['last_name'] ) ) {
 			$old_lastname = get_user_meta( $morder->user_id, "last_name", true );
 			if ( empty( $old_lastname ) ) {
-				update_user_meta( $morder->user_id, "last_name", $_POST['last_name'] );
+				update_user_meta( $morder->user_id, "last_name", stripslashes( sanitize_text_field( $_POST['last_name'] ) ) );
 			}
 		}
 
@@ -970,8 +951,9 @@ function pmpro_stripe_webhook_change_membership_level( $morder ) {
  *
  * @param MemberOrder          $order            The order to update.
  * @param Stripe_PaymentMethod $payment_method   The payment method object.
+ * @param string               $customer_id      The Stripe customer to try to pull a billing address from if not on the payment method.
  */
-function pmpro_stripe_webhook_populate_order_from_payment( $order, $payment_method ) {
+function pmpro_stripe_webhook_populate_order_from_payment( $order, $payment_method, $customer_id = null ) {
 	global $wpdb;
 
 	// Fill the "Payment Type" and credit card fields.
@@ -1004,19 +986,43 @@ function pmpro_stripe_webhook_populate_order_from_payment( $order, $payment_meth
 		$order->ExpirationDate_YdashM = '';
 	}
 
-	// Add billing address information.
-	$order->billing = new stdClass();
-	$order->billing->name = empty( $payment_method->billing_details->name ) ? '' : $payment_method->billing_details->name;
-	$order->billing->street = empty( $payment_method->billing_details->address->line1 ) ? '' : $payment_method->billing_details->address->line1;
-	$order->billing->city = empty( $payment_method->billing_details->address->city ) ? '' : $payment_method->billing_details->address->city;
-	$order->billing->state = empty( $payment_method->billing_details->address->state ) ? '' : $payment_method->billing_details->address->state;
-	$order->billing->zip = empty( $payment_method->billing_details->address->postal_code ) ? '' : $payment_method->billing_details->address->postal_code;
-	$order->billing->country = empty( $payment_method->billing_details->address->country ) ? '' : $payment_method->billing_details->address->country;
-	$order->billing->phone = empty( $payment_method->billing_details->phone ) ? '' : $payment_method->billing_details->phone;
+	// Check if we have a billing address in the payment method.
+	if ( ! empty( $payment_method ) && ! empty( $payment_method->billing_details ) && ! empty( $payment_method->billing_details->address ) && ! empty( $payment_method->billing_details->address->line1 ) ) {
+		$order->billing = new stdClass();
+		$order->billing->name = empty( $payment_method->billing_details->name ) ? '' : $payment_method->billing_details->name;
+		$order->billing->street = empty( $payment_method->billing_details->address->line1 ) ? '' : $payment_method->billing_details->address->line1;
+		$order->billing->city = empty( $payment_method->billing_details->address->city ) ? '' : $payment_method->billing_details->address->city;
+		$order->billing->state = empty( $payment_method->billing_details->address->state ) ? '' : $payment_method->billing_details->address->state;
+		$order->billing->zip = empty( $payment_method->billing_details->address->postal_code ) ? '' : $payment_method->billing_details->address->postal_code;
+		$order->billing->country = empty( $payment_method->billing_details->address->country ) ? '' : $payment_method->billing_details->address->country;
+		$order->billing->phone = empty( $payment_method->billing_details->phone ) ? '' : $payment_method->billing_details->phone;
 
-	$name_parts = empty( $payment_method->billing_details->name ) ? [] : pnp_split_full_name( $payment_method->billing_details->name );
-	$order->FirstName = empty( $name_parts['fname'] ) ? '' : $name_parts['fname'];
-	$order->LastName = empty( $name_parts['lname'] ) ? '' : $name_parts['lname'];
+		$name_parts = empty( $payment_method->billing_details->name ) ? [] : pnp_split_full_name( $payment_method->billing_details->name );
+		$order->FirstName = empty( $name_parts['fname'] ) ? '' : $name_parts['fname'];
+		$order->LastName = empty( $name_parts['lname'] ) ? '' : $name_parts['lname'];
+	} else {
+		// No billing address in the payment method, let's try to get it from the customer.
+		if ( ! empty( $customer_id ) ) {
+			$customer = Stripe_Customer::retrieve( $customer_id );
+		}
+		if ( ! empty( $customer ) && ! empty( $customer->address ) && ! empty( $customer->address->line1 ) ) {
+			$order->billing = new stdClass();
+			$order->billing->name = empty( $customer->name ) ? '' : $customer->name;
+			$order->billing->street = empty( $customer->address->line1 ) ? '' : $customer->address->line1;
+			$order->billing->city = empty( $customer->address->city ) ? '' : $customer->address->city;
+			$order->billing->state = empty( $customer->address->state ) ? '' : $customer->address->state;
+			$order->billing->zip = empty( $customer->address->postal_code ) ? '' : $customer->address->postal_code;
+			$order->billing->country = empty( $customer->address->country ) ? '' : $customer->address->country;
+			$order->billing->phone = empty( $customer->phone ) ? '' : $customer->phone;
+
+			$name_parts = empty( $customer->name ) ? [] : pnp_split_full_name( $customer->name );
+			$order->FirstName = empty( $name_parts['fname'] ) ? '' : $name_parts['fname'];
+			$order->LastName = empty( $name_parts['lname'] ) ? '' : $name_parts['lname'];
+		} else {
+			// No billing address in the customer, let's try to get it from the old order or from user meta.
+			$order->find_billing_address();
+		}
+	}
 	$order->Email = $wpdb->get_var("SELECT user_email FROM $wpdb->users WHERE ID = '" . esc_sql( $order->user_id ) . "' LIMIT 1");
 	$order->Address1 = $order->billing->street;
 	$order->City = $order->billing->city;

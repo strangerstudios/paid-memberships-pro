@@ -105,13 +105,13 @@ function pmpro_getAddonBySlug( $slug ) {
  */
 function pmpro_get_addon_categories() {
 	return array(
-		'popular' => array( 'pmpro-advanced-levels-shortcode', 'pmpro-register-helper', 'pmpro-woocommerce', 'pmpro-courses', 'pmpro-member-directory', 'pmpro-subscription-delays', 'pmpro-roles', 'pmpro-add-paypal-express', 'pmpro-set-expiration-dates' ),
+		'popular' => array( 'pmpro-advanced-levels-shortcode', 'pmpro-woocommerce', 'pmpro-courses', 'pmpro-member-directory', 'pmpro-subscription-delays', 'pmpro-roles', 'pmpro-add-paypal-express', 'pmpro-set-expiration-dates' ),
 		'association' => array( 'basic-user-avatars', 'pmpro-add-member-admin', 'pmpro-add-name-to-checkout', 'pmpro-approvals', 'pmpro-donations', 'pmpro-events', 'pmpro-import-users-from-csv', 'pmpro-member-directory', 'pmpro-membership-manager-role', 'pmpro-pay-by-check', 'pmpro-set-expiration-dates', 'pmpro-sponsored-members' ),
 		'coaching' => array( 'pmpro-affiliates', 'pmpro-courses', 'pmpro-gift-levels', 'pmpro-member-badges', 'pmpro-membership-card', 'pmpro-user-pages' ),
 		'community' => array( 'pmpro-approvals', 'pmpro-bbpress', 'pmpro-buddypress', 'pmpro-discord-add-on', 'pmpro-email-confirmation', 'pmpro-import-users-from-csv', 'pmpro-invite-only' ),
 		'courses' => array( 'pmpro-courses', 'pmpro-goals', 'pmpro-member-badges', 'pmpro-multiple-memberships-per-user', 'pmpro-user-pages' ),
 		'directory' => array( 'basic-user-avatars', 'pmpro-member-badges', 'pmpro-member-directory', 'pmpro-membership-maps' ),
-		'products' => array( 'pmpro-gift-levels', 'pmpro-shipping', 'pmpro-woocommerce' ),
+		'products' => array( 'MailPoet-Paid-Memberships-Pro-Add-on', 'pmpro-akismet', 'pmpro-gift-levels', 'pmpro-shipping', 'pmpro-woocommerce' ),
 		'content' => array( 'pmpro-addon-packages', 'pmpro-cpt', 'pmpro-series', 'seriously-simple-podcasting', 'pmpro-user-pages' ),
 	);
 }
@@ -319,9 +319,9 @@ function pmpro_admin_init_updating_plugins() {
 	}
 
 	// updating one or more plugins via Dashboard -> Upgrade
-	if ( basename( $_SERVER['SCRIPT_NAME'] ) == 'update.php' && ! empty( $_REQUEST['action'] ) && $_REQUEST['action'] == 'update-selected' && ! empty( $_REQUEST['plugins'] ) ) {
+	if ( basename( sanitize_text_field( $_SERVER['SCRIPT_NAME'] ) ) == 'update.php' && ! empty( $_REQUEST['action'] ) && $_REQUEST['action'] == 'update-selected' && ! empty( $_REQUEST['plugins'] ) ) {
 		// figure out which plugins we are updating
-		$plugins = explode( ',', stripslashes( $_GET['plugins'] ) );
+		$plugins = explode( ',', stripslashes( sanitize_text_field( $_GET['plugins'] ) ) );
 		$plugins = array_map( 'urldecode', $plugins );
 
 		// look for addons
@@ -360,9 +360,9 @@ function pmpro_admin_init_updating_plugins() {
 	}
 
 	// upgrading just one or plugin via an update.php link
-	if ( basename( $_SERVER['SCRIPT_NAME'] ) == 'update.php' && ! empty( $_REQUEST['action'] ) && $_REQUEST['action'] == 'upgrade-plugin' && ! empty( $_REQUEST['plugin'] ) ) {
+	if ( basename( sanitize_text_field( $_SERVER['SCRIPT_NAME'] ) ) == 'update.php' && ! empty( $_REQUEST['action'] ) && $_REQUEST['action'] == 'upgrade-plugin' && ! empty( $_REQUEST['plugin'] ) ) {
 		// figure out which plugin we are updating
-		$plugin = urldecode( trim( $_REQUEST['plugin'] ) );
+		$plugin = urldecode( trim( sanitize_text_field( $_REQUEST['plugin'] ) ) );
 
 		$slug = str_replace( '.php', '', basename( $plugin ) );
 		$addon = pmpro_getAddonBySlug( $slug );
@@ -387,9 +387,9 @@ function pmpro_admin_init_updating_plugins() {
 	}
 
 	// updating via AJAX on the plugins page
-	if ( basename( $_SERVER['SCRIPT_NAME'] ) == 'admin-ajax.php' && ! empty( $_REQUEST['action'] ) && $_REQUEST['action'] == 'update-plugin' && ! empty( $_REQUEST['plugin'] ) ) {
+	if ( basename( sanitize_text_field( $_SERVER['SCRIPT_NAME'] ) ) == 'admin-ajax.php' && ! empty( $_REQUEST['action'] ) && $_REQUEST['action'] == 'update-plugin' && ! empty( $_REQUEST['plugin'] ) ) {
 		// figure out which plugin we are updating
-		$plugin = urldecode( trim( $_REQUEST['plugin'] ) );
+		$plugin = urldecode( trim( sanitize_text_field( $_REQUEST['plugin'] ) ) );
 
 		$slug = str_replace( '.php', '', basename( $plugin ) );
 		$addon = pmpro_getAddonBySlug( $slug );

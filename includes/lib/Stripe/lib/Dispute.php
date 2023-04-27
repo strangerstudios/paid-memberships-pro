@@ -1,5 +1,7 @@
 <?php
 
+// File generated from our OpenAPI spec
+
 namespace Stripe;
 
 /**
@@ -62,17 +64,17 @@ class Dispute extends ApiResource
     const STATUS_WON = 'won';
 
     /**
+     * @param null|array $params
      * @param null|array|string $opts
      *
      * @throws \Stripe\Exception\ApiErrorException if the request fails
      *
      * @return \Stripe\Dispute the closed dispute
      */
-    // TODO: add $params to standardize signature
-    public function close($opts = null)
+    public function close($params = null, $opts = null)
     {
         $url = $this->instanceUrl() . '/close';
-        list($response, $opts) = $this->_request('post', $url, null, $opts);
+        list($response, $opts) = $this->_request('post', $url, $params, $opts);
         $this->refreshFrom($response, $opts);
 
         return $this;
