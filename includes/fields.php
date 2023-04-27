@@ -138,25 +138,27 @@ function pmpro_add_user_taxonomy( $name, $name_plural ) {
 		'choose_from_most_used'      => sprintf( __( 'Choose from the most popular %s', 'paid-memberships-pro' ), $name_plural ),
 	);
 
+	$pmpro_user_taxonomy_args = array(
+		'public'       => false,
+		'labels'       => $pmpro_user_taxonomy_labels,
+		'rewrite'      => false,
+		'show_ui'      => true,
+		'capabilities' => array(
+			'manage_terms' => 'edit_users',
+			'edit_terms'   => 'edit_users',
+			'delete_terms' => 'edit_users',
+			'assign_terms' => 'read',
+		),
+	);
+
 	/**
 	 * Filter the args passed to the user taxonomy created.
 	 *
 	 * @param array $pmpro_user_taxonomy_args The arguments passed to the register_taxonomy function.
+	 * @param string $name The current taxonomy name.
 	 *
 	 */
-	$pmpro_user_taxonomy_args = apply_filters( 'pmpro_user_taxonomy_args', array(
-			'public'       => false,
-			'labels'       => $pmpro_user_taxonomy_labels,
-			'rewrite'      => false,
-			'show_ui'      => true,
-			'capabilities' => array(
-				'manage_terms' => 'edit_users',
-				'edit_terms'   => 'edit_users',
-				'delete_terms' => 'edit_users',
-				'assign_terms' => 'read',
-			),
-		)
-	);
+	$pmpro_user_taxonomy_args = apply_filters( 'pmpro_user_taxonomy_args', $pmpro_user_taxonomy_args, $name );
 	register_taxonomy( $safe_name, 'user', $pmpro_user_taxonomy_args );
 
 	/**
