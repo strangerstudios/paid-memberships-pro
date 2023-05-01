@@ -53,44 +53,52 @@ function pmpro_report_sales_widget() {
 			'all time'   => __('All Time', 'paid-memberships-pro' ),
 		);
 
-	foreach ( $reports as $report_type => $report_name ) {
-		//sale prices stats
-		$count = 0;
-		$max_prices_count = apply_filters( 'pmpro_admin_reports_max_sale_prices', 5 );
-		$prices = pmpro_get_prices_paid( $report_type, $max_prices_count );
-		?>
-		<tbody>
-			<tr class="pmpro_report_tr">
-				<th scope="row">
-					<?php if( ! empty( $prices ) ) { ?>
-						<button class="pmpro_report_th pmpro_report_th_closed"><?php echo esc_html($report_name); ?></button>
-					<?php } else { ?>
-						<?php echo esc_html($report_name); ?>
-					<?php } ?>
-				</th>
-				<td><?php echo esc_html( number_format_i18n( pmpro_getSales( $report_type, null, 'all' ) ) ); ?></td>
-				<td><?php echo pmpro_escape_price( pmpro_formatPrice( pmpro_getRevenue( $report_type ) ) ); ?></td>
-			</tr>
-			<?php
-				//sale prices stats
-				$count = 0;
-				$max_prices_count = apply_filters( 'pmpro_admin_reports_max_sale_prices', 5 );
-				foreach ( $prices as $price => $quantity ) {
-					if ( $count++ >= $max_prices_count ) {
-						break;
-					}
+		/**
+		 * Filter the periods for the sales widget.
+		 * @since TBD
+		 * @param array $reports The array of periods.
+		 * @return array $reports The array of periods.
+		 */
+		$reports = apply_filters( 'pmpro_sales_widget_periods', $reports );
+
+		foreach ( $reports as $report_type => $report_name ) {
+			//sale prices stats
+			$count = 0;
+			$max_prices_count = apply_filters( 'pmpro_admin_reports_max_sale_prices', 5 );
+			$prices = pmpro_get_prices_paid( $report_type, $max_prices_count );
 			?>
-				<tr class="pmpro_report_tr_sub" style="display: none;">
-					<th scope="row">- <?php echo pmpro_escape_price( pmpro_formatPrice( $price ) );?></th>
-					<td><?php echo esc_html( number_format_i18n( $quantity['total'] ) ); ?></td>
-					<td><?php echo pmpro_escape_price( pmpro_formatPrice( $price * $quantity['total'] ) ); ?></td>
+			<tbody>
+				<tr class="pmpro_report_tr">
+					<th scope="row">
+						<?php if( ! empty( $prices ) ) { ?>
+							<button class="pmpro_report_th pmpro_report_th_closed"><?php echo esc_html($report_name); ?></button>
+						<?php } else { ?>
+							<?php echo esc_html($report_name); ?>
+						<?php } ?>
+					</th>
+					<td><?php echo esc_html( number_format_i18n( pmpro_getSales( $report_type, null, 'all' ) ) ); ?></td>
+					<td><?php echo pmpro_escape_price( pmpro_formatPrice( pmpro_getRevenue( $report_type ) ) ); ?></td>
 				</tr>
+				<?php
+					//sale prices stats
+					$count = 0;
+					$max_prices_count = apply_filters( 'pmpro_admin_reports_max_sale_prices', 5 );
+					foreach ( $prices as $price => $quantity ) {
+						if ( $count++ >= $max_prices_count ) {
+							break;
+						}
+				?>
+					<tr class="pmpro_report_tr_sub" style="display: none;">
+						<th scope="row">- <?php echo pmpro_escape_price( pmpro_formatPrice( $price ) );?></th>
+						<td><?php echo esc_html( number_format_i18n( $quantity['total'] ) ); ?></td>
+						<td><?php echo pmpro_escape_price( pmpro_formatPrice( $price * $quantity['total'] ) ); ?></td>
+					</tr>
+				<?php
+				}
+				?>
+			</tbody>
 			<?php
-			}
-			?>
-		</tbody>
-		<?php
-	}
+		}
 	?>
 	</table>
 	<?php if ( function_exists( 'pmpro_report_sales_page' ) ) { ?>
@@ -123,23 +131,26 @@ function pmpro_report_sales_page()
 	else
 		$period = "daily";
 
-	if(isset($_REQUEST['month']))
+	if ( ! empty( $_REQUEST['month'] ) ) {
 		$month = intval($_REQUEST['month']);
-	else
+	} else {
 		$month = date_i18n("n", current_time('timestamp'));
+	}
 
 	$thisyear = date_i18n("Y", current_time('timestamp'));
-	if(isset($_REQUEST['year']))
+	if( ! empty( $_REQUEST['year'] ) ) {
 		$year = intval($_REQUEST['year']);
-	else
+	} else {
 		$year = $thisyear;
+	}
 
-	if(isset($_REQUEST['level']))
+	if( ! empty( $_REQUEST['level'] ) ) {
 		$l = intval($_REQUEST['level']);
-	else
+	} else {
 		$l = "";
+	}
 
-	if ( isset( $_REQUEST[ 'discount_code' ] ) ) {
+	if ( ! empty( $_REQUEST[ 'discount_code' ] ) ) {
 		$discount_code = intval( $_REQUEST[ 'discount_code' ] );
 	} else {
 		$discount_code = '';
@@ -183,7 +194,7 @@ function pmpro_report_sales_page()
 				 	$type_function( IF( mo2id IS NOT NULL, mo1total, NULL ) ) as renewals
 				 FROM ";
 	$sqlQuery .= "(";	// Sub query.
-	$sqlQuery .= "SELECT $date_function( DATE_ADD( mo1.timestamp, INTERVAL $tz_offset SECOND ) ) as date,
+	$sqlQuery .= "SELECT $date_function( DATE_ADD( mo1.timestamp, INTERVAL " . (int) $tz_offset . " SECOND ) ) as date,
 					    mo1.id as mo1id,
 						mo1.total as mo1total,
 						mo2.id as mo2id
@@ -199,15 +210,15 @@ function pmpro_report_sales_page()
 	}
 
 	$sqlQuery .= "WHERE mo1.total > 0
-					AND mo1.timestamp >= DATE_ADD( '$startdate' , INTERVAL - $tz_offset SECOND )
+					AND mo1.timestamp >= DATE_ADD( '" . esc_sql( $startdate ) . "' , INTERVAL - " . (int) $tz_offset . " SECOND )
 					AND mo1.status NOT IN('refunded', 'review', 'token', 'error')
 					AND mo1.gateway_environment = '" . esc_sql( $gateway_environment ) . "' ";
 
 	if(!empty($enddate))
-		$sqlQuery .= "AND mo1.timestamp <= DATE_ADD( '$enddate 23:59:59' , INTERVAL - $tz_offset SECOND )";
+		$sqlQuery .= "AND mo1.timestamp <= DATE_ADD( '" . esc_sql( $enddate ) . " 23:59:59' , INTERVAL - " . (int) $tz_offset . " SECOND )";
 
 	if(!empty($l))
-		$sqlQuery .= "AND mo1.membership_id IN(" . esc_sql( $l ) . ") ";
+		$sqlQuery .= "AND mo1.membership_id IN(" . $l . ") "; // $l is already escaped for SQL. See declaration.
 
 	if ( ! empty( $discount_code ) ) {
 		$sqlQuery .= "AND dc.code_id = '" . esc_sql( $discount_code ) . "' ";
@@ -624,7 +635,12 @@ function pmpro_getSales( $period = 'all time', $levels = 'all', $type = 'all' ) 
 
 	// Restrict by level.
 	if( ! empty( $levels ) && $levels != 'all' ) {
-		$sqlQuery .= "AND mo1.membership_id IN(" . esc_sql( $levels ) . ") ";
+		// Let's make sure that each ID inside of $levels is an integer.
+		if ( ! is_array($levels) ) {
+			$levels = explode( ',', $levels );
+		}
+		$levels = implode( ',', array_map( 'intval', $levels ) );
+		$sqlQuery .= "AND mo1.membership_id IN(" . $levels . ") ";
 	}		
 	
 	// Filter to renewals or new orders only. 	
@@ -638,7 +654,7 @@ function pmpro_getSales( $period = 'all time', $levels = 'all', $type = 'all' ) 
 	$sqlQuery .= "GROUP BY mo1.id ";
 
 	// We want the count of rows produced, so update the query.
-	$sqlQuery = "SELECT COUNT(*) FROM (" . $sqlQuery . ") as t1";
+	$sqlQuery = "SELECT COUNT(*) FROM (" . $sqlQuery  . ") as t1";
 
 	$sales = $wpdb->get_var($sqlQuery);
 
@@ -687,12 +703,7 @@ function pmpro_get_prices_paid( $period, $count = NULL ) {
 
 	// Build query.
 	global $wpdb;
-	$sql_query = "SELECT ROUND(total,8) as rtotal, COUNT(*) as num FROM $wpdb->pmpro_membership_orders WHERE total > 0 AND status NOT IN('refunded', 'review', 'token', 'error') AND timestamp >= '" . $startdate . "' AND gateway_environment = '" . esc_sql( $gateway_environment ) . "' ";
-
-	// Restrict by level.
-	if ( ! empty( $levels ) ) {
-		$sql_query .= 'AND membership_id IN(' . $levels . ') ';
-	}
+	$sql_query = "SELECT ROUND(total,8) as rtotal, COUNT(*) as num FROM $wpdb->pmpro_membership_orders WHERE total > 0 AND status NOT IN('refunded', 'review', 'token', 'error') AND timestamp >= '" . esc_sql( $startdate ) . "' AND gateway_environment = '" . esc_sql( $gateway_environment ) . "' ";
 
 	$sql_query .= ' GROUP BY rtotal ORDER BY num DESC ';
 
@@ -815,8 +826,14 @@ function pmpro_getRevenue( $period, $levels = NULL, $type = 'all' ) {
 					AND mo1.gateway_environment = '" . esc_sql( $gateway_environment ) . "' ";
 
 	// Restrict by level.
-	if(!empty($levels))
+	if ( ! empty( $levels ) ) {
+		// Let's make sure that each ID inside of $levels is an integer.
+		if ( ! is_array($levels) ) {
+			$levels = explode( ',', $levels );
+		}
+		$levels = implode( ',', array_map( 'intval', $levels ) );
 		$sqlQuery .= "AND mo1.membership_id IN(" . $levels . ") ";
+	}
 		
 	// Filter to renewals or new orders only. 	
 	if ( $type == 'renewals' ) {
@@ -861,7 +878,7 @@ function pmpro_get_revenue_between_dates( $start_date, $end_date = '', $level_id
 		$sql_query .= " AND timestamp <= '" . esc_sql( $end_date ) . " 23:59:59'";
 	}
 	if ( ! empty( $level_ids ) ) {
-		$sql_query .= ' AND membership_id IN(' . implode( ', ', $levels ) . ') ';
+		$sql_query .= ' AND membership_id IN(' . implode( ', ', array_map( 'intval', $level_ids ) ) . ') '; 
 	}
 	return $wpdb->get_var($sql_query);
 }

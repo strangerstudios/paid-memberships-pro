@@ -58,11 +58,16 @@ if ( isset( $_REQUEST['pn'] ) ) {
 if ( isset( $_REQUEST['limit'] ) ) {
 	$limit = intval( $_REQUEST['limit'] );
 } else {
-	$limit = 15;
+	$limit = false;
 }
 
-$end   = $pn * $limit;
-$start = $end - $limit;
+if ( $limit ) {
+	$end   = $pn * $limit;
+	$start = $end - $limit;
+} else {
+	$end   = null;
+	$start = null;
+}
 
 if ( $s ) {
 	$sqlQuery = "SELECT SQL_CALC_FOUND_ROWS u.ID, u.user_login, u.user_email, UNIX_TIMESTAMP(CONVERT_TZ(u.user_registered, '+00:00', @@global.time_zone)) as joindate, mu.membership_id, mu.initial_payment, mu.billing_amount, mu.cycle_period, mu.cycle_number, mu.billing_limit, mu.trial_amount, mu.trial_limit, UNIX_TIMESTAMP(CONVERT_TZ(mu.startdate, '+00:00', @@global.time_zone)) as startdate, UNIX_TIMESTAMP(CONVERT_TZ(mu.enddate, '+00:00', @@global.time_zone)) as enddate, m.name as membership FROM $wpdb->users u LEFT JOIN $wpdb->usermeta um ON u.ID = um.user_id LEFT JOIN $wpdb->pmpro_memberships_users mu ON u.ID = mu.user_id AND mu.status = 'active' LEFT JOIN $wpdb->pmpro_membership_levels m ON mu.membership_id = m.id WHERE (u.user_login LIKE '%" . esc_sql( $s ) . "%' OR u.user_email LIKE '%" . esc_sql( $s ) . "%' OR um.meta_value LIKE '%" . esc_sql( $s ) . "%') ";
@@ -73,7 +78,7 @@ if ( $s ) {
 		$sqlQuery .= " AND mu.membership_id = '" . esc_sql( $l ) . "' ";
 	}
 
-	$sqlQuery .= "GROUP BY u.ID ORDER BY user_registered DESC LIMIT $start, $limit";
+	$sqlQuery .= "GROUP BY u.ID ORDER BY user_registered DESC";
 } else {
 	$sqlQuery  = "SELECT SQL_CALC_FOUND_ROWS u.ID, u.user_login, u.user_email, UNIX_TIMESTAMP(CONVERT_TZ(u.user_registered, '+00:00', @@global.time_zone)) as joindate, mu.membership_id, mu.initial_payment, mu.billing_amount, mu.cycle_period, mu.cycle_number, mu.billing_limit, mu.trial_amount, mu.trial_limit, UNIX_TIMESTAMP(CONVERT_TZ(mu.startdate, '+00:00', @@global.time_zone)) as startdate, UNIX_TIMESTAMP(CONVERT_TZ(mu.enddate, '+00:00', @@global.time_zone)) as enddate, m.name as membership FROM $wpdb->users u LEFT JOIN $wpdb->pmpro_memberships_users mu ON u.ID = mu.user_id AND mu.status = 'active' LEFT JOIN $wpdb->pmpro_membership_levels m ON mu.membership_id = m.id";
 	$sqlQuery .= ' WHERE 1=1 ';
@@ -83,7 +88,11 @@ if ( $s ) {
 	} elseif ( $l ) {
 		$sqlQuery .= " AND mu.membership_id = '" . esc_sql( $l ) . "' ";
 	}
-	$sqlQuery .= "GROUP BY u.ID ORDER BY user_registered DESC LIMIT $start, $limit";
+	$sqlQuery .= "GROUP BY u.ID ORDER BY user_registered DESC";
+}
+
+if ( ! empty( $start ) && ! empty( $limit ) ) {
+	$sqlQuery .= "LIMIT " . (int) $start . "," . (int) $limit;
 }
 
 		$sqlQuery = apply_filters( 'pmpro_visits_views_logins_csv_sql', $sqlQuery );
@@ -132,17 +141,17 @@ $default_columns = array(
 	array( 'user', 'user_login' ),
 	array( 'user', 'membership' ),
 	array( 'visits', 'last' ),
-	array( 'visits', 'thisweek' ),
-	array( 'visits', 'thismonth' ),
+	array( 'visits', 'week' ),
+	array( 'visits', 'month' ),
 	array( 'visits', 'ytd' ),
 	array( 'visits', 'alltime' ),
-	array( 'views', 'thisweek' ),
-	array( 'views', 'thismonth' ),
+	array( 'views', 'week' ),
+	array( 'views', 'month' ),
 	array( 'views', 'ytd' ),
 	array( 'views', 'alltime' ),
 	array( 'logins', 'last' ),
-	array( 'logins', 'thisweek' ),
-	array( 'logins', 'thismonth' ),
+	array( 'logins', 'week' ),
+	array( 'logins', 'month' ),
 	array( 'logins', 'ytd' ),
 	array( 'logins', 'alltime' ),
 );
@@ -224,7 +233,6 @@ for ( $ic = 1; $ic <= $iterations; $ic ++ ) {
 	}
 
 	foreach ( $theusers as $user ) {
-
 		$csvoutput = array();
 
 		// Get the visits, views and logins arrays. Set it to an object.
@@ -258,7 +266,7 @@ for ( $ic = 1; $ic <= $iterations; $ic ++ ) {
 		if ( $user->enddate ) {
 			$enddate = pmpro_enclose( date_i18n( $dateformat, $user->joindate ) );
 		} else {
-			$enddate = 'Never';
+			$enddate = __( 'Never', 'paid-memberships-pro' );
 		}
 		
 		// Add joindate and enddate to the CSV export.

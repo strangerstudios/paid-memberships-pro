@@ -130,7 +130,7 @@ class PMPro_Wisdom_Integration {
 	 */
 	public function sync_wisdom_setting_to_plugin( $old_value, $value ) {
 		$opt_out = ! empty( $value[ $this->plugin_slug ] ) ? 0 : 1;		
-		pmpro_setOption( $this->plugin_option, $opt_out );
+		update_option( $this->plugin_option, $opt_out );
 	}
 
 	/**
@@ -169,8 +169,8 @@ class PMPro_Wisdom_Integration {
 	 * @return bool Whether the site is recognized as a local site.
 	 */
 	public function bypass_local_tracking( $is_local = false ) {
-		if ( true === $is_local || 'production' !== wp_get_environment_type() ) {
-			return $is_local;
+		if ( true === $is_local || ( function_exists( 'wp_get_environment_type' ) && 'production' !== wp_get_environment_type() ) ) {
+			return true;
 		}
 
 		$url = network_site_url( '/' );
@@ -178,9 +178,14 @@ class PMPro_Wisdom_Integration {
 		$url       = strtolower( trim( $url ) );
 		$url_parts = parse_url( $url );
 		$host      = ! empty( $url_parts['host'] ) ? $url_parts['host'] : false;
+		$port      = ! empty( $url_parts['port'] ) ? $url_parts['port'] : false;
 
 		if ( empty( $host ) ) {
 			return $is_local;
+		}
+
+		if( 8888 === $port ){
+			return true;
 		}
 
 		if ( 'localhost' === $host ) {
@@ -191,20 +196,76 @@ class PMPro_Wisdom_Integration {
 			return true;
 		}
 
-		$tlds_to_check = [
-			'.local',
-			'.test',
-		];
+		if (
+			// localhost
+			$this->host_starts_with( $host, 'localhost' ) ||
 
-		foreach ( $tlds_to_check as $tld ) {
-			$minus_tld = strlen( $host ) - strlen( $tld );
+			// domains starting with
+			$this->host_starts_with( $host, 'stage' ) ||
+			$this->host_starts_with( $host, 'staging' ) ||
 
-			if ( $minus_tld === strpos( $host, $tld ) ) {
-				return true;
-			}
+			// subdomains
+			$this->host_starts_with( $host, 'dev.' ) ||
+			$this->host_starts_with( $host, 'test.' ) ||
+			$this->host_starts_with( $host, 'testing.' ) ||
+
+			// local tlds
+			$this->host_ends_with( $host, '.test' ) ||
+			$this->host_ends_with( $host, '.local' ) ||
+
+			// common testing/staging tlds and third party hosts
+			$this->host_ends_with( $host, '.bigscoots-staging.com' ) ||
+			$this->host_ends_with( $host, '.closte.com' ) ||
+			$this->host_ends_with( $host, '.cloudwaysapp.com' ) ||
+			$this->host_ends_with( $host, '.e.wpstage.net' ) ||
+			$this->host_ends_with( $host, '.kinsta.cloud' ) ||
+			$this->host_ends_with( $host, '.onrocket.site' ) ||
+			$this->host_ends_with( $host, '.pantheonsite.io' ) ||
+			$this->host_ends_with( $host, '.pressdns.com' ) ||
+			$this->host_ends_with( $host, '.runcloud.link' ) ||
+			$this->host_ends_with( $host, '.servebolt.com' ) ||
+			$this->host_ends_with( $host, '.sg-host.com' ) ||
+			$this->host_ends_with( $host, '.stacks.run' ) ||
+			$this->host_ends_with( $host, '.wpengine.com' )
+		) {
+			return true;
 		}
 
 		return $is_local;
+	}
+
+	/**
+	 * PHP8.0 str_starts_with() polyfill.
+	 *
+	 * @param string $haystack
+	 * @param string $needle
+	 *
+	 * @return bool
+	 */
+	protected function host_starts_with( $haystack, $needle ) {
+		return 0 === strncmp( $haystack, $needle, \strlen( $needle ) );
+	}
+
+	/**
+	 * PHP8.0 str_starts_with() polyfill.
+	 *
+	 * @param string $haystack
+	 * @param string $needle
+	 *
+	 * @return bool
+	 */
+	protected function host_ends_with( $haystack, $needle ) {
+		if ( '' === $needle || $needle === $haystack ) {
+			return true;
+		}
+
+		if ( '' === $haystack ) {
+			return false;
+		}
+
+		$needleLength = \strlen( $needle );
+
+		return $needleLength <= \strlen( $haystack ) && 0 === substr_compare( $haystack, $needle, - $needleLength );
 	}
 
 	/**
@@ -446,6 +507,9 @@ class PMPro_Wisdom_Integration {
 	 * @return array The list of Add Ons categorized by active, inactive, and update available.
 	 */
 	public function get_addons_info() {
+		// This file only is usually only required when is_admin().
+		require_once( PMPRO_DIR . '/includes/addons.php' );
+		
 		// Build the list of Add Ons data to track.
 		$addons      = pmpro_getAddons();
 		$plugin_info = get_site_transient( 'update_plugins' );

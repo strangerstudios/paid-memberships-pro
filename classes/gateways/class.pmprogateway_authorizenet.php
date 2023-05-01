@@ -151,36 +151,7 @@ class PMProGateway_authorizenet extends PMProGateway
 			if($this->authorize($order))
 			{
 				$this->void($order);
-				if(!pmpro_isLevelTrial($order->membership_level))
-				{
-					//subscription will start today with a 1 period trial
-					$order->ProfileStartDate = date_i18n("Y-m-d\TH:i:s");
-					$order->TrialBillingPeriod = $order->BillingPeriod;
-					$order->TrialBillingFrequency = $order->BillingFrequency;
-					$order->TrialBillingCycles = 1;
-					$order->TrialAmount = 0;
-
-					//add a billing cycle to make up for the trial, if applicable
-					if(!empty($order->TotalBillingCycles))
-						$order->TotalBillingCycles++;
-				}
-				elseif($order->InitialPayment == 0 && $order->TrialAmount == 0)
-				{
-					//it has a trial, but the amount is the same as the initial payment, so we can squeeze it in there
-					$order->ProfileStartDate = date_i18n("Y-m-d\TH:i:s");
-					$order->TrialBillingCycles++;
-
-					//add a billing cycle to make up for the trial, if applicable
-					if(!empty($order->TotalBillingCycles))
-						$order->TotalBillingCycles++;
-				}
-				else
-				{
-					//add a period to the start date to account for the initial payment
-					$order->ProfileStartDate = date_i18n("Y-m-d\TH:i:s", strtotime("+ " . $order->BillingFrequency . " " . $order->BillingPeriod, current_time("timestamp")));
-				}
-
-				$order->ProfileStartDate = apply_filters("pmpro_profile_start_date", $order->ProfileStartDate, $order);
+				$order->ProfileStartDate = pmpro_calculate_profile_start_date( $order, 'Y-m-d\TH:i:s' );
 				return $this->subscribe($order);
 			}
 			else
@@ -198,36 +169,7 @@ class PMProGateway_authorizenet extends PMProGateway
 				//set up recurring billing
 				if(pmpro_isLevelRecurring($order->membership_level))
 				{
-					if(!pmpro_isLevelTrial($order->membership_level))
-					{
-						//subscription will start today with a 1 period trial
-						$order->ProfileStartDate = date_i18n("Y-m-d\TH:i:s");
-						$order->TrialBillingPeriod = $order->BillingPeriod;
-						$order->TrialBillingFrequency = $order->BillingFrequency;
-						$order->TrialBillingCycles = 1;
-						$order->TrialAmount = 0;
-
-						//add a billing cycle to make up for the trial, if applicable
-						if(!empty($order->TotalBillingCycles))
-							$order->TotalBillingCycles++;
-					}
-					elseif($order->InitialPayment == 0 && $order->TrialAmount == 0)
-					{
-						//it has a trial, but the amount is the same as the initial payment, so we can squeeze it in there
-						$order->ProfileStartDate = date_i18n("Y-m-d\TH:i:s");
-						$order->TrialBillingCycles++;
-
-						//add a billing cycle to make up for the trial, if applicable
-						if(!empty($order->TotalBillingCycles))
-							$order->TotalBillingCycles++;
-					}
-					else
-					{
-						//add a period to the start date to account for the initial payment
-						$order->ProfileStartDate = date_i18n("Y-m-d\TH:i:s", strtotime("+ " . $order->BillingFrequency . " " . $order->BillingPeriod, current_time("timestamp")));
-					}
-
-					$order->ProfileStartDate = apply_filters("pmpro_profile_start_date", $order->ProfileStartDate, $order);
+					$order->ProfileStartDate = pmpro_calculate_profile_start_date( $order, 'Y-m-d\TH:i:s' );
 					if($this->subscribe($order))
 					{
 						return true;
@@ -620,7 +562,6 @@ class PMProGateway_authorizenet extends PMProGateway
 
 		if(!empty($order->TrialBillingPeriod) && $order->TrialBillingPeriod != $order->BillingPeriod)
 		{
-			echo "F";
 			return false;
 		}
 
@@ -976,16 +917,15 @@ class PMProGateway_authorizenet extends PMProGateway
 			{
 				$order->status = "error";
 				$order->errorcode = $resultCode;
-				$order->error = $message;
+				$order->error = $text;
 				$order->shorterror = $text;
 			}
 		}
 		else
 		{
 			$order->status = "error";
-			$order->errorcode = $resultCode;
-			$order->error = $message;
-			$order->shorterror = $text;
+			$order->error = __("Could not connect to Authorize.net", 'paid-memberships-pro' );
+			$order->shorterror = __("Could not connect to Authorize.net", 'paid-memberships-pro' );
 		}
 	}
 
@@ -1038,7 +978,6 @@ class PMProGateway_authorizenet extends PMProGateway
 			error_reporting(E_ERROR);
 			fputs($fp, "POST $path  HTTP/1.1\r\n");
 			fputs($fp, $header.$content);
-			fwrite($fp, $out);
 			$response = "";
 			while (!feof($fp))
 			{

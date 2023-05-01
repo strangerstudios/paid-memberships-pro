@@ -283,10 +283,12 @@
 					$username = trim(sanitize_text_field($_REQUEST['username']));
 				else
 					$username = "";
-				if(isset($_REQUEST['password']))
-					$password = $_REQUEST['password'];
-				else
+				if(isset($_REQUEST['password'])) {
+					// Can't sanitize the password. Be careful.
+					$password = $_REQUEST['password']; //phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+				} else {
 					$password = "";
+				}
 				if(isset($_REQUEST['bemail']))
 					$bemail = sanitize_email($_REQUEST['bemail']);
 				else
@@ -1088,7 +1090,7 @@
 		/**
 		 * Refunds an order (only supports full amounts)
 		 *
-		 * @param bool    $succes Status of the refund (default: false)
+		 * @param bool    $success Status of the refund (default: false)
 		 * @param object  $morder The Member Order Object
 		 * @since 2.8
 		 * 

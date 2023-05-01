@@ -301,7 +301,7 @@
 			$billTo->postalCode = $order->billing->zip;
 			$billTo->country = $order->billing->country;
 			$billTo->email = $order->Email;
-			$billTo->ipAddress = $_SERVER['REMOTE_ADDR'];
+			$billTo->ipAddress = pmpro_get_ip();
 			$request->billTo = $billTo;
 			//card
 			$card = new stdClass();
@@ -465,7 +465,7 @@
 			$billTo->postalCode = $order->billing->zip;
 			$billTo->country = $order->billing->country;
 			$billTo->email = $order->Email;
-			$billTo->ipAddress = $_SERVER['REMOTE_ADDR'];
+			$billTo->ipAddress = pmpro_get_ip();
 			$request->billTo = $billTo;
 			//card
 			$card = new stdClass();
@@ -663,7 +663,7 @@
 			$billTo->postalCode = $order->billing->zip;
 			$billTo->country = $order->billing->country;
 			$billTo->email = $order->Email;
-			$billTo->ipAddress = $_SERVER['REMOTE_ADDR'];
+			$billTo->ipAddress = pmpro_get_ip();
 			$request->billTo = $billTo;
 			//card
 			$card = new stdClass();
@@ -752,7 +752,7 @@
 			$billTo->postalCode = $order->billing->zip;
 			$billTo->country = $order->billing->country;
 			$billTo->email = $order->Email;
-			$billTo->ipAddress = $_SERVER['REMOTE_ADDR'];
+			$billTo->ipAddress = pmpro_get_ip();
 			$request->billTo = $billTo;
 			//card
 			$card = new stdClass();

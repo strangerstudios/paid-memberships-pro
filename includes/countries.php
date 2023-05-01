@@ -5,7 +5,7 @@
 
 	$pmpro_countries = array(
 		'AD' => __( 'Andorra', 'paid-memberships-pro' ),
-    	'AE' => __( 'United Arab Emirates', 'paid-memberships-pro' ),
+		'AE' => __( 'United Arab Emirates', 'paid-memberships-pro' ),
 		'AF' => __( 'Afghanistan', 'paid-memberships-pro' ),
 		'AG' => __( 'Antigua and Barbuda', 'paid-memberships-pro' ),
 		'AI' => __( 'Anguilla', 'paid-memberships-pro' ),
@@ -251,7 +251,6 @@
 		'ZM' => __( 'Zambia', 'paid-memberships-pro' ),
 		'ZW' => __( 'Zimbabwe', 'paid-memberships-pro' ),
 	  	'USAF' => __( 'US Armed Forces', 'paid-memberships-pro' ),
-		'VE' => __( 'Venezuela', 'paid-memberships-pro' ),
 	);
 
 	asort($pmpro_countries);

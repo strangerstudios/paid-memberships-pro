@@ -50,8 +50,8 @@ class PMPro_Deny_Network_Activation {
 
 				//show notice
 				echo '<div class="notice notice-info is-dismissible"><p>';
-				$text = sprintf( __("The %s plugin should not be network activated. Activate on each individual site's plugin page.", 'paid-memberships-pro'), $plugin_name);
-				echo $text;
+				$text = sprintf( esc_html__("The %s plugin should not be network activated. Activate on each individual site's plugin page.", 'paid-memberships-pro'), $plugin_name);
+				echo esc_html( $text );
 				echo '</p></div>';
 		}
 	}

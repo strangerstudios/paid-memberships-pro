@@ -147,7 +147,12 @@
 		if ( empty( $wpdb->last_error ) ) {		
 			$edit = false;
 			$msg = 1;
-			$msgt = __( 'Membership level added successfully.', 'paid-memberships-pro' );
+
+			if ( ! empty( $saveid ) ) {
+				$msgt = __( 'Membership level updated successfully.', 'paid-memberships-pro' );
+			} else {
+				$msgt = __( 'Membership level added successfully.', 'paid-memberships-pro' );
+			}
 		} else {
 			$msg = -1;
 			$msgt = __( 'Error adding membership level.', 'paid-memberships-pro' );
@@ -942,7 +947,7 @@
 	{
 		$sqlQuery = "SELECT * FROM $wpdb->pmpro_membership_levels ";
 		if($s)
-			$sqlQuery .= "WHERE name LIKE '%$s%' ";
+			$sqlQuery .= "WHERE name LIKE '%" . esc_sql( $s ) . "%' ";
 			$sqlQuery .= "ORDER BY id ASC";
 
 			$levels = $wpdb->get_results($sqlQuery, OBJECT);
@@ -1035,7 +1040,7 @@
 		<?php if( empty( $s ) && count( $reordered_levels ) === 0 ) { ?>
 			<div class="pmpro-new-install">
 				<h2><?php esc_html_e( 'No Membership Levels Found', 'paid-memberships-pro' ); ?></h2>
-				<a href="<?php echo esc_url( admin_url( 'admin.php?page=pmpro-membershiplevels&edit=-1' ) ); ?>" class="button-primary"><?php esc_html_e( 'Create a Membership Level', 'paid-memberships-pro' ); ?></a>
+				<a href="javascript:addLevel();" class="button-primary"><?php esc_html_e( 'Create a Membership Level', 'paid-memberships-pro' ); ?></a>
 				<a href="https://www.paidmembershipspro.com/documentation/initial-plugin-setup/step-1-add-new-membership-level/?utm_source=plugin&utm_medium=pmpro-membershiplevels&utm_campaign=documentation&utm_content=step-1-add-new-membership-level" target="_blank" rel="nofollow noopener" class="button"><?php esc_html_e( 'Video: Membership Levels', 'paid-memberships-pro' ); ?></a>
 			</div> <!-- end pmpro-new-install -->
 		<?php } else { ?>
@@ -1064,6 +1069,9 @@
 			/**
 			 * Filter the Membership Levels page title action links.
 			 *
+			 * @since 2.9
+			 * @since TBD Deprecating strings as $pmpro_membershiplevels_page_action_links values.
+			 *
 			 * @param array $pmpro_membershiplevels_page_action_links Page action links.
 			 * @return array $pmpro_membershiplevels_page_action_links Page action links.
 			 */
@@ -1072,9 +1080,8 @@
 			// Display the links.
 			foreach ( $pmpro_membershiplevels_page_action_links as $pmpro_membershiplevels_page_action_link ) {
 				
-				// If the value is not an array, assume it's a string of HTML.
+				// If the value is not an array, it is not in the correct format. Continue.
 				if ( ! is_array( $pmpro_membershiplevels_page_action_link ) ) {
-					echo $pmpro_membershiplevels_page_action_link;
 					continue;
 				}
 
@@ -1142,7 +1149,7 @@
 						$delete_text = esc_html(
 							sprintf(
 								// translators: %s is the Level Name.
-								__( 'Are you sure you want to delete membership level %s? All subscriptions will be cancelled.', 'paid-memberships-pro' ),
+								__( "Are you sure you want to delete membership level %s? Any gateway subscriptions or third-party connections with a member's account will remain active.", 'paid-memberships-pro' ),
 								$level->name
 							)
 						);
@@ -1278,10 +1285,19 @@
 			jQuery('.pmproPopupCloseButton').click(function() {
 				jQuery('.pmpro-popup-overlay').hide();
 			});
+			
+			// Hide the popup banner if "ESC" is pressed.
+			jQuery(document).keyup(function (e) {
+				if (e.key === 'Escape') {
+					jQuery('.pmpro-popup-overlay').hide();
+				}
+			});
+
+			<?php if( ! empty( $_REQUEST['showpopup'] ) ) { ?>addLevel();<?php } ?>
 		} );
 		function addLevel() {
 			jQuery('.pmpro-popup-overlay').show();
-		}
+		}		
 	</script>
 	<div id="pmpro-popup" class="pmpro-popup-overlay">
 		<span class="pmpro-popup-helper"></span>

@@ -37,7 +37,7 @@
 	//get users (search input field)
 	$search_key = false;
 	if( isset( $_REQUEST['s'] ) ) {
-		$s = sanitize_text_field( trim( $_REQUEST['s'] ) );
+		$s = trim( sanitize_text_field( $_REQUEST['s'] ) );
 	} else {
 		$s = '';
 	}
@@ -159,7 +159,7 @@
 		if ( ! empty( $search_key ) ) {
 			// If there's a colon in the search string, make the search smarter.
 			if( in_array( $search_key, array( 'login', 'nicename', 'email', 'url', 'display_name' ), true ) ) {
-				$key_column = 'u.user_' . esc_sql( $search_key );
+				$key_column = 'u.user_' . $search_key; // All options for $search_key are safe for use in a query.
 				$search = " AND $key_column LIKE '%" . esc_sql( $s ) . "%' ";
 			} elseif ( $search_key === 'discount' || $search_key === 'discount_code' || $search_key === 'dc' ) {
 				$user_ids = $wpdb->get_col( "SELECT dcu.user_id FROM $wpdb->pmpro_discount_codes_uses dcu LEFT JOIN $wpdb->pmpro_discount_codes dc ON dcu.code_id = dc.id WHERE dc.code = '" . esc_sql( $s ) . "'" );
@@ -220,7 +220,7 @@
 
 	//records for active users with the requested membership level
 	// elseif($l)
-	$filter = ( (is_null($filter) && is_numeric($l)) ? " AND mu.status = 'active' AND mu.membership_id = " . esc_sql($l) . " " : $filter);
+	$filter = ( (is_null($filter) && is_numeric($l)) ? " AND mu.status = 'active' AND mu.membership_id = " . (int) $l . " " : $filter);
 
 	//any active users
 	// else
@@ -435,21 +435,20 @@
 			}
 
 			//joindate and enddate
-			array_push($csvoutput, pmpro_enclose(date($dateformat, $theuser->joindate)));
+			array_push($csvoutput, pmpro_enclose(date_i18n($dateformat, $theuser->joindate)));
 
 			if($theuser->membership_id)
 			{
 				if($theuser->enddate)
 					array_push($csvoutput, pmpro_enclose(apply_filters("pmpro_memberslist_expires_column", date_i18n($dateformat, $theuser->enddate), $theuser)));
 				else
-					array_push($csvoutput, pmpro_enclose(apply_filters("pmpro_memberslist_expires_column", "Never", $theuser)));
+					array_push($csvoutput, pmpro_enclose(apply_filters("pmpro_memberslist_expires_column", __('Never', 'paid-memberships-pro'), $theuser)));
 			}
-			elseif($l == "oldmembers" && $theuser->enddate)
-			{
-				array_push($csvoutput, pmpro_enclose(date($dateformat, $theuser->enddate)));
+			elseif($l == "oldmembers" && $theuser->enddate) {
+				array_push($csvoutput, pmpro_enclose(date_i18n($dateformat, $theuser->enddate)));
+			} else {
+				array_push($csvoutput, __('N/A', 'paid-memberships-pro'));
 			}
-			else
-				array_push($csvoutput, "N/A");
 
 			//any extra columns
 			if(!empty($extra_columns))
