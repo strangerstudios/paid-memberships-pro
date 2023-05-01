@@ -59,6 +59,7 @@ require_once( PMPRO_DIR . '/adminpages/reports/sales.php' );		// load the Sales 
 require_once( PMPRO_DIR . '/includes/admin.php' );                  // admin notices and functionality
 require_once( PMPRO_DIR . '/includes/adminpages.php' );             // dashboard pages
 require_once( PMPRO_DIR . '/classes/class-pmpro-members-list-table.php' ); // Members List
+require_once( PMPRO_DIR . '/classes/class-pmpro-discount-code-list-table.php' ); // Discount Code List
 
 if ( version_compare( PHP_VERSION, '5.3.29', '>=' ) ) {
 	require_once( PMPRO_DIR . '/blocks/blocks.php' );             	// Gutenberg blocks
