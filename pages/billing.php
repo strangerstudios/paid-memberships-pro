@@ -49,6 +49,7 @@
 		 * @since 1.9.2
 		 */
 		 do_action('pmpro_billing_message_top'); ?>
+
 		<ul>
 			<?php
 			 /**
@@ -138,7 +139,6 @@
 		// Show the default gateway form and allow billing information update.
 		?>
 		<div id="pmpro_level-<?php echo intval( $level->id ); ?>" class="<?php echo esc_attr( pmpro_get_element_class( $pmpro_billing_gateway_class, 'pmpro_level-' . $level->id ) ); ?>">
-
 		<form id="pmpro_form" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form' ) ); ?>" action="<?php echo esc_url( pmpro_url( "billing", "", "https") ) ?>" method="post">
 
 			<input type="hidden" name="level" value="<?php echo esc_attr($level->id);?>" />

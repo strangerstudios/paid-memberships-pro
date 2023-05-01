@@ -217,9 +217,7 @@ jQuery( document ).ready( function( $ ) {
 
 			// error message
 			$( '#pmpro_message' ).text( response.error.message ).addClass( 'pmpro_error' ).removeClass( 'pmpro_alert' ).removeClass( 'pmpro_success' ).show();
-			//Scroll a bit above the meesage, otherwise is not visible on the page.
-			const offset = $( '#pmpro_message' ).offset().top - 100;
-			scrollTo(0,offset);
+			
 		} else if ( response.paymentMethod ) {			
 			// A payment method was created successfully. Submit the checkout form and finish the checkout in PHP.
 			paymentMethodId = response.paymentMethod.id;
