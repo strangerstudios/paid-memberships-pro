@@ -322,9 +322,9 @@ class PMPro_Orders_List_Table extends WP_List_Table {
                 $start_date = $start_year . '-' . $start_month . '-' . $start_day;
                 $end_date   = $end_year . '-' . $end_month . '-' . $end_day;
 
-                // add times to dates
-                $start_date = $start_date . ' 00:00:00';
-                $end_date   = $end_date . ' 23:59:59';
+                // add times to dates and localize
+                $start_date = get_gmt_from_date( $start_date . ' 00:00:00' );
+                $end_date   = get_gmt_from_date( $end_date . ' 23:59:59' );
 
             } elseif ( $filter == 'predefined-date-range' ) {
                 if ( $predefined_date == 'Last Month' ) {
@@ -343,9 +343,10 @@ class PMPro_Orders_List_Table extends WP_List_Table {
                     $end_date   = date( 'Y-m-d', strtotime( "last day of December $year", $now ) );
                 }
 
-                // add times to dates
-                $start_date = $start_date . ' 00:00:00';
-                $end_date   = $end_date . ' 23:59:59';
+                // add times to dates and localize
+                $start_date = get_gmt_from_date( $start_date . ' 00:00:00' );
+                $end_date   = get_gmt_from_date( $end_date . ' 23:59:59' );
+
 
             }
         
