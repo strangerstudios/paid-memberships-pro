@@ -216,10 +216,10 @@ jQuery( document ).ready( function( $ ) {
 			$('#pmpro_processing_message').css('visibility', 'hidden');
 
 			// error message
-			const $pmpro_message = $( '#pmpro_message' ).length ? $( '#pmpro_message' ) : $( '<div />').attr( 'id', 'pmpro_message' ).addClass( 'pmpro_message' ).insertBefore( form );
 			$( '#pmpro_message' ).text( response.error.message ).addClass( 'pmpro_error' ).removeClass( 'pmpro_alert' ).removeClass( 'pmpro_success' ).show();
-			//Otherwise, error message is not visible on page.
-			scrollTo(0,0)
+			//Scroll a bit above the meesage, otherwise is not visible on the page.
+			const offset = $( '#pmpro_message' ).offset().top - 100;
+			scrollTo(0,offset);
 		} else if ( response.paymentMethod ) {			
 			// A payment method was created successfully. Submit the checkout form and finish the checkout in PHP.
 			paymentMethodId = response.paymentMethod.id;
