@@ -404,7 +404,7 @@ class PMPro_Discount_Code_List_Table extends WP_List_Table {
 				$actions_html[] = sprintf(
 					'<span class="%1$s">%2$s</span>',
 					esc_attr( $action ),
-					$link
+					$link // Escaped above.
 				);
 			}
 
@@ -430,7 +430,7 @@ class PMPro_Discount_Code_List_Table extends WP_List_Table {
 		if( $item->uses > 0 ) {
 			echo "<strong>" . (int)$item->used . "</strong>/" . (int)$item->uses;
 		} else {
-			echo "<strong>" . (int)$item->used . "</strong>/" . __( 'unlimited', 'paid-memberships-pro' );
+			echo "<strong>" . (int)$item->used . "</strong>/" . esc_html__( 'unlimited', 'paid-memberships-pro' );
 		}
 
 	}
@@ -491,9 +491,10 @@ class PMPro_Discount_Code_List_Table extends WP_List_Table {
 			}
 		}
 		if( $level_names ) {
-			echo implode( ', ', $level_names );
+			// Echo imploded level names and escape allowing links.
+			echo wp_kses( implode( ', ', $level_names ), array( 'a' => array( 'href' => array(), 'title' => array(), 'target' => array() ) ) );
 		} else {
-			echo __( 'None', 'paid-memberships-pro' );
+			esc_html_e( 'None', 'paid-memberships-pro' );
 		}
 	}
 	

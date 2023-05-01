@@ -4,10 +4,9 @@
 	{
 		die(__("You do not have permissions to perform this action.", 'paid-memberships-pro' ));
 	}
-	
-	global $wpdb, $pmpro_currency_symbol, $pmpro_stripe_error, $pmpro_braintree_error, $pmpro_payflow_error, $pmpro_twocheckout_error, $pmpro_pages, $gateway;	
 
-	require_once dirname( __DIR__ ) . '/adminpages/admin_header.php';
+	//vars
+	global $wpdb, $pmpro_currency_symbol, $pmpro_stripe_error, $pmpro_braintree_error, $pmpro_payflow_error, $pmpro_twocheckout_error, $pmpro_pages, $gateway;
 
 	$now = current_time( 'timestamp' );
 
@@ -748,7 +747,6 @@
 				<?php
 				}
 
-				global $discountcode_list_table;
 				$discountcode_list_table = new PMPro_Discount_Code_List_Table();
 				$discountcode_list_table->prepare_items();
 				
