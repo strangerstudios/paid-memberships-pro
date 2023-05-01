@@ -318,8 +318,11 @@ class PMPro_Discount_Code_List_Table extends WP_List_Table {
 			$delete_nonce_url = wp_nonce_url(
 				add_query_arg(
 					[
-						'page'   => 'pmpro-discountcodes',
-						'delete' => $item->id,
+						'page'    => 'pmpro-discountcodes',
+						'delete'  => $item->id,
+						's' 	  => isset( $_REQUEST['s'] ) ? sanitize_text_field( $_REQUEST['s'] ) : null,
+						'orderby' => isset( $_REQUEST['orderby'] ) ? sanitize_text_field( $_REQUEST['orderby'] ) : null,
+						'order'   => isset( $_REQUEST['order'] ) ? sanitize_text_field( $_REQUEST['order'] ) : null,
 					],
 					admin_url( 'admin.php' )
 				),
