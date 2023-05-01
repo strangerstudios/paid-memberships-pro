@@ -13,7 +13,8 @@ function pmpro_shortcode_account($atts, $content=null, $code="")
 
 	extract(shortcode_atts(array(
 		'section' => '',
-		'sections' => 'membership,profile,invoices,links'
+		'sections' => 'membership,profile,invoices,links',
+		'title' => 'title',
 	), $atts));
 
 	//did they use 'section' instead of 'sections'?
@@ -24,6 +25,9 @@ function pmpro_shortcode_account($atts, $content=null, $code="")
 	$sections = array_map('trim',explode(",",$sections));
 	ob_start();
 
+	//Extrct the title if conditions are met.
+	$title_param = count($sections) == 1 && ! empty( $atts['title'] ) ? $atts['title'] : null;
+
 	//if a member is logged in, show them some info here (1. past invoices. 2. billing information with button to update.)
 	$order = new MemberOrder();
 	$order->getLastMemberOrder();
@@ -32,10 +36,12 @@ function pmpro_shortcode_account($atts, $content=null, $code="")
 	$invoices = $wpdb->get_results("SELECT *, UNIX_TIMESTAMP(CONVERT_TZ(timestamp, '+00:00', @@global.time_zone)) as timestamp FROM $wpdb->pmpro_membership_orders WHERE user_id = '$current_user->ID' AND status NOT IN('review', 'token', 'error') ORDER BY timestamp DESC LIMIT 6");
 	?>
 	<div id="pmpro_account">
-		<?php if(in_array('membership', $sections) || in_array('memberships', $sections)) { ?>
-			<div id="pmpro_account-membership" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_box', 'pmpro_account-membership' ) ); ?>">
+		<?php if(in_array('membership', $sections) || in_array('memberships', $sections)) {
+			$membership_title = $title_param ? $title_param : 'My Membership';
+		?>
 
-				<h3><?php esc_html_e("My Memberships", 'paid-memberships-pro' );?></h3>
+			<div id="pmpro_account-membership" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_box', 'pmpro_account-membership' ) ); ?>">
+				<h3><?php esc_html_e($membership_title, 'paid-memberships-pro' );?></h3>
 				<table class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_table' ) ); ?>" width="100%" cellpadding="0" cellspacing="0" border="0">
 					<thead>
 						<tr>
@@ -168,10 +174,12 @@ function pmpro_shortcode_account($atts, $content=null, $code="")
 			</div> <!-- end pmpro_account-membership -->
 		<?php } ?>
 
-		<?php if(in_array('profile', $sections)) { ?>
+		<?php if(in_array('profile', $sections)) {
+			$profile_title = $title_param ? $title_param : 'My Account';
+		?>
 			<div id="pmpro_account-profile" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_box', 'pmpro_account-profile' ) ); ?>">
 				<?php wp_get_current_user(); ?>
-				<h3><?php esc_html_e("My Account", 'paid-memberships-pro' );?></h3>
+				<h3><?php esc_html_e($profile_title, 'paid-memberships-pro' );?></h3>
 				<?php if($current_user->user_firstname) { ?>
 					<p><?php echo esc_html( $current_user->user_firstname );?> <?php echo esc_html( $current_user->user_lastname );?></p>
 				<?php } ?>
@@ -221,9 +229,11 @@ function pmpro_shortcode_account($atts, $content=null, $code="")
 			</div> <!-- end pmpro_account-profile -->
 		<?php } ?>
 
-		<?php if(in_array('invoices', $sections) && !empty($invoices)) { ?>
+		<?php if(in_array('invoices', $sections) && !empty($invoices)) {
+			$invoices_title = $title_param ? $title_param : 'Past Invoices';
+		?>
 		<div id="pmpro_account-invoices" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_box', 'pmpro_account-invoices' ) ); ?>">
-			<h3><?php esc_html_e("Past Invoices", 'paid-memberships-pro' );?></h3>
+			<h3><?php esc_html_e($invoices_title, 'paid-memberships-pro' );?></h3>
 			<table class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_table' ) ); ?>" width="100%" cellpadding="0" cellspacing="0" border="0">
 				<thead>
 					<tr>
@@ -275,9 +285,11 @@ function pmpro_shortcode_account($atts, $content=null, $code="")
 		</div> <!-- end pmpro_account-invoices -->
 		<?php } ?>
 
-		<?php if(in_array('links', $sections) && (has_filter('pmpro_member_links_top') || has_filter('pmpro_member_links_bottom'))) { ?>
+		<?php if(in_array('links', $sections) && (has_filter('pmpro_member_links_top') || has_filter('pmpro_member_links_bottom'))) {
+			$links_title = $title_param ? $title_param : 'Member Links';
+		?>
 		<div id="pmpro_account-links" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_box', 'pmpro_account-links' ) ); ?>">
-			<h3><?php esc_html_e("Member Links", 'paid-memberships-pro' );?></h3>
+			<h3><?php esc_html_e($links_title, 'paid-memberships-pro' );?></h3>
 			<ul>
 				<?php
 					do_action("pmpro_member_links_top");
