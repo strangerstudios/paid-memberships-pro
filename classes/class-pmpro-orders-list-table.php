@@ -233,13 +233,7 @@ class PMPro_Orders_List_Table extends WP_List_Table {
                 $l = intval( $_REQUEST['l'] );
             } else {
                 $l = false;
-            }
-
-            if ( isset( $_REQUEST['paged'] ) ) {
-                $pn = intval( $_REQUEST['paged'] );
-            } else {
-                $pn = 1;
-            }            
+            }         
 
             if ( isset( $_REQUEST['discount-code'] ) ) {
                 $discount_code = intval( $_REQUEST['discount-code'] );
@@ -300,54 +294,10 @@ class PMPro_Orders_List_Table extends WP_List_Table {
             } else {
                 $filter = 'all';
             }
-    
-            $items_per_page = $this->get_items_per_page( 'orders_per_page' );
-            /**
-             * Filter to set the default number of items to show per page
-             * on the Orders page in the admin.
-             *
-             * @since 1.8.4.5
-             *
-             * @param int $limit The number of items to show per page.
-             */
-            $limit = apply_filters( 'pmpro_orders_per_page', $items_per_page );
-
-            $end   = $pn * $limit;
-            $start = $end - $limit;
 
             // filters
             if ( empty( $filter ) || $filter === 'all' ) {
                 $filter    = 'all';
-            } elseif ( $filter == 'within-a-date-range' ) {
-                $start_date = $start_year . '-' . $start_month . '-' . $start_day;
-                $end_date   = $end_year . '-' . $end_month . '-' . $end_day;
-
-                // add times to dates and localize
-                $start_date = get_gmt_from_date( $start_date . ' 00:00:00' );
-                $end_date   = get_gmt_from_date( $end_date . ' 23:59:59' );
-
-            } elseif ( $filter == 'predefined-date-range' ) {
-                if ( $predefined_date == 'Last Month' ) {
-                    $start_date = date( 'Y-m-d', strtotime( 'first day of last month', $now ) );
-                    $end_date   = date( 'Y-m-d', strtotime( 'last day of last month', $now ) );
-                } elseif ( $predefined_date == 'This Month' ) {
-                    $start_date = date( 'Y-m-d', strtotime( 'first day of this month', $now ) );
-                    $end_date   = date( 'Y-m-d', strtotime( 'last day of this month', $now ) );
-                } elseif ( $predefined_date == 'This Year' ) {
-                    $year       = date( 'Y', $now );
-                    $start_date = date( 'Y-m-d', strtotime( "first day of January $year", $now ) );
-                    $end_date   = date( 'Y-m-d', strtotime( "last day of December $year", $now ) );
-                } elseif ( $predefined_date == 'Last Year' ) {
-                    $year       = date( 'Y', $now ) - 1;
-                    $start_date = date( 'Y-m-d', strtotime( "first day of January $year", $now ) );
-                    $end_date   = date( 'Y-m-d', strtotime( "last day of December $year", $now ) );
-                }
-
-                // add times to dates and localize
-                $start_date = get_gmt_from_date( $start_date . ' 00:00:00' );
-                $end_date   = get_gmt_from_date( $end_date . ' 23:59:59' );
-
-
             }
         
             // The code that goes before the table is here
