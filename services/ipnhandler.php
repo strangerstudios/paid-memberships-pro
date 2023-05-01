@@ -237,7 +237,6 @@ if ( $txn_type == "recurring_payment" ) {
  * @param array List of txn types to be treated as failures.
  */
 $failed_payment_txn_types = apply_filters( 'pmpro_paypal_renewal_failed_txn_types', array(
-	'recurring_payment_suspended_due_to_max_failed_payment', // && 'suspended' == $profile_status
 	'recurring_payment_suspended',
 	'recurring_payment_skipped',
 	'subscr_failed'
@@ -256,7 +255,7 @@ if ( in_array( $txn_type, $failed_payment_txn_types ) ) {
 }
 
 // Recurring Payment Profile Cancelled or Failed (PayPal Express)
-if ( $txn_type == 'recurring_payment_profile_cancel' || $txn_type == 'recurring_payment_failed' ) {
+if ( $txn_type == 'recurring_payment_profile_cancel' || $txn_type == 'recurring_payment_failed' || $txn_type == 'recurring_payment_suspended_due_to_max_failed_payment' ) {
 	//find last order
 	$last_subscription_order = new MemberOrder();
 	if ( $last_subscription_order->getLastMemberOrderBySubscriptionTransactionID( $recurring_payment_id ) == false ) {

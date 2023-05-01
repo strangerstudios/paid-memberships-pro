@@ -438,7 +438,7 @@ function pmpro_report_track_values($type, $user_id = NULL) {
 	//set cookie for visits
 	if( $type === 'visits' && empty( $_COOKIE['pmpro_visit'] ) ) {
 		// The secure parameter is set to is_ssl(), true if HTTPS.
-        setcookie( 'pmpro_visit', '1', null, COOKIEPATH, COOKIE_DOMAIN, is_ssl(), true );
+        setcookie( 'pmpro_visit', '1', 0, COOKIEPATH, COOKIE_DOMAIN, is_ssl(), true );
     }
 
 	//some vars for below

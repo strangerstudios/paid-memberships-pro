@@ -137,9 +137,31 @@ function pmpro_register_helper_deprecated() {
 }
 add_action( 'plugins_loaded', 'pmpro_register_helper_deprecated', 20 );
 
-// Check if installed, deactivate it and show a notice now.
-function pmpro_check_for_deprecated_add_ons() {
+/**
+ * Get a list of deprecated PMPro Add Ons.
+ *
+ * @since TBD
+ *
+ * @return array Add Ons that are deprecated.
+ */
+function pmpro_get_deprecated_add_ons() {
+	global $wpdb;
 
+	// Check if the RH restrict by username or email feature was being used.
+	static $pmpro_register_helper_restricting_by_email_or_username = null;
+	if ( ! isset( $pmpro_register_helper_restricting_by_email_or_username ) ) {
+		$sqlQuery = "SELECT option_value FROM $wpdb->options WHERE option_name LIKE 'pmpro_level_%_restrict_emails' OR option_name LIKE 'pmpro_level_%_restrict_usernames' AND option_value <> '' LIMIT 1";
+		$pmpro_register_helper_restricting_by_email_or_username = $wpdb->get_var( $sqlQuery );	
+	}
+
+	// If the RH restrict by username or email feature was being used, set the message.
+	if ( $pmpro_register_helper_restricting_by_email_or_username ) {
+		$pmpro_register_helper_message = sprintf( __( 'Restricting members by username or email was not merged into Paid Memberships Pro. If this feature was being used, a <a href="%s" target="_blank">code recipe</a> will be needed to continue using this functionality.', 'paid-memberships-pro' ), 'https://www.paidmembershipspro.com/restrict-membership-signup-by-email-or-username/' );
+	} else {
+		$pmpro_register_helper_message = '';
+	}
+	
+	// Set the array of deprecated Add Ons.
 	$deprecated = array(
 		'pmpro-member-history' => array(
 			'file' => 'pmpro-member-history.php',
@@ -156,6 +178,11 @@ function pmpro_check_for_deprecated_add_ons() {
 		'pmpro-better-logins-report' => array(
 			'file' => 'pmpro-better-logins-report.php',
 			'label' => 'Better Logins Report'
+		),
+		'pmpro-register-helper' => array(
+			'file' => 'pmpro-register-helper.php',
+			'label' => 'Register Helper',
+			'message' => $pmpro_register_helper_message
 		)
 	);
 	
@@ -163,14 +190,24 @@ function pmpro_check_for_deprecated_add_ons() {
 	
 	// If the list is empty or not an array, just bail.
 	if ( empty( $deprecated ) || ! is_array( $deprecated ) ) {
-		return;
+		return array();
 	}
-	
-	$deprecated_active = array();
+
+	return $deprecated;
+}
+
+// Check if installed, deactivate it and show a notice now.
+function pmpro_check_for_deprecated_add_ons() {
+	$deprecated = pmpro_get_deprecated_add_ons();
+  	$deprecated_active = array();
+	$has_messages = false;
 	foreach( $deprecated as $key => $values ) {
 		$path = '/' . $key . '/' . $values['file'];
 		if ( file_exists( WP_PLUGIN_DIR . $path ) ) {
-			$deprecated_active[] = $values['label'];
+			$deprecated_active[] = $values;
+			if ( ! empty( $values['message'] ) ) {
+				$has_messages = true;
+			}
 
 			// Try to deactivate it if it's enabled.
 			if ( is_plugin_active( plugin_basename( $path ) ) ) {
@@ -180,7 +217,7 @@ function pmpro_check_for_deprecated_add_ons() {
 	}
 
 	// If any deprecated add ons are active, show warning.
-	if ( is_array( $deprecated_active ) && ! empty( $deprecated_active ) ) {
+	if ( ! empty( $deprecated_active ) && is_array( $deprecated_active ) ) {
 		// Only show on certain pages.
 		if ( ! isset( $_REQUEST['page'] ) || strpos( sanitize_text_field( $_REQUEST['page'] ), 'pmpro' ) === false  ) {
 			return;
@@ -190,22 +227,81 @@ function pmpro_check_for_deprecated_add_ons() {
 		<p>
 			<?php
 				// translators: %s: The list of deprecated plugins that are active.
-				printf(
-					__( 'Some Add Ons are now merged into the Paid Memberships Pro core plugin. The features of the following plugins are now included in PMPro by default. You should <strong>delete these unnecessary plugins</strong> from your site: <em><strong>%s</strong></em>.', 'paid-memberships-pro' ),
-					implode( ', ', $deprecated_active )
+				echo wp_kses(
+					sprintf(
+						__( 'Some Add Ons are now merged into the Paid Memberships Pro core plugin. The features of the following plugins are now included in PMPro by default. You should <strong>delete these unnecessary plugins</strong> from your site: <em><strong>%s</strong></em>.', 'paid-memberships-pro' ),
+						implode( ', ', wp_list_pluck( $deprecated_active, 'label' ) )
+					),
+					array(
+						'strong' => array(),
+						'em' => array(),
+					)
 				);
 			?>
 		</p>
-    	</div>
+		<?php
+		// If there are any messages, show them.
+		if ( $has_messages ) {
+			?>
+			<ul>
+				<?php
+				foreach( $deprecated_active as $deprecated ) {
+					if ( empty( $deprecated['message'] ) ) {
+						continue;
+					}
+					?>
+					<li>
+						<strong><?php echo esc_html( $deprecated['label'] ); ?></strong>:
+						<?php
+						echo wp_kses(
+							$deprecated['message'],
+							array(
+								'a' => array(
+								'href' => array(),
+								'target' => array(),
+							) )
+						);
+						?>
+					</li>
+					<?php
+				}
+				?>
+			</ul>
+			<?php
+		}
+		?>
+		</div>
 		<?php
 	}
 }
 add_action( 'admin_notices', 'pmpro_check_for_deprecated_add_ons' );
 
 /**
+ * Remove the "Activate" link on the plugins page for deprecated add ons.
+ *
+ * @since TBD
+ *
+ * @param array  $actions An array of plugin action links.
+ * @param string $plugin_file Path to the plugin file relative to the plugins directory.
+ * @return array $actions An array of plugin action links.
+ */
+ function pmpro_deprecated_add_ons_action_links( $actions, $plugin_file ) {
+	$deprecated = pmpro_get_deprecated_add_ons();
+
+	foreach( $deprecated as $key => $values ) {
+		if ( $plugin_file == $key . '/' . $values['file'] ) {
+			$actions['activate'] = esc_html__( 'Deprecated', 'paid-memberships-pro' );
+		}
+	}
+
+	return $actions;
+}
+add_filter( 'plugin_action_links', 'pmpro_deprecated_add_ons_action_links', 10, 2 );
+
+/**
  * The 2Checkout gateway was deprecated in v2.6.
- * Cybersource was deprecated in TBD.
- * PayPal Website Payments Pro was deprecated in TBD.
+ * Cybersource was deprecated in 2.10.
+ * PayPal Website Payments Pro was deprecated in 2.10.
  *
  * This code will add it back those gateways if it was the selected gateway.
  * In future versions, we will remove gateway code entirely.
