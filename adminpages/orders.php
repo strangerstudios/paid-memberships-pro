@@ -4,7 +4,10 @@ if ( ! function_exists( 'current_user_can' ) || ( ! current_user_can( 'manage_op
 	die( __( 'You do not have permissions to perform this action.', 'paid-memberships-pro' ) );
 }
 
+// vars
 global $wpdb;
+
+$now = current_time( 'timestamp' );
 
 // deleting?
 if ( ! empty( $_REQUEST['delete'] ) ) {
@@ -50,8 +53,6 @@ if ( ! empty( $_REQUEST['refund'] ) ) {
 	}
 }
 
-$now = current_time( 'timestamp' );
-
 $thisyear = date( 'Y', $now );
 
 // this array stores fields that should be read only
@@ -64,6 +65,7 @@ $read_only_fields = apply_filters(
 );
 
 // if this is a new order or copy of one, let's make all fields editable
+// Checking orderby as order could be the order ID or whether the List Table should be sorted ascending or descending.
 if ( ( ! empty( $_REQUEST['order'] ) && $_REQUEST['order'] < 0 ) && ! isset( $_REQUEST['orderby'] ) ) {
 	$read_only_fields = array();
 }
@@ -206,6 +208,7 @@ if ( ! empty( $_REQUEST['save'] ) ) {
 	}
 } else {
 	// order passed?
+	// Checking orderby as order could be the order ID or whether the List Table should be sorted ascending or descending.
 	if ( ! empty( $_REQUEST['order'] ) && ! isset( $_REQUEST['orderby'] ) ) {
 		$order_id = intval( $_REQUEST['order'] );
 		if ( $order_id > 0 ) {
@@ -903,18 +906,32 @@ require_once( dirname( __FILE__ ) . '/admin_header.php' ); ?>
 
 	</form>
 
-<?php } else { 
+<?php } else { ?>
 
-	$orders_list_query = pmpro_orderslist_query();
-	$export_url = $orders_list_query['export_url'];
+	<form id="posts-filter" method="get" action="">
 
-	?>
-
-	<form id="posts-filter" method="GET">
-		<input type="hidden" name="page" value="pmpro-orders" />
 		<h1 class="wp-heading-inline"><?php esc_html_e( 'Orders', 'paid-memberships-pro' ); ?></h1>
 		<a href="<?php echo esc_url( add_query_arg( array( 'page' => 'pmpro-orders', 'order' => -1 ), admin_url( 'admin.php' ) ) ); ?>" class="page-title-action pmpro-has-icon pmpro-has-icon-plus"><?php esc_html_e( 'Add New Order', 'paid-memberships-pro' ); ?></a>
 
+		<?php
+		// build the export URL
+		$export_url = admin_url( 'admin-ajax.php?action=orders_csv' );
+		$url_params = array(
+			'filter'          => isset( $_REQUEST['filter'] ) ? trim( sanitize_text_field( $_REQUEST['filter'] ) ) : 'all',
+			's'               => isset( $_REQUEST['s'] ) ? sanitize_text_field( $_REQUEST['s'] ) : '',
+			'l'               => isset( $_REQUEST['l'] ) ? sanitize_text_field( $_REQUEST['l'] ) : false,
+			'start-month'     => isset( $_REQUEST['start-month'] ) ? intval( $_REQUEST['start-month'] ) : '1',
+			'start-day'       => isset( $_REQUEST['start-day'] ) ? intval( $_REQUEST['start-day'] ) : '1',
+			'start-year'      => isset( $_REQUEST['start-year'] ) ? intval( $_REQUEST['start-year'] ) : date( 'Y', $now ),
+			'end-month'       => isset( $_REQUEST['end-month'] ) ? intval( $_REQUEST['end-month'] ) : date( 'n', $now ),
+			'end-day'         => isset( $_REQUEST['end-day'] ) ? intval( $_REQUEST['end-day'] ) : date( 'j', $now ),
+			'end-year'        => isset( $_REQUEST['end-year'] ) ? intval( $_REQUEST['end-year'] ) : date( 'Y', $now ),
+			'predefined-date' => isset( $_REQUEST['predefined-date'] ) ? sanitize_text_field( $_REQUEST['predefined-date'] ) : 'This Month',
+			'discount-code'	  => isset( $_REQUEST['discount-code'] ) ? intval( $_REQUEST['discount-code'] ) : false,
+			'status'          => isset( $_REQUEST['status'] ) ? sanitize_text_field( $_REQUEST['status'] ) : '',
+		);
+		$export_url = add_query_arg( $url_params, $export_url );
+		?>
 		<a target="_blank" href="<?php echo esc_url( $export_url ); ?>" class="page-title-action pmpro-has-icon pmpro-has-icon-download"><?php esc_html_e( 'Export to CSV', 'paid-memberships-pro' ); ?></a>
 
 		<?php if ( ! empty( $pmpro_msg ) ) { ?>
