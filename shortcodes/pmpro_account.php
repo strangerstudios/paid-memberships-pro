@@ -14,7 +14,7 @@ function pmpro_shortcode_account($atts, $content=null, $code="")
 	extract(shortcode_atts(array(
 		'section' => '',
 		'sections' => 'membership,profile,invoices,links',
-		'title' => 'title',
+		'title' => null,
 	), $atts));
 
 	//did they use 'section' instead of 'sections'?
@@ -25,8 +25,11 @@ function pmpro_shortcode_account($atts, $content=null, $code="")
 	$sections = array_map('trim',explode(",",$sections));
 	ob_start();
 
-	//Extrct the title if conditions are met.
-	$title_param = count($sections) == 1 && ! empty( $atts['title'] ) ? $atts['title'] : null;
+	// If multiple sections are being shown, set title to null.
+	// Titles can only be changed from the default if only one section is being shown.
+	if ( count( $sections ) > 1 ) {
+		$title = null;
+	}
 
 	//if a member is logged in, show them some info here (1. past invoices. 2. billing information with button to update.)
 	$order = new MemberOrder();
@@ -36,12 +39,16 @@ function pmpro_shortcode_account($atts, $content=null, $code="")
 	$invoices = $wpdb->get_results("SELECT *, UNIX_TIMESTAMP(CONVERT_TZ(timestamp, '+00:00', @@global.time_zone)) as timestamp FROM $wpdb->pmpro_membership_orders WHERE user_id = '$current_user->ID' AND status NOT IN('review', 'token', 'error') ORDER BY timestamp DESC LIMIT 6");
 	?>
 	<div id="pmpro_account">
-		<?php if(in_array('membership', $sections) || in_array('memberships', $sections)) {
-			$membership_title = $title_param ? $title_param : 'My Membership';
-		?>
-
+		<?php if(in_array('membership', $sections) || in_array('memberships', $sections)) { ?>
 			<div id="pmpro_account-membership" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_box', 'pmpro_account-membership' ) ); ?>">
-				<h3><?php echo esc_html($membership_title, 'paid-memberships-pro' );?></h3>
+				<?php
+				if ( '' !== $title ) { // Check if title is being forced to not show.
+					// If a custom title was not set, use the default. Otherwise, show the custom title.
+					?>
+					<h3><?php echo esc_html( null === $title ? __( 'My Membership', 'paid-membereships-pro' ) : $title ); ?></h3>
+					<?php
+				}
+				?>
 				<table class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_table' ) ); ?>" width="100%" cellpadding="0" cellspacing="0" border="0">
 					<thead>
 						<tr>
@@ -174,12 +181,17 @@ function pmpro_shortcode_account($atts, $content=null, $code="")
 			</div> <!-- end pmpro_account-membership -->
 		<?php } ?>
 
-		<?php if(in_array('profile', $sections)) {
-			$profile_title = $title_param ? $title_param : 'My Account';
-		?>
+		<?php if(in_array('profile', $sections)) { ?>
 			<div id="pmpro_account-profile" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_box', 'pmpro_account-profile' ) ); ?>">
-				<?php wp_get_current_user(); ?>
-				<h3><?php echo esc_html($profile_title, 'paid-memberships-pro' );?></h3>
+				<?php
+				if ( '' !== $title ) { // Check if title is being forced to not show.
+					// If a custom title was not set, use the default. Otherwise, show the custom title.
+					?>
+					<h3><?php echo esc_html( null === $title ? __( 'My Account', 'paid-membereships-pro' ) : $title ); ?></h3>
+					<?php
+				}
+				wp_get_current_user();
+				?>
 				<?php if($current_user->user_firstname) { ?>
 					<p><?php echo esc_html( $current_user->user_firstname );?> <?php echo esc_html( $current_user->user_lastname );?></p>
 				<?php } ?>
@@ -229,11 +241,16 @@ function pmpro_shortcode_account($atts, $content=null, $code="")
 			</div> <!-- end pmpro_account-profile -->
 		<?php } ?>
 
-		<?php if(in_array('invoices', $sections) && !empty($invoices)) {
-			$invoices_title = $title_param ? $title_param : 'Past Invoices';
-		?>
+		<?php if(in_array('invoices', $sections) && !empty($invoices)) { ?>
 		<div id="pmpro_account-invoices" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_box', 'pmpro_account-invoices' ) ); ?>">
-			<h3><?php echo esc_html($invoices_title, 'paid-memberships-pro' );?></h3>
+			<?php
+			if ( '' !== $title ) { // Check if title is being forced to not show.
+				// If a custom title was not set, use the default. Otherwise, show the custom title.
+				?>
+				<h3><?php echo esc_html( null === $title ? __( 'Past Invoices', 'paid-membereships-pro' ) : $title ); ?></h3>
+				<?php
+			}
+			?>
 			<table class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_table' ) ); ?>" width="100%" cellpadding="0" cellspacing="0" border="0">
 				<thead>
 					<tr>
@@ -285,11 +302,16 @@ function pmpro_shortcode_account($atts, $content=null, $code="")
 		</div> <!-- end pmpro_account-invoices -->
 		<?php } ?>
 
-		<?php if(in_array('links', $sections) && (has_filter('pmpro_member_links_top') || has_filter('pmpro_member_links_bottom'))) {
-			$links_title = $title_param ? $title_param : 'Member Links';
-		?>
+		<?php if(in_array('links', $sections) && (has_filter('pmpro_member_links_top') || has_filter('pmpro_member_links_bottom'))) { ?>
 		<div id="pmpro_account-links" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_box', 'pmpro_account-links' ) ); ?>">
-			<h3><?php echo esc_html($links_title, 'paid-memberships-pro' );?></h3>
+			<?php
+			if ( '' !== $title ) { // Check if title is being forced to not show.
+				// If a custom title was not set, use the default. Otherwise, show the custom title.
+				?>
+				<h3><?php echo esc_html( null === $title ? __( 'Member Links', 'paid-membereships-pro' ) : $title ); ?></h3>
+				<?php
+			}
+			?>
 			<ul>
 				<?php
 					do_action("pmpro_member_links_top");
