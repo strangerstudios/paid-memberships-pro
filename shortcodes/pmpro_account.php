@@ -41,7 +41,7 @@ function pmpro_shortcode_account($atts, $content=null, $code="")
 		?>
 
 			<div id="pmpro_account-membership" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_box', 'pmpro_account-membership' ) ); ?>">
-				<h3><?php esc_html_e($membership_title, 'paid-memberships-pro' );?></h3>
+				<h3><?php echo esc_html($membership_title, 'paid-memberships-pro' );?></h3>
 				<table class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_table' ) ); ?>" width="100%" cellpadding="0" cellspacing="0" border="0">
 					<thead>
 						<tr>
@@ -179,7 +179,7 @@ function pmpro_shortcode_account($atts, $content=null, $code="")
 		?>
 			<div id="pmpro_account-profile" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_box', 'pmpro_account-profile' ) ); ?>">
 				<?php wp_get_current_user(); ?>
-				<h3><?php esc_html_e($profile_title, 'paid-memberships-pro' );?></h3>
+				<h3><?php echo esc_html($profile_title, 'paid-memberships-pro' );?></h3>
 				<?php if($current_user->user_firstname) { ?>
 					<p><?php echo esc_html( $current_user->user_firstname );?> <?php echo esc_html( $current_user->user_lastname );?></p>
 				<?php } ?>
@@ -233,7 +233,7 @@ function pmpro_shortcode_account($atts, $content=null, $code="")
 			$invoices_title = $title_param ? $title_param : 'Past Invoices';
 		?>
 		<div id="pmpro_account-invoices" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_box', 'pmpro_account-invoices' ) ); ?>">
-			<h3><?php esc_html_e($invoices_title, 'paid-memberships-pro' );?></h3>
+			<h3><?php echo esc_html($invoices_title, 'paid-memberships-pro' );?></h3>
 			<table class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_table' ) ); ?>" width="100%" cellpadding="0" cellspacing="0" border="0">
 				<thead>
 					<tr>
@@ -289,7 +289,7 @@ function pmpro_shortcode_account($atts, $content=null, $code="")
 			$links_title = $title_param ? $title_param : 'Member Links';
 		?>
 		<div id="pmpro_account-links" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_box', 'pmpro_account-links' ) ); ?>">
-			<h3><?php esc_html_e($links_title, 'paid-memberships-pro' );?></h3>
+			<h3><?php echo esc_html($links_title, 'paid-memberships-pro' );?></h3>
 			<ul>
 				<?php
 					do_action("pmpro_member_links_top");
