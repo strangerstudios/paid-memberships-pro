@@ -40,6 +40,7 @@
          attributes: {
           title : {
             type: 'string',
+            default: __( 'My Membership', 'paid-memberships-pro' ),
           }
          },
          edit({ attributes, setAttributes }) {
@@ -51,7 +52,7 @@
                    <span className="pmpro-block-title">{ __( 'Paid Memberships Pro', 'paid-memberships-pro' ) }</span>
                    <span className="pmpro-block-subtitle">{ __( 'Membership Account: My Memberships', 'paid-memberships-pro' ) }</span>
                    <input
-                    placeholder="Write a title. If empty, the default title will be used."
+                    placeholder={ __( 'No title will be shown.', 'paid-memberships-pro' ) }
                     type="text"
                     value={ attributes.title }
                     class="block-editor-plain-text"

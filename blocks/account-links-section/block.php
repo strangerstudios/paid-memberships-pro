@@ -29,7 +29,7 @@ function register_dynamic_block() {
 		'attributes'	=> array(
 			'title'		=> array(
 				'type' => 'string',
-				'default' => '',
+				'default' => __( 'Member Links', 'paid-memberships-pro' )
 			)
 		),
 	] );
@@ -41,6 +41,6 @@ function register_dynamic_block() {
  * @return string
  **/
 function render_dynamic_block( $attributes ) {
-	$title = isset( $attributes['title'] ) ? $attributes['title'] : '';
+	$title = isset( $attributes['title'] ) ? $attributes['title'] : null;
 	return pmpro_shortcode_account( array ( 'sections' => 'links', 'title' => $title ) );
 }
