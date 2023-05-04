@@ -116,6 +116,7 @@
 
 					$user_id = $old_order->user_id;
 					$user = get_userdata($user_id);
+
 					if ( empty( $user ) ) {
 						$logstr .= "Couldn't find the old order's user. Order ID = " . $old_order->id . ".";
 						pmpro_stripeWebhookExit();
@@ -928,7 +929,6 @@ function pmpro_stripe_webhook_change_membership_level( $morder ) {
 
 		//setup some values for the emails
 		$user                   = get_userdata( $morder->user_id );
-		$user->membership_level = $pmpro_level;        //make sure they have the right level info
 
 		//send email to member
 		$pmproemail = new PMProEmail();
