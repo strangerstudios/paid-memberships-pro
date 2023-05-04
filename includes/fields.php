@@ -687,8 +687,6 @@ add_action( 'edit_user_profile', 'pmpro_show_user_fields_in_profile_with_locatio
  * @since 2.3
  */
 function pmpro_show_user_fields_in_frontend_profile( $user, $withlocations = false ) {
-	global $pmpro_user_fields;
-
 	//which fields are marked for the profile
 	$profile_fields = pmpro_get_user_fields_for_profile($user->ID, $withlocations);
 
@@ -698,15 +696,15 @@ function pmpro_show_user_fields_in_frontend_profile( $user, $withlocations = fal
 			$box = pmpro_get_field_group_by_name( $where );
 
 			// Only show on front-end if there are fields to be shown.
-			$show_fields = false;
+			$show_fields = array();
 			foreach( $fields as $key => $field ) {
-				if ( $field->profile !== 'only_admin' ) {
-					$show_fields = true;
+				if ( pmpro_is_field( $field ) && $field->profile !== 'only_admin' && $field->profile !== 'admin' && $field->profile !== 'admins' ) {
+					$show_fields[] = $field;
 				}
 			}
 
 			// Bail if there are no fields to show on the front-end profile.
-			if ( ! $show_fields ) {
+			if ( empty( $show_fields ) ) {
 				continue;
 			}
 			?>
@@ -722,11 +720,9 @@ function pmpro_show_user_fields_in_frontend_profile( $user, $withlocations = fal
 					<?php } ?>
 
 					<?php
-						 // Cycle through groups.
-						foreach( $fields as $field ) {
-							if ( pmpro_is_field( $field ) && $field->profile !== 'only_admin' ) {
-								$field->displayAtCheckout( $user->ID );
-							}
+						 // Show fields.
+						foreach( $show_fields as $field ) {
+							$field->displayAtCheckout( $user->ID );
 						}
 					?>
 				</div> <!-- end pmpro_member_profile_edit-fields -->
