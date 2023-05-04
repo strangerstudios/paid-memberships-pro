@@ -1195,32 +1195,17 @@
 		/**
 		 * Send an email to the member when an admin has changed their membership level.
 		 *
-		 * @deprecated TBD
-		 *
 		 * @param object $user The WordPress user object.
 		 */
 		function sendAdminChangeEmail($user = NULL)
 		{
-			_deprecated_function( __FUNCTION__, 'TBD' );
-
 			global $current_user, $wpdb;
 			if(!$user)
 				$user = $current_user;
 			
 			if(!$user)
 				return false;
-			
-			//make sure we have the current membership level data
-			$user->membership_level = pmpro_getMembershipLevelForUser($user->ID, true);
-
-			if(!empty($user->membership_level) && !empty($user->membership_level->name)) {
-				$membership_level_name = $user->membership_level->name;
-				$membership_level_id = $user->membership_level->id;
-			} else {
-				$membership_level_name = __('None', 'paid-memberships-pro');
-				$membership_level_id = '';
-			}
-						
+	
 			$this->email = $user->user_email;
 			$this->subject = sprintf(__("Your membership at %s has been changed", "paid-memberships-pro"), get_option("blogname"));
 
@@ -1231,27 +1216,17 @@
 				'user_login' => $user->user_login, 
 				'user_email' => $user->user_email, 
 				'sitename' => get_option( 'blogname' ), 
-				'membership_id' => $membership_level_id, 
-				'membership_level_name' => $membership_level_name, 
 				'siteemail' => pmpro_getOption( 'from_email' ), 
 				'login_link' => pmpro_login_url(), 
 				'login_url' => pmpro_login_url(),
 				'levels_url' => pmpro_url( 'levels' )
 			);
 
-			if(!empty($user->membership_level) && !empty($user->membership_level->ID)) {
-				$this->data["membership_change"] = sprintf(__("The new level is %s.", 'paid-memberships-pro' ), $user->membership_level->name);
+			// If the user no longer has a membership level, set the membership_change text to "Membership has been cancelled."
+			if ( ! pmpro_hasMembershipLevel( null, $user->ID ) ) {
+				$this->data['membership_change'] = __( 'Your membership has been cancelled.', 'paid-memberships-pro' );
 			} else {
-				$this->data["membership_change"] = __("Your membership has been cancelled.", "paid-memberships-pro");
-			}
-
-			if(!empty($user->membership_level->enddate))
-			{
-					$this->data["membership_change"] .= " " . sprintf(__("This membership will expire on %s.", 'paid-memberships-pro' ), date_i18n(get_option('date_format'), $user->membership_level->enddate));
-			}
-			elseif(!empty($this->expiration_changed))
-			{
-				$this->data["membership_change"] .= " " . __("This membership does not expire.", 'paid-memberships-pro' );
+				$this->data['membership_change'] = __( 'You can view your current memberships by logging in and visiting your membership account page.', 'paid-memberships-pro' );
 			}
 
 			$this->template = apply_filters("pmpro_email_template", "admin_change", $this);
@@ -1262,31 +1237,16 @@
 		/**
 		 * Send an email to the admin when an admin has changed a member's membership level.
 		 *
-		 * @deprecated TBD
-		 *
 		 * @param object $user The WordPress user object.
 		 */
 		function sendAdminChangeAdminEmail($user = NULL)
 		{
-			_deprecated_function( __FUNCTION__, 'TBD' );
-
 			global $current_user, $wpdb;
 			if(!$user)
 				$user = $current_user;
 			
 			if(!$user)
 				return false;
-
-			//make sure we have the current membership level data
-			$user->membership_level = pmpro_getMembershipLevelForUser($user->ID, true);
-						
-			if(!empty($user->membership_level) && !empty($user->membership_level->name)) {
-				$membership_level_name = $user->membership_level->name;
-				$membership_level_id = $user->membership_level->id;
-			} else {
-				$membership_level_name = __('None', 'paid-memberships-pro');
-				$membership_level_id = '';
-			}
 
 			$this->email = get_bloginfo("admin_email");
 			$this->subject = sprintf(__("Membership for %s at %s has been changed", "paid-memberships-pro"), $user->user_login, get_option("blogname"));
@@ -1298,27 +1258,17 @@
 				'user_login' => $user->user_login, 
 				'user_email' => $user->user_email, 
 				'sitename' => get_option('blogname'), 
-				'membership_id' => $membership_level_id, 
-				'membership_level_name' => $membership_level_name,
 				'siteemail' => get_bloginfo('admin_email'), 
 				'login_link' => pmpro_login_url(), 
 				'login_url' => pmpro_login_url(),
 				'levels_url' => pmpro_url( 'levels' )
 			);
 
-			if(!empty($user->membership_level) && !empty($user->membership_level->ID)) {
-				$this->data["membership_change"] = sprintf(__("The new level is %s.", 'paid-memberships-pro' ), $user->membership_level->name);
+			// If the user no longer has a membership level, set the membership_change text to "Membership has been cancelled."
+			if ( ! pmpro_hasMembershipLevel( null, $user->ID ) ) {
+				$this->data['membership_change'] = __( "The user's membership has been cancelled.", 'paid-memberships-pro' );
 			} else {
-				$this->data["membership_change"] = __("Membership has been cancelled.", 'paid-memberships-pro' );	
-			}
-			
-			if(!empty($user->membership_level) && !empty($user->membership_level->enddate))
-			{
-					$this->data["membership_change"] .= " " . sprintf(__("This membership will expire on %s.", 'paid-memberships-pro' ), date_i18n(get_option('date_format'), $user->membership_level->enddate));
-			}
-			elseif(!empty($this->expiration_changed))
-			{
-				$this->data["membership_change"] .= " " . __("This membership does not expire.", 'paid-memberships-pro' );
+				$this->data['membership_change'] = __( "You can view the user's current memberships from their Edit User page.", 'paid-memberships-pro' );
 			}
 
 			$this->template = apply_filters("pmpro_email_template", "admin_change_admin", $this);
