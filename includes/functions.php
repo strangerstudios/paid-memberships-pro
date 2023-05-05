@@ -2348,20 +2348,19 @@ function pmpro_getLevelAtCheckout( $level_id = null, $discount_code = null ) {
 
 	// If a pretty permalink was used, grab the level from the URL.
 	if ( empty( $level_id ) && ! empty( $wp_query->query_vars['pmpro_checkout_level'] ) ) {
+		$query_checkout_level = $wp_query->query_vars['pmpro_checkout_level'];
 		$all_levels = pmpro_getAllLevels( false, false );
 
 		// If the level is a number, check if we have a level with that ID.
-		if ( is_numeric( $wp_query->query_vars['pmpro_checkout_level'] ) ) {
-			if ( ! empty( $all_levels[ $wp_query->query_vars['pmpro_checkout_level'] ] ) ) {
-				$level_id = $wp_query->query_vars['pmpro_checkout_level'];
-			}
+		if ( is_numeric( $query_checkout_level ) && ! empty( $all_levels[ $query_checkout_level ] ) ) {
+			$level_id = $query_checkout_level;
 		}
 
 		// If we still don't have a level, check if we have a level with that name.
 		if ( empty( $level_id ) ) {
-			$lowercase_query_var = strtolower( $wp_query->query_vars['pmpro_checkout_level'] );
+			$lowercase_query_checkout_level = strtolower( $query_checkout_level );
 			foreach ( $all_levels as $level ) {
-				if ( strtolower( urlencode( $level->name ) ) === $lowercase_query_var ) {
+				if ( strtolower( urlencode( $level->name ) ) === $lowercase_query_checkout_level ) {
 					$level_id = $level->id;
 					break;
 				}
