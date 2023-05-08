@@ -449,7 +449,9 @@ class PMProGateway_stripe extends PMProGateway {
 
 						try {
 							$recently_sent = Stripe\Event::all( $event_query_arr );
-						} catch ( Exception $e ) {
+						} catch ( \Throwable $th ) {
+							$recently_sent = $th->getMessage();
+						} catch ( \Exception $e ) {
 							$recently_sent = $e->getMessage();
 						} 
 
