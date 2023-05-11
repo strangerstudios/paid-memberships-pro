@@ -19,7 +19,7 @@ function pmpro_membership_level_profile_fields($user)
 	if(!$levels)
 		return "";
 ?>
-<h3><?php esc_html_e("Membership Level", 'paid-memberships-pro' ); ?></h3>
+<h2><?php esc_html_e("Membership Level", 'paid-memberships-pro' ); ?></h2>
 <table class="form-table">
     <?php
 		$show_membership_level = true;
@@ -424,7 +424,7 @@ function pmpro_membership_history_profile_fields( $user ) {
 
 	if ( $invoices || $levelshistory ) { ?>
 		<hr />
-		<h3><?php esc_html_e( 'Member History', 'paid-memberships-pro' ); ?></h3>
+		<h2><?php esc_html_e( 'Member History', 'paid-memberships-pro' ); ?></h2>
 		<p><strong><?php esc_html_e( 'Total Paid', 'paid-memberships-pro' ); ?></strong> <?php echo pmpro_formatPrice( $totalvalue ); ?></p>
 		<ul id="member-history-filters" class="subsubsub">
 			<li id="member-history-filters-orders"><a href="javascript:void(0);" class="current orders tab"><?php esc_html_e( 'Order History', 'paid-memberships-pro' ); ?></a> <span>(<?php echo count( $invoices ); ?>)</span></li>

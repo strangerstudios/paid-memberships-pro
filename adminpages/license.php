@@ -41,7 +41,7 @@ if ( defined( 'PMPRO_DIR' ) ) {
 	require_once( PMPRO_DIR . '/adminpages/admin_header.php' );
 } ?>
 	<hr class="wp-header-end">
-	<h1 class="wp-heading-inline"><?php esc_html_e('Paid Memberships Pro Support License', 'paid-memberships-pro' );?></h1>
+	<h1><?php esc_html_e('Paid Memberships Pro Support License', 'paid-memberships-pro' );?></h1>
 	<div class="about-wrap">
 		<div class="about-text">
 			<?php if ( is_wp_error( $pmpro_license_check ) ) { ?>
