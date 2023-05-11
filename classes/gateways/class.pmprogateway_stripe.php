@@ -1653,6 +1653,7 @@ class PMProGateway_stripe extends PMProGateway {
 		unset( $request_vars['password'] );
 		unset( $request_vars['password2'] );
 		unset( $request_vars['password2_copy'] );
+		unset( $request_vars['AccountNumber'] );
 		update_pmpro_membership_order_meta( $morder->id, 'checkout_request_vars', $request_vars );
 
 		// Save the checkout level.
