@@ -6,11 +6,12 @@
 	}
 	// Get Add On recommendations based on site type.
 	$addon_cats = pmpro_get_addon_categories();
-	
 	if ( ! empty( $addon_cats[$site_type] ) && $addon_cats[$site_type] ) {
 		$addon_list = $addon_cats[$site_type];
+		$addon_list = array_slice( $addon_list, 0, 4 );
 	} else {
 		$addon_list = $addon_cats['popular'];
+		$addon_list = array_rand( $addon_list, 4 );
 	}
 
 	// Did they choose collect payments? If so, show a nudge to complete the gateway setup.
@@ -45,10 +46,8 @@
 		</p>
 		<div class="pmpro-wizard__addons">
 		<?php
-			// Get some Add On recommendations and only show 4.
-			$random_addon = array_rand( $addon_list, 4 );
-			foreach( $random_addon as $key ) {
-				$addon_slug = $addon_list[$key];
+			// Get the Add On recommendations.
+			foreach( $addon_list as $addon_slug ) {
 				$addon = pmpro_getAddonBySlug( $addon_slug );
 
 				// Get the shortened name otherwise set to name.
