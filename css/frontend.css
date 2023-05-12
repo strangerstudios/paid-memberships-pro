@@ -355,16 +355,16 @@ span.pmpro_price_part_sub:before {
 /*---------------------------------------
 	Membership Checkout
 ---------------------------------------*/
-#pmpro_form .pmpro_checkout h3 {
+#pmpro_form .pmpro_checkout h2 {
 	margin: 1em 0 0 0;
 	padding: 0;
 }
-.pmpro_checkout h3 span.pmpro_checkout-h3-name {
+.pmpro_checkout h2 span.pmpro_checkout-h2-name {
 	display: inline-block;
 	margin: 0 .5rem 1rem 0;
 }
-.pmpro_checkout h3 span.pmpro_checkout-h3-msg {
-	font-size: 11px;
+.pmpro_checkout h2 span.pmpro_checkout-h2-msg {
+	font-size: 13px;
 	font-style: italic;
 	font-weight: normal;
 	letter-spacing: normal;
