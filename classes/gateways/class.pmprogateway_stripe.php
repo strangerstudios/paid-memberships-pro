@@ -923,10 +923,10 @@ class PMProGateway_stripe extends PMProGateway {
 		?>
         <div id="pmpro_payment_information_fields" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout', 'pmpro_payment_information_fields' ) ); ?>"
 		     <?php if ( ! $pmpro_requirebilling || apply_filters( "pmpro_hide_payment_information_fields", false ) ) { ?>style="display: none;"<?php } ?>>
-            <h3>
-                <span class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout-h3-name' ) ); ?>"><?php esc_html_e( 'Payment Information', 'paid-memberships-pro' ); ?></span>
-                <span class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout-h3-msg' ) ); ?>"><?php esc_html_e( 'We accept all major credit cards', 'paid-memberships-pro' ); ?></span>
-            </h3>
+            <h2>
+                <span class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout-h2-name' ) ); ?>"><?php esc_html_e( 'Payment Information', 'paid-memberships-pro' ); ?></span>
+                <span class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout-h2-msg' ) ); ?>"><?php esc_html_e( 'We accept all major credit cards', 'paid-memberships-pro' ); ?></span>
+            </h2>
 			<?php $sslseal = pmpro_getOption( "sslseal" ); ?>
 			<?php if ( ! empty( $sslseal ) ) { ?>
             <div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout-fields-display-seal' ) ); ?>">
@@ -3246,7 +3246,7 @@ class PMProGateway_stripe extends PMProGateway {
 		$current_year  = date_i18n( 'Y' );
 		$current_month = date_i18n( 'm' );
 		?>
-            <h3><?php esc_html_e( 'Subscription Updates', 'paid-memberships-pro' ); ?></h3>
+            <h2><?php esc_html_e( 'Subscription Updates', 'paid-memberships-pro' ); ?></h2>
 			<p><?php esc_html_e( 'Subscription updates will be deprecated in a future version of PMPro, though your existing subscription updates will still trigger as expected. We now instead recommend updating the subscription directly in Stripe.', 'paid-memberships-pro' ); ?></p>
             <table class="form-table">
 				<input type='hidden' name='pmpro_subscription_updates_visible' value='1' />
