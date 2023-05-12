@@ -247,7 +247,7 @@
 				</tr>
 				<tr>
 					<th scope="row" valign="top">
-						<label for="spamprotection"><?php esc_html_e('Enable Spam Protection?', 'paid-memberships-pro' );?>:</label>
+						<label for="spamprotection"><?php esc_html_e('Enable Spam Protection?', 'paid-memberships-pro' );?></label>
 					</th>
 					<td>
 						<select id="spamprotection" name="spamprotection">
@@ -276,7 +276,7 @@
 			<table class="form-table" id="recaptcha_settings" <?php if(!$recaptcha) { ?>style="display: none;"<?php } ?>>
 			<tbody>
 				<tr>
-					<th scope="row" valign="top"><label for="recaptcha_version"><?php esc_html_e( 'reCAPTCHA Version', 'paid-memberships-pro' );?></label></th>
+					<th scope="row" valign="top"><label for="recaptcha_version"><?php esc_html_e( 'reCAPTCHA Version', 'paid-memberships-pro' );?>:</label></th>
 					<td>					
 						<select id="recaptcha_version" name="recaptcha_version">
 							<option value="2_checkbox" <?php selected( '2_checkbox', $recaptcha_version ); ?>><?php esc_html_e( ' v2 - Checkbox', 'paid-memberships-pro' ); ?></option>
