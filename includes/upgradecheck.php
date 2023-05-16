@@ -318,6 +318,15 @@ function pmpro_checkForUpgrades()
 		pmpro_upgrade_2_10();
 		pmpro_setOption( 'db_version', '2.95' );		
 	}
+
+	/**
+	 * Version 2.10.6
+	 * Check for sensitive information in ordermeta.
+	 */
+	if ( $pmpro_db_version < 2.106 ) {
+		require_once( PMPRO_DIR . "/includes/updates/upgrade_2_10_6.php" );
+		pmpro_upgrade_2_10_6();
+	}
 }
 
 function pmpro_db_delta()
