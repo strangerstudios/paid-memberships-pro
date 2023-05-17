@@ -46,13 +46,13 @@ function pmpro_calculate_profile_start_date( $order, $date_format, $filter = tru
 function pmpro_checkout_rewrite_rules() {
 	global $pmpro_pages;
 
-	// If the checkout page is not set, return.
-	if ( empty( $pmpro_pages['checkout'] ) ) {
+	// Get the checkout page url.
+	$checkout_page = pmpro_url( 'checkout' );
+
+	// Bail if the checkout page is not set.
+	if ( empty( $checkout_page ) ) {
 		return;
 	}
-
-	// Get the permalink for the checkout page.
-	$checkout_page = get_the_permalink( $pmpro_pages['checkout'] );
 
 	// Get the base site url.
 	$site_url = get_site_url();
