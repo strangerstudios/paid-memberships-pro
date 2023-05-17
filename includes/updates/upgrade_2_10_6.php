@@ -9,12 +9,15 @@
 	2. Loop through and scrub the AccountNumbers.
 */
 function pmpro_upgrade_2_10_6() {
-    global $wpdb;
-    $sqlQuery = "SELECT pmpro_membership_order_id
-                 FROM $wpdb->pmpro_membership_ordermeta
-                 WHERE meta_key = 'checkout_request_vars'
-                    AND meta_value LIKE '%AccountNumber%'
-                    AND meta_value NOT LIKE '%XXXXXXXXXXXX%'
+	global $wpdb;
+	$sqlQuery = "SELECT pmpro_membership_order_id
+				FROM $wpdb->pmpro_membership_ordermeta
+				WHERE meta_key = 'checkout_request_vars'
+					AND (
+						( meta_value LIKE '%:\"AccountNumber\";%' AND meta_value NOT LIKE '%XXXXXXXXXXXX%' )
+						OR ( meta_value LIKE '%:\"CVV\";%' )
+						OR ( meta_value LIKE '%:\"add_sub_accounts_password\";%' )
+					)
 				ORDER BY meta_id";
 	$order_ids = $wpdb->get_col( $sqlQuery );
 
@@ -43,10 +46,13 @@ function pmpro_upgrade_2_10_6_ajax() {
 	
 	//get orders
 	$sqlQuery = "SELECT pmpro_membership_order_id
-                 FROM $wpdb->pmpro_membership_ordermeta
-                 WHERE meta_key = 'checkout_request_vars'
-                    AND meta_value LIKE '%AccountNumber%'
-                    AND meta_value NOT LIKE '%XXXXXXXXXXXX%'
+				FROM $wpdb->pmpro_membership_ordermeta
+				WHERE meta_key = 'checkout_request_vars'
+					AND (
+						( meta_value LIKE '%:\"AccountNumber\";%' AND meta_value NOT LIKE '%XXXXXXXXXXXX%' )
+						OR ( meta_value LIKE '%:\"CVV\";%' )
+						OR ( meta_value LIKE '%:\"add_sub_accounts_password\";%' )
+					)
 				ORDER BY meta_id";
 	$order_ids = $wpdb->get_col( $sqlQuery );
 
@@ -85,6 +91,9 @@ function pmpro_upgrade_2_10_6_helper_scrub_account_numbers_in_orders( $order_ids
         if ( ! empty( $request_vars['CVV'] ) ) {
             unset( $request_vars['CVV'] );
         }
+		if ( ! empty( $request_vars['add_sub_accounts_password'] ) ) {
+			unset( $request_vars['add_sub_accounts_password'] );
+		}
 
         // Save updated values.
         update_pmpro_membership_order_meta( $order_id, 'checkout_request_vars', $request_vars );
