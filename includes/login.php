@@ -841,15 +841,16 @@ add_action( 'login_form_resetpass', 'pmpro_do_password_reset' );
  */
 function pmpro_password_reset_email_filter( $message, $key, $user_login ) {
 
-	$login_page_id = pmpro_getOption( 'login_page_id' );
-    if ( ! empty ( $login_page_id ) ) {
-		$login_url = get_permalink( $login_page_id );
-		if ( strpos( $login_url, '?' ) ) {
-			// Login page permalink contains a '?', so we need to replace the '?' already in the login URL with '&'.
-			$message = str_replace( network_site_url( 'wp-login.php' ) . '?', $login_url . '&', $message );
-		}
-		$message = str_replace( network_site_url( 'wp-login.php' ), $login_url, $message );
+	$login_url = pmpro_url( 'login' );
+	if ( ! $login_url ) {
+		return $message;
 	}
+
+	if ( strpos( $login_url, '?' ) ) {
+		// Login page permalink contains a '?', so we need to replace the '?' already in the login URL with '&'.
+		$message = str_replace( network_site_url( 'wp-login.php' ) . '?', $login_url . '&', $message );
+	}
+	$message = str_replace( network_site_url( 'wp-login.php' ), $login_url, $message );
 
 	return $message;
 }
