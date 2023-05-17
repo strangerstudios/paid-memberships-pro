@@ -770,65 +770,77 @@ function pmpro_login_forms_handler_nav( $pmpro_form ) { ?>
  * @since 2.3
  */
 function pmpro_do_password_reset() {
-    if ( 'POST' == $_SERVER['REQUEST_METHOD'] ) {
-        $login_page = pmpro_getOption( 'login_page_id' );
 
-		if ( empty( $login_page ) ) {
-			return;
+    if ( 'POST' != $_SERVER['REQUEST_METHOD'] ) {
+		return;
+	}
+
+	// Don't reset if we're not using the PMPro login page.
+	$redirect_url = pmpro_url( 'login' );
+	if ( ! $redirect_url ) {
+		return;
+	}
+
+	$rp_key = sanitize_text_field( $_REQUEST['rp_key'] );
+	$rp_login = sanitize_text_field( $_REQUEST['rp_login'] );
+
+	$check = check_password_reset_key( $rp_key, $rp_login );
+
+	// If the key is expired or invalid, figure out the correct error code.
+	if ( is_wp_error( $check ) ) {
+		$error_code = $check->get_error_code() == 'expired_key' ? 'expiredkey' : 'invalidkey';	
+	} elseif ( gettype( $check ) !== 'WP_User' ) {
+		// Probably null/false returned from a plugin filtering the check.
+		$error_code = 'invalidkey';
+	}
+
+	// If there was an error redirect with that code.
+	if ( ! empty( $error_code ) ) {		
+		wp_redirect( add_query_arg( array( 'login' => urlencode( $error_code ), 'action' => urlencode( 'rp' ) ), $redirect_url ) );
+		exit;
+	}
+
+	if ( isset( $_POST['pass1'] ) ) {
+		
+		$password_error = false;
+
+		if ( $_POST['pass1'] != $_POST['pass2'] ) {
+			// Passwords don't match
+			$redirect_url = add_query_arg( array(
+				'key' => urlencode( $rp_key ),
+				'login' => urlencode( $rp_login ),
+				'error' => urlencode( 'password_reset_mismatch' ),
+				'action' => urlencode( 'rp' )
+			), $redirect_url );
+			$password_error = true;
 		}
 
-		$rp_key = sanitize_text_field( $_REQUEST['rp_key'] );
-		$rp_login = sanitize_text_field( $_REQUEST['rp_login'] );
+		if ( empty( $_POST['pass1'] ) ) {
+			// Password is empty
+			$redirect_url = add_query_arg( array(
+				'key' => urlencode( $rp_key ),
+				'login' => urlencode( $rp_login ),
+				'error' => urlencode( 'password_reset_empty' ),
+				'action' => urlencode( 'rp' )
+			), $redirect_url );
+			$password_error = true;
+		}
 
-		$redirect_url = $login_page ? get_permalink( $login_page ): '';
-		$user = check_password_reset_key( $rp_key, $rp_login );
+		if( ! empty( $redirect_url ) && $password_error ) {
+			wp_redirect( $redirect_url );
+			exit;
+		}
 
-        if ( ! $user || is_wp_error( $user ) ) {
-            if ( $user && $user->get_error_code() === 'expired_key' ) {
-				wp_redirect( add_query_arg( array( 'login' => urlencode( 'expiredkey' ), 'action' => urlencode( 'rp' ) ), $redirect_url ) );
-            } else {
-                wp_redirect( add_query_arg( array( 'login' => urlencode( 'invalidkey' ), 'action' => urlencode( 'rp' ) ), $redirect_url ) );
-            }
-            exit;
-        }
+		// Parameter checks OK, reset password.
+		// Note: Can't sanitize the password.
+		reset_password( $user, $_POST['pass1'] ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+		wp_redirect( add_query_arg( urlencode( 'password' ), urlencode( 'changed' ), $redirect_url ) );
+	} else {
+		esc_html_e( 'Invalid Request', 'paid-memberships-pro' );
+	}
 
-        if ( isset( $_POST['pass1'] ) ) {
-            if ( $_POST['pass1'] != $_POST['pass2'] ) {
-				// Passwords don't match
-				$redirect_url = add_query_arg( array(
-					'key' => urlencode( $rp_key ),
-					'login' => urlencode( $rp_login ),
-					'error' => urlencode( 'password_reset_mismatch' ),
-					'action' => urlencode( 'rp' )
-				), $redirect_url );
-
-                wp_redirect( $redirect_url );
-                exit;
-            }
-
-            if ( empty( $_POST['pass1'] ) ) {
-				// Password is empty
-				$redirect_url = add_query_arg( array(
-					'key' => urlencode( $rp_key ),
-					'login' => urlencode( $rp_login ),
-					'error' => urlencode( 'password_reset_empty' ),
-					'action' => urlencode( 'rp' )
-				), $redirect_url );
-
-                wp_redirect( $redirect_url );
-                exit;
-            }
-
-            // Parameter checks OK, reset password.
-			// Note: Can't sanitize the password.
-            reset_password( $user, $_POST['pass1'] ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
-            wp_redirect( add_query_arg( urlencode( 'password' ), urlencode( 'changed' ), $redirect_url ) );
-        } else {
-           esc_html_e( 'Invalid Request', 'paid-memberships-pro' );
-        }
-
-        exit;
-    }
+	exit;
+    
 }
 add_action( 'login_form_rp', 'pmpro_do_password_reset' );
 add_action( 'login_form_resetpass', 'pmpro_do_password_reset' );
