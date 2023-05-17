@@ -106,23 +106,25 @@ add_action("login_init", "pmpro_redirect_to_logged_in", 5);
  * @since 2.3
  */
 function pmpro_login_url_filter( $login_url='', $redirect='' ) {
+
 	// Don't filter when specifically on wp-login.php.
 	if ( $_SERVER['SCRIPT_NAME'] === '/wp-login.php' ) {
 		return $login_url;
 	}
 
 	// Check for a PMPro Login page.
-	$login_page_id = pmpro_getOption( 'login_page_id' );
-	if ( ! empty ( $login_page_id ) && 'publish' === get_post_status( $login_page_id ) ) {
-		$login_page_permalink = get_permalink( $login_page_id );
-		// If the page or permalink is unavailable, don't override the url here.
-		if ( $login_page_permalink ) {
-			$login_url = $login_page_permalink;
-		}
-		
-		if ( ! empty( $redirect ) ) {
-			$login_url = add_query_arg( 'redirect_to', urlencode( $redirect ), $login_url ) ;
-		}
+	$login_page_permalink = pmpro_url( 'login' );
+	if ( ! $login_page_permalink ) {
+		return;
+	}
+
+	// If the page or permalink is unavailable, don't override the url here.
+	if ( $login_page_permalink ) {
+		$login_url = $login_page_permalink;
+	}
+	
+	if ( ! empty( $redirect ) ) {
+		$login_url = add_query_arg( 'redirect_to', urlencode( $redirect ), $login_url ) ;
 	}
 
 	return $login_url;
