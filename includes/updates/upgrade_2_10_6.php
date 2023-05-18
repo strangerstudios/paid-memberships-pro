@@ -129,8 +129,8 @@ function pmpro_add_site_health_info_2_10_6( $info ) {
 	return $info;
 }
 
-// Only load these functions if we need to call them.
-if ( $pmpro_db_version >= 2.95 ) {
+// Only load these functions we haven't already updated to db version 2.96
+if ( $pmpro_db_version >= 2.96 ) {
 	return;
 }
 
