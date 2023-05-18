@@ -325,7 +325,7 @@ function pmpro_checkForUpgrades()
 	 */
 	require_once( PMPRO_DIR . "/includes/updates/upgrade_2_10_6.php" ); // Need to include this for admin notice.
 	if ( $pmpro_db_version < 2.96 ) { // 2.96 since 2.106 would be lower than previous update.
-		pmpro_upgrade_2_10_6();
+		pmpro_upgrade_2_10_6(); // This function will update the db version.
 	}
 }
 

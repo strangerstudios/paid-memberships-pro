@@ -11,6 +11,8 @@
 
 /**
  * Show admin notice if site was affected.
+ *
+ * @since TBD
  */
 function pmpro_upgrade_2_10_6_notice() {
 	// Check if we need to show the notice.
@@ -50,6 +52,83 @@ function pmpro_upgrade_2_10_6_notice() {
 }
 add_action( 'admin_notices', 'pmpro_upgrade_2_10_6_notice' );
 
+/**
+ * When orders are exported, check if we cleaned data in the 2.10.6 update.
+ * If so, show the cleaned fields in the export.
+ *
+ * @since TBD
+ *
+ * @param array $columns The columns to export.
+ * @return array The columns to export.
+ */
+function pmpro_orders_csv_extra_columns_2_10_6( $columns ) {
+	global $wpdb;
+
+	// Check if any order has the cleaned_fields_2_10_6 meta set.
+	$sqlQuery = "SELECT meta_value
+				FROM $wpdb->pmpro_membership_ordermeta
+				WHERE meta_key = 'cleaned_fields_2_10_6'
+				LIMIT 1";
+	$cleaned_fields = $wpdb->get_var( $sqlQuery );
+	if ( ! empty( $cleaned_fields ) ) {
+		// Add the cleaned fields to the export.
+		$columns['cleaned_data_2_10_6'] = 'pmpro_orders_csv_column_cleaned_data_2_10_6';
+	}
+
+	return $columns;
+}
+add_filter( 'pmpro_orders_csv_extra_columns', 'pmpro_orders_csv_extra_columns_2_10_6' );
+
+/**
+ * Add the cleaned fields to the export.
+ *
+ * @since TBD
+ *
+ * @param object $order The order object.
+ * @return string The cleaned fields.
+ */
+function pmpro_orders_csv_column_cleaned_data_2_10_6( $order ) {
+	// Get the cleaned fields.
+	$cleaned_fields = get_pmpro_membership_order_meta( $order->id, 'cleaned_fields_2_10_6', true );
+	return empty( $cleaned_fields ) ? '' : implode( ', ', $cleaned_fields );
+}
+
+/**
+ * If the site was affected, show a message in Site Health.
+ *
+ * @since TBD
+ *
+ * @param array $info The Site Health info.
+ * @return array The Site Health info.
+ */
+function pmpro_add_site_health_info_2_10_6( $info ) {
+	global $wpdb;
+
+	// Get the number of orders that were affected.
+	$sqlQuery = "SELECT COUNT(*)
+				FROM $wpdb->pmpro_membership_ordermeta
+				WHERE meta_key = 'cleaned_fields_2_10_6'";
+	$affected_orders = (int) $wpdb->get_var( $sqlQuery );
+
+	// If there were affected orders, add a message to Site Health.
+	if ( $affected_orders > 0 ) {
+		$info['pmpro']['fields']['cleaned_fields_2_10_6'] = array(
+			'label' => __( 'Cleaned Fields (2.10.6)', 'paid-memberships-pro' ),
+			'value' => sprintf(
+				_n(
+					'%d order was affected by the 2.10.6 update.',
+					'%d orders were affected by the 2.10.6 update.',
+					$affected_orders,
+					'paid-memberships-pro'
+				),
+				$affected_orders
+			) . ' ' . __( 'For more information, read our post here', 'paid-memberships-pro' ) . ': https://www.paidmembershipspro.com/pmpro-update-2-10-6/',
+		);
+	}
+
+	return $info;
+}
+
 // Only load these functions if we need to call them.
 if ( $pmpro_db_version >= 2.95 ) {
 	return;
@@ -80,7 +159,7 @@ function pmpro_upgrade_2_10_6() {
 			pmpro_upgrade_2_10_6_helper_scrub_account_numbers_in_orders( $order_ids, false );
 		}
 	}
-	pmpro_setOption( 'db_version', '2.106' );
+	pmpro_setOption( 'db_version', '2.96' );
 	return 2.106;
 }
 
@@ -133,16 +212,25 @@ function pmpro_upgrade_2_10_6_helper_scrub_account_numbers_in_orders( $order_ids
             continue;
         }
 
+		// Track cleaned fields so that admins can see what was cleaned.
+		$cleaned_fields = array();
+
         // Unset sensitive data.
         if ( ! empty( $request_vars['AccountNumber'] ) ) {
             unset( $request_vars['AccountNumber'] );
+			$cleaned_fields[] = 'AccountNumber';
         }
         if ( ! empty( $request_vars['CVV'] ) ) {
             unset( $request_vars['CVV'] );
+			$cleaned_fields[] = 'CVV';
         }
 		if ( ! empty( $request_vars['add_sub_accounts_password'] ) ) {
 			unset( $request_vars['add_sub_accounts_password'] );
+			$cleaned_fields[] = 'add_sub_accounts_password';
 		}
+
+		// Log cleaned fields.
+		update_pmpro_membership_order_meta( $order_id, 'cleaned_fields_2_10_6', $cleaned_fields );
 
         // Save updated values.
         update_pmpro_membership_order_meta( $order_id, 'checkout_request_vars', $request_vars );
