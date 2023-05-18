@@ -12,12 +12,8 @@ const {
     registerBlockType
 } = wp.blocks;
 const {
-    InnerBlocks,
     useBlockProps, 
 } = wp.blockEditor;
-const {
-    select
-} = wp.data;
 
  /**
   * Register block
@@ -56,32 +52,9 @@ export default registerBlockType(
             },
         },
         edit: props => {
-            
-            const { setAttributes } = props; 
-
-            var parent = select('core/block-editor').getBlockParents(props.clientId);
-            const parentAtts = select('core/block-editor').getBlockAttributes(parent);
-
-            setAttributes({ selected_level: parentAtts.selected_level });
-            
-            let level_name = 'Checkout Button?';
-            if (pmpro.all_levels[parentAtts.selected_level] !== undefined) {
-                level_name = pmpro.all_levels[parentAtts.selected_level].name;
-            }
-
             return ( 
                 <div { ...useBlockProps() }>
-                    { level_name }
-                </div>
-            );
-        },
-        save() {
-                        
-            const blockProps = useBlockProps.save();
-            
-            return (
-                <div { ...blockProps }>
-                    <InnerBlocks.Content />
+                    { 'Checkout Button?'}
                 </div>
             );
         },

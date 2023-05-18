@@ -3,7 +3,11 @@
  *
  *
  */
-
+const getName = (level) => {
+    return pmpro.all_levels_formatted_text[level]
+                ? pmpro.all_levels_formatted_text[level].name
+                : 'Level Name Placeholder';
+}
 /**
  * Internal block libraries
  */
@@ -12,12 +16,8 @@ const {
     registerBlockType
 } = wp.blocks;
 const {
-    InnerBlocks,
     useBlockProps,
 } = wp.blockEditor;
-const {
-    select
-} = wp.data;
 
 /**
  * Register block
@@ -56,37 +56,16 @@ export default registerBlockType(
             }
         },
         edit: props => {
-
-            const { setAttributes } = props;
-
-            var parent = select('core/block-editor').getBlockParents(props.clientId);
-            const parentAtts = select('core/block-editor').getBlockAttributes(parent);
-
-            setAttributes({ selected_level: parentAtts.selected_level });
-
-            let level_name = 'Level Name Placeholder';
-            if (pmpro.all_levels_formatted_text[parentAtts.selected_level] !== undefined) {
-                level_name = pmpro.all_levels_formatted_text[parentAtts.selected_level].name;
-            }
-
             return (
                 <div {...useBlockProps()}>
-                    {level_name}
+                    {getName(props.attributes.selected_level)}
                 </div>
             );
         },
         save: ( props ) => {
-            
             const blockProps = useBlockProps.save();
-
-            let level_name = 'Level Name Placeholder';
-            
-            if (pmpro.all_levels_formatted_text[props.attributes.selected_level] !== undefined) {
-                level_name = pmpro.all_levels_formatted_text[props.attributes.selected_level].name;
-            }
-            
             return <div {...blockProps}>
-                {level_name}
+                    {getName(props.attributes.selected_level)}
             </div>;
         },
     }

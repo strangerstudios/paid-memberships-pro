@@ -7,6 +7,7 @@
 /**
  * Internal block libraries
  */
+
 const { __ } = wp.i18n;
 const {
     registerBlockType
@@ -16,7 +17,6 @@ const {
     SelectControl,
 } = wp.components;
 const {
-    InspectorControls,
     InnerBlocks,
     useBlockProps
 } = wp.blockEditor;
@@ -66,36 +66,21 @@ export default registerBlockType(
                 default: ''
             }
         },
-        edit: props => {
-            const { attributes: { uid, selected_level }, setAttributes, isSelected } = props;
-            // console.log(props);
-            // console.log(props.clientId);
-            var children = select('core/block-editor').getBlocksByClientId(props.clientId);
-            //[0].innerBlocks;
-            // console.log(children);
-            children.forEach(function (child) {
-                dispatch('core/block-editor').updateBlockAttributes(child.clientId, { selected_level: selected_level })
+        edit: (props) => {
+            const {
+              attributes: {  selected_level },
+              setAttributes,
+              isSelected,
+            } = props
+
+            const element = select('core/block-editor').getBlock(props.clientId);
+            element.innerBlocks.forEach((child) => {
+                dispatch('core/block-editor').updateBlockAttributes(child.clientId, {
+                selected_level: selected_level,
+                });
             });
 
-            setAttributes({ selected_level: selected_level, levels: all_levels });
-
-            if (uid == '') {
-                var rand = Math.random() + "";
-                setAttributes({ uid: rand });
-            }
-
             return [
-                isSelected && <InspectorControls>
-                    <PanelBody>
-                        <p><strong>{__('Select a Membership Level', 'paid-memberships-pro')}</strong></p>
-                        <SelectControl
-                            value={selected_level}
-                            help={__("Select a level.", "paid-memberships-pro")}
-                            options={all_levels}
-                            onChange={selected_level => setAttributes({ selected_level })}
-                        />
-                    </PanelBody>
-                </InspectorControls>,
                 isSelected && <div className="pmpro-block-require-membership-element" >
                     <span className="pmpro-block-title">{__('Individual Membership Level', 'paid-memberships-pro')}</span>
                     <div class="pmpro-block-inspector">
@@ -108,32 +93,22 @@ export default registerBlockType(
                             />
                         </PanelBody>
                     </div>
-                    {/* <InnerBlocks templateLock={false} template={[
-                        ['pmpro/single-level-name', { selected_level: selected_level, content: 'Example Nested Block Template' }],
-                        ['pmpro/single-level-price', { level: 2, content: 'Example Nested Block Template' }],
-                        ['pmpro/single-level-expiration', { level: 2, content: 'Example Nested Block Template' }],
-                        ['pmpro/single-level-description', { level: 2, content: 'Example Nested Block Template' }],
-                        ['pmpro/single-level-checkout', { level: 2, content: 'Example Nested Block Template' }],
-                    ]}
-                    /> */}
                 </div>,
                 !isSelected && <div className="pmpro-block-require-membership-element" >
                     <span className="pmpro-block-title">{__('Membership Level', 'paid-memberships-pro')}</span>
                     <InnerBlocks templateLock={false} template={[
                         ['pmpro/single-level-name', { selected_level: selected_level, content: 'Example Nested Block Template' }],
-                        ['pmpro/single-level-price', { level: 2, content: 'Example Nested Block Template' }],
-                        ['pmpro/single-level-expiration', { level: 2, content: 'Example Nested Block Template' }],
-                        ['pmpro/single-level-description', { level: 2, content: 'Example Nested Block Template' }],
-                        ['pmpro/single-level-checkout', { level: 2, content: 'Example Nested Block Template' }],
+                        ['pmpro/single-level-price', { selected_level: selected_level, content: 'Example Nested Block Template' }],
+                        ['pmpro/single-level-expiration', {selected_level: selected_level, content: 'Example Nested Block Template' }],
+                        ['pmpro/single-level-description', { selected_level: selected_level, content: 'Example Nested Block Template' }],
+                        ['pmpro/single-level-checkout', { selected_level: selected_level, content: 'Example Nested Block Template' }],
                     ]}
                     />
                 </div>,
             ];
         },
         save() {
-
             const blockProps = useBlockProps.save();
-
             return (
                 <div {...blockProps}>
                     <InnerBlocks.Content />

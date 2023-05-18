@@ -4,6 +4,12 @@
  *
  */
 
+const getExpirationText = (level) => {
+    return pmpro.all_levels_formatted_text[level]
+                ? pmpro.all_levels_formatted_text[level].formatted_expiration
+                : 'Expiration placeholder';
+}
+
 /**
  * Internal block libraries
  */
@@ -12,12 +18,9 @@ const {
     registerBlockType
 } = wp.blocks;
 const {
-    InnerBlocks,
     useBlockProps,
 } = wp.blockEditor;
-const {
-    select
-} = wp.data;
+
 
 /**
  * Register block
@@ -56,38 +59,17 @@ export default registerBlockType(
             },
         },
         edit: props => {
-
-            const { setAttributes } = props;
-
-            var parent = select('core/block-editor').getBlockParents(props.clientId);
-            const parentAtts = select('core/block-editor').getBlockAttributes(parent);
-
-            setAttributes({ selected_level: parentAtts.selected_level });
-
-            let formatted_expiration = 'Expiration placeholder';
-            if (pmpro.all_levels_formatted_text[parentAtts.selected_level] !== undefined) {
-                formatted_expiration = pmpro.all_levels_formatted_text[parentAtts.selected_level].formatted_expiration;
-            }
-
             return (
-
                 <div {...useBlockProps()}>
-                    {formatted_expiration}                    
+                    {getExpirationText(props.attributes.selected_level)}                    
                 </div>
             );
         },
         save( props ) {
 
             const blockProps = useBlockProps.save();
-
-            let formatted_expiration = 'Expiration Placeholder';
-
-            if (pmpro.all_levels_formatted_text[props.attributes.selected_level] !== undefined) {
-                formatted_expiration = pmpro.all_levels_formatted_text[props.attributes.selected_level].formatted_expiration;
-            }
-
             return <div {...blockProps}>
-                {formatted_expiration}
+                {getExpirationText(props.attributes.selected_level)}
             </div>;
         },
     }

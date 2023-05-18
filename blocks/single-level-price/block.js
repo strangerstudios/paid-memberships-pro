@@ -11,20 +11,16 @@ const { __ } = wp.i18n;
 const {
     registerBlockType
 } = wp.blocks;
+
 const {
-    PanelBody,
-    CheckboxControl,
-    SelectControl,
-} = wp.components;
-const {
-    InspectorControls,
-    InnerBlocks,
     useBlockProps, 
 } = wp.blockEditor;
-const {
-    dispatch,
-    select
-} = wp.data;
+
+const getFormattedPrice = (level) => {
+    return pmpro.all_levels_formatted_text[level]
+                ? pmpro.all_levels_formatted_text[level].formatted_price
+                : 'Level Price Placeholder';
+}
 
  /**
   * Register block
@@ -63,36 +59,16 @@ export default registerBlockType(
             },
         },
         edit: props => {
-            
-            const { attributes: { levels, selected_level }, setAttributes, isSelected } = props; 
-
-            var parent = select('core/block-editor').getBlockParents(props.clientId);
-            const parentAtts = select('core/block-editor').getBlockAttributes(parent);
-
-            setAttributes( {selected_level: parentAtts.selected_level } );
-
-            let formatted_price = 'Level Price Placeholder';
-            if (pmpro.all_levels_formatted_text[parentAtts.selected_level] !== undefined) {
-                formatted_price = pmpro.all_levels_formatted_text[parentAtts.selected_level].formatted_price;
-            }
-
             return ( 
                 <div { ...useBlockProps() }>
-                    { formatted_price }
+                    { getFormattedPrice(props.attributes.selected_level)}
                 </div>
             );
         },
         save: ( props ) => {
-                        
             const blockProps = useBlockProps.save();
-
-            let formatted_price = 'Level Price Placeholder';
-            if (pmpro.all_levels_formatted_text[props.attributes.selected_level] !== undefined) {
-                formatted_price = pmpro.all_levels_formatted_text[props.attributes.selected_level].formatted_price;
-            }
-            
             return <div {...blockProps}>
-                {formatted_price}
+               {getFormattedPrice(props.attributes.selected_level)}
             </div>;
         },
     }
