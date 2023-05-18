@@ -129,11 +129,6 @@ function pmpro_add_site_health_info_2_10_6( $info ) {
 	return $info;
 }
 
-// Only load these functions we haven't already updated to db version 2.96
-if ( $pmpro_db_version >= 2.96 ) {
-	return;
-}
-
 function pmpro_upgrade_2_10_6() {
 	global $wpdb;
 	$sqlQuery = "SELECT pmpro_membership_order_id
