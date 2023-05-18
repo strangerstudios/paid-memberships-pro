@@ -484,11 +484,11 @@ function pmpro_report_sales_page()
 		// Maybe add compare to previous period data.
 		if ( ! empty( $previous_period_dates ) ) {
 			if ( $new_renewals === 'new_renewals' ) {
-				$google_chart_row_data[ $date ][ 'tooltip' ] .= '<li style="border-top: 1px solid #CCC; margin-bottom: 0px; margin-top: 8px; padding-top: 8px;">' . sprintf( __( 'Previous Period: %s', 'paid-memberships-pro' ), $type === 'sales' ? $data->compare_value : pmpro_formatPrice( $data->compare_value ) ) . '</li>';
+				$google_chart_row_data[ $date ][ 'tooltip' ] .= '<li style="border-top: 1px solid #CCC; margin-bottom: 0px; margin-top: 8px; padding-top: 8px;">' . sprintf( __( 'Previous Year: %s', 'paid-memberships-pro' ), $type === 'sales' ? $data->compare_value : pmpro_formatPrice( $data->compare_value ) ) . '</li>';
 			} elseif ( $new_renewals === 'only_new') {
-				$google_chart_row_data[ $date ][ 'tooltip' ] .= '<li style="border-top: 1px solid #CCC; margin-bottom: 0px; margin-top: 8px; padding-top: 8px;">' . sprintf( __( 'Previous Period: %s', 'paid-memberships-pro' ), $type === 'sales' ? $data->compare_value - $data->compare_renewals : pmpro_formatPrice( $data->compare_value - $data->compare_renewals ) ) . '</li>';
+				$google_chart_row_data[ $date ][ 'tooltip' ] .= '<li style="border-top: 1px solid #CCC; margin-bottom: 0px; margin-top: 8px; padding-top: 8px;">' . sprintf( __( 'Previous Year: %s', 'paid-memberships-pro' ), $type === 'sales' ? $data->compare_value - $data->compare_renewals : pmpro_formatPrice( $data->compare_value - $data->compare_renewals ) ) . '</li>';
 			} elseif ( $new_renewals === 'only_renewals') {
-				$google_chart_row_data[ $date ][ 'tooltip' ] .= '<li style="border-top: 1px solid #CCC; margin-bottom: 0px; margin-top: 8px; padding-top: 8px;">' . sprintf( __( 'Previous Period: %s', 'paid-memberships-pro' ), $type === 'sales' ? $data->compare_renewals : pmpro_formatPrice( $data->compare_renewals ) ) . '</li>';
+				$google_chart_row_data[ $date ][ 'tooltip' ] .= '<li style="border-top: 1px solid #CCC; margin-bottom: 0px; margin-top: 8px; padding-top: 8px;">' . sprintf( __( 'Previous Year: %s', 'paid-memberships-pro' ), $type === 'sales' ? $data->compare_renewals : pmpro_formatPrice( $data->compare_renewals ) ) . '</li>';
 			}
 		}
 		// Close the UL and div.
