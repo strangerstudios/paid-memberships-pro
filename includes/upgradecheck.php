@@ -337,6 +337,7 @@ function pmpro_checkForUpgrades()
 		pmpro_db_delta();
 		$pmpro_db_version = pmpro_upgrade_3_0();
 		pmpro_setOption( 'db_version', '3.0' );
+	}
 }
 
 function pmpro_db_delta()
