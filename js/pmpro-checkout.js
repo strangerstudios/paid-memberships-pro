@@ -2,8 +2,8 @@ jQuery(document).ready(function(){
     // Discount code JS if we are showing discount codes.
     if ( pmpro.show_discount_code ) {
         //update discount code link to show field at top of form
-        jQuery('#other_discount_code_a').attr('href', 'javascript:void(0);');
-        jQuery('#other_discount_code_a').click(function() {
+        jQuery('#other_discount_code_toggle').attr('href', 'javascript:void(0);');
+        jQuery('#other_discount_code_toggle').click(function() {
             jQuery('#other_discount_code_tr').show();
             jQuery('#other_discount_code_p').hide();
             jQuery('#other_discount_code').focus();

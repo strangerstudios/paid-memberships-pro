@@ -79,7 +79,10 @@ input[type="button"]#discount_code_button:hover,
 input[type="button"]#discount_code_button:focus,
 input[type="button"]#other_discount_code_button,
 input[type="button"]#other_discount_code_button:hover,
-input[type="button"]#other_discount_code_button:focus {
+input[type="button"]#other_discount_code_button:focus,
+button[type="button"]#other_discount_code_toggle,
+button[type="button"]#other_discount_code_toggle:hover,
+button[type="button"]#other_discount_code_toggle:focus {
 	-webkit-appearance: none;
     -moz-appearance: none;
 	background: none;
@@ -91,7 +94,7 @@ input[type="button"]#other_discount_code_button:focus {
 	font-family: inherit;
     font-size: 100%;
 	font-weight: normal;
-	margin: 0 0 0 5px;
+	margin: 0;
 	outline: none;
     padding: 0;
 	text-align: center;
@@ -221,6 +224,10 @@ form.pmpro_form .pmpro_payment-cvv .input,
 form.pmpro_form .pmpro_payment-discount-code .input,
 form.pmpro_form #other_discount_code.input {
 	max-width: 40%;
+}
+form.pmpro_form #discount_code.input,
+form.pmpro_form #other_discount_code.input {
+	margin-right: .5em;
 }
 form.pmpro_form input[type=checkbox]#tos {
 	width: auto;

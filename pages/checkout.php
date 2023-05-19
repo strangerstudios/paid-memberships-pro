@@ -61,7 +61,7 @@ if ( empty( $default_gateway ) ) {
 		<div id="pmpro_pricing_fields" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout', 'pmpro_pricing_fields' ) ); ?>">
 			<h2>
 				<span class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout-h2-name' ) ); ?>"><?php esc_html_e('Membership Level', 'paid-memberships-pro' );?></span>
-				<?php if(count($pmpro_levels) > 1) { ?><span class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout-h2-msg' ) ); ?>"><a href="<?php echo esc_url( pmpro_url( "levels" ) ); ?>"><?php esc_html_e('change', 'paid-memberships-pro' );?></a></span><?php } ?>
+				<?php if(count($pmpro_levels) > 1) { ?><span class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout-h2-msg' ) ); ?>"><a aria-label="<?php esc_html_e( 'Select a different membership level', 'paid-memberships-pro' ); ?>" href="<?php echo esc_url( pmpro_url( "levels" ) ); ?>"><?php esc_html_e('change', 'paid-memberships-pro' );?></a></span><?php } ?>
 			</h2>
 			<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout-fields' ) ); ?>">
 				<p class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_level_name_text' ) );?>">
@@ -116,9 +116,9 @@ if ( empty( $default_gateway ) ) {
 
 				<?php if($pmpro_show_discount_code) { ?>
 					<?php if($discount_code && !$pmpro_review) { ?>
-						<p id="other_discount_code_p" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_small', 'other_discount_code_p' ) ); ?>"><a id="other_discount_code_a" href="#discount_code"><?php esc_html_e('Click here to change your discount code.', 'paid-memberships-pro' );?></a></p>
+						<p id="other_discount_code_p" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_small', 'other_discount_code_p' ) ); ?>"><button type="button" id="other_discount_code_toggle"><?php esc_html_e('Click here to change your discount code', 'paid-memberships-pro' );?></button></p>
 					<?php } elseif(!$pmpro_review) { ?>
-						<p id="other_discount_code_p" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_small', 'other_discount_code_p' ) ); ?>"><?php esc_html_e('Do you have a discount code?', 'paid-memberships-pro' );?> <a id="other_discount_code_a" href="#discount_code"><?php esc_html_e('Click here to enter your discount code', 'paid-memberships-pro' );?></a>.</p>
+						<p id="other_discount_code_p" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_small', 'other_discount_code_p' ) ); ?>"><?php esc_html_e('Do you have a discount code?', 'paid-memberships-pro' );?> <button type="button" id="other_discount_code_toggle"><?php esc_html_e('Click here to enter your discount code', 'paid-memberships-pro' );?></button></p>
 					<?php } elseif($pmpro_review && $discount_code) { ?>
 						<p><strong><?php esc_html_e('Discount Code', 'paid-memberships-pro' );?>:</strong> <?php echo esc_html( $discount_code ); ?></p>
 					<?php } ?>
@@ -128,7 +128,7 @@ if ( empty( $default_gateway ) ) {
 				<div id="other_discount_code_tr" style="display: none;">
 					<label for="other_discount_code"><?php esc_html_e('Discount Code', 'paid-memberships-pro' );?></label>
 					<input id="other_discount_code" name="other_discount_code" type="text" class="<?php echo esc_attr( pmpro_get_element_class( 'input pmpro_alter_price', 'other_discount_code' ) ); ?>" size="20" value="<?php echo esc_attr($discount_code); ?>" />
-					<input type="button" name="other_discount_code_button" id="other_discount_code_button" value="<?php esc_attr_e('Apply', 'paid-memberships-pro' );?>" />
+					<input aria-label="<?php esc_html_e( 'Apply discount code', 'paid-memberships-pro' ); ?>" type="button" name="other_discount_code_button" id="other_discount_code_button" value="<?php esc_attr_e('Apply', 'paid-memberships-pro' );?>" />
 				</div>
 				<?php } ?>
 			</div> <!-- end pmpro_checkout-fields -->
@@ -463,7 +463,7 @@ if ( empty( $default_gateway ) ) {
 					<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout-field pmpro_payment-discount-code', 'pmpro_payment-discount-code' ) ); ?>">
 						<label for="discount_code"><?php esc_html_e('Discount Code', 'paid-memberships-pro' );?></label>
 						<input class="<?php echo esc_attr( pmpro_get_element_class( 'input pmpro_alter_price', 'discount_code' ) ); ?>" id="discount_code" name="discount_code" type="text" size="10" value="<?php echo esc_attr($discount_code); ?>" />
-						<input type="button" id="discount_code_button" name="discount_code_button" value="<?php esc_attr_e('Apply', 'paid-memberships-pro' );?>" />
+						<input  aria-label="<?php esc_html_e( 'Apply discount code', 'paid-memberships-pro' ); ?>" type="button" id="discount_code_button" name="discount_code_button" value="<?php esc_attr_e('Apply', 'paid-memberships-pro' );?>" />
 						<p id="discount_code_message" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_message', 'discount_code_message' ) ); ?>" style="display: none;"></p>
 					</div>
 				<?php } ?>
