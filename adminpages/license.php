@@ -96,7 +96,7 @@ if ( defined( 'PMPRO_DIR' ) ) {
 				echo '<p>' . wp_kses( __( '<strong>Need help?</strong> Your license allows you to open new tickets in our private support area. Purchases are backed by a 30 day, no questions asked refund policy.', 'paid-memberships-pro' ), $allowed_pmpro_license_strings_html ) . '</p>';
 			?>
 
-			<p><a href="https://www.paidmembershipspro.com/pricing/?utm_source=plugin&utm_medium=pmpro-license&utm_campaign=pricing&utm_content=view-license-options" target="_blank" rel="noopener noreferrer"><?php esc_html_e( 'View Support License Options &raquo;', 'paid-memberships-pro' ); ?></a></p>
+			<p><a href="https://www.paidmembershipspro.com/pricing/?utm_source=plugin&utm_medium=pmpro-license&utm_campaign=pricing&utm_content=view-license-options" target="_blank" rel="noopener noreferrer"><?php esc_html_e( 'View Support License Options', 'paid-memberships-pro' ); ?></a></p>
 
 		</div> <!-- end about-text -->
 	</div> <!-- end about-wrap -->
