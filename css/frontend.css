@@ -756,10 +756,10 @@ li.pmpro_more {
 	#pmpro_levels_table td:nth-child(1) {
 		min-width: unset;
 	}
-	.pmpro_checkout h3 span.pmpro_checkout-h3-name {
+	.pmpro_checkout h2 span.pmpro_checkout-h2-name {
 		display: block;
 	}
-	.pmpro_checkout h3 span.pmpro_checkout-h3-msg {
+	.pmpro_checkout h2 span.pmpro_checkout-h2-msg {
 		display: block;
 		margin-bottom: 1em;
 	}

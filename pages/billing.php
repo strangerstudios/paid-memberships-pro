@@ -159,9 +159,9 @@
 			?>
 			<div id="pmpro_billing_address_fields" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout', 'pmpro_billing_address_fields' ) ); ?>">
 				<hr />
-				<h3>
-					<span class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout-h3-name' ) ); ?>"><?php esc_html_e('Billing Address', 'paid-memberships-pro' );?></span>
-				</h3>
+				<h2>
+					<span class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout-h2-name' ) ); ?>"><?php esc_html_e('Billing Address', 'paid-memberships-pro' );?></span>
+				</h2>
 				<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout-fields' ) ); ?>">
 					<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout-field pmpro_checkout-field-bfirstname', 'pmpro_checkout-field-bfirstname' ) ); ?>">
 						<label for="bfirstname"><?php esc_html_e('First Name', 'paid-memberships-pro' );?></label>
@@ -322,11 +322,11 @@
 				$pmpro_accepted_credit_cards_string = pmpro_implodeToEnglish($pmpro_accepted_credit_cards);
 				?>
 				<div id="pmpro_payment_information_fields" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout', 'pmpro_payment_information_fields' ) ); ?>">
-					<h3>
-						<span class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout-h3-name' ) ); ?>"><?php esc_html_e('Credit Card Information', 'paid-memberships-pro' );?></span>
-						<span class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout-h3-msg' ) ); ?>"><?php echo esc_html( sprintf( __('We accept %s', 'paid-memberships-pro' ), $pmpro_accepted_credit_cards_string ) ); ?></span>
+					<h2>
+						<span class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout-h2-name' ) ); ?>"><?php esc_html_e('Credit Card Information', 'paid-memberships-pro' );?></span>
+						<span class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout-h2-msg' ) ); ?>"><?php echo esc_html( sprintf( __('We accept %s', 'paid-memberships-pro' ), $pmpro_accepted_credit_cards_string ) ); ?></span>
 
-					</h3>
+					</h2>
 					<?php $sslseal = pmpro_getOption("sslseal"); ?>
 					<?php if(!empty($sslseal)) { ?>
 						<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout-fields-display-seal' ) ); ?>">

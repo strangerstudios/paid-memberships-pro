@@ -305,9 +305,9 @@ function pmpro_checkout_boxes_fields() {
 			?>
 			<div id="pmpro_checkout_box-<?php echo sanitize_title( $cb->name ); ?>" class="pmpro_checkout">
 				<hr />
-				<h3>
-					<span class="pmpro_checkout-h3-name"><?php echo wp_kses_post( $cb->label );?></span>
-				</h3>
+				<h2>
+					<span class="pmpro_checkout-h2-name"><?php echo wp_kses_post( $cb->label );?></span>
+				</h2>
 				<div class="pmpro_checkout-fields">
 				<?php if(!empty($cb->description)) { ?>
 					<div class="pmpro_checkout_decription"><?php echo wp_kses_post( $cb->description ); ?></div>
@@ -634,7 +634,7 @@ function pmpro_show_user_fields_in_profile( $user, $withlocations = false ) {
 
 			if ( !empty($box->label) ) {
 				?>
-				<h3><?php echo wp_kses_post( $box->label ); ?></h3>
+				<h2><?php echo wp_kses_post( $box->label ); ?></h2>
 				<?php
 				if ( ! empty( $box->description ) ) {
 					?>
@@ -713,7 +713,7 @@ function pmpro_show_user_fields_in_frontend_profile( $user, $withlocations = fal
 
 			<div class="pmpro_checkout_box-<?php echo sanitize_title( $where ); ?>">
 				<?php if ( ! empty( $box->label ) ) { ?>
-					<h3><?php echo wp_kses_post( $box->label ); ?></h3>
+					<h2><?php echo wp_kses_post( $box->label ); ?></h2>
 				<?php } ?>
 
 				<div class="pmpro_member_profile_edit-fields">
