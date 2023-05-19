@@ -1,4 +1,13 @@
 == Changelog ==
+= 2.10.6 - 2023-05-19 =
+* SECURITY: Added extra precautions to make sure credit card and password information does not get stored in the `checkout_request_vars` order meta when using Stripe Checkout. More info here: https://www.paidmembershipspro.com/pmpro-update-2-10-6/ #2468, #2473 (@dparker1005, @ideadude)
+* ENHANCEMENT: Added a new filter `pmpro_sales_widget_periods` to allow filtering the periods for the sales widget. (@kimcoleman)
+* BUG FIX/ENHANCEMENT: Now including the administrator's display name in emails that are sent to the admin. #2453 (@MaximilianoRicoTabo)
+* BUG FIX/ENHANCEMENT: Now validating license keys in setup wizard. #2464 (@dparker1005)
+* BUG FIX: Fixed fatal error on payment gateway settings page when using Stripe with expired API keys. #2455 (@dparker1005)
+* BUG FIX: Fixed issue where an error message would not be displayed on the Update Billing page when a credit card number was not entered. #2457 (@MaximilianoRicoTabo)
+* BUG FIX: Fixed issue where the orders export date filter may ignore the site's timzeone. #2460 (@JarrydLong)
+
 = 2.10.5 - 2023-04-27 =
 * BUG FIX/ENHANCEMENT: Fixed issue where the date/time of orders in the Member History table were sometimes off based on timezone. #2552 (@JarrydLong, @dparker1005)
 * BUG FIX: Fixed issue where checkouts for subscriptions with a $0 initial payment were failing with Stripe. #2454 (@dparker1005)

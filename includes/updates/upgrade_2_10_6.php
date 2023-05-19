@@ -12,7 +12,7 @@
 /**
  * Show admin notice if site was affected.
  *
- * @since TBD
+ * @since 2.10.6
  */
 function pmpro_upgrade_2_10_6_notice() {
 	// Check if we need to show the notice.
@@ -56,7 +56,7 @@ add_action( 'admin_notices', 'pmpro_upgrade_2_10_6_notice' );
  * When orders are exported, check if we cleaned data in the 2.10.6 update.
  * If so, show the cleaned fields in the export.
  *
- * @since TBD
+ * @since 2.10.6
  *
  * @param array $columns The columns to export.
  * @return array The columns to export.
@@ -82,7 +82,7 @@ add_filter( 'pmpro_orders_csv_extra_columns', 'pmpro_orders_csv_extra_columns_2_
 /**
  * Add the cleaned fields to the export.
  *
- * @since TBD
+ * @since 2.10.6
  *
  * @param object $order The order object.
  * @return string The cleaned fields.
@@ -96,7 +96,7 @@ function pmpro_orders_csv_column_cleaned_data_2_10_6( $order ) {
 /**
  * If the site was affected, show a message in Site Health.
  *
- * @since TBD
+ * @since 2.10.6
  *
  * @param array $info The Site Health info.
  * @return array The Site Health info.
