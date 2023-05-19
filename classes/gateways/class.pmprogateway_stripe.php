@@ -1660,9 +1660,22 @@ class PMProGateway_stripe extends PMProGateway {
 		// Save some checkout information in the order so that we can access it when the payment is complete.
 		// Save the request variables.
 		$request_vars = $_REQUEST;
-		unset( $request_vars['password'] );
-		unset( $request_vars['password2'] );
-		unset( $request_vars['password2_copy'] );
+		// Unset restricted request variables.
+		$restricted_vars = array(
+			'password',
+			'password2',
+			'password2_copy',
+			'AccountNumber',
+			'CVV',
+			'ExpirationMonth',
+			'ExpirationYear',
+			'add_sub_accounts_password', // Creating users at checkout with Sponsored Members.
+		);
+		foreach ( $restricted_vars as $key ) {
+			if ( isset( $request_vars[ $key ] ) ) {
+				unset( $request_vars[ $key ] );
+			}
+		}
 		update_pmpro_membership_order_meta( $morder->id, 'checkout_request_vars', $request_vars );
 
 		// Save the checkout level.
