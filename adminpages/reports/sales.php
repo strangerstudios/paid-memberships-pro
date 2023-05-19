@@ -55,7 +55,7 @@ function pmpro_report_sales_widget() {
 
 		/**
 		 * Filter the periods for the sales widget.
-		 * @since TBD
+		 * @since 2.10.6
 		 * @param array $reports The array of periods.
 		 * @return array $reports The array of periods.
 		 */

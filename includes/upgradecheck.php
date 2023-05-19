@@ -320,6 +320,15 @@ function pmpro_checkForUpgrades()
 	}
 
 	/**
+	 * Version 2.10.6
+	 * Check for sensitive information in ordermeta.
+	 */
+	require_once( PMPRO_DIR . "/includes/updates/upgrade_2_10_6.php" ); // Need to include this for admin notice.
+	if ( $pmpro_db_version < 2.96 ) { // 2.96 since 2.106 would be lower than previous update.
+		pmpro_upgrade_2_10_6(); // This function will update the db version.
+	}
+
+	/**
 	 * Version 3.0
 	 * Running pmpro_db_delta to add subscription and subscription meta tables.
 	 */
@@ -328,7 +337,6 @@ function pmpro_checkForUpgrades()
 		pmpro_db_delta();
 		$pmpro_db_version = pmpro_upgrade_3_0();
 		pmpro_setOption( 'db_version', '3.0' );
-	}
 }
 
 function pmpro_db_delta()
