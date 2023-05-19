@@ -4,6 +4,12 @@
  *
  */
 
+const getDescription = (level) => {
+    return pmpro.all_levels_formatted_text[level] 
+    ? pmpro.all_levels_formatted_text[level].description 
+    : 'Level Description Placeholder';
+}
+
 /**
  * Internal block libraries
  */
@@ -12,7 +18,6 @@ const {
     registerBlockType
 } = wp.blocks;
 const {
-    InnerBlocks,
     useBlockProps,
 } = wp.blockEditor;
 const {
@@ -57,21 +62,9 @@ export default registerBlockType(
         },
         edit: props => {
 
-            const { setAttributes } = props;
-
-            var parent = select('core/block-editor').getBlockParents(props.clientId);
-            const parentAtts = select('core/block-editor').getBlockAttributes(parent);
-
-            setAttributes({ selected_level: parentAtts.selected_level });
-
-            let level_description = 'Level description placeholder';
-            if (pmpro.all_levels[parentAtts.selected_level] !== undefined) {
-                level_description = pmpro.all_levels[parentAtts.selected_level].description;
-            }
-
-            return (
+             return (
                 <div {...useBlockProps()}>
-                    {level_description}
+                    {getDescription(props.attributes.selected_level)}
                 </div>
             );
         },
@@ -79,13 +72,8 @@ export default registerBlockType(
 
             const blockProps = useBlockProps.save();
 
-            let level_description = 'Level Description Placeholder';
-            if (pmpro.all_levels[props.attributes.selected_level] !== undefined) {
-                level_description = pmpro.all_levels[props.attributes.selected_level].description;
-            }
-
             return <div {...blockProps}>
-                {level_description}
+                { getDescription(props.attributes.selected_level) }
             </div>;
         },
     }
