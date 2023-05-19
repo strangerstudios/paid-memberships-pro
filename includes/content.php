@@ -25,6 +25,11 @@ function pmpro_has_membership_access($post_id = NULL, $user_id = NULL, $return_m
 	//use current user if no value is supplied
 	if(!$user_id)
 		$user_id = $current_user->ID;
+
+	// Give admins access to all posts automatically and filterable to turn it on/off
+	if ( current_user_can( 'manage_options' ) && empty( get_option( 'pmpro_view_as' ) ) && apply_filters( 'pmpro_admin_always_has_access', true ) ) {
+		return true;
+	}
 	
 	//if no post or current_user object, set them up
 	if(isset($queried_object->ID) && !empty($queried_object->ID) && $post_id == $queried_object->ID)
@@ -136,7 +141,7 @@ function pmpro_has_membership_access($post_id = NULL, $user_id = NULL, $return_m
 	//filter for this post type
 	if( isset($mypost->post_type) && has_filter("pmpro_has_membership_access_filter_" . $mypost->post_type))
 		$hasaccess = apply_filters("pmpro_has_membership_access_filter_" . $mypost->post_type, $hasaccess, $mypost, $myuser, $post_membership_levels);
-
+	
 	//return
 	if($return_membership_levels)
 		return array($hasaccess, $post_membership_levels_ids, $post_membership_levels_names);
@@ -545,3 +550,40 @@ function pmpro_body_classes( $classes ) {
 	return $classes;
 }
 add_filter( 'body_class', 'pmpro_body_classes' );
+
+/**
+ * /// Adjust the access to content based on "View As" option.
+ * @since TBD
+ */
+function pmpro_view_as_access_filter( $has_access, $post, $user, $levels ) {
+	$view_as = get_option( 'pmpro_view_as', false );
+
+	// No option found, just return $has_access as is.
+	if ( $view_as == false ) {
+		return $has_access;
+	}
+
+	// If set to View as a non-member and they try to view a membership related post or page - deny access.
+	if ( $view_as === 'non-member' && ! empty( $levels ) ) {
+		return false;
+	}
+	
+	// Assume level ids are stored as array, loop through them and see if the post level ID matches.
+	if ( ! empty( $view_as ) && is_array( $view_as ) ) {
+		//get level ids for this post
+		$post_level_ids = array();
+		foreach( $levels as $key => $level ) {
+			$post_level_ids[] = $level->id;
+		}
+
+		foreach ( $view_as as $key => $level_id ) {
+			//return true when we find a match
+			if ( in_array( $level_id, $post_level_ids ) ) {
+				$has_access = true;
+			}
+		}
+	}
+
+	return $has_access;
+}
+add_filter( 'pmpro_has_membership_access_filter', 'pmpro_view_as_access_filter', 5, 4 );
