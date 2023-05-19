@@ -58,10 +58,19 @@ global $pmpro_pages;
 				<?php esc_html_e( 'Yes, I will be collecting payments for my memberships.', 'paid-memberships-pro' ); ?>
 			</label>
 		</div>
-		<div class="pmpro-wizard__field">
+		<div class="pmpro-wizard__field pmpro_admin">
 			<label class="pmpro-wizard__label-block">
 				<?php esc_html_e( 'Enter Your Support License Key (optional)', 'paid-memberships-pro' ); ?>
 			</label>
+			<?php
+			// Check if the user tried to submit a license key, but is still on this page.
+			// If so, the license wasn't valid. Show an error.
+			if ( ! empty( $_REQUEST['pmpro_license_key'] ) ) {
+				?>
+				<p class="pmpro_message pmpro_error"><?php esc_html_e( 'The license key you entered is invalid. Please try again.', 'paid-memberships-pro' ); ?></p>
+				<?php
+			}
+			?>
 			<p class="pmpro-wizard__field-description"><?php esc_html_e( 'An annual support license is recommended for websites running Paid Memberships Pro.', 'paid-memberships-pro' ); ?> <a href="https://www.paidmembershipspro.com/pricing/?utm_source=plugin&utm_medium=pmpro-wizard&utm_campaign=pricing&utm_content=view-plans-pricing" target="_blank" rel="noopener noreferrer"><?php esc_html_e( 'View Plans and Pricing', 'paid-memberships-pro' ); ?></a></p>
 			<input type="text" name="pmpro_license_key" id="pmpro_license_key" class="pmpro-wizard__field-block" value="<?php esc_attr_e( $pmpro_license_key ); ?>">
 		</div>
