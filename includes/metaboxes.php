@@ -129,7 +129,11 @@ function pmpro_page_meta_wrapper() {
 		return;
 	}
 	add_action( 'save_post', 'pmpro_page_save' );
-	add_meta_box( 'pmpro_page_meta', __( 'Require Membership', 'paid-memberships-pro' ), 'pmpro_page_meta', 'page', 'side', 'high' );
-	add_meta_box( 'pmpro_page_meta', __( 'Require Membership', 'paid-memberships-pro' ), 'pmpro_page_meta', 'post', 'side', 'high' );
+
+	// Add meta box for each restrictable post type.
+	$restrictable_post_types = apply_filters( 'pmpro_restrictable_post_types', array( 'page', 'post' ) );
+	foreach( $restrictable_post_types as $post_type ) {
+		add_meta_box( 'pmpro_page_meta', __( 'Require Membership', 'paid-memberships-pro' ), 'pmpro_page_meta', $post_type, 'side', 'high' );
+	}
 }
 add_action( 'current_screen', 'pmpro_page_meta_wrapper' );

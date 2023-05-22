@@ -86,6 +86,7 @@ function pmpro_block_editor_scripts() {
 		'pmpro_blocks',
 		array(
 			'post_id' => $post->ID,
+			'show_require_membership_panel' => in_array( $post->post_type, apply_filters( 'pmpro_restrictable_post_types', array( 'page', 'post' ) ) ),
 		)
 	);
 
