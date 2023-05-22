@@ -118,10 +118,20 @@ if ( pmpro_blocks.show_require_membership_panel ) {
 			);
 			return (
 				<fragment>
-					<h3>{ __('Select levels to restrict by', 'paid-memberships-pro') }</h3>
+					{
+						// Add buttons to select all or none.
+						<p> { __( 'Select', 'paid-memberships-pro' ) + ': ' }
+							<button className="button-link" onClick={ () => {
+								props.setRestrictedLevelsValue( props.levels.map( ( level ) => level.id ) );
+							} }>{ __( 'All', 'paid-memberships-pro' ) }</button>{ ' | ' }
+							<button className="button-link" onClick={ () => {
+								props.setRestrictedLevelsValue( [] );
+							} }>{__( 'None', 'paid-memberships-pro' ) }</button>
+						</p>
+					}
 					{
 						level_checkboxes.length > 6 ? (
-							<div className="pmpro-scrollable-div">
+							<div className="pmpro-block-inspector-scrollable">
 								{ level_checkboxes }
 							</div>
 						) : (
