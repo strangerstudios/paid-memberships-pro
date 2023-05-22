@@ -120,6 +120,7 @@ if ( pmpro_blocks.show_require_membership_panel ) {
 				<fragment>
 					{
 						// Add buttons to select all or none.
+						level_checkboxes.length > 1 &&
 						<p> { __( 'Select', 'paid-memberships-pro' ) + ': ' }
 							<button className="button-link" onClick={ () => {
 								props.setRestrictedLevelsValue( props.levels.map( ( level ) => level.id ) );
