@@ -1069,6 +1069,9 @@
 			/**
 			 * Filter the Membership Levels page title action links.
 			 *
+			 * @since 2.9
+			 * @since TBD Deprecating strings as $pmpro_membershiplevels_page_action_links values.
+			 *
 			 * @param array $pmpro_membershiplevels_page_action_links Page action links.
 			 * @return array $pmpro_membershiplevels_page_action_links Page action links.
 			 */
@@ -1077,9 +1080,8 @@
 			// Display the links.
 			foreach ( $pmpro_membershiplevels_page_action_links as $pmpro_membershiplevels_page_action_link ) {
 				
-				// If the value is not an array, assume it's a string of HTML.
+				// If the value is not an array, it is not in the correct format. Continue.
 				if ( ! is_array( $pmpro_membershiplevels_page_action_link ) ) {
-					echo $pmpro_membershiplevels_page_action_link;
 					continue;
 				}
 

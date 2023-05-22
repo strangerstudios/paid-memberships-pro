@@ -1507,8 +1507,17 @@
 			static $count = 0;
 			$count++;
 
+			if( defined( 'AUTH_KEY' ) && defined( 'SECURE_AUTH_KEY' ) ) {
+				$auth_code = AUTH_KEY;
+				$secure_auth_code = SECURE_AUTH_KEY;
+			} else {
+				//Generate our own random string and hash it
+				$auth_code = md5( rand() );
+				$secure_auth_code = md5( rand() );
+			}
+
 			while( empty( $code ) ) {
-				$scramble = md5( AUTH_KEY . microtime() . SECURE_AUTH_KEY . $count );
+				$scramble = md5( $auth_code . microtime() . $secure_auth_code . $count );
 				$code = substr( $scramble, 0, 10 );
 				$code = apply_filters( 'pmpro_random_code', $code, $this );	//filter
 				$check = $wpdb->get_var( $wpdb->prepare( "SELECT id FROM $wpdb->pmpro_membership_orders WHERE code = %s LIMIT 1", $code ) );

@@ -53,44 +53,52 @@ function pmpro_report_sales_widget() {
 			'all time'   => __('All Time', 'paid-memberships-pro' ),
 		);
 
-	foreach ( $reports as $report_type => $report_name ) {
-		//sale prices stats
-		$count = 0;
-		$max_prices_count = apply_filters( 'pmpro_admin_reports_max_sale_prices', 5 );
-		$prices = pmpro_get_prices_paid( $report_type, $max_prices_count );
-		?>
-		<tbody>
-			<tr class="pmpro_report_tr">
-				<th scope="row">
-					<?php if( ! empty( $prices ) ) { ?>
-						<button class="pmpro_report_th pmpro_report_th_closed"><?php echo esc_html($report_name); ?></button>
-					<?php } else { ?>
-						<?php echo esc_html($report_name); ?>
-					<?php } ?>
-				</th>
-				<td><?php echo esc_html( number_format_i18n( pmpro_getSales( $report_type, null, 'all' ) ) ); ?></td>
-				<td><?php echo pmpro_escape_price( pmpro_formatPrice( pmpro_getRevenue( $report_type ) ) ); ?></td>
-			</tr>
-			<?php
-				//sale prices stats
-				$count = 0;
-				$max_prices_count = apply_filters( 'pmpro_admin_reports_max_sale_prices', 5 );
-				foreach ( $prices as $price => $quantity ) {
-					if ( $count++ >= $max_prices_count ) {
-						break;
-					}
+		/**
+		 * Filter the periods for the sales widget.
+		 * @since 2.10.6
+		 * @param array $reports The array of periods.
+		 * @return array $reports The array of periods.
+		 */
+		$reports = apply_filters( 'pmpro_sales_widget_periods', $reports );
+
+		foreach ( $reports as $report_type => $report_name ) {
+			//sale prices stats
+			$count = 0;
+			$max_prices_count = apply_filters( 'pmpro_admin_reports_max_sale_prices', 5 );
+			$prices = pmpro_get_prices_paid( $report_type, $max_prices_count );
 			?>
-				<tr class="pmpro_report_tr_sub" style="display: none;">
-					<th scope="row">- <?php echo pmpro_escape_price( pmpro_formatPrice( $price ) );?></th>
-					<td><?php echo esc_html( number_format_i18n( $quantity['total'] ) ); ?></td>
-					<td><?php echo pmpro_escape_price( pmpro_formatPrice( $price * $quantity['total'] ) ); ?></td>
+			<tbody>
+				<tr class="pmpro_report_tr">
+					<th scope="row">
+						<?php if( ! empty( $prices ) ) { ?>
+							<button class="pmpro_report_th pmpro_report_th_closed"><?php echo esc_html($report_name); ?></button>
+						<?php } else { ?>
+							<?php echo esc_html($report_name); ?>
+						<?php } ?>
+					</th>
+					<td><?php echo esc_html( number_format_i18n( pmpro_getSales( $report_type, null, 'all' ) ) ); ?></td>
+					<td><?php echo pmpro_escape_price( pmpro_formatPrice( pmpro_getRevenue( $report_type ) ) ); ?></td>
 				</tr>
+				<?php
+					//sale prices stats
+					$count = 0;
+					$max_prices_count = apply_filters( 'pmpro_admin_reports_max_sale_prices', 5 );
+					foreach ( $prices as $price => $quantity ) {
+						if ( $count++ >= $max_prices_count ) {
+							break;
+						}
+				?>
+					<tr class="pmpro_report_tr_sub" style="display: none;">
+						<th scope="row">- <?php echo pmpro_escape_price( pmpro_formatPrice( $price ) );?></th>
+						<td><?php echo esc_html( number_format_i18n( $quantity['total'] ) ); ?></td>
+						<td><?php echo pmpro_escape_price( pmpro_formatPrice( $price * $quantity['total'] ) ); ?></td>
+					</tr>
+				<?php
+				}
+				?>
+			</tbody>
 			<?php
-			}
-			?>
-		</tbody>
-		<?php
-	}
+		}
 	?>
 	</table>
 	<?php if ( function_exists( 'pmpro_report_sales_page' ) ) { ?>
