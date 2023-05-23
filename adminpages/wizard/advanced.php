@@ -9,18 +9,18 @@ $wisdom_tracking = pmpro_getOption( 'wisdom_opt_out', true );
 <div class="pmpro-wizard__step pmpro-wizard__step-4">
 	<form action="" method="post">
 		<div class="pmpro-wizard__step-header">
-			<h1><?php esc_html_e( 'Advanced Settings', 'paid-memberships-pro' ); ?></h1>
+			<h2><?php esc_html_e( 'Advanced Settings', 'paid-memberships-pro' ); ?></h2>
 			<p><?php esc_html_e( 'Configure advanced settings relating to your membership site. You can configure additional settings later.', 'paid-memberships-pro' ); ?></p>
 		</div>
 		<div class="pmpro-wizard__field">
-			<label class="pmpro-wizard__label-block">
+			<label for="filterqueries" class="pmpro-wizard__label-block">
 				<?php esc_html_e( 'Filter searches and archives?', 'paid-memberships-pro' ); ?>
 			</label>
 			<select name="filterqueries" id="filterqueries" class="pmpro-wizard__field-block">
 				<option value="0" <?php selected( 0, $filter_queries); ?>><?php esc_html_e( 'No - Non-members will see restricted posts/pages in searches and archives.', 'paid-memberships-pro' ); ?></option>
 				<option value="1" <?php selected( 1, $filter_queries ); ?>><?php esc_html_e( 'Yes - Only members will see restricted posts/pages in searches and archives.', 'paid-memberships-pro' ); ?></option>
 			</select><br><br>
-			<label class="pmpro-wizard__label-block">
+			<label for="showexcerpts" class="pmpro-wizard__label-block">
 				<?php esc_html_e( 'Show excerpts to non-members?', 'paid-memberships-pro' ); ?>
 			</label>
 			<select name="showexcerpts" id="showexcerpts" class="pmpro-wizard__field-block">
@@ -39,7 +39,7 @@ $wisdom_tracking = pmpro_getOption( 'wisdom_opt_out', true );
 			</label>
 		</div>
 		<div class="pmpro-wizard__field">
-			<label class="pmpro-wizard__label-block">
+			<label for="wisdom_opt_out" class="pmpro-wizard__label-block">
 				<?php esc_html_e( 'Enable Tracking?', 'paid-memberships-pro' ); ?>
 			</label>
 			<select name="wisdom_opt_out" id="wisdom_opt_out" class="pmpro-wizard__field-block">

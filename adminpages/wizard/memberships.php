@@ -7,60 +7,63 @@ $collecting_payment = pmpro_getOption( 'wizard_collect_payment' );
 ?>
 <div class="pmpro-wizard__step pmpro-wizard__step-3">
 	<div class="pmpro-wizard__step-header">
-		<h1><?php esc_html_e( 'Membership Levels', 'paid-memberships-pro' ); ?></h1>
+		<h2><?php esc_html_e( 'Membership Levels', 'paid-memberships-pro' ); ?></h2>
 		<p><?php esc_html_e( 'Set up your first membership levels from this wizard. You can set up more membership levels with additional settings later.', 'paid-memberships-pro' ); ?></p>
 	</div>
 	<form action="" method="post">
-	<div class="pmpro-wizard__field">
-		<div class="pmpro-wizard__field__checkbox-group">
-			<input type="checkbox" id="pmpro-wizard__free-level" name="pmpro-wizard__free-level" value="1">
-			<div class="pmpro-wizard__field__checkbox-content">
-				<label for="pmpro-wizard__free-level" class="pmpro-wizard__label-block">
-					<?php esc_html_e( 'Free Membership', 'paid-memberships-pro' ); ?>
-				</label>
-				<div>
-					<label><?php esc_html_e( 'Level Name', 'paid-memberships-pro' ); ?></label>
-					<input type="text" name="pmpro-wizard__free-level-name" id="pmpro-wizard__free-level-name" placeholder="<?php esc_attr_e( 'Free', 'paid-memberships-pro' ); ?>" />
-				</div>						
+	<fieldset>
+		<legend><?php esc_html_e( 'Create Your Membership Levels', 'paid-memberships-pro' ); ?></legend>
+		<div class="pmpro-wizard__field">
+			<div class="pmpro-wizard__field__checkbox-group">
+				<input type="checkbox" id="pmpro-wizard__free-level" name="pmpro-wizard__free-level" value="1">
+				<div class="pmpro-wizard__field__checkbox-content">
+					<label for="pmpro-wizard__free-level" class="pmpro-wizard__label-block">
+						<?php esc_html_e( 'Free Membership', 'paid-memberships-pro' ); ?>
+					</label>
+					<div>
+						<label for="pmpro-wizard__free-level-name"><?php esc_html_e( 'Level Name', 'paid-memberships-pro' ); ?></label>
+						<input type="text" name="pmpro-wizard__free-level-name" id="pmpro-wizard__free-level-name" placeholder="<?php esc_attr_e( 'Free', 'paid-memberships-pro' ); ?>" />
+					</div>						
+				</div>
 			</div>
 		</div>
-	</div>
-	<?php if ( $collecting_payment ) { ?>
-	<div class="pmpro-wizard__field">	
-		<div class="pmpro-wizard__field__checkbox-group">
-			<input type="checkbox" id="pmpro-wizard__paid-level" name="pmpro-wizard__paid-level" value="1">
-			<div class="pmpro-wizard__field__checkbox-content">
-				<label for="pmpro-wizard__paid-level" class="pmpro-wizard__label-block">
-					<?php esc_html_e( 'Paid Membership', 'paid-memberships-pro' ); ?>
-				</label>
-				<div>
-					<label><?php esc_html_e( 'Level Name', 'paid-memberships-pro' ); ?></label>
-					<input type="text" id="pmpro-wizard__paid-level-name" name="pmpro-wizard__paid-level-name" placeholder="<?php esc_attr_e( 'Premium', 'paid-memberships-pro' ); ?>"/>
-				</div>
-				<div>
-					<label><?php esc_html_e( 'Fee', 'paid-memberships-pro' ); ?></label>
-					<input type="text" id="pmpro-wizard__paid-level-amount" name="pmpro-wizard__paid-level-amount" placeholder="<?php esc_attr_e( 'Amount (i.e. "10")', 'paid-memberships-pro' ); ?>" />
-					<?php esc_html_e( 'every', 'paid-memberships-pro' ); ?>
-					<select id="cycle_period" name="cycle_period">
-						<?php
-							$cycles = array(
-								__( 'Day', 'paid-memberships-pro' ) => 'Day',
-								__( 'Week', 'paid-memberships-pro' ) => 'Week',
-								__( 'Month', 'paid-memberships-pro' ) => 'Month',
-								__( 'Year', 'paid-memberships-pro' ) => 'Year',
-							);
-							foreach ( $cycles as $name => $value ) {
+		<?php if ( $collecting_payment ) { ?>
+		<div class="pmpro-wizard__field">	
+			<div class="pmpro-wizard__field__checkbox-group">
+				<input type="checkbox" id="pmpro-wizard__paid-level" name="pmpro-wizard__paid-level" value="1">
+				<div class="pmpro-wizard__field__checkbox-content">
+					<label for="pmpro-wizard__paid-level" class="pmpro-wizard__label-block">
+						<?php esc_html_e( 'Paid Membership', 'paid-memberships-pro' ); ?>
+					</label>
+					<div>
+						<label for="pmpro-wizard__paid-level-name"><?php esc_html_e( 'Level Name', 'paid-memberships-pro' ); ?></label>
+						<input type="text" id="pmpro-wizard__paid-level-name" name="pmpro-wizard__paid-level-name" placeholder="<?php esc_attr_e( 'Premium', 'paid-memberships-pro' ); ?>"/>
+					</div>
+					<div>
+						<labe for="pmpro-wizard__paid-level-amount"><?php esc_html_e( 'Fee', 'paid-memberships-pro' ); ?></label>
+						<input type="text" id="pmpro-wizard__paid-level-amount" name="pmpro-wizard__paid-level-amount" placeholder="<?php esc_attr_e( 'Amount (i.e. "10")', 'paid-memberships-pro' ); ?>" />
+						<?php esc_html_e( 'every', 'paid-memberships-pro' ); ?>
+						<select id="cycle_period" name="cycle_period">
+							<?php
+								$cycles = array(
+									__( 'Day', 'paid-memberships-pro' ) => 'Day',
+									__( 'Week', 'paid-memberships-pro' ) => 'Week',
+									__( 'Month', 'paid-memberships-pro' ) => 'Month',
+									__( 'Year', 'paid-memberships-pro' ) => 'Year',
+								);
+								foreach ( $cycles as $name => $value ) {
+									?>
+									<option <?php selected( $value, 'Month' ); ?> value="<?php echo esc_attr( $value ); ?>"><?php echo esc_html( $name ); ?></option>
+									<?php
+								}
 								?>
-								<option <?php selected( $value, 'Month' ); ?> value="<?php echo esc_attr( $value ); ?>"><?php echo esc_html( $name ); ?></option>
-								<?php
-							}
-							?>
-					</select>
+						</select>
+					</div>
 				</div>
 			</div>
 		</div>
-	</div>
-	<?php } ?>
+		<?php } ?>
+	</fieldset>
 	<div class="pmpro-wizard__field pmpro-wizard__field-alt">
 		<p>
 			<img src="<?php echo esc_url( PMPRO_URL . '/images/lock.svg' ); ?>" />

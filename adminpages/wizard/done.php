@@ -22,11 +22,11 @@
 ?>
 <div class="pmpro-wizard__step pmpro-wizard__step-4">
 	<div class="pmpro-wizard__step-header">
-		<h1><?php esc_html_e( 'Setup Complete', 'paid-memberships-pro' ); ?></h1>
+		<h2><?php esc_html_e( 'Setup Complete', 'paid-memberships-pro' ); ?></h2>
 		<p><strong><?php esc_html_e( 'Congratulations!', 'paid-memberships-pro' ); ?></strong> <a href="<?php echo esc_url( admin_url( '/admin.php?page=pmpro-membershiplevels' ) ); ?>"><?php esc_html_e( 'Your membership site is ready.', 'paid-memberships-pro' ); ?></a></p>
 	</div>
 	<div class="pmpro-wizard__field"> <!-- Recommended icons -->
-		<h2 class="pmpro-wizard__section-title"><?php esc_html_e( "What's next?", 'paid-memberships-pro' ); ?></h2>
+		<h3 class="pmpro-wizard__section-title"><?php esc_html_e( "What's next?", 'paid-memberships-pro' ); ?></h3>
 		<p>
 			<?php
 			if ( isset( $site_types[ $site_type ] ) ) {
@@ -100,7 +100,7 @@
 				<?php esc_html_e( 'Finish configuring your payment gateway.', 'paid-memberships-pro' ); ?></p>
 			</div>
 			<div class="pmpro-wizard__col">
-				<a href="<?php echo esc_url( admin_url( 'admin.php?page=pmpro-paymentsettings' ) ); ?>" class="button button-hero"><?php esc_html_e( 'View settings', 'paid-memberships-pro' ); ?></a>
+				<a href="<?php echo esc_url( admin_url( 'admin.php?page=pmpro-paymentsettings' ) ); ?>" class="button button-hero"><?php esc_html_e( 'View payment settings', 'paid-memberships-pro' ); ?></a>
 			</div>
 		<?php } ?>
 
@@ -112,7 +112,7 @@
 			</p>
 		</div>
 		<div class="pmpro-wizard__col">
-			<a href="https://www.paidmembershipspro.com/documentation/?utm_source=plugin&utm_medium=setup-wizard&utm_campaign=wizard-done&utm_content=view-docs" target="_blank" class="button button-hero"><?php esc_html_e( 'View docs', 'paid-memberships-pro' ); ?></a>
+			<a aria-label="<?php esc_attr_e( 'View Paid Memberships Pro documentation in a new tab', 'paid-memberships-pro' ); ?>" href="https://www.paidmembershipspro.com/documentation/?utm_source=plugin&utm_medium=setup-wizard&utm_campaign=wizard-done&utm_content=view-docs" target="_blank" class="button button-hero"><?php esc_html_e( 'View docs', 'paid-memberships-pro' ); ?></a>
 		</div>
 	</div>
 	<script>

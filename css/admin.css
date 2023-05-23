@@ -1324,6 +1324,10 @@ tr.pmpro_settings_divider td {
 	text-align: center;
 }
 
+.pmpro-wizard .pmpro-wizard__header h1 {
+	margin: 0;
+}
+
 .pmpro-wizard .pmpro-wizard__header a.pmpro_logo {
 	display: inline-block;
 	max-width: 275px;
@@ -1335,7 +1339,9 @@ tr.pmpro_settings_divider td {
 }
 
 .pmpro-stepper {
-	width: 100%;
+	margin-right: 1em;
+	margin-left: 1em;
+	position: relative;
 }
 
 .pmpro-stepper .pmpro-stepper__steps {
@@ -1346,20 +1352,18 @@ tr.pmpro_settings_divider td {
 }
 
 .pmpro-stepper .pmpro-stepper__step {
-	padding: 1em;
+	background-color: #FFF;
 	font-weight: 400;
+	padding: 1em;
 	position: relative;
+	z-index: 5;
 }
 
 .pmpro-stepper .pmpro-stepper__step-divider {
-	align-self: flex-start;
-	flex-grow: 1;
 	border-bottom: 1px solid #DDD;
-	margin-top: 2em;
-}
-
-.pmpro-stepper .pmpro-stepper__step-divider:last-child {
-	display: none;
+	position: absolute;
+	top: 2em;
+	width: 100%;
 }
 
 .pmpro-stepper .pmpro-stepper__step .pmpro-stepper__step-label {
@@ -1368,12 +1372,23 @@ tr.pmpro_settings_divider td {
 	font-size: 16px;
 }
 
-.pmpro-stepper .pmpro-stepper__step .pmpro-stepper__step-label a {
-	color: #1d2327;
+.pmpro-stepper .pmpro-stepper__step a {
 	text-decoration: none;
 }
 
-.pmpro-stepper .pmpro-stepper__step .pmpro-stepper__step-label a:hover {
+.pmpro-stepper .pmpro-stepper__step a:active,
+.pmpro-stepper .pmpro-stepper__step a:focus {
+	outline: 0;
+	border: none;
+	box-shadow: none;
+}
+
+.pmpro-stepper .pmpro-stepper__step .pmpro-stepper__step-label {
+	color: #1d2327;
+}
+
+.pmpro-stepper .pmpro-stepper__step a:hover .pmpro-stepper__step-label {
+	color: #1A688B;
 	text-decoration: underline;
 }
 
@@ -1425,7 +1440,7 @@ tr.pmpro_settings_divider td {
 	text-align: left;
 }
 
-.pmpro-wizard__container .pmpro-wizard__step-header h1 {
+.pmpro-wizard__container .pmpro-wizard__step-header h2 {
 	font-size: 2em;
 	line-height: 1.2;
 	margin: 1em 0 0 0;
@@ -1445,16 +1460,38 @@ tr.pmpro_settings_divider td {
 	color: #1d2327;
 }
 
-.pmpro-wizard__container h2.pmpro-wizard__section-title {
+.pmpro-wizard__container .pmpro-wizard__section-title {
 	font-size: 2em;
 	line-height: 1.2;
 	margin: 0 0 1em 0;
+}
+
+.pmpro-wizard__container fieldset {
+	border-top: 1px solid #EEE;
+	margin: 0;
+	padding: 2em;
+}
+
+.pmpro-wizard__container legend {
+	color: #1d2327;
+	display: table;
+	float: left;
+	font-size: 18px;
+	line-height: 26px;
+	margin: 0 0 1em 0;
+	width: 100%;
 }
 
 .pmpro-wizard__container .pmpro-wizard__field {
 	border-top: 1px solid #EEE;
 	padding: 2em;
 	text-align: left;
+}
+
+.pmpro-wizard__container fieldset .pmpro-wizard__field {
+	border-top: none;
+	clear: both;
+	padding: 0 0 2em 0;
 }
 
 .pmpro-wizard__container .pmpro-wizard__field-alt {
