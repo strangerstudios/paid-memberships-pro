@@ -2,14 +2,14 @@
 # This file is distributed under the same license as the Paid Memberships Pro plugin.
 msgid ""
 msgstr ""
-"Project-Id-Version: Paid Memberships Pro 2.10.6\n"
+"Project-Id-Version: Paid Memberships Pro 2.10.7\n"
 "Report-Msgid-Bugs-To: info@paidmembershipspro.com\n"
 "Last-Translator: Paid Memberships Pro <info@paidmembershipspro.com>\n"
 "Language-Team: Paid Memberships Pro <info@paidmembershipspro.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2023-05-19T15:12:25+00:00\n"
+"POT-Creation-Date: 2023-05-23T18:38:37+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.7.1\n"
 "X-Domain: paid-memberships-pro\n"
@@ -134,6 +134,7 @@ msgstr "Nochmal überprüfen"
 #: includes/terms.php:29
 #: includes/terms.php:88
 #: adminpages/orders.php:1102
+#: adminpages/reports.php:21
 msgid "All"
 msgstr "Alle"
 
@@ -2654,6 +2655,7 @@ msgstr "Beginnt"
 #: adminpages/dashboard.php:234
 #: adminpages/reports/login.php:197
 #: adminpages/reports/logins.php:197
+#: adminpages/reports/logins.php:203
 msgid "Expires"
 msgstr "Endet"
 
@@ -3796,6 +3798,7 @@ msgstr "Mitgliederliste"
 #: adminpages/reports/sales.php:337
 #: adminpages/orders.php:1078
 #: adminpages/reports/sales.php:345
+#: adminpages/reports/sales.php:593
 msgid "Export to CSV"
 msgstr "Als CSV exportieren"
 
@@ -3890,6 +3893,8 @@ msgstr "Anzeigen"
 #: adminpages/reports/sales.php:370
 #: classes/class.pmproemail.php:225
 #: classes/class.pmproemail.php:281
+#: adminpages/reports/logins.php:167
+#: adminpages/reports/sales.php:623
 msgid "All Levels"
 msgstr "Alle Pakete"
 
@@ -4098,6 +4103,7 @@ msgstr "Gebühr"
 #: adminpages/reports/login.php:196
 #: adminpages/reports/logins.php:196
 #: classes/class-pmpro-admin-activity-email.php:119
+#: adminpages/reports/logins.php:202
 msgid "Joined"
 msgstr "Beigetreten"
 
@@ -5419,6 +5425,7 @@ msgstr "%d Bestellungen gefunden."
 #: adminpages/dashboard.php:299
 #: adminpages/orders.php:1428
 #: adminpages/orders.php:1595
+#: adminpages/reports/logins.php:200
 msgid "User"
 msgstr "Benutzer"
 
@@ -6364,6 +6371,8 @@ msgstr "Alles erzeugte HTML durch einen URL-Filter führen, um HTTPS an URLs von
 #: adminpages/reports/sales.php:98
 #: adminpages/reports/logins.php:71
 #: adminpages/reports/sales.php:106
+#: adminpages/reports/members-per-level.php:32
+#: adminpages/reports/memberships.php:94
 msgid "Details"
 msgstr "Details"
 
@@ -6371,6 +6380,7 @@ msgstr "Details"
 #: adminpages/reports.php:61
 #: adminpages/reports.php:19
 #: adminpages/reports.php:21
+#: adminpages/reports.php:34
 msgid "Back to Reports Dashboard"
 msgstr "Zurück zum Berichte-Dashboard"
 
@@ -6382,16 +6392,19 @@ msgstr "Besucher, Ansichten und Logins"
 
 #: adminpages/reports/login.php:31
 #: adminpages/reports/logins.php:31
+#: adminpages/reports/logins.php:195
 msgid "Visits"
 msgstr "Besuche"
 
 #: adminpages/reports/login.php:32
 #: adminpages/reports/logins.php:32
+#: adminpages/reports/logins.php:196
 msgid "Views"
 msgstr "Ansichten"
 
 #: adminpages/reports/login.php:33
 #: adminpages/reports/logins.php:33
+#: adminpages/reports/logins.php:197
 msgid "Logins"
 msgstr "Anmeldungen"
 
@@ -6406,6 +6419,7 @@ msgstr "Anmeldungen"
 #: adminpages/reports/memberships.php:49
 #: adminpages/reports/sales.php:50
 #: adminpages/reports/logins.php:38
+#: adminpages/reports/memberships.php:47
 msgid "Today"
 msgstr "Heute"
 
@@ -6425,6 +6439,9 @@ msgstr "Heute"
 #: adminpages/orders.php:1158
 #: adminpages/reports/logins.php:50
 #: adminpages/orders.php:1157
+#: adminpages/reports/logins.php:206
+#: adminpages/reports/logins.php:210
+#: adminpages/reports/logins.php:215
 msgid "This Month"
 msgstr "Dieser Monat"
 
@@ -6444,6 +6461,10 @@ msgstr "Dieser Monat"
 #: adminpages/reports/logins.php:62
 #: adminpages/reports/sales.php:571
 #: adminpages/reports/sales.php:579
+#: adminpages/reports/logins.php:208
+#: adminpages/reports/logins.php:212
+#: adminpages/reports/logins.php:217
+#: adminpages/reports/sales.php:822
 msgid "All Time"
 msgstr "Gesamte Zeit"
 
@@ -6467,6 +6488,7 @@ msgstr "Besucher, Ansichten und Login Berichte"
 #: adminpages/reports/login.php:111
 #: adminpages/reports/login.php:121
 #: adminpages/reports/logins.php:121
+#: adminpages/reports/logins.php:166
 msgid "All Users"
 msgstr "Alle Benutzer"
 
@@ -6563,6 +6585,7 @@ msgstr "Logins Gesamt"
 #: adminpages/reports/memberships.php:327
 #: adminpages/reports/memberships.php:342
 #: adminpages/reports/memberships.php:344
+#: adminpages/reports/memberships.php:16
 msgid "Membership Stats"
 msgstr "Mitglieder-Statistiken"
 
@@ -6571,6 +6594,10 @@ msgstr "Mitglieder-Statistiken"
 #: adminpages/reports/memberships.php:40
 #: adminpages/reports/memberships.php:48
 #: adminpages/reports/memberships.php:43
+#: adminpages/reports/memberships.php:41
+#: adminpages/reports/sales.php:520
+#: adminpages/reports/sales.php:531
+#: adminpages/reports/sales.php:560
 msgid "Signups"
 msgstr "Registrierungen"
 
@@ -6578,6 +6605,7 @@ msgstr "Registrierungen"
 #: adminpages/reports/memberships.php:38
 #: adminpages/reports/memberships.php:41
 #: adminpages/reports/memberships.php:44
+#: adminpages/reports/memberships.php:42
 msgid "All Cancellations"
 msgstr "Alle Stornierungen"
 
@@ -6594,6 +6622,10 @@ msgstr "Alle Stornierungen"
 #: adminpages/orders.php:1081
 #: adminpages/orders.php:1162
 #: adminpages/orders.php:1161
+#: adminpages/reports/logins.php:207
+#: adminpages/reports/logins.php:211
+#: adminpages/reports/logins.php:216
+#: adminpages/reports/memberships.php:49
 msgid "This Year"
 msgstr "Dieses Jahr"
 
@@ -6619,6 +6651,7 @@ msgstr "Dieses Jahr"
 #: adminpages/reports/memberships.php:350
 #: adminpages/reports/sales.php:341
 #: adminpages/reports/sales.php:349
+#: adminpages/reports/sales.php:599
 msgid "Daily"
 msgstr "täglich"
 
@@ -6646,6 +6679,7 @@ msgstr "täglich"
 #: adminpages/reports/memberships.php:351
 #: adminpages/reports/sales.php:342
 #: adminpages/reports/sales.php:350
+#: adminpages/reports/sales.php:600
 msgid "Monthly"
 msgstr "monatlich"
 
@@ -6671,6 +6705,7 @@ msgstr "monatlich"
 #: adminpages/reports/memberships.php:352
 #: adminpages/reports/sales.php:343
 #: adminpages/reports/sales.php:351
+#: adminpages/reports/sales.php:601
 msgid "Annual"
 msgstr "jährlich"
 
@@ -6753,6 +6788,8 @@ msgstr "Anmeldungen vs. Ausgelaufene"
 #: adminpages/reports/sales.php:349
 #: adminpages/reports/sales.php:360
 #: adminpages/reports/sales.php:368
+#: adminpages/reports/sales.php:610
+#: adminpages/reports/sales.php:621
 msgid "for"
 msgstr "für"
 
@@ -6776,6 +6813,7 @@ msgstr "für"
 #: adminpages/reports/memberships.php:402
 #: adminpages/reports/sales.php:388
 #: adminpages/reports/sales.php:396
+#: adminpages/reports/sales.php:654
 msgid "Generate Report"
 msgstr "Bericht erstellen"
 
@@ -6795,6 +6833,7 @@ msgstr "Verkäufe und Umsatz (Test/Sandbox)"
 #: adminpages/reports/sales.php:332
 #: adminpages/reports/sales.php:335
 #: adminpages/reports/sales.php:343
+#: adminpages/reports/sales.php:591
 msgid "Sales and Revenue"
 msgstr "Verkäufe und Umsatz"
 
@@ -6811,6 +6850,7 @@ msgstr "Verkäufe und Umsatz"
 #: adminpages/reports/sales.php:344
 #: adminpages/reports/sales.php:347
 #: adminpages/reports/sales.php:355
+#: adminpages/reports/sales.php:608
 msgid "Sales"
 msgstr "Verkäufe"
 
@@ -6827,6 +6867,10 @@ msgstr "Verkäufe"
 #: adminpages/reports/sales.php:343
 #: adminpages/reports/sales.php:346
 #: adminpages/reports/sales.php:354
+#: adminpages/reports/sales.php:520
+#: adminpages/reports/sales.php:531
+#: adminpages/reports/sales.php:560
+#: adminpages/reports/sales.php:607
 msgid "Revenue"
 msgstr "Umsatz"
 
@@ -7732,6 +7776,7 @@ msgstr "Es wurde eine Teilzahlung getätigt, die wir nicht stornieren können. B
 #: paid-memberships-pro.php:176
 #: paid-memberships-pro.php:174
 #: paid-memberships-pro.php:179
+#: paid-memberships-pro.php:180
 msgid "Authorize.net"
 msgstr "Authorize.net"
 
@@ -7853,6 +7898,7 @@ msgstr "Problem beim Zugriff auf das Braintree Gateway. Bitte verifizieren Sie I
 #: paid-memberships-pro.php:177
 #: paid-memberships-pro.php:175
 #: paid-memberships-pro.php:180
+#: paid-memberships-pro.php:181
 msgid "Braintree Payments"
 msgstr "Braintree Zahlungen"
 
@@ -8599,6 +8645,7 @@ msgstr "Abonnement konnte nicht gefunden werden."
 #: paid-memberships-pro.php:170
 #: paid-memberships-pro.php:169
 #: paid-memberships-pro.php:174
+#: paid-memberships-pro.php:175
 msgid "Pay by Check"
 msgstr "Zahlen auf Rechnung"
 
@@ -9050,6 +9097,7 @@ msgstr "Bitte kontaktieren Sie den Betreiber der Seite, wenn Sie Ihr Abonemment 
 #: paid-memberships-pro.php:172
 #: paid-memberships-pro.php:171
 #: paid-memberships-pro.php:176
+#: paid-memberships-pro.php:177
 msgid "PayPal Express"
 msgstr "PayPal Express"
 
@@ -9116,6 +9164,7 @@ msgstr "Der PayPal Token ging verloren."
 #: paid-memberships-pro.php:175
 #: paid-memberships-pro.php:173
 #: paid-memberships-pro.php:178
+#: paid-memberships-pro.php:179
 msgid "PayPal Standard"
 msgstr "PayPal Standard"
 
@@ -9161,6 +9210,7 @@ msgstr "Benutzer verlangte Kündigung"
 #: classes/gateways/class.pmprogateway_stripe.php:235
 #: paid-memberships-pro.php:170
 #: paid-memberships-pro.php:175
+#: paid-memberships-pro.php:176
 msgid "Stripe"
 msgstr "Stripe"
 
@@ -12485,6 +12535,7 @@ msgstr "Tag"
 #: includes/localization.php:28
 #: includes/localization.php:38
 #: adminpages/wizard/memberships.php:48
+#: adminpages/reports/logins.php:214
 msgid "Week"
 msgstr "Woche"
 
@@ -12745,6 +12796,8 @@ msgstr "Bestelldatum"
 #: classes/class-pmpro-members-list-table.php:82
 #: pages/invoice.php:126
 #: pages/billing.php:68
+#: adminpages/reports/logins.php:201
+#: adminpages/reports/members-per-level.php:107
 msgid "Level"
 msgstr "Paket"
 
@@ -14186,6 +14239,7 @@ msgstr "&larr; zurück zur Startseite"
 #: paid-memberships-pro.php:169
 #: paid-memberships-pro.php:168
 #: paid-memberships-pro.php:173
+#: paid-memberships-pro.php:174
 msgid "Testing Only"
 msgstr "Nur Test"
 
@@ -14205,6 +14259,7 @@ msgstr "Nur Test"
 #: paid-memberships-pro.php:174
 #: paid-memberships-pro.php:172
 #: paid-memberships-pro.php:177
+#: paid-memberships-pro.php:178
 msgid "PayPal Payflow Pro/PayPal Pro"
 msgstr "PayPal Payflow Pro/PayPal Pro"
 
@@ -14235,6 +14290,7 @@ msgstr "Cybersource"
 #: paid-memberships-pro.php:201
 #: paid-memberships-pro.php:204
 #: paid-memberships-pro.php:206
+#: paid-memberships-pro.php:207
 msgid "Once a month"
 msgstr "Einmal monatlich"
 
@@ -16916,6 +16972,8 @@ msgstr "Bezahlte Summe"
 
 #: adminpages/reports/login.php:44
 #: adminpages/reports/logins.php:44
+#: adminpages/reports/logins.php:205
+#: adminpages/reports/logins.php:209
 msgid "This Week"
 msgstr "Diese Woche"
 
@@ -16989,6 +17047,7 @@ msgstr "Alle freien Pakete"
 #: adminpages/reports/memberships.php:394
 #: adminpages/reports/sales.php:380
 #: adminpages/reports/sales.php:388
+#: adminpages/reports/sales.php:641
 msgid "All Codes"
 msgstr "Alle Codes"
 
@@ -16997,6 +17056,7 @@ msgstr "Alle Codes"
 #: adminpages/reports/sales.php:390
 #: adminpages/reports/sales.php:393
 #: adminpages/reports/sales.php:401
+#: adminpages/reports/sales.php:660
 msgid "Average line calculated using data prior to current day, month, or year."
 msgstr "Durchschnittslinie, die anhand von Daten vor dem aktuellen Tag, Monat oder Jahr berechnet wird."
 
@@ -20219,6 +20279,7 @@ msgstr "Klicken Sie hier, um Ihren Rabattcode zu ändern."
 #: paid-memberships-pro.php:179
 #: paid-memberships-pro.php:182
 #: paid-memberships-pro.php:184
+#: paid-memberships-pro.php:185
 msgid "Default"
 msgstr "Standard"
 
@@ -20949,11 +21010,13 @@ msgid "Save Code"
 msgstr ""
 
 #. translators: %s is the Order ID.
+#. translators: %s is the User ID.
 #: adminpages/discountcodes.php:835
 #: adminpages/orders.php:1499
 #: includes/profile.php:480
 #: includes/profile.php:479
 #: adminpages/orders.php:1500
+#: adminpages/reports/logins.php:244
 msgid "ID: %s"
 msgstr ""
 
@@ -21161,6 +21224,7 @@ msgstr ""
 #: adminpages/reports/login.php:109
 #: adminpages/reports/login.php:119
 #: adminpages/reports/logins.php:119
+#: adminpages/reports/logins.php:164
 msgctxt "Dropdown label, e.g. Show All Users"
 msgid "Show"
 msgstr ""
@@ -21176,6 +21240,7 @@ msgstr ""
 #: adminpages/reports/sales.php:433
 #: adminpages/reports/sales.php:436
 #: adminpages/reports/sales.php:444
+#: adminpages/reports/sales.php:531
 msgid "New %s"
 msgstr ""
 
@@ -21194,6 +21259,7 @@ msgstr ""
 #: adminpages/reports/sales.php:552
 #: adminpages/reports/sales.php:555
 #: adminpages/reports/sales.php:563
+#: adminpages/reports/sales.php:783
 msgid "New:"
 msgstr ""
 
@@ -21201,6 +21267,7 @@ msgstr ""
 #: adminpages/reports/sales.php:555
 #: adminpages/reports/sales.php:558
 #: adminpages/reports/sales.php:566
+#: adminpages/reports/sales.php:788
 msgid "Renewals:"
 msgstr ""
 
@@ -21208,6 +21275,7 @@ msgstr ""
 #: adminpages/reports/sales.php:558
 #: adminpages/reports/sales.php:561
 #: adminpages/reports/sales.php:569
+#: adminpages/reports/sales.php:793
 msgid "Total:"
 msgstr ""
 
@@ -21215,6 +21283,7 @@ msgstr ""
 #: adminpages/reports/sales.php:571
 #: adminpages/reports/sales.php:574
 #: adminpages/reports/sales.php:582
+#: adminpages/reports/sales.php:825
 msgid "%s %s for %s"
 msgstr ""
 
@@ -23636,6 +23705,7 @@ msgstr ""
 
 #: adminpages/wizard/memberships.php:22
 #: adminpages/wizard/memberships.php:37
+#: adminpages/reports/members-per-level.php:51
 msgid "Level Name"
 msgstr ""
 
@@ -24030,4 +24100,104 @@ msgstr ""
 
 #: pages/billing.php:165
 msgid "You are logged in as <strong>%s</strong>. If you would like to update your billing information for a different account, <a href=\"%s\">log out now</a>."
+msgstr ""
+
+#: adminpages/reports/logins.php:162
+#: adminpages/reports/memberships.php:346
+#: adminpages/reports/sales.php:595
+msgid "Customize Report"
+msgstr ""
+
+#: adminpages/reports/logins.php:204
+#: adminpages/reports/logins.php:213
+msgid "Last"
+msgstr ""
+
+#: adminpages/reports/members-per-level.php:16
+#: adminpages/reports/members-per-level.php:42
+msgid "Active Members Per Level"
+msgstr ""
+
+#: adminpages/reports/members-per-level.php:52
+msgid "Number of Active Members"
+msgstr ""
+
+#: adminpages/reports/members-per-level.php:62
+msgid "View Active Members With This Level"
+msgstr ""
+
+#: adminpages/reports/members-per-level.php:69
+msgid "No Active Members Found"
+msgstr ""
+
+#: adminpages/reports/members-per-level.php:107
+msgid "Active Members"
+msgstr ""
+
+#: adminpages/reports/memberships.php:348
+#: adminpages/reports/sales.php:597
+msgctxt "Dropdown label, e.g. Show Period"
+msgid "Show"
+msgstr ""
+
+#: adminpages/reports/sales.php:485
+msgid "Renewals: %s"
+msgstr ""
+
+#: adminpages/reports/sales.php:489
+msgid "New: %s"
+msgstr ""
+
+#: adminpages/reports/sales.php:493
+msgid "Total: %s"
+msgstr ""
+
+#: adminpages/reports/sales.php:498
+#: adminpages/reports/sales.php:500
+#: adminpages/reports/sales.php:502
+msgid "Previous Year: %s"
+msgstr ""
+
+#: adminpages/reports/sales.php:520
+msgid "Renewal %s"
+msgstr ""
+
+#: adminpages/reports/sales.php:542
+msgid "Previous Period"
+msgstr ""
+
+#: adminpages/reports/sales.php:560
+msgid "Average %s"
+msgstr ""
+
+#: adminpages/reports/sales.php:602
+msgid "Last 7 Days"
+msgstr ""
+
+#: adminpages/reports/sales.php:603
+msgid "Last 30 Days"
+msgstr ""
+
+#: adminpages/reports/sales.php:604
+msgid "Last 12 Months"
+msgstr ""
+
+#: adminpages/reports/sales.php:648
+msgid "Show New and Renewals"
+msgstr ""
+
+#: adminpages/reports/sales.php:649
+msgid "Show Only New"
+msgstr ""
+
+#: adminpages/reports/sales.php:650
+msgid "Show Only Renewals"
+msgstr ""
+
+#: adminpages/reports/sales.php:800
+msgid "Previous Period New:"
+msgstr ""
+
+#: adminpages/reports/sales.php:805
+msgid "Previous Period Renewals:"
 msgstr ""
