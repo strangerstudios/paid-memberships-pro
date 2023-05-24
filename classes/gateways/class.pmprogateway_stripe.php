@@ -447,9 +447,15 @@ class PMProGateway_stripe extends PMProGateway {
 							$event_query_arr['created']['gt'] = strtotime( $legacy_last_webhook_recieved_timestamp );
 						}
 
+						try {
+							$recently_sent = Stripe\Event::all( $event_query_arr );
+						} catch ( \Throwable $th ) {
+							$recently_sent = $th->getMessage();
+						} catch ( \Exception $e ) {
+							$recently_sent = $e->getMessage();
+						} 
 
-						$recently_sent = Stripe\Event::all( $event_query_arr );
-						if ( ! empty( $recently_sent->data[0] ) ) {
+						if ( ! is_string( $recently_sent ) && ! empty( $recently_sent->data[0] ) ) {
 							if ( $last_received >= $recently_sent->data[0]->created ) {
 								$event_data['status'] =  '<span style="color: green;">' . esc_html__( 'Working', 'paid-memberships-pro' ) . '</span>';
 								$working_webhooks[] = $event_data;
@@ -457,6 +463,10 @@ class PMProGateway_stripe extends PMProGateway {
 								$event_data['status'] = '<span style="color: red;">' . esc_html__( 'Last Sent ', 'paid-memberships-pro' ) . date_i18n( get_option('date_format') . ' ' . get_option('time_format'), $recently_sent->data[0]->created ) . '</span>';
 								$failed_webhooks[] = $event_data;
 							}
+						} elseif ( is_string( $recently_sent ) ) {
+							// An error was returned from the Stripe API. Show it.
+							$event_data['status'] = '<span style="color: red;">' . esc_html__( 'Error: ', 'paid-memberships-pro' ) . $recently_sent . '</span>';
+							$failed_webhooks[] = $event_data;
 						} else {
 							if ( ! empty( $last_received ) ) {
 								$event_data['status'] = '<span style="color: green;">' . esc_html__( 'Working', 'paid-memberships-pro' ) . '</span>';
@@ -1650,9 +1660,22 @@ class PMProGateway_stripe extends PMProGateway {
 		// Save some checkout information in the order so that we can access it when the payment is complete.
 		// Save the request variables.
 		$request_vars = $_REQUEST;
-		unset( $request_vars['password'] );
-		unset( $request_vars['password2'] );
-		unset( $request_vars['password2_copy'] );
+		// Unset restricted request variables.
+		$restricted_vars = array(
+			'password',
+			'password2',
+			'password2_copy',
+			'AccountNumber',
+			'CVV',
+			'ExpirationMonth',
+			'ExpirationYear',
+			'add_sub_accounts_password', // Creating users at checkout with Sponsored Members.
+		);
+		foreach ( $restricted_vars as $key ) {
+			if ( isset( $request_vars[ $key ] ) ) {
+				unset( $request_vars[ $key ] );
+			}
+		}
 		update_pmpro_membership_order_meta( $morder->id, 'checkout_request_vars', $request_vars );
 
 		// Save the checkout level.
@@ -1952,14 +1975,6 @@ class PMProGateway_stripe extends PMProGateway {
 				return false;
 			}
 
-			$customer = $this->set_default_payment_method_for_customer( $customer, $payment_method );
-			if ( is_string( $customer ) ) {
-				// There was an issue updating the default payment method.
-				$order->error      = __( 'Error updating default payment method.', 'paid-memberships-pro' ) . ' ' . $customer;
-				$order->shorterror = $order->error;
-				return false;
-			}
-
 			// Save customer in $order for create_payment_intent().
 			// This will likely be removed as we rework payment processing.
 			$order->stripe_customer = $customer;
@@ -1975,6 +1990,25 @@ class PMProGateway_stripe extends PMProGateway {
 			// If we needed to charge an initial payment, it was successful.
 			if ( ! empty( $order->stripe_payment_intent->latest_charge ) ) {
 				$payment_transaction_id = $order->stripe_payment_intent->latest_charge;
+			} else {
+				// If we haven't charged a payment, the payment method will not be attached to the customer.
+				// Attach it now.
+				try {
+					$payment_method->attach(
+						array(
+							'customer' => $customer->id,
+						)
+					);
+				} catch ( \Stripe\Error $e ) {
+					$order->error = $e->getMessage();
+					return false;
+				} catch ( \Throwable $e ) {
+					$order->error = $e->getMessage();
+					return false;
+				} catch ( \Exception $e ) {
+					$order->error = $e->getMessage();
+					return false;
+				}
 			}
 		}
 
@@ -2173,6 +2207,12 @@ class PMProGateway_stripe extends PMProGateway {
 	 * @since 1.4
 	 */
 	public function update( &$order ) {
+		// Make sure the order has a subscription_transaction_id.
+		if ( empty( $order->subscription_transaction_id ) ) {
+			$order->error  = __( 'No subscription transaction ID.', 'paid-memberships-pro' );
+			return false;
+		}
+
 		$customer = $this->update_customer_at_checkout( $order );
 		if ( empty( $customer ) ) {
 			// There was an issue creating/updating the Stripe customer.
@@ -2188,17 +2228,38 @@ class PMProGateway_stripe extends PMProGateway {
 			return false;
 		}
 
-		$customer = $this->set_default_payment_method_for_customer( $customer, $payment_method );
-		if ( is_string( $customer ) ) {
-			// There was an issue updating the default payment method.
-			$order->error      = __( "Error updating default payment method.", 'paid-memberships-pro' ) . " " . $customer;
-			$order->shorterror = $order->error;
+		// Attach the customer to the payment method.
+		try {
+			$payment_method->attach(
+				array(
+					'customer' => $customer->id,
+				)
+			);
+		} catch ( \Stripe\Error $e ) {
+			$order->error = $e->getMessage();
+			return false;
+		} catch ( \Throwable $e ) {
+			$order->error = $e->getMessage();
+			return false;
+		} catch ( \Exception $e ) {
+			$order->error = $e->getMessage();
 			return false;
 		}
 
-		if ( ! $this->update_payment_method_for_subscriptions( $order ) ) {
-			$order->error      = __( "Error updating payment method for subscription.", 'paid-memberships-pro' );
-			$order->shorterror = $order->error;
+		// Update the subscription.
+		$subscription_args = array(
+			'default_payment_method' => $order->payment_method_id,
+		);
+		try {
+			Stripe_Subscription::update( $order->subscription_transaction_id, $subscription_args );
+		} catch ( \Stripe\Error $e ) {
+			$order->error = $e->getMessage();
+			return false;
+		} catch ( \Throwable $e ) {
+			$order->error = $e->getMessage();
+			return false;
+		} catch ( \Exception $e ) {
+			$order->error = $e->getMessage();
 			return false;
 		}
 
@@ -2706,34 +2767,6 @@ class PMProGateway_stripe extends PMProGateway {
 	}
 
 	/**
-	 * Sets the default Payment Method for a Customer in Stripe.
-	 *
-	 * @param Stripe_Customer $customer to update default payment method for.
-	 * @param Stripe_PaymentMethod $payment_method to set as default.
-	 * @return Stripe_Customer|string error message.
-	 */
-	private function set_default_payment_method_for_customer( $customer, $payment_method ) {
-		if ( ! empty( $customer->invoice_settings->default_payment_method ) && $customer->invoice_settings->default_payment_method === $payment_method->id ) {
-			// Payment method already correct, no need to update.
-			return $customer;
-		}
-
-		try {
-			$payment_method->attach( [ 'customer' => $customer->id ] );
-			$customer->invoice_settings->default_payment_method = $payment_method->id;
-			$customer->save();
-		} catch ( Stripe\Error\Base $e ) {
-			return $e->getMessage();
-		} catch ( \Throwable $e ) {
-			return $e->getMessage();
-		} catch ( \Exception $e ) {
-			return $e->getMessage();
-		}
-
-		return $customer;
-	}
-
-	/**
 	 * Convert a price to a positive integer in cents (or 0 for a free price)
 	 * representing how much to charge. This is how Stripe wants us to send price amounts.
 	 *
@@ -2760,8 +2793,8 @@ class PMProGateway_stripe extends PMProGateway {
 	 */
 	private function get_subscription( $subscription_id ) {
 		try {
-			$customer = Stripe_Subscription::retrieve( $subscription_id );
-			return $customer;
+			$subscription = Stripe_Subscription::retrieve( $subscription_id );
+			return $subscription;
 		} catch ( \Throwable $e ) {
 			// Assume no subscription found.
 		} catch ( \Exception $e ) {
@@ -3032,11 +3065,18 @@ class PMProGateway_stripe extends PMProGateway {
 			return false;
 		}
 
+		// Make sure we have a payment method on the order.
+		if ( empty( $order->payment_method_id ) ) {
+			$order->error = esc_html__( 'Cannot find payment method.', 'paid-memberships-pro' );
+			return false;
+		}
+
 		$trial_period_days = $this->calculate_trial_period_days( $order );
 
 		try {
 			$subscription_params = array(
 				'customer'          => $customer_id,
+				'default_payment_method' => $order->payment_method_id,
 				'items'             => array(
 					array( 'price' => $price->id ),
 				),
@@ -3712,14 +3752,14 @@ class PMProGateway_stripe extends PMProGateway {
 	/**
 	 * Update the payment method for a subscription.
 	 *
-	 * Only called on update billing page. Should be completely deprecated if we switch to using Stripe Customer Portal.
+	 * Only called on update billing page.
 	 *
-	 * @deprecated 2.7.0. Only deprecated for public use, will be changed to private non-static in a future version.
+	 * @deprecated 2.7.0
 	 *
 	 * @param MemberOrder $order The MemberOrder object.
 	 */
 	public function update_payment_method_for_subscriptions( &$order ) {
-		pmpro_method_should_be_private( '2.7.0' );
+		_deprecated_function( __METHOD__, '2.7.0', 'PMProGateway_stripe::update' );
 
 		// get customer
 		$customer = $this->update_customer_at_checkout( $order );
@@ -3731,25 +3771,26 @@ class PMProGateway_stripe extends PMProGateway {
 		// get all subscriptions
 		if ( ! empty( $customer->subscriptions ) ) {
 			$subscriptions = $customer->subscriptions->all();
+
+			foreach( $subscriptions as $subscription ) {
+				// check if cancelled or expired
+				if ( in_array( $subscription->status, array( 'canceled', 'incomplete', 'incomplete_expired' ) ) ) {
+					continue;
+				}
+
+				// check if we have a related order for it
+				$one_order = new MemberOrder();
+				$one_order->getLastMemberOrderBySubscriptionTransactionID( $subscription->id );
+				if ( empty( $one_order ) || empty( $one_order->id ) ) {
+					continue;
+				}
+
+				// update the payment method
+				$subscription->default_payment_method = $customer->invoice_settings->default_payment_method;
+				$subscription->save();
+			}
 		}
 
-		foreach( $subscriptions as $subscription ) {
-			// check if cancelled or expired
-			if ( in_array( $subscription->status, array( 'canceled', 'incomplete', 'incomplete_expired' ) ) ) {
-				continue;
-			}
-
-			// check if we have a related order for it
-			$one_order = new MemberOrder();
-			$one_order->getLastMemberOrderBySubscriptionTransactionID( $subscription->id );
-			if ( empty( $one_order ) || empty( $one_order->id ) ) {
-				continue;
-			}
-
-			// update the payment method
-			$subscription->default_payment_method = $customer->invoice_settings->default_payment_method;
-			$subscription->save();
-		}
 		return true;
 	}
 
@@ -4835,6 +4876,7 @@ class PMProGateway_stripe extends PMProGateway {
 	 * @return bool   Status of the processed refund
 	 */
 	public static function process_refund( $success, $order ) {
+		global $current_user;
 
 		//default to using the payment id from the order
 		if ( !empty( $order->payment_transaction_id ) ) {
@@ -4854,8 +4896,6 @@ class PMProGateway_stripe extends PMProGateway {
 				$transaction_id = $invoice->charge;
 			}
 		}
-
-		$success = false;
 
 		//attempt refund
 		try {
@@ -4879,12 +4919,8 @@ class PMProGateway_stripe extends PMProGateway {
 			//Make sure we're refunding an order that was successful
 			if ( $refund->status != 'failed' ) {
 				$order->status = 'refunded';	
-
-				$success = true;
-			
-				global $current_user;
-
-				$order->notes = trim( $order->notes.' '.sprintf( __('Admin: Order successfully refunded on %1$s for transaction ID %2$s by %3$s.', 'paid-memberships-pro' ), date_i18n('Y-m-d H:i:s'), $transaction_id, $current_user->display_name ) );	
+				$order->notes = trim( $order->notes.' '.sprintf( __('Admin: Order successfully refunded on %1$s for transaction ID %2$s by %3$s.', 'paid-memberships-pro' ), date_i18n('Y-m-d H:i:s'), $transaction_id, $current_user->display_name ) );
+				$order->saveOrder();
 
 				$user = get_user_by( 'id', $order->user_id );
 				//send an email to the member
@@ -4895,19 +4931,18 @@ class PMProGateway_stripe extends PMProGateway {
 				$myemail = new PMProEmail();
 				$myemail->sendRefundedAdminEmail( $user, $order );
 
-			} else {
-				$order->notes = trim( $order->notes . ' ' . __('Admin: An error occured while attempting to process this refund.', 'paid-memberships-pro' ) );
+				return true;
 			}
 
+			// Refund failed.
+			$order->notes = trim( $order->notes . ' ' . __('Admin: An error occured while attempting to process this refund.', 'paid-memberships-pro' ) );
 		} catch ( \Throwable $e ) {			
 			$order->notes = trim( $order->notes . ' ' . __( 'Admin: There was a problem processing the refund', 'paid-memberships-pro' ) . ' ' . $e->getMessage() );	
 		} catch ( \Exception $e ) {
 			$order->notes = trim( $order->notes . ' ' . __( 'Admin: There was a problem processing the refund', 'paid-memberships-pro' ) . ' ' . $e->getMessage() );
-		}		
-
+		}
 		$order->saveOrder();
-
-		return $success;
+		return false;
 	}
 
 	/**
@@ -5029,7 +5064,7 @@ class PMProGateway_stripe extends PMProGateway {
 	 * @deprecated 2.7.0. Use set_default_payment_method_for_customer().
 	 */
 	public function attach_payment_method_to_customer( &$order ) {
-		_deprecated_function( __FUNCTION__, '2.7.0', 'set_default_payment_method_for_customer()' );
+		_deprecated_function( __FUNCTION__, '2.7.0' );
 		$customer = $this->update_customer_at_checkout( $order );
 
 		if ( ! empty( $customer->invoice_settings->default_payment_method ) &&
