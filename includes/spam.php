@@ -190,23 +190,3 @@ function pmpro_disable_checkout_for_spammers( $required_fields ) {
 	return $required_fields;
 }
 add_filter( 'pmpro_required_billing_fields', 'pmpro_disable_checkout_for_spammers' );
-
-/**
- * Set a user meta value when a user is created during a PMPro checkout.
- */
-function pmpro_set_spam_pending_user_meta( $user_id ) {
-	// Set a user meta value with the current timestamp.
-	update_user_meta( $user_id, 'pmpro_spam_pending', current_time( 'timestamp' ) );
-}
-add_action( 'pmpro_checkout_before_user_auth', 'pmpro_set_spam_pending_user_meta', 10 );
-
-/**
- * After a checkout is complete, remove the pmpro_pending user meta value.
- *
- * @param int $user_id The user ID.
- */
-function pmproabandoned_remove_spam_pending_user_meta( $user_id ) {
-	// Remove the user meta value.
-	delete_user_meta( $user_id, 'pmpro_spam_pending' );
-}
-add_action( 'pmpro_after_checkout', 'pmproabandoned_remove_spam_pending_user_meta', 10 );

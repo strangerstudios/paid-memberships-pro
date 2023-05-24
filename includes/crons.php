@@ -35,9 +35,6 @@ function pmpro_get_crons() {
 		'pmpro_license_check_key'                  => [
 			'interval' => 'monthly',
 		],
-		'pmpro_cron_spam_pending'                  => [
-			'interval' => 'hourly',
-		],
 	];
 
 	/**
