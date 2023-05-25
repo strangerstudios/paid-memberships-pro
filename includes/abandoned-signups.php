@@ -82,8 +82,8 @@ function pmpro_add_users_table_view_abandoned_signups( $views ) {
 	// Add the view for abandoned signups.
 	$views['pmpro-abandoned-signups'] = sprintf(
 		'<a href="%s"%s>%s <span class="count">(%d)</span></a>',
-		esc_url( add_query_arg( 'role', 'pmpro-abandoned-signups', admin_url( 'users.php' ) ) ),
-		( isset( $_REQUEST['role'] ) && 'pmpro-abandoned-signups' === $_REQUEST['role'] ) ? ' class="current"' : '',
+		esc_url( add_query_arg( 'pmpro-abandoned-signups', '1', admin_url( 'users.php' ) ) ),
+		empty( $_REQUEST['pmpro-abandoned-signups'] ) ? '' : ' class="current"',
 		__( 'Incomplete Membership Checkouts', 'paid-memberships-pro' ),
 		count( $abandoned_signup_users )
 	);
@@ -103,7 +103,7 @@ add_filter( 'views_users', 'pmpro_add_users_table_view_abandoned_signups' );
  */
 function pmpro_add_users_table_user_registered_column( $columns ) {
 	// Bail if we are not on the Users page or not filtering by abandoned signups.
-	if ( empty( $_REQUEST['role'] ) || 'pmpro-abandoned-signups' !== $_REQUEST['role'] ) {
+	if ( empty( $_REQUEST['pmpro-abandoned-signups'] ) ) {
 		return $columns;
 	}
 
@@ -118,7 +118,7 @@ add_filter( 'manage_users_columns', 'pmpro_add_users_table_user_registered_colum
  */
 function pmpro_make_users_table_user_registered_column_sortable( $columns ) {
 	// Bail if we are not on the Users page or not filtering by abandoned signups.
-	if ( empty( $_REQUEST['role'] ) || 'pmpro-abandoned-signups' !== $_REQUEST['role'] ) {
+	if ( empty( $_REQUEST['pmpro-abandoned-signups'] ) ) {
 		return $columns;
 	}
 
@@ -140,7 +140,7 @@ add_filter( 'manage_users_sortable_columns', 'pmpro_make_users_table_user_regist
  */
 function pmpro_add_users_table_user_registered_column_output( $output, $column_name, $user_id ) {
 	// Bail if we are not on the Users page or not filtering by abandoned signups.
-	if ( empty( $_REQUEST['role'] ) || 'pmpro-abandoned-signups' !== $_REQUEST['role'] ) {
+	if ( empty( $_REQUEST['pmpro-abandoned-signups'] ) ) {
 		return $output;
 	}
 
@@ -172,7 +172,7 @@ add_filter( 'manage_users_custom_column', 'pmpro_add_users_table_user_registered
  */
 function pmpro_abandoned_signups_users_list_table_query_args( $query_args ) {    
 	// Bail if we are not on the Users page or not filtering by abandoned signups.
-	if ( empty( $_REQUEST['role'] ) || 'pmpro-abandoned-signups' !== $_REQUEST['role'] ) {
+	if ( empty( $_REQUEST['pmpro-abandoned-signups'] ) ) {
 		return $query_args;
 	}
 
