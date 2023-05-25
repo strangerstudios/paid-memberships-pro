@@ -3,7 +3,7 @@
  * Enqueue frontend JavaScript and CSS
  */
 function pmpro_enqueue_scripts() {
-    global $pmpro_pages;
+    global $pmpro_level, $pmpro_pages;
     
     // Figure out which frontend.css file to load.    
     if( file_exists( get_stylesheet_directory() . "/paid-memberships-pro/css/frontend.css" ) ) {
@@ -86,6 +86,16 @@ function pmpro_enqueue_scripts() {
             'allow_weak_passwords' => $allow_weak_passwords ) );
         wp_enqueue_script( 'pmpro_login' );	
     }
+
+    // Enqueue select2 on front end and user profiles
+	if( pmpro_is_checkout() || 
+        ! empty( $_REQUEST['level'] ) ||
+        ! empty( $pmpro_level ) ||
+		( class_exists("Theme_My_Login") && method_exists('Theme_My_Login', 'is_tml_page') && Theme_My_Login::is_tml_page("profile") ) ||
+		( isset( $pmpro_pages['member_profile_edit'] ) && is_page( $pmpro_pages['member_profile_edit'] ) ) ) {
+		wp_enqueue_style( 'select2', plugins_url('css/select2.min.css', dirname(__FILE__)), '', '4.0.3', 'screen' );
+		wp_enqueue_script( 'select2', plugins_url('js/select2.min.js', dirname(__FILE__)), array( 'jquery' ), '4.0.3' );
+	}
 }
 add_action( 'wp_enqueue_scripts', 'pmpro_enqueue_scripts' );
 
@@ -93,27 +103,57 @@ add_action( 'wp_enqueue_scripts', 'pmpro_enqueue_scripts' );
  * Enqueue admin JavaScript and CSS
  */
 function pmpro_admin_enqueue_scripts() {
-	// Admin JS
-	wp_register_script( 'pmpro_admin', plugins_url( 'js/pmpro-admin.js', __DIR__ ), [
-		'jquery',
-		'jquery-ui-sortable',
-	], PMPRO_VERSION );
+    // Enqueue Select2.  
+    wp_register_script( 'select2',
+                        plugins_url( 'js/select2.min.js', dirname(__FILE__) ),
+                        array( 'jquery', 'jquery-ui-sortable' ),
+                        '4.0.3' );
+    wp_enqueue_style( 'select2', plugins_url('css/select2.min.css', dirname(__FILE__)), '', '4.0.3', 'screen' );
+    wp_enqueue_script( 'select2' );
+
+
+    if ( ( isset( $_REQUEST['page'] ) && $_REQUEST['page'] == 'pmpro-wizard' ) && ( isset( $_REQUEST['step'] ) && $_REQUEST['step'] == 'done' ) ) {
+        wp_register_script( 'pmpro_confetti', plugins_url( 'js/pmpro-confetti.js', __DIR__ ), [
+                'jquery',
+            ], PMPRO_VERSION );
+
+        wp_enqueue_script( 'pmpro_confetti' );
+    }
+   
 
 	$all_levels                  = pmpro_getAllLevels( true, true );
 	$all_level_values_and_labels = [];
 
-	foreach ( $all_levels as $level ) {
-		$all_level_values_and_labels[] = [
-			'value' => $level->id,
-			'label' => $level->name,
-		];
-	}
+    // Enqueue pmpro-admin.js.
+    wp_register_script( 'pmpro_admin',
+                        plugins_url( 'js/pmpro-admin.js', dirname(__FILE__) ),
+                        array( 'jquery', 'jquery-ui-sortable', 'select2' ),
+                        PMPRO_VERSION );
+    $all_levels = pmpro_getAllLevels( true, true );
+    $all_level_values_and_labels = array();
+    foreach( $all_levels as $level ) {
+        $all_level_values_and_labels[] = array( 'value' => $level->id, 'label' => $level->name );
+    }
+    // Get HTML for empty field group.
+    ob_start();
+    pmpro_get_field_group_html();
+    $empty_field_group_html = ob_get_clean();
+    // Get HTML for empty field.
+    ob_start();
+    pmpro_get_field_html();
+    $empty_field_html = ob_get_clean();
 
-	wp_localize_script( 'pmpro_admin', 'pmpro', [
-		'all_levels'                  => $all_levels,
-		'all_level_values_and_labels' => $all_level_values_and_labels,
-	] );
+    wp_localize_script( 'pmpro_admin', 'pmpro', array(
+        'all_levels' => $all_levels,
+        'all_level_values_and_labels' => $all_level_values_and_labels,
+        'user_fields_blank_group' => $empty_field_group_html,
+        'user_fields_blank_field' => $empty_field_html,
+        // We want the core WP translation so we can check for it in JS.
+        'plugin_updated_successfully_text' => __( 'Plugin updated successfully.' ),
+    ));
+    wp_enqueue_script( 'pmpro_admin' );
 
+    // Enqueue styles.
 	// Figure out which admin.css to load.
 	if ( file_exists( get_stylesheet_directory() . '/paid-memberships-pro/css/admin.css' ) ) {
 		$admin_css = get_stylesheet_directory_uri() . '/paid-memberships-pro/css/admin.css';
@@ -135,7 +175,6 @@ function pmpro_admin_enqueue_scripts() {
 	wp_register_style( 'pmpro_admin', $admin_css, [], PMPRO_VERSION, 'screen' );
 	wp_register_style( 'pmpro_admin_rtl', $admin_css_rtl, [], PMPRO_VERSION, 'screen' );	
 
-	wp_enqueue_script( 'pmpro_admin' );
 	wp_enqueue_style( 'pmpro_admin' );
 
 	if ( is_rtl() ) {

@@ -69,6 +69,34 @@ function pmpro_wp_ajax_orders_csv()
 }
 add_action('wp_ajax_orders_csv', 'pmpro_wp_ajax_orders_csv');
 
+
+/**
+ * Handles the Visits, Views and Logins Export
+ */
+function pmpro_wp_ajax_login_report_csv() {
+	require_once(dirname(__FILE__) . "/../adminpages/login-csv.php");	
+	exit;	
+}
+add_action('wp_ajax_login_report_csv', 'pmpro_wp_ajax_login_report_csv');
+
+/**
+ * Handles the Sales Export
+ */
+function pmpro_wp_ajax_sales_report_csv() {
+	require_once(dirname(__FILE__) . "/../adminpages/sales-csv.php");	
+	exit;	
+}
+add_action('wp_ajax_sales_report_csv', 'pmpro_wp_ajax_sales_report_csv');
+
+/**
+ * Handles the Membership Stats Export
+ */
+function pmpro_wp_ajax_membership_stats_csv() {
+	require_once(dirname(__FILE__) . "/../adminpages/memberships-csv.php");	
+	exit;	
+}
+add_action('wp_ajax_membership_stats_csv', 'pmpro_wp_ajax_membership_stats_csv');
+
 /**
  * Load the Orders print view.
  *
@@ -84,6 +112,7 @@ add_action('wp_ajax_pmpro_orders_print_view', 'pmpro_orders_print_view');
  * Get order JSON.
  *
  * @since 1.8.6
+ * @since 2.9.10 - Only returns a subset of data. Only email is really used.
  */
 function pmpro_get_order_json() {
 	// only admins can get this
@@ -93,7 +122,16 @@ function pmpro_get_order_json() {
 	
 	$order_id = intval( $_REQUEST['order_id'] );
 	$order = new MemberOrder($order_id);
-	echo json_encode($order);
+		
+	$r = array(
+		'id' => (int)$order->id,
+		'user_id' => (int)$order->user_id,
+		'membership_id' => (int)$order->membership_id,
+		'code' => esc_html( $order->code ),
+		'Email' => sanitize_email( $order->Email ),		
+	);
+	
+	echo wp_json_encode($r);
 	exit;
 }
 add_action('wp_ajax_pmpro_get_order_json', 'pmpro_get_order_json');
@@ -117,3 +155,22 @@ function pmpro_update_level_order() {
     exit;
 }
 add_action('wp_ajax_pmpro_update_level_order', 'pmpro_update_level_order');
+
+// User fields AJAX.
+/**
+ * Callback to draw a field group.
+ */
+function pmpro_userfields_get_group_ajax() {	
+	echo pmpro_get_field_group_html();
+    exit;
+}
+add_action( 'wp_ajax_pmpro_userfields_get_group', 'pmpro_userfields_get_group_ajax' );
+ 
+/**
+ * Callback to draw a field.
+ */
+function pmpro_userfields_get_field_ajax() {
+ 	echo pmpro_get_field_html();
+	exit;
+}
+add_action( 'wp_ajax_pmpro_userfields_get_field', 'pmpro_userfields_get_field_ajax' );

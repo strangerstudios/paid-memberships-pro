@@ -165,9 +165,10 @@ if ($submit) {
 		if ( isset( $_POST["recaptcha_challenge_field"] ) ) {
 			//using older recaptcha lib
 			$resp = recaptcha_check_answer( $recaptcha_privatekey,
-				$_SERVER["REMOTE_ADDR"],
-				$_POST["recaptcha_challenge_field"],
-				$_POST["recaptcha_response_field"] );
+				pmpro_get_ip(),
+				sanitize_text_field( $_POST["recaptcha_challenge_field"] ),
+				sanitize_text_field( $_POST["recaptcha_response_field"] )
+            );
 
 			$recaptcha_valid  = $resp->is_valid;
 			$recaptcha_errors = $resp->error;
@@ -178,7 +179,7 @@ if ($submit) {
 			// pmpro_recaptcha_validated session variable, which is checked
 			// earlier. We should remove/refactor this code.
 			$reCaptcha = new pmpro_ReCaptcha( $recaptcha_privatekey );
-			$resp      = $reCaptcha->verifyResponse( $_SERVER["REMOTE_ADDR"], $_POST["g-recaptcha-response"] );
+			$resp      = $reCaptcha->verifyResponse( pmpro_get_ip(), sanitize_text_field( $_POST["g-recaptcha-response"] ) );
 
 			$recaptcha_valid  = $resp->success;
 			$recaptcha_errors = $resp->errorCodes;
@@ -274,7 +275,7 @@ if ($submit) {
             $pmpro_msg = sprintf(__('Information updated. <a href="%s">&laquo; back to my account</a>', 'paid-memberships-pro' ), pmpro_url("account"));
             $pmpro_msgt = "pmpro_success";
 			
-			do_action( 'pmpro_after_update_billing', $current_user->ID, $morder );
+			do_action( 'pmpro_after_update_billing', $current_user->ID, !empty( $morder ) ? $morder : null );
         } else {
 			/**
 			 * Allow running code when the update fails.

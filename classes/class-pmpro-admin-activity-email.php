@@ -116,9 +116,9 @@ class PMPro_Admin_Activity_Email extends PMProEmail {
 									$num_expired_link   = admin_url( 'admin.php?page=pmpro-memberslist&l=expired' );
 									$num_cancelled_link = admin_url( 'admin.php?page=pmpro-memberslist&l=cancelled' );
 									?>
-									<td width="33%"><div style="border:8px solid #dff0d8;color:#3c763d;margin:5px;padding:10px;"><a style="color:#3c763d;display:block;text-decoration:none;" href="<?php echo( esc_url( $num_joined_link ) ); ?>" target="_blank"><div style="font-size:50px;font-weight:900;line-height:65px;"><?php esc_html_e( number_format_i18n( $num_joined ) ); ?></div>Joined</a></div></td>
-									<td width="33%"><div style="border:8px solid #fcf8e3;color:#8a6d3b;margin:5px;padding:10px;"><a style="color:#8a6d3b;display:block;text-decoration:none;" href="<?php echo( esc_url( $num_expired_link ) ); ?>" target="_blank"><div style="font-size:50px;font-weight:900;line-height:65px;"><?php esc_html_e( number_format_i18n( $num_expired ) ); ?></div>Expired</a></div></td>
-									<td width="33%"><div style="border:8px solid #f2dede;color:#a94442;margin:5px;padding:10px;"><a style="color:#a94442;display:block;text-decoration:none;" href="<?php echo( esc_url( $num_cancelled_link ) ); ?>" target="_blank"><div style="font-size:50px;font-weight:900;line-height:65px;"><?php esc_html_e( number_format_i18n( $num_cancelled ) ); ?></div>Cancelled</a></div></td>
+									<td width="33%"><div style="border:8px solid #dff0d8;color:#3c763d;margin:5px;padding:10px;"><a style="color:#3c763d;display:block;text-decoration:none;" href="<?php echo( esc_url( $num_joined_link ) ); ?>" target="_blank"><div style="font-size:50px;font-weight:900;line-height:65px;"><?php esc_html_e( number_format_i18n( $num_joined ) ); ?></div><?php esc_html_e( 'Joined', 'paid-memberships-pro' ) ?></a></div></td>
+									<td width="33%"><div style="border:8px solid #fcf8e3;color:#8a6d3b;margin:5px;padding:10px;"><a style="color:#8a6d3b;display:block;text-decoration:none;" href="<?php echo( esc_url( $num_expired_link ) ); ?>" target="_blank"><div style="font-size:50px;font-weight:900;line-height:65px;"><?php esc_html_e( number_format_i18n( $num_expired ) ); ?></div><?php esc_html_e( 'Expired', 'paid-memberships-pro' ) ?></a></div></td>
+									<td width="33%"><div style="border:8px solid #f2dede;color:#a94442;margin:5px;padding:10px;"><a style="color:#a94442;display:block;text-decoration:none;" href="<?php echo( esc_url( $num_cancelled_link ) ); ?>" target="_blank"><div style="font-size:50px;font-weight:900;line-height:65px;"><?php esc_html_e( number_format_i18n( $num_cancelled ) ); ?></div><?php esc_html_e( 'Cancelled', 'paid-memberships-pro' ) ?></a></div></td>
 								</tr>
 							</table>
 						</td>
@@ -192,7 +192,7 @@ class PMPro_Admin_Activity_Email extends PMProEmail {
 												ON dc.id = dcu.code_id
 											LEFT JOIN $wpdb->pmpro_membership_orders mo
 												ON dcu.order_id = mo.id
-											WHERE dcu.order_id IN(" . implode(",", $order_ids_with_discount_code ) . ")
+											WHERE dcu.order_id IN(" . implode(",", array_map( 'intval', $order_ids_with_discount_code ) ) . ")
 											  AND mo.status NOT IN('refunded', 'review', 'token', 'error')
 												AND mo.gateway_environment = '" . esc_sql( $gateway_environment ) . "'
 											GROUP BY dc.code

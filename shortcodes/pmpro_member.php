@@ -131,6 +131,14 @@ function pmpro_member_shortcode($atts, $content=null, $code='')
 			$r = pmpro_escape_price( pmpro_formatPrice($r) );
 	}
 
+	// If this is a user field with an associative array of options, get the label(s) for the value(s).
+	$r = pmpro_get_label_for_user_field_value( $field, $r );
+
+	//Check for arrays to reformat them.
+	if ( is_array( $r ) ) {
+		$r = implode( ', ', $r );
+	}
+
 	/** 
 	 * Filter
 	 */

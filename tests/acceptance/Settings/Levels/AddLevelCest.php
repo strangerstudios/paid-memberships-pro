@@ -13,11 +13,11 @@ class AddLevelCest {
 
 		$I->amOnAdminPage( '/admin.php?page=pmpro-membershiplevels' );
 
-		//$I->see( 'Add new level', 'a.page-title-action' );
-		//$I->click( 'a.page-title-action' );
+		$I->see( 'Add new level', 'a.page-title-action' );
+		$I->click( 'a.page-title-action' );
 
-		$I->see( 'Create a Membership Level', '.pmpro-new-install a.button-primary' );
-		$I->click( '.pmpro-new-install a.button-primary' );
+		//$I->see( 'Create a Membership Level', '.pmpro-new-install a.button-primary' );
+		//$I->click( '.pmpro-new-install a.button-primary' );
 	}
 
 	/**

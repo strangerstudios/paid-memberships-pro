@@ -39,7 +39,7 @@ class PMPro_Widget_Member_Login extends WP_Widget {
 		}
 
 		if ( isset( $cache[ $args['widget_id'] ] ) ) {
-			echo $cache[ $args['widget_id'] ];
+			echo wp_kses_post( $cache[ $args['widget_id'] ] );
 			return;
 		}
 
@@ -58,11 +58,12 @@ class PMPro_Widget_Member_Login extends WP_Widget {
 
 		<?php
 			// Display the widget if there is anything to show.			
-			$content = pmpro_login_forms_handler( $show_menu, $show_logout_link, $display_if_logged_in, 'widget', false );			
-			if ( ! empty( $content ) ) {
-				echo $before_widget;
-				echo $content;
-				echo $after_widget;
+			$content_escaped = pmpro_login_forms_handler( $show_menu, $show_logout_link, $display_if_logged_in, 'widget', false );			
+			if ( ! empty( $content_escaped ) ) {
+				echo wp_kses_post( $before_widget );
+				// phpcs:ignore Content has been escaped on each section within the pmpro_login_forms_handler function
+				echo $content_escaped;
+				echo wp_kses_post( $after_widget );
 			}
 		?>
 			
@@ -100,18 +101,18 @@ class PMPro_Widget_Member_Login extends WP_Widget {
 		$show_logout_link = isset( $instance['show_logout_link'] ) ? (bool) $instance['show_logout_link'] : false;
 		?>
 		<p>
-			<input class="checkbox" type="checkbox" <?php checked( $display_if_logged_in ); ?> id="<?php echo $this->get_field_id( 'display_if_logged_in' ); ?>" name="<?php echo $this->get_field_name( 'display_if_logged_in' ); ?>" />
-			<label for="<?php echo $this->get_field_id( 'display_if_logged_in' ); ?>"><?php esc_html_e( 'Display "Welcome" content when logged in.', 'paid-memberships-pro' ); ?></label>
+			<input class="checkbox" type="checkbox" <?php checked( $display_if_logged_in ); ?> id="<?php echo esc_attr( $this->get_field_id( 'display_if_logged_in' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'display_if_logged_in' ) ); ?>" />
+			<label for="<?php echo esc_attr( $this->get_field_id( 'display_if_logged_in' ) ); ?>"><?php esc_html_e( 'Display "Welcome" content when logged in.', 'paid-memberships-pro' ); ?></label>
 		</p>
 
 		<p>
-			<input class="checkbox" type="checkbox" <?php checked( $show_logout_link ); ?> id="<?php echo $this->get_field_id( 'show_logout_link' ); ?>" name="<?php echo $this->get_field_name( 'show_logout_link' ); ?>" />
-			<label for="<?php echo $this->get_field_id( 'show_logout_link' ); ?>"><?php esc_html_e( 'Display a "Log Out" link.', 'paid-memberships-pro' ); ?></label>
+			<input class="checkbox" type="checkbox" <?php checked( $show_logout_link ); ?> id="<?php echo esc_attr( $this->get_field_id( 'show_logout_link' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'show_logout_link' ) ); ?>" />
+			<label for="<?php echo esc_attr( $this->get_field_id( 'show_logout_link' ) ); ?>"><?php esc_html_e( 'Display a "Log Out" link.', 'paid-memberships-pro' ); ?></label>
 		</p>
 
 		<p>
-			<input class="checkbox" type="checkbox" <?php checked( $show_menu ); ?> id="<?php echo $this->get_field_id( 'show_menu' ); ?>" name="<?php echo $this->get_field_name( 'show_menu' ); ?>" />
-			<label for="<?php echo $this->get_field_id( 'show_menu' ); ?>"><?php esc_html_e( 'Display the "Log In Widget" menu.', 'paid-memberships-pro' ); ?></label>
+			<input class="checkbox" type="checkbox" <?php checked( $show_menu ); ?> id="<?php echo esc_attr( $this->get_field_id( 'show_menu' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'show_menu' ) ); ?>" />
+			<label for="<?php echo esc_attr( $this->get_field_id( 'show_menu' ) ); ?>"><?php esc_html_e( 'Display the "Log In Widget" menu.', 'paid-memberships-pro' ); ?></label>
 		</p>
 		<?php
 			$allowed_nav_menus_link_html = array (

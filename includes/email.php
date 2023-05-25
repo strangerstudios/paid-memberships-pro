@@ -28,7 +28,7 @@ function pmpro_wp_mail_from_name($from_name)
 function pmpro_wp_mail_from($from_email)
 {
 	// default from email wordpress@sitename
-	$sitename = strtolower( $_SERVER['SERVER_NAME'] );
+	$sitename = strtolower( sanitize_text_field( $_SERVER['SERVER_NAME'] ) );
 	if ( substr( $sitename, 0, 4 ) == 'www.' ) {
 		$sitename = substr( $sitename, 4 );
 	}
@@ -216,7 +216,7 @@ function pmpro_email_templates_save_template_data() {
 
 	$template = sanitize_text_field( $_REQUEST['template'] );
 	$subject = sanitize_text_field( wp_unslash( $_REQUEST['subject'] ) );
-	$body = pmpro_kses( wp_unslash( $_REQUEST['body'] ), 'email' );
+	$body = pmpro_kses( wp_unslash( $_REQUEST['body'] ), 'email' );	// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 
 	//update this template's settings
 	pmpro_setOption( 'email_' . $template . '_subject', $subject );
@@ -284,8 +284,8 @@ function pmpro_email_templates_send_test() {
 
 	//setup test email
 	$test_email = new PMProEmail();
-	$test_email->to = sanitize_email( $_REQUEST['email'] );
-	$test_email->template = sanitize_text_field( str_replace('email_', '', $_REQUEST['template']) );
+	$test_email->email = sanitize_email( $_REQUEST['email'] );
+	$test_email->template = str_replace( 'email_', '', sanitize_text_field( $_REQUEST['template'] ) );
 
 	//add filter to change recipient
 	add_filter('pmpro_email_recipient', 'pmpro_email_templates_test_recipient', 10, 2);
@@ -407,7 +407,7 @@ function pmpro_email_templates_test_body($body, $email = null) {
 function pmpro_email_templates_test_template($email)
 {
 	if( ! empty( $_REQUEST['template'] ) ) {
-		$email->template = sanitize_text_field( str_replace('email_', '', $_REQUEST['template']) );
+		$email->template = str_replace( 'email_', '', sanitize_text_field( $_REQUEST['template'] ) );
 	}
 
 	return $email;
@@ -595,3 +595,39 @@ function pmpro_email_templates_get_template_body($template) {
 
 	return $body;
 }
+
+/**
+ * Make sure none of the template vars used in our default emails
+ * look like URLs that make_clickable will convert.
+ * This could be a vector of attack by agents spamming the checkout page.
+ */
+function pmpro_sanitize_email_data( $data ) {	
+	$keys_to_sanitize = array(
+		'name',
+		'display_name',
+		'user_login',
+		'billing_name',
+		'billing_street',
+		'billing_city',
+		'billing_state',
+		'billing_zip',
+		'billing_country',
+		'billing_phone',
+		'cardtype',
+		'account_number',
+		'expirationmonth',
+		'expirationyear',
+		'billing_address'
+	);
+	
+	foreach( $keys_to_sanitize as $key ) {
+		if ( isset( $data[$key] ) ) {
+			$data[$key] = str_replace( 'www.', 'www ', $data[$key] );
+			$data[$key] = str_replace( 'ftp.', 'ftp ', $data[$key] );
+			$data[$key] = str_replace( '://', ': ', $data[$key] );
+		}
+	}
+	
+	return $data;
+}
+add_filter( 'pmpro_email_data', 'pmpro_sanitize_email_data' );

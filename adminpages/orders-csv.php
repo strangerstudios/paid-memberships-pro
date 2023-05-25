@@ -9,7 +9,7 @@ define('PMPRO_BENCHMARK', true);
 if (!defined('PMPRO_BENCHMARK'))
 	define('PMPRO_BENCHMARK', false);
 
-$start_memory = memory_get_usage(true);;
+$start_memory = memory_get_usage(true);
 $start_time = microtime(true);
 
 if (true === PMPRO_BENCHMARK)
@@ -132,9 +132,9 @@ if ( $filter == "all" || ! $filter ) {
 	$start_date = $start_year . "-" . $start_month . "-" . $start_day;
 	$end_date   = $end_year . "-" . $end_month . "-" . $end_day;
 
-	//add times to dates
-	$start_date = $start_date . " 00:00:00";
-	$end_date   = $end_date . " 23:59:59";
+	//add times to dates and localize
+	$start_date = get_gmt_from_date( $start_date . ' 00:00:00' );
+	$end_date   = get_gmt_from_date( $end_date . ' 23:59:59' );
 
 	$condition = "o.timestamp BETWEEN '" . $start_date . "' AND '" . $end_date . "'";
 } elseif ( $filter == "predefined-date-range" ) {
@@ -154,15 +154,15 @@ if ( $filter == "all" || ! $filter ) {
 		$end_date   = date_i18n( "Y-m-d", strtotime( "last day of December $year", current_time( "timestamp" ) ) );
 	}
 
-	//add times to dates
-	$start_date = $start_date . " 00:00:00";
-	$end_date   = $end_date . " 23:59:59";
+	//add times to dates and localize
+	$start_date = get_gmt_from_date( $start_date . ' 00:00:00' );
+	$end_date   = get_gmt_from_date( $end_date . ' 23:59:59' );
 
 	$condition = "o.timestamp BETWEEN '" . esc_sql( $start_date ) . "' AND '" . esc_sql( $end_date ) . "'";
 } elseif ( $filter == "within-a-level" ) {
-	$condition = "o.membership_id = " . esc_sql( $l );
+	$condition = "o.membership_id = " . (int) $l;
 } elseif ( $filter == 'with-discount-code' ) {
-	$condition = 'dc.code_id = ' . esc_sql( $discount_code );
+	$condition = 'dc.code_id = ' . (int) $discount_code;
 } elseif ( $filter == "within-a-status" ) {
 	$condition = "o.status = '" . esc_sql( $status ) . "' ";
 } elseif ( $filter == 'only-paid' ) {
@@ -222,10 +222,11 @@ if ( ! empty( $s ) ) {
 	$fields = apply_filters( "pmpro_orders_search_fields", $fields );
 
 	foreach ( $fields as $field ) {
-		$sqlQuery .= " OR " . $field . " LIKE '%" . esc_sql( $s ) . "%' ";
+		$sqlQuery .= " OR " . esc_sql( $field ) . " LIKE '%" . esc_sql( $s ) . "%' ";
 	}
 
 	$sqlQuery .= ") ";
+	//Not escaping here because we escape the values in the condition statement
 	$sqlQuery .= "AND " . $condition . " ";
 	$sqlQuery .= "GROUP BY o.id ORDER BY o.id DESC, o.timestamp DESC ";
 
@@ -235,12 +236,12 @@ if ( ! empty( $s ) ) {
 	if ( $filter === 'with-discount-code' ) {
 		$sqlQuery .= "LEFT JOIN $wpdb->pmpro_discount_codes_uses dc ON o.id = dc.order_id ";
 	}
-
+	//Not escaping here because we escape the values in the condition statement
 	$sqlQuery .= "WHERE " . $condition . ' ORDER BY o.id DESC, o.timestamp DESC ';
 }
 
 if ( ! empty( $start ) && ! empty( $limit ) ) {
-	$sqlQuery .= "LIMIT $start, $limit";
+	$sqlQuery .= "LIMIT " . (int) $start . "," . (int) $limit;
 }
 
 $headers   = array();

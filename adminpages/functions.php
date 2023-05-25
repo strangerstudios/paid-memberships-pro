@@ -388,7 +388,7 @@ function pmpro_add_email_order_modal() {
 	if ( ! empty( $_REQUEST['email'] ) && ! empty( $_REQUEST['order'] ) ) {
 		$email = new PMProEmail();
 		$user  = get_user_by( 'email', sanitize_email( $_REQUEST['email'] ) );
-		$order = new MemberOrder( $_REQUEST['order'] );
+		$order = new MemberOrder( intval( $_REQUEST['order'] ) );
 		if ( ! empty( $user ) && ! empty( $order ) && $email->sendBillableInvoiceEmail( $user, $order ) ) { ?>
 			<div class="notice notice-success is-dismissible">
 				<p><?php esc_html_e( 'Invoice emailed successfully.', 'paid-memberships-pro' ); ?></p>
@@ -431,4 +431,68 @@ function pmpro_add_email_order_modal() {
 		</form>
 	</div>
 	<?php
+}
+
+/**
+ * Get the available level templates.
+ * 
+ * @return array $level_templates An associative array of level templates and their attributes.
+ */
+function pmpro_edit_level_templates() {
+
+	$level_templates = array(
+		'free' => array(
+			'name' => __( 'Free', 'paid-memberships-pro' ),
+			'description' => __( 'A free membership level that never expires.', 'paid-memberships-pro' )
+		),
+		'monthly' => array(
+			'name' => __( 'Monthly', 'paid-memberships-pro' ),
+			'description' => __( 'Charge a recurring monthly subscription that never ends.', 'paid-memberships-pro' )
+		),
+		'annual' => array(
+			'name' => __( 'Annual', 'paid-memberships-pro' ),
+			'description' => __( 'Charge a recurring annual subscription that never ends.', 'paid-memberships-pro' )
+		),
+		'onetime' => array(
+			'name' => __( 'One Time', 'paid-memberships-pro' ),
+			'description' => __( 'Charge a one-time payment for a fixed period.', 'paid-memberships-pro' )
+		),
+		'lifetime' => array(
+			'name' => __( 'Lifetime', 'paid-memberships-pro' ),
+			'description' => __( 'Charge a one-time payment for a level that never expires.', 'paid-memberships-pro' )
+		),
+		'trial' => array(
+			'name' => __( 'Trial', 'paid-memberships-pro' ),
+			'description' => __( 'Trial membership that captures recurring payment info at checkout.', 'paid-memberships-pro' )
+		),
+		'none' => array(
+			'name' => __( 'Advanced', 'paid-memberships-pro' ),
+			'description' => __( 'Show all settings. I want to create an advanced membership level.', 'paid-memberships-pro' )
+		),
+		'approvals' => array(
+			'name' => __( 'Approval', 'paid-memberships-pro' ),
+			'description' => __( 'Give admins the ability to approve or deny members.', 'paid-memberships-pro' ),
+			'external-link' => 'https://www.paidmembershipspro.com/add-ons/approval-process-membership/',
+			'type'	=> 'add_on'
+		),
+		'gift' => array(
+			'name' => __( 'Gift', 'paid-memberships-pro' ),
+			'description' => __( 'Allow anyone to purchase a gift of membership.' ),
+			'external-link' => 'https://www.paidmembershipspro.com/add-ons/pmpro-gift-levels/',
+			'type' => 'add_on'
+		)
+	);
+
+	/**
+	 * Filter to add or remove level templates from the Membership Levels > Add New popup.
+	 *
+	 * @since 2.9
+	 *
+	 * @param $level_templates array An array of templates with name and description.
+	 *
+	 * @return $level_templates array An array of templates with name and description.
+	 */
+	$level_templates = apply_filters( 'pmpro_membershiplevels_templates', $level_templates );
+
+	return $level_templates;
 }

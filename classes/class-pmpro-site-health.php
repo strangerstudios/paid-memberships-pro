@@ -81,6 +81,10 @@ class PMPro_Site_Health {
 					'label' => __( 'Discount Codes', 'paid-memberships-pro' ),
 					'value' => self::get_discount_codes(),
 				],
+				'pmpro-sessions'       => [
+					'label' => __( 'PHP Sessions', 'paid-memberships-pro' ),
+					'value' => self::test_sessions(),
+				],
 				'pmpro-membership-levels'    => [
 					'label' => __( 'Membership Levels', 'paid-memberships-pro' ),
 					'value' => self::get_levels(),
@@ -105,11 +109,28 @@ class PMPro_Site_Health {
 					'label' => __( 'Library Conflicts', 'paid-memberships-pro' ),
 					'value' => self::get_library_conflicts(),
 				],
+				'pmpro-current-site-url' => [
+					'label' => __( 'Current Site URL', 'paid-memberships-pro' ),
+					'value' => get_site_url(),
+				],
+				'pmpro-recorded-site-url' => [
+					'label' => __( 'Last Known Site URL', 'paid-memberships-pro' ),
+					'value' => pmpro_getOption( 'last_known_url' ),
+				],
+				'pmpro-pause-mode' => [
+					'label' => __( 'Pause Mode', 'paid-memberships-pro' ),
+					'value' => self::get_pause_mode_state(),
+				],
 			],
 		];
 
 		// Automatically add information about constants set.
 		$info['pmpro']['fields'] = array_merge( $info['pmpro']['fields'], self::get_constants() );
+
+		if ( function_exists( 'pmpro_add_site_health_info_2_10_6' ) ) {
+			// If the 2.10.6 update cleaned up sensitive order meta data, we want to show that.
+			$info = pmpro_add_site_health_info_2_10_6( $info );
+		}
 
 		return $info;
 	}
@@ -228,6 +249,33 @@ class PMPro_Site_Health {
 	}
 
 	/**
+	 * Tests if PHP sessions are enabled
+	 *
+	 * @since 2.9
+	 *
+	 * @return string The PHP Session data.
+	 */
+	public function test_sessions() {
+
+		$session_data = array();
+
+		$php_session_status = session_status();
+
+		if ( $php_session_status !== 0 || $php_session_status !== PHP_SESSIONS_DISABLED ) {
+			$session_data['session_status'] = __( 'Active', 'paid-memberships-pro' );
+		} else {
+			$session_data['session_status'] = __( 'Inactive', 'paid-memberships-pro' );
+		}
+
+		if ( defined( 'PANTHEON_SESSIONS_VERSION' ) ) {
+			$session_data['wp_native_sessions'] = __( 'Active', 'paid-memberships-pro' );
+		}
+
+		return $session_data;
+
+	}
+
+	/**
 	 * Get the custom template information.
 	 *
 	 * @since 2.6.2
@@ -275,7 +323,7 @@ class PMPro_Site_Health {
 
 		WP_Filesystem();
 
-		if ( ! $wp_filesystem ) {
+        if ( ! $wp_filesystem || ! is_object($wp_filesystem) || ( is_wp_error($wp_filesystem->errors) && $wp_filesystem->errors->has_errors() ) ) {
 			return new WP_Error( 'access-denied', __( 'Unable to verify', 'paid-memberships-pro' ) );
 		}
 
@@ -446,7 +494,7 @@ class PMPro_Site_Health {
 
 		WP_Filesystem();
 
-		if ( ! $wp_filesystem ) {
+        if ( ! $wp_filesystem || ! is_object($wp_filesystem) || ( is_wp_error($wp_filesystem->errors) && $wp_filesystem->errors->has_errors() ) ) {
 			return __( 'Unable to access .htaccess file', 'paid-memberships-pro' );
 		}
 
@@ -567,5 +615,24 @@ class PMPro_Site_Health {
 		}
 
 		return $constants_formatted;
+	}
+
+	/**
+	 * Get the pause mode state
+	 *
+	 * @since 2.10
+	 *
+	 * @return string What state is pause mode in 
+	 */
+	public function get_pause_mode_state() {
+
+		$pause_mode = pmpro_is_paused();
+
+		if( $pause_mode ) {
+			return __( 'Enabled', 'paid-memberships-pro' );
+		}
+
+		return __( 'Disabled', 'paid-memberships-pro' );
+
 	}
 }

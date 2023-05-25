@@ -7,14 +7,9 @@
 
 use Braintree\WebhookNotification as Braintree_WebhookNotification;
 
-// If loading directly, make sure we return a 200 HTTP status
-global $isapage;
-$isapage = true;
-
 //in case the file is loaded directly
-if ( ! defined( "ABSPATH" ) ) {
-	define( 'WP_USE_THEMES', false );
-	require_once( dirname( __FILE__ ) . '/../../../../wp-load.php' );
+if( ! defined( 'ABSPATH' ) ) {
+	exit;
 }
 
 //globals
@@ -59,8 +54,10 @@ try {
 	 * @since 1.9.5 - BUG FIX: Unable to identify Braintree Webhook messages
 	 * Expecting Braintree library to sanitize signature & payload 
 	 * since using sanitize_text_field() breaks Braintree parser
+	 * 
+	 * NOTE: The Braintree API needs the unsanitized input.
 	 */
-	$webhookNotification = Braintree_WebhookNotification::parse( $_POST['bt_signature'], $_POST['bt_payload'] );
+	$webhookNotification = Braintree_WebhookNotification::parse( $_POST['bt_signature'], $_POST['bt_payload'] ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 	
 	$logstr[] = "\webhookNotification:";
 	$logstr[] = var_export( $webhookNotification, true );
