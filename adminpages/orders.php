@@ -901,7 +901,7 @@ require_once( dirname( __FILE__ ) . '/admin_header.php' ); ?>
 			"/>
 			<input name="save" type="submit" class="button-primary" value="<?php esc_attr_e( 'Save Order', 'paid-memberships-pro' ); ?>"/>
 			<input name="cancel" type="button" class="cancel button-secondary" value="<?php esc_attr_e( 'Cancel', 'paid-memberships-pro' ); ?>"
-				   onclick="location.href='<?php echo esc_url( admin_url( '/admin.php?page=pmpro-orders' ) ); ?>';"/>
+				   onclick="location.href='<?php echo esc_url( admin_url( 'admin.php?page=pmpro-orders' ) ); ?>';"/>
 		</p>
 
 	</form>
