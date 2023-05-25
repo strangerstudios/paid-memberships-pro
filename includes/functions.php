@@ -78,12 +78,12 @@ function pmpro_br2nl( $text, $tags = 'br' ) {
 	return( $text );
 }
 
+/**
+ * get_option() should be used directly instead.
+ * @deprecated TBD
+ */
 function pmpro_getOption( $s, $force = false ) {
-	if ( get_option( 'pmpro_' . $s ) ) {
-		return get_option( 'pmpro_' . $s );
-	} else {
-		return '';
-	}
+	return get_option( 'pmpro_' . $s, '' );
 }
 
 function pmpro_setOption( $s, $v = null, $sanitize_function = 'sanitize_text_field', $autoload = false ) {		
