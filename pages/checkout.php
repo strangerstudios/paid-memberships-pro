@@ -1,6 +1,7 @@
 <?php
 /**
  * Template: Checkout
+ * Version: 2.0.2
  *
  * See documentation for how to override the PMPro templates.
  * @link https://www.paidmembershipspro.com/documentation/templates/

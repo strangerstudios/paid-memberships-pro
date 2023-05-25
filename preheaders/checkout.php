@@ -509,6 +509,9 @@ if ( $submit && $pmpro_msgt != "pmpro_error" ) {
 					//setting some cookies
 					wp_set_current_user( $user_id, $username );
 					wp_set_auth_cookie( $user_id, true, apply_filters( 'pmpro_checkout_signon_secure', force_ssl_admin() ) );
+
+					// Skip the account fields since we just created an account.
+					$skip_account_fields = true;
 				}
 			} else {
 				$user_id = $current_user->ID;
@@ -838,7 +841,7 @@ if ( empty( $submit ) ) {
 	//show message if the payment gateway is not setup yet
 	if ( $pmpro_requirebilling && ! pmpro_getOption( "gateway", true ) ) {
 		if ( pmpro_isAdmin() ) {
-			$pmpro_msg = sprintf( __( 'You must <a href="%s">set up a Payment Gateway</a> before any payments will be processed.', 'paid-memberships-pro' ), admin_url( '/admin.php?page=pmpro-paymentsettings' ) );
+			$pmpro_msg = sprintf( __( 'You must <a href="%s">set up a Payment Gateway</a> before any payments will be processed.', 'paid-memberships-pro' ), admin_url( 'admin.php?page=pmpro-paymentsettings' ) );
 		} else {
 			$pmpro_msg = __( "A Payment Gateway must be set up before any payments will be processed.", 'paid-memberships-pro' );
 		}

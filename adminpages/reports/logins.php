@@ -107,7 +107,7 @@ function pmpro_report_login_page()
 	<h1 class="wp-heading-inline">
 		<?php _e('Visits, Views, and Logins Report', 'paid-memberships-pro');?>
 	</h1>
-	<a target="_blank" href="<?php echo esc_url( $csv_export_link ); ?>" class="page-title-action"><?php esc_html_e( 'Export to CSV', 'paid-memberships-pro' ); ?></a>
+	<a target="_blank" href="<?php echo esc_url( $csv_export_link ); ?>" class="page-title-action pmpro-has-icon pmpro-has-icon-download"><?php esc_html_e( 'Export to CSV', 'paid-memberships-pro' ); ?></a>
 	<p class="search-box">
 		<label class="hidden" for="post-search-input"><?php echo esc_html_x( 'Search', 'Search form label', 'paid-memberships-pro')?> <?php if(empty($l)) esc_html_e( 'Users', 'paid-memberships-pro' ); else esc_html_e( 'Members', 'paid-memberships-pro' );?>:</label>
 		<input type="hidden" name="page" value="pmpro-reports" />
@@ -115,105 +115,110 @@ function pmpro_report_login_page()
 		<input id="post-search-input" type="text" value="<?php echo esc_attr($s)?>" name="s"/>
 		<input class="button" type="submit" value="<?php esc_attr_e( 'Search Members', 'paid-memberships-pro' ) ?>"/>
 	</p>
-	<div class="tablenav top">
-		<label for="l"><?php echo esc_html_x( 'Show', 'Dropdown label, e.g. Show All Users', 'paid-memberships-pro' ); ?></label>
-		<select name="l" onchange="jQuery('#posts-filter').submit();">
-			<option value="" <?php if(!$l) { ?>selected="selected"<?php } ?>><?php esc_html_e('All Users', 'paid-memberships-pro')?></option>
-			<option value="all" <?php if($l == "all") { ?>selected="selected"<?php } ?>><?php esc_html_e('All Levels', 'paid-memberships-pro')?></option>
-			<?php
-				$levels = $wpdb->get_results("SELECT id, name FROM $wpdb->pmpro_membership_levels ORDER BY name");
-				$levels = pmpro_sort_levels_by_order( $levels );
-				foreach($levels as $level)
-				{
-			?>
-				<option value="<?php echo esc_attr( $level->id ) ?>" <?php if($l == $level->id) { ?>selected="selected"<?php } ?>><?php echo esc_html( $level->name ); ?></option>
+	<?php
+		//some vars for the search
+		if(isset($_REQUEST['pn']))
+			$pn = intval($_REQUEST['pn']);
+		else
+			$pn = 1;
+			
+		if(isset($_REQUEST['limit']))
+			$limit = intval($_REQUEST['limit']);
+		else
+			$limit = 15;
 
-			<?php
-				}
-			?>
-		</select>
-		<div class="tablenav-pages one-page">
-			<?php
-				//some vars for the search
-				if(isset($_REQUEST['pn']))
-					$pn = intval($_REQUEST['pn']);
-				else
-					$pn = 1;
+		$end = $pn * $limit;
+		$start = $end - $limit;
 
-				if(isset($_REQUEST['limit']))
-					$limit = intval($_REQUEST['limit']);
-				else
-					$limit = 15;
+		if($s)
+		{
+			$sqlQuery = "SELECT SQL_CALC_FOUND_ROWS u.ID, u.user_login, u.user_email, UNIX_TIMESTAMP(CONVERT_TZ(u.user_registered, '+00:00', @@global.time_zone)) as joindate, mu.membership_id, mu.initial_payment, mu.billing_amount, mu.cycle_period, mu.cycle_number, mu.billing_limit, mu.trial_amount, mu.trial_limit, UNIX_TIMESTAMP(CONVERT_TZ(mu.startdate, '+00:00', @@global.time_zone)) as startdate, UNIX_TIMESTAMP(CONVERT_TZ(mu.enddate, '+00:00', @@global.time_zone)) as enddate, m.name as membership FROM $wpdb->users u LEFT JOIN $wpdb->usermeta um ON u.ID = um.user_id LEFT JOIN $wpdb->pmpro_memberships_users mu ON u.ID = mu.user_id AND mu.status = 'active' LEFT JOIN $wpdb->pmpro_membership_levels m ON mu.membership_id = m.id WHERE (u.user_login LIKE '%" . esc_sql($s) . "%' OR u.user_email LIKE '%" . esc_sql($s) . "%' OR um.meta_value LIKE '%" . esc_sql($s) . "%') ";
 
-				$end = $pn * $limit;
-				$start = $end - $limit;
+			if($l == "all")
+				$sqlQuery .= " AND mu.status = 'active' AND mu.membership_id > 0 ";
+			elseif($l)
+				$sqlQuery .= " AND mu.membership_id = '" . esc_sql($l) . "' ";
 
-				if($s)
-				{
-					$sqlQuery = "SELECT SQL_CALC_FOUND_ROWS u.ID, u.user_login, u.user_email, UNIX_TIMESTAMP(CONVERT_TZ(u.user_registered, '+00:00', @@global.time_zone)) as joindate, mu.membership_id, mu.initial_payment, mu.billing_amount, mu.cycle_period, mu.cycle_number, mu.billing_limit, mu.trial_amount, mu.trial_limit, UNIX_TIMESTAMP(CONVERT_TZ(mu.startdate, '+00:00', @@global.time_zone)) as startdate, UNIX_TIMESTAMP(CONVERT_TZ(mu.enddate, '+00:00', @@global.time_zone)) as enddate, m.name as membership FROM $wpdb->users u LEFT JOIN $wpdb->usermeta um ON u.ID = um.user_id LEFT JOIN $wpdb->pmpro_memberships_users mu ON u.ID = mu.user_id AND mu.status = 'active' LEFT JOIN $wpdb->pmpro_membership_levels m ON mu.membership_id = m.id WHERE (u.user_login LIKE '%" . esc_sql($s) . "%' OR u.user_email LIKE '%" . esc_sql($s) . "%' OR um.meta_value LIKE '%" . esc_sql($s) . "%') ";
+			$sqlQuery .= "GROUP BY u.ID ORDER BY user_registered DESC LIMIT " . (int) $start . "," . (int) $limit;
+		}
+		else
+		{
+			$sqlQuery = "SELECT SQL_CALC_FOUND_ROWS u.ID, u.user_login, u.user_email, UNIX_TIMESTAMP(CONVERT_TZ(u.user_registered, '+00:00', @@global.time_zone)) as joindate, mu.membership_id, mu.initial_payment, mu.billing_amount, mu.cycle_period, mu.cycle_number, mu.billing_limit, mu.trial_amount, mu.trial_limit, UNIX_TIMESTAMP(CONVERT_TZ(mu.startdate, '+00:00', @@global.time_zone)) as startdate, UNIX_TIMESTAMP(CONVERT_TZ(mu.enddate, '+00:00', @@global.time_zone)) as enddate, m.name as membership FROM $wpdb->users u LEFT JOIN $wpdb->pmpro_memberships_users mu ON u.ID = mu.user_id AND mu.status = 'active' LEFT JOIN $wpdb->pmpro_membership_levels m ON mu.membership_id = m.id";
+			$sqlQuery .= " WHERE 1=1 ";
 
-					if($l == "all")
-						$sqlQuery .= " AND mu.status = 'active' AND mu.membership_id > 0 ";
-					elseif($l)
-						$sqlQuery .= " AND mu.membership_id = '" . esc_sql($l) . "' ";
+			if($l == "all")
+				$sqlQuery .= " AND mu.membership_id > 0  AND mu.status = 'active' ";
+			elseif($l)
+				$sqlQuery .= " AND mu.membership_id = '" . esc_sql($l) . "' ";
+			$sqlQuery .= "GROUP BY u.ID ORDER BY user_registered DESC LIMIT " . (int) $start . "," . (int) $limit;
+		}
 
-					$sqlQuery .= "GROUP BY u.ID ORDER BY user_registered DESC LIMIT " . (int) $start . "," . (int) $limit;
-				}
-				else
-				{
-					$sqlQuery = "SELECT SQL_CALC_FOUND_ROWS u.ID, u.user_login, u.user_email, UNIX_TIMESTAMP(CONVERT_TZ(u.user_registered, '+00:00', @@global.time_zone)) as joindate, mu.membership_id, mu.initial_payment, mu.billing_amount, mu.cycle_period, mu.cycle_number, mu.billing_limit, mu.trial_amount, mu.trial_limit, UNIX_TIMESTAMP(CONVERT_TZ(mu.startdate, '+00:00', @@global.time_zone)) as startdate, UNIX_TIMESTAMP(CONVERT_TZ(mu.enddate, '+00:00', @@global.time_zone)) as enddate, m.name as membership FROM $wpdb->users u LEFT JOIN $wpdb->pmpro_memberships_users mu ON u.ID = mu.user_id AND mu.status = 'active' LEFT JOIN $wpdb->pmpro_membership_levels m ON mu.membership_id = m.id";
-					$sqlQuery .= " WHERE 1=1 ";
-
-					if($l == "all")
-						$sqlQuery .= " AND mu.membership_id > 0  AND mu.status = 'active' ";
-					elseif($l)
-						$sqlQuery .= " AND mu.membership_id = '" . esc_sql($l) . "' ";
-						$sqlQuery .= "GROUP BY u.ID ORDER BY user_registered DESC LIMIT " . (int) $start . "," . (int) $limit;
-				}
-
-				$sqlQuery = apply_filters("pmpro_members_list_sql", $sqlQuery);
-
-				$theusers = $wpdb->get_results($sqlQuery);
-				$totalrows = $wpdb->get_var("SELECT FOUND_ROWS() as found_rows");
-
-				if($theusers)
-				{
-				?>
-				<span class="displaying-num"><?php echo strval($totalrows)?> <?php if(empty($l)) echo "users"; else echo "members";?> found.</span>
+		$sqlQuery = apply_filters("pmpro_members_list_sql", $sqlQuery);
+		
+		$theusers = $wpdb->get_results($sqlQuery);
+		$totalrows = $wpdb->get_var("SELECT FOUND_ROWS() as found_rows");
+	?>
+	<div class="pmpro_report-filters">
+		<h3><?php esc_html_e( 'Customize Report', 'paid-memberships-pro'); ?></h3>
+		<div class="tablenav top">
+			<label for="l"><?php echo esc_html_x( 'Show', 'Dropdown label, e.g. Show All Users', 'paid-memberships-pro' ); ?></label>
+			<select name="l" onchange="jQuery('#posts-filter').submit();">
+				<option value="" <?php if(!$l) { ?>selected="selected"<?php } ?>><?php esc_html_e('All Users', 'paid-memberships-pro')?></option>
+				<option value="all" <?php if($l == "all") { ?>selected="selected"<?php } ?>><?php esc_html_e('All Levels', 'paid-memberships-pro')?></option>
 				<?php
-				}
-			?>
-		</div>
-		<br class="clear" />
-	</div>
-	<table class="widefat">
+					$levels = $wpdb->get_results("SELECT id, name FROM $wpdb->pmpro_membership_levels ORDER BY name");
+					$levels = pmpro_sort_levels_by_order( $levels );
+					foreach($levels as $level)
+					{
+				?>
+					<option value="<?php echo esc_attr( $level->id ) ?>" <?php if($l == $level->id) { ?>selected="selected"<?php } ?>><?php echo esc_html( $level->name ); ?></option>
+
+				<?php
+					}
+				?>
+			</select>
+			<br class="clear" />
+		</div> <!-- end tablenav -->
+	</div> <!-- end pmpro_report-filters -->
+	<?php if ( $theusers ) { ?>
+		<div class="tablenav top">
+			<div class="tablenav-pages one-page">
+				<span class="displaying-num"><?php echo strval($totalrows)?> <?php if(empty($l)) echo "users"; else echo "members";?> found.</span>
+			</div>
+			<br class="clear" />
+		</div> <!-- end tablenav -->
+	<?php } ?>	
+	<table id="pmpro_report_login_data" class="widefat striped">
 		<thead>
-			<tr class="thead">
-				<th><?php esc_html_e('ID', 'paid-memberships-pro')?></th>
-				<th><?php esc_html_e('Username', 'paid-memberships-pro')?></th>
-				<th><?php esc_html_e('Name', 'paid-memberships-pro')?></th>
-				<th><?php esc_html_e('Level', 'paid-memberships-pro')?></th>
-				<th><?php esc_html_e('Joined', 'paid-memberships-pro')?></th>
-				<th><?php esc_html_e('Expires', 'paid-memberships-pro')?></th>
-				<th><?php esc_html_e('Last Visit', 'paid-memberships-pro')?></th>
-				<th><?php esc_html_e('Visits This Week', 'paid-memberships-pro')?></th>
-				<th><?php esc_html_e('Visits This Month', 'paid-memberships-pro')?></th>
-				<th><?php esc_html_e('Visits This Year', 'paid-memberships-pro')?></th>
-				<th><?php esc_html_e('Visits All Time', 'paid-memberships-pro')?></th>
-				<th><?php esc_html_e('Views This Week', 'paid-memberships-pro')?></th>
-				<th><?php esc_html_e('Views This Month', 'paid-memberships-pro')?></th>
-				<th><?php esc_html_e('Views This Year', 'paid-memberships-pro')?></th>
-				<th><?php esc_html_e('Views All Time', 'paid-memberships-pro')?></th>
-				<th><?php esc_html_e('Last Login', 'paid-memberships-pro')?></th>
-				<th><?php esc_html_e('Logins This Week', 'paid-memberships-pro')?></th>
-				<th><?php esc_html_e('Logins This Month', 'paid-memberships-pro')?></th>
-				<th><?php esc_html_e('Logins This Year', 'paid-memberships-pro')?></th>
-				<th><?php esc_html_e('Logins All Time', 'paid-memberships-pro')?></th>
+			<tr>
+				<th colspan="4"></th>
+				<th colspan="5"><?php esc_html_e( 'Visits', 'paid-memberships-pro' ); ?></th>
+				<th colspan="4"><?php esc_html_e( 'Views', 'paid-memberships-pro' ); ?></th>
+				<th colspan="5"><?php esc_html_e( 'Logins', 'paid-memberships-pro' ); ?></th>
+			</tr>
+			<tr class="thead-sub">
+				<th><?php esc_html_e( 'User', 'paid-memberships-pro' ); ?></th>
+				<th><?php esc_html_e( 'Level', 'paid-memberships-pro' ); ?></th>
+				<th><?php esc_html_e( 'Joined', 'paid-memberships-pro' ); ?></th>
+				<th><?php esc_html_e( 'Expires', 'paid-memberships-pro' ); ?></th>
+				<th><?php esc_html_e( 'Last', 'paid-memberships-pro' ); ?></th>
+				<th><?php esc_html_e( 'This Week', 'paid-memberships-pro' ); ?></th>
+				<th><?php esc_html_e( 'This Month', 'paid-memberships-pro' ); ?></th>
+				<th><?php esc_html_e( 'This Year', 'paid-memberships-pro' ); ?></th>
+				<th><?php esc_html_e( 'All Time', 'paid-memberships-pro' ); ?></th>
+				<th><?php esc_html_e( 'This Week', 'paid-memberships-pro' ); ?></th>
+				<th><?php esc_html_e( 'This Month', 'paid-memberships-pro' ); ?></th>
+				<th><?php esc_html_e( 'This Year', 'paid-memberships-pro' ); ?></th>
+				<th><?php esc_html_e( 'All Time', 'paid-memberships-pro' ); ?></th>
+				<th><?php esc_html_e( 'Last', 'paid-memberships-pro' ); ?></th>
+				<th><?php esc_html_e( 'Week', 'paid-memberships-pro' ); ?></th>
+				<th><?php esc_html_e( 'This Month', 'paid-memberships-pro' ); ?></th>
+				<th><?php esc_html_e( 'This Year', 'paid-memberships-pro' ); ?></th>
+				<th><?php esc_html_e( 'All Time', 'paid-memberships-pro' ); ?></th>
 			</tr>
 		</thead>
-		<tbody id="users" class="list:user user-list">
+		<tbody id="users">
 			<?php
-				$count = 0;
 				foreach($theusers as $auser)
 				{
 					//get meta
@@ -221,40 +226,35 @@ function pmpro_report_login_page()
 					$visits = pmpro_reports_get_values_for_user("visits", $auser->ID);
 					$views = pmpro_reports_get_values_for_user("views", $auser->ID);
 					$logins = pmpro_reports_get_values_for_user("logins", $auser->ID);
-
-					if(empty($logins))
-						$logins = array(
-							"last"    => __( "N/A", "paid-memberships-pro" ),
-							"week"    => __( "N/A", "paid-memberships-pro" ),
-							"month"   => __( "N/A", "paid-memberships-pro" ),
-							"ytd"     => __( "N/A", "paid-memberships-pro" ),
-							"alltime" => __( "N/A", "paid-memberships-pro" )
-						);
 					?>
-						<tr <?php if($count++ % 2 == 0) { ?>class="alternate"<?php } ?>>
-							<td><?php echo $theuser->ID?></td>
-							<td>
+						<tr>
+							<td class="user column-username has-row-actions column-primary">
 								<?php echo get_avatar($theuser->ID, 32)?>
 								<strong>
 									<?php
-										$userlink = '<a href="user-edit.php?user_id=' . $theuser->ID . '">' . $theuser->user_login . '</a>';
+										$userlink = '<a href="user-edit.php?user_id=' . $theuser->ID . '">' . $theuser->display_name . '</a>';
 										$userlink = apply_filters("pmpro_members_list_user_link", $userlink, $theuser);
 										echo $userlink;
 									?>
 								</strong>
-							</td>
-							<td>
-								<?php echo $theuser->display_name;?>
+								<div class="row-actions">
+									<?php
+										printf(
+											// translators: %s is the User ID.
+											__( 'ID: %s', 'paid-memberships-pro' ),
+											esc_attr( $theuser->ID )
+										);
+									?>
+								</div>
 							</td>
 							<td><?php echo $auser->membership?></td>
-							<td><?php echo date_i18n( 'm/d/Y', strtotime( get_date_from_gmt( $theuser->user_registered ), current_time( 'timestamp' ) ) ); ?></td>
-
+							<td><?php echo date_i18n( get_option( 'date_format' ), strtotime( get_date_from_gmt( $theuser->user_registered ), current_time( 'timestamp' ) ) ); ?></td>
 							<td>
 								<?php
 									if($auser->enddate)
 										echo date_i18n(get_option('date_format'), $auser->enddate);
 									else
-										echo __( "Never", "paid-memberships-pro" );
+										esc_html_e( 'Never', 'paid-memberships-pro' );
 								?>
 							</td>
 							<td><?php if(!empty($visits['last'])) echo $visits['last'];?></td>
@@ -279,7 +279,7 @@ function pmpro_report_login_page()
 				{
 				?>
 				<tr>
-					<td colspan="9"><p><?php esc_html_e('No members found.', 'paid-memberships-pro')?> <?php if($l) { ?><a href="?page=pmpro-memberslist&s=<?php echo esc_attr($s)?>"><?php esc_html_e('Search all levels', 'paid-memberships-pro')?></a>.<?php } ?></p></td>
+					<td colspan="18"><p><?php esc_html_e( 'No members found.', 'paid-memberships-pro' ); ?> <?php if($l) { ?><a href="?page=pmpro-memberslist&s=<?php echo esc_attr($s)?>"><?php esc_html_e( 'Search all levels', 'paid-memberships-pro' ); ?></a>.<?php } ?></p></td>
 				</tr>
 				<?php
 				}
@@ -287,10 +287,13 @@ function pmpro_report_login_page()
 		</tbody>
 	</table>
 	</form>
-
-	<?php
-	echo pmpro_getPaginationString($pn, $totalrows, $limit, 1, admin_url( "admin.php?page=pmpro-reports&report=login&s=" . urlencode($s)), "&l=$l&limit=$limit&pn=");
-	?>
+	<div class="tablenav bottom">
+		<div class="tablenav-pages">
+			<?php
+				echo pmpro_getPaginationString($pn, $totalrows, $limit, 1, admin_url( "admin.php?page=pmpro-reports&report=login&s=" . urlencode($s)), "&l=$l&limit=$limit&pn=");
+			?>
+		</div>
+	</div>
 <?php
 }
 

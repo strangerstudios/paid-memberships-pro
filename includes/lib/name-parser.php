@@ -98,9 +98,9 @@ if(!function_exists("pnp_split_full_name"))
 
 		// return the various parts in an array
 		$name['salutation'] = $salutation;
-		$name['fname'] = trim($fname);
-		$name['initials'] = trim($initials);
-		$name['lname'] = trim($lname);
+		$name['fname'] = $name != null ? trim($fname) : '';
+		$name['initials'] = $initials!= null ? trim($initials) : '';
+		$name['lname'] = $lname != null  ? trim($lname) : '';
 		$name['suffix'] = $suffix;
 		return $name;
 	}
