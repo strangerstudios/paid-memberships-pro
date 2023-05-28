@@ -406,6 +406,7 @@
 	?>
 	<hr class="wp-header-end">
 	<?php if ( ! empty( $level->id ) ) { ?>
+		<br class="wp-clearfix">
 		<h1 class="wp-heading-inline">
 		<?php
 			echo sprintf(

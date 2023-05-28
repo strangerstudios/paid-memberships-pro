@@ -437,6 +437,7 @@ require_once( dirname( __FILE__ ) . '/admin_header.php' ); ?>
 			'pmpro_orders_nonce'
 		);
 		?>
+	<br class="wp-clearfix">
     <h1 class="wp-heading-inline"><?php esc_html_e( 'Edit Order', 'paid-memberships-pro' ); ?> ID: <?php echo esc_html( $order->id ); ?></h1>
 		<a title="<?php esc_attr_e( 'Print', 'paid-memberships-pro' ); ?>" href="<?php echo esc_url( add_query_arg( array( 'action' => 'pmpro_orders_print_view', 'order' => $order->id ), admin_url( 'admin-ajax.php' ) ) ); ?>" target="_blank" class="page-title-action pmpro-has-icon pmpro-has-icon-printer"><?php esc_html_e( 'Print', 'paid-memberships-pro' ); ?></a>
 		<a title="<?php esc_attr_e( 'Email', 'paid-memberships-pro' ); ?>" href="#TB_inline?width=600&height=200&inlineId=email_invoice" class="thickbox email_link page-title-action pmpro-has-icon pmpro-has-icon-email" data-order="<?php echo esc_html( $order->id ); ?>"><?php esc_html_e( 'Email', 'paid-memberships-pro' ); ?></a>
