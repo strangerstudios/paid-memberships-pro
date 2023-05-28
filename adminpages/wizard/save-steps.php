@@ -35,11 +35,6 @@ function pmpro_init_save_wizard_data() {
 		// Save the type of membership site. May be saved as "Blank"?
 		pmpro_setOption( 'site_type', sanitize_text_field( $_REQUEST['membership_site_type'] ) );
 
-		// Update license key value
-		if ( ! empty( $_REQUEST['pmpro_license_key'] ) ) {
-			pmpro_setOption( 'license_key', sanitize_text_field( $_REQUEST['pmpro_license_key'] ) );
-		}
-
 		// Generate pages
 		if ( ! empty( $_REQUEST['createpages'] ) ) {
 			global $pmpro_pages;
@@ -83,6 +78,16 @@ function pmpro_init_save_wizard_data() {
 		} else {
 			pmpro_setOption( 'wizard_collect_payment', false );
 			$step = 'memberships';
+		}
+
+		// Update license key value
+		if ( ! empty( $_REQUEST['pmpro_license_key'] ) ) {
+			// Check if license key is valid.
+			if ( ! pmpro_license_isValid( sanitize_text_field( $_REQUEST['pmpro_license_key'] ), NULL, true ) ) {
+				return;
+			}
+
+			pmpro_setOption( 'license_key', sanitize_text_field( $_REQUEST['pmpro_license_key'] ) );
 		}
 
 		$next_step = add_query_arg(

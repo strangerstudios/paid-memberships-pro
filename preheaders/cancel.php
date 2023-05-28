@@ -89,3 +89,11 @@
 			$pmpro_msgt = "pmpro_error";
 		}
 	}
+
+	wp_register_script(
+		'pmpro_cancel',
+		plugins_url( 'js/pmpro-cancel.js', PMPRO_BASE_FILE ),
+		array( 'jquery' ),
+		PMPRO_VERSION
+	);
+	wp_enqueue_script( 'pmpro_cancel' );
