@@ -1241,7 +1241,7 @@
 				</td>
 				<td>
 					<?php if(!pmpro_isLevelExpiring($level)) { ?>
-						--
+						<span aria-label="<?php esc_attr_e( 'None', 'paid-memberships-pro' ); ?>"><?php esc_html_e( '&#8212;', 'paid-memberships-pro' ); ?></span>
 					<?php } else { ?>
 						<?php _e('After', 'paid-memberships-pro' );?> <?php echo $level->expiration_number?> <?php echo sornot($level->expiration_period,$level->expiration_number)?>
 					<?php } ?>
