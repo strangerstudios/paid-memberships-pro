@@ -26,7 +26,7 @@ add_action( 'init', 'pmpro_report_memberships_init' );
 
 //widget
 function pmpro_report_memberships_widget() {
-	global $wpdb;
+	global $wpdb, $pmpro_reports;
 
 	//get levels to show stats on first 3
 	$pmpro_levels = pmpro_sort_levels_by_order( pmpro_getAllLevels(true, true) );
@@ -91,7 +91,7 @@ function pmpro_report_memberships_widget() {
 	</table>
 	<?php if ( function_exists( 'pmpro_report_memberships_page' ) ) { ?>
 		<p class="pmpro_report-button">
-			<a class="button button-primary" href="<?php echo esc_url(admin_url( 'admin.php?page=pmpro-reports&report=memberships')); ?>"><?php esc_html_e('Details', 'paid-memberships-pro' );?></a>
+			<a class="button button-primary" href="<?php echo esc_url(admin_url( 'admin.php?page=pmpro-reports&report=memberships')); ?>" aria-label="<?php echo esc_attr( sprintf( __( 'View the full %s report', 'paid-memberships-pro' ), $pmpro_reports['memberships'] ) ); ?>"><?php esc_html_e('Details', 'paid-memberships-pro' );?></a>
 		</p>
 	<?php } ?>
 </span>

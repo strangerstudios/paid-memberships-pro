@@ -31,7 +31,7 @@ add_action("init", "pmpro_report_sales_init");
 
 //widget
 function pmpro_report_sales_widget() {
-	global $wpdb;
+	global $wpdb, $pmpro_reports;
 ?>
 <style>
 	#pmpro_report_sales tbody td:last-child {text-align: right; }
@@ -103,7 +103,7 @@ function pmpro_report_sales_widget() {
 	</table>
 	<?php if ( function_exists( 'pmpro_report_sales_page' ) ) { ?>
 		<p class="pmpro_report-button">
-			<a class="button button-primary" href="<?php echo esc_url( admin_url( 'admin.php?page=pmpro-reports&report=sales' ) ); ?>"><?php esc_html_e('Details', 'paid-memberships-pro' );?></a>
+			<a class="button button-primary" href="<?php echo esc_url( admin_url( 'admin.php?page=pmpro-reports&report=sales' ) ); ?>" aria-label="<?php echo esc_attr( sprintf( __( 'View the full %s report', 'paid-memberships-pro' ), $pmpro_reports['sales'] ) ); ?>"><?php esc_html_e('Details', 'paid-memberships-pro' );?></a>
 		</p>
 	<?php } ?>
 </span>
