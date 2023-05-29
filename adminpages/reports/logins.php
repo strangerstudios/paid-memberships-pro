@@ -109,11 +109,11 @@ function pmpro_report_login_page()
 	</h1>
 	<a target="_blank" href="<?php echo esc_url( $csv_export_link ); ?>" class="page-title-action pmpro-has-icon pmpro-has-icon-download"><?php esc_html_e( 'Export to CSV', 'paid-memberships-pro' ); ?></a>
 	<p class="search-box">
-		<label class="hidden" for="post-search-input"><?php echo esc_html_x( 'Search', 'Search form label', 'paid-memberships-pro')?> <?php if(empty($l)) esc_html_e( 'Users', 'paid-memberships-pro' ); else esc_html_e( 'Members', 'paid-memberships-pro' );?>:</label>
+		<label class="screen-reader-text" for="post-search-input"><?php echo esc_html_x( 'Search', 'Search form label', 'paid-memberships-pro')?> <?php if(empty($l)) esc_html_e( 'Users', 'paid-memberships-pro' ); else esc_html_e( 'Members', 'paid-memberships-pro' );?>:</label>
 		<input type="hidden" name="page" value="pmpro-reports" />
 		<input type="hidden" name="report" value="login" />
 		<input id="post-search-input" type="text" value="<?php echo esc_attr($s)?>" name="s"/>
-		<input class="button" type="submit" value="<?php esc_attr_e( 'Search Members', 'paid-memberships-pro' ) ?>"/>
+		<input class="button" type="submit" value="<?php esc_attr_e( 'Search', 'paid-memberships-pro' ) ?>"/>
 	</p>
 	<?php
 		//some vars for the search
@@ -162,7 +162,7 @@ function pmpro_report_login_page()
 		<h3><?php esc_html_e( 'Customize Report', 'paid-memberships-pro'); ?></h3>
 		<div class="tablenav top">
 			<label for="l"><?php echo esc_html_x( 'Show', 'Dropdown label, e.g. Show All Users', 'paid-memberships-pro' ); ?></label>
-			<select name="l" onchange="jQuery('#posts-filter').submit();">
+			<select id="l" name="l" onchange="jQuery('#posts-filter').submit();" aria-label="<?php esc_attr_e( 'Select a membership level to customize this report', 'paid-memberships-pro' ); ?>">
 				<option value="" <?php if(!$l) { ?>selected="selected"<?php } ?>><?php esc_html_e('All Users', 'paid-memberships-pro')?></option>
 				<option value="all" <?php if($l == "all") { ?>selected="selected"<?php } ?>><?php esc_html_e('All Levels', 'paid-memberships-pro')?></option>
 				<?php

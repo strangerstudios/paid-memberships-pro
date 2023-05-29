@@ -345,30 +345,35 @@ function pmpro_report_memberships_page()
 	<div class="pmpro_report-filters">
 		<h3><?php esc_html_e( 'Customize Report', 'paid-memberships-pro'); ?></h3>
 		<div class="tablenav top">
-			<label for="period"><?php echo esc_html_x( 'Show', 'Dropdown label, e.g. Show Period', 'paid-memberships-pro' ); ?></label>
+			<span><?php echo esc_html_x( 'Show', 'Dropdown label, e.g. Show Period', 'paid-memberships-pro' ); ?></span>
+			<label for="period" class="screen-reader-text"><?php esc_html_e( 'Select report time period', 'paid-memberships-pro' ); ?></label>
 			<select id="period" name="period">
 				<option value="daily" <?php selected($period, "daily");?>><?php esc_html_e('Daily', 'paid-memberships-pro' );?></option>
 				<option value="monthly" <?php selected($period, "monthly");?>><?php esc_html_e('Monthly', 'paid-memberships-pro' );?></option>
 				<option value="annual" <?php selected($period, "annual");?>><?php esc_html_e('Annual', 'paid-memberships-pro' );?></option>
 			</select>
+			<label for="type" class="screen-reader-text"><?php esc_html_e( 'Select report type', 'paid-memberships-pro' ); ?></label>
 			<select id="type" name="type">
 				<option value="signup_v_all" <?php selected($type, "signup_v_all");?>><?php esc_html_e('Signups vs. All Cancellations', 'paid-memberships-pro' );?></option>
 				<option value="signup_v_cancel" <?php selected($type, "signup_v_cancel");?>><?php esc_html_e('Signups vs. Cancellations', 'paid-memberships-pro' );?></option>
 				<option value="signup_v_expiration" <?php selected($type, "signup_v_expiration");?>><?php esc_html_e('Signups vs. Expirations', 'paid-memberships-pro' );?></option>
 			</select>
 			<span id="for"><?php esc_html_e('for', 'paid-memberships-pro' )?></span>
+			<label for="month" class="screen-reader-text"><?php esc_html_e( 'Select report month', 'paid-memberships-pro' ); ?></label>
 			<select id="month" name="month">
 				<?php for($i = 1; $i < 13; $i++) { ?>
 					<option value="<?php echo esc_attr($i);?>" <?php selected($month, $i);?>><?php echo esc_html(date_i18n("F", mktime(0, 0, 0, $i, 2)));?></option>
 				<?php } ?>
 			</select>
+			<label for="year" class="screen-reader-text"><?php esc_html_e( 'Select report year', 'paid-memberships-pro' ); ?></label>
 			<select id="year" name="year">
 				<?php for($i = $thisyear; $i > 2007; $i--) { ?>
 					<option value="<?php echo esc_attr($i);?>" <?php selected($year, $i);?>><?php echo esc_html($i);?></option>
 				<?php } ?>
 			</select>
 			<span id="for"><?php esc_html_e('for', 'paid-memberships-pro' )?></span>
-			<select name="level">
+			<label for="level" class="screen-reader-text"><?php esc_html_e( 'Filter report by membership level', 'paid-memberships-pro' ); ?></label>
+			<select id="level" name="level">
 				<option value="" <?php if(!$l) { ?>selected="selected"<?php } ?>><?php esc_html_e('All Levels', 'paid-memberships-pro' );?></option>
 				<option value="paid-levels" <?php if(isset($_REQUEST['level']) && $_REQUEST['level'] === "paid-levels"){?> selected="selected" <?php }?>><?php esc_html_e( 'All Paid Levels', 'paid-memberships-pro' ); ?></option>
 				<option value="free-levels" <?php if(isset($_REQUEST['level']) && $_REQUEST['level'] === "free-levels"){?> selected="selected" <?php }?>><?php esc_html_e( 'All Free Levels', 'paid-memberships-pro' ); ?></option>
@@ -390,6 +395,7 @@ function pmpro_report_memberships_page()
 			$sqlQuery .= "ORDER BY id DESC ";
 			$codes = $wpdb->get_results($sqlQuery, OBJECT);
 			if ( ! empty( $codes ) ) { ?>
+			<label for="discount_code" class="screen-reader-text"><?php esc_html_e( 'Filter report by discount code', 'paid-memberships-pro' ); ?></label>
 			<select id="discount_code" name="discount_code">
 				<option value="" <?php if ( empty( $discount_code ) ) { ?>selected="selected"<?php } ?>><?php esc_html_e('All Codes', 'paid-memberships-pro' );?></option>
 				<?php foreach ( $codes as $code ) { ?>

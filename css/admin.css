@@ -2066,7 +2066,7 @@ h2.nav-tab-wrapper {
 
 #pmpro_report_login .wp-list-table tbody td,
 #pmpro_report_memberships .wp-list-table tbody tr.pmpro_report_tr td,
-#pmpro_report_sales .wp-list-table tbody tr.pmpro_report_tr td,
+#pmpro_report_sales .wp-list-table tbody tr.pmpro_report_tr td:not(#pmpro_report_sales .wp-list-table tbody tr.pmpro_report_tr td:first-child),
 #pmpro_report_sales .wp-list-table tfoot td {
 	font-size: 1.1rem;
 	font-weight: bold;
@@ -2083,7 +2083,7 @@ h2.nav-tab-wrapper {
 	vertical-align: top;
 }
 
-.pmpro_report-holder .wp-list-table tbody th button {
+.pmpro_report-holder .wp-list-table tbody button {
 	border: none;
 	background: 0 0;
 	-webkit-border-radius: 0;
