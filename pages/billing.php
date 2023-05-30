@@ -146,12 +146,6 @@
 			<div id="pmpro_message" <?php if(! $pmpro_msg) ?> style="display:none" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_message ' . $pmpro_msgt, $pmpro_msgt ) ); ?>"> <?php if($pmpro_msg) echo wp_kses_post( $pmpro_msg ); ?>
 			</div>
 
-			<?php
-				$pmpro_include_billing_address_fields = apply_filters('pmpro_include_billing_address_fields', true);
-				if($pmpro_include_billing_address_fields)
-				{
-			?>
-
 			<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_message pmpro_alert', 'pmpro_account_loggedin' ) ); ?>">
 				<?php
 					$allowed_html = array(
@@ -165,6 +159,12 @@
 					echo wp_kses( sprintf( __('You are logged in as <strong>%s</strong>. If you would like to update your billing information for a different account, <a href="%s">log out now</a>.', 'paid-memberships-pro' ), $current_user->user_login, wp_logout_url( esc_url_raw( $_SERVER['REQUEST_URI'] ) ) ), $allowed_html );
 				?>
 			</div> <!-- end pmpro_account_loggedin -->
+
+			<?php
+				$pmpro_include_billing_address_fields = apply_filters('pmpro_include_billing_address_fields', true);
+				if($pmpro_include_billing_address_fields)
+				{
+			?>
 
 			<div id="pmpro_billing_address_fields" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout', 'pmpro_billing_address_fields' ) ); ?>">
 				<hr />
