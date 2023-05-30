@@ -1,9 +1,9 @@
 <?php 
 // Get options.
-$filter_queries = pmpro_getOption( 'filterqueries', true );
-$show_excerpts = pmpro_getOption( 'showexcerpts', true );
-$spam_protection = pmpro_getOption( 'spamprotection', true );
-$wisdom_tracking = pmpro_getOption( 'wisdom_opt_out', true );
+$filter_queries = get_option( 'pmpro_filterqueries' );
+$show_excerpts = get_option( 'pmpro_showexcerpts' );
+$spam_protection = get_option( 'pmpro_spamprotection' );
+$wisdom_tracking = get_option( 'pmpro_wisdom_opt_out' );
 ?>
 <div class="pmpro-wizard__step pmpro-wizard__step-4">
 	<form action="" method="post">
