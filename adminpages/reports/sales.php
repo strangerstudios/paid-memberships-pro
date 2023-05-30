@@ -828,16 +828,17 @@ function pmpro_report_sales_page()
 				if ( $period ) {
 					switch ( $period ) {
 						case '30days':
-							$period = __( 'Last 30 Days', 'paid-memberships-pro' );
+							$period_title = __( 'Last 30 Days', 'paid-memberships-pro' );
 							break;
 						case '7days':
-							$period = __( 'Last 7 Days', 'paid-memberships-pro' );
+							$period_title = __( 'Last 7 Days', 'paid-memberships-pro' );
 							break;
 						case '12months':
-							$period = __( 'Last 12 Months', 'paid-memberships-pro' );
+							$period_title = __( 'Last 12 Months', 'paid-memberships-pro' );
 							break;
 						default:
-						break;
+							$period_title = $period;
+							break;
 					}
 				}
 				
@@ -845,7 +846,7 @@ function pmpro_report_sales_page()
 				if ( $date ) {
 					$title = sprintf( esc_html__( '%s %s for %s', 'paid-memberships-pro' ), ucwords( $period ), ucwords( $type ), ucwords( $date ) );
 				} else {
-					$title = sprintf( esc_html__( '%s %s' ) , ucwords( $period ), ucwords( $type ) );
+					$title = sprintf( esc_html__( '%s %s' ) , ucwords( $period_title ), ucwords( $type ) );
 
 				}
 			?>
