@@ -4,7 +4,7 @@ Tags: memberships, members, subscriptions, ecommerce, user registration, member,
 Requires at least: 5.2
 Tested up to: 6.2
 Requires PHP: 5.6
-Stable tag: 2.10.6
+Stable tag: 2.10.7
 
 WordPress membership plugin: restrict content, accept member subscriptions with recurring payment. Includes user registration, login, & profile fields
 
@@ -156,6 +156,13 @@ Not sure? You can find out by doing a bit a research.
 9. Membership Account page, display all sections or show specific sections using shortcode attributes.
 
 == Changelog ==
+= 2.10.7 - 2023-05-23 =
+* ENHANCEMENT: Updated sales and revenue report to compare to previous periods. #2426 (@JarrydLong)
+* ENHANCEMENT: Updated sales and revenue report to show orders from a predefined timeframe (ex. last 30 days). #2426 (@JarrydLong)
+* ENHANCEMENT: Added "Active Memberships Per Level" report. #2426 (@JarrydLong)
+* BUG FIX/ENHANCEMENT: Now preventing multiple clicks on the "submit" button on the cancel page. #2425 (@dparker1005)
+* BUG FIX: Fixing incorrect value for `PMPRO_VERSION` constant.
+
 = 2.10.6 - 2023-05-19 =
 * SECURITY: Added extra precautions to make sure credit card and password information does not get stored in the `checkout_request_vars` order meta when using Stripe Checkout. More info here: https://www.paidmembershipspro.com/pmpro-update-2-10-6/ #2468, #2473 (@dparker1005, @ideadude)
 * ENHANCEMENT: Added a new filter `pmpro_sales_widget_periods` to allow filtering the periods for the sales widget. (@kimcoleman)
