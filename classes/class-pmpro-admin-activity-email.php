@@ -28,7 +28,7 @@ class PMPro_Admin_Activity_Email extends PMProEmail {
 		global $wpdb, $pmpro_levels;
 
 		if ( ! in_array( $frequency, array( 'day', 'week', 'month', 'never' ), true ) ) {
-			$frequency = pmpro_getOption( 'activity_email_frequency' );
+			$frequency = get_option( 'pmpro_activity_email_frequency' );
 		}
 
 		if ( 'never' === $frequency ) {
@@ -63,7 +63,7 @@ class PMPro_Admin_Activity_Email extends PMProEmail {
 			$date_range .= ' - ' . date_i18n( get_option( 'date_format' ), strtotime( $report_end_date ) );
 		}
 
-		$gateway_environment = pmpro_getOption( 'gateway_environment' );
+		$gateway_environment = get_option( 'pmpro_gateway_environment' );
 
 		$email_sections = array();
 
@@ -404,8 +404,8 @@ class PMPro_Admin_Activity_Email extends PMProEmail {
 		$this->subject  = sprintf( __( '[%1$s] PMPro Activity for %2$s: %3$s', 'paid-memberships-pro' ), get_bloginfo( 'name' ), ucwords( $term ), $date_range );
 		$this->template = 'admin_activity_email';
 		$this->body     = $admin_activity_email_body;
-		$this->from     = pmpro_getOption( 'from' );
-		$this->fromname = pmpro_getOption( 'from_name' );
+		$this->from     = get_option( 'pmpro_from' );
+		$this->fromname = get_option( 'pmpro_from_name' );
 		add_filter( 'pmpro_email_body_header', '__return_false', 99 );
 		add_filter( 'pmpro_email_body_footer', '__return_false', 99 );
 		$response = $this->sendEmail();

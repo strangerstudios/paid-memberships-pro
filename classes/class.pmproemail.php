@@ -36,7 +36,7 @@
 
 			// If email is disabled don't send it.
 			// Note option may have 'false' stored as a string.
-			$template_disabled = pmpro_getOption( 'email_' . $this->template . '_disabled' );
+			$template_disabled = get_option( 'pmpro_email_' . $this->template . '_disabled' );
 			if ( ! empty( $template_disabled ) && $template_disabled !== 'false' ) {
 				return false;
 			}
@@ -47,16 +47,16 @@
 				$this->email = $current_user->user_email;
 				
 			if(!$this->from)
-				$this->from = pmpro_getOption("from_email");
+				$this->from = get_option("pmpro_from_email");
 			
 			if(!$this->fromname)
-				$this->fromname = pmpro_getOption("from_name");
+				$this->fromname = get_option("pmpro_from_name");
 	
 			if(!$this->template)
 				$this->template = "default";
 			
 			//Okay let's get the subject stuff.
-			$template_subject = pmpro_getOption( 'email_' . $this->template . '_subject' );
+			$template_subject = get_option( 'pmpro_email_' . $this->template . '_subject' );
 			if ( ! empty( $template_subject ) ) {
 				$this->subject = $template_subject;
 			} elseif ( empty( $this->subject ) ) {
@@ -73,8 +73,8 @@
 			//load the template			
 			$locale = apply_filters("plugin_locale", get_locale(), "paid-memberships-pro");
 
-			if( empty( $this->data['body'] ) && ! empty( pmpro_getOption( 'email_' . $this->template . '_body' ) ) )
-				$this->body = pmpro_getOption( 'email_' . $this->template . '_body' );
+			if( empty( $this->data['body'] ) && ! empty( get_option( 'pmpro_email_' . $this->template . '_body' ) ) )
+				$this->body = get_option( 'pmpro_email_' . $this->template . '_body' );
 			elseif(file_exists(get_stylesheet_directory() . "/paid-memberships-pro/email/" . $locale . "/" . $this->template . ".html"))
 				$this->body = file_get_contents(get_stylesheet_directory() . "/paid-memberships-pro/email/" . $locale . "/" . $this->template . ".html");	//localized email folder in child theme
 			elseif(file_exists(get_stylesheet_directory() . "/paid-memberships-pro/email/" . $this->template . ".html"))
@@ -100,14 +100,14 @@
 
 
 			// Get template header.
-			if( pmpro_getOption( 'email_header_disabled' ) != 'true' ) {
+			if( get_option( 'pmpro_email_header_disabled' ) != 'true' ) {
 				$email_header = pmpro_email_templates_get_template_body('header');
 			} else {
 				$email_header = '';
 			}
 
 			// Get template footer
-			if( pmpro_getOption( 'email_footer_disabled' ) != 'true' ) {
+			if( get_option( 'pmpro_email_footer_disabled' ) != 'true' ) {
 				$email_footer = pmpro_email_templates_get_template_body('footer');
 			} else {
 				$email_footer = '';
@@ -216,7 +216,7 @@
 				'header_name' => $user->display_name,
 				'user_login' => $user->user_login, 
 				'sitename' => get_option( 'blogname' ), 
-				'siteemail' => pmpro_getOption( 'from_email' ),
+				'siteemail' => get_option( 'pmpro_from_email' ),
 				'levels_url' => pmpro_url( 'levels' )
 			);
 
@@ -263,7 +263,7 @@
 				'user_email' => $user->user_email, 
 				'display_name' => $user->display_name, 
 				'sitename' => get_option( 'blogname' ), 
-				'siteemail' => pmpro_getOption('from_email'), 
+				'siteemail' => get_option('pmpro_from_email'), 
 				'login_link' => pmpro_login_url(), 
 				'login_url' => pmpro_login_url(),
 				'levels_url' => pmpro_url( 'levels' )
@@ -332,7 +332,7 @@
 				'display_name' => $user->display_name,
 				'header_name' => $user->display_name,
 				'sitename' => get_option('blogname'),
-				'siteemail' => pmpro_getOption('from_email'),
+				'siteemail' => get_option('pmpro_from_email'),
 				'login_link' => pmpro_login_url(),
 				'login_url' => pmpro_login_url(),
 				'membership_id' => $membership_level_id,
@@ -406,7 +406,7 @@
 				'display_name' => $user->display_name,
 				'header_name' => $this->get_admin_name( $this->email ),
 				'sitename' => get_option('blogname'),
-				'siteemail' => pmpro_getOption('from_email'),
+				'siteemail' => get_option('pmpro_from_email'),
 				'login_link' => pmpro_login_url(),
 				'login_url' => pmpro_login_url(),
 				'membership_id' => $membership_level_id,
@@ -486,7 +486,7 @@
 								'display_name' => $user->display_name,
 								'user_login' => $user->user_login,
 								'sitename' => get_option('blogname'),
-								'siteemail' => pmpro_getOption('from_email'),
+								'siteemail' => get_option('pmpro_from_email'),
 								'membership_id' => $membership_level->id,
 								'membership_level_name' => $membership_level->name,
 								'membership_level_confirmation_message' => $confirmation_message,
@@ -521,7 +521,7 @@
 			// Gather data depending on template being used.
 			if( in_array( $this->template, array( 'checkout_express', 'checkout_check', 'checkout_trial', 'checkout_paid' ) ) ) {									
 				if( $this->template === 'checkout_check' ) {					
-					$this->data["instructions"] = wpautop(pmpro_getOption("instructions"));
+					$this->data["instructions"] = wpautop(get_option("pmpro_instructions"));
 				}
 				
 				$this->data["invoice_id"] = $invoice->code;
@@ -613,7 +613,7 @@
 								'name' => $user->display_name, 
 								'user_login' => $user->user_login,
 								'sitename' => get_option( 'blogname' ),
-								'siteemail' => pmpro_getOption( 'from_email' ),
+								'siteemail' => get_option( 'pmpro_from_email' ),
 								'membership_id' => $membership_level->id,
 								'membership_level_name' => $membership_level->name,
 								'membership_level_confirmation_message' => $confirmation_message,
@@ -726,7 +726,7 @@
 								'name' => $user->display_name,
 								'user_login' => $user->user_login,
 								'sitename' => get_option( 'blogname' ),
-								'siteemail' => pmpro_getOption( 'from_email' ),
+								'siteemail' => get_option( 'pmpro_from_email' ),
 								'membership_id' => $membership_level->id,
 								'membership_level_name' => $membership_level->name,
 								'display_name' => $user->display_name,
@@ -790,7 +790,7 @@
 								'name' => $user->display_name,
 								'user_login' => $user->user_login,
 								'sitename' => get_option( 'blogname' ),
-								'siteemail' => pmpro_getOption( 'from_email' ),
+								'siteemail' => get_option( 'pmpro_from_email' ),
 								'membership_id' => $membership_level->id,
 								'membership_level_name' => $membership_level->name,
 								'display_name' => $user->display_name,
@@ -850,7 +850,7 @@
 								'name' => $user->display_name,
 								'user_login' => $user->user_login,
 								'sitename' => get_option( 'blogname' ),
-								'siteemail' => pmpro_getOption( 'from_email' ),
+								'siteemail' => get_option( 'pmpro_from_email' ),
 								'membership_id' => $membership_level->id,
 								'membership_level_name' => $membership_level->name,
 								'display_name' => $user->display_name,
@@ -907,7 +907,7 @@
 								'name' => 'Admin', 
 								'user_login' => $user->user_login,
 								'sitename' => get_option( 'blogname' ),
-								'siteemail' => pmpro_getOption( 'from_email' ),
+								'siteemail' => get_option( 'pmpro_from_email' ),
 								'membership_id' => $membership_level->id,
 								'membership_level_name' => $membership_level->name,
 								'display_name' => $user->display_name,
@@ -970,7 +970,7 @@
 								'name' => $user->display_name,
 								'user_login' => $user->user_login,
 								'sitename' => get_option( 'blogname' ),
-								'siteemail' => pmpro_getOption( 'from_email' ),
+								'siteemail' => get_option( 'pmpro_from_email' ),
 								'membership_id' => $membership_level->id,
 								'membership_level_name' => $membership_level->name,
 								'display_name' => $user->display_name,
@@ -1035,7 +1035,7 @@
 								'name' => $user->display_name,
 								'user_login' => $user->user_login,
 								'sitename' => get_option( 'blogname' ),
-								'siteemail' => pmpro_getOption( 'from_email' ),
+								'siteemail' => get_option( 'pmpro_from_email' ),
 								'membership_id' => $membership_level->id,
 								'membership_level_name' => $membership_level->name,
 								'display_name' => $user->display_name,
@@ -1126,7 +1126,7 @@
 				'sitename' => get_option( 'blogname' ), 				
 				'membership_id' => $membership_level->id,
 				'membership_level_name' => $membership_level->name, 
-				'siteemail' => pmpro_getOption( 'from_email' ), 
+				'siteemail' => get_option( 'pmpro_from_email' ), 
 				'login_link' => pmpro_login_url(),
 				'login_url' => pmpro_login_url(),
 				'display_name' => $user->display_name, 
@@ -1158,7 +1158,7 @@
 			$this->email = $user->user_email;
 			$this->subject = sprintf(__("Your membership at %s has ended", "paid-memberships-pro"), get_option("blogname"));			
 
-			$this->data = array("subject" => $this->subject, "name" => $user->display_name, "user_login" => $user->user_login, "header_name" => $user->display_name, "sitename" => get_option("blogname"), "siteemail" => pmpro_getOption("from_email"), "login_link" => pmpro_login_url(), "login_url" => pmpro_login_url(), "display_name" => $user->display_name, "user_email" => $user->user_email, "levels_link" => pmpro_url("levels"), "levels_url" => pmpro_url("levels"));
+			$this->data = array("subject" => $this->subject, "name" => $user->display_name, "user_login" => $user->user_login, "header_name" => $user->display_name, "sitename" => get_option("blogname"), "siteemail" => get_option("pmpro_from_email"), "login_link" => pmpro_login_url(), "login_url" => pmpro_login_url(), "display_name" => $user->display_name, "user_email" => $user->user_email, "levels_link" => pmpro_url("levels"), "levels_url" => pmpro_url("levels"));
 
 			$this->template = apply_filters("pmpro_email_template", "membership_expired", $this);
 
@@ -1197,7 +1197,7 @@
 				'sitename' => get_option('blogname'), 
 				'membership_id' => $membership_level->id, 
 				'membership_level_name' => $membership_level->name, 
-				'siteemail' => pmpro_getOption('from_email'), 
+				'siteemail' => get_option('pmpro_from_email'), 
 				'login_link' => pmpro_login_url(), 
 				'login_url' => pmpro_login_url(), 
 				'enddate' => date_i18n(get_option('date_format'), $membership_level->enddate), 
@@ -1236,7 +1236,7 @@
 				'user_login' => $user->user_login, 
 				'user_email' => $user->user_email, 
 				'sitename' => get_option( 'blogname' ), 
-				'siteemail' => pmpro_getOption( 'from_email' ), 
+				'siteemail' => get_option( 'pmpro_from_email' ), 
 				'login_link' => pmpro_login_url(), 
 				'login_url' => pmpro_login_url(),
 				'levels_url' => pmpro_url( 'levels' )
@@ -1394,7 +1394,7 @@
 				'display_name' => $user->display_name,
 				'user_login' => $user->user_login,
 				'sitename' => get_option( 'blogname' ),
-				'siteemail' => pmpro_getOption( 'from_email' ),
+				'siteemail' => get_option( 'pmpro_from_email' ),
 				'invoice_link' => $invoice_url,
 				'invoice_url' => $invoice_url,
 				'levels_url' => pmpro_url( 'levels' )
@@ -1442,7 +1442,7 @@
 				'display_name' => $user->display_name,
 				'user_login' => $user->user_login,
 				'sitename' => get_option('blogname'),
-				'siteemail' => pmpro_getOption('from_email'),
+				'siteemail' => get_option('pmpro_from_email'),
 				'user_email' => $user->user_email,
 				'invoice_link' => $invoice_url,
 				'invoice_url' => $invoice_url,

@@ -186,8 +186,8 @@
 			</th>
 			<td>
 				<select id="paypalexpress_skip_confirmation" name="paypalexpress_skip_confirmation">
-					<option value="0" <?php selected(pmpro_getOption('paypalexpress_skip_confirmation'), 0);?>><?php esc_html_e( 'Require an extra confirmation after users return from PayPal.', 'paid-memberships-pro' ) ?></option>
-					<option value="1" <?php selected(pmpro_getOption('paypalexpress_skip_confirmation'), 1);?>><?php esc_html_e( 'Skip the extra confirmation after users return from PayPal.', 'paid-memberships-pro' ) ?></option>
+					<option value="0" <?php selected(get_option('pmpro_paypalexpress_skip_confirmation'), 0);?>><?php esc_html_e( 'Require an extra confirmation after users return from PayPal.', 'paid-memberships-pro' ) ?></option>
+					<option value="1" <?php selected(get_option('pmpro_paypalexpress_skip_confirmation'), 1);?>><?php esc_html_e( 'Skip the extra confirmation after users return from PayPal.', 'paid-memberships-pro' ) ?></option>
 				</select>
 			</td>
 		</tr>
@@ -210,11 +210,11 @@
 		 */
 		static function pmpro_checkout_preheader() {
 			global $gateway, $gateway_environment, $pmpro_level;
-			$default_gateway = pmpro_getOption("gateway");
+			$default_gateway = get_option("pmpro_gateway");
 
 			if ( $gateway == 'paypal' || $default_gateway == 'paypal' ) {
 				$dependencies = array( 'jquery' );
-				$paypal_enable_3dsecure = pmpro_getOption( 'paypal_enable_3dsecure' );
+				$paypal_enable_3dsecure = get_option( 'pmpro_paypal_enable_3dsecure' );
 				$data = array();
 
 				// Setup 3DSecure if enabled.
@@ -249,14 +249,14 @@
 		static function get_cardinal_jwt() {
 			require_once( PMPRO_DIR . '/includes/lib/php-jwt/JWT.php' );
 
-			$key = pmpro_getOption( 'paypal_cardinal_apikey' );
+			$key = get_option( 'pmpro_paypal_cardinal_apikey' );
 			$now = current_time( 'timestamp' );
 			$token = array(
 				'jti' => 'JWT' . pmpro_getDiscountCode(),
 				'iat' => $now,
 				'exp' => $now + 7200,
-				'iss' => pmpro_getOption( 'paypal_cardinal_apiidentifier' ),
-				'OrgUnitId' => pmpro_getOption( 'paypal_cardinal_orgunitid' ),
+				'iss' => get_option( 'pmpro_paypal_cardinal_apiidentifier' ),
+				'OrgUnitId' => get_option( 'pmpro_paypal_cardinal_orgunitid' ),
 
 			);
 			$jwt = \PMPro\Firebase\JWT\JWT::encode($token, $key);
@@ -366,7 +366,7 @@
 			$nvpStr = "";
 			if(!empty($order->Token))
 				$nvpStr .= "&TOKEN=" . $order->Token;
-			$nvpStr .="&AMT=1.00&CURRENCYCODE=" . pmpro_getOption("currency");
+			$nvpStr .="&AMT=1.00&CURRENCYCODE=" . get_option("pmpro_currency");
 			$nvpStr .= "&NOTIFYURL=" . urlencode( add_query_arg( 'action', 'ipnhandler', admin_url('admin-ajax.php') ) );
 			//$nvpStr .= "&L_BILLINGTYPE0=RecurringPayments&L_BILLINGAGREEMENTDESCRIPTION0=" . $order->PaymentAmount;
 
@@ -861,9 +861,9 @@
 			global $gateway_environment;
 			$environment = $gateway_environment;
 
-			$API_UserName = pmpro_getOption("apiusername");
-			$API_Password = pmpro_getOption("apipassword");
-			$API_Signature = pmpro_getOption("apisignature");
+			$API_UserName = get_option("pmpro_apiusername");
+			$API_Password = get_option("pmpro_apipassword");
+			$API_Signature = get_option("pmpro_apisignature");
 			$API_Endpoint = "https://api-3t.paypal.com/nvp";
 			if("sandbox" === $environment || "beta-sandbox" === $environment) {
 				$API_Endpoint = "https://api-3t.$environment.paypal.com/nvp";

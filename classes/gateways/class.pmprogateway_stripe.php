@@ -49,7 +49,7 @@ class PMProGateway_stripe extends PMProGateway {
 	 */
 	function __construct( $gateway = null ) {
 		$this->gateway             = $gateway;
-		$this->gateway_environment = pmpro_getOption( "gateway_environment" );
+		$this->gateway_environment = get_option( "pmpro_gateway_environment" );
 
 		if ( true === $this->dependencies() ) {
 			$this->loadStripeLibrary();
@@ -114,7 +114,7 @@ class PMProGateway_stripe extends PMProGateway {
 
 		//old global RE showing billing address or not
 		global $pmpro_stripe_lite;
-		$pmpro_stripe_lite = apply_filters( "pmpro_stripe_lite", ! pmpro_getOption( "stripe_billingaddress" ) );    //default is oposite of the stripe_billingaddress setting
+		$pmpro_stripe_lite = apply_filters( "pmpro_stripe_lite", ! get_option( "pmpro_stripe_billingaddress" ) );    //default is oposite of the stripe_billingaddress setting
 
 		$gateway = pmpro_getGateway();
 		if($gateway == "stripe")
@@ -144,7 +144,7 @@ class PMProGateway_stripe extends PMProGateway {
 		//add_filter('pmpro_next_payment', array('PMProGateway_stripe', 'pmpro_next_payment'), 10, 3);
 
 		//code to add at checkout if Stripe is the current gateway
-		$default_gateway = pmpro_getOption( 'gateway' );
+		$default_gateway = get_option( 'pmpro_gateway' );
 		$current_gateway = pmpro_getGateway();
 
 		// $_REQUEST['review'] here means the PayPal Express review pag
@@ -776,7 +776,7 @@ class PMProGateway_stripe extends PMProGateway {
 	public static function pmpro_checkout_after_preheader( $order ) {
 		global $gateway, $pmpro_level, $current_user, $pmpro_requirebilling, $pmpro_pages, $pmpro_currency;
 
-		$default_gateway = pmpro_getOption( "gateway" );
+		$default_gateway = get_option( "pmpro_gateway" );
 
 		if ( $gateway == "stripe" || $default_gateway == "stripe" ) {
 			//stripe js library
@@ -786,7 +786,7 @@ class PMProGateway_stripe extends PMProGateway {
 				$localize_vars = array(
 					'publishableKey' => self::get_publishablekey(),
 					'user_id'        => self::get_connect_user_id(),
-					'verifyAddress'  => apply_filters( 'pmpro_stripe_verify_address', pmpro_getOption( 'stripe_billingaddress' ) ),
+					'verifyAddress'  => apply_filters( 'pmpro_stripe_verify_address', get_option( 'pmpro_stripe_billingaddress' ) ),
 					'ajaxUrl'        => admin_url( "admin-ajax.php" ),
 					'msgAuthenticationValidated' => __( 'Verification steps confirmed. Your payment is processing.', 'paid-memberships-pro' ),
 					'pmpro_require_billing' => $pmpro_requirebilling,
@@ -914,7 +914,7 @@ class PMProGateway_stripe extends PMProGateway {
 	 */
 	public static function pmpro_include_billing_address_fields( $include ) {
 		//check settings RE showing billing address
-		if ( ! pmpro_getOption( "stripe_billingaddress" ) ) {
+		if ( ! get_option( "pmpro_stripe_billingaddress" ) ) {
 			$include = false;
 		}
 
@@ -937,12 +937,12 @@ class PMProGateway_stripe extends PMProGateway {
                 <span class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout-h3-name' ) ); ?>"><?php esc_html_e( 'Payment Information', 'paid-memberships-pro' ); ?></span>
                 <span class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout-h3-msg' ) ); ?>"><?php esc_html_e( 'We accept all major credit cards', 'paid-memberships-pro' ); ?></span>
             </h3>
-			<?php $sslseal = pmpro_getOption( "sslseal" ); ?>
+			<?php $sslseal = get_option( "pmpro_sslseal" ); ?>
 			<?php if ( ! empty( $sslseal ) ) { ?>
             <div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout-fields-display-seal' ) ); ?>">
 				<?php } ?>
 		<?php
-			if ( pmpro_getOption( 'stripe_payment_request_button' ) ) { ?>
+			if ( get_option( 'pmpro_stripe_payment_request_button' ) ) { ?>
 				<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout-field pmpro_checkout-field-payment-request-button', 'pmpro_checkout-field-payment-request-button' ) ); ?>">
 					<div id="payment-request-button"><!-- Alternate payment method will be inserted here. --></div>
 					<h4 class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout-field pmpro_payment-credit-card', 'pmpro_payment-credit-card' ) ); ?>"><?php esc_html_e( 'Pay with Credit Card', 'paid-memberships-pro' ); ?></h4>
@@ -1024,7 +1024,7 @@ class PMProGateway_stripe extends PMProGateway {
 				<tr>
 					<th><?php esc_html_e( 'Stripe Customer', 'paid-memberships-pro' ); ?></th>
 					<td>
-						<a target="_blank" href="<?php echo esc_url( 'https://dashboard.stripe.com/' . ( pmpro_getOption( 'gateway_environment' ) == 'sandbox' ? 'test/' : '' ) . 'customers/' . $customer->id ); ?>"><?php esc_html_e( 'Edit customer in Stripe', 'paid-memberships-pro' ); ?></a>
+						<a target="_blank" href="<?php echo esc_url( 'https://dashboard.stripe.com/' . ( get_option( 'pmpro_gateway_environment' ) == 'sandbox' ? 'test/' : '' ) . 'customers/' . $customer->id ); ?>"><?php esc_html_e( 'Edit customer in Stripe', 'paid-memberships-pro' ); ?></a>
 					</td>
 				</tr>
 			</table>
@@ -1384,8 +1384,8 @@ class PMProGateway_stripe extends PMProGateway {
 		}
 
 		// Change current gateway to Stripe
-		pmpro_setOption( 'gateway', 'stripe' );
-		pmpro_setOption( 'gateway_environment', $_REQUEST['pmpro_stripe_connected_environment'] ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+		update_option( 'pmpro_gateway', 'stripe' );
+		update_option( 'pmpro_gateway_environment', $_REQUEST['pmpro_stripe_connected_environment'] ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 
 		$error = '';
 		if (
@@ -1404,14 +1404,14 @@ class PMProGateway_stripe extends PMProGateway {
 			// Update keys.
 			if ( $_REQUEST['pmpro_stripe_connected_environment'] === 'live' ) {
 				// Update live keys.
-				pmpro_setOption( 'live_stripe_connect_user_id', $_REQUEST['pmpro_stripe_user_id'] ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
-				pmpro_setOption( 'live_stripe_connect_secretkey', $_REQUEST['pmpro_stripe_access_token'] ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
-				pmpro_setOption( 'live_stripe_connect_publishablekey', $_REQUEST['pmpro_stripe_publishable_key'] ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+				update_option( 'pmpro_live_stripe_connect_user_id', $_REQUEST['pmpro_stripe_user_id'] ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+				update_option( 'pmpro_live_stripe_connect_secretkey', $_REQUEST['pmpro_stripe_access_token'] ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+				update_option( 'pmpro_live_stripe_connect_publishablekey', $_REQUEST['pmpro_stripe_publishable_key'] ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 			} else {
 				// Update sandbox keys.
-				pmpro_setOption( 'sandbox_stripe_connect_user_id', $_REQUEST['pmpro_stripe_user_id'] ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
-				pmpro_setOption( 'sandbox_stripe_connect_secretkey', $_REQUEST['pmpro_stripe_access_token'] ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
-				pmpro_setOption( 'sandbox_stripe_connect_publishablekey', $_REQUEST['pmpro_stripe_publishable_key'] ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+				update_option( 'pmpro_sandbox_stripe_connect_user_id', $_REQUEST['pmpro_stripe_user_id'] ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+				update_option( 'pmpro_sandbox_stripe_connect_secretkey', $_REQUEST['pmpro_stripe_access_token'] ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+				update_option( 'pmpro_sandbox_stripe_connect_publishablekey', $_REQUEST['pmpro_stripe_publishable_key'] ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 			}
 
 
@@ -1502,7 +1502,7 @@ class PMProGateway_stripe extends PMProGateway {
 	 * @return bool Whether the site is using legacy Stripe keys.
 	 */
 	public static function using_legacy_keys() {
-		$r = ! empty( pmpro_getOption( 'stripe_secretkey' ) ) && ! empty( pmpro_getOption( 'stripe_publishablekey' ) );
+		$r = ! empty( get_option( 'pmpro_stripe_secretkey' ) ) && ! empty( get_option( 'pmpro_stripe_publishablekey' ) );
 		return $r;
 	}
 
@@ -1515,22 +1515,22 @@ class PMProGateway_stripe extends PMProGateway {
 	 */
 	public static function has_connect_credentials( $gateway_environment = null ) {
 		if ( empty( $gateway_environment ) ) {
-			$gateway_environment = pmpro_getOption( 'pmpro_gateway_environment' );
+			$gateway_environment = get_option( 'pmpro_pmpro_gateway_environment' );
 		}
 
 		if ( $gateway_environment === 'live' ) {
 			// Return whether Stripe is connected for live gateway environment.
 			return (
-				pmpro_getOption( 'live_stripe_connect_user_id' ) &&
-				pmpro_getOption( 'live_stripe_connect_secretkey' ) &&
-				pmpro_getOption( 'live_stripe_connect_publishablekey' )
+				get_option( 'pmpro_live_stripe_connect_user_id' ) &&
+				get_option( 'pmpro_live_stripe_connect_secretkey' ) &&
+				get_option( 'pmpro_live_stripe_connect_publishablekey' )
 			);
 		} else {
 			// Return whether Stripe is connected for sandbox gateway environment.
 			return (
-				pmpro_getOption( 'sandbox_stripe_connect_user_id' ) &&
-				pmpro_getOption( 'sandbox_stripe_connect_secretkey' ) &&
-				pmpro_getOption( 'sandbox_stripe_connect_publishablekey' )
+				get_option( 'pmpro_sandbox_stripe_connect_user_id' ) &&
+				get_option( 'pmpro_sandbox_stripe_connect_secretkey' ) &&
+				get_option( 'pmpro_sandbox_stripe_connect_publishablekey' )
 			);
 		}
 	}
@@ -1599,7 +1599,7 @@ class PMProGateway_stripe extends PMProGateway {
 	 * @return bool
 	 */
 	public static function using_stripe_checkout() {
-		return 'checkout' === pmpro_getOption( 'stripe_payment_flow' );
+		return 'checkout' === get_option( 'pmpro_stripe_payment_flow' );
 	}
 
 	/**
@@ -1806,17 +1806,17 @@ class PMProGateway_stripe extends PMProGateway {
 		}
 
 		// Set up tax and billing addres collection.
-		$automatic_tax = ( ! empty( pmpro_getOption( 'stripe_tax' ) ) && 'no' !== pmpro_getOption( 'stripe_tax' ) ) ? array(
+		$automatic_tax = ( ! empty( get_option( 'pmpro_stripe_tax' ) ) && 'no' !== get_option( 'pmpro_stripe_tax' ) ) ? array(
 			'enabled' => true,
 		) : array(
 			'enabled' => false,
 		);
-		$tax_id_collection = ! empty( pmpro_getOption( 'stripe_tax_id_collection_enabled' ) ) ? array(
+		$tax_id_collection = ! empty( get_option( 'pmpro_stripe_tax_id_collection_enabled' ) ) ? array(
 			'enabled' => true,
 		) : array(
 			'enabled' => false,
 		);
-		$billing_address_collection = pmpro_getOption( 'stripe_checkout_billing_address' ) ?: 'auto';
+		$billing_address_collection = get_option( 'pmpro_stripe_checkout_billing_address' ) ?: 'auto';
 
 		// And let's send 'em to Stripe!
 		$checkout_session_params = array(
@@ -1878,7 +1878,7 @@ class PMProGateway_stripe extends PMProGateway {
 			return;
 		}
 
-		if ( 'portal' === pmpro_getOption( 'stripe_update_billing_flow' ) ) {
+		if ( 'portal' === get_option( 'pmpro_stripe_update_billing_flow' ) ) {
 			// Send user to Stripe Customer Portal.
 			$stripe = new PMProGateway_stripe();
 			$customer = $stripe->get_customer_for_user( $pmpro_billing_order->user_id );
@@ -1907,7 +1907,7 @@ class PMProGateway_stripe extends PMProGateway {
 	 * @since 2.10.
 	 */
 	public static function pmpro_billing_preheader_stripe_customer_portal() {
-		if ( 'portal' === pmpro_getOption( 'stripe_update_billing_flow' ) ) {
+		if ( 'portal' === get_option( 'pmpro_stripe_update_billing_flow' ) ) {
 			// Get current user.
 			$user = wp_get_current_user();
 			if ( empty( $user->ID ) ) {
@@ -2903,7 +2903,7 @@ class PMProGateway_stripe extends PMProGateway {
 		}
 
 		// Get the product ID from the level based on the current gateway environment.
-		$gateway_environment = pmpro_getOption( 'gateway_environment' );
+		$gateway_environment = get_option( 'pmpro_gateway_environment' );
 		if ( $gateway_environment === 'sandbox' ) {
 			$stripe_product_id = $level->stripe_product_id_sandbox;
 		} else {
@@ -3013,7 +3013,7 @@ class PMProGateway_stripe extends PMProGateway {
 		$cycle_period = strtolower( $cycle_period );
 
 		// Only for use with Stripe Checkout.
-		$tax_behavior = pmpro_getOption( 'stripe_tax' );
+		$tax_behavior = get_option( 'pmpro_stripe_tax' );
 		if ( ! self::using_stripe_checkout() || empty( $tax_behavior ) ) {
 			$tax_behavior = 'no';
 		}
@@ -4308,7 +4308,7 @@ class PMProGateway_stripe extends PMProGateway {
 		}
 
 		// Check if we specified a reduced application fee for this website.
-		$application_fee_percentage = pmpro_getOption( 'stripe_connect_reduced_application_fee' );
+		$application_fee_percentage = get_option( 'pmpro_stripe_connect_reduced_application_fee' );
 		if ( empty( $application_fee_percentage ) ) {
 			$application_fee_percentage = 2; // 2% is the default.
 		}
@@ -4367,11 +4367,11 @@ class PMProGateway_stripe extends PMProGateway {
 		pmpro_method_should_be_private( '2.7.0' );
 		$secretkey = '';
 		if ( self::using_legacy_keys() ) {
-			$secretkey = pmpro_getOption( 'stripe_secretkey' );
+			$secretkey = get_option( 'pmpro_stripe_secretkey' );
 		} else {
-			$secretkey = pmpro_getOption( 'gateway_environment' ) === 'live'
-				? pmpro_getOption( 'live_stripe_connect_secretkey' )
-				: pmpro_getOption( 'sandbox_stripe_connect_secretkey' );
+			$secretkey = get_option( 'pmpro_gateway_environment' ) === 'live'
+				? get_option( 'pmpro_live_stripe_connect_secretkey' )
+				: get_option( 'pmpro_sandbox_stripe_connect_secretkey' );
 		}
 		return $secretkey;
 	}
@@ -4387,11 +4387,11 @@ class PMProGateway_stripe extends PMProGateway {
 		pmpro_method_should_be_private( '2.7.0' );
 		$publishablekey = '';
 		if ( self::using_legacy_keys() ) {
-			$publishablekey = pmpro_getOption( 'stripe_publishablekey' );
+			$publishablekey = get_option( 'pmpro_stripe_publishablekey' );
 		} else {
-			$publishablekey = pmpro_getOption( 'gateway_environment' ) === 'live'
-				? pmpro_getOption( 'live_stripe_connect_publishablekey' )
-				: pmpro_getOption( 'sandbox_stripe_connect_publishablekey' );
+			$publishablekey = get_option( 'pmpro_gateway_environment' ) === 'live'
+				? get_option( 'pmpro_live_stripe_connect_publishablekey' )
+				: get_option( 'pmpro_sandbox_stripe_connect_publishablekey' );
 		}
 		return $publishablekey;
 	}
@@ -4406,9 +4406,9 @@ class PMProGateway_stripe extends PMProGateway {
 	 */
 	public static function get_connect_user_id() {
 		pmpro_method_should_be_private( '2.7.0' );
-		return pmpro_getOption( 'gateway_environment' ) === 'live'
-			? pmpro_getOption( 'live_stripe_connect_user_id' )
-			: pmpro_getOption( 'sandbox_stripe_connect_user_id' );
+		return get_option( 'pmpro_gateway_environment' ) === 'live'
+			? get_option( 'pmpro_live_stripe_connect_user_id' )
+			: get_option( 'pmpro_sandbox_stripe_connect_user_id' );
 	}
 
 	/**
@@ -5031,14 +5031,14 @@ class PMProGateway_stripe extends PMProGateway {
 		//attempt refund
 		try {
 			
-			$secretkey = pmpro_getOption( 'stripe_secretkey' );
+			$secretkey = get_option( 'pmpro_stripe_secretkey' );
 
 			// If they are not using legacy keys, get Stripe Connect keys for the relevant environment.
 			if ( ! self::using_legacy_keys() && empty( $secretkey ) ) {
-				if ( pmpro_getOption( 'gateway_environment' ) === 'live' ) {
-					$secretkey = pmpro_getOption( 'live_stripe_connect_secretkey' );
+				if ( get_option( 'pmpro_gateway_environment' ) === 'live' ) {
+					$secretkey = get_option( 'pmpro_live_stripe_connect_secretkey' );
 				} else {
-					$secretkey = pmpro_getOption( 'sandbox_stripe_connect_secretkey' );
+					$secretkey = get_option( 'pmpro_sandbox_stripe_connect_secretkey' );
 				}
 			} 
 
@@ -5303,7 +5303,7 @@ class PMProGateway_stripe extends PMProGateway {
 		global $wpdb;
 
 		if ( empty( $gateway_environment ) ) {
-			$gateway_environment = pmpro_getOption( 'pmpro_gateway_environment' );
+			$gateway_environment = get_option( 'pmpro_pmpro_gateway_environment' );
 		}
 
 		$last_webhook = get_option( 'pmpro_stripe_last_webhook_received_' . $gateway_environment );
