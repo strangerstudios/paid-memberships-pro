@@ -2384,6 +2384,12 @@ function pmpro_are_any_visible_levels() {
  */
 function pmpro_getLevelAtCheckout( $level_id = null, $discount_code = null ) {
 	global $pmpro_level, $wpdb, $post;
+	static $pmpro_getLevelAtCheckout_cache = array();
+
+	if ( isset( $pmpro_getLevelAtCheckout_cache[ (int)$level_id ][ (string)$discount_code ] ) ) {
+		$pmpro_level = $pmpro_getLevelAtCheckout_cache[ (int)$level_id ][ (string)$discount_code ];
+		return $pmpro_level;
+	}
 
 	// reset pmpro_level
 	$pmpro_level = null;
@@ -2464,6 +2470,9 @@ function pmpro_getLevelAtCheckout( $level_id = null, $discount_code = null ) {
 
 	// filter the level (for upgrades, etc)
 	$pmpro_level = apply_filters( 'pmpro_checkout_level', $pmpro_level );
+
+	// Cache it.
+	$pmpro_getLevelAtCheckout_cache[ (int)$level_id ][ (string)$discount_code ] = $pmpro_level;
 
 	return $pmpro_level;
 }
