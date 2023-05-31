@@ -811,7 +811,7 @@ if ( ! empty( $pmpro_confirmed ) ) {
 			}
 
 			//redirect to confirmation
-			$rurl = pmpro_url( "confirmation", "?level=" . $pmpro_level->id );
+			$rurl = pmpro_url( "confirmation", "?pmpro_level=" . $pmpro_level->id );
 			$rurl = apply_filters( "pmpro_confirmation_url", $rurl, $user_id, $pmpro_level );
 			wp_redirect( $rurl );
 			exit;

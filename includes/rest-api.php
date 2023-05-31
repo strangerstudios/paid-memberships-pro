@@ -784,7 +784,9 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 		function pmpro_rest_api_get_checkout_level( $request ) {
 			$params = $request->get_params();
 
-			if ( isset( $params['level_id'] ) ) {
+			if ( isset( $params['pmpro_level' ] ) ) {
+				$level_id = intval( $params['pmpro_level'] );
+			} elseif ( isset( $params['level_id'] ) ) {
 				$level_id = intval( $params['level_id'] );
 			} elseif ( isset( $params['level'] ) ) {
 				$level_id = intval( $params['level'] );

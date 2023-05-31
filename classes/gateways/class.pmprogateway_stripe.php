@@ -1831,8 +1831,8 @@ class PMProGateway_stripe extends PMProGateway {
 				'address' => 'auto',
 				'name' => 'auto'
 			),
-			'success_url' => apply_filters( 'pmpro_confirmation_url', add_query_arg( 'level', $morder->membership_level->id, pmpro_url("confirmation" ) ), $user_id, $pmpro_level ),
-			'cancel_url' =>  add_query_arg( 'level', $morder->membership_level->id, pmpro_url("checkout" ) ),
+			'success_url' => apply_filters( 'pmpro_confirmation_url', add_query_arg( 'pmpro_level', $morder->membership_level->id, pmpro_url("confirmation" ) ), $user_id, $pmpro_level ),
+			'cancel_url' =>  add_query_arg( 'pmpro_level', $morder->membership_level->id, pmpro_url("checkout" ) ),
 		);
 		if ( ! empty( $subscription_data ) ) {
 			$checkout_session_params['subscription_data'] = $subscription_data;

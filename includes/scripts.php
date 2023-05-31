@@ -89,7 +89,7 @@ function pmpro_enqueue_scripts() {
 
     // Enqueue select2 on front end and user profiles
 	if( pmpro_is_checkout() || 
-        ! empty( $_REQUEST['level'] ) ||
+        ! empty( $_REQUEST['pmpro_level'] ) ||
         ! empty( $pmpro_level ) ||
 		( class_exists("Theme_My_Login") && method_exists('Theme_My_Login', 'is_tml_page') && Theme_My_Login::is_tml_page("profile") ) ||
 		( isset( $pmpro_pages['member_profile_edit'] ) && is_page( $pmpro_pages['member_profile_edit'] ) ) ) {

@@ -368,7 +368,7 @@
 					'item_number'   => $order->code,
 					'charset'       => get_bloginfo( 'charset' ),
 					'rm'            => '2',
-					'return'        => add_query_arg( 'level', $order->membership_level->id, pmpro_url("confirmation" ) ),
+					'return'        => add_query_arg( 'pmpro_level', $order->membership_level->id, pmpro_url("confirmation" ) ),
 					'notify_url'    => add_query_arg( 'action', 'ipnhandler', admin_url("admin-ajax.php") ),
 					'src'			=> '1',
 					'sra'			=> '1',
@@ -479,7 +479,7 @@
 					'item_number'   => $order->code,
 					'charset'       => get_bloginfo( 'charset' ),
 					'rm'            => '2',
-					'return'        => add_query_arg( 'level', $order->membership_level->id, pmpro_url("confirmation" ) ),
+					'return'        => add_query_arg( 'pmpro_level', $order->membership_level->id, pmpro_url("confirmation" ) ),
 					'notify_url'    => add_query_arg( 'action', 'ipnhandler', admin_url("admin-ajax.php") ),
 					'bn'		    => PAYPAL_BN_CODE
 				 );

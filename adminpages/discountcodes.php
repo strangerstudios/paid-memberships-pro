@@ -945,7 +945,7 @@
 									$level_names = array();
 									foreach( $levels as $level ) {
 										if ( ! empty( $pmpro_pages['checkout'] ) ) {
-											$level_names[] = '<a title="' . pmpro_url( 'checkout', '?level=' . $level->id . '&discount_code=' . $code->code) . '" target="_blank" href="' . pmpro_url( 'checkout', '?level=' . $level->id . '&discount_code=' . $code->code) . '">' . $level->name . '</a>';
+											$level_names[] = '<a title="' . pmpro_url( 'checkout', '?pmpro_level=' . $level->id . '&discount_code=' . $code->code) . '" target="_blank" href="' . pmpro_url( 'checkout', '?pmpro_level=' . $level->id . '&discount_code=' . $code->code) . '">' . $level->name . '</a>';
 										} else {
 											$level_names[] = $level->name;
 										}

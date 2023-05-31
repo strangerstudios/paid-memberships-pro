@@ -2388,34 +2388,39 @@ function pmpro_getLevelAtCheckout( $level_id = null, $discount_code = null ) {
 	// reset pmpro_level
 	$pmpro_level = null;
 
-	// default to level passed in via URL
+	// Default to level passed in via URL.
+	if ( empty( $level_id ) && ! empty( $_REQUEST['pmpro_level'] ) ) {
+		$level_id = intval( $_REQUEST['pmpro_level'] );
+	}
+
+	// If we don't have a level yet, check for a default level in the custom fields for this post.
+	if ( empty( $level_id ) && ! empty( $post ) ) {
+		$level_id = get_post_meta( $post->ID, 'pmpro_default_level', true );
+	}
+
+	// If we still don't have a level, check the legacy 'level' request parameter.
 	if ( empty( $level_id ) && ! empty( $_REQUEST['level'] ) ) {
+		// TODO: We may want to show a message here that the level parameter is deprecated.
 		$level_id = intval( $_REQUEST['level'] );
 	}
 
-	// no level, check for a default level in the custom fields for this post
-	if ( empty( $level_id ) && ! empty( $post ) ) {
+	// If we still don't have a level, use the default level.
+	if ( empty( $level_id ) ) {
+		$all_levels = pmpro_getAllLevels( false, false );
 
-		$level_id = get_post_meta( $post->ID, 'pmpro_default_level', true );
-
-		// if still empty, let's try get first available level.
-		if ( empty( $level_id ) ) {
-			$all_levels = pmpro_getAllLevels( false, false );
-
-			if ( ! empty( $all_levels ) ) {
-				// Get lowest level ID.
-				$default_level =  min( array_keys( $all_levels ) );
-			} else {
-				$default_level = null;
-			}
-
-			$level_id = apply_filters( 'pmpro_default_level', intval( $default_level ) );
-
-			// Bail back to levels page if level ID is empty or less than 1.
-			if ( empty( $level_id ) || $level_id < 1 || ! is_int( $level_id ) ) {
-				return;
-			}
+		if ( ! empty( $all_levels ) ) {
+			// Get lowest level ID.
+			$default_level =  min( array_keys( $all_levels ) );
+		} else {
+			$default_level = null;
 		}
+
+		$level_id = apply_filters( 'pmpro_default_level', intval( $default_level ) );
+	}
+
+	// If we still don't have a level, bail.
+	if ( empty( $level_id ) || $level_id < 1 || ! is_int( $level_id ) ) {
+		return;
 	}
 
 	// default to discount code passed in
@@ -2540,7 +2545,7 @@ function pmpro_getCheckoutButton( $level_id, $button_text = null, $classes = nul
 	}
 
 	if ( ! empty( $level_id ) ) {
-		$r = '<a href="' . esc_url( pmpro_url( 'checkout', '?level=' . $level_id ) ) . '" class="' . esc_attr( $classes ) . '">' . wp_kses_post( $button_text ) . '</a>';
+		$r = '<a href="' . esc_url( pmpro_url( 'checkout', '?pmpro_level=' . $level_id ) ) . '" class="' . esc_attr( $classes ) . '">' . wp_kses_post( $button_text ) . '</a>';
 	} else {
 		$r = '<a href="' . esc_url( pmpro_url( 'checkout' ) ) . '" class="' . esc_attr( $classes ) . '">' . wp_kses_post( $button_text ) . '</a>';
 	}
