@@ -92,6 +92,13 @@
 		// Log that we have successfully received a webhook from Stripe.
 		update_option( 'pmpro_stripe_webhook_last_received_' . ( $livemode ? 'live' : 'sandbox' ) . '_' . $pmpro_stripe_event->type, $pmpro_stripe_event->created );
 
+		/**
+		 * Allow code to run when a Stripe webhook is received.
+		 *
+		 * @since TBD
+		 */
+		do_action( 'pmpro_stripe_webhook_event_received', $pmpro_stripe_event );
+
 		//check what kind of event it is
 		if($pmpro_stripe_event->type == "invoice.payment_succeeded")
 		{
@@ -856,6 +863,13 @@
 	function pmpro_stripeWebhookExit()
 	{
 		global $logstr;
+
+		/**
+		 * Allow custom code to run before exiting.
+		 *
+		 * @since TBD
+		 */
+		do_action( 'pmpro_stripe_webhook_before_exit' );
 
 		//for log
 		if($logstr)
