@@ -844,9 +844,11 @@ function pmpro_report_sales_page()
 				
 				// Adjust the title if we have a date or not so it reads better.
 				if ( $date ) {
-					$title = sprintf( esc_html__( '%s %s for %s', 'paid-memberships-pro' ), ucwords( $period ), ucwords( $type ), ucwords( $date ) );
+					// translators: %1$s is the report period, %2$s is the report type, %3$s is the date.
+					$title = sprintf( esc_html__( '%1$s %2$s for %3$s', 'paid-memberships-pro' ), ucwords( $period ), ucwords( $type ), ucwords( $date ) );
 				} else {
-					$title = sprintf( esc_html__( '%s %s' ) , ucwords( $period_title ), ucwords( $type ) );
+					// translators: %1$s is the report period, %2$s is the report type.
+					$title = sprintf( esc_html__( '%1$s %2$s', 'paid-memberships-pro' ) , ucwords( $period_title ), ucwords( $type ) );
 
 				}
 			?>
