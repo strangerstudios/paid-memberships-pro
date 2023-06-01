@@ -36,12 +36,14 @@ function pmpro_set_abandoned_signup_taxonomy( $user_id ) {
 	}
 
 	// Add the abandoned signup taxonomy to the user.
-	var_dump( wp_set_object_terms( $user_id, 'abandoned-signup', 'pmpro_abandoned_signup' ) );
+	wp_set_object_terms( $user_id, 'abandoned-signup', 'pmpro_abandoned_signup' );
 }
 add_action( 'pmpro_checkout_before_user_auth', 'pmpro_set_abandoned_signup_taxonomy', 10 );
 
 /**
  * After a checkout is complete, remove the abandoned signup taxonomy from the user.
+ *
+ * @since TBD
  *
  * @param int $user_id The user ID.
  */
@@ -56,6 +58,29 @@ function pmpro_remove_abandoned_signup_taxonomy( $user_id ) {
 }
 add_action( 'pmpro_after_checkout', 'pmpro_remove_abandoned_signup_taxonomy' );
 add_action( 'deleted_user', 'pmpro_remove_abandoned_signup_taxonomy' );
+
+/**
+ * If a user loads any non-checkout page after their account is created
+ * during the checkout process, remove the abandoned signup taxonomy from
+ * the user.
+ *
+ * @since TBD
+ */
+function pmpro_remove_abandoned_signup_taxonomy_on_page_load() {
+	// Bail if the user ID is empty.
+	if ( empty( get_current_user_id() ) ) {
+		return;
+	}
+
+	// Bail if the user is on the checkout page.
+	if ( pmpro_is_checkout() ) {
+		return;
+	}
+
+	// The user did something after being created. Remove the abandoned signup taxonomy from the user.
+	wp_remove_object_terms( get_current_user_id(), 'abandoned-signup', 'pmpro_abandoned_signup' );
+}
+add_action( 'wp', 'pmpro_remove_abandoned_signup_taxonomy_on_page_load' );
 
 /**
  * Filter the views on the Users page to include a view for abandoned signups.
