@@ -25,7 +25,7 @@
 	$pmpro_email_field_type = apply_filters('pmpro_email_field_type', true);
 
 	// Get the default gateway for the site.
-	$default_gateway = pmpro_getOption( 'gateway' );
+	$default_gateway = get_option( 'pmpro_gateway' );
 
 	// Set the wrapping class for the checkout div based on the default gateway;
 	if ( empty( $gateway ) ) {
@@ -87,7 +87,7 @@
 		</ul>
 		<?php
 		if ( $show_check_payment_instructions ) {
-			$instructions = pmpro_getOption("instructions"); ?>
+			$instructions = get_option( 'pmpro_instructions' ); ?> 
 			<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_check_instructions' ) ); ?>"><?php echo wp_kses_post( wpautop( wp_unslash( $instructions ) ) ); ?></div>
 			<hr />
 			<p class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_actions_nav' ) ); ?>">
@@ -282,7 +282,7 @@
 			$pmpro_include_payment_information_fields = apply_filters('pmpro_include_payment_information_fields', true);
 			if($pmpro_include_payment_information_fields)
 			{
-				$pmpro_accepted_credit_cards = pmpro_getOption("accepted_credit_cards");
+				$pmpro_accepted_credit_cards = get_option( 'pmpro_accepted_credit_cards' );
 				$pmpro_accepted_credit_cards = explode(",", $pmpro_accepted_credit_cards);
 				$pmpro_accepted_credit_cards_string = pmpro_implodeToEnglish($pmpro_accepted_credit_cards);
 				?>
@@ -292,7 +292,7 @@
 						<span class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout-h3-msg' ) ); ?>"><?php echo esc_html( sprintf( __('We accept %s', 'paid-memberships-pro' ), $pmpro_accepted_credit_cards_string ) ); ?></span>
 
 					</h3>
-					<?php $sslseal = pmpro_getOption("sslseal"); ?>
+					<?php $sslseal = get_option( 'pmpro_sslseal' ); ?>
 					<?php if(!empty($sslseal)) { ?>
 						<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout-fields-display-seal' ) ); ?>">
 					<?php } ?>
