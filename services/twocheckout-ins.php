@@ -236,9 +236,9 @@
 
 		//is this a return call or notification
 		if(empty($params['message_type']))
-			$check = Twocheckout_Return::check( $params, pmpro_getOption( 'twocheckout_secretword' ) );
+			$check = Twocheckout_Return::check( $params, get_option( 'pmpro_twocheckout_secretword' ) );
 		else
-			$check = Twocheckout_Notification::check( $params, pmpro_getOption( 'twocheckout_secretword' ) );
+			$check = Twocheckout_Notification::check( $params, get_option( 'pmpro_twocheckout_secretword' ) );
 
 		if( empty ( $check ) )
 			$r = false;	//HTTP failure

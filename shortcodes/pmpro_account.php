@@ -163,7 +163,7 @@ function pmpro_shortcode_account($atts, $content=null, $code="")
 				<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_actionlinks' ) ); ?>">
 					<?php
 						// Get the edit profile and change password links if 'Member Profile Edit Page' is set.
-						if ( ! empty( pmpro_getOption( 'member_profile_edit_page_id' ) ) ) {
+						if ( ! empty( get_option( 'pmpro_member_profile_edit_page_id' ) ) ) {
 							$edit_profile_url = pmpro_url( 'member_profile_edit' );
 							$change_password_url = add_query_arg( 'view', 'change-password', pmpro_url( 'member_profile_edit' ) );
 						} elseif ( ! pmpro_block_dashboard() ) {
