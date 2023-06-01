@@ -47,7 +47,7 @@ if (empty($pmpro_billing_order->gateway)) {
     //no order
     $besecure = false;
 } elseif ($pmpro_billing_order->gateway == "paypalexpress") {
-    $besecure = pmpro_getOption("use_ssl");
+    $besecure = get_option("pmpro_use_ssl");
     //still they might have website payments pro setup
     if ($gateway == "paypal") {
         //$besecure = true;
@@ -59,7 +59,7 @@ if (empty($pmpro_billing_order->gateway)) {
     $show_check_payment_instructions = true;
 } else {
     //$besecure = true;
-    $besecure = pmpro_getOption("use_ssl");
+    $besecure = get_option("pmpro_use_ssl");
 }
 
 // this variable is checked sometimes to know if the page should show billing fields
@@ -260,7 +260,7 @@ if ($submit) {
         $pmpro_billing_order->billing->zip = $bzipcode;
         $pmpro_billing_order->billing->phone = $bphone;
 
-        //$gateway = pmpro_getOption("gateway");
+        //$gateway = get_option("pmpro_gateway");
         $pmpro_billing_order->gateway = $gateway;
         $pmpro_billing_order->setGateway();
         
