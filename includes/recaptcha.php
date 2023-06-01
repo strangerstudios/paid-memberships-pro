@@ -6,7 +6,7 @@
 function pmpro_init_recaptcha() {
 	//don't load if setting is off
 	global $recaptcha, $recaptcha_validated, $pmpro_pages;
-	$recaptcha = pmpro_getOption( 'recaptcha' );
+	$recaptcha = get_option( 'pmpro_recaptcha' );
 	if ( empty( $recaptcha ) ) {
 		return;
 	}
@@ -43,7 +43,7 @@ function pmpro_init_recaptcha() {
 				$lang = apply_filters( 'pmpro_recaptcha_lang', $lang );
 	
 				// Check which version of ReCAPTCHA we are using.
-				$recaptcha_version = pmpro_getOption( 'recaptcha_version' ); 
+				$recaptcha_version = get_option( 'pmpro_recaptcha_version' ); 
 	
 				if( $recaptcha_version == '3_invisible' ) { ?>
 					<div class="g-recaptcha" data-sitekey="<?php echo $pubkey;?>" data-size="invisible" data-callback="onSubmit"></div>
@@ -174,8 +174,8 @@ function pmpro_init_recaptcha() {
 			}
 		}
 		
-		$recaptcha_publickey = pmpro_getOption( 'recaptcha_publickey' );
-		$recaptcha_privatekey = pmpro_getOption( 'recaptcha_privatekey' );
+		$recaptcha_publickey = get_option( 'pmpro_recaptcha_publickey' );
+		$recaptcha_privatekey = get_option( 'pmpro_recaptcha_privatekey' );
 	}
 }
 add_action( 'wp', 'pmpro_init_recaptcha', 1 );
@@ -186,7 +186,7 @@ add_action( 'wp', 'pmpro_init_recaptcha', 1 );
 function pmpro_wp_ajax_validate_recaptcha() {
 	require_once( PMPRO_DIR . '/includes/lib/recaptchalib.php' );
 	
-	$recaptcha_privatekey = pmpro_getOption( 'recaptcha_privatekey' );
+	$recaptcha_privatekey = get_option( 'pmpro_recaptcha_privatekey' );
 	
 	$reCaptcha = new pmpro_ReCaptcha( $recaptcha_privatekey );
 	$resp      = $reCaptcha->verifyResponse( pmpro_get_ip(), sanitize_text_field( $_REQUEST['g-recaptcha-response'] ) );

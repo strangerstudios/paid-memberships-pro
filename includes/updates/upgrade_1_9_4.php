@@ -15,7 +15,7 @@ function pmpro_upgrade_1_9_4() {
 			add_action( 'admin_notices', 'pmpro_upgrade_1_9_4_show_div_notice' );
 		}
 
-		pmpro_setOption( 'db_version', '1.94' );
+		update_option( 'pmpro_db_version', '1.94' );
 		return 1.94;
 }
 

@@ -29,7 +29,7 @@ function pmpro_upgrade_1_8_7() {
 	pmpro_maybe_schedule_event(current_time('timestamp')+1, 'daily', 'pmpro_cron_expiration_warnings');
 	pmpro_maybe_schedule_event(current_time('timestamp'), 'monthly', 'pmpro_cron_credit_card_expiring_warnings');
 
-	pmpro_setOption("db_version", "1.87");
+	update_option("pmpro_db_version", "1.87");
 
 	return 1.87;
 }

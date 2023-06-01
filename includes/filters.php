@@ -121,7 +121,7 @@ add_filter( 'pmpro_checkout_start_date', 'pmpro_checkout_start_date_keep_startda
 	Stripe Lite Pulled into Core Plugin
 */
 // Stripe Lite, Set the Globals/etc
-$stripe_billingaddress = pmpro_getOption( 'stripe_billingaddress' );
+$stripe_billingaddress = get_option( 'pmpro_stripe_billingaddress' );
 if ( empty( $stripe_billingaddress ) ) {
 	global $pmpro_stripe_lite;
 	$pmpro_stripe_lite = true;
