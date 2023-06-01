@@ -1006,17 +1006,20 @@ function pmpro_stripe_webhook_change_membership_level( $morder ) {
 		//hook
 		do_action( "pmpro_after_checkout", $morder->user_id, $morder );
 
-		//setup some values for the emails
-		$user                   = get_userdata( $morder->user_id );
-		$user->membership_level = $pmpro_level;        //make sure they have the right level info
+		// Check if we should send emails.
+		if ( apply_filters( 'pmpro_send_checkout_emails', true, $morder ) ) {
+			// Set up some values for the emails.
+			$user                   = get_userdata( $morder->user_id );
+			$user->membership_level = $pmpro_level;        // Make sure that they have the right level info.
 
-		//send email to member
-		$pmproemail = new PMProEmail();
-		$pmproemail->sendCheckoutEmail( $user, $morder );
+			// Send email to member.
+			$pmproemail = new PMProEmail();
+			$pmproemail->sendCheckoutEmail( $user, $morder );
 
-		//send email to admin
-		$pmproemail = new PMProEmail();
-		$pmproemail->sendCheckoutAdminEmail( $user, $morder );
+			// Send email to admin.
+			$pmproemail = new PMProEmail();
+			$pmproemail->sendCheckoutAdminEmail( $user, $morder );
+		}
 
 		return true;
 	} else {
