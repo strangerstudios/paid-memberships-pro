@@ -45,7 +45,7 @@ function pmpro_shortcode_account($atts, $content=null, $code="")
 				if ( '' !== $title ) { // Check if title is being forced to not show.
 					// If a custom title was not set, use the default. Otherwise, show the custom title.
 					?>
-					<h3><?php echo esc_html( null === $title ? __( 'My Membership', 'paid-membereships-pro' ) : $title ); ?></h3>
+					<h2><?php echo esc_html( null === $title ? __( 'My Membership', 'paid-membereships-pro' ) : $title ); ?></h2>
 					<?php
 				}
 				?>
@@ -103,20 +103,20 @@ function pmpro_shortcode_account($atts, $content=null, $code="")
 										// Build the links to return.
 										$pmpro_member_action_links = array();
 
-										if( array_key_exists($level->id, $pmpro_levels) && pmpro_isLevelExpiringSoon( $level ) ) {
-											$pmpro_member_action_links['renew'] = sprintf( '<a id="pmpro_actionlink-renew" href="%s">%s</a>', esc_url( add_query_arg( 'level', $level->id, pmpro_url( 'checkout', '', 'https' ) ) ), esc_html__( 'Renew', 'paid-memberships-pro' ) );
+										if( array_key_exists($level->id, $pmpro_levels) && pmpro_isLevelExpiringSoon( $level ) || true) {
+											$pmpro_member_action_links['renew'] = '<a id="pmpro_actionlink-renew" href="' . esc_url( add_query_arg( 'level', $level->id, pmpro_url( 'checkout', '', 'https' ) ) ) . '" aria-label="' . esc_html__( sprintf( esc_html__( 'Renew %1$s Membership', 'paid-memberships-pro' ), $level->name ) ) . '">' . esc_html__( 'Renew', 'paid-memberships-pro' ) . '</a>';
 										}
 
 										if((isset($order->status) && $order->status == "success") && (isset($order->gateway) && in_array($order->gateway, array("authorizenet", "paypal", "stripe", "braintree", "payflow", "cybersource"))) && pmpro_isLevelRecurring($level)) {
-											$pmpro_member_action_links['update-billing'] = sprintf( '<a id="pmpro_actionlink-update-billing" href="%s">%s</a>', pmpro_url( 'billing', '', 'https' ), esc_html__( 'Update Billing Info', 'paid-memberships-pro' ) );
+											$pmpro_member_action_links['update-billing'] = '<a id="pmpro_actionlink-update-billing" href="' . esc_url( pmpro_url( 'billing', '', 'https' ) ) . '" aria-label="' . esc_html__( sprintf( esc_html__( 'Update Billing Info for %1$s Membership', 'paid-memberships-pro' ), $level->name ) ) . '">' . esc_html__( 'Update Billing Info', 'paid-memberships-pro' ) . '</a>';
 										}
 
 										//To do: Only show CHANGE link if this level is in a group that has upgrade/downgrade rules
 										if(count($pmpro_levels) > 1 && !defined("PMPRO_DEFAULT_LEVEL")) {
-											$pmpro_member_action_links['change'] = sprintf( '<a id="pmpro_actionlink-change" href="%s">%s</a>', pmpro_url( 'levels' ), esc_html__( 'Change', 'paid-memberships-pro' ) );
+											$pmpro_member_action_links['change'] = '<a id="pmpro_actionlink-change" href="' . esc_url( pmpro_url( 'levels' ) ) . '" aria-label="' . esc_html__( sprintf( esc_html__( 'Change %1$s Membership', 'paid-memberships-pro' ), $level->name ) ) . '">' . esc_html__( 'Change', 'paid-memberships-pro' ) . '</a>';
 										}
 
-										$pmpro_member_action_links['cancel'] = sprintf( '<a id="pmpro_actionlink-cancel" href="%s">%s</a>', esc_url( add_query_arg( 'levelstocancel', $level->id, pmpro_url( 'cancel' ) ) ), esc_html__( 'Cancel', 'paid-memberships-pro' ) );
+										$pmpro_member_action_links['cancel'] = '<a id="pmpro_actionlink-cancel" href="' . esc_url( add_query_arg( 'levelstocancel', $level->id, pmpro_url( 'cancel' ) ) ) . '" aria-label="' . esc_html__( sprintf( esc_html__( 'Cancel %1$s Membership', 'paid-memberships-pro' ), $level->name ) ) . '">' . esc_html__( 'Cancel', 'paid-memberships-pro' ) . '</a>';
 
 										/**
 										 * Filter the member action links.
@@ -134,6 +134,7 @@ function pmpro_shortcode_account($atts, $content=null, $code="")
 												'id' => array(),
 												'target' => array(),
 												'title' => array(),
+												'aria-label' => array(),
 											),
 										);
 										echo wp_kses( implode( pmpro_actions_nav_separator(), $pmpro_member_action_links ), $allowed_html );
@@ -187,7 +188,7 @@ function pmpro_shortcode_account($atts, $content=null, $code="")
 				if ( '' !== $title ) { // Check if title is being forced to not show.
 					// If a custom title was not set, use the default. Otherwise, show the custom title.
 					?>
-					<h3><?php echo esc_html( null === $title ? __( 'My Account', 'paid-membereships-pro' ) : $title ); ?></h3>
+					<h2><?php echo esc_html( null === $title ? __( 'My Account', 'paid-membereships-pro' ) : $title ); ?></h2>
 					<?php
 				}
 				wp_get_current_user();
@@ -247,7 +248,7 @@ function pmpro_shortcode_account($atts, $content=null, $code="")
 			if ( '' !== $title ) { // Check if title is being forced to not show.
 				// If a custom title was not set, use the default. Otherwise, show the custom title.
 				?>
-				<h3><?php echo esc_html( null === $title ? __( 'Past Invoices', 'paid-membereships-pro' ) : $title ); ?></h3>
+				<h2><?php echo esc_html( null === $title ? __( 'Past Invoices', 'paid-membereships-pro' ) : $title ); ?></h2>
 				<?php
 			}
 			?>
@@ -308,7 +309,7 @@ function pmpro_shortcode_account($atts, $content=null, $code="")
 			if ( '' !== $title ) { // Check if title is being forced to not show.
 				// If a custom title was not set, use the default. Otherwise, show the custom title.
 				?>
-				<h3><?php echo esc_html( null === $title ? __( 'Member Links', 'paid-membereships-pro' ) : $title ); ?></h3>
+				<h2><?php echo esc_html( null === $title ? __( 'Member Links', 'paid-membereships-pro' ) : $title ); ?></h2>
 				<?php
 			}
 			?>
