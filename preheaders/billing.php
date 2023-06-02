@@ -159,38 +159,14 @@ if ($submit) {
     }
 	
 	// Check reCAPTCHA if needed.
-	global $recaptcha, $recaptcha_validated;
-	if (  $recaptcha == 2 || ( $recaptcha == 1 && pmpro_isLevelFree( $pmpro_level ) ) ) {
-		global $recaptcha_privatekey;
-		if ( isset( $_POST["recaptcha_challenge_field"] ) ) {
-			//using older recaptcha lib
-			$resp = recaptcha_check_answer( $recaptcha_privatekey,
-				pmpro_get_ip(),
-				sanitize_text_field( $_POST["recaptcha_challenge_field"] ),
-				sanitize_text_field( $_POST["recaptcha_response_field"] )
-            );
-
-			$recaptcha_valid  = $resp->is_valid;
-			$recaptcha_errors = $resp->error;
-		} else {
-			//using newer recaptcha lib
-			// NOTE: In practice, we don't execute this code because
-			// we use AJAX to send the data back to the server and set the
-			// pmpro_recaptcha_validated session variable, which is checked
-			// earlier. We should remove/refactor this code.
-			$reCaptcha = new pmpro_ReCaptcha( $recaptcha_privatekey );
-			$resp      = $reCaptcha->verifyResponse( pmpro_get_ip(), sanitize_text_field( $_POST["g-recaptcha-response"] ) );
-
-			$recaptcha_valid  = $resp->success;
-			$recaptcha_errors = $resp->errorCodes;
-		}
-		if ( ! $recaptcha_valid ) {
-			$pmpro_msg  = sprintf( __( "reCAPTCHA failed. (%s) Please try again.", 'paid-memberships-pro' ), $recaptcha_errors );
-			$pmpro_msgt = "pmpro_error";
-		} else {			
-			pmpro_set_session_var( 'pmpro_recaptcha_validated', true );
-		}
-	}
+    $recaptcha = pmpro_getOption("recaptcha");
+    if (  $recaptcha == 2 || ( $recaptcha == 1 && pmpro_isLevelFree( $pmpro_level ) ) ) {
+        $recaptcha_validated = pmpro_recaptcha_is_validated(); // Returns true if validated, string error message if not.
+        if ( is_string( $recaptcha_validated ) ) {
+            $pmpro_msg  = sprintf( __( "reCAPTCHA failed. (%s) Please try again.", 'paid-memberships-pro' ), $recaptcha_validated );
+            $pmpro_msgt = "pmpro_error";
+        }
+    }
 	
     if (!empty($missing_billing_field)) {
         $pmpro_msg = __("Please complete all required fields.", 'paid-memberships-pro' );

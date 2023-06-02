@@ -1,6 +1,7 @@
 <?php
 /**
  * Template: Checkout
+ * Version: 2.0.2
  *
  * See documentation for how to override the PMPro templates.
  * @link https://www.paidmembershipspro.com/documentation/templates/
@@ -534,10 +535,9 @@ if ( empty( $default_gateway ) ) {
 
 	<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout-field pmpro_captcha', 'pmpro_captcha' ) ); ?>">
 	<?php
-		global $recaptcha, $recaptcha_publickey;
+		$recaptcha = pmpro_getOption("recaptcha");
 		if ( $recaptcha == 2 || $recaptcha == 1 ) {
-			//phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-			echo pmpro_recaptcha_get_html($recaptcha_publickey, NULL, true);
+			pmpro_recaptcha_get_html();
 		}
 	?>
 	</div> <!-- end pmpro_captcha -->

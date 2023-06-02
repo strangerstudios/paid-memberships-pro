@@ -1,6 +1,7 @@
 <?php
 /**
  * Template: Billing
+ * Version: 2.0.1
  *
  * See documentation for how to override the PMPro templates.
  * @link https://www.paidmembershipspro.com/documentation/templates/
@@ -145,12 +146,6 @@
 
 			<div id="pmpro_message" <?php if(! $pmpro_msg) ?> style="display:none" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_message ' . $pmpro_msgt, $pmpro_msgt ) ); ?>"> <?php if($pmpro_msg) echo wp_kses_post( $pmpro_msg ); ?></div>
 
-			<?php
-				$pmpro_include_billing_address_fields = apply_filters('pmpro_include_billing_address_fields', true);
-				if($pmpro_include_billing_address_fields)
-				{
-			?>
-
 			<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_message pmpro_alert', 'pmpro_account_loggedin' ) ); ?>">
 				<?php
 					$allowed_html = array(
@@ -164,6 +159,12 @@
 					echo wp_kses( sprintf( __('You are logged in as <strong>%s</strong>. If you would like to update your billing information for a different account, <a href="%s">log out now</a>.', 'paid-memberships-pro' ), $current_user->user_login, wp_logout_url( esc_url_raw( $_SERVER['REQUEST_URI'] ) ) ), $allowed_html );
 				?>
 			</div> <!-- end pmpro_account_loggedin -->
+
+			<?php
+				$pmpro_include_billing_address_fields = apply_filters('pmpro_include_billing_address_fields', true);
+				if($pmpro_include_billing_address_fields)
+				{
+			?>
 
 			<div id="pmpro_billing_address_fields" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout', 'pmpro_billing_address_fields' ) ); ?>">
 				<hr />
@@ -435,10 +436,9 @@
 
 			<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout-field pmpro_captcha', 'pmpro_captcha' ) ); ?>">
 			<?php
-				global $recaptcha, $recaptcha_publickey;				
+				$recaptcha = pmpro_getOption("recaptcha");
 				if ( $recaptcha == 2 || ( $recaptcha == 1 && pmpro_isLevelFree( $pmpro_level ) ) ) {
-					// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-					echo pmpro_recaptcha_get_html($recaptcha_publickey, NULL, true);
+					pmpro_recaptcha_get_html();
 				}
 			?>
 			</div> <!-- end pmpro_captcha -->

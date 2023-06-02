@@ -147,7 +147,7 @@
 					
 					// Messages for connected or not.
 					$connected = __( 'Your site is connected to SendWP.', 'paid-memberships-pro' ) . " <a href='https://app.sendwp.com/dashboard/' target='_blank' rel='nofollow noopener'>" . __( 'View Your SendWP Account', 'paid-memberships-pro' ) . "</a>";
-					$disconnected = ' ' . sprintf( __( 'Please enable email sending inside %s.', 'paid-memberships-pro' ), '<a href="' . admin_url('/tools.php?page=sendwp') . '">SendWP Settings</a>' );
+					$disconnected = ' ' . sprintf( __( 'Please enable email sending inside %s.', 'paid-memberships-pro' ), '<a href="' . admin_url('tools.php?page=sendwp') . '">SendWP Settings</a>' );
 					?>
 					<p class="description" id="pmpro-sendwp-description"><?php echo $sendwp_email_forwarding ? $connected : $disconnected; ?></p>
 				<?php }

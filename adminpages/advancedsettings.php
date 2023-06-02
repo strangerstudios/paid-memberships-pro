@@ -247,7 +247,7 @@
 				</tr>
 				<tr>
 					<th scope="row" valign="top">
-						<label for="spamprotection"><?php esc_html_e('Enable Spam Protection?', 'paid-memberships-pro' );?>:</label>
+						<label for="spamprotection"><?php esc_html_e('Enable Spam Protection?', 'paid-memberships-pro' );?></label>
 					</th>
 					<td>
 						<select id="spamprotection" name="spamprotection">
@@ -260,7 +260,7 @@
 				</tr>
 				<tr>
 					<th scope="row" valign="top">
-						<label for="recaptcha"><?php esc_html_e('Use reCAPTCHA?', 'paid-memberships-pro' );?>:</label>
+						<label for="recaptcha"><?php esc_html_e('Use reCAPTCHA?', 'paid-memberships-pro' );?></label>
 					</th>
 					<td>
 						<select id="recaptcha" name="recaptcha" onchange="pmpro_updateRecaptchaTRs();">

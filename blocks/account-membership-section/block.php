@@ -27,6 +27,12 @@ function register_dynamic_block() {
 	register_block_type(
 		'pmpro/account-membership-section', [
 			'render_callback' => __NAMESPACE__ . '\render_dynamic_block',
+			'attributes'	=> array(
+				'title'		=> array(
+					'type' => 'string',
+					'default' =>  __( 'My Membership', 'paid-memberships-pro' )
+				)
+			),
 		]
 	);
 }
@@ -36,6 +42,7 @@ function register_dynamic_block() {
  *
  * @return string
  **/
-function render_dynamic_block() {
-	return pmpro_shortcode_account( array( 'sections' => 'membership' ) );
+function render_dynamic_block( $attributes ) {
+	$title = isset( $attributes['title'] ) ? $attributes['title'] : null;
+	return pmpro_shortcode_account( array( 'sections' => 'membership', 'title' => $title ) );
 }

@@ -60,6 +60,8 @@ require_once( PMPRO_DIR . '/adminpages/reports/sales.php' );             // load
 require_once( PMPRO_DIR . '/includes/admin.php' );                  // admin notices and functionality
 require_once( PMPRO_DIR . '/includes/adminpages.php' );             // dashboard pages
 require_once( PMPRO_DIR . '/classes/class-pmpro-members-list-table.php' ); // Members List
+require_once( PMPRO_DIR . '/classes/class-pmpro-orders-list-table.php' ); // Orders List
+require_once( PMPRO_DIR . '/classes/class-pmpro-discount-code-list-table.php' ); // Discount Code List
 
 if ( version_compare( PHP_VERSION, '5.3.29', '>=' ) ) {
 	require_once( PMPRO_DIR . '/blocks/blocks.php' );             	// Gutenberg blocks
@@ -74,6 +76,7 @@ require_once( PMPRO_DIR . '/includes/notifications.php' );          // check for
 require_once( PMPRO_DIR . '/includes/init.php' );                   // code run during init, set_current_user, and wp hooks
 require_once( PMPRO_DIR . '/includes/scripts.php' );                // enqueue frontend and admin JS and CSS
 require_once( PMPRO_DIR . '/includes/terms.php' );                  // allow restricting terms by membership level
+require_once( PMPRO_DIR . '/includes/page-templates.php' );         // page templates
 
 require_once( PMPRO_DIR . '/includes/content.php' );                // code to check for memebrship and protect content
 require_once( PMPRO_DIR . '/includes/compatibility.php' );          // code to support compatibility for popular page builders
@@ -86,6 +89,7 @@ require_once( PMPRO_DIR . '/includes/capabilities.php' );           // manage PM
 require_once( PMPRO_DIR . '/includes/privacy.php' );                // code to aid with user data privacy, e.g. GDPR compliance
 require_once( PMPRO_DIR . '/includes/pointers.php' );				// popover help pointers
 require_once( PMPRO_DIR . '/includes/spam.php' );					// code to combat spam of various kinds
+require_once( PMPRO_DIR . '/includes/abandoned-signups.php' );		// track users who were created at checkout but did not complete checkout.
 require_once( PMPRO_DIR . '/includes/checkout.php' );		        // Common functions used at checkout.
 
 require_once( PMPRO_DIR . '/includes/xmlrpc.php' );                 // xmlrpc methods

@@ -118,7 +118,7 @@ function pmpro_wizard_get_site_type_hubs() {
 			}
 			
 		?>
-		<p class="pmpro-wizard__exit"><a href="<?php echo esc_url( admin_url( '/admin.php?page=pmpro-dashboard' ) ); ?>"><?php esc_html_e( 'Exit Wizard and Return to Dashboard', 'paid-memberships-pro' ); ?></a></p>
+		<p class="pmpro-wizard__exit"><a href="<?php echo esc_url( admin_url( 'admin.php?page=pmpro-dashboard' ) ); ?>"><?php esc_html_e( 'Exit Wizard and Return to Dashboard', 'paid-memberships-pro' ); ?></a></p>
 	</div> <!-- end pmpro-wizard__container -->
 </div> <!-- end pmpro-wizard -->
 <?php

@@ -825,11 +825,41 @@ function pmpro_report_sales_page()
 					$date = date_i18n( 'F', mktime(0, 0, 0, $month, 2) ) . ' ' . $year;
 				} elseif( ! empty( $year ) && $period === 'monthly'  ) {
 					$date = $year;
-				} else {
+				} elseif ( $period === 'annual') {
 					$date = __( 'All Time', 'paid-memberships-pro' );
+				} else {
+					$date = '';
+				}
+
+				// Let's make the period read better.
+				if ( $period ) {
+					switch ( $period ) {
+						case '30days':
+							$period_title = __( 'Last 30 Days', 'paid-memberships-pro' );
+							break;
+						case '7days':
+							$period_title = __( 'Last 7 Days', 'paid-memberships-pro' );
+							break;
+						case '12months':
+							$period_title = __( 'Last 12 Months', 'paid-memberships-pro' );
+							break;
+						default:
+							$period_title = $period;
+							break;
+					}
+				}
+				
+				// Adjust the title if we have a date or not so it reads better.
+				if ( $date ) {
+					// translators: %1$s is the report period, %2$s is the report type, %3$s is the date.
+					$title = sprintf( esc_html__( '%1$s %2$s for %3$s', 'paid-memberships-pro' ), ucwords( $period ), ucwords( $type ), ucwords( $date ) );
+				} else {
+					// translators: %1$s is the report period, %2$s is the report type.
+					$title = sprintf( esc_html__( '%1$s %2$s', 'paid-memberships-pro' ) , ucwords( $period_title ), ucwords( $type ) );
+
 				}
 			?>
-			return <?php echo wp_json_encode( esc_html( sprintf( __( '%s %s for %s', 'paid-memberships-pro' ), ucwords( $period ), ucwords( $type ), ucwords( $date ) ) ) ); ?>;
+			return <?php echo wp_json_encode( esc_html(  $title )  ); ?>;
 		}
 	</script>
 

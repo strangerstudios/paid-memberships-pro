@@ -290,7 +290,7 @@ function pmpro_report_login_page()
 	<div class="tablenav bottom">
 		<div class="tablenav-pages">
 			<?php
-				echo pmpro_getPaginationString($pn, $totalrows, $limit, 1, admin_url( "/admin.php?page=pmpro-reports&report=login&s=" . urlencode($s)), "&l=$l&limit=$limit&pn=");
+				echo pmpro_getPaginationString($pn, $totalrows, $limit, 1, admin_url( "admin.php?page=pmpro-reports&report=login&s=" . urlencode($s)), "&l=$l&limit=$limit&pn=");
 			?>
 		</div>
 	</div>

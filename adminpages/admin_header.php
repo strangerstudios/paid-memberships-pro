@@ -205,7 +205,7 @@
 	?>
 	<script>
 		jQuery(document).ready(function() {
-			jQuery.get('<?php echo admin_url( "/admin-ajax.php?action=pmpro_notifications" . $specific_notification ); ?>', function(data) {
+			jQuery.get('<?php echo admin_url( "admin-ajax.php?action=pmpro_notifications" . $specific_notification ); ?>', function(data) {
 				if(data && data != 'NULL')
 					jQuery('#pmpro_notifications').html(data);
 			});
