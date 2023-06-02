@@ -53,6 +53,11 @@ function pmpro_remove_abandoned_signup_taxonomy( $user_id ) {
 		return;
 	}
 
+	// Bail if the user doesn't have the adbandoned signup taxonomy.
+	if ( ! has_term( 'abandoned-signup', 'pmpro_abandoned_signup', $user_id ) ) {
+		return;
+	}
+
 	// Remove the abandoned signup taxonomy from the user.
 	wp_remove_object_terms( $user_id, 'abandoned-signup', 'pmpro_abandoned_signup' );
 }
@@ -67,8 +72,10 @@ add_action( 'deleted_user', 'pmpro_remove_abandoned_signup_taxonomy' );
  * @since TBD
  */
 function pmpro_remove_abandoned_signup_taxonomy_on_page_load() {
-	// Bail if the user ID is empty.
-	if ( empty( get_current_user_id() ) ) {
+	$user_id = get_current_user_id();
+	
+	// Bail if the user ID is empty.	
+	if ( empty( $user_id ) ) {
 		return;
 	}
 
@@ -77,8 +84,13 @@ function pmpro_remove_abandoned_signup_taxonomy_on_page_load() {
 		return;
 	}
 
+	// Bail if the user doesn't have the adbandoned signup taxonomy.
+	if ( ! has_term( 'abandoned-signup', 'pmpro_abandoned_signup', $user_id ) ) {
+		return;
+	}
+
 	// The user did something after being created. Remove the abandoned signup taxonomy from the user.
-	wp_remove_object_terms( get_current_user_id(), 'abandoned-signup', 'pmpro_abandoned_signup' );
+	wp_remove_object_terms( $user_id, 'abandoned-signup', 'pmpro_abandoned_signup' );
 }
 add_action( 'wp', 'pmpro_remove_abandoned_signup_taxonomy_on_page_load' );
 
