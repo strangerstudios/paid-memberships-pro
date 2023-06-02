@@ -156,6 +156,25 @@ Not sure? You can find out by doing a bit a research.
 9. Membership Account page, display all sections or show specific sections using shortcode attributes.
 
 == Changelog ==
+= 2.11 - 2023-06-05 =
+* FEATURE: Now tracking users that are created at checkout but never complete checkout or otherwise use the site. These users can be found and deleted from the Users Table in the admin dashboard. #2435 (@dparker1005, @ideadude)
+* FEATURE: Added compatibility with Oxygen Builder. #2404 (@JarrydLong)
+* ENHANCEMENT: Updated the Orders list to use a WP List Table. #2383 (@JarrydLong)
+* ENHANCEMENT: Updated the Discount Code list to use a WP List Table. #2370 (@JarrydLong)
+* ENHANCEMENT: Now showing a notice when using a page template that is out of date. #2427 (@JarrydLong, dparker1005)
+* ENHANCEMENT: Reducing calls made to `get_option()` from `pmpro_getOption()`. #2137 (@JJJ)
+* ENHANCEMENT: Now allowing account page section titles to be customized. #2459 (@MaximilianoRicoTabo)
+* ENHANCEMENT: Adding filters `pmpro_stripe_webhook_event_recieved` and `pmpro_stripe_webhook_before_exit`. #2465 (@dparker1005)
+* ENHANCEMENT: Improved Add Ons search to support multiple keywords and phrases. #2444 (@andrewlimaza)
+* BUG FIX/ENHANCEMENT: Now making sure that our reCAPTCHA functions are always loaded. #2449 (@mircobabini, @dparker1005)
+* BUG FIX/ENHANCEMENT: Improved the chart title wording for some sales and revenue report periods. #2488 (@andrewlimaza)
+* BUG FIX/ENHANCEMENT: Removing trailing colons after question marks in Advanced Settings. #2467 (@mircobabini)
+* BUG FIX: Resolved issue where checkouts using Stripe may complete even if reCAPTCHA fails. #2449 (@dparker1005)
+* BUG FIX: Resolved issue where "log out" link may not show on the update billing page. #2489 (@dparker1005)
+* REFACTOR: Removed leading slash in all uses of `admin_url()`. #2429 (@jahidhasan018)
+* REFACTOR: Removing unused variable in `pmpro_rest_api_recent_memberships()`. #2469 (@andrewlimaza)
+* REFACTOR: Marking `pmpro_getOption()` as deprecated. The `get_option()` function in core WordPress should be called directly instead.
+
 = 2.10.7 - 2023-05-23 =
 * ENHANCEMENT: Updated sales and revenue report to compare to previous periods. #2426 (@JarrydLong)
 * ENHANCEMENT: Updated sales and revenue report to show orders from a predefined timeframe (ex. last 30 days). #2426 (@JarrydLong)
