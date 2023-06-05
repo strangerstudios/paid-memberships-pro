@@ -20,6 +20,10 @@ if ( isset( $_REQUEST['l'] ) ) {
 	<hr class="wp-header-end">
 	<h1 class="wp-heading-inline"><?php esc_html_e( 'Members List', 'paid-memberships-pro' ); ?></h1>
 	<a target="_blank" href="<?php echo esc_url( $csv_export_link ); ?>" class="page-title-action"><?php esc_html_e( 'Export to CSV', 'paid-memberships-pro' ); ?></a>
+	<a target="_blank" href="?page=pmpro-addmember" class="page-title-action">
+		<span class="dashicons dashicons-plus"></span>
+		<?php esc_html_e( 'Add New Member', 'paid-memberships-pro' ); ?>
+	</a>
 	<?php do_action( 'pmpro_memberslist_before_table' ); ?>			
 	<form id="member-list-form" method="get">
 		<input type="hidden" name="page" value="pmpro-memberslist" />
