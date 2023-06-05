@@ -142,11 +142,13 @@ jQuery(document).ready(function(){
 		jQuery( '.pmpro_required' ).closest( '.pmpro_checkout-field' ).append( '<span class="pmpro_asterisk"> <abbr title="Required Field">*</abbr></span>' );
 	}
 
-	//move asterisk for some field types
-	if ( jQuery( '.pmpro_checkout-field-radio' ).find( ".pmpro_asterisk" ) ) {
-		jQuery( '.pmpro_checkout-field-radio' ).find( ".pmpro_asterisk" ).remove();
-		jQuery( '.pmpro_checkout-field-radio' ).find( 'label' ).first().append( '<span class="pmpro_asterisk"> <abbr title="Required Field">*</abbr></span>' );
-	}
+	//Loop through all radio type fields and move the asterisk.
+	jQuery('.pmpro_checkout-field-radio').each(function () {
+		if (jQuery(this).find('span').hasClass('pmpro_asterisk')) {
+			jQuery(this).find(".pmpro_asterisk").remove();
+			jQuery(this).find('label').first().append('<span class="pmpro_asterisk"> <abbr title="Required Field">*</abbr></span>');
+		}
+	});
     
     //move asterisk before hint <p>'s
     jQuery( 'span.pmpro_asterisk' ).each(function() {
