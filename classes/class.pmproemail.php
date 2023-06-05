@@ -124,8 +124,15 @@
 			$this->data = apply_filters("pmpro_email_data", $this->data, $this);	//filter
 
 			// Handle backwards compatibility for the new !!header_name!! variable.
-			if( empty ($this->data['header_name'] ) && ! empty( $this->data['name'] ) ) {
-				$this->data['header_name'] = $this->data['name'];
+			if( empty ($this->data['header_name'] ) ) {
+				$email_user = get_user_by( 'email', $this->email );
+				if( $email_user ) {
+					$this->data['header_name'] = $email_user->display_name;
+				} elseif ( ! empty ( $this->data['name'] ) ) {
+					$this->data['header_name'] = $this->data['name'];
+				} else {
+					$this->data['header_name'] = __( 'User', 'paid-memberships-pro' );
+				}
 			}
 			
 			//swap data into body and subject line
