@@ -12,35 +12,40 @@ $collecting_payment = pmpro_getOption( 'wizard_collect_payment' );
 	</div>
 	<form action="" method="post">
 	<fieldset>
-		<legend><?php esc_html_e( 'Create Your Membership Levels', 'paid-memberships-pro' ); ?></legend>
+		<legend class="screen-reader-text"><?php esc_html_e( 'Create Your Membership Levels', 'paid-memberships-pro' ); ?></legend>
 		<div class="pmpro-wizard__field">
 			<div class="pmpro-wizard__field__checkbox-group">
 				<input type="checkbox" id="pmpro-wizard__free-level" name="pmpro-wizard__free-level" value="1">
-				<div class="pmpro-wizard__field__checkbox-content">
-					<label for="pmpro-wizard__free-level" class="pmpro-wizard__label-block">
-						<?php esc_html_e( 'Free Membership', 'paid-memberships-pro' ); ?>
-					</label>
-					<div>
-						<label for="pmpro-wizard__free-level-name"><?php esc_html_e( 'Level Name', 'paid-memberships-pro' ); ?></label>
-						<input type="text" name="pmpro-wizard__free-level-name" id="pmpro-wizard__free-level-name" placeholder="<?php esc_attr_e( 'Free', 'paid-memberships-pro' ); ?>" />
-					</div>						
+				<label for="pmpro-wizard__free-level" class="pmpro-wizard__label-block">
+					<?php esc_html_e( 'Create a Free Membership Level', 'paid-memberships-pro' ); ?>
+				</label>
+				<div class="pmpro-wizard__field__checkbox-content" style="display: none;">
+					<label for="pmpro-wizard__free-level-name"><?php esc_html_e( 'Level Name', 'paid-memberships-pro' ); ?></label>
+					<input type="text" name="pmpro-wizard__free-level-name" id="pmpro-wizard__free-level-name" placeholder="<?php esc_attr_e( 'Free', 'paid-memberships-pro' ); ?>" />
 				</div>
 			</div>
 		</div>
-		<?php if ( $collecting_payment ) { ?>
+		<script>
+			jQuery(document).ready(function() {
+				jQuery('#pmpro-wizard__free-level').click(function() {
+					pmpro_toggle_elements_by_selector( jQuery(this).parent().find('.pmpro-wizard__field__checkbox-content'), jQuery( this ).prop( 'checked' ) );
+				});
+			});
+		</script>
+		<?php if ( $collecting_payment || true ) { ?>
 		<div class="pmpro-wizard__field">	
 			<div class="pmpro-wizard__field__checkbox-group">
 				<input type="checkbox" id="pmpro-wizard__paid-level" name="pmpro-wizard__paid-level" value="1">
-				<div class="pmpro-wizard__field__checkbox-content">
-					<label for="pmpro-wizard__paid-level" class="pmpro-wizard__label-block">
-						<?php esc_html_e( 'Paid Membership', 'paid-memberships-pro' ); ?>
-					</label>
+				<label for="pmpro-wizard__paid-level" class="pmpro-wizard__label-block">
+					<?php esc_html_e( 'Create a Paid Membership Level', 'paid-memberships-pro' ); ?>
+				</label>
+				<div class="pmpro-wizard__field__checkbox-content" style="display: none;">
 					<div>
 						<label for="pmpro-wizard__paid-level-name"><?php esc_html_e( 'Level Name', 'paid-memberships-pro' ); ?></label>
 						<input type="text" id="pmpro-wizard__paid-level-name" name="pmpro-wizard__paid-level-name" placeholder="<?php esc_attr_e( 'Premium', 'paid-memberships-pro' ); ?>"/>
 					</div>
 					<div>
-						<labe for="pmpro-wizard__paid-level-amount"><?php esc_html_e( 'Fee', 'paid-memberships-pro' ); ?></label>
+						<label for="pmpro-wizard__paid-level-amount"><?php esc_html_e( 'Fee', 'paid-memberships-pro' ); ?></label>
 						<input type="text" id="pmpro-wizard__paid-level-amount" name="pmpro-wizard__paid-level-amount" placeholder="<?php esc_attr_e( 'Amount (i.e. "10")', 'paid-memberships-pro' ); ?>" />
 						<?php esc_html_e( 'every', 'paid-memberships-pro' ); ?>
 						<select id="cycle_period" name="cycle_period">
@@ -62,6 +67,13 @@ $collecting_payment = pmpro_getOption( 'wizard_collect_payment' );
 				</div>
 			</div>
 		</div>
+		<script>
+			jQuery(document).ready(function() {
+				jQuery('#pmpro-wizard__paid-level').click(function() {
+					pmpro_toggle_elements_by_selector( jQuery(this).parent().find('.pmpro-wizard__field__checkbox-content'), jQuery( this ).prop( 'checked' ) );
+				});
+			});
+		</script>
 		<?php } ?>
 	</fieldset>
 	<div class="pmpro-wizard__field pmpro-wizard__field-alt">
