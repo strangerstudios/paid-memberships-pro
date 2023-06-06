@@ -19,7 +19,6 @@
 * BUG FIX: Fixed an issue where radio button would always show asterisk even when not required. This now applies the asterisk to each and every radio button individually to support multiple radio buttons at checkout. #2499 (@andrewlimaza)
 * REFACTOR: Removed leading slash in all uses of `admin_url()`. #2429 (@jahidhasan018)
 * REFACTOR: Removing unused variable in `pmpro_rest_api_recent_memberships()`. #2469 (@andrewlimaza)
-* REFACTOR: Marking `pmpro_getOption()` as deprecated. The `get_option()` function in core WordPress should be called directly instead.
 
 = 2.10.7 - 2023-05-23 =
 * ENHANCEMENT: Updated sales and revenue report to compare to previous periods. #2426 (@JarrydLong)
