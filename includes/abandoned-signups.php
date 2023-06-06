@@ -121,7 +121,7 @@ function pmpro_add_users_table_view_abandoned_signups( $views ) {
 		'<a href="%s"%s>%s <span class="count">(%d)</span></a>',
 		esc_url( add_query_arg( 'pmpro-abandoned-signups', '1', admin_url( 'users.php' ) ) ),
 		empty( $_REQUEST['pmpro-abandoned-signups'] ) ? '' : ' class="current"',
-		__( 'Incomplete Membership Checkouts', 'paid-memberships-pro' ),
+		__( 'Potential Spam Checkouts', 'paid-memberships-pro' ),
 		count( $abandoned_signup_users )
 	);
 	
@@ -231,3 +231,42 @@ function pmpro_abandoned_signups_users_list_table_query_args( $query_args ) {
 	return $query_args;
 }
 add_action( 'users_list_table_query_args', 'pmpro_abandoned_signups_users_list_table_query_args' );
+
+/**
+ * Show a description on the Users page when filtering by abandoned signups.
+ *
+ * @since TBD
+ */
+function pmpro_abandoned_signups_users_list_table_description() {
+	global $current_screen;
+
+	// Bail if we are not on the Users page or not filtering by abandoned signups.
+	if ( ! is_admin() || empty( $current_screen->id ) || 'users' !== $current_screen->id || empty( $_REQUEST['pmpro-abandoned-signups'] ) ) {
+		return;
+	}
+
+	// Get the ID for the 'abandoned-signup' term.
+	$abandoned_signup_term = get_term_by( 'slug', 'abandoned-signup', 'pmpro_abandoned_signup' );
+	if ( empty( $abandoned_signup_term ) ) {
+		return;
+	}
+
+	// Get all users with the 'abandoned-signup' term.
+	$abandoned_signup_users = get_objects_in_term( $abandoned_signup_term->term_id, 'pmpro_abandoned_signup' );
+
+	// Bail if there are no users with the 'abandoned-signup' term.
+	if ( empty( $abandoned_signup_users ) ) {
+		return;
+	}
+
+	// Use JavaScript to add the description box to the users table.
+	// Description: These are users who were created during the Paid Memberships Pro checkout process but haven't yet completed checkout or performed any other action on your site. You should periodically delete users from this list if the Registered date is more than a few days old.
+	?>
+	<script>
+		jQuery( document ).ready( function( $ ) {
+			$( '.tablenav.top' ).after( '<div class="pmpro-abandoned-signup-description"><p><?php esc_html_e( 'These are users who were created during the Paid Memberships Pro checkout process but haven\'t yet completed checkout or performed any other action on your site. You should periodically delete users from this list if the Registered date is more than a few days old.', 'paid-memberships-pro' ); ?></p></div>' );
+		} );
+	</script>
+	<?php
+}
+add_action( 'admin_head', 'pmpro_abandoned_signups_users_list_table_description' );
