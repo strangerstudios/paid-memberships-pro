@@ -11,10 +11,8 @@
     "url": "https://github.com/strangerstudios/paid-memberships-pro.git"
   },
   "scripts": {
-    "start": "npm run watch:sass & wp-scripts start",
-    "build": "npm run build:sass && wp-scripts build",
-    "build:sass": "sass ./scss/main.scss css/pmpro-main.css",
-    "watch:sass": "sass --watch ./scss/main.scss:css/pmpro-main.css"
+    "start": "wp-scripts start",
+    "build": "wp-scripts build"
   },
   "keywords": [
     "wordpress",
@@ -24,8 +22,6 @@
   "author": "Stranger Studios",
   "license": "GPL-2.0",
   "devDependencies": {
-    "@wordpress/scripts": "^23.7.2",
-    "node-sass": "^7.0.3",
-    "sass": "^1.62.1"
+    "@wordpress/scripts": "^23.7.2"
   }
 }

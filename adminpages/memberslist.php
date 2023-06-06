@@ -4,6 +4,20 @@ global $user_list_table;
 // Query, filter, and sort the data.
 $user_list_table = new PMPro_Members_List_Table();
 $user_list_table->prepare_items();
+
+
+function pmpro_members_action_links( $actions, $user ) {
+	$cap = apply_filters( 'pmpro_add_member_cap', 'edit_users' );
+
+	if ( current_user_can( $cap ) && ! empty( $user->ID ) ) {
+		$actions['edituser'] = '<a href="' . admin_url( 'admin.php?page=pmpro-members&user=' . (int) $user->ID ) . '">' . __( 'Edit', 'pmpro-members' ) . '</a>';
+		$actions['addorder'] = '<a href="' . admin_url( 'admin.php?page=pmpro-orders&order=-1&user=' . (int) $user->ID ) . '&membership='. (int) $user->membership_id . '">' . __( '+order', 'pmpro-orders' ) . '</a>';	
+	}
+
+	return $actions;
+}
+add_filter( 'pmpro_memberslist_user_row_actions', 'pmpro_members_action_links', 10, 2 );
+
 require_once dirname( __DIR__ ) . '/adminpages/admin_header.php';
 
 // Build CSV export link.
@@ -20,7 +34,7 @@ if ( isset( $_REQUEST['l'] ) ) {
 	<hr class="wp-header-end">
 	<h1 class="wp-heading-inline"><?php esc_html_e( 'Members List', 'paid-memberships-pro' ); ?></h1>
 	<a target="_blank" href="<?php echo esc_url( $csv_export_link ); ?>" class="page-title-action"><?php esc_html_e( 'Export to CSV', 'paid-memberships-pro' ); ?></a>
-	<a target="_blank" href="?page=pmpro-addmember" class="page-title-action">
+	<a target="_blank" href="<?php echo esc_url( add_query_arg( array( 'page' => 'pmpro-members'), admin_url( 'admin.php' ) ) ); ?>" class="page-title-action">
 		<span class="dashicons dashicons-plus"></span>
 		<?php esc_html_e( 'Add New Member', 'paid-memberships-pro' ); ?>
 	</a>

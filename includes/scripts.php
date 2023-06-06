@@ -175,28 +175,10 @@ function pmpro_admin_enqueue_scripts() {
 	wp_register_style( 'pmpro_admin', $admin_css, [], PMPRO_VERSION, 'screen' );
 	wp_register_style( 'pmpro_admin_rtl', $admin_css_rtl, [], PMPRO_VERSION, 'screen' );
 
-    wp_enqueue_style( 'pmpro_admin' );
+	wp_enqueue_style( 'pmpro_admin' );
 
 	if ( is_rtl() ) {
 		wp_enqueue_style( 'pmpro_admin_rtl' );
 	}
-
-    // Figure out which main scss file load if applicable.
-    $PLUGIN_NAME = '/paid-memberships-pro';
-    $FILE_NAME = '/css/pmpro-main.css';
-    $PLUGIN_AND_FILE = $PLUGIN_NAME . $FILE_NAME;
-
-    if ( file_exists( get_stylesheet_directory() . $PLUGIN_AND_FILE ) ) {
-        $main_scss_file = get_stylesheet_directory_uri() . $PLUGIN_AND_FILE;
-    } elseif( file_exists( get_template_directory() . $PLUGIN_AND_FILE ) ) {
-        $main_scss_file = get_template_directory_uri() . $PLUGIN_AND_FILE;
-    } else {
-        $main_scss_file = plugins_url( $FILE_NAME, __DIR__ );
-    }
-
-    wp_register_style( 'pmpro_main', $main_scss_file, [], PMPRO_VERSION, 'screen' );
-
-    wp_enqueue_style( 'pmpro_main' );
-
 }
 add_action( 'admin_enqueue_scripts', 'pmpro_admin_enqueue_scripts' );

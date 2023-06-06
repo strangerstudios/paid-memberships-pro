@@ -71,6 +71,7 @@ function pmpro_add_pages() {
 		$span_color = '#FF3333';
 	}
 	add_submenu_page( 'pmpro-dashboard', __( 'License', 'paid-memberships-pro' ), __( '<span style="color: ' . $span_color . '">License</span>', 'paid-memberships-pro' ), 'manage_options', 'pmpro-license', 'pmpro_license_settings_page' );
+	add_submenu_page( 'pmpro-members', __( 'Add Member', 'paid-memberships-pro' ), __( '<span>Add Member</span>', 'paid-memberships-pro' ), 'manage_options', 'pmpro-members', 'pmpro_members' );
 
 	// Settings tabs
 	add_submenu_page( 'admin.php', __( 'Discount Codes', 'paid-memberships-pro' ), __( 'Discount Codes', 'paid-memberships-pro' ), 'pmpro_discountcodes', 'pmpro-discountcodes', 'pmpro_discountcodes' );
@@ -332,6 +333,10 @@ function pmpro_license_settings_page() {
 
 function pmpro_updates() {
 	require_once( PMPRO_DIR . '/adminpages/updates.php' );
+}
+
+function pmpro_members() {
+	require_once( PMPRO_DIR . '/adminpages/members.php' );
 }
 
 /**

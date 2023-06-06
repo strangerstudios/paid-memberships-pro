@@ -2280,3 +2280,8 @@ button.pmpro_report_th_closed:before {
 .pmpro_plugin_update_notice+p:before {
 	display: none;
 }
+
+.pmpro_admin-pmpro-memberslist a span.dashicons-plus {
+  vertical-align: sub;
+  font-size: 15px;
+}
