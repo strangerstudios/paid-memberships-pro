@@ -157,14 +157,14 @@ function pmpro_required_billing_fields_stripe_lite( $fields ) {
 }
 
 // copy other discount code to discount code if latter is not set
-if ( empty( $_REQUEST['discount_code'] ) && ! empty( $_REQUEST['other_discount_code'] ) ) {
-	$_REQUEST['discount_code'] = sanitize_text_field( $_REQUEST['other_discount_code'] );
+if ( empty( $_REQUEST['pmpro_discount_code'] ) && ! empty( $_REQUEST['pmpro_other_discount_code'] ) ) {
+	$_REQUEST['pmpro_discount_code'] = sanitize_text_field( $_REQUEST['pmpro_other_discount_code'] );
 }
-if ( empty( $_POST['discount_code'] ) && ! empty( $_POST['other_discount_code'] ) ) {
-	$_POST['discount_code'] = sanitize_text_field( $_POST['other_discount_code'] );	
+if ( empty( $_POST['pmpro_discount_code'] ) && ! empty( $_POST['pmpro_other_discount_code'] ) ) {
+	$_POST['pmpro_discount_code'] = sanitize_text_field( $_POST['pmpro_other_discount_code'] );	
 }
-if ( empty( $_GET['discount_code'] ) && ! empty( $_GET['other_discount_code'] ) ) {
-	$_GET['discount_code'] = sanitize_text_field( $_GET['other_discount_code'] );	
+if ( empty( $_GET['pmpro_discount_code'] ) && ! empty( $_GET['pmpro_other_discount_code'] ) ) {
+	$_GET['pmpro_discount_code'] = sanitize_text_field( $_GET['pmpro_other_discount_code'] );	
 }
 
 // apply all the_content filters to confirmation messages for levels

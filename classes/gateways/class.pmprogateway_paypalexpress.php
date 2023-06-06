@@ -560,7 +560,7 @@
 
 			if(!empty($order->discount_code))
 			{
-				$nvpStr .= "&ReturnUrl=" . urlencode(pmpro_url("checkout", "?pmpro_level=" . $order->membership_level->id . "&discount_code=" . $order->discount_code . "&review=" . $order->code));
+				$nvpStr .= "&ReturnUrl=" . urlencode(pmpro_url("checkout", "?pmpro_level=" . $order->membership_level->id . "&pmpro_discount_code=" . $order->discount_code . "&review=" . $order->code));
 			}
 			else
 			{

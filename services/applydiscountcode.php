@@ -112,8 +112,8 @@
 		} else {
 			jQuery('<input>').attr({
 				type: 'hidden',
-				id: 'discount_code',
-				name: 'discount_code',
+				id: 'pmpro_discount_code',
+				name: 'pmpro_discount_code',
 				value: '<?php echo esc_attr( $discount_code );?>'
 			}).appendTo('#pmpro_form');
 		}

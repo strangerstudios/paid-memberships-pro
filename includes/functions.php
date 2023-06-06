@@ -2429,22 +2429,27 @@ function pmpro_getLevelAtCheckout( $level_id = null, $discount_code = null ) {
 		return;
 	}
 
-	// default to discount code passed in
+	// default to discount code passed in via URL.
+	if ( empty( $discount_code ) && ! empty( $_REQUEST['pmpro_discount_code'] ) ) {
+		$discount_code = preg_replace( '/[^A-Za-z0-9\-]/', '', sanitize_text_field( $_REQUEST['pmpro_discount_code'] ) );
+	}
+
+	// If we still don't have a discount code, check the legacy 'discount_code' request parameter.
 	if ( empty( $discount_code ) && ! empty( $_REQUEST['discount_code'] ) ) {
 		$discount_code = preg_replace( '/[^A-Za-z0-9\-]/', '', sanitize_text_field( $_REQUEST['discount_code'] ) );
 	}
 
-	// what level are they purchasing? (discount code passed)
+	// If we still don't have a discount code, add a filter to let other plugins add one.
+	if ( empty( $discount_code ) ) {
+		$discount_code = apply_filters( 'pmpro_default_discount_code', null );
+	}
+
+	// If we are using a discount code, check it and get the level.
 	if ( ! empty( $level_id ) && ! empty( $discount_code ) ) {
 		$discount_code_id = $wpdb->get_var( "SELECT id FROM $wpdb->pmpro_discount_codes WHERE code = '" . esc_sql( $discount_code ) . "' LIMIT 1" );
 
 		// check code
-		global $pmpro_checkout_level_ids; // Set by MMPU.
-		if ( isset( $pmpro_checkout_level_ids ) ) {
-			$code_check = pmpro_checkDiscountCode( $discount_code, $pmpro_checkout_level_ids, true );
-		} else {
-			$code_check = pmpro_checkDiscountCode( $discount_code, $level_id, true );
-		}
+		$code_check = pmpro_checkDiscountCode( $discount_code, $level_id, true );
 		if ( $code_check[0] != false ) {
 			$sqlQuery    = "SELECT l.id, cl.*, l.name, l.description, l.allow_signups, l.confirmation FROM $wpdb->pmpro_discount_codes_levels cl LEFT JOIN $wpdb->pmpro_membership_levels l ON cl.level_id = l.id LEFT JOIN $wpdb->pmpro_discount_codes dc ON dc.id = cl.code_id WHERE dc.code = '" . esc_sql( $discount_code ) . "' AND cl.level_id = '" . esc_sql( $level_id ) . "' LIMIT 1";
 			$pmpro_level = $wpdb->get_row( $sqlQuery );
@@ -2455,15 +2460,16 @@ function pmpro_getLevelAtCheckout( $level_id = null, $discount_code = null ) {
 			}
 
 			// filter adjustments to the level
-			$pmpro_level->code_id = $discount_code_id;
-			$pmpro_level          = apply_filters( 'pmpro_discount_code_level', $pmpro_level, $discount_code_id );
+			$pmpro_level->code_id       = $discount_code_id;
+			$pmpro_level->discount_code = $discount_code;
+			$pmpro_level                = apply_filters( 'pmpro_discount_code_level', $pmpro_level, $discount_code_id );
 		} else {
 			// error with discount code, we want to halt checkout
 			pmpro_setMessage( $code_check[1], 'pmpro_error' );
 		}
 	}
 
-	// what level are they purchasing? (no discount code)
+	// If we don't have a level object yet, pull it from the database.
 	if ( empty( $pmpro_level ) && ! empty( $level_id ) ) {
 		$pmpro_level = $wpdb->get_row( "SELECT * FROM $wpdb->pmpro_membership_levels WHERE id = '" . esc_sql( $level_id ) . "' AND allow_signups = 1 LIMIT 1" );
 	}

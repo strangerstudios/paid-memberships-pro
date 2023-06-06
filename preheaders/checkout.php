@@ -222,8 +222,8 @@ if ( isset( $_REQUEST['CVV'] ) ) {
 	$CVV = "";
 }
 
-if ( isset( $_REQUEST['discount_code'] ) ) {
-	$discount_code = preg_replace( "/[^A-Za-z0-9\-]/", "", sanitize_text_field( $_REQUEST['discount_code'] ) );
+if ( ! empty( $pmpro_level->discount_code ) ) {
+	$discount_code = preg_replace( "/[^A-Za-z0-9\-]/", "", sanitize_text_field( $pmpro_level->discount_code ) );
 } else {
 	$discount_code = "";
 }

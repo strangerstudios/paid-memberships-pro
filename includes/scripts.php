@@ -47,7 +47,7 @@ function pmpro_enqueue_scripts() {
             'ajaxurl' => admin_url( 'admin-ajax.php' ),
             'ajax_timeout' => apply_filters( 'pmpro_ajax_timeout', 5000, 'applydiscountcode' ),
             'show_discount_code' => pmpro_show_discount_code(),
-			'discount_code_passed_in' => !empty( $_REQUEST['discount_code'] ),
+			'discount_code_passed_in' => !empty( $_REQUEST['pmpro_discount_code'] ) && !empty( $_REQUEST['discount_code'] ),
         ));
         wp_enqueue_script( 'pmpro_checkout' );
     }
