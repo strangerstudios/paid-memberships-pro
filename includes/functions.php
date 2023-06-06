@@ -2399,15 +2399,15 @@ function pmpro_getLevelAtCheckout( $level_id = null, $discount_code = null ) {
 		$level_id = intval( $_REQUEST['pmpro_level'] );
 	}
 
-	// If we don't have a level yet, check for a default level in the custom fields for this post.
-	if ( empty( $level_id ) && ! empty( $post ) ) {
-		$level_id = get_post_meta( $post->ID, 'pmpro_default_level', true );
-	}
-
-	// If we still don't have a level, check the legacy 'level' request parameter.
+	// If we don't have a level, check the legacy 'level' request parameter.
 	if ( empty( $level_id ) && ! empty( $_REQUEST['level'] ) ) {
 		// TODO: We may want to show a message here that the level parameter is deprecated.
 		$level_id = intval( $_REQUEST['level'] );
+	}
+
+	// If we still don't have a level yet, check for a default level in the custom fields for this post.
+	if ( empty( $level_id ) && ! empty( $post ) ) {
+		$level_id = intval( get_post_meta( $post->ID, 'pmpro_default_level', true ) );
 	}
 
 	// If we still don't have a level, use the default level.
