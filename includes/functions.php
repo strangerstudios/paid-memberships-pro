@@ -80,7 +80,8 @@ function pmpro_br2nl( $text, $tags = 'br' ) {
 
 /**
  * get_option() should be used directly instead.
- * @deprecated TBD
+ *
+ * Will be deprecated in a future release.
  */
 function pmpro_getOption( $s, $force = false ) {
 	return get_option( 'pmpro_' . $s, '' );
