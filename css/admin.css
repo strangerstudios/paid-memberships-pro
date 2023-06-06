@@ -1489,6 +1489,7 @@ tr.pmpro_settings_divider td {
 	font-size: 18px;
 	line-height: 26px;
 	margin: 0 0 1em 0;
+	padding: 0;
 	width: 100%;
 }
 
@@ -1590,11 +1591,32 @@ tr.pmpro_settings_divider td {
 }
 
 .pmpro-wizard__container .pmpro-wizard__field__checkbox-group {
-	display: flex;
+	align-items: center;
+	display: grid;
+	grid-template-columns: auto 8fr;
+	grid-column-gap: 1em;
+	grid-template-areas: "input label" ". content";
 }
 
 .pmpro-wizard__container .pmpro-wizard__field__checkbox-group input[type="checkbox"] {
-	margin: .25em 1em 0 0;
+	grid-area: input;
+	margin: 0;
+}
+
+.pmpro-wizard__container .pmpro-wizard__field__checkbox-group > label {
+	font-weight: bold;
+	grid-area: label;
+	margin-bottom: 0;
+}
+
+.pmpro-wizard__container .pmpro-wizard__field__checkbox-group .pmpro-wizard__field__checkbox-content {
+	grid-area: content;
+}
+
+.pmpro-wizard__container .pmpro-wizard__field__checkbox-group .pmpro-wizard__field__checkbox-content input,
+.pmpro-wizard__container .pmpro-wizard__field__checkbox-group .pmpro-wizard__field__checkbox-content select {
+	margin-right: .5em;
+	margin-left: .5em;
 }
 
 .pmpro-wizard__container .pmpro_wizard__submit {
