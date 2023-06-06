@@ -100,6 +100,7 @@ button[type="button"]#other_discount_code_toggle:focus {
 	text-align: center;
     text-decoration: underline;
 	text-transform: none;
+	transform: none;
 }
 
 /*---------------------------------------
