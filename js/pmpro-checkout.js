@@ -66,7 +66,7 @@ jQuery(document).ready(function(){
         });
 		
 		// Bottom discount code field click handler.
-		jQuery('#pmpro_discount_code_button').click(function() {
+		jQuery('#discount_code_button').click(function() {
 			var code = jQuery('#pmpro_discount_code').val();
 			var level_id = jQuery('#pmpro_level').val();
 
@@ -95,7 +95,7 @@ jQuery(document).ready(function(){
 						}
 						else
 						{
-							jQuery('#pmpro_discount_code_message').html(responseHTML);
+							jQuery('#discount_code_message').html(responseHTML);
 						}
 
 						//enable invite button
