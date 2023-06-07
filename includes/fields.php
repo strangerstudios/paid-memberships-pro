@@ -116,6 +116,10 @@ function pmpro_add_user_taxonomy( $name, $name_plural ) {
 		$safe_name = substr( $safe_name, 0, 32 );
 	}
 
+	// Add to the global so we can keep track.
+	$pmpro_user_taxonomies = (array) $pmpro_user_taxonomies;
+	$pmpro_user_taxonomies[] = $safe_name;
+
 	// Make sure name and plural name are less than 32 characters.
 	if ( strlen( $name ) > 32 ) {
 		$name = substr( $name, 0, 32 );

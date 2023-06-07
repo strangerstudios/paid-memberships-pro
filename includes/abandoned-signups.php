@@ -19,7 +19,7 @@ function pmpro_abandoned_signups_taxonomy() {
 		)
 	);
 }
-add_action( 'init', 'pmpro_abandoned_signups_taxonomy', 10 );
+add_action( 'init', 'pmpro_abandoned_signups_taxonomy', 1 );
 
 /**
  * Add the abandoned signup taxonomy to the user object when they are created during
@@ -54,7 +54,7 @@ function pmpro_remove_abandoned_signup_taxonomy( $user_id ) {
 	}
 
 	// Bail if the user doesn't have the adbandoned signup taxonomy.
-	if ( ! has_term( 'abandoned-signup', 'pmpro_abandoned_signup', $user_id ) ) {
+	if ( ! is_object_in_term( $user_id, 'pmpro_abandoned_signup', 'abandoned-signup' ) ) {		
 		return;
 	}
 
@@ -84,13 +84,8 @@ function pmpro_remove_abandoned_signup_taxonomy_on_page_load() {
 		return;
 	}
 
-	// Bail if the user doesn't have the adbandoned signup taxonomy.
-	if ( ! has_term( 'abandoned-signup', 'pmpro_abandoned_signup', $user_id ) ) {
-		return;
-	}
-
-	// The user did something after being created. Remove the abandoned signup taxonomy from the user.
-	wp_remove_object_terms( $user_id, 'abandoned-signup', 'pmpro_abandoned_signup' );
+	// Remove the abandoned signup taxonomy from the user.
+	pmpro_remove_abandoned_signup_taxonomy( $user_id );
 }
 add_action( 'wp', 'pmpro_remove_abandoned_signup_taxonomy_on_page_load' );
 
@@ -259,12 +254,11 @@ function pmpro_abandoned_signups_users_list_table_description() {
 		return;
 	}
 
-	// Use JavaScript to add the description box to the users table.
-	// Description: These are users who were created during the Paid Memberships Pro checkout process but haven't yet completed checkout or performed any other action on your site. You should periodically delete users from this list if the Registered date is more than a few days old.
+	// Use JavaScript to add the description box to the users table.	
 	?>
 	<script>
 		jQuery( document ).ready( function( $ ) {
-			$( '.tablenav.top' ).after( '<div class="pmpro-abandoned-signup-description"><p><?php esc_html_e( 'These are users who were created during the Paid Memberships Pro checkout process but haven\'t yet completed checkout or performed any other action on your site. You should periodically delete users from this list if the Registered date is more than a few days old.', 'paid-memberships-pro' ); ?></p></div>' );
+			$( '.tablenav.top' ).after( '<div class="pmpro-abandoned-signup-description"><p><?php esc_html_e( "These are users who were created during the Paid Memberships Pro checkout process but haven't yet completed checkout or performed any other action on your site. You should periodically delete users from this list if the Registered date is more than a few days old.", 'paid-memberships-pro' ); ?></p></div>' );
 		} );
 	</script>
 	<?php

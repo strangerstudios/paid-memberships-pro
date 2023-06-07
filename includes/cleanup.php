@@ -4,6 +4,7 @@
 */
 // deleting a user? remove their account info.
 function pmpro_delete_user( $user_id ) {
+	global $pmpro_user_taxonomies;
 
 	if ( empty( $user_id ) ) {
 		return false;
