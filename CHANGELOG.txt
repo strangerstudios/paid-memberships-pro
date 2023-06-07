@@ -1,5 +1,5 @@
 == Changelog ==
-= 2.11 - 2023-06-05 =
+= 2.11 - 2023-06-07 =
 * FEATURE: Now tracking users that are created at checkout but never complete checkout or otherwise use the site. These users can be found and deleted from the Users Table in the admin dashboard. #2435 (@dparker1005, @ideadude)
 * FEATURE: Added compatibility with Oxygen Builder. #2404 (@JarrydLong)
 * ENHANCEMENT: Updated the Orders list to use a WP List Table. #2383 (@JarrydLong)
