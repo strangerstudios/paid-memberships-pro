@@ -247,7 +247,7 @@ add_action( 'admin_bar_menu', 'pmpro_admin_bar_menu', 1000);
 
 /// Add docblock
 function pmpro_view_as_admin_bar_menu() {
-	global $wp_admin_bar;
+	global $wp_admin_bar, $current_user;
 
 	// Only show when viewing the frontend of the site.
 	if ( is_admin() ) {
@@ -275,26 +275,26 @@ function pmpro_view_as_admin_bar_menu() {
 		$view_as = sanitize_text_field( $_REQUEST['pmpro_view_as'] );
 
 		if ( $view_as == 'member' && ! empty( $_REQUEST['levels'] ) ) {
-			update_option( 'pmpro_view_as', array_map( 'sanitize_text_field', $_REQUEST['levels'] ) );
+			update_user_meta( $current_user->ID, 'pmpro_view_as', array_map( 'sanitize_text_field', $_REQUEST['levels'] ) );
 		} elseif ( $view_as !== 'admin' ) {
-			update_option( 'pmpro_view_as', $view_as );
+			update_user_meta( $current_user->ID, 'pmpro_view_as', $view_as );
 		} else {
-			delete_option( 'pmpro_view_as' );
+			delete_user_meta( $current_user->ID, 'pmpro_view_as' );
 		}
 
-		 echo "<meta http-equiv='refresh' content='0'>";
+		echo "<meta http-equiv='refresh' content='0'>";
 	}
 
 	// Let's get the option now so we can show it.
-	$viewing_as = get_option( 'pmpro_view_as' );
+	$viewing_as = get_user_meta( $current_user->ID, 'pmpro_view_as', true );
 
 	// Set the title and the option value.
 	if ( is_array( $viewing_as ) ) {
 		$view_as_option = $viewing_as;
-		$title = __( 'Viewing as Member', 'paid-memberships-pro' );
+		$title = '<span class="ab-icon dashicons dashicons-saved has-access-icon"></span>' . __( 'Viewing as Member', 'paid-memberships-pro' );
 	} elseif ( is_string( $viewing_as ) && ! empty( $viewing_as ) ) {
 		$view_as_option = $viewing_as;
-		$title = __( 'Viewing as', 'paid-memberships-pro' ) . ' ' . $view_as_option;
+		$title = '<span class="ab-icon dashicons dashicons-hidden non-member-icon"></span>' . __( 'Viewing as', 'paid-memberships-pro' ) . ' ' . $view_as_option;
 	} else {
 		$title = __( 'View as...', 'paid-memberships-pro' );
 		$view_as_option = $viewing_as;
@@ -309,20 +309,36 @@ function pmpro_view_as_admin_bar_menu() {
 	);
 
 	?>
-<script>	
-document.addEventListener('DOMContentLoaded', function () {
-  var viewAsMember = document.getElementById('pmpro_view_as_member');
-  var viewAsSelect = document.getElementById('pmpro_view_as');
+<script>
+jQuery(document).ready(function(){
+	
+	var viewAsMember = jQuery('#pmpro_view_as_member');
+	var viewAsSelect = jQuery('#pmpro_view_as');
+	var container = jQuery('#wp-admin-bar-pmpro-view-as .ab-sub-wrapper');
 
-  viewAsMember.style.display = 'none';
-  
-  viewAsSelect.addEventListener('change', function () {
-    if (this.value === 'member') {
-      viewAsMember.style.display = 'block';
-    } else {
-      viewAsMember.style.display = 'none';
-    }
-  });
+	// Hide it by default.
+	viewAsMember.hide();
+
+	/// Load Select2 for the 'member' levels.
+  	// jQuery('#pmpro_view_as_member').select2();
+
+	// Show the dropdown for membership levels if returning to the page.
+	if ( viewAsSelect.val() === 'member' ) {
+		viewAsMember.show();
+		container.css('height', '180px');
+	}
+
+	// Show the dropdown for membership levels.
+	viewAsSelect.change(function () {
+		if (this.value === 'member') {
+			viewAsMember.show();
+			container.css('height', '180px');
+		} else {
+			viewAsMember.hide();
+			container.css('height', '90px');
+		}
+	});
+
 });
 </script>
 	<style>
@@ -355,6 +371,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 		#pmpro_view_as_member {
 			margin:10px 0 10px 0;
+			display:block;
 		}
 
 	</style>

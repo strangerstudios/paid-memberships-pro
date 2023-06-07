@@ -25,12 +25,12 @@ function pmpro_has_membership_access($post_id = NULL, $user_id = NULL, $return_m
 	//use current user if no value is supplied
 	if(!$user_id)
 		$user_id = $current_user->ID;
-
+	
 	// Give admins access to all posts automatically and filterable to turn it on/off
 	if ( current_user_can( 'manage_options' ) && empty( get_option( 'pmpro_view_as' ) ) && apply_filters( 'pmpro_admin_always_has_access', true ) ) {
 		return true;
 	}
-	
+
 	//if no post or current_user object, set them up
 	if(isset($queried_object->ID) && !empty($queried_object->ID) && $post_id == $queried_object->ID)
 		$mypost = $queried_object;
@@ -141,7 +141,7 @@ function pmpro_has_membership_access($post_id = NULL, $user_id = NULL, $return_m
 	//filter for this post type
 	if( isset($mypost->post_type) && has_filter("pmpro_has_membership_access_filter_" . $mypost->post_type))
 		$hasaccess = apply_filters("pmpro_has_membership_access_filter_" . $mypost->post_type, $hasaccess, $mypost, $myuser, $post_membership_levels);
-	
+
 	//return
 	if($return_membership_levels)
 		return array($hasaccess, $post_membership_levels_ids, $post_membership_levels_names);
@@ -556,10 +556,15 @@ add_filter( 'body_class', 'pmpro_body_classes' );
  * @since TBD
  */
 function pmpro_view_as_access_filter( $has_access, $post, $user, $levels ) {
-	$view_as = get_option( 'pmpro_view_as', false );
+	$view_as = get_user_meta( $user->ID, 'pmpro_view_as', true );
 
 	// No option found, just return $has_access as is.
 	if ( $view_as == false ) {
+		return $has_access;
+	}
+
+	// Don't run this code unless an admin.
+	if ( ! current_user_can( 'manage_options' ) ) {
 		return $has_access;
 	}
 
