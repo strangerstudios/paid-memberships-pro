@@ -40,7 +40,7 @@
          attributes: {
           title : {
             type: 'string',
-            default: __( 'My account', 'paid-memberships-pro' ),
+            default: __( 'My Account', 'paid-memberships-pro' ),
           }
          },
          edit({ attributes, setAttributes }) {

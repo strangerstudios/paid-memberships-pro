@@ -30,7 +30,7 @@ function register_dynamic_block() {
 			'attributes'	=> array(
 				'title'		=> array(
 					'type' => 'string',
-					'default' =>  __( 'My account', 'paid-memberships-pro' )
+					'default' =>  __( 'My Account', 'paid-memberships-pro' )
 				)
 			),
 		]
