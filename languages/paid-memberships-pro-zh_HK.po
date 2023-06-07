@@ -2,16 +2,16 @@
 # This file is distributed under the same license as the Paid Memberships Pro plugin.
 msgid ""
 msgstr ""
-"Project-Id-Version: Paid Memberships Pro 2.10.7\n"
+"Project-Id-Version: Paid Memberships Pro 2.11\n"
 "Report-Msgid-Bugs-To: info@paidmembershipspro.com\n"
 "Last-Translator: Paid Memberships Pro <info@paidmembershipspro.com>\n"
 "Language-Team: Paid Memberships Pro <info@paidmembershipspro.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2023-05-23T18:39:23+00:00\n"
+"POT-Creation-Date: 2023-06-07T04:03:11+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"X-Generator: WP-CLI 2.7.1\n"
+"X-Generator: WP-CLI 2.8.1\n"
 "X-Domain: paid-memberships-pro\n"
 
 #: adminpages/addons.php:5
@@ -88,6 +88,7 @@ msgstr "您無權造這個行動."
 #: adminpages/admin_header.php:256
 #: includes/adminpages.php:61
 #: includes/adminpages.php:221
+#: adminpages/admin_header.php:255
 msgid "Add Ons"
 msgstr "附加"
 
@@ -133,6 +134,8 @@ msgstr "再檢查"
 #: includes/terms.php:88
 #: adminpages/orders.php:1102
 #: adminpages/reports.php:21
+#: adminpages/membershiplevels.php:825
+#: classes/class-pmpro-orders-list-table.php:481
 msgid "All"
 msgstr "所有的"
 
@@ -148,6 +151,8 @@ msgstr "所有的"
 #: classes/class-pmpro-site-health.php:266
 #: classes/class-pmpro-site-health.php:265
 #: classes/class-pmpro-site-health.php:271
+#: classes/class-pmpro-site-health.php:269
+#: classes/class-pmpro-site-health.php:275
 msgid "Active"
 msgstr "活動"
 
@@ -159,6 +164,7 @@ msgstr "活動"
 #: classes/class-pmpro-site-health.php:250
 #: classes/class-pmpro-site-health.php:262
 #: classes/class-pmpro-site-health.php:267
+#: classes/class-pmpro-site-health.php:271
 msgid "Inactive"
 msgstr "無活動"
 
@@ -206,6 +212,7 @@ msgstr "類型"
 #: adminpages/membershiplevels.php:357
 #: adminpages/membershiplevels.php:453
 #: adminpages/membershiplevels.php:458
+#: adminpages/membershiplevels.php:459
 msgid "Description"
 msgstr "描述"
 
@@ -322,6 +329,12 @@ msgstr "啟用 %s"
 #: adminpages/orders.php:1536
 #: includes/fields.php:1351
 #: adminpages/membershiplevels.php:1204
+#: adminpages/membershiplevels.php:1203
+#: adminpages/membershiplevels.php:1205
+#: classes/class-pmpro-discount-code-list-table.php:370
+#: classes/class-pmpro-discount-code-list-table.php:372
+#: classes/class-pmpro-orders-list-table.php:912
+#: classes/class-pmpro-orders-list-table.php:914
 msgid "Delete"
 msgstr "刪除"
 
@@ -433,6 +446,13 @@ msgstr "WordPress.org"
 #: classes/class.pmproemail.php:313
 #: classes/class.pmproemail.php:387
 #: classes/gateways/class.pmprogateway_stripe.php:475
+#: adminpages/orders.php:564
+#: adminpages/orders.php:856
+#: classes/class-pmpro-orders-list-table.php:1122
+#: classes/class-pmpro-orders-list-table.php:1131
+#: classes/class.pmproemail.php:320
+#: classes/class.pmproemail.php:394
+#: shortcodes/pmpro_account.php:289
 msgid "N/A"
 msgstr "N/A"
 
@@ -623,6 +643,8 @@ msgstr "會員論壇"
 #: adminpages/admin_header.php:271
 #: adminpages/wizard/save-steps.php:71
 #: adminpages/wizard/save-steps.php:66
+#: adminpages/admin_header.php:270
+#: adminpages/membershiplevels.php:1057
 msgid "Membership Levels"
 msgstr "會員會籍程度"
 
@@ -637,6 +659,7 @@ msgstr "會員會籍程度"
 #: adminpages/admin_header.php:262
 #: adminpages/admin_header.php:267
 #: adminpages/admin_header.php:279
+#: adminpages/admin_header.php:278
 msgid "Pages"
 msgstr "頁面"
 
@@ -649,6 +672,7 @@ msgstr "頁面"
 #: adminpages/admin_header.php:266
 #: adminpages/admin_header.php:271
 #: adminpages/admin_header.php:283
+#: adminpages/admin_header.php:282
 msgid "Payment Gateway &amp; SSL"
 msgstr "付款通道(payment gateway) &amp; SSL"
 
@@ -696,6 +720,10 @@ msgstr "付款通道(payment gateway) &amp; SSL"
 #: adminpages/orders.php:1554
 #: adminpages/orders.php:1557
 #: classes/class-pmpro-members-list-table.php:80
+#: adminpages/orders.php:300
+#: classes/class-pmpro-orders-list-table.php:932
+#: classes/class-pmpro-orders-list-table.php:935
+#: shortcodes/pmpro_account.php:202
 msgid "Email"
 msgstr "電郵"
 
@@ -711,6 +739,8 @@ msgstr "電郵"
 #: adminpages/functions.php:481
 #: adminpages/wizard/wizard.php:48
 #: adminpages/admin_header.php:299
+#: adminpages/admin_header.php:298
+#: adminpages/wizard/wizard.php:75
 msgid "Advanced"
 msgstr "高等/深入"
 
@@ -769,6 +799,8 @@ msgstr "這些內容是給會員的. 請登入/登記我們的網站就能讀."
 #: includes/adminpages.php:78
 #: adminpages/admin_header.php:299
 #: includes/adminpages.php:79
+#: adminpages/admin_header.php:298
+#: adminpages/wizard/advanced.php:12
 msgid "Advanced Settings"
 msgstr "深入的設定"
 
@@ -831,6 +863,7 @@ msgstr "這個訊息是代替RSS feed的內容."
 #: adminpages/advancedsettings.php:201
 #: adminpages/advancedsettings.php:208
 #: adminpages/wizard/advanced.php:16
+#: adminpages/wizard/advanced.php:17
 msgid "Filter searches and archives?"
 msgstr "過濾搜查和造檔案?"
 
@@ -839,6 +872,7 @@ msgstr "過濾搜查和造檔案?"
 #: adminpages/advancedsettings.php:205
 #: adminpages/advancedsettings.php:212
 #: adminpages/wizard/advanced.php:19
+#: adminpages/wizard/advanced.php:20
 msgid "No - Non-members will see restricted posts/pages in searches and archives."
 msgstr "不是 – 在搜查和洛檔案時非會員就只能讀有限制性的文章/網頁內容."
 
@@ -847,6 +881,7 @@ msgstr "不是 – 在搜查和洛檔案時非會員就只能讀有限制性的�
 #: adminpages/advancedsettings.php:206
 #: adminpages/advancedsettings.php:213
 #: adminpages/wizard/advanced.php:20
+#: adminpages/wizard/advanced.php:21
 msgid "Yes - Only members will see restricted posts/pages in searches and archives."
 msgstr "正是 – 在搜查和洛檔案時會員就能讀有限制性的文章/網頁內容."
 
@@ -866,6 +901,7 @@ msgstr "可出示, 但不能出示給非會員?"
 #: adminpages/advancedsettings.php:216
 #: adminpages/advancedsettings.php:223
 #: adminpages/wizard/advanced.php:26
+#: adminpages/wizard/advanced.php:27
 msgid "No - Hide excerpts."
 msgstr "不是 – 藏起摘錄."
 
@@ -876,6 +912,7 @@ msgstr "不是 – 藏起摘錄."
 #: adminpages/advancedsettings.php:217
 #: adminpages/advancedsettings.php:224
 #: adminpages/wizard/advanced.php:27
+#: adminpages/wizard/advanced.php:28
 msgid "Yes - Show excerpts."
 msgstr "正是 - 可出示, 但不能出示."
 
@@ -998,6 +1035,7 @@ msgstr "對會員藏起廣告?"
 #: adminpages/membershiplevels.php:1256
 #: classes/gateways/class.pmprogateway_stripe.php:559
 #: classes/gateways/class.pmprogateway_stripe.php:573
+#: adminpages/membershiplevels.php:1257
 msgid "No"
 msgstr "不是"
 
@@ -1162,6 +1200,8 @@ msgstr "只能是複數網站"
 #: adminpages/membershiplevels.php:1253
 #: classes/gateways/class.pmprogateway_stripe.php:561
 #: classes/gateways/class.pmprogateway_stripe.php:575
+#: adminpages/membershiplevels.php:1252
+#: adminpages/membershiplevels.php:1254
 msgid "Yes"
 msgstr "正是"
 
@@ -1275,6 +1315,7 @@ msgstr "保存設定"
 #: adminpages/discountcodes.php:49
 #: adminpages/discountcodes.php:113
 #: adminpages/discountcodes.php:115
+#: adminpages/discountcodes.php:105
 msgid "Discount code updated successfully."
 msgstr "减價密碼升級成功."
 
@@ -1283,6 +1324,7 @@ msgstr "减價密碼升級成功."
 #: adminpages/discountcodes.php:56
 #: adminpages/discountcodes.php:125
 #: adminpages/discountcodes.php:127
+#: adminpages/discountcodes.php:117
 msgid "Error updating discount code. That code may already be in use."
 msgstr "减價密碼升級有錯. 誤减價密碼有可能不是新的."
 
@@ -1291,6 +1333,7 @@ msgstr "减價密碼升級有錯. 誤减價密碼有可能不是新的."
 #: adminpages/discountcodes.php:65
 #: adminpages/discountcodes.php:107
 #: adminpages/discountcodes.php:109
+#: adminpages/discountcodes.php:99
 msgid "Discount code added successfully."
 msgstr "减價密碼加入成功."
 
@@ -1300,6 +1343,7 @@ msgstr "减價密碼加入成功."
 #: adminpages/discountcodes.php:73
 #: adminpages/discountcodes.php:121
 #: adminpages/discountcodes.php:123
+#: adminpages/discountcodes.php:113
 msgid "Error adding discount code. That code may already be in use."
 msgstr "减價密碼加入有錯誤.减價密碼有可能不是新的."
 
@@ -1309,6 +1353,7 @@ msgstr "减價密碼加入有錯誤.减價密碼有可能不是新的."
 #: adminpages/discountcodes.php:198
 #: adminpages/discountcodes.php:287
 #: adminpages/discountcodes.php:289
+#: adminpages/discountcodes.php:279
 #, php-format
 msgid "Error saving values for the %s level."
 msgstr "這個%s會籍程度保存數值有錯誤."
@@ -1319,6 +1364,7 @@ msgstr "這個%s會籍程度保存數值有錯誤."
 #: adminpages/discountcodes.php:206
 #: adminpages/discountcodes.php:295
 #: adminpages/discountcodes.php:297
+#: adminpages/discountcodes.php:287
 msgid "There were errors updating the level values: "
 msgstr "會籍程度數值升級有錯誤: "
 
@@ -1329,6 +1375,7 @@ msgstr "會籍程度數值升級有錯誤: "
 #: adminpages/discountcodes.php:239
 #: adminpages/discountcodes.php:335
 #: adminpages/discountcodes.php:337
+#: adminpages/discountcodes.php:327
 #, php-format
 msgid "Code %s deleted successfully."
 msgstr "密碼%s清除成功."
@@ -1340,6 +1387,7 @@ msgstr "密碼%s清除成功."
 #: adminpages/discountcodes.php:244
 #: adminpages/discountcodes.php:340
 #: adminpages/discountcodes.php:342
+#: adminpages/discountcodes.php:332
 msgid "Error deleting discount code. The code was only partially deleted. Please try again."
 msgstr "清除减價密碼有錯誤. 這個密碼不是完全清除. 請再次試下."
 
@@ -1350,6 +1398,7 @@ msgstr "清除减價密碼有錯誤. 這個密碼不是完全清除. 請再次�
 #: adminpages/discountcodes.php:250
 #: adminpages/discountcodes.php:346
 #: adminpages/discountcodes.php:348
+#: adminpages/discountcodes.php:338
 msgid "Error deleting code. Please try again."
 msgstr "清除密碼有錯誤. 請再次試下."
 
@@ -1363,6 +1412,7 @@ msgstr "清除密碼有錯誤. 請再次試下."
 #: adminpages/discountcodes.php:354
 #: adminpages/discountcodes.php:798
 #: adminpages/discountcodes.php:799
+#: adminpages/discountcodes.php:344
 msgid "Code not found."
 msgstr "密碼找不到."
 
@@ -1373,6 +1423,7 @@ msgstr "密碼找不到."
 #: adminpages/discountcodes.php:269
 #: adminpages/discountcodes.php:373
 #: adminpages/discountcodes.php:375
+#: adminpages/discountcodes.php:365
 msgid "Edit Discount Code"
 msgstr "編輯改變减價密碼"
 
@@ -1392,6 +1443,8 @@ msgstr "編輯改變减價密碼"
 #: adminpages/discountcodes.php:377
 #: adminpages/discountcodes.php:737
 #: adminpages/discountcodes.php:738
+#: adminpages/discountcodes.php:367
+#: adminpages/discountcodes.php:729
 msgid "Add New Discount Code"
 msgstr "加新减價密碼"
 
@@ -1462,6 +1515,10 @@ msgstr "加新减價密碼"
 #: adminpages/reports/logins.php:192
 #: classes/class-pmpro-members-list-table.php:76
 #: adminpages/membershiplevels.php:1122
+#: adminpages/discountcodes.php:436
+#: adminpages/membershiplevels.php:1123
+#: classes/class-pmpro-discount-code-list-table.php:82
+#: classes/class-pmpro-orders-list-table.php:92
 msgid "ID"
 msgstr "ID"
 
@@ -1481,6 +1538,7 @@ msgstr "ID"
 #: adminpages/orders.php:421
 #: adminpages/discountcodes.php:447
 #: adminpages/orders.php:422
+#: adminpages/discountcodes.php:437
 msgid "This will be generated when you save."
 msgstr "當保存時會産生造成的."
 
@@ -1533,6 +1591,10 @@ msgstr "當保存時會産生造成的."
 #: includes/profile.php:449
 #: adminpages/orders.php:1427
 #: adminpages/orders.php:1451
+#: adminpages/discountcodes.php:441
+#: adminpages/orders.php:334
+#: classes/class-pmpro-discount-code-list-table.php:84
+#: classes/class-pmpro-orders-list-table.php:94
 msgid "Code"
 msgstr "密碼/程式密碼"
 
@@ -1552,6 +1614,7 @@ msgstr "密碼/程式密碼"
 #: includes/profile.php:568
 #: includes/profile.php:567
 #: classes/class-pmpro-members-list-table.php:86
+#: adminpages/discountcodes.php:479
 msgid "Start Date"
 msgstr "開始日期"
 
@@ -1615,6 +1678,8 @@ msgstr "開始日期"
 #: pages/checkout.php:427
 #: classes/gateways/class.pmprogateway_stripe.php:961
 #: pages/billing.php:391
+#: adminpages/discountcodes.php:497
+#: pages/checkout.php:428
 msgid "Expiration Date"
 msgstr "到期日期"
 
@@ -1635,6 +1700,8 @@ msgstr "到期日期"
 #: adminpages/discountcodes.php:789
 #: adminpages/discountcodes.php:790
 #: adminpages/discountcodes.php:925
+#: adminpages/discountcodes.php:515
+#: classes/class-pmpro-discount-code-list-table.php:87
 msgid "Uses"
 msgstr "用"
 
@@ -1645,6 +1712,7 @@ msgstr "用"
 #: adminpages/discountcodes.php:393
 #: adminpages/discountcodes.php:526
 #: adminpages/discountcodes.php:528
+#: adminpages/discountcodes.php:518
 msgid "Leave blank for unlimited uses."
 msgstr "無限就著下空著的."
 
@@ -1654,6 +1722,7 @@ msgstr "無限就著下空著的."
 #: adminpages/discountcodes.php:402
 #: adminpages/discountcodes.php:535
 #: adminpages/discountcodes.php:537
+#: adminpages/discountcodes.php:527
 msgid "Which Levels Will This Code Apply To?"
 msgstr "這個程度會著下怎麼密碼?"
 
@@ -1678,6 +1747,8 @@ msgstr "這個程度會著下怎麼密碼?"
 #: adminpages/membershiplevels.php:399
 #: adminpages/membershiplevels.php:538
 #: adminpages/membershiplevels.php:543
+#: adminpages/discountcodes.php:566
+#: adminpages/membershiplevels.php:544
 msgid "Initial Payment"
 msgstr "首期付款"
 
@@ -1699,6 +1770,8 @@ msgstr "首期付款"
 #: adminpages/membershiplevels.php:410
 #: adminpages/membershiplevels.php:549
 #: adminpages/membershiplevels.php:554
+#: adminpages/discountcodes.php:577
+#: adminpages/membershiplevels.php:555
 msgid "The initial amount collected at registration."
 msgstr "首期會在登記時收集."
 
@@ -1720,6 +1793,8 @@ msgstr "首期會在登記時收集."
 #: adminpages/membershiplevels.php:415
 #: adminpages/membershiplevels.php:553
 #: adminpages/membershiplevels.php:558
+#: adminpages/discountcodes.php:582
+#: adminpages/membershiplevels.php:559
 msgid "Recurring Subscription"
 msgstr "定期訂閱"
 
@@ -1741,6 +1816,8 @@ msgstr "定期訂閱"
 #: adminpages/membershiplevels.php:416
 #: adminpages/membershiplevels.php:554
 #: adminpages/membershiplevels.php:559
+#: adminpages/discountcodes.php:583
+#: adminpages/membershiplevels.php:560
 msgid "Check if this level has a recurring subscription payment."
 msgstr "請檢查這個會籍程度有不有定期訂閱費."
 
@@ -1761,6 +1838,8 @@ msgstr "請檢查這個會籍程度有不有定期訂閱費."
 #: adminpages/membershiplevels.php:420
 #: adminpages/membershiplevels.php:558
 #: adminpages/membershiplevels.php:563
+#: adminpages/discountcodes.php:587
+#: adminpages/membershiplevels.php:564
 msgid "Billing Amount"
 msgstr "付款帳單數量"
 
@@ -1830,6 +1909,9 @@ msgstr "付款帳單數量"
 #: classes/gateways/class.pmprogateway_stripe.php:3240
 #: classes/gateways/class.pmprogateway_stripe.php:3259
 #: classes/gateways/class.pmprogateway_stripe.php:3282
+#: adminpages/discountcodes.php:602
+#: adminpages/discountcodes.php:690
+#: adminpages/membershiplevels.php:757
 msgid "Day(s)"
 msgstr "日(s)"
 
@@ -1898,6 +1980,10 @@ msgstr "日(s)"
 #: classes/gateways/class.pmprogateway_stripe.php:3242
 #: classes/gateways/class.pmprogateway_stripe.php:3261
 #: classes/gateways/class.pmprogateway_stripe.php:3284
+#: adminpages/discountcodes.php:602
+#: adminpages/discountcodes.php:690
+#: adminpages/membershiplevels.php:582
+#: adminpages/membershiplevels.php:759
 msgid "Month(s)"
 msgstr "月(s)"
 
@@ -1966,6 +2052,9 @@ msgstr "月(s)"
 #: classes/gateways/class.pmprogateway_stripe.php:3241
 #: classes/gateways/class.pmprogateway_stripe.php:3260
 #: classes/gateways/class.pmprogateway_stripe.php:3283
+#: adminpages/discountcodes.php:602
+#: adminpages/discountcodes.php:690
+#: adminpages/membershiplevels.php:758
 msgid "Week(s)"
 msgstr "星期(s)"
 
@@ -2035,6 +2124,10 @@ msgstr "星期(s)"
 #: classes/gateways/class.pmprogateway_stripe.php:3243
 #: classes/gateways/class.pmprogateway_stripe.php:3262
 #: classes/gateways/class.pmprogateway_stripe.php:3285
+#: adminpages/discountcodes.php:602
+#: adminpages/discountcodes.php:690
+#: adminpages/membershiplevels.php:583
+#: adminpages/membershiplevels.php:760
 msgid "Year(s)"
 msgstr "年(s)"
 
@@ -2056,6 +2149,8 @@ msgstr "年(s)"
 #: adminpages/membershiplevels.php:444
 #: adminpages/membershiplevels.php:591
 #: adminpages/membershiplevels.php:596
+#: adminpages/discountcodes.php:610
+#: adminpages/membershiplevels.php:597
 msgid "The amount to be billed one cycle after the initial payment."
 msgstr "交完首期付款後一個週期後的付款數量."
 
@@ -2077,6 +2172,8 @@ msgstr "交完首期付款後一個週期後的付款數量."
 #: adminpages/membershiplevels.php:463
 #: adminpages/membershiplevels.php:609
 #: adminpages/membershiplevels.php:614
+#: adminpages/discountcodes.php:620
+#: adminpages/membershiplevels.php:615
 msgid "Billing Cycle Limit"
 msgstr "結算週期限期"
 
@@ -2098,6 +2195,8 @@ msgstr "結算週期限期"
 #: adminpages/membershiplevels.php:467
 #: adminpages/membershiplevels.php:613
 #: adminpages/membershiplevels.php:618
+#: adminpages/discountcodes.php:624
+#: adminpages/membershiplevels.php:619
 msgid "The <strong>total</strong> number of recurring billing cycles for this level, including the trial period (if applicable) but not including the initial payment. Set to zero if membership is indefinite."
 msgstr "在這個會籍程度結算週期的<strong>總數量</strong>, (如果適合就)包含試用期, 但是不包含首期付款. 無限期的會籍就既定是零."
 
@@ -2120,6 +2219,8 @@ msgstr "在這個會籍程度結算週期的<strong>總數量</strong>, (如果�
 #: adminpages/membershiplevels.php:487
 #: adminpages/membershiplevels.php:644
 #: adminpages/membershiplevels.php:649
+#: adminpages/discountcodes.php:644
+#: adminpages/membershiplevels.php:650
 msgid "Custom Trial"
 msgstr "專門設計試用期"
 
@@ -2143,6 +2244,8 @@ msgstr "專門設計試用期"
 #: adminpages/membershiplevels.php:489
 #: adminpages/membershiplevels.php:646
 #: adminpages/membershiplevels.php:651
+#: adminpages/discountcodes.php:646
+#: adminpages/membershiplevels.php:652
 msgid "Check to add a custom trial period."
 msgstr "檢查再加專門設計試用期."
 
@@ -2165,6 +2268,8 @@ msgstr "檢查再加專門設計試用期."
 #: adminpages/discountcodes.php:664
 #: adminpages/membershiplevels.php:654
 #: adminpages/membershiplevels.php:659
+#: adminpages/discountcodes.php:654
+#: adminpages/membershiplevels.php:660
 msgid "Trial Billing Amount"
 msgstr "試用付款帳單數量"
 
@@ -2187,6 +2292,8 @@ msgstr "試用付款帳單數量"
 #: adminpages/discountcodes.php:675
 #: adminpages/membershiplevels.php:665
 #: adminpages/membershiplevels.php:670
+#: adminpages/discountcodes.php:665
+#: adminpages/membershiplevels.php:671
 msgid "for the first"
 msgstr "是開始的"
 
@@ -2209,6 +2316,8 @@ msgstr "是開始的"
 #: adminpages/discountcodes.php:677
 #: adminpages/membershiplevels.php:667
 #: adminpages/membershiplevels.php:672
+#: adminpages/discountcodes.php:667
+#: adminpages/membershiplevels.php:673
 msgid "subscription payments"
 msgstr "訂閱費"
 
@@ -2232,6 +2341,8 @@ msgstr "訂閱費"
 #: adminpages/discountcodes.php:689
 #: adminpages/membershiplevels.php:730
 #: adminpages/membershiplevels.php:735
+#: adminpages/discountcodes.php:679
+#: adminpages/membershiplevels.php:736
 msgid "Membership Expiration"
 msgstr "會籍到期"
 
@@ -2254,6 +2365,8 @@ msgstr "會籍到期"
 #: adminpages/discountcodes.php:690
 #: adminpages/membershiplevels.php:731
 #: adminpages/membershiplevels.php:736
+#: adminpages/discountcodes.php:680
+#: adminpages/membershiplevels.php:737
 msgid "Check this to set when membership access expires."
 msgstr "檢查這個會籍甚麼時候到期, 來設定會籍到期日."
 
@@ -2280,6 +2393,9 @@ msgstr "檢查這個會籍甚麼時候到期, 來設定會籍到期日."
 #: adminpages/membershiplevels.php:744
 #: adminpages/membershiplevels.php:749
 #: pages/confirmation.php:142
+#: adminpages/discountcodes.php:684
+#: adminpages/membershiplevels.php:750
+#: pages/confirmation.php:143
 msgid "Expires In"
 msgstr "到期日是"
 
@@ -2303,6 +2419,8 @@ msgstr "到期日是"
 #: adminpages/membershiplevels.php:587
 #: adminpages/membershiplevels.php:767
 #: adminpages/membershiplevels.php:772
+#: adminpages/discountcodes.php:700
+#: adminpages/membershiplevels.php:773
 msgid "Set the duration of membership access. Note that the any future payments (recurring subscription, if any) will be cancelled when the membership expires."
 msgstr "設置會籍讀取期限. 注意在會籍到期時任何付款(如果有定期訂閱費)都會在會籍到期時取消."
 
@@ -2315,6 +2433,7 @@ msgstr "設置會籍讀取期限. 注意在會籍到期時任何付款(如果有
 #: adminpages/discountcodes.php:734
 #: adminpages/discountcodes.php:736
 #: adminpages/discountcodes.php:737
+#: adminpages/discountcodes.php:728
 msgid "Memberships Discount Codes"
 msgstr "會籍减價密碼"
 
@@ -2342,6 +2461,8 @@ msgstr "搜查减價密碼"
 #: adminpages/discountcodes.php:774
 #: adminpages/discountcodes.php:776
 #: adminpages/discountcodes.php:771
+#: adminpages/discountcodes.php:758
+#: adminpages/reports/logins.php:116
 msgid "Search"
 msgstr "搜查"
 
@@ -2355,6 +2476,7 @@ msgstr "搜查"
 #: adminpages/discountcodes.php:787
 #: adminpages/discountcodes.php:788
 #: adminpages/discountcodes.php:919
+#: classes/class-pmpro-discount-code-list-table.php:85
 msgid "Starts"
 msgstr "開始"
 
@@ -2395,6 +2517,7 @@ msgstr "開始"
 #: adminpages/reports/login.php:197
 #: adminpages/reports/logins.php:197
 #: adminpages/reports/logins.php:203
+#: classes/class-pmpro-discount-code-list-table.php:86
 msgid "Expires"
 msgstr "到期日"
 
@@ -2413,6 +2536,8 @@ msgstr "到期日"
 #: adminpages/admin_header.php:254
 #: adminpages/admin_header.php:259
 #: adminpages/admin_header.php:271
+#: adminpages/admin_header.php:270
+#: classes/class-pmpro-discount-code-list-table.php:88
 msgid "Levels"
 msgstr "程度"
 
@@ -2469,6 +2594,7 @@ msgstr "减價密碼可以提供你給有些客戶有减價會籍費."
 #: adminpages/orders.php:1557
 #: adminpages/orders.php:1726
 #: adminpages/orders.php:1727
+#: classes/class-pmpro-orders-list-table.php:1184
 msgid "edit"
 msgstr "編輯改變"
 
@@ -2483,6 +2609,7 @@ msgstr "編輯改變"
 #: adminpages/discountcodes.php:816
 #: adminpages/discountcodes.php:813
 #: adminpages/discountcodes.php:815
+#: classes/class-pmpro-discount-code-list-table.php:313
 #, php-format
 msgid "Are you sure you want to delete the %s discount code? The subscriptions for existing users will not change, but new users will not be able to use this code anymore."
 msgstr "您真是要刪除%s减價密碼? 現在的會員訂閱費不會改, 但新會員就會不能用减價密碼."
@@ -2539,6 +2666,7 @@ msgstr "刪除"
 #: includes/adminpages.php:75
 #: adminpages/admin_header.php:287
 #: includes/adminpages.php:76
+#: adminpages/admin_header.php:286
 msgid "Email Settings"
 msgstr "電郵設定"
 
@@ -2751,6 +2879,7 @@ msgstr "編輯改變會員會籍程度"
 #: adminpages/membershiplevels.php:268
 #: adminpages/membershiplevels.php:422
 #: adminpages/membershiplevels.php:427
+#: adminpages/membershiplevels.php:428
 msgid "Add New Membership Level"
 msgstr "加新會員會籍程度"
 
@@ -2794,6 +2923,8 @@ msgstr "加新會員會籍程度"
 #: includes/fields.php:1370
 #: adminpages/reports/logins.php:194
 #: adminpages/membershiplevels.php:1123
+#: adminpages/membershiplevels.php:455
+#: adminpages/membershiplevels.php:1124
 msgid "Name"
 msgstr "名"
 
@@ -2805,6 +2936,7 @@ msgstr "名"
 #: adminpages/membershiplevels.php:375
 #: adminpages/membershiplevels.php:459
 #: adminpages/membershiplevels.php:464
+#: adminpages/membershiplevels.php:465
 msgid "Confirmation Message"
 msgstr "確認訊息"
 
@@ -2831,6 +2963,8 @@ msgstr "確認訊息"
 #: adminpages/membershiplevels.php:523
 #: adminpages/membershiplevels.php:1122
 #: adminpages/membershiplevels.php:1124
+#: adminpages/membershiplevels.php:524
+#: adminpages/membershiplevels.php:1125
 msgid "Billing Details"
 msgstr "付款帳單資料"
 
@@ -2877,6 +3011,8 @@ msgstr "付款帳單資料"
 #: classes/gateways/class.pmprogateway_stripe.php:3299
 #: classes/gateways/class.pmprogateway_stripe.php:3318
 #: classes/gateways/class.pmprogateway_stripe.php:3341
+#: adminpages/discountcodes.php:598
+#: adminpages/membershiplevels.php:575
 msgid "per"
 msgstr "每"
 
@@ -2900,6 +3036,8 @@ msgstr "Stripe只綜合付款帳單用\"星期\",\"月\",\"年\"的時分."
 #: adminpages/membershiplevels.php:446
 #: adminpages/membershiplevels.php:593
 #: adminpages/membershiplevels.php:598
+#: adminpages/discountcodes.php:612
+#: adminpages/membershiplevels.php:599
 msgid "Braintree integration currently only supports billing periods of \"Month\" or \"Year\"."
 msgstr "Braintree只綜合付款帳單用\"月\"或\"年\"的時分."
 
@@ -2913,6 +3051,7 @@ msgstr "Braintree只綜合付款帳單用\"月\"或\"年\"的時分."
 #: adminpages/membershiplevels.php:452
 #: adminpages/membershiplevels.php:599
 #: adminpages/membershiplevels.php:604
+#: adminpages/membershiplevels.php:605
 msgid "After saving this level, make note of the ID and create a \"Plan\" in your Braintree dashboard with the same settings and the \"Plan ID\" set to <em>pmpro_#</em>, where # is the level ID."
 msgstr "請記下ID和在您的Braintree控制台板開啓相同設定的新計劃\"Plan\"和\"Plan ID\"設定在 <em>pmpro_#</em>, 以#是會員會籍程度ID."
 
@@ -2944,6 +3083,8 @@ msgstr "請記下ID和在您的Braintree控制台板開啓相同設定的新計�
 #: adminpages/membershiplevels.php:599
 #: adminpages/membershiplevels.php:604
 #: adminpages/membershiplevels.php:609
+#: adminpages/membershiplevels.php:605
+#: adminpages/membershiplevels.php:610
 msgid "Note"
 msgstr "注意"
 
@@ -2968,6 +3109,8 @@ msgstr "你需要用相同的設定和計劃ID\"Plan ID\"在Braintree控制台�
 #: adminpages/membershiplevels.php:469
 #: adminpages/membershiplevels.php:615
 #: adminpages/membershiplevels.php:620
+#: adminpages/discountcodes.php:626
+#: adminpages/membershiplevels.php:621
 msgid "Stripe integration currently does not support billing limits. You can still set an expiration date below."
 msgstr "Stripe 的綜合現在不支持付款帳單限制. 你可以在下面設定有限日期."
 
@@ -2984,6 +3127,8 @@ msgstr "Stripe 的綜合現在不支持付款帳單限制. 你可以在下面設
 #: adminpages/membershiplevels.php:492
 #: adminpages/membershiplevels.php:649
 #: adminpages/membershiplevels.php:654
+#: adminpages/discountcodes.php:648
+#: adminpages/membershiplevels.php:655
 msgid "2Checkout integration does not support custom trials. You can do one period trials by setting an initial payment different from the billing amount."
 msgstr "2Checkout 的綜合不支持專門設計試用期. 在付款帳單裏的付款, 你可以設定首期付款來造你的一期試用期, 以又是同付款帳單的付款數量不同."
 
@@ -3000,6 +3145,8 @@ msgstr "2Checkout 的綜合不支持專門設計試用期. 在付款帳單裏的
 #: adminpages/discountcodes.php:679
 #: adminpages/membershiplevels.php:669
 #: adminpages/membershiplevels.php:674
+#: adminpages/discountcodes.php:669
+#: adminpages/membershiplevels.php:675
 msgid "Stripe integration currently does not support trial amounts greater than $0."
 msgstr "Stripe的綜合現在不支持試驗付款超個$0."
 
@@ -3016,6 +3163,8 @@ msgstr "Stripe的綜合現在不支持試驗付款超個$0."
 #: adminpages/discountcodes.php:681
 #: adminpages/membershiplevels.php:671
 #: adminpages/membershiplevels.php:676
+#: adminpages/discountcodes.php:671
+#: adminpages/membershiplevels.php:677
 msgid "Braintree integration currently does not support trial amounts greater than $0."
 msgstr "Braintree 的綜合現在不支持試用費超個$0."
 
@@ -3032,6 +3181,8 @@ msgstr "Braintree 的綜合現在不支持試用費超個$0."
 #: adminpages/discountcodes.php:683
 #: adminpages/membershiplevels.php:673
 #: adminpages/membershiplevels.php:678
+#: adminpages/discountcodes.php:673
+#: adminpages/membershiplevels.php:679
 msgid "Payflow integration currently does not support trial amounts greater than $0."
 msgstr "Payflow 的綜合現在不支持試用費超個$0."
 
@@ -3051,6 +3202,7 @@ msgstr "Payflow 的綜合現在不支持試用費超個$0."
 #: adminpages/dashboard.php:146
 #: adminpages/membershiplevels.php:908
 #: adminpages/membershiplevels.php:913
+#: adminpages/membershiplevels.php:914
 msgid "Other Settings"
 msgstr "其它設定"
 
@@ -3065,6 +3217,7 @@ msgstr "其它設定"
 #: adminpages/membershiplevels.php:554
 #: adminpages/membershiplevels.php:915
 #: adminpages/membershiplevels.php:920
+#: adminpages/membershiplevels.php:921
 msgid "Disable New Signups"
 msgstr "暫停新的報名"
 
@@ -3079,6 +3232,7 @@ msgstr "暫停新的報名"
 #: adminpages/membershiplevels.php:555
 #: adminpages/membershiplevels.php:916
 #: adminpages/membershiplevels.php:921
+#: adminpages/membershiplevels.php:922
 msgid "Check to hide this level from the membership levels page and disable registration."
 msgstr "用檢查來藏起這個程度對會籍頁和暫停登記."
 
@@ -3097,6 +3251,7 @@ msgstr "用檢查來藏起這個程度對會籍頁和暫停登記."
 #: adminpages/membershiplevels.php:625
 #: adminpages/membershiplevels.php:800
 #: adminpages/membershiplevels.php:805
+#: adminpages/membershiplevels.php:806
 msgid "Content Settings"
 msgstr "內容設定"
 
@@ -3112,6 +3267,7 @@ msgstr "內容設定"
 #: adminpages/membershiplevels.php:655
 #: adminpages/membershiplevels.php:817
 #: adminpages/membershiplevels.php:822
+#: adminpages/membershiplevels.php:823
 msgid "Categories"
 msgstr "種類"
 
@@ -3125,6 +3281,7 @@ msgstr "種類"
 #: adminpages/membershiplevels.php:700
 #: adminpages/membershiplevels.php:934
 #: adminpages/membershiplevels.php:939
+#: adminpages/membershiplevels.php:940
 msgid "Save Level"
 msgstr "保存程度"
 
@@ -3192,6 +3349,12 @@ msgstr "保存程度"
 #: pages/billing.php:445
 #: adminpages/orders.php:1046
 #: pages/billing.php:454
+#: adminpages/discountcodes.php:720
+#: adminpages/membershiplevels.php:941
+#: adminpages/orders.php:904
+#: pages/billing.php:453
+#: pages/cancel.php:99
+#: shortcodes/pmpro_account.php:119
 msgid "Cancel"
 msgstr "取消"
 
@@ -3210,6 +3373,7 @@ msgstr "取消"
 #: adminpages/membershiplevels.php:818
 #: adminpages/membershiplevels.php:1060
 #: adminpages/membershiplevels.php:1065
+#: adminpages/membershiplevels.php:1066
 msgid "Add New Level"
 msgstr "加新程度"
 
@@ -3243,6 +3407,8 @@ msgstr "加新程度"
 #: adminpages/membershiplevels.php:1047
 #: adminpages/membershiplevels.php:1049
 #: adminpages/membershiplevels.php:1052
+#: adminpages/membershiplevels.php:1050
+#: adminpages/membershiplevels.php:1053
 msgid "Search Levels"
 msgstr "搜查程度"
 
@@ -3258,6 +3424,7 @@ msgstr "搜查程度"
 #: adminpages/membershiplevels.php:1105
 #: adminpages/membershiplevels.php:1110
 #: adminpages/membershiplevels.php:1112
+#: adminpages/membershiplevels.php:1113
 msgid "Drag and drop membership levels to reorder them on the Levels page."
 msgstr "在程度頁拉和落下這個會籍程度來再訂購."
 
@@ -3302,6 +3469,12 @@ msgstr "在程度頁拉和落下這個會籍程度來再訂購."
 #: adminpages/membershiplevels.php:1125
 #: adminpages/orders.php:840
 #: pages/billing.php:101
+#: adminpages/membershiplevels.php:1126
+#: adminpages/orders.php:698
+#: pages/cancel.php:74
+#: pages/confirmation.php:100
+#: pages/invoice.php:90
+#: shortcodes/pmpro_account.php:57
 msgid "Expiration"
 msgstr "到期"
 
@@ -3323,6 +3496,7 @@ msgstr "到期"
 #: adminpages/membershiplevels.php:1119
 #: adminpages/membershiplevels.php:1124
 #: adminpages/membershiplevels.php:1126
+#: adminpages/membershiplevels.php:1127
 msgid "Allow Signups"
 msgstr "可以報名"
 
@@ -3345,6 +3519,7 @@ msgstr "可以報名"
 #: adminpages/membershiplevels.php:1229
 #: adminpages/membershiplevels.php:1234
 #: adminpages/membershiplevels.php:1236
+#: adminpages/membershiplevels.php:1237
 msgid "FREE"
 msgstr "免費"
 
@@ -3367,6 +3542,7 @@ msgstr "免費"
 #: adminpages/membershiplevels.php:1238
 #: adminpages/membershiplevels.php:1243
 #: adminpages/membershiplevels.php:1245
+#: adminpages/membershiplevels.php:1246
 msgid "After"
 msgstr "以後"
 
@@ -3427,6 +3603,7 @@ msgstr "複製"
 #: includes/adminpages.php:153
 #: adminpages/memberslist.php:20
 #: adminpages/memberslist.php:21
+#: adminpages/memberslist.php:22
 msgid "Members List"
 msgstr "會員名單"
 
@@ -3454,6 +3631,8 @@ msgstr "會員名單"
 #: adminpages/orders.php:1078
 #: adminpages/reports/sales.php:345
 #: adminpages/reports/sales.php:593
+#: adminpages/memberslist.php:23
+#: adminpages/orders.php:936
 msgid "Export to CSV"
 msgstr "輸出到CSV"
 
@@ -3496,6 +3675,7 @@ msgstr "輸出到CSV"
 #: adminpages/reports/sales.php:339
 #: adminpages/orders.php:1100
 #: adminpages/reports/sales.php:347
+#: classes/class-pmpro-orders-list-table.php:479
 msgid "Show"
 msgstr "顯示"
 
@@ -3544,6 +3724,10 @@ msgstr "顯示"
 #: classes/class.pmproemail.php:281
 #: adminpages/reports/logins.php:167
 #: adminpages/reports/sales.php:623
+#: adminpages/reports/memberships.php:377
+#: adminpages/reports/sales.php:628
+#: classes/class.pmproemail.php:232
+#: classes/class.pmproemail.php:288
 msgid "All Levels"
 msgstr "所有程度"
 
@@ -3646,6 +3830,8 @@ msgstr "%d 會員找到."
 #: classes/class-pmpro-members-list-table.php:75
 #: pages/checkout.php:158
 #: classes/class.memberorder.php:1630
+#: pages/checkout.php:159
+#: shortcodes/pmpro_account.php:201
 msgid "Username"
 msgstr "會員名"
 
@@ -3703,6 +3889,10 @@ msgstr "姓氏"
 #: pages/checkout.php:264
 #: adminpages/orders.php:570
 #: pages/billing.php:172
+#: adminpages/orders.php:428
+#: pages/checkout.php:265
+#: pages/confirmation.php:79
+#: pages/invoice.php:69
 msgid "Billing Address"
 msgstr "付款帳單地址"
 
@@ -3725,6 +3915,7 @@ msgstr "會籍"
 #: adminpages/memberslist.php:162
 #: adminpages/wizard/memberships.php:41
 #: classes/class-pmpro-members-list-table.php:84
+#: adminpages/wizard/memberships.php:48
 msgid "Fee"
 msgstr "付款"
 
@@ -3824,6 +4015,7 @@ msgstr "成功清除訂購."
 #: adminpages/orders.php:164
 #: adminpages/orders.php:170
 #: adminpages/orders.php:171
+#: adminpages/orders.php:26
 msgid "Error deleting order."
 msgstr "清除訂購有錯."
 
@@ -3836,6 +4028,7 @@ msgstr "清除訂購有錯."
 #: adminpages/orders.php:315
 #: adminpages/orders.php:316
 #: adminpages/orders.php:342
+#: adminpages/orders.php:198
 msgid "Order saved successfully."
 msgstr "成功保存訂購."
 
@@ -3856,6 +4049,7 @@ msgstr "訂購時間標志更新有錯."
 #: adminpages/orders.php:318
 #: adminpages/orders.php:319
 #: adminpages/orders.php:345
+#: adminpages/orders.php:201
 msgid "Error saving order."
 msgstr "保存訂購有錯."
 
@@ -3892,6 +4086,7 @@ msgstr "訂購"
 #: adminpages/orders.php:394
 #: adminpages/orders.php:454
 #: adminpages/orders.php:455
+#: adminpages/orders.php:313
 msgid "New Order"
 msgstr "新訂購"
 
@@ -3906,6 +4101,7 @@ msgstr "新訂購"
 #: adminpages/orders.php:440
 #: adminpages/orders.php:487
 #: adminpages/orders.php:488
+#: adminpages/orders.php:346
 msgid "Randomly generated for you."
 msgstr "幫助你隨意産生."
 
@@ -3920,6 +4116,7 @@ msgstr "幫助你隨意産生."
 #: adminpages/orders.php:445
 #: adminpages/orders.php:539
 #: adminpages/orders.php:540
+#: adminpages/orders.php:397
 msgid "User ID"
 msgstr "會員ID"
 
@@ -3937,6 +4134,7 @@ msgstr "會員ID"
 #: adminpages/orders.php:552
 #: adminpages/orders.php:555
 #: adminpages/orders.php:554
+#: adminpages/orders.php:412
 msgid "Membership Level ID"
 msgstr "會員會籍程度ID"
 
@@ -3953,6 +4151,7 @@ msgstr "會員會籍程度ID"
 #: adminpages/orders.php:576
 #: adminpages/orders.php:579
 #: adminpages/orders.php:578
+#: adminpages/orders.php:436
 msgid "Billing Name"
 msgstr "付款帳名字"
 
@@ -3969,6 +4168,7 @@ msgstr "付款帳名字"
 #: adminpages/orders.php:590
 #: adminpages/orders.php:593
 #: adminpages/orders.php:592
+#: adminpages/orders.php:450
 msgid "Billing Street"
 msgstr "付款帳街道名"
 
@@ -3986,6 +4186,7 @@ msgstr "付款帳街道名"
 #: adminpages/orders.php:602
 #: adminpages/orders.php:605
 #: adminpages/orders.php:604
+#: adminpages/orders.php:462
 msgid "Billing City"
 msgstr "付款帳都市名"
 
@@ -4002,6 +4203,7 @@ msgstr "付款帳都市名"
 #: adminpages/orders.php:615
 #: adminpages/orders.php:618
 #: adminpages/orders.php:617
+#: adminpages/orders.php:475
 msgid "Billing State"
 msgstr "付款帳州名"
 
@@ -4020,6 +4222,7 @@ msgstr "付款帳州名"
 #: adminpages/orders.php:627
 #: adminpages/orders.php:630
 #: adminpages/orders.php:629
+#: adminpages/orders.php:487
 msgid "Billing Postal Code"
 msgstr "付款帳郵政號碼"
 
@@ -4038,6 +4241,7 @@ msgstr "付款帳郵政號碼"
 #: adminpages/orders.php:639
 #: adminpages/orders.php:642
 #: adminpages/orders.php:641
+#: adminpages/orders.php:499
 msgid "Billing Country"
 msgstr "付款帳"
 
@@ -4055,6 +4259,7 @@ msgstr "付款帳"
 #: adminpages/orders.php:652
 #: adminpages/orders.php:655
 #: adminpages/orders.php:654
+#: adminpages/orders.php:512
 msgid "Billing Phone"
 msgstr "付款帳"
 
@@ -4072,6 +4277,7 @@ msgstr "付款帳"
 #: adminpages/orders.php:719
 #: adminpages/orders.php:722
 #: adminpages/orders.php:721
+#: adminpages/orders.php:579
 msgid "Sub Total"
 msgstr "小計部分"
 
@@ -4102,6 +4308,8 @@ msgstr "小計部分"
 #: includes/functions.php:2942
 #: adminpages/orders.php:734
 #: includes/functions.php:2951
+#: adminpages/orders.php:592
+#: includes/functions.php:2890
 msgid "Tax"
 msgstr "稅"
 
@@ -4119,6 +4327,7 @@ msgstr "稅"
 #: adminpages/orders.php:749
 #: adminpages/orders.php:752
 #: adminpages/orders.php:751
+#: adminpages/orders.php:609
 msgid "Coupon Amount"
 msgstr "禮券數量"
 
@@ -4170,6 +4379,9 @@ msgstr "禮券數量"
 #: includes/functions.php:2971
 #: adminpages/orders.php:769
 #: includes/functions.php:2980
+#: adminpages/orders.php:627
+#: classes/class-pmpro-orders-list-table.php:97
+#: includes/functions.php:2919
 msgid "Total"
 msgstr "總數"
 
@@ -4196,6 +4408,7 @@ msgstr "應當是小計部分 + 稅 - 禮券數量."
 #: adminpages/orders.php:781
 #: adminpages/orders.php:784
 #: adminpages/orders.php:783
+#: adminpages/orders.php:641
 msgid "Payment Type"
 msgstr "付款類型"
 
@@ -4212,6 +4425,7 @@ msgstr "付款類型"
 #: adminpages/orders.php:792
 #: adminpages/orders.php:795
 #: adminpages/orders.php:794
+#: adminpages/orders.php:652
 msgid "e.g. PayPal Express, PayPal Standard, Credit Card."
 msgstr "例如. PayPal Express, PayPal Standard, Credit Card (信用卡)."
 
@@ -4278,6 +4492,8 @@ msgstr "例如. PayPal Express, PayPal Standard, Credit Card (信用卡)."
 #: pages/checkout.php:412
 #: adminpages/orders.php:798
 #: pages/billing.php:348
+#: adminpages/orders.php:656
+#: pages/checkout.php:413
 msgid "Card Type"
 msgstr "卡類型"
 
@@ -4294,6 +4510,7 @@ msgstr "卡類型"
 #: adminpages/orders.php:806
 #: adminpages/orders.php:809
 #: adminpages/orders.php:808
+#: adminpages/orders.php:666
 msgid "e.g. Visa, MasterCard, AMEX, etc"
 msgstr "例如. Visa, MasterCard, AMEX, etc"
 
@@ -4318,6 +4535,7 @@ msgstr "例如. Visa, MasterCard, AMEX, etc"
 #: classes/gateways/class.pmprogateway_twocheckout.php:145
 #: adminpages/orders.php:813
 #: adminpages/orders.php:812
+#: adminpages/orders.php:670
 msgid "Account Number"
 msgstr "戶口號碼"
 
@@ -4333,6 +4551,7 @@ msgstr "戶口號碼"
 #: adminpages/orders.php:820
 #: adminpages/orders.php:823
 #: adminpages/orders.php:822
+#: adminpages/orders.php:680
 msgid "Obscure all but last 4 digits."
 msgstr "不計最後的4個數字，其也要用少人用的."
 
@@ -4352,6 +4571,7 @@ msgstr "不計最後的4個數字，其也要用少人用的."
 #: adminpages/orders.php:829
 #: adminpages/orders.php:832
 #: adminpages/orders.php:831
+#: adminpages/orders.php:689
 msgid "Expiration Month"
 msgstr "到期月"
 
@@ -4417,6 +4637,10 @@ msgstr "限期年份"
 #: classes/gateways/class.pmprogateway_stripe.php:484
 #: adminpages/orders.php:851
 #: classes/gateways/class.pmprogateway_stripe.php:494
+#: adminpages/orders.php:709
+#: classes/class-pmpro-orders-list-table.php:101
+#: pages/invoice.php:41
+#: shortcodes/pmpro_account.php:261
 msgid "Status"
 msgstr "狀態"
 
@@ -4454,6 +4678,8 @@ msgstr "狀態"
 #: adminpages/orders.php:1668
 #: adminpages/orders.php:878
 #: classes/class.memberorder.php:1633
+#: adminpages/orders.php:736
+#: classes/class-pmpro-orders-list-table.php:99
 msgid "Gateway"
 msgstr "網關入口"
 
@@ -4478,6 +4704,7 @@ msgstr "網關入口"
 #: adminpages/paymentsettings.php:153
 #: adminpages/orders.php:902
 #: adminpages/orders.php:901
+#: adminpages/orders.php:759
 msgid "Gateway Environment"
 msgstr "網關入口環境"
 
@@ -4509,6 +4736,8 @@ msgstr "網關入口環境"
 #: classes/class-pmpro-site-health.php:233
 #: adminpages/orders.php:909
 #: classes/class-pmpro-site-health.php:238
+#: adminpages/orders.php:767
+#: classes/class-pmpro-site-health.php:242
 msgid "Sandbox/Testing"
 msgstr "沙箱/測試"
 
@@ -4540,6 +4769,8 @@ msgstr "沙箱/測試"
 #: classes/class-pmpro-site-health.php:234
 #: adminpages/orders.php:910
 #: classes/class-pmpro-site-health.php:239
+#: adminpages/orders.php:768
+#: classes/class-pmpro-site-health.php:243
 msgid "Live/Production"
 msgstr "活起/生產"
 
@@ -4557,6 +4788,7 @@ msgstr "活起/生產"
 #: adminpages/orders.php:916
 #: adminpages/orders.php:919
 #: adminpages/orders.php:918
+#: adminpages/orders.php:776
 msgid "Payment Transaction ID"
 msgstr "付款交易身分証明ID"
 
@@ -4573,6 +4805,7 @@ msgstr "付款交易身分証明ID"
 #: adminpages/orders.php:926
 #: adminpages/orders.php:929
 #: adminpages/orders.php:928
+#: adminpages/orders.php:786
 msgid "Generated by the gateway. Useful to cross reference orders."
 msgstr "是網關入口生產的. 對訂購有相互參照好處."
 
@@ -4596,6 +4829,7 @@ msgstr "是網關入口生產的. 對訂購有相互參照好處."
 #: classes/class.memberorder.php:1625
 #: adminpages/orders.php:933
 #: classes/class.memberorder.php:1634
+#: adminpages/orders.php:791
 msgid "Subscription Transaction ID"
 msgstr "訂閱交易ID"
 
@@ -4613,6 +4847,7 @@ msgstr "訂閱交易ID"
 #: adminpages/orders.php:942
 #: adminpages/orders.php:945
 #: adminpages/orders.php:944
+#: adminpages/orders.php:802
 msgid "Generated by the gateway. Useful to cross reference subscriptions."
 msgstr "是網關入口生產的. 對訂閱有相互參照好處."
 
@@ -4664,6 +4899,10 @@ msgstr "是網關入口生產的. 對訂閱有相互參照好處."
 #: adminpages/orders.php:1715
 #: includes/fields.php:1389
 #: pages/invoice.php:124
+#: adminpages/orders.php:351
+#: classes/class-pmpro-orders-list-table.php:102
+#: pages/invoice.php:125
+#: shortcodes/pmpro_account.php:258
 msgid "Date"
 msgstr "日期"
 
@@ -4680,6 +4919,7 @@ msgstr "日期"
 #: adminpages/orders.php:956
 #: adminpages/orders.php:959
 #: adminpages/orders.php:958
+#: adminpages/orders.php:816
 msgid "Affiliate ID"
 msgstr "聯盟行銷 ID"
 
@@ -4696,6 +4936,7 @@ msgstr "聯盟行銷 ID"
 #: adminpages/orders.php:969
 #: adminpages/orders.php:972
 #: adminpages/orders.php:971
+#: adminpages/orders.php:829
 msgid "Affiliate SubID"
 msgstr "聯盟行銷輔 ID"
 
@@ -4712,6 +4953,7 @@ msgstr "聯盟行銷輔 ID"
 #: adminpages/orders.php:1005
 #: adminpages/orders.php:1008
 #: adminpages/orders.php:1007
+#: adminpages/orders.php:865
 msgid "Notes"
 msgstr "注意/記錄"
 
@@ -4728,6 +4970,7 @@ msgstr "注意/記錄"
 #: adminpages/orders.php:1043
 #: adminpages/orders.php:1046
 #: adminpages/orders.php:1045
+#: adminpages/orders.php:903
 msgid "Save Order"
 msgstr "保存訂購"
 
@@ -4794,6 +5037,9 @@ msgstr "傳送電郵"
 #: includes/adminpages.php:58
 #: includes/adminpages.php:185
 #: adminpages/orders.php:1056
+#: adminpages/admin_header.php:243
+#: adminpages/orders.php:914
+#: classes/class-pmpro-discount-code-list-table.php:390
 msgid "Orders"
 msgstr "訂購"
 
@@ -4810,6 +5056,7 @@ msgstr "訂購"
 #: adminpages/orders.php:1055
 #: adminpages/orders.php:1058
 #: adminpages/orders.php:1057
+#: adminpages/orders.php:915
 msgid "Add New Order"
 msgstr "加新訂購"
 
@@ -4824,6 +5071,7 @@ msgstr "加新訂購"
 #: adminpages/orders.php:1017
 #: adminpages/orders.php:1105
 #: adminpages/orders.php:1104
+#: classes/class-pmpro-orders-list-table.php:483
 msgid "Within a Date Range"
 msgstr "要在日期價格"
 
@@ -4838,6 +5086,7 @@ msgstr "要在日期價格"
 #: adminpages/orders.php:1019
 #: adminpages/orders.php:1107
 #: adminpages/orders.php:1106
+#: classes/class-pmpro-orders-list-table.php:485
 msgid "Predefined Date Range"
 msgstr "於先的日期價格"
 
@@ -4852,6 +5101,7 @@ msgstr "於先的日期價格"
 #: adminpages/orders.php:1021
 #: adminpages/orders.php:1109
 #: adminpages/orders.php:1108
+#: classes/class-pmpro-orders-list-table.php:487
 msgid "Within a Level"
 msgstr "要在程度裏"
 
@@ -4866,6 +5116,7 @@ msgstr "要在程度裏"
 #: adminpages/orders.php:1025
 #: adminpages/orders.php:1113
 #: adminpages/orders.php:1112
+#: classes/class-pmpro-orders-list-table.php:491
 msgid "Within a Status"
 msgstr "要在狀態裏"
 
@@ -4880,6 +5131,7 @@ msgstr "要在狀態裏"
 #: adminpages/orders.php:1037
 #: adminpages/orders.php:1125
 #: adminpages/orders.php:1124
+#: classes/class-pmpro-orders-list-table.php:503
 msgid "From"
 msgstr "從"
 
@@ -4894,6 +5146,7 @@ msgstr "從"
 #: adminpages/orders.php:1052
 #: adminpages/orders.php:1140
 #: adminpages/orders.php:1139
+#: classes/class-pmpro-orders-list-table.php:518
 msgid "To"
 msgstr "給向"
 
@@ -4908,6 +5161,7 @@ msgstr "給向"
 #: adminpages/orders.php:1065
 #: adminpages/orders.php:1153
 #: adminpages/orders.php:1152
+#: classes/class-pmpro-orders-list-table.php:531
 msgid "filter by "
 msgstr "過濾者是 "
 
@@ -4922,6 +5176,7 @@ msgstr "過濾者是 "
 #: adminpages/orders.php:1115
 #: adminpages/orders.php:1203
 #: adminpages/orders.php:1202
+#: classes/class-pmpro-orders-list-table.php:581
 msgid "Filter"
 msgstr "過濾"
 
@@ -4949,6 +5204,7 @@ msgstr "過濾"
 #: adminpages/orders.php:1097
 #: adminpages/orders.php:1093
 #: adminpages/orders.php:1096
+#: adminpages/orders.php:951
 msgid "Search Orders"
 msgstr "搜查訂購"
 
@@ -4999,6 +5255,8 @@ msgstr "%d 訂購找到."
 #: adminpages/orders.php:1428
 #: adminpages/orders.php:1595
 #: adminpages/reports/logins.php:200
+#: classes/class-pmpro-orders-list-table.php:95
+#: classes/class.pmproemail.php:134
 msgid "User"
 msgstr "用者"
 
@@ -5054,6 +5312,10 @@ msgstr "用者"
 #: blocks/checkout-button/block.js:76
 #: blocks/checkout-page/block.js:62
 #: pages/confirmation.php:140
+#: pages/checkout.php:64
+#: pages/confirmation.php:66
+#: pages/confirmation.php:141
+#: pages/invoice.php:39
 msgid "Membership Level"
 msgstr "會員會籍程度"
 
@@ -5081,6 +5343,7 @@ msgstr "會員會籍程度"
 #: adminpages/orders.php:1532
 #: adminpages/orders.php:1684
 #: adminpages/orders.php:1685
+#: classes/class-pmpro-orders-list-table.php:1117
 msgid "Payment"
 msgstr "付款"
 
@@ -5099,6 +5362,7 @@ msgstr "付款"
 #: adminpages/orders.php:1683
 #: adminpages/orders.php:1434
 #: adminpages/orders.php:1684
+#: classes/class-pmpro-orders-list-table.php:100
 msgid "Transaction IDs"
 msgstr "交易IDs"
 
@@ -5132,6 +5396,7 @@ msgstr "交易IDs"
 #: includes/profile.php:502
 #: adminpages/orders.php:1601
 #: adminpages/orders.php:1613
+#: classes/class-pmpro-orders-list-table.php:987
 msgid "deleted"
 msgstr "清除"
 
@@ -5159,6 +5424,7 @@ msgstr "清除"
 #: adminpages/orders.php:1541
 #: adminpages/orders.php:1693
 #: adminpages/orders.php:1694
+#: classes/class-pmpro-orders-list-table.php:1126
 msgid "Subscription"
 msgstr "會籍"
 
@@ -5178,6 +5444,7 @@ msgstr "會籍"
 #: adminpages/orders.php:1368
 #: adminpages/orders.php:1457
 #: adminpages/orders.php:1458
+#: classes/class-pmpro-orders-list-table.php:822
 #, php-format
 msgid "Deleting orders is permanent and can affect active users. Are you sure you want to delete order %s?"
 msgstr "如果進行清除訂購就是永久的, 同時會影響活躍的用者. 你真是要清除訂購 %s?"
@@ -5216,6 +5483,7 @@ msgstr "電郵"
 #: adminpages/orders.php:1741
 #: adminpages/dashboard.php:310
 #: adminpages/orders.php:1742
+#: classes/class-pmpro-orders-list-table.php:177
 msgid "No orders found."
 msgstr "找不到訂購."
 
@@ -5929,6 +6197,7 @@ msgstr "送給所有生産的HTML通過這個URL過濾, 它會加HTTPS到URLs就
 #: adminpages/reports/sales.php:106
 #: adminpages/reports/members-per-level.php:32
 #: adminpages/reports/memberships.php:94
+#: adminpages/reports/members-per-level.php:33
 msgid "Details"
 msgstr "細節"
 
@@ -5997,6 +6266,7 @@ msgstr "今日"
 #: adminpages/reports/logins.php:206
 #: adminpages/reports/logins.php:210
 #: adminpages/reports/logins.php:215
+#: classes/class-pmpro-orders-list-table.php:536
 msgid "This Month"
 msgstr "今月"
 
@@ -6019,6 +6289,7 @@ msgstr "今月"
 #: adminpages/reports/logins.php:212
 #: adminpages/reports/logins.php:217
 #: adminpages/reports/sales.php:822
+#: adminpages/reports/sales.php:829
 msgid "All Time"
 msgstr "所有的時間"
 
@@ -6168,6 +6439,7 @@ msgstr "所有的取消"
 #: adminpages/reports/logins.php:211
 #: adminpages/reports/logins.php:216
 #: adminpages/reports/memberships.php:49
+#: classes/class-pmpro-orders-list-table.php:540
 msgid "This Year"
 msgstr "今年"
 
@@ -6193,6 +6465,8 @@ msgstr "今年"
 #: adminpages/reports/sales.php:341
 #: adminpages/reports/sales.php:349
 #: adminpages/reports/sales.php:599
+#: adminpages/reports/memberships.php:351
+#: adminpages/reports/sales.php:600
 msgid "Daily"
 msgstr "每日"
 
@@ -6220,6 +6494,8 @@ msgstr "每日"
 #: adminpages/reports/sales.php:342
 #: adminpages/reports/sales.php:350
 #: adminpages/reports/sales.php:600
+#: adminpages/reports/memberships.php:352
+#: adminpages/reports/sales.php:601
 msgid "Monthly"
 msgstr "每月"
 
@@ -6244,6 +6520,8 @@ msgstr "每月"
 #: adminpages/reports/sales.php:343
 #: adminpages/reports/sales.php:351
 #: adminpages/reports/sales.php:601
+#: adminpages/reports/memberships.php:353
+#: adminpages/reports/sales.php:602
 msgid "Annual"
 msgstr "每年"
 
@@ -6254,6 +6532,7 @@ msgstr "每年"
 #: adminpages/reports/memberships.php:337
 #: adminpages/reports/memberships.php:353
 #: adminpages/reports/memberships.php:355
+#: adminpages/reports/memberships.php:357
 msgid "Signups vs. All Cancellations"
 msgstr "報名 vs 所有取消"
 
@@ -6266,6 +6545,7 @@ msgstr "報名 vs 所有取消"
 #: adminpages/reports/memberships.php:338
 #: adminpages/reports/memberships.php:354
 #: adminpages/reports/memberships.php:356
+#: adminpages/reports/memberships.php:358
 msgid "Signups vs. Cancellations"
 msgstr "報名 vs 取消"
 
@@ -6276,6 +6556,7 @@ msgstr "報名 vs 取消"
 #: adminpages/reports/memberships.php:339
 #: adminpages/reports/memberships.php:355
 #: adminpages/reports/memberships.php:357
+#: adminpages/reports/memberships.php:359
 msgid "Signups vs. Expirations"
 msgstr "報名 vs 到期"
 
@@ -6323,6 +6604,10 @@ msgstr "報名 vs 到期"
 #: adminpages/reports/sales.php:368
 #: adminpages/reports/sales.php:610
 #: adminpages/reports/sales.php:621
+#: adminpages/reports/memberships.php:361
+#: adminpages/reports/memberships.php:374
+#: adminpages/reports/sales.php:612
+#: adminpages/reports/sales.php:625
 msgid "for"
 msgstr "為了"
 
@@ -6345,6 +6630,8 @@ msgstr "為了"
 #: adminpages/reports/sales.php:388
 #: adminpages/reports/sales.php:396
 #: adminpages/reports/sales.php:654
+#: adminpages/reports/memberships.php:408
+#: adminpages/reports/sales.php:661
 msgid "Generate Report"
 msgstr "生産報道"
 
@@ -6379,6 +6666,7 @@ msgstr "銷售和收入"
 #: adminpages/reports/sales.php:347
 #: adminpages/reports/sales.php:355
 #: adminpages/reports/sales.php:608
+#: adminpages/reports/sales.php:610
 msgid "Sales"
 msgstr "銷售"
 
@@ -6397,6 +6685,7 @@ msgstr "銷售"
 #: adminpages/reports/sales.php:531
 #: adminpages/reports/sales.php:560
 #: adminpages/reports/sales.php:607
+#: adminpages/reports/sales.php:609
 msgid "Revenue"
 msgstr "收入"
 
@@ -6433,6 +6722,7 @@ msgstr "物件"
 #: pages/levels.php:28
 #: adminpages/templates/orders-email.php:51
 #: adminpages/templates/orders-print.php:80
+#: pages/levels.php:29
 msgid "Price"
 msgstr "價錢"
 
@@ -6449,6 +6739,7 @@ msgstr "價錢"
 #: includes/functions.php:2915
 #: includes/functions.php:2935
 #: includes/functions.php:2944
+#: includes/functions.php:2883
 msgid "Subtotal"
 msgstr "小計部分總數"
 
@@ -6505,6 +6796,7 @@ msgstr "電郵從 %s"
 #: classes/class.pmproemail.php:184
 #: classes/class.pmproemail.php:201
 #: classes/class.pmproemail.php:206
+#: classes/class.pmproemail.php:213
 #, php-format
 msgid "Your membership at %s has been CANCELLED"
 msgstr "你的會籍在 %s 已經被取消"
@@ -6518,6 +6810,7 @@ msgstr "你的會籍在 %s 已經被取消"
 #: classes/class.pmproemail.php:212
 #: classes/class.pmproemail.php:242
 #: classes/class.pmproemail.php:248
+#: classes/class.pmproemail.php:255
 #, php-format
 msgid "Membership for %s at %s has been CANCELLED"
 msgstr "會籍給 %s 在%s 已經被取消"
@@ -6534,6 +6827,7 @@ msgstr "會籍給 %s 在%s 已經被取消"
 #: classes/class.pmproemail.php:401
 #: classes/class.pmproemail.php:461
 #: classes/class.pmproemail.php:470
+#: classes/class.pmproemail.php:477
 #, php-format
 msgid "Your membership confirmation for %s"
 msgstr "你的會籍確認給 %s"
@@ -6709,6 +7003,20 @@ msgstr "你的會籍確認給 %s"
 #: classes/class.pmproemail.php:1064
 #: classes/class.pmproemail.php:1066
 #: classes/gateways/class.pmprogateway_stripe.php:974
+#: adminpages/orders.php:557
+#: classes/class-pmpro-orders-list-table.php:103
+#: classes/class.pmproemail.php:548
+#: classes/class.pmproemail.php:554
+#: classes/class.pmproemail.php:560
+#: classes/class.pmproemail.php:672
+#: classes/class.pmproemail.php:678
+#: classes/class.pmproemail.php:1071
+#: classes/class.pmproemail.php:1073
+#: pages/checkout.php:124
+#: pages/checkout.php:130
+#: pages/checkout.php:465
+#: pages/confirmation.php:71
+#: pages/invoice.php:53
 msgid "Discount Code"
 msgstr "减價密碼"
 
@@ -6778,6 +7086,11 @@ msgstr "减價密碼"
 #: classes/class.pmproemail.php:1073
 #: classes/class.pmproemail.php:1256
 #: classes/class.pmproemail.php:1320
+#: classes/class.pmproemail.php:568
+#: classes/class.pmproemail.php:688
+#: classes/class.pmproemail.php:1080
+#: classes/class.pmproemail.php:1263
+#: classes/class.pmproemail.php:1327
 #, php-format
 msgid "This membership will expire on %s."
 msgstr "你的會籍會在%s到期."
@@ -6802,6 +7115,7 @@ msgstr "會員結帳是%s 在 %s"
 #: classes/class.pmproemail.php:693
 #: classes/class.pmproemail.php:700
 #: classes/class.pmproemail.php:711
+#: classes/class.pmproemail.php:718
 #, php-format
 msgid "Your billing information has been updated at %s"
 msgstr "你的付款帳單資料已經更新在 %s"
@@ -6816,6 +7130,7 @@ msgstr "你的付款帳單資料已經更新在 %s"
 #: classes/class.pmproemail.php:756
 #: classes/class.pmproemail.php:763
 #: classes/class.pmproemail.php:775
+#: classes/class.pmproemail.php:782
 #, php-format
 msgid "Billing information has been updated for %s at %s"
 msgstr "付款帳單資料已經更新給 %s在%s"
@@ -6876,6 +7191,7 @@ msgstr "發票給%s 的會籍"
 #: classes/class.pmproemail.php:1090
 #: classes/class.pmproemail.php:1092
 #: classes/class.pmproemail.php:1109
+#: classes/class.pmproemail.php:1116
 #, php-format
 msgid "Your trial at %s is ending soon"
 msgstr "你的試用期在 %s 就近到期日"
@@ -6896,6 +7212,7 @@ msgstr "你的試用期在 %s 就近到期日"
 #: classes/class.pmproemail.php:1129
 #: classes/class.pmproemail.php:1131
 #: classes/class.pmproemail.php:1149
+#: classes/class.pmproemail.php:1156
 #, php-format
 msgid "Your membership at %s has ended"
 msgstr "你的會籍在 %s 以完了"
@@ -6916,6 +7233,7 @@ msgstr "你的會籍在 %s 以完了"
 #: classes/class.pmproemail.php:1160
 #: classes/class.pmproemail.php:1162
 #: classes/class.pmproemail.php:1180
+#: classes/class.pmproemail.php:1187
 #, php-format
 msgid "Your membership at %s will end soon"
 msgstr "你的會籍在 %s 就近完了"
@@ -6936,6 +7254,7 @@ msgstr "你的會籍在 %s 就近完了"
 #: classes/class.pmproemail.php:1209
 #: classes/class.pmproemail.php:1211
 #: classes/class.pmproemail.php:1230
+#: classes/class.pmproemail.php:1237
 #, php-format
 msgid "Your membership at %s has been changed"
 msgstr "你的會籍在 %s 已經改變了"
@@ -7020,6 +7339,7 @@ msgstr "這個會籍會不是到期"
 #: classes/class.pmproemail.php:1272
 #: classes/class.pmproemail.php:1274
 #: classes/class.pmproemail.php:1294
+#: classes/class.pmproemail.php:1301
 #, php-format
 msgid "Membership for %s at %s has been changed"
 msgstr "這個 %s 籍會在 %s 已經改變了"
@@ -7152,6 +7472,7 @@ msgstr "有些付款已經做下了半部分我們不能取消. 請您馬上通�
 #: paid-memberships-pro.php:174
 #: paid-memberships-pro.php:179
 #: paid-memberships-pro.php:180
+#: paid-memberships-pro.php:184
 msgid "Authorize.net"
 msgstr "Authorize.net"
 
@@ -7249,6 +7570,7 @@ msgstr "這個 %s 網關入口需要%s PHP extension. 請你開起來, 或請你
 #: paid-memberships-pro.php:175
 #: paid-memberships-pro.php:180
 #: paid-memberships-pro.php:181
+#: paid-memberships-pro.php:185
 msgid "Braintree Payments"
 msgstr "Braintree 付款"
 
@@ -7401,6 +7723,8 @@ msgstr "全面同Braintree配合, 你需要設定網鉤URL到"
 #: pages/checkout.php:400
 #: adminpages/orders.php:678
 #: classes/gateways/class.pmprogateway_stripe.php:937
+#: adminpages/orders.php:536
+#: pages/checkout.php:401
 msgid "Payment Information"
 msgstr "付款資料"
 
@@ -7442,6 +7766,7 @@ msgstr "付款資料"
 #: classes/gateways/class.pmprogateway_stripe.php:856
 #: pages/checkout.php:387
 #: pages/checkout.php:401
+#: pages/checkout.php:402
 #, php-format
 msgid "We Accept %s"
 msgstr "我們接受 %s"
@@ -7499,6 +7824,7 @@ msgstr "我們接受 %s"
 #: pages/checkout.php:423
 #: classes/gateways/class.pmprogateway_stripe.php:957
 #: pages/billing.php:387
+#: pages/checkout.php:424
 msgid "Card Number"
 msgstr "卡號碼"
 
@@ -7649,6 +7975,8 @@ msgstr "這是怎麼?"
 #: pages/checkout.php:131
 #: pages/checkout.php:466
 #: classes/gateways/class.pmprogateway_stripe.php:979
+#: pages/checkout.php:132
+#: pages/checkout.php:467
 msgid "Apply"
 msgstr "啟用"
 
@@ -7843,6 +8171,7 @@ msgstr "找不到訂閱."
 #: paid-memberships-pro.php:169
 #: paid-memberships-pro.php:174
 #: paid-memberships-pro.php:175
+#: paid-memberships-pro.php:179
 msgid "Pay by Check"
 msgstr "用支票來付費"
 
@@ -7935,6 +8264,7 @@ msgstr "賣主"
 #: pages/checkout.php:143
 #: pages/checkout.php:163
 #: pages/checkout.php:167
+#: pages/checkout.php:168
 msgid "Password"
 msgstr "密碼"
 
@@ -8144,6 +8474,7 @@ msgstr "所有的收費和訂閱會在這個URL是送給 PayPal. 您不需要設
 #: pages/checkout.php:238
 #: classes/gateways/class.pmprogateway_paypalexpress.php:499
 #: pages/checkout.php:252
+#: pages/checkout.php:253
 msgid "Check Out with PayPal"
 msgstr "PayPal來結帳"
 
@@ -8276,6 +8607,7 @@ msgstr "如果您不想繼續提交付款, 請您通告您的網站的業主或�
 #: paid-memberships-pro.php:171
 #: paid-memberships-pro.php:176
 #: paid-memberships-pro.php:177
+#: paid-memberships-pro.php:181
 msgid "PayPal Express"
 msgstr "PayPal Express"
 
@@ -8339,6 +8671,7 @@ msgstr "這個 PayPal Token 是遺失了."
 #: paid-memberships-pro.php:173
 #: paid-memberships-pro.php:178
 #: paid-memberships-pro.php:179
+#: paid-memberships-pro.php:183
 msgid "PayPal Standard"
 msgstr "PayPal Standard"
 
@@ -8376,6 +8709,8 @@ msgstr "這是您的 IPN URL 參考. 您不需要在PayPal設定頁造設定."
 #: paid-memberships-pro.php:170
 #: paid-memberships-pro.php:175
 #: paid-memberships-pro.php:176
+#: adminpages/wizard/payments.php:30
+#: paid-memberships-pro.php:180
 msgid "Stripe"
 msgstr "Stripe"
 
@@ -8455,6 +8790,7 @@ msgstr "公佈得的鎖匙"
 #: adminpages/orders.php:573
 #: classes/gateways/class.pmprogateway_stripe.php:424
 #: adminpages/orders.php:572
+#: adminpages/orders.php:430
 msgid "Show Billing Address Fields"
 msgstr "顯示付款帳單地址的欄位"
 
@@ -8612,6 +8948,7 @@ msgstr "訂閱以更新, 可以允許你在預早時改好你的訂閱數值. �
 #: classes/gateways/class.pmprogateway_stripe.php:3273
 #: classes/gateways/class.pmprogateway_stripe.php:3296
 #: pages/billing.php:452
+#: pages/billing.php:451
 msgid "Update"
 msgstr "更新"
 
@@ -9127,6 +9464,7 @@ msgstr "同2Checkout結帳"
 #: includes/adminpages.php:50
 #: includes/adminpages.php:52
 #: includes/adminpages.php:53
+#: adminpages/wizard/wizard.php:74
 msgid "Memberships"
 msgstr "會籍"
 
@@ -9150,6 +9488,7 @@ msgstr "會籍"
 #: includes/adminpages.php:73
 #: adminpages/admin_header.php:279
 #: includes/adminpages.php:74
+#: adminpages/admin_header.php:278
 msgid "Page Settings"
 msgstr "設定頁"
 
@@ -9190,6 +9529,8 @@ msgstr "付款設定"
 #: adminpages/admin_header.php:248
 #: includes/adminpages.php:59
 #: includes/adminpages.php:197
+#: adminpages/admin_header.php:247
+#: adminpages/reports.php:38
 msgid "Reports"
 msgstr "報道"
 
@@ -9212,6 +9553,7 @@ msgstr "報道"
 #: includes/adminpages.php:72
 #: adminpages/admin_header.php:275
 #: includes/adminpages.php:73
+#: adminpages/admin_header.php:274
 msgid "Discount Codes"
 msgstr "减價密碼"
 
@@ -9642,6 +9984,7 @@ msgstr "越南盾"
 #: includes/functions.php:515
 #: includes/functions.php:398
 #: includes/functions.php:516
+#: includes/functions.php:337
 #, php-format
 msgid "The price for membership is <strong>%s</strong> now"
 msgstr "現在的會籍價用是<strong>%s</strong>"
@@ -9662,6 +10005,7 @@ msgstr "現在的會籍價用是<strong>%s</strong>"
 #: includes/functions.php:517
 #: includes/functions.php:403
 #: includes/functions.php:518
+#: includes/functions.php:342
 #, php-format
 msgid "<strong>%s</strong> now"
 msgstr "現在是<strong>%s</strong>"
@@ -9803,6 +10147,7 @@ msgstr " 和然後 <strong>%s 每個 %d %s</strong>."
 #: includes/functions.php:446
 #: includes/functions.php:450
 #: includes/functions.php:451
+#: includes/functions.php:390
 msgid "After your initial payment, your first payment is Free."
 msgstr "交給這個首期付款後, 您這個週期如果没有到期或無任何改變您都不需要再交付款."
 
@@ -9823,6 +10168,7 @@ msgstr "交給這個首期付款後, 您這個週期如果没有到期或無任�
 #: includes/functions.php:448
 #: includes/functions.php:452
 #: includes/functions.php:453
+#: includes/functions.php:392
 #, php-format
 msgid "After your initial payment, your first %d payments are Free."
 msgstr "交給這個首期付款後, 您這個週期%d如果没有到期或無任何改變您都不需要再交付款."
@@ -9844,6 +10190,7 @@ msgstr "交給這個首期付款後, 您這個週期%d如果没有到期或無�
 #: includes/functions.php:452
 #: includes/functions.php:456
 #: includes/functions.php:457
+#: includes/functions.php:396
 #, php-format
 msgid "After your initial payment, your first payment will cost %s."
 msgstr "交給這個首期付款後, 您的第一個付款是 %s."
@@ -9912,12 +10259,14 @@ msgstr "<strong>%s 每個 %d %s</strong>"
 #: includes/functions.php:511
 #: includes/functions.php:560
 #: includes/functions.php:561
+#: includes/functions.php:500
 msgid "Trial pricing has been applied to the first payment."
 msgstr "試用價格已經應用在第一個付款."
 
 #: includes/functions.php:513
 #: includes/functions.php:562
 #: includes/functions.php:563
+#: includes/functions.php:502
 #, php-format
 msgid "Trial pricing has been applied to the first %d payments."
 msgstr "試用價格已經應用在第一個%d付款."
@@ -9966,6 +10315,7 @@ msgstr "%s 會籍 expires after %d %s以後"
 #: includes/functions.php:986
 #: includes/functions.php:987
 #: includes/functions.php:988
+#: includes/functions.php:927
 msgid "User ID not found."
 msgstr "會員ID找不到."
 
@@ -9994,6 +10344,8 @@ msgstr "會員ID找不到."
 #: includes/functions.php:1019
 #: includes/functions.php:1012
 #: includes/functions.php:1020
+#: includes/functions.php:951
+#: includes/functions.php:959
 msgid "Invalid level."
 msgstr "不承認的程度."
 
@@ -10069,6 +10421,7 @@ msgstr "不改變?"
 #: includes/functions.php:1092
 #: includes/functions.php:1093
 #: includes/functions.php:1094
+#: includes/functions.php:1033
 msgid "Error interacting with database"
 msgstr "同數據庫交流有錯"
 
@@ -10079,6 +10432,7 @@ msgstr "同數據庫交流有錯"
 #: includes/functions.php:1198
 #: includes/functions.php:1199
 #: includes/functions.php:1200
+#: includes/functions.php:1139
 #, php-format
 msgid "Error interacting with database: %s"
 msgstr "同數據庫交流有錯: %s"
@@ -10134,6 +10488,8 @@ msgstr "同數據庫交流有錯: %s"
 #: includes/functions.php:1385
 #: includes/functions.php:1347
 #: includes/functions.php:1386
+#: includes/functions.php:1286
+#: includes/functions.php:1325
 msgid "Membership level not found."
 msgstr "找不到會籍程度."
 
@@ -10158,6 +10514,7 @@ msgstr "找不到會籍程度."
 #: includes/functions.php:1769
 #: includes/functions.php:1768
 #: includes/functions.php:1777
+#: includes/functions.php:1716
 msgid "No code was given to check."
 msgstr "無給到密碼來檢查."
 
@@ -10189,6 +10546,7 @@ msgstr "無給到密碼來檢查."
 #: includes/functions.php:1778
 #: includes/functions.php:1777
 #: includes/functions.php:1786
+#: includes/functions.php:1725
 msgid "The discount code could not be found."
 msgstr "减價密碼找不到."
 
@@ -10220,6 +10578,7 @@ msgstr "减價密碼找不到."
 #: includes/functions.php:1793
 #: includes/functions.php:1792
 #: includes/functions.php:1801
+#: includes/functions.php:1740
 #, php-format
 msgid "This discount code goes into effect on %s."
 msgstr "减價密碼生效在 %s."
@@ -10252,6 +10611,7 @@ msgstr "减價密碼生效在 %s."
 #: includes/functions.php:1800
 #: includes/functions.php:1799
 #: includes/functions.php:1808
+#: includes/functions.php:1747
 #, php-format
 msgid "This discount code expired on %s."
 msgstr "减價密碼到期在 %s."
@@ -10284,6 +10644,7 @@ msgstr "减價密碼到期在 %s."
 #: includes/functions.php:1809
 #: includes/functions.php:1808
 #: includes/functions.php:1817
+#: includes/functions.php:1756
 msgid "This discount code is no longer valid."
 msgstr "减價密碼已經不承認了."
 
@@ -10314,6 +10675,7 @@ msgstr "减價密碼已經不承認了."
 #: includes/functions.php:1828
 #: includes/functions.php:1827
 #: includes/functions.php:1836
+#: includes/functions.php:1775
 msgid "This discount code does not apply to this membership level."
 msgstr "减價密碼不可以啟用在這個程度."
 
@@ -10345,6 +10707,7 @@ msgstr "减價密碼不可以啟用在這個程度."
 #: includes/functions.php:1866
 #: includes/functions.php:1865
 #: includes/functions.php:1874
+#: includes/functions.php:1813
 msgid "This discount code is okay."
 msgstr "减價密碼無問題."
 
@@ -10383,6 +10746,7 @@ msgstr "减價密碼無問題."
 #: includes/functions.php:1896
 #: includes/functions.php:1895
 #: includes/functions.php:1904
+#: includes/functions.php:1843
 msgid "and"
 msgstr "和"
 
@@ -10416,6 +10780,7 @@ msgstr "和"
 #: includes/functions.php:2464
 #: includes/functions.php:2461
 #: includes/functions.php:2473
+#: includes/functions.php:2412
 msgid "Sign Up for !!name!! Now"
 msgstr "馬上報名加入到 !!name!!啊"
 
@@ -10494,6 +10859,12 @@ msgstr "請明確指出程度 id."
 #: adminpages/orders.php:710
 #: classes/class.pmproemail.php:1225
 #: classes/class.pmproemail.php:1289
+#: adminpages/membershiplevels.php:825
+#: adminpages/membershiplevels.php:1244
+#: adminpages/orders.php:568
+#: classes/class-pmpro-discount-code-list-table.php:500
+#: classes/class.pmproemail.php:1232
+#: classes/class.pmproemail.php:1296
 msgid "None"
 msgstr "無"
 
@@ -10512,6 +10883,7 @@ msgstr "Paid Memberships Pro 支援牌照"
 
 #: includes/license.php:86
 #: adminpages/license.php:64
+#: adminpages/license.php:60
 msgid "License Key"
 msgstr "牌照鎖匙"
 
@@ -10544,6 +10916,7 @@ msgstr "<p><strong>謝謝您!</strong> 在這個網站一個確鑿的 <strong>%s
 #: adminpages/license.php:51
 #: adminpages/license.php:53
 #: adminpages/license.php:65
+#: adminpages/license.php:62
 msgid "Enter license key here..."
 msgstr "輸入牌照鎖匙在這裏..."
 
@@ -10580,6 +10953,7 @@ msgstr "多資料"
 #: includes/localization.php:23
 #: includes/localization.php:36
 #: adminpages/wizard/memberships.php:47
+#: adminpages/wizard/memberships.php:54
 msgid "Day"
 msgstr "日"
 
@@ -10588,6 +10962,7 @@ msgstr "日"
 #: includes/localization.php:38
 #: adminpages/wizard/memberships.php:48
 #: adminpages/reports/logins.php:214
+#: adminpages/wizard/memberships.php:55
 msgid "Week"
 msgstr "星期"
 
@@ -10595,6 +10970,7 @@ msgstr "星期"
 #: includes/localization.php:27
 #: includes/localization.php:40
 #: adminpages/wizard/memberships.php:49
+#: adminpages/wizard/memberships.php:56
 msgid "Month"
 msgstr "月"
 
@@ -10602,6 +10978,7 @@ msgstr "月"
 #: includes/localization.php:29
 #: includes/localization.php:42
 #: adminpages/wizard/memberships.php:50
+#: adminpages/wizard/memberships.php:57
 msgid "Year"
 msgstr "年"
 
@@ -10827,6 +11204,14 @@ msgstr "登出"
 #: pages/billing.php:68
 #: adminpages/reports/logins.php:201
 #: adminpages/reports/members-per-level.php:107
+#: adminpages/reports/members-per-level.php:108
+#: classes/class-pmpro-orders-list-table.php:96
+#: pages/billing.php:69
+#: pages/cancel.php:73
+#: pages/invoice.php:127
+#: pages/levels.php:28
+#: shortcodes/pmpro_account.php:55
+#: shortcodes/pmpro_account.php:259
 msgid "Level"
 msgstr "程度"
 
@@ -10927,6 +11312,7 @@ msgstr "您的會籍付款是給PayPal管理. 請 <a href=\"http://www.paypal.co
 #: pages/billing.php:167
 #: pages/checkout.php:268
 #: pages/billing.php:176
+#: pages/checkout.php:269
 msgid "First Name"
 msgstr "名字"
 
@@ -10960,6 +11346,7 @@ msgstr "名字"
 #: pages/billing.php:171
 #: pages/checkout.php:272
 #: pages/billing.php:180
+#: pages/checkout.php:273
 msgid "Last Name"
 msgstr "姓氏"
 
@@ -10986,6 +11373,7 @@ msgstr "姓氏"
 #: pages/billing.php:177
 #: pages/checkout.php:276
 #: pages/billing.php:186
+#: pages/checkout.php:277
 msgid "Address 1"
 msgstr "地址 1"
 
@@ -11012,6 +11400,7 @@ msgstr "地址 1"
 #: pages/billing.php:181
 #: pages/checkout.php:280
 #: pages/billing.php:190
+#: pages/checkout.php:281
 msgid "Address 2"
 msgstr "地址 2"
 
@@ -11038,6 +11427,7 @@ msgstr "地址 2"
 #: pages/billing.php:192
 #: pages/checkout.php:287
 #: pages/billing.php:201
+#: pages/checkout.php:288
 msgid "City"
 msgstr "都市"
 
@@ -11064,6 +11454,7 @@ msgstr "都市"
 #: pages/billing.php:196
 #: pages/checkout.php:291
 #: pages/billing.php:205
+#: pages/checkout.php:292
 msgid "State"
 msgstr "州"
 
@@ -11090,6 +11481,7 @@ msgstr "州"
 #: pages/billing.php:200
 #: pages/checkout.php:295
 #: pages/billing.php:209
+#: pages/checkout.php:296
 msgid "Postal Code"
 msgstr "郵遞區號"
 
@@ -11116,6 +11508,7 @@ msgstr "郵遞區號"
 #: pages/billing.php:209
 #: pages/checkout.php:300
 #: pages/billing.php:218
+#: pages/checkout.php:301
 msgid "City, State Zip"
 msgstr "都市, 州編碼"
 
@@ -11142,6 +11535,7 @@ msgstr "都市, 州編碼"
 #: pages/billing.php:262
 #: pages/checkout.php:337
 #: pages/billing.php:271
+#: pages/checkout.php:338
 msgid "Country"
 msgstr "國家"
 
@@ -11168,6 +11562,7 @@ msgstr "國家"
 #: pages/billing.php:288
 #: pages/checkout.php:353
 #: pages/billing.php:297
+#: pages/checkout.php:354
 msgid "Phone"
 msgstr "電話"
 
@@ -11204,6 +11599,8 @@ msgstr "電話"
 #: pages/checkout.php:188
 #: pages/checkout.php:368
 #: pages/billing.php:308
+#: pages/checkout.php:189
+#: pages/checkout.php:369
 msgid "Email Address"
 msgstr "電子郵件地址"
 
@@ -11230,6 +11627,7 @@ msgstr "電子郵件地址"
 #: pages/billing.php:303
 #: pages/checkout.php:375
 #: pages/billing.php:312
+#: pages/checkout.php:376
 msgid "Confirm Email"
 msgstr "確認電子郵件"
 
@@ -11280,6 +11678,7 @@ msgstr "我們接受 %s"
 #: pages/billing.php:484
 #: pages/billing.php:486
 #: pages/billing.php:495
+#: pages/billing.php:494
 msgid "This subscription is not recurring. So you don't need to update your billing information."
 msgstr "這個會籍不是定期的訂閱. 所以你不需要更新你的付款帳單的資料."
 
@@ -11289,6 +11688,7 @@ msgstr "這個會籍不是定期的訂閱. 所以你不需要更新你的付款�
 #: pages/cancel.php:33
 #: pages/cancel.php:44
 #: pages/cancel.php:46
+#: pages/cancel.php:47
 msgid "Are you sure you want to cancel your membership?"
 msgstr "你真是想除消你的會籍?"
 
@@ -11297,6 +11697,7 @@ msgstr "你真是想除消你的會籍?"
 #: pages/cancel.php:40
 #: pages/cancel.php:51
 #: pages/cancel.php:53
+#: pages/cancel.php:54
 #, php-format
 msgid "Are you sure you want to cancel your %s membership?"
 msgid_plural "Are you sure you want to cancel your %s memberships?"
@@ -11307,6 +11708,7 @@ msgstr[1] ""
 #: pages/cancel.php:45
 #: pages/cancel.php:56
 #: pages/cancel.php:58
+#: pages/cancel.php:59
 msgid "Yes, cancel this membership"
 msgstr "是的, 消你這個會籍"
 
@@ -11314,6 +11716,7 @@ msgstr "是的, 消你這個會籍"
 #: pages/cancel.php:46
 #: pages/cancel.php:57
 #: pages/cancel.php:59
+#: pages/cancel.php:60
 msgid "No, keep this membership"
 msgstr "不是的, 保留這個會籍"
 
@@ -11326,6 +11729,7 @@ msgstr "不是的, 保留這個會籍"
 #: pages/cancel.php:66
 #: shortcodes/pmpro_account.php:38
 #: pages/cancel.php:68
+#: pages/cancel.php:69
 msgid "My Memberships"
 msgstr "我的會籍"
 
@@ -11334,6 +11738,7 @@ msgstr "我的會籍"
 #: pages/cancel.php:92
 #: pages/cancel.php:105
 #: pages/cancel.php:107
+#: pages/cancel.php:108
 msgid "Cancel All Memberships"
 msgstr "消你的會籍"
 
@@ -11343,6 +11748,7 @@ msgstr "消你的會籍"
 #: pages/cancel.php:101
 #: pages/cancel.php:114
 #: pages/cancel.php:116
+#: pages/cancel.php:117
 msgid "Click here to go to the home page."
 msgstr "點擊這裡主頁."
 
@@ -11351,6 +11757,7 @@ msgstr "點擊這裡主頁."
 #: pages/checkout.php:27
 #: pages/checkout.php:28
 #: pages/checkout.php:54
+#: pages/checkout.php:55
 msgid "Almost done. Review the membership information and pricing below then <strong>click the \"Complete Payment\" button</strong> to finish your order."
 msgstr "就來完了. 重溫在下面的會籍資料和價格然後 <strong>點擊 \"Complete Payment\" 按鈕</strong> 就可以完成您的訂購."
 
@@ -11360,6 +11767,7 @@ msgstr "就來完了. 重溫在下面的會籍資料和價格然後 <strong>點�
 #: pages/checkout.php:35
 #: pages/checkout.php:42
 #: pages/checkout.php:64
+#: pages/checkout.php:65
 msgid "change"
 msgstr "改變"
 
@@ -11369,6 +11777,7 @@ msgstr "改變"
 #: pages/checkout.php:43
 #: pages/checkout.php:50
 #: pages/checkout.php:68
+#: pages/checkout.php:69
 #, php-format
 msgid "You have selected the <strong>%s</strong> membership level."
 msgstr "您已經選擇在 <strong>%s</strong> 會籍程度."
@@ -11395,6 +11804,8 @@ msgstr "<p class=\"pmpro_level_discount_applied\">這個 <strong>%s</strong> 密
 #: services/applydiscountcode.php:89
 #: services/applydiscountcode.php:127
 #: services/applydiscountcode.php:122
+#: pages/checkout.php:120
+#: services/applydiscountcode.php:124
 msgid "Click here to change your discount code"
 msgstr "點擊這裡减價密碼"
 
@@ -11407,6 +11818,7 @@ msgstr "點擊這裡减價密碼"
 #: pages/checkout.php:97
 #: pages/checkout.php:117
 #: pages/checkout.php:121
+#: pages/checkout.php:122
 msgid "Click here to enter your discount code"
 msgstr "點擊這裡來輸入您的减價密碼"
 
@@ -11419,6 +11831,7 @@ msgstr "點擊這裡來輸入您的减價密碼"
 #: pages/checkout.php:97
 #: pages/checkout.php:117
 #: pages/checkout.php:121
+#: pages/checkout.php:122
 msgid "Do you have a discount code?"
 msgstr "您有不有减價密碼?"
 
@@ -11432,6 +11845,7 @@ msgstr "您有不有减價密碼?"
 #: pages/checkout.php:129
 #: pages/checkout.php:149
 #: pages/checkout.php:153
+#: pages/checkout.php:154
 msgid "Account Information"
 msgstr "戶口資料"
 
@@ -11445,6 +11859,7 @@ msgstr "戶口資料"
 #: pages/checkout.php:130
 #: pages/checkout.php:150
 #: pages/checkout.php:154
+#: pages/checkout.php:155
 msgid "Already have an account?"
 msgstr "您已經有戶口嗎?"
 
@@ -11458,6 +11873,7 @@ msgstr "您已經有戶口嗎?"
 #: pages/checkout.php:130
 #: pages/checkout.php:150
 #: pages/checkout.php:154
+#: pages/checkout.php:155
 msgid "Log in here"
 msgstr "在這裡請登入"
 
@@ -11471,6 +11887,7 @@ msgstr "在這裡請登入"
 #: pages/checkout.php:151
 #: pages/checkout.php:171
 #: pages/checkout.php:175
+#: pages/checkout.php:176
 msgid "Confirm Password"
 msgstr "確認密碼"
 
@@ -11484,6 +11901,7 @@ msgstr "確認密碼"
 #: pages/checkout.php:172
 #: pages/checkout.php:192
 #: pages/checkout.php:196
+#: pages/checkout.php:197
 msgid "Confirm Email Address"
 msgstr "確認電郵地址"
 
@@ -11497,6 +11915,7 @@ msgstr "確認電郵地址"
 #: pages/checkout.php:185
 #: pages/checkout.php:205
 #: pages/checkout.php:209
+#: pages/checkout.php:210
 msgid "Full Name"
 msgstr "全名"
 
@@ -11510,6 +11929,7 @@ msgstr "全名"
 #: pages/checkout.php:186
 #: pages/checkout.php:206
 #: pages/checkout.php:210
+#: pages/checkout.php:211
 msgid "LEAVE THIS BLANK"
 msgstr "留下這裡空白"
 
@@ -11523,6 +11943,7 @@ msgstr "留下這裡空白"
 #: pages/checkout.php:193
 #: pages/checkout.php:213
 #: pages/checkout.php:226
+#: pages/checkout.php:227
 #, php-format
 msgid "You are logged in as <strong>%s</strong>. If you would like to use a different account for this membership, <a href=\"%s\">log out now</a>."
 msgstr "您的證入身份是 <strong>%s</strong>. 如果您想改變證入戶口在這個會籍, <a href=\"%s\">馬上證入</a>."
@@ -11538,6 +11959,7 @@ msgstr "您的證入身份是 <strong>%s</strong>. 如果您想改變證入戶�
 #: pages/checkout.php:209
 #: pages/checkout.php:229
 #: pages/checkout.php:243
+#: pages/checkout.php:244
 msgid "Choose your Payment Method"
 msgstr "付款方式"
 
@@ -11552,6 +11974,7 @@ msgstr "付款方式"
 #: pages/checkout.php:214
 #: pages/checkout.php:234
 #: pages/checkout.php:248
+#: pages/checkout.php:249
 msgid "Check Out with a Credit Card Here"
 msgstr "在這裡用信用卡來結帳"
 
@@ -11572,6 +11995,7 @@ msgstr "在這裡用信用卡來結帳"
 #: pages/checkout.php:498
 #: pages/checkout.php:515
 #: pages/checkout.php:516
+#: pages/checkout.php:517
 #, php-format
 msgid "I agree to the %s"
 msgstr "我同意這個 %s"
@@ -11618,17 +12042,20 @@ msgstr "做變化過程..."
 
 #: pages/confirmation.php:12
 #: pages/confirmation.php:25
+#: pages/confirmation.php:26
 msgid "Your payment has been submitted. Your membership will be activated shortly."
 msgstr "您的付款以經提交了. 您的會籍好快會活躍起來."
 
 #: pages/confirmation.php:14
 #: pages/confirmation.php:27
+#: pages/confirmation.php:28
 #, php-format
 msgid "Thank you for your membership to %s. Your %s membership is now active."
 msgstr "謝謝您您的會籍到 %s. 您的 %s 會籍現在已經活躍了."
 
 #: pages/confirmation.php:28
 #: pages/confirmation.php:41
+#: pages/confirmation.php:42
 #, php-format
 msgid "Below are details about your membership account and a receipt for your initial membership invoice. A welcome email with a copy of your initial membership invoice has been sent to %s."
 msgstr "以下是您的會籍戶口資料和一張首期會籍付款發票. 一張歡迎的電郵發票已經寄給到您的 %s, 這張信有您的會籍付款發票."
@@ -11638,6 +12065,8 @@ msgstr "以下是您的會籍戶口資料和一張首期會籍付款發票. 一�
 #: pages/confirmation.php:41
 #: pages/confirmation.php:59
 #: pages/invoice.php:33
+#: pages/confirmation.php:60
+#: pages/invoice.php:34
 #, php-format
 msgid "Invoice #%s on %s"
 msgstr "付款發票 #%s 在 %s"
@@ -11668,6 +12097,11 @@ msgstr "付款發票 #%s 在 %s"
 #: includes/profile.php:487
 #: adminpages/orders.php:1540
 #: adminpages/orders.php:1550
+#: adminpages/orders.php:299
+#: classes/class-pmpro-orders-list-table.php:918
+#: classes/class-pmpro-orders-list-table.php:928
+#: pages/confirmation.php:62
+#: pages/invoice.php:35
 msgid "Print"
 msgstr "印出"
 
@@ -11683,6 +12117,9 @@ msgstr "印出"
 #: pages/confirmation.php:137
 #: pages/invoice.php:37
 #: pages/confirmation.php:139
+#: pages/confirmation.php:65
+#: pages/confirmation.php:140
+#: pages/invoice.php:38
 msgid "Account"
 msgstr "戶口"
 
@@ -11694,6 +12131,7 @@ msgstr "戶口"
 #: pages/confirmation.php:49
 #: pages/invoice.php:29
 #: pages/confirmation.php:67
+#: pages/confirmation.php:68
 msgid "Membership Expires"
 msgstr "會籍到期"
 
@@ -11710,6 +12148,8 @@ msgstr "會籍到期"
 #: pages/billing.php:98
 #: pages/billing.php:99
 #: pages/billing.php:97
+#: pages/confirmation.php:96
+#: pages/invoice.php:86
 msgid "Payment Method"
 msgstr "付款方式"
 
@@ -11728,6 +12168,9 @@ msgstr "付款方式"
 #: includes/profile.php:413
 #: includes/profile.php:453
 #: pages/invoice.php:127
+#: pages/confirmation.php:108
+#: pages/invoice.php:98
+#: pages/invoice.php:128
 msgid "Total Billed"
 msgstr "付款總數"
 
@@ -11742,6 +12185,8 @@ msgstr "付款總數"
 #: pages/billing.php:100
 #: pages/billing.php:101
 #: pages/billing.php:99
+#: pages/confirmation.php:98
+#: pages/invoice.php:88
 msgid "ending in"
 msgstr "完在"
 
@@ -11749,6 +12194,7 @@ msgstr "完在"
 #: pages/confirmation.php:97
 #: pages/confirmation.php:125
 #: pages/confirmation.php:127
+#: pages/confirmation.php:128
 #, php-format
 msgid "Below are details about your membership account. A welcome email has been sent to %s."
 msgstr "以下是你的會籍戶口的資料. 一張歡迎的電郵已經寄給到 %s."
@@ -11761,6 +12207,10 @@ msgstr "以下是你的會籍戶口的資料. 一張歡迎的電郵已經寄給�
 #: pages/confirmation.php:65
 #: shortcodes/pmpro_account.php:254
 #: pages/confirmation.php:140
+#: classes/class-pmpro-orders-list-table.php:291
+#: pages/confirmation.php:66
+#: pages/confirmation.php:141
+#: shortcodes/pmpro_account.php:282
 msgid "Pending"
 msgstr "未決定"
 
@@ -11781,6 +12231,8 @@ msgstr "未決定"
 #: pages/invoice.php:157
 #: pages/billing.php:126
 #: pages/billing.php:132
+#: pages/confirmation.php:152
+#: pages/invoice.php:158
 msgid "View Your Membership Account &rarr;"
 msgstr "審視您的會籍戶口 &rarr;"
 
@@ -11789,6 +12241,7 @@ msgstr "審視您的會籍戶口 &rarr;"
 #: pages/confirmation.php:115
 #: pages/confirmation.php:151
 #: pages/confirmation.php:153
+#: pages/confirmation.php:154
 msgid "If your account is not activated within a few minutes, please contact the site owner."
 msgstr "如果你的戶口在幾分鐘後都是無活躍, 請您通告網站的業主."
 
@@ -11803,6 +12256,7 @@ msgstr "如果你的戶口在幾分鐘後都是無活躍, 請您通告網站的�
 #: includes/functions.php:2930
 #: includes/functions.php:2950
 #: includes/functions.php:2959
+#: includes/functions.php:2898
 msgid "Coupon"
 msgstr "禮券"
 
@@ -11810,6 +12264,7 @@ msgstr "禮券"
 #: pages/invoice.php:106
 #: pages/invoice.php:123
 #: pages/invoice.php:125
+#: pages/invoice.php:126
 msgid "Invoice #"
 msgstr "發票 #"
 
@@ -11817,6 +12272,7 @@ msgstr "發票 #"
 #: pages/invoice.php:132
 #: pages/invoice.php:149
 #: pages/invoice.php:151
+#: pages/invoice.php:152
 msgid "No invoices found."
 msgstr "找不到發票."
 
@@ -11824,6 +12280,7 @@ msgstr "找不到發票."
 #: pages/invoice.php:143
 #: pages/invoice.php:157
 #: pages/invoice.php:159
+#: pages/invoice.php:160
 msgid "&larr; View All Invoices"
 msgstr "&larr; 審視所有發票"
 
@@ -11842,6 +12299,8 @@ msgstr "&larr; 審視所有發票"
 #: adminpages/wizard/save-steps.php:159
 #: adminpages/wizard/save-steps.php:161
 #: adminpages/wizard/save-steps.php:166
+#: adminpages/wizard/memberships.php:24
+#: includes/functions.php:340
 msgid "Free"
 msgstr "免費"
 
@@ -11854,6 +12313,7 @@ msgstr "免費"
 #: pages/levels.php:58
 #: includes/fields.php:1370
 #: includes/fields.php:1383
+#: pages/levels.php:59
 msgid "Select"
 msgstr "選擇"
 
@@ -11866,6 +12326,8 @@ msgstr "選擇"
 #: shortcodes/pmpro_account.php:61
 #: pages/levels.php:64
 #: shortcodes/pmpro_account.php:94
+#: pages/levels.php:65
+#: shortcodes/pmpro_account.php:107
 msgid "Renew"
 msgstr "續期"
 
@@ -11874,6 +12336,7 @@ msgstr "續期"
 #: pages/levels.php:117
 #: pages/levels.php:129
 #: pages/levels.php:68
+#: pages/levels.php:69
 msgid "Your&nbsp;Level"
 msgstr "您的&nbsp;程度"
 
@@ -11910,6 +12373,7 @@ msgstr "&larr; 回到你的主頁"
 #: paid-memberships-pro.php:168
 #: paid-memberships-pro.php:173
 #: paid-memberships-pro.php:174
+#: paid-memberships-pro.php:178
 msgid "Testing Only"
 msgstr "只是測試"
 
@@ -11928,6 +12392,7 @@ msgstr "只是測試"
 #: paid-memberships-pro.php:172
 #: paid-memberships-pro.php:177
 #: paid-memberships-pro.php:178
+#: paid-memberships-pro.php:182
 msgid "PayPal Payflow Pro/PayPal Pro"
 msgstr "PayPal Payflow Pro/PayPal Pro"
 
@@ -11955,6 +12420,7 @@ msgstr "Cybersource"
 #: paid-memberships-pro.php:204
 #: paid-memberships-pro.php:206
 #: paid-memberships-pro.php:207
+#: paid-memberships-pro.php:211
 msgid "Once a month"
 msgstr "一個月一次"
 
@@ -11997,6 +12463,7 @@ msgstr "對不起, 您的要求不能完成 - 請你在幾分鐘後再試."
 #: preheaders/billing.php:195
 #: preheaders/billing.php:196
 #: preheaders/checkout.php:341
+#: preheaders/billing.php:172
 msgid "Please complete all required fields."
 msgstr "請你完成填寫所有需要的欄位."
 
@@ -12021,6 +12488,7 @@ msgstr "請你完成填寫所有需要的欄位."
 #: preheaders/billing.php:198
 #: preheaders/billing.php:199
 #: preheaders/checkout.php:349
+#: preheaders/billing.php:175
 msgid "Your email addresses do not match. Please try again."
 msgstr "你的電郵地址是不相同的. 請再試."
 
@@ -12045,6 +12513,7 @@ msgstr "你的電郵地址是不相同的. 請再試."
 #: preheaders/billing.php:201
 #: preheaders/billing.php:202
 #: preheaders/checkout.php:354
+#: preheaders/billing.php:178
 msgid "The email address entered is in an invalid format. Please try again."
 msgstr "你輸入的電郵地址格式有錯. 請再試."
 
@@ -12058,6 +12527,7 @@ msgstr "你輸入的電郵地址格式有錯. 請再試."
 #: preheaders/billing.php:172
 #: preheaders/billing.php:207
 #: preheaders/billing.php:208
+#: preheaders/billing.php:184
 msgid "All good!"
 msgstr "所有都好!"
 
@@ -12071,6 +12541,7 @@ msgstr "所有都好!"
 #: preheaders/billing.php:239
 #: preheaders/billing.php:274
 #: preheaders/billing.php:275
+#: preheaders/billing.php:251
 #, php-format
 msgid "Information updated. <a href=\"%s\">&laquo; back to my account</a>"
 msgstr "資料更新成功. <a href=\"%s\">&laquo; 回到我的戶口</a>"
@@ -12086,6 +12557,7 @@ msgstr "資料更新成功. <a href=\"%s\">&laquo; 回到我的戶口</a>"
 #: preheaders/billing.php:245
 #: preheaders/billing.php:291
 #: preheaders/billing.php:292
+#: preheaders/billing.php:268
 msgid "Error updating billing information."
 msgstr "付款帳單的資料更新有錯."
 
@@ -12107,6 +12579,7 @@ msgstr "付款帳單的資料更新有錯."
 #: preheaders/cancel.php:76
 #: classes/class.pmproemail.php:1231
 #: classes/class.pmproemail.php:1251
+#: classes/class.pmproemail.php:1258
 msgid "Your membership has been cancelled."
 msgstr "你的會籍以是除消."
 
@@ -12244,6 +12717,7 @@ msgstr "這個電郵地址以給其他人用以. 請試其他電郵地址."
 #: preheaders/checkout.php:423
 #: preheaders/billing.php:188
 #: preheaders/checkout.php:430
+#: preheaders/billing.php:166
 #, php-format
 msgid "reCAPTCHA failed. (%s) Please try again."
 msgstr "reCAPTCHA  失敗. (%s) 請再試."
@@ -12265,6 +12739,7 @@ msgstr "reCAPTCHA  失敗. (%s) 請再試."
 #: preheaders/checkout.php:456
 #: preheaders/checkout.php:528
 #: preheaders/checkout.php:531
+#: preheaders/checkout.php:498
 msgid "Payment accepted."
 msgstr "接受付款成功."
 
@@ -12333,6 +12808,7 @@ msgstr "接受您的付款是成功, 但組織您的戶口有錯. 請通告我�
 #: preheaders/checkout.php:834
 #: preheaders/checkout.php:827
 #: preheaders/checkout.php:830
+#: preheaders/checkout.php:797
 msgid "IMPORTANT: Something went wrong during membership creation. Your credit card authorized, but we cancelled the order immediately. You should not try to submit this form again. Please contact the site owner to fix this issue."
 msgstr "重要的: 造會籍時有錯. 您的信用卡已經認可, 但我們已經馬上取消訂購. 您不好再常試提交這張表格. 請您通告網站的業主來修理這個事故."
 
@@ -12360,6 +12836,7 @@ msgstr "重要的: 造會籍時有錯. 您的信用卡已經認可, 但我們已
 #: preheaders/checkout.php:837
 #: preheaders/checkout.php:830
 #: preheaders/checkout.php:833
+#: preheaders/checkout.php:800
 msgid "IMPORTANT: Something went wrong during membership creation. Your credit card was charged, but we couldn't assign your membership. You should not submit this form again. Please contact the site owner to fix this issue."
 msgstr "重要的: 造會籍時有錯. 我們已經用到您的信用卡收費了, 但我們不能註冊您的會籍. 您不好再常試提交這張表格. 請您通告網站的業主來修理這個事故."
 
@@ -12387,6 +12864,7 @@ msgstr "重要的: 造會籍時有錯. 我們已經用到您的信用卡收費�
 #: preheaders/checkout.php:848
 #: preheaders/checkout.php:841
 #: preheaders/checkout.php:844
+#: preheaders/checkout.php:811
 #, php-format
 msgid "You must <a href=\"%s\">set up a Payment Gateway</a> before any payments will be processed."
 msgstr "您一定要 <a href=\"%s\">組織一個付款網關入口</a> 然後再處埋付款."
@@ -12415,6 +12893,7 @@ msgstr "您一定要 <a href=\"%s\">組織一個付款網關入口</a> 然後再
 #: preheaders/checkout.php:850
 #: preheaders/checkout.php:843
 #: preheaders/checkout.php:846
+#: preheaders/checkout.php:813
 msgid "A Payment Gateway must be set up before any payments will be processed."
 msgstr "您一定要組織一個付款網關入口然後再處埋付款."
 
@@ -12481,6 +12960,7 @@ msgstr "試用期滿了有電郵已經寄出到 %s. "
 #: services/applydiscountcode.php:67
 #: services/applydiscountcode.php:93
 #: services/applydiscountcode.php:88
+#: services/applydiscountcode.php:89
 #, php-format
 msgid "The %s code has been applied to your order. "
 msgstr "這個 %s 密碼已經應用在你的訂購. "
@@ -12493,6 +12973,8 @@ msgstr "這個 %s 密碼已經應用在你的訂購. "
 #: services/applydiscountcode.php:138
 #: services/applydiscountcode.php:133
 #: pages/checkout.php:91
+#: pages/checkout.php:92
+#: services/applydiscountcode.php:135
 #, php-format
 msgid "The <strong>%s</strong> code has been applied to your order."
 msgstr "這個 <strong>%s</strong> 密碼已經應用在你的訂購."
@@ -12525,6 +13007,8 @@ msgstr "處埋這個%s更新會籍時, 我們失敗取消舊會籍在Stripe. 請
 #: adminpages/orders.php:1619
 #: adminpages/orders.php:1432
 #: adminpages/orders.php:1620
+#: classes/class-pmpro-orders-list-table.php:98
+#: shortcodes/pmpro_account.php:56
 msgid "Billing"
 msgstr "付款帳單"
 
@@ -12533,6 +13017,7 @@ msgstr "付款帳單"
 #: shortcodes/pmpro_account.php:62
 #: shortcodes/pmpro_account.php:65
 #: shortcodes/pmpro_account.php:98
+#: shortcodes/pmpro_account.php:111
 msgid "Update Billing Info"
 msgstr "更新付款帳單資料"
 
@@ -12541,6 +13026,7 @@ msgstr "更新付款帳單資料"
 #: shortcodes/pmpro_account.php:68
 #: shortcodes/pmpro_account.php:71
 #: shortcodes/pmpro_account.php:103
+#: shortcodes/pmpro_account.php:116
 msgid "Change"
 msgstr "改變"
 
@@ -12550,6 +13036,7 @@ msgstr "改變"
 #: shortcodes/pmpro_account.php:92
 #: shortcodes/pmpro_account.php:158
 #: shortcodes/pmpro_account.php:165
+#: shortcodes/pmpro_account.php:179
 msgid "View all Membership Options"
 msgstr "審視所有會籍的選擇"
 
@@ -12572,6 +13059,7 @@ msgstr "我的戶口"
 #: shortcodes/pmpro_account.php:112
 #: shortcodes/pmpro_account.php:191
 #: shortcodes/pmpro_account.php:198
+#: shortcodes/pmpro_account.php:219
 msgid "Edit Profile"
 msgstr "編輯改變檔案"
 
@@ -12595,6 +13083,7 @@ msgstr "編輯改變檔案"
 #: includes/profile.php:953
 #: includes/profile.php:915
 #: includes/profile.php:952
+#: shortcodes/pmpro_account.php:223
 msgid "Change Password"
 msgstr "改變密碼"
 
@@ -12606,6 +13095,8 @@ msgstr "改變密碼"
 #: shortcodes/pmpro_account.php:120
 #: shortcodes/pmpro_account.php:219
 #: shortcodes/pmpro_account.php:226
+#: blocks/account-invoices-section/block.php:32
+#: blocks/account-invoices-section/block.js:45
 msgid "Past Invoices"
 msgstr "提交發票"
 
@@ -12615,6 +13106,7 @@ msgstr "提交發票"
 #: shortcodes/pmpro_account.php:126
 #: shortcodes/pmpro_account.php:225
 #: shortcodes/pmpro_account.php:232
+#: shortcodes/pmpro_account.php:260
 msgid "Amount"
 msgstr "數量"
 
@@ -12627,6 +13119,7 @@ msgstr "數量"
 #: shortcodes/pmpro_account.php:264
 #: shortcodes/pmpro_account.php:271
 #: shortcodes/pmpro_account.php:273
+#: shortcodes/pmpro_account.php:301
 msgid "View All Invoices"
 msgstr "審視所有發票"
 
@@ -12639,18 +13132,22 @@ msgstr "審視所有發票"
 #: shortcodes/pmpro_account.php:271
 #: shortcodes/pmpro_account.php:278
 #: shortcodes/pmpro_account.php:280
+#: blocks/account-links-section/block.php:32
+#: blocks/account-links-section/block.js:45
 msgid "Member Links"
 msgstr "會員聯繫"
 
 #: adminpages/addons.php:79
 #: classes/class-pmpro-site-health.php:630
 #: classes/class-pmpro-site-health.php:635
+#: classes/class-pmpro-site-health.php:663
 msgid "Disabled"
 msgstr "無效"
 
 #: adminpages/addons.php:79
 #: classes/class-pmpro-site-health.php:627
 #: classes/class-pmpro-site-health.php:632
+#: classes/class-pmpro-site-health.php:660
 msgid "Enabled"
 msgstr "有效"
 
@@ -12705,6 +13202,7 @@ msgstr "試用期的循環"
 #: adminpages/membershiplevels.php:551
 #: adminpages/membershiplevels.php:578
 #: adminpages/wizard/memberships.php:43
+#: adminpages/wizard/memberships.php:50
 msgid "every"
 msgstr "每個"
 
@@ -13148,6 +13646,11 @@ msgstr "%s 的會籍付款已經給Stripe除消. 請檢查這個會籍戶口有�
 #: includes/compatibility/divi.php:20
 #: includes/compatibility/divi.php:24
 #: includes/compatibility/elementor/class-pmpro-elementor.php:69
+#: adminpages/wizard/wizard.php:67
+#: blocks/account-invoices-section/block.js:54
+#: blocks/account-links-section/block.js:54
+#: blocks/account-membership-section/block.js:52
+#: blocks/account-profile-section/block.js:52
 msgid "Paid Memberships Pro"
 msgstr ""
 
@@ -13223,6 +13726,7 @@ msgstr ""
 #: adminpages/admin_header.php:174
 #: adminpages/wizard/done.php:77
 #: adminpages/wizard/done.php:83
+#: adminpages/wizard/done.php:109
 msgid "Documentation"
 msgstr ""
 
@@ -13259,6 +13763,7 @@ msgstr ""
 #: adminpages/admin_header.php:236
 #: includes/adminpages.php:56
 #: includes/adminpages.php:161
+#: adminpages/admin_header.php:235
 msgid "Dashboard"
 msgstr ""
 
@@ -13280,6 +13785,7 @@ msgstr ""
 #: adminpages/admin_header.php:240
 #: includes/adminpages.php:57
 #: includes/adminpages.php:173
+#: adminpages/admin_header.php:239
 msgid "Members"
 msgstr ""
 
@@ -13297,6 +13803,7 @@ msgstr ""
 #: adminpages/admin_header.php:252
 #: includes/adminpages.php:60
 #: includes/adminpages.php:209
+#: adminpages/admin_header.php:251
 msgid "Settings"
 msgstr ""
 
@@ -13309,6 +13816,7 @@ msgstr ""
 #: includes/adminpages.php:69
 #: adminpages/admin_header.php:260
 #: includes/adminpages.php:70
+#: adminpages/admin_header.php:259
 msgid "License"
 msgstr ""
 
@@ -13317,6 +13825,7 @@ msgstr ""
 #: adminpages/admin_header.php:266
 #: adminpages/admin_header.php:271
 #: adminpages/admin_header.php:283
+#: adminpages/admin_header.php:282
 msgid "Payment Gateway &amp; SSL Settings"
 msgstr ""
 
@@ -13331,6 +13840,7 @@ msgstr ""
 #: includes/adminpages.php:76
 #: adminpages/admin_header.php:291
 #: includes/adminpages.php:77
+#: adminpages/admin_header.php:290
 msgid "Email Templates"
 msgstr ""
 
@@ -13349,6 +13859,8 @@ msgstr ""
 #: adminpages/pagesettings.php:48
 #: adminpages/pagesettings.php:91
 #: adminpages/membershiplevels.php:51
+#: adminpages/discountcodes.php:55
+#: adminpages/discountcodes.php:303
 msgid "Are you sure you want to do that? Try again."
 msgstr ""
 
@@ -13380,6 +13892,7 @@ msgstr ""
 #: adminpages/advancedsettings.php:143
 #: adminpages/advancedsettings.php:145
 #: adminpages/advancedsettings.php:152
+#: adminpages/wizard/advanced.php:34
 msgid "Block all users with the Subscriber role from accessing the Dashboard."
 msgstr ""
 
@@ -13392,6 +13905,7 @@ msgstr ""
 #: adminpages/advancedsettings.php:151
 #: adminpages/advancedsettings.php:153
 #: adminpages/advancedsettings.php:160
+#: adminpages/wizard/advanced.php:38
 msgid "Hide the Toolbar from all users with the Subscriber role."
 msgstr ""
 
@@ -13541,6 +14055,7 @@ msgstr ""
 #: adminpages/membershiplevels.php:805
 #: adminpages/membershiplevels.php:1038
 #: adminpages/membershiplevels.php:1043
+#: adminpages/membershiplevels.php:1044
 msgid "Create a Membership Level"
 msgstr ""
 
@@ -13633,6 +14148,7 @@ msgstr ""
 #: adminpages/wizard/general.php:62
 #: adminpages/wizard/general.php:65
 #: adminpages/wizard/general.php:74
+#: adminpages/wizard/general.php:76
 msgid "An annual support license is recommended for websites running Paid Memberships Pro."
 msgstr ""
 
@@ -13747,6 +14263,7 @@ msgstr ""
 #: adminpages/dashboard.php:329
 #: adminpages/dashboard.php:344
 #: adminpages/orders.php:1603
+#: classes/class-pmpro-orders-list-table.php:989
 msgid "none"
 msgstr ""
 
@@ -13792,6 +14309,8 @@ msgstr ""
 #: adminpages/membershiplevels.php:448
 #: adminpages/membershiplevels.php:595
 #: adminpages/membershiplevels.php:600
+#: adminpages/discountcodes.php:614
+#: adminpages/membershiplevels.php:601
 msgid "Stripe integration does not allow billing periods longer than 1 year."
 msgstr ""
 
@@ -13808,30 +14327,36 @@ msgstr ""
 #: adminpages/membershiplevels.php:581
 #: adminpages/membershiplevels.php:750
 #: adminpages/membershiplevels.php:755
+#: adminpages/discountcodes.php:690
+#: adminpages/membershiplevels.php:756
 msgid "Hour(s)"
 msgstr ""
 
 #: adminpages/discountcodes.php:754
 #: adminpages/discountcodes.php:756
 #: adminpages/discountcodes.php:755
+#: adminpages/discountcodes.php:738
 msgid "No Discount Codes Found"
 msgstr ""
 
 #: adminpages/discountcodes.php:755
 #: adminpages/discountcodes.php:757
 #: adminpages/discountcodes.php:756
+#: adminpages/discountcodes.php:739
 msgid "Discount codes allow you to override your membership level's default pricing."
 msgstr ""
 
 #: adminpages/discountcodes.php:756
 #: adminpages/discountcodes.php:758
 #: adminpages/discountcodes.php:757
+#: adminpages/discountcodes.php:740
 msgid "Create a Discount Code"
 msgstr ""
 
 #: adminpages/discountcodes.php:757
 #: adminpages/discountcodes.php:759
 #: adminpages/discountcodes.php:758
+#: adminpages/discountcodes.php:741
 msgid "Documentation: Discount Codes"
 msgstr ""
 
@@ -13844,6 +14369,7 @@ msgstr ""
 
 #: adminpages/discountcodes.php:807
 #: adminpages/discountcodes.php:809
+#: classes/class-pmpro-discount-code-list-table.php:307
 msgid "Edit Code: %s"
 msgstr ""
 
@@ -13886,6 +14412,12 @@ msgstr ""
 #: includes/fields.php:1349
 #: adminpages/membershiplevels.php:1173
 #: adminpages/membershiplevels.php:1183
+#: adminpages/membershiplevels.php:1174
+#: adminpages/membershiplevels.php:1184
+#: classes/class-pmpro-discount-code-list-table.php:341
+#: classes/class-pmpro-discount-code-list-table.php:351
+#: classes/class-pmpro-orders-list-table.php:883
+#: classes/class-pmpro-orders-list-table.php:893
 msgid "Edit"
 msgstr ""
 
@@ -13920,6 +14452,12 @@ msgstr ""
 #: adminpages/orders.php:1530
 #: adminpages/membershiplevels.php:1187
 #: adminpages/membershiplevels.php:1198
+#: adminpages/membershiplevels.php:1188
+#: adminpages/membershiplevels.php:1199
+#: classes/class-pmpro-discount-code-list-table.php:355
+#: classes/class-pmpro-discount-code-list-table.php:366
+#: classes/class-pmpro-orders-list-table.php:897
+#: classes/class-pmpro-orders-list-table.php:908
 msgid "Copy"
 msgstr ""
 
@@ -14236,6 +14774,7 @@ msgstr ""
 #: adminpages/license.php:53
 #: adminpages/license.php:55
 #: adminpages/license.php:67
+#: adminpages/license.php:64
 msgid "Validate Key"
 msgstr ""
 
@@ -14251,6 +14790,7 @@ msgstr ""
 #: adminpages/membershiplevels.php:389
 #: adminpages/membershiplevels.php:462
 #: adminpages/membershiplevels.php:467
+#: adminpages/membershiplevels.php:468
 msgid "Check to include this message in the membership confirmation email."
 msgstr ""
 
@@ -14258,6 +14798,7 @@ msgstr ""
 #: adminpages/membershiplevels.php:457
 #: adminpages/membershiplevels.php:604
 #: adminpages/membershiplevels.php:609
+#: adminpages/membershiplevels.php:610
 msgid "You will need to create a \"Plan\" in your Braintree dashboard with the same settings and the \"Plan ID\" set to %s."
 msgstr ""
 
@@ -14277,6 +14818,7 @@ msgstr ""
 #: adminpages/membershiplevels.php:641
 #: adminpages/membershiplevels.php:853
 #: adminpages/membershiplevels.php:858
+#: adminpages/membershiplevels.php:859
 msgid "Non-members will not see posts in these categories. You can <a href=\"%s\" title=\"Advanced Settings\" target=\"_blank\">update this setting here</a>."
 msgstr ""
 
@@ -14284,6 +14826,7 @@ msgstr ""
 #: adminpages/membershiplevels.php:645
 #: adminpages/membershiplevels.php:857
 #: adminpages/membershiplevels.php:862
+#: adminpages/membershiplevels.php:863
 msgid "Non-members will see the title and excerpt for posts in these categories. You can <a href=\"%s\" title=\"Advanced Settings\" target=\"_blank\">update this setting here</a>."
 msgstr ""
 
@@ -14291,6 +14834,7 @@ msgstr ""
 #: adminpages/membershiplevels.php:648
 #: adminpages/membershiplevels.php:860
 #: adminpages/membershiplevels.php:865
+#: adminpages/membershiplevels.php:866
 msgid "Non-members will see the title only for posts in these categories. You can <a href=\"%s\" title=\"Advanced Settings\" target=\"_blank\">update this setting here</a>."
 msgstr ""
 
@@ -14305,6 +14849,8 @@ msgstr ""
 #: adminpages/membershiplevels.php:1042
 #: adminpages/membershiplevels.php:1132
 #: adminpages/membershiplevels.php:1134
+#: adminpages/membershiplevels.php:1043
+#: adminpages/membershiplevels.php:1135
 msgid "No Membership Levels Found"
 msgstr ""
 
@@ -14313,6 +14859,7 @@ msgstr ""
 #: adminpages/membershiplevels.php:806
 #: adminpages/membershiplevels.php:1039
 #: adminpages/membershiplevels.php:1044
+#: adminpages/membershiplevels.php:1045
 msgid "Video: Membership Levels"
 msgstr ""
 
@@ -14330,6 +14877,7 @@ msgstr ""
 #: adminpages/orders.php:525
 #: includes/profile.php:95
 #: adminpages/orders.php:526
+#: adminpages/orders.php:383
 msgid "at"
 msgstr ""
 
@@ -14340,6 +14888,7 @@ msgstr ""
 #: adminpages/orders.php:990
 #: adminpages/orders.php:993
 #: adminpages/orders.php:992
+#: adminpages/orders.php:850
 msgid "TOS Consent"
 msgstr ""
 
@@ -14349,6 +14898,7 @@ msgstr ""
 #: adminpages/orders.php:1023
 #: adminpages/orders.php:1111
 #: adminpages/orders.php:1110
+#: classes/class-pmpro-orders-list-table.php:489
 msgid "With a Discount Code"
 msgstr ""
 
@@ -14358,6 +14908,7 @@ msgstr ""
 #: adminpages/orders.php:1027
 #: adminpages/orders.php:1115
 #: adminpages/orders.php:1114
+#: classes/class-pmpro-orders-list-table.php:493
 msgid "Only Paid Orders"
 msgstr ""
 
@@ -14367,6 +14918,7 @@ msgstr ""
 #: adminpages/orders.php:1029
 #: adminpages/orders.php:1117
 #: adminpages/orders.php:1116
+#: classes/class-pmpro-orders-list-table.php:495
 msgid "Only Free Orders"
 msgstr ""
 
@@ -14376,6 +14928,7 @@ msgstr ""
 #: adminpages/orders.php:1072
 #: adminpages/orders.php:1160
 #: adminpages/orders.php:1159
+#: classes/class-pmpro-orders-list-table.php:538
 msgid "Last Month"
 msgstr ""
 
@@ -14385,6 +14938,7 @@ msgstr ""
 #: adminpages/orders.php:1076
 #: adminpages/orders.php:1164
 #: adminpages/orders.php:1163
+#: classes/class-pmpro-orders-list-table.php:542
 msgid "Last Year"
 msgstr ""
 
@@ -14689,6 +15243,7 @@ msgstr ""
 #: adminpages/reports/memberships.php:355
 #: adminpages/reports/memberships.php:371
 #: adminpages/reports/memberships.php:373
+#: adminpages/reports/memberships.php:378
 msgid "All Paid Levels"
 msgstr ""
 
@@ -14696,6 +15251,7 @@ msgstr ""
 #: adminpages/reports/memberships.php:356
 #: adminpages/reports/memberships.php:372
 #: adminpages/reports/memberships.php:374
+#: adminpages/reports/memberships.php:379
 msgid "All Free Levels"
 msgstr ""
 
@@ -14709,6 +15265,8 @@ msgstr ""
 #: adminpages/reports/sales.php:380
 #: adminpages/reports/sales.php:388
 #: adminpages/reports/sales.php:641
+#: adminpages/reports/memberships.php:400
+#: adminpages/reports/sales.php:647
 msgid "All Codes"
 msgstr ""
 
@@ -14719,6 +15277,7 @@ msgstr ""
 #: adminpages/reports/sales.php:393
 #: adminpages/reports/sales.php:401
 #: adminpages/reports/sales.php:660
+#: adminpages/reports/sales.php:667
 msgid "Average line calculated using data prior to current day, month, or year."
 msgstr ""
 
@@ -14892,6 +15451,11 @@ msgstr ""
 #: adminpages/orders.php:1680
 #: adminpages/orders.php:1731
 #: classes/class-pmpro-members-list-table.php:577
+#: adminpages/membershiplevels.php:1244
+#: classes/class-pmpro-orders-list-table.php:1008
+#: classes/class-pmpro-orders-list-table.php:1074
+#: classes/class-pmpro-orders-list-table.php:1103
+#: classes/class-pmpro-orders-list-table.php:1188
 msgid "&#8212;"
 msgstr ""
 
@@ -14912,6 +15476,7 @@ msgstr ""
 #: classes/class.memberorder.php:1626
 #: classes/class.memberorder.php:1628
 #: classes/class.memberorder.php:1637
+#: adminpages/orders.php:298
 msgid "Edit Order"
 msgstr ""
 
@@ -14932,6 +15497,7 @@ msgstr ""
 #: classes/class.pmproemail.php:582
 #: classes/class.pmproemail.php:588
 #: classes/class.pmproemail.php:598
+#: classes/class.pmproemail.php:605
 msgid "Member checkout for %s at %s"
 msgstr ""
 
@@ -14943,6 +15509,7 @@ msgstr ""
 #: classes/class.pmproemail.php:815
 #: classes/class.pmproemail.php:822
 #: classes/class.pmproemail.php:835
+#: classes/class.pmproemail.php:842
 msgid "Membership payment failed at %s"
 msgstr ""
 
@@ -14954,6 +15521,7 @@ msgstr ""
 #: classes/class.pmproemail.php:871
 #: classes/class.pmproemail.php:878
 #: classes/class.pmproemail.php:892
+#: classes/class.pmproemail.php:899
 msgid "Membership payment failed For %s at %s"
 msgstr ""
 
@@ -14965,6 +15533,7 @@ msgstr ""
 #: classes/class.pmproemail.php:933
 #: classes/class.pmproemail.php:940
 #: classes/class.pmproemail.php:955
+#: classes/class.pmproemail.php:962
 msgid "Credit card on file expiring soon at %s"
 msgstr ""
 
@@ -14976,6 +15545,7 @@ msgstr ""
 #: classes/class.pmproemail.php:997
 #: classes/class.pmproemail.php:1004
 #: classes/class.pmproemail.php:1020
+#: classes/class.pmproemail.php:1027
 msgid "Invoice for %s membership"
 msgstr ""
 
@@ -15000,6 +15570,8 @@ msgstr ""
 #: classes/class.pmproemail.php:1292
 #: classes/class.pmproemail.php:1249
 #: classes/class.pmproemail.php:1313
+#: classes/class.pmproemail.php:1256
+#: classes/class.pmproemail.php:1320
 msgid "The new level is %s."
 msgstr ""
 
@@ -15024,6 +15596,8 @@ msgstr ""
 #: classes/class.pmproemail.php:1303
 #: classes/class.pmproemail.php:1260
 #: classes/class.pmproemail.php:1324
+#: classes/class.pmproemail.php:1267
+#: classes/class.pmproemail.php:1331
 msgid "This membership does not expire."
 msgstr ""
 
@@ -15036,6 +15610,7 @@ msgstr ""
 #: classes/class.pmproemail.php:1292
 #: classes/class.pmproemail.php:1294
 #: classes/class.pmproemail.php:1315
+#: classes/class.pmproemail.php:1322
 msgid "Membership has been cancelled."
 msgstr ""
 
@@ -15048,6 +15623,7 @@ msgstr ""
 #: classes/class.pmproemail.php:1332
 #: classes/class.pmproemail.php:1334
 #: classes/class.pmproemail.php:1355
+#: classes/class.pmproemail.php:1362
 msgid "Invoice for order #: "
 msgstr ""
 
@@ -15060,6 +15636,7 @@ msgstr ""
 #: classes/class.pmproemail.php:1391
 #: classes/class.pmproemail.php:1393
 #: classes/class.pmproemail.php:1414
+#: classes/class.pmproemail.php:1421
 msgid "Payment action required for your %s membership"
 msgstr ""
 
@@ -15072,6 +15649,7 @@ msgstr ""
 #: classes/class.pmproemail.php:1438
 #: classes/class.pmproemail.php:1440
 #: classes/class.pmproemail.php:1462
+#: classes/class.pmproemail.php:1469
 msgid "Payment action required: membership for %s at %s"
 msgstr ""
 
@@ -16394,6 +16972,7 @@ msgstr ""
 #: includes/addons.php:317
 #: includes/addons.php:332
 #: includes/addons.php:378
+#: includes/addons.php:451
 msgid "Return to the PMPro Add Ons page"
 msgstr ""
 
@@ -18360,60 +18939,70 @@ msgstr ""
 #: includes/functions.php:406
 #: includes/functions.php:410
 #: includes/functions.php:411
+#: includes/functions.php:350
 msgid " and then <strong>%1$s per %2$s for %3$d more %4$s</strong>."
 msgstr ""
 
 #: includes/functions.php:408
 #: includes/functions.php:412
 #: includes/functions.php:413
+#: includes/functions.php:352
 msgid " and then <strong>%1$s every %2$d %3$s for %4$d more payments</strong>."
 msgstr ""
 
 #: includes/functions.php:411
 #: includes/functions.php:415
 #: includes/functions.php:416
+#: includes/functions.php:355
 msgid " and then <strong>%1$s after %2$d %3$s</strong>."
 msgstr ""
 
 #: includes/functions.php:416
 #: includes/functions.php:420
 #: includes/functions.php:421
+#: includes/functions.php:360
 msgid "The price for membership is <strong>%1$s per %2$s</strong>."
 msgstr ""
 
 #: includes/functions.php:418
 #: includes/functions.php:422
 #: includes/functions.php:423
+#: includes/functions.php:362
 msgid "<strong>%1$s per %2$s</strong>."
 msgstr ""
 
 #: includes/functions.php:422
 #: includes/functions.php:426
 #: includes/functions.php:427
+#: includes/functions.php:366
 msgid "The price for membership is <strong>%1$s every %2$d %3$s</strong>."
 msgstr ""
 
 #: includes/functions.php:424
 #: includes/functions.php:428
 #: includes/functions.php:429
+#: includes/functions.php:368
 msgid "<strong>%1$s every %2$d %3$s</strong>."
 msgstr ""
 
 #: includes/functions.php:429
 #: includes/functions.php:433
 #: includes/functions.php:434
+#: includes/functions.php:373
 msgid " and then <strong>%1$s per %2$s</strong>."
 msgstr ""
 
 #: includes/functions.php:431
 #: includes/functions.php:435
 #: includes/functions.php:436
+#: includes/functions.php:375
 msgid " and then <strong>%1$s every %2$d %3$s</strong>."
 msgstr ""
 
 #: includes/functions.php:454
 #: includes/functions.php:458
 #: includes/functions.php:459
+#: includes/functions.php:398
 msgid "After your initial payment, your first %1$d payments will cost %2$s."
 msgstr ""
 
@@ -18423,48 +19012,57 @@ msgstr ""
 #: includes/functions.php:571
 #: includes/functions.php:469
 #: includes/functions.php:572
+#: includes/functions.php:408
+#: includes/functions.php:511
 msgid "Customers in %1$s will be charged %2$s%% tax."
 msgstr ""
 
 #: includes/functions.php:522
 #: includes/functions.php:528
 #: includes/functions.php:529
+#: includes/functions.php:468
 msgid "<strong>%1$s per %2$s for %3$d more %4$s</strong>"
 msgstr ""
 
 #: includes/functions.php:524
 #: includes/functions.php:530
 #: includes/functions.php:531
+#: includes/functions.php:470
 msgid "<strong>%1$s every %2$d %3$s for %4$d more payments</strong>"
 msgstr ""
 
 #: includes/functions.php:527
 #: includes/functions.php:533
 #: includes/functions.php:534
+#: includes/functions.php:473
 msgid "<strong>%1$s after %2$d %3$s</strong>"
 msgstr ""
 
 #: includes/functions.php:530
 #: includes/functions.php:536
 #: includes/functions.php:537
+#: includes/functions.php:476
 msgid "<strong>%1$s every %2$s</strong>"
 msgstr ""
 
 #: includes/functions.php:532
 #: includes/functions.php:538
 #: includes/functions.php:539
+#: includes/functions.php:478
 msgid "<strong>%1$s every %2$d %3$s</strong>"
 msgstr ""
 
 #: includes/functions.php:582
 #: includes/functions.php:588
 #: includes/functions.php:589
+#: includes/functions.php:528
 msgid "Membership expires after %1$d %2$s."
 msgstr ""
 
 #: includes/functions.php:601
 #: includes/functions.php:607
 #: includes/functions.php:608
+#: includes/functions.php:547
 msgid "%1$s membership expires after %2$d %3$s"
 msgstr ""
 
@@ -18472,6 +19070,7 @@ msgstr ""
 #: includes/functions.php:1004
 #: includes/functions.php:1005
 #: includes/functions.php:1006
+#: includes/functions.php:945
 msgid "No membership_id specified in pmpro_changeMembershipLevel."
 msgstr ""
 
@@ -18482,6 +19081,7 @@ msgstr ""
 #: includes/functions.php:2488
 #: includes/functions.php:2485
 #: includes/functions.php:2497
+#: includes/functions.php:2436
 msgid "Sign Up Now"
 msgstr ""
 
@@ -18732,6 +19332,7 @@ msgstr ""
 #: includes/login.php:968
 #: includes/login.php:990
 #: includes/login.php:998
+#: shortcodes/pmpro_account.php:226
 msgid "Log Out"
 msgstr ""
 
@@ -18918,6 +19519,10 @@ msgstr ""
 #: includes/profile.php:526
 #: includes/profile.php:525
 #: adminpages/orders.php:1706
+#: classes/class-pmpro-orders-list-table.php:286
+#: classes/class-pmpro-orders-list-table.php:1149
+#: pages/invoice.php:44
+#: shortcodes/pmpro_account.php:279
 msgid "Paid"
 msgstr ""
 
@@ -19119,6 +19724,7 @@ msgstr ""
 
 #: includes/recaptcha.php:114
 #: includes/recaptcha.php:115
+#: includes/recaptcha.php:34
 msgid "Please check the ReCAPTCHA box to confirm you are not a bot."
 msgstr ""
 
@@ -19175,6 +19781,8 @@ msgstr ""
 #: pages/billing.php:475
 #: pages/billing.php:477
 #: pages/billing.php:486
+#: pages/billing.php:485
+#: shortcodes/pmpro_account.php:81
 msgid "Your membership is not active. <a href='%s'>Renew now.</a>"
 msgstr ""
 
@@ -19184,6 +19792,8 @@ msgstr ""
 #: pages/billing.php:478
 #: pages/billing.php:480
 #: pages/billing.php:489
+#: pages/billing.php:488
+#: shortcodes/pmpro_account.php:84
 msgid "You do not have an active membership. <a href='%s'>Register here.</a>"
 msgstr ""
 
@@ -19193,6 +19803,8 @@ msgstr ""
 #: pages/billing.php:481
 #: pages/billing.php:483
 #: pages/billing.php:492
+#: pages/billing.php:491
+#: shortcodes/pmpro_account.php:87
 msgid "You do not have an active membership. <a href='%s'>Choose a membership level.</a>"
 msgstr ""
 
@@ -19210,6 +19822,7 @@ msgstr ""
 #: pages/checkout.php:424
 #: pages/checkout.php:444
 #: pages/checkout.php:458
+#: pages/checkout.php:459
 msgid "Security Code (CVC)"
 msgstr ""
 
@@ -19220,6 +19833,7 @@ msgstr ""
 #: paid-memberships-pro.php:182
 #: paid-memberships-pro.php:184
 #: paid-memberships-pro.php:185
+#: paid-memberships-pro.php:189
 msgid "Default"
 msgstr ""
 
@@ -19244,6 +19858,8 @@ msgstr ""
 
 #: shortcodes/pmpro_account.php:249
 #: shortcodes/pmpro_account.php:256
+#: classes/class-pmpro-orders-list-table.php:288
+#: shortcodes/pmpro_account.php:284
 msgid "Refunded"
 msgstr ""
 
@@ -19252,6 +19868,7 @@ msgstr ""
 #: js/blocks.build.js:119
 #: js/blocks.build.js:137
 #: blocks/account-invoices-section/block.js:48
+#: blocks/account-invoices-section/block.js:55
 msgid "Membership Account: Invoices"
 msgstr ""
 
@@ -19321,6 +19938,7 @@ msgstr ""
 #: blocks/account-links-section/block.js:39
 #: js/blocks.build.js:194
 #: blocks/account-links-section/block.js:48
+#: blocks/account-links-section/block.js:55
 msgid "Membership Account: Member Links"
 msgstr ""
 
@@ -19337,6 +19955,7 @@ msgstr ""
 #: blocks/account-membership-section/block.js:39
 #: js/blocks.build.js:251
 #: blocks/account-membership-section/block.js:46
+#: blocks/account-membership-section/block.js:53
 msgid "Membership Account: My Memberships"
 msgstr ""
 
@@ -19370,6 +19989,7 @@ msgstr ""
 #: js/blocks.build.js:492
 #: js/blocks.build.js:510
 #: blocks/account-profile-section/block.js:46
+#: blocks/account-profile-section/block.js:53
 msgid "Membership Account: Profile"
 msgstr ""
 
@@ -19606,6 +20226,8 @@ msgstr ""
 #: adminpages/discountcodes.php:878
 #: adminpages/membershiplevels.php:420
 #: adminpages/membershiplevels.php:425
+#: adminpages/membershiplevels.php:426
+#: classes/class-pmpro-discount-code-list-table.php:379
 msgid "View Orders"
 msgstr ""
 
@@ -19690,6 +20312,7 @@ msgstr ""
 #: classes/class-pmpro-site-health.php:132
 #: classes/class-pmpro-site-health.php:144
 #: classes/class-pmpro-site-health.php:149
+#: classes/class-pmpro-site-health.php:153
 msgid "No Levels Found"
 msgstr ""
 
@@ -19701,6 +20324,7 @@ msgstr ""
 #: classes/class-pmpro-site-health.php:151
 #: classes/class-pmpro-site-health.php:163
 #: classes/class-pmpro-site-health.php:168
+#: classes/class-pmpro-site-health.php:172
 msgid "%d discount code"
 msgid_plural "%d discount codes"
 msgstr[0] ""
@@ -19714,6 +20338,7 @@ msgstr[1] ""
 #: classes/class-pmpro-site-health.php:167
 #: classes/class-pmpro-site-health.php:179
 #: classes/class-pmpro-site-health.php:184
+#: classes/class-pmpro-site-health.php:188
 msgid "%d order"
 msgid_plural "%d orders"
 msgstr[0] ""
@@ -19727,6 +20352,7 @@ msgstr[1] ""
 #: classes/class-pmpro-site-health.php:184
 #: classes/class-pmpro-site-health.php:196
 #: classes/class-pmpro-site-health.php:201
+#: classes/class-pmpro-site-health.php:205
 msgid "%s (gateway not registered)"
 msgstr ""
 
@@ -19740,6 +20366,7 @@ msgstr ""
 #: classes/class-pmpro-wisdom-integration.php:401
 #: classes/class-pmpro-wisdom-integration.php:406
 #: classes/class-pmpro-site-health.php:214
+#: classes/class-pmpro-site-health.php:218
 msgid "Legacy Keys"
 msgstr ""
 
@@ -19754,6 +20381,7 @@ msgstr ""
 #: classes/class-pmpro-wisdom-integration.php:406
 #: classes/class-pmpro-wisdom-integration.php:411
 #: classes/class-pmpro-site-health.php:219
+#: classes/class-pmpro-site-health.php:223
 msgid "Stripe Connect"
 msgstr ""
 
@@ -19766,6 +20394,7 @@ msgstr ""
 #: classes/class-pmpro-site-health.php:228
 #: classes/class-pmpro-site-health.php:240
 #: classes/class-pmpro-site-health.php:245
+#: classes/class-pmpro-site-health.php:249
 msgid "%s (environment not registered)"
 msgstr ""
 
@@ -19777,6 +20406,7 @@ msgstr ""
 #: classes/class-pmpro-site-health.php:310
 #: classes/class-pmpro-site-health.php:322
 #: classes/class-pmpro-site-health.php:327
+#: classes/class-pmpro-site-health.php:331
 msgid "Unable to verify"
 msgstr ""
 
@@ -19788,6 +20418,7 @@ msgstr ""
 #: classes/class-pmpro-site-health.php:373
 #: classes/class-pmpro-site-health.php:385
 #: classes/class-pmpro-site-health.php:390
+#: classes/class-pmpro-site-health.php:394
 msgid "missing"
 msgstr ""
 
@@ -19844,6 +20475,7 @@ msgstr ""
 
 #: shortcodes/pmpro_account.php:145
 #: shortcodes/pmpro_account.php:152
+#: shortcodes/pmpro_account.php:166
 msgctxt "A dash is shown when there is no expiration date."
 msgid "&#8212;"
 msgstr ""
@@ -19878,6 +20510,7 @@ msgstr ""
 #: classes/class-pmpro-site-health.php:430
 #: classes/class-pmpro-site-health.php:442
 #: classes/class-pmpro-site-health.php:447
+#: classes/class-pmpro-site-health.php:451
 msgid "PMPRO_GETFILE_ENABLED is not set"
 msgstr ""
 
@@ -19888,6 +20521,7 @@ msgstr ""
 #: classes/class-pmpro-site-health.php:434
 #: classes/class-pmpro-site-health.php:446
 #: classes/class-pmpro-site-health.php:451
+#: classes/class-pmpro-site-health.php:455
 msgid "PMPRO_GETFILE_ENABLED is off"
 msgstr ""
 
@@ -19904,6 +20538,8 @@ msgstr ""
 #: classes/class-pmpro-site-health.php:493
 #: classes/class-pmpro-site-health.php:464
 #: classes/class-pmpro-site-health.php:498
+#: classes/class-pmpro-site-health.php:468
+#: classes/class-pmpro-site-health.php:502
 msgid "Unable to access .htaccess file"
 msgstr ""
 
@@ -19920,6 +20556,8 @@ msgstr ""
 #: classes/class-pmpro-site-health.php:497
 #: classes/class-pmpro-site-health.php:468
 #: classes/class-pmpro-site-health.php:502
+#: classes/class-pmpro-site-health.php:472
+#: classes/class-pmpro-site-health.php:506
 msgid "Off - No .htaccess file"
 msgstr ""
 
@@ -19936,6 +20574,8 @@ msgstr ""
 #: classes/class-pmpro-site-health.php:508
 #: classes/class-pmpro-site-health.php:474
 #: classes/class-pmpro-site-health.php:513
+#: classes/class-pmpro-site-health.php:478
+#: classes/class-pmpro-site-health.php:517
 msgid "Off"
 msgstr ""
 
@@ -19946,6 +20586,7 @@ msgstr ""
 #: classes/class-pmpro-site-health.php:460
 #: classes/class-pmpro-site-health.php:472
 #: classes/class-pmpro-site-health.php:477
+#: classes/class-pmpro-site-health.php:481
 msgid "On - .htaccess contains services/getfile.php usage"
 msgstr ""
 
@@ -19956,6 +20597,7 @@ msgstr ""
 #: classes/class-pmpro-site-health.php:491
 #: classes/class-pmpro-site-health.php:503
 #: classes/class-pmpro-site-health.php:508
+#: classes/class-pmpro-site-health.php:512
 msgid "On - Browser cache enabled for HTML (ExpiresByType text/html), this may interfere with Content Restriction after Login. Remove that line from your .htaccess to resolve this problem."
 msgstr ""
 
@@ -19966,6 +20608,7 @@ msgstr ""
 #: classes/class-pmpro-site-health.php:493
 #: classes/class-pmpro-site-health.php:505
 #: classes/class-pmpro-site-health.php:510
+#: classes/class-pmpro-site-health.php:514
 msgid "On - Browser cache enabled for HTML (ExpiresDefault), this may interfere with Content Restriction after Login. Remove that line from your .htaccess to resolve this problem."
 msgstr ""
 
@@ -19976,6 +20619,7 @@ msgstr ""
 #: classes/class-pmpro-site-health.php:539
 #: classes/class-pmpro-site-health.php:551
 #: classes/class-pmpro-site-health.php:556
+#: classes/class-pmpro-site-health.php:584
 msgid "Cron Limit"
 msgstr ""
 
@@ -19986,6 +20630,7 @@ msgstr ""
 #: classes/class-pmpro-site-health.php:540
 #: classes/class-pmpro-site-health.php:552
 #: classes/class-pmpro-site-health.php:557
+#: classes/class-pmpro-site-health.php:585
 msgid "Default Membership Level"
 msgstr ""
 
@@ -19996,6 +20641,7 @@ msgstr ""
 #: classes/class-pmpro-site-health.php:541
 #: classes/class-pmpro-site-health.php:553
 #: classes/class-pmpro-site-health.php:558
+#: classes/class-pmpro-site-health.php:586
 msgid "Use Sessions"
 msgstr ""
 
@@ -20006,6 +20652,7 @@ msgstr ""
 #: classes/class-pmpro-site-health.php:546
 #: classes/class-pmpro-site-health.php:558
 #: classes/class-pmpro-site-health.php:563
+#: classes/class-pmpro-site-health.php:591
 msgid "Authorize.net Silent Post Debug Mode"
 msgstr ""
 
@@ -20016,6 +20663,7 @@ msgstr ""
 #: classes/class-pmpro-site-health.php:549
 #: classes/class-pmpro-site-health.php:561
 #: classes/class-pmpro-site-health.php:566
+#: classes/class-pmpro-site-health.php:594
 msgid "Braintree Webhook Debug Mode"
 msgstr ""
 
@@ -20038,6 +20686,9 @@ msgstr ""
 #: classes/class-pmpro-site-health.php:569
 #: classes/class-pmpro-site-health.php:572
 #: classes/class-pmpro-site-health.php:575
+#: classes/class-pmpro-site-health.php:597
+#: classes/class-pmpro-site-health.php:600
+#: classes/class-pmpro-site-health.php:603
 msgid "PayPal IPN Debug Mode"
 msgstr ""
 
@@ -20048,6 +20699,7 @@ msgstr ""
 #: classes/class-pmpro-site-health.php:561
 #: classes/class-pmpro-site-health.php:573
 #: classes/class-pmpro-site-health.php:578
+#: classes/class-pmpro-site-health.php:606
 msgid "Stripe Webhook Delay"
 msgstr ""
 
@@ -20058,6 +20710,7 @@ msgstr ""
 #: classes/class-pmpro-site-health.php:562
 #: classes/class-pmpro-site-health.php:574
 #: classes/class-pmpro-site-health.php:579
+#: classes/class-pmpro-site-health.php:607
 msgid "Stripe Webhook Debug Mode"
 msgstr ""
 
@@ -20068,6 +20721,7 @@ msgstr ""
 #: classes/class-pmpro-site-health.php:565
 #: classes/class-pmpro-site-health.php:577
 #: classes/class-pmpro-site-health.php:582
+#: classes/class-pmpro-site-health.php:610
 msgid "2Checkout INS Debug Mode"
 msgstr ""
 
@@ -20095,6 +20749,9 @@ msgstr ""
 #: adminpages/wizard/general.php:62
 #: adminpages/wizard/general.php:65
 #: adminpages/wizard/general.php:74
+#: adminpages/addons.php:453
+#: adminpages/license.php:70
+#: adminpages/wizard/general.php:76
 msgid "View Plans and Pricing"
 msgstr ""
 
@@ -20115,6 +20772,7 @@ msgstr ""
 #: classes/class-pmpro-site-health.php:413
 #: classes/class-pmpro-site-health.php:425
 #: classes/class-pmpro-site-health.php:430
+#: classes/class-pmpro-site-health.php:434
 msgid "No Membership Pages Found"
 msgstr ""
 
@@ -20379,6 +21037,7 @@ msgstr ""
 #: includes/terms.php:92
 #: includes/terms.php:29
 #: includes/terms.php:88
+#: adminpages/membershiplevels.php:825
 msgid "Select:"
 msgstr ""
 
@@ -20410,11 +21069,13 @@ msgstr ""
 
 #: adminpages/license.php:96
 #: adminpages/license.php:98
+#: adminpages/license.php:92
 msgid "<strong>Paid Memberships Pro offers plans for automatic updates of Add Ons and premium support.</strong> These plans include a license key which we recommend for all public websites running Paid Memberships Pro. A license key allows you to automatically install Add Ons included in your plan and update active Add Ons included in your plan when a new security, bug fix, or feature enhancement is released."
 msgstr ""
 
 #: adminpages/license.php:100
 #: adminpages/license.php:102
+#: adminpages/license.php:96
 msgid "<strong>Need help?</strong> Your license allows you to open new tickets in our private support area. Purchases are backed by a 30 day, no questions asked refund policy."
 msgstr ""
 
@@ -20459,6 +21120,7 @@ msgstr ""
 #: adminpages/reports/sales.php:555
 #: adminpages/reports/sales.php:563
 #: adminpages/reports/sales.php:783
+#: adminpages/reports/sales.php:790
 msgid "New:"
 msgstr ""
 
@@ -20468,6 +21130,7 @@ msgstr ""
 #: adminpages/reports/sales.php:558
 #: adminpages/reports/sales.php:566
 #: adminpages/reports/sales.php:788
+#: adminpages/reports/sales.php:795
 msgid "Renewals:"
 msgstr ""
 
@@ -20477,6 +21140,7 @@ msgstr ""
 #: adminpages/reports/sales.php:561
 #: adminpages/reports/sales.php:569
 #: adminpages/reports/sales.php:793
+#: adminpages/reports/sales.php:800
 msgid "Total:"
 msgstr ""
 
@@ -20515,6 +21179,7 @@ msgstr ""
 #: classes/class-pmpro-site-health.php:314
 #: classes/class-pmpro-site-health.php:326
 #: classes/class-pmpro-site-health.php:331
+#: classes/class-pmpro-site-health.php:335
 msgid "No template overrides"
 msgstr ""
 
@@ -20524,6 +21189,7 @@ msgstr ""
 #: classes/class-pmpro-site-health.php:320
 #: classes/class-pmpro-site-health.php:332
 #: classes/class-pmpro-site-health.php:337
+#: classes/class-pmpro-site-health.php:341
 msgid "Empty override folder -- no template overrides"
 msgstr ""
 
@@ -20559,21 +21225,25 @@ msgstr ""
 
 #: includes/addons.php:243
 #: includes/addons.php:289
+#: includes/addons.php:362
 msgid "Important: This plugin requires a valid PMPro %s license key to update."
 msgstr ""
 
 #: includes/addons.php:307
 #: includes/addons.php:353
+#: includes/addons.php:426
 msgid "You must have a <a href=\"https://www.paidmembershipspro.com/pricing/?utm_source=wp-admin&utm_pluginlink=bulkupdate\">valid PMPro %s License Key</a> to update PMPro %s add ons. The following plugins will not be updated:"
 msgstr ""
 
 #: includes/addons.php:329
 #: includes/addons.php:375
+#: includes/addons.php:448
 msgid "You must have a <a href=\"https://www.paidmembershipspro.com/pricing/?utm_source=wp-admin&utm_pluginlink=addon_update\">valid PMPro %s License Key</a> to update PMPro %s add ons."
 msgstr ""
 
 #: includes/addons.php:351
 #: includes/addons.php:397
+#: includes/addons.php:470
 msgid "You must enter a valid PMPro %s License Key under Settings > PMPro License to update this add on."
 msgstr ""
 
@@ -20643,21 +21313,25 @@ msgstr ""
 
 #: adminpages/discountcodes.php:728
 #: adminpages/discountcodes.php:729
+#: adminpages/discountcodes.php:719
 msgid "Save Code"
 msgstr ""
 
 #: adminpages/license.php:66
 #: adminpages/license.php:78
+#: adminpages/license.php:72
 msgid "Manage My Account"
 msgstr ""
 
 #: adminpages/license.php:68
 #: adminpages/license.php:80
+#: adminpages/license.php:74
 msgid "Open Support Ticket"
 msgstr ""
 
 #: adminpages/license.php:70
 #: adminpages/license.php:82
+#: adminpages/license.php:76
 msgid "Upgrade For Support"
 msgstr ""
 
@@ -20667,6 +21341,7 @@ msgid "View Support License Options &raquo;"
 msgstr ""
 
 #: adminpages/orders.php:168
+#: adminpages/orders.php:23
 msgid "Order %s deleted successfully."
 msgstr ""
 
@@ -20813,10 +21488,12 @@ msgid "Please deactivate and remove this plugin."
 msgstr ""
 
 #: pages/levels.php:82
+#: pages/levels.php:83
 msgid "Return to Your Account"
 msgstr ""
 
 #: pages/levels.php:84
+#: pages/levels.php:85
 msgid "Return to Home"
 msgstr ""
 
@@ -20859,10 +21536,12 @@ msgstr ""
 #: adminpages/membershiplevels.php:169
 #: adminpages/membershiplevels.php:171
 #: adminpages/membershiplevels.php:176
+#: adminpages/discountcodes.php:350
 msgid "WARNING: A level was set with both a recurring billing amount and an expiration date. You only need to set one of these unless you really want this membership to expire after a specific time period. For more information, <a target=\"_blank\" rel=\"nofollow noopener\" href=\"%s\">see our post here</a>."
 msgstr ""
 
 #: adminpages/discountcodes.php:646
+#: adminpages/discountcodes.php:636
 msgid "Optional: Allow billing limits with Stripe using the <a href=\"%s\" title=\"Paid Memberships Pro - Stripe Billing Limits Add On\" target=\"_blank\" rel=\"nofollow nopopener\">Stripe Billing Limits Add On</a>."
 msgstr ""
 
@@ -20874,6 +21553,8 @@ msgstr ""
 #: includes/profile.php:479
 #: adminpages/orders.php:1500
 #: adminpages/reports/logins.php:244
+#: classes/class-pmpro-discount-code-list-table.php:336
+#: classes/class-pmpro-orders-list-table.php:878
 msgid "ID: %s"
 msgstr ""
 
@@ -20896,33 +21577,40 @@ msgstr ""
 #: adminpages/membershiplevels.php:479
 #: adminpages/membershiplevels.php:624
 #: adminpages/membershiplevels.php:629
+#: adminpages/membershiplevels.php:630
 msgid "Optional: Allow billing limits with Stripe using the <a href=\"%s\" title=\"Paid Memberships Pro - Stripe Billing Limits Add On\" target=\"_blank\" rel=\"nofollow noopener\">Stripe Billing Limits Add On</a>."
 msgstr ""
 
 #: adminpages/membershiplevels.php:506
 #: adminpages/membershiplevels.php:532
 #: adminpages/membershiplevels.php:537
+#: adminpages/membershiplevels.php:538
 msgid "Optional: Allow more customizable trial periods and renewal dates using the <a href=\"%s\" title=\"Paid Memberships Pro - Subscription Delays Add On\" target=\"_blank\" rel=\"nofollow noopener\">Subscription Delays Add On</a>."
 msgstr ""
 
 #: adminpages/membershiplevels.php:572
 #: adminpages/membershiplevels.php:741
 #: adminpages/membershiplevels.php:746
+#: adminpages/membershiplevels.php:747
 msgid "Optional: Allow more customizable expiration dates using the <a href=\"%s\" title=\"Paid Memberships Pro - Set Expiration Date Add On\" target=\"_blank\" rel=\"nofollow noopener\">Set Expiration Date Add On</a>."
 msgstr ""
 
 #: adminpages/membershiplevels.php:590
 #: adminpages/membershiplevels.php:710
 #: adminpages/membershiplevels.php:715
+#: adminpages/membershiplevels.php:716
 msgid "WARNING: This level is set with both a recurring billing amount and an expiration date. You only need to set one of these unless you really want this membership to expire after a certain number of payments. For more information, <a target=\"_blank\" rel=\"nofollow noopener\" href=\"%s\">see our post here</a>."
 msgstr ""
 
 #: adminpages/orders.php:188
+#: adminpages/orders.php:43
 msgid "Order refunded successfully."
 msgstr ""
 
 #: adminpages/orders.php:191
 #: adminpages/orders.php:196
+#: adminpages/orders.php:46
+#: adminpages/orders.php:51
 msgid "Error refunding order. Please check the order notes for more information."
 msgstr ""
 
@@ -20931,11 +21619,14 @@ msgstr ""
 #: adminpages/orders.php:1478
 #: adminpages/orders.php:421
 #: adminpages/orders.php:1479
+#: adminpages/orders.php:278
+#: classes/class-pmpro-orders-list-table.php:857
 msgid "Refund order %s at the payment gateway. This action is permanent. The user and admin will receive an email confirmation after the refund is processed. Are you sure you want to refund this order?"
 msgstr ""
 
 #: adminpages/orders.php:441
 #: adminpages/orders.php:443
+#: adminpages/orders.php:301
 msgid "View"
 msgstr ""
 
@@ -20947,28 +21638,36 @@ msgstr ""
 #: adminpages/orders.php:450
 #: adminpages/orders.php:1564
 #: adminpages/orders.php:1566
+#: adminpages/orders.php:306
+#: adminpages/orders.php:308
+#: classes/class-pmpro-orders-list-table.php:942
+#: classes/class-pmpro-orders-list-table.php:944
 msgid "Refund"
 msgstr ""
 
 #: adminpages/orders.php:485
 #: adminpages/orders.php:486
+#: adminpages/orders.php:344
 msgid "A randomly generated code that serves as a unique, non-sequential invoice number."
 msgstr ""
 
 #: adminpages/orders.php:534
 #: adminpages/orders.php:535
+#: adminpages/orders.php:392
 msgid "Member Information"
 msgstr ""
 
 #: adminpages/orders.php:844
 #: adminpages/orders.php:847
 #: adminpages/orders.php:846
+#: adminpages/orders.php:704
 msgid "MM/YYYY"
 msgstr ""
 
 #: adminpages/orders.php:872
 #: adminpages/orders.php:875
 #: adminpages/orders.php:874
+#: adminpages/orders.php:732
 msgid "Payment Gateway Information"
 msgstr ""
 
@@ -20977,6 +21676,8 @@ msgstr ""
 #: adminpages/orders.php:942
 #: adminpages/orders.php:1712
 #: adminpages/orders.php:941
+#: adminpages/orders.php:799
+#: classes/class-pmpro-orders-list-table.php:1155
 msgid "View all orders for this subscription"
 msgstr ""
 
@@ -20985,12 +21686,15 @@ msgstr ""
 #: adminpages/orders.php:942
 #: adminpages/orders.php:1712
 #: adminpages/orders.php:941
+#: adminpages/orders.php:799
+#: classes/class-pmpro-orders-list-table.php:1155
 msgid "Renewal"
 msgstr ""
 
 #: adminpages/orders.php:948
 #: adminpages/orders.php:951
 #: adminpages/orders.php:950
+#: adminpages/orders.php:808
 msgid "Additional Order Information"
 msgstr ""
 
@@ -20999,6 +21703,7 @@ msgstr ""
 #: includes/profile.php:468
 #: includes/profile.php:467
 #: adminpages/orders.php:1719
+#: classes/class-pmpro-orders-list-table.php:1169
 msgid "%1$s at %2$s"
 msgstr ""
 
@@ -21015,6 +21720,7 @@ msgstr ""
 #: classes/class-pmpro-site-health.php:512
 #: classes/class-pmpro-site-health.php:524
 #: classes/class-pmpro-site-health.php:529
+#: classes/class-pmpro-site-health.php:533
 msgid "No library conflicts detected."
 msgstr ""
 
@@ -21136,12 +21842,14 @@ msgstr ""
 #: classes/class.pmproemail.php:265
 #: classes/class.pmproemail.php:310
 #: classes/class.pmproemail.php:317
+#: classes/class.pmproemail.php:324
 msgid "Your invoice for order #%s at %s has been REFUNDED"
 msgstr ""
 
 #: classes/class.pmproemail.php:331
 #: classes/class.pmproemail.php:383
 #: classes/class.pmproemail.php:391
+#: classes/class.pmproemail.php:398
 msgid "Invoice for order #%s at %s has been REFUNDED"
 msgstr ""
 
@@ -21883,6 +22591,7 @@ msgstr ""
 #: adminpages/wizard/save-steps.php:181
 #: adminpages/wizard/save-steps.php:183
 #: adminpages/wizard/save-steps.php:188
+#: adminpages/wizard/memberships.php:45
 msgid "Premium"
 msgstr ""
 
@@ -21934,10 +22643,13 @@ msgstr ""
 #: adminpages/membershiplevels.php:1296
 #: adminpages/membershiplevels.php:1304
 #: adminpages/membershiplevels.php:1306
+#: adminpages/addons.php:450
+#: adminpages/membershiplevels.php:1307
 msgid "Close Popup"
 msgstr ""
 
 #: adminpages/addons.php:416
+#: adminpages/addons.php:452
 msgid "Get %s and more with a %s license."
 msgstr ""
 
@@ -21955,6 +22667,7 @@ msgstr ""
 #: includes/adminpages.php:77
 #: adminpages/admin_header.php:295
 #: includes/adminpages.php:78
+#: adminpages/admin_header.php:294
 msgid "User Fields"
 msgstr ""
 
@@ -22030,76 +22743,91 @@ msgstr ""
 #. translators: %s is the Level ID.
 #: adminpages/membershiplevels.php:408
 #: adminpages/membershiplevels.php:413
+#: adminpages/membershiplevels.php:414
 msgid "Edit Level ID: %s"
 msgstr ""
 
 #: adminpages/membershiplevels.php:418
 #: adminpages/membershiplevels.php:423
+#: adminpages/membershiplevels.php:424
 msgid "View at Checkout"
 msgstr ""
 
 #: adminpages/membershiplevels.php:419
 #: adminpages/membershiplevels.php:424
+#: adminpages/membershiplevels.php:425
 msgid "View Members"
 msgstr ""
 
 #: adminpages/membershiplevels.php:442
 #: adminpages/membershiplevels.php:447
+#: adminpages/membershiplevels.php:448
 msgid "General Information"
 msgstr ""
 
 #: adminpages/membershiplevels.php:474
 #: adminpages/membershiplevels.php:479
+#: adminpages/membershiplevels.php:480
 msgid "Use the placeholder variable <code>%1$s</code> in your checkout <a href=\"%2$s\" title=\"Edit Membership Email Templates\">email templates</a> to include this information."
 msgstr ""
 
 #: adminpages/membershiplevels.php:530
 #: adminpages/membershiplevels.php:535
+#: adminpages/membershiplevels.php:536
 msgid "Set the member pricing for this level. The initial payment is collected immediately at checkout. Recurring payments, if applicable, begin one cycle after the initial payment. Changing the level price only applies to new members and does not affect existing members of this level."
 msgstr ""
 
 #: adminpages/membershiplevels.php:705
 #: adminpages/membershiplevels.php:710
+#: adminpages/membershiplevels.php:711
 msgid "Expiration Settings"
 msgstr ""
 
 #: adminpages/membershiplevels.php:813
 #: adminpages/membershiplevels.php:818
+#: adminpages/membershiplevels.php:819
 msgid "Protect access to posts, pages, and content sections with built-in PMPro features. If you want to protect more content types, <a href=\"%s\" rel=\"nofollow noopener\" target=\"_blank\">read our documentation on restricting content</a>."
 msgstr ""
 
 #: adminpages/membershiplevels.php:846
 #: adminpages/membershiplevels.php:851
+#: adminpages/membershiplevels.php:852
 msgid "Select categories to bulk protect posts."
 msgstr ""
 
 #: adminpages/membershiplevels.php:868
 #: adminpages/membershiplevels.php:873
+#: adminpages/membershiplevels.php:874
 msgid "Single Posts"
 msgstr ""
 
 #: adminpages/membershiplevels.php:869
 #: adminpages/membershiplevels.php:874
+#: adminpages/membershiplevels.php:875
 msgid "<a target=\"_blank\" href=\"%1$s\">Add</a> or <a target=\"_blank\" href=\"%2$s\">edit</a> a single post to protect it."
 msgstr ""
 
 #: adminpages/membershiplevels.php:872
 #: adminpages/membershiplevels.php:877
+#: adminpages/membershiplevels.php:878
 msgid "Single Pages"
 msgstr ""
 
 #: adminpages/membershiplevels.php:873
 #: adminpages/membershiplevels.php:878
+#: adminpages/membershiplevels.php:879
 msgid "<a target=\"_blank\" href=\"%1$s\">Add</a> or <a target=\"_blank\" href=\"%2$s\">edit</a> a single page to protect it."
 msgstr ""
 
 #: adminpages/membershiplevels.php:876
 #: adminpages/membershiplevels.php:881
+#: adminpages/membershiplevels.php:882
 msgid "Other Content Types"
 msgstr ""
 
 #: adminpages/membershiplevels.php:877
 #: adminpages/membershiplevels.php:882
+#: adminpages/membershiplevels.php:883
 msgid "Protect access to other content including custom post types (CPTs), courses, events, products, communities, podcasts, and more. <a href=\"%s\" rel=\"nofollow noopener\" target=\"_blank\">Read our documentation on restricting content</a>."
 msgstr ""
 
@@ -22108,6 +22836,7 @@ msgstr ""
 #: adminpages/membershiplevels.php:1297
 #: adminpages/membershiplevels.php:1305
 #: adminpages/membershiplevels.php:1307
+#: adminpages/membershiplevels.php:1308
 msgid "What type of membership level do you want to create?"
 msgstr ""
 
@@ -22116,11 +22845,13 @@ msgstr ""
 #: adminpages/membershiplevels.php:1315
 #: adminpages/membershiplevels.php:1323
 #: adminpages/membershiplevels.php:1325
+#: adminpages/membershiplevels.php:1326
 msgid "Add On"
 msgstr ""
 
 #: adminpages/orders.php:1626
 #: adminpages/orders.php:1627
+#: classes/class-pmpro-orders-list-table.php:1040
 msgid "PayPal"
 msgstr ""
 
@@ -22648,24 +23379,29 @@ msgstr ""
 #: includes/adminpages.php:94
 #: adminpages/admin_header.php:264
 #: includes/adminpages.php:95
+#: adminpages/admin_header.php:263
 msgid "Setup Wizard"
 msgstr ""
 
 #: adminpages/discountcodes.php:930
+#: classes/class-pmpro-discount-code-list-table.php:436
 msgid "unlimited"
 msgstr ""
 
 #. translators: %s is the Level Name.
 #: adminpages/membershiplevels.php:1150
 #: adminpages/membershiplevels.php:1152
+#: adminpages/membershiplevels.php:1153
 msgid "Are you sure you want to delete membership level %s? Any gateway subscriptions or third-party connections with a member's account will remain active."
 msgstr ""
 
 #: adminpages/wizard/advanced.php:12
+#: adminpages/wizard/advanced.php:13
 msgid "Configure advanced settings relating to your membership site. You can configure additional settings later."
 msgstr ""
 
 #: adminpages/wizard/advanced.php:23
+#: adminpages/wizard/advanced.php:24
 msgid "Show excerpts to non-members?"
 msgstr ""
 
@@ -22678,18 +23414,22 @@ msgid "Block IPs from checkout if there are more than 10 failures within 15 minu
 msgstr ""
 
 #: adminpages/wizard/advanced.php:40
+#: adminpages/wizard/advanced.php:43
 msgid "Enable Tracking?"
 msgstr ""
 
 #: adminpages/wizard/advanced.php:43
+#: adminpages/wizard/advanced.php:46
 msgid "Yes - Allow usage of Paid Memberships Pro to be tracked."
 msgstr ""
 
 #: adminpages/wizard/advanced.php:44
+#: adminpages/wizard/advanced.php:47
 msgid "No - Do not track usage of Paid Memberships Pro on my site."
 msgstr ""
 
 #: adminpages/wizard/advanced.php:46
+#: adminpages/wizard/advanced.php:49
 msgid "Sharing non-sensitive membership site data helps us analyze how our plugin is meeting your needs and identify opportunities to improve. Can be turned off under \"Advanced\" Settings."
 msgstr ""
 
@@ -22699,6 +23439,10 @@ msgstr ""
 #: adminpages/wizard/payments.php:76
 #: adminpages/wizard/general.php:71
 #: adminpages/wizard/general.php:80
+#: adminpages/wizard/advanced.php:55
+#: adminpages/wizard/general.php:82
+#: adminpages/wizard/memberships.php:95
+#: adminpages/wizard/payments.php:78
 msgid "Submit and Continue"
 msgstr ""
 
@@ -22708,22 +23452,30 @@ msgstr ""
 #: adminpages/wizard/payments.php:77
 #: adminpages/wizard/general.php:72
 #: adminpages/wizard/general.php:81
+#: adminpages/wizard/advanced.php:56
+#: adminpages/wizard/general.php:83
+#: adminpages/wizard/memberships.php:96
+#: adminpages/wizard/payments.php:79
 msgid "Skip"
 msgstr ""
 
 #: adminpages/wizard/done.php:23
+#: adminpages/wizard/done.php:25
 msgid "Setup Complete"
 msgstr ""
 
 #: adminpages/wizard/done.php:24
+#: adminpages/wizard/done.php:26
 msgid "Congratulations!"
 msgstr ""
 
 #: adminpages/wizard/done.php:24
+#: adminpages/wizard/done.php:26
 msgid "Your membership site is ready."
 msgstr ""
 
 #: adminpages/wizard/done.php:27
+#: adminpages/wizard/done.php:29
 msgid "What's next?"
 msgstr ""
 
@@ -22732,37 +23484,45 @@ msgid "You indicated you're building a %s membership site."
 msgstr ""
 
 #: adminpages/wizard/done.php:33
+#: adminpages/wizard/done.php:44
 msgid "Here are some recommended Add Ons for your business."
 msgstr ""
 
 #: adminpages/wizard/done.php:57
 #: adminpages/wizard/done.php:63
+#: adminpages/wizard/done.php:88
 msgid "OR"
 msgstr ""
 
 #: adminpages/wizard/done.php:59
 #: adminpages/wizard/done.php:65
+#: adminpages/wizard/done.php:90
 msgid "More functionality"
 msgstr ""
 
 #: adminpages/wizard/done.php:60
 #: adminpages/wizard/done.php:66
+#: adminpages/wizard/done.php:91
 msgid "Add more features to your membership site."
 msgstr ""
 
 #: adminpages/wizard/done.php:63
 #: adminpages/wizard/done.php:69
+#: adminpages/wizard/done.php:94
 msgid "View available Add Ons"
 msgstr ""
 
 #: adminpages/wizard/done.php:68
 #: adminpages/wizard/wizard.php:46
 #: adminpages/wizard/done.php:74
+#: adminpages/wizard/done.php:99
+#: adminpages/wizard/wizard.php:73
 msgid "Payments"
 msgstr ""
 
 #: adminpages/wizard/done.php:69
 #: adminpages/wizard/done.php:75
+#: adminpages/wizard/done.php:100
 msgid "Finish configuring your payment gateway."
 msgstr ""
 
@@ -22777,6 +23537,7 @@ msgstr ""
 
 #: adminpages/wizard/done.php:81
 #: adminpages/wizard/done.php:87
+#: adminpages/wizard/done.php:115
 msgid "View docs"
 msgstr ""
 
@@ -22815,6 +23576,7 @@ msgstr ""
 
 #: adminpages/wizard/general.php:60
 #: adminpages/wizard/general.php:63
+#: adminpages/wizard/general.php:65
 msgid "Enter Your Support License Key (optional)"
 msgstr ""
 
@@ -22829,6 +23591,9 @@ msgstr ""
 #: adminpages/wizard/memberships.php:22
 #: adminpages/wizard/memberships.php:37
 #: adminpages/reports/members-per-level.php:51
+#: adminpages/reports/members-per-level.php:52
+#: adminpages/wizard/memberships.php:23
+#: adminpages/wizard/memberships.php:44
 msgid "Level Name"
 msgstr ""
 
@@ -22837,6 +23602,7 @@ msgid "Paid Membership"
 msgstr ""
 
 #: adminpages/wizard/memberships.php:42
+#: adminpages/wizard/memberships.php:49
 msgid "Amount (i.e. \"10\")"
 msgstr ""
 
@@ -22857,14 +23623,17 @@ msgid "Configure Your Payment Gateway"
 msgstr ""
 
 #: adminpages/wizard/payments.php:32
+#: adminpages/wizard/payments.php:33
 msgid "We have detected you previously connected to Stripe, to change your Stripe account please adjust it in the \"Payment Gateway & SSL\" settings."
 msgstr ""
 
 #: adminpages/wizard/payments.php:35
+#: adminpages/wizard/payments.php:36
 msgid "After clicking \"Submit and Continue\", you will be redirected to Stripe to finish connecting PMPro to your Stripe account. If you do not already have a Stripe account and do not want to set one up at this time, please select \"Other/Setup Later\" instead."
 msgstr ""
 
 #: adminpages/wizard/payments.php:44
+#: adminpages/wizard/payments.php:45
 msgid "After connecting to Stripe, it is important to <a href=\"%s\" target=\"_blank\">set up your Stripe webhooks</a> to make sure that PMPro is notified of events that happen in Stripe."
 msgstr ""
 
@@ -22873,18 +23642,22 @@ msgid "Other/Setup Later"
 msgstr ""
 
 #: adminpages/wizard/payments.php:58
+#: adminpages/wizard/payments.php:60
 msgid "Payment gateways may be configured under \"Payment Gateway & SSL Settings\"."
 msgstr ""
 
 #: adminpages/wizard/wizard.php:25
+#: adminpages/wizard/wizard.php:29
 msgid "Association"
 msgstr ""
 
 #: adminpages/wizard/wizard.php:26
+#: adminpages/wizard/wizard.php:31
 msgid "Community"
 msgstr ""
 
 #: adminpages/wizard/wizard.php:27
+#: adminpages/wizard/wizard.php:32
 msgid "Courses"
 msgstr ""
 
@@ -22905,18 +23678,22 @@ msgid "Premium Content"
 msgstr ""
 
 #: adminpages/wizard/wizard.php:32
+#: adminpages/wizard/wizard.php:37
 msgid "Other"
 msgstr ""
 
 #: adminpages/wizard/wizard.php:45
+#: adminpages/wizard/wizard.php:72
 msgid "General Info"
 msgstr ""
 
 #: adminpages/wizard/wizard.php:49
+#: adminpages/wizard/wizard.php:76
 msgid "All Set!"
 msgstr ""
 
 #: adminpages/wizard/wizard.php:89
+#: adminpages/wizard/wizard.php:121
 msgid "Exit Wizard and Return to Dashboard"
 msgstr ""
 
@@ -22927,6 +23704,7 @@ msgstr ""
 
 #: classes/class-pmpro-admin-activity-email.php:121
 #: classes/class-pmpro-members-list-table.php:101
+#: classes/class-pmpro-orders-list-table.php:287
 msgid "Cancelled"
 msgstr ""
 
@@ -22945,18 +23723,22 @@ msgid "Display Name"
 msgstr ""
 
 #: classes/class-pmpro-members-list-table.php:85
+#: includes/abandoned-signups.php:148
 msgid "Registered"
 msgstr ""
 
 #: classes/class-pmpro-site-health.php:113
+#: classes/class-pmpro-site-health.php:117
 msgid "Current Site URL"
 msgstr ""
 
 #: classes/class-pmpro-site-health.php:117
+#: classes/class-pmpro-site-health.php:121
 msgid "Last Known Site URL"
 msgstr ""
 
 #: classes/class-pmpro-site-health.php:121
+#: classes/class-pmpro-site-health.php:125
 msgid "Pause Mode"
 msgstr ""
 
@@ -23076,6 +23858,7 @@ msgid "Delete any related membership history. Order history will be retained."
 msgstr ""
 
 #: preheaders/checkout.php:484
+#: preheaders/checkout.php:451
 msgid "There was an error setting up your account. Please contact us."
 msgstr ""
 
@@ -23098,10 +23881,12 @@ msgid "Paused"
 msgstr ""
 
 #: adminpages/wizard/done.php:84
+#: adminpages/wizard/done.php:110
 msgid "Not sure where to start? Take a look at our documentation."
 msgstr ""
 
 #: adminpages/wizard/general.php:58
+#: adminpages/wizard/general.php:60
 msgid "Yes, I will be collecting payments for my memberships."
 msgstr ""
 
@@ -23206,6 +23991,7 @@ msgid "Deprecated"
 msgstr ""
 
 #: adminpages/wizard/general.php:70
+#: adminpages/wizard/general.php:72
 msgid "The license key you entered is invalid. Please try again."
 msgstr ""
 
@@ -23232,6 +24018,7 @@ msgid "For more information, read our post here"
 msgstr ""
 
 #: pages/billing.php:165
+#: pages/billing.php:159
 msgid "You are logged in as <strong>%s</strong>. If you would like to update your billing information for a different account, <a href=\"%s\">log out now</a>."
 msgstr ""
 
@@ -23248,22 +24035,27 @@ msgstr ""
 
 #: adminpages/reports/members-per-level.php:16
 #: adminpages/reports/members-per-level.php:42
+#: adminpages/reports/members-per-level.php:43
 msgid "Active Members Per Level"
 msgstr ""
 
 #: adminpages/reports/members-per-level.php:52
+#: adminpages/reports/members-per-level.php:53
 msgid "Number of Active Members"
 msgstr ""
 
 #: adminpages/reports/members-per-level.php:62
+#: adminpages/reports/members-per-level.php:63
 msgid "View Active Members With This Level"
 msgstr ""
 
 #: adminpages/reports/members-per-level.php:69
+#: adminpages/reports/members-per-level.php:70
 msgid "No Active Members Found"
 msgstr ""
 
 #: adminpages/reports/members-per-level.php:107
+#: adminpages/reports/members-per-level.php:108
 msgid "Active Members"
 msgstr ""
 
@@ -23304,33 +24096,378 @@ msgid "Average %s"
 msgstr ""
 
 #: adminpages/reports/sales.php:602
+#: adminpages/reports/sales.php:603
+#: adminpages/reports/sales.php:841
 msgid "Last 7 Days"
 msgstr ""
 
 #: adminpages/reports/sales.php:603
+#: adminpages/reports/sales.php:604
+#: adminpages/reports/sales.php:838
 msgid "Last 30 Days"
 msgstr ""
 
 #: adminpages/reports/sales.php:604
+#: adminpages/reports/sales.php:605
+#: adminpages/reports/sales.php:844
 msgid "Last 12 Months"
 msgstr ""
 
 #: adminpages/reports/sales.php:648
+#: adminpages/reports/sales.php:655
 msgid "Show New and Renewals"
 msgstr ""
 
 #: adminpages/reports/sales.php:649
+#: adminpages/reports/sales.php:656
 msgid "Show Only New"
 msgstr ""
 
 #: adminpages/reports/sales.php:650
+#: adminpages/reports/sales.php:657
 msgid "Show Only Renewals"
 msgstr ""
 
 #: adminpages/reports/sales.php:800
+#: adminpages/reports/sales.php:807
 msgid "Previous Period New:"
 msgstr ""
 
 #: adminpages/reports/sales.php:805
+#: adminpages/reports/sales.php:812
 msgid "Previous Period Renewals:"
+msgstr ""
+
+#: adminpages/addons.php:454
+msgid "Already purchased? <a href=\"%s\">Enter your license key here</a>"
+msgstr ""
+
+#: adminpages/dashboard.php:180
+msgid "<a href=\"%s\">Enter your key here</a>"
+msgstr ""
+
+#: adminpages/license.php:88
+msgid "Paid Memberships Pro and our Add Ons are distributed under the <a href=\"%s\" target=\"_blank\">GPLv2 license</a>. This means, among other things, that you may use the software on this site or any other site free of charge."
+msgstr ""
+
+#: adminpages/license.php:99
+msgid "View Support License Options"
+msgstr ""
+
+#: adminpages/reports/logins.php:71
+#: adminpages/reports/members-per-level.php:33
+#: adminpages/reports/memberships.php:94
+#: adminpages/reports/sales.php:106
+msgid "View the full %s report"
+msgstr ""
+
+#: adminpages/reports/logins.php:165
+msgid "Select a membership level to customize this report"
+msgstr ""
+
+#: adminpages/reports/memberships.php:349
+#: adminpages/reports/sales.php:598
+msgid "Select report time period"
+msgstr ""
+
+#: adminpages/reports/memberships.php:355
+#: adminpages/reports/sales.php:607
+msgid "Select report type"
+msgstr ""
+
+#: adminpages/reports/memberships.php:362
+#: adminpages/reports/sales.php:613
+msgid "Select report month"
+msgstr ""
+
+#: adminpages/reports/memberships.php:368
+#: adminpages/reports/sales.php:619
+msgid "Select report year"
+msgstr ""
+
+#: adminpages/reports/memberships.php:375
+#: adminpages/reports/sales.php:626
+msgid "Filter report by membership level"
+msgstr ""
+
+#: adminpages/reports/memberships.php:398
+#: adminpages/reports/sales.php:645
+msgid "Filter report by discount code"
+msgstr ""
+
+#: adminpages/reports/sales.php:43
+msgid "Period"
+msgstr ""
+
+#: adminpages/reports/sales.php:74
+msgid "Toggle orders by price for %s"
+msgstr ""
+
+#: adminpages/reports/sales.php:92
+msgid "Orders %s at %s price"
+msgstr ""
+
+#: adminpages/reports/sales.php:653
+msgid "Select report data to include"
+msgstr ""
+
+#. translators: %1$s is the report period, %2$s is the report type, %3$s is the date.
+#: adminpages/reports/sales.php:855
+msgid "%1$s %2$s for %3$s"
+msgstr ""
+
+#. translators: %1$s is the report period, %2$s is the report type.
+#: adminpages/reports/sales.php:858
+msgid "%1$s %2$s"
+msgstr ""
+
+#: adminpages/wizard/done.php:33
+msgid "In step 1, you chose the %s site type."
+msgstr ""
+
+#. translators: %s: URL to the PMPro use case hub for the chosen site type
+#: adminpages/wizard/done.php:36
+msgid "Check out the %s, which guides you through next steps for your unique project."
+msgstr ""
+
+#: adminpages/wizard/done.php:37
+msgid "hub"
+msgstr ""
+
+#: adminpages/wizard/done.php:62
+msgid "Free Add On"
+msgstr ""
+
+#: adminpages/wizard/done.php:64
+msgid "Standard Add On"
+msgstr ""
+
+#: adminpages/wizard/done.php:66
+msgid "Plus Add On"
+msgstr ""
+
+#: adminpages/wizard/done.php:68
+msgid "Builder Add On"
+msgstr ""
+
+#: adminpages/wizard/done.php:70
+msgid "Free Plugin"
+msgstr ""
+
+#: adminpages/wizard/done.php:103
+msgid "View payment settings"
+msgstr ""
+
+#: adminpages/wizard/done.php:111
+msgid "Free membership account required."
+msgstr ""
+
+#: adminpages/wizard/done.php:115
+msgid "View Paid Memberships Pro documentation in a new tab"
+msgstr ""
+
+#: adminpages/wizard/general.php:54
+msgid "We will automatically create frontend pages for your levels, checkout, account management, and more."
+msgstr ""
+
+#: adminpages/wizard/general.php:76
+msgid "View plans and pricing for Paid Memberships Pro optional licenses in a new tab"
+msgstr ""
+
+#: adminpages/wizard/memberships.php:11
+msgid "Set up your first membership levels from this wizard. You can set up more membership levels with additional settings later."
+msgstr ""
+
+#: adminpages/wizard/memberships.php:15
+msgid "Create Your Membership Levels"
+msgstr ""
+
+#: adminpages/wizard/memberships.php:20
+msgid "Create a Free Membership Level"
+msgstr ""
+
+#: adminpages/wizard/memberships.php:40
+msgid "Create a Paid Membership Level"
+msgstr ""
+
+#: adminpages/wizard/memberships.php:82
+msgid "Content restrictions are configured after initial setup."
+msgstr ""
+
+#. translators: %s: URL to the PMPro documentation page on content restriction
+#: adminpages/wizard/memberships.php:86
+msgid "Learn more about %s."
+msgstr ""
+
+#: adminpages/wizard/memberships.php:87
+msgid "restricting WordPress content here"
+msgstr ""
+
+#: adminpages/wizard/wizard.php:30
+msgid "Blog/News"
+msgstr ""
+
+#: adminpages/wizard/wizard.php:33
+msgid "Directory/Listings"
+msgstr ""
+
+#: adminpages/wizard/wizard.php:34
+msgid "Paid Newsletter"
+msgstr ""
+
+#: adminpages/wizard/wizard.php:35
+msgid "Podcast"
+msgstr ""
+
+#: adminpages/wizard/wizard.php:36
+msgid "Video"
+msgstr ""
+
+#: adminpages/wizard/wizard.php:94
+msgid "Step"
+msgstr ""
+
+#: adminpages/wizard/wizard.php:98
+msgid "%s Active Step"
+msgstr ""
+
+#: blocks/account-membership-section/block.php:33
+#: blocks/account-membership-section/block.js:43
+msgid "My Membership"
+msgstr ""
+
+#: blocks/account-profile-section/block.php:33
+#: blocks/account-profile-section/block.js:43
+msgid "My account"
+msgstr ""
+
+#: classes/class-pmpro-admin-activity-email.php:165
+msgid "View Signups and Cancellations Report"
+msgstr ""
+
+#: classes/class-pmpro-discount-code-list-table.php:163
+msgid "No discount codes found."
+msgstr ""
+
+#: classes/class-pmpro-orders-list-table.php:289
+msgid "Token"
+msgstr ""
+
+#: classes/class-pmpro-orders-list-table.php:290
+msgid "Review"
+msgstr ""
+
+#: classes/class-pmpro-orders-list-table.php:292
+msgid "Error"
+msgstr ""
+
+#: classes/class-pmpro-site-health.php:113
+msgid "Outdated Templates"
+msgstr ""
+
+#: classes/class-pmpro-site-health.php:564
+msgid "No outdated templates detected."
+msgstr ""
+
+#: classes/class-pmpro-site-health.php:570
+msgid "Default version"
+msgstr ""
+
+#: classes/class-pmpro-site-health.php:570
+msgid "Loaded version"
+msgstr ""
+
+#: classes/class-pmpro-site-health.php:570
+msgid "Loaded path"
+msgstr ""
+
+#: classes/gateways/class.pmprogateway_braintree.php:518
+#: classes/gateways/class.pmprogateway_stripe.php:978
+#: pages/checkout.php:132
+#: pages/checkout.php:467
+msgid "Apply discount code"
+msgstr ""
+
+#: classes/gateways/class.pmprogateway_stripe.php:586
+msgid "Allow users to pay using Apple Pay, Google Pay, or Microsoft Pay depending on their browser. When enabled, your domain will automatically be registered with Apple and a domain association file will be hosted on your site. <a target=\"_blank\" href=\"%s\" title=\"More Information about the domain association file for Apple Pay\">More Information</a>"
+msgstr ""
+
+#: classes/gateways/class.pmprogateway_stripe.php:2448
+msgid "Read the documentation on switching to Stripe Connect"
+msgstr ""
+
+#: classes/gateways/class.pmprogateway_stripe.php:2517
+msgid "Learn More"
+msgstr ""
+
+#: includes/abandoned-signups.php:124
+msgid "Potential Spam Checkouts"
+msgstr ""
+
+#: includes/abandoned-signups.php:267
+msgid "These are users who were created during the Paid Memberships Pro checkout process but haven't yet completed checkout or performed any other action on your site. You should periodically delete users from this list if the Registered date is more than a few days old."
+msgstr ""
+
+#. translators: $1$s - Paid Memberships Pro plugin name; $2$s - WP.org review link.
+#: includes/admin.php:246
+msgid "Please <a href=\"%1$s\" target=\"_blank\" rel=\"noopener noreferrer\">rate us %2$s on WordPress.org</a> to help others find %3$s. Thank you from the %4$s team!"
+msgstr ""
+
+#: includes/compatibility/oxygen-builder.php:11
+msgid "Non-Members"
+msgstr ""
+
+#: includes/compatibility/oxygen-builder.php:20
+msgid "Paid Memberships Pro Level"
+msgstr ""
+
+#: includes/page-templates.php:196
+msgid "Outdated page templates have been detected in your theme or a plugin. You should update the following templates to ensure compatibility with the Paid Memberships Pro plugin:"
+msgstr ""
+
+#: includes/recaptcha.php:26
+msgid "ReCAPTCHA validation failed. Try again."
+msgstr ""
+
+#: includes/recaptcha.php:165
+msgid "ReCAPTCHA not submitted."
+msgstr ""
+
+#: pages/checkout.php:65
+msgid "Select a different membership level"
+msgstr ""
+
+#: pages/levels.php:59
+msgid "Select the %s membership level"
+msgstr ""
+
+#: pages/levels.php:65
+msgid "Renew your %s membership level"
+msgstr ""
+
+#: pages/levels.php:69
+msgid "View your %s membership account"
+msgstr ""
+
+#: shortcodes/pmpro_account.php:107
+msgid "Renew %1$s Membership"
+msgstr ""
+
+#: shortcodes/pmpro_account.php:111
+msgid "Update Billing Info for %1$s Membership"
+msgstr ""
+
+#: shortcodes/pmpro_account.php:116
+msgid "Change %1$s Membership"
+msgstr ""
+
+#: shortcodes/pmpro_account.php:119
+msgid "Cancel %1$s Membership"
+msgstr ""
+
+#: blocks/account-invoices-section/block.js:57
+#: blocks/account-links-section/block.js:57
+#: blocks/account-membership-section/block.js:55
+#: blocks/account-profile-section/block.js:55
+msgid "No title will be shown."
 msgstr ""
