@@ -95,7 +95,7 @@
 		/**
 		 * Allow code to run when a Stripe webhook is received.
 		 *
-		 * @since TBD
+		 * @since 2.11
 		 */
 		do_action( 'pmpro_stripe_webhook_event_received', $pmpro_stripe_event );
 
@@ -867,7 +867,7 @@
 		/**
 		 * Allow custom code to run before exiting.
 		 *
-		 * @since TBD
+		 * @since 2.11
 		 */
 		do_action( 'pmpro_stripe_webhook_before_exit' );
 

@@ -4,7 +4,7 @@
  * Set up a user taxonomy to track users who were created during the PMPro
  * checkout process but did not complete the checkout.
  *
- * @since TBD
+ * @since 2.11
  */
 function pmpro_abandoned_signups_taxonomy() {
 	// Register the taxonomy.
@@ -25,7 +25,7 @@ add_action( 'init', 'pmpro_abandoned_signups_taxonomy', 10 );
  * Add the abandoned signup taxonomy to the user object when they are created during
  * the PMPro checkout process.
  *
- * @since TBD
+ * @since 2.11
  *
  * @param int $user_id The user ID.
  */
@@ -43,7 +43,7 @@ add_action( 'pmpro_checkout_before_user_auth', 'pmpro_set_abandoned_signup_taxon
 /**
  * After a checkout is complete, remove the abandoned signup taxonomy from the user.
  *
- * @since TBD
+ * @since 2.11
  *
  * @param int $user_id The user ID.
  */
@@ -69,7 +69,7 @@ add_action( 'deleted_user', 'pmpro_remove_abandoned_signup_taxonomy' );
  * during the checkout process, remove the abandoned signup taxonomy from
  * the user.
  *
- * @since TBD
+ * @since 2.11
  */
 function pmpro_remove_abandoned_signup_taxonomy_on_page_load() {
 	$user_id = get_current_user_id();
@@ -97,7 +97,7 @@ add_action( 'wp', 'pmpro_remove_abandoned_signup_taxonomy_on_page_load' );
 /**
  * Filter the views on the Users page to include a view for abandoned signups.
  *
- * @since TBD
+ * @since 2.11
  *
  * @param array $views The views on the Users page.
  */
@@ -133,7 +133,7 @@ add_filter( 'views_users', 'pmpro_add_users_table_view_abandoned_signups' );
  * If the users table is being filtered by abandoned signups, add the user registered
  * column to the table.
  *
- * @since TBD
+ * @since 2.11
  *
  * @param array $columns The columns in the users table.
  * @return array The updated columns in the users table.
@@ -168,7 +168,7 @@ add_filter( 'manage_users_sortable_columns', 'pmpro_make_users_table_user_regist
 /**
  * Output the registered column for abandoned signups.
  *
- * @since TBD
+ * @since 2.11
  *
  * @param string $output The output for the registered column.
  * @param string $column_name The name of the column.
@@ -202,7 +202,7 @@ add_filter( 'manage_users_custom_column', 'pmpro_add_users_table_user_registered
  * Filter the users list table query args to only include users with the
  * 'abandoned-signup' term if the 'pmpro-abandoned-signups' query arg is set.
  *
- * @since TBD
+ * @since 2.11
  *
  * @param array $query_args The query args for the users list table.
  * @return array The updated query args for the users list table.
@@ -235,7 +235,7 @@ add_action( 'users_list_table_query_args', 'pmpro_abandoned_signups_users_list_t
 /**
  * Show a description on the Users page when filtering by abandoned signups.
  *
- * @since TBD
+ * @since 2.11
  */
 function pmpro_abandoned_signups_users_list_table_description() {
 	global $current_screen;

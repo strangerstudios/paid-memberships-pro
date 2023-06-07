@@ -19,7 +19,7 @@ if ( empty( $_REQUEST['step'] ) ) {
  * Helper function to get all site types and their human-readable labels.
  * Can only be used within the wizard.
  *
- * @since TBD.
+ * @since 2.11
  *
  * @return array
  */
@@ -42,7 +42,7 @@ function pmpro_wizard_get_site_types() {
  * Helper function to get the hub links based on site type.
  * Can only be used within the wizard.
  *
- * @since TBD.
+ * @since 2.11
  *
  * @return array
  */

@@ -175,7 +175,7 @@ function pmpro_pause_mode_notice() {
 /**
  * Maybe display a notice about spam protection being disabled.
  *
- * @since TBD
+ * @since 2.11
  */
 function pmpro_spamprotection_notice() {
 	global $current_user;

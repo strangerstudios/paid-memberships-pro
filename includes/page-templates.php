@@ -3,7 +3,7 @@
 /**
  * Get the template path that should be loaded for a given page.
  *
- * @since TBD
+ * @since 2.11
  *
  * @param null   $page_name - Name of the page/template
  * @param string $where - `local` or `url` (whether to load from FS or over http)
@@ -85,7 +85,7 @@ function pmpro_loadTemplate( $page_name = null, $where = 'local', $type = 'pages
 /**
  * Get the version of a page template at a given path.
  *
- * @since TBD
+ * @since 2.11
  *
  * @param string $path Path to the page template.
  * @return string|null Version of the page template, or null if not found.
@@ -102,7 +102,7 @@ function pmpro_get_version_for_page_template_at_path( $path ) {
 /**
  * List all outdated page templates being used.
  *
- * @since TBD
+ * @since 2.11
  *
  * @return array List of outdated page templates.
  */
@@ -156,7 +156,7 @@ function pmpro_get_outdated_page_templates() {
 /**
  * Displays a warning notice regarding outdated templates
  *
- * @since TBD
+ * @since 2.11
  *
  * @return mixed|string - Empty, or the HTML containing the notice
  */
@@ -172,7 +172,7 @@ function pmpro_page_template_notices() {
 	 *
 	 * @param bool To permanently hide template version notices
 	 * 
-	 * @since TBD
+	 * @since 2.11
 	 *
 	 */
 	$hide_template_notices = apply_filters( 'pmpro_hide_template_version_notices', false );

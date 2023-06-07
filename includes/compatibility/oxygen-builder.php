@@ -2,7 +2,7 @@
 /**
  * Oxygen Builder Compatibility.
  *
- * @since TBD
+ * @since 2.11
  */
 if( function_exists( 'oxygen_vsb_register_condition' ) ) {
 

@@ -551,7 +551,7 @@ class PMPro_Site_Health {
 	/**
  	 * Get outdated templates.
  	 *
- 	 * @since TBD
+	 * @since 2.11
  	 *
  	 * @return string|string[] The outdated templates information.
  	 */

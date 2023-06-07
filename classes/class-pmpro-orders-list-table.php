@@ -8,7 +8,7 @@ class PMPro_Orders_List_Table extends WP_List_Table {
 	/**
 	 * The text domain of this plugin.
 	 *
-	 * @since TBD
+	 * @since 2.11
 	 *
 	 * @access   private
 	 * @var      string    $plugin_text_domain    The text domain of this plugin.
@@ -20,7 +20,7 @@ class PMPro_Orders_List_Table extends WP_List_Table {
 	 *
 	 * @param string $plugin_text_domain    Text domain of the plugin.
 	 *
-	 * @since TBD
+	 * @since 2.11
 	 */
 	public function __construct() {
 
@@ -43,7 +43,7 @@ class PMPro_Orders_List_Table extends WP_List_Table {
 	 *
 	 * Query, filter data, handle sorting, and pagination, and any other data-manipulation required prior to rendering
 	 *
-	 * @since TBD
+	 * @since 2.11
 	 */
 	public function prepare_items() {
 		
@@ -82,7 +82,7 @@ class PMPro_Orders_List_Table extends WP_List_Table {
 	 *
 	 * The format is: 'internal-name' => 'Title'
 	 *
-	 * @since TBD
+	 * @since 2.11
 	 *
 	 * @return array
 	 */
@@ -143,7 +143,7 @@ class PMPro_Orders_List_Table extends WP_List_Table {
 	 *
 	 * The second format will make the initial sorting order be descending
 	 *
-	 * @since TBD
+	 * @since 2.11
 	 *
 	 * @return array
 	 */
@@ -168,7 +168,7 @@ class PMPro_Orders_List_Table extends WP_List_Table {
 	/**
 	 * Text displayed when no user data is available
 	 *
-	 * @since TBD
+	 * @since 2.11
 	 *
 	 * @return void
 	 */

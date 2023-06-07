@@ -1609,7 +1609,7 @@ function pmpro_has_coded_user_fields() {
 /**
  * Gets the label(s) for a passed user field value.
  *
- * @since TBD
+ * @since 2.11
  *
  * @param string $field_name  The name of the field that the value belongs to.
  * @param string|array $field_value The value to get the label for.
