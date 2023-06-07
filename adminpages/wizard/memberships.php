@@ -32,7 +32,7 @@ $collecting_payment = pmpro_getOption( 'wizard_collect_payment' );
 				});
 			});
 		</script>
-		<?php if ( $collecting_payment || true ) { ?>
+		<?php if ( $collecting_payment ) { ?>
 		<div class="pmpro-wizard__field">	
 			<div class="pmpro-wizard__field__checkbox-group">
 				<input type="checkbox" id="pmpro-wizard__paid-level" name="pmpro-wizard__paid-level" value="1">
