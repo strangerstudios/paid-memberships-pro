@@ -27,7 +27,7 @@ function pmpro_has_membership_access($post_id = NULL, $user_id = NULL, $return_m
 		$user_id = $current_user->ID;
 	
 	// Give admins access to all posts automatically and filterable to turn it on/off
-	if ( current_user_can( 'manage_options' ) && empty( get_option( 'pmpro_view_as' ) ) && apply_filters( 'pmpro_admin_always_has_access', true ) ) {
+	if ( current_user_can( 'manage_options' ) && empty( get_user_meta( $user_id, 'pmpro_view_as', true ) ) && apply_filters( 'pmpro_admin_always_has_access', true ) ) {
 		return true;
 	}
 
@@ -563,7 +563,6 @@ function pmpro_view_as_access_filter( $has_access, $post, $user, $levels ) {
 		return $has_access;
 	}
 
-	// Don't run this code unless an admin.
 	if ( ! current_user_can( 'manage_options' ) ) {
 		return $has_access;
 	}
