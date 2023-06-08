@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2023-06-07T04:01:50+00:00\n"
+"POT-Creation-Date: 2023-06-08T00:12:18+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.8.1\n"
 "X-Domain: paid-memberships-pro\n"
@@ -227,6 +227,8 @@ msgstr ""
 #: includes/fields.php:1377
 #: includes/fields.php:1266
 #: includes/fields.php:1378
+#: includes/fields.php:1270
+#: includes/fields.php:1382
 msgid "Type"
 msgstr ""
 
@@ -410,6 +412,7 @@ msgstr ""
 #: classes/class-pmpro-discount-code-list-table.php:372
 #: classes/class-pmpro-orders-list-table.php:912
 #: classes/class-pmpro-orders-list-table.php:914
+#: includes/fields.php:1355
 msgid "Delete"
 msgstr ""
 
@@ -1975,6 +1978,11 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:559
 #: classes/gateways/class.pmprogateway_stripe.php:573
 #: adminpages/membershiplevels.php:1257
+#: includes/fields.php:1225
+#: includes/fields.php:1236
+#: includes/fields.php:1405
+#: includes/fields.php:1415
+#: includes/fields.php:1429
 msgid "No"
 msgstr ""
 
@@ -2525,6 +2533,11 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:575
 #: adminpages/membershiplevels.php:1252
 #: adminpages/membershiplevels.php:1254
+#: includes/fields.php:1224
+#: includes/fields.php:1234
+#: includes/fields.php:1406
+#: includes/fields.php:1416
+#: includes/fields.php:1427
 msgid "Yes"
 msgstr ""
 
@@ -3545,6 +3558,7 @@ msgstr ""
 #: classes/class-pmpro-orders-list-table.php:102
 #: pages/invoice.php:125
 #: shortcodes/pmpro_account.php:258
+#: includes/fields.php:1393
 msgid "Date"
 msgstr ""
 
@@ -5692,6 +5706,7 @@ msgstr ""
 #: classes/class-pmpro-discount-code-list-table.php:351
 #: classes/class-pmpro-orders-list-table.php:883
 #: classes/class-pmpro-orders-list-table.php:893
+#: includes/fields.php:1353
 msgid "Edit"
 msgstr ""
 
@@ -6277,6 +6292,8 @@ msgstr ""
 #: adminpages/membershiplevels.php:1123
 #: adminpages/membershiplevels.php:455
 #: adminpages/membershiplevels.php:1124
+#: includes/fields.php:1269
+#: includes/fields.php:1374
 msgid "Name"
 msgstr ""
 
@@ -7246,6 +7263,7 @@ msgstr ""
 #: classes/class.memberorder.php:1623
 #: includes/fields.php:1263
 #: classes/class.memberorder.php:1632
+#: includes/fields.php:1267
 msgid "Order"
 msgstr ""
 
@@ -21826,6 +21844,8 @@ msgstr ""
 #: pages/cancel.php:66
 #: pages/cancel.php:68
 #: pages/cancel.php:69
+#: blocks/account-membership-section/block.php:33
+#: blocks/account-membership-section/block.js:43
 msgid "My Memberships"
 msgstr ""
 
@@ -23393,6 +23413,8 @@ msgstr ""
 #: shortcodes/pmpro_account.php:153
 #: shortcodes/pmpro_account.php:167
 #: shortcodes/pmpro_account.php:174
+#: blocks/account-profile-section/block.php:33
+#: blocks/account-profile-section/block.js:43
 msgid "My Account"
 msgstr ""
 
@@ -29617,56 +29639,67 @@ msgstr ""
 #: includes/fields.php:1481
 #: includes/fields.php:1482
 #: includes/fields.php:1483
+#: includes/fields.php:1487
 msgid "More Information"
 msgstr ""
 
 #: includes/fields.php:110
 #: includes/fields.php:131
+#: includes/fields.php:135
 msgid "Search %s"
 msgstr ""
 
 #: includes/fields.php:111
 #: includes/fields.php:132
+#: includes/fields.php:136
 msgid "Popular %s"
 msgstr ""
 
 #: includes/fields.php:112
 #: includes/fields.php:133
+#: includes/fields.php:137
 msgid "All %s"
 msgstr ""
 
 #: includes/fields.php:113
 #: includes/fields.php:134
+#: includes/fields.php:138
 msgid "Edit %s"
 msgstr ""
 
 #: includes/fields.php:114
 #: includes/fields.php:135
+#: includes/fields.php:139
 msgid "Update %s"
 msgstr ""
 
 #: includes/fields.php:115
 #: includes/fields.php:136
+#: includes/fields.php:140
 msgid "Add New %s"
 msgstr ""
 
 #: includes/fields.php:116
 #: includes/fields.php:137
+#: includes/fields.php:141
 msgid "New %s Name"
 msgstr ""
 
 #: includes/fields.php:117
 #: includes/fields.php:138
+#: includes/fields.php:142
 msgid "Separate %s with commas"
 msgstr ""
 
 #: includes/fields.php:118
 #: includes/fields.php:139
+#: includes/fields.php:143
 msgid "Add or remove %s"
 msgstr ""
 
 #: includes/fields.php:119
 #: includes/fields.php:140
+#: includes/fields.php:144
 msgid "Choose from the most popular %s"
 msgstr ""
 
@@ -29677,29 +29710,35 @@ msgstr ""
 #: includes/fields.php:504
 #: includes/fields.php:513
 #: classes/class-pmpro-field.php:527
+#: includes/fields.php:508
+#: includes/fields.php:517
 msgid "Sorry, the file type for %s is not permitted for security reasons."
 msgstr ""
 
 #: includes/fields.php:516
 #: includes/fields.php:537
 #: includes/fields.php:539
+#: includes/fields.php:543
 msgid "The %s field is required."
 msgstr ""
 
 #: includes/fields.php:519
 #: includes/fields.php:540
 #: includes/fields.php:542
+#: includes/fields.php:546
 msgid "The %s fields are required."
 msgstr ""
 
 #: includes/fields.php:808
 #: includes/fields.php:829
+#: includes/fields.php:833
 msgid "Unable to add/update user fields for this member"
 msgstr ""
 
 #: includes/fields.php:1040
 #: includes/fields.php:1061
 #: includes/fields.php:1062
+#: includes/fields.php:1066
 msgid "Extra Fields:"
 msgstr ""
 
@@ -29709,12 +29748,15 @@ msgstr ""
 #: includes/fields.php:1334
 #: includes/fields.php:1191
 #: includes/fields.php:1335
+#: includes/fields.php:1195
+#: includes/fields.php:1339
 msgid "Move up"
 msgstr ""
 
 #: includes/fields.php:1180
 #: includes/fields.php:1193
 #: includes/fields.php:1194
+#: includes/fields.php:1198
 msgid "Move Group Up"
 msgstr ""
 
@@ -29724,12 +29766,15 @@ msgstr ""
 #: includes/fields.php:1339
 #: includes/fields.php:1196
 #: includes/fields.php:1340
+#: includes/fields.php:1200
+#: includes/fields.php:1344
 msgid "Move down"
 msgstr ""
 
 #: includes/fields.php:1185
 #: includes/fields.php:1198
 #: includes/fields.php:1199
+#: includes/fields.php:1203
 msgid "Move Group Down"
 msgstr ""
 
@@ -29738,6 +29783,8 @@ msgstr ""
 #: includes/fields.php:1202
 #: includes/fields.php:1203
 #: includes/fields.php:1204
+#: includes/fields.php:1207
+#: includes/fields.php:1208
 msgid "Group Name"
 msgstr ""
 
@@ -29747,18 +29794,22 @@ msgstr ""
 #: includes/fields.php:1209
 #: includes/fields.php:1207
 #: includes/fields.php:1210
+#: includes/fields.php:1211
+#: includes/fields.php:1214
 msgid "Expand and Edit Group"
 msgstr ""
 
 #: includes/fields.php:1204
 #: includes/fields.php:1217
 #: includes/fields.php:1218
+#: includes/fields.php:1222
 msgid "Show fields at checkout?"
 msgstr ""
 
 #: includes/fields.php:1214
 #: includes/fields.php:1227
 #: includes/fields.php:1228
+#: includes/fields.php:1232
 msgid "Show fields on user profile?"
 msgstr ""
 
@@ -29769,24 +29820,29 @@ msgstr ""
 #: includes/fields.php:1423
 #: includes/fields.php:1231
 #: includes/fields.php:1424
+#: includes/fields.php:1235
+#: includes/fields.php:1428
 msgid "Yes (only admins)"
 msgstr ""
 
 #: includes/fields.php:1225
 #: includes/fields.php:1238
 #: includes/fields.php:1239
+#: includes/fields.php:1243
 msgid "Description (optional, visible to users)"
 msgstr ""
 
 #: includes/fields.php:1231
 #: includes/fields.php:1244
 #: includes/fields.php:1245
+#: includes/fields.php:1249
 msgid "Restrict Fields for Membership Levels"
 msgstr ""
 
 #: includes/fields.php:1246
 #: includes/fields.php:1259
 #: includes/fields.php:1260
+#: includes/fields.php:1264
 msgid "Manage Fields in This Group"
 msgstr ""
 
@@ -29796,6 +29852,8 @@ msgstr ""
 #: includes/fields.php:1361
 #: includes/fields.php:1264
 #: includes/fields.php:1362
+#: includes/fields.php:1268
+#: includes/fields.php:1366
 msgid "Label"
 msgstr ""
 
@@ -29803,84 +29861,98 @@ msgstr ""
 #: includes/fields.php:1272
 #: includes/fields.php:1285
 #: includes/fields.php:1286
+#: includes/fields.php:1290
 msgid "%s Add Field"
 msgstr ""
 
 #: includes/fields.php:1275
 #: includes/fields.php:1288
 #: includes/fields.php:1289
+#: includes/fields.php:1293
 msgid "Delete Group"
 msgstr ""
 
 #: includes/fields.php:1324
 #: includes/fields.php:1337
 #: includes/fields.php:1338
+#: includes/fields.php:1342
 msgid "Move Field Up"
 msgstr ""
 
 #: includes/fields.php:1329
 #: includes/fields.php:1342
 #: includes/fields.php:1343
+#: includes/fields.php:1347
 msgid "Move Field Down"
 msgstr ""
 
 #: includes/fields.php:1335
 #: includes/fields.php:1348
 #: includes/fields.php:1349
+#: includes/fields.php:1353
 msgid "Edit field"
 msgstr ""
 
 #: includes/fields.php:1336
 #: includes/fields.php:1349
 #: includes/fields.php:1350
+#: includes/fields.php:1354
 msgid "Duplicate field"
 msgstr ""
 
 #: includes/fields.php:1336
 #: includes/fields.php:1349
 #: includes/fields.php:1350
+#: includes/fields.php:1354
 msgid "Duplicate"
 msgstr ""
 
 #: includes/fields.php:1337
 #: includes/fields.php:1350
 #: includes/fields.php:1351
+#: includes/fields.php:1355
 msgid "Delete field"
 msgstr ""
 
 #: includes/fields.php:1351
 #: includes/fields.php:1364
 #: includes/fields.php:1365
+#: includes/fields.php:1369
 msgid "Brief descriptive text for the field. Shown on user forms."
 msgstr ""
 
 #: includes/fields.php:1359
 #: includes/fields.php:1372
 #: includes/fields.php:1373
+#: includes/fields.php:1377
 msgid "Single word with no spaces. Underscores are allowed."
 msgstr ""
 
 #: includes/fields.php:1366
 #: includes/fields.php:1379
 #: includes/fields.php:1380
+#: includes/fields.php:1384
 msgid "Text"
 msgstr ""
 
 #: includes/fields.php:1367
 #: includes/fields.php:1380
 #: includes/fields.php:1381
+#: includes/fields.php:1385
 msgid "Text Area"
 msgstr ""
 
 #: includes/fields.php:1368
 #: includes/fields.php:1381
 #: includes/fields.php:1382
+#: includes/fields.php:1386
 msgid "Checkbox"
 msgstr ""
 
 #: includes/fields.php:1369
 #: includes/fields.php:1382
 #: includes/fields.php:1383
+#: includes/fields.php:1387
 msgid "Radio"
 msgstr ""
 
@@ -29888,6 +29960,7 @@ msgstr ""
 #: includes/fields.php:1384
 #: includes/fields.php:1385
 #: includes/fields.php:1386
+#: includes/fields.php:1390
 msgid "Multi Select"
 msgstr ""
 
@@ -29895,6 +29968,7 @@ msgstr ""
 #: includes/fields.php:1385
 #: includes/fields.php:1386
 #: includes/fields.php:1387
+#: includes/fields.php:1391
 msgid "File"
 msgstr ""
 
@@ -29902,6 +29976,7 @@ msgstr ""
 #: includes/fields.php:1386
 #: includes/fields.php:1387
 #: includes/fields.php:1388
+#: includes/fields.php:1392
 msgid "Number"
 msgstr ""
 
@@ -29909,6 +29984,7 @@ msgstr ""
 #: includes/fields.php:1388
 #: includes/fields.php:1389
 #: includes/fields.php:1390
+#: includes/fields.php:1394
 msgid "Read-Only"
 msgstr ""
 
@@ -29916,6 +29992,7 @@ msgstr ""
 #: includes/fields.php:1389
 #: includes/fields.php:1390
 #: includes/fields.php:1391
+#: includes/fields.php:1395
 msgid "Hidden"
 msgstr ""
 
@@ -29929,6 +30006,7 @@ msgstr ""
 #: includes/fields.php:1407
 #: includes/fields.php:1408
 #: includes/fields.php:1409
+#: includes/fields.php:1413
 msgid "Read Only?"
 msgstr ""
 
@@ -29936,6 +30014,7 @@ msgstr ""
 #: includes/fields.php:1418
 #: includes/fields.php:1419
 #: includes/fields.php:1420
+#: includes/fields.php:1424
 msgid "Show field on user profile?"
 msgstr ""
 
@@ -29943,6 +30022,7 @@ msgstr ""
 #: includes/fields.php:1420
 #: includes/fields.php:1421
 #: includes/fields.php:1422
+#: includes/fields.php:1426
 msgid "[Inherit Group Setting]"
 msgstr ""
 
@@ -29950,6 +30030,7 @@ msgstr ""
 #: includes/fields.php:1431
 #: includes/fields.php:1432
 #: includes/fields.php:1433
+#: includes/fields.php:1437
 msgid "Field Wrapper Class (optional)"
 msgstr ""
 
@@ -29957,6 +30038,7 @@ msgstr ""
 #: includes/fields.php:1434
 #: includes/fields.php:1435
 #: includes/fields.php:1436
+#: includes/fields.php:1440
 msgid "Assign a custom CSS selector to the field's wrapping div"
 msgstr ""
 
@@ -29964,6 +30046,7 @@ msgstr ""
 #: includes/fields.php:1439
 #: includes/fields.php:1440
 #: includes/fields.php:1441
+#: includes/fields.php:1445
 msgid "Field Element Class (optional)"
 msgstr ""
 
@@ -29971,6 +30054,7 @@ msgstr ""
 #: includes/fields.php:1442
 #: includes/fields.php:1443
 #: includes/fields.php:1444
+#: includes/fields.php:1448
 msgid "Assign a custom CSS selector to the field"
 msgstr ""
 
@@ -29978,6 +30062,7 @@ msgstr ""
 #: includes/fields.php:1448
 #: includes/fields.php:1449
 #: includes/fields.php:1450
+#: includes/fields.php:1454
 msgid "Hint (optional)"
 msgstr ""
 
@@ -29985,6 +30070,7 @@ msgstr ""
 #: includes/fields.php:1451
 #: includes/fields.php:1452
 #: includes/fields.php:1453
+#: includes/fields.php:1457
 msgid "Descriptive text for users or admins submitting the field."
 msgstr ""
 
@@ -29992,6 +30078,7 @@ msgstr ""
 #: includes/fields.php:1456
 #: includes/fields.php:1457
 #: includes/fields.php:1458
+#: includes/fields.php:1462
 msgid "Options"
 msgstr ""
 
@@ -29999,6 +30086,7 @@ msgstr ""
 #: includes/fields.php:1459
 #: includes/fields.php:1460
 #: includes/fields.php:1461
+#: includes/fields.php:1465
 msgid "One option per line. To set separate values and labels, use value:label."
 msgstr ""
 
@@ -30006,6 +30094,7 @@ msgstr ""
 #: includes/fields.php:1464
 #: includes/fields.php:1465
 #: includes/fields.php:1466
+#: includes/fields.php:1470
 msgid "Close Field"
 msgstr ""
 
@@ -30013,16 +30102,19 @@ msgstr ""
 #: includes/fields.php:1467
 #: includes/fields.php:1468
 #: includes/fields.php:1469
+#: includes/fields.php:1473
 msgid "Delete Field"
 msgstr ""
 
 #: includes/fields.php:1383
 #: includes/fields.php:1384
+#: includes/fields.php:1388
 msgid "Select / Dropdown"
 msgstr ""
 
 #: includes/fields.php:1384
 #: includes/fields.php:1385
+#: includes/fields.php:1389
 msgid "Select2 / Autocomplete"
 msgstr ""
 
@@ -30040,6 +30132,7 @@ msgid "Thank you for installing our %1$s. We'd like your permission to track its
 msgstr ""
 
 #: includes/fields.php:1399
+#: includes/fields.php:1403
 msgid "Required at Checkout?"
 msgstr ""
 
@@ -30387,6 +30480,7 @@ msgstr ""
 
 #: classes/class-pmpro-members-list-table.php:85
 #: includes/abandoned-signups.php:148
+#: includes/abandoned-signups.php:143
 msgid "Registered"
 msgstr ""
 
@@ -30501,22 +30595,27 @@ msgid "Only users with the <code>pmpro_manage_pause_mode</code> capability are a
 msgstr ""
 
 #: includes/cleanup.php:64
+#: includes/cleanup.php:65
 msgid "What should be done with the PMPro Membership data for these users?"
 msgstr ""
 
 #: includes/cleanup.php:71
+#: includes/cleanup.php:72
 msgid "<strong>Warning:</strong> One or more users for deletion have an active membership level."
 msgstr ""
 
 #: includes/cleanup.php:73
+#: includes/cleanup.php:74
 msgid "<strong>Warning:</strong> This user has an active membership level."
 msgstr ""
 
 #: includes/cleanup.php:77
+#: includes/cleanup.php:78
 msgid "Cancel any related membership levels first. This may trigger cancellations at the gateway or other third party services."
 msgstr ""
 
 #: includes/cleanup.php:84
+#: includes/cleanup.php:85
 msgid "Delete any related membership history. Order history will be retained."
 msgstr ""
 
@@ -31060,10 +31159,12 @@ msgid "Learn More"
 msgstr ""
 
 #: includes/abandoned-signups.php:124
+#: includes/abandoned-signups.php:119
 msgid "Potential Spam Checkouts"
 msgstr ""
 
 #: includes/abandoned-signups.php:267
+#: includes/abandoned-signups.php:261
 msgid "These are users who were created during the Paid Memberships Pro checkout process but haven't yet completed checkout or performed any other action on your site. You should periodically delete users from this list if the Registered date is more than a few days old."
 msgstr ""
 
