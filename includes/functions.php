@@ -2441,7 +2441,7 @@ function pmpro_getLevelAtCheckout( $level_id = null, $discount_code = null ) {
 
 	// If we still don't have a discount code, add a filter to let other plugins add one.
 	if ( empty( $discount_code ) ) {
-		$discount_code = apply_filters( 'pmpro_default_discount_code', null );
+		$discount_code = apply_filters( 'pmpro_default_discount_code', null, $level_id );
 	}
 
 	// If we are using a discount code, check it and get the level.
