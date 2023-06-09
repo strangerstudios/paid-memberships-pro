@@ -139,7 +139,7 @@
 	<form action="" method="post" enctype="multipart/form-data">
 		<?php wp_nonce_field('savesettings', 'pmpro_advancedsettings_nonce');?>
 		<hr class="wp-header-end">
-		<h1 class="wp-heading-inline"><?php esc_html_e( 'Advanced Settings', 'paid-memberships-pro' ); ?></h1>
+		<h1><?php esc_html_e( 'Advanced Settings', 'paid-memberships-pro' ); ?></h1>
 		<div class="pmpro_admin_section pmpro_admin_section-restrict-dashboard">
 			<h2 class="title"><?php esc_html_e( 'Restrict Dashboard Access', 'paid-memberships-pro' ); ?></h2>
 			<table class="form-table">
@@ -247,7 +247,7 @@
 				</tr>
 				<tr>
 					<th scope="row" valign="top">
-						<label for="spamprotection"><?php esc_html_e('Enable Spam Protection?', 'paid-memberships-pro' );?>:</label>
+						<label for="spamprotection"><?php esc_html_e('Enable Spam Protection?', 'paid-memberships-pro' );?></label>
 					</th>
 					<td>
 						<select id="spamprotection" name="spamprotection">
@@ -260,7 +260,7 @@
 				</tr>
 				<tr>
 					<th scope="row" valign="top">
-						<label for="recaptcha"><?php esc_html_e('Use reCAPTCHA?', 'paid-memberships-pro' );?>:</label>
+						<label for="recaptcha"><?php esc_html_e('Use reCAPTCHA?', 'paid-memberships-pro' );?></label>
 					</th>
 					<td>
 						<select id="recaptcha" name="recaptcha" onchange="pmpro_updateRecaptchaTRs();">

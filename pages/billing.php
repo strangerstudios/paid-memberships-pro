@@ -1,6 +1,7 @@
 <?php
 /**
  * Template: Billing
+ * Version: 2.0.1
  *
  * See documentation for how to override the PMPro templates.
  * @link https://www.paidmembershipspro.com/documentation/templates/
@@ -104,8 +105,8 @@
 	<?php } else {
 			// Show the default gateway form and allow billing information update.
 			?>
-			<div id="pmpro_level-<?php echo $pmpro_billing_level->id; ?>" class="<?php echo pmpro_get_element_class( $pmpro_billing_gateway_class, 'pmpro_level-' . $pmpro_billing_level->id ); ?>">
-			<form id="pmpro_form" class="<?php echo pmpro_get_element_class( 'pmpro_form' ); ?>" action="<?php echo esc_url( pmpro_url( "billing", "", "https") ) ?>" method="post">
+			<div id="pmpro_level-<?php echo intval( $pmpro_billing_level->id ); ?>" class="<?php echo esc_attr( pmpro_get_element_class( $pmpro_billing_gateway_class, 'pmpro_level-' . $pmpro_billing_level->id ) ); ?>">
+			<form id="pmpro_form" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form' ) ); ?>" action="<?php echo esc_url( pmpro_url( "billing", "", "https") ) ?>" method="post">
 				<input type="hidden" name="order_id" value="<?php echo empty( $_REQUEST['order_id'] ) ? 0 : esc_attr( intval( $_REQUEST['order_id'] ) ); ?>" />
 				<input type="hidden" name="level" value="<?php echo esc_attr($pmpro_billing_level->id);?>" />
 				<div id="pmpro_message" <?php if(! $pmpro_msg) ?> style="display:none" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_message ' . $pmpro_msgt, $pmpro_msgt ) ); ?>">
@@ -142,9 +143,7 @@
 						</div> <!-- end pmpro_checkout-field-bfirstname -->
 						<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout-field pmpro_checkout-field-blastname', 'pmpro_checkout-field-blastname' ) ); ?>">
 							<label for="blastname"><?php esc_html_e('Last Name', 'paid-memberships-pro' );?></label>
-							<input id="blastname" name="blastname" type="text" 
-
-							class="<?php echo esc_attr( pmpro_get_element_class( 'input', 'blastname' ) ); ?>" size="30" value="<?php echo esc_attr($blastname);?>" />
+							<input id="blastname" name="blastname" type="text" class="<?php echo esc_attr( pmpro_get_element_class( 'input', 'blastname' ) ); ?>" size="30" value="<?php echo esc_attr($blastname);?>" />
 						</div> <!-- end pmpro_checkout-field-blastname -->
 						<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout-field pmpro_checkout-field-baddress1', 'pmpro_checkout-field-baddress1' ) ); ?>">
 							<label for="baddress1"><?php esc_html_e('Address 1', 'paid-memberships-pro' );?></label>
@@ -295,11 +294,11 @@
 				$pmpro_accepted_credit_cards_string = pmpro_implodeToEnglish($pmpro_accepted_credit_cards);
 				?>
 				<div id="pmpro_payment_information_fields" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout', 'pmpro_payment_information_fields' ) ); ?>">
-					<h3>
-						<span class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout-h3-name' ) ); ?>"><?php esc_html_e('Credit Card Information', 'paid-memberships-pro' );?></span>
-						<span class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout-h3-msg' ) ); ?>"><?php echo esc_html( sprintf( __('We accept %s', 'paid-memberships-pro' ), $pmpro_accepted_credit_cards_string ) ); ?></span>
+					<h2>
+						<span class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout-h2-name' ) ); ?>"><?php esc_html_e('Credit Card Information', 'paid-memberships-pro' );?></span>
+						<span class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout-h2-msg' ) ); ?>"><?php echo esc_html( sprintf( __('We accept %s', 'paid-memberships-pro' ), $pmpro_accepted_credit_cards_string ) ); ?></span>
 
-					</h3>
+					</h2>
 					<?php $sslseal = pmpro_getOption("sslseal"); ?>
 					<?php if(!empty($sslseal)) { ?>
 						<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout-fields-display-seal' ) ); ?>">

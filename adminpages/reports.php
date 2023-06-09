@@ -34,8 +34,9 @@ if ( ! empty( $_REQUEST[ 'report' ] ) ) {
 	<p><a class="button button-primary" href="<?php echo esc_url( admin_url( 'admin.php?page=pmpro-reports' ) );?>"><?php esc_html_e( 'Back to Reports Dashboard', 'paid-memberships-pro' ); ?></a></p>
 
 	<?php
-} else {
-    if( ! empty( $pmpro_reports ) ) {
+} else { ?>
+	<h1><?php esc_html_e( 'Reports', 'paid-memberships-pro' ); ?></h1>
+    <?php if( ! empty( $pmpro_reports ) ) {
         $pieces = array_chunk( $pmpro_reports, ceil( count( $pmpro_reports ) / 2 ), true );
         foreach ( $pieces[0] as $report => $title ) {
             add_meta_box(

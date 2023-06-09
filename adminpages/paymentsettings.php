@@ -109,7 +109,7 @@
 	<form action="" method="post" enctype="multipart/form-data">
 		<?php wp_nonce_field('savesettings', 'pmpro_paymentsettings_nonce');?>
 		<hr class="wp-header-end">
-        <h1 class="wp-heading-inline"><?php esc_html_e( 'Payment Gateway', 'paid-memberships-pro' );?> &amp; <?php esc_html_e( 'SSL Settings', 'paid-memberships-pro' ); ?></h1>
+        <h1><?php esc_html_e( 'Payment Gateway', 'paid-memberships-pro' );?> &amp; <?php esc_html_e( 'SSL Settings', 'paid-memberships-pro' ); ?></h1>
 		<p><?php			
 			$gateway_settings_link = '<a title="' . esc_html__( 'Paid Memberships Pro - Payment Gateway Settings', 'paid-memberships-pro' ) . '" target="_blank" rel="nofollow noopener" href="https://www.paidmembershipspro.com/documentation/admin/payment-ssl-settings/?utm_source=plugin&utm_medium=pmpro-paymentsettings&utm_campaign=documentation&utm_content=payment-gateway-settings">' . esc_html__( 'Payment Gateway Settings', 'paid-memberships-pro' ) . '</a>';
 			$ssl_settings_link = '<a title="' . esc_html__( 'Paid Memberships Pro - SSL Settings', 'paid-memberships-pro' ) . '" target="_blank" rel="nofollow noopener" href="https://www.paidmembershipspro.com/documentation/initial-plugin-setup/ssl/?utm_source=plugin&utm_medium=pmpro-paymentsettings&utm_campaign=documentation&utm_content=ssl&utm_term=link1">' . esc_html__( 'SSL', 'paid-memberships-pro' ) . '</a>';
@@ -122,7 +122,7 @@
 			<tr class="pmpro_settings_divider">
 				<td colspan="2">
 					<hr />
-					<h3><?php esc_html_e('Choose a Gateway', 'paid-memberships-pro' ); ?></h3>
+					<h2><?php esc_html_e('Choose a Gateway', 'paid-memberships-pro' ); ?></h2>
 				</td>
 			</tr>
 			<tr>
@@ -196,7 +196,7 @@
 			<tr class="pmpro_settings_divider">
 				<td colspan="2">
 					<hr />
-					<h3><?php esc_html_e('Currency and Tax Settings', 'paid-memberships-pro' ); ?></h3>
+					<h2><?php esc_html_e('Currency and Tax Settings', 'paid-memberships-pro' ); ?></h2>
 				</td>
 			</tr>
 			<tr class="gateway gateway_ <?php echo esc_attr(pmpro_getClassesForPaymentSettingsField("currency"));?>" <?php if(!empty($gateway) && $gateway != "paypal" && $gateway != "paypalexpress" && $gateway != "check" && $gateway != "paypalstandard" && $gateway != "braintree" && $gateway != "twocheckout" && $gateway != "cybersource" && $gateway != "payflowpro" && $gateway != "stripe" && $gateway != "authorizenet" && $gateway != "gourl") { ?>style="display: none;"<?php } ?>>
@@ -256,7 +256,7 @@
 			<tr class="pmpro_settings_divider">
 				<td colspan="2">
 					<hr />
-					<h3><?php esc_html_e('SSL Settings', 'paid-memberships-pro' ); ?></h3>
+					<h2><?php esc_html_e('SSL Settings', 'paid-memberships-pro' ); ?></h2>
 				</td>
 			</tr>
 			<tr class="gateway gateway_ <?php echo esc_attr(pmpro_getClassesForPaymentSettingsField("use_ssl"));?>">

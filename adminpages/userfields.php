@@ -110,7 +110,7 @@
 
 	?>		
 	<hr class="wp-header-end">
-	<h1 class="wp-heading-inline"><?php esc_html_e( 'User Fields', 'paid-memberships-pro' ); ?></h1>
+	<h1><?php esc_html_e( 'User Fields', 'paid-memberships-pro' ); ?></h1>
 
 	<div id="poststuff">
 		<div id="post-body" class="metabox-holder columns-2">
