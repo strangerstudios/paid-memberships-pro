@@ -463,3 +463,15 @@ function pmpro_plugin_row_meta( $links, $file ) {
 	return $links;
 }
 add_filter( 'plugin_row_meta', 'pmpro_plugin_row_meta', 10, 2 );
+
+function pmpro_users_action_links( $actions, $user ) {
+	$cap = apply_filters( 'pmpro_add_member_cap', 'edit_users' );
+
+	if ( current_user_can( $cap ) && ! empty( $user->ID ) ) {
+		$actions['editmembership'] = '<a href="' . admin_url( 'admin.php?page=pmpro-members&user=' . (int) $user->ID ) . '">' . __( 'Edit Membership', 'pmpro-members' ) . '</a>';
+	}
+
+	return $actions;
+}
+
+add_filter( 'user_row_actions', 'pmpro_users_action_links', 10, 2 );
