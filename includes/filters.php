@@ -266,9 +266,9 @@ function pmpro_ignore_checkout_order_when_cancelling_old_orders( $order_ids ) {
 add_filter( 'pmpro_other_order_ids_to_cancel', 'pmpro_ignore_checkout_order_when_cancelling_old_orders' );
 
 /**
- * Default the get_optoin call for pmpro_spam_protection option to '2'.
+ * Default the get_option call for pmpro_spam_protection option to '2'.
  *
- * @since TBD
+ * @since 2.11
  *
  * @param string $default The default value for the option.
  * @return string The default value for the option.
