@@ -50,12 +50,12 @@ Users can select a membership level, complete checkout, and immediately become m
 * Create an Interactive Members-only Community: lock down [BuddyPress](https://www.paidmembershipspro.com/add-ons/buddypress-integration/) and [bbPress](https://www.paidmembershipspro.com/add-ons/pmpro-bbpress/).
 * [Drip-Feed / Series Type Content](https://www.paidmembershipspro.com/add-ons/pmpro-series-for-drip-feed-content/)
 * Offer [personalized content to each member](https://www.paidmembershipspro.com/add-ons/pmpro-user-pages/), [customize navigation menus](https://www.paidmembershipspro.com/add-ons/pmpro-nav-menus/), and design [unique member dashboards](https://www.paidmembershipspro.com/add-ons/member-homepages/).
-* Restrict Elementor elements or Beaver Builder modules.
+* Restrict Elementor elements, Divi sections or rows, Beaver Builder modules, and Oxygen Builder components.
 * Offer [Member Directories and Profiles](https://www.paidmembershipspro.com/add-ons/member-directory/) for your members.
 
 = Integrated Payment Gateways =
 
-All of our payment gateways are included in the plugin. Choose from [Stripe](https://www.paidmembershipspro.com/gateway/stripe/), [PayPal](https://www.paidmembershipspro.com/gateway/paypal/), [Authorize.net](https://www.paidmembershipspro.com/gateway/authorize-net/), [Braintree](https://www.paidmembershipspro.com/gateway/braintree/), or [2Checkout](https://www.paidmembershipspro.com/gateway/2checkout/). You can offer multiple gateway options at checkout including [PayPal Express](https://www.paidmembershipspro.com/add-ons/pmpro-add-paypal-express-option-checkout/) or [offline payment by check or direct transfer](https://www.paidmembershipspro.com/add-ons/pmpro-pay-by-check-add-on/).
+All of our payment gateways are included in the plugin. Choose from [Stripe](https://www.paidmembershipspro.com/gateway/stripe/), [PayPal](https://www.paidmembershipspro.com/gateway/paypal/), [Authorize.net](https://www.paidmembershipspro.com/gateway/authorize-net/), or [Braintree](https://www.paidmembershipspro.com/gateway/braintree/). You can offer multiple gateway options at checkout including [PayPal Express](https://www.paidmembershipspro.com/add-ons/pmpro-add-paypal-express-option-checkout/) or [offline payment by check or direct transfer](https://www.paidmembershipspro.com/add-ons/pmpro-pay-by-check-add-on/).
 
 = Flexible Level Pricing and Expirations  =
 
@@ -78,7 +78,7 @@ Extend the features of your membership site or integrate with third-party servic
 * Let members [log in or join with their social media profiles](https://www.paidmembershipspro.com/add-ons/social-login-add-on/).
 * Design your site [using popular Page Builders](https://www.paidmembershipspro.com/using-page-builders-to-enhance-your-sites-membership-pages/) like Elementor, Page Builder by SiteOrigin, Beaver Builder, and Divi. We offer 15 core membership blocks for the WordPress Block Editor (Gutenberg).
 * Create a [sales landing page with banners to run a sitewide or flash sale](https://sitewidesales.com).
-* [Offer members-only events](https://www.paidmembershipspro.com/add-ons/events-for-members-only/) with Events Manager, The Events Calendar, Sugar Calendar, or All-in-One Event Calendar.
+* [Offer members-only events](https://www.paidmembershipspro.com/add-ons/events-for-members-only/) with Events Manager, The Events Calendar, and Sugar Calendar.
 
 [View all Add Ons](https://www.paidmembershipspro.com/add-ons/)
 
@@ -164,7 +164,7 @@ Not sure? You can find out by doing a bit a research.
 * ENHANCEMENT: Now showing a notice when using a page template that is out of date. #2427 (@JarrydLong, dparker1005)
 * ENHANCEMENT: Reducing calls made to `get_option()` from `pmpro_getOption()`. #2137 (@JJJ)
 * ENHANCEMENT: Now allowing account page section titles to be customized. #2459 (@MaximilianoRicoTabo)
-* ENHANCEMENT: Adding filters `pmpro_stripe_webhook_event_recieved` and `pmpro_stripe_webhook_before_exit`. #2465 (@dparker1005)
+* ENHANCEMENT: Adding filters `pmpro_stripe_webhook_event_received` and `pmpro_stripe_webhook_before_exit`. #2465 (@dparker1005)
 * ENHANCEMENT: Improved Add Ons search to support multiple keywords and phrases. #2444 (@andrewlimaza)
 * BUG FIX/ENHANCEMENT: Improved accessibility across the entire admin dashboard. Thanks for contributions from Piccia Neri, Alex Stine, and Amber Hinds. #2448 (@kimcoleman)
 * BUG FIX/ENHANCEMENT: Now making sure that our reCAPTCHA functions are always loaded. #2449 (@mircobabini, @dparker1005)
