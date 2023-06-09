@@ -7,7 +7,7 @@
 * ENHANCEMENT: Now showing a notice when using a page template that is out of date. #2427 (@JarrydLong, dparker1005)
 * ENHANCEMENT: Reducing calls made to `get_option()` from `pmpro_getOption()`. #2137 (@JJJ)
 * ENHANCEMENT: Now allowing account page section titles to be customized. #2459 (@MaximilianoRicoTabo)
-* ENHANCEMENT: Adding filters `pmpro_stripe_webhook_event_recieved` and `pmpro_stripe_webhook_before_exit`. #2465 (@dparker1005)
+* ENHANCEMENT: Adding filters `pmpro_stripe_webhook_event_received` and `pmpro_stripe_webhook_before_exit`. #2465 (@dparker1005)
 * ENHANCEMENT: Improved Add Ons search to support multiple keywords and phrases. #2444 (@andrewlimaza)
 * BUG FIX/ENHANCEMENT: Improved accessibility across the entire admin dashboard. Thanks for contributions from Piccia Neri, Alex Stine, and Amber Hinds. #2448 (@kimcoleman)
 * BUG FIX/ENHANCEMENT: Now making sure that our reCAPTCHA functions are always loaded. #2449 (@mircobabini, @dparker1005)
