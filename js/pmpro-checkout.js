@@ -140,6 +140,7 @@ jQuery(document).ready(function(){
 	//add required to required fields
 	if ( ! jQuery( '.pmpro_required' ).next().hasClass( "pmpro_asterisk" ) ) {
 		jQuery( '.pmpro_required' ).closest( '.pmpro_checkout-field' ).append( '<span class="pmpro_asterisk"> <abbr title="Required Field">*</abbr></span>' );
+		jQuery( '.pmpro_required' ).attr( 'required', 'required' );
 	}
 
 	//Loop through all radio type fields and move the asterisk.
