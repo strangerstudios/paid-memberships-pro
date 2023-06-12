@@ -5,19 +5,6 @@ global $user_list_table;
 $user_list_table = new PMPro_Members_List_Table();
 $user_list_table->prepare_items();
 
-
-function pmpro_members_action_links( $actions, $user ) {
-	$cap = apply_filters( 'pmpro_add_member_cap', 'edit_users' );
-
-	if ( current_user_can( $cap ) && ! empty( $user->ID ) ) {
-		$actions['edituser'] = '<a href="' . admin_url( 'admin.php?page=pmpro-members&user=' . (int) $user->ID ) . '">' . __( 'Edit', 'pmpro-members' ) . '</a>';
-		$actions['addorder'] = '<a href="' . admin_url( 'admin.php?page=pmpro-orders&order=-1&user=' . (int) $user->ID ) . '&membership='. (int) $user->membership_id . '">' . __( '+order', 'pmpro-orders' ) . '</a>';	
-	}
-
-	return $actions;
-}
-add_filter( 'pmpro_memberslist_user_row_actions', 'pmpro_members_action_links', 10, 2 );
-
 require_once dirname( __DIR__ ) . '/adminpages/admin_header.php';
 
 // Build CSV export link.
