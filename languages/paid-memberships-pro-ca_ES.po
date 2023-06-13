@@ -2,14 +2,14 @@
 # This file is distributed under the same license as the Paid Memberships Pro plugin.
 msgid ""
 msgstr ""
-"Project-Id-Version: Paid Memberships Pro 2.11\n"
+"Project-Id-Version: Paid Memberships Pro 2.11.1\n"
 "Report-Msgid-Bugs-To: info@paidmembershipspro.com\n"
 "Last-Translator: Paid Memberships Pro <info@paidmembershipspro.com>\n"
 "Language-Team: Paid Memberships Pro <info@paidmembershipspro.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2023-06-08T00:12:25+00:00\n"
+"POT-Creation-Date: 2023-06-13T18:41:16+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.8.1\n"
 "X-Domain: paid-memberships-pro\n"
@@ -308,6 +308,8 @@ msgstr "Activa %s"
 #: classes/class-pmpro-orders-list-table.php:912
 #: classes/class-pmpro-orders-list-table.php:914
 #: includes/fields.php:1355
+#: classes/class-pmpro-discount-code-list-table.php:365
+#: classes/class-pmpro-discount-code-list-table.php:367
 msgid "Delete"
 msgstr "Esborra"
 
@@ -4523,6 +4525,7 @@ msgstr "Envia Correu"
 #: adminpages/admin_header.php:243
 #: adminpages/orders.php:914
 #: classes/class-pmpro-discount-code-list-table.php:390
+#: classes/class-pmpro-discount-code-list-table.php:385
 msgid "Orders"
 msgstr "Comandes"
 
@@ -8417,6 +8420,7 @@ msgstr "Informes"
 #: adminpages/admin_header.php:275
 #: includes/adminpages.php:73
 #: adminpages/admin_header.php:274
+#: adminpages/discountcodes.php:728
 msgid "Discount Codes"
 msgstr "Codis de descompte"
 
@@ -9507,6 +9511,7 @@ msgstr "Si us plau especifica un ID de Nivell"
 #: classes/class-pmpro-discount-code-list-table.php:500
 #: classes/class.pmproemail.php:1232
 #: classes/class.pmproemail.php:1296
+#: classes/class-pmpro-discount-code-list-table.php:495
 msgid "None"
 msgstr "Cap"
 
@@ -10238,6 +10243,7 @@ msgstr "No, conserva el meu compte"
 #: pages/cancel.php:69
 #: blocks/account-membership-section/block.php:33
 #: blocks/account-membership-section/block.js:43
+#: shortcodes/pmpro_account.php:48
 msgid "My Memberships"
 msgstr "Les meves subscripcions"
 
@@ -11431,6 +11437,7 @@ msgstr "Mira totes les opcions de subscripció"
 #: shortcodes/pmpro_account.php:174
 #: blocks/account-profile-section/block.php:33
 #: blocks/account-profile-section/block.js:43
+#: shortcodes/pmpro_account.php:191
 msgid "My Account"
 msgstr "El meu compte"
 
@@ -11477,6 +11484,7 @@ msgstr "Canvia Clau"
 #: shortcodes/pmpro_account.php:226
 #: blocks/account-invoices-section/block.php:32
 #: blocks/account-invoices-section/block.js:45
+#: shortcodes/pmpro_account.php:251
 msgid "Past Invoices"
 msgstr "Factures anteriors"
 
@@ -11511,6 +11519,7 @@ msgstr "Mira totes les Factures"
 #: shortcodes/pmpro_account.php:280
 #: blocks/account-links-section/block.php:32
 #: blocks/account-links-section/block.js:45
+#: shortcodes/pmpro_account.php:312
 msgid "Member Links"
 msgstr "Links dels subscriptors"
 
@@ -12688,6 +12697,8 @@ msgstr ""
 #: classes/class-pmpro-orders-list-table.php:883
 #: classes/class-pmpro-orders-list-table.php:893
 #: includes/fields.php:1353
+#: classes/class-pmpro-discount-code-list-table.php:336
+#: classes/class-pmpro-discount-code-list-table.php:346
 msgid "Edit"
 msgstr ""
 
@@ -12728,6 +12739,8 @@ msgstr ""
 #: classes/class-pmpro-discount-code-list-table.php:366
 #: classes/class-pmpro-orders-list-table.php:897
 #: classes/class-pmpro-orders-list-table.php:908
+#: classes/class-pmpro-discount-code-list-table.php:350
+#: classes/class-pmpro-discount-code-list-table.php:361
 msgid "Copy"
 msgstr ""
 
@@ -18612,6 +18625,7 @@ msgstr ""
 #: adminpages/membershiplevels.php:425
 #: adminpages/membershiplevels.php:426
 #: classes/class-pmpro-discount-code-list-table.php:379
+#: classes/class-pmpro-discount-code-list-table.php:374
 msgid "View Orders"
 msgstr ""
 
@@ -21852,6 +21866,7 @@ msgstr ""
 
 #: adminpages/discountcodes.php:930
 #: classes/class-pmpro-discount-code-list-table.php:436
+#: classes/class-pmpro-discount-code-list-table.php:431
 msgid "unlimited"
 msgstr ""
 
@@ -22945,4 +22960,12 @@ msgstr ""
 #: blocks/account-membership-section/block.js:55
 #: blocks/account-profile-section/block.js:55
 msgid "No title will be shown."
+msgstr ""
+
+#: classes/gateways/class.pmprogateway_stripe.php:2483
+msgid "This will disconnect all sites using this Stripe account from Stripe. Users will not be able to complete membership checkout or update their billing information. Existing subscriptions will not be affected at the gateway, but new recurring orders will not be created in this site."
+msgstr ""
+
+#: classes/gateways/class.pmprogateway_stripe.php:2485
+msgid "This will disconnect all sites using this Stripe account from Stripe in test mode only."
 msgstr ""
