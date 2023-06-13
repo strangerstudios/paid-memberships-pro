@@ -331,11 +331,6 @@ class PMPro_Discount_Code_List_Table extends WP_List_Table {
 			);
 
 			$actions = [
-				'id'	 => sprintf(
-					// translators: %s is the Order ID.
-					__( 'ID: %s', 'paid-memberships-pro' ),
-					esc_attr( $item->id )
-				),
 				'edit'   => sprintf(
 					'<a title="%1$s" href="%2$s">%3$s</a>',
 					esc_attr__( 'Edit', 'paid-memberships-pro' ),
@@ -488,7 +483,7 @@ class PMPro_Discount_Code_List_Table extends WP_List_Table {
 		$level_names = array();
 		foreach( $levels as $level ) {
 			if ( ! empty( $pmpro_pages['checkout'] ) ) {
-				$level_names[] = '<a title="' . pmpro_url( 'checkout', '?level=' . $level->id . '&discount_code=' . $item->id) . '" target="_blank" href="' . pmpro_url( 'checkout', '?level=' . $level->id . '&discount_code=' . intval( $item->id ) ) . '">' . $level->name . '</a>';
+				$level_names[] = '<a title="' . pmpro_url( 'checkout', '?level=' . $level->id . '&discount_code=' . esc_attr( $item->code ) ) . '" target="_blank" href="' . pmpro_url( 'checkout', '?level=' . $level->id . '&discount_code=' . esc_attr( $item->code ) ) . '">' . $level->name . '</a>';
 			} else {
 				$level_names[] = $level->name;
 			}
