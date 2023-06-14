@@ -43,7 +43,7 @@ function pmpro_shortcode_account($atts, $content=null, $code="")
 				if ( '' !== $title ) { // Check if title is being forced to not show.
 					// If a custom title was not set, use the default. Otherwise, show the custom title.
 					?>
-					<h2><?php echo esc_html( null === $title ? __( 'My Memberships', 'paid-membereships-pro' ) : $title ); ?></h2>
+					<h2><?php echo esc_html( null === $title ? __( 'My Memberships', 'paid-memberships-pro' ) : $title ); ?></h2>
 					<?php
 				}
 				?>
@@ -167,7 +167,7 @@ function pmpro_shortcode_account($atts, $content=null, $code="")
 				if ( '' !== $title ) { // Check if title is being forced to not show.
 					// If a custom title was not set, use the default. Otherwise, show the custom title.
 					?>
-					<h2><?php echo esc_html( null === $title ? __( 'My Account', 'paid-membereships-pro' ) : $title ); ?></h2>
+					<h2><?php echo esc_html( null === $title ? __( 'My Account', 'paid-memberships-pro' ) : $title ); ?></h2>
 					<?php
 				}
 				wp_get_current_user();
@@ -227,7 +227,7 @@ function pmpro_shortcode_account($atts, $content=null, $code="")
 			if ( '' !== $title ) { // Check if title is being forced to not show.
 				// If a custom title was not set, use the default. Otherwise, show the custom title.
 				?>
-				<h2><?php echo esc_html( null === $title ? __( 'Past Invoices', 'paid-membereships-pro' ) : $title ); ?></h2>
+				<h2><?php echo esc_html( null === $title ? __( 'Past Invoices', 'paid-memberships-pro' ) : $title ); ?></h2>
 				<?php
 			}
 			?>
@@ -288,7 +288,7 @@ function pmpro_shortcode_account($atts, $content=null, $code="")
 			if ( '' !== $title ) { // Check if title is being forced to not show.
 				// If a custom title was not set, use the default. Otherwise, show the custom title.
 				?>
-				<h2><?php echo esc_html( null === $title ? __( 'Member Links', 'paid-membereships-pro' ) : $title ); ?></h2>
+				<h2><?php echo esc_html( null === $title ? __( 'Member Links', 'paid-memberships-pro' ) : $title ); ?></h2>
 				<?php
 			}
 			?>

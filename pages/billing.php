@@ -256,116 +256,116 @@
 							<?php
 							}
 						?>
-					<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout-field pmpro_checkout-field-bphone', 'pmpro_checkout-field-bphone' ) ); ?>">
-						<label for="bphone"><?php esc_html_e('Phone', 'paid-memberships-pro' );?></label>
-						<input id="bphone" name="bphone" type="text" class="<?php echo esc_attr( pmpro_get_element_class( 'input', 'bphone' ) ); ?>" size="30" value="<?php echo esc_attr($bphone)?>" />
-					</div> <!-- end pmpro_checkout-field-bphone -->
-					<?php if($current_user->ID) { ?>
-					<?php
-						if(!$bemail && $current_user->user_email)
-							$bemail = $current_user->user_email;
-						if(!$bconfirmemail && $current_user->user_email)
-							$bconfirmemail = $current_user->user_email;
-					?>
-					<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout-field pmpro_checkout-field-bemail', 'pmpro_checkout-field-bemail' ) ); ?>">
-						<label for="bemail"><?php esc_html_e('Email Address', 'paid-memberships-pro' );?></label>
-						<input id="bemail" name="bemail" type="<?php echo ($pmpro_email_field_type ? 'email' : 'text'); ?>" class="<?php echo esc_attr( pmpro_get_element_class( 'input', 'bemail' ) ); ?>" size="30" value="<?php echo esc_attr($bemail)?>" />
-					</div> <!-- end pmpro_checkout-field-bemail -->
-					<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout-field pmpro_checkout-field-bconfirmemail', 'pmpro_checkout-field-bconfirmemail' ) ); ?>">
-						<label for="bconfirmemail"><?php esc_html_e('Confirm Email', 'paid-memberships-pro' );?></label>
-						<input id="bconfirmemail" name="bconfirmemail" type="<?php echo ($pmpro_email_field_type ? 'email' : 'text'); ?>" class="<?php echo esc_attr( pmpro_get_element_class( 'input', 'bconfirmemail' ) ); ?>" size="30" value="<?php echo esc_attr($bconfirmemail)?>" />
-					</div> <!-- end pmpro_checkout-field-bconfirmemail -->
-					<?php } ?>
-				</div> <!-- end pmpro_checkout-fields -->
-			</div> <!-- end pmpro_billing -->
-			<?php } ?>
-
-			<?php
-			//make sure gateways will show up credit card fields
-			global $pmpro_requirebilling;
-			$pmpro_requirebilling = true;
-
-			//do we need to show the payment information (credit card) fields? gateways will override this
-			$pmpro_include_payment_information_fields = apply_filters('pmpro_include_payment_information_fields', true);
-			if($pmpro_include_payment_information_fields)
-			{
-				$pmpro_accepted_credit_cards = pmpro_getOption("accepted_credit_cards");
-				$pmpro_accepted_credit_cards = explode(",", $pmpro_accepted_credit_cards);
-				$pmpro_accepted_credit_cards_string = pmpro_implodeToEnglish($pmpro_accepted_credit_cards);
-				?>
-				<div id="pmpro_payment_information_fields" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout', 'pmpro_payment_information_fields' ) ); ?>">
-					<h2>
-						<span class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout-h2-name' ) ); ?>"><?php esc_html_e('Credit Card Information', 'paid-memberships-pro' );?></span>
-						<span class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout-h2-msg' ) ); ?>"><?php echo esc_html( sprintf( __('We accept %s', 'paid-memberships-pro' ), $pmpro_accepted_credit_cards_string ) ); ?></span>
-
-					</h2>
-					<?php $sslseal = pmpro_getOption("sslseal"); ?>
-					<?php if(!empty($sslseal)) { ?>
-						<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout-fields-display-seal' ) ); ?>">
-					<?php } ?>
-					<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout-fields' ) ); ?>">
+						<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout-field pmpro_checkout-field-bphone', 'pmpro_checkout-field-bphone' ) ); ?>">
+							<label for="bphone"><?php esc_html_e('Phone', 'paid-memberships-pro' );?></label>
+							<input id="bphone" name="bphone" type="text" class="<?php echo esc_attr( pmpro_get_element_class( 'input', 'bphone' ) ); ?>" size="30" value="<?php echo esc_attr($bphone)?>" />
+						</div> <!-- end pmpro_checkout-field-bphone -->
+						<?php if($current_user->ID) { ?>
 						<?php
-							$pmpro_include_cardtype_field = apply_filters('pmpro_include_cardtype_field', false);
-							if($pmpro_include_cardtype_field) { ?>
-								<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout-field pmpro_payment-card-type', 'pmpro_payment-card-type' ) ); ?>">
-									<label for="CardType"><?php esc_html_e('Card Type', 'paid-memberships-pro' );?></label>
-									<select id="CardType" name="CardType" class="<?php echo esc_attr( pmpro_get_element_class( '', 'CardType' ) );?>">
-										<?php foreach($pmpro_accepted_credit_cards as $cc) { ?>
-											<option value="<?php echo esc_attr( $cc ); ?>" <?php if($CardType === $cc) { ?>selected="selected"<?php } ?>><?php echo esc_html( $cc ); ?></option>
+							if(!$bemail && $current_user->user_email)
+								$bemail = $current_user->user_email;
+							if(!$bconfirmemail && $current_user->user_email)
+								$bconfirmemail = $current_user->user_email;
+						?>
+						<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout-field pmpro_checkout-field-bemail', 'pmpro_checkout-field-bemail' ) ); ?>">
+							<label for="bemail"><?php esc_html_e('Email Address', 'paid-memberships-pro' );?></label>
+							<input id="bemail" name="bemail" type="<?php echo ($pmpro_email_field_type ? 'email' : 'text'); ?>" class="<?php echo esc_attr( pmpro_get_element_class( 'input', 'bemail' ) ); ?>" size="30" value="<?php echo esc_attr($bemail)?>" />
+						</div> <!-- end pmpro_checkout-field-bemail -->
+						<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout-field pmpro_checkout-field-bconfirmemail', 'pmpro_checkout-field-bconfirmemail' ) ); ?>">
+							<label for="bconfirmemail"><?php esc_html_e('Confirm Email', 'paid-memberships-pro' );?></label>
+							<input id="bconfirmemail" name="bconfirmemail" type="<?php echo ($pmpro_email_field_type ? 'email' : 'text'); ?>" class="<?php echo esc_attr( pmpro_get_element_class( 'input', 'bconfirmemail' ) ); ?>" size="30" value="<?php echo esc_attr($bconfirmemail)?>" />
+						</div> <!-- end pmpro_checkout-field-bconfirmemail -->
+						<?php } ?>
+					</div> <!-- end pmpro_checkout-fields -->
+				</div> <!-- end pmpro_billing -->
+				<?php } ?>
 
-										<?php } ?>
-									</select>
-								</div> <!-- end pmpro_payment-card-type -->
-							<?php } else { ?>
-								<input type="hidden" id="CardType" name="CardType" value="<?php echo esc_attr($CardType);?>" />
-								<script>
-									<!--
-									jQuery(document).ready(function() {
-											jQuery('#AccountNumber').validateCreditCard(function(result) {
-												var cardtypenames = {
-													"amex"                      : "American Express",
-													"diners_club_carte_blanche" : "Diners Club Carte Blanche",
-													"diners_club_international" : "Diners Club International",
-													"discover"                  : "Discover",
-													"jcb"                       : "JCB",
-													"laser"                     : "Laser",
-													"maestro"                   : "Maestro",
-													"mastercard"                : "Mastercard",
-													"visa"                      : "Visa",
-													"visa_electron"             : "Visa Electron"
-												};
+				<?php
+				//make sure gateways will show up credit card fields
+				global $pmpro_requirebilling;
+				$pmpro_requirebilling = true;
 
-												if(result.card_type)
-													jQuery('#CardType').val(cardtypenames[result.card_type.name]);
-												else
-													jQuery('#CardType').val('Unknown Card Type');
-											});
-									});
-									-->
-								</script>
-								<?php
-								}
-							?>
-						<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout-field pmpro_payment-account-number', 'pmpro_payment-account-number' ) ); ?>">
-							<label for="AccountNumber"><?php esc_html_e('Card Number', 'paid-memberships-pro' );?></label>
-							<input id="AccountNumber" name="AccountNumber" class="<?php echo esc_attr( pmpro_get_element_class( 'input', 'AccountNumber' ) );?>" type="text" size="25" value="<?php echo esc_attr($AccountNumber)?>" autocomplete="off" />
-						</div>
-						<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout-field pmpro_payment-expiration', 'pmpro_payment-expiration' ) ); ?>">
-							<label for="ExpirationMonth"><?php esc_html_e('Expiration Date', 'paid-memberships-pro' );?></label>
-							<select id="ExpirationMonth" name="ExpirationMonth" class="<?php echo esc_attr( pmpro_get_element_class( '', 'ExpirationMonth' ) ); ?>">
-								<option value="01" <?php if($ExpirationMonth == "01") { ?>selected="selected"<?php } ?>>01</option>
-								<option value="02" <?php if($ExpirationMonth == "02") { ?>selected="selected"<?php } ?>>02</option>
-								<option value="03" <?php if($ExpirationMonth == "03") { ?>selected="selected"<?php } ?>>03</option>
-								<option value="04" <?php if($ExpirationMonth == "04") { ?>selected="selected"<?php } ?>>04</option>
-								<option value="05" <?php if($ExpirationMonth == "05") { ?>selected="selected"<?php } ?>>05</option>
-								<option value="06" <?php if($ExpirationMonth == "06") { ?>selected="selected"<?php } ?>>06</option>
-								<option value="07" <?php if($ExpirationMonth == "07") { ?>selected="selected"<?php } ?>>07</option>
-								<option value="08" <?php if($ExpirationMonth == "08") { ?>selected="selected"<?php } ?>>08</option>
-								<option value="09" <?php if($ExpirationMonth == "09") { ?>selected="selected"<?php } ?>>09</option>
-								<option value="10" <?php if($ExpirationMonth == "10") { ?>selected="selected"<?php } ?>>10</option>
-								<option value="11" <?php if($ExpirationMonth == "11") { ?>selected="selected"<?php } ?>>11</option>
-								<option value="12" <?php if($ExpirationMonth == "12") { ?>selected="selected"<?php } ?>>12</option>
-							</select>/<select id="ExpirationYear" name="ExpirationYear" class="<?php echo esc_attr( pmpro_get_element_class( '', 'ExpirationYear' ) ); ?>">
+				//do we need to show the payment information (credit card) fields? gateways will override this
+				$pmpro_include_payment_information_fields = apply_filters('pmpro_include_payment_information_fields', true);
+				if($pmpro_include_payment_information_fields)
+				{
+					$pmpro_accepted_credit_cards = pmpro_getOption("accepted_credit_cards");
+					$pmpro_accepted_credit_cards = explode(",", $pmpro_accepted_credit_cards);
+					$pmpro_accepted_credit_cards_string = pmpro_implodeToEnglish($pmpro_accepted_credit_cards);
+					?>
+					<div id="pmpro_payment_information_fields" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout', 'pmpro_payment_information_fields' ) ); ?>">
+						<h2>
+							<span class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout-h2-name' ) ); ?>"><?php esc_html_e('Credit Card Information', 'paid-memberships-pro' );?></span>
+							<span class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout-h2-msg' ) ); ?>"><?php echo esc_html( sprintf( __('We accept %s', 'paid-memberships-pro' ), $pmpro_accepted_credit_cards_string ) ); ?></span>
+
+						</h2>
+						<?php $sslseal = pmpro_getOption("sslseal"); ?>
+						<?php if(!empty($sslseal)) { ?>
+							<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout-fields-display-seal' ) ); ?>">
+						<?php } ?>
+						<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout-fields' ) ); ?>">
+							<?php
+								$pmpro_include_cardtype_field = apply_filters('pmpro_include_cardtype_field', false);
+								if($pmpro_include_cardtype_field) { ?>
+									<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout-field pmpro_payment-card-type', 'pmpro_payment-card-type' ) ); ?>">
+										<label for="CardType"><?php esc_html_e('Card Type', 'paid-memberships-pro' );?></label>
+										<select id="CardType" name="CardType" class="<?php echo esc_attr( pmpro_get_element_class( '', 'CardType' ) );?>">
+											<?php foreach($pmpro_accepted_credit_cards as $cc) { ?>
+												<option value="<?php echo esc_attr( $cc ); ?>" <?php if($CardType === $cc) { ?>selected="selected"<?php } ?>><?php echo esc_html( $cc ); ?></option>
+
+											<?php } ?>
+										</select>
+									</div> <!-- end pmpro_payment-card-type -->
+								<?php } else { ?>
+									<input type="hidden" id="CardType" name="CardType" value="<?php echo esc_attr($CardType);?>" />
+									<script>
+										<!--
+										jQuery(document).ready(function() {
+												jQuery('#AccountNumber').validateCreditCard(function(result) {
+													var cardtypenames = {
+														"amex"                      : "American Express",
+														"diners_club_carte_blanche" : "Diners Club Carte Blanche",
+														"diners_club_international" : "Diners Club International",
+														"discover"                  : "Discover",
+														"jcb"                       : "JCB",
+														"laser"                     : "Laser",
+														"maestro"                   : "Maestro",
+														"mastercard"                : "Mastercard",
+														"visa"                      : "Visa",
+														"visa_electron"             : "Visa Electron"
+													};
+
+													if(result.card_type)
+														jQuery('#CardType').val(cardtypenames[result.card_type.name]);
+													else
+														jQuery('#CardType').val('Unknown Card Type');
+												});
+										});
+										-->
+									</script>
+									<?php
+									}
+								?>
+							<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout-field pmpro_payment-account-number', 'pmpro_payment-account-number' ) ); ?>">
+								<label for="AccountNumber"><?php esc_html_e('Card Number', 'paid-memberships-pro' );?></label>
+								<input id="AccountNumber" name="AccountNumber" class="<?php echo esc_attr( pmpro_get_element_class( 'input', 'AccountNumber' ) );?>" type="text" size="25" value="<?php echo esc_attr($AccountNumber)?>" autocomplete="off" />
+							</div>
+							<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout-field pmpro_payment-expiration', 'pmpro_payment-expiration' ) ); ?>">
+								<label for="ExpirationMonth"><?php esc_html_e('Expiration Date', 'paid-memberships-pro' );?></label>
+								<select id="ExpirationMonth" name="ExpirationMonth" class="<?php echo esc_attr( pmpro_get_element_class( '', 'ExpirationMonth' ) ); ?>">
+									<option value="01" <?php if($ExpirationMonth == "01") { ?>selected="selected"<?php } ?>>01</option>
+									<option value="02" <?php if($ExpirationMonth == "02") { ?>selected="selected"<?php } ?>>02</option>
+									<option value="03" <?php if($ExpirationMonth == "03") { ?>selected="selected"<?php } ?>>03</option>
+									<option value="04" <?php if($ExpirationMonth == "04") { ?>selected="selected"<?php } ?>>04</option>
+									<option value="05" <?php if($ExpirationMonth == "05") { ?>selected="selected"<?php } ?>>05</option>
+									<option value="06" <?php if($ExpirationMonth == "06") { ?>selected="selected"<?php } ?>>06</option>
+									<option value="07" <?php if($ExpirationMonth == "07") { ?>selected="selected"<?php } ?>>07</option>
+									<option value="08" <?php if($ExpirationMonth == "08") { ?>selected="selected"<?php } ?>>08</option>
+									<option value="09" <?php if($ExpirationMonth == "09") { ?>selected="selected"<?php } ?>>09</option>
+									<option value="10" <?php if($ExpirationMonth == "10") { ?>selected="selected"<?php } ?>>10</option>
+									<option value="11" <?php if($ExpirationMonth == "11") { ?>selected="selected"<?php } ?>>11</option>
+									<option value="12" <?php if($ExpirationMonth == "12") { ?>selected="selected"<?php } ?>>12</option>
+								</select>/<select id="ExpirationYear" name="ExpirationYear" class="<?php echo esc_attr( pmpro_get_element_class( '', 'ExpirationYear' ) ); ?>">
 								<?php
 									for($i = date_i18n("Y"); $i < date_i18n("Y") + 10; $i++)
 										{
@@ -376,7 +376,7 @@
 										}
 									?>
 								</select>
-							</div>
+							</div>							
 							<?php
 								$pmpro_show_cvv = apply_filters("pmpro_show_cvv", true);
 								if($pmpro_show_cvv) {
@@ -388,7 +388,7 @@
 								?>
 								<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout-field pmpro_payment-cvv', 'pmpro_payment-cvv' ) ); ?>">
 									<label for="CVV"><?php esc_html_e('CVV', 'paid-memberships-pro' );?></label>
-									<input id="CVV" name="CVV" type="text" size="4" value="<?php if(!empty($_REQUEST['CVV'])) { echo esc_attr( sanitize_text_field( $_REQUEST['CVV'] ) ); }?>" class="<?php echo esc_attr( pmpro_get_element_class( 'input', 'CVV ') );?>" />  <small>(<a href="javascript:void(0);" onclick="javascript:window.open('<?php echo esc_url( pmpro_https_filter($cvv_template) ); ?>','cvv','toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=yes, resizable=yes, width=600, height=475');"><?php esc_html_e("what's this?", 'paid-memberships-pro' );?></a>)</small>
+									<input id="CVV" name="CVV" type="text" size="4" value="<?php if(!empty($_REQUEST['CVV'])) { echo esc_attr( sanitize_text_field( $_REQUEST['CVV'] ) ); }?>" class="<?php echo esc_attr( pmpro_get_element_class( 'input', 'CVV' ) ); ?>" />
 								</div>
 							<?php } ?>
 						</div> <!-- end pmpro_checkout-fields -->
@@ -399,12 +399,11 @@
 
 				<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout-field pmpro_captcha', 'pmpro_captcha' ) ); ?>">
 				<?php
-					global $recaptcha, $recaptcha_publickey;				
+					$recaptcha = pmpro_getOption("recaptcha");
 					if ( $recaptcha == 2 || ( $recaptcha == 1 && pmpro_isLevelFree( $pmpro_level ) ) ) {
-						// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-						echo pmpro_recaptcha_get_html($recaptcha_publickey, NULL, true);
+						pmpro_recaptcha_get_html();
 					}
-				?>
+				?>				
 				</div> <!-- end pmpro_captcha -->
 
 				<?php do_action("pmpro_billing_before_submit_button"); ?>

@@ -2,9 +2,9 @@
 Contributors: strangerstudios, kimannwall, andrewza, dlparker1005, paidmembershipspro
 Tags: memberships, members, subscriptions, ecommerce, user registration, member, membership, e-commerce, paypal, stripe, braintree, authorize.net, payflow, restrict access, restrict content, directory
 Requires at least: 5.2
-Tested up to: 6.2
+Tested up to: 6.2.2
 Requires PHP: 5.6
-Stable tag: 2.11
+Stable tag: 2.11.1
 
 WordPress membership plugin: restrict content, accept member subscriptions with recurring payment. Includes user registration, login, & profile fields
 
@@ -156,6 +156,13 @@ Not sure? You can find out by doing a bit a research.
 9. Membership Account page, display all sections or show specific sections using shortcode attributes.
 
 == Changelog ==
+* ENHANCEMENT: Now using HTML5 required field attribute on required fields at membership checkout.#2511 (@kimcoleman)
+* ENHANCEMENT: Better wording for the "Disconnect from Stripe" button in the payment settings so folks understand this will disconnect ANY site connected to Stripe through that account. #2514 (@dparker1005)
+* BUG FIX/ENHANCEMENT: Removed the "What's This?" text from the CVV field on Membership Billing page. #2512 (@kimcoleman)
+* BUG FIX/ENHANCEMENT: Minor fixes to the Orders List Table. #2509 (@dparker1005)
+* BUG FIX/ENHANCEMENT: Fixed the text domains for the default headings for the account page shortcode. #2508 (@dparker1005)
+* BUG FIX/ENHANCEMENT: Fixed the default page titles when using the account block. #2505 (@dparker1005)
+
 = 2.11 - 2023-06-07 =
 * FEATURE: Now tracking users that are created at checkout but never complete checkout or otherwise use the site. These users can be found and deleted from the Users Table in the admin dashboard. #2435 (@dparker1005, @ideadude)
 * FEATURE: Added compatibility with Oxygen Builder. #2404 (@JarrydLong)
