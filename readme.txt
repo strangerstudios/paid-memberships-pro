@@ -4,7 +4,7 @@ Tags: memberships, members, subscriptions, ecommerce, user registration, member,
 Requires at least: 5.2
 Tested up to: 6.2.2
 Requires PHP: 5.6
-Stable tag: 2.11.1
+Stable tag: 2.11.2
 
 WordPress membership plugin: restrict content, accept member subscriptions with recurring payment. Includes user registration, login, & profile fields
 
@@ -156,6 +156,10 @@ Not sure? You can find out by doing a bit a research.
 9. Membership Account page, display all sections or show specific sections using shortcode attributes.
 
 == Changelog ==
+= 2.11.2 - 2023-06-14 =
+* BUG FIX: Reverting the application of the required attribute for required fields at checkout. This would break valid checkouts in some cases if required fields were hidden. We need to address this differently. #2516 (@ideadude)
+
+= 2.11.1 - 2023-06-13 =
 * ENHANCEMENT: Now using HTML5 required field attribute on required fields at membership checkout.#2511 (@kimcoleman)
 * ENHANCEMENT: Better wording for the "Disconnect from Stripe" button in the payment settings so folks understand this will disconnect ANY site connected to Stripe through that account. #2514 (@dparker1005)
 * BUG FIX/ENHANCEMENT: Removed the "What's This?" text from the CVV field on Membership Billing page. #2512 (@kimcoleman)
