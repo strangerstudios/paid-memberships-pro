@@ -476,7 +476,11 @@ class PMPro_Members_List_Table extends WP_List_Table {
 		$output   = $avatar . ' <strong>' . $userlink . '</strong><br />';
 
 		// Set up the hover actions for this user.
-		$actions      = apply_filters( 'pmpro_memberslist_user_row_actions', array(), (object) $item );
+		$actions      = array(
+			'edituser' => '<a href="' . admin_url( 'admin.php?page=pmpro-members&user=' . (int)$item['ID'] ) . '">' . __( 'Edit', 'pmpro-members' ) . '</a>',
+			'addorder' => '<a href="' . admin_url( 'admin.php?page=pmpro-orders&order=-1&user=' . (int)$item['ID'] . '&membership_id=' . (int)$item['membership_id'] ) . '">' . __( '+ Order', 'pmpro-members' ) . '</a>',
+		);
+		$actions      = apply_filters( 'pmpro_memberslist_user_row_actions', $actions, (object) $item );
 		$action_count = count( $actions );
 		$i            = 0;
 		if ( $action_count ) {
