@@ -1089,7 +1089,8 @@ table.pmprommpu_levels tr.remove_level td {background: #F2DEDE; }
 }
 
 /* orders */
-.pmpro_admin-pmpro-orders .nav-tab-wrapper {
+.pmpro_admin-pmpro-orders .nav-tab-wrapper,
+.pmpro_admin-pmpro-memberslist .nav-tab-wrapper {
 	margin-bottom: 10px;
 }
 
