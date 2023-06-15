@@ -18,25 +18,21 @@ if ( ! empty( $_REQUEST['user_id'] ) ) {
 		// We have a user, let's get the user metadata
 		$user_notes = get_user_meta( $user_id, 'user_notes', true );
 	}
-} else {
-	// New user.
-	$user = get_userdata( 0 );
 }
+
+// Some vars for the form.
+$role = ! empty( $_POST['role'] ) ? sanitize_text_field( $_POST['role'] ) : get_option( 'default_role' );
 
 // this block handles form submission
 if ( ! empty( $_POST ) ) {
-	$user_login = ! empty( $_POST['user_login'] ) ? $_POST['user_login'] : '';
-	$user_email = ! empty( $_POST['email'] ) ? $_POST['email'] : '';
-	$first_name = ! empty( $_POST['first_name'] ) ? $_POST['first_name'] : '';
-	$last_name = ! empty( $_POST['last_name'] ) ? $_POST['last_name'] : '';
-	$role = ! empty( $_POST['role'] ) ? $_POST['role'] : get_option( 'default_role' );
-	$user_notes = ! empty( $_POST['user_notes'] ) ? $_POST['user_notes'] : '';
-	$order_notes = ! empty( $_POST['order_notes'] ) ? $_POST['order_notes'] : '';
-	$payment = ! empty( $_POST['payment'] ) ? $_POST['payment'] : 'payment';
-	$total = ! empty( $_POST['total'] ) ? $_POST['total'] : '';
+	$user_login = ! empty( $_POST['user_login'] ) ? sanitize_user( $_POST['user_login'] ) : '';
+	$user_email = ! empty( $_POST['email'] ) ? stripslashes( sanitize_email( $_POST['email'] ) ) : '';
+	$first_name = ! empty( $_POST['first_name'] ) ? stripslashes( sanitize_text_field( $_POST['first_name'] ) ): '';
+	$last_name = ! empty( $_POST['last_name'] ) ? stripslashes( sanitize_text_field( $_POST['last_name'] ) ) : '';	
+	$user_notes = ! empty( $_POST['user_notes'] ) ? stripslashes( sanitize_text_field( $_POST['user_notes'] ) ) : '';
 
 	if ( isset( $_POST['membership_level'] ) ) {
-		$membership_level = $_POST['membership_level'];
+		$membership_level = intval( $_POST['membership_level'] );
 	} elseif ( ! empty( $user ) ) {
 		$user->membership_level = pmpro_getMembershipLevelForUser( $user_id );
 		if ( ! empty( $user->membership_level ) ) {
@@ -66,21 +62,28 @@ if ( ! empty( $_POST ) ) {
 		pmpro_setMessage( __( 'Please fill out all required fields:', 'pmpro-add-member-admin' ) . ' ' . implode( ', ', $pmpro_error_fields ), 'pmpro_error' );
 	}
 
-	// check if user exists, if it's not an edit scenario username can't be the same as an existing user.
-	$oldusername = $wpdb->get_var( "SELECT user_login FROM $wpdb->users WHERE user_login = '" . esc_sql( $user_login ) . "' LIMIT 1" );
-	$oldemail = $wpdb->get_var( "SELECT user_email FROM $wpdb->users WHERE user_email = '" . esc_sql( $user_email ) . "' LIMIT 1" );
-	// this hook can be used to allow multiple accounts with the same email address
-	$oldemail = apply_filters( 'pmpro_checkout_oldemail', $oldemail );
+	// Check that the email and username are available.
+	$ouser      = get_user_by( 'login', $user_login );
+	$oldem_user = get_user_by( 'email', $user_email );
 
-	if ( ! $user && ! empty( $oldusername ) ) {
-		pmpro_setMessage( __( 'That username is already taken. Please try another.', 'pmpro-add-member-admin' ), 'pmpro_error' );
-		$pmpro_error_fields[] = 'username';
+	/**
+	 * This hook can be used to allow multiple accounts with the same email address.
+	 * This is also set in preheaders/checkout.php
+	 * @todo Abstract to a function so we only have one filter.
+	 * Return null to allow duplicate users with the same email.
+	 */
+	$oldemail = apply_filters( "pmpro_checkout_oldemail", ( false !== $oldem_user ? $oldem_user->user_email : null ) );
+
+	if ( ! empty( $ouser->user_login ) ) {
+		pmpro_setMessage( __( "That username is already taken. Please try another.", 'paid-memberships-pro' ), "pmpro_error" );
+		$pmpro_error_fields[] = "username";
 	}
-	if ( ! $user && ! empty( $oldemail ) ) {
-		pmpro_setMessage( __( 'That email address is already taken. Please try another.', 'pmpro-add-member-admin' ), 'pmpro_error' );
-		$pmpro_error_fields[] = 'bemail';
-		$pmpro_error_fields[] = 'bconfirmemail';
-	}
+
+	if ( ! empty( $oldemail ) ) {
+		pmpro_setMessage( __( "That email address is already in use. Please log in, or use a different email address.", 'paid-memberships-pro' ), "pmpro_error" );
+		$pmpro_error_fields[] = "bemail";
+		$pmpro_error_fields[] = "bconfirmemail";
+	}	
 
 	// okay so far?
 	if ( $pmpro_msgt != 'pmpro_error' ) {
@@ -89,21 +92,17 @@ if ( ! empty( $_POST ) ) {
 			$user_pass = wp_generate_password();
 			$send_password = true; // Force this option to be true, if the password field was empty so the email may be sent.
 		}
-			$user_to_post = array( 
-				'ID' => $user_id,
-				'user_login' => $user_login,
-				'user_email' => $user_email,
-				'first_name' => $first_name,
-				'last_name' => $last_name,
-				'role' => $role,
-			);
+		$user_to_post = array( 
+			'ID' => $user_id,
+			'user_login' => $user_login,
+			'user_email' => $user_email,
+			'first_name' => $first_name,
+			'last_name' => $last_name,
+			'role' => $role,
+		);
 
-		
-			$user_id = ! empty( $_REQUEST['user_id'] ) ? wp_update_user($user_to_post) : wp_insert_user($user_to_post);
-		
-		
+		$user_id = ! empty( $_REQUEST['user_id'] ) ? wp_update_user($user_to_post) : wp_insert_user($user_to_post);
 	}
-	
 
 	if ( ! $user_id ) {
 		pmpro_setMessage( __( 'Error creating user.', 'pmpro-add-member-admin' ), 'pmpro_error' );
@@ -113,72 +112,19 @@ if ( ! empty( $_POST ) ) {
 
 		// figure out start date
 		$now = current_time( 'timestamp' );
-		$startdate = date( 'Y-m-d', $now );
-
-		// figure out end date
-		if ( ! empty( $_REQUEST['expires'] ) ) {
-			// update the expiration date
-			$enddate = intval( $_REQUEST['expires_year'] ) . '-' . str_pad( intval( $_REQUEST['expires_month'] ), 2, '0', STR_PAD_LEFT ) . '-' . str_pad( intval( $_REQUEST['expires_day'] ), 2, '0', STR_PAD_LEFT );
-		} else {
-			$enddate = '';
-		}
-
-		// add membership level
-		$custom_level = array(
-			'user_id' => $user_id,
-			'membership_id' => $membership_level,
-			'code_id' => '',
-			'initial_payment' => $total,
-			'billing_amount' => '',
-			'cycle_number' => '',
-			'cycle_period' => '',
-			'billing_limit' => '',
-			'trial_amount' => '',
-			'trial_limit' => '',
-			'startdate' => $startdate,
-			'enddate' => $enddate,
-		);
-		pmpro_changeMembershipLevel( $custom_level, $user_id );
-
-		// add order
-		// blank order for free levels
-
-		$morder = new MemberOrder();
-		$morder->InitialPayment = $total;
-		$morder->Email = $user_email;
-		$morder->gateway = $gateway;
-		$morder->status = 'success';
-
-		// add an item to the history table, cancel old subscriptions
-		if ( ! empty( $morder ) ) {
-			$morder->user_id = $user_id;
-			$morder->membership_id = $membership_level;
-			$morder->notes = $order_notes;
-			$morder->saveOrder();
-		}
-
-		// It's not an edit scenario, we are creating a new user from scratch.
-		if(! $user) {
-			$user = get_userdata( $user_id );
-			do_action( 'pmpro_add_member_added', $user_id, $user, $morder );
-		}		
+		$startdate = date( 'Y-m-d', $now );	
 
 		// notify user
 		if ( $send_password ) {
 			wp_new_user_notification( $user_id, null, 'user' );
 		}
 
-		// got here with no errors
+		// Got here with no errors.
+		// TODO: We want to redirect to the edit level step instead. We have to run this all earlier to do that.
 		if ( $pmpro_msgt != 'pmpro_error' ) {
-			// set message
-			if ( ! empty( $_REQUEST['user_id'] ) ) {
-				$pmpro_msg = esc_html__( 'Order added.', 'pmpro-add-member-admin' );
-			} else {
-				$pmpro_msg = esc_html__( 'Member added.', 'pmpro-add-member-admin' );
-			}
-
-			$pmpro_msgt = 'pmpro_success';
-
+			// set message			
+			pmpro_setMessage( esc_html__( 'User added.', 'pmpro-add-member-admin' ), 'pmpro_success' );
+					
 			// clear vars
 			$payment = '';
 			$gateway = '';
@@ -198,7 +144,7 @@ if ( ! empty( $_POST ) ) {
 			}
 		} else {
 			global $pmpro_msg;
-			$pmpro_msg = esc_html__( 'The user account has been created, but there were other errors setting up membership: ', 'pmpro-add-member-admin' ) . $pmpro_msg;
+			$pmpro_msg = esc_html__( 'There was an error creating adding this member: ', 'pmpro-add-member-admin' ) . $pmpro_msg;
 		}
 	}
 }
@@ -256,13 +202,12 @@ form td button.toggle-pass-visibility {
 form td .dashicons {
 	vertical-align: middle;
 }
-
 </style>
 
 <?php
 if ( $pmpro_msg ) {
 ?>
-	<div id="pmpro_message" class="pmpro_message <?php echo esc_attr( $pmpro_msgt ); ?>"><?php echo esc_html( $pmpro_msg ); ?></div>
+	<div id="pmpro_message" class="pmpro_message <?php echo esc_attr( $pmpro_msgt ); ?>"><?php echo wp_kses_post( $pmpro_msg ); ?></div>
 <?php
 } else {
 ?>
@@ -271,9 +216,9 @@ if ( $pmpro_msg ) {
 }
 ?>
 <div class="wrap">
-	<h1 class="wp-heading-inline">Add Member</h1>
+	<h1 class="wp-heading-inline"><?php echo esc_html_e( 'Add Member', 'paid-memberships-pro' );?></h1>
 		<div>
-			<?php if (! empty($user_id)) { ?>
+			<?php if (! empty( $user_id ) ) { ?>
 			<form class="pmpro-add-member" action="" method="post">
 				<nav id="user-menu" role="tablist" aria-label="Add Member Field Tabs">
 					<button
@@ -323,11 +268,11 @@ if ( $pmpro_msg ) {
 						<table class="form-table">
 							<tr>
 								<th><label for="user_logim">Username (required) </label></th>
-								<td><input type="text" name="user_login" id="user_login" required readonly="true" value="<?php echo esc_attr( $user->user_login ) ?>"></td>
+								<td><input type="text" name="user_login" id="user_login" autocapitalize="none" autocorrect="off" autocomplete="off" required readonly="true" value="<?php echo esc_attr( $user->user_login ) ?>"></td>
 							</tr>
 							<tr>
 								<th><label for="email">Email (required)</label></th>
-								<td><input type="email" name="email" id="email" required value="<?php echo esc_attr( $user->user_email ) ?>"></td>
+								<td><input type="email" name="email" id="email" autocomplete="new-password" spellcheck="false" required value="<?php echo esc_attr( $user->user_email ) ?>"></td>
 							</tr>
 							
 						</table>
@@ -337,23 +282,23 @@ if ( $pmpro_msg ) {
 						<table class="form-table">
 							<tr>
 								<th><label for="first_name">First Name</label></th>
-								<td><input type="text" name="first_name" id="first_name" value="<?php echo  $user->first_name ?>"></td>
+								<td><input type="text" name="first_name" id="first_name" autocomplete="off" value="<?php echo $user->first_name ?>"></td>
 							</tr>
 							<tr>
 								<th><label for="last_name">Last Name</label></th>
-								<td><input type="text" name="last_name" id="last_name" value="<?php echo  $user->last_name ?>"></td>
+								<td><input type="text" name="last_name" id="last_name" autocomplete="off" value="<?php echo $user->last_name ?>"></td>
 							</tr>
 							<tr>
 								<th><label for="password">Password</label></th>
 								<td>
-									<input type="password" name="password" id="password" required value="<?php echo  $user->user_pass ?>">
+									<input type="password" name="password" id="password" autocomplete="off" required value="<?php echo  $user->user_pass ?>">
 									<button class="toggle-pass-visibility" aria-controls="password" aria-expanded="false"><span class="dashicons dashicons-visibility toggle-pass-visibility"></span></button>
 								</td>
 							</tr>
 							<tr>
 								<th><label for="send_password">Send User Notification</label></th>
 								<td><input type="checkbox" name="send_password" id="send_password">
-								<label>Send the new user an email about their account.</label>
+								<label for="send_password">Send the new user an email about their account.</label>
 								</td>
 							</tr>
 							<tr>
@@ -449,7 +394,7 @@ if ( $pmpro_msg ) {
 				</div>
 			</form>
 			<?php  } else {?>
-				<form action=""  method="post">
+				<form action="" method="post">
 					<?php wp_nonce_field('custom_user_form', 'custom_user_form_nonce'); ?>
 
 					<table class="form-table">
@@ -475,7 +420,10 @@ if ( $pmpro_msg ) {
 						</tr>
 						<tr class="form-field">
 							<th><label for="send_password">Send Password?</label></th>
-							<td><input type="checkbox" name="send_password" id="send_password"></td>
+							<td>
+								<input type="checkbox" name="send_password" id="send_password">
+								<label for="send_password">Send the new user an email about their account.</label>
+							</td>
 						</tr>
 						<tr class="form-field">
 							<th><label for="user_notes">User Notes:</label></th>
@@ -486,21 +434,6 @@ if ( $pmpro_msg ) {
 							<td>
 								<select name="role" id="role" class="<?php echo pmpro_getClassForField( 'role' ); ?>">
 									<?php wp_dropdown_roles( $role ); ?>
-								</select>
-							</td>
-						</tr>
-						<tr class="form-field">
-							<th><label for="level">Level</label></th>
-							<td>
-								<select name="membership_level" id="membership_level">
-									<?php
-										$levels = pmpro_getAllLevels( true, true );
-									foreach ( $levels as $level ) {
-										?>
-										<option value="<?php echo esc_attr( $level->id ); ?>"><?php echo esc_html( $level->name ); ?></option>
-										<?php
-									}
-									?>
 								</select>
 							</td>
 						</tr>
@@ -592,6 +525,4 @@ function changeTabs(e) {
     .querySelector(`#${target.getAttribute("aria-controls")}`)
     .removeAttribute("hidden");
 }
-
-
 </script>
