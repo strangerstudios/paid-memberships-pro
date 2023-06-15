@@ -289,7 +289,7 @@ class PMPro_Discount_Code_List_Table extends WP_List_Table {
 			}
 		} else {
 			// The preferred ways of doing things.
-			do_action( 'pmpro_manage_discount_code_list_custom_column', $column_name, $item->id );
+			do_action( 'pmpro_manage_discount_code_list_custom_column', $column_name, $item['id'] );
 		}
 		
 	}
