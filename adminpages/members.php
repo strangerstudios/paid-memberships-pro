@@ -5,23 +5,23 @@ if ( ! function_exists( 'current_user_can' ) || ( ! current_user_can( 'manage_op
 	die( esc_html__( 'You do not have permissions to perform this action.', 'pmpro-add-member-admin' ) );
 }
 
-// vars
+// Global vars.
 global $wpdb, $msg, $msgt, $pmpro_currency_symbol, $pmpro_required_user_fields, $pmpro_error_fields, $pmpro_msg, $pmpro_msgt;
 
-
-if ( ! empty( $_REQUEST['user'] ) ) {
-	$user_id = intval( $_REQUEST['user'] );
+// Check if editing a user.
+if ( ! empty( $_REQUEST['user_id'] ) ) {
+	$user_id = intval( $_REQUEST['user_id'] );
 	$user = get_userdata( $user_id );
 	if ( empty( $user->ID ) ) {
-		$user_id = false;
-	// We have a user, let's get the user metadata
+		$user_id = false;		
 	} else  {
+		// We have a user, let's get the user metadata
 		$user_notes = get_user_meta( $user_id, 'user_notes', true );
 	}
 } else {
+	// New user.
 	$user = get_userdata( 0 );
 }
-
 
 // this block handles form submission
 if ( ! empty( $_POST ) ) {
@@ -99,7 +99,7 @@ if ( ! empty( $_POST ) ) {
 			);
 
 		
-			$user_id = ! empty( $_REQUEST['user'] ) ? wp_update_user($user_to_post) : wp_insert_user($user_to_post);
+			$user_id = ! empty( $_REQUEST['user_id'] ) ? wp_update_user($user_to_post) : wp_insert_user($user_to_post);
 		
 		
 	}
@@ -161,13 +161,7 @@ if ( ! empty( $_POST ) ) {
 		if(! $user) {
 			$user = get_userdata( $user_id );
 			do_action( 'pmpro_add_member_added', $user_id, $user, $morder );
-		}
-
-		//Send user a welcome email
-		pmproada_send_added_email( $user, $morder );
-
-		//Send admin a notification of a new user
-		pmproada_send_added_email_admin( $user, $morder );
+		}		
 
 		// notify user
 		if ( $send_password ) {
@@ -177,7 +171,7 @@ if ( ! empty( $_POST ) ) {
 		// got here with no errors
 		if ( $pmpro_msgt != 'pmpro_error' ) {
 			// set message
-			if ( ! empty( $_REQUEST['user'] ) ) {
+			if ( ! empty( $_REQUEST['user_id'] ) ) {
 				$pmpro_msg = esc_html__( 'Order added.', 'pmpro-add-member-admin' );
 			} else {
 				$pmpro_msg = esc_html__( 'Member added.', 'pmpro-add-member-admin' );
@@ -192,7 +186,7 @@ if ( ! empty( $_POST ) ) {
 			$order_notes = '';
 
 			// clear user vars too if one wasn't passed in
-			if ( empty( $_REQUEST['user'] ) ) {
+			if ( empty( $_REQUEST['user_id'] ) ) {
 				$user = get_userdata( 0 );
 				$user_id = false;
 				$user_login = '';
