@@ -207,135 +207,138 @@ form td .dashicons {
 </style>
 
 <?php
-if ( $pmpro_msg ) {
-?>
-	<div id="pmpro_message" class="pmpro_message <?php echo esc_attr( $pmpro_msgt ); ?>"><?php echo wp_kses_post( $pmpro_msg ); ?></div>
-<?php
-} else {
-?>
-<div id="pmpro_message" class="pmpro_message" style="display: none;"></div>
-<?php
-}
+	// Show messages if they exist.
+	if ( $pmpro_msg ) {
+	?>
+		<div id="pmpro_message" class="pmpro_message <?php echo esc_attr( $pmpro_msgt ); ?>"><?php echo wp_kses_post( $pmpro_msg ); ?></div>
+	<?php
+	} else {
+	?>
+	<div id="pmpro_message" class="pmpro_message" style="display: none;"></div>
+	<?php
+	}
 ?>
 <div class="wrap">
-	<h1 class="wp-heading-inline"><?php echo esc_html_e( 'Add Member', 'paid-memberships-pro' );?></h1>
-		<div>
-			<?php if (! empty( $user_id ) ) { ?>
-			<form class="pmpro-members <?php if ( ! empty( $_REQUEST['user_id'] ) ) {?>pmpro-members-edit<?php } ?>" action="" method="post">
-				<nav id="user-menu" role="tablist" aria-label="Add Member Field Tabs">
-					<button
-						role="tab"
-						aria-selected="true"
-						aria-controls="panel-1"
-						id="tab-1"
-						tabindex="0">
-						Required Fields
-					</button>
-					<button
-						role="tab"
-						aria-selected="false"
-						aria-controls="panel-2"
-						id="tab-2"
-						tabindex="-1">
-						Info
-					</button>
-					<button
-						role="tab"
-						aria-selected="false"
-						aria-controls="panel-3"
-						id="tab-3"
-						tabindex="-1">
-						Membership
-					</button>
-					<button
-						role="tab"
-						aria-selected="false"
-						aria-controls="panel-4"
-						id="tab-4"
-						tabindex="-1">
-						Billing
-					</button>
-					<button
-						role="tab"
-						aria-selected="false"
-						aria-controls="panel-5"
-						id="tab-5"
-						tabindex="-1">
-						Notes
-					</button>
-				</nav>
-				<div class="panel-wrappers">
-					<div id="panel-1" role="tabpanel" tabindex="0" aria-labelledby="tab-1">
-						<h2>Required Fields</h2>
+	<h1 class="wp-heading-inline">
+		<?php echo esc_html_e( 'Add Member', 'paid-memberships-pro' );?>
+	</h1>
+	<div>
+		<?php if (! empty( $user_id ) ) { ?>
+		<form class="pmpro-members <?php if ( ! empty( $_REQUEST['user_id'] ) ) {?>pmpro-members-edit<?php } ?>" action="" method="post">
+			<nav id="user-menu" role="tablist" aria-label="Add Member Field Tabs">
+				<button
+					role="tab"
+					aria-selected="true"
+					aria-controls="panel-1"
+					id="tab-1"
+					tabindex="0">
+					Required Fields
+				</button>
+				<button
+					role="tab"
+					aria-selected="false"
+					aria-controls="panel-2"
+					id="tab-2"
+					tabindex="-1">
+					Info
+				</button>
+				<button
+					role="tab"
+					aria-selected="false"
+					aria-controls="panel-3"
+					id="tab-3"
+					tabindex="-1">
+					Membership
+				</button>
+				<button
+					role="tab"
+					aria-selected="false"
+					aria-controls="panel-4"
+					id="tab-4"
+					tabindex="-1">
+					Billing
+				</button>
+				<button
+					role="tab"
+					aria-selected="false"
+					aria-controls="panel-5"
+					id="tab-5"
+					tabindex="-1">
+					Notes
+				</button>
+			</nav>
+			<div class="panel-wrappers">
+				<div id="panel-1" role="tabpanel" tabindex="0" aria-labelledby="tab-1">
+					<h2>Required Fields</h2>
+					<table class="form-table">
+						<tr>
+							<th><label for="user_logim">Username (required) </label></th>
+							<td><input type="text" name="user_login" id="user_login" autocapitalize="none" autocorrect="off" autocomplete="off" required readonly="true" value="<?php echo esc_attr( $user->user_login ) ?>"></td>
+						</tr>
+						<tr>
+							<th><label for="email">Email (required)</label></th>
+							<td><input type="email" name="email" id="email" autocomplete="new-password" spellcheck="false" required value="<?php echo esc_attr( $user->user_email ) ?>"></td>
+						</tr>
+						
+					</table>
+				</div>
+				<div id="panel-2" role="tabpanel" tabindex="0" aria-labelledby="tab-2" hidden>
+					<h2>Info</h2>
+					<table class="form-table">
+						<tr>
+							<th><label for="first_name">First Name</label></th>
+							<td><input type="text" name="first_name" id="first_name" autocomplete="off" value="<?php echo $user->first_name ?>"></td>
+						</tr>
+						<tr>
+							<th><label for="last_name">Last Name</label></th>
+							<td><input type="text" name="last_name" id="last_name" autocomplete="off" value="<?php echo $user->last_name ?>"></td>
+						</tr>
+						<tr>
+							<th><label for="password">Password</label></th>
+							<td>
+								<input type="password" name="password" id="password" autocomplete="off" required value="<?php echo  $user->user_pass ?>">
+								<button class="toggle-pass-visibility" aria-controls="password" aria-expanded="false"><span class="dashicons dashicons-visibility toggle-pass-visibility"></span></button>
+							</td>
+						</tr>
+						<tr>
+							<th><label for="send_password">Send User Notification</label></th>
+							<td><input type="checkbox" name="send_password" id="send_password">
+							<label for="send_password">Send the new user an email about their account.</label>
+							</td>
+						</tr>
+						<tr>
+							<th><label for="role"><?php esc_html_e( 'Role', 'paid-memberships-pro' ); ?></label></th>
+							<td>
+								<select name="role" id="role" class="<?php echo pmpro_getClassForField( 'role' ); ?>">
+									<?php  wp_dropdown_roles( $role ); ?>
+								</select>
+							</td>
+						</tr>
+					</table>
+				</div>
+					<div id="panel-3" role="tabpanel" tabindex="0" aria-labelledby="tab-3" hidden>
+						<h2>Membership</h2>
 						<table class="form-table">
 							<tr>
-								<th><label for="user_logim">Username (required) </label></th>
-								<td><input type="text" name="user_login" id="user_login" autocapitalize="none" autocorrect="off" autocomplete="off" required readonly="true" value="<?php echo esc_attr( $user->user_login ) ?>"></td>
-							</tr>
-							<tr>
-								<th><label for="email">Email (required)</label></th>
-								<td><input type="email" name="email" id="email" autocomplete="new-password" spellcheck="false" required value="<?php echo esc_attr( $user->user_email ) ?>"></td>
-							</tr>
-							
-						</table>
-					</div>
-					<div id="panel-2" role="tabpanel" tabindex="0" aria-labelledby="tab-2" hidden>
-						<h2>Info</h2>
-						<table class="form-table">
-							<tr>
-								<th><label for="first_name">First Name</label></th>
-								<td><input type="text" name="first_name" id="first_name" autocomplete="off" value="<?php echo $user->first_name ?>"></td>
-							</tr>
-							<tr>
-								<th><label for="last_name">Last Name</label></th>
-								<td><input type="text" name="last_name" id="last_name" autocomplete="off" value="<?php echo $user->last_name ?>"></td>
-							</tr>
-							<tr>
-								<th><label for="password">Password</label></th>
+								<th><label for="membership_level"><?php esc_html_e( 'Membership Level', 'paid-memberships-pro' ); ?></label></th>
 								<td>
-									<input type="password" name="password" id="password" autocomplete="off" required value="<?php echo  $user->user_pass ?>">
-									<button class="toggle-pass-visibility" aria-controls="password" aria-expanded="false"><span class="dashicons dashicons-visibility toggle-pass-visibility"></span></button>
-								</td>
-							</tr>
-							<tr>
-								<th><label for="send_password">Send User Notification</label></th>
-								<td><input type="checkbox" name="send_password" id="send_password">
-								<label for="send_password">Send the new user an email about their account.</label>
-								</td>
-							</tr>
-							<tr>
-								<th><label for="role"><?php esc_html_e( 'Role', 'paid-memberships-pro' ); ?></label></th>
-								<td>
-									<select name="role" id="role" class="<?php echo pmpro_getClassForField( 'role' ); ?>">
-										<?php  wp_dropdown_roles( $role ); ?>
+									<select name="membership_level" id="membership_level">
+										<option value="" <?php selected( '', $membership_level ); ?> class="<?php echo pmpro_getClassForField( 'membership_level' ); ?>"><?php esc_html_e( 'No Level', 'paid-memberships-pro' ); ?></option>
+										<?php
+											$levels = pmpro_getAllLevels( true, true );
+										foreach ( $levels as $level ) {
+											?>
+											<option value="<?php echo esc_attr( $level->id ); ?>" <?php selected( $level->id, $membership_level ); ?>><?php echo esc_html( $level->name ); ?></option>
+											<?php
+										}
+										?>
 									</select>
 								</td>
 							</tr>
+							
 						</table>
-					</div>
-						<div id="panel-3" role="tabpanel" tabindex="0" aria-labelledby="tab-3" hidden>
-							<h2>Membership</h2>
-							<table class="form-table">
-								<tr>
-									<th><label for="membership_level"><?php esc_html_e( 'Membership Level', 'paid-memberships-pro' ); ?></label></th>
-									<td>
-										<select name="membership_level" id="membership_level">
-											<option value="" <?php selected( '', $membership_level ); ?> class="<?php echo pmpro_getClassForField( 'membership_level' ); ?>"><?php esc_html_e( 'No Level', 'paid-memberships-pro' ); ?></option>
-											<?php
-												$levels = pmpro_getAllLevels( true, true );
-											foreach ( $levels as $level ) {
-												?>
-												<option value="<?php echo esc_attr( $level->id ); ?>" <?php selected( $level->id, $membership_level ); ?>><?php echo esc_html( $level->name ); ?></option>
-												<?php
-											}
-											?>
-										</select>
-									</td>
-								</tr>
-								
-							</table>
 
-						</div>
+					</div>
 					<div id="panel-4" role="tabpanel" tabindex="0" aria-labelledby="tab-4" hidden>
 						<h2>Billing</h2>
 						<table class="form-table">
@@ -395,7 +398,7 @@ if ( $pmpro_msg ) {
 					</div>
 				</div>
 			</form>
-			<?php  } else {?>
+		<?php  } else {?>
 			<form action="" method="post">
 				<?php wp_nonce_field('custom_user_form', 'custom_user_form_nonce'); ?>
 
@@ -444,63 +447,60 @@ if ( $pmpro_msg ) {
 					<input type="submit" name="submit" value="Save User" class="button button-primary">
 				</div>
 			</form>
-			<?php } ?>
-        </div>
+		<?php } ?>
     </div>
+</div>
 <script>
-	window.addEventListener("DOMContentLoaded", () => {
+window.addEventListener("DOMContentLoaded", () => {
 	const tabs = document.querySelectorAll('[role="tab"]');
 	const tabList = document.querySelector('[role="tablist"]');
 
-  // Add a click event handler to each tab
-  tabs.forEach((tab) => {
-    tab.addEventListener("click", changeTabs);
-  });
+	// Add a click event handler to each tab
+	tabs.forEach((tab) => {
+	tab.addEventListener("click", changeTabs);
+	});
 
-  // Enable arrow navigation between tabs in the tab list
-  let tabFocus = 0;
+	// Enable arrow navigation between tabs in the tab list
+	let tabFocus = 0;
 
-  tabList.addEventListener("keydown", (e) => {
-    // Move Down
-    if (e.key === "ArrowDown" || e.key === "ArrowUp") {
-      tabs[tabFocus].setAttribute("tabindex", -1);
-      if (e.key === "ArrowDown") {
-        tabFocus++;
-        // If we're at the end, go to the start
-        if (tabFocus >= tabs.length) {
-          tabFocus = 0;
-        }
-        // Move Up
-      } else if (e.key === "ArrowUp") {
-        tabFocus--;
-        // If we're at the start, move to the end
-        if (tabFocus < 0) {
-          tabFocus = tabs.length - 1;
-        }
-      }
+	tabList.addEventListener("keydown", (e) => {
+	// Move Down
+	if (e.key === "ArrowDown" || e.key === "ArrowUp") {
+		tabs[tabFocus].setAttribute("tabindex", -1);
+		if (e.key === "ArrowDown") {
+		tabFocus++;
+		// If we're at the end, go to the start
+		if (tabFocus >= tabs.length) {
+			tabFocus = 0;
+		}
+		// Move Up
+		} else if (e.key === "ArrowUp") {
+		tabFocus--;
+		// If we're at the start, move to the end
+		if (tabFocus < 0) {
+			tabFocus = tabs.length - 1;
+		}
+		}
 
-      tabs[tabFocus].setAttribute("tabindex", 0);
-      tabs[tabFocus].focus();
-    }
-  });
+		tabs[tabFocus].setAttribute("tabindex", 0);
+		tabs[tabFocus].focus();
+	}
+	});
 
 	document.querySelector('.toggle-pass-visibility').addEventListener('click', function(e) {
-	e.preventDefault();
-	const passInput = document.querySelector('#password');
-	const classToReplace = passInput.getAttribute('type') == 'password' ? 'dashicons-hidden' : 'dashicons-visibility';
-	const currentClass = passInput.getAttribute('type') == 'password' ? 'dashicons-visibility' : 'dashicons-hidden';
-	passInput.getAttribute('type') == 'password' ? passInput.setAttribute('type', 'text') : passInput.setAttribute('type', 'password');
-	e.currentTarget.firstChild.classList.replace(currentClass, classToReplace);
+		e.preventDefault();
+		const passInput = document.querySelector('#password');
+		const classToReplace = passInput.getAttribute('type') == 'password' ? 'dashicons-hidden' : 'dashicons-visibility';
+		const currentClass = passInput.getAttribute('type') == 'password' ? 'dashicons-visibility' : 'dashicons-hidden';
+		passInput.getAttribute('type') == 'password' ? passInput.setAttribute('type', 'text') : passInput.setAttribute('type', 'password');
+		e.currentTarget.firstChild.classList.replace(currentClass, classToReplace);
 
-	if (input.getAttribute('type') == 'password') {
-		input.setAttribute('type', 'text');
-	} else {
-		input.setAttribute('type', 'password');
-	}
-
-});
-
-
+		if (input.getAttribute('type') == 'password') {
+			input.setAttribute('type', 'text');
+		} else {
+			input.setAttribute('type', 'password');
+		}
+	});
 });
 
 function changeTabs(e) {
