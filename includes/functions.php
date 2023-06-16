@@ -101,7 +101,7 @@ function pmpro_setOption( $s, $v = null, $sanitize_function = 'sanitize_text_fie
 	if ( is_array( $v ) ) {
 		$v = implode( ',', $v );
 	} else {
-		$v = trim( $v );
+		$v =isset ( $v ) ? trim( $v ) : '';
 	}
 
 	return update_option( 'pmpro_' . $s, $v, $autoload );
