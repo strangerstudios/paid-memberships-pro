@@ -2,7 +2,7 @@
 // only admins can get this
 $cap = apply_filters( 'pmpro_add_member_cap', 'edit_users' );
 if ( ! function_exists( 'current_user_can' ) || ( ! current_user_can( 'manage_options' ) && ! current_user_can( $cap ) ) ) {
-	die( esc_html__( 'You do not have permissions to perform this action.', 'pmpro-add-member-admin' ) );
+	die( esc_html__( 'You do not have permissions to perform this action.', 'paid-memberships-pro' ) );
 }
 
 // Global vars.
@@ -59,7 +59,7 @@ if ( ! empty( $_POST ) ) {
 	}
 
 	if ( ! empty( $pmpro_error_fields ) ) {
-		pmpro_setMessage( __( 'Please fill out all required fields:', 'pmpro-add-member-admin' ) . ' ' . implode( ', ', $pmpro_error_fields ), 'pmpro_error' );
+		pmpro_setMessage( __( 'Please fill out all required fields:', 'paid-memberships-pro' ) . ' ' . implode( ', ', $pmpro_error_fields ), 'pmpro_error' );
 	}
 
 	// Check that the email and username are available.
@@ -105,7 +105,7 @@ if ( ! empty( $_POST ) ) {
 	}
 
 	if ( ! $user_id ) {
-		pmpro_setMessage( __( 'Error creating user.', 'pmpro-add-member-admin' ), 'pmpro_error' );
+		pmpro_setMessage( __( 'Error creating user.', 'paid-memberships-pro' ), 'pmpro_error' );
 	} else {
 		// other user meta
 		update_user_meta( $user_id, 'user_notes', $user_notes );
@@ -123,7 +123,7 @@ if ( ! empty( $_POST ) ) {
 		// TODO: We want to redirect to the edit level step instead. We have to run this all earlier to do that.
 		if ( $pmpro_msgt != 'pmpro_error' ) {
 			// set message			
-			pmpro_setMessage( esc_html__( 'User added.', 'pmpro-add-member-admin' ), 'pmpro_success' );
+			pmpro_setMessage( esc_html__( 'User added.', 'paid-memberships-pro' ), 'pmpro_success' );
 					
 			// clear vars
 			$payment = '';
@@ -144,17 +144,17 @@ if ( ! empty( $_POST ) ) {
 			}
 		} else {
 			global $pmpro_msg;
-			$pmpro_msg = esc_html__( 'There was an error creating adding this member: ', 'pmpro-add-member-admin' ) . $pmpro_msg;
+			$pmpro_msg = esc_html__( 'There was an error creating adding this member: ', 'paid-memberships-pro' ) . $pmpro_msg;
 		}
 	}
 }
 ?>
 <style>
-form {
+form.pmpro-members-edit {
 	display: flex;
 	gap:40px;
 }
-form nav {
+form.pmpro-members-edit nav {
 	flex-shrink: 0;
     width: 300px;
 }
@@ -192,6 +192,8 @@ form div.panel-wrappers {
 }
 
 form div.submit {
+	clear: both;
+	display: block;
 	padding: 1em 0;
 }
 form td button.toggle-pass-visibility {
@@ -219,7 +221,7 @@ if ( $pmpro_msg ) {
 	<h1 class="wp-heading-inline"><?php echo esc_html_e( 'Add Member', 'paid-memberships-pro' );?></h1>
 		<div>
 			<?php if (! empty( $user_id ) ) { ?>
-			<form class="pmpro-add-member" action="" method="post">
+			<form class="pmpro-members <?php if ( ! empty( $_REQUEST['user_id'] ) ) {?>pmpro-members-edit<?php } ?>" action="" method="post">
 				<nav id="user-menu" role="tablist" aria-label="Add Member Field Tabs">
 					<button
 						role="tab"
@@ -302,7 +304,7 @@ if ( $pmpro_msg ) {
 								</td>
 							</tr>
 							<tr>
-								<th><label for="role"><?php esc_html_e( 'Role', 'pmpro-add-member-admin' ); ?></label></th>
+								<th><label for="role"><?php esc_html_e( 'Role', 'paid-memberships-pro' ); ?></label></th>
 								<td>
 									<select name="role" id="role" class="<?php echo pmpro_getClassForField( 'role' ); ?>">
 										<?php  wp_dropdown_roles( $role ); ?>
@@ -315,10 +317,10 @@ if ( $pmpro_msg ) {
 							<h2>Membership</h2>
 							<table class="form-table">
 								<tr>
-									<th><label for="membership_level"><?php esc_html_e( 'Membership Level', 'pmpro-add-member-admin' ); ?></label></th>
+									<th><label for="membership_level"><?php esc_html_e( 'Membership Level', 'paid-memberships-pro' ); ?></label></th>
 									<td>
 										<select name="membership_level" id="membership_level">
-											<option value="" <?php selected( '', $membership_level ); ?> class="<?php echo pmpro_getClassForField( 'membership_level' ); ?>"><?php esc_html_e( 'No Level', 'pmpro-add-member-admin' ); ?></option>
+											<option value="" <?php selected( '', $membership_level ); ?> class="<?php echo pmpro_getClassForField( 'membership_level' ); ?>"><?php esc_html_e( 'No Level', 'paid-memberships-pro' ); ?></option>
 											<?php
 												$levels = pmpro_getAllLevels( true, true );
 											foreach ( $levels as $level ) {
@@ -338,19 +340,19 @@ if ( $pmpro_msg ) {
 						<h2>Billing</h2>
 						<table class="form-table">
 							<tr>
-								<th><label for="payment"><?php esc_html_e( 'Payment', 'pmpro-add-member-admin' ); ?></label></th>
+								<th><label for="payment"><?php esc_html_e( 'Payment', 'paid-memberships-pro' ); ?></label></th>
 								<td>
 									<select name="payment" id="payment">
-										<option value="" <?php selected( '', $payment ); ?>><?php esc_html_e( 'None', 'pmpro-add-member-admin' ); ?></option>
-										<option value="check" <?php selected( 'check', $payment ); ?>><?php esc_html_e( 'Check/Cash', 'pmpro-add-member-admin' ); ?></option>
-										<option value="gateway" <?php selected( 'gateway', $payment ); ?>><?php esc_html_e( 'Gateway (Not Functional)', 'pmpro-add-member-admin' ); ?></option>
-										<option value="credit" <?php selected( 'credit', $payment ); ?>><?php esc_html_e( 'Credit Card (Not Functional)', 'pmpro-add-member-admin' ); ?></option>
+										<option value="" <?php selected( '', $payment ); ?>><?php esc_html_e( 'None', 'paid-memberships-pro' ); ?></option>
+										<option value="check" <?php selected( 'check', $payment ); ?>><?php esc_html_e( 'Check/Cash', 'paid-memberships-pro' ); ?></option>
+										<option value="gateway" <?php selected( 'gateway', $payment ); ?>><?php esc_html_e( 'Gateway (Not Functional)', 'paid-memberships-pro' ); ?></option>
+										<option value="credit" <?php selected( 'credit', $payment ); ?>><?php esc_html_e( 'Credit Card (Not Functional)', 'paid-memberships-pro' ); ?></option>
 									</select>
 								</td>
 							</tr>
 
 							<tr class="payment payment-check payment-gateway payment-credit">
-								<th><label for="total"><?php esc_html_e( 'Order Total', 'pmpro-add-member-admin' ); ?></label></th>
+								<th><label for="total"><?php esc_html_e( 'Order Total', 'paid-memberships-pro' ); ?></label></th>
 								<td>
 									<?php
 									global $pmpro_currency_symbol;
@@ -374,14 +376,14 @@ if ( $pmpro_msg ) {
 							
 							<!-- Do we need this for the edit scenario ?
 								<tr>
-								<th><label for="order_notes"><?php esc_html_e( 'Order Notes', 'pmpro-add-member-admin' ); ?></label></th>
+								<th><label for="order_notes"><?php esc_html_e( 'Order Notes', 'paid-memberships-pro' ); ?></label></th>
 								<td>
 									<textarea name="order_notes" id="order_notes" rows="5" cols="80" class="<?php echo pmpro_getClassForField( 'order_notes' ); ?>"><?php echo esc_textarea( $order_notes ); ?></textarea>
 								</td>
 							</tr> -->
 						<tr>
 
-							<th><label for="user_notes"><?php esc_html_e( 'User Notes', 'pmpro-add-member-admin' ); ?></label></th>
+							<th><label for="user_notes"><?php esc_html_e( 'User Notes', 'paid-memberships-pro' ); ?></label></th>
 								<td>
 									<textarea name="user_notes" id="user_notes" rows="5" cols="80" class="<?php echo pmpro_getClassForField( 'user_notes' ); ?>"><?php echo esc_textarea( $user_notes ); ?></textarea>
 								</td>
@@ -394,55 +396,55 @@ if ( $pmpro_msg ) {
 				</div>
 			</form>
 			<?php  } else {?>
-				<form action="" method="post">
-					<?php wp_nonce_field('custom_user_form', 'custom_user_form_nonce'); ?>
+			<form action="" method="post">
+				<?php wp_nonce_field('custom_user_form', 'custom_user_form_nonce'); ?>
 
-					<table class="form-table">
-						<tr class="form-field form-required">
-							<th><label for="username">Username (required)</label></th>
-							<td><input type="text" name="user_login" id="user_login" required></td>
-						</tr>
-						<tr class="form-field form-required">
-							<th><label for="email">Email (required)</label></th>
-							<td><input type="email" name="email" id="email" required></td>
-						</tr>
-						<tr class="form-field">
-							<th><label for="first_name">First Name</label></th>
-							<td><input type="text" name="first_name" id="first_name"></td>
-						</tr>
-						<tr>
-							<th><label for="last_name">Last Name</label></th>
-							<td><input type="text" name="last_name" id="last_name"></td>
-						</tr>
-						<tr class="form-field">
-							<th><label for="password">Password:</label></th>
-							<td><input type="password" name="password" id="password" required></td>
-						</tr>
-						<tr class="form-field">
-							<th><label for="send_password">Send Password?</label></th>
-							<td>
-								<input type="checkbox" name="send_password" id="send_password">
-								<label for="send_password">Send the new user an email about their account.</label>
-							</td>
-						</tr>
-						<tr class="form-field">
-							<th><label for="user_notes">User Notes:</label></th>
-							<td><textarea name="user_notes" id="user_notes"></textarea></td>
-						</tr>
-						<tr class="form-field">
-							<th><label for="role">Role</label></th>
-							<td>
-								<select name="role" id="role" class="<?php echo pmpro_getClassForField( 'role' ); ?>">
-									<?php wp_dropdown_roles( $role ); ?>
-								</select>
-							</td>
-						</tr>
-					</table>
-				<p class="submit">
+				<table class="form-table">
+					<tr class="form-field form-required">
+						<th><label for="username">Username (required)</label></th>
+						<td><input type="text" name="user_login" id="user_login" required></td>
+					</tr>
+					<tr class="form-field form-required">
+						<th><label for="email">Email (required)</label></th>
+						<td><input type="email" name="email" id="email" required></td>
+					</tr>
+					<tr class="form-field">
+						<th><label for="first_name">First Name</label></th>
+						<td><input type="text" name="first_name" id="first_name"></td>
+					</tr>
+					<tr>
+						<th><label for="last_name">Last Name</label></th>
+						<td><input type="text" name="last_name" id="last_name"></td>
+					</tr>
+					<tr class="form-field">
+						<th><label for="password">Password:</label></th>
+						<td><input type="password" name="password" id="password" required></td>
+					</tr>
+					<tr class="form-field">
+						<th><label for="send_password">Send Password?</label></th>
+						<td>
+							<input type="checkbox" name="send_password" id="send_password">
+							<label for="send_password">Send the new user an email about their account.</label>
+						</td>
+					</tr>
+					<tr class="form-field">
+						<th><label for="user_notes">User Notes:</label></th>
+						<td><textarea name="user_notes" id="user_notes"></textarea></td>
+					</tr>
+					<tr class="form-field">
+						<th><label for="role">Role</label></th>
+						<td>
+							<select name="role" id="role" class="<?php echo pmpro_getClassForField( 'role' ); ?>">
+								<?php wp_dropdown_roles( $role ); ?>
+							</select>
+						</td>
+					</tr>
+				</table>
+				<div class="submit">
 					<input type="submit" name="submit" value="Save User" class="button button-primary">
-				</p>
+				</div>
 			</form>
-		<?php } ?>
+			<?php } ?>
         </div>
     </div>
 <script>
