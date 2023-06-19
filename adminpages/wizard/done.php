@@ -11,7 +11,7 @@
 		$addon_list = array_slice( $addon_list, 0, 4 );
 	} else {
 		$addon_list = $addon_cats['popular'];
-		$addon_list = array_rand( $addon_list, 4 );
+		$addon_list = array_slice( $addon_list, 0, 4 );
 	}
 
 	// Did they choose collect payments? If so, show a nudge to complete the gateway setup.
