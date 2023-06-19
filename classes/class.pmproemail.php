@@ -2,10 +2,65 @@
 	class PMProEmail
 	{
 		
+		/**
+		 * Email address to send the email to.
+		 *
+		 * @var string $email
+		 * @since TBD
+		 */
+		public $email = '';
+
+		/**
+		 * From address to send the email from.
+		 *
+		 * @var string $from
+		 * @since TBD
+		 */
+		public $from = '';
+
+		/**
+		 * From name to send the email from.
+		 *
+		 * @var string $fromname
+		 * @since TBD
+		 */
+		public $fromname = '';
+
+		/**
+		 * Subject line for the email.
+		 *
+		 * @var string $subject
+		 * @since TBD
+		 */
+		public $subject = '';
+
+		/**
+		 * Template of the email address to use.
+		 *
+		 * @var string $template
+		 * @since TBD
+		 */
+		public $template = '';
+
+		/**
+		 * Data that accompanies the email.
+		 *
+		 * @var array $data
+		 * @since TBD
+		 */
+		public $data = '';
+
+		/**
+		 * Body content for the email
+		 *
+		 * @var string $body
+		 * @since TBD
+		 */
+		public $body = '';
+
 		function __construct()
 		{
-			$this->email = $this->from = $this->fromname = $this->subject = $this->template = $this->data = $this->body = NULL;
-		}					
+		}
 		
 		/**
 		 * Send an email to a member or admin. Uses the wp_mail function.
