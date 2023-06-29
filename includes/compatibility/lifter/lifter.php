@@ -16,21 +16,18 @@ function enable_streamlined_feature() {
 
 add_action( 'admin_init','enable_streamlined_feature' );
 
-/**
- * Detect lifter activation and install pmpro-courses plugin.
- */
-function wp_detect_plugin_activation( $plugin, $network_activation ) {
-	if ( $plugin == 'lifterlms/lifterlms.php' ) {
-		update_option( 'toggle_streamline', 'true' );
-		include_once( PMPRO_DIR . '/classes/' . 'class-quiet-plugin-installer.php' ) ;
-		$slug = 'pmpro-courses';
-		$installer = new Quiet_Skin(compact('title', 'url', 'nonce', 'plugin', 'api') );
-		$installer->download_install_and_activate($slug);
-		exit( wp_redirect("/wp-admin/admin.php?page=pmpro-lifter-streamline") );
-	}
+function lifter_plugin_activation() {
+	update_option( 'toggle_streamline', 'true' );
+	include_once( PMPRO_DIR . '/classes/' . 'class-quiet-plugin-installer.php' ) ;
+	$slug = 'pmpro-courses';
+	$installer = new Quiet_Skin(compact('title', 'url', 'nonce', 'plugin', 'api') );
+	$installer->download_install_and_activate($slug);
+	exit( wp_redirect("/wp-admin/admin.php?page=pmpro-lifter-streamline") );
 }
 
-add_action( 'activated_plugin', 'wp_detect_plugin_activation', 10, 2 );
+
+register_activation_hook( 'lifterlms/lifterlms.php', 'lifter_plugin_activation' );
+
 
 /**
  * Backend Ajax function to toggle streamline feature.
