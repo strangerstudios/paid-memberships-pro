@@ -100,7 +100,7 @@ class PMPro_Elementor_Content_Restriction extends PMPro_Elementor {
 
 		if ( ! $show ) {
 			// Show no content message here or not
-			if ( $widget_settings['pmpro_no_access_message'] ) {
+			if ( $widget_settings['pmpro_no_access_message'] === 'yes' ) {
 				$content = pmpro_get_no_access_message( NULL, $widget_settings['pmpro_require_membership'] );
 			} else {
 				$content = '';
