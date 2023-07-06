@@ -337,7 +337,7 @@ function pmpro_lifter_streamline() {
 }
 
 function pmpro_lifter_streamline_step_pages() {
-	require_once( PMPRO_DIR . '/adminpages/pmpro-lifter-streamline-step-pages.php' );
+	require_once( PMPRO_DIR . '/adminpages/lifter-streamline-step-pages.php' );
 }
 /**
  * Move orphaned pages under the pmpro-dashboard menu page.

@@ -13,24 +13,29 @@
 
 <ul class="llms-setup-progress">
         <li class="current">
-            <a href="http://wp-core.dvl.to/wp-admin/?page=llms-setup&amp;step=intro">
+            <a href="<?php echo esc_url( admin_url() . "/admin.php?page=pmpro-lifter-streamline" ) ?>">
                 <?php esc_html_e( 'Welcome!', 'paid-memberships-pro' );?>
+            </a>
         </li>
         <li>
-            <a href="http://wp-core.dvl.to/wp-admin/?page=llms-setup&amp;step=pages">
-                <?php esc_html_e( 'Page Setup', 'paid-memberships-pro' );?></a>
+            <a href="<?php echo esc_url( admin_url() . "/admin.php?page=pmpro-lifter-streamline-step-pages" ) ?>">
+                <?php esc_html_e( 'Page Setup', 'paid-memberships-pro' );?>
+            </a>
         </li>
         <li>
-            <a href="http://wp-core.dvl.to/wp-admin/?page=llms-setup&amp;step=payments">
-                <?php esc_html_e( 'Payments', 'paid-memberships-pro' );?></a>
+            <a href="<?php echo esc_url( admin_url() . "?page=llms-setup&amp;step=payments" ) ?>">
+                <?php esc_html_e( 'Payments', 'paid-memberships-pro' );?>
+            </a>
         </li>
         <li>
-            <a href="http://wp-core.dvl.to/wp-admin/?page=llms-setup&amp;step=coupon">
-                <?php esc_html_e( 'Coupon', 'paid-memberships-pro' );?></a>
+            <a href="<?php echo esc_url( admin_url() . "?page=llms-setup&amp;step=coupon" ) ?>">
+                <?php esc_html_e( 'Coupon', 'paid-memberships-pro' );?>
+            </a>
         </li>
         <li>
-            <a href="http://wp-core.dvl.to/wp-admin/?page=llms-setup&amp;step=finish">
-                <?php esc_html_e( 'Finish!', 'paid-memberships-pro' );?></a>
+            <a href="<?php echo esc_url( admin_url() . "?page=llms-setup&amp;step=finish" ) ?>">
+                <?php esc_html_e( 'Finish!', 'paid-memberships-pro' );?>
+            </a>
         </li>
 </ul>
 

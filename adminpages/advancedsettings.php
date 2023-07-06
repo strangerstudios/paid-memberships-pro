@@ -55,7 +55,7 @@
 		pmpro_setOption("redirecttosubscription");
 		pmpro_setOption("uninstall");
 		$isChecked = isset( $_POST['lifter-streamline'] ) ? 'true' : 'false';
-		update_option("toggle_streamline", $isChecked);
+		update_option("pmpro_toggle_lifter_streamline_setup", $isChecked);
 
 		// Set up Wisdom tracking cron if needed.
 		if ( (int)pmpro_getOption("wisdom_opt_out") === 0 ) {
@@ -111,7 +111,7 @@
 		$redirecttosubscription = pmpro_getOption("redirecttosubscription");
 	}
 	$uninstall = pmpro_getOption('uninstall');
-	$lifter_streamlined = get_option('toggle_streamline', false);
+	$lifter_streamlined = get_option('pmpro_toggle_lifter_streamline_setup', false);
 
 	// Default settings.
 	if(!$nonmembertext)

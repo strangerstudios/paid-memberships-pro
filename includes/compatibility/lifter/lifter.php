@@ -3,7 +3,7 @@
  *  On the admin side check if lifters streamline feature is enabled and react accordingly.
  */
 function enable_streamlined_feature() {
-	$is_lifter_streamnlined_enabled = get_option( 'toggle_streamline' ) == 'true';
+	$is_lifter_streamnlined_enabled = get_option( 'pmpro_toggle_lifter_streamline_setup' ) == 'true';
 	if($is_lifter_streamnlined_enabled ) {
 		$lifter_streamline =  plugins_url() . '/paid-memberships-pro/css/lifter-streamline.css';
 		wp_register_style( 'pmpro_lifter', $lifter_streamline, [], PMPRO_VERSION, 'screen' );
@@ -20,7 +20,7 @@ add_action( 'admin_init','enable_streamlined_feature' );
  * On LifterLMS plugin activation, activate streamline feature and install PMPro Courses plugin.
  */
 function lifter_plugin_activation() {
-	update_option( 'toggle_streamline', 'true' );
+	update_option( 'pmpro_toggle_lifter_streamline_setup', 'true' );
 	include_once( PMPRO_DIR . '/classes/' . 'class-quiet-plugin-installer.php' ) ;
 	$slug = 'pmpro-courses';
 	$installer = new Quiet_Skin(compact('title', 'url', 'nonce', 'plugin', 'api') );
@@ -37,7 +37,7 @@ register_activation_hook( 'lifterlms/lifterlms.php', 'lifter_plugin_activation' 
  */
 function toggle_streamline() {
 	$status = $_POST['status'];
-	update_option( 'toggle_streamline', $status);
+	update_option( 'pmpro_toggle_lifter_streamline_setup', $status);
 	exit();
 }
 
@@ -48,7 +48,7 @@ add_action( 'wp_ajax_toggle_streamline', 'toggle_streamline' );
  */
 function lifter_streamlined_orders( $template ) {
 	global $wp;
-	$is_lifter_streamnlined_enabled = get_option( 'toggle_streamline' ) == 'true';
+	$is_lifter_streamnlined_enabled = get_option( 'pmpro_toggle_lifter_streamline_setup' ) == 'true';
 	$is_student_dashboard = $wp->query_string == "pagename=student-dashboard";
 
 	if( $is_lifter_streamnlined_enabled && $is_student_dashboard ) {
@@ -66,7 +66,7 @@ add_filter( 'template_include', 'lifter_streamlined_orders' );
  */
 function lifter_custom_step_pages () {
 	global $pagenow;
-	$is_lifter_streamnlined_enabled = get_option( 'toggle_streamline' ) == 'true';
+	$is_lifter_streamnlined_enabled = get_option( 'pmpro_toggle_lifter_streamline_setup' ) == 'true';
 	$is_page_step = $pagenow == "index.php" && $_GET && $_GET['page'] == "llms-setup" && $_GET['step'] == "pages";
 	if ($is_lifter_streamnlined_enabled && $is_page_step) {
 		wp_redirect("/wp-admin/admin.php?page=pmpro-lifter-streamline-step-pages");
