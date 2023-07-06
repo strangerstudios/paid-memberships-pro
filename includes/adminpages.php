@@ -72,6 +72,7 @@ function pmpro_add_pages() {
 
 	add_submenu_page( 'pmpro-members', __( 'Add Member', 'paid-memberships-pro' ), __( '<span>Add Member</span>', 'paid-memberships-pro' ), 'manage_options', 'pmpro-members', 'pmpro_members' );
 	add_submenu_page( 'pmpro-lifter-streamline', __( 'Lifter Streamline', 'paid-memberships-pro' ), __( '<span>Lifter Streamline</span>', 'paid-memberships-pro' ), 'manage_options', 'pmpro-lifter-streamline', 'pmpro_lifter_streamline' );
+	add_submenu_page( 'pmpro-lifter-streamline-step-pages', __( 'Lifter Streamline', 'paid-memberships-pro' ), __( '<span>Lifter Streamline step pages</span>', 'paid-memberships-pro' ), 'manage_options', 'pmpro-lifter-streamline-step-pages', 'pmpro_lifter_streamline_step_pages' );
 
 	// Settings tabs
 	add_submenu_page( 'admin.php', __( 'Discount Codes', 'paid-memberships-pro' ), __( 'Discount Codes', 'paid-memberships-pro' ), 'pmpro_discountcodes', 'pmpro-discountcodes', 'pmpro_discountcodes' );
@@ -335,6 +336,9 @@ function pmpro_lifter_streamline() {
 	require_once( PMPRO_DIR . '/adminpages/lifter-streamline.php' );
 }
 
+function pmpro_lifter_streamline_step_pages() {
+	require_once( PMPRO_DIR . '/adminpages/pmpro-lifter-streamline-step-pages.php' );
+}
 /**
  * Move orphaned pages under the pmpro-dashboard menu page.
  */

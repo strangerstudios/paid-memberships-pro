@@ -16,6 +16,9 @@ function enable_streamlined_feature() {
 
 add_action( 'admin_init','enable_streamlined_feature' );
 
+/**
+ * On LifterLMS plugin activation, activate streamline feature and install PMPro Courses plugin.
+ */
 function lifter_plugin_activation() {
 	update_option( 'toggle_streamline', 'true' );
 	include_once( PMPRO_DIR . '/classes/' . 'class-quiet-plugin-installer.php' ) ;
@@ -56,3 +59,19 @@ function lifter_streamlined_orders( $template ) {
 }
 
 add_filter( 'template_include', 'lifter_streamlined_orders' );
+
+
+/**
+ * Check if page being loaded is the lifter wizard on the pages step and redirect to a streamlined version of the same page.
+ */
+function lifter_custom_step_pages () {
+	global $pagenow;
+	$is_lifter_streamnlined_enabled = get_option( 'toggle_streamline' ) == 'true';
+	$is_page_step = $pagenow == "index.php" && $_GET && $_GET['page'] == "llms-setup" && $_GET['step'] == "pages";
+	if ($is_lifter_streamnlined_enabled && $is_page_step) {
+		wp_redirect("/wp-admin/admin.php?page=pmpro-lifter-streamline-step-pages");
+	}
+}
+
+add_filter( 'admin_init', 'lifter_custom_step_pages' );
+

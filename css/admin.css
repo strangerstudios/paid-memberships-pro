@@ -2368,3 +2368,157 @@ button.pmpro_report_th_closed:before {
 .pmpro_plugin_update_notice+p:before {
 	display: none;
 }
+
+#llms-setup-wizard {
+    background-color: #f0f0f1;
+    height: 100%;
+    left: 0;
+    overflow: scroll;
+    position: fixed;
+    top: 0;
+    width: 100%;
+}
+.llms-setup-wrapper {
+    margin: 30px auto;
+    max-width: 640px;
+}
+#llms-logo {
+    text-align: center;
+}
+
+#llms-logo a {
+    display: inline-block;
+}
+#llms-logo a img {
+    max-width: 300px;
+}
+
+.llms-setup-progress {
+    display: flex;
+    margin: 20px 0;
+}
+.llms-setup-progress li {
+    border-bottom: 4px solid #2295ff;
+    display: inline-block;
+    font-size: 14px;
+    padding-bottom: 10px;
+    position: relative;
+    text-align: center;
+    -webkit-box-flex: 1;
+    -ms-flex: 1;
+    flex: 1;
+}
+.llms-setup-progress li.current:after {
+    background: #fff;
+}
+
+.llms-setup-progress li.current {
+    font-weight: 700;
+}
+.llms-setup-progress li a {
+    color: #2295ff;
+    text-decoration: none;
+}
+
+
+.llms-setup-progress li:after {
+    background: #2295ff;
+    bottom: 0;
+    content: "";
+    border: 4px solid #2295ff;
+    border-radius: 100%;
+    height: 4px;
+    position: absolute;
+    left: 50%;
+    margin-left: -6px;
+    margin-bottom: -8px;
+    width: 4px;
+}
+.llms-setup-progress li.current~li {
+    border-bottom-color: #ccc;
+}
+.llms-setup-progress li.current~li:after {
+    background: #ccc;
+    border-color: #ccc;
+}
+.llms-setup-content {
+    background-color: #fff;
+    -webkit-box-shadow: 0 1px 3px rgba(0,0,0,.13);
+    box-shadow: 0 1px 3px rgba(0,0,0,.13);
+    padding: 30px;
+}
+.llms-setup-content h1 {
+    color: #3c434a;
+}
+
+.llms-setup-content p, .llms-setup-content li {
+    color: #3c434a;
+    font-size: 16px;
+    line-height: 1.5;
+    margin: 1em 0;
+}
+.llms-setup-content .llms-setup-actions {
+    margin-top: 40px;
+    text-align: right;
+}
+.llms-button-action, .llms-button-danger, .llms-button-primary, .llms-button-secondary {
+    border: none;
+    border-radius: 8px;
+    color: #fefefe;
+    cursor: pointer;
+    font-weight: 700;
+    text-decoration: none;
+    text-shadow: none;
+    margin: 0;
+    max-width: 100%;
+    position: relative;
+    -webkit-transition: all .5s ease;
+    transition: all .5s ease;
+    background: #e1e1e1;
+    color: #414141;
+    font-size: 18px;
+    line-height: 1.2;
+    padding: 16px 32px;
+}
+
+.llms-button-action.large, .llms-button-danger.large, .llms-button-primary.large, .llms-button-secondary.large {
+    font-size: 18px;
+    line-height: 1.2;
+    padding: 16px 32px;
+}
+
+.llms-setup-content .llms-setup-actions {
+    margin-top: 40px;
+    text-align: right;
+}
+
+
+.llms-button-action.large, .llms-button-danger.large, .llms-button-primary.large, .llms-button-secondary.large {
+    font-size: 18px;
+    line-height: 1.2;
+    padding: 16px 32px;
+}
+
+.llms-setup-content a:not(.llms-button-primary):not(.llms-button-secondary) {
+    color: #2295ff;
+}
+.llms-setup-content td:first-child a {
+    font-size: 16px;
+    font-weight: 500;
+}
+.llms-setup-content table {
+    border-bottom: 1px solid #f1f1f1;
+    border-collapse: collapse;
+    width: 100%;
+}
+.llms-setup-content .llms-setup-actions .llms-button-primary:after {
+    content: "\f054";
+    font-family: "FontAwesome";
+    font-weight: 900;
+    padding-left: 10px;
+}
+
+.llms-setup-content p.llms-setup-actions .llms-exit-setup {
+    color: inherit;
+    margin-right: 10px;
+}
