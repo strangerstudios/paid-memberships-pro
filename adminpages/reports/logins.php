@@ -103,7 +103,7 @@ function pmpro_report_login_page()
 		$csv_export_link = add_query_arg( 'l', $l, $csv_export_link );
 	}
 ?>
-	<form id="posts-filter" method="get" action="">
+	<form id="visits-views-logins-form" method="get" action="">
 	<h1 class="wp-heading-inline">
 		<?php _e('Visits, Views, and Logins Report', 'paid-memberships-pro');?>
 	</h1>
