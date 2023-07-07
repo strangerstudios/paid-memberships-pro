@@ -176,7 +176,7 @@
 					{
 						$billing_amount = sanitize_text_field($billing_amount_a[$n]);
 						$cycle_number = intval($cycle_number_a[$n]);
-						$cycle_period = sanitize_text_field($cycle_period_a[$n]);
+						$cycle_period = pmpro_sanitize_with_safelist( sanitize_text_field($cycle_period_a[$n]), pmpro_get_allowed_cycle_periods() );
 						$billing_limit = intval($billing_limit_a[$n]);
 
 						//custom trial

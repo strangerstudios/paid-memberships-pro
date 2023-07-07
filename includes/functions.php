@@ -4378,3 +4378,10 @@ function pmpro_set_pause_mode( $state ) {
 	_deprecated_function( __FUNCTION__, '2.10.7' );
 	return pmpro_setOption( 'pause_mode', $state );
 }
+
+/**
+ * Returns an array of allowed cycle_periods
+ */
+function pmpro_get_allowed_cycle_periods() {
+	return apply_filters( 'pmpro_allowed_cycle_periods', array( 'Hour', 'Day', 'Week', 'Month', 'Year' ) );
+}
