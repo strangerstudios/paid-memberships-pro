@@ -54,8 +54,8 @@
 </label>
 
         <p class="llms-setup-actions">
-            <a href="http://wp-core.dvl.to/wp-admin/" class="llms-button-secondary large"><?php esc_html_e( 'Skip setup' ) ?></a>
-            <a href="http://wp-core.dvl.to/wp-admin/?page=llms-setup&amp;step=pages" class="llms-button-primary large"><?php esc_html_e( 'Get Started Now' ) ?></a>
+            <a href="<?php echo esc_url( admin_url() ); ?>" class="llms-button-secondary large"><?php esc_html_e( 'Skip setup' ) ?></a>
+            <a href="<?php echo esc_url( admin_url( 'admin.php?page=llms-setup&step=pages' ) ); ?>" class="llms-button-primary large"><?php esc_html_e( 'Get Started Now' ) ?></a>
         </p>
 
     </form>
