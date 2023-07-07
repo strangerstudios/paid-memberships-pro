@@ -468,7 +468,7 @@ function pmpro_users_action_links( $actions, $user ) {
 	$cap = apply_filters( 'pmpro_add_member_cap', 'edit_users' );
 
 	if ( current_user_can( $cap ) && ! empty( $user->ID ) ) {
-		$actions['editmembership'] = '<a href="' . admin_url( 'admin.php?page=pmpro-members&user=' . (int) $user->ID ) . '">' . __( 'Edit Membership', 'pmpro-members' ) . '</a>';
+		$actions['editmember'] = '<a href="' . esc_url( add_query_arg( array( 'page' => 'pmpro-members', 'user_id' => (int) $user->ID ), admin_url( 'admin.php' ) ) ) . '">' . __( 'Edit Member', 'paid-memberships-pro' ) . '</a>';
 	}
 
 	return $actions;

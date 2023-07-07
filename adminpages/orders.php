@@ -911,7 +911,7 @@ require_once( dirname( __FILE__ ) . '/admin_header.php' ); ?>
 
 <?php } else { ?>
 
-	<form id="posts-filter" method="get" action="">
+	<form id="order-list-form" method="get" action="">
 
 		<h1 class="wp-heading-inline"><?php esc_html_e( 'Orders', 'paid-memberships-pro' ); ?></h1>
 		<a href="<?php echo esc_url( add_query_arg( array( 'page' => 'pmpro-orders', 'order' => -1 ), admin_url( 'admin.php' ) ) ); ?>" class="page-title-action pmpro-has-icon pmpro-has-icon-plus"><?php esc_html_e( 'Add New Order', 'paid-memberships-pro' ); ?></a>

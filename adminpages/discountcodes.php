@@ -724,43 +724,40 @@
 
 	<?php } else { ?>
 		<hr class="wp-header-end">
-		<br class="wp-clearfix">
-		<h1 class="wp-heading-inline"><?php esc_html_e( 'Discount Codes', 'paid-memberships-pro' ); ?></h1>
-		<a href="admin.php?page=pmpro-discountcodes&edit=-1" class="page-title-action"><?php esc_html_e( 'Add New Discount Code', 'paid-memberships-pro' ); ?></a>
-		<?php
-		
-			$totalrows = $wpdb->get_var( "SELECT COUNT( DISTINCT id ) FROM $wpdb->pmpro_discount_codes" );
+		<form id="discount-code-list-form" method="get">
+			<h1 class="wp-heading-inline"><?php esc_html_e( 'Discount Codes', 'paid-memberships-pro' ); ?></h1>
+			<a href="admin.php?page=pmpro-discountcodes&edit=-1" class="page-title-action"><?php esc_html_e( 'Add New Discount Code', 'paid-memberships-pro' ); ?></a>
+			<?php
+				$totalrows = $wpdb->get_var( "SELECT COUNT( DISTINCT id ) FROM $wpdb->pmpro_discount_codes" );
 
+				if( empty( $s ) && empty( $totalrows ) ) { ?>
 
-			if( empty( $s ) && empty( $totalrows ) ) { ?>
+					<div class="pmpro-new-install">
+						<h2><?php esc_html_e( 'No Discount Codes Found', 'paid-memberships-pro' ); ?></h2>
+						<h4><?php esc_html_e( 'Discount codes allow you to override your membership level\'s default pricing.', 'paid-memberships-pro' ); ?></h4>
+						<a href="<?php echo esc_url( admin_url( 'admin.php?page=pmpro-discountcodes&edit=-1' ) ) ; ?>" class="button-primary"><?php esc_html_e( 'Create a Discount Code', 'paid-memberships-pro' );?></a>
+						<a href="<?php echo esc_url( 'https://www.paidmembershipspro.com/documentation/discount-codes/?utm_source=plugin&utm_medium=pmpro-discountcodes&utm_campaign=documentation&utm_content=discount-codes' ); ?>" target="_blank" rel="nofollow noopener" class="button"><?php esc_html_e( 'Documentation: Discount Codes', 'paid-memberships-pro' ); ?></a>
+					</div> <!-- end pmpro-new-install -->
+				<?php } else { 
 
-				<div class="pmpro-new-install">
-					<h2><?php esc_html_e( 'No Discount Codes Found', 'paid-memberships-pro' ); ?></h2>
-					<h4><?php esc_html_e( 'Discount codes allow you to override your membership level\'s default pricing.', 'paid-memberships-pro' ); ?></h4>
-					<a href="<?php echo esc_url( admin_url( 'admin.php?page=pmpro-discountcodes&edit=-1' ) ) ; ?>" class="button-primary"><?php esc_html_e( 'Create a Discount Code', 'paid-memberships-pro' );?></a>
-					<a href="<?php echo esc_url( 'https://www.paidmembershipspro.com/documentation/discount-codes/?utm_source=plugin&utm_medium=pmpro-discountcodes&utm_campaign=documentation&utm_content=discount-codes' ); ?>" target="_blank" rel="nofollow noopener" class="button"><?php esc_html_e( 'Documentation: Discount Codes', 'paid-memberships-pro' ); ?></a>
-				</div> <!-- end pmpro-new-install -->
-			<?php } else { 
+					if(!empty($pmpro_msg)) { 
+					?>
+						<div id="message" class="<?php if($pmpro_msgt == "success") echo "updated fade"; else echo "error"; ?>"><p><?php echo $pmpro_msg?></p></div>
+					<?php
+					}
 
-				if(!empty($pmpro_msg)) { 
-				?>
-					<div id="message" class="<?php if($pmpro_msgt == "success") echo "updated fade"; else echo "error"; ?>"><p><?php echo $pmpro_msg?></p></div>
-				<?php
-				}
-
-				$discountcode_list_table = new PMPro_Discount_Code_List_Table();
-				$discountcode_list_table->prepare_items();
-				
-				?>
-				<form id="discount-code-list-form" method="get">
+					$discountcode_list_table = new PMPro_Discount_Code_List_Table();
+					$discountcode_list_table->prepare_items();
+					
+					?>
 					<input type="hidden" name="page" value="pmpro-discountcodes" />
 					<?php
 						$discountcode_list_table->search_box( __( 'Search', 'paid-memberships-pro' ), 'paid-memberships-pro' );
 						$discountcode_list_table->display();
-					?>
-				</form>
-				<?php
-			}
+				}
+			?>
+			</form>
+			<?php
 		}
 
 		require_once(dirname(__FILE__) . "/admin_footer.php");

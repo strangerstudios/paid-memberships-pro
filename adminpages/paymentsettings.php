@@ -121,7 +121,6 @@
 		<tbody>
 			<tr class="pmpro_settings_divider">
 				<td colspan="2">
-					<hr />
 					<h2><?php esc_html_e('Choose a Gateway', 'paid-memberships-pro' ); ?></h2>
 				</td>
 			</tr>

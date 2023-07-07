@@ -194,98 +194,6 @@ if ( ! empty( $_POST ) ) {
 	}
 }
 ?>
-<style>
-body.admin_page_pmpro-members {
-	background: #F1F5F9;
-}
-body.admin_page_pmpro-members .wrap h1.wp-heading-inline {
-	align-items: center;
-	display: flex;
-	font-size: 32px;
-	gap: 6px;
-	margin: 1em 0;
-}
-body.admin_page_pmpro-members .wrap h1.wp-heading-inline .avatar {
-	border-radius: 9999px;
-	margin-right: 12px;
-}
-body.admin_page_pmpro-members h2 {
-	font-size: 24px;
-	font-weight: 500;
-}
-body.admin_page_pmpro-members h3 {
-	font-size: 18px;
-	font-weight: 500;
-	margin-top: 4em;
-}
-body.admin_page_pmpro-members .pmpro_scrollable:not(.pmpro_consent_log.pmpro_scrollable) {
-	height: 900px;
-}
-body.admin_page_pmpro-members .pmpro_consent_log.pmpro_scrollable {
-	max-width: 100%;
-}
-body.admin_page_pmpro-members .pmpro_scrollable table thead th {
-	background-color: #FFF;
-	position: sticky;
-	top: 0;
-}
-form {
-	display: flex;
-	gap: 2em;
-}
-form nav {
-	flex-shrink: 0;
-    width: 220px;
-}
-form nav button {
-	background: none;
-  	border: none;
-  	display: block;
-	font-weight: 500;
-	margin-bottom: 6px;
-    padding: 12px 20px;
-    color: #0F172A;
-    text-decoration: none;
-    border-radius: 6px;
-    position: relative;
-	width: 100%;
-	text-align: left;
-}
-form nav button[aria-selected="true"] {
-    background-color: #E2E8F0;
-}
-form nav button:hover {
-	background-color: #F8FAFC;
-
-}
-form nav button:focus {
-	outline: 2px solid rgba(0,0,0,.6)
-}
-form div.panel-wrappers {
-	padding: 1em 2em;
-    background-color: #FFF;
-	border: 1px solid #E5E7EB;
-    border-radius: 5px;
-    box-shadow: 1px 2px 3px #12196110;
-	width: 100%;
-}
-form div.panel-wrappers hr {
-	margin: 4em 0;
-}
-form div.submit {
-	clear: both;
-	display: block;
-	padding: 1em 0;
-}
-form td button.toggle-pass-visibility {
-	background: transparent;
-	border: none;
-}
-
-form td .dashicons {
-	vertical-align: middle;
-}
-</style>
 
 <?php
 /**
@@ -347,7 +255,7 @@ require_once( dirname( __FILE__ ) . '/admin_header.php' ); ?>
 					Other Info
 				</button>						
 			</nav>
-			<div class="panel-wrappers">
+			<div class="pmpro_section">
 				<div id="panel-1" role="tabpanel" tabindex="0" aria-labelledby="tab-1">
 					<h2>
 						<?php esc_html_e( 'User Info', 'paid-memberships-pro' ); ?>
