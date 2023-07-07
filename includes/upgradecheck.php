@@ -327,6 +327,15 @@ function pmpro_checkForUpgrades()
 	if ( $pmpro_db_version < 2.96 ) { // 2.96 since 2.106 would be lower than previous update.
 		pmpro_upgrade_2_10_6(); // This function will update the db version.
 	}
+
+	/**
+	 * Version 2.12
+	 * Update the database to use varchar instead of enums.
+	 */
+	require_once( PMPRO_DIR . "/includes/updates/upgrade_2_12.php" ); // Need to include this for admin notice.
+	if ( $pmpro_db_version < 2.97 ) { // 2.96 since 2.106 would be lower than previous update.
+		pmpro_upgrade_2_12(); // This function will update the db version.
+	}
 }
 
 function pmpro_db_delta()
@@ -356,13 +365,13 @@ function pmpro_db_delta()
 		  `initial_payment` decimal(18,8) NOT NULL DEFAULT '0.00',
 		  `billing_amount` decimal(18,8) NOT NULL DEFAULT '0.00',
 		  `cycle_number` int(11) NOT NULL DEFAULT '0',
-		  `cycle_period` enum('Day','Week','Month','Year') DEFAULT 'Month',
+		  `cycle_period` varchar(10) DEFAULT 'Month',
 		  `billing_limit` int(11) NOT NULL COMMENT 'After how many cycles should billing stop?',
 		  `trial_amount` decimal(18,8) NOT NULL DEFAULT '0.00',
 		  `trial_limit` int(11) NOT NULL DEFAULT '0',
 		  `allow_signups` tinyint(4) NOT NULL DEFAULT '1',
 		  `expiration_number` int(10) unsigned NOT NULL,
-		  `expiration_period` enum('Hour','Day','Week','Month','Year') NOT NULL,
+		  `expiration_period` varchar(10) NOT NULL,
 		  PRIMARY KEY  (`id`),
 		  KEY `allow_signups` (`allow_signups`),
 		  KEY `initial_payment` (`initial_payment`),
@@ -460,7 +469,7 @@ function pmpro_db_delta()
 		   `initial_payment` decimal(18,8) NOT NULL,
 		   `billing_amount` decimal(18,8) NOT NULL,
 		   `cycle_number` int(11) NOT NULL,
-		   `cycle_period` enum('Day','Week','Month','Year') NOT NULL DEFAULT 'Month',
+		   `cycle_period` varchar(10) NOT NULL DEFAULT 'Month',
 		   `billing_limit` int(11) NOT NULL,
 		   `trial_amount` decimal(18,8) NOT NULL,
 		   `trial_limit` int(11) NOT NULL,
@@ -503,12 +512,12 @@ function pmpro_db_delta()
 		  `initial_payment` decimal(18,8) NOT NULL DEFAULT '0.00',
 		  `billing_amount` decimal(18,8) NOT NULL DEFAULT '0.00',
 		  `cycle_number` int(11) NOT NULL DEFAULT '0',
-		  `cycle_period` enum('Day','Week','Month','Year') DEFAULT 'Month',
+		  `cycle_period` varchar(10) DEFAULT 'Month',
 		  `billing_limit` int(11) NOT NULL COMMENT 'After how many cycles should billing stop?',
 		  `trial_amount` decimal(18,8) NOT NULL DEFAULT '0.00',
 		  `trial_limit` int(11) NOT NULL DEFAULT '0',
 		  `expiration_number` int(10) unsigned NOT NULL,
-		  `expiration_period` enum('Hour','Day','Week','Month','Year') NOT NULL,
+		  `expiration_period` varchar(10) NOT NULL,
 		  PRIMARY KEY  (`code_id`,`level_id`),
 		  KEY `initial_payment` (`initial_payment`)
 		);
