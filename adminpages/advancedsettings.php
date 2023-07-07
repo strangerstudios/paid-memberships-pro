@@ -53,7 +53,9 @@
 		pmpro_setOption("wisdom_opt_out");
 		pmpro_setOption("hideadslevels");
 		pmpro_setOption("redirecttosubscription");
-		pmpro_setOption("uninstall");		
+		pmpro_setOption("uninstall");
+		$isChecked = isset( $_POST['lifter-streamline'] ) ? 'true' : 'false';
+		update_option("pmpro_toggle_lifter_streamline_setup", $isChecked);
 
 		// Set up Wisdom tracking cron if needed.
 		if ( (int)pmpro_getOption("wisdom_opt_out") === 0 ) {
@@ -109,6 +111,7 @@
 		$redirecttosubscription = pmpro_getOption("redirecttosubscription");
 	}
 	$uninstall = pmpro_getOption('uninstall');
+	$lifter_streamlined = get_option('pmpro_toggle_lifter_streamline_setup', false);
 
 	// Default settings.
 	if(!$nonmembertext)
@@ -532,6 +535,14 @@ if ( function_exists( 'pmpro_displayAds' ) && pmpro_displayAds() ) {
 							<option value="1" <?php if ( $uninstall == 1 ) { ?>selected="selected"<?php } ?>><?php esc_html_e( 'Yes - Delete all PMPro Data.', 'paid-memberships-pro' );?></option>
 						</select>
 						<p class="description"><?php esc_html_e( 'To delete all PMPro data from the database, set to Yes, deactivate PMPro, and then click to delete PMPro from the plugins page.', 'paid-memberships-pro' ); ?></p>
+					</td>
+				</tr>
+				<tr>
+					<th scope="row" valign="top">
+						<label for="lifter-streamline"><?php esc_html_e( 'Use streamlined LifterLMS version', 'paid-memberships-pro' ); ?></label>
+					</th>
+					<td>
+						<input type="checkbox" name="lifter-streamline" id="lifter-streamline" <?php checked( $lifter_streamlined, 'true' ); ?> >
 					</td>
 				</tr>
 	        </tbody>

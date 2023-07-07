@@ -91,6 +91,7 @@ require_once( PMPRO_DIR . '/includes/pointers.php' );				// popover help pointer
 require_once( PMPRO_DIR . '/includes/spam.php' );					// code to combat spam of various kinds
 require_once( PMPRO_DIR . '/includes/abandoned-signups.php' );		// track users who were created at checkout but did not complete checkout.
 require_once( PMPRO_DIR . '/includes/checkout.php' );		        // Common functions used at checkout.
+require_once( PMPRO_DIR . '/includes/compatibility/lifter/lifter.php' ); // LifterLMS compatibility
 
 require_once( PMPRO_DIR . '/includes/xmlrpc.php' );                 // xmlrpc methods
 require_once( PMPRO_DIR . '/includes/rest-api.php' );               // rest API endpoints
