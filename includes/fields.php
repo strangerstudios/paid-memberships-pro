@@ -627,7 +627,7 @@ function pmpro_show_user_fields_in_profile( $user, $withlocations = false ) {
 	global $pmpro_user_fields;
 
 	//which fields are marked for the profile
-	$profile_fields = pmpro_get_user_fields_for_profile($user->ID, $withlocations);
+	$profile_fields = pmpro_get_user_fields_for_profile_and_email($user->ID, $withlocations);
 
 	//show the fields
 	if(!empty($profile_fields) && $withlocations)
@@ -694,7 +694,7 @@ function pmpro_show_user_fields_in_frontend_profile( $user, $withlocations = fal
 	global $pmpro_user_fields;
 
 	//which fields are marked for the profile
-	$profile_fields = pmpro_get_user_fields_for_profile($user->ID, $withlocations);
+	$profile_fields = pmpro_get_user_fields_for_profile_and_email($user->ID, $withlocations);
 
 	//show the fields
 	if ( ! empty( $profile_fields ) && $withlocations ) {
@@ -926,51 +926,37 @@ function pmpro_get_user_fields_for_csv() {
 }
 
 /**
- * Get user fields which are marked to show in the profile.
+ * Get user fields which are marked to show in the profile or if it's an admin confirmation email.
  * If a $user_id is passed in, get fields based on the user's level.
  */
-function pmpro_get_user_fields_for_profile( $user_id, $withlocations = false ) {
-	global $pmpro_user_fields;
+function pmpro_get_user_fields_for_profile_and_email($user_id, $withlocations = false, $for_notifications = false) {
+    global $pmpro_user_fields;
 
-	$profile_fields = array();
-	if(!empty($pmpro_user_fields))
-	{
-		//cycle through groups
-		foreach($pmpro_user_fields as $where => $fields)
-		{
-			//cycle through fields
-			foreach($fields as $field)
-			{
-				if( ! pmpro_is_field( $field ) ) {
-                    continue;
-                }
-                
-                if ( ! pmpro_check_field_for_level( $field, "profile", $user_id ) ) {
+    $profile_fields = array();
+
+    if ( ! empty($pmpro_user_fields) ) {
+        foreach ( $pmpro_user_fields as $where => $fields ) {
+            foreach ( $fields as $field ) {
+                if ( ! pmpro_is_field($field) || ! pmpro_check_field_for_level($field, "profile", $user_id) ) {
                     continue;
                 }
 
-				if(!empty($field->profile) && ($field->profile === "admins" || $field->profile === "admin" || $field->profile === "only_admin"))
-				{
-					if( current_user_can( 'manage_options' ) || current_user_can( 'pmpro_membership_manager' ) )
-					{
-						if($withlocations)
-							$profile_fields[$where][] = $field;
-						else
-							$profile_fields[] = $field;
-					}
-				}
-				elseif(!empty($field->profile))
-				{
-					if($withlocations)
-						$profile_fields[$where][] = $field;
-					else
-						$profile_fields[] = $field;
-				}
-			}
-		}
-	}
+                $add_field = $for_notifications ||
+                    ( (! empty($field->profile) && ( $field->profile === "admins" || $field->profile === "admin" || $field->profile === "only_admin" ) ) &&
+			        ( current_user_can('manage_options') || current_user_can('pmpro_membership_manager' ) ) );
 
-	return $profile_fields;
+                if ($add_field) {
+                    if ($withlocations) {
+                        $profile_fields[$where][] = $field;
+                    } else {
+                        $profile_fields[] = $field;
+                    }
+                }
+            }
+        }
+    }
+
+    return $profile_fields;
 }
 
 /**
@@ -989,7 +975,7 @@ function pmpro_save_user_fields_in_profile( $user_id )
 	if ( !current_user_can( 'edit_user', $user_id ) )
 		return false;
 
-	$profile_fields = pmpro_get_user_fields_for_profile($user_id);
+	$profile_fields = pmpro_get_user_fields_for_profile_and_email($user_id);
 
 	//save our added fields in session while the user goes off to PayPal
 	if(!empty($profile_fields))
@@ -1058,7 +1044,7 @@ function pmpro_add_user_fields_to_email( $email ) {
 		if(!empty($user_id))
 		{
 			//get meta fields
-			$fields = pmpro_get_user_fields_for_profile($user_id);
+			$fields = pmpro_get_user_fields_for_profile_and_email($user_id, false, true );
 
 			//add to bottom of email
 			if(!empty($fields))
