@@ -7,7 +7,7 @@
 
 <h1 id="llms-logo">
     <a href="https://lifterlms.com/blog/pmpro-partnership/" target="_blank">
-        <img src="<?php echo esc_url( PMPRO_URL .  '/images/lifter-streamline.png' ); ?>" alt="PMProLifterLMS">
+        <img src="<?php echo esc_url( PMPRO_URL .  '/images/lifter-streamline.png' ); ?>" alt="PMPro + LifterLMS">
     </a>
 </h1>
 
