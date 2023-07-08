@@ -71,7 +71,7 @@ function pmpro_add_pages() {
 		$span_color = '#FCD34D';
 	}
 	add_submenu_page( 'pmpro-dashboard', __( 'License', 'paid-memberships-pro' ), __( '<span style="color: ' . $span_color . '">License</span>', 'paid-memberships-pro' ), 'manage_options', 'pmpro-license', 'pmpro_license_settings_page' );
-	add_submenu_page( 'pmpro-members', __( 'Add Member', 'paid-memberships-pro' ), __( '<span>Add Member</span>', 'paid-memberships-pro' ), 'manage_options', 'pmpro-members', 'pmpro_members' );
+	add_submenu_page( 'pmpro-member', __( 'Add Member', 'paid-memberships-pro' ), __( '<span>Add Member</span>', 'paid-memberships-pro' ), 'manage_options', 'pmpro-member', 'pmpro_member' );
 
 	// Settings tabs
 	add_submenu_page( 'admin.php', __( 'Discount Codes', 'paid-memberships-pro' ), __( 'Discount Codes', 'paid-memberships-pro' ), 'pmpro_discountcodes', 'pmpro-discountcodes', 'pmpro_discountcodes' );
@@ -335,8 +335,8 @@ function pmpro_updates() {
 	require_once( PMPRO_DIR . '/adminpages/updates.php' );
 }
 
-function pmpro_members() {
-	require_once( PMPRO_DIR . '/adminpages/members.php' );
+function pmpro_member() {
+	require_once( PMPRO_DIR . '/adminpages/member.php' );
 }
 
 /**
@@ -468,7 +468,7 @@ function pmpro_users_action_links( $actions, $user ) {
 	$cap = apply_filters( 'pmpro_add_member_cap', 'edit_users' );
 
 	if ( current_user_can( $cap ) && ! empty( $user->ID ) ) {
-		$actions['editmember'] = '<a href="' . esc_url( add_query_arg( array( 'page' => 'pmpro-members', 'user_id' => (int) $user->ID ), admin_url( 'admin.php' ) ) ) . '">' . __( 'Edit Member', 'paid-memberships-pro' ) . '</a>';
+		$actions['editmember'] = '<a href="' . esc_url( add_query_arg( array( 'page' => 'pmpro-member', 'user_id' => (int) $user->ID ), admin_url( 'admin.php' ) ) ) . '">' . __( 'Edit Member', 'paid-memberships-pro' ) . '</a>';
 	}
 
 	return $actions;

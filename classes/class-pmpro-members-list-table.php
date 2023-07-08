@@ -471,13 +471,13 @@ class PMPro_Members_List_Table extends WP_List_Table {
 	 */
 	public function column_username( $item ) {
 		$avatar   = get_avatar( $item['ID'], 32 );
-		$userlink = '<a href="' . esc_url( add_query_arg( array( 'page' => 'pmpro-members', 'user_id' => (int)$item['ID'] ), admin_url( 'admin.php' ) ) ) . '">' . $item['user_login'] . '</a>';
+		$userlink = '<a href="' . esc_url( add_query_arg( array( 'page' => 'pmpro-member', 'user_id' => (int)$item['ID'] ), admin_url( 'admin.php' ) ) ) . '">' . $item['user_login'] . '</a>';
 		$userlink = apply_filters( 'pmpro_members_list_user_link', $userlink, get_userdata( $item['ID'] ) );
 		$output   = $avatar . ' <strong>' . $userlink . '</strong><br />';
 
 		// Set up the hover actions for this user.
 		$actions      = array(
-			'editmember' => '<a href="' . esc_url( add_query_arg( array( 'page' => 'pmpro-members', 'user_id' => (int)$item['ID'] ), admin_url( 'admin.php' ) ) ) . '">' . __( 'Edit Member', 'pmpro-members' ) . '</a>',
+			'editmember' => '<a href="' . esc_url( add_query_arg( array( 'page' => 'pmpro-member', 'user_id' => (int)$item['ID'] ), admin_url( 'admin.php' ) ) ) . '">' . __( 'Edit Member', 'paid-memberships-pro' ) . '</a>',
 			'edituser' => '<a href="' . esc_url( add_query_arg( array( 'user_id' => (int)$item['ID'] ), admin_url( 'user-edit.php' ) ) ) . '">' . __( 'Edit User', 'paid-memberships-pro' ) . '</a>'
 		);
 		$actions      = apply_filters( 'pmpro_memberslist_user_row_actions', $actions, (object) $item );

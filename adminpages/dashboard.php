@@ -322,7 +322,7 @@ function pmpro_dashboard_report_recent_orders_callback() {
         				<td class="username column-username">
         					<?php $order->getUser(); ?>
         					<?php if ( ! empty( $order->user ) ) { ?>
-        						<a href="<?php echo esc_url( add_query_arg( array( 'page' => 'pmpro-members', 'user_id' => (int)$order->user->ID ), admin_url( 'admin.php' ) ) ); ?>"><?php echo $order->user->user_login; ?></a>
+        						<a href="<?php echo esc_url( add_query_arg( array( 'page' => 'pmpro-member', 'user_id' => (int)$order->user->ID ), admin_url( 'admin.php' ) ) ); ?>"><?php echo $order->user->user_login; ?></a>
         					<?php } elseif ( $order->user_id > 0 ) { ?>
         						[<?php _e( 'deleted', 'paid-memberships-pro' ); ?>]
         					<?php } else { ?>

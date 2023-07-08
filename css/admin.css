@@ -321,10 +321,6 @@ body[class*="memberships_page_pmpro-"] {
 	border-radius: 5px;
 }
 
-.pmpro_scrollable table.widefat {
-	border: none;
-}
-
 /**
  * Clickable Items
  */
@@ -659,89 +655,112 @@ body[class*="memberships_page_pmpro-"] {
 /**
  * Single Member Page Styles
  */
-.pmpro_admin-pmpro-members h1.wp-heading-inline  {
-	align-items: center;
-	display: flex;
-	gap: 6px;
+.pmpro_admin-pmpro-member h1.wp-heading-inline {
 	margin: 0 0 1em 0;
 	padding: 0;
 }
 
-.pmpro_admin-pmpro-members h1 .avatar {
-	border-radius: 9999px;
-	margin-right: 12px;
+.pmpro_admin-pmpro-member h1 .avatar {
+	display: none;
 }
 
-.pmpro_admin-pmpro-members .pmpro_scrollable:not(.pmpro_consent_log.pmpro_scrollable) {
+.pmpro_admin-pmpro-member .pmpro_scrollable:not(.pmpro_consent_log.pmpro_scrollable) {
 	height: 900px;
 }
 
-.pmpro_admin-pmpro-members .pmpro_consent_log.pmpro_scrollable {
+.pmpro_admin-pmpro-member .pmpro_consent_log.pmpro_scrollable {
 	max-width: 100%;
 }
 
-.pmpro_admin-pmpro-members .pmpro_scrollable table thead th {
+.pmpro_admin-pmpro-member .pmpro_scrollable table thead th {
 	background-color: #FFF;
 	position: sticky;
 	top: 0;
 }
 
-.pmpro_admin-pmpro-members form {
-	display: flex;
-	gap: 2em;
+.pmpro_admin-pmpro-member form nav {
+	margin: var(--spacing-small) 0;
 }
 
-.pmpro_admin-pmpro-members form nav {
-	flex-shrink: 0;
-	width: 220px;
-}
-
-.pmpro_admin-pmpro-members form nav button {
-	background: none;
-	border: none;
-	display: block;
-	font-weight: 500;
-	margin-bottom: 6px;
-	padding: 12px 20px;
+.pmpro_admin-pmpro-member form nav button {
 	color: #0F172A;
-	text-decoration: none;
-	border-radius: 6px;
+	background-color: transparent;
+	border: none;
+	border-radius: var(--border-radius);
+	cursor: pointer;
+	font-size: 14px;
+	font-weight: 500;
+	line-height: 1.5;
+	margin-bottom: 6px;
+	padding: calc( var(--spacing-small) / 2 ) var(--spacing-small);
 	position: relative;
-	width: 100%;
 	text-align: left;
+	text-decoration: none;
 }
-.pmpro_admin-pmpro-members form nav button[aria-selected="true"] {
+.pmpro_admin-pmpro-member form nav button[aria-selected="true"] {
 	background-color: #E2E8F0;
 }
 
-.pmpro_admin-pmpro-members form nav button:hover {
-	background-color: #F8FAFC;
-
+.pmpro_admin-pmpro-member form nav button:hover {
+	background-color: var(--color-blue-medium-transparent);
 }
 
-.pmpro_admin-pmpro-members form nav button:focus {
+.pmpro_admin-pmpro-member form nav button:focus {
 	outline: 2px solid rgba(0,0,0,.6)
 }
 
-.pmpro_admin-pmpro-members .pmpro_section {
+.pmpro_admin-pmpro-member .pmpro_section {
 	margin: 0;
 	padding: calc( var(--spacing-medium) / 2 ) var(--spacing-medium);
-	width: 100%;
 }
 
-.pmpro_admin-pmpro-members form div.submit {
+.pmpro_admin-pmpro-member form div.submit {
 	clear: both;
 	display: block;
 	padding: 1em 0;
 }
 
-.pmpro_admin-pmpro-members form td button.toggle-pass-visibility {
+.pmpro_admin-pmpro-member form td button.toggle-pass-visibility {
 	background: transparent;
 	border: none;
 }
 
-.pmpro_admin-pmpro-members form td .dashicons {
+.pmpro_admin-pmpro-member form td .dashicons {
 	vertical-align: middle;
+}
+
+@media only screen and (min-width: 783px) {
+	.pmpro_admin-pmpro-member h1.wp-heading-inline {
+		align-items: center;
+		display: flex;
+		gap: 6px;
+	}
+	.pmpro_admin-pmpro-member h1 .avatar {
+		border-radius: 9999px;
+		display: block;
+		margin-right: var(--spacing-small);
+	}
+
+	.pmpro_admin-pmpro-member form {
+		display: flex;
+		gap: 2em;
+	}
+
+	.pmpro_admin-pmpro-member form nav {
+		flex-shrink: 0;
+		margin-top: 0;
+		width: 220px;
+	}
+
+	.pmpro_admin-pmpro-member .pmpro_section {
+		width: 100%;
+	}
+
+	.pmpro_admin-pmpro-member form nav button {
+		display: block;
+		padding: var(--spacing-small) calc( var(--spacing-small) * 2);
+		width: 100%;
+	}
 }
 
 /* buttons */
@@ -2560,6 +2579,29 @@ button.pmpro_report_th_closed:before {
  * Responsive Styles
  */
 @media only screen and (max-width: 782px) {
+	.wrap.pmpro_admin {
+		margin-right: var(--spacing-small);
+		margin-left: var(--spacing-small);
+	}
+
+	.wrap.pmpro_admin .subsubsub {
+		margin-bottom: 0;
+	}
+
+	.wrap.pmpro_admin h1.wp-heading-inline {
+		margin-bottom: 0;
+	}
+
+	.wrap.pmpro_admin .tablenav.top {
+		margin: var(--spacing-small) 0;
+		padding: 0;
+	}
+
+	.wrap.pmpro_admin .tablenav .tablenav-pages {
+		margin: var(--spacing-small) 0;
+		text-align: left;
+	}
+
 	.pmpro_admin .pmpro_banner {
 		display: block;
 	}
