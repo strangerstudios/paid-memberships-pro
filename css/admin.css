@@ -248,6 +248,12 @@ body[class*="memberships_page_pmpro-"] {
 	line-height: 1.5;
 }
 
+.pmpro_admin p {
+	font-size: 14px;
+	line-height: 1.5;
+	margin: var(--spacing-small) 0;
+}
+
 .pmpro_admin #dashboard-widgets .meta-box-sortables {
 	margin: 0;
 }
@@ -628,11 +634,6 @@ body[class*="memberships_page_pmpro-"] {
 	margin-top: 0;
 }
 
-.pmpro_admin .pmpro_section .pmpro_section_inside p {
-	font-size: 14px;
-	line-height: 1.5;
-	margin: var(--spacing-small) 0;
-}
 .pmpro_admin .pmpro_section .pmpro_section_inside.bleed > * {
 	margin-right: 16px;
 	margin-left: 16px;
