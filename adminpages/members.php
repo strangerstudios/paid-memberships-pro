@@ -325,7 +325,6 @@ require_once( dirname( __FILE__ ) . '/admin_header.php' ); ?>
 
 						// Build the selectors for the membership levels history list based on history count.
 						$levelshistory_classes = array();
-						$levelshistory_classes[] = "widgets-holder-wrap";
 						if ( ! empty( $levelshistory ) && count( $levelshistory ) > 10 ) {
 							$levelshistory_classes[] = "pmpro_scrollable";
 						}
@@ -400,7 +399,6 @@ require_once( dirname( __FILE__ ) . '/admin_header.php' ); ?>
 
 						// Build the selectors for the subscription history list based on history count.
 						$subscriptions_classes = array();
-						$subscriptions_classes[] = "widgets-holder-wrap";
 						if ( ! empty( $subscriptions ) && count( $subscriptions ) > 10 ) {
 							$subscriptions_classes[] = "pmpro_scrollable";
 						}
@@ -457,7 +455,6 @@ require_once( dirname( __FILE__ ) . '/admin_header.php' ); ?>
 
 						// Build the selectors for the invoices history list based on history count.
 						$invoices_classes = array();
-						$invoices_classes[] = "widgets-holder-wrap";
 						if ( ! empty( $invoices ) && count( $invoices ) > 10 ) {
 							$invoices_classes[] = "pmpro_scrollable";
 						}

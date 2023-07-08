@@ -249,9 +249,11 @@ function pmpro_admin_header() {
 	} ?>
 	<div class="pmpro_banner">
 		<div class="pmpro_banner_wrapper">
-			<a class="pmpro_logo" title="Paid Memberships Pro - Membership Plugin for WordPress" target="_blank" rel="noopener noreferrer" href="https://www.paidmembershipspro.com/?utm_source=plugin&utm_medium=pmpro-admin-header&utm_campaign=homepage"><img src="<?php echo esc_url( PMPRO_URL . '/images/Paid-Memberships-Pro.png' ); ?>" width="350" height="75" border="0" alt="Paid Memberships Pro(c) - All Rights Reserved" /></a>
-			<div class="pmpro_meta">
+			<div class="pmpro_logo">
+				<a title="Paid Memberships Pro - Membership Plugin for WordPress" target="_blank" rel="noopener noreferrer" href="https://www.paidmembershipspro.com/?utm_source=plugin&utm_medium=pmpro-admin-header&utm_campaign=homepage"><img src="<?php echo esc_url( PMPRO_URL . '/images/Paid-Memberships-Pro.png' ); ?>" width="300" border="0" alt="Paid Memberships Pro(c) - All Rights Reserved" /></a>
 				<span class="pmpro_version">v<?php echo PMPRO_VERSION?></span>
+			</div>
+			<div class="pmpro_meta">
 				<a target="_blank" rel="noopener noreferrer" href="https://www.paidmembershipspro.com/documentation/?utm_source=plugin&utm_medium=pmpro-admin-header&utm_campaign=documentation"><?php esc_html_e('Documentation', 'paid-memberships-pro' ); ?></a>
 				<a target="_blank" href="https://www.paidmembershipspro.com/support/?utm_source=plugin&utm_medium=pmpro-admin-header&utm_campaign=pricing&utm_content=get-support"><?php esc_html_e('Get Support', 'paid-memberships-pro' );?></a>
 

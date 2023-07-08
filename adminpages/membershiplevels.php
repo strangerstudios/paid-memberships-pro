@@ -1301,7 +1301,7 @@
 			</form>
 
 			<?php if(empty($_REQUEST['s']) && count($reordered_levels) > 1) { ?>
-				<p><?php esc_html_e('Drag and drop membership levels to reorder them on the Levels page.', 'paid-memberships-pro' ); ?></p>
+				<p><?php esc_html_e('Drag and drop membership levels within the group to reorder them on the Membership Levels page. Reorder groups using the up/down arrows.', 'paid-memberships-pro' ); ?></p>
 			<?php } ?>
 
 			<?php
