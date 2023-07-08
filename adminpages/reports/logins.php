@@ -232,7 +232,7 @@ function pmpro_report_login_page()
 								<?php echo get_avatar($theuser->ID, 32)?>
 								<strong>
 									<?php
-										$userlink = '<a href="user-edit.php?user_id=' . $theuser->ID . '">' . $theuser->display_name . '</a>';
+										$userlink = '<a href="' . esc_url( add_query_arg( array( 'page' => 'pmpro-members', 'user_id' => (int)$theuser->ID ), admin_url( 'admin.php' ) ) ) . '">' . $theuser->display_name . '</a>';
 										$userlink = apply_filters("pmpro_members_list_user_link", $userlink, $theuser);
 										echo $userlink;
 									?>

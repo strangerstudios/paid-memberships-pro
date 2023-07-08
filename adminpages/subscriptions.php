@@ -51,7 +51,7 @@ if ( empty( $subscription ) ) {
 		<tbody>
 			<tr>
 				<th scope="row"><?php esc_html_e( 'User', 'paid-memberships-pro' ); ?></th>
-				<td><a href="<?php echo ( esc_url( add_query_arg( array( 'user_id' => $subscription->get_user_id() ), admin_url('user-edit.php' ) ) ) ); ?>"><?php echo esc_html( $sub_username ); ?></a></td>
+				<td><a href="<?php echo esc_url( add_query_arg( array( 'page' => 'pmpro-members', 'user_id' => (int)$subscription->get_user_id() ), admin_url( 'admin.php' ) ) ); ?>"><?php echo esc_html( $sub_username ); ?></a></td>
 			</tr>
 			<tr>
 				<th scope="row"><?php esc_html_e( 'Membership Level', 'paid-memberships-pro' ); ?></th>
