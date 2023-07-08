@@ -214,7 +214,7 @@ body[class*="memberships_page_pmpro-"] {
 
 .pmpro_admin hr:not(hr.wp-header-end) {
 	background-color: var(--border-color);
-	margin: 40px 0;
+	margin: var(--spacing-medium) 0;
 }
 
 .pmpro_admin .topborder {
@@ -519,6 +519,16 @@ body[class*="memberships_page_pmpro-"] {
 	.pmpro_admin table.wp-list-table tbody td {
 		padding: 1.25em;
 	}
+}
+
+.pmpro_admin tr.pmpro_settings_divider td {
+	padding: 0;
+}
+
+.pmpro_admin tr.pmpro_settings_divider td h2 {
+	font-size: 18px;
+	font-weight: 500;
+	margin-bottom: 0;
 }
 
 /**
