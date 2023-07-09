@@ -250,7 +250,10 @@ function pmpro_admin_header() {
 	<div class="pmpro_banner">
 		<div class="pmpro_banner_wrapper">
 			<div class="pmpro_logo">
-				<a title="Paid Memberships Pro - Membership Plugin for WordPress" target="_blank" rel="noopener noreferrer" href="https://www.paidmembershipspro.com/?utm_source=plugin&utm_medium=pmpro-admin-header&utm_campaign=homepage"><img src="<?php echo esc_url( PMPRO_URL . '/images/Paid-Memberships-Pro.png' ); ?>" width="300" border="0" alt="Paid Memberships Pro(c) - All Rights Reserved" /></a>
+				<h1>
+					<span class="screen-reader-text"><?php esc_html_e( 'Paid Memberships Pro', 'paid-memberships-pro' ); ?></span>
+					<a target="_blank" rel="noopener noreferrer" href="https://www.paidmembershipspro.com/?utm_source=plugin&utm_medium=pmpro-admin-header&utm_campaign=homepage"><img src="<?php echo esc_url( PMPRO_URL . '/images/Paid-Memberships-Pro.png' ); ?>" width="300" border="0" alt="Paid Memberships Pro(c) - All Rights Reserved" /></a>
+				</h1>
 				<span class="pmpro_version">v<?php echo PMPRO_VERSION?></span>
 			</div>
 			<div class="pmpro_meta">

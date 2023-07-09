@@ -249,7 +249,7 @@ function pmpro_dashboard_report_recent_members_callback() {
     						<?php echo get_avatar($theuser->ID, 32)?>
     						<strong>
     							<?php
-    								$userlink = '<a href="' . get_edit_user_link( $theuser->ID ) . '">' . esc_attr( $theuser->user_login ) . '</a>';
+    								$userlink = '<a href="' . esc_url( add_query_arg( array( 'page' => 'pmpro-member', 'user_id' => (int)$theuser->ID ), admin_url( 'admin.php' ) ) ) . '">' . esc_attr( $theuser->user_login ) . '</a>';
     								$userlink = apply_filters( 'pmpro_members_list_user_link', $userlink, $theuser );
     								echo $userlink;
     							?>
