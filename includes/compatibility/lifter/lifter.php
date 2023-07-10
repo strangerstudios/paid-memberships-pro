@@ -19,18 +19,13 @@ add_action( 'admin_init','enable_streamlined_feature' );
 /**
  * On LifterLMS plugin activation, activate streamline feature and install PMPro Courses plugin.
  */
-function lifter_plugin_activation() {
-	update_option( 'pmpro_toggle_lifter_streamline_setup', 'true' );
+function lifter_plugin_activation() {	
 	include_once( PMPRO_DIR . '/classes/' . 'class-quiet-plugin-installer.php' ) ;
 	$slug = 'pmpro-courses';
 	$installer = new Quiet_Skin(compact('title', 'url', 'nonce', 'plugin', 'api') );
-	$installer->download_install_and_activate($slug);
-	exit( wp_redirect("/wp-admin/admin.php?page=pmpro-lifter-streamline") );
+	$installer->download_install_and_activate($slug);	
 }
-
-
 register_activation_hook( 'lifterlms/lifterlms.php', 'lifter_plugin_activation' );
-
 
 /**
  * Backend Ajax function to toggle streamline feature.
@@ -40,7 +35,6 @@ function toggle_streamline() {
 	update_option( 'pmpro_toggle_lifter_streamline_setup', $status);
 	exit();
 }
-
 add_action( 'wp_ajax_toggle_streamline', 'toggle_streamline' );
 
 /**
@@ -60,18 +54,78 @@ function lifter_streamlined_orders( $template ) {
 
 add_filter( 'template_include', 'lifter_streamlined_orders' );
 
+/**
+ * Insert our option into the intro step of the LifterLMS wizard.
+ */
+function pmpro_lifter_intro_html( $html, $wizard ) {
+	// Get any previous streamline option. Default to true.
+	$streamline = get_option( 'pmpro_toggle_lifter_streamline_setup', null );	
+	if ( $streamline === null ) {
+		$streamline = 1;
+	}
+	
+	// Save output buffer.
+	ob_start();
+	?>
+	<hr />
+	<p><?php esc_html_e( 'Since you already have Paid Memberships Pro installed, you can enable a "streamlined" version of LifterLMS that will let PMPro handle all checkouts, memberships, restrictions, and user fields.', 'paid-memberships-pro' ) ?></p>
+
+	<label for="lifter-streamline">
+		<input type="checkbox" name="lifter-streamline" id="lifter-streamline" <?php checked( (int)$streamline, 1 ); ?>>
+		<?php esc_html_e( 'Enable streamlined version of LifterLMS', 'paid-memberships-pro' ) ?>
+	</label>
+	<script>
+		jQuery(document).ready(function(){
+			function pmpro_lifter_add_streamline_to_url() {
+				let $checkbox = jQuery('#lifter-streamline');
+				let $link = jQuery('.llms-setup-actions a.llms-button-primary');
+
+				//If the checkbox is checked, add streamline to the url
+				if ($checkbox.is(':checked')) {
+					$link.attr('href', $link.attr('href') + '&pmpro_toggle_lifter_streamline_setup=true');
+				} else {
+					$link.attr('href', $link.attr('href').replace('&pmpro_toggle_lifter_streamline_setup=true', ''));
+				}
+			}
+			
+			// Update the URL when the checkbox is changed.
+			jQuery('#lifter-streamline').on('change', function(){
+				pmpro_lifter_add_streamline_to_url();
+			});
+
+			// Run on load too.
+			pmpro_lifter_add_streamline_to_url();
+		});
+	</script>
+	<?php
+	// Add the content buffer to the $html string.
+	$html .= ob_get_clean();
+	
+	return $html;
+}
+add_filter( 'llms_setup_wizard_intro_html', 'pmpro_lifter_intro_html', 10, 2 );
 
 /**
- * Check if page being loaded is the lifter wizard on the pages step and redirect to a streamlined version of the same page.
+ * Hook into Page Setup step to save the streamline option.
  */
-function lifter_custom_step_pages () {
-	global $pagenow;
-	$is_lifter_streamnlined_enabled = get_option( 'pmpro_toggle_lifter_streamline_setup' ) == 'true';
-	$is_page_step = $pagenow == "index.php" && $_GET && $_GET['page'] == "llms-setup" && $_GET['step'] == "pages";
-	if ($is_lifter_streamnlined_enabled && $is_page_step) {
-		wp_redirect("/wp-admin/admin.php?page=pmpro-lifter-streamline-step-pages");
+function pmpro_lifter_save_streamline_option( $wizard ) {
+	// Bail if we're in the LifterLMS wizard.
+	if ( empty( $_REQUEST['page'] ) || $_REQUEST['page'] !== 'llms-setup' ) {
+		return;
 	}
+
+	// Bail if we're not on the pages step.
+	if ( empty( $_REQUEST['step'] ) || $_REQUEST['step'] !== 'pages' ) {
+		return;
+	}
+
+	// Get the streamline value.
+	if ( ! empty( $_REQUEST['pmpro_toggle_lifter_streamline_setup'] ) ) {
+		$streamline = 1;
+	} else {
+		$streamline = 0;
+	}
+	
+	update_option( 'pmpro_toggle_lifter_streamline_setup', $streamline );
 }
-
-add_filter( 'admin_init', 'lifter_custom_step_pages' );
-
+add_action( 'admin_init', 'pmpro_lifter_save_streamline_option' );
