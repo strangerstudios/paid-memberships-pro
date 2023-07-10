@@ -67,7 +67,7 @@ function pmpro_save_checkout_data_to_order( $order ) {
 			unset( $request_vars[ $key ] );
 		}
 	}
-	update_pmpro_membership_order_meta( $morder->id, 'checkout_request_vars', $request_vars );
+	update_pmpro_membership_order_meta( $order->id, 'checkout_request_vars', $request_vars );
 
 	// Save the checkout level.
 	$pmpro_level_arr = (array) $pmpro_level;
