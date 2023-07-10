@@ -895,8 +895,6 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 			 */
 			$limit = apply_filters( 'pmpro_trigger_recent_members_limit', $limit );
 			
-			$response_type = isset( $params['response_type'] ) ? sanitize_text_field( $params['response_type'] ) : null;
-			
 			if ( empty( $params['level_status'] ) ) {
 				$level_status = [ 'active' ];
 			} else {

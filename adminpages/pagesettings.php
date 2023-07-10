@@ -165,7 +165,7 @@ require_once(dirname(__FILE__) . "/admin_header.php");
     <form action="<?php echo esc_url( admin_url( 'admin.php?page=pmpro-pagesettings' ) );?>" method="post" enctype="multipart/form-data">
         <?php wp_nonce_field('savesettings', 'pmpro_pagesettings_nonce');?>
         <hr class="wp-header-end">
-        <h1 class="wp-heading-inline"><?php esc_html_e( 'Page Settings', 'paid-memberships-pro' ); ?></h1>
+        <h1><?php esc_html_e( 'Page Settings', 'paid-memberships-pro' ); ?></h1>
         <?php
 		// check if we have all pages
 		if ( $pmpro_pages['account'] ||
