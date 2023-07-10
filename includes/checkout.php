@@ -48,12 +48,26 @@ function pmpro_calculate_profile_start_date( $order, $date_format, $filter = tru
 function pmpro_save_checkout_data_to_order( $order ) {
 	global $pmpro_level, $discount_code;
 
+	// Save some checkout information in the order so that we can access it when the payment is complete.
 	// Save the request variables.
 	$request_vars = $_REQUEST;
-	unset( $request_vars['password'] );
-	unset( $request_vars['password2'] );
-	unset( $request_vars['password2_copy'] );
-	update_pmpro_membership_order_meta( $order->id, 'checkout_request_vars', array_map( 'sanitize_text_field', $request_vars ) );
+	// Unset restricted request variables.
+	$restricted_vars = array(
+		'password',
+		'password2',
+		'password2_copy',
+		'AccountNumber',
+		'CVV',
+		'ExpirationMonth',
+		'ExpirationYear',
+		'add_sub_accounts_password', // Creating users at checkout with Sponsored Members.
+	);
+	foreach ( $restricted_vars as $key ) {
+		if ( isset( $request_vars[ $key ] ) ) {
+			unset( $request_vars[ $key ] );
+		}
+	}
+	update_pmpro_membership_order_meta( $morder->id, 'checkout_request_vars', $request_vars );
 
 	// Save the checkout level.
 	$pmpro_level_arr = (array) $pmpro_level;
