@@ -119,6 +119,11 @@ function pmpro_lifter_save_streamline_option( $wizard ) {
 		return;
 	}
 
+	// Bail if the current user doesn't have permission to manage LifterLMS.
+	if ( ! current_user_can( 'manage_lifterlms' ) ) {
+		return;
+	}
+
 	// Get the streamline value.
 	if ( ! empty( $_REQUEST['pmpro_toggle_lifter_streamline_setup'] ) ) {
 		$streamline = 1;
