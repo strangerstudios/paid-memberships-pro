@@ -129,3 +129,26 @@ function pmpro_lifter_save_streamline_option( $wizard ) {
 	update_option( 'pmpro_toggle_lifter_streamline_setup', $streamline );
 }
 add_action( 'admin_init', 'pmpro_lifter_save_streamline_option' );
+
+/**
+ * If the streamline option is enabled, don't create some pages.
+ */
+function pmpro_lifter_install_create_pages( $pages ) {
+	// Bail if streamline is not enabled.
+	if ( get_option( 'pmpro_toggle_lifter_streamline_setup' ) ) {
+		return $pages;
+	}
+	
+	// Loop through and remove the membership catalog and checkout pages.
+	$new_pages = array();
+	foreach ( $pages as $page ) {
+		if ( $page['slug'] == 'memberships' || $page['slug'] == 'purchase' ) {
+			continue;
+		}
+		
+		$new_pages[] = $page;
+	}
+
+	return $new_pages;
+}
+add_filter( 'llms_install_create_pages', 'pmpro_lifter_install_create_pages' );
