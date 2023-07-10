@@ -199,8 +199,8 @@ function pmpro_complete_async_checkout( $order ) {
 					current_time( 'mysql' )
 				)
 			);
-			do_action( 'pmpro_discount_code_used', $discount_code_id, $order->user_id, $order->id );
 		}
+		do_action( 'pmpro_discount_code_used', $discount_code_id, $order->user_id, $order->id );
 	}
 
 	// Save first and last name fields.
