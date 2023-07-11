@@ -3,7 +3,7 @@
  *  On the admin side check if lifters streamline feature is enabled and react accordingly.
  */
 function enable_streamlined_feature() {
-	$is_lifter_streamnlined_enabled = get_option( 'pmpro_toggle_lifter_streamline_setup' ) == 'true';
+	$is_lifter_streamnlined_enabled = get_option( 'pmpro_lifter_streamline' ) == 'true';
 	if($is_lifter_streamnlined_enabled ) {
 		$lifter_streamline =  plugins_url() . '/paid-memberships-pro/css/lifter-streamline.css';
 		wp_register_style( 'pmpro_lifter', $lifter_streamline, [], PMPRO_VERSION, 'screen' );
@@ -27,11 +27,29 @@ function lifter_plugin_activation() {
 register_activation_hook( 'lifterlms/lifterlms.php', 'lifter_plugin_activation' );
 
 /**
+ * Add streamline setting to the PMPro Advanced Settings page.
+ */
+function pmpro_lifter_streamline_advanced_setting( $settings ) {
+	$settings['lifter_streamline'] = [
+		'field_name'  => 'lifter_streamline',
+		'field_type'  => 'select',
+		'options'	  => [
+			'0' => __( 'No - All LifterLMS features are enabled.', 'paid-memberships-pro' ),
+			'1' => __( 'Yes - Some LifterLMS features are disabled.', 'paid-memberships-pro' ),
+		],
+		'is_associative' => true,
+		'label'       => __( 'Streamline LifterLMS', 'paid-memberships-pro' )		
+	];
+	return $settings;
+}
+add_filter( 'pmpro_custom_advanced_settings', 'pmpro_lifter_streamline_advanced_setting' );
+
+/**
  * Override student dashboard links if streamline feature is enabled.
  */
 function pmpro_lifter_override_dashboard_tabs( $tabs ) {	
 	// Only override if streamlined is enabled.
-	if ( ! get_option( 'pmpro_toggle_lifter_streamline_setup' ) ) {
+	if ( ! get_option( 'pmpro_lifter_streamline' ) ) {
 		return $template;
 	}
 	
@@ -54,7 +72,7 @@ add_filter( 'llms_get_student_dashboard_tabs', 'pmpro_lifter_override_dashboard_
  */
 function pmpro_lifter_intro_html( $html, $wizard ) {
 	// Get any previous streamline option. Default to true.
-	$streamline = get_option( 'pmpro_toggle_lifter_streamline_setup', null );	
+	$streamline = get_option( 'pmpro_lifter_streamline', null );	
 	if ( $streamline === null ) {
 		$streamline = 1;
 	}
@@ -77,9 +95,9 @@ function pmpro_lifter_intro_html( $html, $wizard ) {
 
 				//If the checkbox is checked, add streamline to the url
 				if ($checkbox.is(':checked')) {
-					$link.attr('href', $link.attr('href') + '&pmpro_toggle_lifter_streamline_setup=true');
+					$link.attr('href', $link.attr('href') + '&pmpro_lifter_streamline=1');
 				} else {
-					$link.attr('href', $link.attr('href').replace('&pmpro_toggle_lifter_streamline_setup=true', ''));
+					$link.attr('href', $link.attr('href').replace('&pmpro_lifter_streamline=1', ''));
 				}
 			}
 			
@@ -120,13 +138,13 @@ function pmpro_lifter_save_streamline_option( $wizard ) {
 	}
 
 	// Get the streamline value.
-	if ( ! empty( $_REQUEST['pmpro_toggle_lifter_streamline_setup'] ) ) {
+	if ( ! empty( $_REQUEST['pmpro_lifter_streamline'] ) ) {
 		$streamline = 1;
 	} else {
 		$streamline = 0;
 	}
 	
-	update_option( 'pmpro_toggle_lifter_streamline_setup', $streamline );
+	update_option( 'pmpro_lifter_streamline', $streamline );
 }
 add_action( 'admin_init', 'pmpro_lifter_save_streamline_option' );
 
@@ -135,7 +153,7 @@ add_action( 'admin_init', 'pmpro_lifter_save_streamline_option' );
  */
 function pmpro_lifter_install_create_pages( $pages ) {
 	// Bail if streamline is not enabled.
-	if ( get_option( 'pmpro_toggle_lifter_streamline_setup' ) ) {
+	if ( get_option( 'pmpro_lifter_streamline' ) ) {
 		return $pages;
 	}
 	

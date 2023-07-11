@@ -54,9 +54,7 @@
 		pmpro_setOption("hideadslevels");
 		pmpro_setOption("redirecttosubscription");
 		pmpro_setOption("uninstall");
-		$isChecked = isset( $_POST['lifter-streamline'] ) ? 'true' : 'false';
-		update_option("pmpro_toggle_lifter_streamline_setup", $isChecked);
-
+		
 		// Set up Wisdom tracking cron if needed.
 		if ( (int)pmpro_getOption("wisdom_opt_out") === 0 ) {
 			$wisdom_integration = PMPro_Wisdom_Integration::instance();
@@ -110,8 +108,7 @@
 	if( is_multisite() ) {
 		$redirecttosubscription = pmpro_getOption("redirecttosubscription");
 	}
-	$uninstall = pmpro_getOption('uninstall');
-	$lifter_streamlined = get_option('pmpro_toggle_lifter_streamline_setup', false);
+	$uninstall = pmpro_getOption('uninstall');	
 
 	// Default settings.
 	if(!$nonmembertext)
@@ -444,7 +441,7 @@ if ( function_exists( 'pmpro_displayAds' ) && pmpro_displayAds() ) {
 		                                    name="<?php echo esc_attr( $field['field_name'] ); ?>">
 		                                <?php
 		                                	//For associative arrays, we use the array keys as values. For numerically indexed arrays, we use the array values.
-		                                	$is_associative = (bool)count(array_filter(array_keys($field['options']), 'is_string'));
+		                                	$is_associative = !empty($field['is_associative']) || !(bool)count(array_filter(array_keys($field['options']), 'is_string'));
 		                                	foreach ($field['options'] as $key => $option) {
 		                                    	if(!$is_associative) $key = $option;
 		                                    	?>
@@ -536,15 +533,7 @@ if ( function_exists( 'pmpro_displayAds' ) && pmpro_displayAds() ) {
 						</select>
 						<p class="description"><?php esc_html_e( 'To delete all PMPro data from the database, set to Yes, deactivate PMPro, and then click to delete PMPro from the plugins page.', 'paid-memberships-pro' ); ?></p>
 					</td>
-				</tr>
-				<tr>
-					<th scope="row" valign="top">
-						<label for="lifter-streamline"><?php esc_html_e( 'Use streamlined LifterLMS version', 'paid-memberships-pro' ); ?></label>
-					</th>
-					<td>
-						<input type="checkbox" name="lifter-streamline" id="lifter-streamline" <?php checked( $lifter_streamlined, 'true' ); ?> >
-					</td>
-				</tr>
+				</tr>				
 	        </tbody>
 			</table>
 			<script>
