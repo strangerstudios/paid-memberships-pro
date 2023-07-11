@@ -27,21 +27,27 @@ function lifter_plugin_activation() {
 register_activation_hook( 'lifterlms/lifterlms.php', 'lifter_plugin_activation' );
 
 /**
- * Override student dashboard template if streamline feature is enabled.
+ * Override student dashboard links if streamline feature is enabled.
  */
-function lifter_streamlined_orders( $template ) {
-	global $wp;
-	$is_lifter_streamnlined_enabled = get_option( 'pmpro_toggle_lifter_streamline_setup' ) == 'true';
-	$is_student_dashboard = $wp->query_string == "pagename=student-dashboard";
-
-	if( $is_lifter_streamnlined_enabled && $is_student_dashboard ) {
-		$template = plugin_dir_path( __FILE__ ) . '/templates/my-orders.php';
+function pmpro_lifter_override_dashboard_tabs( $tabs ) {	
+	// Only override if streamlined is enabled.
+	if ( ! get_option( 'pmpro_toggle_lifter_streamline_setup' ) ) {
+		return $template;
+	}
+	
+	// Override the My Memberships tab.
+	if ( isset( $tabs ) && isset( $tabs['view-memberships'] ) ) {
+		$tabs['view-memberships']['url'] = pmpro_url( 'account' );
 	}
 
-	return $template;
-}
+	// Override the My Orders tab.
+	if ( isset( $tabs ) && isset( $tabs['orders'] ) ) {
+		$tabs['orders']['url'] = pmpro_url( 'invoice' );
+	}
 
-add_filter( 'template_include', 'lifter_streamlined_orders' );
+	return $tabs;
+}
+add_filter( 'llms_get_student_dashboard_tabs', 'pmpro_lifter_override_dashboard_tabs' );
 
 /**
  * Insert our option into the intro step of the LifterLMS wizard.
