@@ -13,7 +13,6 @@ function enable_streamlined_feature() {
 		wp_dequeue_style( 'pmpro_lifter' );
 	}
 }
-
 add_action( 'admin_init','enable_streamlined_feature' );
 
 /**
@@ -26,16 +25,6 @@ function lifter_plugin_activation() {
 	$installer->download_install_and_activate($slug);	
 }
 register_activation_hook( 'lifterlms/lifterlms.php', 'lifter_plugin_activation' );
-
-/**
- * Backend Ajax function to toggle streamline feature.
- */
-function toggle_streamline() {
-	$status = $_POST['status'];
-	update_option( 'pmpro_toggle_lifter_streamline_setup', $status);
-	exit();
-}
-add_action( 'wp_ajax_toggle_streamline', 'toggle_streamline' );
 
 /**
  * Override student dashboard template if streamline feature is enabled.
