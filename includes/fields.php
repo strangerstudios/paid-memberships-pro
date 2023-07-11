@@ -1050,37 +1050,35 @@ function pmpro_add_user_fields_to_email( $email ) {
 	global $wpdb;
 
 	//only update admin confirmation emails
-	if(!empty($email) && strpos($email->template, "checkout") !== false && strpos($email->template, "admin") !== false)
-	{
+	if(!empty($email) && strpos($email->template, "checkout") !== false && strpos($email->template, "admin") !== false) {
 		//get the user_id from the email
 		$user_id = $wpdb->get_var("SELECT ID FROM $wpdb->users WHERE user_email = '" . $email->data['user_email'] . "' LIMIT 1");
 
-		if(!empty($user_id))
-		{
+		if(!empty($user_id)) {
 			//get meta fields
-			$fields = pmpro_get_user_fields_for_profile($user_id);
+			$fields_groups = pmpro_get_user_fields();
 
 			//add to bottom of email
-			if(!empty($fields))
-			{
+			if(!empty($fields_groups)) {
 				$email->body .= "<p>" . __( 'Extra Fields:', 'paid-memberships-pro' ) . "<br />";
-				foreach($fields as $field)
-				{
-                    if( ! pmpro_is_field( $field ) ) {
-                        continue;
-                    }
+				//cycle through groups
+				foreach( $fields_groups as $where => $fields ) {
+					//cycle through fields
+					foreach( $fields as $field ) {
+						if( ! pmpro_is_field( $field ) ) {
+							continue;
+						}
+						$email->body .= "- " . $field->label . ": ";
+						$value = get_user_meta($user_id, $field->meta_key, true);
+						if($field->type == "file" && is_array($value) && !empty($value['fullurl']))
+							$email->body .= $value['fullurl'];
+						elseif(is_array($value))
+							$email->body .= implode(", ", $value);
+						else
+							$email->body .= $value;
 
-					$email->body .= "- " . $field->label . ": ";
-
-					$value = get_user_meta($user_id, $field->meta_key, true);
-					if($field->type == "file" && is_array($value) && !empty($value['fullurl']))
-						$email->body .= $value['fullurl'];
-					elseif(is_array($value))
-						$email->body .= implode(", ", $value);
-					else
-						$email->body .= $value;
-
-					$email->body .= "<br />";
+						$email->body .= "<br />";
+					}
 				}
 				$email->body .= "</p>";
 			}
