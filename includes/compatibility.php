@@ -55,6 +55,11 @@ function pmpro_compatibility_checker() {
 			'file' 		  => 'oxygen-builder.php',
 			'check_type'  => 'class',
 			'check_value' => 'OxyEl'
+		],
+		[
+			'file'		  => 'lifter.php',
+			'check_type'  => 'function',
+			'check_value' => 'llms'
 		]
 	];
 
@@ -93,7 +98,7 @@ function pmpro_compatibility_checker_is_requirement_met( $requirement ) {
 	}
 
 	// Check for a function.
-	if ( 'function' === $requirement['check_type'] ) {
+	if ( 'function' === $requirement['check_type'] ) {		
 		return function_exists( $requirement['check_value'] );
 	}
 
