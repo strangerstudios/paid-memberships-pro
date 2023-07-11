@@ -782,6 +782,15 @@ body[class*="memberships_page_pmpro-"] {
 	top: 0;
 }
 
+/* Membership level add / change / remove */
+.pmpro_admin-pmpro-member tr#pmpro-level-change td {
+	padding: var(--spacing-medium);
+}
+
+.pmpro_admin-pmpro-member tr#pmpro-level-change div {
+	margin: var(--spacing-small) 0;
+}
+
 .pmpro_admin-pmpro-member form nav {
 	margin: var(--spacing-small) 0;
 }
