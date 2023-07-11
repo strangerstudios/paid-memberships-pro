@@ -2694,12 +2694,12 @@ button.pmpro_report_th_closed:before {
 		margin-left: var(--spacing-small);
 	}
 
-	.wrap..pmpro_admin form h1.wp-heading-inline {
+	.wrap.pmpro_admin form h1.wp-heading-inline {
 		display: block;
 		margin-bottom: var(--spacing-small);
 	}
 
-	.wrap..pmpro_admin form .page-title-action {
+	.wrap.pmpro_admin form .page-title-action {
 		top: 0;
 	}
 
