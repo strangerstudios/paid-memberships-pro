@@ -4,7 +4,7 @@
 */
 function pmpro_checkForUpgrades()
 {
-	$pmpro_db_version = pmpro_getOption("db_version");
+	$pmpro_db_version = get_option("pmpro_db_version");
 
 	//if we can't find the DB tables, reset db_version to 0
 	global $wpdb;
@@ -16,7 +16,7 @@ function pmpro_checkForUpgrades()
 
 	//default options
 	if(!$pmpro_db_version) {
-		pmpro_setOption( 'wizard_redirect', true ); // This is for defaulting to the wizard on first activation.
+		update_option( 'pmpro_wizard_redirect', true ); // This is for defaulting to the wizard on first activation.
 		require_once(PMPRO_DIR . "/includes/updates/upgrade_1.php");
 		$pmpro_db_version = pmpro_upgrade_1();
 	}
@@ -90,7 +90,7 @@ function pmpro_checkForUpgrades()
 
 		pmpro_db_delta();
 
-		pmpro_setOption("db_version", "1.703");
+		update_option("pmpro_db_version", "1.703");
 		$pmpro_db_version = 1.703;
 	}
 
@@ -98,7 +98,7 @@ function pmpro_checkForUpgrades()
 	if($pmpro_db_version < 1.71)
 	{
 		pmpro_db_delta();
-		pmpro_setOption("db_version", "1.71");
+		update_option("pmpro_db_version", "1.71");
 		$pmpro_db_version = 1.71;
 	}
 
@@ -108,7 +108,7 @@ function pmpro_checkForUpgrades()
 		//schedule the credit card expiring cron
 		pmpro_maybe_schedule_event(current_time('timestamp'), 'monthly', 'pmpro_cron_credit_card_expiring_warnings');
 
-		pmpro_setOption("db_version", "1.72");
+		update_option("pmpro_db_version", "1.72");
 		$pmpro_db_version = 1.72;
 	}
 
@@ -118,19 +118,19 @@ function pmpro_checkForUpgrades()
 		//need to register caps for menu
 		pmpro_activation();
 
-		pmpro_setOption("db_version", "1.79");
+		update_option("pmpro_db_version", "1.79");
 		$pmpro_db_version = 1.79;
 	}
 
 	//set default filter_queries setting
 	if($pmpro_db_version < 1.791)
 	{
-		if(!pmpro_getOption("showexcerpts"))
-			pmpro_setOption("filterqueries", 1);
+		if(!get_option("pmpro_showexcerpts"))
+			update_option("pmpro_filterqueries", 1);
 		else
-			pmpro_SetOption("filterqueries", 0);
+			update_option("pmpro_filterqueries", 0);
 
-		pmpro_setOption("db_version", "1.791");
+		update_option("pmpro_db_version", "1.791");
 		$pmpro_db_version = 1.791;
 	}
 
@@ -180,7 +180,7 @@ function pmpro_checkForUpgrades()
 		pmpro_db_delta();
 
 		$pmpro_db_version = 1.892;
-		pmpro_setOption("db_version", "1.892");
+		update_option("pmpro_db_version", "1.892");
 	}
 
 	/*
@@ -201,7 +201,7 @@ function pmpro_checkForUpgrades()
 		pmpro_db_delta();
 
 		$pmpro_db_version = 1.92;
-		pmpro_setOption("db_version", "1.92");
+		update_option("pmpro_db_version", "1.92");
 	}
 
 	/*
@@ -213,7 +213,7 @@ function pmpro_checkForUpgrades()
 		pmpro_db_delta();
 
 		$pmpro_db_version = 1.93;
-		pmpro_setOption("db_version", "1.93");
+		update_option("pmpro_db_version", "1.93");
 	}
 
 	require_once( PMPRO_DIR . "/includes/updates/upgrade_1_9_4.php" );
@@ -224,19 +224,19 @@ function pmpro_checkForUpgrades()
 	if($pmpro_db_version < 1.944) {
 		pmpro_cleanup_memberships_users_table();
 		$pmpro_db_version = '1.944';
-		pmpro_setOption('db_version', '1.944');
+		update_option('pmpro_db_version', '1.944');
 	}
 
 	if ( $pmpro_db_version < 2.1 ) {
 		pmpro_db_delta();
 
 		$pmpro_db_version = 2.1;
-		pmpro_setOption( 'db_version', '2.1' );
+		update_option( 'pmpro_db_version', '2.1' );
 	}
 
 	if ( $pmpro_db_version < 2.3 ) {
 		pmpro_maybe_schedule_event( strtotime( '10:30:00' ) - ( get_option( 'gmt_offset' ) * HOUR_IN_SECONDS ), 'daily', 'pmpro_cron_admin_activity_email' );
-		pmpro_setOption( 'db_version', '2.3' );
+		update_option( 'pmpro_db_version', '2.3' );
 	}
 
 	/**
@@ -256,7 +256,7 @@ function pmpro_checkForUpgrades()
 	if( $pmpro_db_version < 2.5 ) {
 		pmpro_db_delta();
 		$pmpro_db_version = 2.5;
-		pmpro_setOption( 'db_version', '2.5' );
+		update_option( 'pmpro_db_version', '2.5' );
 	}
 
 	/**
@@ -267,7 +267,7 @@ function pmpro_checkForUpgrades()
 	if( $pmpro_db_version < 2.6 ) {
 		pmpro_db_delta();
 		$pmpro_db_version = pmpro_upgrade_2_6();
-		pmpro_setOption( 'db_version', '2.6' );
+		update_option( 'pmpro_db_version', '2.6' );
 	}
 
 	/**
@@ -276,16 +276,16 @@ function pmpro_checkForUpgrades()
 	 */
 	 if( $pmpro_db_version < 2.71 ) {
  		pmpro_db_delta();
- 		pmpro_setOption( 'db_version', '2.71' );
+ 		update_option( 'pmpro_db_version', '2.71' );
  	}
-	
+
 	/**
 	 * Version 2.8
 	 * Default option for Wisdom tracking.
 	 */
 	if ( $pmpro_db_version < 2.8 ) {
-		pmpro_setOption('wisdom_opt_out', 1);
-		pmpro_setOption( 'db_version', '2.8' );
+		update_option('pmpro_wisdom_opt_out', 1);
+		update_option( 'pmpro_db_version', '2.8' );
 	}
 	
 	/**
@@ -295,16 +295,16 @@ function pmpro_checkForUpgrades()
 	if ( $pmpro_db_version < 2.81 ) {
 		pmpro_clear_crons();
 		pmpro_maybe_schedule_crons();
-		pmpro_setOption( 'db_version', '2.81' );
+		update_option( 'pmpro_db_version', '2.81' );
 	}
-
+	
 	/**
 	 * Version 2.9.4
 	 * Check the current domain and store it
 	 */
 	if ( $pmpro_db_version < 2.94 ) {
-		pmpro_setOption( 'last_known_url', get_site_url() );
-		pmpro_setOption( 'db_version', '2.94' );
+		update_option( 'pmpro_last_known_url', get_site_url() );
+		update_option( 'pmpro_db_version', '2.94' );
 	}
 
 	/**
@@ -316,7 +316,27 @@ function pmpro_checkForUpgrades()
 	if ( $pmpro_db_version < 2.95 ) { // 2.95 since 2.10 would be lower than previous update.
 		require_once( PMPRO_DIR . "/includes/updates/upgrade_2_10.php" );
 		pmpro_upgrade_2_10();
-		pmpro_setOption( 'db_version', '2.95' );		
+		update_option( 'pmpro_db_version', '2.95' );		
+	}
+
+	/**
+	 * Version 2.10.6
+	 * Check for sensitive information in ordermeta.
+	 */
+	require_once( PMPRO_DIR . "/includes/updates/upgrade_2_10_6.php" ); // Need to include this for admin notice.
+	if ( $pmpro_db_version < 2.96 ) { // 2.96 since 2.106 would be lower than previous update.
+		pmpro_upgrade_2_10_6(); // This function will update the db version.
+	}
+
+	/**
+	 * Version 3.0
+	 * Running pmpro_db_delta to add subscription and subscription meta tables.
+	 */
+	require_once( PMPRO_DIR . "/includes/updates/upgrade_3_0.php" );
+	if( $pmpro_db_version < 3.0 ) {
+		pmpro_db_delta();
+		$pmpro_db_version = pmpro_upgrade_3_0();
+		update_option( 'pmpro_db_version', '3.0' );
 	}
 
 	/**
@@ -344,7 +364,11 @@ function pmpro_db_delta()
 	$wpdb->pmpro_discount_codes_levels = $wpdb->prefix . 'pmpro_discount_codes_levels';
 	$wpdb->pmpro_discount_codes_uses = $wpdb->prefix . 'pmpro_discount_codes_uses';
 	$wpdb->pmpro_membership_levelmeta = $wpdb->prefix . 'pmpro_membership_levelmeta';
+	$wpdb->pmpro_subscriptions = $wpdb->prefix . 'pmpro_subscriptions';
 	$wpdb->pmpro_membership_ordermeta = $wpdb->prefix . 'pmpro_membership_ordermeta';
+	$wpdb->pmpro_subscriptionmeta = $wpdb->prefix . 'pmpro_subscriptionmeta';
+	$wpdb->pmpro_groups = $wpdb->prefix . 'pmpro_groups';
+	$wpdb->pmpro_membership_levels_groups = $wpdb->prefix . 'pmpro_membership_levels_groups';
 
 	//wp_pmpro_membership_levels
 	$sqlQuery = "
@@ -544,6 +568,34 @@ function pmpro_db_delta()
 	";
 	dbDelta($sqlQuery);
 
+	//pmpro_membership_subscriptions
+	$sqlQuery = "
+		CREATE TABLE `" . $wpdb->pmpro_subscriptions . "` (
+			`id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+			`user_id` int(11) unsigned NOT NULL,
+			`membership_level_id` int(20) unsigned NOT NULL,
+			`gateway` varchar(64) NOT NULL,
+			`gateway_environment` varchar(64) NOT NULL,
+			`subscription_transaction_id` varchar(32) NOT NULL,
+			`status` varchar(20) NOT NULL DEFAULT 'active',
+			`startdate` datetime DEFAULT NULL,
+			`enddate` datetime DEFAULT NULL,
+			`next_payment_date` datetime DEFAULT NULL,
+			`billing_amount` decimal(18,8) NOT NULL DEFAULT '0.00',
+			`cycle_number` int(11) NOT NULL DEFAULT '0',
+			`cycle_period` enum('Day','Week','Month','Year') NOT NULL DEFAULT 'Month',
+			`billing_limit` int(11) NOT NULL DEFAULT '0',
+			`trial_amount` decimal(18,8) NOT NULL DEFAULT '0.00',
+			`trial_limit` int(11) NOT NULL DEFAULT '0',
+			`modified` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+			PRIMARY KEY (`id`),
+			UNIQUE KEY `subscription_link` (`subscription_transaction_id`, `gateway_environment`, `gateway`),
+			KEY `user_id` (`user_id`),
+			KEY `next_payment_date` (`next_payment_date`)
+		);
+	";
+	dbDelta($sqlQuery);
+
 	//pmpro_membership_ordermeta
 	$sqlQuery = "
 		CREATE TABLE `" . $wpdb->pmpro_membership_ordermeta . "` (
@@ -556,5 +608,41 @@ function pmpro_db_delta()
 		  KEY `meta_key` (`meta_key`)
 		);
 	";
+	dbDelta($sqlQuery);
+
+	//pmpro_subscriptionmeta
+	$sqlQuery = "
+		CREATE TABLE `" . $wpdb->pmpro_subscriptionmeta . "` (
+		  `meta_id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+		  `pmpro_subscription_id` int(11) unsigned NOT NULL,
+		  `meta_key` varchar(255) NOT NULL,
+		  `meta_value` longtext,
+		  PRIMARY KEY (`meta_id`),
+		  KEY `pmpro_subscription_id` (`pmpro_subscription_id`),
+		  KEY `meta_key` (`meta_key`)
+		);
+	";
+	dbDelta($sqlQuery);
+
+	//pmpro_groups
+	$sqlQuery = "CREATE TABLE `" . $wpdb->pmpro_groups . "` (
+		`id` int unsigned NOT NULL AUTO_INCREMENT,
+		`name` varchar(255) NOT NULL,
+		`allow_multiple_selections` tinyint NOT NULL DEFAULT '1',
+		`displayorder` int,
+		PRIMARY KEY (`id`),
+		KEY `name` (`name`)
+	)";
+	dbDelta($sqlQuery);
+
+	//pmpro_membership_levels_groups
+	$sqlQuery = "CREATE TABLE `" . $wpdb->pmpro_membership_levels_groups . "` (
+		`id` int unsigned NOT NULL AUTO_INCREMENT,
+		`level` int unsigned NOT NULL DEFAULT '0',
+		`group` int unsigned NOT NULL DEFAULT '0',
+		PRIMARY KEY (`id`),
+		KEY `level` (`level`),
+		KEY `group` (`group`)
+	)";
 	dbDelta($sqlQuery);
 }

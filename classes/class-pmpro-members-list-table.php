@@ -81,7 +81,7 @@ class PMPro_Members_List_Table extends WP_List_Table {
 			'address'       => __( 'Billing Address', 'paid-memberships-pro' ),
 			'membership'    => __( 'Level', 'paid-memberships-pro' ),
 			'membership_id' => __( 'Level ID', 'paid-memberships-pro' ),
-			'fee'           => __( 'Fee', 'paid-memberships-pro' ),
+			'fee'           => __( 'Subscription', 'paid-memberships-pro' ),
 			'joindate'      => __( 'Registered', 'paid-memberships-pro' ),
 			'startdate'     => __( 'Start Date', 'paid-memberships-pro' ),
 			'enddate'       => __( 'End Date', 'paid-memberships-pro' ),
@@ -300,7 +300,7 @@ class PMPro_Members_List_Table extends WP_List_Table {
 		$start = $end - $limit;
 
 		if ( $count ) {
-			$sqlQuery = "SELECT COUNT( DISTINCT u.ID ) ";
+			$sqlQuery = "SELECT COUNT( DISTINCT u.ID, mu.membership_id ) ";
 		} else {
 			$sqlQuery =
 				"
@@ -369,7 +369,7 @@ class PMPro_Members_List_Table extends WP_List_Table {
 		}
 
 		if ( ! $count ) {
-			$sqlQuery .= ' GROUP BY u.ID ';
+			$sqlQuery .= ' GROUP BY u.ID, mu.membership_id ';
 
 			$sqlQuery .= " ORDER BY $orderby $order ";
 
