@@ -42,22 +42,22 @@
 			$livemode = ! empty( $post_event->livemode );
 		} else {
 			// No event data passed in body, so use current environment.
-			$livemode = pmpro_getOption( 'gateway_environment' ) === 'live';
+			$livemode = get_option( 'pmro_gateway_environment' ) === 'live';
 		}
 	}
 	else
 	{
 		$event_id = sanitize_text_field($_REQUEST['event_id']);
-		$livemode = pmpro_getOption( 'gateway_environment' ) === 'live'; // User is testing, so use current environment.
+		$livemode = get_option( 'pmro_gateway_environment' ) === 'live'; // User is testing, so use current environment.
 	}
 
 	try {
 		if ( PMProGateway_stripe::using_legacy_keys() ) {
-			$secret_key = pmpro_getOption( "stripe_secretkey" );
+			$secret_key = get_option( "pmro_stripe_secretkey" );
 		} elseif ( $livemode ) {
-			$secret_key = pmpro_getOption( 'live_stripe_connect_secretkey' );
+			$secret_key = get_option( 'pmpro_live_stripe_connect_secretkey' );
 		} else {
-			$secret_key = pmpro_getOption( 'sandbox_stripe_connect_secretkey' );
+			$secret_key = get_option( 'pmpro_sandbox_stripe_connect_secretkey' );
 		}
 		Stripe\Stripe::setApiKey( $secret_key );
 	} catch ( Exception $e ) {
@@ -92,6 +92,13 @@
 		// Log that we have successfully received a webhook from Stripe.
 		update_option( 'pmpro_stripe_webhook_last_received_' . ( $livemode ? 'live' : 'sandbox' ) . '_' . $pmpro_stripe_event->type, $pmpro_stripe_event->created );
 
+		/**
+		 * Allow code to run when a Stripe webhook is received.
+		 *
+		 * @since 2.11
+		 */
+		do_action( 'pmpro_stripe_webhook_event_received', $pmpro_stripe_event );
+
 		//check what kind of event it is
 		if($pmpro_stripe_event->type == "invoice.payment_succeeded")
 		{
@@ -116,6 +123,7 @@
 
 					$user_id = $old_order->user_id;
 					$user = get_userdata($user_id);
+
 					if ( empty( $user ) ) {
 						$logstr .= "Couldn't find the old order's user. Order ID = " . $old_order->id . ".";
 						pmpro_stripeWebhookExit();
@@ -777,6 +785,13 @@
 	{
 		global $logstr;
 
+		/**
+		 * Allow custom code to run before exiting.
+		 *
+		 * @since 2.11
+		 */
+		do_action( 'pmpro_stripe_webhook_before_exit' );
+
 		//for log
 		if($logstr)
 		{
@@ -926,17 +941,20 @@ function pmpro_stripe_webhook_change_membership_level( $morder ) {
 		//hook
 		do_action( "pmpro_after_checkout", $morder->user_id, $morder );
 
-		//setup some values for the emails
-		$user                   = get_userdata( $morder->user_id );
-		$user->membership_level = $pmpro_level;        //make sure they have the right level info
+		// Check if we should send emails.
+		if ( apply_filters( 'pmpro_send_checkout_emails', true, $morder ) ) {
+			// Set up some values for the emails.
+			$user                   = get_userdata( $morder->user_id );
+			$user->membership_level = $pmpro_level;        // Make sure that they have the right level info.
 
-		//send email to member
-		$pmproemail = new PMProEmail();
-		$pmproemail->sendCheckoutEmail( $user, $morder );
+			// Send email to member.
+			$pmproemail = new PMProEmail();
+			$pmproemail->sendCheckoutEmail( $user, $morder );
 
-		//send email to admin
-		$pmproemail = new PMProEmail();
-		$pmproemail->sendCheckoutAdminEmail( $user, $morder );
+			// Send email to admin.
+			$pmproemail = new PMProEmail();
+			$pmproemail->sendCheckoutAdminEmail( $user, $morder );
+		}
 
 		return true;
 	} else {

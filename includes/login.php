@@ -4,7 +4,7 @@
  * Checks for WP default, TML, and PMPro login page.
  */
 function pmpro_is_login_page() {
-	return ( in_array( $GLOBALS['pagenow'], array( 'wp-login.php', 'wp-register.php' ) ) || is_page( 'login' ) || ( pmpro_getOption( 'login_page_id' ) && is_page( pmpro_getOption( 'login_page_id' ) ) ) );
+	return ( in_array( $GLOBALS['pagenow'], array( 'wp-login.php', 'wp-register.php' ) ) || is_page( 'login' ) || ( get_option( 'pmpro_login_page_id' ) && is_page( get_option( 'pmpro_login_page_id' ) ) ) );
 }
 
 /**
@@ -37,7 +37,7 @@ add_filter( 'login_redirect','pmpro_login_redirect', 10, 3 );
  * Where is the sign up page? Levels page or default multisite page.
  */
 function pmpro_wp_signup_location( $location ) {
-	if ( is_multisite() && pmpro_getOption("redirecttosubscription") ) {
+	if ( is_multisite() && get_option("pmpro_redirecttosubscription") ) {
 		$location = pmpro_url("levels");
 	}
 
@@ -112,7 +112,7 @@ function pmpro_login_url_filter( $login_url='', $redirect='' ) {
 	}
 
 	// Check for a PMPro Login page.
-	$login_page_id = pmpro_getOption( 'login_page_id' );
+	$login_page_id = get_option( 'pmpro_login_page_id' );
 	if ( ! empty ( $login_page_id ) && 'publish' === get_post_status( $login_page_id ) ) {
 		$login_page_permalink = get_permalink( $login_page_id );
 		// If the page or permalink is unavailable, don't override the url here.
@@ -599,7 +599,7 @@ function pmpro_lost_password_form() { ?>
  */
 function pmpro_lost_password_redirect() {
 	if ( 'POST' == $_SERVER['REQUEST_METHOD'] ) {
-		$login_page = pmpro_getOption( 'login_page_id' );
+		$login_page = get_option( 'pmpro_login_page_id' );
 
 		if ( empty( $login_page ) ) {
 			return;
@@ -626,7 +626,7 @@ add_action( 'login_form_lostpassword', 'pmpro_lost_password_redirect' );
  */
 function pmpro_reset_password_redirect() {
 	if ( 'GET' == $_SERVER['REQUEST_METHOD'] ) {
-		$login_page = pmpro_getOption( 'login_page_id' );
+		$login_page = get_option( 'pmpro_login_page_id' );
 
 		if ( empty( $login_page ) ) {
 			return;
@@ -735,7 +735,7 @@ function pmpro_login_forms_handler_nav( $pmpro_form ) { ?>
 			}
 
 			if ( apply_filters( 'pmpro_show_register_link', get_option( 'users_can_register' ) ) ) {
-				$levels_page_id = pmpro_getOption( 'levels_page_id' );
+				$levels_page_id = get_option( 'pmpro_levels_page_id' );
 
 				if ( $levels_page_id && pmpro_are_any_visible_levels() ) {
 					$links['register'] = sprintf( '<a href="%s">%s</a>', esc_url( pmpro_url( 'levels' ) ), esc_html__( 'Join Now', 'paid-memberships-pro' ) );
@@ -771,7 +771,7 @@ function pmpro_login_forms_handler_nav( $pmpro_form ) { ?>
  */
 function pmpro_do_password_reset() {
     if ( 'POST' == $_SERVER['REQUEST_METHOD'] ) {
-        $login_page = pmpro_getOption( 'login_page_id' );
+        $login_page = get_option( 'pmpro_login_page_id' );
 
 		if ( empty( $login_page ) ) {
 			return;
@@ -841,7 +841,7 @@ add_action( 'login_form_resetpass', 'pmpro_do_password_reset' );
  */
 function pmpro_password_reset_email_filter( $message, $key, $user_login ) {
 
-	$login_page_id = pmpro_getOption( 'login_page_id' );
+	$login_page_id = get_option( 'pmpro_login_page_id' );
     if ( ! empty ( $login_page_id ) ) {
 		$login_url = get_permalink( $login_page_id );
 		if ( strpos( $login_url, '?' ) ) {
@@ -911,7 +911,7 @@ add_filter( 'authenticate', 'pmpro_authenticate_username_password', 30, 3);
  */
 function pmpro_login_failed( $username, $error = null ) {
 
-	$login_page = pmpro_getOption( 'login_page_id' );
+	$login_page = get_option( 'pmpro_login_page_id' );
 	if ( empty( $login_page ) ) {
 		return;
 	}

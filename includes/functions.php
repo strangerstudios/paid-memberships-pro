@@ -82,12 +82,13 @@ function pmpro_br2nl( $text, $tags = 'br' ) {
 	return( $text );
 }
 
+/**
+ * get_option() should be used directly instead.
+ *
+ * Will be deprecated in a future release.
+ */
 function pmpro_getOption( $s, $force = false ) {
-	if ( get_option( 'pmpro_' . $s ) ) {
-		return get_option( 'pmpro_' . $s );
-	} else {
-		return '';
-	}
+	return get_option( 'pmpro_' . $s, '' );
 }
 
 function pmpro_setOption( $s, $v = null, $sanitize_function = 'sanitize_text_field', $autoload = false ) {		
@@ -332,69 +333,7 @@ function pmpro_isLevelExpiringSoon( &$level ) {
 	return $r;
 }
 
-/**
- * Loads a template from one of the default paths (PMPro plugin or theme), or from filtered path
- *
- * @param null   $page_name - Name of the page/template
- * @param string $where - `local` or `url` (whether to load from FS or over http)
- * @param string $type - Type of template (valid: 'email' or 'pages', 'adminpages', 'preheader')
- * @param string $ext - File extension ('php', 'html', 'htm', etc)
- * @return string - The HTML for the template.
- *
- * TODO - Allow localized template files to be loaded?
- *
- * @since 1.8.9
- */
-function pmpro_loadTemplate( $page_name = null, $where = 'local', $type = 'pages', $ext = 'php' ) {
-	// called from page handler shortcode
-	if ( is_null( $page_name ) ) {
-		global $pmpro_page_name;
-		$page_name = $pmpro_page_name;
-	}
 
-	if ( $where == 'local' ) {
-		// template paths in order of priority (array gets reversed)
-		$default_templates = array(
-			PMPRO_DIR . "/{$type}/{$page_name}.{$ext}", // default plugin path
-			get_template_directory() . "/paid-memberships-pro/{$type}/{$page_name}.{$ext}", // parent theme
-			get_stylesheet_directory() . "/paid-memberships-pro/{$type}/{$page_name}.{$ext}", // child / active theme
-		);
-	} elseif ( $where == 'url' ) {
-		// template paths in order of priority (array gets reversed)
-		$default_templates = array(
-			PMPRO_URL . "/{$type}/{$page_name}.{$ext}", // default plugin path
-			get_template_directory_uri() . "/paid-memberships-pro/{$type}/{$page_name}.{$ext}", // parent theme
-			get_stylesheet_directory_uri() . "/paid-memberships-pro/{$type}/{$page_name}.{$ext}", // child / active theme
-		);
-
-	}
-	// Valid types: 'email', 'pages'
-	$templates = apply_filters( "pmpro_{$type}_custom_template_path", $default_templates, $page_name, $type, $where, $ext );
-	$user_templates = array_diff( $templates, $default_templates );
-	$allowed_default_templates = array_intersect( $templates, $default_templates );
-
-	// user specified a custom template path, so it has priority.
-	if ( ! empty( $user_templates ) ) {
-		$templates = array_merge($allowed_default_templates, $user_templates);
-	}
-
-	// last element included in the array is the most first one we try to load
-	$templates = array_reverse( $templates );
-
-	// look for template file to include
-	ob_start();
-	foreach ( $templates as $template_path ) {
-		// If loading a local file, check if it exists first
-		if ( $where == 'url' || file_exists( $template_path ) ) {
-			include $template_path;
-			break;
-		}
-	}
-	$template = ob_get_clean();
-
-	// return template content
-	return $template;
-}
 
 function pmpro_getLevelCost( &$level, $tags = true, $short = false ) {
 	// initial payment
@@ -466,8 +405,8 @@ function pmpro_getLevelCost( &$level, $tags = true, $short = false ) {
 	}
 
 	// taxes part
-	$tax_state = pmpro_getOption( 'tax_state' );
-	$tax_rate = pmpro_getOption( 'tax_rate' );
+	$tax_state = get_option( 'pmpro_tax_state' );
+	$tax_rate = get_option( 'pmpro_tax_rate' );
 
 	if ( $tax_state && $tax_rate && ! pmpro_isLevelFree( $level ) ) {
 		$r .= sprintf( __( 'Customers in %1$s will be charged %2$s%% tax.', 'paid-memberships-pro' ), $tax_state, round( $tax_rate * 100, 2 ) );
@@ -569,8 +508,8 @@ function pmpro_getLevelsCost( &$levels, $tags = true, $short = false ) {
 	}
 
 	// taxes part
-	$tax_state = pmpro_getOption( 'tax_state' );
-	$tax_rate = pmpro_getOption( 'tax_rate' );
+	$tax_state = get_option( 'pmpro_tax_state' );
+	$tax_rate = get_option( 'pmpro_tax_rate' );
 
 	if ( $tax_state && $tax_rate && ! pmpro_areLevelsFree( $levels ) ) {
 		$r .= sprintf( __( 'Customers in %1$s will be charged %2$s%% tax.', 'paid-memberships-pro' ), $tax_state, round( $tax_rate * 100, 2 ) );
@@ -831,15 +770,15 @@ function pmpro_showRequiresMembershipMessage() {
 
 	// get the correct message
 	if ( is_feed() ) {
-		$content = pmpro_getOption( 'rsstext' );
+		$content = get_option( 'pmpro_rsstext' );
 		$content = str_replace( '!!levels!!', implode( ', ', $post_membership_levels_names ), $content );
 	} elseif ( $current_user->ID ) {
 		// not a member
-		$content = pmpro_getOption( 'nonmembertext' );
+		$content = get_option( 'pmpro_nonmembertext' );
 		$content = str_replace( '!!levels!!', implode( ', ', $post_membership_levels_names ), $content );
 	} else {
 		// not logged in!
-		$content = pmpro_getOption( 'notloggedintext' );
+		$content = get_option( 'pmpro_notloggedintext' );
 		$content = str_replace( '!!levels!!', implode( ', ', $post_membership_levels_names ), $content );
 	}
 }
@@ -1780,8 +1719,17 @@ function pmpro_getDiscountCode( $seed = null ) {
 	static $count = 0;
 	$count++;
 
+	if( defined( 'AUTH_KEY' ) && defined( 'SECURE_AUTH_KEY' ) ) {
+		$auth_code = AUTH_KEY;
+		$secure_auth_code = SECURE_AUTH_KEY;
+	} else {
+		//Generate our own random string and hash it
+		$auth_code = md5( rand() );
+		$secure_auth_code = md5( rand() );
+	}
+
 	while ( empty( $code ) ) {
-		$scramble = md5( AUTH_KEY . microtime() . $seed . SECURE_AUTH_KEY . $count );
+		$scramble = md5( $auth_code . microtime() . $seed . $secure_auth_code . $count );
 		$code = substr( $scramble, 0, 10 );
 		$check = $wpdb->get_var( "SELECT code FROM $wpdb->pmpro_discount_codes WHERE code = '" . esc_sql( $code ) . "' LIMIT 1" );
 		if ( $check || is_numeric( $code ) ) {
@@ -2012,15 +1960,15 @@ function pmpro_get_no_access_message( $content, $level_ids, $level_names = NULL 
 
 	// Get the correct message to show at the bottom.
 	if ( is_feed() ) {
-		$newcontent = apply_filters( 'pmpro_rss_text_filter', stripslashes( pmpro_getOption( 'rsstext' ) ) );
+		$newcontent = apply_filters( 'pmpro_rss_text_filter', stripslashes( get_option( 'pmpro_rsstext' ) ) );
 		$content .= $pmpro_content_message_pre . str_replace( $sr_search, $sr_replace, $newcontent ) . $pmpro_content_message_post;
 	} elseif ( $current_user->ID ) {
 		//not a member
-		$newcontent = apply_filters( 'pmpro_non_member_text_filter', stripslashes( pmpro_getOption( 'nonmembertext' ) ) );
+		$newcontent = apply_filters( 'pmpro_non_member_text_filter', stripslashes( get_option( 'pmpro_nonmembertext' ) ) );
 		$content .= $pmpro_content_message_pre . str_replace( $sr_search, $sr_replace, $newcontent ) . $pmpro_content_message_post;
 	} else {
 		//not logged in!
-		$newcontent = apply_filters( 'pmpro_not_logged_in_text_filter', stripslashes( pmpro_getOption( 'notloggedintext' ) ) );
+		$newcontent = apply_filters( 'pmpro_not_logged_in_text_filter', stripslashes( get_option( 'pmpro_notloggedintext' ) ) );
 		$content .= $pmpro_content_message_pre . str_replace( $sr_search, $sr_replace, $newcontent ) . $pmpro_content_message_post;
 	}
 
@@ -2462,7 +2410,7 @@ function pmpro_getLevelAtCheckout( $level_id = null, $discount_code = null ) {
  *
  */
 function pmpro_sort_levels_by_order( $pmpro_levels ) {
-	$pmpro_level_order = pmpro_getOption( 'level_order' );
+	$pmpro_level_order = get_option( 'pmpro_level_order' );
 
 	// No custom sort order, just return.
 	if ( empty( $pmpro_level_order ) ) {
@@ -2670,7 +2618,7 @@ function pmpro_showMessage() {
 
 	if ( ! empty( $pmpro_msg ) ) {		
 		?>
-		<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_msg ' . $pmpro_msgt, $pmpro_msgt ) ); ?>">
+		<div role="alert" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_msg ' . $pmpro_msgt, $pmpro_msgt ) ); ?>">
 			<p><?php echo wp_kses( $pmpro_msg, $allowed_html ); ?></p>
 		</div>
 		<?php
@@ -2839,56 +2787,56 @@ function pmpro_is_ready() {
 		// no paid membership level now or attached to a user. we don't need the gateway setup
 		$pmpro_gateway_ready = true;
 	} else {
-		$gateway             = pmpro_getOption( 'gateway' );
-		$gateway_environment = pmpro_getOption( 'gateway_environment' );
+		$gateway             = get_option( 'pmpro_gateway' );
+		$gateway_environment = get_option( 'pmpro_gateway_environment' );
 		if ( $gateway == 'authorizenet' ) {
-			if ( $gateway_environment && pmpro_getOption( 'loginname' ) && pmpro_getOption( 'transactionkey' ) ) {
+			if ( $gateway_environment && get_option( 'pmpro_loginname' ) && get_option( 'pmpro_transactionkey' ) ) {
 				$pmpro_gateway_ready = true;
 			} else {
 				$pmpro_gateway_ready = false;
 			}
 		} elseif ( $gateway == 'paypal' || $gateway == 'paypalexpress' ) {
-			if ( $gateway_environment && pmpro_getOption( 'gateway_email' ) && pmpro_getOption( 'apiusername' ) && pmpro_getOption( 'apipassword' ) && pmpro_getOption( 'apisignature' ) ) {
+			if ( $gateway_environment && get_option( 'pmpro_gateway_email' ) && get_option( 'pmpro_apiusername' ) && get_option( 'pmpro_apipassword' ) && get_option( 'pmpro_apisignature' ) ) {
 				$pmpro_gateway_ready = true;
 			} else {
 				$pmpro_gateway_ready = false;
 			}
 		} elseif ( $gateway == 'paypalstandard' ) {
-			if ( $gateway_environment && pmpro_getOption( 'gateway_email' ) ) {
+			if ( $gateway_environment && get_option( 'pmpro_gateway_email' ) ) {
 				$pmpro_gateway_ready = true;
 			} else {
 				$pmpro_gateway_ready = false;
 			}
 		} elseif ( $gateway == 'payflowpro' ) {
-			if ( pmpro_getOption( 'payflow_partner' ) && pmpro_getOption( 'payflow_vendor' ) && pmpro_getOption( 'payflow_user' ) && pmpro_getOption( 'payflow_pwd' ) ) {
+			if ( get_option( 'pmpro_payflow_partner' ) && get_option( 'pmpro_payflow_vendor' ) && get_option( 'pmpro_payflow_user' ) && get_option( 'pmpro_payflow_pwd' ) ) {
 				$pmpro_gateway_ready = true;
 			} else {
 				$pmpro_gateway_ready = false;
 			}
 		} elseif ( $gateway == 'stripe' ) {
-			if ( $gateway_environment && pmpro_getOption( 'stripe_secretkey' ) && pmpro_getOption( 'stripe_publishablekey' ) ) {
+			if ( $gateway_environment && get_option( 'pmpro_stripe_secretkey' ) && get_option( 'pmpro_stripe_publishablekey' ) ) {
 				// Using legacy keys.
 				$pmpro_gateway_ready = true;
-			} elseif ( $gateway_environment && pmpro_getOption( $gateway_environment . '_stripe_connect_secretkey' ) && pmpro_getOption( $gateway_environment . '_stripe_connect_publishablekey' ) ) {
+			} elseif ( $gateway_environment && get_option( 'pmpro_' . $gateway_environment . '_stripe_connect_secretkey' ) && get_option( 'pmpro_' . $gateway_environment . '_stripe_connect_publishablekey' ) ) {
 				// Using connect.
 				$pmpro_gateway_ready = true;
 			} else {
 				$pmpro_gateway_ready = false;
 			}
 		} elseif ( $gateway == 'braintree' ) {
-			if ( $gateway_environment && pmpro_getOption( 'braintree_merchantid' ) && pmpro_getOption( 'braintree_publickey' ) && pmpro_getOption( 'braintree_privatekey' ) ) {
+			if ( $gateway_environment && get_option( 'pmpro_braintree_merchantid' ) && get_option( 'pmpro_braintree_publickey' ) && get_option( 'pmpro_braintree_privatekey' ) ) {
 				$pmpro_gateway_ready = true;
 			} else {
 				$pmpro_gateway_ready = false;
 			}
 		} elseif ( $gateway == 'twocheckout' ) {
-			if ( $gateway_environment && pmpro_getOption( 'twocheckout_apiusername' ) && pmpro_getOption( 'twocheckout_apipassword' ) ) {
+			if ( $gateway_environment && get_option( 'pmpro_twocheckout_apiusername' ) && get_option( 'pmpro_twocheckout_apipassword' ) ) {
 				$pmpro_gateway_ready = true;
 			} else {
 				$pmpro_gateway_ready = false;
 			}
 		} elseif ( $gateway == 'cybersource' ) {
-			if ( $gateway_environment && pmpro_getOption( 'cybersource_merchantid' ) && pmpro_getOption( 'cybersource_securitykey' ) ) {
+			if ( $gateway_environment && get_option( 'pmpro_cybersource_merchantid' ) && get_option( 'pmpro_cybersource_securitykey' ) ) {
 				$pmpro_gateway_ready = true;
 			} else {
 				$pmpro_gateway_ready = false;
@@ -2947,7 +2895,7 @@ function pmpro_show_setup_wizard_link() {
 	global $pmpro_ready;
 
 	// If PMPro isn't ready AND the wizard hasn't completed yet.
-	if ( ! $pmpro_ready && pmpro_getOption( 'wizard_step' ) !== 'done' ) {
+	if ( ! $pmpro_ready && get_option( 'pmpro_wizard_step' ) !== 'done' ) {
 		$show = true;
 	} else {
 		$show = false;
@@ -3366,14 +3314,14 @@ function pmpro_getGateway() {
 	} elseif ( ! empty( $_REQUEST['review'] ) ) {
 		$gateway = 'paypalexpress';             // if review param assume paypalexpress
 	} else {
-		$gateway = pmpro_getOption( 'gateway' );  // get from options
+		$gateway = get_option( 'pmpro_gateway' );  // get from options
 	}
 
 	// set valid gateways - the active gateway in the settings and any gateway added through the filter will be allowed
-	if ( pmpro_getOption( 'gateway', true ) == 'paypal' ) {
+	if ( get_option( 'pmpro_gateway' ) == 'paypal' ) {
 		$valid_gateways = apply_filters( 'pmpro_valid_gateways', array( 'paypal', 'paypalexpress' ) );
 	} else {
-		$valid_gateways = apply_filters( 'pmpro_valid_gateways', array( pmpro_getOption( 'gateway', true ) ) );
+		$valid_gateways = apply_filters( 'pmpro_valid_gateways', array( get_option( 'pmpro_gateway' ) ) );
 	}
 
 	// make sure it's valid
@@ -3507,7 +3455,7 @@ function pmpro_generatePages( $pages ) {
 			$pmpro_pages[ $name ] = wp_insert_post( $insert );
 
 			// update the option too
-			pmpro_setOption( $name . '_page_id', $pmpro_pages[ $name ] );
+			update_option( 'pmpro_' . $name . '_page_id', $pmpro_pages[ $name ] );
 			$pages_created[] = $pmpro_pages[ $name ];
 		}
 	}
@@ -4426,11 +4374,11 @@ function pmpro_activating_plugin( $plugin = null ) {
  */
 function pmpro_compare_siteurl() {
 	$site_url = get_site_url( null, '', 'https' ); // Always get the https version of the site URL.=
-	$current_url = pmpro_getOption( 'last_known_url' );
+	$current_url = get_option( 'pmpro_last_known_url' );
 
 	// If we don't have a current URL yet, set it to the site URL.
 	if ( empty( $current_url ) ) {
-		pmpro_setOption( 'last_known_url', $site_url );
+		update_option( 'pmpro_last_known_url', $site_url );
 		$current_url = $site_url;
 	}
 
@@ -4462,10 +4410,10 @@ function pmpro_is_paused() {
  *
  * @param $state bool true or false if in pause mode state
  * @since 2.10
- * @deprecated TBD No longer using `pmpro_pause_mode` option
+ * @deprecated 2.10.7 No longer using `pmpro_pause_mode` option
  * @return bool True if the option has been updated
  */
 function pmpro_set_pause_mode( $state ) {
-	_deprecated_function( __FUNCTION__, 'TBD' );
-	return pmpro_setOption( 'pause_mode', $state );
+	_deprecated_function( __FUNCTION__, '2.10.7' );
+	return update_option( 'pmpro_pause_mode', $state );
 }
