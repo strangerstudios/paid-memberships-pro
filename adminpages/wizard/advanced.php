@@ -1,10 +1,11 @@
 <?php 
 // Get options.
-$filter_queries = pmpro_getOption( 'filterqueries', true );
-$show_excerpts = pmpro_getOption( 'showexcerpts', true );
-$hide_toolbar = pmpro_getOption( 'hide_toolbar', true );
-$block_dashboard = pmpro_getOption( 'block_dashboard', true );
-$wisdom_tracking = pmpro_getOption( 'wisdom_opt_out', true );
+$filter_queries = get_option( 'pmpro_filterqueries' );
+$show_excerpts = get_option( 'pmpro_showexcerpts' );
+$hide_toolbar = get_option( 'pmpro_hide_toolbar' );
+$block_dashboard = get_option( 'pmpro_block_dashboard' );
+$wisdom_tracking = get_option( 'pmpro_wisdom_opt_out' );
+
 ?>
 <div class="pmpro-wizard__step pmpro-wizard__step-4">
 	<form action="" method="post">

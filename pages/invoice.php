@@ -58,7 +58,7 @@
 		<?php
 			// Check instructions
 			if ( $pmpro_invoice->gateway == "check" && ! pmpro_isLevelFree( $pmpro_invoice->membership_level ) ) {
-				echo '<div class="' . esc_attr( pmpro_get_element_class( 'pmpro_payment_instructions' ) ) . '">' . wp_kses_post( wpautop( wp_unslash( pmpro_getOption("instructions") ) ) ) . '</div>';
+				echo '<div class="' . esc_attr( pmpro_get_element_class( 'pmpro_payment_instructions' ) ) . '">' . wp_kses_post( wpautop( wp_unslash( get_option( 'pmpro_instructions' ) ) ) ) . '</div>';
 			}
 		?>
 
