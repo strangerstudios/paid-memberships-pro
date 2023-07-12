@@ -3321,7 +3321,7 @@ function pmpro_getGateway() {
 	if ( get_option( 'pmpro_gateway' ) == 'paypal' ) {
 		$valid_gateways = apply_filters( 'pmpro_valid_gateways', array( 'paypal', 'paypalexpress' ) );
 	} else {
-		$valid_gateways = apply_filters( 'pmpro_valid_gateways', array( get_option( 'pmpro_gateway', true ) ) );
+		$valid_gateways = apply_filters( 'pmpro_valid_gateways', array( get_option( 'pmpro_gateway' ) ) );
 	}
 
 	// make sure it's valid
