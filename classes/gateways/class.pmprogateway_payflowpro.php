@@ -623,10 +623,10 @@
 			global $gateway_environment;
 			$environment = $gateway_environment;
 
-			$PARTNER = pmpro_getOption("payflow_partner");
-			$VENDOR = pmpro_getOption("payflow_vendor");
-			$USER = pmpro_getOption("payflow_user");
-			$PWD = pmpro_getOption("payflow_pwd");
+			$PARTNER = get_option("pmpro_payflow_partner");
+			$VENDOR = get_option("pmpro_payflow_vendor");
+			$USER = get_option("pmpro_payflow_user");
+			$PWD = get_option("pmpro_payflow_pwd");
 			$API_Endpoint = "https://payflowpro.paypal.com";
 			if("sandbox" === $environment || "beta-sandbox" === $environment) {
 				$API_Endpoint = "https://pilot-payflowpro.paypal.com";

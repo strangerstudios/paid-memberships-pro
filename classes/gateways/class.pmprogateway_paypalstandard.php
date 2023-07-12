@@ -130,7 +130,7 @@
 		<tr class="pmpro_settings_divider gateway gateway_paypal gateway_paypalexpress gateway_paypalstandard" <?php if($gateway != "paypal" && $gateway != "paypalexpress" && $gateway != "paypalstandard") { ?>style="display: none;"<?php } ?>>
 			<td colspan="2">
 				<hr />
-				<h3><?php esc_html_e('PayPal Settings', 'paid-memberships-pro' ); ?></h3>
+				<h2><?php esc_html_e('PayPal Settings', 'paid-memberships-pro' ); ?></h2>
 			</td>
 		</tr>
 		<tr class="gateway gateway_paypalstandard" <?php if($gateway != "paypalstandard") { ?>style="display: none;"<?php } ?>>
@@ -238,12 +238,12 @@
 			?>
 			<span id="pmpro_paypalexpress_checkout" <?php if(($gateway != "paypalexpress" && $gateway != "paypalstandard") || !$pmpro_requirebilling) { ?>style="display: none;"<?php } ?>>
 				<input type="hidden" name="submit-checkout" value="1" />
-				<input type="image" id="pmpro_btn-submit-paypalstandard" class="<?php echo pmpro_get_element_class( 'pmpro_btn-submit-checkout' ); ?>" value="<?php esc_attr_e('Check Out with PayPal', 'paid-memberships-pro' );?> &raquo;" src="<?php echo apply_filters("pmpro_paypal_button_image", "https://www.paypalobjects.com/webstatic/en_US/i/buttons/checkout-logo-medium.png");?>" />
+				<input type="image" id="pmpro_btn-submit-paypalstandard" class="<?php echo pmpro_get_element_class( 'pmpro_btn-submit-checkout' ); ?>" value="<?php esc_attr_e('Check Out with PayPal', 'paid-memberships-pro' );?>" src="<?php echo apply_filters("pmpro_paypal_button_image", "https://www.paypalobjects.com/webstatic/en_US/i/buttons/checkout-logo-medium.png");?>" />
 			</span>
 
 			<span id="pmpro_submit_span" <?php if(($gateway == "paypalexpress" || $gateway == "paypalstandard") && $pmpro_requirebilling) { ?>style="display: none;"<?php } ?>>
 				<input type="hidden" name="submit-checkout" value="1" />
-				<input type="submit" id="pmpro_btn-submit" class="<?php echo pmpro_get_element_class( 'pmpro_btn pmpro_btn-submit-checkout', 'pmpro_btn-submit-checkout' ); ?>" value="<?php if($pmpro_requirebilling) { _e('Submit and Check Out', 'paid-memberships-pro' ); } else { _e('Submit and Confirm', 'paid-memberships-pro' );}?> &raquo;" />
+				<input type="submit" id="pmpro_btn-submit" class="<?php echo pmpro_get_element_class( 'pmpro_btn pmpro_btn-submit-checkout', 'pmpro_btn-submit-checkout' ); ?>" value="<?php if($pmpro_requirebilling) { _e('Submit and Check Out', 'paid-memberships-pro' ); } else { _e('Submit and Confirm', 'paid-memberships-pro' );}?>" />
 			</span>
 			<?php
 
@@ -323,7 +323,7 @@
 			$amount = pmpro_round_price_as_string( (float) $amount + (float) $amount_tax );
 
 			//build PayPal Redirect	URL
-			$environment = pmpro_getOption("gateway_environment");
+			$environment = get_option("pmpro_gateway_environment");
 
 			if("sandbox" === $environment || "beta-sandbox" === $environment) {
 				$paypal_url = "https://www.sandbox.paypal.com/cgi-bin/webscr";
@@ -351,7 +351,7 @@
 
 				//other args
 				$paypal_args = array(
-                    'business'      => pmpro_getOption("gateway_email"),
+                    'business'      => get_option("pmpro_gateway_email"),
 					'cmd'           => '_xclick-subscriptions',
 					'a1'			=> $initial_payment,
 					'p1'			=> $order->BillingFrequency,
@@ -467,7 +467,7 @@
 			{
 				//other args
 				$paypal_args = array(
-					'business'      => pmpro_getOption("gateway_email"),
+					'business'      => get_option("pmpro_gateway_email"),
 					'cmd'           => '_xclick',
 					'amount'        => $initial_payment,
 					'item_name'     => apply_filters( 'pmpro_paypal_level_description', substr($order->membership_level->name . " at " . get_bloginfo("name"), 0, 127), $order->membership_level->name, $order, get_bloginfo("name") ),
@@ -527,8 +527,8 @@
 			$nvp_args    = array();
 
 			$gateway     = pmpro_getGateway();
-            $environment = pmpro_getOption("gateway_environment");
-			$signature   = pmpro_getOption("apisignature");
+            $environment = get_option("pmpro_gateway_environment");
+			$signature   = get_option("pmpro_apisignature");
 
 			if("sandbox" === $environment || "beta-sandbox" === $environment) {
 				$paypal_url = "https://www.sandbox.paypal.com/cgi-bin/webscr";
@@ -604,9 +604,9 @@
 			global $gateway_environment;
 			$environment = $gateway_environment;
 
-			$API_UserName = pmpro_getOption("apiusername");
-			$API_Password = pmpro_getOption("apipassword");
-			$API_Signature = pmpro_getOption("apisignature");
+			$API_UserName = get_option("pmpro_apiusername");
+			$API_Password = get_option("pmpro_apipassword");
+			$API_Signature = get_option("pmpro_apisignature");
 			$API_Endpoint = "https://api-3t.paypal.com/nvp";
 			if("sandbox" === $environment || "beta-sandbox" === $environment) {
 				$API_Endpoint = "https://api-3t.$environment.paypal.com/nvp";

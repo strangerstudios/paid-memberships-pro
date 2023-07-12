@@ -99,7 +99,7 @@
 		<tr class="pmpro_settings_divider gateway gateway_check" <?php if($gateway != "check") { ?>style="display: none;"<?php } ?>>
 			<td colspan="2">
 				<hr />
-				<h3><?php esc_html_e('Pay by Check Settings', 'paid-memberships-pro' ); ?></h3>
+				<h2><?php esc_html_e('Pay by Check Settings', 'paid-memberships-pro' ); ?></h2>
 			</td>
 		</tr>
 		<tr class="gateway gateway_check" <?php if($gateway != "check") { ?>style="display: none;"<?php } ?>>
@@ -149,7 +149,7 @@
 			global $pmpro_level;
 
 			if($gateway == "check" && !pmpro_isLevelFree($pmpro_level)) {
-				$instructions = pmpro_getOption("instructions");
+				$instructions = get_option("pmpro_instructions");
 				echo '<div class="' . pmpro_get_element_class( 'pmpro_check_instructions' ) . '">' . wpautop(wp_unslash( $instructions )) . '</div>';
 			}
 		}

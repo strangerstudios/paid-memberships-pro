@@ -26,6 +26,12 @@ function register_dynamic_block() {
 	// Hook server side rendering into render callback.
 	register_block_type( 'pmpro/account-links-section', [
 		'render_callback' => __NAMESPACE__ . '\render_dynamic_block',
+		'attributes'	=> array(
+			'title'		=> array(
+				'type' => 'string',
+				'default' => __( 'Member Links', 'paid-memberships-pro' )
+			)
+		),
 	] );
 }
 
@@ -34,6 +40,7 @@ function register_dynamic_block() {
  *
  * @return string
  **/
-function render_dynamic_block() {
-	return pmpro_shortcode_account( array( 'sections' => 'links' ) );
+function render_dynamic_block( $attributes ) {
+	$title = isset( $attributes['title'] ) ? $attributes['title'] : null;
+	return pmpro_shortcode_account( array ( 'sections' => 'links', 'title' => $title ) );
 }

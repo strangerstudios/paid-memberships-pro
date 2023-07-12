@@ -109,13 +109,17 @@ class PMPro_Site_Health {
 					'label' => __( 'Library Conflicts', 'paid-memberships-pro' ),
 					'value' => self::get_library_conflicts(),
 				],
+				'pmpro-outdated-templates' => [
+					'label' => __( 'Outdated Templates', 'paid-memberships-pro' ),
+					'value' => self::get_outdated_templates(),
+				],
 				'pmpro-current-site-url' => [
 					'label' => __( 'Current Site URL', 'paid-memberships-pro' ),
 					'value' => get_site_url(),
 				],
 				'pmpro-recorded-site-url' => [
 					'label' => __( 'Last Known Site URL', 'paid-memberships-pro' ),
-					'value' => pmpro_getOption( 'last_known_url' ),
+					'value' => get_option( 'pmpro_last_known_url' ),
 				],
 				'pmpro-pause-mode' => [
 					'label' => __( 'Pause Mode', 'paid-memberships-pro' ),
@@ -192,7 +196,7 @@ class PMPro_Site_Health {
 	 * @return string The payment gateway information.
 	 */
 	public function get_gateway() {
-		$gateway  = pmpro_getOption( 'gateway' );
+		$gateway  = get_option( 'pmpro_gateway' );
 		$gateways = pmpro_gateways();
 
 		// Check if gateway is registered.
@@ -233,7 +237,7 @@ class PMPro_Site_Health {
 	 * @return string The payment gateway environment information.
 	 */
 	public function get_gateway_env() {
-		$environment  = pmpro_getOption( 'gateway_environment' );
+		$environment  = get_option( 'pmpro_gateway_environment' );
 		$environments = [
 			'sandbox' => __( 'Sandbox/Testing', 'paid-memberships-pro' ),
 			'live'    => __( 'Live/Production', 'paid-memberships-pro' ),
@@ -545,6 +549,30 @@ class PMPro_Site_Health {
 	}
 
 	/**
+ 	 * Get outdated templates.
+ 	 *
+	 * @since 2.11
+ 	 *
+ 	 * @return string|string[] The outdated templates information.
+ 	 */
+	  function get_outdated_templates() {
+		// Get outdated templates.
+		$outdated_templates = pmpro_get_outdated_page_templates();
+
+		// If there are no outdated templates, return a message.
+		if ( empty( $outdated_templates ) ) {
+			return __( 'No outdated templates detected.', 'paid-memberships-pro' );
+		}
+
+		// Format data to be displayed in site health.
+		$return_arr = array();
+		foreach ( $outdated_templates as $template_name => $template_data ) {
+			$return_arr[ $template_name ] = __( 'Default version', 'paid-memberships-pro' ) . ': ' . $template_data['default_version'] . ' | ' . __( 'Loaded version', 'paid-memberships-pro' ) . ': ' . $template_data['loaded_version'] . ' | ' . __( 'Loaded path', 'paid-memberships-pro' ) . ': ' . $template_data['loaded_path'];
+		}
+		return $return_arr;
+	}
+
+	/**
 	 * Get the constants site health information.
 	 *
 	 * @since 2.6.4
@@ -583,7 +611,7 @@ class PMPro_Site_Health {
 			],
 		];
 
-		$gateway = pmpro_getOption( 'gateway' );
+		$gateway = get_option( 'pmpro_gateway' );
 
 		if ( $gateway && isset( $gateway_specific_constants[ $gateway ] ) ) {
 			$constants = array_merge( $constants, $gateway_specific_constants[ $gateway ] );
