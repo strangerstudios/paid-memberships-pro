@@ -40,13 +40,27 @@
          supports: {
          },
          attributes: {
+          title : {
+            type: 'string',
+            default: __( 'Member Links', 'paid-memberships-pro' ),
+          }
          },
-         edit(){
+         edit({ attributes, setAttributes }) {
+          const updateTitle = ( event ) => {
+           setAttributes( { title: event.target.value } );
+          };
              return [
-                 <div className="pmpro-block-element">
-                   <span className="pmpro-block-title">{ __( 'Paid Memberships Pro', 'paid-memberships-pro' ) }</span>
-                   <span className="pmpro-block-subtitle">{ __( 'Membership Account: Member Links', 'paid-memberships-pro' ) }</span>
-                 </div>
+                <div className="pmpro-block-element">
+                  <span className="pmpro-block-title">{ __( 'Paid Memberships Pro', 'paid-memberships-pro' ) }</span>
+                  <span className="pmpro-block-subtitle">{ __( 'Membership Account: Member Links', 'paid-memberships-pro' ) }</span>
+                  <input
+                  placeholder={ __( 'No title will be shown.', 'paid-memberships-pro' ) }
+                  type="text"
+                  value={ attributes.title }
+                  class="block-editor-plain-text"
+                  onChange={ updateTitle }
+                  />
+                </div>
             ];
          },
          save() {

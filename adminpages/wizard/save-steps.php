@@ -3,7 +3,7 @@
  * Include the Wizard Save Steps File in the admin init hook when using the Wizard.
  * This is to save and handle data and redirects.
  *
- * @since TBD
+ * @since 2.11
  */
 function pmpro_init_save_wizard_data() {
 	// Bail if not on the wizard page.
@@ -258,15 +258,14 @@ function pmpro_init_save_wizard_data() {
 		// Get the data and store it in an option.
 		$filterqueries = ! empty( $_REQUEST['filterqueries'] ) ? intval( $_REQUEST['filterqueries'] ) : 0;
 		$showexcerpts = ! empty( $_REQUEST['showexcerpts'] ) ? intval( $_REQUEST['showexcerpts'] ) : 0;
-		$spamprotection = ! empty( $_REQUEST['spamprotection'] ) ? intval( $_REQUEST['spamprotection'] ) : 0;
 		$wisdom_opt_out = ! empty( $_REQUEST['wisdom_opt_out'] ) ? intval( $_REQUEST['wisdom_opt_out'] ) : 0;
 
 		// Updated the options. Set the values as above to cater for cases where the REQUEST variables are empty for blank checkboxes.
 		pmpro_setOption( 'filterqueries', $filterqueries );
 		pmpro_setOption( 'showexcerpts', $showexcerpts );
-		pmpro_setOption( 'spamprotection', $spamprotection );
+		pmpro_setOption( 'block_dashboard' );
+		pmpro_setOption( 'hide_toolbar' );
 		pmpro_setOption( 'wisdom_opt_out', $wisdom_opt_out );
-		
 
 		// Redirect to next step
 		$next_step = add_query_arg(
