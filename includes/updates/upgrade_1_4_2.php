@@ -6,7 +6,7 @@ function pmpro_upgrade_1_4_2()
 		PayPal Website Payments Pro, Authorize.net, and Stripe will default to use ssl.
 		PayPal Express and the test gateway (no gateway) will default to not use ssl.
 	*/
-	$gateway = pmpro_getOption("gateway");
+	$gateway = get_option( "pmpro_gateway");
 	if($gateway == "paypal" || $gateway == "authorizenet" || $gateway == "stripe")
 		update_option("pmpro_use_ssl", 1);
 	else

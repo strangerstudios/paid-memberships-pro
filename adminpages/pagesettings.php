@@ -62,21 +62,21 @@ if (!empty($_REQUEST['savesettings'])) {
 	pmpro_setOption("member_profile_edit_page_id", NULL, 'intval');
 
     //update the pages array
-    $pmpro_pages["account"] = pmpro_getOption("account_page_id");
-    $pmpro_pages["billing"] = pmpro_getOption("billing_page_id");
-    $pmpro_pages["cancel"] = pmpro_getOption("cancel_page_id");
-    $pmpro_pages["checkout"] = pmpro_getOption("checkout_page_id");
-    $pmpro_pages["confirmation"] = pmpro_getOption("confirmation_page_id");
-    $pmpro_pages["invoice"] = pmpro_getOption("invoice_page_id");
-    $pmpro_pages["levels"] = pmpro_getOption("levels_page_id");
-	$pmpro_pages["login"] = pmpro_getOption("login_page_id");
-    $pmpro_pages['member_profile_edit'] = pmpro_getOption( 'member_profile_edit_page_id' );
+    $pmpro_pages["account"] = get_option( "pmpro_account_page_id");
+    $pmpro_pages["billing"] = get_option( "pmpro_billing_page_id");
+    $pmpro_pages["cancel"] = get_option( "pmpro_cancel_page_id");
+    $pmpro_pages["checkout"] = get_option( "pmpro_checkout_page_id");
+    $pmpro_pages["confirmation"] = get_option( "pmpro_confirmation_page_id");
+    $pmpro_pages["invoice"] = get_option( "pmpro_invoice_page_id");
+    $pmpro_pages["levels"] = get_option( "pmpro_levels_page_id");
+	$pmpro_pages["login"] = get_option( "pmpro_login_page_id");
+    $pmpro_pages['member_profile_edit'] = get_option( 'pmpro_member_profile_edit_page_id' );
 
     //save additional pages
     if (!empty($extra_pages)) {
         foreach ($extra_pages as $name => $label) {
             pmpro_setOption($name . '_page_id', NULL, 'intval');
-            $pmpro_pages[$name] = pmpro_getOption($name . '_page_id');
+            $pmpro_pages[$name] = get_option($name . '_page_id');
         }
     }
 
@@ -119,7 +119,7 @@ if (!empty($_REQUEST['createpages'])) {
 		$pages['member_profile_edit'] = __('Your Profile', 'paid-memberships-pro' );
 	} elseif ( in_array( $_REQUEST['page_name'], array_keys( $generate_once ) ) ) {
 		$page_name = sanitize_text_field( $_REQUEST['page_name'] );
-		if ( ! empty( pmpro_getOption( $page_name . '_page_generated' ) ) ) {
+		if ( ! empty( get_option( $page_name . '_page_generated' ) ) ) {
 			// Don't generate again.
 			unset( $pages[$page_name] );
 

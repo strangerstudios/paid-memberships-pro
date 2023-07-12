@@ -246,8 +246,8 @@ if ( ! empty( $_REQUEST['save'] ) ) {
 			$order->expirationmonth = '';
 			$order->expirationyear = '';
 			$order->status = 'success';
-			$order->gateway = pmpro_getOption( 'gateway' );
-			$order->gateway_environment = pmpro_getOption( 'gateway_environment' );
+			$order->gateway = get_option( 'pmpro_gateway' );
+			$order->gateway_environment = get_option( 'pmpro_gateway_environment' );
 			$order->payment_transaction_id = '';
 			$order->subscription_transaction_id = '';
 			$order->affiliate_id = '';
@@ -842,7 +842,7 @@ require_once( dirname( __FILE__ ) . '/admin_header.php' ); ?>
 			<?php } ?>
 
 			<?php
-				$tospage_id = pmpro_getOption( 'tospage' );
+				$tospage_id = get_option( 'pmpro_tospage' );
 				$consent_entry = $order->get_tos_consent_log_entry();
 
 				if( !empty( $tospage_id ) || !empty( $consent_entry ) ) {

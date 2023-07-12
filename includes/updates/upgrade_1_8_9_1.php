@@ -74,7 +74,7 @@ function pmpro_upgrade_1_8_9_1_ajax() {
 					'timeout' => 60,
 					'sslverify' => FALSE,
 					'httpversion' => '1.1',
-					'headers'=>array('Authorization' => 'Bearer ' . pmpro_getOption("stripe_secretkey")),
+					'headers'=>array('Authorization' => 'Bearer ' . get_option( "pmpro_stripe_secretkey")),
 			    ))));
 
 			//no sub?

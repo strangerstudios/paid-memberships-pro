@@ -565,7 +565,7 @@ if ( empty( $default_gateway ) ) {
 
 	<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout-field pmpro_captcha', 'pmpro_captcha' ) ); ?>">
 	<?php
-		$recaptcha = pmpro_getOption("recaptcha");
+		$recaptcha = get_option( "pmpro_recaptcha");
 		if ( $recaptcha == 2 || $recaptcha == 1 ) {
 			pmpro_recaptcha_get_html();
 		}
