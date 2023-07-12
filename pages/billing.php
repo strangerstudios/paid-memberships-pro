@@ -26,7 +26,7 @@
 	$pmpro_email_field_type = apply_filters('pmpro_email_field_type', true);
 
 	// Get the default gateway for the site.
-	$default_gateway = pmpro_getOption( 'gateway' );
+	$default_gateway = get_option( 'pmpro_gateway' );
 
 	// Set the wrapping class for the checkout div based on the default gateway;
 	if ( empty( $gateway ) ) {
@@ -61,19 +61,7 @@
 			<?php if( $pmpro_billing_subscription->get_billing_limit() ) { ?>
 				<li><strong><?php esc_html_e("Duration", 'paid-memberships-pro' );?>:</strong> <?php echo esc_html( $pmpro_billing_subscription->get_billing_limit() . ' ' . sornot( $pmpro_billing_subscription->get_cycle_period(), $pmpro_billing_subscription->get_billing_limit() ) ); ?></li>
 
-			<?php } ?>
-
-			<?php
-				$pmpro_billing_show_payment_method = apply_filters( 'pmpro_billing_show_payment_method'
-					, true);
-				if ( $pmpro_billing_show_payment_method && ! empty( $CardType ) ) { ?>
-					<li><strong><?php esc_html_e( 'Payment Method', 'paid-memberships-pro' ); ?>: </strong>
-						<?php echo esc_html( ucwords( $CardType ) ); ?>
-						<?php _e('ending in', 'paid-memberships-pro' ); ?>
-						<?php echo esc_html( last4( get_user_meta( $current_user->ID, 'pmpro_AccountNumber', true ) ) ); ?>.
-						<?php _e('Expiration', 'paid-memberships-pro' );?>: <?php echo esc_html( $ExpirationMonth ); ?>/<?php echo esc_html( $ExpirationYear ); ?>
-					</li>
-				<?php } ?>
+			<?php } ?>			
 
 			<?php
 			 /**
@@ -86,7 +74,7 @@
 		</ul>
 		<?php
 		if ( $show_check_payment_instructions ) {
-			$instructions = pmpro_getOption("instructions"); ?>
+			$instructions = get_option( 'pmpro_instructions' ); ?> 
 			<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_check_instructions' ) ); ?>"><?php echo wp_kses_post( wpautop( wp_unslash( $instructions ) ) ); ?></div>
 			<hr />
 			<p class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_actions_nav' ) ); ?>">
@@ -289,7 +277,7 @@
 				$pmpro_include_payment_information_fields = apply_filters('pmpro_include_payment_information_fields', true);
 				if($pmpro_include_payment_information_fields)
 				{
-					$pmpro_accepted_credit_cards = pmpro_getOption("accepted_credit_cards");
+					$pmpro_accepted_credit_cards = get_option("pmpro_accepted_credit_cards");
 					$pmpro_accepted_credit_cards = explode(",", $pmpro_accepted_credit_cards);
 					$pmpro_accepted_credit_cards_string = pmpro_implodeToEnglish($pmpro_accepted_credit_cards);
 					?>
@@ -299,7 +287,7 @@
 							<span class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout-h2-msg' ) ); ?>"><?php echo esc_html( sprintf( __('We accept %s', 'paid-memberships-pro' ), $pmpro_accepted_credit_cards_string ) ); ?></span>
 
 						</h2>
-						<?php $sslseal = pmpro_getOption("sslseal"); ?>
+						<?php $sslseal = get_option("pmpro_sslseal"); ?>
 						<?php if(!empty($sslseal)) { ?>
 							<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout-fields-display-seal' ) ); ?>">
 						<?php } ?>
@@ -312,7 +300,6 @@
 										<select id="CardType" name="CardType" class="<?php echo esc_attr( pmpro_get_element_class( '', 'CardType' ) );?>">
 											<?php foreach($pmpro_accepted_credit_cards as $cc) { ?>
 												<option value="<?php echo esc_attr( $cc ); ?>" <?php if($CardType === $cc) { ?>selected="selected"<?php } ?>><?php echo esc_html( $cc ); ?></option>
-
 											<?php } ?>
 										</select>
 									</div> <!-- end pmpro_payment-card-type -->
@@ -399,7 +386,7 @@
 
 				<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout-field pmpro_captcha', 'pmpro_captcha' ) ); ?>">
 				<?php
-					$recaptcha = pmpro_getOption("recaptcha");
+					$recaptcha = get_option("pmpro_recaptcha");
 					if ( $recaptcha == 2 || ( $recaptcha == 1 && pmpro_isLevelFree( $pmpro_level ) ) ) {
 						pmpro_recaptcha_get_html();
 					}

@@ -24,7 +24,7 @@ global $discount_code, $username, $password, $password2, $bfirstname, $blastname
 $pmpro_email_field_type = apply_filters('pmpro_email_field_type', true);
 
 // Set the wrapping class for the checkout div based on the default gateway;
-$default_gateway = pmpro_getOption( 'gateway' );
+$default_gateway = get_option( 'pmpro_gateway' );
 if ( empty( $default_gateway ) ) {
 	$pmpro_checkout_gateway_class = 'pmpro_checkout_gateway-none';
 } else {
@@ -417,7 +417,7 @@ if ( empty( $default_gateway ) ) {
 	<?php do_action("pmpro_checkout_after_billing_fields"); ?>
 
 	<?php
-		$pmpro_accepted_credit_cards = pmpro_getOption("accepted_credit_cards");
+		$pmpro_accepted_credit_cards = get_option( 'pmpro_accepted_credit_cards' );
 		$pmpro_accepted_credit_cards = explode(",", $pmpro_accepted_credit_cards);
 		$pmpro_accepted_credit_cards_string = pmpro_implodeToEnglish($pmpro_accepted_credit_cards);
 	?>
@@ -431,7 +431,7 @@ if ( empty( $default_gateway ) ) {
 				<span class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout-h2-name' ) ); ?>"><?php esc_html_e('Payment Information', 'paid-memberships-pro' );?></span>
 				<span class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout-h2-msg' ) ); ?>"><?php echo esc_html( sprintf( __('We Accept %s', 'paid-memberships-pro' ), $pmpro_accepted_credit_cards_string ) );?></span>
 			</h2>
-			<?php $sslseal = pmpro_getOption("sslseal"); ?>
+			<?php $sslseal = get_option( 'pmpro_sslseal' ); ?>
 			<?php if(!empty($sslseal)) { ?>
 				<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout-fields-display-seal' ) ); ?>">
 			<?php } ?>

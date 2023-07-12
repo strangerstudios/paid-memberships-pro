@@ -140,8 +140,7 @@
 		}
 	}
 
-	//check gateway dependencies
-	$gateway = pmpro_getOption('gateway');
+	$gateway = get_option( 'pmpro_gateway' );
 	if($gateway == "stripe" && version_compare( PHP_VERSION, '5.3.29', '>=' ) ) {
 		PMProGateway_stripe::dependencies();
 	} elseif($gateway == "braintree" && version_compare( PHP_VERSION, '5.4.45', '>=' ) ) {

@@ -387,7 +387,7 @@ function pmpro_membership_level_profile_fields($user)
 			}
 		}
 
-		$tospage_id = pmpro_getOption( 'tospage' );
+		$tospage_id = get_option( 'pmpro_tospage' );
 		$consent_log = pmpro_get_consent_log( $user->ID, true );
 
 		if( !empty( $tospage_id ) || !empty( $consent_log ) ) {

@@ -20,9 +20,9 @@
 			}
 
 			//set API connection vars
-			Twocheckout::sellerId(pmpro_getOption('twocheckout_accountnumber'));
-			Twocheckout::username(pmpro_getOption('twocheckout_apiusername'));
-			Twocheckout::password(pmpro_getOption('twocheckout_apipassword'));
+			Twocheckout::sellerId(get_option('pmpro_twocheckout_accountnumber'));
+			Twocheckout::username(get_option('pmpro_twocheckout_apiusername'));
+			Twocheckout::password(get_option('pmpro_twocheckout_apipassword'));
 			Twocheckout::$verifySSL = false;
 
 			$this->gateway = $gateway;
@@ -270,7 +270,7 @@
 			global $pmpro_currency;
 
 			$tco_args = array(
-				'sid' => pmpro_getOption("twocheckout_accountnumber"),
+				'sid' => get_option("pmpro_twocheckout_accountnumber"),
 				'mode' => '2CO', // will always be 2CO according to docs (@see https://www.2checkout.com/documentation/checkout/parameter-sets/pass-through-products/)
 				'li_0_type' => 'product',
 				'li_0_name' => substr($order->membership_level->name . " at " . get_bloginfo("name"), 0, 127),
@@ -315,7 +315,7 @@
 
 			// Demo mode?
 			if(empty($order->gateway_environment))
-				$gateway_environment = pmpro_getOption("gateway_environment");
+				$gateway_environment = get_option("pmpro_gateway_environment");
 			else
 				$gateway_environment = $order->gateway_environment;
 			if("sandbox" === $gateway_environment || "beta-sandbox" === $gateway_environment)
@@ -374,7 +374,7 @@
 
 			// Demo mode?
 			if(empty($order->gateway_environment))
-				$gateway_environment = pmpro_getOption("gateway_environment");
+				$gateway_environment = get_option("pmpro_gateway_environment");
 			else
 				$gateway_environment = $order->gateway_environment;
 

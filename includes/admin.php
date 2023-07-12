@@ -19,7 +19,7 @@ function pmpro_admin_init_redirect_to_dashboard() {
 	}
 
 	// Check if we should redirect to the wizard. This should only happen on new installs and once.
-	if ( pmpro_getOption( 'wizard_redirect', true ) ) {		
+	if ( get_option( 'pmpro_wizard_redirect' ) ) {
 		delete_option( 'pmpro_wizard_redirect' );	// Deleting right away to avoid redirect loops.
 		wp_redirect( admin_url( 'admin.php?page=pmpro-wizard' ) );
 		exit;
@@ -49,7 +49,7 @@ add_action( 'admin_init', 'pmpro_block_dashboard_redirect', 9 );
 function pmpro_block_dashboard() {
 	global $current_user, $pagenow;
 
-	$block_dashboard = pmpro_getOption( 'block_dashboard' );
+	$block_dashboard = get_option( 'pmpro_block_dashboard' );
 
 	if (
 		! wp_doing_ajax()
@@ -157,7 +157,7 @@ function pmpro_pause_mode_notice() {
 			</div>
 			<div class="pmpro_notification-content">
 				<h3><?php esc_html_e( 'Site URL Change Detected', 'paid-memberships-pro' ); ?></h3>
-				<p><?php printf( __( '<strong>Warning:</strong> We have detected that your site URL has changed. All PMPro-related cron jobs and automated services have been disabled. Paid Memberships Pro considers %s to be the site URL.', 'paid-memberships-pro' ), '<code>' . esc_url( pmpro_getOption( 'last_known_url' ) ) . '</code>' ); ?></p>
+				<p><?php printf( __( '<strong>Warning:</strong> We have detected that your site URL has changed. All PMPro-related cron jobs and automated services have been disabled. Paid Memberships Pro considers %s to be the site URL.', 'paid-memberships-pro' ), '<code>' . esc_url( get_option( 'pmpro_last_known_url' ) ) . '</code>' ); ?></p>
 				<?php if ( current_user_can( 'pmpro_manage_pause_mode' ) ) { ?>
 				<p>
 					<a href='#' id="hide_pause_notification_button" class='button' value="hide_pause_notification"><?php esc_html_e( 'Dismiss notice and keep all services paused', 'paid-memberships-pro' ); ?></a>
@@ -182,7 +182,7 @@ function pmpro_spamprotection_notice() {
 
 	// If spam protection is enabled, we are not on a PMPro settings page, or we are on the PMPro advanced settings page, don't show the notice.
 	if (
-		pmpro_getOption( 'spamprotection' ) ||
+		get_option( 'pmpro_spamprotection' ) ||
 		! isset( $_REQUEST['page'] ) ||
 		( isset( $_REQUEST['page'] ) && 'pmpro-' !== substr( $_REQUEST['page'], 0, 6 ) ) ||
 		( isset( $_REQUEST['page'] ) && 'pmpro-advancedsettings' === $_REQUEST['page'] )

@@ -17,14 +17,16 @@ if ( ! empty( $_REQUEST['gateway'] ) ) {
 } elseif ( ! empty( $_REQUEST['review'] ) ) {
 	$gateway = "paypalexpress";
 } else {
-	$gateway = pmpro_getOption( "gateway" );
+	$gateway = get_option( "pmpro_gateway" );
 }
 
 //set valid gateways - the active gateway in the settings and any gateway added through the filter will be allowed
-if ( pmpro_getOption( "gateway", true ) == "paypal" ) {
+if ( get_option( "pmpro_gateway" ) == "paypal" ) {
+
 	$valid_gateways = apply_filters( "pmpro_valid_gateways", array( "paypal", "paypalexpress" ) );
 } else {
-	$valid_gateways = apply_filters( "pmpro_valid_gateways", array( pmpro_getOption( "gateway", true ) ) );
+	$valid_gateways = apply_filters( "pmpro_valid_gateways", array( get_option( "pmpro_gateway" ) ) );
+
 }
 
 //let's add an error now, if an invalid gateway is set
@@ -66,7 +68,7 @@ if ( ! pmpro_isLevelFree( $pmpro_level ) ) {
 	//require billing and ssl
 	$pagetitle            = __( "Checkout: Payment Information", 'paid-memberships-pro' );
 	$pmpro_requirebilling = true;
-	$besecure             = pmpro_getOption( "use_ssl" );
+	$besecure             = get_option( "pmpro_use_ssl" );
 } else {
 	//no payment so we don't need ssl
 	$pagetitle            = __( "Set Up Your Account", 'paid-memberships-pro' );
@@ -104,7 +106,7 @@ $skip_account_fields = apply_filters( "pmpro_skip_account_fields", $skip_account
 
 //some options
 global $tospage;
-$tospage = pmpro_getOption( "tospage" );
+$tospage = get_option( "pmpro_tospage" );
 if ( $tospage ) {
 	$tospage = get_post( $tospage );
 }
@@ -679,18 +681,8 @@ if ( ! empty( $pmpro_confirmed ) ) {
 			}
 
 			//save billing info ect, as user meta
-			$meta_keys   = array(
-				"pmpro_CardType",
-				"pmpro_AccountNumber",
-				"pmpro_ExpirationMonth",
-				"pmpro_ExpirationYear",
-			);
-			$meta_values = array(
-				$CardType,
-				hideCardNumber( $AccountNumber ),
-				$ExpirationMonth,
-				$ExpirationYear,
-			);
+			$meta_keys   = array();
+			$meta_values = array();
 
 			// Check if firstname and last name fields are set.
 			if ( ! empty( $bfirstname ) || ! empty( $blastname ) ) {
@@ -801,7 +793,8 @@ if ( ! empty( $pmpro_confirmed ) ) {
 //default values
 if ( empty( $submit ) ) {
 	//show message if the payment gateway is not setup yet
-	if ( $pmpro_requirebilling && ! pmpro_getOption( "gateway", true ) ) {
+	if ( $pmpro_requirebilling && ! get_option( "pmpro_gateway" ) ) {
+
 		if ( pmpro_isAdmin() ) {
 			$pmpro_msg = sprintf( __( 'You must <a href="%s">set up a Payment Gateway</a> before any payments will be processed.', 'paid-memberships-pro' ), admin_url( 'admin.php?page=pmpro-paymentsettings' ) );
 		} else {
@@ -823,16 +816,7 @@ if ( empty( $submit ) ) {
 		$bphone        = get_user_meta( $current_user->ID, "pmpro_bphone", true );
 		$bemail        = get_user_meta( $current_user->ID, "pmpro_bemail", true );
 		$bconfirmemail = $bemail;    //as of 1.7.5, just setting to bemail
-		$CardType      = get_user_meta( $current_user->ID, "pmpro_CardType", true );
-		//$AccountNumber = hideCardNumber(get_user_meta($current_user->ID, "pmpro_AccountNumber", true), false);
-		$ExpirationMonth = get_user_meta( $current_user->ID, "pmpro_ExpirationMonth", true );
-		$ExpirationYear  = get_user_meta( $current_user->ID, "pmpro_ExpirationYear", true );
 	}
-}
-
-//clear out XXXX numbers (e.g. with Stripe)
-if ( ! empty( $AccountNumber ) && strpos( $AccountNumber, "XXXX" ) === 0 ) {
-	$AccountNumber = "";
 }
 
 /**
