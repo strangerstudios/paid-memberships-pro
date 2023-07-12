@@ -145,7 +145,6 @@ if ( ! empty( $_REQUEST['save'] ) ) {
 	if ( ! in_array( 'expirationyear', $read_only_fields ) && isset( $_POST['expirationyear'] ) ) {
 		$order->expirationyear = sanitize_text_field( $_POST['expirationyear'] );
 	}
-
 	if ( ! in_array( 'status', $read_only_fields ) && isset( $_POST['status'] ) ) {
 		$order->status = pmpro_sanitize_with_safelist( $_POST['status'], pmpro_getOrderStatuses() ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 	}

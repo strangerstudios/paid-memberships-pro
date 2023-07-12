@@ -681,18 +681,8 @@ if ( ! empty( $pmpro_confirmed ) ) {
 			}
 
 			//save billing info ect, as user meta
-			$meta_keys   = array(
-				"pmpro_CardType",
-				"pmpro_AccountNumber",
-				"pmpro_ExpirationMonth",
-				"pmpro_ExpirationYear",
-			);
-			$meta_values = array(
-				$CardType,
-				hideCardNumber( $AccountNumber ),
-				$ExpirationMonth,
-				$ExpirationYear,
-			);
+			$meta_keys   = array();
+			$meta_values = array();
 
 			// Check if firstname and last name fields are set.
 			if ( ! empty( $bfirstname ) || ! empty( $blastname ) ) {
@@ -826,16 +816,7 @@ if ( empty( $submit ) ) {
 		$bphone        = get_user_meta( $current_user->ID, "pmpro_bphone", true );
 		$bemail        = get_user_meta( $current_user->ID, "pmpro_bemail", true );
 		$bconfirmemail = $bemail;    //as of 1.7.5, just setting to bemail
-		$CardType      = get_user_meta( $current_user->ID, "pmpro_CardType", true );
-		//$AccountNumber = hideCardNumber(get_user_meta($current_user->ID, "pmpro_AccountNumber", true), false);
-		$ExpirationMonth = get_user_meta( $current_user->ID, "pmpro_ExpirationMonth", true );
-		$ExpirationYear  = get_user_meta( $current_user->ID, "pmpro_ExpirationYear", true );
 	}
-}
-
-//clear out XXXX numbers (e.g. with Stripe)
-if ( ! empty( $AccountNumber ) && strpos( $AccountNumber, "XXXX" ) === 0 ) {
-	$AccountNumber = "";
 }
 
 /**

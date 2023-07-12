@@ -61,19 +61,7 @@
 			<?php if( $pmpro_billing_subscription->get_billing_limit() ) { ?>
 				<li><strong><?php esc_html_e("Duration", 'paid-memberships-pro' );?>:</strong> <?php echo esc_html( $pmpro_billing_subscription->get_billing_limit() . ' ' . sornot( $pmpro_billing_subscription->get_cycle_period(), $pmpro_billing_subscription->get_billing_limit() ) ); ?></li>
 
-			<?php } ?>
-
-			<?php
-				$pmpro_billing_show_payment_method = apply_filters( 'pmpro_billing_show_payment_method'
-					, true);
-				if ( $pmpro_billing_show_payment_method && ! empty( $CardType ) ) { ?>
-					<li><strong><?php esc_html_e( 'Payment Method', 'paid-memberships-pro' ); ?>: </strong>
-						<?php echo esc_html( ucwords( $CardType ) ); ?>
-						<?php _e('ending in', 'paid-memberships-pro' ); ?>
-						<?php echo esc_html( last4( get_user_meta( $current_user->ID, 'pmpro_AccountNumber', true ) ) ); ?>.
-						<?php _e('Expiration', 'paid-memberships-pro' );?>: <?php echo esc_html( $ExpirationMonth ); ?>/<?php echo esc_html( $ExpirationYear ); ?>
-					</li>
-				<?php } ?>
+			<?php } ?>			
 
 			<?php
 			 /**

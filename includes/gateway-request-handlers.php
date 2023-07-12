@@ -85,3 +85,44 @@ function pmpro_handle_subscription_cancellation_at_gateway( $subscription_transa
 
 	return 'Cancelled membership for user with id = ' . $user->ID . '. Subscription transaction id = ' . $subscription_transaction_id . '.';
 }
+
+/**
+ * Get the most recent order's payment method information and assign
+ * it to the order provided where possible
+ *
+ * @since TBD
+ *
+ * @param object $order The Member Order we want to save the billing data to
+ *
+ * @return string Entry to add to IPN/webhook log.
+ */
+function pmpro_update_order_with_recent_payment_method( $order ){
+
+	$subscription = PMPro_Subscription::get_subscription_from_subscription_transaction_id( $order->subscription_transaction_id, $order->gateway,  $order->gateway_environment );
+
+	if( $subscription !== NULL ) {
+
+		$sub_orders = $subscription->get_orders( array( 'limit' => 2 ) );
+
+		if( count( $sub_orders ) >= 2 ) {
+			//Get the first order
+			$first_sub_order = reset( $sub_orders );
+
+			$order->payment_type = $first_sub_order->payment_type;
+			$order->cardtype = $first_sub_order->cardtype;
+			$order->accountnumber = $first_sub_order->accountnumber;
+			$order->expirationmonth = $first_sub_order->expirationmonth;
+			$order->expirationyear = $first_sub_order->expirationyear;
+
+			$order->saveOrder();
+
+			return 'Order '.$order->code.' has been updated with the payment method information from order '.$first_sub_order->code.'.';
+
+		}
+	
+	}
+
+	return 'No recent subscriptions associated with this order were found.';
+
+
+}
