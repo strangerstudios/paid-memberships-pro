@@ -45,6 +45,40 @@ function pmpro_lifter_streamline_advanced_setting( $settings ) {
 add_filter( 'pmpro_custom_advanced_settings', 'pmpro_lifter_streamline_advanced_setting' );
 
 /**
+ * Hide the Restrictions tab of the edit course page if streamline is enabled.
+ */
+function pmpro_lifter_hide_restrictions_tab( $fields ) {
+	// Bail if the streamline option is not enabled.
+	if ( ! get_option( 'pmpro_lifter_streamline' ) ) {
+		return $fields;
+	}
+	
+	$new_fields = array();
+	foreach( $fields as $field ) {
+		if ( $field['title'] != __( 'Restrictions', 'lifterlms' ) ) {
+			$new_fields[] = $field;
+		}
+	}
+	
+	return $new_fields;
+}
+add_filter( 'llms_metabox_fields_lifterlms_course_options', 'pmpro_lifter_hide_restrictions_tab' );
+
+/**
+ * Hide the Access Plans section of the edit course page if streamline is enabled.
+ */
+function pmpro_lifter_hide_access_plans() {
+	// Bail if the streamline option is not enabled.
+	if ( ! get_option( 'pmpro_lifter_streamline' ) ) {
+		return $html;
+	}
+	
+	// Remove the Access Plans meta box.
+	remove_meta_box( 'lifterlms-product', array( 'course', 'llms_membership' ), array( 'side', 'normal' ) );
+}
+add_filter( 'add_meta_boxes', 'pmpro_lifter_hide_access_plans' );
+
+/**
  * Override student dashboard links if streamline feature is enabled.
  */
 function pmpro_lifter_override_dashboard_tabs( $tabs ) {	
