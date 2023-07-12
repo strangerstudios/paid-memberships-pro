@@ -836,7 +836,8 @@ if ( ! empty( $pmpro_confirmed ) ) {
 //default values
 if ( empty( $submit ) ) {
 	//show message if the payment gateway is not setup yet
-	if ( $pmpro_requirebilling && ! get_option( "pmpro_gateway", true ) ) {
+	if ( $pmpro_requirebilling && ! get_option( "pmpro_gateway" ) ) {
+
 		if ( pmpro_isAdmin() ) {
 			$pmpro_msg = sprintf( __( 'You must <a href="%s">set up a Payment Gateway</a> before any payments will be processed.', 'paid-memberships-pro' ), admin_url( '/admin.php?page=pmpro-paymentsettings' ) );
 		} else {
