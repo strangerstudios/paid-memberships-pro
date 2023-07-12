@@ -45,6 +45,20 @@ function pmpro_lifter_streamline_advanced_setting( $settings ) {
 add_filter( 'pmpro_custom_advanced_settings', 'pmpro_lifter_streamline_advanced_setting' );
 
 /**
+ * Hide the LifterLMS Membership menu item from the admin dashboard if streamline is enabled.
+ */
+function pmpro_lifter_hide_membership_menu() {
+	// Bail if the streamline option is not enabled.
+	if ( ! get_option( 'pmpro_lifter_streamline' ) ) {
+		return;
+	}
+	
+	// Remove the LifterLMS Membership menu item.
+	remove_menu_page( 'edit.php?post_type=llms_membership' );
+}
+add_action( 'admin_menu', 'pmpro_lifter_hide_membership_menu', 99 );
+
+/**
  * Hide the Restrictions tab of the edit course page if streamline is enabled.
  */
 function pmpro_lifter_hide_restrictions_tab( $fields ) {
