@@ -50,6 +50,11 @@ function pmpro_compatibility_checker() {
 			'file' 		  => 'avada.php',
 			'check_type'  => 'constant',
 			'check_value' => 'FUSION_BUILDER_VERSION'
+		],
+		[
+			'file' 		  => 'oxygen-builder.php',
+			'check_type'  => 'class',
+			'check_value' => 'OxyEl'
 		]
 	];
 

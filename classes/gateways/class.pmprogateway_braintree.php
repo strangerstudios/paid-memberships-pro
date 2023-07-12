@@ -18,7 +18,7 @@ use Braintree\WebhookNotification as Braintree_WebhookNotification;
 		function __construct($gateway = NULL)
 		{
 			$this->gateway = $gateway;
-			$this->gateway_environment = pmpro_getOption("gateway_environment");
+			$this->gateway_environment = get_option("pmpro_gateway_environment");
 
 			if( true === $this->dependencies() ) {
 				$this->loadBraintreeLibrary();
@@ -28,9 +28,9 @@ use Braintree\WebhookNotification as Braintree_WebhookNotification;
 				if($environment == "live")
 					$environment = "production";
 
-				$merch_id = pmpro_getOption( "braintree_merchantid" );
-				$pk = pmpro_getOption( "braintree_publickey" );
-				$sk = pmpro_getOption( "braintree_privatekey" );
+				$merch_id = get_option( "pmpro_braintree_merchantid" );
+				$pk = get_option( "pmpro_braintree_publickey" );
+				$sk = get_option( "pmpro_braintree_privatekey" );
 
                 try {
 
@@ -125,7 +125,7 @@ use Braintree\WebhookNotification as Braintree_WebhookNotification;
 		 */
 		function getPlans($force = false) {
 			//check for cache
-			$cache_key = 'pmpro_braintree_plans_' . md5($this->gateway_environment . pmpro_getOption("braintree_merchantid") . pmpro_getOption("braintree_publickey") . pmpro_getOption("braintree_privatekey"));
+			$cache_key = 'pmpro_braintree_plans_' . md5($this->gateway_environment . get_option("pmpro_braintree_merchantid") . get_option("pmpro_braintree_publickey") . get_option("pmpro_braintree_privatekey"));
 
       $plans = wp_cache_get( $cache_key,'pmpro_levels' );
 
@@ -180,7 +180,7 @@ use Braintree\WebhookNotification as Braintree_WebhookNotification;
 		    $BT_Gateway = new PMProGateway_braintree();
 
 		    if ( isset( $BT_Gateway->gateway_environment ) ) {
-			    $cache_key = 'pmpro_braintree_plans_' . md5($BT_Gateway->gateway_environment . pmpro_getOption("braintree_merchantid") . pmpro_getOption("braintree_publickey") . pmpro_getOption("braintree_privatekey"));
+			    $cache_key = 'pmpro_braintree_plans_' . md5($BT_Gateway->gateway_environment . get_option("pmpro_braintree_merchantid") . get_option("pmpro_braintree_publickey") . get_option("pmpro_braintree_privatekey"));
 
 			    wp_cache_delete( $cache_key,'pmpro_levels' );
 		    }
@@ -231,7 +231,7 @@ use Braintree\WebhookNotification as Braintree_WebhookNotification;
 			add_filter('pmpro_payment_option_fields', array('PMProGateway_braintree', 'pmpro_payment_option_fields'), 10, 2);
 
 			//code to add at checkout if Braintree is the current gateway
-			$default_gateway = pmpro_getOption('gateway');
+			$default_gateway = get_option('pmpro_gateway');
 			$current_gateway = pmpro_getGateway();
 			if( ( $default_gateway == "braintree" || $current_gateway == "braintree" && empty($_REQUEST['review'])))	//$_REQUEST['review'] means the PayPal Express review page
 			{
@@ -370,7 +370,7 @@ use Braintree\WebhookNotification as Braintree_WebhookNotification;
 		static function pmpro_checkout_preheader() {
 			global $gateway, $pmpro_level;
 
-			$default_gateway = pmpro_getOption("gateway");
+			$default_gateway = get_option("pmpro_gateway");
 
 			if(($gateway == "braintree" || $default_gateway == "braintree")) {
 				wp_enqueue_script("stripe", "https://js.braintreegateway.com/v1/braintree.js", array(), NULL);
@@ -379,7 +379,7 @@ use Braintree\WebhookNotification as Braintree_WebhookNotification;
                             array( 'jquery' ),
                             PMPRO_VERSION );
 				wp_localize_script( 'pmpro_braintree', 'pmpro_braintree', array(
-					'encryptionkey' => pmpro_getOption( 'braintree_encryptionkey' )
+					'encryptionkey' => get_option( 'pmpro_braintree_encryptionkey' )
 				));
 				wp_enqueue_script( 'pmpro_braintree' );
 			}
@@ -450,18 +450,18 @@ use Braintree\WebhookNotification as Braintree_WebhookNotification;
 			global $pmpro_requirebilling, $pmpro_show_discount_code, $discount_code, $CardType, $AccountNumber, $ExpirationMonth, $ExpirationYear;
 
 			//get accepted credit cards
-			$pmpro_accepted_credit_cards = pmpro_getOption("accepted_credit_cards");
+			$pmpro_accepted_credit_cards = get_option("pmpro_accepted_credit_cards");
 			$pmpro_accepted_credit_cards = explode(",", $pmpro_accepted_credit_cards);
 			$pmpro_accepted_credit_cards_string = pmpro_implodeToEnglish($pmpro_accepted_credit_cards);
 
 			//include ours
 			?>
 			<div id="pmpro_payment_information_fields" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout', 'pmpro_payment_information_fields' ) ); ?>" <?php if(!$pmpro_requirebilling || apply_filters("pmpro_hide_payment_information_fields", false) ) { ?>style="display: none;"<?php } ?>>
-				<h3>
-					<span class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout-h3-name' ) ); ?>"><?php esc_html_e('Payment Information', 'paid-memberships-pro' );?></span>
-				<span class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout-h3-msg' ) ); ?>"><?php printf(esc_html__('We Accept %s', 'paid-memberships-pro' ), $pmpro_accepted_credit_cards_string);?></span>
-				</h3>
-				<?php $sslseal = pmpro_getOption("sslseal"); ?>
+				<h2>
+					<span class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout-h2-name' ) ); ?>"><?php esc_html_e('Payment Information', 'paid-memberships-pro' );?></span>
+				<span class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout-h2-msg' ) ); ?>"><?php printf(esc_html__('We Accept %s', 'paid-memberships-pro' ), $pmpro_accepted_credit_cards_string);?></span>
+				</h2>
+				<?php $sslseal = get_option("pmpro_sslseal"); ?>
 				<?php if(!empty($sslseal)) { ?>
 					<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout-fields-display-seal' ) ); ?>">
 				<?php } ?>
@@ -515,7 +515,7 @@ use Braintree\WebhookNotification as Braintree_WebhookNotification;
 						<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout-field pmpro_payment-discount-code', 'pmpro_payment-discount-code' ) ); ?>">
 							<label for="discount_code"><?php esc_html_e('Discount Code', 'paid-memberships-pro' );?></label>
 							<input class="<?php echo esc_attr( pmpro_get_element_class( 'input', 'discount_code' ) ); ?>" id="discount_code" name="discount_code" type="text" size="20" value="<?php echo esc_attr($discount_code)?>" />
-							<input type="button" id="discount_code_button" name="discount_code_button" value="<?php esc_attr_e('Apply', 'paid-memberships-pro' );?>" />
+							<input aria-label="<?php esc_html_e( 'Apply discount code', 'paid-memberships-pro' ); ?>" type="button" id="discount_code_button" name="discount_code_button" value="<?php esc_attr_e('Apply', 'paid-memberships-pro' );?>" />
 							<p id="discount_code_message" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_message' ) ); ?>" style="display: none;"></p>
 						</div>
 					<?php } ?>

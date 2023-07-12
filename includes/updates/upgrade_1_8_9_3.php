@@ -12,7 +12,7 @@ function pmpro_upgrade_1_8_9_3() {
 	if(!empty($user_ids))
 		pmpro_addUpdate('pmpro_upgrade_1_8_9_3_ajax');
 
-	pmpro_setOption("db_version", "1.91");
+	update_option("pmpro_db_version", "1.91");
 	return 1.893;
 }
 

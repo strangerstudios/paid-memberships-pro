@@ -37,6 +37,6 @@ ADD  `expiration_period` ENUM(  'Day',  'Week',  'Month',  'Year' ) NOT NULL
 	";
 	$wpdb->query($sqlQuery);
 
-	pmpro_setOption("db_version", "1.23");
+	update_option("pmpro_db_version", "1.23");
 	return 1.23;
 }

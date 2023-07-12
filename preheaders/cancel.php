@@ -29,8 +29,6 @@
 		wp_redirect( add_query_arg( 'redirect_to', urlencode( $redirect ), pmpro_login_url() ) );
 		exit;
 	} else {
-		// Get the membership level for the current user.
-		$current_user->membership_level = pmpro_getMembershipLevelForUser( $current_user->ID) ;
 		// If user has no membership level, redirect to levels page.
 		if ( ! isset( $current_user->membership_level->ID ) ) {
 			wp_redirect( pmpro_url( 'levels' ) );
@@ -92,3 +90,11 @@
 			$pmpro_msgt = "pmpro_error";
 		}
 	}
+
+	wp_register_script(
+		'pmpro_cancel',
+		plugins_url( 'js/pmpro-cancel.js', PMPRO_BASE_FILE ),
+		array( 'jquery' ),
+		PMPRO_VERSION
+	);
+	wp_enqueue_script( 'pmpro_cancel' );

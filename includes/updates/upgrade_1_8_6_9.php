@@ -46,7 +46,7 @@ function pmpro_upgrade_1_8_6_9() {
 		}
 	}
 
-	pmpro_setOption("db_version", "1.869");
+	update_option("pmpro_db_version", "1.869");
 	return 1.869;
 }
 

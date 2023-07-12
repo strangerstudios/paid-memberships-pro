@@ -409,7 +409,7 @@ function pmpro_ipnValidate() {
 	}
 
 	//post back to PayPal system to validate
-	$gateway_environment = pmpro_getOption( "gateway_environment" );
+	$gateway_environment = get_option( "pmpro_gateway_environment" );
 	if ( $gateway_environment == "sandbox" ) {
 		$paypal_url = 'https://www.' . $gateway_environment . '.paypal.com/cgi-bin/webscr';
 	} else {
@@ -487,7 +487,7 @@ function pmpro_ipnCheckReceiverEmail( $email ) {
 		$email = array( $email );
 	}
 
-	if ( ! in_array( strtolower( pmpro_getOption( 'gateway_email' ) ), $email ) ) {
+	if ( ! in_array( strtolower( get_option( 'pmpro_gateway_email' ) ), $email ) ) {
 		$r = false;
 	} else {
 		$r = true;
@@ -511,7 +511,7 @@ function pmpro_ipnCheckReceiverEmail( $email ) {
 		}
 
 		//not yours
-		ipnlog( "ERROR: receiver_email (" . $receiver_email . ") and business email (" . $business . ") did not match (" . pmpro_getOption( 'gateway_email' ) . ")" );
+		ipnlog( "ERROR: receiver_email (" . $receiver_email . ") and business email (" . $business . ") did not match (" . get_option( 'pmpro_gateway_email' ) . ")" );
 
 		return false;
 	}
@@ -625,8 +625,7 @@ function pmpro_ipnChangeMembershipLevel( $txn_id, &$morder ) {
 			$invoice = null;
 		}
 
-		$user                   = get_userdata( $morder->user_id );
-		$user->membership_level = $morder->membership_level;        //make sure they have the right level info
+		$user = get_userdata( $morder->user_id );
 
 		//send email to member
 		$pmproemail = new PMProEmail();
@@ -656,7 +655,6 @@ function pmpro_ipnFailedPayment( $last_order ) {
 	$morder->membership_id = $last_order->membership_id;
 
 	$user                   = new WP_User( $last_order->user_id );
-	$user->membership_level = pmpro_getMembershipLevelForUser( $user->ID );
 
 	//add billing information if appropriate
 	if ( $last_order->gateway == "paypal" )        //website payments pro
@@ -670,11 +668,8 @@ function pmpro_ipnFailedPayment( $last_order ) {
 		$morder->billing->country = sanitize_text_field( $_POST['address_country_code'] );
 		$morder->billing->phone   = get_user_meta( $morder->user_id, "pmpro_bphone", true );
 
-		//get CC info that is on file
-		$morder->cardtype        = get_user_meta( $morder->user_id, "pmpro_CardType", true );
-		$morder->accountnumber   = hideCardNumber( get_user_meta( $morder->user_id, "pmpro_AccountNumber", true ), false );
-		$morder->expirationmonth = get_user_meta( $morder->user_id, "pmpro_ExpirationMonth", true );
-		$morder->expirationyear  = get_user_meta( $morder->user_id, "pmpro_ExpirationYear", true );
+		//Updates this order with the most recent orders payment method information and saves it. 
+		pmpro_update_order_with_recent_payment_method( $morder );
 	} elseif ( $last_order->gateway == "paypalexpress" ) {
 		$morder->billing = new stdClass();
 
@@ -685,12 +680,9 @@ function pmpro_ipnFailedPayment( $last_order ) {
 		$morder->billing->zip     = $last_order->billing->zip;
 		$morder->billing->country = $last_order->billing->country;
 		$morder->billing->phone   = $last_order->billing->phone;
-
-		//get CC info that is on file
-		$morder->cardtype        = get_user_meta( $morder->user_id, "pmpro_CardType", true );
-		$morder->accountnumber   = hideCardNumber( get_user_meta( $morder->user_id, "pmpro_AccountNumber", true ), false );
-		$morder->expirationmonth = get_user_meta( $morder->user_id, "pmpro_ExpirationMonth", true );
-		$morder->expirationyear  = get_user_meta( $morder->user_id, "pmpro_ExpirationYear", true );
+		
+		//Updates this order with the most recent orders payment method information and saves it. 
+		pmpro_update_order_with_recent_payment_method( $morder );
 	}
 
 	// Email the user and ask them to update their credit card information
@@ -765,13 +757,8 @@ function pmpro_ipnSaveOrder( $txn_id, $last_order ) {
 
 		//get card info if appropriate
 		if ( $last_order->gateway == "paypal" ) {   //website payments pro
-			//get CC info that is on file
-			$morder->cardtype              = get_user_meta( $last_order->user_id, "pmpro_CardType", true );
-			$morder->accountnumber         = hideCardNumber( get_user_meta( $last_order->user_id, "pmpro_AccountNumber", true ), false );
-			$morder->expirationmonth       = get_user_meta( $last_order->user_id, "pmpro_ExpirationMonth", true );
-			$morder->expirationyear        = get_user_meta( $last_order->user_id, "pmpro_ExpirationYear", true );
-			$morder->ExpirationDate        = $morder->expirationmonth . $morder->expirationyear;
-			$morder->ExpirationDate_YdashM = $morder->expirationyear . "-" . $morder->expirationmonth;
+			//Updates this order with the most recent orders payment method information and saves it. 
+			pmpro_update_order_with_recent_payment_method( $morder );
 		}
 
 		//figure out timestamp or default to none (today)
