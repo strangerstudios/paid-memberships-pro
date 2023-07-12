@@ -26,7 +26,7 @@ $pmpro_email_templates_defaults = array(
 	'header'                  => array(
 		'subject'     => __( '', 'paid-memberships-pro' ),
 		'description' => __( 'Email Header', 'paid-memberships-pro'),
-		'body' => __( '<p>Dear !!name!!,</p>', 'paid-memberships-pro' ),
+		'body' => __( '<p>Dear !!header_name!!,</p>', 'paid-memberships-pro' ),
 		'help_text' => __( 'This is the opening message included in every email sent to members and the site administrator through Paid Memberships Pro.', 'paid-memberships-pro' )
 	),
 	'admin_change'             => array(

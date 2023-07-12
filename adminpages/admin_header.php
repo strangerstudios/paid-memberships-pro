@@ -140,8 +140,7 @@
 		}
 	}
 
-	//check gateway dependencies
-	$gateway = pmpro_getOption('gateway');
+	$gateway = get_option( 'pmpro_gateway' );
 	if($gateway == "stripe" && version_compare( PHP_VERSION, '5.3.29', '>=' ) ) {
 		PMProGateway_stripe::dependencies();
 	} elseif($gateway == "braintree" && version_compare( PHP_VERSION, '5.4.45', '>=' ) ) {
@@ -178,9 +177,9 @@
 				if ( pmpro_is_paused() ) {
 					// Link to reactivate the notification about pause mode if has cap.
 					if ( current_user_can( 'pmpro_manage_pause_mode' ) ) { ?>
-						<a class="pmpro_paused_tag" href="<?php echo esc_url( add_query_arg( array( 'page' => 'pmpro-dashboard', 'show_pause_notification' => '1' ), admin_url( 'admin.php' ) ) ); ?>"><?php esc_html_e( 'Paused', 'paid-memberships-pro' ); ?></a>
+						<a class="pmpro_paused_tag" href="<?php echo esc_url( add_query_arg( array( 'page' => 'pmpro-dashboard', 'show_pause_notification' => '1' ), admin_url( 'admin.php' ) ) ); ?>"><?php esc_html_e( 'Services Paused', 'paid-memberships-pro' ); ?></a>
 					<?php } else { ?>
-						<span class="pmpro_paused_tag"><?php esc_html_e( 'Paused', 'paid-memberships-pro' ); ?></span>
+						<span class="pmpro_paused_tag"><?php esc_html_e( 'Crons Disabled', 'paid-memberships-pro' ); ?></span>
 					<?php }
 				}
 			?>
@@ -205,13 +204,12 @@
 	?>
 	<script>
 		jQuery(document).ready(function() {
-			jQuery.get('<?php echo admin_url( "/admin-ajax.php?action=pmpro_notifications" . $specific_notification ); ?>', function(data) {
+			jQuery.get('<?php echo admin_url( "admin-ajax.php?action=pmpro_notifications" . $specific_notification ); ?>', function(data) {
 				if(data && data != 'NULL')
 					jQuery('#pmpro_notifications').html(data);
 			});
 		});
 	</script>
-	<h2 class="pmpro_wp-notice-fix">&nbsp;</h2>
 	<?php
 		$settings_tabs = array(
 			'pmpro-dashboard',

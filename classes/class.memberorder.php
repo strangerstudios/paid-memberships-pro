@@ -274,7 +274,7 @@
 		{
 
 			//set up the gateway
-			$this->setGateway(pmpro_getOption("gateway"));
+			$this->setGateway(get_option("pmpro_gateway"));
 
 			//set up the billing address structure
 			$this->billing = new stdClass();
@@ -637,8 +637,8 @@
 			$order->expirationmonth = "";
 			$order->expirationyear = "";
 			$order->status = "success";
-			$order->gateway = pmpro_getOption("gateway");
-			$order->gateway_environment = pmpro_getOption("gateway_environment");
+			$order->gateway = get_option("pmpro_gateway");
+			$order->gateway_environment = get_option("pmpro_gateway_environment");
 			$order->payment_transaction_id = "";
 			$order->subscription_transaction_id = "";
 			$order->affiliate_id = "";
@@ -1178,8 +1178,8 @@
 		function getTaxForPrice($price)
 		{
 			//get options
-			$tax_state = pmpro_getOption("tax_state");
-			$tax_rate = pmpro_getOption("tax_rate");
+			$tax_state = get_option("pmpro_tax_state");
+			$tax_rate = get_option("pmpro_tax_rate");
 
 			//default
 			$tax = 0;
@@ -1347,9 +1347,9 @@
 				$this->status = "";
 
 			if(empty($this->gateway))
-				$this->gateway = pmpro_getOption("gateway");
+				$this->gateway = get_option("pmpro_gateway");
 			if(empty($this->gateway_environment))
-				$this->gateway_environment = pmpro_getOption("gateway_environment");
+				$this->gateway_environment = get_option("pmpro_gateway_environment");
 			
 			if( empty( $this->datetime ) && empty( $this->timestamp ) ) {
 				$this->timestamp = time();
@@ -1516,8 +1516,17 @@
 			static $count = 0;
 			$count++;
 
+			if( defined( 'AUTH_KEY' ) && defined( 'SECURE_AUTH_KEY' ) ) {
+				$auth_code = AUTH_KEY;
+				$secure_auth_code = SECURE_AUTH_KEY;
+			} else {
+				//Generate our own random string and hash it
+				$auth_code = md5( rand() );
+				$secure_auth_code = md5( rand() );
+			}
+
 			while( empty( $code ) ) {
-				$scramble = md5( AUTH_KEY . microtime() . SECURE_AUTH_KEY . $count );
+				$scramble = md5( $auth_code . microtime() . $secure_auth_code . $count );
 				$code = substr( $scramble, 0, 10 );
 				$code = apply_filters( 'pmpro_random_code', $code, $this );	//filter
 				$check = $wpdb->get_var( $wpdb->prepare( "SELECT id FROM $wpdb->pmpro_membership_orders WHERE code = %s LIMIT 1", $code ) );
