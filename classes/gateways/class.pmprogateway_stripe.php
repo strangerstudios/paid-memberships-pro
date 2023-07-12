@@ -583,7 +583,7 @@ class PMProGateway_stripe extends PMProGateway {
 						),
 					);
 				?>
-				<p class="description"><?php echo sprintf( wp_kses( __( 'Allow users to pay using Apple Pay, Google Pay, or Microsoft Pay depending on their browser. When enabled, your domain will automatically be registered with Apple and a domain association file will be hosted on your site. <a target="_blank" href="%s" title="More Information about the domain association file for Apple Pay">More Information &raquo;</a>', 'paid-memberships-pro' ), $allowed_stripe_payment_button_html ), 'https://stripe.com/docs/stripe-js/elements/payment-request-button#verifying-your-domain-with-apple-pay' ); ?></p>
+				<p class="description"><?php echo sprintf( wp_kses( __( 'Allow users to pay using Apple Pay, Google Pay, or Microsoft Pay depending on their browser. When enabled, your domain will automatically be registered with Apple and a domain association file will be hosted on your site. <a target="_blank" href="%s" title="More Information about the domain association file for Apple Pay">More Information</a>', 'paid-memberships-pro' ), $allowed_stripe_payment_button_html ), 'https://stripe.com/docs/stripe-js/elements/payment-request-button#verifying-your-domain-with-apple-pay' ); ?></p>
 					<?php
 					if ( ! empty( $values['stripe_payment_request_button'] ) ) {
 						// Are there any issues with how the payment request button is set up?
@@ -933,10 +933,10 @@ class PMProGateway_stripe extends PMProGateway {
 		?>
         <div id="pmpro_payment_information_fields" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout', 'pmpro_payment_information_fields' ) ); ?>"
 		     <?php if ( ! $pmpro_requirebilling || apply_filters( "pmpro_hide_payment_information_fields", false ) ) { ?>style="display: none;"<?php } ?>>
-            <h3>
-                <span class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout-h3-name' ) ); ?>"><?php esc_html_e( 'Payment Information', 'paid-memberships-pro' ); ?></span>
-                <span class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout-h3-msg' ) ); ?>"><?php esc_html_e( 'We accept all major credit cards', 'paid-memberships-pro' ); ?></span>
-            </h3>
+            <h2>
+                <span class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout-h2-name' ) ); ?>"><?php esc_html_e( 'Payment Information', 'paid-memberships-pro' ); ?></span>
+                <span class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout-h2-msg' ) ); ?>"><?php esc_html_e( 'We accept all major credit cards', 'paid-memberships-pro' ); ?></span>
+            </h2>
 			<?php $sslseal = get_option( "pmpro_sslseal" ); ?>
 			<?php if ( ! empty( $sslseal ) ) { ?>
             <div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout-fields-display-seal' ) ); ?>">
@@ -975,7 +975,7 @@ class PMProGateway_stripe extends PMProGateway {
                             <input class="<?php echo esc_attr( pmpro_get_element_class( 'input pmpro_alter_price', 'discount_code' ) ); ?>"
                                    id="discount_code" name="discount_code" type="text" size="10"
                                    value="<?php echo esc_attr( $discount_code ) ?>"/>
-                            <input type="button" id="discount_code_button" name="discount_code_button"
+                            <input aria-label="<?php esc_html_e( 'Apply discount code', 'paid-memberships-pro' ); ?>" type="button" id="discount_code_button" name="discount_code_button"
                                    value="<?php esc_attr_e( 'Apply', 'paid-memberships-pro' ); ?>"/>
                             <p id="discount_code_message" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_message' ) ); ?>" style="display: none;"></p>
                         </div>
@@ -2502,7 +2502,7 @@ class PMProGateway_stripe extends PMProGateway {
 								esc_html_e( 'Use the "Connect with Stripe" button below to securely authenticate with your Stripe account using Stripe Connect in test mode.', 'paid-memberships-pro' );
 							}
 							?>
-							<a href="https://www.paidmembershipspro.com/gateway/stripe/switch-legacy-to-connect/?utm_source=plugin&utm_medium=pmpro-paymentsettings&utm_campaign=documentation&utm_content=switch-to-connect" target="_blank"><?php esc_html_e( 'Read the documentation on switching to Stripe Connect &raquo;', 'paid-memberships-pro' ); ?></a>
+							<a href="https://www.paidmembershipspro.com/gateway/stripe/switch-legacy-to-connect/?utm_source=plugin&utm_medium=pmpro-paymentsettings&utm_campaign=documentation&utm_content=switch-to-connect" target="_blank"><?php esc_html_e( 'Read the documentation on switching to Stripe Connect', 'paid-memberships-pro' ); ?></a>
 						</p>
 					</div>
 				<?php } elseif ( self::using_legacy_keys() ) {  ?>
@@ -2537,9 +2537,9 @@ class PMProGateway_stripe extends PMProGateway {
 					<p class="description">
 						<?php
 						if ( $livemode ) {
-							esc_html_e( 'This will disconnect your site from Stripe. Users will not be able to complete membership checkout or update their billing information. Existing subscriptions will not be affected at the gateway, but new recurring orders will not be created in this site.', 'paid-memberships-pro' );
+							esc_html_e( 'This will disconnect all sites using this Stripe account from Stripe. Users will not be able to complete membership checkout or update their billing information. Existing subscriptions will not be affected at the gateway, but new recurring orders will not be created in this site.', 'paid-memberships-pro' );
 						} else {
-							esc_html_e( 'This will disconnect your site from Stripe in test mode only.', 'paid-memberships-pro' );
+							esc_html_e( 'This will disconnect all sites using this Stripe account from Stripe in test mode only.', 'paid-memberships-pro' );
 						}
 						?>
 					</p>
@@ -2571,7 +2571,7 @@ class PMProGateway_stripe extends PMProGateway {
 							}
 							
 						}
-						echo ' <a href="https://www.paidmembershipspro.com/gateway/stripe/?utm_source=plugin&utm_medium=pmpro-paymentsettings&utm_campaign=gateways&utm_content=stripe-fees#tab-fees" target="_blank" rel="noopener noreferrer">' . esc_html__( 'Learn More &raquo;', 'paid-memberships-pro' ) . '</a>';
+						echo ' <a href="https://www.paidmembershipspro.com/gateway/stripe/?utm_source=plugin&utm_medium=pmpro-paymentsettings&utm_campaign=gateways&utm_content=stripe-fees#fees" target="_blank" rel="noopener noreferrer">' . esc_html__( 'Learn More', 'paid-memberships-pro' ) . '</a>';
 					?>
 				</p>
 				<input type='hidden' name='<?php echo esc_attr( $environment ); ?>_stripe_connect_user_id' id='<?php echo esc_attr( $environment ); ?>_stripe_connect_user_id' value='<?php echo esc_attr( $values[ $environment . '_stripe_connect_user_id'] ) ?>'/>
@@ -3367,7 +3367,7 @@ class PMProGateway_stripe extends PMProGateway {
 		$current_year  = date_i18n( 'Y' );
 		$current_month = date_i18n( 'm' );
 		?>
-            <h3><?php esc_html_e( 'Subscription Updates', 'paid-memberships-pro' ); ?></h3>
+            <h2><?php esc_html_e( 'Subscription Updates', 'paid-memberships-pro' ); ?></h2>
 			<p><?php esc_html_e( 'Subscription updates will be deprecated in a future version of PMPro, though your existing subscription updates will still trigger as expected. We now instead recommend updating the subscription directly in Stripe.', 'paid-memberships-pro' ); ?></p>
             <table class="form-table">
 				<input type='hidden' name='pmpro_subscription_updates_visible' value='1' />
@@ -5359,7 +5359,7 @@ class PMProGateway_stripe extends PMProGateway {
 		if ( ! self::webhook_is_working( $environment ) ) {
 			echo '<div class="notice error inline"><p>';
 			echo esc_html__( 'Your webhook may not be working correctly.', 'paid-memberships-pro' );
-			echo ' <a target="_blank" href="https://www.paidmembershipspro.com/gateway/stripe/?utm_source=plugin&utm_medium=pmpro-paymentsettings&utm_campaign=gateways&utm_content=stripe-webhook#tab-gateway-setup">';
+			echo ' <a target="_blank" href="https://www.paidmembershipspro.com/gateway/stripe/setup/?utm_source=plugin&utm_medium=pmpro-paymentsettings&utm_campaign=gateways&utm_content=stripe-webhook#webhook">';
 			echo esc_html__( 'Click here for info on setting up your webhook with Stripe.', 'paid-memberships-pro' );
 			echo '</a>';
 			echo '</p></div>';

@@ -24,12 +24,13 @@ function pmpro_report_members_per_level_init() {
 add_action("init", "pmpro_report_members_per_level_init");
 
 // Members Per Level Report Widget on Reports Dashboard
-function pmpro_report_members_per_level_widget() { ?>
+function pmpro_report_members_per_level_widget() {
+	global $pmpro_reports; ?>
 	<span id="pmpro_report_members_per_level_widget" class="pmpro_report-holder">
 		<?php pmpro_report_draw_active_members_per_level_chart(); ?>
 		<?php if ( function_exists( 'pmpro_report_members_per_level_page' ) ) { ?>
 			<p class="pmpro_report-button">
-				<a class="button button-primary" href="<?php echo esc_url( admin_url( 'admin.php?page=pmpro-reports&report=members_per_level' ) ); ?>"><?php esc_html_e('Details', 'paid-memberships-pro' );?></a>
+				<a class="button button-primary" href="<?php echo esc_url( admin_url( 'admin.php?page=pmpro-reports&report=members_per_level' ) ); ?>" aria-label="<?php echo esc_attr( sprintf( __( 'View the full %s report', 'paid-memberships-pro' ), $pmpro_reports['members_per_level'] ) ); ?>"><?php esc_html_e('Details', 'paid-memberships-pro' );?></a>
 			</p>
 		<?php } ?>
 	</span>

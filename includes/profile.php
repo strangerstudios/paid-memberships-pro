@@ -23,7 +23,7 @@ function pmpro_membership_level_profile_fields($user)
 	$user_levels = pmpro_getMembershipLevelsForUser($user->ID);
 
 	?>
-	<h3><?php esc_html_e("Membership Levels", 'paid-memberships-pro' ); ?></h3>
+	<h2><?php esc_html_e("Membership Levels", 'paid-memberships-pro' ); ?></h2>
 	<table class="form-table">
 	<?php
 		$show_membership_level = true;
@@ -387,7 +387,7 @@ function pmpro_membership_level_profile_fields($user)
 			}
 		}
 
-		$tospage_id = pmpro_getOption( 'tospage' );
+		$tospage_id = get_option( 'pmpro_tospage' );
 		$consent_log = pmpro_get_consent_log( $user->ID, true );
 
 		if( !empty( $tospage_id ) || !empty( $consent_log ) ) {
@@ -599,7 +599,7 @@ function pmpro_membership_history_profile_fields( $user ) {
 
 	if ( $invoices || $subscriptions || $levelshistory ) { ?>
 		<hr />
-		<h3><?php esc_html_e( 'Member History', 'paid-memberships-pro' ); ?></h3>
+		<h2><?php esc_html_e( 'Member History', 'paid-memberships-pro' ); ?></h2>
 		<p><strong><?php esc_html_e( 'Total Paid', 'paid-memberships-pro' ); ?></strong> <?php echo pmpro_formatPrice( $totalvalue ); ?></p>
 		<ul id="member-history-filters" class="subsubsub">
 			<li id="member-history-filters-orders"><a href="javascript:void(0);" class="current orders tab"><?php esc_html_e( 'Order History', 'paid-memberships-pro' ); ?></a> <span>(<?php echo count( $invoices ); ?>)</span></li>
@@ -981,7 +981,7 @@ function pmpro_member_profile_edit_form() {
 
 		// Show error messages.
 		if ( ! empty( $errors ) ) { ?>
-			<div class="<?php echo pmpro_get_element_class( 'pmpro_message pmpro_error', 'pmpro_error' ); ?>">
+			<div role="alert" class="<?php echo pmpro_get_element_class( 'pmpro_message pmpro_error', 'pmpro_error' ); ?>">
 				<?php
 					foreach ( $errors as $key => $value ) {
 						echo '<p>' . $value . '</p>';
@@ -992,7 +992,7 @@ function pmpro_member_profile_edit_form() {
 			// Save updated profile fields.
 			wp_update_user( $user );
 			?>
-			<div class="<?php echo pmpro_get_element_class( 'pmpro_message pmpro_success', 'pmpro_success' ); ?>">
+			<div role="alert" class="<?php echo pmpro_get_element_class( 'pmpro_message pmpro_success', 'pmpro_success' ); ?>">
 				<?php _e( 'Your profile has been updated.', 'paid-memberships-pro' ); ?>
 			</div>
 		<?php }
@@ -1145,7 +1145,7 @@ function pmpro_change_password_form() {
 	?>
 	<h2><?php esc_html_e( 'Change Password', 'paid-memberships-pro' ); ?></h2>
 	<?php if ( ! empty( $pmpro_msg ) ) { ?>
-		<div class="<?php echo pmpro_get_element_class( 'pmpro_message ' . $pmpro_msgt, $pmpro_msgt ); ?>">
+		<div role="alert" class="<?php echo pmpro_get_element_class( 'pmpro_message ' . $pmpro_msgt, $pmpro_msgt ); ?>">
 			<?php echo esc_html( $pmpro_msg ); ?>
 		</div>
 	<?php } ?>

@@ -121,7 +121,7 @@ add_filter( 'pmpro_checkout_start_date', 'pmpro_checkout_start_date_keep_startda
 	Stripe Lite Pulled into Core Plugin
 */
 // Stripe Lite, Set the Globals/etc
-$stripe_billingaddress = pmpro_getOption( 'stripe_billingaddress' );
+$stripe_billingaddress = get_option( 'pmpro_stripe_billingaddress' );
 if ( empty( $stripe_billingaddress ) ) {
 	global $pmpro_stripe_lite;
 	$pmpro_stripe_lite = true;
@@ -266,9 +266,9 @@ function pmpro_ignore_checkout_order_when_cancelling_old_orders( $order_ids ) {
 add_filter( 'pmpro_other_order_ids_to_cancel', 'pmpro_ignore_checkout_order_when_cancelling_old_orders' );
 
 /**
- * Default the get_optoin call for pmpro_spam_protection option to '2'.
+ * Default the get_option call for pmpro_spam_protection option to '2'.
  *
- * @since TBD
+ * @since 2.11
  *
  * @param string $default The default value for the option.
  * @return string The default value for the option.

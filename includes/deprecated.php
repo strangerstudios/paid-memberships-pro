@@ -254,7 +254,7 @@ function pmpro_multiple_memberships_per_user_deprecated() {
 			global $wpdb;
 			$retarray = array();
 			$pmpro_levels = pmpro_getAllLevels($includehidden, true);
-			$pmpro_level_order = pmpro_getOption('level_order');
+			$pmpro_level_order = get_option('pmpro_level_order');
 			$pmpro_levels = apply_filters('pmpro_levels_array', $pmpro_levels );
 			$include = array();
 			foreach( $pmpro_levels as $level ) {
@@ -663,7 +663,7 @@ function pmpro_get_mmpu_incompatible_add_ons() {
 /**
  * Get a list of deprecated PMPro Add Ons.
  *
- * @since TBD
+ * @since 2.11
  *
  * @return array Add Ons that are deprecated.
  */
@@ -806,7 +806,7 @@ add_action( 'admin_notices', 'pmpro_check_for_deprecated_add_ons' );
 /**
  * Remove the "Activate" link on the plugins page for deprecated add ons.
  *
- * @since TBD
+ * @since 2.11
  *
  * @param array  $actions An array of plugin action links.
  * @param string $plugin_file Path to the plugin file relative to the plugins directory.
@@ -836,14 +836,14 @@ add_filter( 'plugin_action_links', 'pmpro_deprecated_add_ons_action_links', 10, 
  * or choose a new gateway.
  */
 function pmpro_check_for_deprecated_gateways() {
-	$undeprecated_gateways = pmpro_getOption( 'undeprecated_gateways' );
+	$undeprecated_gateways = get_option( 'pmpro_undeprecated_gateways' );
 	if ( empty( $undeprecated_gateways ) ) {
 		$undeprecated_gateways = array();
 	} elseif ( is_string( $undeprecated_gateways ) ) {
 		// pmpro_setOption turns this into a comma separated string
 		$undeprecated_gateways = explode( ',', $undeprecated_gateways );
 	}
-	$default_gateway = pmpro_getOption( 'gateway' );
+	$default_gateway = get_option( 'pmpro_gateway' );
 
 	$deprecated_gateways = array( 'twocheckout', 'cybersource', 'paypal' );
 	foreach ( $deprecated_gateways as $deprecated_gateway ) {
@@ -851,7 +851,7 @@ function pmpro_check_for_deprecated_gateways() {
 			require_once( PMPRO_DIR . '/classes/gateways/class.pmprogateway_' . $deprecated_gateway . '.php' );
 			if ( ! in_array( $deprecated_gateway, $undeprecated_gateways ) ) {
 				$undeprecated_gateways[] = $deprecated_gateway;
-				pmpro_setOption( 'undeprecated_gateways', $undeprecated_gateways );
+				update_option( 'pmpro_undeprecated_gateways', $undeprecated_gateways );
 			}
 		}
 	}

@@ -346,25 +346,61 @@
 		</div> <!-- end pmpro-admin-add-ons-list -->
 		<script>
 			jQuery(document).ready( function($) {
-				$('[data-search]').keyup(function() {
-					var views = $( '.addons-search' ).closest( '.filter-links' );
-					views.find( 'li a' ).removeClass( 'current' );
-					$('.addons-search a').addClass( 'current' );
-					$('.addons-search').show();
 
-					var filter = $(this).data('search');
-					var filter_items = $(`[data-search-${filter}]`);
-					var search_val = $(this).val();
+				/**
+				 * Catches native clear search form event and run custom code.
+				 */
+				$('[data-search]').on('search', () => {
+					clearSearch($( '.addons-search' ))
+				});
 
-					if ( search_val != '' ) {
-						filter_items.addClass('search-hide');
-						$(`[data-search-${filter}*="${search_val.toLowerCase()}"]`).removeClass('search-hide');
-					} else {
-						filter_items.removeClass('search-hide');
-						jQuery('.addons-search').hide();
+				/**
+				 * Clear search.
+				 */
+				const clearSearch = ($addonsSearch) => {
+					$('#pmpro-no-add-ons').hide();
+					$addonsSearch.hide();
+					const current = location.hash.split("#")[1] || 'all';
+					$( `.filter-links li a[href="#${current}"` ).trigger('click');
+				};
+
+				/**
+				 * Add-on search.
+				 */
+				$('[data-search]').on('keyup', (ev) => {
+					const MIN_SEARCH_LENGTH = 3;
+					const $input = $(ev.currentTarget);
+					const searchTerms = $input.val().toLowerCase().split( ' ' ).filter( term => term !== '' && term.length >= MIN_SEARCH_LENGTH );
+					$addonsSearch = $( '.addons-search' );
+
+					if (searchTerms.length === 0) {
+						clearSearch($( '.addons-search' ));
+						return;
+					}
+
+					$addonsSearch.closest( '.filter-links' ).find( 'li a' ).removeClass( 'current' );
+					$addonsSearch.addClass( 'current' ).show();
+
+					const filter = $input.data('search');
+					const $allItemsArray = $(`[data-search-${filter}]`);
+					$allItemsArray.hide();
+
+					const filteredItems = $allItemsArray.filter((index,element) => {
+						const addonsSearchableDescription = $(element).data(`search-${filter}`).toLowerCase();
+						return searchTerms.some((term) => addonsSearchableDescription.includes(term));
+					});
+
+					if( filteredItems.length > 0 ) {
+						filteredItems.show();
+						$('#pmpro-no-add-ons').hide();
+					 } else {
+						$('#pmpro-no-add-ons').show();
 					}
 				});
 
+				/**
+				 * Handles clicks on filter addons links.
+				 */
 				$('.filter-links li a' ).click( function(e) {
 					// don't want to jump to #
 					e.preventDefault();
@@ -393,10 +429,10 @@
 					}
 
 					if ( view_val != '' ) {
-						view_items.addClass('search-hide');
-						$(`[data-search-${view}*="${view_val.toLowerCase()}"]`).removeClass('search-hide').addClass('search-show');
+						view_items.hide();
+						$(`[data-search-${view}*="${view_val.toLowerCase()}"]`).show();
 					} else {
-						view_items.removeClass('search-hide').addClass('search-show');
+						view_items.show();
 					}
 
 				});
@@ -415,7 +451,7 @@
 				<a title="Paid Memberships Pro - Membership Plugin for WordPress" target="_blank" rel="noopener noreferrer" href="https://www.paidmembershipspro.com/pricing/?utm_source=plugin&utm_medium=pmpro-addons&utm_campaign=pricing&utm_content=pmpro-popup"><img src="<?php echo esc_url( PMPRO_URL . '/images/Paid-Memberships-Pro.png' ); ?>" width="350" height="75" border="0" alt="Paid Memberships Pro(c) - All Rights Reserved" /></a>
 				<h1><?php printf(__( 'Get %s and more with a %s license.', 'paid-memberships-pro' ), '<strong id="addon-name"></strong>', '<strong id="addon-license"></strong>' ); ?></h1>
 				<p><a class="button button-primary button-hero" href="https://www.paidmembershipspro.com/pricing/?utm_source=plugin&utm_medium=pmpro-addons&utm_campaign=pricing&utm_content=pmpro-popup"><strong><?php esc_html_e( 'View Plans and Pricing', 'paid-memberships-pro' ); ?></strong></a></p>
-				<p><?php printf(__( 'Already purchased? <a href="%s">Enter your license key here &raquo;</a>', 'paid-memberships-pro' ), admin_url( 'admin.php?page=pmpro-license' ) ); ?></p>
+				<p><?php printf(__( 'Already purchased? <a href="%s">Enter your license key here</a>', 'paid-memberships-pro' ), admin_url( 'admin.php?page=pmpro-license' ) ); ?></p>
 			</span>
 		</div>
 	</div> <!-- end pmpro-popup -->

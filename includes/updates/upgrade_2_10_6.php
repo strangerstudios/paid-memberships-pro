@@ -154,7 +154,7 @@ function pmpro_upgrade_2_10_6() {
 			pmpro_upgrade_2_10_6_helper_scrub_account_numbers_in_orders( $order_ids, false );
 		}
 	}
-	pmpro_setOption( 'db_version', '2.96' );
+	update_option( 'pmpro_db_version', '2.96' );
 	return 2.106;
 }
 

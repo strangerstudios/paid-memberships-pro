@@ -130,7 +130,7 @@
 		<tr class="pmpro_settings_divider gateway gateway_paypal gateway_paypalexpress gateway_paypalstandard" <?php if($gateway != "paypal" && $gateway != "paypalexpress" && $gateway != "paypalstandard") { ?>style="display: none;"<?php } ?>>
 			<td colspan="2">
 				<hr />
-				<h3><?php esc_html_e('PayPal Settings', 'paid-memberships-pro' ); ?></h3>
+				<h2><?php esc_html_e('PayPal Settings', 'paid-memberships-pro' ); ?></h2>
 			</td>
 		</tr>
 		<tr class="gateway gateway_paypalstandard" <?php if($gateway != "paypalstandard") { ?>style="display: none;"<?php } ?>>
@@ -238,12 +238,12 @@
 			?>
 			<span id="pmpro_paypalexpress_checkout" <?php if(($gateway != "paypalexpress" && $gateway != "paypalstandard") || !$pmpro_requirebilling) { ?>style="display: none;"<?php } ?>>
 				<input type="hidden" name="submit-checkout" value="1" />
-				<input type="image" id="pmpro_btn-submit-paypalstandard" class="<?php echo pmpro_get_element_class( 'pmpro_btn-submit-checkout' ); ?>" value="<?php esc_attr_e('Check Out with PayPal', 'paid-memberships-pro' );?> &raquo;" src="<?php echo apply_filters("pmpro_paypal_button_image", "https://www.paypalobjects.com/webstatic/en_US/i/buttons/checkout-logo-medium.png");?>" />
+				<input type="image" id="pmpro_btn-submit-paypalstandard" class="<?php echo pmpro_get_element_class( 'pmpro_btn-submit-checkout' ); ?>" value="<?php esc_attr_e('Check Out with PayPal', 'paid-memberships-pro' );?>" src="<?php echo apply_filters("pmpro_paypal_button_image", "https://www.paypalobjects.com/webstatic/en_US/i/buttons/checkout-logo-medium.png");?>" />
 			</span>
 
 			<span id="pmpro_submit_span" <?php if(($gateway == "paypalexpress" || $gateway == "paypalstandard") && $pmpro_requirebilling) { ?>style="display: none;"<?php } ?>>
 				<input type="hidden" name="submit-checkout" value="1" />
-				<input type="submit" id="pmpro_btn-submit" class="<?php echo pmpro_get_element_class( 'pmpro_btn pmpro_btn-submit-checkout', 'pmpro_btn-submit-checkout' ); ?>" value="<?php if($pmpro_requirebilling) { _e('Submit and Check Out', 'paid-memberships-pro' ); } else { _e('Submit and Confirm', 'paid-memberships-pro' );}?> &raquo;" />
+				<input type="submit" id="pmpro_btn-submit" class="<?php echo pmpro_get_element_class( 'pmpro_btn pmpro_btn-submit-checkout', 'pmpro_btn-submit-checkout' ); ?>" value="<?php if($pmpro_requirebilling) { _e('Submit and Check Out', 'paid-memberships-pro' ); } else { _e('Submit and Confirm', 'paid-memberships-pro' );}?>" />
 			</span>
 			<?php
 

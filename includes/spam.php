@@ -151,7 +151,7 @@ function pmpro_clear_spam_activity( $ip = null ) {
  */
 function pmpro_track_failed_checkouts_for_spam( $morder ) {
 	// Bail if Spam Protection is disabled.
-	$spamprotection = pmpro_getOption("spamprotection");	
+	$spamprotection = get_option("pmpro_spamprotection");	
 	if ( empty( $spamprotection ) ) {
 		return;
 	}
@@ -178,7 +178,7 @@ add_action( 'pmpro_update_billing_failed', 'pmpro_track_failed_checkouts_for_spa
  */
 function pmpro_disable_checkout_for_spammers( $required_fields ) {
 	// Bail if Spam Protection is disabled.
-	$spamprotection = pmpro_getOption("spamprotection");	
+	$spamprotection = get_option("pmpro_spamprotection");	
 	if ( empty( $spamprotection ) ) {
 		return $required_fields;
 	}
