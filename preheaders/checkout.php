@@ -21,7 +21,8 @@ if ( ! empty( $_REQUEST['gateway'] ) ) {
 }
 
 //set valid gateways - the active gateway in the settings and any gateway added through the filter will be allowed
-if ( get_option( "pmpro_gateway", true ) == "paypal" ) {
+if ( get_option( "pmpro_gateway" ) == "paypal" ) {
+
 	$valid_gateways = apply_filters( "pmpro_valid_gateways", array( "paypal", "paypalexpress" ) );
 } else {
 	$valid_gateways = apply_filters( "pmpro_valid_gateways", array( get_option( "pmpro_gateway", true ) ) );
