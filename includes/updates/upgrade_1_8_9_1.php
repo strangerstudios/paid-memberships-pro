@@ -12,7 +12,7 @@ function pmpro_upgrade_1_8_9_1() {
 	if(!empty($orders))
 		pmpro_addUpdate('pmpro_upgrade_1_8_9_1_ajax');
 
-	pmpro_setOption("db_version", "1.891");
+	update_option("pmpro_db_version", "1.891");
 	return 1.891;
 }
 

@@ -420,7 +420,7 @@ function pmpro_save_consent( $user_id = NULL, $post_id = NULL, $post_modified = 
 
 	// Default to the TOS post chosen on the advanced settings page
 	if( empty( $post_id ) ) {
-		$post_id = pmpro_getOption( 'tospage' );
+		$post_id = get_option( 'pmpro_tospage' );
 	}
 
 	if( empty( $post_id ) ) {
@@ -482,7 +482,7 @@ function pmpro_get_consent_log( $user_id = NULL, $reversed = true ) {
  */
 function pmpro_after_checkout_update_consent( $user_id, $order ) {
 	if( !empty( $_REQUEST['tos'] ) ) {
-		$tospage_id = pmpro_getOption( 'tospage' );
+		$tospage_id = get_option( 'pmpro_tospage' );
 		pmpro_save_consent( $user_id, $tospage_id, NULL, $order->id );
 	} elseif ( !empty( $_SESSION['tos'] ) ) {
 		// PayPal Express and others might save tos info into a session variable
