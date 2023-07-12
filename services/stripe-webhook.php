@@ -42,22 +42,22 @@
 			$livemode = ! empty( $post_event->livemode );
 		} else {
 			// No event data passed in body, so use current environment.
-			$livemode = pmpro_getOption( 'gateway_environment' ) === 'live';
+			$livemode = get_option( 'pmro_gateway_environment' ) === 'live';
 		}
 	}
 	else
 	{
 		$event_id = sanitize_text_field($_REQUEST['event_id']);
-		$livemode = pmpro_getOption( 'gateway_environment' ) === 'live'; // User is testing, so use current environment.
+		$livemode = get_option( 'pmro_gateway_environment' ) === 'live'; // User is testing, so use current environment.
 	}
 
 	try {
 		if ( PMProGateway_stripe::using_legacy_keys() ) {
-			$secret_key = pmpro_getOption( "stripe_secretkey" );
+			$secret_key = get_option( "pmro_stripe_secretkey" );
 		} elseif ( $livemode ) {
-			$secret_key = pmpro_getOption( 'live_stripe_connect_secretkey' );
+			$secret_key = get_option( 'pmpro_live_stripe_connect_secretkey' );
 		} else {
-			$secret_key = pmpro_getOption( 'sandbox_stripe_connect_secretkey' );
+			$secret_key = get_option( 'pmpro_sandbox_stripe_connect_secretkey' );
 		}
 		Stripe\Stripe::setApiKey( $secret_key );
 	} catch ( Exception $e ) {

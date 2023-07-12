@@ -297,7 +297,7 @@ function pmpro_cron_admin_activity_email() {
 		return;
 	}
 	
-	$frequency = pmpro_getOption( 'activity_email_frequency' );
+	$frequency = get_option( 'pmpro_activity_email_frequency' );
 	if ( empty( $frequency ) ) {
 		$frequency = 'week';
 	}
