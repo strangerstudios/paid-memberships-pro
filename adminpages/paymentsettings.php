@@ -71,15 +71,15 @@
 	*/
 	$payment_option_values = array();
 	foreach($payment_options as $option)
-		$payment_option_values[$option] = pmpro_getOption($option);
+		$payment_option_values[$option] = get_option($option);
 	extract($payment_option_values);
 
 	/*
 		Some special cases that get worked out here.
 	*/
 	//make sure the tax rate is not > 1
-	$tax_state = pmpro_getOption("tax_state");
-	$tax_rate = pmpro_getOption("tax_rate");
+	$tax_state = get_option( "pmpro_tax_state");
+	$tax_rate = get_option( "pmpro_tax_rate");
 	if((double)$tax_rate > 1)
 	{
 		//assume the entered X%

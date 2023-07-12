@@ -394,7 +394,7 @@ if ( $submit && $pmpro_msgt != "pmpro_error" ) {
 		//only continue if there are no other errors yet
 		if ( $pmpro_msgt != "pmpro_error" ) {
 			//check recaptcha first
-			$recaptcha = pmpro_getOption("recaptcha");
+			$recaptcha = get_option( "pmpro_recaptcha");
 			if (  $recaptcha == 2 || ( $recaptcha == 1 && pmpro_isLevelFree( $pmpro_level ) ) ) {
 				$recaptcha_validated = pmpro_recaptcha_is_validated(); // Returns true if validated, string error message if not.
 				if ( is_string( $recaptcha_validated ) ) {

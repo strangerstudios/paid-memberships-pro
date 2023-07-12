@@ -8,8 +8,8 @@
 	global $wpdb, $msg, $msgt, $pmpro_currency_symbol, $allowedposttags, $pmpro_pages;
 
 	//some vars
-	$gateway = pmpro_getOption("gateway");
-    $pmpro_level_order = pmpro_getOption('level_order');
+	$gateway = get_option( "pmpro_gateway");
+    $pmpro_level_order = get_option( 'pmpro_level_order');
 
 	global $pmpro_stripe_error, $pmpro_braintree_error, $pmpro_payflow_error, $pmpro_twocheckout_error, $wp_version;
 
@@ -906,8 +906,8 @@
 									<?php esc_html_e( 'Select categories to bulk protect posts.', 'paid-memberships-pro' ); ?>
 									<?php
 										// Get the Advanced Settings for filtering queries and showing excerpts.
-										$filterqueries = pmpro_getOption('filterqueries');
-										$showexcerpts = pmpro_getOption("showexcerpts");
+										$filterqueries = get_option( 'pmpro_filterqueries');
+										$showexcerpts = get_option( "pmpro_showexcerpts");
 										if ( $filterqueries == 1 ) {
 											// Show a message that posts in these categories are hidden.
 											echo sprintf( wp_kses( __( 'Non-members will not see posts in these categories. You can <a href="%s" title="Advanced Settings" target="_blank">update this setting here</a>.', 'paid-memberships-pro' ), $allowed_html ), admin_url( 'admin.php?page=pmpro-advancedsettings' ) );

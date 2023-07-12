@@ -38,16 +38,16 @@
 		$msgt = "Your email settings have been updated.";		
 	}
 	
-	$from_email = pmpro_getOption("from_email");
-	$from_name = pmpro_getOption("from_name");
-	$only_filter_pmpro_emails = pmpro_getOption("only_filter_pmpro_emails");
+	$from_email = get_option( "pmpro_from_email");
+	$from_name = get_option( "pmpro_from_name");
+	$only_filter_pmpro_emails = get_option( "pmpro_only_filter_pmpro_emails");
 	
-	$email_admin_checkout = pmpro_getOption("email_admin_checkout");
-	$email_admin_changes = pmpro_getOption("email_admin_changes");
-	$email_admin_cancels = pmpro_getOption("email_admin_cancels");
-	$email_admin_billing = pmpro_getOption("email_admin_billing");	
+	$email_admin_checkout = get_option( "pmpro_email_admin_checkout");
+	$email_admin_changes = get_option( "pmpro_email_admin_changes");
+	$email_admin_cancels = get_option( "pmpro_email_admin_cancels");
+	$email_admin_billing = get_option( "pmpro_email_admin_billing");	
 	
-	$email_member_notification = pmpro_getOption("email_member_notification");
+	$email_member_notification = get_option( "pmpro_email_member_notification");
 	
 	if(empty($from_email))
 	{

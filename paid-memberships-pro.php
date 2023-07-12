@@ -172,7 +172,7 @@ define( 'PAYPAL_BN_CODE', 'PaidMembershipsPro_SP' );
 	Globals
 */
 global $gateway_environment;
-$gateway_environment = pmpro_getOption( 'gateway_environment' );
+$gateway_environment = get_option( 'pmpro_gateway_environment' );
 
 
 // Returns a list of all available gateway

@@ -26,7 +26,7 @@
 */
 function pmpro_checkLevelForStripeCompatibility($level = NULL)
 {
-	$gateway = pmpro_getOption("gateway");
+	$gateway = get_option( "pmpro_gateway");
 	if($gateway == "stripe")
 	{
 		global $wpdb;
@@ -79,7 +79,7 @@ function pmpro_checkLevelForStripeCompatibility($level = NULL)
 */
 function pmpro_checkLevelForPayflowCompatibility($level = NULL)
 {
-	$gateway = pmpro_getOption("gateway");
+	$gateway = get_option( "pmpro_gateway");
 	if($gateway == "payflowpro")
 	{
 		global $wpdb;
@@ -125,7 +125,7 @@ function pmpro_checkLevelForPayflowCompatibility($level = NULL)
 */
 function pmpro_checkLevelForBraintreeCompatibility($level = NULL)
 {
-	$gateway = pmpro_getOption("gateway");
+	$gateway = get_option( "pmpro_gateway");
 	if($gateway == "braintree")
 	{
 		global $wpdb;
@@ -174,7 +174,7 @@ function pmpro_checkLevelForBraintreeCompatibility($level = NULL)
  */
 function pmpro_check_discount_code_for_gateway_compatibility( $discount_code = NULL ) {
 	// Return if no gateway is set.
-	$gateway = pmpro_getOption( 'gateway' );
+	$gateway = get_option( 'pmpro_gateway' );
 	if ( empty( $gateway ) ) {
 		return true;
 	}
@@ -215,7 +215,7 @@ function pmpro_check_discount_code_for_gateway_compatibility( $discount_code = N
  */
 function pmpro_check_discount_code_level_for_gateway_compatibility( $discount_code_level = NULL ) {
 	// Return if no gateway is set.
-	$gateway = pmpro_getOption( 'gateway' );
+	$gateway = get_option( 'pmpro_gateway' );
 	if ( empty( $gateway ) ) {
 		return true;
 	}
@@ -291,7 +291,7 @@ function pmpro_check_discount_code_level_for_gateway_compatibility( $discount_co
 */
 function pmpro_checkLevelForTwoCheckoutCompatibility($level = NULL)
 {
-	$gateway = pmpro_getOption("gateway");
+	$gateway = get_option( "pmpro_gateway");
 	if($gateway == "twocheckout")
 	{
 		global $wpdb;

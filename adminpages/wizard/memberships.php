@@ -3,7 +3,7 @@
  * Step 3 file content. [Memberships]
  */
 // Get option for collecting payments
-$collecting_payment = pmpro_getOption( 'wizard_collect_payment' );
+$collecting_payment = get_option( 'pmpro_wizard_collect_payment' );
 ?>
 <div class="pmpro-wizard__step pmpro-wizard__step-3">
 	<div class="pmpro-wizard__step-header">

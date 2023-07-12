@@ -428,7 +428,7 @@ if ( $webhookNotification->kind === Braintree_WebhookNotification::SUBSCRIPTION_
 		$logstr[] = 'No subscription ID.';
 		pmpro_braintreeWebhookExit();
 	}
-	$logstr[] = pmpro_handle_subscription_cancellation_at_gateway( $webhookNotification->subscription->id, 'braintree', pmpro_getOption( 'gateway_environment' ) );
+	$logstr[] = pmpro_handle_subscription_cancellation_at_gateway( $webhookNotification->subscription->id, 'braintree', get_option( 'pmpro_gateway_environment' ) );
 	pmpro_braintreeWebhookExit();
 }
 
