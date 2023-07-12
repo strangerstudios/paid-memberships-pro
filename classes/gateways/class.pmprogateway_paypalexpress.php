@@ -206,8 +206,8 @@
 			</th>
 			<td>
 				<select id="paypalexpress_skip_confirmation" name="paypalexpress_skip_confirmation">
-					<option value="0" <?php selected(pmpro_getOption('paypalexpress_skip_confirmation'), 0);?>><?php esc_html_e( 'Require an extra confirmation after users return from PayPal.', 'paid-memberships-pro' ) ?></option>
-					<option value="1" <?php selected(pmpro_getOption('paypalexpress_skip_confirmation'), 1);?>><?php esc_html_e( 'Skip the extra confirmation after users return from PayPal.', 'paid-memberships-pro' ) ?></option>
+					<option value="0" <?php selected(get_option('pmpro_paypalexpress_skip_confirmation'), 0);?>><?php esc_html_e( 'Require an extra confirmation after users return from PayPal.', 'paid-memberships-pro' ) ?></option>
+					<option value="1" <?php selected(get_option('pmpro_paypalexpress_skip_confirmation'), 1);?>><?php esc_html_e( 'Skip the extra confirmation after users return from PayPal.', 'paid-memberships-pro' ) ?></option>
 				</select>
 			</td>
 		</tr>
@@ -256,7 +256,7 @@
 		static function pmpro_checkout_preheader() {
 			global $gateway, $pmpro_level;
 
-			$default_gateway = pmpro_getOption("gateway");
+			$default_gateway = get_option("pmpro_gateway");
 
 			if(($gateway == "paypal" || $default_gateway == "paypal") && !pmpro_isLevelFree($pmpro_level)) {
 				wp_register_script( 'pmpro_paypal',
@@ -301,7 +301,7 @@
 			}
 
 			if( !empty( $_REQUEST['tos'] ) ) {
-				$tospost = get_post( pmpro_getOption( 'tospage' ) );
+				$tospost = get_post( get_option( 'pmpro_tospage' ) );
 				$_SESSION['tos'] = array(
 					'post_id' => $tospost->ID,
 					'post_modified' => $tospost->post_modified,
@@ -363,7 +363,7 @@
 
 			if(empty($pmpro_msg) &&
 				(!empty($_REQUEST['confirm']) ||
-				(pmpro_getOption('paypalexpress_skip_confirmation') && $pmpro_review))
+				(get_option('pmpro_paypalexpress_skip_confirmation') && $pmpro_review))
 			)
 			{
 				$morder = new MemberOrder();
@@ -605,7 +605,7 @@
 
 				//redirect to paypal
 				$paypal_url = "https://www.paypal.com/webscr?cmd=_express-checkout&useraction=commit&token=" . $this->httpParsedResponseAr['TOKEN'];
-				$environment = pmpro_getOption("gateway_environment");
+				$environment = get_option("pmpro_gateway_environment");
 				if("sandbox" === $environment || "beta-sandbox" === $environment)
 				{
 					$paypal_url = "https://www.sandbox.paypal.com/webscr?cmd=_express-checkout&useraction=commit&token="  . $this->httpParsedResponseAr['TOKEN'];
@@ -1258,9 +1258,9 @@
 			global $gateway_environment;
 			$environment = $gateway_environment;
 
-			$API_UserName = pmpro_getOption("apiusername");
-			$API_Password = pmpro_getOption("apipassword");
-			$API_Signature = pmpro_getOption("apisignature");
+			$API_UserName = get_option("pmpro_apiusername");
+			$API_Password = get_option("pmpro_apipassword");
+			$API_Signature = get_option("pmpro_apisignature");
 			$API_Endpoint = "https://api-3t.paypal.com/nvp";
 			if("sandbox" === $environment || "beta-sandbox" === $environment) {
 				$API_Endpoint = "https://api-3t.$environment.paypal.com/nvp";

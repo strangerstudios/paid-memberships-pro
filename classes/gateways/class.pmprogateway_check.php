@@ -149,7 +149,7 @@
 			global $pmpro_level;
 
 			if($gateway == "check" && !pmpro_isLevelFree($pmpro_level)) {
-				$instructions = pmpro_getOption("instructions");
+				$instructions = get_option("pmpro_instructions");
 				echo '<div class="' . pmpro_get_element_class( 'pmpro_check_instructions' ) . '">' . wpautop(wp_unslash( $instructions )) . '</div>';
 			}
 		}
