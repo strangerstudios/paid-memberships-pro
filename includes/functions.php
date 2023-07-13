@@ -4380,17 +4380,17 @@ function pmpro_set_pause_mode( $state ) {
 }
 
 /**
- * Sanitizes a cycle period and makes sure it's a valid period.
+ * Sanitizes a cycle period or expiration period and makes sure it's a valid period.
  *
  * @since TBD
  *
  * @param string $cycle_period The cycle period to sanitize.
  * @return string The sanitized cycle period or false if invalid.
  */
-function pmpro_sanitize_cycle_period( $cycle_period ) {
+function pmpro_sanitize_period( $period ) {
 	// Validate the cycle period that was passed in.
-	$allowed_cycle_periods = apply_filters( 'pmpro_allowed_cycle_periods', array( 'Hour', 'Day', 'Week', 'Month', 'Year' ) );
-	$sanitized_period = pmpro_sanitize_with_safelist( $cycle_period, $allowed_cycle_periods );
+	$allowed_periods = apply_filters( 'pmpro_allowed_periods', array( 'Hour', 'Day', 'Week', 'Month', 'Year' ) );
+	$sanitized_period = pmpro_sanitize_with_safelist( $period, $allowed_periods );
 
 	// If the period was invalid, default to Month.
 	if ( empty( $sanitized_period ) ) {
