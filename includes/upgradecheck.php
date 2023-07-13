@@ -332,9 +332,9 @@ function pmpro_checkForUpgrades()
 	 * Version 2.12
 	 * Update the database to use varchar instead of enums.
 	 */
-	require_once( PMPRO_DIR . "/includes/updates/upgrade_2_12.php" ); // Need to include this for admin notice.
-	if ( $pmpro_db_version < 2.97 ) { // 2.96 since 2.106 would be lower than previous update.
-		pmpro_upgrade_2_12(); // This function will update the db version.
+	if ( $pmpro_db_version < 2.97 ) { // 2.97 since 2.12 would be lower than previous update.
+		pmpro_db_delta();
+		update_option( 'pmpro_db_version', '2.97' );
 	}
 }
 
