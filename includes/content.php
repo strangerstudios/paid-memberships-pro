@@ -268,7 +268,7 @@ function pmpro_search_filter($query)
 
     return $query;
 }
-$filterqueries = pmpro_getOption("filterqueries");
+$filterqueries = get_option("pmpro_filterqueries");
 if( ! empty( $filterqueries ) ) {
 	add_filter( 'pre_get_posts', 'pmpro_search_filter' );
 }
@@ -325,7 +325,7 @@ function pmpro_membership_content_filter( $content, $skipcheck = false ) {
 		return $content;
 	} else {
 		//if show excerpts is set, return just the excerpt
-		if( pmpro_getOption( "showexcerpts" ) ) {
+		if( get_option( "pmpro_showexcerpts" ) ) {
 			//show excerpt
 			global $post;
 			if( $post->post_excerpt ) {

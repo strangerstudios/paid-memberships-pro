@@ -1,25 +1,27 @@
 <?php 
 // Get options.
-$filter_queries = pmpro_getOption( 'filterqueries', true );
-$show_excerpts = pmpro_getOption( 'showexcerpts', true );
-$spam_protection = pmpro_getOption( 'spamprotection', true );
-$wisdom_tracking = pmpro_getOption( 'wisdom_opt_out', true );
+$filter_queries = get_option( 'pmpro_filterqueries' );
+$show_excerpts = get_option( 'pmpro_showexcerpts' );
+$hide_toolbar = get_option( 'pmpro_hide_toolbar' );
+$block_dashboard = get_option( 'pmpro_block_dashboard' );
+$wisdom_tracking = get_option( 'pmpro_wisdom_opt_out' );
+
 ?>
 <div class="pmpro-wizard__step pmpro-wizard__step-4">
 	<form action="" method="post">
 		<div class="pmpro-wizard__step-header">
-			<h1><?php esc_html_e( 'Advanced Settings', 'paid-memberships-pro' ); ?></h1>
+			<h2><?php esc_html_e( 'Advanced Settings', 'paid-memberships-pro' ); ?></h2>
 			<p><?php esc_html_e( 'Configure advanced settings relating to your membership site. You can configure additional settings later.', 'paid-memberships-pro' ); ?></p>
 		</div>
 		<div class="pmpro-wizard__field">
-			<label class="pmpro-wizard__label-block">
+			<label for="filterqueries" class="pmpro-wizard__label-block">
 				<?php esc_html_e( 'Filter searches and archives?', 'paid-memberships-pro' ); ?>
 			</label>
 			<select name="filterqueries" id="filterqueries" class="pmpro-wizard__field-block">
 				<option value="0" <?php selected( 0, $filter_queries); ?>><?php esc_html_e( 'No - Non-members will see restricted posts/pages in searches and archives.', 'paid-memberships-pro' ); ?></option>
 				<option value="1" <?php selected( 1, $filter_queries ); ?>><?php esc_html_e( 'Yes - Only members will see restricted posts/pages in searches and archives.', 'paid-memberships-pro' ); ?></option>
 			</select><br><br>
-			<label class="pmpro-wizard__label-block">
+			<label for="showexcerpts" class="pmpro-wizard__label-block">
 				<?php esc_html_e( 'Show excerpts to non-members?', 'paid-memberships-pro' ); ?>
 			</label>
 			<select name="showexcerpts" id="showexcerpts" class="pmpro-wizard__field-block">
@@ -28,15 +30,17 @@ $wisdom_tracking = pmpro_getOption( 'wisdom_opt_out', true );
 			</select>
 		</div>
 		<div class="pmpro-wizard__field">
-			<label class="pmpro-wizard__label-block">
-				<input type="checkbox" name="spamprotection" id="spamprotection" value="2" <?php checked( 2, $spam_protection ); ?>>
-				<?php esc_html_e( 'Enable Spam Protection', 'paid-memberships-pro' ); ?>
+			<label class="pmpro-wizard__label-block" for="block_dashboard">
+				<input type="checkbox" name="block_dashboard" id="block_dashboard" value="yes" <?php checked( $block_dashboard, 'yes' ); ?> />
+				<?php esc_html_e( 'Block all users with the Subscriber role from accessing the Dashboard.', 'paid-memberships-pro' ); ?>
+			</label><br><br>
+			<label class="pmpro-wizard__label-block" for="hide_toolbar">
+				<input type="checkbox" name="hide_toolbar" id="hide_toolbar" value="yes" <?php checked( $hide_toolbar, 'yes' ); ?> />
+				<?php esc_html_e( 'Hide the Toolbar from all users with the Subscriber role.', 'paid-memberships-pro' ); ?>
 			</label>
-			<p class="pmpro-wizard__field-description"><?php esc_html_e( 'Block IPs from checkout if there are more than 10 failures within 15 minutes.', 'paid-memberships-pro' ); ?></p>
 		</div>
-		
 		<div class="pmpro-wizard__field">
-			<label class="pmpro-wizard__label-block">
+			<label for="wisdom_opt_out" class="pmpro-wizard__label-block">
 				<?php esc_html_e( 'Enable Tracking?', 'paid-memberships-pro' ); ?>
 			</label>
 			<select name="wisdom_opt_out" id="wisdom_opt_out" class="pmpro-wizard__field-block">

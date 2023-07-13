@@ -1,6 +1,7 @@
 <?php
 /**
  * Template: Checkout
+ * Version: 2.0.2
  *
  * See documentation for how to override the PMPro templates.
  * @link https://www.paidmembershipspro.com/documentation/templates/
@@ -23,7 +24,7 @@ global $discount_code, $username, $password, $password2, $bfirstname, $blastname
 $pmpro_email_field_type = apply_filters('pmpro_email_field_type', true);
 
 // Set the wrapping class for the checkout div based on the default gateway;
-$default_gateway = pmpro_getOption( 'gateway' );
+$default_gateway = get_option( 'pmpro_gateway' );
 if ( empty( $default_gateway ) ) {
 	$pmpro_checkout_gateway_class = 'pmpro_checkout_gateway-none';
 } else {
@@ -43,7 +44,7 @@ if ( empty( $default_gateway ) ) {
 	<?php } ?>
 
 	<?php if($pmpro_msg) { ?>
-		<div id="pmpro_message" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_message ' . $pmpro_msgt, $pmpro_msgt ) ); ?>">
+		<div role="alert" id="pmpro_message" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_message ' . $pmpro_msgt, $pmpro_msgt ) ); ?>">
 			<?php echo wp_kses_post( apply_filters( 'pmpro_checkout_message', $pmpro_msg, $pmpro_msgt ) ); ?>
 		</div>
 	<?php } else { ?>
@@ -59,13 +60,43 @@ if ( empty( $default_gateway ) ) {
 		if ( $include_pricing_fields ) {
 		?>
 		<div id="pmpro_pricing_fields" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout', 'pmpro_pricing_fields' ) ); ?>">
-			<h3>
-				<span class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout-h3-name' ) ); ?>"><?php esc_html_e('Membership Level', 'paid-memberships-pro' );?></span>
-				<?php if(count($pmpro_levels) > 1) { ?><span class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout-h3-msg' ) ); ?>"><a href="<?php echo esc_url( pmpro_url( "levels" ) ); ?>"><?php esc_html_e('change', 'paid-memberships-pro' );?></a></span><?php } ?>
-			</h3>
+			<h2>
+				<span class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout-h2-name' ) ); ?>"><?php esc_html_e('Membership Level', 'paid-memberships-pro' );?></span>
+				<?php if(count($pmpro_levels) > 1) { ?><span class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout-h2-msg' ) ); ?>"><a aria-label="<?php esc_html_e( 'Select a different membership level', 'paid-memberships-pro' ); ?>" href="<?php echo esc_url( pmpro_url( "levels" ) ); ?>"><?php esc_html_e('change', 'paid-memberships-pro' );?></a></span><?php } ?>
+			</h2>
 			<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout-fields' ) ); ?>">
 				<p class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_level_name_text' ) );?>">
-					<?php echo wp_kses( sprintf( __('You have selected the <strong>%s</strong> membership level.', 'paid-memberships-pro' ), $pmpro_level->name), array( 'strong' => array() ) );?>
+					<?php
+					// Tell the user which level they are signing up for.
+					printf( esc_html__('You have selected the %s membership level.', 'paid-memberships-pro' ), '<strong>' . esc_html( $pmpro_level->name ) . '</strong>' );
+
+					// If a level will be removed with this purchase, let them know that too.
+					// First off, get the group for this level and check if it allows a user to have multiple levels.
+					$group_id = pmpro_get_group_id_for_level( $pmpro_level->id );
+					$group    = pmpro_get_level_group( $group_id );
+					if ( ! empty( $group ) && empty( $group->allow_multiple_selections ) ) {
+						// Get all of the user's current membership levels.
+						$levels = pmpro_getMembershipLevelsForUser( $current_user->ID );
+
+						// Loop through the levels and see if any are in the same group as the level being purchased.
+						if ( ! empty( $levels ) ) {
+							foreach ( $levels as $level ) {
+								// If this is the level that the user is purchasing, continue.
+								if ( $level->id == $pmpro_level->id ) {
+									continue;
+								}
+
+								// If this level is not in the same group, continue.
+								if ( pmpro_get_group_id_for_level( $level->id ) != $group_id ) {
+									continue;
+								}
+
+								// If we made it this far, the user is going to lose this level after checkout.
+								printf( ' ' . esc_html__( 'Your current membership level of %s will be removed when you complete your purchase.', 'paid-memberships-pro' ), '<strong>' . esc_html( $level->name ) . '</strong>' );
+							}
+						}
+					}
+					?>
 				</p>
 
 				<?php
@@ -116,9 +147,9 @@ if ( empty( $default_gateway ) ) {
 
 				<?php if($pmpro_show_discount_code) { ?>
 					<?php if($discount_code && !$pmpro_review) { ?>
-						<p id="other_discount_code_p" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_small', 'other_discount_code_p' ) ); ?>"><a id="other_discount_code_a" href="#discount_code"><?php esc_html_e('Click here to change your discount code.', 'paid-memberships-pro' );?></a></p>
+						<p id="other_discount_code_p" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_small', 'other_discount_code_p' ) ); ?>"><button type="button" id="other_discount_code_toggle"><?php esc_html_e('Click here to change your discount code', 'paid-memberships-pro' );?></button></p>
 					<?php } elseif(!$pmpro_review) { ?>
-						<p id="other_discount_code_p" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_small', 'other_discount_code_p' ) ); ?>"><?php esc_html_e('Do you have a discount code?', 'paid-memberships-pro' );?> <a id="other_discount_code_a" href="#discount_code"><?php esc_html_e('Click here to enter your discount code', 'paid-memberships-pro' );?></a>.</p>
+						<p id="other_discount_code_p" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_small', 'other_discount_code_p' ) ); ?>"><?php esc_html_e('Do you have a discount code?', 'paid-memberships-pro' );?> <button type="button" id="other_discount_code_toggle"><?php esc_html_e('Click here to enter your discount code', 'paid-memberships-pro' );?></button></p>
 					<?php } elseif($pmpro_review && $discount_code) { ?>
 						<p><strong><?php esc_html_e('Discount Code', 'paid-memberships-pro' );?>:</strong> <?php echo esc_html( $discount_code ); ?></p>
 					<?php } ?>
@@ -128,7 +159,7 @@ if ( empty( $default_gateway ) ) {
 				<div id="other_discount_code_tr" style="display: none;">
 					<label for="other_discount_code"><?php esc_html_e('Discount Code', 'paid-memberships-pro' );?></label>
 					<input id="other_discount_code" name="other_discount_code" type="text" class="<?php echo esc_attr( pmpro_get_element_class( 'input pmpro_alter_price', 'other_discount_code' ) ); ?>" size="20" value="<?php echo esc_attr($discount_code); ?>" />
-					<input type="button" name="other_discount_code_button" id="other_discount_code_button" value="<?php esc_attr_e('Apply', 'paid-memberships-pro' );?>" />
+					<input aria-label="<?php esc_html_e( 'Apply discount code', 'paid-memberships-pro' ); ?>" type="button" name="other_discount_code_button" id="other_discount_code_button" value="<?php esc_attr_e('Apply', 'paid-memberships-pro' );?>" />
 				</div>
 				<?php } ?>
 			</div> <!-- end pmpro_checkout-fields -->
@@ -149,10 +180,10 @@ if ( empty( $default_gateway ) ) {
 	?>
 	<div id="pmpro_user_fields" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout', 'pmpro_user_fields' ) ); ?>">
 		<hr />
-		<h3>
-			<span class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout-h3-name' ) ); ?>"><?php esc_html_e('Account Information', 'paid-memberships-pro' );?></span>
-			<span class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout-h3-msg' ) ); ?>"><?php esc_html_e('Already have an account?', 'paid-memberships-pro' );?> <a href="<?php echo esc_url( wp_login_url( apply_filters( 'pmpro_checkout_login_redirect', pmpro_url("checkout", "?level=" . $pmpro_level->id . $discount_code_link) ) ) ); ?>"><?php esc_html_e('Log in here', 'paid-memberships-pro' );?></a></span>
-		</h3>
+		<h2>
+			<span class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout-h2-name' ) ); ?>"><?php esc_html_e('Account Information', 'paid-memberships-pro' );?></span>
+			<span class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout-h2-msg' ) ); ?>"><?php esc_html_e('Already have an account?', 'paid-memberships-pro' );?> <a href="<?php echo esc_url( wp_login_url( apply_filters( 'pmpro_checkout_login_redirect', pmpro_url("checkout", "?level=" . $pmpro_level->id . $discount_code_link) ) ) ); ?>"><?php esc_html_e('Log in here', 'paid-memberships-pro' );?></a></span>
+		</h2>
 		<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout-fields' ) ); ?>">
 			<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout-field pmpro_checkout-field-username', 'pmpro_checkout-field-username' ) ); ?>">
 				<label for="username"><?php esc_html_e('Username', 'paid-memberships-pro' );?></label>
@@ -239,9 +270,9 @@ if ( empty( $default_gateway ) ) {
 	<?php if(pmpro_getGateway() == "paypal" && empty($pmpro_review) && true == apply_filters('pmpro_include_payment_option_for_paypal', true ) ) { ?>
 	<div id="pmpro_payment_method" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout', 'pmpro_payment_method' ) ); ?>" <?php if(!$pmpro_requirebilling) { ?>style="display: none;"<?php } ?>>
 		<hr />
-		<h3>
-			<span class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout-h3-name' ) ); ?>"><?php esc_html_e('Choose your Payment Method', 'paid-memberships-pro' ); ?></span>
-		</h3>
+		<h2>
+			<span class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout-h2-name' ) ); ?>"><?php esc_html_e('Choose your Payment Method', 'paid-memberships-pro' ); ?></span>
+		</h2>
 		<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout-fields' ) ); ?>">
 			<span class="<?php echo esc_attr( pmpro_get_element_class( 'gateway_paypal' ) ); ?>">
 				<input type="radio" name="gateway" value="paypal" <?php if(!$gateway || $gateway == "paypal") { ?>checked="checked"<?php } ?> />
@@ -260,9 +291,9 @@ if ( empty( $default_gateway ) ) {
 		if($pmpro_include_billing_address_fields) { ?>
 	<div id="pmpro_billing_address_fields" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout', 'pmpro_billing_address_fields' ) ); ?>" <?php if(!$pmpro_requirebilling || apply_filters("pmpro_hide_billing_address_fields", false) ){ ?>style="display: none;"<?php } ?>>
 		<hr />
-		<h3>
-			<span class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout-h3-name' ) ); ?>"><?php esc_html_e('Billing Address', 'paid-memberships-pro' );?></span>
-		</h3>
+		<h2>
+			<span class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout-h2-name' ) ); ?>"><?php esc_html_e('Billing Address', 'paid-memberships-pro' );?></span>
+		</h2>
 		<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout-fields' ) ); ?>">
 			<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout-field pmpro_checkout-field-bfirstname', 'pmpro_checkout-field-bfirstname' ) ); ?>">
 				<label for="bfirstname"><?php esc_html_e('First Name', 'paid-memberships-pro' );?></label>
@@ -386,7 +417,7 @@ if ( empty( $default_gateway ) ) {
 	<?php do_action("pmpro_checkout_after_billing_fields"); ?>
 
 	<?php
-		$pmpro_accepted_credit_cards = pmpro_getOption("accepted_credit_cards");
+		$pmpro_accepted_credit_cards = get_option( 'pmpro_accepted_credit_cards' );
 		$pmpro_accepted_credit_cards = explode(",", $pmpro_accepted_credit_cards);
 		$pmpro_accepted_credit_cards_string = pmpro_implodeToEnglish($pmpro_accepted_credit_cards);
 	?>
@@ -396,11 +427,11 @@ if ( empty( $default_gateway ) ) {
 		if($pmpro_include_payment_information_fields) { ?>
 		<div id="pmpro_payment_information_fields" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout', 'pmpro_payment_information_fields' ) ); ?>" <?php if(!$pmpro_requirebilling || apply_filters("pmpro_hide_payment_information_fields", false) ) { ?>style="display: none;"<?php } ?>>
 			<hr />
-			<h3>
-				<span class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout-h3-name' ) ); ?>"><?php esc_html_e('Payment Information', 'paid-memberships-pro' );?></span>
-				<span class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout-h3-msg' ) ); ?>"><?php echo esc_html( sprintf( __('We Accept %s', 'paid-memberships-pro' ), $pmpro_accepted_credit_cards_string ) );?></span>
-			</h3>
-			<?php $sslseal = pmpro_getOption("sslseal"); ?>
+			<h2>
+				<span class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout-h2-name' ) ); ?>"><?php esc_html_e('Payment Information', 'paid-memberships-pro' );?></span>
+				<span class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout-h2-msg' ) ); ?>"><?php echo esc_html( sprintf( __('We Accept %s', 'paid-memberships-pro' ), $pmpro_accepted_credit_cards_string ) );?></span>
+			</h2>
+			<?php $sslseal = get_option( 'pmpro_sslseal' ); ?>
 			<?php if(!empty($sslseal)) { ?>
 				<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout-fields-display-seal' ) ); ?>">
 			<?php } ?>
@@ -463,7 +494,7 @@ if ( empty( $default_gateway ) ) {
 					<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout-field pmpro_payment-discount-code', 'pmpro_payment-discount-code' ) ); ?>">
 						<label for="discount_code"><?php esc_html_e('Discount Code', 'paid-memberships-pro' );?></label>
 						<input class="<?php echo esc_attr( pmpro_get_element_class( 'input pmpro_alter_price', 'discount_code' ) ); ?>" id="discount_code" name="discount_code" type="text" size="10" value="<?php echo esc_attr($discount_code); ?>" />
-						<input type="button" id="discount_code_button" name="discount_code_button" value="<?php esc_attr_e('Apply', 'paid-memberships-pro' );?>" />
+						<input  aria-label="<?php esc_html_e( 'Apply discount code', 'paid-memberships-pro' ); ?>" type="button" id="discount_code_button" name="discount_code_button" value="<?php esc_attr_e('Apply', 'paid-memberships-pro' );?>" />
 						<p id="discount_code_message" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_message', 'discount_code_message' ) ); ?>" style="display: none;"></p>
 					</div>
 				<?php } ?>
@@ -483,9 +514,9 @@ if ( empty( $default_gateway ) ) {
 	<?php if($tospage && !$pmpro_review) { ?>
 		<div id="pmpro_tos_fields" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout', 'pmpro_tos_fields' ) ); ?>">
 			<hr />
-			<h3>
-				<span class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout-h3-name' ) ); ?>"><?php echo esc_html( $tospage->post_title );?></span>
-			</h3>
+			<h2>
+				<span class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout-h2-name' ) ); ?>"><?php echo esc_html( $tospage->post_title );?></span>
+			</h2>
 			<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout-fields' ) ); ?>">
 				<div id="pmpro_license" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout-field', 'pmpro_license' ) ); ?>">
 <?php 
@@ -534,10 +565,9 @@ if ( empty( $default_gateway ) ) {
 
 	<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout-field pmpro_captcha', 'pmpro_captcha' ) ); ?>">
 	<?php
-		global $recaptcha, $recaptcha_publickey;
+		$recaptcha = get_option( "pmpro_recaptcha");
 		if ( $recaptcha == 2 || $recaptcha == 1 ) {
-			//phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-			echo pmpro_recaptcha_get_html($recaptcha_publickey, NULL, true);
+			pmpro_recaptcha_get_html();
 		}
 	?>
 	</div> <!-- end pmpro_captcha -->
@@ -562,7 +592,7 @@ if ( empty( $default_gateway ) ) {
 				<input type="hidden" name="confirm" value="1" />
 				<input type="hidden" name="token" value="<?php echo esc_attr($pmpro_paypal_token); ?>" />
 				<input type="hidden" name="gateway" value="<?php echo esc_attr($gateway); ?>" />
-				<input type="submit" id="pmpro_btn-submit" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_btn pmpro_btn-submit-checkout', 'pmpro_btn-submit-checkout' ) ); ?>" value="<?php esc_attr_e('Complete Payment', 'paid-memberships-pro' );?> &raquo;" />
+				<input type="submit" id="pmpro_btn-submit" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_btn pmpro_btn-submit-checkout', 'pmpro_btn-submit-checkout' ) ); ?>" value="<?php esc_attr_e('Complete Payment', 'paid-memberships-pro' );?>" />
 			</span>
 
 		<?php } else { ?>
@@ -574,7 +604,7 @@ if ( empty( $default_gateway ) ) {
 				?>
 				<span id="pmpro_submit_span">
 					<input type="hidden" name="submit-checkout" value="1" />
-					<input type="submit"  id="pmpro_btn-submit" class="<?php echo esc_attr( pmpro_get_element_class(  'pmpro_btn pmpro_btn-submit-checkout', 'pmpro_btn-submit-checkout' ) ); ?>" value="<?php if($pmpro_requirebilling) { esc_html_e('Submit and Check Out', 'paid-memberships-pro' ); } else { esc_html_e('Submit and Confirm', 'paid-memberships-pro' );}?> &raquo;" />
+					<input type="submit"  id="pmpro_btn-submit" class="<?php echo esc_attr( pmpro_get_element_class(  'pmpro_btn pmpro_btn-submit-checkout', 'pmpro_btn-submit-checkout' ) ); ?>" value="<?php if($pmpro_requirebilling) { esc_html_e('Submit and Check Out', 'paid-memberships-pro' ); } else { esc_html_e('Submit and Confirm', 'paid-memberships-pro' );}?>" />
 				</span>
 				<?php
 				}

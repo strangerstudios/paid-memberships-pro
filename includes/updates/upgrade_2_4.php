@@ -36,7 +36,7 @@ function pmpro_upgrade_2_4() {
 		}
 	}
 
-	pmpro_setOption( 'db_version', '2.4' );
+	update_option( 'pmpro_db_version', '2.4' );
 	return 2.4;
 }
 

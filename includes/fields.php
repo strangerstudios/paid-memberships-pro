@@ -116,6 +116,10 @@ function pmpro_add_user_taxonomy( $name, $name_plural ) {
 		$safe_name = substr( $safe_name, 0, 32 );
 	}
 
+	// Add to the global so we can keep track.
+	$pmpro_user_taxonomies = (array) $pmpro_user_taxonomies;
+	$pmpro_user_taxonomies[] = $safe_name;
+
 	// Make sure name and plural name are less than 32 characters.
 	if ( strlen( $name ) > 32 ) {
 		$name = substr( $name, 0, 32 );
@@ -305,9 +309,9 @@ function pmpro_checkout_boxes_fields() {
 			?>
 			<div id="pmpro_checkout_box-<?php echo sanitize_title( $cb->name ); ?>" class="pmpro_checkout">
 				<hr />
-				<h3>
-					<span class="pmpro_checkout-h3-name"><?php echo wp_kses_post( $cb->label );?></span>
-				</h3>
+				<h2>
+					<span class="pmpro_checkout-h2-name"><?php echo wp_kses_post( $cb->label );?></span>
+				</h2>
 				<div class="pmpro_checkout-fields">
 				<?php if(!empty($cb->description)) { ?>
 					<div class="pmpro_checkout_decription"><?php echo wp_kses_post( $cb->description ); ?></div>
@@ -634,7 +638,7 @@ function pmpro_show_user_fields_in_profile( $user, $withlocations = false ) {
 
 			if ( !empty($box->label) ) {
 				?>
-				<h3><?php echo wp_kses_post( $box->label ); ?></h3>
+				<h2><?php echo wp_kses_post( $box->label ); ?></h2>
 				<?php
 				if ( ! empty( $box->description ) ) {
 					?>
@@ -687,8 +691,6 @@ add_action( 'edit_user_profile', 'pmpro_show_user_fields_in_profile_with_locatio
  * @since 2.3
  */
 function pmpro_show_user_fields_in_frontend_profile( $user, $withlocations = false ) {
-	global $pmpro_user_fields;
-
 	//which fields are marked for the profile
 	$profile_fields = pmpro_get_user_fields_for_profile($user->ID, $withlocations);
 
@@ -698,22 +700,22 @@ function pmpro_show_user_fields_in_frontend_profile( $user, $withlocations = fal
 			$box = pmpro_get_field_group_by_name( $where );
 
 			// Only show on front-end if there are fields to be shown.
-			$show_fields = false;
+			$show_fields = array();
 			foreach( $fields as $key => $field ) {
-				if ( $field->profile !== 'only_admin' ) {
-					$show_fields = true;
+				if ( pmpro_is_field( $field ) && $field->profile !== 'only_admin' && $field->profile !== 'admin' && $field->profile !== 'admins' ) {
+					$show_fields[] = $field;
 				}
 			}
 
 			// Bail if there are no fields to show on the front-end profile.
-			if ( ! $show_fields ) {
+			if ( empty( $show_fields ) ) {
 				continue;
 			}
 			?>
 
 			<div class="pmpro_checkout_box-<?php echo sanitize_title( $where ); ?>">
 				<?php if ( ! empty( $box->label ) ) { ?>
-					<h3><?php echo wp_kses_post( $box->label ); ?></h3>
+					<h2><?php echo wp_kses_post( $box->label ); ?></h2>
 				<?php } ?>
 
 				<div class="pmpro_member_profile_edit-fields">
@@ -722,11 +724,9 @@ function pmpro_show_user_fields_in_frontend_profile( $user, $withlocations = fal
 					<?php } ?>
 
 					<?php
-						 // Cycle through groups.
-						foreach( $fields as $field ) {
-							if ( pmpro_is_field( $field ) && $field->profile !== 'only_admin' ) {
-								$field->displayAtCheckout( $user->ID );
-							}
+						 // Show fields.
+						foreach( $show_fields as $field ) {
+							$field->displayAtCheckout( $user->ID );
 						}
 					?>
 				</div> <!-- end pmpro_member_profile_edit-fields -->
@@ -1609,7 +1609,7 @@ function pmpro_has_coded_user_fields() {
 /**
  * Gets the label(s) for a passed user field value.
  *
- * @since TBD
+ * @since 2.11
  *
  * @param string $field_name  The name of the field that the value belongs to.
  * @param string|array $field_value The value to get the label for.

@@ -1,8 +1,8 @@
 <?php
 // Variables that may exist prior to running the Setup Wizard.
-$pmpro_license_key = pmpro_getOption( 'license_key' );
-$site_type         = pmpro_getOption( 'site_type' );
-$collect_payment   = pmpro_getOption( 'wizard_collect_payment' );
+$pmpro_license_key = get_option( 'pmpro_license_key' );
+$site_type         = get_option( 'pmpro_site_type' );
+$collect_payment   = get_option( 'pmpro_wizard_collect_payment' );
 
 // Check if we should allow page generation or not.
 global $pmpro_pages;
@@ -22,12 +22,12 @@ global $pmpro_pages;
 
 <div class="pmpro-wizard__step pmpro-wizard__step-1">
 	<div class="pmpro-wizard__step-header">
-		<h1><?php esc_html_e( 'Welcome to Your New Membership Site', 'paid-memberships-pro' ); ?></h1>
+		<h2><?php esc_html_e( 'Welcome to Your New Membership Site', 'paid-memberships-pro' ); ?></h2>
 		<p><?php esc_html_e( 'Tell us about your membership site to get up and running in 5 easy steps.', 'paid-memberships-pro' ); ?></p>
 	</div>
 	<form action="" method="post">
 		<div class="pmpro-wizard__field">
-			<label class="pmpro-wizard__label-block">
+			<label class="pmpro-wizard__label-block" for="membership_site_type">
 				<?php esc_html_e( 'What type of membership site are you creating?', 'paid-memberships-pro' ); ?>
 			</label>
 			<p class="pmpro-wizard__field-description"><?php esc_html_e( 'Choose the answer that best fits the primary value of your membership site.', 'paid-memberships-pro' ); ?></p>
@@ -50,6 +50,8 @@ global $pmpro_pages;
 			</label>
 			<?php if ( $member_pages_exist ) {
 				echo '<p class="pmpro-wizard__field-description">' . esc_html__( 'We detected you have pages assigned for Paid Memberships Pro, this option is disabled.', 'paid-memberships-pro' ) . '</p>';
+			} else {
+				echo '<p class="pmpro-wizard__field-description">' . esc_html__( 'We will automatically create frontend pages for your levels, checkout, account management, and more.', 'paid-memberships-pro' ) . '</p>';
 			} ?>
 		</div>
 		<div class="pmpro-wizard__field">
@@ -59,7 +61,7 @@ global $pmpro_pages;
 			</label>
 		</div>
 		<div class="pmpro-wizard__field pmpro_admin">
-			<label class="pmpro-wizard__label-block">
+			<label class="pmpro-wizard__label-block" for="pmpro_license_key">
 				<?php esc_html_e( 'Enter Your Support License Key (optional)', 'paid-memberships-pro' ); ?>
 			</label>
 			<?php
@@ -71,7 +73,7 @@ global $pmpro_pages;
 				<?php
 			}
 			?>
-			<p class="pmpro-wizard__field-description"><?php esc_html_e( 'An annual support license is recommended for websites running Paid Memberships Pro.', 'paid-memberships-pro' ); ?> <a href="https://www.paidmembershipspro.com/pricing/?utm_source=plugin&utm_medium=pmpro-wizard&utm_campaign=pricing&utm_content=view-plans-pricing" target="_blank" rel="noopener noreferrer"><?php esc_html_e( 'View Plans and Pricing', 'paid-memberships-pro' ); ?></a></p>
+			<p class="pmpro-wizard__field-description"><?php esc_html_e( 'An annual support license is recommended for websites running Paid Memberships Pro.', 'paid-memberships-pro' ); ?> <a aria-label="<?php esc_attr_e( 'View plans and pricing for Paid Memberships Pro optional licenses in a new tab', 'paid-memberships-pro' ); ?>" href="https://www.paidmembershipspro.com/pricing/?utm_source=plugin&utm_medium=pmpro-wizard&utm_campaign=pricing&utm_content=view-plans-pricing" target="_blank"><?php esc_html_e( 'View Plans and Pricing', 'paid-memberships-pro' ); ?></a></p>
 			<input type="text" name="pmpro_license_key" id="pmpro_license_key" class="pmpro-wizard__field-block" value="<?php esc_attr_e( $pmpro_license_key ); ?>">
 		</div>
 		<p class="pmpro_wizard__submit">
