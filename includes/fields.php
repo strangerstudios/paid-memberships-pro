@@ -1058,16 +1058,28 @@ function pmpro_add_user_fields_to_email( $email ) {
 			// Get field group settings.
 			$fields_groups = pmpro_get_user_fields_settings();
 
+			// Remove any field groups that don't show on checkout.
+			foreach ( $fields_groups as $key => $group ) {
+				if ( $group->checkout !== 'yes' ) {
+					unset( $fields_groups[ $key ] );
+				}
+			}
+
+			// Remove any field groups that are not for the membership level that was purchased.
+			if ( ! empty( $email->data['membership_id'] ) ) {
+				$level_id = $email->data['membership_id'];
+				foreach ( $fields_groups as $key => $group ) {
+					if ( ! empty( $group->levels ) && ! in_array( $level_id, $group->levels ) ) {
+						unset( $fields_groups[ $key ] );
+					}
+				}
+			}
+
 			//add to bottom of email
 			if ( ! empty( $fields_groups ) ) {
 				$email->body .= "<p>" . __( 'Extra Fields:', 'paid-memberships-pro' ) . "<br />";
 				//cycle through groups
 				foreach( $fields_groups as $group ) {
-
-					// Skip any field groups that don't show on checkout.
-					if ( $group->checkout !== 'yes' ) {
-						continue;
-					}
 
 					// Get the groups name so we can grab it from the associative array.
 					$group_name = $group->name;
