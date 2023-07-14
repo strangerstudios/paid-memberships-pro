@@ -240,7 +240,7 @@ class PMPro_Discount_Code{
                 $initial_payment = $data['initial_payment'];
                 $billing_amount = $data['billing_amount'];
                 $cycle_number = $data['cycle_number'];
-                $cycle_period = pmpro_sanitize_with_safelist( $data['cycle_period'], pmpro_get_allowed_cycle_periods() );
+                $cycle_period = pmpro_sanitize_period( $data['cycle_period'] );
                 $billing_limit = $data['billing_limit'];
                 $trial_amount = $data['trial_amount'];
                 $trial_limit = $data['trial_limit'];
