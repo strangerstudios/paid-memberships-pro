@@ -318,7 +318,7 @@ add_action( 'admin_init', 'pmpro_lifter_save_streamline_option' );
  */
 function pmpro_lifter_install_create_pages( $pages ) {
 	// Bail if streamline is not enabled.
-	if ( get_option( 'pmpro_lifter_streamline' ) ) {
+	if ( ! get_option( 'pmpro_lifter_streamline' ) ) {
 		return $pages;
 	}
 	
@@ -335,3 +335,36 @@ function pmpro_lifter_install_create_pages( $pages ) {
 	return $new_pages;
 }
 add_filter( 'llms_install_create_pages', 'pmpro_lifter_install_create_pages' );
+
+/**
+ * If (1) we are in streamlined mode and (2) PMPro Courses was
+ * only being used for the LifterLMS module, deactivate it
+ * and show a notice.
+ */
+function pmpro_lifter_maybe_deprecate_pmpro_courses( $deprecated_addons ) {
+	// Bail if streamline is not enabled.
+	if ( ! get_option( 'pmpro_lifter_streamline' ) ) {
+		return $deprecated_addons;
+	}
+
+	// Bail if PMPro Courses is not active.
+	if ( ! defined( 'PMPRO_COURSES_VERSION') ) {
+		return $deprecated_addons;
+	}
+
+	// Bail if any module besides the LifterLMS module is active.
+	$active_modules = array_diff( get_option( 'pmpro_courses_modules', array() ), array( 'lifterlms' ) );
+	if ( ! empty( $active_modules ) ) {
+		return $deprecated_addons;
+	}
+
+	// Okay, deprecate PMPro Courses
+	$deprecated_addons['pmpro-courses'] = array(
+		'file' => 'pmpro-courses.php',
+		'label' => 'PMPro Courses',
+		'message' => 'The Streamline LifterLMS option is enabled and includes all of the functionality previously found in the LifterLMS module of PMPro Courses.',
+	);
+
+	return $deprecated_addons;
+}
+add_filter( 'pmpro_deprecated_add_ons_list', 'pmpro_lifter_maybe_deprecate_pmpro_courses' );
