@@ -316,7 +316,7 @@ add_action( 'admin_init', 'pmpro_lifter_save_streamline_option' );
 /**
  * If the streamline option is enabled, don't create some pages.
  */
-function pmpro_lifter_install_create_pages( $pages ) {
+function pmpro_lifter_install_get_pages( $pages ) {
 	// Bail if streamline is not enabled.
 	if ( ! get_option( 'pmpro_lifter_streamline' ) ) {
 		return $pages;
@@ -334,7 +334,8 @@ function pmpro_lifter_install_create_pages( $pages ) {
 
 	return $new_pages;
 }
-add_filter( 'llms_install_create_pages', 'pmpro_lifter_install_create_pages' );
+add_filter( 'llms_install_get_pages', 'pmpro_lifter_install_get_pages' );
+add_filter( 'llms_install_create_pages', 'pmpro_lifter_install_get_pages' );	// Old filter.
 
 /**
  * If (1) we are in streamlined mode and (2) PMPro Courses was
