@@ -115,7 +115,7 @@ function pmpro_login_url_filter( $login_url='', $redirect='' ) {
 	// Check for a PMPro Login page.
 	$login_page_permalink = pmpro_url( 'login' );
 	if ( ! $login_page_permalink ) {
-		return;
+		return $login_url;
 	}
 
 	// If the page or permalink is unavailable, don't override the url here.
