@@ -934,31 +934,25 @@ add_filter( 'authenticate', 'pmpro_authenticate_username_password', 30, 3);
  */
 function pmpro_login_failed( $username, $error = null ) {
 
-	$login_page = pmpro_getOption( 'login_page_id' );
-	if ( empty( $login_page ) ) {
+	$redirect_url = pmpro_url( 'login' );
+	if ( ! $redirect_url ) {
 		return;
 	}
 
 	$referrer = wp_get_referer();
-	if ( ! empty( $_REQUEST['redirect_to'] ) ) {
-		$redirect_to = esc_url_raw( $_REQUEST['redirect_to'] );
-	} else {
-		$redirect_to = '';
-	}
+
+	$redirect_to = ( ! empty( $_REQUEST['redirect_to'] ) ) ? esc_url_raw( $_REQUEST['redirect_to'] ) : '';
 
 	if ( $referrer && ! strstr( $referrer, 'wp-login' ) && ! strstr( $referrer, 'wp-admin' ) ) {
 		if ( ! strstr( $referrer, '?login=failed') ) {
 			// If an error was passed, get the code from there.
-			if ( is_wp_error( $error ) ) {
-				$error_code = $error->get_error_code();
-			} else {
-				$error_code = 'failed';
-			}
-			
-			wp_redirect( add_query_arg( array( 'action'=> $error_code, 'username' => sanitize_text_field( $username ), 'redirect_to' => urlencode( $redirect_to ) ), pmpro_login_url() ) );	
+			$error_code = is_wp_error( $error ) ? $error->get_error_code() : 'failed';
+
+			$redirect_url = add_query_arg( array( 'action'=> $error_code, 'username' => sanitize_text_field( $username ), 'redirect_to' => urlencode( $redirect_to ) ), pmpro_login_url() );
 		} else {
-			wp_redirect( add_query_arg( 'action', 'loggedout', pmpro_login_url() ) );
+			$redirect_url = add_query_arg( 'action', 'loggedout', pmpro_login_url() );			
 		}
+		wp_redirect( $redirect_url );
 		exit;
 	}
 }
