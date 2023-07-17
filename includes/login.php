@@ -623,33 +623,44 @@ add_action( 'login_form_lostpassword', 'pmpro_lost_password_redirect' );
 /**
  * Redirect Password reset to our own page.
  * @since 2.3
+ * @since [version] Uses the pmpro_url function now.
  */
 function pmpro_reset_password_redirect() {
-	if ( 'GET' == $_SERVER['REQUEST_METHOD'] ) {
-		$login_page = pmpro_getOption( 'login_page_id' );
-
-		if ( empty( $login_page ) ) {
-			return;
-		}
-
-		$redirect_url = $login_page ? get_permalink( $login_page ): '';
-		$user = check_password_reset_key( sanitize_text_field( $_REQUEST['rp_key'] ), sanitize_text_field( $_REQUEST['rp_login'] ) );
-
-		if ( ! $user || is_wp_error( $user ) ) {
-            if ( $user && $user->get_error_code() === 'expired_key' ) {
-				wp_redirect( add_query_arg( 'login', urlencode( 'expiredkey' ), $redirect_url ) );
-            } else {
-                wp_redirect( add_query_arg( 'login', urlencode( 'invalidkey' ), $redirect_url ));
-            }
-            exit;
-        }
-
-        $redirect_url = add_query_arg( array( 'login' => esc_attr( sanitize_text_field( $_REQUEST['rp_login'] ) ), 'action' => urlencode( 'rp' ) ), $redirect_url );
-        $redirect_url = add_query_arg( array( 'key' => esc_attr( sanitize_text_field( $_REQUEST['rp_key'] ) ), 'action' => urlencode( 'rp' ) ), $redirect_url );
-
-        wp_redirect( $redirect_url );
-        exit;
+	
+	// Don't redirect if the form is being submitted, i.e. POST.
+	if ( 'GET' != $_SERVER['REQUEST_METHOD'] ) {
+		return;
 	}
+
+	// Don't redirect if we're not using the PMPro login page.
+	$login_url = pmpro_url( 'login' );
+	if ( ! $login_url ) {
+		return;
+	}
+	
+	// Make sure the reset password link is valid. A WP_User object on success or WP_Error object for invalid or expired keys.
+	$check = check_password_reset_key( sanitize_text_field( $_REQUEST['rp_key'] ), sanitize_text_field( $_REQUEST['rp_login'] ) );
+
+	// If the key is expired or invalid, figure out the correct error code.
+	if ( is_wp_error( $check ) ) {
+		$error_code = $check->get_error_code() == 'expired_key' ? 'expiredkey' : 'invalidkey';	
+	} elseif ( gettype( $check ) !== 'WP_User' ) {
+		// Probably null/false returned from a plugin filtering the check.
+		$error_code = 'invalidkey';
+	}
+
+	// If there was an error redirect with that code.
+	if ( ! empty( $error_code ) ) {
+		wp_redirect( add_query_arg( 'login', urlencode( $error_code ), $login_url ) );
+		exit;
+	}
+
+	// The check worked. Let's redirect to our password reset page.	
+	$redirect_url = add_query_arg( array( 'login' => esc_attr( sanitize_text_field( $_REQUEST['rp_login'] ) ), 'action' => urlencode( 'rp' ) ), $login_url );
+	$redirect_url = add_query_arg( array( 'key' => esc_attr( sanitize_text_field( $_REQUEST['rp_key'] ) ), 'action' => urlencode( 'rp' ) ), $login_url );
+
+	wp_redirect( $login_url );
+	exit;
 }
 add_action( 'login_form_rp', 'pmpro_reset_password_redirect' );
 add_action( 'login_form_resetpass', 'pmpro_reset_password_redirect' );
