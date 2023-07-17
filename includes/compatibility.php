@@ -55,6 +55,11 @@ function pmpro_compatibility_checker() {
 			'file' 		  => 'oxygen-builder.php',
 			'check_type'  => 'class',
 			'check_value' => 'OxyEl'
+		],
+		[
+			'file'		  => 'lifterlms.php',
+			'check_type'  => 'function',
+			'check_value' => 'llms'
 		]
 	];
 
