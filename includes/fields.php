@@ -1639,11 +1639,6 @@ function pmpro_get_label_for_user_field_value( $field_name, $field_value ) {
                 continue;
             }
             
-            // Check if this is a user field with an associative array of values.
-            if ( ! array_keys( $user_field->options ) !== range( 0, count( $user_field->options ) - 1 ) ) {
-                continue;
-            }
-            
 			// Replace meta values with their corresponding labels.
 			if ( is_array( $field_value ) ) {
 				foreach ( $field_value as $key => $value ) {
