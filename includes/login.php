@@ -598,25 +598,27 @@ function pmpro_lost_password_form() { ?>
  * @since 2.3
  */
 function pmpro_lost_password_redirect() {
-	if ( 'POST' == $_SERVER['REQUEST_METHOD'] ) {
-		$login_page = pmpro_getOption( 'login_page_id' );
 
-		if ( empty( $login_page ) ) {
-			return;
-		}
-
-		$redirect_url = $login_page ? get_permalink( $login_page ): '';
-
-		$errors = retrieve_password();
-		if ( is_wp_error( $errors ) ) {
-		$redirect_url = add_query_arg( array( 'errors' => join( ',', $errors->get_error_codes() ), 'action' => urlencode( 'reset_pass' ) ), $redirect_url );
-		} else {
-			$redirect_url = add_query_arg( array( 'checkemail' => urlencode( 'confirm' ) ), $redirect_url );
-		}
-
-		wp_redirect( $redirect_url );
-		exit;
+	if ( 'POST' != $_SERVER['REQUEST_METHOD'] ) {
+		return;
 	}
+
+	// Don't redirect if we're not using the PMPro login page.
+	$redirect_url = pmpro_url( 'login' );
+	if ( ! $redirect_url ) {
+		return;
+	}
+	
+	$errors = retrieve_password();
+	if ( is_wp_error( $errors ) ) {
+		$redirect_url = add_query_arg( array( 'errors' => join( ',', $errors->get_error_codes() ), 'action' => urlencode( 'reset_pass' ) ), $redirect_url );
+	} else {
+		$redirect_url = add_query_arg( array( 'checkemail' => urlencode( 'confirm' ) ), $redirect_url );
+	}
+
+	wp_redirect( $redirect_url );
+	exit;
+
 }
 add_action( 'login_form_lostpassword', 'pmpro_lost_password_redirect' );
 
