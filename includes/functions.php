@@ -2076,8 +2076,8 @@ function pmpro_getMembershipLevelForUser( $user_id = null, $force = false ) {
  *		Failure returns false.
  */
 function pmpro_getMembershipLevelsForUser( $user_id = null, $include_inactive = false ) {
+	global $current_user;
 	if ( empty( $user_id ) ) {
-		global $current_user;
 		$user_id = $current_user->ID;
 	}
 
@@ -2087,6 +2087,31 @@ function pmpro_getMembershipLevelsForUser( $user_id = null, $include_inactive = 
 
 	// make sure user id is int for security
 	$user_id = intval( $user_id );
+
+	// Admins have special rules for membership levels. Check them here.
+	if ( $user_id == $current_user->ID && current_user_can( 'manage_options' ) && ! is_admin() ) {
+		// This user meta can be changed via the admin bar.
+		$admin_membership_access = get_user_meta( $current_user->ID, 'pmpro_admin_membership_access', true );
+
+		if ( 'no' === $admin_membership_access ) {
+			return array();
+		} elseif ( 'current' !== $admin_membership_access ) {
+			$all_levels = pmpro_getAllLevels( true );
+
+			// Make sure that each level has all the necessary fields.
+			foreach ( $all_levels as $key => $level ) {
+				$level->ID = $level->id;
+				$level->subscription_id = null;
+				$level->code_id = null;
+				$level->startdate = strtotime( '-1 year' );
+				$level->enddate = strtotime ( '+1 year' );
+			}
+			return $all_levels;
+		}
+
+		// If we get here, the admin membership access is set to 'current'.
+		// Continue checking access as normal.
+	}
 
 	global $wpdb;
 

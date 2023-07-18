@@ -248,8 +248,10 @@ function pmpro_admin_bar_menu() {
 }
 add_action( 'admin_bar_menu', 'pmpro_admin_bar_menu', 1000);
 
-/// Add docblock
-function pmpro_view_as_admin_bar_menu() {
+/**
+ * Add the "Admin Membership Access" menu to the admin bar.
+ */
+function pmpro_admin_membership_access_menu_bar() {
 	global $wp_admin_bar, $current_user;
 
 	// Only show when viewing the frontend of the site.
@@ -258,157 +260,77 @@ function pmpro_view_as_admin_bar_menu() {
 	}
 
 	/**
-	 * Filter to hide the "View As" menu in the admin bar.
+	 * Filter to hide the "Admin Membership Access" menu in the admin bar.
 	 * @since TBD
-	 * @param bool $hide_view_as_toolbar Whether to hide the "View As" menu in the admin bar. Default false.
+	 * @param bool $hide Whether to hide the "Admin Membership Access" menu in the admin bar. Default false.
 	 */
-	if ( apply_filters( 'pmpro_hide_view_as_toolbar', false ) ) {
+	if ( apply_filters( 'pmpro_hide_admin_membership_access_toolbar', false ) ) {
 		return;
 	}
 
-	//view menu at all?
+	// View menu at all?
 	if ( ! current_user_can( 'pmpro_memberships_menu' ) || ! is_admin_bar_showing() ) {
 		return;
 	}
 
 	// Let's save or delete the option now.
-	if ( ! empty( $_REQUEST['pmpro-view-as-submit'] ) ) {
+	if ( ! empty( $_REQUEST['pmpro-admin-membership-access'] ) ) {
 
 		// Let's get the value of the view_as now:
-		$view_as = sanitize_text_field( $_REQUEST['pmpro_view_as'] );
+		$admin_membership_access = sanitize_text_field( $_REQUEST['pmpro-admin-membership-access'] );
 
-		if ( $view_as == 'member' && ! empty( $_REQUEST['levels'] ) ) {
-			update_user_meta( $current_user->ID, 'pmpro_view_as', array_map( 'sanitize_text_field', $_REQUEST['levels'] ) );
-		} elseif ( $view_as !== 'admin' ) {
-			update_user_meta( $current_user->ID, 'pmpro_view_as', $view_as );
+		if ( $admin_membership_access == 'no' ) {
+			update_user_meta( $current_user->ID, 'pmpro_admin_membership_access', 'no' );
+		} elseif ( $admin_membership_access == 'current' ) {
+			update_user_meta( $current_user->ID, 'pmpro_admin_membership_access', 'current' );
 		} else {
-			delete_user_meta( $current_user->ID, 'pmpro_view_as' );
+			update_user_meta( $current_user->ID, 'pmpro_admin_membership_access', 'yes' );
 		}
 
 		echo "<meta http-equiv='refresh' content='0'>";
 	}
 
 	// Let's get the option now so we can show it.
-	$viewing_as = get_user_meta( $current_user->ID, 'pmpro_view_as', true );
+	$admin_membership_access = get_user_meta( $current_user->ID, 'pmpro_admin_membership_access', true );
 
 	// Set the title and the option value.
-	if ( is_array( $viewing_as ) ) {
-		$view_as_option = $viewing_as;
-		$title = '<span class="ab-icon dashicons dashicons-saved has-access-icon"></span>' . __( 'Viewing as Member', 'paid-memberships-pro' );
-	} elseif ( is_string( $viewing_as ) && ! empty( $viewing_as ) ) {
-		$view_as_option = $viewing_as;
-		$title = '<span class="ab-icon dashicons dashicons-hidden non-member-icon"></span>' . __( 'Viewing as', 'paid-memberships-pro' ) . ' ' . $view_as_option;
+	if ( 'no' === $admin_membership_access ) {
+		$title = '<span class="ab-icon dashicons dashicons-hidden non-member-icon"></span>' . __( 'Viewing without membership access', 'paid-memberships-pro' );
+	} elseif ( 'current' === $admin_membership_access ) {
+		$title = __( 'Viewing with current membership levels', 'paid-memberships-pro' );
 	} else {
-		$title = __( 'View as...', 'paid-memberships-pro' );
-		$view_as_option = $viewing_as;
+		$title = '<span class="ab-icon dashicons dashicons-saved has-access-icon"></span>' . __( 'Viewing with membership access', 'paid-memberships-pro' );
+		$admin_membership_access = 'yes';
 	}
 
 	$wp_admin_bar->add_menu(
 		array(
-			'id' => 'pmpro-view-as',
+			'id' => 'pmpro-admin-membership-access',
 			'parent' => 'top-secondary',
 			'title' => $title,
 		)
 	);
 
+	// Build a form input for changing the Admin Membership Access setting..
+	ob_start();
 	?>
-<script>
-jQuery(document).ready(function(){
-	
-	var viewAsMember = jQuery('#pmpro_view_as_member');
-	var viewAsSelect = jQuery('#pmpro_view_as');
-	var container = jQuery('#wp-admin-bar-pmpro-view-as .ab-sub-wrapper');
-
-	// Hide it by default.
-	viewAsMember.hide();
-
-	/// Load Select2 for the 'member' levels.
-  	// jQuery('#pmpro_view_as_member').select2();
-
-	// Show the dropdown for membership levels if returning to the page.
-	if ( viewAsSelect.val() === 'member' ) {
-		viewAsMember.show();
-		container.css('height', '180px');
-	}
-
-	// Show the dropdown for membership levels.
-	viewAsSelect.change(function () {
-		if (this.value === 'member') {
-			viewAsMember.show();
-			container.css('height', '180px');
-		} else {
-			viewAsMember.hide();
-			container.css('height', '90px');
-		}
-	});
-
-});
-</script>
-	<style>
-		#wp-admin-bar-pmpro-view-as .ab-sub-wrapper{
-  			height:85px;
-			width:165px;
-		}
-
-		#pmpro_view_as_form select{
-			margin-left:15px;
-			width:80%;
-		}
-
-		#pmpro_view_as_form .button{
-			padding:0 2% 0 2%;
-			margin:5px;
-			width: 90%;
-			border: none;
-			border-radius: 3px;
-			cursor: pointer;
-			text-decoration: none;
-   			text-shadow: none;
-		}
-
-		#pmpro_view_as_form .button-primary {
-			background: #2271b1;
-    		border-color: #2271b1;
-    		color: #fff;
-		}
-
-		#pmpro_view_as_member {
-			margin:10px 0 10px 0;
-			display:block;
-		}
-
-	</style>
+	<form method="POST" id="pmpro-admin-membership-access-form" action="">
+		<select name="pmpro-admin-membership-access" id="pmpro-admin-membership-access" onchange="this.form.submit()">
+			<option value="yes" <?php selected( $admin_membership_access, 'yes', true ); ?>><?php esc_html_e( 'View with membership access', 'paid-memberships-pro' ); ?></option>
+			<option value="current" <?php selected( $admin_membership_access, 'current', true ); ?>><?php esc_html_e( 'View with current membership levels', 'paid-memberships-pro' ); ?></option>
+			<option value="no" <?php selected( $admin_membership_access, 'no', true ); ?>><?php esc_html_e( 'View without membership access', 'paid-memberships-pro' ); ?></option>
+		</select>
+	</form>
 	<?php
 
-	// Get all levels to allow selection when viewing as member.
-	$levels = pmpro_getAllLevels( true, true );
-
-	// Use $selected_levels to show stored selected levels for VIEW AS.
-	$selected_levels = is_array( $view_as_option ) ? $view_as_option : array();
-
-	// Build a form input for what we are selecting now for the actual "View As"
-	$form = '<form method="POST" id="pmpro_view_as_form" action="">';
-	$form .= '<select name="pmpro_view_as" id="pmpro_view_as">';
-	$form .= '<option value="admin" ' . selected( is_bool( $view_as_option ), true, false ) . '>' . esc_html__( 'Admin', 'paid-memberships-pro' ) . '</option>';
-	$form .= '<option value="non-member"' . selected( ! empty( $view_as_option ), true, false ) .'>' .  esc_html__( 'Non-member', 'paid-memberships-pro' ) . '</option>';
-	$form .= '<option value="member"' . selected( is_array( $view_as_option ), true, false ). '>' . esc_html__( 'Member', 'paid-memberships-pro' ) . '</option>';
-	$form .= '</select><br/>';
-	$form .= '<select name="levels[]" id="pmpro_view_as_member" multiple="multiple" />';
-		foreach( $levels as $level ) {
-			$is_selected = in_array( $level->id, $selected_levels ) ? true : false;
-			$form .= '<option value="' . esc_attr( $level->id ) . '"' . selected( $is_selected, true, false ) . '>' . esc_html( $level->name ) . '</option>';
-		}
-	$form .= '</select>';
-	$form .= '<input type="submit" name="pmpro-view-as-submit" class="button button-primary" value="' . __( 'Switch Access', 'paid-memberships-pro' ) . '"/>';
-	$form .= '</form>';
-
+	// Add the form to the menu.
 	$wp_admin_bar->add_node( array(
-		'parent' => 'pmpro-view-as',
-		'id' => 'pmpro-view-as-input',
-		'title' => $form,
+		'parent' => 'pmpro-admin-membership-access',
+		'id' => 'pmpro-admin-membership-access-input',
+		'title' => ob_get_clean(),
 	) );
 }
-add_action( 'admin_bar_menu', 'pmpro_view_as_admin_bar_menu' );
+add_action( 'admin_bar_menu', 'pmpro_admin_membership_access_menu_bar' );
 
 /**
  * Functions to load pages from adminpages directory
