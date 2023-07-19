@@ -78,12 +78,13 @@ function pmpro_br2nl( $text, $tags = 'br' ) {
 	return( $text );
 }
 
+/**
+ * get_option() should be used directly instead.
+ *
+ * Will be deprecated in a future release.
+ */
 function pmpro_getOption( $s, $force = false ) {
-	if ( get_option( 'pmpro_' . $s ) ) {
-		return get_option( 'pmpro_' . $s );
-	} else {
-		return '';
-	}
+	return get_option( 'pmpro_' . $s, '' );
 }
 
 function pmpro_setOption( $s, $v = null, $sanitize_function = 'sanitize_text_field', $autoload = false ) {		
@@ -328,69 +329,7 @@ function pmpro_isLevelExpiringSoon( &$level ) {
 	return $r;
 }
 
-/**
- * Loads a template from one of the default paths (PMPro plugin or theme), or from filtered path
- *
- * @param null   $page_name - Name of the page/template
- * @param string $where - `local` or `url` (whether to load from FS or over http)
- * @param string $type - Type of template (valid: 'email' or 'pages', 'adminpages', 'preheader')
- * @param string $ext - File extension ('php', 'html', 'htm', etc)
- * @return string - The HTML for the template.
- *
- * TODO - Allow localized template files to be loaded?
- *
- * @since 1.8.9
- */
-function pmpro_loadTemplate( $page_name = null, $where = 'local', $type = 'pages', $ext = 'php' ) {
-	// called from page handler shortcode
-	if ( is_null( $page_name ) ) {
-		global $pmpro_page_name;
-		$page_name = $pmpro_page_name;
-	}
 
-	if ( $where == 'local' ) {
-		// template paths in order of priority (array gets reversed)
-		$default_templates = array(
-			PMPRO_DIR . "/{$type}/{$page_name}.{$ext}", // default plugin path
-			get_template_directory() . "/paid-memberships-pro/{$type}/{$page_name}.{$ext}", // parent theme
-			get_stylesheet_directory() . "/paid-memberships-pro/{$type}/{$page_name}.{$ext}", // child / active theme
-		);
-	} elseif ( $where == 'url' ) {
-		// template paths in order of priority (array gets reversed)
-		$default_templates = array(
-			PMPRO_URL . "/{$type}/{$page_name}.{$ext}", // default plugin path
-			get_template_directory_uri() . "/paid-memberships-pro/{$type}/{$page_name}.{$ext}", // parent theme
-			get_stylesheet_directory_uri() . "/paid-memberships-pro/{$type}/{$page_name}.{$ext}", // child / active theme
-		);
-
-	}
-	// Valid types: 'email', 'pages'
-	$templates = apply_filters( "pmpro_{$type}_custom_template_path", $default_templates, $page_name, $type, $where, $ext );
-	$user_templates = array_diff( $templates, $default_templates );
-	$allowed_default_templates = array_intersect( $templates, $default_templates );
-
-	// user specified a custom template path, so it has priority.
-	if ( ! empty( $user_templates ) ) {
-		$templates = array_merge($allowed_default_templates, $user_templates);
-	}
-
-	// last element included in the array is the most first one we try to load
-	$templates = array_reverse( $templates );
-
-	// look for template file to include
-	ob_start();
-	foreach ( $templates as $template_path ) {
-		// If loading a local file, check if it exists first
-		if ( $where == 'url' || file_exists( $template_path ) ) {
-			include $template_path;
-			break;
-		}
-	}
-	$template = ob_get_clean();
-
-	// return template content
-	return $template;
-}
 
 function pmpro_getLevelCost( &$level, $tags = true, $short = false ) {
 	// initial payment
@@ -2641,7 +2580,7 @@ function pmpro_showMessage() {
 
 	if ( ! empty( $pmpro_msg ) ) {		
 		?>
-		<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_msg ' . $pmpro_msgt, $pmpro_msgt ) ); ?>">
+		<div role="alert" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_msg ' . $pmpro_msgt, $pmpro_msgt ) ); ?>">
 			<p><?php echo wp_kses( $pmpro_msg, $allowed_html ); ?></p>
 		</div>
 		<?php
@@ -4432,10 +4371,10 @@ function pmpro_is_paused() {
  *
  * @param $state bool true or false if in pause mode state
  * @since 2.10
- * @deprecated TBD No longer using `pmpro_pause_mode` option
+ * @deprecated 2.10.7 No longer using `pmpro_pause_mode` option
  * @return bool True if the option has been updated
  */
 function pmpro_set_pause_mode( $state ) {
-	_deprecated_function( __FUNCTION__, 'TBD' );
+	_deprecated_function( __FUNCTION__, '2.10.7' );
 	return pmpro_setOption( 'pause_mode', $state );
 }

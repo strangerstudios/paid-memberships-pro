@@ -140,7 +140,7 @@ add_action( 'plugins_loaded', 'pmpro_register_helper_deprecated', 20 );
 /**
  * Get a list of deprecated PMPro Add Ons.
  *
- * @since TBD
+ * @since 2.11
  *
  * @return array Add Ons that are deprecated.
  */
@@ -279,7 +279,7 @@ add_action( 'admin_notices', 'pmpro_check_for_deprecated_add_ons' );
 /**
  * Remove the "Activate" link on the plugins page for deprecated add ons.
  *
- * @since TBD
+ * @since 2.11
  *
  * @param array  $actions An array of plugin action links.
  * @param string $plugin_file Path to the plugin file relative to the plugins directory.

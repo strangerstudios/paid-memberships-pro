@@ -1,6 +1,7 @@
 <?php
 /**
  * Template: Levels
+ * Version: 2.0
  *
  * See documentation for how to override the PMPro templates.
  * @link https://www.paidmembershipspro.com/documentation/templates/
@@ -55,17 +56,17 @@ if($pmpro_msg)
 		</td>
 		<td>
 		<?php if ( ! $has_level ) { ?>                	
-			<a class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_btn pmpro_btn-select', 'pmpro_btn-select' ) ); ?>" href="<?php echo esc_url( pmpro_url( "checkout", "?level=" . $level->id, "https" ) ) ?>"><?php esc_html_e('Select', 'paid-memberships-pro' );?></a>
+			<a aria-label="<?php esc_html_e( sprintf( __('Select the %s membership level', 'paid-memberships-pro' ), $level->name ) ); ?>" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_btn pmpro_btn-select', 'pmpro_btn-select' ) ); ?>" href="<?php echo esc_url( pmpro_url( "checkout", "?level=" . $level->id, "https" ) ) ?>"><?php esc_html_e('Select', 'paid-memberships-pro' ); ?></a>
 		<?php } else { ?>      
 			<?php
 				//if it's a one-time-payment level, offer a link to renew	
 				if( pmpro_isLevelExpiringSoon( $user_level ) && $level->allow_signups ) {
 					?>
-						<a class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_btn pmpro_btn-select', 'pmpro_btn-select' ) ); ?>" href="<?php echo esc_url( pmpro_url( "checkout", "?level=" . $level->id, "https" ) ) ?>"><?php esc_html_e('Renew', 'paid-memberships-pro' );?></a>
+						<a aria-label="<?php esc_html_e( sprintf( __('Renew your %s membership level', 'paid-memberships-pro' ), $level->name ) ); ?>" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_btn pmpro_btn-select', 'pmpro_btn-select' ) ); ?>" href="<?php echo esc_url( pmpro_url( "checkout", "?level=" . $level->id, "https" ) ) ?>"><?php esc_html_e('Renew', 'paid-memberships-pro' );?></a>
 					<?php
 				} else {
 					?>
-						<a class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_btn disabled', 'pmpro_btn' ) ); ?>" href="<?php echo esc_url( pmpro_url( "account" ) ) ?>"><?php esc_html_e('Your&nbsp;Level', 'paid-memberships-pro' );?></a>
+						<a aria-label="<?php esc_html_e( sprintf( __('View your %s membership account', 'paid-memberships-pro' ), $level->name ) ); ?>" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_btn disabled', 'pmpro_btn' ) ); ?>" href="<?php echo esc_url( pmpro_url( "account" ) ) ?>"><?php esc_html_e('Your&nbsp;Level', 'paid-memberships-pro' );?></a>
 					<?php
 				}
 			?>

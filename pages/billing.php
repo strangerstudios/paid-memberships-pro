@@ -1,6 +1,7 @@
 <?php
 /**
  * Template: Billing
+ * Version: 2.0.1
  *
  * See documentation for how to override the PMPro templates.
  * @link https://www.paidmembershipspro.com/documentation/templates/
@@ -42,9 +43,7 @@
 		$level = $levels[0];
 		$checkout_url = pmpro_url( 'checkout', '?level=' . $level->id );
 		$logout_url = wp_logout_url( $checkout_url );
-		?>
-		<p><?php echo wp_kses( sprintf( __("Logged in as <strong>%s</strong>.", 'paid-memberships-pro' ), $current_user->user_login ), array( 'strong' => array() ) );?> <small><a href="<?php echo esc_url( $logout_url ); ?>"><?php esc_html_e("logout", 'paid-memberships-pro' );?></a></small></p>
-		<?php
+
 		 /**
 		 * pmpro_billing_message_top hook to add in general content to the billing page without using custom page templates.
 		 *
@@ -144,24 +143,34 @@
 		<form id="pmpro_form" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form' ) ); ?>" action="<?php echo esc_url( pmpro_url( "billing", "", "https") ) ?>" method="post">
 
 			<input type="hidden" name="level" value="<?php echo esc_attr($level->id);?>" />
-			<?php if($pmpro_msg)
-				{
-			?>
-				<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_message ' . $pmpro_msgt, $pmpro_msgt ) ); ?>"><?php echo wp_kses_post( $pmpro_msg );?></div>
-			<?php
-				}
-			?>
+
+			<div id="pmpro_message" <?php if(! $pmpro_msg) ?> style="display:none" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_message ' . $pmpro_msgt, $pmpro_msgt ) ); ?>"> <?php if($pmpro_msg) echo wp_kses_post( $pmpro_msg ); ?></div>
+
+			<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_message pmpro_alert', 'pmpro_account_loggedin' ) ); ?>">
+				<?php
+					$allowed_html = array(
+						'a' => array(
+							'href' => array(),
+							'title' => array(),
+							'target' => array(),
+						),
+						'strong' => array(),
+					);
+					echo wp_kses( sprintf( __('You are logged in as <strong>%s</strong>. If you would like to update your billing information for a different account, <a href="%s">log out now</a>.', 'paid-memberships-pro' ), $current_user->user_login, wp_logout_url( esc_url_raw( $_SERVER['REQUEST_URI'] ) ) ), $allowed_html );
+				?>
+			</div> <!-- end pmpro_account_loggedin -->
 
 			<?php
 				$pmpro_include_billing_address_fields = apply_filters('pmpro_include_billing_address_fields', true);
 				if($pmpro_include_billing_address_fields)
 				{
 			?>
+
 			<div id="pmpro_billing_address_fields" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout', 'pmpro_billing_address_fields' ) ); ?>">
 				<hr />
-				<h3>
-					<span class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout-h3-name' ) ); ?>"><?php esc_html_e('Billing Address', 'paid-memberships-pro' );?></span>
-				</h3>
+				<h2>
+					<span class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout-h2-name' ) ); ?>"><?php esc_html_e('Billing Address', 'paid-memberships-pro' );?></span>
+				</h2>
 				<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout-fields' ) ); ?>">
 					<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout-field pmpro_checkout-field-bfirstname', 'pmpro_checkout-field-bfirstname' ) ); ?>">
 						<label for="bfirstname"><?php esc_html_e('First Name', 'paid-memberships-pro' );?></label>
@@ -322,11 +331,11 @@
 				$pmpro_accepted_credit_cards_string = pmpro_implodeToEnglish($pmpro_accepted_credit_cards);
 				?>
 				<div id="pmpro_payment_information_fields" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout', 'pmpro_payment_information_fields' ) ); ?>">
-					<h3>
-						<span class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout-h3-name' ) ); ?>"><?php esc_html_e('Credit Card Information', 'paid-memberships-pro' );?></span>
-						<span class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout-h3-msg' ) ); ?>"><?php echo esc_html( sprintf( __('We accept %s', 'paid-memberships-pro' ), $pmpro_accepted_credit_cards_string ) ); ?></span>
+					<h2>
+						<span class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout-h2-name' ) ); ?>"><?php esc_html_e('Credit Card Information', 'paid-memberships-pro' );?></span>
+						<span class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout-h2-msg' ) ); ?>"><?php echo esc_html( sprintf( __('We accept %s', 'paid-memberships-pro' ), $pmpro_accepted_credit_cards_string ) ); ?></span>
 
-					</h3>
+					</h2>
 					<?php $sslseal = pmpro_getOption("sslseal"); ?>
 					<?php if(!empty($sslseal)) { ?>
 						<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout-fields-display-seal' ) ); ?>">
@@ -416,7 +425,7 @@
 							?>
 							<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout-field pmpro_payment-cvv', 'pmpro_payment-cvv' ) ); ?>">
 								<label for="CVV"><?php esc_html_e('CVV', 'paid-memberships-pro' );?></label>
-								<input id="CVV" name="CVV" type="text" size="4" value="<?php if(!empty($_REQUEST['CVV'])) { echo esc_attr( sanitize_text_field( $_REQUEST['CVV'] ) ); }?>" class="<?php echo esc_attr( pmpro_get_element_class( 'input', 'CVV ') );?>" />  <small>(<a href="javascript:void(0);" onclick="javascript:window.open('<?php echo esc_url( pmpro_https_filter($cvv_template) ); ?>','cvv','toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=yes, resizable=yes, width=600, height=475');"><?php esc_html_e("what's this?", 'paid-memberships-pro' );?></a>)</small>
+								<input id="CVV" name="CVV" type="text" size="4" value="<?php if(!empty($_REQUEST['CVV'])) { echo esc_attr( sanitize_text_field( $_REQUEST['CVV'] ) ); }?>" class="<?php echo esc_attr( pmpro_get_element_class( 'input', 'CVV' ) ); ?>" />
 							</div>
 						<?php } ?>
 					</div> <!-- end pmpro_checkout-fields -->
@@ -427,10 +436,9 @@
 
 			<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout-field pmpro_captcha', 'pmpro_captcha' ) ); ?>">
 			<?php
-				global $recaptcha, $recaptcha_publickey;				
+				$recaptcha = pmpro_getOption("recaptcha");
 				if ( $recaptcha == 2 || ( $recaptcha == 1 && pmpro_isLevelFree( $pmpro_level ) ) ) {
-					// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-					echo pmpro_recaptcha_get_html($recaptcha_publickey, NULL, true);
+					pmpro_recaptcha_get_html();
 				}
 			?>
 			</div> <!-- end pmpro_captcha -->

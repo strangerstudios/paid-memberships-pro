@@ -109,6 +109,10 @@ class PMPro_Site_Health {
 					'label' => __( 'Library Conflicts', 'paid-memberships-pro' ),
 					'value' => self::get_library_conflicts(),
 				],
+				'pmpro-outdated-templates' => [
+					'label' => __( 'Outdated Templates', 'paid-memberships-pro' ),
+					'value' => self::get_outdated_templates(),
+				],
 				'pmpro-current-site-url' => [
 					'label' => __( 'Current Site URL', 'paid-memberships-pro' ),
 					'value' => get_site_url(),
@@ -126,6 +130,11 @@ class PMPro_Site_Health {
 
 		// Automatically add information about constants set.
 		$info['pmpro']['fields'] = array_merge( $info['pmpro']['fields'], self::get_constants() );
+
+		if ( function_exists( 'pmpro_add_site_health_info_2_10_6' ) ) {
+			// If the 2.10.6 update cleaned up sensitive order meta data, we want to show that.
+			$info = pmpro_add_site_health_info_2_10_6( $info );
+		}
 
 		return $info;
 	}
@@ -535,6 +544,30 @@ class PMPro_Site_Health {
 				$conflict_strings[] = 'v' . $conflicting_plugin_data['version'] . ' (' . $conflicting_plugin_data['timestamp'] . ')' . ' - ' . $conflicting_plugin_path;
 			}
 			$return_arr[ $library_name ] = implode( ' | ', $conflict_strings );
+		}
+		return $return_arr;
+	}
+
+	/**
+ 	 * Get outdated templates.
+ 	 *
+	 * @since 2.11
+ 	 *
+ 	 * @return string|string[] The outdated templates information.
+ 	 */
+	  function get_outdated_templates() {
+		// Get outdated templates.
+		$outdated_templates = pmpro_get_outdated_page_templates();
+
+		// If there are no outdated templates, return a message.
+		if ( empty( $outdated_templates ) ) {
+			return __( 'No outdated templates detected.', 'paid-memberships-pro' );
+		}
+
+		// Format data to be displayed in site health.
+		$return_arr = array();
+		foreach ( $outdated_templates as $template_name => $template_data ) {
+			$return_arr[ $template_name ] = __( 'Default version', 'paid-memberships-pro' ) . ': ' . $template_data['default_version'] . ' | ' . __( 'Loaded version', 'paid-memberships-pro' ) . ': ' . $template_data['loaded_version'] . ' | ' . __( 'Loaded path', 'paid-memberships-pro' ) . ': ' . $template_data['loaded_path'];
 		}
 		return $return_arr;
 	}
