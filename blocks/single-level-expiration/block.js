@@ -29,7 +29,7 @@ export default registerBlockType(
     'pmpro/single-level-expiration',
     {
         title: __('Level Expiration Text', 'paid-memberships-pro'),
-        description: __('Nest blocks within this wrapper to control the inner block visibility by membership level or for non-members only.', 'paid-memberships-pro'),
+        description: __('The expiration text for this membership level.', 'paid-memberships-pro'),
         category: 'pmpro',
         icon: {
             background: '#FFFFFF',

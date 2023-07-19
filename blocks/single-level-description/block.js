@@ -31,7 +31,7 @@ export default registerBlockType(
     'pmpro/single-level-description',
     {
         title: __('Level Description', 'paid-memberships-pro'),
-        description: __('Nest blocks within this wrapper to control the inner block visibility by membership level or for non-members only.', 'paid-memberships-pro'),
+        description: __('The description for this membership level.', 'paid-memberships-pro'),
         category: 'pmpro',
         icon: {
             background: '#FFFFFF',

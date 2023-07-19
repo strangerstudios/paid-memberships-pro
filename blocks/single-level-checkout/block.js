@@ -22,7 +22,7 @@ export default registerBlockType(
     'pmpro/single-level-checkout',
     {
         title: __( 'Level Checkout Button', 'paid-memberships-pro' ),
-        description: __( 'Nest blocks within this wrapper to control the inner block visibility by membership level or for non-members only.', 'paid-memberships-pro' ),
+        description: __( 'A button to send users to the checkout page for this membership level.', 'paid-memberships-pro' ),
         category: 'pmpro',
         icon: {
             background: '#FFFFFF',
