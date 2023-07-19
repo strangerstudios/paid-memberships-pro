@@ -205,7 +205,8 @@ function pmpro_lifter_hide_access_plans() {
 	}
 	
 	// Remove the Access Plans meta box.
-	remove_meta_box( 'lifterlms-product', array( 'course', 'llms_membership' ), array( 'side', 'normal' ) );
+	remove_meta_box( 'lifterlms-product', array( 'course', 'llms_membership' ), 'side' );
+	remove_meta_box( 'lifterlms-product', array( 'course', 'llms_membership' ),  'normal' );
 }
 add_filter( 'add_meta_boxes', 'pmpro_lifter_hide_access_plans' );
 
