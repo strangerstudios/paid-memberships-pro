@@ -5,6 +5,11 @@
  */
 
 /**
+ * Block dependencies
+ */
+import Inspector from './inspector';
+
+/**
  * Internal block libraries
  */
 
@@ -13,10 +18,6 @@ const {
     registerBlockType
 } = wp.blocks;
 const {
-    PanelBody,
-    SelectControl,
-} = wp.components;
-const {
     InnerBlocks,
     useBlockProps
 } = wp.blockEditor;
@@ -24,8 +25,6 @@ const {
     dispatch,
     select
 } = wp.data;
-
-const all_levels = [{ value: 0, label: __("Choose a level", 'paid-memberships-pro') }].concat(pmpro.all_level_values_and_labels);
 
 /**
  * Register block
@@ -84,14 +83,6 @@ export default registerBlockType(
                 isSelected && <div className="pmpro-block-require-membership-element" >
                     <span className="pmpro-block-title">{__('Individual Membership Level', 'paid-memberships-pro')}</span>
                     <div class="pmpro-block-inspector">
-                        <PanelBody>
-                            <SelectControl
-                                value={selected_level}
-                                help={__("Select a level.", "paid-memberships-pro")}
-                                options={all_levels}
-                                onChange={selected_level => setAttributes({ selected_level })}
-                            />
-                        </PanelBody>
                         <InnerBlocks templateLock={false} template={[
                             ['pmpro/single-level-name', { selected_level: selected_level, content: 'Example Nested Block Template' }],
                             ['pmpro/single-level-price', { selected_level: selected_level, content: 'Example Nested Block Template' }],
@@ -113,6 +104,7 @@ export default registerBlockType(
                     ]}
                     />
                 </div>,
+                isSelected && <Inspector {...props} />,
             ];
         },
         save() {
