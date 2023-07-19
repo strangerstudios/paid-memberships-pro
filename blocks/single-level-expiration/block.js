@@ -7,7 +7,7 @@
 const getExpirationText = (level) => {
     return pmpro.all_levels_formatted_text[level]
                 ? pmpro.all_levels_formatted_text[level].formatted_expiration
-                : 'Expiration placeholder';
+                : '[Level Expiration Placeholder]';
 }
 
 /**
@@ -61,7 +61,7 @@ export default registerBlockType(
         edit: props => {
             return (
                 <div {...useBlockProps()}>
-                    {getExpirationText(props.attributes.selected_level)}                    
+                    { getExpirationText(props.attributes.selected_level) ? getExpirationText(props.attributes.selected_level) : '[Level Expiration Placeholder]' }
                 </div>
             );
         },

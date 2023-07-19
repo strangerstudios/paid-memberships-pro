@@ -7,7 +7,7 @@
 const getDescription = (level) => {
     return pmpro.all_levels_formatted_text[level] 
     ? pmpro.all_levels_formatted_text[level].description 
-    : 'Level Description Placeholder';
+    : '[Level Description Placeholder]';
 }
 
 /**
@@ -64,7 +64,7 @@ export default registerBlockType(
 
              return (
                 <div {...useBlockProps()}>
-                    {getDescription(props.attributes.selected_level)}
+                    { getDescription(props.attributes.selected_level) ? getDescription(props.attributes.selected_level) : '[Level Description Placeholder]' }
                 </div>
             );
         },

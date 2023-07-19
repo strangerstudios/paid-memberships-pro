@@ -6,7 +6,7 @@
 const getName = (level) => {
     return pmpro.all_levels_formatted_text[level]
                 ? pmpro.all_levels_formatted_text[level].name
-                : 'Level Name Placeholder';
+                : '[Level Name Placeholder]';
 }
 /**
  * Internal block libraries
@@ -58,7 +58,7 @@ export default registerBlockType(
         edit: props => {
             return (
                 <div {...useBlockProps()}>
-                    {getName(props.attributes.selected_level)}
+                    { getName(props.attributes.selected_level) ? getName(props.attributes.selected_level) : '[Level Name Placeholder]' }
                 </div>
             );
         },

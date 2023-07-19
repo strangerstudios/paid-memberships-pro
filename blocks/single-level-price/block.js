@@ -19,7 +19,7 @@ const {
 const getFormattedPrice = (level) => {
     return pmpro.all_levels_formatted_text[level]
                 ? pmpro.all_levels_formatted_text[level].formatted_price
-                : 'Level Price Placeholder';
+                : '[Level Price Placeholder]';
 }
 
  /**
@@ -61,7 +61,7 @@ export default registerBlockType(
         edit: props => {
             return ( 
                 <div { ...useBlockProps() }>
-                    { getFormattedPrice(props.attributes.selected_level)}
+                    { getFormattedPrice(props.attributes.selected_level) ? getFormattedPrice(props.attributes.selected_level) : '[Level Price Placeholder]' }
                 </div>
             );
         },

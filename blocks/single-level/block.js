@@ -92,6 +92,14 @@ export default registerBlockType(
                                 onChange={selected_level => setAttributes({ selected_level })}
                             />
                         </PanelBody>
+                        <InnerBlocks templateLock={false} template={[
+                            ['pmpro/single-level-name', { selected_level: selected_level, content: 'Example Nested Block Template' }],
+                            ['pmpro/single-level-price', { selected_level: selected_level, content: 'Example Nested Block Template' }],
+                            ['pmpro/single-level-expiration', {selected_level: selected_level, content: 'Example Nested Block Template' }],
+                            ['pmpro/single-level-description', { selected_level: selected_level, content: 'Example Nested Block Template' }],
+                            ['pmpro/single-level-checkout', { selected_level: selected_level, content: 'Example Nested Block Template' }],
+                        ]}
+                        />
                     </div>
                 </div>,
                 !isSelected && <div className="pmpro-block-require-membership-element" >
