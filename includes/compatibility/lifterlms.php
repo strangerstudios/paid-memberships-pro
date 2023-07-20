@@ -222,6 +222,23 @@ function pmpro_lifter_hide_restrictions_tab( $fields ) {
 add_filter( 'llms_metabox_fields_lifterlms_course_options', 'pmpro_lifter_hide_restrictions_tab' );
 
 /**
+ * Hide the "No Gateways" notice.
+ * @since 2.12
+ * @param bool $has_gateways
+ * @return bool
+ */
+function pmpro_lifter_hide_no_payment_gateways_notice( $has_gateways ) {	
+	// Bail if the streamline option is not enabled.
+	if ( ! get_option( 'pmpro_lifter_streamline' ) ) {
+		return $has_gateways;
+	}
+
+	// The usage here is odd, but returning true means there are gateways, so don't show the notice.
+	return true;
+}
+add_filter( 'llms_admin_notice_no_payment_gateways', 'pmpro_lifter_hide_no_payment_gateways_notice' );
+
+/**
  * Hide the Access Plans section of the edit course page if streamline is enabled.
  */
 function pmpro_lifter_hide_access_plans() {
