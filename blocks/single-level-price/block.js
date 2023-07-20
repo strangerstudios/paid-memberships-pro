@@ -34,19 +34,12 @@ export default registerBlockType(
         icon: {
             background: '#FFFFFF',
             foreground: '#1A688B',
-            src: 'visibility',
+            src: 'slides',
         },
         parent: ['pmpro/single-level'],
         keywords: [
-            __( 'block visibility', 'paid-memberships-pro' ),
-            __( 'conditional', 'paid-memberships-pro' ),
-            __( 'content', 'paid-memberships-pro' ),
-            __( 'hide', 'paid-memberships-pro' ),
-            __( 'hidden', 'paid-memberships-pro' ),
-            __( 'paid memberships pro', 'paid-memberships-pro' ),
-            __( 'pmpro', 'paid-memberships-pro' ),
-            __( 'private', 'paid-memberships-pro' ),
-            __( 'restrict', 'paid-memberships-pro' ),
+            __('paid memberships pro', 'paid-memberships-pro'),
+            __('pmpro', 'paid-memberships-pro'),
         ],
         attributes: {
             levels: {
