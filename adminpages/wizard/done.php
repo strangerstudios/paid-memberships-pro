@@ -49,6 +49,9 @@
 			// Get the Add On recommendations.
 			foreach( $addon_list as $addon_slug ) {
 				$addon = pmpro_getAddonBySlug( $addon_slug );
+				if ( ! is_array( $addon ) ) {
+					continue;
+				}
 
 				// Get the shortened name otherwise set to name.
 				if ( ! empty( $addon['ShortName'] ) ) {
