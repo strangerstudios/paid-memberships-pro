@@ -63,8 +63,12 @@ export default registerBlockType(
         edit: props => {
 
              return (
-                <div {...useBlockProps()}>
-                    { getDescription(props.attributes.selected_level) ? getDescription(props.attributes.selected_level) : '[Level Description Placeholder]' }
+                <div {...useBlockProps()} >
+                    {
+                        getDescription(props.attributes.selected_level) ?
+                        <p>{ getDescription(props.attributes.selected_level) }</p> :
+                        <p style={{color: "grey"}}>[Level Description Placeholder]</p>
+                    }
                 </div>
             );
         },

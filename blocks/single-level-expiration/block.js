@@ -61,7 +61,11 @@ export default registerBlockType(
         edit: props => {
             return (
                 <div {...useBlockProps()}>
-                    { getExpirationText(props.attributes.selected_level) ? getExpirationText(props.attributes.selected_level) : '[Level Expiration Placeholder]' }
+                    {
+                        getExpirationText(props.attributes.selected_level) ?
+                        <p>{ getExpirationText(props.attributes.selected_level) }</p> :
+                        <p style={{color: "grey"}}>[Level Expiration Placeholder]</p>
+                    }
                 </div>
             );
         },

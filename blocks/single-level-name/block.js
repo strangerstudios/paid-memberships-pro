@@ -58,7 +58,11 @@ export default registerBlockType(
         edit: props => {
             return (
                 <div {...useBlockProps()}>
-                    { getName(props.attributes.selected_level) ? getName(props.attributes.selected_level) : '[Level Name Placeholder]' }
+                    {
+                        getName(props.attributes.selected_level) ?
+                        <p>{ getName(props.attributes.selected_level) }</p> :
+                        <p style={{color: "grey"}}>[Level Name Placeholder]</p>
+                    }
                 </div>
             );
         },

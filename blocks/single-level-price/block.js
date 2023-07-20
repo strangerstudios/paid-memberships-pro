@@ -61,7 +61,11 @@ export default registerBlockType(
         edit: props => {
             return ( 
                 <div { ...useBlockProps() }>
-                    { getFormattedPrice(props.attributes.selected_level) ? getFormattedPrice(props.attributes.selected_level) : '[Level Price Placeholder]' }
+                    {
+                        getFormattedPrice(props.attributes.selected_level) ?
+                        <p>{ getFormattedPrice(props.attributes.selected_level) }</p> :
+                        <p style={{color: "grey"}}>[Level Price Placeholder]</p>
+                    }
                 </div>
             );
         },
