@@ -116,6 +116,10 @@ function pmpro_add_user_taxonomy( $name, $name_plural ) {
 		$safe_name = substr( $safe_name, 0, 32 );
 	}
 
+	// Add to the global so we can keep track.
+	$pmpro_user_taxonomies = (array) $pmpro_user_taxonomies;
+	$pmpro_user_taxonomies[] = $safe_name;
+
 	// Make sure name and plural name are less than 32 characters.
 	if ( strlen( $name ) > 32 ) {
 		$name = substr( $name, 0, 32 );
@@ -305,9 +309,9 @@ function pmpro_checkout_boxes_fields() {
 			?>
 			<div id="pmpro_checkout_box-<?php echo sanitize_title( $cb->name ); ?>" class="pmpro_checkout">
 				<hr />
-				<h3>
-					<span class="pmpro_checkout-h3-name"><?php echo wp_kses_post( $cb->label );?></span>
-				</h3>
+				<h2>
+					<span class="pmpro_checkout-h2-name"><?php echo wp_kses_post( $cb->label );?></span>
+				</h2>
 				<div class="pmpro_checkout-fields">
 				<?php if(!empty($cb->description)) { ?>
 					<div class="pmpro_checkout_decription"><?php echo wp_kses_post( $cb->description ); ?></div>
@@ -382,7 +386,8 @@ function pmpro_after_checkout_save_fields( $user_id, $order ) {
 				//assume no value
 				$value = NULL;
 
-				//where are we getting the value from?
+				// Where are we getting the value from? We sanitize $value right after this.
+				// phpcs:disable WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 				if(isset($_REQUEST[$field->name]))
 				{
 					//request
@@ -423,11 +428,12 @@ function pmpro_after_checkout_save_fields( $user_id, $order ) {
 					//file
 					$value = $_FILES[$field->name]['name'];
 				}
+				// phpcs:enable WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 
 				//update user meta
 				if(isset($value))
 				{
-					if ( isset( $field->sanitize ) && true === $field->sanitize ) {
+					if ( ! empty( $field->sanitize ) ) {
 						$value = pmpro_sanitize( $value, $field );
                     }
 
@@ -484,22 +490,22 @@ function pmpro_registration_checks_for_user_fields( $okay ) {
                 }
 
 				if(isset($_REQUEST[$field->name]))
-					$value = $_REQUEST[$field->name];
+					$value = pmpro_sanitize( $_REQUEST[$field->name], $field ); //phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 				elseif(isset($_FILES[$field->name]))
 				{
-					$value = $_FILES[$field->name]['name'];
+					$value = sanitize_file_name( $_FILES[$field->name]['name'] );
 
 					//handle empty file but the user already has a file
 					if(empty($value) && !empty($_REQUEST[$field->name . "_old"]))
-						$value = $_REQUEST[$field->name . "_old"];
+						$value = sanitize_file_name( $_REQUEST[$field->name . "_old"] );
 					elseif(!empty($value))
 					{
 						//check extension against allowed extensions
-						$filetype = wp_check_filetype_and_ext($_FILES[$field->name]['tmp_name'], $_FILES[$field->name]['name']);
+						$filetype = wp_check_filetype_and_ext( sanitize_text_field( $_FILES[$field->name]['tmp_name'] ), sanitize_file_name( $_FILES[$field->name]['name'] ) );
 						if((!$filetype['type'] || !$filetype['ext'] ) && !current_user_can( 'unfiltered_upload' ))
 						{
 							if($okay)	//only want to update message if there is no previous error
-								pmpro_setMessage(sprintf(__("Sorry, the file type for %s is not permitted for security reasons.", "paid-memberships-pro"), $_FILES[$field->name]['name']), "pmpro_error");
+								pmpro_setMessage( sprintf( __( "Sorry, the file type for %s is not permitted for security reasons.", "paid-memberships-pro"), sanitize_file_name( $_FILES[$field->name]['name'] ) ), "pmpro_error");
 							return false;
 						}
 						else
@@ -508,7 +514,7 @@ function pmpro_registration_checks_for_user_fields( $okay ) {
 							if(!empty($field->ext) && !in_array($filetype['ext'], $field->ext))
 							{
 								if($okay)	//only want to update message if there is no previous error
-									pmpro_setMessage(sprintf(__("Sorry, the file type for %s is not permitted for security reasons.", "paid-memberships-pro"), $_FILES[$field->name]['name']), "pmpro_error");
+									pmpro_setMessage( sprintf( __( "Sorry, the file type for %s is not permitted for security reasons.", "paid-memberships-pro"), sanitize_file_name( $_FILES[$field->name]['name'] ) ), "pmpro_error");
 								return false;
 							}
 						}
@@ -575,13 +581,17 @@ function pmpro_paypalexpress_session_vars_for_user_fields() {
                     continue;
                 }
 
-                if(isset($_REQUEST[$field->name]))
-					$_SESSION[$field->name] = $_REQUEST[$field->name];
-				elseif(isset($_FILES[$field->name]))
-				{
+                if( isset( $_REQUEST[$field->name] ) ) {
+					$_SESSION[$field->name] = pmpro_sanitize( $_REQUEST[$field->name], $field ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+				} elseif ( isset( $_FILES[$field->name] ) ) {
 					/*
 						We need to save the file somewhere and save values in $_SESSION
 					*/
+
+					// Make sure file was uploaded.
+					if ( ! is_uploaded_file( sanitize_text_field( $_FILES[$field->name]['tmp_name'] ) ) ) {						
+                        continue;
+					}
 
 					//check for a register helper directory in wp-content
 					$upload_dir = wp_upload_dir();
@@ -594,14 +604,14 @@ function pmpro_paypalexpress_session_vars_for_user_fields() {
 					}
 
 					//move file
-					$new_filename = $pmprorh_dir . basename($_FILES[$field->name]['tmp_name']);
-					move_uploaded_file($_FILES[$field->name]['tmp_name'], $new_filename);
+					$new_filename = $pmprorh_dir . basename( sanitize_file_name( $_FILES[$field->name]['name'] ) );
+					move_uploaded_file( sanitize_text_field( $_FILES[$field->name]['tmp_name'] ), $new_filename );
 
 					//update location of file
 					$_FILES[$field->name]['tmp_name'] = $new_filename;
 
 					//save file info in session
-					$_SESSION[$field->name] = $_FILES[$field->name];
+					$_SESSION[$field->name] = array_map( 'sanitize_text_field', $_FILES[$field->name] );
 				}
 			}
 		}
@@ -628,7 +638,7 @@ function pmpro_show_user_fields_in_profile( $user, $withlocations = false ) {
 
 			if ( !empty($box->label) ) {
 				?>
-				<h3><?php echo wp_kses_post( $box->label ); ?></h3>
+				<h2><?php echo wp_kses_post( $box->label ); ?></h2>
 				<?php
 				if ( ! empty( $box->description ) ) {
 					?>
@@ -705,9 +715,9 @@ function pmpro_show_user_fields_in_frontend_profile( $user, $withlocations = fal
 			}
 			?>
 
-			<div class="pmpro_checkout_box-<?php echo $where; ?>">
+			<div class="pmpro_checkout_box-<?php echo sanitize_title( $where ); ?>">
 				<?php if ( ! empty( $box->label ) ) { ?>
-					<h3><?php echo wp_kses_post( $box->label ); ?></h3>
+					<h2><?php echo wp_kses_post( $box->label ); ?></h2>
 				<?php } ?>
 
 				<div class="pmpro_member_profile_edit-fields">
@@ -724,14 +734,14 @@ function pmpro_show_user_fields_in_frontend_profile( $user, $withlocations = fal
 						}
 					?>
 				</div> <!-- end pmpro_member_profile_edit-fields -->
-			</div> <!-- end pmpro_checkout_box_$where -->
+			</div> <!-- end pmpro_checkout_box-name -->
 			<?php
 		}
 	} elseif ( ! empty( $profile_fields ) ) { ?>
 		<div class="pmpro_member_profile_edit-fields">
 			<?php
 				 // Cycle through groups.
-				foreach( $fields as $field ) {
+				foreach( $profile_fields as $field ) {
 					if ( pmpro_is_field( $field ) && $field->profile !== 'only_admin' ) {
 						$field->displayAtCheckout( $user->ID );
 					}
@@ -795,44 +805,35 @@ function pmpro_add_member_admin_fields( $user = null, $user_id = null)
     }
 }
 add_action( 'pmpro_add_member_fields', 'pmpro_add_member_admin_fields', 10, 2 );
-// Save the fields.
+
+/**
+ * Save user fields on the Add Member Admin form.
+ * Hooks into pmpro_add_member_added.
+ * @since 2.9
+ * @param int $uid The user ID.
+ * @param object $user The user object.
+ * @return void
+ */
 function pmpro_add_member_admin_save_user_fields( $uid = null, $user = null ) {
-	/**
-	 * BUG: Incorrectly assumed that the user_login $_REQUEST[] variable exists
-	 *
-	 * @since 1.3
-	 */
+	global $pmpro_user_fields;
+	
+	// Use the ID from the $user object if passed in.
 	if ( ! empty( $user ) && is_object( $user ) ) {
 		$user_id = $user->ID;
 	}
 
+	// Otherwise, let's use the $uid passed in.
 	if ( !empty( $uid ) && ( empty( $user ) || !is_object( $user ) ) ) {
 		$user_id = $uid;
 	}
 
-	if ( empty($uid) && ( empty( $user ) || !is_object( $user ) ) ) {
-
-		$user_login = isset( $_REQUEST['user_login'] ) ? $_REQUEST['user_login'] : null;
-
-		if (!empty($user_login)) {
-			$user_id = get_user_by('login', $_REQUEST['user_login'])->ID;
-		}
-
-	}
-
 	// check whether the user login variable contains something useful
-	if (empty($user_id)) {
+	if (empty($user_id)) {		
 
-		global $pmpro_msgt;
-		global $pmpro_msg;
-
-		$pmpro_msg = __("Unable to add/update user fields for this member", "paid-memberships-pro");
-		$pmpro_msgt = "pmpro_error";
+		pmpro_setMessage( __( 'Unable to add/update user fields for this member', 'paid-memberships-pro' ), 'pmpro_error' );
 
 		return false;
 	}
-
-    global $pmpro_user_fields;
 
     $addmember_fields = array();
     if(!empty($pmpro_user_fields))
@@ -859,14 +860,16 @@ function pmpro_add_member_admin_save_user_fields( $uid = null, $user = null ) {
         {
             if(pmpro_is_field($field) && isset($_POST[$field->name]) || isset($_FILES[$field->name]))
             {
-	            if ( isset( $field->sanitize ) && true === $field->sanitize ) {
-
+	            // Sanitize by default, or not. Some fields may have custom save functions/etc.
+				// phpcs:disable WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+				if ( ! empty( $field->sanitize ) && isset( $_POST[ $field->name ] ) ) {
 		            $value = pmpro_sanitize( $_POST[ $field->name ], $field );
 	            } elseif( isset($_POST[$field->name]) ) {
 	                $value = $_POST[ $field->name ];
                 } else {
                 	$value = $_FILES[$field->name];
                 }
+				// phpcs:enable WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 
                 //callback?
                 if(!empty($field->save_function))
@@ -892,7 +895,6 @@ function pmpro_add_member_admin_save_user_fields( $uid = null, $user = null ) {
 			}
         }
     }
-
 }
 add_action( 'pmpro_add_member_added', 'pmpro_add_member_admin_save_user_fields', 10, 2 );
 
@@ -1001,13 +1003,16 @@ function pmpro_save_user_fields_in_profile( $user_id )
 
 			if(isset($_POST[$field->name]) || isset($_FILES[$field->name]))
 			{
-				if ( isset( $_POST[ $field->name ] ) && isset( $field->sanitize ) && true === $field->sanitize ) {
+				// Sanitize by default, or not. Some fields may have custom save functions/etc.
+				// phpcs:disable WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+				if ( ! empty( $field->sanitize ) && isset( $_POST[ $field->name ] ) ) {
 					$value = pmpro_sanitize( $_POST[ $field->name ], $field );
 				} elseif( isset($_POST[$field->name]) ) {
 				    $value = $_POST[ $field->name ];
                 } else {
                 	$value = $_FILES[$field->name];
                 }
+				// phpcs:enable WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 
 				//callback?
 				if(!empty($field->save_function))
@@ -1395,7 +1400,7 @@ function pmpro_get_field_html( $field = null ) {
             <div class="pmpro_userfield-field-setting pmpro_userfield-field-setting-dual">
                 <div class="pmpro_userfield-field-setting">
                     <label>
-                        <?php esc_html_e( 'Required?', 'paid-memberships-pro' ); ?><br />
+                        <?php esc_html_e( 'Required at Checkout?', 'paid-memberships-pro' ); ?><br />
                         <select name="pmpro_userfields_field_required">
                             <option value="no" <?php selected( $field_required, 'no' );?>><?php esc_html_e( 'No', 'paid-memberships-pro' ); ?></option>
                             <option value="yes" <?php selected( $field_required, 'yes' );?>><?php esc_html_e( 'Yes', 'paid-memberships-pro' ); ?></option>
@@ -1603,4 +1608,55 @@ function pmpro_has_coded_user_fields() {
 	$num_db_fields = array_sum( array_map( function ($group) { return count( $group->fields ); }, pmpro_get_user_fields_settings() ) ); // Fields from UI settings page.
 	$num_global_fields = array_sum( array_map( 'count', $pmpro_user_fields ) ); // Total loaded fields.
 	return $num_global_fields > $num_db_fields;
+}
+
+/**
+ * Gets the label(s) for a passed user field value.
+ *
+ * @since 2.11
+ *
+ * @param string $field_name  The name of the field that the value belongs to.
+ * @param string|array $field_value The value to get the label for.
+ *
+ * @return string|array The label(s) for the passed value. Will be same type as $field_value.
+ */
+function pmpro_get_label_for_user_field_value( $field_name, $field_value ) {
+	global $pmpro_user_fields;
+	foreach ( $pmpro_user_fields as $user_field_group ) { // Loop through each user field group.
+		foreach ( $user_field_group as $user_field ) { // Loop through each user field in the group.
+			// Make sure that we have a valid user field.
+            if ( ! pmpro_is_field( $user_field ) ) {
+                continue;
+            }
+            
+            // Check if this is the user field that we are displaying.
+            if ( empty( $user_field->options ) ) {
+                continue;
+            }
+            
+            // Make sure that $options is an array.
+            if ( ! is_array( $user_field->options ) ) {
+                continue;
+            }
+            
+            // Check if this is a user field with an associative array of values.
+            if ( ! array_keys( $user_field->options ) !== range( 0, count( $user_field->options ) - 1 ) ) {
+                continue;
+            }
+            
+			// Replace meta values with their corresponding labels.
+			if ( is_array( $field_value ) ) {
+				foreach ( $field_value as $key => $value ) {
+					if ( isset( $user_field->options[ $value ] ) ) {
+						$field_value[ $key ] = $user_field->options[ $value ];
+					}
+				}
+			} else {
+				if ( isset( $user_field->options[ $field_value ] ) ) {
+					$field_value = $user_field->options[ $field_value ];
+				}
+			}
+		}
+	}
+	return $field_value;
 }

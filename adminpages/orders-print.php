@@ -19,7 +19,7 @@ if ( empty( $_REQUEST['order'] ) ) {
 }
 
 // Get order and membership level.
-$order = new MemberOrder($_REQUEST['order']);
+$order = new MemberOrder( intval( $_REQUEST['order'] ) );
 $level = pmpro_getLevel($order->membership_id);
 
 // Load template

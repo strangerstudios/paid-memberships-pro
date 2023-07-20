@@ -70,7 +70,7 @@
 	}
 	
 	// default from email wordpress@sitename
-	$sitename = strtolower( $_SERVER['SERVER_NAME'] );
+	$sitename = strtolower( sanitize_text_field( $_SERVER['SERVER_NAME'] ) );
 	if ( substr( $sitename, 0, 4 ) == 'www.' ) {
 		$sitename = substr( $sitename, 4 );
 	}
@@ -82,7 +82,7 @@
 	<form action="" method="post" enctype="multipart/form-data"> 
 		<?php wp_nonce_field('savesettings', 'pmpro_emailsettings_nonce');?>
 		<hr class="wp-header-end">
-		<h1 class="wp-heading-inline"><?php esc_html_e( 'Email Settings', 'paid-memberships-pro' ); ?></h1>
+		<h1><?php esc_html_e( 'Email Settings', 'paid-memberships-pro' ); ?></h1>
 		<h2><?php esc_html_e( 'Send Emails From', 'paid-memberships-pro' ); ?></h2>
 		<p><?php echo wp_kses_post( __( 'By default, system generated emails are sent from <em><strong>wordpress@yourdomain.com</strong></em>. You can update this from address using the fields below.', 'paid-memberships-pro' ) );?></p>
 
@@ -147,7 +147,7 @@
 					
 					// Messages for connected or not.
 					$connected = __( 'Your site is connected to SendWP.', 'paid-memberships-pro' ) . " <a href='https://app.sendwp.com/dashboard/' target='_blank' rel='nofollow noopener'>" . __( 'View Your SendWP Account', 'paid-memberships-pro' ) . "</a>";
-					$disconnected = ' ' . sprintf( __( 'Please enable email sending inside %s.', 'paid-memberships-pro' ), '<a href="' . admin_url('/tools.php?page=sendwp') . '">SendWP Settings</a>' );
+					$disconnected = ' ' . sprintf( __( 'Please enable email sending inside %s.', 'paid-memberships-pro' ), '<a href="' . admin_url('tools.php?page=sendwp') . '">SendWP Settings</a>' );
 					?>
 					<p class="description" id="pmpro-sendwp-description"><?php echo $sendwp_email_forwarding ? $connected : $disconnected; ?></p>
 				<?php }

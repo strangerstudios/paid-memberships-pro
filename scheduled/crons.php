@@ -7,6 +7,11 @@ function pmpro_cron_expire_memberships()
 {
 	global $wpdb;
 
+	//Don't let anything run if PMPro is paused
+	if( pmpro_is_paused() ) {
+		return;
+	}
+
 	//clean up errors in the memberships_users table that could cause problems
 	pmpro_cleanup_memberships_users_table();
 
@@ -42,10 +47,8 @@ function pmpro_cron_expire_memberships()
 			if ( ! empty( $euser ) ) {
 				$pmproemail->sendMembershipExpiredEmail( $euser, $e->membership_id );
 
-				if(current_user_can('manage_options')) {
-					printf(__("Membership expired email sent to %s. ", 'paid-memberships-pro' ), $euser->user_email);
-				} else {
-					echo ". ";
+				if ( WP_DEBUG ) {
+					error_log( sprintf(__("Membership expired email sent to %s. ", 'paid-memberships-pro' ), $euser->user_email) );
 				}
 			}
 		}
@@ -59,6 +62,11 @@ add_action("pmpro_cron_expiration_warnings", "pmpro_cron_expiration_warnings");
 function pmpro_cron_expiration_warnings()
 {
 	global $wpdb;
+
+	//Don't let anything run if PMPro is paused
+	if( pmpro_is_paused() ) {
+		return;
+	}
 
 	//clean up errors in the memberships_users table that could cause problems
 	pmpro_cleanup_memberships_users_table();
@@ -112,10 +120,8 @@ function pmpro_cron_expiration_warnings()
 			if ( ! empty( $euser ) ) {
 				$pmproemail->sendMembershipExpiringEmail( $euser, $e->membership_id);
 
-				if(current_user_can('manage_options')) {
-					printf(__("Membership expiring email sent to %s. ", 'paid-memberships-pro' ), $euser->user_email);
-				} else {
-					echo ". ";
+				if ( WP_DEBUG ) {
+					error_log( sprintf( __("Membership expiring email sent to %s. ", 'paid-memberships-pro' ), $euser->user_email) );
 				}
 			}
 		}
@@ -135,6 +141,11 @@ add_action("pmpro_cron_credit_card_expiring_warnings", "pmpro_cron_credit_card_e
 function pmpro_cron_credit_card_expiring_warnings()
 {
 	global $wpdb;
+
+	//Don't let anything run if PMPro is paused
+	if( pmpro_is_paused() ) {
+		return;
+	}
 
 	//clean up errors in the memberships_users table that could cause problems
 	pmpro_cleanup_memberships_users_table();
@@ -201,10 +212,8 @@ function pmpro_cron_credit_card_expiring_warnings()
 				$pmproemail = new PMProEmail();
 				$pmproemail->sendCreditCardExpiringEmail($euser,$last_order);
 
-				if(current_user_can('manage_options')) {
-					printf(__("Credit card expiring email sent to %s. ", 'paid-memberships-pro' ), $euser->user_email);
-				} else {
-					echo ". ";
+				if ( WP_DEBUG ) {
+					error_log( sprintf( __("Credit card expiring email sent to %s. ", 'paid-memberships-pro' ), $euser->user_email) );
 				}
 			}
 
@@ -219,11 +228,20 @@ function pmpro_cron_credit_card_expiring_warnings()
 	Commented out as of version 1.7.2 since this caused issues on some sites
 	and doesn't take into account the many "custom trial" solutions that are
 	in the wild (e.g. some trials are actually a delay of the subscription start date)
+
+	@deprecated 2.10
 */
 //add_action("pmpro_cron_trial_ending_warnings", "pmpro_cron_trial_ending_warnings");
 function pmpro_cron_trial_ending_warnings()
 {
+	_deprecated_function( 'pmpro_cron_trial_ending_warnings', '2.10' );
+
 	global $wpdb;
+
+	//Don't let anything run if PMPro is paused
+	if( pmpro_is_paused() ) {
+		return;
+	}
 
 	//clean up errors in the memberships_users table that could cause problems
 	pmpro_cleanup_memberships_users_table();
@@ -261,10 +279,8 @@ function pmpro_cron_trial_ending_warnings()
 			if ( ! empty( $euser ) ) {
 				$pmproemail->sendTrialEndingEmail($euser);
 
-				if(current_user_can('manage_options')) {
-					printf(__("Trial ending email sent to %s. ", 'paid-memberships-pro' ), $euser->user_email);
-				} else {
-					echo ". ";
+				if ( WP_DEBUG ) {
+					error_log( sprintf( __("Trial ending email sent to %s. ", 'paid-memberships-pro' ), $euser->user_email) );
 				}
 			}
 		}
@@ -276,6 +292,11 @@ function pmpro_cron_trial_ending_warnings()
 
 add_action( 'pmpro_cron_admin_activity_email', 'pmpro_cron_admin_activity_email' );
 function pmpro_cron_admin_activity_email() {
+	//Don't let anything run if PMPro is paused
+	if( pmpro_is_paused() ) {
+		return;
+	}
+	
 	$frequency = pmpro_getOption( 'activity_email_frequency' );
 	if ( empty( $frequency ) ) {
 		$frequency = 'week';

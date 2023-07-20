@@ -138,11 +138,11 @@ class PMPro_Wisdom_Tracker {
 	public function schedule_weekly_event( $schedules ) {
 		$schedules['weekly']  = [
 			'interval' => 604800,
-			'display'  => __( 'Once Weekly' ),
+			'display'  => esc_html__( 'Once Weekly', 'paid-memberships-pro' ),
 		];
 		$schedules['monthly'] = [
 			'interval' => 2635200,
-			'display'  => __( 'Once Monthly' ),
+			'display'  => esc_html__( 'Once Monthly', 'paid-memberships-pro' ),
 		];
 
 		return $schedules;
@@ -260,7 +260,7 @@ class PMPro_Wisdom_Tracker {
 		}
 		$body['marketing_method'] = $this->marketing;
 
-		$body['server'] = isset( $_SERVER['SERVER_SOFTWARE'] ) ? $_SERVER['SERVER_SOFTWARE'] : '';
+		$body['server'] = isset( $_SERVER['SERVER_SOFTWARE'] ) ? sanitize_text_field( $_SERVER['SERVER_SOFTWARE'] ) : '';
 
 		// Extra PHP fields
 		$body['memory_limit']        = ini_get( 'memory_limit' );
@@ -310,7 +310,7 @@ class PMPro_Wisdom_Tracker {
 		if ( empty( $plugin ) ) {
 			// We can't find the plugin data
 			// Send a message back to our home site
-			$body['message'] .= __( 'We can\'t detect any product information. This is most probably because you have not included the code snippet.', 'paid-memberships-pro' );
+			$body['message'] .= esc_html__( "We can't detect any product information. This is most probably because you have not included the code snippet.", 'paid-memberships-pro' );
 			$body['status']  = 'Data not found'; // Never translated
 		} else {
 			if ( isset( $plugin['Name'] ) ) {
@@ -775,6 +775,11 @@ class PMPro_Wisdom_Tracker {
 		if ( ! $is_time ) {
 			return false;
 		}
+		
+		// Don't display on the PMPro Advanced Settings page.
+		if ( ! empty( $_REQUEST['page'] ) && $_REQUEST['page'] === 'pmpro-advancedsettings' ) {
+		   return false;
+	   	}
 
 		// Check whether to block the notice, e.g. because we're in a local environment
 		// wisdom_block_notice works the same as wisdom_allow_tracking, an array of plugin names
@@ -788,19 +793,9 @@ class PMPro_Wisdom_Tracker {
 			return;
 		}
 
-		// @credit EDD
 		// Don't bother asking user to opt in if they're in local dev
-		$is_local = false;
-		if ( stristr( network_site_url( '/' ), '.dev' ) !== false || stristr( network_site_url( '/' ), 'localhost' ) !== false || stristr( network_site_url( '/' ), ':8888' ) !== false ) {
-			$is_local = true;
-		}
+		$is_local = apply_filters( 'wisdom_is_local_' . $this->plugin_name, false );
 
-		// PMPRO MODIFICATION
-		if ( ! $is_local && stristr( network_site_url( '/' ), '.local' ) !== false ) {
-			//$is_local = true;
-		}
-
-		$is_local = apply_filters( 'wisdom_is_local_' . $this->plugin_name, $is_local );
 		if ( $is_local ) {
 			$this->update_block_notice();
 
@@ -808,6 +803,9 @@ class PMPro_Wisdom_Tracker {
 			if ( $this->marketing ) {
 				$this->set_can_collect_email( false );
 			}
+		} elseif ( get_option( 'pmpro_wisdom_opt_out' ) !== false ) {			
+			// Option already set in PMPro Wizard or Advanced Settings page.
+			$this->update_block_notice();
 		} else {
 			// Display the notice requesting permission to track
 			// Retrieve current plugin information
@@ -837,10 +835,10 @@ class PMPro_Wisdom_Tracker {
 			// Decide on notice text
 			if ( $this->marketing != 1 ) {
 				// Standard notice text
-				$notice_text = sprintf( __( 'Thank you for installing our %1$s. We would like to track its usage on your site. We don\'t record any sensitive data, only information regarding the WordPress environment and %1$s settings, which we will use to help us make improvements to the %1$s. Tracking is completely optional.', 'paid-memberships-pro' ), $this->what_am_i );
+				$notice_text = sprintf( esc_html__( "Thank you for installing our %1\$s. We would like to track its usage on your site. We don't record any sensitive data, only information regarding the WordPress environment and %1\$s settings, which we will use to help us make improvements to the %1\$s. Tracking is completely optional.", 'paid-memberships-pro' ), $this->what_am_i );
 			} else {
 				// If we have option 1 for marketing, we include reference to sending product information here
-				$notice_text = sprintf( __( 'Thank you for installing our %1$s. We\'d like your permission to track its usage on your site and subscribe you to our newsletter. We won\'t record any sensitive data, only information regarding the WordPress environment and %1$s settings, which we will use to help us make improvements to the %1$s. Tracking is completely optional.', 'paid-memberships-pro' ), $this->what_am_i );
+				$notice_text = sprintf( esc_html__( "Thank you for installing our %1\$s. We'd like your permission to track its usage on your site and subscribe you to our newsletter. We won\'t record any sensitive data, only information regarding the WordPress environment and %1\$s settings, which we will use to help us make improvements to the %1\$s. Tracking is completely optional.", 'paid-memberships-pro' ), $this->what_am_i );
 			}
 			// And we allow you to filter the text anyway
 			$notice_text = apply_filters( 'wisdom_notice_text_' . esc_attr( $this->plugin_name ), $notice_text ); ?>
@@ -885,7 +883,7 @@ class PMPro_Wisdom_Tracker {
 				'marketing_optin' => 'no',
 			] );
 
-			$marketing_text = sprintf( __( 'Thank you for opting in to tracking. Would you like to receive occasional news about this %s, including details of new features and special offers?', 'paid-memberships-pro' ), $this->what_am_i );
+			$marketing_text = sprintf( esc_html__( 'Thank you for opting in to tracking. Would you like to receive occasional news about this %s, including details of new features and special offers?', 'paid-memberships-pro' ), $this->what_am_i );
 			$marketing_text = apply_filters( 'wisdom_marketing_text_' . esc_attr( $this->plugin_name ), $marketing_text ); ?>
 
 			<div class="notice notice-info updated put-dismiss-notice">
@@ -926,18 +924,18 @@ class PMPro_Wisdom_Tracker {
 	 */
 	public function form_default_text() {
 		$form            = [];
-		$form['heading'] = __( 'Sorry to see you go', 'paid-memberships-pro' );
-		$form['body']    = __( 'Before you deactivate the plugin, would you quickly give us your reason for doing so?', 'paid-memberships-pro' );
+		$form['heading'] = esc_html__( 'Sorry to see you go', 'paid-memberships-pro' );
+		$form['body']    = esc_html__( 'Before you deactivate the plugin, would you quickly give us your reason for doing so?', 'paid-memberships-pro' );
 		$form['options'] = [
-			__( 'Set up is too difficult', 'paid-memberships-pro' ),
-			__( 'Lack of documentation', 'paid-memberships-pro' ),
-			__( 'Not the features I wanted', 'paid-memberships-pro' ),
-			__( 'Found a better plugin', 'paid-memberships-pro' ),
-			__( 'Installed by mistake', 'paid-memberships-pro' ),
-			__( 'Only required temporarily', 'paid-memberships-pro' ),
-			__( 'Didn\'t work', 'paid-memberships-pro' ),
+			esc_html__( 'Set up is too difficult', 'paid-memberships-pro' ),
+			esc_html__( 'Lack of documentation', 'paid-memberships-pro' ),
+			esc_html__( 'Not the features I wanted', 'paid-memberships-pro' ),
+			esc_html__( 'Found a better plugin', 'paid-memberships-pro' ),
+			esc_html__( 'Installed by mistake', 'paid-memberships-pro' ),
+			esc_html__( 'Only required temporarily', 'paid-memberships-pro' ),
+			esc_html__( "Didn't work", 'paid-memberships-pro' ),
 		];
-		$form['details'] = __( 'Details (optional)', 'paid-memberships-pro' );
+		$form['details'] = esc_html__( 'Details (optional)', 'paid-memberships-pro' );
 
 		return $form;
 	}
@@ -969,18 +967,18 @@ class PMPro_Wisdom_Tracker {
 			$form = $this->form_default_text();
 		}
 		// Build the HTML to go in the form
-		$html = '<div class="put-goodbye-form-head"><strong>' . esc_html( $form['heading'] ) . '</strong></div>';
-		$html .= '<div class="put-goodbye-form-body"><p>' . esc_html( $form['body'] ) . '</p>';
+		$html_escaped = '<div class="put-goodbye-form-head"><strong>' . esc_html( $form['heading'] ) . '</strong></div>';
+		$html_escaped .= '<div class="put-goodbye-form-body"><p>' . esc_html( $form['body'] ) . '</p>';
 		if ( is_array( $form['options'] ) ) {
-			$html .= '<div class="put-goodbye-options"><p>';
+			$html_escaped .= '<div class="put-goodbye-options"><p>';
 			foreach ( $form['options'] as $option ) {
-				$html .= '<input type="checkbox" name="put-goodbye-options[]" id="' . str_replace( " ", "", esc_attr( $option ) ) . '" value="' . esc_attr( $option ) . '"> <label for="' . str_replace( " ", "", esc_attr( $option ) ) . '">' . esc_attr( $option ) . '</label><br>';
+				$html_escaped .= '<input type="checkbox" name="put-goodbye-options[]" id="' . str_replace( " ", "", esc_attr( $option ) ) . '" value="' . esc_attr( $option ) . '"> <label for="' . str_replace( " ", "", esc_attr( $option ) ) . '">' . esc_attr( $option ) . '</label><br>';
 			}
-			$html .= '</p><label for="put-goodbye-reasons">' . esc_html( $form['details'] ) . '</label><textarea name="put-goodbye-reasons" id="put-goodbye-reasons" rows="2" style="width:100%"></textarea>';
-			$html .= '</div><!-- .put-goodbye-options -->';
+			$html_escaped .= '</p><label for="put-goodbye-reasons">' . esc_html( $form['details'] ) . '</label><textarea name="put-goodbye-reasons" id="put-goodbye-reasons" rows="2" style="width:100%"></textarea>';
+			$html_escaped .= '</div><!-- .put-goodbye-options -->';
 		}
-		$html .= '</div><!-- .put-goodbye-form-body -->';
-		$html .= '<p class="deactivating-spinner"><span class="spinner"></span> ' . __( 'Submitting form', 'paid-memberships-pro' ) . '</p>';
+		$html_escaped .= '</div><!-- .put-goodbye-form-body -->';
+		$html_escaped .= '<p class="deactivating-spinner"><span class="spinner"></span> ' . esc_html__( 'Submitting form', 'paid-memberships-pro' ) . '</p>';
 		?>
 		<div class="put-goodbye-form-bg"></div>
 		<style type="text/css">
@@ -1049,7 +1047,7 @@ class PMPro_Wisdom_Tracker {
 					var url = document.getElementById( "put-goodbye-link-<?php echo esc_attr( $this->plugin_name ); ?>" );
 					$( 'body' ).toggleClass( 'put-form-active' );
 					$( "#put-goodbye-form-<?php echo esc_attr( $this->plugin_name ); ?>" ).fadeIn();
-					$( "#put-goodbye-form-<?php echo esc_attr( $this->plugin_name ); ?>" ).html( '<?php echo $html; ?>' + '<div class="put-goodbye-form-footer"><p><a id="put-submit-form" class="button primary" href="#"><?php _e( 'Submit and Deactivate', 'paid-memberships-pro' ); ?></a>&nbsp;<a class="secondary button" href="' + url + '"><?php _e( 'Just Deactivate', 'paid-memberships-pro' ); ?></a></p></div>' );
+					$( "#put-goodbye-form-<?php echo esc_attr( $this->plugin_name ); ?>" ).html( '<?php echo $html_escaped; ?>' + '<div class="put-goodbye-form-footer"><p><a id="put-submit-form" class="button primary" href="#"><?php _e( 'Submit and Deactivate', 'paid-memberships-pro' ); ?></a>&nbsp;<a class="secondary button" href="' + url + '"><?php _e( 'Just Deactivate', 'paid-memberships-pro' ); ?></a></p></div>' );
 					$( '#put-submit-form' ).on( 'click', function ( e ) {
 						// As soon as we click, the body of the form should disappear
 						$( "#put-goodbye-form-<?php echo esc_attr( $this->plugin_name ); ?> .put-goodbye-form-body" ).fadeOut();
@@ -1092,7 +1090,7 @@ class PMPro_Wisdom_Tracker {
 	public function goodbye_form_callback() {
 		check_ajax_referer( 'wisdom_goodbye_form', 'security' );
 		if ( isset( $_POST['values'] ) ) {
-			$values = json_encode( wp_unslash( $_POST['values'] ) );
+			$values = json_encode( wp_unslash( sanitize_text_field( $_POST['values'] ) ) );
 			update_option( 'wisdom_deactivation_reason_' . $this->plugin_name, $values );
 		}
 		if ( isset( $_POST['details'] ) ) {

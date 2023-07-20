@@ -406,6 +406,7 @@
 	?>
 	<hr class="wp-header-end">
 	<?php if ( ! empty( $level->id ) ) { ?>
+		<br class="wp-clearfix">
 		<h1 class="wp-heading-inline">
 		<?php
 			echo sprintf(
@@ -451,8 +452,8 @@
 				<table class="form-table">
 					<tbody>
 						<tr>
-							<th scope="row" valign="top"><label for="name"><?php esc_html_e('Name', 'paid-memberships-pro' );?></label></th>
-							<td><input name="name" type="text" value="<?php echo esc_attr($level->name);?>" class="regular-text" required/></td>
+							<th scope="row" valign="top"><label for="name"><?php esc_html_e( 'Name', 'paid-memberships-pro' );?></label></th>
+							<td><input id="name" name="name" type="text" value="<?php echo esc_attr($level->name);?>" class="regular-text" required/></td>
 						</tr>
 						<tr>
 							<th scope="row" valign="top"><label for="description"><?php esc_html_e('Description', 'paid-memberships-pro' );?></label></th>
@@ -464,8 +465,8 @@
 							<th scope="row" valign="top"><label for="confirmation"><?php esc_html_e('Confirmation Message', 'paid-memberships-pro' );?></label></th>
 							<td class="pmpro_confirmation">
 								<?php wp_editor( $level->confirmation, 'confirmation', array( 'textarea_rows' => 5 ) ); ?>
-								<p><input id="confirmation_in_email" name="confirmation_in_email" type="checkbox" value="yes" <?php checked( $confirmation_in_email, 1); ?> /> <label for="confirmation_in_email"><?php esc_html_e('Check to include this message in the membership confirmation email.', 'paid-memberships-pro' );?></label></p>
-								<p class="description">
+								<p><input id="confirmation_in_email" name="confirmation_in_email" type="checkbox" value="yes" <?php checked( $confirmation_in_email, 1); ?> aria-describedby="confirmation_in_email_description" /> <label for="confirmation_in_email"><?php esc_html_e('Check to include this message in the membership confirmation email.', 'paid-memberships-pro' );?></label></p>
+								<p id="confirmation_in_email_description" class="description">
 									<?php 
 										$allowed_confirmation_in_email_html = array (
 											'a' => array (
@@ -947,7 +948,7 @@
 	{
 		$sqlQuery = "SELECT * FROM $wpdb->pmpro_membership_levels ";
 		if($s)
-			$sqlQuery .= "WHERE name LIKE '%$s%' ";
+			$sqlQuery .= "WHERE name LIKE '%" . esc_sql( $s ) . "%' ";
 			$sqlQuery .= "ORDER BY id ASC";
 
 			$levels = $wpdb->get_results($sqlQuery, OBJECT);
@@ -1069,6 +1070,9 @@
 			/**
 			 * Filter the Membership Levels page title action links.
 			 *
+			 * @since 2.9
+			 * @since 2.11 Deprecating strings as $pmpro_membershiplevels_page_action_links values.
+			 *
 			 * @param array $pmpro_membershiplevels_page_action_links Page action links.
 			 * @return array $pmpro_membershiplevels_page_action_links Page action links.
 			 */
@@ -1077,9 +1081,8 @@
 			// Display the links.
 			foreach ( $pmpro_membershiplevels_page_action_links as $pmpro_membershiplevels_page_action_link ) {
 				
-				// If the value is not an array, assume it's a string of HTML.
+				// If the value is not an array, it is not in the correct format. Continue.
 				if ( ! is_array( $pmpro_membershiplevels_page_action_link ) ) {
-					echo $pmpro_membershiplevels_page_action_link;
 					continue;
 				}
 
@@ -1147,7 +1150,7 @@
 						$delete_text = esc_html(
 							sprintf(
 								// translators: %s is the Level Name.
-								__( 'Are you sure you want to delete membership level %s? All subscriptions will be cancelled.', 'paid-memberships-pro' ),
+								__( "Are you sure you want to delete membership level %s? Any gateway subscriptions or third-party connections with a member's account will remain active.", 'paid-memberships-pro' ),
 								$level->name
 							)
 						);
@@ -1238,7 +1241,7 @@
 				</td>
 				<td>
 					<?php if(!pmpro_isLevelExpiring($level)) { ?>
-						--
+						<span aria-label="<?php esc_attr_e( 'None', 'paid-memberships-pro' ); ?>"><?php esc_html_e( '&#8212;', 'paid-memberships-pro' ); ?></span>
 					<?php } else { ?>
 						<?php _e('After', 'paid-memberships-pro' );?> <?php echo $level->expiration_number?> <?php echo sornot($level->expiration_period,$level->expiration_number)?>
 					<?php } ?>
@@ -1283,6 +1286,14 @@
 			jQuery('.pmproPopupCloseButton').click(function() {
 				jQuery('.pmpro-popup-overlay').hide();
 			});
+			
+			// Hide the popup banner if "ESC" is pressed.
+			jQuery(document).keyup(function (e) {
+				if (e.key === 'Escape') {
+					jQuery('.pmpro-popup-overlay').hide();
+				}
+			});
+
 			<?php if( ! empty( $_REQUEST['showpopup'] ) ) { ?>addLevel();<?php } ?>
 		} );
 		function addLevel() {

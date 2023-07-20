@@ -56,11 +56,11 @@ else
 
 if(isset($_REQUEST['level'])) {
 	if( $_REQUEST['level'] == 'paid-levels' ) {
-		$l = pmpro_report_get_levels( 'paid' );
+		$l = pmpro_report_get_levels( 'paid' ); // String of ints and commas. Already escaped for SQL.
 	}elseif( $_REQUEST['level'] == 'free-levels' ) {
-		$l = pmpro_report_get_levels( 'free' );
+		$l = pmpro_report_get_levels( 'free' ); // String of ints and commas. Already escaped for SQL.
 	}else{
-		$l = intval($_REQUEST['level']);
+		$l = intval($_REQUEST['level']); // Escaping for SQL.
 	}
 } else {
 	$l = "";
@@ -116,7 +116,7 @@ if (
 }
 
 if ( ! empty( $l ) ) {
-	$sqlQuery .= "AND mu.membership_id IN(" . esc_sql( $l ) . ") ";
+	$sqlQuery .= "AND mu.membership_id IN(" . $l . ") "; // $l is already escaped. See declaration.
 }
 
 if ( ! empty( $discount_code ) ) {
@@ -196,7 +196,7 @@ if ( $type === "signup_v_cancel" || $type === "signup_v_expiration" || $type ===
 
 	//restrict by level
 	if ( ! empty( $l ) ) {
-		$sqlQuery .= "AND mu1.membership_id IN(" . esc_sql( $l ) . ") ";
+		$sqlQuery .= "AND mu1.membership_id IN(" . $l . ") "; // $l is already escaped. See declaration.
 	}
 
 	if ( ! empty( $discount_code ) ) {

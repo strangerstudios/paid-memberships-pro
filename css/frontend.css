@@ -57,10 +57,8 @@ a.pmpro_btn:hover,
 fieldset[disabled] .pmpro_btn {
 	-webkit-box-shadow: none;
 	box-shadow: none;
-	cursor: not-allowed;
 	filter: alpha(opacity=65);
 	opacity: 0.65;
-	pointer-events: none;
 }
 .pmpro_btn.pmpro_btn-cancel,
 .pmpro_btn.pmpro_btn-cancel:link,
@@ -81,7 +79,10 @@ input[type="button"]#discount_code_button:hover,
 input[type="button"]#discount_code_button:focus,
 input[type="button"]#other_discount_code_button,
 input[type="button"]#other_discount_code_button:hover,
-input[type="button"]#other_discount_code_button:focus {
+input[type="button"]#other_discount_code_button:focus,
+button[type="button"]#other_discount_code_toggle,
+button[type="button"]#other_discount_code_toggle:hover,
+button[type="button"]#other_discount_code_toggle:focus {
 	-webkit-appearance: none;
     -moz-appearance: none;
 	background: none;
@@ -93,12 +94,13 @@ input[type="button"]#other_discount_code_button:focus {
 	font-family: inherit;
     font-size: 100%;
 	font-weight: normal;
-	margin: 0 0 0 5px;
+	margin: 0;
 	outline: none;
     padding: 0;
 	text-align: center;
     text-decoration: underline;
 	text-transform: none;
+	transform: none;
 }
 
 /*---------------------------------------
@@ -223,6 +225,10 @@ form.pmpro_form .pmpro_payment-cvv .input,
 form.pmpro_form .pmpro_payment-discount-code .input,
 form.pmpro_form #other_discount_code.input {
 	max-width: 40%;
+}
+form.pmpro_form #discount_code.input,
+form.pmpro_form #other_discount_code.input {
+	margin-right: .5em;
 }
 form.pmpro_form input[type=checkbox]#tos {
 	width: auto;
@@ -357,16 +363,16 @@ span.pmpro_price_part_sub:before {
 /*---------------------------------------
 	Membership Checkout
 ---------------------------------------*/
-#pmpro_form .pmpro_checkout h3 {
+#pmpro_form .pmpro_checkout h2 {
 	margin: 1em 0 0 0;
 	padding: 0;
 }
-.pmpro_checkout h3 span.pmpro_checkout-h3-name {
+.pmpro_checkout h2 span.pmpro_checkout-h2-name {
 	display: inline-block;
 	margin: 0 .5rem 1rem 0;
 }
-.pmpro_checkout h3 span.pmpro_checkout-h3-msg {
-	font-size: 11px;
+.pmpro_checkout h2 span.pmpro_checkout-h2-msg {
+	font-size: 13px;
 	font-style: italic;
 	font-weight: normal;
 	letter-spacing: normal;
@@ -507,7 +513,7 @@ span.pmpro_price_part_sub:before {
 	margin: 1em 0;
 	padding: 1em 0;
 }
-#pmpro_account .pmpro_box h3 {
+#pmpro_account .pmpro_box h2 {
 	background: none;
 	border: none;
 	margin: 0;
@@ -751,10 +757,10 @@ li.pmpro_more {
 	#pmpro_levels_table td:nth-child(1) {
 		min-width: unset;
 	}
-	.pmpro_checkout h3 span.pmpro_checkout-h3-name {
+	.pmpro_checkout h2 span.pmpro_checkout-h2-name {
 		display: block;
 	}
-	.pmpro_checkout h3 span.pmpro_checkout-h3-msg {
+	.pmpro_checkout h2 span.pmpro_checkout-h2-msg {
 		display: block;
 		margin-bottom: 1em;
 	}

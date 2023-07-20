@@ -109,11 +109,32 @@ class PMPro_Site_Health {
 					'label' => __( 'Library Conflicts', 'paid-memberships-pro' ),
 					'value' => self::get_library_conflicts(),
 				],
+				'pmpro-outdated-templates' => [
+					'label' => __( 'Outdated Templates', 'paid-memberships-pro' ),
+					'value' => self::get_outdated_templates(),
+				],
+				'pmpro-current-site-url' => [
+					'label' => __( 'Current Site URL', 'paid-memberships-pro' ),
+					'value' => get_site_url(),
+				],
+				'pmpro-recorded-site-url' => [
+					'label' => __( 'Last Known Site URL', 'paid-memberships-pro' ),
+					'value' => pmpro_getOption( 'last_known_url' ),
+				],
+				'pmpro-pause-mode' => [
+					'label' => __( 'Pause Mode', 'paid-memberships-pro' ),
+					'value' => self::get_pause_mode_state(),
+				],
 			],
 		];
 
 		// Automatically add information about constants set.
 		$info['pmpro']['fields'] = array_merge( $info['pmpro']['fields'], self::get_constants() );
+
+		if ( function_exists( 'pmpro_add_site_health_info_2_10_6' ) ) {
+			// If the 2.10.6 update cleaned up sensitive order meta data, we want to show that.
+			$info = pmpro_add_site_health_info_2_10_6( $info );
+		}
 
 		return $info;
 	}
@@ -306,7 +327,7 @@ class PMPro_Site_Health {
 
 		WP_Filesystem();
 
-		if ( ! $wp_filesystem ) {
+        if ( ! $wp_filesystem || ! is_object($wp_filesystem) || ( is_wp_error($wp_filesystem->errors) && $wp_filesystem->errors->has_errors() ) ) {
 			return new WP_Error( 'access-denied', __( 'Unable to verify', 'paid-memberships-pro' ) );
 		}
 
@@ -477,7 +498,7 @@ class PMPro_Site_Health {
 
 		WP_Filesystem();
 
-		if ( ! $wp_filesystem ) {
+        if ( ! $wp_filesystem || ! is_object($wp_filesystem) || ( is_wp_error($wp_filesystem->errors) && $wp_filesystem->errors->has_errors() ) ) {
 			return __( 'Unable to access .htaccess file', 'paid-memberships-pro' );
 		}
 
@@ -523,6 +544,30 @@ class PMPro_Site_Health {
 				$conflict_strings[] = 'v' . $conflicting_plugin_data['version'] . ' (' . $conflicting_plugin_data['timestamp'] . ')' . ' - ' . $conflicting_plugin_path;
 			}
 			$return_arr[ $library_name ] = implode( ' | ', $conflict_strings );
+		}
+		return $return_arr;
+	}
+
+	/**
+ 	 * Get outdated templates.
+ 	 *
+	 * @since 2.11
+ 	 *
+ 	 * @return string|string[] The outdated templates information.
+ 	 */
+	  function get_outdated_templates() {
+		// Get outdated templates.
+		$outdated_templates = pmpro_get_outdated_page_templates();
+
+		// If there are no outdated templates, return a message.
+		if ( empty( $outdated_templates ) ) {
+			return __( 'No outdated templates detected.', 'paid-memberships-pro' );
+		}
+
+		// Format data to be displayed in site health.
+		$return_arr = array();
+		foreach ( $outdated_templates as $template_name => $template_data ) {
+			$return_arr[ $template_name ] = __( 'Default version', 'paid-memberships-pro' ) . ': ' . $template_data['default_version'] . ' | ' . __( 'Loaded version', 'paid-memberships-pro' ) . ': ' . $template_data['loaded_version'] . ' | ' . __( 'Loaded path', 'paid-memberships-pro' ) . ': ' . $template_data['loaded_path'];
 		}
 		return $return_arr;
 	}
@@ -598,5 +643,24 @@ class PMPro_Site_Health {
 		}
 
 		return $constants_formatted;
+	}
+
+	/**
+	 * Get the pause mode state
+	 *
+	 * @since 2.10
+	 *
+	 * @return string What state is pause mode in 
+	 */
+	public function get_pause_mode_state() {
+
+		$pause_mode = pmpro_is_paused();
+
+		if( $pause_mode ) {
+			return __( 'Enabled', 'paid-memberships-pro' );
+		}
+
+		return __( 'Disabled', 'paid-memberships-pro' );
+
 	}
 }
