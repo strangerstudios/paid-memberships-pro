@@ -304,7 +304,8 @@
 	margin: 0 0 20px 0;
 }
 
-.pmpro-popup-wrap a.pmproPopupCloseButton {
+.pmpro-popup-wrap a.pmproPopupCloseButton, 
+.pmpro-popup-wrap button.pmproPopupCloseButton {
 	color: #666;
 	display: inline-block;
 	margin: .9rem 0 0 1.45rem;
@@ -313,6 +314,40 @@
 	text-decoration: none;
 	top: 10px;
 }
+
+.pmpro-popup-wrap a.pmproPopupCloseButton:hover, 
+.pmpro-popup-wrap button.pmproPopupCloseButton:hover {
+color: #000;
+}
+
+/* Stripe connected confirmation modal  */
+@media only screen and (min-width: 1200px) {
+	.pmpro-popup-wrap.pmpro-popup-stripe-confirmation {
+		width: 25%;
+		border-radius: 0;
+		border-top: #658B24 4px solid;
+		box-shadow: none;
+	}
+
+}
+
+.pmpro-popup-wrap.pmpro-popup-stripe-confirmation h1 {
+	font-size: 1.5em;
+	font-weight: bold;
+	text-align: left;
+}
+.pmpro-popup-wrap.pmpro-popup-stripe-confirmation button.pmproPopupCloseButton {
+	border:none;
+	background:transparent;
+}
+.pmpro-popup-wrap.pmpro-popup-stripe-confirmation p {
+	text-align: left;
+}
+.pmpro-popup-wrap.pmpro-popup-stripe-confirmation p a, 
+.pmpro-popup-wrap.pmpro-popup-stripe-confirmation p b {
+	font-weight:bold;
+}
+
 
 /* Consent Log */
 .pmpro_consent_log.pmpro_scrollable {
