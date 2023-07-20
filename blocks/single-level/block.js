@@ -87,8 +87,8 @@ export default registerBlockType(
                             ['pmpro/single-level-name', { selected_level: selected_level, content: 'Example Nested Block Template' }],
                             ['pmpro/single-level-price', { selected_level: selected_level, content: 'Example Nested Block Template' }],
                             ['pmpro/single-level-expiration', {selected_level: selected_level, content: 'Example Nested Block Template' }],
-                            ['pmpro/single-level-description', { selected_level: selected_level, content: 'Example Nested Block Template' }],
                             ['pmpro/single-level-checkout', { selected_level: selected_level, content: 'Example Nested Block Template' }],
+                            ['pmpro/single-level-description', { selected_level: selected_level, content: 'Example Nested Block Template' }],
                         ]}
                         />
                     </div>
@@ -99,8 +99,8 @@ export default registerBlockType(
                         ['pmpro/single-level-name', { selected_level: selected_level, content: 'Example Nested Block Template' }],
                         ['pmpro/single-level-price', { selected_level: selected_level, content: 'Example Nested Block Template' }],
                         ['pmpro/single-level-expiration', {selected_level: selected_level, content: 'Example Nested Block Template' }],
-                        ['pmpro/single-level-description', { selected_level: selected_level, content: 'Example Nested Block Template' }],
                         ['pmpro/single-level-checkout', { selected_level: selected_level, content: 'Example Nested Block Template' }],
+                        ['pmpro/single-level-description', { selected_level: selected_level, content: 'Example Nested Block Template' }],
                     ]}
                     />
                 </div>,
