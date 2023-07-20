@@ -1,6 +1,8 @@
 <?php
 /**
  * Compatibility for the LifterLMS plugin.
+ * @since 2.12
+ * 
  * We add an option to "Streamline LifterLMS" to the
  * LifterLMS Setup Wizard and also the PMPro Advanced Settings Page.
  * When enabled, this will:
@@ -174,6 +176,30 @@ function pmpro_lifter_hide_membership_menu() {
 	remove_menu_page( 'edit.php?post_type=llms_membership' );
 }
 add_action( 'admin_menu', 'pmpro_lifter_hide_membership_menu', 99 );
+
+/**
+ * Hide the LifterLMS Membership and Checkout tabs from the admin settings.
+ * @param array $tabs
+ * @return array
+ * @since 2.12
+ */
+function pmpro_lifter_hide_settings_tabs( $tabs ) {
+	// Bail if the streamline option is not enabled.
+	if ( ! get_option( 'pmpro_lifter_streamline' ) ) {
+		return $tabs;
+	}
+
+	if ( isset( $tabs['memberships'] ) ) {
+		unset( $tabs['memberships'] );
+	}
+
+	if ( isset( $tabs['checkout'] ) ) {
+		unset( $tabs['checkout'] );
+	}
+
+	return $tabs;
+}
+add_filter( 'lifterlms_settings_tabs_array', 'pmpro_lifter_hide_settings_tabs', 30 );
 
 /**
  * Hide the Restrictions tab of the edit course page if streamline is enabled.
