@@ -18,6 +18,11 @@ function pmpro_delete_user( $user_id ) {
 		} else {
 			// okay, guessing they didn't have a level
 		}
+	} 
+	
+	// Assume the user is being deleted from the frontend by deleting their own account, we'd most likely want to cancel their subscription in this case.
+	if ( ! is_admin() ) {
+		pmpro_changeMembershipLevel( 0, $user_id );
 	}
 
 	//Remove all membership history for this user from the pmpro_memberships_users table
