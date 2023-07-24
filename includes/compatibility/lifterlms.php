@@ -202,6 +202,27 @@ function pmpro_lifter_hide_settings_tabs( $tabs ) {
 add_filter( 'lifterlms_settings_tabs_array', 'pmpro_lifter_hide_settings_tabs', 30 );
 
 /**
+ * Hide the LifterLMS memberships and sales tabs from the reporting page.
+ */
+function pmpro_lifter_reporting_tabs( $tabs ) {
+	// Bail if the streamline option is not enabled.
+	if ( ! get_option( 'pmpro_lifter_streamline' ) ) {
+		return $tabs;
+	}
+
+	if ( isset( $tabs['memberships'] ) ) {
+		unset( $tabs['memberships'] );
+	}
+
+	if ( isset( $tabs['sales'] ) ) {
+		unset( $tabs['sales'] );
+	}
+	
+	return $tabs;
+}
+add_filter( 'lifterlms_reporting_tabs', 'pmpro_lifter_reporting_tabs' );
+
+/**
  * Hide the Restrictions tab of the edit course page if streamline is enabled.
  */
 function pmpro_lifter_hide_restrictions_tab( $fields ) {
