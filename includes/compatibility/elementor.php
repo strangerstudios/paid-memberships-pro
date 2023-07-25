@@ -47,9 +47,18 @@ function pmpro_elementor_get_all_levels() {
 }
 add_action( 'plugins_loaded', 'pmpro_elementor_compatibility', 15 );
 
-
-
 function pmpro_elementor_clear_level_cache( $level_id ) {
 	delete_transient( 'pmpro_elementor_levels_cache' );
 }
 add_action( 'pmpro_save_membership_level', 'pmpro_elementor_clear_level_cache' );
+
+/** Add support for Member Homepages Add On 
+ * @since TBD
+ */
+function pmpro_elementor_fix_homepage_redirect( $member_homepage_id, $level_id ) {
+	if ( ! current_user_can( 'edit_post', get_the_ID() ) || ! empty( $_REQUEST['elementor-preview'] ) ) {
+		return false;
+	}
+	return $member_homepage_id;
+}
+add_filter( 'pmpro_member_homepage_id', 'pmpro_elementor_fix_homepage_redirect', 10, 2 );
