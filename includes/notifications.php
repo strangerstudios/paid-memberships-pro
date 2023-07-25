@@ -12,7 +12,8 @@ function pmpro_notifications() {
 		if ( empty( $notification ) ) {
 			exit;
 		}
-		
+		//Check if is an install scenario. If yes, pause notifications.
+		pause_on_install();
 		$paused = pmpro_notifications_pause();		
 		if ( $paused && empty( $_REQUEST['pmpro_notification'] ) && $notification->priority !== 1 ) {
 			exit;
@@ -560,3 +561,26 @@ function pmpro_footer_link() {
 	<?php }
 }
 add_action( 'wp_footer', 'pmpro_footer_link' );
+
+/**
+ * Check if current user has any pmpro_archived_notifications. 
+ * If not, we assume is an installation scenario and then we add dummy pause notifications. 
+ * 
+ * @return void
+ * @since TBD
+ */
+function pause_on_install() {
+	global $current_user;
+	
+	$archived_notifications = get_user_meta( $current_user->ID, 'pmpro_archived_notifications', true );
+	// If no archived notifications, we assume is an installation scenario and then we add dummy notifications.
+	if (! $archived_notifications ) {
+		$archived_notifications = array();
+		// Add 3 dummy notifications.
+		for ( $i = 0; $i < 3 ; $i++ ) {
+			$archived_notifications[$i] = date_i18n( 'c' );
+		}
+		update_user_meta($current_user->ID, 'pmpro_archived_notifications', $archived_notifications);
+	}
+	return;
+}
