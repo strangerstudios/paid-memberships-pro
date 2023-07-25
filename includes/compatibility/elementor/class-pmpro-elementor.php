@@ -80,7 +80,7 @@ class PMPro_Elementor {
 PMPro_Elementor::instance();
 
 /**
- * Compatibility for other Add Ons and features can go below this.
+ * Compatibility for other Add Ons and features can go below this docblock.
  * @since TBD
  * Note: We can move this into it's own file if we need to but for now I don't think we do.
  */
