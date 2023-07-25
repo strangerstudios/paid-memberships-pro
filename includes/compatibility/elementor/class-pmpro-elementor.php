@@ -78,3 +78,16 @@ class PMPro_Elementor {
 
 // Instantiate Plugin Class
 PMPro_Elementor::instance();
+
+/**
+ * Compatibility for other Add Ons and features can go below this.
+ * @since TBD
+ * Note: We can move this into it's own file if we need to but for now I don't think we do.
+ */
+ function pmpro_elementor_fix_homepage_redirect( $member_homepage_id, $level_id ) {
+	if ( ! current_user_can( 'edit_post', get_the_ID() ) || ! empty( $_REQUEST['elementor-preview'] ) ) {
+		return false;
+	}
+	return $member_homepage_id;
+}
+add_filter( 'pmpro_member_homepage_id', 'pmpro_elementor_fix_homepage_redirect', 10, 2 );
