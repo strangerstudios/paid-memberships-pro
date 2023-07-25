@@ -166,7 +166,7 @@ function pmpro_init_save_wizard_data() {
 			$free_level_name = ! empty( $_REQUEST['pmpro-wizard__free-level-name'] ) ? sanitize_text_field( $_REQUEST['pmpro-wizard__free-level-name'] ) : sanitize_text_field( __( 'Free', 'paid-memberships-pro' ) );
 
 			$levels_array['free'] = array(
-				'id'                => -1,
+				'id'                => 0,
 				'name'              => $free_level_name,
 				'description'       => '',
 				'confirmation'      => '',
@@ -190,7 +190,7 @@ function pmpro_init_save_wizard_data() {
 			$period          = ! empty( $_REQUEST['cycle_period'] ) ? sanitize_text_field( $_REQUEST['cycle_period'] ) : 'Month';
 
 			$levels_array['paid'] = array(
-				'id'                => -1,
+				'id'                => 0,
 				'name'              => $paid_level_name,
 				'description'       => '',
 				'confirmation'      => '',
