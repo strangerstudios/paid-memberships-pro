@@ -12,8 +12,7 @@ function pmpro_notifications() {
 		if ( empty( $notification ) ) {
 			exit;
 		}
-		//Check if is an install scenario. If yes, pause notifications.
-		pause_on_install();
+		
 		$paused = pmpro_notifications_pause();		
 		if ( $paused && empty( $_REQUEST['pmpro_notification'] ) && $notification->priority !== 1 ) {
 			exit;
@@ -496,7 +495,11 @@ function pmpro_notifications_pause() {
 	
 	$archived_notifications = get_user_meta( $current_user->ID, 'pmpro_archived_notifications', true );
 	if ( ! is_array( $archived_notifications ) ) {
-		return false;
+		// If the user has not yet archived a notiification, assume that this is a new PMPro install or that they are a new admin.
+		// Either way, we want to delay their first notification.
+		// We can do this by creating a "delay" archived notification with an archive day 7 days in the future.
+		update_user_meta( $current_user->ID, 'pmpro_archived_notifications', array( 'initial_notification_delay' => date_i18n( 'c', strtotime( '+7 days' ) ) ) );
+		return true;
 	}			
 	$archived_notifications = array_values( $archived_notifications );
 	$num = count($archived_notifications);
@@ -520,7 +523,7 @@ function pmpro_notifications_pause() {
 	
 	// If we've shown 3 this week already. Pause.
 	$third_last_notification_date = $archived_notifications[$num - 3];
-	if ( strtotime( $last_notification_date, $now ) > ( $now - 3600*24*7 ) ) {		
+	if ( strtotime( $third_last_notification_date, $now ) > ( $now - 3600*24*7 ) ) {		
 		return true;
 	}
 	
@@ -561,26 +564,3 @@ function pmpro_footer_link() {
 	<?php }
 }
 add_action( 'wp_footer', 'pmpro_footer_link' );
-
-/**
- * Check if current user has any pmpro_archived_notifications. 
- * If not, we assume is an installation scenario and then we add dummy pause notifications. 
- * 
- * @return void
- * @since TBD
- */
-function pause_on_install() {
-	global $current_user;
-	
-	$archived_notifications = get_user_meta( $current_user->ID, 'pmpro_archived_notifications', true );
-	// If no archived notifications, we assume is an installation scenario and then we add dummy notifications.
-	if (! $archived_notifications ) {
-		$archived_notifications = array();
-		// Add 3 dummy notifications.
-		for ( $i = 0; $i < 3 ; $i++ ) {
-			$archived_notifications[$i] = date_i18n( 'c' );
-		}
-		update_user_meta($current_user->ID, 'pmpro_archived_notifications', $archived_notifications);
-	}
-	return;
-}
