@@ -900,3 +900,8 @@ jQuery(document).ready(function () {
         }
     });
 });
+
+jQuery(document).ready(function ($) {
+    //If we added the successfully connected modal then show it.
+    $('.pmpro-stripe-success-connected-modal').show();
+});

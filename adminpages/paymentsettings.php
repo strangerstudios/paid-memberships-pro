@@ -314,39 +314,9 @@
 			<input name="savesettings" type="submit" class="button button-primary" value="<?php esc_attr_e('Save Settings', 'paid-memberships-pro' );?>" />
 		</p>
 	</form>
-<?php 
-// if request's coming from stripe connect, show a popup with instructions
-if( $_GET['pmpro_stripe_publishable_key'] ) { ?>
-	<div id="pmpro-popup" class="pmpro-popup-overlay">
-		<span class="pmpro-popup-helper"></span>
-		<div class="pmpro-popup-wrap pmpro-popup-stripe-confirmation">
-			<div id="pmpro-popup-inner">
-			<button class="pmproPopupCloseButton" title="<?php esc_attr_e( 'Close Popup', 'paid-memberships-pro' ); ?>"><span class="dashicons dashicons-no"></span></button>
-				<h1> <?php esc_html_e( 'You are connected! Now this is important: Please configure your Stripe webhook to finalize your setup.', 'paid-memberships-pro' ); ?></h1>
-				<p> 
-					<?php esc_html_e( 'In order for Stripe to function properly, you must add a new Stripe webhook endpoint. To do this please visit ', 'paid-memberships-pro' ); ?> 
-					<a href="https://dashboard.stripe.com/webhooks">
-						<?php esc_html_e( 'Webhooks section of your Stripe Dashboard ', 'paid-memberships-pro' ); ?>
-					</a> 
-					<?php esc_html_e( 'and click the  ', 'paid-memberships-pro' ); ?>
-					<b><?php esc_html_e( 'Add endpoint ', 'paid-memberships-pro' ); ?></b>
-					<?php esc_html_e( 'button and paste the following URL: ', 'paid-memberships-pro' ); ?>
-					<b> <?php echo esc_url( admin_url( 'admin-ajax.php' ) . '?action=stripe_webhook'  ); ?> </b>
-				</p>
-				<p> 
-					<?php echo esc_html_e( 'Stripe webhooks are required so Paid Memberships Pro can communicate properly with the payment gateway to confirm paymnt completion, renewals and more. ', 'paid-memberships-pro' ); ?>
-				</p>
-			</div>
-		</div>
-	</div>
-		<script>
-		jQuery(document).ready(function($) {
-			$('.pmpro-popup-overlay').show();
-		});
-		</script>
+
 
 <?php
 // endif for stripe connect popup
-    }
 	require_once(dirname(__FILE__) . "/admin_footer.php");
 ?>

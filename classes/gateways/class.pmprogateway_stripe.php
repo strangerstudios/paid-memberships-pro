@@ -194,6 +194,7 @@ class PMProGateway_stripe extends PMProGateway {
 		add_action( 'admin_init', array( 'PMProGateway_stripe', 'stripe_connect_save_options' ) );
 		add_action( 'admin_notices', array( 'PMProGateway_stripe', 'stripe_connect_show_errors' ) );
 		add_action( 'admin_notices', array( 'PMProGateway_stripe', 'stripe_connect_deauthorize' ) );
+		add_action( 'wp_loaded', array( 'PMProGateway_stripe', 'stripe_connect_show_modal_on_success' ) );
 
 		add_filter( 'pmpro_process_refund_stripe', array( 'PMProGateway_stripe', 'process_refund' ), 10, 2 );
 	}
@@ -1497,6 +1498,39 @@ class PMProGateway_stripe extends PMProGateway {
 	}
 
 	/**
+	 * Show a modal to the user after connecting to Stripe.
+	 *
+	 * @since TBD
+	 */
+	public static function stripe_connect_show_modal_on_success () {
+		if( $_GET['pmpro_stripe_publishable_key'] ) { ?>
+			<div id="pmpro-popup" class="pmpro-popup-overlay pmpro-stripe-success-connected-modal" style="display:none">
+				<span class="pmpro-popup-helper"></span>
+				<div class="pmpro-popup-wrap pmpro-popup-stripe-confirmation">
+					<div id="pmpro-popup-inner">
+					<button class="pmproPopupCloseButton" title="<?php esc_attr_e( 'Close Popup', 'paid-memberships-pro' ); ?>"><span class="dashicons dashicons-no"></span></button>
+						<h1> <?php esc_html_e( 'You are connected! Now this is important: Please configure your Stripe webhook to finalize your setup.', 'paid-memberships-pro' ); ?></h1>
+						<p>
+							<?php esc_html_e( 'In order for Stripe to function properly, you must add a new Stripe webhook endpoint. To do this please visit ', 'paid-memberships-pro' ); ?> 
+							<a href="https://dashboard.stripe.com/webhooks">
+								<?php esc_html_e( 'Webhooks section of your Stripe Dashboard ', 'paid-memberships-pro' ); ?>
+							</a>
+							<?php esc_html_e( 'and click the  ', 'paid-memberships-pro' ); ?>
+							<b><?php esc_html_e( 'Add endpoint ', 'paid-memberships-pro' ); ?></b>
+							<?php esc_html_e( 'button and paste the following URL: ', 'paid-memberships-pro' ); ?>
+							<b> <?php echo esc_url( admin_url( 'admin-ajax.php' ) . '?action=stripe_webhook'  ); ?> </b>
+						</p>
+						<p>
+							<?php echo esc_html_e( 'Stripe webhooks are required so Paid Memberships Pro can communicate properly with the payment gateway to confirm paymnt completion, renewals and more. ', 'paid-memberships-pro' ); ?>
+						</p>
+					</div>
+				</div>
+			</div>
+		<?php
+		}
+	}
+
+	/**
 	 * Determine whether the site is using legacy Stripe keys.
 	 *
 	 * @return bool Whether the site is using legacy Stripe keys.
@@ -2382,7 +2416,6 @@ class PMProGateway_stripe extends PMProGateway {
 			return '';
 		}
 	}
-
 
 	/****************************************
 	 *********** PRIVATE METHODS ************
