@@ -327,6 +327,7 @@ color: #000;
 		border-radius: 0;
 		border-top: #658B24 4px solid;
 		box-shadow: none;
+		overflow: hidden;
 	}
 
 }
@@ -335,6 +336,7 @@ color: #000;
 	font-size: 1.5em;
 	font-weight: bold;
 	text-align: left;
+	line-height: normal;
 }
 .pmpro-popup-wrap.pmpro-popup-stripe-confirmation button.pmproPopupCloseButton {
 	border:none;
