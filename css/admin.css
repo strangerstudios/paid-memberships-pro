@@ -307,12 +307,12 @@
 .pmpro-popup-wrap a.pmproPopupCloseButton, 
 .pmpro-popup-wrap button.pmproPopupCloseButton {
 	color: #666;
-	display: inline-block;
-	margin: .9rem 0 0 1.45rem;
 	position: absolute;
-	right: 25px;
-	text-decoration: none;
+	right: 10px;
 	top: 10px;
+	padding:0;
+	text-decoration: none;
+
 }
 
 .pmpro-popup-wrap a.pmproPopupCloseButton:hover, 
@@ -345,10 +345,33 @@ color: #000;
 .pmpro-popup-wrap.pmpro-popup-stripe-confirmation p {
 	text-align: left;
 }
-.pmpro-popup-wrap.pmpro-popup-stripe-confirmation p a, 
-.pmpro-popup-wrap.pmpro-popup-stripe-confirmation p b {
+.pmpro-popup-wrap.pmpro-popup-stripe-confirmation p a {
 	font-weight:bold;
 }
+
+
+.pmpro-popup-wrap.pmpro-popup-stripe-confirmation ol,
+.pmpro-popup-wrap.pmpro-popup-stripe-confirmation ul {
+	display: flex;
+	flex-direction: column;
+	justify-content: flex-start;
+	align-items: flex-start;
+	gap: 6px;
+}
+
+.pmpro-popup-wrap.pmpro-popup-stripe-confirmation ul {
+    list-style: disc;
+    padding-left: 40px;
+	padding-top: 6px;
+}
+
+.pmpro-popup-wrap.pmpro-popup-stripe-confirmation ol li,
+.pmpro-popup-wrap.pmpro-popup-stripe-confirmation ul li  {
+text-align: left;
+margin-bottom: 0;
+}
+
+
 
 
 /* Consent Log */
