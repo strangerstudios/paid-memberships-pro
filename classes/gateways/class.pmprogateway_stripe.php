@@ -1845,6 +1845,8 @@ class PMProGateway_stripe extends PMProGateway {
 			$checkout_session_params['invoice_creation']['enabled'] = true;
 		}
 
+		$checkout_session_params = apply_filters( 'pmpro_stripe_checkout_checkout_session_parameters', $checkout_session_params, $morder, $customer );
+		
 		try {
 			$checkout_session = Stripe_Checkout_Session::create( $checkout_session_params );
 		} catch ( Throwable $th ) {
