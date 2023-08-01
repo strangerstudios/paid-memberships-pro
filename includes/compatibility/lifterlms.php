@@ -434,3 +434,88 @@ function pmpro_lifter_maybe_deprecate_pmpro_courses( $deprecated_addons ) {
 	return $deprecated_addons;
 }
 add_filter( 'pmpro_deprecated_add_ons_list', 'pmpro_lifter_maybe_deprecate_pmpro_courses' );
+
+/**
+ * Filter the LifterLMS Admin Dashboard widgets.
+ */
+function pmpro_lifter_dashboard_widget_data( $data ) {
+	// Bail if streamline is not enabled.
+	if ( ! get_option( 'pmpro_lifter_streamline' ) ) {
+		return $data;
+	}
+
+	// Update the Net Sales widget.
+	if ( isset( $data['sold'] ) ) {
+		$data['sold']['link'] = admin_url( 'admin.php?page=pmpro-reports&report=sales' );
+		$keys = array_keys( $data );
+    	$keys[ array_search( 'sold', $keys ) ] = 'sold_pmpro';
+    	$data = array_combine( $keys, $data );	
+	}	
+
+	return $data;
+}
+add_filter( 'llms_dashboard_widget_data', 'pmpro_lifter_dashboard_widget_data' );
+
+/**
+ * Filter some URLs on the LifterLMS dashboard.
+ */
+function pmpro_lifter_dashboard_admin_url( $url ) {
+	// Bail if streamline is not enabled.
+	if ( ! get_option( 'pmpro_lifter_streamline' ) ) {
+		return $url;
+	}
+
+	// Bail if not on the LifterLMS dashboard.
+	if ( ! isset( $_REQUEST['page'] ) || $_REQUEST['page'] !== 'llms-dashboard' ) {
+		return $url;
+	}
+	
+	// Only update the following URLs.
+	$swaps = array(
+		'post-new.php?post_type=llms_membership' => 'admin.php?page=pmpro-membershiplevels',
+		'edit.php?post_type=llms_order' => 'admin.php?page=pmpro-orders',
+		'admin.php?page=llms-reporting&tab=sales' => 'admin.php?page=pmpro-reports&report=sales'
+	);	
+	foreach ( $swaps as $old => $new ) {
+		if ( strpos( $url, $old ) !== false ) {
+			$url = admin_url( $new );
+			break;
+		}
+	}
+	
+	return $url;
+}
+add_filter( 'admin_url', 'pmpro_lifter_dashboard_admin_url' );
+
+/**
+ * Swap the Create Access Plan checklist item.
+ */
+function pmpro_lifter_dashboard_checklist( $checklist ) {
+	global $wpdb;
+
+	// Bail	if streamline is not enabled.
+	if ( ! get_option( 'pmpro_lifter_streamline' ) ) {
+		return $checklist;
+	}
+
+	// Bail if not on the LifterLMS dashboard.
+	if ( ! isset( $_REQUEST['page'] ) || $_REQUEST['page'] !== 'llms-dashboard' ) {
+		return $checklist;
+	}
+
+	// Swap the Create Access Plan checklist item.
+	$sqlQuery = "SELECT COUNT(*) FROM $wpdb->pmpro_memberships_pages mp LEFT JOIN $wpdb->posts p ON mp.page_id = p.ID WHERE p.post_type = 'course' AND p.post_status = 'publish' GROUP BY mp.page_id LIMIT 1";
+	$ap_check = $wpdb->get_var( $sqlQuery );
+	if ( $ap_check ) {
+		$checklist['access_plan'] = '<i class="fa fa-check"></i> ' . esc_html( 'Restrict a Course', 'paid-memberships-pro' );
+	} else {
+		$checklist['access_plan'] = '<i class="fa fa-times"></i> <a href="https://www.paidmembershipspro.com/add-ons/lifterlms/" target="_blank" rel="noopener">' .  esc_html( 'Restrict a Course', 'paid-memberships-pro' ) . '</a>';
+	}	
+
+	return $checklist;
+}
+add_filter( 'llms_dashboard_checklist', 'pmpro_lifter_dashboard_checklist' );
+
+/**
+ * TODO: Add AJAX callback to get PMPro sales data.
+ */
