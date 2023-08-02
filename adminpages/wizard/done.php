@@ -7,11 +7,20 @@
 	// Get Add On recommendations based on site type.
 	$addon_cats = pmpro_get_addon_categories();
 	if ( ! empty( $addon_cats[$site_type] ) && $addon_cats[$site_type] ) {
-		$addon_list = $addon_cats[$site_type];
-		$addon_list = array_slice( $addon_list, 0, 4 );
+		$addon_slug_list = $addon_cats[$site_type];
+		$addon_slug_list = array_slice( $addon_slug_list, 0, 4 );
 	} else {
-		$addon_list = $addon_cats['popular'];
-		$addon_list = array_slice( $addon_list, 0, 4 );
+		$addon_slug_list = $addon_cats['popular'];
+		$addon_slug_list = array_slice( $addon_slug_list, 0, 4 );
+	}
+
+	$addon_list = array();
+	foreach ( $addon_slug_list as $addon_slug ) {
+		$addon = pmpro_getAddonBySlug( $addon_slug );
+		if ( ! is_array( $addon ) ) {
+			continue;
+		}
+		$addon_list[] = $addon;
 	}
 
 	// Did they choose collect payments? If so, show a nudge to complete the gateway setup.
@@ -39,53 +48,57 @@
 			}
 			?>
 		</p>
-		<p>
-			<?php
-			esc_html_e( 'Here are some recommended Add Ons for your business.', 'paid-memberships-pro' );
-			?>
-		</p>
-		<div class="pmpro-wizard__addons">
 		<?php
-			// Get the Add On recommendations.
-			foreach( $addon_list as $addon_slug ) {
-				$addon = pmpro_getAddonBySlug( $addon_slug );
-
-				// Get the shortened name otherwise set to name.
-				if ( ! empty( $addon['ShortName'] ) ) {
-					$title = $addon['ShortName'];
-				} else {
-					$title = str_replace( 'Paid Memberships Pro - ', '', $addon['Title'] );
-				}
-				$link = $addon['PluginURI'];
-				$icon = pmpro_get_addon_icon( $addon_slug );
-				if ( $addon['License'] == 'free' ) {
-					$license_label = __( 'Free Add On', 'paid-memberships-pro' );
-				} elseif( $addon['License'] == 'standard' ) {
-					$license_label = __( 'Standard Add On', 'paid-memberships-pro' );
-				} elseif( $addon['License'] == 'plus' ) {
-					$license_label = __( 'Plus Add On', 'paid-memberships-pro' );
-				} elseif( $addon['License'] == 'builder' ) {
-					$license_label = __( 'Builder Add On', 'paid-memberships-pro' );
-				} elseif( $addon['License'] == 'wordpress.org' ) {
-					$license_label = __( 'Free Plugin', 'paid-memberships-pro' );
-				} else {
-					$license_label = false;
-				}
-				?>
-				<div class="pmpro-wizard__addon">
-					<a href="<?php echo esc_url( $link ); ?>" target='_blank' rel='nofollow'>
-						<img src="<?php echo esc_url( $icon ); ?>" />
-						<div>
-							<span><?php esc_html_e( $title ); ?></span>
-							<small><?php esc_html_e( $license_label ); ?></small>
-						</div>
-					</a>
-				</div>
+		if ( ! empty( $addon_list) ) {
+			?>
+			<p>
 				<?php
-			}
+				esc_html_e( 'Here are some recommended Add Ons for your business.', 'paid-memberships-pro' );
+				?>
+			</p>
+			<div class="pmpro-wizard__addons">
+			<?php
+				// Get the Add On recommendations.
+				foreach( $addon_list as $addon ) {
+					// Get the shortened name otherwise set to name.
+					if ( ! empty( $addon['ShortName'] ) ) {
+						$title = $addon['ShortName'];
+					} else {
+						$title = str_replace( 'Paid Memberships Pro - ', '', $addon['Title'] );
+					}
+					$link = $addon['PluginURI'];
+					$icon = pmpro_get_addon_icon( $addon['Slug'] );
+					if ( $addon['License'] == 'free' ) {
+						$license_label = __( 'Free Add On', 'paid-memberships-pro' );
+					} elseif( $addon['License'] == 'standard' ) {
+						$license_label = __( 'Standard Add On', 'paid-memberships-pro' );
+					} elseif( $addon['License'] == 'plus' ) {
+						$license_label = __( 'Plus Add On', 'paid-memberships-pro' );
+					} elseif( $addon['License'] == 'builder' ) {
+						$license_label = __( 'Builder Add On', 'paid-memberships-pro' );
+					} elseif( $addon['License'] == 'wordpress.org' ) {
+						$license_label = __( 'Free Plugin', 'paid-memberships-pro' );
+					} else {
+						$license_label = false;
+					}
+					?>
+					<div class="pmpro-wizard__addon">
+						<a href="<?php echo esc_url( $link ); ?>" target='_blank' rel='nofollow'>
+							<img src="<?php echo esc_url( $icon ); ?>" />
+							<div>
+								<span><?php esc_html_e( $title ); ?></span>
+								<small><?php esc_html_e( $license_label ); ?></small>
+							</div>
+						</a>
+					</div>
+					<?php
+				}
+			?>
+			</div> <!-- end .pmpro-wizard__addons -->
+			<p class="pmpro-wizard__textbreak"><?php esc_html_e( 'OR', 'paid-memberships-pro' ); ?></p>
+			<?php
+		}
 		?>
-		</div> <!-- end .pmpro-wizard__addons -->
-		<p class="pmpro-wizard__textbreak"><?php esc_html_e( 'OR', 'paid-memberships-pro' ); ?></p>
 		<div class="pmpro-wizard__col">
 			<p><span class="pmpro-wizard__subtitle"><?php esc_html_e( 'More functionality', 'paid-memberships-pro' ); ?></span><br>
 			<?php esc_html_e( 'Add more features to your membership site.', 'paid-memberships-pro' ); ?></p>
