@@ -165,6 +165,10 @@
 	font-size: 18px;
 }
 
+.pmpro_admin hr.wp-header-end {
+	margin-top: 0;
+}
+
 /* Footer */
 #footer-left a {
 	font-weight: bold;
