@@ -1,7 +1,7 @@
 <?php
 
 // only admins can get this
-if ( ! function_exists( 'current_user_can' ) || ( ! current_user_can( 'manage_options' ) && ! current_user_can( 'pmpro_logincsv' ) ) ) {
+if ( ! function_exists( 'current_user_can' ) || ( ! current_user_can( 'manage_options' ) && ! current_user_can( 'pmpro_reportscsv' ) ) ) {
 	die( __( 'You do not have permissions to perform this action.', 'paid-memberships-pro' ) );
 }
 
