@@ -10,17 +10,14 @@ function pmpro_delete_user( $user_id ) {
 		return false;
 	}
 
-	// Delete is happening from the backend by an admin.
-	if ( ! empty( $_REQUEST['pmpro_delete_user_from_admin'] ) ) {
-		// Was the checkbox to delete active subscriptions checked?
-		if ( isset( $_REQUEST['pmpro_delete_active_subscriptions'] ) && 
+	//Disable any active subscriptions that are associated with the account
+	if ( isset( $_REQUEST['pmpro_delete_active_subscriptions'] ) && 
 		$_REQUEST['pmpro_delete_active_subscriptions'] == '1' ) {
-			pmpro_changeMembershipLevel( 0, $user_id );
+		if ( pmpro_changeMembershipLevel( 0, $user_id ) ) {
+			// okay
+		} else {
+			// okay, guessing they didn't have a level
 		}
-
-	} else {
-		// Change the member's level before deleting, assuming their account is being deleted elsewhere.
-		pmpro_changeMembershipLevel( 0, $user_id );
 	}
 
 	//Remove all membership history for this user from the pmpro_memberships_users table
@@ -79,7 +76,6 @@ function pmpro_delete_user_form_notice( $current_user, $userids ) {
 			?>
 		</div>
 		<p><input type='checkbox' name='pmpro_delete_active_subscriptions' id='pmpro_delete_active_subscriptions' value='1' /><label for='pmpro_delete_active_subscriptions'><?php esc_html_e('Cancel any related membership levels first. This may trigger cancellations at the gateway or other third party services.', 'paid-memberships-pro' ); ?></label></p>
-		<input type='hidden' name='pmpro_delete_user_from_admin' value='1' />
 		<?php
 	}
 		
