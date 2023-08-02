@@ -517,7 +517,7 @@
 								'siteemail' => pmpro_getOption('from_email'),
 								'membership_id' => $membership_level->id,
 								'membership_level_name' => $membership_level->name,
-								'membership_level_confirmation_message' => apply_filters( 'pmpro_confirmation_message', $confirmation_message, $invoice ),
+								'membership_level_confirmation_message' => wpautop( $confirmation_message ),
 								'membership_cost' => pmpro_getLevelCost($membership_level),								
 								'login_link' => pmpro_login_url(),
 								'login_url' => pmpro_login_url(),
