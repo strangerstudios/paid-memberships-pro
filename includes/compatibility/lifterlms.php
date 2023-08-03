@@ -517,5 +517,40 @@ function pmpro_lifter_dashboard_checklist( $checklist ) {
 add_filter( 'llms_dashboard_checklist', 'pmpro_lifter_dashboard_checklist' );
 
 /**
- * TODO: Add AJAX callback to get PMPro sales data.
+ * AJAX callback to get PMPro sales data.
  */
+function pmpro_lifter_ajax_llms_widget_sold_pmpro() {
+	// Make sure the user has the pmpro_reports capability.
+	if ( ! current_user_can( 'pmpro_reports' ) ) {
+		wp_send_json_error( __( 'You do not have permission to perform this action.', 'paid-memberships-pro' ) );
+	}
+
+	// Get the start date.
+	$startdate = sanitize_text_field( $_REQUEST['dates']['start'] );
+	// Note: We ignore the enddate. pmpro_getRevenue assumes the enddate is today.
+
+	// Get total PMPro sales in this period.
+	$sales = llms_price_raw( floatval( pmpro_getRevenue( $startdate ) ) );
+
+	// Format how LifterLMS expects it.
+	$data = array(
+		'chart_data' => array(
+			'type'   => 'amount', // Type of field.			
+			'header' => array(
+				'id'    => 'sold_pmpro',
+				'label' => __( 'Net Sales', 'paid-memberships-pro' ),
+				'type'  => 'number',
+			)
+		),
+		'charts'     => true,
+		'message'    => 'success',
+		'response'   => $sales,	// The response.
+		'results'    => array(),
+		'success'    => true
+	);
+
+	header( 'Content-Type: application/json' );
+	echo wp_json_encode( $data );
+	exit;
+}
+add_filter( 'wp_ajax_llms_widget_sold_pmpro', 'pmpro_lifter_ajax_llms_widget_sold_pmpro' );
