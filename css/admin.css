@@ -317,62 +317,57 @@
 
 .pmpro-popup-wrap a.pmproPopupCloseButton:hover, 
 .pmpro-popup-wrap button.pmproPopupCloseButton:hover {
-color: #000;
+	color: #000;
 }
 
 /* Stripe connected confirmation modal  */
 @media only screen and (min-width: 1200px) {
 	.pmpro-popup-wrap.pmpro-popup-stripe-confirmation {
-		width: 25%;
-		border-radius: 0;
-		border-top: #658B24 4px solid;
-		box-shadow: none;
+		max-width: 720px;
 		overflow: hidden;
+		width: 55%;
 	}
 
 }
 
-.pmpro-popup-wrap.pmpro-popup-stripe-confirmation h1 {
-	font-size: 1.5em;
-	font-weight: bold;
+.pmpro-popup-wrap.pmpro-popup-stripe-confirmation h2 {
 	text-align: left;
 	line-height: normal;
+	margin-top: 0;
 }
+
 .pmpro-popup-wrap.pmpro-popup-stripe-confirmation button.pmproPopupCloseButton {
-	border:none;
-	background:transparent;
+	border: none;
+	background: transparent;
 }
+
 .pmpro-popup-wrap.pmpro-popup-stripe-confirmation p {
+	font-size: 14px;
+	line-height: 1.5;
 	text-align: left;
 }
-.pmpro-popup-wrap.pmpro-popup-stripe-confirmation p a {
-	font-weight:bold;
+
+.pmpro-popup-wrap.pmpro-popup-stripe-confirmation p:last-of-type {
+	margin-bottom: 0;
 }
 
-
-.pmpro-popup-wrap.pmpro-popup-stripe-confirmation ol,
-.pmpro-popup-wrap.pmpro-popup-stripe-confirmation ul {
-	display: flex;
-	flex-direction: column;
-	justify-content: flex-start;
-	align-items: flex-start;
-	gap: 6px;
+.pmpro-popup-wrap.pmpro-popup-stripe-confirmation code {
+	display: block;
+	margin: .5em 0;
 }
 
 .pmpro-popup-wrap.pmpro-popup-stripe-confirmation ul {
-    list-style: disc;
-    padding-left: 40px;
-	padding-top: 6px;
+	list-style: disc;
+	margin: .5em 0 0 1em;
 }
 
 .pmpro-popup-wrap.pmpro-popup-stripe-confirmation ol li,
 .pmpro-popup-wrap.pmpro-popup-stripe-confirmation ul li  {
-text-align: left;
-margin-bottom: 0;
+	font-size: 14px;
+	line-height: 1.5;
+	margin-bottom: .5em;
+	text-align: left;
 }
-
-
-
 
 /* Consent Log */
 .pmpro_consent_log.pmpro_scrollable {
