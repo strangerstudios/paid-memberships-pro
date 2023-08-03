@@ -4399,14 +4399,3 @@ function pmpro_sanitize_period( $period ) {
 
 	return $sanitized_period;
 }
-
-/**
- * Filter to automatically cancel subscriptions in certain cases. Primarily used for account deletion.
- * 
- * @since TBD
- * @param string $action The action that is triggering the function. Helps to identify where the call is coming from.
- * @return boolean $cancel_subscription Whether or not to cancel the subscription.
- */
-function pmpro_maybe_cancel_subscription( $action = null ) {
-	return apply_filters( 'pmpro_maybe_cancel_subscription', false, $action );
-}
