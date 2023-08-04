@@ -441,7 +441,7 @@ if ( function_exists( 'pmpro_displayAds' ) && pmpro_displayAds() ) {
 		                                    name="<?php echo esc_attr( $field['field_name'] ); ?>">
 		                                <?php
 		                                	//For associative arrays, we use the array keys as values. For numerically indexed arrays, we use the array values.
-		                                	$is_associative = (bool)count(array_filter(array_keys($field['options']), 'is_string'));
+		                                	$is_associative = !empty($field['is_associative']) || !(bool)count(array_filter(array_keys($field['options']), 'is_string'));
 		                                	foreach ($field['options'] as $key => $option) {
 		                                    	if(!$is_associative) $key = $option;
 		                                    	?>

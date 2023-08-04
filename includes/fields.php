@@ -1047,40 +1047,71 @@ add_action( 'pmpro_personal_options_update', 'pmpro_save_user_fields_in_profile'
  * Add user fields to confirmation email.
  */
 function pmpro_add_user_fields_to_email( $email ) {
-	global $wpdb;
+	global $wpdb, $pmpro_user_fields;
 
 	//only update admin confirmation emails
-	if(!empty($email) && strpos($email->template, "checkout") !== false && strpos($email->template, "admin") !== false)
-	{
+	if ( ! empty( $email ) && strpos( $email->template, "checkout" ) !== false && strpos( $email->template, "admin" ) !== false ) {
 		//get the user_id from the email
-		$user_id = $wpdb->get_var("SELECT ID FROM $wpdb->users WHERE user_email = '" . $email->data['user_email'] . "' LIMIT 1");
+		$user_id = $wpdb->get_var( "SELECT ID FROM $wpdb->users WHERE user_email = '" . esc_sql( $email->data['user_email'] ) . "' LIMIT 1" );
 
-		if(!empty($user_id))
-		{
-			//get meta fields
-			$fields = pmpro_get_user_fields_for_profile($user_id);
+		if ( ! empty( $user_id ) ) {
+			// Get field group settings.
+			$fields_groups = pmpro_get_user_fields_settings();
+
+			// Remove any field groups that don't show on checkout.
+			foreach ( $fields_groups as $key => $group ) {
+				if ( $group->checkout !== 'yes' ) {
+					unset( $fields_groups[ $key ] );
+				}
+			}
+
+			// Remove any field groups that are not for the membership level that was purchased.
+			if ( ! empty( $email->data['membership_id'] ) ) {
+				$level_id = $email->data['membership_id'];
+				foreach ( $fields_groups as $key => $group ) {
+					if ( ! empty( $group->levels ) && ! in_array( $level_id, $group->levels ) ) {
+						unset( $fields_groups[ $key ] );
+					}
+				}
+			}
 
 			//add to bottom of email
-			if(!empty($fields))
-			{
+			if ( ! empty( $fields_groups ) ) {
 				$email->body .= "<p>" . __( 'Extra Fields:', 'paid-memberships-pro' ) . "<br />";
-				foreach($fields as $field)
-				{
-                    if( ! pmpro_is_field( $field ) ) {
-                        continue;
-                    }
+				//cycle through groups
+				foreach( $fields_groups as $group ) {
 
-					$email->body .= "- " . $field->label . ": ";
+					// Get the groups name so we can grab it from the associative array.
+					$group_name = $group->name;
 
-					$value = get_user_meta($user_id, $field->meta_key, true);
-					if($field->type == "file" && is_array($value) && !empty($value['fullurl']))
-						$email->body .= $value['fullurl'];
-					elseif(is_array($value))
-						$email->body .= implode(", ", $value);
-					else
-						$email->body .= $value;
+					// Skip if there are no fields in this group.
+					if ( empty( $pmpro_user_fields[$group_name] ) ) {
+						continue;
+					}
+					
+					//cycle through groups and fields associated with that group.
+					foreach( $pmpro_user_fields[$group_name] as $field ) {
 
-					$email->body .= "<br />";
+						if ( ! pmpro_is_field( $field ) ) {
+							continue;
+						}
+
+						$email->body .= "- " . esc_html( $field->label ) . ": ";
+						$value = get_user_meta( $user_id, $field->name, true);
+
+						// Get the label value for field types that have labels.
+						$value = pmpro_get_label_for_user_field_value( $field->name, $value );
+
+						if ( $field->type == "file" && is_array( $value ) && ! empty( $value['fullurl'] ) ) {
+							$email->body .= pmpro_sanitize( $value['fullurl'], $field );
+						} elseif( is_array( $value  ) ) {
+							$email->body .= implode(", ", pmpro_sanitize( $value, $field ) );
+						} else {
+							$email->body .= pmpro_sanitize( $value, $field );
+						}
+
+						$email->body .= "<br />";
+					}
 				}
 				$email->body .= "</p>";
 			}
@@ -1089,7 +1120,7 @@ function pmpro_add_user_fields_to_email( $email ) {
 
 	return $email;
 }
-add_filter( 'pmpro_email_filter', 'pmpro_add_user_fields_to_email', 10, 2);
+add_filter( 'pmpro_email_filter', 'pmpro_add_user_fields_to_email', 10, 2 );
 
 /**
  * Add CSV fields to the Member's List CSV Export.
@@ -1636,11 +1667,6 @@ function pmpro_get_label_for_user_field_value( $field_name, $field_value ) {
             
             // Make sure that $options is an array.
             if ( ! is_array( $user_field->options ) ) {
-                continue;
-            }
-            
-            // Check if this is a user field with an associative array of values.
-            if ( ! array_keys( $user_field->options ) !== range( 0, count( $user_field->options ) - 1 ) ) {
                 continue;
             }
             

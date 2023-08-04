@@ -105,6 +105,10 @@ class PMProGateway_stripe extends PMProGateway {
 			'pmpro_payment_option_fields'
 		), 10, 2 );
 
+		// Show webhook setup banner on payment settings page.
+		add_action( 'update_option_pmpro_stripe_payment_flow', array( 'PMProGateway_stripe', 'update_option_pmpro_stripe_payment_flow' ), 10, 1 );
+		add_action( 'pmpro_payment_option_fields', array( 'PMProGateway_stripe', 'show_set_up_webhooks_popup' ) );
+
 		//add some fields to edit user page (Updates)
 		add_action( 'pmpro_after_membership_level_profile_fields', array(
 			'PMProGateway_stripe',
@@ -1423,6 +1427,10 @@ class PMProGateway_stripe extends PMProGateway {
 			unset( $_GET['pmpro_stripe_connected_environment'] );
 			unset( $_GET['pmpro_stripe_user_id'] );
 			unset( $_GET['pmpro_stripe_access_token'] );
+			unset( $_GET['pmpro_stripe_publishable_key'] );
+
+			// Set a transient to show a banner to set up webhooks on the next page load.
+			set_transient( 'pmpro_stripe_connect_show_webhook_set_up_banner', true, 60 );
 
 			wp_redirect( admin_url( sprintf( 'admin.php?%s', http_build_query( $_GET ) ) ) );
 			exit;
@@ -1494,6 +1502,101 @@ class PMProGateway_stripe extends PMProGateway {
 			delete_option( 'pmpro_sandbox_stripe_connect_secretkey' );
 			delete_option( 'pmpro_sandbox_stripe_connect_publishablekey' );
 		}
+	}
+
+	/**
+	 * If the checkout flow has changed to Stripe Checkout, remember to show a banner to set up webhooks.
+	 *
+	 * @since TBD
+	 *
+	 * @param string $old_value The old value of the option.
+	 */
+	public static function update_option_pmpro_stripe_payment_flow( $old_value ) {
+		global $pmpro_stripe_old_payment_flow;
+		$pmpro_stripe_old_payment_flow = empty( $old_value ) ? 'onsite' : $old_value;
+	}
+
+	/**
+	 * Show a modal to the user after connecting to Stripe or switching to Stripe Checkout.
+	 *
+	 * @since TBD
+	 */
+	public static function show_set_up_webhooks_popup() {
+		global $pmpro_stripe_old_payment_flow;
+
+		// Figure out if we need to show a popup.
+		$message = null;
+
+		// Check if we just connected to Stripe.
+		if ( get_transient( 'pmpro_stripe_connect_show_webhook_set_up_banner' ) ) {
+			$message = true;
+			delete_transient( 'pmpro_stripe_connect_show_webhook_set_up_banner' );
+		}
+
+		// Check if we just switched to Stripe Checkout.
+		if ( isset( $pmpro_stripe_old_payment_flow ) && 'onsite' === $pmpro_stripe_old_payment_flow && isset( $_REQUEST['stripe_payment_flow'] ) && 'checkout' === $_REQUEST['stripe_payment_flow'] ) {
+			$message = true;
+		}
+
+		// Bail if we don't need to show a popup.
+		if ( ! $message ) {
+			return;
+		}
+
+		// Show the popup.
+		?>
+		<div id="pmpro-popup" role="dialog" class="pmpro-popup-overlay pmpro-stripe-success-connected-modal" tabindex="-1" aria-modal="true" aria-labelledby="pmpro-popup-stripe-confirmation-label" aria-describedby="pmpro-popup-stripe-confirmation-description">
+			<span class="pmpro-popup-helper"></span>
+			<div class="pmpro-popup-wrap pmpro-popup-stripe-confirmation">
+				<div id="pmpro-popup-inner">
+				<button class="pmproPopupCloseButton" title="<?php esc_attr_e( 'Close Popup', 'paid-memberships-pro' ); ?>"><span class="dashicons dashicons-no"></span></button>
+					<h2 id="pmpro-popup-stripe-confirmation-label">
+						<?php esc_html_e( 'Next Step: Register a Stripe Webhook.', 'paid-memberships-pro' ); ?>
+					</h2>
+					<p id="pmpro-popup-stripe-confirmation-description">
+						<?php esc_html_e( 'In order for Stripe to function properly, there must be a Stripe Webhook configured for this website.', 'paid-memberships-pro' ); ?>
+						<strong><?php esc_html_e( 'Here\'s how to create a webhook endpoint in your Stripe dashboard', 'paid-memberships-pro' ); ?>:</strong>
+					</p>
+					<ol>
+						<li>
+							<?php
+							printf(
+								esc_html__( 'Open the %s page in your Stripe dashboard', 'paid-memberships-pro' ),
+								'<a href="https://dashboard.stripe.com/account/webhooks" target="_blank">' . esc_html__( 'Webhooks', 'paid-memberships-pro' ) . '</a>'
+							)
+							?>
+						</li>
+						<li><?php esc_html_e( 'Click "Add an endpoint"', 'paid-memberships-pro' ); ?></li>
+						<li>
+							<?php esc_html_e( 'Paste the following value into the "Endpoint URL" field:', 'paid-memberships-pro' ); ?>
+							<code><?php echo esc_url( admin_url( 'admin-ajax.php' ) . '?action=stripe_webhook'  ); ?> </code>
+						</li>
+						<li>
+							<?php esc_html_e( 'Select the following events to listen to:', 'paid-memberships-pro' ); ?>
+							<ul>
+								<?php
+								$events = self::webhook_events();
+								foreach ( $events as $event ) {
+									echo '<li>' . esc_html( $event ) . '</li>';
+								}
+								?>
+							</ul>
+						</li>
+						<li><?php esc_html_e( 'Click "Add endpoint" to save your webhook', 'paid-memberships-pro' ); ?></li>
+					</ol>
+					<p>
+						<?php echo esc_html_e( 'You must complete these steps for both the Sandbox/Testing and Live/Production modes if you intend to use Stripe for testing.', 'paid-memberships-pro' ); ?>
+					</p>
+				</div>
+			</div>
+		</div>
+		<script>
+			jQuery(document).ready(function ($) {
+				// If we added the successfully connected modal then show it.
+				$('.pmpro-stripe-success-connected-modal').show();
+			});
+		</script>
+		<?php
 	}
 
 	/**
@@ -1845,6 +1948,8 @@ class PMProGateway_stripe extends PMProGateway {
 			$checkout_session_params['invoice_creation']['enabled'] = true;
 		}
 
+		$checkout_session_params = apply_filters( 'pmpro_stripe_checkout_session_parameters', $checkout_session_params, $morder, $customer );
+		
 		try {
 			$checkout_session = Stripe_Checkout_Session::create( $checkout_session_params );
 		} catch ( Throwable $th ) {

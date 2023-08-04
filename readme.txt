@@ -4,7 +4,7 @@ Tags: memberships, members, subscriptions, ecommerce, user registration, member,
 Requires at least: 5.2
 Tested up to: 6.2.2
 Requires PHP: 5.6
-Stable tag: 2.11.2
+Stable tag: 2.12
 
 WordPress membership plugin: restrict content, accept member subscriptions with recurring payment. Includes user registration, login, & profile fields
 
@@ -156,6 +156,21 @@ Not sure? You can find out by doing a bit a research.
 9. Membership Account page, display all sections or show specific sections using shortcode attributes.
 
 == Changelog ==
+* FEATURE: Added integration with LifterLMS to streamline setting up that plugin when Paid Memberships Pro is active. #2533 (@ideadude, @MaximilianoRicoTabo)
+* ENHANCEMENT: A “no access” message can now be set when restricting Elementor widgets. #2525 (@andrewlimaza)
+* ENHANCEMENT: A “no access” message can now be set when restricting content with DIVI. #2526 (@andrewlimaza)
+* BUG FIX/ENHANCEMENT: Removed associative array check in the `pmpro_get_label_for_user_field_value()` function to ensure that user-friendly values are always returned. #2524 (@andrewlimaza)
+* BUG FIX/ENHANCEMENT: Updating the “Active Members Per Level” to ignore deleted users. #2482 (@JarrydLong)
+* BUG FIX/ENHANCEMENT: Added a new capability pmpro_loginscsv for exporting the login report data and a new capability pmpro_reportscsv as a fallback for exporting all report data. #2536 (@andrewlimaza)
+* BUG FIX: Fixed post restriction logic for posts that are in multiple categories. #2522 (@andrewlimaza)
+* BUG FIX: Fixed an issue where extra checkout fields weren’t being displayed correctly in admin checkout emails. #2537 (@andrewlimaza, @MaximilianoRicoTabo)
+* BUG FIX: Updated login functions to broken links from potentially being generated. #24722, #2244, #2475, #2476, #2477, #2478 (@JarrydLong)
+* BUG FIX: Fixed styling for h2 tags on the Membership Account page. (@kimcoleman)
+* BUG FIX: Fixed the ID parameter in the `pmpro_manage_discount_code_list_custom_column` filter. #2517 (@JarrydLong)
+* BUG FIX: Fixed issues where suggested Add Ons would not show in setup wizard if the site type was not specified. #2524 (@andrewlimaza)
+* BUG FIX: Fixed the timing of the `pmpro_discount_code_used` filter when processing a Stripe Checkout payment. #2532 (@dparker1005)
+* REFACTOR: Updated enum columns in database to varchar. #2529 (@andrewlimaza)
+
 = 2.11.2 - 2023-06-14 =
 * BUG FIX: Reverting the application of the required attribute for required fields at checkout. This would break valid checkouts in some cases if required fields were hidden. We need to address this differently. #2516 (@ideadude)
 
