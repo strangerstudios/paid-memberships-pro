@@ -29,8 +29,9 @@
 
 	//confirmation message for this level
 	$level_message = $wpdb->get_var("SELECT l.confirmation FROM $wpdb->pmpro_membership_levels l LEFT JOIN $wpdb->pmpro_memberships_users mu ON l.id = mu.membership_id WHERE mu.status = 'active' AND mu.user_id = '" . intval( $current_user->ID ) . "' LIMIT 1");
-	if(!empty($level_message))
-		$confirmation_message .= "\n" . stripslashes($level_message) . "\n";
+	if ( ! empty( $level_message ) ) {
+		$confirmation_message .= wpautop( stripslashes( $level_message ) );
+	}
 ?>
 
 <?php if(!empty($pmpro_invoice) && !empty($pmpro_invoice->id)) { ?>

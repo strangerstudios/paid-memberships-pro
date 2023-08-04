@@ -1,11 +1,54 @@
 <?php
 	class PMProEmail
-	{
-		
-		function __construct()
-		{
-			$this->email = $this->from = $this->fromname = $this->subject = $this->template = $this->data = $this->body = NULL;
-		}					
+	{		
+		/**
+		 * Email address to send the email to.
+		 *
+		 * @var string $email
+		 */
+		public $email = '';
+
+		/**
+		 * From address to send the email from.
+		 *
+		 * @var string $from
+		 */
+		public $from = '';
+
+		/**
+		 * From name to send the email from.
+		 *
+		 * @var string $fromname
+		 */
+		public $fromname = '';
+
+		/**
+		 * Subject line for the email.
+		 *
+		 * @var string $subject
+		 */
+		public $subject = '';
+
+		/**
+		 * Template of the email address to use.
+		 *
+		 * @var string $template
+		 */
+		public $template = '';
+
+		/**
+		 * Data that accompanies the email.
+		 *
+		 * @var array $data
+		 */
+		public $data = '';
+
+		/**
+		 * Body content for the email
+		 *
+		 * @var string $body
+		 */
+		public $body = '';
 		
 		/**
 		 * Send an email to a member or admin. Uses the wp_mail function.
@@ -496,7 +539,7 @@
 								'siteemail' => get_option('pmpro_from_email'),
 								'membership_id' => $membership_level->id,
 								'membership_level_name' => $membership_level->name,
-								'membership_level_confirmation_message' => $confirmation_message,
+								'membership_level_confirmation_message' => wpautop( $confirmation_message ),
 								'membership_cost' => pmpro_getLevelCost($membership_level),								
 								'login_link' => pmpro_login_url(),
 								'login_url' => pmpro_login_url(),
@@ -1105,9 +1148,10 @@
 		 */
 		function sendTrialEndingEmail( $user = NULL, $membership_id = NULL )
 		{
+			global $current_user;
+
 			_deprecated_function( 'sendTrialEndingEmail', '2.10' );
 
-			global $current_user, $wpdb;
 			if(!$user)
 				$user = $current_user;
 			
@@ -1155,7 +1199,7 @@
 		
 		function sendMembershipExpiredEmail( $user = NULL, $membership_id = NULL )
 		{
-			global $current_user, $wpdb;
+			global $current_user;
 			if(!$user)
 				$user = $current_user;
 			
@@ -1180,7 +1224,7 @@
 		 */
 		function sendMembershipExpiringEmail( $user = NULL, $membership_id = NULL )
 		{
-			global $current_user, $wpdb;
+			global $current_user;
 			if(!$user)
 				$user = $current_user;
 			
@@ -1225,7 +1269,7 @@
 		 */
 		function sendAdminChangeEmail($user = NULL)
 		{
-			global $current_user, $wpdb;
+			global $current_user;
 			if(!$user)
 				$user = $current_user;
 			
@@ -1268,7 +1312,7 @@
 		 */
 		function sendAdminChangeAdminEmail($user = NULL)
 		{
-			global $current_user, $wpdb;
+			global $current_user;
 			if(!$user)
 				$user = $current_user;
 			
@@ -1372,7 +1416,7 @@
 		 */
 		function sendPaymentActionRequiredEmail($user = NULL, $order = NULL, $invoice_url = NULL)
 		{
-			global $wpdb, $current_user;
+			global $current_user;
 			if(!$user)
 				$user = $current_user;
 			
@@ -1420,7 +1464,7 @@
 		 */
 		function sendPaymentActionRequiredAdminEmail($user = NULL, $order = NULL, $invoice_url = NULL)
 		{
-			global $wpdb, $current_user;
+			global $current_user;
 			if(!$user)
 				$user = $current_user;
 			
