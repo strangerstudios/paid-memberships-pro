@@ -495,7 +495,11 @@ function pmpro_notifications_pause() {
 	
 	$archived_notifications = get_user_meta( $current_user->ID, 'pmpro_archived_notifications', true );
 	if ( ! is_array( $archived_notifications ) ) {
-		return false;
+		// If the user has not yet archived a notiification, assume that this is a new PMPro install or that they are a new admin.
+		// Either way, we want to delay their first notification.
+		// We can do this by creating a "delay" archived notification with an archive day 7 days in the future.
+		update_user_meta( $current_user->ID, 'pmpro_archived_notifications', array( 'initial_notification_delay' => date_i18n( 'c', strtotime( '+7 days' ) ) ) );
+		return true;
 	}			
 	$archived_notifications = array_values( $archived_notifications );
 	$num = count($archived_notifications);
@@ -519,7 +523,7 @@ function pmpro_notifications_pause() {
 	
 	// If we've shown 3 this week already. Pause.
 	$third_last_notification_date = $archived_notifications[$num - 3];
-	if ( strtotime( $last_notification_date, $now ) > ( $now - 3600*24*7 ) ) {		
+	if ( strtotime( $third_last_notification_date, $now ) > ( $now - 3600*24*7 ) ) {		
 		return true;
 	}
 	

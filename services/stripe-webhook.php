@@ -920,8 +920,8 @@ function pmpro_stripe_webhook_change_membership_level( $morder ) {
 						current_time( 'mysql' )
 					)	
 				);
-				do_action( 'pmpro_discount_code_used', $discount_code_id, $morder->user_id, $morder->id );
 			}
+			do_action( 'pmpro_discount_code_used', $discount_code_id, $morder->user_id, $morder->id );
 		}
 
 		//save first and last name fields

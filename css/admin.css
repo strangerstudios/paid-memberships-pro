@@ -394,6 +394,10 @@ body[class*="memberships_page_pmpro-"] {
 	}
 }
 
+.pmpro_admin hr.wp-header-end {
+	margin-top: 0;
+}
+
 /* Footer */
 #footer-left a {
 	font-weight: bold;
@@ -530,14 +534,69 @@ body[class*="memberships_page_pmpro-"] {
 	margin: 0 0 20px 0;
 }
 
-.pmpro-popup-wrap a.pmproPopupCloseButton {
+.pmpro-popup-wrap a.pmproPopupCloseButton, 
+.pmpro-popup-wrap button.pmproPopupCloseButton {
 	color: #666;
-	display: inline-block;
-	margin: .9rem 0 0 1.45rem;
 	position: absolute;
-	right: 25px;
-	text-decoration: none;
+	right: 10px;
 	top: 10px;
+	padding:0;
+	text-decoration: none;
+
+}
+
+.pmpro-popup-wrap a.pmproPopupCloseButton:hover, 
+.pmpro-popup-wrap button.pmproPopupCloseButton:hover {
+	color: #000;
+}
+
+/* Stripe connected confirmation modal  */
+@media only screen and (min-width: 1200px) {
+	.pmpro-popup-wrap.pmpro-popup-stripe-confirmation {
+		max-width: 720px;
+		overflow: hidden;
+		width: 55%;
+	}
+
+}
+
+.pmpro-popup-wrap.pmpro-popup-stripe-confirmation h2 {
+	text-align: left;
+	line-height: normal;
+	margin-top: 0;
+}
+
+.pmpro-popup-wrap.pmpro-popup-stripe-confirmation button.pmproPopupCloseButton {
+	border: none;
+	background: transparent;
+}
+
+.pmpro-popup-wrap.pmpro-popup-stripe-confirmation p {
+	font-size: 14px;
+	line-height: 1.5;
+	text-align: left;
+}
+
+.pmpro-popup-wrap.pmpro-popup-stripe-confirmation p:last-of-type {
+	margin-bottom: 0;
+}
+
+.pmpro-popup-wrap.pmpro-popup-stripe-confirmation code {
+	display: block;
+	margin: .5em 0;
+}
+
+.pmpro-popup-wrap.pmpro-popup-stripe-confirmation ul {
+	list-style: disc;
+	margin: .5em 0 0 1em;
+}
+
+.pmpro-popup-wrap.pmpro-popup-stripe-confirmation ol li,
+.pmpro-popup-wrap.pmpro-popup-stripe-confirmation ul li  {
+	font-size: 14px;
+	line-height: 1.5;
+	margin-bottom: .5em;
+	text-align: left;
 }
 
 /* Consent Log */

@@ -10,14 +10,19 @@ function pmpro_delete_user( $user_id ) {
 		return false;
 	}
 
-	//Disable any active subscriptions that are associated with the account
-	if ( isset( $_REQUEST['pmpro_delete_active_subscriptions'] ) && 
-		$_REQUEST['pmpro_delete_active_subscriptions'] == '1' ) {
-		if ( pmpro_changeMembershipLevel( 0, $user_id ) ) {
-			// okay
-		} else {
-			// okay, guessing they didn't have a level
-		}
+	// Check if an admin chose to cancel the user's active subscriptions.
+	$cancel_active_subscriptions =  isset( $_REQUEST['pmpro_delete_active_subscriptions'] ) && $_REQUEST['pmpro_delete_active_subscriptions'] == '1';
+
+	/**
+	 * Filter to set whether or not to cancel active subscriptions when a user is deleted.
+	 *
+	 * @since 2.12
+	 *
+	 * @param bool $cancel_active_subscriptions True or false.
+	 * @param int  $user_id                     The WordPress user ID.
+	 */
+	if ( apply_filters( 'pmpro_user_deletion_cancel_active_subscriptions', $cancel_active_subscriptions, $user_id ) ) {
+		pmpro_changeMembershipLevel( 0, $user_id );
 	}
 
 	//Remove all membership history for this user from the pmpro_memberships_users table

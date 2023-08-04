@@ -349,7 +349,11 @@ class PMPro_Orders_List_Table extends WP_List_Table {
 
 			//Not escaping here because we escape the values in the condition statement
 			$sqlQuery .= 'AND ' . $condition . ' ';
-			$sqlQuery .= 'GROUP BY o.id ORDER BY o.id DESC, o.timestamp DESC ';
+
+			if( ! $count ) {
+				$sqlQuery .= 'GROUP BY o.id ORDER BY o.id DESC, o.timestamp DESC ';
+			}
+			
 		} else {
 
 			if ( $filter === 'with-discount-code' ) {

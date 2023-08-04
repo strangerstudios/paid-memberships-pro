@@ -8,7 +8,7 @@ class PMProDivi{
 			add_filter( 'et_builder_get_parent_modules', array( __CLASS__, 'toggle' ) );
 			add_filter( 'et_pb_module_content', array( __CLASS__, 'restrict_content' ), 10, 4 );
 			add_filter( 'et_pb_all_fields_unprocessed_et_pb_row', array( __CLASS__, 'row_settings' ) );
-			add_filter( 'et_pb_all_fields_unprocessed_et_pb_section', array( __CLASS__, 'section_settings' ) );			
+			add_filter( 'et_pb_all_fields_unprocessed_et_pb_section', array( __CLASS__, 'row_settings' ) );			
 		}
 		
 		add_action( 'pmpro_element_class', array( __CLASS__, 'pmpro_element_class' ), 10, 2 );
@@ -40,21 +40,17 @@ class PMProDivi{
 			'toggle_slug' => 'paid-memberships-pro',
 	    );
 
-		return $settings;
-
-	}
-
-	public static function section_settings( $settings ) {
-
-	    $settings['paid-memberships-pro'] = array(
+		$settings['pmpro_show_no_access_message'] = array(
 			'tab_slug' => 'custom_css',
-			'label' => __( 'Restrict Section by Level', 'paid-memberships-pro' ),
-			'description' => __( 'Enter comma-separated level IDs.', 'paid-memberships-pro' ),
-			'type' => 'text',
-			'default' => '',
-			'option_category' => 'configuration',
+			'label' => __( 'Show no access message', 'paid-memberships-pro' ),
+			'description' => __( 'Displays a no access message to non-members.', 'paid-memberships-pro' ),
+			'type' => 'yes_no_button',
+			'options' => array(
+				'off' => __( 'No', 'paid-memberships-pro' ),
+				'on' => __( 'Yes', 'paid-memberships-pro' ),
+			),
 			'toggle_slug' => 'paid-memberships-pro',
-	    );
+		);
 
 		return $settings;
 
@@ -87,7 +83,12 @@ class PMProDivi{
 	    if( pmpro_hasMembershipLevel( $levels ) ){
 	    	return $output;
 	    } else {
-	    	return '';
+			if ( ! empty( $props['pmpro_show_no_access_message'] ) && 'on' === $props['pmpro_show_no_access_message'] ) {
+				return pmpro_get_no_access_message( NULL, $levels );
+			} else {
+				return '';
+			}
+	    	
 	    }
 	}
 	
