@@ -4382,7 +4382,7 @@ function pmpro_set_pause_mode( $state ) {
 /**
  * Sanitizes a cycle period or expiration period and makes sure it's a valid period.
  *
- * @since TBD
+ * @since 2.12
  *
  * @param string $cycle_period The cycle period to sanitize.
  * @return string The sanitized cycle period or false if invalid.

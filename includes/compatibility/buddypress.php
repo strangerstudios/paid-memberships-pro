@@ -9,7 +9,7 @@
  * @see https://www.buddyboss.com/resources/reference/functions/bp_core_delete_account/
  *
  * @param int $user_id - The user ID that is about to be deleted from WordPress.
- * @since TBD
+ * @since 2.12
  */
 function pmpro_buddypress_cancel_sub_self_delete( $user_id ) {
 	add_filter( 'pmpro_user_deletion_cancel_active_subscriptions', '__return_true' );

@@ -16,7 +16,7 @@ function pmpro_delete_user( $user_id ) {
 	/**
 	 * Filter to set whether or not to cancel active subscriptions when a user is deleted.
 	 *
-	 * @since TBD
+	 * @since 2.12
 	 *
 	 * @param bool $cancel_active_subscriptions True or false.
 	 * @param int  $user_id                     The WordPress user ID.

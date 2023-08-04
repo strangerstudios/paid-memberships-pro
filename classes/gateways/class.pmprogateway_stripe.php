@@ -1507,7 +1507,7 @@ class PMProGateway_stripe extends PMProGateway {
 	/**
 	 * If the checkout flow has changed to Stripe Checkout, remember to show a banner to set up webhooks.
 	 *
-	 * @since TBD
+	 * @since 2.12
 	 *
 	 * @param string $old_value The old value of the option.
 	 */
@@ -1519,7 +1519,7 @@ class PMProGateway_stripe extends PMProGateway {
 	/**
 	 * Show a modal to the user after connecting to Stripe or switching to Stripe Checkout.
 	 *
-	 * @since TBD
+	 * @since 2.12
 	 */
 	public static function show_set_up_webhooks_popup() {
 		global $pmpro_stripe_old_payment_flow;
