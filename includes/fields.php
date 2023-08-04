@@ -1084,6 +1084,11 @@ function pmpro_add_user_fields_to_email( $email ) {
 					// Get the groups name so we can grab it from the associative array.
 					$group_name = $group->name;
 
+					// Skip if there are no fields in this group.
+					if ( empty( $pmpro_user_fields[$group_name] ) ) {
+						continue;
+					}
+					
 					//cycle through groups and fields associated with that group.
 					foreach( $pmpro_user_fields[$group_name] as $field ) {
 
