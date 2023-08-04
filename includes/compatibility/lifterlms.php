@@ -419,8 +419,8 @@ function pmpro_lifter_maybe_deprecate_pmpro_courses( $deprecated_addons ) {
 	}
 
 	// Bail if any module besides the LifterLMS module is active.
-	$active_modules = array_diff( get_option( 'pmpro_courses_modules', array() ), array( 'lifterlms' ) );
-	if ( ! empty( $active_modules ) ) {
+	$active_modules = get_option( 'pmpro_courses_modules', array() );	
+	if ( $active_modules !== array( 'lifterlms' ) ) {
 		return $deprecated_addons;
 	}
 
@@ -430,6 +430,9 @@ function pmpro_lifter_maybe_deprecate_pmpro_courses( $deprecated_addons ) {
 		'label' => 'PMPro Courses',
 		'message' => 'The Streamline LifterLMS option is enabled and includes all of the functionality previously found in the LifterLMS module of PMPro Courses.',
 	);
+
+	// Also deactivate the LifterLMS module, so folks can reactivate PMPro Courses if they want.
+	update_option( 'pmpro_courses_modules', array() );	
 
 	return $deprecated_addons;
 }
