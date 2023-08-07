@@ -802,7 +802,7 @@ function pmpro_do_password_reset() {
 	// If the key is expired or invalid, figure out the correct error code.
 	if ( is_wp_error( $check ) ) {
 		$error_code = $check->get_error_code() == 'expired_key' ? 'expiredkey' : 'invalidkey';	
-	} elseif ( gettype( $check ) !== 'WP_User' ) {
+	} elseif ( ! is_a( $check,  'WP_User' ) ) {
 		// Probably null/false returned from a plugin filtering the check.
 		$error_code = 'invalidkey';
 	}
@@ -846,7 +846,8 @@ function pmpro_do_password_reset() {
 
 		// Parameter checks OK, reset password.
 		// Note: Can't sanitize the password.
-		reset_password( $user, $_POST['pass1'] ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+		// $check must be a WP_User object at this point, otherwise $error_code would be set and we'd have already redirected.
+		reset_password( $check, $_POST['pass1'] ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 		wp_redirect( add_query_arg( urlencode( 'password' ), urlencode( 'changed' ), $redirect_url ) );
 	} else {
 		esc_html_e( 'Invalid Request', 'paid-memberships-pro' );
