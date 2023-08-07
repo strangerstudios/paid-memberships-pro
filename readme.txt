@@ -156,7 +156,7 @@ Not sure? You can find out by doing a bit a research.
 9. Membership Account page, display all sections or show specific sections using shortcode attributes.
 
 == Changelog ==
-= 2.12 - 2023-08-07 =
+= 2.12.1 - 2023-08-07 =
 * BUG FIX: Fixed issue where password reset attempts may incorrectly show that the user's password reset key is invalid. #2561 (@dparker1005, @andrewlimaza)
 
 = 2.12 - 2023-08-04 =
