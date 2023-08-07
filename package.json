@@ -1,9 +1,14 @@
 {
-  "name": "restrict-with-stripe",
-  "version": "1.0.9",
-  "description": "Restrict WordPress content with Stripe",
-  "author": "Stranger Studios",
-  "license": "GPL-2.0-or-later",
+  "name": "paid-memberships-pro",
+  "version": "2.11.2",
+  "description": "WordPress Membership Plugin",
+  "directories": {
+    "test": "tests"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/strangerstudios/paid-memberships-pro.git"
+  },
   "main": "build/index.js",
   "scripts": {
     "build": "wp-scripts build",
@@ -14,6 +19,13 @@
     "plugin-zip": "wp-scripts plugin-zip",
     "start": "wp-scripts start"
   },
+  "keywords": [
+    "wordpress",
+    "membership",
+    "pmpro"
+  ],
+  "author": "Stranger Studios",
+  "license": "GPL-2.0",
   "devDependencies": {
     "@wordpress/scripts": "^23.5.0"
   }

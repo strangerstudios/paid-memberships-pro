@@ -11,6 +11,7 @@ const CopyPlugin = require("copy-webpack-plugin");
 const config = require("@wordpress/scripts/config/webpack.config.js");
 
 config.entry = {
+  /*
   "sidebar/index": path.resolve(
     process.cwd(),
     "blocks",
@@ -32,6 +33,7 @@ config.entry = {
     "customer-portal",
     "index.js"
   ),
+  */
 };
 
 config.output = {
