@@ -34,3 +34,15 @@ function pmpro_register_block_types() {
 }
 add_action( 'init', 'pmpro_register_block_types' );
 
+/**
+ * Enqueue block editor only CSS.
+ */
+function pmpro_block_editor_assets() {
+	// Enqueue the CSS file css/blocks.editor.css.
+	wp_enqueue_style(
+		'pmpro-block-editor-css',
+		PMPRO_URL . '/css/blocks.editor.css',
+		array( 'wp-edit-blocks' )
+	);
+}
+add_action( 'enqueue_block_editor_assets', 'pmpro_block_editor_assets' );
