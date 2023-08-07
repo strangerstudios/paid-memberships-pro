@@ -4,7 +4,7 @@ Tags: memberships, members, subscriptions, ecommerce, user registration, member,
 Requires at least: 5.2
 Tested up to: 6.3
 Requires PHP: 5.6
-Stable tag: 2.12
+Stable tag: 2.12.1
 
 WordPress membership plugin: restrict content, accept member subscriptions with recurring payment. Includes user registration, login, & profile fields
 
@@ -156,6 +156,9 @@ Not sure? You can find out by doing a bit a research.
 9. Membership Account page, display all sections or show specific sections using shortcode attributes.
 
 == Changelog ==
+= 2.12 - 2023-08-07 =
+* BUG FIX: Fixed issue where password reset attempts may incorrectly show that the user's password reset key is invalid. #2561 (@dparker1005, @andrewlimaza)
+
 = 2.12 - 2023-08-04 =
 * FEATURE: Added integration with LifterLMS to streamline setting up that plugin when Paid Memberships Pro is active. #2533 (@ideadude, @MaximilianoRicoTabo)
 * ENHANCEMENT: A “no access” message can now be set when restricting Elementor widgets. #2525 (@andrewlimaza)
