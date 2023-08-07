@@ -4,7 +4,7 @@
 	"name": "pmpro/account-profile-section",
 	"title": "PMPro Page: Account Profile",
 	"category": "pmpro-pages",
-	"icon": "archive",
+	"icon": "admin-users",
 	"description": "Dynamic page section that displays the member's profile as read-only information with a link to edit fields or change their password.",
 	"attributes" : {
 		"title" : {
