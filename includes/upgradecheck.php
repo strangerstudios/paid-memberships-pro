@@ -335,17 +335,9 @@ function pmpro_checkForUpgrades()
 	require_once( PMPRO_DIR . "/includes/updates/upgrade_3_0.php" );
 	if( $pmpro_db_version < 3.0 ) {
 		pmpro_db_delta();
+		flush_rewrite_rules();
 		$pmpro_db_version = pmpro_upgrade_3_0();
 		update_option( 'pmpro_db_version', '3.0' );
-	}
-
-	/**
-	 * Version 2.11
-	 * Unless we push this feature to 3.0, implementing pretty permalinks for checkout so we need to flush the rewrite rules.
-	 */
-	if ( $pmpro_db_version < 2.96 ) { // 2.96 since 2.11 would be lower than previous update.
-		flush_rewrite_rules();
-		pmpro_setOption( 'db_version', '2.96' );		
 	}
 }
 
