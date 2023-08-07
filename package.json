@@ -1,27 +1,20 @@
 {
-  "name": "paid-memberships-pro",
-  "version": "2.11.2",
-  "description": "WordPress Membership Plugin",
-  "main": "webpack.config.js",
-  "directories": {
-    "test": "tests"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/strangerstudios/paid-memberships-pro.git"
-  },
-  "scripts": {
-    "start": "wp-scripts start",
-    "build": "wp-scripts build"
-  },
-  "keywords": [
-    "wordpress",
-    "membership",
-    "pmpro"
-  ],
+  "name": "restrict-with-stripe",
+  "version": "1.0.9",
+  "description": "Restrict WordPress content with Stripe",
   "author": "Stranger Studios",
-  "license": "GPL-2.0",
+  "license": "GPL-2.0-or-later",
+  "main": "build/index.js",
+  "scripts": {
+    "build": "wp-scripts build",
+    "format": "wp-scripts format",
+    "lint:css": "wp-scripts lint-style",
+    "lint:js": "wp-scripts lint-js",
+    "packages-update": "wp-scripts packages-update",
+    "plugin-zip": "wp-scripts plugin-zip",
+    "start": "wp-scripts start"
+  },
   "devDependencies": {
-    "@wordpress/scripts": "^23.7.2"
+    "@wordpress/scripts": "^23.5.0"
   }
 }
