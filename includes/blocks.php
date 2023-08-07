@@ -1,6 +1,6 @@
 <?php
 /**
- * Add new block category for Restrict With Stripe blocks.
+ * Add new block category for Paid Memberships Pro blocks.
  *
  * @since 1.0
  *
@@ -15,6 +15,10 @@ function pmpro_block_categories( $categories ) {
 				'slug' => 'pmpro',
 				'title' => esc_html__( 'Paid Memberships Pro', 'paid-memberships-pro' ),
 			),
+			array(
+				'slug' => 'pmpro-pages',
+				'title' => esc_html__( 'Paid Memberships Pro Pages', 'paid-memberships-pro' ),
+			),
 		)
 	);
 }
@@ -23,14 +27,10 @@ add_filter( 'block_categories_all', 'pmpro_block_categories' );
 /**
  * Register block types for the block editor.
  */
-/*
-function rwstripe_register_block_types() {
+function pmpro_register_block_types() {
 	register_block_type(
-		RWSTRIPE_DIR . '/blocks/build/customer-portal',
-		array(
-			'render_callback' => 'rwstripe_render_customer_portal_block',
-		)
+		PMPRO_DIR . '/blocks/build/account-invoices-section'
 	);
 }
-add_action( 'init', 'rwstripe_register_block_types' );
-*/
+add_action( 'init', 'pmpro_register_block_types' );
+

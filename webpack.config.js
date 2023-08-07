@@ -11,29 +11,13 @@ const CopyPlugin = require("copy-webpack-plugin");
 const config = require("@wordpress/scripts/config/webpack.config.js");
 
 config.entry = {
-  /*
-  "sidebar/index": path.resolve(
+  "account-invoices-section/index": path.resolve(
     process.cwd(),
     "blocks",
     "src",
-    "sidebar",
+    "account-invoices-section",
     "index.js"
   ),
-  "settings/admin": path.resolve(
-    process.cwd(),
-    "blocks",
-    "src",
-    "settings",
-    "index.js"
-  ),
-  "customer-portal/index": path.resolve(
-    process.cwd(),
-    "blocks",
-    "src",
-    "customer-portal",
-    "index.js"
-  ),
-  */
 };
 
 config.output = {
@@ -48,6 +32,11 @@ config.plugins.push(
       {
         context: "blocks/src",
         from: `*/block.json`,
+        noErrorOnMissing: true,
+      },
+      {
+        context: "blocks/src",
+        from: `*/render.php`,
         noErrorOnMissing: true,
       },
     ],
