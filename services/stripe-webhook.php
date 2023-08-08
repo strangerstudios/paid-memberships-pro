@@ -683,13 +683,13 @@
    	/**
 		* Get the Member's Order from a Stripe Event.
 		*
-		* @deprecated TBD
+		* @deprecated 2.10
 		*
 		* @param Object $pmpro_stripe_event The Stripe Event object sent via webhook.
 		* @return PMPro_MemberOrder|bool Returns either the member order object linked to the Stripe Event data or false if no order is found.
 		*/
 	function getOldOrderFromInvoiceEvent( $pmpro_stripe_event ) {	
-		_deprecated_function( __FUNCTION__, 'TBD' );
+		_deprecated_function( __FUNCTION__, '2.10' );
 
 		// Pause here to give PMPro a chance to finish checkout.
 		sleep( PMPRO_STRIPE_WEBHOOK_DELAY );
@@ -753,10 +753,10 @@
 	}
 
 	/**
-	 * @deprecated TBD
+	 * @deprecated 2.10
 	 */
 	function getOrderFromInvoiceEvent($pmpro_stripe_event) {
-		_deprecated_function( __FUNCTION__, 'TBD' );
+		_deprecated_function( __FUNCTION__, '2.10' );
 
 		//pause here to give PMPro a chance to finish checkout
 		sleep(PMPRO_STRIPE_WEBHOOK_DELAY);

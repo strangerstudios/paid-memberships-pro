@@ -90,36 +90,20 @@ add_action( 'admin_init', 'pmpro_init_site_health_integration' );
 /**
  * Compare stored and current site URL and decide if we should go into pause mode
  *
- * @since TBD
+ * @since 2.10
  */
 function pmpro_site_url_check() {
-
-	//Checking if a stored site URL exists on first time installs
-	if ( empty( pmpro_getOption( 'last_known_url' ) ) ) {
-		pmpro_setOption( 'last_known_url', get_site_url() );
-	}
-
-	if ( ! pmpro_is_paused() ) {
-		//We aren't paused, check if the domains match
-		if( ! pmpro_compare_siteurl() ) {
-			//Site URL's don't match - enable pause mode
-			pmpro_setOption( 'pause_mode', true );				
-		} else {
-			//Site URL's do match - disable pause mode
-			pmpro_setOption( 'pause_mode', false );				
-		}
-	} else {
+	if ( pmpro_is_paused() ) {
 		//We are paused, show a notice.
 		add_action( 'admin_notices', 'pmpro_pause_mode_notice' );
 	}
-
 }
 add_action( 'admin_init', 'pmpro_site_url_check' );
 
 /**
  * Allows a user to deactivate pause mode and update the last known URL
  *
- * @since TBD
+ * @since 2.10
  */
 function pmpro_handle_pause_mode_actions() {
 
@@ -127,8 +111,7 @@ function pmpro_handle_pause_mode_actions() {
 	if ( current_user_can( 'pmpro_manage_pause_mode' ) ) {
 		//We're attempting to reactivate all services.
 		if( ! empty( $_REQUEST['pmpro-reactivate-services'] ) ) {			
-			pmpro_setOption( 'last_known_url', get_site_url() );
-			pmpro_setOption( 'pause_mode', false );			
+			delete_option( 'pmpro_last_known_url' );
 		}
 	}
 
@@ -138,7 +121,7 @@ add_action( 'admin_init', 'pmpro_handle_pause_mode_actions' );
 /**
  * Display a notice about pause mode being enabled
  *
- * @since TBD
+ * @since 2.10
  */
 function pmpro_pause_mode_notice() {
 	global $current_user;
@@ -188,6 +171,48 @@ function pmpro_pause_mode_notice() {
 		<?php
 	}
 }
+
+/**
+ * Maybe display a notice about spam protection being disabled.
+ *
+ * @since TBD
+ */
+function pmpro_spamprotection_notice() {
+	global $current_user;
+
+	// If spam protection is enabled, we are not on a PMPro settings page, or we are on the PMPro advanced settings page, don't show the notice.
+	if (
+		pmpro_getOption( 'spamprotection' ) ||
+		! isset( $_REQUEST['page'] ) ||
+		( isset( $_REQUEST['page'] ) && 'pmpro-' !== substr( $_REQUEST['page'], 0, 6 ) ) ||
+		( isset( $_REQUEST['page'] ) && 'pmpro-advancedsettings' === $_REQUEST['page'] )
+	) {
+		return;
+	}
+
+	// Get notifications that have been archived.
+	$archived_notifications = get_user_meta( $current_user->ID, 'pmpro_archived_notifications', true );
+
+	// If the user hasn't dismissed the notice, show it.
+	if ( ! is_array( $archived_notifications ) || ! array_key_exists( 'hide_spamprotection_notification', $archived_notifications ) ) {
+		?>
+		<div id="hide_spamprotection_notification" class="notice notice-error pmpro_notification pmpro_notification-error">
+			<button type="button" class="pmpro-notice-button notice-dismiss" value="hide_spamprotection_notification"><span class="screen-reader-text"><?php esc_html_e( 'Dismiss this notice.', 'paid-memberships-pro' ); ?></span></button>
+			<div class="pmpro_notification-icon">
+				<span class="dashicons dashicons-warning"></span>
+			</div>
+			<div class="pmpro_notification-content">
+				<h3><?php esc_html_e( 'Spam Protection Disabled', 'paid-memberships-pro' ); ?></h3>
+				<p><?php esc_html_e( 'Spam protection is currently disabled. This is not recommended. Please enable spam protection on the Advanced Settings page.', 'paid-memberships-pro' ); ?></p>
+				<p>
+					<a href='<?php echo admin_url( 'admin.php?page=pmpro-advancedsettings' ); ?>' class='button button-secondary'><?php esc_html_e( 'Go to Advanced Settings', 'paid-memberships-pro' ); ?></a>
+				</p>
+			</div>
+		</div>
+		<?php
+	}
+}
+add_action( 'admin_notices', 'pmpro_spamprotection_notice' );
 
 /**
  * Remove all WordPress admin notifications from our Wizard area as it's distracting.
