@@ -269,7 +269,7 @@ function pmpro_admin_membership_access_menu_bar() {
 	}
 
 	// View menu at all?
-	if ( ! current_user_can( 'pmpro_memberships_menu' ) || ! is_admin_bar_showing() ) {
+	if ( ! current_user_can( 'manage_options' ) || ! is_admin_bar_showing() ) {
 		return;
 	}
 
