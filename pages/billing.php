@@ -59,12 +59,12 @@
 
 			// Check if the gateway for this subscription updates a single subscription at once or all subscriptions at once.
 			$subscription_gateway_obj = $pmpro_billing_subscription->get_gateway_object();
-			if ( 'individual' === $subscription_gateway_obj->supportsPaymentMethodUpdates() ) {
+			if ( 'individual' === $subscription_gateway_obj->supports_payment_method_updates() ) {
 				// Show the level name and the cost text for the subscription.
 				?>
 				<li><strong><?php echo esc_html( $pmpro_billing_level->name ); ?>:</strong> (<?php echo esc_html( $pmpro_billing_subscription->get_cost_text() ); ?>)</li>
 				<?php
-			} elseif ( 'all' === $subscription_gateway_obj->supportsPaymentMethodUpdates() ) {
+			} elseif ( 'all' === $subscription_gateway_obj->supports_payment_method_updates() ) {
 				// This is a bit trickier. We need to get all subscriptions that will be updated, which should be all subscriptions for this user
 				// that have the same gateway.
 				$user_subscriptions = PMPro_Subscription::get_subscriptions_for_user();

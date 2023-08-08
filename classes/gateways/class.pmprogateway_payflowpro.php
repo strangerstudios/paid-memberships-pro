@@ -49,7 +49,7 @@
 		 * @return string|false 'individual' if the gateway allows for payment method updates for individual subscriptions, 
 		 *                      'all' if the gateway updates all subscriptions, or false if the gateway does not support payment method updates.
 		 */
-		function supportsPaymentMethodUpdates() {
+		function supports_payment_method_updates() {
 			return 'individual';
 		}
 
