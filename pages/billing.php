@@ -55,15 +55,38 @@
 			 * @since 1.9.2
 			 * @param {objects} {$pmpro_billing_level} {Passes the $pmpro_billing_level object}
 			 */
-			do_action('pmpro_billing_bullets_top', $pmpro_billing_level);?>
-			<li><strong><?php esc_html_e("Level", 'paid-memberships-pro' );?>:</strong> <?php echo esc_html( $pmpro_billing_level->name ); ?></li>
+			do_action('pmpro_billing_bullets_top', $pmpro_billing_level);
 
-			<?php if( $pmpro_billing_subscription->get_billing_limit() ) { ?>
-				<li><strong><?php esc_html_e("Duration", 'paid-memberships-pro' );?>:</strong> <?php echo esc_html( $pmpro_billing_subscription->get_billing_limit() . ' ' . sornot( $pmpro_billing_subscription->get_cycle_period(), $pmpro_billing_subscription->get_billing_limit() ) ); ?></li>
+			// Check if the gateway for this subscription updates a single subscription at once or all subscriptions at once.
+			$subscription_gateway_obj = $pmpro_billing_subscription->get_gateway_object();
+			if ( 'individual' === $subscription_gateway_obj->supports_payment_method_updates() ) {
+				// Show the level name and the cost text for the subscription.
+				?>
+				<li><strong><?php echo esc_html( $pmpro_billing_level->name ); ?>:</strong> (<?php echo esc_html( $pmpro_billing_subscription->get_cost_text() ); ?>)</li>
+				<?php
+			} elseif ( 'all' === $subscription_gateway_obj->supports_payment_method_updates() ) {
+				// This is a bit trickier. We need to get all subscriptions that will be updated, which should be all subscriptions for this user
+				// that have the same gateway.
+				$user_subscriptions = PMPro_Subscription::get_subscriptions_for_user();
+				foreach ( $user_subscriptions as $user_subscription ) {
+					// Skip this subscription if the gateway doesn't match $pmpro_billing_subscription.
+					if ( $user_subscription->get_gateway() !== $pmpro_billing_subscription->get_gateway() ) {
+						continue;
+					}
 
-			<?php } ?>			
+					// Get the level name for this subscription.
+					$level = new PMPro_Membership_Level( $user_subscription->get_membership_level_id() );
+					if ( empty( $level ) || empty( $level->name ) ) {
+						continue;
+					}
 
-			<?php
+					// Show the level name and the cost text for the subscription.
+					?>
+					<li><strong><?php echo esc_html( $level->name ); ?>:</strong> (<?php echo esc_html( $user_subscription->get_cost_text() ); ?>)</li>
+					<?php
+				}
+			}
+
 			 /**
 			 * pmpro_billing_bullets_top hook allows you to add information to the billing list (at the bottom).
 			 *
