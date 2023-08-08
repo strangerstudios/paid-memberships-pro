@@ -81,27 +81,8 @@ function pmpro_handle_subscription_cancellation_at_gateway( $subscription_transa
 	if ( apply_filters( 'pmpro_cancel_on_next_payment_date', true, $subscription->get_membership_level_id(), $user->ID ) ) {
 		// Check if $old_next_payment_date is in the future.
 		if ( ! empty( $old_next_payment_date ) && $old_next_payment_date > current_time( 'timestamp' ) ) {
-			// Extend the user's membership to the next payment date.
-			$enddate = date( 'Y-m-d H:i:s', $old_next_payment_date );
-			$wpdb->update(
-				$wpdb->pmpro_memberships_users,
-				[
-					'enddate' => $enddate,
-				],
-				[
-					'status'        => 'active',
-					'membership_id' => $subscription->get_membership_level_id(),
-					'user_id'       => $user->ID,
-				],
-				[
-					'%s',
-				],
-				[
-					'%s',
-					'%d',
-					'%d',
-				]
-			);
+			// Set the enddate to the next payment date.
+			pmpro_set_expiration_date( $user->ID, $subscription->get_membership_level_id(), $old_next_payment_date );
 
 			// Clear the user's membership level cache.
 			pmpro_clear_level_cache_for_user( $user->ID );

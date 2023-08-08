@@ -83,29 +83,7 @@
 			// Also add a filter in case a site wants to disable "cancel on next payment date" and cancel immediately.
 			if ( ! empty( $next_payment_date ) && apply_filters( 'pmpro_cancel_on_next_payment_date', true, $old_level_id, $current_user->ID ) ) {
 				// Set the enddate to the next payment date.
-				$enddate = date( 'Y-m-d H:i:s', $next_payment_date );
-				$wpdb->update(
-					$wpdb->pmpro_memberships_users,
-					[
-						'enddate' => $enddate,
-					],
-					[
-						'status'        => 'active',
-						'membership_id' => $old_level_id,
-						'user_id'       => $current_user->ID,
-					],
-					[
-						'%s',
-					],
-					[
-						'%s',
-						'%d',
-						'%d',
-					]
-				);
-
-				// Clear the level cache for this user.
-				pmpro_clear_level_cache_for_user( $current_user->ID );
+				pmpro_set_expiration_date( $current_user->ID, $old_level_id, $next_payment_date );
 
 				// Cancel the subscriptions.
 				foreach ( $subscriptions as $sub ) {
