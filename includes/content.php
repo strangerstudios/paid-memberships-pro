@@ -251,10 +251,19 @@ function pmpro_search_filter($query)
 			$sql = "SELECT category_id FROM $wpdb->pmpro_memberships_categories";
 		}							
         $hidden_cat_ids = array_values(array_unique($wpdb->get_col($sql)));
-				
+		
         //make this work
         if( $hidden_cat_ids ) {
-			$query->set( 'category__not_in', array_merge( $query->get( 'category__not_in' ), $hidden_cat_ids ) );
+
+			// Get all registered category ID's so we may remove the ones we need to hide. This is to support posts that may belong to multiple categories and only one of them is hidden.
+			$all_cat_ids = get_terms( array(
+				'taxonomy' => 'category',
+				'fields'   => 'ids',
+				'get'      => 'all',
+			));
+
+			// Show only these categories to members.
+			$query->set( 'category__in', array_merge( $query->get( 'category__in' ), array_diff( $all_cat_ids, $hidden_cat_ids ) ) );
 						
 			//filter so posts in this member's categories are allowed
 			add_action( 'posts_where', 'pmpro_posts_where_unhide_cats' );
@@ -263,7 +272,7 @@ function pmpro_search_filter($query)
 
     return $query;
 }
-$filterqueries = pmpro_getOption("filterqueries");
+$filterqueries = get_option("pmpro_filterqueries");
 if( ! empty( $filterqueries ) ) {
 	add_filter( 'pre_get_posts', 'pmpro_search_filter' );
 }
@@ -320,7 +329,7 @@ function pmpro_membership_content_filter( $content, $skipcheck = false ) {
 		return $content;
 	} else {
 		//if show excerpts is set, return just the excerpt
-		if( pmpro_getOption( "showexcerpts" ) ) {
+		if( get_option( "pmpro_showexcerpts" ) ) {
 			//show excerpt
 			global $post;
 			if( $post->post_excerpt ) {

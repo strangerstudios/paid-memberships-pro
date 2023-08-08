@@ -1,6 +1,7 @@
 <?php
 /**
  * Template: Confirmation
+ * Version: 2.0
  *
  * See documentation for how to override the PMPro templates.
  * @link https://www.paidmembershipspro.com/documentation/templates/
@@ -28,8 +29,9 @@
 
 	//confirmation message for this level
 	$level_message = $wpdb->get_var("SELECT l.confirmation FROM $wpdb->pmpro_membership_levels l LEFT JOIN $wpdb->pmpro_memberships_users mu ON l.id = mu.membership_id WHERE mu.status = 'active' AND mu.user_id = '" . intval( $current_user->ID ) . "' LIMIT 1");
-	if(!empty($level_message))
-		$confirmation_message .= "\n" . stripslashes($level_message) . "\n";
+	if ( ! empty( $level_message ) ) {
+		$confirmation_message .= wpautop( stripslashes( $level_message ) );
+	}
 ?>
 
 <?php if(!empty($pmpro_invoice) && !empty($pmpro_invoice->id)) { ?>
@@ -42,7 +44,7 @@
 
 		// Check instructions
 		if ( $pmpro_invoice->gateway == "check" && ! pmpro_isLevelFree( $pmpro_invoice->membership_level ) ) {
-			$confirmation_message .= '<div class="' . pmpro_get_element_class( 'pmpro_payment_instructions' ) . '">' . wpautop( wp_unslash( pmpro_getOption("instructions") ) ) . '</div>';
+			$confirmation_message .= '<div class="' . pmpro_get_element_class( 'pmpro_payment_instructions' ) . '">' . wpautop( wp_unslash( get_option( 'pmpro_instructions' ) ) ) . '</div>';
 		}
 
 		/**
@@ -55,9 +57,9 @@
 
 		echo wp_kses_post( $confirmation_message );
 	?>
-	<h3>
+	<h2>
 		<?php echo esc_html( sprintf(__('Invoice #%s on %s', 'paid-memberships-pro' ), $pmpro_invoice->code, date_i18n(get_option('date_format'), $pmpro_invoice->getTimestamp())) );?>
-	</h3>
+	</h2>
 	<a class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_a-print' ) ); ?>" href="javascript:window.print()"><?php esc_html_e('Print', 'paid-memberships-pro' );?></a>
 	<ul>
 		<?php do_action("pmpro_invoice_bullets_top", $pmpro_invoice); ?>

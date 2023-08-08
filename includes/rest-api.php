@@ -557,7 +557,7 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 			$initial_payment = isset( $params['initial_payment'] ) ? floatval( $params['initial_payment'] ) : $level->initial_payment;
 			$billing_amount = isset( $params['billing_amount'] ) ? floatval( $params['billing_amount'] ) : $level->billing_amount;
 			$cycle_number = isset( $params['cycle_number'] ) ? intval( $params['cycle_number'] ) : $level->cycle_number;
-			$cycle_period = isset( $params['cycle_period'] ) ? sanitize_text_field( $params['cycle_period'] ) : $level->cycle_period;
+			$cycle_period = isset( $params['cycle_period'] ) ? pmpro_sanitize_period( $params['cycle_period'] ) : $level->cycle_period;
 			$billing_limit = isset( $params['billing_limit'] ) ? sanitize_text_field( $params['billing_limit'] ) : $level->billing_limit;
 			$trial_amount = isset( $params['trial_amount'] ) ? floatval( $params['trial_amount'] ) : $level->trial_amount;
 			$trial_limit = isset( $params['trial_limit'] ) ? floatval( $params['trial_limit'] ) : $level->trial_limit;
@@ -885,8 +885,6 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 			 * @param int $limit The total number of recent members to show.
 			 */
 			$limit = apply_filters( 'pmpro_trigger_recent_members_limit', $limit );
-			
-			$response_type = isset( $params['response_type'] ) ? sanitize_text_field( $params['response_type'] ) : null;
 			
 			if ( empty( $params['level_status'] ) ) {
 				$level_status = [ 'active' ];

@@ -56,7 +56,7 @@
 		pmpro_setOption("uninstall");		
 
 		// Set up Wisdom tracking cron if needed.
-		if ( (int)pmpro_getOption("wisdom_opt_out") === 0 ) {
+		if ( (int)get_option( "pmpro_wisdom_opt_out") === 0 ) {
 			$wisdom_integration = PMPro_Wisdom_Integration::instance();
 			$wisdom_integration->wisdom_tracker->schedule_tracking();
 		}
@@ -77,38 +77,38 @@
 	}
 
 	// Dashboard settings.
-	$hide_toolbar = pmpro_getOption( 'hide_toolbar' );
-	$block_dashboard = pmpro_getOption( 'block_dashboard' );
+	$hide_toolbar = get_option( 'pmpro_hide_toolbar' );
+	$block_dashboard = get_option( 'pmpro_block_dashboard' );
 
 	// Message settings.
-	$nonmembertext = pmpro_getOption("nonmembertext");
-	$notloggedintext = pmpro_getOption("notloggedintext");
-	$rsstext = pmpro_getOption("rsstext");
+	$nonmembertext = get_option( "pmpro_nonmembertext");
+	$notloggedintext = get_option( "pmpro_notloggedintext");
+	$rsstext = get_option( "pmpro_rsstext");
 
 	// Content settings.
-	$filterqueries = pmpro_getOption('filterqueries');
-	$showexcerpts = pmpro_getOption("showexcerpts");
+	$filterqueries = get_option( 'pmpro_filterqueries');
+	$showexcerpts = get_option( "pmpro_showexcerpts");
 
 	// Checkout settings.
-	$tospage = pmpro_getOption("tospage");
-	$spamprotection = pmpro_getOption("spamprotection");
-	$recaptcha = pmpro_getOption("recaptcha");
-	$recaptcha_version = pmpro_getOption("recaptcha_version");
-	$recaptcha_publickey = pmpro_getOption("recaptcha_publickey");
-	$recaptcha_privatekey = pmpro_getOption("recaptcha_privatekey");
+	$tospage = get_option( "pmpro_tospage");
+	$spamprotection = get_option( "pmpro_spamprotection");
+	$recaptcha = get_option( "pmpro_recaptcha");
+	$recaptcha_version = get_option( "pmpro_recaptcha_version");
+	$recaptcha_publickey = get_option( "pmpro_recaptcha_publickey");
+	$recaptcha_privatekey = get_option( "pmpro_recaptcha_privatekey");
 
 	// Communication settings.
-	$maxnotificationpriority = pmpro_getOption("maxnotificationpriority");
-	$activity_email_frequency = pmpro_getOption("activity_email_frequency");
+	$maxnotificationpriority = get_option( "pmpro_maxnotificationpriority");
+	$activity_email_frequency = get_option( "pmpro_activity_email_frequency");
 
 	// Other settings.
-	$hideads = pmpro_getOption("hideads");
-	$wisdom_opt_out = (int)pmpro_getOption("wisdom_opt_out");
-	$hideadslevels = pmpro_getOption("hideadslevels");
+	$hideads = get_option( "pmpro_hideads");
+	$wisdom_opt_out = (int)get_option( "pmpro_wisdom_opt_out");
+	$hideadslevels = get_option( "pmpro_hideadslevels");
 	if( is_multisite() ) {
-		$redirecttosubscription = pmpro_getOption("redirecttosubscription");
+		$redirecttosubscription = get_option( "pmpro_redirecttosubscription");
 	}
-	$uninstall = pmpro_getOption('uninstall');
+	$uninstall = get_option( 'pmpro_uninstall');
 
 	// Default settings.
 	if(!$nonmembertext)
@@ -139,7 +139,7 @@
 	<form action="" method="post" enctype="multipart/form-data">
 		<?php wp_nonce_field('savesettings', 'pmpro_advancedsettings_nonce');?>
 		<hr class="wp-header-end">
-		<h1 class="wp-heading-inline"><?php esc_html_e( 'Advanced Settings', 'paid-memberships-pro' ); ?></h1>
+		<h1><?php esc_html_e( 'Advanced Settings', 'paid-memberships-pro' ); ?></h1>
 		<div class="pmpro_admin_section pmpro_admin_section-restrict-dashboard">
 			<h2 class="title"><?php esc_html_e( 'Restrict Dashboard Access', 'paid-memberships-pro' ); ?></h2>
 			<table class="form-table">
@@ -247,7 +247,7 @@
 				</tr>
 				<tr>
 					<th scope="row" valign="top">
-						<label for="spamprotection"><?php esc_html_e('Enable Spam Protection?', 'paid-memberships-pro' );?>:</label>
+						<label for="spamprotection"><?php esc_html_e('Enable Spam Protection?', 'paid-memberships-pro' );?></label>
 					</th>
 					<td>
 						<select id="spamprotection" name="spamprotection">
@@ -260,7 +260,7 @@
 				</tr>
 				<tr>
 					<th scope="row" valign="top">
-						<label for="recaptcha"><?php esc_html_e('Use reCAPTCHA?', 'paid-memberships-pro' );?>:</label>
+						<label for="recaptcha"><?php esc_html_e('Use reCAPTCHA?', 'paid-memberships-pro' );?></label>
 					</th>
 					<td>
 						<select id="recaptcha" name="recaptcha" onchange="pmpro_updateRecaptchaTRs();">
@@ -388,7 +388,7 @@ if ( function_exists( 'pmpro_displayAds' ) && pmpro_displayAds() ) {
 						?>
 						<div class="<?php echo esc_attr( $class ); ?>">
 							<?php
-								$hideadslevels = pmpro_getOption("hideadslevels");
+								$hideadslevels = get_option( "pmpro_hideadslevels");
 								if(!is_array($hideadslevels))
 									$hideadslevels = explode(",", $hideadslevels);
 
@@ -441,11 +441,11 @@ if ( function_exists( 'pmpro_displayAds' ) && pmpro_displayAds() ) {
 		                                    name="<?php echo esc_attr( $field['field_name'] ); ?>">
 		                                <?php
 		                                	//For associative arrays, we use the array keys as values. For numerically indexed arrays, we use the array values.
-		                                	$is_associative = (bool)count(array_filter(array_keys($field['options']), 'is_string'));
+		                                	$is_associative = !empty($field['is_associative']) || !(bool)count(array_filter(array_keys($field['options']), 'is_string'));
 		                                	foreach ($field['options'] as $key => $option) {
 		                                    	if(!$is_associative) $key = $option;
 		                                    	?>
-		                                    	<option value="<?php echo esc_attr($key); ?>" <?php selected($key, pmpro_getOption($field['field_name']));?>>
+		                                    	<option value="<?php echo esc_attr($key); ?>" <?php selected($key, get_option($field['field_name']));?>>
 		                                    		<?php echo esc_textarea($option); ?>
 		                                    	</option>
 		                               			<?php
@@ -459,7 +459,7 @@ if ( function_exists( 'pmpro_displayAds' ) && pmpro_displayAds() ) {
 		                            <input id="<?php echo esc_attr( $field['field_name'] ); ?>"
 		                                   name="<?php echo esc_attr( $field['field_name'] ); ?>"
 		                                   type="<?php echo esc_attr( $field['field_type'] ); ?>"
-		                                   value="<?php echo esc_attr(pmpro_getOption($field['field_name'])); ?> "
+		                                   value="<?php echo esc_attr(get_option($field['field_name'])); ?> "
 		                                   class="regular-text">
 		                            <?php
 		                            break;
@@ -468,7 +468,7 @@ if ( function_exists( 'pmpro_displayAds' ) && pmpro_displayAds() ) {
 		                            <textarea id="<?php echo esc_attr( $field['field_name'] ); ?>"
 		                                      name="<?php echo esc_attr( $field['field_name'] ); ?>"
 		                                      class="large-text">
-		                                <?php echo esc_textarea(pmpro_getOption($field['field_name'])); ?>
+		                                <?php echo esc_textarea(get_option($field['field_name'])); ?>
 		                            </textarea>
 		                            <?php
 		                            break;

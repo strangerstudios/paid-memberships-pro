@@ -50,7 +50,22 @@ function pmpro_compatibility_checker() {
 			'file' 		  => 'avada.php',
 			'check_type'  => 'constant',
 			'check_value' => 'FUSION_BUILDER_VERSION'
-		]
+		],
+		[
+			'file' 		  => 'oxygen-builder.php',
+			'check_type'  => 'class',
+			'check_value' => 'OxyEl'
+		],
+		[
+			'file'		  => 'lifterlms.php',
+			'check_type'  => 'function',
+			'check_value' => 'llms'
+		],
+		[
+			'file'		  => 'buddypress.php',
+			'check_type'  => 'class',
+			'check_value' => 'BuddyPress' //BuddyBoss uses this class, too.
+		],
 	];
 
 	foreach ( $compat_checks as $value ) {

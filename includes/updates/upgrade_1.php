@@ -5,22 +5,22 @@ function pmpro_upgrade_1()
 		default options
 	*/
 	$nonmembertext = sprintf( __( 'This content is for !!levels!! members only.<br /><a href="%s">Join Now</a>', 'paid-memberships-pro' ), "!!levels_page_url!!" );
-	pmpro_setOption("nonmembertext", $nonmembertext);
+	update_option("pmpro_nonmembertext", $nonmembertext);
 
 	$notloggedintext = sprintf( __( 'This content is for !!levels!! members only.<br /><a href="%s">Login</a> <a href="%s">Join Now</a>', 'paid-memberships-pro' ), '!!login_url!!', "!!levels_page_url!!" );
-	pmpro_setOption("notloggedintext", $notloggedintext);
+	update_option("pmpro_notloggedintext", $notloggedintext);
 
 	$rsstext = __( 'This content is for members only. Visit the site and log in/register to read.', 'paid-memberships-pro' );
-	pmpro_setOption("rsstext", $rsstext);
+	update_option("pmpro_rsstext", $rsstext);
 
 	$gateway_environment = "sandbox";
-	pmpro_setOption("gateway_environment", $gateway_environment);
+	update_option("pmpro_gateway_environment", $gateway_environment);
 
 	$pmpro_currency = "USD";
-	pmpro_setOption("currency", $pmpro_currency);
+	update_option("pmpro_currency", $pmpro_currency);
 
 	$pmpro_accepted_credit_cards = "Visa,Mastercard,American Express,Discover";
-	pmpro_setOption("accepted_credit_cards", $pmpro_accepted_credit_cards);
+	update_option("pmpro_accepted_credit_cards", $pmpro_accepted_credit_cards);
 
 	$parsed = parse_url( home_url() );
 	$hostname = $parsed['host'];
@@ -32,17 +32,17 @@ function pmpro_upgrade_1()
 	}
 	
 	$from_email = "wordpress@" . $email_domain;
-	pmpro_setOption("from_email", $from_email);
+	update_option("pmpro_from_email", $from_email);
 
 	$from_name = "WordPress";
-	pmpro_setOption("from_name", $from_name);
+	update_option("pmpro_from_name", $from_name);
 
 	//setting new email settings defaults
-	pmpro_setOption("email_admin_checkout", "1");
-	pmpro_setOption("email_admin_changes", "1");
-	pmpro_setOption("email_admin_cancels", "1");
-	pmpro_setOption("email_admin_billing", "1");
-	pmpro_setOption("tospage", "");
+	update_option("pmpro_email_admin_checkout", "1");
+	update_option("pmpro_email_admin_changes", "1");
+	update_option("pmpro_email_admin_cancels", "1");
+	update_option("pmpro_email_admin_billing", "1");
+	update_option("pmpro_tospage", "");
 	
 	//don't want these pointers to show on new installs
 	update_option( 'pmpro_dismissed_wp_pointers', array( 'pmpro_v2_menu_moved' ) );
@@ -52,7 +52,7 @@ function pmpro_upgrade_1()
 	update_option('pmpro_nag_paused', $pmpro_nag_paused, 'no');
 	
 	//wisdom tracking turned off by default
-	pmpro_setOption('wisdom_opt_out', 1);
+	update_option('pmpro_wisdom_opt_out', 1);
 
 	//db update
 	pmpro_db_delta();

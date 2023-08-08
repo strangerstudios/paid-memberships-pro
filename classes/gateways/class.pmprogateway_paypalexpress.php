@@ -206,8 +206,8 @@
 			</th>
 			<td>
 				<select id="paypalexpress_skip_confirmation" name="paypalexpress_skip_confirmation">
-					<option value="0" <?php selected(pmpro_getOption('paypalexpress_skip_confirmation'), 0);?>><?php esc_html_e( 'Require an extra confirmation after users return from PayPal.', 'paid-memberships-pro' ) ?></option>
-					<option value="1" <?php selected(pmpro_getOption('paypalexpress_skip_confirmation'), 1);?>><?php esc_html_e( 'Skip the extra confirmation after users return from PayPal.', 'paid-memberships-pro' ) ?></option>
+					<option value="0" <?php selected(get_option('pmpro_paypalexpress_skip_confirmation'), 0);?>><?php esc_html_e( 'Require an extra confirmation after users return from PayPal.', 'paid-memberships-pro' ) ?></option>
+					<option value="1" <?php selected(get_option('pmpro_paypalexpress_skip_confirmation'), 1);?>><?php esc_html_e( 'Skip the extra confirmation after users return from PayPal.', 'paid-memberships-pro' ) ?></option>
 				</select>
 			</td>
 		</tr>
@@ -256,7 +256,7 @@
 		static function pmpro_checkout_preheader() {
 			global $gateway, $pmpro_level;
 
-			$default_gateway = pmpro_getOption("gateway");
+			$default_gateway = get_option("pmpro_gateway");
 
 			if(($gateway == "paypal" || $default_gateway == "paypal") && !pmpro_isLevelFree($pmpro_level)) {
 				wp_register_script( 'pmpro_paypal',
@@ -301,7 +301,7 @@
 			}
 
 			if( !empty( $_REQUEST['tos'] ) ) {
-				$tospost = get_post( pmpro_getOption( 'tospage' ) );
+				$tospost = get_post( get_option( 'pmpro_tospage' ) );
 				$_SESSION['tos'] = array(
 					'post_id' => $tospost->ID,
 					'post_modified' => $tospost->post_modified,
@@ -363,7 +363,7 @@
 
 			if(empty($pmpro_msg) &&
 				(!empty($_REQUEST['confirm']) ||
-				(pmpro_getOption('paypalexpress_skip_confirmation') && $pmpro_review))
+				(get_option('pmpro_paypalexpress_skip_confirmation') && $pmpro_review))
 			)
 			{
 				$morder = new MemberOrder();
@@ -496,12 +496,12 @@
 			?>
 			<span id="pmpro_paypalexpress_checkout" <?php if(($gateway != "paypalexpress" && $gateway != "paypalstandard") || !$pmpro_requirebilling) { ?>style="display: none;"<?php } ?>>
 				<input type="hidden" name="submit-checkout" value="1" />
-				<input type="image" id="pmpro_btn-submit-paypalexpress" class="<?php echo pmpro_get_element_class( 'pmpro_btn-submit-checkout' ); ?>" value="<?php esc_attr_e('Check Out with PayPal', 'paid-memberships-pro' );?> &raquo;" src="<?php echo apply_filters("pmpro_paypal_button_image", "https://www.paypalobjects.com/webstatic/en_US/i/buttons/checkout-logo-medium.png");?>" />
+				<input type="image" id="pmpro_btn-submit-paypalexpress" class="<?php echo pmpro_get_element_class( 'pmpro_btn-submit-checkout' ); ?>" value="<?php esc_attr_e('Check Out with PayPal', 'paid-memberships-pro' );?>" src="<?php echo apply_filters("pmpro_paypal_button_image", "https://www.paypalobjects.com/webstatic/en_US/i/buttons/checkout-logo-medium.png");?>" />
 			</span>
 
 			<span id="pmpro_submit_span" <?php if(($gateway == "paypalexpress" || $gateway == "paypalstandard") && $pmpro_requirebilling) { ?>style="display: none;"<?php } ?>>
 				<input type="hidden" name="submit-checkout" value="1" />
-				<input type="submit" id="pmpro_btn-submit" class="<?php echo pmpro_get_element_class( 'pmpro_btn pmpro_btn-submit-checkout', 'pmpro_btn-submit-checkout' ); ?>" value="<?php if($pmpro_requirebilling) { _e('Submit and Check Out', 'paid-memberships-pro' ); } else { _e('Submit and Confirm', 'paid-memberships-pro' );}?> &raquo;" />
+				<input type="submit" id="pmpro_btn-submit" class="<?php echo pmpro_get_element_class( 'pmpro_btn pmpro_btn-submit-checkout', 'pmpro_btn-submit-checkout' ); ?>" value="<?php if($pmpro_requirebilling) { _e('Submit and Check Out', 'paid-memberships-pro' ); } else { _e('Submit and Confirm', 'paid-memberships-pro' );}?>" />
 			</span>
 			<?php
 
@@ -605,7 +605,7 @@
 
 				//redirect to paypal
 				$paypal_url = "https://www.paypal.com/webscr?cmd=_express-checkout&useraction=commit&token=" . $this->httpParsedResponseAr['TOKEN'];
-				$environment = pmpro_getOption("gateway_environment");
+				$environment = get_option("pmpro_gateway_environment");
 				if("sandbox" === $environment || "beta-sandbox" === $environment)
 				{
 					$paypal_url = "https://www.sandbox.paypal.com/webscr?cmd=_express-checkout&useraction=commit&token="  . $this->httpParsedResponseAr['TOKEN'];
@@ -1108,39 +1108,6 @@
 			return $timestamp;
 		}
 
-		function get_next_payment_date( &$subscription ) {
-			// Get most recent order for this subscription.
-			$morder = $subscription->get_last_order();
-			if ( ! is_a( $morder, 'MemberOrder' ) || empty( $morder->timestamp ) ) {
-				// No valid order found.
-				return '0000-00-00 00:00:00';
-			}
-		
-			//check if this is a paypal express order with a subscription transaction id
-			if(!empty($morder->id) && !empty($morder->subscription_transaction_id) && $morder->gateway == "paypalexpress")
-			{
-				//get the subscription status
-				$status = $morder->getGatewaySubscriptionStatus();
-
-				if(!empty($status) && !empty($status['NEXTBILLINGDATE'])) {
-					//found the next billing date at PayPal, going to use that
-					$timestamp = strtotime(urldecode($status['NEXTBILLINGDATE']));
-				}
-				elseif(!empty($status) && !empty($status['PROFILESTARTDATE']) && $order_status == "cancelled") {
-					//startdate is in the future and we cancelled so going to use that as the next payment date
-					$startdate_timestamp = strtotime(urldecode($status['PROFILESTARTDATE']));
-					if($startdate_timestamp > current_time('timestamp')) {
-						$timestamp = $startdate_timestamp;
-					}
-				} 
-			}
-			if ( empty( $timestamp ) ) {
-				return '0000-00-00 00:00:00';
-			} else {
-				return date( 'Y-m-d H:i:s', $timestamp );
-			}
-		}
-
 		/**
 		 * PAYPAL Function
 		 * Send HTTP POST Request with retries
@@ -1258,9 +1225,9 @@
 			global $gateway_environment;
 			$environment = $gateway_environment;
 
-			$API_UserName = pmpro_getOption("apiusername");
-			$API_Password = pmpro_getOption("apipassword");
-			$API_Signature = pmpro_getOption("apisignature");
+			$API_UserName = get_option("pmpro_apiusername");
+			$API_Password = get_option("pmpro_apipassword");
+			$API_Signature = get_option("pmpro_apisignature");
 			$API_Endpoint = "https://api-3t.paypal.com/nvp";
 			if("sandbox" === $environment || "beta-sandbox" === $environment) {
 				$API_Endpoint = "https://api-3t.$environment.paypal.com/nvp";

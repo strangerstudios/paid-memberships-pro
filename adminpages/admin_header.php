@@ -140,8 +140,7 @@
 		}
 	}
 
-	//check gateway dependencies
-	$gateway = pmpro_getOption('gateway');
+	$gateway = get_option( 'pmpro_gateway' );
 	if($gateway == "stripe" && version_compare( PHP_VERSION, '5.3.29', '>=' ) ) {
 		PMProGateway_stripe::dependencies();
 	} elseif($gateway == "braintree" && version_compare( PHP_VERSION, '5.4.45', '>=' ) ) {
@@ -205,13 +204,12 @@
 	?>
 	<script>
 		jQuery(document).ready(function() {
-			jQuery.get('<?php echo admin_url( "/admin-ajax.php?action=pmpro_notifications" . $specific_notification ); ?>', function(data) {
+			jQuery.get('<?php echo admin_url( "admin-ajax.php?action=pmpro_notifications" . $specific_notification ); ?>', function(data) {
 				if(data && data != 'NULL')
 					jQuery('#pmpro_notifications').html(data);
 			});
 		});
 	</script>
-	<h2 class="pmpro_wp-notice-fix">&nbsp;</h2>
 	<?php
 		$settings_tabs = array(
 			'pmpro-dashboard',

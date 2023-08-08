@@ -118,7 +118,7 @@
 }
 
 .pmpro_banner .pmpro_meta a.pmpro_license_tag.pmpro_license_tag-invalid {
-	color: #AAA;
+	color: #555;
 }
 
 .pmpro_banner .pmpro_meta a.pmpro_license_tag.pmpro_license_tag-invalid:before {
@@ -173,22 +173,17 @@
 	font-size: 18px;
 }
 
-/* Footer */
-.pmpro-rate-us a {
-	font-weight: bold;
-	text-decoration: none;
+.pmpro_admin hr.wp-header-end {
+	margin-top: 0;
 }
 
-.pmpro-rate-us a:hover {
-	border-bottom: 1px solid;
+/* Footer */
+#footer-left a {
+	font-weight: bold;
 }
-.pmpro-rate-us .dashicons {
+
+#footer-left .pmpro-rating-stars {
 	color: #ffb900;
-	display: inline-block;
-	font-size: 14px;
-	height: 16px;
-	line-height: inherit;
-	width: 16px;
 }
 
 /* Scollable Boxes */
@@ -211,6 +206,16 @@
 
 .pmpro_scrollable table.widefat {
 	border: none;
+}
+
+/**
+ * Clickable Items
+ */
+.pmpro_clickable {
+	cursor: pointer;
+}
+.js .postbox.pmpro_clickable h3 {
+	cursor: pointer;
 }
 
 /**
@@ -311,14 +316,69 @@
 	margin: 0 0 20px 0;
 }
 
-.pmpro-popup-wrap a.pmproPopupCloseButton {
+.pmpro-popup-wrap a.pmproPopupCloseButton, 
+.pmpro-popup-wrap button.pmproPopupCloseButton {
 	color: #666;
-	display: inline-block;
-	margin: .9rem 0 0 1.45rem;
 	position: absolute;
-	right: 25px;
-	text-decoration: none;
+	right: 10px;
 	top: 10px;
+	padding:0;
+	text-decoration: none;
+
+}
+
+.pmpro-popup-wrap a.pmproPopupCloseButton:hover, 
+.pmpro-popup-wrap button.pmproPopupCloseButton:hover {
+	color: #000;
+}
+
+/* Stripe connected confirmation modal  */
+@media only screen and (min-width: 1200px) {
+	.pmpro-popup-wrap.pmpro-popup-stripe-confirmation {
+		max-width: 720px;
+		overflow: hidden;
+		width: 55%;
+	}
+
+}
+
+.pmpro-popup-wrap.pmpro-popup-stripe-confirmation h2 {
+	text-align: left;
+	line-height: normal;
+	margin-top: 0;
+}
+
+.pmpro-popup-wrap.pmpro-popup-stripe-confirmation button.pmproPopupCloseButton {
+	border: none;
+	background: transparent;
+}
+
+.pmpro-popup-wrap.pmpro-popup-stripe-confirmation p {
+	font-size: 14px;
+	line-height: 1.5;
+	text-align: left;
+}
+
+.pmpro-popup-wrap.pmpro-popup-stripe-confirmation p:last-of-type {
+	margin-bottom: 0;
+}
+
+.pmpro-popup-wrap.pmpro-popup-stripe-confirmation code {
+	display: block;
+	margin: .5em 0;
+}
+
+.pmpro-popup-wrap.pmpro-popup-stripe-confirmation ul {
+	list-style: disc;
+	margin: .5em 0 0 1em;
+}
+
+.pmpro-popup-wrap.pmpro-popup-stripe-confirmation ol li,
+.pmpro-popup-wrap.pmpro-popup-stripe-confirmation ul li  {
+	font-size: 14px;
+	line-height: 1.5;
+	margin-bottom: .5em;
+	text-align: left;
 }
 
 /* Consent Log */
@@ -526,7 +586,6 @@
 	cursor: move;
 }
 
-.pmpro_admin-pmpro-membershiplevels .membership-levels tr th:first-child:before,
 .pmpro_admin-pmpro-membershiplevels .membership-levels tr td:first-child:before {
 	color: #CCC;
 	content: "\f333";
@@ -1235,7 +1294,7 @@ tr.pmpro_settings_divider td {
 }
 
 .pmpro_admin .pmpro_alert {
-	background-color: #FFF8E0;
+	background-color: #fff8e0;
 	border-left-color: #ffeeba;
 }
 
@@ -1372,6 +1431,10 @@ tr.pmpro_settings_divider td {
 	padding-left: 0;
 }
 
+.admin_page_pmpro-wizard #wpfooter {
+	display: none;
+}
+
 .pmpro-wizard .pmpro-wizard__background {
 	background-image: url(../images/bg_icons-white.png);
 	background-repeat: repeat;
@@ -1393,6 +1456,10 @@ tr.pmpro_settings_divider td {
 	text-align: center;
 }
 
+.pmpro-wizard .pmpro-wizard__header h1 {
+	margin: 0;
+}
+
 .pmpro-wizard .pmpro-wizard__header a.pmpro_logo {
 	display: inline-block;
 	max-width: 275px;
@@ -1404,7 +1471,9 @@ tr.pmpro_settings_divider td {
 }
 
 .pmpro-stepper {
-	width: 100%;
+	margin-right: 1em;
+	margin-left: 1em;
+	position: relative;
 }
 
 .pmpro-stepper .pmpro-stepper__steps {
@@ -1415,38 +1484,51 @@ tr.pmpro_settings_divider td {
 }
 
 .pmpro-stepper .pmpro-stepper__step {
-	padding: 1em;
+	background-color: #FFF;
 	font-weight: 400;
+	padding: 1em;
 	position: relative;
+	z-index: 5;
 }
 
 .pmpro-stepper .pmpro-stepper__step-divider {
-	align-self: flex-start;
-	flex-grow: 1;
 	border-bottom: 1px solid #DDD;
-	margin-top: 2em;
-}
-
-.pmpro-stepper .pmpro-stepper__step-divider:last-child {
-	display: none;
+	position: absolute;
+	top: 2em;
+	width: 100%;
 }
 
 .pmpro-stepper .pmpro-stepper__step .pmpro-stepper__step-label {
-	color: #666;
+	color: #1d2327;
 	line-height: 24px;
 	font-size: 16px;
 }
 
-.pmpro-stepper .pmpro-stepper__step .pmpro-stepper__step-label a {
-	color: #666;
+.pmpro-stepper .pmpro-stepper__step a {
 	text-decoration: none;
+}
+
+.pmpro-stepper .pmpro-stepper__step a:active,
+.pmpro-stepper .pmpro-stepper__step a:focus {
+	outline: 0;
+	border: none;
+	box-shadow: none;
+}
+
+.pmpro-stepper .pmpro-stepper__step .pmpro-stepper__step-label {
+	color: #1d2327;
+}
+
+.pmpro-stepper .pmpro-stepper__step a:hover .pmpro-stepper__step-label {
+	color: #1A688B;
+	text-decoration: underline;
 }
 
 .pmpro-stepper .pmpro-stepper__step-icon {
 	align-items: center;
-	background-color: #EEE;
+	background-color: #F1F1F1;
 	border-radius: 50%;
-	color: #757575;
+	color: #1d2327;
 	display: inline-flex;
 	font-size: 16px;
 	height: 24px;
@@ -1472,7 +1554,7 @@ tr.pmpro_settings_divider td {
 	text-align: left;
 }
 
-.pmpro-wizard .pmpro-wizard__container>* {
+.pmpro-wizard .pmpro-wizard__container > * {
 	margin-left: auto;
 	margin-right: auto;
 	max-width: 650px;
@@ -1487,10 +1569,10 @@ tr.pmpro_settings_divider td {
 
 .pmpro-wizard__container .pmpro-wizard__step-header {
 	padding: 1em 2em;
-	text-align: center;
+	text-align: left;
 }
 
-.pmpro-wizard__container .pmpro-wizard__step-header h1 {
+.pmpro-wizard__container .pmpro-wizard__step-header h2 {
 	font-size: 2em;
 	line-height: 1.2;
 	margin: 1em 0 0 0;
@@ -1506,14 +1588,43 @@ tr.pmpro_settings_divider td {
 	line-height: 26px;
 }
 
+.pmpro-wizard__container label {
+	color: #1d2327;
+}
+
 .pmpro-wizard__container .pmpro-wizard__section-title {
-	margin: 0 0 2em 0;
+	font-size: 2em;
+	line-height: 1.2;
+	margin: 0 0 1em 0;
+}
+
+.pmpro-wizard__container fieldset {
+	border-top: 1px solid #EEE;
+	margin: 0;
+	padding: 2em;
+}
+
+.pmpro-wizard__container legend {
+	color: #1d2327;
+	display: table;
+	float: left;
+	font-size: 18px;
+	line-height: 26px;
+	margin: 0 0 1em 0;
+	padding: 0;
+	width: 100%;
 }
 
 .pmpro-wizard__container .pmpro-wizard__field {
 	border-top: 1px solid #EEE;
 	padding: 2em;
 	text-align: left;
+}
+
+.pmpro-wizard__container fieldset .pmpro-wizard__field {
+	border-top: none;
+	clear: both;
+	padding: 0 0 2em 0;
 }
 
 .pmpro-wizard__container .pmpro-wizard__field-alt {
@@ -1526,8 +1637,8 @@ tr.pmpro_settings_divider td {
 
 .pmpro-wizard__container p.pmpro-wizard__field-description {
 	font-size: 14px;
-	line-height: 20px;
-	margin: .5em 0;
+	line-height: 22px;
+	margin: .5em 0 1em 0;
 }
 
 .pmpro-wizard__container .pmpro-wizard__label-block {
@@ -1602,11 +1713,32 @@ tr.pmpro_settings_divider td {
 }
 
 .pmpro-wizard__container .pmpro-wizard__field__checkbox-group {
-	display: flex;
+	align-items: center;
+	display: grid;
+	grid-template-columns: auto 8fr;
+	grid-column-gap: 1em;
+	grid-template-areas: "input label" ". content";
 }
 
 .pmpro-wizard__container .pmpro-wizard__field__checkbox-group input[type="checkbox"] {
-	margin: .25em 1em 0 0;
+	grid-area: input;
+	margin: 0;
+}
+
+.pmpro-wizard__container .pmpro-wizard__field__checkbox-group > label {
+	font-weight: bold;
+	grid-area: label;
+	margin-bottom: 0;
+}
+
+.pmpro-wizard__container .pmpro-wizard__field__checkbox-group .pmpro-wizard__field__checkbox-content {
+	grid-area: content;
+}
+
+.pmpro-wizard__container .pmpro-wizard__field__checkbox-group .pmpro-wizard__field__checkbox-content input,
+.pmpro-wizard__container .pmpro-wizard__field__checkbox-group .pmpro-wizard__field__checkbox-content select {
+	margin-right: .5em;
+	margin-left: .5em;
 }
 
 .pmpro-wizard__container .pmpro_wizard__submit {
@@ -1617,14 +1749,14 @@ tr.pmpro_settings_divider td {
 }
 
 .pmpro-wizard__container .pmpro-wizard__exit {
-	color: #666;
+	color: #1d2327;
 	font-size: 14px;
 	margin-top: 2em;
 	text-align: center;
 }
 
 .pmpro-wizard__container .pmpro-wizard__exit a {
-	color: #666;
+	color: #1d2327;
 }
 
 .pmpro-wizard__col {
@@ -1647,21 +1779,39 @@ tr.pmpro_settings_divider td {
 
 .pmpro-wizard__addons {
 	display: grid;
-	grid-gap: 20px;
-	grid-template-columns: 1fr 1fr 1fr;
-	margin-bottom: 20px;
+	grid-gap: 2em;
+	grid-template-columns: 1fr 1fr;
+	margin-bottom: 40px;
 }
 
-.pmpro-wizard__addons > * {
-	text-align: center;
+.pmpro-wizard__addon > a {
+	align-items: center;
+	display: grid;
+	grid-column-gap: 1em;
+	grid-template-columns: 1fr 5fr;
+	text-decoration: none;
 }
 
 .pmpro-wizard__addons img {
 	border-radius: 50%;
-	box-shadow: 0px 0px 5px rgba( 0, 0, 0, 0.2 );
+	box-shadow: 0px 0px 10px rgba( 0, 0, 0, 0.1 );
+	max-width: 70px;
+}
+
+.pmpro-wizard__addon span {
+	font-size: 18px;
+	font-weight: bold;
+	line-height: 26px;
+	text-decoration: underline;
+}
+
+.pmpro-wizard__addon small {
+	color: #666;
 	display: block;
-	margin: 15px auto;
-	max-width: 120px;
+	font-size: 14px;
+	font-weight: normal;
+	margin-top: .25em;
+	text-decoration: none;
 }
 
 .pmpro-wizard__textbreak::before,
@@ -1682,9 +1832,9 @@ tr.pmpro_settings_divider td {
 }
 
 a.pmpro_wizard__skip {
-	color: #666;
+	color: #1d2327;
 	display: inline-block;
-	font-size: 13px;
+	font-size: 14px;
 	margin-top: 10px;
 	text-decoration: underline;
 }
@@ -1942,11 +2092,24 @@ p.pmpro_meta_notice {
 	color: #3c434a;
 }
 
-.pmpro_admin-pmpro-license .form-table td {
-	padding-left: 0;
+.pmpro_admin-pmpro-license form {
+	margin: 2em 0;
 }
 
-.pmpro_admin-pmpro-license .form-table label {
+.pmpro_admin-pmpro-license #pmpro-settings-key-box {
+	align-items: center;
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.5em;
+	justify-content: flex-start;
+	margin: 1em 0 2em 0;
+}
+
+.pmpro_admin-pmpro-license #pmpro-settings-key-box > * {
+	margin: 0;
+}
+
+.pmpro_admin-pmpro-license label {
 	display: block;
 	font-size: 16px;
 	font-weight: bold;
@@ -1984,10 +2147,54 @@ h2.nav-tab-wrapper {
 }
 
 /* reports */
+.memberships_page_pmpro-reports .dashboard-widgets-wrap {
+	margin-top: 1em;
+}
+
 .pmpro_admin-pmpro-reports .nav-tab-wrapper {
 	margin-bottom: 10px;
 }
+.pmpro_report-filters {
+	background-color: #FAFAFA;
+	border: 1px solid #DADADA;
+	border-radius: 6px;
+	box-shadow: 1px 1px 5px rgb(0 0 0 / 12%);
+	margin: 1em 0;
+	padding: 1.25em;
+}
+.pmpro_report-filters h3 {
+	margin: 0 0 .75em 0;
+	padding: 0;
+}
+.pmpro_report-filters .tablenav.top  {
+	align-items: center;
+	display: flex;
+	flex-wrap: wrap;
+	gap: .5em;
+	height: auto;
+	margin: 0;
+	padding: 0;
+}
 
+/* Reports individual page view styles */
+#pmpro_report_login_data thead tr th {
+	background-color: #1A688B;
+	color: #FFF;
+	font-weight: bold;
+}
+#pmpro_report_login_data thead tr.thead-sub th {
+	background-color: initial;
+	color: initial;
+	font-size: 12px;
+	font-weight: normal;
+	word-spacing: 100vw;
+}
+#pmpro_report_login_data thead th,
+#pmpro_report_login_data tbody td {
+	padding-left: 4px;
+	padding-right: 4px;
+}
+/* Reports widgets view styles */
 .pmpro_report-holder table.wp-list-table thead th,
 .pmpro_report-holder table.wp-list-table tbody td {
 	padding: 8px 10px;
@@ -2003,7 +2210,7 @@ h2.nav-tab-wrapper {
 
 #pmpro_report_login .wp-list-table tbody td,
 #pmpro_report_memberships .wp-list-table tbody tr.pmpro_report_tr td,
-#pmpro_report_sales .wp-list-table tbody tr.pmpro_report_tr td,
+#pmpro_report_sales .wp-list-table tbody tr.pmpro_report_tr td:not(#pmpro_report_sales .wp-list-table tbody tr.pmpro_report_tr td:first-child),
 #pmpro_report_sales .wp-list-table tfoot td {
 	font-size: 1.1rem;
 	font-weight: bold;
@@ -2020,7 +2227,7 @@ h2.nav-tab-wrapper {
 	vertical-align: top;
 }
 
-.pmpro_report-holder .wp-list-table tbody th button {
+.pmpro_report-holder .wp-list-table tbody button {
 	border: none;
 	background: 0 0;
 	-webkit-border-radius: 0;
@@ -2078,9 +2285,12 @@ button.pmpro_report_th_closed:before {
 
 .pmpro_chart_area {
 	background-color: #FFF;
+	border: 1px solid #DADADA;
+	border-radius: 6px;
+	box-shadow: 1px 1px 5px rgb(0 0 0 / 12%);
 	clear: both;
-	margin: 0 0 40px 0;
-	padding: 0px 10px 10px 10px;
+	margin: 1em 0;
+	padding: 0 1.25em;
 }
 
 .pmpro_chart_area rect[stroke-opacity] {

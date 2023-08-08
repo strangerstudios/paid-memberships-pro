@@ -131,7 +131,7 @@ function pmpro_upgrade_1_1_15()
 	";
 	$wpdb->query($sqlQuery);
 
-	pmpro_setOption("db_version", "1.115");
+	update_option("pmpro_db_version", "1.115");
 
 	//do the next update
 	return 1.115;

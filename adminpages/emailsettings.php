@@ -38,16 +38,16 @@
 		$msgt = "Your email settings have been updated.";		
 	}
 	
-	$from_email = pmpro_getOption("from_email");
-	$from_name = pmpro_getOption("from_name");
-	$only_filter_pmpro_emails = pmpro_getOption("only_filter_pmpro_emails");
+	$from_email = get_option( "pmpro_from_email");
+	$from_name = get_option( "pmpro_from_name");
+	$only_filter_pmpro_emails = get_option( "pmpro_only_filter_pmpro_emails");
 	
-	$email_admin_checkout = pmpro_getOption("email_admin_checkout");
-	$email_admin_changes = pmpro_getOption("email_admin_changes");
-	$email_admin_cancels = pmpro_getOption("email_admin_cancels");
-	$email_admin_billing = pmpro_getOption("email_admin_billing");	
+	$email_admin_checkout = get_option( "pmpro_email_admin_checkout");
+	$email_admin_changes = get_option( "pmpro_email_admin_changes");
+	$email_admin_cancels = get_option( "pmpro_email_admin_cancels");
+	$email_admin_billing = get_option( "pmpro_email_admin_billing");	
 	
-	$email_member_notification = pmpro_getOption("email_member_notification");
+	$email_member_notification = get_option( "pmpro_email_member_notification");
 	
 	if(empty($from_email))
 	{
@@ -82,7 +82,7 @@
 	<form action="" method="post" enctype="multipart/form-data"> 
 		<?php wp_nonce_field('savesettings', 'pmpro_emailsettings_nonce');?>
 		<hr class="wp-header-end">
-		<h1 class="wp-heading-inline"><?php esc_html_e( 'Email Settings', 'paid-memberships-pro' ); ?></h1>
+		<h1><?php esc_html_e( 'Email Settings', 'paid-memberships-pro' ); ?></h1>
 		<h2><?php esc_html_e( 'Send Emails From', 'paid-memberships-pro' ); ?></h2>
 		<p><?php echo wp_kses_post( __( 'By default, system generated emails are sent from <em><strong>wordpress@yourdomain.com</strong></em>. You can update this from address using the fields below.', 'paid-memberships-pro' ) );?></p>
 
@@ -147,7 +147,7 @@
 					
 					// Messages for connected or not.
 					$connected = __( 'Your site is connected to SendWP.', 'paid-memberships-pro' ) . " <a href='https://app.sendwp.com/dashboard/' target='_blank' rel='nofollow noopener'>" . __( 'View Your SendWP Account', 'paid-memberships-pro' ) . "</a>";
-					$disconnected = ' ' . sprintf( __( 'Please enable email sending inside %s.', 'paid-memberships-pro' ), '<a href="' . admin_url('/tools.php?page=sendwp') . '">SendWP Settings</a>' );
+					$disconnected = ' ' . sprintf( __( 'Please enable email sending inside %s.', 'paid-memberships-pro' ), '<a href="' . admin_url('tools.php?page=sendwp') . '">SendWP Settings</a>' );
 					?>
 					<p class="description" id="pmpro-sendwp-description"><?php echo $sendwp_email_forwarding ? $connected : $disconnected; ?></p>
 				<?php }

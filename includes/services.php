@@ -151,7 +151,7 @@ function pmpro_update_level_order() {
 		$level_order = sanitize_text_field( $_REQUEST['level_order'] );
 	}
 	
-	echo pmpro_setOption('level_order', $level_order);
+	echo update_option('pmpro_level_order', $level_order);
     exit;
 }
 add_action('wp_ajax_pmpro_update_level_order', 'pmpro_update_level_order');
