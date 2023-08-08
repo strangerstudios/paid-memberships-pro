@@ -2076,8 +2076,8 @@ function pmpro_getMembershipLevelForUser( $user_id = null, $force = false ) {
  *		Failure returns false.
  */
 function pmpro_getMembershipLevelsForUser( $user_id = null, $include_inactive = false ) {
+	global $current_user, $pmpro_pages;
 	if ( empty( $user_id ) ) {
-		global $current_user;
 		$user_id = $current_user->ID;
 	}
 
@@ -2087,6 +2087,45 @@ function pmpro_getMembershipLevelsForUser( $user_id = null, $include_inactive = 
 
 	// make sure user id is int for security
 	$user_id = intval( $user_id );
+
+	// Admins have special rules for membership levels. Check them here.
+	if ( $user_id == $current_user->ID && current_user_can( 'manage_options' ) ) {
+		// Make sure that we are not on a page where we want to always show the user's true levels.
+		if (
+			! is_admin() &&
+			( empty( $GLOBALS['wp_query'] ) || ! pmpro_is_checkout() ) &&
+			( empty( $pmpro_pages['account'] ) || ! is_page( $pmpro_pages['account'] ) ) &&
+			( empty( $pmpro_pages['billing'] ) || ! is_page( $pmpro_pages['billing'] ) ) &&
+			( empty( $pmpro_pages['cancel'] ) || ! is_page( $pmpro_pages['cancel'] ) ) &&
+			( empty( $pmpro_pages['checkout'] ) || ! is_page( $pmpro_pages['checkout'] ) ) &&
+			( empty( $pmpro_pages['confirmation'] ) || ! is_page( $pmpro_pages['confirmation'] ) ) &&
+			( empty( $pmpro_pages['invoice'] ) || ! is_page( $pmpro_pages['invoice'] ) ) &&
+			( empty( $pmpro_pages['levels'] ) || ! is_page( $pmpro_pages['levels'] ) ) &&
+			! apply_filters( 'pmpro_disable_admin_membership_access', false )
+		) {
+			// This user meta can be changed via the admin bar.
+			$admin_membership_access = get_user_meta( $current_user->ID, 'pmpro_admin_membership_access', true );
+
+			if ( 'no' === $admin_membership_access ) {
+				return array();
+			} elseif ( 'current' !== $admin_membership_access ) {
+				$all_levels = pmpro_getAllLevels( true );
+
+				// Make sure that each level has all the necessary fields.
+				foreach ( $all_levels as $key => $level ) {
+					$level->ID = $level->id;
+					$level->subscription_id = null;
+					$level->code_id = null;
+					$level->startdate = strtotime( '-1 year' );
+					$level->enddate = strtotime ( '+1 year' );
+				}
+				return $all_levels;
+			}
+
+			// If we get here, the admin membership access is set to 'current'.
+			// Continue checking access as normal.
+		}
+	}
 
 	global $wpdb;
 
