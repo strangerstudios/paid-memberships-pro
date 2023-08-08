@@ -295,11 +295,11 @@ function pmpro_admin_membership_access_menu_bar() {
 
 	// Set the title and the option value.
 	if ( 'no' === $admin_membership_access ) {
-		$title = '<span class="ab-icon dashicons dashicons-hidden non-member-icon"></span>' . __( 'Viewing without membership access', 'paid-memberships-pro' );
+		$title = '<span class="ab-icon dashicons dashicons-hidden non-member-icon"></span>' . esc_html__( 'Viewing without membership access', 'paid-memberships-pro' );
 	} elseif ( 'current' === $admin_membership_access ) {
-		$title = __( 'Viewing with current membership levels', 'paid-memberships-pro' );
+		$title = esc_html__( 'Viewing with current membership levels', 'paid-memberships-pro' );
 	} else {
-		$title = '<span class="ab-icon dashicons dashicons-saved has-access-icon"></span>' . __( 'Viewing with membership access', 'paid-memberships-pro' );
+		$title = '<span class="ab-icon dashicons dashicons-saved has-access-icon"></span>' . esc_html__( 'Viewing with membership access', 'paid-memberships-pro' );
 		$admin_membership_access = 'yes';
 	}
 
