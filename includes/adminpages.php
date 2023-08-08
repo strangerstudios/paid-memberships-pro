@@ -276,6 +276,9 @@ function pmpro_admin_membership_access_menu_bar() {
 	// Let's save or delete the option now.
 	if ( ! empty( $_REQUEST['pmpro-admin-membership-access'] ) ) {
 
+		// Check the nonce.
+		check_admin_referer( 'pmpro_admin_membership_access', 'pmpro_admin_membership_access_nonce' );
+
 		// Let's get the value of the view_as now:
 		$admin_membership_access = sanitize_text_field( $_REQUEST['pmpro-admin-membership-access'] );
 
@@ -311,7 +314,7 @@ function pmpro_admin_membership_access_menu_bar() {
 		)
 	);
 
-	// Build a form input for changing the Admin Membership Access setting..
+	// Build a form input for changing the Admin Membership Access setting.
 	ob_start();
 	?>
 	<form method="POST" id="pmpro-admin-membership-access-form" action="">
@@ -320,6 +323,7 @@ function pmpro_admin_membership_access_menu_bar() {
 			<option value="current" <?php selected( $admin_membership_access, 'current', true ); ?>><?php esc_html_e( 'View with current membership levels', 'paid-memberships-pro' ); ?></option>
 			<option value="no" <?php selected( $admin_membership_access, 'no', true ); ?>><?php esc_html_e( 'View without membership access', 'paid-memberships-pro' ); ?></option>
 		</select>
+		<?php wp_nonce_field( 'pmpro_admin_membership_access', 'pmpro_admin_membership_access_nonce' ); ?>
 	</form>
 	<?php
 
