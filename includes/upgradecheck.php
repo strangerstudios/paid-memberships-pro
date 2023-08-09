@@ -370,6 +370,11 @@ function pmpro_db_delta()
 	$wpdb->pmpro_groups = $wpdb->prefix . 'pmpro_groups';
 	$wpdb->pmpro_membership_levels_groups = $wpdb->prefix . 'pmpro_membership_levels_groups';
 
+	$collate = '';
+	if ( $wpdb->has_cap( 'collation' ) ) {
+		$collate = $wpdb->get_charset_collate();
+	}
+
 	//wp_pmpro_membership_levels
 	$sqlQuery = "
 		CREATE TABLE `" . $wpdb->pmpro_membership_levels . "` (
@@ -391,7 +396,7 @@ function pmpro_db_delta()
 		  KEY `allow_signups` (`allow_signups`),
 		  KEY `initial_payment` (`initial_payment`),
 		  KEY `name` (`name`)
-		);
+		) $collate;
 	";
 	dbDelta($sqlQuery);
 
@@ -446,7 +451,7 @@ function pmpro_db_delta()
 		  KEY `affiliate_id` (`affiliate_id`),
 		  KEY `affiliate_subid` (`affiliate_subid`),
 		  KEY `checkout_id` (`checkout_id`)
-		);
+		) $collate;
 	";
 	dbDelta($sqlQuery);
 
@@ -458,7 +463,7 @@ function pmpro_db_delta()
 		  `modified` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 		  PRIMARY KEY (`membership_id`,`category_id`),
 		  UNIQUE KEY `category_membership` (`category_id`,`membership_id`)
-		);
+		) $collate;
 	";
 	dbDelta($sqlQuery);
 
@@ -470,7 +475,7 @@ function pmpro_db_delta()
 		  `modified` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 		  PRIMARY KEY (`page_id`,`membership_id`),
 		  UNIQUE KEY `membership_page` (`membership_id`,`page_id`)
-		);
+		) $collate;
 	";
 	dbDelta($sqlQuery);
 
@@ -499,7 +504,7 @@ function pmpro_db_delta()
 		   KEY `enddate` (`enddate`),
 		   KEY `user_id` (`user_id`),
 		   KEY `status` (`status`)
-		);
+		) $collate;
 	";
 	dbDelta($sqlQuery);
 
@@ -515,7 +520,7 @@ function pmpro_db_delta()
 		  UNIQUE KEY `code` (`code`),
 		  KEY `starts` (`starts`),
 		  KEY `expires` (`expires`)
-		);
+		) $collate;
 	";
 	dbDelta($sqlQuery);
 
@@ -535,7 +540,7 @@ function pmpro_db_delta()
 		  `expiration_period` varchar(10) NOT NULL,
 		  PRIMARY KEY  (`code_id`,`level_id`),
 		  KEY `initial_payment` (`initial_payment`)
-		);
+		) $collate;
 	";
 	dbDelta($sqlQuery);
 
@@ -550,7 +555,7 @@ function pmpro_db_delta()
 		  PRIMARY KEY  (`id`),
 		  KEY `user_id` (`user_id`),
 		  KEY `timestamp` (`timestamp`)
-		);
+		) $collate;
 	";
 	dbDelta($sqlQuery);
 
@@ -564,7 +569,7 @@ function pmpro_db_delta()
 		  PRIMARY KEY (`meta_id`),
 		  KEY `pmpro_membership_level_id` (`pmpro_membership_level_id`),
 		  KEY `meta_key` (`meta_key`)
-		);
+		) $collate;
 	";
 	dbDelta($sqlQuery);
 
@@ -592,7 +597,7 @@ function pmpro_db_delta()
 			UNIQUE KEY `subscription_link` (`subscription_transaction_id`, `gateway_environment`, `gateway`),
 			KEY `user_id` (`user_id`),
 			KEY `next_payment_date` (`next_payment_date`)
-		);
+		) $collate;
 	";
 	dbDelta($sqlQuery);
 
@@ -606,7 +611,7 @@ function pmpro_db_delta()
 		  PRIMARY KEY (`meta_id`),
 		  KEY `pmpro_membership_order_id` (`pmpro_membership_order_id`),
 		  KEY `meta_key` (`meta_key`)
-		);
+		) $collate;
 	";
 	dbDelta($sqlQuery);
 
@@ -620,29 +625,33 @@ function pmpro_db_delta()
 		  PRIMARY KEY (`meta_id`),
 		  KEY `pmpro_subscription_id` (`pmpro_subscription_id`),
 		  KEY `meta_key` (`meta_key`)
-		);
+		) $collate;
 	";
 	dbDelta($sqlQuery);
 
 	//pmpro_groups
-	$sqlQuery = "CREATE TABLE `" . $wpdb->pmpro_groups . "` (
-		`id` int unsigned NOT NULL AUTO_INCREMENT,
-		`name` varchar(255) NOT NULL,
-		`allow_multiple_selections` tinyint NOT NULL DEFAULT '1',
-		`displayorder` int,
-		PRIMARY KEY (`id`),
-		KEY `name` (`name`)
-	)";
+	$sqlQuery = "
+		CREATE TABLE `" . $wpdb->pmpro_groups . "` (
+		 `id` int unsigned NOT NULL AUTO_INCREMENT,
+		 `name` varchar(255) NOT NULL,
+		 `allow_multiple_selections` tinyint NOT NULL DEFAULT '1',
+		 `displayorder` int,
+		 PRIMARY KEY (`id`),
+		 KEY `name` (`name`)
+		) $collate;
+	";
 	dbDelta($sqlQuery);
 
 	//pmpro_membership_levels_groups
-	$sqlQuery = "CREATE TABLE `" . $wpdb->pmpro_membership_levels_groups . "` (
-		`id` int unsigned NOT NULL AUTO_INCREMENT,
-		`level` int unsigned NOT NULL DEFAULT '0',
-		`group` int unsigned NOT NULL DEFAULT '0',
-		PRIMARY KEY (`id`),
-		KEY `level` (`level`),
-		KEY `group` (`group`)
-	)";
+	$sqlQuery = "
+		CREATE TABLE `" . $wpdb->pmpro_membership_levels_groups . "` (
+		 `id` int unsigned NOT NULL AUTO_INCREMENT,
+		 `level` int unsigned NOT NULL DEFAULT '0',
+		 `group` int unsigned NOT NULL DEFAULT '0',
+		 PRIMARY KEY (`id`),
+		 KEY `level` (`level`),
+		 KEY `group` (`group`)
+		) $collate;
+	";
 	dbDelta($sqlQuery);
 }
