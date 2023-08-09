@@ -18,6 +18,13 @@ config.entry = {
     "account-invoices-section",
     "index.js"
   ),
+  "account-profile-section/index": path.resolve(
+    process.cwd(),
+    "blocks",
+    "src",
+    "account-profile-section",
+    "index.js"
+  ),
 };
 
 config.output = {
