@@ -96,7 +96,7 @@ pmpro_insert_or_replace(
 
 // Was there an error inserting or updating?
 if ( empty( $wpdb->last_error ) ) {		
-	$edit = false;
+	unset( $_REQUEST['edit'] );
 	$msg = 1;
 
 	if ( ! empty( $saveid ) ) {
