@@ -30,6 +30,7 @@ add_filter( 'block_categories_all', 'pmpro_block_categories' );
 function pmpro_register_block_types() {
 	register_block_type( PMPRO_DIR . '/blocks/build/account-invoices-section' );
 	register_block_type( PMPRO_DIR . '/blocks/build/account-profile-section' );
+	register_block_type( PMPRO_DIR . '/blocks/build/account-links-section' );
 }
 add_action( 'init', 'pmpro_register_block_types' );
 
