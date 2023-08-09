@@ -671,9 +671,11 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 			$levels = pmpro_getAllLevels( true, true );
 
 			// Hide confirmation message if not an admin or member.
-			if ( ! current_user_can( 'manage_options' ) && ! pmpro_hasMembershipLevel() ) {
+			if ( ! current_user_can( 'manage_options' ) && ! current_user_can( 'pmpro_membershiplevels' ) ) {
 				foreach ( $levels as $level ) {
-					$level->confirmation = '';
+					if ( ! pmpro_hasMembershipLevel( $level->id ) ) {
+						$level->confirmation = '';
+					}
 				}
 			}
 
@@ -1105,7 +1107,7 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 			$params = $request->get_params();
 
 			$post_id = isset( $params['post_id'] ) ? intval( $params['post_id'] ) : null;
-			$level_ids = isset( $params['level_ids'] ) ? $params['level_ids'] : null;
+			$level_ids = isset( $params['level_ids'] ) ? array_map( 'intval', $params['level_ids'] ) : null;
 
 			if ( empty( $post_id ) ) {
 				return new WP_REST_Response( array( 'error' => 'No post ID provided.' ), 400 );
