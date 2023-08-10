@@ -1481,7 +1481,7 @@
 				$subscription = $this->get_subscription();
 
 				// Check if the subscription has reached its billing limit.
-				if ( 'active' === $subscription->get_status() && $subscription->billing_limit_reached() ) {
+				if ( ! empty( $subscription ) && 'active' === $subscription->get_status() && $subscription->billing_limit_reached() ) {
 					// Cancel the subscription.
 					$subscription->cancel_at_gateway();
 				}
