@@ -224,8 +224,8 @@ if ( isset( $_REQUEST['CVV'] ) ) {
 	$CVV = "";
 }
 
-if ( isset( $_REQUEST['discount_code'] ) ) {
-	$discount_code = preg_replace( "/[^A-Za-z0-9\-]/", "", sanitize_text_field( $_REQUEST['discount_code'] ) );
+if ( ! empty( $pmpro_level->discount_code ) ) {
+	$discount_code = preg_replace( "/[^A-Za-z0-9\-]/", "", sanitize_text_field( $pmpro_level->discount_code ) );
 } else {
 	$discount_code = "";
 }
@@ -770,7 +770,7 @@ if ( ! empty( $pmpro_confirmed ) ) {
 			}
 
 			//redirect to confirmation
-			$rurl = pmpro_url( "confirmation", "?level=" . $pmpro_level->id );
+			$rurl = pmpro_url( "confirmation", "?pmpro_level=" . $pmpro_level->id );
 			$rurl = apply_filters( "pmpro_confirmation_url", $rurl, $user_id, $pmpro_level );
 			wp_redirect( $rurl );
 			exit;

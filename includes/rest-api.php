@@ -858,7 +858,9 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 		function pmpro_rest_api_get_checkout_level( $request ) {
 			$params = $request->get_params();
 
-			if ( isset( $params['level_id'] ) ) {
+			if ( isset( $params['pmpro_level' ] ) ) {
+				$level_id = intval( $params['pmpro_level'] );
+			} elseif ( isset( $params['level_id'] ) ) {
 				$level_id = intval( $params['level_id'] );
 			} elseif ( isset( $params['level'] ) ) {
 				$level_id = intval( $params['level'] );
@@ -868,7 +870,14 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 				return new WP_REST_Response( 'No level found.', 400 );
 			}
 
-			$discount_code = isset( $params['discount_code'] ) ? sanitize_text_field( $params['discount_code'] ) : null;
+			if ( isset( $params['pmpro_discount_code'] ) ) {
+				$discount_code = sanitize_text_field( $params['pmpro_discount_code'] );
+			} elseif ( isset( $params['discount_code'] ) ) {
+				$discount_code = sanitize_text_field( $params['discount_code'] );
+			} else {
+				$discount_code = null;
+			}
+
 			$checkout_level = pmpro_getLevelAtCheckout( $level_id, $discount_code );
 			
 			// Hide confirmation message if not an admin or member.
