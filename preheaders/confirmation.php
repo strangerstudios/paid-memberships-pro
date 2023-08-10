@@ -4,8 +4,8 @@ global $current_user, $pmpro_invoice;
 // Redirect non-user to the login page; pass the Confirmation page as the redirect_to query arg.
 if ( ! is_user_logged_in() ) {
 	// Get level ID from URL parameter.
-	if ( ! empty( $_REQUEST['level'] ) ) {
-		$confirmation_url = add_query_arg( 'level', sanitize_text_field( $_REQUEST['level'] ), pmpro_url( 'confirmation' ) );
+	if ( ! empty( $_REQUEST['pmpro_level'] ) ) {
+		$confirmation_url = add_query_arg( 'pmpro_level', sanitize_text_field( $_REQUEST['pmpro_level'] ), pmpro_url( 'confirmation' ) );
 	} else {
 		$confirmation_url = pmpro_url( 'confirmation' );
 	}

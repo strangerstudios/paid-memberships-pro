@@ -1,11 +1,54 @@
 <?php
 	class PMProEmail
-	{
-		
-		function __construct()
-		{
-			$this->email = $this->from = $this->fromname = $this->subject = $this->template = $this->data = $this->body = NULL;
-		}					
+	{		
+		/**
+		 * Email address to send the email to.
+		 *
+		 * @var string $email
+		 */
+		public $email = '';
+
+		/**
+		 * From address to send the email from.
+		 *
+		 * @var string $from
+		 */
+		public $from = '';
+
+		/**
+		 * From name to send the email from.
+		 *
+		 * @var string $fromname
+		 */
+		public $fromname = '';
+
+		/**
+		 * Subject line for the email.
+		 *
+		 * @var string $subject
+		 */
+		public $subject = '';
+
+		/**
+		 * Template of the email address to use.
+		 *
+		 * @var string $template
+		 */
+		public $template = '';
+
+		/**
+		 * Data that accompanies the email.
+		 *
+		 * @var array $data
+		 */
+		public $data = '';
+
+		/**
+		 * Body content for the email
+		 *
+		 * @var string $body
+		 */
+		public $body = '';
 		
 		/**
 		 * Send an email to a member or admin. Uses the wp_mail function.
@@ -306,6 +349,102 @@
 		}
 
 		/**
+		 * Semnd the "cancel on next payment date" email to the member.
+		 *
+		 * @param WP_User $user The WordPress user object.
+		 * @param int $level_id The level ID of the level that was cancelled.
+		 */
+		function sendCancelOnNextPaymentDateEmail( $user, $level_id ) {
+			// If an array is passed for $level_id, throw doing it wrong warning.
+			if ( is_array( $level_id ) ) {
+				_doing_it_wrong( __FUNCTION__, __( 'The $level_id parameter should be an integer, not an array.', 'paid-memberships-pro' ), 'TBD' );
+			}
+
+			// Make sure that the user object is a WP_User object.
+			if ( ! is_a( $user, 'WP_User' ) ) {
+				_doing_it_wrong( __FUNCTION__, __( 'The $user parameter should be a WP_User object.', 'paid-memberships-pro' ), 'TBD' );
+			}
+
+			// Get the level object.
+			$level = pmpro_getSpecificMembershipLevelForUser( $user->ID, $level_id );
+
+			// Make sure that the level is now set to expire.
+			if ( empty( $level ) || empty( $level->enddate) ) {
+				return false;
+			}
+
+			$this->email = $user->user_email;
+			$this->subject = sprintf( __( 'Your payment subscription at %s has been CANCELLED', 'paid-memberships-pro' ), $user->user_login, get_option( 'blogname' ) );
+
+			$this->data = array(
+				'user_login' => $user->user_login,
+				'user_email' => $user->user_email,
+				'display_name' => $user->display_name,
+				'sitename' => get_option( 'blogname' ),
+				'siteemail' => pmpro_getOption( 'from_email' ),
+				'login_link' => pmpro_login_url(),
+				'login_url' => pmpro_login_url(),
+				'levels_url' => pmpro_url( 'levels' ),
+				'membership_id' => $level->id,
+				'membership_level_name' => $level->name,
+				'startdate' => date_i18n( get_option( 'date_format' ), $level->startdate ),
+				'enddate' => date_i18n( get_option( 'date_format' ), $level->enddate ),
+			);
+
+			$this->template = apply_filters( "pmpro_email_template", "cancel_on_next_payment_date", $this );
+
+			return $this->sendEmail();
+		}
+
+		/**
+		 * Send the "cancel on next payment date" email to the admin.
+		 *
+		 * @param WP_User $user The WordPress user object.
+		 * @param int $level_id The level ID of the level that was cancelled.
+		 */
+		function sendCancelOnNextPaymentDateAdminEmail( $user, $level_id ) {
+			// If an array is passed for $level_id, throw doing it wrong warning.
+			if ( is_array( $level_id ) ) {
+				_doing_it_wrong( __FUNCTION__, __( 'The $level_id parameter should be an integer, not an array.', 'paid-memberships-pro' ), 'TBD' );
+			}
+
+			// Make sure that the user object is a WP_User object.
+			if ( ! is_a( $user, 'WP_User' ) ) {
+				_doing_it_wrong( __FUNCTION__, __( 'The $user parameter should be a WP_User object.', 'paid-memberships-pro' ), 'TBD' );
+			}
+
+			// Get the level object.
+			$level = pmpro_getSpecificMembershipLevelForUser( $user->ID, $level_id );
+
+			// Make sure that the level is now set to expire.
+			if ( empty( $level ) || empty( $level->enddate) ) {
+				return false;
+			}
+
+			$this->email = pmpro_getOption( 'from_email' );
+			$this->subject = sprintf( __( 'Payment subscription for %s at %s has been CANCELLED', 'paid-memberships-pro' ), $user->user_login, get_option( 'blogname' ) );
+
+			$this->data = array(
+				'user_login' => $user->user_login,
+				'user_email' => $user->user_email,
+				'display_name' => $user->display_name,
+				'sitename' => get_option( 'blogname' ),
+				'siteemail' => pmpro_getOption( 'from_email' ),
+				'login_link' => pmpro_login_url(),
+				'login_url' => pmpro_login_url(),
+				'levels_url' => pmpro_url( 'levels' ),
+				'membership_id' => $level->id,
+				'membership_level_name' => $level->name,
+				'startdate' => date_i18n( get_option( 'date_format' ), $level->startdate ),
+				'enddate' => date_i18n( get_option( 'date_format' ), $level->enddate ),
+			);
+
+			$this->template = apply_filters( "pmpro_email_template", "cancel_on_next_payment_date_admin", $this );
+
+			return $this->sendEmail();
+		}
+
+		/**
 		 * Send the refunded email to the member.
 		 *
 		 * @param object $user The WordPress user object.
@@ -496,7 +635,7 @@
 								'siteemail' => get_option('pmpro_from_email'),
 								'membership_id' => $membership_level->id,
 								'membership_level_name' => $membership_level->name,
-								'membership_level_confirmation_message' => $confirmation_message,
+								'membership_level_confirmation_message' => wpautop( $confirmation_message ),
 								'membership_cost' => pmpro_getLevelCost($membership_level),								
 								'login_link' => pmpro_login_url(),
 								'login_url' => pmpro_login_url(),
@@ -1105,9 +1244,10 @@
 		 */
 		function sendTrialEndingEmail( $user = NULL, $membership_id = NULL )
 		{
+			global $current_user;
+
 			_deprecated_function( 'sendTrialEndingEmail', '2.10' );
 
-			global $current_user, $wpdb;
 			if(!$user)
 				$user = $current_user;
 			
@@ -1155,7 +1295,7 @@
 		
 		function sendMembershipExpiredEmail( $user = NULL, $membership_id = NULL )
 		{
-			global $current_user, $wpdb;
+			global $current_user;
 			if(!$user)
 				$user = $current_user;
 			
@@ -1180,7 +1320,7 @@
 		 */
 		function sendMembershipExpiringEmail( $user = NULL, $membership_id = NULL )
 		{
-			global $current_user, $wpdb;
+			global $current_user;
 			if(!$user)
 				$user = $current_user;
 			
@@ -1225,7 +1365,7 @@
 		 */
 		function sendAdminChangeEmail($user = NULL)
 		{
-			global $current_user, $wpdb;
+			global $current_user;
 			if(!$user)
 				$user = $current_user;
 			
@@ -1268,7 +1408,7 @@
 		 */
 		function sendAdminChangeAdminEmail($user = NULL)
 		{
-			global $current_user, $wpdb;
+			global $current_user;
 			if(!$user)
 				$user = $current_user;
 			
@@ -1372,7 +1512,7 @@
 		 */
 		function sendPaymentActionRequiredEmail($user = NULL, $order = NULL, $invoice_url = NULL)
 		{
-			global $wpdb, $current_user;
+			global $current_user;
 			if(!$user)
 				$user = $current_user;
 			
@@ -1420,7 +1560,7 @@
 		 */
 		function sendPaymentActionRequiredAdminEmail($user = NULL, $order = NULL, $invoice_url = NULL)
 		{
-			global $wpdb, $current_user;
+			global $current_user;
 			if(!$user)
 				$user = $current_user;
 			

@@ -249,6 +249,94 @@ function pmpro_admin_bar_menu() {
 add_action( 'admin_bar_menu', 'pmpro_admin_bar_menu', 1000);
 
 /**
+ * Add the "Admin Membership Access" menu to the admin bar.
+ */
+function pmpro_admin_membership_access_menu_bar() {
+	global $wp_admin_bar, $current_user;
+
+	// Only show when viewing the frontend of the site.
+	if ( is_admin() ) {
+		return;
+	}
+
+	/**
+	 * Filter to hide the "Admin Membership Access" menu in the admin bar.
+	 * @since TBD
+	 * @param bool $hide Whether to hide the "Admin Membership Access" menu in the admin bar. Default false.
+	 */
+	if ( apply_filters( 'pmpro_hide_admin_membership_access_toolbar', false ) ) {
+		return;
+	}
+
+	// View menu at all?
+	if ( ! current_user_can( 'manage_options' ) || ! is_admin_bar_showing() ) {
+		return;
+	}
+
+	// Let's save or delete the option now.
+	if ( ! empty( $_REQUEST['pmpro-admin-membership-access'] ) ) {
+
+		// Check the nonce.
+		check_admin_referer( 'pmpro_admin_membership_access', 'pmpro_admin_membership_access_nonce' );
+
+		// Let's get the value of the view_as now:
+		$admin_membership_access = sanitize_text_field( $_REQUEST['pmpro-admin-membership-access'] );
+
+		if ( $admin_membership_access == 'no' ) {
+			update_user_meta( $current_user->ID, 'pmpro_admin_membership_access', 'no' );
+		} elseif ( $admin_membership_access == 'current' ) {
+			update_user_meta( $current_user->ID, 'pmpro_admin_membership_access', 'current' );
+		} else {
+			update_user_meta( $current_user->ID, 'pmpro_admin_membership_access', 'yes' );
+		}
+
+		echo "<meta http-equiv='refresh' content='0'>";
+	}
+
+	// Let's get the option now so we can show it.
+	$admin_membership_access = get_user_meta( $current_user->ID, 'pmpro_admin_membership_access', true );
+
+	// Set the title and the option value.
+	if ( 'no' === $admin_membership_access ) {
+		$title = '<span class="ab-icon dashicons dashicons-hidden non-member-icon"></span>' . esc_html__( 'Viewing without membership access', 'paid-memberships-pro' );
+	} elseif ( 'current' === $admin_membership_access ) {
+		$title = esc_html__( 'Viewing with current membership levels', 'paid-memberships-pro' );
+	} else {
+		$title = '<span class="ab-icon dashicons dashicons-saved has-access-icon"></span>' . esc_html__( 'Viewing with membership access', 'paid-memberships-pro' );
+		$admin_membership_access = 'yes';
+	}
+
+	$wp_admin_bar->add_menu(
+		array(
+			'id' => 'pmpro-admin-membership-access',
+			'parent' => 'top-secondary',
+			'title' => $title,
+		)
+	);
+
+	// Build a form input for changing the Admin Membership Access setting.
+	ob_start();
+	?>
+	<form method="POST" id="pmpro-admin-membership-access-form" action="">
+		<select name="pmpro-admin-membership-access" id="pmpro-admin-membership-access" onchange="this.form.submit()">
+			<option value="yes" <?php selected( $admin_membership_access, 'yes', true ); ?>><?php esc_html_e( 'View with membership access', 'paid-memberships-pro' ); ?></option>
+			<option value="current" <?php selected( $admin_membership_access, 'current', true ); ?>><?php esc_html_e( 'View with current membership levels', 'paid-memberships-pro' ); ?></option>
+			<option value="no" <?php selected( $admin_membership_access, 'no', true ); ?>><?php esc_html_e( 'View without membership access', 'paid-memberships-pro' ); ?></option>
+		</select>
+		<?php wp_nonce_field( 'pmpro_admin_membership_access', 'pmpro_admin_membership_access_nonce' ); ?>
+	</form>
+	<?php
+
+	// Add the form to the menu.
+	$wp_admin_bar->add_node( array(
+		'parent' => 'pmpro-admin-membership-access',
+		'id' => 'pmpro-admin-membership-access-input',
+		'title' => ob_get_clean(),
+	) );
+}
+add_action( 'admin_bar_menu', 'pmpro_admin_membership_access_menu_bar' );
+
+/**
  * Functions to load pages from adminpages directory
  */
 function pmpro_reports() {

@@ -650,6 +650,96 @@ function pmpro_multiple_memberships_per_user_deprecated() {
 add_action( 'plugins_loaded', 'pmpro_multiple_memberships_per_user_deprecated', 20 );
 
 /**
+ * Old Stripe Billing Limits functions.
+ */
+function pmpro_stripe_billing_limits_deprecated() {
+	if ( ! function_exists( 'pmprosbl_pmpro_added_order' ) ) {
+		function pmprosbl_pmpro_added_order() {
+			_deprecated_function( __FUNCTION__, 'TBD' );
+		}
+	}
+
+	if ( ! function_exists( 'pmprosbl_pmpro_stripe_subscription_deleted' ) ) {
+		function pmprosbl_pmpro_stripe_subscription_deleted() {
+			_deprecated_function( __FUNCTION__, 'TBD' );
+		}
+	}
+
+	if ( ! function_exists( 'pmprosbl_is_billing_limit_reached' ) ) {
+		function pmprosbl_is_billing_limit_reached( $order ) {
+			_deprecated_function( __FUNCTION__, 'TBD' );
+
+			// Get the subscription for this order.
+			$subscription = $order->get_subscription();
+			if ( empty( $subscription ) ) {
+				return false;
+			}
+
+			return $subscription->billing_limit_reached();
+		}
+	}
+
+	if ( ! function_exists( 'pmprosbl_plugin_row_meta' ) ) {
+		function pmprosbl_plugin_row_meta() {
+			_deprecated_function( __FUNCTION__, 'TBD' );
+		}
+	}
+}
+add_action( 'plugins_loaded', 'pmpro_stripe_billing_limits_deprecated', 20 );
+
+/**
+ * Old Cancel On Next Payment Date functions.
+ */
+function pmpro_cancel_on_next_payment_date_deprecated() {
+	// pmproconpd_load_text_domain function.
+	if ( ! function_exists( 'pmproconpd_load_text_domain' ) ) {
+		function pmproconpd_load_text_domain() {
+			_deprecated_function( __FUNCTION__, 'TBD' );
+		}
+	}
+
+	// pmproconpd_pmpro_change_level function.
+	if ( ! function_exists( 'pmproconpd_pmpro_change_level' ) ) {
+		function pmproconpd_pmpro_change_level( $level_id, $user_id ) {
+			_deprecated_function( __FUNCTION__, 'TBD' );
+		}
+	}
+
+	// pmproconpd_gettext_cancel_text function.
+	if ( ! function_exists( 'pmproconpd_gettext_cancel_text' ) ) {
+		function pmproconpd_gettext_cancel_text( $translated_text, $text, $domain ) {
+			_deprecated_function( __FUNCTION__, 'TBD' );
+			return $translated_text;
+		}
+	}
+
+	// pmproconpd_pmpro_email_body function.
+	if ( ! function_exists( 'pmproconpd_pmpro_email_body' ) ) {
+		function pmproconpd_pmpro_email_body( $body, $email ) {
+			_deprecated_function( __FUNCTION__, 'TBD' );
+			return $body;
+		}
+	}
+
+	// pmproconpd_pmpro_email_data function.
+	if ( ! function_exists( 'pmproconpd_pmpro_email_data' ) ) {
+		function pmproconpd_pmpro_email_data( $email_data, $email ) {
+			_deprecated_function( __FUNCTION__, 'TBD' );
+			return $email_data;
+		}
+	}
+
+	// pmproconpd_plugin_row_meta function.
+	if ( ! function_exists( 'pmproconpd_plugin_row_meta' ) ) {
+		function pmproconpd_plugin_row_meta( $links, $file ) {
+			_deprecated_function( __FUNCTION__, 'TBD' );
+			return $links;
+		}
+	}
+}
+add_action( 'plugins_loaded', 'pmpro_cancel_on_next_payment_date_deprecated', 20 );
+
+/**
  * Check for active Add Ons that are not yet MMPU compatible.
  *
  * @since TBD
@@ -705,6 +795,14 @@ function pmpro_get_deprecated_add_ons() {
 		'pmpro-multiple-memberships-per-user' => array(
 			'file' => 'pmpro-multiple-memberships-per-user.php',
 			'label' => 'Multiple Memberships Per User'
+		),
+		'pmpro-cancel-on-next-payment-date' => array(
+			'file' => 'pmpro-cancel-on-next-payment-date.php',
+			'label' => 'Cancel on Next Payment Date'
+    ),
+		'pmpro-stripe-billing-limits' => array(
+			'file' => 'pmpro-stripe-billing-limits.php',
+			'label' => 'Stripe Billing Limits'
 		),
 		'pmpro-register-helper' => array(
 			'file' => 'pmpro-register-helper.php',

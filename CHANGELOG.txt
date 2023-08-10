@@ -1,4 +1,27 @@
 == Changelog ==
+= 2.12 - 2023-08-04 =
+* FEATURE: Added integration with LifterLMS to streamline setting up that plugin when Paid Memberships Pro is active. #2533 (@ideadude, @MaximilianoRicoTabo)
+* ENHANCEMENT: A “no access” message can now be set when restricting Elementor widgets. #2525 (@andrewlimaza)
+* ENHANCEMENT: A “no access” message can now be set when restricting content with DIVI. #2526 (@andrewlimaza)
+* ENHANCEMENT: Added `pmpro_stripe_checkout_session_parameters` filter. #2555 (@JarrydLong)
+* ENHANCEMENT: Now delaying non-security notification banners for 1 week the first time an admin user visits a PMPro dashboard page. #2552 (@MaximilianoRicoTabo)
+* ENHANCEMENT: Now showing a modal with instructions for setting up webhooks after linking an account through Stripe Connect. #2554 (@MaximilianoRicoTabo)
+* BUG FIX/ENHANCEMENT: Removed associative array check in the `pmpro_get_label_for_user_field_value()` function to ensure that user-friendly values are always returned. #2524 (@andrewlimaza)
+* BUG FIX/ENHANCEMENT: Updating the “Active Members Per Level” to ignore deleted users. #2482 (@JarrydLong)
+* BUG FIX/ENHANCEMENT: Added a new capability pmpro_loginscsv for exporting the login report data and a new capability pmpro_reportscsv as a fallback for exporting all report data. #2536 (@andrewlimaza)
+* BUG FIX/ENHANCEMENT: Fixed issue where subscriptions weren't cancelling when users deleted their own account using BuddyPress or BuddyBoss. #2559 (@dparker1005, @andrewlimaza)
+* BUG FIX/ENHANCEMENT: Use wpautop() for membership confirmation message. This fixes an issue where Elementor and possibly other solutions were not honoring the \n as paragraphs. #2549 (@andrewlimaza)
+* BUG FIX: Fixed post restriction logic for posts that are in multiple categories. #2522 (@andrewlimaza)
+* BUG FIX: Fixed an issue where extra checkout fields weren’t being displayed correctly in admin checkout emails. #2537 (@andrewlimaza, @MaximilianoRicoTabo)
+* BUG FIX: Updated login functions to broken links from potentially being generated. #24722, #2244, #2475, #2476, #2477, #2478 (@JarrydLong)
+* BUG FIX: Fixed styling for h2 tags on the Membership Account page. (@kimcoleman)
+* BUG FIX: Fixed the ID parameter in the `pmpro_manage_discount_code_list_custom_column` filter. #2517 (@JarrydLong)
+* BUG FIX: Fixed issues where suggested Add Ons would not show in setup wizard if the site type was not specified. #2524 (@andrewlimaza)
+* BUG FIX: Fixed the timing of the `pmpro_discount_code_used` filter when processing a Stripe Checkout payment. #2532 (@dparker1005)
+* BUG FIX: Fixed issue where only the first page of orders was showing up when searching orders. #2553 (@JarrydLong)
+* BUG FIX: Fixed issue with some DB setups where levels couldn't be added to the table. #2546 (@dparker1005)
+* REFACTOR: Updated enum columns in database to varchar. #2529 (@andrewlimaza)
+
 = 2.11.2 - 2023-06-14
 * BUG FIX: Reverting the application of the required attribute for required fields at checkout. This would break valid checkouts in some cases if required fields were hidden. We need to address this differently. #2516 (@ideadude)
 

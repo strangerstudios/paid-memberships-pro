@@ -72,9 +72,22 @@ function pmpro_block_editor_scripts() {
 			'wp-components',
 			'wp-api',
 			'wp-block-editor',
+			'wp-plugins',
+			'wp-edit-post',
 			'pmpro_admin',
 		],
 		PMPRO_VERSION
+	);
+
+	// Localize the post_id being edited.
+	global $post;
+	wp_localize_script(
+		'pmpro-blocks-editor-js',
+		'pmpro_blocks',
+		array(
+			'post_id' => $post->ID,
+			'show_require_membership_panel' => in_array( $post->post_type, apply_filters( 'pmpro_restrictable_post_types', array( 'page', 'post' ) ) ),
+		)
 	);
 
 	// Enqueue optional editor only styles.

@@ -21,6 +21,7 @@ import './levels-page/block.js';
 import './membership/block.js';
 import './member-profile-edit/block.js';
 import './login/block.js';
+import './sidebar/index.js';
 
 ( function() {
 	const PMProSVG = <svg version="1.1" id="Layer_1" x="0px" y="0px"

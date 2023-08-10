@@ -9,7 +9,7 @@ else
     $default_level = false;
 
 if ($default_level) {
-    wp_redirect(pmpro_url("checkout", "?level=" . $default_level));
+    wp_redirect(pmpro_url("checkout", "?pmpro_level=" . $default_level));
     exit;
 }
 

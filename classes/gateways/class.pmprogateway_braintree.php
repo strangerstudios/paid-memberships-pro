@@ -514,7 +514,7 @@ use Braintree\WebhookNotification as Braintree_WebhookNotification;
 					<?php if($pmpro_show_discount_code) { ?>
 						<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout-field pmpro_payment-discount-code', 'pmpro_payment-discount-code' ) ); ?>">
 							<label for="discount_code"><?php esc_html_e('Discount Code', 'paid-memberships-pro' );?></label>
-							<input class="<?php echo esc_attr( pmpro_get_element_class( 'input', 'discount_code' ) ); ?>" id="discount_code" name="discount_code" type="text" size="20" value="<?php echo esc_attr($discount_code)?>" />
+							<input class="<?php echo esc_attr( pmpro_get_element_class( 'input', 'discount_code' ) ); ?>" id="pmpro_discount_code" name="pmpro_discount_code" type="text" size="20" value="<?php echo esc_attr($discount_code)?>" />
 							<input aria-label="<?php esc_html_e( 'Apply discount code', 'paid-memberships-pro' ); ?>" type="button" id="discount_code_button" name="discount_code_button" value="<?php esc_attr_e('Apply', 'paid-memberships-pro' );?>" />
 							<p id="discount_code_message" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_message' ) ); ?>" style="display: none;"></p>
 						</div>
@@ -1182,5 +1182,17 @@ use Braintree\WebhookNotification as Braintree_WebhookNotification;
 		}
 
 		return (bool) $result->success;
+	}
+
+	/**
+	 * Returns whether the gateway allows for payment method updates.
+	 *
+	 * @since TBD
+	 *
+	 * @return string|false 'individual' if the gateway allows for payment method updates for individual subscriptions, 
+	 *                      'all' if the gateway updates all subscriptions, or false if the gateway does not support payment method updates.
+	 */
+	function supports_payment_method_updates() {
+		return 'all';
 	}
 }

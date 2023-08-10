@@ -25,7 +25,7 @@ function pmpro_has_membership_access($post_id = NULL, $user_id = NULL, $return_m
 	//use current user if no value is supplied
 	if(!$user_id)
 		$user_id = $current_user->ID;
-	
+
 	//if no post or current_user object, set them up
 	if(isset($queried_object->ID) && !empty($queried_object->ID) && $post_id == $queried_object->ID)
 		$mypost = $queried_object;
@@ -251,10 +251,19 @@ function pmpro_search_filter($query)
 			$sql = "SELECT category_id FROM $wpdb->pmpro_memberships_categories";
 		}							
         $hidden_cat_ids = array_values(array_unique($wpdb->get_col($sql)));
-				
+		
         //make this work
         if( $hidden_cat_ids ) {
-			$query->set( 'category__not_in', array_merge( $query->get( 'category__not_in' ), $hidden_cat_ids ) );
+
+			// Get all registered category ID's so we may remove the ones we need to hide. This is to support posts that may belong to multiple categories and only one of them is hidden.
+			$all_cat_ids = get_terms( array(
+				'taxonomy' => 'category',
+				'fields'   => 'ids',
+				'get'      => 'all',
+			));
+
+			// Show only these categories to members.
+			$query->set( 'category__in', array_merge( $query->get( 'category__in' ), array_diff( $all_cat_ids, $hidden_cat_ids ) ) );
 						
 			//filter so posts in this member's categories are allowed
 			add_action( 'posts_where', 'pmpro_posts_where_unhide_cats' );

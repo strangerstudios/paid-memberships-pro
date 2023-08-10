@@ -289,7 +289,7 @@ class PMPro_Discount_Code_List_Table extends WP_List_Table {
 			}
 		} else {
 			// The preferred ways of doing things.
-			do_action( 'pmpro_manage_discount_code_list_custom_column', $column_name, $item->id );
+			do_action( 'pmpro_manage_discount_code_list_custom_column', $column_name, $item['id'] );
 		}
 		
 	}
@@ -483,7 +483,7 @@ class PMPro_Discount_Code_List_Table extends WP_List_Table {
 		$level_names = array();
 		foreach( $levels as $level ) {
 			if ( ! empty( $pmpro_pages['checkout'] ) ) {
-				$level_names[] = '<a target="_blank" href="' . esc_url( pmpro_url( 'checkout', '?level=' . $level->id . '&discount_code=' . $item->code ) ) . '">' . esc_html( $level->name ) . '</a>';
+				$level_names[] = '<a target="_blank" href="' . esc_url( pmpro_url( 'checkout', '?pmpro_level=' . $level->id . '&pmpro_discount_code=' . $item->code ) ) . '">' . esc_html( $level->name ) . '</a>';
 			} else {
 				$level_names[] = $level->name;
 			}
