@@ -25,6 +25,13 @@ config.entry = {
     "account-profile-section",
     "index.js"
   ),
+  "invoice-page/index": path.resolve(
+    process.cwd(),
+    "blocks",
+    "src",
+    "invoice-page",
+    "index.js"
+  )
 };
 
 config.output = {
