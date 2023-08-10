@@ -64,7 +64,7 @@
 			inslog( "ERROR: Couldn't change level for order (" . $morder->code . ")." );
 		}
 
-		pmpro_twocheckoutExit(pmpro_url("confirmation", "?level=" . $morder->membership_level->id));
+		pmpro_twocheckoutExit(pmpro_url("confirmation", "?pmpro_level=" . $morder->membership_level->id));
 	}
 
 	// First Payment (checkout) (Will probably want to update order, but not send another email/etc)
@@ -88,7 +88,7 @@
 			inslog( "ERROR: Couldn't change level for order (" . $morder->code . ")." );
 		}
 
-		pmpro_twocheckoutExit(pmpro_url("confirmation", "?level=" . $morder->membership_level->id));
+		pmpro_twocheckoutExit(pmpro_url("confirmation", "?pmpro_level=" . $morder->membership_level->id));
 	}
 
 	// Recurring Payment Success (recurring installment success and recurring is true)

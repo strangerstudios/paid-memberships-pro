@@ -487,7 +487,7 @@
 										<td><?php
 											if($level->allow_signups) {
 												if ( ! empty( $pmpro_pages['checkout'] ) ) {
-													?><a target="_blank" href="<?php echo esc_url( add_query_arg( 'level', $level->id, pmpro_url("checkout") ) );?>"><?php esc_html_e('Yes', 'paid-memberships-pro' );?></a><?php
+													?><a target="_blank" href="<?php echo esc_url( add_query_arg( 'pmpro_level', $level->id, pmpro_url("checkout") ) );?>"><?php esc_html_e('Yes', 'paid-memberships-pro' );?></a><?php
 												} else {
 													_e('Yes', 'paid-memberships-pro' );
 												}

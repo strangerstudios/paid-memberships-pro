@@ -2362,56 +2362,78 @@ function pmpro_are_any_visible_levels() {
  */
 function pmpro_getLevelAtCheckout( $level_id = null, $discount_code = null ) {
 	global $pmpro_level, $wpdb, $post;
+	// Commenting out caching for now. We want to rethink this appraoch before we commit to it.
+	/*
+	static $function_cache = array();
+
+	// Get the cache key for the passed inputs.
+	$cache_key = md5( serialize( array( $level_id, $discount_code ) ) );
+
+	if ( array_key_exists( $cache_key, $function_cache ) ) {
+		$pmpro_level = $function_cache[ $cache_key ];
+		return $pmpro_level;
+	}
+	*/
 
 	// reset pmpro_level
 	$pmpro_level = null;
 
-	// default to level passed in via URL
+	// Default to level passed in via URL.
+	if ( empty( $level_id ) && ! empty( $_REQUEST['pmpro_level'] ) ) {
+		$level_id = intval( $_REQUEST['pmpro_level'] );
+	}
+
+	// If we don't have a level, check the legacy 'level' request parameter.
 	if ( empty( $level_id ) && ! empty( $_REQUEST['level'] ) ) {
+		// TODO: We may want to show a message here that the level parameter is deprecated.
 		$level_id = intval( $_REQUEST['level'] );
 	}
 
-	// no level, check for a default level in the custom fields for this post
+	// If we still don't have a level yet, check for a default level in the custom fields for this post.
 	if ( empty( $level_id ) && ! empty( $post ) ) {
-
-		$level_id = get_post_meta( $post->ID, 'pmpro_default_level', true );
-
-		// if still empty, let's try get first available level.
-		if ( empty( $level_id ) ) {
-			$all_levels = pmpro_getAllLevels( false, false );
-
-			if ( ! empty( $all_levels ) ) {
-				// Get lowest level ID.
-				$default_level =  min( array_keys( $all_levels ) );
-			} else {
-				$default_level = null;
-			}
-
-			$level_id = apply_filters( 'pmpro_default_level', intval( $default_level ) );
-
-			// Bail back to levels page if level ID is empty or less than 1.
-			if ( empty( $level_id ) || $level_id < 1 || ! is_int( $level_id ) ) {
-				return;
-			}
-		}
+		$level_id = intval( get_post_meta( $post->ID, 'pmpro_default_level', true ) );
 	}
 
-	// default to discount code passed in
+	// If we still don't have a level, use the default level.
+	if ( empty( $level_id ) ) {
+		$all_levels = pmpro_getAllLevels( false, false );
+
+		if ( ! empty( $all_levels ) ) {
+			// Get lowest level ID.
+			$default_level =  min( array_keys( $all_levels ) );
+		} else {
+			$default_level = null;
+		}
+
+		$level_id = apply_filters( 'pmpro_default_level', intval( $default_level ) );
+	}
+
+	// If we still don't have a level, bail.
+	if ( empty( $level_id ) || $level_id < 1 || ! is_int( $level_id ) ) {
+		return;
+	}
+
+	// default to discount code passed in via URL.
+	if ( empty( $discount_code ) && ! empty( $_REQUEST['pmpro_discount_code'] ) ) {
+		$discount_code = preg_replace( '/[^A-Za-z0-9\-]/', '', sanitize_text_field( $_REQUEST['pmpro_discount_code'] ) );
+	}
+
+	// If we still don't have a discount code, check the legacy 'discount_code' request parameter.
 	if ( empty( $discount_code ) && ! empty( $_REQUEST['discount_code'] ) ) {
 		$discount_code = preg_replace( '/[^A-Za-z0-9\-]/', '', sanitize_text_field( $_REQUEST['discount_code'] ) );
 	}
 
-	// what level are they purchasing? (discount code passed)
+	// If we still don't have a discount code, add a filter to let other plugins add one.
+	if ( empty( $discount_code ) ) {
+		$discount_code = apply_filters( 'pmpro_default_discount_code', null, $level_id );
+	}
+
+	// If we are using a discount code, check it and get the level.
 	if ( ! empty( $level_id ) && ! empty( $discount_code ) ) {
 		$discount_code_id = $wpdb->get_var( "SELECT id FROM $wpdb->pmpro_discount_codes WHERE code = '" . esc_sql( $discount_code ) . "' LIMIT 1" );
 
 		// check code
-		global $pmpro_checkout_level_ids; // Set by MMPU.
-		if ( isset( $pmpro_checkout_level_ids ) ) {
-			$code_check = pmpro_checkDiscountCode( $discount_code, $pmpro_checkout_level_ids, true );
-		} else {
-			$code_check = pmpro_checkDiscountCode( $discount_code, $level_id, true );
-		}
+		$code_check = pmpro_checkDiscountCode( $discount_code, $level_id, true );
 		if ( $code_check[0] != false ) {
 			$sqlQuery    = "SELECT l.id, cl.*, l.name, l.description, l.allow_signups, l.confirmation FROM $wpdb->pmpro_discount_codes_levels cl LEFT JOIN $wpdb->pmpro_membership_levels l ON cl.level_id = l.id LEFT JOIN $wpdb->pmpro_discount_codes dc ON dc.id = cl.code_id WHERE dc.code = '" . esc_sql( $discount_code ) . "' AND cl.level_id = '" . esc_sql( $level_id ) . "' LIMIT 1";
 			$pmpro_level = $wpdb->get_row( $sqlQuery );
@@ -2422,21 +2444,28 @@ function pmpro_getLevelAtCheckout( $level_id = null, $discount_code = null ) {
 			}
 
 			// filter adjustments to the level
-			$pmpro_level->code_id = $discount_code_id;
-			$pmpro_level          = apply_filters( 'pmpro_discount_code_level', $pmpro_level, $discount_code_id );
+			$pmpro_level->code_id       = $discount_code_id;
+			$pmpro_level->discount_code = $discount_code;
+			$pmpro_level                = apply_filters( 'pmpro_discount_code_level', $pmpro_level, $discount_code_id );
 		} else {
 			// error with discount code, we want to halt checkout
 			pmpro_setMessage( $code_check[1], 'pmpro_error' );
 		}
 	}
 
-	// what level are they purchasing? (no discount code)
+	// If we don't have a level object yet, pull it from the database.
 	if ( empty( $pmpro_level ) && ! empty( $level_id ) ) {
 		$pmpro_level = $wpdb->get_row( "SELECT * FROM $wpdb->pmpro_membership_levels WHERE id = '" . esc_sql( $level_id ) . "' AND allow_signups = 1 LIMIT 1" );
 	}
 
 	// filter the level (for upgrades, etc)
 	$pmpro_level = apply_filters( 'pmpro_checkout_level', $pmpro_level );
+
+	// Commenting out caching for now. We want to rethink this appraoch before we commit to it.
+	/*
+	// Cache it.
+	$function_cache[ $cache_key ] = $pmpro_level;
+	*/
 
 	return $pmpro_level;
 }
@@ -2518,7 +2547,7 @@ function pmpro_getCheckoutButton( $level_id, $button_text = null, $classes = nul
 	}
 
 	if ( ! empty( $level_id ) ) {
-		$r = '<a href="' . esc_url( pmpro_url( 'checkout', '?level=' . $level_id ) ) . '" class="' . esc_attr( $classes ) . '">' . wp_kses_post( $button_text ) . '</a>';
+		$r = '<a href="' . esc_url( pmpro_url( 'checkout', '?pmpro_level=' . $level_id ) ) . '" class="' . esc_attr( $classes ) . '">' . wp_kses_post( $button_text ) . '</a>';
 	} else {
 		$r = '<a href="' . esc_url( pmpro_url( 'checkout' ) ) . '" class="' . esc_attr( $classes ) . '">' . wp_kses_post( $button_text ) . '</a>';
 	}
