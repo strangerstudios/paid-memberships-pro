@@ -281,7 +281,7 @@
 				'currency_code' => $pmpro_currency,
 				'pay_method' => 'CC',
 				'purchase_step' => 'billing-information',
-				'x_receipt_link_url' => admin_url("admin-ajax.php") . "?action=twocheckout-ins" //pmpro_url("confirmation", "?level=" . $order->membership_level->id)
+				'x_receipt_link_url' => admin_url("admin-ajax.php") . "?action=twocheckout-ins" //pmpro_url("confirmation", "?pmpro_level=" . $order->membership_level->id)
 			);
 
 			//taxes on initial amount
