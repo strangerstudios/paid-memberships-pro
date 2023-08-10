@@ -2323,6 +2323,8 @@ function pmpro_are_any_visible_levels() {
  */
 function pmpro_getLevelAtCheckout( $level_id = null, $discount_code = null ) {
 	global $pmpro_level, $wpdb, $post;
+	// Commenting out caching for now. We want to rethink this appraoch before we commit to it.
+	/*
 	static $function_cache = array();
 
 	// Get the cache key for the passed inputs.
@@ -2332,6 +2334,7 @@ function pmpro_getLevelAtCheckout( $level_id = null, $discount_code = null ) {
 		$pmpro_level = $function_cache[ $cache_key ];
 		return $pmpro_level;
 	}
+	*/
 
 	// reset pmpro_level
 	$pmpro_level = null;
@@ -2419,8 +2422,11 @@ function pmpro_getLevelAtCheckout( $level_id = null, $discount_code = null ) {
 	// filter the level (for upgrades, etc)
 	$pmpro_level = apply_filters( 'pmpro_checkout_level', $pmpro_level );
 
+	// Commenting out caching for now. We want to rethink this appraoch before we commit to it.
+	/*
 	// Cache it.
 	$function_cache[ $cache_key ] = $pmpro_level;
+	*/
 
 	return $pmpro_level;
 }
