@@ -25,6 +25,13 @@ config.entry = {
     "account-profile-section",
     "index.js"
   ),
+  "checkout-button/index": path.resolve(
+    process.cwd(),
+    "blocks",
+    "src",
+    "checkout-button",
+    "index.js"
+  ),
 };
 
 config.output = {
