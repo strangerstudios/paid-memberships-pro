@@ -107,7 +107,9 @@ foreach ( $level_groups as $level_group ) {
 	</table>
 <?php } ?>
 <p class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_actions_nav' ) ); ?>">
-	<?php if( $has_any_level ) { ?>
+	<?php
+	$has_any_level = false;
+	 if( $has_any_level ) { ?>
 		<a href="<?php echo esc_url( pmpro_url("account" ) ) ?>" id="pmpro_levels-return-account">&larr; <?php esc_html_e('Return to Your Account', 'paid-memberships-pro' );?></a>
 	<?php } else { ?>
 		<a href="<?php echo esc_url( home_url() ) ?>" id="pmpro_levels-return-home">&larr; <?php esc_html_e('Return to Home', 'paid-memberships-pro' );?></a>

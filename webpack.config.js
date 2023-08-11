@@ -25,6 +25,13 @@ config.entry = {
     "account-profile-section",
     "index.js"
   ),
+  "cancel-page/index": path.resolve(
+    process.cwd(),
+    "blocks",
+    "src",
+    "cancel-page",
+    "index.js"
+  ),
 };
 
 config.output = {
