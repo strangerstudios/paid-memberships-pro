@@ -34,17 +34,16 @@ add_filter( 'pmpro_custom_advanced_settings', 'pmpro_lifter_streamline_advanced_
 /**
  * Add Require Membership box to LifterLMS courses.
  */
-function pmpro_lifter_admin_menu() {
+function pmpro_lifter_meta_boxes() {
 	// Bail if the streamline option is not enabled.
 	if ( ! get_option( 'pmpro_lifter_streamline' ) ) {
 		return;
 	}
 	
-	if( function_exists( 'pmpro_page_meta' ) ){
-		add_meta_box( 'pmpro_page_meta', esc_html__( 'Require Membership', 'pmpro-courses' ), 'pmpro_page_meta', 'course', 'side');
-	}
+	
+	add_meta_box( 'pmpro_page_meta', esc_html__( 'Require Membership', 'pmpro-courses' ), 'pmpro_page_meta', 'course', 'side' );
 }
-add_action('admin_menu', 'pmpro_lifter_admin_menu', 20);
+add_action( 'add_meta_boxes', 'pmpro_lifter_meta_boxes', 20 );
 
 /**
  * Override PMPro's the_content filter.
