@@ -2,14 +2,14 @@
 # This file is distributed under the same license as the Paid Memberships Pro plugin.
 msgid ""
 msgstr ""
-"Project-Id-Version: Paid Memberships Pro 2.12\n"
+"Project-Id-Version: Paid Memberships Pro 2.12.1\n"
 "Report-Msgid-Bugs-To: info@paidmembershipspro.com\n"
 "Last-Translator: Paid Memberships Pro <info@paidmembershipspro.com>\n"
 "Language-Team: Paid Memberships Pro <info@paidmembershipspro.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2023-08-04T15:37:22+00:00\n"
+"POT-Creation-Date: 2023-08-07T19:05:06+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.8.1\n"
 "X-Domain: paid-memberships-pro\n"
@@ -8566,7 +8566,7 @@ msgid "<strong>Error:</strong> The username field is empty."
 msgstr ""
 
 #: includes/login.php:342
-#: includes/login.php:905
+#: includes/login.php:906
 msgid "<strong>Error:</strong> The password field is empty."
 msgstr ""
 
@@ -8699,16 +8699,16 @@ msgstr ""
 msgid "Lost Password?"
 msgstr ""
 
-#: includes/login.php:852
+#: includes/login.php:853
 msgid "Invalid Request"
 msgstr ""
 
 #. translators: a generated link to the user's account or profile page
-#: includes/login.php:984
+#: includes/login.php:985
 msgid "Welcome, %s"
 msgstr ""
 
-#: includes/login.php:1018
+#: includes/login.php:1019
 #: includes/menus.php:76
 #: includes/menus.php:79
 #: includes/menus.php:169
@@ -8716,11 +8716,11 @@ msgstr ""
 msgid "Log Out"
 msgstr ""
 
-#: includes/login.php:1051
+#: includes/login.php:1052
 msgid "Missing request ID."
 msgstr ""
 
-#: includes/login.php:1055
+#: includes/login.php:1056
 msgid "Missing confirm key."
 msgstr ""
 
