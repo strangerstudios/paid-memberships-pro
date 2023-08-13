@@ -191,8 +191,10 @@ Not sure? You can find out by doing a bit a research.
 
 == Changelog ==
 = 2.12.2 - 2023-08-13
-* BUG FIX: Fixed issue where some advanced settings added by Add Ons weren't applying properly. Resave and try again. #2571
-* ENHANCEMENT: Improving the LifterLMS Streamline functionality. #2572
+* ENHANCEMENT: Improving the LifterLMS Streamline functionality. #2572 (@ideadude)
+* ENHANCEMENT: Now also applying the pmpro_checkout_message filter to the bottom message box on the checkout page. #2567 (@ipokkel)
+* ENHANCEMENT: Caching the Stripe webhook status checks. #2565 (@dparker1005)
+* BUG FIX: Fixed issue where some advanced settings added by Add Ons weren't applying properly. Resave and try again. #2571 (@ideadude)
 
 = 2.12.1 - 2023-08-07 =
 * BUG FIX: Fixed issue where password reset attempts may incorrectly show that the user's password reset key is invalid. #2561 (@dparker1005, @andrewlimaza)
