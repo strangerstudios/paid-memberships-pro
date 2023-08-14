@@ -25,6 +25,13 @@ config.entry = {
     "account-profile-section",
     "index.js"
   ),
+  "confirmation-page/index": path.resolve(
+    process.cwd(),
+    "blocks",
+    "src",
+    "confirmation-page",
+    "index.js"
+  )
 };
 
 config.output = {
