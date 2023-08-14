@@ -25,6 +25,13 @@ config.entry = {
     "account-profile-section",
     "index.js"
   ),
+  "login/index": path.resolve(
+    process.cwd(),
+    "blocks",
+    "src",
+    "login",
+    "index.js"
+  )
 };
 
 config.output = {
