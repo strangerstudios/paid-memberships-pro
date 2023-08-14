@@ -25,6 +25,13 @@ config.entry = {
     "account-profile-section",
     "index.js"
   ),
+  "member-profile-edit/index": path.resolve(
+    process.cwd(),
+    "blocks",
+    "src",
+    "member-profile-edit",
+    "index.js"
+  ),
 };
 
 config.output = {
