@@ -25,8 +25,14 @@ config.entry = {
     "account-profile-section",
     "index.js"
   ),
+  "billing-page/index": path.resolve(
+    process.cwd(),
+    "blocks",
+    "src",
+    "billing-page",
+    "index.js"
+  )
 };
-
 config.output = {
   filename: "[name].js",
   path: path.resolve(process.cwd(), "blocks", "build"),
