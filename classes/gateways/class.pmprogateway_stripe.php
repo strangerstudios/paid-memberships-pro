@@ -429,34 +429,48 @@ class PMProGateway_stripe extends PMProGateway {
 						$last_received = get_option( 'pmpro_stripe_webhook_last_received_' . $stripe->gateway_environment . '_' . $required_webhook_event );
 						$event_data['last_received'] = empty( $last_received ) ? esc_html__( 'Never Received', 'paid-memberships-pro' ) : date_i18n( get_option('date_format') . ' ' . get_option('time_format'), $last_received );
 
-						$event_query_arr = array(
-							'limit' => 1,
-							'created' => array(
-								'lt' => time() - 60, // Ignore events created in the last 60 seconds in case we haven't finished processing them yet.
-							),
-							'type' => $required_webhook_event,
-						);
-						if ( ! empty( $legacy_last_webhook_recieved_timestamp ) ) {
-							$event_query_arr['created']['gt'] = strtotime( $legacy_last_webhook_recieved_timestamp );
+						// Check the cache for a recently sent webhook.
+						$cache_key     = 'pmpro_stripe_last_webhook_sent_' . $stripe->gateway_environment . '_' . $required_webhook_event;
+						$recently_sent = get_transient( $cache_key );
+
+						if ( false === $recently_sent ) {
+							// No cache, so check Stripe for a recently sent webhook.
+							// We want to ignore events that were sent by Stripe before site was updated to start tracking individual events.
+							// (We don't want to ignore events that were sent by Stripe before the site was updated to start tracking individual events
+							//  if the site was updated to start tracking individual events before the webhook was sent.
+							$event_query_arr = array(
+								'limit' => 1,
+								'created' => array(
+									'lt' => time() - 60, // Ignore events created in the last 60 seconds in case we haven't finished processing them yet.
+								),
+								'type' => $required_webhook_event,
+							);
+							if ( ! empty( $legacy_last_webhook_recieved_timestamp ) ) {
+								$event_query_arr['created']['gt'] = strtotime( $legacy_last_webhook_recieved_timestamp );
+							}
+
+							try {
+								$recently_sent_arr = Stripe\Event::all( $event_query_arr );
+								$recently_sent     = empty( $recently_sent_arr->data[0] ) ? '' : $recently_sent_arr->data[0];
+							} catch ( \Throwable $th ) {
+								$recently_sent = $th->getMessage();
+							} catch ( \Exception $e ) {
+								$recently_sent = $e->getMessage();
+							}
+
+							// Cache the result for 5 minutes.
+							set_transient( $cache_key, $recently_sent, 5 * MINUTE_IN_SECONDS );
 						}
 
-						try {
-							$recently_sent = Stripe\Event::all( $event_query_arr );
-						} catch ( \Throwable $th ) {
-							$recently_sent = $th->getMessage();
-						} catch ( \Exception $e ) {
-							$recently_sent = $e->getMessage();
-						} 
-
-						if ( ! is_string( $recently_sent ) && ! empty( $recently_sent->data[0] ) ) {
-							if ( $last_received >= $recently_sent->data[0]->created ) {
+						if ( ! empty( $recently_sent ) && ! is_string( $recently_sent ) ) {
+							if ( $last_received >= $recently_sent->created ) {
 								$event_data['status'] =  '<span style="color: green;">' . esc_html__( 'Working', 'paid-memberships-pro' ) . '</span>';
 								$working_webhooks[] = $event_data;
 							} else {
-								$event_data['status'] = '<span style="color: red;">' . esc_html__( 'Last Sent ', 'paid-memberships-pro' ) . date_i18n( get_option('date_format') . ' ' . get_option('time_format'), $recently_sent->data[0]->created ) . '</span>';
+								$event_data['status'] = '<span style="color: red;">' . esc_html__( 'Last Sent ', 'paid-memberships-pro' ) . date_i18n( get_option('date_format') . ' ' . get_option('time_format'), $recently_sent->created ) . '</span>';
 								$failed_webhooks[] = $event_data;
 							}
-						} elseif ( is_string( $recently_sent ) ) {
+						} elseif ( is_string( $recently_sent ) && ! empty( $recently_sent ) ) {
 							// An error was returned from the Stripe API. Show it.
 							$event_data['status'] = '<span style="color: red;">' . esc_html__( 'Error: ', 'paid-memberships-pro' ) . $recently_sent . '</span>';
 							$failed_webhooks[] = $event_data;

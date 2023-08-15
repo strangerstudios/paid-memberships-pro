@@ -178,6 +178,15 @@ class PMPro_Subscription {
 	protected $initial_payment;
 
 	/**
+	 * The date that this subscription was last modified.
+	 *
+	 * @since TBD
+	 *
+	 * @var string
+	 */
+	protected $modified = '';
+
+	/**
 	 * Create a new PMPro_Subscription object.
 	 *
 	 * @since TBD
@@ -1074,7 +1083,7 @@ class PMPro_Subscription {
 			$incomplete_orders = $this->get_orders( array( 'status' => array( 'token', 'pending', 'review' ) ) );
 			if ( ! empty( $incomplete_orders ) ) {
 				foreach ( $incomplete_orders as $order ) {
-					$last_subscription_order->updateStatus( 'error' );
+					$order->updateStatus( 'error' );
 				}
 			}
 		}
