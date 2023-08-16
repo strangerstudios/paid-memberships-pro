@@ -256,7 +256,7 @@ function pmpro_search_filter($query)
         if( $hidden_cat_ids ) {
 
 			// Do not filter on custom taxonomies by default, bail.
-			if ( apply_filters( 'pmpro_dont_filter_taxonomy_archives', is_tax() ) ) {
+			if ( is_tax() ) {
 				return;
 			}
 
