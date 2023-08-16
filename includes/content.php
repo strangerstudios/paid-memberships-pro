@@ -255,6 +255,11 @@ function pmpro_search_filter($query)
         //make this work
         if( $hidden_cat_ids ) {
 
+			// Do not filter on custom taxonomies by default, bail.
+			if ( apply_filters( 'pmpro_dont_filter_taxonomy_archives', is_tax() ) ) {
+				return;
+			}
+
 			// Get all registered category ID's so we may remove the ones we need to hide. This is to support posts that may belong to multiple categories and only one of them is hidden.
 			$all_cat_ids = get_terms( array(
 				'taxonomy' => 'category',
