@@ -66,6 +66,11 @@ function pmpro_compatibility_checker() {
 			'check_type'  => 'class',
 			'check_value' => 'BuddyPress' //BuddyBoss uses this class, too.
 		],
+		[
+			'file'		  => 'wp-bakery.php',
+			'check_type'  => 'function',
+			'check_value' => 'vc_add_param'
+		],
 	];
 
 	foreach ( $compat_checks as $value ) {
