@@ -631,7 +631,7 @@ add_action( 'login_form_lostpassword', 'pmpro_lost_password_redirect' );
  */
 function pmpro_reset_password_redirect() {
 	
-	// We're not just trying to load the password reset page, let's try to redirect.
+	// Don't redirect if the form is being submitted, i.e. POST.
 	if ( 'GET' != $_SERVER['REQUEST_METHOD'] ) {
 		return;
 	}
