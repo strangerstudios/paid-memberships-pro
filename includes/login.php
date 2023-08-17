@@ -789,6 +789,11 @@ function pmpro_do_password_reset() {
 		return;
 	}
 
+	// We're on the default WP page, let's not try to interfere.
+	if ( ! empty( $_REQUEST['wp-submit'] ) ) {
+		return;
+	}
+
 	$rp_key = sanitize_text_field( $_REQUEST['rp_key'] );
 	$rp_login = sanitize_text_field( $_REQUEST['rp_login'] );
 
@@ -864,6 +869,11 @@ function pmpro_password_reset_email_filter( $message, $key, $user_login ) {
 
 	$login_url = pmpro_url( 'login' );
 	if ( ! $login_url ) {
+		return $message;
+	}
+
+	// Don't replace the password reset link if it came from the default WP form. (Our form uses 'submit')
+	if ( ! empty( $_REQUEST['wp-submit'] ) ) {
 		return $message;
 	}
 
