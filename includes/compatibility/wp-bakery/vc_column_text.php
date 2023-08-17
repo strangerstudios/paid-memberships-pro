@@ -38,35 +38,8 @@ $output = '
  */
 if( ! empty( $atts['pmpro_levels'] ) ) {
 
-	$protected_content = "";
-
-	$restricted_levels = $atts['pmpro_levels'];
-	$show_no_access_message = $atts['pmpro_no_access_message'];
-
-	// Just bail if the content isn't restricted at all.
-	if ( ! $restricted_levels ) {
-		$protected_content = $content;
-	}
-
-	$levels_array = explode( ",", $restricted_levels );
-	
-	if ( ! pmpro_hasMembershipLevel( $levels_array ) ) {
-		$access = false;
-	} else {
-		$access = true;
-	}
-
-	$access = apply_filters( 'pmpro_wpbakery_has_access', $access, $content, $restricted_levels, $atts );
-
-	if ( ! $access ) {
-		// Show no content message here or not
-		if ( $show_no_access_message === 'Yes' ) {
-			$protected_content = pmpro_get_no_access_message( NULL, $restricted_levels );
-		}
-	} else {
-		$protected_content = $content;
-	}
+	$content = pmpro_wpbakery_show_content( $content, $atts );
 
 }
 
-echo $protected_content;
+echo $content;
