@@ -647,12 +647,6 @@ function pmpro_reset_password_redirect() {
 		return;
 	}
 
-	// While doing the redirect, if the pages initial load isn't our login page. Don't redirect. (i.e. Another plugin called this password reset)
-	$current_page_slug = get_permalink();
-	if ( $current_page_slug !== $login_url ) {
-		return;
-	}
-
 	// Get current REQUEST PARAMS and just add it to ours and then redirect to our login_url
 	$redirect_url = add_query_arg( array_map( 'sanitize_text_field', $_REQUEST ), $login_url );
 
@@ -790,7 +784,6 @@ function pmpro_do_password_reset() {
 	if ( ! $redirect_url ) {
 		return;
 	}
-
 
 	// Request came from elsewhere, let's bail.
 	if ( ! isset( $_REQUEST['pmpro_form_used'] ) ) {
