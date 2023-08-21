@@ -25,6 +25,13 @@ config.entry = {
     "account-profile-section",
     "index.js"
   ),
+  "single-level-checkout/index": path.resolve(
+    process.cwd(),
+    "blocks",
+    "src",
+    "single-level-checkout",
+    "index.js"
+  )
 };
 
 config.output = {
