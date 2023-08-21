@@ -25,6 +25,13 @@ config.entry = {
     "account-profile-section",
     "index.js"
   ),
+  "single-level-expiration/index": path.resolve(
+    process.cwd(),
+    "blocks",
+    "src",
+    "single-level-expiration",
+    "index.js"
+  ),
 };
 
 config.output = {
