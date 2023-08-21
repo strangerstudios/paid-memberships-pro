@@ -25,8 +25,14 @@ config.entry = {
     "account-profile-section",
     "index.js"
   ),
+  "single-level-description/index": path.resolve(
+    process.cwd(),
+    "blocks",
+    "src",
+    "single-level-description",
+    "index.js"
+  ),
 };
-
 config.output = {
   filename: "[name].js",
   path: path.resolve(process.cwd(), "blocks", "build"),
