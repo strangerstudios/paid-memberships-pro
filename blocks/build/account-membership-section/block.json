@@ -4,7 +4,7 @@
 	"name": "pmpro/account-membership-section",
 	"title": "PMPro Page: Account Memberships",
 	"category": "pmpro-pages",
-	"icon": "admin-users",
+	"icon": "groups",
 	"description": "Dynamic page section to display the member's active membership information with links to view all membership options, update billing information, and change or cancel membership.",
 	"attributes" : {
 		"title" : {
