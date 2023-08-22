@@ -20,6 +20,7 @@ import { useBlockProps } from '@wordpress/block-editor';
  * @see https://www.npmjs.com/package/@wordpress/scripts#using-css
  */
 import './editor.scss';
+import block from '../../account-membership-section/block';
 
 /**
  * The edit function describes the structure of your block in the context of the
@@ -38,7 +39,7 @@ export default function Edit( { attributes, setAttributes } ) {
 	return [
 		<div className="pmpro-block-element" { ...blockProps }>
 		<span className="pmpro-block-title">{ __( 'Paid Memberships Pro', 'paid-memberships-pro' ) }</span>
-		<span className="pmpro-block-subtitle"> { __( 'Membership Account: Profile', 'paid-memberships-pro' ) }</span>
+		<span className="pmpro-block-subtitle">{ __( 'Membership Account: Member Links', 'paid-memberships-pro' ) }</span>
 		<input
 		placeholder={ __( 'No title will be shown.', 'paid-memberships-pro' ) }
 		type="text"
