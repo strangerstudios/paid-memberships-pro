@@ -24,6 +24,34 @@ config.entry = {
     "src",
     "account-profile-section",
     "index.js"
+  ),  
+  "account-membership-section/index": path.resolve(
+    process.cwd(),
+    "blocks",
+    "src",
+    "account-membership-section",
+    "index.js"
+  ),
+  "account-links-section/index": path.resolve(
+    process.cwd(),
+    "blocks",
+    "src",
+    "account-links-section",
+    "index.js"
+  ),
+  "billing-page/index": path.resolve(
+    process.cwd(),
+    "blocks",
+    "src",
+    "billing-page",
+    "index.js"
+  ),
+  "cancel-page/index": path.resolve(
+    process.cwd(),
+    "blocks",
+    "src",
+    "cancel-page",
+    "index.js"
   ),
   "confirmation-page/index": path.resolve(
     process.cwd(),
@@ -31,9 +59,29 @@ config.entry = {
     "src",
     "confirmation-page",
     "index.js"
-  )
+  ),
+  "invoice-page/index": path.resolve(
+    process.cwd(),
+    "blocks",
+    "src",
+    "invoice-page",
+    "index.js"
+  ),
+  "levels-page/index": path.resolve(
+    process.cwd(),
+    "blocks",
+    "src",
+    "levels-page",
+    "index.js"
+  ),
+  "member-profile-edit/index": path.resolve(
+    process.cwd(),
+    "blocks",
+    "src",
+    "member-profile-edit",
+    "index.js"
+  ),
 };
-
 config.output = {
   filename: "[name].js",
   path: path.resolve(process.cwd(), "blocks", "build"),
