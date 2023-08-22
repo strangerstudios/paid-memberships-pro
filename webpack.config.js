@@ -32,8 +32,14 @@ config.entry = {
     "account-membership-section",
     "index.js"
   ),
+  "account-links-section/index": path.resolve(
+    process.cwd(),
+    "blocks",
+    "src",
+    "account-links-section",
+    "index.js"
+  ),
 };
-
 config.output = {
   filename: "[name].js",
   path: path.resolve(process.cwd(), "blocks", "build"),
