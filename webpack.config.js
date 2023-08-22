@@ -53,6 +53,13 @@ config.entry = {
     "cancel-page",
     "index.js"
   ),
+  "levels-page/index": path.resolve(
+    process.cwd(),
+    "blocks",
+    "src",
+    "levels-page",
+    "index.js"
+  )
 };
 config.output = {
   filename: "[name].js",
