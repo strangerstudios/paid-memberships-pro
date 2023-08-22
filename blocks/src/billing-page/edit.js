@@ -38,14 +38,7 @@ export default function Edit( { attributes, setAttributes } ) {
 	return [
 		<div className="pmpro-block-element" { ...blockProps }>
 		<span className="pmpro-block-title">{ __( 'Paid Memberships Pro', 'paid-memberships-pro' ) }</span>
-		<span className="pmpro-block-subtitle"> { __( 'Membership Account: Profile', 'paid-memberships-pro' ) }</span>
-		<input
-		placeholder={ __( 'No title will be shown.', 'paid-memberships-pro' ) }
-		type="text"
-		value={ attributes.title }
-		class="block-editor-plain-text"
-		onChange={ updateTitle }
-		/>
-		</div>
+		<span className="pmpro-block-subtitle">{ __( 'Membership Billing Page', 'paid-memberships-pro' ) }</span>
+	  	</div>
 	];
 }
