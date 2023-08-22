@@ -30,11 +30,11 @@ import './editor.scss';
  * @return {WPElement} Element to render.
  */
 export default function Edit() {
-	blockProps = useBlockProps( {} );
+	const blockProps = useBlockProps( {} );
 	
 	return [
 		<div { ...blockProps }>
-			{ 'Checkout Button?'}
+			{ 'Checkout Button'}
 		</div>
 	];
 }
