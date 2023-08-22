@@ -34,9 +34,10 @@ function pmpro_register_block_types() {
  	register_block_type( PMPRO_DIR . '/blocks/build/account-membership-section' );
   register_block_type( PMPRO_DIR . '/blocks/build/billing-page' );
   register_block_type( PMPRO_DIR . '/blocks/build/cancel-page' );
+  register_block_type( PMPRO_DIR . '/blocks/build/confirmation-page' );
+  register_block_type( PMPRO_DIR . '/blocks/build/invoice-page' );
   register_block_type( PMPRO_DIR . '/blocks/build/levels-page' );
   register_block_type( PMPRO_DIR . '/blocks/build/member-profile-edit' );
-  register_block_type( PMPRO_DIR . '/blocks/build/invoice-page' );
 }
 add_action( 'init', 'pmpro_register_block_types' );
 /**

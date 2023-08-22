@@ -53,6 +53,20 @@ config.entry = {
     "cancel-page",
     "index.js"
   ),
+  "confirmation-page/index": path.resolve(
+    process.cwd(),
+    "blocks",
+    "src",
+    "confirmation-page",
+    "index.js"
+  ),
+  "invoice-page/index": path.resolve(
+    process.cwd(),
+    "blocks",
+    "src",
+    "invoice-page",
+    "index.js"
+  ),
   "levels-page/index": path.resolve(
     process.cwd(),
     "blocks",
@@ -67,13 +81,6 @@ config.entry = {
     "member-profile-edit",
     "index.js"
   ),
-  "invoice-page/index": path.resolve(
-    process.cwd(),
-    "blocks",
-    "src",
-    "invoice-page",
-    "index.js"
-  )
 };
 config.output = {
   filename: "[name].js",
