@@ -46,6 +46,13 @@ config.entry = {
     "billing-page",
     "index.js"
   ),
+  "cancel-page/index": path.resolve(
+    process.cwd(),
+    "blocks",
+    "src",
+    "cancel-page",
+    "index.js"
+  ),
 };
 config.output = {
   filename: "[name].js",
