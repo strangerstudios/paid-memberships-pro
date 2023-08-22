@@ -24,7 +24,7 @@ config.entry = {
     "src",
     "account-profile-section",
     "index.js"
-  ),
+  ),  
   "account-membership-section/index": path.resolve(
     process.cwd(),
     "blocks",
@@ -59,7 +59,14 @@ config.entry = {
     "src",
     "levels-page",
     "index.js"
-  )
+  ),
+  "member-profile-edit/index": path.resolve(
+    process.cwd(),
+    "blocks",
+    "src",
+    "member-profile-edit",
+    "index.js"
+  ),
 };
 config.output = {
   filename: "[name].js",
