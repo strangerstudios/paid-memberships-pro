@@ -29,23 +29,13 @@ import './editor.scss';
  *
  * @return {WPElement} Element to render.
  */
-export default function Edit( { attributes, setAttributes } ) {
+export default function Edit() {
 	const blockProps = useBlockProps( {} );
-	const updateTitle = ( event ) => {
-		setAttributes( { title: event.target.value } );
-	};
 
 	return [
 		<div className="pmpro-block-element" { ...blockProps }>
 		<span className="pmpro-block-title">{ __( 'Paid Memberships Pro', 'paid-memberships-pro' ) }</span>
-		<span className="pmpro-block-subtitle"> { __( 'Membership Account: Profile', 'paid-memberships-pro' ) }</span>
-		<input
-		placeholder={ __( 'No title will be shown.', 'paid-memberships-pro' ) }
-		type="text"
-		value={ attributes.title }
-		class="block-editor-plain-text"
-		onChange={ updateTitle }
-		/>
+		<span className="pmpro-block-subtitle">{ __( 'Membership Cancel Page', 'paid-memberships-pro' ) }</span>
 		</div>
 	];
 }
