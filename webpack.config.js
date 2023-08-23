@@ -60,6 +60,13 @@ config.entry = {
     "single-level-description",
     "index.js"
   ),
+  "single-level-price/index": path.resolve(
+    process.cwd(),
+    "blocks",
+    "src",
+    "single-level-price",
+    "index.js"
+  ),
 };
 config.output = {
   filename: "[name].js",
