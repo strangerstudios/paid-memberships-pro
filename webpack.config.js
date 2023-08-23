@@ -45,7 +45,14 @@ config.entry = {
     "src",
     "single-level-name",
     "index.js"
-  )
+  ),
+  "single-level-expiration/index": path.resolve(
+    process.cwd(),
+    "blocks",
+    "src",
+    "single-level-expiration",
+    "index.js"
+  ),
 };
 
 config.output = {
