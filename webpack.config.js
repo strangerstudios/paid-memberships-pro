@@ -39,6 +39,13 @@ config.entry = {
     "single-level-checkout",
     "index.js"
   ),
+  "single-level-name/index": path.resolve(
+    process.cwd(),
+    "blocks",
+    "src",
+    "single-level-name",
+    "index.js"
+  )
 };
 
 config.output = {
