@@ -305,9 +305,9 @@ class PMPro_Members_List_Table extends WP_List_Table {
 			$sqlQuery =
 				"
 				SELECT u.ID, u.user_login, u.user_email, u.display_name,
-				UNIX_TIMESTAMP(CONVERT_TZ(u.user_registered, '+00:00', @@global.time_zone)) as joindate, mu.membership_id, mu.initial_payment, mu.billing_amount, SUM(mu.initial_payment+ mu.billing_amount) as fee, mu.cycle_period, mu.cycle_number, mu.billing_limit, mu.trial_amount, mu.trial_limit,
-				UNIX_TIMESTAMP(CONVERT_TZ(mu.startdate, '+00:00', @@global.time_zone)) as startdate,
-				UNIX_TIMESTAMP(CONVERT_TZ(max(mu.enddate), '+00:00', @@global.time_zone)) as enddate, m.name as membership
+				u.user_registered as joindate, mu.membership_id, mu.initial_payment, mu.billing_amount, SUM(mu.initial_payment+ mu.billing_amount) as fee, mu.cycle_period, mu.cycle_number, mu.billing_limit, mu.trial_amount, mu.trial_limit,
+				mu.startdate,
+				max(mu.enddate) as enddate, m.name as membership
 				";
 		}
 
@@ -382,6 +382,13 @@ class PMPro_Members_List_Table extends WP_List_Table {
 			$sql_table_data = $wpdb->get_var( $sqlQuery );
 		} else {
 			$sql_table_data = $wpdb->get_results( $sqlQuery, ARRAY_A );
+
+			// Make sure that joindate, startdate, and enddate are timestamps.
+			foreach ( $sql_table_data as $key => $value ) {
+				$sql_table_data[$key]['joindate'] = pmpro_convert_utc_datetime_to_timestamp( $value['joindate'] );
+				$sql_table_data[$key]['startdate'] = pmpro_convert_utc_datetime_to_timestamp( $value['startdate'] );
+				$sql_table_data[$key]['enddate'] = pmpro_convert_utc_datetime_to_timestamp( $value['enddate'] );
+			}
 		}
 
 		return $sql_table_data;

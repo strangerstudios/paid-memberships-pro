@@ -379,7 +379,7 @@
 				{
 					$code = $wpdb->get_row(
 						$wpdb->prepare("
-						SELECT *, UNIX_TIMESTAMP(CONVERT_TZ(starts, '+00:00', @@global.time_zone)) as starts, UNIX_TIMESTAMP(CONVERT_TZ(expires, '+00:00', @@global.time_zone)) as expires
+						SELECT *
 						FROM $wpdb->pmpro_discount_codes
 						WHERE id = %d LIMIT 1",
 						$edit ),
@@ -401,7 +401,7 @@
 				{
 					$code = $wpdb->get_row(
 						$wpdb->prepare("
-						SELECT *, UNIX_TIMESTAMP(CONVERT_TZ(starts, '+00:00', @@global.time_zone)) as starts, UNIX_TIMESTAMP(CONVERT_TZ(expires, '+00:00', @@global.time_zone)) as expires
+						SELECT *
 						FROM $wpdb->pmpro_discount_codes
 						WHERE id = %d LIMIT 1",
 						$copy ),
@@ -409,6 +409,12 @@
 					);
 
 					$temp_code = $code;
+				}
+
+				// Make sure that starts and ends are timetsamps.
+				if ( ! empty( $code ) ) {
+					$code->starts = pmpro_convert_utc_datetime_to_timestamp( $code->starts );
+					$code->expires = pmpro_convert_utc_datetime_to_timestamp( $code->expires );
 				}
 
 				// didn't find a discount code, let's add a new one...

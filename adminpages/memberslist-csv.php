@@ -340,7 +340,7 @@
 				DISTINCT u.ID,
 				u.user_login,
 				u.user_email,
-				UNIX_TIMESTAMP(CONVERT_TZ(u.user_registered, '+00:00', @@global.time_zone)) as joindate,
+				u.user_registered as joindate,
 				u.user_login,
 				u.user_nicename,
 				u.user_url,
@@ -351,7 +351,7 @@
 				mu.initial_payment,
 				mu.billing_amount,
 				mu.cycle_period,
-				UNIX_TIMESTAMP(CONVERT_TZ(max(mu.enddate), '+00:00', @@global.time_zone)) as enddate,
+				max(mu.enddate) as enddate,
 				m.name as membership
 			FROM {$wpdb->users} u
 			LEFT JOIN {$wpdb->usermeta} um ON u.ID = um.user_id
@@ -380,6 +380,10 @@
 		foreach($usr_data as $theuser) {
 
 			$csvoutput = array();
+
+			// Make sure that joindate and enddate are timestamps.
+			$theuser->joindate = pmpro_convert_utc_datetime_to_timestamp( $theuser->joindate );
+			$theuser->enddate = pmpro_convert_utc_datetime_to_timestamp( $theuser->enddate );
 
 			//process usermeta
 			$metavalues = new stdClass();

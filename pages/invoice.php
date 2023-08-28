@@ -1,12 +1,12 @@
 <?php 
 /**
  * Template: Invoice
- * Version: 2.0
+ * Version: TBD
  *
  * See documentation for how to override the PMPro templates.
  * @link https://www.paidmembershipspro.com/documentation/templates/
  *
- * @version 2.0
+ * @version TBD
  *
  * @author Paid Memberships Pro
  */
@@ -115,7 +115,7 @@
 	else
 	{
 		//Show all invoices for user if no invoice ID is passed
-		$invoices = $wpdb->get_results("SELECT o.*, UNIX_TIMESTAMP(CONVERT_TZ(o.timestamp, '+00:00', @@global.time_zone)) as timestamp, l.name as membership_level_name FROM $wpdb->pmpro_membership_orders o LEFT JOIN $wpdb->pmpro_membership_levels l ON o.membership_id = l.id WHERE o.user_id = '$current_user->ID' AND o.status NOT IN('review', 'token', 'error') ORDER BY timestamp DESC");
+		$invoices = $wpdb->get_results("SELECT o.*, o.timestamp, l.name as membership_level_name FROM $wpdb->pmpro_membership_orders o LEFT JOIN $wpdb->pmpro_membership_levels l ON o.membership_id = l.id WHERE o.user_id = '$current_user->ID' AND o.status NOT IN('review', 'token', 'error') ORDER BY timestamp DESC");
 		if($invoices)
 		{
 			?>
@@ -132,6 +132,8 @@
 			<?php
 				foreach($invoices as $invoice)
 				{
+					// Make sure that timestamp is actually a timestamp.
+					$invoice->timestamp = pmpro_convert_utc_datetime_to_timestamp( $invoice->timestamp );
 					?>
 					<tr>
 						<td><a href="<?php echo esc_url( pmpro_url("invoice", "?invoice=" . $invoice->code ) ) ?>"><?php echo esc_html( date_i18n( get_option("date_format"), strtotime( get_date_from_gmt( date( 'Y-m-d H:i:s', $invoice->timestamp ) ) ) ) )?></a></td>
