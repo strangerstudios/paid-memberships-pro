@@ -1265,7 +1265,7 @@
 			}
 
 			global $wpdb;
-			$this->sqlQuery = $wpdb->prepare( "UPDATE $wpdb->pmpro_membership_orders SET timestamp = %s WHERE id = %d LIMIT 1", $date, $this->id );
+			$this->sqlQuery = $wpdb->prepare( "UPDATE $wpdb->pmpro_membership_orders SET timestamp = %s WHERE id = %d", $date, $this->id );
 
 			do_action('pmpro_update_order', $this);
 			if($wpdb->query($this->sqlQuery) !== "false") {
@@ -1545,7 +1545,7 @@
 			if(empty($this->id))
 				return false;
 
-			$this->sqlQuery = $wpdb->prepare( "UPDATE $wpdb->pmpro_membership_orders SET status = %s WHERE id = %d LIMIT 1", $newstatus, $this->id );
+			$this->sqlQuery = $wpdb->prepare( "UPDATE $wpdb->pmpro_membership_orders SET status = %s WHERE id = %d", $newstatus, $this->id );
 			
 			do_action('pmpro_update_order', $this);
 			if($wpdb->query($this->sqlQuery) !== false){

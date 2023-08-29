@@ -82,7 +82,7 @@ function pmpro_upgrade_1_8_9_1_ajax() {
 				if($debug)
 					echo "- Can't find the subscription.\n";
 				if($run)
-					$wpdb->query("UPDATE $wpdb->pmpro_membership_orders SET `status` = 'error', notes = CONCAT(notes, '\nRecurring order we couldn\'t find the subscription.') WHERE id = $order->id LIMIT 1");
+					$wpdb->query("UPDATE $wpdb->pmpro_membership_orders SET `status` = 'error', notes = CONCAT(notes, '\nRecurring order we couldn\'t find the subscription.') WHERE id = $order->id");
 				
 				continue;
 			}
@@ -95,7 +95,7 @@ function pmpro_upgrade_1_8_9_1_ajax() {
 				if($debug)
 					echo "- Can't find the customer.\n";
 				if($run)
-					$wpdb->query("UPDATE $wpdb->pmpro_membership_orders SET `status` = 'error', notes = CONCAT(notes, '\nRecurring order we couldn\'t find the original customer for.') WHERE id = $order->id LIMIT 1");
+					$wpdb->query("UPDATE $wpdb->pmpro_membership_orders SET `status` = 'error', notes = CONCAT(notes, '\nRecurring order we couldn\'t find the original customer for.') WHERE id = $order->id");
 
 				continue;
 			}
@@ -137,7 +137,7 @@ function pmpro_upgrade_1_8_9_1_ajax() {
 			if($debug)
 				echo "- No invoice for this sub.\n";
 			if($run)
-				$wpdb->query("UPDATE $wpdb->pmpro_membership_orders SET `status` = 'error', notes = CONCAT(notes, '\nRecurring order we couldn\'t find the original customer for.') WHERE id = $order->id LIMIT 1");
+				$wpdb->query("UPDATE $wpdb->pmpro_membership_orders SET `status` = 'error', notes = CONCAT(notes, '\nRecurring order we couldn\'t find the original customer for.') WHERE id = $order->id");
 
 			continue;
 		}

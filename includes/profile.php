@@ -332,7 +332,7 @@ function pmpro_membership_level_profile_fields_update()
 				$expiration_date = $expiration_date . " " . intval($_REQUEST['expires_hour']) . ":00:00";
 			}
 		}
-				$sqlQuery = $wpdb->prepare( "UPDATE $wpdb->pmpro_memberships_users SET enddate = %s WHERE status = 'active' AND membership_id = %d AND user_id = %d LIMIT 1", $expiration_date, intval($_REQUEST['membership_level']), $user_ID );
+				$sqlQuery = $wpdb->prepare( "UPDATE $wpdb->pmpro_memberships_users SET enddate = %s WHERE status = 'active' AND membership_id = %d AND user_id = %d", $expiration_date, intval($_REQUEST['membership_level']), $user_ID );
 		if($wpdb->query($sqlQuery))
 			$expiration_changed = true;
 	}
@@ -345,7 +345,7 @@ function pmpro_membership_level_profile_fields_update()
 		if(empty($blank))
 		{
 			//null out the expiration
-			$sqlQuery = $wpdb->prepare( "UPDATE $wpdb->pmpro_memberships_users SET enddate = NULL WHERE status = 'active' AND membership_id = %d AND user_id = %d LIMIT 1", intval($_REQUEST['membership_level']), $user_ID );
+			$sqlQuery = $wpdb->prepare( "UPDATE $wpdb->pmpro_memberships_users SET enddate = NULL WHERE status = 'active' AND membership_id = %d AND user_id = %d", intval($_REQUEST['membership_level']), $user_ID );
 			if($wpdb->query($sqlQuery))
 				$expiration_changed = true;
 		}

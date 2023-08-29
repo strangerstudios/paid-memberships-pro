@@ -158,7 +158,7 @@ function pmpro_upgrade_1_8_9_3_ajax() {
 				if($debug)
 					echo "- Adding startdate " . $startdate . ".\n";
 				if($run) {
-					$sqlQuery = "UPDATE $wpdb->pmpro_memberships_users SET startdate = '" . esc_sql($startdate) . "' WHERE user_id = $user_id AND membership_id = $level_id AND status = 'active' LIMIT 1";
+					$sqlQuery = "UPDATE $wpdb->pmpro_memberships_users SET startdate = '" . esc_sql($startdate) . "' WHERE user_id = $user_id AND membership_id = $level_id AND status = 'active'";
 					$wpdb->query($sqlQuery);
 				}
 			} else {
@@ -179,7 +179,7 @@ function pmpro_upgrade_1_8_9_3_ajax() {
 					if($debug)
 						echo "- Adding enddate " . $enddate . ".\n";
 					if($run) {
-						$sqlQuery = "UPDATE $wpdb->pmpro_memberships_users SET enddate = '" . esc_sql($enddate) . "' WHERE user_id = $user_id AND membership_id = $level_id AND status = 'active' LIMIT 1";
+						$sqlQuery = "UPDATE $wpdb->pmpro_memberships_users SET enddate = '" . esc_sql($enddate) . "' WHERE user_id = $user_id AND membership_id = $level_id AND status = 'active'";
 						$wpdb->query($sqlQuery);
 					}
 				}
