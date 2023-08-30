@@ -264,7 +264,7 @@ for ( $ic = 1; $ic <= $iterations; $ic ++ ) {
 
 		// Check if the user has an enddate or not.
 		if ( $user->enddate ) {
-			$enddate = pmpro_enclose( date_i18n( $dateformat, $user->joindate ) );
+			$enddate = pmpro_enclose( date_i18n( $dateformat, $user->enddate ) );
 		} else {
 			$enddate = __( 'Never', 'paid-memberships-pro' );
 		}
