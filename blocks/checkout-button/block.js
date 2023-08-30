@@ -64,7 +64,7 @@ export default registerBlockType(
              return [
                 isSelected && <Inspector { ...{ setAttributes, ...props} } />,
                 <div className={ className }>
-                  <a class={css_class} >{text}</a>
+                  <a className={css_class} >{text}</a>
                 </div>,
                 isSelected && <div className="pmpro-block-element">
                    <TextControl
