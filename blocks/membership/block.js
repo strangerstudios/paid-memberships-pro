@@ -21,7 +21,7 @@ const {
     InnerBlocks,
 } = wp.blockEditor;
 
-const all_levels = [{ value: 0, label: "Non-Members" }].concat( pmpro.all_level_values_and_labels );
+const all_levels = [{ value: 0, label: __( "Non-Members", 'paid-memberships-pro' ) }].concat( pmpro.all_level_values_and_labels );
 
  /**
   * Register block
