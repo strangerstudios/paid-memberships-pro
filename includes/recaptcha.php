@@ -43,6 +43,15 @@ function pmpro_init_recaptcha() {
 	global $recaptcha_publickey, $recaptcha_privatekey;
 	$recaptcha_publickey = 'global deprecated';
 	$recaptcha_privatekey = 'global deprecated';
+
+	// For templates using the old recaptcha_get_html. 
+	// TODO: Remove this in a future version.
+	if ( ! function_exists( 'recaptcha_get_html' ) ) {
+		function recaptcha_get_html() {
+			_deprecated_function( 'recaptcha_get_html', 'TBD', 'pmpro_recaptcha_get_html');
+			return pmpro_recaptcha_get_html();
+		}
+	}
 }
 add_action( 'pmpro_checkout_preheader', 'pmpro_init_recaptcha' );
 add_action( 'pmpro_billing_preheader', 'pmpro_init_recaptcha', 9 ); // Run before the Stripe class loads pmpro-stripe.js
@@ -85,13 +94,6 @@ function pmpro_recaptcha_get_html() {
 			src="https://www.google.com/recaptcha/api.js?hl=<?php echo esc_attr( $lang );?>">
 		</script>
 	<?php }				
-}
-
-//for templates using the old recaptcha_get_html
-if ( ! function_exists( 'recaptcha_get_html' ) ) {
-	function recaptcha_get_html() {
-		return pmpro_recaptcha_get_html();
-	}
 }
 
 /**
