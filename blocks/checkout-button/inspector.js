@@ -36,7 +36,7 @@ export default class Inspector extends Component {
               </PanelBody>
               <PanelBody>
                   <SelectControl
-                      label={ __( 'Level', 'paid-memberships-pro' ) }
+                      label={ __( 'Membership Level', 'paid-memberships-pro' ) }
                       help={ __( 'The level to link to for checkout button', 'paid-memberships-pro' ) }
                       value={ level }
                       onChange={ level => setAttributes( { level } ) }
