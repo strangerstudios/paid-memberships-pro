@@ -66,6 +66,11 @@ function pmpro_compatibility_checker() {
 			'check_type'  => 'class',
 			'check_value' => 'BuddyPress' //BuddyBoss uses this class, too.
 		],
+		[
+			'file'        => 'bluehost-wordpress-plugin.php',
+			'check_type'  => 'constant',
+			'check_value' => 'BLUEHOST_PLUGIN_VERSION',
+		],
 	];
 
 	foreach ( $compat_checks as $value ) {
