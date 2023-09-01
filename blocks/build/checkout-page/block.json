@@ -1,0 +1,17 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "pmpro/checkout-page",
+	"title": "Membership Checkout Form",
+	"category": "pmpro",
+	"icon": "list-view",
+	"description": "Dynamic form that allows users to complete free registration or paid checkout for the selected membership level.",
+	"supports": {
+		"html": false
+	},
+	"textdomain": "paid-memberships-pro",
+	"editorScript": "file:./index.js",
+	"editorStyle": "file:./index.css",
+	"style": "file:./style-index.css",
+	"render": "file:./render.php"
+}

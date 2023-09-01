@@ -16,18 +16,21 @@ $pmpro_billing_order = MemberOrder::get_order( $order_id );
 if ( empty( $pmpro_billing_order ) ) {
     // We need an order to update. Redirect to the account page.
     wp_redirect( pmpro_url( 'account' ) );
+    exit;
 }
 
 // Check that the order belongs to the current user.
 if ( $pmpro_billing_order->user_id != $current_user->ID ) {
     // This order doesn't belong to the current user. Redirect to the account page.
     wp_redirect( pmpro_url( 'account' ) );
+    exit;
 }
 
 // Make sure that the order is in success status.
 if ( $pmpro_billing_order->status != 'success' ) {
     // This order is not in success status. Redirect to the account page.
     wp_redirect( pmpro_url( 'account' ) );
+    exit;
 }
 
 // Get the subscription for this order and make sure that it is active.
@@ -35,6 +38,7 @@ $pmpro_billing_subscription = PMPro_Subscription::get_subscription_from_subscrip
 if ( empty( $pmpro_billing_subscription ) || $pmpro_billing_subscription->get_status() != 'active' ) {
     // This subscription is not active. Redirect to the account page.
     wp_redirect( pmpro_url( 'account' ) );
+    exit;
 }
 
 // Get the user's current membership level.

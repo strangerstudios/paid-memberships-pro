@@ -30,12 +30,13 @@ import './editor.scss';
  * @return {WPElement} Element to render.
  */
 export default function Edit( { attributes, setAttributes } ) {
+	const blockProps = useBlockProps( {} );
 	const updateTitle = ( event ) => {
 		setAttributes( { title: event.target.value } );
 	};
 
 	return [
-		<div className="pmpro-block-element">
+		<div className="pmpro-block-element" { ...blockProps }>
 		<span className="pmpro-block-title">{ __( 'Paid Memberships Pro', 'paid-memberships-pro' ) }</span>
 		<span className="pmpro-block-subtitle"> { __( 'Membership Account: Profile', 'paid-memberships-pro' ) }</span>
 		<input
