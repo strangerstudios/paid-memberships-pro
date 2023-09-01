@@ -11,6 +11,8 @@ import { __ } from '@wordpress/i18n';
  *
  * @see https://developer.wordpress.org/block-editor/reference-guides/packages/packages-block-editor/#useblockprops
  */
+import { useSelect } from '@wordpress/data';
+import { useEntityProp } from '@wordpress/core-data';
 import { useBlockProps } from '@wordpress/block-editor';
 import { InspectorControls } from '@wordpress/block-editor';
 import { PanelBody, SelectControl } from '@wordpress/components';
@@ -22,7 +24,6 @@ import { PanelBody, SelectControl } from '@wordpress/components';
  * @see https://www.npmjs.com/package/@wordpress/scripts#using-css
  */
 import './editor.scss';
-import block from '../../account-page/block';
 
 /**
  * The edit function describes the structure of your block in the context of the
@@ -34,7 +35,15 @@ import block from '../../account-page/block';
  */
 export default function Edit({ attributes, setAttributes }) {
 	const blockProps = useBlockProps({});
-	const { pmpro_default_level } = attributes;
+    const postType = useSelect(
+        ( select ) => select( 'core/editor' ).getCurrentPostType(),
+        []
+    );
+    const [ meta, setMeta ] = useEntityProp( 'postType', postType, 'meta' );
+	const pmpro_default_level_value = meta['pmpro_default_level'];
+    const updateMetaValue = ( value ) => {
+        setMeta( { ...meta, pmpro_default_level: value } );
+    };
 
 	return (
 		<>
@@ -43,22 +52,15 @@ export default function Edit({ attributes, setAttributes }) {
           <SelectControl
               label={ __( 'Membership Level', 'paid-memberships-pro' ) }
               help={ __( 'Choose a default level for Membership Checkout.', 'paid-memberships-pro' ) }
-              value={ pmpro_default_level }
-              onChange={ pmpro_default_level => setAttributes( { pmpro_default_level } ) }
+              value={ pmpro_default_level_value }
+              onChange={ updateMetaValue }
               options={ [''].concat( window.pmpro.all_level_values_and_labels ) }
           />
       </PanelBody>
       </InspectorControls>
       <div className="pmpro-block-element" { ...blockProps }>
       <span className="pmpro-block-title">{ __( 'Paid Memberships Pro', 'paid-memberships-pro' ) }</span>
-      <span className="pmpro-block-subtitle">{ __( 'Membership Checkout Form', 'paid-memberships-pro' ) }</span>
-      <hr />
-      <SelectControl
-          label={ __( 'Membership Level', 'paid-memberships-pro' ) }
-          value={ pmpro_default_level }
-          onChange={ pmpro_default_level => setAttributes( { pmpro_default_level } ) }
-          options={ window.pmpro.all_level_values_and_labels }
-      />
+	  <span className="pmpro-block-subtitle"> { __( 'Membership Checkout Form', 'paid-memberships-pro' ) }</span>
     </div>
 		</>
 	);
