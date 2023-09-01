@@ -81,6 +81,13 @@ config.entry = {
     "member-profile-edit",
     "index.js"
   ),
+  "login/index": path.resolve(
+    process.cwd(),
+    "blocks",
+    "src",
+    "login",
+    "index.js"
+  )
 };
 config.output = {
   filename: "[name].js",
