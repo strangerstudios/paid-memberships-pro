@@ -53,6 +53,13 @@ config.entry = {
     "cancel-page",
     "index.js"
   ),
+  "checkout-page/index": path.resolve(
+    process.cwd(),
+    "blocks",
+    "src",
+    "checkout-page",
+    "index.js",
+  ),
   "confirmation-page/index": path.resolve(
     process.cwd(),
     "blocks",
