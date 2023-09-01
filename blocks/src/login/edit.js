@@ -54,7 +54,7 @@ export default function Edit({ attributes, setAttributes }) {
 			  }}
 			/>
 			<ToggleControl
-			  label={__("Display the 'Log In Widget' menu.", "paid-memberships-pro")}
+			  label={__("Display the 'Log In Widget' menu in the 'Welcome' content.", "paid-memberships-pro")}
 			  help={__("Assign the menu under Appearance > Menus.", "paid-memberships-pro")}
 			  checked={show_menu}
 			  onChange={(value) => {
@@ -64,7 +64,7 @@ export default function Edit({ attributes, setAttributes }) {
 			  }}
 			/>
 			<ToggleControl
-			  label={__("Display a 'Log Out' link.", "paid-memberships-pro")}
+			  label={__("Display a 'Log Out' link in the 'Welcome' content.", "paid-memberships-pro")}
 			  checked={show_logout_link}
 			  onChange={(value) => {
 				setAttributes({
