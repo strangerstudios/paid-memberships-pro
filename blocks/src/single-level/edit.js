@@ -36,7 +36,6 @@ import "./editor.scss";
  * @return {WPElement} Element to render.
  */
 export default function Edit(props) {
-  const blockProps = useBlockProps({});
   const all_levels = [
     { value: 0, label: __("Choose a level", "paid-memberships-pro") },
   ].concat(pmpro.all_level_values_and_labels);
@@ -69,7 +68,10 @@ export default function Edit(props) {
       )}
 
       {isSelected ? (
-        <div className="pmpro-block-require-membership-element" {...blockProps}>
+        <div
+          className="pmpro-block-require-membership-element"
+          {...useBlockProps()}
+        >
           <span className="pmpro-block-title">
             {__("Individual Membership Level", "paid-memberships-pro")}
           </span>
@@ -117,7 +119,10 @@ export default function Edit(props) {
           </div>
         </div>
       ) : (
-        <div className="pmpro-block-require-membership-element" {...blockProps}>
+        <div
+          className="pmpro-block-require-membership-element"
+          {...useBlockProps()}
+        >
           <span className="pmpro-block-title">
             {__("Membership Level", "paid-memberships-pro")}
           </span>

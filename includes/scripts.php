@@ -122,7 +122,7 @@ function pmpro_admin_enqueue_scripts() {
    
 
 	$all_levels                  = pmpro_getAllLevels( true, true );
-    $all_level_values_and_labels = array();
+	$all_level_values_and_labels = array();
     $all_levels_formatted_text = array();
 
     // Enqueue pmpro-admin.js.
