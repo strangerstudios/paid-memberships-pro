@@ -39,6 +39,13 @@ config.entry = {
     "account-links-section",
     "index.js"
   ),
+  "account-page/index": path.resolve(
+    process.cwd(),
+    "blocks",
+    "src",
+    "account-page",
+    "index.js"
+  ),
   "billing-page/index": path.resolve(
     process.cwd(),
     "blocks",

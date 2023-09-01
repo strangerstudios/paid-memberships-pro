@@ -1,0 +1,35 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "pmpro/account-page",
+	"title": "PMPro Page: Account (Full)",
+	"category": "pmpro-pages",
+	"icon": "admin-users",
+	"description": "Dynamic page section to display the selected sections of the Membership Account page including Memberships, Profile, Invoices, and Member Links. These sections can also be added via separate blocks.",
+	"attributes": {
+		"membership": {
+			"type": "boolean",
+			"default": false
+		},
+		"profile": {
+			"type": "boolean",
+			"default": false
+		},
+		"invoices": {
+			"type": "boolean",
+			"default": false
+		},
+		"links": {
+			"type": "boolean",
+			"default": false
+		}
+	},
+	"supports": {
+		"html": false
+	},
+	"textdomain": "paid-memberships-pro",
+	"editorScript": "file:./index.js",
+	"editorStyle": "file:./index.css",
+	"style": "file:./style-index.css",
+	"render": "file:./render.php"
+}
