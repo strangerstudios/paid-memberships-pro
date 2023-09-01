@@ -39,6 +39,13 @@ config.entry = {
     "account-links-section",
     "index.js"
   ),
+  "account-page/index": path.resolve(
+    process.cwd(),
+    "blocks",
+    "src",
+    "account-page",
+    "index.js"
+  ),
   "billing-page/index": path.resolve(
     process.cwd(),
     "blocks",
@@ -52,6 +59,20 @@ config.entry = {
     "src",
     "cancel-page",
     "index.js"
+  ),
+  "checkout-button/index": path.resolve(
+    process.cwd(),
+    "blocks",
+    "src",
+    "checkout-button",
+    "index.js"
+  ),
+  "checkout-page/index": path.resolve(
+    process.cwd(),
+    "blocks",
+    "src",
+    "checkout-page",
+    "index.js",
   ),
   "confirmation-page/index": path.resolve(
     process.cwd(),
@@ -81,7 +102,14 @@ config.entry = {
     "member-profile-edit",
     "index.js"
   ),
-  "single-level/index": path.resolve(
+  "login/index": path.resolve(
+    process.cwd(),
+    "blocks",
+    "src",
+    "login",
+    "index.js"
+  ),
+   "single-level/index": path.resolve(
     process.cwd(),
     "blocks",
     "src",
