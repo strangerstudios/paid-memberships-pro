@@ -1,0 +1,28 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "pmpro/single-level-description",
+	"title": "Level Description",
+	"category": "pmpro",
+	"icon": "slides",
+	"description": "The description for this membership level.",
+	"parent": ["pmpro/single-level"],
+	"attributes" : {
+		"levels" : {
+			"type" : "array",
+			"default" : []
+		},
+		"selected_level" : {
+			"type" : "string",
+			"default" : ""
+		}
+	},
+	"supports": {
+		"html": false
+	},
+	"textdomain": "paid-memberships-pro",
+	"editorScript": "file:./index.js",
+	"editorStyle": "file:./index.css",
+	"style": "file:./style-index.css",
+	"render": "file:./render.php"
+}

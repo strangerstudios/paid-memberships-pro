@@ -29,15 +29,13 @@ add_filter( 'block_categories_all', 'pmpro_block_categories' );
  */
 function pmpro_register_block_types() {
 	register_block_type( PMPRO_DIR . '/blocks/build/account-invoices-section' );
-	register_block_type( PMPRO_DIR . '/blocks/build/account-profile-section' );	
-	register_block_type( PMPRO_DIR . '/blocks/build/account-links-section' );
- 	register_block_type( PMPRO_DIR . '/blocks/build/account-membership-section' );
-  register_block_type( PMPRO_DIR . '/blocks/build/billing-page' );
-  register_block_type( PMPRO_DIR . '/blocks/build/cancel-page' );
-  register_block_type( PMPRO_DIR . '/blocks/build/confirmation-page' );
-  register_block_type( PMPRO_DIR . '/blocks/build/invoice-page' );
-  register_block_type( PMPRO_DIR . '/blocks/build/levels-page' );
-  register_block_type( PMPRO_DIR . '/blocks/build/member-profile-edit' );
+	register_block_type( PMPRO_DIR . '/blocks/build/account-profile-section' );
+	register_block_type( PMPRO_DIR . '/blocks/build/single-level' );
+	register_block_type( PMPRO_DIR . '/blocks/build/single-level-checkout' );
+	register_block_type( PMPRO_DIR . '/blocks/build/single-level-name' );
+	register_block_type( PMPRO_DIR . '/blocks/build/single-level-expiration' );
+	register_block_type( PMPRO_DIR . '/blocks/build/single-level-description' );
+	register_block_type( PMPRO_DIR . '/blocks/build/single-level-price' );
 }
 add_action( 'init', 'pmpro_register_block_types' );
 /**
