@@ -1,0 +1,23 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "pmpro/account-membership-section",
+	"title": "PMPro Page: Account Memberships",
+	"category": "pmpro-pages",
+	"icon": "groups",
+	"description": "Dynamic page section to display the member's active membership information with links to view all membership options, update billing information, and change or cancel membership.",
+	"attributes" : {
+		"title" : {
+			"type" : "string",
+			"default" : "My Memberships"
+		}
+	},
+	"supports": {
+		"html": false
+	},
+	"textdomain": "paid-memberships-pro",
+	"editorScript": "file:./index.js",
+	"editorStyle": "file:./index.css",
+	"style": "file:./style-index.css",
+	"render": "file:./render.php"
+}

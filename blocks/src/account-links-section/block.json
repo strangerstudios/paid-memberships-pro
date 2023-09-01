@@ -1,0 +1,23 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "pmpro/account-links-section",
+	"title": "PMPro Page: Account Links",
+	"category": "pmpro-pages",
+	"icon": "external",
+	"description": "Dynamic page section that displays custom links available for the active member only. This block is only visible if other Add Ons or custom code have added links.",
+	"attributes" : {
+		"title" : {
+			"type" : "string",
+			"default" : "Member Links"
+		}
+	},
+	"supports": {
+		"html": false
+	},
+	"textdomain": "paid-memberships-pro",
+	"editorScript": "file:./index.js",
+	"editorStyle": "file:./index.css",
+	"style": "file:./style-index.css",
+	"render": "file:./render.php"
+}
