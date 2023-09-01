@@ -34,6 +34,7 @@ function pmpro_register_block_types() {
  	register_block_type( PMPRO_DIR . '/blocks/build/account-membership-section' );
   register_block_type( PMPRO_DIR . '/blocks/build/billing-page' );
   register_block_type( PMPRO_DIR . '/blocks/build/cancel-page' );
+  register_block_type( PMPRO_DIR . '/blocks/build/checkout-button' );
   register_block_type( PMPRO_DIR . '/blocks/build/checkout-page' );
   register_block_type( PMPRO_DIR . '/blocks/build/confirmation-page' );
   register_block_type( PMPRO_DIR . '/blocks/build/invoice-page' );
