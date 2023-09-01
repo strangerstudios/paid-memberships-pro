@@ -1,0 +1,30 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "pmpro/checkout-button",
+	"title": "Membership Checkout Button",
+	"category": "pmpro",
+	"icon": "migrate",
+	"description": "Inserts a button that links directly to membership checkout for the selected level.",
+	"attributes" : {
+		"text": {
+			"type": "string",
+			"default": "Buy Now"
+		},
+		"css_class": {
+			"type": "string",
+			"default": "pmpro_btn"
+		},
+		"level": {
+			"type": "string"
+		}
+	},
+	"supports": {
+		"html": false
+	},
+	"textdomain": "paid-memberships-pro",
+	"editorScript": "file:./index.js",
+	"editorStyle": "file:./index.css",
+	"style": "file:./style-index.css",
+	"render": "file:./render.php"
+}

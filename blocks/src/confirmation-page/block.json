@@ -1,0 +1,19 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "pmpro/confirmation-page",
+	"title": "PMPro Page: Confirmation",
+	"category": "pmpro-pages",
+	"icon": "yes",
+	"description": "Dynamic page section that displays a confirmation message and purchase information for the active member immediately after membership registration and checkout.",
+	"attributes" : {
+	},
+	"supports": {
+		"html": false
+	},
+	"textdomain": "paid-memberships-pro",
+	"editorScript": "file:./index.js",
+	"editorStyle": "file:./index.css",
+	"style": "file:./style-index.css",
+	"render": "file:./render.php"
+}
