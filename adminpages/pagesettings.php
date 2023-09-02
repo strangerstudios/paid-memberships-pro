@@ -83,6 +83,9 @@ if (!empty($_REQUEST['savesettings'])) {
     //assume success
     $msg = true;
     $msgt = __("Your page settings have been updated.", 'paid-memberships-pro' );
+
+    // flush rewrite rules.
+    flush_rewrite_rules();
 }
 
 //check nonce for generating pages
@@ -156,6 +159,9 @@ if (!empty($_REQUEST['createpages'])) {
         $msg = true;
         $msgt = __("The following pages have been created for you", 'paid-memberships-pro' ) . ": " . implode(", ", $pages_created) . ".";
     }
+
+    // Flush rewrite rules.
+    flush_rewrite_rules();
 }
 
 require_once(dirname(__FILE__) . "/admin_header.php");

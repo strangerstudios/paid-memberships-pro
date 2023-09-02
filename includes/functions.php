@@ -2361,7 +2361,8 @@ function pmpro_are_any_visible_levels() {
  * @return mixed|void
  */
 function pmpro_getLevelAtCheckout( $level_id = null, $discount_code = null ) {
-	global $pmpro_level, $wpdb, $post;
+	global $pmpro_level, $wpdb, $post, $wp_query;
+
 	// Commenting out caching for now. We want to rethink this appraoch before we commit to it.
 	/*
 	static $function_cache = array();
@@ -2381,6 +2382,28 @@ function pmpro_getLevelAtCheckout( $level_id = null, $discount_code = null ) {
 	// Default to level passed in via URL.
 	if ( empty( $level_id ) && ! empty( $_REQUEST['pmpro_level'] ) ) {
 		$level_id = intval( $_REQUEST['pmpro_level'] );
+	}
+ 
+  // If a pretty permalink was used, grab the level from the URL.
+	if ( empty( $level_id ) && ! empty( $wp_query->query_vars['pmpro_checkout_level'] ) ) {
+		$query_checkout_level = $wp_query->query_vars['pmpro_checkout_level'];
+		$all_levels = pmpro_getAllLevels( false, false );
+
+		// If the level is a number, check if we have a level with that ID.
+		if ( is_numeric( $query_checkout_level ) && ! empty( $all_levels[ $query_checkout_level ] ) ) {
+			$level_id = $query_checkout_level;
+		}
+
+		// If we still don't have a level, check if we have a level with that name.
+		if ( empty( $level_id ) ) {
+			$lowercase_query_checkout_level = strtolower( $query_checkout_level );
+			foreach ( $all_levels as $level ) {
+				if ( strtolower( urlencode( $level->name ) ) === $lowercase_query_checkout_level ) {
+					$level_id = $level->id;
+					break;
+				}
+			}
+		}
 	}
 
 	// If we don't have a level, check the legacy 'level' request parameter.

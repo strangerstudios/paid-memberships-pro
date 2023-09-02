@@ -344,6 +344,7 @@ function pmpro_checkForUpgrades()
 	require_once( PMPRO_DIR . "/includes/updates/upgrade_3_0.php" );
 	if( $pmpro_db_version < 3.0 ) {
 		pmpro_db_delta();
+		flush_rewrite_rules();
 		$pmpro_db_version = pmpro_upgrade_3_0();
 		update_option( 'pmpro_db_version', '3.0' );
 	}

@@ -37,3 +37,47 @@ function pmpro_calculate_profile_start_date( $order, $date_format, $filter = tru
 	// Convert $profile_start_date to correct format.
 	return date_i18n( $date_format, strtotime( $profile_start_date ) );
 }
+
+/**
+ * Set up rewrite rules so that pretty permalinks can be used on the checkout page.
+ *
+ * @since TBD
+ */
+function pmpro_checkout_rewrite_rules() {
+	global $pmpro_pages;
+
+	// Get the checkout page url.
+	$checkout_page = pmpro_url( 'checkout' );
+
+	// Bail if the checkout page is not set.
+	if ( empty( $checkout_page ) ) {
+		return;
+	}
+
+	// Get the base site url.
+	$site_url = get_site_url();
+
+	// Get the base checkout page url.
+	$checkout_page_base = str_replace( $site_url . '/', '', $checkout_page );
+
+	// Add the rewrite rule.
+	add_rewrite_rule( $checkout_page_base . '([^/]*)/?', 'index.php?page_id=' . $pmpro_pages['checkout'] . '&pmpro_checkout_level=$matches[1]', 'top' );
+}
+add_action( 'init', 'pmpro_checkout_rewrite_rules' );
+
+/**
+ * Adding the pmpro_checkout_level query var so that it can be used in the rewrite rule.
+ *
+ * @since TBD
+ *
+ * @param array $query_vars The query vars.
+ * @return array The query vars.
+ */
+function pmpro_checkout_custom_query_vars( $query_vars ) {
+
+    $query_vars[] = 'pmpro_checkout_level';
+    
+    return $query_vars;
+}
+
+add_filter( 'query_vars', 'pmpro_checkout_custom_query_vars', 10, 1 );
