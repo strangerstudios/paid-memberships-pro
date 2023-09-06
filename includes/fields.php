@@ -84,6 +84,7 @@ function pmpro_add_field_group( $name, $label = NULL, $description = '', $order 
 	$temp->label = $label;
 	$temp->description = $description;
 	$temp->order = $order;
+	$temp->checkout = 'yes';
 
 	//defaults
 	if( empty( $temp->label ) ) {
@@ -1047,16 +1048,18 @@ add_action( 'pmpro_personal_options_update', 'pmpro_save_user_fields_in_profile'
  * Add user fields to confirmation email.
  */
 function pmpro_add_user_fields_to_email( $email ) {
-	global $wpdb, $pmpro_user_fields;
+	global $wpdb, $pmpro_user_fields, $pmpro_field_groups;
 
 	//only update admin confirmation emails
 	if ( ! empty( $email ) && strpos( $email->template, "checkout" ) !== false && strpos( $email->template, "admin" ) !== false ) {
+
 		//get the user_id from the email
 		$user_id = $wpdb->get_var( "SELECT ID FROM $wpdb->users WHERE user_email = '" . esc_sql( $email->data['user_email'] ) . "' LIMIT 1" );
 
 		if ( ! empty( $user_id ) ) {
-			// Get field group settings.
-			$fields_groups = pmpro_get_user_fields_settings();
+			
+			// Get field group settings from the global.
+			$fields_groups = $pmpro_field_groups;
 
 			// Remove any field groups that don't show on checkout.
 			foreach ( $fields_groups as $key => $group ) {
@@ -1065,19 +1068,24 @@ function pmpro_add_user_fields_to_email( $email ) {
 				}
 			}
 
-			// Remove any field groups that are not for the membership level that was purchased.
+			// Get the level ID from the email.
 			if ( ! empty( $email->data['membership_id'] ) ) {
 				$level_id = $email->data['membership_id'];
-				foreach ( $fields_groups as $key => $group ) {
-					if ( ! empty( $group->levels ) && ! in_array( $level_id, $group->levels ) ) {
-						unset( $fields_groups[ $key ] );
-					}
+			}
+			
+
+			// Remove any field groups that are not for the membership level that was purchased.
+			foreach ( $fields_groups as $key => $group ) {
+				if ( ! empty( $group->levels ) && ! in_array( $level_id, $group->levels ) ) {
+					unset( $fields_groups[ $key ] );
 				}
 			}
 
 			//add to bottom of email
 			if ( ! empty( $fields_groups ) ) {
+				
 				$email->body .= "<p>" . __( 'Extra Fields:', 'paid-memberships-pro' ) . "<br />";
+
 				//cycle through groups
 				foreach( $fields_groups as $group ) {
 
@@ -1090,9 +1098,19 @@ function pmpro_add_user_fields_to_email( $email ) {
 					}
 					
 					//cycle through groups and fields associated with that group.
-					foreach( $pmpro_user_fields[$group_name] as $field ) {
+					foreach( $pmpro_user_fields[$group_name] as $field ) { 
 
 						if ( ! pmpro_is_field( $field ) ) {
+							continue;
+						}
+
+						// If the field is showing only to admins we can skip it.
+						if ( $field->profile === 'only_admin' ) {
+							continue;
+						}
+
+						// Let's make sure the field level ID's are the same as the one they checked out for.
+						if ( ! empty( $field->levels ) &&  ! in_array( $level_id, $field->levels ) ) {
 							continue;
 						}
 
@@ -1112,6 +1130,7 @@ function pmpro_add_user_fields_to_email( $email ) {
 
 						$email->body .= "<br />";
 					}
+
 				}
 				$email->body .= "</p>";
 			}
