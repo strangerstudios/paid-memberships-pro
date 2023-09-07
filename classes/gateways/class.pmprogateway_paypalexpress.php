@@ -375,6 +375,10 @@
 				$morder = new MemberOrder();
 				$morder->getMemberOrderByPayPalToken(sanitize_text_field($_REQUEST['token']));
 				$morder->Token = $morder->paypal_token; $pmpro_paypal_token = $morder->paypal_token;
+
+				// Pull checkout values from order meta.
+				pmpro_pull_checkout_data_from_order( $morder );
+
 				if($morder->Token)
 				{
 					//set up values
