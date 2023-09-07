@@ -1774,60 +1774,7 @@ class PMProGateway_stripe extends PMProGateway {
 		$morder->status  = 'token';
 		$morder->saveOrder();
 
-		// Save some checkout information in the order so that we can access it when the payment is complete.
-		// Save the request variables.
-		$request_vars = $_REQUEST;
-		// Unset restricted request variables.
-		$restricted_vars = array(
-			'password',
-			'password2',
-			'password2_copy',
-			'AccountNumber',
-			'CVV',
-			'ExpirationMonth',
-			'ExpirationYear',
-			'add_sub_accounts_password', // Creating users at checkout with Sponsored Members.
-		);
-		foreach ( $restricted_vars as $key ) {
-			if ( isset( $request_vars[ $key ] ) ) {
-				unset( $request_vars[ $key ] );
-			}
-		}
-		update_pmpro_membership_order_meta( $morder->id, 'checkout_request_vars', $request_vars );
-
-		// Save the checkout level.
-		$pmpro_level_arr = (array) $pmpro_level;
-		update_pmpro_membership_order_meta( $morder->id, 'checkout_level', $pmpro_level_arr );
-
-		// Save the discount code.
-		update_pmpro_membership_order_meta( $morder->id, 'checkout_discount_code', $discount_code );
-	
-		// Save any files that were uploaded.
-		if ( ! empty( $_FILES ) ) {
-			$files = array();
-			foreach ( $_FILES as $arr_key => $file ) {
-				// Move the file to the uploads/pmpro-register-helper/tmp directory.
-				// Check for a register helper directory in wp-content.
-				$upload_dir = wp_upload_dir();
-				$pmprorh_dir = $upload_dir['basedir'] . "/pmpro-register-helper/tmp/";
-
-				// Create the dir and subdir if needed
-				if( ! is_dir( $pmprorh_dir ) ) {
-					wp_mkdir_p( $pmprorh_dir );
-				}
-
-				// Move file
-				$new_filename = $pmprorh_dir . basename( $file['tmp_name'] );
-				move_uploaded_file($file['tmp_name'], $new_filename);
-
-				// Update location of file
-				$file['tmp_name'] = $new_filename;
-
-				// Add the file to the array.
-				$files[ $arr_key ] = $file;
-			}
-			update_pmpro_membership_order_meta( $morder->id, 'checkout_files', $files );
-		}
+		pmpro_save_checkout_data_to_order( $morder );
 
 		// Time to send the user to pay with Stripe!
 		$stripe = new PMProGateway_stripe();
