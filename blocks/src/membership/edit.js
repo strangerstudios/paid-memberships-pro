@@ -83,18 +83,7 @@ export default function Edit(props) {
 			/>
 		</PanelBody>
 	</InspectorControls>,
-	isSelected && <div className="pmpro-block-require-membership-element" { ...blockProps }>
-		<span className="pmpro-block-title">{ __( 'Membership Required', 'paid-memberships-pro' ) }</span>
-		<div class="pmpro-block-inspector-scrollable">
-		<PanelBody>                      
-			{checkboxes}
-		</PanelBody>
-		</div>
-		<InnerBlocks
-			templateLock={ false }
-		/>
-	</div>,
-	! isSelected && <div className="pmpro-block-require-membership-element" { ...blockProps }>
+	<div className="pmpro-block-require-membership-element" { ...blockProps }>
 		<span className="pmpro-block-title">{ __( 'Membership Required', 'paid-memberships-pro' ) }</span>
 		<InnerBlocks
 			templateLock={ false }
