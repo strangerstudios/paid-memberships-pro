@@ -1,0 +1,19 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "pmpro/member-profile-edit",
+	"title": "PMPro Page: Account Profile Edit",
+	"category": "pmpro-pages",
+	"icon": "admin-users",
+	"description": "Dynamic form that allows the current logged in member to edit their default user profile information and any custom user profile fields.",
+	"attributes" : {
+	},
+	"supports": {
+		"html": false
+	},
+	"textdomain": "paid-memberships-pro",
+	"editorScript": "file:./index.js",
+	"editorStyle": "file:./index.css",
+	"style": "file:./style-index.css",
+	"render": "file:./render.php"
+}

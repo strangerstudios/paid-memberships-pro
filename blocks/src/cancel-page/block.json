@@ -1,0 +1,19 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "pmpro/cancel-page",
+	"title": "PMPro Page: Cancel",
+	"category": "pmpro-pages",
+	"icon": "no",
+	"description": "Dynamic page section where members can cancel their membership and active subscription if applicable.",
+	"attributes" : {
+	},
+	"supports": {
+		"html": false
+	},
+	"textdomain": "paid-memberships-pro",
+	"editorScript": "file:./index.js",
+	"editorStyle": "file:./index.css",
+	"style": "file:./style-index.css",
+	"render": "file:./render.php"
+}
