@@ -109,6 +109,13 @@ config.entry = {
     "login",
     "index.js"
   ),
+  "membership/index": path.resolve(
+    process.cwd(),
+    "blocks",
+    "src",
+    "membership",
+    "index.js"
+  ),
    "single-level/index": path.resolve(
     process.cwd(),
     "blocks",
@@ -150,7 +157,7 @@ config.entry = {
     "src",
     "single-level-price",
     "index.js"
-  ),
+  )
 };
 config.output = {
   filename: "[name].js",
