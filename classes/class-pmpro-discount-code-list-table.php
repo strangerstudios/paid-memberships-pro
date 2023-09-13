@@ -368,7 +368,7 @@ class PMPro_Discount_Code_List_Table extends WP_List_Table {
 				),
 			];
 
-			if ( 0 < (int) $item->uses ) {
+			if ( 0 < (int) $item->used ) {
 				$actions['orders'] = sprintf(
 					'<a title="%1$s" href="%2$s">%3$s</a>',
 					esc_attr__( 'View Orders', 'paid-memberships-pro' ),
