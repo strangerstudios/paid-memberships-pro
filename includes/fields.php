@@ -559,7 +559,7 @@ function pmpro_registration_checks_for_user_fields( $okay ) {
 add_filter( 'pmpro_registration_checks', 'pmpro_registration_checks_for_user_fields' );
 
 /**
- * Sessions vars for PayPal Express
+ * Sessions vars for TwoCheckout. PayPal Express was updated to store in order meta.
  */
 function pmpro_paypalexpress_session_vars_for_user_fields() {
 	global $pmpro_user_fields;
@@ -617,7 +617,6 @@ function pmpro_paypalexpress_session_vars_for_user_fields() {
 		}
 	}
 }
-add_action( 'pmpro_paypalexpress_session_vars', 'pmpro_paypalexpress_session_vars_for_user_fields' );
 add_action( 'pmpro_before_send_to_twocheckout', 'pmpro_paypalexpress_session_vars_for_user_fields', 10, 0);
 
 /**
