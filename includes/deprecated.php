@@ -183,6 +183,10 @@ function pmpro_get_deprecated_add_ons() {
 			'file' => 'pmpro-register-helper.php',
 			'label' => 'Register Helper',
 			'message' => $pmpro_register_helper_message
+		),
+		'pmpro-table-pages' => array(
+			'file' => 'pmpro-table-pages.php',
+			'label' => 'Table Layout Plugin Pages'
 		)
 	);
 	
