@@ -1097,12 +1097,18 @@
 			//check if there is an entry in memberships_users first
 			if(!empty($this->user_id))
 			{
-				$sqlQuery = $wpdb->prepare( "SELECT l.id as level_id, l.name, l.description, l.allow_signups, l.expiration_number, l.expiration_period, mu.*, UNIX_TIMESTAMP(CONVERT_TZ(mu.startdate, '+00:00', @@global.time_zone)) as startdate, UNIX_TIMESTAMP(CONVERT_TZ(mu.enddate, '+00:00', @@global.time_zone)) as enddate, l.name, l.description, l.allow_signups FROM $wpdb->pmpro_membership_levels l LEFT JOIN $wpdb->pmpro_memberships_users mu ON l.id = mu.membership_id WHERE mu.status = 'active' AND l.id = %d AND mu.user_id = %d LIMIT 1", $this->membership_id, $this->user_id );
+				$sqlQuery = $wpdb->prepare( "SELECT l.id as level_id, l.name, l.description, l.allow_signups, l.expiration_number, l.expiration_period, mu.*, mu.startdate, mu.enddate, l.name, l.description, l.allow_signups FROM $wpdb->pmpro_membership_levels l LEFT JOIN $wpdb->pmpro_memberships_users mu ON l.id = mu.membership_id WHERE mu.status = 'active' AND l.id = %d AND mu.user_id = %d LIMIT 1", $this->membership_id, $this->user_id );
 				$this->membership_level = $wpdb->get_row( $sqlQuery );
 
 				//fix the membership level id
 				if(!empty($this->membership_level->level_id))
 					$this->membership_level->id = $this->membership_level->level_id;
+
+				// Fix the membership level startdate and enddate to be timestamps.
+				if ( ! empty( $this->membership_level ) ) {
+					$this->membership_level->startdate = pmpro_convert_utc_datetime_to_timestamp( $this->membership_level->startdate );
+					$this->membership_level->enddate = pmpro_convert_utc_datetime_to_timestamp( $this->membership_level->enddate );
+				}
 			}
 
 			//okay, do I have a discount code to check? (if there is no membership_level->membership_id value, that means there was no entry in memberships_users)
@@ -1259,7 +1265,7 @@
 			}
 
 			global $wpdb;
-			$this->sqlQuery = $wpdb->prepare( "UPDATE $wpdb->pmpro_membership_orders SET timestamp = %s WHERE id = %d LIMIT 1", $date, $this->id );
+			$this->sqlQuery = $wpdb->prepare( "UPDATE $wpdb->pmpro_membership_orders SET timestamp = %s WHERE id = %d", $date, $this->id );
 
 			do_action('pmpro_update_order', $this);
 			if($wpdb->query($this->sqlQuery) !== "false") {
@@ -1539,7 +1545,7 @@
 			if(empty($this->id))
 				return false;
 
-			$this->sqlQuery = $wpdb->prepare( "UPDATE $wpdb->pmpro_membership_orders SET status = %s WHERE id = %d LIMIT 1", $newstatus, $this->id );
+			$this->sqlQuery = $wpdb->prepare( "UPDATE $wpdb->pmpro_membership_orders SET status = %s WHERE id = %d", $newstatus, $this->id );
 			
 			do_action('pmpro_update_order', $this);
 			if($wpdb->query($this->sqlQuery) !== false){
@@ -1760,7 +1766,7 @@
 				return false;
 
 			global $wpdb;
-			$this->sqlQuery = $wpdb->prepare( "DELETE FROM $wpdb->pmpro_membership_orders WHERE id = %d LIMIT 1", $this->id );
+			$this->sqlQuery = $wpdb->prepare( "DELETE FROM $wpdb->pmpro_membership_orders WHERE id = %d", $this->id );
 			if($wpdb->query($this->sqlQuery) !== false)
 			{
 				do_action("pmpro_delete_order", $this->id, $this);

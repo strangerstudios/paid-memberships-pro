@@ -195,7 +195,7 @@ class PMPro_Discount_Code_List_Table extends WP_List_Table {
 			$sqlQuery = "SELECT COUNT( DISTINCT id ) FROM $wpdb->pmpro_discount_codes ";
 		} else {
 			//Includes uses for each discount code as 'used' so we can sort by it later
-			$sqlQuery = "SELECT SQL_CALC_FOUND_ROWS *, UNIX_TIMESTAMP(CONVERT_TZ(starts, '+00:00', @@global.time_zone)) as starts, UNIX_TIMESTAMP(CONVERT_TZ(expires, '+00:00', @@global.time_zone)) as expires, (SELECT COUNT(*) FROM $wpdb->pmpro_discount_codes_uses WHERE code_id = do.id) as used FROM $wpdb->pmpro_discount_codes as do ";			
+			$sqlQuery = "SELECT SQL_CALC_FOUND_ROWS *, starts, expires, (SELECT COUNT(*) FROM $wpdb->pmpro_discount_codes_uses WHERE code_id = do.id) as used FROM $wpdb->pmpro_discount_codes as do ";			
 		}
 
 		if ( ! empty( $s ) ) {
@@ -226,6 +226,12 @@ class PMPro_Discount_Code_List_Table extends WP_List_Table {
 			$sql_table_data = $wpdb->get_var( $sqlQuery );
 		} else {
 			$sql_table_data = $wpdb->get_results( $sqlQuery );
+
+			// Make sure that starts and ends are timetsamps.
+			foreach ( $sql_table_data as $code ) {
+				$code->starts = pmpro_convert_utc_datetime_to_timestamp( $code->starts );
+				$code->expires = pmpro_convert_utc_datetime_to_timestamp( $code->expires );
+			}
 		}
 
 		return $sql_table_data;

@@ -1294,7 +1294,7 @@ function pmpro_toggleMembershipCategory( $level, $category, $value ) {
 			return $wpdb->last_error;
 		}
 	} else {
-		$sql = "DELETE FROM {$wpdb->pmpro_memberships_categories} WHERE `membership_id` = '" . esc_sql( $level ) . "' AND `category_id` = '" . esc_sql( $category ). "' LIMIT 1";
+		$sql = "DELETE FROM {$wpdb->pmpro_memberships_categories} WHERE `membership_id` = '" . esc_sql( $level ) . "' AND `category_id` = '" . esc_sql( $category ). "'";
 		$wpdb->query( $sql );
 		if ( $wpdb->last_error ) {
 			return $wpdb->last_error;
@@ -1718,7 +1718,7 @@ function pmpro_checkDiscountCode( $code, $level_id = null, $return_errors = fals
 
 	// get code from db
 	if ( ! $error ) {
-		$dbcode = $wpdb->get_row( "SELECT *, UNIX_TIMESTAMP(CONVERT_TZ(starts, '+00:00', @@global.time_zone)) as starts, UNIX_TIMESTAMP(CONVERT_TZ(expires, '+00:00', @@global.time_zone)) as expires FROM $wpdb->pmpro_discount_codes WHERE code ='" . esc_sql( $code ) . "' LIMIT 1" );
+		$dbcode = $wpdb->get_row( "SELECT * FROM $wpdb->pmpro_discount_codes WHERE code ='" . esc_sql( $code ) . "' LIMIT 1" );
 
 		// did we find it?
 		if ( empty( $dbcode->id ) ) {
@@ -1729,8 +1729,8 @@ function pmpro_checkDiscountCode( $code, $level_id = null, $return_errors = fals
 	// check if the code has started
 	if ( ! $error ) {
 		// fix the date timestamps
-		$dbcode->starts = strtotime( date_i18n( 'm/d/Y', $dbcode->starts ) );
-		$dbcode->expires = strtotime( date_i18n( 'm/d/Y', $dbcode->expires ) );
+		$dbcode->starts = strtotime( date_i18n( 'm/d/Y', pmpro_convert_utc_datetime_to_timestamp( $dbcode->starts ) ) );
+		$dbcode->expires = strtotime( date_i18n( 'm/d/Y', pmpro_convert_utc_datetime_to_timestamp( $dbcode->expires ) ) );
 
 		// today
 		$today = strtotime( date_i18n( 'm/d/Y H:i:00', current_time( 'timestamp' ) ) );
@@ -1985,13 +1985,19 @@ function pmpro_getMembershipLevelForUser( $user_id = null, $force = false ) {
 				mu.trial_amount,
 				mu.trial_limit,
 				mu.code_id as code_id,
-				UNIX_TIMESTAMP( CONVERT_TZ(startdate, '+00:00', @@global.time_zone) ) as startdate,
-				UNIX_TIMESTAMP( CONVERT_TZ(enddate, '+00:00', @@global.time_zone) ) as enddate
+				mu.startdate,
+				mu.enddate
 			FROM {$wpdb->pmpro_membership_levels} AS l
 			JOIN {$wpdb->pmpro_memberships_users} AS mu ON (l.id = mu.membership_id)
 			WHERE mu.user_id = $user_id AND mu.status = 'active'
 			LIMIT 1"
 		);
+
+		// For each startdate and enddate, change it into a timestamp.
+		if ( ! empty( $all_membership_levels[ $user_id ] ) ) {
+			$all_membership_levels[ $user_id ]->startdate = pmpro_convert_utc_datetime_to_timestamp( $all_membership_levels[ $user_id ]->startdate );
+			$all_membership_levels[ $user_id ]->enddate = pmpro_convert_utc_datetime_to_timestamp( $all_membership_levels[ $user_id ]->enddate );
+		}
 
 		// if null, change to false to avoid user meta conflicts
 		if ( empty( $all_membership_levels[ $user_id ] ) ) {
@@ -2082,8 +2088,8 @@ function pmpro_getMembershipLevelsForUser( $user_id = null, $include_inactive = 
 				mu.trial_amount,
 				mu.trial_limit,
 				mu.code_id as code_id,
-				UNIX_TIMESTAMP(CONVERT_TZ(startdate, '+00:00', @@global.time_zone)) as startdate,
-				UNIX_TIMESTAMP(CONVERT_TZ(enddate, '+00:00', @@global.time_zone)) as enddate
+				mu.startdate,
+				mu.enddate
 			FROM {$wpdb->pmpro_membership_levels} AS l
 			JOIN {$wpdb->pmpro_memberships_users} AS mu ON (l.id = mu.membership_id)
 			WHERE mu.user_id = $user_id" . ( $include_inactive ? '' : " AND mu.status = 'active'
@@ -2098,6 +2104,14 @@ function pmpro_getMembershipLevelsForUser( $user_id = null, $include_inactive = 
 			$levels[$key]->initial_payment = pmpro_round_price( $level->initial_payment );
 			$levels[$key]->billing_amount = pmpro_round_price( $level->billing_amount );
 			$levels[$key]->trial_amount = pmpro_round_price( $level->trial_amount );
+		}
+	}
+
+	// Convert startdate and enddate to timestamps.
+	if ( ! empty( $levels ) ) {
+		foreach ( $levels as $key => $level ) {
+			$levels[$key]->startdate = pmpro_convert_utc_datetime_to_timestamp( $level->startdate );
+			$levels[$key]->enddate = pmpro_convert_utc_datetime_to_timestamp( $level->enddate );
 		}
 	}
 
@@ -2502,12 +2516,12 @@ if ( ! function_exists( 'pmpro_getMemberStartdate' ) ) {
 			global $wpdb;
 
 			if ( ! empty( $level_id ) ) {
-				$sqlQuery = "SELECT UNIX_TIMESTAMP(CONVERT_TZ(startdate, '+00:00', @@global.time_zone)) FROM $wpdb->pmpro_memberships_users WHERE status = 'active' AND membership_id IN(" . (int) $level_id . ") AND user_id = '" . $user_id . "' ORDER BY id LIMIT 1";
+				$sqlQuery = "SELECT startdate FROM $wpdb->pmpro_memberships_users WHERE status = 'active' AND membership_id IN(" . (int) $level_id . ") AND user_id = '" . $user_id . "' ORDER BY id LIMIT 1";
 			} else {
-				$sqlQuery = "SELECT UNIX_TIMESTAMP(CONVERT_TZ(startdate, '+00:00', @@global.time_zone)) FROM $wpdb->pmpro_memberships_users WHERE status = 'active' AND user_id = '" . esc_sql( $user_id ) . "' ORDER BY id LIMIT 1";
+				$sqlQuery = "SELECT startdate FROM $wpdb->pmpro_memberships_users WHERE status = 'active' AND user_id = '" . esc_sql( $user_id ) . "' ORDER BY id LIMIT 1";
 			}
 
-			$startdate = apply_filters( 'pmpro_member_startdate', $wpdb->get_var( $sqlQuery ), $user_id, $level_id );
+			$startdate = apply_filters( 'pmpro_member_startdate', pmpro_convert_utc_datetime_to_timestamp( $wpdb->get_var( $sqlQuery ) ), $user_id, $level_id );
 
 			$pmpro_startdates[ $user_id ][ $level_id ] = $startdate;
 		}
@@ -4399,3 +4413,39 @@ function pmpro_sanitize_period( $period ) {
 
 	return $sanitized_period;
 }
+
+/**
+ * Converts a UTC datetime pulled from the database into a UTC timestamp.
+ *
+ * In the past, we used to pull these dates directly from the db as timestamps using something like:
+ * UNIX_TIMESTAMP( CONVERT_TZ(startdate, '+00:00', @@global.time_zone) ) as startdate,
+ *
+ * When we were doing those conversions, the dates were stored in the db in UTC, but if the server was set to a different timezone,
+ * UNIX_TIMESTAMP would incorrectly assume that those dates were in the server's timezone and try to "convert them to UTC".
+ * CONVERT_TZ was needed to undo the unnecessary conversion.
+ *
+ * This is complex and some database types don't support CONVERT_TZ. So now, we are just going to pull the dates
+ * as strings and convert them to timestamps here in PHP.
+ *
+ * @since TBD.
+ *
+ * @param string $datetime The datetime string to convert.
+ * @return int|null The timestamp or null if the datetime string was invalid (including 0000-00-00 00:00:00).
+ */
+function pmpro_convert_utc_datetime_to_timestamp( $datetime ) {
+	// If the datetime is empty, return null.
+	if ( empty( $datetime ) ) {
+		return null;
+	}
+
+	// If the datetime is 0000-00-00 00:00:00, return null.
+	if ( $datetime === '0000-00-00 00:00:00' ) {
+		return null;
+	}
+
+	// Convert the datetime to a timestamp.
+	$timestamp = strtotime( $datetime . ' UTC' );
+
+	return $timestamp;
+}
+

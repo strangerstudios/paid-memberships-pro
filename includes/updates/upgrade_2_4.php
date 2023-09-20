@@ -106,7 +106,7 @@ function pmpro_upgrade_2_4_helper_get_subscriptions_for_orders( $orders, $update
 		//find the one for this order
 		foreach ( $subscriptions->data as $sub ) {
 			if ( in_array( $sub->plan->id, $codes ) ) {
-				$sqlQuery = "UPDATE $wpdb->pmpro_membership_orders SET subscription_transaction_id = '" . esc_sql( $sub->id ) . "' WHERE id = '" . esc_sql( $order->id ) . "' LIMIT 1";
+				$sqlQuery = "UPDATE $wpdb->pmpro_membership_orders SET subscription_transaction_id = '" . esc_sql( $sub->id ) . "' WHERE id = '" . esc_sql( $order->id ) . "'";
 				$wpdb->query( $sqlQuery );
 				break;
 			}

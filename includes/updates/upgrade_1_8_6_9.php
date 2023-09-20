@@ -20,7 +20,7 @@ function pmpro_upgrade_1_8_6_9() {
 					
 			foreach($orders as $order) {
 				if(!empty($subids[$order->subscription_transaction_id])) {
-					$wpdb->query("UPDATE $wpdb->pmpro_membership_orders SET subscription_transaction_id = '" . esc_sql($subids[$order->subscription_transaction_id]) . "' WHERE id = '" . $order->id . "' LIMIT 1");
+					$wpdb->query("UPDATE $wpdb->pmpro_membership_orders SET subscription_transaction_id = '" . esc_sql($subids[$order->subscription_transaction_id]) . "' WHERE id = '" . $order->id . "'");
 
 					//echo "Updating subid for #" . $order->id . " " . $order->subscription_transaction_id . ".<br />";
 				}
@@ -34,7 +34,7 @@ function pmpro_upgrade_1_8_6_9() {
 					$subid = $wpdb->get_var("SELECT subscription_transaction_id FROM $wpdb->pmpro_membership_orders WHERE membership_id = '" . $order->membership_id . "' AND user_id = '" . $order->user_id . "' AND subscription_transaction_id LIKE 'sub_%' LIMIT 1");
 					$subids[$order->subscription_transaction_id] = $subid;
 					if(!empty($subid)) {
-						$wpdb->query("UPDATE $wpdb->pmpro_membership_orders SET subscription_transaction_id = '" . esc_sql($subid) . "' WHERE id = '" . $order->id . "' LIMIT 1");
+						$wpdb->query("UPDATE $wpdb->pmpro_membership_orders SET subscription_transaction_id = '" . esc_sql($subid) . "' WHERE id = '" . $order->id . "'");
 
 						//echo "Updating subid for #" . $order->id . " " . $order->subscription_transaction_id . ".<br />";	
 					}
@@ -71,7 +71,7 @@ function pmpro_upgrade_1_8_6_9_ajax() {
 		foreach($orders as $order) {
 			$last_order_id = $order->id;	//keeping track of the last order we processed
 			if(!empty($subids[$order->subscription_transaction_id])) {
-				$wpdb->query("UPDATE $wpdb->pmpro_membership_orders SET subscription_transaction_id = '" . esc_sql($subids[$order->subscription_transaction_id]) . "' WHERE id = '" . $order->id . "' LIMIT 1");
+				$wpdb->query("UPDATE $wpdb->pmpro_membership_orders SET subscription_transaction_id = '" . esc_sql($subids[$order->subscription_transaction_id]) . "' WHERE id = '" . $order->id . "'");
 			}
 			elseif(isset($subids[$order->subscription_transaction_id])) {
 				//no sub id found, so let it go
@@ -81,7 +81,7 @@ function pmpro_upgrade_1_8_6_9_ajax() {
 				$subid = $wpdb->get_var("SELECT subscription_transaction_id FROM $wpdb->pmpro_membership_orders WHERE membership_id = '" . $order->membership_id . "' AND user_id = '" . $order->user_id . "' AND subscription_transaction_id LIKE 'sub_%' LIMIT 1");
 				$subids[$order->subscription_transaction_id] = $subid;
 				if(!empty($subid)) {
-					$wpdb->query("UPDATE $wpdb->pmpro_membership_orders SET subscription_transaction_id = '" . esc_sql($subid) . "' WHERE id = '" . $order->id . "' LIMIT 1");
+					$wpdb->query("UPDATE $wpdb->pmpro_membership_orders SET subscription_transaction_id = '" . esc_sql($subid) . "' WHERE id = '" . $order->id . "'");
 				}
 				else {
 					//no sub id found, so let it go
