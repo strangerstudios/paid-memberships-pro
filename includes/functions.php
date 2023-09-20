@@ -1094,6 +1094,11 @@ function pmpro_changeMembershipLevel( $level, $user_id = null, $old_level_status
 			$level['startdate'] = preg_replace( '/\'/', '', $level['startdate'] );
 			$level['enddate'] = preg_replace( '/\'/', '', $level['enddate'] );
 
+			// If enddate is "NULL", convert it to 0000-00-00 00:00:00.
+			if ( $level['enddate'] === 'NULL' ) {
+				$level['enddate'] = '0000-00-00 00:00:00';
+			}
+
 			$sql = $wpdb->prepare(
 				"
 					INSERT INTO {$wpdb->pmpro_memberships_users}
