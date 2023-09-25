@@ -60,7 +60,7 @@ add_action( 'init', 'pmpro_admin_init_redirect_old_menu_items' );
  * Old Register Helper functions and classes.
  */
 function pmpro_register_helper_deprecated() {
-	// Activated plugins run after plugins_loaded. Bail to be safe.	
+	// Activated plugins run after plugins_loaded. Bail to be safe.
 	if ( pmpro_activating_plugin( 'pmpro-register-helper/pmpro-register-helper.php' ) ) {
 		return;
 	}
@@ -151,7 +151,14 @@ function pmpro_get_deprecated_add_ons() {
 	static $pmpro_register_helper_restricting_by_email_or_username = null;
 	if ( ! isset( $pmpro_register_helper_restricting_by_email_or_username ) ) {
 		$sqlQuery = "SELECT option_value FROM $wpdb->options WHERE option_name LIKE 'pmpro_level_%_restrict_emails' OR option_name LIKE 'pmpro_level_%_restrict_usernames' AND option_value <> '' LIMIT 1";
-		$pmpro_register_helper_restricting_by_email_or_username = $wpdb->get_var( $sqlQuery );	
+		$pmpro_register_helper_restricting_by_email_or_username = $wpdb->get_var( $sqlQuery );
+
+		// If the option was not found then the feature was not being used.
+		if( $pmpro_register_helper_restricting_by_email_or_username === null ) {
+			$pmpro_register_helper_restricting_by_email_or_username = false;
+		} else {
+			$pmpro_register_helper_restricting_by_email_or_username = true;
+		}
 	}
 
 	// If the RH restrict by username or email feature was being used, set the message.
