@@ -4,6 +4,12 @@
 */
 function pmpro_member_shortcode($atts, $content=null, $code='')
 {
+	//Bail if $atts is null or empty
+	if( !$atts || empty($atts) ) {
+		echo esc_html__( "fields attribute is required in the pmpro_member shortcode", 'paid-memberships-pro' );
+	 	return;
+	}
+	
 	// $atts    ::= array of attributes
 	// $content ::= text within enclosing form of shortcode element
 	// $code    ::= the shortcode found, when == callback name
@@ -14,6 +20,13 @@ function pmpro_member_shortcode($atts, $content=null, $code='')
 		'user_id' => $current_user->ID,
 		'field' => NULL
 	), $atts));
+	
+	//Bail if there's no field attribute
+	if( !$field ) {
+		echo esc_html__( "fields attribute is required in the pmpro_member shortcode", 'paid-memberships-pro' );
+		return;
+	}
+
 	
 	/*
 		- pmpro_next_payment()
