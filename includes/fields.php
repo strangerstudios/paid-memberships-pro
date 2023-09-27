@@ -1582,13 +1582,21 @@ function pmpro_load_user_fields_from_settings() {
             if ( in_array( $settings_field->type, $option_types ) ) {
                 $options = array();
                 $settings_options = explode( "\n", $settings_field->options );
+				//Let's check if the user wants to use the value as the label, is there any ':' in any option ?
+				$assume_intetion_to_use_value_as_label = pmpro_strposa( ":", $settings_options );
                 foreach( $settings_options as $settings_option ) {
+					//this option has a label and a value
                     if ( strpos( $settings_option, ':' ) !== false ) {
                         $parts = explode( ':', $settings_option );
                         $options[trim( $parts[0] )] = trim( $parts[1] );
-                    } else {
-                        $options[] = $settings_option;
-                    }
+					} else {
+						$settings_option = trim( $settings_option );
+						if( $assume_intetion_to_use_value_as_label ) {
+							$options[$settings_option] = $settings_option;
+						} else {
+							$options[] = $settings_option;
+						}
+					}
                 }
             } else {
                 $options = false;
@@ -1689,4 +1697,23 @@ function pmpro_get_label_for_user_field_value( $field_name, $field_value ) {
 		}
 	}
 	return $field_value;
+}
+
+/**
+ * Do a strpos search within an array. Should we move this to a Util class instead ?
+ *
+ * @param string $needle The string to search for.
+ * @param array $haystacks The array of strings to search in.
+ * @return bool True if the needle is found in any of the haystacks, false otherwise.
+ * @since TBD
+ */
+function pmpro_strposa( $needle, $haystacks ) {
+	foreach( $haystacks as $haystack ) {
+		if( strpos($haystack, $needle) !== false ) {
+			// stop on first true result
+			return true;
+		}
+	}
+
+	return false;
 }
