@@ -790,7 +790,7 @@ function pmpro_showRequiresMembershipMessage() {
  *   * Success returns boolean true.
  *   * Failure returns a string containing the error message.
  *
- * @since TBD Added support to pass comma separated value to $levels
+ * @since 2.12.3 Added support to pass comma separated value to $levels
  * @since 1.8.5 Added 'e' option for expired members.
  * @since 1.0.0
  *
