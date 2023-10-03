@@ -820,18 +820,17 @@ function pmpro_hasMembershipLevel( $levels = null, $user_id = null ) {
 		$return = ! empty( $membership_levels );
 	} else {
 		if ( ! is_array( $levels ) ) {
-		//we'll assume is a string
-        $levels_str = (string)$levels;
-        // If no comma, just make the value and array how we used to
-        if ( strpos( $levels_str, ',' ) === false ) {
-            $levels = array( $levels );
-        } else {
-            // We have a string with at least 1 comma in it, turn it into an array and check again.
-            $level_ids = explode( ',', $levels_str );
-            // Trim whitespace from the levels ids or names.
-            $levels = array_map( 'trim', $level_ids );
-        }
-
+			// Check for a comma.
+			$levels_str = (string)$levels;
+			if ( strpos( $levels_str, ',' ) !== false ) {
+				// We have a string with at least 1 comma in it, turn it into an array.
+				$level_ids = explode( ',', $levels_str );
+				// Trim whitespace from the levels ids or names.
+				$levels = array_map( 'trim', $level_ids );				
+			} else {
+				// No comma, but we want an array of levels.
+				$levels = array( $levels );
+			}
 		}
 
 		if ( empty( $membership_levels ) ) {
