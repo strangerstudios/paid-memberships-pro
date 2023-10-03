@@ -783,13 +783,14 @@ function pmpro_showRequiresMembershipMessage() {
  * Function to check if a user has specified membership levels.
  *
  * pmpro_hasMembershipLevel() checks if the passed user is a member of the passed level
- * $level may either be the ID or name of the desired membership_level. (or an array of such)
+ * $level may either be the ID or name of the desired membership_level. (or an array of such or a comma separated string)
  * If $user_id is omitted, the value will be retrieved from $current_user.
  *
  *  Return values:
  *   * Success returns boolean true.
  *   * Failure returns a string containing the error message.
  *
+ * @since TBD Added support to pass comma separated value to $levels
  * @since 1.8.5 Added 'e' option for expired members.
  * @since 1.0.0
  *
@@ -819,7 +820,17 @@ function pmpro_hasMembershipLevel( $levels = null, $user_id = null ) {
 		$return = ! empty( $membership_levels );
 	} else {
 		if ( ! is_array( $levels ) ) {
-			$levels = array( $levels );
+			// Check for a comma.
+			$levels_str = (string)$levels;
+			if ( strpos( $levels_str, ',' ) !== false ) {
+				// We have a string with at least 1 comma in it, turn it into an array.
+				$level_ids = explode( ',', $levels_str );
+				// Trim whitespace from the levels ids or names.
+				$levels = array_map( 'trim', $level_ids );				
+			} else {
+				// No comma, but we want an array of levels.
+				$levels = array( $levels );
+			}
 		}
 
 		if ( empty( $membership_levels ) ) {
