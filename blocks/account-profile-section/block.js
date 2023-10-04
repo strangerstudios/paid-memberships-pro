@@ -55,7 +55,7 @@
                    placeholder={ __( 'No title will be shown.', 'paid-memberships-pro' ) }
                    type="text"
                    value={ attributes.title }
-                   class="block-editor-plain-text"
+                   className="block-editor-plain-text"
                    onChange={ updateTitle }
                   />
                  </div>

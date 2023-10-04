@@ -21,7 +21,7 @@ const {
     InnerBlocks,
 } = wp.blockEditor;
 
-const all_levels = [{ value: 0, label: "Non-Members" }].concat( pmpro.all_level_values_and_labels );
+const all_levels = [{ value: 0, label: __( "Non-Members", 'paid-memberships-pro' ) }].concat( pmpro.all_level_values_and_labels );
 
  /**
   * Register block
@@ -96,7 +96,7 @@ const all_levels = [{ value: 0, label: "Non-Members" }].concat( pmpro.all_level_
                 isSelected && <InspectorControls>
                     <PanelBody>
                         <p><strong>{ __( 'Which membership levels can view this block?', 'paid-memberships-pro' ) }</strong></p>
-                        <div class="pmpro-block-inspector-scrollable">
+                        <div className="pmpro-block-inspector-scrollable">
                             {checkboxes}
                         </div>
                         <hr />
@@ -114,7 +114,7 @@ const all_levels = [{ value: 0, label: "Non-Members" }].concat( pmpro.all_level_
                 </InspectorControls>,
                 isSelected && <div className="pmpro-block-require-membership-element" >
                   <span className="pmpro-block-title">{ __( 'Membership Required', 'paid-memberships-pro' ) }</span>
-                  <div class="pmpro-block-inspector-scrollable">
+                  <div className="pmpro-block-inspector-scrollable">
                   <PanelBody>                      
                       {checkboxes}
                   </PanelBody>
