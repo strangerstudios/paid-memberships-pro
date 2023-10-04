@@ -280,7 +280,7 @@ class PMPro_Orders_List_Table extends WP_List_Table {
 
 			$order_query = "ORDER BY $orderby $order";
 		} else {
-			$order_query = 'ORDER BY id DESC';
+			$order_query = 'ORDER BY o.id DESC';
 		}
 
 		$paid_string = __( 'Paid', 'paid-memberships-pro' );
