@@ -80,7 +80,7 @@ function pmpro_add_field_group( $name, $label = NULL, $description = '', $order 
 	global $pmpro_field_groups;
 	//Bail if the group already exists.
 	foreach($pmpro_field_groups as $group) {
-		if($group->name == $name)
+		if($group->name === $name)
 		//already exists	
 		return false;
 	}
