@@ -271,12 +271,12 @@
 		 * Save session vars before processing
 		 *
 		 * @since 1.8
-		 * @deprecated TBD
+		 * @deprecated 2.12.3
 		 */
 		static function pmpro_checkout_before_processing() {
 			global $current_user, $gateway;
 
-			_deprecated_function( __FUNCTION__, 'TBD' );
+			_deprecated_function( __FUNCTION__, '2.12.3' );
 
 			//save user fields for PayPal Express
 			if(!$current_user->ID) {
@@ -311,7 +311,7 @@
 			}
 
 			//can use this hook to save some other variables to the session
-			// @deprecated TBD
+			// @deprecated 2.12.3
 			do_action("pmpro_paypalexpress_session_vars");
 		}
 

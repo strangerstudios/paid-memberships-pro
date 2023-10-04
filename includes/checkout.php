@@ -41,7 +41,7 @@ function pmpro_calculate_profile_start_date( $order, $date_format, $filter = tru
 /**
  * Save checkout data in order meta before sending user offsite to pay.
  *
- * @since TBD
+ * @since 2.12.3
  *
  * @param MemberOrder $order The order to save the checkout fields for.
  */
@@ -107,7 +107,7 @@ function pmpro_calculate_profile_start_date( $order, $date_format, $filter = tru
 /**
  * Pull checkout data from order meta after returning from offsite payment.
  *
- * @since TBD
+ * @since 2.12.3
  *
  * @param MemberOrder $order The order to pull the checkout fields for.
  */
@@ -134,7 +134,7 @@ function pmpro_pull_checkout_data_from_order( $order ) {
 /**
  * Complete an asynchronous checkout.
  *
- * @since TBD
+ * @since 2.12.3
  *
  * @param MemberOrder $order The order to complete the checkout for.
  * @return bool True if the checkout was completed successfully, false otherwise.
