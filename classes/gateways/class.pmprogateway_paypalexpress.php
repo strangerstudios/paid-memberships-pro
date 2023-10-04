@@ -67,7 +67,6 @@
 				add_filter('pmpro_required_billing_fields', array('PMProGateway_paypalexpress', 'pmpro_required_billing_fields'));
 				add_filter('pmpro_checkout_new_user_array', array('PMProGateway_paypalexpress', 'pmpro_checkout_new_user_array'));
 				add_filter('pmpro_checkout_confirmed', array('PMProGateway_paypalexpress', 'pmpro_checkout_confirmed'));
-				add_action('pmpro_checkout_before_processing', array('PMProGateway_paypalexpress', 'pmpro_checkout_before_processing'));
 				add_filter('pmpro_checkout_default_submit_button', array('PMProGateway_paypalexpress', 'pmpro_checkout_default_submit_button'));
 				add_action('http_api_curl', array('PMProGateway_paypalexpress', 'http_api_curl'), 10, 3);
 			}
@@ -272,9 +271,12 @@
 		 * Save session vars before processing
 		 *
 		 * @since 1.8
+		 * @deprecated 2.12.3
 		 */
 		static function pmpro_checkout_before_processing() {
 			global $current_user, $gateway;
+
+			_deprecated_function( __FUNCTION__, '2.12.3' );
 
 			//save user fields for PayPal Express
 			if(!$current_user->ID) {
@@ -309,6 +311,7 @@
 			}
 
 			//can use this hook to save some other variables to the session
+			// @deprecated 2.12.3
 			do_action("pmpro_paypalexpress_session_vars");
 		}
 
@@ -335,6 +338,9 @@
 
 				$morder = new MemberOrder();
 				$morder->getMemberOrderByPayPalToken(sanitize_text_field($_REQUEST['token']));
+
+				// Pull checkout values from order meta.
+				pmpro_pull_checkout_data_from_order( $morder );
 
 				if( $morder->status === 'token' ){
 					$morder->Token = $morder->paypal_token; $pmpro_paypal_token = $morder->paypal_token;
@@ -369,6 +375,10 @@
 				$morder = new MemberOrder();
 				$morder->getMemberOrderByPayPalToken(sanitize_text_field($_REQUEST['token']));
 				$morder->Token = $morder->paypal_token; $pmpro_paypal_token = $morder->paypal_token;
+
+				// Pull checkout values from order meta.
+				pmpro_pull_checkout_data_from_order( $morder );
+
 				if($morder->Token)
 				{
 					//set up values
@@ -593,6 +603,9 @@
 
 				//update order
 				$order->saveOrder();
+
+				// Save checkout information to order meta.
+				pmpro_save_checkout_data_to_order( $order );
 
 				/**
 				 * Allow performing actions just before sending the user to the gateway to complete the payment.

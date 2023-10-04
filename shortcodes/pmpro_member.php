@@ -3,7 +3,7 @@
 	Shortcode to show a specific user field for current user or specified user ID.
 */
 function pmpro_member_shortcode($atts, $content=null, $code='')
-{
+{	
 	// $atts    ::= array of attributes
 	// $content ::= text within enclosing form of shortcode element
 	// $code    ::= the shortcode found, when == callback name
@@ -14,6 +14,12 @@ function pmpro_member_shortcode($atts, $content=null, $code='')
 		'user_id' => $current_user->ID,
 		'field' => NULL
 	), $atts));
+	
+	//Bail if there's no field attribute
+	if( empty( $field ) ) {
+		esc_html_e( 'The "field" attribute is required in the pmpro_member shortcode.', 'paid-memberships-pro' );
+		return;
+	}
 	
 	/*
 		- pmpro_next_payment()

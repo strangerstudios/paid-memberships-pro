@@ -38,10 +38,6 @@ function register_dynamic_block() {
  * @return string
  **/
 function render_dynamic_block( $attributes ) {
-	$text      = 'Buy Now';
-	$level     = null;
-	$css_class = 'pmpro_btn';
-
 	if ( ! empty( $attributes['level'] ) ) {
 		$level = $attributes['level'];
 	} else {
