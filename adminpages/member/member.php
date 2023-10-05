@@ -20,6 +20,7 @@ if ( ! empty( $_REQUEST['user_id'] ) ) {
 	}	
 } else {
 	$user_id = '';
+	$user = new WP_User();
 }
 
 // Define a constant if user is editing their own membership.
@@ -38,7 +39,7 @@ $role = ! empty( $_POST['role'] ) ? sanitize_text_field( $_POST['role'] ) : get_
 $user_notes = ! empty( $_POST['user_notes'] ) ? stripslashes( sanitize_text_field( $_POST['user_notes'] ) ) : '';
 
 // Set values if editing a user and the form wasn't submitted.
-if ( ! empty( $user ) && empty( $_POST ) ) {
+if ( ! empty( $user->ID ) && empty( $_POST ) ) {
 	$user_login = $user->user_login;
 	$user_display_name = $user->display_name;
 	$user_email = $user->user_email;
@@ -51,7 +52,7 @@ if ( ! empty( $user ) && empty( $_POST ) ) {
 // Get the current user level.
 if ( isset( $_POST['membership_level'] ) ) {
 	$membership_level = intval( $_POST['membership_level'] );
-} elseif ( ! empty( $user ) ) {
+} elseif ( ! empty( $user->ID ) ) {
 	$user->membership_level = pmpro_getMembershipLevelForUser( $user_id );
 	if ( ! empty( $user->membership_level ) ) {
 		$membership_level = $user->membership_level->id;
@@ -229,7 +230,7 @@ require_once( PMPRO_DIR . '/adminpages/admin_header.php' );
 				aria-selected="false"
 				aria-controls="pmpro-membership-panel"
 				id="tab-2"
-				<?php if ( empty( $user ) ) { ?>disabled="disabled"<?php } ?>
+				<?php if ( empty( $user->ID ) ) { ?>disabled="disabled"<?php } ?>
 				tabindex="-1">
 				<?php esc_html_e( 'Membership', 'paid-memberships-pro' ); ?>
 			</button>
@@ -238,7 +239,7 @@ require_once( PMPRO_DIR . '/adminpages/admin_header.php' );
 				aria-selected="false"
 				aria-controls="pmpro-subscriptions-panel"
 				id="tab-3"
-				<?php if ( empty( $user ) ) { ?>disabled="disabled"<?php } ?>
+				<?php if ( empty( $user->ID ) ) { ?>disabled="disabled"<?php } ?>
 				tabindex="-1">
 				<?php esc_html_e( 'Subscriptions', 'paid-memberships-pro' ); ?>
 			</button>
@@ -247,7 +248,7 @@ require_once( PMPRO_DIR . '/adminpages/admin_header.php' );
 				aria-selected="false"
 				aria-controls="pmpro-orders-panel"
 				id="tab-4"
-				<?php if ( empty( $user ) ) { ?>disabled="disabled"<?php } ?>
+				<?php if ( empty( $user->ID ) ) { ?>disabled="disabled"<?php } ?>
 				tabindex="-1">
 				<?php esc_html_e( 'Orders', 'paid-memberships-pro' ); ?>
 			</button>
@@ -256,7 +257,7 @@ require_once( PMPRO_DIR . '/adminpages/admin_header.php' );
 				aria-selected="false"
 				aria-controls="pmpro-other-info-panel"
 				id="tab-5"
-				<?php if ( empty( $user ) ) { ?>disabled="disabled"<?php } ?>
+				<?php if ( empty( $user->ID ) ) { ?>disabled="disabled"<?php } ?>
 				tabindex="-1">
 				<?php esc_html_e( 'Other Info', 'paid-memberships-pro' ); ?>
 			</button>						
@@ -270,9 +271,8 @@ require_once( PMPRO_DIR . '/adminpages/admin_header.php' );
 				require_once( PMPRO_DIR . '/adminpages/member/memberships.php' );
 				require_once( PMPRO_DIR . '/adminpages/member/subscriptions.php' );
 				require_once( PMPRO_DIR . '/adminpages/member/orders.php' );
-			}
-
-			require_once( PMPRO_DIR . '/adminpages/member/other.php' );
+				require_once( PMPRO_DIR . '/adminpages/member/other.php' );
+			}			
 		?>	
 		<div class="submit">
 			<input type="hidden" name="user_id" value="<?php echo esc_attr( $user_id ); ?>">					

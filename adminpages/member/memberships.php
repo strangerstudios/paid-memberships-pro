@@ -190,16 +190,18 @@
                                 
                                     <?php
                                         // Get the last member order and see if we can refund it.
-                                        $last_order = new MemberOrder();
-                                        $last_order->getLastMemberOrder( $user->ID, array( 'success', 'refunded' ), $shown_level->id );
-                                        if ( pmpro_allowed_refunds( $last_order ) ) { ?>
-                                            <div class="more_level_options">
-                                                <label for="<?php echo esc_attr( $shown_level_name_prefix ); ?>[refund]">
-                                                    <input type="checkbox" name="<?php echo esc_attr( $shown_level_name_prefix ); ?>[refund]" value="1" />
-                                                    <?php printf( esc_html( 'Refund the last payment (%s).', 'paid-memberships-pro' ), pmpro_formatPrice( $last_order->total ) ); ?>
-                                                </label>
-                                            </div>
-                                            <?php
+                                        if ( ! empty( $shown_level ) ) {
+                                            $last_order = new MemberOrder();
+                                            $last_order->getLastMemberOrder( $user->ID, array( 'success', 'refunded' ), $shown_level->id );
+                                            if ( pmpro_allowed_refunds( $last_order ) ) { ?>
+                                                <div class="more_level_options">
+                                                    <label for="<?php echo esc_attr( $shown_level_name_prefix ); ?>[refund]">
+                                                        <input type="checkbox" name="<?php echo esc_attr( $shown_level_name_prefix ); ?>[refund]" value="1" />
+                                                        <?php printf( esc_html( 'Refund the last payment (%s).', 'paid-memberships-pro' ), pmpro_formatPrice( $last_order->total ) ); ?>
+                                                    </label>
+                                                </div>
+                                                <?php
+                                            }
                                         }
                                     ?>
 
