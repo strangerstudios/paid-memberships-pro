@@ -220,7 +220,7 @@ require_once( PMPRO_DIR . '/adminpages/admin_header.php' );
 				role="tab"
 				aria-selected="true"
 				aria-controls="pmpro-user-info-panel"
-				id="tab-1"
+				id="tab-1"				
 				tabindex="0">
 				<?php esc_html_e( 'User Info', 'paid-memberships-pro' ); ?>
 			</button>				
@@ -229,6 +229,7 @@ require_once( PMPRO_DIR . '/adminpages/admin_header.php' );
 				aria-selected="false"
 				aria-controls="pmpro-membership-panel"
 				id="tab-2"
+				<?php if ( empty( $user ) ) { ?>disabled="disabled"<?php } ?>
 				tabindex="-1">
 				<?php esc_html_e( 'Membership', 'paid-memberships-pro' ); ?>
 			</button>
@@ -237,6 +238,7 @@ require_once( PMPRO_DIR . '/adminpages/admin_header.php' );
 				aria-selected="false"
 				aria-controls="pmpro-subscriptions-panel"
 				id="tab-3"
+				<?php if ( empty( $user ) ) { ?>disabled="disabled"<?php } ?>
 				tabindex="-1">
 				<?php esc_html_e( 'Subscriptions', 'paid-memberships-pro' ); ?>
 			</button>
@@ -245,6 +247,7 @@ require_once( PMPRO_DIR . '/adminpages/admin_header.php' );
 				aria-selected="false"
 				aria-controls="pmpro-orders-panel"
 				id="tab-4"
+				<?php if ( empty( $user ) ) { ?>disabled="disabled"<?php } ?>
 				tabindex="-1">
 				<?php esc_html_e( 'Orders', 'paid-memberships-pro' ); ?>
 			</button>
@@ -253,6 +256,7 @@ require_once( PMPRO_DIR . '/adminpages/admin_header.php' );
 				aria-selected="false"
 				aria-controls="pmpro-other-info-panel"
 				id="tab-5"
+				<?php if ( empty( $user ) ) { ?>disabled="disabled"<?php } ?>
 				tabindex="-1">
 				<?php esc_html_e( 'Other Info', 'paid-memberships-pro' ); ?>
 			</button>						
