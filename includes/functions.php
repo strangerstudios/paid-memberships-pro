@@ -2111,6 +2111,15 @@ function pmpro_getMembershipLevelsForUser( $user_id = null, $include_inactive = 
 			WHERE mu.user_id = $user_id" . ( $include_inactive ? '' : " AND mu.status = 'active'
 			GROUP BY l.id" )
 		);
+
+		// Convert startdate and enddate to timestamps.
+		if ( ! empty( $levels ) ) {
+			foreach ( $levels as $key => $level ) {
+				$levels[$key]->startdate = pmpro_convert_utc_datetime_to_timestamp( $level->startdate );
+				$levels[$key]->enddate = pmpro_convert_utc_datetime_to_timestamp( $level->enddate );
+			}
+		}
+
 		wp_cache_set( $cache_key, $levels, 'pmpro', 3600 );
 	}
 
@@ -2120,14 +2129,6 @@ function pmpro_getMembershipLevelsForUser( $user_id = null, $include_inactive = 
 			$levels[$key]->initial_payment = pmpro_round_price( $level->initial_payment );
 			$levels[$key]->billing_amount = pmpro_round_price( $level->billing_amount );
 			$levels[$key]->trial_amount = pmpro_round_price( $level->trial_amount );
-		}
-	}
-
-	// Convert startdate and enddate to timestamps.
-	if ( ! empty( $levels ) ) {
-		foreach ( $levels as $key => $level ) {
-			$levels[$key]->startdate = pmpro_convert_utc_datetime_to_timestamp( $level->startdate );
-			$levels[$key]->enddate = pmpro_convert_utc_datetime_to_timestamp( $level->enddate );
 		}
 	}
 
