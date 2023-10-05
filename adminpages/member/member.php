@@ -13,7 +13,7 @@ if ( ! empty( $_REQUEST['user_id'] ) ) {
 	$user_id = intval( $_REQUEST['user_id'] );
 	$user = get_userdata( $user_id );
 	if ( empty( $user->ID ) ) {
-		$user_id = false;		
+		$user_id = false;
 	} else  {
 		// We have a user, let's get the user metadata
 		$user_notes = get_user_meta( $user_id, 'user_notes', true );

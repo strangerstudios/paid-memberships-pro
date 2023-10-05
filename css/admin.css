@@ -2852,7 +2852,7 @@ button.pmpro_report_th_closed:before {
 /**
  * Add/Edit Member Page
  */
-.pmpro-members nav button:disabled {
-	background-color:rgba(0, 0, 0, .1);
-	color: #777;	
+.pmpro-members nav button:disabled {	
+	color: #777;
+	cursor: not-allowed;	
 }
