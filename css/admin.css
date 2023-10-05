@@ -841,6 +841,11 @@ body[class*="memberships_page_pmpro-"] {
 	top: 0;
 }
 
+.pmpro_admin-pmpro-member nav button:disabled {	
+	color: #777;
+	cursor: not-allowed;	
+}
+
 /* Membership level add / change / remove */
 .pmpro_admin-pmpro-member tr#pmpro-level-change td {
 	padding: var(--spacing-medium);
@@ -2847,12 +2852,4 @@ button.pmpro_report_th_closed:before {
 .pmpro_admin-pmpro-memberslist a span.dashicons-plus {
   vertical-align: sub;
   font-size: 15px;
-}
-
-/**
- * Add/Edit Member Page
- */
-.pmpro-members nav button:disabled {	
-	color: #777;
-	cursor: not-allowed;	
 }
