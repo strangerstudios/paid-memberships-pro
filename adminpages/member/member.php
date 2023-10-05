@@ -199,7 +199,7 @@ if ( ! empty( $_POST ) ) {
 /**
  * Load the Paid Memberships Pro dashboard-area header
  */
-require_once( dirname( __FILE__ ) . '/admin_header.php' );
+require_once( PMPRO_DIR . '/adminpages/admin_header.php' );
 ?>
 
 <hr class="wp-header-end">
@@ -356,4 +356,4 @@ function changeTabs(e) {
 </script>
 
 <?php
-	require_once(dirname(__FILE__) . "/admin_footer.php");
+	require_once( PMPRO_DIR . '/adminpages/admin_footer.php' );	

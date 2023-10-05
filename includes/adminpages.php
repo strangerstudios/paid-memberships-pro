@@ -424,7 +424,7 @@ function pmpro_updates() {
 }
 
 function pmpro_member() {
-	require_once( PMPRO_DIR . '/adminpages/member.php' );
+	require_once( PMPRO_DIR . '/adminpages/member/member.php' );
 }
 
 /**
