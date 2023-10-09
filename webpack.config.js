@@ -115,6 +115,13 @@ config.entry = {
     "src",
     "membership",
     "index.js"
+  ),
+  "membership-excluded/index": path.resolve(
+    process.cwd(),
+    "blocks",
+    "src",
+    "membership-excluded",
+    "index.js"
   )
 };
 config.output = {

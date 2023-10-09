@@ -1,0 +1,31 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "pmpro/membership-excluded",
+	"title": "Membership Excluded Block",
+	"category": "pmpro",
+	"icon": "hidden",
+	"description": "Nest blocks within this wrapper to hide inner blocks by selected membership levels or for all non-members.",
+	"attributes" : {
+		"levels": {
+			"type": "array",
+			"default":[]
+		},
+		"uid": {
+			"type": "string",
+			"default":""
+		},
+		"show_noaccess": {
+			"type": "string",
+			"default": "0"
+		}
+	},
+	"supports": {
+		"html": false
+	},
+	"textdomain": "paid-memberships-pro",
+	"editorScript": "file:./index.js",
+	"editorStyle": "file:./index.css",
+	"style": "file:./style-index.css",
+	"render": "file:./render.php"
+}
