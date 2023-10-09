@@ -2,6 +2,21 @@
 	//require_once(dirname(__FILE__) . "/class.pmprogateway.php");
 	class PMProGateway
 	{
+
+		/**
+		 * The gateway name.
+		 *
+		 * @var string
+		 */
+		public $gateway = '';
+
+		/**
+		 * The gateway environment. (Live or testing)
+		 *
+		 * @var string
+		 */
+		public $gateway_environment = '';
+
 		function __construct($gateway = NULL)
 		{
 			$this->gateway = $gateway;
