@@ -311,13 +311,13 @@ function pmpro_report_memberships_page()
 		$sqlQuery = apply_filters('pmpro_reports_signups_sql', $sqlQuery, $type, $startdate, $enddate, $l);
 
 		$cdates = $wpdb->get_results($sqlQuery, OBJECT_K);
-		if( $date_function != "YEAR" ) {
-			foreach( $dates as $day => &$date )
-			{
-				if(!empty($cdates) && !empty($cdates[$day]))
+		if ( $date_function != "YEAR" ) {
+			foreach ( $dates as $day => &$date ) {
+				if ( ! empty( $cdates ) && ! empty( $cdates[$day] ) ) {
 					$date->cancellations = $cdates[$day]->cancellations;
-				else
+				} else {
 					$date->cancellations = 0;
+				}
 			}
 		} else {
 			$year = $dates[0]->date;
