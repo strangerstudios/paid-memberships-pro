@@ -181,9 +181,12 @@ if ( ! empty( $_POST ) ) {
 			// User inserted.
 			pmpro_setMessage( esc_html__( 'User added.', 'paid-memberships-pro' ), 'updated' );
 			$_REQUEST['user_id'] = $user_id;
+			$user = get_userdata( $user_id );
 			?>
 			<script>
-				jQuery(document).ready(function() {					
+				jQuery(document).ready(function() {
+					// Enable the other tabs in the "Add Member" nav.
+					jQuery('.pmpro-members nav button').removeAttr('disabled');
 					jQuery('#tab-2').click();
 				});
 			</script>
