@@ -185,8 +185,6 @@ if ( ! empty( $_POST ) ) {
 			?>
 			<script>
 				jQuery(document).ready(function() {
-					// Enable the other tabs in the "Add Member" nav.
-					jQuery('.pmpro-members nav button').removeAttr('disabled');
 					jQuery('#tab-2').click();
 				});
 			</script>
