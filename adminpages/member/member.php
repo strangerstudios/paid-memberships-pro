@@ -163,6 +163,7 @@ if ( ! empty( $_POST ) ) {
 		// Update/insert all good.
 
 		// Other user meta
+		pmpro_save_user_fields_in_profile( $user->id );
 		//update_user_meta( $user_id, 'user_notes', $user_notes );
 
 		// Update the user's membership level.
@@ -195,9 +196,7 @@ if ( ! empty( $_POST ) ) {
 		}			
 	}
 }
-?>
 
-<?php
 /**
  * Load the Paid Memberships Pro dashboard-area header
  */
@@ -261,7 +260,30 @@ require_once( PMPRO_DIR . '/adminpages/admin_header.php' );
 				<?php if ( empty( $user->ID ) ) { ?>disabled="disabled"<?php } ?>
 				tabindex="-1">
 				<?php esc_html_e( 'Other Info', 'paid-memberships-pro' ); ?>
-			</button>						
+			</button>
+			<?php
+			if ( ! empty( $user->ID ) ) {
+				// Get user fields for profile.
+				$profile_user_fields = pmpro_get_user_fields_for_profile( $user->ID, true );
+
+				$user_field_tab_start = 6;
+				$user_field_loop_index = $user_field_tab_start;
+				foreach ( $profile_user_fields as $group_name => $user_fields ) {
+					?>
+					<button
+						role="tab"
+						aria-selected="false"
+						aria-controls="pmpro-field-group-<?php echo esc_attr( $user_field_loop_index ); ?>-panel"
+						id="tab-<?php echo esc_attr( $user_field_loop_index ); ?>"
+						<?php if ( empty( $user->ID ) ) { ?>disabled="disabled"<?php } ?>
+						tabindex="-1">
+						<?php echo esc_html( $group_name ); ?>
+					</button>
+					<?php
+					$user_field_loop_index++;
+				}
+			}
+			?>
 		</nav>
 
 		<?php
@@ -273,6 +295,7 @@ require_once( PMPRO_DIR . '/adminpages/admin_header.php' );
 				require_once( PMPRO_DIR . '/adminpages/member/subscriptions.php' );
 				require_once( PMPRO_DIR . '/adminpages/member/orders.php' );
 				require_once( PMPRO_DIR . '/adminpages/member/other.php' );
+				require_once( PMPRO_DIR . '/adminpages/member/user-fields.php' );
 			}			
 		?>	
 		<div class="submit">
