@@ -11,7 +11,7 @@ import { __ } from '@wordpress/i18n';
  *
  * @see https://developer.wordpress.org/block-editor/reference-guides/packages/packages-block-editor/#useblockprops
  */
-import { CheckboxControl, PanelBody, SelectControl } from '@wordpress/components';
+import { CheckboxControl, PanelBody, SelectControl, Button } from '@wordpress/components';
 import { InnerBlocks, useBlockProps, InspectorControls } from '@wordpress/block-editor';
 
 
@@ -39,6 +39,14 @@ export default function Edit(props) {
 		var rand = Math.random() + "";
 		setAttributes({ uid: rand });
 	}
+
+	function toggleAllLevels() {
+		const allLevelValues = all_levels.map((level) => level.value + '');
+		const newLevels = allCheckboxesSelected ? [] : allLevelValues;
+		setAttributes({ levels: newLevels });
+	  }
+	  // Determine whether all checkboxes are selected
+	  const allCheckboxesSelected = all_levels.every((level) => levels.includes(level.value + ''));
 
 	// Build an array of checkboxes for each level.
 	var checkboxes = all_levels.map( function(level) {
@@ -70,7 +78,15 @@ export default function Edit(props) {
 			<div class="pmpro-block-inspector-scrollable">
 				{checkboxes}
 			</div>
-			<hr />
+			<p>
+			<Button
+			  onClick={toggleAllLevels}
+			isSecondary={allCheckboxesSelected}
+			isPrimary={!allCheckboxesSelected}
+			>
+			  {allCheckboxesSelected ? __('Deselect All', 'paid-memberships-pro') : __('Select All', 'paid-memberships-pro')}
+			</Button>
+			</p>
 			<p><strong>{ __( 'What should users without access see?', 'paid-memberships-pro' ) }</strong></p>
 			<SelectControl
 				value={ show_noaccess }

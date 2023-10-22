@@ -77,6 +77,15 @@ function Edit(props) {
       uid: rand
     });
   }
+  function toggleAllLevels() {
+    const allLevelValues = all_levels.map(level => level.value + '');
+    const newLevels = allCheckboxesSelected ? [] : allLevelValues;
+    setAttributes({
+      levels: newLevels
+    });
+  }
+  // Determine whether all checkboxes are selected
+  const allCheckboxesSelected = all_levels.every(level => levels.includes(level.value + ''));
 
   // Build an array of checkboxes for each level.
   var checkboxes = all_levels.map(function (level) {
@@ -104,7 +113,11 @@ function Edit(props) {
   });
   return [isSelected && (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_4__.InspectorControls, null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.PanelBody, null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)("p", null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)("strong", null, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Which membership levels should this block be hidden from?', 'paid-memberships-pro'))), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)("div", {
     class: "pmpro-block-inspector-scrollable"
-  }, checkboxes), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)("hr", null), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)("p", null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)("strong", null, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('What should users without access see?', 'paid-memberships-pro'))), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.SelectControl, {
+  }, checkboxes), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)("p", null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.Button, {
+    onClick: toggleAllLevels,
+    isSecondary: allCheckboxesSelected,
+    isPrimary: !allCheckboxesSelected
+  }, allCheckboxesSelected ? (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Deselect All', 'paid-memberships-pro') : (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Select All', 'paid-memberships-pro'))), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)("p", null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)("strong", null, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('What should users without access see?', 'paid-memberships-pro'))), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.SelectControl, {
     value: show_noaccess,
     help: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)("Modify the 'no access' message on the Memberships > Advanced Settings page.", "paid-memberships-pro"),
     options: [{
