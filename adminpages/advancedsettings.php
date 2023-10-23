@@ -35,6 +35,7 @@
 		// Content settings.
 		pmpro_setOption("filterqueries");
 		pmpro_setOption("showexcerpts");
+        pmpro_setOption("allowhtmlinexcerpts");
 
 		// Checkout settings.
 		pmpro_setOption("tospage");
@@ -88,6 +89,7 @@
 	// Content settings.
 	$filterqueries = pmpro_getOption('filterqueries');
 	$showexcerpts = pmpro_getOption("showexcerpts");
+	$allowhtmlinexcerpts = get_option("pmpro_allowhtmlinexcerpts");
 
 	// Checkout settings.
 	$tospage = pmpro_getOption("tospage");
@@ -216,14 +218,25 @@
 				</tr>
 				<tr>
 					<th scope="row" valign="top">
-						<label for="showexcerpts"><?php esc_html_e('Show Excerpts to Non-Members?', 'paid-memberships-pro' );?></label>
-	            </th>
-	            <td>
-	                <select id="showexcerpts" name="showexcerpts">
-	                    <option value="0" <?php if(!$showexcerpts) { ?>selected="selected"<?php } ?>><?php esc_html_e('No - Hide excerpts.', 'paid-memberships-pro' );?></option>
-	                    <option value="1" <?php if($showexcerpts == 1) { ?>selected="selected"<?php } ?>><?php esc_html_e('Yes - Show excerpts.', 'paid-memberships-pro' );?></option>
-	                </select>
-	            </td>
+							<label for="showexcerpts"><?php esc_html_e('Show Excerpts to Non-Members?', 'paid-memberships-pro' );?></label>
+					</th>
+					<td>
+						<select id="showexcerpts" name="showexcerpts">
+							<option value="0" <?php if(!$showexcerpts) { ?>selected="selected"<?php } ?>><?php esc_html_e('No - Hide excerpts.', 'paid-memberships-pro' );?></option>
+							<option value="1" <?php if($showexcerpts == 1) { ?>selected="selected"<?php } ?>><?php esc_html_e('Yes - Show excerpts.', 'paid-memberships-pro' );?></option>
+						</select>
+					</td>
+				</tr>
+				<tr <?php if( !$showexcerpts ) { ?> style="display:none" <?php } ?>>
+					<th scope="row" valign="top">
+							<label for="allowhtmlinexcerpts"><?php esc_html_e('Show allowed HTML tags in Excerpts?', 'paid-memberships-pro' );?></label>
+					</th>
+					<td>
+						<select id="allowhtmlinexcerpts" name="allowhtmlinexcerpts">
+							<option value="0" <?php if(!$allowhtmlinexcerpts) { ?>selected="selected"<?php } ?>><?php esc_html_e('No - strip html tags.', 'paid-memberships-pro' );?></option>
+							<option value="1" <?php if($allowhtmlinexcerpts == 1) { ?>selected="selected"<?php } ?>><?php esc_html_e('Yes - show allowed html tags.', 'paid-memberships-pro' );?></option>
+						</select>
+					</td>
 	            </tr>
 			</tbody>
 			</table>
@@ -537,6 +550,15 @@ if ( function_exists( 'pmpro_displayAds' ) && pmpro_displayAds() ) {
 	        </tbody>
 			</table>
 			<script>
+				jQuery('document').ready(function($) {
+					$('#showexcerpts').change(function() {
+						if($('#showexcerpts').val() == 1) {
+							$('#allowhtmlinexcerpts').closest('tr').fadeIn();
+						} else {
+							$('#allowhtmlinexcerpts').closest('tr').fadeOut();
+						}
+					});
+				});
 				function pmpro_updateHideAdsTRs()
 				{
 					var hideads = jQuery('#pmpro-hideads').val();
