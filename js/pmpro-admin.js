@@ -905,8 +905,8 @@ jQuery(document).ready(function () {
  * Add/Edit Member Page
  */
 window.addEventListener("DOMContentLoaded", () => {
-	const tabs = document.querySelectorAll('form.pmpro-members [role="tab"]');
-	const tabList = document.querySelector('form.pmpro-members [role="tablist"]');
+	const tabs = document.querySelectorAll('#pmpro-edit-user-div [role="tab"]');
+	const tabList = document.querySelector('#pmpro-edit-user-div [role="tablist"]');
 
 	// Add a click event handler to each tab
 	tabs.forEach((tab) => {
@@ -940,7 +940,7 @@ window.addEventListener("DOMContentLoaded", () => {
 	}
 	});
 
-	document.querySelector('form.pmpro-members .toggle-pass-visibility').addEventListener('click', function(e) {
+	document.querySelector('#pmpro-edit-user-div .toggle-pass-visibility').addEventListener('click', function(e) {
 		e.preventDefault();
 		const passInput = document.querySelector('#password');
 		const classToReplace = passInput.getAttribute('type') == 'password' ? 'dashicons-hidden' : 'dashicons-visibility';

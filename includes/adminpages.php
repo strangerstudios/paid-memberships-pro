@@ -424,8 +424,9 @@ function pmpro_updates() {
 }
 
 function pmpro_member() {
-	require_once( PMPRO_DIR . '/adminpages/member/member.php' );
+	pmpro_member_edit_display();
 }
+require_once( PMPRO_DIR . '/adminpages/member.php' );
 
 /**
  * Move orphaned pages under the pmpro-dashboard menu page.
