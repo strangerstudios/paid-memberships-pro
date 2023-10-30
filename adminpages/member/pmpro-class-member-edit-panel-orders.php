@@ -1,15 +1,24 @@
 <?php
 
 class PMPro_Member_Edit_Panel_Orders extends PMPro_Member_Edit_Panel {
-	public function get_title( $user_id ) {
-		return __( 'Orders', 'paid-memberships-pro' );
+	/**
+	 * Set up the panel.
+	 */
+	public function __construct() {
+		$user = self::get_user();
+		$this->slug = 'orders';
+		$this->title = __( 'Orders', 'paid-memberships-pro' );
+		$this->title_link = empty( $user->ID ) ? '' : '<a href=' . admin_url( 'admin.php?page=pmpro-orders&order=-1&user_id=' . $user->ID ) . ' class="page-title-action">' . esc_html__( 'Add Order', 'paid-memberships-pro' ) . '</a>';
 	}
 
-	public function display( $user_id ) {
+	/**
+	 * Display the panel contents.
+	 */
+	protected function display_panel_contents() {
 		global $wpdb;
 
 		//Show all invoices for user
-		$invoices = $wpdb->get_results( $wpdb->prepare( "SELECT mo.*, du.code_id as code_id FROM $wpdb->pmpro_membership_orders mo LEFT JOIN $wpdb->pmpro_discount_codes_uses du ON mo.id = du.order_id WHERE mo.user_id = %d ORDER BY mo.timestamp DESC", $user_id ) );
+		$invoices = $wpdb->get_results( $wpdb->prepare( "SELECT mo.*, du.code_id as code_id FROM $wpdb->pmpro_membership_orders mo LEFT JOIN $wpdb->pmpro_discount_codes_uses du ON mo.id = du.order_id WHERE mo.user_id = %d ORDER BY mo.timestamp DESC", self::get_user()->ID ) );
 
 		// Build the selectors for the invoices history list based on history count.
 		$invoices_classes = array();
@@ -126,10 +135,6 @@ class PMPro_Member_Edit_Panel_Orders extends PMPro_Member_Edit_Panel {
 				</table>
 			<?php } ?>
 		</div> <!-- end #member-history-orders -->
-	<?php
-	}
-
-	function get_title_link( $user_id ) {
-		return '<a href=' . admin_url( 'admin.php?page=pmpro-orders&order=-1&user_id=' . $user_id ) . ' class="page-title-action">' . esc_html__( 'Add Order', 'paid-memberships-pro' ) . '</a>';
+		<?php
 	}
 }

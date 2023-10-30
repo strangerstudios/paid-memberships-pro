@@ -923,7 +923,7 @@ body[class*="memberships_page_pmpro-"] {
 	}
 
 	.pmpro_admin-pmpro-member #pmpro-edit-user-div {
-		display: flex !important;
+		display: flex;
 		gap: 2em;
 	}
 

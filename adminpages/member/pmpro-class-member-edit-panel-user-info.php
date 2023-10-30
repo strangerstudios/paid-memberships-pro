@@ -1,11 +1,21 @@
 <?php
 
 class PMPro_Member_Edit_Panel_User_Info extends PMPro_Member_Edit_Panel {
-	public function get_title( $user_id ) {
-		return __( 'User Info', 'paid-memberships-pro' );
+	/**
+	 * Set up the panel.
+	 */
+	public function __construct() {
+		$user = self::get_user();
+		$this->slug = 'user_info';
+		$this->title = __( 'User Info', 'paid-memberships-pro' );
+		$this->title_link = empty( $user->ID ) ? '' : '<a href="' . esc_url( add_query_arg( array( 'user_id' => intval( $user->ID ) ), admin_url( 'user-edit.php' ) ) ) . '" target="_blank" class="page-title-action pmpro-has-icon pmpro-has-icon-admin-users">' . esc_html__( 'Edit User', 'paid-memberships-pro' ) . '</a>';
+		$this->submit_text = empty( $user->ID ) ? __( 'Create User ') : __( 'Update User Info', 'paid-memberships-pro' );
 	}
 
-	public function display( $user_id ) {
+	/**
+	 * Display the panel contents.
+	 */
+	protected function display_panel_contents() {
 		// Populate values from form.
 		$user_login = ! empty( $_POST['user_login'] ) ? sanitize_user( $_POST['user_login'] ) : '';
 		$user_email = ! empty( $_POST['email'] ) ? stripslashes( sanitize_email( $_POST['email'] ) ) : '';
@@ -14,15 +24,13 @@ class PMPro_Member_Edit_Panel_User_Info extends PMPro_Member_Edit_Panel {
 		$role = ! empty( $_POST['role'] ) ? sanitize_text_field( $_POST['role'] ) : get_option( 'default_role' );
 
 		// If we are edting a user, get the user information.
-		if ( ! empty( $user_id ) ) {
-			$check_user = get_userdata( $user_id );
-			if ( ! empty( $check_user->ID ) ) {
-				$user_login = $check_user->user_login;
-				$user_email = $check_user->user_email;
-				$first_name = $check_user->first_name;
-				$last_name = $check_user->last_name;
-				$role = $check_user->roles[0];
-			}
+		$user = self::get_user();
+		if ( ! empty( $user->ID ) ) {
+			$user_login = $user->user_login;
+			$user_email = $user->user_email;
+			$first_name = $user->first_name;
+			$last_name = $user->last_name;
+			$role = $user->roles[0];
 		}
 
 		// Show the form.
@@ -46,7 +54,7 @@ class PMPro_Member_Edit_Panel_User_Info extends PMPro_Member_Edit_Panel {
 			</tr>						
 			<?php
 			// Only show for new users.
-			if ( empty( $user_id ) ) {
+			if ( empty( $user->ID ) ) {
 				?>
 				<tr>
 					<th><label for="password"><?php esc_html_e( 'Password', 'paid-memberships-pro' ); ?></label></th>
@@ -64,7 +72,7 @@ class PMPro_Member_Edit_Panel_User_Info extends PMPro_Member_Edit_Panel {
 				<?php
 			}
 			?>
-			<?php if ( ! IS_PROFILE_PAGE && current_user_can( 'promote_user', $user_id ) ) { ?>
+			<?php if ( ! IS_PROFILE_PAGE && current_user_can( 'promote_user', $user->ID ) ) { ?>
 				<tr>
 					<th><label for="role"><?php esc_html_e( 'Role', 'paid-memberships-pro' ); ?></label></th>
 					<td>
@@ -78,24 +86,16 @@ class PMPro_Member_Edit_Panel_User_Info extends PMPro_Member_Edit_Panel {
 		<?php
 	}
 
-	public function get_title_link( $user_id ) {
-		if ( empty( $user_id ) ) {
-			// Creating a new user, so we shouldn't link to profile.
-			return '';
-		}
+	/**
+	 * Save panel data and redirect if we are creating a new user.
+	 */
+	public function save() {
+		// TODO: Password doesn't actually save.
+		// TODO: Need permission check for changing roles
+		// TODO: Review all of this.
+		global $wpdb, $pmpro_msgt, $pmpro_msg;
 
-		return '<a href="' .  esc_url( add_query_arg( array( 'user_id' => intval( $user_id ) ), admin_url( 'user-edit.php' ) ) ) . '" target="_blank" class="page-title-action pmpro-has-icon pmpro-has-icon-admin-users">' . esc_html__( 'Edit User', 'paid-memberships-pro' ) . '</a>';
-	}
-
-	public function get_submit_text( $user_id ) {
-		return empty( $user_id ) ? __( 'Create User ') : __( 'Update User Info', 'paid-memberships-pro' );
-	}
-
-	// TODO: Password doesn't actually save.
-	// TODO: Need permission check for changing roles
-	// TODO: Review all of this.
-	public function save( $user_id ) {
-		global $pmpro_msgt, $pmpro_msg;
+		$user = self::get_user();
 
 		// Populate values from form.
 		$user_login = ! empty( $_POST['user_login'] ) ? sanitize_user( $_POST['user_login'] ) : '';
@@ -107,7 +107,7 @@ class PMPro_Member_Edit_Panel_User_Info extends PMPro_Member_Edit_Panel {
 		// Update the email address in signups, if present.
 		// Alterred from wp-admin/user-edit.php.
 		if ( is_multisite() ) {
-			$user = get_userdata( $user_id );
+			$user = get_userdata( $user->ID );
 
 			if ( $user->user_login && isset( $_POST['email'] ) && is_email( $_POST['email'] ) && $wpdb->get_var( $wpdb->prepare( "SELECT user_login FROM {$wpdb->signups} WHERE user_login = %s", $user->user_login ) ) ) {
 				$wpdb->query( $wpdb->prepare( "UPDATE {$wpdb->signups} SET user_email = %s WHERE user_login = %s", $_POST['email'], $user_login ) );
@@ -144,12 +144,12 @@ class PMPro_Member_Edit_Panel_User_Info extends PMPro_Member_Edit_Panel {
 		 */
 		$oldemail = apply_filters( "pmpro_checkout_oldemail", ( false !== $oldem_user ? $oldem_user->user_email : null ) );
 
-		if ( ! empty( $ouser->user_login ) && $ouser->id !== $user_id ) {
+		if ( ! empty( $ouser->user_login ) && $ouser->id !== $user->ID ) {
 			pmpro_setMessage( __( "That username is already taken. Please try another.", 'paid-memberships-pro' ), "notice-error" );
 			$pmpro_error_fields[] = "username";
 		}
 
-		if ( ! empty( $oldemail ) && $oldem_user->id !== $user_id ) {
+		if ( ! empty( $oldemail ) && $oldem_user->id !== $user->ID ) {
 			pmpro_setMessage( __( "That email address is already in use. Please log in, or use a different email address.", 'paid-memberships-pro' ), "notice-error" );
 			$pmpro_error_fields[] = "bemail";
 			$pmpro_error_fields[] = "bconfirmemail";
@@ -158,14 +158,14 @@ class PMPro_Member_Edit_Panel_User_Info extends PMPro_Member_Edit_Panel {
 		// okay so far?
 		if ( $pmpro_msgt != 'notice-error' ) {
 			// random password if needed
-			if ( ! $user_id && empty( $user_pass ) ) {
+			if ( ! $user->ID && empty( $user_pass ) ) {
 				$user_pass = wp_generate_password();
 				$send_password = true; // Force this option to be true, if the password field was empty so the email may be sent.
 			}
 
 			// User data.
 			$user_to_post = array( 
-				'ID' => $user_id,
+				'ID' => self::get_user()->ID,
 				'user_login' => $user_login,
 				'user_email' => $user_email,
 				'first_name' => $first_name,
@@ -174,14 +174,13 @@ class PMPro_Member_Edit_Panel_User_Info extends PMPro_Member_Edit_Panel {
 			);
 
 			// Update or insert user.
-			$user_id = ! empty( $_REQUEST['user_id'] ) ? wp_update_user($user_to_post) : wp_insert_user($user_to_post);
+			$updated_id = ! empty( $_REQUEST['user_id'] ) ? wp_update_user($user_to_post) : wp_insert_user($user_to_post);
 		}
 
-		if ( ! $user_id ) {
+		if ( ! $updated_id ) {
 			// Error during user update/insert.
 			if ( ! empty( $_REQUEST['user_id'] ) ) {
 				pmpro_setMessage( __( 'Error updating user.', 'paid-memberships-pro' ), 'notice-error' );
-				$user_id = intval( $_REQUEST['user_id'] );	// Reset user_id var so rest of form works.
 			} else {
 				pmpro_setMessage( __( 'Error creating user.', 'paid-memberships-pro' ), 'notice-error' );
 			}
@@ -196,7 +195,7 @@ class PMPro_Member_Edit_Panel_User_Info extends PMPro_Member_Edit_Panel {
 			// Update/insert all good.
 			// Notify users if needed.
 			if ( $send_password ) {
-				wp_new_user_notification( $user_id, null, 'user' );
+				wp_new_user_notification( $updated_id, null, 'user' );
 			}
 
 			// clear vars
@@ -205,7 +204,7 @@ class PMPro_Member_Edit_Panel_User_Info extends PMPro_Member_Edit_Panel {
 			// Set message and redirect if this is a new user.		
 			if ( empty( $_REQUEST['user_id'] ) ) {
 				// User inserted.
-				wp_redirect( admin_url( 'admin.php?page=pmpro-member&pmpro_member_edit_panel=memberships&user_id=' . $user_id ) );
+				wp_redirect( admin_url( 'admin.php?page=pmpro-member&pmpro_member_edit_panel=memberships&user_id=' . $updated_id ) );
 				exit;
 			} else {
 				// Users updated.

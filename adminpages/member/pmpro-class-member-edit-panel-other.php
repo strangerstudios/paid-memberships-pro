@@ -1,14 +1,21 @@
 <?php
 
 class PMPro_Member_Edit_Panel_Other extends PMPro_Member_Edit_Panel {
-	public function get_title( $user_id ) {
-		return __( 'Other', 'paid-memberships-pro' );
+	/**
+	 * Set up the panel.
+	 */
+	public function __construct() {
+		$this->slug = 'other';
+		$this->title = __( 'Other', 'paid-memberships-pro' );
 	}
 
-	public function display( $user_id ) {
+	/**
+	 * Display the panel contents.
+	 */
+	protected function display_panel_contents() {
 		// Show TOS Consent History if available.
 		$tospage_id = pmpro_getOption( 'tospage' );
-		$consent_log = pmpro_get_consent_log( $user_id, true );
+		$consent_log = pmpro_get_consent_log( self::get_user()->ID, true );
 		if ( ! empty( $tospage_id ) || ! empty( $consent_log ) ) { ?>
 			<h3><?php esc_html_e("TOS Consent History", 'paid-memberships-pro' ); ?></h3>
 			<div id="tos_consent_history">

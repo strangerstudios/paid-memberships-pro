@@ -1,17 +1,24 @@
 <?php
 
 class PMPro_Member_Edit_Panel_Subscriptions extends PMPro_Member_Edit_Panel {
-	public function get_title( $user_id ) {
-		return __( 'Subscriptions', 'paid-memberships-pro' );
+	/**
+	 * Set up the panel.
+	 */
+	public function __construct() {
+		$this->slug = 'subscriptions';
+		$this->title = __( 'Subscriptions', 'paid-memberships-pro' );
 	}
 
-	public function display( $user_id ) {
+	/**
+	 * Display the panel contents.
+	 */
+	protected function display_panel_contents() {
 		global $wpdb;
 		?>
 		(edit customer in Stripe should go here once we have a hook for it)
 		<?php
 			// Show all subscriptions for user.
-			$subscriptions = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM $wpdb->pmpro_subscriptions WHERE user_id = %d ORDER BY startdate DESC", $user_id ) );
+			$subscriptions = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM $wpdb->pmpro_subscriptions WHERE user_id = %d ORDER BY startdate DESC", self::get_user()->ID ) );
 
 			// Build the selectors for the subscription history list based on history count.
 			$subscriptions_classes = array();
