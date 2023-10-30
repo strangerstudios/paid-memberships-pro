@@ -855,11 +855,11 @@ body[class*="memberships_page_pmpro-"] {
 	margin: var(--spacing-small) 0;
 }
 
-.pmpro_admin-pmpro-member form nav {
+.pmpro_admin-pmpro-member nav {
 	margin: var(--spacing-small) 0;
 }
 
-.pmpro_admin-pmpro-member form nav button {
+.pmpro_admin-pmpro-member nav button {
 	color: var(--color-almost-black);
 	background-color: transparent;
 	border: none;
@@ -874,15 +874,15 @@ body[class*="memberships_page_pmpro-"] {
 	text-align: left;
 	text-decoration: none;
 }
-.pmpro_admin-pmpro-member form nav button[aria-selected="true"] {
+.pmpro_admin-pmpro-member nav button[aria-selected="true"] {
 	background-color: #E2E8F0;
 }
 
-.pmpro_admin-pmpro-member form nav button:hover {
+.pmpro_admin-pmpro-member nav button:hover {
 	background-color: var(--color-blue-medium-transparent);
 }
 
-.pmpro_admin-pmpro-member form nav button:focus {
+.pmpro_admin-pmpro-member nav button:focus {
 	outline: 2px solid rgba(0,0,0,.6)
 }
 
@@ -895,18 +895,18 @@ body[class*="memberships_page_pmpro-"] {
 	margin-top: var(--spacing-small);
 }
 
-.pmpro_admin-pmpro-member form div.submit {
+.pmpro_admin-pmpro-member div.submit {
 	clear: both;
 	display: block;
 	padding: 1em 0;
 }
 
-.pmpro_admin-pmpro-member form td button.toggle-pass-visibility {
+.pmpro_admin-pmpro-member td button.toggle-pass-visibility {
 	background: transparent;
 	border: none;
 }
 
-.pmpro_admin-pmpro-member form td .dashicons {
+.pmpro_admin-pmpro-member td .dashicons {
 	vertical-align: middle;
 }
 
@@ -922,12 +922,12 @@ body[class*="memberships_page_pmpro-"] {
 		margin-right: var(--spacing-small);
 	}
 
-	.pmpro_admin-pmpro-member form {
+	.pmpro_admin-pmpro-member #pmpro-edit-user-div {
 		display: flex;
 		gap: 2em;
 	}
 
-	.pmpro_admin-pmpro-member form nav {
+	.pmpro_admin-pmpro-member nav {
 		flex-shrink: 0;
 		margin-top: 0;
 		width: 220px;
@@ -937,7 +937,7 @@ body[class*="memberships_page_pmpro-"] {
 		width: 100%;
 	}
 
-	.pmpro_admin-pmpro-member form nav button {
+	.pmpro_admin-pmpro-member nav button {
 		display: block;
 		padding: var(--spacing-small) calc( var(--spacing-small) * 2);
 		width: 100%;
