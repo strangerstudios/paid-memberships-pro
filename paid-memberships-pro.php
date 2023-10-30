@@ -59,13 +59,13 @@ require_once( PMPRO_DIR . '/adminpages/reports/members-per-level.php' ); // load
 require_once( PMPRO_DIR . '/adminpages/reports/sales.php' );             // load the Sales report
 
 require_once( PMPRO_DIR . '/adminpages/member-edit.php' ); // load the Member Edit admin page.
-require_once( PMPRO_DIR . '/adminpages/member/pmpro-abstract-class-member-edit-panel.php' );
-require_once( PMPRO_DIR . '/adminpages/member/pmpro-class-member-edit-panel-user-info.php' );
-require_once( PMPRO_DIR . '/adminpages/member/pmpro-class-member-edit-panel-memberships.php' );
-require_once( PMPRO_DIR . '/adminpages/member/pmpro-class-member-edit-panel-subscriptions.php' );
-require_once( PMPRO_DIR . '/adminpages/member/pmpro-class-member-edit-panel-orders.php' );
-require_once( PMPRO_DIR . '/adminpages/member/pmpro-class-member-edit-panel-other.php' );
-require_once( PMPRO_DIR . '/adminpages/member/pmpro-class-member-edit-panel-user-fields.php' );
+require_once( PMPRO_DIR . '/adminpages/member-edit/pmpro-abstract-class-member-edit-panel.php' );
+require_once( PMPRO_DIR . '/adminpages/member-edit/pmpro-class-member-edit-panel-user-info.php' );
+require_once( PMPRO_DIR . '/adminpages/member-edit/pmpro-class-member-edit-panel-memberships.php' );
+require_once( PMPRO_DIR . '/adminpages/member-edit/pmpro-class-member-edit-panel-subscriptions.php' );
+require_once( PMPRO_DIR . '/adminpages/member-edit/pmpro-class-member-edit-panel-orders.php' );
+require_once( PMPRO_DIR . '/adminpages/member-edit/pmpro-class-member-edit-panel-other.php' );
+require_once( PMPRO_DIR . '/adminpages/member-edit/pmpro-class-member-edit-panel-user-fields.php' );
 
 require_once( PMPRO_DIR . '/includes/admin.php' );                  // admin notices and functionality
 require_once( PMPRO_DIR . '/includes/adminpages.php' );             // dashboard pages
