@@ -1061,7 +1061,7 @@ function pmpro_changeMembershipLevel( $level, $user_id = null, $old_level_status
 		$pmpro_cancel_previous_subscriptions = apply_filters( 'pmpro_cancel_previous_subscriptions', $pmpro_cancel_previous_subscriptions );
 
 		$other_order_ids = $wpdb->get_col(
-			"SELECT id, IF(subscription_transaction_id = '', CONCAT('UNIQUE_SUB_ID_', id), subscription_transaction_id) as unique_sub_id
+			"SELECT MAX(id), IF(subscription_transaction_id = '', CONCAT('UNIQUE_SUB_ID_', id), subscription_transaction_id) as unique_sub_id
 											FROM $wpdb->pmpro_membership_orders
 											WHERE user_id = '" . esc_sql( $user_id ) . "'
 												AND status = 'success'
