@@ -135,6 +135,8 @@ function pmpro_member_edit_display() {
  * @since TBD
  */
 function pmpro_member_edit_save() {
+	global $current_user;
+
 	// Check if we are on the pmpro-member page.
 	if ( empty( $_REQUEST['page'] ) || 'pmpro-member' !== $_REQUEST['page'] ) {
 		return;
@@ -147,7 +149,8 @@ function pmpro_member_edit_save() {
 
 	// Make sure the current user can edit this user.
 	// Alterred from wp-admin/user-edit.php.
-	if ( ! current_user_can( 'edit_user', PMPro_Member_Edit_Panel::get_user()->ID ) ) {
+	$user = PMPro_Member_Edit_Panel::get_user();
+	if ( ! current_user_can( 'edit_user', $user->ID ) ) {
 		wp_die( __( 'Sorry, you are not allowed to edit this user.', 'paid-memberships-pro' ) );
 	}
 
@@ -160,6 +163,11 @@ function pmpro_member_edit_save() {
 	// Check the nonce.
 	if ( empty( $_REQUEST['pmpro_member_edit_saved_panel_nonce'] ) || ! wp_verify_nonce( $_REQUEST['pmpro_member_edit_saved_panel_nonce'], 'pmpro_member_edit_saved_panel_' . $panel_slug ) ) {
 		return;
+	}
+
+	// Define a constant if user is editing their own membership.
+	if ( ! defined( 'IS_PROFILE_PAGE' ) ) {
+		define( 'IS_PROFILE_PAGE', ( $user->ID === $current_user->ID ) );
 	}
 
 	// Save the panel.

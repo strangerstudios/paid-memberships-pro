@@ -210,7 +210,7 @@ class PMPro_Member_Edit_Panel_User_Info extends PMPro_Member_Edit_Panel {
 				exit;
 			} else {
 				// Users updated.
-				pmpro_setMessage( esc_html__( 'User updated.', 'paid-memberships-pro' ), 'updated' );
+				wp_redirect( admin_url( 'admin.php?page=pmpro-member&user_id=' . $updated_id ) );
 			}			
 		}
 	}
