@@ -64,9 +64,9 @@ class PMPro_Member_Edit_Panel_User_Info extends PMPro_Member_Edit_Panel {
 					</td>
 				</tr>
 				<tr>
-					<th><label for="send_password">Send User Notification</label></th>
+					<th><label for="send_password"><?php esc_html_e( 'Send User Notification', 'paid-memberships-pro' ); ?></label></th>
 					<td><input type="checkbox" name="send_password" id="send_password">
-					<label for="send_password">Send the new user an email about their account.</label>
+					<label for="send_password"><?php esc_html_e( 'Send the new user an email about their account.', 'paid-memberships-pro' ); ?></label>
 					</td>
 				</tr>
 				<?php
@@ -157,12 +157,6 @@ class PMPro_Member_Edit_Panel_User_Info extends PMPro_Member_Edit_Panel {
 
 		// okay so far?
 		if ( $pmpro_msgt != 'notice-error' ) {
-			// random password if needed
-			if ( ! $user->ID && empty( $user_pass ) ) {
-				$user_pass = wp_generate_password();
-				$send_password = true; // Force this option to be true, if the password field was empty so the email may be sent.
-			}
-
 			// User data.
 			$user_to_post = array( 
 				'ID' => self::get_user()->ID,
@@ -172,6 +166,12 @@ class PMPro_Member_Edit_Panel_User_Info extends PMPro_Member_Edit_Panel {
 				'last_name' => $last_name,
 				'role' => $role,
 			);
+
+			// For new users, set the password.
+			if ( ! $user->ID ) {
+				$user_to_post['user_pass'] = empty( sanitize_text_field( $_REQUEST[ 'password' ] ) ) ? wp_generate_password() : sanitize_text_field( $_REQUEST[ 'password' ] );
+				unset( $_REQUEST[ 'password' ] );
+			}
 
 			// Update or insert user.
 			$updated_id = ! empty( $_REQUEST['user_id'] ) ? wp_update_user($user_to_post) : wp_insert_user($user_to_post);
@@ -194,12 +194,9 @@ class PMPro_Member_Edit_Panel_User_Info extends PMPro_Member_Edit_Panel {
 		} else {
 			// Update/insert all good.
 			// Notify users if needed.
-			if ( $send_password ) {
+			if ( ! $user->ID && ! empty( $_REQUEST['send_password'] ) ) {
 				wp_new_user_notification( $updated_id, null, 'user' );
 			}
-
-			// clear vars
-			$user_pass = '';
 			
 			// Set message and redirect if this is a new user.		
 			if ( empty( $_REQUEST['user_id'] ) ) {
