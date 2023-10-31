@@ -908,11 +908,25 @@ window.addEventListener("DOMContentLoaded", () => {
 	const tabs = document.querySelectorAll('#pmpro-edit-user-div [role="tab"]');
 	const tabList = document.querySelector('#pmpro-edit-user-div [role="tablist"]');
 	const togglePassVisibility = document.querySelector('#pmpro-edit-user-div .toggle-pass-visibility');
+	const inputs = document.querySelectorAll('#pmpro-edit-user-div input, #pmpro-edit-user-div textarea, #pmpro-edit-user-div select');
 
 	if ( tabs && tabList ) {
+		// Track whether an input has been changed.
+		let inputChanged = false;
+		inputs.forEach((input) => {
+			input.addEventListener('change', function(e) {
+				inputChanged = true;
+			});
+		});
+
 		// Add a click event handler to each tab
 		tabs.forEach((tab) => {
-			tab.addEventListener("click", pmpro_changeTabs);
+			tab.addEventListener("click", function (e) {
+				if ( pmpro_changeTabs(e, inputChanged ) ) {
+					// If we changed tabs, reset the inputChanged flag.
+					inputChanged = false;
+				}
+			});
 		});
 
 		// Enable arrow navigation between tabs in the tab list
@@ -958,8 +972,16 @@ window.addEventListener("DOMContentLoaded", () => {
 	}
 });
 
-function pmpro_changeTabs(e) {
+function pmpro_changeTabs( e, inputChanged ) {
 	e.preventDefault();
+
+	if ( inputChanged ) {
+		const answer = window.confirm('You have unsaved changes. Are you sure you want to switch tabs?');
+		if ( ! answer ) {
+			return false;
+		}
+	}
+
 	const target = e.target;
 	const parent = target.parentNode;
 	const grandparent = parent.parentNode;
@@ -981,4 +1003,6 @@ function pmpro_changeTabs(e) {
 	grandparent.parentNode
 	.querySelector(`#${target.getAttribute("aria-controls")}`)
 	.removeAttribute("hidden");
+
+	return true;
 }
