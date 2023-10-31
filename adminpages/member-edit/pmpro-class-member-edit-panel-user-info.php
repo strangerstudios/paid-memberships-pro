@@ -91,7 +91,6 @@ class PMPro_Member_Edit_Panel_User_Info extends PMPro_Member_Edit_Panel {
 	 */
 	public function save() {
 		// TODO: Password doesn't actually save.
-		// TODO: Need permission check for changing roles
 		// TODO: Review all of this.
 		global $wpdb, $pmpro_msgt, $pmpro_msg;
 
@@ -170,8 +169,11 @@ class PMPro_Member_Edit_Panel_User_Info extends PMPro_Member_Edit_Panel {
 				'user_email' => $user_email,
 				'first_name' => $first_name,
 				'last_name' => $last_name,
-				'role' => $role,
 			);
+
+			if ( ! IS_PROFILE_PAGE && current_user_can( 'promote_user', $user->ID ) ) {
+				$user_to_post['role'] = $role;
+			}
 
 			// Update or insert user.
 			$updated_id = ! empty( $_REQUEST['user_id'] ) ? wp_update_user($user_to_post) : wp_insert_user($user_to_post);
