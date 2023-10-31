@@ -163,16 +163,16 @@ class PMPro_Member_Edit_Panel_User_Info extends PMPro_Member_Edit_Panel {
 				'last_name' => $last_name,
 			);
 
-      // Set the role if the current user has permission.
-      if ( ! IS_PROFILE_PAGE && current_user_can( 'promote_user', $user->ID ) ) {
-	  	  $user_to_post['role'] = $role;
-      }
+			// Set the role if the current user has permission.
+			if ( ! IS_PROFILE_PAGE && current_user_can( 'promote_user', $user->ID ) ) {
+				$user_to_post['role'] = $role;
+			}
 
 			// For new users, set the password.
 			if ( ! $user->ID ) {
 				$user_to_post['user_pass'] = empty( sanitize_text_field( $_REQUEST[ 'password' ] ) ) ? wp_generate_password() : sanitize_text_field( $_REQUEST[ 'password' ] );
 				unset( $_REQUEST[ 'password' ] );
-      }
+			}
 
 			// Update or insert user.
 			$updated_id = ! empty( $_REQUEST['user_id'] ) ? wp_update_user($user_to_post) : wp_insert_user($user_to_post);
