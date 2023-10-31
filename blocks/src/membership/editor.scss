@@ -3,7 +3,9 @@
  *
  * Replace them with your own styles or remove the file completely.
  */
-
-.wp-block-create-block-account-invoices-section {
-	border: 1px dotted #f00;
+[class*="wp-block-pmpro-membership"] span.pmpro-block-title {
+	border-bottom: 5px solid #F5F8FA;
+}
+.wp-block-pmpro-membership .block-editor-inner-blocks {
+	margin: 8px;
 }
