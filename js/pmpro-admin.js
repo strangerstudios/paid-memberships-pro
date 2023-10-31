@@ -907,53 +907,57 @@ jQuery(document).ready(function () {
 window.addEventListener("DOMContentLoaded", () => {
 	const tabs = document.querySelectorAll('#pmpro-edit-user-div [role="tab"]');
 	const tabList = document.querySelector('#pmpro-edit-user-div [role="tablist"]');
+	const togglePassVisibility = document.querySelector('#pmpro-edit-user-div .toggle-pass-visibility');
 
-	// Add a click event handler to each tab
-	tabs.forEach((tab) => {
-	tab.addEventListener("click", pmpro_changeTabs);
-	});
+	if ( tabs && tabList ) {
+		// Add a click event handler to each tab
+		tabs.forEach((tab) => {
+			tab.addEventListener("click", pmpro_changeTabs);
+		});
 
-	// Enable arrow navigation between tabs in the tab list
-	let tabFocus = 0;
+		// Enable arrow navigation between tabs in the tab list
+		let tabFocus = 0;
+		tabList.addEventListener("keydown", (e) => {
+		// Move Down
+		if (e.key === "ArrowDown" || e.key === "ArrowUp") {
+			tabs[tabFocus].setAttribute("tabindex", -1);
+			if (e.key === "ArrowDown") {
+			tabFocus++;
+			// If we're at the end, go to the start
+			if (tabFocus >= tabs.length) {
+				tabFocus = 0;
+			}
+			// Move Up
+			} else if (e.key === "ArrowUp") {
+			tabFocus--;
+			// If we're at the start, move to the end
+			if (tabFocus < 0) {
+				tabFocus = tabs.length - 1;
+			}
+			}
 
-	tabList.addEventListener("keydown", (e) => {
-	// Move Down
-	if (e.key === "ArrowDown" || e.key === "ArrowUp") {
-		tabs[tabFocus].setAttribute("tabindex", -1);
-		if (e.key === "ArrowDown") {
-		tabFocus++;
-		// If we're at the end, go to the start
-		if (tabFocus >= tabs.length) {
-			tabFocus = 0;
+			tabs[tabFocus].setAttribute("tabindex", 0);
+			tabs[tabFocus].focus();
 		}
-		// Move Up
-		} else if (e.key === "ArrowUp") {
-		tabFocus--;
-		// If we're at the start, move to the end
-		if (tabFocus < 0) {
-			tabFocus = tabs.length - 1;
-		}
-		}
-
-		tabs[tabFocus].setAttribute("tabindex", 0);
-		tabs[tabFocus].focus();
+		});
 	}
-	});
 
-	document.querySelector('#pmpro-edit-user-div .toggle-pass-visibility').addEventListener('click', function(e) {
-		e.preventDefault();
-		const passInput = document.querySelector('#password');
-		const classToReplace = passInput.getAttribute('type') == 'password' ? 'dashicons-hidden' : 'dashicons-visibility';
-		const currentClass = passInput.getAttribute('type') == 'password' ? 'dashicons-visibility' : 'dashicons-hidden';
-		passInput.getAttribute('type') == 'password' ? passInput.setAttribute('type', 'text') : passInput.setAttribute('type', 'password');
-		e.currentTarget.firstChild.classList.replace(currentClass, classToReplace);
+	if ( togglePassVisibility ) {
+		togglePassVisibility.addEventListener('click', function(e) {
+			e.preventDefault();
+			const passInput = document.querySelector('#password');
+			const classToReplace = passInput.getAttribute('type') == 'password' ? 'dashicons-hidden' : 'dashicons-visibility';
+			const currentClass = passInput.getAttribute('type') == 'password' ? 'dashicons-visibility' : 'dashicons-hidden';
+			passInput.getAttribute('type') == 'password' ? passInput.setAttribute('type', 'text') : passInput.setAttribute('type', 'password');
+			e.currentTarget.firstChild.classList.replace(currentClass, classToReplace);
 
-		if (passInput.getAttribute('type') == 'password') {
-			passInput.setAttribute('type', 'text');
-		} else {
-			passInput.setAttribute('type', 'password');
-		}
-	});
+			if (passInput.getAttribute('type') == 'password') {
+				passInput.setAttribute('type', 'text');
+			} else {
+				passInput.setAttribute('type', 'password');
+			}
+		});
+	}
 });
 
 function pmpro_changeTabs(e) {
