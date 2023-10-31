@@ -87,16 +87,6 @@ export default function Edit(props) {
 			  {allCheckboxesSelected ? __('Deselect All', 'paid-memberships-pro') : __('Select All', 'paid-memberships-pro')}
 			</Button>
 			</p>
-			<p><strong>{ __( 'What should users without access see?', 'paid-memberships-pro' ) }</strong></p>
-			<SelectControl
-				value={ show_noaccess }
-				help={__( "Modify the 'no access' message on the Memberships > Advanced Settings page.", "paid-memberships-pro" ) }
-				options={ [
-					{ label: __( "Show nothing", 'paid-memberships-pro' ), value: '0' },
-					{ label: __( "Show the 'no access' message", 'paid-memberships-pro' ), value: '1' },
-				] }
-				onChange={ show_noaccess => setAttributes( { show_noaccess } ) }
-			/>
 		</PanelBody>
 	</InspectorControls>,
 	<div className="pmpro-block-require-membership-element" { ...blockProps }>
