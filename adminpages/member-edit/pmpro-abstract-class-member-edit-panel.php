@@ -43,8 +43,8 @@ abstract class PMPro_Member_Edit_Panel {
 		<button
 			role="tab"
 			aria-selected="<?php echo $is_selected ? 'true' : 'false' ?>"
-			aria-controls="pmpro-<?php echo esc_attr( $this->slug ) ?>-panel"
-			id="pmpro-<?php echo esc_attr( $this->slug ) ?>-tab"
+			aria-controls="pmpro-member-edit-<?php echo esc_attr( $this->slug ) ?>-panel"
+			id="pmpro-member-edit-<?php echo esc_attr( $this->slug ) ?>-tab"
 			<?php echo ( empty( self::get_user()->ID ) ) ? 'disabled="disabled"' : ''; ?>
 			tabindex="<?php echo ( $is_selected ) ? '0' : '-1' ?>"
 		>
@@ -63,10 +63,10 @@ abstract class PMPro_Member_Edit_Panel {
 	final public function display_panel( $is_selected ) {
 		?>
 		<div
-			id="pmpro-<?php echo esc_attr( $this->slug ) ?>-panel"
+			id="pmpro-member-edit-<?php echo esc_attr( $this->slug ) ?>-panel"
 			role="tabpanel"
 			tabindex="<?php echo $is_selected ? '0' : '-1' ?>"
-			aria-labelledby="pmpro-<?php echo esc_attr( $this->slug ) ?>-tab"
+			aria-labelledby="pmpro-member-edit-<?php echo esc_attr( $this->slug ) ?>-tab"
 			<?php echo $is_selected ? '' : 'hidden'; ?>
 		>
 			<h2>
