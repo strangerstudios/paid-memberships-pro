@@ -144,7 +144,7 @@
 
 			<input type="hidden" name="level" value="<?php echo esc_attr($level->id);?>" />
 
-			<div id="pmpro_message" <?php if(! $pmpro_msg) ?> style="display:none" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_message ' . $pmpro_msgt, $pmpro_msgt ) ); ?>"> <?php if($pmpro_msg) echo wp_kses_post( $pmpro_msg ); ?></div>
+			<div id="pmpro_message" <?php if(! $pmpro_msg) { ?> style="display:none" <?php } ?> class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_message ' . $pmpro_msgt, $pmpro_msgt ) ); ?>"> <?php if($pmpro_msg) echo wp_kses_post( $pmpro_msg ); ?></div>
 
 			<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_message pmpro_alert', 'pmpro_account_loggedin' ) ); ?>">
 				<?php
