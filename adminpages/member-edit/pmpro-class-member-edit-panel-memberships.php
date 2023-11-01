@@ -433,7 +433,6 @@ class PMPro_Member_Edit_Panel_Memberships extends PMPro_Member_Edit_Panel {
 				return;
 			}
 
-			// Need to account for level_id, expiration checkbox, expiration value, refund checkbox, subscription action, and send email checkbox.
 			// Get the level ID to add.
 			$level_id = empty( $level_data[ 'level_id' ] ) ? null : intval( $level_data[ 'level_id' ] );
 			if ( empty( $level_id ) ) {
