@@ -214,7 +214,7 @@ class PMPro_Member_Edit_Panel_Memberships extends PMPro_Member_Edit_Panel {
 									if ( pmpro_allowed_refunds( $last_order ) ) { ?>
 										<div class="more_level_options">
 											<label for="<?php echo esc_attr( $cancel_level_input_name_base ); ?>[refund]">
-												<input type="checkbox" name="<?php echo esc_attr( $cancel_level_input_name_base ); ?>[refund]" value="<?php (int)$last_order->id ?>" />
+												<input type="checkbox" name="<?php echo esc_attr( $cancel_level_input_name_base ); ?>[refund]" value="<?php echo (int)$last_order->id; ?>" />
 												<?php printf( esc_html( 'Refund the last payment (%s).', 'paid-memberships-pro' ), pmpro_formatPrice( $last_order->total ) ); ?>
 											</label>
 										</div>
@@ -307,7 +307,7 @@ class PMPro_Member_Edit_Panel_Memberships extends PMPro_Member_Edit_Panel {
 									if ( pmpro_allowed_refunds( $last_order ) ) { ?>
 										<div class="more_level_options">
 											<label for="<?php echo esc_attr( $add_level_to_group_input_name_base ); ?>[refund]">
-												<input type="checkbox" name="<?php echo esc_attr( $add_level_to_group_input_name_base ); ?>[refund]" value="<?php (int)$last_order->id ?>" />
+												<input type="checkbox" name="<?php echo esc_attr( $add_level_to_group_input_name_base ); ?>[refund]" value="<?php echo (int)$last_order->id; ?>" />
 												<?php printf( esc_html( 'Refund the last payment (%s).', 'paid-memberships-pro' ), pmpro_formatPrice( $last_order->total ) ); ?>
 											</label>
 										</div>
@@ -551,7 +551,7 @@ class PMPro_Member_Edit_Panel_Memberships extends PMPro_Member_Edit_Panel {
 				$refund_order = new MemberOrder( $refund_last_order );
 
 				// Make sure the order belongs to the user.
-				if ( $refund_order->user_id !== $user->ID ) {
+				if ( (int)$refund_order->user_id !== (int)$user->ID ) {
 					pmpro_setMessage( __( 'The order to refund does not belong to this user.', 'paid-memberships-pro' ), 'pmpro_error' );
 					return;
 				}
@@ -668,7 +668,7 @@ class PMPro_Member_Edit_Panel_Memberships extends PMPro_Member_Edit_Panel {
 				$refund_order = new MemberOrder( $refund_last_order );
 
 				// Make sure the order belongs to the user.
-				if ( $refund_order->user_id !== $user->ID ) {
+				if ( (int)$refund_order->user_id !== (int)$user->ID ) {
 					pmpro_setMessage( __( 'The order to refund does not belong to this user.', 'paid-memberships-pro' ), 'pmpro_error' );
 					return;
 				}
