@@ -106,7 +106,7 @@ class PMPro_Member_Edit_Panel_Memberships extends PMPro_Member_Edit_Panel {
 												esc_html__( 'Edit', 'paid-memberships-pro' )
 											),
 											'cancel' => sprintf(
-												'<a href="%1$s">%2$s</a>',
+												'<a class="pmpro-member-cancel-level" href="%1$s">%2$s</a>',
 												'#',
 												esc_html__( 'Cancel', 'paid-memberships-pro' )
 											),
@@ -196,6 +196,56 @@ class PMPro_Member_Edit_Panel_Memberships extends PMPro_Member_Edit_Panel {
 									<div class="submit">
 										<button type="submit" name="pmpro-member-edit-memberships-panel-edit_level" class="button button-primary" value="<?php echo (int)$shown_level->id; ?>"><?php esc_html_e( 'Edit Membership', 'paid-memberships-pro' ) ?></button>
 										<input type="button" name="cancel-edit-level" value="Cancel" class="button button-secondary">
+									</div>
+								</td>
+							</tr>
+							<tr id="pmpro-level-<?php echo esc_attr( $shown_level->id ); ?>-cancel" style="display: none;">
+								<td colspan="3">
+									<?php
+									$cancel_level_input_name_base = 'pmpro-member-edit-memberships-panel-cancel_level_' . $shown_level->id;
+									?>
+									<div>
+										<p><?php printf( esc_html( 'You are about to cancel the %s membership.', 'paid-memberships-pro' ),  esc_html( $shown_level->name ) ); ?></p>
+									</div>
+
+									<?php
+									$last_order = new MemberOrder();
+									$last_order->getLastMemberOrder( $user->ID, array( 'success', 'refunded' ), $shown_level->id );
+									if ( pmpro_allowed_refunds( $last_order ) ) { ?>
+										<div class="more_level_options">
+											<label for="<?php echo esc_attr( $cancel_level_input_name_base ); ?>[refund]">
+												<input type="checkbox" name="<?php echo esc_attr( $cancel_level_input_name_base ); ?>[refund]" value="<?php (int)$last_order->id ?>" />
+												<?php printf( esc_html( 'Refund the last payment (%s).', 'paid-memberships-pro' ), pmpro_formatPrice( $last_order->total ) ); ?>
+											</label>
+										</div>
+										<?php
+									}
+
+									// If this group only allows users to have a single level and the user has a subscription, show the option to cancel it.
+									if ( ! empty( $subscriptions ) ) {
+										?>
+										<div class="more_level_options">
+											<label for="<?php echo esc_attr( $cancel_level_input_name_base ); ?>[subscription_action]">
+												<select name="<?php echo esc_attr( $cancel_level_input_name_base ); ?>[subscription_action]">
+													<option value="cancel"><?php esc_html_e( 'Cancel payment subscription (Recommended)', 'paid-memberships-pro' ); ?></option>
+													<option value="keep"><?php esc_html_e( 'Keep subscription active', 'paid-memberships-pro' ); ?></option>
+												</select>
+											</label>
+										</div>
+										<?php
+									}
+									?>
+
+									<div class="more_level_options">
+										<label for="<?php echo esc_attr( $cancel_level_input_name_base ); ?>[send_change_email]">
+											<input type="checkbox" name="<?php echo esc_attr( $cancel_level_input_name_base ); ?>[send_change_email]" value="1" />
+											<?php esc_html_e( 'Send membership change email to member.', 'paid-memberships-pro' ); ?>
+										</label>
+									</div>
+
+									<div class="submit">
+										<button type="submit" name="pmpro-member-edit-memberships-panel-cancel_level" class="button button-primary" value="<?php echo (int)$shown_level->id; ?>"><?php esc_html_e( 'Cancel Membership', 'paid-memberships-pro' ) ?></button>
+										<input type="button" name="cancel-cancel-level" value="Cancel" class="button button-secondary">
 									</div>
 								</td>
 							</tr>
@@ -300,7 +350,7 @@ class PMPro_Member_Edit_Panel_Memberships extends PMPro_Member_Edit_Panel {
 		}
 	?>
 	<script>
-		// Row actions to edit membership.
+		// Button to show edit membership.
 		jQuery('#pmpro-member-edit-memberships-panel a.pmpro-member-edit-level').on('click', function (event) {
 			event.preventDefault();
 			jQuery(this).closest('tr').next('tr').show();
@@ -311,6 +361,20 @@ class PMPro_Member_Edit_Panel_Memberships extends PMPro_Member_Edit_Panel {
 		jQuery('#pmpro-member-edit-memberships-panel input[name="cancel-edit-level"]').on('click', function (event) {
 			event.preventDefault();
 			jQuery(this).closest('tr').prev('tr').show();
+			jQuery(this).closest('tr').hide();
+		});
+
+		// Button to show cancel membership.
+		jQuery('#pmpro-member-edit-memberships-panel a.pmpro-member-cancel-level').on('click', function (event) {
+			event.preventDefault();
+			jQuery(this).closest('tr').next('tr').next('tr').show();
+			jQuery(this).closest('tr').hide();
+		});
+
+		// Button to cancel cancelling membership.
+		jQuery('#pmpro-member-edit-memberships-panel input[name="cancel-cancel-level"]').on('click', function (event) {
+			event.preventDefault();
+			jQuery(this).closest('tr').prev('tr').prev('tr').show();
 			jQuery(this).closest('tr').hide();
 		});
 
@@ -454,6 +518,7 @@ class PMPro_Member_Edit_Panel_Memberships extends PMPro_Member_Edit_Panel {
 			// Get the data for the level to add.
 			$level_data = empty( $_REQUEST[ 'pmpro-member-edit-memberships-panel-add_level_to_group_' . $group_id ] ) ? null : $_REQUEST[ 'pmpro-member-edit-memberships-panel-add_level_to_group_' . $group_id ];
 			if ( empty( $level_data ) ) {
+				// At the very least, 'level_id' should be set.
 				pmpro_setMessage( __( 'Please pass level data to add.', 'paid-memberships-pro' ), 'pmpro_error' );
 				return;
 			}
@@ -546,6 +611,7 @@ class PMPro_Member_Edit_Panel_Memberships extends PMPro_Member_Edit_Panel {
 			// Get the data for the level to edit.
 			$level_data = empty( $_REQUEST[ 'pmpro-member-edit-memberships-panel-edit_level_' . $level_id ] ) ? null : $_REQUEST[ 'pmpro-member-edit-memberships-panel-edit_level_' . $level_id ];
 			if ( empty( $level_data ) ) {
+				// At the very least, 'expiration' should be set even if the checkbox is empty.
 				pmpro_setMessage( __( 'Please pass level data to edit.', 'paid-memberships-pro' ), 'pmpro_error' );
 				return;
 			}
@@ -580,13 +646,68 @@ class PMPro_Member_Edit_Panel_Memberships extends PMPro_Member_Edit_Panel {
 				return;
 			}
 
-			// TODO: Finish this.
+			// Get the data for the level to cancel.
+			$level_data = empty( $_REQUEST[ 'pmpro-member-edit-memberships-panel-cancel_level_' . $level_id ] ) ? null : $_REQUEST[ 'pmpro-member-edit-memberships-panel-cancel_level_' . $level_id ];
+			if ( empty( $level_data ) ) {
+				// It is possible that no data is passed if the user is cancelling a level that has no subscription. In this case, we will just cancel the level.
+				$level_data = array();
+			}
+
+			// Check if we should refund the last order.
+			$refund_last_order = ! empty( $level_data[ 'refund' ] ) ? intval( $level_data[ 'refund' ] ) : null;
+			if ( $refund_last_order ) {
+				$refund_order = new MemberOrder( $refund_last_order );
+
+				// Make sure the order belongs to the user.
+				if ( $refund_order->user_id !== $user->ID ) {
+					pmpro_setMessage( __( 'The order to refund does not belong to this user.', 'paid-memberships-pro' ), 'pmpro_error' );
+					return;
+				}
+
+				// Process the refund.
+				pmpro_refund_order( $refund_order );
+			}
+
+			// Check if we should keep the subscription active.
+			$keep_subscription = ! empty( $level_data[ 'subscription_action' ] ) && 'keep' === $level_data[ 'subscription_action' ];
+
+			// If we need to keep the subscription, add the filter.
+			if ( $keep_subscription ) {
+				add_filter( 'pmpro_cancel_previous_subscriptions', '__return_false' );
+			}
+
+			// Cancel the membership level.
+			$change_successful = pmpro_cancelMembershipLevel( $level_id, $user->ID, 'admin_cancelled' );
+
+			// Remove the filter.
+			if ( $keep_subscription ) {
+				remove_filter( 'pmpro_cancel_previous_subscriptions', '__return_false' );
+			}
+
+			// Check if the change was successful.
+			if ( ! $change_successful ) {
+				pmpro_setMessage( __( 'Error cancelling membership level.', 'paid-memberships-pro' ), 'pmpro_error' );
+				return;
+			}
+
+			// Check if we should send the change email.
+			$send_change_email = ! empty( $level_data[ 'send_change_email' ] );
+			if ( $send_change_email ) {
+				// Send an email to the user.
+				$myemail = new PMProEmail();
+				$myemail->sendCancelEmail( $user );
+
+				// Send an email to the admin.
+				$myemail = new PMProEmail();
+				$myemail->sendCancelAdminEmail( $user );
+			}
 		} else {
 			pmpro_setMessage( __( 'Membership action not found.', 'paid-memberships-pro' ), 'pmpro_error');
 			return;
 		}
 
 		// Clear the level cache.
+		pmpro_clear_level_cache_for_user( $user->ID );
 
 		pmpro_setMessage( __( 'Memberships updated.', 'paid-memberships-pro' ), 'pmpro_success' );
 	}
