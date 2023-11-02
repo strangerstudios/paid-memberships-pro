@@ -156,17 +156,8 @@ class PMPro_Member_Edit_Panel_Memberships extends PMPro_Member_Edit_Panel {
 												<?php
 											}
 											$subscription = $subscriptions[0];
-											$billing_amount = $subscription->get_billing_amount();
-											$cycle_number   = $subscription->get_cycle_number();
-											$cycle_period   = $subscription->get_cycle_period();
-
-											if ( $cycle_number == 1 ) {
-												$cost_text = sprintf( esc_html__( '%1$s per %2$s', 'paid-memberships-pro' ), pmpro_formatPrice( $billing_amount ), $cycle_period );
-											} else {
-												$cost_text = sprintf( esc_html__( '%1$s every %2$s %3$ss', 'paid-memberships-pro' ), pmpro_formatPrice( $billing_amount ), $cycle_number, $cycle_period );
-											}
 											?>
-											<p><?php echo esc_html( $cost_text ); ?></p>
+											<p><?php echo esc_html( $subscription->get_cost_text() ); ?></p>
 											<?php
 										} else {
 											?>
