@@ -178,7 +178,34 @@ class PMPro_Member_Edit_Panel_Memberships extends PMPro_Member_Edit_Panel {
 							</tr>
 							<tr id="pmpro-level-<?php echo esc_attr( $shown_level->id ); ?>-edit" style="display: none;">
 								<td colspan="3">
-									.. actions slide out here.
+									<?php
+									$edit_level_input_name_base = 'pmpro-member-edit-memberships-panel-edit_level_' . $shown_level->id;
+									?>
+									<div>
+										<p><?php printf( esc_html( 'You are editing the %s membership.', 'paid-memberships-pro' ),  esc_html( $shown_level->name ) ); ?></p>
+									</div>
+
+									<div class="more_level_options">
+										<?php
+										$has_enddate = ! empty( $shown_level->enddate );
+										$enddate     = $has_enddate ? date( 'Y-m-d H:i', $shown_level->enddate ) : date( 'Y-m-d H:i', strtotime( '+1 year' ) );
+										?>
+										<input type="checkbox" name="<?php echo esc_attr( $edit_level_input_name_base ); ?>[expires]" id="<?php echo esc_attr( $edit_level_input_name_base ); ?>[expires]" value="1" class="pmpro_expires_checkbox" <?php checked( $has_enddate ) ?>/>
+										<label for="<?php echo esc_attr( $edit_level_input_name_base ); ?>[expires]"><?php esc_html_e( 'Set Expiration', 'paid-memberships-pro' ); ?></label>
+										<input type="datetime-local" name="<?php echo esc_attr( $edit_level_input_name_base ); ?>[expiration]" value="<?php echo esc_attr( $enddate ); ?>" <?php echo $has_enddate ? '' : 'style="display: none"'; ?>>
+									</div>
+
+									<div class="more_level_options">
+										<label for="<?php echo esc_attr( $edit_level_input_name_base ); ?>[send_change_email]">
+											<input type="checkbox" name="<?php echo esc_attr( $edit_level_input_name_base ); ?>[send_change_email]" value="1" />
+											<?php esc_html_e( 'Send membership change email to member.', 'paid-memberships-pro' ); ?>
+										</label>
+									</div>
+
+									<div class="submit">
+										<button type="submit" name="pmpro-member-edit-memberships-panel-edit_level" class="button button-primary" value="<?php echo (int)$shown_level->id; ?>"><?php esc_html_e( 'Edit Membership', 'paid-memberships-pro' ) ?></button>
+										<input type="button" name="cancel-edit-level" value="Cancel" class="button button-secondary">
+									</div>
 								</td>
 							</tr>
 							<?php
@@ -271,7 +298,7 @@ class PMPro_Member_Edit_Panel_Memberships extends PMPro_Member_Edit_Panel {
 
 								<div class="submit">
 									<button type="submit" name="pmpro-member-edit-memberships-panel-add_level_to_group" class="button button-primary" value="<?php echo (int)$group->id; ?>"><?php echo esc_html( $link_text ) ?></button>
-									<input type="button" name="cancel" value="Cancel" class="button button-secondary">
+									<input type="button" name="cancel-add-level" value="Cancel" class="button button-secondary">
 								</div>
 							</td>
 						</tr>
@@ -282,10 +309,17 @@ class PMPro_Member_Edit_Panel_Memberships extends PMPro_Member_Edit_Panel {
 		}
 	?>
 	<script>
-		// Row actions to change or cancel membership.
+		// Row actions to edit membership.
 		jQuery('#pmpro-member-edit-memberships-panel a.pmpro-member-edit-level').on('click', function (event) {
 			event.preventDefault();
 			jQuery(this).closest('tr').next('tr').show();
+			jQuery(this).closest('tr').hide();
+		});
+
+		// Button to cancel editing membership.
+		jQuery('#pmpro-member-edit-memberships-panel input[name="cancel-edit-level"]').on('click', function (event) {
+			event.preventDefault();
+			jQuery(this).closest('tr').prev('tr').show();
 			jQuery(this).closest('tr').hide();
 		});
 
@@ -306,7 +340,7 @@ class PMPro_Member_Edit_Panel_Memberships extends PMPro_Member_Edit_Panel {
 		});
 
 		// Button to cancel changing membership.
-		jQuery('#pmpro-member-edit-memberships-panel input[name="cancel"]').on('click', function (event) {
+		jQuery('#pmpro-member-edit-memberships-panel input[name="cancel-add-level"]').on('click', function (event) {
 			event.preventDefault();
 			jQuery(this).closest('tr').closest('table').find('thead').show();
 			jQuery(this).closest('tr').closest('table').find('tbody').show();
@@ -518,7 +552,35 @@ class PMPro_Member_Edit_Panel_Memberships extends PMPro_Member_Edit_Panel {
 				return;
 			}
 
-			// TODO: Finish this.
+			// Get the data for the level to edit.
+			$level_data = empty( $_REQUEST[ 'pmpro-member-edit-memberships-panel-edit_level_' . $level_id ] ) ? null : $_REQUEST[ 'pmpro-member-edit-memberships-panel-edit_level_' . $level_id ];
+			if ( empty( $level_data ) ) {
+				pmpro_setMessage( __( 'Please pass level data to edit.', 'paid-memberships-pro' ), 'pmpro_error' );
+				return;
+			}
+
+			// Update the expiration date.
+			$expiration = ( ! empty( $level_data[ 'expires' ] ) && ! empty( $level_data[ 'expiration' ] ) ) ? $level_data[ 'expiration' ] : 'NULL';
+			$wpdb->query( $wpdb->prepare( "UPDATE $wpdb->pmpro_memberships_users SET enddate = %s WHERE user_id = %d AND membership_id = %d AND status = 'active'", $expiration, $user->ID, $level_id ) );
+
+			// If the expiration query failed, set an error.
+			if ( $wpdb->last_error ) {
+				pmpro_setMessage( __( 'Error updating expiration date.', 'paid-memberships-pro' ), 'pmpro_error' );
+				return;
+			}
+
+			// Check if we should send the change email.
+			$send_change_email = ! empty( $level_data[ 'send_change_email' ] );
+			if ( $send_change_email ) {
+				// Send an email to the user.
+				$myemail = new PMProEmail();
+				$myemail->sendAdminChangeEmail( $user );
+
+				// Send an email to the admin.
+				$myemail = new PMProEmail();
+				$myemail->sendAdminChangeAdminEmail( $user );
+			}
+
 		} elseif ( ! empty( $_REQUEST[ 'pmpro-member-edit-memberships-panel-cancel_level' ] ) ) {
 			// Get the level that we are cancelling.
 			$level_id = intval( $_REQUEST[ 'pmpro-member-edit-memberships-panel-cancel_level' ] );
