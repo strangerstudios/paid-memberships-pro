@@ -523,6 +523,9 @@ class PMPro_Member_Edit_Panel_Memberships extends PMPro_Member_Edit_Panel {
 				return;
 			}
 
+			// Sanitize all the data.
+			$level_data = array_map( 'sanitize_text_field', $level_data );
+
 			// Get the level ID to add.
 			$level_id = empty( $level_data[ 'level_id' ] ) ? null : intval( $level_data[ 'level_id' ] );
 			if ( empty( $level_id ) ) {
@@ -616,6 +619,9 @@ class PMPro_Member_Edit_Panel_Memberships extends PMPro_Member_Edit_Panel {
 				return;
 			}
 
+			// Sanitize all the data.
+			$level_data = array_map( 'sanitize_text_field', $level_data );
+
 			// Update the expiration date.
 			$expiration = ( ! empty( $level_data[ 'expires' ] ) && ! empty( $level_data[ 'expiration' ] ) ) ? $level_data[ 'expiration' ] : 'NULL';
 			$wpdb->query( $wpdb->prepare( "UPDATE $wpdb->pmpro_memberships_users SET enddate = %s WHERE user_id = %d AND membership_id = %d AND status = 'active'", $expiration, $user->ID, $level_id ) );
@@ -652,6 +658,9 @@ class PMPro_Member_Edit_Panel_Memberships extends PMPro_Member_Edit_Panel {
 				// It is possible that no data is passed if the user is cancelling a level that has no subscription. In this case, we will just cancel the level.
 				$level_data = array();
 			}
+
+			// Sanitize all the data.
+			$level_data = array_map( 'sanitize_text_field', $level_data );
 
 			// Check if we should refund the last order.
 			$refund_last_order = ! empty( $level_data[ 'refund' ] ) ? intval( $level_data[ 'refund' ] ) : null;
