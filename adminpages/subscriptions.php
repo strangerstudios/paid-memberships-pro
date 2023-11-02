@@ -78,7 +78,7 @@ if ( empty( $subscription ) ) {
 						// If the user does not have the level that this subscription is for, show a warning.
 						if ( ! in_array( $sub_membership_level_id, $user_level_ids ) ) {
 							?>
-							<p class="description"><?php esc_html_e( 'This user does not have the membership level that this subscription is for.', 'paid-memberships-pro' ); ?></p>
+							<p class="description" style="color: red;"><?php esc_html_e( 'This user does not have the membership level that this subscription is for.', 'paid-memberships-pro' ); ?></p>
 							<?php
 						}
 
