@@ -437,6 +437,7 @@
 	background: #FFF;
 	border: 1px solid #CCD0D4;
 	border-bottom: none;
+	clear: both;
 	margin: 15px 0;
 }
 
@@ -577,16 +578,16 @@
 	background: #f6f7f7;
 }
 
-.pmpro_admin-pmpro-membershiplevels .membership-levels tr.alternate td {
+.pmpro_admin-pmpro-membershiplevels .membership-levels tr:nth-child(odd) td {
 	background: #FFF;
 }
 
-.pmpro_admin-pmpro-membershiplevels .membership-levels tr.ui-sortable-helper {
+.pmpro_admin-pmpro-membershiplevels .has-sortable-membership-levels tr.ui-sortable-helper {
 	border: 2px solid #2997C8;
 	cursor: move;
 }
 
-.pmpro_admin-pmpro-membershiplevels .membership-levels tr td:first-child:before {
+.pmpro_admin-pmpro-membershiplevels .has-sortable-membership-levels tr td:first-child:before {
 	color: #CCC;
 	content: "\f333";
 	display: inline-block;
