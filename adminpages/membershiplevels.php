@@ -378,8 +378,7 @@
 									</tr>
 									<?php } ?>
 									<?php
-										$count = 0;
-										foreach($group_levels_to_show as $level) {
+										foreach ( $group_levels_to_show as $level ) {
 									?>
 									<tr class="<?php if(!$level->allow_signups) { ?>pmpro_gray<?php } ?> <?php if(!pmpro_checkLevelForStripeCompatibility($level) || !pmpro_checkLevelForBraintreeCompatibility($level) || !pmpro_checkLevelForPayflowCompatibility($level) || !pmpro_checkLevelForTwoCheckoutCompatibility($level)) { ?>pmpro_error<?php } ?>">
 										<td><?php echo $level->id?></td>
