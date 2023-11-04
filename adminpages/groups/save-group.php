@@ -1,7 +1,7 @@
 <?php
 
 $group_id = (int) $_REQUEST['saveid'];
-$group_name = sanitize_text_field( $_REQUEST['name'] );
+$group_name = sanitize_text_field( stripslashes( $_REQUEST['name'] ) );
 $allow_multi = empty( $_REQUEST['allow_multiple_selections'] ) ? 0 : 1;
 $displayorder = (int) $_REQUEST['displayorder'];
 if ( $group_id > 0 ) {

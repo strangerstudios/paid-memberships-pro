@@ -1,12 +1,11 @@
 <?php
 global $wpdb, $msg, $msgt, $pmpro_stripe_error, $pmpro_braintree_error, $pmpro_payflow_error, $pmpro_twocheckout_error, $pmpro_currency_symbol;
 
+// Get level templates.
 $level_templates = pmpro_edit_level_templates();
 
 // Get level groups in order.
 $level_groups = pmpro_get_level_groups_in_order();
-
-$current_group = isset( $_REQUEST['level_group'] ) ? intval( $_REQUEST['level_group'] ) : 0;
 
 // Get the template if passed in the URL.
 if ( isset( $_REQUEST['template'] ) ) {
@@ -15,9 +14,20 @@ if ( isset( $_REQUEST['template'] ) ) {
 	$template = false;
 }
 
-if(isset($_REQUEST['copy']))
+// Are we copying a level?
+if ( isset( $_REQUEST['copy'] ) ) {
 	$copy = intval($_REQUEST['copy']);
+}
 
+// Set up the level group if copying or if group is passed in the URL.
+if ( ! empty( $copy ) && $copy > 0 ) {
+	// If we're copying, get the group from the copied level.
+	$current_group = pmpro_get_group_id_for_level( $copy );
+} else {
+	$current_group = isset( $_REQUEST['level_group'] ) ? intval( $_REQUEST['level_group'] ) : 0;
+}
+
+// Get the primary gateway.
 $gateway = get_option( "pmpro_gateway");
 
 // Set up the level or create a new one.

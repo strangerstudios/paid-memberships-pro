@@ -113,7 +113,7 @@
 		                return ui;
 		            };
 
-		            $("table.membership-levels tbody").sortable({
+		            $("table.has-sortable-membership-levels tbody").sortable({
 		                axis: "y",
 		                helper: fixHelper,
 		                placeholder: 'testclass',
@@ -123,14 +123,8 @@
 
 		            function update_level_order(event, ui) {
 		                level_order = [];
-		                $("table.membership-levels tbody tr").each(function() {
-		                    $(this).removeClass('alternate');
+		                $("table.has-sortable-membership-levels tbody tr").each(function() {
 		                    level_order.push(parseInt( $("td:first", this).text()));
-		                });
-
-		                //update styles
-		                $("table.membership-levels tbody tr:odd").each(function() {
-		                    $(this).addClass('alternate');
 		                });
 
 		                data = {
@@ -356,7 +350,7 @@
 									}
 								?>
 							</p>
-							<table class="widefat membership-levels">
+							<table class="widefat membership-levels<?php if ( count( $group_levels_to_show ) > 1 && empty( $s ) ) { ?> has-sortable-membership-levels<?php } ?>">
 								<thead>
 									<tr>
 										<th><?php esc_html_e('ID', 'paid-memberships-pro' );?></th>
@@ -368,10 +362,18 @@
 									</tr>
 								</thead>
 								<tbody>
-									<?php if ( empty( $s ) && empty( $group_levels_to_show ) ) { ?>
-									<tr class="alternate">
+									<?php if ( empty( $group_levels_to_show ) ) { ?>
+									<tr>
 										<td colspan="5">
-											<?php esc_html_e( 'No Membership Levels Found', 'paid-memberships-pro' ); ?>
+											<?php if ( ! empty( $s ) ) {
+												printf(
+													// translators: %s is the search term.
+													esc_html__( 'No membership levels found for search term: "%s".', 'paid-memberships-pro' ),
+													esc_html( $s )
+												);
+											} else {
+												esc_html_e( 'No membership levels found.', 'paid-memberships-pro' );
+											} ?>
 										</td>
 									</tr>
 									<?php } ?>
@@ -379,7 +381,7 @@
 										$count = 0;
 										foreach($group_levels_to_show as $level) {
 									?>
-									<tr class="<?php if($count++ % 2 == 1) { ?>alternate<?php } ?> <?php if(!$level->allow_signups) { ?>pmpro_gray<?php } ?> <?php if(!pmpro_checkLevelForStripeCompatibility($level) || !pmpro_checkLevelForBraintreeCompatibility($level) || !pmpro_checkLevelForPayflowCompatibility($level) || !pmpro_checkLevelForTwoCheckoutCompatibility($level)) { ?>pmpro_error<?php } ?>">
+									<tr class="<?php if(!$level->allow_signups) { ?>pmpro_gray<?php } ?> <?php if(!pmpro_checkLevelForStripeCompatibility($level) || !pmpro_checkLevelForBraintreeCompatibility($level) || !pmpro_checkLevelForPayflowCompatibility($level) || !pmpro_checkLevelForTwoCheckoutCompatibility($level)) { ?>pmpro_error<?php } ?>">
 										<td><?php echo $level->id?></td>
 										<td class="level_name has-row-actions">
 											<span class="level-name"><a href="<?php echo esc_url( add_query_arg( array( 'page' => 'pmpro-membershiplevels', 'edit' => $level->id ), admin_url( 'admin.php' ) ) ); ?>"><?php echo esc_html( $level->name ); ?></a></span>
