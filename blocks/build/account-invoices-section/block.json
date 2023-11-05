@@ -1,0 +1,23 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "pmpro/account-invoices-section",
+	"title": "PMPro Page: Account Invoices",
+	"category": "pmpro-pages",
+	"icon": "archive",
+	"description": "Dynamic page section that displays a list of the last 5 membership invoices for the active member.",
+	"attributes" : {
+		"title" : {
+			"type" : "string",
+			"default" : "Past Invoices"
+		}
+	},
+	"supports": {
+		"html": false
+	},
+	"textdomain": "paid-memberships-pro",
+	"editorScript": "file:./index.js",
+	"editorStyle": "file:./index.css",
+	"style": "file:./style-index.css",
+	"render": "file:./render.php"
+}
