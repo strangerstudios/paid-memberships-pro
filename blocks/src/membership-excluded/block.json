@@ -25,10 +25,6 @@
 		"uid": {
 			"type": "string",
 			"default":""
-		},
-		"show_noaccess": {
-			"type": "string",
-			"default": "0"
 		}
 	},
 	"supports": {
@@ -65,6 +61,5 @@
 	"textdomain": "paid-memberships-pro",
 	"editorScript": "file:./index.js",
 	"editorStyle": "file:./index.css",
-	"style": "file:./style-index.css",
 	"render": "file:./render.php"
 }
