@@ -1,9 +1,11 @@
 <?php
 /**
- * @see https://github.com/WordPress/gutenberg/blob/trunk/docs/reference-guides/block-api/block-metadata.md#render
+ * Render the Membership Required block on the frontend.
  */
 $output = '';
-if ( ! array_key_exists( 'levels', $attributes ) || ! is_array( $attributes['levels'] ) ) {
+var_dump( $attributes['levels'] );
+if ( ! array_key_exists( 'levels', $attributes ) || empty( $attributes['levels'] ) ) {
+	// Assume require any membership level, and do not show to non-members.
 	if ( pmpro_hasMembershipLevel() ) {
 		$output = do_blocks( $content );
 	}
@@ -14,8 +16,4 @@ if ( ! array_key_exists( 'levels', $attributes ) || ! is_array( $attributes['lev
 		$output = pmpro_get_no_access_message( NULL, $attributes['levels'] );
 	}
 }
-
-?>
-<p <?php echo get_block_wrapper_attributes(); ?>>
-	<?php echo $output; ?>
-</p>
+echo $output;
