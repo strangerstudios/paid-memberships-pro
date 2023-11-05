@@ -43,6 +43,7 @@ function pmpro_register_block_types() {
 	register_block_type( PMPRO_DIR . '/blocks/build/login' );
 	register_block_type( PMPRO_DIR . '/blocks/build/member-profile-edit' );
 	register_block_type( PMPRO_DIR . '/blocks/build/membership' );
+	register_block_type( PMPRO_DIR . '/blocks/build/membership-excluded' );
 }
 add_action( 'init', 'pmpro_register_block_types' );
 /**
