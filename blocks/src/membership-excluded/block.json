@@ -6,7 +6,18 @@
 	"category": "pmpro",
 	"icon": "hidden",
 	"description": "Nest blocks within this wrapper to hide inner blocks by selected membership levels or for all non-members.",
-	"attributes" : {
+	"attributes": {
+		"tagName": {
+			"type": "string",
+			"default": "div"
+		},
+		"templateLock": {
+			"type": [ "string", "boolean" ],
+			"enum": [ "all", "insert", "contentOnly", false ]
+		},
+		"allowedBlocks": {
+			"type": "array"
+		},
 		"levels": {
 			"type": "array",
 			"default":[]
@@ -21,7 +32,35 @@
 		}
 	},
 	"supports": {
-		"html": false
+		"anchor": true,
+		"align": [ "wide", "full" ],
+		"anchor": true,
+		"ariaLabel": true,
+		"html": false,
+		"background": {
+			"backgroundImage": true
+		},
+		"color": {
+			"gradients": true,
+			"heading": true,
+			"button": true,
+			"link": true
+		},
+		"spacing": {
+			"margin": [ "top", "bottom" ],
+			"padding": true,
+			"blockGap": true
+		},
+		"dimensions": {
+			"minHeight": true
+		},
+		"typography": {
+			"fontSize": true,
+			"lineHeight": true
+		},
+		"layout": {
+			"allowSizingOnChildren": true
+		}
 	},
 	"textdomain": "paid-memberships-pro",
 	"editorScript": "file:./index.js",

@@ -1,9 +1,9 @@
 <?php
 /**
- * @see https://github.com/WordPress/gutenberg/blob/trunk/docs/reference-guides/block-api/block-metadata.md#render
+ * Render the Membership Excluded block on the frontend.
  */
 $output = '';
-if ( ! array_key_exists( 'levels', $attributes ) || ! is_array( $attributes['levels'] ) ) {
+if ( ! array_key_exists( 'levels', $attributes ) || empty( $attributes['levels'] ) ) {
 	$output = do_blocks( $content );
 } else {
 	if ( pmpro_hasMembershipLevel( $attributes['levels'] ) ) {
@@ -14,8 +14,4 @@ if ( ! array_key_exists( 'levels', $attributes ) || ! is_array( $attributes['lev
 		$output = do_blocks( $content );
 	}
 }
-
-?>
-<p <?php echo get_block_wrapper_attributes(); ?>>
-	<?php echo $output; ?>
-</p>
+echo $output;
