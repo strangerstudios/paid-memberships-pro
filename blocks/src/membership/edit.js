@@ -27,12 +27,12 @@ export default function Edit(props) {
 	const blockProps = useBlockProps({});
 	const all_levels = [{ value: 0, label: "Non-Members" }].concat(pmpro.all_level_values_and_labels);
 	const { attributes: { levels, uid, show_noaccess }, setAttributes, isSelected } = props;
-  
+
 	if (uid === '') {
 		var rand = Math.random() + "";
 		setAttributes({ uid: rand });
 	}
-  
+
 	function selectAllLevels(selectAll) {
 		const allLevelValues = all_levels.map((level) => level.value + '');
 		// If selectAll is true, set newLevels to all values. If false, set it to an empty array.
@@ -62,7 +62,7 @@ export default function Edit(props) {
 			/>
 		];
 	});
-  
+
 	return [
 		isSelected && (
 			<InspectorControls>
