@@ -25,7 +25,7 @@ function pmpro_has_membership_access($post_id = NULL, $user_id = NULL, $return_m
 	//use current user if no value is supplied
 	if(!$user_id)
 		$user_id = $current_user->ID;
-	
+
 	//if no post or current_user object, set them up
 	if(isset($queried_object->ID) && !empty($queried_object->ID) && $post_id == $queried_object->ID)
 		$mypost = $queried_object;

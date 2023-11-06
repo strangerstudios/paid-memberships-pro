@@ -134,17 +134,7 @@ if ( empty( $subscription ) ) {
 			<tr>
 				<th scope="row"><?php esc_html_e( 'Fee', 'paid-memberships-pro' ); ?></th>
 				<td>
-					<?php
-					$billing_amount = $subscription->get_billing_amount();
-					$cycle_number   = $subscription->get_cycle_number();
-					$cycle_period   = $subscription->get_cycle_period();
-
-					if ( $cycle_number == 1 ) {
-						printf( esc_html__( '%1$s per %2$s', 'paid-memberships-pro' ), pmpro_formatPrice( $billing_amount ), $cycle_period );
-					} else {
-						printf( esc_html__( '%1$s every %2$s %3$ss', 'paid-memberships-pro' ), pmpro_formatPrice( $billing_amount ), $cycle_number, $cycle_period );
-					}
-					?>
+					<?php echo esc_html( $subscription->get_cost_text() ); ?>
 				</td>
 			</tr>
 		</tbody>

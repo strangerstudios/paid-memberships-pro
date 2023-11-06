@@ -178,6 +178,15 @@ class PMPro_Subscription {
 	protected $initial_payment;
 
 	/**
+	 * The date that this subscription was last modified.
+	 *
+	 * @since TBD
+	 *
+	 * @var string
+	 */
+	protected $modified = '';
+
+	/**
 	 * Create a new PMPro_Subscription object.
 	 *
 	 * @since TBD
@@ -1003,6 +1012,23 @@ class PMPro_Subscription {
 	}
 
 	/**
+	 * Get the cost text for this subscription.
+	 *
+	 * @since TBD
+	 *
+	 * @return string
+	 */
+	public function get_cost_text() {
+		if  ( 1 == $this->cycle_number ) {
+			// translators: %1$s - price, %2$s - period.
+			return sprintf( __( '%1$s per %2$s', 'paid-memberships-pro' ), pmpro_formatPrice( $this->billing_amount ), $this->cycle_period );
+		} else {
+			// translators: %1$s - price, %2$d - number, %3$s - period.
+			return sprintf( __( '%1$s every %2$d %3$s', 'paid-memberships-pro' ), pmpro_formatPrice( $this->billing_amount ), $this->cycle_number, $this->cycle_period );
+		}
+	}
+
+	/**
 	 * Set a property for this subscription.
 	 *
 	 * @since TBD
@@ -1057,7 +1083,7 @@ class PMPro_Subscription {
 			$incomplete_orders = $this->get_orders( array( 'status' => array( 'token', 'pending', 'review' ) ) );
 			if ( ! empty( $incomplete_orders ) ) {
 				foreach ( $incomplete_orders as $order ) {
-					$last_subscription_order->updateStatus( 'error' );
+					$order->updateStatus( 'error' );
 				}
 			}
 		}
@@ -1266,6 +1292,31 @@ class PMPro_Subscription {
 
 		// Mark this subscription as having default migration data.
 		delete_pmpro_subscription_meta( $this->id, 'has_default_migration_data' );
+	}
+
+	/**
+	 * Check if the billing limit has been reached for this subscription.
+	 *
+	 * @since TBD
+	 *
+	 * @return bool False if there is not a billing limit or if the billing limit has not yet been reached. True otherwise.
+	 */
+	public function billing_limit_reached() {
+		// If there is no billing limit, then we can't have reached it.
+		if ( empty( $this->billing_limit ) ) {
+			return false;
+		}
+
+		// Billing limits do not include the initial order.
+		// With this in mind, get the last [billing_limit+1] successful orders for this subscription.
+		$orders_args = array(
+			'limit'  => $this->billing_limit + 1,
+			'status' => 'success',
+		);
+		$orders = $this->get_orders( $orders_args );
+
+		// Check if we have reached the billing limit.
+		return count( $orders ) >= $this->billing_limit + 1;
 	}
 
 } // end of class

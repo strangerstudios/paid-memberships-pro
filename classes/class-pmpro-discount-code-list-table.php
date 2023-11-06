@@ -368,7 +368,7 @@ class PMPro_Discount_Code_List_Table extends WP_List_Table {
 				),
 			];
 
-			if ( 0 < (int) $item->uses ) {
+			if ( 0 < (int) $item->used ) {
 				$actions['orders'] = sprintf(
 					'<a title="%1$s" href="%2$s">%3$s</a>',
 					esc_attr__( 'View Orders', 'paid-memberships-pro' ),
@@ -483,7 +483,7 @@ class PMPro_Discount_Code_List_Table extends WP_List_Table {
 		$level_names = array();
 		foreach( $levels as $level ) {
 			if ( ! empty( $pmpro_pages['checkout'] ) ) {
-				$level_names[] = '<a target="_blank" href="' . esc_url( pmpro_url( 'checkout', '?level=' . $level->id . '&discount_code=' . $item->code ) ) . '">' . esc_html( $level->name ) . '</a>';
+				$level_names[] = '<a target="_blank" href="' . esc_url( pmpro_url( 'checkout', '?pmpro_level=' . $level->id . '&pmpro_discount_code=' . $item->code ) ) . '">' . esc_html( $level->name ) . '</a>';
 			} else {
 				$level_names[] = $level->name;
 			}

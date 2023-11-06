@@ -1478,8 +1478,13 @@
 				do_action($after_action, $this);
 
 				// Create a subscription if we need to.
-				$this->maybe_create_subscription_for_order();
+				$subscription = $this->get_subscription();
 
+				// Check if the subscription has reached its billing limit.
+				if ( ! empty( $subscription ) && 'active' === $subscription->get_status() && $subscription->billing_limit_reached() ) {
+					// Cancel the subscription.
+					$subscription->cancel_at_gateway();
+				}
 
 				//Lets only run this once the update has been run successfully.
 				if ( $this->status !== $this->original_status ) {
@@ -1766,23 +1771,24 @@
 		}
 
 		/**
-		 * If a subscription does not already exist for this order, create one.
+		 * Get the PMPro_Subscription object for this order.
+		 * If the subscription doesn't exist, it will be created.
 		 *
-		 * @return bool True if a subscription was created, false if not.
+		 * @return PMPro_Subscription|null The subscription object or null if the order is not a subscription.
 		 */
-		private function maybe_create_subscription_for_order() {
+		public function get_subscription() {
 			global $pmpro_level;
 
 			// Make sure that this order is a part of a subscription.
 			if ( empty( $this->subscription_transaction_id ) ) {
 				// No subscription transaction ID, so we don't need to create a subscription.
-				return false;
+				return null;
 			}
 
 			// Make sure that this order has been completed.
 			if ( 'success' !== $this->status ) {
-				// The order is not complete, so we shouldn't create a subscription yet.
-				return false;
+				// The order is not complete, so it isn't a valid subscription payment.
+				return null;
 			}
 
 			$get_subscription_args = array(
@@ -1792,8 +1798,8 @@
 			);
 			$existing_subscription = PMPro_Subscription::get_subscription( $get_subscription_args );
 			if ( ! empty( $existing_subscription ) ) {
-				// We already have a subscription for this order, so we don't need to create a new one.
-				return false;
+				// We already have a subscription for this order, return it.
+				return $existing_subscription;
 			}
 
 			if ( isset( $pmpro_level ) ) {
@@ -1806,7 +1812,7 @@
 
 			if ( empty( $subscription_level ) ) {
 				// We couldn't get level information, so we shouldn't create a subscription.
-				return false;
+				return null;
 			}
 
 			$create_subscription_args = array(
@@ -1826,7 +1832,7 @@
 			);
 
 			$new_subscription = PMPro_Subscription::create( $create_subscription_args );
-			return ! empty( $new_subscription );
+			return ! empty( $new_subscription ) ? $new_subscription : null;
 		}
 
 		/**

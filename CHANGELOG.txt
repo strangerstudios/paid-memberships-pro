@@ -1,4 +1,25 @@
 == Changelog ==
+= 2.12.3 - 2023-10-03 =
+* ENHANCEMENT: Updated the PayPal Express integration to save checkout data in order meta instead of sessions to improve compatibility with various Add Ons. #2616 (@dparker1005)
+* BUG FIX/ENHANCEMENT: Fixed performance issue in deprecation code. #2621 (@MaximilianoRicoTabo)
+* BUG FIX/ENHANCEMENT: Fixed warning in PHP 8.1 when using the pmpro_member shortcode without a field attribute. #2622 (@MaximilianoRicoTabo)
+* BUG FIX/ENHANCEMENT: Updated pmpro_hasMembershipLevel() function to accept a string of comma separated level ids or names. This also fixes issues in The Events Calendar ticketing add ons. #2623 (@MaximilianoRicoTabo)
+* BUG FIX: Fixed issue where user fields may not be shown in admin checkout emails. #2613 (@andrewlimaza, @dparker1005)
+* BUG FIX: Fixed issue where the incorrect label could be shown for a user field value. #2613 (@dparker1005)
+* BUG FIX: Fixed issue where the Visits, Views, and Logins report CSV export may show the user's "joindate" in the "enddate" column. #2608 (@dparker1005)
+* BUG FIX: Now only declaring the `recaptcha_get_html()` function on the PMPro checkout page. This fixes conflicts with other plugins that declare their own `recaptcha_get_html()` function. #2607 (@dparker1005)
+* BUG FIX: Fixed issue where row action to view a discount code's orders was not showing for unlimited use codes. #2599 (@kimcoleman)
+* REFACTOR: Marking the PMPro Table Pages Add On as deprecated. #2606 (@dwanjuki)
+
+= 2.12.2 - 2023-08-13
+* ENHANCEMENT: Improving the LifterLMS Streamline functionality. #2572 (@ideadude)
+* ENHANCEMENT: Now also applying the pmpro_checkout_message filter to the bottom message box on the checkout page. #2567 (@ipokkel)
+* ENHANCEMENT: Caching the Stripe webhook status checks. #2565 (@dparker1005)
+* BUG FIX: Fixed issue where some advanced settings added by Add Ons weren't applying properly. Resave and try again. #2571 (@ideadude)
+
+= 2.12.1 - 2023-08-07 =
+* BUG FIX: Fixed issue where password reset attempts may incorrectly show that the user's password reset key is invalid. #2561 (@dparker1005, @andrewlimaza)
+
 = 2.12 - 2023-08-04 =
 * FEATURE: Added integration with LifterLMS to streamline setting up that plugin when Paid Memberships Pro is active. #2533 (@ideadude, @MaximilianoRicoTabo)
 * ENHANCEMENT: A “no access” message can now be set when restricting Elementor widgets. #2525 (@andrewlimaza)
