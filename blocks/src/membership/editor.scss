@@ -1,0 +1,9 @@
+/**
+ * Generate the Membership Required block styles to be applied in the block editor.
+ */
+[class*="wp-block-pmpro-membership"] span.pmpro-block-title {
+	border-bottom: 5px solid #F5F8FA;
+}
+.wp-block-pmpro-membership .block-editor-inner-blocks {
+	margin: 8px;
+}
