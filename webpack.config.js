@@ -122,7 +122,14 @@ config.entry = {
     "src",
     "membership-excluded",
     "index.js"
-  )
+  ),
+  "sidebar/index": path.resolve(
+    process.cwd(),
+    "blocks",
+    "src",
+    "sidebar",
+    "index.js"
+  ),
 };
 config.output = {
   filename: "[name].js",
