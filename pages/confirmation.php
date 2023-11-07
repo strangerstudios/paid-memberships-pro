@@ -37,7 +37,7 @@ global $wpdb, $current_user, $pmpro_invoice, $pmpro_msg, $pmpro_msgt;
 	// Get the invoice if we have one.
 	$confirmation_invoice = ( ! empty( $pmpro_invoice ) && ! empty( $pmpro_invoice->id ) ) ? $pmpro_invoice : false;
 
-	// Add some details to the confirmation messge about the invoice.
+	// Add some details to the confirmation message about the invoice.
 	if ( ! empty( $confirmation_invoice ) ) {
 		$confirmation_invoice->getUser();
 		$confirmation_invoice->getMembershipLevel();
