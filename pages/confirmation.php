@@ -73,18 +73,18 @@ global $wpdb, $current_user, $pmpro_invoice, $pmpro_msg, $pmpro_msgt;
 		<?php
 	}
 
-	?>
-	<p class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_actions_nav' ) ); ?>">
-		<?php
-		if ( ! empty( $current_user->membership_level ) ) {
-			if ( empty( $confirmation_invoice ) ) { // The invoice already shows a link to the account page.
-				?>
-				<span class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_actions_nav-right' ) ); ?>"><a href="<?php echo esc_url( pmpro_url( 'account' ) ); ?>"><?php esc_html_e( 'View Your Membership Account &rarr;', 'paid-memberships-pro' ); ?></a></span>
-				<?php
-			}
-		} else {
-			esc_html_e( 'If your account is not activated within a few minutes, please contact the site owner.', 'paid-memberships-pro' );
-		}
-		?>
-	</p> <!-- end pmpro_actions_nav -->
+	// Show a link to the Membership Account page if the user has a membership level and did not have an invoice displayed.
+	if ( ! empty( $current_user->membership_level ) && empty( $confirmation_invoice ) ) { ?>
+		<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_actions_nav' ) ); ?>">
+			<span class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_actions_nav-right' ) ); ?>"><a href="<?php echo esc_url( pmpro_url( 'account' ) ); ?>"><?php esc_html_e( 'View Your Membership Account &rarr;', 'paid-memberships-pro' ); ?></a></span>
+		</div> <!-- end pmpro_actions_nav -->
+	<?php }
+
+	// Show a message about account activation if the user does not have a membership level.
+	if ( empty( $current_user->membership_level ) ) { ?>
+		<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_message pmpro_alert' ) ); ?>">
+			<p><?php esc_html_e( 'If your account is not activated within a few minutes, please contact the site owner.', 'paid-memberships-pro' ); ?></p>
+		</div> <!-- pmpro_message -->
+	<?php } ?>
+
 </div> <!-- end pmpro_confirmation_wrap -->
