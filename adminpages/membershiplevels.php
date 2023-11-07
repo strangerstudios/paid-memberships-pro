@@ -516,8 +516,20 @@
 									// Show a button to delete the group (disabled if there are levels in group).
 									$disabled_button = empty( $group_levels_to_show) ? '' : 'disabled=disabled';
 									$disabled_message = empty( $group_levels_to_show) ? '' : '<span class="description"><em>' . __( 'Move levels to another group to enable group deletion.', 'paid-memberships-pro' ) . '</em></span>';
+									$delete_link = '#';
+									if ( empty( $group_levels_to_show) ) {
+										$delete_url = empty( $group_levels_to_show) ? wp_nonce_url( add_query_arg( array( 'group_id' => $level_group->id, 'action' => 'delete_group' ), admin_url( 'admin.php?page=pmpro-membershiplevels' ) ), 'delete_group', 'pmpro_membershiplevels_nonce' ) : '#';
+										$delete_text = esc_html(
+											sprintf(
+												// translators: %s is the Group Name.
+												__( "Are you sure you want to delete membership level group: %s?", 'paid-memberships-pro' ),
+												$level_group->name
+											)
+										);
+										$delete_link = 'javascript:pmpro_askfirst(\'' . esc_js( $delete_text ) . '\', \'' . esc_js( esc_url( $delete_url ) ) . '\'); void(0);';
+									}
 								?>
-								<a <?php echo esc_attr( $disabled_button ); ?> class="button is-destructive pmpro-has-icon pmpro-has-icon-trash" href="<?php echo esc_url( wp_nonce_url( admin_url( 'admin.php?page=pmpro-membershiplevels&group_id=' . $level_group->id . '&action=delete_group' ), 'delete_group', 'pmpro_membershiplevels_nonce' ) ); ?>" ><?php esc_html_e( 'Delete Group', 'paid-memberships-pro' ) ?></a>
+								<a <?php echo esc_attr( $disabled_button ); ?> class="button is-destructive pmpro-has-icon pmpro-has-icon-trash" href="<?php echo esc_attr( $delete_link ); ?>" ><?php esc_html_e( 'Delete Group', 'paid-memberships-pro' ) ?></a>
 								<?php echo wp_kses_post( $disabled_message ); ?>
 							</div>
 						</div> <!-- end .pmpro_section_inside -->
