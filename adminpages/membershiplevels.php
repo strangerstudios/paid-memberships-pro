@@ -522,7 +522,7 @@
 										$delete_text = esc_html(
 											sprintf(
 												// translators: %s is the Group Name.
-												__( "Are you sure you want to delete membership level group %s?", 'paid-memberships-pro' ),
+												__( "Are you sure you want to delete membership level group: %s?", 'paid-memberships-pro' ),
 												$level_group->name
 											)
 										);
