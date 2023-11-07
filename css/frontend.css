@@ -684,22 +684,19 @@ li.pmpro_more {
 	Misc
 ---------------------------------------*/
 .pmpro_actions_nav {
-	text-align: center;
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: space-between;
 }
 .pmpro_actions_nav-left {
-	display: block;
-	float: left;
-	width: 48%;
+	flex: 1;
+	order: 1;
 	text-align: left;
 }
 .pmpro_actions_nav-right {
-	display: block;
-	float: right;
-	width: 48%;
+	flex: 1;
+	order: 2;
 	text-align: right;
-}
-.pmpro-levels .pmpro_actions_nav {
-	text-align: left;
 }
 .pmpro_a-right {
 	float: right;
@@ -793,5 +790,13 @@ li.pmpro_more {
 	}
 	.pmpro_invoice_details {
 		display: block;
+	}
+	.pmpro_actions_nav {
+		text-align: center;
+	}
+	.pmpro_actions_nav-left,
+	.pmpro_actions_nav-right {
+		flex-basis: 100%;
+		text-align: center;
 	}
 }
