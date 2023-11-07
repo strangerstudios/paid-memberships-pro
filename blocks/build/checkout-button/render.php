@@ -1,6 +1,6 @@
 <?php
 /**
- * @see https://github.com/WordPress/gutenberg/blob/trunk/docs/reference-guides/block-api/block-metadata.md#render
+ * Render the NAMEHERE block on the frontend.
  */
 if ( ! empty( $attributes['level'] ) ) {
 	$level = $attributes['level'];
