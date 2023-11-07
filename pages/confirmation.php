@@ -79,7 +79,7 @@ global $wpdb, $current_user, $pmpro_invoice, $pmpro_msg, $pmpro_msgt;
 		if ( ! empty( $current_user->membership_level ) ) {
 			if ( empty( $confirmation_invoice ) ) { // The invoice already shows a link to the account page.
 				?>
-				<a href="<?php echo esc_url( pmpro_url( 'account' ) ); ?>"><?php esc_html_e( 'View Your Membership Account &rarr;', 'paid-memberships-pro' ); ?></a>
+				<span class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_actions_nav-right' ) ); ?>"><a href="<?php echo esc_url( pmpro_url( 'account' ) ); ?>"><?php esc_html_e( 'View Your Membership Account &rarr;', 'paid-memberships-pro' ); ?></a></span>
 				<?php
 			}
 		} else {
