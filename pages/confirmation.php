@@ -47,7 +47,7 @@ global $wpdb, $current_user, $pmpro_invoice, $pmpro_msg, $pmpro_msgt;
 	}
 
 	/**
-	 * All devs to filter the confirmation message.
+	 * Allow devs to filter the confirmation message.
 	 * We also have a function in includes/filters.php that applies the the_content filters to this message.
 	 * @param string $confirmation_message The confirmation message.
 	 * @param object $pmpro_invoice The PMPro Invoice/Order object.
