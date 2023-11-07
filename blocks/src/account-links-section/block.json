@@ -4,8 +4,8 @@
 	"name": "pmpro/account-links-section",
 	"title": "PMPro Page: Account Links",
 	"category": "pmpro-pages",
-	"icon": "external",
 	"description": "Dynamic page section that displays custom links available for the active member only. This block is only visible if other Add Ons or custom code have added links.",
+	"keywords": [ "access", "account", "link", "member", "quick link", "user", "paid memberships pro", "pmpro" ],
 	"attributes" : {
 		"title" : {
 			"type" : "string",
@@ -13,11 +13,62 @@
 		}
 	},
 	"supports": {
-		"html": false
+		"align": [ "wide", "full" ],
+		"ariaLabel": true,
+		"html": false,
+		"background": {
+			"backgroundImage": true
+		},
+		"color": {
+			"gradients": true,
+			"heading": true,
+			"button": true,
+			"link": true
+		},
+		"spacing": {
+			"margin": [ "top", "bottom" ],
+			"padding": true,
+			"blockGap": true,
+			"__experimentalDefaultControls": {
+				"padding": true,
+				"blockGap": true
+			}
+		},
+		"dimensions": {
+			"minHeight": true
+		},
+		"__experimentalBorder": {
+			"color": true,
+			"radius": true,
+			"style": true,
+			"width": true,
+			"__experimentalDefaultControls": {
+				"color": true,
+				"radius": true,
+				"style": true,
+				"width": true
+			}
+		},
+		"typography": {
+			"fontSize": true,
+			"lineHeight": true,
+			"__experimentalFontFamily": true,
+			"__experimentalFontWeight": true,
+			"__experimentalFontStyle": true,
+			"__experimentalTextTransform": true,
+			"__experimentalTextDecoration": true,
+			"__experimentalLetterSpacing": true,
+			"__experimentalDefaultControls": {
+				"fontSize": true
+			}
+		},
+		"layout": {
+			"allowSizingOnChildren": true
+		}
+	},
+	"example": {
 	},
 	"textdomain": "paid-memberships-pro",
 	"editorScript": "file:./index.js",
-	"editorStyle": "file:./index.css",
-	"style": "file:./style-index.css",
 	"render": "file:./render.php"
 }

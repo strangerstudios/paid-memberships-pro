@@ -1,6 +1,6 @@
 <?php
 /**
- * @see https://github.com/WordPress/gutenberg/blob/trunk/docs/reference-guides/block-api/block-metadata.md#render
+ * Render the Membership Account block on the frontend.
  */
 $str_atts = '';
 	if ( ! empty( $attributes['membership'] ) ) {
@@ -21,6 +21,6 @@ $str_atts = '';
 	$atts = [ 'sections' => $str_atts ];
 	$output = pmpro_shortcode_account( $atts );
 ?>
-<p <?php echo get_block_wrapper_attributes(); ?>>
+<div <?php echo get_block_wrapper_attributes(); ?>>
 	<?php echo $output; ?>
-</p>
+</div>

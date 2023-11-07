@@ -14,6 +14,11 @@ import metadata from './block.json';
  * Register the Membership Excluded block.
  */
 registerBlockType( metadata.name, {
+	icon: {
+		background: '#FFFFFF',
+		foreground: '#1A688B',
+		src: 'hidden',
+	},
 	/**
 	 * @see ./edit.js
 	 */
