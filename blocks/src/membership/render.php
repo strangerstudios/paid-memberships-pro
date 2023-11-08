@@ -4,7 +4,7 @@
  */
 $output = '';
 
-if ( ! array_key_exists( 'segment', $attributes ) || empty( $attributes['segment'] ) ) {
+if ( 'all' === $attributes['segment'] && ! empty( $attributes['levels'] ) ) {
 	// Legacy setup for PMPro < 3.0.
 	if ( ! array_key_exists( 'levels', $attributes ) || empty( $attributes['levels'] ) ) {
 		// Assume require any membership level, and do not show to non-members.
