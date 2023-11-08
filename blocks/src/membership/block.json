@@ -2,10 +2,10 @@
 	"$schema": "https://schemas.wp.org/trunk/block.json",
 	"apiVersion": 3,
 	"name": "pmpro/membership",
-	"title": "Membership Required Block",
+	"title": "Content Visibility Block",
 	"category": "pmpro",
-	"description": "Nest blocks within this wrapper to control the inner block visibility by membership level or for non-members only.",
-	"keywords": [ "block visibility", "conditional", "content", "hide", "hidden", "private", "restrict", "paid memberships pro", "pmpro" ],
+	"description": "Nest blocks within this wrapper to show or hide content by membership level, login status, or for non-members.",
+	"keywords": [ "block visibility", "conditional", "content", "exclude", "hide", "hidden", "membership", "membership excluded", "membership required", "private", "restrict", "require", "paid memberships pro", "pmpro" ],
 	"attributes": {
 		"invert_restrictions": {
 			"type": "string",

@@ -17,7 +17,7 @@ import { InnerBlocks, useBlockProps, InspectorControls } from '@wordpress/block-
 import './editor.scss';
 
 /**
- * Render the Membership Required block in the editor.
+ * Render the Content Visibility block in the editor.
  *
  * @see https://developer.wordpress.org/block-editor/reference-guides/block-api/block-edit-save/#edit
  *
@@ -91,7 +91,7 @@ export default function Edit(props) {
 		isSelected && (
 			<InspectorControls>
 				<PanelBody
-					title={__( 'Restriction Settings', 'paid-memberships-pro' ) }
+					title={__( 'Content Visibility', 'paid-memberships-pro' ) }
 					initialOpen={true}
 				>
 					<HStack>
@@ -136,7 +136,6 @@ export default function Edit(props) {
 							{checkboxes}
 						</div>
 					</> }
-					<br />
 					{ invert_restrictions=='0' && <>
 						<SelectControl
 							value={show_noaccess}
@@ -153,8 +152,11 @@ export default function Edit(props) {
 			</InspectorControls>
 		),
 		<div className="pmpro-block-require-membership-element" {...blockProps}>
-			<span className="pmpro-block-title">{ __( 'Membership Required', 'paid-memberships-pro' ) }</span>
 			<InnerBlocks templateLock={false} />
+			<span className="pmpro-block-note">
+				<span class="dashicon dashicons dashicons-lock"></span>
+				{ __( 'This block has content visibility settings.', 'paid-memberships-pro' ) }
+			</span>
 		</div>,
 	];
 }

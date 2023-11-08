@@ -13,7 +13,7 @@ import Save from './save';
 import metadata from './block.json';
 
 /**
- * Register the Membership Required block.
+ * Register the Content Visibility block.
  */
 registerBlockType( metadata.name, {
 	icon: {
