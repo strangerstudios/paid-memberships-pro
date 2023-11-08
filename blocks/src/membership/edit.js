@@ -64,11 +64,6 @@ export default function Edit(props) {
 		setAttributes({ segment: newSegment, levels: [] });
 	}
 
-	// Build the visibility component.
-	function setInvertRestrictions() {
-		setAttributes({ invert_restrictions: invert_restrictions === '1' ? '0' : '1' });
-	}
-
 	// Build an array of checkboxes for each level.
 	var checkboxes = pmpro.all_level_values_and_labels.map(function (level) {
 		function setLevelsAttribute(nowChecked) {
@@ -106,7 +101,7 @@ export default function Edit(props) {
 							icon="visibility"
 							variant={invert_restrictions === '0' ? 'primary' : 'secondary'}
 							style={ { flexGrow: '1', justifyContent: 'center' } }
-							onClick={() => setInvertRestrictions('0')} // Set to '0' to show content
+							onClick={() => setAttributes({ invert_restrictions: '0' })}
 						>
 							{__('Show', 'your-text-domain')}
 						</Button>
@@ -116,7 +111,7 @@ export default function Edit(props) {
 							icon="hidden"
 							variant={invert_restrictions === '1' ? 'primary' : 'secondary'}
 							style={ { flexGrow: '1', justifyContent: 'center' } }
-							onClick={() => setInvertRestrictions('1')} // Set to '1' to hide content
+							onClick={() => setAttributes({ invert_restrictions: '1' })}
 						>
 							{__('Hide', 'your-text-domain')}
 						</Button>
