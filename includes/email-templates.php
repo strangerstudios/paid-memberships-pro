@@ -142,6 +142,27 @@ $pmpro_email_templates_defaults = array(
 <p>Log in to your WordPress admin here: !!login_url!!</p>', 'paid-memberships-pro' ),
 		'help_text' => __( 'The site administrator can manually cancel a user\'s membership through the WordPress admin or the member can cancel their own membership through your site. This email is sent to the site administrator as confirmation of a cancelled membership.', 'paid-memberships-pro' )
 	),
+	'cancel_on_next_payment_date' => array(
+		'subject'     => __( "Your payment subscription at !!sitename!! has been CANCELLED", 'paid-memberships-pro' ),
+		'description' => __('Cancel On Next Payment Date', 'paid-memberships-pro'),
+		'body' => __( '<p>Your payment subscription at !!sitename!! has been cancelled.</p>
+
+<p>Account: !!display_name!! (!!user_email!!)</p>
+<p>Membership Level: !!membership_level_name!!</p>
+<p>Your access will expire on !!enddate!!.</p>', 'paid-memberships-pro' ),
+		'help_text' => __( 'When a user cancels a membership with a recurring subscription, they will still have access until when their next payment would have been taken. This email is sent to the member to notify them of this change.', 'paid-memberships-pro' )
+	),
+	'cancel_on_next_payment_date_admin' => array(
+		'subject'     => __( "Payment subscription for !!user_login!! at !!sitename!! has been CANCELLED", 'paid-memberships-pro' ),
+		'description' => __('Cancel On Next Payment Date (admin)', 'paid-memberships-pro'),
+		'body' => __( '<p>The payment subscription for !!user_login!! at !!sitename!! has been cancelled.</p>
+
+<p>Account: !!display_name!! (!!user_email!!)</p>
+<p>Membership Level: !!membership_level_name!!</p>
+<p>Start Date: !!startdate!!</p>
+<p>Expiration Date: !!enddate!!</p>', 'paid-memberships-pro' ),
+		'help_text' => __( 'When a user cancels a membership with a recurring subscription, they will still have access until when their next payment would have been taken. This email is sent to the site administrator to notify them of this change.', 'paid-memberships-pro' )
+	),
 	'checkout_check'           => array(
 		'subject'     => __( "Your membership confirmation for !!sitename!!", 'paid-memberships-pro' ),
 		'description' => __('Checkout - Check', 'paid-memberships-pro'),

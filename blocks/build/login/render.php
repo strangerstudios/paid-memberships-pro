@@ -1,6 +1,6 @@
 <?php
 /**
- * @see https://github.com/WordPress/gutenberg/blob/trunk/docs/reference-guides/block-api/block-metadata.md#render
+ * Render the Login Form block on the frontend.
  */
 if ( isset( $attributes['display_if_logged_in'] ) ) {
 	$attributes['display_if_logged_in'] = filter_var( $attributes['display_if_logged_in'], FILTER_VALIDATE_BOOLEAN );
@@ -19,8 +19,7 @@ $output = ( pmpro_login_forms_handler(
 	'',
 	false
 ) );
-
 ?>
-<p <?php echo get_block_wrapper_attributes(); ?>>
+<div <?php echo get_block_wrapper_attributes(); ?>>
 	<?php echo $output; ?>
-</p>
+</div>

@@ -4,16 +4,63 @@
 	"name": "pmpro/member-profile-edit",
 	"title": "PMPro Page: Account Profile Edit",
 	"category": "pmpro-pages",
-	"icon": "admin-users",
 	"description": "Dynamic form that allows the current logged in member to edit their default user profile information and any custom user profile fields.",
-	"attributes" : {
-	},
+	"keywords": [ "custom field", "fields", "user fields", "paid memberships pro", "pmpro" ],
 	"supports": {
-		"html": false
+		"align": [ "wide", "full" ],
+		"ariaLabel": true,
+		"html": false,
+		"background": {
+			"backgroundImage": true
+		},
+		"color": {
+			"gradients": true,
+			"heading": true,
+			"button": true,
+			"link": true
+		},
+		"spacing": {
+			"margin": [ "top", "bottom" ],
+			"padding": true,
+			"blockGap": true,
+			"__experimentalDefaultControls": {
+				"padding": true,
+				"blockGap": true
+			}
+		},
+		"dimensions": {
+			"minHeight": true
+		},
+		"__experimentalBorder": {
+			"color": true,
+			"radius": true,
+			"style": true,
+			"width": true,
+			"__experimentalDefaultControls": {
+				"color": true,
+				"radius": true,
+				"style": true,
+				"width": true
+			}
+		},
+		"typography": {
+			"fontSize": true,
+			"lineHeight": true,
+			"__experimentalFontFamily": true,
+			"__experimentalFontWeight": true,
+			"__experimentalFontStyle": true,
+			"__experimentalTextTransform": true,
+			"__experimentalTextDecoration": true,
+			"__experimentalLetterSpacing": true,
+			"__experimentalDefaultControls": {
+				"fontSize": true
+			}
+		},
+		"layout": {
+			"allowSizingOnChildren": true
+		}
 	},
 	"textdomain": "paid-memberships-pro",
 	"editorScript": "file:./index.js",
-	"editorStyle": "file:./index.css",
-	"style": "file:./style-index.css",
 	"render": "file:./render.php"
 }

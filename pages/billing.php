@@ -37,7 +37,7 @@
 
 	//Make sure the $pmpro_billing_level object is a valid level definition
 	if ( ! empty($pmpro_billing_order) && ! empty( $pmpro_billing_subscription ) ) {
-		$checkout_url = pmpro_url( 'checkout', '?level=' . $pmpro_billing_level->id );
+		$checkout_url = pmpro_url( 'checkout', '?pmpro_level=' . $pmpro_billing_level->id );
 		$logout_url = wp_logout_url( $checkout_url );
 
 		 /**
@@ -55,15 +55,38 @@
 			 * @since 1.9.2
 			 * @param {objects} {$pmpro_billing_level} {Passes the $pmpro_billing_level object}
 			 */
-			do_action('pmpro_billing_bullets_top', $pmpro_billing_level);?>
-			<li><strong><?php esc_html_e("Level", 'paid-memberships-pro' );?>:</strong> <?php echo esc_html( $pmpro_billing_level->name ); ?></li>
+			do_action('pmpro_billing_bullets_top', $pmpro_billing_level);
 
-			<?php if( $pmpro_billing_subscription->get_billing_limit() ) { ?>
-				<li><strong><?php esc_html_e("Duration", 'paid-memberships-pro' );?>:</strong> <?php echo esc_html( $pmpro_billing_subscription->get_billing_limit() . ' ' . sornot( $pmpro_billing_subscription->get_cycle_period(), $pmpro_billing_subscription->get_billing_limit() ) ); ?></li>
+			// Check if the gateway for this subscription updates a single subscription at once or all subscriptions at once.
+			$subscription_gateway_obj = $pmpro_billing_subscription->get_gateway_object();
+			if ( 'individual' === $subscription_gateway_obj->supports_payment_method_updates() ) {
+				// Show the level name and the cost text for the subscription.
+				?>
+				<li><strong><?php echo esc_html( $pmpro_billing_level->name ); ?>:</strong> (<?php echo esc_html( $pmpro_billing_subscription->get_cost_text() ); ?>)</li>
+				<?php
+			} elseif ( 'all' === $subscription_gateway_obj->supports_payment_method_updates() ) {
+				// This is a bit trickier. We need to get all subscriptions that will be updated, which should be all subscriptions for this user
+				// that have the same gateway.
+				$user_subscriptions = PMPro_Subscription::get_subscriptions_for_user();
+				foreach ( $user_subscriptions as $user_subscription ) {
+					// Skip this subscription if the gateway doesn't match $pmpro_billing_subscription.
+					if ( $user_subscription->get_gateway() !== $pmpro_billing_subscription->get_gateway() ) {
+						continue;
+					}
 
-			<?php } ?>			
+					// Get the level name for this subscription.
+					$level = new PMPro_Membership_Level( $user_subscription->get_membership_level_id() );
+					if ( empty( $level ) || empty( $level->name ) ) {
+						continue;
+					}
 
-			<?php
+					// Show the level name and the cost text for the subscription.
+					?>
+					<li><strong><?php echo esc_html( $level->name ); ?>:</strong> (<?php echo esc_html( $user_subscription->get_cost_text() ); ?>)</li>
+					<?php
+				}
+			}
+
 			 /**
 			 * pmpro_billing_bullets_top hook allows you to add information to the billing list (at the bottom).
 			 *
@@ -96,7 +119,7 @@
 			<div id="pmpro_level-<?php echo intval( $pmpro_billing_level->id ); ?>" class="<?php echo esc_attr( pmpro_get_element_class( $pmpro_billing_gateway_class, 'pmpro_level-' . $pmpro_billing_level->id ) ); ?>">
 			<form id="pmpro_form" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form' ) ); ?>" action="<?php echo esc_url( pmpro_url( "billing", "", "https") ) ?>" method="post">
 				<input type="hidden" name="order_id" value="<?php echo empty( $_REQUEST['order_id'] ) ? 0 : esc_attr( intval( $_REQUEST['order_id'] ) ); ?>" />
-				<input type="hidden" name="level" value="<?php echo esc_attr($pmpro_billing_level->id);?>" />
+				<input type="hidden" name="pmpro_level" value="<?php echo esc_attr($pmpro_billing_level->id);?>" />
 				<div id="pmpro_message" <?php if(! $pmpro_msg) ?> style="display:none" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_message ' . $pmpro_msgt, $pmpro_msgt ) ); ?>">
 					<?php if($pmpro_msg) echo wp_kses_post( $pmpro_msg ); ?>
  				</div>

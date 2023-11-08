@@ -1,11 +1,7 @@
 <?php
 /**
- * @see https://github.com/WordPress/gutenberg/blob/trunk/docs/reference-guides/block-api/block-metadata.md#render
+ * Render the NAMEHERE block on the frontend.
  */
-$text  = 'Buy Now';
-$level     = null;
-$css_class = 'pmpro_btn';
-
 if ( ! empty( $attributes['level'] ) ) {
 	$level = $attributes['level'];
 } else {

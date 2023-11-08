@@ -316,6 +316,14 @@ function pmpro_email_templates_send_test() {
 			$send_email = 'sendCancelAdminEmail';
 			$params = array($current_user, $current_user->membership_level->id);
 			break;
+		case 'cancel_on_next_payment_date':
+			$send_email = 'sendCancelOnNextPaymentDateEmail';
+			$params = array( $test_user, $test_user->membership_level->id );
+			break;
+		case 'cancel_on_next_payment_date_admin':
+			$send_email = 'sendCancelOnNextPaymentDateAdminEmail';
+			$params = array( $test_user, $test_user->membership_level->id );
+			break;
 		case 'checkout_check':
 		case 'checkout_express':
 		case 'checkout_free':

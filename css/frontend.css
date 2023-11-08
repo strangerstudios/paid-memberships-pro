@@ -223,7 +223,7 @@ form.pmpro_form .pmpro_checkout-field-bcity_state_zip select {
 }
 form.pmpro_form .pmpro_payment-cvv .input,
 form.pmpro_form .pmpro_payment-discount-code .input,
-form.pmpro_form #other_discount_code.input {
+form.pmpro_form #pmpro_other_discount_code.input {
 	max-width: 40%;
 }
 form.pmpro_form #discount_code.input,
@@ -684,22 +684,19 @@ li.pmpro_more {
 	Misc
 ---------------------------------------*/
 .pmpro_actions_nav {
-	text-align: center;
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: space-between;
 }
 .pmpro_actions_nav-left {
-	display: block;
-	float: left;
-	width: 48%;
+	flex: 1;
+	order: 1;
 	text-align: left;
 }
 .pmpro_actions_nav-right {
-	display: block;
-	float: right;
-	width: 48%;
+	flex: 1;
+	order: 2;
 	text-align: right;
-}
-.pmpro-levels .pmpro_actions_nav {
-	text-align: left;
 }
 .pmpro_a-right {
 	float: right;
@@ -777,7 +774,7 @@ li.pmpro_more {
 	form.pmpro_form .pmpro_change_password-fields #pass-strength-result {
 		max-width: 90%;
 	}
-	form.pmpro_form input[type=text]#other_discount_code, form.pmpro_form input[type=text]#CVV, form.pmpro_form input[type=text]#discount_code {
+	form.pmpro_form input[type=text]#pmpro_other_discount_code, form.pmpro_form input[type=text]#CVV, form.pmpro_form input[type=text]#pmpro_discount_code {
 		width: 40%;
 	}
 	#pmpro_payment_information_fields .pmpro_checkout-fields-display-seal {
@@ -793,5 +790,13 @@ li.pmpro_more {
 	}
 	.pmpro_invoice_details {
 		display: block;
+	}
+	.pmpro_actions_nav {
+		text-align: center;
+	}
+	.pmpro_actions_nav-left,
+	.pmpro_actions_nav-right {
+		flex-basis: 100%;
+		text-align: center;
 	}
 }

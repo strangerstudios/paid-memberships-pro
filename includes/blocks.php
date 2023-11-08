@@ -49,6 +49,7 @@ function pmpro_register_block_types() {
 	register_block_type( PMPRO_DIR . '/blocks/build/single-level-expiration' );
 	register_block_type( PMPRO_DIR . '/blocks/build/single-level-description' );
 	register_block_type( PMPRO_DIR . '/blocks/build/single-level-price' );
+	register_block_type( PMPRO_DIR . '/blocks/build/membership-excluded' );
 }
 add_action( 'init', 'pmpro_register_block_types' );
 /**
@@ -61,6 +62,24 @@ function pmpro_block_editor_assets() {
 		PMPRO_URL . '/css/blocks.editor.css',
 		array( 'wp-edit-blocks' )
 	);
+
+	// If we're editing a post that can be restricted, enqueue the sidebar block editor script.
+	if ( in_array( get_post_type(), apply_filters( 'pmpro_restrictable_post_types', array( 'page', 'post' ) ) ) ) {
+		wp_register_script(
+			'pmpro-sidebar-editor-script',
+			PMPRO_URL . '/blocks/build/sidebar/index.js',
+			array( 'wp-blocks', 'wp-element', 'wp-components', 'wp-i18n', 'wp-editor', 'wp-api-request', 'wp-plugins', 'wp-edit-post' )
+		);
+		wp_localize_script(
+			'pmpro-sidebar-editor-script',
+			'pmpro_block_editor_sidebar',
+			array(
+				'post_id' => get_the_ID(),
+			)
+		);
+		wp_enqueue_script( 'pmpro-sidebar-editor-script' );
+	}
+
 }
 add_action( 'enqueue_block_editor_assets', 'pmpro_block_editor_assets' );
 

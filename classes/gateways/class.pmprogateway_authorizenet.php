@@ -45,6 +45,18 @@ class PMProGateway_authorizenet extends PMProGateway
 	}
 
 	/**
+	 * Returns whether the gateway allows for payment method updates.
+	 *
+	 * @since TBD
+	 *
+	 * @return string|false 'individual' if the gateway allows for payment method updates for individual subscriptions, 
+	 *                      'all' if the gateway updates all subscriptions, or false if the gateway does not support payment method updates.
+	 */
+	function supports_payment_method_updates() {
+		return 'individual';
+	}
+
+	/**
 	 * Make sure this gateway is in the gateways list
 	 *
 	 * @since 1.8

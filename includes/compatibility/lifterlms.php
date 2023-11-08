@@ -33,18 +33,57 @@ add_filter( 'pmpro_custom_advanced_settings', 'pmpro_lifter_streamline_advanced_
 
 /**
  * Add Require Membership box to LifterLMS courses.
+ * @since 2.12.2 Removing lifterlms-membership-access metaboxes too.
  */
-function pmpro_lifter_admin_menu() {
+function pmpro_lifter_meta_boxes() {
 	// Bail if the streamline option is not enabled.
 	if ( ! get_option( 'pmpro_lifter_streamline' ) ) {
 		return;
 	}
 	
-	if( function_exists( 'pmpro_page_meta' ) ){
-		add_meta_box( 'pmpro_page_meta', esc_html__( 'Require Membership', 'pmpro-courses' ), 'pmpro_page_meta', 'course', 'side');
-	}
+	add_meta_box( 'pmpro_page_meta', esc_html__( 'Require Membership', 'pmpro-courses' ), 'pmpro_page_meta', 'course', 'side' );
+	remove_meta_box( 'lifterlms-membership-access', array(), 'side' );
 }
-add_action('admin_menu', 'pmpro_lifter_admin_menu', 20);
+add_action( 'add_meta_boxes', 'pmpro_lifter_meta_boxes', 20 );
+
+/**
+ * Remove the LifterLMS Require Access Metaboxes.
+ * @since 2.12.2
+ */
+function pmpro_lifter_restricted_post_types( $post_types ) {
+	// Bail if the streamline option is not enabled.
+	if ( ! get_option( 'pmpro_lifter_streamline' ) ) {
+		return $post_types;
+	}
+	
+	// Note: This keeps LifterLMS from processing metaboxes, but actually results
+	// in the metaboxes being added to EVERY CPT because the LLMS_Admin_Metabox::register
+	// method doesn't expect the screens to be empty. So we remove all meta boxes above too.
+	$post_types = array();
+	return $post_types;
+}
+add_filter( 'llms_membership_restricted_post_types', 'pmpro_lifter_restricted_post_types' );
+
+/**
+ * Disable LifterLMS Membership restrictions by skipping checks
+ * for posts and pages just in case a restriction was set
+ * while Streamline was turned off.
+ * Note: Other post types may still be restricted, but it's
+ * unlikely if Streamline was always on.
+ * @since 2.12.2
+ */
+function pmpro_lifter_membership_skip_post_types( $post_types ) {
+	// Bail if the streamline option is not enabled.
+	if ( ! get_option( 'pmpro_lifter_streamline' ) ) {
+		return $post_types;
+	}
+	
+	$post_types[] = 'post';
+	$post_types[] = 'page';
+	$post_types = array_unique( $post_types );
+	return $post_types;
+}
+add_filter( 'llms_is_post_restricted_by_membership_skip_post_types', 'pmpro_lifter_membership_skip_post_types' );
 
 /**
  * Override PMPro's the_content filter.
