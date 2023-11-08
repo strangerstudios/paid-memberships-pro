@@ -7,3 +7,9 @@
 .wp-block-pmpro-membership .block-editor-inner-blocks {
 	margin: 8px;
 }
+
+.pmpro-block-require-membership-element__set-hide-button.is-secondary,
+.pmpro-block-require-membership-element__set-show-button.is-secondary {
+	box-shadow: inset 0 0 0 1px #777;
+	color: #777;
+}

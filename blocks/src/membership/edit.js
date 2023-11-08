@@ -8,7 +8,7 @@ import { __ } from '@wordpress/i18n';
 /**
  * WordPress dependencies
  */
-import { CheckboxControl, PanelBody, SelectControl, ToggleControl, IconButton } from '@wordpress/components';
+import { CheckboxControl, PanelBody, SelectControl, Button, __experimentalHStack as HStack } from '@wordpress/components';
 import { InnerBlocks, useBlockProps, InspectorControls } from '@wordpress/block-editor';
 
 /**
@@ -65,18 +65,9 @@ export default function Edit(props) {
 	}
 
 	// Build the visibility component.
-	function toggleVisibility() {
+	function setInvertRestrictions() {
 		setAttributes({ invert_restrictions: invert_restrictions === '1' ? '0' : '1' });
 	}
-	var segment_label = 
-		<div>
-			<IconButton
-				icon={invert_restrictions === '1' ? 'hidden' : 'visibility'}
-				label={invert_restrictions === '1' ? __('Hide content from these users', 'your-text-domain') : __('Show content to these users', 'your-text-domain')}
-				onClick={toggleVisibility}
-			/>
-			{ invert_restrictions=='0' ? __( 'Show this block to:', 'paid-memberships-pro' ) : __( 'Hide this block from:', 'paid-memberships-pro' ) }
-		</div>;
 
 	// Build an array of checkboxes for each level.
 	var checkboxes = pmpro.all_level_values_and_labels.map(function (level) {
@@ -105,12 +96,35 @@ export default function Edit(props) {
 		isSelected && (
 			<InspectorControls>
 				<PanelBody
-					title={__( 'Restriction Settings', 'paid-memberships-pro' )}
+					title={__( 'Restriction Settings', 'paid-memberships-pro' ) }
 					initialOpen={true}
 				>
+					<HStack>
+						{/* Button to toggle visibility to "show" mode */}
+						<Button
+							className="pmpro-block-require-membership-element__set-show-button"
+							icon="visibility"
+							variant={invert_restrictions === '0' ? 'primary' : 'secondary'}
+							style={ { flexGrow: '1', justifyContent: 'center' } }
+							onClick={() => setInvertRestrictions('0')} // Set to '0' to show content
+						>
+							{__('Show', 'your-text-domain')}
+						</Button>
+						{/* Button to toggle visibility to "hide" mode */}
+						<Button
+							className="pmpro-block-require-membership-element__set-hide-button"
+							icon="hidden"
+							variant={invert_restrictions === '1' ? 'primary' : 'secondary'}
+							style={ { flexGrow: '1', justifyContent: 'center' } }
+							onClick={() => setInvertRestrictions('1')} // Set to '1' to hide content
+						>
+							{__('Hide', 'your-text-domain')}
+						</Button>
+					</HStack>
+					<br />
 					<SelectControl
 						value={segment}
-						label={ segment_label }
+						label={ invert_restrictions === '1' ? __('Hide content from:', 'paid-memberships-pro') : __('Show content to:', 'paid-memberships-pro') }
 						options={[
 							{ label: __( 'All Members', 'paid-memberships-pro' ), value: 'all' },
 							{ label: __( 'Specific Membership Levels', 'paid-memberships-pro' ), value: 'specific' },
@@ -127,6 +141,7 @@ export default function Edit(props) {
 							{checkboxes}
 						</div>
 					</> }
+					<br />
 					{ invert_restrictions=='0' && <>
 						<SelectControl
 							value={show_noaccess}
