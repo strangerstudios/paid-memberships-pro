@@ -63,6 +63,7 @@
 				'nuclear_HTTPS',
 				'gateway_environment',
 				'instructions',
+				'check_gateway_name',
 				'currency',
 				'use_ssl',
 				'tax_state',
@@ -79,8 +80,13 @@
 		 */
 		static function pmpro_payment_options($options)
 		{			
-			//get stripe options
+			//get check gateway options
 			$check_options = PMProGateway_check::getGatewayOptions();
+
+			//default to 'check' if empty.
+			if( empty( $check_options['check_gateway_name'] ) ) {
+				$check_options['check_gateway_name'] = 'check';
+			}
 			
 			//merge with others.
 			$options = array_merge($check_options, $options);
@@ -110,7 +116,17 @@
 				<textarea id="instructions" name="instructions" rows="3" cols="50" class="large-text"><?php echo wpautop(  wp_unslash( $values['instructions'] ) ); ?></textarea>
 				<p class="description"><?php esc_html_e('Who to write the check out to. Where to mail it. Shown on checkout, confirmation, and invoice pages.', 'paid-memberships-pro' );?></p>
 			</td>
-		</tr>	
+		</tr>
+		</tr>
+		<tr class="gateway gateway_check" <?php if($gateway != "check") { ?>style="display: none;"<?php } ?>>
+			<th scope="row" valign="top">
+				<label for="check_gateway_name"><?php esc_html_e('gateway name label', 'paid-memberships-pro' );?></label>
+			</th>
+			<td>
+				<input type="text" id="check_gateway_name" name="check_gateway_name" class="regular-text code" value="<?php echo esc_attr( $values['check_gateway_name'] ); ?>"></input>
+				<p class="description"><?php esc_html_e('How to label the gateway in the frontend, default to check. In the DB always check.', 'paid-memberships-pro' );?></p>
+			</td>
+		</tr>
 		<?php
 		}
 		
