@@ -19,6 +19,15 @@
 	padding: 0 10px 10px 10px;
 	position: relative;
 }
+[class*="wp-block-pmpro-"] span.pmpro-block-note {
+	background-color: #F5F8FA;
+	border-top: 1px solid #E2E8F099;
+	color: #222222;
+	display: block;
+	padding: 5px 10px;
+	font-size: 13px;
+	font-style: italic;
+}
 [class*="wp-block-pmpro-"] hr {
 	margin-bottom: 16px;
 	margin-top: 16px;

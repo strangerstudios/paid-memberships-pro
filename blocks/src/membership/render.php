@@ -1,6 +1,6 @@
 <?php
 /**
- * Render the Membership Required block on the frontend.
+ * Render the Content Visibility block on the frontend.
  */
 $output = '';
 
