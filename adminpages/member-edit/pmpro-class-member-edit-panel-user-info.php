@@ -126,7 +126,7 @@ class PMPro_Member_Edit_Panel_User_Info extends PMPro_Member_Edit_Panel {
 		}
 
 		if ( ! empty( $pmpro_error_fields ) ) {
-			pmpro_setMessage( __( 'Please fill out all required fields:', 'paid-memberships-pro' ) . ' ' . implode( ', ', $pmpro_error_fields ), 'notice-error' );
+			pmpro_setMessage( __( 'Please fill out all required fields:', 'paid-memberships-pro' ) . ' ' . implode( ', ', $pmpro_error_fields ), 'pmpro_error' );
 		}
 
 		// Check that the email and username are available.
@@ -142,18 +142,19 @@ class PMPro_Member_Edit_Panel_User_Info extends PMPro_Member_Edit_Panel {
 		$oldemail = apply_filters( "pmpro_checkout_oldemail", ( false !== $oldem_user ? $oldem_user->user_email : null ) );
 
 		if ( ! empty( $ouser->user_login ) && $ouser->id !== $user->ID ) {
-			pmpro_setMessage( __( "That username is already taken. Please try another.", 'paid-memberships-pro' ), "notice-error" );
+			pmpro_setMessage( __( "That username is already taken. Please try another.", 'paid-memberships-pro' ), "pmpro_error" );
 			$pmpro_error_fields[] = "username";
 		}
 
 		if ( ! empty( $oldemail ) && $oldem_user->id !== $user->ID ) {
-			pmpro_setMessage( __( "That email address is already in use. Please log in, or use a different email address.", 'paid-memberships-pro' ), "notice-error" );
+			pmpro_setMessage( __( "That email address is already in use. Please log in, or use a different email address.", 'paid-memberships-pro' ), "pmpro_error" );
 			$pmpro_error_fields[] = "bemail";
 			$pmpro_error_fields[] = "bconfirmemail";
 		}
 
 		// okay so far?
-		if ( $pmpro_msgt != 'notice-error' ) {
+
+		if ( $pmpro_msgt != 'pmpro_error' ) {
 			// User data.
 			$user_to_post = array( 
 				'ID' => self::get_user()->ID,
@@ -181,11 +182,11 @@ class PMPro_Member_Edit_Panel_User_Info extends PMPro_Member_Edit_Panel {
 		if ( ! $updated_id ) {
 			// Error during user update/insert.
 			if ( ! empty( $_REQUEST['user_id'] ) ) {
-				pmpro_setMessage( __( 'Error updating user.', 'paid-memberships-pro' ), 'notice-error' );
+				pmpro_setMessage( __( 'Error updating user.', 'paid-memberships-pro' ), 'pmpro_error' );
 			} else {
-				pmpro_setMessage( __( 'Error creating user.', 'paid-memberships-pro' ), 'notice-error' );
+				pmpro_setMessage( __( 'Error creating user.', 'paid-memberships-pro' ), 'pmpro_error' );
 			}
-		} elseif ( $pmpro_msgt === 'notice-error' ) {		
+		} elseif ( $pmpro_msgt === 'pmpro_error' ) {		
 			// There was another error above.
 			if ( ! empty( $_REQUEST['user_id'] ) ) {
 				$pmpro_msg = esc_html__( 'There was an error updating this user: ', 'paid-memberships-pro' ) . $pmpro_msg;
