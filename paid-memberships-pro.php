@@ -73,10 +73,6 @@ require_once( PMPRO_DIR . '/classes/class-pmpro-members-list-table.php' ); // Me
 require_once( PMPRO_DIR . '/classes/class-pmpro-orders-list-table.php' ); // Orders List
 require_once( PMPRO_DIR . '/classes/class-pmpro-discount-code-list-table.php' ); // Discount Code List
 
-if ( version_compare( PHP_VERSION, '5.3.29', '>=' ) ) {
-	require_once( PMPRO_DIR . '/blocks/blocks.php' );             	// Gutenberg blocks
-}
-
 require_once( PMPRO_DIR . '/includes/services.php' );               // services loaded by AJAX and via webhook, etc
 require_once( PMPRO_DIR . '/includes/metaboxes.php' );              // metaboxes for dashboard
 require_once( PMPRO_DIR . '/includes/profile.php' );                // edit user/profile fields
@@ -116,6 +112,7 @@ require_once( PMPRO_DIR . '/shortcodes/pmpro_account.php' );        // [pmpro_ac
 require_once( PMPRO_DIR . '/shortcodes/pmpro_login.php' );          // [pmpro_login] shortcode to show a login form or logged in member info and menu.
 require_once( PMPRO_DIR . '/shortcodes/pmpro_member.php' );         // [pmpro_member] shortcode to show user fields
 require_once( PMPRO_DIR . '/shortcodes/pmpro_member_profile_edit.php' );         // [pmpro_member_profile_edit] shortcode to allow members to edit their profile
+require_once( PMPRO_DIR . '/includes/blocks.php' ); // Set up blocks.
 
 // load gateway
 require_once( PMPRO_DIR . '/classes/gateways/class.pmprogateway.php' ); // loaded by memberorder class when needed
