@@ -64,9 +64,9 @@ class PMPro_Member_Edit_Panel_User_Info extends PMPro_Member_Edit_Panel {
 					</td>
 				</tr>
 				<tr>
-					<th><label for="send_password">Send User Notification</label></th>
+					<th><label for="send_password"><?php esc_html_e( 'Send User Notification', 'paid-memberships-pro' ); ?></label></th>
 					<td><input type="checkbox" name="send_password" id="send_password">
-					<label for="send_password">Send the new user an email about their account.</label>
+					<label for="send_password"><?php esc_html_e( 'Send the new user an email about their account.', 'paid-memberships-pro' ); ?></label>
 					</td>
 				</tr>
 				<?php
@@ -90,8 +90,6 @@ class PMPro_Member_Edit_Panel_User_Info extends PMPro_Member_Edit_Panel {
 	 * Save panel data and redirect if we are creating a new user.
 	 */
 	public function save() {
-		// TODO: Password doesn't actually save.
-		// TODO: Review all of this.
 		global $wpdb, $pmpro_msgt, $pmpro_msg;
 
 		$user = self::get_user();
@@ -155,13 +153,8 @@ class PMPro_Member_Edit_Panel_User_Info extends PMPro_Member_Edit_Panel {
 		}
 
 		// okay so far?
-		if ( $pmpro_msgt != 'pmpro_error' ) {
-			// random password if needed
-			if ( ! $user->ID && empty( $user_pass ) ) {
-				$user_pass = wp_generate_password();
-				$send_password = true; // Force this option to be true, if the password field was empty so the email may be sent.
-			}
 
+		if ( $pmpro_msgt != 'pmpro_error' ) {
 			// User data.
 			$user_to_post = array( 
 				'ID' => self::get_user()->ID,
@@ -171,8 +164,15 @@ class PMPro_Member_Edit_Panel_User_Info extends PMPro_Member_Edit_Panel {
 				'last_name' => $last_name,
 			);
 
+			// Set the role if the current user has permission.
 			if ( ! IS_PROFILE_PAGE && current_user_can( 'promote_user', $user->ID ) ) {
 				$user_to_post['role'] = $role;
+			}
+
+			// For new users, set the password.
+			if ( ! $user->ID ) {
+				$user_to_post['user_pass'] = empty( sanitize_text_field( $_REQUEST[ 'password' ] ) ) ? wp_generate_password() : sanitize_text_field( $_REQUEST[ 'password' ] );
+				unset( $_REQUEST[ 'password' ] );
 			}
 
 			// Update or insert user.
@@ -196,12 +196,9 @@ class PMPro_Member_Edit_Panel_User_Info extends PMPro_Member_Edit_Panel {
 		} else {
 			// Update/insert all good.
 			// Notify users if needed.
-			if ( $send_password ) {
+			if ( ! $user->ID && ! empty( $_REQUEST['send_password'] ) ) {
 				wp_new_user_notification( $updated_id, null, 'user' );
 			}
-
-			// clear vars
-			$user_pass = '';
 			
 			// Set message and redirect if this is a new user.		
 			if ( empty( $_REQUEST['user_id'] ) ) {
