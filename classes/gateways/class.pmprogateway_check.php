@@ -105,7 +105,7 @@
 		<tr class="pmpro_settings_divider gateway gateway_check" <?php if($gateway != "check") { ?>style="display: none;"<?php } ?>>
 			<td colspan="2">
 				<hr />
-				<h3><?php esc_html_e('Pay by Check Settings', 'paid-memberships-pro' ); ?></h3>
+				<h3><?php esc_html_e( str_replace("Check", $values['check_gateway_name'],  'Pay by Check Settings' ),'paid-memberships-pro' ); ?></h3>
 			</td>
 		</tr>
 		<tr class="gateway gateway_check" <?php if($gateway != "check") { ?>style="display: none;"<?php } ?>>
@@ -114,7 +114,7 @@
 			</th>
 			<td>
 				<textarea id="instructions" name="instructions" rows="3" cols="50" class="large-text"><?php echo wpautop(  wp_unslash( $values['instructions'] ) ); ?></textarea>
-				<p class="description"><?php esc_html_e('Who to write the check out to. Where to mail it. Shown on checkout, confirmation, and invoice pages.', 'paid-memberships-pro' );?></p>
+				<p class="description"><?php esc_html_e( str_replace( "Check", $values['check_gateway_name'], 'Who to write the Check out to. Where to mail it. Shown on checkout, confirmation, and invoice pages.',), 'paid-memberships-pro' );?></p>
 			</td>
 		</tr>
 		</tr>
