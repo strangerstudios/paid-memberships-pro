@@ -249,7 +249,7 @@ function pmpro_dashboard_report_recent_members_callback() {
     						<?php echo get_avatar($theuser->ID, 32)?>
     						<strong>
     							<?php
-    								$userlink = '<a href="' . get_edit_user_link( $theuser->ID ) . '">' . esc_attr( $theuser->user_login ) . '</a>';
+    								$userlink = '<a href="' . esc_url( add_query_arg( array( 'page' => 'pmpro-member', 'user_id' => (int)$theuser->ID ), admin_url( 'admin.php' ) ) ) . '">' . esc_attr( $theuser->user_login ) . '</a>';
     								$userlink = apply_filters( 'pmpro_members_list_user_link', $userlink, $theuser );
     								echo $userlink;
     							?>
@@ -322,7 +322,7 @@ function pmpro_dashboard_report_recent_orders_callback() {
         				<td class="username column-username">
         					<?php $order->getUser(); ?>
         					<?php if ( ! empty( $order->user ) ) { ?>
-        						<a href="user-edit.php?user_id=<?php echo $order->user->ID; ?>"><?php echo $order->user->user_login; ?></a>
+        						<a href="<?php echo esc_url( add_query_arg( array( 'page' => 'pmpro-member', 'user_id' => (int)$order->user->ID ), admin_url( 'admin.php' ) ) ); ?>"><?php echo $order->user->user_login; ?></a>
         					<?php } elseif ( $order->user_id > 0 ) { ?>
         						[<?php _e( 'deleted', 'paid-memberships-pro' ); ?>]
         					<?php } else { ?>

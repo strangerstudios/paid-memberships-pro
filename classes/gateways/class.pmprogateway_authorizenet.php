@@ -124,7 +124,7 @@ class PMProGateway_authorizenet extends PMProGateway
 	</tr>
 	<tr class="gateway gateway_authorizenet" <?php if($gateway != "authorizenet") { ?>style="display: none;"<?php } ?>>
 		<th scope="row" valign="top">
-			<label for="loginname"><?php esc_html_e('Login Name', 'paid-memberships-pro' );?>:</label>
+			<label for="loginname"><?php esc_html_e('Login Name', 'paid-memberships-pro' );?></label>
 		</th>
 		<td>
 			<input type="text" id="loginname" name="loginname" value="<?php echo esc_attr($values['loginname'])?>" class="regular-text code" />
@@ -132,7 +132,7 @@ class PMProGateway_authorizenet extends PMProGateway
 	</tr>
 	<tr class="gateway gateway_authorizenet" <?php if($gateway != "authorizenet") { ?>style="display: none;"<?php } ?>>
 		<th scope="row" valign="top">
-			<label for="transactionkey"><?php esc_html_e('Transaction Key', 'paid-memberships-pro' );?>:</label>
+			<label for="transactionkey"><?php esc_html_e('Transaction Key', 'paid-memberships-pro' );?></label>
 		</th>
 		<td>
 			<input type="text" id="transactionkey" name="transactionkey" value="<?php echo esc_attr($values['transactionkey'])?>" autocomplete="off" class="regular-text code pmpro-admin-secure-key" />
@@ -140,7 +140,7 @@ class PMProGateway_authorizenet extends PMProGateway
 	</tr>
 	<tr class="gateway gateway_authorizenet" <?php if($gateway != "authorizenet") { ?>style="display: none;"<?php } ?>>
 		<th scope="row" valign="top">
-			<label><?php esc_html_e('Silent Post URL', 'paid-memberships-pro' );?>:</label>
+			<label><?php esc_html_e('Silent Post URL', 'paid-memberships-pro' );?></label>
 		</th>
 		<td>
 			<p><?php esc_html_e('To fully integrate with Authorize.net, be sure to set your Silent Post URL to', 'paid-memberships-pro' ); ?></p>

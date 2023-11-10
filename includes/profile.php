@@ -859,7 +859,7 @@ function pmpro_membership_history_profile_fields( $user ) {
 			});
 		</script>
 		<?php
-	}	
+	}
 }
 add_action('edit_user_profile', 'pmpro_membership_history_profile_fields');
 add_action('show_user_profile', 'pmpro_membership_history_profile_fields');
