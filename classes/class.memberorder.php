@@ -628,7 +628,7 @@
 			$order->user_id = "";
 			$order->membership_id = "";
 			$order->subtotal = "";
-			$order->tax = "";
+			$order->tax = 0.00;
 			$order->couponamount = "";
 			$order->total = "";
 			$order->payment_type = "";
@@ -705,7 +705,7 @@
 				$this->Email = $wpdb->get_var( $wpdb->prepare( "SELECT user_email FROM $wpdb->users WHERE ID = %d LIMIT 1", $this->user_id ) );
 
 				$this->subtotal = $dbobj->subtotal;
-				$this->tax = $dbobj->tax;
+				$this->tax = (float)$dbobj->tax;
 				$this->couponamount = $dbobj->couponamount;
 				$this->certificate_id = $dbobj->certificate_id;
 				$this->certificateamount = $dbobj->certificateamount;
@@ -1182,7 +1182,7 @@
 			$tax_rate = get_option("pmpro_tax_rate");
 
 			//default
-			$tax = 0;
+			$tax = 0.00;
 
 			//calculate tax
 			if($tax_state && $tax_rate)
@@ -1209,7 +1209,7 @@
 				$values['billing_country'] = $this->billing->country;
 
 			//filter
-			$tax = apply_filters("pmpro_tax", $tax, $values, $this);
+			$tax = (float)apply_filters("pmpro_tax", $tax, $values, $this);
 			return $tax;
 		}
 
@@ -1294,10 +1294,13 @@
 			//Todo: Tax?!, Coupons, Certificates, affiliates
 			if(empty($this->subtotal))
 				$this->subtotal = $amount;
-			if(isset($this->tax))
+
+			if ( ! empty( $this->tax ) ) {
 				$tax = $this->tax;
-			else
-				$tax = $this->getTax(true);
+			} else {
+				$tax = $this->getTax( true );
+			}
+
 			$this->certificate_id = "";
 			$this->certificateamount = "";
 
