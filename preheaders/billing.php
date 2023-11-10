@@ -16,25 +16,30 @@ $pmpro_billing_order = MemberOrder::get_order( $order_id );
 if ( empty( $pmpro_billing_order ) ) {
     // We need an order to update. Redirect to the account page.
     wp_redirect( pmpro_url( 'account' ) );
+    exit;
 }
 
 // Check that the order belongs to the current user.
 if ( $pmpro_billing_order->user_id != $current_user->ID ) {
     // This order doesn't belong to the current user. Redirect to the account page.
     wp_redirect( pmpro_url( 'account' ) );
+    exit;
 }
 
 // Make sure that the order is in success status.
 if ( $pmpro_billing_order->status != 'success' ) {
     // This order is not in success status. Redirect to the account page.
     wp_redirect( pmpro_url( 'account' ) );
+    exit;
 }
 
-// Get the subscription for this order and make sure that it is active.
+// Get the subscription for this order and make sure that we can update its billing info.
 $pmpro_billing_subscription = PMPro_Subscription::get_subscription_from_subscription_transaction_id( $pmpro_billing_order->subscription_transaction_id, $pmpro_billing_order->gateway, $pmpro_billing_order->gateway_environment );
-if ( empty( $pmpro_billing_subscription ) || $pmpro_billing_subscription->get_status() != 'active' ) {
-    // This subscription is not active. Redirect to the account page.
+$subscription_gateway_obj   = empty( $pmpro_billing_subscription ) ? null: $pmpro_billing_subscription->get_gateway_object();
+if ( empty( $pmpro_billing_subscription ) || $pmpro_billing_subscription->get_status() != 'active' || empty( $subscription_gateway_obj ) || empty( $subscription_gateway_obj->supports_payment_method_updates() ) ) {
+    // We cannot update the billing info for this subscription. Redirect to the account page.
     wp_redirect( pmpro_url( 'account' ) );
+    exit;
 }
 
 // Get the user's current membership level.
@@ -47,7 +52,7 @@ if (empty($pmpro_billing_order->gateway)) {
     //no order
     $besecure = false;
 } elseif ($pmpro_billing_order->gateway == "paypalexpress") {
-    $besecure = pmpro_getOption("use_ssl");
+    $besecure = get_option("pmpro_use_ssl");
     //still they might have website payments pro setup
     if ($gateway == "paypal") {
         //$besecure = true;
@@ -59,7 +64,7 @@ if (empty($pmpro_billing_order->gateway)) {
     $show_check_payment_instructions = true;
 } else {
     //$besecure = true;
-    $besecure = pmpro_getOption("use_ssl");
+    $besecure = get_option("pmpro_use_ssl");
 }
 
 // this variable is checked sometimes to know if the page should show billing fields
@@ -186,38 +191,14 @@ if ($submit) {
     }
 	
 	// Check reCAPTCHA if needed.
-	global $recaptcha, $recaptcha_validated;
-	if (  $recaptcha == 2 || ( $recaptcha == 1 && pmpro_isLevelFree( $pmpro_level ) ) ) {
-		global $recaptcha_privatekey;
-		if ( isset( $_POST["recaptcha_challenge_field"] ) ) {
-			//using older recaptcha lib
-			$resp = recaptcha_check_answer( $recaptcha_privatekey,
-				pmpro_get_ip(),
-				sanitize_text_field( $_POST["recaptcha_challenge_field"] ),
-				sanitize_text_field( $_POST["recaptcha_response_field"] )
-            );
-
-			$recaptcha_valid  = $resp->is_valid;
-			$recaptcha_errors = $resp->error;
-		} else {
-			//using newer recaptcha lib
-			// NOTE: In practice, we don't execute this code because
-			// we use AJAX to send the data back to the server and set the
-			// pmpro_recaptcha_validated session variable, which is checked
-			// earlier. We should remove/refactor this code.
-			$reCaptcha = new pmpro_ReCaptcha( $recaptcha_privatekey );
-			$resp      = $reCaptcha->verifyResponse( pmpro_get_ip(), sanitize_text_field( $_POST["g-recaptcha-response"] ) );
-
-			$recaptcha_valid  = $resp->success;
-			$recaptcha_errors = $resp->errorCodes;
-		}
-		if ( ! $recaptcha_valid ) {
-			$pmpro_msg  = sprintf( __( "reCAPTCHA failed. (%s) Please try again.", 'paid-memberships-pro' ), $recaptcha_errors );
-			$pmpro_msgt = "pmpro_error";
-		} else {			
-			pmpro_set_session_var( 'pmpro_recaptcha_validated', true );
-		}
-	}
+    $recaptcha = get_option( "pmpro_recaptcha");
+    if (  $recaptcha == 2 || ( $recaptcha == 1 && pmpro_isLevelFree( $pmpro_level ) ) ) {
+        $recaptcha_validated = pmpro_recaptcha_is_validated(); // Returns true if validated, string error message if not.
+        if ( is_string( $recaptcha_validated ) ) {
+            $pmpro_msg  = sprintf( __( "reCAPTCHA failed. (%s) Please try again.", 'paid-memberships-pro' ), $recaptcha_validated );
+            $pmpro_msgt = "pmpro_error";
+        }
+    }
 	
     if (!empty($missing_billing_field)) {
         $pmpro_msg = __("Please complete all required fields.", 'paid-memberships-pro' );
@@ -260,7 +241,7 @@ if ($submit) {
         $pmpro_billing_order->billing->zip = $bzipcode;
         $pmpro_billing_order->billing->phone = $bphone;
 
-        //$gateway = pmpro_getOption("gateway");
+        //$gateway = get_option("pmpro_gateway");
         $pmpro_billing_order->gateway = $gateway;
         $pmpro_billing_order->setGateway();
         
@@ -283,7 +264,7 @@ if ($submit) {
             $pmproemail->sendBillingAdminEmail($current_user, $pmpro_billing_order);
 
             //update the user meta too
-            $meta_keys = array("pmpro_bfirstname", "pmpro_blastname", "pmpro_baddress1", "pmpro_baddress2", "pmpro_bcity", "pmpro_bstate", "pmpro_bzipcode", "pmpro_bcountry", "pmpro_bphone", "pmpro_bemail", "pmpro_CardType", "pmpro_AccountNumber", "pmpro_ExpirationMonth", "pmpro_ExpirationYear");
+            $meta_keys = array("pmpro_bfirstname", "pmpro_blastname", "pmpro_baddress1", "pmpro_baddress2", "pmpro_bcity", "pmpro_bstate", "pmpro_bzipcode", "pmpro_bcountry", "pmpro_bphone", "pmpro_bemail");
             $meta_values = array($bfirstname, $blastname, $baddress1, $baddress2, $bcity, $bstate, $bzipcode, $bcountry, $bphone, $bemail, $CardType, hideCardNumber($AccountNumber), $ExpirationMonth, $ExpirationYear);
             pmpro_replaceUserMeta($current_user->ID, $meta_keys, $meta_values);
 
@@ -321,11 +302,7 @@ if ($submit) {
     $bcountry = get_user_meta($current_user->ID, "pmpro_bcountry", true);
     $bphone = get_user_meta($current_user->ID, "pmpro_bphone", true);
     $bemail = get_user_meta($current_user->ID, "pmpro_bemail", true);
-    $bconfirmemail = get_user_meta($current_user->ID, "pmpro_bemail", true);
-    $CardType = get_user_meta($current_user->ID, "pmpro_CardType", true);
-    //$AccountNumber = hideCardNumber(get_user_meta($current_user->ID, "pmpro_AccountNumber", true), false);
-    $ExpirationMonth = get_user_meta($current_user->ID, "pmpro_ExpirationMonth", true);
-    $ExpirationYear = get_user_meta($current_user->ID, "pmpro_ExpirationYear", true);
+    $bconfirmemail = get_user_meta($current_user->ID, "pmpro_bemail", true);    
 }
 
 /**

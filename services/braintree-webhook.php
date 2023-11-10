@@ -179,13 +179,8 @@ if ( $webhookNotification->kind === Braintree_WebhookNotification::SUBSCRIPTION_
 	$morder->PhoneNumber = $old_order->billing->phone;
 	$morder->billing->phone   = $old_order->billing->phone;
 	
-	//get CC info that is on file
-	$morder->cardtype              = get_user_meta( $user_id, "pmpro_CardType", true );
-	$morder->accountnumber         = hideCardNumber( get_user_meta( $user_id, "pmpro_AccountNumber", true ), false );
-	$morder->expirationmonth       = get_user_meta( $user_id, "pmpro_ExpirationMonth", true );
-	$morder->expirationyear        = get_user_meta( $user_id, "pmpro_ExpirationYear", true );
-	$morder->ExpirationDate        = $morder->expirationmonth . $morder->expirationyear;
-	$morder->ExpirationDate_YdashM = $morder->expirationyear . "-" . $morder->expirationmonth;
+	//Updates this order with the most recent orders payment method information and saves it. 
+	pmpro_update_order_with_recent_payment_method( $morder );
 	
 	//save
 	$morder->status = "success";
@@ -278,11 +273,8 @@ if ( $webhookNotification->kind === Braintree_WebhookNotification::SUBSCRIPTION_
 	
 	$morder->billing->phone = $old_order->billing->phone;
 	
-	//get CC info that is on file
-	$morder->cardtype        = get_user_meta( $user_id, "pmpro_CardType", true );
-	$morder->accountnumber   = hideCardNumber( get_user_meta( $user_id, "pmpro_AccountNumber", true ), false );
-	$morder->expirationmonth = get_user_meta( $user_id, "pmpro_ExpirationMonth", true );
-	$morder->expirationyear  = get_user_meta( $user_id, "pmpro_ExpirationYear", true );
+	//Updates this order with the most recent orders payment method information and saves it. 
+	pmpro_update_order_with_recent_payment_method( $morder );
 	
 	// Email the user and ask them to update their credit card information
 	$pmproemail = new \PMProEmail();
@@ -364,11 +356,8 @@ if ( $webhookNotification->kind === Braintree_WebhookNotification::SUBSCRIPTION_
 	
 	$morder->billing->phone = $old_order->billing->phone;
 	
-	//get CC info that is on file
-	$morder->cardtype        = get_user_meta( $user_id, "pmpro_CardType", true );
-	$morder->accountnumber   = hideCardNumber( get_user_meta( $user_id, "pmpro_AccountNumber", true ), false );
-	$morder->expirationmonth = get_user_meta( $user_id, "pmpro_ExpirationMonth", true );
-	$morder->expirationyear  = get_user_meta( $user_id, "pmpro_ExpirationYear", true );
+	//Updates this order with the most recent orders payment method information and saves it. 
+	pmpro_update_order_with_recent_payment_method( $morder );
 	
 	// Email the user and ask them to update their credit card information
 	$pmproemail = new \PMProEmail();
@@ -439,7 +428,7 @@ if ( $webhookNotification->kind === Braintree_WebhookNotification::SUBSCRIPTION_
 		$logstr[] = 'No subscription ID.';
 		pmpro_braintreeWebhookExit();
 	}
-	$logstr[] = pmpro_handle_subscription_cancellation_at_gateway( $webhookNotification->subscription->id, 'braintree', pmpro_getOption( 'gateway_environment' ) );
+	$logstr[] = pmpro_handle_subscription_cancellation_at_gateway( $webhookNotification->subscription->id, 'braintree', get_option( 'pmpro_gateway_environment' ) );
 	pmpro_braintreeWebhookExit();
 }
 

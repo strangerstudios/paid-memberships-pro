@@ -68,8 +68,15 @@ jQuery( document ).ready( function( $ ) {
 		pmpro_require_billing = pmproStripe.pmpro_require_billing;
 	}
 	$( '.pmpro_form' ).submit( function( event ) {
-		// If there is no "level" input, then this is not a checkout form. Return.
-		if ( $( 'input[name="level"]' ).length === 0 ) {
+
+		// If default is already being prevented, don't try to initiate the payment process.
+		// Likely caused by ReCAPTCHA failing.
+		if ( event.isDefaultPrevented() ) {
+			return;
+		}
+
+		// If there is no "pmpro_level" input (or "level" input for legacy page templates), then this is not a checkout form. Return.
+		if ( $( 'input[name="pmpro_level"]' ).length === 0 && $( 'input[name="level"]' ).length === 0 ) {
 			return;
 		}
 
@@ -216,7 +223,7 @@ jQuery( document ).ready( function( $ ) {
 			$('#pmpro_processing_message').css('visibility', 'hidden');
 
 			// error message
-			$( '#pmpro_message' ).text( response.error.message ).addClass( 'pmpro_error' ).removeClass( 'pmpro_alert' ).removeClass( 'pmpro_success' ).show();
+			$( '#pmpro_message' ).text( response.error.message ).addClass( 'pmpro_error' ).removeClass( 'pmpro_alert' ).removeClass( 'pmpro_success' ).attr('role', 'alert').show();
 			
 		} else if ( response.paymentMethod ) {			
 			// A payment method was created successfully. Submit the checkout form and finish the checkout in PHP.

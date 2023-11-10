@@ -3,7 +3,7 @@
  * Include the Wizard Save Steps File in the admin init hook when using the Wizard.
  * This is to save and handle data and redirects.
  *
- * @since TBD
+ * @since 2.11
  */
 function pmpro_init_save_wizard_data() {
 	// Bail if not on the wizard page.
@@ -34,11 +34,6 @@ function pmpro_init_save_wizard_data() {
 
 		// Save the type of membership site. May be saved as "Blank"?
 		pmpro_setOption( 'site_type', sanitize_text_field( $_REQUEST['membership_site_type'] ) );
-
-		// Update license key value
-		if ( ! empty( $_REQUEST['pmpro_license_key'] ) ) {
-			pmpro_setOption( 'license_key', sanitize_text_field( $_REQUEST['pmpro_license_key'] ) );
-		}
 
 		// Generate pages
 		if ( ! empty( $_REQUEST['createpages'] ) ) {
@@ -83,6 +78,16 @@ function pmpro_init_save_wizard_data() {
 		} else {
 			pmpro_setOption( 'wizard_collect_payment', false );
 			$step = 'memberships';
+		}
+
+		// Update license key value
+		if ( ! empty( $_REQUEST['pmpro_license_key'] ) ) {
+			// Check if license key is valid.
+			if ( ! pmpro_license_isValid( sanitize_text_field( $_REQUEST['pmpro_license_key'] ), NULL, true ) ) {
+				return;
+			}
+
+			pmpro_setOption( 'license_key', sanitize_text_field( $_REQUEST['pmpro_license_key'] ) );
 		}
 
 		$next_step = add_query_arg(
@@ -161,7 +166,7 @@ function pmpro_init_save_wizard_data() {
 			$free_level_name = ! empty( $_REQUEST['pmpro-wizard__free-level-name'] ) ? sanitize_text_field( $_REQUEST['pmpro-wizard__free-level-name'] ) : sanitize_text_field( __( 'Free', 'paid-memberships-pro' ) );
 
 			$levels_array['free'] = array(
-				'id'                => -1,
+				'id'                => 0,
 				'name'              => $free_level_name,
 				'description'       => '',
 				'confirmation'      => '',
@@ -185,7 +190,7 @@ function pmpro_init_save_wizard_data() {
 			$period          = ! empty( $_REQUEST['cycle_period'] ) ? sanitize_text_field( $_REQUEST['cycle_period'] ) : 'Month';
 
 			$levels_array['paid'] = array(
-				'id'                => -1,
+				'id'                => 0,
 				'name'              => $paid_level_name,
 				'description'       => '',
 				'confirmation'      => '',
@@ -253,15 +258,14 @@ function pmpro_init_save_wizard_data() {
 		// Get the data and store it in an option.
 		$filterqueries = ! empty( $_REQUEST['filterqueries'] ) ? intval( $_REQUEST['filterqueries'] ) : 0;
 		$showexcerpts = ! empty( $_REQUEST['showexcerpts'] ) ? intval( $_REQUEST['showexcerpts'] ) : 0;
-		$spamprotection = ! empty( $_REQUEST['spamprotection'] ) ? intval( $_REQUEST['spamprotection'] ) : 0;
 		$wisdom_opt_out = ! empty( $_REQUEST['wisdom_opt_out'] ) ? intval( $_REQUEST['wisdom_opt_out'] ) : 0;
 
 		// Updated the options. Set the values as above to cater for cases where the REQUEST variables are empty for blank checkboxes.
 		pmpro_setOption( 'filterqueries', $filterqueries );
 		pmpro_setOption( 'showexcerpts', $showexcerpts );
-		pmpro_setOption( 'spamprotection', $spamprotection );
+		pmpro_setOption( 'block_dashboard' );
+		pmpro_setOption( 'hide_toolbar' );
 		pmpro_setOption( 'wisdom_opt_out', $wisdom_opt_out );
-		
 
 		// Redirect to next step
 		$next_step = add_query_arg(

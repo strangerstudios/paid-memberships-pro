@@ -61,7 +61,7 @@ add_meta_box(
  * Load the Paid Memberships Pro dashboard-area header
  */
 require_once( dirname( __FILE__ ) . '/admin_header.php' ); ?>
-
+<hr class="wp-header-end">
 <form id="pmpro-dashboard-form" method="post" action="admin-post.php">
 
 	<div class="dashboard-widgets-wrap">
@@ -175,10 +175,10 @@ function pmpro_dashboard_welcome_callback() { ?>
     			$pmpro_license_check = get_option( 'pmpro_license_check', array( 'license' => false, 'enddate' => 0 ) );
     		?>
 			<?php if ( ! pmpro_license_isValid() && empty( $key ) ) { ?>
-    			<p class="pmpro_message pmpro_error">
-    				<strong><?php esc_html_e( 'No support license key found.', 'paid-memberships-pro' ); ?></strong><br />
-    				<?php printf(__( '<a href="%s">Enter your key here &raquo;</a>', 'paid-memberships-pro' ), admin_url( 'admin.php?page=pmpro-license' ) );?>
-    			</p>
+				<p class="pmpro_message pmpro_error">
+					<strong><?php esc_html_e( 'No support license key found.', 'paid-memberships-pro' ); ?></strong><br />
+					<?php printf(__( '<a href="%s">Enter your key here</a>', 'paid-memberships-pro' ), admin_url( 'admin.php?page=pmpro-license' ) );?>
+				</p>
 			<?php } elseif ( ! pmpro_license_isValid() ) { ?>
 				<p class="pmpro_message pmpro_alert">
     				<strong><?php esc_html_e( 'Your license is invalid or expired.', 'paid-memberships-pro' ); ?></strong><br />

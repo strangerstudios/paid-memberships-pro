@@ -11,6 +11,6 @@ function pmpro_upgrade_1_4()
 	";
 	$wpdb->query($sqlQuery);
 
-	pmpro_setOption("db_version", "1.4");
+	update_option("pmpro_db_version", "1.4");
 	return 1.4;
 }

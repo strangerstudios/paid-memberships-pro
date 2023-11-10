@@ -57,7 +57,7 @@ function pmpro_besecure() {
 
 	$besecure = apply_filters( 'pmpro_besecure', $besecure );
 
-	$use_ssl = pmpro_getOption( 'use_ssl' );
+	$use_ssl = get_option( 'pmpro_use_ssl' );
 	if( $use_ssl == 1 ) {
 		if( $besecure && ( empty( $_SERVER['HTTPS'] ) || $_SERVER['HTTPS'] == 'off' || $_SERVER['HTTPS'] == 'false' ) ) {
 			//need to be secure		
@@ -79,7 +79,7 @@ add_action( 'login_init', 'pmpro_besecure', 2 );
  */
 function pmpro_ssl_javascript_redirect() {
 	global $besecure;
-	$use_ssl = pmpro_getOption( 'use_ssl' );
+	$use_ssl = get_option( 'pmpro_use_ssl' );
 	if( ! is_admin() && $use_ssl == 2 ) {
 		if( ! empty( $besecure ) ) {
 		?>
@@ -140,7 +140,7 @@ add_action( 'init', 'pmpro_admin_https_handler' );
 */
 function pmpro_NuclearHTTPS() {
 	//did they choose the option?
-	$nuking = pmpro_getOption( 'nuclear_HTTPS' );
+	$nuking = get_option( 'pmpro_nuclear_HTTPS' );
 	if(!empty($nuking)) {
 		ob_start( 'pmpro_replaceURLsInBuffer' );
 	}

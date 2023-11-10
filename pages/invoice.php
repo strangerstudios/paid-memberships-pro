@@ -1,6 +1,7 @@
 <?php 
 /**
  * Template: Invoice
+ * Version: 2.0
  *
  * See documentation for how to override the PMPro templates.
  * @link https://www.paidmembershipspro.com/documentation/templates/
@@ -30,7 +31,7 @@
 			$pmpro_invoice->getUser();
 			$pmpro_invoice->getMembershipLevel();
 		?>
-		<h3><?php echo esc_html( sprintf(__('Invoice #%s on %s', 'paid-memberships-pro' ), $pmpro_invoice->code, date_i18n(get_option('date_format'), $pmpro_invoice->getTimestamp())) );?></h3>
+		<h2><?php echo esc_html( sprintf(__('Invoice #%s on %s', 'paid-memberships-pro' ), $pmpro_invoice->code, date_i18n(get_option('date_format'), $pmpro_invoice->getTimestamp())) );?></h2>
 		<a class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_a-print' ) ); ?>" href="javascript:window.print()"><?php esc_html_e('Print', 'paid-memberships-pro' ); ?></a>
 		<ul>
 			<?php do_action("pmpro_invoice_bullets_top", $pmpro_invoice); ?>
@@ -57,7 +58,7 @@
 		<?php
 			// Check instructions
 			if ( $pmpro_invoice->gateway == "check" && ! pmpro_isLevelFree( $pmpro_invoice->membership_level ) ) {
-				echo '<div class="' . esc_attr( pmpro_get_element_class( 'pmpro_payment_instructions' ) ) . '">' . wp_kses_post( wpautop( wp_unslash( pmpro_getOption("instructions") ) ) ) . '</div>';
+				echo '<div class="' . esc_attr( pmpro_get_element_class( 'pmpro_payment_instructions' ) ) . '">' . wp_kses_post( wpautop( wp_unslash( get_option( 'pmpro_instructions' ) ) ) ) . '</div>';
 			}
 		?>
 
@@ -153,10 +154,10 @@
 		}
 	}
 ?>
-<p class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_actions_nav' ) ); ?>">
+<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_actions_nav' ) ); ?>">
 	<span class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_actions_nav-right' ) ); ?>"><a href="<?php echo esc_url( pmpro_url( "account" ) ) ?>"><?php esc_html_e('View Your Membership Account &rarr;', 'paid-memberships-pro' );?></a></span>
 	<?php if ( $pmpro_invoice ) { ?>
 		<span class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_actions_nav-left' ) ); ?>"><a href="<?php echo esc_url( pmpro_url( "invoice" ) ) ?>"><?php esc_html_e('&larr; View All Invoices', 'paid-memberships-pro' );?></a></span>
 	<?php } ?>
-</p> <!-- end pmpro_actions_nav -->
+</div> <!-- end pmpro_actions_nav -->
 </div> <!-- end pmpro_invoice_wrap -->

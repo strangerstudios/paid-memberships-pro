@@ -23,7 +23,7 @@ function pmpro_membership_level_profile_fields($user)
 	$user_levels = pmpro_getMembershipLevelsForUser($user->ID);
 
 	?>
-	<h3><?php esc_html_e("Membership Levels", 'paid-memberships-pro' ); ?></h3>
+	<h2><?php esc_html_e("Membership Levels", 'paid-memberships-pro' ); ?></h2>
 	<table class="form-table">
 	<?php
 		$show_membership_level = true;
@@ -109,18 +109,8 @@ function pmpro_membership_level_profile_fields($user)
 								$subscriptions = PMPro_Subscription::get_subscriptions_for_user( $user->ID, $shown_level->id );
 								if ( ! empty( $subscriptions ) ) {
 									$subscription = $subscriptions[0];
-									$billing_amount = $subscription->get_billing_amount();
-									$cycle_number   = $subscription->get_cycle_number();
-									$cycle_period   = $subscription->get_cycle_period();
-
-									$cost_text = esc_html__( 'Subscription', 'paid-memberships-pro' ) . ': ';
-									if ( $cycle_number == 1 ) {
-										$cost_text .= sprintf( esc_html__( '%1$s per %2$s', 'paid-memberships-pro' ), pmpro_formatPrice( $billing_amount ), $cycle_period );
-									} else {
-										$cost_text .= sprintf( esc_html__( '%1$s every %2$s %3$ss', 'paid-memberships-pro' ), pmpro_formatPrice( $billing_amount ), $cycle_number, $cycle_period );
-									}
 									?>
-									<p><?php echo esc_html( $cost_text ); ?></p>
+									<p><?php echo esc_html__( 'Subscription', 'paid-memberships-pro' ) . ': ' . esc_html( $subscription->get_cost_text() ); ?></p>
 									<?php
 									// If the user has more than 1 subscription, show a warning message.
 									if ( count( $subscriptions ) > 1 ) {
@@ -238,17 +228,8 @@ function pmpro_membership_level_profile_fields($user)
 														<?php
 													}
 													$subscription = $subscriptions[0];
-													$billing_amount = $subscription->get_billing_amount();
-													$cycle_number   = $subscription->get_cycle_number();
-													$cycle_period   = $subscription->get_cycle_period();
-
-													if ( $cycle_number == 1 ) {
-														$cost_text = sprintf( esc_html__( '%1$s per %2$s', 'paid-memberships-pro' ), pmpro_formatPrice( $billing_amount ), $cycle_period );
-													} else {
-														$cost_text = sprintf( esc_html__( '%1$s every %2$s %3$ss', 'paid-memberships-pro' ), pmpro_formatPrice( $billing_amount ), $cycle_number, $cycle_period );
-													}
 													?>
-													<p><?php echo esc_html( $cost_text ); ?></p>
+													<p><?php echo esc_html( $subscription->get_cost_text() ); ?></p>
 													<label for="<?php echo esc_attr( $name_prefix ); ?>[subscription_action]" style="display: none">
 														<select name="<?php echo esc_attr( $name_prefix ); ?>[subscription_action]">
 															<option value="cancel"><?php esc_html_e( 'Cancel payment subscription (Reccomended)', 'paid-memberships-pro' ); ?></option>
@@ -302,6 +283,20 @@ function pmpro_membership_level_profile_fields($user)
 					?>
 					</td>
 				</tr>
+				<?php
+				// Hidden row to be shown when a change is made. This is used to show the "send membership change email" option.
+				?>
+				<tr id="pmpro_level_change_options" style="display: none;">
+					<th>
+						<?php esc_html_e( 'Membership Change Options', 'paid-memberships-pro' ); ?>
+					</th>
+					<td>
+						<label for="pmpro_send_change_email">
+							<input type="checkbox" id="pmpro_send_change_email" name="pmpro_send_change_email" value="1" />
+							<?php esc_html_e( 'Send membership change email to member.', 'paid-memberships-pro' ); ?>
+						</label>
+					</td>
+				</tr>
 				<script>
 					jQuery( document ).ready( function() {
 						// Show/hide the expiration date field when the level select is changed.
@@ -329,6 +324,9 @@ function pmpro_membership_level_profile_fields($user)
 								// Hide the expiration fields.
 								jQuery( this ).next( 'p' ).hide();
 							}
+
+							// Show the "level change" options.
+							jQuery( '#pmpro_level_change_options' ).show();
 						} );
 
 						// Show/hide the expiration date field when the checkbox is clicked.
@@ -338,6 +336,9 @@ function pmpro_membership_level_profile_fields($user)
 							} else {
 								jQuery( this ).next( 'input' ).hide();
 							}
+
+							// Show the "level change" options.
+							jQuery( '#pmpro_level_change_options' ).show();
 						} );
 
 						// Show/hide the expiration date and subscription fields when the "has level" checkbox is toggled.
@@ -357,6 +358,9 @@ function pmpro_membership_level_profile_fields($user)
 								// Show the subscription cancel fields.
 								jQuery( this ).parent().parent().next().next().find('label').show();
 							}
+
+							// Show the "level change" options.
+							jQuery( '#pmpro_level_change_options' ).show();
 						} );
 					} );
 				</script>
@@ -364,7 +368,7 @@ function pmpro_membership_level_profile_fields($user)
 			}
 		}
 
-		$tospage_id = pmpro_getOption( 'tospage' );
+		$tospage_id = get_option( 'pmpro_tospage' );
 		$consent_log = pmpro_get_consent_log( $user->ID, true );
 
 		if( !empty( $tospage_id ) || !empty( $consent_log ) ) {
@@ -529,6 +533,21 @@ function pmpro_membership_level_profile_fields_update() {
 			);
 		}
 	}
+
+	// If any level changes were made and the admin wants to send an email, do it.
+	if ( ! empty( $levels_to_add ) || ! empty( $levels_to_remove ) || ! empty( $levels_to_update ) ) {
+		if ( ! empty( $_REQUEST['pmpro_send_change_email'] ) ) {
+			$edited_user = get_userdata( $user_id );
+
+			// Send an email to the user.
+			$myemail = new PMProEmail();
+			$myemail->sendAdminChangeEmail( $edited_user );
+
+			// Send an email to the admin.
+			$myemail = new PMProEmail();
+			$myemail->sendAdminChangeAdminEmail( $edited_user );
+		}
+	}
 }
 add_action( 'show_user_profile', 'pmpro_membership_level_profile_fields' );
 add_action( 'edit_user_profile', 'pmpro_membership_level_profile_fields' );
@@ -551,7 +570,7 @@ function pmpro_membership_history_profile_fields( $user ) {
 	global $wpdb;
 
 	//Show all invoices for user
-	$invoices = $wpdb->get_results( $wpdb->prepare( "SELECT mo.*, UNIX_TIMESTAMP(mo.timestamp) as timestamp, du.code_id as code_id FROM $wpdb->pmpro_membership_orders mo LEFT JOIN $wpdb->pmpro_discount_codes_uses du ON mo.id = du.order_id WHERE mo.user_id = %d ORDER BY mo.timestamp DESC", $user->ID ) );
+	$invoices = $wpdb->get_results( $wpdb->prepare( "SELECT mo.*, du.code_id as code_id FROM $wpdb->pmpro_membership_orders mo LEFT JOIN $wpdb->pmpro_discount_codes_uses du ON mo.id = du.order_id WHERE mo.user_id = %d ORDER BY mo.timestamp DESC", $user->ID ) );
 
 	$subscriptions = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM $wpdb->pmpro_subscriptions WHERE user_id = %d ORDER BY startdate DESC", $user->ID ) );
 
@@ -561,7 +580,7 @@ function pmpro_membership_history_profile_fields( $user ) {
 
 	if ( $invoices || $subscriptions || $levelshistory ) { ?>
 		<hr />
-		<h3><?php esc_html_e( 'Member History', 'paid-memberships-pro' ); ?></h3>
+		<h2><?php esc_html_e( 'Member History', 'paid-memberships-pro' ); ?></h2>
 		<p><strong><?php esc_html_e( 'Total Paid', 'paid-memberships-pro' ); ?></strong> <?php echo pmpro_formatPrice( $totalvalue ); ?></p>
 		<ul id="member-history-filters" class="subsubsub">
 			<li id="member-history-filters-orders"><a href="javascript:void(0);" class="current orders tab"><?php esc_html_e( 'Order History', 'paid-memberships-pro' ); ?></a> <span>(<?php echo count( $invoices ); ?>)</span></li>
@@ -603,8 +622,8 @@ function pmpro_membership_history_profile_fields( $user ) {
 								echo esc_html( sprintf(
 									// translators: %1$s is the date and %2$s is the time.
 									__( '%1$s at %2$s', 'paid-memberships-pro' ),
-									esc_html( date_i18n( get_option( 'date_format' ), $invoice->timestamp ) ),
-									esc_html( date_i18n( get_option( 'time_format' ), $invoice->timestamp ) )
+									esc_html( date_i18n( get_option( 'date_format' ), strtotime( get_date_from_gmt( $invoice->timestamp ) ) ) ),
+									esc_html( date_i18n( get_option( 'time_format' ), strtotime( get_date_from_gmt( $invoice->timestamp ) ) ) )
 								) );
 							?>
 						</td>
@@ -943,7 +962,7 @@ function pmpro_member_profile_edit_form() {
 
 		// Show error messages.
 		if ( ! empty( $errors ) ) { ?>
-			<div class="<?php echo pmpro_get_element_class( 'pmpro_message pmpro_error', 'pmpro_error' ); ?>">
+			<div role="alert" class="<?php echo pmpro_get_element_class( 'pmpro_message pmpro_error', 'pmpro_error' ); ?>">
 				<?php
 					foreach ( $errors as $key => $value ) {
 						echo '<p>' . $value . '</p>';
@@ -954,7 +973,7 @@ function pmpro_member_profile_edit_form() {
 			// Save updated profile fields.
 			wp_update_user( $user );
 			?>
-			<div class="<?php echo pmpro_get_element_class( 'pmpro_message pmpro_success', 'pmpro_success' ); ?>">
+			<div role="alert" class="<?php echo pmpro_get_element_class( 'pmpro_message pmpro_success', 'pmpro_success' ); ?>">
 				<?php _e( 'Your profile has been updated.', 'paid-memberships-pro' ); ?>
 			</div>
 		<?php }
@@ -1107,7 +1126,7 @@ function pmpro_change_password_form() {
 	?>
 	<h2><?php esc_html_e( 'Change Password', 'paid-memberships-pro' ); ?></h2>
 	<?php if ( ! empty( $pmpro_msg ) ) { ?>
-		<div class="<?php echo pmpro_get_element_class( 'pmpro_message ' . $pmpro_msgt, $pmpro_msgt ); ?>">
+		<div role="alert" class="<?php echo pmpro_get_element_class( 'pmpro_message ' . $pmpro_msgt, $pmpro_msgt ); ?>">
 			<?php echo esc_html( $pmpro_msg ); ?>
 		</div>
 	<?php } ?>

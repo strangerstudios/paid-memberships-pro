@@ -43,6 +43,20 @@ class PMPro_Elementor_Content_Restriction extends PMPro_Elementor {
             )
         );
 
+		// Only add this option to Widgets as we can replace the contents in widgets, not sections.
+		if ( 'widget' === $element->get_type() ) {
+			$element->add_control(
+				'pmpro_no_access_message', array(
+					'label' => esc_html__( 'Show no access message', 'paid-memberships-pro' ),
+					'type' => \Elementor\Controls_Manager::SWITCHER,
+					'label_on' => esc_html__( 'Yes', 'paid-memberships-pro' ),
+					'label_off' => esc_html__( 'No', 'paid-memberships-pro' ),
+					'return_value' => 'yes',
+					'default' => 'no',
+				)
+			);
+		}
+
 	}
 
 	/**
@@ -82,9 +96,15 @@ class PMPro_Elementor_Content_Restriction extends PMPro_Elementor {
         }
 
 		$show = $this->pmpro_elementor_has_access( $widget );
-		
+		$widget_settings = $widget->get_active_settings();
+
 		if ( ! $show ) {
-			$content = '';
+			// Show no content message here or not
+			if ( $widget_settings['pmpro_no_access_message'] === 'yes' ) {
+				$content = pmpro_get_no_access_message( NULL, $widget_settings['pmpro_require_membership'] );
+			} else {
+				$content = '';
+			}
 		}
         
         return $content;

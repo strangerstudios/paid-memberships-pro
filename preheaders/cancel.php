@@ -6,6 +6,7 @@
 
 	// Get the level IDs they are requesting to cancel using the old ?level param.
 	if ( ! empty( $_REQUEST['level'] ) && empty( $_REQUEST['levelstocancel'] ) ) {
+		// TODO: Maybe show a warning here that this is deprecated.
 		$requested_ids = intval( $_REQUEST['level'] );
 	}
 
@@ -29,8 +30,6 @@
 		wp_redirect( add_query_arg( 'redirect_to', urlencode( $redirect ), pmpro_login_url() ) );
 		exit;
 	} else {
-		// Get the membership level for the current user.
-		$current_user->membership_level = pmpro_getMembershipLevelForUser( $current_user->ID) ;
 		// If user has no membership level, redirect to levels page.
 		if ( ! isset( $current_user->membership_level->ID ) ) {
 			wp_redirect( pmpro_url( 'levels' ) );
@@ -59,36 +58,85 @@
 		$pmpro_confirm = false;
 
 	if($pmpro_confirm) {
-        if(!empty($old_level_ids)) {
-        	$worked = true;
-			foreach($old_level_ids as $old_level_id) {
+        if ( empty( $old_level_ids ) ) {
+        	$old_level_ids = $wpdb->get_col( $wpdb->prepare( "SELECT DISTINCT(membership_id) FROM $wpdb->pmpro_memberships_users WHERE user_id = %d AND status = 'active'", $current_user->ID ) );
+        }
+
+		$worked = true;
+		foreach($old_level_ids as $old_level_id) {
+			// See if we have an active subscription for this level.
+			$subscriptions = PMPro_Subscription::get_subscriptions_for_user( $current_user->ID, $old_level_id );
+
+			// If the user does have a subscription for this level (possibly multiple), get the furthest next payment date that is after today.
+			$next_payment_date = false;
+			if ( ! empty( $subscriptions ) ) {
+				foreach ( $subscriptions as $sub ) {
+					$sub_next_payment_date = $sub->get_next_payment_date();
+					if ( ! empty( $sub_next_payment_date ) && $sub_next_payment_date > current_time( 'timestamp' ) && ( empty( $next_payment_date ) || $sub_next_payment_date > $next_payment_date ) ) {
+						$next_payment_date = $sub_next_payment_date;
+					}
+				}
+			}
+
+			// If we have a next payment date, we only want to set the enddate for the membership to the next payment date and cancel the subscription.
+			// Also add a filter in case a site wants to disable "cancel on next payment date" and cancel immediately.
+			if ( ! empty( $next_payment_date ) && apply_filters( 'pmpro_cancel_on_next_payment_date', true, $old_level_id, $current_user->ID ) ) {
+				// Set the enddate to the next payment date.
+				pmpro_set_expiration_date( $current_user->ID, $old_level_id, $next_payment_date );
+
+				// Cancel the subscriptions.
+				foreach ( $subscriptions as $sub ) {
+					$sub->cancel_at_gateway();
+				}
+
+				// Send an email to the member.
+				$myemail = new PMProEmail();
+				$myemail->sendCancelOnNextPaymentDateEmail( $current_user, $old_level_id );
+
+				// Send an email to the admin.
+				$myemail = new PMProEmail();
+				$myemail->sendCancelOnNextPaymentDateAdminEmail( $current_user, $old_level_id );
+			} else {
 				$one_worked = pmpro_cancelMembershipLevel($old_level_id, $current_user->ID, 'cancelled');
 				$worked = $worked && $one_worked !== false;
+
+				if ( $one_worked ) {
+					// Send an email to the member.
+					$myemail = new PMProEmail();
+					$myemail->sendCancelEmail( $current_user, $old_level_id );
+
+					// Send an email to the admin.
+					$myemail = new PMProEmail();
+					$myemail->sendCancelAdminEmail( $current_user, $old_level_id );
+				}
 			}
-        }
-		else {
-			$old_level_ids = $wpdb->get_col( $wpdb->prepare( "SELECT DISTINCT(membership_id) FROM $wpdb->pmpro_memberships_users WHERE user_id = %d AND status = 'active'", $current_user->ID ) );
-			$worked = pmpro_changeMembershipLevel(0, $current_user->ID, 'cancelled');
 		}
         
 		if($worked != false && empty($pmpro_error))
 		{
-			$pmpro_msg = __("Your membership has been cancelled.", 'paid-memberships-pro' );
-			$pmpro_msgt = "pmpro_success";
-
-			// Send a cancellation email for each cancelled level.
-			foreach ( $old_level_ids as $old_level_id ) {
-				// Send an email to the user.
-				$pmproemail = new PMProEmail();
-				$pmproemail->sendCancelEmail( $current_user, $old_level_id );
-
-				// Send an an email to the admin.
-				$pmproemail = new PMProEmail();
-				$pmproemail->sendCancelAdminEmail( $current_user, $old_level_id );
+			if ( count( $old_level_ids ) > 1 ) {
+				$pmpro_msg = __( 'Your memberships have been cancelled.', 'paid-memberships-pro' );
+			} else {
+				$pmpro_msg = __("Your membership has been cancelled.", 'paid-memberships-pro' );
+				if ( ! empty($old_level_ids[0] ) ) {
+					$level = pmpro_getSpecificMembershipLevelForUser( $current_user->ID, $old_level_ids[0] );
+					if ( ! empty( $level ) && ! empty( $level->enddate ) ) {
+						$pmpro_msg = sprintf( __( 'Your recurring subscription has been cancelled. Your active membership will expire on %s.', 'paid-memberships-pro' ), date_i18n( get_option( 'date_format' ), $level->enddate ) );
+					}
+				}
 			}
+			$pmpro_msgt = "pmpro_success";
 		} else {
 			global $pmpro_error;
 			$pmpro_msg = $pmpro_error;
 			$pmpro_msgt = "pmpro_error";
 		}
 	}
+
+	wp_register_script(
+		'pmpro_cancel',
+		plugins_url( 'js/pmpro-cancel.js', PMPRO_BASE_FILE ),
+		array( 'jquery' ),
+		PMPRO_VERSION
+	);
+	wp_enqueue_script( 'pmpro_cancel' );
