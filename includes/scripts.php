@@ -146,6 +146,7 @@ function pmpro_admin_enqueue_scripts() {
     wp_localize_script( 'pmpro_admin', 'pmpro', array(
         'all_levels' => $all_levels,
         'all_level_values_and_labels' => $all_level_values_and_labels,
+        'checkout_url' => pmpro_url( 'checkout' ),
         'user_fields_blank_group' => $empty_field_group_html,
         'user_fields_blank_field' => $empty_field_html,
         // We want the core WP translation so we can check for it in JS.
