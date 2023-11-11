@@ -1,4 +1,9 @@
 /**
+ * External dependencies
+ */
+import classnames from 'classnames';
+
+/**
  * Retrieves the translation of text.
  *
  * @see https://developer.wordpress.org/block-editor/reference-guides/packages/packages-i18n/
@@ -6,29 +11,92 @@
 import { __ } from "@wordpress/i18n";
 
 /**
- * React hook that is used to mark the block wrapper element.
- * It provides all the necessary props like the class name.
- *
- * @see https://developer.wordpress.org/block-editor/reference-guides/packages/packages-block-editor/#useblockprops
+ * WordPress dependencies
  */
-import { useBlockProps } from "@wordpress/block-editor";
+import {
+	AlignmentControl,
+	BlockControls,
+	RichText,
+	useBlockProps,
+	__experimentalUseBorderProps as useBorderProps,
+	__experimentalGetSpacingClassesAndStyles as useSpacingProps,
+	__experimentalUseColorProps as useColorProps,
+	__experimentalGetElementClassName,
+} from '@wordpress/block-editor';
 
 /**
- * Lets webpack process CSS, SASS or SCSS files referenced in JavaScript files.
- * Those files can contain any CSS code that gets applied to the editor.
- *
- * @see https://www.npmjs.com/package/@wordpress/scripts#using-css
- */
-import "./editor.scss";
-
-/**
- * The edit function describes the structure of your block in the context of the
- * editor. This represents what the editor will render when the block is used.
+ * Render the Level Checkout Button block in the editor.
  *
  * @see https://developer.wordpress.org/block-editor/reference-guides/block-api/block-edit-save/#edit
  *
  * @return {WPElement} Element to render.
  */
-export default function Edit() {
-  return [<div {...useBlockProps()}>{"Checkout Button"}</div>];
+export default function Edit(props) {
+	const {
+		attributes,
+		setAttributes,
+		className,
+	} = props;
+	const {
+		textAlign,
+		placeholder,
+		style,
+		text,
+	} = attributes;
+
+	function setButtonText( newText ) {
+		setAttributes( { text: newText } );
+	}
+
+	const borderProps = useBorderProps( attributes );
+	const colorProps = useColorProps( attributes );
+	const spacingProps = useSpacingProps( attributes );
+	const blockProps = useBlockProps();
+
+	const wrapperClasses = classnames(
+		{ [ `has-text-align-${ textAlign }` ]: textAlign },
+	);
+
+	return [
+		<>
+		<div className={wrapperClasses}>
+			<BlockControls>
+				<AlignmentControl
+					value={ textAlign }
+					onChange={ ( nextAlign ) => {
+						setAttributes( { textAlign: nextAlign } );
+					} }
+				/>
+			</BlockControls>
+			<RichText
+				{ ...blockProps }
+				allowedFormats={ [] }
+				aria-label={ __( 'Button text' ) }
+				placeholder={ placeholder || __( 'Buy Now', 'paid-memberships-pro' ) }
+				value={ text }
+				onChange={ ( value ) => setButtonText( value ) }
+				withoutInteractiveFormatting
+				className={ classnames(
+					className,
+					'wp-block-button__link',
+					colorProps.className,
+					borderProps.className,
+					{
+						// For backwards compatibility add style that isn't
+						// provided via block support.
+						'no-border-radius': style?.border?.radius === 0,
+					},
+					__experimentalGetElementClassName( 'button' )
+				) }
+				style={ {
+					...borderProps.style,
+					...colorProps.style,
+					...spacingProps.style,
+					textAlign: textAlign,
+				} }
+				identifier="text"
+			/>
+		</div>
+		</>,
+	];
 }

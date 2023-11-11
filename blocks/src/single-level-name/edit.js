@@ -1,4 +1,9 @@
 /**
+ * External dependencies
+ */
+import classnames from 'classnames';
+
+/**
  * Retrieves the translation of text.
  *
  * @see https://developer.wordpress.org/block-editor/reference-guides/packages/packages-i18n/
@@ -6,43 +11,75 @@
 import { __ } from "@wordpress/i18n";
 
 /**
- * React hook that is used to mark the block wrapper element.
- * It provides all the necessary props like the class name.
- *
- * @see https://developer.wordpress.org/block-editor/reference-guides/packages/packages-block-editor/#useblockprops
+ * WordPress dependencies
  */
-import { useBlockProps } from "@wordpress/block-editor";
+import { AlignmentControl, HeadingLevelDropdown, BlockControls, useBlockProps } from '@wordpress/block-editor';
+import { Fragment } from '@wordpress/element';
 
 /**
- * Lets webpack process CSS, SASS or SCSS files referenced in JavaScript files.
- * Those files can contain any CSS code that gets applied to the editor.
- *
- * @see https://www.npmjs.com/package/@wordpress/scripts#using-css
- */
-import "./editor.scss";
-
-/**
- * The edit function describes the structure of your block in the context of the
- * editor. This represents what the editor will render when the block is used.
+ * Render the Single Level Name Block in the editor.
  *
  * @see https://developer.wordpress.org/block-editor/reference-guides/block-api/block-edit-save/#edit
  *
  * @return {WPElement} Element to render.
  */
 export default function Edit(props) {
-  const getName = (level) => {
-    return pmpro.all_levels_formatted_text[level]
-      ? pmpro.all_levels_formatted_text[level].name
-      : null;
-  };
+	const getName = (level) => {
+		return pmpro.all_levels_formatted_text[level]
+			? pmpro.all_levels_formatted_text[level].name
+			: null;
+	};
 
-  return [
-    <div {...useBlockProps()}>
-      {getName(props.attributes.selected_level) ? (
-        <p>{getName(props.attributes.selected_level)}</p>
-      ) : (
-        <p style={{ color: "grey" }}>[Level Name Placeholder]</p>
-      )}
-    </div>,
-  ];
+	const { attributes: { textAlign, level }, setAttributes } = props;
+
+	const TagName = 'h' + level;
+
+	const blockProps = useBlockProps( {
+		className: classnames( {
+			[ `has-text-align-${ textAlign }` ]: textAlign,
+		} ),
+	} );
+
+	let titleElement;
+
+	const levelName = getName(props.attributes.selected_membership_level);
+
+	if (levelName) {
+		// If levelName exists, use it and set it as dangerouslySetInnerHTML
+		titleElement = (
+			<TagName
+				{...blockProps}
+				dangerouslySetInnerHTML={{ __html: levelName }}
+			/>
+		);
+	} else {
+		// If levelName doesn't exist, use the placeholder text as children
+		titleElement = (
+			<TagName {...blockProps}>
+				{ __('Level Name', 'paid-memberships-pro') }
+			</TagName>
+		);
+	}
+
+	return [
+		<>
+			<Fragment>
+				<BlockControls>
+					<HeadingLevelDropdown
+						value={ level }
+						onChange={ ( newLevel ) =>
+							setAttributes( { level: newLevel } )
+						}
+					/>
+					<AlignmentControl
+						value={ textAlign }
+						onChange={ ( nextAlign ) => {
+							setAttributes( { textAlign: nextAlign } );
+						} }
+					/>
+				</BlockControls>
+			</Fragment>
+			{ titleElement }
+		</>,
+	];
 }
