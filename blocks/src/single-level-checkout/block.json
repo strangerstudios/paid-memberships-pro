@@ -21,7 +21,8 @@
 			"__experimentalRole": "content"
 		},
 		"placeholder": {
-			"type": "string"
+			"type": "string",
+			"default": "Buy Now"
 		},
 		"backgroundColor": {
 			"type": "string"
@@ -31,7 +32,6 @@
 		}
 	},
 	"supports": {
-		"align": [ "wide", "full" ],
 		"color": {
 			"__experimentalSkipSerialization": true,
 			"__experimentalDefaultControls": {

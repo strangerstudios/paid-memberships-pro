@@ -24,10 +24,15 @@ export default function Edit(props) {
 		{ value: 0, label: __("Choose a level", "paid-memberships-pro") },
 	].concat(pmpro.all_level_values_and_labels);
 	const {
-		attributes: { selected_membership_level },
+		attributes: { layout, selected_membership_level },
 		setAttributes,
 		isSelected,
 	} = props;
+
+	// Default to constrained layout if not set.
+	if ( ! layout ) {
+		setAttributes( { layout: { type: 'constrained' } } );
+	}
 
 	const element = select("core/block-editor").getBlock(props.clientId);
 	element.innerBlocks.forEach((child) => {

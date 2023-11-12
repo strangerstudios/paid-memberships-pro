@@ -39,8 +39,8 @@ export default function Edit(props) {
 	} = props;
 	const {
 		textAlign,
-		placeholder,
 		style,
+		placeholder,
 		text,
 	} = attributes;
 
@@ -53,13 +53,18 @@ export default function Edit(props) {
 	const spacingProps = useSpacingProps( attributes );
 	const blockProps = useBlockProps();
 
-	const wrapperClasses = classnames(
+	const wrapperClasses1 = classnames(
+		'wp-block-buttons',
 		{ [ `has-text-align-${ textAlign }` ]: textAlign },
+	);
+
+	const wrapperClasses2 = classnames(
+		'wp-block-button',
 	);
 
 	return [
 		<>
-		<div className={wrapperClasses}>
+		<div className={wrapperClasses1}><div className={wrapperClasses2}>
 			<BlockControls>
 				<AlignmentControl
 					value={ textAlign }
@@ -71,14 +76,15 @@ export default function Edit(props) {
 			<RichText
 				{ ...blockProps }
 				allowedFormats={ [] }
-				aria-label={ __( 'Button text' ) }
-				placeholder={ placeholder || __( 'Buy Now', 'paid-memberships-pro' ) }
+				aria-label={ __( 'Button text', 'paid-memberships-pro' ) }
+				placeholder={ placeholder }
 				value={ text }
 				onChange={ ( value ) => setButtonText( value ) }
 				withoutInteractiveFormatting
 				className={ classnames(
 					className,
 					'wp-block-button__link',
+					blockProps.className,
 					colorProps.className,
 					borderProps.className,
 					{
@@ -89,6 +95,7 @@ export default function Edit(props) {
 					__experimentalGetElementClassName( 'button' )
 				) }
 				style={ {
+					...blockProps.style,
 					...borderProps.style,
 					...colorProps.style,
 					...spacingProps.style,
@@ -96,7 +103,7 @@ export default function Edit(props) {
 				} }
 				identifier="text"
 			/>
-		</div>
+		</div></div>
 		</>,
 	];
 }

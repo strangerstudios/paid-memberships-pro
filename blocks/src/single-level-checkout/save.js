@@ -19,12 +19,9 @@ export default function save( { attributes, className } ) {
 	const {
 		textAlign,
 		style,
+		placeholder,
 		text,
 	} = attributes;
-
-	if ( ! text ) {
-		return null;
-	}
 
 	const TagName = 'a';
 
@@ -40,6 +37,7 @@ export default function save( { attributes, className } ) {
 	const spacingProps = getSpacingClassesAndStyles( attributes );
 	const buttonClasses = classnames(
 		'wp-block-button__link',
+		blockProps.className,
 		colorProps.className,
 		borderProps.className,
 		{
@@ -56,22 +54,25 @@ export default function save( { attributes, className } ) {
 		...spacingProps.style,
 	};
 
-	const wrapperClasses = classnames(
-		blockProps.className,
-		'wp-block-button',
+	const wrapperClasses1 = classnames(
+		'wp-block-buttons',
 		{ [ `has-text-align-${ textAlign }` ]: textAlign },
 	);
 
+	const wrapperClasses2 = classnames(
+		'wp-block-button',
+	);
+
 	return (
-		<div className={wrapperClasses}>
+		<div className={ wrapperClasses1 }><div className={ wrapperClasses2 }>
 			<RichText.Content
 			  	{...blockProps}
 				tagName={ TagName }
 				className={ buttonClasses }
 				href={ url( attributes.selected_membership_level ) }
 				style={ buttonStyle }
-				value={ text }
+				value={ text || placeholder }
 			/>
-		</div>
+		</div></div>
 	);
 }

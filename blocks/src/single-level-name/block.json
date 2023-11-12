@@ -21,7 +21,6 @@
 		}
 	},
 	"supports": {
-		"align": [ "wide", "full" ],
 		"anchor": true,
 		"ariaLabel": true,
 		"html": false,
