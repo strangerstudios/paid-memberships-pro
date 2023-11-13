@@ -246,6 +246,30 @@ function pmpro_admin_bar_menu() {
 			)
 		);
 	}
+
+	// Add menu item for adding a new member.
+	if ( current_user_can( 'manage_options' ) ) {
+		$wp_admin_bar->add_menu(
+			array(
+				'id' => 'pmpro-new-member',
+				'parent' => 'new-content',
+				'title' => __( 'Member', 'paid-memberships-pro' ),
+				'href' => admin_url( 'admin.php?page=pmpro-member' )
+			)
+		);
+	}
+
+	// Add a menu item for editing the current user's member information.
+	if ( current_user_can( 'manage_options' ) ) {
+		$wp_admin_bar->add_menu(
+			array(
+				'id' => 'pmpro-edit-member',
+				'parent' => 'user-actions',
+				'title' => __( 'Edit Member', 'paid-memberships-pro' ),
+				'href' => admin_url( 'admin.php?page=pmpro-member&user_id=' . get_current_user_id() )
+			)
+		);
+	}
 }
 add_action( 'admin_bar_menu', 'pmpro_admin_bar_menu', 1000);
 
