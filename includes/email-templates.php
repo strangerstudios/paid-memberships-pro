@@ -4,7 +4,7 @@
  */
 
  global $pmpro_email_templates_defaults;
- $check_gateway_name = get_option( 'pmpro_check_gateway_name' ) ? "pay by " . get_option( 'pmpro_check_gateway_name' ) : __( 'Check', 'paid-memberships-pro' );
+ $check_gateway_label = get_option( 'pmpro_check_gateway_label' ) ? get_option( 'pmpro_check_gateway_label' ) : __( 'Check', 'paid-memberships-pro' );
  /**
  * Default email templates.
  */
@@ -166,7 +166,7 @@ $pmpro_email_templates_defaults = array(
 	),
 	'checkout_check'           => array(
 		'subject'     => __( "Your membership confirmation for !!sitename!!", 'paid-memberships-pro' ),
-		'description' => __( str_replace('check', $check_gateway_name, 'Checkout - check' ), 'paid-memberships-pro' ),
+		'description' => sprintf( __('Checkout - %s', 'paid-memberships-pro' ), $check_gateway_label ),
 		'body' => __( '<p>Thank you for your membership to !!sitename!!. Your membership account is now active.</p>
 
 !!membership_level_confirmation_message!!
@@ -186,14 +186,15 @@ $pmpro_email_templates_defaults = array(
 </p>
 
 <p>Log in to your membership account here: !!login_url!!</p>', 'paid-memberships-pro' ),
-		'help_text' =>  __( str_replace('Pay by Check', $check_gateway_name,'This is a membership confirmation welcome email sent to a new member or to existing members that change their level using the "Pay by Check" gateway.'), 'paid-memberships-pro' )
+		'help_text' => sprintf( __('This is a membership confirmation welcome email sent to a new member or to existing members that change their level using the "Pay by %s" gateway.','paid-memberships-pro' ), $check_gateway_label ) 
+	
 	),
 	'checkout_check_admin'     => array(
 		'subject'     => __( "Member checkout for !!membership_level_name!! at !!sitename!!", 'paid-memberships-pro' ),
-		'description' => __( str_replace( 'check', $check_gateway_name, 'Checkout - check (admin)' ), 'paid-memberships-pro'),
-		'body' =>  __( str_replace('pay by check', $check_gateway_name, '<p>There was a new member checkout at !!sitename!!.</p>
+		'description' => sprintf( __('Checkout - %s (admin)', 'paid-memberships-pro') , $check_gateway_label ),
+		'body' =>  sprintf (__( '<p>There was a new member checkout at !!sitename!!.</p>
 
-<p><strong>They have chosen to pay by check.</strong></p>
+<p><strong>They have chosen to pay by %s.</strong></p>
 
 <p>Below are details about the new membership account and a receipt for the initial membership invoice.</p>
 
@@ -207,10 +208,10 @@ $pmpro_email_templates_defaults = array(
 	Total Billed: !!invoice_total!!
 </p>
 
-<p>Log in to your membership account here: !!login_url!!</p>' ), 'paid-memberships-pro' ),
-		'help_text' =>  __( str_replace( "Pay by Check", $check_gateway_name, 'This is the membership confirmation email sent to the site administrator for every membership checkout using the "Pay by Check" gateway.'), 'paid-memberships-pro' )
+<p>Log in to your membership account here: !!login_url!!</p>','paid-memberships-pro' ),  $check_gateway_label ),
+		'help_text' =>  sprintf( __('This is the membership confirmation email sent to the site administrator for every membership checkout using the "Pay by %s" gateway.', 'paid-memberships-pro' ),  $check_gateway_label )
 	),
-	'checkout_express'         => array(
+	'checkout_express'	=> array(
 		'subject'     => __( "Your membership confirmation for !!sitename!!", 'paid-memberships-pro' ),
 		'description' => __('Checkout - PayPal Express', 'paid-memberships-pro'),
 		'body' => __( '<p>Thank you for your membership to !!sitename!!. Your membership account is now active.</p>

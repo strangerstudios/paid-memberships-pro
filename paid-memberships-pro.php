@@ -189,9 +189,9 @@ function pmpro_gateways() {
 		$pmpro_gateways[''] = __( 'Default', 'paid-memberships-pro' );
 	}
 
-	$check_gateway_name = get_option( 'pmpro_check_gateway_name' );
-	if( !empty( $check_gateway_name ) ) {
-		$pmpro_gateways['check'] =  $check_gateway_name;
+	$check_gateway_label = get_option( 'pmpro_check_gateway_label' );
+	if( !empty( $check_gateway_label ) ) {
+		$pmpro_gateways['check'] =  $check_gateway_label;
 	}
 
 	return apply_filters( 'pmpro_gateways', $pmpro_gateways );

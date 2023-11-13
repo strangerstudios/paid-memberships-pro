@@ -63,7 +63,7 @@
 				'nuclear_HTTPS',
 				'gateway_environment',
 				'instructions',
-				'check_gateway_name',
+				'check_gateway_label',
 				'currency',
 				'use_ssl',
 				'tax_state',
@@ -84,8 +84,8 @@
 			$check_options = PMProGateway_check::getGatewayOptions();
 
 			//default to 'check' if empty.
-			if( empty( $check_options['check_gateway_name'] ) ) {
-				$check_options['check_gateway_name'] = 'check';
+			if( empty( $check_options['check_gateway_label'] ) ) {
+				$check_options['check_gateway_label'] = 'check';
 			}
 			
 			//merge with others.
@@ -105,7 +105,7 @@
 		<tr class="pmpro_settings_divider gateway gateway_check" <?php if($gateway != "check") { ?>style="display: none;"<?php } ?>>
 			<td colspan="2">
 				<hr />
-				<h2><?php esc_html_e( str_replace("Check", $values['check_gateway_name'],  'Pay by Check Settings' ),'paid-memberships-pro' ); ?></h2>
+				<h2><?php esc_html_e( sprintf( 'Pay by Check Settings',$values['check_gateway_label'] ), 'paid-memberships-pro' ); ?></h2>
 			</td>
 		</tr>
 		<tr class="gateway gateway_check" <?php if($gateway != "check") { ?>style="display: none;"<?php } ?>>
@@ -114,17 +114,17 @@
 			</th>
 			<td>
 				<textarea id="instructions" name="instructions" rows="3" cols="50" class="large-text"><?php echo wpautop(  wp_unslash( $values['instructions'] ) ); ?></textarea>
-				<p class="description"><?php esc_html_e( str_replace( "Check", $values['check_gateway_name'], 'Who to write the Check out to. Where to mail it. Shown on checkout, confirmation, and invoice pages.',), 'paid-memberships-pro' );?></p>
+				<p class="description"><?php  esc_html_e(sprintf('Who to write the %s out to. Where to mail it. Shown on checkout, confirmation, and invoice pages.', $values['check_gateway_label']), 'paid-memberships-pro' );?></p>
 			</td>
 		</tr>
 		</tr>
 		<tr class="gateway gateway_check" <?php if($gateway != "check") { ?>style="display: none;"<?php } ?>>
 			<th scope="row" valign="top">
-				<label for="check_gateway_name"><?php esc_html_e('gateway name label', 'paid-memberships-pro' );?></label>
+				<label for="check_gateway_label"><?php esc_html_e('gateway name label', 'paid-memberships-pro' );?></label>
 			</th>
 			<td>
-				<input type="text" id="check_gateway_name" name="check_gateway_name" class="regular-text code" value="<?php echo esc_attr( $values['check_gateway_name'] ); ?>"></input>
-				<p class="description"><?php esc_html_e('How to label the gateway in the frontend, default to check. In the DB always check.', 'paid-memberships-pro' );?></p>
+				<input placeholder="<?php esc_html_e('Pay by check', 'paid-memberships-pro') ?> " type="text" id="check_gateway_label" name="check_gateway_label" class="regular-text code" value="<?php echo esc_attr( $values['check_gateway_label'] ); ?>"></input>
+				<p class="description"><?php esc_html_e('Enter the wording of your accepted payment type. If empty, defaults to Pay By Check', 'paid-memberships-pro' );?></p>
 			</td>
 		</tr>
 		<?php
