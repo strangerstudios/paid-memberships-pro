@@ -49,7 +49,6 @@ function pmpro_register_block_types() {
 	register_block_type( PMPRO_DIR . '/blocks/build/single-level-expiration' );
 	register_block_type( PMPRO_DIR . '/blocks/build/single-level-description' );
 	register_block_type( PMPRO_DIR . '/blocks/build/single-level-price' );
-	register_block_type( PMPRO_DIR . '/blocks/build/membership-excluded' );
 }
 add_action( 'init', 'pmpro_register_block_types' );
 /**

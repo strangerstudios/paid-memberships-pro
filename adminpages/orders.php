@@ -413,9 +413,11 @@ require_once( dirname( __FILE__ ) . '/admin_header.php' ); ?>
 					<?php
 						if ( in_array( 'membership_id', $read_only_fields ) && $order_id > 0 ) {
 						echo esc_html( $order->membership_id );
-						} else { ?>
-							<input id="membership_id" name="membership_id" type="text" value="<?php echo esc_attr( $order->membership_id ); ?>" size="10" />
-						<?php
+						} else { 
+							$membership_id = ! empty( $_REQUEST['membership_id'] ) ? intval( $_REQUEST['membership_id'] ) : $order->membership_id;
+							?>
+							<input id="membership_id" name="membership_id" type="text" value="<?php echo esc_attr( $membership_id ); ?>" size="10" />
+							<?php
 						}
 					?>
 				</td>
@@ -908,7 +910,7 @@ require_once( dirname( __FILE__ ) . '/admin_header.php' ); ?>
 
 <?php } else { ?>
 
-	<form id="posts-filter" method="get" action="">
+	<form id="order-list-form" method="get" action="">
 
 		<h1 class="wp-heading-inline"><?php esc_html_e( 'Orders', 'paid-memberships-pro' ); ?></h1>
 		<a href="<?php echo esc_url( add_query_arg( array( 'page' => 'pmpro-orders', 'order' => -1 ), admin_url( 'admin.php' ) ) ); ?>" class="page-title-action pmpro-has-icon pmpro-has-icon-plus"><?php esc_html_e( 'Add New Order', 'paid-memberships-pro' ); ?></a>
