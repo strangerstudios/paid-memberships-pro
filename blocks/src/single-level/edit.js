@@ -71,7 +71,7 @@ export default function Edit(props) {
 						},
 					],
 					[
-						"pmpro/single-level-checkout",
+						"pmpro/checkout-button",
 						{
 							selected_membership_level: selected_membership_level
 						},

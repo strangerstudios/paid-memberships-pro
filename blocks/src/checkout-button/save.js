@@ -22,10 +22,6 @@ export default function save( { attributes, className } ) {
 		text,
 	} = attributes;
 
-	if ( ! text ) {
-		return null;
-	}
-
 	const TagName = 'a';
 
 	const url = ( level ) =>{
@@ -58,17 +54,17 @@ export default function save( { attributes, className } ) {
 		...spacingProps.style,
 	};
 
-	const wrapperClasses1 = classnames(
+	const wrapperButtonsDiv = classnames(
 		'wp-block-buttons',
 		{ [ `has-text-align-${ textAlign }` ]: textAlign },
 	);
 
-	const wrapperClasses2 = classnames(
+	const wrapperButtonDiv = classnames(
 		'wp-block-button',
 	);
 
 	return (
-		<div className={wrapperClasses1}><div className={wrapperClasses2}>
+		<div className={wrapperButtonsDiv}><div className={wrapperButtonDiv}>
 			<RichText.Content
 			  	{...blockProps}
 				tagName={ TagName }

@@ -18,13 +18,14 @@ import {
 	BlockControls,
 	RichText,
 	useBlockProps,
-    InspectorControls,
+	InspectorControls,
 	__experimentalUseBorderProps as useBorderProps,
 	__experimentalGetSpacingClassesAndStyles as useSpacingProps,
 	__experimentalUseColorProps as useColorProps,
 	__experimentalGetElementClassName,
 } from '@wordpress/block-editor';
 import { PanelBody, SelectControl } from '@wordpress/components';
+import { useSelect } from '@wordpress/data';
 
 /**
  * Render the Level Checkout Button block in the editor.
@@ -37,7 +38,7 @@ export default function Edit(props) {
 	const all_levels = [
 		{ value: 0, label: __( 'Choose a level', 'paid-memberships-pro' ) },
 	].concat(pmpro.all_level_values_and_labels);
-    const {
+	const {
 		attributes,
 		setAttributes,
 		className,
@@ -48,8 +49,8 @@ export default function Edit(props) {
 		style,
 		text,
 		level,
-        css_class,
-        selected_membership_level,
+		css_class,
+		selected_membership_level,
 	} = attributes;
 
 	// Handle migration of the level attribute from PMPro < 3.0.
@@ -73,7 +74,22 @@ export default function Edit(props) {
 		delete attributes.css_class;
 	}
 
-    function setButtonText( newText ) {
+	// Set the constant whether this block is a child of the Single Level block.
+	const inSingleLevelBlock = useSelect( ( select ) => {
+		// Retrieves the block editor's store
+		const { getBlockParents, getBlockName } = select( 'core/block-editor' );
+
+		// Gets all the ancestor blocks' client IDs
+		const parentClientIds = getBlockParents( props.clientId );
+
+		// Map parent client IDs to their block names
+		const parentBlockNames = parentClientIds.map(parentId => getBlockName(parentId));
+
+		// Check if the 'pmpro/single-level' block name is in the parent block names
+		return parentBlockNames.includes('pmpro/single-level');
+	}, [ props.clientId ] );
+
+	function setButtonText( newText ) {
 		setAttributes( { text: newText } );
 	}
 
@@ -82,31 +98,33 @@ export default function Edit(props) {
 	const spacingProps = useSpacingProps( attributes );
 	const blockProps = useBlockProps();
 
-	const wrapperClasses1 = classnames(
+	const wrapperButtonsDiv = classnames(
 		'wp-block-buttons',
 		{ [ `has-text-align-${ textAlign }` ]: textAlign },
 	);
 
-	const wrapperClasses2 = classnames(
+	const wrapperButtonDiv = classnames(
 		'wp-block-button',
 	);
 
 	return [
-        <>
-		<div className={wrapperClasses1}><div className={wrapperClasses2}>
-            <InspectorControls>
-				<PanelBody
-					title={__( 'Checkout Button Settings', 'paid-memberships-pro' ) }
-					initialOpen={true}
-				>
-					<SelectControl
-						label={__( 'Choose a Level', 'paid-memberships-pro' )}
-						value={ selected_membership_level }
-						options={ all_levels }
-						onChange={(selected_membership_level) => setAttributes({ selected_membership_level })}
-					/>
-				</PanelBody>
-			</InspectorControls>
+		<>
+		<div className={wrapperButtonsDiv}><div className={wrapperButtonDiv}>
+			{ ! inSingleLevelBlock && (
+				<InspectorControls>
+					<PanelBody
+						title={__( 'Checkout Button Settings', 'paid-memberships-pro' ) }
+						initialOpen={true}
+					>
+						<SelectControl
+							label={__( 'Choose a Level', 'paid-memberships-pro' )}
+							value={ selected_membership_level }
+							options={ all_levels }
+							onChange={(selected_membership_level) => setAttributes({ selected_membership_level })}
+						/>
+					</PanelBody>
+				</InspectorControls>
+			) }
 			<BlockControls>
 				<AlignmentControl
 					value={ textAlign }
