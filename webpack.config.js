@@ -123,13 +123,6 @@ config.entry = {
     "single-level",
     "index.js"
   ),
-  "single-level-checkout/index": path.resolve(
-    process.cwd(),
-    "blocks",
-    "src",
-    "single-level-checkout",
-    "index.js"
-  ),
   "single-level-name/index": path.resolve(
     process.cwd(),
     "blocks",
