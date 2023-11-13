@@ -87,8 +87,7 @@ export default function Edit(props) {
 
 		// Check if the 'pmpro/single-level' block name is in the parent block names
 		return parentBlockNames.includes('pmpro/single-level');
-	  }, [ props.clientId ] );
-console.log( inSingleLevelBlock );
+	}, [ props.clientId ] );
 
 	function setButtonText( newText ) {
 		setAttributes( { text: newText } );
