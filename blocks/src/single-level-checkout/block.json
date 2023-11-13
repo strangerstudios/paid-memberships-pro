@@ -1,0 +1,81 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "pmpro/single-level-checkout",
+	"title": "Level Checkout Button",
+	"category": "pmpro",
+	"description": "A button to send users to the checkout page for this membership level.",
+	"parent": ["pmpro/single-level"],
+	"attributes" : {
+		"selected_membership_level": {
+			"type": "string",
+			"default": ""
+		},
+		"textAlign": {
+			"type": "string"
+		},
+		"text": {
+			"type": "string",
+			"source": "html",
+			"selector": "a,button",
+			"__experimentalRole": "content"
+		},
+		"placeholder": {
+			"type": "string",
+			"default": "Buy Now"
+		},
+		"backgroundColor": {
+			"type": "string"
+		},
+		"textColor": {
+			"type": "string"
+		}
+	},
+	"supports": {
+		"color": {
+			"__experimentalSkipSerialization": true,
+			"__experimentalDefaultControls": {
+				"background": true,
+				"text": true
+			}
+		},
+		"typography": {
+			"fontSize": true,
+			"lineHeight": true,
+			"__experimentalFontFamily": true,
+			"__experimentalFontWeight": true,
+			"__experimentalFontStyle": true,
+			"__experimentalTextTransform": true,
+			"__experimentalTextDecoration": true,
+			"__experimentalLetterSpacing": true,
+			"__experimentalDefaultControls": {
+				"fontSize": true
+			}
+		},
+		"reusable": false,
+		"shadow": true,
+		"spacing": {
+			"margin": true,
+			"padding": [ "horizontal", "vertical" ],
+			"__experimentalDefaultControls": {
+				"padding": true
+			}
+		},
+		"__experimentalBorder": {
+			"color": true,
+			"radius": true,
+			"style": true,
+			"width": true,
+			"__experimentalSkipSerialization": true,
+			"__experimentalDefaultControls": {
+				"color": true,
+				"radius": true,
+				"style": true,
+				"width": true
+			}
+		}
+	},
+	"textdomain": "paid-memberships-pro",
+	"editorScript": "file:./index.js",
+	"render": "file:./render.php"
+}

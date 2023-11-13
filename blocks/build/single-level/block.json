@@ -1,0 +1,31 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "pmpro/single-level",
+	"title": "Single Membership Level",
+	"category": "pmpro",
+	"icon": "groups",
+	"description": "Holds single membership level parts.",
+	"attributes" : {
+		"levels": {
+			"type": "array",
+			"default": []
+		},
+		"uid": {
+			"type": "string",
+			"default": ""
+		},
+		"selected_level": {
+			"type": "string",
+			"default": ""
+		}
+	},
+	"supports": {
+		"html": false
+	},
+	"textdomain": "paid-memberships-pro",
+	"editorScript": "file:./index.js",
+	"editorStyle": "file:./index.css",
+	"style": "file:./style-index.css",
+	"render": "file:./render.php"
+}

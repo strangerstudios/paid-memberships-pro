@@ -43,6 +43,12 @@ function pmpro_register_block_types() {
 	register_block_type( PMPRO_DIR . '/blocks/build/login' );
 	register_block_type( PMPRO_DIR . '/blocks/build/member-profile-edit' );
 	register_block_type( PMPRO_DIR . '/blocks/build/membership' );
+	register_block_type( PMPRO_DIR . '/blocks/build/single-level' );
+	register_block_type( PMPRO_DIR . '/blocks/build/single-level-checkout' );
+	register_block_type( PMPRO_DIR . '/blocks/build/single-level-name' );
+	register_block_type( PMPRO_DIR . '/blocks/build/single-level-expiration' );
+	register_block_type( PMPRO_DIR . '/blocks/build/single-level-description' );
+	register_block_type( PMPRO_DIR . '/blocks/build/single-level-price' );
 }
 add_action( 'init', 'pmpro_register_block_types' );
 /**
