@@ -815,6 +815,9 @@ if ( empty( $submit ) ) {
 	}
 }
 
+// Preventing conflicts with old checkout templates that depend on the $pmpro_level global being set.
+pmpro_getAllLevels();
+
 /**
  * Hook to run actions after the checkout preheader is loaded.
  * @since 2.1
