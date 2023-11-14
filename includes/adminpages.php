@@ -271,7 +271,13 @@ function pmpro_admin_bar_menu() {
 				'id' => 'pmpro-edit-member',
 				'parent' => 'user-actions',
 				'title' => __( 'Edit Member', 'paid-memberships-pro' ),
-				'href' => admin_url( 'admin.php?page=pmpro-member&user_id=' . get_current_user_id() )
+				'href' => add_query_arg(
+					array(
+						'page' => 'pmpro-member',
+						'user_id' => get_current_user_id(),
+					),
+					admin_url( 'admin.php' )
+				)
 			)
 		);
 	}
