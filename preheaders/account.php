@@ -34,3 +34,6 @@ if ( ! empty( $current_user->ID ) && empty( $current_user->membership_level->ID 
 		exit;
 	}
 }
+
+// Preventing conflicts with old account page templates and custom code that depend on the $pmpro_level global being set.
+pmpro_getAllLevels();
