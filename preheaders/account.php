@@ -1,5 +1,5 @@
 <?php
-global $current_user, $pmpro_msg, $pmpro_msgt, $pmpro_levels, $pmpro_pages;
+global $current_user, $pmpro_msg, $pmpro_msgt, $pmpro_pages;
 
 // Redirect to login.
 if ( ! is_user_logged_in() ) {
@@ -34,8 +34,3 @@ if ( ! empty( $current_user->ID ) && empty( $current_user->membership_level->ID 
 		exit;
 	}
 }
-
-/**
- * Add-Ons might need this global to be set.
- */
-$pmpro_levels = pmpro_getAllLevels();
