@@ -71,7 +71,7 @@
 	*/
 	$payment_option_values = array();
 	foreach($payment_options as $option)
-		$payment_option_values[$option] = get_option( 'pmpro_' . $option);
+		$payment_option_values[$option] = get_option( 'pmpro_' . $option );
 	extract($payment_option_values);
 
 	/*
