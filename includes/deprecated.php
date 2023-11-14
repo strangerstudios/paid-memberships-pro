@@ -740,6 +740,100 @@ function pmpro_cancel_on_next_payment_date_deprecated() {
 add_action( 'plugins_loaded', 'pmpro_cancel_on_next_payment_date_deprecated', 20 );
 
 /**
+ * Old Add Member From Admin functions.
+ */
+function pmpro_add_member_admin_deprecated() {
+	if ( ! function_exists( 'pmproama_pmpro_add_pages' ) ) {
+		function pmproama_pmpro_add_pages() {
+			_deprecated_function( __FUNCTION__, 'TBD' );
+		}
+	}
+
+	if ( ! function_exists( 'pmpro_addmember' ) ) {
+		function pmpro_addmember() {
+			_deprecated_function( __FUNCTION__, 'TBD' );
+		}
+	}
+
+	if ( ! function_exists( 'pmproama_admin_bar_menu' ) ) {
+		function pmproama_admin_bar_menu() {
+			_deprecated_function( __FUNCTION__, 'TBD' );
+		}
+	}
+
+	if ( ! function_exists( 'pmproama_send_admin_notification' ) ) {
+		function pmproama_send_admin_notification( $user_id, $user) {
+			_deprecated_function( __FUNCTION__, 'TBD' );
+		}
+	}
+
+	if ( ! function_exists( 'pmproama_admin_notice_activation_hook' ) ) {
+		function pmproama_admin_notice_activation_hook() {
+			_deprecated_function( __FUNCTION__, 'TBD' );
+		}
+	}
+
+	if ( ! function_exists( 'pmproama_admin_notice' ) ) {
+		function pmproama_admin_notice() {
+			_deprecated_function( __FUNCTION__, 'TBD' );
+		}
+	}
+
+	if ( ! function_exists( 'pmproama_plugins_loaded' ) ) {
+		function pmproama_plugins_loaded() {
+			_deprecated_function( __FUNCTION__, 'TBD' );
+		}
+	}
+
+	if ( ! function_exists( 'pmproama_add_action_links' ) ) {
+		function pmproama_add_action_links( $links ) {
+			_deprecated_function( __FUNCTION__, 'TBD' );
+			return $links;
+		}
+	}
+
+	if ( ! function_exists( 'pmproama_plugin_row_meta' ) ) {
+		function pmproama_plugin_row_meta( $links, $file ) {
+			_deprecated_function( __FUNCTION__, 'TBD' );
+			return $links;
+		}
+	}
+
+	if ( ! function_exists( 'pmproama_action_links' ) ) {
+		function pmproama_action_links( $actions, $user ) {
+			_deprecated_function( __FUNCTION__, 'TBD' );
+			return $actions;
+		}
+	}
+
+	if ( ! function_exists( 'pmproama_load_plugin_textdomain' ) ) {
+		function pmproama_load_plugin_textdomain() {
+			_deprecated_function( __FUNCTION__, 'TBD' );
+		}
+	}
+
+	if ( ! function_exists( 'pmproama_email_templates' ) ) {
+		function pmproama_email_templates( $email_template_defaults ) {
+			_deprecated_function( __FUNCTION__, 'TBD' );
+			return $email_template_defaults;
+		}
+	}
+
+	if ( ! function_exists( 'pmproada_send_added_email' ) ) {
+		function pmproada_send_added_email( $user, $order ) {
+			_deprecated_function( __FUNCTION__, 'TBD' );
+		}
+	}
+
+	if ( ! function_exists( 'pmproada_send_added_email_admin' ) ) {
+		function pmproada_send_added_email_admin( $user, $order ) {
+			_deprecated_function( __FUNCTION__, 'TBD' );
+		}
+	}
+}
+add_action( 'plugins_loaded', 'pmpro_add_member_admin_deprecated', 20 );
+
+/**
  * Check for active Add Ons that are not yet MMPU compatible.
  *
  * @since TBD
@@ -819,7 +913,11 @@ function pmpro_get_deprecated_add_ons() {
 		'pmpro-table-pages' => array(
 			'file' => 'pmpro-table-pages.php',
 			'label' => 'Table Layout Plugin Pages'
-		)
+		),
+		'pmpro-add-member-admin' => array(
+			'file' => 'pmpro-add-member-admin.php',
+			'label' => 'Add Member From Admin'
+		),
 	);
 	
 	$deprecated = apply_filters( 'pmpro_deprecated_add_ons_list', $deprecated );
