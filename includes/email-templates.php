@@ -186,7 +186,7 @@ $pmpro_email_templates_defaults = array(
 </p>
 
 <p>Log in to your membership account here: !!login_url!!</p>', 'paid-memberships-pro' ),
-		'help_text' => sprintf( __('This is a membership confirmation welcome email sent to a new member or to existing members that change their level using the "Pay by %s" gateway.','paid-memberships-pro' ), $check_gateway_label ) 
+		'help_text' => sprintf( __('This is a membership confirmation welcome email sent to a new member or to existing members that change their level using the "%s (Pay by Check)" gateway.','paid-memberships-pro' ), $check_gateway_label ) 
 	
 	),
 	'checkout_check_admin'     => array(
@@ -209,7 +209,7 @@ $pmpro_email_templates_defaults = array(
 </p>
 
 <p>Log in to your membership account here: !!login_url!!</p>','paid-memberships-pro' ),  $check_gateway_label ),
-		'help_text' =>  sprintf( __('This is the membership confirmation email sent to the site administrator for every membership checkout using the "Pay by %s" gateway.', 'paid-memberships-pro' ),  $check_gateway_label )
+		'help_text' =>  sprintf( __('This is the membership confirmation email sent to the site administrator for every membership checkout using the "%s (Pay by Check)" gateway.', 'paid-memberships-pro' ),  $check_gateway_label )
 	),
 	'checkout_express'	=> array(
 		'subject'     => __( "Your membership confirmation for !!sitename!!", 'paid-memberships-pro' ),
