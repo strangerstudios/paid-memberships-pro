@@ -190,8 +190,8 @@ function pmpro_gateways() {
 	}
 
 	$check_gateway_label = get_option( 'pmpro_check_gateway_label' );
-	if( !empty( $check_gateway_label ) ) {
-		$pmpro_gateways['check'] =  $check_gateway_label;
+	if ( ! empty( $check_gateway_label ) ) {
+		$pmpro_gateways['check'] =  esc_html( $check_gateway_label . ' (' . __( 'Pay by Check', 'paid-memberships-pro' ) . ')' );
 	}
 
 	return apply_filters( 'pmpro_gateways', $pmpro_gateways );
