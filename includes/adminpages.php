@@ -271,7 +271,7 @@ function pmpro_admin_bar_menu() {
 		);
 	}
 }
-add_action( 'admin_bar_menu', 'pmpro_admin_bar_menu', 1000);
+add_action( 'admin_bar_menu', 'pmpro_admin_bar_menu', 1000 );
 
 /**
  * Add the "Admin Membership Access" menu to the admin bar.
