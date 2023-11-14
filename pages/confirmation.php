@@ -36,7 +36,7 @@ if ( empty( $pmpro_invoice ) ) {
 		$pmpro_invoice->user->membership_level = $pmpro_invoice->membership_level; // Backwards compatibility.
 
 		// Start building the confirmation message.
-		if ( empty( $pmpro_invoice->membership_level ) ) {
+		if ( 'success' != $pmpro_invoice->status ) {
 			$confirmation_message = '<p>' . __('Your payment has been submitted. Your membership will be activated shortly.', 'paid-memberships-pro' ) . '</p>';
 		} else {
 			$confirmation_message = '<p>' . sprintf(__('Thank you for your membership to %s. Your %s membership is now active.', 'paid-memberships-pro' ), get_bloginfo("name"), $pmpro_invoice->membership_level->name) . '</p>';
