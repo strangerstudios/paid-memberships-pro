@@ -113,7 +113,6 @@
 				<p class="description"><?php  esc_html_e(sprintf('Instructions for members to follow to complete their purchase, when paying with %s. Shown on checkout, confirmation, and invoice pages.', $check_gateway_label), 'paid-memberships-pro' );?></p>
 			</td>
 		</tr>
-		</tr>
 		<tr class="gateway gateway_check" <?php if($gateway != "check") { ?>style="display: none;"<?php } ?>>
 			<th scope="row" valign="top">
 				<label for="check_gateway_label"><?php esc_html_e( 'Gateway Label', 'paid-memberships-pro' );?></label>
