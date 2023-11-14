@@ -69,12 +69,10 @@ abstract class PMPro_Member_Edit_Panel {
 			aria-labelledby="pmpro-member-edit-<?php echo esc_attr( $this->slug ) ?>-tab"
 			<?php echo $is_selected ? '' : 'hidden'; ?>
 		>
-			<h2>
-				<?php
-				echo esc_html( $this->title );
+			<h2><?php echo esc_html( $this->title ); ?></h2>
+			<?php
 				echo wp_kses( $this->title_link, array( 'a' => array( 'href' => array(), 'target' => array(), 'class' => array() ) ) );
-				?>
-			</h2>
+			?>
 			<form class="pmpro-members" action="" method="post">
 				<input type="hidden" name="pmpro_member_edit_panel" value="<?php echo esc_attr( $this->slug ); ?>">
 				<?php
