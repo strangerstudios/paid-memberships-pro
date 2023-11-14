@@ -127,6 +127,26 @@ function pmpro_parent_file( $parent_file ) {
 add_filter( 'parent_file', 'pmpro_parent_file' );
 
 /**
+ * Filter the title of the Edit Member admin page.
+ */
+function pmpro_admin_title( $admin_title, $title ) {
+	// Only filter on the Edit Member page.
+	if ( isset( $_REQUEST['page']) && $_REQUEST['page'] === 'pmpro-member' ) {
+		$user = PMPro_Member_Edit_Panel::get_user();
+		if ( empty( $user->ID ) ) {
+			$title = __( 'Add Member', 'paid-memberships-pro' );
+		} else {
+			/* translators: %s: User's display name. */
+			$title = sprintf( __( 'Edit Member: %s', 'paid-memberships-pro' ), $user->display_name );
+		}
+		/* translators: Edit/Add Member Admin screen title. 1: Screen name, 2: Site name. */
+		$admin_title = sprintf( __( '%1$s &lsaquo; %2$s &#8212; WordPress' ), $title, get_bloginfo( 'name' ) );
+	}
+	return $admin_title;
+}
+add_filter( 'admin_title', 'pmpro_admin_title', 10, 2 );
+
+/**
  * Admin Bar
  */
 function pmpro_admin_bar_menu() {
