@@ -254,7 +254,12 @@ function pmpro_admin_bar_menu() {
 				'id' => 'pmpro-new-member',
 				'parent' => 'new-content',
 				'title' => __( 'Member', 'paid-memberships-pro' ),
-				'href' => admin_url( 'admin.php?page=pmpro-member' )
+				'href' => add_query_arg(
+					array(
+						'page' => 'pmpro-member',
+					),
+					admin_url( 'admin.php' )
+				)
 			)
 		);
 	}
