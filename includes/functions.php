@@ -2290,6 +2290,8 @@ function pmpro_getLevel( $level ) {
 /**
  * Get all PMPro membership levels.
  *
+ * @since TBD deprecated the second `$use_cache` argument.
+ *
  * @param bool $include_hidden      Include levels marked as hidden/inactive.
  * @param bool $deprecated_argument No longer used.
  * @param bool $force               Resets the static var caches.
