@@ -491,7 +491,7 @@ class PMPro_Field {
 		}
 
 		// Get $file and $filetype.
-		$file = array_map( 'sanitize_text_field', $_FILES[ $file_index ] );
+		$file = array_map( 'sanitize_text_field', $_FILES[ $name ] );
 		$filetype = wp_check_filetype_and_ext( $file['tmp_name'], $file['name'] );
 
 		/*
