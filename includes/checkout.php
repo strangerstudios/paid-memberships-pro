@@ -78,13 +78,6 @@ function pmpro_calculate_profile_start_date( $order, $date_format, $filter = tru
 
 	// Save any files that were uploaded.
 	if ( ! empty( $_FILES ) ) {
-		// Check for a register helper directory in wp-content and create it if needed.
-		$upload_dir = wp_upload_dir();
-		$pmprorh_dir = $upload_dir['basedir'] . "/pmpro-register-helper/tmp/";
-		if( ! is_dir( $pmprorh_dir ) ) {
-			wp_mkdir_p( $pmprorh_dir );
-		}
-
 		// Build an array of files to save.
 		$files = array();
 		foreach ( $_FILES as $arr_key => $file ) {
@@ -97,6 +90,13 @@ function pmpro_calculate_profile_start_date( $order, $date_format, $filter = tru
 			// Make sure that the file was uploaded during this page load.
 			if ( ! is_uploaded_file( sanitize_text_field( $file['tmp_name'] ) ) ) {						
 				continue;
+			}
+
+			// Check for a register helper directory in wp-content and create it if needed.
+			$upload_dir = wp_upload_dir();
+			$pmprorh_dir = $upload_dir['basedir'] . "/pmpro-register-helper/tmp/";
+			if( ! is_dir( $pmprorh_dir ) ) {
+				wp_mkdir_p( $pmprorh_dir );
 			}
 
 			// Move file.

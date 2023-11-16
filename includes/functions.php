@@ -4414,10 +4414,13 @@ function pmpro_sanitize_period( $period ) {
 /**
  * Check whether a file should be allowed to be uploaded.
  *
+ * By default, only files assiciated with a user field can be uploaded,
+ * but there is a filter to allow other files to be uploaded as well.
+ *
  * @since TBD
  *
  * @param $file_index string The array index of the file to check in the $_FILES array.
- * @return array[]|WP_Error An array containing the file and filetype information if the file is allowed, otherwise a WP_Error object.
+ * @return true|WP_Error True if the file is allowed, otherwise a WP_Error object.
  */
 function pmpro_check_upload( $file_index ) {
 	global $pmpro_user_fields;
@@ -4442,11 +4445,15 @@ function pmpro_check_upload( $file_index ) {
 	}
 
 	// If this is an upload for a user field, we need to perform additional checks.
+	$is_user_field = false;
 	if ( ! empty( $pmpro_user_fields ) && is_array( $pmpro_user_fields ) ) {
 		foreach ( $pmpro_user_fields as $checkout_box ) {
 			foreach ( $checkout_box as $field ) {
 				if ( $field->name == $file_index ) {
-					// This file is being uploaded for a user field. First, make sure that this is a 'file' field.
+					// This file is being uploaded for a user field.
+					$is_user_field = true;
+
+					// First, make sure that this is a 'file' field.
 					if ( $field->type !== 'file' ) {
 						return new WP_Error( 'pmpro_upload_error', __( 'Invalid field input.', 'paid-memberships-pro' ) );
 					}
@@ -4461,10 +4468,23 @@ function pmpro_check_upload( $file_index ) {
 		}
 	}
 
+	if ( ! $is_user_field ) {
+		/**
+		 * Filter whether a file not associated with a user field can be uploaded.
+		 *
+		 * @since TBD
+		 *
+		 * @param bool $allow_upload True if the file can be uploaded, otherwise false.
+		 * @param array $file The file info.
+		 * @param array $filetype The file type info.
+		 */
+		if ( ! apply_filters( 'pmpro_allow_uploading_non_user_field_file', false, $file, $filetype ) ) {
+			return new WP_Error( 'pmpro_upload_error', __( 'Invalid file submission.', 'paid-memberships-pro' ) );
+		}
+	}
+	
+
 	// If we made it this far, the file is allowed.
 	// Add the extension to the file array and return.
-	return array(
-		'file' => $file,
-		'filetype' => $filetype,
-	);
+	return true;
 }

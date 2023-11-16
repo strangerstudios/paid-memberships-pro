@@ -573,7 +573,9 @@ function pmpro_paypalexpress_session_vars_for_user_fields() {
 					}
 
 					// Get $file and $filetype.
-					extract( $upload_check );
+					// Get $file and $filetype.
+					$file = array_map( 'sanitize_text_field', $_FILES[ $file_index ] );
+					$filetype = wp_check_filetype_and_ext( $file['tmp_name'], $file['name'] );
 
 					// Make sure file was uploaded during this page load.
 					if ( ! is_uploaded_file( sanitize_text_field( $file['tmp_name'] ) ) ) {						
