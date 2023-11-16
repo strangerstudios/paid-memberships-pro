@@ -26,6 +26,7 @@ if ( ! empty( $_REQUEST[ 'report' ] ) ) {
 			}
 		} ?>
 	</ul>
+	<br class="clear" />
 	<?php
 		// View a single report
 		call_user_func( 'pmpro_report_' . $report . '_page' );
