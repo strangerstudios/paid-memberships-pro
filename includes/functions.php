@@ -4410,3 +4410,61 @@ function pmpro_sanitize_period( $period ) {
 
 	return $sanitized_period;
 }
+
+/**
+ * Check whether a file should be allowed to be uploaded.
+ *
+ * @since TBD
+ *
+ * @param $file_index string The array index of the file to check in the $_FILES array.
+ * @return array[]|WP_Error An array containing the file and filetype information if the file is allowed, otherwise a WP_Error object.
+ */
+function pmpro_check_upload( $file_index ) {
+	global $pmpro_user_fields;
+
+	// Check if the file was uploaded.
+	if ( empty( $_FILES[ $file_index ] ) ) {
+		return new WP_Error( 'pmpro_upload_error', __( 'No file was uploaded.', 'paid-memberships-pro' ) );
+	}
+
+	// Get the file info.
+	$file = array_map( 'sanitize_text_field', $_FILES[ $file_index ] );
+	if ( empty( $file['name'] ) ) {
+		return new WP_Error( 'pmpro_upload_error', __( 'No file name found.', 'paid-memberships-pro' ) );
+	}
+
+	// If the current user cannot does not have the unfiltered_upload permission, check if the file is an allowed file type.
+	if ( ! current_user_can( 'unfiltered_upload' ) ) {
+		$filetype = wp_check_filetype_and_ext( $file['tmp_name'], $file['name'] );
+		if ( empty( $filetype['ext'] ) || empty( $filetype['type'] ) ) {
+			return new WP_Error( 'pmpro_upload_error', __( 'Invalid file type.', 'paid-memberships-pro' ) );
+		}
+	}
+
+	// If this is an upload for a user field, we need to perform additional checks.
+	if ( ! empty( $pmpro_user_fields ) && is_array( $pmpro_user_fields ) ) {
+		foreach ( $pmpro_user_fields as $checkout_box ) {
+			foreach ( $checkout_box as $field ) {
+				if ( $field->name == $file_index ) {
+					// This file is being uploaded for a user field. First, make sure that this is a 'file' field.
+					if ( $field->type !== 'file' ) {
+						return new WP_Error( 'pmpro_upload_error', __( 'Invalid field input.', 'paid-memberships-pro' ) );
+					}
+
+					// If there are allowed file types, check if the file is an allowed file type.
+					// It does not look like the ext property is documented anywhere, but keeping it in case sites are using it.
+					if ( ! empty( $field->ext ) && is_array( $field->ext ) && ! in_array( $filetype['ext'], $field->ext ) ) {
+						return new WP_Error( 'pmpro_upload_error', __( 'Invalid file type.', 'paid-memberships-pro' ) );
+					}
+				}
+			}
+		}
+	}
+
+	// If we made it this far, the file is allowed.
+	// Add the extension to the file array and return.
+	return array(
+		'file' => $file,
+		'filetype' => $filetype,
+	);
+}

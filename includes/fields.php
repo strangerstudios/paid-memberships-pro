@@ -489,39 +489,14 @@ function pmpro_registration_checks_for_user_fields( $okay ) {
                     continue;	//wasn't shown at checkout
                 }
 
-				if(isset($_REQUEST[$field->name]))
-					$value = pmpro_sanitize( $_REQUEST[$field->name], $field ); //phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
-				elseif(isset($_FILES[$field->name]))
-				{
-					$value = sanitize_file_name( $_FILES[$field->name]['name'] );
-
-					//handle empty file but the user already has a file
-					if(empty($value) && !empty($_REQUEST[$field->name . "_old"]))
-						$value = sanitize_file_name( $_REQUEST[$field->name . "_old"] );
-					elseif(!empty($value))
-					{
-						//check extension against allowed extensions
-						$filetype = wp_check_filetype_and_ext( sanitize_text_field( $_FILES[$field->name]['tmp_name'] ), sanitize_file_name( $_FILES[$field->name]['name'] ) );
-						if((!$filetype['type'] || !$filetype['ext'] ) && !current_user_can( 'unfiltered_upload' ))
-						{
-							if($okay)	//only want to update message if there is no previous error
-								pmpro_setMessage( sprintf( __( "Sorry, the file type for %s is not permitted for security reasons.", "paid-memberships-pro"), sanitize_file_name( $_FILES[$field->name]['name'] ) ), "pmpro_error");
-							return false;
-						}
-						else
-						{
-							//check for specific extensions anyway
-							if(!empty($field->ext) && !in_array($filetype['ext'], $field->ext))
-							{
-								if($okay)	//only want to update message if there is no previous error
-									pmpro_setMessage( sprintf( __( "Sorry, the file type for %s is not permitted for security reasons.", "paid-memberships-pro"), sanitize_file_name( $_FILES[$field->name]['name'] ) ), "pmpro_error");
-								return false;
-							}
-						}
+				// If this is a file upload, check whether the file is allowed.
+				if ( isset( $_FILES[ $field->name ] ) && ! empty( $_FILES[$field->name]['name'] ) ) {
+					$upload_check = pmpro_check_upload( $field->name );
+					if ( is_wp_error( $upload_check ) ) {
+						pmpro_setMessage( $upload_check->get_error_message(), 'pmpro_error' );
+						return false;
 					}
 				}
-				else
-					$value = false;
 
 				if( ! $field->was_filled_if_needed() ) {
 					$required[] = $field->name;
@@ -560,9 +535,13 @@ add_filter( 'pmpro_registration_checks', 'pmpro_registration_checks_for_user_fie
 
 /**
  * Sessions vars for TwoCheckout. PayPal Express was updated to store in order meta.
+ *
+ * @deprecated TBD Use pmpro_after_checkout_save_fields instead to save fields immediately or pmpro_save_checkout_data_to_order for delayed checkouts.
  */
 function pmpro_paypalexpress_session_vars_for_user_fields() {
 	global $pmpro_user_fields;
+
+	_deprecated_function( __FUNCTION__, 'TBD', 'pmpro_after_checkout_save_fields' );
 
 	//save our added fields in session while the user goes off to PayPal
 	if(!empty($pmpro_user_fields))
@@ -587,10 +566,18 @@ function pmpro_paypalexpress_session_vars_for_user_fields() {
 					/*
 						We need to save the file somewhere and save values in $_SESSION
 					*/
+					// Make sure the file is allowed.
+					$upload_check = pmpro_check_upload( $field->name );
+					if ( is_wp_error( $upload_check ) ) {
+						continue;
+					}
 
-					// Make sure file was uploaded.
-					if ( ! is_uploaded_file( sanitize_text_field( $_FILES[$field->name]['tmp_name'] ) ) ) {						
-                        continue;
+					// Get $file and $filetype.
+					extract( $upload_check );
+
+					// Make sure file was uploaded during this page load.
+					if ( ! is_uploaded_file( sanitize_text_field( $file['tmp_name'] ) ) ) {						
+						continue;
 					}
 
 					//check for a register helper directory in wp-content
@@ -604,20 +591,19 @@ function pmpro_paypalexpress_session_vars_for_user_fields() {
 					}
 
 					//move file
-					$new_filename = $pmprorh_dir . basename( sanitize_file_name( $_FILES[$field->name]['name'] ) );
-					move_uploaded_file( sanitize_text_field( $_FILES[$field->name]['tmp_name'] ), $new_filename );
+					$new_filename = $pmprorh_dir . basename( sanitize_file_name( $file['name'] ) );
+					move_uploaded_file( sanitize_text_field( $$file['tmp_name'] ), $new_filename );
 
 					//update location of file
 					$_FILES[$field->name]['tmp_name'] = $new_filename;
 
 					//save file info in session
-					$_SESSION[$field->name] = array_map( 'sanitize_text_field', $_FILES[$field->name] );
+					$_SESSION[$field->name] = array_map( 'sanitize_text_field', $file );
 				}
 			}
 		}
 	}
 }
-add_action( 'pmpro_before_send_to_twocheckout', 'pmpro_paypalexpress_session_vars_for_user_fields', 10, 0);
 
 /**
  * Show user fields in profile.
