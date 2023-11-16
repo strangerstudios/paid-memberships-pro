@@ -4485,6 +4485,5 @@ function pmpro_check_upload( $file_index ) {
 	
 
 	// If we made it this far, the file is allowed.
-	// Add the extension to the file array and return.
 	return true;
 }

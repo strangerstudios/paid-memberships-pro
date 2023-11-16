@@ -573,7 +573,6 @@ function pmpro_paypalexpress_session_vars_for_user_fields() {
 					}
 
 					// Get $file and $filetype.
-					// Get $file and $filetype.
 					$file = array_map( 'sanitize_text_field', $_FILES[ $field->name ] );
 					$filetype = wp_check_filetype_and_ext( $file['tmp_name'], $file['name'] );
 
