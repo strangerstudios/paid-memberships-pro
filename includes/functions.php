@@ -4417,7 +4417,7 @@ function pmpro_sanitize_period( $period ) {
  * By default, only files assiciated with a user field can be uploaded,
  * but there is a filter to allow other files to be uploaded as well.
  *
- * @since TBD
+ * @since 2.12.4
  *
  * @param $file_index string The array index of the file to check in the $_FILES array.
  * @return true|WP_Error True if the file is allowed, otherwise a WP_Error object.
@@ -4472,7 +4472,7 @@ function pmpro_check_upload( $file_index ) {
 		/**
 		 * Filter whether a file not associated with a user field can be uploaded.
 		 *
-		 * @since TBD
+		 * @since 2.12.4
 		 *
 		 * @param bool $allow_upload True if the file can be uploaded, otherwise false.
 		 * @param array $file The file info.

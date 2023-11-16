@@ -536,12 +536,12 @@ add_filter( 'pmpro_registration_checks', 'pmpro_registration_checks_for_user_fie
 /**
  * Sessions vars for TwoCheckout. PayPal Express was updated to store in order meta.
  *
- * @deprecated TBD Use pmpro_after_checkout_save_fields instead to save fields immediately or pmpro_save_checkout_data_to_order for delayed checkouts.
+ * @deprecated 2.12.4 Use pmpro_after_checkout_save_fields instead to save fields immediately or pmpro_save_checkout_data_to_order for delayed checkouts.
  */
 function pmpro_paypalexpress_session_vars_for_user_fields() {
 	global $pmpro_user_fields;
 
-	_deprecated_function( __FUNCTION__, 'TBD', 'pmpro_after_checkout_save_fields' );
+	_deprecated_function( __FUNCTION__, '2.12.4', 'pmpro_after_checkout_save_fields' );
 
 	//save our added fields in session while the user goes off to PayPal
 	if(!empty($pmpro_user_fields))

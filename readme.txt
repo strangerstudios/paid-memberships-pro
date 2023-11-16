@@ -2,9 +2,9 @@
 Contributors: strangerstudios, kimannwall, andrewza, dlparker1005, paidmembershipspro
 Tags: memberships, member, community, user profile, user registration, members, membership, ecommerce, paypal, stripe, braintree, authorize.net, payflow, restrict access, restrict content, directory
 Requires at least: 5.2
-Tested up to: 6.3.1
+Tested up to: 6.4.1
 Requires PHP: 5.6
-Stable tag: 2.12.3
+Stable tag: 2.12.4
 
 Build a membership site that grows with you: user registration, member profiles, 28 protected content types, free or paid subscriptions.
 
@@ -190,6 +190,10 @@ Not sure? You can find out by doing a bit a research.
 9. Advanced settings for updating non-member messages, optionally show excerpts or filter content, use reCAPTCHA, and a Terms of Service checkbox.
 
 == Changelog ==
+= 2.12.4 - 2023-11-16 =
+* SECURITY: Fixed security issue where in some cases users could upload files at checkout with disallowed file types, e.g. .php files that could then be accessed to run arbitrary code on the server. For more information, see https://www.paidmembershipspro.com/pmpro-update-2-12-4/ (Thanks, István Márton and WordFence)
+* ENHANCEMENT: New icons for LifterLMS and the GA4 Add On.
+
 = 2.12.3 - 2023-10-03 =
 * ENHANCEMENT: Updated the PayPal Express integration to save checkout data in order meta instead of sessions to improve compatibility with various Add Ons. #2616 (@dparker1005)
 * BUG FIX/ENHANCEMENT: Fixed performance issue in deprecation code. #2621 (@MaximilianoRicoTabo)
