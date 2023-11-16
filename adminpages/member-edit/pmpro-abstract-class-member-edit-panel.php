@@ -48,7 +48,9 @@ abstract class PMPro_Member_Edit_Panel {
 			<?php echo ( empty( self::get_user()->ID ) ) ? 'disabled="disabled"' : ''; ?>
 			tabindex="<?php echo ( $is_selected ) ? '0' : '-1' ?>"
 		>
-			<?php echo esc_attr( $this->title ); ?>
+			<?php
+				echo esc_attr( ( strlen( $this->title ) > 40 ) ? substr( $this->title, 0, 40 ) . '...' : $this->title );
+			?>
 		</button>
 		<?php
 	}
