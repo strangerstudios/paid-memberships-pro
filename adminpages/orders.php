@@ -438,10 +438,10 @@ require_once( dirname( __FILE__ ) . '/admin_header.php' ); ?>
 										<select id="membership_id" name="membership_id">
 											<option value="0" <?php selected( $membership_id, 0 ); ?>>-- <?php _e("None", 'paid-memberships-pro' );?> --</option>
 											<?php
-											// If the current membership level is not in the list, add it as "Deleted level #[membership_id]".
+											// If the current membership level is not in the list, add it as "ID {membership_id} [deleted]".
 											if ( ! empty( $membership_id ) && ! in_array( $membership_id, wp_list_pluck( $levels, 'id' ) ) ) {
 												?>
-												<option value="<?php echo esc_attr( $membership_id ); ?>" selected><?php echo esc_html( sprintf( __( 'Deleted level #%d', 'paid-memberships-pro' ), $membership_id ) ); ?></option>
+												<option value="<?php echo esc_attr( $membership_id ); ?>" selected><?php echo esc_html( sprintf( __( 'ID %d [deleted]', 'paid-memberships-pro' ), $membership_id ) ); ?></option>
 												<?php
 											}
 
