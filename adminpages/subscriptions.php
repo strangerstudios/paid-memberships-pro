@@ -31,18 +31,6 @@ require_once( dirname( __FILE__ ) . '/admin_header.php' );
 <h1 class="wp-heading-inline"><?php esc_html_e( 'View Subscription', 'paid-memberships-pro' ); ?></h1>
 <?php
 
-if ( $pmpro_msg ) {
-	?>
-	<div role="alert" id="pmpro_message" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_message ' . $pmpro_msgt, $pmpro_msgt ) ); ?>">
-		<?php echo wp_kses_post( $pmpro_msg ); ?>
-	</div>
-	<?php
-} else {
-	?>
-	<div id="pmpro_message" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_message' ) ); ?>" style="display: none;"></div>
-	<?php
-}
-
 // Check if we have a subscription object.
 if ( empty( $subscription ) ) {
 	// Either a subscription ID wasn't passed or the subscription doesn't exist.
@@ -74,6 +62,20 @@ if ( empty( $subscription ) ) {
 		onclick="pmpro_askfirst('<?php esc_html_e( 'Please confirm that you want to cancel this subscription. This action stops any future charges at the gateway but does not cancel the corresponding membership level.', 'paid-memberships-pro' ); ?>', '<?php echo ( esc_url( wp_nonce_url( add_query_arg( array( 'page' => 'pmpro-subscriptions', 'id' => $subscription->get_id(), 'cancel' => '1' ), admin_url('admin.php' ) ), 'cancel', 'pmpro_subscriptions_nonce'  ) ) ); ?>')">
 		<?php esc_html_e( 'Cancel Subscription', 'paid-memberships-pro' ); ?>
 	</a>
+
+	<?php
+		if ( $pmpro_msg ) {
+			?>
+			<div role="alert" id="pmpro_message" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_message ' . $pmpro_msgt, $pmpro_msgt ) ); ?>">
+				<?php echo wp_kses_post( $pmpro_msg ); ?>
+			</div>
+			<?php
+		} else {
+			?>
+			<div id="pmpro_message" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_message' ) ); ?>" style="display: none;"></div>
+			<?php
+		}
+	?>
 
 	<div class="pmpro_section" data-visibility="shown" data-activated="true">
 		<div class="pmpro_section_toggle">
