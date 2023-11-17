@@ -949,6 +949,9 @@ body[class*="memberships_page_pmpro-"] {
 	gap: var(--pmpro--spacing--small);
 	padding: var(--pmpro--spacing--medium);
 }
+.pmpro_section_inside > .pmpro_member-box {
+	margin-bottom: var(--pmpro--spacing--small);
+}
 .pmpro_member-box .avatar {
 	border-radius: 9999px;
 	display: block;
@@ -1906,11 +1909,16 @@ table.pmprommpu_levels tr.remove_level td {background: #F2DEDE; }
 .pmpro_message {
 	border: 1px solid var(--pmpro--color--info-border);
 	border-radius: var(--pmpro--border--radius);
+	box-shadow: var(--pmpro--box-shadow);
 	color: var(--pmpro--color--info-text);
 	font-size: 14px;
 	line-height: 1.5;
-	margin-right: var(--pmpro--spacing--small);
 	padding: var(--pmpro--spacing--small) calc( var(--pmpro--spacing--medium) / 2 );
+}
+
+.pmpro_admin h1.wp-heading-inline + .pmpro_message,
+.pmpro_admin .page-title-action + .pmpro_message {
+	margin-top: var(--pmpro--spacing--medium);
 }
 
 .pmpro_message p:first-of-type {

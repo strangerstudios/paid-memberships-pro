@@ -720,9 +720,12 @@ class PMPro_Subscription {
 				$pmproemail->data['body'] .= '<hr />' . "\n";
 				$pmproemail->data['body'] .= '<p>' . esc_html__( 'Edit User', 'paid-memberships-pro' ) . ': ' . esc_url( add_query_arg( 'user_id', $this->user_id, self_admin_url( 'user-edit.php' ) ) ) . '</p>';
 				$pmproemail->sendEmail( get_bloginfo( 'admin_email' ) );
+
+				pmpro_setMessage( __( 'There was an error synchronizing a subscription with your payment gateway: ', 'paid-memberships-pro' ), 'pmpro_error' ) . esc_html( $error_message );
 			}
 		}
 
+		pmpro_setMessage( __( 'Subscription updated.', 'paid-memberships-pro' ), 'pmpro_success' ); // Will not overwrite previous messages.
 		return $this->save();
 	}
 
@@ -1140,9 +1143,11 @@ class PMPro_Subscription {
 
 		// The subscription was not created properly.
 		if ( empty( $this->id ) ) {
+			pmpro_setMessage( __( 'There was an error saving the subscription.', 'paid-memberships-pro' ), 'pmpro_error' );
 			return false;
 		}
 
+		pmpro_setMessage( __( 'Subscription saved.', 'paid-memberships-pro' ), 'pmpro_success' ); // Will not overwrite previous messages.
 		return $this->id;
 	}
 
@@ -1198,7 +1203,7 @@ class PMPro_Subscription {
 			$user                      = get_userdata( $this->user_id );
 			$pmproemail                = new PMProEmail();
 			$pmproemail->template      = 'subscription_cancel_error';
-			$pmproemail->data          = array( 'body' => '<p>' . esc_html__( 'There was an error canceling a subscription from your website. You will want to check your payment gateway to see if their subscription is still active.', 'paid-memberships-pro' ) . '</p>' . "\n" );
+			$pmproemail->data          = array( 'body' => '<p>' . esc_html__( 'There was an error cancelling a subscription from your website. Check your payment gateway to see if the subscription is still active.', 'paid-memberships-pro' ) . '</p>' . "\n" );
 			$pmproemail->data['body'] .= '<p>' . esc_html__( 'User Email', 'paid-memberships-pro' ) . ': ' . $user->user_email . '</p>' . "\n";
 			$pmproemail->data['body'] .= '<p>' . esc_html__( 'Username', 'paid-memberships-pro' ) . ': ' . $user->user_login . '</p>' . "\n";
 			$pmproemail->data['body'] .= '<p>' . esc_html__( 'User Display Name', 'paid-memberships-pro' ) . ': ' . $user->display_name . '</p>' . "\n";
@@ -1208,6 +1213,10 @@ class PMPro_Subscription {
 			$pmproemail->data['body'] .= '<hr />' . "\n";
 			$pmproemail->data['body'] .= '<p>' . esc_html__( 'Edit User', 'paid-memberships-pro' ) . ': ' . esc_url( add_query_arg( 'user_id', $this->user_id, self_admin_url( 'user-edit.php' ) ) ) . '</p>';
 			$pmproemail->sendEmail( get_bloginfo( 'admin_email' ) );
+
+			pmpro_setMessage( __( 'There was an error cancelling a subscription from your website. Check your payment gateway to see if the subscription is still active.', 'paid-memberships-pro' ), 'pmpro_error', true ); // Will overwrite previous messages.
+		} else {
+			pmpro_setMessage( __( 'Subscription cancelled at gateway.', 'paid-memberships-pro' ), 'pmpro_success', true ); // Will overwrite previous messages.
 		}
 
 		$this->update();
