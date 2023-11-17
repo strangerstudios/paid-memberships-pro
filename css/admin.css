@@ -1875,8 +1875,17 @@ table.pmprommpu_levels tr.remove_level td {background: #F2DEDE; }
 	padding: var(--pmpro--spacing--small) calc( var(--pmpro--spacing--medium) / 2 );
 }
 
+.pmpro_message p:first-of-type {
+	margin-top: 0;
+}
+
 .pmpro_message p:last-of-type {
 	margin-bottom: 0;
+}
+
+.pmpro_message .notice-dismiss {
+	height: 100%;
+	padding-top: var(--pmpro--spacing--small);
 }
 
 .pmpro_message a {
@@ -1894,7 +1903,8 @@ table.pmprommpu_levels tr.remove_level td {background: #F2DEDE; }
 	color: var(--pmpro--color--success-text);
 }
 
-.pmpro_success a {
+.pmpro_success a,
+.pmpro_success .notice-dismiss:before {
 	color: var(--pmpro--color--success-link)
 }
 
@@ -1914,7 +1924,8 @@ tr.pmpro_error td {
 }
 
 .pmpro_error a,
-tr.pmpro_error td a {
+tr.pmpro_error td a,
+.pmpro_error .notice-dismiss:before {
 	color: var(--pmpro--color--error-link)
 }
 
@@ -1928,7 +1939,8 @@ tr.pmpro_error td a {
 	color: var(--pmpro--color--alert-text);
 }
 
-.pmpro_alert a {
+.pmpro_alert a,
+.pmpro_alert .notice-dismiss:before {
 	color: var(--pmpro--color--alert-link)
 }
 
