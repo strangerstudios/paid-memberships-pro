@@ -23,10 +23,13 @@ function pmpro_member_edit_get_panels() {
 	$panels[] = new PMPro_Member_Edit_Panel_Other();
 
 	// Add user fields panels.
-	$profile_user_fields = pmpro_get_user_fields_for_profile( PMPro_Member_Edit_Panel::get_user()->ID, true );
-	if ( ! empty( $profile_user_fields ) ) {
-		foreach ( $profile_user_fields as $group_name => $user_fields ) {
-			$panels[] = new PMPro_Member_Edit_Panel_User_Fields( $group_name );
+	$user_id = PMPro_Member_Edit_Panel::get_user()->ID;
+	if ( $user_id ) {
+		$profile_user_fields = pmpro_get_user_fields_for_profile( $user_id, true );
+		if ( ! empty( $profile_user_fields ) ) {
+			foreach ( $profile_user_fields as $group_name => $user_fields ) {
+				$panels[] = new PMPro_Member_Edit_Panel_User_Fields( $group_name );
+			}
 		}
 	}
 
