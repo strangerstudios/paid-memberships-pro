@@ -551,64 +551,74 @@ class PMPro_Member_Edit_Panel_Memberships extends PMPro_Member_Edit_Panel {
 		// Show all membership history for user.
 		$levelshistory = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM $wpdb->pmpro_memberships_users WHERE user_id = %s ORDER BY id DESC", $user->ID ) );
 
-		if ( $levelshistory ) {
-			// Build the selectors for the membership levels history list based on history count.
-			$levelshistory_classes = array();
-			if ( ! empty( $levelshistory ) && count( $levelshistory ) > 10 ) {
-				$levelshistory_classes[] = "pmpro_scrollable";
-			}
-			$levelshistory_class = implode( ' ', array_unique( $levelshistory_classes ) );
-			?>
-			<h3><?php esc_html_e( 'Membership History', 'paid-memberships-pro' ); ?></h3>
-			<div id="member-history-memberships" class="<?php echo esc_attr( $levelshistory_class ); ?>">
-				<table class="wp-list-table widefat striped fixed" width="100%" cellpadding="0" cellspacing="0" border="0">
-					<thead>
-						<tr>
-							<th><?php esc_html_e( 'Level ID', 'paid-memberships-pro' ); ?>
-							<th><?php esc_html_e( 'Level', 'paid-memberships-pro' ); ?></th>
-							<th><?php esc_html_e( 'Start Date', 'paid-memberships-pro' ); ?></th>
-							<th><?php esc_html_e( 'Date Modified', 'paid-memberships-pro' ); ?></th>
-							<th><?php esc_html_e( 'End Date', 'paid-memberships-pro' ); ?></th>
-							<th><?php esc_html_e( 'Level Cost', 'paid-memberships-pro' ); ?></th>
-							<th><?php esc_html_e( 'Status', 'paid-memberships-pro' ); ?></th>
-							<?php do_action( 'pmpromh_member_history_extra_cols_header' ); ?>
-						</tr>
-					</thead>
-					<tbody>
-					<?php
-						foreach ( $levelshistory as $levelhistory ) {
-							$level = pmpro_getLevel( $levelhistory->membership_id );
-
-							if ( $levelhistory->enddate === null || $levelhistory->enddate == '0000-00-00 00:00:00' ) {
-								$levelhistory->enddate = __( 'Never', 'paid-memberships-pro' );
-							} else {
-								$levelhistory->enddate = date_i18n( get_option( 'date_format'), strtotime( $levelhistory->enddate ) );
-							} ?>
-							<tr>
-								<td><?php if ( ! empty( $level ) ) { echo $level->id; } else { esc_html_e( 'N/A', 'paid-memberships-pro' ); } ?></td>
-								<td><?php if ( ! empty( $level ) ) { echo $level->name; } else { esc_html_e( 'N/A', 'paid-memberships-pro' ); } ?></td>
-								<td><?php echo ( $levelhistory->startdate === '0000-00-00 00:00:00' ? __('N/A', 'paid-memberships-pro') : date_i18n( get_option( 'date_format' ), strtotime( $levelhistory->startdate ) ) ); ?></td>
-								<td><?php echo date_i18n( get_option( 'date_format'), strtotime( $levelhistory->modified ) ); ?></td>
-								<td><?php echo esc_html( $levelhistory->enddate ); ?></td>
-								<td><?php echo pmpro_getLevelCost( $levelhistory, true, true ); ?></td>
-								<td>
-									<?php 
-										if ( empty( $levelhistory->status ) ) {
-											echo '-';
-										} else {
-											echo esc_html( $levelhistory->status ); 
-										}
-									?>
-								</td>
-								<?php do_action( 'pmpromh_member_history_extra_cols_body', $user, $level ); ?>
-							</tr>
-							<?php
-						}
-					?>
-					</tbody>
-				</table>
+		if ( $levelshistory ) { ?>
+			<div class="pmpro_section" data-visibility="hidden" data-activated="false">
+			<div class="pmpro_section_toggle">
+				<button class="pmpro_section-toggle-button" type="button" aria-expanded="false">
+					<span class="dashicons dashicons-arrow-down-alt2"></span>
+					<?php esc_html_e( 'Membership History', 'paid-memberships-pro' ); ?>
+				</button>
 			</div>
+			<div class="pmpro_section_inside" style="display: none;">
 			<?php
+				// Build the selectors for the membership levels history list based on history count.
+				$levelshistory_classes = array();
+				if ( ! empty( $levelshistory ) && count( $levelshistory ) > 10 ) {
+					$levelshistory_classes[] = "pmpro_scrollable";
+				}
+				$levelshistory_class = implode( ' ', array_unique( $levelshistory_classes ) );
+				?>
+				<div id="member-history-memberships" class="<?php echo esc_attr( $levelshistory_class ); ?>">
+					<table class="wp-list-table widefat striped fixed" width="100%" cellpadding="0" cellspacing="0" border="0">
+						<thead>
+							<tr>
+								<th><?php esc_html_e( 'Level ID', 'paid-memberships-pro' ); ?>
+								<th><?php esc_html_e( 'Level', 'paid-memberships-pro' ); ?></th>
+								<th><?php esc_html_e( 'Start Date', 'paid-memberships-pro' ); ?></th>
+								<th><?php esc_html_e( 'Date Modified', 'paid-memberships-pro' ); ?></th>
+								<th><?php esc_html_e( 'End Date', 'paid-memberships-pro' ); ?></th>
+								<th><?php esc_html_e( 'Level Cost', 'paid-memberships-pro' ); ?></th>
+								<th><?php esc_html_e( 'Status', 'paid-memberships-pro' ); ?></th>
+								<?php do_action( 'pmpromh_member_history_extra_cols_header' ); ?>
+							</tr>
+						</thead>
+						<tbody>
+						<?php
+							foreach ( $levelshistory as $levelhistory ) {
+								$level = pmpro_getLevel( $levelhistory->membership_id );
+
+								if ( $levelhistory->enddate === null || $levelhistory->enddate == '0000-00-00 00:00:00' ) {
+									$levelhistory->enddate = __( 'Never', 'paid-memberships-pro' );
+								} else {
+									$levelhistory->enddate = date_i18n( get_option( 'date_format'), strtotime( $levelhistory->enddate ) );
+								} ?>
+								<tr>
+									<td><?php if ( ! empty( $level ) ) { echo $level->id; } else { esc_html_e( 'N/A', 'paid-memberships-pro' ); } ?></td>
+									<td><?php if ( ! empty( $level ) ) { echo $level->name; } else { esc_html_e( 'N/A', 'paid-memberships-pro' ); } ?></td>
+									<td><?php echo ( $levelhistory->startdate === '0000-00-00 00:00:00' ? __('N/A', 'paid-memberships-pro') : date_i18n( get_option( 'date_format' ), strtotime( $levelhistory->startdate ) ) ); ?></td>
+									<td><?php echo date_i18n( get_option( 'date_format'), strtotime( $levelhistory->modified ) ); ?></td>
+									<td><?php echo esc_html( $levelhistory->enddate ); ?></td>
+									<td><?php echo pmpro_getLevelCost( $levelhistory, true, true ); ?></td>
+									<td>
+										<?php 
+											if ( empty( $levelhistory->status ) ) {
+												echo '-';
+											} else {
+												echo esc_html( $levelhistory->status ); 
+											}
+										?>
+									</td>
+									<?php do_action( 'pmpromh_member_history_extra_cols_body', $user, $level ); ?>
+								</tr>
+								<?php
+							}
+						?>
+						</tbody>
+					</table>
+				</div>
+			</div> <!-- end pmpro_section_inside -->
+		</div> <!-- end pmpro_section -->
+		<?php
 		}
 	}
 
