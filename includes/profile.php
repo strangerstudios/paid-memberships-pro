@@ -2,10 +2,14 @@
 /**
  * Add the "membership level" field to the edit user/profile page,
  * along with other membership-related fields.
+ *
+ * @deprecated TBD Use the single member dashboard.
  */
 function pmpro_membership_level_profile_fields($user)
 {
 	global $current_user;
+
+	_deprecated_function( __FUNCTION__, 'TBD' );
 
 	$membership_level_capability = apply_filters("pmpro_edit_member_capability", "manage_options");
 	if(!current_user_can($membership_level_capability))
@@ -407,15 +411,26 @@ function pmpro_membership_level_profile_fields($user)
 /*
 	When applied, previous subscriptions won't be cancelled when changing membership levels.
 	Use a function here instead of __return_false so we can easily turn add and remove it.
+
+	@deprecated TBD
 */
 function pmpro_cancel_previous_subscriptions_false()
 {
+	_deprecated_function( __FUNCTION__, 'TBD' );
+
 	return false;
 }
 
-//save the fields on update
+/**
+ * Update the membership level when the user profile is updated.
+ *
+ * @deprecated TBD Use the single member dashboard.
+ */
 function pmpro_membership_level_profile_fields_update() {
 	global $wpdb, $current_user;
+
+	_deprecated_function( __FUNCTION__, 'TBD' );
+
 	wp_get_current_user();
 
 	$user_id = empty( $_REQUEST['user_id'] ) ? intval( $current_user->ID ) : intval( $_REQUEST['user_id'] );
@@ -549,18 +564,17 @@ function pmpro_membership_level_profile_fields_update() {
 		}
 	}
 }
-add_action( 'show_user_profile', 'pmpro_membership_level_profile_fields' );
-add_action( 'edit_user_profile', 'pmpro_membership_level_profile_fields' );
-add_action( 'personal_options_update', 'pmpro_membership_level_profile_fields_update' );
-add_action( 'edit_user_profile_update', 'pmpro_membership_level_profile_fields_update' );
-
 
 /**
  * Add the history view to the user profile
  *
+ * @deprecated TBD Use the single member dashboard.
  */
 function pmpro_membership_history_profile_fields( $user ) {
 	global $current_user;
+
+	_deprecated_function( __FUNCTION__, 'TBD' );
+
 	$membership_level_capability = apply_filters( 'pmpro_edit_member_capability', 'manage_options' );
 
 	if ( ! current_user_can( $membership_level_capability ) ) {
@@ -861,15 +875,16 @@ function pmpro_membership_history_profile_fields( $user ) {
 		<?php
 	}
 }
-add_action('edit_user_profile', 'pmpro_membership_history_profile_fields');
-add_action('show_user_profile', 'pmpro_membership_history_profile_fields');
 
 
 /**
  * Allow orders to be emailed from the member history section on user profile.
  *
+ * @deprecated TBD Use the single member dashboard.
  */
 function pmpro_membership_history_email_modal() {
+	_deprecated_function( __FUNCTION__, 'TBD' );
+
 	$screen = get_current_screen();
 	if ( $screen->base == 'user-edit' || $screen->base == 'profile' ) {
 		// Require the core Paid Memberships Pro Admin Functions.
@@ -883,9 +898,6 @@ function pmpro_membership_history_email_modal() {
 		}
 	}
 }
-add_action( 'in_admin_header', 'pmpro_membership_history_email_modal' );
-
-
 
 /**
  * Display a frontend Member Profile Edit form and allow user to edit specific fields.
