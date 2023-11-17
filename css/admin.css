@@ -1030,7 +1030,7 @@ body[class*="memberships_page_pmpro-"] {
 	cursor: not-allowed;	
 }
 
-.pmpro_admin-pmpro-member .pmpro_section {
+.pmpro_admin-pmpro-member .pmpro_section:not(.pmpro_admin-pmpro-member .pmpro_section .pmpro_section) {
 	margin: 0;
 	padding: calc( var(--pmpro--spacing--medium) / 2 ) var(--pmpro--spacing--medium);
 }
@@ -1136,6 +1136,44 @@ body[class*="memberships_page_pmpro-"] {
 	display: flex;
 	flex-direction: row;
 	gap: calc( var(--pmpro--spacing--medium) / 2 );
+}
+
+/* Single Member - Memberships Panel */
+.pmpro_admin-pmpro-member #pmpro-member-edit-memberships-panel .pmpro_section .pmpro_section_inside {
+	padding: 0;
+}
+
+.pmpro_admin-pmpro-member #member-history-memberships table.widefat {
+	border: none;
+	border-radius: 0;
+}
+
+.pmpro_admin-pmpro-member #member-history-memberships table.widefat thead th:first-child,
+.pmpro_admin-pmpro-member #member-history-memberships table.widefat thead th:last-child {
+	border-radius: 0;
+}
+
+.pmpro_admin-pmpro-member #member-history-memberships table.widefat thead th {
+	border-top: none;
+}
+
+/* Single Member - Subscriptions Panel */
+.pmpro_admin-pmpro-member #pmpro-member-edit-subscriptions-panel .pmpro_section .pmpro_section_inside {
+	padding: 0;
+}
+
+.pmpro_admin-pmpro-member #member-history-subscriptions table.widefat {
+	border: none;
+	border-radius: 0;
+}
+
+.pmpro_admin-pmpro-member #member-history-subscriptions table.widefat thead th:first-child,
+.pmpro_admin-pmpro-member #member-history-subscriptions table.widefat thead th:last-child {
+	border-radius: 0;
+}
+
+.pmpro_admin-pmpro-member #member-history-subscriptions table.widefat thead th {
+	border-top: none;
 }
 
 /* Single Member - Orders Panel */
@@ -1883,8 +1921,17 @@ table.pmprommpu_levels tr.remove_level td {background: #F2DEDE; }
 	margin-top: var(--pmpro--spacing--medium);
 }
 
+.pmpro_message p:first-of-type {
+	margin-top: 0;
+}
+
 .pmpro_message p:last-of-type {
 	margin-bottom: 0;
+}
+
+.pmpro_message .notice-dismiss {
+	height: 100%;
+	padding-top: var(--pmpro--spacing--small);
 }
 
 .pmpro_message a {
@@ -1902,7 +1949,8 @@ table.pmprommpu_levels tr.remove_level td {background: #F2DEDE; }
 	color: var(--pmpro--color--success-text);
 }
 
-.pmpro_success a {
+.pmpro_success a,
+.pmpro_success .notice-dismiss:before {
 	color: var(--pmpro--color--success-link)
 }
 
@@ -1922,7 +1970,8 @@ tr.pmpro_error td {
 }
 
 .pmpro_error a,
-tr.pmpro_error td a {
+tr.pmpro_error td a,
+.pmpro_error .notice-dismiss:before {
 	color: var(--pmpro--color--error-link)
 }
 
@@ -1936,7 +1985,8 @@ tr.pmpro_error td a {
 	color: var(--pmpro--color--alert-text);
 }
 
-.pmpro_alert a {
+.pmpro_alert a,
+.pmpro_alert .notice-dismiss:before {
 	color: var(--pmpro--color--alert-link)
 }
 

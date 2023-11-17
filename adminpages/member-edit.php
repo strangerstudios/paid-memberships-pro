@@ -23,10 +23,13 @@ function pmpro_member_edit_get_panels() {
 	$panels[] = new PMPro_Member_Edit_Panel_Other();
 
 	// Add user fields panels.
-	$profile_user_fields = pmpro_get_user_fields_for_profile( PMPro_Member_Edit_Panel::get_user()->ID, true );
-	if ( ! empty( $profile_user_fields ) ) {
-		foreach ( $profile_user_fields as $group_name => $user_fields ) {
-			$panels[] = new PMPro_Member_Edit_Panel_User_Fields( $group_name );
+	$user_id = PMPro_Member_Edit_Panel::get_user()->ID;
+	if ( $user_id ) {
+		$profile_user_fields = pmpro_get_user_fields_for_profile( $user_id, true );
+		if ( ! empty( $profile_user_fields ) ) {
+			foreach ( $profile_user_fields as $group_name => $user_fields ) {
+				$panels[] = new PMPro_Member_Edit_Panel_User_Fields( $group_name );
+			}
 		}
 	}
 
@@ -118,6 +121,14 @@ function pmpro_member_edit_display() {
 				// When creating a new user, we only want to show the user_info panel.
 				if ( empty( $user->ID ) && $panel_slug !== 'user_info' ) {
 					continue;
+				}
+
+				// If we are showing the orders panel, there is additional code that we need to run to allow emailing invoices.
+				// Ideally this would be in the "orders" panel class, but this code needs to be its own separate <form>.
+				// Hopefully we will have a solution for this down the road, but for now, adding this code here.
+				if ( $panel_slug === 'orders' && function_exists( 'pmpro_add_email_order_modal' ) ) {
+					// Load the email order modal.
+					pmpro_add_email_order_modal();
 				}
 
 				// Display the panel.
