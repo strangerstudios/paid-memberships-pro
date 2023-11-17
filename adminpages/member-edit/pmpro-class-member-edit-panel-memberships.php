@@ -135,11 +135,16 @@ class PMPro_Member_Edit_Panel_Memberships extends PMPro_Member_Edit_Panel {
 										if ( empty( $enddate_to_show ) ) {
 											esc_html_e( 'Never', 'paid-memberships-pro' );
 										} else {
-											echo esc_html( date_i18n( get_option( 'date_format'), $enddate_to_show ) );
+											echo esc_html( sprintf(
+												// translators: %1$s is the date and %2$s is the time.
+												__( '%1$s at %2$s', 'paid-memberships-pro' ),
+												esc_html( date_i18n( get_option( 'date_format'), $enddate_to_show ) ),
+												esc_html( date_i18n( get_option( 'time_format'), $enddate_to_show ) )
+											) );
 										}
 									?>
 								</td>
-								<td class="pmpro_levels_subscription_data">
+								<td class="pmpro_levels_subscription_data has-row-actions">
 									<?php
 										$subscriptions = PMPro_Subscription::get_subscriptions_for_user( $user->ID, $shown_level->id );
 										if ( ! empty( $subscriptions ) ) {
@@ -149,16 +154,51 @@ class PMPro_Member_Edit_Panel_Memberships extends PMPro_Member_Edit_Panel {
 												<div class="pmpro_message pmpro_error">
 													<p>
 														<?php
-														esc_html_e( 'The user has multiple active subscriptions for this level. Old payment subscriptions should be cancelled from the Subscriptions tab.', 'paid-memberships-pro' );
-														?>
+														printf(
+															// translators: %1$d is the number of subscriptions and %2$s is the link to view subscriptions.
+															_n(
+																'This user has %1$d active subscription for this level. %2$s',
+																'This user has %1$d active subscriptions for this level. %2$s',
+																count( $subscriptions ),
+																'paid-memberships-pro'
+															),
+															count( $subscriptions ),
+															sprintf(
+																'<a href="%1$s">%2$s</a>',
+																esc_url( add_query_arg( array( 'page' => 'pmpro-member', 'user_id' => $user->ID, 'pmpro_member_edit_panel' => 'subscriptions' ), admin_url( 'admin.php' ) ) ),
+																esc_html__( 'View Subscriptions', 'paid-memberships-pro' )
+															)
+														); ?>
 													</p>
 												</div>
 												<?php
 											}
 											$subscription = $subscriptions[0];
-											?>
-											<p><?php echo esc_html( $subscription->get_cost_text() ); ?></p>
-											<?php
+											echo esc_html( $subscription->get_cost_text() );
+											$actions = [
+												'view'   => sprintf(
+													'<a href="%1$s">%2$s</a>',
+													esc_url( add_query_arg( array( 'page' => 'pmpro-subscriptions', 'id' => $subscription->get_id() ), admin_url('admin.php' ) ) ),
+													esc_html__( 'View Details', 'paid-memberships-pro' )
+												)
+											];
+
+											$actions_html = [];
+
+											foreach ( $actions as $action => $link ) {
+												$actions_html[] = sprintf(
+													'<span class="%1$s">%2$s</span>',
+													esc_attr( $action ),
+													$link
+												);
+											}
+
+											if ( ! empty( $actions_html ) ) { ?>
+												<div class="row-actions">
+													<?php echo implode( ' | ', $actions_html ); ?>
+												</div>
+												<?php
+											}
 										} else {
 											?>
 											<p><?php esc_html_e( 'No subscription found.', 'paid-memberships-pro' ); ?></p>
@@ -167,183 +207,244 @@ class PMPro_Member_Edit_Panel_Memberships extends PMPro_Member_Edit_Panel {
 									?>
 								</td>
 							</tr>
-							<tr id="pmpro-level-<?php echo esc_attr( $shown_level->id ); ?>-edit" style="display: none;">
+							<tr id="pmpro-level-<?php echo esc_attr( $shown_level->id ); ?>-edit" class="pmpro-level_change" style="display: none;">
 								<td colspan="3">
-									<?php
-									$edit_level_input_name_base = 'pmpro-member-edit-memberships-panel-edit_level_' . $shown_level->id;
-									?>
-									<div>
-										<p><?php printf( esc_html( 'You are editing the %s membership.', 'paid-memberships-pro' ),  esc_html( $shown_level->name ) ); ?></p>
-									</div>
-
-									<div class="more_level_options">
+									<div class="pmpro-level_change-actions">
 										<?php
-										$has_enddate = ! empty( $shown_level->enddate );
-										$enddate     = $has_enddate ? date( 'Y-m-d H:i', $shown_level->enddate ) : date( 'Y-m-d H:i', strtotime( '+1 year' ) );
+										$edit_level_input_name_base = 'pmpro-member-edit-memberships-panel-edit_level_' . $shown_level->id;
 										?>
-										<input type="checkbox" name="<?php echo esc_attr( $edit_level_input_name_base ); ?>[expires]" id="<?php echo esc_attr( $edit_level_input_name_base ); ?>[expires]" value="1" class="pmpro_expires_checkbox" <?php checked( $has_enddate ) ?>/>
-										<label for="<?php echo esc_attr( $edit_level_input_name_base ); ?>[expires]"><?php esc_html_e( 'Set Expiration', 'paid-memberships-pro' ); ?></label>
-										<input type="datetime-local" name="<?php echo esc_attr( $edit_level_input_name_base ); ?>[expiration]" value="<?php echo esc_attr( $enddate ); ?>" <?php echo $has_enddate ? '' : 'style="display: none"'; ?>>
-									</div>
+										<div class="pmpro-level_change-action-header">
+											<h4><?php esc_html_e( 'Edit Membership', 'paid-memberships-pro' ); ?></h4>
+											<p><?php printf( esc_html( 'You are editing the following membership level: %s.', 'paid-memberships-pro' ),  esc_html( $shown_level->name ) ); ?></p>
+										</div>
 
-									<div class="more_level_options">
-										<label for="<?php echo esc_attr( $edit_level_input_name_base ); ?>[send_change_email]">
-											<input type="checkbox" name="<?php echo esc_attr( $edit_level_input_name_base ); ?>[send_change_email]" value="1" />
-											<?php esc_html_e( 'Send membership change email to member.', 'paid-memberships-pro' ); ?>
-										</label>
-									</div>
+										<div class="pmpro-level_change-action">
+											<span class="pmpro-level_change-action-label"><?php esc_html_e( 'Level Expiration', 'paid-memberships-pro' ); ?></span>
+											<span class="pmpro-level_change-action-field">
+												<?php
+												$has_enddate = ! empty( $shown_level->enddate );
+												$enddate     = $has_enddate ? date( 'Y-m-d H:i', $shown_level->enddate ) : date( 'Y-m-d H:i', strtotime( '+1 year' ) );
+												?>
+												<input type="checkbox" name="<?php echo esc_attr( $edit_level_input_name_base ); ?>[expires]" id="<?php echo esc_attr( $edit_level_input_name_base ); ?>[expires]" value="1" class="pmpro_expires_checkbox" <?php checked( $has_enddate ) ?>/>
+												<label for="<?php echo esc_attr( $edit_level_input_name_base ); ?>[expires]"><?php esc_html_e( 'Click to set the level expiration date.', 'paid-memberships-pro' ); ?></label>
+												<input type="datetime-local" name="<?php echo esc_attr( $edit_level_input_name_base ); ?>[expiration]" value="<?php echo esc_attr( $enddate ); ?>" <?php echo $has_enddate ? '' : 'style="display: none"'; ?>>
+											</span>
+										</div>
 
-									<div class="submit">
-										<button type="submit" name="pmpro-member-edit-memberships-panel-edit_level" class="button button-primary" value="<?php echo (int)$shown_level->id; ?>"><?php esc_html_e( 'Edit Membership', 'paid-memberships-pro' ) ?></button>
-										<input type="button" name="cancel-edit-level" value="Cancel" class="button button-secondary">
-									</div>
+										<div class="pmpro-level_change-action">
+											<span class="pmpro-level_change-action-label">
+												<?php esc_html_e( 'Member Communication', 'paid-memberships-pro' ); ?>
+											</span>
+											<span class="pmpro-level_change-action-field">
+												<label for="<?php echo esc_attr( $edit_level_input_name_base ); ?>[send_change_email]">
+													<input type="checkbox" name="<?php echo esc_attr( $edit_level_input_name_base ); ?>[send_change_email]" value="1" />
+													<?php esc_html_e( 'Send membership change email to member.', 'paid-memberships-pro' ); ?>
+												</label>
+											</span>
+										</div>
+
+										<div class="pmpro-level_change-action-footer">
+											<button type="submit" name="pmpro-member-edit-memberships-panel-edit_level" class="button button-primary" value="<?php echo (int)$shown_level->id; ?>"><?php esc_html_e( 'Edit Membership', 'paid-memberships-pro' ) ?></button>
+											<input type="button" name="cancel-edit-level" value="Cancel" class="button button-secondary">
+										</div>
+									</div> <!-- end pmpro-level_change-actions -->
 								</td>
 							</tr>
-							<tr id="pmpro-level-<?php echo esc_attr( $shown_level->id ); ?>-cancel" style="display: none;">
+							<tr id="pmpro-level-<?php echo esc_attr( $shown_level->id ); ?>-cancel" class="pmpro-level_change" style="display: none;">
 								<td colspan="3">
-									<?php
-									$cancel_level_input_name_base = 'pmpro-member-edit-memberships-panel-cancel_level_' . $shown_level->id;
-									?>
-									<div>
-										<p><?php printf( esc_html( 'You are about to cancel the %s membership.', 'paid-memberships-pro' ),  esc_html( $shown_level->name ) ); ?></p>
-									</div>
-
-									<?php
-									$last_order = new MemberOrder();
-									$last_order->getLastMemberOrder( $user->ID, array( 'success', 'refunded' ), $shown_level->id );
-									if ( pmpro_allowed_refunds( $last_order ) ) { ?>
-										<div class="more_level_options">
-											<label for="<?php echo esc_attr( $cancel_level_input_name_base ); ?>[refund]">
-												<input type="checkbox" name="<?php echo esc_attr( $cancel_level_input_name_base ); ?>[refund]" value="<?php echo (int)$last_order->id; ?>" />
-												<?php printf( esc_html( 'Refund the last payment (%s).', 'paid-memberships-pro' ), pmpro_formatPrice( $last_order->total ) ); ?>
-											</label>
-										</div>
+									<div class="pmpro-level_change-actions">
 										<?php
-									}
-
-									// If this group only allows users to have a single level and the user has a subscription, show the option to cancel it.
-									if ( ! empty( $subscriptions ) ) {
+										$cancel_level_input_name_base = 'pmpro-member-edit-memberships-panel-cancel_level_' . $shown_level->id;
 										?>
-										<div class="more_level_options">
-											<label for="<?php echo esc_attr( $cancel_level_input_name_base ); ?>[subscription_action]">
-												<select name="<?php echo esc_attr( $cancel_level_input_name_base ); ?>[subscription_action]">
-													<option value="cancel"><?php esc_html_e( 'Cancel payment subscription (Recommended)', 'paid-memberships-pro' ); ?></option>
-													<option value="keep"><?php esc_html_e( 'Keep subscription active', 'paid-memberships-pro' ); ?></option>
-												</select>
-											</label>
+										<div class="pmpro-level_change-action-header">
+											<h4><?php esc_html_e( 'Cancel Membership', 'paid-memberships-pro' ); ?></h4>
+											<p><?php printf( esc_html( 'This change will permanently cancel the following membership level: %s.', 'paid-memberships-pro' ),  esc_html( $shown_level->name ) ); ?></p>
 										</div>
+
 										<?php
-									}
-									?>
+										$last_order = new MemberOrder();
+										$last_order->getLastMemberOrder( $user->ID, array( 'success', 'refunded' ), $shown_level->id );
+										if ( pmpro_allowed_refunds( $last_order ) ) { ?>
+											<div class="pmpro-level_change-action">
+												<span class="pmpro-level_change-action-label"><?php esc_html_e( 'Refund Payment', 'paid-memberships-pro' ); ?></span>
+												<span class="pmpro-level_change-action-field">
+													<label for="<?php echo esc_attr( $cancel_level_input_name_base ); ?>[refund]">
+														<input type="checkbox" name="<?php echo esc_attr( $cancel_level_input_name_base ); ?>[refund]" value="<?php echo (int)$last_order->id; ?>" />
+														<?php printf( esc_html( 'Refund the last payment (%s).', 'paid-memberships-pro' ), pmpro_formatPrice( $last_order->total ) ); ?>
+													</label>
+												</span>
+											</div>
+											<?php
+										}
 
-									<div class="more_level_options">
-										<label for="<?php echo esc_attr( $cancel_level_input_name_base ); ?>[send_change_email]">
-											<input type="checkbox" name="<?php echo esc_attr( $cancel_level_input_name_base ); ?>[send_change_email]" value="1" />
-											<?php esc_html_e( 'Send membership change email to member.', 'paid-memberships-pro' ); ?>
-										</label>
-									</div>
+										// If this group only allows users to have a single level and the user has a subscription, show the option to cancel it.
+										if ( ! empty( $subscriptions ) ) {
+											?>
+											<div class="pmpro-level_change-action">
+												<span class="pmpro-level_change-action-label">
+													<label for="<?php echo esc_attr( $cancel_level_input_name_base ); ?>[subscription_action]">
+														<?php esc_html_e( 'Current Subscription', 'paid-memberships-pro' ); ?>
+													</label>
+												</span>
+												<span class="pmpro-level_change-action-field">
+													<select name="<?php echo esc_attr( $cancel_level_input_name_base ); ?>[subscription_action]">
+														<option value="cancel"><?php esc_html_e( 'Cancel payment subscription (Recommended)', 'paid-memberships-pro' ); ?></option>
+														<option value="keep"><?php esc_html_e( 'Keep subscription active', 'paid-memberships-pro' ); ?></option>
+													</select>
+												</span>
+											</div>
+											<?php
+										}
+										?>
 
-									<div class="submit">
-										<button type="submit" name="pmpro-member-edit-memberships-panel-cancel_level" class="button button-primary" value="<?php echo (int)$shown_level->id; ?>"><?php esc_html_e( 'Cancel Membership', 'paid-memberships-pro' ) ?></button>
-										<input type="button" name="cancel-cancel-level" value="Cancel" class="button button-secondary">
-									</div>
+										<div class="pmpro-level_change-action">
+											<span class="pmpro-level_change-action-label">
+												<?php esc_html_e( 'Member Communication', 'paid-memberships-pro' ); ?>
+											</span>
+											<span class="pmpro-level_change-action-field">
+												<label for="<?php echo esc_attr( $cancel_level_input_name_base ); ?>[send_change_email]">
+													<input type="checkbox" name="<?php echo esc_attr( $cancel_level_input_name_base ); ?>[send_change_email]" value="1" />
+													<?php esc_html_e( 'Send membership change email to member.', 'paid-memberships-pro' ); ?>
+												</label>
+											</span>
+										</div>
+
+										<div class="pmpro-level_change-action-footer">
+											<button type="submit" name="pmpro-member-edit-memberships-panel-cancel_level" class="button button-primary" value="<?php echo (int)$shown_level->id; ?>"><?php esc_html_e( 'Cancel Membership', 'paid-memberships-pro' ) ?></button>
+											<input type="button" name="cancel-cancel-level" value="Cancel" class="button button-secondary">
+										</div>
+									</div> <!-- end pmpro-level_change-actions -->
 								</td>
 							</tr>
 							<?php
 						}
 						?>
 					</tbody>
-					<tfoot>
-						<tr>
-							<?php
-							$link_icon = empty( $group->allow_multiple_selections ) ? 'image-rotate' : 'plus';
-							$js_target_class = empty( $group->allow_multiple_selections ) ? 'pmpro-member-change-level' : 'pmpro-member-add-level';
-							$link_text = empty( $group->allow_multiple_selections ) ? __( 'Change Membership', 'paid-memberships-pro' ) : __( 'Add Membership', 'paid-memberships-pro' );
-							?>
-							<td colspan="3"><a class="button-secondary pmpro-has-icon pmpro-has-icon-<?php echo esc_attr( $link_icon ) . ' ' . esc_attr( $js_target_class ); ?>" href="#"><?php echo esc_html( $link_text ); ?></a></td>
-						</tr>
-						<tr class="pmpro-level-change" style="display: none;">
-							<td colspan="3">
-								<?php
-								$add_level_to_group_input_name_base = 'pmpro-member-edit-memberships-panel-add_level_to_group_' . $group->id;
-								?>
-								<div>
+
+					<?php
+						// Only show actions if there are levels the user can have or change to.
+						if ( empty( $group->allow_multiple_selections ) || count( $levels_in_group ) !== count( $user_level_ids_in_group ) ) { ?>
+							<tfoot>
+								<tr>
 									<?php
-									// If the group only allows a single level and the user already has a level, note the level that will be removed.
-									if ( empty( $group->allow_multiple_selections ) && ! empty( $shown_level ) ) {
-										?>
-										<p><?php printf( esc_html( 'Changing the membership level will remove the %s membership.', 'paid-memberships-pro' ), esc_html( $shown_level->name ) ); ?></p>
-										<?php
-									}
+									$link_icon = empty( $group->allow_multiple_selections ) ? 'image-rotate' : 'plus';
+									$js_target_class = empty( $group->allow_multiple_selections ) ? 'pmpro-member-change-level' : 'pmpro-member-add-level';
+									$link_text = empty( $group->allow_multiple_selections ) ? __( 'Change Membership', 'paid-memberships-pro' ) : __( 'Add Membership', 'paid-memberships-pro' );
 									?>
-									<label for="<?php echo esc_attr( $add_level_to_group_input_name_base ); ?>[level_id]"><?php esc_html_e( 'New Membership Level', 'paid-memberships-pro' ); ?></label></th>
-									<select name="<?php echo esc_attr( $add_level_to_group_input_name_base ); ?>[level_id]">
-										<option value="">-- <?php _e( 'Choose Level', 'paid-memberships-pro' );?> --</option>
-										<?php
-										foreach ( $levels_in_group as $level ) {
-											// If the user already has this level, don't allow them to add it.
-											if ( in_array( $level->id, $user_level_ids_in_group ) ) {
-												continue;
+									<td colspan="3"><a class="button-secondary pmpro-has-icon pmpro-has-icon-<?php echo esc_attr( $link_icon ) . ' ' . esc_attr( $js_target_class ); ?>" href="#"><?php echo esc_html( $link_text ); ?></a></td>
+								</tr>
+								<tr class="pmpro-level_change" style="display: none;">
+									<td colspan="3">
+										<div class="pmpro-level_change-actions">
+											<?php
+												$add_level_to_group_input_name_base = 'pmpro-member-edit-memberships-panel-add_level_to_group_' . $group->id;
+											?>
+											<div class="pmpro-level_change-action-header">
+												<h4><?php echo esc_html( $link_text ); ?></h4>
+												<?php
+												// If the group only allows a single level and the user already has a level, note the level that will be removed.
+												if ( empty( $group->allow_multiple_selections ) && ! empty( $shown_level ) ) {
+													?>
+													<p><?php printf( esc_html( 'This change will remove the following membership level: %s.', 'paid-memberships-pro' ), esc_html( $shown_level->name ) ); ?></p>
+													<?php
+												}
+												?>
+											</div>
+
+											<div class="pmpro-level_change-action">
+												<span class="pmpro-level_change-action-label">
+													<label for="<?php echo esc_attr( $add_level_to_group_input_name_base ); ?>[level_id]"><?php esc_html_e( 'New Membership Level', 'paid-memberships-pro' ); ?></label>
+												</span>
+												<span class="pmpro-level_change-action-field">
+													<select name="<?php echo esc_attr( $add_level_to_group_input_name_base ); ?>[level_id]">
+														<option value="">-- <?php _e( 'Choose Level', 'paid-memberships-pro' );?> --</option>
+														<?php
+														foreach ( $levels_in_group as $level ) {
+															// If the user already has this level, don't allow them to add it.
+															if ( in_array( $level->id, $user_level_ids_in_group ) ) {
+																continue;
+															}
+															?>
+															<option value="<?php echo esc_attr( $level->id ) ?>" <?php selected($level->id, (isset($shown_level->ID) ? $shown_level->ID : 0 )); ?>><?php echo esc_html( $level->name ); ?></option>
+															<?php
+														}
+														?>
+													</select>
+												</span>
+											</div>
+
+											<div class="pmpro-level_change-action">
+												<span class="pmpro-level_change-action-label"><?php esc_html_e( 'Level Expiration', 'paid-memberships-pro' ); ?></span>
+												<span class="pmpro-level_change-action-field">
+													<input type="checkbox" name="<?php echo esc_attr( $add_level_to_group_input_name_base ); ?>[expires]" id="<?php echo esc_attr( $add_level_to_group_input_name_base ); ?>[expires]" value="1" class="pmpro_expires_checkbox" />
+													<label for="<?php echo esc_attr( $add_level_to_group_input_name_base ); ?>[expires]"><?php esc_html_e( 'Click to set the level expiration date.', 'paid-memberships-pro' ); ?></label>
+													<input type="datetime-local" name="<?php echo esc_attr( $add_level_to_group_input_name_base ); ?>[expiration]" value="<?php echo esc_attr( date( 'Y-m-d H:i', strtotime( '+1 year' ) ) ); ?>" style="display: none" >
+												</span>
+											</div>
+										
+											<?php
+											// If this group only allows users to have a single level, get the last member order and see if we can refund it.
+											if ( empty( $group->allow_multiple_selections ) && ! empty( $shown_level ) ) {
+												$last_order = new MemberOrder();
+												$last_order->getLastMemberOrder( $user->ID, array( 'success', 'refunded' ), $shown_level->id );
+												if ( pmpro_allowed_refunds( $last_order ) ) { ?>
+													<div class="pmpro-level_change-action">
+														 <span class="pmpro-level_change-action-label"><?php esc_html_e( 'Refund Payment', 'paid-memberships-pro' ); ?></span>
+														 <span class="pmpro-level_change-action-field">
+															<label for="<?php echo esc_attr( $add_level_to_group_input_name_base ); ?>[refund]">
+																<input type="checkbox" name="<?php echo esc_attr( $add_level_to_group_input_name_base ); ?>[refund]" value="<?php echo (int)$last_order->id; ?>" />
+																<?php printf( esc_html( 'Refund the last payment (%s).', 'paid-memberships-pro' ), pmpro_formatPrice( $last_order->total ) ); ?>
+															</label>
+														</span>
+													</div>
+													<?php
+												}
+											}
+
+											// If this group only allows users to have a single level and the user has a subscription, show the option to cancel it.
+											if ( empty( $group->allow_multiple_selections ) && ! empty( $shown_level ) && ! empty( $subscriptions ) ) {
+												?>
+												<div class="pmpro-level_change-action">
+													<span class="pmpro-level_change-action-label">
+														<label for="<?php echo esc_attr( $add_level_to_group_input_name_base ); ?>[subscription_action]">
+															<?php esc_html_e( 'Current Subscription', 'paid-memberships-pro' ); ?>
+														</label>
+													</span>
+													<span class="pmpro-level_change-action-field">
+														<select name="<?php echo esc_attr( $add_level_to_group_input_name_base ); ?>[subscription_action]">
+															<option value="cancel"><?php esc_html_e( 'Cancel payment subscription (Recommended)', 'paid-memberships-pro' ); ?></option>
+															<option value="keep"><?php esc_html_e( 'Keep subscription active', 'paid-memberships-pro' ); ?></option>
+														</select>
+													</span>
+												</div>
+												<?php
 											}
 											?>
-											<option value="<?php echo esc_attr( $level->id ) ?>" <?php selected($level->id, (isset($shown_level->ID) ? $shown_level->ID : 0 )); ?>><?php echo esc_html( $level->name ); ?></option>
-											<?php
-										}
-										?>
-									</select>
-								</div>
 
-								<div class="more_level_options">
-									<input type="checkbox" name="<?php echo esc_attr( $add_level_to_group_input_name_base ); ?>[expires]" id="<?php echo esc_attr( $add_level_to_group_input_name_base ); ?>[expires]" value="1" class="pmpro_expires_checkbox" />
-									<label for="<?php echo esc_attr( $add_level_to_group_input_name_base ); ?>[expires]"><?php esc_html_e( 'Set Expiration', 'paid-memberships-pro' ); ?></label>
-									<input type="datetime-local" name="<?php echo esc_attr( $add_level_to_group_input_name_base ); ?>[expiration]" value="<?php echo esc_attr( date( 'Y-m-d H:i', strtotime( '+1 year' ) ) ); ?>" style="display: none" >
-								</div>
-							
-								<?php
-								// If this group only allows users to have a single level, get the last member order and see if we can refund it.
-								if ( empty( $group->allow_multiple_selections ) && ! empty( $shown_level ) ) {
-									$last_order = new MemberOrder();
-									$last_order->getLastMemberOrder( $user->ID, array( 'success', 'refunded' ), $shown_level->id );
-									if ( pmpro_allowed_refunds( $last_order ) ) { ?>
-										<div class="more_level_options">
-											<label for="<?php echo esc_attr( $add_level_to_group_input_name_base ); ?>[refund]">
-												<input type="checkbox" name="<?php echo esc_attr( $add_level_to_group_input_name_base ); ?>[refund]" value="<?php echo (int)$last_order->id; ?>" />
-												<?php printf( esc_html( 'Refund the last payment (%s).', 'paid-memberships-pro' ), pmpro_formatPrice( $last_order->total ) ); ?>
-											</label>
-										</div>
-										<?php
-									}
-								}
+											<div class="pmpro-level_change-action">
+												<span class="pmpro-level_change-action-label">
+													<?php esc_html_e( 'Member Communication', 'paid-memberships-pro' ); ?>
+												</span>
+												<span class="pmpro-level_change-action-field">
+													<label for="<?php echo esc_attr( $add_level_to_group_input_name_base ); ?>[send_change_email]">
+														<input type="checkbox" name="<?php echo esc_attr( $add_level_to_group_input_name_base ); ?>[send_change_email]" value="1" />
+														<?php esc_html_e( 'Send membership change email to member.', 'paid-memberships-pro' ); ?>
+													</label>
+												</span>
+											</div>
 
-								// If this group only allows users to have a single level and the user has a subscription, show the option to cancel it.
-								if ( empty( $group->allow_multiple_selections ) && ! empty( $shown_level ) && ! empty( $subscriptions ) ) {
-									?>
-									<div class="more_level_options">
-										<label for="<?php echo esc_attr( $add_level_to_group_input_name_base ); ?>[subscription_action]">
-											<select name="<?php echo esc_attr( $add_level_to_group_input_name_base ); ?>[subscription_action]">
-												<option value="cancel"><?php esc_html_e( 'Cancel payment subscription (Recommended)', 'paid-memberships-pro' ); ?></option>
-												<option value="keep"><?php esc_html_e( 'Keep subscription active', 'paid-memberships-pro' ); ?></option>
-											</select>
-										</label>
-									</div>
-									<?php
-								}
-								?>
+											<div class="pmpro-level_change-action-footer">
+												<button type="submit" name="pmpro-member-edit-memberships-panel-add_level_to_group" class="button button-primary" value="<?php echo (int)$group->id; ?>"><?php echo esc_html( $link_text ) ?></button>
+												<input type="button" name="cancel-add-level" value="Cancel" class="button button-secondary">
+											</div>
 
-								<div class="more_level_options">
-									<label for="<?php echo esc_attr( $add_level_to_group_input_name_base ); ?>[send_change_email]">
-										<input type="checkbox" name="<?php echo esc_attr( $add_level_to_group_input_name_base ); ?>[send_change_email]" value="1" />
-										<?php esc_html_e( 'Send membership change email to member.', 'paid-memberships-pro' ); ?>
-									</label>
-								</div>
-
-								<div class="submit">
-									<button type="submit" name="pmpro-member-edit-memberships-panel-add_level_to_group" class="button button-primary" value="<?php echo (int)$group->id; ?>"><?php echo esc_html( $link_text ) ?></button>
-									<input type="button" name="cancel-add-level" value="Cancel" class="button button-secondary">
-								</div>
-							</td>
-						</tr>
-					</tfoot>
+										</div> <!-- end pmpro-level_change-actions -->
+									</td>
+								</tr>
+							</tfoot>
+							<?php
+						}
+					?>
 				</table>
 				<?php
 			}
@@ -353,54 +454,88 @@ class PMPro_Member_Edit_Panel_Memberships extends PMPro_Member_Edit_Panel {
 		// Button to show edit membership.
 		jQuery('#pmpro-member-edit-memberships-panel a.pmpro-member-edit-level').on('click', function (event) {
 			event.preventDefault();
-			jQuery(this).closest('tr').next('tr').show();
-			jQuery(this).closest('tr').hide();
+			var currentRow = jQuery(this).closest('tr');
+			currentRow.next('tr').show();
+			currentRow.closest('table').find('tfoot').hide();
+			currentRow.hide();
+
+			// Add muted class to all other <tr> elements in the same table.
+			currentRow.closest('table').find('tr:not(.pmpro-level_change)').addClass('pmpro_opaque');
 		});
 
 		// Button to cancel editing membership.
 		jQuery('#pmpro-member-edit-memberships-panel input[name="cancel-edit-level"]').on('click', function (event) {
 			event.preventDefault();
-			jQuery(this).closest('tr').prev('tr').show();
-			jQuery(this).closest('tr').hide();
+			var currentRow = jQuery(this).closest('tr');
+			currentRow.prev('tr').show();
+			currentRow.closest('table').find('tfoot').show();
+			currentRow.hide();
+
+			// Remove pmpro_opaque class from all <tr> elements.
+			var table = jQuery(this).closest('table');
+			table.find('tr').removeClass('pmpro_opaque');
 		});
 
 		// Button to show cancel membership.
 		jQuery('#pmpro-member-edit-memberships-panel a.pmpro-member-cancel-level').on('click', function (event) {
 			event.preventDefault();
-			jQuery(this).closest('tr').next('tr').next('tr').show();
-			jQuery(this).closest('tr').hide();
+			var currentRow = jQuery(this).closest('tr');
+			currentRow.next('tr').next('tr').show();
+			currentRow.closest('table').find('tfoot').hide();
+			currentRow.hide();
+
+			// Add muted class to all other <tr> elements in the same table.
+			currentRow.closest('table').find('tr:not(.pmpro-level_change)').addClass('pmpro_opaque');
 		});
 
 		// Button to cancel cancelling membership.
 		jQuery('#pmpro-member-edit-memberships-panel input[name="cancel-cancel-level"]').on('click', function (event) {
 			event.preventDefault();
-			jQuery(this).closest('tr').prev('tr').prev('tr').show();
-			jQuery(this).closest('tr').hide();
+			var currentRow = jQuery(this).closest('tr');
+			currentRow.prev('tr').prev('tr').show();
+			currentRow.closest('table').find('tfoot').show();
+			currentRow.hide();
+
+			// Remove pmpro_opaque class from all <tr> elements.
+			var table = jQuery(this).closest('table');
+			table.find('tr').removeClass('pmpro_opaque');
 		});
 
 		// Button to change membership in "one per" groups.
 		jQuery('#pmpro-member-edit-memberships-panel a.pmpro-member-change-level').on('click', function (event) {
 			event.preventDefault();
-			jQuery(this).closest('tr').next('tr').show();
-			jQuery(this).closest('table').find('thead').hide();
-			jQuery(this).closest('table').find('tbody').hide();
-			jQuery(this).closest('tr').hide();
+			var currentRow = jQuery(this).closest('tr');
+			currentRow.next('tr').show();
+			currentRow.closest('table').find('tbody').hide();
+			currentRow.closest('table').find('thead').hide();
+			currentRow.hide();
+
+			// Add muted class to all other <tr> elements in the same table.
+			currentRow.closest('table').find('tr:not(.pmpro-level_change)').addClass('pmpro_opaque');
 		});
 
 		// Button to add membership in "multiple" groups.
 		jQuery('#pmpro-member-edit-memberships-panel a.pmpro-member-add-level').on('click', function (event) {
 			event.preventDefault();
-			jQuery(this).closest('tr').next('tr').show();
-			jQuery(this).closest('tr').hide();
+			var currentRow = jQuery(this).closest('tr');
+			currentRow.next('tr').show();
+			currentRow.hide();
+
+			// Add muted class to all other <tr> elements in the same table.
+			currentRow.closest('table').find('tr:not(.pmpro-level_change)').addClass('pmpro_opaque');
 		});
 
-		// Button to cancel changing membership.
+		// Button to cancel adding membership.
 		jQuery('#pmpro-member-edit-memberships-panel input[name="cancel-add-level"]').on('click', function (event) {
 			event.preventDefault();
-			jQuery(this).closest('tr').closest('table').find('thead').show();
-			jQuery(this).closest('tr').closest('table').find('tbody').show();
-			jQuery(this).closest('tr').closest('table').find('tfoot').find('tr').show();
-			jQuery(this).closest('tr').closest('table').find('tfoot').find('tr').next('tr').hide();
+			var table = jQuery(this).closest('table');
+			table.find('thead').show();
+			table.find('tbody').show();
+			table.find('tfoot').find('tr').show();
+			table.find('tfoot').find('tr').next('tr').hide();
+
+			// Remove pmpro_opaque class from all <tr> elements.
+			table.find('tr').removeClass('pmpro_opaque');
 		});
 
 		// Show/hide the expiration date field when the checkbox is clicked.
@@ -416,73 +551,65 @@ class PMPro_Member_Edit_Panel_Memberships extends PMPro_Member_Edit_Panel {
 		// Show all membership history for user.
 		$levelshistory = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM $wpdb->pmpro_memberships_users WHERE user_id = %s ORDER BY id DESC", $user->ID ) );
 
-		// Build the selectors for the membership levels history list based on history count.
-		$levelshistory_classes = array();
-		if ( ! empty( $levelshistory ) && count( $levelshistory ) > 10 ) {
-			$levelshistory_classes[] = "pmpro_scrollable";
-		}
-		$levelshistory_class = implode( ' ', array_unique( $levelshistory_classes ) );
-	?>
-	<h3><?php esc_html_e( 'Membership History', 'paid-memberships-pro' ); ?></h3>
-	<div id="member-history-memberships" class="<?php echo esc_attr( $levelshistory_class ); ?>">
-		<?php if ( $levelshistory ) { ?>
-			<table class="wp-list-table widefat striped fixed" width="100%" cellpadding="0" cellspacing="0" border="0">
-			<thead>
-				<tr>
-					<th><?php esc_html_e( 'Level ID', 'paid-memberships-pro' ); ?>
-					<th><?php esc_html_e( 'Level', 'paid-memberships-pro' ); ?></th>
-					<th><?php esc_html_e( 'Start Date', 'paid-memberships-pro' ); ?></th>
-					<th><?php esc_html_e( 'Date Modified', 'paid-memberships-pro' ); ?></th>
-					<th><?php esc_html_e( 'End Date', 'paid-memberships-pro' ); ?></th>
-					<th><?php esc_html_e( 'Level Cost', 'paid-memberships-pro' ); ?></th>
-					<th><?php esc_html_e( 'Status', 'paid-memberships-pro' ); ?></th>
-					<?php do_action( 'pmpromh_member_history_extra_cols_header' ); ?>
-				</tr>
-			</thead>
-			<tbody>
-			<?php
-				foreach ( $levelshistory as $levelhistory ) {
-					$level = pmpro_getLevel( $levelhistory->membership_id );
-
-					if ( $levelhistory->enddate === null || $levelhistory->enddate == '0000-00-00 00:00:00' ) {
-						$levelhistory->enddate = __( 'Never', 'paid-memberships-pro' );
-					} else {
-						$levelhistory->enddate = date_i18n( get_option( 'date_format'), strtotime( $levelhistory->enddate ) );
-					} ?>
-					<tr>
-						<td><?php if ( ! empty( $level ) ) { echo $level->id; } else { esc_html_e( 'N/A', 'paid-memberships-pro' ); } ?></td>
-						<td><?php if ( ! empty( $level ) ) { echo $level->name; } else { esc_html_e( 'N/A', 'paid-memberships-pro' ); } ?></td>
-						<td><?php echo ( $levelhistory->startdate === '0000-00-00 00:00:00' ? __('N/A', 'paid-memberships-pro') : date_i18n( get_option( 'date_format' ), strtotime( $levelhistory->startdate ) ) ); ?></td>
-						<td><?php echo date_i18n( get_option( 'date_format'), strtotime( $levelhistory->modified ) ); ?></td>
-						<td><?php echo esc_html( $levelhistory->enddate ); ?></td>
-						<td><?php echo pmpro_getLevelCost( $levelhistory, true, true ); ?></td>
-						<td>
-							<?php 
-								if ( empty( $levelhistory->status ) ) {
-									echo '-';
-								} else {
-									echo esc_html( $levelhistory->status ); 
-								}
-							?>
-						</td>
-						<?php do_action( 'pmpromh_member_history_extra_cols_body', $user, $level ); ?>
-					</tr>
-					<?php
-				}
+		if ( $levelshistory ) {
+			// Build the selectors for the membership levels history list based on history count.
+			$levelshistory_classes = array();
+			if ( ! empty( $levelshistory ) && count( $levelshistory ) > 10 ) {
+				$levelshistory_classes[] = "pmpro_scrollable";
+			}
+			$levelshistory_class = implode( ' ', array_unique( $levelshistory_classes ) );
 			?>
-			</tbody>
-			</table>
-			<?php } else { ?>
+			<h3><?php esc_html_e( 'Membership History', 'paid-memberships-pro' ); ?></h3>
+			<div id="member-history-memberships" class="<?php echo esc_attr( $levelshistory_class ); ?>">
 				<table class="wp-list-table widefat striped fixed" width="100%" cellpadding="0" cellspacing="0" border="0">
-					<tbody>
+					<thead>
 						<tr>
-							<td><?php esc_html_e( 'No membership history found.', 'paid-memberships-pro'); ?></td>
+							<th><?php esc_html_e( 'Level ID', 'paid-memberships-pro' ); ?>
+							<th><?php esc_html_e( 'Level', 'paid-memberships-pro' ); ?></th>
+							<th><?php esc_html_e( 'Start Date', 'paid-memberships-pro' ); ?></th>
+							<th><?php esc_html_e( 'Date Modified', 'paid-memberships-pro' ); ?></th>
+							<th><?php esc_html_e( 'End Date', 'paid-memberships-pro' ); ?></th>
+							<th><?php esc_html_e( 'Level Cost', 'paid-memberships-pro' ); ?></th>
+							<th><?php esc_html_e( 'Status', 'paid-memberships-pro' ); ?></th>
+							<?php do_action( 'pmpromh_member_history_extra_cols_header' ); ?>
 						</tr>
+					</thead>
+					<tbody>
+					<?php
+						foreach ( $levelshistory as $levelhistory ) {
+							$level = pmpro_getLevel( $levelhistory->membership_id );
+
+							if ( $levelhistory->enddate === null || $levelhistory->enddate == '0000-00-00 00:00:00' ) {
+								$levelhistory->enddate = __( 'Never', 'paid-memberships-pro' );
+							} else {
+								$levelhistory->enddate = date_i18n( get_option( 'date_format'), strtotime( $levelhistory->enddate ) );
+							} ?>
+							<tr>
+								<td><?php if ( ! empty( $level ) ) { echo $level->id; } else { esc_html_e( 'N/A', 'paid-memberships-pro' ); } ?></td>
+								<td><?php if ( ! empty( $level ) ) { echo $level->name; } else { esc_html_e( 'N/A', 'paid-memberships-pro' ); } ?></td>
+								<td><?php echo ( $levelhistory->startdate === '0000-00-00 00:00:00' ? __('N/A', 'paid-memberships-pro') : date_i18n( get_option( 'date_format' ), strtotime( $levelhistory->startdate ) ) ); ?></td>
+								<td><?php echo date_i18n( get_option( 'date_format'), strtotime( $levelhistory->modified ) ); ?></td>
+								<td><?php echo esc_html( $levelhistory->enddate ); ?></td>
+								<td><?php echo pmpro_getLevelCost( $levelhistory, true, true ); ?></td>
+								<td>
+									<?php 
+										if ( empty( $levelhistory->status ) ) {
+											echo '-';
+										} else {
+											echo esc_html( $levelhistory->status ); 
+										}
+									?>
+								</td>
+								<?php do_action( 'pmpromh_member_history_extra_cols_body', $user, $level ); ?>
+							</tr>
+							<?php
+						}
+					?>
 					</tbody>
 				</table>
-			<?php } ?>
-		</div> <!-- end #member-history-memberships -->
-		<?php	
+			</div>
+			<?php
+		}
 	}
 
 	/**
