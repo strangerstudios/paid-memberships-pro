@@ -75,21 +75,7 @@ function pmpro_member_edit_display() {
 	/**
 	 * Load the Paid Memberships Pro dashboard-area header
 	 */
-	require_once( PMPRO_DIR . '/adminpages/admin_header.php' );
-
-	// TODO: Do we need to update how this is displayed at all?
-	if ( $pmpro_msg ) {
-		?>
-		<div role="alert" id="pmpro_message" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_message ' . $pmpro_msgt, $pmpro_msgt ) ); ?>">
-			<?php echo wp_kses_post( apply_filters( 'pmpro_checkout_message', $pmpro_msg, $pmpro_msgt ) ); ?>
-		</div>
-		<?php
-	} else {
-		?>
-		<div id="pmpro_message" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_message' ) ); ?>" style="display: none;"></div>
-		<?php
-	}
-	?>
+	require_once( PMPRO_DIR . '/adminpages/admin_header.php' ); ?>
 
 	<hr class="wp-header-end">
 	<h1 class="wp-heading-inline">
@@ -102,12 +88,28 @@ function pmpro_member_edit_display() {
 		}
 		?>
 	</h1>
-	<div id="pmpro-edit-user-div">
-		<nav id="pmpro-edit-user-nav" role="tablist" aria-label="Edit Member Field Tabs">
+
+	<?php
+		if ( $pmpro_msg ) {
+			?>
+			<div role="alert" id="pmpro_message" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_message ' . $pmpro_msgt, $pmpro_msgt ) ); ?>">
+				<?php echo wp_kses_post( $pmpro_msg ); ?>
+			</div>
 			<?php
-			foreach ( $panels as $panel_slug => $panel ) {
-				$panel->display_tab( $panel_slug === $default_panel_slug );
-			}
+		} else {
+			?>
+			<div id="pmpro_message" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_message' ) ); ?>" style="display: none;"></div>
+			<?php
+		}
+	?>
+
+	<div id="pmpro-edit-user-div">
+		<nav id="pmpro-edit-user-nav" role="tablist" aria-labelledby="pmpro-edit-user-menu">
+			<h2 id="pmpro-edit-user-menu" class="screen-reader-text"><?php esc_html_e( 'Edit Member Area Menu', 'paid-memberships-pro' ); ?></h2>
+			<?php
+				foreach ( $panels as $panel_slug => $panel ) {
+					$panel->display_tab( $panel_slug === $default_panel_slug );
+				}
 			?>
 		</nav>
 		<div class="pmpro_section">
