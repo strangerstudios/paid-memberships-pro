@@ -155,10 +155,10 @@ class PMPro_Member_Edit_Panel_Memberships extends PMPro_Member_Edit_Panel {
 													<p>
 														<?php
 														printf(
-															// translators: %1$s is the number of subscriptions and %2$s is the link to view subscriptions.
+															// translators: %1$d is the number of subscriptions and %2$s is the link to view subscriptions.
 															_n(
-																'This user has %1$s active subscription for this level. %2$s',
-																'This user has %1$s active subscriptions for this level. %2$s',
+																'This user has %1$d active subscription for this level. %2$s',
+																'This user has %1$d active subscriptions for this level. %2$s',
 																count( $subscriptions ),
 																'paid-memberships-pro'
 															),
