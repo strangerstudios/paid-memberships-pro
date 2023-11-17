@@ -1,4 +1,6 @@
 <?php
+global $pmpro_msg, $pmpro_msgt;
+
 // only admins can get this
 if ( ! function_exists( 'current_user_can' ) || ( ! current_user_can( 'manage_options' ) && ! current_user_can( 'pmpro_subscriptions' ) ) ) {
 	die( __( 'You do not have permissions to perform this action.', 'paid-memberships-pro' ) );
@@ -28,6 +30,18 @@ require_once( dirname( __FILE__ ) . '/admin_header.php' );
 <hr class="wp-header-end">
 <h1 class="wp-heading-inline"><?php esc_html_e( 'View Subscription', 'paid-memberships-pro' ); ?></h1>
 <?php
+
+if ( $pmpro_msg ) {
+	?>
+	<div role="alert" id="pmpro_message" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_message ' . $pmpro_msgt, $pmpro_msgt ) ); ?>">
+		<?php echo wp_kses_post( $pmpro_msg ); ?>
+	</div>
+	<?php
+} else {
+	?>
+	<div id="pmpro_message" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_message' ) ); ?>" style="display: none;"></div>
+	<?php
+}
 
 // Check if we have a subscription object.
 if ( empty( $subscription ) ) {
