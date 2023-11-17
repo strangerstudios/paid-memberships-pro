@@ -1135,6 +1135,7 @@ body[class*="memberships_page_pmpro-"] {
 	gap: calc( var(--pmpro--spacing--medium) / 2 );
 }
 
+/* Single Member - Memberships Panel */
 .pmpro_admin-pmpro-member #pmpro-member-edit-memberships-panel .pmpro_section .pmpro_section_inside {
 	padding: 0;
 }
@@ -1150,6 +1151,25 @@ body[class*="memberships_page_pmpro-"] {
 }
 
 .pmpro_admin-pmpro-member #member-history-memberships table.widefat thead th {
+	border-top: none;
+}
+
+/* Single Member - Subscriptions Panel */
+.pmpro_admin-pmpro-member #pmpro-member-edit-subscriptions-panel .pmpro_section .pmpro_section_inside {
+	padding: 0;
+}
+
+.pmpro_admin-pmpro-member #member-history-subscriptions table.widefat {
+	border: none;
+	border-radius: 0;
+}
+
+.pmpro_admin-pmpro-member #member-history-subscriptions table.widefat thead th:first-child,
+.pmpro_admin-pmpro-member #member-history-subscriptions table.widefat thead th:last-child {
+	border-radius: 0;
+}
+
+.pmpro_admin-pmpro-member #member-history-subscriptions table.widefat thead th {
 	border-top: none;
 }
 
