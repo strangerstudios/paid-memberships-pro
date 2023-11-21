@@ -157,7 +157,14 @@ config.entry = {
     "src",
     "sidebar",
     "index.js"
-  )
+  ),
+  "block-membership-required-component/index": path.resolve(
+	process.cwd(),
+	"blocks",
+	"src",
+	"block-membership-required-component",
+	"index.js" ),
+
 };
 config.output = {
   filename: "[name].js",

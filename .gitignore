@@ -31,6 +31,9 @@ composer.lock
 log/*.log
 log/*.txt
 tests/_build
+
+#blocks
+/blocks/build/*
 js/blocks.build.asset.php
 js/blocks/blocks.build.asset.php
 js/blocks.build.js.map
