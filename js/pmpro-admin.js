@@ -791,6 +791,15 @@ jQuery(document).ready(function () {
         jQuery('.pmpro-popup-overlay').hide();
     });
 
+    // Hide the popup if clicked outside the popup.
+    jQuery(document).on('click', function (e) {
+        e.preventDefault();
+        // Check if the clicked element is the close button or outside the pmpro-popup-wrap
+        if ( jQuery(e.target).closest('.pmpro-popup-wrap').length === 0 ) {
+            jQuery('.pmpro-popup-overlay').hide();
+        }
+    });
+
     // Hide the popup banner if "ESC" is pressed.
     jQuery(document).keyup(function (e) {
         if (e.key === 'Escape') {
