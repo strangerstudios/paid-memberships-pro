@@ -88,17 +88,3 @@
 	vertical-align: middle;
 	white-space: nowrap;
 }
-.pmpro-required-selectors {
-	display: flex;
-	gap: 5px;
-	margin-bottom: 10px;
-}
-.pmpro-required-memberships-level-checkbox-wrapper {
-	display: flex;
-	flex-direction: column;
-	gap: 5px;
-}
-
-.pmpro-required-memberships-level-checkbox-wrapper .components-base-control.components-checkbox-control{
-	margin-bottom: 0;
-}

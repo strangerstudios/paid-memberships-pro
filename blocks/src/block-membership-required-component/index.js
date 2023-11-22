@@ -1,5 +1,7 @@
 import { __ } from '@wordpress/i18n';
 
+import InspectorControlsFragment from '../membership/inspectorControlsFragment';
+
 /**
  * Add the visibility attributes to the block settings.
  *
@@ -10,9 +12,21 @@ function addVisibilityAttribute(settings, name) {
 	if (typeof settings.attributes !== 'undefined') {
 		if (name.startsWith('core/')) {
 			settings.attributes = Object.assign(settings.attributes, {
-				restrictedLevels: {
-					type: 'array',
-					default: [],
+				invert_restrictions: {
+					type: "string",
+					default: "0"
+				},
+				segment:{
+					type: "string",
+					default: "all"
+				},
+				levels: {
+					type: "array",
+					default:[]
+				},
+				show_noaccess: {
+					type: "string",
+					default: "0"
 				}
 			});
 		}
@@ -28,70 +42,28 @@ wp.hooks.addFilter(
 
 
 /**
- *  Add the visibility controls to the block inspector.
- * 
- * 
+ *  Render the Content Visibility block in the inspector controls sidebar.
+ *
+ * @param {object} props The block props.
+ * @return {WPElement} Element to render.
  */
 const membershipRequiredComponent = wp.compose.createHigherOrderComponent((BlockEdit) => {
-	return (props) => {
-		const { Fragment } = wp.element;
-		const { ToggleControl } = wp.components;
-		const { CheckboxControl } = wp.components;
-		const { InspectorControls } = wp.blockEditor;
-		const { attributes, setAttributes, isSelected } = props;
-		const { PanelBody } = wp.components
- 		const levels = pmpro.all_level_values_and_labels;
+	 return (props) => {
 
-		return (
+		const { Fragment } = wp.element;
+		const {  isSelected } = props;
+		 return (	
 			<Fragment>
 				<BlockEdit {...props} />
-				{isSelected && (props.name.startsWith('core/')) &&
-					<InspectorControls>
-						<PanelBody className='pmpro-required-memberships-wrapper' title={__('Require Memberships', 'paid-memberships-pro')}>
-							<div className='pmpro-required-selectors'>
-								<label>{__('Select: ', 'paid-memberships-pro')}</label>
-								<button className='pmpro-selector-all button-link' onClick={() => toggleAllLevels(true, props, levels)}>{__('All')}</button>
-								<span> | </span>
-								<button className='pmpro-selector-none button-link' onClick={() => toggleAllLevels(false, props, levels)}>{__('None')}</button>
-							</div>
-							<div className={['pmpro-required-memberships-level-checkbox-wrapper',  levels.length > 5 ? 'pmpro-block-inspector-scrollable' : ''].join(' ')}>
-								{levels.map((level) => {
-										return (
-									<CheckboxControl
-										label={level.label}
-										checked={attributes.restrictedLevels.includes(level.value)}
-										onChange={() => {
-											let newValue = [...attributes.restrictedLevels];
-											if (newValue.includes(level.value)) {
-												newValue = newValue.filter((item) => item !== level.value);
-											} else {
-												newValue.push(level.value);
-											}
-											setAttributes({restrictedLevels: newValue});
-										}}
-									/>
-									);
-								})}
-							</div>
-						</PanelBody>
-					</InspectorControls>
-				}
+				{ isSelected && (props.name.startsWith('core/')) &&	InspectorControlsFragment(props) }
 			</Fragment>
 		);
+
 	};
 }, 'membershipRequiredComponent');
-
 
 wp.hooks.addFilter(
 	'editor.BlockEdit',
 	'paid-memberships-pro/core-visibility',
 	membershipRequiredComponent
 );
-
-const toggleAllLevels = ( toggle, props, levels ) => {
-	const { setAttributes } = props;
-	toggle ? setAttributes({restrictedLevels: levels.map((level) => level.value)}) : setAttributes({restrictedLevels: []});
-	document.querySelectorAll('pmpro-required-memberships-wrapper input[type="checkbox"]').forEach((el) => {
-		el.checked = toggle;
-	});
-}
