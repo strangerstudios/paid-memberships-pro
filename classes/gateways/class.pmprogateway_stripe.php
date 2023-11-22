@@ -963,7 +963,19 @@ class PMProGateway_stripe extends PMProGateway {
 			if ( pmpro_getOption( 'stripe_payment_request_button' ) ) { ?>
 				<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout-field pmpro_checkout-field-payment-request-button', 'pmpro_checkout-field-payment-request-button' ) ); ?>">
 					<div id="payment-request-button"><!-- Alternate payment method will be inserted here. --></div>
-					<h4 class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout-field pmpro_payment-credit-card', 'pmpro_payment-credit-card' ) ); ?>"><?php esc_html_e( 'Pay with Credit Card', 'paid-memberships-pro' ); ?></h4>
+					<h4 class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout-field pmpro_payment-credit-card', 'pmpro_payment-credit-card' ) ); ?>">
+					<?php
+						$current_page_id = get_the_ID();
+						$billing_page_id = (int) pmpro_getOption("billing_page_id");
+
+						// if it's checkout page then the label should be Pay Wiht Credit Card but if it's billing page this should show Update your Payment Information
+						if( $current_page_id === $billing_page_id ){
+							esc_html_e( 'Update your Payment Information', 'paid-memberships-pro' );
+						}else{
+							esc_html_e( 'Pay with Credit Card', 'paid-memberships-pro' );
+						}						
+					?>
+					</h4>
 				</div>
 				<?php
 			}
