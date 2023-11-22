@@ -1122,7 +1122,7 @@ class PMProGateway_authorizenet extends PMProGateway
 					$newest_order = current( $newest_orders );
 
 					// Calculate the next payment date.
-					$this->next_payment_date = date_i18n( 'Y-m-d H:i:s', strtotime( '+ ' . $update_array['cycle_number'] . ' ' . $update_array['cycle_period'], $newest_order->getTimestamp( true ) ) );
+					$update_array['next_payment_date'] = date_i18n( 'Y-m-d H:i:s', strtotime( '+ ' . $update_array['cycle_number'] . ' ' . $update_array['cycle_period'], $newest_order->getTimestamp( true ) ) );
 				}
 			}
 		} else {
