@@ -968,7 +968,7 @@ class PMProGateway_stripe extends PMProGateway {
 						$current_page_id = get_the_ID();
 						$billing_page_id = (int) pmpro_getOption("billing_page_id");
 
-						// if it's checkout page then the label should be Pay Wiht Credit Card but if it's billing page this should show Update your Payment Information
+						// if it's checkout page then the label should be Pay With Credit Card but if it's billing page this should show Update your Payment Information
 						if( $current_page_id === $billing_page_id ){
 							esc_html_e( 'Update your Payment Information', 'paid-memberships-pro' );
 						}else{
