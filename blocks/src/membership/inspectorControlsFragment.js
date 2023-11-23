@@ -58,7 +58,7 @@ export default function inspectorControlsFragment (props) {
 						style={ { flexGrow: '1', justifyContent: 'center' } }
 						onClick={() => setAttributes({ invert_restrictions: '0' })}
 					>
-						{__('Show', 'your-text-domain')}
+						{__('Show', 'paid-memberships-pro')}
 					</Button>
 					{/* Button to toggle visibility to "hide" mode */}
 					<Button
@@ -68,7 +68,7 @@ export default function inspectorControlsFragment (props) {
 						style={ { flexGrow: '1', justifyContent: 'center' } }
 						onClick={() => setAttributes({ invert_restrictions: '1' })}
 					>
-						{__('Hide', 'your-text-domain')}
+						{__('Hide', 'paid-memberships-pro')}
 					</Button>
 				</HStack>
 				<br />
