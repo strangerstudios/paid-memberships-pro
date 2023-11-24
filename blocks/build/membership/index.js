@@ -20,7 +20,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _wordpress_block_editor__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @wordpress/block-editor */ "@wordpress/block-editor");
 /* harmony import */ var _wordpress_block_editor__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_3__);
 /* harmony import */ var _editor_scss__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./editor.scss */ "./blocks/src/membership/editor.scss");
-/* harmony import */ var _inspectorColorsFragment__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./inspectorColorsFragment */ "./blocks/src/membership/inspectorColorsFragment.js");
+/* harmony import */ var _membershipContentControls__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./membershipContentControls */ "./blocks/src/membership/membershipContentControls.js");
 
 
 /**
@@ -90,7 +90,7 @@ function Edit(props) {
       });
     }
   }
-  return [isSelected && (0,_inspectorColorsFragment__WEBPACK_IMPORTED_MODULE_5__["default"])(props), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)("div", (0,_babel_runtime_helpers_extends__WEBPACK_IMPORTED_MODULE_0__["default"])({
+  return [isSelected && (0,_membershipContentControls__WEBPACK_IMPORTED_MODULE_5__["default"])(props), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)("div", (0,_babel_runtime_helpers_extends__WEBPACK_IMPORTED_MODULE_0__["default"])({
     className: "pmpro-block-require-membership-element"
   }, blockProps), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_3__.InnerBlocks, {
     templateLock: false
@@ -103,15 +103,15 @@ function Edit(props) {
 
 /***/ }),
 
-/***/ "./blocks/src/membership/inspectorColorsFragment.js":
-/*!**********************************************************!*\
-  !*** ./blocks/src/membership/inspectorColorsFragment.js ***!
-  \**********************************************************/
+/***/ "./blocks/src/membership/membershipContentControls.js":
+/*!************************************************************!*\
+  !*** ./blocks/src/membership/membershipContentControls.js ***!
+  \************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (/* binding */ inspectorColorsFragment)
+/* harmony export */   "default": () => (/* binding */ MembershipContentControls)
 /* harmony export */ });
 /* harmony import */ var _wordpress_element__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @wordpress/element */ "@wordpress/element");
 /* harmony import */ var _wordpress_element__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_wordpress_element__WEBPACK_IMPORTED_MODULE_0__);
@@ -134,9 +134,10 @@ __webpack_require__.r(__webpack_exports__);
  */
 
 
-function inspectorColorsFragment(props) {
+function MembershipContentControls(props) {
   const {
     attributes: {
+      visibilityBlockEnabled,
       invert_restrictions,
       segment,
       levels,
@@ -151,6 +152,16 @@ function inspectorColorsFragment(props) {
     setAttributes({
       segment: newSegment,
       levels: []
+    });
+  };
+
+  // Helper function to select/deselect all levels.
+  const selectAllLevels = selectAll => {
+    const allLevelValues = pmpro.all_level_values_and_labels.map(level => level.value + '');
+    // If selectAll is true, set newLevels to all values. If false, set it to an empty array.
+    const newLevels = selectAll ? allLevelValues : [];
+    setAttributes({
+      levels: newLevels
     });
   };
 
@@ -181,6 +192,18 @@ function inspectorColorsFragment(props) {
   return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_3__.InspectorControls, null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_2__.PanelBody, {
     title: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__.__)('Content Visibility', 'paid-memberships-pro'),
     initialOpen: true
+  }, props.name !== 'pmpro/membership' && (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_2__.ToggleControl, {
+    label: visibilityBlockEnabled ? (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__.__)('Disable Content Visibility for this block', 'paid-memberships-pro') : (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__.__)('Enable Content Visibility for this block', 'paid-memberships-pro'),
+    onChange: newValue => {
+      setAttributes({
+        visibilityBlockEnabled: newValue ? true : false
+      });
+    },
+    checked: visibilityBlockEnabled
+  }), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
+    style: {
+      display: visibilityBlockEnabled ? 'block' : 'none'
+    }
   }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_2__.__experimentalHStack, null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_2__.Button, {
     className: "pmpro-block-require-membership-element__set-show-button",
     icon: "visibility",
@@ -245,7 +268,7 @@ function inspectorColorsFragment(props) {
     onChange: show_noaccess => setAttributes({
       show_noaccess
     })
-  }))));
+  })))));
 }
 
 /***/ }),
@@ -371,7 +394,7 @@ function _extends() {
   \******************************************/
 /***/ ((module) => {
 
-module.exports = JSON.parse('{"$schema":"https://schemas.wp.org/trunk/block.json","apiVersion":3,"name":"pmpro/membership","title":"Content Visibility Block","category":"pmpro","description":"Nest blocks within this wrapper to show or hide content by membership level, login status, or for non-members.","keywords":["block visibility","conditional","content","exclude","hide","hidden","membership","membership excluded","membership required","private","restrict","require","paid memberships pro","pmpro"],"attributes":{"invert_restrictions":{"type":"string","default":"0"},"segment":{"type":"string","default":"all"},"levels":{"type":"array","default":[]},"show_noaccess":{"type":"string","default":"0"}},"supports":{"align":["wide","full"],"anchor":true,"ariaLabel":true,"html":false,"background":{"backgroundImage":true},"color":{"gradients":true,"heading":true,"button":true,"link":true},"spacing":{"margin":["top","bottom"],"padding":true,"blockGap":true,"__experimentalDefaultControls":{"padding":true,"blockGap":true}},"dimensions":{"minHeight":true},"__experimentalBorder":{"color":true,"radius":true,"style":true,"width":true,"__experimentalDefaultControls":{"color":true,"radius":true,"style":true,"width":true}},"typography":{"fontSize":true,"lineHeight":true,"__experimentalFontFamily":true,"__experimentalFontWeight":true,"__experimentalFontStyle":true,"__experimentalTextTransform":true,"__experimentalTextDecoration":true,"__experimentalLetterSpacing":true,"__experimentalDefaultControls":{"fontSize":true}},"layout":{"allowSizingOnChildren":true}},"example":{},"textdomain":"paid-memberships-pro","editorScript":"file:./index.js","editorStyle":"file:./index.css","render":"file:./render.php"}');
+module.exports = JSON.parse('{"$schema":"https://schemas.wp.org/trunk/block.json","apiVersion":3,"name":"pmpro/membership","title":"Content Visibility Block","category":"pmpro","description":"Nest blocks within this wrapper to show or hide content by membership level, login status, or for non-members.","keywords":["block visibility","conditional","content","exclude","hide","hidden","membership","membership excluded","membership required","private","restrict","require","paid memberships pro","pmpro"],"attributes":{"visibilityBlockEnabled":{"type":"boolean","default":true},"invert_restrictions":{"type":"string","default":"0"},"segment":{"type":"string","default":"all"},"levels":{"type":"array","default":[]},"show_noaccess":{"type":"string","default":"0"}},"supports":{"align":["wide","full"],"anchor":true,"ariaLabel":true,"html":false,"background":{"backgroundImage":true},"color":{"gradients":true,"heading":true,"button":true,"link":true},"spacing":{"margin":["top","bottom"],"padding":true,"blockGap":true,"__experimentalDefaultControls":{"padding":true,"blockGap":true}},"dimensions":{"minHeight":true},"__experimentalBorder":{"color":true,"radius":true,"style":true,"width":true,"__experimentalDefaultControls":{"color":true,"radius":true,"style":true,"width":true}},"typography":{"fontSize":true,"lineHeight":true,"__experimentalFontFamily":true,"__experimentalFontWeight":true,"__experimentalFontStyle":true,"__experimentalTextTransform":true,"__experimentalTextDecoration":true,"__experimentalLetterSpacing":true,"__experimentalDefaultControls":{"fontSize":true}},"layout":{"allowSizingOnChildren":true}},"example":{},"textdomain":"paid-memberships-pro","editorScript":"file:./index.js","editorStyle":"file:./index.css","render":"file:./render.php"}');
 
 /***/ })
 

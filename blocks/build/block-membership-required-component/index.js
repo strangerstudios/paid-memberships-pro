@@ -2,116 +2,15 @@
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({
 
-/***/ "./blocks/src/membership/edit.js":
-/*!***************************************!*\
-  !*** ./blocks/src/membership/edit.js ***!
-  \***************************************/
+/***/ "./blocks/src/membership/membershipContentControls.js":
+/*!************************************************************!*\
+  !*** ./blocks/src/membership/membershipContentControls.js ***!
+  \************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (/* binding */ Edit)
-/* harmony export */ });
-/* harmony import */ var _babel_runtime_helpers_extends__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/helpers/extends */ "./node_modules/@babel/runtime/helpers/esm/extends.js");
-/* harmony import */ var _wordpress_element__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @wordpress/element */ "@wordpress/element");
-/* harmony import */ var _wordpress_element__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_wordpress_element__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var _wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @wordpress/i18n */ "@wordpress/i18n");
-/* harmony import */ var _wordpress_i18n__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__);
-/* harmony import */ var _wordpress_block_editor__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @wordpress/block-editor */ "@wordpress/block-editor");
-/* harmony import */ var _wordpress_block_editor__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_3__);
-/* harmony import */ var _editor_scss__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./editor.scss */ "./blocks/src/membership/editor.scss");
-/* harmony import */ var _inspectorColorsFragment__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./inspectorColorsFragment */ "./blocks/src/membership/inspectorColorsFragment.js");
-
-
-/**
- * Retrieves the translation of text.
- *
- * @see https://developer.wordpress.org/block-editor/reference-guides/packages/packages-i18n/
- */
-
-
-/**
- * WordPress dependencies
- */
-
-
-/**
- * CSS code for the Membership Excluded block that gets applied to the editor.
- */
-
-
-/**
- * Render the Content Visibility block in the editor.
- *
- * @see https://developer.wordpress.org/block-editor/reference-guides/block-api/block-edit-save/#edit
- *
- * @return {WPElement} Element to render.
- */
-function Edit(props) {
-  // Set up the block.
-  const blockProps = (0,_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_3__.useBlockProps)({});
-  const {
-    attributes: {
-      invert_restrictions,
-      segment,
-      levels
-    },
-    setAttributes,
-    isSelected
-  } = props;
-
-  // Handle migrations from PMPro < 3.0.
-  // If levels is not empty and segment is 'all', we  need to migrate.
-  if (levels.length > 0 && segment == 'all') {
-    // If '0' is in levels, then restrictions should be inverted.
-    if (levels.includes('0')) {
-      // If '0' was the only element, then the segment should be 'all'.
-      if (levels.length == 1) {
-        setAttributes({
-          invert_restrictions: '1',
-          segment: 'all',
-          levels: []
-        });
-      } else {
-        // Otherwise, the segment should be 'specific' and we need to change the levels array to
-        // all level IDs that were not previously selected.
-        const newLevels = pmpro.all_level_values_and_labels.map(level => level.value + '').filter(levelID => !levels.includes(levelID));
-        setAttributes({
-          invert_restrictions: '1',
-          segment: 'specific',
-          levels: newLevels
-        });
-      }
-    } else {
-      // If '0' is not in levels, then we do not need to invert subscriptions and just need to change the segment to 'specific'.
-      setAttributes({
-        invert_restrictions: '0',
-        segment: 'specific'
-      });
-    }
-  }
-  return [isSelected && (0,_inspectorColorsFragment__WEBPACK_IMPORTED_MODULE_5__["default"])(props), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)("div", (0,_babel_runtime_helpers_extends__WEBPACK_IMPORTED_MODULE_0__["default"])({
-    className: "pmpro-block-require-membership-element"
-  }, blockProps), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_3__.InnerBlocks, {
-    templateLock: false
-  }), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)("span", {
-    className: "pmpro-block-note"
-  }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)("span", {
-    class: "dashicon dashicons dashicons-lock"
-  }), (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('This block has content visibility settings.', 'paid-memberships-pro')))];
-}
-
-/***/ }),
-
-/***/ "./blocks/src/membership/inspectorColorsFragment.js":
-/*!**********************************************************!*\
-  !*** ./blocks/src/membership/inspectorColorsFragment.js ***!
-  \**********************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (/* binding */ inspectorColorsFragment)
+/* harmony export */   "default": () => (/* binding */ MembershipContentControls)
 /* harmony export */ });
 /* harmony import */ var _wordpress_element__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @wordpress/element */ "@wordpress/element");
 /* harmony import */ var _wordpress_element__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_wordpress_element__WEBPACK_IMPORTED_MODULE_0__);
@@ -134,9 +33,10 @@ __webpack_require__.r(__webpack_exports__);
  */
 
 
-function inspectorColorsFragment(props) {
+function MembershipContentControls(props) {
   const {
     attributes: {
+      visibilityBlockEnabled,
       invert_restrictions,
       segment,
       levels,
@@ -151,6 +51,16 @@ function inspectorColorsFragment(props) {
     setAttributes({
       segment: newSegment,
       levels: []
+    });
+  };
+
+  // Helper function to select/deselect all levels.
+  const selectAllLevels = selectAll => {
+    const allLevelValues = pmpro.all_level_values_and_labels.map(level => level.value + '');
+    // If selectAll is true, set newLevels to all values. If false, set it to an empty array.
+    const newLevels = selectAll ? allLevelValues : [];
+    setAttributes({
+      levels: newLevels
     });
   };
 
@@ -181,6 +91,18 @@ function inspectorColorsFragment(props) {
   return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_3__.InspectorControls, null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_2__.PanelBody, {
     title: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__.__)('Content Visibility', 'paid-memberships-pro'),
     initialOpen: true
+  }, props.name !== 'pmpro/membership' && (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_2__.ToggleControl, {
+    label: visibilityBlockEnabled ? (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__.__)('Disable Content Visibility for this block', 'paid-memberships-pro') : (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__.__)('Enable Content Visibility for this block', 'paid-memberships-pro'),
+    onChange: newValue => {
+      setAttributes({
+        visibilityBlockEnabled: newValue ? true : false
+      });
+    },
+    checked: visibilityBlockEnabled
+  }), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
+    style: {
+      display: visibilityBlockEnabled ? 'block' : 'none'
+    }
   }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_2__.__experimentalHStack, null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_2__.Button, {
     className: "pmpro-block-require-membership-element__set-show-button",
     icon: "visibility",
@@ -245,20 +167,8 @@ function inspectorColorsFragment(props) {
     onChange: show_noaccess => setAttributes({
       show_noaccess
     })
-  }))));
+  })))));
 }
-
-/***/ }),
-
-/***/ "./blocks/src/membership/editor.scss":
-/*!*******************************************!*\
-  !*** ./blocks/src/membership/editor.scss ***!
-  \*******************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-__webpack_require__.r(__webpack_exports__);
-// extracted by mini-css-extract-plugin
-
 
 /***/ }),
 
@@ -299,33 +209,6 @@ module.exports = window["wp"]["element"];
 /***/ ((module) => {
 
 module.exports = window["wp"]["i18n"];
-
-/***/ }),
-
-/***/ "./node_modules/@babel/runtime/helpers/esm/extends.js":
-/*!************************************************************!*\
-  !*** ./node_modules/@babel/runtime/helpers/esm/extends.js ***!
-  \************************************************************/
-/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
-
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (/* binding */ _extends)
-/* harmony export */ });
-function _extends() {
-  _extends = Object.assign ? Object.assign.bind() : function (target) {
-    for (var i = 1; i < arguments.length; i++) {
-      var source = arguments[i];
-      for (var key in source) {
-        if (Object.prototype.hasOwnProperty.call(source, key)) {
-          target[key] = source[key];
-        }
-      }
-    }
-    return target;
-  };
-  return _extends.apply(this, arguments);
-}
 
 /***/ })
 
@@ -408,12 +291,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _wordpress_element__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_wordpress_element__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var _wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @wordpress/i18n */ "@wordpress/i18n");
 /* harmony import */ var _wordpress_i18n__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var _wordpress_block_editor__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @wordpress/block-editor */ "@wordpress/block-editor");
-/* harmony import */ var _wordpress_block_editor__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_2__);
-/* harmony import */ var _membership_edit__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../membership/edit */ "./blocks/src/membership/edit.js");
-/* harmony import */ var _membership_inspectorColorsFragment__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../membership/inspectorColorsFragment */ "./blocks/src/membership/inspectorColorsFragment.js");
-
-
+/* harmony import */ var _membership_membershipContentControls__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../membership/membershipContentControls */ "./blocks/src/membership/membershipContentControls.js");
 
 
 
@@ -428,25 +306,25 @@ function addVisibilityAttribute(settings, name) {
   if (typeof settings.attributes !== 'undefined') {
     if (name.startsWith('core/')) {
       settings.attributes = Object.assign(settings.attributes, {
-        restrictedLevels: {
-          type: 'array',
-          default: []
+        "visibilityBlockEnabled": {
+          "type": 'boolean',
+          "default": false
         },
-        invert_restrictions: {
-          type: "string",
-          default: "0"
+        "invert_restrictions": {
+          "type": "string",
+          "default": "0"
         },
-        segment: {
-          type: "string",
-          default: "all"
+        "segment": {
+          "type": "string",
+          "default": "all"
         },
-        levels: {
-          type: "array",
-          default: []
+        "levels": {
+          "type": "array",
+          "default": []
         },
-        show_noaccess: {
-          type: "string",
-          default: "0"
+        "show_noaccess": {
+          "type": "string",
+          "default": "0"
         }
       });
     }
@@ -456,9 +334,10 @@ function addVisibilityAttribute(settings, name) {
 wp.hooks.addFilter('blocks.registerBlockType', 'paid-memberships-pro/core-visibility', addVisibilityAttribute);
 
 /**
- *  Add the visibility controls to the block inspector.
- * 
- * 
+ *  Render the Content Visibility block in the inspector controls sidebar.
+ *
+ * @param {object} props The block props.
+ * @return {WPElement} Element to render.
  */
 const membershipRequiredComponent = wp.compose.createHigherOrderComponent(BlockEdit => {
   return props => {
@@ -468,23 +347,10 @@ const membershipRequiredComponent = wp.compose.createHigherOrderComponent(BlockE
     const {
       isSelected
     } = props;
-    return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(Fragment, null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(BlockEdit, props), isSelected && props.name.startsWith('core/') && (0,_membership_inspectorColorsFragment__WEBPACK_IMPORTED_MODULE_4__["default"])(props));
+    return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(Fragment, null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(BlockEdit, props), isSelected && props.name.startsWith('core/') && (0,_membership_membershipContentControls__WEBPACK_IMPORTED_MODULE_2__["default"])(props));
   };
 }, 'membershipRequiredComponent');
 wp.hooks.addFilter('editor.BlockEdit', 'paid-memberships-pro/core-visibility', membershipRequiredComponent);
-const toggleAllLevels = (toggle, props, levels) => {
-  const {
-    setAttributes
-  } = props;
-  toggle ? setAttributes({
-    restrictedLevels: levels.map(level => level.value)
-  }) : setAttributes({
-    restrictedLevels: []
-  });
-  document.querySelectorAll('pmpro-required-memberships-wrapper input[type="checkbox"]').forEach(el => {
-    el.checked = toggle;
-  });
-};
 })();
 
 /******/ })()

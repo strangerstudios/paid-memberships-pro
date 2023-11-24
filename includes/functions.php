@@ -4557,3 +4557,24 @@ function pmpro_set_expiration_date( $user_id, $level_id, $enddate ) {
 	// Clear the level cache for this user.
 	pmpro_clear_level_cache_for_user( $user_id );
 }
+
+
+ add_filter( 'render_block', 'filter_blocks', 10, 3 );
+
+
+	/**
+	* Add the membership setting to the block.
+	*
+	* @since TBD
+	* @param string $block_content The block content.
+	* @param array  $block		The block.
+	* @return string
+	*/
+	function filter_blocks( $block_content, $block, $instance ) {
+		//TODO Replace with https://www.php.net/manual/en/function.str-starts-with when we drop support for PHP 7.x.
+		if ( strpos( $block['blockName'], 'core/' ) === 0 ) {
+				require_once( PMPRO_DIR . "/blocks/classes/class-require-membership-settings.php" );
+			return PMPro_blocks_helper_class::filter_block_content( $block['attrs'], $block_content );
+		}
+		return $block_content;
+	}

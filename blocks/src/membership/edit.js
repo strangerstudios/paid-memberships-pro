@@ -15,7 +15,7 @@ import { InnerBlocks, useBlockProps } from '@wordpress/block-editor';
  */
 import './editor.scss';
 
-import InspectorControlsFragment from './inspectorControlsFragment'
+import MembershipContentControls from './membershipContentControls'
 /**
  * Render the Content Visibility block in the editor.
  *
@@ -51,7 +51,7 @@ export default function Edit(props) {
 	}
 
 	return [
-		isSelected && InspectorControlsFragment(props),
+		isSelected && MembershipContentControls(props),
 		<div className="pmpro-block-require-membership-element" {...blockProps}>
 			<InnerBlocks templateLock={false} />
 			<span className="pmpro-block-note">
