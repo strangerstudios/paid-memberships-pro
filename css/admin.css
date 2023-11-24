@@ -50,7 +50,7 @@ p.pmpro_meta_notice {
 	font-family: "dashicons";
 }
 
-.pmpro_admin tr td .dashicons {
+.pmpro_admin tr td .dashicons:not(.button .dashicons) {
 	padding-top: 5px;
 }
 
@@ -727,12 +727,6 @@ body[class*="memberships_page_pmpro-"] {
 }
 
 /* General admin-area tables styles */
-.pmpro_admin table.wp-list-table thead th,
-.pmpro_admin table.wp-list-table tfoot th {
-	padding-left: calc( var(--pmpro--spacing--medium) / 2 );
-	padding-right: calc( var(--pmpro--spacing--medium) / 2 );
-}
-
 .pmpro_admin table.widefat {
 	border-color: var(--pmpro--border--color);
 	box-shadow: var(--pmpro--box-shadow);
@@ -1068,7 +1062,7 @@ body[class*="memberships_page_pmpro-"] {
 	border: none;
 }
 
-.pmpro_admin-pmpro-member td .dashicons {
+.pmpro_admin-pmpro-member td .dashicons:not(.button .dashicons) {
 	vertical-align: middle;
 }
 
@@ -1139,6 +1133,24 @@ body[class*="memberships_page_pmpro-"] {
 }
 
 /* Single Member - Memberships Panel */
+.pmpro_admin-pmpro-member input[type=text],
+.pmpro_admin-pmpro-member input[type=email] {
+	min-width: 25em;
+	width: auto;
+}
+
+.pmpro_admin-pmpro-member textarea {
+	width: 100%;
+}
+
+.pmpro_admin-pmpro-member .wp-pwd {
+	margin-top: 0;
+}
+
+.pmpro_admin-pmpro-member button.wp-generate-pw {
+	margin-bottom: var(--pmpro--spacing--small );
+}
+
 .pmpro_admin-pmpro-member #pmpro-member-edit-memberships-panel .pmpro_section .pmpro_section_inside {
 	padding: 0;
 }
