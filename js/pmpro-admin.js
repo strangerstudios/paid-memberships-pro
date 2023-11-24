@@ -1006,3 +1006,10 @@ function pmpro_changeTabs( e, inputChanged ) {
 
 	return true;
 }
+
+/**
+ * Edit Order Page
+ */
+jQuery(document).ready(function () {
+    jQuery('.pmpro_admin-pmpro-orders select#membership_id').select2();
+});

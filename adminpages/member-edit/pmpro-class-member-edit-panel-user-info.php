@@ -22,6 +22,7 @@ class PMPro_Member_Edit_Panel_User_Info extends PMPro_Member_Edit_Panel {
 		$first_name = ! empty( $_POST['first_name'] ) ? stripslashes( sanitize_text_field( $_POST['first_name'] ) ): '';
 		$last_name = ! empty( $_POST['last_name'] ) ? stripslashes( sanitize_text_field( $_POST['last_name'] ) ) : '';	
 		$role = ! empty( $_POST['role'] ) ? sanitize_text_field( $_POST['role'] ) : get_option( 'default_role' );
+		$user_notes = ! empty( $_POST['user_notes'] ) ? stripslashes( sanitize_textarea_field( $_POST['user_notes'] ) ) : '';
 
 		// If we are edting a user, get the user information.
 		$user = self::get_user();
@@ -31,42 +32,46 @@ class PMPro_Member_Edit_Panel_User_Info extends PMPro_Member_Edit_Panel {
 			$first_name = $user->first_name;
 			$last_name = $user->last_name;
 			$role = $user->roles[0];
+			$user_notes = $user->user_notes;
 		}
 
 		// Show the form.
 		?>
 		<table class="form-table">
 			<tr>
-				<th><label for="user_login"><?php esc_html_e( 'Username (required)', 'paid-memberships-pro' ); ?></label></th>
+				<th scope="row"><label for="user_login"><?php esc_html_e( 'Username (required)', 'paid-memberships-pro' ); ?></label></th>
 				<td><input type="text" name="user_login" id="user_login" autocapitalize="none" autocorrect="off" autocomplete="off" required <?php if ( ! empty( $_REQUEST['user_id'] ) ) { ?>readonly="true"<?php } ?> value="<?php echo esc_attr( $user_login ) ?>"></td>
 			</tr>
 			<tr>
-				<th><label for="email"><?php esc_html_e( 'Email (required)', 'paid-memberships-pro' ); ?></label></th>
+				<th scope="row"><label for="email"><?php esc_html_e( 'Email (required)', 'paid-memberships-pro' ); ?></label></th>
 				<td><input type="email" name="email" id="email" autocomplete="new-password" spellcheck="false" required value="<?php echo esc_attr( $user_email ) ?>"></td>
 			</tr>
 			<tr>
-				<th><label for="first_name"><?php esc_html_e( 'First Name', 'paid-memberships-pro' ); ?></label></th>
-				<td><input type="text" name="first_name" id="first_name" autocomplete="off" value="<?php echo $first_name ?>"></td>
+				<th scope="row"><label for="first_name"><?php esc_html_e( 'First Name', 'paid-memberships-pro' ); ?></label></th>
+				<td><input type="text" name="first_name" id="first_name" autocomplete="off" value="<?php echo esc_attr( $first_name ); ?>"></td>
 			</tr>
 			<tr>
-				<th><label for="last_name"><?php esc_html_e( 'Last Name', 'paid-memberships-pro' ); ?></label></th>
-				<td><input type="text" name="last_name" id="last_name" autocomplete="off" value="<?php echo $last_name ?>"></td>
+				<th scope="row"><label for="last_name"><?php esc_html_e( 'Last Name', 'paid-memberships-pro' ); ?></label></th>
+				<td><input type="text" name="last_name" id="last_name" autocomplete="off" value="<?php echo esc_attr( $last_name ); ?>"></td>
 			</tr>						
 			<?php
 			// Only show for new users.
 			if ( empty( $user->ID ) ) {
 				?>
 				<tr>
-					<th><label for="password"><?php esc_html_e( 'Password', 'paid-memberships-pro' ); ?></label></th>
+					<th scope="row"><label for="password"><?php esc_html_e( 'Password', 'paid-memberships-pro' ); ?></label></th>
 					<td>
-						<input type="password" name="password" id="password" autocomplete="off" required value="">
+						<input type="password" name="password" id="password" autocomplete="off" value="">
 						<button class="toggle-pass-visibility" aria-controls="password" aria-expanded="false"><span class="dashicons dashicons-visibility toggle-pass-visibility"></span></button>
+						<p class="description"><?php esc_html_e( 'If left blank, a secure password will be generated automatically.', 'paid-memberships-pro' ); ?></p>
 					</td>
 				</tr>
 				<tr>
-					<th><label for="send_password"><?php esc_html_e( 'Send User Notification', 'paid-memberships-pro' ); ?></label></th>
-					<td><input type="checkbox" name="send_password" id="send_password">
-					<label for="send_password"><?php esc_html_e( 'Send the new user an email about their account.', 'paid-memberships-pro' ); ?></label>
+					<th scope="row"><label for="send_password"><?php esc_html_e( 'Send User Notification', 'paid-memberships-pro' ); ?></label></th>
+					<td>
+						<input type="checkbox" name="send_password" id="send_password">
+						<label for="send_password"><?php esc_html_e( 'Send the new user an email about their account.', 'paid-memberships-pro' ); ?></label>
+						<p class="description"><?php esc_html_e( 'This will send the user an email with their username and a link to reset their password. For security reasons, this email does not include the unencrypted password.', 'paid-memberships-pro' ); ?></p>
 					</td>
 				</tr>
 				<?php
@@ -74,7 +79,7 @@ class PMPro_Member_Edit_Panel_User_Info extends PMPro_Member_Edit_Panel {
 			?>
 			<?php if ( ! IS_PROFILE_PAGE && current_user_can( 'promote_user', $user->ID ) ) { ?>
 				<tr>
-					<th><label for="role"><?php esc_html_e( 'Role', 'paid-memberships-pro' ); ?></label></th>
+					<th scope="row"><label for="role"><?php esc_html_e( 'Role', 'paid-memberships-pro' ); ?></label></th>
 					<td>
 						<select name="role" id="role" class="<?php echo pmpro_getClassForField( 'role' ); ?>">
 							<?php wp_dropdown_roles( $role ); ?>
@@ -82,6 +87,12 @@ class PMPro_Member_Edit_Panel_User_Info extends PMPro_Member_Edit_Panel {
 					</td>
 				</tr>
 			<?php } ?>
+			<tr>
+				<th scope="row" valign="top"><label for="user_notes"><?php esc_html_e( 'Member Notes', 'paid-memberships-pro' ); ?></label></th>
+				<td>
+					<textarea name="user_notes" id="user_notes" rows="5" cols="80" class="<?php echo pmpro_getClassForField( 'user_notes' ); ?>"><?php echo esc_textarea( $user_notes ); ?></textarea>
+					<p class="description"><?php esc_html_e( 'Member notes are private and only visible to other users with membership management capabilities.', 'paid-memberships-pro' ); ?></p>
+				</td>
 		</table>
 		<?php
 	}
@@ -100,6 +111,7 @@ class PMPro_Member_Edit_Panel_User_Info extends PMPro_Member_Edit_Panel {
 		$first_name = ! empty( $_POST['first_name'] ) ? stripslashes( sanitize_text_field( $_POST['first_name'] ) ): '';
 		$last_name = ! empty( $_POST['last_name'] ) ? stripslashes( sanitize_text_field( $_POST['last_name'] ) ) : '';	
 		$role = ! empty( $_POST['role'] ) ? sanitize_text_field( $_POST['role'] ) : get_option( 'default_role' );
+		$user_notes = ! empty( $_POST['user_notes'] ) ? stripslashes( sanitize_textarea_field( $_POST['user_notes'] ) ) : '';
 
 		// Update the email address in signups, if present.
 		// Alterred from wp-admin/user-edit.php.
@@ -195,6 +207,10 @@ class PMPro_Member_Edit_Panel_User_Info extends PMPro_Member_Edit_Panel {
 			}
 		} else {
 			// Update/insert all good.
+
+			// Add other user meta
+			update_user_meta( $updated_id, 'user_notes', $user_notes );
+
 			// Notify users if needed.
 			if ( ! $user->ID && ! empty( $_REQUEST['send_password'] ) ) {
 				wp_new_user_notification( $updated_id, null, 'user' );
@@ -206,9 +222,9 @@ class PMPro_Member_Edit_Panel_User_Info extends PMPro_Member_Edit_Panel {
 				wp_redirect( admin_url( 'admin.php?page=pmpro-member&pmpro_member_edit_panel=memberships&user_id=' . $updated_id ) );
 				exit;
 			} else {
-				// Users updated.
+				// User updated.
 				wp_redirect( admin_url( 'admin.php?page=pmpro-member&user_id=' . $updated_id ) );
-			}			
+			}
 		}
 	}
 }

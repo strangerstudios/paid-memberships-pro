@@ -6,7 +6,7 @@ class PMPro_Member_Edit_Panel_Other extends PMPro_Member_Edit_Panel {
 	 */
 	public function __construct() {
 		$this->slug = 'other';
-		$this->title = __( 'Other', 'paid-memberships-pro' );
+		$this->title = __( 'Additional Info', 'paid-memberships-pro' );
 	}
 
 	/**

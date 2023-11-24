@@ -2,16 +2,16 @@
 # This file is distributed under the same license as the Paid Memberships Pro plugin.
 msgid ""
 msgstr ""
-"Project-Id-Version: Paid Memberships Pro 2.12.3\n"
+"Project-Id-Version: Paid Memberships Pro 2.12.4\n"
 "Report-Msgid-Bugs-To: info@paidmembershipspro.com\n"
 "Last-Translator: Paid Memberships Pro <info@paidmembershipspro.com>\n"
 "Language-Team: Paid Memberships Pro <info@paidmembershipspro.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2023-10-03T18:19:24+00:00\n"
+"POT-Creation-Date: 2023-11-16T21:05:12+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"X-Generator: WP-CLI 2.8.1\n"
+"X-Generator: WP-CLI 2.9.0\n"
 "X-Domain: paid-memberships-pro\n"
 
 #: adminpages/addons.php:5
@@ -192,6 +192,8 @@ msgstr "Nome do Add On"
 #: includes/fields.php:1413
 #: includes/fields.php:1298
 #: includes/fields.php:1410
+#: includes/fields.php:1285
+#: includes/fields.php:1397
 msgid "Type"
 msgstr "Tipo"
 
@@ -319,6 +321,7 @@ msgstr "Ativado %s"
 #: classes/class-pmpro-orders-list-table.php:918
 #: includes/fields.php:1386
 #: includes/fields.php:1383
+#: includes/fields.php:1370
 msgid "Delete"
 msgstr "Apagar"
 
@@ -1004,6 +1007,11 @@ msgstr "Esconder Ads nas Assinaturas?"
 #: includes/fields.php:1433
 #: includes/fields.php:1443
 #: includes/fields.php:1457
+#: includes/fields.php:1240
+#: includes/fields.php:1251
+#: includes/fields.php:1420
+#: includes/fields.php:1430
+#: includes/fields.php:1444
 msgid "No"
 msgstr "Não"
 
@@ -1178,6 +1186,10 @@ msgstr "apenas multisite"
 #: includes/fields.php:1434
 #: includes/fields.php:1444
 #: includes/fields.php:1455
+#: includes/fields.php:1239
+#: includes/fields.php:1249
+#: includes/fields.php:1431
+#: includes/fields.php:1442
 msgid "Yes"
 msgstr "Sim"
 
@@ -2695,6 +2707,8 @@ msgstr "Adicione um novo Tipo de Assinatura"
 #: includes/fields.php:1405
 #: includes/fields.php:1297
 #: includes/fields.php:1402
+#: includes/fields.php:1284
+#: includes/fields.php:1389
 msgid "Name"
 msgstr "Nome"
 
@@ -3739,6 +3753,7 @@ msgstr "Erro ao gravar o pedido."
 #: includes/fields.php:1267
 #: includes/fields.php:1298
 #: includes/fields.php:1295
+#: includes/fields.php:1282
 msgid "Order"
 msgstr "Pedidos"
 
@@ -4485,6 +4500,7 @@ msgstr "Gerado pelo Gateway. Útil para comparar os pagamentos/assinaturas."
 #: includes/fields.php:1393
 #: includes/fields.php:1424
 #: includes/fields.php:1421
+#: includes/fields.php:1408
 msgid "Date"
 msgstr "Data"
 
@@ -12922,6 +12938,7 @@ msgstr ""
 #: classes/class-pmpro-orders-list-table.php:897
 #: includes/fields.php:1384
 #: includes/fields.php:1381
+#: includes/fields.php:1368
 msgid "Edit"
 msgstr ""
 
@@ -18496,6 +18513,7 @@ msgstr ""
 #: includes/profile.php:943
 #: classes/class-pmpro-field.php:1267
 #: classes/class-pmpro-field.php:1260
+#: classes/class-pmpro-field.php:1225
 msgid "Required Field"
 msgstr ""
 
@@ -21841,6 +21859,7 @@ msgstr ""
 #: classes/class-pmpro-field.php:766
 #: classes/class-pmpro-field.php:779
 #: classes/class-pmpro-field.php:772
+#: classes/class-pmpro-field.php:737
 msgid "Choose one or more."
 msgstr ""
 
@@ -21852,6 +21871,8 @@ msgstr ""
 #: classes/class-pmpro-field.php:947
 #: classes/class-pmpro-field.php:938
 #: classes/class-pmpro-field.php:940
+#: classes/class-pmpro-field.php:903
+#: classes/class-pmpro-field.php:905
 msgid "Current File: %s"
 msgstr ""
 
@@ -21859,6 +21880,7 @@ msgstr ""
 #: classes/class-pmpro-field.php:943
 #: classes/class-pmpro-field.php:956
 #: classes/class-pmpro-field.php:949
+#: classes/class-pmpro-field.php:914
 msgid "[delete]"
 msgstr ""
 
@@ -21866,6 +21888,7 @@ msgstr ""
 #: classes/class-pmpro-field.php:944
 #: classes/class-pmpro-field.php:957
 #: classes/class-pmpro-field.php:950
+#: classes/class-pmpro-field.php:915
 msgid "[restore]"
 msgstr ""
 
@@ -21896,6 +21919,7 @@ msgstr ""
 #: includes/fields.php:1487
 #: includes/fields.php:1518
 #: includes/fields.php:1517
+#: includes/fields.php:1504
 msgid "More Information"
 msgstr ""
 
@@ -21975,6 +21999,7 @@ msgstr ""
 #: includes/fields.php:537
 #: includes/fields.php:539
 #: includes/fields.php:543
+#: includes/fields.php:518
 msgid "The %s field is required."
 msgstr ""
 
@@ -21982,6 +22007,7 @@ msgstr ""
 #: includes/fields.php:540
 #: includes/fields.php:542
 #: includes/fields.php:546
+#: includes/fields.php:521
 msgid "The %s fields are required."
 msgstr ""
 
@@ -21989,6 +22015,7 @@ msgstr ""
 #: includes/fields.php:829
 #: includes/fields.php:833
 #: includes/fields.php:832
+#: includes/fields.php:819
 msgid "Unable to add/update user fields for this member"
 msgstr ""
 
@@ -21997,6 +22024,7 @@ msgstr ""
 #: includes/fields.php:1062
 #: includes/fields.php:1066
 #: includes/fields.php:1080
+#: includes/fields.php:1049
 msgid "Extra Fields:"
 msgstr ""
 
@@ -22012,6 +22040,8 @@ msgstr ""
 #: includes/fields.php:1370
 #: includes/fields.php:1223
 #: includes/fields.php:1367
+#: includes/fields.php:1210
+#: includes/fields.php:1354
 msgid "Move up"
 msgstr ""
 
@@ -22021,6 +22051,7 @@ msgstr ""
 #: includes/fields.php:1198
 #: includes/fields.php:1229
 #: includes/fields.php:1226
+#: includes/fields.php:1213
 msgid "Move Group Up"
 msgstr ""
 
@@ -22036,6 +22067,8 @@ msgstr ""
 #: includes/fields.php:1375
 #: includes/fields.php:1228
 #: includes/fields.php:1372
+#: includes/fields.php:1215
+#: includes/fields.php:1359
 msgid "Move down"
 msgstr ""
 
@@ -22045,6 +22078,7 @@ msgstr ""
 #: includes/fields.php:1203
 #: includes/fields.php:1234
 #: includes/fields.php:1231
+#: includes/fields.php:1218
 msgid "Move Group Down"
 msgstr ""
 
@@ -22059,6 +22093,8 @@ msgstr ""
 #: includes/fields.php:1239
 #: includes/fields.php:1235
 #: includes/fields.php:1236
+#: includes/fields.php:1222
+#: includes/fields.php:1223
 msgid "Group Name"
 msgstr ""
 
@@ -22073,6 +22109,8 @@ msgstr ""
 #: includes/fields.php:1242
 #: includes/fields.php:1245
 #: includes/fields.php:1239
+#: includes/fields.php:1226
+#: includes/fields.php:1229
 msgid "Expand and Edit Group"
 msgstr ""
 
@@ -22082,6 +22120,7 @@ msgstr ""
 #: includes/fields.php:1222
 #: includes/fields.php:1253
 #: includes/fields.php:1250
+#: includes/fields.php:1237
 msgid "Show fields at checkout?"
 msgstr ""
 
@@ -22091,6 +22130,7 @@ msgstr ""
 #: includes/fields.php:1232
 #: includes/fields.php:1263
 #: includes/fields.php:1260
+#: includes/fields.php:1247
 msgid "Show fields on user profile?"
 msgstr ""
 
@@ -22107,6 +22147,8 @@ msgstr ""
 #: includes/fields.php:1459
 #: includes/fields.php:1263
 #: includes/fields.php:1456
+#: includes/fields.php:1250
+#: includes/fields.php:1443
 msgid "Yes (only admins)"
 msgstr ""
 
@@ -22116,6 +22158,7 @@ msgstr ""
 #: includes/fields.php:1243
 #: includes/fields.php:1274
 #: includes/fields.php:1271
+#: includes/fields.php:1258
 msgid "Description (optional, visible to users)"
 msgstr ""
 
@@ -22125,6 +22168,7 @@ msgstr ""
 #: includes/fields.php:1249
 #: includes/fields.php:1280
 #: includes/fields.php:1277
+#: includes/fields.php:1264
 msgid "Restrict Fields for Membership Levels"
 msgstr ""
 
@@ -22134,6 +22178,7 @@ msgstr ""
 #: includes/fields.php:1264
 #: includes/fields.php:1295
 #: includes/fields.php:1292
+#: includes/fields.php:1279
 msgid "Manage Fields in This Group"
 msgstr ""
 
@@ -22149,6 +22194,8 @@ msgstr ""
 #: includes/fields.php:1397
 #: includes/fields.php:1296
 #: includes/fields.php:1394
+#: includes/fields.php:1283
+#: includes/fields.php:1381
 msgid "Label"
 msgstr ""
 
@@ -22159,6 +22206,7 @@ msgstr ""
 #: includes/fields.php:1290
 #: includes/fields.php:1321
 #: includes/fields.php:1318
+#: includes/fields.php:1305
 msgid "%s Add Field"
 msgstr ""
 
@@ -22168,6 +22216,7 @@ msgstr ""
 #: includes/fields.php:1293
 #: includes/fields.php:1324
 #: includes/fields.php:1321
+#: includes/fields.php:1308
 msgid "Delete Group"
 msgstr ""
 
@@ -22177,6 +22226,7 @@ msgstr ""
 #: includes/fields.php:1342
 #: includes/fields.php:1373
 #: includes/fields.php:1370
+#: includes/fields.php:1357
 msgid "Move Field Up"
 msgstr ""
 
@@ -22186,6 +22236,7 @@ msgstr ""
 #: includes/fields.php:1347
 #: includes/fields.php:1378
 #: includes/fields.php:1375
+#: includes/fields.php:1362
 msgid "Move Field Down"
 msgstr ""
 
@@ -22195,6 +22246,7 @@ msgstr ""
 #: includes/fields.php:1353
 #: includes/fields.php:1384
 #: includes/fields.php:1381
+#: includes/fields.php:1368
 msgid "Edit field"
 msgstr ""
 
@@ -22204,6 +22256,7 @@ msgstr ""
 #: includes/fields.php:1354
 #: includes/fields.php:1385
 #: includes/fields.php:1382
+#: includes/fields.php:1369
 msgid "Duplicate field"
 msgstr ""
 
@@ -22213,6 +22266,7 @@ msgstr ""
 #: includes/fields.php:1354
 #: includes/fields.php:1385
 #: includes/fields.php:1382
+#: includes/fields.php:1369
 msgid "Duplicate"
 msgstr ""
 
@@ -22222,6 +22276,7 @@ msgstr ""
 #: includes/fields.php:1355
 #: includes/fields.php:1386
 #: includes/fields.php:1383
+#: includes/fields.php:1370
 msgid "Delete field"
 msgstr ""
 
@@ -22231,6 +22286,7 @@ msgstr ""
 #: includes/fields.php:1369
 #: includes/fields.php:1400
 #: includes/fields.php:1397
+#: includes/fields.php:1384
 msgid "Brief descriptive text for the field. Shown on user forms."
 msgstr ""
 
@@ -22240,6 +22296,7 @@ msgstr ""
 #: includes/fields.php:1377
 #: includes/fields.php:1408
 #: includes/fields.php:1405
+#: includes/fields.php:1392
 msgid "Single word with no spaces. Underscores are allowed."
 msgstr ""
 
@@ -22249,6 +22306,7 @@ msgstr ""
 #: includes/fields.php:1384
 #: includes/fields.php:1415
 #: includes/fields.php:1412
+#: includes/fields.php:1399
 msgid "Text"
 msgstr ""
 
@@ -22258,6 +22316,7 @@ msgstr ""
 #: includes/fields.php:1385
 #: includes/fields.php:1416
 #: includes/fields.php:1413
+#: includes/fields.php:1400
 msgid "Text Area"
 msgstr ""
 
@@ -22267,6 +22326,7 @@ msgstr ""
 #: includes/fields.php:1386
 #: includes/fields.php:1417
 #: includes/fields.php:1414
+#: includes/fields.php:1401
 msgid "Checkbox"
 msgstr ""
 
@@ -22276,6 +22336,7 @@ msgstr ""
 #: includes/fields.php:1387
 #: includes/fields.php:1418
 #: includes/fields.php:1415
+#: includes/fields.php:1402
 msgid "Radio"
 msgstr ""
 
@@ -22286,6 +22347,7 @@ msgstr ""
 #: includes/fields.php:1390
 #: includes/fields.php:1421
 #: includes/fields.php:1418
+#: includes/fields.php:1405
 msgid "Multi Select"
 msgstr ""
 
@@ -22296,6 +22358,7 @@ msgstr ""
 #: includes/fields.php:1391
 #: includes/fields.php:1422
 #: includes/fields.php:1419
+#: includes/fields.php:1406
 msgid "File"
 msgstr ""
 
@@ -22306,6 +22369,7 @@ msgstr ""
 #: includes/fields.php:1392
 #: includes/fields.php:1423
 #: includes/fields.php:1420
+#: includes/fields.php:1407
 msgid "Number"
 msgstr ""
 
@@ -22316,6 +22380,7 @@ msgstr ""
 #: includes/fields.php:1394
 #: includes/fields.php:1425
 #: includes/fields.php:1422
+#: includes/fields.php:1409
 msgid "Read-Only"
 msgstr ""
 
@@ -22326,6 +22391,7 @@ msgstr ""
 #: includes/fields.php:1395
 #: includes/fields.php:1426
 #: includes/fields.php:1423
+#: includes/fields.php:1410
 msgid "Hidden"
 msgstr ""
 
@@ -22342,6 +22408,7 @@ msgstr ""
 #: includes/fields.php:1413
 #: includes/fields.php:1444
 #: includes/fields.php:1441
+#: includes/fields.php:1428
 msgid "Read Only?"
 msgstr ""
 
@@ -22352,6 +22419,7 @@ msgstr ""
 #: includes/fields.php:1424
 #: includes/fields.php:1455
 #: includes/fields.php:1452
+#: includes/fields.php:1439
 msgid "Show field on user profile?"
 msgstr ""
 
@@ -22362,6 +22430,7 @@ msgstr ""
 #: includes/fields.php:1426
 #: includes/fields.php:1457
 #: includes/fields.php:1454
+#: includes/fields.php:1441
 msgid "[Inherit Group Setting]"
 msgstr ""
 
@@ -22372,6 +22441,7 @@ msgstr ""
 #: includes/fields.php:1437
 #: includes/fields.php:1468
 #: includes/fields.php:1465
+#: includes/fields.php:1452
 msgid "Field Wrapper Class (optional)"
 msgstr ""
 
@@ -22382,6 +22452,7 @@ msgstr ""
 #: includes/fields.php:1440
 #: includes/fields.php:1471
 #: includes/fields.php:1468
+#: includes/fields.php:1455
 msgid "Assign a custom CSS selector to the field's wrapping div"
 msgstr ""
 
@@ -22392,6 +22463,7 @@ msgstr ""
 #: includes/fields.php:1445
 #: includes/fields.php:1476
 #: includes/fields.php:1473
+#: includes/fields.php:1460
 msgid "Field Element Class (optional)"
 msgstr ""
 
@@ -22402,6 +22474,7 @@ msgstr ""
 #: includes/fields.php:1448
 #: includes/fields.php:1479
 #: includes/fields.php:1476
+#: includes/fields.php:1463
 msgid "Assign a custom CSS selector to the field"
 msgstr ""
 
@@ -22412,6 +22485,7 @@ msgstr ""
 #: includes/fields.php:1454
 #: includes/fields.php:1485
 #: includes/fields.php:1482
+#: includes/fields.php:1469
 msgid "Hint (optional)"
 msgstr ""
 
@@ -22422,6 +22496,7 @@ msgstr ""
 #: includes/fields.php:1457
 #: includes/fields.php:1488
 #: includes/fields.php:1485
+#: includes/fields.php:1472
 msgid "Descriptive text for users or admins submitting the field."
 msgstr ""
 
@@ -22432,6 +22507,7 @@ msgstr ""
 #: includes/fields.php:1462
 #: includes/fields.php:1493
 #: includes/fields.php:1490
+#: includes/fields.php:1477
 msgid "Options"
 msgstr ""
 
@@ -22442,6 +22518,7 @@ msgstr ""
 #: includes/fields.php:1465
 #: includes/fields.php:1496
 #: includes/fields.php:1493
+#: includes/fields.php:1480
 msgid "One option per line. To set separate values and labels, use value:label."
 msgstr ""
 
@@ -22452,6 +22529,7 @@ msgstr ""
 #: includes/fields.php:1470
 #: includes/fields.php:1501
 #: includes/fields.php:1498
+#: includes/fields.php:1485
 msgid "Close Field"
 msgstr ""
 
@@ -22462,6 +22540,7 @@ msgstr ""
 #: includes/fields.php:1473
 #: includes/fields.php:1504
 #: includes/fields.php:1501
+#: includes/fields.php:1488
 msgid "Delete Field"
 msgstr ""
 
@@ -22482,6 +22561,7 @@ msgstr ""
 #: includes/fields.php:1388
 #: includes/fields.php:1419
 #: includes/fields.php:1416
+#: includes/fields.php:1403
 msgid "Select / Dropdown"
 msgstr ""
 
@@ -22490,6 +22570,7 @@ msgstr ""
 #: includes/fields.php:1389
 #: includes/fields.php:1420
 #: includes/fields.php:1417
+#: includes/fields.php:1404
 msgid "Select2 / Autocomplete"
 msgstr ""
 
@@ -22510,6 +22591,7 @@ msgstr ""
 #: includes/fields.php:1403
 #: includes/fields.php:1434
 #: includes/fields.php:1431
+#: includes/fields.php:1418
 msgid "Required at Checkout?"
 msgstr ""
 
@@ -22867,11 +22949,13 @@ msgstr ""
 
 #: classes/class-pmpro-field.php:567
 #: classes/class-pmpro-field.php:568
+#: classes/class-pmpro-field.php:533
 msgid "Error uploading file. Too many files with the same name."
 msgstr ""
 
 #: classes/class-pmpro-field.php:580
 #: classes/class-pmpro-field.php:584
+#: classes/class-pmpro-field.php:549
 msgid "Sorry, the file %s was not uploaded."
 msgstr ""
 
@@ -23821,4 +23905,25 @@ msgstr ""
 
 #: shortcodes/pmpro_member.php:20
 msgid "The \"field\" attribute is required in the pmpro_member shortcode."
+msgstr ""
+
+#: includes/functions.php:4430
+msgid "No file was uploaded."
+msgstr ""
+
+#: includes/functions.php:4436
+msgid "No file name found."
+msgstr ""
+
+#: includes/functions.php:4443
+#: includes/functions.php:4464
+msgid "Invalid file type."
+msgstr ""
+
+#: includes/functions.php:4458
+msgid "Invalid field input."
+msgstr ""
+
+#: includes/functions.php:4482
+msgid "Invalid file submission."
 msgstr ""

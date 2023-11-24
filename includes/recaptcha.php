@@ -48,7 +48,7 @@ function pmpro_init_recaptcha() {
 	// TODO: Remove this in a future version.
 	if ( ! function_exists( 'recaptcha_get_html' ) ) {
 		function recaptcha_get_html() {
-			_deprecated_function( 'recaptcha_get_html', 'TBD', 'pmpro_recaptcha_get_html');
+			_deprecated_function( 'recaptcha_get_html', '2.12.3', 'pmpro_recaptcha_get_html');
 			return pmpro_recaptcha_get_html();
 		}
 	}

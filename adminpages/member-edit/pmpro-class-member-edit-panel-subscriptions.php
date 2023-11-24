@@ -30,126 +30,227 @@ class PMPro_Member_Edit_Panel_Subscriptions extends PMPro_Member_Edit_Panel {
 
 		// Show all active subscriptions for the user.
 		$active_subscriptions = PMPro_Subscription::get_subscriptions_for_user( $user->ID );
-		?>
-		<h3><?php esc_html_e( 'Active Subscriptions', 'paid-memberships-pro' ); ?></h3>
-		<table class="wp-list-table widefat striped fixed" width="100%" cellpadding="0" cellspacing="0" border="0">
-			<thead>
-				<tr>
-					<th><?php esc_html_e( 'Level', 'paid-memberships-pro' ); ?></th>
-					<th><?php esc_html_e( 'Created', 'paid-memberships-pro' ); ?></th>
-					<th><?php esc_html_e( 'Next Payment', 'paid-memberships-pro' ); ?></th>
-					<th><?php esc_html_e( 'Orders', 'paid-memberships-pro' ); ?></th>
-				</tr>
-			</thead>
-			<tbody>
+		if ( $active_subscriptions ) { ?>
+			<h3>
 				<?php
-				$user_levels = pmpro_getMembershipLevelsForUser($user->ID);
-				$user_level_ids = wp_list_pluck( $user_levels, 'id' );
-				foreach ( $active_subscriptions as $active_subscription ) {
-					$level = pmpro_getLevel( $active_subscription->get_membership_level_id() );
+					printf(
+						esc_html__( 'Active Subscriptions (%d)', 'paid-memberships-pro' ),
+						number_format_i18n( count( $active_subscriptions ) )
+					);
+				?>
+			</h3>
+			<table class="wp-list-table widefat striped fixed" width="100%" cellpadding="0" cellspacing="0" border="0">
+				<thead>
+					<tr>
+						<th><?php esc_html_e( 'Level', 'paid-memberships-pro' ); ?></th>
+						<th><?php esc_html_e( 'Created', 'paid-memberships-pro' ); ?></th>
+						<th><?php esc_html_e( 'Next Payment', 'paid-memberships-pro' ); ?></th>
+						<th><?php esc_html_e( 'Orders', 'paid-memberships-pro' ); ?></th>
+					</tr>
+				</thead>
+				<tbody>
+					<?php
+					$user_levels = pmpro_getMembershipLevelsForUser($user->ID);
+					$user_level_ids = wp_list_pluck( $user_levels, 'id' );
+					foreach ( $active_subscriptions as $active_subscription ) {
+						$level = pmpro_getLevel( $active_subscription->get_membership_level_id() );
+						?>
+						<tr>
+							<td class="has-row-actions">
+								<strong><?php echo esc_html( $level->name ); ?></strong>
+								<?php
+									// Show warning if the user does not have the level for this subscription.
+									if ( ! in_array( $level->id, $user_level_ids ) ) { ?>
+										<span class="pmpro_tag pmpro_tag-has_icon pmpro_tag-error">
+											<?php esc_html_e( 'Membership Ended', 'paid-memberships-pro' ); ?>
+										</span>
+									<?php }
+								?>
+								<div class="row-actions">
+									<?php
+										$actions = [
+											'view'   => sprintf(
+												'<a href="%1$s">%2$s</a>',
+												esc_url( add_query_arg( array( 'page' => 'pmpro-subscriptions', 'id' => $active_subscription->get_id() ), admin_url('admin.php' ) ) ),
+												esc_html__( 'View Details', 'paid-memberships-pro' )
+											)
+										];
 
-					// If the user does not have the level for this subscription, we want to show the level name in red.
-					$level_name       = $level->name;
-					$level_name_style = '';
-					if ( ! in_array( $level->id, $user_level_ids ) ) {
-						$level_name      .= ' [' . esc_html__( 'Membership Ended', 'paid-memberships-pro' ) . ']';
-						$level_name_style = 'color: red;';
+										$actions_html = [];
+
+										foreach ( $actions as $action => $link ) {
+											$actions_html[] = sprintf(
+												'<span class="%1$s">%2$s</span>',
+												esc_attr( $action ),
+												$link
+											);
+										}
+
+										if ( ! empty( $actions_html ) ) {
+											echo implode( ' | ', $actions_html );
+										}
+									?>
+								</div>
+							</td>
+							<td>
+								<?php
+									echo esc_html( sprintf(
+										// translators: %1$s is the date and %2$s is the time.
+										__( '%1$s at %2$s', 'paid-memberships-pro' ),
+										esc_html( $active_subscription->get_startdate( get_option( 'date_format' ) ) ),
+										esc_html( $active_subscription->get_startdate( get_option( 'time_format' ) ) )
+									) );
+								?>
+							</td>
+							<td>
+								<?php 
+									echo ! empty( $active_subscription->get_next_payment_date() ) 
+										? esc_html( sprintf(
+											// translators: %1$s is the date and %2$s is the time.
+											__( '%1$s at %2$s', 'paid-memberships-pro' ),
+											esc_html( $active_subscription->get_next_payment_date( get_option( 'date_format' ) ) ),
+											esc_html( $active_subscription->get_next_payment_date( get_option( 'time_format' ) ) )
+										) )
+										: '&#8212;';
+								?>
+							</td>
+							<td>
+								<?php
+								// Display the number of orders for this subscription and link to the orders page filtered by this subscription.
+								$orders_count = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM $wpdb->pmpro_membership_orders WHERE subscription_transaction_id = %s", $active_subscription->get_subscription_transaction_id() ) );
+								?>
+								<a href="<?php echo esc_url( add_query_arg( array( 'page' => 'pmpro-orders', 's' => $active_subscription->get_subscription_transaction_id() ), admin_url( 'admin.php' ) ) ); ?>"><?php echo esc_html( number_format_i18n( $orders_count ) ); ?></a>
+							</td>
+						</tr>
+						<?php
 					}
 					?>
-					<tr>
-						<td style="<?php echo esc_attr( $level_name_style ); ?>">
-							<?php echo esc_html( $level_name ); ?>
-							<div class="row-actions">
-								<?php
-									$actions = [
-										'edit'   => sprintf(
-											'<a href="%1$s">%2$s</a>',
-											esc_url( add_query_arg( array( 'page' => 'pmpro-subscriptions', 'id' => $active_subscription->get_id() ), admin_url('admin.php' ) ) ),
-											esc_html__( 'Edit', 'paid-memberships-pro' )
-										)
-									];
-
-									$actions_html = [];
-
-									foreach ( $actions as $action => $link ) {
-										$actions_html[] = sprintf(
-											'<span class="%1$s">%2$s</span>',
-											esc_attr( $action ),
-											$link
-										);
-									}
-
-									if ( ! empty( $actions_html ) ) {
-										echo implode( ' | ', $actions_html );
-									}
-								?>
-							</div>
-						</td>
-						<td><?php echo esc_html( $active_subscription->get_startdate( get_option( 'date_format' ) ) ); ?></td>
-						<td><?php echo esc_html( $active_subscription->get_next_payment_date( get_option( 'date_format' ) ) ); ?></td>
-						<td>
-							<?php
-							// Display the number of orders for this subscription and link to the orders page filtered by this subscription.
-							$orders_count = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM $wpdb->pmpro_membership_orders WHERE subscription_transaction_id = %s", $active_subscription->get_subscription_transaction_id() ) );
-							?>
-							<a href="<?php echo esc_url( add_query_arg( array( 'page' => 'pmpro-orders', 's' => $active_subscription->get_subscription_transaction_id() ), admin_url( 'admin.php' ) ) ); ?>"><?php echo esc_html( $orders_count ); ?></a>
-						</td>
-					</tr>
-					<?php
-				}
-				?>
-			</tbody>
-		</table>
-
-		<?php
-		// Show all subscriptions for user.
-		$subscriptions = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM $wpdb->pmpro_subscriptions WHERE user_id = %d ORDER BY startdate DESC", $user->ID ) );
-		$subscriptions_classes = array();
-		if ( ! empty( $subscriptions ) && count( $subscriptions ) > 10 ) {
-			$subscriptions_classes[] = "pmpro_scrollable";
-		}
-		$subscriptions_class = implode( ' ', array_unique( $subscriptions_classes ) );
-		?>
-		<h3><?php esc_html_e( 'All Subscriptions', 'paid-memberships-pro' ); ?></h3>
-		<div id="member-history-subscriptions" class="<?php echo esc_attr( $subscriptions_class ); ?>">
-		<?php if ( $subscriptions ) { ?>
-			<table class="wp-list-table widefat striped fixed" width="100%" cellpadding="0" cellspacing="0" border="0">
-			<thead>
-				<tr>
-					<th><?php esc_html_e( 'Date', 'paid-memberships-pro' ); ?></th>
-					<th><?php esc_html_e( 'Subscription Transaction ID', 'paid-memberships-pro' ); ?></th>
-					<th><?php esc_html_e( 'Level', 'paid-memberships-pro' ); ?></th>
-					<th><?php esc_html_e( 'Gateway', 'paid-memberships-pro' ); ?>
-					<th><?php esc_html_e( 'Gateway Environment', 'paid-memberships-pro' ); ?></th>
-					<th><?php esc_html_e( 'Next Payment Date', 'paid-memberships-pro' ); ?></th>
-					<th><?php esc_html_e( 'Ended', 'paid-memberships-pro' ); ?></th>
-					<th><?php esc_html_e( 'Status', 'paid-memberships-pro' ); ?></th>
-				</tr>
-			</thead>
-			<tbody>
-			<?php
-				foreach ( $subscriptions as $subscription ) { 
-					$level = pmpro_getLevel( $subscription->membership_level_id );
-					?>
-					<tr>
-						<td><?php echo esc_html( $subscription->startdate ); ?></td>
-						<td><a href="<?php echo ( esc_url( add_query_arg( array( 'page' => 'pmpro-subscriptions', 'id' => $subscription->id ), admin_url('admin.php' ) ) ) ); ?>"><?php echo esc_html( $subscription->subscription_transaction_id ); ?></a></td>
-						<td><?php if ( ! empty( $level ) ) { echo esc_html( $level->name ); } else { esc_html_e( 'N/A', 'paid-memberships-pro'); } ?></td>
-						<td><?php echo esc_html( $subscription->gateway ); ?>
-						<td><?php echo esc_html( $subscription->gateway_environment ); ?>
-						<td><?php echo esc_html( $subscription->next_payment_date ); ?>
-						<td><?php echo esc_html( $subscription->enddate ); ?>
-						<td><?php echo esc_html( $subscription->status ); ?>
-					</tr>
-					<?php
-				}
-			?>
-			</tbody>
+				</tbody>
 			</table>
-			<?php } else { 
-				esc_html_e( 'No subscriptions found.', 'paid-memberships-pro' );
-			} ?>
-		</div>
-		<?php		
+			<?php
+		}
+
+		// Show cancelled subscriptions for the user.
+		$cancelled_subscriptions = PMPro_Subscription::get_subscriptions_for_user( $user->ID, null, array( 'cancelled' ) );
+
+		if ( $cancelled_subscriptions ) { ?>
+		<div class="pmpro_section" data-visibility="hidden" data-activated="false">
+			<div class="pmpro_section_toggle">
+				<button class="pmpro_section-toggle-button" type="button" aria-expanded="false">
+					<span class="dashicons dashicons-arrow-down-alt2"></span>
+					<?php
+						printf(
+							esc_html__( 'Cancelled Subscriptions (%d)', 'paid-memberships-pro' ),
+							number_format_i18n( count( $cancelled_subscriptions ) )
+						);
+					?>
+				</button>
+			</div>
+			<div class="pmpro_section_inside" style="display: none;">
+			<?php
+				// Optionally wrap table in scrollable box.
+				$subscriptions_classes = array();
+				if ( ! empty( $cancelled_subscriptions ) && count( $cancelled_subscriptions ) > 10 ) {
+					$subscriptions_classes[] = "pmpro_scrollable";
+				}
+				$subscriptions_class = implode( ' ', array_unique( $subscriptions_classes ) );
+				?>
+				<div id="member-history-subscriptions" class="<?php echo esc_attr( $subscriptions_class ); ?>">
+					<table class="wp-list-table widefat striped fixed" width="100%" cellpadding="0" cellspacing="0" border="0">
+						<thead>
+							<tr>
+								<th><?php esc_html_e( 'Level', 'paid-memberships-pro' ); ?></th>
+								<th><?php esc_html_e( 'Created', 'paid-memberships-pro' ); ?></th>
+								<th><?php esc_html_e( 'Ended', 'paid-memberships-pro' ); ?></th>
+								<th><?php esc_html_e( 'Orders', 'paid-memberships-pro' ); ?></th>
+							</tr>
+						</thead>
+						<tbody>
+						<?php
+							foreach ( $cancelled_subscriptions as $cancelled_subscription ) {
+								$level = pmpro_getLevel( $cancelled_subscription->get_membership_level_id() );
+								?>
+								<tr>
+									<td>
+										<?php if ( ! empty( $level ) ) {
+											echo esc_html( $level->name );
+										} elseif ( $cancelled_subscription->get_membership_level_id() > 0 ) {
+											echo '['. esc_html( 'deleted', 'paid-memberships-pro' ).']';
+										} else {
+											esc_html_e( '&#8212;', 'paid-memberships-pro' );
+										}
+										?>
+										<div class="row-actions">
+											<?php
+												$actions = [
+													'view'   => sprintf(
+														'<a href="%1$s">%2$s</a>',
+														esc_url( add_query_arg( array( 'page' => 'pmpro-subscriptions', 'id' => $cancelled_subscription->get_id() ), admin_url('admin.php' ) ) ),
+														esc_html__( 'View Details', 'paid-memberships-pro' )
+													)
+												];
+
+												$actions_html = [];
+
+												foreach ( $actions as $action => $link ) {
+													$actions_html[] = sprintf(
+														'<span class="%1$s">%2$s</span>',
+														esc_attr( $action ),
+														$link
+													);
+												}
+
+												if ( ! empty( $actions_html ) ) {
+													echo implode( ' | ', $actions_html );
+												}
+											?>
+										</div>
+									</td>
+									<td>
+										<?php
+											echo esc_html( sprintf(
+												// translators: %1$s is the date and %2$s is the time.
+												__( '%1$s at %2$s', 'paid-memberships-pro' ),
+												esc_html( $cancelled_subscription->get_startdate( get_option( 'date_format' ) ) ),
+												esc_html( $cancelled_subscription->get_startdate( get_option( 'time_format' ) ) )
+											) );
+										?>
+									</td>
+									<td>
+										<?php 
+											echo ! empty( $cancelled_subscription->get_enddate() ) 
+												? esc_html( sprintf(
+													// translators: %1$s is the date and %2$s is the time.
+													__( '%1$s at %2$s', 'paid-memberships-pro' ),
+													esc_html( $cancelled_subscription->get_enddate( get_option( 'date_format' ) ) ),
+													esc_html( $cancelled_subscription->get_enddate( get_option( 'time_format' ) ) )
+												) )
+												: '&#8212;';
+										?>
+									</td>
+									<td>
+										<?php
+										// Display the number of orders for this subscription and link to the orders page filtered by this subscription.
+										$orders_count = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM $wpdb->pmpro_membership_orders WHERE subscription_transaction_id = %s", $cancelled_subscription->get_subscription_transaction_id() ) );
+										?>
+										<a href="<?php echo esc_url( add_query_arg( array( 'page' => 'pmpro-orders', 's' => $cancelled_subscription->get_subscription_transaction_id() ), admin_url( 'admin.php' ) ) ); ?>"><?php echo esc_html( number_format_i18n( $orders_count ) ); ?></a>
+									</td>
+								</tr>
+								<?php
+							}
+						?>
+						</tbody>
+					</table>
+				</div>
+			</div> <!-- end pmpro_section_inside -->
+		</div> <!-- end pmpro_section -->
+		<?php
+		}
+		// Show a message if there are no active or cancelled subscriptions.
+		if ( empty( $active_subscriptions ) && empty( $cancelled_subscriptions ) ) {
+			?>
+			<p><?php esc_html_e( 'This user does not have any subscriptions.', 'paid-memberships-pro' ); ?></p>
+			<?php
+		}
 	}
 }
