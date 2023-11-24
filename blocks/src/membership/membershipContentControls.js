@@ -5,22 +5,29 @@
  */
 import { __ } from '@wordpress/i18n';
 
+
 /**
  * WordPress dependencies
  */
 import { ToggleControl, CheckboxControl, PanelBody, SelectControl, Button, __experimentalHStack as HStack } from '@wordpress/components';
 import { InspectorControls } from '@wordpress/block-editor';
+import { select } from "@wordpress/data";
 
 export default function MembershipContentControls (props) {
 	const { attributes: { visibilityBlockEnabled, invert_restrictions, segment, levels, show_noaccess }, setAttributes } = props;
 	
+	//Get the root parent block id
+	const rootParentId = select( 'core/block-editor' ).getBlockHierarchyRootClientId( props.clientId );
+	//Get the root parent block
+	const rootParent = select('core/block-editor').getBlock( rootParentId );
+	//We don't want to render the visibility controls on the inner block.
+	const shouldRender = rootParent.name === props.name;
 
 	// Helper function to handle changes to the segment attribute.
 	const  handleSegmentChange = (newSegment) => {
 		// Set the segment attribute and clear the levels array.
 		setAttributes({ segment: newSegment, levels: [] });
 	}
-
 	// Helper function to select/deselect all levels.
 	const selectAllLevels = (selectAll) => {
 		const allLevelValues = pmpro.all_level_values_and_labels.map((level) => level.value + '');
@@ -29,7 +36,7 @@ export default function MembershipContentControls (props) {
 		setAttributes({ levels: newLevels });
 	}
 
-		// Build an array of checkboxes for each level.
+	// Build an array of checkboxes for each level.
 	const checkboxes = pmpro.all_level_values_and_labels.map((level) => {
 		function setLevelsAttribute(nowChecked) {
 			if (nowChecked && !(levels.some((levelID) => levelID == level.value))) {
@@ -53,6 +60,7 @@ export default function MembershipContentControls (props) {
 	});
 
 	return (
+		shouldRender &&
 		<InspectorControls>
 			<PanelBody
 				title={__( 'Content Visibility', 'paid-memberships-pro' ) }
@@ -76,7 +84,7 @@ export default function MembershipContentControls (props) {
 								style={ { flexGrow: '1', justifyContent: 'center' } }
 								onClick={() => setAttributes({ invert_restrictions: '0' })}
 							>
-								{__('Show', 'your-text-domain')}
+								{__('Show', 'paid-memberships-pro')}
 							</Button>
 							{/* Button to toggle visibility to "hide" mode */}
 							<Button
@@ -86,7 +94,7 @@ export default function MembershipContentControls (props) {
 								style={ { flexGrow: '1', justifyContent: 'center' } }
 								onClick={() => setAttributes({ invert_restrictions: '1' })}
 							>
-								{__('Hide', 'your-text-domain')}
+								{__('Hide', 'paid-memberships-pro')}
 							</Button>
 						</HStack>
 						<br />

@@ -4636,23 +4636,29 @@ function pmpro_check_upload( $file_index ) {
 	return true;
 }
 
-
- add_filter( 'render_block', 'filter_blocks', 10, 3 );
+ add_filter( 'render_block', 'pmpro_filter_core_blocks', 10, 2 );
 
 
 	/**
-	* Add the membership setting to the block.
+	* Hook into render_block to filter core blocks  and apply Content Visibility rules.
 	*
-	* @since TBD
 	* @param string $block_content The block content.
-	* @param array  $block		The block.
-	* @return string
+	* @param array  $block	The block.
+	* @return string The filtered block content.
+	* @since TBD
 	*/
-	function filter_blocks( $block_content, $block, $instance ) {
+	function pmpro_filter_core_blocks( $block_content, $block ) {
 		//TODO Replace with https://www.php.net/manual/en/function.str-starts-with when we drop support for PHP 7.x.
 		if ( strpos( $block['blockName'], 'core/' ) === 0 ) {
-				require_once( PMPRO_DIR . "/blocks/classes/class-require-membership-settings.php" );
-			return PMPro_blocks_helper_class::filter_block_content( $block['attrs'], $block_content );
+			//We need defaults because WP doesn't store defaults in the DB.
+			$attributes = wp_parse_args( $block['attrs'], array(
+				'segment' => 'all',
+				'levels' => array(),
+				'show_noaccess' => '0',
+				'invert_restrictions' => '0',
+			) );
+			require_once( PMPRO_DIR . "/blocks/includes/functions.php" );
+			return pmpro_filter_block_content( $attributes, $block_content );
 		}
 		return $block_content;
 	}
