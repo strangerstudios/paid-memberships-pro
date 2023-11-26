@@ -1951,6 +1951,10 @@ table.pmprommpu_levels tr.remove_level td {background: #F2DEDE; }
 	text-decoration: underline;
 }
 
+.pmpro_message ul {
+	list-style: disc;
+	margin-left: 20px;
+}
 .pmpro_success {
 	background-color: var(--pmpro--color--success-background);
 	border-color: var(--pmpro--color--success-border);
