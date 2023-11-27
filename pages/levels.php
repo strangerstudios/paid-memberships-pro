@@ -41,7 +41,7 @@ if($pmpro_msg)
 		$has_any_level = $has_level ?: $has_any_level;
 	?>
 	<tr class="<?php if($count++ % 2 == 0) { ?>odd<?php } ?><?php if( $has_level ) { ?> active<?php } ?>">
-		<td><?php echo $has_level ? "<strong>" . esc_html( $level->name ) . "</strong>" : esc_html( $level->name );?></td>
+		<th><?php echo $has_level ? "<strong>" . esc_html( $level->name ) . "</strong>" : esc_html( $level->name );?></th>
 		<td>
 			<?php
 				$cost_text = pmpro_getLevelCost($level, true, true); 
