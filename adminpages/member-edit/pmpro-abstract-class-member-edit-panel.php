@@ -86,9 +86,12 @@ abstract class PMPro_Member_Edit_Panel {
 
 				// Display the submit button.
 				if ( ! empty( $this->submit_text ) ) {
+					// If this is the selected panel, set the submit button ID.
+					// Needed for the 'user-profile' script on the user info panel when creating a new user.
+					$submit_id = $is_selected ? 'submit' : ''; 
 					?>
 					<p class="submit">
-						<input id="submit" type="submit" name="submit" class="button button-primary" value="<?php echo esc_attr( $this->submit_text ); ?>">
+						<input id="<?php echo esc_attr( $submit_id ); ?>" type="submit" name="submit" class="button button-primary" value="<?php echo esc_attr( $this->submit_text ); ?>">
 					</p>
 					<?php
 				}
