@@ -57,7 +57,7 @@ function pmpro_member_edit_get_panels() {
  * @since TBD
  */
 function pmpro_member_edit_display() {
-	global $current_user, $pmpro_msg, $pmpro_msgt, $pmpro_error_fields;
+	global $current_user;
 
 	// Get the user that we are editing.
 	$user = PMPro_Member_Edit_Panel::get_user();
