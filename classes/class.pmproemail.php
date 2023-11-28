@@ -1426,8 +1426,6 @@
 				'user_login' => $user->user_login, 
 				'user_email' => $user->user_email, 
 				'sitename' => get_option('blogname'), 
-				'membership_id' => $membership_level_id, 
-				'membership_level_name' => $membership_level_name,
 				'siteemail' => $this->email,
 				'login_link' => pmpro_login_url(), 
 				'login_url' => pmpro_login_url(),
