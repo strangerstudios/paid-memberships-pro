@@ -956,20 +956,6 @@ window.addEventListener("DOMContentLoaded", () => {
 		});
 	}
 
-	if ( togglePassVisibility ) {
-		togglePassVisibility.addEventListener('click', function(e) {
-			e.preventDefault();
-			const passInput = document.querySelector('#password');
-			const classToReplace = passInput.getAttribute('type') == 'password' ? 'dashicons-hidden' : 'dashicons-visibility';
-			const currentClass = passInput.getAttribute('type') == 'password' ? 'dashicons-visibility' : 'dashicons-hidden';
-
-			// Switch the input type.
-			passInput.getAttribute('type') == 'password' ? passInput.setAttribute('type', 'text') : passInput.setAttribute('type', 'password');
-
-			// Switch the icon.
-			e.currentTarget.firstChild.classList.replace(currentClass, classToReplace);
-		});
-	}
 });
 
 function pmpro_changeTabs( e, inputChanged ) {

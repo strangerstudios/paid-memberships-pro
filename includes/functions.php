@@ -2674,7 +2674,7 @@ function pmpro_setMessage( $message, $type, $force = false ) {
 }
 
 /**
- * Show a a PMPro message set via pmpro_setMessage
+ * Show a PMPro message set via pmpro_setMessage
  *
  * @since 1.8.5
  */
@@ -2693,11 +2693,13 @@ function pmpro_showMessage() {
 			'class' => array(),
 		),
 		'strong' => array(),
+		'ul' => array(),
+		'li' => array(),
 	);
 
 	if ( ! empty( $pmpro_msg ) ) {		
 		?>
-		<div role="alert" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_msg ' . $pmpro_msgt, $pmpro_msgt ) ); ?>">
+		<div role="alert" id="pmpro_message" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_message ' . $pmpro_msgt, $pmpro_msgt ) ); ?>">
 			<p><?php echo wp_kses( $pmpro_msg, $allowed_html ); ?></p>
 		</div>
 		<?php
