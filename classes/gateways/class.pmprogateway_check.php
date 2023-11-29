@@ -356,5 +356,66 @@
 			//simulate a successful cancel			
 			$order->updateStatus("cancelled");					
 			return true;
-		}	
+		}
+
+		/**
+		 * Synchronizes a subscription with this payment gateway.
+		 *
+		 * @since TBD
+		 *
+		 * @param PMPro_Subscription $subscription The subscription to synchronize.
+		 * @return string|null Error message is returned if update fails.
+		 */
+		public function update_subscription_info( $subscription ) {
+			// Track the fields that need to be updated.
+			$update_array = array();
+
+			// Update the start date to the date of the first order for this subscription if it
+			// it is earlier than the current start date.
+			$oldest_orders = $subscription->get_orders( [
+				'limit'   => 1,
+				'orderby' => '`timestamp` ASC, `id` ASC',
+			] );
+			if ( ! empty( $oldest_orders ) ) {
+				$oldest_order = current( $oldest_orders );
+				if ( empty( $subscription->get_startdate() ) || $oldest_order->getTimestamp( true ) < strtotime( $subscription->get_startdate() ) ) {
+					$update_array['startdate'] = date_i18n( 'Y-m-d H:i:s', $oldest_order->getTimestamp( true ) );
+				}
+			}
+
+			// Update the subscription's next payment date.
+			// If there is a pending order for this subscription, the subscription's next payment date should be the timestamp of the oldest pending order.
+			$pending_orders = $subscription->get_orders(
+				array(
+					'status'  => 'pending',
+					'orderby' => '`timestamp` ASC, `id` ASC',
+					'limit'   => 1,
+				)
+			);
+			if ( ! empty( $pending_orders ) ) {
+				// Get the oldest pending order.
+				$oldest_pending_order = current( $pending_orders );
+
+				// Set the next payment date to the timestamp of the oldest pending order.
+				$update_array['next_payment_date'] = date_i18n( 'Y-m-d H:i:s', $oldest_pending_order->getTimestamp( true ) );
+			} else {
+				// If there are no pending orders, the subscription's next payment date should be updated to one payment period after the timestamp of the most recent 'success' order.
+				$newest_orders = $subscription->get_orders(
+					array(
+						'status' => 'success',
+						'limit'  => 1
+					)
+				);
+				if ( ! empty( $newest_orders ) ) {
+					// Get the most recent order.
+					$newest_order = current( $newest_orders );
+
+					// Calculate the next payment date.
+					$update_array['next_payment_date'] = date_i18n( 'Y-m-d H:i:s', strtotime( '+ ' . $subscription->get_cycle_number() . ' ' . $subscription->get_cycle_period(), $newest_order->getTimestamp( true ) ) );
+				}
+			}
+
+			// Update the subscription.
+			$subscription->set( $update_array );
+		}
 	}
