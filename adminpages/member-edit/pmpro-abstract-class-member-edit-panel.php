@@ -73,9 +73,12 @@ abstract class PMPro_Member_Edit_Panel {
 		>
 			<h2><?php echo esc_html( $this->title ); ?></h2>
 			<?php
-				echo wp_kses( $this->title_link, array( 'a' => array( 'href' => array(), 'target' => array(), 'class' => array() ) ) );
+			echo wp_kses( $this->title_link, array( 'a' => array( 'href' => array(), 'target' => array(), 'class' => array() ) ) );
+
+			// Get the URL to submit to.
+			$submit_url = add_query_arg( 'user_id', self::get_user()->ID, admin_url( 'admin.php?page=pmpro-member' ) );
 			?>
-			<form class="pmpro-members" action="" method="post">
+			<form class="pmpro-members" action="<?php echo esc_url( $submit_url ); ?>" method="post">
 				<input type="hidden" name="pmpro_member_edit_panel" value="<?php echo esc_attr( $this->slug ); ?>">
 				<?php
 				// Add a nonce.
