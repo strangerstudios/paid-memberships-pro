@@ -268,10 +268,6 @@ class PMPro_Member_Edit_Panel_User_Info extends PMPro_Member_Edit_Panel {
 		}
 
 		if ( ! empty( $errors ) ) {
-			// Set error fields.
-			// TO DO: These aren't being set correctly. Do we want to support this here?
-			//$pmpro_error_fields = array_keys( $errors );
-
 			// Set error messages.
 			$error_messages = '<p>' . __( 'There were errors in the form.', 'paid-memberships-pro' ) . '</p>';
 			$error_messages .= '<ul>';
@@ -281,7 +277,6 @@ class PMPro_Member_Edit_Panel_User_Info extends PMPro_Member_Edit_Panel {
 			$error_messages .= '</ul>';
 
 			// Set the message.
-			// TO DO: Should we escape/sanitize anything here? It is also handled in the pmpro_setMessage function.
 			pmpro_setMessage( $error_messages, 'pmpro_error' );
 		} else {
 
