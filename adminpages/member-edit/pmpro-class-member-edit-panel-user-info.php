@@ -158,8 +158,6 @@ class PMPro_Member_Edit_Panel_User_Info extends PMPro_Member_Edit_Panel {
 	 * Save panel data and redirect if we are creating a new user.
 	 */
 	public function save() {
-		global $wpdb, $pmpro_msgt, $pmpro_msg;
-
 		// Get all roles for the site.
 		$wp_roles = wp_roles();
 
