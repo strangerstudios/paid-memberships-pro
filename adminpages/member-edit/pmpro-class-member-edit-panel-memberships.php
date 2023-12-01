@@ -327,9 +327,10 @@ class PMPro_Member_Edit_Panel_Memberships extends PMPro_Member_Edit_Panel {
 							<tfoot>
 								<tr>
 									<?php
-									$link_icon = empty( $group->allow_multiple_selections ) ? 'image-rotate' : 'plus';
 									$js_target_class = empty( $group->allow_multiple_selections ) ? 'pmpro-member-change-level' : 'pmpro-member-add-level';
-									$link_text = empty( $group->allow_multiple_selections ) ? __( 'Change Membership', 'paid-memberships-pro' ) : __( 'Add Membership', 'paid-memberships-pro' );
+									$is_single_membership = count( $user_level_ids_in_group ) === 0;
+									$link_icon = ( $group->allow_multiple_selections || $is_single_membership ) ? 'plus' : 'image-rotate';
+									$link_text = $group->allow_multiple_selections || $is_single_membership ? __( 'Add Membership', 'paid-memberships-pro' ) : __( 'Change Membership', 'paid-memberships-pro' );
 									?>
 									<td colspan="3"><a class="button-secondary pmpro-has-icon pmpro-has-icon-<?php echo esc_attr( $link_icon ) . ' ' . esc_attr( $js_target_class ); ?>" href="#"><?php echo esc_html( $link_text ); ?></a></td>
 								</tr>

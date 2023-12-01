@@ -159,8 +159,8 @@
 		$msgt = sprintf(__("We recommend upgrading to PHP %s or greater. Ask your host to upgrade.", "paid-memberships-pro" ), PMPRO_MIN_PHP_VERSION );
 	}
 
-	// Show the contextual messages.
-	if( ! empty( $msg ) && $view != 'pmpro-dashboard' ) { ?>
+	// Show the contextual messages on our admin pages.
+	if ( ! empty( $msg ) && ! in_array( $view, array( 'pmpro-dashboard', 'pmpro-member' ) ) ) { ?>
 		<div id="message" class="<?php if($msg > 0) echo "updated fade"; else echo "error"; ?>"><p><?php echo $msgt?></p></div>
 	<?php } ?>
 

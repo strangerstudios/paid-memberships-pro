@@ -57,7 +57,7 @@ function pmpro_member_edit_get_panels() {
  * @since TBD
  */
 function pmpro_member_edit_display() {
-	global $current_user, $pmpro_msg, $pmpro_msgt;
+	global $current_user;
 
 	// Get the user that we are editing.
 	$user = PMPro_Member_Edit_Panel::get_user();
@@ -92,19 +92,7 @@ function pmpro_member_edit_display() {
 		?>
 	</h1>
 
-	<?php
-		if ( $pmpro_msg ) {
-			?>
-			<div role="alert" id="pmpro_message" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_message ' . $pmpro_msgt, $pmpro_msgt ) ); ?>">
-				<?php echo wp_kses_post( $pmpro_msg ); ?>
-			</div>
-			<?php
-		} else {
-			?>
-			<div id="pmpro_message" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_message' ) ); ?>" style="display: none;"></div>
-			<?php
-		}
-	?>
+	<?php pmpro_showMessage(); ?>
 
 	<div id="pmpro-edit-user-div">
 		<nav id="pmpro-edit-user-nav" role="tablist" aria-labelledby="pmpro-edit-user-menu">

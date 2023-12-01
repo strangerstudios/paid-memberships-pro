@@ -45,7 +45,7 @@ abstract class PMPro_Member_Edit_Panel {
 			aria-selected="<?php echo $is_selected ? 'true' : 'false' ?>"
 			aria-controls="pmpro-member-edit-<?php echo esc_attr( $this->slug ) ?>-panel"
 			id="pmpro-member-edit-<?php echo esc_attr( $this->slug ) ?>-tab"
-			<?php echo ( empty( self::get_user()->ID ) ) ? 'disabled="disabled"' : ''; ?>
+			<?php echo ( empty( self::get_user()->ID ) && $this->slug != 'user_info'  ) ? 'disabled="disabled"' : ''; ?>
 			tabindex="<?php echo ( $is_selected ) ? '0' : '-1' ?>"
 		>
 			<?php
@@ -86,9 +86,12 @@ abstract class PMPro_Member_Edit_Panel {
 
 				// Display the submit button.
 				if ( ! empty( $this->submit_text ) ) {
+					// If this is the selected panel, set the submit button ID.
+					// Needed for the 'user-profile' script on the user info panel when creating a new user.
+					$submit_id = $is_selected ? 'submit' : ''; 
 					?>
 					<p class="submit">
-						<input type="submit" name="submit" class="button button-primary" value="<?php echo esc_attr( $this->submit_text ); ?>">
+						<input id="<?php echo esc_attr( $submit_id ); ?>" type="submit" name="submit" class="button button-primary" value="<?php echo esc_attr( $this->submit_text ); ?>">
 					</p>
 					<?php
 				}
