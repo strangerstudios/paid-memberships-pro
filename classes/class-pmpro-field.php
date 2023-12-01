@@ -1245,7 +1245,7 @@ class PMPro_Field {
 		global $current_user;
 		if(metadata_exists("user", $user_id, $this->meta_key))
 		{
-			$meta = get_user_meta($user_id, $this->name, true);				
+			$meta = get_user_meta($user_id, $this->meta_key, true);	
 			if(is_array($meta) && !empty($meta['filename']))
 			{
 				$this->file = get_user_meta($user_id, $this->meta_key, true);
