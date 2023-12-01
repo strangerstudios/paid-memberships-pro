@@ -44,6 +44,7 @@ class PMPro_Member_Edit_Panel_Subscriptions extends PMPro_Member_Edit_Panel {
 					<tr>
 						<th><?php esc_html_e( 'Level', 'paid-memberships-pro' ); ?></th>
 						<th><?php esc_html_e( 'Created', 'paid-memberships-pro' ); ?></th>
+						<th><?php esc_html_e( 'Fee', 'paid-memberships-pro' ); ?></th>
 						<th><?php esc_html_e( 'Next Payment', 'paid-memberships-pro' ); ?></th>
 						<th><?php esc_html_e( 'Orders', 'paid-memberships-pro' ); ?></th>
 					</tr>
@@ -103,6 +104,11 @@ class PMPro_Member_Edit_Panel_Subscriptions extends PMPro_Member_Edit_Panel {
 								?>
 							</td>
 							<td>
+								<?php
+									// Show the subscription fee.
+									echo esc_html( $active_subscription->get_cost_text() );
+								?>
+							<td>
 								<?php 
 									echo ! empty( $active_subscription->get_next_payment_date() ) 
 										? esc_html( sprintf(
@@ -161,6 +167,7 @@ class PMPro_Member_Edit_Panel_Subscriptions extends PMPro_Member_Edit_Panel {
 							<tr>
 								<th><?php esc_html_e( 'Level', 'paid-memberships-pro' ); ?></th>
 								<th><?php esc_html_e( 'Created', 'paid-memberships-pro' ); ?></th>
+								<th><?php esc_html_e( 'Fee', 'paid-memberships-pro' ); ?></th>
 								<th><?php esc_html_e( 'Ended', 'paid-memberships-pro' ); ?></th>
 								<th><?php esc_html_e( 'Orders', 'paid-memberships-pro' ); ?></th>
 							</tr>
@@ -216,6 +223,11 @@ class PMPro_Member_Edit_Panel_Subscriptions extends PMPro_Member_Edit_Panel {
 											) );
 										?>
 									</td>
+									<td>
+										<?php
+											// Show the subscription fee.
+											echo esc_html( $cancelled_subscription->get_cost_text() );
+										?>
 									<td>
 										<?php 
 											echo ! empty( $cancelled_subscription->get_enddate() ) 
