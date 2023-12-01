@@ -87,6 +87,14 @@ function pmpro_admin_prep_click_events() {
     });
 }
 
+// Hide the popup if clicked outside the popup.
+jQuery(document).on('click', function (e) {
+    // Check if the clicked element is the close button or outside the pmpro-popup-wrap
+    if ( jQuery(e.target).closest('.pmpro-popup-wrap').length === 0 ) {
+        jQuery('.pmpro-popup-overlay').hide();
+    }
+});
+
 /** JQuery to hide the notifications. */
 jQuery(document).ready(function () {
     jQuery(document).on('click', '.pmpro-notice-button.notice-dismiss', function () {
