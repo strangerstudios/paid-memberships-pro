@@ -10,6 +10,15 @@ class PMPro_Member_Edit_Panel_User_Info extends PMPro_Member_Edit_Panel {
 		$this->title = empty( $user->ID ) ? __( 'Add New User', 'paid-memberships-pro' ) : __( 'User Info', 'paid-memberships-pro' );
 		$this->title_link = empty( $user->ID ) ? '' : '<a href="' . esc_url( add_query_arg( array( 'user_id' => intval( $user->ID ) ), admin_url( 'user-edit.php' ) ) ) . '" target="_blank" class="page-title-action pmpro-has-icon pmpro-has-icon-admin-users">' . esc_html__( 'Edit User', 'paid-memberships-pro' ) . '</a>';
 		$this->submit_text = empty( $user->ID ) ? __( 'Create User ') : __( 'Update User Info', 'paid-memberships-pro' );
+
+		// Show user updated or user created message if necessary.
+		if ( isset( $_REQUEST['user_id'] ) && ! empty( $_REQUEST['user_id'] && ! empty( $_REQUEST['user_info_action'] ) ) ) {
+			if ( 'updated' === $_REQUEST['user_info_action'] ) {
+				pmpro_setMessage( __( 'User updated.', 'paid-memberships-pro' ), 'pmpro_success' );
+			} elseif ( 'created' === $_REQUEST['user_info_action'] ) {
+				pmpro_setMessage( __( 'New user created.', 'paid-memberships-pro' ), 'pmpro_success' );
+			}
+		}
 	}
 
 	/**
@@ -298,11 +307,11 @@ class PMPro_Member_Edit_Panel_User_Info extends PMPro_Member_Edit_Panel {
 			// Set message and redirect if this is a new user.		
 			if ( $update ) {
 				// User updated.
-				wp_redirect( admin_url( 'admin.php?page=pmpro-member&user_id=' . $user_id ) );
+				wp_redirect( admin_url( 'admin.php?page=pmpro-member&user_info_action=updated&user_id=' . $user_id ) );
 				exit;
 			} else {
 				// User inserted.
-				wp_redirect( admin_url( 'admin.php?page=pmpro-member&pmpro_member_edit_panel=memberships&user_id=' . $user_id ) );
+				wp_redirect( admin_url( 'admin.php?page=pmpro-member&user_info_action=created&pmpro_member_edit_panel=memberships&user_id=' . $user_id ) );
 			}
 		}
 	}

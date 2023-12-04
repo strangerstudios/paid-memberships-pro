@@ -32,6 +32,13 @@ class PMPro_Member_Edit_Panel_User_Fields extends PMPro_Member_Edit_Panel {
 	 * Save panel data.
 	 */
 	public function save() {
-		pmpro_save_user_fields_in_profile( self::get_user()->ID );
+		$saved = ( pmpro_save_user_fields_in_profile( self::get_user()->ID ) !== false ); // Function returns false on failed, null on saved.
+
+		// Show success message.
+		if ( $saved ) {
+			pmpro_setMessage( __( 'User fields updated successfully.', 'paid-memberships-pro' ), 'pmpro_success' );
+		} else {
+			pmpro_setMessage( __( 'You do not have permission to update these fields.', 'paid-memberships-pro' ), 'pmpro_error' );
+		}
 	}
 }
