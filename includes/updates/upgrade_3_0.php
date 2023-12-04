@@ -46,14 +46,14 @@ function pmpro_upgrade_3_0() {
 		SET status = 'success'
 		WHERE status = 'cancelled'
 		";
-	//$wpdb->query( $sqlQuery ); // Disabled for now to not interfere with development sites.
+	$wpdb->query( $sqlQuery ); // Disabled for now to not interfere with development sites.
 
 	// PMPro Stripe Billing Limits Add On has been merged into core and no longer needs 'pmpro_stripe_billing_limit' user meta.
 	$sqlQuery = "
 		DELETE FROM {$wpdb->usermeta}
 		WHERE meta_key = 'pmpro_stripe_billing_limit'
 		";
-	//$wpdb->query( $sqlQuery ); // Disabled for now to not interfere with development sites.
+	$wpdb->query( $sqlQuery ); // Disabled for now to not interfere with development sites.
 
 	return 3.0;
 }
