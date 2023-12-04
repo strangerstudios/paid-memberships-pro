@@ -97,15 +97,6 @@ function pmpro_add_pages() {
 	// Hidden pages
 	add_submenu_page( 'admin.php', __( 'Subscriptions', 'paid-memberships-pro' ), __( 'Subscriptions', 'paid-memberships-pro' ), 'pmpro_subscriptions', 'pmpro-subscriptions', 'pmpro_subscriptions' );
 	add_submenu_page( 'admin.php', __( 'Add Member', 'paid-memberships-pro' ), __( 'Add Member', 'paid-memberships-pro' ), 'manage_options', 'pmpro-member', 'pmpro_member_edit_display' );
-
-	// For the subscriptions page, if there is not an ID or the ID does not exist, redirect to the members page.
-	if ( isset( $_REQUEST['page'] ) && $_REQUEST['page'] == 'pmpro-subscriptions' ) {
-		// If the subscription that they are trying to view does not exist, redirect them to the members page.
-		if ( empty( $_REQUEST['id'] ) || empty( PMPro_Subscription::get_subscription( $_REQUEST['id'] ) ) ) {
-			wp_redirect( admin_url( 'admin.php?page=pmpro-memberslist' ) );
-			exit;
-		}
-	}
 }
 add_action( 'admin_menu', 'pmpro_add_pages' );
 
@@ -315,6 +306,83 @@ function pmpro_admin_bar_menu() {
 	}
 }
 add_action( 'admin_bar_menu', 'pmpro_admin_bar_menu', 1000 );
+
+/**
+ * Redirect away from certain admin pages if the single item doesn't exist.
+ *
+ * @since TBD
+ * @return void
+ */
+function pmpro_admin_init_redirect_single_item_edit() {
+	// Set to the page we are on or empty string.
+	$pmpro_admin_page = isset( $_REQUEST['page'] ) ? sanitize_text_field( $_REQUEST['page'] ) : '';
+
+	// Return if no page is set.
+	if ( empty( $pmpro_admin_page ) ) {
+		return;
+	}
+
+	// If page doesn't start with 'pmpro-', return.
+	if ( strpos( $pmpro_admin_page, 'pmpro-' ) !== 0 ) {
+		return;
+	}
+
+	// Edit Membership Level or Group redirects.
+	if ( $pmpro_admin_page == 'pmpro-membershiplevels' ) {
+		// If the level they are trying to edit does not exist, redirect them to the membership levels page.
+		if ( ! empty( $_REQUEST['edit'] ) && $_REQUEST['edit'] > 0 && empty( pmpro_getLevel( $_REQUEST['edit'] ) ) ) {
+			wp_redirect( add_query_arg( array( 'page' => 'pmpro-membershiplevels' ), admin_url( 'admin.php' ) ) );
+			exit;
+		}
+
+		// If the group they are trying to edit does not exist, redirect them to the membership levels page.
+		if ( ! empty( $_REQUEST['edit_group'] ) && $_REQUEST['edit_group'] > 0 && empty( pmpro_get_level_group( $_REQUEST['edit_group'] ) ) ) {
+			wp_redirect( add_query_arg( array( 'page' => 'pmpro-membershiplevels' ), admin_url( 'admin.php' ) ) );
+			exit;
+		}
+	}
+
+	// Edit Member redirect.
+	if ( $pmpro_admin_page == 'pmpro-member' ) {
+		// If the discount code they are trying to edit does not exist, redirect them to the discount codes page.
+		if ( ! empty( $_REQUEST['user_id'] ) && $_REQUEST['user_id'] > 0 && empty( PMPro_Member_Edit_Panel::get_user()->ID ) ) {
+			wp_redirect( add_query_arg( array( 'page' => 'pmpro-memberslist' ), 	admin_url( 'admin.php' ) ) );
+			exit;
+		}
+	}
+
+	// Edit Discount Code redirect.
+	if ( $pmpro_admin_page == 'pmpro-discountcodes' ) {
+		// If the discount code they are trying to edit does not exist, redirect them to the discount codes page.
+		if ( ! empty( $_REQUEST['edit'] ) && $_REQUEST['edit'] > 0 ) {
+			$discount_code = new PMPro_Discount_Code();
+			$discount_code->get_discount_code_by_id( $_REQUEST['edit'] );
+			if ( empty( $discount_code->id ) ) {
+				wp_redirect( add_query_arg( array( 'page' => 'pmpro-discountcodes' ), 	admin_url( 'admin.php' ) ) );
+				exit;
+			}
+		}
+	}
+
+	// Edit Order redirect.
+	if ( $pmpro_admin_page == 'pmpro-orders' ) {
+		// If the order they are trying to edit does not exist, redirect them to the orders list.
+		if ( ! empty( $_REQUEST['order'] ) && $_REQUEST['order'] > 0 && empty( MemberOrder::get_order( $_REQUEST['order'] ) ) ) {
+			wp_redirect( add_query_arg( array( 'page' => 'pmpro-orders' ), admin_url( 'admin.php' ) ) );
+			exit;
+		}
+	}
+
+	// View Subscription redirect.
+	if ( $pmpro_admin_page == 'pmpro-subscriptions' ) {
+		// If the subscription they are trying to view does not exist, redirect them to the members list.
+		if ( empty( $_REQUEST['id'] ) || empty( PMPro_Subscription::get_subscription( $_REQUEST['id'] ) ) ) {
+			wp_redirect( add_query_arg( array( 'page' => 'pmpro-memberslist' ), admin_url( 'admin.php' ) ) );
+			exit;
+		}
+	}
+}
+add_action( 'admin_init', 'pmpro_admin_init_redirect_single_item_edit' );
 
 /**
  * Add the "Admin Membership Access" menu to the admin bar.
