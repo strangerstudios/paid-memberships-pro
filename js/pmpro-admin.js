@@ -87,6 +87,14 @@ function pmpro_admin_prep_click_events() {
     });
 }
 
+// Hide the popup if clicked outside the popup.
+jQuery(document).on('click', function (e) {
+    // Check if the clicked element is the close button or outside the pmpro-popup-wrap
+    if ( jQuery(e.target).closest('.pmpro-popup-wrap').length === 0 ) {
+        jQuery('.pmpro-popup-overlay').hide();
+    }
+});
+
 /** JQuery to hide the notifications. */
 jQuery(document).ready(function () {
     jQuery(document).on('click', '.pmpro-notice-button.notice-dismiss', function () {
@@ -956,20 +964,6 @@ window.addEventListener("DOMContentLoaded", () => {
 		});
 	}
 
-	if ( togglePassVisibility ) {
-		togglePassVisibility.addEventListener('click', function(e) {
-			e.preventDefault();
-			const passInput = document.querySelector('#password');
-			const classToReplace = passInput.getAttribute('type') == 'password' ? 'dashicons-hidden' : 'dashicons-visibility';
-			const currentClass = passInput.getAttribute('type') == 'password' ? 'dashicons-visibility' : 'dashicons-hidden';
-
-			// Switch the input type.
-			passInput.getAttribute('type') == 'password' ? passInput.setAttribute('type', 'text') : passInput.setAttribute('type', 'password');
-
-			// Switch the icon.
-			e.currentTarget.firstChild.classList.replace(currentClass, classToReplace);
-		});
-	}
 });
 
 function pmpro_changeTabs( e, inputChanged ) {
@@ -1006,3 +1000,10 @@ function pmpro_changeTabs( e, inputChanged ) {
 
 	return true;
 }
+
+/**
+ * Edit Order Page
+ */
+jQuery(document).ready(function () {
+    jQuery('.pmpro_admin-pmpro-orders select#membership_id').select2();
+});

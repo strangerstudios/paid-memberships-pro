@@ -412,7 +412,7 @@ class PMProGateway_stripe extends PMProGateway {
 	      <td colspan="2">
 				<?php
 				if ( ! empty( $stripe->get_secretkey() ) ) {
-					$required_webhook_events = $stripe->webhook_events();
+					$required_webhook_events = self::webhook_events();
 					sort( $required_webhook_events );
 
 					$webhook_event_data = array();
@@ -3149,7 +3149,7 @@ class PMProGateway_stripe extends PMProGateway {
 	 * @since 2.7 Deprecated for public use.
 	 * @since 3.0 Updated to private non-static.
 	 */
-	private function webhook_events() {
+	private static function webhook_events() {
 		$events = array(
 			'invoice.payment_succeeded',
 			'invoice.payment_action_required',
@@ -3175,7 +3175,7 @@ class PMProGateway_stripe extends PMProGateway {
 		try {
 			$create = Stripe_Webhook::create([
 				'url' => $this->get_site_webhook_url(),
-				'enabled_events' => $this->webhook_events(),
+				'enabled_events' => self::webhook_events(),
 				'api_version' => PMPRO_STRIPE_API_VERSION,
 			]);
 
@@ -3247,7 +3247,7 @@ class PMProGateway_stripe extends PMProGateway {
 	 */
 	private function check_missing_webhook_events( $webhook_events ) {
 		// Get required events
-		$pmpro_webhook_events = $this->webhook_events();
+		$pmpro_webhook_events = self::webhook_events();
 
 		// No missing events if webhook event is "All Events" selected.
 		if ( is_array( $webhook_events ) && $webhook_events[0] === '*' ) {
