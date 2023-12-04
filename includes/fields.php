@@ -314,7 +314,7 @@ function pmpro_checkout_boxes_fields() {
 				</h2>
 				<div class="pmpro_checkout-fields">
 				<?php if(!empty($cb->description)) { ?>
-					<div class="pmpro_checkout_decription"><?php echo wp_kses_post( $cb->description ); ?></div>
+					<div class="pmpro_checkout_description"><?php echo wp_kses_post( $cb->description ); ?></div>
 				<?php } ?>
 
 				<?php
