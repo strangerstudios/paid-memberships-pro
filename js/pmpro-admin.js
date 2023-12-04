@@ -87,6 +87,14 @@ function pmpro_admin_prep_click_events() {
     });
 }
 
+// Hide the popup if clicked outside the popup.
+jQuery(document).on('click', function (e) {
+    // Check if the clicked element is the close button or outside the pmpro-popup-wrap
+    if ( jQuery(e.target).closest('.pmpro-popup-wrap').length === 0 ) {
+        jQuery('.pmpro-popup-overlay').hide();
+    }
+});
+
 /** JQuery to hide the notifications. */
 jQuery(document).ready(function () {
     jQuery(document).on('click', '.pmpro-notice-button.notice-dismiss', function () {
@@ -908,11 +916,25 @@ window.addEventListener("DOMContentLoaded", () => {
 	const tabs = document.querySelectorAll('#pmpro-edit-user-div [role="tab"]');
 	const tabList = document.querySelector('#pmpro-edit-user-div [role="tablist"]');
 	const togglePassVisibility = document.querySelector('#pmpro-edit-user-div .toggle-pass-visibility');
+	const inputs = document.querySelectorAll('#pmpro-edit-user-div input, #pmpro-edit-user-div textarea, #pmpro-edit-user-div select');
 
 	if ( tabs && tabList ) {
+		// Track whether an input has been changed.
+		let inputChanged = false;
+		inputs.forEach((input) => {
+			input.addEventListener('change', function(e) {
+				inputChanged = true;
+			});
+		});
+
 		// Add a click event handler to each tab
 		tabs.forEach((tab) => {
-			tab.addEventListener("click", pmpro_changeTabs);
+			tab.addEventListener("click", function (e) {
+				if ( pmpro_changeTabs(e, inputChanged ) ) {
+					// If we changed tabs, reset the inputChanged flag.
+					inputChanged = false;
+				}
+			});
 		});
 
 		// Enable arrow navigation between tabs in the tab list
@@ -942,24 +964,18 @@ window.addEventListener("DOMContentLoaded", () => {
 		});
 	}
 
-	if ( togglePassVisibility ) {
-		togglePassVisibility.addEventListener('click', function(e) {
-			e.preventDefault();
-			const passInput = document.querySelector('#password');
-			const classToReplace = passInput.getAttribute('type') == 'password' ? 'dashicons-hidden' : 'dashicons-visibility';
-			const currentClass = passInput.getAttribute('type') == 'password' ? 'dashicons-visibility' : 'dashicons-hidden';
-
-			// Switch the input type.
-			passInput.getAttribute('type') == 'password' ? passInput.setAttribute('type', 'text') : passInput.setAttribute('type', 'password');
-
-			// Switch the icon.
-			e.currentTarget.firstChild.classList.replace(currentClass, classToReplace);
-		});
-	}
 });
 
-function pmpro_changeTabs(e) {
+function pmpro_changeTabs( e, inputChanged ) {
 	e.preventDefault();
+
+	if ( inputChanged ) {
+		const answer = window.confirm('You have unsaved changes. Are you sure you want to switch tabs?');
+		if ( ! answer ) {
+			return false;
+		}
+	}
+
 	const target = e.target;
 	const parent = target.parentNode;
 	const grandparent = parent.parentNode;
@@ -981,4 +997,13 @@ function pmpro_changeTabs(e) {
 	grandparent.parentNode
 	.querySelector(`#${target.getAttribute("aria-controls")}`)
 	.removeAttribute("hidden");
+
+	return true;
 }
+
+/**
+ * Edit Order Page
+ */
+jQuery(document).ready(function () {
+    jQuery('.pmpro_admin-pmpro-orders select#membership_id').select2();
+});

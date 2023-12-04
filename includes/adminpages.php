@@ -97,6 +97,15 @@ function pmpro_add_pages() {
 	// Hidden pages
 	add_submenu_page( 'admin.php', __( 'Subscriptions', 'paid-memberships-pro' ), __( 'Subscriptions', 'paid-memberships-pro' ), 'pmpro_subscriptions', 'pmpro-subscriptions', 'pmpro_subscriptions' );
 	add_submenu_page( 'admin.php', __( 'Add Member', 'paid-memberships-pro' ), __( 'Add Member', 'paid-memberships-pro' ), 'manage_options', 'pmpro-member', 'pmpro_member_edit_display' );
+
+	// For the subscriptions page, if there is not an ID or the ID does not exist, redirect to the members page.
+	if ( isset( $_REQUEST['page'] ) && $_REQUEST['page'] == 'pmpro-subscriptions' ) {
+		// If the subscription that they are trying to view does not exist, redirect them to the members page.
+		if ( empty( $_REQUEST['id'] ) || empty( PMPro_Subscription::get_subscription( $_REQUEST['id'] ) ) ) {
+			wp_redirect( admin_url( 'admin.php?page=pmpro-memberslist' ) );
+			exit;
+		}
+	}
 }
 add_action( 'admin_menu', 'pmpro_add_pages' );
 
@@ -128,6 +137,26 @@ function pmpro_parent_file( $parent_file ) {
 	return $parent_file;
 }
 add_filter( 'parent_file', 'pmpro_parent_file' );
+
+/**
+ * Filter the title of the Edit Member admin page.
+ */
+function pmpro_admin_title( $admin_title, $title ) {
+	// Only filter on the Edit Member page.
+	if ( isset( $_REQUEST['page']) && $_REQUEST['page'] === 'pmpro-member' ) {
+		$user = PMPro_Member_Edit_Panel::get_user();
+		if ( empty( $user->ID ) ) {
+			$title = __( 'Add Member', 'paid-memberships-pro' );
+		} else {
+			/* translators: %s: User's display name. */
+			$title = sprintf( __( 'Edit Member: %s', 'paid-memberships-pro' ), $user->display_name );
+		}
+		/* translators: Edit/Add Member Admin screen title. 1: Screen name, 2: Site name. */
+		$admin_title = sprintf( __( '%1$s &lsaquo; %2$s &#8212; WordPress' ), $title, get_bloginfo( 'name' ) );
+	}
+	return $admin_title;
+}
+add_filter( 'admin_title', 'pmpro_admin_title', 10, 2 );
 
 /**
  * Admin Bar
@@ -249,8 +278,43 @@ function pmpro_admin_bar_menu() {
 			)
 		);
 	}
+
+	// Add menu item for adding a new member.
+	if ( current_user_can( 'manage_options' ) ) {
+		$wp_admin_bar->add_menu(
+			array(
+				'id' => 'pmpro-new-member',
+				'parent' => 'new-content',
+				'title' => __( 'Member', 'paid-memberships-pro' ),
+				'href' => add_query_arg(
+					array(
+						'page' => 'pmpro-member',
+					),
+					admin_url( 'admin.php' )
+				)
+			)
+		);
+	}
+
+	// Add a menu item for editing the current user's member information.
+	if ( current_user_can( 'manage_options' ) ) {
+		$wp_admin_bar->add_menu(
+			array(
+				'id' => 'pmpro-edit-member',
+				'parent' => 'user-actions',
+				'title' => __( 'Edit Member', 'paid-memberships-pro' ),
+				'href' => add_query_arg(
+					array(
+						'page' => 'pmpro-member',
+						'user_id' => get_current_user_id(),
+					),
+					admin_url( 'admin.php' )
+				)
+			)
+		);
+	}
 }
-add_action( 'admin_bar_menu', 'pmpro_admin_bar_menu', 1000);
+add_action( 'admin_bar_menu', 'pmpro_admin_bar_menu', 1000 );
 
 /**
  * Add the "Admin Membership Access" menu to the admin bar.

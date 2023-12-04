@@ -15,7 +15,7 @@ if ( ! is_user_logged_in() ) {
 
 // If there was a level passed, grab it.
 $confirmation_level = ! empty( $_REQUEST['pmpro_level'] ) ? intval( $_REQUEST['pmpro_level'] ) : null;
-$confirmation_level = empty( $confirmation_level ) && ! empty( $_REQUEST['level'] ) ? intval( $_REQUEST['level'] ) : null; // Backwards compatibility.
+$confirmation_level = empty( $confirmation_level ) && ! empty( $_REQUEST['level'] ) ? intval( $_REQUEST['level'] ) : $confirmation_level; // Backwards compatibility.
 
 // Get the corresponding invoice.
 $pmpro_invoice = new MemberOrder();
@@ -38,16 +38,15 @@ if ( empty( $pmpro_invoice ) || empty( $confirmation_level ) ) {
 $user_level = pmpro_getSpecificMembershipLevelForUser( $current_user->ID, $confirmation_level );
 $current_user->membership_level = $user_level; // Backwards compatibility.
 
+// If the user doesn't have the level they are confirming (including pending checkouts), redirect them to the account page.
 if ( ! in_array( $pmpro_invoice->status, array( 'pending', 'token' ) ) && empty( $user_level ) ) {
-	// The user does not have a membership level (including pending checkouts).
-	// Redirect them to the account page.
 	$redirect_url = pmpro_url( 'account' );
 	wp_redirect( $redirect_url );
 	exit;
-} elseif ( ! empty( $user_level ) && pmpro_isLevelFree( $user_level ) ) {
-	// User checked out for a free level. We are not going to show the invoice on the confirmation page.
-	$pmpro_invoice = null;
-} elseif ( in_array( $pmpro_invoice->status, array( 'pending', 'token' ) ) ) {
+}
+
+// If the payment hasn't completed, enqueue JS to check for completion.
+if ( in_array( $pmpro_invoice->status, array( 'pending', 'token' ) ) ) {
 	// Enqueue PMPro Confirmation script.
 	wp_register_script(
 		'pmpro_confirmation',

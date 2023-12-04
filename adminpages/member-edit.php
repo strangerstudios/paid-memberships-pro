@@ -23,10 +23,13 @@ function pmpro_member_edit_get_panels() {
 	$panels[] = new PMPro_Member_Edit_Panel_Other();
 
 	// Add user fields panels.
-	$profile_user_fields = pmpro_get_user_fields_for_profile( PMPro_Member_Edit_Panel::get_user()->ID, true );
-	if ( ! empty( $profile_user_fields ) ) {
-		foreach ( $profile_user_fields as $group_name => $user_fields ) {
-			$panels[] = new PMPro_Member_Edit_Panel_User_Fields( $group_name );
+	$user_id = PMPro_Member_Edit_Panel::get_user()->ID;
+	if ( $user_id ) {
+		$profile_user_fields = pmpro_get_user_fields_for_profile( $user_id, true );
+		if ( ! empty( $profile_user_fields ) ) {
+			foreach ( $profile_user_fields as $group_name => $user_fields ) {
+				$panels[] = new PMPro_Member_Edit_Panel_User_Fields( $group_name );
+			}
 		}
 	}
 
@@ -54,7 +57,7 @@ function pmpro_member_edit_get_panels() {
  * @since TBD
  */
 function pmpro_member_edit_display() {
-	global $current_user, $pmpro_msg, $pmpro_msgt;
+	global $current_user;
 
 	// Get the user that we are editing.
 	$user = PMPro_Member_Edit_Panel::get_user();
@@ -75,21 +78,7 @@ function pmpro_member_edit_display() {
 	/**
 	 * Load the Paid Memberships Pro dashboard-area header
 	 */
-	require_once( PMPRO_DIR . '/adminpages/admin_header.php' );
-
-	// TODO: Do we need to update how this is displayed at all?
-	if ( $pmpro_msg ) {
-		?>
-		<div role="alert" id="pmpro_message" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_message ' . $pmpro_msgt, $pmpro_msgt ) ); ?>">
-			<?php echo wp_kses_post( apply_filters( 'pmpro_checkout_message', $pmpro_msg, $pmpro_msgt ) ); ?>
-		</div>
-		<?php
-	} else {
-		?>
-		<div id="pmpro_message" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_message' ) ); ?>" style="display: none;"></div>
-		<?php
-	}
-	?>
+	require_once( PMPRO_DIR . '/adminpages/admin_header.php' ); ?>
 
 	<hr class="wp-header-end">
 	<h1 class="wp-heading-inline">
@@ -102,12 +91,16 @@ function pmpro_member_edit_display() {
 		}
 		?>
 	</h1>
+
+	<?php pmpro_showMessage(); ?>
+
 	<div id="pmpro-edit-user-div">
-		<nav id="pmpro-edit-user-nav" role="tablist" aria-label="Edit Member Field Tabs">
+		<nav id="pmpro-edit-user-nav" role="tablist" aria-labelledby="pmpro-edit-user-menu">
+			<h2 id="pmpro-edit-user-menu" class="screen-reader-text"><?php esc_html_e( 'Edit Member Area Menu', 'paid-memberships-pro' ); ?></h2>
 			<?php
-			foreach ( $panels as $panel_slug => $panel ) {
-				$panel->display_tab( $panel_slug === $default_panel_slug );
-			}
+				foreach ( $panels as $panel_slug => $panel ) {
+					$panel->display_tab( $panel_slug === $default_panel_slug );
+				}
 			?>
 		</nav>
 		<div class="pmpro_section">
@@ -116,6 +109,14 @@ function pmpro_member_edit_display() {
 				// When creating a new user, we only want to show the user_info panel.
 				if ( empty( $user->ID ) && $panel_slug !== 'user_info' ) {
 					continue;
+				}
+
+				// If we are showing the orders panel, there is additional code that we need to run to allow emailing invoices.
+				// Ideally this would be in the "orders" panel class, but this code needs to be its own separate <form>.
+				// Hopefully we will have a solution for this down the road, but for now, adding this code here.
+				if ( $panel_slug === 'orders' && function_exists( 'pmpro_add_email_order_modal' ) ) {
+					// Load the email order modal.
+					pmpro_add_email_order_modal();
 				}
 
 				// Display the panel.
