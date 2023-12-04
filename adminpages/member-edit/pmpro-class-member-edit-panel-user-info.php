@@ -12,11 +12,11 @@ class PMPro_Member_Edit_Panel_User_Info extends PMPro_Member_Edit_Panel {
 		$this->submit_text = empty( $user->ID ) ? __( 'Create User ') : __( 'Update User Info', 'paid-memberships-pro' );
 
 		// Show user updated or user created message if necessary.
-		if ( ! empty( $_REQUEST['user_id'] && ! empty( $_REQUEST['user_info_action'] ) ) ) {
+		if ( isset( $_REQUEST['user_id'] ) && ! empty( $_REQUEST['user_id'] && ! empty( $_REQUEST['user_info_action'] ) ) ) {
 			if ( 'updated' === $_REQUEST['user_info_action'] ) {
 				pmpro_setMessage( __( 'User updated.', 'paid-memberships-pro' ), 'pmpro_success' );
 			} elseif ( 'created' === $_REQUEST['user_info_action'] ) {
-				pmpro_setMessage( __( 'User created.', 'paid-memberships-pro' ), 'pmpro_success' );
+				pmpro_setMessage( __( 'New user created.', 'paid-memberships-pro' ), 'pmpro_success' );
 			}
 		}
 	}
