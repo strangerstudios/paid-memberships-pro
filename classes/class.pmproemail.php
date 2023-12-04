@@ -1436,7 +1436,7 @@
 			if ( ! pmpro_hasMembershipLevel( null, $user->ID ) ) {
 				$this->data['membership_change'] = __( "The user's membership has been cancelled.", 'paid-memberships-pro' );
 			} else {
-				$this->data['membership_change'] = __( "You can view the user's current memberships from their Edit User page.", 'paid-memberships-pro' );
+				$this->data['membership_change'] = __( "You can view the user's current memberships from their Edit Member page.", 'paid-memberships-pro' );
 			}
 
 			$this->template = apply_filters("pmpro_email_template", "admin_change_admin", $this);
