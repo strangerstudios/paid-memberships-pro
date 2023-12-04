@@ -15,7 +15,7 @@ if ( ! is_user_logged_in() ) {
 
 // If there was a level passed, grab it.
 $confirmation_level = ! empty( $_REQUEST['pmpro_level'] ) ? intval( $_REQUEST['pmpro_level'] ) : null;
-$confirmation_level = empty( $confirmation_level ) && ! empty( $_REQUEST['level'] ) ? intval( $_REQUEST['level'] ) : null; // Backwards compatibility.
+$confirmation_level = empty( $confirmation_level ) && ! empty( $_REQUEST['level'] ) ? intval( $_REQUEST['level'] ) : $confirmation_level; // Backwards compatibility.
 
 // Get the corresponding invoice.
 $pmpro_invoice = new MemberOrder();
