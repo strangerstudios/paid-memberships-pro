@@ -140,7 +140,14 @@ function pmpro_shortcode_account($atts, $content=null, $code="")
 									</div> <!-- end pmpro_actionlinks -->
 								</td>
 								<td class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_account-membership-levelfee' ) ); ?>">
-									<p><?php echo wp_kses_post( pmpro_getLevelCost($level, true, true) );?></p>
+									<p>
+										<?php
+											if ( ! empty( $subscriptions) ) {
+												$subscription = $subscriptions[0];
+												echo esc_html( $subscription->get_cost_text() );
+											}
+										?>
+									</p>
 								</td>
 								<td class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_account-membership-expiration' ) ); ?>">
 									<?php

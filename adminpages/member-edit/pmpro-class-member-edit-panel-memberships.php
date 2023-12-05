@@ -599,7 +599,7 @@ class PMPro_Member_Edit_Panel_Memberships extends PMPro_Member_Edit_Panel {
 									<td>
 										<?php 
 											if ( empty( $levelhistory->status ) ) {
-												echo '-';
+												esc_html_e( '&#8212;', 'paid-memberships-pro' );
 											} else {
 												echo esc_html( $levelhistory->status ); 
 											}

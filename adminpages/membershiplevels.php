@@ -355,7 +355,7 @@
 									<tr>
 										<th><?php esc_html_e('ID', 'paid-memberships-pro' );?></th>
 										<th><?php esc_html_e('Name', 'paid-memberships-pro' );?></th>
-										<th><?php esc_html_e('Billing Details', 'paid-memberships-pro' );?></th>
+										<th><?php esc_html_e('Level Cost', 'paid-memberships-pro' );?></th>
 										<th><?php esc_html_e('Expiration', 'paid-memberships-pro' );?></th>
 										<th><?php esc_html_e('Allow Signups', 'paid-memberships-pro' );?></th>
 										<?php do_action( 'pmpro_membership_levels_table_extra_cols_header', $reordered_levels ); ?>
@@ -473,16 +473,16 @@
 										</td>
 										<td>
 											<?php if(pmpro_isLevelFree($level)) { ?>
-												<?php _e('FREE', 'paid-memberships-pro' );?>
+												<?php esc_html_e( 'Free', 'paid-memberships-pro' ); ?>
 											<?php } else { ?>
-												<?php echo str_replace( 'The price for membership is', '', pmpro_getLevelCost($level)); ?>
+												<?php echo str_replace( 'The price for membership is', '', pmpro_getLevelCost($level) ); ?>
 											<?php } ?>
 										</td>
 										<td>
-											<?php if(!pmpro_isLevelExpiring($level)) { ?>
-												--
-											<?php } else { ?>
-												<?php _e('After', 'paid-memberships-pro' );?> <?php echo $level->expiration_number?> <?php echo sornot($level->expiration_period,$level->expiration_number)?>
+											<?php if(!pmpro_isLevelExpiring($level)) {
+												esc_html_e( '&#8212;', 'paid-memberships-pro' );
+											} else { ?>
+												<?php esc_html_e('After', 'paid-memberships-pro' );?> <?php echo $level->expiration_number?> <?php echo sornot($level->expiration_period,$level->expiration_number)?>
 											<?php } ?>
 										</td>
 										<td><?php
