@@ -781,6 +781,67 @@ class PMProGateway_authorizenet extends PMProGateway
 
 			if($resultCode == "Ok" || $code == "Ok")
 			{
+				// Subscription successfully updated. Let's also set the new payment profile to be default.
+				$customer_profile_id = intval( $this->substring_between($this->response, "<customerProfileId>", "</customerProfileId>") );
+				$payment_profile_id  = intval( $this->substring_between($this->response, "<customerPaymentProfileId>", "</customerPaymentProfileId>") );
+				if ( ! empty( $customer_profile_id ) && ! empty( $payment_profile_id ) ) {
+					sleep(10); // Wait for the subscription to be updated. 5 seemed to be too quick, 10 seems to be enough.
+
+					$this->content =
+						"<?xml version=\"1.0\" encoding=\"utf-8\"?>" .
+						"<updateCustomerPaymentProfileRequest xmlns=\"AnetApi/xml/v1/schema/AnetApiSchema.xsd\">".
+						"<merchantAuthentication>".
+						"<name><![CDATA[" . $loginname . "]]></name>".
+						"<transactionKey>" . $transactionkey . "</transactionKey>".
+						"</merchantAuthentication>".
+						"<customerProfileId>" . $customer_profile_id . "</customerProfileId>".
+						"<paymentProfile>".
+						"<billTo>".
+						"<firstName><![CDATA[". substr($firstName, 0, 50) . "]]></firstName>".
+						"<lastName><![CDATA[" . substr($lastName, 0, 50) . "]]></lastName>".
+						"<address><![CDATA[". substr($address, 0, 60) . "]]></address>".
+						"<city><![CDATA[" . substr($city, 0, 40) . "]]></city>".
+						"<state><![CDATA[". substr($state, 0, 2) . "]]></state>".
+						"<zip>" . substr($zip, 0, 20) . "</zip>".
+						"<country>". substr($country, 0, 60) . "</country>".
+						"</billTo>".
+						"<payment>".
+						"<creditCard>".
+						"<cardNumber>" . $cardNumber . "</cardNumber>".
+						"<expirationDate>" . $expirationDate . "</expirationDate>";
+					if(!empty($cardCode))
+						$this->content .= "<cardCode>" . $cardCode . "</cardCode>";
+					$this->content .=
+						"</creditCard>".
+						"</payment>".
+						"<defaultPaymentProfile>true</defaultPaymentProfile>".
+						"<customerPaymentProfileId>" . $payment_profile_id . "</customerPaymentProfileId>".
+						"</paymentProfile>".
+						"</updateCustomerPaymentProfileRequest>";
+
+					//send the xml via curl
+					$this->response = $this->send_request_via_curl($host,$path,$this->content);
+					//echo $this->response . '<br><br>'; // If we tried to update too soon, error will say that customer profile or payment profile doesn't exist.
+
+					// In case we want to check that the payment profile was set to default.
+					/*
+					$this->content = 
+						"<?xml version=\"1.0\" encoding=\"utf-8\"?>" .
+						"<getCustomerProfileRequest xmlns=\"AnetApi/xml/v1/schema/AnetApiSchema.xsd\">".
+						"<merchantAuthentication>".
+						"<name><![CDATA[" . $loginname . "]]></name>".
+						"<transactionKey>" . $transactionkey . "</transactionKey>".
+						"</merchantAuthentication>".
+						"<customerProfileId>" . $customer_profile_id . "</customerProfileId>".
+						"<includeIssuerInfo>true</includeIssuerInfo>".
+						"</getCustomerProfileRequest>";
+					$this->response = $this->send_request_via_curl($host,$path,$this->content);
+					// Print entire repsonse.
+					echo $this->response;
+					wp_die();
+					*/
+
+				}
 				return true;
 			}
 			else

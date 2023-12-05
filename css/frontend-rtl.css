@@ -42,6 +42,10 @@ li.pmpro_more {
 /*---------------------------------------
 	Membership Levels
 ---------------------------------------*/
+#pmpro_levels_table thead th,
+#pmpro_levels_table tbody th {
+	text-align: right;
+}
 
 /*---------------------------------------
 	Misc

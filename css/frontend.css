@@ -693,10 +693,15 @@ li.pmpro_more {
 /*---------------------------------------
 	Membership Levels
 ---------------------------------------*/
-.pmpro_levels_table { 
+.pmpro_levels_table {
+	table-layout: fixed;
 	width: 100%;
 }
-.pmpro_levels_table td:nth-child(1) {
+.pmpro_levels_table thead th,
+.pmpro_levels_table tbody th {
+	text-align: left;
+}
+.pmpro_levels_table th:nth-child(1) {
 	min-width: 200px;
 }
 .pmpro_levels_table .pmpro_btn {
