@@ -40,5 +40,7 @@ class PMPro_Member_Edit_Panel_Other extends PMPro_Member_Edit_Panel {
 			</div>
 			<?php
 		}
+
+		do_action( 'pmpro_after_membership_level_profile_fields', self::get_user() );
 	}
 }

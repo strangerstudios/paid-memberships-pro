@@ -107,12 +107,6 @@ class PMProGateway_stripe extends PMProGateway {
 		add_action( 'update_option_pmpro_stripe_payment_flow', array( 'PMProGateway_stripe', 'update_option_pmpro_stripe_payment_flow' ), 10, 1 );
 		add_action( 'pmpro_payment_option_fields', array( 'PMProGateway_stripe', 'show_set_up_webhooks_popup' ) );
 
-		//add some fields to edit user page (Updates)
-		add_action( 'pmpro_after_membership_level_profile_fields', array(
-			'PMProGateway_stripe',
-			'user_profile_fields'
-		) );
-
 		//old global RE showing billing address or not
 		global $pmpro_stripe_lite;
 		$pmpro_stripe_lite = apply_filters( "pmpro_stripe_lite", ! get_option( "pmpro_stripe_billingaddress" ) );    //default is oposite of the stripe_billingaddress setting
@@ -1004,9 +998,12 @@ class PMProGateway_stripe extends PMProGateway {
 	 * Fields shown on edit user page
 	 *
 	 * @since 1.8
+	 * @deprecated TBD
 	 */
 	public static function user_profile_fields( $user ) {
 		global $wpdb, $current_user, $pmpro_currency_symbol;
+
+		_deprecated_function( __FUNCTION__, 'TBD' );
 
 		//make sure the current user has privileges
 		$membership_level_capability = apply_filters( "pmpro_edit_member_capability", "manage_options" );

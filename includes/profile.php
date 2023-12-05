@@ -1,11 +1,144 @@
 <?php
 /**
+ * Show an overview of active membership information linked to the single member dashboard.
+ *
+ * @since TBD
+ */
+function pmpro_membership_levels_table_on_profile( $user ) {
+	global $current_user;
+
+	$membership_level_capability = apply_filters( 'pmpro_edit_member_capability', 'manage_options' );
+
+	// If the user doesn't have the capability to edit members, don't show the table.
+	if ( ! current_user_can( $membership_level_capability ) )
+		return false;
+
+	// Return early if we should not show membership information on the Edit User / Profile page.
+	$show_membership_level = true;
+	$show_membership_level = apply_filters( 'pmpro_profile_show_membership_level', $show_membership_level, $user );
+	if ( ! $show_membership_level ) {
+		return false;
+	}
+
+	// Get all membership levels for this user.
+	$user_levels = pmpro_getMembershipLevelsForUser( $user->ID );
+	?>
+	<div id="pmpro-membership-levels-section">
+		<h2><?php esc_html_e( 'Membership Levels', 'paid-memberships-pro' ); ?></h2>
+
+		<?php if ( empty( $user_levels ) ) { ?>
+			<p><?php esc_html_e( 'This user does not have any membership levels.', 'paid-memberships-pro' ); ?></p>
+			<p><a href="<?php echo esc_url( add_query_arg( array( 'page' => 'pmpro-member', 'user_id' => (int) $user->ID, 'pmpro_member_edit_panel' => 'memberships' ), admin_url( 'admin.php' ) ) ); ?>" class="button button-secondary"><?php esc_html_e( 'Add Membership', 'paid-memberships-pro' ); ?></a></p>
+		<?php } else { ?>
+			<p>
+				<?php
+					printf(
+						// translators: %1$s is the link to the single member dashboard.
+						__( 'This section shows an overview of active membership levels for this member. Use the %1$s to manage this member.', 'paid-memberships-pro' ),
+						sprintf(
+							'<a href="%1$s">%2$s</a>',
+							esc_url( add_query_arg( array( 'page' => 'pmpro-member', 'user_id' => $user->ID, 'pmpro_member_edit_panel' => 'memberships' ), admin_url( 'admin.php' ) ) ),
+							esc_html__( 'single member dashboard', 'paid-memberships-pro' )
+						)
+					);
+				?>
+			</p>
+			<table class="wp-list-table widefat striped fixed" width="100%" cellpadding="0" cellspacing="0" border="0">
+				<thead>
+					<tr>
+						<th><?php esc_html_e( 'Level', 'paid-memberships-pro' ); ?></th>
+						<th><?php esc_html_e( 'Expiration', 'paid-memberships-pro' ); ?></th>
+						<th><?php esc_html_e( 'Subscription', 'paid-memberships-pro' ); ?></th>
+					</tr>
+				</thead>
+				<tbody>
+				<?php
+					foreach ( $user_levels as $user_level ) {
+						$shown_level = pmpro_getSpecificMembershipLevelForUser( $user->ID, $user_level->ID );
+						?>
+						<tr>
+							<td><?php echo esc_html( $shown_level->name ); ?></td>
+							<td>
+								<?php
+									// Get the expiration date to show for this level.
+									$enddate_to_show = $shown_level->enddate;
+									if ( empty( $enddate_to_show ) ) {
+										esc_html_e( 'Never', 'paid-memberships-pro' );
+									} else {
+										echo esc_html( sprintf(
+											// translators: %1$s is the date and %2$s is the time.
+											__( '%1$s at %2$s', 'paid-memberships-pro' ),
+											esc_html( date_i18n( get_option( 'date_format'), $enddate_to_show ) ),
+											esc_html( date_i18n( get_option( 'time_format'), $enddate_to_show ) )
+										) );
+									}
+								?>
+							</td>
+							<td class="pmpro_levels_subscription_data">
+								<?php
+									$subscriptions = PMPro_Subscription::get_subscriptions_for_user( $user->ID, $shown_level->id );
+									if ( ! empty( $subscriptions ) ) {
+										// If the user has more than 1 subscription, show a warning message.
+										if ( count( $subscriptions ) > 1 ) {
+											?>
+											<div class="pmpro_message pmpro_error">
+												<p>
+													<?php
+													printf(
+														// translators: %1$d is the number of subscriptions and %2$s is the link to view subscriptions.
+														_n(
+															'This user has %1$d active subscription for this level. %2$s',
+															'This user has %1$d active subscriptions for this level. %2$s',
+															count( $subscriptions ),
+															'paid-memberships-pro'
+														),
+														count( $subscriptions ),
+														sprintf(
+															'<a href="%1$s">%2$s</a>',
+															esc_url( add_query_arg( array( 'page' => 'pmpro-member', 'user_id' => $user->ID, 'pmpro_member_edit_panel' => 'subscriptions' ), admin_url( 'admin.php' ) ) ),
+															esc_html__( 'View Subscriptions', 'paid-memberships-pro' )
+														)
+													); ?>
+												</p>
+											</div>
+											<?php
+										}
+										$subscription = $subscriptions[0];
+										echo esc_html( $subscription->get_cost_text() );
+									} else {
+										?>
+										<p><?php esc_html_e( 'No subscription found.', 'paid-memberships-pro' ); ?></p>
+										<?php
+									}
+								?>
+							</td>
+						</tr>
+						<?php
+					}
+				?>
+				</tbody>
+			</table>
+			<p><a href="<?php echo esc_url( add_query_arg( array( 'page' => 'pmpro-member', 'user_id' => (int) $user->ID, 'pmpro_member_edit_panel' => 'memberships' ), admin_url( 'admin.php' ) ) ); ?>" target="_blank" class="button button-secondary"><?php esc_html_e( 'View and Edit Member', 'paid-memberships-pro' ); ?></a></p>
+		<?php
+		}
+	?>
+	</div> <!-- end .pmpro-membership-levels-section -->
+	<?php
+}
+add_action( 'show_user_profile', 'pmpro_membership_levels_table_on_profile' );
+add_action( 'edit_user_profile', 'pmpro_membership_levels_table_on_profile' );
+
+/**
  * Add the "membership level" field to the edit user/profile page,
  * along with other membership-related fields.
+ *
+ * @deprecated TBD Use the single member dashboard.
  */
 function pmpro_membership_level_profile_fields($user)
 {
 	global $current_user;
+
+	_deprecated_function( __FUNCTION__, 'TBD' );
 
 	$membership_level_capability = apply_filters("pmpro_edit_member_capability", "manage_options");
 	if(!current_user_can($membership_level_capability))
@@ -407,15 +540,26 @@ function pmpro_membership_level_profile_fields($user)
 /*
 	When applied, previous subscriptions won't be cancelled when changing membership levels.
 	Use a function here instead of __return_false so we can easily turn add and remove it.
+
+	@deprecated TBD
 */
 function pmpro_cancel_previous_subscriptions_false()
 {
+	_deprecated_function( __FUNCTION__, 'TBD' );
+
 	return false;
 }
 
-//save the fields on update
+/**
+ * Update the membership level when the user profile is updated.
+ *
+ * @deprecated TBD Use the single member dashboard.
+ */
 function pmpro_membership_level_profile_fields_update() {
 	global $wpdb, $current_user;
+
+	_deprecated_function( __FUNCTION__, 'TBD' );
+
 	wp_get_current_user();
 
 	$user_id = empty( $_REQUEST['user_id'] ) ? intval( $current_user->ID ) : intval( $_REQUEST['user_id'] );
@@ -549,18 +693,17 @@ function pmpro_membership_level_profile_fields_update() {
 		}
 	}
 }
-add_action( 'show_user_profile', 'pmpro_membership_level_profile_fields' );
-add_action( 'edit_user_profile', 'pmpro_membership_level_profile_fields' );
-add_action( 'personal_options_update', 'pmpro_membership_level_profile_fields_update' );
-add_action( 'edit_user_profile_update', 'pmpro_membership_level_profile_fields_update' );
-
 
 /**
  * Add the history view to the user profile
  *
+ * @deprecated TBD Use the single member dashboard.
  */
 function pmpro_membership_history_profile_fields( $user ) {
 	global $current_user;
+
+	_deprecated_function( __FUNCTION__, 'TBD' );
+
 	$membership_level_capability = apply_filters( 'pmpro_edit_member_capability', 'manage_options' );
 
 	if ( ! current_user_can( $membership_level_capability ) ) {
@@ -861,15 +1004,16 @@ function pmpro_membership_history_profile_fields( $user ) {
 		<?php
 	}
 }
-add_action('edit_user_profile', 'pmpro_membership_history_profile_fields');
-add_action('show_user_profile', 'pmpro_membership_history_profile_fields');
 
 
 /**
  * Allow orders to be emailed from the member history section on user profile.
  *
+ * @deprecated TBD Use the single member dashboard.
  */
 function pmpro_membership_history_email_modal() {
+	_deprecated_function( __FUNCTION__, 'TBD' );
+
 	$screen = get_current_screen();
 	if ( $screen->base == 'user-edit' || $screen->base == 'profile' ) {
 		// Require the core Paid Memberships Pro Admin Functions.
@@ -883,9 +1027,6 @@ function pmpro_membership_history_email_modal() {
 		}
 	}
 }
-add_action( 'in_admin_header', 'pmpro_membership_history_email_modal' );
-
-
 
 /**
  * Display a frontend Member Profile Edit form and allow user to edit specific fields.
