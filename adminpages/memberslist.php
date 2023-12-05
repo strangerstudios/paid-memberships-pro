@@ -30,18 +30,6 @@ if ( isset( $_REQUEST['l'] ) ) {
 			$user_list_table->display();
 		?>
 	</form>
-
-	<?php if ( ! function_exists( 'pmprorh_add_registration_field' ) ) {
-		$allowed_pmprorh_html = array (
-			'a' => array (
-				'href' => array(),
-				'target' => array(),
-				'title' => array(),
-			),
-		);
-		echo '<p class="description">' . sprintf( wp_kses( __( 'Optional: Capture additional member profile fields using the <a href="%s" title="Paid Memberships Pro - Register Helper Add On" target="_blank">Register Helper Add On</a>.', 'paid-memberships-pro' ), $allowed_pmprorh_html ), 'https://www.paidmembershipspro.com/add-ons/pmpro-register-helper-add-checkout-and-profile-fields/?utm_source=plugin&utm_medium=pmpro-memberslist&utm_campaign=add-ons&utm_content=pmpro-register-helper-add-checkout-and-profile-fields' ) . '</p>';
-	} ?>
-	
 <?php
 	require_once dirname( __DIR__ ) . '/adminpages/admin_footer.php';
 ?>
