@@ -38,7 +38,7 @@
 		<h3 class="pmpro-wizard__section-title"><?php esc_html_e( "What's next?", 'paid-memberships-pro' ); ?></h3>
 		<p>
 			<?php
-			if ( isset( $site_types[ $site_type ] ) ) {
+			if ( isset( $site_types[ $site_type ] ) && isset( $site_type_hubs[ $site_type ] ) ) {
 				echo sprintf( esc_html__( "In step 1, you chose the %s site type.", 'paid-memberships-pro' ), '<strong>' . esc_html( $site_types[ $site_type ] ) . '</strong>' ) . ' ';
 				echo sprintf(
 					/* translators: %s: URL to the PMPro use case hub for the chosen site type */
