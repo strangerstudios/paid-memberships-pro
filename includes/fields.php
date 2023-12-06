@@ -78,11 +78,12 @@ function pmpro_add_user_field( $where, $field ) {
  */
 function pmpro_add_field_group( $name, $label = NULL, $description = '', $order = NULL ) {
 	global $pmpro_field_groups;
-	//Bail if the group already exists.
-	foreach($pmpro_field_groups as $group) {
-		if($group->name === $name)
-		//already exists	
-		return false;
+	// Bail if the group already exists.
+	foreach ( $pmpro_field_groups as $group ) {
+		if ( $group->name === $name ) {
+			// Group already exists.
+			return false;
+		}
 	}
 
 	$temp = new stdClass();
