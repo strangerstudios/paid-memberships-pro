@@ -69,12 +69,12 @@ function pmpro_wpbakery_show_content( $content, $atts ) {
 		$access = true;
 	}
 
-	$access = apply_filters( 'pmpro_wpbakery_has_access', $access, $content, $restricted_levels, $atts );
+	$access = apply_filters( 'pmpro_wpbakery_has_access', $access, $content, $levels_array, $atts );
 
 	if ( ! $access ) {
 		// Show no content message here or not
 		if ( $show_no_access_message === 'Yes' ) {
-			return pmpro_get_no_access_message( NULL, $restricted_levels );
+			return pmpro_get_no_access_message( NULL, $levels_array );
 		}
 	} else {
 		return $content;
