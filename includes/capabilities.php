@@ -55,6 +55,7 @@ function pmpro_get_capability_defs($role)
         'pmpro_wizard',
         'pmpro_membershiplevels',
         'pmpro_edit_memberships',
+        'pmpro_edit_members',
         'pmpro_pagesettings',
         'pmpro_paymentsettings',
         'pmpro_emailsettings',

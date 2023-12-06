@@ -96,7 +96,7 @@ function pmpro_add_pages() {
 
 	// Hidden pages
 	add_submenu_page( 'admin.php', __( 'Subscriptions', 'paid-memberships-pro' ), __( 'Subscriptions', 'paid-memberships-pro' ), 'pmpro_subscriptions', 'pmpro-subscriptions', 'pmpro_subscriptions' );
-	add_submenu_page( 'admin.php', __( 'Add Member', 'paid-memberships-pro' ), __( 'Add Member', 'paid-memberships-pro' ), 'manage_options', 'pmpro-member', 'pmpro_member_edit_display' );
+	add_submenu_page( 'admin.php', __( 'Add Member', 'paid-memberships-pro' ), __( 'Add Member', 'paid-memberships-pro' ), 'pmpro_edit_members', 'pmpro-member', 'pmpro_member_edit_display' );
 
 	// For the subscriptions page, if there is not an ID or the ID does not exist, redirect to the members page.
 	if ( isset( $_REQUEST['page'] ) && $_REQUEST['page'] == 'pmpro-subscriptions' ) {
