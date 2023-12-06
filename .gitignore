@@ -36,4 +36,5 @@ js/blocks/blocks.build.asset.php
 js/blocks.build.js.map
 .vscode/settings.json
 /tests/_output
-blocks/build/**/*.map
+blocks/build/**
+

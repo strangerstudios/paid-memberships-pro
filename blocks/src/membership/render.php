@@ -1,3 +1,3 @@
 <?php
-require_once( PMPRO_DIR . "/blocks/includes/functions.php" );
-pmpro_filter_block_content( $attributes, $content );
+require_once( PMPRO_DIR . "/includes/blocks.php" );
+pmpro_apply_block_visibility( $attributes, $content );

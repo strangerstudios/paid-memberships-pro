@@ -4657,8 +4657,8 @@ function pmpro_check_upload( $file_index ) {
 				'show_noaccess' => '0',
 				'invert_restrictions' => '0',
 			) );
-			require_once( PMPRO_DIR . "/blocks/includes/functions.php" );
-			return pmpro_filter_block_content( $attributes, $block_content );
+			require_once( PMPRO_DIR . "/includes/blocks.php" );
+			return pmpro_apply_block_visibility( $attributes, $block_content );
 		}
 		return $block_content;
 	}
