@@ -1,5 +1,6 @@
-[class*="wp-block-pmpro-"] {
+[class*="wp-block-pmpro-"]:not([class*="wp-block-pmpro-"] [class*="wp-block-pmpro-"]) {
 	border: 1px solid #E2E8F099;
+	overflow: hidden;
 }
 [class*="wp-block-pmpro-"] span.pmpro-block-title {
 	background-color: #F5F8FA;

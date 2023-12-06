@@ -672,57 +672,39 @@ class PMPro_Subscription {
 	 * @return bool True if the subscription was saved, false if not.
 	 */
 	public function update() {
-		global $pmpro_level;
-
-		// Update the start date to the date of the first order for this subscription if it
-		// it is earlier than the current start date.
-		$oldest_orders = $this->get_orders( [
-			'limit'   => 1,
-			'orderby' => '`timestamp` ASC, `id` ASC',
-		] );
-		if ( ! empty( $oldest_orders ) ) {
-			$oldest_order = current( $oldest_orders );
-			if ( empty( $this->startdate ) || $oldest_order->getTimestamp( true ) < strtotime( $this->startdate ) ) {
-				$this->startdate = date_i18n( 'Y-m-d H:i:s', $oldest_order->getTimestamp( true ) );
-			}
-		}
-
-		// If the next payment date has passed, update the next payment date based on the most recent order.
-		if ( strtotime( $this->next_payment_date ) < time() && ! empty( $this->cycle_number ) ) {
-			// Only update the next payment date if we are not at checkout or there is no next payment date already set.
-			if ( ! isset( $pmpro_level ) || empty( $this->next_payment_date ) ) {
-				$newest_orders = $this->get_orders( array( 'limit' => 1 ) );
-				if ( ! empty( $newest_orders ) ) {
-					// Get the most recent order.
-					$newest_order = current( $newest_orders );
-
-					// Calculate the next payment date.
-					$this->next_payment_date = date_i18n( 'Y-m-d H:i:s', strtotime( '+ ' . $this->cycle_number . ' ' . $this->cycle_period, $newest_order->getTimestamp( true ) ) );
-				}
-			}
-		}
-
-		// Try to update directly from gateway.
+		// Get the gateway object.
 		$gateway_object = $this->get_gateway_object();
-		if ( $gateway_object && method_exists( $gateway_object, 'update_subscription_info' ) ) {
+
+		// Track update errors.
+		$error_message = null;
+
+		// Make sure that the gateway object is valid.
+		if ( $gateway_object instanceof PMProGateway ) {
+			// Update subscription info.
 			$error_message = $gateway_object->update_subscription_info( $this );
-			if ( ! empty( $error_message ) ) {
-				// Sync was not successful. Send email to admin.
-				$pmproemail                = new PMProEmail();
-				$pmproemail->template      = 'subscription_sync_failed';
-				$pmproemail->data          = array( 'body' => '<p>' . esc_html__( 'There was an error synchronizing a subscription with your payment gateway.', 'paid-memberships-pro' ) . '</p>' . "\n" );
-				$pmproemail->data['body'] .= '<p>' . esc_html__( 'Error', 'paid-memberships-pro' ) . ': ' . esc_html( $error_message ) . '</p>' . "\n";
-				$pmproemail->data['body'] .= '<p>' . esc_html__( 'Subscription ID', 'paid-memberships-pro' ) . ': ' . $this->id . '</p>' . "\n";
-				$pmproemail->data['body'] .= '<p>' . esc_html__( 'Gateway', 'paid-memberships-pro' ) . ': ' . $this->gateway . '</p>' . "\n";
-				$pmproemail->data['body'] .= '<p>' . esc_html__( 'Subscription Transaction ID', 'paid-memberships-pro' ) . ': ' . $this->subscription_transaction_id . '</p>' . "\n";
-				$pmproemail->data['body'] .= '<p>' . esc_html__( 'User ID', 'paid-memberships-pro' ) . ': ' . $this->user_id . '</p>' . "\n";
-				$pmproemail->data['body'] .= '<p>' . esc_html__( 'Membership Level ID', 'paid-memberships-pro' ) . ': ' . $this->membership_level_id . '</p>' . "\n";
-				$pmproemail->data['body'] .= '<hr />' . "\n";
-				$pmproemail->data['body'] .= '<p>' . esc_html__( 'Edit User', 'paid-memberships-pro' ) . ': ' . esc_url( add_query_arg( 'user_id', $this->user_id, self_admin_url( 'user-edit.php' ) ) ) . '</p>';
-				$pmproemail->sendEmail( get_bloginfo( 'admin_email' ) );
-			}
+		} else {
+			$error_message = __( 'Could not find gateway class.', 'paid-memberships-pro' );
 		}
 
+		// Send an email if there was an error.
+		if ( ! empty( $error_message ) ) {
+			$pmproemail                = new PMProEmail();
+			$pmproemail->template      = 'subscription_sync_failed';
+			$pmproemail->data          = array( 'body' => '<p>' . esc_html__( 'There was an error synchronizing a subscription with your payment gateway.', 'paid-memberships-pro' ) . '</p>' . "\n" );
+			$pmproemail->data['body'] .= '<p>' . esc_html__( 'Error', 'paid-memberships-pro' ) . ': ' . esc_html( $error_message ) . '</p>' . "\n";
+			$pmproemail->data['body'] .= '<p>' . esc_html__( 'Subscription ID', 'paid-memberships-pro' ) . ': ' . $this->id . '</p>' . "\n";
+			$pmproemail->data['body'] .= '<p>' . esc_html__( 'Gateway', 'paid-memberships-pro' ) . ': ' . $this->gateway . '</p>' . "\n";
+			$pmproemail->data['body'] .= '<p>' . esc_html__( 'Subscription Transaction ID', 'paid-memberships-pro' ) . ': ' . $this->subscription_transaction_id . '</p>' . "\n";
+			$pmproemail->data['body'] .= '<p>' . esc_html__( 'User ID', 'paid-memberships-pro' ) . ': ' . $this->user_id . '</p>' . "\n";
+			$pmproemail->data['body'] .= '<p>' . esc_html__( 'Membership Level ID', 'paid-memberships-pro' ) . ': ' . $this->membership_level_id . '</p>' . "\n";
+			$pmproemail->data['body'] .= '<hr />' . "\n";
+			$pmproemail->data['body'] .= '<p>' . esc_html__( 'Edit User', 'paid-memberships-pro' ) . ': ' . esc_url( add_query_arg( 'user_id', $this->user_id, self_admin_url( 'user-edit.php' ) ) ) . '</p>';
+			$pmproemail->sendEmail( get_bloginfo( 'admin_email' ) );
+
+			pmpro_setMessage( __( 'There was an error synchronizing a subscription with your payment gateway: ', 'paid-memberships-pro' ), 'pmpro_error' ) . esc_html( $error_message );
+		}
+
+		pmpro_setMessage( __( 'Subscription updated.', 'paid-memberships-pro' ), 'pmpro_success' ); // Will not overwrite previous messages.
 		return $this->save();
 	}
 
@@ -1140,9 +1122,11 @@ class PMPro_Subscription {
 
 		// The subscription was not created properly.
 		if ( empty( $this->id ) ) {
+			pmpro_setMessage( __( 'There was an error saving the subscription.', 'paid-memberships-pro' ), 'pmpro_error' );
 			return false;
 		}
 
+		pmpro_setMessage( __( 'Subscription saved.', 'paid-memberships-pro' ), 'pmpro_success' ); // Will not overwrite previous messages.
 		return $this->id;
 	}
 
@@ -1198,7 +1182,7 @@ class PMPro_Subscription {
 			$user                      = get_userdata( $this->user_id );
 			$pmproemail                = new PMProEmail();
 			$pmproemail->template      = 'subscription_cancel_error';
-			$pmproemail->data          = array( 'body' => '<p>' . esc_html__( 'There was an error canceling a subscription from your website. You will want to check your payment gateway to see if their subscription is still active.', 'paid-memberships-pro' ) . '</p>' . "\n" );
+			$pmproemail->data          = array( 'body' => '<p>' . esc_html__( 'There was an error cancelling a subscription from your website. Check your payment gateway to see if the subscription is still active.', 'paid-memberships-pro' ) . '</p>' . "\n" );
 			$pmproemail->data['body'] .= '<p>' . esc_html__( 'User Email', 'paid-memberships-pro' ) . ': ' . $user->user_email . '</p>' . "\n";
 			$pmproemail->data['body'] .= '<p>' . esc_html__( 'Username', 'paid-memberships-pro' ) . ': ' . $user->user_login . '</p>' . "\n";
 			$pmproemail->data['body'] .= '<p>' . esc_html__( 'User Display Name', 'paid-memberships-pro' ) . ': ' . $user->display_name . '</p>' . "\n";
@@ -1208,6 +1192,10 @@ class PMPro_Subscription {
 			$pmproemail->data['body'] .= '<hr />' . "\n";
 			$pmproemail->data['body'] .= '<p>' . esc_html__( 'Edit User', 'paid-memberships-pro' ) . ': ' . esc_url( add_query_arg( 'user_id', $this->user_id, self_admin_url( 'user-edit.php' ) ) ) . '</p>';
 			$pmproemail->sendEmail( get_bloginfo( 'admin_email' ) );
+
+			pmpro_setMessage( __( 'There was an error cancelling a subscription from your website. Check your payment gateway to see if the subscription is still active.', 'paid-memberships-pro' ), 'pmpro_error', true ); // Will overwrite previous messages.
+		} else {
+			pmpro_setMessage( __( 'Subscription cancelled at gateway.', 'paid-memberships-pro' ), 'pmpro_success', true ); // Will overwrite previous messages.
 		}
 
 		$this->update();

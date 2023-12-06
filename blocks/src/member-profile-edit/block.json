@@ -60,6 +60,8 @@
 			"allowSizingOnChildren": true
 		}
 	},
+	"example": {
+	},
 	"textdomain": "paid-memberships-pro",
 	"editorScript": "file:./index.js",
 	"render": "file:./render.php"

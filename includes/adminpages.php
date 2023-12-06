@@ -56,9 +56,6 @@ function pmpro_add_pages() {
 	add_submenu_page( 'pmpro-dashboard', __( 'Dashboard', 'paid-memberships-pro' ), __( 'Dashboard', 'paid-memberships-pro' ), 'pmpro_dashboard', 'pmpro-dashboard', 'pmpro_dashboard' );
 	$list_table_hook = add_submenu_page( 'pmpro-dashboard', __( 'Members', 'paid-memberships-pro' ), __( 'Members', 'paid-memberships-pro' ), 'pmpro_memberslist', 'pmpro-memberslist', 'pmpro_memberslist' );
 	add_submenu_page( 'pmpro-dashboard', __( 'Orders', 'paid-memberships-pro' ), __( 'Orders', 'paid-memberships-pro' ), 'pmpro_orders', 'pmpro-orders', 'pmpro_orders' );
-	if ( isset( $_REQUEST['page'] ) && $_REQUEST['page'] == 'pmpro-subscriptions' ) {
-		add_submenu_page( 'pmpro-dashboard', __( 'Subscriptions', 'paid-memberships-pro' ), __( 'Subscriptions', 'paid-memberships-pro' ), 'pmpro_subscriptions', 'pmpro-subscriptions', 'pmpro_subscriptions' );
-	}
 	add_submenu_page( 'pmpro-dashboard', __( 'Reports', 'paid-memberships-pro' ), __( 'Reports', 'paid-memberships-pro' ), 'pmpro_reports', 'pmpro-reports', 'pmpro_reports' );
 	add_submenu_page( 'pmpro-dashboard', __( 'Settings', 'paid-memberships-pro' ), __( 'Settings', 'paid-memberships-pro' ), 'pmpro_membershiplevels', 'pmpro-membershiplevels', 'pmpro_membershiplevels' );
 	add_submenu_page( 'pmpro-dashboard', __( 'Add Ons', 'paid-memberships-pro' ), __( 'Add Ons', 'paid-memberships-pro' ), 'pmpro_addons', 'pmpro-addons', 'pmpro_addons' );
@@ -96,6 +93,19 @@ function pmpro_add_pages() {
 	}
 	
 	add_submenu_page( $wizard_location, __( 'Setup Wizard', 'paid-memberships-pro' ), __( 'Setup Wizard', 'paid-memberships-pro' ), 'pmpro_wizard', 'pmpro-wizard', 'pmpro_wizard' );
+
+	// Hidden pages
+	add_submenu_page( 'admin.php', __( 'Subscriptions', 'paid-memberships-pro' ), __( 'Subscriptions', 'paid-memberships-pro' ), 'pmpro_subscriptions', 'pmpro-subscriptions', 'pmpro_subscriptions' );
+	add_submenu_page( 'admin.php', __( 'Add Member', 'paid-memberships-pro' ), __( 'Add Member', 'paid-memberships-pro' ), 'manage_options', 'pmpro-member', 'pmpro_member_edit_display' );
+
+	// For the subscriptions page, if there is not an ID or the ID does not exist, redirect to the members page.
+	if ( isset( $_REQUEST['page'] ) && $_REQUEST['page'] == 'pmpro-subscriptions' ) {
+		// If the subscription that they are trying to view does not exist, redirect them to the members page.
+		if ( empty( $_REQUEST['id'] ) || empty( PMPro_Subscription::get_subscription( $_REQUEST['id'] ) ) ) {
+			wp_redirect( admin_url( 'admin.php?page=pmpro-memberslist' ) );
+			exit;
+		}
+	}
 }
 add_action( 'admin_menu', 'pmpro_add_pages' );
 
@@ -106,24 +116,47 @@ function pmpro_parent_file( $parent_file ) {
 	global $parent_file, $plugin_page, $submenu_file;
 	
 	$pmpro_settings_tabs = array(
-		'pmpro-membershiplevels',
-		'pmpro-discountcodes',
-		'pmpro-pagesettings',
-		'pmpro-paymentsettings',
-		'pmpro-emailsettings',
-		'pmpro-emailtemplates',
-		'pmpro-advancedsettings',
+		'pmpro-membershiplevels' => 'pmpro-membershiplevels',
+		'pmpro-discountcodes' => 'pmpro-membershiplevels',
+		'pmpro-pagesettings' => 'pmpro-membershiplevels',
+		'pmpro-paymentsettings' => 'pmpro-membershiplevels',
+		'pmpro-emailsettings' => 'pmpro-membershiplevels',
+		'pmpro-emailtemplates' => 'pmpro-membershiplevels',
+		'pmpro-userfields' => 'pmpro-membershiplevels',
+		'pmpro-advancedsettings' => 'pmpro-membershiplevels',
+		'pmpro-subscriptions' => '',
+		'pmpro-member' => 'pmpro-memberslist',
 	);
 	
-	if( isset( $_REQUEST['page']) && in_array( $_REQUEST['page'], $pmpro_settings_tabs ) ) {
+	if( isset( $_REQUEST['page']) && isset( $pmpro_settings_tabs[ $_REQUEST['page'] ] ) ) {
 		$parent_file = 'pmpro-dashboard';
 		$plugin_page = 'pmpro-dashboard';
-		$submenu_file = 'pmpro-membershiplevels';
+		$submenu_file = $pmpro_settings_tabs[ $_REQUEST['page'] ];
 	}
 	
 	return $parent_file;
 }
 add_filter( 'parent_file', 'pmpro_parent_file' );
+
+/**
+ * Filter the title of the Edit Member admin page.
+ */
+function pmpro_admin_title( $admin_title, $title ) {
+	// Only filter on the Edit Member page.
+	if ( isset( $_REQUEST['page']) && $_REQUEST['page'] === 'pmpro-member' ) {
+		$user = PMPro_Member_Edit_Panel::get_user();
+		if ( empty( $user->ID ) ) {
+			$title = __( 'Add Member', 'paid-memberships-pro' );
+		} else {
+			/* translators: %s: User's display name. */
+			$title = sprintf( __( 'Edit Member: %s', 'paid-memberships-pro' ), $user->display_name );
+		}
+		/* translators: Edit/Add Member Admin screen title. 1: Screen name, 2: Site name. */
+		$admin_title = sprintf( __( '%1$s &lsaquo; %2$s &#8212; WordPress' ), $title, get_bloginfo( 'name' ) );
+	}
+	return $admin_title;
+}
+add_filter( 'admin_title', 'pmpro_admin_title', 10, 2 );
 
 /**
  * Admin Bar
@@ -245,8 +278,43 @@ function pmpro_admin_bar_menu() {
 			)
 		);
 	}
+
+	// Add menu item for adding a new member.
+	if ( current_user_can( 'manage_options' ) ) {
+		$wp_admin_bar->add_menu(
+			array(
+				'id' => 'pmpro-new-member',
+				'parent' => 'new-content',
+				'title' => __( 'Member', 'paid-memberships-pro' ),
+				'href' => add_query_arg(
+					array(
+						'page' => 'pmpro-member',
+					),
+					admin_url( 'admin.php' )
+				)
+			)
+		);
+	}
+
+	// Add a menu item for editing the current user's member information.
+	if ( current_user_can( 'manage_options' ) ) {
+		$wp_admin_bar->add_menu(
+			array(
+				'id' => 'pmpro-edit-member',
+				'parent' => 'user-actions',
+				'title' => __( 'Edit Member', 'paid-memberships-pro' ),
+				'href' => add_query_arg(
+					array(
+						'page' => 'pmpro-member',
+						'user_id' => get_current_user_id(),
+					),
+					admin_url( 'admin.php' )
+				)
+			)
+		);
+	}
 }
-add_action( 'admin_bar_menu', 'pmpro_admin_bar_menu', 1000);
+add_action( 'admin_bar_menu', 'pmpro_admin_bar_menu', 1000 );
 
 /**
  * Add the "Admin Membership Access" menu to the admin bar.
@@ -546,3 +614,15 @@ function pmpro_plugin_row_meta( $links, $file ) {
 	return $links;
 }
 add_filter( 'plugin_row_meta', 'pmpro_plugin_row_meta', 10, 2 );
+
+function pmpro_users_action_links( $actions, $user ) {
+	$cap = apply_filters( 'pmpro_add_member_cap', 'edit_users' );
+
+	if ( current_user_can( $cap ) && ! empty( $user->ID ) ) {
+		$actions['editmember'] = '<a href="' . esc_url( add_query_arg( array( 'page' => 'pmpro-member', 'user_id' => (int) $user->ID ), admin_url( 'admin.php' ) ) ) . '">' . __( 'Edit Member', 'paid-memberships-pro' ) . '</a>';
+	}
+
+	return $actions;
+}
+
+add_filter( 'user_row_actions', 'pmpro_users_action_links', 10, 2 );

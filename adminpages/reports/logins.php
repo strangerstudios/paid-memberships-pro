@@ -103,7 +103,7 @@ function pmpro_report_login_page()
 		$csv_export_link = add_query_arg( 'l', $l, $csv_export_link );
 	}
 ?>
-	<form id="posts-filter" method="get" action="">
+	<form id="visits-views-logins-form" method="get" action="">
 	<h1 class="wp-heading-inline">
 		<?php _e('Visits, Views, and Logins Report', 'paid-memberships-pro');?>
 	</h1>
@@ -232,7 +232,7 @@ function pmpro_report_login_page()
 								<?php echo get_avatar($theuser->ID, 32)?>
 								<strong>
 									<?php
-										$userlink = '<a href="user-edit.php?user_id=' . $theuser->ID . '">' . $theuser->display_name . '</a>';
+										$userlink = '<a href="' . esc_url( add_query_arg( array( 'page' => 'pmpro-member', 'user_id' => (int)$theuser->ID ), admin_url( 'admin.php' ) ) ) . '">' . $theuser->display_name . '</a>';
 										$userlink = apply_filters("pmpro_members_list_user_link", $userlink, $theuser);
 										echo $userlink;
 									?>
