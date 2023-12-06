@@ -219,14 +219,39 @@ class PMPro_Member_Edit_Panel_Memberships extends PMPro_Member_Edit_Panel {
 										<span class="pmpro-level_change-action-label"><?php esc_html_e( 'Level Expiration', 'paid-memberships-pro' ); ?></span>
 										<span class="pmpro-level_change-action-field">
 											<?php
-											$has_enddate = ! empty( $shown_level->enddate );
-											$enddate     = $has_enddate ? date( 'Y-m-d H:i', $shown_level->enddate ) : date( 'Y-m-d H:i', strtotime( '+1 year' ) );
+											$enddate = date( 'Y-m-d H:i', strtotime( '+1 year' ) ); // Default to 1 year in the future.
+											if ( ! empty( $shown_level->enddate ) ) {
+												// If the user's membership already has an end date, use that.
+												$enddate = date( 'Y-m-d H:i', $shown_level->enddate );
+											} elseif ( ! empty( $subscriptions ) ) {
+												// If the user has a subscription, default to the subscription's next paymetn date.
+												$enddate = $subscriptions[0]->get_next_payment_date('Y-m-d H:i');
+											}
 											?>
-											<input type="checkbox" name="<?php echo esc_attr( $edit_level_input_name_base ); ?>[expires]" id="<?php echo esc_attr( $edit_level_input_name_base ); ?>[expires]" value="1" class="pmpro_expires_checkbox" <?php checked( $has_enddate ) ?>/>
+											<input type="checkbox" name="<?php echo esc_attr( $edit_level_input_name_base ); ?>[expires]" id="<?php echo esc_attr( $edit_level_input_name_base ); ?>[expires]" value="1" class="pmpro_expires_checkbox" <?php checked( ! empty( $shown_level->enddate ) ) ?>/>
 											<label for="<?php echo esc_attr( $edit_level_input_name_base ); ?>[expires]"><?php esc_html_e( 'Click to set the level expiration date.', 'paid-memberships-pro' ); ?></label>
-											<input type="datetime-local" name="<?php echo esc_attr( $edit_level_input_name_base ); ?>[expiration]" value="<?php echo esc_attr( $enddate ); ?>" <?php echo $has_enddate ? '' : 'style="display: none"'; ?>>
+											<input type="datetime-local" name="<?php echo esc_attr( $edit_level_input_name_base ); ?>[expiration]" value="<?php echo esc_attr( $enddate ); ?>" <?php echo ( ! empty( $shown_level->enddate ) ? '' : 'style="display: none"' ); ?>>
 										</span>
 									</div>
+
+									<?php
+									// If the user has a subscription, show a checkbox to cancel the subscription.
+									if ( ! empty( $subscriptions ) ) {
+										?>
+										<div class="pmpro-level_change-action">
+											<span class="pmpro-level_change-action-label">
+												<label for="<?php echo esc_attr( $edit_level_input_name_base ); ?>[cancel_subscription]">
+													<?php esc_html_e( 'Cancel Subscription', 'paid-memberships-pro' ); ?>
+												</label>
+											</span>
+											<span class="pmpro-level_change-action-field">
+												<input type="checkbox" name="<?php echo esc_attr( $edit_level_input_name_base ); ?>[cancel_subscription]" value="1" />
+												<?php esc_html_e( 'Cancel the user\'s subscription for this level.', 'paid-memberships-pro' ); ?>
+											</span>
+										</div>
+										<?php
+									}
+									?>
 
 									<div class="pmpro-level_change-action">
 										<span class="pmpro-level_change-action-label">
@@ -764,6 +789,17 @@ class PMPro_Member_Edit_Panel_Memberships extends PMPro_Member_Edit_Panel {
 			if ( $wpdb->last_error ) {
 				pmpro_setMessage( __( 'Error updating expiration date.', 'paid-memberships-pro' ), 'pmpro_error' );
 				return;
+			}
+
+			// Check if we should cancel the subscription.
+			$cancel_subscription = ! empty( $level_data[ 'cancel_subscription' ] );
+			if ( $cancel_subscription ) {
+				// Get all subscriptions for this user's membership.
+				$subscriptions = PMPro_Subscription::get_subscriptions_for_user( $user->ID, $level_id );
+				foreach( $subscriptions as $subscription ) {
+					// Cancel the subscription.
+					$subscription->cancel_at_gateway();
+				}
 			}
 
 			// Check if we should send the change email.

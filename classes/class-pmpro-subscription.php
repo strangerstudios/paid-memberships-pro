@@ -1186,7 +1186,7 @@ class PMPro_Subscription {
 			$pmproemail->data['body'] .= '<p>' . esc_html__( 'User Email', 'paid-memberships-pro' ) . ': ' . $user->user_email . '</p>' . "\n";
 			$pmproemail->data['body'] .= '<p>' . esc_html__( 'Username', 'paid-memberships-pro' ) . ': ' . $user->user_login . '</p>' . "\n";
 			$pmproemail->data['body'] .= '<p>' . esc_html__( 'User Display Name', 'paid-memberships-pro' ) . ': ' . $user->display_name . '</p>' . "\n";
-			$pmproemail->data['body'] .= '<p>' . esc_html__( 'Subscription', 'paid-memberships-pro' ) . ': ' . $this->ID . '</p>' . "\n";
+			$pmproemail->data['body'] .= '<p>' . esc_html__( 'Subscription', 'paid-memberships-pro' ) . ': ' . $this->id . '</p>' . "\n";
 			$pmproemail->data['body'] .= '<p>' . esc_html__( 'Gateway', 'paid-memberships-pro' ) . ': ' . $this->gateway . '</p>' . "\n";
 			$pmproemail->data['body'] .= '<p>' . esc_html__( 'Subscription Transaction ID', 'paid-memberships-pro' ) . ': ' . $this->subscription_transaction_id . '</p>' . "\n";
 			$pmproemail->data['body'] .= '<hr />' . "\n";
