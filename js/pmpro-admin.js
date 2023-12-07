@@ -915,7 +915,6 @@ jQuery(document).ready(function () {
 window.addEventListener("DOMContentLoaded", () => {
 	const tabs = document.querySelectorAll('#pmpro-edit-user-div [role="tab"]');
 	const tabList = document.querySelector('#pmpro-edit-user-div [role="tablist"]');
-	const togglePassVisibility = document.querySelector('#pmpro-edit-user-div .toggle-pass-visibility');
 	const inputs = document.querySelectorAll('#pmpro-edit-user-div input, #pmpro-edit-user-div textarea, #pmpro-edit-user-div select');
 
 	if ( tabs && tabList ) {
