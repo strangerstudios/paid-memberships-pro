@@ -17,8 +17,8 @@
 		$discount_code_id = "";
 	}
 
-	if ( ! empty( $_REQUEST['level'] ) ) {
-		$level_str = sanitize_text_field( $_REQUEST['level'] );
+	if ( ! empty( $_REQUEST['pmpro_level'] ) ) {
+		$level_str = sanitize_text_field( $_REQUEST['pmpro_level'] );
 		$level_str = str_replace( ' ', '+', $level_str ); // If val passed via URL, + would be converted to space.
 		$level_ids = array_map( 'intval', explode( '+', $level_str ) );
 	} else {
@@ -114,8 +114,8 @@
 		} else {
 			jQuery('<input>').attr({
 				type: 'hidden',
-				id: 'discount_code',
-				name: 'discount_code',
+				id: 'pmpro_discount_code',
+				name: 'pmpro_discount_code',
 				value: '<?php echo esc_attr( $discount_code );?>'
 			}).appendTo('#pmpro_form');
 		}

@@ -13,7 +13,7 @@
 	* pmpro_report_{slug}_page()     to show up when users click on the report page widget.
 */
 global $pmpro_reports;
-$gateway_environment = pmpro_getOption("gateway_environment");
+$gateway_environment = get_option( "pmpro_gateway_environment");
 if($gateway_environment == "sandbox")
 	$pmpro_reports['sales'] = __('Sales and Revenue (Testing/Sandbox)', 'paid-memberships-pro' );
 else
@@ -123,7 +123,7 @@ function pmpro_report_sales_data( $args ){
 	$l = ! empty( $args['l'] ) ? (int) $args['l'] : '';
 
 	//testing or live data
-	$gateway_environment = pmpro_getOption("gateway_environment");
+	$gateway_environment = get_option( "pmpro_gateway_environment");
 
 	// Get the estimated second offset to convert from GMT time to local.This is not perfect as daylight
 	// savings time can come and go in the middle of a month, but it's a tradeoff that we are making
@@ -889,7 +889,7 @@ function pmpro_getSales( $period = 'all time', $levels = 'all', $type = 'all' ) 
 	else
 		$startdate = date_i18n("Y-m-d", 0);
 
-	$gateway_environment = pmpro_getOption("gateway_environment");
+	$gateway_environment = get_option( "pmpro_gateway_environment");
 
 	// Convert from local to UTC.
 	$startdate = get_gmt_from_date( $startdate );
@@ -979,7 +979,7 @@ function pmpro_get_prices_paid( $period, $count = NULL ) {
 	// Convert from local to UTC.
 	$startdate = get_gmt_from_date( $startdate );
 
-	$gateway_environment = pmpro_getOption( 'gateway_environment' );
+	$gateway_environment = get_option( 'pmpro_gateway_environment' );
 
 	// Build query.
 	global $wpdb;
@@ -1083,7 +1083,7 @@ function pmpro_getRevenue( $period, $levels = NULL, $type = 'all' ) {
 	// Convert from local to UTC.
 	$startdate = get_gmt_from_date( $startdate );
 
-	$gateway_environment = pmpro_getOption("gateway_environment");
+	$gateway_environment = get_option( "pmpro_gateway_environment");
 
 	// Build query.
 	global $wpdb;

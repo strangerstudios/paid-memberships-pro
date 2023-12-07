@@ -454,7 +454,6 @@ class PMPro_Field {
 	function saveFile($user_id, $name, $value)
 	{			
 		//setup some vars
-		$file = array_map( 'sanitize_text_field', $_FILES[$name] );
 		$user = get_userdata($user_id);
 		$meta_key = str_replace("pmprorhprefix_", "", $name);
 
@@ -479,55 +478,21 @@ class PMPro_Field {
 			}
 		}
 
-		//no file?
-		if(empty($file['name'])) {
+		// If we don't have a file to upload, return.
+		if ( empty( $_FILES[ $name ] ) || empty( $_FILES[ $name ]['name'] ) ) {
 			return;
 		}
-		
-		//check extension against allowed extensions
-		$filetype = wp_check_filetype_and_ext($file['tmp_name'], $file['name']);		
-		if((!$filetype['type'] || !$filetype['ext'] ) && !current_user_can( 'unfiltered_upload' ))
-		{			
-			//we throw an error earlier, but this just bails on the upload just in case
-			return false;
+
+		// Check if we can upload the file.
+		$upload_check = pmpro_check_upload( $name );
+		if ( is_wp_error( $upload_check ) ) {
+			pmpro_setMessage( $upload_check->get_error_message(), 'pmpro_error' );
+			return;
 		}
-		else
-		{
-			//need to check this in case we are in class context or not
-			if(!empty($this))
-			{
-				if(!empty($this->ext))
-					$ext = $this->ext;
-				else
-					$ext = false;
-			}
-			else
-			{
-				global $pmpro_user_fields;					
-				foreach($pmpro_user_fields as $checkout_box)
-				{
-					foreach($checkout_box as $field)
-					{
-						if($field->name == $name)
-						{
-							if(!empty($field->ext))
-								$ext = $field->ext;
-							else
-								$ext = false;
-								
-							break 2;
-						}
-					}
-				}
-			}
-			
-			//check for specific extensions anyway
-			if(!empty($ext) && !in_array($filetype['ext'], $ext))
-			{
-				pmpro_setMessage(sprintf(__("Sorry, the file type for %s is not permitted for security reasons.", "paid-memberships-pro"), $file['name']), "pmpro_error");
-				return false;
-			}
-		}		
+
+		// Get $file and $filetype.
+		$file = array_map( 'sanitize_text_field', $_FILES[ $name ] );
+		$filetype = wp_check_filetype_and_ext( $file['tmp_name'], $file['name'] );
 
 		/*
 			save file in uploads
@@ -1280,7 +1245,7 @@ class PMPro_Field {
 		global $current_user;
 		if(metadata_exists("user", $user_id, $this->meta_key))
 		{
-			$meta = get_user_meta($user_id, $this->name, true);				
+			$meta = get_user_meta($user_id, $this->meta_key, true);	
 			if(is_array($meta) && !empty($meta['filename']))
 			{
 				$this->file = get_user_meta($user_id, $this->meta_key, true);

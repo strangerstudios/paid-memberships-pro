@@ -1,5 +1,5 @@
 <?php
-	$site_type = pmpro_getOption( 'site_type', true );
+	$site_type = get_option( 'pmpro_site_type' );
 
 	if ( empty( $site_type ) ) {
 		$site_type = 'general';
@@ -24,7 +24,7 @@
 	}
 
 	// Did they choose collect payments? If so, show a nudge to complete the gateway setup.
-	$configure_payment = pmpro_getOption( 'wizard_collect_payment', true );
+	$configure_payment = get_option( 'pmpro_wizard_collect_payment' );
 
 	$site_types = pmpro_wizard_get_site_types();
 	$site_type_hubs = pmpro_wizard_get_site_type_hubs();
@@ -38,7 +38,7 @@
 		<h3 class="pmpro-wizard__section-title"><?php esc_html_e( "What's next?", 'paid-memberships-pro' ); ?></h3>
 		<p>
 			<?php
-			if ( isset( $site_types[ $site_type ] ) ) {
+			if ( isset( $site_types[ $site_type ] ) && isset( $site_type_hubs[ $site_type ] ) ) {
 				echo sprintf( esc_html__( "In step 1, you chose the %s site type.", 'paid-memberships-pro' ), '<strong>' . esc_html( $site_types[ $site_type ] ) . '</strong>' ) . ' ';
 				echo sprintf(
 					/* translators: %s: URL to the PMPro use case hub for the chosen site type */

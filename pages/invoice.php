@@ -58,7 +58,7 @@
 		<?php
 			// Check instructions
 			if ( $pmpro_invoice->gateway == "check" && ! pmpro_isLevelFree( $pmpro_invoice->membership_level ) ) {
-				echo '<div class="' . esc_attr( pmpro_get_element_class( 'pmpro_payment_instructions' ) ) . '">' . wp_kses_post( wpautop( wp_unslash( pmpro_getOption("instructions") ) ) ) . '</div>';
+				echo '<div class="' . esc_attr( pmpro_get_element_class( 'pmpro_payment_instructions' ) ) . '">' . wp_kses_post( wpautop( wp_unslash( get_option( 'pmpro_instructions' ) ) ) ) . '</div>';
 			}
 		?>
 
@@ -154,10 +154,10 @@
 		}
 	}
 ?>
-<p class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_actions_nav' ) ); ?>">
+<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_actions_nav' ) ); ?>">
 	<span class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_actions_nav-right' ) ); ?>"><a href="<?php echo esc_url( pmpro_url( "account" ) ) ?>"><?php esc_html_e('View Your Membership Account &rarr;', 'paid-memberships-pro' );?></a></span>
 	<?php if ( $pmpro_invoice ) { ?>
 		<span class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_actions_nav-left' ) ); ?>"><a href="<?php echo esc_url( pmpro_url( "invoice" ) ) ?>"><?php esc_html_e('&larr; View All Invoices', 'paid-memberships-pro' );?></a></span>
 	<?php } ?>
-</p> <!-- end pmpro_actions_nav -->
+</div> <!-- end pmpro_actions_nav -->
 </div> <!-- end pmpro_invoice_wrap -->

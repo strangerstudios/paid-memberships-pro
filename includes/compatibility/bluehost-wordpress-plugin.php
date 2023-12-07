@@ -11,7 +11,7 @@
  * This function will disable the BlueHost plugin's password check when a user is
  * checking out.
  *
- * @since TBD
+ * @since 2.12.3
  */
 function pmpro_bluehost_disable_password_check() {
 	remove_action( 'wp_login', 'Newfold\WP\Module\Secure_Passwords\wp_login', 10, 2 );

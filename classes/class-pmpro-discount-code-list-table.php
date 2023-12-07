@@ -479,11 +479,12 @@ class PMPro_Discount_Code_List_Table extends WP_List_Table {
 			esc_sql( $item->id )
 		);
 		$levels = $wpdb->get_results($sqlQuery);
+		$levels = pmpro_sort_levels_by_order( $levels );
 
 		$level_names = array();
 		foreach( $levels as $level ) {
 			if ( ! empty( $pmpro_pages['checkout'] ) ) {
-				$level_names[] = '<a target="_blank" href="' . esc_url( pmpro_url( 'checkout', '?level=' . $level->id . '&discount_code=' . $item->code ) ) . '">' . esc_html( $level->name ) . '</a>';
+				$level_names[] = '<a target="_blank" href="' . esc_url( pmpro_url( 'checkout', '?pmpro_level=' . $level->id . '&pmpro_discount_code=' . $item->code ) ) . '">' . esc_html( $level->name ) . '</a>';
 			} else {
 				$level_names[] = $level->name;
 			}

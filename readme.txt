@@ -2,9 +2,9 @@
 Contributors: strangerstudios, kimannwall, andrewza, dlparker1005, paidmembershipspro
 Tags: memberships, member, community, user profile, user registration, members, membership, ecommerce, paypal, stripe, braintree, authorize.net, payflow, restrict access, restrict content, directory
 Requires at least: 5.2
-Tested up to: 6.3
+Tested up to: 6.4.1
 Requires PHP: 5.6
-Stable tag: 2.12.2
+Stable tag: 2.12.4
 
 Build a membership site that grows with you: user registration, member profiles, 28 protected content types, free or paid subscriptions.
 
@@ -190,8 +190,16 @@ Not sure? You can find out by doing a bit a research.
 9. Advanced settings for updating non-member messages, optionally show excerpts or filter content, use reCAPTCHA, and a Terms of Service checkbox.
 
 == Changelog ==
-= 2.12.3 - TBD =
+= 2.12.4 - 2023-11-16 =
+* SECURITY: Fixed security issue where in some cases users could upload files at checkout with disallowed file types, e.g. .php files that could then be accessed to run arbitrary code on the server. For more information, see https://www.paidmembershipspro.com/pmpro-update-2-12-4/ (Thanks, István Márton and WordFence)
+* ENHANCEMENT: New icons for LifterLMS and the GA4 Add On.
+* BUG FIX/ENHANCEMENT: Fixed issues with the notifications shown when updating billing details. (Thanks, dwanjuki on GitHub)
+
+= 2.12.3 - 2023-10-03 =
 * ENHANCEMENT: Updated the PayPal Express integration to save checkout data in order meta instead of sessions to improve compatibility with various Add Ons. #2616 (@dparker1005)
+* BUG FIX/ENHANCEMENT: Fixed performance issue in deprecation code. #2621 (@MaximilianoRicoTabo)
+* BUG FIX/ENHANCEMENT: Fixed warning in PHP 8.1 when using the pmpro_member shortcode without a field attribute. #2622 (@MaximilianoRicoTabo)
+* BUG FIX/ENHANCEMENT: Updated pmpro_hasMembershipLevel() function to accept a string of comma separated level ids or names. This also fixes issues in The Events Calendar ticketing add ons. #2623 (@MaximilianoRicoTabo)
 * BUG FIX: Fixed issue where user fields may not be shown in admin checkout emails. #2613 (@andrewlimaza, @dparker1005)
 * BUG FIX: Fixed issue where the incorrect label could be shown for a user field value. #2613 (@dparker1005)
 * BUG FIX: Fixed issue where the Visits, Views, and Logins report CSV export may show the user's "joindate" in the "enddate" column. #2608 (@dparker1005)

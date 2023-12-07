@@ -93,7 +93,7 @@ elseif($period == "annual")
 }
 
 //testing or live data
-$gateway_environment = pmpro_getOption("gateway_environment");
+$gateway_environment = get_option( "pmpro_gateway_environment");
 
 //get data
 if (

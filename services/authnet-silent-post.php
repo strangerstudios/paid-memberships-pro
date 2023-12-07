@@ -107,14 +107,9 @@
 				$morder->billing->country = $fields['x_country'];
 				$morder->billing->phone = $fields['x_phone'];
 
-				//get CC info that is on file
-				$morder->cardtype = get_user_meta($user_id, "pmpro_CardType", true);
-				$morder->accountnumber = hideCardNumber(get_user_meta($user_id, "pmpro_AccountNumber", true), false);
-				$morder->expirationmonth = get_user_meta($user_id, "pmpro_ExpirationMonth", true);
-				$morder->expirationyear = get_user_meta($user_id, "pmpro_ExpirationYear", true);
-				$morder->ExpirationDate = $morder->expirationmonth . $morder->expirationyear;
-				$morder->ExpirationDate_YdashM = $morder->expirationyear . "-" . $morder->expirationmonth;
-
+				//Updates this order with the most recent orders payment method information and saves it. 
+				pmpro_update_order_with_recent_payment_method( $morder );
+				
 				//save
 				$morder->status = "success";
 				$morder->saveOrder();
@@ -150,11 +145,8 @@
 			$morder->billing->country = $fields['x_country'];
 			$morder->billing->phone = $fields['x_phone'];
 
-			//get CC info that is on file
-			$morder->cardtype = get_user_meta($user_id, "pmpro_CardType", true);
-			$morder->accountnumber = hideCardNumber(get_user_meta($user_id, "pmpro_AccountNumber", true), false);
-			$morder->expirationmonth = get_user_meta($user_id, "pmpro_ExpirationMonth", true);
-			$morder->expirationyear = get_user_meta($user_id, "pmpro_ExpirationYear", true);
+			//Updates this order with the most recent orders payment method information and saves it. 
+			pmpro_update_order_with_recent_payment_method( $morder );
 
 			// Email the user and ask them to update their credit card information
 			$pmproemail = new PMProEmail();

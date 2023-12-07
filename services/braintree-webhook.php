@@ -179,13 +179,8 @@ if ( $webhookNotification->kind === Braintree_WebhookNotification::SUBSCRIPTION_
 	$morder->PhoneNumber = $old_order->billing->phone;
 	$morder->billing->phone   = $old_order->billing->phone;
 	
-	//get CC info that is on file
-	$morder->cardtype              = get_user_meta( $user_id, "pmpro_CardType", true );
-	$morder->accountnumber         = hideCardNumber( get_user_meta( $user_id, "pmpro_AccountNumber", true ), false );
-	$morder->expirationmonth       = get_user_meta( $user_id, "pmpro_ExpirationMonth", true );
-	$morder->expirationyear        = get_user_meta( $user_id, "pmpro_ExpirationYear", true );
-	$morder->ExpirationDate        = $morder->expirationmonth . $morder->expirationyear;
-	$morder->ExpirationDate_YdashM = $morder->expirationyear . "-" . $morder->expirationmonth;
+	//Updates this order with the most recent orders payment method information and saves it. 
+	pmpro_update_order_with_recent_payment_method( $morder );
 	
 	//save
 	$morder->status = "success";
@@ -278,11 +273,8 @@ if ( $webhookNotification->kind === Braintree_WebhookNotification::SUBSCRIPTION_
 	
 	$morder->billing->phone = $old_order->billing->phone;
 	
-	//get CC info that is on file
-	$morder->cardtype        = get_user_meta( $user_id, "pmpro_CardType", true );
-	$morder->accountnumber   = hideCardNumber( get_user_meta( $user_id, "pmpro_AccountNumber", true ), false );
-	$morder->expirationmonth = get_user_meta( $user_id, "pmpro_ExpirationMonth", true );
-	$morder->expirationyear  = get_user_meta( $user_id, "pmpro_ExpirationYear", true );
+	//Updates this order with the most recent orders payment method information and saves it. 
+	pmpro_update_order_with_recent_payment_method( $morder );
 	
 	// Email the user and ask them to update their credit card information
 	$pmproemail = new \PMProEmail();
@@ -364,11 +356,8 @@ if ( $webhookNotification->kind === Braintree_WebhookNotification::SUBSCRIPTION_
 	
 	$morder->billing->phone = $old_order->billing->phone;
 	
-	//get CC info that is on file
-	$morder->cardtype        = get_user_meta( $user_id, "pmpro_CardType", true );
-	$morder->accountnumber   = hideCardNumber( get_user_meta( $user_id, "pmpro_AccountNumber", true ), false );
-	$morder->expirationmonth = get_user_meta( $user_id, "pmpro_ExpirationMonth", true );
-	$morder->expirationyear  = get_user_meta( $user_id, "pmpro_ExpirationYear", true );
+	//Updates this order with the most recent orders payment method information and saves it. 
+	pmpro_update_order_with_recent_payment_method( $morder );
 	
 	// Email the user and ask them to update their credit card information
 	$pmproemail = new \PMProEmail();
@@ -432,72 +421,14 @@ if ( $webhookNotification->kind === Braintree_WebhookNotification::SUBSCRIPTION_
 
 //subscription cancelled (they used one l canceled)
 if ( $webhookNotification->kind === Braintree_WebhookNotification::SUBSCRIPTION_CANCELED ) {
-	
-	$logstr[] = "The Braintree gateway cancelled the subscription plan";
-	
-	//need a subscription id
+	$logstr[] = 'The Braintree gateway cancelled the subscription plan';
+
+	// Need a subscription id.
 	if ( empty( $webhookNotification->subscription->id ) ) {
-		$logstr[] = "No subscription ID.";
+		$logstr[] = 'No subscription ID.';
 		pmpro_braintreeWebhookExit();
 	}
-	
-	//figure out which order to attach to
-	$old_order = new \MemberOrder();
-	$old_order->getLastMemberOrderBySubscriptionTransactionID( $webhookNotification->subscription->id );
-	
-	if ( empty( $old_order ) ) {
-		$logstr[] = "Couldn't find old order for failed payment with subscription id={$webhookNotification->subscription->id}";
-		pmpro_braintreeWebhookExit();
-	}
-	
-	/**
-	 * @since v1.9.5+ - BUG FIX: Don't process previously handled subscription cancellation
-	 */
-	if ( isset( $old_order->status ) && 'cancelled' == $old_order->status ) {
-		$logstr[] = "Order for subscription id {$webhookNotification->subscription->id} is cancelled already";
-		pmpro_braintreeWebhookExit();
-	}
-	
-	$user_id                = $old_order->user_id;
-	$user                   = get_userdata( $user_id );
-	$user->membership_level = pmpro_getMembershipLevelForUser( $user_id,true );
-	
-	/**
-	 * @since 1.9.5 - BUG FIX: Erroneously triggering warning email
-	 *                Happens when a user cancels their membership (and Braintree) sends a webhook notifying us
-	 *                of the fact that the user cancelled their subscription plan (SUBSCRIPTION_CANCELED event).
-	 */
-	if ( empty( $user->membership_level ) ) {
-		
-		$logstr[] = "Membership for user (ID: {$user_id}) is cancelled already. Probably a duplicate webhook notification. Exiting!";
-		pmpro_braintreeWebhookExit();
-	}
-	
-	// Trigger subscription cancelled action
-	do_action( "pmpro_subscription_cancelled", $old_order );
-	
-	$transaction = isset( $webhookNotification->transactions ) && is_array( $webhookNotification->transactions ) ?
-		$webhookNotification->transactions[0] :
-		null;
-	
-	if ( empty( $transaction ) || ! isset( $transaction->billing_details ) ) {
-		// Get billing address info from either old order or billing meta
-		$old_order->billing = pmpro_braintreeAddressInfo( $user_id, $old_order );
-	}
-	
-	// Cancel the related membership.
-	pmpro_cancelMembershipLevel( $old_order->membership_id, $old_order->user_id, 'cancelled' );
-	
-	$logstr[] = "Cancelled membership for user with id = {$old_order->user_id}. Subscription transaction id = {$old_order->subscription_transaction_id}.\n";
-	
-	// Send an email to the member.
-	$myemail = new PMProEmail();
-	$myemail->sendCancelEmail( $user, $old_order->membership_id );
-	
-	// Send an email to the admin.
-	$myemail = new PMProEmail();
-	$myemail->sendCancelAdminEmail( $user, $old_order->membership_id );
-	
+	$logstr[] = pmpro_handle_subscription_cancellation_at_gateway( $webhookNotification->subscription->id, 'braintree', get_option( 'pmpro_gateway_environment' ) );
 	pmpro_braintreeWebhookExit();
 }
 

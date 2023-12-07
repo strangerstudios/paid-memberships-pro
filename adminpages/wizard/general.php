@@ -1,8 +1,8 @@
 <?php
 // Variables that may exist prior to running the Setup Wizard.
-$pmpro_license_key = pmpro_getOption( 'license_key' );
-$site_type         = pmpro_getOption( 'site_type' );
-$collect_payment   = pmpro_getOption( 'wizard_collect_payment' );
+$pmpro_license_key = get_option( 'pmpro_license_key' );
+$site_type         = get_option( 'pmpro_site_type' );
+$collect_payment   = get_option( 'pmpro_wizard_collect_payment' );
 
 // Check if we should allow page generation or not.
 global $pmpro_pages;

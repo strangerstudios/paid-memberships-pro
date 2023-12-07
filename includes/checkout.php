@@ -41,7 +41,7 @@ function pmpro_calculate_profile_start_date( $order, $date_format, $filter = tru
 /**
  * Save checkout data in order meta before sending user offsite to pay.
  *
- * @since TBD
+ * @since 2.12.3
  *
  * @param MemberOrder $order The order to save the checkout fields for.
  */
@@ -78,23 +78,32 @@ function pmpro_calculate_profile_start_date( $order, $date_format, $filter = tru
 
 	// Save any files that were uploaded.
 	if ( ! empty( $_FILES ) ) {
+		// Build an array of files to save.
 		$files = array();
 		foreach ( $_FILES as $arr_key => $file ) {
-			// Move the file to the uploads/pmpro-register-helper/tmp directory.
-			// Check for a register helper directory in wp-content.
+			// If this file should not be saved, skip it.
+			$upload_check = pmpro_check_upload( $arr_key );
+			if ( is_wp_error( $upload_check ) ) {
+				continue;
+			}
+
+			// Make sure that the file was uploaded during this page load.
+			if ( ! is_uploaded_file( sanitize_text_field( $file['tmp_name'] ) ) ) {						
+				continue;
+			}
+
+			// Check for a register helper directory in wp-content and create it if needed.
 			$upload_dir = wp_upload_dir();
 			$pmprorh_dir = $upload_dir['basedir'] . "/pmpro-register-helper/tmp/";
-
-			// Create the dir and subdir if needed
 			if( ! is_dir( $pmprorh_dir ) ) {
 				wp_mkdir_p( $pmprorh_dir );
 			}
 
-			// Move file
-			$new_filename = $pmprorh_dir . basename( $file['tmp_name'] );
+			// Move file.
+			$new_filename = $pmprorh_dir . basename( $file['tmp_name'] ) . '.' . $upload_check['filetype']['ext'];
 			move_uploaded_file($file['tmp_name'], $new_filename);
 
-			// Update location of file
+			// Update location of file.
 			$file['tmp_name'] = $new_filename;
 
 			// Add the file to the array.
@@ -107,7 +116,7 @@ function pmpro_calculate_profile_start_date( $order, $date_format, $filter = tru
 /**
  * Pull checkout data from order meta after returning from offsite payment.
  *
- * @since TBD
+ * @since 2.12.3
  *
  * @param MemberOrder $order The order to pull the checkout fields for.
  */
@@ -134,7 +143,7 @@ function pmpro_pull_checkout_data_from_order( $order ) {
 /**
  * Complete an asynchronous checkout.
  *
- * @since TBD
+ * @since 2.12.3
  *
  * @param MemberOrder $order The order to complete the checkout for.
  * @return bool True if the checkout was completed successfully, false otherwise.

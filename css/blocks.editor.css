@@ -1,68 +1,44 @@
-.pmpro-block-element {
-	background: rgba(237, 239, 240, 0.8);
-	padding: 20px;
+[class*="wp-block-pmpro-"]:not([class*="wp-block-pmpro-"] [class*="wp-block-pmpro-"]) {
+	border: 1px solid #E2E8F099;
+	overflow: hidden;
 }
-.pmpro-block-element span.pmpro-block-title {
-	color: #555d66;
+[class*="wp-block-pmpro-"] span.pmpro-block-title {
+	background-color: #F5F8FA;
+	color: #222222;
 	display: block;
-	font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen-Sans, Ubuntu, Cantarell, Helvetica Neue, sans-serif;
 	font-size: 22px;
-	font-weight: 300;
-	letter-spacing: 1px;
+	font-weight: 400;
+	padding: 10px 10px 5px 10px;
 	position: relative;
-	text-transform: uppercase;
 }
-.pmpro-block-element span.pmpro-block-subtitle {
-	color: #555d66;
+[class*="wp-block-pmpro-"] span.pmpro-block-subtitle {
+	background-color: #F5F8FA;
+	color: #222222;
 	display: block;
-	font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen-Sans, Ubuntu, Cantarell, Helvetica Neue, sans-serif;
 	font-size: 18px;
 	font-weight: 700;
+	padding: 0 10px 10px 10px;
 	position: relative;
-	text-transform: uppercase;
 }
-.pmpro-block-element hr {
+[class*="wp-block-pmpro-"] span.pmpro-block-note {
+	background-color: #F5F8FA;
+	border-top: 1px solid #E2E8F099;
+	color: #222222;
+	display: block;
+	padding: 5px 10px;
+	font-size: 13px;
+	font-style: italic;
+}
+[class*="wp-block-pmpro-"] hr {
 	margin-bottom: 16px;
 	margin-top: 16px;
 }
-.pmpro-block-element .components-base-control {
-	margin-bottom: 16px;
+[class*="wp-block-pmpro-account-"] {
+	background-color: #F5F8FA;
 }
-.pmpro-block-element .components-base-control .components-select-control {
-	height: auto;
-}
-.pmpro-block-element .components-base-control .components-base-control__label {
-	display: block;
-}
-
-/* Require Membership Block */
-.pmpro-block-require-membership-element {
-	background: rgba(237, 239, 240, 0.8);
-	border-bottom: 5px solid #8d96a0;
-	border-top: 5px solid #8d96a0;
-}
-.pmpro-block-require-membership-element .pmpro-block-title {
-    color: #555d66;
-    display: block;
-    font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen-Sans, Ubuntu, Cantarell, Helvetica Neue, sans-serif;
-    font-weight: 600;
-    padding: 16px;
-    position: relative;
-    text-transform: uppercase;
-}
-.pmpro-block-require-membership-element .components-panel__body,
-.pmpro-block-require-membership-element .components-panel__body.is-opened {
-	background: rgba(237, 239, 240, 0.8);
-	border-bottom: none;
-	border-top: none;
-}
-.pmpro-block-require-membership-element .pmpro-block-inspector-scrollable {
-	border: 1px solid #CCC;
-	margin: 0px 16px 16px 16px;
-}
-.pmpro-block-require-membership-element .block-editor-inner-blocks {
-	background-color: #FFF;
-	padding: 16px;
+[class*="wp-block-pmpro-account-"] input.block-editor-plain-text[type=text] {
+	margin: 0 10px 10px 10px;
+	width: 95%;
 }
 .pmpro-block-inspector-scrollable {
 	height: 170px;

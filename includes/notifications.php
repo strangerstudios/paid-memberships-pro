@@ -427,7 +427,7 @@ function pmpro_notification_test_pmpro_setting( $data ) {
 		$data[0] = substr( $data[0], 6, strlen( $data[0] ) - 6 );
 	}
 		
-	$option_value = pmpro_getOption( $data[0] );	
+	$option_value = get_option( 'pmpro_' . $data[0] );	
 	if ( isset( $option_value ) && $option_value == $data[1] ) {
 		return true;
 	} else {
@@ -466,7 +466,7 @@ function pmpro_get_max_notification_priority() {
 	static $max_priority = null;
 
 	if ( ! isset( $max_priority ) ) {
-		$max_priority = pmpro_getOption( 'maxnotificationpriority' );
+		$max_priority = get_option( 'pmpro_maxnotificationpriority' );
 		
 		// default to 5
 		if ( empty( $max_priority ) ) {
@@ -559,7 +559,7 @@ function pmpro_link() {
 }
 
 function pmpro_footer_link() {
-	if ( ! pmpro_getOption( 'hide_footer_link' ) ) { ?>
+	if ( ! get_option( 'pmpro_hide_footer_link' ) ) { ?>
 		<!-- <?php echo pmpro_link()?> -->
 	<?php }
 }

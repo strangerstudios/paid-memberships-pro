@@ -78,6 +78,13 @@ function pmpro_add_user_field( $where, $field ) {
  */
 function pmpro_add_field_group( $name, $label = NULL, $description = '', $order = NULL ) {
 	global $pmpro_field_groups;
+	// Bail if the group already exists.
+	foreach ( $pmpro_field_groups as $group ) {
+		if ( $group->name === $name ) {
+			// Group already exists.
+			return false;
+		}
+	}
 
 	$temp = new stdClass();
 	$temp->name = $name;
@@ -314,7 +321,7 @@ function pmpro_checkout_boxes_fields() {
 				</h2>
 				<div class="pmpro_checkout-fields">
 				<?php if(!empty($cb->description)) { ?>
-					<div class="pmpro_checkout_decription"><?php echo wp_kses_post( $cb->description ); ?></div>
+					<div class="pmpro_checkout_description"><?php echo wp_kses_post( $cb->description ); ?></div>
 				<?php } ?>
 
 				<?php
@@ -489,39 +496,14 @@ function pmpro_registration_checks_for_user_fields( $okay ) {
                     continue;	//wasn't shown at checkout
                 }
 
-				if(isset($_REQUEST[$field->name]))
-					$value = pmpro_sanitize( $_REQUEST[$field->name], $field ); //phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
-				elseif(isset($_FILES[$field->name]))
-				{
-					$value = sanitize_file_name( $_FILES[$field->name]['name'] );
-
-					//handle empty file but the user already has a file
-					if(empty($value) && !empty($_REQUEST[$field->name . "_old"]))
-						$value = sanitize_file_name( $_REQUEST[$field->name . "_old"] );
-					elseif(!empty($value))
-					{
-						//check extension against allowed extensions
-						$filetype = wp_check_filetype_and_ext( sanitize_text_field( $_FILES[$field->name]['tmp_name'] ), sanitize_file_name( $_FILES[$field->name]['name'] ) );
-						if((!$filetype['type'] || !$filetype['ext'] ) && !current_user_can( 'unfiltered_upload' ))
-						{
-							if($okay)	//only want to update message if there is no previous error
-								pmpro_setMessage( sprintf( __( "Sorry, the file type for %s is not permitted for security reasons.", "paid-memberships-pro"), sanitize_file_name( $_FILES[$field->name]['name'] ) ), "pmpro_error");
-							return false;
-						}
-						else
-						{
-							//check for specific extensions anyway
-							if(!empty($field->ext) && !in_array($filetype['ext'], $field->ext))
-							{
-								if($okay)	//only want to update message if there is no previous error
-									pmpro_setMessage( sprintf( __( "Sorry, the file type for %s is not permitted for security reasons.", "paid-memberships-pro"), sanitize_file_name( $_FILES[$field->name]['name'] ) ), "pmpro_error");
-								return false;
-							}
-						}
+				// If this is a file upload, check whether the file is allowed.
+				if ( isset( $_FILES[ $field->name ] ) && ! empty( $_FILES[$field->name]['name'] ) ) {
+					$upload_check = pmpro_check_upload( $field->name );
+					if ( is_wp_error( $upload_check ) ) {
+						pmpro_setMessage( $upload_check->get_error_message(), 'pmpro_error' );
+						return false;
 					}
 				}
-				else
-					$value = false;
 
 				if( ! $field->was_filled_if_needed() ) {
 					$required[] = $field->name;
@@ -560,9 +542,13 @@ add_filter( 'pmpro_registration_checks', 'pmpro_registration_checks_for_user_fie
 
 /**
  * Sessions vars for TwoCheckout. PayPal Express was updated to store in order meta.
+ *
+ * @deprecated 2.12.4 Use pmpro_after_checkout_save_fields instead to save fields immediately or pmpro_save_checkout_data_to_order for delayed checkouts.
  */
 function pmpro_paypalexpress_session_vars_for_user_fields() {
 	global $pmpro_user_fields;
+
+	_deprecated_function( __FUNCTION__, '2.12.4', 'pmpro_after_checkout_save_fields' );
 
 	//save our added fields in session while the user goes off to PayPal
 	if(!empty($pmpro_user_fields))
@@ -587,10 +573,19 @@ function pmpro_paypalexpress_session_vars_for_user_fields() {
 					/*
 						We need to save the file somewhere and save values in $_SESSION
 					*/
+					// Make sure the file is allowed.
+					$upload_check = pmpro_check_upload( $field->name );
+					if ( is_wp_error( $upload_check ) ) {
+						continue;
+					}
 
-					// Make sure file was uploaded.
-					if ( ! is_uploaded_file( sanitize_text_field( $_FILES[$field->name]['tmp_name'] ) ) ) {						
-                        continue;
+					// Get $file and $filetype.
+					$file = array_map( 'sanitize_text_field', $_FILES[ $field->name ] );
+					$filetype = wp_check_filetype_and_ext( $file['tmp_name'], $file['name'] );
+
+					// Make sure file was uploaded during this page load.
+					if ( ! is_uploaded_file( sanitize_text_field( $file['tmp_name'] ) ) ) {						
+						continue;
 					}
 
 					//check for a register helper directory in wp-content
@@ -604,20 +599,19 @@ function pmpro_paypalexpress_session_vars_for_user_fields() {
 					}
 
 					//move file
-					$new_filename = $pmprorh_dir . basename( sanitize_file_name( $_FILES[$field->name]['name'] ) );
-					move_uploaded_file( sanitize_text_field( $_FILES[$field->name]['tmp_name'] ), $new_filename );
+					$new_filename = $pmprorh_dir . basename( sanitize_file_name( $file['name'] ) );
+					move_uploaded_file( sanitize_text_field( $$file['tmp_name'] ), $new_filename );
 
 					//update location of file
 					$_FILES[$field->name]['tmp_name'] = $new_filename;
 
 					//save file info in session
-					$_SESSION[$field->name] = array_map( 'sanitize_text_field', $_FILES[$field->name] );
+					$_SESSION[$field->name] = array_map( 'sanitize_text_field', $file );
 				}
 			}
 		}
 	}
 }
-add_action( 'pmpro_before_send_to_twocheckout', 'pmpro_paypalexpress_session_vars_for_user_fields', 10, 0);
 
 /**
  * Show user fields in profile.
@@ -690,8 +684,6 @@ add_action( 'edit_user_profile', 'pmpro_show_user_fields_in_profile_with_locatio
  * @since 2.3
  */
 function pmpro_show_user_fields_in_frontend_profile( $user, $withlocations = false ) {
-	global $pmpro_user_fields;
-
 	//which fields are marked for the profile
 	$profile_fields = pmpro_get_user_fields_for_profile($user->ID, $withlocations);
 
@@ -701,15 +693,15 @@ function pmpro_show_user_fields_in_frontend_profile( $user, $withlocations = fal
 			$box = pmpro_get_field_group_by_name( $where );
 
 			// Only show on front-end if there are fields to be shown.
-			$show_fields = false;
+			$show_fields = array();
 			foreach( $fields as $key => $field ) {
-				if ( $field->profile !== 'only_admin' ) {
-					$show_fields = true;
+				if ( pmpro_is_field( $field ) && $field->profile !== 'only_admin' && $field->profile !== 'admin' && $field->profile !== 'admins' ) {
+					$show_fields[] = $field;
 				}
 			}
 
 			// Bail if there are no fields to show on the front-end profile.
-			if ( ! $show_fields ) {
+			if ( empty( $show_fields ) ) {
 				continue;
 			}
 			?>
@@ -725,11 +717,9 @@ function pmpro_show_user_fields_in_frontend_profile( $user, $withlocations = fal
 					<?php } ?>
 
 					<?php
-						 // Cycle through groups.
-						foreach( $fields as $field ) {
-							if ( pmpro_is_field( $field ) && $field->profile !== 'only_admin' ) {
-								$field->displayAtCheckout( $user->ID );
-							}
+						 // Show fields.
+						foreach( $show_fields as $field ) {
+							$field->displayAtCheckout( $user->ID );
 						}
 					?>
 				</div> <!-- end pmpro_member_profile_edit-fields -->
