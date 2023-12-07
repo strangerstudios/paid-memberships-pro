@@ -339,9 +339,9 @@ function pmpro_checkForUpgrades()
 
 	/**
 	 * Version 3.0
-	 * Running pmpro_db_delta to add subscription and subscription meta tables.
+	 * Running `pmpro_db_delta` to add subscription and subscription meta tables.
 	 * Populate subscription and subscription meta tables based on this site's order data.
-	 * Updates all orders in 'cancelled' status to 'success' so that we can remove cancelled status.
+	 * Updates all orders in `cancelled` status to `success` so that we can remove cancelled status.
 	 */
 	require_once( PMPRO_DIR . "/includes/updates/upgrade_3_0.php" );
 	if ( $pmpro_db_version < 3.0 ) {
