@@ -2290,11 +2290,14 @@ function pmpro_getLevel( $level ) {
 /**
  * Get all PMPro membership levels.
  *
- * @param bool $include_hidden Include levels marked as hidden/inactive.
- * @param bool $use_cache      If false, use $pmpro_levels global. If true use other caches.
- * @param bool $force          Resets the static var caches as well.
+ * @since TBD deprecated the second `$use_cache` argument.
+ *
+ * @param bool $include_hidden      Include levels marked as hidden/inactive.
+ * @param bool $deprecated_argument No longer used.
+ * @param bool $force               Resets the static var caches.
  */
-function pmpro_getAllLevels( $include_hidden = false, $use_cache = false, $force = false ) {
+function pmpro_getAllLevels( $include_hidden = false, $deprecated_argument = false, $force = false ) {
+	// The global $pmpro_levels variable is deprecated and should no longer be used, but we'll set it for backwards compatibility.
 	global $pmpro_levels, $wpdb;
 
 	static $pmpro_all_levels;			// every single level
@@ -2306,16 +2309,13 @@ function pmpro_getAllLevels( $include_hidden = false, $use_cache = false, $force
 		$pmpro_visible_levels = NULL;
 	}
 
-	// just use the $pmpro_levels global
-	if ( ! empty( $pmpro_levels ) && ! $use_cache ) {
-		return $pmpro_levels;
-	}
-
 	// If use_cache is true check if we have something in a static var.
 	if ( $include_hidden && isset( $pmpro_all_levels ) ) {
+		$pmpro_levels = $pmpro_all_levels;
 		return $pmpro_all_levels;
 	}
 	if ( ! $include_hidden && isset( $pmpro_visible_levels ) ) {
+		$pmpro_levels = $pmpro_visible_levels;
 		return $pmpro_visible_levels;
 	}
 

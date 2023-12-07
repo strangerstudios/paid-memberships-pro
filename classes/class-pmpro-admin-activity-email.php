@@ -25,7 +25,7 @@ class PMPro_Admin_Activity_Email extends PMProEmail {
 	 * @param string $frequency to send emails at. Determines length of time reported.
 	 */
 	public function sendAdminActivity( $frequency = '', $recipient = null ) {
-		global $wpdb, $pmpro_levels;
+		global $wpdb;
 
 		if ( ! in_array( $frequency, array( 'day', 'week', 'month', 'never' ), true ) ) {
 			$frequency = get_option( 'pmpro_activity_email_frequency' );
