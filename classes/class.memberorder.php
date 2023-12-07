@@ -889,8 +889,10 @@
 		 * Get the most recent order for a user.
 		 *
 		 * @param int $user_id ID of user to find order for.
-		 * @param string $status Limit search to only orders with this status. Defaults to "success".
-		 * @param int $membership_id Limit search to only orders for this membership level. Defaults to NULL to find orders for any level.
+		 * @param string|string[] $status Limit search to only orders with this status. Defaults to "success".
+		 * @param int|int[] $membership_id Limit search to only orders for this membership level. Defaults to NULL to find orders for any level.
+		 * @param string $gateway Limit search to only orders with this gateway. Defaults to NULL to find orders for any gateway.
+		 * @param string $gateway_environment Limit search to only orders with this gateway environment. Defaults to NULL to find orders for any gateway environment.
 		 *
 		 * @return MemberOrder
 		 */
@@ -911,8 +913,11 @@
 				$this->sqlQuery .= "AND status = '" . esc_sql($status) . "' ";
 			}
 
-			if(!empty($membership_id))
+			if(!empty($membership_id) && is_array($membership_id)) {
+				$this->sqlQuery .= "AND membership_id IN('" . implode( "','", array_map( 'esc_sql', $membership_id ) ) . "') ";
+			} elseif(!empty($membership_id)) {
 				$this->sqlQuery .= "AND membership_id = '" . esc_sql( $membership_id ) . "' ";
+			}
 
 			if(!empty($gateway))
 				$this->sqlQuery .= "AND gateway = '" . esc_sql($gateway) . "' ";
