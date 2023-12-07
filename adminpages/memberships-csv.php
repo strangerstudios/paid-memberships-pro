@@ -88,7 +88,7 @@ elseif($period == "monthly")
 elseif($period == "annual")
 {
 	$startdate = '1970-01-01';	//all time
-	$enddate = strval(intval($year)+1) . '-01-01';
+	$enddate = strval(intval($thisyear)+1) . '-01-01';
 	$date_function = 'YEAR';
 }
 
@@ -169,6 +169,28 @@ elseif($period == "monthly")
 }
 elseif($period == "annual") //annual
 {
+	// Get the first year we have signups for.
+	$first_year = $thisyear;
+	foreach ( $dates as $date ) {
+		if ( $date->date < $first_year ) {
+			$first_year = $date->date;
+		}
+	}
+
+	for ( $i = $first_year; $i <= $thisyear; $i++ ) {
+		// Signups vs. Cancellations, Expirations, or All
+		if ( $type === 'signup_v_cancel' || $type === 'signup_v_expiration' || $type === 'signup_v_all' ) {
+			$cols[ $i ]          = new stdClass();
+			$cols[ $i ]->date    = $i;
+			$cols[ $i ]->signups = 0;
+			foreach ( $dates as $date ) {
+				if ( $date->date == $i ) {
+					$cols[ $i ]->date    = $date->date;
+					$cols[ $i ]->signups = $date->signups;
+				}
+			}
+		}
+	}
 }
 
 $dates = ( ! empty( $cols ) ) ? $cols : $dates;
@@ -220,13 +242,14 @@ if ( $type === "signup_v_cancel" || $type === "signup_v_expiration" || $type ===
 
 	$cdates = $wpdb->get_results($sqlQuery, OBJECT_K);
 
-	foreach( $dates as $day => &$date )
-	{
-		if(!empty($cdates) && !empty($cdates[$day]))
+	foreach ( $dates as $day => &$date ) {
+		if ( ! empty( $cdates ) && ! empty( $cdates[$day] ) ) {
 			$date->cancellations = $cdates[$day]->cancellations;
-		else
+		} else {
 			$date->cancellations = 0;
+		}
 	}
+
 }
 
 $headers   = array();
