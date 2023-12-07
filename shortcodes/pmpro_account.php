@@ -4,7 +4,7 @@
 */
 function pmpro_shortcode_account($atts, $content=null, $code="")
 {
-	global $wpdb, $pmpro_msg, $pmpro_msgt, $current_user, $levels;
+	global $wpdb, $current_user;
 
 	// $atts    ::= array of attributes
 	// $content ::= text within enclosing form of shortcode element
