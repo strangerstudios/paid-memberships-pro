@@ -108,15 +108,25 @@
 		if($worked != false && empty($pmpro_error))
 		{
 			if ( count( $old_level_ids ) > 1 ) {
+				// If cancelling multiple levels, show a generic message.
 				$pmpro_msg = __( 'Your memberships have been cancelled.', 'paid-memberships-pro' );
-			} else {
-				$pmpro_msg = __("Your membership has been cancelled.", 'paid-memberships-pro' );
-				if ( ! empty($old_level_ids[0] ) ) {
-					$level = pmpro_getSpecificMembershipLevelForUser( $current_user->ID, $old_level_ids[0] );
-					if ( ! empty( $level ) && ! empty( $level->enddate ) ) {
-						$pmpro_msg = sprintf( __( 'Your recurring subscription has been cancelled. Your active membership will expire on %s.', 'paid-memberships-pro' ), date_i18n( get_option( 'date_format' ), $level->enddate ) );
-					}
+			} elseif ( ! empty( $old_level_ids[0] ) ) {
+				// If cancelling a single level, show the level name.
+				$cancelled_level = pmpro_getLevel( $old_level_ids[0] );
+				if ( ! empty( $cancelled_level ) && ! empty( $cancelled_level->name ) ) {
+					/* translators: %s: level name */
+					$pmpro_msg = sprintf( __( 'Your %s membership has been cancelled.', 'paid-memberships-pro' ), esc_html( $cancelled_level->name ) );
 				}
+
+				// If the level has an enddate, show that.
+				$expiring_level = pmpro_getSpecificMembershipLevelForUser( $current_user->ID, $old_level_ids[0] );
+				if ( ! empty( $expiring_level ) && ! empty( $expiring_level->enddate ) ) {
+					/* translators: %s: membership expiration date */
+					$pmpro_msg = sprintf( __( 'Your recurring subscription has been cancelled. Your active membership will expire on %s.', 'paid-memberships-pro' ), date_i18n( get_option( 'date_format' ), $expiring_level->enddate ) );
+				}
+			} else {
+				// Show a generic message about cancellation if we get here.
+				$pmpro_msg = __( 'Your membership has been cancelled.', 'paid-memberships-pro' );
 			}
 			$pmpro_msgt = "pmpro_success";
 		} else {
