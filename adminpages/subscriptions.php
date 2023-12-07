@@ -148,9 +148,9 @@ if ( empty( $subscription ) ) {
 								// If the user has a level other than the one that the subscription is for, show a link to show settings to move sub to new level.
 								$user_level_ids = empty( $user_membership_levels ) ? array() : wp_list_pluck( $user_membership_levels, 'id' );
 								if ( ! empty( array_diff( $user_level_ids, array( $sub_membership_level_id ) ) ) ) {
-									echo ' ';
+									echo '<br />';
 									?>
-									<a id="pmpro-show-change-subscription-level"><?php esc_html_e( 'Change', 'paid-memberships-pro' ); ?></a>
+									<button class="button button-link" id="pmpro-show-change-subscription-level"><?php esc_html_e( 'Change Subscription Level', 'paid-memberships-pro' ); ?></button>
 									<?php
 								}
 
@@ -178,7 +178,7 @@ if ( empty( $subscription ) ) {
 											?>
 										</select>
 										<?php wp_nonce_field( 'change-level', 'pmpro_subscriptions_nonce' ); ?>
-										<input type="submit" value="<?php esc_attr_e( 'Update Subscription Level', 'paid-memberships-pro' ); ?>" />
+										<input type="submit" class="button button-link" value="<?php esc_attr_e( 'Update Subscription Level', 'paid-memberships-pro' ); ?>" />
 									</form>
 								</div>
 								<script>
