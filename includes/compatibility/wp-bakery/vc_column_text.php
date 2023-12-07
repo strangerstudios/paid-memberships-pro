@@ -36,10 +36,7 @@ $output = '
 /**
  * Paid Memberships Pro will check to see if any levels are required, and show/hide the content as expected.
  */
-if( ! empty( $atts['pmpro_levels'] ) ) {
-
-	$content = pmpro_wpbakery_show_content( $content, $atts );
-
+if ( ! empty( $atts['pmpro_levels'] ) ) {
+	$output = pmpro_wpbakery_show_content( $output, $atts );
 }
-
-echo $content;
+echo $output;
