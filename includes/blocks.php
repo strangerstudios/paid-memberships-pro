@@ -68,7 +68,6 @@ function pmpro_block_editor_assets() {
 			PMPRO_URL . '/blocks/build/sidebar/index.js',
 			array( 'wp-blocks', 'wp-element', 'wp-components', 'wp-i18n', 'wp-editor', 'wp-api-request', 'wp-plugins', 'wp-edit-post' )
 		);
-
 		wp_localize_script(
 			'pmpro-sidebar-editor-script',
 			'pmpro_block_editor_sidebar',
@@ -167,3 +166,27 @@ function pmpro_apply_block_visibility( $attributes, $content ) {
 	return $output;
 }
 
+/**
+ * Hook into render_block to filter core blocks  and apply Content Visibility rules.
+ *
+ * @param string $block_content The block content.
+ * @param array  $block	The block.
+ * @return string The filtered block content.
+ * @since TBD
+ */
+function pmpro_filter_core_blocks( $block_content, $block ) {
+	//TODO Replace with https://www.php.net/manual/en/function.str-starts-with when we drop support for PHP 7.x.
+	if ( strpos( $block['blockName'], 'core/' ) === 0 ) {
+		//We need defaults because WP doesn't store defaults in the DB.
+		$attributes = wp_parse_args( $block['attrs'], array(
+			'segment' => 'all',
+			'levels' => array(),
+			'show_noaccess' => '0',
+			'invert_restrictions' => '0',
+		) );
+		require_once( PMPRO_DIR . "/includes/blocks.php" );
+		return pmpro_apply_block_visibility( $attributes, $block_content );
+	}
+	return $block_content;
+}
+add_filter( 'render_block', 'pmpro_filter_core_blocks', 10, 2 );

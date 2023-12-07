@@ -4558,7 +4558,6 @@ function pmpro_set_expiration_date( $user_id, $level_id, $enddate ) {
 	pmpro_clear_level_cache_for_user( $user_id );
 }
 
-
 /*
  * Check whether a file should be allowed to be uploaded.
  *
@@ -4635,30 +4634,3 @@ function pmpro_check_upload( $file_index ) {
 	// If we made it this far, the file is allowed.
 	return true;
 }
-
- add_filter( 'render_block', 'pmpro_filter_core_blocks', 10, 2 );
-
-
-	/**
-	* Hook into render_block to filter core blocks  and apply Content Visibility rules.
-	*
-	* @param string $block_content The block content.
-	* @param array  $block	The block.
-	* @return string The filtered block content.
-	* @since TBD
-	*/
-	function pmpro_filter_core_blocks( $block_content, $block ) {
-		//TODO Replace with https://www.php.net/manual/en/function.str-starts-with when we drop support for PHP 7.x.
-		if ( strpos( $block['blockName'], 'core/' ) === 0 ) {
-			//We need defaults because WP doesn't store defaults in the DB.
-			$attributes = wp_parse_args( $block['attrs'], array(
-				'segment' => 'all',
-				'levels' => array(),
-				'show_noaccess' => '0',
-				'invert_restrictions' => '0',
-			) );
-			require_once( PMPRO_DIR . "/includes/blocks.php" );
-			return pmpro_apply_block_visibility( $attributes, $block_content );
-		}
-		return $block_content;
-	}

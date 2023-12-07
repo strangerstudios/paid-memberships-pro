@@ -163,8 +163,8 @@ config.entry = {
 	"blocks",
 	"src",
 	"block-membership-required-component",
-	"index.js" ),
-
+	"index.js"
+  )
 };
 config.output = {
   filename: "[name].js",
