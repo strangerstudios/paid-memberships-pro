@@ -1785,12 +1785,6 @@
 				return null;
 			}
 
-			// Make sure that this order has been completed.
-			if ( 'success' !== $this->status ) {
-				// The order is not complete, so it isn't a valid subscription payment.
-				return null;
-			}
-
 			$get_subscription_args = array(
 				'subscription_transaction_id' => $this->subscription_transaction_id,
 				'gateway'                     => $this->gateway,
@@ -1800,6 +1794,12 @@
 			if ( ! empty( $existing_subscription ) ) {
 				// We already have a subscription for this order, return it.
 				return $existing_subscription;
+			}
+
+			// Only create a subscription if this order is complete.
+			if ( 'success' !== $this->status ) {
+				// The order is not complete, so it isn't a valid subscription payment.
+				return null;
 			}
 
 			if ( isset( $pmpro_level ) ) {
