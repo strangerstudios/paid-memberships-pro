@@ -356,7 +356,7 @@
 
 	require_once(dirname(__FILE__) . "/admin_header.php");
 ?>
-
+	<hr class="wp-header-end">
 	<?php if($edit) { ?>
 
 		<h1>
@@ -726,7 +726,6 @@
 		</form>
 
 	<?php } else { ?>
-		<hr class="wp-header-end">
 		<form id="discount-code-list-form" method="get">
 			<h1 class="wp-heading-inline"><?php esc_html_e( 'Discount Codes', 'paid-memberships-pro' ); ?></h1>
 			<a href="admin.php?page=pmpro-discountcodes&edit=-1" class="page-title-action"><?php esc_html_e( 'Add New Discount Code', 'paid-memberships-pro' ); ?></a>
