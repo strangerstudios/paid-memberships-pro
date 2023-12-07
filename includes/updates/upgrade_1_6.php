@@ -9,6 +9,6 @@ function pmpro_upgrade_1_6()
 	$sqlQuery = "ALTER TABLE  `" . $wpdb->pmpro_membership_orders . "` ADD  `notes` TEXT NOT NULL";
 	$wpdb->query($sqlQuery);
 
-	pmpro_setOption("db_version", "1.6");
+	update_option("pmpro_db_version", "1.6");
 	return 1.6;
 }

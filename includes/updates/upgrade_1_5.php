@@ -21,6 +21,6 @@ function pmpro_upgrade_1_5()
 	$sqlQuery = "ALTER TABLE `" . $wpdb->pmpro_memberships_users . "` ADD  `status` varchar( 20 ) NOT NULL DEFAULT 'active' AFTER `trial_limit`";
 	$wpdb->query($sqlQuery);
 
-	pmpro_setOption("db_version", "1.5");
+	update_option("pmpro_db_version", "1.5");
 	return 1.5;
 }

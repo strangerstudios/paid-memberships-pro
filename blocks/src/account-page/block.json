@@ -1,0 +1,86 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "pmpro/account-page",
+	"title": "PMPro Page: Account (Full)",
+	"category": "pmpro-pages",
+	"description": "Dynamic page section to display the selected sections of the Membership Account page including Memberships, Profile, Invoices, and Member Links. These sections can also be added via separate blocks.",
+	"keywords": [ "account", "billing", "invoice", "links", "member", "order", "profile", "purchases", "quick link", "receipt", "user", "paid memberships pro", "pmpro" ],
+	"attributes": {
+		"membership": {
+			"type": "boolean",
+			"default": false
+		},
+		"profile": {
+			"type": "boolean",
+			"default": false
+		},
+		"invoices": {
+			"type": "boolean",
+			"default": false
+		},
+		"links": {
+			"type": "boolean",
+			"default": false
+		}
+	},
+	"supports": {
+		"align": [ "wide", "full" ],
+		"ariaLabel": true,
+		"html": false,
+		"background": {
+			"backgroundImage": true
+		},
+		"color": {
+			"gradients": true,
+			"heading": true,
+			"button": true,
+			"link": true
+		},
+		"spacing": {
+			"margin": [ "top", "bottom" ],
+			"padding": true,
+			"blockGap": true,
+			"__experimentalDefaultControls": {
+				"padding": true,
+				"blockGap": true
+			}
+		},
+		"dimensions": {
+			"minHeight": true
+		},
+		"__experimentalBorder": {
+			"color": true,
+			"radius": true,
+			"style": true,
+			"width": true,
+			"__experimentalDefaultControls": {
+				"color": true,
+				"radius": true,
+				"style": true,
+				"width": true
+			}
+		},
+		"typography": {
+			"fontSize": true,
+			"lineHeight": true,
+			"__experimentalFontFamily": true,
+			"__experimentalFontWeight": true,
+			"__experimentalFontStyle": true,
+			"__experimentalTextTransform": true,
+			"__experimentalTextDecoration": true,
+			"__experimentalLetterSpacing": true,
+			"__experimentalDefaultControls": {
+				"fontSize": true
+			}
+		},
+		"layout": {
+			"allowSizingOnChildren": true
+		}
+	},
+	"example": {
+	},
+	"textdomain": "paid-memberships-pro",
+	"editorScript": "file:./index.js",
+	"render": "file:./render.php"
+}

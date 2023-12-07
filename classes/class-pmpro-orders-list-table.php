@@ -985,7 +985,7 @@ class PMPro_Orders_List_Table extends WP_List_Table {
 	 */
 	public function column_user( $item ) {
 		if ( ! empty( $item->user ) ) { 
-			echo '<a href="user-edit.php?user_id='.esc_attr( $item->user->ID ).'">'.esc_html( $item->user->user_login ).'</a><br />';
+			echo '<a href="' . esc_url( add_query_arg( array( 'page' => 'pmpro-member', 'user_id' => (int)$item->user->ID ), admin_url( 'admin.php' ) ) ) . '">' . esc_html( $item->user->user_login ) . '</a><br />';
 			echo esc_html( $item->user->user_email );
 		 } elseif ( $item->user_id > 0 ) {
 			echo '['. esc_html__( 'deleted', 'paid-memberships-pro' ) . ']';

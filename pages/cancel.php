@@ -10,7 +10,7 @@
  *
  * @author Paid Memberships Pro
  */
-global $pmpro_msg, $pmpro_msgt, $pmpro_confirm, $current_user, $wpdb;
+global $pmpro_msg, $pmpro_msgt, $current_user, $wpdb;
 
 if(isset($_REQUEST['levelstocancel']) && $_REQUEST['levelstocancel'] !== 'all') {
 	// Odd input format here (1+2+3). These values are sanitized.
@@ -26,6 +26,8 @@ if(isset($_REQUEST['levelstocancel']) && $_REQUEST['levelstocancel'] !== 'all') 
 } else {
 	$old_level_ids = false;
 }
+
+$user_levels = pmpro_getMembershipLevelsForUser( $current_user->ID );
 ?>
 <div id="pmpro_cancel" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_cancel_wrap', 'pmpro_cancel' ) ); ?>">
 	<?php
@@ -37,8 +39,7 @@ if(isset($_REQUEST['levelstocancel']) && $_REQUEST['levelstocancel'] !== 'all') 
 		}
 	?>
 	<?php
-		if(!$pmpro_confirm)
-		{
+		if ( empty( $_REQUEST['confirm'] ) ) {
 			if($old_level_ids)
 			{
 				if(!is_array($old_level_ids) && $old_level_ids == "all")
@@ -56,15 +57,26 @@ if(isset($_REQUEST['levelstocancel']) && $_REQUEST['levelstocancel'] !== 'all') 
 				}
 			?>
 			<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_actionlinks' ) ); ?>">
-				<a class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_btn pmpro_btn-submit pmpro_yeslink yeslink', 'pmpro_btn-submit' ) ); ?>" href="<?php echo esc_url( pmpro_url( "cancel", "?levelstocancel=" . esc_attr( sanitize_text_field( $_REQUEST['levelstocancel'] ) ) . "&confirm=true" ) ) ?>" onclick="this.classList.add('disabled');"><?php esc_html_e('Yes, cancel this membership', 'paid-memberships-pro' );?></a>
-				<a class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_btn pmpro_btn-cancel pmpro_nolink nolink', 'pmpro_btn-cancel' ) ); ?>" href="<?php echo esc_url( pmpro_url( "account" ) ) ?>"><?php esc_html_e('No, keep this membership', 'paid-memberships-pro' );?></a>
+				<?php
+					if ( ! is_array( $old_level_ids ) && $old_level_ids == 'all' ) {
+						$cancel_memberships_text = __( 'Yes, cancel all of my memberships', 'paid-memberships-pro' );
+						$keep_memberships_text = __( 'No, keep my memberships', 'paid-memberships-pro' );
+					} elseif ( count( $old_level_ids ) > 1 ) {
+						$cancel_memberships_text = __( 'Yes, cancel these memberships', 'paid-memberships-pro' );
+						$keep_memberships_text = __( 'No, keep these memberships', 'paid-memberships-pro' );
+					} else {
+						$cancel_memberships_text = __( 'Yes, cancel this membership', 'paid-memberships-pro' );
+						$keep_memberships_text = __( 'No, keep this membership', 'paid-memberships-pro' );
+					}
+				?>
+				<a class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_btn pmpro_btn-submit pmpro_yeslink yeslink', 'pmpro_btn-submit' ) ); ?>" href="<?php echo esc_url( pmpro_url( "cancel", "?levelstocancel=" . esc_attr( sanitize_text_field( $_REQUEST['levelstocancel'] ) ) . "&confirm=true" ) ) ?>" onclick="this.classList.add('disabled');"><?php echo esc_html( $cancel_memberships_text ); ?></a>
+				<a class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_btn pmpro_btn-cancel pmpro_nolink nolink', 'pmpro_btn-cancel' ) ); ?>" href="<?php echo esc_url( pmpro_url( "account" ) ) ?>"><?php echo esc_html( $keep_memberships_text ); ?></a>
 			</div>
 			<?php
 			}
 			else
 			{
-				if($current_user->membership_level->ID)
-				{
+				if ( ! empty( $user_levels ) ) {
 					?>
 					<h2><?php esc_html_e("My Memberships", 'paid-memberships-pro' );?></h2>
 					<table class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_table' ) ); ?>" width="100%" cellpadding="0" cellspacing="0" border="0">
@@ -77,13 +89,12 @@ if(isset($_REQUEST['levelstocancel']) && $_REQUEST['levelstocancel'] !== 'all') 
 						</thead>
 						<tbody>
 							<?php
-								$current_user->membership_levels = pmpro_getMembershipLevelsForUser($current_user->ID);
-								foreach($current_user->membership_levels as $level) {
+								foreach ( $user_levels as $level ) {
 								?>
 								<tr>
-									<td class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_cancel-membership-levelname' ) ); ?>">
+									<th class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_cancel-membership-levelname' ) ); ?>">
 										<?php echo esc_html( $level->name );?>
-									</td>
+									</th>
 									<td class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_cancel-membership-expiration' ) ); ?>">
 									<?php
 										if($level->enddate) {
@@ -105,7 +116,8 @@ if(isset($_REQUEST['levelstocancel']) && $_REQUEST['levelstocancel'] !== 'all') 
 						</tbody>
 					</table>
 					<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_actions_nav' ) ); ?>">
-						<a href="<?php echo esc_url( pmpro_url( "cancel", "?levelstocancel=all" ) ); ?>"><?php esc_html_e("Cancel All Memberships", 'paid-memberships-pro' );?></a>
+						<span class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_actions_nav-right' ) ); ?>"><a href="<?php echo esc_url( pmpro_url( "account" ) ) ?>"><?php esc_html_e('View Your Membership Account &rarr;', 'paid-memberships-pro' );?></a></span>
+						<span class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_actions_nav-left' ) ); ?>"><a href="<?php echo esc_url( pmpro_url( "cancel", "?levelstocancel=all" ) ); ?>"><?php esc_html_e("Cancel All Memberships", 'paid-memberships-pro' );?></a></span>
 					</div>
 					<?php
 				}
@@ -114,7 +126,21 @@ if(isset($_REQUEST['levelstocancel']) && $_REQUEST['levelstocancel'] !== 'all') 
 		else
 		{
 			?>
-			<p class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_cancel_return_home' ) ); ?>"><a href="<?php echo esc_url( get_home_url() )?>"><?php esc_html_e('Click here to go to the home page.', 'paid-memberships-pro' );?></a></p>
+			<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_actions_nav' ) ); ?>">
+			<?php
+				if ( ! pmpro_getMembershipLevelsForUser() ) {
+					// The user cancelled all of their membership levels. Send them to the home page.
+					?>
+					<span class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_cancel_return_home pmpro_actions_nav-right', 'pmpro_cancel_return_home' ) ); ?>"><a href="<?php echo esc_url( get_home_url() )?>"><?php esc_html_e( 'View the Homepage &rarr;', 'paid-memberships-pro' ); ?></a></span>
+					<?php
+				} else {
+					// The user still has some membership levels. Send them to the account page.
+					?>
+					<span class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_actions_nav-right' ) ); ?>"><a href="<?php echo esc_url( pmpro_url( "account" ) ) ?>"><?php esc_html_e('View Your Membership Account &rarr;', 'paid-memberships-pro' );?></a></span>
+					<?php
+				}
+			?>
+			</div>
 			<?php
 		}
 	?>

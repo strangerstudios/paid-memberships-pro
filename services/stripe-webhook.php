@@ -12,16 +12,10 @@
 	// For compatibility with old library (Namespace Alias)
 	use Stripe\Invoice as Stripe_Invoice;
 	use Stripe\Event as Stripe_Event;
-	use Stripe\PaymentIntent as Stripe_PaymentIntent;
-	use Stripe\Charge as Stripe_Charge;
 	use Stripe\PaymentMethod as Stripe_PaymentMethod;
 	use Stripe\Customer as Stripe_Customer;
 
 	global $logstr;	
-
-	//you can define a different # of seconds (define PMPRO_STRIPE_WEBHOOK_DELAY in your wp-config.php) if you need this webhook to delay more or less
-	if(!defined('PMPRO_STRIPE_WEBHOOK_DELAY'))
-		define('PMPRO_STRIPE_WEBHOOK_DELAY', 2);	
 
 	if(!class_exists("Stripe\Stripe")) {
 		require_once( PMPRO_DIR . "/includes/lib/Stripe/init.php" );
@@ -42,22 +36,22 @@
 			$livemode = ! empty( $post_event->livemode );
 		} else {
 			// No event data passed in body, so use current environment.
-			$livemode = pmpro_getOption( 'gateway_environment' ) === 'live';
+			$livemode = get_option( 'pmro_gateway_environment' ) === 'live';
 		}
 	}
 	else
 	{
 		$event_id = sanitize_text_field($_REQUEST['event_id']);
-		$livemode = pmpro_getOption( 'gateway_environment' ) === 'live'; // User is testing, so use current environment.
+		$livemode = get_option( 'pmro_gateway_environment' ) === 'live'; // User is testing, so use current environment.
 	}
 
 	try {
 		if ( PMProGateway_stripe::using_legacy_keys() ) {
-			$secret_key = pmpro_getOption( "stripe_secretkey" );
+			$secret_key = get_option( "pmro_stripe_secretkey" );
 		} elseif ( $livemode ) {
-			$secret_key = pmpro_getOption( 'live_stripe_connect_secretkey' );
+			$secret_key = get_option( 'pmpro_live_stripe_connect_secretkey' );
 		} else {
-			$secret_key = pmpro_getOption( 'sandbox_stripe_connect_secretkey' );
+			$secret_key = get_option( 'pmpro_sandbox_stripe_connect_secretkey' );
 		}
 		Stripe\Stripe::setApiKey( $secret_key );
 	} catch ( Exception $e ) {
@@ -123,6 +117,7 @@
 
 					$user_id = $old_order->user_id;
 					$user = get_userdata($user_id);
+
 					if ( empty( $user ) ) {
 						$logstr .= "Couldn't find the old order's user. Order ID = " . $old_order->id . ".";
 						pmpro_stripeWebhookExit();
@@ -197,30 +192,6 @@
 					$pmproemail->sendInvoiceEmail($user, $morder);
 
 					$logstr .= "Created new order with ID #" . $morder->id . ". Event ID #" . $pmpro_stripe_event->id . ".";
-
-					/*
-						Checking if there is an update "after next payment" for this user.
-					*/
-					$user_updates = $user->pmpro_stripe_updates;
-					if(!empty($user_updates))
-					{
-						foreach($user_updates as $key => $update)
-						{
-							if($update['when'] == 'payment')
-							{
-								PMProGateway_stripe::updateSubscription($update, $user_id);
-
-								//remove this update
-								unset($user_updates[$key]);
-
-								//only process the first next payment update
-								break;
-							}
-						}
-
-						//save updates in case we removed some
-						update_user_meta($user_id, "pmpro_stripe_updates", $user_updates);
-					}
 
 					do_action('pmpro_subscription_payment_completed', $morder);
 
@@ -392,88 +363,8 @@
 		}
 		elseif($pmpro_stripe_event->type == "customer.subscription.deleted")
 		{
-			//for one of our users? if they still have a membership for the same level, cancel it
-			$old_order = new MemberOrder();
-			$old_order->getLastMemberOrderBySubscriptionTransactionID( $pmpro_stripe_event->data->object->id );
-
-			if( ! empty( $old_order ) && ! empty( $old_order->id ) ) {
-				$user_id = $old_order->user_id;
-				$user = get_userdata($user_id);
-				if ( empty( $user ) ) {
-					$logstr .= "Couldn't find the old order's user. Order ID = " . $old_order->id . ".";
-					pmpro_stripeWebhookExit();
-				}
-								
-				/**
-				 * Array of Stripe.com subscription IDs and the timestamp when they were configured as 'preservable'
-				 */
-				$preserve = get_user_meta( $user_id, 'pmpro_stripe_dont_cancel', true );
-				
-				// Asume we should cancel the membership
-				$cancel_membership = true;
-				
-				// Grab the subscription ID from the webhook
-				if ( !empty( $pmpro_stripe_event->data->object ) && 'subscription' == $pmpro_stripe_event->data->object->object ) {
-					
-					$subscr = $pmpro_stripe_event->data->object;
-					
-					// Check if there's a sub ID to look at (from the webhook)
-					// If it's in the list of preservable subscription IDs, don't delete it
-					if ( is_array( $preserve ) && in_array( $subscr->id, array_keys( $preserve ) ) ) {
-						
-						$logstr       .= "Stripe subscription ({$subscr->id}) has been flagged during Subscription Update (in user profile). Will NOT cancel the membership for {$user->display_name} ({$user->user_email})!\n";
-						$cancel_membership = false;
-						
-					}
-				}
-				
-				if(!empty($user->ID) && true === $cancel_membership ) {
-					do_action( "pmpro_stripe_subscription_deleted", $user->ID );
-					
-					if ( $old_order->status == "cancelled" ) {
-						$logstr .= "We've already processed this cancellation. Probably originated from WP/PMPro. (Order #{$old_order->id}, Subscription Transaction ID #{$old_order->subscription_transaction_id})\n";
-					} else if ( ! pmpro_hasMembershipLevel( $old_order->membership_id, $user->ID ) ) {
-						$logstr .= "This user has a different level than the one associated with this order. Their membership was probably changed by an admin or through an upgrade/downgrade. (Order #{$old_order->id}, Subscription Transaction ID #{$old_order->subscription_transaction_id})\n";
-					} else {
-						//if the initial payment failed, cancel with status error instead of cancelled					
-						pmpro_cancelMembershipLevel( $old_order->membership_id, $old_order->user_id, 'cancelled' );
-						
-						$logstr .= "Cancelled membership for user with id = {$old_order->user_id}. Subscription transaction id = {$old_order->subscription_transaction_id}.\n";
-						
-						//send an email to the member
-						$myemail = new PMProEmail();
-						$myemail->sendCancelEmail( $user, $old_order->membership_id );
-						
-						//send an email to the admin
-						$myemail = new PMProEmail();
-						$myemail->sendCancelAdminEmail( $user, $old_order->membership_id );
-					}
-					
-					// Try to delete the usermeta entry as it's (probably) stale
-					if ( isset( $preserve[$old_order->subscription_transaction_id])) {
-						unset( $preserve[$old_order->subscription_transaction_id]);
-						update_user_meta( $user_id, 'pmpro_stripe_dont_cancel', $preserve );
-					}
-					
-					$logstr .= "Subscription deleted for user ID #" . $user->ID . ". Event ID #" . $pmpro_stripe_event->id . ".";
-					pmpro_stripeWebhookExit();
-				} else {
-					$logstr .= "Stripe tells us they deleted the subscription, but for some reason we must ignore it. ";
-					
-					if ( false === $cancel_membership ) {
-						$logstr .= "The subscription has been flagged as one to not delete the user membership for.\n ";
-					} else {
-						$logstr .= "Perhaps we could not find a user here for that subscription. ";
-					}
-					
-					$logstr .= "Could also be a subscription managed by a different app or plugin. Event ID # {$pmpro_stripe_event->id}.";
-					pmpro_stripeWebhookExit();
-				}
-				
-			} else {
-				$logstr .= "Stripe tells us a subscription is deleted, but we could not find the order for that subscription. Could be a subscription managed by a different app or plugin. Event ID #" . $pmpro_stripe_event->id . ".";
-				pmpro_stripeWebhookExit();
-			}
+			$logstr .= pmpro_handle_subscription_cancellation_at_gateway( $pmpro_stripe_event->data->object->id, 'stripe', $livemode ? 'live' : 'sandbox' );
+			pmpro_stripeWebhookExit();
 		}
 		elseif( $pmpro_stripe_event->type == "charge.refunded" )
 		{			
@@ -715,151 +606,6 @@
 		pmpro_stripeWebhookExit();
 	}
 
-	/**
-	 * @deprecated 2.7.0.
-	 */
-	function getUserFromInvoiceEvent($pmpro_stripe_event) {
-		_deprecated_function( __FUNCTION__, '2.7.0' );
-		//pause here to give PMPro a chance to finish checkout
-		sleep(PMPRO_STRIPE_WEBHOOK_DELAY);
-
-		global $wpdb;
-
-		$customer_id = $pmpro_stripe_event->data->object->customer;
-
-		//look up the order
-		$user_id = $wpdb->get_var("SELECT user_id FROM $wpdb->pmpro_membership_orders WHERE subscription_transaction_id = '" . esc_sql($customer_id) . "' LIMIT 1");
-
-		if(!empty($user_id))
-			return get_userdata($user_id);
-		else
-			return false;
-	}
-
-	/**
-	 * @deprecated 2.7.0.
-	 */
-	function getUserFromCustomerEvent($pmpro_stripe_event, $status = false, $checkplan = true) {
-		_deprecated_function( __FUNCTION__, '2.7.0' );
-
-		//pause here to give PMPro a chance to finish checkout
-		sleep(PMPRO_STRIPE_WEBHOOK_DELAY);
-
-		global $wpdb;
-
-		$customer_id = $pmpro_stripe_event->data->object->customer;
-		$subscription_id = $pmpro_stripe_event->data->object->id;
-		$plan_id = $pmpro_stripe_event->data->object->plan->id;
-
-		//look up the order
-		$sqlQuery = "SELECT user_id FROM $wpdb->pmpro_membership_orders WHERE (subscription_transaction_id = '" . esc_sql($customer_id) . "' OR subscription_transaction_id = '"  . esc_sql($subscription_id) . "') ";
-		if($status)
-			$sqlQuery .= " AND status='" . esc_sql($status) . "' ";
-		if($checkplan)
-			$sqlQuery .= " AND code='" . esc_sql($plan_id) . "' ";
-		$sqlQuery .= " LIMIT 1";
-
-		$user_id = $wpdb->get_var($sqlQuery);
-
-		if(!empty($user_id))
-			return get_userdata($user_id);
-		else
-			return false;
-	}
-
-   	/**
-		* Get the Member's Order from a Stripe Event.
-		*
-		* @deprecated 2.10
-		*
-		* @param Object $pmpro_stripe_event The Stripe Event object sent via webhook.
-		* @return PMPro_MemberOrder|bool Returns either the member order object linked to the Stripe Event data or false if no order is found.
-		*/
-	function getOldOrderFromInvoiceEvent( $pmpro_stripe_event ) {	
-		_deprecated_function( __FUNCTION__, '2.10' );
-
-		// Pause here to give PMPro a chance to finish checkout.
-		sleep( PMPRO_STRIPE_WEBHOOK_DELAY );
-
-		global $wpdb;
-
-		// Check if the Stripe event has a subscription ID available. (Most likely an older API version).
-		if ( ! empty( $pmpro_stripe_event->data->object->subscription ) ) {
-            $subscription_id = $pmpro_stripe_event->data->object->subscription;
-		}
-
-		// Try to get the subscription ID from the order ID.
-		if ( empty( $subscription_id ) ) {
-			// Try to get the order ID from the invoice ID in the event.
-			$invoice_id = $pmpro_stripe_event->data->object->invoice;
-
-			try {
-				$invoice = Stripe_Invoice::retrieve( $invoice_id );
-			} catch ( Exception $e ) {
-				error_log( 'Unable to fetch Stripe Invoice object: ' . $e->getMessage() );
-				$invoice = null;
-			}
-
-			if ( isset( $invoice->subscription ) ) { 
-				$subscription_id = $invoice->subscription;
-			} else {
-				// Fall back to the Stripe event ID as a last resort.
-				$subscription_id = $pmpro_stripe_event->data->object->id;
-			}
-			
-			// Try to get the order ID from the subscription ID if we have one.			
-			if ( ! empty( $subscription_id ) ) {				
-				$old_order_id = $wpdb->get_var(
-					$wpdb->prepare(
-						"
-							SELECT id
-							FROM $wpdb->pmpro_membership_orders
-							WHERE
-								subscription_transaction_id = %s
-								AND gateway = 'stripe'
-							ORDER BY timestamp DESC
-							LIMIT 1
-						",
-						$subscription_id
-					)
-				);
-			}			
-		}
-
-		// If we have an ID, get the associated MemberOrder.
-		if ( ! empty( $old_order_id ) ) {
-
-			$old_order = new MemberOrder( $old_order_id );
-
-			if ( isset( $old_order->id ) && ! empty( $old_order->id ) ) {
-				return $old_order;
-			}	
-		}
-
-		return false;
-	}
-
-	/**
-	 * @deprecated 2.10
-	 */
-	function getOrderFromInvoiceEvent($pmpro_stripe_event) {
-		_deprecated_function( __FUNCTION__, '2.10' );
-
-		//pause here to give PMPro a chance to finish checkout
-		sleep(PMPRO_STRIPE_WEBHOOK_DELAY);
-
-		$invoice_id = $pmpro_stripe_event->data->object->id;
-
-		//get order by invoice id
-		$order = new MemberOrder();
-		$order->getMemberOrderByPaymentTransactionID($invoice_id);		
-		
-		if(!empty($order->id))
-			return $order;
-		else
-			return false;
-	}
-
 	function pmpro_stripeWebhookExit()
 	{
 		global $logstr;
@@ -921,124 +667,11 @@
  * @return bool
  */
 function pmpro_stripe_webhook_change_membership_level( $morder ) {
-	global $wpdb, $pmpro_level, $discount_code, $discount_code_id;
-
-	// We need to pull the checkout level and fields data from the order.
-	$checkout_level_arr = get_pmpro_membership_order_meta( $morder->id, 'checkout_level', true );
-	$pmpro_level = (object) $checkout_level_arr;
-
-	// Set $discount_code_id.
-	$discount_code = get_pmpro_membership_order_meta( $morder->id, 'checkout_discount_code', true );
-	
-	// Set $_REQUEST.
-	$checkout_request_vars = get_pmpro_membership_order_meta( $morder->id, 'checkout_request_vars', true );
-	$_REQUEST = array_merge( $_REQUEST, $checkout_request_vars );
-
-	// Set $_FILES.
-	$checkout_files = get_pmpro_membership_order_meta( $morder->id, 'checkout_files', true );
-	if ( ! empty( $checkout_files ) ) {
-		$_FILES = array_merge( $_FILES, $checkout_files );
-	}
-
-	// Run the pmpro_checkout_before_change_membership_level action in case add ons need to set up.
+	// Make sure that we don't redirect back to Stripe Checkout.
 	remove_action(  'pmpro_checkout_before_change_membership_level', array('PMProGateway_stripe', 'pmpro_checkout_before_change_membership_level'), 10, 2 );
-	do_action( 'pmpro_checkout_before_change_membership_level', $morder->user_id, $morder );
 
-	//set the start date to current_time('timestamp') but allow filters  (documented in preheaders/checkout.php)
-	$startdate = apply_filters( "pmpro_checkout_start_date", "'" . current_time( 'mysql' ) . "'", $morder->user_id, $pmpro_level );
-
-	//fix expiration date
-	if ( ! empty( $pmpro_level->expiration_number ) ) {
-		$enddate = "'" . date_i18n( "Y-m-d", strtotime( "+ " . $pmpro_level->expiration_number . " " . $pmpro_level->expiration_period, current_time( "timestamp" ) ) ) . "'";
-	} else {
-		$enddate = "NULL";
-	}
-
-	//filter the enddate (documented in preheaders/checkout.php)
-	$enddate = apply_filters( "pmpro_checkout_end_date", $enddate, $morder->user_id, $pmpro_level, $startdate );
-
-	//custom level to change user to
-	$custom_level = array(
-		'user_id'         => $morder->user_id,
-		'membership_id'   => $pmpro_level->id,
-		'code_id'         => $discount_code_id,
-		'initial_payment' => $pmpro_level->initial_payment,
-		'billing_amount'  => $pmpro_level->billing_amount,
-		'cycle_number'    => $pmpro_level->cycle_number,
-		'cycle_period'    => $pmpro_level->cycle_period,
-		'billing_limit'   => $pmpro_level->billing_limit,
-		'trial_amount'    => $pmpro_level->trial_amount,
-		'trial_limit'     => $pmpro_level->trial_limit,
-		'startdate'       => $startdate,
-		'enddate'         => $enddate
-	);
-
-	global $pmpro_error;
-	if ( ! empty( $pmpro_error ) ) {		
-		ipnlog( $pmpro_error );
-	}
-
-	//change level and continue "checkout"
-	if ( pmpro_changeMembershipLevel( $custom_level, $morder->user_id, 'changed' ) !== false ) {
-		// Mark the order as successful.
-		$morder->status                 = "success";
-		$morder->saveOrder();
-
-		//add discount code use
-		if ( ! empty( $discount_code ) ) {
-			$discount_code_id = $wpdb->get_var( "SELECT id FROM $wpdb->pmpro_discount_codes WHERE code = '" . esc_sql( $discount_code ) . "' LIMIT 1" );
-			if ( ! empty( $discount_code_id ) ) {
-				$wpdb->query(
-					$wpdb->prepare(
-						"INSERT INTO {$wpdb->pmpro_discount_codes_uses} 
-							( code_id, user_id, order_id, timestamp ) 
-							VALUES( %d, %d, %s, %s )",
-						$discount_code_id,
-						$morder->user_id,
-						$morder->id,
-						current_time( 'mysql' )
-					)	
-				);
-			}
-			do_action( 'pmpro_discount_code_used', $discount_code_id, $morder->user_id, $morder->id );
-		}
-
-		//save first and last name fields
-		if ( ! empty( $_POST['first_name'] ) ) {
-			$old_firstname = get_user_meta( $morder->user_id, "first_name", true );
-			if ( empty( $old_firstname ) ) {
-				update_user_meta( $morder->user_id, "first_name", stripslashes( sanitize_text_field( $_POST['first_name'] ) ) );
-			}
-		}
-		if ( ! empty( $_POST['last_name'] ) ) {
-			$old_lastname = get_user_meta( $morder->user_id, "last_name", true );
-			if ( empty( $old_lastname ) ) {
-				update_user_meta( $morder->user_id, "last_name", stripslashes( sanitize_text_field( $_POST['last_name'] ) ) );
-			}
-		}
-
-		//hook
-		do_action( "pmpro_after_checkout", $morder->user_id, $morder );
-
-		// Check if we should send emails.
-		if ( apply_filters( 'pmpro_send_checkout_emails', true, $morder ) ) {
-			// Set up some values for the emails.
-			$user                   = get_userdata( $morder->user_id );
-			$user->membership_level = $pmpro_level;        // Make sure that they have the right level info.
-
-			// Send email to member.
-			$pmproemail = new PMProEmail();
-			$pmproemail->sendCheckoutEmail( $user, $morder );
-
-			// Send email to admin.
-			$pmproemail = new PMProEmail();
-			$pmproemail->sendCheckoutAdminEmail( $user, $morder );
-		}
-
-		return true;
-	} else {
-		return false;
-	}
+	pmpro_pull_checkout_data_from_order( $morder );
+ 	return pmpro_complete_async_checkout( $morder );
 }
 
 /**

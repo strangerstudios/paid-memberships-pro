@@ -210,10 +210,67 @@
 			//this looks different for each gateway, but generally an array of some sort
 			return array();
 		}
-		
+
 		function getTransactionStatus(&$order)
 		{			
 			//this looks different for each gateway, but generally an array of some sort
 			return array();
+		}
+
+		/**
+		 * Returns whether the gateway allows for payment method updates.
+		 *
+		 * @since TBD
+		 *
+		 * @return string|false 'individual' if the gateway allows for payment method updates for individual subscriptions, 
+		 *                      'all' if the gateway updates all subscriptions, or false if the gateway does not support payment method updates.
+		 */
+		function supports_payment_method_updates() {
+			return false;
+		}
+
+		/**
+		 * Synchronizes a subscription with this payment gateway.
+		 *
+		 * @since TBD
+		 *
+		 * @param PMPro_Subscription $subscription The subscription to synchronize.
+		 * @return string|null Error message is returned if update fails.
+		 */
+		public function update_subscription_info( $subscription ) {
+			// Track the fields that need to be updated.
+			$update_array = array();
+
+			// Update the start date to the date of the first order for this subscription if it
+			// it is earlier than the current start date.
+			$oldest_orders = $subscription->get_orders( [
+				'limit'   => 1,
+				'orderby' => '`timestamp` ASC, `id` ASC',
+			] );
+			if ( ! empty( $oldest_orders ) ) {
+				$oldest_order = current( $oldest_orders );
+				if ( empty( $subscription->get_startdate() ) || $oldest_order->getTimestamp( true ) < strtotime( $subscription->get_startdate() ) ) {
+					$update_array['startdate'] = date_i18n( 'Y-m-d H:i:s', $oldest_order->getTimestamp( true ) );
+				}
+			}
+
+			// If the next payment date has passed, update the next payment date based on the most recent order.
+			if ( strtotime( $subscription->get_next_payment_date() ) < time() && ! empty( $subscription->get_cycle_number() ) ) {
+				// Only update the next payment date if we are not at checkout or if we don't have a next payment date yet.
+				// We don't want to update profile start dates set at checkout.
+				if ( ! pmpro_is_checkout() || empty( $subscription->get_next_payment_date() ) ) {
+					$newest_orders = $subscription->get_orders( array( 'limit' => 1 ) );
+					if ( ! empty( $newest_orders ) ) {
+						// Get the most recent order.
+						$newest_order = current( $newest_orders );
+
+						// Calculate the next payment date.
+						$update_array['next_payment_date'] = date_i18n( 'Y-m-d H:i:s', strtotime( '+ ' . $subscription->get_cycle_number() . ' ' . $subscription->get_cycle_period(), $newest_order->getTimestamp( true ) ) );
+					}
+				}
+			}
+
+			// Update the subscription.
+			$subscription->set( $update_array );
 		}
 	}

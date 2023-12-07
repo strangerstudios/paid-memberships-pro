@@ -24,7 +24,7 @@
 			$group->name        = sanitize_text_field( $group->name );
 			$group->checkout    = 'yes' === $group->checkout ? 'yes' : 'no';
 			$group->profile     = sanitize_text_field( $group->profile );
-			$group->description = sanitize_text_field( $group->description );
+			$group->description = wp_kses_post( $group->description );
 			$group->levels      = array_map( 'intval', $group->levels );
 			foreach ( $group->fields as $field ) {
 				$field_name 		  = pmpro_format_field_name( $field->name ); //Replace spaces and dashes with underscores.
