@@ -66,14 +66,17 @@ export default function MembershipContentControls (props) {
 				title={__( 'Content Visibility', 'paid-memberships-pro' ) }
 				initialOpen={true}
 			>
-			{ props.name !== 'pmpro/membership' && <ToggleControl
-
-					label={ visibilityBlockEnabled 	? __('Disable Content Visibility for this block', 'paid-memberships-pro') : __('Enable Content Visibility for this block', 'paid-memberships-pro') }
-					onChange={ (newValue) => {
-						setAttributes({ visibilityBlockEnabled: newValue ? true : false });
-					}}
-					checked={ visibilityBlockEnabled }
-				/>}
+				{
+					props.name !== 'pmpro/membership' &&
+					<ToggleControl
+						label={ visibilityBlockEnabled 	? __('Disable Content Visibility for this block', 'paid-memberships-pro') : __('Enable Content Visibility for this block', 'paid-memberships-pro') }
+						onChange={ (newValue) => {
+							setAttributes({ visibilityBlockEnabled: newValue ? true : false });
+						}}
+						checked={ visibilityBlockEnabled }
+					/>
+				}
+				
 				<div style={{display: visibilityBlockEnabled ? 'block' : 'none' }}>
 					<HStack>
 						{/* Button to toggle visibility to "show" mode */}

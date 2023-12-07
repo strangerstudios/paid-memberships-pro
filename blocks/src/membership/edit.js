@@ -15,7 +15,7 @@ import { InnerBlocks, useBlockProps } from '@wordpress/block-editor';
  */
 import './editor.scss';
 
-import MembershipContentControls from './membershipContentControls'
+import MembershipContentControls from '../block-membership-required-component/membershipContentControls'
 /**
  * Render the Content Visibility block in the editor.
  *
@@ -26,7 +26,7 @@ import MembershipContentControls from './membershipContentControls'
 export default function Edit(props) {
 	// Set up the block.
 	const blockProps = useBlockProps({});
-	const { attributes: { invert_restrictions, segment, levels }, setAttributes, isSelected } = props;
+	const { attributes: { invert_restrictions, segment, levels, visibilityBlockEnabled }, setAttributes, isSelected } = props;
 
 	// Handle migrations from PMPro < 3.0.
 	// If levels is not empty and segment is 'all', we  need to migrate.
@@ -48,6 +48,11 @@ export default function Edit(props) {
 			// If '0' is not in levels, then we do not need to invert subscriptions and just need to change the segment to 'specific'.
 			setAttributes({ invert_restrictions: '0', segment: 'specific' });
 		}
+	}
+
+	// Always set visibilityBlockEnabled to true.
+	if ( visibilityBlockEnabled != true ) {
+		setAttributes({ visibilityBlockEnabled: true });
 	}
 
 	return [

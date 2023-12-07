@@ -1,6 +1,6 @@
 import { __ } from '@wordpress/i18n';
 
-import MembershipContentControls from '../membership/membershipContentControls';
+import MembershipContentControls from './membershipContentControls';
 
 /**
  * Add the visibility attributes to the block settings.

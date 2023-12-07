@@ -152,7 +152,7 @@ function pmpro_apply_block_visibility( $attributes, $content ) {
 					return $attributes['invert_restrictions'] == '0' ? $level : '-' . $level;
 				}, $attributes['levels'] );
 				break;
-			case 'logged_in	':
+			case 'logged_in':
 				$levels_to_check = $attributes['invert_restrictions'] == '0' ? 'L' : '-L';
 				break;
 		}
