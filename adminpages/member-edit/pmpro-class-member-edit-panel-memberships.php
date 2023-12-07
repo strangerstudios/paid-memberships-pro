@@ -219,18 +219,35 @@ class PMPro_Member_Edit_Panel_Memberships extends PMPro_Member_Edit_Panel {
 										<span class="pmpro-level_change-action-label"><?php esc_html_e( 'Level Expiration', 'paid-memberships-pro' ); ?></span>
 										<span class="pmpro-level_change-action-field">
 											<?php
-											$enddate = date( 'Y-m-d H:i', strtotime( '+1 year' ) ); // Default to 1 year in the future.
+											$expiration_input_enddate = date( 'Y-m-d H:i', strtotime( '+1 year' ) ); // Default to 1 year in the future.
 											if ( ! empty( $shown_level->enddate ) ) {
 												// If the user's membership already has an end date, use that.
-												$enddate = date( 'Y-m-d H:i', $shown_level->enddate );
+												$expiration_input_enddate = date( 'Y-m-d H:i', $shown_level->enddate );
 											} elseif ( ! empty( $subscriptions ) ) {
-												// If the user has a subscription, default to the subscription's next paymetn date.
-												$enddate = $subscriptions[0]->get_next_payment_date('Y-m-d H:i');
+												// If the user has a subscription, default to the subscription's next payment date.
+												$expiration_input_enddate = $subscriptions[0]->get_next_payment_date('Y-m-d H:i');
+												$expiration_input_next_payment_date = $expiration_input_enddate;
 											}
 											?>
 											<input type="checkbox" name="<?php echo esc_attr( $edit_level_input_name_base ); ?>[expires]" id="<?php echo esc_attr( $edit_level_input_name_base ); ?>[expires]" value="1" class="pmpro_expires_checkbox" <?php checked( ! empty( $shown_level->enddate ) ) ?>/>
 											<label for="<?php echo esc_attr( $edit_level_input_name_base ); ?>[expires]"><?php esc_html_e( 'Click to set the level expiration date.', 'paid-memberships-pro' ); ?></label>
-											<input type="datetime-local" name="<?php echo esc_attr( $edit_level_input_name_base ); ?>[expiration]" value="<?php echo esc_attr( $enddate ); ?>" <?php echo ( ! empty( $shown_level->enddate ) ? '' : 'style="display: none"' ); ?>>
+											<input type="datetime-local" name="<?php echo esc_attr( $edit_level_input_name_base ); ?>[expiration]" value="<?php echo esc_attr( $expiration_input_enddate ); ?>" <?php echo ( ! empty( $shown_level->enddate ) ? '' : 'style="display: none"' ); ?>>
+											<?php
+												// Show the next payment date for this member if available.
+												if ( ! empty( $expiration_input_next_payment_date ) ) {
+													?>
+													<p class="description" style="display: none;">
+													<?php
+														printf(
+															// translators: %s is the next payment date.
+															esc_html__( 'Note: The next payment date for this level is %s.', 'paid-memberships-pro' ),
+															esc_html( date_i18n( get_option( 'date_format' ), strtotime( $expiration_input_next_payment_date ) ) )
+														);
+													?>
+													</p>
+													<?php
+												}
+											?>
 										</span>
 									</div>
 
@@ -562,10 +579,13 @@ class PMPro_Member_Edit_Panel_Memberships extends PMPro_Member_Edit_Panel {
 
 		// Show/hide the expiration date field when the checkbox is clicked.
 		jQuery( '#pmpro-member-edit-memberships-panel .pmpro_expires_checkbox' ).on( 'change', function() {
-			if ( jQuery( this ).is( ':checked' ) ) {
-				jQuery( this ).next().next( 'input' ).show();
+			var checkbox = jQuery(this);
+			if (checkbox.is(':checked')) {
+				checkbox.next().next('input').show();
+				checkbox.closest('.pmpro-level_change-action-field').find('p.description').show();
 			} else {
-				jQuery( this ).next().next( 'input' ).hide();
+				checkbox.next().next('input').hide();
+				checkbox.closest('.pmpro-level_change-action-field').find('p.description').hide();
 			}
 		} );
 	</script>
