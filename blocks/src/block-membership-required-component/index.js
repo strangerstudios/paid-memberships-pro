@@ -40,10 +40,9 @@ function addVisibilityAttribute(settings, name) {
 
 wp.hooks.addFilter(
 	'blocks.registerBlockType',
-	'paid-memberships-pro/core-visibility',
+	'pmpro/core-visibility',
 	addVisibilityAttribute
 );
-
 
 /**
  *  Render the Content Visibility block in the inspector controls sidebar.
@@ -68,6 +67,6 @@ const membershipRequiredComponent = wp.compose.createHigherOrderComponent((Block
 
 wp.hooks.addFilter(
 	'editor.BlockEdit',
-	'paid-memberships-pro/core-visibility',
+	'pmpro/core-visibility',
 	membershipRequiredComponent
 );

@@ -16,11 +16,11 @@ import { select } from "@wordpress/data";
 export default function MembershipContentControls (props) {
 	const { attributes: { visibilityBlockEnabled, invert_restrictions, segment, levels, show_noaccess }, setAttributes } = props;
 	
-	//Get the root parent block id
+	// Get the root parent block id
 	const rootParentId = select( 'core/block-editor' ).getBlockHierarchyRootClientId( props.clientId );
-	//Get the root parent block
+	// Get the root parent block
 	const rootParent = select('core/block-editor').getBlock( rootParentId );
-	//We don't want to render the visibility controls on the inner block.
+	// We don't want to render the visibility controls on the inner block.
 	const shouldRender = rootParent.name === props.name;
 
 	// Helper function to handle changes to the segment attribute.
@@ -69,7 +69,7 @@ export default function MembershipContentControls (props) {
 				{
 					props.name !== 'pmpro/membership' &&
 					<ToggleControl
-						label={ visibilityBlockEnabled 	? __('Disable Content Visibility for this block', 'paid-memberships-pro') : __('Enable Content Visibility for this block', 'paid-memberships-pro') }
+						label={ visibilityBlockEnabled 	? __('Disable content visibility for this block', 'paid-memberships-pro') : __('Enable content visibility for this block', 'paid-memberships-pro') }
 						onChange={ (newValue) => {
 							setAttributes({ visibilityBlockEnabled: newValue ? true : false });
 						}}

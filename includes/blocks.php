@@ -167,7 +167,7 @@ function pmpro_apply_block_visibility( $attributes, $content ) {
 }
 
 /**
- * Hook into render_block to filter core blocks  and apply Content Visibility rules.
+ * Hook into render_block to filter core blocks and apply content visibility rules.
  *
  * @param string $block_content The block content.
  * @param array  $block	The block.
@@ -175,18 +175,25 @@ function pmpro_apply_block_visibility( $attributes, $content ) {
  * @since TBD
  */
 function pmpro_filter_core_blocks( $block_content, $block ) {
-	//TODO Replace with https://www.php.net/manual/en/function.str-starts-with when we drop support for PHP 7.x.
-	if ( strpos( $block['blockName'], 'core/' ) === 0 ) {
-		//We need defaults because WP doesn't store defaults in the DB.
-		$attributes = wp_parse_args( $block['attrs'], array(
-			'segment' => 'all',
-			'levels' => array(),
-			'show_noaccess' => '0',
-			'invert_restrictions' => '0',
-		) );
-		require_once( PMPRO_DIR . "/includes/blocks.php" );
-		return pmpro_apply_block_visibility( $attributes, $block_content );
+	// TODO Replace with https://www.php.net/manual/en/function.str-starts-with when we drop support for PHP 7.x.
+
+	// Return block if there are no attributes or content visibility is not enabled.
+	if ( empty( $block['attrs'] ) || empty( $block['attrs']['visibilityBlockEnabled'] ) ) {
+		return $block_content;
 	}
-	return $block_content;
+
+	// Return block if this is not a core block.
+	if ( strpos( $block['blockName'], 'core/' ) != 0 ) {
+		return $block_content;
+	}
+
+	// We need defaults because WP doesn't store defaults in the DB.
+	$attributes = wp_parse_args( $block['attrs'], array(
+		'segment' => 'all',
+		'levels' => array(),
+		'show_noaccess' => '0',
+		'invert_restrictions' => '0',
+	) );
+	return pmpro_apply_block_visibility( $attributes, $block_content );
 }
 add_filter( 'render_block', 'pmpro_filter_core_blocks', 10, 2 );
