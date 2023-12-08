@@ -157,6 +157,13 @@ config.entry = {
     "src",
     "sidebar",
     "index.js"
+  ),
+  "component-content-visibility/index": path.resolve(
+	process.cwd(),
+	"blocks",
+	"src",
+	"component-content-visibility",
+	"index.js"
   )
 };
 config.output = {

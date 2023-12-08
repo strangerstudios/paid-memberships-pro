@@ -78,6 +78,21 @@ function pmpro_block_editor_assets() {
 		wp_enqueue_script( 'pmpro-sidebar-editor-script' );
 	}
 
+	wp_register_script(
+		'pmpro-component-content-visibility-script',
+		PMPRO_URL . '/blocks/build/component-content-visibility/index.js',
+		array( 'wp-blocks', 'wp-element', 'wp-components', 'wp-i18n', 'wp-editor', 'wp-api-request', 'wp-plugins', 'wp-edit-post' )
+	);
+
+	wp_localize_script(
+		'pmpro-component-content-visibility-script',
+		'pmpro_content_visibility_component',
+		array(
+			'post_id' => get_the_ID(),
+		)
+	);
+	wp_enqueue_script( 'pmpro-component-content-visibility-script' );
+
 }
 add_action( 'enqueue_block_editor_assets', 'pmpro_block_editor_assets' );
 
@@ -99,3 +114,86 @@ function pmpro_register_post_meta() {
 	);
 }
 add_action( 'init', 'pmpro_register_post_meta' );
+
+/**
+* Render the block content on the frontend based on content visibility attributes.
+*
+* @param array $attributes The block attributes.
+* @param array  $content The block content.
+* @return string the filtered output
+* @since TBD
+*/
+function pmpro_apply_block_visibility( $attributes, $content ) {
+	$output = '';
+
+	if ( 'all' === $attributes['segment'] && ! empty( $attributes['levels'] ) ) {
+		// Legacy setup for PMPro < 3.0.
+		if ( ! array_key_exists( 'levels', $attributes ) || empty( $attributes['levels'] ) ) {
+			// Assume require any membership level, and do not show to non-members.
+			if ( pmpro_hasMembershipLevel() ) {
+				$output = do_blocks( $content );
+			}
+		} else {
+			if ( pmpro_hasMembershipLevel( $attributes['levels'] ) ) {
+				$output = do_blocks( $content );
+			} elseif ( ! empty( $attributes['show_noaccess'] ) ) {
+				$output = pmpro_get_no_access_message( NULL, $attributes['levels'] );
+			}
+		}
+	} else {
+		// Setup for PMPro >= 3.0.
+		switch ( $attributes['segment'] ) {
+			case 'all':
+				$levels_to_check = $attributes['invert_restrictions'] == '0' ? null : '0';
+				break;
+			case 'specific':
+				// If inverting restrictions, we need to make all level IDs negative.
+				$levels_to_check = array_map( function( $level ) use ( $attributes ) {
+					return $attributes['invert_restrictions'] == '0' ? $level : '-' . $level;
+				}, $attributes['levels'] );
+				break;
+			case 'logged_in':
+				$levels_to_check = $attributes['invert_restrictions'] == '0' ? 'L' : '-L';
+				break;
+		}
+
+		if ( pmpro_hasMembershipLevel( $levels_to_check ) ) {
+			$output = do_blocks( $content );
+		} elseif ( ! empty( $attributes['show_noaccess'] ) && $attributes['invert_restrictions'] == '0' ) {
+			$output = pmpro_get_no_access_message( NULL, $attributes['levels'] );
+		}
+	}
+	return $output;
+}
+
+/**
+ * Hook into render_block to filter core blocks and apply content visibility rules.
+ *
+ * @param string $block_content The block content.
+ * @param array  $block	The block.
+ * @return string The filtered block content.
+ * @since TBD
+ */
+function pmpro_filter_core_blocks( $block_content, $block ) {
+	// TODO Replace with https://www.php.net/manual/en/function.str-starts-with when we drop support for PHP 7.x.
+
+	// Return block if there are no attributes or content visibility is not enabled.
+	if ( empty( $block['attrs'] ) || empty( $block['attrs']['visibilityBlockEnabled'] ) ) {
+		return $block_content;
+	}
+
+	// Return block if this is not a core block.
+	if ( strpos( $block['blockName'], 'core/' ) != 0 ) {
+		return $block_content;
+	}
+
+	// We need defaults because WP doesn't store defaults in the DB.
+	$attributes = wp_parse_args( $block['attrs'], array(
+		'segment' => 'all',
+		'levels' => array(),
+		'show_noaccess' => '0',
+		'invert_restrictions' => '0',
+	) );
+	return pmpro_apply_block_visibility( $attributes, $block_content );
+}
+add_filter( 'render_block', 'pmpro_filter_core_blocks', 10, 2 );
