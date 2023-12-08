@@ -96,12 +96,12 @@
 		 */
 		static function pmpro_payment_option_fields($values, $gateway)
 		{
-			$check_gateway_label = ! empty( $values['check_gateway_label'] ) ? $values['check_gateway_label'] : __( 'Pay by Check', 'paid-memberships-pro' );
+			$check_gateway_label = ! empty( $values['check_gateway_label'] ) ? $values['check_gateway_label'] : __( 'Check', 'paid-memberships-pro' );
 		?>
 		<tr class="pmpro_settings_divider gateway gateway_check" <?php if($gateway != "check") { ?>style="display: none;"<?php } ?>>
 			<td colspan="2">
 				<hr />
-				<h2><?php esc_html_e( sprintf( '%s Settings', $check_gateway_label ), 'paid-memberships-pro' ); ?></h2>
+				<h2><?php echo esc_html( sprintf( __( 'Pay by %s Settings', 'paid-memberships-pro' ), $check_gateway_label ) ); ?></h2>
 			</td>
 		</tr>
 		<tr class="gateway gateway_check" <?php if($gateway != "check") { ?>style="display: none;"<?php } ?>>
