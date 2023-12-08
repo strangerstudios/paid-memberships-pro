@@ -137,7 +137,7 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 
 		/**
 		 * Get all membership levels.
-		 * @since TBD
+		 * @since 3.0
 		 * Example: https://example.com/wp-json/pmpro/v1/membership_levels
 		 */
 		register_rest_route( $pmpro_namespace, '/membership_levels',
@@ -257,7 +257,7 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 
 		/**
 		 * Get the IDs that a post has been restricted to.
-		 * @since TBD
+		 * @since 3.0
 		 * Example: https://example.com/wp-json/pmpro/v1/post_restrictions
 		 */
 		register_rest_route( $pmpro_namespace, '/post_restrictions',
@@ -656,7 +656,7 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 
 		/**
 		 * Get all membership levels.
-		 * @since TBD
+		 * @since 3.0
 		 * Example: https://example.com/wp-json/pmpro/v1/membership_levels
 		 */
 		function pmpro_rest_api_get_membership_levels( $request ) {
@@ -1080,7 +1080,7 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 		/**
 		 * Get the membership level IDs restricting a given post.
 		 *
-		 * @since TBD
+		 * @since 3.0
 		 *
 		 * @param WP_REST_Request $request The REST request.
 		 *
@@ -1105,7 +1105,7 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 		/**
 		 * Set the membership level IDs restricting a given post.
 		 *
-		 * @since TBD
+		 * @since 3.0
 		 *
 		 * @param WP_REST_Request $request The REST request.
 		 * @return WP_REST_Response The REST response.

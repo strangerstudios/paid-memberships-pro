@@ -1018,13 +1018,13 @@ function pmpro_changeMembershipLevel( $level, $user_id = null, $old_level_status
 
 	// Check if we are trying to cancel a single level (Deprecated).
 	if ( empty( $level ) && ! empty( $cancel_level ) ) {
-		_doing_it_wrong( __FUNCTION__, __( 'The $cancel_level parameter is deprecated. Use pmpro_cancelMembershipLevel() instead.', 'paid-memberships-pro' ), 'TBD' );
+		_doing_it_wrong( __FUNCTION__, __( 'The $cancel_level parameter is deprecated. Use pmpro_cancelMembershipLevel() instead.', 'paid-memberships-pro' ), '3.0' );
 		return pmpro_cancelMembershipLevel( $cancel_level, $user_id, $old_level_status );
 	}
 
 	// Check if we are trying to cancel all levels (Deprecated).
 	if ( empty( $level ) && empty( $cancel_level ) ) {
-		_doing_it_wrong( __FUNCTION__, __( 'The pmpro_cancelMembershipLevel() function should be used to cancel membership levels.', 'paid-memberships-pro' ), 'TBD' );
+		_doing_it_wrong( __FUNCTION__, __( 'The pmpro_cancelMembershipLevel() function should be used to cancel membership levels.', 'paid-memberships-pro' ), '3.0' );
 		$membership_levels = pmpro_getMembershipLevelsForUser( $user_id );
 		$success = true;
 		foreach ( $membership_levels as $membership_level ) {
@@ -2290,7 +2290,7 @@ function pmpro_getLevel( $level ) {
 /**
  * Get all PMPro membership levels.
  *
- * @since TBD deprecated the second `$use_cache` argument.
+ * @since 3.0 deprecated the second `$use_cache` argument.
  *
  * @param bool $include_hidden      Include levels marked as hidden/inactive.
  * @param bool $deprecated_argument No longer used.
@@ -4495,7 +4495,7 @@ function pmpro_is_paused() {
  * @return bool True if the option has been updated
  */
 function pmpro_set_pause_mode( $state ) {
-  _deprecated_function( __FUNCTION__, 'TBD' );
+  _deprecated_function( __FUNCTION__, '3.0' );
 	return pmpro_setOption( 'pause_mode', $state );
 }
 
@@ -4523,7 +4523,7 @@ function pmpro_sanitize_period( $period ) {
 /**
  * Set the expiration date for an active membership.
  *
- * @since TBD
+ * @since 3.0
  *
  * @param int $user_id The ID of the user to update.
  * @param int $level_id The ID of the level to update.

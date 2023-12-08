@@ -228,7 +228,7 @@ add_action( 'in_admin_header', 'pmpro_wizard_remove_admin_notices', 11 );
 /**
  * Adds the Paid Memberships Pro branded header to the PMPro settings and admin pages.
  *
- * @since TBD
+ * @since 3.0
  */
 function pmpro_admin_header() {
 	// Assume we should not show our header.

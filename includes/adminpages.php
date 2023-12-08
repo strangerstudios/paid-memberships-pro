@@ -310,7 +310,7 @@ add_action( 'admin_bar_menu', 'pmpro_admin_bar_menu', 1000 );
 /**
  * Redirect away from certain admin pages if the single item doesn't exist.
  *
- * @since TBD
+ * @since 3.0
  * @return void
  */
 function pmpro_admin_init_redirect_single_item_edit() {
@@ -397,7 +397,7 @@ function pmpro_admin_membership_access_menu_bar() {
 
 	/**
 	 * Filter to hide the "Admin Membership Access" menu in the admin bar.
-	 * @since TBD
+	 * @since 3.0
 	 * @param bool $hide Whether to hide the "Admin Membership Access" menu in the admin bar. Default false.
 	 */
 	if ( apply_filters( 'pmpro_hide_admin_membership_access_toolbar', false ) ) {

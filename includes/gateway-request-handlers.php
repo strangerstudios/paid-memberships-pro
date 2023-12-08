@@ -4,7 +4,7 @@
  * Handle IPN/webhook requests from gateways
  * notifying site of subscription cancellation.
  *
- * @since TBD
+ * @since 3.0
  *
  * @param string $subscription_transaction_id The subscription transaction ID.
  * @param string $gateway The gateway that sent the request.
@@ -122,7 +122,7 @@ function pmpro_handle_subscription_cancellation_at_gateway( $subscription_transa
  * Get the most recent order's payment method information and assign
  * it to the order provided where possible
  *
- * @since TBD
+ * @since 3.0
  *
  * @param object $order The Member Order we want to save the billing data to
  *

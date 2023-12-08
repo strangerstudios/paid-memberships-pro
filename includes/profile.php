@@ -2,7 +2,7 @@
 /**
  * Show an overview of active membership information linked to the single member dashboard.
  *
- * @since TBD
+ * @since 3.0
  */
 function pmpro_membership_levels_table_on_profile( $user ) {
 	global $current_user;
@@ -132,13 +132,13 @@ add_action( 'edit_user_profile', 'pmpro_membership_levels_table_on_profile' );
  * Add the "membership level" field to the edit user/profile page,
  * along with other membership-related fields.
  *
- * @deprecated TBD Use the single member dashboard.
+ * @deprecated 3.0 Use the single member dashboard.
  */
 function pmpro_membership_level_profile_fields($user)
 {
 	global $current_user;
 
-	_deprecated_function( __FUNCTION__, 'TBD' );
+	_deprecated_function( __FUNCTION__, '3.0' );
 
 	$membership_level_capability = apply_filters("pmpro_edit_member_capability", "manage_options");
 	if(!current_user_can($membership_level_capability))
@@ -541,11 +541,11 @@ function pmpro_membership_level_profile_fields($user)
 	When applied, previous subscriptions won't be cancelled when changing membership levels.
 	Use a function here instead of __return_false so we can easily turn add and remove it.
 
-	@deprecated TBD
+	@deprecated 3.0
 */
 function pmpro_cancel_previous_subscriptions_false()
 {
-	_deprecated_function( __FUNCTION__, 'TBD' );
+	_deprecated_function( __FUNCTION__, '3.0' );
 
 	return false;
 }
@@ -553,12 +553,12 @@ function pmpro_cancel_previous_subscriptions_false()
 /**
  * Update the membership level when the user profile is updated.
  *
- * @deprecated TBD Use the single member dashboard.
+ * @deprecated 3.0 Use the single member dashboard.
  */
 function pmpro_membership_level_profile_fields_update() {
 	global $wpdb, $current_user;
 
-	_deprecated_function( __FUNCTION__, 'TBD' );
+	_deprecated_function( __FUNCTION__, '3.0' );
 
 	wp_get_current_user();
 
@@ -697,12 +697,12 @@ function pmpro_membership_level_profile_fields_update() {
 /**
  * Add the history view to the user profile
  *
- * @deprecated TBD Use the single member dashboard.
+ * @deprecated 3.0 Use the single member dashboard.
  */
 function pmpro_membership_history_profile_fields( $user ) {
 	global $current_user;
 
-	_deprecated_function( __FUNCTION__, 'TBD' );
+	_deprecated_function( __FUNCTION__, '3.0' );
 
 	$membership_level_capability = apply_filters( 'pmpro_edit_member_capability', 'pmpro_edit_members' );
 
@@ -1009,10 +1009,10 @@ function pmpro_membership_history_profile_fields( $user ) {
 /**
  * Allow orders to be emailed from the member history section on user profile.
  *
- * @deprecated TBD Use the single member dashboard.
+ * @deprecated 3.0 Use the single member dashboard.
  */
 function pmpro_membership_history_email_modal() {
-	_deprecated_function( __FUNCTION__, 'TBD' );
+	_deprecated_function( __FUNCTION__, '3.0' );
 
 	$screen = get_current_screen();
 	if ( $screen->base == 'user-edit' || $screen->base == 'profile' ) {

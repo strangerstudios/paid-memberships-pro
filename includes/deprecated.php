@@ -154,11 +154,11 @@ function pmpro_multiple_memberships_per_user_deprecated() {
 		class MemberInvoice extends MemberOrder {
 			// Show deprecation warning in constructor.
 			public function __construct() {
-				_deprecated_function( __CLASS__, 'TBD', 'MemberOrder' );
+				_deprecated_function( __CLASS__, '3.0', 'MemberOrder' );
 			}
 
 			function getLastMemberInvoice( $user_id = NULL, $status = 'success' ) {
-				_deprecated_function( __CLASS__ . '::' . __FUNCTION__, 'TBD', 'MemberOrder::getLastMemberOrder' );
+				_deprecated_function( __CLASS__ . '::' . __FUNCTION__, '3.0', 'MemberOrder::getLastMemberOrder' );
 				return $this->getLastMemberOrder( $user_id, $status );
 			}
 		}
@@ -167,35 +167,35 @@ function pmpro_multiple_memberships_per_user_deprecated() {
 	// pmprommpu_load_plugin_text_domain function.
 	if ( ! function_exists( 'pmprommpu_load_plugin_text_domain' ) ) {
 		function pmprommpu_load_plugin_text_domain() {
-			_deprecated_function( __FUNCTION__, 'TBD' );
+			_deprecated_function( __FUNCTION__, '3.0' );
 		}
 	}
 
 	// pmprommpu_activation function.
 	if ( ! function_exists( 'pmprommpu_activation' ) ) {
 		function pmprommpu_activation() {
-			_deprecated_function( __FUNCTION__, 'TBD' );
+			_deprecated_function( __FUNCTION__, '3.0' );
 		}
 	}
 
 	// pmprommpu_deactivation function.
 	if ( ! function_exists( 'pmprommpu_deactivation' ) ) {
 		function pmprommpu_deactivation() {
-			_deprecated_function( __FUNCTION__, 'TBD' );
+			_deprecated_function( __FUNCTION__, '3.0' );
 		}
 	}
 
 	// pmprommpu_init function.
 	if ( ! function_exists( 'pmprommpu_init' ) ) {
 		function pmprommpu_init() {
-			_deprecated_function( __FUNCTION__, 'TBD' );
+			_deprecated_function( __FUNCTION__, '3.0' );
 		}
 	}
 
 	// pmprommpu_send_checkout_emails function.
 	if ( ! function_exists( 'pmprommpu_send_checkout_emails' ) ) {
 		function pmprommpu_send_checkout_emails() {
-			_deprecated_function( __FUNCTION__, 'TBD' );
+			_deprecated_function( __FUNCTION__, '3.0' );
 			return false;
 		}
 	}
@@ -203,14 +203,14 @@ function pmpro_multiple_memberships_per_user_deprecated() {
 	// pmprommpu_setDBTables function.
 	if ( ! function_exists( 'pmprommpu_setDBTables' ) ) {
 		function pmprommpu_setDBTables() {
-			_deprecated_function( __FUNCTION__, 'TBD' );
+			_deprecated_function( __FUNCTION__, '3.0' );
 		}
 	}
 
 	// pmprommpu_is_loaded function.
 	if ( ! function_exists( 'pmprommpu_is_loaded' ) ) {
 		function pmprommpu_is_loaded() {
-			_deprecated_function( __FUNCTION__, 'TBD' );
+			_deprecated_function( __FUNCTION__, '3.0' );
 			return true;
 		}
 	}
@@ -218,7 +218,7 @@ function pmpro_multiple_memberships_per_user_deprecated() {
 	// pmprommpu_plugin_dir function.
 	if ( ! function_exists( 'pmprommpu_plugin_dir' ) ) {
 		function pmprommpu_plugin_dir() {
-			_deprecated_function( __FUNCTION__, 'TBD' );
+			_deprecated_function( __FUNCTION__, '3.0' );
 			return '';
 		}
 	}
@@ -226,7 +226,7 @@ function pmpro_multiple_memberships_per_user_deprecated() {
 	// pmprommpu_get_groups function.
 	if ( ! function_exists( 'pmprommpu_get_groups' ) ) {
 		function pmprommpu_get_groups() {
-			_deprecated_function( __FUNCTION__, 'TBD', 'pmpro_get_level_groups' );
+			_deprecated_function( __FUNCTION__, '3.0', 'pmpro_get_level_groups' );
 			return pmpro_get_level_groups();
 		}
 	}
@@ -234,7 +234,7 @@ function pmpro_multiple_memberships_per_user_deprecated() {
 	// pmprommpu_create_group function.
 	if ( ! function_exists( 'pmprommpu_create_group' ) ) {
 		function pmprommpu_create_group( $name, $allowmulti ) {
-			_deprecated_function( __FUNCTION__, 'TBD', 'pmpro_create_level_group' );
+			_deprecated_function( __FUNCTION__, '3.0', 'pmpro_create_level_group' );
 			return pmpro_create_level_group( $name, $allowmulti );
 		}
 	}
@@ -242,7 +242,7 @@ function pmpro_multiple_memberships_per_user_deprecated() {
 	// pmprommpu_set_level_for_group function.
 	if ( ! function_exists( 'pmprommpu_set_level_for_group' ) ) {
 		function pmprommpu_set_level_for_group( $level_id, $group_id ) {
-			_deprecated_function( __FUNCTION__, 'TBD', 'pmpro_add_level_to_group' );
+			_deprecated_function( __FUNCTION__, '3.0', 'pmpro_add_level_to_group' );
 			return pmpro_add_level_to_group( $level_id, $group_id );
 		}
 	}
@@ -250,7 +250,7 @@ function pmpro_multiple_memberships_per_user_deprecated() {
 	// pmprommpu_get_levels_and_groups_in_order function.
 	if ( ! function_exists( 'pmprommpu_get_levels_and_groups_in_order' ) ) {
 		function pmprommpu_get_levels_and_groups_in_order( $includehidden = false ) {
-			_deprecated_function( __FUNCTION__, 'TBD', 'pmpro_get_level_groups_in_order' );
+			_deprecated_function( __FUNCTION__, '3.0', 'pmpro_get_level_groups_in_order' );
 			global $wpdb;
 			$retarray = array();
 			$pmpro_levels = pmpro_getAllLevels($includehidden, true);
@@ -297,7 +297,7 @@ function pmpro_multiple_memberships_per_user_deprecated() {
 	// pmprommpu_gateway_supports_multiple_level_checkout function.
 	if ( ! function_exists( 'pmprommpu_gateway_supports_multiple_level_checkout' ) ) {
 		function pmprommpu_gateway_supports_multiple_level_checkout( $gateway ) {
-			_deprecated_function( __FUNCTION__, 'TBD' );
+			_deprecated_function( __FUNCTION__, '3.0' );
 			return false;
 		}
 	}
@@ -305,14 +305,14 @@ function pmpro_multiple_memberships_per_user_deprecated() {
 	// pmprommpu_override_user_pages function.
 	if ( ! function_exists( 'pmprommpu_override_user_pages' ) ) {
 		function pmprommpu_override_user_pages() {
-			_deprecated_function( __FUNCTION__, 'TBD' );
+			_deprecated_function( __FUNCTION__, '3.0' );
 		}
 	}
 
 	// pmprommpu_get_group_for_level function.
 	if ( ! function_exists( 'pmprommpu_get_group_for_level' ) ) {
 		function pmprommpu_get_group_for_level( $level_id ) {
-			_deprecated_function( __FUNCTION__, 'TBD', 'pmpro_get_group_id_for_level' );
+			_deprecated_function( __FUNCTION__, '3.0', 'pmpro_get_group_id_for_level' );
 			return pmpro_get_group_id_for_level( $level_id );
 		}
 	}
@@ -320,7 +320,7 @@ function pmpro_multiple_memberships_per_user_deprecated() {
 	// pmprommpu_set_group_for_level function.
 	if ( ! function_exists( 'pmprommpu_set_group_for_level' ) ) {
 		function pmprommpu_set_group_for_level( $level_id, $group_id ) {
-			_deprecated_function( __FUNCTION__, 'TBD', 'pmpro_add_level_to_group' );
+			_deprecated_function( __FUNCTION__, '3.0', 'pmpro_add_level_to_group' );
 			return pmpro_add_level_to_group( $level_id, $group_id );
 		}
 	}
@@ -328,35 +328,35 @@ function pmpro_multiple_memberships_per_user_deprecated() {
 	// pmprommpu_add_group function.
 	if ( ! function_exists( 'pmprommpu_add_group' ) ) {
 		function pmprommpu_add_group() {
-			_deprecated_function( __FUNCTION__, 'TBD' );
+			_deprecated_function( __FUNCTION__, '3.0' );
 		}
 	}
 
 	// pmprommpu_edit_group function.
 	if ( ! function_exists( 'pmprommpu_edit_group' ) ) {
 		function pmprommpu_edit_group() {
-			_deprecated_function( __FUNCTION__, 'TBD' );
+			_deprecated_function( __FUNCTION__, '3.0' );
 		}
 	}
 
 	// pmprommpu_del_group function.
 	if ( ! function_exists( 'pmprommpu_del_group' ) ) {
 		function pmprommpu_del_group() {
-			_deprecated_function( __FUNCTION__, 'TBD' );
+			_deprecated_function( __FUNCTION__, '3.0' );
 		}
 	}
 
 	// pmprommpu_update_level_and_group_order function.
 	if ( ! function_exists( 'pmprommpu_update_level_and_group_order' ) ) {
 		function pmprommpu_update_level_and_group_order() {
-			_deprecated_function( __FUNCTION__, 'TBD' );
+			_deprecated_function( __FUNCTION__, '3.0' );
 		}
 	}
 
 	// pmprommpu_get_levels_from_latest_checkout function.
 	if ( ! function_exists( 'pmprommpu_get_levels_from_latest_checkout' ) ) {
 		function pmprommpu_get_levels_from_latest_checkout() {
-			_deprecated_function( __FUNCTION__, 'TBD' );
+			_deprecated_function( __FUNCTION__, '3.0' );
 			global $wpdb, $current_user;
 			if(empty($user_id))
 			{
@@ -397,7 +397,7 @@ function pmpro_multiple_memberships_per_user_deprecated() {
 	// pmprommpu_join_with_and function.
 	if ( ! function_exists( 'pmprommpu_join_with_and' ) ) {
 		function pmprommpu_join_with_and( $array ) {
-			_deprecated_function( __FUNCTION__, 'TBD' );
+			_deprecated_function( __FUNCTION__, '3.0' );
 			$outstring = "";
 			if(!is_array($inarray) || count($inarray)<1) { return $outstring; }
 			$lastone = array_pop($inarray);
@@ -414,7 +414,7 @@ function pmpro_multiple_memberships_per_user_deprecated() {
 	// pmprommpu_hasMembershipGroup function.
 	if ( ! function_exists( 'pmprommpu_hasMembershipGroup' ) ) {
 		function pmprommpu_hasMembershipGroup( $groups = null, $user_id = null ) {
-			_deprecated_function( __FUNCTION__, 'TBD', 'pmpro_has_membership_access' );
+			_deprecated_function( __FUNCTION__, '3.0', 'pmpro_has_membership_access' );
 			global $current_user, $wpdb;
 			//assume false
 			$return = false;
@@ -455,7 +455,7 @@ function pmpro_multiple_memberships_per_user_deprecated() {
 	// pmprommpu_addMembershipLevel function.
 	if ( ! function_exists( 'pmprommpu_addMembershipLevel' ) ) {
 		function pmprommpu_addMembershipLevel( $level_id, $user_id = null ) {
-			_deprecated_function( __FUNCTION__, 'TBD', 'pmpro_changeMembershipLevel' );
+			_deprecated_function( __FUNCTION__, '3.0', 'pmpro_changeMembershipLevel' );
 			pmpro_changeMembershipLevel( $level_id, $user_id );
 		}
 	}
@@ -463,35 +463,35 @@ function pmpro_multiple_memberships_per_user_deprecated() {
 	// pmprommpu_init_checkout_levels function.
 	if ( ! function_exists( 'pmprommpu_init_checkout_levels' ) ) {
 		function pmprommpu_init_checkout_levels() {
-			_deprecated_function( __FUNCTION__, 'TBD' );
+			_deprecated_function( __FUNCTION__, '3.0' );
 		}
 	}
 
 	// pmprommpu_template_redirect_dupe_level_check function.
 	if ( ! function_exists( 'pmprommpu_template_redirect_dupe_level_check' ) ) {
 		function pmprommpu_template_redirect_dupe_level_check() {
-			_deprecated_function( __FUNCTION__, 'TBD' );
+			_deprecated_function( __FUNCTION__, '3.0' );
 		}
 	}
 
 	// pmprommpu_addin_jquery_dialog function.
 	if ( ! function_exists( 'pmprommpu_addin_jquery_dialog' ) ) {
 		function pmprommpu_addin_jquery_dialog() {
-			_deprecated_function( __FUNCTION__, 'TBD' );
+			_deprecated_function( __FUNCTION__, '3.0' );
 		}
 	}
 
 	// pmprommpu_frontend_scripts function.
 	if ( ! function_exists( 'pmprommpu_frontend_scripts' ) ) {
 		function pmprommpu_frontend_scripts() {
-			_deprecated_function( __FUNCTION__, 'TBD' );
+			_deprecated_function( __FUNCTION__, '3.0' );
 		}
 	}
 
 	// pmprommpu_checkout_level_text function.
 	if ( ! function_exists( 'pmprommpu_checkout_level_text' ) ) {
 		function pmprommpu_checkout_level_text( $level_text ) {
-			_deprecated_function( __FUNCTION__, 'TBD' );
+			_deprecated_function( __FUNCTION__, '3.0' );
 			return $level_text;
 		}
 	}
@@ -499,7 +499,7 @@ function pmpro_multiple_memberships_per_user_deprecated() {
 	// pmprommpu_registration_checks_single_level function.
 	if ( ! function_exists( 'pmprommpu_registration_checks_single_level' ) ) {
 		function pmprommpu_registration_checks_single_level( $continue ) {
-			_deprecated_function( __FUNCTION__, 'TBD' );
+			_deprecated_function( __FUNCTION__, '3.0' );
 			return $continue;
 		}
 	}
@@ -507,7 +507,7 @@ function pmpro_multiple_memberships_per_user_deprecated() {
 	// pmprommpu_pmpro_deactivate_old_levels function.
 	if ( ! function_exists( 'pmprommpu_pmpro_deactivate_old_levels' ) ) {
 		function pmprommpu_pmpro_deactivate_old_levels( $deactivate ) {
-			_deprecated_function( __FUNCTION__, 'TBD' );
+			_deprecated_function( __FUNCTION__, '3.0' );
 			return $deactivate;
 		}
 	}
@@ -515,7 +515,7 @@ function pmpro_multiple_memberships_per_user_deprecated() {
 	// pmprommpu_pmpro_cancel_previous_subscriptions function.
 	if ( ! function_exists( 'pmprommpu_pmpro_cancel_previous_subscriptions' ) ) {
 		function pmprommpu_pmpro_cancel_previous_subscriptions( $cancel ) {
-			_deprecated_function( __FUNCTION__, 'TBD' );
+			_deprecated_function( __FUNCTION__, '3.0' );
 			return $cancel;
 		}
 	}
@@ -523,14 +523,14 @@ function pmpro_multiple_memberships_per_user_deprecated() {
 	// pmprommpu_pmpro_after_checkout function.
 	if ( ! function_exists( 'pmprommpu_pmpro_after_checkout' ) ) {
 		function pmprommpu_pmpro_after_checkout( $user_id, $checkout_statuses ) {
-			_deprecated_function( __FUNCTION__, 'TBD' );
+			_deprecated_function( __FUNCTION__, '3.0' );
 		}
 	}
 
 	// pmprommpu_pmpro_membership_levels_table function.
 	if ( ! function_exists( 'pmprommpu_pmpro_membership_levels_table' ) ) {
 		function pmprommpu_pmpro_membership_levels_table( $html ) {
-			_deprecated_function( __FUNCTION__, 'TBD' );
+			_deprecated_function( __FUNCTION__, '3.0' );
 			return $html;
 		}
 	}
@@ -538,28 +538,28 @@ function pmpro_multiple_memberships_per_user_deprecated() {
 	// pmprommpu_add_group_to_level_options function.
 	if ( ! function_exists( 'pmprommpu_add_group_to_level_options' ) ) {
 		function pmprommpu_add_group_to_level_options() {
-			_deprecated_function( __FUNCTION__, 'TBD' );
+			_deprecated_function( __FUNCTION__, '3.0' );
 		}
 	}
 
 	// pmprommpu_save_group_on_level_edit function.
 	if ( ! function_exists( 'pmprommpu_save_group_on_level_edit' ) ) {
 		function pmprommpu_save_group_on_level_edit( $level_id ) {
-			_deprecated_function( __FUNCTION__, 'TBD' );
+			_deprecated_function( __FUNCTION__, '3.0' );
 		}
 	}
 
 	// pmprommpu_on_del_level function.
 	if ( ! function_exists( 'pmprommpu_on_del_level' ) ) {
 		function pmprommpu_on_del_level( $level_id ) {
-			_deprecated_function( __FUNCTION__, 'TBD' );
+			_deprecated_function( __FUNCTION__, '3.0' );
 		}
 	}
 
 	// pmprommpu_stop_default_checkout_emails function.
 	if ( ! function_exists( 'pmprommpu_stop_default_checkout_emails' ) ) {
 		function pmprommpu_stop_default_checkout_emails( $send ) {
-			_deprecated_function( __FUNCTION__, 'TBD' );
+			_deprecated_function( __FUNCTION__, '3.0' );
 			return $send;
 		}
 	}
@@ -567,7 +567,7 @@ function pmpro_multiple_memberships_per_user_deprecated() {
 	// pmprommpu_show_multiple_levels_in_memlist function.
 	if ( ! function_exists( 'pmprommpu_show_multiple_levels_in_memlist' ) ) {
 		function pmprommpu_show_multiple_levels_in_memlist( $inuser ) {
-			_deprecated_function( __FUNCTION__, 'TBD' );
+			_deprecated_function( __FUNCTION__, '3.0' );
 			return $inuser;
 		}
 	}
@@ -575,7 +575,7 @@ function pmpro_multiple_memberships_per_user_deprecated() {
 	// pmprommpu_memberslist_extra_cols function.
 	if ( ! function_exists( 'pmprommpu_memberslist_extra_cols' ) ) {
 		function pmprommpu_memberslist_extra_cols( $cols ) {
-			_deprecated_function( __FUNCTION__, 'TBD' );
+			_deprecated_function( __FUNCTION__, '3.0' );
 			return $cols;
 		}
 	}
@@ -583,21 +583,21 @@ function pmpro_multiple_memberships_per_user_deprecated() {
 	// pmprommpu_fill_memberslist_col_member_number function.
 	if ( ! function_exists( 'pmprommpu_fill_memberslist_col_member_number' ) ) {
 		function pmprommpu_fill_memberslist_col_member_number() {
-			_deprecated_function( __FUNCTION__, 'TBD' );
+			_deprecated_function( __FUNCTION__, '3.0' );
 		}
 	}
 
 	// pmprommpu_set_checkout_id function.
 	if ( ! function_exists( 'pmprommpu_set_checkout_id' ) ) {
 		function pmprommpu_set_checkout_id() {
-			_deprecated_function( __FUNCTION__, 'TBD' );
+			_deprecated_function( __FUNCTION__, '3.0' );
 		}
 	}
 
 	// pmprommpu_pmpro_require_billing function.
 	if ( ! function_exists( 'pmprommpu_pmpro_require_billing' ) ) {
 		function pmprommpu_pmpro_require_billing( $require_billing ) {
-			_deprecated_function( __FUNCTION__, 'TBD' );
+			_deprecated_function( __FUNCTION__, '3.0' );
 			return $require_billing;
 		}
 	}
@@ -605,28 +605,28 @@ function pmpro_multiple_memberships_per_user_deprecated() {
 	// pmprommpu_init_profile_hooks function.
 	if ( ! function_exists( 'pmprommpu_init_profile_hooks' ) ) {
 		function pmprommpu_init_profile_hooks() {
-			_deprecated_function( __FUNCTION__, 'TBD' );
+			_deprecated_function( __FUNCTION__, '3.0' );
 		}
 	}
 
 	// pmprommpu_membership_level_profile_fields function.
 	if ( ! function_exists( 'pmprommpu_membership_level_profile_fields' ) ) {
 		function pmprommpu_membership_level_profile_fields( $user ) {
-			_deprecated_function( __FUNCTION__, 'TBD' );
+			_deprecated_function( __FUNCTION__, '3.0' );
 		}
 	}
 
 	// pmprommpu_membership_level_profile_fields_update function.
 	if ( ! function_exists( 'pmprommpu_membership_level_profile_fields_update' ) ) {
 		function pmprommpu_membership_level_profile_fields_update() {
-			_deprecated_function( __FUNCTION__, 'TBD' );
+			_deprecated_function( __FUNCTION__, '3.0' );
 		}
 	}
 
 	// pmprommpu_setup_and_upgrade function.
 	if ( ! function_exists( 'pmprommpu_setup_and_upgrade' ) ) {
 		function pmprommpu_setup_and_upgrade() {
-			_deprecated_function( __FUNCTION__, 'TBD', 'pmpro_db_delta' );
+			_deprecated_function( __FUNCTION__, '3.0', 'pmpro_db_delta' );
 			pmpro_db_delta();
 		}
 	}
@@ -634,7 +634,7 @@ function pmpro_multiple_memberships_per_user_deprecated() {
 	// pmprommpu_db_delta function.
 	if ( ! function_exists( 'pmprommpu_db_delta' ) ) {
 		function pmprommpu_db_delta() {
-			_deprecated_function( __FUNCTION__, 'TBD', 'pmpro_db_delta' );
+			_deprecated_function( __FUNCTION__, '3.0', 'pmpro_db_delta' );
 			pmpro_db_delta();
 		}
 	}
@@ -642,7 +642,7 @@ function pmpro_multiple_memberships_per_user_deprecated() {
 	// pmprommpu_setup_v1 function.
 	if ( ! function_exists( 'pmprommpu_setup_v1' ) ) {
 		function pmprommpu_setup_v1() {
-			_deprecated_function( __FUNCTION__, 'TBD', 'pmpro_db_delta' );
+			_deprecated_function( __FUNCTION__, '3.0', 'pmpro_db_delta' );
 			pmpro_db_delta();
 		}
 	}
@@ -655,19 +655,19 @@ add_action( 'plugins_loaded', 'pmpro_multiple_memberships_per_user_deprecated', 
 function pmpro_stripe_billing_limits_deprecated() {
 	if ( ! function_exists( 'pmprosbl_pmpro_added_order' ) ) {
 		function pmprosbl_pmpro_added_order() {
-			_deprecated_function( __FUNCTION__, 'TBD' );
+			_deprecated_function( __FUNCTION__, '3.0' );
 		}
 	}
 
 	if ( ! function_exists( 'pmprosbl_pmpro_stripe_subscription_deleted' ) ) {
 		function pmprosbl_pmpro_stripe_subscription_deleted() {
-			_deprecated_function( __FUNCTION__, 'TBD' );
+			_deprecated_function( __FUNCTION__, '3.0' );
 		}
 	}
 
 	if ( ! function_exists( 'pmprosbl_is_billing_limit_reached' ) ) {
 		function pmprosbl_is_billing_limit_reached( $order ) {
-			_deprecated_function( __FUNCTION__, 'TBD' );
+			_deprecated_function( __FUNCTION__, '3.0' );
 
 			// Get the subscription for this order.
 			$subscription = $order->get_subscription();
@@ -681,7 +681,7 @@ function pmpro_stripe_billing_limits_deprecated() {
 
 	if ( ! function_exists( 'pmprosbl_plugin_row_meta' ) ) {
 		function pmprosbl_plugin_row_meta() {
-			_deprecated_function( __FUNCTION__, 'TBD' );
+			_deprecated_function( __FUNCTION__, '3.0' );
 		}
 	}
 }
@@ -694,21 +694,21 @@ function pmpro_cancel_on_next_payment_date_deprecated() {
 	// pmproconpd_load_text_domain function.
 	if ( ! function_exists( 'pmproconpd_load_text_domain' ) ) {
 		function pmproconpd_load_text_domain() {
-			_deprecated_function( __FUNCTION__, 'TBD' );
+			_deprecated_function( __FUNCTION__, '3.0' );
 		}
 	}
 
 	// pmproconpd_pmpro_change_level function.
 	if ( ! function_exists( 'pmproconpd_pmpro_change_level' ) ) {
 		function pmproconpd_pmpro_change_level( $level_id, $user_id ) {
-			_deprecated_function( __FUNCTION__, 'TBD' );
+			_deprecated_function( __FUNCTION__, '3.0' );
 		}
 	}
 
 	// pmproconpd_gettext_cancel_text function.
 	if ( ! function_exists( 'pmproconpd_gettext_cancel_text' ) ) {
 		function pmproconpd_gettext_cancel_text( $translated_text, $text, $domain ) {
-			_deprecated_function( __FUNCTION__, 'TBD' );
+			_deprecated_function( __FUNCTION__, '3.0' );
 			return $translated_text;
 		}
 	}
@@ -716,7 +716,7 @@ function pmpro_cancel_on_next_payment_date_deprecated() {
 	// pmproconpd_pmpro_email_body function.
 	if ( ! function_exists( 'pmproconpd_pmpro_email_body' ) ) {
 		function pmproconpd_pmpro_email_body( $body, $email ) {
-			_deprecated_function( __FUNCTION__, 'TBD' );
+			_deprecated_function( __FUNCTION__, '3.0' );
 			return $body;
 		}
 	}
@@ -724,7 +724,7 @@ function pmpro_cancel_on_next_payment_date_deprecated() {
 	// pmproconpd_pmpro_email_data function.
 	if ( ! function_exists( 'pmproconpd_pmpro_email_data' ) ) {
 		function pmproconpd_pmpro_email_data( $email_data, $email ) {
-			_deprecated_function( __FUNCTION__, 'TBD' );
+			_deprecated_function( __FUNCTION__, '3.0' );
 			return $email_data;
 		}
 	}
@@ -732,7 +732,7 @@ function pmpro_cancel_on_next_payment_date_deprecated() {
 	// pmproconpd_plugin_row_meta function.
 	if ( ! function_exists( 'pmproconpd_plugin_row_meta' ) ) {
 		function pmproconpd_plugin_row_meta( $links, $file ) {
-			_deprecated_function( __FUNCTION__, 'TBD' );
+			_deprecated_function( __FUNCTION__, '3.0' );
 			return $links;
 		}
 	}
@@ -742,7 +742,7 @@ add_action( 'plugins_loaded', 'pmpro_cancel_on_next_payment_date_deprecated', 20
 /**
  * Check for active Add Ons that are not yet MMPU compatible.
  *
- * @since TBD
+ * @since 3.0
  * @return array[string] Add On names that are not yet MMPU compatible.
  */
 function pmpro_get_mmpu_incompatible_add_ons() {

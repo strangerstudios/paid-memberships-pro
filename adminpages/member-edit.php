@@ -3,7 +3,7 @@
 /**
  * Get the panels to display on the member edit page.
  *
- * @since TBD
+ * @since 3.0
  *
  * @return array
  */
@@ -36,7 +36,7 @@ function pmpro_member_edit_get_panels() {
 	/**
 	 * Filter to add/edit panels on the member edit page.
 	 *
-	 * @since TBD
+	 * @since 3.0
 	 *
 	 * @param array $panels The panels to display on the member edit page.
 	 */
@@ -54,7 +54,7 @@ function pmpro_member_edit_get_panels() {
 /**
  * Display the member edit page.
  *
- * @since TBD
+ * @since 3.0
  */
 function pmpro_member_edit_display() {
 	global $current_user;
@@ -133,7 +133,7 @@ function pmpro_member_edit_display() {
 /**
  * Save the member edit page.
  *
- * @since TBD
+ * @since 3.0
  */
 function pmpro_member_edit_save() {
 	global $current_user;

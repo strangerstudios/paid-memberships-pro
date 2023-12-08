@@ -17,14 +17,14 @@
  * @method float  get_trial_amount                Get the trial amount.
  * @method int	  get_trial_limit                 Get the trial limit.
  *
- * @since TBD
+ * @since 3.0
  */
 class PMPro_Subscription {
 
 	/**
 	 * The subscription ID.
 	 *
-	 * @since TBD
+	 * @since 3.0
 	 *
 	 * @var int
 	 */
@@ -33,7 +33,7 @@ class PMPro_Subscription {
 	/**
 	 * The subscription user ID.
 	 *
-	 * @since TBD
+	 * @since 3.0
 	 *
 	 * @var int
 	 */
@@ -42,7 +42,7 @@ class PMPro_Subscription {
 	/**
 	 * The subscription membership level ID.
 	 *
-	 * @since TBD
+	 * @since 3.0
 	 *
 	 * @var int
 	 */
@@ -51,7 +51,7 @@ class PMPro_Subscription {
 	/**
 	 * The subscription gateway.
 	 *
-	 * @since TBD
+	 * @since 3.0
 	 *
 	 * @var string
 	 */
@@ -60,7 +60,7 @@ class PMPro_Subscription {
 	/**
 	 * The subscription gateway environment.
 	 *
-	 * @since TBD
+	 * @since 3.0
 	 *
 	 * @var string
 	 */
@@ -69,7 +69,7 @@ class PMPro_Subscription {
 	/**
 	 * The subscription transaction id.
 	 *
-	 * @since TBD
+	 * @since 3.0
 	 *
 	 * @var string
 	 */
@@ -78,7 +78,7 @@ class PMPro_Subscription {
 	/**
 	 * The subscription status.
 	 *
-	 * @since TBD
+	 * @since 3.0
 	 *
 	 * @var string
 	 */
@@ -87,7 +87,7 @@ class PMPro_Subscription {
 	/**
 	 * The subscription start date (UTC YYYY-MM-DD HH:MM:SS).
 	 *
-	 * @since TBD
+	 * @since 3.0
 	 *
 	 * @var string
 	 */
@@ -96,7 +96,7 @@ class PMPro_Subscription {
 	/**
 	 * The subscription end date (UTC YYYY-MM-DD HH:MM:SS).
 	 *
-	 * @since TBD
+	 * @since 3.0
 	 *
 	 * @var string
 	 */
@@ -105,7 +105,7 @@ class PMPro_Subscription {
 	/**
 	 * The subscription next payment date (UTC YYYY-MM-DD HH:MM:SS).
 	 *
-	 * @since TBD
+	 * @since 3.0
 	 *
 	 * @var string
 	 */
@@ -114,7 +114,7 @@ class PMPro_Subscription {
 	/**
 	 * The subscription billing amount.
 	 *
-	 * @since TBD
+	 * @since 3.0
 	 *
 	 * @var float
 	 */
@@ -123,7 +123,7 @@ class PMPro_Subscription {
 	/**
 	 * The subscription billing cycle number.
 	 *
-	 * @since TBD
+	 * @since 3.0
 	 *
 	 * @var int
 	 */
@@ -132,7 +132,7 @@ class PMPro_Subscription {
 	/**
 	 * The subscription billing cycle period.
 	 *
-	 * @since TBD
+	 * @since 3.0
 	 *
 	 * @var string
 	 */
@@ -141,7 +141,7 @@ class PMPro_Subscription {
 	/**
 	 * The subscription billing limit.
 	 *
-	 * @since TBD
+	 * @since 3.0
 	 *
 	 * @var int
 	 */
@@ -150,7 +150,7 @@ class PMPro_Subscription {
 	/**
 	 * The subscription trial billing amount.
 	 *
-	 * @since TBD
+	 * @since 3.0
 	 *
 	 * @var float
 	 */
@@ -159,7 +159,7 @@ class PMPro_Subscription {
 	/**
 	 * The subscription trial billing cycle number.
 	 *
-	 * @since TBD
+	 * @since 3.0
 	 *
 	 * @var int
 	 */
@@ -170,7 +170,7 @@ class PMPro_Subscription {
 	 *
 	 * This will be filled in automatically when $sub->get_initial_payment() is called.
 	 *
-	 * @since TBD
+	 * @since 3.0
 	 *
 	 * @var null|float|int
 	 * @see get_initial_payment()
@@ -180,7 +180,7 @@ class PMPro_Subscription {
 	/**
 	 * The date that this subscription was last modified.
 	 *
-	 * @since TBD
+	 * @since 3.0
 	 *
 	 * @var string
 	 */
@@ -189,7 +189,7 @@ class PMPro_Subscription {
 	/**
 	 * Create a new PMPro_Subscription object.
 	 *
-	 * @since TBD
+	 * @since 3.0
 	 *
 	 * @param null|int|array|object $subscription The ID of the subscription to set up or the subscription data to load.
 	 *                                            Leave empty for a new subscription.
@@ -236,7 +236,7 @@ class PMPro_Subscription {
 	/**
 	 * Call magic methods.
 	 *
-	 * @since TBD
+	 * @since 3.0
 	 *
 	 * @param string $name      The method that was called.
 	 * @param array  $arguments The arguments passed to the method.
@@ -527,7 +527,7 @@ class PMPro_Subscription {
 	/**
 	 * Get subscriptions for a user.
 	 *
-	 * @since TBD
+	 * @since 3.0
 	 *
 	 * @param int|null             $user_id             ID of the user to get subscriptions for. Defaults to current user.
 	 * @param int|int[]|null       $membership_level_id The membership level ID(s) to get subscriptions for. Defaults to all.
@@ -567,7 +567,7 @@ class PMPro_Subscription {
 	/**
 	 * Get the subscription with the given subscription transaction ID.
 	 *
-	 * @since TBD
+	 * @since 3.0
 	 *
 	 * @param string $subscription_transaction_id Subscription transaction ID to get.
 	 * @param string $gateway                     Gateway to get the subscription for.
@@ -594,7 +594,7 @@ class PMPro_Subscription {
 	/**
 	 * Create a new subscription.
 	 *
-	 * @since TBD
+	 * @since 3.0
 	 *
 	 * @param array $args {
 	 *                    Arguments to create a new subscription.
@@ -667,7 +667,7 @@ class PMPro_Subscription {
 	 * Update the startdate and next payment date based on information
 	 * in the database, then sync with gateway.
 	 *
-	 * @since TBD
+	 * @since 3.0
 	 *
 	 * @return bool True if the subscription was saved, false if not.
 	 */
@@ -712,7 +712,7 @@ class PMPro_Subscription {
 	 * Update a subscription when a recurring payment is made. Should only
 	 * be used on `pmpro_subscription_payment_completed` hook.
 	 *
-	 * @since TBD
+	 * @since 3.0
 	 *
 	 * @param MemberOrder $order The order for the recurring payment that was just processed.
 	 */
@@ -726,7 +726,7 @@ class PMPro_Subscription {
 	/**
 	 * Get the next payment date for this subscription.
 	 *
-	 * @since TBD
+	 * @since 3.0
 	 *
 	 * @param string $format     Format to return the date in.
 	 * @param bool   $local_time Whether to return the date in local time or UTC.
@@ -740,7 +740,7 @@ class PMPro_Subscription {
 	/**
 	 * Get the start date for this subscription.
 	 *
-	 * @since TBD
+	 * @since 3.0
 	 *
 	 * @param string $format     Format to return the date in.
 	 * @param bool   $local_time Whether to return the date in local time or UTC.
@@ -754,7 +754,7 @@ class PMPro_Subscription {
 	/**
 	 * Get the end date for this subscription.
 	 *
-	 * @since TBD
+	 * @since 3.0
 	 *
 	 * @param string $format     Format to return the date in.
 	 * @param bool   $local_time Whether to return the date in local time or UTC.
@@ -768,7 +768,7 @@ class PMPro_Subscription {
 	/**
 	 * Format a date.
 	 *
-	 * @since TBD
+	 * @since 3.0
 	 *
 	 * @param string $date       Date to format.
 	 * @param string $format     Format to return the date in.
@@ -804,7 +804,7 @@ class PMPro_Subscription {
 	/**
 	 * Returns the PMProGateway object for this subscription.
 	 *
-	 * @since TBD
+	 * @since 3.0
 	 *
 	 * @return null|PMProGateway The PMProGateway object, null if not set or class found.
 	 */
@@ -832,7 +832,7 @@ class PMPro_Subscription {
 	/**
 	 * Get the initial payment amount for the subscription.
 	 *
-	 * @since TBD
+	 * @since 3.0
 	 *
 	 * @return float The initial payment amount for the subscription.
 	 */
@@ -866,7 +866,7 @@ class PMPro_Subscription {
 	 * Defaults to returning the latest 100 orders from a subscription based on the subscription transaction ID,
 	 * the gateway, and the gateway environment.
 	 *
-	 * @since TBD
+	 * @since 3.0
 	 *
 	 * @param array $args The query arguments to use.
 	 *
@@ -996,7 +996,7 @@ class PMPro_Subscription {
 	/**
 	 * Get the cost text for this subscription.
 	 *
-	 * @since TBD
+	 * @since 3.0
 	 *
 	 * @return string
 	 */
@@ -1013,7 +1013,7 @@ class PMPro_Subscription {
 	/**
 	 * Set a property for this subscription.
 	 *
-	 * @since TBD
+	 * @since 3.0
 	 *
 	 * @param string|array $property Property to set, or an array with property => value pairs.
 	 * @param mixed        $value    Value to set.
@@ -1043,7 +1043,7 @@ class PMPro_Subscription {
 	/**
 	 * Save the subscription using the current properties set. This will also set $subscription->id on creation.
 	 *
-	 * @since TBD
+	 * @since 3.0
 	 *
 	 * @return bool The new subscription ID or false if the save did not complete.
 	 */
@@ -1136,7 +1136,7 @@ class PMPro_Subscription {
 	 * Legacy: Falls back on calling the gateway's cancel() method if the gateway does not
 	 * support cancelling PMPro_Subscription objects specifically.
 	 *
-	 * @since TBD
+	 * @since 3.0
 	 *
 	 * @return bool True if the subscription was canceled successfully in the payment gateway.
 	 */
@@ -1208,7 +1208,7 @@ class PMPro_Subscription {
 	 * Checks if this subscription has default migration data and,
 	 * if so, fixes it.
 	 *
-	 * @since TBD
+	 * @since 3.0
 	 */
 	private function maybe_fix_default_migration_data() {
 		// Let's first check if the subscription's data looks like migration data.
@@ -1285,7 +1285,7 @@ class PMPro_Subscription {
 	/**
 	 * Check if the billing limit has been reached for this subscription.
 	 *
-	 * @since TBD
+	 * @since 3.0
 	 *
 	 * @return bool False if there is not a billing limit or if the billing limit has not yet been reached. True otherwise.
 	 */

@@ -247,7 +247,7 @@
 		{
 			// If an array is passed for $old_level_id, throw doing it wrong warning.
 			if ( is_array( $old_level_id ) ) {
-				_doing_it_wrong( __FUNCTION__, __( 'The $old_level_id parameter should be an integer, not an array.', 'paid-memberships-pro' ), 'TBD' );
+				_doing_it_wrong( __FUNCTION__, __( 'The $old_level_id parameter should be an integer, not an array.', 'paid-memberships-pro' ), '3.0' );
 			}
 
 			global $wpdb, $current_user;
@@ -294,7 +294,7 @@
 		{
 			// If an array is passed for $old_level_id, throw doing it wrong warning.
 			if ( is_array( $old_level_id ) ) {
-				_doing_it_wrong( __FUNCTION__, __( 'The $old_level_id parameter should be an integer, not an array.', 'paid-memberships-pro' ), 'TBD' );
+				_doing_it_wrong( __FUNCTION__, __( 'The $old_level_id parameter should be an integer, not an array.', 'paid-memberships-pro' ), '3.0' );
 			}
 
 			global $wpdb, $current_user;
@@ -357,12 +357,12 @@
 		function sendCancelOnNextPaymentDateEmail( $user, $level_id ) {
 			// If an array is passed for $level_id, throw doing it wrong warning.
 			if ( is_array( $level_id ) ) {
-				_doing_it_wrong( __FUNCTION__, __( 'The $level_id parameter should be an integer, not an array.', 'paid-memberships-pro' ), 'TBD' );
+				_doing_it_wrong( __FUNCTION__, __( 'The $level_id parameter should be an integer, not an array.', 'paid-memberships-pro' ), '3.0' );
 			}
 
 			// Make sure that the user object is a WP_User object.
 			if ( ! is_a( $user, 'WP_User' ) ) {
-				_doing_it_wrong( __FUNCTION__, __( 'The $user parameter should be a WP_User object.', 'paid-memberships-pro' ), 'TBD' );
+				_doing_it_wrong( __FUNCTION__, __( 'The $user parameter should be a WP_User object.', 'paid-memberships-pro' ), '3.0' );
 			}
 
 			// Get the level object.
@@ -405,12 +405,12 @@
 		function sendCancelOnNextPaymentDateAdminEmail( $user, $level_id ) {
 			// If an array is passed for $level_id, throw doing it wrong warning.
 			if ( is_array( $level_id ) ) {
-				_doing_it_wrong( __FUNCTION__, __( 'The $level_id parameter should be an integer, not an array.', 'paid-memberships-pro' ), 'TBD' );
+				_doing_it_wrong( __FUNCTION__, __( 'The $level_id parameter should be an integer, not an array.', 'paid-memberships-pro' ), '3.0' );
 			}
 
 			// Make sure that the user object is a WP_User object.
 			if ( ! is_a( $user, 'WP_User' ) ) {
-				_doing_it_wrong( __FUNCTION__, __( 'The $user parameter should be a WP_User object.', 'paid-memberships-pro' ), 'TBD' );
+				_doing_it_wrong( __FUNCTION__, __( 'The $user parameter should be a WP_User object.', 'paid-memberships-pro' ), '3.0' );
 			}
 
 			// Get the level object.

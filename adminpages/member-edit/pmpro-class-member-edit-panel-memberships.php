@@ -4,7 +4,7 @@ class PMPro_Member_Edit_Panel_Memberships extends PMPro_Member_Edit_Panel {
 	/**
 	 * Set up the panel.
 	 *
-	 * @since TBD
+	 * @since 3.0
 	 */
 	public function __construct() {
 		$this->slug = 'memberships';
@@ -14,7 +14,7 @@ class PMPro_Member_Edit_Panel_Memberships extends PMPro_Member_Edit_Panel {
 	/**
 	 * Display the panel contents.
 	 *
-	 * @since TBD
+	 * @since 3.0
 	 */
 	protected function display_panel_contents() {
 		global $wpdb;
@@ -667,7 +667,7 @@ class PMPro_Member_Edit_Panel_Memberships extends PMPro_Member_Edit_Panel {
 	/**
 	 * Save the panel.
 	 *
-	 * @since TBD
+	 * @since 3.0
 	 */
 	public function save() {
 		global $wpdb;

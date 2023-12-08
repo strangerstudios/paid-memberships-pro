@@ -23,7 +23,7 @@ abstract class PMPro_Member_Edit_Panel {
 	/**
 	 * Get the slug for this panel.
 	 *
-	 * @since TBD
+	 * @since 3.0
 	 *
 	 * @return string
 	 */
@@ -34,7 +34,7 @@ abstract class PMPro_Member_Edit_Panel {
 	/**
 	 * Display the tab for this panel.
 	 *
-	 * @since TBD
+	 * @since 3.0
 	 *
 	 * @param bool $is_selected True if this is the selected panel, false otherwise.
 	 */
@@ -58,7 +58,7 @@ abstract class PMPro_Member_Edit_Panel {
 	/**
 	 * Display the panel.
 	 *
-	 * @since TBD
+	 * @since 3.0
 	 *
 	 * @param bool $is_selected True if this is the selected panel, false otherwise.
 	 */
@@ -107,7 +107,7 @@ abstract class PMPro_Member_Edit_Panel {
 	/**
 	 * Get the user that we are editing.
 	 *
-	 * @since TBD
+	 * @since 3.0
 	 *
 	 * @return WP_User
 	 */
@@ -137,14 +137,14 @@ abstract class PMPro_Member_Edit_Panel {
 	/**
 	 * Save the panel.
 	 *
-	 * @since TBD
+	 * @since 3.0
 	 */
 	public function save() {}
 
 	/**
 	 * Display the contents of the panel.
 	 *
-	 * @since TBD
+	 * @since 3.0
 	 */
 	abstract protected function display_panel_contents();
 }

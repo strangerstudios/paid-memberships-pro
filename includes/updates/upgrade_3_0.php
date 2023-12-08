@@ -8,7 +8,7 @@
  * 2. Mark all created subscriptions as needing to be synced with gateway.
  * 3. Change all `cancelled` orders to `success` so that we can remove `cancelled` status.
  *
- * @since TBD
+ * @since 3.0
  */
 function pmpro_upgrade_3_0() {
 	global $wpdb;

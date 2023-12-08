@@ -99,7 +99,7 @@ add_action( 'enqueue_block_editor_assets', 'pmpro_block_editor_assets' );
 /**
  * Register post meta needed for our blocks.
  *
- * @since TBD
+ * @since 3.0
  */
 function pmpro_register_post_meta() {
 	// Register pmpro_default_level for the checkout block.
@@ -121,7 +121,7 @@ add_action( 'init', 'pmpro_register_post_meta' );
 * @param array $attributes The block attributes.
 * @param array  $content The block content.
 * @return string the filtered output
-* @since TBD
+* @since 3.0
 */
 function pmpro_apply_block_visibility( $attributes, $content ) {
 	$output = '';
@@ -172,7 +172,7 @@ function pmpro_apply_block_visibility( $attributes, $content ) {
  * @param string $block_content The block content.
  * @param array  $block	The block.
  * @return string The filtered block content.
- * @since TBD
+ * @since 3.0
  */
 function pmpro_filter_core_blocks( $block_content, $block ) {
 	// TODO Replace with https://www.php.net/manual/en/function.str-starts-with when we drop support for PHP 7.x.

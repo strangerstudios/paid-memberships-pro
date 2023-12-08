@@ -1002,12 +1002,12 @@ class PMProGateway_stripe extends PMProGateway {
 	 * Fields shown on edit user page
 	 *
 	 * @since 1.8
-	 * @deprecated TBD
+	 * @deprecated 3.0
 	 */
 	public static function user_profile_fields( $user ) {
 		global $wpdb, $current_user, $pmpro_currency_symbol;
 
-		_deprecated_function( __FUNCTION__, 'TBD' );
+		_deprecated_function( __FUNCTION__, '3.0' );
 
 		//make sure the current user has privileges
 		$membership_level_capability = apply_filters( "pmpro_edit_member_capability", "manage_options" );
@@ -2304,7 +2304,7 @@ class PMProGateway_stripe extends PMProGateway {
 	/**
 	 * Returns whether the gateway allows for payment method updates.
 	 *
-	 * @since TBD
+	 * @since 3.0
 	 *
 	 * @return string|false 'individual' if the gateway allows for payment method updates for individual subscriptions, 
 	 *                      'all' if the gateway updates all subscriptions, or false if the gateway does not support payment method updates.

@@ -136,12 +136,12 @@ function pmpro_cron_expiration_warnings()
 
 /*
 	Credit Card Expiring Warnings
-	@deprecated TBD
+	@deprecated 3.0
 */
 function pmpro_cron_credit_card_expiring_warnings() {
 	global $wpdb;
 
-	_deprecated_function( __FUNCTION__, 'TBD' );
+	_deprecated_function( __FUNCTION__, '3.0' );
 
 	//Don't let anything run if PMPro is paused
 	if( pmpro_is_paused() ) {

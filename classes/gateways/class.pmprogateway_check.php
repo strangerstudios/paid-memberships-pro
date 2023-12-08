@@ -372,7 +372,7 @@
 		/**
 		 * Synchronizes a subscription with this payment gateway.
 		 *
-		 * @since TBD
+		 * @since 3.0
 		 *
 		 * @param PMPro_Subscription $subscription The subscription to synchronize.
 		 * @return string|null Error message is returned if update fails.

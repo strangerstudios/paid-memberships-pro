@@ -220,7 +220,7 @@
 		/**
 		 * Returns whether the gateway allows for payment method updates.
 		 *
-		 * @since TBD
+		 * @since 3.0
 		 *
 		 * @return string|false 'individual' if the gateway allows for payment method updates for individual subscriptions, 
 		 *                      'all' if the gateway updates all subscriptions, or false if the gateway does not support payment method updates.
@@ -232,7 +232,7 @@
 		/**
 		 * Synchronizes a subscription with this payment gateway.
 		 *
-		 * @since TBD
+		 * @since 3.0
 		 *
 		 * @param PMPro_Subscription $subscription The subscription to synchronize.
 		 * @return string|null Error message is returned if update fails.
