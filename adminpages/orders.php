@@ -348,9 +348,6 @@ require_once( dirname( __FILE__ ) . '/admin_header.php' ); ?>
 								}
 							?>
 							<p class="description"><?php esc_html_e( 'A randomly generated code that serves as a unique, non-sequential invoice number.', 'paid-memberships-pro' ); ?></p>
-							<?php if ( $order_id < 0 ) { ?>
-								<p class="description"><?php esc_html_e( 'Randomly generated for you.', 'paid-memberships-pro' ); ?></p>
-							<?php } ?>
 						</td>
 					</tr>
 					<tr>
@@ -719,10 +716,9 @@ require_once( dirname( __FILE__ ) . '/admin_header.php' ); ?>
 							<?php
 							if ( in_array( 'accountnumber', $read_only_fields ) && $order_id > 0 ) {
 								echo esc_html( $order->accountnumber );
-							} else {
-												?>
-													<input id="accountnumber" name="accountnumber" type="text" size="50"
-														value="<?php echo esc_attr( $order->accountnumber ); ?>"/>
+							} else { ?>
+								<input id="accountnumber" name="accountnumber" type="text" size="50"
+									value="<?php echo esc_attr( $order->accountnumber ); ?>"/>
 							<?php } ?>
 							<p class="description"><?php esc_html_e( 'Only the last 4 digits are stored in this site to use as a reference with the gateway.', 'paid-memberships-pro' ); ?></p>
 						</td>
