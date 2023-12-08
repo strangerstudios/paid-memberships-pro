@@ -88,7 +88,7 @@ function pmpro_shortcode_account($atts, $content=null, $code="")
 										// Check if we should show the update billing link.
 										// First, check if there is an active subscription for this level.
 										$subscriptions =  PMPro_Subscription::get_subscriptions_for_user( $current_user->ID, $level->id );
-										if ( ! empty( $subscriptions) ) {
+										if ( ! empty( $subscriptions ) ) {
 											// Let's get the first. There should not be more than one.
 											$subscription = $subscriptions[0];
 
@@ -107,7 +107,7 @@ function pmpro_shortcode_account($atts, $content=null, $code="")
 											}
 										}
 
-										//To do: Only show CHANGE link if this level is in a group that has upgrade/downgrade rules
+										// Check if we should show the change membership level link.
 										if(count($pmpro_levels) > 1 && !defined("PMPRO_DEFAULT_LEVEL")) {
 											$pmpro_member_action_links['change'] = '<a id="pmpro_actionlink-change" href="' . esc_url( pmpro_url( 'levels' ) ) . '" aria-label="' . esc_html__( sprintf( esc_html__( 'Change %1$s Membership', 'paid-memberships-pro' ), $level->name ) ) . '">' . esc_html__( 'Change', 'paid-memberships-pro' ) . '</a>';
 										}
@@ -142,9 +142,11 @@ function pmpro_shortcode_account($atts, $content=null, $code="")
 								<td class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_account-membership-levelfee' ) ); ?>">
 									<p>
 										<?php
-											if ( ! empty( $subscriptions) ) {
+											if ( ! empty( $subscriptions ) ) {
 												$subscription = $subscriptions[0];
 												echo esc_html( $subscription->get_cost_text() );
+											} else {
+												esc_html_e( '&#8212;', 'paid-memberships-pro' );
 											}
 										?>
 									</p>
@@ -177,7 +179,6 @@ function pmpro_shortcode_account($atts, $content=null, $code="")
 						<?php } ?>
 					</tbody>
 				</table>
-				<?php //Todo: If there are multiple levels defined that aren't all in the same group defined as upgrades/downgrades ?>
 				<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_actionlinks' ) ); ?>">
 					<a id="pmpro_actionlink-levels" href="<?php echo esc_url( pmpro_url( "levels" ) ) ?>"><?php esc_html_e("View all Membership Options", 'paid-memberships-pro' );?></a>
 				</div>
