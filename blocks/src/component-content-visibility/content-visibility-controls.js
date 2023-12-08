@@ -13,7 +13,7 @@ import { ToggleControl, CheckboxControl, PanelBody, SelectControl, Button, __exp
 import { InspectorControls } from '@wordpress/block-editor';
 import { select } from "@wordpress/data";
 
-export default function MembershipContentControls (props) {
+export default function ContentVisibilityControls (props) {
 	const { attributes: { visibilityBlockEnabled, invert_restrictions, segment, levels, show_noaccess }, setAttributes } = props;
 	
 	// Get the root parent block id

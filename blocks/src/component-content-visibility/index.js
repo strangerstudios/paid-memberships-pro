@@ -1,6 +1,6 @@
 import { __ } from '@wordpress/i18n';
 
-import MembershipContentControls from './membershipContentControls';
+import ContentVisibilityControls from './content-visibility-controls';
 
 /**
  * Add the visibility attributes to the block settings.
@@ -8,7 +8,7 @@ import MembershipContentControls from './membershipContentControls';
  * @param {object} settings  The block settings.
  * @param {string} name 	The block name.
  */
-function addVisibilityAttribute(settings, name) {
+function addContentVisibilityAttribute(settings, name) {
 	if (typeof settings.attributes !== 'undefined') {
 		if (name.startsWith('core/')) {
 			settings.attributes = Object.assign(settings.attributes, {
@@ -40,8 +40,8 @@ function addVisibilityAttribute(settings, name) {
 
 wp.hooks.addFilter(
 	'blocks.registerBlockType',
-	'pmpro/core-visibility',
-	addVisibilityAttribute
+	'pmpro/content-visibility',
+	addContentVisibilityAttribute
 );
 
 /**
@@ -50,7 +50,7 @@ wp.hooks.addFilter(
  * @param {object} props The block props.
  * @return {WPElement} Element to render.
  */
-const membershipRequiredComponent = wp.compose.createHigherOrderComponent((BlockEdit) => {
+const contentVisibilityComponent = wp.compose.createHigherOrderComponent((BlockEdit) => {
 	 return (props) => {
 
 		const { Fragment } = wp.element;
@@ -58,15 +58,15 @@ const membershipRequiredComponent = wp.compose.createHigherOrderComponent((Block
 		 return (	
 			<Fragment>
 				<BlockEdit {...props} />
-				{ isSelected && (props.name.startsWith('core/')) &&	MembershipContentControls(props) }
+				{ isSelected && (props.name.startsWith('core/')) &&	ContentVisibilityControls(props) }
 			</Fragment>
 		);
 
 	};
-}, 'membershipRequiredComponent');
+}, 'contentVisibilityComponent');
 
 wp.hooks.addFilter(
 	'editor.BlockEdit',
-	'pmpro/core-visibility',
-	membershipRequiredComponent
+	'pmpro/content-visibility',
+	contentVisibilityComponent
 );

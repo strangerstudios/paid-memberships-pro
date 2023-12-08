@@ -158,11 +158,11 @@ config.entry = {
     "sidebar",
     "index.js"
   ),
-  "block-membership-required-component/index": path.resolve(
+  "component-content-visibility/index": path.resolve(
 	process.cwd(),
 	"blocks",
 	"src",
-	"block-membership-required-component",
+	"component-content-visibility",
 	"index.js"
   )
 };
