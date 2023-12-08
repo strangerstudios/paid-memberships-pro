@@ -106,20 +106,20 @@
 		</tr>
 		<tr class="gateway gateway_check" <?php if($gateway != "check") { ?>style="display: none;"<?php } ?>>
 			<th scope="row" valign="top">
-				<label for="instructions"><?php esc_html_e('Instructions', 'paid-memberships-pro' );?></label>					
-			</th>
-			<td>
-				<textarea id="instructions" name="instructions" rows="3" cols="50" class="large-text"><?php echo wpautop(  wp_unslash( $values['instructions'] ) ); ?></textarea>
-				<p class="description"><?php  echo esc_html( sprintf( __( 'Instructions for members to follow to complete their purchase, when paying with %s. Shown on checkout, confirmation, and invoice pages.', 'paid-memberships-pro' ), $check_gateway_label ) );?></p>
-			</td>
-		</tr>
-		<tr class="gateway gateway_check" <?php if($gateway != "check") { ?>style="display: none;"<?php } ?>>
-			<th scope="row" valign="top">
 				<label for="check_gateway_label"><?php esc_html_e( 'Gateway Label', 'paid-memberships-pro' );?></label>
 			</th>
 			<td>
 				<input type="text" id="check_gateway_label" name="check_gateway_label" class="regular-text code" value="<?php echo esc_attr( $check_gateway_label ); ?>"/>
 				<p class="description"><?php esc_html_e('Enter a custom payment method that will show on the frontend of your site, please choose a manual payment method like Wire Transfer, Cash or something similar. Defaults to "Pay By Check".', 'paid-memberships-pro' );?></p>
+			</td>
+		</tr>
+		<tr class="gateway gateway_check" <?php if($gateway != "check") { ?>style="display: none;"<?php } ?>>
+			<th scope="row" valign="top">
+				<label for="instructions"><?php esc_html_e('Instructions', 'paid-memberships-pro' );?></label>
+			</th>
+			<td>
+				<textarea id="instructions" name="instructions" rows="3" cols="50" class="large-text"><?php echo wpautop(  wp_unslash( $values['instructions'] ) ); ?></textarea>
+				<p class="description"><?php echo esc_html( sprintf( __( 'Instructions for members to follow to complete their purchase, when paying with %s. Shown on checkout, confirmation, and invoice pages.', 'paid-memberships-pro' ), $check_gateway_label ) );?></p>
 			</td>
 		</tr>
 		<?php
@@ -156,12 +156,22 @@
 		 * @since 1.8.9.3
 		 */
 		static function pmpro_checkout_after_payment_information_fields() {
-			global $gateway;
-			global $pmpro_level;
-
-			if($gateway == "check" && !pmpro_isLevelFree($pmpro_level)) {
-				$instructions = get_option("pmpro_instructions");
-				echo '<div class="' . pmpro_get_element_class( 'pmpro_check_instructions' ) . '">' . wpautop(wp_unslash( $instructions )) . '</div>';
+			global $gateway, $pmpro_level;
+			if ( $gateway == 'check' && ! pmpro_isLevelFree( $pmpro_level ) ) {
+				$instructions = get_option( 'pmpro_instructions' );
+				$check_gateway_label = get_option( 'pmpro_check_gateway_label' );
+				?>
+				<div id="pmpro_payment_information_fields" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout', 'pmpro_payment_information_fields' ) ); ?>">
+					<h2>
+						<span class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout-h2-name' ) ); ?>"><?php echo esc_html( sprintf( __( 'Pay by %s', 'paid-memberships-pro' ), $check_gateway_label ) ); ?></span>
+					</h2>
+					<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout-fields' ) ); ?>">
+						<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout-field pmpro_check_instructions', 'pmpro_check_instructions' ) ); ?>">
+							<?php echo wpautop( wp_unslash( $instructions ) ); ?>
+						</div> <!-- end pmpro_checkout-field pmpro_check_instructions -->
+					</div> <!-- end pmpro_checkout-fields -->
+				</div> <!-- end pmpro_payment_information_fields -->
+				<?php
 			}
 		}
 
