@@ -610,6 +610,11 @@ function pmpro_lost_password_redirect() {
 	if ( ! $redirect_url ) {
 		return;
 	}
+
+	// Don't redirect if we're not on the PMPro form.
+	if ( ! isset( $_REQUEST['pmpro_form_used'] ) ) {
+		return;
+	}
 	
 	$errors = retrieve_password();
 	if ( is_wp_error( $errors ) ) {
@@ -642,7 +647,12 @@ function pmpro_reset_password_redirect() {
 		return;
 	}
 
-	// Make sure we're not on the wp-login.php page
+	// If the URL we're trying to redirect to isn't the login page, then don't redirect (assume it's coming from elsewhere)
+	if ( strpos( $login_url, $_SERVER['REQUEST_URI'] ) === false ) {
+		return;
+	}
+
+	// Don't redirect any requests coming from the wp-login.php page. (Backup check in case the above case fails for any reason.)
 	if ( strpos( $_SERVER['REQUEST_URI'], 'wp-login.php' ) !== false ) {
 		return;
 	}
