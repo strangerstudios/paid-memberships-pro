@@ -80,7 +80,7 @@
 		 *
 		 * @var float
 		 */
-		private $tax = null;
+		private $tax = 0.00;
 
 		/**
 		 * Discount Code Amount
@@ -677,7 +677,7 @@
 				$this->Email = $wpdb->get_var( $wpdb->prepare( "SELECT user_email FROM $wpdb->users WHERE ID = %d LIMIT 1", $this->user_id ) );
 
 				$this->subtotal = $dbobj->subtotal;
-				$this->tax = $dbobj->tax;
+				$this->tax = (float)$dbobj->tax;
 				$this->couponamount = $dbobj->couponamount;
 				$this->certificate_id = $dbobj->certificate_id;
 				$this->certificateamount = $dbobj->certificateamount;
@@ -1154,7 +1154,7 @@
 			$tax_rate = get_option("pmpro_tax_rate");
 
 			//default
-			$tax = 0;
+			$tax = 0.00;
 
 			//calculate tax
 			if($tax_state && $tax_rate)
@@ -1181,7 +1181,7 @@
 				$values['billing_country'] = $this->billing->country;
 
 			//filter
-			$tax = apply_filters("pmpro_tax", $tax, $values, $this);
+			$tax = (float)apply_filters("pmpro_tax", $tax, $values, $this);
 			return $tax;
 		}
 
