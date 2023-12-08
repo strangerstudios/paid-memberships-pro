@@ -63,6 +63,7 @@
 				'nuclear_HTTPS',
 				'gateway_environment',
 				'instructions',
+				'check_gateway_label',
 				'currency',
 				'use_ssl',
 				'tax_state',
@@ -79,7 +80,7 @@
 		 */
 		static function pmpro_payment_options($options)
 		{			
-			//get stripe options
+			//get check gateway options
 			$check_options = PMProGateway_check::getGatewayOptions();
 			
 			//merge with others.
@@ -95,11 +96,12 @@
 		 */
 		static function pmpro_payment_option_fields($values, $gateway)
 		{
+			$check_gateway_label = ! empty( $values['check_gateway_label'] ) ? $values['check_gateway_label'] : __( 'Check', 'paid-memberships-pro' );
 		?>
 		<tr class="pmpro_settings_divider gateway gateway_check" <?php if($gateway != "check") { ?>style="display: none;"<?php } ?>>
 			<td colspan="2">
 				<hr />
-				<h2><?php esc_html_e('Pay by Check Settings', 'paid-memberships-pro' ); ?></h2>
+				<h2><?php echo esc_html( sprintf( __( 'Pay by %s Settings', 'paid-memberships-pro' ), $check_gateway_label ) ); ?></h2>
 			</td>
 		</tr>
 		<tr class="gateway gateway_check" <?php if($gateway != "check") { ?>style="display: none;"<?php } ?>>
@@ -108,9 +110,18 @@
 			</th>
 			<td>
 				<textarea id="instructions" name="instructions" rows="3" cols="50" class="large-text"><?php echo wpautop(  wp_unslash( $values['instructions'] ) ); ?></textarea>
-				<p class="description"><?php esc_html_e('Who to write the check out to. Where to mail it. Shown on checkout, confirmation, and invoice pages.', 'paid-memberships-pro' );?></p>
+				<p class="description"><?php  echo esc_html( sprintf( __( 'Instructions for members to follow to complete their purchase, when paying with %s. Shown on checkout, confirmation, and invoice pages.', 'paid-memberships-pro' ), $check_gateway_label ) );?></p>
 			</td>
-		</tr>	
+		</tr>
+		<tr class="gateway gateway_check" <?php if($gateway != "check") { ?>style="display: none;"<?php } ?>>
+			<th scope="row" valign="top">
+				<label for="check_gateway_label"><?php esc_html_e( 'Gateway Label', 'paid-memberships-pro' );?></label>
+			</th>
+			<td>
+				<input type="text" id="check_gateway_label" name="check_gateway_label" class="regular-text code" value="<?php echo esc_attr( $check_gateway_label ); ?>"/>
+				<p class="description"><?php esc_html_e('Enter a custom payment method that will show on the frontend of your site, please choose a manual payment method like Wire Transfer, Cash or something similar. Defaults to "Pay By Check".', 'paid-memberships-pro' );?></p>
+			</td>
+		</tr>
 		<?php
 		}
 		
