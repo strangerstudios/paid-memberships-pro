@@ -110,7 +110,7 @@
 			</th>
 			<td>
 				<input type="text" id="check_gateway_label" name="check_gateway_label" class="regular-text code" value="<?php echo esc_attr( $check_gateway_label ); ?>"/>
-				<p class="description"><?php esc_html_e('Enter a custom payment method that will show on the frontend of your site, please choose a manual payment method like Wire Transfer, Cash or something similar. Defaults to "Pay By Check".', 'paid-memberships-pro' );?></p>
+				<p class="description"><?php esc_html_e('The name of the custom payment method that will show on the frontend of your site. Useful for manual payment methods name like Wire Transfer, Direct Deposit, or Cash. Defaults to "Pay By Check".', 'paid-memberships-pro' );?></p>
 			</td>
 		</tr>
 		<tr class="gateway gateway_check" <?php if($gateway != "check") { ?>style="display: none;"<?php } ?>>
@@ -119,7 +119,7 @@
 			</th>
 			<td>
 				<textarea id="instructions" name="instructions" rows="3" cols="50" class="large-text"><?php echo wpautop(  wp_unslash( $values['instructions'] ) ); ?></textarea>
-				<p class="description"><?php echo esc_html( sprintf( __( 'Instructions for members to follow to complete their purchase, when paying with %s. Shown on checkout, confirmation, and invoice pages.', 'paid-memberships-pro' ), $check_gateway_label ) );?></p>
+				<p class="description"><?php echo esc_html( sprintf( __( 'Instructions for members to follow to complete their purchase when paying with %s. Shown on the membership checkout, confirmation, and invoice pages.', 'paid-memberships-pro' ), $check_gateway_label ) );?></p>
 			</td>
 		</tr>
 		<?php
