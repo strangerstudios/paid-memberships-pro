@@ -255,6 +255,12 @@ function pmpro_search_filter($query)
         //make this work
         if( $hidden_cat_ids ) {
 
+			// Ignore taxonomy searches based on category filtering.
+			$ignore_taxonomies = apply_filters( 'pmpro_ignore_taxonomies_category_filter', array( 'product_cat' ) );
+			if ( ! empty( $ignore_taxonomies ) && is_tax( $ignore_taxonomies ) ) {
+				return $query;
+			}
+
 			// Get all registered category ID's so we may remove the ones we need to hide. This is to support posts that may belong to multiple categories and only one of them is hidden.
 			$all_cat_ids = get_terms( array(
 				'taxonomy' => 'category',
