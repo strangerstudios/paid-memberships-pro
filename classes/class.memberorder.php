@@ -621,41 +621,13 @@
 		 */
 		function getEmptyMemberOrder()
 		{
-
 			//defaults
-			$order = new stdClass();
-			$order->code = $this->getRandomCode();
-			$order->user_id = "";
-			$order->membership_id = "";
-			$order->subtotal = "";
-			$order->tax = "";
-			$order->couponamount = "";
-			$order->total = "";
-			$order->payment_type = "";
-			$order->cardtype = "";
-			$order->accountnumber = "";
-			$order->expirationmonth = "";
-			$order->expirationyear = "";
-			$order->status = "success";
-			$order->gateway = get_option("pmpro_gateway");
-			$order->gateway_environment = get_option("pmpro_gateway_environment");
-			$order->payment_transaction_id = "";
-			$order->subscription_transaction_id = "";
-			$order->affiliate_id = "";
-			$order->affiliate_subid = "";
-			$order->notes = "";
-			$order->checkout_id = 0;
+			$this->code = $this->getRandomCode();
+			$this->status = "success";
+			$this->gateway = get_option("pmpro_gateway");
+			$this->gateway_environment = get_option("pmpro_gateway_environment");
 
-			$order->billing = new stdClass();
-			$order->billing->name = "";
-			$order->billing->street = "";
-			$order->billing->city = "";
-			$order->billing->state = "";
-			$order->billing->zip = "";
-			$order->billing->country = "";
-			$order->billing->phone = "";
-
-			return $order;
+			return $this;
 		}
 
 		/**
@@ -1277,80 +1249,14 @@
 		 */
 		function saveOrder()
 		{
-			global $current_user, $wpdb, $pmpro_checkout_id;
+			global $wpdb;
 
+			// Perform calculations before each order save.
 			//get a random code to use for the public ID
 			if(empty($this->code))
 				$this->code = $this->getRandomCode();
 
-			//figure out how much we charged
-			if(!empty($this->InitialPayment))
-				$amount = $this->InitialPayment;
-			elseif(!empty($this->subtotal))
-				$amount = $this->subtotal;
-			else
-				$amount = 0;
-
-			//Todo: Tax?!, Coupons, Certificates, affiliates
-			if(empty($this->subtotal))
-				$this->subtotal = $amount;
-			if(isset($this->tax))
-				$tax = $this->tax;
-			else
-				$tax = $this->getTax(true);
-			$this->certificate_id = "";
-			$this->certificateamount = "";
-
-			//calculate total
-			if ( ! empty( $this->total ) ) {
-				$total = $this->total;
-			} else {
-				$total = (float)$amount + (float)$tax;
-				$this->total = $total;
-			}
-			
-			//these fix some warnings/notices
-			if(empty($this->billing))
-			{
-				$this->billing = new stdClass();
-				$this->billing->name = $this->billing->street = $this->billing->city = $this->billing->state = $this->billing->zip = $this->billing->country = $this->billing->phone = "";
-			}
-			if(empty($this->user_id))
-				$this->user_id = 0;
-			if(empty($this->paypal_token))
-				$this->paypal_token = "";
-			if(empty($this->couponamount))
-				$this->couponamount = "";
-			if(empty($this->payment_type))
-				$this->payment_type = "";
-			if(empty($this->payment_transaction_id))
-				$this->payment_transaction_id = "";
-			if(empty($this->subscription_transaction_id))
-				$this->subscription_transaction_id = "";
-			if(empty($this->affiliate_id))
-				$this->affiliate_id = "";
-			if(empty($this->affiliate_subid))
-				$this->affiliate_subid = "";
-			if(empty($this->session_id))
-				$this->session_id = "";
-			if(empty($this->accountnumber))
-				$this->accountnumber = "";
-			if(empty($this->cardtype))
-				$this->cardtype = "";
-			if(empty($this->expirationmonth))
-				$this->expirationmonth = "";
-			if(empty($this->expirationyear))
-				$this->expirationyear = "";
-			if(empty($this->ExpirationDate))
-				$this->ExpirationDate = "";
-			if (empty($this->status))
-				$this->status = "";
-
-			if(empty($this->gateway))
-				$this->gateway = get_option("pmpro_gateway");
-			if(empty($this->gateway_environment))
-				$this->gateway_environment = get_option("pmpro_gateway_environment");
-			
+			// Calculate datetime/timestamp. Datetime is what actually gets saved.
 			if( empty( $this->datetime ) && empty( $this->timestamp ) ) {
 				$this->timestamp = time();
 				$this->datetime = date("Y-m-d H:i:s", $this->timestamp);				
@@ -1359,15 +1265,12 @@
 			} elseif( empty( $this->datetime ) && ! empty( $this->timestamp ) ) {
 				$this->datetime = $this->timestamp;		//must have a datetime in it
 				$this->timestamp = strtotime( $this->datetime );	//fixing the timestamp
-			}				
+			}
 
-			if(empty($this->notes))
-				$this->notes = "";
-
+			// Calculate checkout_id if necessary.
 			if(empty($this->checkout_id) || intval($this->checkout_id)<1) {
 				$highestval = $wpdb->get_var("SELECT MAX(checkout_id) FROM $wpdb->pmpro_membership_orders");
 				$this->checkout_id = intval($highestval)+1;
-				$pmpro_checkout_id = $this->checkout_id;
 			}
 
 			// Deprecating cancelled status with subscriptions table update. Change to success.
@@ -1424,6 +1327,21 @@
 				//set up actions
 				$before_action = "pmpro_add_order";
 				$after_action = "pmpro_added_order";
+
+				// Perform calculations before a new order is added.
+				// Figure out how much we charged.
+				$amount = ! empty( $this->InitialPayment ) ? (float)$this->InitialPayment : (float)$this->subtotal;
+
+				// Fill subtotal if necessary.
+				if ( empty( $this->subtotal ) ) {
+					$this->subtotal = $amount;
+				}
+
+				// Calculate tax if necessary.
+				$this->tax = empty( $this->tax ) ? $this->getTax(true) : $this->tax;
+
+				// Calculate total.
+				$this->total = empty( $this->total ) ? (float)$amount + (float)$this->tax : $this->total;
 				
 				//only on inserts, we might want to set the expirationmonth and expirationyear from ExpirationDate
 				if( (empty($this->expirationmonth) || empty($this->expirationyear)) && !empty($this->ExpirationDate)) {
@@ -1447,11 +1365,11 @@
 									   '" . esc_sql($this->billing->country) . "',
 									   '" . esc_sql( cleanPhone($this->billing->phone) ) . "',
 									   '" . esc_sql( $this->subtotal ) . "',
-									   '" . esc_sql( $tax ) . "',
+									   '" . esc_sql( $this->tax ) . "',
 									   '" . esc_sql( $this->couponamount ). "',
 									   " . intval($this->certificate_id) . ",
 									   '" . esc_sql( $this->certificateamount ) . "',
-									   '" . esc_sql( $total ) . "',
+									   '" . esc_sql( $this->total ) . "',
 									   '" . esc_sql( $this->payment_type ) . "',
 									   '" . esc_sql( $this->cardtype ) . "',
 									   '" . esc_sql( hideCardNumber($this->accountnumber, false) ) . "',
