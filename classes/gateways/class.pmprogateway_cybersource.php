@@ -91,7 +91,7 @@
 		</tr>
 		<tr class="gateway gateway_cybersource" <?php if($gateway != "cybersource") { ?>style="display: none;"<?php } ?>>
 			<th scope="row" valign="top">
-				<label for="cybersource_merchantid"><?php esc_html_e('Merchant ID', 'paid-memberships-pro' );?>:</label>
+				<label for="cybersource_merchantid"><?php esc_html_e('Merchant ID', 'paid-memberships-pro' );?></label>
 			</th>
 			<td>
 				<input type="text" id="cybersource_merchantid" name="cybersource_merchantid" value="<?php echo esc_attr($values['cybersource_merchantid'])?>" class="regular-text code" />
@@ -99,7 +99,7 @@
 		</tr>
 		<tr class="gateway gateway_cybersource" <?php if($gateway != "cybersource") { ?>style="display: none;"<?php } ?>>
 			<th scope="row" valign="top">
-				<label for="cybersource_securitykey"><?php esc_html_e('Transaction Security Key', 'paid-memberships-pro' );?>:</label>
+				<label for="cybersource_securitykey"><?php esc_html_e('Transaction Security Key', 'paid-memberships-pro' );?></label>
 			</th>
 			<td>
 				<textarea id="cybersource_securitykey" name="cybersource_securitykey" autocomplete="off" rows="3" cols="50" class="large-text code pmpro-admin-secure-key"><?php echo esc_textarea($values['cybersource_securitykey']);?></textarea>

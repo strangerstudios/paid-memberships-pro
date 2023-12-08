@@ -2290,11 +2290,14 @@ function pmpro_getLevel( $level ) {
 /**
  * Get all PMPro membership levels.
  *
- * @param bool $include_hidden Include levels marked as hidden/inactive.
- * @param bool $use_cache      If false, use $pmpro_levels global. If true use other caches.
- * @param bool $force          Resets the static var caches as well.
+ * @since TBD deprecated the second `$use_cache` argument.
+ *
+ * @param bool $include_hidden      Include levels marked as hidden/inactive.
+ * @param bool $deprecated_argument No longer used.
+ * @param bool $force               Resets the static var caches.
  */
-function pmpro_getAllLevels( $include_hidden = false, $use_cache = false, $force = false ) {
+function pmpro_getAllLevels( $include_hidden = false, $deprecated_argument = false, $force = false ) {
+	// The global $pmpro_levels variable is deprecated and should no longer be used, but we'll set it for backwards compatibility.
 	global $pmpro_levels, $wpdb;
 
 	static $pmpro_all_levels;			// every single level
@@ -2306,16 +2309,13 @@ function pmpro_getAllLevels( $include_hidden = false, $use_cache = false, $force
 		$pmpro_visible_levels = NULL;
 	}
 
-	// just use the $pmpro_levels global
-	if ( ! empty( $pmpro_levels ) && ! $use_cache ) {
-		return $pmpro_levels;
-	}
-
 	// If use_cache is true check if we have something in a static var.
 	if ( $include_hidden && isset( $pmpro_all_levels ) ) {
+		$pmpro_levels = $pmpro_all_levels;
 		return $pmpro_all_levels;
 	}
 	if ( ! $include_hidden && isset( $pmpro_visible_levels ) ) {
+		$pmpro_levels = $pmpro_visible_levels;
 		return $pmpro_visible_levels;
 	}
 
@@ -2674,7 +2674,7 @@ function pmpro_setMessage( $message, $type, $force = false ) {
 }
 
 /**
- * Show a a PMPro message set via pmpro_setMessage
+ * Show a PMPro message set via pmpro_setMessage
  *
  * @since 1.8.5
  */
@@ -2693,11 +2693,13 @@ function pmpro_showMessage() {
 			'class' => array(),
 		),
 		'strong' => array(),
+		'ul' => array(),
+		'li' => array(),
 	);
 
 	if ( ! empty( $pmpro_msg ) ) {		
 		?>
-		<div role="alert" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_msg ' . $pmpro_msgt, $pmpro_msgt ) ); ?>">
+		<div role="alert" id="pmpro_message" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_message ' . $pmpro_msgt, $pmpro_msgt ) ); ?>">
 			<p><?php echo wp_kses( $pmpro_msg, $allowed_html ); ?></p>
 		</div>
 		<?php
@@ -4556,4 +4558,81 @@ function pmpro_set_expiration_date( $user_id, $level_id, $enddate ) {
 
 	// Clear the level cache for this user.
 	pmpro_clear_level_cache_for_user( $user_id );
+}
+
+/*
+ * Check whether a file should be allowed to be uploaded.
+ *
+ * By default, only files assiciated with a user field can be uploaded,
+ * but there is a filter to allow other files to be uploaded as well.
+ *
+ * @since 2.12.4
+ *
+ * @param $file_index string The array index of the file to check in the $_FILES array.
+ * @return true|WP_Error True if the file is allowed, otherwise a WP_Error object.
+ */
+function pmpro_check_upload( $file_index ) {
+	global $pmpro_user_fields;
+
+	// Check if the file was uploaded.
+	if ( empty( $_FILES[ $file_index ] ) ) {
+		return new WP_Error( 'pmpro_upload_error', __( 'No file was uploaded.', 'paid-memberships-pro' ) );
+	}
+
+	// Get the file info.
+	$file = array_map( 'sanitize_text_field', $_FILES[ $file_index ] );
+	if ( empty( $file['name'] ) ) {
+		return new WP_Error( 'pmpro_upload_error', __( 'No file name found.', 'paid-memberships-pro' ) );
+	}
+
+	// If the current user cannot does not have the unfiltered_upload permission, check if the file is an allowed file type.
+	if ( ! current_user_can( 'unfiltered_upload' ) ) {
+		$filetype = wp_check_filetype_and_ext( $file['tmp_name'], $file['name'] );
+		if ( empty( $filetype['ext'] ) || empty( $filetype['type'] ) ) {
+			return new WP_Error( 'pmpro_upload_error', __( 'Invalid file type.', 'paid-memberships-pro' ) );
+		}
+	}
+
+	// If this is an upload for a user field, we need to perform additional checks.
+	$is_user_field = false;
+	if ( ! empty( $pmpro_user_fields ) && is_array( $pmpro_user_fields ) ) {
+		foreach ( $pmpro_user_fields as $checkout_box ) {
+			foreach ( $checkout_box as $field ) {
+				if ( $field->name == $file_index ) {
+					// This file is being uploaded for a user field.
+					$is_user_field = true;
+
+					// First, make sure that this is a 'file' field.
+					if ( $field->type !== 'file' ) {
+						return new WP_Error( 'pmpro_upload_error', __( 'Invalid field input.', 'paid-memberships-pro' ) );
+					}
+
+					// If there are allowed file types, check if the file is an allowed file type.
+					// It does not look like the ext property is documented anywhere, but keeping it in case sites are using it.
+					if ( ! empty( $field->ext ) && is_array( $field->ext ) && ! in_array( $filetype['ext'], $field->ext ) ) {
+						return new WP_Error( 'pmpro_upload_error', __( 'Invalid file type.', 'paid-memberships-pro' ) );
+					}
+				}
+			}
+		}
+	}
+
+	if ( ! $is_user_field ) {
+		/**
+		 * Filter whether a file not associated with a user field can be uploaded.
+		 *
+		 * @since 2.12.4
+		 *
+		 * @param bool $allow_upload True if the file can be uploaded, otherwise false.
+		 * @param array $file The file info.
+		 * @param array $filetype The file type info.
+		 */
+		if ( ! apply_filters( 'pmpro_allow_uploading_non_user_field_file', false, $file, $filetype ) ) {
+			return new WP_Error( 'pmpro_upload_error', __( 'Invalid file submission.', 'paid-memberships-pro' ) );
+		}
+	}
+	
+
+	// If we made it this far, the file is allowed.
+	return true;
 }

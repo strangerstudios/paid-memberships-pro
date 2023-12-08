@@ -42,8 +42,14 @@ if ( defined( 'PMPRO_DIR' ) ) {
 } ?>
 	<hr class="wp-header-end">
 	<h1><?php esc_html_e('Paid Memberships Pro Support License', 'paid-memberships-pro' );?></h1>
-	<div class="about-wrap">
-		<div class="about-text">
+	<div id="pmpro-license-settings" class="pmpro_section" data-visibility="shown" data-activated="true">
+		<div class="pmpro_section_toggle">
+			<button class="pmpro_section-toggle-button" type="button" aria-expanded="true">
+				<span class="dashicons dashicons-arrow-up-alt2"></span>
+				<?php esc_html_e( 'Manage Your License', 'paid-memberships-pro' ); ?>
+			</button>
+		</div>
+		<div class="pmpro_section_inside">
 			<?php if ( is_wp_error( $pmpro_license_check ) ) { ?>
 				<p class="pmpro_message pmpro_error"><strong><?php echo esc_html( sprintf( __( 'There was an issue validating your license key: %s', 'paid-memberships-pro' ), $pmpro_license_check->get_error_message() ) );?></strong> <?php echo wp_kses( sprintf( __('Visit the PMPro <a href="%s" target="_blank">Membership Account</a> page to confirm that your account is active and to find your license key.', 'paid-memberships-pro' ), 'https://www.paidmembershipspro.com/login/?redirect_to=%2Fmembership-account%2F%3Futm_source%3Dplugin%26utm_medium%3Dpmpro-license%26utm_campaign%3Dmembership-account%26utm_content%3Dkey-not-valid' ), $allowed_pmpro_license_strings_html );?></p>
 			<?php } elseif( ! pmpro_license_isValid() && empty( $key ) ) { ?>
@@ -67,7 +73,7 @@ if ( defined( 'PMPRO_DIR' ) ) {
 
 			<p>
 				<?php if ( ! pmpro_license_isValid() ) { ?>
-					<a class="button button-primary button-hero" href="https://www.paidmembershipspro.com/pricing/?utm_source=plugin&utm_medium=pmpro-license&utm_campaign=pricing&utm_content=view-plans-pricing" target="_blank" rel="noopener noreferrer"><?php esc_html_e( 'View Plans and Pricing', 'paid-memberships-pro' ); ?></a>
+					<a class="button button-secondary button-hero" href="https://www.paidmembershipspro.com/pricing/?utm_source=plugin&utm_medium=pmpro-license&utm_campaign=pricing&utm_content=view-plans-pricing" target="_blank" rel="noopener noreferrer"><?php esc_html_e( 'View Plans and Pricing', 'paid-memberships-pro' ); ?></a>
 				<?php } else { ?>
 					<a class="button button-primary button-hero" href="https://www.paidmembershipspro.com/login/?redirect_to=%2Fmembership-account%2F%3Futm_source%3Dplugin%26utm_medium%3Dpmpro-license%26utm_campaign%3Dmembership-account%26utm_content%3Dview-account" target="_blank" rel="noopener noreferrer"><?php esc_html_e( 'Manage My Account', 'paid-memberships-pro' ); ?></a>
 					<?php if ( pmpro_license_isValid( $key, pmpro_license_get_premium_types() ) ) { ?>
@@ -77,11 +83,16 @@ if ( defined( 'PMPRO_DIR' ) ) {
 					<?php }
 				} ?>
 			</p>
-
-			<hr />
-			
-			<div class="clearfix"></div>
-
+		</div> <!-- end pmpro_section_inside -->
+	</div> <!-- end pmpro_section -->
+	<div id="pmpro-license-about" class="pmpro_section" data-visibility="shown" data-activated="true">
+		<div class="pmpro_section_toggle">
+			<button class="pmpro_section-toggle-button" type="button" aria-expanded="true">
+				<span class="dashicons dashicons-arrow-up-alt2"></span>
+				<?php esc_html_e( 'About the PMPro Support License', 'paid-memberships-pro' ); ?>
+			</button>
+		</div>
+		<div class="pmpro_section_inside">
 			<img class="pmpro_icon alignright" src="<?php echo PMPRO_URL?>/images/Paid-Memberships-Pro_icon.png" border="0" alt="Paid Memberships Pro(c) - All Rights Reserved" />			
 
 			<?php
@@ -96,10 +107,12 @@ if ( defined( 'PMPRO_DIR' ) ) {
 				echo '<p>' . wp_kses( __( '<strong>Need help?</strong> Your license allows you to open new tickets in our private support area. Purchases are backed by a 30 day, no questions asked refund policy.', 'paid-memberships-pro' ), $allowed_pmpro_license_strings_html ) . '</p>';
 			?>
 
-			<p><a href="https://www.paidmembershipspro.com/pricing/?utm_source=plugin&utm_medium=pmpro-license&utm_campaign=pricing&utm_content=view-license-options" target="_blank" rel="noopener noreferrer"><?php esc_html_e( 'View Support License Options', 'paid-memberships-pro' ); ?></a></p>
+			<?php if ( ! pmpro_license_isValid() ) { ?>
+				<p><br /><a class="button button-secondary button-hero" href="https://www.paidmembershipspro.com/pricing/?utm_source=plugin&utm_medium=pmpro-license&utm_campaign=pricing&utm_content=view-license-options" target="_blank" rel="noopener noreferrer"><?php esc_html_e( 'View Support License Options', 'paid-memberships-pro' ); ?></a></p>
+			<?php } ?>
 
-		</div> <!-- end about-text -->
-	</div> <!-- end about-wrap -->
+		</div> <!-- end pmpro_section_inside -->
+	</div> <!-- end pmpro_section -->
 
 <?php
 

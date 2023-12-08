@@ -479,6 +479,7 @@ class PMPro_Discount_Code_List_Table extends WP_List_Table {
 			esc_sql( $item->id )
 		);
 		$levels = $wpdb->get_results($sqlQuery);
+		$levels = pmpro_sort_levels_by_order( $levels );
 
 		$level_names = array();
 		foreach( $levels as $level ) {

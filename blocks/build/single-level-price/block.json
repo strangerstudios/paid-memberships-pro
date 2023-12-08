@@ -1,23 +1,22 @@
 {
 	"$schema": "https://schemas.wp.org/trunk/block.json",
 	"apiVersion": 3,
-	"name": "pmpro/membership-excluded",
-	"title": "Membership Excluded Block",
+	"name": "pmpro/single-level-price",
+	"title": "Level Price",
 	"category": "pmpro",
-	"description": "Nest blocks within this wrapper to hide inner blocks by selected membership levels or for all non-members.",
-	"keywords": [ "block visibility", "conditional", "content", "hide", "hidden", "private", "restrict", "paid memberships pro", "pmpro" ],
-	"attributes": {
-		"levels": {
-			"type": "array",
-			"default":[]
+	"description": "The price text for this membership level.",
+	"keywords": [ "price", "membership", "level", "paid memberships pro", "pmpro" ],
+	"parent": ["pmpro/single-level"],
+	"attributes" : {
+		"textAlign": {
+			"type": "string"
 		},
-		"uid": {
+		"selected_membership_level": {
 			"type": "string",
-			"default":""
+			"default": ""
 		}
 	},
 	"supports": {
-		"align": [ "wide", "full" ],
 		"anchor": true,
 		"ariaLabel": true,
 		"html": false,
@@ -31,7 +30,7 @@
 			"link": true
 		},
 		"spacing": {
-			"margin": [ "top", "bottom" ],
+			"margin": true,
 			"padding": true,
 			"blockGap": true,
 			"__experimentalDefaultControls": {
@@ -66,15 +65,11 @@
 			"__experimentalDefaultControls": {
 				"fontSize": true
 			}
-		},
-		"layout": {
-			"allowSizingOnChildren": true
 		}
 	},
 	"example": {
 	},
 	"textdomain": "paid-memberships-pro",
 	"editorScript": "file:./index.js",
-	"editorStyle": "file:./index.css",
 	"render": "file:./render.php"
 }

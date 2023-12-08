@@ -249,7 +249,7 @@ function pmpro_dashboard_report_recent_members_callback() {
     						<?php echo get_avatar($theuser->ID, 32)?>
     						<strong>
     							<?php
-    								$userlink = '<a href="' . get_edit_user_link( $theuser->ID ) . '">' . esc_attr( $theuser->user_login ) . '</a>';
+    								$userlink = '<a href="' . esc_url( add_query_arg( array( 'page' => 'pmpro-member', 'user_id' => (int)$theuser->ID ), admin_url( 'admin.php' ) ) ) . '">' . esc_attr( $theuser->user_login ) . '</a>';
     								$userlink = apply_filters( 'pmpro_members_list_user_link', $userlink, $theuser );
     								echo $userlink;
     							?>
@@ -274,7 +274,7 @@ function pmpro_dashboard_report_recent_members_callback() {
     	</table>
     </span>
     <?php if ( ! empty( $theusers ) ) { ?>
-        <p class="text-center"><a class="button button-primary" href="<?php echo esc_url( admin_url( 'admin.php?page=pmpro-memberslist' ) ); ?>"><?php esc_html_e( 'View All Members ', 'paid-memberships-pro' ); ?></a></p>
+        <p class="pmpro_report-button"><a class="button button-primary" href="<?php echo esc_url( admin_url( 'admin.php?page=pmpro-memberslist' ) ); ?>"><?php esc_html_e( 'View All Members ', 'paid-memberships-pro' ); ?></a></p>
     <?php } ?>
 	<?php
 }
@@ -322,7 +322,7 @@ function pmpro_dashboard_report_recent_orders_callback() {
         				<td class="username column-username">
         					<?php $order->getUser(); ?>
         					<?php if ( ! empty( $order->user ) ) { ?>
-        						<a href="user-edit.php?user_id=<?php echo $order->user->ID; ?>"><?php echo $order->user->user_login; ?></a>
+        						<a href="<?php echo esc_url( add_query_arg( array( 'page' => 'pmpro-member', 'user_id' => (int)$order->user->ID ), admin_url( 'admin.php' ) ) ); ?>"><?php echo $order->user->user_login; ?></a>
         					<?php } elseif ( $order->user_id > 0 ) { ?>
         						[<?php _e( 'deleted', 'paid-memberships-pro' ); ?>]
         					<?php } else { ?>
@@ -365,7 +365,7 @@ function pmpro_dashboard_report_recent_orders_callback() {
     	</table>
     </span>
     <?php if ( ! empty( $order_ids ) ) { ?>
-        <p class="text-center"><a class="button button-primary" href="<?php echo esc_url( admin_url( 'admin.php?page=pmpro-orders' ) ); ?>"><?php esc_html_e( 'View All Orders ', 'paid-memberships-pro' ); ?></a></p>
+        <p class="pmpro_report-button"><a class="button button-primary" href="<?php echo esc_url( admin_url( 'admin.php?page=pmpro-orders' ) ); ?>"><?php esc_html_e( 'View All Orders ', 'paid-memberships-pro' ); ?></a></p>
     <?php } ?>
 	<?php
 }
@@ -410,7 +410,7 @@ function pmpro_dashboard_news_updates_callback() {
 	        <?php endforeach; ?>
 	    <?php endif; ?>
 	</ul>
-	<p class="text-center"><a class="button button-primary" href="https://www.paidmembershipspro.com/blog/?utm_source=plugin&utm_medium=pmpro-dashboard&utm_campaign=blog&utm_content=news-updates-metabox"><?php esc_html_e( 'View More', 'paid-memberships-pro' ); ?></a></p>
+	<p class="pmpro_report-button"><a class="button button-primary" href="https://www.paidmembershipspro.com/blog/?utm_source=plugin&utm_medium=pmpro-dashboard&utm_campaign=blog&utm_content=news-updates-metabox"><?php esc_html_e( 'View More', 'paid-memberships-pro' ); ?></a></p>
 	<?php
 }
 

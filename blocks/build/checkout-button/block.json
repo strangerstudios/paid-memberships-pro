@@ -4,12 +4,27 @@
 	"name": "pmpro/checkout-button",
 	"title": "Membership Checkout Button",
 	"category": "pmpro",
-	"icon": "migrate",
 	"description": "Inserts a button that links directly to membership checkout for the selected level.",
+	"keywords": [ "membership", "checkout", "button", "buy", "paid memberships pro", "pmpro" ],
 	"attributes" : {
+		"selected_membership_level": {
+			"type": "string"
+		},
+		"textAlign": {
+			"type": "string"
+		},
 		"text": {
 			"type": "string",
 			"default": "Buy Now"
+		},
+		"placeholder": {
+			"type": "string"
+		},
+		"backgroundColor": {
+			"type": "string"
+		},
+		"textColor": {
+			"type": "string"
 		},
 		"css_class": {
 			"type": "string",
@@ -20,11 +35,52 @@
 		}
 	},
 	"supports": {
-		"html": false
+		"color": {
+			"__experimentalSkipSerialization": true,
+			"__experimentalDefaultControls": {
+				"background": true,
+				"text": true
+			}
+		},
+		"typography": {
+			"fontSize": true,
+			"lineHeight": true,
+			"__experimentalFontFamily": true,
+			"__experimentalFontWeight": true,
+			"__experimentalFontStyle": true,
+			"__experimentalTextTransform": true,
+			"__experimentalTextDecoration": true,
+			"__experimentalLetterSpacing": true,
+			"__experimentalDefaultControls": {
+				"fontSize": true
+			}
+		},
+		"reusable": false,
+		"shadow": true,
+		"spacing": {
+			"margin": true,
+			"padding": [ "horizontal", "vertical" ],
+			"__experimentalDefaultControls": {
+				"padding": true
+			}
+		},
+		"__experimentalBorder": {
+			"color": true,
+			"radius": true,
+			"style": true,
+			"width": true,
+			"__experimentalSkipSerialization": true,
+			"__experimentalDefaultControls": {
+				"color": true,
+				"radius": true,
+				"style": true,
+				"width": true
+			}
+		}
+	},
+	"example": {
 	},
 	"textdomain": "paid-memberships-pro",
 	"editorScript": "file:./index.js",
-	"editorStyle": "file:./index.css",
-	"style": "file:./style-index.css",
 	"render": "file:./render.php"
 }

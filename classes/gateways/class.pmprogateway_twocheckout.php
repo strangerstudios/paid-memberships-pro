@@ -124,7 +124,7 @@
 		</tr>
 		<tr class="gateway gateway_twocheckout" <?php if($gateway != "twocheckout") { ?>style="display: none;"<?php } ?>>
 			<th scope="row" valign="top">
-				<label for="twocheckout_apiusername"><?php esc_html_e('API Username', 'paid-memberships-pro' );?>:</label>
+				<label for="twocheckout_apiusername"><?php esc_html_e('API Username', 'paid-memberships-pro' );?></label>
 			</th>
 			<td>
 				<input type="text" id="twocheckout_apiusername" name="twocheckout_apiusername" value="<?php echo esc_attr($values['twocheckout_apiusername'])?>" class="regular-text code" />
@@ -133,7 +133,7 @@
 		</tr>
 		<tr class="gateway gateway_twocheckout" <?php if($gateway != "twocheckout") { ?>style="display: none;"<?php } ?>>
 			<th scope="row" valign="top">
-				<label for="twocheckout_apipassword"><?php esc_html_e('API Password', 'paid-memberships-pro' );?>:</label>
+				<label for="twocheckout_apipassword"><?php esc_html_e('API Password', 'paid-memberships-pro' );?></label>
 			</th>
 			<td>
 				<input type="text" id="twocheckout_apipassword" name="twocheckout_apipassword" value="<?php echo esc_attr($values['twocheckout_apipassword'])?>" autocomplete="off" class="regular-text code pmpro-admin-secure-key" />
@@ -142,7 +142,7 @@
 		</tr>
 		<tr class="gateway gateway_twocheckout" <?php if($gateway != "twocheckout") { ?>style="display: none;"<?php } ?>>
 			<th scope="row" valign="top">
-				<label for="twocheckout_accountnumber"><?php esc_html_e('Account Number', 'paid-memberships-pro' );?>:</label>
+				<label for="twocheckout_accountnumber"><?php esc_html_e('Account Number', 'paid-memberships-pro' );?></label>
 			</th>
 			<td>
 				<input type="text" name="twocheckout_accountnumber" value="<?php echo esc_attr( $values['twocheckout_accountnumber'] ) ?>" class="regular-text code" />
@@ -151,7 +151,7 @@
 		</tr>
 		<tr class="gateway gateway_twocheckout" <?php if($gateway != "twocheckout") { ?>style="display: none;"<?php } ?>>
 			<th scope="row" valign="top">
-				<label for="twocheckout_secretword"><?php esc_html_e('Secret Word', 'paid-memberships-pro' );?>:</label>
+				<label for="twocheckout_secretword"><?php esc_html_e('Secret Word', 'paid-memberships-pro' );?></label>
 			</th>
 			<td>
 				<input type="text" name="twocheckout_secretword" size="60" value="<?php echo esc_attr( $values['twocheckout_secretword'] ) ?>" />
@@ -160,7 +160,7 @@
 		</tr>
 		<tr class="gateway gateway_twocheckout" <?php if($gateway != "twocheckout") { ?>style="display: none;"<?php } ?>>
 			<th scope="row" valign="top">
-				<label><?php esc_html_e('TwoCheckout INS URL', 'paid-memberships-pro' );?>:</label>
+				<label><?php esc_html_e('TwoCheckout INS URL', 'paid-memberships-pro' );?></label>
 			</th>
 			<td>
 				<p><?php esc_html_e('To fully integrate with 2Checkout, be sure to use the following for your INS URL and Approved URL', 'paid-memberships-pro' );?></p>

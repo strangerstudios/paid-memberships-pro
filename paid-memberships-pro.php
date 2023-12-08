@@ -3,7 +3,7 @@
  * Plugin Name: Paid Memberships Pro
  * Plugin URI: https://www.paidmembershipspro.com
  * Description: The most complete member management and membership subscriptions plugin for WordPress.
- * Version: 2.12.3
+ * Version: 2.12.4
  * Author: Paid Memberships Pro
  * Author URI: https://www.paidmembershipspro.com
  * Text Domain: paid-memberships-pro
@@ -16,7 +16,7 @@
  */
 
 // version constant
-define( 'PMPRO_VERSION', '2.12.3' );
+define( 'PMPRO_VERSION', '2.12.4' );
 define( 'PMPRO_USER_AGENT', 'Paid Memberships Pro v' . PMPRO_VERSION . '; ' . site_url() );
 define( 'PMPRO_MIN_PHP_VERSION', '5.6' );
 
@@ -57,6 +57,15 @@ require_once( PMPRO_DIR . '/adminpages/reports/logins.php' );            // load
 require_once( PMPRO_DIR . '/adminpages/reports/memberships.php' );       // load the Memberships report
 require_once( PMPRO_DIR . '/adminpages/reports/members-per-level.php' ); // load the Members Per Level report
 require_once( PMPRO_DIR . '/adminpages/reports/sales.php' );             // load the Sales report
+
+require_once( PMPRO_DIR . '/adminpages/member-edit.php' ); // load the Member Edit admin page.
+require_once( PMPRO_DIR . '/adminpages/member-edit/pmpro-abstract-class-member-edit-panel.php' );
+require_once( PMPRO_DIR . '/adminpages/member-edit/pmpro-class-member-edit-panel-user-info.php' );
+require_once( PMPRO_DIR . '/adminpages/member-edit/pmpro-class-member-edit-panel-memberships.php' );
+require_once( PMPRO_DIR . '/adminpages/member-edit/pmpro-class-member-edit-panel-subscriptions.php' );
+require_once( PMPRO_DIR . '/adminpages/member-edit/pmpro-class-member-edit-panel-orders.php' );
+require_once( PMPRO_DIR . '/adminpages/member-edit/pmpro-class-member-edit-panel-other.php' );
+require_once( PMPRO_DIR . '/adminpages/member-edit/pmpro-class-member-edit-panel-user-fields.php' );
 
 require_once( PMPRO_DIR . '/includes/admin.php' );                  // admin notices and functionality
 require_once( PMPRO_DIR . '/includes/adminpages.php' );             // dashboard pages
@@ -187,6 +196,11 @@ function pmpro_gateways() {
 
 	if ( pmpro_onlyFreeLevels() ) {
 		$pmpro_gateways[''] = __( 'Default', 'paid-memberships-pro' );
+	}
+
+	$check_gateway_label = get_option( 'pmpro_check_gateway_label' );
+	if ( ! empty( $check_gateway_label ) ) {
+		$pmpro_gateways['check'] =  esc_html( $check_gateway_label . ' (' . __( 'Pay by Check', 'paid-memberships-pro' ) . ')' );
 	}
 
 	return apply_filters( 'pmpro_gateways', $pmpro_gateways );

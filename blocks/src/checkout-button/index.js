@@ -9,14 +9,24 @@ import { registerBlockType } from '@wordpress/blocks';
  * Internal dependencies
  */
 import Edit from './edit';
+import Save from './save';
 import metadata from './block.json';
 
 /**
- * Register the NAMEHERE block.
+ * Register the Checkout Button block.
  */
 registerBlockType( metadata.name, {
+	icon: {
+		background: '#FFFFFF',
+		foreground: '#1A688B',
+		src: 'button',
+	},
 	/**
 	 * @see ./edit.js
 	 */
 	edit: Edit,
+	/**
+	 * @see ./save.js
+	 */
+	save: Save,
 } );

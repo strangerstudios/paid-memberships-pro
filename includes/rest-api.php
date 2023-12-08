@@ -552,12 +552,12 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 			}
 
 			$level = new PMPro_Membership_Level( $id );
-			
+
 			// Hide confirmation message if not an admin or member.
 			if ( ! empty( $level->confirmation ) 
 				 && ! pmpro_hasMembershipLevel( $id )
-				 && ! current_user_can( 'pmpro_edit_memberships' ) ) {				
-					 $level->confirmation = '';					
+				 && ! current_user_can( 'pmpro_edit_members' ) ) {
+					 $level->confirmation = '';
 			}
 
 			if ( 'json' === $response_type ) {
@@ -879,14 +879,14 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 			}
 
 			$checkout_level = pmpro_getLevelAtCheckout( $level_id, $discount_code );
-			
+
 			// Hide confirmation message if not an admin or member.
 			if ( ! empty( $checkout_level->confirmation ) 
 				 && ! pmpro_hasMembershipLevel( $level_id )
-				 && ! current_user_can( 'pmpro_edit_memberships' ) ) {				
-					 $checkout_level->confirmation = '';					
+				 && ! current_user_can( 'pmpro_edit_members' ) ) {
+					 $checkout_level->confirmation = '';
 			}
-			
+
 			return new WP_REST_Response( $checkout_level );
 		}
 
@@ -1149,16 +1149,16 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 			$method = $request->get_method();
 			$route = $request->get_route();
 
-			// Default to requiring pmpro_edit_memberships capability.
-			$permission = current_user_can( 'pmpro_edit_memberships' );
+			// Default to requiring pmpro_edit_members capability.
+			$permission = current_user_can( 'pmpro_edit_members' );
 
 			// Check other caps for some routes.
 			$route_caps = array(
-				'/pmpro/v1/has_membership_access' => 'pmpro_edit_memberships',
-				'/pmpro/v1/get_membership_level_for_user' => 'pmpro_edit_memberships',
-				'/pmpro/v1/get_membership_levels_for_user' => 'pmpro_edit_memberships',
-				'/pmpro/v1/change_membership_level' => 'pmpro_edit_memberships',
-				'/pmpro/v1/cancel_membership_level' => 'pmpro_edit_memberships',
+				'/pmpro/v1/has_membership_access' => 'pmpro_edit_members',
+				'/pmpro/v1/get_membership_level_for_user' => 'pmpro_edit_members',
+				'/pmpro/v1/get_membership_levels_for_user' => 'pmpro_edit_members',
+				'/pmpro/v1/change_membership_level' => 'pmpro_edit_members',
+				'/pmpro/v1/cancel_membership_level' => 'pmpro_edit_members',
 				'/pmpro/v1/membership_level' => true,
 				'/pmpro/v1/membership_levels' => true,
 				'/pmpro/v1/discount_code' => 'pmpro_discountcodes',
@@ -1166,9 +1166,9 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 				'/pmpro/v1/checkout_level' => true,
 				'/pmpro/v1/checkout_levels' => true,
 				'/pmpro/v1/me' => true,
-				'/pmpro/v1/recent_memberships' => 'pmpro_edit_memberships',
+				'/pmpro/v1/recent_memberships' => 'pmpro_edit_members',
 				'/pmpro/v1/recent_orders' => 'pmpro_orders',
-				'/pmpro/v1/post_restrictions' => 'pmpro_edit_memberships',
+				'/pmpro/v1/post_restrictions' => 'pmpro_edit_members',
 			);
 			$route_caps = apply_filters( 'pmpro_rest_api_route_capabilities', $route_caps, $request );			
 			

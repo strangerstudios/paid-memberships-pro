@@ -88,7 +88,11 @@
 						<p><?php echo esc_html( ucwords( $pmpro_invoice->cardtype ) ); ?> <?php esc_html_e('ending in', 'paid-memberships-pro' );?> <?php echo esc_html( last4($pmpro_invoice->accountnumber) )?>
 						<br />
 						<?php esc_html_e('Expiration', 'paid-memberships-pro' );?>: <?php echo esc_html( $pmpro_invoice->expirationmonth ); ?>/<?php echo esc_html( $pmpro_invoice->expirationyear ); ?></p>
-					<?php } else { ?>
+					<?php } else { 
+						if ( $pmpro_invoice->payment_type === 'Check' && ! empty( get_option( 'pmpro_check_gateway_label' ) ) ) {
+							$pmpro_invoice->payment_type = get_option( 'pmpro_check_gateway_label' );
+						}
+						?>
 						<p><?php echo esc_html( $pmpro_invoice->payment_type ); ?></p>
 					<?php } ?>
 				</div> <!-- end pmpro_invoice-payment-method -->
