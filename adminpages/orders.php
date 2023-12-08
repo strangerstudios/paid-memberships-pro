@@ -724,7 +724,7 @@ require_once( dirname( __FILE__ ) . '/admin_header.php' ); ?>
 													<input id="accountnumber" name="accountnumber" type="text" size="50"
 														value="<?php echo esc_attr( $order->accountnumber ); ?>"/>
 							<?php } ?>
-							<p class="description"><?php esc_html_e( 'Obscure all but last 4 digits.', 'paid-memberships-pro' ); ?></p>
+							<p class="description"><?php esc_html_e( 'Only the last 4 digits are stored in this site to use as a reference with the gateway.', 'paid-memberships-pro' ); ?></p>
 						</td>
 					</tr>
 					<?php

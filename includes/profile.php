@@ -7,7 +7,7 @@
 function pmpro_membership_levels_table_on_profile( $user ) {
 	global $current_user;
 
-	$membership_level_capability = apply_filters( 'pmpro_edit_member_capability', 'manage_options' );
+	$membership_level_capability = apply_filters( 'pmpro_edit_member_capability', 'pmpro_edit_members' );
 
 	// If the user doesn't have the capability to edit members, don't show the table.
 	if ( ! current_user_can( $membership_level_capability ) )
@@ -564,7 +564,7 @@ function pmpro_membership_level_profile_fields_update() {
 
 	$user_id = empty( $_REQUEST['user_id'] ) ? intval( $current_user->ID ) : intval( $_REQUEST['user_id'] );
 
-	$membership_level_capability = apply_filters( 'pmpro_edit_member_capability', 'manage_options' );
+	$membership_level_capability = apply_filters( 'pmpro_edit_member_capability', 'pmpro_edit_members' );
 	if ( ! current_user_can( $membership_level_capability ) ) {
 		return false;
 	}
@@ -704,7 +704,7 @@ function pmpro_membership_history_profile_fields( $user ) {
 
 	_deprecated_function( __FUNCTION__, 'TBD' );
 
-	$membership_level_capability = apply_filters( 'pmpro_edit_member_capability', 'manage_options' );
+	$membership_level_capability = apply_filters( 'pmpro_edit_member_capability', 'pmpro_edit_members' );
 
 	if ( ! current_user_can( $membership_level_capability ) ) {
 		return false;

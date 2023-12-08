@@ -1,5 +1,5 @@
 <?php
-global $post, $gateway, $wpdb, $besecure, $discount_code, $discount_code_id, $pmpro_level, $pmpro_levels, $pmpro_msg, $pmpro_msgt, $pmpro_review, $skip_account_fields, $pmpro_paypal_token, $pmpro_show_discount_code, $pmpro_error_fields, $pmpro_required_billing_fields, $pmpro_required_user_fields, $wp_version, $current_user;
+global $post, $gateway, $wpdb, $besecure, $discount_code, $discount_code_id, $pmpro_level, $pmpro_msg, $pmpro_msgt, $pmpro_review, $skip_account_fields, $pmpro_paypal_token, $pmpro_show_discount_code, $pmpro_error_fields, $pmpro_required_billing_fields, $pmpro_required_user_fields, $wp_version, $current_user;
 
 // we are on the checkout page
 add_filter( 'pmpro_is_checkout', '__return_true' );
@@ -87,10 +87,6 @@ if ( ! $besecure && ! empty( $_REQUEST['submit-checkout'] ) && is_ssl() ) {
 
 //action to run extra code for gateways/etc
 do_action( 'pmpro_checkout_preheader' );
-
-//get all levels in case we need them
-global $pmpro_levels;
-$pmpro_levels = pmpro_getAllLevels();
 
 // We set a global var for add-ons that are expecting it.
 $pmpro_show_discount_code = pmpro_show_discount_code();
@@ -818,6 +814,9 @@ if ( empty( $submit ) ) {
 		$bconfirmemail = $bemail;    //as of 1.7.5, just setting to bemail
 	}
 }
+
+// Preventing conflicts with old checkout templates that depend on the $pmpro_level global being set.
+pmpro_getAllLevels();
 
 /**
  * Hook to run actions after the checkout preheader is loaded.

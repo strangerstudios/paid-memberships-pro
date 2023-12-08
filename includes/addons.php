@@ -114,9 +114,9 @@ function pmpro_get_addon_categories() {
 			'pmpro-roles',
 			'pmpro-approvals',
 			'pmpro-add-paypal-express',
+			'pmpro-group-accounts',
 			'pmpro-signup-shortcode',
 			'pmpro-set-expiration-dates',
-			'pmpro-sponsored-members',
 			'pmpro-import-users-from-csv'
 		),
 		'association' => array(
@@ -129,9 +129,9 @@ function pmpro_get_addon_categories() {
 			'pmpro-add-name-to-checkout',
 			'pmpro-donations',
 			'pmpro-events',
+			'pmpro-group-accounts',
 			'pmpro-pay-by-check',
-			'pmpro-set-expiration-dates',
-			'pmpro-sponsored-members'
+			'pmpro-set-expiration-dates'
 		),
 		'premium_content' => array(
 			'pmpro-email-confirmation',

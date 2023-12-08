@@ -4,7 +4,7 @@
 */
 function pmpro_shortcode_account($atts, $content=null, $code="")
 {
-	global $wpdb, $pmpro_msg, $pmpro_msgt, $pmpro_levels, $current_user, $levels;
+	global $wpdb, $current_user;
 
 	// $atts    ::= array of attributes
 	// $content ::= text within enclosing form of shortcode element
@@ -35,7 +35,7 @@ function pmpro_shortcode_account($atts, $content=null, $code="")
 	add_filter( 'pmpro_disable_admin_membership_access', '__return_true', 15 ); // We want to show the actual levels for admins.
 	$mylevels = pmpro_getMembershipLevelsForUser();
 	remove_filter( 'pmpro_disable_admin_membership_access', '__return_true', 15 ); // Remove the filter so we don't mess up other stuff.
-	$pmpro_levels = pmpro_getAllLevels(false, true); // just to be sure - include only the ones that allow signups
+	$pmpro_levels = pmpro_getAllLevels(); // just to be sure - include only the ones that allow signups
 	$invoices = $wpdb->get_results("SELECT *, UNIX_TIMESTAMP(CONVERT_TZ(timestamp, '+00:00', @@global.time_zone)) as timestamp FROM $wpdb->pmpro_membership_orders WHERE user_id = '$current_user->ID' AND status NOT IN('review', 'token', 'error') ORDER BY timestamp DESC LIMIT 6");
 	?>
 	<div id="pmpro_account">
@@ -140,7 +140,14 @@ function pmpro_shortcode_account($atts, $content=null, $code="")
 									</div> <!-- end pmpro_actionlinks -->
 								</td>
 								<td class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_account-membership-levelfee' ) ); ?>">
-									<p><?php echo wp_kses_post( pmpro_getLevelCost($level, true, true) );?></p>
+									<p>
+										<?php
+											if ( ! empty( $subscriptions) ) {
+												$subscription = $subscriptions[0];
+												echo esc_html( $subscription->get_cost_text() );
+											}
+										?>
+									</p>
 								</td>
 								<td class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_account-membership-expiration' ) ); ?>">
 									<?php
