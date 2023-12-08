@@ -587,8 +587,8 @@ function pmpro_lost_password_form() { ?>
 			</div>
 		</div> <!-- end pmpro_lost_password-fields -->
 		<div class="<?php echo pmpro_get_element_class( 'pmpro_submit' ); ?>">
+			<input type="hidden" name="pmpro_login_form_used" value="1" />
 			<input type="submit" name="submit" class="<?php echo pmpro_get_element_class( 'pmpro_btn pmpro_btn-submit', 'pmpro_btn-submit' ); ?>" value="<?php esc_attr_e( 'Get New Password', 'paid-memberships-pro' ); ?>" />
-			<input type="hidden" name="pmpro_form_used" value="1" />
 		</div>
 	</form>
 	<?php
@@ -612,7 +612,7 @@ function pmpro_lost_password_redirect() {
 	}
 
 	// Don't redirect if we're not on the PMPro form.
-	if ( ! isset( $_REQUEST['pmpro_form_used'] ) ) {
+	if ( ! isset( $_REQUEST['pmpro_login_form_used'] ) ) {
 		return;
 	}
 	
@@ -725,8 +725,8 @@ function pmpro_reset_password_form() {
 				</div>
 			</div> <!-- end pmpro_reset_password-fields -->
 			<div class="<?php echo pmpro_get_element_class( 'pmpro_submit' ); ?>">
+				<input type="hidden" name="pmpro_login_form_used" value="1" />
 				<input type="submit" name="submit" id="resetpass-button" class="<?php echo pmpro_get_element_class( 'pmpro_btn pmpro_btn-submit', 'pmpro_btn-submit' ); ?>" value="<?php esc_attr_e( 'Reset Password', 'paid-memberships-pro' ); ?>" />
-				<input type="hidden" name="pmpro_form_used" value="1" />
 			</div>
 		</form>
 		<?php
@@ -796,7 +796,7 @@ function pmpro_do_password_reset() {
 	}
 
 	// Request came from elsewhere, let's bail.
-	if ( ! isset( $_REQUEST['pmpro_form_used'] ) ) {
+	if ( ! isset( $_REQUEST['pmpro_login_form_used'] ) ) {
 		return;
 	}
 
@@ -879,7 +879,7 @@ function pmpro_password_reset_email_filter( $message, $key, $user_login ) {
 	}
 
 	// Don't replace the password reset link if it came from elsewhere.
-	if ( ! isset( $_REQUEST['pmpro_form_used'] ) ) {
+	if ( ! isset( $_REQUEST['pmpro_login_form_used'] ) ) {
 		return $message;
 	}
 
