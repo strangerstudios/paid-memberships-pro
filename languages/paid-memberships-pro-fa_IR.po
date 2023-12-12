@@ -2,22 +2,14 @@
 # This file is distributed under the same license as the Paid Memberships Pro plugin.
 msgid ""
 msgstr ""
-<<<<<<< HEAD
 "Project-Id-Version: Paid Memberships Pro 2.99.99\n"
-=======
-"Project-Id-Version: Paid Memberships Pro 2.12.5\n"
->>>>>>> dev
 "Report-Msgid-Bugs-To: info@paidmembershipspro.com\n"
 "Last-Translator: Paid Memberships Pro <info@paidmembershipspro.com>\n"
 "Language-Team: Paid Memberships Pro <info@paidmembershipspro.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-<<<<<<< HEAD
-"POT-Creation-Date: 2023-12-08T20:31:58+00:00\n"
-=======
-"POT-Creation-Date: 2023-12-12T17:40:47+00:00\n"
->>>>>>> dev
+"POT-Creation-Date: 2023-12-12T19:45:32+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.9.0\n"
 "X-Domain: paid-memberships-pro\n"
@@ -3291,6 +3283,7 @@ msgstr "ذخیره سطح"
 #: includes/profile.php:1306
 #: pages/cancel.php:110
 #: shortcodes/pmpro_account.php:115
+#: adminpages/orders.php:957
 msgid "Cancel"
 msgstr "لغو کردن"
 
@@ -3534,6 +3527,7 @@ msgstr "لیست اعضا"
 #: adminpages/memberslist.php:25
 #: adminpages/orders.php:997
 #: adminpages/reports/memberships.php:358
+#: adminpages/orders.php:989
 msgid "Export to CSV"
 msgstr "ذخیره با فرمت CSV"
 
@@ -4727,6 +4721,7 @@ msgstr "یادداشت ها"
 #: adminpages/orders.php:1045
 #: adminpages/orders.php:903
 #: adminpages/orders.php:964
+#: adminpages/orders.php:956
 msgid "Save Order"
 msgstr "ذخیره سفارش"
 
@@ -4774,6 +4769,7 @@ msgstr "ذخیره سفارش"
 #: adminpages/member-edit/pmpro-class-member-edit-panel-subscriptions.php:172
 #: adminpages/orders.php:975
 #: includes/adminpages.php:212
+#: adminpages/orders.php:967
 msgid "Orders"
 msgstr "سفارشات"
 
@@ -4789,6 +4785,7 @@ msgstr "سفارشات"
 #: adminpages/orders.php:915
 #: adminpages/member-edit/pmpro-class-member-edit-panel-orders.php:11
 #: adminpages/orders.php:976
+#: adminpages/orders.php:968
 msgid "Add New Order"
 msgstr "افزودن سفارش جدید"
 
@@ -4906,6 +4903,7 @@ msgstr "فیلتر"
 #: adminpages/orders.php:1096
 #: adminpages/orders.php:951
 #: adminpages/orders.php:1012
+#: adminpages/orders.php:1004
 msgid "Search Orders"
 msgstr "جستجوی سفارش"
 
@@ -7035,16 +7033,13 @@ msgstr "برای ادغام کامل با Authorize.net، مطمئن شوید ک
 #: classes/gateways/class.pmprogateway_authorizenet.php:855
 #: classes/gateways/class.pmprogateway_authorizenet.php:927
 #: classes/gateways/class.pmprogateway_authorizenet.php:928
-<<<<<<< HEAD
 #: classes/gateways/class.pmprogateway_authorizenet.php:929
 #: classes/gateways/class.pmprogateway_authorizenet.php:1000
 #: classes/gateways/class.pmprogateway_authorizenet.php:1001
-=======
 #: classes/gateways/class.pmprogateway_authorizenet.php:916
 #: classes/gateways/class.pmprogateway_authorizenet.php:917
 #: classes/gateways/class.pmprogateway_authorizenet.php:988
 #: classes/gateways/class.pmprogateway_authorizenet.php:989
->>>>>>> dev
 msgid "Could not connect to Authorize.net"
 msgstr "قادر به اتصال به سایت Authorize.net نمی باشد"
 
@@ -9610,7 +9605,6 @@ msgstr "لطفا یک شناسه سطح را مشخص کنید."
 #: classes/class-pmpro-discount-code-list-table.php:495
 #: classes/class.pmproemail.php:1276
 #: classes/class.pmproemail.php:1340
-<<<<<<< HEAD
 #: adminpages/levels/edit-level.php:605
 #: adminpages/orders.php:436
 #: adminpages/orders.php:612
@@ -9621,9 +9615,6 @@ msgstr "لطفا یک شناسه سطح را مشخص کنید."
 #: blocks/build/sidebar/index.js:1
 #: blocks/src/component-content-visibility/content-visibility-controls.js:117
 #: blocks/src/sidebar/index.js:128
-=======
-#: classes/class-pmpro-discount-code-list-table.php:496
->>>>>>> dev
 msgid "None"
 msgstr "هیچ"
 
@@ -11784,16 +11775,13 @@ msgstr "هر"
 #: adminpages/reports/logins.php:257
 #: classes/class-pmpro-members-list-table.php:638
 #: adminpages/login-csv.php:269
-<<<<<<< HEAD
 #: adminpages/advancedsettings.php:368
 #: adminpages/member-edit/pmpro-class-member-edit-panel-memberships.php:133
 #: adminpages/member-edit/pmpro-class-member-edit-panel-memberships.php:633
 #: classes/class-pmpro-members-list-table.php:642
 #: includes/profile.php:66
 #: includes/profile.php:929
-=======
 #: adminpages/login-csv.php:267
->>>>>>> dev
 msgid "Never"
 msgstr "هرگز"
 
