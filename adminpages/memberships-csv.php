@@ -5,8 +5,6 @@ if ( ! function_exists( 'current_user_can' ) || ( ! current_user_can( 'manage_op
 	die( __( 'You do not have permissions to perform this action.', 'paid-memberships-pro' ) );
 }
 
-define( 'PMPRO_BENCHMARK', true );
-
 if ( ! defined( 'PMPRO_BENCHMARK' ) ) {
 	define( 'PMPRO_BENCHMARK', false );
 }
