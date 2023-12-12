@@ -2,14 +2,14 @@
 # This file is distributed under the same license as the Paid Memberships Pro plugin.
 msgid ""
 msgstr ""
-"Project-Id-Version: Paid Memberships Pro 2.12.4\n"
+"Project-Id-Version: Paid Memberships Pro 2.12.5\n"
 "Report-Msgid-Bugs-To: info@paidmembershipspro.com\n"
 "Last-Translator: Paid Memberships Pro <info@paidmembershipspro.com>\n"
 "Language-Team: Paid Memberships Pro <info@paidmembershipspro.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2023-11-16T21:05:22+00:00\n"
+"POT-Creation-Date: 2023-12-12T17:41:11+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.9.0\n"
 "X-Domain: paid-memberships-pro\n"
@@ -7693,6 +7693,10 @@ msgstr "要完全配合了Authorize.net, 你需要設定無聲文章URL到"
 #: classes/gateways/class.pmprogateway_authorizenet.php:855
 #: classes/gateways/class.pmprogateway_authorizenet.php:927
 #: classes/gateways/class.pmprogateway_authorizenet.php:928
+#: classes/gateways/class.pmprogateway_authorizenet.php:916
+#: classes/gateways/class.pmprogateway_authorizenet.php:917
+#: classes/gateways/class.pmprogateway_authorizenet.php:988
+#: classes/gateways/class.pmprogateway_authorizenet.php:989
 msgid "Could not connect to Authorize.net"
 msgstr "不能同Authorize.net相連"
 
@@ -11110,6 +11114,7 @@ msgstr "請明確指出程度 id."
 #: classes/class-pmpro-discount-code-list-table.php:495
 #: classes/class.pmproemail.php:1276
 #: classes/class.pmproemail.php:1340
+#: classes/class-pmpro-discount-code-list-table.php:496
 msgid "None"
 msgstr "無"
 
@@ -13496,6 +13501,7 @@ msgstr "每個"
 #: adminpages/reports/logins.php:257
 #: classes/class-pmpro-members-list-table.php:638
 #: adminpages/login-csv.php:269
+#: adminpages/login-csv.php:267
 msgid "Never"
 msgstr "永不會"
 
