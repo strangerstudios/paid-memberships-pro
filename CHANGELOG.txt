@@ -30,6 +30,15 @@
 * REFACTOR: Changing uses of `pmpro_getOption()` to `get_option()`. #2491, #2493, #2494, #2495 (@JarrydLong, @MaximilianoRicoTabo)
 * DEPRECATED: No longer using `$pmpro_levels` global variable. #2666 (@dparker1005)
 
+= 2.12.5 - 2023-12-12 =
+* ENHANCEMENT: Now allowing links to be included in user field group descriptions. #2681 (@dparker1005)
+* ENHANCEMENT: Now sorting the Levels column on the Discount Codes list table by the sorted level order. #2628 (@kimcoleman)
+* ENHANCEMENT: Now recommending the new Group Members Add On instead of the Sponsored Members Add On. #2714 (@kimcoleman)
+* BUG FIX/ENHANCEMENT: Improved accessibility for the frontend membership levels page default table. #2689 (@kimcoleman)
+* BUG FIX: Fixed a PHP warning when selecting "other" as the site type in the setup wizard. #2708 (@MaximilianoRicoTabo)
+* BUG FIX: Fixed an issue where new payment methods may not be charged after a user updates their payment method while using the Authorize.net gateway. #2330 (@dparker1005)
+* BUG FIX: Removed definition of `PMPRO_BENCHMARK` constant that was defaulting that constant to `true` in certain admin CSV files. #2724 (@andrewlimaza)
+
 = 2.12.4 - 2023-11-16 =
 * SECURITY: Fixed security issue where in some cases users could upload files at checkout with disallowed file types, e.g. .php files that could then be accessed to run arbitrary code on the server. For more information, see https://www.paidmembershipspro.com/pmpro-update-2-12-4/ (Thanks, István Márton and WordFence)
 * ENHANCEMENT: New icons for LifterLMS and the GA4 Add On.
