@@ -63,7 +63,7 @@ class PMPro_Member_Edit_Panel_User_Info extends PMPro_Member_Edit_Panel {
 					</label>
 				</th>
 				<td>
-					<input type="text" name="user_login" id="user_login" autocapitalize="none" autocorrect="off" autocomplete="off" required <?php $user->ID ?'disabled="disabled"' : ''; ?> value="<?php echo esc_attr( $user_login ) ?>">
+					<input type="text" name="user_login" id="user_login" autocapitalize="none" autocorrect="off" autocomplete="off" required <?php echo $user->ID ?'disabled="disabled"' : ''; ?> value="<?php echo esc_attr( $user_login ) ?>">
 					<?php if ( $user->ID ) { ?>
 						<p class="description"><?php esc_html_e( 'Usernames cannot be changed.', 'paid-memberships-pro' ); ?></p>
 					<?php } ?>
