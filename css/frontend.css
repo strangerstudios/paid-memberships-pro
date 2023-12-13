@@ -718,7 +718,7 @@ li.pmpro_more {
 /*---------------------------------------
 	Misc
 ---------------------------------------*/
-.pmpro_actions_nav {
+.pmpro_actions_nav:not(.pmpro_login_wrap .pmpro_actions_nav) {
 	display: flex;
 	flex-wrap: wrap;
 	justify-content: space-between;
