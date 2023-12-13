@@ -301,7 +301,7 @@ class PMPro_Member_Edit_Panel_User_Info extends PMPro_Member_Edit_Panel {
 			}
 
 			// Add other user meta
-			$user_notes = ! empty( $_POST['user_notes'] ) ? stripslashes( sanitize_textarea_field( $_POST['user_notes'] ) ) : '';
+			$user_notes = ! empty( $_POST['user_notes'] ) ? sanitize_textarea_field( $_POST['user_notes'] ) : '';
 			update_user_meta( $user_id, 'user_notes', $user_notes );
 
 			// Set message and redirect if this is a new user.		
