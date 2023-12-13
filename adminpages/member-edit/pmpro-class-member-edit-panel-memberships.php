@@ -64,6 +64,15 @@ class PMPro_Member_Edit_Panel_Memberships extends PMPro_Member_Edit_Panel {
 				<?php
 			}
 
+			// If this group does not have any levels, show a message to create a new level and move on to the next group.
+			if ( empty( $levels_in_group ) ) {
+				?>
+				<p><?php esc_html_e( 'There are no membership levels in this group.', 'paid-memberships-pro' ); ?></p>
+				<a class="button-primary" href="<?php echo esc_url( add_query_arg( array( 'page' => 'pmpro-membershiplevels' ), admin_url( 'admin.php' ) ) ) ?>"><?php esc_html_e( 'Edit Membership Levels', 'paid-memberships-pro' ) ?></a>
+				<?php
+				continue;
+			}
+
 			// State whether users can have multiple levels from this group.
 			echo '<p>' . ( empty( $group->allow_multiple_selections ) ? __( 'Users can only hold one level from this group.', 'paid-memberships-pro' ) : __( 'Users can hold multiple levels from this group.', 'paid-memberships-pro' ) ) . '</p>';
 
