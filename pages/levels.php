@@ -56,7 +56,6 @@ foreach ( $level_groups as $level_group ) {
 	<tbody>
 		<?php	
 		$count = 0;
-		$has_any_level = false;
 		foreach($pmpro_levels as $level)
 		{
 			if ( ! in_array( $level->id, $levels_in_group ) ) {
@@ -65,7 +64,6 @@ foreach ( $level_groups as $level_group ) {
 
 			$user_level = pmpro_getSpecificMembershipLevelForUser( $current_user->ID, $level->id );
 			$has_level = ! empty( $user_level );
-			$has_any_level = $has_level ?: $has_any_level;
 		?>
 		<tr class="<?php if($count++ % 2 == 0) { ?>odd<?php } ?><?php if( $has_level ) { ?> active<?php } ?>">
 			<th><?php echo $has_level ? '<strong>' . esc_html( $level->name ) . '</strong>' : esc_html( $level->name )?></th>
