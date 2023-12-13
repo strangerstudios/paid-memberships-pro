@@ -1746,7 +1746,8 @@
 				'billing_limit'               => empty( $subscription_level->billing_limit ) ? 0 : $subscription_level->billing_limit,
 				'trial_amount'                => empty( $subscription_level->trial_amount ) ? 0.00 : $subscription_level->trial_amount,
 				'trial_limit'                 => empty( $subscription_level->trial_limit ) ? 0 : $subscription_level->trial_limit,
-				'next_payment_date'           => empty( $this->ProfileStartDate ) ? '' : $this->ProfileStartDate,
+				'startdate'                   => date_i18n( 'Y-m-d H:i:s', $this->timestamp ),
+				'next_payment_date'           => empty( $this->ProfileStartDate ) ? date_i18n( 'Y-m-d H:i:s', strtotime( '+ ' . $subscription_level->cycle_number . ' ' . $subscription_level->cycle_period, (int)$this->timestamp ) ) : $this->ProfileStartDate,
 			);
 
 			$new_subscription = PMPro_Subscription::create( $create_subscription_args );
