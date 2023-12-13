@@ -45,7 +45,11 @@ if ( get_option( 'pmpro_uninstall', 0 ) ) {
 	    'pmpro_membership_levels',
 	    'pmpro_membership_orders',
 	    'pmpro_membership_levelmeta',
-	    'pmpro_membership_ordermeta'
+	    'pmpro_membership_ordermeta',
+		'pmpro_groups',
+		'pmpro_membership_levels_groups',
+		'pmpro_subscriptions',
+		'pmpro_subscriptionmeta'
 	);
 
 	foreach($tables as $table){
