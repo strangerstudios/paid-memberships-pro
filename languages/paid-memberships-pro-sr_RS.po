@@ -2,14 +2,14 @@
 # This file is distributed under the same license as the Paid Memberships Pro plugin.
 msgid ""
 msgstr ""
-"Project-Id-Version: Paid Memberships Pro 2.99.99\n"
+"Project-Id-Version: Paid Memberships Pro 2.99.991\n"
 "Report-Msgid-Bugs-To: info@paidmembershipspro.com\n"
 "Last-Translator: Paid Memberships Pro <info@paidmembershipspro.com>\n"
 "Language-Team: Paid Memberships Pro <info@paidmembershipspro.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2023-12-12T19:45:52+00:00\n"
+"POT-Creation-Date: 2023-12-14T14:35:23+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.9.0\n"
 "X-Domain: paid-memberships-pro\n"
@@ -1385,6 +1385,7 @@ msgstr "Ističe za"
 #: includes/profile.php:50
 #: includes/profile.php:314
 #: pages/cancel.php:86
+#: adminpages/member-edit/pmpro-class-member-edit-panel-memberships.php:85
 msgid "Expiration"
 msgstr "Isticanje"
 
@@ -1676,6 +1677,8 @@ msgstr "Vaše članstvo je <strong>aktivno</strong>."
 #: pages/invoice.php:131
 #: pages/levels.php:51
 #: shortcodes/pmpro_account.php:263
+#: adminpages/member-edit/pmpro-class-member-edit-panel-memberships.php:84
+#: adminpages/member-edit/pmpro-class-member-edit-panel-memberships.php:627
 msgid "Level"
 msgstr "Nivo"
 
@@ -1880,6 +1883,8 @@ msgstr "Promijenite Nivo Članstva"
 #: pages/account.php:157
 #: adminpages/member-edit/pmpro-class-member-edit-panel-memberships.php:299
 #: adminpages/member-edit/pmpro-class-member-edit-panel-memberships.php:352
+#: adminpages/member-edit/pmpro-class-member-edit-panel-memberships.php:308
+#: adminpages/member-edit/pmpro-class-member-edit-panel-memberships.php:361
 msgid "Cancel Membership"
 msgstr "Otkažite Članstvo"
 
@@ -2804,6 +2809,7 @@ msgstr "Ažuriraj"
 #: pages/cancel.php:110
 #: shortcodes/pmpro_account.php:115
 #: adminpages/orders.php:957
+#: adminpages/member-edit/pmpro-class-member-edit-panel-memberships.php:117
 msgid "Cancel"
 msgstr "Otkaži"
 
@@ -2908,6 +2914,7 @@ msgstr "%s svaki %d %s."
 #: blocks/build/sidebar/index.js:1
 #: blocks/src/component-content-visibility/content-visibility-controls.js:117
 #: blocks/src/sidebar/index.js:122
+#: pages/levels.php:84
 msgid "Select"
 msgstr "Izaberite"
 
@@ -2918,6 +2925,7 @@ msgstr "Izaberite"
 #: shortcodes/pmpro_account.php:107
 #: pages/levels.php:92
 #: shortcodes/pmpro_account.php:85
+#: pages/levels.php:90
 msgid "Renew"
 msgstr "Obnovite"
 
@@ -2925,6 +2933,7 @@ msgstr "Obnovite"
 #: pages/levels.php:68
 #: pages/levels.php:69
 #: pages/levels.php:96
+#: pages/levels.php:94
 msgid "Your&nbsp;Level"
 msgstr "Vaš&nbsp;Nivo"
 
@@ -5025,6 +5034,7 @@ msgstr "Godina Isteka"
 #: includes/profile.php:872
 #: includes/profile.php:919
 #: shortcodes/pmpro_account.php:265
+#: adminpages/member-edit/pmpro-class-member-edit-panel-memberships.php:632
 msgid "Status"
 msgstr "Status"
 
@@ -5454,6 +5464,7 @@ msgstr "obrisano"
 #: includes/profile.php:51
 #: includes/profile.php:246
 #: includes/profile.php:315
+#: adminpages/member-edit/pmpro-class-member-edit-panel-memberships.php:86
 msgid "Subscription"
 msgstr "Pretplata"
 
@@ -5666,6 +5677,8 @@ msgstr "Završen"
 #: includes/profile.php:66
 #: includes/profile.php:929
 #: adminpages/login-csv.php:267
+#: adminpages/member-edit/pmpro-class-member-edit-panel-memberships.php:142
+#: adminpages/member-edit/pmpro-class-member-edit-panel-memberships.php:642
 msgid "Never"
 msgstr "Nikad"
 
@@ -6601,6 +6614,7 @@ msgstr "Dodaj Novi Kod Za Popust"
 #: adminpages/discountcodes.php:486
 #: adminpages/member-edit/pmpro-class-member-edit-panel-memberships.php:619
 #: includes/profile.php:915
+#: adminpages/member-edit/pmpro-class-member-edit-panel-memberships.php:628
 msgid "Start Date"
 msgstr "Datum Početka"
 
@@ -7938,6 +7952,9 @@ msgstr ""
 #: includes/profile.php:935
 #: includes/profile.php:936
 #: shortcodes/pmpro_account.php:293
+#: adminpages/member-edit/pmpro-class-member-edit-panel-memberships.php:647
+#: adminpages/member-edit/pmpro-class-member-edit-panel-memberships.php:648
+#: adminpages/member-edit/pmpro-class-member-edit-panel-memberships.php:649
 msgid "N/A"
 msgstr ""
 
@@ -8817,6 +8834,7 @@ msgstr ""
 #: adminpages/membershiplevels.php:423
 #: includes/fields.php:1375
 #: includes/profile.php:784
+#: adminpages/member-edit/pmpro-class-member-edit-panel-memberships.php:112
 msgid "Edit"
 msgstr ""
 
@@ -10570,6 +10588,7 @@ msgstr ""
 #: includes/profile.php:811
 #: includes/profile.php:821
 #: shortcodes/pmpro_account.php:149
+#: adminpages/member-edit/pmpro-class-member-edit-panel-memberships.php:656
 msgid "&#8212;"
 msgstr ""
 
@@ -10603,6 +10622,7 @@ msgstr ""
 #: classes/class.memberorder.php:1801
 #: classes/class.memberorder.php:1810
 #: classes/class.memberorder.php:1686
+#: classes/class.memberorder.php:1676
 msgid "This is a test order used with the PMPro Email Templates addon."
 msgstr ""
 
@@ -15508,6 +15528,7 @@ msgstr ""
 #: classes/class-pmpro-members-list-table.php:83
 #: adminpages/member-edit/pmpro-class-member-edit-panel-memberships.php:617
 #: includes/profile.php:913
+#: adminpages/member-edit/pmpro-class-member-edit-panel-memberships.php:626
 msgid "Level ID"
 msgstr ""
 
@@ -15520,6 +15541,7 @@ msgstr ""
 #: includes/profile.php:568
 #: adminpages/member-edit/pmpro-class-member-edit-panel-memberships.php:620
 #: includes/profile.php:916
+#: adminpages/member-edit/pmpro-class-member-edit-panel-memberships.php:629
 msgid "Date Modified"
 msgstr ""
 
@@ -15533,6 +15555,7 @@ msgstr ""
 #: classes/class-pmpro-members-list-table.php:87
 #: adminpages/member-edit/pmpro-class-member-edit-panel-memberships.php:621
 #: includes/profile.php:917
+#: adminpages/member-edit/pmpro-class-member-edit-panel-memberships.php:630
 msgid "End Date"
 msgstr ""
 
@@ -15547,6 +15570,7 @@ msgstr ""
 #: adminpages/membershiplevels.php:358
 #: classes/class-pmpro-members-list-table.php:84
 #: includes/profile.php:918
+#: adminpages/member-edit/pmpro-class-member-edit-panel-memberships.php:631
 msgid "Level Cost"
 msgstr ""
 
@@ -18225,6 +18249,7 @@ msgstr ""
 #: adminpages/subscriptions.php:238
 #: includes/profile.php:70
 #: includes/profile.php:767
+#: adminpages/member-edit/pmpro-class-member-edit-panel-memberships.php:146
 msgid "%1$s at %2$s"
 msgstr ""
 
@@ -21645,16 +21670,19 @@ msgstr ""
 
 #: pages/levels.php:59
 #: pages/levels.php:86
+#: pages/levels.php:84
 msgid "Select the %s membership level"
 msgstr ""
 
 #: pages/levels.php:65
 #: pages/levels.php:92
+#: pages/levels.php:90
 msgid "Renew your %s membership level"
 msgstr ""
 
 #: pages/levels.php:69
 #: pages/levels.php:96
+#: pages/levels.php:94
 msgid "View your %s membership account"
 msgstr ""
 
@@ -21934,16 +21962,19 @@ msgid "The user has multiple levels from this group. Saving this profile will re
 msgstr ""
 
 #: adminpages/member-edit/pmpro-class-member-edit-panel-memberships.php:68
+#: adminpages/member-edit/pmpro-class-member-edit-panel-memberships.php:77
 msgid "Users can only hold one level from this group."
 msgstr ""
 
 #: adminpages/member-edit/pmpro-class-member-edit-panel-memberships.php:68
+#: adminpages/member-edit/pmpro-class-member-edit-panel-memberships.php:77
 msgid "Users can hold multiple levels from this group."
 msgstr ""
 
 #. translators: %1$d is the number of subscriptions and %2$s is the link to view subscriptions.
 #: adminpages/member-edit/pmpro-class-member-edit-panel-memberships.php:156
 #: includes/profile.php:89
+#: adminpages/member-edit/pmpro-class-member-edit-panel-memberships.php:165
 msgid "This user has %1$d active subscription for this level. %2$s"
 msgid_plural "This user has %1$d active subscriptions for this level. %2$s"
 msgstr[0] ""
@@ -21951,23 +21982,28 @@ msgstr[1] ""
 
 #: adminpages/member-edit/pmpro-class-member-edit-panel-memberships.php:166
 #: includes/profile.php:99
+#: adminpages/member-edit/pmpro-class-member-edit-panel-memberships.php:175
 msgid "View Subscriptions"
 msgstr ""
 
 #: adminpages/member-edit/pmpro-class-member-edit-panel-memberships.php:179
 #: adminpages/member-edit/pmpro-class-member-edit-panel-subscriptions.php:76
 #: adminpages/member-edit/pmpro-class-member-edit-panel-subscriptions.php:196
+#: adminpages/member-edit/pmpro-class-member-edit-panel-memberships.php:188
 msgid "View Details"
 msgstr ""
 
 #: adminpages/member-edit/pmpro-class-member-edit-panel-memberships.php:201
 #: includes/profile.php:110
 #: includes/profile.php:376
+#: adminpages/member-edit/pmpro-class-member-edit-panel-memberships.php:210
 msgid "No subscription found."
 msgstr ""
 
 #: adminpages/member-edit/pmpro-class-member-edit-panel-memberships.php:214
 #: adminpages/member-edit/pmpro-class-member-edit-panel-memberships.php:286
+#: adminpages/member-edit/pmpro-class-member-edit-panel-memberships.php:223
+#: adminpages/member-edit/pmpro-class-member-edit-panel-memberships.php:295
 msgid "Edit Membership"
 msgstr ""
 
@@ -21975,32 +22011,42 @@ msgstr ""
 #: adminpages/member-edit/pmpro-class-member-edit-panel-memberships.php:417
 #: blocks/build/single-level-expiration/index.js:1
 #: blocks/src/single-level-expiration/edit.js:59
+#: adminpages/member-edit/pmpro-class-member-edit-panel-memberships.php:228
+#: adminpages/member-edit/pmpro-class-member-edit-panel-memberships.php:426
 msgid "Level Expiration"
 msgstr ""
 
 #: adminpages/member-edit/pmpro-class-member-edit-panel-memberships.php:233
 #: adminpages/member-edit/pmpro-class-member-edit-panel-memberships.php:420
+#: adminpages/member-edit/pmpro-class-member-edit-panel-memberships.php:242
+#: adminpages/member-edit/pmpro-class-member-edit-panel-memberships.php:429
 msgid "Click to set the level expiration date."
 msgstr ""
 
 #. translators: %s is the next payment date.
 #: adminpages/member-edit/pmpro-class-member-edit-panel-memberships.php:243
+#: adminpages/member-edit/pmpro-class-member-edit-panel-memberships.php:252
 msgid "Note: The next payment date for this level is %s."
 msgstr ""
 
 #: adminpages/member-edit/pmpro-class-member-edit-panel-memberships.php:261
 #: adminpages/subscriptions.php:59
 #: adminpages/subscriptions.php:63
+#: adminpages/member-edit/pmpro-class-member-edit-panel-memberships.php:270
 msgid "Cancel Subscription"
 msgstr ""
 
 #: adminpages/member-edit/pmpro-class-member-edit-panel-memberships.php:266
+#: adminpages/member-edit/pmpro-class-member-edit-panel-memberships.php:275
 msgid "Cancel the user's subscription for this level."
 msgstr ""
 
 #: adminpages/member-edit/pmpro-class-member-edit-panel-memberships.php:275
 #: adminpages/member-edit/pmpro-class-member-edit-panel-memberships.php:341
 #: adminpages/member-edit/pmpro-class-member-edit-panel-memberships.php:466
+#: adminpages/member-edit/pmpro-class-member-edit-panel-memberships.php:284
+#: adminpages/member-edit/pmpro-class-member-edit-panel-memberships.php:350
+#: adminpages/member-edit/pmpro-class-member-edit-panel-memberships.php:475
 msgid "Member Communication"
 msgstr ""
 
@@ -22008,21 +22054,30 @@ msgstr ""
 #: adminpages/member-edit/pmpro-class-member-edit-panel-memberships.php:346
 #: adminpages/member-edit/pmpro-class-member-edit-panel-memberships.php:471
 #: includes/profile.php:429
+#: adminpages/member-edit/pmpro-class-member-edit-panel-memberships.php:289
+#: adminpages/member-edit/pmpro-class-member-edit-panel-memberships.php:355
+#: adminpages/member-edit/pmpro-class-member-edit-panel-memberships.php:480
 msgid "Send membership change email to member."
 msgstr ""
 
 #: adminpages/member-edit/pmpro-class-member-edit-panel-memberships.php:308
 #: adminpages/member-edit/pmpro-class-member-edit-panel-memberships.php:432
+#: adminpages/member-edit/pmpro-class-member-edit-panel-memberships.php:317
+#: adminpages/member-edit/pmpro-class-member-edit-panel-memberships.php:441
 msgid "Refund Payment"
 msgstr ""
 
 #: adminpages/member-edit/pmpro-class-member-edit-panel-memberships.php:325
 #: adminpages/member-edit/pmpro-class-member-edit-panel-memberships.php:450
+#: adminpages/member-edit/pmpro-class-member-edit-panel-memberships.php:334
+#: adminpages/member-edit/pmpro-class-member-edit-panel-memberships.php:459
 msgid "Current Subscription"
 msgstr ""
 
 #: adminpages/member-edit/pmpro-class-member-edit-panel-memberships.php:330
 #: adminpages/member-edit/pmpro-class-member-edit-panel-memberships.php:455
+#: adminpages/member-edit/pmpro-class-member-edit-panel-memberships.php:339
+#: adminpages/member-edit/pmpro-class-member-edit-panel-memberships.php:464
 msgid "Cancel payment subscription (Recommended)"
 msgstr ""
 
@@ -22030,84 +22085,106 @@ msgstr ""
 #: adminpages/member-edit/pmpro-class-member-edit-panel-memberships.php:456
 #: includes/profile.php:266
 #: includes/profile.php:369
+#: adminpages/member-edit/pmpro-class-member-edit-panel-memberships.php:340
+#: adminpages/member-edit/pmpro-class-member-edit-panel-memberships.php:465
 msgid "Keep subscription active"
 msgstr ""
 
 #: adminpages/member-edit/pmpro-class-member-edit-panel-memberships.php:372
 #: includes/profile.php:31
+#: adminpages/member-edit/pmpro-class-member-edit-panel-memberships.php:381
 msgid "Add Membership"
 msgstr ""
 
 #: adminpages/member-edit/pmpro-class-member-edit-panel-memberships.php:372
+#: adminpages/member-edit/pmpro-class-member-edit-panel-memberships.php:381
 msgid "Change Membership"
 msgstr ""
 
 #: adminpages/member-edit/pmpro-class-member-edit-panel-memberships.php:396
+#: adminpages/member-edit/pmpro-class-member-edit-panel-memberships.php:405
 msgid "New Membership Level"
 msgstr ""
 
 #: adminpages/member-edit/pmpro-class-member-edit-panel-memberships.php:400
+#: adminpages/member-edit/pmpro-class-member-edit-panel-memberships.php:409
 msgid "Choose Level"
 msgstr ""
 
 #: adminpages/member-edit/pmpro-class-member-edit-panel-memberships.php:601
+#: adminpages/member-edit/pmpro-class-member-edit-panel-memberships.php:610
 msgid "Membership History"
 msgstr ""
 
 #: adminpages/member-edit/pmpro-class-member-edit-panel-memberships.php:678
+#: adminpages/member-edit/pmpro-class-member-edit-panel-memberships.php:687
 msgid "You do not have permission to update this user's membership levels."
 msgstr ""
 
 #: adminpages/member-edit/pmpro-class-member-edit-panel-memberships.php:685
+#: adminpages/member-edit/pmpro-class-member-edit-panel-memberships.php:694
 msgid "User not found."
 msgstr ""
 
 #: adminpages/member-edit/pmpro-class-member-edit-panel-memberships.php:693
+#: adminpages/member-edit/pmpro-class-member-edit-panel-memberships.php:702
 msgid "Please pass a group to add a level for."
 msgstr ""
 
 #: adminpages/member-edit/pmpro-class-member-edit-panel-memberships.php:701
+#: adminpages/member-edit/pmpro-class-member-edit-panel-memberships.php:710
 msgid "Please pass level data to add."
 msgstr ""
 
 #: adminpages/member-edit/pmpro-class-member-edit-panel-memberships.php:711
+#: adminpages/member-edit/pmpro-class-member-edit-panel-memberships.php:720
 msgid "Please pass a level ID to add."
 msgstr ""
 
 #: adminpages/member-edit/pmpro-class-member-edit-panel-memberships.php:734
 #: adminpages/member-edit/pmpro-class-member-edit-panel-memberships.php:862
+#: adminpages/member-edit/pmpro-class-member-edit-panel-memberships.php:743
+#: adminpages/member-edit/pmpro-class-member-edit-panel-memberships.php:871
 msgid "The order to refund does not belong to this user."
 msgstr ""
 
 #: adminpages/member-edit/pmpro-class-member-edit-panel-memberships.php:771
+#: adminpages/member-edit/pmpro-class-member-edit-panel-memberships.php:780
 msgid "Error changing membership level."
 msgstr ""
 
 #: adminpages/member-edit/pmpro-class-member-edit-panel-memberships.php:789
+#: adminpages/member-edit/pmpro-class-member-edit-panel-memberships.php:798
 msgid "Please pass a level to edit."
 msgstr ""
 
 #: adminpages/member-edit/pmpro-class-member-edit-panel-memberships.php:797
+#: adminpages/member-edit/pmpro-class-member-edit-panel-memberships.php:806
 msgid "Please pass level data to edit."
 msgstr ""
 
 #: adminpages/member-edit/pmpro-class-member-edit-panel-memberships.php:810
+#: adminpages/member-edit/pmpro-class-member-edit-panel-memberships.php:819
 msgid "Error updating expiration date."
 msgstr ""
 
 #: adminpages/member-edit/pmpro-class-member-edit-panel-memberships.php:841
+#: adminpages/member-edit/pmpro-class-member-edit-panel-memberships.php:850
 msgid "Please pass a level to cancel."
 msgstr ""
 
 #: adminpages/member-edit/pmpro-class-member-edit-panel-memberships.php:888
+#: adminpages/member-edit/pmpro-class-member-edit-panel-memberships.php:897
 msgid "Error cancelling membership level."
 msgstr ""
 
 #: adminpages/member-edit/pmpro-class-member-edit-panel-memberships.php:904
+#: adminpages/member-edit/pmpro-class-member-edit-panel-memberships.php:913
 msgid "Membership action not found."
 msgstr ""
 
 #: adminpages/member-edit/pmpro-class-member-edit-panel-memberships.php:911
+#: adminpages/member-edit/pmpro-class-member-edit-panel-memberships.php:920
 msgid "Memberships updated."
 msgstr ""
 
@@ -23638,4 +23715,12 @@ msgstr ""
 #: blocks/src/single-level/block.json
 msgctxt "block keyword"
 msgid "pricing"
+msgstr ""
+
+#: adminpages/member-edit/pmpro-class-member-edit-panel-memberships.php:70
+msgid "There are no membership levels in this group."
+msgstr ""
+
+#: adminpages/member-edit/pmpro-class-member-edit-panel-memberships.php:71
+msgid "Edit Membership Levels"
 msgstr ""
