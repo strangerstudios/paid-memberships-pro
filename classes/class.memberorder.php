@@ -1114,20 +1114,10 @@
 		 * @param bool $force If true, it will reset the property.
 		 *
 		 */
-		function getMembershipLevelAtCheckout($force = false) {
-			global $pmpro_level;
-
-			if( ! empty( $this->membership_level ) && empty( $force ) ) {
-				return $this->membership_level;
+		function getMembershipLevelAtCheckout($force = false) {			
+			if ( empty( $this->membership_level ) || $force ) {
+				$this->membership_level = pmpro_getLevelAtCheckout();
 			}
-			
-			// If for some reason, we haven't setup pmpro_level yet, do that.
-			if ( empty( $pmpro_level ) ) {
-				$pmpro_level = pmpro_getLevelAtCheckout();
-			}
-			
-			// Set the level to the checkout level global.
-			$this->membership_level = $pmpro_level;
 			
 			// Fix the membership level id.
 			if(!empty( $this->membership_level) && !empty($this->membership_level->level_id)) {
@@ -1695,8 +1685,6 @@
 		 * @return PMPro_Subscription|null The subscription object or null if the order is not a subscription.
 		 */
 		public function get_subscription() {
-			global $pmpro_level;
-
 			// Make sure that this order is a part of a subscription.
 			if ( empty( $this->subscription_transaction_id ) ) {
 				// No subscription transaction ID, so we don't need to create a subscription.
@@ -1720,7 +1708,7 @@
 				return null;
 			}
 
-			if ( isset( $pmpro_level ) ) {
+			if ( pmpro_is_checkout() ) {
 				// We are processing a checkout. Get the level from the checkout.
 				$subscription_level = $this->getMembershipLevelAtCheckout();
 			} else {
