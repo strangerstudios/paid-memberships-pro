@@ -4,7 +4,7 @@ Tags: memberships, member, community, user profile, user registration, members, 
 Requires at least: 5.2
 Tested up to: 6.4.2
 Requires PHP: 5.6
-Stable tag: 2.99.99
+Stable tag: 2.99.991
 
 Build a membership site that grows with you: user registration, member profiles, 28 protected content types, free or paid subscriptions.
 
@@ -190,7 +190,7 @@ Not sure? You can find out by doing a bit a research.
 9. Advanced settings for updating non-member messages, optionally show excerpts or filter content, use reCAPTCHA, and a Terms of Service checkbox.
 
 == Changelog ==
-= 3.0 (Updated for v2.99.99 on 2023-12-08) =
+= 3.0 (Updated for v2.99.991 on 2023-12-08) =
 * FEATURE: Now tracking payment subscriptions using a new subscriptions table. (@dparker1005)
 * FEATURE: The Multiple Memberships Per User Add On has been merged into the core PMPro plugin. #2250 (@dparker1005)
 * FEATURE: The Stripe Billing Limits Add On  has been merged into the core PMPro plugin. All gateways now support billing limits. #2384 (@dparker1005)

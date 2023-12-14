@@ -1,5 +1,5 @@
 == Changelog ==
-= 3.0 (Updated for v2.99.99 on 2023-12-08) =
+= 3.0 (Updated for v2.99.991 on 2023-12-14) =
 * FEATURE: Now tracking payment subscriptions using a new subscriptions table. (@dparker1005)
 * FEATURE: The Multiple Memberships Per User Add On has been merged into the core PMPro plugin. #2250 (@dparker1005)
 * FEATURE: The Stripe Billing Limits Add On  has been merged into the core PMPro plugin. All gateways now support billing limits. #2384 (@dparker1005)
