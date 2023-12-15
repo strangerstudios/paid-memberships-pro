@@ -1199,7 +1199,6 @@ class PMPro_Subscription {
 		}
 
 		$this->update();
-		$this->save();
 
 		return $cancelled;
 	}
@@ -1211,17 +1210,9 @@ class PMPro_Subscription {
 	 * @since 3.0
 	 */
 	private function maybe_fix_default_migration_data() {
-		// Let's first check if the subscription's data looks like migration data.
-		// If not, then this saves a subscription meta check.
-		if ( ! empty( $this->billing_amount ) || ! empty( $this->cycle_number ) ) {
-			// We have some data, so we don't need to migrate.
-			return;
-		}
-
-		// Even if it looks like we have migration data, we may not need to fix it.
-		// Let's check subscription meta.
-		if ( empty( get_pmpro_subscription_meta( $this->id, 'has_default_migration_data', true ) ) ) {
-			// This subscription has already been migrated.
+		// Make sure that this looks like default migration data for an active subscription.
+		if (  empty( $this->id ) || 'active' !== $this->status || ! empty( $this->billing_amount ) || ! empty( $this->cycle_number ) ) {
+			// This is not default migration data for an active subscription. Bail.
 			return;
 		}
 
@@ -1264,22 +1255,39 @@ class PMPro_Subscription {
 			}
 		}
 
-		// If we have found a level, let's fill in the subscription.
-		// Otherwise, we'll just have to hope the data can be pulled from the gateway.
-		if ( ! empty( $subscription_level ) ) {
-			$this->billing_amount = $subscription_level->billing_amount;
-			$this->cycle_number   = $subscription_level->cycle_number;
-			$this->cycle_period   = $subscription_level->cycle_period;
-			$this->billing_limit  = $subscription_level->billing_limit;
-			$this->trial_amount   = $subscription_level->trial_amount;
-			$this->trial_limit    = $subscription_level->trial_limit;
+		// If we still don't have a subscription level, then this membership level isn't recurring or no longer exists on the site. Bail.
+		if ( empty( $subscription_level ) ) {
+			return;
+		}
+
+		// We have found a level, let's fill in the subscription.
+		$this->billing_amount = $subscription_level->billing_amount;
+		$this->cycle_number   = $subscription_level->cycle_number;
+		$this->cycle_period   = $subscription_level->cycle_period;
+		$this->billing_limit  = $subscription_level->billing_limit;
+		$this->trial_amount   = $subscription_level->trial_amount;
+		$this->trial_limit    = $subscription_level->trial_limit;
+
+		// Let's take a guess at the start date.
+		$oldest_orders = $this->get_orders( [
+			'limit'   => 1,
+			'orderby' => '`timestamp` ASC, `id` ASC',
+		] );
+		if ( ! empty( $oldest_orders ) ) {
+			$oldest_order = current( $oldest_orders );
+			$this->startdate = date_i18n( 'Y-m-d H:i:s', $oldest_order->getTimestamp( true ) );
+		}
+
+
+		// Let's also take a guess at the next payment date.
+		$newest_orders = $this->get_orders( array( 'limit' => 1 ) );
+		if ( ! empty( $newest_orders ) ) {
+			$newest_order = current( $newest_orders );
+			$this->next_payment_date = date_i18n( 'Y-m-d H:i:s', strtotime( '+ ' . $this->cycle_number . ' ' . $this->cycle_period, $newest_order->getTimestamp( true ) ) );
 		}
 
 		// Now that we have the basic data filled in, the `update()` method will take care of the rest.
-		$saved = $this->update();
-
-		// Mark this subscription as having default migration data.
-		delete_pmpro_subscription_meta( $this->id, 'has_default_migration_data' );
+		$this->update();
 	}
 
 	/**
