@@ -44,7 +44,7 @@ if ( empty( $subscription ) ) {
 
 	$sub_membership_level_id   = $subscription->get_membership_level_id();
 	$sub_membership_level      = pmpro_getLevel( $sub_membership_level_id );
-	$sub_membership_level_name = empty( $sub_membership_level ) ? '' : $sub_membership_level->name;
+	$sub_membership_level_name = empty( $sub_membership_level ) ? '[' . sprintf( esc_html( 'deleted level #%d', 'paid-memberships-pro' ), (int)$subscription->get_membership_level_id() ) . ']' : $sub_membership_level->name;
 	?>
 
 	<a
