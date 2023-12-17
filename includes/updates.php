@@ -107,7 +107,8 @@ function pmpro_updates_notice() {
 <div class="update-nag notice notice-warning inline">
 	<?php
 		echo __( 'Paid Memberships Pro Data Update Required', 'paid-memberships-pro' ) . '. ';
-		echo sprintf(__( '(1) <a target="_blank" href="%s">Backup your WordPress database</a></strong> and then (2) <a href="%s">click here to start the update</a>.', 'paid-memberships-pro' ), 'https://codex.wordpress.org/WordPress_Backups#Database_Backup_Instructions', admin_url('admin.php?page=pmpro-updates'));
+		/* translators: %s: URL to the updates page. */
+		echo sprintf(__( '(1) <a target="_blank" href="%s">Backup your WordPress database</a></strong> and then (2) <a href="%s">click here to start the update</a>.', 'paid-memberships-pro' ), esc_url( 'https://www.paidmembershipspro.com/backup-wordpress-site/?utm_source=plugin&utm_medium=pmpro-admin-header&utm_campaign=blog&utm_content=backup-notification' ), admin_url('admin.php?page=pmpro-updates'));
 	?>
 </div>
 <?php
