@@ -690,7 +690,7 @@ class PMPro_Subscription {
 		if ( ! empty( $error_message ) ) {
 			$pmproemail                = new PMProEmail();
 			$pmproemail->template      = 'subscription_sync_failed';
-			$pmproemail->subject       = __( 'Subscription Synchronization Error', 'paid-memberships-pro' );
+			$pmproemail->subject       = __( 'Error Synchronizing Subscription', 'paid-memberships-pro' );
 			$pmproemail->data          = array( 'body' => '<p>' . esc_html__( 'There was an error synchronizing a subscription with your payment gateway.', 'paid-memberships-pro' ) . '</p>' . "\n" );
 			$pmproemail->data['body'] .= '<p>' . esc_html__( 'Error', 'paid-memberships-pro' ) . ': ' . esc_html( $error_message ) . '</p>' . "\n";
 			$pmproemail->data['body'] .= '<p>' . esc_html__( 'Subscription ID', 'paid-memberships-pro' ) . ': ' . $this->id . '</p>' . "\n";
