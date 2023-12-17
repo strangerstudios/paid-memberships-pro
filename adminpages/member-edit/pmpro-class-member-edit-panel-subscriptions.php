@@ -130,7 +130,10 @@ class PMPro_Member_Edit_Panel_Subscriptions extends PMPro_Member_Edit_Panel {
 									echo esc_html( $level->name );
 								} elseif ( $subscription->get_membership_level_id() > 0 ) {
 									/* translators: %d is the level ID */
-									echo sprintf( esc_html( 'Level ID: %d [deleted]', 'paid-memberships-pro' ), (int)$subscription->get_membership_level_id() );
+									echo sprintf(
+										esc_html__( 'Level ID: %d [deleted]', 'paid-memberships-pro' ),
+										(int) $subscription->get_membership_level_id()
+									);
 								} else {
 									esc_html_e( '&#8212;', 'paid-memberships-pro' );
 								}
