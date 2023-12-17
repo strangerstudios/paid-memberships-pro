@@ -702,7 +702,7 @@ class PMPro_Subscription {
 			$pmproemail->data['body'] .= '<p>' . esc_html__( 'Edit User', 'paid-memberships-pro' ) . ': ' . esc_url( add_query_arg( 'user_id', $this->user_id, self_admin_url( 'user-edit.php' ) ) ) . '</p>';
 			$pmproemail->sendEmail( get_bloginfo( 'admin_email' ) );
 
-			pmpro_setMessage( __( 'There was an error synchronizing a subscription with your payment gateway: ', 'paid-memberships-pro' ), 'pmpro_error' ) . esc_html( $error_message );
+			pmpro_setMessage( __( 'There was an error synchronizing a subscription with your payment gateway: ', 'paid-memberships-pro' ) . esc_html( $error_message ), 'pmpro_error' );
 		}
 
 		pmpro_setMessage( __( 'Subscription updated.', 'paid-memberships-pro' ), 'pmpro_success' ); // Will not overwrite previous messages.
