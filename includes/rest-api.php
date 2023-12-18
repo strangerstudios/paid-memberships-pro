@@ -833,8 +833,17 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 			$r['initial_payment'] = 0.00;
 			foreach ( $level_ids as $level_id ) {
 				$r[ $level_id ] = pmpro_getLevelAtCheckout( $level_id, $discount_code );
+				
+				// Increment the total initial_paymnent.
 				if ( ! empty( $r[ $level_id ]->initial_payment ) ) {
 					$r['initial_payment'] += floatval( $r[ $level_id ]->initial_payment );
+				}
+
+				// Hide confirmation message if not an admin or member.
+				if ( ! empty( $r[ $level_id ]->confirmation ) 
+						&& ! pmpro_hasMembershipLevel( $level_id )
+						&& ! current_user_can( 'pmpro_edit_memberships' ) ) {				
+					$r[ $level_id ]->confirmation = '';					
 				}
 			}
 			$r['initial_payment_formatted'] = pmpro_formatPrice( $r['initial_payment'] );
