@@ -4,7 +4,7 @@ Tags: memberships, member, community, user profile, user registration, members, 
 Requires at least: 5.2
 Tested up to: 6.4.2
 Requires PHP: 5.6
-Stable tag: 2.12.5
+Stable tag: 2.12.6
 
 Build a membership site that grows with you: user registration, member profiles, 28 protected content types, free or paid subscriptions.
 
@@ -190,6 +190,10 @@ Not sure? You can find out by doing a bit a research.
 9. Advanced settings for updating non-member messages, optionally show excerpts or filter content, use reCAPTCHA, and a Terms of Service checkbox.
 
 == Changelog ==
+= 2.12.6 - 2023-12-18 =
+* SECURITY: Fixed a security issue where unauthorized users could abuse the REST API endpoints to add new levels or edit existing levels. (Thanks, Craig Smith at WordFence) #2742 (@ideadude)
+* BUG FIX: Now hiding level confirmation messages from the output returned by the checkout_levels API route. #2742 (@ideadude)
+
 = 2.12.5 - 2023-12-12 =
 * ENHANCEMENT: Now allowing links to be included in user field group descriptions. #2681 (@dparker1005)
 * ENHANCEMENT: Now sorting the Levels column on the Discount Codes list table by the sorted level order. #2628 (@kimcoleman)
