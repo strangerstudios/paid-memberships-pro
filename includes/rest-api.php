@@ -1000,6 +1000,7 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 		 * 'administrator' for any other type of request.
 		 *
 		 * @since 2.3
+		 * @since 2.12.6 Now allowing arrays in $route_caps so you can have a different permission per HTTP method.
 		 */
 		 function pmpro_rest_api_get_permissions_check( $request ) {
 
@@ -1007,6 +1008,7 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 			$route = $request->get_route();
 
 			// Default to requiring pmpro_edit_memberships capability.
+			// NOTE: This basically means that anyone with the pmpro_edit_memberships capability could potentially do anything made available through the API in this file.
 			$permission = current_user_can( 'pmpro_edit_memberships' );
 
 			// Check other caps for some routes.
@@ -1016,7 +1018,13 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 				'/pmpro/v1/get_membership_levels_for_user' => 'pmpro_edit_memberships',
 				'/pmpro/v1/change_membership_level' => 'pmpro_edit_memberships',
 				'/pmpro/v1/cancel_membership_level' => 'pmpro_edit_memberships',
-				'/pmpro/v1/membership_level' => true,
+				'/pmpro/v1/membership_level' => array(
+					'GET' => true,
+					'POST' => 'pmpro_edit_memberships',
+					'PUT' => 'pmpro_edit_memberships',
+					'PATCH' => 'pmpro_edit_memberships',
+					'DELETE' => 'pmpro_edit_memberships',
+				),
 				'/pmpro/v1/discount_code' => 'pmpro_discountcodes',
 				'/pmpro/v1/order' => 'pmpro_orders',
 				'/pmpro/v1/checkout_level' => true,
@@ -1025,15 +1033,30 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 				'/pmpro/v1/recent_memberships' => 'pmpro_edit_memberships',
 				'/pmpro/v1/recent_orders' => 'pmpro_orders'
 			);
-			$route_caps = apply_filters( 'pmpro_rest_api_route_capabilities', $route_caps, $request );			
+			$route_caps = apply_filters( 'pmpro_rest_api_route_capabilities', $route_caps, $request );
 			
+			// Check if we have a specific permission to check for this route/method.
 			if ( isset( $route_caps[$route] ) ) {
-				if ( $route_caps[$route] === true ) {
-					// public
-					$permission = true;
-				} else {									
-					$permission = current_user_can( $route_caps[$route] );					
-				}				
+				// Find the permission to check.
+				if ( is_array ( $route_caps[$route] ) && isset( $route_caps[$route][$method] ) ) {
+					// Different permission for this method, use it.
+					$permission_to_check = $route_caps[$route][$method];
+				} elseif ( is_array( $route_caps[$route] ) ) {
+					// No permission for this method, default to false.
+					$permission_to_check = false;
+				} else {
+					// Same permission for all methods, use it.
+					$permission_to_check = $route_caps[$route];
+				}
+
+				// Check the permission.
+				if ( $permission_to_check === true || $permission_to_check === false ) {
+					// For true or false, just pass it along.
+					$permission = $permission_to_check;
+				} else {
+					// Check if the current user has this capability.
+					$permission = current_user_can( $permission );
+				}
 			}
 
 			// Is the request method allowed? We disable DELETE by default.
