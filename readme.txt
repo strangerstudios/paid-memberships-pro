@@ -4,7 +4,11 @@ Tags: memberships, member, community, user profile, user registration, members, 
 Requires at least: 5.2
 Tested up to: 6.4.2
 Requires PHP: 5.6
+<<<<<<< HEAD
 Stable tag: 2.99.991
+=======
+Stable tag: 2.12.6
+>>>>>>> strangerstudios/dev
 
 Build a membership site that grows with you: user registration, member profiles, 28 protected content types, free or paid subscriptions.
 
@@ -220,6 +224,10 @@ Not sure? You can find out by doing a bit a research.
 * REFACTOR: Removed deprecated and unused code in the Stripe gateway integration code. #2428 (@dparker1005)
 * REFACTOR: Changing uses of `pmpro_getOption()` to `get_option()`. #2491, #2493, #2494, #2495 (@JarrydLong, @MaximilianoRicoTabo)
 * DEPRECATED: No longer using `$pmpro_levels` global variable. #2666 (@dparker1005)
+
+= 2.12.6 - 2023-12-18 =
+* SECURITY: Fixed a security issue where unauthorized users could abuse the REST API endpoints to add new levels or edit existing levels. (Thanks, Craig Smith at WordFence) #2742 (@ideadude)
+* BUG FIX: Now hiding level confirmation messages from the output returned by the checkout_levels API route. #2742 (@ideadude)
 
 = 2.12.5 - 2023-12-12 =
 * ENHANCEMENT: Now allowing links to be included in user field group descriptions. #2681 (@dparker1005)
