@@ -1,5 +1,5 @@
 <?php
-global $post, $gateway, $wpdb, $besecure, $discount_code, $discount_code_id, $pmpro_level, $pmpro_levels, $pmpro_msg, $pmpro_msgt, $pmpro_review, $skip_account_fields, $pmpro_paypal_token, $pmpro_show_discount_code, $pmpro_error_fields, $pmpro_required_billing_fields, $pmpro_required_user_fields, $wp_version, $current_user;
+global $post, $gateway, $wpdb, $besecure, $discount_code, $discount_code_id, $pmpro_level, $pmpro_levels, $pmpro_msg, $pmpro_msgt, $pmpro_review, $skip_account_fields, $pmpro_paypal_token, $pmpro_show_discount_code, $pmpro_error_fields, $pmpro_required_billing_fields, $pmpro_required_user_fields, $wp_version, $current_user, $pmpro_checkout_level_ids;
 
 // we are on the checkout page
 add_filter( 'pmpro_is_checkout', '__return_true' );
@@ -597,28 +597,31 @@ if ( ! empty( $pmpro_confirmed ) ) {
 		$enddate = apply_filters( "pmpro_checkout_end_date", $enddate, $user_id, $pmpro_level, $startdate );
 
 		//check code before adding it to the order
-		global $pmpro_checkout_level_ids; // Set by MMPU.
-		if ( isset( $pmpro_checkout_level_ids ) ) {
-			$code_check = pmpro_checkDiscountCode( $discount_code, $pmpro_checkout_level_ids, true );
-		} else {
-			$code_check = pmpro_checkDiscountCode( $discount_code, $pmpro_level->id, true );
-		}
+		if ( ! empty( $discount_code ) ) {
+			if ( isset( $pmpro_checkout_level_ids ) ) {
+				$code_check = pmpro_checkDiscountCode( $discount_code, $pmpro_checkout_level_ids, true );
+			} else {
+				$code_check = pmpro_checkDiscountCode( $discount_code, $pmpro_level->id, true );
+			}
 
-		if ( $code_check[0] == false ) {
-			//error
-			$pmpro_msg  = $code_check[1];
-			$pmpro_msgt = "pmpro_error";
+			if ( $code_check[0] == false ) {
+				//error
+				$pmpro_msg  = $code_check[1];
+				$pmpro_msgt = "pmpro_error";
 
-			//don't use this code
-			$use_discount_code = false;
-		} else {
-			//all okay
-			$use_discount_code = true;
-		}
+				//don't use this code
+				$use_discount_code = false;
+			} else {
+				//all okay
+				$use_discount_code = true;
+			}
 
-		//update membership_user table.
-		if ( ! empty( $discount_code ) && ! empty( $use_discount_code ) ) {
-			$discount_code_id = $wpdb->get_var( "SELECT id FROM $wpdb->pmpro_discount_codes WHERE code = '" . esc_sql( $discount_code ) . "' LIMIT 1" );
+			//update membership_user table.
+			if ( ! empty( $discount_code ) && ! empty( $use_discount_code ) ) {
+				$discount_code_id = $wpdb->get_var( "SELECT id FROM $wpdb->pmpro_discount_codes WHERE code = '" . esc_sql( $discount_code ) . "' LIMIT 1" );
+			} else {
+				$discount_code_id = "";
+			}
 		} else {
 			$discount_code_id = "";
 		}
