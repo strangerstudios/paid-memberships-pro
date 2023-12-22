@@ -703,6 +703,14 @@ class PMPro_Subscription {
 			$pmproemail->sendEmail( get_bloginfo( 'admin_email' ) );
 
 			pmpro_setMessage( __( 'There was an error synchronizing a subscription with your payment gateway: ', 'paid-memberships-pro' ) . esc_html( $error_message ), 'pmpro_error' );
+
+			// Save error in subscription meta with date to reference later.
+			update_pmpro_subscription_meta( $this->id, 'sync_error', $error_message );
+			update_pmpro_subscription_meta( $this->id, 'sync_error_timestamp', current_time( 'timestamp' ) );
+		} else {
+			// No error, so clear the error meta.
+			delete_pmpro_subscription_meta( $this->id, 'sync_error' );
+			delete_pmpro_subscription_meta( $this->id, 'sync_error_timestamp' );
 		}
 
 		pmpro_setMessage( __( 'Subscription updated.', 'paid-memberships-pro' ), 'pmpro_success' ); // Will not overwrite previous messages.
