@@ -1527,12 +1527,13 @@ class PMProGateway_stripe extends PMProGateway {
 				'price'    => $initial_payment_price->id,
 				'quantity' => 1,
 			);
+			$payment_intent_data = array(
+				'description' => self::get_order_description( $morder ),
+			);
 			if ( ! empty( $application_fee_percentage ) ) {
 				$application_fee = floor( $initial_payment_price->unit_amount * $application_fee_percentage / 100 );
 				if ( ! empty( $application_fee ) ) {
-					$payment_intent_data = array(
-						'application_fee_amount' => $application_fee,
-					);
+					$payment_intent_data['application_fee_amount'] = $application_fee;
 				}
 			}
 		}
@@ -1552,7 +1553,9 @@ class PMProGateway_stripe extends PMProGateway {
 				'price'    => $recurring_payment_price->id,
 				'quantity' => 1,
 			);
-			$subscription_data = array();
+			$subscription_data = array(
+				'description' => self::get_order_description( $morder ),
+			);
 
 			// Check if we can combine initial and recurring payments.
 			$filtered_trial_period_days = $stripe->calculate_trial_period_days( $morder );
@@ -3772,7 +3775,7 @@ class PMProGateway_stripe extends PMProGateway {
 			'amount'                 => $this->convert_price_to_unit_amount( $amount ),
 			'currency'               => $pmpro_currency,
 			'confirmation_method'    => 'manual',
-			'description'            => apply_filters( 'pmpro_stripe_order_description', "Order #" . $order->code . ", " . trim( $order->FirstName . " " . $order->LastName ) . " (" . $order->Email . ")", $order ),
+			'description'            => self::get_order_description( $order ),
 			'setup_future_usage'     => 'off_session',
 		);
 		$params = $this->add_application_fee_amount( $params );
@@ -3886,5 +3889,17 @@ class PMProGateway_stripe extends PMProGateway {
 		$order->saveOrder();
 
 		return $success;
+	}
+
+	/**
+	 * Get the description to send to Stripe for an order.
+	 *
+	 * @since TBD
+	 *
+	 * @param MemberOrder $order The MemberOrder object to get the description for.
+	 * @return string The description to send to Stripe.
+	 */
+	private static function get_order_description( $order ) {
+		return apply_filters( 'pmpro_stripe_order_description', "Order #" . $order->code . ", " . trim( $order->FirstName . " " . $order->LastName ) . " (" . $order->Email . ")", $order );
 	}
 }
