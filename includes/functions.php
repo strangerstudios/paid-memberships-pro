@@ -930,7 +930,7 @@ function pmpro_cancelMembershipLevel( $level_id, $user_id = null, $status = 'ina
 	pmpro_set_old_user_levels( $user_id );
 
 	// If we are not giving the user a new level, run the before change membership action.
-	if ( 'changed' === $status ) {
+	if ( ! in_array( $status, array( 'changed', 'admin_changed' ) ) ) {
 		/**
 		 * Action to run before the membership level changes.
 		 *
@@ -962,7 +962,7 @@ function pmpro_cancelMembershipLevel( $level_id, $user_id = null, $status = 'ina
 	}
 
 	// If we are not giving the user a new level, clear the level cache for this user and run the change membership action.
-	if ( 'changed' !== $status ) {
+	if ( ! in_array( $status, array( 'changed', 'admin_changed' ) ) ) {
 		// Clear the level cache for this user.
 		pmpro_clear_level_cache_for_user( $user_id );
 
