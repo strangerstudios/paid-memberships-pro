@@ -29,12 +29,10 @@ if($ml_id > 0) {
     ) );
 
     foreach($user_ids as $user_id) {
-        //change there membership level to none. that will handle the cancel
-        if(pmpro_changeMembershipLevel(0, $user_id)) {
-            //okay
-        } else {
-            //couldn't delete the subscription
-            //we should probably notify the admin
+        // Cancel the membership level and subscription.
+        if ( ! pmpro_cancelMembershipLevel( $ml_id, $user_id, 'inactive' ) ) {
+            // Couldn't delete the subscription or the membership.
+            // We should probably notify the admin
             $pmproemail = new PMProEmail();
             $pmproemail->data = array("body"=>"<p>" . sprintf(__("There was an error canceling the subscription for user with ID=%d. You will want to check your payment gateway to see if their subscription is still active.", 'paid-memberships-pro' ), $user_id) . "</p>");
             $last_order = $wpdb->get_row( $wpdb->prepare( "
