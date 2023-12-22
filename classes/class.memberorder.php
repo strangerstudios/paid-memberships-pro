@@ -1686,8 +1686,8 @@
 		 */
 		public function get_subscription() {
 			// Make sure that this order is a part of a subscription.
-			if ( empty( $this->subscription_transaction_id ) ) {
-				// No subscription transaction ID, so we don't need to create a subscription.
+			if ( empty( $this->subscription_transaction_id ) || empty( $this->gateway ) || empty( $this->gateway_environment ) ) {
+				// We don't have all the info needed for a subscription. Bail.
 				return null;
 			}
 
