@@ -293,6 +293,11 @@
 				} else {
 					$morder = $this->getMemberOrderByCode( $id );
 				}
+
+				// If we found an order, create a subscription if needed.
+				if ( ! empty( $this->id ) ) {
+					$this->get_subscription();
+				}
 			} else {
 				$morder = $this->getEmptyMemberOrder();	//blank constructor
 			}
@@ -1686,8 +1691,8 @@
 		 */
 		public function get_subscription() {
 			// Make sure that this order is a part of a subscription.
-			if ( empty( $this->subscription_transaction_id ) ) {
-				// No subscription transaction ID, so we don't need to create a subscription.
+			if ( empty( $this->subscription_transaction_id ) || empty( $this->gateway ) || empty( $this->gateway_environment ) ) {
+				// We don't have all the info needed for a subscription. Bail.
 				return null;
 			}
 

@@ -159,13 +159,7 @@ class PMProGateway_stripe extends PMProGateway {
 				add_filter( 'pmpro_include_payment_information_fields', array(
 					'PMProGateway_stripe',
 					'pmpro_include_payment_information_fields'
-				) );
-
-				//make sure we clean up subs we will be cancelling after checkout before processing
-				add_action( 'pmpro_checkout_before_processing', array(
-					'PMProGateway_stripe',
-					'pmpro_checkout_before_processing'
-				) );
+				) );				
 			} else {
 				// Checkout flow for Stripe Checkout.
 				add_filter('pmpro_include_payment_information_fields', array('PMProGateway_stripe', 'show_stripe_checkout_pending_warning'));
@@ -1051,86 +1045,6 @@ class PMProGateway_stripe extends PMProGateway {
 	 */
 	public static function pmpro_deactivation() {
 		wp_clear_scheduled_hook( 'pmpro_cron_stripe_subscription_updates' );
-	}
-
-	/**
-	 * Before processing a checkout, check for pending invoices we want to clean up.
-	 * This prevents double billing issues in cases where Stripe has pending invoices
-	 * because of an expired credit card/etc and a user checks out to renew their subscription
-	 * instead of updating their billing information via the billing info page.
-	 */
-	public static function pmpro_checkout_before_processing() {
-		global $wpdb, $current_user;
-
-		// we're only worried about cases where the user is logged in
-		if ( ! is_user_logged_in() ) {
-			return;
-		}
-
-		// make sure we're checking out with Stripe
-		$current_gateway = pmpro_getGateway();
-		if ( $current_gateway != 'stripe' ) {
-			return;
-		}
-
-		//check the $pmpro_cancel_previous_subscriptions filter
-		//this is used in add ons like Gift Memberships to stop PMPro from cancelling old memberships
-		$pmpro_cancel_previous_subscriptions = true;
-		$pmpro_cancel_previous_subscriptions = apply_filters( 'pmpro_cancel_previous_subscriptions', $pmpro_cancel_previous_subscriptions );
-		if ( ! $pmpro_cancel_previous_subscriptions ) {
-			return;
-		}
-
-		//get user and membership level
-		$membership_level = pmpro_getMembershipLevelForUser( $current_user->ID );
-
-		//no level, then probably no subscription at Stripe anymore
-		if ( empty( $membership_level ) ) {
-			return;
-		}
-
-		/**
-		 * Filter which levels to cancel at the gateway.
-		 * MMPU will set this to all levels that are going to be cancelled during this checkout.
-		 * Others may want to display this by add_filter('pmpro_stripe_levels_to_cancel_before_checkout', __return_false);
-		 */
-		$levels_to_cancel = apply_filters( 'pmpro_stripe_levels_to_cancel_before_checkout', array( $membership_level->id ), $current_user );
-
-		foreach ( $levels_to_cancel as $level_to_cancel ) {
-			//get the last order for this user/level
-			$last_order = new MemberOrder();
-			$last_order->getLastMemberOrder( $current_user->ID, 'success', $level_to_cancel, 'stripe' );
-
-			//so let's cancel the user's susbcription
-			if ( ! empty( $last_order ) && ! empty( $last_order->subscription_transaction_id ) ) {
-				$subscription = $last_order->Gateway->get_subscription( $last_order->subscription_transaction_id );
-				if ( ! empty( $subscription ) ) {
-					$last_order->Gateway->cancelSubscriptionAtGateway( $subscription, true );
-
-					//Stripe was probably going to cancel this subscription 7 days past the payment failure (maybe just one hour, use a filter for sure)
-					$memberships_users_row = $wpdb->get_row( "SELECT * FROM $wpdb->pmpro_memberships_users WHERE user_id = '" . $current_user->ID . "' AND membership_id = '" . $level_to_cancel . "' AND status = 'active' LIMIT 1" );
-
-					if ( ! empty( $memberships_users_row ) && ( empty( $memberships_users_row->enddate ) || $memberships_users_row->enddate == '0000-00-00 00:00:00' ) ) {
-						/**
-						 * Filter graced period days when canceling existing subscriptions at checkout.
-						 *
-						 * @param int $days Grace period defaults to 3 days
-						 * @param object $membership Membership row from pmpro_memberships_users including membership_id, user_id, and enddate
-						 *
-						 * @since 1.9.4
-						 *
-						 */
-						$days_grace  = apply_filters( 'pmpro_stripe_days_grace_when_canceling_existing_subscriptions_at_checkout', 3, $memberships_users_row );
-						$new_enddate = date( 'Y-m-d H:i:s', current_time( 'timestamp' ) + 3600 * 24 * $days_grace );
-						$wpdb->update( $wpdb->pmpro_memberships_users, array( 'enddate' => $new_enddate ), array(
-							'user_id'       => $current_user->ID,
-							'membership_id' => $level_to_cancel,
-							'status'        => 'active'
-						), array( '%s' ), array( '%d', '%d', '%s' ) );
-					}
-				}
-			}
-		}
 	}
 
 	/**

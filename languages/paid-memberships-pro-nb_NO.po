@@ -2,22 +2,14 @@
 # This file is distributed under the same license as the Paid Memberships Pro plugin.
 msgid ""
 msgstr ""
-<<<<<<< HEAD
 "Project-Id-Version: Paid Memberships Pro 2.99.991\n"
-=======
-"Project-Id-Version: Paid Memberships Pro 2.12.6\n"
->>>>>>> strangerstudios/dev
 "Report-Msgid-Bugs-To: info@paidmembershipspro.com\n"
 "Last-Translator: Paid Memberships Pro <info@paidmembershipspro.com>\n"
 "Language-Team: Paid Memberships Pro <info@paidmembershipspro.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-<<<<<<< HEAD
-"POT-Creation-Date: 2023-12-14T14:35:13+00:00\n"
-=======
-"POT-Creation-Date: 2023-12-18T21:24:11+00:00\n"
->>>>>>> strangerstudios/dev
+"POT-Creation-Date: 2023-12-19T14:27:44+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.9.0\n"
 "X-Domain: paid-memberships-pro\n"
@@ -3123,6 +3115,7 @@ msgstr "funnet %d medlemmer"
 #: classes/class-pmpro-subscription.php:1187
 #: pages/checkout.php:191
 #: shortcodes/pmpro_account.php:205
+#: classes/class-pmpro-subscription.php:1188
 msgid "Username"
 msgstr "Brukernavn"
 
@@ -3181,6 +3174,8 @@ msgstr "Medlemskap"
 #: adminpages/member-edit/pmpro-class-member-edit-panel-subscriptions.php:47
 #: adminpages/member-edit/pmpro-class-member-edit-panel-subscriptions.php:170
 #: adminpages/subscriptions.php:247
+#: adminpages/member-edit/pmpro-class-member-edit-panel-subscriptions.php:113
+#: adminpages/subscriptions.php:253
 msgid "Fee"
 msgstr "Gebyr"
 
@@ -3207,6 +3202,8 @@ msgstr "Påmeldt"
 #: adminpages/member-edit/pmpro-class-member-edit-panel-subscriptions.php:171
 #: adminpages/subscriptions.php:232
 #: includes/profile.php:871
+#: adminpages/member-edit/pmpro-class-member-edit-panel-subscriptions.php:114
+#: adminpages/subscriptions.php:238
 msgid "Ended"
 msgstr "Avsluttet"
 
@@ -3351,6 +3348,7 @@ msgstr "Tilfeldig generert verdi"
 #: adminpages/orders.php:397
 #: adminpages/orders.php:407
 #: classes/class-pmpro-subscription.php:698
+#: classes/class-pmpro-subscription.php:699
 msgid "User ID"
 msgstr "Bruker ID"
 
@@ -3368,6 +3366,7 @@ msgstr "Bruker ID"
 #: adminpages/emailtemplates.php:134
 #: adminpages/orders.php:422
 #: classes/class-pmpro-subscription.php:699
+#: classes/class-pmpro-subscription.php:700
 msgid "Membership Level ID"
 msgstr "ID for medlemsnivået."
 
@@ -3780,6 +3779,7 @@ msgstr "Utløpsår"
 #: includes/profile.php:919
 #: shortcodes/pmpro_account.php:265
 #: adminpages/member-edit/pmpro-class-member-edit-panel-memberships.php:632
+#: adminpages/subscriptions.php:204
 msgid "Status"
 msgstr "Status"
 
@@ -3814,6 +3814,9 @@ msgstr "Status"
 #: classes/class-pmpro-subscription.php:696
 #: classes/class-pmpro-subscription.php:1190
 #: includes/profile.php:868
+#: adminpages/subscriptions.php:277
+#: classes/class-pmpro-subscription.php:697
+#: classes/class-pmpro-subscription.php:1191
 msgid "Gateway"
 msgstr "portal"
 
@@ -3835,6 +3838,7 @@ msgstr "portal"
 #: adminpages/paymentsettings.php:154
 #: adminpages/subscriptions.php:275
 #: includes/profile.php:869
+#: adminpages/subscriptions.php:281
 msgid "Gateway Environment"
 msgstr "Portaloppsett"
 
@@ -3941,6 +3945,8 @@ msgstr "Opprettet av betalingstjenestens "
 #: classes/class-pmpro-subscription.php:697
 #: classes/class-pmpro-subscription.php:1191
 #: includes/profile.php:866
+#: classes/class-pmpro-subscription.php:698
+#: classes/class-pmpro-subscription.php:1192
 msgid "Subscription Transaction ID"
 msgstr "Transaksjons ID for abonnement"
 
@@ -4127,6 +4133,7 @@ msgstr "Send e-post"
 #: adminpages/orders.php:975
 #: includes/adminpages.php:212
 #: adminpages/orders.php:967
+#: adminpages/member-edit/pmpro-class-member-edit-panel-subscriptions.php:115
 msgid "Orders"
 msgstr "Bestillinger"
 
@@ -4317,6 +4324,7 @@ msgstr "Bruker"
 #: pages/confirmation.php:77
 #: blocks/build/checkout-page/index.js:1
 #: blocks/src/checkout-page/edit.js:40
+#: adminpages/subscriptions.php:142
 msgid "Membership Level"
 msgstr "Type medlemskap"
 
@@ -4400,6 +4408,7 @@ msgstr "slettet"
 #: includes/profile.php:246
 #: includes/profile.php:315
 #: adminpages/member-edit/pmpro-class-member-edit-panel-memberships.php:86
+#: classes/class-pmpro-subscription.php:1190
 msgid "Subscription"
 msgstr "Abonnement"
 
@@ -8233,6 +8242,7 @@ msgstr "Start oppdateringen"
 
 #: includes/updates.php:123
 #: includes/updates.php:130
+#: includes/updates.php:131
 msgid "All Paid Memberships Pro updates have finished."
 msgstr "Alle påkrevde oppdateringer for Paid Memberships Pro er ferdigstilte."
 
@@ -8344,6 +8354,7 @@ msgstr "Logg ut"
 #: shortcodes/pmpro_account.php:263
 #: adminpages/member-edit/pmpro-class-member-edit-panel-memberships.php:84
 #: adminpages/member-edit/pmpro-class-member-edit-panel-memberships.php:627
+#: adminpages/member-edit/pmpro-class-member-edit-panel-subscriptions.php:111
 msgid "Level"
 msgstr "Kurs"
 
@@ -9993,6 +10004,7 @@ msgstr "Lenker for medlemmer"
 
 # @ pmpro
 #: adminpages/subscriptions.php:84
+#: adminpages/subscriptions.php:90
 #~ msgid "Subscription Information"
 #~ msgstr "Kursinformasjon"
 
@@ -11210,6 +11222,7 @@ msgstr ""
 #: classes/class.memberorder.php:1629
 #: adminpages/emailtemplates.php:141
 #: classes/class-pmpro-subscription.php:1186
+#: classes/class-pmpro-subscription.php:1187
 msgid "User Email"
 msgstr ""
 
@@ -11876,6 +11889,9 @@ msgstr ""
 #: classes/class-pmpro-members-list-table.php:481
 #: classes/class-pmpro-subscription.php:701
 #: classes/class-pmpro-subscription.php:1193
+#: adminpages/subscriptions.php:112
+#: classes/class-pmpro-subscription.php:702
+#: classes/class-pmpro-subscription.php:1194
 msgid "Edit User"
 msgstr ""
 
@@ -12222,6 +12238,7 @@ msgstr ""
 #: includes/profile.php:821
 #: shortcodes/pmpro_account.php:149
 #: adminpages/member-edit/pmpro-class-member-edit-panel-memberships.php:656
+#: adminpages/member-edit/pmpro-class-member-edit-panel-subscriptions.php:138
 msgid "&#8212;"
 msgstr ""
 
@@ -12232,6 +12249,7 @@ msgstr ""
 #: classes/class.memberorder.php:1622
 #: classes/class.memberorder.php:1631
 #: classes/class-pmpro-subscription.php:1188
+#: classes/class-pmpro-subscription.php:1189
 msgid "User Display Name"
 msgstr ""
 
@@ -17002,7 +17020,9 @@ msgstr ""
 msgid "Please check the ReCAPTCHA box to confirm you are not a bot."
 msgstr ""
 
+#. translators: %s: URL to the updates page.
 #: includes/updates.php:110
+#: includes/updates.php:111
 msgid "(1) <a target=\"_blank\" href=\"%s\">Backup your WordPress database</a></strong> and then (2) <a href=\"%s\">click here to start the update</a>."
 msgstr ""
 
@@ -19162,6 +19182,7 @@ msgstr ""
 #: adminpages/orders.php:732
 #: adminpages/orders.php:780
 #: adminpages/subscriptions.php:260
+#: adminpages/subscriptions.php:266
 msgid "Payment Gateway Information"
 msgstr ""
 
@@ -19216,6 +19237,11 @@ msgstr ""
 #: includes/profile.php:70
 #: includes/profile.php:767
 #: adminpages/member-edit/pmpro-class-member-edit-panel-memberships.php:146
+#: adminpages/member-edit/pmpro-class-member-edit-panel-subscriptions.php:182
+#: adminpages/member-edit/pmpro-class-member-edit-panel-subscriptions.php:201
+#: adminpages/subscriptions.php:217
+#: adminpages/subscriptions.php:230
+#: adminpages/subscriptions.php:244
 msgid "%1$s at %2$s"
 msgstr ""
 
@@ -22519,6 +22545,7 @@ msgstr ""
 
 #: classes/class-pmpro-orders-list-table.php:292
 #: classes/class-pmpro-subscription.php:694
+#: classes/class-pmpro-subscription.php:695
 msgid "Error"
 msgstr ""
 
@@ -22946,6 +22973,7 @@ msgstr ""
 #: adminpages/member-edit/pmpro-class-member-edit-panel-subscriptions.php:76
 #: adminpages/member-edit/pmpro-class-member-edit-panel-subscriptions.php:196
 #: adminpages/member-edit/pmpro-class-member-edit-panel-memberships.php:188
+#: adminpages/member-edit/pmpro-class-member-edit-panel-subscriptions.php:158
 msgid "View Details"
 msgstr ""
 
@@ -22989,6 +23017,8 @@ msgstr ""
 #: adminpages/subscriptions.php:59
 #: adminpages/subscriptions.php:63
 #: adminpages/member-edit/pmpro-class-member-edit-panel-memberships.php:270
+#: adminpages/subscriptions.php:65
+#: adminpages/subscriptions.php:69
 msgid "Cancel Subscription"
 msgstr ""
 
@@ -23160,22 +23190,28 @@ msgstr ""
 #: adminpages/member-edit/pmpro-class-member-edit-panel-subscriptions.php:46
 #: adminpages/member-edit/pmpro-class-member-edit-panel-subscriptions.php:169
 #: adminpages/subscriptions.php:206
+#: adminpages/member-edit/pmpro-class-member-edit-panel-subscriptions.php:112
+#: adminpages/subscriptions.php:212
 msgid "Created"
 msgstr ""
 
 #: adminpages/member-edit/pmpro-class-member-edit-panel-subscriptions.php:48
+#: adminpages/member-edit/pmpro-class-member-edit-panel-subscriptions.php:114
 msgid "Next Payment"
 msgstr ""
 
 #: adminpages/member-edit/pmpro-class-member-edit-panel-subscriptions.php:66
+#: adminpages/member-edit/pmpro-class-member-edit-panel-subscriptions.php:147
 msgid "Membership Ended"
 msgstr ""
 
 #: adminpages/member-edit/pmpro-class-member-edit-panel-subscriptions.php:149
+#: adminpages/member-edit/pmpro-class-member-edit-panel-subscriptions.php:56
 msgid "Cancelled Subscriptions (%d)"
 msgstr ""
 
 #: adminpages/member-edit/pmpro-class-member-edit-panel-subscriptions.php:264
+#: adminpages/member-edit/pmpro-class-member-edit-panel-subscriptions.php:81
 msgid "This user does not have any subscriptions."
 msgstr ""
 
@@ -23401,14 +23437,18 @@ msgstr ""
 
 #: adminpages/subscriptions.php:52
 #: adminpages/subscriptions.php:54
+#: adminpages/subscriptions.php:58
+#: adminpages/subscriptions.php:60
 msgid "Sync With Gateway"
 msgstr ""
 
 #: adminpages/subscriptions.php:62
+#: adminpages/subscriptions.php:68
 msgid "Please confirm that you want to cancel this subscription. This action stops any future charges at the gateway but does not cancel the corresponding membership level."
 msgstr ""
 
 #: adminpages/subscriptions.php:94
+#: adminpages/subscriptions.php:100
 msgid "Member: %s"
 msgstr ""
 
@@ -23416,32 +23456,40 @@ msgstr ""
 #: classes/class-pmpro-members-list-table.php:480
 #: includes/adminpages.php:296
 #: includes/adminpages.php:690
+#: adminpages/subscriptions.php:107
 msgid "Edit Member"
 msgstr ""
 
 #: adminpages/subscriptions.php:131
+#: adminpages/subscriptions.php:137
 msgid "Unknown Member"
 msgstr ""
 
 #: adminpages/subscriptions.php:153
+#: adminpages/subscriptions.php:159
 msgid "Change Subscription Level"
 msgstr ""
 
 #: adminpages/subscriptions.php:160
+#: adminpages/subscriptions.php:166
 msgid "This user does not have the membership level that this subscription is for."
 msgstr ""
 
 #: adminpages/subscriptions.php:181
+#: adminpages/subscriptions.php:187
 msgid "Update Subscription Level"
 msgstr ""
 
 #: adminpages/subscriptions.php:219
 #: includes/profile.php:870
+#: adminpages/subscriptions.php:225
 msgid "Next Payment Date"
 msgstr ""
 
 #: adminpages/subscriptions.php:267
 #: classes/class-pmpro-subscription.php:695
+#: adminpages/subscriptions.php:273
+#: classes/class-pmpro-subscription.php:696
 msgid "Subscription ID"
 msgstr ""
 
@@ -23450,41 +23498,51 @@ msgid "Could not find gateway class."
 msgstr ""
 
 #: classes/class-pmpro-subscription.php:693
+#: classes/class-pmpro-subscription.php:694
 msgid "There was an error synchronizing a subscription with your payment gateway."
 msgstr ""
 
 #: classes/class-pmpro-subscription.php:704
+#: classes/class-pmpro-subscription.php:705
 msgid "There was an error synchronizing a subscription with your payment gateway: "
 msgstr ""
 
 #: classes/class-pmpro-subscription.php:707
+#: classes/class-pmpro-subscription.php:708
 msgid "Subscription updated."
 msgstr ""
 
 #. translators: %1$s - price, %2$s - period.
 #: classes/class-pmpro-subscription.php:1006
+#: classes/class-pmpro-subscription.php:1007
 msgid "%1$s per %2$s"
 msgstr ""
 
 #. translators: %1$s - price, %2$d - number, %3$s - period.
 #: classes/class-pmpro-subscription.php:1009
+#: classes/class-pmpro-subscription.php:1010
 msgid "%1$s every %2$d %3$s"
 msgstr ""
 
 #: classes/class-pmpro-subscription.php:1125
+#: classes/class-pmpro-subscription.php:1126
 msgid "There was an error saving the subscription."
 msgstr ""
 
 #: classes/class-pmpro-subscription.php:1129
+#: classes/class-pmpro-subscription.php:1130
 msgid "Subscription saved."
 msgstr ""
 
 #: classes/class-pmpro-subscription.php:1185
 #: classes/class-pmpro-subscription.php:1196
+#: classes/class-pmpro-subscription.php:1186
+#: classes/class-pmpro-subscription.php:1197
 msgid "There was an error cancelling a subscription from your website. Check your payment gateway to see if the subscription is still active."
 msgstr ""
 
 #: classes/class-pmpro-subscription.php:1198
+#: classes/class-pmpro-subscription.php:1199
 msgid "Subscription cancelled at gateway."
 msgstr ""
 
@@ -24679,4 +24737,14 @@ msgstr ""
 
 #: adminpages/member-edit/pmpro-class-member-edit-panel-memberships.php:71
 msgid "Edit Membership Levels"
+msgstr ""
+
+#. translators: %d is the level ID.
+#: adminpages/member-edit/pmpro-class-member-edit-panel-subscriptions.php:134
+#: adminpages/subscriptions.php:50
+msgid "Level ID: %d [deleted]"
+msgstr ""
+
+#: classes/class-pmpro-subscription.php:693
+msgid "Error Synchronizing Subscription"
 msgstr ""
