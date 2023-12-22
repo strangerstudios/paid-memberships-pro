@@ -2,14 +2,14 @@
 # This file is distributed under the same license as the Paid Memberships Pro plugin.
 msgid ""
 msgstr ""
-"Project-Id-Version: Paid Memberships Pro 2.99.991\n"
+"Project-Id-Version: Paid Memberships Pro 2.99.992\n"
 "Report-Msgid-Bugs-To: info@paidmembershipspro.com\n"
 "Last-Translator: Paid Memberships Pro <info@paidmembershipspro.com>\n"
 "Language-Team: Paid Memberships Pro <info@paidmembershipspro.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2023-12-19T14:27:06+00:00\n"
+"POT-Creation-Date: 2023-12-22T19:15:35+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.9.0\n"
 "X-Domain: paid-memberships-pro\n"
@@ -474,6 +474,7 @@ msgstr "WordPress.org"
 #: adminpages/member-edit/pmpro-class-member-edit-panel-memberships.php:647
 #: adminpages/member-edit/pmpro-class-member-edit-panel-memberships.php:648
 #: adminpages/member-edit/pmpro-class-member-edit-panel-memberships.php:649
+#: classes/gateways/class.pmprogateway_stripe.php:470
 msgid "N/A"
 msgstr "N/A"
 
@@ -1098,6 +1099,8 @@ msgstr "Amaga els anuncis als subscriptors?"
 #: includes/fields.php:1427
 #: includes/fields.php:1437
 #: includes/fields.php:1451
+#: classes/gateways/class.pmprogateway_stripe.php:554
+#: classes/gateways/class.pmprogateway_stripe.php:568
 msgid "No"
 msgstr "No"
 
@@ -1292,6 +1295,8 @@ msgstr "només “multisite”"
 #: includes/fields.php:1428
 #: includes/fields.php:1438
 #: includes/fields.php:1449
+#: classes/gateways/class.pmprogateway_stripe.php:556
+#: classes/gateways/class.pmprogateway_stripe.php:570
 msgid "Yes"
 msgstr "Sí"
 
@@ -2805,6 +2810,7 @@ msgstr "Error afegint nivell de subscripció."
 #: adminpages/membershiplevels.php:221
 #: adminpages/membershiplevels.php:226
 #: adminpages/levels/delete-level.php:39
+#: adminpages/levels/delete-level.php:37
 #, php-format
 msgid "There was an error canceling the subscription for user with ID=%d. You will want to check your payment gateway to see if their subscription is still active."
 msgstr "Hi ha hagut un error cancel·lant la subscripció de l’usuari ID=%d. Comprova la teva passarel·la de pagament per veure si la seva subscripció encara hi és."
@@ -2817,6 +2823,7 @@ msgstr "Hi ha hagut un error cancel·lant la subscripció de l’usuari ID=%d. C
 #: adminpages/membershiplevels.php:229
 #: adminpages/membershiplevels.php:234
 #: adminpages/levels/delete-level.php:47
+#: adminpages/levels/delete-level.php:45
 msgid "Last Invoice"
 msgstr "Darrera factura."
 
@@ -2827,6 +2834,7 @@ msgstr "Darrera factura."
 #: adminpages/membershiplevels.php:246
 #: adminpages/membershiplevels.php:251
 #: adminpages/levels/delete-level.php:64
+#: adminpages/levels/delete-level.php:62
 msgid "Membership level deleted successfully."
 msgstr "Nivell de subscripció esborrat correctament."
 
@@ -2843,6 +2851,8 @@ msgstr "Nivell de subscripció esborrat correctament."
 #: adminpages/membershiplevels.php:259
 #: adminpages/levels/delete-level.php:67
 #: adminpages/levels/delete-level.php:72
+#: adminpages/levels/delete-level.php:65
+#: adminpages/levels/delete-level.php:70
 msgid "Error deleting membership level."
 msgstr "Error esborrant nivell de subscripció."
 
@@ -3806,6 +3816,7 @@ msgstr "%d subscriptor no trobat."
 #: pages/checkout.php:191
 #: shortcodes/pmpro_account.php:205
 #: classes/class-pmpro-subscription.php:1188
+#: classes/class-pmpro-subscription.php:1196
 msgid "Username"
 msgstr "Nom d’usuari"
 
@@ -4596,6 +4607,7 @@ msgstr "Any de finalització/expiració"
 #: shortcodes/pmpro_account.php:265
 #: adminpages/member-edit/pmpro-class-member-edit-panel-memberships.php:632
 #: adminpages/subscriptions.php:204
+#: classes/gateways/class.pmprogateway_stripe.php:489
 msgid "Status"
 msgstr "Estat"
 
@@ -4639,6 +4651,7 @@ msgstr "Estat"
 #: adminpages/subscriptions.php:277
 #: classes/class-pmpro-subscription.php:697
 #: classes/class-pmpro-subscription.php:1191
+#: classes/class-pmpro-subscription.php:1199
 msgid "Gateway"
 msgstr "Passarel·la"
 
@@ -4796,6 +4809,7 @@ msgstr "Generat per la passarel·la. Útil per a comandes de referències creuad
 #: includes/profile.php:866
 #: classes/class-pmpro-subscription.php:698
 #: classes/class-pmpro-subscription.php:1192
+#: classes/class-pmpro-subscription.php:1200
 msgid "Subscription Transaction ID"
 msgstr "ID de la transacció per a subscripció"
 
@@ -5379,6 +5393,7 @@ msgstr "esborrat"
 #: includes/profile.php:315
 #: adminpages/member-edit/pmpro-class-member-edit-panel-memberships.php:86
 #: classes/class-pmpro-subscription.php:1190
+#: classes/class-pmpro-subscription.php:1198
 msgid "Subscription"
 msgstr "Subscripció"
 
@@ -7661,6 +7676,7 @@ msgstr "Per integrar totalment Braintree, assegura’t de configurar Web Hook UR
 #: adminpages/orders.php:578
 #: classes/gateways/class.pmprogateway_stripe.php:939
 #: pages/checkout.php:433
+#: classes/gateways/class.pmprogateway_stripe.php:933
 msgid "Payment Information"
 msgstr "Informació de pagament"
 
@@ -8528,6 +8544,7 @@ msgstr "El/la %s de la passarela depèn de %s PHP extensió. Si us plau habilita
 #: classes/gateways/class.pmprogateway_stripe.php:239
 #: classes/gateways/class.pmprogateway_stripe.php:224
 #: paid-memberships-pro.php:189
+#: classes/gateways/class.pmprogateway_stripe.php:218
 msgid "Stripe"
 msgstr "Stripe"
 
@@ -8555,6 +8572,7 @@ msgstr "Configuració d’Stripe"
 #: classes/gateways/class.pmprogateway_stripe.php:363
 #: classes/gateways/class.pmprogateway_stripe.php:367
 #: classes/gateways/class.pmprogateway_stripe.php:352
+#: classes/gateways/class.pmprogateway_stripe.php:346
 msgid "Secret Key"
 msgstr "Secret Key"
 
@@ -8575,6 +8593,7 @@ msgstr "Secret Key"
 #: classes/gateways/class.pmprogateway_stripe.php:347
 #: classes/gateways/class.pmprogateway_stripe.php:351
 #: classes/gateways/class.pmprogateway_stripe.php:336
+#: classes/gateways/class.pmprogateway_stripe.php:330
 msgid "Publishable Key"
 msgstr "Clau Publicable"
 
@@ -8617,6 +8636,7 @@ msgstr "Mostra els camps d’adreça de facturació"
 #: classes/gateways/class.pmprogateway_stripe.php:567
 #: classes/gateways/class.pmprogateway_stripe.php:581
 #: classes/gateways/class.pmprogateway_stripe.php:564
+#: classes/gateways/class.pmprogateway_stripe.php:558
 msgid "Stripe doesn't require billing address fields. Choose 'No' to hide them on the checkout page.<br /><strong>If No, make sure you disable address verification in the Stripe dashboard settings.</strong>"
 msgstr "Stripe no necessita camps d’adreça de facturació. Escull “No” per amagar-los de la pàgina de Checkout.<br /><strong>Si No, assegura’t de desabilitar la verificació de l’adreça a l’escripori de configuració de l’Stripe.</strong>"
 
@@ -9009,6 +9029,7 @@ msgstr "Error subscrivint un pla de comprador amb Stripe:"
 #: classes/gateways/class.pmprogateway_stripe.php:2418
 #: classes/gateways/class.pmprogateway_stripe.php:2365
 #: classes/gateways/class.pmprogateway_stripe.php:2176
+#: classes/gateways/class.pmprogateway_stripe.php:2092
 msgid "Could not cancel old subscription."
 msgstr "No s’ha pogut cancel·lar l’antiga subscripció. "
 
@@ -9042,6 +9063,7 @@ msgstr "No s’ha pogut cancel·lar l’antiga subscripció. "
 #: classes/gateways/class.pmprogateway_stripe.php:2434
 #: classes/gateways/class.pmprogateway_stripe.php:2381
 #: classes/gateways/class.pmprogateway_stripe.php:2192
+#: classes/gateways/class.pmprogateway_stripe.php:2108
 msgid "Could not find the customer."
 msgstr "No s’ha trobat el comprador."
 
@@ -13099,6 +13121,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:1670
 #: adminpages/admin_header.php:150
 #: classes/gateways/class.pmprogateway_stripe.php:1477
+#: classes/gateways/class.pmprogateway_stripe.php:1391
 msgid "The Stripe Gateway requires PHP 5.3.29 or greater. We recommend upgrading to PHP %s or greater. Ask your host to upgrade."
 msgstr ""
 
@@ -14149,6 +14172,7 @@ msgstr ""
 #: adminpages/emailtemplates.php:141
 #: classes/class-pmpro-subscription.php:1186
 #: classes/class-pmpro-subscription.php:1187
+#: classes/class-pmpro-subscription.php:1195
 msgid "User Email"
 msgstr ""
 
@@ -14747,6 +14771,7 @@ msgstr ""
 #: adminpages/subscriptions.php:112
 #: classes/class-pmpro-subscription.php:702
 #: classes/class-pmpro-subscription.php:1194
+#: classes/class-pmpro-subscription.php:1202
 msgid "Edit User"
 msgstr ""
 
@@ -15068,6 +15093,7 @@ msgstr ""
 #: classes/class.memberorder.php:1631
 #: classes/class-pmpro-subscription.php:1188
 #: classes/class-pmpro-subscription.php:1189
+#: classes/class-pmpro-subscription.php:1197
 msgid "User Display Name"
 msgstr ""
 
@@ -15092,6 +15118,7 @@ msgstr ""
 #: classes/class.memberorder.php:1810
 #: classes/class.memberorder.php:1686
 #: classes/class.memberorder.php:1676
+#: classes/class.memberorder.php:1681
 msgid "This is a test order used with the PMPro Email Templates addon."
 msgstr ""
 
@@ -15298,6 +15325,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:1671
 #: classes/gateways/class.pmprogateway_stripe.php:1685
 #: classes/gateways/class.pmprogateway_stripe.php:1492
+#: classes/gateways/class.pmprogateway_stripe.php:1406
 msgid "The %s gateway depends on the %s PHP extension. Please enable it, or ask your hosting provider to enable it."
 msgstr ""
 
@@ -15720,6 +15748,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:2541
 #: classes/gateways/class.pmprogateway_stripe.php:2488
 #: classes/gateways/class.pmprogateway_stripe.php:2352
+#: classes/gateways/class.pmprogateway_stripe.php:2268
 msgid "Stripe Connect Settings"
 msgstr ""
 
@@ -15743,6 +15772,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:2544
 #: classes/gateways/class.pmprogateway_stripe.php:2491
 #: classes/gateways/class.pmprogateway_stripe.php:2355
+#: classes/gateways/class.pmprogateway_stripe.php:2271
 msgid "Live Mode:"
 msgstr ""
 
@@ -15770,6 +15800,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:2548
 #: classes/gateways/class.pmprogateway_stripe.php:2495
 #: classes/gateways/class.pmprogateway_stripe.php:2359
+#: classes/gateways/class.pmprogateway_stripe.php:2275
 msgid "Connected"
 msgstr ""
 
@@ -15796,6 +15827,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:2550
 #: classes/gateways/class.pmprogateway_stripe.php:2497
 #: classes/gateways/class.pmprogateway_stripe.php:2361
+#: classes/gateways/class.pmprogateway_stripe.php:2277
 msgid "Not Connected"
 msgstr ""
 
@@ -15837,6 +15869,8 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:2520
 #: classes/gateways/class.pmprogateway_stripe.php:2369
 #: classes/gateways/class.pmprogateway_stripe.php:2384
+#: classes/gateways/class.pmprogateway_stripe.php:2285
+#: classes/gateways/class.pmprogateway_stripe.php:2300
 msgid "Your site is using legacy API keys to authenticate with Stripe."
 msgstr ""
 
@@ -15860,6 +15894,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:2562
 #: classes/gateways/class.pmprogateway_stripe.php:2509
 #: classes/gateways/class.pmprogateway_stripe.php:2373
+#: classes/gateways/class.pmprogateway_stripe.php:2289
 msgid "Use the \"Connect with Stripe\" button below to securely authenticate with your Stripe account using Stripe Connect. Log in with the current Stripe account used for this site so that existing subscriptions are not affected by the update."
 msgstr ""
 
@@ -15913,6 +15948,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:2598
 #: classes/gateways/class.pmprogateway_stripe.php:2545
 #: classes/gateways/class.pmprogateway_stripe.php:2409
+#: classes/gateways/class.pmprogateway_stripe.php:2325
 msgid "Disconnect From Stripe"
 msgstr ""
 
@@ -15960,6 +15996,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:2619
 #: classes/gateways/class.pmprogateway_stripe.php:2566
 #: classes/gateways/class.pmprogateway_stripe.php:2430
+#: classes/gateways/class.pmprogateway_stripe.php:2346
 msgid "Connect with Stripe"
 msgstr ""
 
@@ -15984,6 +16021,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:2626
 #: classes/gateways/class.pmprogateway_stripe.php:2573
 #: classes/gateways/class.pmprogateway_stripe.php:2437
+#: classes/gateways/class.pmprogateway_stripe.php:2353
 msgid "Note: You have a valid license and are not charged additional platform fees for payment processing."
 msgstr ""
 
@@ -16019,6 +16057,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:371
 #: classes/gateways/class.pmprogateway_stripe.php:375
 #: classes/gateways/class.pmprogateway_stripe.php:360
+#: classes/gateways/class.pmprogateway_stripe.php:354
 msgid "Webhook"
 msgstr ""
 
@@ -16052,6 +16091,8 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:532
 #: classes/gateways/class.pmprogateway_stripe.php:395
 #: classes/gateways/class.pmprogateway_stripe.php:515
+#: classes/gateways/class.pmprogateway_stripe.php:389
+#: classes/gateways/class.pmprogateway_stripe.php:509
 msgid "Webhook URL"
 msgstr ""
 
@@ -16075,6 +16116,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:2544
 #: classes/gateways/class.pmprogateway_stripe.php:2491
 #: classes/gateways/class.pmprogateway_stripe.php:2355
+#: classes/gateways/class.pmprogateway_stripe.php:2271
 msgid "Test Mode:"
 msgstr ""
 
@@ -16098,6 +16140,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:2564
 #: classes/gateways/class.pmprogateway_stripe.php:2511
 #: classes/gateways/class.pmprogateway_stripe.php:2375
+#: classes/gateways/class.pmprogateway_stripe.php:2291
 msgid "Use the \"Connect with Stripe\" button below to securely authenticate with your Stripe account using Stripe Connect in test mode."
 msgstr ""
 
@@ -16130,6 +16173,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:323
 #: classes/gateways/class.pmprogateway_stripe.php:327
 #: classes/gateways/class.pmprogateway_stripe.php:312
+#: classes/gateways/class.pmprogateway_stripe.php:306
 msgid "Stripe API Settings (Legacy)"
 msgstr ""
 
@@ -16143,6 +16187,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:355
 #: classes/gateways/class.pmprogateway_stripe.php:359
 #: classes/gateways/class.pmprogateway_stripe.php:344
+#: classes/gateways/class.pmprogateway_stripe.php:338
 msgid "Your Publishable Key appears incorrect."
 msgstr ""
 
@@ -16166,6 +16211,8 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:403
 #: classes/gateways/class.pmprogateway_stripe.php:364
 #: classes/gateways/class.pmprogateway_stripe.php:388
+#: classes/gateways/class.pmprogateway_stripe.php:358
+#: classes/gateways/class.pmprogateway_stripe.php:382
 msgid "Create Webhook"
 msgstr ""
 
@@ -16179,6 +16226,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:381
 #: classes/gateways/class.pmprogateway_stripe.php:385
 #: classes/gateways/class.pmprogateway_stripe.php:370
+#: classes/gateways/class.pmprogateway_stripe.php:364
 msgid "A webhook is set up in Stripe, but it is disabled."
 msgstr ""
 
@@ -16192,6 +16240,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:388
 #: classes/gateways/class.pmprogateway_stripe.php:392
 #: classes/gateways/class.pmprogateway_stripe.php:377
+#: classes/gateways/class.pmprogateway_stripe.php:371
 msgid "A webhook is set up in Stripe, but it is using an old API version."
 msgstr ""
 
@@ -16211,6 +16260,8 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:392
 #: classes/gateways/class.pmprogateway_stripe.php:370
 #: classes/gateways/class.pmprogateway_stripe.php:377
+#: classes/gateways/class.pmprogateway_stripe.php:364
+#: classes/gateways/class.pmprogateway_stripe.php:371
 msgid "Rebuild Webhook"
 msgstr ""
 
@@ -16240,6 +16291,8 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:720
 #: classes/gateways/class.pmprogateway_stripe.php:383
 #: classes/gateways/class.pmprogateway_stripe.php:703
+#: classes/gateways/class.pmprogateway_stripe.php:377
+#: classes/gateways/class.pmprogateway_stripe.php:697
 msgid "Your webhook is enabled."
 msgstr ""
 
@@ -16253,6 +16306,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:394
 #: classes/gateways/class.pmprogateway_stripe.php:398
 #: classes/gateways/class.pmprogateway_stripe.php:383
+#: classes/gateways/class.pmprogateway_stripe.php:377
 msgid "Disable Webhook"
 msgstr ""
 
@@ -16286,6 +16340,8 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:747
 #: classes/gateways/class.pmprogateway_stripe.php:390
 #: classes/gateways/class.pmprogateway_stripe.php:730
+#: classes/gateways/class.pmprogateway_stripe.php:384
+#: classes/gateways/class.pmprogateway_stripe.php:724
 msgid "A webhook in Stripe is required to process recurring payments, manage failed payments, and synchronize cancellations."
 msgstr ""
 
@@ -16301,6 +16357,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:525
 #: classes/gateways/class.pmprogateway_stripe.php:539
 #: classes/gateways/class.pmprogateway_stripe.php:522
+#: classes/gateways/class.pmprogateway_stripe.php:516
 msgid "Other Stripe Settings"
 msgstr ""
 
@@ -16316,6 +16373,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:529
 #: classes/gateways/class.pmprogateway_stripe.php:543
 #: classes/gateways/class.pmprogateway_stripe.php:526
+#: classes/gateways/class.pmprogateway_stripe.php:520
 msgid "Stripe API Version"
 msgstr ""
 
@@ -16353,6 +16411,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:603
 #: classes/gateways/class.pmprogateway_stripe.php:617
 #: classes/gateways/class.pmprogateway_stripe.php:600
+#: classes/gateways/class.pmprogateway_stripe.php:594
 msgid "This webpage is being served over HTTP, but the Stripe Payment Request Button will only work on pages being served over HTTPS. To resolve this, you must <a target=\"_blank\" href=\"%s\" title=\"Configuring WordPress to Always Use HTTPS/SSL\">set up WordPress to always use HTTPS</a>."
 msgstr ""
 
@@ -16368,6 +16427,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:605
 #: classes/gateways/class.pmprogateway_stripe.php:619
 #: classes/gateways/class.pmprogateway_stripe.php:602
+#: classes/gateways/class.pmprogateway_stripe.php:596
 msgid "It looks like you are using an older Stripe publishable key. In order to use the Payment Request Button feature, you will need to update your API key, which will be prefixed with \"pk_live_\" or \"pk_test_\". <a target=\"_blank\" href=\"%s\" title=\"Stripe Dashboard API Key Settings\">Log in to your Stripe Dashboard to roll your publishable key</a>."
 msgstr ""
 
@@ -16383,6 +16443,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:607
 #: classes/gateways/class.pmprogateway_stripe.php:621
 #: classes/gateways/class.pmprogateway_stripe.php:604
+#: classes/gateways/class.pmprogateway_stripe.php:598
 msgid "It looks like you are using an older Stripe secret key. In order to use the Payment Request Button feature, you will need to update your API key, which will be prefixed with \"sk_live_\" or \"sk_test_\". <a target=\"_blank\" href=\"%s\" title=\"Stripe Dashboard API Key Settings\">Log in to your Stripe Dashboard to roll your secret key</a>."
 msgstr ""
 
@@ -16398,6 +16459,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:609
 #: classes/gateways/class.pmprogateway_stripe.php:623
 #: classes/gateways/class.pmprogateway_stripe.php:606
+#: classes/gateways/class.pmprogateway_stripe.php:600
 msgid "Your domain could not be registered with Apple to enable Apple Pay. Please try <a target=\"_blank\" href=\"%s\" title=\"Apple Pay Settings Page in Stripe\">registering your domain manually from the Apple Pay settings page in Stripe</a>."
 msgstr ""
 
@@ -16413,6 +16475,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:679
 #: classes/gateways/class.pmprogateway_stripe.php:693
 #: classes/gateways/class.pmprogateway_stripe.php:676
+#: classes/gateways/class.pmprogateway_stripe.php:670
 msgid "Optional: Offer PayPal Express as an option at checkout using the <a target=\"_blank\" href=\"%s\" title=\"Paid Memberships Pro - Add PayPal Express Option at Checkout Add On\">Add PayPal Express Add On</a>."
 msgstr ""
 
@@ -16427,6 +16490,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:691
 #: classes/gateways/class.pmprogateway_stripe.php:709
 #: classes/gateways/class.pmprogateway_stripe.php:692
+#: classes/gateways/class.pmprogateway_stripe.php:686
 msgid "Webhook creation failed. You might already have a webhook set up."
 msgstr ""
 
@@ -16446,6 +16510,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:739
 #: classes/gateways/class.pmprogateway_stripe.php:753
 #: classes/gateways/class.pmprogateway_stripe.php:736
+#: classes/gateways/class.pmprogateway_stripe.php:730
 msgid "There was an error deleting the webhook."
 msgstr ""
 
@@ -16461,6 +16526,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:767
 #: classes/gateways/class.pmprogateway_stripe.php:781
 #: classes/gateways/class.pmprogateway_stripe.php:764
+#: classes/gateways/class.pmprogateway_stripe.php:758
 msgid "Webhook creation failed. Please refresh and try again."
 msgstr ""
 
@@ -16476,6 +16542,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:795
 #: classes/gateways/class.pmprogateway_stripe.php:809
 #: classes/gateways/class.pmprogateway_stripe.php:793
+#: classes/gateways/class.pmprogateway_stripe.php:787
 msgid "Verification steps confirmed. Your payment is processing."
 msgstr ""
 
@@ -16490,6 +16557,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:948
 #: classes/gateways/class.pmprogateway_stripe.php:952
 #: classes/gateways/class.pmprogateway_stripe.php:966
+#: classes/gateways/class.pmprogateway_stripe.php:946
 msgid "Pay with Credit Card"
 msgstr ""
 
@@ -16582,6 +16650,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:5069
 #: classes/gateways/class.pmprogateway_stripe.php:5075
 #: classes/gateways/class.pmprogateway_stripe.php:469
+#: classes/gateways/class.pmprogateway_stripe.php:463
 msgid "Error: "
 msgstr ""
 
@@ -16633,6 +16702,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:4136
 #: classes/gateways/class.pmprogateway_stripe.php:4083
 #: classes/gateways/class.pmprogateway_stripe.php:3578
+#: classes/gateways/class.pmprogateway_stripe.php:3494
 msgid "Customer authentication is required to complete this transaction. Please complete the verification steps issued by your payment provider."
 msgstr ""
 
@@ -16702,6 +16772,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:3292
 #: classes/gateways/class.pmprogateway_stripe.php:4103
 #: classes/gateways/class.pmprogateway_stripe.php:3105
+#: classes/gateways/class.pmprogateway_stripe.php:3021
 msgid "Customer authentication is required to finish setting up your subscription. Please complete the verification steps issued by your payment provider."
 msgstr ""
 
@@ -16717,6 +16788,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:1406
 #: classes/gateways/class.pmprogateway_stripe.php:1420
 #: classes/gateways/class.pmprogateway_stripe.php:1228
+#: classes/gateways/class.pmprogateway_stripe.php:1142
 msgid "Invalid response from the Stripe Connect server."
 msgstr ""
 
@@ -16733,6 +16805,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:1443
 #: classes/gateways/class.pmprogateway_stripe.php:1457
 #: classes/gateways/class.pmprogateway_stripe.php:1265
+#: classes/gateways/class.pmprogateway_stripe.php:1179
 msgid "<strong>Error:</strong> PMPro could not connect to the Stripe API. Reason: %s"
 msgstr ""
 
@@ -16749,6 +16822,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:1479
 #: classes/gateways/class.pmprogateway_stripe.php:1493
 #: classes/gateways/class.pmprogateway_stripe.php:1301
+#: classes/gateways/class.pmprogateway_stripe.php:1215
 msgid "<strong>Error:</strong> PMPro could not disconnect from the Stripe API. Reason: %s"
 msgstr ""
 
@@ -20451,6 +20525,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:2546
 #: classes/gateways/class.pmprogateway_stripe.php:2493
 #: classes/gateways/class.pmprogateway_stripe.php:2357
+#: classes/gateways/class.pmprogateway_stripe.php:2273
 msgid "Connected with Legacy Keys"
 msgstr ""
 
@@ -20475,6 +20550,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:2559
 #: classes/gateways/class.pmprogateway_stripe.php:2506
 #: classes/gateways/class.pmprogateway_stripe.php:2370
+#: classes/gateways/class.pmprogateway_stripe.php:2286
 msgid "You can continue to use the legacy API keys or choose to upgrade to our new Stripe Connect solution below."
 msgstr ""
 
@@ -20641,6 +20717,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:326
 #: classes/gateways/class.pmprogateway_stripe.php:330
 #: classes/gateways/class.pmprogateway_stripe.php:315
+#: classes/gateways/class.pmprogateway_stripe.php:309
 msgid "Having trouble connecting through the button above or otherwise need to use your own API keys?"
 msgstr ""
 
@@ -20652,6 +20729,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:327
 #: classes/gateways/class.pmprogateway_stripe.php:331
 #: classes/gateways/class.pmprogateway_stripe.php:316
+#: classes/gateways/class.pmprogateway_stripe.php:310
 msgid "Click here to use the legacy API settings."
 msgstr ""
 
@@ -21026,6 +21104,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:1045
 #: adminpages/member-edit/pmpro-class-member-edit-panel-subscriptions.php:19
 #: classes/gateways/class.pmprogateway_stripe.php:1036
+#: classes/gateways/class.pmprogateway_stripe.php:1030
 msgid "Edit customer in Stripe"
 msgstr ""
 
@@ -21050,6 +21129,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:2070
 #: classes/gateways/class.pmprogateway_stripe.php:2017
 #: classes/gateways/class.pmprogateway_stripe.php:1828
+#: classes/gateways/class.pmprogateway_stripe.php:1745
 msgid "Error processing payment intent."
 msgstr ""
 
@@ -21084,6 +21164,8 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:2292
 #: classes/gateways/class.pmprogateway_stripe.php:1850
 #: classes/gateways/class.pmprogateway_stripe.php:2103
+#: classes/gateways/class.pmprogateway_stripe.php:1767
+#: classes/gateways/class.pmprogateway_stripe.php:2019
 msgid "Error retrieving payment method."
 msgstr ""
 
@@ -21125,6 +21207,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:2139
 #: classes/gateways/class.pmprogateway_stripe.php:2086
 #: classes/gateways/class.pmprogateway_stripe.php:1897
+#: classes/gateways/class.pmprogateway_stripe.php:1814
 msgid "Error creating subscription for customer."
 msgstr ""
 
@@ -21160,6 +21243,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:2843
 #: classes/gateways/class.pmprogateway_stripe.php:2790
 #: classes/gateways/class.pmprogateway_stripe.php:2655
+#: classes/gateways/class.pmprogateway_stripe.php:2571
 msgid "Error updating customer record with Stripe."
 msgstr ""
 
@@ -21182,6 +21266,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:2854
 #: classes/gateways/class.pmprogateway_stripe.php:2801
 #: classes/gateways/class.pmprogateway_stripe.php:2666
+#: classes/gateways/class.pmprogateway_stripe.php:2582
 msgid "Error creating customer record with Stripe."
 msgstr ""
 
@@ -21205,6 +21290,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:3177
 #: classes/gateways/class.pmprogateway_stripe.php:3124
 #: classes/gateways/class.pmprogateway_stripe.php:3001
+#: classes/gateways/class.pmprogateway_stripe.php:2917
 msgid "Cannot find product for membership level."
 msgstr ""
 
@@ -21228,6 +21314,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:3183
 #: classes/gateways/class.pmprogateway_stripe.php:3130
 #: classes/gateways/class.pmprogateway_stripe.php:3007
+#: classes/gateways/class.pmprogateway_stripe.php:2923
 msgid "Cannot get price."
 msgstr ""
 
@@ -21520,6 +21607,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:3124
 #: classes/gateways/class.pmprogateway_stripe.php:3071
 #: classes/gateways/class.pmprogateway_stripe.php:2948
+#: classes/gateways/class.pmprogateway_stripe.php:2864
 msgid "Could not create price."
 msgstr ""
 
@@ -22272,6 +22360,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:4988
 #: classes/gateways/class.pmprogateway_paypalexpress.php:1207
 #: classes/gateways/class.pmprogateway_stripe.php:3951
+#: classes/gateways/class.pmprogateway_stripe.php:3867
 msgid "Admin: Order successfully refunded on %1$s for transaction ID %2$s by %3$s."
 msgstr ""
 
@@ -22306,6 +22395,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:534
 #: classes/gateways/class.pmprogateway_stripe.php:548
 #: classes/gateways/class.pmprogateway_stripe.php:531
+#: classes/gateways/class.pmprogateway_stripe.php:525
 msgid "Payment Flow"
 msgstr ""
 
@@ -22316,6 +22406,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:538
 #: classes/gateways/class.pmprogateway_stripe.php:552
 #: classes/gateways/class.pmprogateway_stripe.php:535
+#: classes/gateways/class.pmprogateway_stripe.php:529
 msgid "Accept payments on this site"
 msgstr ""
 
@@ -22326,6 +22417,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:539
 #: classes/gateways/class.pmprogateway_stripe.php:553
 #: classes/gateways/class.pmprogateway_stripe.php:536
+#: classes/gateways/class.pmprogateway_stripe.php:530
 msgid "Accept payments in Stripe (Stripe Checkout)"
 msgstr ""
 
@@ -22341,6 +22433,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:546
 #: classes/gateways/class.pmprogateway_stripe.php:560
 #: classes/gateways/class.pmprogateway_stripe.php:543
+#: classes/gateways/class.pmprogateway_stripe.php:537
 msgid "Update Billing Flow"
 msgstr ""
 
@@ -22351,6 +22444,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:550
 #: classes/gateways/class.pmprogateway_stripe.php:564
 #: classes/gateways/class.pmprogateway_stripe.php:547
+#: classes/gateways/class.pmprogateway_stripe.php:541
 msgid "Update billing on this site"
 msgstr ""
 
@@ -22361,6 +22455,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:551
 #: classes/gateways/class.pmprogateway_stripe.php:565
 #: classes/gateways/class.pmprogateway_stripe.php:548
+#: classes/gateways/class.pmprogateway_stripe.php:542
 msgid "Update billing in the Stripe Customer Portal"
 msgstr ""
 
@@ -22371,6 +22466,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:553
 #: classes/gateways/class.pmprogateway_stripe.php:567
 #: classes/gateways/class.pmprogateway_stripe.php:550
+#: classes/gateways/class.pmprogateway_stripe.php:544
 msgid "Embed the billing information fields on your Membership Billing page or use the Stripe Customer Portal hosted by Stripe."
 msgstr ""
 
@@ -22381,6 +22477,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:624
 #: classes/gateways/class.pmprogateway_stripe.php:638
 #: classes/gateways/class.pmprogateway_stripe.php:621
+#: classes/gateways/class.pmprogateway_stripe.php:615
 msgid "Collect Billing Address in Stripe Checkout"
 msgstr ""
 
@@ -22391,6 +22488,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:628
 #: classes/gateways/class.pmprogateway_stripe.php:642
 #: classes/gateways/class.pmprogateway_stripe.php:625
+#: classes/gateways/class.pmprogateway_stripe.php:619
 msgid "Only when necessary"
 msgstr ""
 
@@ -22401,6 +22499,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:629
 #: classes/gateways/class.pmprogateway_stripe.php:643
 #: classes/gateways/class.pmprogateway_stripe.php:626
+#: classes/gateways/class.pmprogateway_stripe.php:620
 msgid "Always"
 msgstr ""
 
@@ -22416,6 +22515,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:639
 #: classes/gateways/class.pmprogateway_stripe.php:653
 #: classes/gateways/class.pmprogateway_stripe.php:636
+#: classes/gateways/class.pmprogateway_stripe.php:630
 msgid "Do not calculate tax"
 msgstr ""
 
@@ -22426,6 +22526,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:640
 #: classes/gateways/class.pmprogateway_stripe.php:654
 #: classes/gateways/class.pmprogateway_stripe.php:637
+#: classes/gateways/class.pmprogateway_stripe.php:631
 msgid "Membership price includes tax"
 msgstr ""
 
@@ -22436,6 +22537,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:641
 #: classes/gateways/class.pmprogateway_stripe.php:655
 #: classes/gateways/class.pmprogateway_stripe.php:638
+#: classes/gateways/class.pmprogateway_stripe.php:632
 msgid "Calculate tax on top of membership price"
 msgstr ""
 
@@ -22446,6 +22548,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:652
 #: classes/gateways/class.pmprogateway_stripe.php:666
 #: classes/gateways/class.pmprogateway_stripe.php:649
+#: classes/gateways/class.pmprogateway_stripe.php:643
 msgid "Stripe Tax is only available when using Stripe Checkout (the Stripe-hosted payment page). You must <a target=\"_blank\" href=\"%s\">activate Stripe Tax</a> in your Stripe dashboard. <a target=\"_blank\" href=\"%s\">More information about Stripe Tax »</a>"
 msgstr ""
 
@@ -22461,6 +22564,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:661
 #: classes/gateways/class.pmprogateway_stripe.php:675
 #: classes/gateways/class.pmprogateway_stripe.php:658
+#: classes/gateways/class.pmprogateway_stripe.php:652
 msgid "No, do not collect tax IDs."
 msgstr ""
 
@@ -22471,6 +22575,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:662
 #: classes/gateways/class.pmprogateway_stripe.php:676
 #: classes/gateways/class.pmprogateway_stripe.php:659
+#: classes/gateways/class.pmprogateway_stripe.php:653
 msgid "Yes, collect tax IDs."
 msgstr ""
 
@@ -22481,6 +22586,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:664
 #: classes/gateways/class.pmprogateway_stripe.php:678
 #: classes/gateways/class.pmprogateway_stripe.php:661
+#: classes/gateways/class.pmprogateway_stripe.php:655
 msgid "Tax IDs are only collected if you have enabled Stripe Tax. Stripe only performs automatic validation for ABN, EU VAT, and GB VAT numbers. You must verify that provided tax IDs are valid during the Session for all other numbers."
 msgstr ""
 
@@ -22491,6 +22597,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:1627
 #: classes/gateways/class.pmprogateway_stripe.php:1730
 #: classes/gateways/class.pmprogateway_stripe.php:1744
+#: classes/gateways/class.pmprogateway_stripe.php:1453
 msgid "Your previous order has not yet been processed. Submitting your payment again will cause a separate charge to be initiated."
 msgstr ""
 
@@ -22505,6 +22612,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:1840
 #: classes/gateways/class.pmprogateway_stripe.php:1787
 #: classes/gateways/class.pmprogateway_stripe.php:1582
+#: classes/gateways/class.pmprogateway_stripe.php:1496
 msgid "Could not get customer. "
 msgstr ""
 
@@ -22519,6 +22627,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:1849
 #: classes/gateways/class.pmprogateway_stripe.php:1796
 #: classes/gateways/class.pmprogateway_stripe.php:1591
+#: classes/gateways/class.pmprogateway_stripe.php:1505
 msgid "Could not get product ID."
 msgstr ""
 
@@ -22533,6 +22642,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:1867
 #: classes/gateways/class.pmprogateway_stripe.php:1814
 #: classes/gateways/class.pmprogateway_stripe.php:1609
+#: classes/gateways/class.pmprogateway_stripe.php:1523
 msgid "Could not get price for initial payment. "
 msgstr ""
 
@@ -22547,6 +22657,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:1892
 #: classes/gateways/class.pmprogateway_stripe.php:1839
 #: classes/gateways/class.pmprogateway_stripe.php:1634
+#: classes/gateways/class.pmprogateway_stripe.php:1549
 msgid "Could not get price for recurring payment. "
 msgstr ""
 
@@ -22572,6 +22683,8 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:1975
 #: classes/gateways/class.pmprogateway_stripe.php:1918
 #: classes/gateways/class.pmprogateway_stripe.php:1922
+#: classes/gateways/class.pmprogateway_stripe.php:1630
+#: classes/gateways/class.pmprogateway_stripe.php:1634
 msgid "Could not create checkout session. "
 msgstr ""
 
@@ -22596,6 +22709,8 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:1972
 #: classes/gateways/class.pmprogateway_stripe.php:1747
 #: classes/gateways/class.pmprogateway_stripe.php:1783
+#: classes/gateways/class.pmprogateway_stripe.php:1664
+#: classes/gateways/class.pmprogateway_stripe.php:1700
 msgid "Could not get Stripe customer for user."
 msgstr ""
 
@@ -22611,6 +22726,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:2036
 #: classes/gateways/class.pmprogateway_stripe.php:1983
 #: classes/gateways/class.pmprogateway_stripe.php:1794
+#: classes/gateways/class.pmprogateway_stripe.php:1711
 msgid "Could not get Customer Portal URL. This feature may not be set up in Stripe."
 msgstr ""
 
@@ -22626,6 +22742,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:2041
 #: classes/gateways/class.pmprogateway_stripe.php:1988
 #: classes/gateways/class.pmprogateway_stripe.php:1799
+#: classes/gateways/class.pmprogateway_stripe.php:1716
 msgid "Please contact the site administrator."
 msgstr ""
 
@@ -22646,6 +22763,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:5057
 #: classes/gateways/class.pmprogateway_stripe.php:5004
 #: classes/gateways/class.pmprogateway_stripe.php:3963
+#: classes/gateways/class.pmprogateway_stripe.php:3879
 msgid "Admin: An error occured while attempting to process this refund."
 msgstr ""
 
@@ -22682,6 +22800,8 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:5008
 #: classes/gateways/class.pmprogateway_stripe.php:3967
 #: classes/gateways/class.pmprogateway_stripe.php:3969
+#: classes/gateways/class.pmprogateway_stripe.php:3883
+#: classes/gateways/class.pmprogateway_stripe.php:3885
 msgid "Admin: There was a problem processing the refund"
 msgstr ""
 
@@ -23086,6 +23206,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:2574
 #: classes/gateways/class.pmprogateway_stripe.php:2521
 #: classes/gateways/class.pmprogateway_stripe.php:2385
+#: classes/gateways/class.pmprogateway_stripe.php:2301
 msgid "In order to complete the transition to using Stripe legacy API keys, please click the \"Disconnect from Stripe\" button below."
 msgstr ""
 
@@ -23169,6 +23290,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:1566
 #: adminpages/membershiplevels.php:572
 #: classes/gateways/class.pmprogateway_stripe.php:1374
+#: classes/gateways/class.pmprogateway_stripe.php:1288
 msgid "Close Popup"
 msgstr ""
 
@@ -23494,6 +23616,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:942
 #: classes/gateways/class.pmprogateway_stripe.php:956
 #: classes/gateways/class.pmprogateway_stripe.php:940
+#: classes/gateways/class.pmprogateway_stripe.php:934
 msgid "We accept all major credit cards"
 msgstr ""
 
@@ -23503,6 +23626,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:1029
 #: classes/gateways/class.pmprogateway_stripe.php:1043
 #: classes/gateways/class.pmprogateway_stripe.php:1034
+#: classes/gateways/class.pmprogateway_stripe.php:1028
 msgid "Stripe Customer"
 msgstr ""
 
@@ -24670,12 +24794,14 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:413
 #: classes/gateways/class.pmprogateway_stripe.php:417
 #: classes/gateways/class.pmprogateway_stripe.php:402
+#: classes/gateways/class.pmprogateway_stripe.php:396
 msgid "Webhook Status"
 msgstr ""
 
 #: classes/gateways/class.pmprogateway_stripe.php:437
 #: classes/gateways/class.pmprogateway_stripe.php:441
 #: classes/gateways/class.pmprogateway_stripe.php:424
+#: classes/gateways/class.pmprogateway_stripe.php:418
 msgid "Never Received"
 msgstr ""
 
@@ -24689,6 +24815,8 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:490
 #: classes/gateways/class.pmprogateway_stripe.php:461
 #: classes/gateways/class.pmprogateway_stripe.php:473
+#: classes/gateways/class.pmprogateway_stripe.php:455
+#: classes/gateways/class.pmprogateway_stripe.php:467
 msgid "Working"
 msgstr ""
 
@@ -24697,6 +24825,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:467
 #: classes/gateways/class.pmprogateway_stripe.php:481
 #: classes/gateways/class.pmprogateway_stripe.php:464
+#: classes/gateways/class.pmprogateway_stripe.php:458
 msgid "Last Sent "
 msgstr ""
 
@@ -24705,6 +24834,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:485
 #: classes/gateways/class.pmprogateway_stripe.php:499
 #: classes/gateways/class.pmprogateway_stripe.php:482
+#: classes/gateways/class.pmprogateway_stripe.php:476
 msgid "Some webhooks recently sent by Stripe have not been received by your website. Please ensure that you have a webhook set up in Stripe for the Webhook URL shown below with all of the listed event types active. To test an event type again, please resend the most recent webhook event of that type from the Stripe webhook settings page or wait for it to be sent again in the future."
 msgstr ""
 
@@ -24713,6 +24843,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:487
 #: classes/gateways/class.pmprogateway_stripe.php:501
 #: classes/gateways/class.pmprogateway_stripe.php:484
+#: classes/gateways/class.pmprogateway_stripe.php:478
 msgid "Recent webhook attempts appear to have worked correctly, but there are some event types that have not been checked. Those event types will be checked as they are sent by Stripe. In the meantime, please ensure that you have a webhook set up in Stripe for the Webhook URL shown below with all of the listed event types active."
 msgstr ""
 
@@ -24721,6 +24852,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:489
 #: classes/gateways/class.pmprogateway_stripe.php:503
 #: classes/gateways/class.pmprogateway_stripe.php:486
+#: classes/gateways/class.pmprogateway_stripe.php:480
 msgid "All webhooks appear to be working correctly."
 msgstr ""
 
@@ -24729,6 +24861,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:496
 #: classes/gateways/class.pmprogateway_stripe.php:510
 #: classes/gateways/class.pmprogateway_stripe.php:493
+#: classes/gateways/class.pmprogateway_stripe.php:487
 msgid "Event Type"
 msgstr ""
 
@@ -24737,6 +24870,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:497
 #: classes/gateways/class.pmprogateway_stripe.php:511
 #: classes/gateways/class.pmprogateway_stripe.php:494
+#: classes/gateways/class.pmprogateway_stripe.php:488
 msgid "Last Received"
 msgstr ""
 
@@ -24745,6 +24879,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:541
 #: classes/gateways/class.pmprogateway_stripe.php:555
 #: classes/gateways/class.pmprogateway_stripe.php:538
+#: classes/gateways/class.pmprogateway_stripe.php:532
 msgid "Embed the payment information fields on your Membership Checkout page or use the Stripe-hosted payment page (Stripe Checkout). If using Stripe Checkout, be sure that all webhook events listed above are set up in Stripe."
 msgstr ""
 
@@ -24753,6 +24888,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:558
 #: classes/gateways/class.pmprogateway_stripe.php:572
 #: classes/gateways/class.pmprogateway_stripe.php:555
+#: classes/gateways/class.pmprogateway_stripe.php:549
 msgid "Show Billing Address Fields in PMPro Checkout Form"
 msgstr ""
 
@@ -24761,6 +24897,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:572
 #: classes/gateways/class.pmprogateway_stripe.php:586
 #: classes/gateways/class.pmprogateway_stripe.php:569
+#: classes/gateways/class.pmprogateway_stripe.php:563
 msgid "Show Payment Request Button for On-Site Payments"
 msgstr ""
 
@@ -24769,6 +24906,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:635
 #: classes/gateways/class.pmprogateway_stripe.php:649
 #: classes/gateways/class.pmprogateway_stripe.php:632
+#: classes/gateways/class.pmprogateway_stripe.php:626
 msgid "Calculate Tax in Stripe Checkout"
 msgstr ""
 
@@ -24777,6 +24915,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:657
 #: classes/gateways/class.pmprogateway_stripe.php:671
 #: classes/gateways/class.pmprogateway_stripe.php:654
+#: classes/gateways/class.pmprogateway_stripe.php:648
 msgid "Collect Tax IDs in Stripe Checkout"
 msgstr ""
 
@@ -24787,6 +24926,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:2017
 #: classes/gateways/class.pmprogateway_stripe.php:1964
 #: classes/gateways/class.pmprogateway_stripe.php:1775
+#: classes/gateways/class.pmprogateway_stripe.php:1692
 msgid "User is not logged in."
 msgstr ""
 
@@ -24882,6 +25022,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:2630
 #: classes/gateways/class.pmprogateway_stripe.php:2577
 #: classes/gateways/class.pmprogateway_stripe.php:2442
+#: classes/gateways/class.pmprogateway_stripe.php:2358
 msgid "Note: You are using the free Stripe payment gateway integration. This includes an additional %s fee for payment processing. This fee is removed by activating a premium PMPro license."
 msgstr ""
 
@@ -24893,6 +25034,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:2632
 #: classes/gateways/class.pmprogateway_stripe.php:2579
 #: classes/gateways/class.pmprogateway_stripe.php:2444
+#: classes/gateways/class.pmprogateway_stripe.php:2360
 msgid "Note: You are using the free Stripe payment gateway integration. There is no additional fee for payment processing above what Stripe charges."
 msgstr ""
 
@@ -24962,6 +25104,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:2331
 #: classes/gateways/class.pmprogateway_stripe.php:2278
 #: classes/gateways/class.pmprogateway_stripe.php:2089
+#: classes/gateways/class.pmprogateway_stripe.php:2005
 msgid "No subscription transaction ID."
 msgstr ""
 
@@ -24972,6 +25115,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:3189
 #: classes/gateways/class.pmprogateway_stripe.php:3136
 #: classes/gateways/class.pmprogateway_stripe.php:3013
+#: classes/gateways/class.pmprogateway_stripe.php:2929
 msgid "Cannot find payment method."
 msgstr ""
 
@@ -25442,6 +25586,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:590
 #: classes/gateways/class.pmprogateway_stripe.php:604
 #: classes/gateways/class.pmprogateway_stripe.php:587
+#: classes/gateways/class.pmprogateway_stripe.php:581
 msgid "Allow users to pay using Apple Pay, Google Pay, or Microsoft Pay depending on their browser. When enabled, your domain will automatically be registered with Apple and a domain association file will be hosted on your site. <a target=\"_blank\" href=\"%s\" title=\"More Information about the domain association file for Apple Pay\">More Information</a>"
 msgstr ""
 
@@ -25450,6 +25595,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:2567
 #: classes/gateways/class.pmprogateway_stripe.php:2514
 #: classes/gateways/class.pmprogateway_stripe.php:2378
+#: classes/gateways/class.pmprogateway_stripe.php:2294
 msgid "Read the documentation on switching to Stripe Connect"
 msgstr ""
 
@@ -25458,6 +25604,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:2636
 #: classes/gateways/class.pmprogateway_stripe.php:2583
 #: classes/gateways/class.pmprogateway_stripe.php:2448
+#: classes/gateways/class.pmprogateway_stripe.php:2364
 msgid "Learn More"
 msgstr ""
 
@@ -25561,6 +25708,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:2602
 #: classes/gateways/class.pmprogateway_stripe.php:2549
 #: classes/gateways/class.pmprogateway_stripe.php:2413
+#: classes/gateways/class.pmprogateway_stripe.php:2329
 msgid "This will disconnect all sites using this Stripe account from Stripe. Users will not be able to complete membership checkout or update their billing information. Existing subscriptions will not be affected at the gateway, but new recurring orders will not be created in this site."
 msgstr ""
 
@@ -25569,66 +25717,77 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:2604
 #: classes/gateways/class.pmprogateway_stripe.php:2551
 #: classes/gateways/class.pmprogateway_stripe.php:2415
+#: classes/gateways/class.pmprogateway_stripe.php:2331
 msgid "This will disconnect all sites using this Stripe account from Stripe in test mode only."
 msgstr ""
 
 #: classes/gateways/class.pmprogateway_stripe.php:1554
 #: classes/gateways/class.pmprogateway_stripe.php:1568
 #: classes/gateways/class.pmprogateway_stripe.php:1376
+#: classes/gateways/class.pmprogateway_stripe.php:1290
 msgid "Next Step: Register a Stripe Webhook."
 msgstr ""
 
 #: classes/gateways/class.pmprogateway_stripe.php:1557
 #: classes/gateways/class.pmprogateway_stripe.php:1571
 #: classes/gateways/class.pmprogateway_stripe.php:1379
+#: classes/gateways/class.pmprogateway_stripe.php:1293
 msgid "In order for Stripe to function properly, there must be a Stripe Webhook configured for this website."
 msgstr ""
 
 #: classes/gateways/class.pmprogateway_stripe.php:1558
 #: classes/gateways/class.pmprogateway_stripe.php:1572
 #: classes/gateways/class.pmprogateway_stripe.php:1380
+#: classes/gateways/class.pmprogateway_stripe.php:1294
 msgid "Here's how to create a webhook endpoint in your Stripe dashboard"
 msgstr ""
 
 #: classes/gateways/class.pmprogateway_stripe.php:1564
 #: classes/gateways/class.pmprogateway_stripe.php:1578
 #: classes/gateways/class.pmprogateway_stripe.php:1386
+#: classes/gateways/class.pmprogateway_stripe.php:1300
 msgid "Open the %s page in your Stripe dashboard"
 msgstr ""
 
 #: classes/gateways/class.pmprogateway_stripe.php:1565
 #: classes/gateways/class.pmprogateway_stripe.php:1579
 #: classes/gateways/class.pmprogateway_stripe.php:1387
+#: classes/gateways/class.pmprogateway_stripe.php:1301
 msgid "Webhooks"
 msgstr ""
 
 #: classes/gateways/class.pmprogateway_stripe.php:1569
 #: classes/gateways/class.pmprogateway_stripe.php:1583
 #: classes/gateways/class.pmprogateway_stripe.php:1391
+#: classes/gateways/class.pmprogateway_stripe.php:1305
 msgid "Click \"Add an endpoint\""
 msgstr ""
 
 #: classes/gateways/class.pmprogateway_stripe.php:1571
 #: classes/gateways/class.pmprogateway_stripe.php:1585
 #: classes/gateways/class.pmprogateway_stripe.php:1393
+#: classes/gateways/class.pmprogateway_stripe.php:1307
 msgid "Paste the following value into the \"Endpoint URL\" field:"
 msgstr ""
 
 #: classes/gateways/class.pmprogateway_stripe.php:1575
 #: classes/gateways/class.pmprogateway_stripe.php:1589
 #: classes/gateways/class.pmprogateway_stripe.php:1397
+#: classes/gateways/class.pmprogateway_stripe.php:1311
 msgid "Select the following events to listen to:"
 msgstr ""
 
 #: classes/gateways/class.pmprogateway_stripe.php:1585
 #: classes/gateways/class.pmprogateway_stripe.php:1599
 #: classes/gateways/class.pmprogateway_stripe.php:1407
+#: classes/gateways/class.pmprogateway_stripe.php:1321
 msgid "Click \"Add endpoint\" to save your webhook"
 msgstr ""
 
 #: classes/gateways/class.pmprogateway_stripe.php:1588
 #: classes/gateways/class.pmprogateway_stripe.php:1602
 #: classes/gateways/class.pmprogateway_stripe.php:1410
+#: classes/gateways/class.pmprogateway_stripe.php:1324
 msgid "You must complete these steps for both the Sandbox/Testing and Live/Production modes if you intend to use Stripe for testing."
 msgstr ""
 
@@ -26362,28 +26521,33 @@ msgstr ""
 
 #: classes/class-pmpro-subscription.php:707
 #: classes/class-pmpro-subscription.php:708
+#: classes/class-pmpro-subscription.php:716
 msgid "Subscription updated."
 msgstr ""
 
 #. translators: %1$s - price, %2$s - period.
 #: classes/class-pmpro-subscription.php:1006
 #: classes/class-pmpro-subscription.php:1007
+#: classes/class-pmpro-subscription.php:1015
 msgid "%1$s per %2$s"
 msgstr ""
 
 #. translators: %1$s - price, %2$d - number, %3$s - period.
 #: classes/class-pmpro-subscription.php:1009
 #: classes/class-pmpro-subscription.php:1010
+#: classes/class-pmpro-subscription.php:1018
 msgid "%1$s every %2$d %3$s"
 msgstr ""
 
 #: classes/class-pmpro-subscription.php:1125
 #: classes/class-pmpro-subscription.php:1126
+#: classes/class-pmpro-subscription.php:1134
 msgid "There was an error saving the subscription."
 msgstr ""
 
 #: classes/class-pmpro-subscription.php:1129
 #: classes/class-pmpro-subscription.php:1130
+#: classes/class-pmpro-subscription.php:1138
 msgid "Subscription saved."
 msgstr ""
 
@@ -26391,11 +26555,14 @@ msgstr ""
 #: classes/class-pmpro-subscription.php:1196
 #: classes/class-pmpro-subscription.php:1186
 #: classes/class-pmpro-subscription.php:1197
+#: classes/class-pmpro-subscription.php:1194
+#: classes/class-pmpro-subscription.php:1205
 msgid "There was an error cancelling a subscription from your website. Check your payment gateway to see if the subscription is still active."
 msgstr ""
 
 #: classes/class-pmpro-subscription.php:1198
 #: classes/class-pmpro-subscription.php:1199
+#: classes/class-pmpro-subscription.php:1207
 msgid "Subscription cancelled at gateway."
 msgstr ""
 
@@ -26480,10 +26647,12 @@ msgid "Subscription could not be found."
 msgstr ""
 
 #: classes/gateways/class.pmprogateway_stripe.php:952
+#: classes/gateways/class.pmprogateway_stripe.php:946
 msgid "Credit Card"
 msgstr ""
 
 #: classes/gateways/class.pmprogateway_stripe.php:2393
+#: classes/gateways/class.pmprogateway_stripe.php:2309
 msgid "Stripe Connection"
 msgstr ""
 
