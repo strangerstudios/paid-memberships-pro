@@ -159,13 +159,7 @@ class PMProGateway_stripe extends PMProGateway {
 				add_filter( 'pmpro_include_payment_information_fields', array(
 					'PMProGateway_stripe',
 					'pmpro_include_payment_information_fields'
-				) );
-
-				//make sure we clean up subs we will be cancelling after checkout before processing
-				add_action( 'pmpro_checkout_before_processing', array(
-					'PMProGateway_stripe',
-					'pmpro_checkout_before_processing'
-				) );
+				) );				
 			} else {
 				// Checkout flow for Stripe Checkout.
 				add_filter('pmpro_include_payment_information_fields', array('PMProGateway_stripe', 'show_stripe_checkout_pending_warning'));
