@@ -3893,7 +3893,7 @@ class PMProGateway_stripe extends PMProGateway {
 	/**
 	 * Get the description to send to Stripe for an order.
 	 *
-	 * @since TBD
+	 * @since 3.0
 	 *
 	 * @param MemberOrder $order The MemberOrder object to get the description for.
 	 * @return string The description to send to Stripe.

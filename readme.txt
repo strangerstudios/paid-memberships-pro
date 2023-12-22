@@ -4,11 +4,7 @@ Tags: memberships, member, community, user profile, user registration, members, 
 Requires at least: 5.2
 Tested up to: 6.4.2
 Requires PHP: 5.6
-<<<<<<< HEAD
-Stable tag: 2.99.991
-=======
-Stable tag: 2.12.6
->>>>>>> strangerstudios/dev
+Stable tag: 2.99.992
 
 Build a membership site that grows with you: user registration, member profiles, 28 protected content types, free or paid subscriptions.
 
@@ -194,7 +190,7 @@ Not sure? You can find out by doing a bit a research.
 9. Advanced settings for updating non-member messages, optionally show excerpts or filter content, use reCAPTCHA, and a Terms of Service checkbox.
 
 == Changelog ==
-= 3.0 (Updated for v2.99.991 on 2023-12-08) =
+= 3.0 (Updated for v2.99.992 on 2023-12-22) =
 * FEATURE: Now tracking payment subscriptions using a new subscriptions table. (@dparker1005)
 * FEATURE: The Multiple Memberships Per User Add On has been merged into the core PMPro plugin. #2250 (@dparker1005)
 * FEATURE: The Stripe Billing Limits Add On  has been merged into the core PMPro plugin. All gateways now support billing limits. #2384 (@dparker1005)
@@ -210,6 +206,7 @@ Not sure? You can find out by doing a bit a research.
 * ENHANCEMENT: Updated front-end pages and pre-headers. (@kimcoleman, @dparker1005)
 * ENHANCEMENT: Now setting collate when creating database tables. #2566 (@dparker1005)
 * ENHANCEMENT: Adding a `$name` parameter to the `pmpro_user_taxonomy_args` filter. #2456 (@mircobabini)
+* ENHANCEMENT: Now sending payment descriptions to Stripe when users pay via Stripe Checkout. #2744 (@dparker1005)
 * BUG FIX/ENHANCEMENT: Now storing payment information in individual orders instead of in user meta. #2398 (@JarrydLong)
 * BUG FIX/ENHANCENENT: Now showing "Credit Card" instead of "Pay With Credit Card" on the Update Billing page when using the Stripe payment request button. #2684 (jahidhasan018)
 * BUG FIX/ENHANCEMENT: Now preventing multiple user field groups with the same name from being created. #2625 (@MaximilianoRicoTabo)
