@@ -1825,7 +1825,6 @@ class PMProGateway_stripe extends PMProGateway {
 		$order->payment_transaction_id = $payment_transaction_id;
 		$order->subscription_transaction_id = $subscription_transaction_id;
 		$order->status = 'success';
-		$order->saveOrder();
 		return true;
 	}
 
