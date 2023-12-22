@@ -1068,6 +1068,10 @@ function pmpro_changeMembershipLevel( $level, $user_id = null, $old_level_status
 	// Set old user levels to be used in the pmpro_do_action_after_all_membership_level_changes() function.
 	pmpro_set_old_user_levels( $user_id );
 
+	// Get all levels for the user.
+	$membership_levels = pmpro_getMembershipLevelsForUser( $user_id );
+	$membership_ids    = wp_list_pluck( $membership_levels, 'id' );
+
 	/**
 	 * Action to run before the membership level changes.
 	 *
@@ -1076,7 +1080,7 @@ function pmpro_changeMembershipLevel( $level, $user_id = null, $old_level_status
 	 * @param array $old_levels array of prior levels the user belonged to.
 	 * @param int $cancel_level ID of the level being cancelled if specified
 	 */
-	do_action( 'pmpro_before_change_membership_level', $level_id, $user_id, pmpro_getMembershipLevelsForUser( $user_id ), null );
+	do_action( 'pmpro_before_change_membership_level', $level_id, $user_id, $membership_levels, null );
 
 	// Cancel all membership levels for this user in the same level group if only one level per group is allowed.
 	$pmpro_giving_level = true;
@@ -1087,20 +1091,19 @@ function pmpro_changeMembershipLevel( $level, $user_id = null, $old_level_status
 		$levels_in_group = pmpro_get_levels_for_group( $level_group->id );
 		$group_level_ids = wp_list_pluck( $levels_in_group, 'id' );
 
-		// Get all levels for the user.
-		$membership_levels = pmpro_getMembershipLevelsForUser( $user_id );
-		$membership_ids    = wp_list_pluck( $membership_levels, 'id' );
-
 		// Get the intersection of the two arrays.
 		$levels_to_cancel = array_intersect( $group_level_ids, $membership_ids );
 
 		// Cancel the levels.
 		foreach ( $levels_to_cancel as $level_to_cancel ) {
-			if ( $level_to_cancel != $level_id ) {
-				$pmpro_giving_level = true; // Make sure that we don't run level change actions again.
-				pmpro_cancelMembershipLevel( $level_to_cancel, $user_id, 'changed' );
-				unset( $pmpro_giving_level );
-			}
+			$pmpro_giving_level = true; // Make sure that we don't run level change actions again.
+			pmpro_cancelMembershipLevel( $level_to_cancel, $user_id, 'changed' );
+			unset( $pmpro_giving_level );
+		}
+	} else {
+		// If the user already has this membership level, we still want to cancel it.
+		if ( in_array( $level_id, $membership_ids ) ) {
+			pmpro_cancelMembershipLevel( $level_id, $user_id, 'changed' );
 		}
 	}
 	
