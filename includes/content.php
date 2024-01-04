@@ -197,7 +197,7 @@ function pmpro_search_filter( $query ) {
 	}
 
 	// If this is a taxonomy query, make sure the taxonomy is in the post types to filter.
-	if ( $query->is_archive() && ! array_intersect( (array)$query->query_vars['taxonomy'], $pmpro_search_filter_post_types ) ) {
+	if ( $query->is_archive() && ! $query->is_post_type_archive( $pmpro_search_filter_post_types ) ) {
 		return $query;
 	}
 
