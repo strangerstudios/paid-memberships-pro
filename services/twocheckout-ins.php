@@ -64,7 +64,7 @@
 			inslog( "ERROR: Couldn't change level for order (" . $morder->code . ")." );
 		}
 
-		pmpro_twocheckoutExit(pmpro_url("confirmation", "?level=" . $morder->membership_level->id));
+		pmpro_twocheckoutExit(pmpro_url("confirmation", "?pmpro_level=" . $morder->membership_level->id));
 	}
 
 	// First Payment (checkout) (Will probably want to update order, but not send another email/etc)
@@ -88,7 +88,7 @@
 			inslog( "ERROR: Couldn't change level for order (" . $morder->code . ")." );
 		}
 
-		pmpro_twocheckoutExit(pmpro_url("confirmation", "?level=" . $morder->membership_level->id));
+		pmpro_twocheckoutExit(pmpro_url("confirmation", "?pmpro_level=" . $morder->membership_level->id));
 	}
 
 	// Recurring Payment Success (recurring installment success and recurring is true)
@@ -236,9 +236,9 @@
 
 		//is this a return call or notification
 		if(empty($params['message_type']))
-			$check = Twocheckout_Return::check( $params, pmpro_getOption( 'twocheckout_secretword' ) );
+			$check = Twocheckout_Return::check( $params, get_option( 'pmpro_twocheckout_secretword' ) );
 		else
-			$check = Twocheckout_Notification::check( $params, pmpro_getOption( 'twocheckout_secretword' ) );
+			$check = Twocheckout_Notification::check( $params, get_option( 'pmpro_twocheckout_secretword' ) );
 
 		if( empty ( $check ) )
 			$r = false;	//HTTP failure
@@ -482,14 +482,14 @@
 		do_action( 'pmpro_subscription_recurring_stopped', $morder );
     do_action( 'pmpro_subscription_recuring_stopped', $morder );    // Keeping the mispelled version in case. Will deprecate.
     
-		$worked = pmpro_changeMembershipLevel( false, $morder->user->ID , 'inactive');
+		$worked = pmpro_cancelMembershipLevel( $morder->membership_level->id, $morder->user->ID, 'inactive' );
 		if( $worked === true ) {
 			//$pmpro_msg = __("Your membership has been cancelled.", 'paid-memberships-pro' );
 			//$pmpro_msgt = "pmpro_success";
 
 			//send an email to the member
 			$myemail = new PMProEmail();
-			$myemail->sendCancelEmail();
+			$myemail->sendCancelEmail( $morder->user, $morder->membership_level->id );
 
 			//send an email to the admin
 			$myemail = new PMProEmail();

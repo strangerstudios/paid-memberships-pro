@@ -25,7 +25,7 @@ function pmpro_has_membership_access($post_id = NULL, $user_id = NULL, $return_m
 	//use current user if no value is supplied
 	if(!$user_id)
 		$user_id = $current_user->ID;
-	
+
 	//if no post or current_user object, set them up
 	if(isset($queried_object->ID) && !empty($queried_object->ID) && $post_id == $queried_object->ID)
 		$mypost = $queried_object;
@@ -283,7 +283,7 @@ function pmpro_search_filter( $query ) {
 
     return $query;
 }
-$filterqueries = pmpro_getOption("filterqueries");
+$filterqueries = get_option("pmpro_filterqueries");
 if( ! empty( $filterqueries ) ) {
 	add_filter( 'pre_get_posts', 'pmpro_search_filter' );
 }
@@ -340,7 +340,7 @@ function pmpro_membership_content_filter( $content, $skipcheck = false ) {
 		return $content;
 	} else {
 		//if show excerpts is set, return just the excerpt
-		if( pmpro_getOption( "showexcerpts" ) ) {
+		if( get_option( "pmpro_showexcerpts" ) ) {
 			//show excerpt
 			global $post;
 			if( $post->post_excerpt ) {

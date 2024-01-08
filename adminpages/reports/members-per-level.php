@@ -38,7 +38,8 @@ function pmpro_report_members_per_level_widget() {
 }
 
 function pmpro_report_members_per_level_page() {
-	global $pmpro_levels; ?>
+	$pmpro_levels = pmpro_getAllLevels( true );
+	?>
 	<h1 class="wp-heading-inline">
 		<?php esc_html_e( 'Active Members Per Level', 'paid-memberships-pro' ); ?>
 	</h1>
@@ -77,7 +78,7 @@ function pmpro_report_members_per_level_page() {
 
 // Returns an array of membership level IDs and the count of active members.
 function pmpro_report_get_active_members_per_level() {
-	global $wpdb, $pmpro_levels;
+	global $wpdb;
 
 	// Query to get active members per level.
 	$sqlQuery = "SELECT membership_id, count(*) as total_active_members 
@@ -95,7 +96,7 @@ function pmpro_report_get_active_members_per_level() {
 
 // Draw a pie chart of active members per level.
 function pmpro_report_draw_active_members_per_level_chart() {
-	global $pmpro_levels;
+	$pmpro_levels = pmpro_getAllLevels( true );
 	$cols = array();
 	$active_members = pmpro_report_get_active_members_per_level();
 	if ( ! empty( $active_members ) ) {

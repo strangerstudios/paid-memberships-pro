@@ -4,7 +4,7 @@
  * Checks for WP default, TML, and PMPro login page.
  */
 function pmpro_is_login_page() {
-	return ( in_array( $GLOBALS['pagenow'], array( 'wp-login.php', 'wp-register.php' ) ) || is_page( 'login' ) || ( pmpro_getOption( 'login_page_id' ) && is_page( pmpro_getOption( 'login_page_id' ) ) ) );
+	return ( in_array( $GLOBALS['pagenow'], array( 'wp-login.php', 'wp-register.php' ) ) || is_page( 'login' ) || ( get_option( 'pmpro_login_page_id' ) && is_page( get_option( 'pmpro_login_page_id' ) ) ) );
 }
 
 /**
@@ -37,7 +37,7 @@ add_filter( 'login_redirect','pmpro_login_redirect', 10, 3 );
  * Where is the sign up page? Levels page or default multisite page.
  */
 function pmpro_wp_signup_location( $location ) {
-	if ( is_multisite() && pmpro_getOption("redirecttosubscription") ) {
+	if ( is_multisite() && get_option("pmpro_redirecttosubscription") ) {
 		$location = pmpro_url("levels");
 	}
 
@@ -587,6 +587,7 @@ function pmpro_lost_password_form() { ?>
 			</div>
 		</div> <!-- end pmpro_lost_password-fields -->
 		<div class="<?php echo pmpro_get_element_class( 'pmpro_submit' ); ?>">
+			<input type="hidden" name="pmpro_login_form_used" value="1" />
 			<input type="submit" name="submit" class="<?php echo pmpro_get_element_class( 'pmpro_btn pmpro_btn-submit', 'pmpro_btn-submit' ); ?>" value="<?php esc_attr_e( 'Get New Password', 'paid-memberships-pro' ); ?>" />
 		</div>
 	</form>
@@ -595,6 +596,7 @@ function pmpro_lost_password_form() { ?>
 
 /**
  * Handle the password reset functionality. Redirect back to login form and show message.
+ * Look at function `pmpro_do_password_reset` for actually resetting the user's password.
  * @since 2.3
  */
 function pmpro_lost_password_redirect() {
@@ -606,6 +608,11 @@ function pmpro_lost_password_redirect() {
 	// Don't redirect if we're not using the PMPro login page.
 	$redirect_url = pmpro_url( 'login' );
 	if ( ! $redirect_url ) {
+		return;
+	}
+
+	// Don't redirect if we're not on the PMPro form.
+	if ( ! isset( $_REQUEST['pmpro_login_form_used'] ) ) {
 		return;
 	}
 	
@@ -623,45 +630,37 @@ function pmpro_lost_password_redirect() {
 add_action( 'login_form_lostpassword', 'pmpro_lost_password_redirect' );
 
 /**
- * Redirect Password reset to our own page.
+ * Redirect Password reset to our own page and honor all $_REQUEST params.
  * @since 2.3
  * @since [version] Uses the pmpro_url function now.
  */
 function pmpro_reset_password_redirect() {
-	
+
 	// Don't redirect if the form is being submitted, i.e. POST.
 	if ( 'GET' != $_SERVER['REQUEST_METHOD'] ) {
 		return;
 	}
 
-	// Don't redirect if we're not using the PMPro login page.
+	// Don't redirect if we're not using the PMPro login page or if it's empty for some reason.
 	$login_url = pmpro_url( 'login' );
 	if ( ! $login_url ) {
 		return;
 	}
-	
-	// Make sure the reset password link is valid. A WP_User object on success or WP_Error object for invalid or expired keys.
-	$check = check_password_reset_key( sanitize_text_field( $_REQUEST['rp_key'] ), sanitize_text_field( $_REQUEST['rp_login'] ) );
 
-	// If the key is expired or invalid, figure out the correct error code.
-	if ( is_wp_error( $check ) ) {
-		$error_code = $check->get_error_code() == 'expired_key' ? 'expiredkey' : 'invalidkey';	
-	} elseif ( gettype( $check ) !== 'WP_User' ) {
-		// Probably null/false returned from a plugin filtering the check.
-		$error_code = 'invalidkey';
+	// If the URL we're trying to redirect to isn't the login page, then don't redirect (assume it's coming from elsewhere)
+	if ( strpos( $login_url, $_SERVER['REQUEST_URI'] ) === false ) {
+		return;
 	}
 
-	// If there was an error redirect with that code.
-	if ( ! empty( $error_code ) ) {
-		wp_redirect( add_query_arg( 'login', urlencode( $error_code ), $login_url ) );
-		exit;
+	// Don't redirect any requests coming from the wp-login.php page. (Backup check in case the above case fails for any reason.)
+	if ( strpos( $_SERVER['REQUEST_URI'], 'wp-login.php' ) !== false ) {
+		return;
 	}
 
-	// The check worked. Let's redirect to our password reset page.	
-	$redirect_url = add_query_arg( array( 'login' => esc_attr( sanitize_text_field( $_REQUEST['rp_login'] ) ), 'action' => urlencode( 'rp' ) ), $login_url );
-	$redirect_url = add_query_arg( array( 'key' => esc_attr( sanitize_text_field( $_REQUEST['rp_key'] ) ), 'action' => urlencode( 'rp' ) ), $login_url );
+	// Get current REQUEST PARAMS and just add it to ours and then redirect to our login_url
+	$redirect_url = add_query_arg( array_map( 'sanitize_text_field', $_REQUEST ), $login_url );
 
-	wp_redirect( $login_url );
+	wp_redirect( $redirect_url );
 	exit;
 }
 add_action( 'login_form_rp', 'pmpro_reset_password_redirect' );
@@ -726,6 +725,7 @@ function pmpro_reset_password_form() {
 				</div>
 			</div> <!-- end pmpro_reset_password-fields -->
 			<div class="<?php echo pmpro_get_element_class( 'pmpro_submit' ); ?>">
+				<input type="hidden" name="pmpro_login_form_used" value="1" />
 				<input type="submit" name="submit" id="resetpass-button" class="<?php echo pmpro_get_element_class( 'pmpro_btn pmpro_btn-submit', 'pmpro_btn-submit' ); ?>" value="<?php esc_attr_e( 'Reset Password', 'paid-memberships-pro' ); ?>" />
 			</div>
 		</form>
@@ -748,7 +748,7 @@ function pmpro_login_forms_handler_nav( $pmpro_form ) { ?>
 			}
 
 			if ( apply_filters( 'pmpro_show_register_link', get_option( 'users_can_register' ) ) ) {
-				$levels_page_id = pmpro_getOption( 'levels_page_id' );
+				$levels_page_id = get_option( 'pmpro_levels_page_id' );
 
 				if ( $levels_page_id && pmpro_are_any_visible_levels() ) {
 					$links['register'] = sprintf( '<a href="%s">%s</a>', esc_url( pmpro_url( 'levels' ) ), esc_html__( 'Join Now', 'paid-memberships-pro' ) );
@@ -784,6 +784,7 @@ function pmpro_login_forms_handler_nav( $pmpro_form ) { ?>
  */
 function pmpro_do_password_reset() {
 
+	// Only run this code when the password reset it being processed.
     if ( 'POST' != $_SERVER['REQUEST_METHOD'] ) {
 		return;
 	}
@@ -791,6 +792,11 @@ function pmpro_do_password_reset() {
 	// Don't reset if we're not using the PMPro login page.
 	$redirect_url = pmpro_url( 'login' );
 	if ( ! $redirect_url ) {
+		return;
+	}
+
+	// Request came from elsewhere, let's bail.
+	if ( ! isset( $_REQUEST['pmpro_login_form_used'] ) ) {
 		return;
 	}
 
@@ -869,6 +875,11 @@ function pmpro_password_reset_email_filter( $message, $key, $user_login ) {
 
 	$login_url = pmpro_url( 'login' );
 	if ( ! $login_url ) {
+		return $message;
+	}
+
+	// Don't replace the password reset link if it came from elsewhere.
+	if ( ! isset( $_REQUEST['pmpro_login_form_used'] ) ) {
 		return $message;
 	}
 

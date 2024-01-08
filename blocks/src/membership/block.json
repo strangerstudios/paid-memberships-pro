@@ -1,0 +1,92 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "pmpro/membership",
+	"title": "Content Visibility Block",
+	"category": "pmpro",
+	"description": "Nest blocks within this wrapper to show or hide content by membership level, login status, or for non-members.",
+	"keywords": [ "block visibility", "conditional", "content", "exclude", "hide", "hidden", "membership", "membership excluded", "membership required", "private", "restrict", "require", "paid memberships pro", "pmpro" ],
+	"attributes": {
+		"visibilityBlockEnabled": {
+			"type": "boolean",
+			"default": true
+		},
+		"invert_restrictions": {
+			"type": "string",
+			"default": "0"
+		},
+		"segment":{
+			"type": "string",
+			"default": "all"
+		},
+		"levels": {
+			"type": "array",
+			"default":[]
+		},
+		"show_noaccess": {
+			"type": "string",
+			"default": "0"
+		}
+	},
+	"supports": {
+		"align": [ "wide", "full" ],
+		"anchor": true,
+		"ariaLabel": true,
+		"html": false,
+		"background": {
+			"backgroundImage": true
+		},
+		"color": {
+			"gradients": true,
+			"heading": true,
+			"button": true,
+			"link": true
+		},
+		"spacing": {
+			"margin": [ "top", "bottom" ],
+			"padding": true,
+			"blockGap": true,
+			"__experimentalDefaultControls": {
+				"padding": true,
+				"blockGap": true
+			}
+		},
+		"dimensions": {
+			"minHeight": true
+		},
+		"__experimentalBorder": {
+			"color": true,
+			"radius": true,
+			"style": true,
+			"width": true,
+			"__experimentalDefaultControls": {
+				"color": true,
+				"radius": true,
+				"style": true,
+				"width": true
+			}
+		},
+		"typography": {
+			"fontSize": true,
+			"lineHeight": true,
+			"__experimentalFontFamily": true,
+			"__experimentalFontWeight": true,
+			"__experimentalFontStyle": true,
+			"__experimentalTextTransform": true,
+			"__experimentalTextDecoration": true,
+			"__experimentalLetterSpacing": true,
+			"__experimentalDefaultControls": {
+				"fontSize": true
+			}
+		},
+		"layout": {
+			"allowSizingOnChildren": true
+		}
+	},
+	"example": {
+	},
+	"textdomain": "paid-memberships-pro",
+	"editorScript": "file:./index.js",
+	"editorStyle": "file:./index.css",
+	"render": "file:./render.php"
+}

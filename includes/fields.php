@@ -78,6 +78,13 @@ function pmpro_add_user_field( $where, $field ) {
  */
 function pmpro_add_field_group( $name, $label = NULL, $description = '', $order = NULL ) {
 	global $pmpro_field_groups;
+	// Bail if the group already exists.
+	foreach ( $pmpro_field_groups as $group ) {
+		if ( $group->name === $name ) {
+			// Group already exists.
+			return false;
+		}
+	}
 
 	$temp = new stdClass();
 	$temp->name = $name;
@@ -108,8 +115,6 @@ function pmpro_add_field_group( $name, $label = NULL, $description = '', $order 
  *
  */
 function pmpro_add_user_taxonomy( $name, $name_plural ) {
-	global $pmpro_user_taxonomies;
-
 	// Sanitize the taxonomy $name and make sure it is less than 32 characters.
 	$safe_name = sanitize_key( $name );
 	if ( strlen( $safe_name ) > 32 ) {
@@ -129,46 +134,51 @@ function pmpro_add_user_taxonomy( $name, $name_plural ) {
 	}
 
 	$pmpro_user_taxonomy_labels = array(
-		'name' => ucwords( $name ),
-		'singular_name' => ucwords( $name ),
-		'menu_name' => ucwords( $name_plural ),
-		'search_items' => sprintf( __( 'Search %s', 'paid-memberships-pro' ), ucwords( $name_plural ) ),
-		'popular_items' => sprintf( __( 'Popular %s', 'paid-memberships-pro' ), ucwords( $name_plural ) ),
-		'all_items' => sprintf( __( 'All %s', 'paid-memberships-pro' ), ucwords( $name_plural ) ),
-		'edit_item' => sprintf( __( 'Edit %s', 'paid-memberships-pro' ), ucwords( $name ) ),
-		'update_item' => sprintf( __( 'Update %s', 'paid-memberships-pro' ), ucwords( $name ) ),
-		'add_new_item' => sprintf( __( 'Add New %s', 'paid-memberships-pro' ), ucwords( $name ) ),
-		'new_item_name' => sprintf( __( 'New %s Name', 'paid-memberships-pro' ), ucwords( $name ) ),
+		'name'                       => ucwords( $name ),
+		'singular_name'              => ucwords( $name ),
+		'menu_name'                  => ucwords( $name_plural ),
+		'search_items'               => sprintf( __( 'Search %s', 'paid-memberships-pro' ), ucwords( $name_plural ) ),
+		'popular_items'              => sprintf( __( 'Popular %s', 'paid-memberships-pro' ), ucwords( $name_plural ) ),
+		'all_items'                  => sprintf( __( 'All %s', 'paid-memberships-pro' ), ucwords( $name_plural ) ),
+		'edit_item'                  => sprintf( __( 'Edit %s', 'paid-memberships-pro' ), ucwords( $name ) ),
+		'update_item'                => sprintf( __( 'Update %s', 'paid-memberships-pro' ), ucwords( $name ) ),
+		'add_new_item'               => sprintf( __( 'Add New %s', 'paid-memberships-pro' ), ucwords( $name ) ),
+		'new_item_name'              => sprintf( __( 'New %s Name', 'paid-memberships-pro' ), ucwords( $name ) ),
 		'separate_items_with_commas' => sprintf( __( 'Separate %s with commas', 'paid-memberships-pro' ), $name_plural ),
-		'add_or_remove_items' => sprintf( __( 'Add or remove %s', 'paid-memberships-pro' ), $name_plural ),
-		'choose_from_most_used' => sprintf( __( 'Choose from the most popular %s', 'paid-memberships-pro' ), $name_plural ),
+		'add_or_remove_items'        => sprintf( __( 'Add or remove %s', 'paid-memberships-pro' ), $name_plural ),
+		'choose_from_most_used'      => sprintf( __( 'Choose from the most popular %s', 'paid-memberships-pro' ), $name_plural ),
 	);
-	
+
+	$pmpro_user_taxonomy_args = array(
+		'public'       => false,
+		'labels'       => $pmpro_user_taxonomy_labels,
+		'rewrite'      => false,
+		'show_ui'      => true,
+		'capabilities' => array(
+			'manage_terms' => 'edit_users',
+			'edit_terms'   => 'edit_users',
+			'delete_terms' => 'edit_users',
+			'assign_terms' => 'read',
+		),
+	);
+
 	/**
 	 * Filter the args passed to the user taxonomy created.
 	 *
 	 * @param array $pmpro_user_taxonomy_args The arguments passed to the register_taxonomy function.
+	 * @param string $name The current taxonomy name.
 	 *
 	 */
-	$pmpro_user_taxonomy_args = apply_filters( 'pmpro_user_taxonomy_args', array(
-			'public' => false,
-			'labels' => $pmpro_user_taxonomy_labels,
-			'rewrite' => false,
-			'show_ui' => true,
-			'capabilities' => array(
-				'manage_terms' => 'edit_users',
-				'edit_terms'   => 'edit_users',
-				'delete_terms' => 'edit_users',
-				'assign_terms' => 'read',
-			),
-		)
-	);
+	$pmpro_user_taxonomy_args = apply_filters( 'pmpro_user_taxonomy_args', $pmpro_user_taxonomy_args, $name );
 	register_taxonomy( $safe_name, 'user', $pmpro_user_taxonomy_args );
+
+	// Update the labels after the args are filtered.
+	$pmpro_user_taxonomy_labels = $pmpro_user_taxonomy_args['labels'];
 
 	/**
 	 * Add admin page for the registered user taxonomies.
 	 */
-	add_action( 'admin_menu', function() use ( $pmpro_user_taxonomy_labels, $safe_name ) {
+	add_action( 'admin_menu', function () use ( $pmpro_user_taxonomy_labels, $safe_name ) {
 		add_users_page(
 			esc_attr( $pmpro_user_taxonomy_labels['menu_name'] ),
 			esc_attr( $pmpro_user_taxonomy_labels['menu_name'] ),
@@ -178,17 +188,18 @@ function pmpro_add_user_taxonomy( $name, $name_plural ) {
 	} );
 
 	/**
-	 * Update parent file name to fix the selected menu issue for a user taaxonomy.
+	 * Update parent file name to fix the selected menu issue for a user taxonomy.
 	 */
-	add_filter( 'parent_file', function( $parent_file ) use ( $safe_name ) {
+	add_filter( 'parent_file', function ( $parent_file ) use ( $safe_name ) {
 		global $submenu_file;
 		if (
-			isset($_GET['taxonomy']) &&
+			isset( $_GET['taxonomy'] ) &&
 			$_GET['taxonomy'] == $safe_name &&
 			$submenu_file == 'edit-tags.php?taxonomy=' . $safe_name
 		) {
 			$parent_file = 'users.php';
 		}
+
 		return $parent_file;
 	} );
 }
@@ -314,7 +325,7 @@ function pmpro_checkout_boxes_fields() {
 				</h2>
 				<div class="pmpro_checkout-fields">
 				<?php if(!empty($cb->description)) { ?>
-					<div class="pmpro_checkout_decription"><?php echo wp_kses_post( $cb->description ); ?></div>
+					<div class="pmpro_checkout_description"><?php echo wp_kses_post( $cb->description ); ?></div>
 				<?php } ?>
 
 				<?php
@@ -677,8 +688,6 @@ add_action( 'edit_user_profile', 'pmpro_show_user_fields_in_profile_with_locatio
  * @since 2.3
  */
 function pmpro_show_user_fields_in_frontend_profile( $user, $withlocations = false ) {
-	global $pmpro_user_fields;
-
 	//which fields are marked for the profile
 	$profile_fields = pmpro_get_user_fields_for_profile($user->ID, $withlocations);
 
@@ -688,15 +697,15 @@ function pmpro_show_user_fields_in_frontend_profile( $user, $withlocations = fal
 			$box = pmpro_get_field_group_by_name( $where );
 
 			// Only show on front-end if there are fields to be shown.
-			$show_fields = false;
+			$show_fields = array();
 			foreach( $fields as $key => $field ) {
-				if ( $field->profile !== 'only_admin' ) {
-					$show_fields = true;
+				if ( pmpro_is_field( $field ) && $field->profile !== 'only_admin' && $field->profile !== 'admin' && $field->profile !== 'admins' ) {
+					$show_fields[] = $field;
 				}
 			}
 
 			// Bail if there are no fields to show on the front-end profile.
-			if ( ! $show_fields ) {
+			if ( empty( $show_fields ) ) {
 				continue;
 			}
 			?>
@@ -712,11 +721,9 @@ function pmpro_show_user_fields_in_frontend_profile( $user, $withlocations = fal
 					<?php } ?>
 
 					<?php
-						 // Cycle through groups.
-						foreach( $fields as $field ) {
-							if ( pmpro_is_field( $field ) && $field->profile !== 'only_admin' ) {
-								$field->displayAtCheckout( $user->ID );
-							}
+						 // Show fields.
+						foreach( $show_fields as $field ) {
+							$field->displayAtCheckout( $user->ID );
 						}
 					?>
 				</div> <!-- end pmpro_member_profile_edit-fields -->

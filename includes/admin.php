@@ -19,7 +19,7 @@ function pmpro_admin_init_redirect_to_dashboard() {
 	}
 
 	// Check if we should redirect to the wizard. This should only happen on new installs and once.
-	if ( pmpro_getOption( 'wizard_redirect', true ) ) {		
+	if ( get_option( 'pmpro_wizard_redirect' ) ) {
 		delete_option( 'pmpro_wizard_redirect' );	// Deleting right away to avoid redirect loops.
 		wp_redirect( admin_url( 'admin.php?page=pmpro-wizard' ) );
 		exit;
@@ -49,7 +49,7 @@ add_action( 'admin_init', 'pmpro_block_dashboard_redirect', 9 );
 function pmpro_block_dashboard() {
 	global $current_user, $pagenow;
 
-	$block_dashboard = pmpro_getOption( 'block_dashboard' );
+	$block_dashboard = get_option( 'pmpro_block_dashboard' );
 
 	if (
 		! wp_doing_ajax()
@@ -157,7 +157,7 @@ function pmpro_pause_mode_notice() {
 			</div>
 			<div class="pmpro_notification-content">
 				<h3><?php esc_html_e( 'Site URL Change Detected', 'paid-memberships-pro' ); ?></h3>
-				<p><?php printf( __( '<strong>Warning:</strong> We have detected that your site URL has changed. All PMPro-related cron jobs and automated services have been disabled. Paid Memberships Pro considers %s to be the site URL.', 'paid-memberships-pro' ), '<code>' . esc_url( pmpro_getOption( 'last_known_url' ) ) . '</code>' ); ?></p>
+				<p><?php printf( __( '<strong>Warning:</strong> We have detected that your site URL has changed. All PMPro-related cron jobs and automated services have been disabled. Paid Memberships Pro considers %s to be the site URL.', 'paid-memberships-pro' ), '<code>' . esc_url( get_option( 'pmpro_last_known_url' ) ) . '</code>' ); ?></p>
 				<?php if ( current_user_can( 'pmpro_manage_pause_mode' ) ) { ?>
 				<p>
 					<a href='#' id="hide_pause_notification_button" class='button' value="hide_pause_notification"><?php esc_html_e( 'Dismiss notice and keep all services paused', 'paid-memberships-pro' ); ?></a>
@@ -182,7 +182,7 @@ function pmpro_spamprotection_notice() {
 
 	// If spam protection is enabled, we are not on a PMPro settings page, or we are on the PMPro advanced settings page, don't show the notice.
 	if (
-		pmpro_getOption( 'spamprotection' ) ||
+		get_option( 'pmpro_spamprotection' ) ||
 		! isset( $_REQUEST['page'] ) ||
 		( isset( $_REQUEST['page'] ) && 'pmpro-' !== substr( $_REQUEST['page'], 0, 6 ) ) ||
 		( isset( $_REQUEST['page'] ) && 'pmpro-advancedsettings' === $_REQUEST['page'] )
@@ -224,6 +224,64 @@ function pmpro_wizard_remove_admin_notices() {
 	}
 }
 add_action( 'in_admin_header', 'pmpro_wizard_remove_admin_notices', 11 );
+
+/**
+ * Adds the Paid Memberships Pro branded header to the PMPro settings and admin pages.
+ *
+ * @since 3.0
+ */
+function pmpro_admin_header() {
+	// Assume we should not show our header.
+	$show_header = false;
+
+	// Show header on our settings pages.
+	if ( ! empty( $_GET['page'] ) && strpos( $_GET['page'], 'pmpro-' ) === 0 ) {
+		$show_header = true;
+	}
+
+	// Exclude the wizard.
+	if ( ! empty( $_GET['page'] ) && 'pmpro-wizard' === $_GET['page'] ) {
+		$show_header = false;
+	}
+
+	if ( empty( $show_header ) ) {
+		return;
+	} ?>
+	<div class="pmpro_banner">
+		<div class="pmpro_banner_wrapper">
+			<div class="pmpro_logo">
+				<h1>
+					<span class="screen-reader-text"><?php esc_html_e( 'Paid Memberships Pro', 'paid-memberships-pro' ); ?></span>
+					<a target="_blank" rel="noopener noreferrer" href="https://www.paidmembershipspro.com/?utm_source=plugin&utm_medium=pmpro-admin-header&utm_campaign=homepage"><img src="<?php echo esc_url( PMPRO_URL . '/images/Paid-Memberships-Pro.png' ); ?>" width="300" border="0" alt="Paid Memberships Pro(c) - All Rights Reserved" /></a>
+				</h1>
+				<span class="pmpro_version">v<?php echo PMPRO_VERSION?></span>
+			</div>
+			<div class="pmpro_meta">
+				<a target="_blank" rel="noopener noreferrer" href="https://www.paidmembershipspro.com/documentation/?utm_source=plugin&utm_medium=pmpro-admin-header&utm_campaign=documentation"><?php esc_html_e('Documentation', 'paid-memberships-pro' ); ?></a>
+				<a target="_blank" href="https://www.paidmembershipspro.com/support/?utm_source=plugin&utm_medium=pmpro-admin-header&utm_campaign=pricing&utm_content=get-support"><?php esc_html_e('Get Support', 'paid-memberships-pro' );?></a>
+
+				<?php
+					// Show notice if paused.
+					if ( pmpro_is_paused() ) {
+						// Link to reactivate the notification about pause mode if has cap.
+						if ( current_user_can( 'pmpro_manage_pause_mode' ) ) { ?>
+							<a class="pmpro_paused_tag" href="<?php echo esc_url( add_query_arg( array( 'page' => 'pmpro-dashboard', 'show_pause_notification' => '1' ), admin_url( 'admin.php' ) ) ); ?>"><?php esc_html_e( 'Services Paused', 'paid-memberships-pro' ); ?></a>
+						<?php } else { ?>
+							<span class="pmpro_paused_tag"><?php esc_html_e( 'Crons Disabled', 'paid-memberships-pro' ); ?></span>
+						<?php }
+					}
+				?>
+				<?php if ( pmpro_license_isValid( null, pmpro_license_get_premium_types() ) ) { ?>
+					<?php printf(__( '<a class="pmpro_license_tag pmpro_license_tag-valid" href="%s">Valid License</a>', 'paid-memberships-pro' ), esc_url( add_query_arg( array( 'page' => 'pmpro-license' ), admin_url( 'admin.php' ) ) ) ); ?>
+				<?php } elseif ( ! defined( 'PMPRO_LICENSE_NAG' ) || PMPRO_LICENSE_NAG == true ) { ?>
+					<?php printf(__( '<a class="pmpro_license_tag pmpro_license_tag-invalid" href="%s">No License</a>', 'paid-memberships-pro' ), esc_url( add_query_arg( array( 'page' => 'pmpro-license' ), admin_url( 'admin.php' ) ) ) ); ?>
+				<?php } ?>
+			</div> <!-- end pmpro_meta -->
+		</div> <!-- end pmpro_banner_wrapper -->		
+	</div> <!-- end pmpro_banner -->
+	<?php
+}
+add_action( 'admin_notices', 'pmpro_admin_header', 1 );
 
 /**
  * Add notice to rate us that replaces default WordPress footer text on PMPro pages.

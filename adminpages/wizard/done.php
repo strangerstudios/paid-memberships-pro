@@ -1,5 +1,5 @@
 <?php
-	$site_type = pmpro_getOption( 'site_type', true );
+	$site_type = get_option( 'pmpro_site_type' );
 
 	if ( empty( $site_type ) ) {
 		$site_type = 'general';
@@ -24,7 +24,7 @@
 	}
 
 	// Did they choose collect payments? If so, show a nudge to complete the gateway setup.
-	$configure_payment = pmpro_getOption( 'wizard_collect_payment', true );
+	$configure_payment = get_option( 'pmpro_wizard_collect_payment' );
 
 	$site_types = pmpro_wizard_get_site_types();
 	$site_type_hubs = pmpro_wizard_get_site_type_hubs();
