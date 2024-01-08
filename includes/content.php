@@ -145,18 +145,40 @@ function pmpro_has_membership_access($post_id = NULL, $user_id = NULL, $return_m
 }
 
 /**
+ * Filter PMPro pages from search results.
+ * @since 3.0 This functionality was moved out
+ *        of the pmpro_search_filter function.
+ */
+function pmpro_search_filter_pmpro_pages( $query ) {
+	global $pmpro_pages;
+
+	// Ignore queries from the admin dashboard.
+	if ( $query->is_admin ) {
+		return $query;
+	}
+
+	// Ingore queries that aren't search related.
+	if ( ! $query->is_search ) {
+		return $query;
+	}
+
+	// Ignore post parent queries.
+	if ( ! empty( $query->query['post_parent'] ) ) {
+		return $query;
+	}
+
+	// We're good. Remove the PMPro pages from the results.
+	$query->set( 'post__not_in', array_merge( $query->get('post__not_in'), array_filter( array_values( $pmpro_pages ) ) ) );
+
+	return $query;
+}
+add_filter( 'pre_get_posts', 'pmpro_search_filter_pmpro_pages' );
+
+/**
  * Filter restricted posts from searches and archive queries.
  */
 function pmpro_search_filter( $query ) {
     global $current_user, $wpdb, $pmpro_pages;
-	
-    //hide pmpro pages from search results
-    if( ! $query->is_admin && $query->is_search && empty( $query->query['post_parent'] ) ) {
-        //avoiding post_parent queries for now
-		if( empty( $query->query_vars['post_parent'] ) && ! empty( $pmpro_pages ) ) {
-			$query->set( 'post__not_in', array_merge( $query->get('post__not_in'), array_values( $pmpro_pages ) ) );
-		}
-    }
 		
 	/**
 	 * Filter which post types to hide members-only content from search.
@@ -210,37 +232,32 @@ function pmpro_search_filter( $query ) {
 		$levels = false;
 	}
 	
-	$my_pages = array();
-	$member_pages = array();
+	// Pull the IDs out of the levels array.
+	if( ! empty( $levels ) ) {
+		$level_ids = wp_list_pluck( $levels, 'ID' );
+	}
+	
+	// If we have IDs, get all restricted posts.
+	if ( ! empty ( $level_ids ) ) {
+		// Get restricted posts for level.
+		$sql = "SELECT page_id
+				FROM {$wpdb->pmpro_memberships_pages}
+				WHERE membership_id
+					IN(" . implode (', ', array_map( 'esc_sql', $level_ids ) )  . ")";
 
-	if( $levels ) {
-		foreach( $levels as $key => $level ) {
-			// Get restricted posts for level.
-
-			// Make sure the object contains membership info.
-			if ( isset( $level->ID ) ) {
-
-				$sql = $wpdb->prepare("
-					SELECT page_id
-					FROM {$wpdb->pmpro_memberships_pages}
-					WHERE membership_id = %d",
-					$level->ID
-				);
-
-				$member_pages = $wpdb->get_col($sql);
-				$my_pages = array_unique(array_merge($my_pages, $member_pages));
-			}
-		} // foreach
-	} // if($levels)
+		$my_pages = array_values(array_unique($wpdb->get_col($sql)));
+	}
 
 	// Get hidden page ids.
 	if( ! empty( $my_pages ) ) {
+		// All hidden pages, minus the ones I have access to.
 		$sql = "SELECT page_id FROM $wpdb->pmpro_memberships_pages WHERE page_id NOT IN(" . implode(',', array_map( 'esc_sql', $my_pages ) ) . ")";
 	} else {
+		// All hidden pages.
 		$sql = "SELECT page_id FROM $wpdb->pmpro_memberships_pages";
 	}
 	$hidden_page_ids = array_values(array_unique($wpdb->get_col($sql)));
-	
+
 	if( $hidden_page_ids ) {
 		$query->set( 'post__not_in', array_merge( $query->get('post__not_in'), $hidden_page_ids ) );
 	}
