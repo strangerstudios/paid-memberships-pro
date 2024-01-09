@@ -130,9 +130,13 @@
 	 */
 	function pmpro_euro_position_from_locale($position = 'right') {
 		$locale = get_locale();
+		
 		if(strpos($locale, 'en_') === 0) {
 			$position = 'left';
+		}elseif(strpos($locale, 'de_') === 0) {
+			$position = 'left';
 		}
+		
 		return $position;
 	}
 	
