@@ -1130,8 +1130,11 @@
 				$this->membership_level->billing_amount = pmpro_round_price( $this->membership_level->billing_amount );
 				$this->membership_level->trial_amount = pmpro_round_price( $this->membership_level->trial_amount );
 			}
-
-			return $this->membership_level;
+			
+			/**
+			  * @since 1.9.4.x - BUG FIX: Didn't set correct level info for Addon Packages, etc.
+			  */
+			return apply_filters( 'pmpro_checkout_level', $this->membership_level );
 		}
 		
 		/**
