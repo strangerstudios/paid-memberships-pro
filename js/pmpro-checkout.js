@@ -205,3 +205,24 @@ jQuery(document).ready(function(){
 		}
 	}
 });
+
+// Get non-sensitve checkout form data to be sent to checkout_levels endpoint.
+function pmpro_getNonSensitiveCheckoutFormData() {
+	// Get all form data.
+	const checkoutFormData = jQuery( "#pmpro_form" ).serializeArray();
+
+	// Get sensitive data fields.
+	const sensitiveCheckoutRequestVars = pmpro.sensitiveCheckoutRequestVars;
+
+	// Remove sensitive data from form data.
+	for ( var i = 0; i < checkoutFormData.length; i++ ) {
+		if ( sensitiveCheckoutRequestVars.includes( checkoutFormData[i].name ) ) {
+			// Remove sensitive data from form data and adjust index to account for removed item.
+			checkoutFormData.splice( i, 1 );
+			i--;
+		}
+	}
+
+	// Return form data as string.
+	return jQuery.param( checkoutFormData );
+}

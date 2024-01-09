@@ -152,7 +152,7 @@ jQuery( document ).ready( function( $ ) {
 		jQuery.noConflict().ajax({
 			url: pmproStripe.restUrl + 'pmpro/v1/checkout_levels',
 			dataType: 'json',
-			data: pmproStripeGetNonSensitiveCheckoutFormData(),
+			data: pmpro_getNonSensitiveCheckoutFormData(),
 			success: function(data) {
 				if ( data.hasOwnProperty('initial_payment') ) {
 					// Build payment request button.
@@ -206,7 +206,7 @@ jQuery( document ).ready( function( $ ) {
 			jQuery.noConflict().ajax({
 				url: pmproStripe.restUrl + 'pmpro/v1/checkout_levels',
 				dataType: 'json',
-				data: pmproStripeGetNonSensitiveCheckoutFormData(),
+				data: pmpro_getNonSensitiveCheckoutFormData(),
 				success: function(data) {
 					if ( data.hasOwnProperty('initial_payment') ) {
 						paymentRequest.update({
