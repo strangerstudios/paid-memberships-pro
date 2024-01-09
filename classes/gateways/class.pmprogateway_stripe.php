@@ -813,6 +813,7 @@ class PMProGateway_stripe extends PMProGateway {
 					'updatePaymentRequestButton' => apply_filters( 'pmpro_stripe_update_payment_request_button', true ),
 					'currency' => strtolower( $pmpro_currency ),
 					'accountCountry' => self::get_account_country(),
+					'sensitiveCheckoutRequestVars' => pmpro_get_sensitive_checkout_request_vars(),
 				);
 
 				if ( ! empty( $order ) ) {

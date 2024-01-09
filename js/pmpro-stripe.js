@@ -127,11 +127,32 @@ jQuery( document ).ready( function( $ ) {
 	if ( $('#payment-request-button').length ) {
 		var paymentRequest = null;
 
+		// Get non-sensitve checkout form data to be sent to checkout_levels endpoint..
+		function pmproStripeGetNonSensitiveCheckoutFormData() {
+			// Get all form data.
+			const checkoutFormData = jQuery( "#pmpro_form" ).serializeArray();
+
+			// Get sensitive data fields.
+			const sensitiveCheckoutRequestVars = pmproStripe.sensitiveCheckoutRequestVars;
+
+			// Remove sensitive data from form data.
+			for ( var i = 0; i < checkoutFormData.length; i++ ) {
+				if ( sensitiveCheckoutRequestVars.includes( checkoutFormData[i].name ) ) {
+					// Remove sensitive data from form data and adjust index to account for removed item.
+					checkoutFormData.splice( i, 1 );
+					i--;
+				}
+			}
+
+			// Return form data as string.
+			return jQuery.param( checkoutFormData );
+		}
+
 		// Get the level price so that information can be shown in payment request popup
 		jQuery.noConflict().ajax({
 			url: pmproStripe.restUrl + 'pmpro/v1/checkout_levels',
 			dataType: 'json',
-			data: jQuery( "#pmpro_form" ).serialize(),
+			data: pmproStripeGetNonSensitiveCheckoutFormData(),
 			success: function(data) {
 				if ( data.hasOwnProperty('initial_payment') ) {
 					// Build payment request button.
@@ -185,7 +206,7 @@ jQuery( document ).ready( function( $ ) {
 			jQuery.noConflict().ajax({
 				url: pmproStripe.restUrl + 'pmpro/v1/checkout_levels',
 				dataType: 'json',
-				data: jQuery( "#pmpro_form" ).serialize(),
+				data: pmproStripeGetNonSensitiveCheckoutFormData(),
 				success: function(data) {
 					if ( data.hasOwnProperty('initial_payment') ) {
 						paymentRequest.update({
