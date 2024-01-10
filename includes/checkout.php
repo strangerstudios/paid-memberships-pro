@@ -108,7 +108,7 @@ function pmpro_calculate_profile_start_date( $order, $date_format, $filter = tru
 /**
  * Get the list of sensitive request variables that should not be saved in the database.
  *
- * @since TBD
+ * @since 2.12.7
  *
  * @return array The list of sensitive request variables.
  */
@@ -128,7 +128,7 @@ function pmpro_get_sensitive_checkout_request_vars() {
 	/**
 	 * Filter the list of sensitive request variables that should not be saved in the database.
 	 *
-	 * @since TBD
+	 * @since 2.12.7
 	 *
 	 * @param array $sensitive_request_vars The list of sensitive request variables.
 	 */
