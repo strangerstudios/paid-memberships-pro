@@ -185,7 +185,7 @@ jQuery( document ).ready( function( $ ) {
 			jQuery.noConflict().ajax({
 				url: pmproStripe.restUrl + 'pmpro/v1/checkout_levels',
 				dataType: 'json',
-				data: pmpro_getNonSensitiveCheckoutFormData(),
+				data: pmpro_getCheckoutFormDataForCheckoutLevels(),
 				success: function(data) {
 					if ( data.hasOwnProperty('initial_payment') ) {
 						paymentRequest.update({
