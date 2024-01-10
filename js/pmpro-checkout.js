@@ -207,14 +207,12 @@ jQuery(document).ready(function(){
 });
 
 // Get non-sensitve checkout form data to be sent to checkout_levels endpoint.
-function pmpro_getNonSensitiveCheckoutFormData() {
-	// Get all form data.
-	const checkoutFormData = jQuery( "#pmpro_form" ).serializeArray();
+function pmpro_getCheckoutFormDataForCheckoutLevels() {
+	// We need the level, discount code, and any field with the pmpro_alter_price CSS class.
+	const checkoutFormData = jQuery( "#level, #discount_code, #pmpro_form .pmpro_alter_price" ).serializeArray();
 
-	// Get sensitive data fields.
+	// Double check to remove sensitive data from the array.
 	const sensitiveCheckoutRequestVars = pmpro.sensitiveCheckoutRequestVars;
-
-	// Remove sensitive data from form data.
 	for ( var i = 0; i < checkoutFormData.length; i++ ) {
 		if ( sensitiveCheckoutRequestVars.includes( checkoutFormData[i].name ) ) {
 			// Remove sensitive data from form data and adjust index to account for removed item.
