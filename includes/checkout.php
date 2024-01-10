@@ -51,18 +51,10 @@ function pmpro_calculate_profile_start_date( $order, $date_format, $filter = tru
 	// Save some checkout information in the order so that we can access it when the payment is complete.
 	// Save the request variables.
 	$request_vars = $_REQUEST;
-	// Unset restricted request variables.
-	$restricted_vars = array(
-		'password',
-		'password2',
-		'password2_copy',
-		'AccountNumber',
-		'CVV',
-		'ExpirationMonth',
-		'ExpirationYear',
-		'add_sub_accounts_password', // Creating users at checkout with Sponsored Members.
-	);
-	foreach ( $restricted_vars as $key ) {
+
+	// Unset sensitive request variables.
+	$sensitive_vars = pmpro_get_sensitive_checkout_request_vars();
+	foreach ( $sensitive_vars as $key ) {
 		if ( isset( $request_vars[ $key ] ) ) {
 			unset( $request_vars[ $key ] );
 		}
@@ -111,6 +103,36 @@ function pmpro_calculate_profile_start_date( $order, $date_format, $filter = tru
 		}
 		update_pmpro_membership_order_meta( $order->id, 'checkout_files', $files );
 	}
+}
+
+/**
+ * Get the list of sensitive request variables that should not be saved in the database.
+ *
+ * @since 2.12.7
+ *
+ * @return array The list of sensitive request variables.
+ */
+function pmpro_get_sensitive_checkout_request_vars() {
+	// These are the request variables that we do not want to save in the database.
+	$sensitive_request_vars = array(
+		'password',
+		'password2',
+		'password2_copy',
+		'AccountNumber',
+		'CVV',
+		'ExpirationMonth',
+		'ExpirationYear',
+		'add_sub_accounts_password', // Creating users at checkout with Sponsored Members.
+	);
+
+	/**
+	 * Filter the list of sensitive request variables that should not be saved in the database.
+	 *
+	 * @since 2.12.7
+	 *
+	 * @param array $sensitive_request_vars The list of sensitive request variables.
+	 */
+	return apply_filters( 'pmpro_sensitive_checkout_request_vars', $sensitive_request_vars );
 }
 
 /**
