@@ -191,7 +191,7 @@ Not sure? You can find out by doing a bit a research.
 
 == Changelog ==
 = 2.12.7 - 2024-01-10 =
-* SECURITY: Fixed a security issue where sensitive user data was sometimes showing up in web server logs. Please see https://www.paidmembershipspro.com/pmpro-update-2-12-7/ for more information, including notes on how to tell if your site was affected by this issue and what to do about it.
+* SECURITY: Fixed a security issue where sensitive user data was sometimes showing up in web server logs. Please see https://www.paidmembershipspro.com/pmpro-security-update-2-12-7/ for more information, including notes on how to tell if your site was affected by this issue and what to do about it.
 
 = 2.12.6 - 2023-12-18 =
 * SECURITY: Fixed a security issue where unauthorized users could abuse the REST API endpoints to add new levels or edit existing levels. (Thanks, Craig Smith at WordFence) #2742 (@ideadude)
