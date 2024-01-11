@@ -2,6 +2,22 @@
 	//require_once(dirname(__FILE__) . "/class.pmprogateway.php");
 	class PMProGateway
 	{
+
+		/**
+		 * The gateway's name.
+		 */
+		protected $gateway;
+
+		/**
+		 * The gateway's environemnt. Either 'sandbox' or 'live'.
+		 */
+		protected $gateway_environment;
+
+		/**
+		 * The gateway's options.
+		 */
+		protected $httpParsedResponseAr;
+
 		function __construct($gateway = NULL)
 		{
 			$this->gateway = $gateway;

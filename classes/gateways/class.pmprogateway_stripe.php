@@ -46,7 +46,7 @@ class PMProGateway_stripe extends PMProGateway {
 	 * @since 1.4
 	 */
 	function __construct( $gateway = null ) {
-		$this->gateway             = $gateway;
+		$this->gateway = $gateway;
 		$this->gateway_environment = get_option( "pmpro_gateway_environment" );
 
 		if ( true === $this->dependencies() ) {
