@@ -926,6 +926,13 @@ function pmpro_cancelMembershipLevel( $level_id, $user_id = null, $status = 'ina
 		return false;
 	}
 
+	// If the user doesn't have the level, we don't need to do anything.
+	$user_levels = pmpro_getMembershipLevelsForUser( $user_id );
+	$user_level_ids = array_map( 'intval', wp_list_pluck( $user_levels, 'id' ) );
+	if ( ! in_array( (int)$level_id, $user_level_ids ) ) {
+		return false;
+	}
+
 	// Set old user levels to be used in the pmpro_do_action_after_all_membership_level_changes() function.
 	pmpro_set_old_user_levels( $user_id );
 
@@ -943,7 +950,7 @@ function pmpro_cancelMembershipLevel( $level_id, $user_id = null, $status = 'ina
 
 	// Remove the membership level.	
 	$cols_set = array( 'status'=> $status, 'enddate' => current_time( 'mysql' ) );
-	$cols_where = array( 'user_id' => $user_id, 'membership_id' => $level_id );
+	$cols_where = array( 'user_id' => $user_id, 'membership_id' => $level_id, 'status' => 'active' );
 	$cols_format = array( '%s', '%s');
 	if ( $wpdb->update( $wpdb->pmpro_memberships_users, $cols_set, $cols_where, $cols_format ) === false ) {
 		$pmpro_error = __( 'Error interacting with database', 'paid-memberships-pro' ) . ': ' . ( $wpdb->last_error ? $wpdb->last_error : 'unavailable' );
