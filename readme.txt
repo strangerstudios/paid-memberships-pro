@@ -4,11 +4,7 @@ Tags: memberships, member, community, user profile, user registration, members, 
 Requires at least: 5.2
 Tested up to: 6.4.2
 Requires PHP: 5.6
-<<<<<<< HEAD
-Stable tag: 2.99.992
-=======
-Stable tag: 2.12.7
->>>>>>> strangerstudios/dev
+Stable tag: 2.99.993
 
 Build a membership site that grows with you: user registration, member profiles, 28 protected content types, free or paid subscriptions.
 
@@ -194,7 +190,7 @@ Not sure? You can find out by doing a bit a research.
 9. Advanced settings for updating non-member messages, optionally show excerpts or filter content, use reCAPTCHA, and a Terms of Service checkbox.
 
 == Changelog ==
-= 3.0 (Updated for v2.99.992 on 2023-12-22) =
+= 3.0 (Updated for v2.99.993 on 2024-01-14) =
 * FEATURE: Now tracking payment subscriptions using a new subscriptions table. (@dparker1005)
 * FEATURE: The Multiple Memberships Per User Add On has been merged into the core PMPro plugin. #2250 (@dparker1005)
 * FEATURE: The Stripe Billing Limits Add On  has been merged into the core PMPro plugin. All gateways now support billing limits. #2384 (@dparker1005)
@@ -203,6 +199,7 @@ Not sure? You can find out by doing a bit a research.
 * FEATURE: Added a "Admin Membership Access" setting to the toolbar to allow admins to choose whether they want to view the website with full membership access, no membership access, or with their current membership levels. #2541 (@andrewlimaza)
 * FEATURE: Added "content visibility" settings to all core WordPress blocks to allow restricting by membership level. #2680 (@MaximilianoRicoTabo)
 * FEATURE: Added the Single Membership Level block to display information about a specific membership level. #2654 (@JarrydLong, @kimcoleman)
+* ENHANCEMENT: Added a script that will run on upgrade to change all `cancelled` orders to `success` so that we can remove `cancelled` status. #2025 (@dparker1005)
 * ENHANCEMENT: Moving the "Require Membership" settings in the block editor to a new block editor panel. #2445 (@dparker1005)
 * ENHANCEMENT: Added a setting for customizing the word "Check" when collecting offline payments. #2655 (@MaximilianoRicoTabo)
 * ENHANCEMENT: Now prefixing the level and discount code URL parameters at checkout. #2506 (@dparker1005)
@@ -217,6 +214,7 @@ Not sure? You can find out by doing a bit a research.
 * BUG FIX/ENHANCEMENT: Now only calculating order tax and total when creating a new order. #2703 (@dparker1005)
 * BUG FIX/ENHANCEMENT: Defaulting tax on MemberOrders to a float for consistency and to avoid potential edge cases. #2656 (@mircobabini)
 * BUG FIX/ENHANCEMENT: Updated our "Lost Password"/"Reset Password" flow to track whether a password reset was initiated by Paid Memberships Pro. If not, some functions related to password reset will be disabled to avoid conflicting with other plugins. #2595 (@andrewlimaza)
+* BUG FIX/ENHANCEMENT: Now using pmpro_cancelMembershipLevel() when processing an expiration. #2762 (@dparker1005)
 * BUG FIX: Fixed an issue in the WordPress dashboard where the site locale would be loaded instead of the user locale. #2707 (@andrewlimaza)
 * BUG FIX: Fixed an issue where `admin_only` user fields would still show on the frontend profile if the current user was an administrator. #2432 (@dparker1005)
 * BUG FIX: Fixed an issue where the annual membership report would not show cancellations. #2630 (@MaximilianoRicoTabo)
