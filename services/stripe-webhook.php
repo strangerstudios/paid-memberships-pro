@@ -667,9 +667,6 @@
  * @return bool
  */
 function pmpro_stripe_webhook_change_membership_level( $morder ) {
-	// Make sure that we don't redirect back to Stripe Checkout.
-	remove_action(  'pmpro_checkout_before_change_membership_level', array('PMProGateway_stripe', 'pmpro_checkout_before_change_membership_level'), 10, 2 );
-
 	pmpro_pull_checkout_data_from_order( $morder );
  	return pmpro_complete_async_checkout( $morder );
 }

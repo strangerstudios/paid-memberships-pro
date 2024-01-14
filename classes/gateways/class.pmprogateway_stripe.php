@@ -1479,6 +1479,11 @@ class PMProGateway_stripe extends PMProGateway {
 			return;
 		}
 
+		// Only continue if the order's payment_transaction_id and subscription_transaction_id are empty, meaning that a payment hasn't been made yet.
+		if ( ! empty( $morder->payment_transaction_id ) || ! empty( $morder->subscription_transaction_id ) ) {
+			return;
+		}
+
 		$morder->user_id = $user_id;
 		$morder->status  = 'token';
 		$morder->saveOrder();
