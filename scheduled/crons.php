@@ -29,7 +29,7 @@ function pmpro_cron_expire_memberships()
 		do_action("pmpro_membership_pre_membership_expiry", $e->user_id, $e->membership_id );		
 
 		//remove their membership
-		pmpro_changeMembershipLevel(false, $e->user_id, 'expired', $e->membership_id);
+		pmpro_cancelMembershipLevel( $e->membership_id, $e->user_id, 'expired' );
 
 		do_action("pmpro_membership_post_membership_expiry", $e->user_id, $e->membership_id );
 
