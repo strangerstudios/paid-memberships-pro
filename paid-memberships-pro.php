@@ -1,6 +1,6 @@
 <?php
 /**
- * Plugin Name: Paid Memberships Pro
+ * Plugin Name: Paid Memberships Pro - v3.0 Beta 4
  * Plugin URI: https://www.paidmembershipspro.com
  * Description: The most complete member management and membership subscriptions plugin for WordPress.
  * Version: 2.99.993
