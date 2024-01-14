@@ -293,11 +293,6 @@
 				} else {
 					$morder = $this->getMemberOrderByCode( $id );
 				}
-
-				// If we found an order, create a subscription if needed.
-				if ( ! empty( $this->id ) ) {
-					$this->get_subscription();
-				}
 			} else {
 				$morder = $this->getEmptyMemberOrder();	//blank constructor
 			}
