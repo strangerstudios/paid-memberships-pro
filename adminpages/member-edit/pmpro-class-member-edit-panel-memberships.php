@@ -138,16 +138,26 @@ class PMPro_Member_Edit_Panel_Memberships extends PMPro_Member_Edit_Panel {
 								<?php
 									// Get the expiration date to show for this level.
 									$enddate_to_show = $shown_level->enddate;
-									if ( empty( $enddate_to_show ) ) {
-										esc_html_e( 'Never', 'paid-memberships-pro' );
-									} else {
-										echo esc_html( sprintf(
+									$enddate_text = __( 'Never', 'paid-memberships-pro' );
+									if ( ! empty( $enddate_to_show ) ) {
+										$enddate_text = sprintf(
 											// translators: %1$s is the date and %2$s is the time.
 											__( '%1$s at %2$s', 'paid-memberships-pro' ),
-											esc_html( date_i18n( get_option( 'date_format'), $enddate_to_show ) ),
-											esc_html( date_i18n( get_option( 'time_format'), $enddate_to_show ) )
-										) );
+											date_i18n( get_option( 'date_format'), $enddate_to_show ),
+											date_i18n( get_option( 'time_format'), $enddate_to_show )
+										);
 									}
+									/**
+									 * Filter the expiration date text to show for this level.
+									 *
+									 * @since 3.0
+									 *
+									 * @param string $enddate_text The expiration date text to show for this level.
+									 * @param WP_User $user The user object.
+									 * @param object $shown_level The level object.
+									 */
+									$enddate_text = apply_filters( 'pmpro_member_edit_memberships_panel_memberships_enddate_text', $enddate_text, $user, $shown_level );
+									echo esc_html( $enddate_text );
 								?>
 							</td>
 							<td class="pmpro_levels_subscription_data has-row-actions">
