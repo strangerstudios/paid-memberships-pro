@@ -36,6 +36,21 @@ class PMPro_Members_List_Table extends WP_List_Table {
 				// If true, the parent class will call the _js_vars() method in the footer
 			)
 		);
+
+		// Check for default hidden columns.
+		$this->get_hidden_columns();
+
+		add_filter(
+			'screen_settings',
+			array(
+				$this,
+				'screen_controls',
+			),
+			10,
+			2
+		);
+
+		set_screen_options();
 	}
 
 	/**
@@ -46,10 +61,16 @@ class PMPro_Members_List_Table extends WP_List_Table {
 	 * @since 2.2.0
 	 */
 	public function prepare_items() {
-		$this->_column_headers = $this->get_column_info();
+		// Get the columns and set the _column_headers for the list table.
+		$columns = $this->get_columns();
+		$hidden = $this->get_hidden_columns();
+		$sortable = $this->get_sortable_columns();
+		$this->_column_headers = array($columns, $hidden, $sortable);
+
+		// Get the data for the list table.
 		$this->items = $this->sql_table_data();
 
-		// set the pagination arguments
+		// Set the pagination arguments.
 		$items_per_page = $this->get_items_per_page( 'users_per_page' );
 		$total_items = $this->sql_table_data( true );
 		$this->set_pagination_args(
@@ -131,11 +152,27 @@ class PMPro_Members_List_Table extends WP_List_Table {
 	 * @return Array
 	 */
 	public function get_hidden_columns() {
-		$hidden = array(
-			'display_name',
-			'membership_id',
-			'joindate',
-		);
+		$user = wp_get_current_user();
+		if ( ! $user ) {
+			return array();
+		}
+
+		// Check whether the current user has changed screen options or not.
+		$hidden = get_user_meta( $user->ID, 'manage' . $this->screen->id . 'columnshidden', true );
+
+		// If user meta is not found, add the default hidden columns.
+		if ( ! $hidden ) {
+			$hidden = array(
+				'ID',
+				'first_name',
+				'last_name',
+				'address',
+				'membership_id',
+				'joindate',
+			);
+			update_user_meta( $user->ID, 'manage' . $this->screen->id . 'columnshidden', $hidden );
+		}
+
 		return $hidden;
 	}
 
