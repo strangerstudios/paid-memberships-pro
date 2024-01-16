@@ -269,13 +269,13 @@ class PMPro_Member_Edit_Panel_Memberships extends PMPro_Member_Edit_Panel {
 										?>
 										<div class="pmpro-level_change-action">
 											<span class="pmpro-level_change-action-label">
-												<label for="<?php echo esc_attr( $edit_level_input_name_base ); ?>[cancel_subscription]">
-													<?php esc_html_e( 'Cancel Subscription', 'paid-memberships-pro' ); ?>
-												</label>
+												<?php esc_html_e( 'Cancel Subscription', 'paid-memberships-pro' ); ?>
 											</span>
 											<span class="pmpro-level_change-action-field">
-												<input type="checkbox" id="<?php echo esc_attr( $edit_level_input_name_base ); ?>[cancel_subscription]" name="<?php echo esc_attr( $edit_level_input_name_base ); ?>[cancel_subscription]" value="1" />
-												<?php esc_html_e( 'Cancel the user\'s subscription for this level.', 'paid-memberships-pro' ); ?>
+												<label>
+													<input type="checkbox" id="<?php echo esc_attr( $edit_level_input_name_base ); ?>[cancel_subscription]" name="<?php echo esc_attr( $edit_level_input_name_base ); ?>[cancel_subscription]" value="1" />
+													<?php esc_html_e( 'Cancel the user\'s subscription for this level.', 'paid-memberships-pro' ); ?>
+												</label>
 											</span>
 										</div>
 										<?php
@@ -467,7 +467,7 @@ class PMPro_Member_Edit_Panel_Memberships extends PMPro_Member_Edit_Panel {
 													</label>
 												</span>
 												<span class="pmpro-level_change-action-field">
-													<select id=="<?php echo esc_attr( $add_level_to_group_input_name_base ); ?>[subscription_action]" name="<?php echo esc_attr( $add_level_to_group_input_name_base ); ?>[subscription_action]">
+													<select id="<?php echo esc_attr( $add_level_to_group_input_name_base ); ?>[subscription_action]" name="<?php echo esc_attr( $add_level_to_group_input_name_base ); ?>[subscription_action]">
 														<option value="cancel"><?php esc_html_e( 'Cancel payment subscription (Recommended)', 'paid-memberships-pro' ); ?></option>
 														<option value="keep"><?php esc_html_e( 'Keep subscription active', 'paid-memberships-pro' ); ?></option>
 													</select>
