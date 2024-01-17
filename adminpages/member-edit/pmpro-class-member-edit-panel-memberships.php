@@ -221,7 +221,7 @@ class PMPro_Member_Edit_Panel_Memberships extends PMPro_Member_Edit_Panel {
 									?>
 									<div class="pmpro-level_change-action-header">
 										<h4><?php esc_html_e( 'Edit Membership', 'paid-memberships-pro' ); ?></h4>
-										<p><?php printf( esc_html( 'You are editing the following membership level: %s.', 'paid-memberships-pro' ),  esc_html( $shown_level->name ) ); ?></p>
+										<p><?php printf( esc_html( 'You are editing the following membership level: %s.', 'paid-memberships-pro' ), '<strong>' . esc_html( $shown_level->name ) . '</strong>' ); ?></p>
 									</div>
 
 									<div class="pmpro-level_change-action">
@@ -296,7 +296,7 @@ class PMPro_Member_Edit_Panel_Memberships extends PMPro_Member_Edit_Panel {
 
 									<div class="pmpro-level_change-action-footer">
 										<button type="submit" name="pmpro-member-edit-memberships-panel-edit_level" class="button button-primary" value="<?php echo (int)$shown_level->id; ?>"><?php esc_html_e( 'Edit Membership', 'paid-memberships-pro' ) ?></button>
-										<input type="button" name="cancel-edit-level" value="Cancel" class="button button-secondary">
+										<input type="button" name="cancel-edit-level" value="<?php esc_attr_e( 'Close', 'paid-memberships-pro' ); ?>" class="button button-secondary">
 									</div>
 								</div> <!-- end pmpro-level_change-actions -->
 							</td>
@@ -309,7 +309,7 @@ class PMPro_Member_Edit_Panel_Memberships extends PMPro_Member_Edit_Panel {
 									?>
 									<div class="pmpro-level_change-action-header">
 										<h4><?php esc_html_e( 'Cancel Membership', 'paid-memberships-pro' ); ?></h4>
-										<p><?php printf( esc_html( 'This change will permanently cancel the following membership level: %s.', 'paid-memberships-pro' ),  esc_html( $shown_level->name ) ); ?></p>
+										<p><?php printf( esc_html( 'This change will permanently cancel the following membership level: %s.', 'paid-memberships-pro' ),  '<strong>' . esc_html( $shown_level->name ) . '</strong>' ); ?></p>
 									</div>
 
 									<?php
@@ -362,7 +362,7 @@ class PMPro_Member_Edit_Panel_Memberships extends PMPro_Member_Edit_Panel {
 
 									<div class="pmpro-level_change-action-footer">
 										<button type="submit" name="pmpro-member-edit-memberships-panel-cancel_level" class="button button-primary" value="<?php echo (int)$shown_level->id; ?>"><?php esc_html_e( 'Cancel Membership', 'paid-memberships-pro' ) ?></button>
-										<input type="button" name="cancel-cancel-level" value="Cancel" class="button button-secondary">
+										<input type="button" name="cancel-cancel-level" value="<?php esc_attr_e( 'Close', 'paid-memberships-pro' ); ?>" class="button button-secondary">
 									</div>
 								</div> <!-- end pmpro-level_change-actions -->
 							</td>
@@ -397,7 +397,7 @@ class PMPro_Member_Edit_Panel_Memberships extends PMPro_Member_Edit_Panel {
 											// If the group only allows a single level and the user already has a level, note the level that will be removed.
 											if ( empty( $group->allow_multiple_selections ) && ! empty( $shown_level ) ) {
 												?>
-												<p><?php printf( esc_html( 'This change will remove the following membership level: %s.', 'paid-memberships-pro' ), esc_html( $shown_level->name ) ); ?></p>
+												<p><?php printf( esc_html( 'This change will remove the following membership level: %s.', 'paid-memberships-pro' ), '<strong>' . esc_html( $shown_level->name ) . '</strong>' ); ?></p>
 												<?php
 											}
 											?>
@@ -491,7 +491,7 @@ class PMPro_Member_Edit_Panel_Memberships extends PMPro_Member_Edit_Panel {
 
 										<div class="pmpro-level_change-action-footer">
 											<button type="submit" name="pmpro-member-edit-memberships-panel-add_level_to_group" class="button button-primary" value="<?php echo (int)$group->id; ?>"><?php echo esc_html( $link_text ) ?></button>
-											<input type="button" name="cancel-add-level" value="Cancel" class="button button-secondary">
+											<input type="button" name="cancel-add-level" value="<?php esc_attr_e( 'Close', 'paid-memberships-pro' ); ?>" class="button button-secondary">
 										</div>
 
 									</div> <!-- end pmpro-level_change-actions -->

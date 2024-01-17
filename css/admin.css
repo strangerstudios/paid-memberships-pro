@@ -1126,6 +1126,18 @@ body[class*="memberships_page_pmpro-"] {
 	margin: 0;
 }
 
+.pmpro_admin-pmpro-member [id^="pmpro-level-"][id$="-edit"] .pmpro-level_change-action-header strong {
+	color: var(--pmpro--color--info-link);
+}
+
+.pmpro_admin-pmpro-member [id^="pmpro-level-"][id$="-cancel"] .pmpro-level_change-action-header strong {
+	color: var(--pmpro--color--error-text);
+}
+
+.pmpro_admin-pmpro-member [id^="pmpro-level-"][id$="-change"] .pmpro-level_change-action-header strong {
+	color: var(--pmpro--color--alert-text);
+}
+
 .pmpro_admin-pmpro-member .pmpro-level_change-action-footer {
 	display: flex;
 	flex-direction: row;
@@ -1153,6 +1165,10 @@ body[class*="memberships_page_pmpro-"] {
 
 .pmpro_admin-pmpro-member #pmpro-member-edit-memberships-panel .pmpro_section .pmpro_section_inside {
 	padding: 0;
+}
+
+.pmpro_admin-pmpro-member #pmpro-member-edit-memberships-panel .row-actions {
+	position: static;
 }
 
 .pmpro_admin-pmpro-member #member-history-memberships table.widefat {
