@@ -344,9 +344,9 @@ function pmpro_admin_init_redirect_single_item_edit() {
 
 	// Edit Member redirect.
 	if ( $pmpro_admin_page == 'pmpro-member' ) {
-		// If the discount code they are trying to edit does not exist, redirect them to the discount codes page.
+		// If the user they are trying to edit does not exist, redirect them to the members list.
 		if ( ! empty( $_REQUEST['user_id'] ) && $_REQUEST['user_id'] > 0 && empty( PMPro_Member_Edit_Panel::get_user()->ID ) ) {
-			wp_redirect( add_query_arg( array( 'page' => 'pmpro-memberslist' ), 	admin_url( 'admin.php' ) ) );
+			wp_redirect( add_query_arg( array( 'page' => 'pmpro-memberslist' ), admin_url( 'admin.php' ) ) );
 			exit;
 		}
 	}
@@ -684,13 +684,27 @@ function pmpro_plugin_row_meta( $links, $file ) {
 add_filter( 'plugin_row_meta', 'pmpro_plugin_row_meta', 10, 2 );
 
 function pmpro_users_action_links( $actions, $user ) {
-	$cap = apply_filters( 'pmpro_add_member_cap', 'edit_users' );
+	/**
+	 * Filter the capability required to edit members.
+	 *
+	 * @since TBD
+	 * @param string $membership_level_capability The capability required to edit members. Default 'pmpro_edit_members'.
+	 */
+	$membership_level_capability = apply_filters( 'pmpro_edit_member_capability', 'pmpro_edit_members' );
 
-	if ( current_user_can( $cap ) && ! empty( $user->ID ) ) {
-		$actions['editmember'] = '<a href="' . esc_url( add_query_arg( array( 'page' => 'pmpro-member', 'user_id' => (int) $user->ID ), admin_url( 'admin.php' ) ) ) . '">' . __( 'Edit Member', 'paid-memberships-pro' ) . '</a>';
+	// If the user doesn't have the capability to edit members, return.
+	if ( ! current_user_can( $membership_level_capability ) ) {
+		return $actions;
 	}
+
+	// If the user doesn't have an ID, return.
+	if ( empty( $user->ID ) ) {
+		return $actions;
+	}
+
+	// Add the edit member link.
+	$actions['editmember'] = '<a href="' . esc_url( add_query_arg( array( 'page' => 'pmpro-member', 'user_id' => (int) $user->ID ), admin_url( 'admin.php' ) ) ) . '">' . __( 'Edit Member', 'paid-memberships-pro' ) . '</a>';
 
 	return $actions;
 }
-
 add_filter( 'user_row_actions', 'pmpro_users_action_links', 10, 2 );

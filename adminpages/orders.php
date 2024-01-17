@@ -986,7 +986,10 @@ require_once( dirname( __FILE__ ) . '/admin_header.php' ); ?>
 		);
 		$export_url = add_query_arg( $url_params, $export_url );
 		?>
-		<a target="_blank" href="<?php echo esc_url( $export_url ); ?>" class="page-title-action pmpro-has-icon pmpro-has-icon-download"><?php esc_html_e( 'Export to CSV', 'paid-memberships-pro' ); ?></a>
+
+		<?php if ( current_user_can( 'pmpro_orderscsv' ) ) { ?>
+			<a target="_blank" href="<?php echo esc_url( $export_url ); ?>" class="page-title-action pmpro-has-icon pmpro-has-icon-download"><?php esc_html_e( 'Export to CSV', 'paid-memberships-pro' ); ?></a>
+		<?php } ?>
 
 		<?php if ( ! empty( $pmpro_msg ) ) { ?>
 			<div id="message" class="

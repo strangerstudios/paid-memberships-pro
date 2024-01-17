@@ -68,6 +68,7 @@ function pmpro_get_capability_defs($role)
         'pmpro_reportscsv',
         'pmpro_orders',
         'pmpro_orderscsv',
+        'pmpro_sales_report_csv',
         'pmpro_subscriptions',
         'pmpro_discountcodes',
         'pmpro_userfields',

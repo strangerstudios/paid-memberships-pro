@@ -22,7 +22,9 @@ if ( isset( $_REQUEST['l'] ) ) {
 	<form id="member-list-form" method="get">		
 		<h1 class="wp-heading-inline"><?php esc_html_e( 'Members List', 'paid-memberships-pro' ); ?></h1>	
 		<a href="<?php echo esc_url( add_query_arg( array( 'page' => 'pmpro-member'), admin_url( 'admin.php' ) ) ); ?>" class="page-title-action pmpro-has-icon pmpro-has-icon-plus"><?php esc_html_e( 'Add New Member', 'paid-memberships-pro' ); ?></a>
-		<a target="_blank" href="<?php echo esc_url( $csv_export_link ); ?>" class="page-title-action pmpro-has-icon pmpro-has-icon-download"><?php esc_html_e( 'Export to CSV', 'paid-memberships-pro' ); ?></a>
+		<?php if ( current_user_can( 'pmpro_memberslistcsv' ) ) { ?>
+			<a target="_blank" href="<?php echo esc_url( $csv_export_link ); ?>" class="page-title-action pmpro-has-icon pmpro-has-icon-download"><?php esc_html_e( 'Export to CSV', 'paid-memberships-pro' ); ?></a>
+		<?php } ?>
 		<?php do_action( 'pmpro_memberslist_before_table' ); ?>	
 		<input type="hidden" name="page" value="pmpro-memberslist" />
 		<?php

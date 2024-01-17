@@ -476,13 +476,29 @@ class PMPro_Members_List_Table extends WP_List_Table {
 		$output   = $avatar . ' <strong>' . $userlink . '</strong><br />';
 
 		// Set up the hover actions for this user.
-		$actions      = array(
-			'editmember' => '<a href="' . esc_url( add_query_arg( array( 'page' => 'pmpro-member', 'user_id' => (int)$item['ID'] ), admin_url( 'admin.php' ) ) ) . '">' . __( 'Edit Member', 'paid-memberships-pro' ) . '</a>',
-			'edituser' => '<a href="' . esc_url( add_query_arg( array( 'user_id' => (int)$item['ID'] ), admin_url( 'user-edit.php' ) ) ) . '">' . __( 'Edit User', 'paid-memberships-pro' ) . '</a>'
-		);
-		$actions      = apply_filters( 'pmpro_memberslist_user_row_actions', $actions, (object) $item );
+		$actions = array();
+
+		/**
+		 * Filter the capability required to edit members.
+		 *
+		 * @since TBD
+		 * @param string $membership_level_capability The capability required to edit members. Default 'pmpro_edit_members'.
+		 */
+		$membership_level_capability = apply_filters( 'pmpro_edit_member_capability', 'pmpro_edit_members' );
+		if ( current_user_can( $membership_level_capability ) ) {
+			// Add the "Edit Member" action.
+			$actions['editmember'] = '<a href="' . esc_url( add_query_arg( array( 'page' => 'pmpro-member', 'user_id' => (int)$item['ID'] ), admin_url( 'admin.php' ) ) ) . '">' . __( 'Edit Member', 'paid-memberships-pro' ) . '</a>';
+		}
+
+		if ( current_user_can( 'edit_users' ) ) {
+			// Add the "Edit User" action.
+			$actions['edituser'] = '<a href="' . esc_url( add_query_arg( array( 'user_id' => (int)$item['ID'] ), admin_url( 'user-edit.php' ) ) ) . '">' . __( 'Edit User', 'paid-memberships-pro' ) . '</a>';
+		}
+
+		$actions = apply_filters( 'pmpro_memberslist_user_row_actions', $actions, (object) $item );
+
 		$action_count = count( $actions );
-		$i            = 0;
+		$i = 0;
 		if ( $action_count ) {
 			$output .= '<div class="row-actions">';
 			foreach ( $actions as $action => $link ) {
