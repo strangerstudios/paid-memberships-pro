@@ -1026,7 +1026,8 @@
 
 		                data = {
 		                    action: 'pmpro_update_level_order',
-		                    level_order: level_order
+		                    level_order: level_order,
+							nonce: '<?php echo wp_create_nonce( 'pmpro_update_level_order' ); ?>'
 		                };
 
 		                $.post(ajaxurl, data, function(response) {
