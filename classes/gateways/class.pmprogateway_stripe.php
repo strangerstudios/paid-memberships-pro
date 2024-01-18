@@ -1900,8 +1900,10 @@ class PMProGateway_stripe extends PMProGateway {
 		);
 		if ( ! empty( $subscription_data ) ) {
 			$checkout_session_params['subscription_data'] = $subscription_data;
+			$checkout_session_params['subscription_data']['description'] = $morder->membership_level->name;
 		} elseif ( ! empty( $payment_intent_data ) ) {
 			$checkout_session_params['payment_intent_data'] = $payment_intent_data;
+			$checkout_session_params['payment_intent_data']['description'] = $morder->membership_level->name;
 		}
 
 		// For one-time payments, make sure that we create an invoice.
