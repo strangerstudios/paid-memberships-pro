@@ -5311,7 +5311,7 @@ class PMProGateway_stripe extends PMProGateway {
 	 * return string The description to use for the Stripe request.
 	 * @since TBD
 	 */
-	public static function get_order_description( $morder ) {
+	private static function get_order_description( $morder ) {
 		//Bail if no order.
 		if ( empty( $morder ) ) {
 			return '';
