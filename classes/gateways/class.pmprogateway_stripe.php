@@ -1900,10 +1900,10 @@ class PMProGateway_stripe extends PMProGateway {
 		);
 		if ( ! empty( $subscription_data ) ) {
 			$checkout_session_params['subscription_data'] = $subscription_data;
-			$checkout_session_params['subscription_data']['description'] = $morder->membership_level->name;
+			$checkout_session_params['subscription_data']['description'] = PMProGateway_stripe::get_order_description( $morder );
 		} elseif ( ! empty( $payment_intent_data ) ) {
 			$checkout_session_params['payment_intent_data'] = $payment_intent_data;
-			$checkout_session_params['payment_intent_data']['description'] = $morder->membership_level->name;
+			$checkout_session_params['payment_intent_data']['description'] = PMProGateway_stripe::get_order_description( $morder );
 		}
 
 		// For one-time payments, make sure that we create an invoice.
@@ -4398,7 +4398,7 @@ class PMProGateway_stripe extends PMProGateway {
 			'amount'                 => $this->convert_price_to_unit_amount( $amount ),
 			'currency'               => $pmpro_currency,
 			'confirmation_method'    => 'manual',
-			'description'            => apply_filters( 'pmpro_stripe_order_description', "Order #" . $order->code . ", " . trim( $order->FirstName . " " . $order->LastName ) . " (" . $order->Email . ")", $order ),
+			'description'            => PMProGateway_stripe::get_order_description( $order ),
 			'setup_future_usage'     => 'off_session',
 		);
 		$params = self::add_application_fee_amount( $params );
@@ -4633,7 +4633,7 @@ class PMProGateway_stripe extends PMProGateway {
 					"amount"      => $this->convert_price_to_unit_amount( $amount ), # amount in cents, again
 					"currency"    => strtolower( $pmpro_currency ),
 					"customer"    => $customer->id,
-					"description" => apply_filters( 'pmpro_stripe_order_description', "Order #" . $order->code . ", " . trim( $order->FirstName . " " . $order->LastName ) . " (" . $order->Email . ")", $order )
+					"description" => PMProGateway_stripe::get_order_description( $order ),
 				);
 			$params   = self::add_application_fee_amount( $params  );
 			/**
@@ -5301,5 +5301,23 @@ class PMProGateway_stripe extends PMProGateway {
 			echo '</a>';
 			echo '</p></div>';
 		}
+
+	}
+
+	/**
+	 * Get a description from the order to attach into the Stripe request.
+	 *
+	 * @param MemberOrder $morder The member order object.
+	 * return string The description to use for the Stripe request.
+	 * @since TBD
+	 */
+	public static function get_order_description( $morder ) {
+		//Bail if no order.
+		if ( empty( $morder ) ) {
+			return '';
+		}
+
+		$description = apply_filters( 'pmpro_stripe_order_description', "Order #" . $morder->code . ", " . trim( $morder->FirstName . " " . $morder->LastName ) . " (" . $morder->Email . ")", $morder );
+		return $description;
 	}
 }
