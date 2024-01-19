@@ -287,7 +287,12 @@ class PMPro_Field {
 				$this->$key = $value;
 			}
 		}
-		
+
+		//make sure levels is an array
+		if ( ! empty( $this->levels ) && ! is_array( $this->levels ) ) {
+			$this->levels = array( $this->levels );
+		}
+
 		//make sure we have an id
 		if(empty($this->id))
 			$this->id = $this->name;
