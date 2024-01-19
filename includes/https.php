@@ -122,8 +122,8 @@ add_filter( 'pmpro_besecure', 'pmpro_check_site_url_for_https' );
 
 //capturing case where a user links to https admin without admin over https
 function pmpro_admin_https_handler() {
-	if( ! empty( $_SERVER['HTTPS'] ) ) {
-		$https = esc_url_raw( $_SERVER['HTTPS'] );
+	if ( ! empty( $_SERVER['HTTPS'] ) ) {
+		$https = sanitize_text_field( $_SERVER['HTTPS'] );
 		if( strtolower( $https ) != 'off' && strtolower( $https ) != 'false' && is_admin() ) {
 			if( substr( get_option( 'siteurl' ), 0, 5 ) == 'http:' && ! force_ssl_admin() ) {
 				//need to redirect to non https
