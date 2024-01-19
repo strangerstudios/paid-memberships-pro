@@ -23,7 +23,7 @@ function pmpro_is_field( $var ) {
 }
 
 /**
- * Add a field to the PMProRH regisration fields global
+ * Add a field to the PMProRH registration fields global
  *
  *	$where refers to various hooks in the PMPro checkout page and can be:
  *	- after_username

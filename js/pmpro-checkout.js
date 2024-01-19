@@ -206,7 +206,7 @@ jQuery(document).ready(function(){
 	}
 });
 
-// Get non-sensitve checkout form data to be sent to checkout_levels endpoint.
+// Get non-sensitive checkout form data to be sent to checkout_levels endpoint.
 function pmpro_getCheckoutFormDataForCheckoutLevels() {
 	// We need the level, discount code, and any field with the pmpro_alter_price CSS class.
 	const checkoutFormData = jQuery( "#level, #discount_code, #pmpro_form .pmpro_alter_price" ).serializeArray();
