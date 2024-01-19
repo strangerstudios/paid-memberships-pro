@@ -46,7 +46,7 @@
 		$deleteid = intval($_REQUEST['deleteid']);
 
 	//check nonce
-	if(!empty($action) && (empty($_REQUEST['pmpro_membershiplevels_nonce']) || !check_admin_referer($action, 'pmpro_membershiplevels_nonce'))) {
+	if(!empty($action) && (empty(sanitize_key($_REQUEST['pmpro_membershiplevels_nonce'])) || !check_admin_referer($action, 'pmpro_membershiplevels_nonce'))) {
 		$page_msg = -1;
 		$page_msgt = __("Are you sure you want to do that? Try again.", 'paid-memberships-pro' );
 		$action = false;
@@ -1027,7 +1027,7 @@
 		                data = {
 		                    action: 'pmpro_update_level_order',
 		                    level_order: level_order,
-		                    nonce: '<?php echo wp_create_nonce( 'pmpro_update_level_order' ); ?>'
+		                    nonce: '<?php echo esc_attr( wp_create_nonce( 'pmpro_update_level_order' ) ); ?>'
 		                };
 
 		                $.post(ajaxurl, data, function(response) {
