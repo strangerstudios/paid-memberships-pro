@@ -826,6 +826,7 @@ jQuery(document).ready(function () {
             document.getElementById('addon-license').innerHTML = button.siblings('input[name="pmproAddOnAdminLicense"]').val();
             jQuery('.pmpro-popup-overlay').show();
             button.removeClass('disabled');
+            return false;
         } else {
             // Remove checkmark if there.
             button.removeClass('checkmarked');
