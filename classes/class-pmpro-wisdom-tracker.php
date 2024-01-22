@@ -1064,7 +1064,7 @@ class PMPro_Wisdom_Tracker {
 							'action'   : 'goodbye_form',
 							'values'   : values,
 							'details'  : details,
-							'security' : "<?php echo wp_create_nonce( 'wisdom_goodbye_form' ); ?>",
+							'security' : "<?php echo esc_attr( wp_create_nonce( 'wisdom_goodbye_form' ) ); ?>",
 							'dataType' : "json"
 						}
 						$.post( ajaxurl, data, function ( response ) {

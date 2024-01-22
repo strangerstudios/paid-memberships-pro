@@ -142,6 +142,11 @@ function pmpro_update_level_order() {
 		die( __( 'You do not have permissions to perform this action.', 'paid-memberships-pro' ) );
 	}
 
+	// Check the nonce.
+	if ( ! wp_verify_nonce( sanitize_key( $_REQUEST['nonce'] ), 'pmpro_update_level_order' ) ) {
+		die( __( 'You do not have permissions to perform this action.', 'paid-memberships-pro' ) );
+	}
+
 	$level_order = null;
 	
 	if ( isset( $_REQUEST['level_order'] ) && is_array( $_REQUEST['level_order'] ) ) {

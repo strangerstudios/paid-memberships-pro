@@ -1617,8 +1617,10 @@ class PMProGateway_stripe extends PMProGateway {
 		);
 		if ( ! empty( $subscription_data ) ) {
 			$checkout_session_params['subscription_data'] = $subscription_data;
+			$checkout_session_params['subscription_data']['description'] = PMProGateway_stripe::get_order_description( $morder );
 		} elseif ( ! empty( $payment_intent_data ) ) {
 			$checkout_session_params['payment_intent_data'] = $payment_intent_data;
+			$checkout_session_params['payment_intent_data']['description'] = PMProGateway_stripe::get_order_description( $morder );
 		}
 
 		// For one-time payments, make sure that we create an invoice.
@@ -3779,7 +3781,7 @@ class PMProGateway_stripe extends PMProGateway {
 			'amount'                 => $this->convert_price_to_unit_amount( $amount ),
 			'currency'               => $pmpro_currency,
 			'confirmation_method'    => 'manual',
-			'description'            => self::get_order_description( $order ),
+			'description'            => PMProGateway_stripe::get_order_description( $order ),
 			'setup_future_usage'     => 'off_session',
 		);
 		$params = $this->add_application_fee_amount( $params );

@@ -2,14 +2,22 @@
 # This file is distributed under the same license as the Paid Memberships Pro - v3.0 Beta 4 plugin.
 msgid ""
 msgstr ""
+<<<<<<< HEAD
 "Project-Id-Version: Paid Memberships Pro - v3.0 Beta 4 2.99.993\n"
+=======
+"Project-Id-Version: Paid Memberships Pro 2.12.8\n"
+>>>>>>> strangerstudios/dev
 "Report-Msgid-Bugs-To: info@paidmembershipspro.com\n"
 "Last-Translator: Paid Memberships Pro <info@paidmembershipspro.com>\n"
 "Language-Team: Paid Memberships Pro <info@paidmembershipspro.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+<<<<<<< HEAD
 "POT-Creation-Date: 2024-01-14T17:04:14+00:00\n"
+=======
+"POT-Creation-Date: 2024-01-22T13:29:37+00:00\n"
+>>>>>>> strangerstudios/dev
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.9.0\n"
 "X-Domain: paid-memberships-pro\n"
@@ -53,8 +61,12 @@ msgstr ""
 #: includes/services.php:132
 #: includes/services.php:120
 #: includes/services.php:142
+<<<<<<< HEAD
 #: adminpages/subscriptions.php:6
 #: includes/services.php:162
+=======
+#: includes/services.php:147
+>>>>>>> strangerstudios/dev
 msgid "You do not have permissions to perform this action."
 msgstr ""
 
@@ -217,6 +229,7 @@ msgstr ""
 #: adminpages/wizard/save-steps.php:66
 #: adminpages/admin_header.php:270
 #: adminpages/membershiplevels.php:1057
+<<<<<<< HEAD
 #: adminpages/membershiplevels.php:219
 #: includes/profile.php:27
 #: includes/profile.php:159
@@ -225,6 +238,9 @@ msgstr ""
 #: blocks/build/sidebar/index.js:1
 #: blocks/src/component-content-visibility/content-visibility-controls.js:115
 #: blocks/src/sidebar/index.js:196
+=======
+#: adminpages/membershiplevels.php:1058
+>>>>>>> strangerstudios/dev
 msgid "Membership Levels"
 msgstr ""
 
@@ -609,6 +625,7 @@ msgstr ""
 #: includes/fields.php:1420
 #: includes/fields.php:1430
 #: includes/fields.php:1444
+<<<<<<< HEAD
 #: adminpages/advancedsettings.php:278
 #: adminpages/advancedsettings.php:291
 #: adminpages/advancedsettings.php:395
@@ -625,6 +642,9 @@ msgstr ""
 #: includes/fields.php:1451
 #: classes/gateways/class.pmprogateway_stripe.php:554
 #: classes/gateways/class.pmprogateway_stripe.php:568
+=======
+#: adminpages/membershiplevels.php:1258
+>>>>>>> strangerstudios/dev
 msgid "No"
 msgstr ""
 
@@ -793,6 +813,7 @@ msgstr ""
 #: includes/fields.php:1249
 #: includes/fields.php:1431
 #: includes/fields.php:1442
+<<<<<<< HEAD
 #: adminpages/advancedsettings.php:455
 #: adminpages/membershiplevels.php:491
 #: adminpages/membershiplevels.php:493
@@ -806,6 +827,9 @@ msgstr ""
 #: includes/fields.php:1449
 #: classes/gateways/class.pmprogateway_stripe.php:556
 #: classes/gateways/class.pmprogateway_stripe.php:570
+=======
+#: adminpages/membershiplevels.php:1255
+>>>>>>> strangerstudios/dev
 msgid "Yes"
 msgstr ""
 
@@ -1079,8 +1103,12 @@ msgstr ""
 #: adminpages/membershiplevels.php:1123
 #: classes/class-pmpro-discount-code-list-table.php:82
 #: classes/class-pmpro-orders-list-table.php:92
+<<<<<<< HEAD
 #: adminpages/discountcodes.php:443
 #: adminpages/membershiplevels.php:356
+=======
+#: adminpages/membershiplevels.php:1124
+>>>>>>> strangerstudios/dev
 msgid "ID"
 msgstr ""
 
@@ -1371,10 +1399,14 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:3387
 #: classes/gateways/class.pmprogateway_stripe.php:3401
 #: classes/gateways/class.pmprogateway_stripe.php:3348
+<<<<<<< HEAD
 #: adminpages/discountcodes.php:620
 #: adminpages/discountcodes.php:694
 #: adminpages/levels/edit-level.php:366
 #: adminpages/levels/edit-level.php:537
+=======
+#: classes/gateways/class.pmprogateway_stripe.php:3350
+>>>>>>> strangerstudios/dev
 msgid "Day(s)"
 msgstr ""
 
@@ -1423,10 +1455,14 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:3389
 #: classes/gateways/class.pmprogateway_stripe.php:3403
 #: classes/gateways/class.pmprogateway_stripe.php:3350
+<<<<<<< HEAD
 #: adminpages/discountcodes.php:620
 #: adminpages/discountcodes.php:694
 #: adminpages/levels/edit-level.php:368
 #: adminpages/levels/edit-level.php:539
+=======
+#: classes/gateways/class.pmprogateway_stripe.php:3352
+>>>>>>> strangerstudios/dev
 msgid "Month(s)"
 msgstr ""
 
@@ -1474,10 +1510,14 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:3388
 #: classes/gateways/class.pmprogateway_stripe.php:3402
 #: classes/gateways/class.pmprogateway_stripe.php:3349
+<<<<<<< HEAD
 #: adminpages/discountcodes.php:620
 #: adminpages/discountcodes.php:694
 #: adminpages/levels/edit-level.php:367
 #: adminpages/levels/edit-level.php:538
+=======
+#: classes/gateways/class.pmprogateway_stripe.php:3351
+>>>>>>> strangerstudios/dev
 msgid "Week(s)"
 msgstr ""
 
@@ -1527,10 +1567,14 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:3390
 #: classes/gateways/class.pmprogateway_stripe.php:3404
 #: classes/gateways/class.pmprogateway_stripe.php:3351
+<<<<<<< HEAD
 #: adminpages/discountcodes.php:620
 #: adminpages/discountcodes.php:694
 #: adminpages/levels/edit-level.php:369
 #: adminpages/levels/edit-level.php:540
+=======
+#: classes/gateways/class.pmprogateway_stripe.php:3353
+>>>>>>> strangerstudios/dev
 msgid "Year(s)"
 msgstr ""
 
@@ -2192,11 +2236,15 @@ msgstr ""
 #: includes/fields.php:1402
 #: includes/fields.php:1284
 #: includes/fields.php:1389
+<<<<<<< HEAD
 #: adminpages/groups/edit-group.php:64
 #: adminpages/levels/edit-level.php:223
 #: adminpages/membershiplevels.php:357
 #: includes/fields.php:1291
 #: includes/fields.php:1396
+=======
+#: adminpages/membershiplevels.php:1125
+>>>>>>> strangerstudios/dev
 msgid "Name"
 msgstr ""
 
@@ -2240,7 +2288,11 @@ msgstr ""
 #: adminpages/membershiplevels.php:1124
 #: adminpages/membershiplevels.php:524
 #: adminpages/membershiplevels.php:1125
+<<<<<<< HEAD
 #: adminpages/levels/edit-level.php:308
+=======
+#: adminpages/membershiplevels.php:1126
+>>>>>>> strangerstudios/dev
 msgid "Billing Details"
 msgstr ""
 
@@ -2278,8 +2330,12 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:3446
 #: classes/gateways/class.pmprogateway_stripe.php:3460
 #: classes/gateways/class.pmprogateway_stripe.php:3407
+<<<<<<< HEAD
 #: adminpages/discountcodes.php:616
 #: adminpages/levels/edit-level.php:361
+=======
+#: classes/gateways/class.pmprogateway_stripe.php:3409
+>>>>>>> strangerstudios/dev
 msgid "per"
 msgstr "za"
 
@@ -2513,7 +2569,11 @@ msgstr ""
 #: adminpages/membershiplevels.php:1060
 #: adminpages/membershiplevels.php:1065
 #: adminpages/membershiplevels.php:1066
+<<<<<<< HEAD
 #: adminpages/membershiplevels.php:228
+=======
+#: adminpages/membershiplevels.php:1067
+>>>>>>> strangerstudios/dev
 msgid "Add New Level"
 msgstr ""
 
@@ -2534,8 +2594,13 @@ msgstr ""
 #: adminpages/membershiplevels.php:1052
 #: adminpages/membershiplevels.php:1050
 #: adminpages/membershiplevels.php:1053
+<<<<<<< HEAD
 #: adminpages/membershiplevels.php:281
 #: adminpages/membershiplevels.php:284
+=======
+#: adminpages/membershiplevels.php:1051
+#: adminpages/membershiplevels.php:1054
+>>>>>>> strangerstudios/dev
 msgid "Search Levels"
 msgstr ""
 
@@ -2586,6 +2651,7 @@ msgstr ""
 #: pages/invoice.php:90
 #: shortcodes/pmpro_account.php:57
 #: pages/confirmation.php:101
+<<<<<<< HEAD
 #: adminpages/member-edit/pmpro-class-member-edit-panel-memberships.php:76
 #: adminpages/membershiplevels.php:359
 #: adminpages/orders.php:741
@@ -2593,6 +2659,9 @@ msgstr ""
 #: includes/profile.php:314
 #: pages/cancel.php:86
 #: adminpages/member-edit/pmpro-class-member-edit-panel-memberships.php:85
+=======
+#: adminpages/membershiplevels.php:1127
+>>>>>>> strangerstudios/dev
 msgid "Expiration"
 msgstr ""
 
@@ -2607,7 +2676,11 @@ msgstr ""
 #: adminpages/membershiplevels.php:1124
 #: adminpages/membershiplevels.php:1126
 #: adminpages/membershiplevels.php:1127
+<<<<<<< HEAD
 #: adminpages/membershiplevels.php:360
+=======
+#: adminpages/membershiplevels.php:1128
+>>>>>>> strangerstudios/dev
 msgid "Allow Signups"
 msgstr ""
 
@@ -2623,6 +2696,7 @@ msgstr ""
 #: adminpages/membershiplevels.php:1234
 #: adminpages/membershiplevels.php:1236
 #: adminpages/membershiplevels.php:1237
+#: adminpages/membershiplevels.php:1238
 msgid "FREE"
 msgstr ""
 
@@ -2689,7 +2763,11 @@ msgstr ""
 #: adminpages/membershiplevels.php:1243
 #: adminpages/membershiplevels.php:1245
 #: adminpages/membershiplevels.php:1246
+<<<<<<< HEAD
 #: adminpages/membershiplevels.php:485
+=======
+#: adminpages/membershiplevels.php:1247
+>>>>>>> strangerstudios/dev
 msgid "After"
 msgstr ""
 
@@ -6563,6 +6641,8 @@ msgstr "Chyba pri vytváraní záznamu zákazníka so Stripe:"
 #: classes/gateways/class.pmprogateway_stripe.php:4884
 #: classes/gateways/class.pmprogateway_stripe.php:4826
 #: classes/gateways/class.pmprogateway_stripe.php:4831
+#: classes/gateways/class.pmprogateway_stripe.php:4828
+#: classes/gateways/class.pmprogateway_stripe.php:4833
 msgid "Error creating plan with Stripe:"
 msgstr "Chyba pri vytváraní plánu so Stripe"
 
@@ -6616,6 +6696,8 @@ msgstr "Chyba pri vytváraní plánu so Stripe"
 #: classes/gateways/class.pmprogateway_stripe.php:4929
 #: classes/gateways/class.pmprogateway_stripe.php:4862
 #: classes/gateways/class.pmprogateway_stripe.php:4876
+#: classes/gateways/class.pmprogateway_stripe.php:4864
+#: classes/gateways/class.pmprogateway_stripe.php:4878
 msgid "Error subscribing customer to plan with Stripe:"
 msgstr "Chyba prihlásenia zákazníka s plánom Stripe:"
 
@@ -7453,12 +7535,16 @@ msgstr "Aktuálna úroveň"
 #: adminpages/orders.php:436
 #: adminpages/orders.php:612
 #: classes/class-pmpro-discount-code-list-table.php:496
+<<<<<<< HEAD
 #: includes/profile.php:211
 #: blocks/build/component-content-visibility/index.js:1
 #: blocks/build/membership/index.js:1
 #: blocks/build/sidebar/index.js:1
 #: blocks/src/component-content-visibility/content-visibility-controls.js:117
 #: blocks/src/sidebar/index.js:128
+=======
+#: adminpages/membershiplevels.php:1245
+>>>>>>> strangerstudios/dev
 msgid "None"
 msgstr "Žiadny"
 
@@ -8176,7 +8262,11 @@ msgstr "čo je toto?"
 #: classes/gateways/class.pmprogateway_stripe.php:3401
 #: classes/gateways/class.pmprogateway_stripe.php:3415
 #: classes/gateways/class.pmprogateway_stripe.php:3362
+<<<<<<< HEAD
 #: pages/billing.php:424
+=======
+#: classes/gateways/class.pmprogateway_stripe.php:3364
+>>>>>>> strangerstudios/dev
 msgid "Update"
 msgstr "Aktualizácia"
 
@@ -9247,7 +9337,11 @@ msgstr "Vaša platba bola prijatá, ale vznikla chyba pri nastavení konta. Pros
 #: preheaders/checkout.php:827
 #: preheaders/checkout.php:830
 #: preheaders/checkout.php:797
+<<<<<<< HEAD
 #: preheaders/checkout.php:780
+=======
+#: preheaders/checkout.php:800
+>>>>>>> strangerstudios/dev
 msgid "IMPORTANT: Something went wrong during membership creation. Your credit card authorized, but we cancelled the order immediately. You should not try to submit this form again. Please contact the site owner to fix this issue."
 msgstr "DÔLEŽITÉ: Niečo sa pokazilo počas vytvárania členstva. Vaša kreditná karta bola autorizovaná, ale museli sme okamžite zrušiť objednávku. Nemali by ste skúšať odosielať tento formulár znovu. Prosím kontaktujte správcu webu na nápravu tejto chyby."
 
@@ -9265,7 +9359,11 @@ msgstr "DÔLEŽITÉ: Niečo sa pokazilo počas vytvárania členstva. Vaša kred
 #: preheaders/checkout.php:830
 #: preheaders/checkout.php:833
 #: preheaders/checkout.php:800
+<<<<<<< HEAD
 #: preheaders/checkout.php:783
+=======
+#: preheaders/checkout.php:803
+>>>>>>> strangerstudios/dev
 msgid "IMPORTANT: Something went wrong during membership creation. Your credit card was charged, but we couldn't assign your membership. You should not submit this form again. Please contact the site owner to fix this issue."
 msgstr "DÔLEŽITÉ: Niečo sa pokazilo počas vytvárania členstva. Vaša kreditná karta bola účtovaná, ale nemohli sme priradiť vaše členstvo. Nemali by ste skúšať odosielať tento formulár znovu. Prosím kontaktujte správcu webu na nápravu tejto chyby."
 
@@ -9283,7 +9381,11 @@ msgstr "DÔLEŽITÉ: Niečo sa pokazilo počas vytvárania členstva. Vaša kred
 #: preheaders/checkout.php:841
 #: preheaders/checkout.php:844
 #: preheaders/checkout.php:811
+<<<<<<< HEAD
 #: preheaders/checkout.php:795
+=======
+#: preheaders/checkout.php:814
+>>>>>>> strangerstudios/dev
 #, php-format
 msgid "You must <a href=\"%s\">set up a Payment Gateway</a> before any payments will be processed."
 msgstr "Musíte <a href=\"%s\"> nastaviť platobnú bránu</a> pred spracovaním akejkoľvek platby."
@@ -9302,7 +9404,11 @@ msgstr "Musíte <a href=\"%s\"> nastaviť platobnú bránu</a> pred spracovaním
 #: preheaders/checkout.php:843
 #: preheaders/checkout.php:846
 #: preheaders/checkout.php:813
+<<<<<<< HEAD
 #: preheaders/checkout.php:797
+=======
+#: preheaders/checkout.php:816
+>>>>>>> strangerstudios/dev
 msgid "A Payment Gateway must be set up before any payments will be processed."
 msgstr "Platobná brána musí byť nastavená pred spracovanám akejkoľvek platby."
 
@@ -10283,7 +10389,11 @@ msgstr ""
 #: adminpages/membershiplevels.php:1038
 #: adminpages/membershiplevels.php:1043
 #: adminpages/membershiplevels.php:1044
+<<<<<<< HEAD
 #: adminpages/membershiplevels.php:214
+=======
+#: adminpages/membershiplevels.php:1045
+>>>>>>> strangerstudios/dev
 msgid "Create a Membership Level"
 msgstr ""
 
@@ -10677,6 +10787,7 @@ msgstr ""
 #: includes/fields.php:1384
 #: includes/fields.php:1381
 #: includes/fields.php:1368
+<<<<<<< HEAD
 #: adminpages/member-edit/pmpro-class-member-edit-panel-memberships.php:103
 #: adminpages/member-edit/pmpro-class-member-edit-panel-orders.php:71
 #: adminpages/membershiplevels.php:413
@@ -10684,6 +10795,10 @@ msgstr ""
 #: includes/fields.php:1375
 #: includes/profile.php:784
 #: adminpages/member-edit/pmpro-class-member-edit-panel-memberships.php:112
+=======
+#: adminpages/membershiplevels.php:1175
+#: adminpages/membershiplevels.php:1185
+>>>>>>> strangerstudios/dev
 msgid "Edit"
 msgstr ""
 
@@ -10728,8 +10843,13 @@ msgstr ""
 #: classes/class-pmpro-discount-code-list-table.php:361
 #: classes/class-pmpro-orders-list-table.php:901
 #: classes/class-pmpro-orders-list-table.php:912
+<<<<<<< HEAD
 #: adminpages/membershiplevels.php:427
 #: adminpages/membershiplevels.php:438
+=======
+#: adminpages/membershiplevels.php:1189
+#: adminpages/membershiplevels.php:1200
+>>>>>>> strangerstudios/dev
 msgid "Copy"
 msgstr ""
 
@@ -10778,9 +10898,13 @@ msgstr ""
 #: includes/fields.php:1386
 #: includes/fields.php:1383
 #: includes/fields.php:1370
+<<<<<<< HEAD
 #: adminpages/membershiplevels.php:442
 #: adminpages/membershiplevels.php:444
 #: includes/fields.php:1377
+=======
+#: adminpages/membershiplevels.php:1206
+>>>>>>> strangerstudios/dev
 msgid "Delete"
 msgstr ""
 
@@ -11303,7 +11427,12 @@ msgstr ""
 #: adminpages/membershiplevels.php:1134
 #: adminpages/membershiplevels.php:1043
 #: adminpages/membershiplevels.php:1135
+<<<<<<< HEAD
 #: adminpages/membershiplevels.php:213
+=======
+#: adminpages/membershiplevels.php:1044
+#: adminpages/membershiplevels.php:1136
+>>>>>>> strangerstudios/dev
 msgid "No Membership Levels Found"
 msgstr ""
 
@@ -11313,7 +11442,11 @@ msgstr ""
 #: adminpages/membershiplevels.php:1039
 #: adminpages/membershiplevels.php:1044
 #: adminpages/membershiplevels.php:1045
+<<<<<<< HEAD
 #: adminpages/membershiplevels.php:215
+=======
+#: adminpages/membershiplevels.php:1046
+>>>>>>> strangerstudios/dev
 msgid "Video: Membership Levels"
 msgstr ""
 
@@ -11324,6 +11457,7 @@ msgstr ""
 #: adminpages/membershiplevels.php:1110
 #: adminpages/membershiplevels.php:1112
 #: adminpages/membershiplevels.php:1113
+#: adminpages/membershiplevels.php:1114
 msgid "Drag and drop membership levels to reorder them on the Levels page."
 msgstr ""
 
@@ -12267,6 +12401,7 @@ msgstr ""
 #: classes/class-pmpro-orders-list-table.php:1078
 #: classes/class-pmpro-orders-list-table.php:1107
 #: classes/class-pmpro-orders-list-table.php:1192
+<<<<<<< HEAD
 #: adminpages/member-edit/pmpro-class-member-edit-panel-memberships.php:647
 #: adminpages/member-edit/pmpro-class-member-edit-panel-orders.php:91
 #: adminpages/member-edit/pmpro-class-member-edit-panel-orders.php:98
@@ -12281,6 +12416,9 @@ msgstr ""
 #: adminpages/member-edit/pmpro-class-member-edit-panel-memberships.php:656
 #: adminpages/member-edit/pmpro-class-member-edit-panel-subscriptions.php:138
 #: adminpages/member-edit/pmpro-class-member-edit-panel-memberships.php:663
+=======
+#: adminpages/membershiplevels.php:1245
+>>>>>>> strangerstudios/dev
 msgid "&#8212;"
 msgstr ""
 
@@ -13104,9 +13242,13 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:2527
 #: classes/gateways/class.pmprogateway_stripe.php:2541
 #: classes/gateways/class.pmprogateway_stripe.php:2488
+<<<<<<< HEAD
 #: classes/gateways/class.pmprogateway_stripe.php:2352
 #: classes/gateways/class.pmprogateway_stripe.php:2268
 #: classes/gateways/class.pmprogateway_stripe.php:2273
+=======
+#: classes/gateways/class.pmprogateway_stripe.php:2490
+>>>>>>> strangerstudios/dev
 msgid "Stripe Connect Settings"
 msgstr ""
 
@@ -13129,9 +13271,13 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:2530
 #: classes/gateways/class.pmprogateway_stripe.php:2544
 #: classes/gateways/class.pmprogateway_stripe.php:2491
+<<<<<<< HEAD
 #: classes/gateways/class.pmprogateway_stripe.php:2355
 #: classes/gateways/class.pmprogateway_stripe.php:2271
 #: classes/gateways/class.pmprogateway_stripe.php:2276
+=======
+#: classes/gateways/class.pmprogateway_stripe.php:2493
+>>>>>>> strangerstudios/dev
 msgid "Live Mode:"
 msgstr ""
 
@@ -13158,9 +13304,13 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:2534
 #: classes/gateways/class.pmprogateway_stripe.php:2548
 #: classes/gateways/class.pmprogateway_stripe.php:2495
+<<<<<<< HEAD
 #: classes/gateways/class.pmprogateway_stripe.php:2359
 #: classes/gateways/class.pmprogateway_stripe.php:2275
 #: classes/gateways/class.pmprogateway_stripe.php:2280
+=======
+#: classes/gateways/class.pmprogateway_stripe.php:2497
+>>>>>>> strangerstudios/dev
 msgid "Connected"
 msgstr ""
 
@@ -13186,9 +13336,13 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:2536
 #: classes/gateways/class.pmprogateway_stripe.php:2550
 #: classes/gateways/class.pmprogateway_stripe.php:2497
+<<<<<<< HEAD
 #: classes/gateways/class.pmprogateway_stripe.php:2361
 #: classes/gateways/class.pmprogateway_stripe.php:2277
 #: classes/gateways/class.pmprogateway_stripe.php:2282
+=======
+#: classes/gateways/class.pmprogateway_stripe.php:2499
+>>>>>>> strangerstudios/dev
 msgid "Not Connected"
 msgstr ""
 
@@ -13228,12 +13382,17 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:2573
 #: classes/gateways/class.pmprogateway_stripe.php:2505
 #: classes/gateways/class.pmprogateway_stripe.php:2520
+<<<<<<< HEAD
 #: classes/gateways/class.pmprogateway_stripe.php:2369
 #: classes/gateways/class.pmprogateway_stripe.php:2384
 #: classes/gateways/class.pmprogateway_stripe.php:2285
 #: classes/gateways/class.pmprogateway_stripe.php:2300
 #: classes/gateways/class.pmprogateway_stripe.php:2290
 #: classes/gateways/class.pmprogateway_stripe.php:2305
+=======
+#: classes/gateways/class.pmprogateway_stripe.php:2507
+#: classes/gateways/class.pmprogateway_stripe.php:2522
+>>>>>>> strangerstudios/dev
 msgid "Your site is using legacy API keys to authenticate with Stripe."
 msgstr ""
 
@@ -13256,9 +13415,13 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:2548
 #: classes/gateways/class.pmprogateway_stripe.php:2562
 #: classes/gateways/class.pmprogateway_stripe.php:2509
+<<<<<<< HEAD
 #: classes/gateways/class.pmprogateway_stripe.php:2373
 #: classes/gateways/class.pmprogateway_stripe.php:2289
 #: classes/gateways/class.pmprogateway_stripe.php:2294
+=======
+#: classes/gateways/class.pmprogateway_stripe.php:2511
+>>>>>>> strangerstudios/dev
 msgid "Use the \"Connect with Stripe\" button below to securely authenticate with your Stripe account using Stripe Connect. Log in with the current Stripe account used for this site so that existing subscriptions are not affected by the update."
 msgstr ""
 
@@ -13285,6 +13448,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:2568
 #: classes/gateways/class.pmprogateway_stripe.php:2582
 #: classes/gateways/class.pmprogateway_stripe.php:2529
+#: classes/gateways/class.pmprogateway_stripe.php:2531
 msgid "Stripe Connection:"
 msgstr ""
 
@@ -13311,9 +13475,13 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:2584
 #: classes/gateways/class.pmprogateway_stripe.php:2598
 #: classes/gateways/class.pmprogateway_stripe.php:2545
+<<<<<<< HEAD
 #: classes/gateways/class.pmprogateway_stripe.php:2409
 #: classes/gateways/class.pmprogateway_stripe.php:2325
 #: classes/gateways/class.pmprogateway_stripe.php:2330
+=======
+#: classes/gateways/class.pmprogateway_stripe.php:2547
+>>>>>>> strangerstudios/dev
 msgid "Disconnect From Stripe"
 msgstr ""
 
@@ -13360,9 +13528,13 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:2605
 #: classes/gateways/class.pmprogateway_stripe.php:2619
 #: classes/gateways/class.pmprogateway_stripe.php:2566
+<<<<<<< HEAD
 #: classes/gateways/class.pmprogateway_stripe.php:2430
 #: classes/gateways/class.pmprogateway_stripe.php:2346
 #: classes/gateways/class.pmprogateway_stripe.php:2351
+=======
+#: classes/gateways/class.pmprogateway_stripe.php:2568
+>>>>>>> strangerstudios/dev
 msgid "Connect with Stripe"
 msgstr ""
 
@@ -13386,9 +13558,13 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:2612
 #: classes/gateways/class.pmprogateway_stripe.php:2626
 #: classes/gateways/class.pmprogateway_stripe.php:2573
+<<<<<<< HEAD
 #: classes/gateways/class.pmprogateway_stripe.php:2437
 #: classes/gateways/class.pmprogateway_stripe.php:2353
 #: classes/gateways/class.pmprogateway_stripe.php:2358
+=======
+#: classes/gateways/class.pmprogateway_stripe.php:2575
+>>>>>>> strangerstudios/dev
 msgid "Note: You have a valid license and are not charged additional platform fees for payment processing."
 msgstr ""
 
@@ -13482,9 +13658,13 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:2530
 #: classes/gateways/class.pmprogateway_stripe.php:2544
 #: classes/gateways/class.pmprogateway_stripe.php:2491
+<<<<<<< HEAD
 #: classes/gateways/class.pmprogateway_stripe.php:2355
 #: classes/gateways/class.pmprogateway_stripe.php:2271
 #: classes/gateways/class.pmprogateway_stripe.php:2276
+=======
+#: classes/gateways/class.pmprogateway_stripe.php:2493
+>>>>>>> strangerstudios/dev
 msgid "Test Mode:"
 msgstr ""
 
@@ -13507,9 +13687,13 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:2550
 #: classes/gateways/class.pmprogateway_stripe.php:2564
 #: classes/gateways/class.pmprogateway_stripe.php:2511
+<<<<<<< HEAD
 #: classes/gateways/class.pmprogateway_stripe.php:2375
 #: classes/gateways/class.pmprogateway_stripe.php:2291
 #: classes/gateways/class.pmprogateway_stripe.php:2296
+=======
+#: classes/gateways/class.pmprogateway_stripe.php:2513
+>>>>>>> strangerstudios/dev
 msgid "Use the \"Connect with Stripe\" button below to securely authenticate with your Stripe account using Stripe Connect in test mode."
 msgstr ""
 
@@ -13975,6 +14159,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:3396
 #: classes/gateways/class.pmprogateway_stripe.php:3410
 #: classes/gateways/class.pmprogateway_stripe.php:3357
+#: classes/gateways/class.pmprogateway_stripe.php:3359
 msgid "Subscription Updates"
 msgstr ""
 
@@ -14059,6 +14244,8 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:4783
 #: classes/gateways/class.pmprogateway_stripe.php:4725
 #: classes/gateways/class.pmprogateway_stripe.php:4730
+#: classes/gateways/class.pmprogateway_stripe.php:4727
+#: classes/gateways/class.pmprogateway_stripe.php:4732
 msgid "Error getting subscription with Stripe:"
 msgstr ""
 
@@ -14085,6 +14272,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:3796
 #: classes/gateways/class.pmprogateway_stripe.php:3810
 #: classes/gateways/class.pmprogateway_stripe.php:3757
+#: classes/gateways/class.pmprogateway_stripe.php:3759
 msgid "Could not cancel the old subscription. Updates have not been processed."
 msgstr ""
 
@@ -14108,9 +14296,13 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:2404
 #: classes/gateways/class.pmprogateway_stripe.php:2418
 #: classes/gateways/class.pmprogateway_stripe.php:2365
+<<<<<<< HEAD
 #: classes/gateways/class.pmprogateway_stripe.php:2176
 #: classes/gateways/class.pmprogateway_stripe.php:2092
 #: classes/gateways/class.pmprogateway_stripe.php:2097
+=======
+#: classes/gateways/class.pmprogateway_stripe.php:2367
+>>>>>>> strangerstudios/dev
 msgid "Could not cancel old subscription."
 msgstr ""
 
@@ -14134,9 +14326,13 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:2420
 #: classes/gateways/class.pmprogateway_stripe.php:2434
 #: classes/gateways/class.pmprogateway_stripe.php:2381
+<<<<<<< HEAD
 #: classes/gateways/class.pmprogateway_stripe.php:2192
 #: classes/gateways/class.pmprogateway_stripe.php:2108
 #: classes/gateways/class.pmprogateway_stripe.php:2113
+=======
+#: classes/gateways/class.pmprogateway_stripe.php:2383
+>>>>>>> strangerstudios/dev
 msgid "Could not find the customer."
 msgstr ""
 
@@ -14187,8 +14383,13 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:5128
 #: classes/gateways/class.pmprogateway_stripe.php:5069
 #: classes/gateways/class.pmprogateway_stripe.php:5075
+<<<<<<< HEAD
 #: classes/gateways/class.pmprogateway_stripe.php:469
 #: classes/gateways/class.pmprogateway_stripe.php:463
+=======
+#: classes/gateways/class.pmprogateway_stripe.php:5071
+#: classes/gateways/class.pmprogateway_stripe.php:5077
+>>>>>>> strangerstudios/dev
 msgid "Error: "
 msgstr ""
 
@@ -14215,6 +14416,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:5128
 #: classes/gateways/class.pmprogateway_stripe.php:5142
 #: classes/gateways/class.pmprogateway_stripe.php:5089
+#: classes/gateways/class.pmprogateway_stripe.php:5091
 msgid "Error: Unkown error while refunding charge #%s"
 msgstr ""
 
@@ -14239,9 +14441,13 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:4122
 #: classes/gateways/class.pmprogateway_stripe.php:4136
 #: classes/gateways/class.pmprogateway_stripe.php:4083
+<<<<<<< HEAD
 #: classes/gateways/class.pmprogateway_stripe.php:3578
 #: classes/gateways/class.pmprogateway_stripe.php:3494
 #: classes/gateways/class.pmprogateway_stripe.php:3499
+=======
+#: classes/gateways/class.pmprogateway_stripe.php:4085
+>>>>>>> strangerstudios/dev
 msgid "Customer authentication is required to complete this transaction. Please complete the verification steps issued by your payment provider."
 msgstr ""
 
@@ -14310,9 +14516,14 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:3255
 #: classes/gateways/class.pmprogateway_stripe.php:3292
 #: classes/gateways/class.pmprogateway_stripe.php:4103
+<<<<<<< HEAD
 #: classes/gateways/class.pmprogateway_stripe.php:3105
 #: classes/gateways/class.pmprogateway_stripe.php:3021
 #: classes/gateways/class.pmprogateway_stripe.php:3026
+=======
+#: classes/gateways/class.pmprogateway_stripe.php:3257
+#: classes/gateways/class.pmprogateway_stripe.php:4105
+>>>>>>> strangerstudios/dev
 msgid "Customer authentication is required to finish setting up your subscription. Please complete the verification steps issued by your payment provider."
 msgstr ""
 
@@ -14389,6 +14600,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:5329
 #: classes/gateways/class.pmprogateway_stripe.php:5343
 #: classes/gateways/class.pmprogateway_stripe.php:5290
+#: classes/gateways/class.pmprogateway_stripe.php:5292
 msgid "Last webhook received at"
 msgstr ""
 
@@ -14415,6 +14627,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:5331
 #: classes/gateways/class.pmprogateway_stripe.php:5345
 #: classes/gateways/class.pmprogateway_stripe.php:5292
+#: classes/gateways/class.pmprogateway_stripe.php:5294
 msgid "No webhooks have been received."
 msgstr ""
 
@@ -14441,6 +14654,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:5335
 #: classes/gateways/class.pmprogateway_stripe.php:5349
 #: classes/gateways/class.pmprogateway_stripe.php:5296
+#: classes/gateways/class.pmprogateway_stripe.php:5298
 msgid "Your webhook may not be working correctly."
 msgstr ""
 
@@ -14467,6 +14681,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:5337
 #: classes/gateways/class.pmprogateway_stripe.php:5351
 #: classes/gateways/class.pmprogateway_stripe.php:5298
+#: classes/gateways/class.pmprogateway_stripe.php:5300
 msgid "Click here for info on setting up your webhook with Stripe."
 msgstr ""
 
@@ -17648,9 +17863,13 @@ msgstr ""
 #: classes/class-pmpro-field.php:1267
 #: classes/class-pmpro-field.php:1260
 #: classes/class-pmpro-field.php:1225
+<<<<<<< HEAD
 #: includes/profile.php:1284
 #: includes/profile.php:1289
 #: includes/profile.php:1296
+=======
+#: classes/class-pmpro-field.php:1230
+>>>>>>> strangerstudios/dev
 msgid "Required Field"
 msgstr ""
 
@@ -18349,9 +18568,13 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:2532
 #: classes/gateways/class.pmprogateway_stripe.php:2546
 #: classes/gateways/class.pmprogateway_stripe.php:2493
+<<<<<<< HEAD
 #: classes/gateways/class.pmprogateway_stripe.php:2357
 #: classes/gateways/class.pmprogateway_stripe.php:2273
 #: classes/gateways/class.pmprogateway_stripe.php:2278
+=======
+#: classes/gateways/class.pmprogateway_stripe.php:2495
+>>>>>>> strangerstudios/dev
 msgid "Connected with Legacy Keys"
 msgstr ""
 
@@ -18375,9 +18598,13 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:2545
 #: classes/gateways/class.pmprogateway_stripe.php:2559
 #: classes/gateways/class.pmprogateway_stripe.php:2506
+<<<<<<< HEAD
 #: classes/gateways/class.pmprogateway_stripe.php:2370
 #: classes/gateways/class.pmprogateway_stripe.php:2286
 #: classes/gateways/class.pmprogateway_stripe.php:2291
+=======
+#: classes/gateways/class.pmprogateway_stripe.php:2508
+>>>>>>> strangerstudios/dev
 msgid "You can continue to use the legacy API keys or choose to upgrade to our new Stripe Connect solution below."
 msgstr ""
 
@@ -18966,9 +19193,13 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:2056
 #: classes/gateways/class.pmprogateway_stripe.php:2070
 #: classes/gateways/class.pmprogateway_stripe.php:2017
+<<<<<<< HEAD
 #: classes/gateways/class.pmprogateway_stripe.php:1828
 #: classes/gateways/class.pmprogateway_stripe.php:1745
 #: classes/gateways/class.pmprogateway_stripe.php:1750
+=======
+#: classes/gateways/class.pmprogateway_stripe.php:2019
+>>>>>>> strangerstudios/dev
 msgid "Error processing payment intent."
 msgstr ""
 
@@ -19001,12 +19232,17 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:2345
 #: classes/gateways/class.pmprogateway_stripe.php:2039
 #: classes/gateways/class.pmprogateway_stripe.php:2292
+<<<<<<< HEAD
 #: classes/gateways/class.pmprogateway_stripe.php:1850
 #: classes/gateways/class.pmprogateway_stripe.php:2103
 #: classes/gateways/class.pmprogateway_stripe.php:1767
 #: classes/gateways/class.pmprogateway_stripe.php:2019
 #: classes/gateways/class.pmprogateway_stripe.php:1772
 #: classes/gateways/class.pmprogateway_stripe.php:2024
+=======
+#: classes/gateways/class.pmprogateway_stripe.php:2041
+#: classes/gateways/class.pmprogateway_stripe.php:2294
+>>>>>>> strangerstudios/dev
 msgid "Error retrieving payment method."
 msgstr ""
 
@@ -19047,9 +19283,13 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:2125
 #: classes/gateways/class.pmprogateway_stripe.php:2139
 #: classes/gateways/class.pmprogateway_stripe.php:2086
+<<<<<<< HEAD
 #: classes/gateways/class.pmprogateway_stripe.php:1897
 #: classes/gateways/class.pmprogateway_stripe.php:1814
 #: classes/gateways/class.pmprogateway_stripe.php:1819
+=======
+#: classes/gateways/class.pmprogateway_stripe.php:2088
+>>>>>>> strangerstudios/dev
 msgid "Error creating subscription for customer."
 msgstr ""
 
@@ -19084,9 +19324,13 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:2829
 #: classes/gateways/class.pmprogateway_stripe.php:2843
 #: classes/gateways/class.pmprogateway_stripe.php:2790
+<<<<<<< HEAD
 #: classes/gateways/class.pmprogateway_stripe.php:2655
 #: classes/gateways/class.pmprogateway_stripe.php:2571
 #: classes/gateways/class.pmprogateway_stripe.php:2576
+=======
+#: classes/gateways/class.pmprogateway_stripe.php:2792
+>>>>>>> strangerstudios/dev
 msgid "Error updating customer record with Stripe."
 msgstr ""
 
@@ -19108,9 +19352,13 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:2840
 #: classes/gateways/class.pmprogateway_stripe.php:2854
 #: classes/gateways/class.pmprogateway_stripe.php:2801
+<<<<<<< HEAD
 #: classes/gateways/class.pmprogateway_stripe.php:2666
 #: classes/gateways/class.pmprogateway_stripe.php:2582
 #: classes/gateways/class.pmprogateway_stripe.php:2587
+=======
+#: classes/gateways/class.pmprogateway_stripe.php:2803
+>>>>>>> strangerstudios/dev
 msgid "Error creating customer record with Stripe."
 msgstr ""
 
@@ -19133,9 +19381,13 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:3163
 #: classes/gateways/class.pmprogateway_stripe.php:3177
 #: classes/gateways/class.pmprogateway_stripe.php:3124
+<<<<<<< HEAD
 #: classes/gateways/class.pmprogateway_stripe.php:3001
 #: classes/gateways/class.pmprogateway_stripe.php:2917
 #: classes/gateways/class.pmprogateway_stripe.php:2922
+=======
+#: classes/gateways/class.pmprogateway_stripe.php:3126
+>>>>>>> strangerstudios/dev
 msgid "Cannot find product for membership level."
 msgstr ""
 
@@ -19158,9 +19410,13 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:3169
 #: classes/gateways/class.pmprogateway_stripe.php:3183
 #: classes/gateways/class.pmprogateway_stripe.php:3130
+<<<<<<< HEAD
 #: classes/gateways/class.pmprogateway_stripe.php:3007
 #: classes/gateways/class.pmprogateway_stripe.php:2923
 #: classes/gateways/class.pmprogateway_stripe.php:2928
+=======
+#: classes/gateways/class.pmprogateway_stripe.php:3132
+>>>>>>> strangerstudios/dev
 msgid "Cannot get price."
 msgstr ""
 
@@ -19183,6 +19439,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:3326
 #: classes/gateways/class.pmprogateway_stripe.php:3340
 #: classes/gateways/class.pmprogateway_stripe.php:3287
+#: classes/gateways/class.pmprogateway_stripe.php:3289
 msgid "Cannot reuse an old setup intent."
 msgstr ""
 
@@ -19220,6 +19477,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:3376
 #: classes/gateways/class.pmprogateway_stripe.php:3321
 #: classes/gateways/class.pmprogateway_stripe.php:3323
+#: classes/gateways/class.pmprogateway_stripe.php:3325
 msgid "Error adding metadata to setup intent."
 msgstr ""
 
@@ -19248,6 +19506,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:3462
 #: classes/gateways/class.pmprogateway_stripe.php:3476
 #: classes/gateways/class.pmprogateway_stripe.php:3423
+#: classes/gateways/class.pmprogateway_stripe.php:3425
 msgid "Remove"
 msgstr ""
 
@@ -19456,9 +19715,13 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:3110
 #: classes/gateways/class.pmprogateway_stripe.php:3124
 #: classes/gateways/class.pmprogateway_stripe.php:3071
+<<<<<<< HEAD
 #: classes/gateways/class.pmprogateway_stripe.php:2948
 #: classes/gateways/class.pmprogateway_stripe.php:2864
 #: classes/gateways/class.pmprogateway_stripe.php:2869
+=======
+#: classes/gateways/class.pmprogateway_stripe.php:3073
+>>>>>>> strangerstudios/dev
 msgid "Could not create price."
 msgstr ""
 
@@ -19743,6 +20006,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:3397
 #: classes/gateways/class.pmprogateway_stripe.php:3411
 #: classes/gateways/class.pmprogateway_stripe.php:3358
+#: classes/gateways/class.pmprogateway_stripe.php:3360
 msgid "Subscription updates will be deprecated in a future version of PMPro, though your existing subscription updates will still trigger as expected. We now instead recommend updating the subscription directly in Stripe."
 msgstr ""
 
@@ -20214,10 +20478,14 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:5041
 #: classes/gateways/class.pmprogateway_paypalexpress.php:1137
 #: classes/gateways/class.pmprogateway_stripe.php:4988
+<<<<<<< HEAD
 #: classes/gateways/class.pmprogateway_paypalexpress.php:1207
 #: classes/gateways/class.pmprogateway_stripe.php:3951
 #: classes/gateways/class.pmprogateway_stripe.php:3867
 #: classes/gateways/class.pmprogateway_stripe.php:3872
+=======
+#: classes/gateways/class.pmprogateway_stripe.php:4990
+>>>>>>> strangerstudios/dev
 msgid "Admin: Order successfully refunded on %1$s for transaction ID %2$s by %3$s."
 msgstr ""
 
@@ -20544,10 +20812,15 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:1975
 #: classes/gateways/class.pmprogateway_stripe.php:1918
 #: classes/gateways/class.pmprogateway_stripe.php:1922
+<<<<<<< HEAD
 #: classes/gateways/class.pmprogateway_stripe.php:1630
 #: classes/gateways/class.pmprogateway_stripe.php:1634
 #: classes/gateways/class.pmprogateway_stripe.php:1635
 #: classes/gateways/class.pmprogateway_stripe.php:1639
+=======
+#: classes/gateways/class.pmprogateway_stripe.php:1920
+#: classes/gateways/class.pmprogateway_stripe.php:1924
+>>>>>>> strangerstudios/dev
 msgid "Could not create checkout session. "
 msgstr ""
 
@@ -20570,12 +20843,16 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:2011
 #: classes/gateways/class.pmprogateway_stripe.php:2025
 #: classes/gateways/class.pmprogateway_stripe.php:1972
+<<<<<<< HEAD
 #: classes/gateways/class.pmprogateway_stripe.php:1747
 #: classes/gateways/class.pmprogateway_stripe.php:1783
 #: classes/gateways/class.pmprogateway_stripe.php:1664
 #: classes/gateways/class.pmprogateway_stripe.php:1700
 #: classes/gateways/class.pmprogateway_stripe.php:1669
 #: classes/gateways/class.pmprogateway_stripe.php:1705
+=======
+#: classes/gateways/class.pmprogateway_stripe.php:1974
+>>>>>>> strangerstudios/dev
 msgid "Could not get Stripe customer for user."
 msgstr ""
 
@@ -20590,9 +20867,13 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:2022
 #: classes/gateways/class.pmprogateway_stripe.php:2036
 #: classes/gateways/class.pmprogateway_stripe.php:1983
+<<<<<<< HEAD
 #: classes/gateways/class.pmprogateway_stripe.php:1794
 #: classes/gateways/class.pmprogateway_stripe.php:1711
 #: classes/gateways/class.pmprogateway_stripe.php:1716
+=======
+#: classes/gateways/class.pmprogateway_stripe.php:1985
+>>>>>>> strangerstudios/dev
 msgid "Could not get Customer Portal URL. This feature may not be set up in Stripe."
 msgstr ""
 
@@ -20607,9 +20888,13 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:2027
 #: classes/gateways/class.pmprogateway_stripe.php:2041
 #: classes/gateways/class.pmprogateway_stripe.php:1988
+<<<<<<< HEAD
 #: classes/gateways/class.pmprogateway_stripe.php:1799
 #: classes/gateways/class.pmprogateway_stripe.php:1716
 #: classes/gateways/class.pmprogateway_stripe.php:1721
+=======
+#: classes/gateways/class.pmprogateway_stripe.php:1990
+>>>>>>> strangerstudios/dev
 msgid "Please contact the site administrator."
 msgstr ""
 
@@ -20629,9 +20914,13 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:5043
 #: classes/gateways/class.pmprogateway_stripe.php:5057
 #: classes/gateways/class.pmprogateway_stripe.php:5004
+<<<<<<< HEAD
 #: classes/gateways/class.pmprogateway_stripe.php:3963
 #: classes/gateways/class.pmprogateway_stripe.php:3879
 #: classes/gateways/class.pmprogateway_stripe.php:3884
+=======
+#: classes/gateways/class.pmprogateway_stripe.php:5006
+>>>>>>> strangerstudios/dev
 msgid "Admin: An error occured while attempting to process this refund."
 msgstr ""
 
@@ -20666,12 +20955,16 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:5061
 #: classes/gateways/class.pmprogateway_stripe.php:5006
 #: classes/gateways/class.pmprogateway_stripe.php:5008
+<<<<<<< HEAD
 #: classes/gateways/class.pmprogateway_stripe.php:3967
 #: classes/gateways/class.pmprogateway_stripe.php:3969
 #: classes/gateways/class.pmprogateway_stripe.php:3883
 #: classes/gateways/class.pmprogateway_stripe.php:3885
 #: classes/gateways/class.pmprogateway_stripe.php:3888
 #: classes/gateways/class.pmprogateway_stripe.php:3890
+=======
+#: classes/gateways/class.pmprogateway_stripe.php:5010
+>>>>>>> strangerstudios/dev
 msgid "Admin: There was a problem processing the refund"
 msgstr ""
 
@@ -21075,9 +21368,13 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:2560
 #: classes/gateways/class.pmprogateway_stripe.php:2574
 #: classes/gateways/class.pmprogateway_stripe.php:2521
+<<<<<<< HEAD
 #: classes/gateways/class.pmprogateway_stripe.php:2385
 #: classes/gateways/class.pmprogateway_stripe.php:2301
 #: classes/gateways/class.pmprogateway_stripe.php:2306
+=======
+#: classes/gateways/class.pmprogateway_stripe.php:2523
+>>>>>>> strangerstudios/dev
 msgid "In order to complete the transition to using Stripe legacy API keys, please click the \"Disconnect from Stripe\" button below."
 msgstr ""
 
@@ -21163,9 +21460,13 @@ msgstr ""
 #: adminpages/membershiplevels.php:1307
 #: classes/gateways/class.pmprogateway_stripe.php:1552
 #: classes/gateways/class.pmprogateway_stripe.php:1566
+<<<<<<< HEAD
 #: adminpages/membershiplevels.php:572
 #: classes/gateways/class.pmprogateway_stripe.php:1374
 #: classes/gateways/class.pmprogateway_stripe.php:1288
+=======
+#: adminpages/membershiplevels.php:1308
+>>>>>>> strangerstudios/dev
 msgid "Close Popup"
 msgstr ""
 
@@ -21393,7 +21694,11 @@ msgstr ""
 #: adminpages/membershiplevels.php:1305
 #: adminpages/membershiplevels.php:1307
 #: adminpages/membershiplevels.php:1308
+<<<<<<< HEAD
 #: adminpages/membershiplevels.php:573
+=======
+#: adminpages/membershiplevels.php:1309
+>>>>>>> strangerstudios/dev
 msgid "What type of membership level do you want to create?"
 msgstr ""
 
@@ -21403,7 +21708,11 @@ msgstr ""
 #: adminpages/membershiplevels.php:1323
 #: adminpages/membershiplevels.php:1325
 #: adminpages/membershiplevels.php:1326
+<<<<<<< HEAD
 #: adminpages/membershiplevels.php:591
+=======
+#: adminpages/membershiplevels.php:1327
+>>>>>>> strangerstudios/dev
 msgid "Add On"
 msgstr ""
 
@@ -21455,6 +21764,7 @@ msgstr ""
 #: classes/class-pmpro-field.php:779
 #: classes/class-pmpro-field.php:772
 #: classes/class-pmpro-field.php:737
+#: classes/class-pmpro-field.php:742
 msgid "Choose one or more."
 msgstr ""
 
@@ -21468,6 +21778,8 @@ msgstr ""
 #: classes/class-pmpro-field.php:940
 #: classes/class-pmpro-field.php:903
 #: classes/class-pmpro-field.php:905
+#: classes/class-pmpro-field.php:908
+#: classes/class-pmpro-field.php:910
 msgid "Current File: %s"
 msgstr ""
 
@@ -21476,6 +21788,7 @@ msgstr ""
 #: classes/class-pmpro-field.php:956
 #: classes/class-pmpro-field.php:949
 #: classes/class-pmpro-field.php:914
+#: classes/class-pmpro-field.php:919
 msgid "[delete]"
 msgstr ""
 
@@ -21484,6 +21797,7 @@ msgstr ""
 #: classes/class-pmpro-field.php:957
 #: classes/class-pmpro-field.php:950
 #: classes/class-pmpro-field.php:915
+#: classes/class-pmpro-field.php:920
 msgid "[restore]"
 msgstr ""
 
@@ -22295,7 +22609,11 @@ msgstr ""
 #: adminpages/membershiplevels.php:1150
 #: adminpages/membershiplevels.php:1152
 #: adminpages/membershiplevels.php:1153
+<<<<<<< HEAD
 #: adminpages/membershiplevels.php:392
+=======
+#: adminpages/membershiplevels.php:1154
+>>>>>>> strangerstudios/dev
 msgid "Are you sure you want to delete membership level %s? Any gateway subscriptions or third-party connections with a member's account will remain active."
 msgstr ""
 
@@ -22638,12 +22956,14 @@ msgstr ""
 #: classes/class-pmpro-field.php:567
 #: classes/class-pmpro-field.php:568
 #: classes/class-pmpro-field.php:533
+#: classes/class-pmpro-field.php:538
 msgid "Error uploading file. Too many files with the same name."
 msgstr ""
 
 #: classes/class-pmpro-field.php:580
 #: classes/class-pmpro-field.php:584
 #: classes/class-pmpro-field.php:549
+#: classes/class-pmpro-field.php:554
 msgid "Sorry, the file %s was not uploaded."
 msgstr ""
 
@@ -22806,9 +23126,13 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:2003
 #: classes/gateways/class.pmprogateway_stripe.php:2017
 #: classes/gateways/class.pmprogateway_stripe.php:1964
+<<<<<<< HEAD
 #: classes/gateways/class.pmprogateway_stripe.php:1775
 #: classes/gateways/class.pmprogateway_stripe.php:1692
 #: classes/gateways/class.pmprogateway_stripe.php:1697
+=======
+#: classes/gateways/class.pmprogateway_stripe.php:1966
+>>>>>>> strangerstudios/dev
 msgid "User is not logged in."
 msgstr ""
 
@@ -22903,9 +23227,13 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:2616
 #: classes/gateways/class.pmprogateway_stripe.php:2630
 #: classes/gateways/class.pmprogateway_stripe.php:2577
+<<<<<<< HEAD
 #: classes/gateways/class.pmprogateway_stripe.php:2442
 #: classes/gateways/class.pmprogateway_stripe.php:2358
 #: classes/gateways/class.pmprogateway_stripe.php:2363
+=======
+#: classes/gateways/class.pmprogateway_stripe.php:2579
+>>>>>>> strangerstudios/dev
 msgid "Note: You are using the free Stripe payment gateway integration. This includes an additional %s fee for payment processing. This fee is removed by activating a premium PMPro license."
 msgstr ""
 
@@ -22916,9 +23244,13 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:2618
 #: classes/gateways/class.pmprogateway_stripe.php:2632
 #: classes/gateways/class.pmprogateway_stripe.php:2579
+<<<<<<< HEAD
 #: classes/gateways/class.pmprogateway_stripe.php:2444
 #: classes/gateways/class.pmprogateway_stripe.php:2360
 #: classes/gateways/class.pmprogateway_stripe.php:2365
+=======
+#: classes/gateways/class.pmprogateway_stripe.php:2581
+>>>>>>> strangerstudios/dev
 msgid "Note: You are using the free Stripe payment gateway integration. There is no additional fee for payment processing above what Stripe charges."
 msgstr ""
 
@@ -22987,9 +23319,13 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:2317
 #: classes/gateways/class.pmprogateway_stripe.php:2331
 #: classes/gateways/class.pmprogateway_stripe.php:2278
+<<<<<<< HEAD
 #: classes/gateways/class.pmprogateway_stripe.php:2089
 #: classes/gateways/class.pmprogateway_stripe.php:2005
 #: classes/gateways/class.pmprogateway_stripe.php:2010
+=======
+#: classes/gateways/class.pmprogateway_stripe.php:2280
+>>>>>>> strangerstudios/dev
 msgid "No subscription transaction ID."
 msgstr ""
 
@@ -22999,9 +23335,13 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:3175
 #: classes/gateways/class.pmprogateway_stripe.php:3189
 #: classes/gateways/class.pmprogateway_stripe.php:3136
+<<<<<<< HEAD
 #: classes/gateways/class.pmprogateway_stripe.php:3013
 #: classes/gateways/class.pmprogateway_stripe.php:2929
 #: classes/gateways/class.pmprogateway_stripe.php:2934
+=======
+#: classes/gateways/class.pmprogateway_stripe.php:3138
+>>>>>>> strangerstudios/dev
 msgid "Cannot find payment method."
 msgstr ""
 
@@ -23480,9 +23820,13 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:2553
 #: classes/gateways/class.pmprogateway_stripe.php:2567
 #: classes/gateways/class.pmprogateway_stripe.php:2514
+<<<<<<< HEAD
 #: classes/gateways/class.pmprogateway_stripe.php:2378
 #: classes/gateways/class.pmprogateway_stripe.php:2294
 #: classes/gateways/class.pmprogateway_stripe.php:2299
+=======
+#: classes/gateways/class.pmprogateway_stripe.php:2516
+>>>>>>> strangerstudios/dev
 msgid "Read the documentation on switching to Stripe Connect"
 msgstr ""
 
@@ -23490,9 +23834,13 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:2622
 #: classes/gateways/class.pmprogateway_stripe.php:2636
 #: classes/gateways/class.pmprogateway_stripe.php:2583
+<<<<<<< HEAD
 #: classes/gateways/class.pmprogateway_stripe.php:2448
 #: classes/gateways/class.pmprogateway_stripe.php:2364
 #: classes/gateways/class.pmprogateway_stripe.php:2369
+=======
+#: classes/gateways/class.pmprogateway_stripe.php:2585
+>>>>>>> strangerstudios/dev
 msgid "Learn More"
 msgstr ""
 
@@ -23595,9 +23943,13 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:2588
 #: classes/gateways/class.pmprogateway_stripe.php:2602
 #: classes/gateways/class.pmprogateway_stripe.php:2549
+<<<<<<< HEAD
 #: classes/gateways/class.pmprogateway_stripe.php:2413
 #: classes/gateways/class.pmprogateway_stripe.php:2329
 #: classes/gateways/class.pmprogateway_stripe.php:2334
+=======
+#: classes/gateways/class.pmprogateway_stripe.php:2551
+>>>>>>> strangerstudios/dev
 msgid "This will disconnect all sites using this Stripe account from Stripe. Users will not be able to complete membership checkout or update their billing information. Existing subscriptions will not be affected at the gateway, but new recurring orders will not be created in this site."
 msgstr ""
 
@@ -23605,9 +23957,13 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:2590
 #: classes/gateways/class.pmprogateway_stripe.php:2604
 #: classes/gateways/class.pmprogateway_stripe.php:2551
+<<<<<<< HEAD
 #: classes/gateways/class.pmprogateway_stripe.php:2415
 #: classes/gateways/class.pmprogateway_stripe.php:2331
 #: classes/gateways/class.pmprogateway_stripe.php:2336
+=======
+#: classes/gateways/class.pmprogateway_stripe.php:2553
+>>>>>>> strangerstudios/dev
 msgid "This will disconnect all sites using this Stripe account from Stripe in test mode only."
 msgstr ""
 

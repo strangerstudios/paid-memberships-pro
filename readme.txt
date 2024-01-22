@@ -224,6 +224,12 @@ Not sure? You can find out by doing a bit a research.
 * REFACTOR: Changing uses of `pmpro_getOption()` to `get_option()`. #2491, #2493, #2494, #2495 (@JarrydLong, @MaximilianoRicoTabo)
 * DEPRECATED: No longer using `$pmpro_levels` global variable. #2666 (@dparker1005)
 
+= 2.12.8 - 2024-01-22 =
+* SECURITY: Added missing nonce when updating the level order through drag and drop. (Thanks, Kodai Kubono from WordFence) #2773 (@dparker1005)
+* BUG FIX/ENHANCEMENT: The `pmpro_stripe_order_description` filter now applies to Stripe Checkout orders as well. #2774 (@MaximilianoRicoTabo)
+* BUG FIX: Fixed issues with ApplePay and GooglePay when using Stripe Checkout. #2769 (@dparker1005)
+* BUG FIX: Fixed issue when user fields added through code set the levels property to a single integer. This is supported again. #2775 (@MaximilianoRicoTabo)
+
 = 2.12.7 - 2024-01-10 =
 * SECURITY: Fixed a security issue where sensitive user data was sometimes showing up in web server logs. Please see https://www.paidmembershipspro.com/pmpro-security-update-2-12-7/ for more information, including notes on how to tell if your site was affected by this issue and what to do about it.
 

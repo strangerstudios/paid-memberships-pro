@@ -124,7 +124,7 @@ add_action( 'post_tag_edit_form_fields', 'pmpro_term_edit_form_fields', 10, 2 );
  */
 function pmpro_term_saved( $term_id ) {
 	// Check nonce.
-	if ( ! isset( $_REQUEST['pmpro_noncename'] ) || ! wp_verify_nonce( $_REQUEST['pmpro_noncename'], plugin_basename( __FILE__ ) ) ) {
+	if ( ! isset( $_REQUEST['pmpro_noncename'] ) || ! wp_verify_nonce( sanitize_key( $_REQUEST['pmpro_noncename'] ), plugin_basename( __FILE__ ) ) ) {
 		return;
 	}
 

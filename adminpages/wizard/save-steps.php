@@ -28,7 +28,7 @@ function pmpro_init_save_wizard_data() {
 	if ( $_REQUEST['wizard-action'] == 'step-1' ) {
 
 		// Verify the nonce for step 1
-		if ( ! wp_verify_nonce( $_REQUEST['pmpro_wizard_step_1_nonce'], 'pmpro_wizard_step_1_nonce' ) ) {
+		if ( ! wp_verify_nonce( sanitize_key( $_REQUEST['pmpro_wizard_step_1_nonce'] ), 'pmpro_wizard_step_1_nonce' ) ) {
 			return;
 		}
 
@@ -108,7 +108,7 @@ function pmpro_init_save_wizard_data() {
 	 */
 	if ( $_REQUEST['wizard-action'] == 'step-2' ) {
 
-		if ( ! wp_verify_nonce( $_REQUEST['pmpro_wizard_step_2_nonce'], 'pmpro_wizard_step_2_nonce' ) ) {
+		if ( ! wp_verify_nonce( sanitize_key( $_REQUEST['pmpro_wizard_step_2_nonce'] ), 'pmpro_wizard_step_2_nonce' ) ) {
 			return;
 		}
 
@@ -153,7 +153,7 @@ function pmpro_init_save_wizard_data() {
 	if ( $_REQUEST['wizard-action'] == 'step-3' ) {
 		global $wpdb;
 
-		if ( ! wp_verify_nonce( $_REQUEST['pmpro_wizard_step_3_nonce'], 'pmpro_wizard_step_3_nonce' ) ) {
+		if ( ! wp_verify_nonce( sanitize_key( $_REQUEST['pmpro_wizard_step_3_nonce'] ), 'pmpro_wizard_step_3_nonce' ) ) {
 			return;
 		}
 
@@ -251,7 +251,7 @@ function pmpro_init_save_wizard_data() {
 	 * Advanced Settings Step
 	 */
 	if ( $_REQUEST['wizard-action'] == 'step-4' ) {
-		if ( ! wp_verify_nonce( $_REQUEST['pmpro_wizard_step_4_nonce'], 'pmpro_wizard_step_4_nonce' ) ) {
+		if ( ! wp_verify_nonce( sanitize_key( $_REQUEST['pmpro_wizard_step_4_nonce'] ), 'pmpro_wizard_step_4_nonce' ) ) {
 			return;
 		}
 
