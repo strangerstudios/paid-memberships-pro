@@ -5309,7 +5309,7 @@ class PMProGateway_stripe extends PMProGateway {
 	 *
 	 * @param MemberOrder $morder The member order object.
 	 * return string The description to use for the Stripe request.
-	 * @since TBD
+	 * @since 2.12.8
 	 */
 	private static function get_order_description( $morder ) {
 		//Bail if no order.
