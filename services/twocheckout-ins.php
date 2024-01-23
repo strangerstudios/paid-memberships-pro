@@ -261,7 +261,7 @@
 	}
 
 	/*
-		Change the membership level. We also update the membership order to include filtered valus.
+		Change the membership level. We also update the membership order to include filtered values.
 	*/
 	function pmpro_insChangeMembershipLevel($txn_id, &$morder)
 	{

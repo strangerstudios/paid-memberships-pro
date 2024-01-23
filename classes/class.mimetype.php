@@ -72,7 +72,7 @@ class pmpro_mimetype {
       // get base name of the filename provided by user 
       $filename = basename($filename); 
 
-      // break file into parts seperated by . 
+      // break file into parts separated by .
       $filename = explode('.', $filename); 
 
       // take the last part of the file to get the file extension 
@@ -220,7 +220,7 @@ class pmpro_mimetype {
          "rtf" => "text/rtf", 
          "sgml" => "text/sgml", 
          "sgm" => "text/sgml", 
-         "tsv" => "text/tab-seperated-values", 
+         "tsv" => "text/tab-separated-values",
          "wml" => "text/vnd.wap.wml", 
          "wmls" => "text/vnd.wap.wmlscript", 
          "etx" => "text/x-setext", 
@@ -242,4 +242,3 @@ class pmpro_mimetype {
       return $mimetypes;
    } 
 } 
-?>

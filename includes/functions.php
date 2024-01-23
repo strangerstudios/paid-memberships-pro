@@ -1261,7 +1261,7 @@ function pmpro_clear_level_cache_for_user( $user_id ) {
 function pmpro_do_action_after_all_membership_level_changes( $filter_contents = null ) {
 	global $pmpro_old_user_levels;
 	if ( empty( $pmpro_old_user_levels ) ) {
-		// No level changes occured, return.
+		// No level changes occurred, return.
 		return $filter_contents;
 	}
 
@@ -1270,7 +1270,7 @@ function pmpro_do_action_after_all_membership_level_changes( $filter_contents = 
 	$pmpro_old_user_levels = null;
 
 	/**
-	 * Run code after all membership level changes have occured. Users who have had changes
+	 * Run code after all membership level changes have occurred. Users who have had changes
 	 * will be stored in the global $pmpro_old_user_levels array.
 	 *
 	 * @since  2.6
@@ -2381,7 +2381,7 @@ function pmpro_are_any_visible_levels() {
  */
 function pmpro_getLevelAtCheckout( $level_id = null, $discount_code = null ) {
 	global $pmpro_level, $wpdb, $post;
-	// Commenting out caching for now. We want to rethink this appraoch before we commit to it.
+	// Commenting out caching for now. We want to rethink this approach before we commit to it.
 	/*
 	static $function_cache = array();
 
@@ -2480,7 +2480,7 @@ function pmpro_getLevelAtCheckout( $level_id = null, $discount_code = null ) {
 	// filter the level (for upgrades, etc)
 	$pmpro_level = apply_filters( 'pmpro_checkout_level', $pmpro_level );
 
-	// Commenting out caching for now. We want to rethink this appraoch before we commit to it.
+	// Commenting out caching for now. We want to rethink this approach before we commit to it.
 	/*
 	// Cache it.
 	$function_cache[ $cache_key ] = $pmpro_level;
@@ -4025,7 +4025,7 @@ function pmpro_kses( $original_string, $context = 'email' ) {
 }
 
 /**
- * Replace last occurence of a string.
+ * Replace last occurrence of a string.
  * From: http://stackoverflow.com/a/3835653/1154321
  * @since 2.6
  */
@@ -4125,7 +4125,7 @@ function pmpro_kses_allowed_html( $allowed_html, $context ) {
 add_filter( 'wp_kses_allowed_html', 'pmpro_kses_allowed_html', 10, 2 );
 
 /**
- * Show deprecation warning if calling function was called publically.
+ * Show deprecation warning if calling function was called publicly.
  *
  * Useful for preparing to change method visibility from public to private.
  *
@@ -4145,7 +4145,7 @@ function pmpro_method_should_be_private( $deprecated_notice_version ) {
 }
 
 /**
- * Send a 200 HTTP reponse without ending PHP execution.
+ * Send a 200 HTTP response without ending PHP execution.
  *
  * Useful to avoid issues like timeouts from gateways during
  * webhook/IPN handlers.
@@ -4366,7 +4366,7 @@ function pmpro_refund_order( $order ){
 /**
  * Returns an array of order statuses that do not qualify for a refund
  * 
- * @return array Returns an array of statuses that are not allowe to be refunded
+ * @return array Returns an array of statuses that are not allowed to be refunded
  */
 function pmpro_disallowed_refund_statuses() {
 
@@ -4571,7 +4571,7 @@ function pmpro_set_expiration_date( $user_id, $level_id, $enddate ) {
 /*
  * Check whether a file should be allowed to be uploaded.
  *
- * By default, only files assiciated with a user field can be uploaded,
+ * By default, only files associated with a user field can be uploaded,
  * but there is a filter to allow other files to be uploaded as well.
  *
  * @since 2.12.4

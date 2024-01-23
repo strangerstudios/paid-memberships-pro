@@ -89,7 +89,7 @@ if ( $webhookNotification->kind === Braintree_WebhookNotification::CHECK ) {
 	pmpro_braintreeWebhookExit();
 }
 
-//subscription charged sucessfully
+//subscription charged successfully
 if ( $webhookNotification->kind === Braintree_WebhookNotification::SUBSCRIPTION_CHARGED_SUCCESSFULLY ) {
 	$logstr[] = "The Braintree gateway received payment for a recurring billing plan";
 	

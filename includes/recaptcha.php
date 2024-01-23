@@ -4,7 +4,7 @@
  */
 function pmpro_init_recaptcha() {
 	// If ReCAPTCHA is not enabled, don't do anything.
-	// global $recaptcha for backwards compatbility.
+	// global $recaptcha for backwards compatibility.
 	// TODO: Remove this in a future version.
 	global $recaptcha;
 	$recaptcha = get_option( 'pmpro_recaptcha' );

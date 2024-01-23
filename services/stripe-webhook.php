@@ -380,7 +380,7 @@
 
 			//We've got the right order	
 			if( !empty( $morder->id ) ) {
-				// Ingore orders already in refund status.
+				// Ignore orders already in refund status.
 				if( $morder->status == 'refunded' ) {					
 					$logstr .= sprintf( 'Webhook: Order ID %1$s with transaction ID %2$s was already in refund status.', $morder->id, $payment_transaction_id );									
 					pmpro_stripeWebhookExit();

@@ -3,7 +3,7 @@
  * @see https://wordpress.stackexchange.com/questions/390282
  */
 
-// Native Depedencies.
+// Native Dependencies.
 const path = require("path");
 
 // Third-Party Dependencies.

@@ -93,7 +93,7 @@ class PMProDivi{
 	}
 	
 	/**
-	 * Filter the element classess added to the no_access messages for improved appearance in Divi.
+	 * Filter the element classes added to the no_access messages for improved appearance in Divi.
 	 * Hooked into pmpro_element_class.
 	 * @since 2.8.2	 
 	 */
