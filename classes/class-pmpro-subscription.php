@@ -652,13 +652,14 @@ class PMPro_Subscription {
 
 		// Create the subscription.
 		$new_subscription = new PMPro_Subscription( $subscription_data );
-
-		// Try to pull as much info as possible directly from the gateway or from the database.
-		$saved = $new_subscription->update();
+		$saved = $new_subscription->save();
 		if ( ! $saved ) {
 			// We couldn't save the subscription.
 			return null;
 		}
+
+		// Try to pull as much info as possible directly from the gateway or from the database.
+		$new_subscription->update();
 
 		return $new_subscription;
 	}
