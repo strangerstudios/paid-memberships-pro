@@ -1304,6 +1304,9 @@ class PMPro_Field {
 			$output = implode( ', ', $value );
 		elseif( ! empty( $this->options ) && isset( $this->options[$value] ) )
 			$output = $this->options[$value];
+		elseif( $this->type == 'date' ) {
+			$output = date_i18n( get_option( 'date_format' ), strtotime( $value ) );
+		}
 		else
 			$output = $value;
 
