@@ -27,7 +27,7 @@ class PMPro_Member_Edit_Panel_User_Fields extends PMPro_Member_Edit_Panel {
 			<?php
 			foreach( $profile_user_fields[$this->title] as $field ) {
 				if ( pmpro_is_field( $field ) ) {
-					$field->displayInProfile( self::get_user()->ID );
+					$field->displayInProfile( self::get_user()->ID ); // Field will be readonly if cannot edit users.
 				}
 			}
 			?>
@@ -39,12 +39,7 @@ class PMPro_Member_Edit_Panel_User_Fields extends PMPro_Member_Edit_Panel {
 	 * Save panel data.
 	 */
 	public function save() {
-		// Check capabilities.
-		if ( ! current_user_can( 'edit_users' ) ) {
-			return;
-		}
-
-		$saved = ( pmpro_save_user_fields_in_profile( self::get_user()->ID ) !== false ); // Function returns false on failed, null on saved.
+		$saved = ( pmpro_save_user_fields_in_profile( self::get_user()->ID ) !== false ); // Function returns false on failed, null on saved. Will check edit_users cap in function.
 
 		// Show success message.
 		if ( $saved ) {

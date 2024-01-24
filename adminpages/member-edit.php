@@ -148,13 +148,6 @@ function pmpro_member_edit_save() {
 		return;
 	}
 
-	// Make sure the current user can edit this user.
-	// Alterred from wp-admin/user-edit.php.
-	$user = PMPro_Member_Edit_Panel::get_user();
-	if ( ! current_user_can( 'edit_user', $user->ID ) ) {
-		wp_die( __( 'Sorry, you are not allowed to edit this user.', 'paid-memberships-pro' ) );
-	}
-
 	// Get the panel slug that was submitted.
 	$panel_slug = empty( $_REQUEST['pmpro_member_edit_panel'] ) ? '' : sanitize_text_field( $_REQUEST['pmpro_member_edit_panel'] );
 	if ( empty( $panel_slug ) ) {
