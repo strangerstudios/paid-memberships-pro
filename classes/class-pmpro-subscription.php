@@ -652,6 +652,10 @@ class PMPro_Subscription {
 
 		// Create the subscription.
 		$new_subscription = new PMPro_Subscription( $subscription_data );
+
+		// Save the subscription before syncing with gateway
+		// to avoid infinite loops if gateways load orders which
+		// in turn try to create this subscription again.
 		$saved = $new_subscription->save();
 		if ( ! $saved ) {
 			// We couldn't save the subscription.
