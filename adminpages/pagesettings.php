@@ -76,7 +76,7 @@ if (!empty($_REQUEST['savesettings'])) {
     if (!empty($extra_pages)) {
         foreach ($extra_pages as $name => $label) {
             pmpro_setOption($name . '_page_id', NULL, 'intval');
-            $pmpro_pages[$name] = get_option($name . '_page_id');
+            $pmpro_pages[$name] = get_option('pmpro_' . $name . '_page_id');
         }
     }
 
