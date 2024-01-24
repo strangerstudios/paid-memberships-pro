@@ -21,6 +21,11 @@ abstract class PMPro_Member_Edit_Panel {
 	protected $submit_text = '';
 
 	/**
+	 * @var array The user must have at least one of these capabilities to view this panel.
+	 */
+	protected $capabilities = array();
+
+	/**
 	 * Get the slug for this panel.
 	 *
 	 * @since 3.0
@@ -39,6 +44,11 @@ abstract class PMPro_Member_Edit_Panel {
 	 * @param bool $is_selected True if this is the selected panel, false otherwise.
 	 */
 	final public function display_tab( $is_selected ) {
+		// Check capabilities.
+		if ( ! $this->should_show() ) {
+			return;
+		}
+
 		?>
 		<button
 			role="tab"
@@ -63,6 +73,11 @@ abstract class PMPro_Member_Edit_Panel {
 	 * @param bool $is_selected True if this is the selected panel, false otherwise.
 	 */
 	final public function display_panel( $is_selected ) {
+		// Check capabilities.
+		if ( ! $this->should_show() ) {
+			return;
+		}
+
 		?>
 		<div
 			id="pmpro-member-edit-<?php echo esc_attr( $this->slug ) ?>-panel"
@@ -132,6 +147,41 @@ abstract class PMPro_Member_Edit_Panel {
 		}
 
 		return $user;
+	}
+
+	/**
+	 * Check if the current user can view this panel.
+	 *
+	 * @since 3.0
+	 *
+	 * @return bool
+	 */
+	final public function current_user_can_view() {
+		// If no specific capabilities are set, check if the user can edit members.
+		if ( empty( $this->capabilities ) ) {
+			return current_user_can( apply_filters( 'pmpro_edit_member_capability', 'pmpro_edit_members' ) );
+		}
+
+		// Check capabilities.
+		foreach ( $this->capabilities as $cap ) {
+			if ( current_user_can( $cap ) ) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	/**
+	 * Check if this panel should be shown.
+	 * Can be overridden by child classes.
+	 *
+	 * @since 3.0
+	 *
+	 * @return bool
+	 */
+	public function should_show() {
+		return self::current_user_can_view();
 	}
 
 	/**
