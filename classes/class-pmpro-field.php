@@ -1302,7 +1302,7 @@ class PMPro_Field {
 		}
 		elseif(is_array($value))
 			$output = implode( ', ', $value );
-		elseif(!empty($this->options))
+		elseif( ! empty( $this->options ) && isset( $this->options[$value] ) )
 			$output = $this->options[$value];
 		else
 			$output = $value;

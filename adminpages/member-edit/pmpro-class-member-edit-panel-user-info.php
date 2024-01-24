@@ -47,7 +47,7 @@ class PMPro_Member_Edit_Panel_User_Info extends PMPro_Member_Edit_Panel {
 			$user_email = $user->user_email;
 			$first_name = $user->first_name;
 			$last_name = $user->last_name;
-			$role = $user->roles[0];
+			$role = current( $user->roles );
 			$user_notes = $user->user_notes;
 		} else {
 			// We are creating a new user.

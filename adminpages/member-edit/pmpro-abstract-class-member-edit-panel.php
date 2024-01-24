@@ -21,11 +21,6 @@ abstract class PMPro_Member_Edit_Panel {
 	protected $submit_text = '';
 
 	/**
-	 * @var array The user must have at least one of these capabilities to view this panel.
-	 */
-	protected $capabilities = array();
-
-	/**
 	 * Get the slug for this panel.
 	 *
 	 * @since 3.0
@@ -151,29 +146,6 @@ abstract class PMPro_Member_Edit_Panel {
 
 	/**
 	 * Check if the current user can view this panel.
-	 *
-	 * @since 3.0
-	 *
-	 * @return bool
-	 */
-	final public function current_user_can_view() {
-		// If no specific capabilities are set, check if the user can edit members.
-		if ( empty( $this->capabilities ) ) {
-			return current_user_can( apply_filters( 'pmpro_edit_member_capability', 'pmpro_edit_members' ) );
-		}
-
-		// Check capabilities.
-		foreach ( $this->capabilities as $cap ) {
-			if ( current_user_can( $cap ) ) {
-				return true;
-			}
-		}
-
-		return false;
-	}
-
-	/**
-	 * Check if this panel should be shown.
 	 * Can be overridden by child classes.
 	 *
 	 * @since 3.0
@@ -181,7 +153,7 @@ abstract class PMPro_Member_Edit_Panel {
 	 * @return bool
 	 */
 	public function should_show() {
-		return self::current_user_can_view();
+		return current_user_can( apply_filters( 'pmpro_edit_member_capability', 'pmpro_edit_members' ) );
 	}
 
 	/**
