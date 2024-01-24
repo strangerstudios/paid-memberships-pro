@@ -14,9 +14,8 @@ class PMPro_Member_Edit_Panel_TOS extends PMPro_Member_Edit_Panel {
 	 */
 	protected function display_panel_contents() {
 		// Show TOS Consent History if available.
-		$tospage_id = pmpro_getOption( 'tospage' );
 		$consent_log = pmpro_get_consent_log( self::get_user()->ID, true );
-		if ( ! empty( $tospage_id ) || ! empty( $consent_log ) ) { ?>
+		if ( ! empty( $consent_log ) ) { ?>
 			<h3><?php esc_html_e("TOS Consent History", 'paid-memberships-pro' ); ?></h3>
 			<div id="tos_consent_history">
 				<?php
@@ -39,8 +38,23 @@ class PMPro_Member_Edit_Panel_TOS extends PMPro_Member_Edit_Panel {
 				?>
 			</div>
 			<?php
+		} else {
+			echo '<p>' . __( 'No TOS consent history found.', 'paid-memberships-pro' ) . '</p>';
 		}
 
 		do_action( 'pmpro_after_membership_level_profile_fields', self::get_user() );
+	}
+
+	/**
+	 * Do not show if TOS is not enabled.
+	 *
+	 * @return bool
+	 */
+	public function should_show() {
+		if ( empty( get_option( 'pmpro_tospage' ) ) ) {
+			return false;
+		}
+
+		return parent::should_show();
 	}
 }
