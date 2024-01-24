@@ -1266,7 +1266,7 @@ class PMPro_Field {
 		?>
 		<tr id="<?php echo esc_attr( $this->id );?>_tr">
 			<th>
-				<?php if(!empty($this->showmainlabel)) { ?>
+				<?php if ( $this->type != 'hidden' ) { ?>
 					<label for="<?php echo esc_attr($this->name);?>"><?php echo wp_kses_post( $this->label );?></label>
 				<?php } ?>
 			</th>
@@ -1304,9 +1304,10 @@ class PMPro_Field {
 			$output = implode( ', ', $value );
 		elseif( ! empty( $this->options ) && isset( $this->options[$value] ) )
 			$output = $this->options[$value];
-		elseif( $this->type == 'date' ) {
+		elseif ( $this->type == 'checkbox' )
+			$output = $value ? __( 'Yes', 'paid-memberships-pro' ) : __( 'No', 'paid-memberships-pro' );
+		elseif ( $this->type == 'date' )
 			$output = date_i18n( get_option( 'date_format' ), strtotime( $value ) );
-		}
 		else
 			$output = $value;
 
