@@ -9,7 +9,6 @@ class PMPro_Member_Edit_Panel_Orders extends PMPro_Member_Edit_Panel {
 		$this->slug = 'orders';
 		$this->title = __( 'Orders', 'paid-memberships-pro' );
 		$this->title_link = empty( $user->ID ) ? '' : '<a href=' . admin_url( 'admin.php?page=pmpro-orders&order=-1&user=' . $user->ID ) . ' class="page-title-action pmpro-has-icon pmpro-has-icon-plus">' . esc_html__( 'Add New Order', 'paid-memberships-pro' ) . '</a>';
-		$this->capabilities[] = 'pmpro_orders';
 	}
 
 	/**
@@ -137,5 +136,17 @@ class PMPro_Member_Edit_Panel_Orders extends PMPro_Member_Edit_Panel {
 			<?php } ?>
 		</div> <!-- end #member-history-orders -->
 		<?php
+	}
+
+	/**
+	 * Check if the current user can view this panel.
+	 * Can be overridden by child classes.
+	 *
+	 * @since 3.0
+	 *
+	 * @return bool
+	 */
+	public function should_show() {
+		return current_user_can( 'pmpro_orders' );
 	}
 }
