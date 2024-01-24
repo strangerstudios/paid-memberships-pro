@@ -9,6 +9,7 @@ class PMPro_Member_Edit_Panel_Orders extends PMPro_Member_Edit_Panel {
 		$this->slug = 'orders';
 		$this->title = __( 'Orders', 'paid-memberships-pro' );
 		$this->title_link = empty( $user->ID ) ? '' : '<a href=' . admin_url( 'admin.php?page=pmpro-orders&order=-1&user=' . $user->ID ) . ' class="page-title-action pmpro-has-icon pmpro-has-icon-plus">' . esc_html__( 'Add New Order', 'paid-memberships-pro' ) . '</a>';
+		$this->capabilities[] = 'pmpro_orders';
 	}
 
 	/**
