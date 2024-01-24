@@ -1,12 +1,12 @@
 <?php
 
-class PMPro_Member_Edit_Panel_Other extends PMPro_Member_Edit_Panel {
+class PMPro_Member_Edit_Panel_TOS extends PMPro_Member_Edit_Panel {
 	/**
 	 * Set up the panel.
 	 */
 	public function __construct() {
 		$this->slug = 'other';
-		$this->title = __( 'Additional Info', 'paid-memberships-pro' );
+		$this->title = __( 'Terms of Service', 'paid-memberships-pro' );
 	}
 
 	/**
