@@ -17,7 +17,7 @@ class PMPro_Member_Edit_Panel_User_Fields extends PMPro_Member_Edit_Panel {
 		// Print the group description.
 		$field_group = pmpro_get_field_group_by_name( $this->title );
 		if ( ! empty( $field_group->description ) ) {
-			echo wp_kses_post( wpautop( $field_group->description ) );
+			echo wp_kses_post( $field_group->description );
 		}
 
 		// Print the fields.
