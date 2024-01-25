@@ -191,7 +191,7 @@ function pmpro_search_filter( $query ) {
 	$pmpro_search_filter_post_types = apply_filters( 'pmpro_search_filter_post_types', array( 'page', 'post' ) );
 	if ( ! is_array( $pmpro_search_filter_post_types ) ) {
 		$pmpro_search_filter_post_types = array( $pmpro_search_filter_post_types );		
-	}
+	}	
 
 	// Ignore queries from the admin dashboard.
 	if ( $query->is_admin ) {
@@ -200,6 +200,15 @@ function pmpro_search_filter( $query ) {
 
 	// Ignore single post queries.
 	if ( $query->is_singular ) {
+		return $query;
+	}
+
+	/**
+	 * Don't filter custom taxonomies since the changes we
+	 * make to the queries below only work for categories and tags.
+	 * Note that categories and tags return false for is_tax().	 
+	 */
+	if ( $query->is_tax() ) {
 		return $query;
 	}
 
@@ -218,8 +227,13 @@ function pmpro_search_filter( $query ) {
 		return $query;
 	}
 
-	// If this is a taxonomy query, make sure the taxonomy is in the post types to filter.
-	if ( $query->is_archive() && ! $query->is_post_type_archive( $pmpro_search_filter_post_types ) ) {
+	// If posts aren't being filtered, don't filter categories either.
+	if ( ! in_array( 'post', $pmpro_search_filter_post_types ) && $query->is_category() ) {
+		return $query;
+	}
+	
+	// If posts aren't being filtered, don't filter tags either.
+	if ( ! in_array( 'post', $pmpro_search_filter_post_types ) && $query->is_tag() ) {
 		return $query;
 	}
 
