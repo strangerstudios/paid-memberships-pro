@@ -54,6 +54,8 @@ function pmpro_member_shortcode( $atts, $content = null, $shortcode_tag = '' ) {
 	);
 
 	// Get a list of pmpro-related fields stored in user meta.
+	// Note: Most of this information is no longer stored in user meta.
+	//       These will likely be deprecated in the future. Use with caution.
 	$pmpro_user_meta_fields = array(
 		'bfirstname',
 		'blastname',
