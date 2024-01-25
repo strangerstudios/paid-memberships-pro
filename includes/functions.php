@@ -2375,26 +2375,26 @@ function pmpro_are_any_visible_levels() {
  * Get level at checkout and place into $pmpro_level global.
  * If no level is passed or found in the URL parameters, global vars,
  * or in the post options, then this will return the first level found.
+ *
  * @param int $level_id (optional) Pass a level ID to force that level.
- * @param string $discount_code (optional) Pass a discount code to force that code.
+ * @param string $discount_code (optional) Pass a discount code to force that code
+ *
  * @return mixed|void
  */
 function pmpro_getLevelAtCheckout( $level_id = null, $discount_code = null ) {
 	global $pmpro_level, $wpdb, $post;
-	// Commenting out caching for now. We want to rethink this appraoch before we commit to it.
-	/*
+
 	static $function_cache = array();
 
-	// Get the cache key for the passed inputs.
+	// Check if we have a cached value to use.
 	$cache_key = md5( serialize( array( $level_id, $discount_code ) ) );
-
 	if ( array_key_exists( $cache_key, $function_cache ) ) {
+		// Set the global and return the cached value.
 		$pmpro_level = $function_cache[ $cache_key ];
 		return $pmpro_level;
 	}
-	*/
 
-	// reset pmpro_level
+	// Reset $pmpro_level global.
 	$pmpro_level = null;
 
 	// Default to level passed in via URL.
@@ -2477,14 +2477,13 @@ function pmpro_getLevelAtCheckout( $level_id = null, $discount_code = null ) {
 		$pmpro_level = $wpdb->get_row( "SELECT * FROM $wpdb->pmpro_membership_levels WHERE id = '" . esc_sql( $level_id ) . "' AND allow_signups = 1 LIMIT 1" );
 	}
 
-	// filter the level (for upgrades, etc)
+	// Filter the level (for upgrades, etc).
 	$pmpro_level = apply_filters( 'pmpro_checkout_level', $pmpro_level );
 
-	// Commenting out caching for now. We want to rethink this appraoch before we commit to it.
-	/*
-	// Cache it.
-	$function_cache[ $cache_key ] = $pmpro_level;
-	*/
+	// Cache the result for future use if this is a "top level" call to this function.
+	if ( ! doing_filter( 'pmpro_checkout_level' ) ) {
+		$function_cache[ $cache_key ] = $pmpro_level;
+	}
 
 	return $pmpro_level;
 }
