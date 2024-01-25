@@ -203,15 +203,6 @@ function pmpro_search_filter( $query ) {
 		return $query;
 	}
 
-	/**
-	 * Don't filter custom taxonomies since the changes we
-	 * make to the queries below only work for categories and tags.
-	 * Note that categories and tags return false for is_tax().	 
-	 */
-	if ( $query->is_tax() ) {
-		return $query;
-	}
-
 	// Ignore REST API requests.
 	if ( defined( 'REST_REQUEST' ) && REST_REQUEST ) {
 		return $query;
@@ -237,79 +228,101 @@ function pmpro_search_filter( $query ) {
 		return $query;
 	}
 
-	// Okay. Filter the query.
-		
-	// Get page ids that are in my levels.
+	/**
+	 * Okay. We're going to filter the search results.
+	 * Some explaination of what we're doing.
+	 * A = All posts hidden by level.
+	 * B = All posts the current user has access to by level.
+	 * C = All posts hidden by category.
+	 * D = All posts the current user has access to by category.
+	 * 
+	 * Then hidden posts = (A - B) + (C - D)
+	 * 
+	 * We calculate A-B and call it $hidden_post_ids.
+	 * We calculate C-D and call it $cat_hidden_post_ids.
+	 * 
+	 * Then we merge and add to post__not_in.
+	 */
+	
+	/**
+	 * Get hidden post IDs.
+	 * Note this also gets IDs for posts and other custom post types
+	 * that might be protected through the PMPro CPT Add On or
+	 * other plugins or custom code.
+	 */
+	// First, figure out if their is a current user with levels.
 	if( ! empty( $current_user->ID ) ) {
 		$levels = pmpro_getMembershipLevelsForUser($current_user->ID);
 	} else {
 		$levels = false;
 	}
-	
-	// Pull the IDs out of the levels array.
 	if( ! empty( $levels ) ) {
 		$level_ids = wp_list_pluck( $levels, 'ID' );
 	}
-	
-	// If we have IDs, get all restricted posts.
-	if ( ! empty ( $level_ids ) ) {
-		// Get restricted posts for level.
-		$sql = "SELECT page_id
-				FROM {$wpdb->pmpro_memberships_pages}
-				WHERE membership_id
-					IN(" . implode (', ', array_map( 'esc_sql', $level_ids ) )  . ")";
 
-		$my_pages = array_values(array_unique($wpdb->get_col($sql)));
-	}
-
-	// Get hidden page ids.
-	if( ! empty( $my_pages ) ) {
+	// Now get posts hidden by level.
+	if( ! empty( $level_ids ) ) {
 		// All hidden pages, minus the ones I have access to.
-		$sql = "SELECT page_id FROM $wpdb->pmpro_memberships_pages WHERE page_id NOT IN(" . implode(',', array_map( 'esc_sql', $my_pages ) ) . ")";
+		$sql = "SELECT mp.page_id
+				FROM {$wpdb->pmpro_memberships_pages} mp
+					LEFT JOIN {$wpdb->posts} p ON mp.page_id = p.ID
+				WHERE mp.page_id NOT IN(
+					SELECT page_id
+					FROM {$wpdb->pmpro_memberships_pages}
+					WHERE membership_id IN(" . implode(',', array_map( 'esc_sql', $level_ids ) ) . ")
+				) AND p.post_type IN('" . implode( "', '", array_map( 'esc_sql', $pmpro_search_filter_post_types ) ) . "')";
 	} else {
 		// All hidden pages.
-		$sql = "SELECT page_id FROM $wpdb->pmpro_memberships_pages";
+		$sql = "SELECT mp.page_id
+				FROM {$wpdb->pmpro_memberships_pages} mp
+					LEFT JOIN {$wpdb->posts} p ON mp.page_id = p.ID
+				WHERE p.post_type IN('" . implode( "', '", array_map( 'esc_sql', $pmpro_search_filter_post_types ) ) . "')";
 	}
-	$hidden_page_ids = array_values(array_unique($wpdb->get_col($sql)));
-
-	if( $hidden_page_ids ) {
-		$query->set( 'post__not_in', array_merge( $query->get('post__not_in'), $hidden_page_ids ) );
-	}
-			
-	// Get categories that are filtered by level, but not my level.
-	global $pmpro_my_cats;
-	$pmpro_my_cats = array();
-
-	if( $levels ) {
-		foreach( $levels as $key => $level ) {
-			$member_cats = pmpro_getMembershipCategories($level->id);
-			$pmpro_my_cats = array_unique(array_merge($pmpro_my_cats, $member_cats));
-		}
-	}
+	$hidden_post_ids = array_values(array_unique($wpdb->get_col($sql)));
 	
-	// Get hidden cats.
-	if( ! empty( $pmpro_my_cats ) ) {
-		$sql = "SELECT category_id FROM $wpdb->pmpro_memberships_categories WHERE category_id NOT IN(" . implode(',', array_map( 'esc_sql', $pmpro_my_cats ) ) . ")";
+	/**
+	 * Get post IDs hidden by category.
+	 * Note this also gets IDs for tags and other custom taxonomies
+	 * since the PMPro table doesn't differentiate between them.
+	 */
+	if ( ! empty( $level_ids ) ) {
+		// All posts hidden by category, minus the ones I have access to.
+		$sql = "SELECT tr.object_id
+				FROM {$wpdb->term_relationships} tr
+					LEFT JOIN {$wpdb->posts} p ON tr.object_id = p.ID
+				WHERE tr.term_taxonomy_id IN(					
+					SELECT category_id
+					FROM {$wpdb->pmpro_memberships_categories}
+					WHERE membership_id NOT IN(" . implode(',', array_map( 'esc_sql', $level_ids ) ) . ")
+				) AND tr.object_id NOT IN(					
+					SELECT object_id
+					FROM {$wpdb->term_relationships}
+					WHERE term_taxonomy_id IN(
+						SELECT category_id
+						FROM {$wpdb->pmpro_memberships_categories}
+						WHERE membership_id IN(" . implode(',', array_map( 'esc_sql', $level_ids ) ) . ")
+					)
+				) AND p.post_type IN(
+					'" . implode( "', '", array_map( 'esc_sql', $pmpro_search_filter_post_types ) ) . "'
+				)";
 	} else {
-		$sql = "SELECT category_id FROM $wpdb->pmpro_memberships_categories";
-	}							
-	$hidden_cat_ids = array_values(array_unique($wpdb->get_col($sql)));
-	
-	// Make this work.
-	if( $hidden_cat_ids ) {
+		// All posts hidden by category.
+		$sql = "SELECT tr.object_id
+				FROM {$wpdb->term_relationships} tr
+					LEFT JOIN {$wpdb->posts} p ON tr.object_id = p.ID
+				WHERE tr.term_taxonomy_id IN(
+					SELECT category_id
+					FROM {$wpdb->pmpro_memberships_categories}
+				) AND p.post_type IN('" . implode( "', '", array_map( 'esc_sql', $pmpro_search_filter_post_types ) ) . "')";
+	}
+	$cat_hidden_post_ids = array_values(array_unique($wpdb->get_col($sql)));
 
-		// Get all registered category ID's so we may remove the ones we need to hide. This is to support posts that may belong to multiple categories and only one of them is hidden.
-		$all_cat_ids = get_terms( array(
-			'taxonomy' => 'category',
-			'fields'   => 'ids',
-			'get'      => 'all',
-		));
+	// Merge the hidden post IDs.
+	$hidden_post_ids = array_merge( $hidden_post_ids, $cat_hidden_post_ids );
 
-		// Show only these categories to members.
-		$query->set( 'category__in', array_merge( $query->get( 'category__in' ), array_diff( $all_cat_ids, $hidden_cat_ids ) ) );
-					
-		// Filter so posts in this member's categories are allowed.
-		add_action( 'posts_where', 'pmpro_posts_where_unhide_cats' );
+	// If stuff is still hidden, hide it.
+	if( ! empty( $hidden_post_ids ) ) {
+		$query->set( 'post__not_in', array_merge( $query->get('post__not_in'), $hidden_post_ids ) );
 	}
 
     return $query;
@@ -317,30 +330,6 @@ function pmpro_search_filter( $query ) {
 $filterqueries = get_option("pmpro_filterqueries");
 if( ! empty( $filterqueries ) ) {
 	add_filter( 'pre_get_posts', 'pmpro_search_filter' );
-}
-
-/*
- * Find taxonomy filters and make sure member categories are not hidden from members.
- * @since 1.7.15
-*/
-function pmpro_posts_where_unhide_cats($where) {
-	global $pmpro_my_cats, $wpdb;
-	
-	//if we have member cats, make sure they are allowed in taxonomy queries
-	if( ! empty( $where ) && ! empty( $pmpro_my_cats ) ) {
-		$pattern = "/$wpdb->posts.ID NOT IN \(\s*SELECT object_id\s*FROM $wpdb->term_relationships\s*WHERE term_taxonomy_id IN \((.*)\)\s*\)/";
-		$replacement = $wpdb->posts . '.ID NOT IN (
-						SELECT tr1.object_id
-						FROM ' . $wpdb->term_relationships . ' tr1
-							LEFT JOIN ' . $wpdb->term_relationships . ' tr2 ON tr1.object_id = tr2.object_id AND tr2.term_taxonomy_id IN(' . implode( array_map( 'intval', $pmpro_my_cats ) ) . ')
-						WHERE tr1.term_taxonomy_id IN(${1}) AND tr2.term_taxonomy_id IS NULL ) ';
-		$where = preg_replace( $pattern, $replacement, $where );
-	}
-	
-	//remove filter for next query
-	remove_action( 'posts_where', 'pmpro_posts_where_unhide_cats' );
-	
-	return $where;
 }
 
 function pmpro_membership_content_filter( $content, $skipcheck = false ) {
