@@ -137,4 +137,16 @@ class PMPro_Member_Edit_Panel_Orders extends PMPro_Member_Edit_Panel {
 		</div> <!-- end #member-history-orders -->
 		<?php
 	}
+
+	/**
+	 * Check if the current user can view this panel.
+	 * Can be overridden by child classes.
+	 *
+	 * @since 3.0
+	 *
+	 * @return bool
+	 */
+	public function should_show() {
+		return current_user_can( 'pmpro_orders' );
+	}
 }

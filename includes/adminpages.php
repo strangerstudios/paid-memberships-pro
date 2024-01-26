@@ -20,7 +20,6 @@ function pmpro_getPMProCaps() {
 		'pmpro_userfields',
 		'pmpro_advancedsettings',
 		'pmpro_addons',
-		'pmpro_subscriptions',
 		'pmpro_updates',
 		'pmpro_manage_pause_mode'
 	);
@@ -95,7 +94,7 @@ function pmpro_add_pages() {
 	add_submenu_page( $wizard_location, __( 'Setup Wizard', 'paid-memberships-pro' ), __( 'Setup Wizard', 'paid-memberships-pro' ), 'pmpro_wizard', 'pmpro-wizard', 'pmpro_wizard' );
 
 	// Hidden pages
-	add_submenu_page( 'admin.php', __( 'Subscriptions', 'paid-memberships-pro' ), __( 'Subscriptions', 'paid-memberships-pro' ), 'pmpro_subscriptions', 'pmpro-subscriptions', 'pmpro_subscriptions' );
+	add_submenu_page( 'admin.php', __( 'Subscriptions', 'paid-memberships-pro' ), __( 'Subscriptions', 'paid-memberships-pro' ), 'pmpro_edit_members', 'pmpro-subscriptions', 'pmpro_subscriptions' );
 	add_submenu_page( 'admin.php', __( 'Add Member', 'paid-memberships-pro' ), __( 'Add Member', 'paid-memberships-pro' ), 'pmpro_edit_members', 'pmpro-member', 'pmpro_member_edit_display' );
 }
 add_action( 'admin_menu', 'pmpro_add_pages' );
@@ -684,16 +683,8 @@ function pmpro_plugin_row_meta( $links, $file ) {
 add_filter( 'plugin_row_meta', 'pmpro_plugin_row_meta', 10, 2 );
 
 function pmpro_users_action_links( $actions, $user ) {
-	/**
-	 * Filter the capability required to edit members.
-	 *
-	 * @since TBD
-	 * @param string $membership_level_capability The capability required to edit members. Default 'pmpro_edit_members'.
-	 */
-	$membership_level_capability = apply_filters( 'pmpro_edit_member_capability', 'pmpro_edit_members' );
-
 	// If the user doesn't have the capability to edit members, return.
-	if ( ! current_user_can( $membership_level_capability ) ) {
+	if ( ! current_user_can( pmpro_get_edit_member_capability() ) ) {
 		return $actions;
 	}
 

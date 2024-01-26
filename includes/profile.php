@@ -7,11 +7,10 @@
 function pmpro_membership_levels_table_on_profile( $user ) {
 	global $current_user;
 
-	$membership_level_capability = apply_filters( 'pmpro_edit_member_capability', 'pmpro_edit_members' );
-
 	// If the user doesn't have the capability to edit members, don't show the table.
-	if ( ! current_user_can( $membership_level_capability ) )
+	if ( ! current_user_can( pmpro_get_edit_member_capability() ) ) {
 		return false;
+	}
 
 	// Return early if we should not show membership information on the Edit User / Profile page.
 	$show_membership_level = true;
