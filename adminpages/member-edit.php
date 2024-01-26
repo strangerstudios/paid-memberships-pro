@@ -151,7 +151,7 @@ function pmpro_member_edit_save() {
 	// Make sure the current user can edit this user.
  	// Alterred from wp-admin/user-edit.php.
  	$user = PMPro_Member_Edit_Panel::get_user();
- 	if ( ! current_user_can( apply_filters( 'pmpro_edit_member_capability', 'pmpro_edit_members' ) ) ) {
+ 	if ( ! current_user_can( pmpro_get_edit_member_capability() ) ) {
  		wp_die( __( 'Sorry, you are not allowed to edit this user.', 'paid-memberships-pro' ) );
  	}
 

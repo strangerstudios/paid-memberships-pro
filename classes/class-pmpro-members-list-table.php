@@ -512,14 +512,7 @@ class PMPro_Members_List_Table extends WP_List_Table {
 		// Set up the hover actions for this user.
 		$actions = array();
 
-		/**
-		 * Filter the capability required to edit members.
-		 *
-		 * @since TBD
-		 * @param string $membership_level_capability The capability required to edit members. Default 'pmpro_edit_members'.
-		 */
-		$membership_level_capability = apply_filters( 'pmpro_edit_member_capability', 'pmpro_edit_members' );
-		if ( current_user_can( $membership_level_capability ) ) {
+		if ( current_user_can( pmpro_get_edit_member_capability() ) ) {
 			// Add the "Edit Member" action.
 			$actions['editmember'] = '<a href="' . esc_url( add_query_arg( array( 'page' => 'pmpro-member', 'user_id' => (int)$item['ID'] ), admin_url( 'admin.php' ) ) ) . '">' . __( 'Edit Member', 'paid-memberships-pro' ) . '</a>';
 		}

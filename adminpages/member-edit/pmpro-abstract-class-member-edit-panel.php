@@ -153,7 +153,7 @@ abstract class PMPro_Member_Edit_Panel {
 	 * @return bool
 	 */
 	public function should_show() {
-		return current_user_can( apply_filters( 'pmpro_edit_member_capability', 'pmpro_edit_members' ) );
+		return current_user_can( pmpro_get_edit_member_capability() );
 	}
 
 	/**

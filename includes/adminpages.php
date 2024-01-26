@@ -683,16 +683,8 @@ function pmpro_plugin_row_meta( $links, $file ) {
 add_filter( 'plugin_row_meta', 'pmpro_plugin_row_meta', 10, 2 );
 
 function pmpro_users_action_links( $actions, $user ) {
-	/**
-	 * Filter the capability required to edit members.
-	 *
-	 * @since TBD
-	 * @param string $membership_level_capability The capability required to edit members. Default 'pmpro_edit_members'.
-	 */
-	$membership_level_capability = apply_filters( 'pmpro_edit_member_capability', 'pmpro_edit_members' );
-
 	// If the user doesn't have the capability to edit members, return.
-	if ( ! current_user_can( $membership_level_capability ) ) {
+	if ( ! current_user_can( pmpro_get_edit_member_capability() ) ) {
 		return $actions;
 	}
 
