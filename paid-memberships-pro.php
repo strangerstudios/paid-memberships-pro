@@ -64,7 +64,7 @@ require_once( PMPRO_DIR . '/adminpages/member-edit/pmpro-class-member-edit-panel
 require_once( PMPRO_DIR . '/adminpages/member-edit/pmpro-class-member-edit-panel-memberships.php' );
 require_once( PMPRO_DIR . '/adminpages/member-edit/pmpro-class-member-edit-panel-subscriptions.php' );
 require_once( PMPRO_DIR . '/adminpages/member-edit/pmpro-class-member-edit-panel-orders.php' );
-require_once( PMPRO_DIR . '/adminpages/member-edit/pmpro-class-member-edit-panel-other.php' );
+require_once( PMPRO_DIR . '/adminpages/member-edit/pmpro-class-member-edit-panel-tos.php' );
 require_once( PMPRO_DIR . '/adminpages/member-edit/pmpro-class-member-edit-panel-user-fields.php' );
 
 require_once( PMPRO_DIR . '/includes/admin.php' );                  // admin notices and functionality

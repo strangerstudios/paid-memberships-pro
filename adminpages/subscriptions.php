@@ -2,7 +2,7 @@
 global $pmpro_msg, $pmpro_msgt;
 
 // only admins can get this
-if ( ! function_exists( 'current_user_can' ) || ( ! current_user_can( 'manage_options' ) && ! current_user_can( 'pmpro_subscriptions' ) ) ) {
+if ( ! function_exists( 'current_user_can' ) || ( ! current_user_can( 'manage_options' ) && ! current_user_can( 'pmpro_edit_members' ) ) ) {
 	die( __( 'You do not have permissions to perform this action.', 'paid-memberships-pro' ) );
 }
 

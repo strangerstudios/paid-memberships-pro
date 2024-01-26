@@ -20,7 +20,7 @@ function pmpro_member_edit_get_panels() {
 	$panels[] = new PMPro_Member_Edit_Panel_Memberships();
 	$panels[] = new PMPro_Member_Edit_Panel_Subscriptions();
 	$panels[] = new PMPro_Member_Edit_Panel_Orders();
-	$panels[] = new PMPro_Member_Edit_Panel_Other();
+	$panels[] = new PMPro_Member_Edit_Panel_TOS();
 
 	// Add user fields panels.
 	$user_id = PMPro_Member_Edit_Panel::get_user()->ID;
@@ -149,11 +149,11 @@ function pmpro_member_edit_save() {
 	}
 
 	// Make sure the current user can edit this user.
-	// Alterred from wp-admin/user-edit.php.
-	$user = PMPro_Member_Edit_Panel::get_user();
-	if ( ! current_user_can( 'edit_user', $user->ID ) ) {
-		wp_die( __( 'Sorry, you are not allowed to edit this user.', 'paid-memberships-pro' ) );
-	}
+ 	// Alterred from wp-admin/user-edit.php.
+ 	$user = PMPro_Member_Edit_Panel::get_user();
+ 	if ( ! current_user_can( apply_filters( 'pmpro_edit_member_capability', 'pmpro_edit_members' ) ) ) {
+ 		wp_die( __( 'Sorry, you are not allowed to edit this user.', 'paid-memberships-pro' ) );
+ 	}
 
 	// Get the panel slug that was submitted.
 	$panel_slug = empty( $_REQUEST['pmpro_member_edit_panel'] ) ? '' : sanitize_text_field( $_REQUEST['pmpro_member_edit_panel'] );

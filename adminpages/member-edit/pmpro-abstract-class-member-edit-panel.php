@@ -39,6 +39,11 @@ abstract class PMPro_Member_Edit_Panel {
 	 * @param bool $is_selected True if this is the selected panel, false otherwise.
 	 */
 	final public function display_tab( $is_selected ) {
+		// Check capabilities.
+		if ( ! $this->should_show() ) {
+			return;
+		}
+
 		?>
 		<button
 			role="tab"
@@ -63,6 +68,11 @@ abstract class PMPro_Member_Edit_Panel {
 	 * @param bool $is_selected True if this is the selected panel, false otherwise.
 	 */
 	final public function display_panel( $is_selected ) {
+		// Check capabilities.
+		if ( ! $this->should_show() ) {
+			return;
+		}
+
 		?>
 		<div
 			id="pmpro-member-edit-<?php echo esc_attr( $this->slug ) ?>-panel"
@@ -132,6 +142,18 @@ abstract class PMPro_Member_Edit_Panel {
 		}
 
 		return $user;
+	}
+
+	/**
+	 * Check if the current user can view this panel.
+	 * Can be overridden by child classes.
+	 *
+	 * @since 3.0
+	 *
+	 * @return bool
+	 */
+	public function should_show() {
+		return current_user_can( apply_filters( 'pmpro_edit_member_capability', 'pmpro_edit_members' ) );
 	}
 
 	/**
