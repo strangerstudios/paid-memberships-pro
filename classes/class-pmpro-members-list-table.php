@@ -37,9 +37,6 @@ class PMPro_Members_List_Table extends WP_List_Table {
 			)
 		);
 
-		// Check for default hidden columns.
-		$this->get_hidden_columns();
-
 		add_filter(
 			'screen_settings',
 			array(
