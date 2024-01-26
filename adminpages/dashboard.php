@@ -14,41 +14,51 @@ add_meta_box(
 	'toplevel_page_pmpro-dashboard',
 	'normal'
 );
-add_meta_box(
-	'pmpro_dashboard_report_sales',
-	__( 'Sales and Revenue', 'paid-memberships-pro' ),
-	'pmpro_report_sales_widget',
-	'toplevel_page_pmpro-dashboard',
-	'advanced'
-);
-add_meta_box(
-	'pmpro_dashboard_report_membership_stats',
-	__( 'Membership Stats', 'paid-memberships-pro' ),
-	'pmpro_report_memberships_widget',
-	'toplevel_page_pmpro-dashboard',
-	'advanced'
-);
-add_meta_box(
-	'pmpro_dashboard_report_logins',
-	__( 'Visits, Views, and Logins', 'paid-memberships-pro' ),
-	'pmpro_report_login_widget',
-	'toplevel_page_pmpro-dashboard',
-	'advanced'
-);
-add_meta_box(
-	'pmpro_dashboard_report_recent_members',
-	__( 'Recent Members', 'paid-memberships-pro' ),
-	'pmpro_dashboard_report_recent_members_callback',
-	'toplevel_page_pmpro-dashboard',
-	'side'
-);
-add_meta_box(
-	'pmpro_dashboard_report_recent_orders',
-	__( 'Recent Orders', 'paid-memberships-pro' ),
-	'pmpro_dashboard_report_recent_orders_callback',
-	'toplevel_page_pmpro-dashboard',
-	'side'
-);
+
+if ( current_user_can( 'pmpro_reports' ) ) {
+	add_meta_box(
+		'pmpro_dashboard_report_sales',
+		__( 'Sales and Revenue', 'paid-memberships-pro' ),
+		'pmpro_report_sales_widget',
+		'toplevel_page_pmpro-dashboard',
+		'advanced'
+	);
+	add_meta_box(
+		'pmpro_dashboard_report_membership_stats',
+		__( 'Membership Stats', 'paid-memberships-pro' ),
+		'pmpro_report_memberships_widget',
+		'toplevel_page_pmpro-dashboard',
+		'advanced'
+	);
+	add_meta_box(
+		'pmpro_dashboard_report_logins',
+		__( 'Visits, Views, and Logins', 'paid-memberships-pro' ),
+		'pmpro_report_login_widget',
+		'toplevel_page_pmpro-dashboard',
+		'advanced'
+	);
+}
+
+if ( current_user_can( 'pmpro_memberslist' ) ) {
+	add_meta_box(
+		'pmpro_dashboard_report_recent_members',
+		__( 'Recent Members', 'paid-memberships-pro' ),
+		'pmpro_dashboard_report_recent_members_callback',
+		'toplevel_page_pmpro-dashboard',
+		'side'
+	);
+}
+
+if ( current_user_can( 'pmpro_orders' ) ) {
+	add_meta_box(
+		'pmpro_dashboard_report_recent_orders',
+		__( 'Recent Orders', 'paid-memberships-pro' ),
+		'pmpro_dashboard_report_recent_orders_callback',
+		'toplevel_page_pmpro-dashboard',
+		'side'
+	);
+}
+
 add_meta_box(
 	'pmpro_dashboard_news_updates',
 	__( 'Paid Memberships Pro News and Updates', 'paid-memberships-pro' ),

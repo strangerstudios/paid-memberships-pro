@@ -107,7 +107,9 @@ function pmpro_report_login_page()
 	<h1 class="wp-heading-inline">
 		<?php _e('Visits, Views, and Logins Report', 'paid-memberships-pro');?>
 	</h1>
-	<a target="_blank" href="<?php echo esc_url( $csv_export_link ); ?>" class="page-title-action pmpro-has-icon pmpro-has-icon-download"><?php esc_html_e( 'Export to CSV', 'paid-memberships-pro' ); ?></a>
+	<?php if ( current_user_can( 'pmpro_loginscsv' ) ) { ?>
+		<a target="_blank" href="<?php echo esc_url( $csv_export_link ); ?>" class="page-title-action pmpro-has-icon pmpro-has-icon-download"><?php esc_html_e( 'Export to CSV', 'paid-memberships-pro' ); ?></a>
+	<?php } ?>
 	<p class="search-box">
 		<label class="screen-reader-text" for="post-search-input"><?php echo esc_html_x( 'Search', 'Search form label', 'paid-memberships-pro')?> <?php if(empty($l)) esc_html_e( 'Users', 'paid-memberships-pro' ); else esc_html_e( 'Members', 'paid-memberships-pro' );?>:</label>
 		<input type="hidden" name="page" value="pmpro-reports" />

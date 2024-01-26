@@ -355,7 +355,9 @@ function pmpro_report_memberships_page() {
 	<h1 class="wp-heading-inline">
 		<?php _e( 'Membership Stats', 'paid-memberships-pro' ); ?>
 	</h1>
-	<a target="_blank" href="<?php echo esc_url( $csv_export_link ); ?>" class="page-title-action pmpro-has-icon pmpro-has-icon-download"><?php esc_html_e( 'Export to CSV', 'paid-memberships-pro' ); ?></a>
+	<?php if ( current_user_can( 'pmpro_reportscsv' ) ) { ?>
+		<a target="_blank" href="<?php echo esc_url( $csv_export_link ); ?>" class="page-title-action pmpro-has-icon pmpro-has-icon-download"><?php esc_html_e( 'Export to CSV', 'paid-memberships-pro' ); ?></a>
+	<?php } ?>
 	<div class="pmpro_report-filters">
 		<h3><?php esc_html_e( 'Customize Report', 'paid-memberships-pro' ); ?></h3>
 		<div class="tablenav top">
