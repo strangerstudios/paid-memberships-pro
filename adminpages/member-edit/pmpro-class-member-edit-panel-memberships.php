@@ -142,7 +142,7 @@ class PMPro_Member_Edit_Panel_Memberships extends PMPro_Member_Edit_Panel {
 									if ( ! empty( $enddate_to_show ) ) {
 										$enddate_text = sprintf(
 											// translators: %1$s is the date and %2$s is the time.
-											__( '%1$s at %2$s', 'paid-memberships-pro' ),
+											esc_html__( '%1$s at %2$s', 'paid-memberships-pro' ),
 											date_i18n( get_option( 'date_format'), $enddate_to_show ),
 											date_i18n( get_option( 'time_format'), $enddate_to_show )
 										);
