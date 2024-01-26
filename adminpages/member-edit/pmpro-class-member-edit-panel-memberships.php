@@ -688,9 +688,7 @@ class PMPro_Member_Edit_Panel_Memberships extends PMPro_Member_Edit_Panel {
 	public function save() {
 		global $wpdb;
 
-		// Check if the current user can manage memberships.
-		$membership_level_capability = apply_filters( 'pmpro_edit_member_capability', 'pmpro_edit_members' );
-		if ( ! current_user_can( $membership_level_capability ) ) {
+		if ( ! current_user_can( pmpro_get_edit_member_capability() ) ) {
 			pmpro_setMessage( __( "You do not have permission to update this user's membership levels.", 'paid-memberships-pro' ), 'pmpro_error' );
 			return;
 		}
