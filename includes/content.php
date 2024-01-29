@@ -230,99 +230,91 @@ function pmpro_search_filter( $query ) {
 
 	/**
 	 * Okay. We're going to filter the search results.
+	 * We save the array of posts to hide in a static var for cache.
+	 * So first, check if we have a cache, and if so use that.
+	 */	
+	static $final_hidden_posts = null;	
+	if ( isset( $final_hidden_posts ) ) {		
+		if( ! empty( $final_hidden_posts ) ) {
+			$query->set( 'post__not_in', array_merge( $query->get('post__not_in'), $final_hidden_posts ) );
+		}		
+		return $query;
+	}
+
+	/**
+	 * No cache yet. Let's run the queries.
 	 * Some explaination of what we're doing.
 	 * A = All posts hidden by level.
-	 * B = All posts the current user has access to by level.
-	 * C = All posts hidden by category.
+	 * B = All posts hidden by category.
+	 * C = All posts the current user has access to by level.
 	 * D = All posts the current user has access to by category.
 	 * 
-	 * Then hidden posts = (A - B) + (C - D)
-	 * 
-	 * We calculate A-B and call it $hidden_post_ids.
-	 * We calculate C-D and call it $cat_hidden_post_ids.
+	 * Then the final hidden posts = (A + B) - (C + D)
 	 * 
 	 * Then we merge and add to post__not_in.
 	 */
-	
-	/**
-	 * Get hidden post IDs.
-	 * Note this also gets IDs for posts and other custom post types
-	 * that might be protected through the PMPro CPT Add On or
-	 * other plugins or custom code.
-	 */
+
 	// First, figure out if their is a current user with levels.
-	if( ! empty( $current_user->ID ) ) {
-		$levels = pmpro_getMembershipLevelsForUser($current_user->ID);
+	if ( ! empty( $current_user->ID ) ) {
+		$levels = pmpro_getMembershipLevelsForUser( $current_user->ID );
+		$level_ids = ! empty( $levels ) ? wp_list_pluck( $levels, 'ID' ) : [];
 	} else {
-		$levels = false;
-	}
-	if( ! empty( $levels ) ) {
-		$level_ids = wp_list_pluck( $levels, 'ID' );
+		$level_ids = [];
 	}
 
-	// Now get posts hidden by level.
-	if( ! empty( $level_ids ) ) {
-		// All hidden pages, minus the ones I have access to.
-		$sql = "SELECT mp.page_id
-				FROM {$wpdb->pmpro_memberships_pages} mp
-					LEFT JOIN {$wpdb->posts} p ON mp.page_id = p.ID
-				WHERE mp.page_id NOT IN(
-					SELECT page_id
-					FROM {$wpdb->pmpro_memberships_pages}
-					WHERE membership_id IN(" . implode(',', array_map( 'esc_sql', $level_ids ) ) . ")
-				) AND p.post_type IN('" . implode( "', '", array_map( 'esc_sql', $pmpro_search_filter_post_types ) ) . "')";
-	} else {
-		// All hidden pages.
-		$sql = "SELECT mp.page_id
-				FROM {$wpdb->pmpro_memberships_pages} mp
-					LEFT JOIN {$wpdb->posts} p ON mp.page_id = p.ID
-				WHERE p.post_type IN('" . implode( "', '", array_map( 'esc_sql', $pmpro_search_filter_post_types ) ) . "')";
-	}
-	$hidden_post_ids = array_values(array_unique($wpdb->get_col($sql)));
-	
-	/**
-	 * Get post IDs hidden by category.
-	 * Note this also gets IDs for tags and other custom taxonomies
-	 * since the PMPro table doesn't differentiate between them.
-	 */
+	// Query A: All posts hidden by level
+	$sql_A = "SELECT DISTINCT(mp.page_id)
+			  FROM {$wpdb->pmpro_memberships_pages} mp
+			  LEFT JOIN {$wpdb->posts} p ON mp.page_id = p.ID
+			  WHERE p.post_type IN('" . implode( "', '", array_map('esc_sql', $pmpro_search_filter_post_types)) . "')";
+	$posts_hidden_by_level = $wpdb->get_col( $sql_A );
+
+	// Query B: All posts hidden by category
+	$sql_B = "SELECT DISTINCT(tr.object_id)
+	FROM {$wpdb->term_relationships} tr
+	LEFT JOIN {$wpdb->posts} p ON tr.object_id = p.ID
+	WHERE tr.term_taxonomy_id IN(
+		SELECT category_id
+		FROM {$wpdb->pmpro_memberships_categories}
+	)
+	AND p.post_type IN('" . implode( "', '", array_map('esc_sql', $pmpro_search_filter_post_types)) . "')";
+	$posts_hidden_by_category = $wpdb->get_col( $sql_B );
+
+	// Query C: All posts the current user has access to by level	
 	if ( ! empty( $level_ids ) ) {
-		// All posts hidden by category, minus the ones I have access to.
-		$sql = "SELECT tr.object_id
-				FROM {$wpdb->term_relationships} tr
-					LEFT JOIN {$wpdb->posts} p ON tr.object_id = p.ID
-				WHERE tr.term_taxonomy_id IN(					
-					SELECT category_id
-					FROM {$wpdb->pmpro_memberships_categories}
-					WHERE membership_id NOT IN(" . implode(',', array_map( 'esc_sql', $level_ids ) ) . ")
-				) AND tr.object_id NOT IN(					
-					SELECT object_id
-					FROM {$wpdb->term_relationships}
-					WHERE term_taxonomy_id IN(
-						SELECT category_id
-						FROM {$wpdb->pmpro_memberships_categories}
-						WHERE membership_id IN(" . implode(',', array_map( 'esc_sql', $level_ids ) ) . ")
-					)
-				) AND p.post_type IN(
-					'" . implode( "', '", array_map( 'esc_sql', $pmpro_search_filter_post_types ) ) . "'
-				)";
+		$sql_C = "SELECT DISTINCT(mp.page_id)
+			  FROM {$wpdb->pmpro_memberships_pages} mp
+			  LEFT JOIN {$wpdb->posts} p ON mp.page_id = p.ID
+			  WHERE mp.membership_id IN (" . implode(',', array_map('esc_sql', $level_ids)) . ")
+				  AND p.post_type IN('" . implode( "', '", array_map('esc_sql', $pmpro_search_filter_post_types)) . "')";
+		$accessible_posts_by_level = $wpdb->get_col( $sql_C );
 	} else {
-		// All posts hidden by category.
-		$sql = "SELECT tr.object_id
-				FROM {$wpdb->term_relationships} tr
-					LEFT JOIN {$wpdb->posts} p ON tr.object_id = p.ID
-				WHERE tr.term_taxonomy_id IN(
-					SELECT category_id
-					FROM {$wpdb->pmpro_memberships_categories}
-				) AND p.post_type IN('" . implode( "', '", array_map( 'esc_sql', $pmpro_search_filter_post_types ) ) . "')";
+		$accessible_posts_by_level = [];
 	}
-	$cat_hidden_post_ids = array_values(array_unique($wpdb->get_col($sql)));
 
-	// Merge the hidden post IDs.
-	$hidden_post_ids = array_merge( $hidden_post_ids, $cat_hidden_post_ids );
+	// Query D: All posts the current user has access to by category	
+	if ( ! empty ($level_ids ) ) {
+		$sql_D = "SELECT DISTINCT(tr.object_id)
+		FROM {$wpdb->term_relationships} tr
+		LEFT JOIN {$wpdb->posts} p ON tr.object_id = p.ID
+		WHERE tr.term_taxonomy_id IN(
+			SELECT category_id
+			FROM {$wpdb->pmpro_memberships_categories}
+			WHERE membership_id IN (" . implode(',', array_map('esc_sql', $level_ids)) . ")
+		) AND p.post_type IN('" . implode( "', '", array_map('esc_sql', $pmpro_search_filter_post_types)) . "')";
+		$accessible_posts_by_category = $wpdb->get_col ($sql_D );
+	} else {
+		$accessible_posts_by_category = [];
+	}
 
-	// If stuff is still hidden, hide it.
-	if( ! empty( $hidden_post_ids ) ) {
-		$query->set( 'post__not_in', array_merge( $query->get('post__not_in'), $hidden_post_ids ) );
+	// Combine and compute final hidden posts
+	$hidden_posts = array_unique(array_merge($posts_hidden_by_level, $posts_hidden_by_category));
+	$accessible_posts = array_unique(array_merge($accessible_posts_by_level, $accessible_posts_by_category));
+	$final_hidden_posts = array_diff($hidden_posts, $accessible_posts);
+
+	// If we have posts to hide, add them to the query.
+	if( ! empty( $final_hidden_posts ) ) {
+		$query->set( 'post__not_in', array_merge( $query->get('post__not_in'), $final_hidden_posts ) );
 	}
 
     return $query;
