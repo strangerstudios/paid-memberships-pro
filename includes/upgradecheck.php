@@ -590,7 +590,7 @@ function pmpro_db_delta()
 			`next_payment_date` datetime DEFAULT NULL,
 			`billing_amount` decimal(18,8) NOT NULL DEFAULT '0.00',
 			`cycle_number` int(11) NOT NULL DEFAULT '0',
-			`cycle_period` enum('Day','Week','Month','Year') NOT NULL DEFAULT 'Month',
+			`cycle_period` varchar(10) NOT NULL DEFAULT 'Month',
 			`billing_limit` int(11) NOT NULL DEFAULT '0',
 			`trial_amount` decimal(18,8) NOT NULL DEFAULT '0.00',
 			`trial_limit` int(11) NOT NULL DEFAULT '0',
