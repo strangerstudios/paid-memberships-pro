@@ -617,8 +617,8 @@ class PMPro_Field {
 	function getHTML($value = "")
 	{			
 		//vars to store HTML to be added to the beginning or end
-		$r_beginning = "";
-		$r_end = "";
+		$r_beginning = '<div class="pmpro_display-field pmpro_display-field-' . esc_attr( $this->type ) . '">';
+		$r_end = "</div>";
 
 		if($this->type == "text")
 		{
@@ -871,18 +871,6 @@ class PMPro_Field {
 		elseif($this->type == "file")
 		{
 			$r = '';
-							
-			//file input
-			$r .= '<input type="file" id="' . $this->id . '" ';
-			if(!empty($this->accept))
-				$r .= 'accept="' . esc_attr($this->accept) . '" ';
-			if(!empty($this->class))
-				$r .= 'class="' . $this->class . '" ';
-			if(!empty($this->html_attributes))
-				$r .= $this->getHTMLAttributes();
-			if(!empty($this->readonly))
-				$r .= 'disabled="disabled" ';
-			$r .= 'name="' . $this->name . '" />';
 
 			//old value
 			if(is_user_logged_in())
@@ -893,21 +881,21 @@ class PMPro_Field {
 					$r .= '<input type="hidden" name="' . $this->name . '_old" value="' . esc_attr($old_value['filename']) . '" />';
 			}
 
-			// Show a preview of existing file if image type.
-			if ( ( ! empty( $this->preview ) ) && ! empty( $value ) && ! empty( $this->file['previewurl'] ) ) {
-				$filetype = wp_check_filetype( basename( $this->file['previewurl'] ), null );
-				if ( $filetype && 0 === strpos( $filetype['type'], 'image/' ) ) {
-					$r_end .= '<div class="pmprorh_file_preview"><img src="' . $this->file['previewurl'] . '" alt="' . basename($value) . '" /></div>';
-				}
-			}
+			// Show the existing file with a preview and allow user to delete or replace.
+			if ( ! empty( $value ) ) {
 
-			//show name of existing file
-			if(!empty($value))
-			{
+				// Show a preview of existing file if image type.
+				if ( ( ! empty( $this->preview ) ) && ! empty( $this->file['previewurl'] ) ) {
+					$filetype = wp_check_filetype( basename( $this->file['previewurl'] ), null );
+					if ( $filetype && 0 === strpos( $filetype['type'], 'image/' ) ) {
+						$r_beginning .= '<div class="pmprorh_file_preview"><img src="' . $this->file['previewurl'] . '" alt="' . basename($value) . '" /></div>';
+					}
+				}
+
 				if( ! empty( $this->file['fullurl'] ) ) {										
-					$r_end .= '<span class="pmprorh_file_' . $this->name . '_name">' . sprintf(__('Current File: %s', 'paid-memberships-pro' ), '<a target="_blank" href="' . $this->file['fullurl'] . '">' . basename($value) . '</a>' ) . '</span>';
+					$r_beginning .= '<div class="pmprorh_file_' . $this->name . '_name">' . sprintf(__('Current File: %s', 'paid-memberships-pro' ), '<a target="_blank" href="' . $this->file['fullurl'] . '">' . basename($value) . '</a>' ) . '</div>';
 				} else {
-					$r_end .= sprintf(__('Current File: %s', 'paid-memberships-pro' ), basename($value) );
+					$r_beginning .= sprintf(__('Current File: %s', 'paid-memberships-pro' ), basename($value) );
 				}
 
 				// Allow user to delete the uploaded file if we know the full location. 
@@ -916,9 +904,11 @@ class PMPro_Field {
 					if ( $this->allow_delete === true || 
 						( $this->allow_delete === 'admins' || $this->allow_delete === 'only_admin' && current_user_can( 'manage_options', $current_user->ID ) )
 					) {
-						$r_end .= '&nbsp;&nbsp;<button class="pmprorh_delete_restore_file" id="pmprorh_delete_file_' . $this->name . '_button" onclick="return false;">' . __( '[delete]', 'paid-memberships-pro' ) . '</button>';
-					$r_end .= '<button class="pmprorh_delete_restore_file" id="pmprorh_cancel_delete_file_' . $this->name . '_button" style="display: none;" onclick="return false;">' . __( '[restore]', 'paid-memberships-pro' ) . '</button>';
-					$r_end .= '<input id="pmprorh_delete_file_' . $this->name . '_field" name="pmprorh_delete_file_' . $this->name . '_field" type="hidden" value="0" />';
+						$r_beginning .= '<button class="button is-destructive pmprorh_delete_file" id="pmprorh_delete_file_' . $this->name . '_button" onclick="return false;">' . __( 'Delete', 'paid-memberships-pro' ) . '</button>';
+						$r_beginning .= '<button class="button button-secondary pmprorh_replace_file" id="pmprorh_replace_file_' . $this->name . '_button" onclick="return false;">' . __( 'Replace', 'paid-memberships-pro' ) . '</button>';
+						$r_beginning .= '<button class="button button-secondary pmprorh_cancel_change_file" id="pmprorh_cancel_change_file_' . $this->name . '_button" style="display: none;" onclick="return false;">' . __( 'Cancel', 'paid-memberships-pro' ) . '</button>';
+						$r_beginning .= '<input id="pmprorh_delete_file_' . $this->name . '_field" name="pmprorh_delete_file_' . $this->name . '_field" type="hidden" value="0" />';
+
 					}
 				}
 			}
@@ -932,19 +922,47 @@ class PMPro_Field {
 					jQuery("#pmprorh_delete_file_' . $this->name . '_button").click(function(){
 						jQuery("#pmprorh_delete_file_' . $this->name . '_field").val("' . basename($value) . '");
 						jQuery(".pmprorh_file_' . $this->name . '_name").css("text-decoration", "line-through");
-						jQuery("#pmprorh_cancel_delete_file_' . $this->name . '_button").show();
+						jQuery("#pmprorh_cancel_change_file_' . $this->name . '_button").show();
 						jQuery("#pmprorh_delete_file_' . $this->name . '_button").hide();
+						jQuery("#pmprorh_replace_file_' . $this->name . '_button").hide();
+						jQuery("#pmprorh_file_' . $this->id . '_upload").hide();
 					});
 
-					jQuery("#pmprorh_cancel_delete_file_' . $this->name . '_button").click(function(){
+					jQuery("#pmprorh_replace_file_' . $this->name . '_button").click(function(){
+						jQuery("#pmprorh_delete_file_' . $this->name . '_field").val("' . basename($value) . '");
+						jQuery(".pmprorh_file_' . $this->name . '_name").css("text-decoration", "line-through");
+						jQuery("#pmprorh_cancel_change_file_' . $this->name . '_button").show();
+						jQuery("#pmprorh_delete_file_' . $this->name . '_button").hide();
+						jQuery("#pmprorh_replace_file_' . $this->name . '_button").hide();
+						jQuery("#pmprorh_file_' . $this->id . '_upload").show();
+					});
+
+					jQuery("#pmprorh_cancel_change_file_' . $this->name . '_button").click(function(){
 						jQuery("#pmprorh_delete_file_' . $this->name . '_field").val(0);
 						jQuery(".pmprorh_file_' . $this->name . '_name").css("text-decoration", "none");
 						jQuery("#pmprorh_delete_file_' . $this->name . '_button").show();
-						jQuery("#pmprorh_cancel_delete_file_' . $this->name . '_button").hide();
+						jQuery("#pmprorh_replace_file_' . $this->name . '_button").show();
+						jQuery("#pmprorh_cancel_change_file_' . $this->name . '_button").hide();
+						jQuery("#pmprorh_file_' . $this->id . '_upload").hide();
 					});
+
 				});
 			</script>
 			';
+
+			//file input
+			$r .= '<div id="pmprorh_file_' . $this->id . '_upload" class="pmprorh_file_upload" ' . (empty($value) ? '' : 'style="display: none;"') . '>';
+			$r .= '<input type="file" id="' . $this->id . '" ';
+			if(!empty($this->accept))
+				$r .= 'accept="' . esc_attr($this->accept) . '" ';
+			if(!empty($this->class))
+				$r .= 'class="' . $this->class . '" ';
+			if(!empty($this->html_attributes))
+				$r .= $this->getHTMLAttributes();
+			if(!empty($this->readonly))
+				$r .= 'disabled="disabled" ';
+			$r .= 'name="' . $this->name . '" />';
+
 		}
         elseif($this->type == "date")
         {
