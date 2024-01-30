@@ -356,6 +356,10 @@ body[class*="memberships_page_pmpro-"] {
 	color: --pmpro--color--info-link;
 }
 
+.pmpro_admin small {
+	font-size: 13px;
+}
+
 .pmpro_admin #dashboard-widgets .meta-box-sortables {
 	margin: 0;
 }
@@ -1145,13 +1149,25 @@ body[class*="memberships_page_pmpro-"] {
 }
 
 /* Single Member - Memberships Panel */
-.pmpro_admin-pmpro-member input[type=text],
+.pmpro_admin-pmpro-member input[type=text]:not(.pmpro_admin-pmpro-member tr#date_field_tr input[type=text]),
 .pmpro_admin-pmpro-member input[type=email] {
 	min-width: 25em;
 	width: auto;
 }
 
 .pmpro_admin-pmpro-member textarea {
+	width: 100%;
+}
+
+.pmpro_admin-pmpro-member tr#date_field_tr td {
+	align-items: center;
+	display: inline-flex;
+	flex-wrap: wrap;
+	gap: calc( var(--pmpro--spacing--small) / 2 );
+	width: 100%;
+}
+
+.pmpro_admin-pmpro-member tr#date_field_tr td small {
 	width: 100%;
 }
 
