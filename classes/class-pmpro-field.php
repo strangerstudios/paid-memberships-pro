@@ -1286,30 +1286,69 @@ class PMPro_Field {
 		$this->getDependenciesJS();
 	}		
 	
-	//checks for array values and values from fields with options
+	/**
+	 * Echo the value of the field based on type
+	 * and taking into account fields with options.
+	 * @param mixed $value The value to be shown.
+	 * @since 3.0 Shows files as links.
+	 */
 	function displayValue( $value ) {
+		$output = '';
+		$allowed_html = array();
+		
 		if(is_array( $value ) && ! empty( $this->options ) ) {
 			$labels = array();
 			foreach( $value as $item ) {
 				$labels[] = $this->options[$item];
 			}
-			$output = implode( ', ', $labels);
+			$output .= implode( ', ', $labels);
 		} elseif( is_array( $value ) ) {
-			$output = implode( ', ', $value );
+			$output .= implode( ', ', $value );
 		} elseif( ! empty( $this->options ) && isset( $this->options[$value] ) ) {
-			$output = $this->options[$value];
+			$output .= $this->options[$value];
 		} elseif ( $this->type == 'checkbox' ) {
-			$output = $value ? __( 'Yes', 'paid-memberships-pro' ) : __( 'No', 'paid-memberships-pro' );
+			$output .= $value ? __( 'Yes', 'paid-memberships-pro' ) : __( 'No', 'paid-memberships-pro' );
 		} elseif ( $this->type == 'date' ) {
-			$output = date_i18n( get_option( 'date_format' ), strtotime( $value ) );
+			$output .= date_i18n( get_option( 'date_format' ), strtotime( $value ) );
+		} elseif ( $this->type == 'file' ) {			
+			// Show a preview of existing file if image type.
+			if ( ( ! empty( $this->preview ) ) && ! empty( $value ) && ! empty( $this->file['previewurl'] ) ) {
+				$filetype = wp_check_filetype( basename( $this->file['previewurl'] ), null );
+				if ( $filetype && 0 === strpos( $filetype['type'], 'image/' ) ) {
+					$output .= '<div class="pmprorh_file_preview"><img src="' . $this->file['previewurl'] . '" alt="' . basename($value) . '" /></div>';
+				}
+				$allowed_html['div'] = array(
+					'class' => array(),
+				);
+				$allowed_html['img'] = array(
+					'src' => array(),
+					'alt' => array(),
+				);
+			}
+
+			// Show link to file if available, or name if not.
+			if( ! empty( $this->file ) && ! empty( $this->file['fullurl'] ) ) {
+				$output .= '<span class="pmprorh_file_' . $this->name . '_name"><a target="_blank" href="' . esc_url( $this->file['fullurl'] ) . '">' . basename($value) . '</a></span>';
+				$allowed_html['span'] = array(
+					'class' => array(),
+				);
+				$allowed_html['a'] = array(
+					'href' => array(),
+					'target' => array(),
+				);
+			} elseif( empty( $value ) ) {
+				$output .= esc_html__( 'N/A', 'paid-memberships-pro' );
+			} else {
+				$output .= sprintf(__('Current File: %s', 'paid-memberships-pro' ), basename($value) );
+			}
 		} else {
-			$output = $value;
+			$output .= $value;
 		}
 
 		// Enforce string as output.
 		$output = (string) $output;
 
-		echo esc_html( $output );
+		echo wp_kses( $output, $allowed_html );
 	}
 	
 	/**
