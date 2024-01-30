@@ -836,8 +836,7 @@ class PMPro_Field {
 			
 			$r .= sprintf( '</ul></div>' );
 			
-		}
-		
+		}	
 		elseif($this->type == "textarea")
 		{
 			$r = '<textarea id="' . $this->id . '" name="' . $this->name . '" rows="' . $this->rows . '" cols="' . $this->cols . '" ';
@@ -1273,9 +1272,9 @@ class PMPro_Field {
 			<td>
 				<?php 						
 					if(current_user_can("edit_users", $current_user->ID) && $edit !== false)
-						$this->display($value); 
+						$this->display($value);
 					else
-						echo "<div>" . $this->displayValue($value) . "</div>";						
+						echo "<div>" . $this->displayValue($value) . "</div>";
 				?>
 				<?php if(!empty($this->hint)) { ?>
 					<small class="lite"><?php echo wp_kses_post( $this->hint );?></small>
@@ -1288,28 +1287,24 @@ class PMPro_Field {
 	}		
 	
 	//checks for array values and values from fields with options
-	function displayValue($value)
-	{
-		if(is_array($value) && !empty($this->options))
-		{
+	function displayValue( $value ) {
+		if(is_array( $value ) && ! empty( $this->options ) ) {
 			$labels = array();
-			foreach($value as $item)
-			{
+			foreach( $value as $item ) {
 				$labels[] = $this->options[$item];
 			}
-
 			$output = implode( ', ', $labels);
-		}
-		elseif(is_array($value))
+		} elseif( is_array( $value ) ) {
 			$output = implode( ', ', $value );
-		elseif( ! empty( $this->options ) && isset( $this->options[$value] ) )
+		} elseif( ! empty( $this->options ) && isset( $this->options[$value] ) ) {
 			$output = $this->options[$value];
-		elseif ( $this->type == 'checkbox' )
+		} elseif ( $this->type == 'checkbox' ) {
 			$output = $value ? __( 'Yes', 'paid-memberships-pro' ) : __( 'No', 'paid-memberships-pro' );
-		elseif ( $this->type == 'date' )
+		} elseif ( $this->type == 'date' ) {
 			$output = date_i18n( get_option( 'date_format' ), strtotime( $value ) );
-		else
+		} else {
 			$output = $value;
+		}
 
 		// Enforce string as output.
 		$output = (string) $output;
