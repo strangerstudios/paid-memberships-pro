@@ -328,39 +328,39 @@ add_filter( 'admin_footer_text', 'pmpro_admin_footer_text' );
 function pmpro_hide_non_pmpro_notices() {
     global $wp_filter;
 
-	// Only filter on PMPro pages in the admin.
+	// Make sure we're on a PMPro page.
 	if ( ! isset( $_REQUEST['page'] )
 			|| substr( sanitize_text_field( $_REQUEST['page'] ), 0, 6 ) !== 'pmpro-' ) {
 		return;
 	}
 
+	// Handle notices added through these hooks.
     $hooks = ['admin_notices', 'all_admin_notices'];
 
     foreach ($hooks as $hook) {
-        if ( ! isset( $wp_filter[$hook] ) ) {
+        // If no callbacks are registered, skip.
+		if ( ! isset( $wp_filter[$hook] ) ) {
 			continue;
 		}
-				
+
+		// Loop through the callbacks and remove any that aren't PMPro.
 		foreach ($wp_filter[$hook]->callbacks as $priority => $callbacks) {
-			foreach ($callbacks as $key => $callback) {
-				// Check if the callback is a method of a class
-				if (is_array($callback['function'])) {
-					$class = is_object($callback['function'][0]) ? get_class($callback['function'][0]) : $callback['function'][0];
-					$method = $callback['function'][1];
-
+			foreach ($callbacks as $key => $callback) {				
+				if ( is_array( $callback['function'] ) ) {					
 					// Skip if the class starts with pmpro_.
-					if (strpos(strtolower($class), 'pmpro_') === 0 ) {
+					$class = get_class( $callback['function'][0] );
+					if ( strpos( strtolower( $class ), 'pmpro_' ) === 0 ) {
 						continue;
 					}
-
-					// Skip if the method starts with pmpro_.
-					if (strpos(strtolower($method), 'pmpro_') === 0 ) {
+				} else {
+					// Skip if the callback function starts with pmpro_.				
+					if ( strpos( strtolower( $callback['function'] ), 'pmpro_') === 0 ) {
 						continue;
 					}
-					
-					// Probably not a PMPro notice, remove it.
-					unset($wp_filter[$hook]->callbacks[$priority][$key]);
 				}
+
+				// Probably not a PMPro notice, remove it.
+				unset($wp_filter[$hook]->callbacks[$priority][$key]);
 			}
 		}
     }
