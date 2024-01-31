@@ -608,6 +608,8 @@ function pmpro_get_membership_expiration_text( $enddate, $level = null, $user = 
 		 * @param mixed $user A user object or id passed into this function.
 		 * @return bool $pmpro_show_time_on_expiration_date Whether to show the expiration time with expiration date.
 		 * @since 3.0 Now passes the $enddate, $level, and $user.
+		 * 
+		 * Used in adminpages/member-edit/pmpro-class-member-edit-panel-memberships.php
 		 */
 		$show_time = apply_filters( 'pmpro_show_time_on_expiration_date', false, $enddate, $level, $user );
 		
