@@ -361,6 +361,74 @@ select.pmpro_error {
 }
 
 /*---------------------------------------
+	Admin Toolbar View As Feature
+---------------------------------------*/
+#wpadminbar .pmpro_admin-view {
+	display: inline-block;
+	padding: 0 5px;
+}
+
+#wpadminbar .menupop .ab-item:has(.pmpro_admin-view) + .ab-sub-wrapper {
+	border-bottom-right-radius: 6px;
+	border-bottom-left-radius: 6px;
+	padding: 10px;
+}
+
+#wpadminbar .menupop .ab-item:has(.pmpro_admin-view) + .ab-sub-wrapper ul li .ab-item {
+	height: auto;
+}
+
+#wpadminbar .menupop .ab-item:has(.pmpro_admin-view) + .ab-sub-wrapper p {
+	color: #FFF;
+	line-height: 1.5;
+	margin-bottom: 5px;
+	white-space: normal;
+}
+
+#wpadminbar .menupop .ab-item:has(.pmpro_admin-view) + .ab-sub-wrapper select {
+	border-radius: 6px;
+	line-height: 1.5;
+	padding: 5px 8px;
+}
+
+#wpadminbar .ab-item:has(.pmpro_admin-view-yes),
+#wpadminbar .ab-top-menu > li.hover > .ab-item:has(.pmpro_admin-view-yes),
+#wpadminbar:not(.mobile) .ab-top-menu > li:hover > .ab-item:has(.pmpro_admin-view-yes),
+#wpadminbar:not(.mobile) .ab-top-menu > li > .ab-item:has(.pmpro_admin-view-yes):focus,
+#wpadminbar .menupop .ab-item:has(.pmpro_admin-view-yes) + .ab-sub-wrapper {
+	background-color: #0F441C;
+	color: #FFF;
+}
+
+#wpadminbar .ab-item:has(.pmpro_admin-view-current),
+#wpadminbar .ab-top-menu > li.hover > .ab-item:has(.pmpro_admin-view-current),
+#wpadminbar:not(.mobile) .ab-top-menu > li:hover > .ab-item:has(.pmpro_admin-view-current),
+#wpadminbar:not(.mobile) .ab-top-menu > li > .ab-item:has(.pmpro_admin-view-current):focus,
+#wpadminbar .menupop .ab-item:has(.pmpro_admin-view-current) + .ab-sub-wrapper {
+	background-color: #245269;
+	color: #FFF;
+}
+
+#wpadminbar .ab-item:has(.pmpro_admin-view-no),
+#wpadminbar .ab-top-menu > li.hover > .ab-item:has(.pmpro_admin-view-no),
+#wpadminbar:not(.mobile) .ab-top-menu > li:hover > .ab-item:has(.pmpro_admin-view-no),
+#wpadminbar:not(.mobile) .ab-top-menu > li > .ab-item:has(.pmpro_admin-view-no):focus,
+#wpadminbar .menupop .ab-item:has(.pmpro_admin-view-no) + .ab-sub-wrapper {
+	background-color: #721c24;
+	color: #FFF;
+}
+
+#wpadminbar .pmpro_admin-view .ab-icon {
+	margin-right: 3px;
+}
+
+#wpadminbar .pmpro_admin-view .ab-icon:before,
+#wpadminbar li:hover .pmpro_admin-view .ab-icon:before,
+#wpadminbar li.hover .pmpro_admin-view .ab-icon:before {
+	color: #FFF;
+}
+
+/*---------------------------------------
 	Display Price Parts
 ---------------------------------------*/
 .pmpro_price_part_span {
