@@ -320,3 +320,43 @@ function pmpro_admin_footer_text( $text ) {
 	);
 }
 add_filter( 'admin_footer_text', 'pmpro_admin_footer_text' );
+
+/**
+ * Hide non-PMPro notices from PMPro dashboard pages.
+ * @since TBD
+ */
+function pmpro_hide_non_pmpro_notices() {
+    global $wp_filter;
+
+    $hooks = ['admin_notices', 'all_admin_notices'];
+
+    foreach ($hooks as $hook) {
+        if ( ! isset( $wp_filter[$hook] ) ) {
+			continue;
+		}
+				
+		foreach ($wp_filter[$hook]->callbacks as $priority => $callbacks) {
+			foreach ($callbacks as $key => $callback) {
+				// Check if the callback is a method of a class
+				if (is_array($callback['function'])) {
+					$class = is_object($callback['function'][0]) ? get_class($callback['function'][0]) : $callback['function'][0];
+					$method = $callback['function'][1];
+
+					// Skip if the class starts with pmpro_.
+					if (strpos(strtolower($class), 'pmpro_') === 0 ) {
+						continue;
+					}
+
+					// Skip if the method starts with pmpro_.
+					if (strpos(strtolower($method), 'pmpro_') === 0 ) {
+						continue;
+					}
+					
+					// Probably not a PMPro notice, remove it.
+					unset($wp_filter[$hook]->callbacks[$priority][$key]);
+				}
+			}
+		}
+    }
+}
+add_action( 'in_admin_header', 'pmpro_hide_non_pmpro_notices' );
