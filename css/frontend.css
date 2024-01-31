@@ -400,15 +400,6 @@ select.pmpro_error {
 	color: #FFF;
 }
 
-#wpadminbar .ab-item:has(.pmpro_admin-view-current),
-#wpadminbar .ab-top-menu > li.hover > .ab-item:has(.pmpro_admin-view-current),
-#wpadminbar:not(.mobile) .ab-top-menu > li:hover > .ab-item:has(.pmpro_admin-view-current),
-#wpadminbar:not(.mobile) .ab-top-menu > li > .ab-item:has(.pmpro_admin-view-current):focus,
-#wpadminbar .menupop .ab-item:has(.pmpro_admin-view-current) + .ab-sub-wrapper {
-	background-color: #245269;
-	color: #FFF;
-}
-
 #wpadminbar .ab-item:has(.pmpro_admin-view-no),
 #wpadminbar .ab-top-menu > li.hover > .ab-item:has(.pmpro_admin-view-no),
 #wpadminbar:not(.mobile) .ab-top-menu > li:hover > .ab-item:has(.pmpro_admin-view-no),
@@ -426,6 +417,12 @@ select.pmpro_error {
 #wpadminbar li:hover .pmpro_admin-view .ab-icon:before,
 #wpadminbar li.hover .pmpro_admin-view .ab-icon:before {
 	color: #FFF;
+}
+
+#wpadminbar .pmpro_admin-view-current .ab-icon:before,
+#wpadminbar li:hover .pmpro_admin-view-current .ab-icon:before,
+#wpadminbar li.hover .pmpro_admin-view-current .ab-icon:before {
+	color: inherit;
 }
 
 /*---------------------------------------
