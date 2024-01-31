@@ -438,11 +438,8 @@
 			array_push($csvoutput, pmpro_enclose(date_i18n($dateformat, $theuser->joindate)));
 
 			if($theuser->membership_id)
-			{
-				if($theuser->enddate)
-					array_push($csvoutput, pmpro_enclose(apply_filters("pmpro_memberslist_expires_column", date_i18n($dateformat, $theuser->enddate), $theuser)));
-				else
-					array_push($csvoutput, pmpro_enclose(apply_filters("pmpro_memberslist_expires_column", __('Never', 'paid-memberships-pro'), $theuser)));
+			{				
+				array_push($csvoutput, pmpro_enclose(pmpro_get_membership_expiration_text( $theuser->enddate, null, $theuser)));			
 			}
 			elseif($l == "oldmembers" && $theuser->enddate) {
 				array_push($csvoutput, pmpro_enclose(date_i18n($dateformat, $theuser->enddate)));

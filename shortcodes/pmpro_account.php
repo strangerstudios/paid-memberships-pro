@@ -153,25 +153,12 @@ function pmpro_shortcode_account($atts, $content=null, $code="")
 								</td>
 								<td class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_account-membership-expiration' ) ); ?>">
 									<?php
-										$expiration_text = '<p>';
 										if ( $level->enddate ) {
-											$expiration_text .= date_i18n( get_option( 'date_format' ), $level->enddate );
-											/**
-											 * Filter to include the expiration time with expiration date
-											 *
-											 * @param bool $pmpro_show_time_on_expiration_date Show the expiration time with expiration date (default: false).
-											 *
-											 * @return bool $pmpro_show_time_on_expiration_date Whether to show the expiration time with expiration date.
-											 *
-											 */
-											if ( apply_filters( 'pmpro_show_time_on_expiration_date', false ) ) {
-												$expiration_text .= ' ' . date_i18n( get_option( 'time_format', __( 'g:i a' ) ), $level->enddate );
-											}
+											$expiration_text = pmpro_get_membership_expiration_text( $level->enddate, $level, $current_user );
 										} else {
-											$expiration_text .= esc_html_x( '&#8212;', 'A dash is shown when there is no expiration date.', 'paid-memberships-pro' );
+											$expiration_text = pmpro_get_membership_expiration_text( esc_html_x( '&#8212;', 'A dash is shown when there is no expiration date.', 'paid-memberships-pro' ), $level, $current_user );											
 										}
-										$expiration_text .= '</p>';
-										echo wp_kses_post( apply_filters( 'pmpro_account_membership_expiration_text', $expiration_text, $level ) );
+										echo wp_kses_post( $expiration_text );
 									?>
 								</td>
 							</tr>

@@ -681,11 +681,7 @@ class PMPro_Members_List_Table extends WP_List_Table {
 	 */
 	public function column_enddate( $item ) {
 		$user_object = get_userdata( $item['ID'] );
-		if ( 0 == $item['enddate'] ) {
-			return apply_filters( 'pmpro_memberslist_expires_column', __( 'Never', 'paid-memberships-pro' ), $user_object );
-		} else {
-			return apply_filters( 'pmpro_memberslist_expires_column', date_i18n( get_option( 'date_format' ), $item['enddate'] ), $user_object );
-		}
+		return pmpro_get_membership_expiration_text( $item['enddate'], null, $user_object );		
 	}
 
 	/**

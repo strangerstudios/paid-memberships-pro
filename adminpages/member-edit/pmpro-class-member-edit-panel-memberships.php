@@ -135,20 +135,7 @@ class PMPro_Member_Edit_Panel_Memberships extends PMPro_Member_Edit_Panel {
 								</div>
 							</td>
 							<td>
-								<?php
-									// Get the expiration date to show for this level.
-									$enddate_to_show = $shown_level->enddate;
-									if ( empty( $enddate_to_show ) ) {
-										esc_html_e( 'Never', 'paid-memberships-pro' );
-									} else {
-										echo esc_html( sprintf(
-											// translators: %1$s is the date and %2$s is the time.
-											__( '%1$s at %2$s', 'paid-memberships-pro' ),
-											esc_html( date_i18n( get_option( 'date_format'), $enddate_to_show ) ),
-											esc_html( date_i18n( get_option( 'time_format'), $enddate_to_show ) )
-										) );
-									}
-								?>
+								<?php echo pmpro_get_membership_expiration_text( $shown_level->enddate, $shown_level, $user ); ?>
 							</td>
 							<td class="pmpro_levels_subscription_data has-row-actions">
 								<?php
