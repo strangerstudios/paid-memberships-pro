@@ -328,6 +328,12 @@ add_filter( 'admin_footer_text', 'pmpro_admin_footer_text' );
 function pmpro_hide_non_pmpro_notices() {
     global $wp_filter;
 
+	// Only filter on PMPro pages in the admin.
+	if ( ! isset( $_REQUEST['page'] )
+			|| substr( sanitize_text_field( $_REQUEST['page'] ), 0, 6 ) !== 'pmpro-' ) {
+		return;
+	}
+
     $hooks = ['admin_notices', 'all_admin_notices'];
 
     foreach ($hooks as $hook) {
