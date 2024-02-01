@@ -1510,15 +1510,14 @@
 		 * Call the cancel step of the order's subscription if needed.
 		 */
 		function cancel() {			
-			// Only need to cancel on the gateway if there is a subscription id.
-			if ( ! empty( $this->subscription_transaction_id ) ) {
-				$subscription = PMPro_Subscription::get_subscription_from_subscription_transaction_id( $this->subscription_transaction_id, $this->gateway, $this->gateway_environment );
-				if ( ! empty( $subscription ) ) {
-					return $subscription->cancel_at_gateway();
-				}
+			// Only need to cancel on the gateway if there is a subscription.
+			$subscription = $this->get_subscription();
+			if ( empty( $subscription ) ) {
+				return true;
 			}
-				
-			return true;
+
+			// Cancel the subscription.
+			return $subscription->cancel_at_gateway();;
 		}
 
 		/**
