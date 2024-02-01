@@ -75,6 +75,22 @@ class PMPro_Orders_List_Table extends WP_List_Table {
 	}
 
 	/**
+	 * Sets the screen options.
+	 *
+	 * @param string $dummy   Unused.
+	 * @param string $option  Screen option name.
+	 * @param string $value   Screen option value.
+	 * @return string
+	 */
+	public function set_screen_option( $dummy, $option, $value ) {
+		if ( 'pmpro_orders_per_page' === $option ) {
+			return $value;
+		} else {
+			return $dummy;
+		}
+	}
+
+	/**
 	 * Prepares the list of items for displaying.
 	 *
 	 * Query, filter data, handle sorting, and pagination, and any other data-manipulation required prior to rendering
@@ -225,22 +241,6 @@ class PMPro_Orders_List_Table extends WP_List_Table {
 
 		esc_html_e( 'No orders found.', 'paid-memberships-pro' );
 
-	}
-
-	/**
-	 * Sets the screen options.
-	 *
-	 * @param string $dummy   Unused.
-	 * @param string $option  Screen option name.
-	 * @param string $value   Screen option value.
-	 * @return string
-	 */
-	public function set_screen_option( $dummy, $option, $value ) {
-		if ( 'pmpro_orders_per_page' === $option ) {
-			return $value;
-		} else {
-			return $dummy;
-		}
 	}
 
 	/**

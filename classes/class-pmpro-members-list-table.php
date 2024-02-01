@@ -75,6 +75,22 @@ class PMPro_Members_List_Table extends WP_List_Table {
 	}
 
 	/**
+	 * Sets the screen options.
+	 *
+	 * @param string $dummy   Unused.
+	 * @param string $option  Screen option name.
+	 * @param string $value   Screen option value.
+	 * @return string
+	 */
+	public function set_screen_option( $dummy, $option, $value ) {
+		if ( 'pmpro_members_per_page' === $option ) {
+			return $value;
+		} else {
+			return $dummy;
+		}
+	}
+
+	/**
 	 * Prepares the list of items for displaying.
 	 *
 	 * Query, filter data, handle sorting, and pagination, and any other data-manipulation required prior to rendering
@@ -294,22 +310,6 @@ class PMPro_Members_List_Table extends WP_List_Table {
 			<li><a href="<?php echo esc_url( add_query_arg( array( 'page' => 'pmpro-memberslist', 'l' => 'oldmembers', 's' => $s ) ) ); ?>"><?php esc_html_e( 'Old Members', 'paid-memberships-pro' ); ?></a></li>
 		</ul>
 		<?php
-	}
-
-	/**
-	 * Sets the screen options.
-	 *
-	 * @param string $dummy   Unused.
-	 * @param string $option  Screen option name.
-	 * @param string $value   Screen option value.
-	 * @return string
-	 */
-	public function set_screen_option( $dummy, $option, $value ) {
-		if ( 'pmpro_members_per_page' === $option ) {
-			return $value;
-		} else {
-			return $dummy;
-		}
 	}
 
 	/**

@@ -39,6 +39,58 @@ class PMPro_Discount_Code_List_Table extends WP_List_Table {
 	}
 
 	/**
+	 * Sets up screen options for the discount codes list table.
+	 *
+	 * @since 3.0
+	 */
+	public static function hook_screen_options() {
+		$list_table = new PMPro_Discount_Code_List_Table();
+		add_screen_option(
+			'per_page',
+			array(
+				'default' => 20,
+				'label'   => __( 'Discount codes per page', 'paid-memberships-pro' ),
+				'option'  => 'pmpro_discount_codes_per_page',
+			)
+		);
+		add_filter(
+			'screen_settings',
+			array(
+				$list_table,
+				'screen_controls',
+			),
+			10,
+			2
+		);
+		add_filter(
+			'set-screen-option',
+			array(
+				$list_table,
+				'set_screen_option',
+			),
+			10,
+			3
+		);
+		set_screen_options();
+	}
+
+	/**
+	 * Sets the screen options.
+	 *
+	 * @param string $dummy   Unused.
+	 * @param string $option  Screen option name.
+	 * @param string $value   Screen option value.
+	 * @return string
+	 */
+	public function set_screen_option( $dummy, $option, $value ) {
+		if ( 'pmpro_discount_codes_per_page' === $option ) {
+			return $value;
+		} else {
+			return $dummy;
+		}
+	}
+
+	/**
 	 * Prepares the list of items for displaying.
 	 *
 	 * Query, filter data, handle sorting, and pagination, and any other data-manipulation required prior to rendering
@@ -55,7 +107,7 @@ class PMPro_Discount_Code_List_Table extends WP_List_Table {
 
 		$this->items = $this->sql_table_data();
 
-		$items_per_page = $this->get_items_per_page( 'discount_codes_per_page' );
+		$items_per_page = $this->get_items_per_page( 'pmpro_discount_codes_per_page' );
 		$total_items = $this->sql_table_data( true );
 		$this->set_pagination_args(
 			array(
@@ -186,7 +238,7 @@ class PMPro_Discount_Code_List_Table extends WP_List_Table {
 			$pn = 1;
 		}
 		
-		$limit = $this->get_items_per_page( 'discount_codes_per_page' );
+		$limit = $this->get_items_per_page( 'pmpro_discount_codes_per_page' );
 
 		$end = $pn * $limit;
 		$start = $end - $limit;
