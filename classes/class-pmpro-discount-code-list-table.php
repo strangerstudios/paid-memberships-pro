@@ -167,9 +167,22 @@ class PMPro_Discount_Code_List_Table extends WP_List_Table {
 	 * @return Array
 	 */
 	public function get_hidden_columns() {
-		
-		return array();
-		
+		$user = wp_get_current_user();
+ 		if ( ! $user ) {
+ 			return array();
+ 		}
+
+ 		// Check whether the current user has changed screen options or not.
+ 		$hidden = get_user_meta( $user->ID, 'manage' . $this->screen->id . 'columnshidden', true );
+
+ 		// If user meta is not found, add the default hidden columns.
+ 		// Right now, we don't have any default hidden columns.
+ 		if ( ! $hidden ) {
+ 			$hidden = array();
+ 			update_user_meta( $user->ID, 'manage' . $this->screen->id . 'columnshidden', $hidden );
+ 		}
+
+ 		return $hidden;
 	}
 
 	/**
