@@ -352,6 +352,8 @@ class PMPro_Members_List_Table extends WP_List_Table {
 			ON u.ID = mu.user_id
 			LEFT JOIN $wpdb->pmpro_membership_levels m
 			ON mu.membership_id = m.id
+			LEFT JOIN $wpdb->pmpro_subscriptions s
+			ON mu.user_id = s.user_id
 			";
 
 		if ( !empty( $s ) ) {
@@ -366,6 +368,8 @@ class PMPro_Members_List_Table extends WP_List_Table {
 						$user_ids = array(0);	// Avoid warning, but ensure 0 results.
 					}
 					$search_query = " AND u.ID IN(" . implode( ",", $user_ids ) . ") ";					
+				} elseif ( $search_key === 'subscription_transaction_id' ) {
+					$search_query = " AND s.subscription_transaction_id LIKE '%" . esc_sql( $s ) . "%' AND mu.membership_id = s.membership_level_id AND mu.status = 'active' ";
 				} else {
 					$user_ids = $wpdb->get_col( "SELECT user_id FROM $wpdb->usermeta WHERE meta_key = '" . esc_sql( $search_key ) . "' AND meta_value LIKE '%" . esc_sql( $s ) . "%'" );
 					if ( empty( $user_ids ) ) {
@@ -376,7 +380,7 @@ class PMPro_Members_List_Table extends WP_List_Table {
 			} else {
 				// Default search checks a few fields.
 				$sqlQuery .= " LEFT JOIN $wpdb->usermeta um ON u.ID = um.user_id ";
-				$search_query = " AND ( u.user_login LIKE '%" . esc_sql($s) . "%' OR u.user_email LIKE '%" . esc_sql($s) . "%' OR um.meta_value LIKE '%" . esc_sql($s) . "%' OR u.display_name LIKE '%" . esc_sql($s) . "%' ) ";
+				$search_query = " AND ( u.user_login LIKE '%" . esc_sql($s) . "%' OR u.user_email LIKE '%" . esc_sql($s) . "%' OR um.meta_value LIKE '%" . esc_sql($s) . "%' OR u.display_name LIKE '%" . esc_sql($s) . "%' OR ( s.subscription_transaction_id LIKE '%" . esc_sql( $s ) . "%' AND mu.membership_id = s.membership_level_id AND s.status = 'active' ) ) ";
 			}
 		}
 
