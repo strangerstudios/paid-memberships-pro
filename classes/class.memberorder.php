@@ -1517,7 +1517,7 @@
 			}
 
 			// Cancel the subscription.
-			return $subscription->cancel_at_gateway();;
+			return $subscription->cancel_at_gateway();
 		}
 
 		/**
