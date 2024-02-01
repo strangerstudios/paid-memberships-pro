@@ -274,7 +274,12 @@ function pmpro_report_sales_page()
 
 		// Set up the start and end dates.
 		$startdate   = date( 'Y-m-d', strtotime( current_time( 'mysql' ) .' -'.$timeframe.' '.$report_unit ) );
-		$enddate     = current_time( 'mysql' );
+		if ( $period === '12months' ) {
+			// Adjust $startdate to avoid partial months at the beginning the report.
+			$startdate = date( 'Y-m-d', strtotime( $startdate . ' +1 MONTH' ) );
+			$startdate = date( 'Y-m-01', strtotime( $startdate ) );
+		}
+		$enddate = current_time( 'mysql' );
 	} else {
 		// Set up the report unit to use.
 		$report_unit = 'YEAR';
