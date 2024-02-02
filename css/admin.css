@@ -283,7 +283,7 @@ body[class*="memberships_page_pmpro-"] {
 	gap: var(--pmpro--spacing--small);
 }
 
-.pmpro_admin .pmpro-nav-secondary a:not(.pmpro_admin .pmpro-nav-secondary li:first-child a) {
+.pmpro_admin .pmpro-nav-secondary li:not(.pmpro_admin .pmpro-nav-secondary li:first-child) {
 	border-left: 1px solid var(--pmpro--color--blue-darkest);
 	padding-left: var(--pmpro--spacing--small);
 }
@@ -972,7 +972,7 @@ body[class*="memberships_page_pmpro-"] {
 }
 
 /**
- * Single Member Page Styles
+ * Single Edit Member Page Styles
  */
 .pmpro_admin-pmpro-member h1.wp-heading-inline {
 	font-weight: 500;
@@ -1026,6 +1026,31 @@ body[class*="memberships_page_pmpro-"] {
 .pmpro_admin-pmpro-member nav button:disabled {	
 	color: #777;
 	cursor: not-allowed;	
+}
+
+.pmpro_admin-pmpro-member nav .pmpro_divider {
+	position: absolute;
+	top: 50%;
+	width: 100%;
+}
+
+.pmpro_admin-pmpro-member nav .pmpro_relative {
+	margin-top: calc( var(--pmpro--spacing--small) * 2 );
+}
+
+.pmpro_admin-pmpro-member nav button.pmpro-member-edit-show-more-tab {
+	background-color: #FFF;
+	border: 1px solid var(--pmpro--border--color);
+	border-radius: calc( var(--pmpro--border--radius) * 2 );
+	font-size: 12px;
+	font-weight: normal;
+	margin: 0 auto;
+	padding: calc( var(--pmpro--spacing--small) / 2 ) var(--pmpro--spacing--small);
+	width: auto;
+}
+
+.pmpro_admin-pmpro-member nav button.pmpro-member-edit-show-more-tab .dashicons {
+	color: var(--pmpro--color--blue-darkest);
 }
 
 .pmpro_admin-pmpro-member .pmpro_section:not(.pmpro_admin-pmpro-member .pmpro_section .pmpro_section) {
@@ -2837,6 +2862,17 @@ tr.pmpro_alert {
 /**
  * Misc
  */
+.pmpro_relative {
+	position: relative;
+}
+
+.pmpro_divider {
+	border-top: 1px solid var(--pmpro--border--color);
+    color: inherit;
+	height: 0;
+	margin: 0;
+}
+
 .pmpro_lite {
 	color: #777;
 }

@@ -98,8 +98,36 @@ function pmpro_member_edit_display() {
 		<nav id="pmpro-edit-user-nav" role="tablist" aria-labelledby="pmpro-edit-user-menu">
 			<h2 id="pmpro-edit-user-menu" class="screen-reader-text"><?php esc_html_e( 'Edit Member Area Menu', 'paid-memberships-pro' ); ?></h2>
 			<?php
+				$count = 0;
 				foreach ( $panels as $panel_slug => $panel ) {
-					$panel->display_tab( $panel_slug === $default_panel_slug );
+					/**
+					 * Filter to limit the number of tabs that are visible on the member edit page.
+					 *
+					 * @since 3.0
+					 * @param int $num_visible_tabs The default number of tabs that are visible on the member edit page.
+					 * @return int
+					 */
+					$num_visible_tabs = apply_filters( 'pmpro_member_edit_num_visible_tabs', 6 );
+					$tab_visibility = $count < (int) $num_visible_tabs ? true : false;
+
+					// Show the tab.
+					$panel->display_tab( $panel_slug === $default_panel_slug, $tab_visibility );
+
+					// Increment the count.
+					$count++;
+				}
+
+				// Show a "More" tab if there are more than 4 panels.
+				if ( $count > (int) $num_visible_tabs ) {
+					?>
+					<div class="pmpro_relative">
+						<div class="pmpro_divider"></div>
+						<button role="showmore" class="pmpro-member-edit-show-more-tab">
+							<?php esc_html_e( 'Show More', 'paid-memberships-pro' ); ?>
+							<span class="dashicons dashicons-arrow-down-alt2"></span>
+						</button>
+					</div>
+					<?php
 				}
 			?>
 		</nav>
@@ -121,6 +149,9 @@ function pmpro_member_edit_display() {
 
 				// Display the panel.
 				$panel->display_panel( $panel_slug === $default_panel_slug );
+
+				// Increment the count.
+				$count++;
 			}
 			?>
 		</div>
