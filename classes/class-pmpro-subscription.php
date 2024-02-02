@@ -1282,6 +1282,9 @@ class PMPro_Subscription {
 		$this->trial_amount   = $subscription_level->trial_amount;
 		$this->trial_limit    = $subscription_level->trial_limit;
 
+		// Save so that we don't start another migration when we call get_orders().
+		$this->save();
+
 		// Let's take a guess at the start date.
 		$oldest_orders = $this->get_orders( [
 			'limit'   => 1,
