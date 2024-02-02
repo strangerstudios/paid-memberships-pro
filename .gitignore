@@ -21,6 +21,8 @@ package-lock.json
 
 # composer
 vendor
+vendor-namespaced
+strauss.phar
 composer.js
 composer.lock
 

@@ -33,7 +33,8 @@
   ],
   "require": {
     "composer/installers": "1.9.*",
-    "php": ">=5.6"
+    "php": ">=5.6",
+    "trustedlogin/client": "dev-main"
   },
   "require-dev": {
     "automattic/vipwpcs": "^2.0",
@@ -52,15 +53,51 @@
     "lucatume/function-mocker-le": "^1.0.1",
     "lucatume/wp-browser": "^3.0.11",
     "lucatume/wp-snaphot-assertions": "^1.0",
-    "the-events-calendar/tribalscents": "dev-master",
     "phpunit/phpunit": "^6.5.14",
     "spatie/phpunit-snapshot-assertions": "^1.4.2",
     "wp-cli/wp-cli": "2.*",
-    "wp-coding-standards/wpcs": "^2.1"
+    "wp-coding-standards/wpcs": "^2.1",
+    "scssphp/scssphp": "^1.12"
   },
   "minimum-stability": "stable",
   "prefer-stable": true,
+  "autoload": {
+    "classmap": [
+      "vendor"
+    ]
+  },
   "extra": {
-    "installer-name": "paid-memberships-pro"
+    "installer-name": "paid-memberships-pro",
+    "strauss": {
+      "target_directory": "vendor-namespaced",
+      "namespace_prefix": "PMPro\\",
+      "classmap_prefix": "PMPro_",
+      "classmap_output": true,
+      "packages": [
+        "trustedlogin/client"
+      ]
+    }
+  },
+  "config": {
+    "allow-plugins": {
+      "composer/installers": true,
+      "dealerdirect/phpcodesniffer-composer-installer": true
+    }
+  },
+  "scripts": {
+    "strauss": [
+      "@php strauss.phar"
+    ],
+    "trustedlogin": [
+      "@php vendor/bin/build-sass --namespace=PMPro"
+    ],
+    "post-install-cmd": [
+      "@strauss",
+      "@trustedlogin"
+    ],
+    "post-update-cmd": [
+      "@strauss",
+      "@trustedlogin"
+    ]
   }
 }

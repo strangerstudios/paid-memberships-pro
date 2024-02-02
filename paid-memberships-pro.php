@@ -95,6 +95,7 @@ require_once( PMPRO_DIR . '/includes/checkout.php' );		        // Common functio
 require_once( PMPRO_DIR . '/includes/xmlrpc.php' );                 // xmlrpc methods
 require_once( PMPRO_DIR . '/includes/rest-api.php' );               // rest API endpoints
 require_once( PMPRO_DIR . '/includes/widgets.php' );                // widgets for PMPro
+require_once( PMPRO_DIR . '/includes/trustedlogin.php' );           // TrustedLogin!
 
 require_once( PMPRO_DIR . '/classes/class-pmpro-site-health.php' ); // Site Health information.
 
