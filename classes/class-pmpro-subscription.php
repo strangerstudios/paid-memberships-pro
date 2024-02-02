@@ -336,13 +336,10 @@ class PMPro_Subscription {
 
 		/*
 		 * Now filter the query based on the arguments provided.
-		 *
-		 * isset( $arg ) && null !== $arg is meant to deal with $args['arg'] = null usage
-		 * while still supporting $args['arg'] = ''.
 		 */
 
 		// Filter by ID(s).
-		if ( isset( $args['id'] ) && null !== $args['id'] ) {
+		if ( isset( $args['id'] ) ) {
 			if ( ! is_array( $args['id'] ) ) {
 				$where[]    = 'id = %d';
 				$prepared[] = $args['id'];
@@ -353,7 +350,7 @@ class PMPro_Subscription {
 		}
 
 		// Filter by user ID(s).
-		if ( isset( $args['user_id'] ) && null !== $args['user_id'] ) {
+		if ( isset( $args['user_id'] ) ) {
 			if ( ! is_array( $args['user_id'] ) ) {
 				$where[]    = 'user_id = %d';
 				$prepared[] = $args['user_id'];
@@ -364,7 +361,7 @@ class PMPro_Subscription {
 		}
 
 		// Filter by membership level ID(s).
-		if ( isset( $args['membership_level_id'] ) && null !== $args['membership_level_id'] ) {
+		if ( isset( $args['membership_level_id'] ) ) {
 			if ( ! is_array( $args['membership_level_id'] ) ) {
 				$where[]    = 'membership_level_id = %d';
 				$prepared[] = $args['membership_level_id'];
@@ -375,7 +372,7 @@ class PMPro_Subscription {
 		}
 
 		// Filter by status(es).
-		if ( isset( $args['status'] ) && null !== $args['status'] ) {
+		if ( isset( $args['status'] ) ) {
 			if ( ! is_array( $args['status'] ) ) {
 				$where[]    = 'status = %s';
 				$prepared[] = $args['status'];
@@ -386,7 +383,7 @@ class PMPro_Subscription {
 		}
 
 		// Filter by subscription transaction ID(s).
-		if ( isset( $args['subscription_transaction_id'] ) && null !== $args['subscription_transaction_id'] ) {
+		if ( isset( $args['subscription_transaction_id'] ) ) {
 			if ( ! is_array( $args['subscription_transaction_id'] ) ) {
 				$where[]    = 'subscription_transaction_id = %s';
 				$prepared[] = $args['subscription_transaction_id'];
@@ -397,7 +394,7 @@ class PMPro_Subscription {
 		}
 
 		// Filter by gateway(s).
-		if ( isset( $args['gateway'] ) && null !== $args['gateway'] ) {
+		if ( isset( $args['gateway'] ) ) {
 			if ( ! is_array( $args['gateway'] ) ) {
 				$where[]    = 'gateway = %s';
 				$prepared[] = $args['gateway'];
@@ -408,7 +405,7 @@ class PMPro_Subscription {
 		}
 
 		// Filter by gateway environment(s).
-		if ( isset( $args['gateway_environment'] ) && null !== $args['gateway_environment'] ) {
+		if ( isset( $args['gateway_environment'] ) ) {
 			if ( ! is_array( $args['gateway_environment'] ) ) {
 				$where[]    = 'gateway_environment = %s';
 				$prepared[] = $args['gateway_environment'];
@@ -419,7 +416,7 @@ class PMPro_Subscription {
 		}
 
 		// Filter by billing amount(s).
-		if ( isset( $args['billing_amount'] ) && null !== $args['billing_amount'] ) {
+		if ( isset( $args['billing_amount'] ) ) {
 			if ( ! is_array( $args['billing_amount'] ) ) {
 				$where[]    = 'billing_amount = %f';
 				$prepared[] = $args['billing_amount'];
@@ -430,7 +427,7 @@ class PMPro_Subscription {
 		}
 
 		// Filter by cycle number(s).
-		if ( isset( $args['cycle_number'] ) && null !== $args['cycle_number'] ) {
+		if ( isset( $args['cycle_number'] ) ) {
 			if ( ! is_array( $args['cycle_number'] ) ) {
 				$where[]    = 'cycle_number = %d';
 				$prepared[] = $args['cycle_number'];
@@ -441,7 +438,7 @@ class PMPro_Subscription {
 		}
 
 		// Filter by cycle period(s).
-		if ( isset( $args['cycle_period'] ) && null !== $args['cycle_period'] ) {
+		if ( isset( $args['cycle_period'] ) ) {
 			if ( ! is_array( $args['cycle_period'] ) ) {
 				$where[]    = 'cycle_period = %s';
 				$prepared[] = $args['cycle_period'];
@@ -452,7 +449,7 @@ class PMPro_Subscription {
 		}
 
 		// Filter by billing limit(s).
-		if ( isset( $args['billing_limit'] ) && null !== $args['billing_limit'] ) {
+		if ( isset( $args['billing_limit'] ) ) {
 			if ( ! is_array( $args['billing_limit'] ) ) {
 				$where[]    = 'billing_limit = %d';
 				$prepared[] = $args['billing_limit'];
@@ -463,7 +460,7 @@ class PMPro_Subscription {
 		}
 
 		// Filter by trial amount(s).
-		if ( isset( $args['trial_amount'] ) && null !== $args['trial_amount'] ) {
+		if ( isset( $args['trial_amount'] ) ) {
 			if ( ! is_array( $args['trial_amount'] ) ) {
 				$where[]    = 'trial_amount = %f';
 				$prepared[] = $args['trial_amount'];
@@ -474,7 +471,7 @@ class PMPro_Subscription {
 		}
 
 		// Filter by trial limit(s).
-		if ( isset( $args['trial_limit'] ) && null !== $args['trial_limit'] ) {
+		if ( isset( $args['trial_limit'] ) ) {
 			if ( ! is_array( $args['trial_limit'] ) ) {
 				$where[]    = 'trial_limit = %d';
 				$prepared[] = $args['trial_limit'];
@@ -919,13 +916,10 @@ class PMPro_Subscription {
 
 		/*
 		 * Now filter the query based on the arguments provided.
-		 *
-		 * isset( $arg ) && null !== $arg is meant to deal with $args['arg'] = null usage
-		 * while still supporting $args['arg'] = ''.
 		 */
 
 		// Filter by ID(s).
-		if ( isset( $args['id'] ) && null !== $args['id'] ) {
+		if ( isset( $args['id'] ) ) {
 			if ( ! is_array( $args['id'] ) ) {
 				$where[]    = 'id = %d';
 				$prepared[] = $args['id'];
@@ -936,7 +930,7 @@ class PMPro_Subscription {
 		}
 
 		// Filter by code(s).
-		if ( isset( $args['code'] ) && null !== $args['code'] ) {
+		if ( isset( $args['code'] ) ) {
 			if ( ! is_array( $args['code'] ) ) {
 				$where[]    = 'code = %s';
 				$prepared[] = $args['code'];
@@ -947,7 +941,7 @@ class PMPro_Subscription {
 		}
 
 		// Filter by status(es).
-		if ( isset( $args['status'] ) && null !== $args['status'] ) {
+		if ( isset( $args['status'] ) ) {
 			if ( ! is_array( $args['status'] ) ) {
 				$where[]    = 'status = %s';
 				$prepared[] = $args['status'];
@@ -958,7 +952,7 @@ class PMPro_Subscription {
 		}
 
 		// Filter by payment transaction ID(s).
-		if ( isset( $args['payment_transaction_id'] ) && null !== $args['payment_transaction_id'] ) {
+		if ( isset( $args['payment_transaction_id'] ) ) {
 			if ( ! is_array( $args['payment_transaction_id'] ) ) {
 				$where[]    = 'payment_transaction_id = %s';
 				$prepared[] = $args['payment_transaction_id'];
