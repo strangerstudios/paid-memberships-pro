@@ -100,7 +100,6 @@ class PMPro_Orders_List_Table extends WP_List_Table {
 			'transaction_ids'   => __( 'Transaction IDs', 'paid-memberships-pro' ),
 			'order_status'        => __( 'Status', 'paid-memberships-pro' ),
 			'date'          => __( 'Date', 'paid-memberships-pro' ),
-			'discount_code' => __( 'Discount Code', 'paid-memberships-pro' ),
 		);
 
 		// Re-implementing old hook, will be deprecated.
@@ -1025,6 +1024,12 @@ class PMPro_Orders_List_Table extends WP_List_Table {
 
 		echo pmpro_escape_price( pmpro_formatPrice( $item->total ) );
 
+		// If there is a discount code, show it.
+		if ( $item->getDiscountCode() ) {
+			?>
+			<a class="pmpro_discount_code-tag" title="<?php esc_attr_e('edit', 'paid-memberships-pro' ); ?>" href="<?php echo esc_url( add_query_arg( array( 'page' => 'pmpro-discountcodes', 'edit' => $item->discount_code->id ), admin_url('admin.php' ) ) ); ?>"><?php echo esc_html( $item->discount_code->code ); ?></a>
+			<?php
+		}
 	}
 
 	/**
@@ -1118,24 +1123,37 @@ class PMPro_Orders_List_Table extends WP_List_Table {
 	 */
 	public function column_transaction_ids( $item ) {
 
-		esc_html_e( 'Payment', 'paid-memberships-pro' ); ?>:
-		<?php
+		// Build our return variable.
+		$column_value = array();
+
+		// If there is a payment transaction ID, add it to the return variable.
 		if ( ! empty( $item->payment_transaction_id ) ) {
-			echo esc_html( $item->payment_transaction_id );
-		} else {
-			esc_html_e( 'N/A', 'paid-memberships-pro' );
+			$column_value['payment_transaction_id'] = sprintf(
+				// translators: %s is the payment transaction ID.
+				__( 'Payment: %s', 'paid-memberships-pro' ),
+				esc_html( $item->payment_transaction_id )
+			);
 		}
-		?>
-		<br/>
-		<?php esc_html_e( 'Subscription', 'paid-memberships-pro' ); ?>:
-		<?php
+
+		// If there is a subscription transaction ID, add it to the return variable.
 		if ( ! empty( $item->subscription_transaction_id ) ) {
-			echo esc_html( $item->subscription_transaction_id );
-		} else {
-			esc_html_e( 'N/A', 'paid-memberships-pro' );
+			$subscription = PMPro_Subscription::get_subscription_from_subscription_transaction_id( $item->subscription_transaction_id, $item->gateway, $item->gateway_environment );
+			$column_value['subscription_transaction_id'] = sprintf(
+				// translators: %s is the subscription transaction ID.
+				__( 'Subscription: %s', 'paid-memberships-pro' ),
+				! empty( $subscription ) ? '<a href="' . esc_url( add_query_arg( array( 'page' => 'pmpro-subscriptions', 'id' => $subscription->get_id() ), admin_url('admin.php' ) ) ) . '">' . esc_html( $item->subscription_transaction_id ) . '</a>' : esc_html( $item->subscription_transaction_id )
+			);
 		}
-		
-		
+
+		// If there is no transaction IDs, set $column_value to a dash.
+		if ( empty( $column_value ) ) {
+			$column_value['none'] = esc_html__( '&#8212;', 'paid-memberships-pro' );
+		}
+
+		// Echo the data for this column.
+		foreach( $column_value as $key => $value ) {
+			echo '<p>' . wp_kses_post( $value ) . '</p>';
+		}
 	}
 
 	/**
@@ -1176,20 +1194,4 @@ class PMPro_Orders_List_Table extends WP_List_Table {
 		) );
 	}
 
-	/**
-	 * Renders the columns order discount value
-	 *
-	 * @param object  $item
-	 *
-	 * @return string
-	 */
-	public function column_discount_code( $item ) {
-		if ( $item->getDiscountCode() ) { ?>
-			<a title="<?php esc_attr_e('edit', 'paid-memberships-pro' ); ?>" href="<?php echo esc_url( add_query_arg( array( 'page' => 'pmpro-discountcodes', 'edit' => $item->discount_code->id ), admin_url('admin.php' ) ) ); ?>">
-				<?php echo esc_html( $item->discount_code->code ); ?>
-			</a>
-		<?php } else {
-			esc_html_e( '&#8212;', 'paid-memberships-pro' );
-		}
-	}
 }
