@@ -473,13 +473,10 @@
 
 			/*
 			 * Now filter the query based on the arguments provided.
-			 *
-			 * isset( $arg ) && null !== $arg is meant to deal with $args['arg'] = null usage
-			 * while still supporting $args['arg'] = ''.
 			 */
 
 			// Filter by ID(s).
-			if ( isset( $args['id'] ) && null !== $args['id'] ) {
+			if ( isset( $args['id'] ) ) {
 				if ( ! is_array( $args['id'] ) ) {
 					$where[]    = 'id = %d';
 					$prepared[] = $args['id'];
@@ -490,7 +487,7 @@
 			}
 
 			// Filter by user ID(s).
-			if ( isset( $args['user_id'] ) && null !== $args['user_id'] ) {
+			if ( isset( $args['user_id'] ) ) {
 				if ( ! is_array( $args['user_id'] ) ) {
 					$where[]    = 'user_id = %d';
 					$prepared[] = $args['user_id'];
@@ -501,7 +498,7 @@
 			}
 
 			// Filter by membership level ID(s).
-			if ( isset( $args['membership_level_id'] ) && null !== $args['membership_level_id'] ) {
+			if ( isset( $args['membership_level_id'] ) ) {
 				if ( ! is_array( $args['membership_level_id'] ) ) {
 					$where[]    = 'membership_id = %d';
 					$prepared[] = $args['membership_level_id'];
@@ -512,7 +509,7 @@
 			}
 
 			// Filter by status(es).
-			if ( isset( $args['status'] ) && null !== $args['status'] ) {
+			if ( isset( $args['status'] ) ) {
 				if ( ! is_array( $args['status'] ) ) {
 					$where[]    = 'status = %s';
 					$prepared[] = $args['status'];
@@ -523,7 +520,7 @@
 			}
 
 			// Filter by subscription transaction ID(s).
-			if ( isset( $args['subscription_transaction_id'] ) && null !== $args['subscription_transaction_id'] ) {
+			if ( isset( $args['subscription_transaction_id'] ) ) {
 				if ( ! is_array( $args['subscription_transaction_id'] ) ) {
 					$where[]    = 'subscription_transaction_id = %s';
 					$prepared[] = $args['subscription_transaction_id'];
@@ -534,7 +531,7 @@
 			}
 
 			// Filter by gateway(s).
-			if ( isset( $args['gateway'] ) && null !== $args['gateway'] ) {
+			if ( isset( $args['gateway'] ) ) {
 				if ( ! is_array( $args['gateway'] ) ) {
 					$where[]    = 'gateway = %s';
 					$prepared[] = $args['gateway'];
@@ -545,7 +542,7 @@
 			}
 
 			// Filter by gateway environment(s).
-			if ( isset( $args['gateway_environment'] ) && null !== $args['gateway_environment'] ) {
+			if ( isset( $args['gateway_environment'] ) ) {
 				if ( ! is_array( $args['gateway_environment'] ) ) {
 					$where[]    = 'gateway_environment = %s';
 					$prepared[] = $args['gateway_environment'];
@@ -556,7 +553,7 @@
 			}
 
 			// Filter by billing amount(s).
-			if ( isset( $args['total'] ) && null !== $args['total'] ) {
+			if ( isset( $args['total'] ) ) {
 				if ( ! is_array( $args['total'] ) ) {
 					$where[]    = 'total = %f';
 					$prepared[] = $args['total'];
@@ -567,7 +564,7 @@
 			}
 
 			// Filter by payment transaction ID
-			if ( isset( $args['payment_transaction_id'] ) && null !== $args['payment_transaction_id'] ) {
+			if ( isset( $args['payment_transaction_id'] ) ) {
 				if ( ! is_array( $args['payment_transaction_id'] ) ) {
 					$where[]    = 'payment_transaction_id = %s';
 					$prepared[] = $args['payment_transaction_id'];
