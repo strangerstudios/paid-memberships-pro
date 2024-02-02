@@ -1692,14 +1692,17 @@ class PMProGateway_stripe extends PMProGateway {
 	 * @since 2.10.
 	 */
 	public static function pmpro_billing_preheader_stripe_customer_portal() {
-		//Bail if stripe isn't the selected gateway
-		if ( pmpro_getGateway() !== 'stripe' ) {
-			return;
-		}
+		global 	$pmpro_billing_order;
 		//Bail if the customer portal isn't enabled
 		if ( 'portal' !== pmpro_getOption( 'stripe_update_billing_flow' ) ) {
 			return;
 		}
+
+		//Bail if the order's gateway isn't Stripe
+		if ( 'stripe' !== $pmpo_billing_order->gateway  ) {
+			return;
+		}
+
 		// Get current user.
 		$user = wp_get_current_user();
 		if ( empty( $user->ID ) ) {
