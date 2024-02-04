@@ -888,7 +888,7 @@ class PMPro_Field {
 				if ( ( ! empty( $this->preview ) ) && ! empty( $this->file['previewurl'] ) ) {
 					$filetype = wp_check_filetype( basename( $this->file['previewurl'] ), null );
 					if ( $filetype && 0 === strpos( $filetype['type'], 'image/' ) ) {
-						$r_beginning .= '<div class="pmprorh_file_preview"><img src="' . $this->file['previewurl'] . '" alt="' . basename($value) . '" /></div>';
+						$r_beginning .= '<div class="pmprorh_file_preview"><img src="' . esc_url( $this->file['previewurl'] ) . '" alt="' . esc_attr( basename($value) ) . '" /></div>';
 					}
 				}
 
