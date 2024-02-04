@@ -906,7 +906,7 @@ class PMPro_Field {
 					) {
 						$r_beginning .= '<button class="button is-destructive pmprorh_delete_file" id="pmprorh_delete_file_' . esc_attr( $this->name ) . '_button" onclick="return false;">' . __( 'Delete', 'paid-memberships-pro' ) . '</button>';
 						$r_beginning .= '<button class="button button-secondary pmprorh_replace_file" id="pmprorh_replace_file_' . esc_attr( $this->name ) . '_button" onclick="return false;">' . __( 'Replace', 'paid-memberships-pro' ) . '</button>';
-						$r_beginning .= '<button class="button button-secondary pmprorh_cancel_change_file" id="pmprorh_cancel_change_file_' . $this->name . '_button" style="display: none;" onclick="return false;">' . __( 'Cancel', 'paid-memberships-pro' ) . '</button>';
+						$r_beginning .= '<button class="button button-secondary pmprorh_cancel_change_file" id="pmprorh_cancel_change_file_' . esc_attr( $this->name ) . '_button" style="display: none;" onclick="return false;">' . __( 'Cancel', 'paid-memberships-pro' ) . '</button>';
 						$r_beginning .= '<input id="pmprorh_delete_file_' . $this->name . '_field" name="pmprorh_delete_file_' . $this->name . '_field" type="hidden" value="0" />';
 
 					}
