@@ -432,14 +432,16 @@ function pmpro_admin_membership_access_menu_bar() {
 	$admin_membership_access = get_user_meta( $current_user->ID, 'pmpro_admin_membership_access', true );
 
 	// Set the title and the option value.
+	$title = '<span class="pmpro_admin-view pmpro_admin-view-' . esc_attr( $admin_membership_access ) . '">';
 	if ( 'no' === $admin_membership_access ) {
-		$title = '<span class="ab-icon dashicons dashicons-hidden non-member-icon"></span>' . esc_html__( 'Viewing without membership access', 'paid-memberships-pro' );
+		$title .= '<span class="ab-icon dashicons dashicons-lock non-member-icon"></span>' . esc_html__( 'View: No Access', 'paid-memberships-pro' );
 	} elseif ( 'current' === $admin_membership_access ) {
-		$title = esc_html__( 'Viewing with current membership levels', 'paid-memberships-pro' );
+		$title .= '<span class="ab-icon dashicons dashicons-admin-users current-access-icon"></span>' . esc_html__( 'View: My Access', 'paid-memberships-pro' );
 	} else {
-		$title = '<span class="ab-icon dashicons dashicons-saved has-access-icon"></span>' . esc_html__( 'Viewing with membership access', 'paid-memberships-pro' );
+		$title .= '<span class="ab-icon dashicons dashicons-unlock has-access-icon"></span>' . esc_html__( 'View: With Access', 'paid-memberships-pro' );
 		$admin_membership_access = 'yes';
 	}
+	$title .= '</span>';
 
 	$wp_admin_bar->add_menu(
 		array(
@@ -453,6 +455,7 @@ function pmpro_admin_membership_access_menu_bar() {
 	ob_start();
 	?>
 	<form method="POST" id="pmpro-admin-membership-access-form" action="">
+		<p><?php esc_html_e( 'Preview your membership site by changing the selected view below.', 'paid-memberships-pro' ); ?></p>
 		<select name="pmpro-admin-membership-access" id="pmpro-admin-membership-access" onchange="this.form.submit()">
 			<option value="yes" <?php selected( $admin_membership_access, 'yes', true ); ?>><?php esc_html_e( 'View with membership access', 'paid-memberships-pro' ); ?></option>
 			<option value="current" <?php selected( $admin_membership_access, 'current', true ); ?>><?php esc_html_e( 'View with current membership levels', 'paid-memberships-pro' ); ?></option>
