@@ -731,7 +731,7 @@ class PMPro_Subscription {
 	 * @param MemberOrder $order The order for the recurring payment that was just processed.
 	 */
 	public static function update_subscription_for_order( $order ) {
-		$subscription = self::get_subscription_from_subscription_transaction_id( $order->subscription_transaction_id, $order->gateway, $order->gateway_environment );
+		$subscription = $order->get_subscription();
 		if ( ! empty( $subscription ) ) {
 			$subscription->update();
 		}
