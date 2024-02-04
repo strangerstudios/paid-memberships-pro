@@ -36,18 +36,58 @@ class PMPro_Members_List_Table extends WP_List_Table {
 				// If true, the parent class will call the _js_vars() method in the footer
 			)
 		);
+	}
 
+	/**
+	 * Sets up screen options for the members list table.
+	 *
+	 * @since 3.0
+	 */
+	public static function hook_screen_options() {
+		$list_table = new PMPro_Members_List_Table();
+		add_screen_option(
+			'per_page',
+			array(
+				'default' => 20,
+				'label'   => __( 'Members per page', 'paid-memberships-pro' ),
+				'option'  => 'pmpro_members_per_page',
+			)
+		);
 		add_filter(
 			'screen_settings',
 			array(
-				$this,
+				$list_table,
 				'screen_controls',
 			),
 			10,
 			2
 		);
-
+		add_filter(
+			'set-screen-option',
+			array(
+				$list_table,
+				'set_screen_option',
+			),
+			10,
+			3
+		);
 		set_screen_options();
+	}
+
+	/**
+	 * Sets the screen options.
+	 *
+	 * @param string $dummy   Unused.
+	 * @param string $option  Screen option name.
+	 * @param string $value   Screen option value.
+	 * @return string
+	 */
+	public function set_screen_option( $dummy, $option, $value ) {
+		if ( 'pmpro_members_per_page' === $option ) {
+			return $value;
+		} else {
+			return $dummy;
+		}
 	}
 
 	/**
@@ -68,7 +108,7 @@ class PMPro_Members_List_Table extends WP_List_Table {
 		$this->items = $this->sql_table_data();
 
 		// Set the pagination arguments.
-		$items_per_page = $this->get_items_per_page( 'users_per_page' );
+		$items_per_page = $this->get_items_per_page( 'pmpro_members_per_page' );
 		$total_items = $this->sql_table_data( true );
 		$this->set_pagination_args(
 			array(
@@ -328,7 +368,7 @@ class PMPro_Members_List_Table extends WP_List_Table {
 		else
 			$pn = 1;
 
-		$limit = $this->get_items_per_page( 'users_per_page' );
+		$limit = $this->get_items_per_page( 'pmpro_members_per_page' );
 
 		$end = $pn * $limit;
 		$start = $end - $limit;
