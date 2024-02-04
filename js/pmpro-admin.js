@@ -962,7 +962,30 @@ window.addEventListener("DOMContentLoaded", () => {
 			tabs[tabFocus].focus();
 		}
 		});
-	}
+
+        // Enable the button to show more tabs.
+        document.addEventListener('click', function(e) {
+            const moreTabsToggle = e.target.closest('[role="showmore"]');
+            if (moreTabsToggle) {
+                e.preventDefault();
+                const parent = moreTabsToggle.parentNode;
+                const grandparent = parent.parentNode;
+                grandparent.querySelectorAll('[role="tab"]').forEach((t) => t.style.display = 'block');
+                parent.style.display = 'none';
+            }
+        });
+
+        // If the visible panel's corresponding tab is hidden, show all tabs.
+        const visiblePanel = document.querySelector('#pmpro-edit-user-div [role="tabpanel"]:not([hidden])');
+        if ( visiblePanel ) {
+            const visibleTab = document.querySelector(`[aria-controls="${visiblePanel.id}"]`);
+            if ( visibleTab.style.display === 'none' ) {
+                const moreTabsToggle = document.querySelector('[role="showmore"]');
+                moreTabsToggle.click();
+            }
+        }
+
+    }
 
 });
 
