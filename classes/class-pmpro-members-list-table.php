@@ -198,7 +198,7 @@ class PMPro_Members_List_Table extends WP_List_Table {
 		$hidden = get_user_meta( $user->ID, 'manage' . $this->screen->id . 'columnshidden', true );
 
 		// If user meta is not found, add the default hidden columns.
-		if ( ! $hidden ) {
+		if ( ! is_array( $hidden ) ) {
 			$hidden = array(
 				'ID',
 				'first_name',
