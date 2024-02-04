@@ -105,7 +105,7 @@ function pmpro_report_login_page()
 ?>
 	<form id="visits-views-logins-form" method="get" action="">
 	<h1 class="wp-heading-inline">
-		<?php _e('Visits, Views, and Logins Report', 'paid-memberships-pro');?>
+		<?php _e('Visits, Views, and Logins', 'paid-memberships-pro');?>
 	</h1>
 	<?php if ( current_user_can( 'pmpro_loginscsv' ) ) { ?>
 		<a target="_blank" href="<?php echo esc_url( $csv_export_link ); ?>" class="page-title-action pmpro-has-icon pmpro-has-icon-download"><?php esc_html_e( 'Export to CSV', 'paid-memberships-pro' ); ?></a>
@@ -160,6 +160,10 @@ function pmpro_report_login_page()
 		$theusers = $wpdb->get_results($sqlQuery);
 		$totalrows = $wpdb->get_var("SELECT FOUND_ROWS() as found_rows");
 	?>
+	<p>
+		<?php esc_html_e( 'This report offers a detailed view of data points by user and member. For various reasons, the numbers below will not perfectly match up to other tracking you might be doing (such as the data provided by an analytics plugin).', 'paid-memberships-pro' ); ?>
+		<a href="https://www.paidmembershipspro.com/documentation/admin/reports/?utm_source=plugin&utm_medium=pmpro-reports&utm_campaign=documentation&utm_content=visits-views-logins' ); ?>" target="_blank" rel="nofollow noopener"><?php esc_html_e( 'Click here to learn how these numbers are calculated.', 'paid-memberships-pro' ); ?></a>
+	</p>
 	<div class="pmpro_report-filters">
 		<h3><?php esc_html_e( 'Customize Report', 'paid-memberships-pro'); ?></h3>
 		<div class="tablenav top">
