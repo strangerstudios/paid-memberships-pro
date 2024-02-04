@@ -893,7 +893,7 @@ class PMPro_Field {
 				}
 
 				if( ! empty( $this->file['fullurl'] ) ) {										
-					$r_beginning .= '<div class="pmprorh_file_' . $this->name . '_name">' . sprintf(__('Current File: %s', 'paid-memberships-pro' ), '<a target="_blank" href="' . $this->file['fullurl'] . '">' . basename($value) . '</a>' ) . '</div>';
+					$r_beginning .= '<div class="pmprorh_file_' . esc_attr( $this->name ) . '_name">' . sprintf(__('Current File: %s', 'paid-memberships-pro' ), '<a target="_blank" href="' . esc_url( $this->file['fullurl'] ) . '">' . esc_html( basename($value) ) . '</a>' ) . '</div>';
 				} else {
 					$r_beginning .= sprintf(__('Current File: %s', 'paid-memberships-pro' ), basename($value) );
 				}
