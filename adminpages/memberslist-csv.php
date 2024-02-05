@@ -174,6 +174,9 @@
 				}
 				$search = " AND u.ID IN(" . implode( ",", $user_ids ) . ") ";
 			}
+		} elseif( function_exists( 'wp_is_large_user_count' ) && wp_is_large_user_count() ) {
+			// Don't check user meta at all on big sites.
+			$search_query = " AND ( u.user_login LIKE '%" . esc_sql($s) . "%' OR u.user_email LIKE '%" . esc_sql($s) . "%' OR u.display_name LIKE '%" . esc_sql($s) . "%' ) ";
 		} else {
 			// Default search checks a few fields.
 			$sqlQuery .= "LEFT JOIN {$wpdb->usermeta} um ON u.ID = um.user_id ";

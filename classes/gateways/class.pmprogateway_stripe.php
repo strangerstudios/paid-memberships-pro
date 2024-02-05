@@ -1470,7 +1470,9 @@ class PMProGateway_stripe extends PMProGateway {
 			$last_order->getLastMemberOrder( get_current_user_id(), null, null, 'stripe' );
 			if ( ! empty( $last_order->id ) && $last_order->status === 'pending' ) {
 				?>
-				<p class="pmpro_error"><?php _e( 'Your previous order has not yet been processed. Submitting your payment again will cause a separate charge to be initiated.', 'paid-memberships-pro' ); ?></p>
+				<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_message pmpro_error' ) ); ?>">
+					<p><?php esc_html_e( 'Your previous order has not yet been processed. Submitting your payment again will cause a separate charge to be initiated.', 'paid-memberships-pro' ); ?></p>
+				</div>
 				<?php
 			}
 			

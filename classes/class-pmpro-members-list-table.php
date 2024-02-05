@@ -36,18 +36,58 @@ class PMPro_Members_List_Table extends WP_List_Table {
 				// If true, the parent class will call the _js_vars() method in the footer
 			)
 		);
+	}
 
+	/**
+	 * Sets up screen options for the members list table.
+	 *
+	 * @since 3.0
+	 */
+	public static function hook_screen_options() {
+		$list_table = new PMPro_Members_List_Table();
+		add_screen_option(
+			'per_page',
+			array(
+				'default' => 20,
+				'label'   => __( 'Members per page', 'paid-memberships-pro' ),
+				'option'  => 'pmpro_members_per_page',
+			)
+		);
 		add_filter(
 			'screen_settings',
 			array(
-				$this,
+				$list_table,
 				'screen_controls',
 			),
 			10,
 			2
 		);
-
+		add_filter(
+			'set-screen-option',
+			array(
+				$list_table,
+				'set_screen_option',
+			),
+			10,
+			3
+		);
 		set_screen_options();
+	}
+
+	/**
+	 * Sets the screen options.
+	 *
+	 * @param string $dummy   Unused.
+	 * @param string $option  Screen option name.
+	 * @param string $value   Screen option value.
+	 * @return string
+	 */
+	public function set_screen_option( $dummy, $option, $value ) {
+		if ( 'pmpro_members_per_page' === $option ) {
+			return $value;
+		} else {
+			return $dummy;
+		}
 	}
 
 	/**
@@ -68,7 +108,7 @@ class PMPro_Members_List_Table extends WP_List_Table {
 		$this->items = $this->sql_table_data();
 
 		// Set the pagination arguments.
-		$items_per_page = $this->get_items_per_page( 'users_per_page' );
+		$items_per_page = $this->get_items_per_page( 'pmpro_members_per_page' );
 		$total_items = $this->sql_table_data( true );
 		$this->set_pagination_args(
 			array(
@@ -158,7 +198,7 @@ class PMPro_Members_List_Table extends WP_List_Table {
 		$hidden = get_user_meta( $user->ID, 'manage' . $this->screen->id . 'columnshidden', true );
 
 		// If user meta is not found, add the default hidden columns.
-		if ( ! $hidden ) {
+		if ( ! is_array( $hidden ) ) {
 			$hidden = array(
 				'ID',
 				'first_name',
@@ -328,7 +368,7 @@ class PMPro_Members_List_Table extends WP_List_Table {
 		else
 			$pn = 1;
 
-		$limit = $this->get_items_per_page( 'users_per_page' );
+		$limit = $this->get_items_per_page( 'pmpro_members_per_page' );
 
 		$end = $pn * $limit;
 		$start = $end - $limit;
@@ -352,6 +392,8 @@ class PMPro_Members_List_Table extends WP_List_Table {
 			ON u.ID = mu.user_id
 			LEFT JOIN $wpdb->pmpro_membership_levels m
 			ON mu.membership_id = m.id
+			LEFT JOIN $wpdb->pmpro_subscriptions s
+			ON mu.user_id = s.user_id
 			";
 
 		if ( !empty( $s ) ) {
@@ -366,6 +408,8 @@ class PMPro_Members_List_Table extends WP_List_Table {
 						$user_ids = array(0);	// Avoid warning, but ensure 0 results.
 					}
 					$search_query = " AND u.ID IN(" . implode( ",", $user_ids ) . ") ";					
+				} elseif ( $search_key === 'subscription_transaction_id' ) {
+					$search_query = " AND s.subscription_transaction_id LIKE '%" . esc_sql( $s ) . "%' AND mu.membership_id = s.membership_level_id AND mu.status = 'active' ";
 				} else {
 					$user_ids = $wpdb->get_col( "SELECT user_id FROM $wpdb->usermeta WHERE meta_key = '" . esc_sql( $search_key ) . "' AND meta_value LIKE '%" . esc_sql( $s ) . "%'" );
 					if ( empty( $user_ids ) ) {
@@ -373,10 +417,13 @@ class PMPro_Members_List_Table extends WP_List_Table {
 					}
 					$search_query = " AND u.ID IN(" . implode( ",", $user_ids ) . ") ";
 				}
+			} elseif( function_exists( 'wp_is_large_user_count' ) && wp_is_large_user_count() ) {
+				// Don't check user meta at all on big sites.
+				$search_query = " AND ( u.user_login LIKE '%" . esc_sql($s) . "%' OR u.user_email LIKE '%" . esc_sql($s) . "%' OR u.display_name LIKE '%" . esc_sql($s) . "%' ) ";
 			} else {
 				// Default search checks a few fields.
 				$sqlQuery .= " LEFT JOIN $wpdb->usermeta um ON u.ID = um.user_id ";
-				$search_query = " AND ( u.user_login LIKE '%" . esc_sql($s) . "%' OR u.user_email LIKE '%" . esc_sql($s) . "%' OR um.meta_value LIKE '%" . esc_sql($s) . "%' OR u.display_name LIKE '%" . esc_sql($s) . "%' ) ";
+				$search_query = " AND ( u.user_login LIKE '%" . esc_sql($s) . "%' OR u.user_email LIKE '%" . esc_sql($s) . "%' OR um.meta_value LIKE '%" . esc_sql($s) . "%' OR u.display_name LIKE '%" . esc_sql($s) . "%' OR ( s.subscription_transaction_id LIKE '%" . esc_sql( $s ) . "%' AND mu.membership_id = s.membership_level_id AND s.status = 'active' ) ) ";
 			}
 		}
 

@@ -223,7 +223,7 @@
 		 * @since 3.0
 		 * 
 		 * @param string $feature The feature to check for.
-		 * @return bool		 
+		 * @return bool|string Whether the gateway supports the requested. A string may be returned in cases where a feature has different variations of support.
 		 */
 		public static function supports( $feature ) {
 			// The base gateway doesn't support anything.			
