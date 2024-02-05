@@ -591,7 +591,7 @@ function pmpro_getLevelsExpiration( &$levels ) {
 /**
  * Get the text to display a membership's expiration date.
  * @since 3.0
- * @param int $enddate The expiration date timestamp. 
+ * @param int|string $enddate The expiration date timestamp or string to show. 
  * @param mixed $level A level object or id (optional) to pass to filters.
  * @param mixed $user A user object or id (optional) to pass to filters.
  * @return string The expiration date text.
