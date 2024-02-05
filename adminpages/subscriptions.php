@@ -53,12 +53,14 @@ if ( empty( $subscription ) ) {
 		: $sub_membership_level->name;
 	?>
 
-	<a
-		href="<?php echo ( esc_url( wp_nonce_url( add_query_arg( array( 'page' => 'pmpro-subscriptions', 'id' => $subscription->get_id(), 'update' => '1' ), admin_url('admin.php' ) ), 'update', 'pmpro_subscriptions_nonce'  ) ) ); ?>"
-		title="<?php esc_attr_e( 'Sync With Gateway', 'paid-memberships-pro' ); ?>" 
-		class="page-title-action pmpro-has-icon pmpro-has-icon-update">
-		<?php esc_html_e( 'Sync With Gateway', 'paid-memberships-pro' ); ?>
-	</a>
+	<?php if ( $subscription->get_gateway_object()->supports( 'subscription_sync' ) ) { ?>
+		<a
+			href="<?php echo ( esc_url( wp_nonce_url( add_query_arg( array( 'page' => 'pmpro-subscriptions', 'id' => $subscription->get_id(), 'update' => '1' ), admin_url('admin.php' ) ), 'update', 'pmpro_subscriptions_nonce'  ) ) ); ?>"
+			title="<?php esc_attr_e( 'Sync With Gateway', 'paid-memberships-pro' ); ?>" 
+			class="page-title-action pmpro-has-icon pmpro-has-icon-update">
+			<?php esc_html_e( 'Sync With Gateway', 'paid-memberships-pro' ); ?>
+		</a>
+	<?php } ?>
 
 	<a
 		href="javascript:void(0);"

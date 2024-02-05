@@ -1,7 +1,7 @@
 <?php	
 	//require_once(dirname(__FILE__) . "/class.pmprogateway.php");
 	class PMProGateway
-	{
+	{	
 		function __construct($gateway = NULL)
 		{
 			$this->gateway = $gateway;
@@ -215,17 +215,18 @@
 		{			
 			//this looks different for each gateway, but generally an array of some sort
 			return array();
-		}
+		}		
 
 		/**
-		 * Returns whether the gateway allows for payment method updates.
-		 *
+		 * Check if the gateway supports a certain feature.
+		 * 
 		 * @since 3.0
-		 *
-		 * @return string|false 'individual' if the gateway allows for payment method updates for individual subscriptions, 
-		 *                      'all' if the gateway updates all subscriptions, or false if the gateway does not support payment method updates.
+		 * 
+		 * @param string $feature The feature to check for.
+		 * @return bool|string Whether the gateway supports the requested. A string may be returned in cases where a feature has different variations of support.
 		 */
-		function supports_payment_method_updates() {
+		public static function supports( $feature ) {
+			// The base gateway doesn't support anything.			
 			return false;
 		}
 

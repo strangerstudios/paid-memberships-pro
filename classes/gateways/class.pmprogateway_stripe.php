@@ -69,6 +69,25 @@ class PMProGateway_stripe extends PMProGateway {
 	 ************ STATIC METHODS ************
 	 ****************************************/
 	/**
+	 * Does this gateway support this feature?
+	 * 
+	 * @since 3.0
+	 * 
+	 * @return array
+	 */
+	public static function supports( $feature ) {
+		$supports = array(
+			'subscription_sync' => true,
+		);
+
+		if ( empty( $supports[$feature] ) ) {
+			return false;
+		}
+
+		return $supports[$feature];
+	}
+	
+	 /**
 	 * Load the Stripe API library.
 	 *
 	 * @since 1.8
