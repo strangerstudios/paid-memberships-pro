@@ -1185,7 +1185,7 @@ use Braintree\WebhookNotification as Braintree_WebhookNotification;
 	}
 
 	/**
-	 * Does this gateway support this feature?
+	 * Check whether or not a gateway supports a specific feature.
 	 * 
 	 * @since 3.0
 	 * 
