@@ -95,7 +95,7 @@ function pmpro_membership_level_profile_fields($user)
 					<?php _e('at', 'paid-memberships-pro'); ?>
 					<select name='expires_hour'>
 						<?php
-						for( $i = 0; $i <= 24; $i++ ){
+						for( $i = 0; $i <= 23; $i++ ){
 							echo "<option value='".esc_attr($i)."' ".selected( $selected_expires_hour, sprintf("%02d", $i ), true ).">".sprintf("%02d", $i )."</option>";
 						}
 						?>
