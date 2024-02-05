@@ -901,15 +901,17 @@ class PMPro_Field {
 				if ( ( ! empty( $this->allow_delete ) ) && ! empty( $this->file['fullurl'] ) ) {
 					// Check whether the current user can delete the uploaded file based on the field attribute 'allow_delete'.
 					if ( $this->allow_delete === true || 
-						( $this->allow_delete === 'admins' || $this->allow_delete === 'only_admin' && current_user_can( 'manage_options', $current_user->ID ) )
+						( $this->allow_delete === 'admins' || $this->allow_delete === 'only_admin' && current_user_can( 'manage_options' ) )
 					) {
 						$r_beginning .= '<button class="button is-destructive pmprorh_delete_file" id="pmprorh_delete_file_' . esc_attr( $this->name ) . '_button" onclick="return false;">' . __( 'Delete', 'paid-memberships-pro' ) . '</button>';
-						$r_beginning .= '<button class="button button-secondary pmprorh_replace_file" id="pmprorh_replace_file_' . esc_attr( $this->name ) . '_button" onclick="return false;">' . __( 'Replace', 'paid-memberships-pro' ) . '</button>';
-						$r_beginning .= '<button class="button button-secondary pmprorh_cancel_change_file" id="pmprorh_cancel_change_file_' . esc_attr( $this->name ) . '_button" style="display: none;" onclick="return false;">' . __( 'Cancel', 'paid-memberships-pro' ) . '</button>';
-						$r_beginning .= '<input id="pmprorh_delete_file_' . esc_attr( $this->name ) . '_field" name="pmprorh_delete_file_' . esc_attr( $this->name ) . '_field" type="hidden" value="0" />';
-
 					}
 				}
+
+				if( empty( $this->readonly ) ) {
+					$r_beginning .= '<button class="button button-secondary pmprorh_replace_file" id="pmprorh_replace_file_' . esc_attr( $this->name ) . '_button" onclick="return false;">' . __( 'Replace', 'paid-memberships-pro' ) . '</button>';
+					$r_beginning .= '<button class="button button-secondary pmprorh_cancel_change_file" id="pmprorh_cancel_change_file_' . esc_attr( $this->name ) . '_button" style="display: none;" onclick="return false;">' . __( 'Cancel', 'paid-memberships-pro' ) . '</button>';
+					$r_beginning .= '<input id="pmprorh_delete_file_' . esc_attr( $this->name ) . '_field" name="pmprorh_delete_file_' . esc_attr( $this->name ) . '_field" type="hidden" value="0" />';
+				}				
 			}
 			
 			//include script to change enctype of the form and allow deletion
@@ -1290,7 +1292,7 @@ class PMPro_Field {
 			<td>
 				<?php 						
 					if(current_user_can("edit_user", $current_user->ID) && $edit !== false)
-						$this->display($value); 
+						$this->display($value);
 					else
 						echo "<div>" . $this->displayValue($value) . "</div>";
 				?>
