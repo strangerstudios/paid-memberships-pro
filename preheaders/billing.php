@@ -36,7 +36,7 @@ if ( $pmpro_billing_order->status != 'success' ) {
 // Get the subscription for this order and make sure that we can update its billing info.
 $pmpro_billing_subscription = PMPro_Subscription::get_subscription_from_subscription_transaction_id( $pmpro_billing_order->subscription_transaction_id, $pmpro_billing_order->gateway, $pmpro_billing_order->gateway_environment );
 $subscription_gateway_obj   = empty( $pmpro_billing_subscription ) ? null: $pmpro_billing_subscription->get_gateway_object();
-if ( empty( $pmpro_billing_subscription ) || $pmpro_billing_subscription->get_status() != 'active' || empty( $subscription_gateway_obj ) || empty( $subscription_gateway_obj->supports( 'payment_method_updates' ) ) ) {
+if ( empty( $pmpro_billing_subscription ) || $pmpro_billing_subscription->get_status() != 'active' || empty( $subscription_gateway_obj ) || ! $subscription_gateway_obj->supports( 'payment_method_updates' ) ) {
     // We cannot update the billing info for this subscription. Redirect to the account page.
     wp_redirect( pmpro_url( 'account' ) );
     exit;
