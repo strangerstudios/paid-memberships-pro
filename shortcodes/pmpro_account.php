@@ -152,14 +152,16 @@ function pmpro_shortcode_account($atts, $content=null, $code="")
 									</p>
 								</td>
 								<td class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_account-membership-expiration' ) ); ?>">
-									<?php
-										if ( $level->enddate ) {
-											$expiration_text = pmpro_get_membership_expiration_text( $level->enddate, $level, $current_user );
-										} else {
-											$expiration_text = pmpro_get_membership_expiration_text( esc_html_x( '&#8212;', 'A dash is shown when there is no expiration date.', 'paid-memberships-pro' ), $level, $current_user );											
-										}
-										echo wp_kses_post( $expiration_text );
-									?>
+									<p>
+										<?php
+											if ( $level->enddate ) {
+												$expiration_text = pmpro_get_membership_expiration_text( $level->enddate, $level, $current_user );
+											} else {
+												$expiration_text = pmpro_get_membership_expiration_text( esc_html_x( '&#8212;', 'A dash is shown when there is no expiration date.', 'paid-memberships-pro' ), $level, $current_user );
+											}
+											echo wp_kses_post( $expiration_text );
+										?>
+									</p>
 								</td>
 							</tr>
 							<?php } ?>

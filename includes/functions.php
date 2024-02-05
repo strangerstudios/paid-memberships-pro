@@ -628,7 +628,6 @@ function pmpro_get_membership_expiration_text( $enddate, $level = null, $user = 
 
 	// Apply the pmpro_account_membership_expiration_text filter on frontend for backwards compatibility.
 	if ( ! is_admin() ) {
-		$text = '<p>' . $text . '</p>';	// The account shortcode expects this in a p tag.
 		$text = apply_filters( 'pmpro_account_membership_expiration_text', $text, $level );
 	}
 	
