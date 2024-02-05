@@ -597,22 +597,22 @@ function pmpro_getLevelsExpiration( &$levels ) {
  * @return string The expiration date text.
  */
 function pmpro_get_membership_expiration_text( $enddate, $level = null, $user = null ) {	
+	/**
+	 * Filter to include the expiration time with expiration date
+	 * @param bool $pmpro_show_time_on_expiration_date Show the expiration time with expiration date
+	 * @param int $enddate The expiration date timestamp.
+	 * @param mixed $level A level object or id passed into this function.
+	 * @param mixed $user A user object or id passed into this function.
+	 * @return bool $pmpro_show_time_on_expiration_date Whether to show the expiration time with expiration date.
+	 * @since 3.0 Now passes the $enddate, $level, and $user.
+	 *
+	 * Used in adminpages/member-edit/pmpro-class-member-edit-panel-memberships.php
+	 */
+	$show_time = apply_filters( 'pmpro_show_time_on_expiration_date', false, $enddate, $level, $user );
+
 	if ( empty( $enddate ) ) {
 		$text = esc_html__( 'Never', 'paid-memberships-pro' );
-	} elseif( is_numeric( $enddate ) ) {		
-		/**
-		 * Filter to include the expiration time with expiration date
-		 * @param bool $pmpro_show_time_on_expiration_date Show the expiration time with expiration date
-		 * @param int $enddate The expiration date timestamp.
-		 * @param mixed $level A level object or id passed into this function.
-		 * @param mixed $user A user object or id passed into this function.
-		 * @return bool $pmpro_show_time_on_expiration_date Whether to show the expiration time with expiration date.
-		 * @since 3.0 Now passes the $enddate, $level, and $user.
-		 * 
-		 * Used in adminpages/member-edit/pmpro-class-member-edit-panel-memberships.php
-		 */
-		$show_time = apply_filters( 'pmpro_show_time_on_expiration_date', false, $enddate, $level, $user );
-		
+	} elseif( is_numeric( $enddate ) ) {
 		// Convert enddate timestamp to a date string.
 		if ( $show_time ) {
 			$text = sprintf(
@@ -643,8 +643,11 @@ function pmpro_get_membership_expiration_text( $enddate, $level = null, $user = 
 	 * @since 3.0
 	 *
 	 * @param string $text The expiration date text to show for this level.	
+	 * @param mixed $level A level object or id passed into this function.
+	 * @param mixed $user A user object or id passed into this function.
+	 * @param bool $show_time Whether to show the expiration time with expiration date.
 	 */
-	$text = apply_filters( 'pmpro_member_edit_memberships_panel_memberships_enddate_text', $text, $level, $user );
+	$text = apply_filters( 'pmpro_member_edit_memberships_panel_memberships_enddate_text', $text, $level, $user, $show_time );
 	
 	return $text;
 }
