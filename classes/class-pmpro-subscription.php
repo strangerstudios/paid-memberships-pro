@@ -731,7 +731,7 @@ class PMPro_Subscription {
 	 * @param MemberOrder $order The order for the recurring payment that was just processed.
 	 */
 	public static function update_subscription_for_order( $order ) {
-		$subscription = self::get_subscription_from_subscription_transaction_id( $order->subscription_transaction_id, $order->gateway, $order->gateway_environment );
+		$subscription = $order->get_subscription();
 		if ( ! empty( $subscription ) ) {
 			$subscription->update();
 		}
@@ -1281,6 +1281,9 @@ class PMPro_Subscription {
 		$this->billing_limit  = $subscription_level->billing_limit;
 		$this->trial_amount   = $subscription_level->trial_amount;
 		$this->trial_limit    = $subscription_level->trial_limit;
+
+		// Save so that we don't start another migration when we call get_orders().
+		$this->save();
 
 		// Let's take a guess at the start date.
 		$oldest_orders = $this->get_orders( [

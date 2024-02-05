@@ -39,6 +39,58 @@ class PMPro_Orders_List_Table extends WP_List_Table {
 	}
 
 	/**
+	 * Sets up screen options for the orders list table.
+	 *
+	 * @since 3.0
+	 */
+	public static function hook_screen_options() {
+		$list_table = new PMPro_Orders_List_Table();
+		add_screen_option(
+			'per_page',
+			array(
+				'default' => 20,
+				'label'   => __( 'Orders per page', 'paid-memberships-pro' ),
+				'option'  => 'pmpro_orders_per_page',
+			)
+		);
+		add_filter(
+			'screen_settings',
+			array(
+				$list_table,
+				'screen_controls',
+			),
+			10,
+			2
+		);
+		add_filter(
+			'set-screen-option',
+			array(
+				$list_table,
+				'set_screen_option',
+			),
+			10,
+			3
+		);
+		set_screen_options();
+	}
+
+	/**
+	 * Sets the screen options.
+	 *
+	 * @param string $dummy   Unused.
+	 * @param string $option  Screen option name.
+	 * @param string $value   Screen option value.
+	 * @return string
+	 */
+	public function set_screen_option( $dummy, $option, $value ) {
+		if ( 'pmpro_orders_per_page' === $option ) {
+			return $value;
+		} else {
+			return $dummy;
+		}
+	}
+
+	/**
 	 * Prepares the list of items for displaying.
 	 *
 	 * Query, filter data, handle sorting, and pagination, and any other data-manipulation required prior to rendering
@@ -53,7 +105,7 @@ class PMPro_Orders_List_Table extends WP_List_Table {
 
 		$this->_column_headers = array($columns, $hidden, $sortable);
 
-		$items_per_page = $this->get_items_per_page( 'orders_per_page' );
+		$items_per_page = $this->get_items_per_page( 'pmpro_orders_per_page' );
 		/**
 		 * Filter to set the default number of items to show per page
 		 * on the Orders page in the admin.
@@ -130,9 +182,22 @@ class PMPro_Orders_List_Table extends WP_List_Table {
 	 * @return Array
 	 */
 	public function get_hidden_columns() {
-		
-		return array();
-		
+		$user = wp_get_current_user();
+		if ( ! $user ) {
+			return array();
+		}
+
+		// Check whether the current user has changed screen options or not.
+		$hidden = get_user_meta( $user->ID, 'manage' . $this->screen->id . 'columnshidden', true );
+
+		// If user meta is not found, add the default hidden columns.
+		// Right now, we don't have any default hidden columns.
+		if ( ! $hidden ) {
+			$hidden = array();
+			update_user_meta( $user->ID, 'manage' . $this->screen->id . 'columnshidden', $hidden );
+		}
+
+		return $hidden;
 	}
 
 	/**
@@ -202,7 +267,7 @@ class PMPro_Orders_List_Table extends WP_List_Table {
 		$filter = isset( $_REQUEST['filter'] ) ? sanitize_text_field( $_REQUEST['filter'] ) : 'all';
 		$pn = isset( $_REQUEST['paged'] ) ? intval( $_REQUEST['paged'] ) : 1;
 
-		$items_per_page = $this->get_items_per_page( 'orders_per_page' );
+		$items_per_page = $this->get_items_per_page( 'pmpro_orders_per_page' );
 		/**
 		 * Filter to set the default number of items to show per page
 		 * on the Orders page in the admin.
