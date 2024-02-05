@@ -153,3 +153,23 @@ function pmpro_member_shortcode($atts, $content=null, $code='')
 	return $r;
 }
 add_shortcode('pmpro_member', 'pmpro_member_shortcode');
+
+/**
+ * Only allow those with the edit_users capability
+ * to use the pmpro_member shortcode.
+ *
+ * @since TBD
+ * @param string $content
+ * @return string
+ */
+function pmpro_maybe_strip_member_shortcode( $content ) {
+    if ( ! current_user_can( 'edit_users' ) ) {
+        $pattern = get_shortcode_regex( array( 'pmpro_member' ) );
+        $pattern = "/$pattern/";
+		$content = preg_replace( $pattern, '', $content );
+		///$content = preg_replace('/\[pmpro_member[^\]]*\]/', '', $content);
+    }
+    return $content;
+}
+add_filter('content_save_pre', 'pmpro_maybe_strip_member_shortcode' );
+add_filter('excerpt_save_pre', 'pmpro_maybe_strip_member_shortcode' );
