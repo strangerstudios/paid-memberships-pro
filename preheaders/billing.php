@@ -36,7 +36,7 @@ if ( $pmpro_billing_order->status != 'success' ) {
 // Get the subscription for this order and make sure that we can update its billing info.
 $pmpro_billing_subscription = $pmpro_billing_order->get_subscription();
 $subscription_gateway_obj   = empty( $pmpro_billing_subscription ) ? null: $pmpro_billing_subscription->get_gateway_object();
-if ( empty( $pmpro_billing_subscription ) || $pmpro_billing_subscription->get_status() != 'active' || empty( $subscription_gateway_obj ) || empty( $subscription_gateway_obj->supports_payment_method_updates() ) ) {
+if ( empty( $pmpro_billing_subscription ) || $pmpro_billing_subscription->get_status() != 'active' || empty( $subscription_gateway_obj ) || ! $subscription_gateway_obj->supports( 'payment_method_updates' ) ) {
     // We cannot update the billing info for this subscription. Redirect to the account page.
     wp_redirect( pmpro_url( 'account' ) );
     exit;
@@ -263,10 +263,49 @@ if ($submit) {
             $pmproemail = new PMProEmail();
             $pmproemail->sendBillingAdminEmail($current_user, $pmpro_billing_order);
 
-            //update the user meta too
-            $meta_keys = array("pmpro_bfirstname", "pmpro_blastname", "pmpro_baddress1", "pmpro_baddress2", "pmpro_bcity", "pmpro_bstate", "pmpro_bzipcode", "pmpro_bcountry", "pmpro_bphone", "pmpro_bemail");
-            $meta_values = array($bfirstname, $blastname, $baddress1, $baddress2, $bcity, $bstate, $bzipcode, $bcountry, $bphone, $bemail, $CardType, hideCardNumber($AccountNumber), $ExpirationMonth, $ExpirationYear);
-            pmpro_replaceUserMeta($current_user->ID, $meta_keys, $meta_values);
+            // Save billing info ect, as user meta.
+			$meta_keys   = array();
+			$meta_values = array();
+
+			// Check if firstname and last name fields are set.
+			if ( ! empty( $bfirstname ) || ! empty( $blastname ) ) {
+				$meta_keys = array_merge( $meta_keys, array(
+					"pmpro_bfirstname",
+					"pmpro_blastname",
+				) );
+
+				$meta_values = array_merge( $meta_values, array(
+					$bfirstname,
+					$blastname,
+				) );
+			}
+
+			// Check if billing details are available, if not adjust the arrays.
+			if ( ! empty( $baddress1 ) ) {
+				$meta_keys = array_merge( $meta_keys, array(
+					"pmpro_baddress1",
+					"pmpro_baddress2",
+					"pmpro_bcity",
+					"pmpro_bstate",
+					"pmpro_bzipcode",
+					"pmpro_bcountry",
+					"pmpro_bphone",
+					"pmpro_bemail",
+				) );
+
+				$meta_values = array_merge( $meta_values, array(
+					$baddress1,
+					$baddress2,
+					$bcity,
+					$bstate,
+					$bzipcode,
+					$bcountry,
+					$bphone,
+					$bemail,
+				) );
+			}
+
+			pmpro_replaceUserMeta( $current_user->ID, $meta_keys, $meta_values );
 
             //message
             $pmpro_msg = sprintf(__('Information updated. <a href="%s">&laquo; back to my account</a>', 'paid-memberships-pro' ), pmpro_url("account"));

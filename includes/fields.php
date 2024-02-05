@@ -981,7 +981,7 @@ add_action( 'user_edit_form_tag', 'pmpro_user_edit_form_tag' );
  */
 function pmpro_save_user_fields_in_profile( $user_id )
 {
-	if ( !current_user_can( 'edit_users', $user_id ) )
+	if ( !current_user_can( 'edit_user', $user_id ) )
 		return false;
 
 	$profile_fields = pmpro_get_user_fields_for_profile($user_id);

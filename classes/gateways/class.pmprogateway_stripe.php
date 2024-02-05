@@ -69,6 +69,26 @@ class PMProGateway_stripe extends PMProGateway {
 	 ************ STATIC METHODS ************
 	 ****************************************/
 	/**
+	 * Check whether or not a gateway supports a specific feature.
+	 * 
+	 * @since 3.0
+	 * 
+	 * @return array
+	 */
+	public static function supports( $feature ) {
+		$supports = array(
+			'subscription_sync' => true,
+			'payment_method_updates' => 'all'
+		);
+
+		if ( empty( $supports[$feature] ) ) {
+			return false;
+		}
+
+		return $supports[$feature];
+	}
+	
+	 /**
 	 * Load the Stripe API library.
 	 *
 	 * @since 1.8
@@ -1671,21 +1691,21 @@ class PMProGateway_stripe extends PMProGateway {
 			$customer = $stripe->get_customer_for_user( $pmpro_billing_order->user_id );
 			if ( empty( $customer->id ) ) {
 				$error = __( 'Could not get Stripe customer for user.', 'paid-memberships-pro' );
-      }
+			}
+		}
 
-      // Disable Stripe Checkout functionality for the rest of this page load.
-      add_filter( 'pmpro_include_cardtype_field', array(
-        'PMProGateway_stripe',
-        'pmpro_include_billing_address_fields'
-      ), 15 );
-      add_action( 'pmpro_billing_preheader', array( 'PMProGateway_stripe', 'pmpro_checkout_after_preheader' ), 15 );
-      add_filter( 'pmpro_billing_order', array( 'PMProGateway_stripe', 'pmpro_checkout_order' ), 15 );
-      add_filter( 'pmpro_include_payment_information_fields', array(
-        'PMProGateway_stripe',
-        'pmpro_include_payment_information_fields'
-      ), 15 );
-      add_filter( 'option_pmpro_stripe_payment_flow', '__return_false' ); // Disable Stripe Checkout for rest of page load.
-    }
+		// Disable Stripe Checkout functionality for the rest of this page load.
+		add_filter( 'pmpro_include_cardtype_field', array(
+			'PMProGateway_stripe',
+			'pmpro_include_billing_address_fields'
+		), 15 );
+		add_action( 'pmpro_billing_preheader', array( 'PMProGateway_stripe', 'pmpro_checkout_after_preheader' ), 15 );
+		add_filter( 'pmpro_billing_order', array( 'PMProGateway_stripe', 'pmpro_checkout_order' ), 15 );
+		add_filter( 'pmpro_include_payment_information_fields', array(
+			'PMProGateway_stripe',
+			'pmpro_include_payment_information_fields'
+		), 15 );
+		add_filter( 'option_pmpro_stripe_payment_flow', '__return_false' ); // Disable Stripe Checkout for rest of page load.
 	}
 
 	/**
@@ -2225,19 +2245,6 @@ class PMProGateway_stripe extends PMProGateway {
 			return '';
 		}
 	}
-
-	/**
-	 * Returns whether the gateway allows for payment method updates.
-	 *
-	 * @since 3.0
-	 *
-	 * @return string|false 'individual' if the gateway allows for payment method updates for individual subscriptions, 
-	 *                      'all' if the gateway updates all subscriptions, or false if the gateway does not support payment method updates.
-	 */
-	function supports_payment_method_updates() {
-		return 'all';
-	}
-
 
 	/****************************************
 	 *********** PRIVATE METHODS ************
