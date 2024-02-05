@@ -925,7 +925,7 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 				// Hide confirmation message if not an admin or member.
 				if ( ! empty( $r[ $level_id ]->confirmation ) 
 						&& ! pmpro_hasMembershipLevel( $level_id )
-						&& ! current_user_can( 'pmpro_edit_memberships' ) ) {				
+						&& ! current_user_can( 'pmpro_membershiplevels' ) ) {				
 					$r[ $level_id ]->confirmation = '';					
 				}
 			}
