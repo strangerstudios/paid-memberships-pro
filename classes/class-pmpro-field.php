@@ -1284,13 +1284,13 @@ class PMPro_Field {
 		?>
 		<tr id="<?php echo esc_attr( $this->id );?>_tr">
 			<th>
-				<?php if ( $this->type != 'hidden' ) { ?>
+				<?php if ( ! empty( $this->showmainlabel ) ) { ?>
 					<label for="<?php echo esc_attr($this->name);?>"><?php echo wp_kses_post( $this->label );?></label>
 				<?php } ?>
 			</th>
 			<td>
 				<?php 						
-					if(current_user_can("edit_users", $current_user->ID) && $edit !== false)
+					if(current_user_can("edit_user", $current_user->ID) && $edit !== false)
 						$this->display($value); 
 					else
 						echo "<div>" . $this->displayValue($value) . "</div>";						
