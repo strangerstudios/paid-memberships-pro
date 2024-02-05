@@ -78,6 +78,7 @@ class PMProGateway_stripe extends PMProGateway {
 	public static function supports( $feature ) {
 		$supports = array(
 			'subscription_sync' => true,
+			'payment_method_updates' => 'all'
 		);
 
 		if ( empty( $supports[$feature] ) ) {
@@ -2242,19 +2243,6 @@ class PMProGateway_stripe extends PMProGateway {
 			return '';
 		}
 	}
-
-	/**
-	 * Returns whether the gateway allows for payment method updates.
-	 *
-	 * @since 3.0
-	 *
-	 * @return string|false 'individual' if the gateway allows for payment method updates for individual subscriptions, 
-	 *                      'all' if the gateway updates all subscriptions, or false if the gateway does not support payment method updates.
-	 */
-	function supports_payment_method_updates() {
-		return 'all';
-	}
-
 
 	/****************************************
 	 *********** PRIVATE METHODS ************

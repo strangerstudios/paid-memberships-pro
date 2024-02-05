@@ -96,7 +96,7 @@ function pmpro_shortcode_account($atts, $content=null, $code="")
 											if ( $subscription->get_gateway() == get_option( 'pmpro_gateway' ) ) {
 												// Check if the gateway supports updating billing info.
 												$gateway_obj = $subscription->get_gateway_object();
-												if ( ! empty( $gateway_obj) && method_exists( $gateway_obj, 'supports_payment_method_updates' ) && ! empty( $gateway_obj->supports_payment_method_updates() ) ) {
+												if ( ! empty( $gateway_obj) && method_exists( $gateway_obj, 'supports' ) && ! empty( $gateway_obj->supports('payment_method_updates') ) ) {
 													// Get the newest order for this subscription so that we can build the update billing link.
 													$newest_orders = $subscription->get_orders( array( 'limit' => 1 ) );
 													if ( ! empty( $newest_orders ) ) {

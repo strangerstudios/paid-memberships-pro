@@ -42,15 +42,23 @@
 		}
 
 		/**
-		 * Returns whether the gateway allows for payment method updates.
-		 *
+		 * Does this gateway support this feature?
+		 * 
 		 * @since 3.0
-		 *
-		 * @return string|false 'individual' if the gateway allows for payment method updates for individual subscriptions, 
-		 *                      'all' if the gateway updates all subscriptions, or false if the gateway does not support payment method updates.
+		 * 
+		 * @return string|boolean $supports Returns whether or not the gateway supports the requested feature.
 		 */
-		function supports_payment_method_updates() {
-			return 'individual';
+		public static function supports( $feature ) {
+			$supports = array(
+				'subscription_sync' => false,
+				'payment_method_updates' => 'individual'
+			);
+
+			if ( empty( $supports[$feature] ) ) {
+				return false;
+			}
+
+			return $supports[$feature];
 		}
 
 		/**
