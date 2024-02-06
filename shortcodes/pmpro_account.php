@@ -154,12 +154,7 @@ function pmpro_shortcode_account($atts, $content=null, $code="")
 								<td class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_account-membership-expiration' ) ); ?>">
 									<p>
 										<?php
-											if ( $level->enddate ) {
-												$expiration_text = pmpro_get_membership_expiration_text( $level->enddate, $level, $current_user );
-											} else {
-												$expiration_text = pmpro_get_membership_expiration_text( null, $level, $current_user );
-											}
-											echo wp_kses_post( $expiration_text );
+										echo wp_kses_post( pmpro_get_membership_expiration_text( $level, $current_user ) );
 										?>
 									</p>
 								</td>

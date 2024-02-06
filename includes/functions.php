@@ -590,54 +590,93 @@ function pmpro_getLevelsExpiration( &$levels ) {
 
 /**
  * Get the text to display a membership's expiration date.
+ *
  * @since 3.0
- * @param int|string $enddate The expiration date timestamp or string to show. 
- * @param mixed $level A level object or id (optional) to pass to filters.
- * @param mixed $user A user object or id (optional) to pass to filters.
+ *
+ * @param object|int  $level The level object or ID to get the expiration date for.
+ * @param WP_User|int $user  The user object or ID to get the expiration date for.
+ *
  * @return string The expiration date text.
  */
-function pmpro_get_membership_expiration_text( $enddate, $level = null, $user = null ) {
-	/**
-	 * Filter to include the expiration time with expiration date
-	 * @param bool $pmpro_show_time_on_expiration_date Show the expiration time with expiration date
-	 * @param int $enddate The expiration date timestamp.
-	 * @param mixed $level A level object or id passed into this function.
-	 * @param mixed $user A user object or id passed into this function.
-	 * @return bool $pmpro_show_time_on_expiration_date Whether to show the expiration time with expiration date.
-	 * @since 3.0 Now passes the $enddate, $level, and $user.
-	 *
-	 * Used in adminpages/member-edit/pmpro-class-member-edit-panel-memberships.php
-	 */
-	$show_time = apply_filters( 'pmpro_show_time_on_expiration_date', false, $enddate, $level, $user );
+function pmpro_get_membership_expiration_text( $level, $user ) {
+	// If a user ID was passed, get the user object.
+	if ( is_numeric( $user ) ) {
+		$user = get_userdata( $user );
+	}
 
-	if ( empty( $enddate ) ) {
-		// N/A on the backend. &#8212; dash on the frontend.
+	// Make sure that we have a user object.
+	if ( empty( $user ) || ! is_a( $user, 'WP_User' ) ) {
+		return '';
+	}
+
+	// If a level ID was passed, get the level object.
+	if ( is_numeric( $level ) ) {
+		pmpro_getSpecificMembershipLevelForUser( $user->ID, (int)$level );
+	}
+
+	// Make sure that we have a level object with an enddate property, even if it's empty.
+	if ( empty( $level ) || ! is_object( $level ) || ! isset( $level->enddate ) ) {
+		return '';
+	}
+
+	/**
+	 * Filter to include the expiration time with expiration date.
+	 * Used in adminpages/member-edit/pmpro-class-member-edit-panel-memberships.php.
+	 *
+	 * @param bool $show_time Whether to show the expiration time with expiration date.
+	 *
+	 * @return bool Whether to show the expiration time with expiration date.
+	 */
+	$show_time = apply_filters( 'pmpro_show_time_on_expiration_date', false );
+
+	// Generate the expiration date text.
+	if ( empty( $level->enddate ) ) {
+		// If the level does not have an enddate, show a dash (&#8212;).
 		$text = esc_html_x( '&#8212;', 'A dash is shown when there is no expiration date.', 'paid-memberships-pro' );
-	} elseif( is_numeric( $enddate ) ) {
+	} else {
 		// Convert enddate timestamp to a date string.
 		if ( $show_time ) {
 			$text = sprintf(
 				// translators: %1$s is the date and %2$s is the time.
 				esc_html__( '%1$s at %2$s', 'paid-memberships-pro' ),
-				date_i18n( get_option( 'date_format'), $enddate ),
-				date_i18n( get_option( 'time_format'), $enddate )
+				date_i18n( get_option( 'date_format'), $level->enddate ),
+				date_i18n( get_option( 'time_format'), $level->enddate )
 			);
 		} else {
-			$text = date_i18n( get_option( 'date_format' ), $enddate );
+			$text = date_i18n( get_option( 'date_format' ), $level->enddate );
 		}		
-	} else {
-		// A non-timestamp string was passed in. Let's use that.
-		$text = $enddate;
 	}
 
-	// Apply the pmpro_account_membership_expiration_text filter on frontend for backwards compatibility.
-	if ( ! is_admin() ) {
-		$text = apply_filters( 'pmpro_account_membership_expiration_text', $text, $level );
+	// Apply legacy filter pmpro_memberslist_expires_column.
+	if ( is_admin() && has_filter( 'pmpro_memberslist_expires_column' ) ) {
+		/**
+		 * Legacy filter for showing the expiration date in the WP Dashboard.
+		 *
+		 * Note: Since level data is not passed, this filter is not MMPU-compatible.
+		 *
+		 * @deprecated 3.0 Use the pmpro_membership_expiration_text filter instead.
+		 *
+		 * @param string  $text The expiration date text to show for this level.
+		 * @param WP_User $user The user that the expiration date is for.
+		 *
+		 * @return string $text The expiration date text to show for this level.
+		 */
+		$text = apply_filters_deprecated( 'pmpro_memberslist_expires_column', array( $text, $user ), '3.0', 'pmpro_membership_expiration_text' );
 	}
-	
-	// Apply the pmpro_memberslist_expires_column filter on backend for backwards compatibility.
-	if ( is_admin() ) {		
-		$text = apply_filters( 'pmpro_memberslist_expires_column', $text, $user );
+
+	// Apply legacy filter pmpro_account_membership_expiration_text.
+	if ( is_admin() && has_filter( 'pmpro_account_membership_expiration_text' ) ) {
+		/**
+		 * Legacy filter for showing the expiration date on the frontend.
+		 *
+		 * @deprecated 3.0 Use the pmpro_membership_expiration_text filter instead.
+		 *
+		 * @param string $text  The expiration date text to show for this level.
+		 * @param object $level The level that the expiration date is for.
+		 *
+		 * @return string $text The expiration date text to show for this level.
+		 */
+		$text = apply_filters_deprecated( 'pmpro_account_membership_expiration_text', array( $text, $level ), '3.0', 'pmpro_membership_expiration_text' );
 	}
 
 	/**
@@ -645,13 +684,15 @@ function pmpro_get_membership_expiration_text( $enddate, $level = null, $user = 
 	 *
 	 * @since 3.0
 	 *
-	 * @param string $text The expiration date text to show for this level.	
-	 * @param mixed $level A level object or id passed into this function.
-	 * @param mixed $user A user object or id passed into this function.
-	 * @param bool $show_time Whether to show the expiration time with expiration date.
+	 * @param string  $text The expiration date text to show for this level.	
+	 * @param object  $level The level that the expiration date is for.
+	 * @param WP_User $user The user that the expiration date is for.
+	 * @param bool    $show_time Whether to show the expiration time with expiration date.
+	 *
+	 * @return string $text The expiration date text to show for this level.
 	 */
 	$text = apply_filters( 'pmpro_membership_expiration_text', $text, $level, $user, $show_time );
-	
+
 	return $text;
 }
 

@@ -437,11 +437,14 @@
 			//joindate and enddate
 			array_push($csvoutput, pmpro_enclose(date_i18n($dateformat, $theuser->joindate)));
 
-			if($theuser->membership_id)
-			{				
-				array_push($csvoutput, pmpro_enclose(pmpro_get_membership_expiration_text( $theuser->enddate, null, $theuser)));
-			}
-			elseif($l == "oldmembers" && $theuser->enddate) {
+			if ( $theuser->membership_id ) {
+				// We are no longer filtering the expiration date text for performance reasons.
+				if ( $theuser->enddate ) {
+					array_push( $csvoutput, pmpro_enclose( date_i18n( $dateformat, $theuser->enddate ) ) );
+				} else {
+					array_push( $csvoutput, pmpro_enclose( __( 'N/A', 'paid-memberships-pro' ) ) );
+				}
+			} elseif($l == "oldmembers" && $theuser->enddate) {
 				array_push($csvoutput, pmpro_enclose(date_i18n($dateformat, $theuser->enddate)));
 			} else {
 				array_push($csvoutput, __('N/A', 'paid-memberships-pro'));

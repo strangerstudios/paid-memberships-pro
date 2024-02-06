@@ -135,7 +135,7 @@ class PMPro_Member_Edit_Panel_Memberships extends PMPro_Member_Edit_Panel {
 								</div>
 							</td>
 							<td>
-								<?php echo pmpro_get_membership_expiration_text( $shown_level->enddate, $shown_level, $user ); ?>
+								<?php echo pmpro_get_membership_expiration_text( $shown_level, $user ); ?>
 							</td>
 							<td class="pmpro_levels_subscription_data has-row-actions">
 								<?php
