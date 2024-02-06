@@ -346,21 +346,32 @@ function pmpro_hide_non_pmpro_notices() {
 		// Loop through the callbacks and remove any that aren't PMPro.
 		foreach ($wp_filter[$hook]->callbacks as $priority => $callbacks) {
 			foreach ($callbacks as $key => $callback) {				
-				if ( is_array( $callback['function'] ) ) {					
-					// Skip if the class starts with pmpro_.
-					$class = get_class( $callback['function'][0] );
-					if ( strpos( strtolower( $class ), 'pmpro_' ) === 0 ) {
-						continue;
-					}
+				if ( is_string( $callback['function' ] ) ) {
+					// Check the function name.
+					// Ex. add_action( 'admin_notices', 'pmpro_admin_notice' );
+					$name_to_check = $callback['function'];
+				} elseif ( is_array( $callback['function' ] ) && is_string( $callback['function'][0] ) ) {
+					// Check the class name for the static method.
+					// Ex. add_action( 'admin_notices', array( 'PMPro_Admin', 'admin_notice' ) );
+					$name_to_check = $callback['function'][0];
+				} elseif ( is_array( $callback['function' ] ) && is_object( $callback['function'][0] ) ) {
+					// Check the class name for the non-static method.
+					// Ex. add_action( 'admin_notices', array( $some_object, 'admin_notice' ) );
+					$name_to_check = get_class( $callback['function'][0] );
 				} else {
-					// Skip if the callback function starts with pmpro_.				
-					if ( strpos( strtolower( $callback['function'] ), 'pmpro_') === 0 ) {
-						continue;
-					}
+					// Ex. add_action( 'admin_notices', function() { echo 'Hello World'; } );
+					// We don't use closures in PMPro, so we don't need to check for them.
+					$name_to_check = '';
 				}
 
-				// Probably not a PMPro notice, remove it.
-				unset($wp_filter[$hook]->callbacks[$priority][$key]);
+				// Trim slashes for namespaces and lowercase the name.
+				$name_to_check = strtolower( trim( $name_to_check, '\\' ) );
+
+				// If the function name starts with 'pmpro', then we don't want to remove it.
+				// Not checking for 'pmpro_' because we have class names like PMProGateway_stripe and want to keep notices from add ons.
+				if ( strpos( $name_to_check, 'pmpro' ) !== 0 ) {
+					unset( $wp_filter[$hook]->callbacks[$priority][$key] );
+				}
 			}
 		}
     }
