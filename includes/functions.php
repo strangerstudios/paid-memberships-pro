@@ -2427,11 +2427,8 @@ function pmpro_getLevelAtCheckout( $level_id = null, $discount_code = null ) {
 		$level_id = apply_filters( 'pmpro_default_level', intval( $default_level ) );
 	}
 
-	// Cast level ID to int to be safe.
-	$level_id = (int) $level_id;
-
 	// If we still don't have a level, bail.
-	if ( empty( $level_id ) || $level_id < 1 ) {
+	if ( empty( $level_id ) || intval( $level_id ) < 1 ) {
 		return;
 	}
 
