@@ -611,11 +611,11 @@ function pmpro_get_membership_expiration_text( $level, $user ) {
 
 	// If a level ID was passed, get the level object.
 	if ( is_numeric( $level ) ) {
-		pmpro_getSpecificMembershipLevelForUser( $user->ID, (int)$level );
+		$level = pmpro_getSpecificMembershipLevelForUser( $user->ID, (int)$level );
 	}
 
-	// Make sure that we have a level object with an enddate property, even if it's empty.
-	if ( empty( $level ) || ! is_object( $level ) || ! isset( $level->enddate ) ) {
+	// Make sure that we have a level object.
+	if ( empty( $level ) || ! is_object( $level ) ) {
 		return '';
 	}
 
