@@ -633,18 +633,17 @@ function pmpro_get_membership_expiration_text( $level, $user ) {
 	if ( empty( $level->enddate ) ) {
 		// If the level does not have an enddate, show a dash (&#8212;).
 		$text = esc_html_x( '&#8212;', 'A dash is shown when there is no expiration date.', 'paid-memberships-pro' );
+	} elseif ( $show_time ) {
+		// Show the enddate with the time.
+		$text = sprintf(
+			// translators: %1$s is the date and %2$s is the time.
+			esc_html__( '%1$s at %2$s', 'paid-memberships-pro' ),
+			date_i18n( get_option( 'date_format'), $level->enddate ),
+			date_i18n( get_option( 'time_format'), $level->enddate )
+		);
 	} else {
-		// Convert enddate timestamp to a date string.
-		if ( $show_time ) {
-			$text = sprintf(
-				// translators: %1$s is the date and %2$s is the time.
-				esc_html__( '%1$s at %2$s', 'paid-memberships-pro' ),
-				date_i18n( get_option( 'date_format'), $level->enddate ),
-				date_i18n( get_option( 'time_format'), $level->enddate )
-			);
-		} else {
-			$text = date_i18n( get_option( 'date_format' ), $level->enddate );
-		}		
+		// Show the enddate without the time.
+		$text = date_i18n( get_option( 'date_format' ), $level->enddate );
 	}
 
 	// Apply legacy filter pmpro_memberslist_expires_column.
