@@ -596,7 +596,7 @@ function pmpro_getLevelsExpiration( &$levels ) {
  * @param mixed $user A user object or id (optional) to pass to filters.
  * @return string The expiration date text.
  */
-function pmpro_get_membership_expiration_text( $enddate, $level = null, $user = null ) {	
+function pmpro_get_membership_expiration_text( $enddate, $level = null, $user = null ) {
 	/**
 	 * Filter to include the expiration time with expiration date
 	 * @param bool $pmpro_show_time_on_expiration_date Show the expiration time with expiration date
@@ -611,7 +611,12 @@ function pmpro_get_membership_expiration_text( $enddate, $level = null, $user = 
 	$show_time = apply_filters( 'pmpro_show_time_on_expiration_date', false, $enddate, $level, $user );
 
 	if ( empty( $enddate ) ) {
-		$text = esc_html__( 'Never', 'paid-memberships-pro' );
+		// N/A on the backend. &#8212; dash on the frontend.
+		if ( is_admin() ) {
+			$text = esc_html_x( 'N/A', 'N/A is shown when there is no expiration date.', 'paid-memberships-pro' );
+		} else {
+			$text = esc_html_x( '&#8212;', 'A dash is shown when there is no expiration date.', 'paid-memberships-pro' );
+		}		
 	} elseif( is_numeric( $enddate ) ) {
 		// Convert enddate timestamp to a date string.
 		if ( $show_time ) {
@@ -624,6 +629,9 @@ function pmpro_get_membership_expiration_text( $enddate, $level = null, $user = 
 		} else {
 			$text = date_i18n( get_option( 'date_format' ), $enddate );
 		}		
+	} else {
+		// A non-timestamp string was passed in. Let's use that.
+		$text = $enddate;
 	}
 
 	// Apply the pmpro_account_membership_expiration_text filter on frontend for backwards compatibility.
