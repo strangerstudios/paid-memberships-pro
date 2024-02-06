@@ -2428,7 +2428,7 @@ function pmpro_getLevelAtCheckout( $level_id = null, $discount_code = null ) {
 	}
 
 	// If we still don't have a level, bail.
-	if ( empty( $level_id ) || $level_id < 1 || ! is_int( $level_id ) ) {
+	if ( empty( $level_id ) || intval( $level_id ) < 1 ) {
 		return;
 	}
 
