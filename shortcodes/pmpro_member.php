@@ -166,8 +166,7 @@ function pmpro_maybe_strip_member_shortcode( $content ) {
     if ( ! current_user_can( 'edit_users' ) ) {
         $pattern = get_shortcode_regex( array( 'pmpro_member' ) );
         $pattern = "/$pattern/";
-		$content = preg_replace( $pattern, '', $content );
-		///$content = preg_replace('/\[pmpro_member[^\]]*\]/', '', $content);
+		$content = preg_replace( $pattern, '', $content );		
     }
     return $content;
 }
