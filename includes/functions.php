@@ -612,11 +612,7 @@ function pmpro_get_membership_expiration_text( $enddate, $level = null, $user = 
 
 	if ( empty( $enddate ) ) {
 		// N/A on the backend. &#8212; dash on the frontend.
-		if ( is_admin() ) {
-			$text = esc_html_x( 'N/A', 'N/A is shown when there is no expiration date.', 'paid-memberships-pro' );
-		} else {
-			$text = esc_html_x( '&#8212;', 'A dash is shown when there is no expiration date.', 'paid-memberships-pro' );
-		}		
+		$text = esc_html_x( '&#8212;', 'A dash is shown when there is no expiration date.', 'paid-memberships-pro' );
 	} elseif( is_numeric( $enddate ) ) {
 		// Convert enddate timestamp to a date string.
 		if ( $show_time ) {
