@@ -149,8 +149,6 @@ CREATE TABLE `wp_pmpro_membership_orders` (
   `subtotal` varchar(16) NOT NULL DEFAULT '',
   `tax` varchar(16) NOT NULL DEFAULT '',
   `checkout_id` int(11) NOT NULL DEFAULT '0',
-  `certificate_id` int(11) NOT NULL DEFAULT '0',
-  `certificateamount` varchar(16) NOT NULL DEFAULT '',
   `total` varchar(16) NOT NULL DEFAULT '',
   `payment_type` varchar(64) NOT NULL DEFAULT '',
   `cardtype` varchar(32) NOT NULL DEFAULT '',
