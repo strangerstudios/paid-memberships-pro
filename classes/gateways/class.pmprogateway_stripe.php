@@ -1699,7 +1699,7 @@ class PMProGateway_stripe extends PMProGateway {
 		}
 
 		//Bail if the order's gateway isn't Stripe
-		if ( 'stripe' !== $pmpo_billing_order->gateway  ) {
+		if ( empty( $pmpro_billing_order->gateway ) || 'stripe' !== $pmpro_billing_order->gateway  ) {
 			return;
 		}
 
