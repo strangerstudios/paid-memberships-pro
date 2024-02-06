@@ -681,7 +681,7 @@ class PMPro_Members_List_Table extends WP_List_Table {
 	 */
 	public function column_enddate( $item ) {
 		$user_object = get_userdata( $item['ID'] );
-		return pmpro_get_membership_expiration_text( $item['enddate'], null, $user_object );		
+		return pmpro_get_membership_expiration_text( $item['enddate'], null, $user_object );
 	}
 
 	/**

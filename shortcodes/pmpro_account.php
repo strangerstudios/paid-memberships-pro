@@ -157,7 +157,7 @@ function pmpro_shortcode_account($atts, $content=null, $code="")
 											if ( $level->enddate ) {
 												$expiration_text = pmpro_get_membership_expiration_text( $level->enddate, $level, $current_user );
 											} else {
-												$expiration_text = pmpro_get_membership_expiration_text( esc_html_x( '&#8212;', 'A dash is shown when there is no expiration date.', 'paid-memberships-pro' ), $level, $current_user );
+												$expiration_text = pmpro_get_membership_expiration_text( null, $level, $current_user );
 											}
 											echo wp_kses_post( $expiration_text );
 										?>
