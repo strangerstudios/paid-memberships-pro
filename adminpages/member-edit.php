@@ -209,3 +209,24 @@ function pmpro_member_edit_save() {
 	}
 }
 add_action( 'admin_init', 'pmpro_member_edit_save' );
+
+/**
+ * We always want to show the time of expiration on the edit member page of the dashboard.
+ * Fires on priority 5 so sites filtering run later by default.
+ * @param bool $show Whether to show the time of expiration
+ * @since 3.0
+ */
+function pmpro_member_edit_show_time_on_expiration( $show ) {
+	// Ignore on frontend.
+	if ( ! is_admin() ) {
+		return $show;
+	}
+
+	// Make sure we are on the edit member page.
+	if ( empty( $_REQUEST['page'] ) || $_REQUEST['page'] !== 'pmpro-member' ) {
+		return $show;
+	}
+
+	return true;
+}
+add_filter( 'pmpro_show_time_on_expiration_date', 'pmpro_member_edit_show_time_on_expiration', 5 );
