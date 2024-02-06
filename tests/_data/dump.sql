@@ -314,7 +314,6 @@ CREATE TABLE `wp_pmpro_membership_orders` (
   `billing_phone` varchar(32) NOT NULL,
   `subtotal` varchar(16) NOT NULL DEFAULT '',
   `tax` varchar(16) NOT NULL DEFAULT '',
-  `couponamount` varchar(16) NOT NULL DEFAULT '',
   `checkout_id` int(11) NOT NULL DEFAULT '0',
   `certificate_id` int(11) NOT NULL DEFAULT '0',
   `certificateamount` varchar(16) NOT NULL DEFAULT '',

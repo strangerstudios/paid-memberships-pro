@@ -3018,14 +3018,6 @@ function pmpro_get_price_parts( $pmpro_invoice, $format = 'array' ) {
 		);
 	}
 
-	if ( ! empty( $pmpro_invoice->couponamount ) ) {
-		// We don't even use this but it is in the database so it could be shown here.
-		$pmpro_price_parts['couponamount'] = array(
-			'label' => __( 'Coupon', 'paid-memberships-pro' ),
-			'value' => pmpro_escape_price( pmpro_formatPrice( $pmpro_invoice->couponamount ) ),
-		);
-	}
-
 	/**
 	 * Filter to modify the price parts, add parts, or modify the display. Does not include the order total.
 	 *

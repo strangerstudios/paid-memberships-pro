@@ -274,7 +274,6 @@ $csv_file_header_array = array(
 	"level_name",
 	"subtotal",
 	"tax",
-	"couponamount",
 	"total",
 	"payment_type",
 	"cardtype",
@@ -313,7 +312,6 @@ $default_columns = array(
 	array( "level", "name" ),
 	array( "order", "subtotal" ),
 	array( "order", "tax" ),
-	array( "order", "couponamount" ),
 	array( "order", "total" ),
 	array( "order", "payment_type" ),
 	array( "order", "cardtype" ),
@@ -328,14 +326,6 @@ $default_columns = array(
 	array( "discount_code", "id" ),
 	array( "discount_code", "code" )
 );
-
-// Hiding couponamount by default.
-$coupons = apply_filters( 'pmpro_orders_show_coupon_amounts', false );
-if ( empty( $coupons ) ) {
-	$csv_file_header_array = array_diff( $csv_file_header_array, array( 'couponamount' ) );
-	$couponamount_array_key = array_keys( $default_columns, array( 'order', 'couponamount' ) );
-	unset( $default_columns[ $couponamount_array_key[0] ] );
-}
 
 $default_columns = apply_filters( "pmpro_order_list_csv_default_columns", $default_columns );
 

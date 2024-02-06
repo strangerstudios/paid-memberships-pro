@@ -420,7 +420,6 @@ function pmpro_db_delta()
 		  `billing_phone` varchar(32) NOT NULL,
 		  `subtotal` varchar(16) NOT NULL DEFAULT '',
 		  `tax` varchar(16) NOT NULL DEFAULT '',
-		  `couponamount` varchar(16) NOT NULL DEFAULT '',
 		  `checkout_id` bigint(20) NOT NULL DEFAULT '0',
 		  `certificate_id` int(11) NOT NULL DEFAULT '0',
 		  `certificateamount` varchar(16) NOT NULL DEFAULT '',

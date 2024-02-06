@@ -119,14 +119,6 @@ if ( ! empty( $_REQUEST['save'] ) ) {
 		$order->tax = sanitize_text_field( $_POST['tax'] );
 	}
 
-	// Hiding couponamount by default.
-	$coupons = apply_filters( 'pmpro_orders_show_coupon_amounts', false );
-	if ( ! empty( $coupons ) ) {
-		if ( ! in_array( 'couponamount', $read_only_fields ) && isset( $_POST['couponamount'] ) ) {
-			$order->couponamount = sanitize_text_field( $_POST['couponamount'] );
-		}
-	}
-
 	if ( ! in_array( 'total', $read_only_fields ) && isset( $_POST['total'] ) ) {
 		$order->total = sanitize_text_field( $_POST['total'] );
 	}
@@ -238,7 +230,6 @@ if ( ! empty( $_REQUEST['save'] ) ) {
 			$order->discount_code = '';
 			$order->subtotal = '';
 			$order->tax = '';
-			$order->couponamount = '';
 			$order->total = '';
 			$order->payment_type = '';
 			$order->cardtype = '';
@@ -645,28 +636,6 @@ require_once( dirname( __FILE__ ) . '/admin_header.php' ); ?>
 							<?php } ?>
 						</td>
 					</tr>
-					<?php
-						// Hiding couponamount by default.
-						$coupons = apply_filters( 'pmpro_orders_show_coupon_amounts', false );
-						if ( ! empty( $coupons ) ) { ?>
-						<tr>
-							<th scope="row" valign="top"><label for="couponamount"><?php esc_html_e( 'Coupon Amount', 'paid-memberships-pro' ); ?></label>
-							</th>
-							<td>
-							<?php
-								if ( in_array( 'couponamount', $read_only_fields ) && $order_id > 0 ) {
-									echo $order->couponamount;
-								} else {
-								?>
-									<input id="couponamount" name="couponamount" type="text" size="10" value="<?php echo esc_attr( $order->couponamount ); ?>"/>
-								<?php
-								}
-							?>
-							</td>
-						</tr>
-						<?php
-						}
-					?>
 					<tr>
 						<th scope="row" valign="top"><label for="total"><?php esc_html_e( 'Total', 'paid-memberships-pro' ); ?></label></th>
 						<td>
