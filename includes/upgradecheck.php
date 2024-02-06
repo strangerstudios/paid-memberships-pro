@@ -4,10 +4,11 @@
 */
 function pmpro_checkForUpgrades()
 {
+	global $wpdb;
+
 	$pmpro_db_version = pmpro_getOption("db_version");
 
 	//if we can't find the DB tables, reset db_version to 0
-	global $wpdb;
 	$wpdb->hide_errors();
 	$wpdb->pmpro_membership_levels = $wpdb->prefix . 'pmpro_membership_levels';
 	$table_exists = $wpdb->query("SHOW TABLES LIKE '" . $wpdb->pmpro_membership_levels . "'");
@@ -335,6 +336,19 @@ function pmpro_checkForUpgrades()
 	if ( $pmpro_db_version < 2.97 ) { // 2.97 since 2.12 would be lower than previous update.
 		pmpro_db_delta();
 		update_option( 'pmpro_db_version', '2.97' );
+	}
+
+	/**
+	 * Version 2.12.9
+	 * Check for pmpro_member shortcode use.
+	 */
+	if ( $pmpro_db_version < 2.98 ) { // 2.98 since 2.12.9 would be lower than previous update.
+		$sqlQuery = "SELECT id FROM $wpdb->posts WHERE post_content LIKE '%[pmpro_member %' LIMIT 1";
+		$pmpro_member_shortcode_used = $wpdb->get_var( $sqlQuery );
+		if ( $pmpro_member_shortcode_used ) {
+			update_option( 'pmpro_member_shortcode_used', true );
+		}
+		update_option( 'pmpro_db_version', '2.98' );
 	}
 }
 
