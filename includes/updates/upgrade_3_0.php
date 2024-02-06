@@ -38,12 +38,6 @@ function pmpro_upgrade_3_0() {
 		";
 	$wpdb->query( $sqlQuery );
 
-	// Remove unused `couponamount` from orders table.
-	$sqlQuery = "
-		ALTER TABLE {$wpdb->pmpro_membership_orders}
-		DROP COLUMN couponamount
-		";
-
 	$wpdb->query( $sqlQuery );
 	return 3.0;
 }
