@@ -982,12 +982,12 @@ class PMPro_Field {
 
             //setup date vars
             if(is_array($value) && !empty($value)){
-	    $value = strtotime(implode("/", $value), current_time('timestamp'));
-	}elseif(!is_array($value) && !empty($value)){
-	    $value = strtotime($value, current_time('timestamp'));
-	}else{
-	    $value = strtotime(date('Y-m-d'), current_time('timestamp'));
-	}
+				$value = strtotime(implode("/", $value), current_time('timestamp'));
+			}elseif(!is_array($value) && !empty($value)){
+				$value = strtotime($value, current_time('timestamp'));
+			}else{
+				$value = strtotime(date('Y-m-d'), current_time('timestamp'));
+			}
 
             $year = date("Y", $value);
             $month = date("n", $value);
@@ -1310,9 +1310,10 @@ class PMPro_Field {
 	 * Echo the value of the field based on type
 	 * and taking into account fields with options.
 	 * @param mixed $value The value to be shown.
-	 * @since 3.0 Shows files as links.
+	 * @param bool $echo Whether to echo the value or return it.
+	 * @since 3.0 Shows files as links and added echo parameter.
 	 */
-	function displayValue( $value ) {
+	function displayValue( $value, $echo = true ) {
 		$output = '';
 		$allowed_html = array();
 		
@@ -1368,7 +1369,12 @@ class PMPro_Field {
 		// Enforce string as output.
 		$output = (string) $output;
 
-		echo wp_kses( $output, $allowed_html );
+		if ( $echo ) {
+			echo wp_kses( $output, $allowed_html );
+		} else {
+			return wp_kses( $output, $allowed_html );
+		}
+		
 	}
 	
 	/**
