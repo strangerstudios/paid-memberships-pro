@@ -836,8 +836,7 @@ class PMPro_Field {
 			
 			$r .= sprintf( '</ul></div>' );
 			
-		}
-		
+		}	
 		elseif($this->type == "textarea")
 		{
 			$r = '<textarea id="' . esc_attr( $this->id ) . '" name="' . esc_attr( $this->name ) . '" rows="' . $this->rows . '" cols="' . esc_attr( $this->cols ) . '" ';
@@ -905,12 +904,14 @@ class PMPro_Field {
 						( $this->allow_delete === 'admins' || $this->allow_delete === 'only_admin' && current_user_can( 'manage_options' ) )
 					) {
 						$r_beginning .= '<button class="button is-destructive pmprorh_delete_file" id="pmprorh_delete_file_' . esc_attr( $this->name ) . '_button" onclick="return false;">' . __( 'Delete', 'paid-memberships-pro' ) . '</button>';
-						$r_beginning .= '<button class="button button-secondary pmprorh_replace_file" id="pmprorh_replace_file_' . esc_attr( $this->name ) . '_button" onclick="return false;">' . __( 'Replace', 'paid-memberships-pro' ) . '</button>';
-						$r_beginning .= '<button class="button button-secondary pmprorh_cancel_change_file" id="pmprorh_cancel_change_file_' . esc_attr( $this->name ) . '_button" style="display: none;" onclick="return false;">' . __( 'Cancel', 'paid-memberships-pro' ) . '</button>';
-						$r_beginning .= '<input id="pmprorh_delete_file_' . esc_attr( $this->name ) . '_field" name="pmprorh_delete_file_' . esc_attr( $this->name ) . '_field" type="hidden" value="0" />';
-
 					}
 				}
+
+				if( empty( $this->readonly ) ) {
+					$r_beginning .= '<button class="button button-secondary pmprorh_replace_file" id="pmprorh_replace_file_' . esc_attr( $this->name ) . '_button" onclick="return false;">' . __( 'Replace', 'paid-memberships-pro' ) . '</button>';
+					$r_beginning .= '<button class="button button-secondary pmprorh_cancel_change_file" id="pmprorh_cancel_change_file_' . esc_attr( $this->name ) . '_button" style="display: none;" onclick="return false;">' . __( 'Cancel', 'paid-memberships-pro' ) . '</button>';
+					$r_beginning .= '<input id="pmprorh_delete_file_' . esc_attr( $this->name ) . '_field" name="pmprorh_delete_file_' . esc_attr( $this->name ) . '_field" type="hidden" value="0" />';
+				}				
 			}
 			
 			//include script to change enctype of the form and allow deletion
@@ -981,12 +982,12 @@ class PMPro_Field {
 
             //setup date vars
             if(is_array($value) && !empty($value)){
-	    $value = strtotime(implode("/", $value), current_time('timestamp'));
-	}elseif(!is_array($value) && !empty($value)){
-	    $value = strtotime($value, current_time('timestamp'));
-	}else{
-	    $value = strtotime(date('Y-m-d'), current_time('timestamp'));
-	}
+				$value = strtotime(implode("/", $value), current_time('timestamp'));
+			}elseif(!is_array($value) && !empty($value)){
+				$value = strtotime($value, current_time('timestamp'));
+			}else{
+				$value = strtotime(date('Y-m-d'), current_time('timestamp'));
+			}
 
             $year = date("Y", $value);
             $month = date("n", $value);
@@ -1291,9 +1292,9 @@ class PMPro_Field {
 			<td>
 				<?php 						
 					if(current_user_can("edit_user", $user_id) && $edit !== false)
-						$this->display($value); 
+						$this->display($value);
 					else
-						echo "<div>" . $this->displayValue($value) . "</div>";						
+						echo "<div>" . $this->displayValue($value) . "</div>";
 				?>
 				<?php if(!empty($this->hint)) { ?>
 					<small class="lite"><?php echo wp_kses_post( $this->hint );?></small>
@@ -1305,34 +1306,75 @@ class PMPro_Field {
 		$this->getDependenciesJS();
 	}		
 	
-	//checks for array values and values from fields with options
-	function displayValue($value)
-	{
-		if(is_array($value) && !empty($this->options))
-		{
+	/**
+	 * Echo the value of the field based on type
+	 * and taking into account fields with options.
+	 * @param mixed $value The value to be shown.
+	 * @param bool $echo Whether to echo the value or return it.
+	 * @since 3.0 Shows files as links and added echo parameter.
+	 */
+	function displayValue( $value, $echo = true ) {
+		$output = '';
+		$allowed_html = array();
+		
+		if(is_array( $value ) && ! empty( $this->options ) ) {
 			$labels = array();
-			foreach($value as $item)
-			{
+			foreach( $value as $item ) {
 				$labels[] = $this->options[$item];
 			}
+			$output .= implode( ', ', $labels);
+		} elseif( is_array( $value ) ) {
+			$output .= implode( ', ', $value );
+		} elseif( ! empty( $this->options ) && isset( $this->options[$value] ) ) {
+			$output .= $this->options[$value];
+		} elseif ( $this->type == 'checkbox' ) {
+			$output .= $value ? __( 'Yes', 'paid-memberships-pro' ) : __( 'No', 'paid-memberships-pro' );
+		} elseif ( $this->type == 'date' ) {
+			$output .= date_i18n( get_option( 'date_format' ), strtotime( $value ) );
+		} elseif ( $this->type == 'file' ) {			
+			// Show a preview of existing file if image type.
+			if ( ( ! empty( $this->preview ) ) && ! empty( $value ) && ! empty( $this->file['previewurl'] ) ) {
+				$filetype = wp_check_filetype( basename( $this->file['previewurl'] ), null );
+				if ( $filetype && 0 === strpos( $filetype['type'], 'image/' ) ) {
+					$output .= '<div class="pmprorh_file_preview"><img src="' . $this->file['previewurl'] . '" alt="' . basename($value) . '" /></div>';
+				}
+				$allowed_html['div'] = array(
+					'class' => array(),
+				);
+				$allowed_html['img'] = array(
+					'src' => array(),
+					'alt' => array(),
+				);
+			}
 
-			$output = implode( ', ', $labels);
+			// Show link to file if available, or name if not.
+			if( ! empty( $this->file ) && ! empty( $this->file['fullurl'] ) ) {
+				$output .= '<span class="pmprorh_file_' . $this->name . '_name"><a target="_blank" href="' . esc_url( $this->file['fullurl'] ) . '">' . basename($value) . '</a></span>';
+				$allowed_html['span'] = array(
+					'class' => array(),
+				);
+				$allowed_html['a'] = array(
+					'href' => array(),
+					'target' => array(),
+				);
+			} elseif( empty( $value ) ) {
+				$output .= esc_html__( 'N/A', 'paid-memberships-pro' );
+			} else {
+				$output .= sprintf(__('Current File: %s', 'paid-memberships-pro' ), basename($value) );
+			}
+		} else {
+			$output .= $value;
 		}
-		elseif(is_array($value))
-			$output = implode( ', ', $value );
-		elseif( ! empty( $this->options ) && isset( $this->options[$value] ) )
-			$output = $this->options[$value];
-		elseif ( $this->type == 'checkbox' )
-			$output = $value ? __( 'Yes', 'paid-memberships-pro' ) : __( 'No', 'paid-memberships-pro' );
-		elseif ( $this->type == 'date' )
-			$output = date_i18n( get_option( 'date_format' ), strtotime( $value ) );
-		else
-			$output = $value;
 
 		// Enforce string as output.
 		$output = (string) $output;
 
-		echo esc_html( $output );
+		if ( $echo ) {
+			echo wp_kses( $output, $allowed_html );
+		} else {
+			return wp_kses( $output, $allowed_html );
+		}
+		
 	}
 	
 	/**

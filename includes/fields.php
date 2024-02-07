@@ -1686,3 +1686,27 @@ function pmpro_get_label_for_user_field_value( $field_name, $field_value ) {
 	}
 	return $field_value;
 }
+
+/**
+ * Get a single field from the global $pmpro_user_fields array.
+ * @since 3.0
+ * @param string $field_name The name of the field to get.
+ * @return bool|object The field object if found, false otherwise.
+ */
+function pmpro_get_user_field( $field_name ) {
+	global $pmpro_user_fields;
+	
+	if ( empty( $pmpro_user_fields ) ) {
+		return false;
+	}
+
+	foreach ( $pmpro_user_fields as $group ) {
+		foreach ( $group as $field ) {
+			if ( $field->name === $field_name ) {
+				return $field;
+			}
+		}
+	}
+	
+	return false;
+}
