@@ -4,7 +4,7 @@ Tags: memberships, member, community, user profile, user registration, members, 
 Requires at least: 5.2
 Tested up to: 6.4.2
 Requires PHP: 5.6
-Stable tag: 2.12.8
+Stable tag: 2.12.9
 
 Build a membership site that grows with you: user registration, member profiles, 28 protected content types, free or paid subscriptions.
 
@@ -190,6 +190,10 @@ Not sure? You can find out by doing a bit a research.
 9. Advanced settings for updating non-member messages, optionally show excerpts or filter content, use reCAPTCHA, and a Terms of Service checkbox.
 
 == Changelog ==
+= 2.12.9 - 2024-02-07 =
+* SECURITY: Only users with the "edit_users" capability may add the pmpro_member shortcode to posts and widgets now. #2817 (Thanks, Scott Kingsley Clark)
+* BUG FIX/ENHANCEMENT: Removed the 24 option from the hours dropdown for expiration dates since the hours start with 00. #2812 (@MaximilianoRicoTabo)
+
 = 2.12.8 - 2024-01-22 =
 * SECURITY: Added missing nonce when updating the level order through drag and drop. (Thanks, Kodai Kubono from WordFence) #2773 (@dparker1005)
 * BUG FIX/ENHANCEMENT: The `pmpro_stripe_order_description` filter now applies to Stripe Checkout orders as well. #2774 (@MaximilianoRicoTabo)

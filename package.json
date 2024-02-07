@@ -1,6 +1,6 @@
 {
   "name": "paid-memberships-pro",
-  "version": "2.12.8",
+  "version": "2.12.9",
   "description": "WordPress Membership Plugin",
   "main": "webpack.config.js",
   "directories": {
