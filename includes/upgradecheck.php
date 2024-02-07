@@ -336,7 +336,7 @@ function pmpro_checkForUpgrades()
 	if ( $pmpro_db_version < 2.97 ) { // 2.97 since 2.12 would be lower than previous update.
 		pmpro_db_delta();
 		update_option( 'pmpro_db_version', '2.97' );
-	}	
+	}
 }
 
 function pmpro_db_delta()
