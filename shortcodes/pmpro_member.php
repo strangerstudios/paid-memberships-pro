@@ -205,6 +205,13 @@ add_filter( 'widget_update_callback', 'pmpro_maybe_strip_member_shortcode' );
 /**
  * Only allow those with the edit_users capability
  * to use the pmpro_member shortcode in post_meta.
+ *
+ * @since TBD
+ * @param int    $meta_id     ID of the meta data entry.
+ * @param int    $object_id   ID of the object the meta is attached to.
+ * @param string $meta_key    Meta key.
+ * @param mixed  $_meta_value Meta value.
+ * @return void
  */
 function pmpro_maybe_strip_member_shortcode_from_post_meta( $meta_id, $object_id, $meta_key, $_meta_value ) {
 	// Bail if the value is not a string or array.
