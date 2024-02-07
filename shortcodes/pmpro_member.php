@@ -192,7 +192,7 @@ function pmpro_maybe_strip_member_shortcode( $content ) {
 	$blockWrapperPattern = "/<!-- wp:shortcode -->\s*$shortcodeRegex\s*<!-- \/wp:shortcode -->/s";
 	$content = preg_replace( $blockWrapperPattern, '', $content );
 
-	// Then, strip the shortcode by itself.
+	// Replace the shortcode by itself.
 	$shortcodePattern = "/$shortcodeRegex/";
 	$content = preg_replace( $shortcodePattern, '', $content );
 
