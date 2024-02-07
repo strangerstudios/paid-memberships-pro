@@ -228,4 +228,3 @@ function pmpro_maybe_strip_member_shortcode_from_post_meta( $meta_id, $object_id
 	}
 }
 add_action( 'updated_post_meta', 'pmpro_maybe_strip_member_shortcode_from_post_meta', 10, 4 );
-
