@@ -278,10 +278,6 @@ function pmpro_personal_data_exporter( $email_address, $page = 1 ) {
 					'value' => $order->tax,
 				),
 				array(
-					'name' => __( 'Coupon Amount', 'paid-memberships-pro' ),
-					'value' => $order->couponamount,
-				),
-				array(
 					'name' => __( 'Total', 'paid-memberships-pro' ),
 					'value' => $order->total,
 				),

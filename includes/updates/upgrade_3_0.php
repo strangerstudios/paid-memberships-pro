@@ -38,5 +38,19 @@ function pmpro_upgrade_3_0() {
 		";
 	$wpdb->query( $sqlQuery );
 
+	// Dropping deleted order columns.
+	$columns_to_drop = array(
+		'couponamount',
+		'certificate_id',
+		'certificateamount',
+	);
+	foreach ( $columns_to_drop as $column ) {
+		$sqlQuery = "
+			ALTER TABLE {$wpdb->pmpro_membership_orders}
+			DROP COLUMN {$column}
+			";
+		$wpdb->query( $sqlQuery );
+	}
+
 	return 3.0;
 }

@@ -83,37 +83,6 @@
 		private $tax = 0.00;
 
 		/**
-		 * Discount Code Amount
-		 *
-		 * @since 2.9
-		 *
-		 * @var float
-		 */
-		private $couponamount = 0.00;
-
-		/**
-		 * Certificate ID - Notice of deprecation started in 1.8.10. Should no longer be used.
-		 *
-		 * @since 2.9
-		 *
-		 * @var string
-		 *
-		 * @deprecated 1.8.10
-		 */
-		private $certificate_id = '';
-
-		/**
-		 * Certificate Amount - Notice of deprecation started in 1.8.10. Should no longer be used.
-		 *
-		 * @since 2.9
-		 *
-		 * @var string
-		 *
-		 * @deprecated 1.8.10
-		 */
-		private $certificateamount = '';
-
-		/**
 		 * Total order amount
 		 *
 		 * @since 2.9
@@ -680,9 +649,6 @@
 
 				$this->subtotal = $dbobj->subtotal;
 				$this->tax = (float)$dbobj->tax;
-				$this->couponamount = $dbobj->couponamount;
-				$this->certificate_id = $dbobj->certificate_id;
-				$this->certificateamount = $dbobj->certificateamount;
 				$this->total = $dbobj->total;
 				$this->payment_type = $dbobj->payment_type;
 				$this->cardtype = $dbobj->cardtype;
@@ -1292,9 +1258,6 @@
 									`billing_phone` = '" . esc_sql($this->billing->phone) . "',
 									`subtotal` = '" . esc_sql( $this->subtotal ) . "',
 									`tax` = '" . esc_sql( $this->tax ) . "',
-									`couponamount` = '" . esc_sql( $this->couponamount ) . "',
-									`certificate_id` = " . intval($this->certificate_id) . ",
-									`certificateamount` = '" . esc_sql( $this->certificateamount ) . "',
 									`total` = '" . esc_sql( $this->total ) . "',
 									`payment_type` = '" . esc_sql( $this->payment_type ) . "',
 									`cardtype` = '" . esc_sql( $this->cardtype ) . "',
@@ -1343,7 +1306,7 @@
 				
 				//insert
 				$this->sqlQuery = "INSERT INTO $wpdb->pmpro_membership_orders
-								(`code`, `session_id`, `user_id`, `membership_id`, `paypal_token`, `billing_name`, `billing_street`, `billing_city`, `billing_state`, `billing_zip`, `billing_country`, `billing_phone`, `subtotal`, `tax`, `couponamount`, `certificate_id`, `certificateamount`, `total`, `payment_type`, `cardtype`, `accountnumber`, `expirationmonth`, `expirationyear`, `status`, `gateway`, `gateway_environment`, `payment_transaction_id`, `subscription_transaction_id`, `timestamp`, `affiliate_id`, `affiliate_subid`, `notes`, `checkout_id`)
+								(`code`, `session_id`, `user_id`, `membership_id`, `paypal_token`, `billing_name`, `billing_street`, `billing_city`, `billing_state`, `billing_zip`, `billing_country`, `billing_phone`, `subtotal`, `tax`, `total`, `payment_type`, `cardtype`, `accountnumber`, `expirationmonth`, `expirationyear`, `status`, `gateway`, `gateway_environment`, `payment_transaction_id`, `subscription_transaction_id`, `timestamp`, `affiliate_id`, `affiliate_subid`, `notes`, `checkout_id`)
 								VALUES('" . esc_sql( $this->code ) . "',
 									   '" . esc_sql( session_id() ) . "',
 									   " . intval($this->user_id) . ",
@@ -1358,9 +1321,6 @@
 									   '" . esc_sql( cleanPhone($this->billing->phone) ) . "',
 									   '" . esc_sql( $this->subtotal ) . "',
 									   '" . esc_sql( $this->tax ) . "',
-									   '" . esc_sql( $this->couponamount ). "',
-									   " . intval($this->certificate_id) . ",
-									   '" . esc_sql( $this->certificateamount ) . "',
 									   '" . esc_sql( $this->total ) . "',
 									   '" . esc_sql( $this->payment_type ) . "',
 									   '" . esc_sql( $this->cardtype ) . "',
