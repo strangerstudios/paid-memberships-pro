@@ -320,3 +320,60 @@ function pmpro_admin_footer_text( $text ) {
 	);
 }
 add_filter( 'admin_footer_text', 'pmpro_admin_footer_text' );
+
+/**
+ * Hide non-PMPro notices from PMPro dashboard pages.
+ * @since TBD
+ */
+function pmpro_hide_non_pmpro_notices() {
+    global $wp_filter;
+
+	// Make sure we're on a PMPro page.
+	if ( ! isset( $_REQUEST['page'] )
+			|| substr( sanitize_text_field( $_REQUEST['page'] ), 0, 6 ) !== 'pmpro-' ) {
+		return;
+	}
+
+	// Handle notices added through these hooks.
+    $hooks = ['admin_notices', 'all_admin_notices'];
+
+    foreach ($hooks as $hook) {
+        // If no callbacks are registered, skip.
+		if ( ! isset( $wp_filter[$hook] ) ) {
+			continue;
+		}
+
+		// Loop through the callbacks and remove any that aren't PMPro.
+		foreach ($wp_filter[$hook]->callbacks as $priority => $callbacks) {
+			foreach ($callbacks as $key => $callback) {				
+				if ( is_string( $callback['function' ] ) ) {
+					// Check the function name.
+					// Ex. add_action( 'admin_notices', 'pmpro_admin_notice' );
+					$name_to_check = $callback['function'];
+				} elseif ( is_array( $callback['function' ] ) && is_string( $callback['function'][0] ) ) {
+					// Check the class name for the static method.
+					// Ex. add_action( 'admin_notices', array( 'PMPro_Admin', 'admin_notice' ) );
+					$name_to_check = $callback['function'][0];
+				} elseif ( is_array( $callback['function' ] ) && is_object( $callback['function'][0] ) ) {
+					// Check the class name for the non-static method.
+					// Ex. add_action( 'admin_notices', array( $some_object, 'admin_notice' ) );
+					$name_to_check = get_class( $callback['function'][0] );
+				} else {
+					// Ex. add_action( 'admin_notices', function() { echo 'Hello World'; } );
+					// We don't use closures in PMPro, so we don't need to check for them.
+					$name_to_check = '';
+				}
+
+				// Trim slashes for namespaces and lowercase the name.
+				$name_to_check = strtolower( trim( $name_to_check, '\\' ) );
+
+				// If the function name starts with 'pmpro', then we don't want to remove it.
+				// Not checking for 'pmpro_' because we have class names like PMProGateway_stripe and want to keep notices from add ons.
+				if ( strpos( $name_to_check, 'pmpro' ) !== 0 ) {
+					unset( $wp_filter[$hook]->callbacks[$priority][$key] );
+				}
+			}
+		}
+    }
+}
+add_action( 'in_admin_header', 'pmpro_hide_non_pmpro_notices' );

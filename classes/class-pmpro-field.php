@@ -1291,7 +1291,7 @@ class PMPro_Field {
 			</th>
 			<td>
 				<?php 						
-					if(current_user_can("edit_user", $current_user->ID) && $edit !== false)
+					if(current_user_can("edit_user", $user_id) && $edit !== false)
 						$this->display($value);
 					else
 						echo "<div>" . $this->displayValue($value) . "</div>";
