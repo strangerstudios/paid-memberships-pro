@@ -163,10 +163,8 @@ add_shortcode('pmpro_member', 'pmpro_member_shortcode');
  * @return string
  */
 function pmpro_maybe_strip_member_shortcode_from_posts( $content ) {
-	if ( ! current_user_can( 'edit_users' ) ) {
-		$pattern = get_shortcode_regex( array( 'pmpro_member' ) );
-		$pattern = "/$pattern/";
-		$content = preg_replace( $pattern, '', $content );
+	if ( ! current_user_can( 'edit_users' ) ) {		
+		$content = pmpro_strip_shortcode( 'pmpro_member', $content );
 	}
 	return $content;
 }
@@ -183,11 +181,9 @@ add_filter('excerpt_save_pre', 'pmpro_maybe_strip_member_shortcode_from_posts' )
  */
 function pmpro_maybe_strip_member_shortcode_from_widgets( $instance ) {
 	if ( ! current_user_can( 'edit_users' ) ) {
-		$pattern = get_shortcode_regex( array( 'pmpro_member' ) );
-		$pattern = "/$pattern/";
 		foreach ( $instance as $key => $value ) {
 			if ( is_string( $value ) ) {
-				$instance[ $key ] = preg_replace( $pattern, '', $value );
+				$instance[ $key ] = pmpro_strip_shortcode( 'pmpro_member', $value );
 			}
 		}
 	}

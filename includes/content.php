@@ -554,3 +554,25 @@ function pmpro_body_classes( $classes ) {
 	return $classes;
 }
 add_filter( 'body_class', 'pmpro_body_classes' );
+
+/**
+ * Strip a shortcode out of a string.
+ *
+ * @since TBD
+ * @param string $tag The shortcode tag to strip.
+ * @param string $content The content to strip the shortcode from.
+ * @return string The content with the shortcode removed.
+ */
+function pmpro_strip_shortcode( $tag, $content ) {
+	$shortcodeRegex = get_shortcode_regex( array( $tag ) );	
+
+	// Replace shortcode wrapped in block comments.
+	$blockWrapperPattern = "/<!-- wp:shortcode -->\s*$shortcodeRegex\s*<!-- \/wp:shortcode -->/s";
+	$content = preg_replace( $blockWrapperPattern, '', $content );
+
+	// Then, strip the shortcode by itself.
+	$shortcodePattern = "/$shortcodeRegex/";
+	$content = preg_replace( $shortcodePattern, '', $content );
+
+	return $content;
+}
