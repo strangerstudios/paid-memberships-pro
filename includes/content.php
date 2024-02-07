@@ -559,11 +559,28 @@ add_filter( 'body_class', 'pmpro_body_classes' );
  * Strip a shortcode out of a string.
  *
  * @since TBD
- * @param string $tag The shortcode tag to strip.
- * @param string $content The content to strip the shortcode from.
- * @return string The content with the shortcode removed.
+ * @param string $tag 		The shortcode tag to strip.
+ * @param mixed  $content 	The content to strip the shortcode from.
+ * 						 	If an array is passed in, all elements
+ * 						 	will be filtered recursively.
+ * 						 	Non-strings are ignored.
+ * @return mixed The content with the shortcode removed.
  */
 function pmpro_strip_shortcode( $tag, $content ) {
+	// If an array is passed in, filter all elements recursively.
+	if ( is_array( $content ) ) {
+		foreach ( $content as $key => $value ) {
+			$content[ $key ] = pmpro_strip_shortcode( $tag, $value );
+		}
+		return $content;
+	}
+
+	// If we're not looking at a string, just return it.
+	if ( ! is_string( $content ) ) {
+		return $content;
+	}
+	
+	// Okay, we have a string, figure out the regex.
 	$shortcodeRegex = get_shortcode_regex( array( $tag ) );	
 
 	// Replace shortcode wrapped in block comments.

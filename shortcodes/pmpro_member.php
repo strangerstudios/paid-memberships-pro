@@ -181,11 +181,7 @@ add_filter('excerpt_save_pre', 'pmpro_maybe_strip_member_shortcode_from_posts' )
  */
 function pmpro_maybe_strip_member_shortcode_from_widgets( $instance ) {
 	if ( ! current_user_can( 'edit_users' ) ) {
-		foreach ( $instance as $key => $value ) {
-			if ( is_string( $value ) ) {
-				$instance[ $key ] = pmpro_strip_shortcode( 'pmpro_member', $value );
-			}
-		}
+		$instance = pmpro_strip_shortcode( 'pmpro_member', $instance );		
 	}
 	return $instance;
 }
