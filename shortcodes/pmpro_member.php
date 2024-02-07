@@ -157,7 +157,7 @@ add_shortcode('pmpro_member', 'pmpro_member_shortcode');
 /**
  * Strip the [pmpro_member] shortcode from content if the current user can't edit users.
  *
- * @since TBD
+ * @since 2.12.9
 
  * @param string|array $content The content to strip the shortcode from.
  *                              If an array is passed in, all elements
@@ -206,7 +206,7 @@ add_filter( 'widget_update_callback', 'pmpro_maybe_strip_member_shortcode' );
  * Only allow those with the edit_users capability
  * to use the pmpro_member shortcode in post_meta.
  *
- * @since TBD
+ * @since 2.12.9
  * @param int    $meta_id     ID of the meta data entry.
  * @param int    $object_id   ID of the object the meta is attached to.
  * @param string $meta_key    Meta key.
