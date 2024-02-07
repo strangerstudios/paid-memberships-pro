@@ -172,6 +172,31 @@ add_filter('content_save_pre', 'pmpro_maybe_strip_member_shortcode_from_posts' )
 add_filter('excerpt_save_pre', 'pmpro_maybe_strip_member_shortcode_from_posts' );
 
 /**
+ * Only allow those with the edit_users capability
+ * to use the pmpro_member shortcode in post_meta.
+ */
+function pmpro_maybe_strip_member_shortcode_from_post_meta( $meta_id, $object_id, $meta_key, $_meta_value ) {
+	// Bail if current user has access.
+	if ( current_user_can( 'edit_users' ) ) {
+		return;
+	}
+
+	// Bail if the value is not a string or array.
+	if ( ! is_string( $_meta_value ) && ! is_array( $_meta_value ) ) {
+		return;
+	}
+
+	// Strip the shortcode from the meta value.
+	$stripped_value = pmpro_strip_shortcode( 'pmpro_member', $_meta_value );
+
+	// If there was a change, save our stripped version.
+	if ( $stripped_value !== $_meta_value ) {
+		update_post_meta( $object_id, $meta_key, $stripped_value );
+	}
+}
+add_action( 'updated_post_meta', 'pmpro_maybe_strip_member_shortcode_from_post_meta', 10, 4 );
+
+/**
  * Only allow those with the edit_users cabapility
  * to use the pmpro_member shortcode in widgets.
  *
