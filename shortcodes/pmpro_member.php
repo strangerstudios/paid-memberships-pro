@@ -163,12 +163,12 @@ add_shortcode('pmpro_member', 'pmpro_member_shortcode');
  * @return string
  */
 function pmpro_maybe_strip_member_shortcode( $content ) {
-    if ( ! current_user_can( 'edit_users' ) ) {
-        $pattern = get_shortcode_regex( array( 'pmpro_member' ) );
-        $pattern = "/$pattern/";
-		$content = preg_replace( $pattern, '', $content );		
-    }
-    return $content;
+	if ( ! current_user_can( 'edit_users' ) ) {
+		$pattern = get_shortcode_regex( array( 'pmpro_member' ) );
+		$pattern = "/$pattern/";
+		$content = preg_replace( $pattern, '', $content );
+	}
+	return $content;
 }
 add_filter('content_save_pre', 'pmpro_maybe_strip_member_shortcode' );
 add_filter('excerpt_save_pre', 'pmpro_maybe_strip_member_shortcode' );
