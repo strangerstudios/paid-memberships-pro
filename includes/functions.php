@@ -4601,19 +4601,6 @@ function pmpro_is_paused() {
 }
 
 /**
- * Set the pause mode status
- *
- * @param $state bool true or false if in pause mode state
- * @since 2.10
- * @deprecated 2.10.7 No longer using `pmpro_pause_mode` option
- * @return bool True if the option has been updated
- */
-function pmpro_set_pause_mode( $state ) {
-  _deprecated_function( __FUNCTION__, '3.0' );
-	return pmpro_setOption( 'pause_mode', $state );
-}
-
-/**
  * Sanitizes a cycle period or expiration period and makes sure it's a valid period.
  *
  * @since 2.12
