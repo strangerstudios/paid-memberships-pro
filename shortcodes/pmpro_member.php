@@ -155,7 +155,7 @@ function pmpro_member_shortcode($atts, $content=null, $code='')
 add_shortcode('pmpro_member', 'pmpro_member_shortcode');
 
 /**
- * Strip the [pmpro_member] shortcode from content.
+ * Strip the [pmpro_member] shortcode from content if the current user can't edit users.
  *
  * @since TBD
 
@@ -198,8 +198,8 @@ function pmpro_maybe_strip_member_shortcode( $content ) {
 
 	return $content;
 }
-add_filter('content_save_pre', 'pmpro_maybe_strip_member_shortcode' );
-add_filter('excerpt_save_pre', 'pmpro_maybe_strip_member_shortcode' );
+add_filter( 'content_save_pre', 'pmpro_maybe_strip_member_shortcode' );
+add_filter( 'excerpt_save_pre', 'pmpro_maybe_strip_member_shortcode' );
 add_filter( 'widget_update_callback', 'pmpro_maybe_strip_member_shortcode' );
 
 /**
