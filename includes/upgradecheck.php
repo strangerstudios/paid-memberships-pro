@@ -4,10 +4,11 @@
 */
 function pmpro_checkForUpgrades()
 {
+	global $wpdb;
+
 	$pmpro_db_version = pmpro_getOption("db_version");
 
 	//if we can't find the DB tables, reset db_version to 0
-	global $wpdb;
 	$wpdb->hide_errors();
 	$wpdb->pmpro_membership_levels = $wpdb->prefix . 'pmpro_membership_levels';
 	$table_exists = $wpdb->query("SHOW TABLES LIKE '" . $wpdb->pmpro_membership_levels . "'");
