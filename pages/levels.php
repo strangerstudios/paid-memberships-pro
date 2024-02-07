@@ -1,12 +1,12 @@
 <?php
 /**
  * Template: Levels
- * Version: 2.0
+ * Version: 3.0
  *
  * See documentation for how to override the PMPro templates.
  * @link https://www.paidmembershipspro.com/documentation/templates/
  *
- * @version 2.0
+ * @version 3.0
  *
  * @author Paid Memberships Pro
  */
