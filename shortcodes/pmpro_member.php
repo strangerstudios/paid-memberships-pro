@@ -155,39 +155,65 @@ function pmpro_member_shortcode($atts, $content=null, $code='')
 add_shortcode('pmpro_member', 'pmpro_member_shortcode');
 
 /**
- * Only allow those with the edit_users capability
- * to use the pmpro_member shortcode in posts.
+ * Strip the [pmpro_member] shortcode from content if the current user can't edit users.
  *
  * @since TBD
- * @param string $content
- * @return string
+
+ * @param string|array $content The content to strip the shortcode from.
+ *                              If an array is passed in, all elements
+ *                              will be filtered recursively.
+ *                              Non-strings are ignored.
+ *
+ * @return mixed The content with the shortcode removed. Will be the same type as the input.
  */
-function pmpro_maybe_strip_member_shortcode_from_posts( $content ) {
-	if ( ! current_user_can( 'edit_users' ) ) {		
-		$content = pmpro_strip_shortcode( 'pmpro_member', $content );
+function pmpro_maybe_strip_member_shortcode( $content ) {
+	// If the user can edit users, we don't need to strip the shortcode.
+	if ( current_user_can( 'edit_users' ) ) {
+		return $content;
 	}
+
+	// If an array is passed in, filter all elements recursively.
+	if ( is_array( $content ) ) {
+		foreach ( $content as $key => $value ) {
+			$content[ $key ] = pmpro_strip_member_shortcode( $value );
+		}
+		return $content;
+	}
+
+	// If we're not looking at a string, just return it.
+	if ( ! is_string( $content ) ) {
+		return $content;
+	}
+	
+	// Okay, we have a string, figure out the regex.
+	$shortcodeRegex = get_shortcode_regex( array( 'pmpro_member' ) );	
+
+	// Replace shortcode wrapped in block comments.
+	$blockWrapperPattern = "/<!-- wp:shortcode -->\s*$shortcodeRegex\s*<!-- \/wp:shortcode -->/s";
+	$content = preg_replace( $blockWrapperPattern, '', $content );
+
+	// Then, strip the shortcode by itself.
+	$shortcodePattern = "/$shortcodeRegex/";
+	$content = preg_replace( $shortcodePattern, '', $content );
+
 	return $content;
 }
-add_filter('content_save_pre', 'pmpro_maybe_strip_member_shortcode_from_posts' );
-add_filter('excerpt_save_pre', 'pmpro_maybe_strip_member_shortcode_from_posts' );
+add_filter( 'content_save_pre', 'pmpro_maybe_strip_member_shortcode' );
+add_filter( 'excerpt_save_pre', 'pmpro_maybe_strip_member_shortcode' );
+add_filter( 'widget_update_callback', 'pmpro_maybe_strip_member_shortcode' );
 
 /**
  * Only allow those with the edit_users capability
  * to use the pmpro_member shortcode in post_meta.
  */
 function pmpro_maybe_strip_member_shortcode_from_post_meta( $meta_id, $object_id, $meta_key, $_meta_value ) {
-	// Bail if current user has access.
-	if ( current_user_can( 'edit_users' ) ) {
-		return;
-	}
-
 	// Bail if the value is not a string or array.
 	if ( ! is_string( $_meta_value ) && ! is_array( $_meta_value ) ) {
 		return;
 	}
 
 	// Strip the shortcode from the meta value.
-	$stripped_value = pmpro_strip_shortcode( 'pmpro_member', $_meta_value );
+	$stripped_value = pmpro_maybe_strip_member_shortcode( $_meta_value );
 
 	// If there was a change, save our stripped version.
 	if ( $stripped_value !== $_meta_value ) {
@@ -196,18 +222,3 @@ function pmpro_maybe_strip_member_shortcode_from_post_meta( $meta_id, $object_id
 }
 add_action( 'updated_post_meta', 'pmpro_maybe_strip_member_shortcode_from_post_meta', 10, 4 );
 
-/**
- * Only allow those with the edit_users cabapility
- * to use the pmpro_member shortcode in widgets.
- *
- * @since TBD
- * @param array $instance
- * @return array
- */
-function pmpro_maybe_strip_member_shortcode_from_widgets( $instance ) {
-	if ( ! current_user_can( 'edit_users' ) ) {
-		$instance = pmpro_strip_shortcode( 'pmpro_member', $instance );		
-	}
-	return $instance;
-}
-add_filter( 'widget_update_callback', 'pmpro_maybe_strip_member_shortcode_from_widgets' );
