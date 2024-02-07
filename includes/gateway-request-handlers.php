@@ -41,7 +41,7 @@ function pmpro_handle_subscription_cancellation_at_gateway( $subscription_transa
 		 *
 		 * @param int $user_id The ID of the user associated with the subscription.
 		 */
-		do_action( 'pmpro_stripe_subscription_deleted', $user->ID );
+		do_action_deprecated( 'pmpro_stripe_subscription_deleted', array( $user->ID ), '3.0' );
 	}
 
 	// Check if we have already cancelled the subscription in PMPro.
@@ -68,7 +68,7 @@ function pmpro_handle_subscription_cancellation_at_gateway( $subscription_transa
 
 	// Legacy Braintree code to add action on subscription cancellation.
 	if ( 'braintree' === $gateway ) {
-		$newest_order = $this->get_orders( array( 'limit' => 1 ) );
+		$newest_order = $subscription->get_orders( array( 'limit' => 1 ) );
 		if ( ! empty( $newest_order ) ) {
 			/**
 			 * Action for when a subscription is cancelled at a payment gateway.
@@ -76,9 +76,9 @@ function pmpro_handle_subscription_cancellation_at_gateway( $subscription_transa
 			 *
 			 * @deprecated 3.0
 			 *
-			 * @param int $user_id The ID of the user associated with the subscription.
+			 * @param MemberOrder $newest_order The most recent order associated with the subscription.
 			 */
-			do_action( "pmpro_subscription_cancelled", current( $newest_order ) );
+			do_action_deprecated( 'pmpro_subscription_cancelled', array( current( $newest_order ) ), '3.0' );
 		}
 	}
 
