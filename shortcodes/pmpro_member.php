@@ -156,13 +156,13 @@ add_shortcode('pmpro_member', 'pmpro_member_shortcode');
 
 /**
  * Only allow those with the edit_users capability
- * to use the pmpro_member shortcode.
+ * to use the pmpro_member shortcode in posts.
  *
  * @since TBD
  * @param string $content
  * @return string
  */
-function pmpro_maybe_strip_member_shortcode( $content ) {
+function pmpro_maybe_strip_member_shortcode_from_posts( $content ) {
 	if ( ! current_user_can( 'edit_users' ) ) {
 		$pattern = get_shortcode_regex( array( 'pmpro_member' ) );
 		$pattern = "/$pattern/";
@@ -170,5 +170,27 @@ function pmpro_maybe_strip_member_shortcode( $content ) {
 	}
 	return $content;
 }
-add_filter('content_save_pre', 'pmpro_maybe_strip_member_shortcode' );
-add_filter('excerpt_save_pre', 'pmpro_maybe_strip_member_shortcode' );
+add_filter('content_save_pre', 'pmpro_maybe_strip_member_shortcode_from_posts' );
+add_filter('excerpt_save_pre', 'pmpro_maybe_strip_member_shortcode_from_posts' );
+
+/**
+ * Only allow those with the edit_users cabapility
+ * to use the pmpro_member shortcode in widgets.
+ *
+ * @since TBD
+ * @param array $instance
+ * @return array
+ */
+function pmpro_maybe_strip_member_shortcode_from_widgets( $instance ) {
+	if ( ! current_user_can( 'edit_users' ) ) {
+		$pattern = get_shortcode_regex( array( 'pmpro_member' ) );
+		$pattern = "/$pattern/";
+		foreach ( $instance as $key => $value ) {
+			if ( is_string( $value ) ) {
+				$instance[ $key ] = preg_replace( $pattern, '', $value );
+			}
+		}
+	}
+	return $instance;
+}
+add_filter( 'widget_update_callback', 'pmpro_maybe_strip_member_shortcode_from_widgets' );
