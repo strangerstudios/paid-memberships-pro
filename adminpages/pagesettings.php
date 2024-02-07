@@ -23,9 +23,9 @@ global $pmpro_pages;
 $extra_pages = apply_filters('pmpro_extra_page_settings', array());
 
 /**
- * @deprecated replaced with pmpro_admin_pagesetting_post_type since 2.7.0
+ * @deprecated 3.0 replaced with pmpro_admin_pagesetting_post_type since 2.7.0
  */
-$post_types = apply_filters( 'pmpro_admin_pagesetting_post_type_array', array( 'page' ) );
+$post_types = apply_filters_deprecated( 'pmpro_admin_pagesetting_post_type_array', array( array( 'page' ) ), '3.0', 'pmpro_admin_pagesetting_post_type' );
 
 // For backward compatibility we extract the first element from the array
 if ( is_array( $post_types ) ) {
