@@ -190,7 +190,6 @@ Not sure? You can find out by doing a bit a research.
 9. Advanced settings for updating non-member messages, optionally show excerpts or filter content, use reCAPTCHA, and a Terms of Service checkbox.
 
 == Changelog ==
-<<<<<<< HEAD
 = 3.0 (Updated for v2.99.993 on 2024-01-14) =
 * FEATURE: Now tracking payment subscriptions using a new subscriptions table. (@dparker1005)
 * FEATURE: The Multiple Memberships Per User Add On has been merged into the core PMPro plugin. #2250 (@dparker1005)
@@ -224,7 +223,7 @@ Not sure? You can find out by doing a bit a research.
 * REFACTOR: Removed deprecated and unused code in the Stripe gateway integration code. #2428 (@dparker1005)
 * REFACTOR: Changing uses of `pmpro_getOption()` to `get_option()`. #2491, #2493, #2494, #2495 (@JarrydLong, @MaximilianoRicoTabo)
 * DEPRECATED: No longer using `$pmpro_levels` global variable. #2666 (@dparker1005)
-=======
+
 = 2.12.10 - 2024-02-08 =
 * BUG FIX: Fixed fatal error on post save introduced in 2.12.9.
 * ENHANCEMENT: Now simplifying the members and user search on sites where wp_is_large_user_count() is true.
@@ -232,7 +231,6 @@ Not sure? You can find out by doing a bit a research.
 = 2.12.9 - 2024-02-07 =
 * SECURITY: Only users with the "edit_users" capability may add the pmpro_member shortcode to posts and widgets now. #2817 (Thanks, Scott Kingsley Clark)
 * BUG FIX/ENHANCEMENT: Removed the 24 option from the hours dropdown for expiration dates since the hours start with 00. #2812 (@MaximilianoRicoTabo)
->>>>>>> dev
 
 = 2.12.8 - 2024-01-22 =
 * SECURITY: Added missing nonce when updating the level order through drag and drop. (Thanks, Kodai Kubono from WordFence) #2773 (@dparker1005)

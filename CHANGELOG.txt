@@ -32,6 +32,7 @@
 * REFACTOR: Removed deprecated and unused code in the Stripe gateway integration code. #2428 (@dparker1005)
 * REFACTOR: Changing uses of `pmpro_getOption()` to `get_option()`. #2491, #2493, #2494, #2495 (@JarrydLong, @MaximilianoRicoTabo)
 * DEPRECATED: No longer using `$pmpro_levels` global variable. #2666 (@dparker1005)
+
 = 2.12.10 - 2024-02-08 =
 * BUG FIX: Fixed fatal error on post save introduced in 2.12.9.
 * ENHANCEMENT: Now simplifying the members and user search on sites where wp_is_large_user_count() is true.
