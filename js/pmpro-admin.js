@@ -1021,6 +1021,14 @@ function pmpro_changeTabs( e, inputChanged ) {
 	.querySelector(`#${target.getAttribute("aria-controls")}`)
 	.removeAttribute("hidden");
 
+    // Update the URL to include the panel URL in the pmpro_member_edit_panel attribute.
+    const fullPanelName = target.getAttribute('aria-controls');
+    // Need to convert pmpro-member-edit-xyz-panel to xyz.
+    const panelSlug = fullPanelName.replace(/^pmpro-member-edit-/, '').replace(/-panel$/, '');
+    const url = new URL(window.location.href);
+    url.searchParams.set('pmpro_member_edit_panel', panelSlug);
+    window.history.pushState({}, '', url);
+
 	return true;
 }
 
