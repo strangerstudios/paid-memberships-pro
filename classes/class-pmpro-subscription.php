@@ -1219,7 +1219,7 @@ class PMPro_Subscription {
 	 */
 	private function maybe_fix_default_migration_data() {
 		// Make sure that this looks like default migration data for an active subscription.
-		if (  empty( $this->id ) || 'active' !== $this->status || ! empty( $this->billing_amount ) || ! empty( $this->cycle_number ) ) {
+		if (  empty( $this->id ) || ! empty( $this->billing_amount ) || ! empty( $this->cycle_number ) ) {
 			// This is not default migration data for an active subscription. Bail.
 			return;
 		}
@@ -1248,7 +1248,7 @@ class PMPro_Subscription {
 			$level_check = current( $all_user_levels );
 
 			// Let's check if level the same level as this subscription and if it's a recurring level.
-			if ( $level_check->id == $this->membership_level_id && pmpro_isLevelRecurring( $level_check ) ) {
+			if ( $level_check->id == $this->membership_level_id && ! empty( $level_check->billing_amount ) && ! empty( $level_check->cycle_number ) ) {
 				$subscription_level = $level_check;
 				break;
 			}
@@ -1258,14 +1258,21 @@ class PMPro_Subscription {
 		// pull from the level settings instead.
 		if ( empty( $subscription_level ) ) {
 			$level = pmpro_getLevel( $this->membership_level_id );
-			if ( ! empty( $level ) && pmpro_isLevelRecurring( $level ) ) {
+			if ( ! empty( $level ) && ! empty( $level->billing_amount ) && ! empty( $level->cycle_number ) ) {
 				$subscription_level = $level;
 			}
 		}
 
-		// If we still don't have a subscription level, then this membership level isn't recurring or no longer exists on the site. Bail.
+		// If we still don't have a subscription level, then this membership level isn't recurring or no longer exists on the site.
+		// Give it some default values.
 		if ( empty( $subscription_level ) ) {
-			return;
+			$subscription_level = new stdClass();
+			$subscription_level->billing_amount = 0;
+			$subscription_level->cycle_number   = 1;
+			$subscription_level->cycle_period   = 'Month';
+			$subscription_level->billing_limit  = 0;
+			$subscription_level->trial_amount   = 0;
+			$subscription_level->trial_limit    = 0;
 		}
 
 		// We have found a level, let's fill in the subscription.
