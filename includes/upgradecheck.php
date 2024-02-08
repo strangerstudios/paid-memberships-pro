@@ -2,12 +2,11 @@
 /*
 	These functions below handle DB upgrades, etc
 */
-function pmpro_checkForUpgrades()
-{
+function pmpro_checkForUpgrades() {
+	global $wpdb;
 	$pmpro_db_version = get_option("pmpro_db_version");
 
 	//if we can't find the DB tables, reset db_version to 0
-	global $wpdb;
 	$wpdb->hide_errors();
 	$wpdb->pmpro_membership_levels = $wpdb->prefix . 'pmpro_membership_levels';
 	$table_exists = $wpdb->query("SHOW TABLES LIKE '" . $wpdb->pmpro_membership_levels . "'");
@@ -351,8 +350,7 @@ function pmpro_checkForUpgrades()
 	}
 }
 
-function pmpro_db_delta()
-{
+function pmpro_db_delta() {
 	require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
 
 	global $wpdb;
