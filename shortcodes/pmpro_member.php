@@ -175,7 +175,7 @@ function pmpro_maybe_strip_member_shortcode( $content ) {
 	// If an array is passed in, filter all elements recursively.
 	if ( is_array( $content ) ) {
 		foreach ( $content as $key => $value ) {
-			$content[ $key ] = pmpro_strip_member_shortcode( $value );
+			$content[ $key ] = pmpro_maybe_strip_member_shortcode( $value );
 		}
 		return $content;
 	}
