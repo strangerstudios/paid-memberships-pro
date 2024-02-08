@@ -812,9 +812,16 @@ li.pmpro_more {
 	float: right;
 	font-size: 11px;
 	line-height: 16px;
-	padding: 0px 0px 2px 20px;
+	padding: 2px 0px 2px 20px;
 	text-decoration: none;
 	width: auto;
+	border: none;
+	box-shadow: none;
+}
+.pmpro_a-print:hover, .pmpro_a-print:focus {
+	border: none;
+	box-shadow: none;
+	color: unset;
 }
 .pmpro_red {
 	color: #CC0000;
@@ -900,3 +907,4 @@ li.pmpro_more {
 		text-align: center;
 	}
 }
+

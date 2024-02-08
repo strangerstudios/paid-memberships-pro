@@ -15,24 +15,18 @@
 	<?php
 	global $wpdb, $pmpro_invoice, $pmpro_msg, $pmpro_msgt, $current_user;
 
-	if($pmpro_msg)
-	{
-	?>
-	<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_message ' . $pmpro_msgt, $pmpro_msgt ) ); ?>"><?php echo wp_kses_post( $pmpro_msg );?></div>
-	<?php
-	}
-?>
+	if( $pmpro_msg ) { ?>
+		<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_message ' . $pmpro_msgt, $pmpro_msgt ) ); ?>">
+		<?php echo wp_kses_post( $pmpro_msg );?></div>
+	<?php } ?>
 
 <?php
-	if($pmpro_invoice)
-	{
-		?>
-		<?php
+	if( $pmpro_invoice ) {
 			$pmpro_invoice->getUser();
 			$pmpro_invoice->getMembershipLevel();
-		?>
+?>
 		<h2><?php echo esc_html( sprintf(__('Invoice #%s on %s', 'paid-memberships-pro' ), $pmpro_invoice->code, date_i18n(get_option('date_format'), $pmpro_invoice->getTimestamp())) );?></h2>
-		<a class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_a-print' ) ); ?>" href="javascript:window.print()"><?php esc_html_e('Print', 'paid-memberships-pro' ); ?></a>
+		<button class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_a-print' ) ); ?>"><?php esc_html_e('Print', 'paid-memberships-pro' ); ?></button>
 		<ul>
 			<?php do_action("pmpro_invoice_bullets_top", $pmpro_invoice); ?>
 			<li><strong><?php esc_html_e('Account', 'paid-memberships-pro' );?>:</strong> <?php echo esc_html( $pmpro_invoice->user->display_name ); ?> (<?php echo esc_html( $pmpro_invoice->user->user_email ); ?>)</li>
@@ -165,3 +159,55 @@
 	<?php } ?>
 </div> <!-- end pmpro_actions_nav -->
 </div> <!-- end pmpro_invoice_wrap -->
+<script type = "text/javascript">
+	jQuery(document).ready(function($) {
+		//Handle print button click event.
+		$('.pmpro_a-print').on('click', function() {
+			//Create a div to place the clone of the invoice area.
+			const $printable_area = $('<div/>').addClass('printable_area');
+			//Tweak CSS for printeable area.
+			$printable_area.css({
+				border: '3px solid black',
+				'border-radius': '2px',
+				padding: '0 20px'
+			});
+
+			$printable_area.append($('.pmpro_invoice_wrap').clone());
+
+			//Tweak CSS for pmpro_invoice_details area.
+			$printable_area.find('.pmpro_invoice_details').css({
+				display: 'flex',
+				gap: '100px',
+				width: '100%',
+			});
+
+			//Tweak CSS for li elements area.
+			$printable_area.find('li').css('margin', '0px');
+
+			//Tweak CSS for hr elements area.
+			$printable_area.find('hr').css({
+				color: '#03543F21',
+				border: '1px solid #03543F21',
+				height: '1px',
+				margin: '2.9rem 0',
+			});
+
+			//We don't want the nav links when print the invoice.
+			$printable_area.find('.pmpro_actions_nav').remove();
+
+			//Grab all visible elements in the body to hide.
+			$toHide = $("body").children(':visible');
+			$toHide.hide();
+
+			//Add the invoice clone to the body.
+			$('body').append($printable_area);
+
+			//Open print dialog.
+			window.print();
+			//Empty the printable area.
+			$printable_area.empty();
+			//Restore the styles.
+			$toHide.show();
+		});
+	});
+</script>
