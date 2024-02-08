@@ -918,6 +918,15 @@ window.addEventListener("DOMContentLoaded", () => {
 	const tabList = document.querySelector('#pmpro-edit-user-div [role="tablist"]');
 	const inputs = document.querySelectorAll('#pmpro-edit-user-div input, #pmpro-edit-user-div textarea, #pmpro-edit-user-div select');
 
+    const firstTab = document.querySelector('[role="tab"]');
+    const firstPanel = document.querySelector(`#${firstTab.getAttribute("aria-controls")}`);
+
+    // Set the first tab as active
+    firstTab.setAttribute("aria-selected", true);
+
+    // Show the corresponding panel
+    firstPanel.removeAttribute("hidden");
+ 
 	if ( tabs && tabList ) {
 		// Track whether an input has been changed.
 		let inputChanged = false;
