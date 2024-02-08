@@ -299,7 +299,7 @@ class PMPro_Subscriptions_List_Table extends WP_List_Table {
 			$calculation_function = 'SQL_CALC_FOUND_ROWS';
 		}
 
-		$sqlQuery = "SELECT $calculation_function s.id FROM $wpdb->pmpro_subscriptions s LEFT JOIN $wpdb->pmpro_membership_levels ml ON s.membership_level_id = ml.id LEFT JOIN $wpdb->users u ON s.user_id = u.ID LEFT JOIN $wpdb->pmpro_subscriptionmeta sm ON s.id = sm.pmpro_subscription_id ";
+		$sqlQuery = "SELECT $calculation_function s.id FROM $wpdb->pmpro_subscriptions s LEFT JOIN $wpdb->pmpro_membership_levels ml ON s.membership_level_id = ml.id LEFT JOIN $wpdb->users u ON s.user_id = u.ID LEFT JOIN $wpdb->pmpro_subscriptionmeta sm ON s.id = sm.pmpro_subscription_id AND sm.meta_key = 'sync_error' ";
 
 		if ( $s ) {
 			$sqlQuery .= 'WHERE (1=2 ';
