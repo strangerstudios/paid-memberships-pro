@@ -28,16 +28,14 @@ require_once( dirname( __FILE__ ) . '/admin_header.php' );
 
 ?>
 <hr class="wp-header-end">
-<h1 class="wp-heading-inline"><?php esc_html_e( 'View Subscription', 'paid-memberships-pro' ); ?></h1>
 <?php
 
 // Check if we have a subscription object.
-if ( empty( $subscription ) ) {
-	// Either a subscription ID wasn't passed or the subscription doesn't exist.
+if ( ! empty( $subscription ) ) {
 	?>
-	<p><?php esc_html_e( 'Subscription not found.', 'paid-memberships-pro' ); ?></p>
+	<h1 class="wp-heading-inline"><?php esc_html_e( 'View Subscription', 'paid-memberships-pro' ); ?></h1>
 	<?php
-} else {
+
 	// We have a subscription. Display all of its data.
 	$sub_user = get_userdata( $subscription->get_user_id() );
 	$sub_username = empty( $sub_user ) ? '' : $sub_user->display_name;
@@ -287,6 +285,31 @@ if ( empty( $subscription ) ) {
 			</table>
 		</div> <!-- end pmpro_section_inside -->
 	</div> <!-- end pmpro_section -->
+	<?php
+} else {
+	?>
+	<form id="subscriptions-list-form" method="get" action="">
+
+		<h1 class="wp-heading-inline"><?php esc_html_e( 'Subscriptions', 'paid-memberships-pro' ); ?></h1>
+
+		<?php if ( ! empty( $pmpro_msg ) ) { ?>
+			<div id="message" class="
+			<?php
+			if ( $pmpro_msgt == 'success' ) {
+				echo 'updated fade';
+			} else {
+				echo 'error';
+			}
+			?>
+			"><p><?php echo $pmpro_msg; ?></p></div>
+		<?php }
+		$subscriptions_list_table = new PMPro_Subscriptions_List_Table();
+		$subscriptions_list_table->prepare_items();
+		$subscriptions_list_table->search_box( __( 'Search Subscriptions', 'paid-memberships-pro' ), 'paid-memberships-pro' );
+		$subscriptions_list_table->display();
+
+		?>
+	</form>
 	<?php
 }
 
