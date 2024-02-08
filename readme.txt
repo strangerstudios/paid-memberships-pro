@@ -1,7 +1,7 @@
 === Paid Memberships Pro - Content Restriction, User Registration, & Paid Subscriptions ===
 Contributors: strangerstudios, kimannwall, andrewza, dlparker1005, paidmembershipspro
 Tags: memberships, member, community, user profile, user registration, members, membership, ecommerce, paypal, stripe, braintree, authorize.net, payflow, restrict access, restrict content, directory
-Requires at least: 6.0
+Requires at least: 5.2
 Tested up to: 6.4.3
 Requires PHP: 5.6
 Stable tag: 2.12.10
