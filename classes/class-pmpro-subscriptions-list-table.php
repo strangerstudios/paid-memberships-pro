@@ -469,9 +469,9 @@ class PMPro_Subscriptions_List_Table extends WP_List_Table {
 					__( 'ID: %s', 'paid-memberships-pro' ),
 					esc_attr( $item->get_id() )
 				),
-				'edit' => sprintf(
+				'view' => sprintf(
 					'<a title="%1$s" href="%2$s">%3$s</a>',
-					esc_attr__( 'Edit', 'paid-memberships-pro' ),
+					esc_attr__( 'View', 'paid-memberships-pro' ),
 					esc_url(
 						add_query_arg(
 							[
@@ -481,7 +481,7 @@ class PMPro_Subscriptions_List_Table extends WP_List_Table {
 							admin_url( 'admin.php' )
 						)
 					),
-					esc_html__( 'Edit', 'paid-memberships-pro' )
+					esc_html__( 'View', 'paid-memberships-pro' )
 				),
 			];
 
