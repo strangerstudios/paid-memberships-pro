@@ -471,7 +471,7 @@ class PMPro_Subscriptions_List_Table extends WP_List_Table {
 				),
 				'view' => sprintf(
 					'<a title="%1$s" href="%2$s">%3$s</a>',
-					esc_attr__( 'View', 'paid-memberships-pro' ),
+					esc_attr__( 'View Details', 'paid-memberships-pro' ),
 					esc_url(
 						add_query_arg(
 							[
@@ -481,7 +481,7 @@ class PMPro_Subscriptions_List_Table extends WP_List_Table {
 							admin_url( 'admin.php' )
 						)
 					),
-					esc_html__( 'View', 'paid-memberships-pro' )
+					esc_html__( 'View Details', 'paid-memberships-pro' )
 				),
 			];
 
@@ -570,7 +570,7 @@ class PMPro_Subscriptions_List_Table extends WP_List_Table {
 		if ( ! empty( $sync_error ) ) {
 			// Show the sync error message.
 			?>
-			<span class="pmpro_subscription-status-error">
+			<span class="pmpro_tag pmpro_tag-has_icon pmpro_tag-error">
 				<?php esc_html_e( 'Sync Error:', 'paid-memberships-pro' ); ?>
 				<?php echo esc_html( $sync_error ); ?>
 			</span>
