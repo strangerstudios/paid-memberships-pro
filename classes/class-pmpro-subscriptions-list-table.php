@@ -141,7 +141,7 @@ class PMPro_Subscriptions_List_Table extends WP_List_Table {
 	public function get_columns() {
 
 		$columns = array(
-			'id'                          => __( 'ID', 'paid-memberships-pro' ),
+			'id'                          => __( 'Subscription', 'paid-memberships-pro' ),
 			'user'                        => __( 'User', 'paid-memberships-pro' ),
 			'level'                       => __( 'Level', 'paid-memberships-pro' ),
 			'status'                      => __( 'Status', 'paid-memberships-pro' ),
@@ -150,8 +150,6 @@ class PMPro_Subscriptions_List_Table extends WP_List_Table {
 			'next_payment_date'           => __( 'Next Payment Date', 'paid-memberships-pro' ),
 			'enddate'                     => __( 'End Date', 'paid-memberships-pro' ),
 			'orders'                      => __( 'Orders', 'paid-memberships-pro' ),
-			'gateway'                     => __( 'Gateway', 'paid-memberships-pro' ),
-			'subscription_transaction_id' => __( 'Subscription Transaction ID', 'paid-memberships-pro' ),
 		);
 
 		// If we are filtering by status, we either want to remove the next_payment_date or the enddate column.
@@ -192,8 +190,6 @@ class PMPro_Subscriptions_List_Table extends WP_List_Table {
 		if ( ! $hidden ) {
 			$hidden = array(
 				'startdate',
-				'gateway',
-				'subscription_transaction_id',
 			);
 			update_user_meta( $user->ID, 'manage' . $this->screen->id . 'columnshidden', $hidden );
 		}
@@ -450,19 +446,60 @@ class PMPro_Subscriptions_List_Table extends WP_List_Table {
 	 */
 	public function column_id( $item ) {
 		?>
-		<strong><a href="admin.php?page=pmpro-subscriptions&id=<?php echo esc_attr( $item->get_id() ); ?>"><?php echo esc_html( $item->get_id() ); ?></a></strong>
-		<?php
-	}
+		<strong><a href="admin.php?page=pmpro-subscriptions&id=<?php echo esc_attr( $item->get_id() ); ?>"><?php echo esc_html( $item->get_subscription_transaction_id() ); ?></a></strong>
+		<p>
+			<?php
+			if ( ! empty( $item->get_gateway() ) ) {
+				if ( ! empty( $pmpro_gateways[ $item->get_gateway() ] ) ) {
+					echo $pmpro_gateways[ $item->get_gateway() ];
+				} else {
+					echo esc_html( ucwords( $item->get_gateway() ) );
+				}
+				if ( $item->get_gateway_environment() == 'sandbox' ) {
+					echo ' (test)';
+				}
+			}
+			?>
+		</p>
+		<div class="row-actions">
+			<?php
+			$actions = [
+				'id'	 => sprintf(
+					// translators: %s is the Subscription ID.
+					__( 'ID: %s', 'paid-memberships-pro' ),
+					esc_attr( $item->get_id() )
+				),
+				'edit' => sprintf(
+					'<a title="%1$s" href="%2$s">%3$s</a>',
+					esc_attr__( 'Edit', 'paid-memberships-pro' ),
+					esc_url(
+						add_query_arg(
+							[
+								'page'  => 'pmpro-subscriptions',
+								'id' => $item->get_id(),
+							],
+							admin_url( 'admin.php' )
+						)
+					),
+					esc_html__( 'Edit', 'paid-memberships-pro' )
+				),
+			];
 
-	/**
-	 * Renders the columns subscription transaction ID value
-	 *
-	 * @param object  $item
-	 *
-	 * @return string
-	 */
-	public function column_subscription_transaction_id( $item ) {
-		echo esc_html( $item->get_subscription_transaction_id() );
+			$actions_html = [];
+			foreach ( $actions as $action => $link ) {
+				$actions_html[] = sprintf(
+					'<span class="%1$s">%2$s</span>',
+					esc_attr( $action ),
+					$link
+				);
+			}
+
+			if ( ! empty( $actions_html ) ) {
+				echo implode( ' | ', $actions_html );
+			}
+			?>
+		</div>
+		<?php
 	}
 
 	/**
@@ -513,32 +550,6 @@ class PMPro_Subscriptions_List_Table extends WP_List_Table {
 	 */
 	public function column_billing( $item ) {
 		echo esc_html( $item->get_cost_text() );
-	}
-
-	/**
-	 * Renders the columns subscription gateway value
-	 *
-	 * @param object  $item
-	 *
-	 * @return string
-	 */
-	public function column_gateway( $item ) {
-
-		global $pmpro_gateways;
-
-		if ( ! empty( $item->get_gateway() ) ) {
-			if ( ! empty( $pmpro_gateways[ $item->get_gateway() ] ) ) {
-				echo $pmpro_gateways[ $item->get_gateway() ];
-			} else {
-				echo esc_html( ucwords( $item->get_gateway() ) );
-			}
-			if ( $item->get_gateway_environment() == 'sandbox' ) {
-				echo ' (test)';
-			}
-		} else {
-			esc_html_e( '&#8212;', 'paid-memberships-pro' );
-		}
-
 	}
 
 	/**
