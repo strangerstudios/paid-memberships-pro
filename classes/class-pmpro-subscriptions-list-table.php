@@ -155,10 +155,10 @@ class PMPro_Subscriptions_List_Table extends WP_List_Table {
 		);
 
 		// If we are filtering by status, we either want to remove the next_payment_date or the enddate column.
-		if ( isset( $_REQUEST['filter'] ) && $_REQUEST['filter'] == 'within-a-status' && isset( $_REQUEST['status'] ) ) {
+		if ( ! empty( $_REQUEST['status'] ) ) {
 			if ( $_REQUEST['status'] == 'active' ) {
 				unset( $columns['enddate'] );
-			} else {
+			} elseif ( $_REQUEST['status'] == 'cancelled' ) {
 				unset( $columns['next_payment_date'] );
 			}
 		}
@@ -253,7 +253,6 @@ class PMPro_Subscriptions_List_Table extends WP_List_Table {
 		$s = isset( $_REQUEST['s'] ) ? trim( sanitize_text_field( $_REQUEST['s'] ) ) : '';
 		$level = isset( $_REQUEST['level'] ) ? intval( $_REQUEST['level'] ) : false;
 		$status = isset( $_REQUEST['status'] ) ? sanitize_text_field( $_REQUEST['status'] ) : '';
-		$filter = isset( $_REQUEST['filter'] ) ? sanitize_text_field( $_REQUEST['filter'] ) : 'all';
 		$pn = isset( $_REQUEST['paged'] ) ? intval( $_REQUEST['paged'] ) : 1;
 		$items_per_page = $this->get_items_per_page( 'pmpro_subscriptions_per_page' );
 		/**
@@ -270,15 +269,16 @@ class PMPro_Subscriptions_List_Table extends WP_List_Table {
 		$start = $end - $limit;
 
 		// Filters.
-		if ( empty( $filter ) || $filter === 'all' ) {
-			$condition = '1=1';
-			$filter    = 'all';
-		} elseif ( $filter == 'within-a-level' ) {
-			$condition = 's.membership_level_id = ' . esc_sql( $level );
-		} elseif ( $filter == 'within-a-status' ) {
-			$condition = "s.status = '" . esc_sql( $status ) . "' ";
-		} else {
-			$condition = "";
+		$condition = '1=1';
+		if ( ! empty( $level ) ) {
+			$condition .= ' AND s.membership_level_id = ' . esc_sql( $level );
+		}
+		if ( ! empty( $status ) ) {
+			if ( $status === 'sync_error' ) {
+				$condition .= ' AND sm.meta_value IS NOT NULL';
+			} else {
+				$condition .= ' AND s.status = "' . esc_sql( $status ) . '"';
+			}
 		}
 
 		$orderby = '';
@@ -299,7 +299,7 @@ class PMPro_Subscriptions_List_Table extends WP_List_Table {
 			$calculation_function = 'SQL_CALC_FOUND_ROWS';
 		}
 
-		$sqlQuery = "SELECT $calculation_function s.id FROM $wpdb->pmpro_subscriptions s LEFT JOIN $wpdb->pmpro_membership_levels ml ON s.membership_level_id = ml.id LEFT JOIN $wpdb->users u ON s.user_id = u.ID ";
+		$sqlQuery = "SELECT $calculation_function s.id FROM $wpdb->pmpro_subscriptions s LEFT JOIN $wpdb->pmpro_membership_levels ml ON s.membership_level_id = ml.id LEFT JOIN $wpdb->users u ON s.user_id = u.ID LEFT JOIN $wpdb->pmpro_subscriptionmeta sm ON s.id = sm.pmpro_subscription_id ";
 
 		if ( $s ) {
 			$sqlQuery .= 'WHERE (1=2 ';
@@ -355,10 +355,6 @@ class PMPro_Subscriptions_List_Table extends WP_List_Table {
 	function extra_tablenav( $which ) {
 		if ( $which == 'top' ) {
 
-			global $wpdb;
-
-			$now = current_time( 'timestamp' );
-
 			if ( isset( $_REQUEST['level'] ) ) {
 				$l = intval( $_REQUEST['level'] );
 			} else {
@@ -369,17 +365,6 @@ class PMPro_Subscriptions_List_Table extends WP_List_Table {
 				$status = sanitize_text_field( $_REQUEST['status'] );
 			} else {
 				$status = '';
-			}
-
-			if ( isset( $_REQUEST['filter'] ) ) {
-				$filter = sanitize_text_field( $_REQUEST['filter'] );
-			} else {
-				$filter = 'all';
-			}
-
-			// Filters.
-			if ( empty( $filter ) || $filter === 'all' ) {
-				$filter = 'all';
 			}
 
 			// The code that goes before the table is here
@@ -394,67 +379,25 @@ class PMPro_Subscriptions_List_Table extends WP_List_Table {
 				?>
 				"><p><?php echo $pmpro_msg; ?></p></div>
 			<?php } ?>
-
-			<div class="tablenav top">
-				<?php esc_html_e( 'Show', 'paid-memberships-pro' ); ?>
-				<select id="filter" name="filter">
-					<option value="all" <?php selected( $filter, 'all' ); ?>><?php esc_html_e( 'All', 'paid-memberships-pro' ); ?></option>
-					<option value="within-a-level" <?php selected( $filter, 'within-a-level' ); ?>><?php esc_html_e( 'Within a Level', 'paid-memberships-pro' ); ?></option>
-					<option value="within-a-status" <?php selected( $filter, 'within-a-status' ); ?>><?php esc_html_e( 'Within a Status', 'paid-memberships-pro' ); ?></option>
-				</select>
-
-				<span id="filterby"><?php esc_html_e( 'filter by ', 'paid-memberships-pro' ); ?></span>
-
 				<?php
-				// Note: only subscriptions belonging to current levels can be filtered. There is no option for subscriptions belonging to deleted levels
+				// Note: Only subscriptions belonging to current levels can be filtered. There is no option for subscriptions belonging to deleted levels.
 				$levels = pmpro_sort_levels_by_order( pmpro_getAllLevels( true, true ) );
 				?>
 				<select id="level" name="level">
+					<option value=""><?php esc_html_e( 'Select a Level', 'paid-memberships-pro' ); ?></option>
 					<?php foreach ( $levels as $level ) { ?>
 						<option
 							value="<?php echo esc_attr( $level->id ); ?>" <?php selected( $l, $level->id ); ?>><?php echo esc_html( $level->name ); ?></option>
 					<?php } ?>
-
 				</select>
-
 				<select id="status" name="status">
+					<option value=""><?php esc_html_e( 'Select a Status', 'paid-memberships-pro' ); ?></option>
 					<option value="active" <?php selected( $status, 'active' ); ?>><?php esc_html_e( 'Active', 'paid-memberships-pro' ); ?></option>
 					<option value="cancelled" <?php selected( $status, 'cancelled' ); ?>><?php esc_html_e( 'Cancelled', 'paid-memberships-pro' ); ?></option>
+					<option value="sync_error" <?php selected( $status, 'sync_error' ); ?>><?php esc_html_e( 'Sync Error', 'paid-memberships-pro' ); ?></option>
 				</select>
 				<input type="hidden" name="page" value="pmpro-subscriptions"/>
 				<input id="submit" class="button" type="submit" value="<?php esc_attr_e( 'Filter', 'paid-memberships-pro' ); ?>"/>
-
-			<script>
-				//update month/year when period dropdown is changed
-				jQuery(document).ready(function () {
-					jQuery('#filter').change(function () {
-						pmpro_ShowMonthOrYear();
-					});
-				});
-
-				function pmpro_ShowMonthOrYear() {
-					var filter = jQuery('#filter').val();
-					if (filter == 'all') {
-						jQuery('#status').hide();
-						jQuery('#level').hide();
-						jQuery('#submit').show();
-						jQuery('#filterby').hide();
-					}
-					else if (filter == 'within-a-level') {
-						jQuery('#status').hide();
-						jQuery('#level').show();
-						jQuery('#submit').show();
-						jQuery('#filterby').show();
-					}
-					else if (filter == 'within-a-status') {
-						jQuery('#status').show();
-						jQuery('#level').hide();
-						jQuery('#submit').show();
-						jQuery('#filterby').show();
-					}
-				}
-				pmpro_ShowMonthOrYear();
-			</script>
 			<?php
 		}
 	}
@@ -612,6 +555,16 @@ class PMPro_Subscriptions_List_Table extends WP_List_Table {
 			<?php echo esc_html( $status ); ?>
 		</span>
 		<?php
+		$sync_error = get_pmpro_subscription_meta( $item->get_id(), 'sync_error', true );
+		if ( ! empty( $sync_error ) ) {
+			// Show the sync error message.
+			?>
+			<span class="pmpro_subscription-status-error">
+				<?php esc_html_e( 'Sync Error:', 'paid-memberships-pro' ); ?>
+				<?php echo esc_html( $sync_error ); ?>
+			</span>
+			<?php
+		}
 	}
 
 	/**

@@ -1354,7 +1354,8 @@ body[class*="memberships_page_pmpro-"] {
 
 .pmpro_order-status-error,
 .pmpro_order-status-refunded,
-.pmpro_subscription-status-cancelled {
+.pmpro_subscription-status-cancelled,
+.pmpro_subscription-status-error {
 	background-color: var(--pmpro--color--error-background);
 	border-color: var(--pmpro--color--error-border);
 	color: var(--pmpro--color--error-text);
