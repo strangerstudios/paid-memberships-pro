@@ -1000,6 +1000,12 @@
 				$transaction_date = $response[ "L_TIMESTAMP{$transaction_loop_index}" ];
 				$transaction_amount = $response[ "L_AMT{$transaction_loop_index}" ];
 
+				// If the payment is free, skip it.
+				if ( 0 === (float) $transaction_amount ) {
+					$transaction_loop_index++;
+					continue;
+				}
+
 				// Check if we already have this transaction.
 				$existing_order = MemberOrder::get_order(
 					array(
