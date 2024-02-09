@@ -934,45 +934,99 @@
 				return 'Subscription transaction ID is empty.';
 			}
 
-			//paypal profile stuff
+			// Get subscription information from PayPal.
 			$nvpStr = "";
 			$nvpStr .= "&PROFILEID=" . urlencode( $subscription_transaction_id );
 			$response = $this->PPHttpPost('GetRecurringPaymentsProfileDetails', $nvpStr);
 
-			if("SUCCESS" == strtoupper($response["ACK"]) || "SUCCESSWITHWARNING" == strtoupper($response["ACK"])) {
-				// Found subscription.
-				$update_array = array();
+			// If the request failed, return the error message.
+			if ("SUCCESS" != strtoupper($response["ACK"]) && "SUCCESSWITHWARNING" != strtoupper($response["ACK"])) {
+				return __( 'Subscription could not be found.', 'paid-memberships-pro' );
+			}
 
-				// PayPal doesn't send the subscription start date, so let's take a guess based on the user's order history.
+			// Found subscription.
+			$update_array = array();
+
+			// PayPal may or may not return the start date of the subscription.
+			if ( ! empty( $response['PROFILESTARTDATE'] ) ) {
+				$update_array['startdate'] = date_i18n( 'Y-m-d H:i:s', strtotime( $response['PROFILESTARTDATE'] ) );
+			} else {
 				$oldest_orders = $subscription->get_orders( [
 					'limit'   => 1,
 					'orderby' => '`timestamp` ASC, `id` ASC',
 				] );
-
 				if ( ! empty( $oldest_orders ) ) {
 					$oldest_order = current( $oldest_orders );
-
 					$update_array['startdate'] = date_i18n( 'Y-m-d H:i:s', $oldest_order->getTimestamp( true ) );
 				}
+			}
 
-				if ( in_array( $response['STATUS'], array( 'Pending', 'Active' ), true ) ) {
-					// Subscription is active.
-					$update_array['status'] = 'active';
-					$update_array['next_payment_date'] = date( 'Y-m-d H:i:s', strtotime( $response['NEXTBILLINGDATE'] ) );
-					$update_array['billing_amount'] = floatval( $response['REGULARAMT'] );
-					$update_array['cycle_number'] = (int) $response['REGULARBILLINGFREQUENCY'];
-					$update_array['cycle_period'] = $response['REGULARBILLINGPERIOD'];
-					$update_array['trial_amount'] = empty( $response['TRIALAMT'] ) ? 0 : floatval( $response['TRIALAMT'] );
-					$update_array['trial_limit'] = empty( $response['TRIALTOTALBILLINGCYCLES'] ) ? 0 : (int) $response['TRIALTOTALBILLINGCYCLES'];
-					$update_array['billing_limit'] = empty( $response['REGULARTOTALBILLINGCYCLES'] ) ? 0 : (int) $response['REGULARTOTALBILLINGCYCLES'];
-				} else {
-					// Subscription is no longer active.
-					// Can't fill subscription end date, $request only has the date of the last payment.
-					$update_array['status'] = 'cancelled';
-				}
-				$subscription->set( $update_array );
+			if ( in_array( $response['STATUS'], array( 'Pending', 'Active' ), true ) ) {
+				// Subscription is active.
+				$update_array['status'] = 'active';
+				$update_array['next_payment_date'] = date( 'Y-m-d H:i:s', strtotime( $response['NEXTBILLINGDATE'] ) );
+				$update_array['billing_amount'] = floatval( $response['REGULARAMT'] );
+				$update_array['cycle_number'] = (int) $response['REGULARBILLINGFREQUENCY'];
+				$update_array['cycle_period'] = $response['REGULARBILLINGPERIOD'];
+				$update_array['trial_amount'] = empty( $response['TRIALAMT'] ) ? 0 : floatval( $response['TRIALAMT'] );
+				$update_array['trial_limit'] = empty( $response['TRIALTOTALBILLINGCYCLES'] ) ? 0 : (int) $response['TRIALTOTALBILLINGCYCLES'];
+				$update_array['billing_limit'] = empty( $response['REGULARTOTALBILLINGCYCLES'] ) ? 0 : (int) $response['REGULARTOTALBILLINGCYCLES'];
 			} else {
-				return __( 'Subscription could not be found.', 'paid-memberships-pro' );
+				// Subscription is no longer active.
+				// Can't fill subscription end date, $request only has the date of the last payment.
+				$update_array['status'] = 'cancelled';
+			}
+
+			// Update the subscription.
+			$subscription->set( $update_array );
+
+			// Also use this opportunity to pull any missing subscription payments from PayPal.
+			// Start searching 5 years ago.
+			$nvpStr = "";
+			$nvpStr .= "&STARTDATE=" . urlencode( date( 'Y-m-d\TH:i:s\Z', strtotime( '-5 years' ) ) );
+			$nvpStr .= "&PROFILEID=" . urlencode( $subscription_transaction_id );
+			$nvpStr .= "&STATUS=Success";
+			$response = $this->PPHttpPost('TransactionSearch', $nvpStr);
+
+			// If the request failed, bail.
+			if ("SUCCESS" != strtoupper($response["ACK"]) && "SUCCESSWITHWARNING" != strtoupper($response["ACK"])) {
+				return;
+			}
+
+			// Loop through the transactions and add any payments that are missing.
+			$transaction_loop_index = 0;
+			while ( isset( $response[ "L_TRANSACTIONID{$transaction_loop_index}" ] ) ) {
+				$transaction_id = $response[ "L_TRANSACTIONID{$transaction_loop_index}" ];
+				$transaction_date = $response[ "L_TIMESTAMP{$transaction_loop_index}" ];
+				$transaction_amount = $response[ "L_AMT{$transaction_loop_index}" ];
+
+				// Check if we already have this transaction.
+				$existing_order = MemberOrder::get_order(
+					array(
+						'payment_transaction_id' => $transaction_id,
+					)
+				);
+				if ( empty( $existing_order ) ) {
+					// We don't have this invoice yet. Add it.
+					$new_order = new MemberOrder();
+					$new_order->user_id = $subscription->get_user_id();
+					$new_order->membership_id = $subscription->get_membership_level_id();
+					$new_order->timestamp = strtotime( $transaction_date );
+					$new_order->status = 'success';
+					$new_order->payment_transaction_id = $transaction_id;
+					$new_order->subscription_transaction_id = $subscription->get_subscription_transaction_id();
+					$new_order->payment_type = 'PayPal Express';
+
+					$new_order->total = $transaction_amount;
+					$new_order->subtotal = $transaction_amount;
+
+					$new_order->find_billing_address();
+
+					// Save the order.
+					$new_order->saveOrder();
+				}
+
+				$transaction_loop_index++;
 			}
 		}
 		
