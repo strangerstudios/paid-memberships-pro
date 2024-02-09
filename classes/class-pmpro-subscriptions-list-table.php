@@ -148,7 +148,7 @@ class PMPro_Subscriptions_List_Table extends WP_List_Table {
 			'billing'                     => __( 'Billing', 'paid-memberships-pro' ),
 			'startdate'                   => __( 'Start Date', 'paid-memberships-pro' ),
 			'next_payment_date'           => __( 'Next Payment Date', 'paid-memberships-pro' ),
-			'enddate'                     => __( 'End Date', 'paid-memberships-pro' ),
+			'enddate'                     => __( 'Ended', 'paid-memberships-pro' ),
 			'orders'                      => __( 'Orders', 'paid-memberships-pro' ),
 		);
 
