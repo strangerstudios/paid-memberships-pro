@@ -253,7 +253,7 @@ function pmpro_report_sales_page()
 
 		// Set up the start and end dates.
 		$startdate = $year . '-01-01';
-		$enddate = $year . '-12-31';
+		$enddate = $year . '-12-' . date_i18n( 't', strtotime( $startdate ) );
 		
 		// Set up the compare period.
 		$compare_startdate = date( 'Y-m-d', strtotime( $startdate . ' -1 year' ) );

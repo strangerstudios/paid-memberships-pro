@@ -74,7 +74,7 @@ if ( isset( $_REQUEST[ 'discount_code' ] ) ) {
 if($period == "daily")
 {
 	$startdate = $year . '-' . substr("0" . $month, strlen($month) - 1, 2) . '-01';
-	$enddate = $year . '-' . substr("0" . $month, strlen($month) - 1, 2) . '-31';
+	$enddate = $year . '-' . substr("0" . $month, strlen($month) - 1, 2) . '-' . date_i18n( 't', strtotime( $startdate ) );
 	$date_function = 'DAY';
 }
 elseif($period == "monthly")
