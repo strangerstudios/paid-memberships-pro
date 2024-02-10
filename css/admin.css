@@ -51,7 +51,7 @@ p.pmpro_meta_notice {
 }
 
 .pmpro_admin tr td .dashicons:not(.button .dashicons) {
-	padding-top: 5px;
+	padding-top: 4px;
 }
 
 .pmpro_admin .pmpro-has-icon:before {
@@ -350,10 +350,6 @@ body[class*="memberships_page_pmpro-"] {
 	font-size: 14px;
 	line-height: 1.5;
 	margin: var(--pmpro--spacing--small) 0;
-}
-
-.pmpro_admin a {
-	color: --pmpro--color--info-link;
 }
 
 .pmpro_admin small {
@@ -1557,6 +1553,32 @@ table.pmprommpu_levels tr.remove_level td {background: #F2DEDE; }
 	background: var(--pmpro--color--blue-lightest);
 	margin: 0;
 	padding: 0 calc( var(--pmpro--spacing--medium) / 2 ) calc( var(--pmpro--spacing--medium) / 2 ) calc( var(--pmpro--spacing--medium) / 2 );
+}
+
+.pmpro_discount_code-tag {
+	border: 2px dashed var(--pmpro--color--blue-darkest);
+	color: var(--pmpro--color--blue);
+	display: block;
+	font-size: 12px;
+	font-weight: normal;
+	margin-top: calc( var(--pmpro--spacing--small) / 2 );
+	padding: calc( var(--pmpro--spacing--small) / 4 ) calc( var(--pmpro--spacing--small) / 2 );
+}
+
+.pmpro_discount_code-tag:hover {
+	background-color: #FFF;
+	border-color: var(--pmpro--color--blue);
+}
+
+.pmpro_discount_code-tag:before {
+	content: "\f323";
+	font: normal 12px/1 dashicons;
+	margin-right: 3px;
+	vertical-align: middle;
+	position: relative;
+	top: -1px;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
 }
 
 /**

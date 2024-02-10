@@ -1,5 +1,5 @@
 <?php
-global $pmpro_msg, $pmpro_msgt;
+global $wpdb, $pmpro_msg, $pmpro_msgt;
 
 // only admins can get this
 if ( ! function_exists( 'current_user_can' ) || ( ! current_user_can( 'manage_options' ) && ! current_user_can( 'pmpro_edit_members' ) ) ) {
@@ -255,6 +255,18 @@ if ( empty( $subscription ) ) {
 						<th scope="row"><?php esc_html_e( 'Fee', 'paid-memberships-pro' ); ?></th>
 						<td>
 							<?php echo esc_html( $subscription->get_cost_text() ); ?>
+						</td>
+					</tr>
+					<tr>
+						<th scope="row"><?php esc_html_e( 'Orders', 'paid-memberships-pro' ); ?></th>
+						<td>
+							<?php
+							// Display the number of orders for this subscription and link to the orders page filtered by this subscription.
+							$orders_count = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM $wpdb->pmpro_membership_orders WHERE subscription_transaction_id = %s", $subscription->get_subscription_transaction_id() ) );
+							?>
+							<a href="<?php echo esc_url( add_query_arg( array( 'page' => 'pmpro-orders', 's' => $subscription->get_subscription_transaction_id() ), admin_url( 'admin.php' ) ) ); ?>" title="<?php esc_attr_e( 'View all orders for this subscription', 'paid-memberships-pro' ); ?>">
+								<?php echo sprintf( _n( 'View %s order', 'View %s orders', $orders_count, 'text-domain' ), number_format_i18n( $orders_count ) ); ?>
+							</a>
 						</td>
 					</tr>
 				</tbody>
