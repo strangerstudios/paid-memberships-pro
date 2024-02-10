@@ -5,7 +5,7 @@ class PMPro_Member_Edit_Panel_TOS extends PMPro_Member_Edit_Panel {
 	 * Set up the panel.
 	 */
 	public function __construct() {
-		$this->slug = 'other';
+		$this->slug = 'tos';
 		$this->title = __( 'Terms of Service', 'paid-memberships-pro' );
 	}
 
