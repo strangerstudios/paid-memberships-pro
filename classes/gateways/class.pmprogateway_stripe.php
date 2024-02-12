@@ -1401,6 +1401,11 @@ class PMProGateway_stripe extends PMProGateway {
 			return false;
 		}
 
+		// Check the nonce.
+		if ( ! wp_verify_nonce( $_REQUEST['pmpro_stripe_connect_nonce'], 'pmpro_stripe_connect_nonce' ) ) {
+			return false;
+		}
+
 		// Change current gateway to Stripe
 		pmpro_setOption( 'gateway', 'stripe' );
 		pmpro_setOption( 'gateway_environment', $_REQUEST['pmpro_stripe_connected_environment'] ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
@@ -1478,6 +1483,11 @@ class PMProGateway_stripe extends PMProGateway {
 
 		// Be sure only to deauthorize when param present.
 		if ( ! isset( $_REQUEST['pmpro_stripe_disconnected'] ) || ! isset( $_REQUEST['pmpro_stripe_disconnected_environment'] ) ) {
+			return false;
+		}
+
+		// Check the nonce.
+		if ( ! wp_verify_nonce( $_REQUEST['pmpro_stripe_connect_nonce'], 'pmpro_stripe_connect_nonce' ) ) {
 			return false;
 		}
 
@@ -2531,13 +2541,15 @@ class PMProGateway_stripe extends PMProGateway {
 			<td>
 				<?php
 				$connect_url_base = apply_filters( 'pmpro_stripe_connect_url', 'https://connect.paidmembershipspro.com' );
+				// create a return url with a nonce pmpro_stripe_connect_nonce
+				$return_url = rawurlencode( add_query_arg( 'pmpro_stripe_connect_nonce', wp_create_nonce( 'pmpro_stripe_connect_nonce' ), admin_url( 'admin.php?page=pmpro-paymentsettings' ) ) );
 				if ( self::has_connect_credentials( $environment ) ) {
 					$connect_url = add_query_arg(
 						array(
 							'action' => 'disconnect',
 							'gateway_environment' => $environment2,
 							'stripe_user_id' => $values[ $environment . '_stripe_connect_user_id'],
-							'return_url' => rawurlencode( admin_url( 'admin.php?page=pmpro-paymentsettings' ) ),
+							'return_url' => $return_url,
 						),
 						$connect_url_base
 					);
@@ -2558,7 +2570,7 @@ class PMProGateway_stripe extends PMProGateway {
 						array(
 							'action' => 'authorize',
 							'gateway_environment' => $environment2,
-							'return_url' => rawurlencode( admin_url( 'admin.php?page=pmpro-paymentsettings' ) ),
+							'return_url' => $return_url,
 						),
 						$connect_url_base
 					);
