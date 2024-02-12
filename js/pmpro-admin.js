@@ -914,6 +914,8 @@ jQuery(document).ready(function () {
  * Add/Edit Member Page
  */
 window.addEventListener("DOMContentLoaded", () => {
+    if (window.location.search.includes('page=pmpro-member')) {
+
 	const tabs = document.querySelectorAll('#pmpro-edit-user-div [role="tab"]');
 	const tabList = document.querySelector('#pmpro-edit-user-div [role="tablist"]');
 	const inputs = document.querySelectorAll('#pmpro-edit-user-div input, #pmpro-edit-user-div textarea, #pmpro-edit-user-div select');
@@ -995,6 +997,7 @@ window.addEventListener("DOMContentLoaded", () => {
         }
 
     }
+}
 
 });
 
