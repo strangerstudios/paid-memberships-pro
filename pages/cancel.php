@@ -103,7 +103,7 @@ $user_levels = pmpro_getMembershipLevelsForUser( $current_user->ID );
    											$expiration_text = "---";
 										}
        									 
-										echo wp_kses_post( apply_filters( 'pmpro_account_membership_expiration_text', $expiration_text, $level ) );
+										echo wp_kses_post( pmpro_get_membership_expiration_text( $level, $current_user ) );
 									?>
 									</td>
 									<td class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_cancel-membership-cancel' ) ); ?>">
