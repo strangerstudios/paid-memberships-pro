@@ -51,7 +51,7 @@ abstract class PMPro_Member_Edit_Panel {
 			aria-selected="<?php echo $is_selected ? 'true' : 'false' ?>"
 			aria-controls="pmpro-member-edit-<?php echo esc_attr( $this->slug ) ?>-panel"
 			id="pmpro-member-edit-<?php echo esc_attr( $this->slug ) ?>-tab"
-			<?php echo ( empty( self::get_user()->ID ) && $this->slug != 'user_info'  ) ? 'disabled="disabled"' : ''; ?>
+			<?php echo ( empty( self::get_user()->ID ) && $this->slug != 'user-info'  ) ? 'disabled="disabled"' : ''; ?>
 			tabindex="<?php echo ( $is_selected ) ? '0' : '-1' ?>"
 			<?php echo empty( $tab_visibility ) ? 'style="display: none;"' : ''; ?>
 		>
