@@ -254,6 +254,15 @@ class PMPro_Field {
 	 */
 	public $html = '';
 
+	/**
+	 * The HTML attributes to add to the input field.
+	 *
+	 * @since TBD
+	 *
+	 * @var array
+	 */
+	public $html_attributes = array();
+
 	function __construct($name = NULL, $type = NULL, $attr = NULL) {
 		if ( ! empty( $name ) )
 			return $this->set( $name, $type, $attr );
