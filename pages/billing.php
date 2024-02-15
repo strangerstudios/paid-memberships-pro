@@ -446,6 +446,6 @@
 		<?php
 	} else {
 		// User does not have a membership level.
-		printf( __( "You do not have an active membership. <a href='%s'>Choose a membership level.</a>", 'paid-memberships-pro' ), esc_url( $url ) );
+		printf( __( "You do not have an active membership. <a href='%s'>Choose a membership level.</a>", 'paid-memberships-pro' ), esc_url( pmpro_url( 'levels' ) ) );
 	} ?>
 </div> <!-- end pmpro_billing_wrap -->
