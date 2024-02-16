@@ -271,9 +271,10 @@ function pmpro_report_sales_page()
 		$timeframe = 12;
 		$axis_date_format = 'M';
 		$tooltip_date_format = 'F Y';
-		//Set the start date to the first day of the month 11 months ago.
-		$startdate = date( 'Y-m-01', strtotime( current_time( 'mysql' ) . ' -11 MONTH' ) );
-		$enddate = current_time( 'mysql' );
+		// Set the start date to the first day of the month 12 months ago.
+		$startdate = date( 'Y-m-01', strtotime( current_time( 'mysql' ) . ' -12 month' ) );
+		// Set the end date to the last day of the previous month.
+		$enddate = date('Y-m-t', strtotime( current_time( 'mysql' ) . ' -1 month' ) );
 	} else {
 		// Set up the report unit to use.
 		$report_unit = 'YEAR';
