@@ -6,7 +6,7 @@ class PMPro_Member_Edit_Panel_User_Info extends PMPro_Member_Edit_Panel {
 	 */
 	public function __construct() {
 		$user = self::get_user();
-		$this->slug = 'user_info';
+		$this->slug = 'user-info';
 		$this->title = empty( $user->ID ) ? __( 'Add New User', 'paid-memberships-pro' ) : __( 'User Info', 'paid-memberships-pro' );
 		$this->title_link = empty( $user->ID ) ? '' : '<a href="' . esc_url( add_query_arg( array( 'user_id' => intval( $user->ID ) ), admin_url( 'user-edit.php' ) ) ) . '" target="_blank" class="page-title-action pmpro-has-icon pmpro-has-icon-admin-users">' . esc_html__( 'Edit User', 'paid-memberships-pro' ) . '</a>';
 		$this->submit_text = empty( $user->ID ) ? __( 'Create User ') : __( 'Update User Info', 'paid-memberships-pro' );

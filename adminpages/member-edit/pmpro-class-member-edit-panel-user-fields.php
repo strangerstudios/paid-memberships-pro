@@ -5,7 +5,7 @@ class PMPro_Member_Edit_Panel_User_Fields extends PMPro_Member_Edit_Panel {
 	 * Set up the panel.
 	 */
 	public function __construct( $field_group_name ) {
-		$this->slug = 'user_fields_' . sanitize_title( $field_group_name );
+		$this->slug = 'user-fields-' . sanitize_title( $field_group_name );
 		$this->title = $field_group_name;
 		$this->submit_text = current_user_can( 'edit_users' ) ? __( 'Update Member', 'paid-memberships-pro' ) : '';
 	}
