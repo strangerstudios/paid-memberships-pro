@@ -208,6 +208,17 @@ if ( empty( $subscription ) ) {
 							<span class="pmpro_tag pmpro_tag-has_icon pmpro_tag-<?php echo esc_attr( $subscription->get_status() ); ?>">
 								<?php echo ucwords( esc_html( $subscription->get_status() ) ); ?>
 							</span>
+							<?php
+							// Show warning if the subscription had an error when trying to sync.
+							$sync_error = get_pmpro_subscription_meta( $subscription->get_id(), 'sync_error', true );
+							if ( ! empty( $sync_error ) ) {
+								?>
+								<span class="pmpro_tag pmpro_tag-has_icon pmpro_tag-error">
+									<?php echo esc_html( __( 'Sync Error', 'paid-memberships-pro' ) . ': ' . $sync_error ); ?>
+								</span>
+								<?php
+							}
+							?>
 						</td>
 					</tr>
 					<tr>
