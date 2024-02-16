@@ -67,6 +67,8 @@ function pmpro_upgrade_3_0() {
  * @since 3.0
  */
 function pmpro_upgrade_3_0_ajax() {
+	define ( 'PMPRO_UPGRADE_3_0_AJAX', true );
+
 	// Migrated subscription data won't have a `cycle_number` or `billing_amount` set.
 	$subscription_search_param = array(
 		'billing_amount' => 0,
