@@ -581,7 +581,7 @@ function pmpro_report_memberships_page() {
 function pmpro_getSignups( $period = false, $levels = 'all' ) {
 	// check for a transient
 	$cache = get_transient( 'pmpro_report_memberships_signups' );
-	if ( ! empty( $cache ) && ! empty( $cache[ $period ] ) && ! empty( $cache[ $period ][ $levels ] ) ) {
+	if ( ! empty( $cache ) && isset( $cache[ $period ] ) && isset( $cache[ $period ][ $levels ] ) ) {
 		return $cache[ $period ][ $levels ];
 	}
 
@@ -649,7 +649,7 @@ function pmpro_getCancellations( $period = null, $levels = 'all', $status = arra
 		implode( ',', $status )
 	);
 
-	if ( ! empty( $cache ) && ! empty( $cache[ $hash ] ) ) {
+	if ( ! empty( $cache ) && isset( $cache[ $hash ] ) ) {
 		return $cache[ $hash ];
 	}
 
@@ -738,7 +738,7 @@ function pmpro_getCancellationRate( $period, $levels = 'all', $status = null ) {
 	// check for a transient
 	$cache = get_transient( 'pmpro_report_cancellation_rate' );
 	$hash  = md5( $period . $levels . implode( '', $status ) );
-	if ( ! empty( $cache ) && ! empty( $cache[ $hash ] ) ) {
+	if ( ! empty( $cache ) && isset( $cache[ $hash ] ) ) {
 		return $cache[ $hash ];
 	}
 
