@@ -962,7 +962,7 @@ function pmpro_get_prices_paid( $period, $count = NULL ) {
 	// Check for a transient.
 	$cache = get_transient( 'pmpro_report_prices_paid' );
 	$param_hash = md5( $period . $count . PMPRO_VERSION );
-	if ( ! empty( $cache ) && ! empty( $cache[$param_hash] ) ) {
+	if ( ! empty( $cache ) && isset( $cache[$param_hash] ) ) {
 		return $cache[$param_hash];
 	}
 
