@@ -231,7 +231,7 @@ function pmpro_dashboard_report_recent_members_callback() {
 
 	// Check if we have a cache.
 	$theusers = get_transient( 'pmpro_dashboard_report_recent_members' );
-	if ( empty( $theusers ) ) {
+	if ( false === $theusers ) {
 		// No cached value. Get the users.
 		$sqlQuery = "SELECT SQL_CALC_FOUND_ROWS u.ID, u.user_login, u.user_email, UNIX_TIMESTAMP(CONVERT_TZ(u.user_registered, '+00:00', @@global.time_zone)) as joindate, mu.membership_id, mu.initial_payment, mu.billing_amount, mu.cycle_period, mu.cycle_number, mu.billing_limit, mu.trial_amount, mu.trial_limit, UNIX_TIMESTAMP( CONVERT_TZ(mu.startdate, '+00:00', @@global.time_zone) ) as startdate, UNIX_TIMESTAMP( CONVERT_TZ(mu.enddate, '+00:00', @@global.time_zone) ) as enddate, m.name as membership FROM $wpdb->users u LEFT JOIN $wpdb->pmpro_memberships_users mu ON u.ID = mu.user_id LEFT JOIN $wpdb->pmpro_membership_levels m ON mu.membership_id = m.id WHERE mu.membership_id > 0 AND mu.status = 'active' GROUP BY u.ID ORDER BY u.user_registered DESC LIMIT 5";
 		$sqlQuery = apply_filters( 'pmpro_members_list_sql', $sqlQuery );
@@ -295,7 +295,7 @@ function pmpro_dashboard_report_recent_orders_callback() {
 
 	// Check if we have a cache.
 	$order_ids = get_transient( 'pmpro_dashboard_report_recent_orders' );
-	if ( empty( $order_ids ) ) {
+	if ( false === $order_ids) {
 		// No cached value. Get the orders.
 		$sqlQuery = "SELECT SQL_CALC_FOUND_ROWS id FROM $wpdb->pmpro_membership_orders ORDER BY id DESC, timestamp DESC LIMIT 5";
 		$order_ids = $wpdb->get_col( $sqlQuery );
