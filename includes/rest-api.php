@@ -1095,7 +1095,38 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 		$pmpro_rest_api_routes->pmpro_rest_api_register_routes();
 	}
 
-	add_action( 'rest_api_init', 'pmpro_rest_api_register_custom_routes', 5 );
+    add_action( 'rest_api_init', 'pmpro_rest_api_register_custom_routes', 5 );
+
+    /**
+     * Add user meta fields to API.
+     * @since 2.12
+     */
+    function pmpro_rest_api_register_fields() {
+        global $pmpro_user_fields;
+
+        if ( !empty( $pmpro_user_fields ) ) {
+            foreach ( $pmpro_user_fields as $group => $fields ) {
+                foreach ( $fields as $field ) {
+                    if ( !pmpro_is_field( $field ) ) continue;
+                    if ( !pmpro_check_field_for_level( $field, "profile", $user_id ) ) continue;
+
+                    if ( !empty( $field->profile ) ) {
+                        if ( ( $field->profile === "admins" || $field->profile === "admin" || $field->profile === "only_admin" )
+                            && !( current_user_can( 'manage_options') || current_user_can( 'pmpro_membership_manager' ) ) )
+                                continue;
+                        
+                        register_rest_field( 'user', $field->meta_key, array(
+                            'get_callback' => function($user, $field_name, $request) {
+                                return get_user_meta( $user[ 'id' ], $field_name, true );
+                            },
+                        ));
+                    }
+                }
+
+            }
+        }
+    }
+    add_action( 'rest_api_init', 'pmpro_rest_api_register_fields', 5 );
 }
 
 
