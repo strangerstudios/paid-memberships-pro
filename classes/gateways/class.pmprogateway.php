@@ -1,5 +1,6 @@
 <?php	
 	//require_once(dirname(__FILE__) . "/class.pmprogateway.php");
+	#[AllowDynamicProperties]
 	class PMProGateway
 	{	
 		function __construct($gateway = NULL)

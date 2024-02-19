@@ -245,7 +245,7 @@ function pmpro_report_sales_page()
 		// Set up the compare period. Comparing to same month last year.
 		$compare_startdate = date( 'Y-m-d', strtotime( $startdate . ' -1 year' ) );
 		$compare_enddate = date( 'Y-m-d', strtotime( $enddate . ' -1 year' ) );
-	} elseif($period == "monthly") {
+	} else if( $period == "monthly" ) {
 		// Set up the report unit to use.
 		$report_unit = 'MONTH';
 		$axis_date_format = 'M';
@@ -258,33 +258,32 @@ function pmpro_report_sales_page()
 		// Set up the compare period.
 		$compare_startdate = date( 'Y-m-d', strtotime( $startdate . ' -1 year' ) );
 		$compare_enddate = date( 'Y-m-d', strtotime( $enddate . ' -1 year' ) );
-	} else if ( $period === '7days' || $period === '30days' || $period === '12months' ) {
+	} else if ( $period === '7days' || $period === '30days' ) {
 		// Set up the report unit to use.
-		if( $period === '7days' || $period === '30days' ) {
-			$report_unit = 'DAY';
-			$timeframe = ( $period === '7days' ) ? 7 : 30;
-			$axis_date_format = 'd';
-			$tooltip_date_format = get_option( 'date_format' );
-		} else {
-			$report_unit = 'MONTH';
-			$timeframe = 12;
-			$axis_date_format = 'M';
-			$tooltip_date_format = 'F Y';
-		}
-
-		// Set up the start and end dates.
+		$report_unit = 'DAY';
+		$timeframe = ( $period === '7days' ) ? 7 : 30;
+		$axis_date_format = 'd';
+		$tooltip_date_format = get_option( 'date_format' );
 		$startdate   = date( 'Y-m-d', strtotime( current_time( 'mysql' ) .' -'.$timeframe.' '.$report_unit ) );
-		$enddate     = current_time( 'mysql' );
+		$enddate = current_time( 'mysql' );
+	} else if ( $period === '12months' ) {
+		$report_unit = 'MONTH';
+		$timeframe = 12;
+		$axis_date_format = 'M';
+		$tooltip_date_format = 'F Y';
+		// Set the start date to the first day of the month 12 months ago.
+		$startdate = date( 'Y-m-01', strtotime( current_time( 'mysql' ) . ' -12 month' ) );
+		// Set the end date to the last day of the previous month.
+		$enddate = date('Y-m-t', strtotime( current_time( 'mysql' ) . ' -1 month' ) );
 	} else {
 		// Set up the report unit to use.
 		$report_unit = 'YEAR';
 		$axis_date_format = 'Y';
 		$tooltip_date_format = 'Y';
-
 		// Set up the start and end dates.
 		$startdate = '1970-01-01';	//all time
 		$enddate = current_time( 'mysql' );
-	}		
+	}
 
 	// Get the data.
 	$report_data_args = array(
