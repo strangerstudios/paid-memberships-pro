@@ -239,17 +239,7 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 				)
 			)
 		);
-
-        register_rest_route( $pmpro_namespace, '/user_fields',
-            array(
-                array(
-                    'methods'   => WP_REST_Server::READABLE,
-                    'callback' => array( $this, 'pmpro_rest_api_user_fields' ),
-                    'permission_callback' => array( $this, 'pmpro_rest_api_get_permissions_check' ),
-                )
-            )
-        );
-        }
+		}
 		
 		/**
 		 * Get user's membership level.
@@ -1011,7 +1001,7 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 			$results[0]->timestamp = pmpro_format_date_iso8601( $results[0]->timestamp );
 
 			return new WP_REST_Response( $results, 200 );
-        }
+		}
 
 		/**
 		 * Default permissions check for endpoints/routes.
@@ -1093,40 +1083,7 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 		 */
 		function pmpro_rest_api_convert_to_array( $string ) {
 			return explode( ',', $string );
-        }
-
-        /**
-         * Handle request for the user fields.
-         *
-         * @since 2.12
-         *
-         * @param WP_REST_Request $request
-         *
-         * @return WP_REST_Response
-         */
-        public function pmpro_rest_api_user_fields( $request ) {
-			$params = $request->get_params();
-			$user_id = isset( $params['user_id'] ) ? intval( $params['user_id'] ) : null;
-
-			if ( empty( $user_id ) ) {
-                // see if they sent an email
-				if ( ! empty( $params['email'] ) ) {
-					$user = get_user_by( 'email', sanitize_email( $params['email'] ) );
-					$user_id = $user->ID;
-				} else {
-					return new WP_REST_Response( 'No user information passed through.', 404 );
-				}
-            }
-
-            global $pmpro_user_fields;
-            $profile_fields = pmpro_get_user_fields_for_profile( $user_id, false );
-
-            // return new WP_REST_Response( array_reduce( $profile_fields, function($carry, $field) {
-            //     $carry[ $field->id ] = get_user_meta( $user_id, $field->id, true );
-            //     return $carry;
-            // }, []), 200 );
-            return new WP_REST_Response( $pmpro_user_fields, 200 );
-        }
+		}
 	} // End of class
 
 	/**
@@ -1169,7 +1126,6 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
             }
         }
     }
-
     add_action( 'rest_api_init', 'pmpro_rest_api_register_fields', 5 );
 }
 
