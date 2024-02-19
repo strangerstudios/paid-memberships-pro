@@ -98,7 +98,7 @@
 		$headers[] = 'Content-Disposition: attachment; filename="members_list.csv"';
 
 	//set default CSV file headers, using comma as delimiter
-	$csv_file_header = "id,username,firstname,lastname,email,billing firstname,billing lastname,address1,address2,city,state,zipcode,country,phone,membership,initial payment,fee,term,discount_code_id,discount_code,joined";
+	$csv_file_header = "id,username,firstname,lastname,email,billing firstname,billing lastname,address1,address2,city,state,zipcode,country,phone,membership,discount_code_id,discount_code,billing_amount,cycle_number,cycle_period,joined";
 
 	if($l == "oldmembers")
 		$csv_file_header .= ",ended";
@@ -122,9 +122,6 @@
 		array("metavalues", "pmpro_bcountry"),
 		array("metavalues", "pmpro_bphone"),
 		array("theuser", "membership"),
-		array("theuser", "initial_payment"),
-		array("theuser", "billing_amount"),
-		array("theuser", "cycle_period"),
 		array("discount_code", "id"),
 		array("discount_code", "code")
 		//joindate and enddate are handled specifically below
@@ -351,9 +348,6 @@
 				u.user_status,
 				u.display_name,
 				mu.membership_id,
-				mu.initial_payment,
-				mu.billing_amount,
-				mu.cycle_period,
 				UNIX_TIMESTAMP(CONVERT_TZ(max(mu.enddate), '+00:00', @@global.time_zone)) as enddate,
 				m.name as membership
 			FROM {$wpdb->users} u
@@ -436,6 +430,12 @@
 					array_push($csvoutput, pmpro_enclose($val));	//output the value
 				}
 			}
+
+			// Subscription billing amount, cycle number, and cycle period.
+			$subscriptions = PMPro_Subscription::get_subscriptions_for_user( $theuser->ID, $theuser->membership_id );
+			array_push($csvoutput, pmpro_enclose( ( empty( $subscriptions  ) ? '' : $subscriptions[0]->get_billing_amount() ) ) );
+			array_push($csvoutput, pmpro_enclose( ( empty( $subscriptions  ) ? '' : $subscriptions[0]->get_cycle_number() ) ) );
+			array_push($csvoutput, pmpro_enclose( ( empty( $subscriptions  ) ? '' : $subscriptions[0]->get_cycle_period() ) ) );
 
 			//joindate and enddate
 			array_push($csvoutput, pmpro_enclose(date_i18n($dateformat, $theuser->joindate)));

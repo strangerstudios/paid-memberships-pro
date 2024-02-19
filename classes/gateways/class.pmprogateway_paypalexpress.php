@@ -97,6 +97,26 @@
 		}
 
 		/**
+		 * Check whether or not a gateway supports a specific feature.
+		 * 
+		 * @since 3.0
+		 * 
+		 * @return string|boolean $supports Returns whether or not the gateway supports the requested feature.
+		 */
+		public static function supports( $feature ) {
+			$supports = array(
+				'subscription_sync' => true,
+				'payment_method_updates' => false,
+			);
+
+			if ( empty( $supports[$feature] ) ) {
+				return false;
+			}
+
+			return $supports[$feature];
+		}
+
+		/**
 		 * Get a list of payment options that the this gateway needs/supports.
 		 *
 		 * @since 1.8

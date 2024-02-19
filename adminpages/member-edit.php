@@ -70,7 +70,7 @@ function pmpro_member_edit_display() {
 	$panels = pmpro_member_edit_get_panels();
 
 	// Get the panel to default to.
-	$default_panel_slug = 'user_info';
+	$default_panel_slug = 'user-info';
 	if ( ! empty( $user->ID ) && ! empty( $_REQUEST['pmpro_member_edit_panel'] ) && ! empty( $panels[ $_REQUEST['pmpro_member_edit_panel'] ] ) ) {
 		$default_panel_slug = sanitize_text_field( $_REQUEST['pmpro_member_edit_panel'] );
 	}
@@ -134,8 +134,8 @@ function pmpro_member_edit_display() {
 		<div class="pmpro_section">
 			<?php
 			foreach ( $panels as $panel_slug => $panel ) {
-				// When creating a new user, we only want to show the user_info panel.
-				if ( empty( $user->ID ) && $panel_slug !== 'user_info' ) {
+				// When creating a new user, we only want to show the user-info panel.
+				if ( empty( $user->ID ) && $panel_slug !== 'user-info' ) {
 					continue;
 				}
 

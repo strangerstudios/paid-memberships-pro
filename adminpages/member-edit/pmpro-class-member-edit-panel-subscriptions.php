@@ -148,6 +148,16 @@ class PMPro_Member_Edit_Panel_Subscriptions extends PMPro_Member_Edit_Panel {
 								</span>
 								<?php
 							}
+
+							// Show warning if the subscription had an error when trying to sync.
+							$sync_error = get_pmpro_subscription_meta( $subscription->get_id(), 'sync_error', true );
+							if ( ! empty( $sync_error ) ) {
+								?>
+								<span class="pmpro_tag pmpro_tag-has_icon pmpro_tag-error">
+									<?php echo esc_html( __( 'Sync Error', 'paid-memberships-pro' ) . ': ' . $sync_error ); ?>
+								</span>
+								<?php
+							}
 							?>
 							<div class="row-actions">
 								<?php
@@ -213,7 +223,7 @@ class PMPro_Member_Edit_Panel_Subscriptions extends PMPro_Member_Edit_Panel {
 							// Display the number of orders for this subscription and link to the orders page filtered by this subscription.
 							$orders_count = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM $wpdb->pmpro_membership_orders WHERE subscription_transaction_id = %s", $subscription->get_subscription_transaction_id() ) );
 							?>
-							<a href="<?php echo esc_url( add_query_arg( array( 'page' => 'pmpro-orders', 's' => $subscription->get_subscription_transaction_id() ), admin_url( 'admin.php' ) ) ); ?>"><?php echo esc_html( number_format_i18n( $orders_count ) ); ?></a>
+							<a href="<?php echo esc_url( add_query_arg( array( 'page' => 'pmpro-orders', 's' => $subscription->get_subscription_transaction_id() ), admin_url( 'admin.php' ) ) ); ?>" title="<?php esc_attr_e( 'View all orders for this subscription', 'paid-memberships-pro' ); ?>"><?php echo esc_html( number_format_i18n( $orders_count ) ); ?></a>
 						</td>
 					</tr>
 					<?php

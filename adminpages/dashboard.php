@@ -267,14 +267,7 @@ function pmpro_dashboard_report_recent_members_callback() {
     					</td>
     					<td><?php echo esc_html( $auser->membership ); ?></td>
     					<td><?php echo date_i18n( get_option( 'date_format' ), strtotime( get_date_from_gmt( $theuser->user_registered ), current_time( 'timestamp' ) ) ); ?></td>
-    					<td>
-    						<?php
-    							if($auser->enddate)
-    								echo apply_filters("pmpro_memberslist_expires_column", date_i18n(get_option('date_format'), $auser->enddate), $auser);
-    							else
-    								echo apply_filters("pmpro_memberslist_expires_column", __('Never', 'paid-memberships-pro'), $auser);
-    						?>
-    					</td>
+    					<td><?php echo esc_html( pmpro_get_membership_expiration_text( $auser->membership_id, $theuser ) ); ?></td>
     				</tr>
     				<?php
     			}

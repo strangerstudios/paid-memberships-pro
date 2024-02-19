@@ -139,7 +139,7 @@ class PMPro_Members_List_Table extends WP_List_Table {
 			'address'       => __( 'Billing Address', 'paid-memberships-pro' ),
 			'membership'    => __( 'Level', 'paid-memberships-pro' ),
 			'membership_id' => __( 'Level ID', 'paid-memberships-pro' ),
-			'fee'           => __( 'Level Cost', 'paid-memberships-pro' ),
+			'subscription'  => __( 'Subscription', 'paid-memberships-pro' ),
 			'joindate'      => __( 'Registered', 'paid-memberships-pro' ),
 			'startdate'     => __( 'Start Date', 'paid-memberships-pro' ),
 			'enddate'       => __( 'End Date', 'paid-memberships-pro' ),
@@ -240,10 +240,6 @@ class PMPro_Members_List_Table extends WP_List_Table {
 			),
 			'username'     => array(
 				'user_login',
-				false,
-			),
-			'fee' => array(
-				'fee',
 				false,
 			),
 			'display_name'   => array(
@@ -379,7 +375,7 @@ class PMPro_Members_List_Table extends WP_List_Table {
 			$sqlQuery =
 				"
 				SELECT u.ID, u.user_login, u.user_email, u.display_name,
-				UNIX_TIMESTAMP(CONVERT_TZ(u.user_registered, '+00:00', @@global.time_zone)) as joindate, mu.membership_id, mu.initial_payment, mu.billing_amount, SUM(mu.initial_payment+ mu.billing_amount) as fee, mu.cycle_period, mu.cycle_number, mu.billing_limit, mu.trial_amount, mu.trial_limit,
+				UNIX_TIMESTAMP(CONVERT_TZ(u.user_registered, '+00:00', @@global.time_zone)) as joindate, mu.membership_id,
 				UNIX_TIMESTAMP(CONVERT_TZ(mu.startdate, '+00:00', @@global.time_zone)) as startdate,
 				UNIX_TIMESTAMP(CONVERT_TZ(max(mu.enddate), '+00:00', @@global.time_zone)) as enddate, m.name as membership
 				";
@@ -484,7 +480,6 @@ class PMPro_Members_List_Table extends WP_List_Table {
 			'user_email' 		=> 'u.user_email',
 			'membership' 		=> 'mu.membership_id',
 			'membership_id' 	=> 'mu.membership_id',
-			'fee' 				=> 'fee',
 			'joindate' 			=> 'u.user_registered',
 			'startdate' 		=> 'mu.startdate',
 			'enddate' 			=> 'mu.enddate',
@@ -552,7 +547,13 @@ class PMPro_Members_List_Table extends WP_List_Table {
 	 */
 	public function column_username( $item ) {
 		$avatar   = get_avatar( $item['ID'], 32 );
-		$userlink = '<a href="' . esc_url( add_query_arg( array( 'page' => 'pmpro-member', 'user_id' => (int)$item['ID'] ), admin_url( 'admin.php' ) ) ) . '">' . $item['user_login'] . '</a>';
+		
+		if ( current_user_can( pmpro_get_edit_member_capability() ) ) {
+			$userlink = '<a href="' . esc_url( add_query_arg( array( 'page' => 'pmpro-member', 'user_id' => (int)$item['ID'] ), admin_url( 'admin.php' ) ) ) . '">' . $item['user_login'] . '</a>';
+		} else {
+			// If the user can't edit members, don't link to the edit page.
+			$userlink = $item['user_login'];
+		}
 		$userlink = apply_filters( 'pmpro_members_list_user_link', $userlink, get_userdata( $item['ID'] ) );
 		$output   = $avatar . ' <strong>' . $userlink . '</strong><br />';
 
@@ -659,37 +660,69 @@ class PMPro_Members_List_Table extends WP_List_Table {
 	}
 
 	/**
-	 * Get value for fee column.
+	 * Get value for subscription column.
 	 *
 	 * @param object $item A row's data.
 	 * @return string Text to be placed inside the column <td>.
 	 */
-	public function column_fee( $item ) {
-		$fee = '';
-		// If there is no payment for the level, show a dash.
-		if ( (float)$item['initial_payment'] <= 0 && (float)$item['billing_amount'] <= 0 ) {
-			$fee .= esc_html__( '&#8212;', 'paid-memberships-pro' );
+	public function column_subscription( $item ) {
+		// Check if we have subscriptions for this user.
+		$subscriptions = PMPro_Subscription::get_subscriptions_for_user( $item['ID'], $item['membership_id'] );
+		if ( ! empty( $subscriptions ) ) {
+			// If the user has more than 1 subscription, show a warning message.
+			if ( count( $subscriptions ) > 1 ) {
+				?>
+				<div class="pmpro_message pmpro_error">
+					<p>
+						<?php
+						printf(
+							// translators: %1$d is the number of subscriptions and %2$s is the link to view subscriptions.
+							_n(
+								'This user has %1$d active subscription for this level. %2$s',
+								'This user has %1$d active subscriptions for this level. %2$s',
+								count( $subscriptions ),
+								'paid-memberships-pro'
+							),
+							count( $subscriptions ),
+							sprintf(
+								'<a href="%1$s">%2$s</a>',
+								esc_url( add_query_arg( array( 'page' => 'pmpro-member', 'user_id' => $item['ID'], 'pmpro_member_edit_panel' => 'subscriptions' ), admin_url( 'admin.php' ) ) ),
+								esc_html__( 'View Subscriptions', 'paid-memberships-pro' )
+							)
+						); ?>
+					</p>
+				</div>
+				<?php
+			}
+			$subscription = $subscriptions[0];
+			echo esc_html( $subscription->get_cost_text() );
+			$actions = [
+				'view'   => sprintf(
+					'<a href="%1$s">%2$s</a>',
+					esc_url( add_query_arg( array( 'page' => 'pmpro-subscriptions', 'id' => $subscription->get_id() ), admin_url('admin.php' ) ) ),
+					esc_html__( 'View Details', 'paid-memberships-pro' )
+				)
+			];
+
+			$actions_html = [];
+
+			foreach ( $actions as $action => $link ) {
+				$actions_html[] = sprintf(
+					'<span class="%1$s">%2$s</span>',
+					esc_attr( $action ),
+					$link
+				);
+			}
+
+			if ( ! empty( $actions_html ) ) { ?>
+				<div class="row-actions">
+					<?php echo implode( ' | ', $actions_html ); ?>
+				</div>
+				<?php
+			}
 		} else {
-			// Display the member's initial payment.
-			if ( (float)$item['initial_payment'] > 0 ) {
-				$fee .= pmpro_escape_price( pmpro_formatPrice( $item['initial_payment'] ) );
-			}
-			// If there is a recurring payment, show a plus sign.
-			if ( (float)$item['initial_payment'] > 0 && (float)$item['billing_amount'] > 0 ) {
-				$fee .= esc_html__( ' + ', 'paid-memberships-pro' );
-			}
-			// If there is a recurring payment, show the recurring payment amount and cycle.
-			if ( (float)$item['billing_amount'] > 0 ) {
-				$fee .= pmpro_escape_price( pmpro_formatPrice( $item['billing_amount'] ) );
-				$fee .= esc_html__( ' per ', 'paid-memberships-pro' );
-				if ( $item['cycle_number'] > 1 ) {
-					$fee .= $item['cycle_number'] . " " . pmpro_translate_billing_period( $item['cycle_period'], $item['cycle_number'] );
-				} else {
-					$fee .= pmpro_translate_billing_period( $item['cycle_period'], 1 );
-				}
-			}
+			echo '&#8212;';
 		}
-		return $fee;
 	}
 
 	/**

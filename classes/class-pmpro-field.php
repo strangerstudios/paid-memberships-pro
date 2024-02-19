@@ -1,4 +1,5 @@
 <?php
+#[AllowDynamicProperties]
 class PMPro_Field {
 	/**
 	 * The name of the field.

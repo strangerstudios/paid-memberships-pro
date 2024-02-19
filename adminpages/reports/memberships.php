@@ -170,7 +170,7 @@ function pmpro_report_memberships_page() {
 	// calculate start date and how to group dates returned from DB
 	if ( $period == 'daily' ) {
 		$startdate     = $year . '-' . substr( '0' . $month, strlen( $month ) - 1, 2 ) . '-01';
-		$enddate       = $year . '-' . substr( '0' . $month, strlen( $month ) - 1, 2 ) . '-31';
+		$enddate       = $year . '-' . substr( '0' . $month, strlen( $month ) - 1, 2 ) . '-' . date_i18n( 't', strtotime( $startdate ) );
 		$date_function = 'DAY';
 	} elseif ( $period == 'monthly' ) {
 		$startdate     = $year . '-01-01';
@@ -665,7 +665,7 @@ function pmpro_getCancellations( $period = null, $levels = 'all', $status = arra
 		$enddate   = "CONCAT(LAST_DAY('" . date_i18n( 'Y-m', $now ) . '-01' . "'), ' 23:59:59')";
 	} elseif ( $period == 'this year' ) {
 		$startdate = date( 'Y', $now ) . '-01-01 00:00:00';
-		$enddate   = "'" . date( 'Y', $now ) . "-12-31 23:59:59'";
+		$enddate   = "'" . date( 'Y', $now ) . "-12-" . date_i18n( 't', strtotime( $startdate ) ) . " 23:59:59'";
 	} else {
 		// all time
 		$startdate = '1970-01-01';  // all time (no point in using a value prior to the start of the UNIX epoch)

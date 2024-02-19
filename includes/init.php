@@ -70,7 +70,7 @@ function pmpro_wp()
 		//run the appropriate preheader function
 		foreach($pmpro_core_pages as $pmpro_page_name => $pmpro_page_id)
 		{
-			if(!empty($post->post_content) && ( strpos($post->post_content, "[pmpro_" . $pmpro_page_name . "]") !== false || has_block( 'pmpro/' . $pmpro_page_name . '-page', $post ) ) )
+			if( ! empty( $post->post_content ) && ( strpos( $post->post_content, "[pmpro_" . $pmpro_page_name . "]" ) !== false || ( function_exists( 'has_block' ) && has_block( 'pmpro/' . $pmpro_page_name . '-page', $post ) ) ) )
 			{
 				//preheader
 				require_once(PMPRO_DIR . "/preheaders/" . $pmpro_page_name . ".php");
