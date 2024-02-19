@@ -1071,14 +1071,6 @@ class PMPro_Subscription {
 			$this->enddate = '';
 		} elseif ( 'cancelled' === $this->status ) {
 			$this->next_payment_date = '';
-
-			// Mark incomplete orders as error since the subscription is no longer active.
-			$incomplete_orders = $this->get_orders( array( 'status' => array( 'token', 'pending', 'review' ) ) );
-			if ( ! empty( $incomplete_orders ) ) {
-				foreach ( $incomplete_orders as $order ) {
-					$order->updateStatus( 'error' );
-				}
-			}
 		}
 
 		// If the startdate is empty or later than the current time, set it to the current time.
@@ -1135,6 +1127,17 @@ class PMPro_Subscription {
 		if ( empty( $this->id ) ) {
 			pmpro_setMessage( __( 'There was an error saving the subscription.', 'paid-memberships-pro' ), 'pmpro_error' );
 			return false;
+		}
+
+		// If the subscription was cancelled, mark any incomplete orders as error.
+		if ( 'cancelled' === $this->status ) {
+			// Mark incomplete orders as error since the subscription is no longer active.
+			$incomplete_orders = $this->get_orders( array( 'status' => array( 'token', 'pending', 'review' ) ) );
+			if ( ! empty( $incomplete_orders ) ) {
+				foreach ( $incomplete_orders as $order ) {
+					$order->updateStatus( 'error' );
+				}
+			}
 		}
 
 		pmpro_setMessage( __( 'Subscription saved.', 'paid-memberships-pro' ), 'pmpro_success' ); // Will not overwrite previous messages.
