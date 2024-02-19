@@ -689,22 +689,25 @@ class PMPro_Subscription {
 		}
 
 		// Send an email if there was an error.
-		if ( ! empty( $error_message ) ) {
-			$pmproemail                = new PMProEmail();
-			$pmproemail->template      = 'subscription_sync_failed';
-			$pmproemail->subject       = __( 'Error Synchronizing Subscription', 'paid-memberships-pro' );
-			$pmproemail->data          = array( 'body' => '<p>' . esc_html__( 'There was an error synchronizing a subscription with your payment gateway.', 'paid-memberships-pro' ) . '</p>' . "\n" );
-			$pmproemail->data['body'] .= '<p>' . esc_html__( 'Error', 'paid-memberships-pro' ) . ': ' . esc_html( $error_message ) . '</p>' . "\n";
-			$pmproemail->data['body'] .= '<p>' . esc_html__( 'Subscription ID', 'paid-memberships-pro' ) . ': ' . $this->id . '</p>' . "\n";
-			$pmproemail->data['body'] .= '<p>' . esc_html__( 'Gateway', 'paid-memberships-pro' ) . ': ' . $this->gateway . '</p>' . "\n";
-			$pmproemail->data['body'] .= '<p>' . esc_html__( 'Subscription Transaction ID', 'paid-memberships-pro' ) . ': ' . $this->subscription_transaction_id . '</p>' . "\n";
-			$pmproemail->data['body'] .= '<p>' . esc_html__( 'User ID', 'paid-memberships-pro' ) . ': ' . $this->user_id . '</p>' . "\n";
-			$pmproemail->data['body'] .= '<p>' . esc_html__( 'Membership Level ID', 'paid-memberships-pro' ) . ': ' . $this->membership_level_id . '</p>' . "\n";
-			$pmproemail->data['body'] .= '<hr />' . "\n";
-			$pmproemail->data['body'] .= '<p>' . esc_html__( 'Edit User', 'paid-memberships-pro' ) . ': ' . esc_url( add_query_arg( 'user_id', $this->user_id, self_admin_url( 'user-edit.php' ) ) ) . '</p>';
-			$pmproemail->sendEmail( get_bloginfo( 'admin_email' ) );
+		if ( ! empty( $error_message )  ) {
+			// We want to skip the email if we're running the PMPro v3.0 upgrade script to avoid spamming the admin.
+			if ( ! defined( 'PMPRO_UPGRADE_3_0_AJAX' ) ){
+				$pmproemail                = new PMProEmail();
+				$pmproemail->template      = 'subscription_sync_failed';
+				$pmproemail->subject       = __( 'Error Synchronizing Subscription', 'paid-memberships-pro' );
+				$pmproemail->data          = array( 'body' => '<p>' . esc_html__( 'There was an error synchronizing a subscription with your payment gateway.', 'paid-memberships-pro' ) . '</p>' . "\n" );
+				$pmproemail->data['body'] .= '<p>' . esc_html__( 'Error', 'paid-memberships-pro' ) . ': ' . esc_html( $error_message ) . '</p>' . "\n";
+				$pmproemail->data['body'] .= '<p>' . esc_html__( 'Subscription ID', 'paid-memberships-pro' ) . ': ' . $this->id . '</p>' . "\n";
+				$pmproemail->data['body'] .= '<p>' . esc_html__( 'Gateway', 'paid-memberships-pro' ) . ': ' . $this->gateway . '</p>' . "\n";
+				$pmproemail->data['body'] .= '<p>' . esc_html__( 'Subscription Transaction ID', 'paid-memberships-pro' ) . ': ' . $this->subscription_transaction_id . '</p>' . "\n";
+				$pmproemail->data['body'] .= '<p>' . esc_html__( 'User ID', 'paid-memberships-pro' ) . ': ' . $this->user_id . '</p>' . "\n";
+				$pmproemail->data['body'] .= '<p>' . esc_html__( 'Membership Level ID', 'paid-memberships-pro' ) . ': ' . $this->membership_level_id . '</p>' . "\n";
+				$pmproemail->data['body'] .= '<hr />' . "\n";
+				$pmproemail->data['body'] .= '<p>' . esc_html__( 'Edit User', 'paid-memberships-pro' ) . ': ' . esc_url( add_query_arg( 'user_id', $this->user_id, self_admin_url( 'user-edit.php' ) ) ) . '</p>';
+				$pmproemail->sendEmail( get_bloginfo( 'admin_email' ) );
 
-			pmpro_setMessage( __( 'There was an error synchronizing a subscription with your payment gateway: ', 'paid-memberships-pro' ) . esc_html( $error_message ), 'pmpro_error' );
+				pmpro_setMessage( __( 'There was an error synchronizing a subscription with your payment gateway: ', 'paid-memberships-pro' ) . esc_html( $error_message ), 'pmpro_error' );
+			}
 
 			// Save error in subscription meta with date to reference later.
 			update_pmpro_subscription_meta( $this->id, 'sync_error', $error_message );
@@ -1219,7 +1222,7 @@ class PMPro_Subscription {
 	 */
 	private function maybe_fix_default_migration_data() {
 		// Make sure that this looks like default migration data for an active subscription.
-		if (  empty( $this->id ) || 'active' !== $this->status || ! empty( $this->billing_amount ) || ! empty( $this->cycle_number ) ) {
+		if (  empty( $this->id ) || ! empty( $this->billing_amount ) || ! empty( $this->cycle_number ) ) {
 			// This is not default migration data for an active subscription. Bail.
 			return;
 		}
@@ -1248,7 +1251,7 @@ class PMPro_Subscription {
 			$level_check = current( $all_user_levels );
 
 			// Let's check if level the same level as this subscription and if it's a recurring level.
-			if ( $level_check->id == $this->membership_level_id && pmpro_isLevelRecurring( $level_check ) ) {
+			if ( $level_check->id == $this->membership_level_id && ! empty( $level_check->billing_amount ) && ! empty( $level_check->cycle_number ) ) {
 				$subscription_level = $level_check;
 				break;
 			}
@@ -1258,14 +1261,21 @@ class PMPro_Subscription {
 		// pull from the level settings instead.
 		if ( empty( $subscription_level ) ) {
 			$level = pmpro_getLevel( $this->membership_level_id );
-			if ( ! empty( $level ) && pmpro_isLevelRecurring( $level ) ) {
+			if ( ! empty( $level ) && ! empty( $level->billing_amount ) && ! empty( $level->cycle_number ) ) {
 				$subscription_level = $level;
 			}
 		}
 
-		// If we still don't have a subscription level, then this membership level isn't recurring or no longer exists on the site. Bail.
+		// If we still don't have a subscription level, then this membership level isn't recurring or no longer exists on the site.
+		// Give it some default values.
 		if ( empty( $subscription_level ) ) {
-			return;
+			$subscription_level = new stdClass();
+			$subscription_level->billing_amount = 0;
+			$subscription_level->cycle_number   = 1;
+			$subscription_level->cycle_period   = 'Month';
+			$subscription_level->billing_limit  = 0;
+			$subscription_level->trial_amount   = 0;
+			$subscription_level->trial_limit    = 0;
 		}
 
 		// We have found a level, let's fill in the subscription.
