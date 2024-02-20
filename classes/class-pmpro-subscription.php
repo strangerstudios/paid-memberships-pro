@@ -1306,7 +1306,7 @@ class PMPro_Subscription {
 		// Let's also take a guess at the next payment date or end date.
 		$newest_orders = $this->get_orders(
 			[
-				'limit'   => 5,
+				'limit'   => 1,
 				'orderby' => '`timestamp` DESC, `id` DESC',
 			]
 		);
