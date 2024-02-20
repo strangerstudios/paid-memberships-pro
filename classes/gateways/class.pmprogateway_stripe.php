@@ -2168,26 +2168,158 @@ class PMProGateway_stripe extends PMProGateway {
 			return $e->getMessage();
 		}
 
-		if ( ! empty( $stripe_subscription ) ) {
-			$update_array = array(
-				'startdate' => date( 'Y-m-d H:i:s', intval( $stripe_subscription->created ) ),
-			);
-			if ( in_array( $stripe_subscription->status, array( 'trialing', 'active' ) ) ) {
-				// Subscription is active.
-				$update_array['status'] = 'active';
-				$update_array['next_payment_date'] = date( 'Y-m-d H:i:s', intval( $stripe_subscription->current_period_end ) );
-				if ( ! empty( $stripe_subscription->items->data[0]->price ) ) {
-					$stripe_subscription_price = $stripe_subscription->items->data[0]->price;
-					$update_array['billing_amount'] = $this->convert_unit_amount_to_price( $stripe_subscription_price->unit_amount );
-					$update_array['cycle_number']   = $stripe_subscription_price->recurring->interval_count;
-					$update_array['cycle_period']   = ucfirst( $stripe_subscription_price->recurring->interval );
-				}
-			} else {
-				// Subscription is no longer active.
-				$update_array['status'] = 'cancelled';
-				$update_array['enddate'] = date( 'Y-m-d H:i:s', intval( $stripe_subscription->ended_at ) );
+		// Make sure we have a subscription.
+		if ( empty( $stripe_subscription ) ) {
+			// No subscription found.
+			return __( 'No subscription found.', 'paid-memberships-pro' );
+		}
+
+		// Update the subscription.
+		$update_array = array(
+			'startdate' => date( 'Y-m-d H:i:s', intval( $stripe_subscription->created ) ),
+		);
+		if ( in_array( $stripe_subscription->status, array( 'trialing', 'active' ) ) ) {
+			// Subscription is active.
+			$update_array['status'] = 'active';
+			$update_array['next_payment_date'] = date( 'Y-m-d H:i:s', intval( $stripe_subscription->current_period_end ) );
+			if ( ! empty( $stripe_subscription->items->data[0]->price ) ) {
+				$stripe_subscription_price = $stripe_subscription->items->data[0]->price;
+				$update_array['billing_amount'] = $this->convert_unit_amount_to_price( $stripe_subscription_price->unit_amount );
+				$update_array['cycle_number']   = $stripe_subscription_price->recurring->interval_count;
+				$update_array['cycle_period']   = ucfirst( $stripe_subscription_price->recurring->interval );
 			}
-			$subscription->set( $update_array );
+		} else {
+			// Subscription is no longer active.
+			$update_array['status'] = 'cancelled';
+			$update_array['enddate'] = date( 'Y-m-d H:i:s', intval( $stripe_subscription->ended_at ) );
+		}
+		$subscription->set( $update_array );
+
+		// Also use this opportunity to pull any missing subscription payments from Stripe.
+		$subscription_invoices_args = array(
+			'subscription' => $subscription->get_subscription_transaction_id(),
+			'status'       => 'paid',
+			'limit'        => 100,
+			'expand'       => array(
+				'data.default_payment_method',
+			)
+		);
+		try {
+			$stripe_subscription_invoices = Stripe_Invoice::all( $subscription_invoices_args );
+		} catch ( \Throwable $e ) {
+			// Assume no invoices found.
+		} catch ( \Exception $e ) {
+			// Assume no invoices found.
+		}
+
+		if ( ! empty( $stripe_subscription_invoices ) ) {
+			foreach ( $stripe_subscription_invoices->data as $stripe_invoice ) {
+				// Ignore free invoices.
+				if ( empty( $stripe_invoice->total ) || 0 === $stripe_invoice->total ) {
+					continue;
+				}
+
+				// Check if we have this invoice already.
+				$existing_order = MemberOrder::get_order(
+					array(
+						'payment_transaction_id' => $stripe_invoice->id
+					)
+				);
+				if ( empty( $existing_order ) ) {
+					// We don't have this invoice yet. Add it.
+					$new_order = new MemberOrder();
+					$new_order->user_id = $subscription->get_user_id();
+					$new_order->membership_id = $subscription->get_membership_level_id();
+					$new_order->timestamp = $stripe_invoice->created;
+					$new_order->status = 'success';
+					$new_order->payment_transaction_id = $stripe_invoice->id;
+					$new_order->subscription_transaction_id = $subscription->get_subscription_transaction_id();
+
+					// Set the subtotal, tax, and total.
+					global $pmpro_currency, $pmpro_currencies;
+					$currency_unit_multiplier = 100; // 100 cents / USD
+					//account for zero-decimal currencies like the Japanese Yen
+					if ( is_array( $pmpro_currencies[ $pmpro_currency ] ) && isset( $pmpro_currencies[ $pmpro_currency ]['decimals'] ) && $pmpro_currencies[ $pmpro_currency ]['decimals'] == 0 ) {
+						$currency_unit_multiplier = 1;
+					}
+					if ( isset( $stripe_invoice->amount ) ) {
+						$new_order->subtotal = $stripe_invoice->amount / $currency_unit_multiplier;
+						$new_order->tax      = 0;
+					} elseif ( isset( $stripe_invoice->subtotal ) ) {
+						$new_order->subtotal = ( ! empty( $stripe_invoice->subtotal ) ? $stripe_invoice->subtotal / $currency_unit_multiplier : 0 );
+						$new_order->tax      = ( ! empty( $stripe_invoice->tax ) ? $stripe_invoice->tax / $currency_unit_multiplier : 0 );
+						$new_order->total    = ( ! empty( $stripe_invoice->total ) ? $stripe_invoice->total / $currency_unit_multiplier : 0 );
+					}
+
+					// Fill the "Payment Type" and credit card fields.
+					// Find the payment intent.
+					$payment_intent_args = array(
+						'id'     => $stripe_invoice->payment_intent,
+						'expand' => array(
+							'payment_method',
+							'latest_charge',
+						),
+					);
+					$payment_intent = \Stripe\PaymentIntent::retrieve( $payment_intent_args );
+					if ( ! empty( $payment_intent->payment_method ) ) {
+						$payment_method = $payment_intent->payment_method;
+					} elseif( ! empty( $payment_intent->latest_charge ) ) {
+						// If we didn't get a payment method, check the charge.
+						$payment_method = $payment_intent->latest_charge->payment_method_details;
+					}	
+					if ( ! empty( $payment_method ) && ! empty( $payment_method->type ) ) {
+						$new_order->payment_type = 'Stripe - ' . $payment_method->type;
+						if ( ! empty( $payment_method->card ) ) {
+							// Paid with a card, let's update order and user meta with the card info.
+							$new_order->cardtype = $payment_method->card->brand;
+							$new_order->accountnumber = hideCardNumber( $payment_method->card->last4 );
+							$new_order->expirationmonth = $payment_method->card->exp_month;
+							$new_order->expirationyear = $payment_method->card->exp_year;
+							$new_order->ExpirationDate = $new_order->expirationmonth . $new_order->expirationyear;
+							$new_order->ExpirationDate_YdashM = $new_order->expirationyear . "-" . $new_order->expirationmonth;			
+						} else {
+							$new_order->cardtype = '';
+							$new_order->accountnumber = '';
+							$new_order->expirationmonth = '';
+							$new_order->expirationyear = '';
+							$new_order->ExpirationDate = '';
+							$new_order->ExpirationDate_YdashM = '';
+						}
+					} else {
+						// Some defaults.
+						$new_order->payment_type = 'Stripe';
+						$new_order->cardtype = '';
+						$new_order->accountnumber = '';
+						$new_order->expirationmonth = '';
+						$new_order->expirationyear = '';
+						$new_order->ExpirationDate = '';
+						$new_order->ExpirationDate_YdashM = '';
+					}
+
+					// Update billing information.
+					$new_order->billing = new stdClass();
+					if ( ! empty( $payment_method ) && ! empty( $payment_method->billing_details ) && ! empty( $payment_method->billing_details->address ) && ! empty( $payment_method->billing_details->address->line1 ) ) {
+						$new_order->billing->name = empty( $payment_method->billing_details->name ) ? '' : $payment_method->billing_details->name;
+						$new_order->billing->street = empty( $payment_method->billing_details->address->line1 ) ? '' : $payment_method->billing_details->address->line1;
+						$new_order->billing->city = empty( $payment_method->billing_details->address->city ) ? '' : $payment_method->billing_details->address->city;
+						$new_order->billing->state = empty( $payment_method->billing_details->address->state ) ? '' : $payment_method->billing_details->address->state;
+						$new_order->billing->zip = empty( $payment_method->billing_details->address->postal_code ) ? '' : $payment_method->billing_details->address->postal_code;
+						$new_order->billing->country = empty( $payment_method->billing_details->address->country ) ? '' : $payment_method->billing_details->address->country;
+						$new_order->billing->phone = empty( $payment_method->billing_details->phone ) ? '' : $payment_method->billing_details->phone;
+					} else {
+						$new_order->billing->name = empty( $stripe_invoice->customer_name ) ? '' : $stripe_invoice->customer_name;
+						$new_order->billing->street = empty( $stripe_invoice->customer_address->line1 ) ? '' : $stripe_invoice->customer_address->line1;
+						$new_order->billing->city = empty( $stripe_invoice->customer_address->city ) ? '' : $stripe_invoice->customer_address->city;
+						$new_order->billing->state = empty( $stripe_invoice->customer_address->state ) ? '' : $stripe_invoice->customer_address->state;
+						$new_order->billing->zip = empty( $stripe_invoice->customer_address->postal_code ) ? '' : $stripe_invoice->customer_address->postal_code;
+						$new_order->billing->country = empty( $stripe_invoice->customer_address->country ) ? '' : $stripe_invoice->customer_address->country;
+						$new_order->billing->phone = empty( $stripe_invoice->customer_phone ) ? '' : $stripe_invoice->customer_phone;
+					}
+
+					// Save the order.
+					$new_order->saveOrder();
+				}
+			}
 		}
 	}
 
