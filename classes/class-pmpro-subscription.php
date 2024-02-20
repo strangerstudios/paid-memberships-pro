@@ -1247,16 +1247,18 @@ class PMPro_Subscription {
 		 *        created for.
 		 * 4. If we do not find a membership level that matches the subscription level and is recurring,
 		 *       then let's use the default membership level settings if it is recurring.
-		*/
-		$all_user_levels = pmpro_getMembershipLevelsForUser( $this->user_id, true ); // True to include old memberships.
-		// Looping through $all_user_levels backwards to get the most recent first.
-		for ( end( $all_user_levels ); key( $all_user_levels ) !== null; prev( $all_user_levels ) ) {
-			$level_check = current( $all_user_levels );
+		 */
+		if ( 'active' === $this->status ) { // Only guess for active subscriptions. For cancelled subscriptions, we would rather show $0/month than a potentially wrong amount.
+			$all_user_levels = pmpro_getMembershipLevelsForUser( $this->user_id, true ); // True to include old memberships.
+			// Looping through $all_user_levels backwards to get the most recent first.
+			for ( end( $all_user_levels ); key( $all_user_levels ) !== null; prev( $all_user_levels ) ) {
+				$level_check = current( $all_user_levels );
 
-			// Let's check if level the same level as this subscription and if it's a recurring level.
-			if ( $level_check->id == $this->membership_level_id && ! empty( $level_check->billing_amount ) && ! empty( $level_check->cycle_number ) ) {
-				$subscription_level = $level_check;
-				break;
+				// Let's check if level the same level as this subscription and if it's a recurring level.
+				if ( $level_check->id == $this->membership_level_id && ! empty( $level_check->billing_amount ) && ! empty( $level_check->cycle_number ) ) {
+					$subscription_level = $level_check;
+					break;
+				}
 			}
 		}
 
