@@ -1260,9 +1260,9 @@ class PMPro_Subscription {
 			}
 		}
 
-		// If the user hasn't had a recurring membership for this level,
-		// pull from the level settings instead.
-		if ( empty( $subscription_level ) ) {
+		// If the user hasn't had a recurring membership for this level, pull from the level settings instead.
+		// Only do this if the subscription is active since we can guess wrong and may not be able to sync with the gateway since this is an old subscription.
+		if ( empty( $subscription_level ) && 'active' === $this->status) {
 			$level = pmpro_getLevel( $this->membership_level_id );
 			if ( ! empty( $level ) && ! empty( $level->billing_amount ) && ! empty( $level->cycle_number ) ) {
 				$subscription_level = $level;
@@ -1303,11 +1303,20 @@ class PMPro_Subscription {
 		}
 
 
-		// Let's also take a guess at the next payment date.
-		$newest_orders = $this->get_orders( array( 'limit' => 1 ) );
+		// Let's also take a guess at the next payment date or end date.
+		$newest_orders = $this->get_orders(
+			[
+				'limit'   => 5,
+				'orderby' => '`timestamp` DESC, `id` DESC',
+			]
+		);
 		if ( ! empty( $newest_orders ) ) {
 			$newest_order = current( $newest_orders );
-			$this->next_payment_date = date_i18n( 'Y-m-d H:i:s', strtotime( '+ ' . $this->cycle_number . ' ' . $this->cycle_period, $newest_order->getTimestamp( true ) ) );
+			if ( 'active' === $this->status ) {
+				$this->next_payment_date = date_i18n( 'Y-m-d H:i:s', strtotime( '+ ' . $this->cycle_number . ' ' . $this->cycle_period, $newest_order->getTimestamp( true ) ) );
+			} else {
+				$this->enddate = date_i18n( 'Y-m-d H:i:s', $newest_order->getTimestamp( true ) );
+			}
 		}
 
 		// Now that we have the basic data filled in, the `update()` method will take care of the rest.
