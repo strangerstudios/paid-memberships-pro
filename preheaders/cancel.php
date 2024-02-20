@@ -121,7 +121,7 @@
 			}
 		}
         
-		if ( ! empty( $worked ) && empty( $pmpro_error ) ) {
+		if ( ! empty( $worked ) ) {
 			if ( count( $old_level_ids ) > 1 ) {
 				// If cancelling multiple levels, show a generic message.
 				$pmpro_msg = __( 'Your memberships have been cancelled.', 'paid-memberships-pro' );
