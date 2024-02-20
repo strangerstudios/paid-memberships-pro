@@ -1065,14 +1065,10 @@ function pmpro_cancelMembershipLevel( $level_id, $user_id = null, $status = 'ina
 	}
 
 	// Check if we should cancel the user's subscription.
-	$subscriptions_cancelled_successfully = true;
 	if ( apply_filters( 'pmpro_cancel_previous_subscriptions', true ) ) {
 		$active_subscriptions = PMPro_Subscription::get_subscriptions_for_user( $user_id, $level_id );
 		foreach ( $active_subscriptions as $subscription ) {
-			if ( ! $subscription->cancel_at_gateway() ) {
-				$pmpro_error = __( 'Error cancelling subscription at gateway.', 'paid-memberships-pro' );
-				$subscriptions_cancelled_successfully = false;
-			}
+			$subscription->cancel_at_gateway();
 		}
 	}
 
@@ -1091,7 +1087,7 @@ function pmpro_cancelMembershipLevel( $level_id, $user_id = null, $status = 'ina
 		do_action( 'pmpro_after_change_membership_level', 0, $user_id, $level_id );
 	}
 
-	return $subscriptions_cancelled_successfully;
+	return true;
 }
 
 /**
