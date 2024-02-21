@@ -121,7 +121,7 @@
 			}
 		}
         
-		if ( $worked != false && empty( $pmpro_error ) ) {
+		if ( ! empty( $worked ) ) {
 			if ( count( $old_level_ids ) > 1 ) {
 				// If cancelling multiple levels, show a generic message.
 				$pmpro_msg = __( 'Your memberships have been cancelled.', 'paid-memberships-pro' );
@@ -154,9 +154,10 @@
 			 */
 			do_action( 'pmpro_cancel_processed', $current_user );
 		} else {
-			global $pmpro_error;
-			$pmpro_msg = $pmpro_error;
-			$pmpro_msgt = "pmpro_error";
+			if ( ! empty( $pmpro_error ) ) {
+				pmpro_setMessage( $pmpro_error, 'pmpro_error' );
+			}
+			$_REQUEST['confirm'] = false; // Show the form again.
 		}
 	}
 
