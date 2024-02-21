@@ -525,7 +525,16 @@ class PMPro_Members_List_Table extends WP_List_Table {
 			}
 		} else {
 			// The preferred ways of doing things.
-			do_action( 'pmpro_manage_memberslist_custom_column', $column_name, $item['ID'] );
+			/**
+			 * Fill in columns that don't have a built-in method.
+			 *
+			 * @since TBD
+			 *
+			 * @param string $column_name The name of the column.
+			 * @param int    $user_id     The ID of the user.
+			 * @param array  $item        The membership data being shown.
+			 */
+			do_action( 'pmpro_manage_memberslist_custom_column', $column_name, $item['ID'], $item );
 		}
 	}
 
