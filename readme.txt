@@ -4,7 +4,7 @@ Tags: memberships, member, community, user profile, user registration, members, 
 Requires at least: 5.2
 Tested up to: 6.4.3
 Requires PHP: 5.6
-Stable tag: 2.99.993
+Stable tag: 2.99.994
 
 Build a membership site that grows with you: user registration, member profiles, 28 protected content types, free or paid subscriptions.
 
@@ -190,7 +190,7 @@ Not sure? You can find out by doing a bit a research.
 9. Advanced settings for updating non-member messages, optionally show excerpts or filter content, use reCAPTCHA, and a Terms of Service checkbox.
 
 == Changelog ==
-= 3.0 (Updated for v2.99.993 on 2024-01-14) =
+= 3.0 (Updated for v2.99.994 on 2024-02-21) =
 * FEATURE: Now tracking payment subscriptions using a new subscriptions table. (@dparker1005)
 * FEATURE: The Multiple Memberships Per User Add On has been merged into the core PMPro plugin. #2250 (@dparker1005)
 * FEATURE: The Stripe Billing Limits Add On  has been merged into the core PMPro plugin. All gateways now support billing limits. #2384 (@dparker1005)
@@ -208,6 +208,10 @@ Not sure? You can find out by doing a bit a research.
 * ENHANCEMENT: Now setting collate when creating database tables. #2566 (@dparker1005)
 * ENHANCEMENT: Adding a `$name` parameter to the `pmpro_user_taxonomy_args` filter. #2456 (@mircobabini)
 * ENHANCEMENT: Now sending payment descriptions to Stripe when users pay via Stripe Checkout. #2744 (@dparker1005)
+* ENHANCEMENT: Added the `pmpro_get_membership_expiration_text()` function to replace the various ways we were getting the expiration text for the Members List table and when showing levels on the account page. Includes a `pmpro_membership_expiration_text` filter that is meant to replace the `pmpro_memberslist_expires_column` and `pmpro_account_membership_expiration_text` filters. The old filters are still applied if in place, but will be deprecated eventually. #2838 (@ideadude, @dparker1005)
+* ENHANCEMENT: Now hiding on-PMPro notices on the PMPro dashboard pages. #2797 (@ideadude)
+* ENHANCEMENT: Added Screen Options for the orders and discount code list tables. #2799 (@dparker1005)
+* ENHANCEMENT: Now showing links and previews when viewing file fields as read only. #2792 (@ideadude)
 * BUG FIX/ENHANCEMENT: Now storing payment information in individual orders instead of in user meta. #2398 (@JarrydLong)
 * BUG FIX/ENHANCENENT: Now showing "Credit Card" instead of "Pay With Credit Card" on the Update Billing page when using the Stripe payment request button. #2684 (jahidhasan018)
 * BUG FIX/ENHANCEMENT: Now preventing multiple user field groups with the same name from being created. #2625 (@MaximilianoRicoTabo)
@@ -215,14 +219,24 @@ Not sure? You can find out by doing a bit a research.
 * BUG FIX/ENHANCEMENT: Defaulting tax on MemberOrders to a float for consistency and to avoid potential edge cases. #2656 (@mircobabini)
 * BUG FIX/ENHANCEMENT: Updated our "Lost Password"/"Reset Password" flow to track whether a password reset was initiated by Paid Memberships Pro. If not, some functions related to password reset will be disabled to avoid conflicting with other plugins. #2595 (@andrewlimaza)
 * BUG FIX/ENHANCEMENT: Now using pmpro_cancelMembershipLevel() when processing an expiration. #2762 (@dparker1005)
+* BUG FIX/ENHANCEMENT: Now caching the recent members and orders dashboard reports. #2850 (@dparker1005)
+* BUG FIX/ENHANCEMENT: Fixed caching of sales reports that were 0 values. #2851 (@dparker1005)
+* BUG FIX/ENHANCEMENT: Allowing dynamic properties in gateway and field classes to avoid PHP 8.2+ warnings. #2844 (@dparker1005)
+* BUG FIX/ENHANCEMENT: No longer attempting to load our blocks if the register_block_type function is unavailable. (ClassicPress compatibility.) #2840 (@MaximilianoRicoTabo)
+* BUG FIX/ENHANCEMENT: Adjusted the dashboard UI to hide some elements when the current user doesn't have the proper caps to use them. #2771 (@kimcoleman)
 * BUG FIX: Fixed an issue in the WordPress dashboard where the site locale would be loaded instead of the user locale. #2707 (@andrewlimaza)
 * BUG FIX: Fixed an issue where `admin_only` user fields would still show on the frontend profile if the current user was an administrator. #2432 (@dparker1005)
 * BUG FIX: Fixed an issue where the annual membership report would not show cancellations. #2630 (@MaximilianoRicoTabo)
 * BUG FIX: Fixed an incorrect class name in the profile edit fields. #2632 (@patric-boehner)
+* BUG FIX: Fixed issue where invalid dates were breaking SQL queries in the members export and sales reports. #2835 (@dparker1005)
+* BUG FIX: Fixed issue where clicking outside of a modal popup was not closing the popup. #2776 (@mircobabini)
 * REFACTOR: Updated how we enqueue blocks to follow most recent WordPress standards. #2647 (@briansantos10)
 * REFACTOR: Removed deprecated and unused code in the Stripe gateway integration code. #2428 (@dparker1005)
 * REFACTOR: Changing uses of `pmpro_getOption()` to `get_option()`. #2491, #2493, #2494, #2495 (@JarrydLong, @MaximilianoRicoTabo)
+* REFACTOR: The pmpro_edit_memberships capability has been replaced with the pmpro_edit_members capability. This cap is required to edit members in the dashboard or through the API.
 * DEPRECATED: No longer using `$pmpro_levels` global variable. #2666 (@dparker1005)
+* DEPRECATED: Marked the following hooks as deprecated: pmpro_admin_pagesetting_post_type_array (replaced by pmpro_admin_pagesetting_post_type), pmpro_stripe_subscription_deleted, pmpro_subscription_cancelled. #2819 (@dparker1005)
+* DEPRECATED: Removed the following functions which were previously marked deprecated: `pmpro_set_pause_mode()`, `pmpro_cron_trial_ending_warnings()`. #2818 (@dparker1005)
 
 = 2.12.10 - 2024-02-08 =
 * BUG FIX: Fixed fatal error on post save introduced in 2.12.9.
