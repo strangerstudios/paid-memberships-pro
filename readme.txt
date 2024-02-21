@@ -224,6 +224,7 @@ Not sure? You can find out by doing a bit a research.
 * BUG FIX/ENHANCEMENT: Allowing dynamic properties in gateway and field classes to avoid PHP 8.2+ warnings. #2844 (@dparker1005)
 * BUG FIX/ENHANCEMENT: No longer attempting to load our blocks if the register_block_type function is unavailable. (ClassicPress compatibility.) #2840 (@MaximilianoRicoTabo)
 * BUG FIX/ENHANCEMENT: Adjusted the dashboard UI to hide some elements when the current user doesn't have the proper caps to use them. #2771 (@kimcoleman)
+* BUG FIX/ENHANCEMENT: No longer making the AJAX call to check for notifications if notifications are turned off. #2856 (@mircobabini)
 * BUG FIX: Fixed an issue in the WordPress dashboard where the site locale would be loaded instead of the user locale. #2707 (@andrewlimaza)
 * BUG FIX: Fixed an issue where `admin_only` user fields would still show on the frontend profile if the current user was an administrator. #2432 (@dparker1005)
 * BUG FIX: Fixed an issue where the annual membership report would not show cancellations. #2630 (@MaximilianoRicoTabo)
