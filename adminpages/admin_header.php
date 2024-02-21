@@ -165,24 +165,27 @@
 	<?php } ?>
 
 <div class="wrap pmpro_admin <?php echo 'pmpro_admin-' . esc_attr( $view ); ?>">
-	<div id="pmpro_notifications">
-	</div>
-	<?php
-		// To debug a specific notification.
-		if ( !empty( $_REQUEST['pmpro_notification'] ) ) {
-			$specific_notification = '&pmpro_notification=' . intval( $_REQUEST['pmpro_notification'] );
-		} else {	
-			$specific_notification = '';
-		}
-	?>
-	<script>
-		jQuery(document).ready(function() {
-			jQuery.get('<?php echo admin_url( "admin-ajax.php?action=pmpro_notifications" . $specific_notification ); ?>', function(data) {
-				if(data && data != 'NULL')
-					jQuery('#pmpro_notifications').html(data);
-			});
-		});
-	</script>
+    <?php if( pmpro_get_max_notification_priority() > 0 ) : ?>
+        <div id="pmpro_notifications">
+        </div>
+        <?php
+            // To debug a specific notification.
+            if ( !empty( $_REQUEST['pmpro_notification'] ) ) {
+                $specific_notification = '&pmpro_notification=' . intval( $_REQUEST['pmpro_notification'] );
+            } else {
+                $specific_notification = '';
+            }
+        ?>
+        <script>
+            jQuery(document).ready(function() {
+                jQuery.get('<?php echo admin_url( "admin-ajax.php?action=pmpro_notifications" . $specific_notification ); ?>', function(data) {
+                    if(data && data != 'NULL')
+                        jQuery('#pmpro_notifications').html(data);
+                });
+            });
+        </script>
+    <?php endif; ?>
+
 	<?php
 		$settings_tabs = array(
 			'pmpro-dashboard',
