@@ -2172,7 +2172,7 @@ class PMProGateway_stripe extends PMProGateway {
 			$update_array = array(
 				'startdate' => date( 'Y-m-d H:i:s', intval( $stripe_subscription->created ) ),
 			);
-			if ( in_array( $stripe_subscription->status, array( 'trialing', 'active' ) ) ) {
+			if ( in_array( $stripe_subscription->status, array( 'trialing', 'active', 'past_due' ) ) ) {
 				// Subscription is active.
 				$update_array['status'] = 'active';
 				$update_array['next_payment_date'] = date( 'Y-m-d H:i:s', intval( $stripe_subscription->current_period_end ) );
