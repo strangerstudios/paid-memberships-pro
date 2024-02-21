@@ -323,7 +323,7 @@ add_filter( 'admin_footer_text', 'pmpro_admin_footer_text' );
 
 /**
  * Hide non-PMPro notices from PMPro dashboard pages.
- * @since TBD
+ * @since 3.0
  */
 function pmpro_hide_non_pmpro_notices() {
     global $wp_filter;

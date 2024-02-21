@@ -428,7 +428,7 @@ function pmpro_dashboard_news_updates_callback() {
 /**
  * Delete transients when orders are updated.
  *
- * @since TBD
+ * @since 3.0
  */
 function pmpro_report_dashboard_delete_transients() {
 	delete_transient( 'pmpro_dashboard_report_recent_members' );

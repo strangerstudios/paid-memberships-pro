@@ -58,7 +58,7 @@ $user_levels = pmpro_getMembershipLevelsForUser( $current_user->ID );
 					/**
 					 * Hook to add additional content to the cancel page.
 					 *
-					 * @since TBD
+					 * @since 3.0
 					 *
 					 * @param WP_User $user The user cancelling their membership.
 					 * @param array|string   $old_level_ids The level IDs being cancelled or 'all'.

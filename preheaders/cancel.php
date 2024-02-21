@@ -62,7 +62,7 @@
 		/**
 		 * Check whether a cancellation should be able to process.
 		 *
-		 * @since TBD
+		 * @since 3.0
 		 *
 		 * @param bool $process_cancellation Whether the cancellation should be processed.
 		 * @param WP_User $user The user cancelling their membership.
@@ -148,7 +148,7 @@
 			/**
 			 * Fires after a membership level is cancelled.
 			 *
-			 * @since TBD
+			 * @since 3.0
 			 *
 			 * @param WP_User $user The user who cancelled their membership.
 			 */
