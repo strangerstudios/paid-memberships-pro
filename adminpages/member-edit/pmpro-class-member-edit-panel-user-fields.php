@@ -20,6 +20,12 @@ class PMPro_Member_Edit_Panel_User_Fields extends PMPro_Member_Edit_Panel {
 			echo wp_kses_post( $field_group->description );
 		}
 
+		// Check if this is a checkout field location and show a message about custom code.
+		$checkout_field_locations = pmpro_get_checkout_field_location_names();
+		if ( array_key_exists( $this->title, $checkout_field_locations ) ) {
+			esc_html_e( 'These user fields were added via custom code to hook into a location on the membership checkout page.', 'paid-memberships-pro' );
+		}
+
 		// Print the fields.
 		$profile_user_fields = pmpro_get_user_fields_for_profile( self::get_user()->ID, true );
 		?>

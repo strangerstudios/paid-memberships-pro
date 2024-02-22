@@ -23,6 +23,24 @@ function pmpro_is_field( $var ) {
 }
 
 /**
+ * Get checkout page field location nice names.
+ *
+ * @since TBD
+ * @return array
+ */
+function pmpro_get_checkout_field_location_names() {
+	return array(
+		'after_username' => __( 'Checkout: After Username', 'paid-memberships-pro' ),
+		'after_password' => __( 'Checkout: After Password', 'paid-memberships-pro' ),
+		'after_email' => __( 'Checkout: After Email', 'paid-memberships-pro' ),
+		'after_captcha' => __( 'Checkout: After Captcha', 'paid-memberships-pro' ),
+		'checkout_boxes' => __( 'Checkout Boxes', 'paid-memberships-pro' ),
+		'after_billing_fields' => __( 'Checkout: After Billing Fields', 'paid-memberships-pro' ),
+		'before_submit_button' => __( 'Checkout: Before Submit Button', 'paid-memberships-pro' ),
+	);
+}
+
+/**
  * Add a field to the PMProRH regisration fields global
  *
  *	$where refers to various hooks in the PMPro checkout page and can be:
