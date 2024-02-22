@@ -965,7 +965,7 @@ function pmpro_membership_history_profile_fields( $user ) {
 		<script>
 			//tabs
 			jQuery(document).ready(function() {
-				jQuery('#member-history-filters a.tab').click(function() {
+				jQuery('#member-history-filters a.tab').on('click',function() {
 					//which tab?
 					var tab = jQuery(this).parent().attr('id').replace('member-history-filters-', '');
 					

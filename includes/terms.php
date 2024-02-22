@@ -28,10 +28,10 @@ function pmpro_term_add_form_fields() {
 		<?php if ( count( $membership_levels ) > 1 ) { ?>
 			<p><?php esc_html_e( 'Select:', 'paid-memberships-pro' ); ?> <a id="pmpro-memberships-checklist-select-all" href="javascript:void(0);"><?php esc_html_e( 'All', 'paid-memberships-pro' ); ?></a> | <a id="pmpro-memberships-checklist-select-none" href="javascript:void(0);"><?php esc_html_e( 'None', 'paid-memberships-pro' ); ?></a></p>
 			<script type="text/javascript">
-				jQuery('#pmpro-memberships-checklist-select-all').click(function(){
+				jQuery('#pmpro-memberships-checklist-select-all').on('click',function(){
 					jQuery('#pmpro-memberships-checklist input').prop('checked', true);
 				});
-				jQuery('#pmpro-memberships-checklist-select-none').click(function(){
+				jQuery('#pmpro-memberships-checklist-select-none').on('click',function(){
 					jQuery('#pmpro-memberships-checklist input').prop('checked', false);
 				});
 			</script>
@@ -87,10 +87,10 @@ function pmpro_term_edit_form_fields( $term ) {
 			<?php if ( count( $membership_levels ) > 1 ) { ?>
 				<p><?php esc_html_e( 'Select:', 'paid-memberships-pro' ); ?> <a id="pmpro-memberships-checklist-select-all" href="javascript:void(0);"><?php esc_html_e( 'All', 'paid-memberships-pro' ); ?></a> | <a id="pmpro-memberships-checklist-select-none" href="javascript:void(0);"><?php esc_html_e( 'None', 'paid-memberships-pro' ); ?></a></p>
 				<script type="text/javascript">
-					jQuery('#pmpro-memberships-checklist-select-all').click(function(){
+					jQuery('#pmpro-memberships-checklist-select-all').on('click',function(){
 						jQuery('#pmpro-memberships-checklist input').prop('checked', true);
 					});
-					jQuery('#pmpro-memberships-checklist-select-none').click(function(){
+					jQuery('#pmpro-memberships-checklist-select-none').on('click',function(){
 						jQuery('#pmpro-memberships-checklist input').prop('checked', false);
 					});
 				</script>

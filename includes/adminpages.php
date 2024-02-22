@@ -459,7 +459,7 @@ function pmpro_admin_membership_access_menu_bar() {
 	?>
 	<form method="POST" id="pmpro-admin-membership-access-form" action="">
 		<p><?php esc_html_e( 'Preview your membership site by changing the selected view below.', 'paid-memberships-pro' ); ?></p>
-		<select name="pmpro-admin-membership-access" id="pmpro-admin-membership-access" onchange="this.form.submit()">
+		<select name="pmpro-admin-membership-access" id="pmpro-admin-membership-access" onchange="this.form.trigger('submit')">
 			<option value="yes" <?php selected( $admin_membership_access, 'yes', true ); ?>><?php esc_html_e( 'View with membership access', 'paid-memberships-pro' ); ?></option>
 			<option value="current" <?php selected( $admin_membership_access, 'current', true ); ?>><?php esc_html_e( 'View with current membership levels', 'paid-memberships-pro' ); ?></option>
 			<option value="no" <?php selected( $admin_membership_access, 'no', true ); ?>><?php esc_html_e( 'View without membership access', 'paid-memberships-pro' ); ?></option>

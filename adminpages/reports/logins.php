@@ -168,7 +168,7 @@ function pmpro_report_login_page()
 		<h3><?php esc_html_e( 'Customize Report', 'paid-memberships-pro'); ?></h3>
 		<div class="tablenav top">
 			<label for="l"><?php echo esc_html_x( 'Show', 'Dropdown label, e.g. Show All Users', 'paid-memberships-pro' ); ?></label>
-			<select id="l" name="l" onchange="jQuery('#posts-filter').submit();" aria-label="<?php esc_attr_e( 'Select a membership level to customize this report', 'paid-memberships-pro' ); ?>">
+			<select id="l" name="l" onchange="jQuery('#posts-filter').trigger('submit');" aria-label="<?php esc_attr_e( 'Select a membership level to customize this report', 'paid-memberships-pro' ); ?>">
 				<option value="" <?php if(!$l) { ?>selected="selected"<?php } ?>><?php esc_html_e('All Users', 'paid-memberships-pro')?></option>
 				<option value="all" <?php if($l == "all") { ?>selected="selected"<?php } ?>><?php esc_html_e('All Levels', 'paid-memberships-pro')?></option>
 				<?php

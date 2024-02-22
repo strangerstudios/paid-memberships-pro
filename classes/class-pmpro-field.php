@@ -920,7 +920,7 @@ class PMPro_Field {
 				jQuery(document).ready(function() {
 					jQuery("#' . esc_attr( $this->id ) . '").closest("form").attr("enctype", "multipart/form-data");
 
-					jQuery("#pmprorh_delete_file_' . esc_attr( $this->name ) . '_button").click(function(){
+					jQuery("#pmprorh_delete_file_' . esc_attr( $this->name ) . '_button").on("click",function(){
 						jQuery("#pmprorh_delete_file_' . esc_attr( $this->name ) . '_field").val("' . esc_attr( basename($value) ) . '");
 						jQuery(".pmprorh_file_' . esc_attr( $this->name ) . '_name").css("text-decoration", "line-through");
 						jQuery("#pmprorh_cancel_change_file_' . esc_attr( $this->name ) . '_button").show();
@@ -929,7 +929,7 @@ class PMPro_Field {
 						jQuery("#pmprorh_file_' . esc_attr( $this->id ) . '_upload").hide();
 					});
 
-					jQuery("#pmprorh_replace_file_' . esc_attr( $this->name ) . '_button").click(function(){
+					jQuery("#pmprorh_replace_file_' . esc_attr( $this->name ) . '_button").on("click",function(){
 						jQuery("#pmprorh_delete_file_' . esc_attr( $this->name ) . '_field").val("' . esc_attr( basename($value) ) . '");
 						jQuery(".pmprorh_file_' . esc_attr( $this->name ) . '_name").css("text-decoration", "line-through");
 						jQuery("#pmprorh_cancel_change_file_' . esc_attr( $this->name ) . '_button").show();
@@ -938,7 +938,7 @@ class PMPro_Field {
 						jQuery("#pmprorh_file_' . esc_attr( $this->id ) . '_upload").show();
 					});
 
-					jQuery("#pmprorh_cancel_change_file_' . esc_attr( $this->name ) . '_button").click(function(){
+					jQuery("#pmprorh_cancel_change_file_' . esc_attr( $this->name ) . '_button").on("click",function(){
 						jQuery("#pmprorh_delete_file_' . esc_attr( $this->name ) . '_field").val(0);
 						jQuery(".pmprorh_file_' . esc_attr( $this->name ) . '_name").css("text-decoration", "none");
 						jQuery("#pmprorh_delete_file_' . esc_attr( $this->name ) . '_button").show();
