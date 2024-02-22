@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2024-02-21T13:27:09+00:00\n"
+"POT-Creation-Date: 2024-02-22T13:42:39+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.10.0\n"
 "X-Domain: paid-memberships-pro\n"
@@ -226,6 +226,7 @@ msgstr "Üyelik Seviyeleri"
 #: adminpages/admin_header.php:279
 #: adminpages/admin_header.php:278
 #: adminpages/admin_header.php:256
+#: adminpages/admin_header.php:259
 msgid "Pages"
 msgstr "Sayfalar"
 
@@ -238,6 +239,7 @@ msgstr "Sayfalar"
 #: adminpages/admin_header.php:283
 #: adminpages/admin_header.php:282
 #: adminpages/admin_header.php:260
+#: adminpages/admin_header.php:263
 msgid "Payment Gateway &amp; SSL"
 msgstr "Ödeme Kanalı &amp; SSL"
 
@@ -312,6 +314,7 @@ msgstr "Email"
 #: adminpages/wizard/wizard.php:75
 #: adminpages/admin_header.php:276
 #: adminpages/functions.php:458
+#: adminpages/admin_header.php:279
 msgid "Advanced"
 msgstr "Gelişmiş"
 
@@ -342,6 +345,7 @@ msgstr "Gelişmiş"
 #: adminpages/admin_header.php:230
 #: includes/adminpages.php:248
 #: includes/adminpages.php:250
+#: adminpages/admin_header.php:233
 msgid "Add Ons"
 msgstr "Eklentiler"
 
@@ -1816,6 +1820,7 @@ msgstr "Bitiş"
 #: classes/class-pmpro-discount-code-list-table.php:88
 #: adminpages/admin_header.php:248
 #: classes/class-pmpro-discount-code-list-table.php:140
+#: adminpages/admin_header.php:251
 msgid "Levels"
 msgstr "Seviyeler"
 
@@ -1891,6 +1896,7 @@ msgstr "sil"
 #: includes/adminpages.php:76
 #: adminpages/admin_header.php:286
 #: adminpages/admin_header.php:264
+#: adminpages/admin_header.php:267
 msgid "Email Settings"
 msgstr "Email Ayarları"
 
@@ -2742,6 +2748,7 @@ msgstr "CSV olarak aktar"
 #: blocks/src/component-content-visibility/content-visibility-controls.js:90
 #: classes/class-pmpro-members-list-table.php:780
 #: classes/class-pmpro-orders-list-table.php:547
+#: classes/class-pmpro-members-list-table.php:789
 msgid "Show"
 msgstr "Göster"
 
@@ -2795,6 +2802,7 @@ msgstr "Göster"
 #: adminpages/reports/memberships.php:397
 #: adminpages/reports/sales.php:629
 #: classes/class-pmpro-members-list-table.php:782
+#: classes/class-pmpro-members-list-table.php:791
 msgid "All Levels"
 msgstr "Tüm Seviyeler"
 
@@ -2809,6 +2817,7 @@ msgstr "Tüm Seviyeler"
 #: classes/class-pmpro-members-list-table.php:676
 #: classes/class-pmpro-members-list-table.php:306
 #: classes/class-pmpro-members-list-table.php:794
+#: classes/class-pmpro-members-list-table.php:803
 msgid "Old Members"
 msgstr "Eski Üyeler"
 
@@ -4092,6 +4101,7 @@ msgstr "Vazgeç"
 #: adminpages/subscriptions.php:272
 #: classes/class-pmpro-discount-code-list-table.php:450
 #: includes/adminpages.php:214
+#: adminpages/admin_header.php:221
 msgid "Orders"
 msgstr "Siparişler"
 
@@ -6783,6 +6793,7 @@ msgstr "Ödeme Seçenekleri"
 #: includes/adminpages.php:224
 #: adminpages/reports.php:46
 #: includes/adminpages.php:226
+#: adminpages/admin_header.php:225
 msgid "Reports"
 msgstr "Raporlar"
 
@@ -6806,6 +6817,7 @@ msgstr "Raporlar"
 #: adminpages/discountcodes.php:728
 #: adminpages/admin_header.php:252
 #: adminpages/discountcodes.php:730
+#: adminpages/admin_header.php:255
 msgid "Discount Codes"
 msgstr "İndirim Kodu"
 
@@ -9999,6 +10011,7 @@ msgstr ""
 #: adminpages/admin_header.php:210
 #: includes/adminpages.php:188
 #: includes/adminpages.php:190
+#: adminpages/admin_header.php:213
 msgid "Dashboard"
 msgstr ""
 
@@ -10025,6 +10038,7 @@ msgstr ""
 #: includes/adminpages.php:200
 #: adminpages/reports/logins.php:114
 #: includes/adminpages.php:202
+#: adminpages/admin_header.php:217
 msgid "Members"
 msgstr ""
 
@@ -10046,6 +10060,7 @@ msgstr ""
 #: adminpages/admin_header.php:226
 #: includes/adminpages.php:236
 #: includes/adminpages.php:238
+#: adminpages/admin_header.php:229
 msgid "Settings"
 msgstr ""
 
@@ -10060,6 +10075,7 @@ msgstr ""
 #: includes/adminpages.php:70
 #: adminpages/admin_header.php:259
 #: adminpages/admin_header.php:234
+#: adminpages/admin_header.php:237
 msgid "License"
 msgstr ""
 
@@ -10085,6 +10101,7 @@ msgstr ""
 #: includes/adminpages.php:77
 #: adminpages/admin_header.php:290
 #: adminpages/admin_header.php:268
+#: adminpages/admin_header.php:271
 msgid "Email Templates"
 msgstr ""
 
@@ -11976,6 +11993,7 @@ msgstr ""
 #: classes/class-pmpro-members-list-table.php:570
 #: classes/class-pmpro-subscription.php:706
 #: classes/class-pmpro-subscription.php:1207
+#: classes/class-pmpro-members-list-table.php:579
 msgid "Edit User"
 msgstr ""
 
@@ -12343,6 +12361,7 @@ msgstr ""
 #: classes/class-pmpro-members-list-table.php:674
 #: classes/class-pmpro-members-list-table.php:304
 #: classes/class-pmpro-members-list-table.php:792
+#: classes/class-pmpro-members-list-table.php:801
 msgid "Cancelled Members"
 msgstr ""
 
@@ -12356,6 +12375,7 @@ msgstr ""
 #: classes/class-pmpro-members-list-table.php:675
 #: classes/class-pmpro-members-list-table.php:305
 #: classes/class-pmpro-members-list-table.php:793
+#: classes/class-pmpro-members-list-table.php:802
 msgid "Expired Members"
 msgstr ""
 
@@ -21610,6 +21630,7 @@ msgstr ""
 #: includes/adminpages.php:78
 #: adminpages/admin_header.php:294
 #: adminpages/admin_header.php:272
+#: adminpages/admin_header.php:275
 msgid "User Fields"
 msgstr ""
 
@@ -22794,6 +22815,7 @@ msgstr ""
 #: adminpages/admin_header.php:263
 #: adminpages/admin_header.php:238
 #: includes/adminpages.php:97
+#: adminpages/admin_header.php:241
 msgid "Setup Wizard"
 msgstr ""
 
@@ -24385,10 +24407,12 @@ msgid "Invalid file submission."
 msgstr ""
 
 #: adminpages/admin_header.php:207
+#: adminpages/admin_header.php:210
 msgid "Memberships Area Menu"
 msgstr ""
 
 #: adminpages/admin_header.php:245
+#: adminpages/admin_header.php:248
 msgid "Membership Settings Menu"
 msgstr ""
 
@@ -24503,6 +24527,7 @@ msgstr ""
 #: adminpages/member-edit/pmpro-class-member-edit-panel-memberships.php:152
 #: classes/class-pmpro-members-list-table.php:680
 #: includes/profile.php:88
+#: classes/class-pmpro-members-list-table.php:689
 msgid "This user has %1$d active subscription for this level. %2$s"
 msgid_plural "This user has %1$d active subscriptions for this level. %2$s"
 msgstr[0] ""
@@ -24514,6 +24539,7 @@ msgstr[1] ""
 #: adminpages/member-edit/pmpro-class-member-edit-panel-memberships.php:162
 #: classes/class-pmpro-members-list-table.php:690
 #: includes/profile.php:98
+#: classes/class-pmpro-members-list-table.php:699
 msgid "View Subscriptions"
 msgstr ""
 
@@ -24525,6 +24551,7 @@ msgstr ""
 #: adminpages/member-edit/pmpro-class-member-edit-panel-memberships.php:175
 #: adminpages/member-edit/pmpro-class-member-edit-panel-subscriptions.php:168
 #: classes/class-pmpro-members-list-table.php:703
+#: classes/class-pmpro-members-list-table.php:712
 msgid "View Details"
 msgstr ""
 
@@ -25151,6 +25178,7 @@ msgstr ""
 #: classes/class-pmpro-members-list-table.php:565
 #: includes/adminpages.php:298
 #: includes/adminpages.php:705
+#: classes/class-pmpro-members-list-table.php:574
 msgid "Edit Member"
 msgstr ""
 
