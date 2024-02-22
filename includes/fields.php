@@ -37,6 +37,7 @@ function pmpro_get_checkout_field_location_names() {
 		'checkout_boxes' => __( 'Checkout Boxes', 'paid-memberships-pro' ),
 		'after_billing_fields' => __( 'Checkout: After Billing Fields', 'paid-memberships-pro' ),
 		'before_submit_button' => __( 'Checkout: Before Submit Button', 'paid-memberships-pro' ),
+		'just_profile' => __( 'User Profile Only', 'paid-memberships-pro' ),
 	);
 }
 
