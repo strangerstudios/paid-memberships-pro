@@ -688,28 +688,8 @@ class PMPro_Subscription {
 			$error_message = __( 'Could not find gateway class.', 'paid-memberships-pro' );
 		}
 
-		// Send an email if there was an error.
+		// Save error in subscription meta with date to reference later.
 		if ( ! empty( $error_message )  ) {
-			// We want to skip the email if we're running the PMPro v3.0 upgrade script to avoid spamming the admin.
-			if ( ! defined( 'PMPRO_UPGRADE_3_0_AJAX' ) ){
-				$pmproemail                = new PMProEmail();
-				$pmproemail->template      = 'subscription_sync_failed';
-				$pmproemail->subject       = __( 'Error Synchronizing Subscription', 'paid-memberships-pro' );
-				$pmproemail->data          = array( 'body' => '<p>' . esc_html__( 'There was an error synchronizing a subscription with your payment gateway.', 'paid-memberships-pro' ) . '</p>' . "\n" );
-				$pmproemail->data['body'] .= '<p>' . esc_html__( 'Error', 'paid-memberships-pro' ) . ': ' . esc_html( $error_message ) . '</p>' . "\n";
-				$pmproemail->data['body'] .= '<p>' . esc_html__( 'Subscription ID', 'paid-memberships-pro' ) . ': ' . $this->id . '</p>' . "\n";
-				$pmproemail->data['body'] .= '<p>' . esc_html__( 'Gateway', 'paid-memberships-pro' ) . ': ' . $this->gateway . '</p>' . "\n";
-				$pmproemail->data['body'] .= '<p>' . esc_html__( 'Subscription Transaction ID', 'paid-memberships-pro' ) . ': ' . $this->subscription_transaction_id . '</p>' . "\n";
-				$pmproemail->data['body'] .= '<p>' . esc_html__( 'User ID', 'paid-memberships-pro' ) . ': ' . $this->user_id . '</p>' . "\n";
-				$pmproemail->data['body'] .= '<p>' . esc_html__( 'Membership Level ID', 'paid-memberships-pro' ) . ': ' . $this->membership_level_id . '</p>' . "\n";
-				$pmproemail->data['body'] .= '<hr />' . "\n";
-				$pmproemail->data['body'] .= '<p>' . esc_html__( 'Edit User', 'paid-memberships-pro' ) . ': ' . esc_url( add_query_arg( 'user_id', $this->user_id, self_admin_url( 'user-edit.php' ) ) ) . '</p>';
-				$pmproemail->sendEmail( get_bloginfo( 'admin_email' ) );
-
-				pmpro_setMessage( __( 'There was an error synchronizing a subscription with your payment gateway: ', 'paid-memberships-pro' ) . esc_html( $error_message ), 'pmpro_error' );
-			}
-
-			// Save error in subscription meta with date to reference later.
 			update_pmpro_subscription_meta( $this->id, 'sync_error', $error_message );
 			update_pmpro_subscription_meta( $this->id, 'sync_error_timestamp', current_time( 'timestamp' ) );
 		} else {
