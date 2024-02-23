@@ -2159,7 +2159,12 @@ class PMProGateway_stripe extends PMProGateway {
 	 */
 	public function update_subscription_info( $subscription ) {
 		try {
-			$stripe_subscription = Stripe_Subscription::retrieve( $subscription->get_subscription_transaction_id() );
+			$stripe_subscription = Stripe_Subscription::retrieve(
+				array(
+					'id' => $subscription->get_subscription_transaction_id(),
+					'expand' => array( 'latest_invoice' ),
+				)
+			);
 		} catch ( \Throwable $e ) {
 			// Assume no subscription found.
 			return $e->getMessage();
@@ -2175,7 +2180,15 @@ class PMProGateway_stripe extends PMProGateway {
 			if ( in_array( $stripe_subscription->status, array( 'trialing', 'active', 'past_due' ) ) ) {
 				// Subscription is active.
 				$update_array['status'] = 'active';
-				$update_array['next_payment_date'] = date( 'Y-m-d H:i:s', intval( $stripe_subscription->current_period_end ) );
+
+				// Get the next payment date. If the last invoice is not paid, that invoice date is the next payment date. Otherwise, the next payment date is the current_period_end.
+				if ( ! empty( $stripe_subscription->latest_invoice ) && empty( $stripe_subscription->latest_invoice->paid ) ) {
+					$update_array['next_payment_date'] = date( 'Y-m-d H:i:s', intval( $stripe_subscription->latest_invoice->period_end ) );
+				} else {
+					$update_array['next_payment_date'] = date( 'Y-m-d H:i:s', intval( $stripe_subscription->current_period_end ) );
+				}
+
+				// Get the billing amount and cycle.
 				if ( ! empty( $stripe_subscription->items->data[0]->price ) ) {
 					$stripe_subscription_price = $stripe_subscription->items->data[0]->price;
 					$update_array['billing_amount'] = $this->convert_unit_amount_to_price( $stripe_subscription_price->unit_amount );
