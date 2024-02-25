@@ -1305,7 +1305,7 @@ class PMProGateway_stripe extends PMProGateway {
 			<span class="pmpro-popup-helper"></span>
 			<div class="pmpro-popup-wrap pmpro-popup-stripe-confirmation">
 				<div id="pmpro-popup-inner">
-				<button class="pmproPopupCloseButton" title="<?php esc_attr_e( 'Close Popup', 'paid-memberships-pro' ); ?>"><span class="dashicons dashicons-no"></span></button>
+					<button class="pmproPopupCloseButton" title="<?php esc_attr_e( 'Close Popup', 'paid-memberships-pro' ); ?>"><span class="dashicons dashicons-no"></span></button>
 					<h2 id="pmpro-popup-stripe-confirmation-label">
 						<?php esc_html_e( 'Next Step: Register a Stripe Webhook.', 'paid-memberships-pro' ); ?>
 					</h2>
@@ -1343,13 +1343,21 @@ class PMProGateway_stripe extends PMProGateway {
 					<p>
 						<?php echo esc_html_e( 'You must complete these steps for both the Sandbox/Testing and Live/Production modes if you intend to use Stripe for testing.', 'paid-memberships-pro' ); ?>
 					</p>
+
+					<button class="button button-primary pmpro-stripe-close-modal"><?php echo esc_html_e('Finish process and close modal', 'paid-memberships-pro' ); ?></button>
 				</div>
 			</div>
+
 		</div>
 		<script>
 			jQuery(document).ready(function ($) {
 				// If we added the successfully connected modal then show it.
 				$('.pmpro-stripe-success-connected-modal').show();
+			});
+
+			jQuery(document).on('click', '.pmpro-stripe-close-modal', function (e) {
+				e.preventDefault();
+				jQuery('.pmpro-popup-overlay').hide();
 			});
 		</script>
 		<?php
