@@ -1308,3 +1308,18 @@ function pmpro_change_password_form() {
 	</div> <!-- end pmpro_change_password_wrap -->
 	<?php
 }
+
+/**
+ * Add a link to the Edit Member page in PMPro inline with the Edit User screen's page title.
+ */
+function pmpro_add_edit_member_link_on_profile( $user ) {
+	?>
+	<script>
+		jQuery(document).ready(function() {
+			jQuery('h1.wp-heading-inline').append(' <a class="page-title-action" href="<?php echo esc_url( add_query_arg( array( 'page' => 'pmpro-member', 'user_id' => (int) $user->ID, 'pmpro_member_edit_panel' => 'memberships' ), admin_url( 'admin.php' ) ) ); ?>" target="_blank"><?php echo esc_html__( 'Edit Member', 'paid-memberships-pro' ); ?></a>');
+		});
+	</script>
+	<?php
+}
+add_action( 'show_user_profile', 'pmpro_add_edit_member_link_on_profile' );
+add_action( 'edit_user_profile', 'pmpro_add_edit_member_link_on_profile' );
