@@ -137,10 +137,21 @@ jQuery(document).ready(function(){
 		jQuery('#pmpro_processing_message').css('visibility', 'visible');
 	});	
 
-	//add required to required fields
-	if ( ! jQuery( '.pmpro_required' ).next().hasClass( "pmpro_asterisk" ) ) {
-		jQuery( '.pmpro_required' ).closest( '.pmpro_checkout-field' ).append( '<span class="pmpro_asterisk"> <abbr title="Required Field">*</abbr></span>' );
-	}
+	jQuery('.pmpro_checkout-field').each(function() {
+		// Check if this checkout field is marked as required (either by class or by containing a .pmpro_required element)
+		var isRequired = jQuery(this).hasClass('pmpro_checkout-field-required') || jQuery(this).find('.pmpro_required').length > 0;
+
+		if (isRequired) {
+			// Find the last input/select element within the .pmpro_checkout-field or .pmpro_display-field (if present)
+			var $lastInput = jQuery(this).find('.pmpro_display-field').length ? jQuery(this).find('.pmpro_display-field:last').find('input, select').last() : jQuery(this).find('input, select').last();
+
+			// Check if there's already an asterisk after the last input/select
+			if (!$lastInput.nextAll('.pmpro_asterisk').length) {
+				// If not, append the asterisk span after the last input/select
+				$lastInput.after('<span class="pmpro_asterisk"> <abbr title="Required Field">*</abbr></span>');
+			}
+		}
+	});
 
 	//Loop through all radio type fields and move the asterisk.
 	jQuery('.pmpro_checkout-field-radio').each(function () {
