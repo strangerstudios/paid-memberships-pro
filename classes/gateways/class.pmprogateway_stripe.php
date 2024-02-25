@@ -1344,7 +1344,7 @@ class PMProGateway_stripe extends PMProGateway {
 						<?php echo esc_html_e( 'You must complete these steps for both the Sandbox/Testing and Live/Production modes if you intend to use Stripe for testing.', 'paid-memberships-pro' ); ?>
 					</p>
 
-					<button class="button button-primary pmpro-stripe-close-modal"><?php echo esc_html_e('Finish process and close modal', 'paid-memberships-pro' ); ?></button>
+					<button class="button button-primary button-hero pmproPopupCompleteButton"><?php echo esc_html_e('I Have Set Up My Webhooks', 'paid-memberships-pro' ); ?></button>
 				</div>
 			</div>
 
@@ -1353,11 +1353,6 @@ class PMProGateway_stripe extends PMProGateway {
 			jQuery(document).ready(function ($) {
 				// If we added the successfully connected modal then show it.
 				$('.pmpro-stripe-success-connected-modal').show();
-			});
-
-			jQuery(document).on('click', '.pmpro-stripe-close-modal', function (e) {
-				e.preventDefault();
-				jQuery('.pmpro-popup-overlay').hide();
 			});
 		</script>
 		<?php

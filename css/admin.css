@@ -642,12 +642,12 @@ body[class*="memberships_page_pmpro-"] {
 .pmpro-popup-wrap a.pmproPopupCloseButton, 
 .pmpro-popup-wrap button.pmproPopupCloseButton {
 	color: #666;
+	cursor: pointer;
+	padding:0;
 	position: absolute;
 	right: 10px;
-	top: 10px;
-	padding:0;
 	text-decoration: none;
-
+	top: 10px;
 }
 
 .pmpro-popup-wrap a.pmproPopupCloseButton:hover, 
