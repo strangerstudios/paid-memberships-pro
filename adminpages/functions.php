@@ -387,7 +387,7 @@ function pmpro_add_email_order_modal() {
 	// emailing?
 	if ( ! empty( $_REQUEST['pmpro_email_to'] ) && ! empty( $_REQUEST['pmpro_email_order'] ) ) {
 		// verify nonce
-		if ( ! wp_verify_nonce( $_REQUEST['pmpro_email_invoice_nonce'], 'pmpro_email_invoice' ) ) {
+		if ( ! wp_verify_nonce( sanitize_key( $_REQUEST['pmpro_email_invoice_nonce'] ), 'pmpro_email_invoice' ) ) {
 			wp_die( __( 'Security error.', 'paid-memberships-pro' ) );
 		}
 
