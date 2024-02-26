@@ -337,16 +337,24 @@ function pmpro_checkForUpgrades() {
 	}
 
 	/**
-	 * Version 3.0
+	 * Version 3.0 (db v3.0-3.009 for RC's)
 	 * Running `pmpro_db_delta` to add subscription and subscription meta tables.
 	 * Populate subscription and subscription meta tables based on this site's order data.
 	 * Updates all orders in `cancelled` status to `success` so that we can remove cancelled status.
 	 */
 	require_once( PMPRO_DIR . "/includes/updates/upgrade_3_0.php" );
-	if ( $pmpro_db_version < 3.0 ) {
+	if ( $pmpro_db_version < 3.001 ) {
+		// Run the dbDelta function to add new tables.
 		pmpro_db_delta();
-		$pmpro_db_version = pmpro_upgrade_3_0();
-		update_option( 'pmpro_db_version', '3.0' );
+
+		// Determine if the migration script has already ran ($pmpro_db_version >= 3.0).
+		$rerunning_migration = $pmpro_db_version >= 3.0;
+
+		// Run the migration script.
+		$pmpro_db_version = pmpro_upgrade_3_0( $rerunning_migration );
+
+		// If the migration script has already ran, we need to update the db version to the latest version.
+		update_option( 'pmpro_db_version', '3.001' );
 	}
 }
 
