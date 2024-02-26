@@ -651,7 +651,7 @@ class PMPro_Orders_List_Table extends WP_List_Table {
 			<script>
 				//update month/year when period dropdown is changed
 				jQuery(document).ready(function () {
-					jQuery('#filter').change(function () {
+					jQuery('#filter').on('change',function () {
 						pmpro_ShowMonthOrYear();
 					});
 				});

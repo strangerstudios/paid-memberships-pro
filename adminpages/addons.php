@@ -401,7 +401,7 @@
 				/**
 				 * Handles clicks on filter addons links.
 				 */
-				$('.filter-links li a' ).click( function(e) {
+				$('.filter-links li a' ).on('click', function(e) {
 					// don't want to jump to #
 					e.preventDefault();
 
@@ -438,7 +438,7 @@
 				});
 
 				// check if we should switch Add On content on page loads
-				$( 'a[data-toggle="view"][href="' + window.location.hash + '"]' ).click();
+				$( 'a[data-toggle="view"][href="' + window.location.hash + '"]' ).trigger('click');
 
 			});
 		</script>

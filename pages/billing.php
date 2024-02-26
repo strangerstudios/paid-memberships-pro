@@ -429,7 +429,7 @@
 			<script>
 				<!--
 				// Find ALL <form> tags on your page
-				jQuery('form').submit(function(){
+				jQuery('form').on('submit',function(){
 					// On submit disable its submit button
 					jQuery('input[type=submit]', this).attr('disabled', 'disabled');
 					jQuery('input[type=image]', this).attr('disabled', 'disabled');
