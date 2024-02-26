@@ -51,4 +51,14 @@ var pmpro_recaptcha_onloadCallback = function () {
         'sitekey': pmpro_recaptcha_v3.public_key,
         'callback': pmpro_recaptcha_onSubmit
     });
+
+    // Fallback if there still are buttons without the #pmpro_btn-submit ID.
+    submit_buttons.each(function () {
+        if (jQuery(this).attr('id') != 'pmpro_btn-submit') {
+            jQuery(this).click(function (event) {
+                event.preventDefault();
+                grecaptcha.execute();
+            });
+        }
+    });
 };
