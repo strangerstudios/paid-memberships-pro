@@ -419,7 +419,7 @@ function pmpro_lifter_save_streamline_option() {
 	}
 
 	// We are trying to set the streamline option. Check the nonce.
-	if ( ! isset( $_REQUEST['pmpro_lifter_streamline_nonce'] ) || ! wp_verify_nonce( $_REQUEST['pmpro_lifter_streamline_nonce'], 'pmpro_lifter_streamline_nonce' ) ) {
+	if ( ! isset( $_REQUEST['pmpro_lifter_streamline_nonce'] ) || ! wp_verify_nonce( sanitize_key( $_REQUEST['pmpro_lifter_streamline_nonce'] ), 'pmpro_lifter_streamline_nonce' ) ) {
 		wp_die( __( 'Security check failed.', 'paid-memberships-pro' ), '', array( 'response' => 403 ) );
 	}
 
