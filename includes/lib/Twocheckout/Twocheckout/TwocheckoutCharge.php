@@ -13,7 +13,7 @@ class Twocheckout_Charge extends Twocheckout
         }
         if ($type == 'auto') {
             echo '<input type="submit" value="' . esc_attr__( 'Click here if you are not redirected automatically.', 'paid-memberships-pro' ) . '" /></form>';
-            echo '<script type="text/javascript">document.getElementById("2checkout").trigger("submit");</script>';
+            echo '<script type="text/javascript">document.getElementById("2checkout").submit();</script>';
         } else {
             echo '<input type="submit" value="'.esc_attr($type).'" />';
             echo '</form>';
@@ -34,7 +34,7 @@ class Twocheckout_Charge extends Twocheckout
             echo '<script type="text/javascript">
                     function submitForm() {
                         document.getElementById("tco_lightbox").style.display = "block";
-                        document.getElementById("2checkout").trigger("submit");
+                        document.getElementById("2checkout").submit();
                     }
                     setTimeout("submitForm()", 2000);
                   </script>';
