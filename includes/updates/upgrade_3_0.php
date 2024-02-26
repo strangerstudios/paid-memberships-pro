@@ -60,7 +60,7 @@ function pmpro_upgrade_3_0( $rerunning_migration = false ) {
 function pmpro_upgrade_3_0_ajax() {
 	global $wpdb;
 
-	define ( 'PMPRO_UPGRADE_3_0_AJAX', true );
+	define( 'PMPRO_UPGRADE_3_0_AJAX', true );
 
 	// Migrated subscription data won't have a `cycle_number` or `billing_amount` set.
 	$subscription_search_param = array(
