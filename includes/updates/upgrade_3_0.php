@@ -35,7 +35,7 @@ function pmpro_upgrade_3_0( $rerunning_migration = false ) {
 		";
 	$wpdb->query( $sqlQuery );
 
-	// If we added any subscriptions or rerunning the migration script, create an update to fill out the data.
+	// If we added any subscriptions or are rerunning the migration script, create an update to fill out the data.
 	if ( $wpdb->rows_affected || $rerunning_migration ) {
 		pmpro_addUpdate( 'pmpro_upgrade_3_0_ajax' );
 	}
