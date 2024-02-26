@@ -1402,7 +1402,7 @@ class PMProGateway_stripe extends PMProGateway {
 		}
 
 		// Check the nonce.
-		if ( ! wp_verify_nonce( $_REQUEST['pmpro_stripe_connect_nonce'], 'pmpro_stripe_connect_nonce' ) ) {
+		if ( ! wp_verify_nonce( sanitize_key( $_REQUEST['pmpro_stripe_connect_nonce'] ), 'pmpro_stripe_connect_nonce' ) ) {
 			return false;
 		}
 
