@@ -21,10 +21,19 @@ class PMPro_Member_Edit_Panel_User_Fields extends PMPro_Member_Edit_Panel {
 		}
 
 		// Check if this is a checkout field location and show a message about custom code.
-		$checkout_field_locations = pmpro_get_checkout_field_location_names();
-		if ( array_key_exists( $this->title, $checkout_field_locations ) ) {
+		$checkout_field_locations = array(
+			'after_username',
+			'after_password',
+			'after_email',
+			'after_captcha',
+			'checkout_boxes',
+			'after_billing_fields',
+			'before_submit_button',
+			'just_profile'
+		);
+		if ( in_array( $this->title, $checkout_field_locations ) ) {
 			esc_html_e( 'These user fields were added via custom code to hook into the following location:', 'paid-memberships-pro' );
-			echo ' <code>' . esc_html( $checkout_field_locations[ $this->title ] ) . '</code>';
+			echo ' <code>' . esc_html( $this->title ) . '</code>';
 		}
 
 		// Print the fields.
