@@ -98,7 +98,7 @@
 		$headers[] = 'Content-Disposition: attachment; filename="members_list.csv"';
 
 	//set default CSV file headers, using comma as delimiter
-	$csv_file_header = "id,username,firstname,lastname,email,billing firstname,billing lastname,address1,address2,city,state,zipcode,country,phone,membership,discount_code_id,discount_code,subscription_transaction_id,billing_amount,cycle_number,cycle_period,next_payment_date,joined";
+	$csv_file_header = "id,username,firstname,lastname,email,membership,discount_code_id,discount_code,subscription_transaction_id,billing_amount,cycle_number,cycle_period,next_payment_date,joined";
 
 	if($l == "oldmembers")
 		$csv_file_header .= ",ended";
@@ -112,15 +112,6 @@
 		array("metavalues", "first_name"),
 		array("metavalues", "last_name"),
 		array("theuser", "user_email"),
-		array("metavalues", "pmpro_bfirstname"),
-		array("metavalues", "pmpro_blastname"),
-		array("metavalues", "pmpro_baddress1"),
-		array("metavalues", "pmpro_baddress2"),
-		array("metavalues", "pmpro_bcity"),
-		array("metavalues", "pmpro_bstate"),
-		array("metavalues", "pmpro_bzipcode"),
-		array("metavalues", "pmpro_bcountry"),
-		array("metavalues", "pmpro_bphone"),
 		array("theuser", "membership"),
 		array("discount_code", "id"),
 		array("discount_code", "code")
