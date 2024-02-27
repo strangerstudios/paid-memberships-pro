@@ -136,7 +136,6 @@ class PMPro_Members_List_Table extends WP_List_Table {
 			'last_name'     => __( 'Last Name', 'paid-memberships-pro' ),
 			'display_name'  => __( 'Display Name', 'paid-memberships-pro' ),
 			'user_email'    => __( 'Email', 'paid-memberships-pro' ),
-			'address'       => __( 'Billing Address', 'paid-memberships-pro' ),
 			'membership'    => __( 'Level', 'paid-memberships-pro' ),
 			'membership_id' => __( 'Level ID', 'paid-memberships-pro' ),
 			'subscription'  => __( 'Subscription', 'paid-memberships-pro' ),
@@ -203,7 +202,6 @@ class PMPro_Members_List_Table extends WP_List_Table {
 				'ID',
 				'first_name',
 				'last_name',
-				'address',
 				'membership_id',
 				'joindate',
 			);
@@ -635,17 +633,6 @@ class PMPro_Members_List_Table extends WP_List_Table {
 	 */
 	public function column_user_email( $item ) {
 		return $item['user_email'];
-	}
-
-	/**
-	 * Get value for Address column.
-	 *
-	 * @param object $item A row's data.
-	 * @return string Text to be placed inside the column <td>.
-	 */
-	public function column_address( $item ) {
-		$user_object = get_userdata( $item['ID'] );
-		return pmpro_formatAddress( trim( $user_object->pmpro_bfirstname . ' ' . $user_object->pmpro_blastname ), $user_object->pmpro_baddress1, $user_object->pmpro_baddress2, $user_object->pmpro_bcity, $user_object->pmpro_bstate, $user_object->pmpro_bzipcode, $user_object->pmpro_bcountry, $user_object->pmpro_bphone );
 	}
 
 	/**
