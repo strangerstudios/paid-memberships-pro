@@ -1210,6 +1210,25 @@ class PMPro_Subscription {
 			return;
 		}
 
+		/**
+		 * Filter to skip fixing default migration data for a subscription.
+		 *
+		 * Useful in cases such as CSV imports where we need to be performant when creating subscriptions.
+		 * In such a use-case, the following steps should be taken:
+		 * 1. Use this hook to disable updating default migration data.
+		 * 2. Directly add the subscription data to the database with "default migration data".
+		 * 3. Create any orders for the subscription (this should only be done after the subscription is created in the db).
+		 * 4. After all entries are processed, add the `pmpro_upgrade_3_0_ajax` update so that admins can automatically sync the subscriptions after the import is complete.
+		 *
+		 * @since 3.0
+		 *
+		 * @param bool $skip_fixing_default_migration_data True to skip fixing default migration data for a subscription, false to process it.
+		 */
+		$skip_fixing_default_migration_data = apply_filters( 'pmpro_skip_fixing_default_migration_data', false );
+		if ( $skip_fixing_default_migration_data ) {
+			return;
+		}
+
 		/*
 		 * The following data should already be correct from the migration:
 		 * id, user_id, membership_level_id, gateway, gateway_environment, subscription_transaction_id, status.
