@@ -36,18 +36,26 @@ var pmpro_recaptcha_onSubmit = function(token) {
     }						
 };
 
-var pmpro_recaptcha_onloadCallback = function() {
-    // Render on main submit button.
-    grecaptcha.render('pmpro_btn-submit', {
-    'sitekey' : pmpro_recaptcha_v3.public_key,
-    'callback' : pmpro_recaptcha_onSubmit
-        });
-    
-    // Update other submit buttons.
+var pmpro_recaptcha_onloadCallback = function () {
+
+    // If we're using a custom button, let's add the button ID to the custom button.
     var submit_buttons = jQuery('.pmpro_btn-submit-checkout');
-    submit_buttons.each(function() {
-        if(jQuery(this).attr('id') != 'pmpro_btn-submit') {
-            jQuery(this).click(function(event) {
+    if (jQuery('#pmpro_btn-submit').length === 0) {
+        if (submit_buttons.length > 0) {
+            jQuery(submit_buttons[0]).attr('id', 'pmpro_btn-submit');
+        }
+    }
+    
+    // Render on submit button.
+    grecaptcha.render('pmpro_btn-submit', {
+        'sitekey': pmpro_recaptcha_v3.public_key,
+        'callback': pmpro_recaptcha_onSubmit
+    });
+
+    // Fallback if there still are buttons without the #pmpro_btn-submit ID.
+    submit_buttons.each(function () {
+        if (jQuery(this).attr('id') != 'pmpro_btn-submit') {
+            jQuery(this).click(function (event) {
                 event.preventDefault();
                 grecaptcha.execute();
             });
