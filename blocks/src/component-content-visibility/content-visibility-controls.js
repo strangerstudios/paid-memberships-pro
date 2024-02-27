@@ -11,17 +11,9 @@ import { __ } from '@wordpress/i18n';
  */
 import { ToggleControl, CheckboxControl, PanelBody, SelectControl, Button, __experimentalHStack as HStack } from '@wordpress/components';
 import { InspectorControls } from '@wordpress/block-editor';
-import { select } from "@wordpress/data";
 
 export default function ContentVisibilityControls (props) {
 	const { attributes: { visibilityBlockEnabled, invert_restrictions, segment, levels, show_noaccess }, setAttributes } = props;
-	
-	// Get the root parent block id
-	const rootParentId = select( 'core/block-editor' ).getBlockHierarchyRootClientId( props.clientId );
-	// Get the root parent block
-	const rootParent = select('core/block-editor').getBlock( rootParentId );
-	// We don't want to render the visibility controls on the inner block.
-	const shouldRender = rootParent.name === props.name;
 
 	// Helper function to handle changes to the segment attribute.
 	const  handleSegmentChange = (newSegment) => {
@@ -60,7 +52,6 @@ export default function ContentVisibilityControls (props) {
 	});
 
 	return (
-		shouldRender &&
 		<InspectorControls>
 			<PanelBody
 				title={__( 'Content Visibility', 'paid-memberships-pro' ) }
