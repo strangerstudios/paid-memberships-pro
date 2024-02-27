@@ -41,8 +41,6 @@ class PMPro_Member_Edit_Panel_TOS extends PMPro_Member_Edit_Panel {
 		} else {
 			echo '<p>' . __( 'No TOS consent history found.', 'paid-memberships-pro' ) . '</p>';
 		}
-
-		do_action( 'pmpro_after_membership_level_profile_fields', self::get_user() );
 	}
 
 	/**
