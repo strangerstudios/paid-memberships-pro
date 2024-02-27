@@ -98,7 +98,7 @@
 		$headers[] = 'Content-Disposition: attachment; filename="members_list.csv"';
 
 	//set default CSV file headers, using comma as delimiter
-	$csv_file_header = "id,username,firstname,lastname,email,billing firstname,billing lastname,address1,address2,city,state,zipcode,country,phone,membership,discount_code_id,discount_code,billing_amount,cycle_number,cycle_period,joined";
+	$csv_file_header = "id,username,firstname,lastname,email,billing firstname,billing lastname,address1,address2,city,state,zipcode,country,phone,membership,discount_code_id,discount_code,subscription_transaction_id,billing_amount,cycle_number,cycle_period,next_payment_date,joined";
 
 	if($l == "oldmembers")
 		$csv_file_header .= ",ended";
@@ -124,7 +124,7 @@
 		array("theuser", "membership"),
 		array("discount_code", "id"),
 		array("discount_code", "code")
-		//joindate and enddate are handled specifically below
+		// Subscription information, joindate, and enddate are handled specifically below
 	);
 
 	//filter
@@ -431,11 +431,13 @@
 				}
 			}
 
-			// Subscription billing amount, cycle number, and cycle period.
+			// Subscription transaction ID, billing amount, cycle number, and cycle period.
 			$subscriptions = PMPro_Subscription::get_subscriptions_for_user( $theuser->ID, $theuser->membership_id );
+			array_push($csvoutput, pmpro_enclose( ( empty( $subscriptions  ) ? '' : $subscriptions[0]->get_subscription_transaction_id() ) ) );
 			array_push($csvoutput, pmpro_enclose( ( empty( $subscriptions  ) ? '' : $subscriptions[0]->get_billing_amount() ) ) );
 			array_push($csvoutput, pmpro_enclose( ( empty( $subscriptions  ) ? '' : $subscriptions[0]->get_cycle_number() ) ) );
 			array_push($csvoutput, pmpro_enclose( ( empty( $subscriptions  ) ? '' : $subscriptions[0]->get_cycle_period() ) ) );
+			array_push($csvoutput, pmpro_enclose( ( empty( $subscriptions  ) ? '' : date_i18n($dateformat, $subscriptions[0]->get_next_payment_date() ) ) ) );
 
 			//joindate and enddate
 			array_push($csvoutput, pmpro_enclose(date_i18n($dateformat, $theuser->joindate)));
