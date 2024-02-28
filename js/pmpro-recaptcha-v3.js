@@ -51,8 +51,14 @@ var pmpro_recaptcha_onloadCallback = function () {
         'sitekey': pmpro_recaptcha_v3.public_key,
         'callback': pmpro_recaptcha_onSubmit
     });
+  
+    // Move the <div> with the reCAPTCHA widget outside of the span that contains the submit button.
+    var submit_button = jQuery('#pmpro_btn-submit');
+    var submit_span = submit_button.parent();
+    var recaptcha_widget = jQuery('#pmpro_btn-submit').prev();
+    recaptcha_widget.insertAfter( submit_span );
 
-    // Fallback if there still are buttons without the #pmpro_btn-submit ID.
+    // Update other submit buttons.
     submit_buttons.each(function () {
         if (jQuery(this).attr('id') != 'pmpro_btn-submit') {
             jQuery(this).click(function (event) {
