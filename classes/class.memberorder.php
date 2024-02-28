@@ -1084,7 +1084,7 @@
 		 */
 		function getMembershipLevelAtCheckout($force = false) {			
 			if ( empty( $this->membership_level ) || $force ) {
-				$this->membership_level = pmpro_getLevelAtCheckout();
+				$this->membership_level = pmpro_getLevelAtCheckout( empty( $this->membership_id ) ? null : $this->membership_id );
 			}
 			
 			// Fix the membership level id.
