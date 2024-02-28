@@ -503,7 +503,7 @@ if (!empty($page_msg)) { ?>
 
 					pmpro_expirationWarningCheck();
 
-					jQuery('#recurring,#expiration').change(function() {
+					jQuery('#recurring,#expiration').on('change',function() {
 						pmpro_expirationWarningCheck();
 					});
 				});
@@ -604,10 +604,10 @@ if (!empty($page_msg)) { ?>
 						<td>
 							<p><?php esc_html_e('Select:', 'paid-memberships-pro'); ?> <a id="pmpro-membership-categories-checklist-select-all" href="javascript:void(0);"><?php esc_html_e('All', 'paid-memberships-pro'); ?></a> | <a id="pmpro-membership-categories-checklist-select-none" href="javascript:void(0);"><?php esc_html_e('None', 'paid-memberships-pro'); ?></a></p>
 							<script type="text/javascript">
-								jQuery('#pmpro-membership-categories-checklist-select-all').click(function() {
+								jQuery('#pmpro-membership-categories-checklist-select-all').on('click',function() {
 									jQuery('#pmpro-membership-categories-checklist input').prop('checked', true);
 								});
-								jQuery('#pmpro-membership-categories-checklist-select-none').click(function() {
+								jQuery('#pmpro-membership-categories-checklist-select-none').on('click',function() {
 									jQuery('#pmpro-membership-categories-checklist input').prop('checked', false);
 								});
 							</script>

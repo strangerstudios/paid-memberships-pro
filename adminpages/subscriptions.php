@@ -191,7 +191,7 @@ if ( empty( $subscription ) ) {
 								</div>
 								<script>
 									jQuery(document).ready(function() {
-										jQuery('#pmpro-show-change-subscription-level').click(function() {
+										jQuery('#pmpro-show-change-subscription-level').on('click',function() {
 											jQuery('#pmpro-change-subscription-level').show();
 											jQuery(this).hide();
 										});

@@ -187,6 +187,7 @@ class PMPro_Member_Edit_Panel_User_Info extends PMPro_Member_Edit_Panel {
 			<?php } ?>
 		</table>
 		<?php
+		do_action( 'pmpro_after_membership_level_profile_fields', self::get_user() );
 	}
 
 	/**

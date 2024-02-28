@@ -332,13 +332,13 @@ class PMProGateway_stripe extends PMProGateway {
 				<script>
 					// Toggle to show the Stripe legacy keys settings.
 					jQuery(document).ready(function(){
-						jQuery('#pmpro_stripe_legacy_keys_toggle').click(function(e){
+						jQuery('#pmpro_stripe_legacy_keys_toggle').on('click',function(e){
 							var btn = jQuery('#pmpro_stripe_legacy_keys_toggle');
 							var div = btn.closest('.pmpro_settings_divider');
 							btn.parent().remove();
 							jQuery('.pmpro_stripe_legacy_keys').show();
 							jQuery('.pmpro_stripe_legacy_keys').addClass('gateway_stripe');
-							jQuery('#stripe_publishablekey').focus();
+							jQuery('#stripe_publishablekey').trigger('focus');
 						});
 					});
 				</script>
@@ -1143,6 +1143,11 @@ class PMProGateway_stripe extends PMProGateway {
 			return false;
 		}
 
+		// Check the nonce.
+		if ( ! wp_verify_nonce( sanitize_key( $_REQUEST['pmpro_stripe_connect_nonce'] ), 'pmpro_stripe_connect_nonce' ) ) {
+			return false;
+		}
+
 		// Change current gateway to Stripe
 		update_option( 'pmpro_gateway', 'stripe' );
 		update_option( 'pmpro_gateway_environment', $_REQUEST['pmpro_stripe_connected_environment'] ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
@@ -1220,6 +1225,11 @@ class PMProGateway_stripe extends PMProGateway {
 
 		// Be sure only to deauthorize when param present.
 		if ( ! isset( $_REQUEST['pmpro_stripe_disconnected'] ) || ! isset( $_REQUEST['pmpro_stripe_disconnected_environment'] ) ) {
+			return false;
+		}
+
+		// Check the nonce.
+		if ( ! wp_verify_nonce( sanitize_key( $_REQUEST['pmpro_stripe_connect_deauthorize_nonce'] ), 'pmpro_stripe_connect_deauthorize_nonce' ) ) {
 			return false;
 		}
 
@@ -2358,7 +2368,7 @@ class PMProGateway_stripe extends PMProGateway {
 							'action' => 'disconnect',
 							'gateway_environment' => $environment2,
 							'stripe_user_id' => $values[ $environment . '_stripe_connect_user_id'],
-							'return_url' => rawurlencode( admin_url( 'admin.php?page=pmpro-paymentsettings' ) ),
+							'return_url' => rawurlencode( add_query_arg( 'pmpro_stripe_connect_deauthorize_nonce', wp_create_nonce( 'pmpro_stripe_connect_deauthorize_nonce' ), admin_url( 'admin.php?page=pmpro-paymentsettings' ) ) ),
 						),
 						$connect_url_base
 					);
@@ -2379,7 +2389,7 @@ class PMProGateway_stripe extends PMProGateway {
 						array(
 							'action' => 'authorize',
 							'gateway_environment' => $environment2,
-							'return_url' => rawurlencode( admin_url( 'admin.php?page=pmpro-paymentsettings' ) ),
+							'return_url' => rawurlencode( add_query_arg( 'pmpro_stripe_connect_nonce', wp_create_nonce( 'pmpro_stripe_connect_nonce' ), admin_url( 'admin.php?page=pmpro-paymentsettings' ) ) ),
 						),
 						$connect_url_base
 					);
