@@ -1224,7 +1224,7 @@ class PMPro_Subscription {
 		 *
 		 * @param bool $skip_fixing_default_migration_data True to skip fixing default migration data for a subscription, false to process it.
 		 */
-		$skip_fixing_default_migration_data = apply_filters( 'pmpro_skip_fixing_default_migration_data', false );
+		$skip_fixing_default_migration_data = apply_filters( 'pmpro_subscription_skip_fixing_default_migration_data', false );
 		if ( $skip_fixing_default_migration_data ) {
 			return;
 		}
