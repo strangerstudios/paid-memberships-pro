@@ -36,11 +36,22 @@ jQuery(document).ready(function() {
 					else
 					{
 						$count++;
+						// Regex to find any string between square brackets.
 						re = /\[.*\]/;
+
+						// Get all strings between square brackets.
 						progress = re.exec(responseHTML);
-						if(progress && progress.length > 0)
-							jQuery('#pmpro_updates_progress').html(progress + ' ' + parseInt(eval(progress[0].replace(/\[|\]/ig, ''))*100) + '%');
-						$status.html($status.html() + responseHTML.replace(re, ''));						
+
+						// If there is a string between square brackets, update the progress bar.
+						if ( progress && progress.length > 0 ) {
+							// Assume progress is something like [1/10].
+							jQuery('#pmpro_updates_progress').html(progress[0] + ' ' + parseInt(eval(progress[0].replace(/\[|\]/ig, ''))*100) + '%');
+						}
+
+						// Update the status area.
+						$status.html($status.html() + responseHTML.replace(re, ''));
+
+						// Title bar animation.
 						document.title = $cycles[$count%4] + ' ' + $title;
 						$update_timer = setTimeout(function() { pmpro_updates();}, 200);
 					}

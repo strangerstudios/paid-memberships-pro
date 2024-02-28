@@ -58,7 +58,9 @@ function pmpro_upgrade_3_0( $rerunning_migration = false ) {
  * @since 3.0
  */
 function pmpro_upgrade_3_0_ajax() {
-	define ( 'PMPRO_UPGRADE_3_0_AJAX', true );
+	global $wpdb;
+
+	define( 'PMPRO_UPGRADE_3_0_AJAX', true );
 
 	// Migrated subscription data won't have a `cycle_number` or `billing_amount` set.
 	$subscription_search_param = array(
@@ -67,6 +69,15 @@ function pmpro_upgrade_3_0_ajax() {
 		'limit' => 10,
 	);
 	$subscriptions = PMPro_Subscription::get_subscriptions( $subscription_search_param );
+
+	// Get the number of subs with a billing amount or cycle number.
+	$migrated = $wpdb->get_var( "SELECT COUNT(*) FROM {$wpdb->pmpro_subscriptions} WHERE billing_amount > 0 OR cycle_number > 0" );
+
+	// Get the total number of subscriptions.
+	$total = $wpdb->get_var( "SELECT COUNT(*) FROM {$wpdb->pmpro_subscriptions}" );
+
+	// Update the progress.
+	echo '[' . (int)$migrated . '/' . (int)$total . ']';
 
 	// If we have no subscriptions left to update, remove the update.
 	if ( empty( $subscriptions ) ) {
