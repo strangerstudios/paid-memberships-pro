@@ -526,8 +526,6 @@ class PMPro_Members_List_Table extends WP_List_Table {
 			/**
 			 * Fill in columns that don't have a built-in method.
 			 *
-			 * @since TBD
-			 *
 			 * @param string $column_name The name of the column.
 			 * @param int    $user_id     The ID of the user.
 			 * @param array  $item        The membership data being shown.
