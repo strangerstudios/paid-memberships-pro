@@ -70,6 +70,19 @@ function pmpro_upgrade_3_0_ajax() {
 	);
 	$subscriptions = PMPro_Subscription::get_subscriptions( $subscription_search_param );
 
+	// Check if the migration was successful.
+	$failed_migrations = array();
+	foreach ( $subscriptions as $subscription ) {
+		if ( empty( $subscription->get_billing_amount() ) && empty( $subscription->get_cycle_number() ) ) {
+			$failed_migrations[] = $subscription->get_id();
+		}
+	}
+	if ( ! empty( $failed_migrations ) ) {
+		// If we have failed migrations, echo the error.
+		echo '[error] Failed to migrate subscriptions: ' . implode( ', ', $failed_migrations );
+		return;
+	}
+
 	// Get the number of subs with a billing amount or cycle number.
 	$migrated = $wpdb->get_var( "SELECT COUNT(*) FROM {$wpdb->pmpro_subscriptions} WHERE billing_amount > 0 OR cycle_number > 0" );
 
