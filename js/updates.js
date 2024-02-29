@@ -5,6 +5,7 @@ jQuery(document).ready(function() {
 	var $count = 0;
 	var $title = document.title;
 	var $cycles = ['|','/','-','\\'];
+	var $timeout = 30000;
 	
 	//start updates and update status
 	if($status && $status.length > 0)
@@ -14,11 +15,22 @@ jQuery(document).ready(function() {
 		function pmpro_updates()
 		{
 			jQuery.ajax({
-				url: ajaxurl,type:'GET', timeout: 30000,
+				url: ajaxurl,type:'GET', timeout: $timeout,
 				dataType: 'html',
 				data: 'action=pmpro_updates',
-				error: function(xml){
-					alert('Error with update. Try refreshing.');				
+				error: function( xml, status, error ) {
+					if ( status == 'timeout' ) {
+						if ( window.confirm( 'Timeout error. Would you like to try again with a longer timeout?' ) ) {
+							$timeout = $timeout * 2;
+							pmpro_updates();
+						}
+					} else if ( status == 'error' && error ) {
+						// Likely the case with a PHP error.
+						alert( error + '. Try refreshing. If this error occurs again, check your PHP error logs or seek help on the PMPro member forums.');
+					} else if ( status == 'error' ) {
+						// Likely the case if the user tries to nagivate away from the update page.
+						alert( 'This update could not complete. Try refreshing. If this error occurs again, seek help on the PMPro member forums.');
+					}
 				},
 				success: function(responseHTML){
 					if (responseHTML.indexOf('[error]') > -1)
