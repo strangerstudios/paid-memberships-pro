@@ -1028,4 +1028,4 @@ BUG FIX: Fixed issue where PMPro would always try to add capabilities to the adm
 
 == Upgrade Notice ==
 = 3.0 =
-The PMPro v3.0 release will make irreversible changes to the structure of your membership site data. Please back up your database before upgrading. For more information, please visit https://www.paidmembershipspro.com/xyz.
+The PMPro v3.0 release will make irreversible changes to the structure of your membership site data. Please back up your database before upgrading. For more information, please visit https://www.paidmembershipspro.com/pmpro-update-3-0/.
