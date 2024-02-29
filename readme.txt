@@ -1025,3 +1025,7 @@ BUG FIX: Fixed issue where PMPro would always try to add capabilities to the adm
 * ENHANCEMENT: Added links to the PMPro YouTube and Facebook profiles.
 * REFACTOR: Cleaned up some code in incldues/content.php, especially around the pmpro_search_filter() function.
 * REFACTOR: Removed the package-lock.json file from the repository.
+
+== Upgrade Notice ==
+= 3.0 =
+The PMPro v3.0 release will make irreversible changes to the structure of your membership site data. Please back up your database before upgrading. For more information, please visit https://www.paidmembershipspro.com/xyz.
