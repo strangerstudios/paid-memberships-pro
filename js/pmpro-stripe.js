@@ -129,7 +129,7 @@ jQuery( document ).ready( function( $ ) {
 
 		// Get the level price so that information can be shown in payment request popup
 		jQuery.noConflict().ajax({
-			url: pmproStripe.restUrl + 'pmpro/v1/checkout_levels',
+			url: pmproStripe.restUrl + 'pmpro/v1/checkout_level',
 			dataType: 'json',
 			data: pmpro_getCheckoutFormDataForCheckoutLevels(),
 			success: function(data) {
@@ -183,7 +183,7 @@ jQuery( document ).ready( function( $ ) {
 		// Update price shown in payment request button if price changes.
 		function stripeUpdatePaymentRequestButton() {
 			jQuery.noConflict().ajax({
-				url: pmproStripe.restUrl + 'pmpro/v1/checkout_levels',
+				url: pmproStripe.restUrl + 'pmpro/v1/checkout_level',
 				dataType: 'json',
 				data: pmpro_getCheckoutFormDataForCheckoutLevels(),
 				success: function(data) {

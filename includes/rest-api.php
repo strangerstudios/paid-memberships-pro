@@ -881,11 +881,16 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 
 			$checkout_level = pmpro_getLevelAtCheckout( $level_id, $discount_code );
 
-			// Hide confirmation message if not an admin or member.
-			if ( ! empty( $checkout_level->confirmation ) 
-				 && ! pmpro_hasMembershipLevel( $level_id )
-				 && ! current_user_can( 'pmpro_edit_members' ) ) {
-					 $checkout_level->confirmation = '';
+			if ( ! empty( $checkout_level ) ) {
+				// Hide confirmation message if not an admin or member.
+				if ( ! empty( $checkout_level->confirmation ) 
+					&& ! pmpro_hasMembershipLevel( $level_id )
+					&& ! current_user_can( 'pmpro_edit_members' ) ) {
+						$checkout_level->confirmation = '';
+				}
+
+				// Also add a formatted version of the initial payment.
+				$checkout_level->initial_payment_formatted = pmpro_formatPrice( $checkout_level->initial_payment );
 			}
 
 			return new WP_REST_Response( $checkout_level );
