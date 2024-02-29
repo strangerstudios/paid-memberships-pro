@@ -909,7 +909,9 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 			if ( ! empty( $pmpro_checkout_level_ids ) ) {
 				// MMPU Compatibility...
 				$level_ids = $pmpro_checkout_level_ids;
-			} elseif ( isset( $params['level_id'] ) ) {
+			} elseif ( isset( $params['pmpro_level' ] ) ) {
+				$level_ids = explode( '+', intval( $params['pmpro_level'] ) );
+			}elseif ( isset( $params['level_id'] ) ) {
 				$level_ids = explode( '+', intval( $params['level_id'] ) );
 			} elseif ( isset( $params['level'] ) ) {
 				$level_ids = explode( '+', intval( $params['level'] ) );
