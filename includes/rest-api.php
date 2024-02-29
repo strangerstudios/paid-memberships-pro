@@ -201,6 +201,7 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 		/**
 		 * Get membership levels after checkout options are applied.
 		 * Example: https://example.com/wp-json/pmpro/v1/checkout_levels
+		 * @deprecated 3.0
 		 */
 		register_rest_route( $pmpro_namespace, '/checkout_levels', 
 		array(
@@ -851,7 +852,7 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 
 		/**
 		 * Get a membership level at checkout.
-		 * Note: Not compatible with MMPU.
+		 *
 		 * @since 2.4
 		 * Example: https://example.com/wp-json/pmpro/v1/checkout_level
 		 */
@@ -893,6 +894,8 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 		/**
 		 * Get membership levels at checkout.
 		 * Example: https://example.com/wp-json/pmpro/v1/checkout_levels
+		 *
+		 * @deprecated 3.0 Use the /pmpro/v1/checkout_level endpoint instead.
 		 */
 		function pmpro_rest_api_get_checkout_levels( $request ) {
 			$params = $request->get_params();
