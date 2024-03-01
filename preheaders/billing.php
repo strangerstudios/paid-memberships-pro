@@ -9,9 +9,39 @@ if ( ! is_user_logged_in() ) {
     exit;
 }
 
-// Get the order that was passed in.
-$order_id = empty( $_REQUEST['order_id'] ) ? 0 : intval( $_REQUEST['order_id'] );
-$pmpro_billing_order = MemberOrder::get_order( $order_id );
+// Get the subscription and order that was passed in.
+if ( ! empty( $_REQUEST['pmpro_subscription_id'] ) ) {
+	// A subscription ID was passed. Get the subscription and its order.
+	$pmpro_billing_subscription = PMPro_Subscription::get_subscription( (int)$_REQUEST['pmpro_subscription_id'] );
+	if ( ! empty( $pmpro_billing_subscription ) ) {
+		$newest_orders = $pmpro_billing_subscription->get_orders(
+			array(
+				'limit'   => 1,
+				'orderby' => '`timestamp` DESC, `id` DESC',
+			)
+		);
+		$pmpro_billing_order = ! empty( $newest_orders ) ? $newest_orders[0] : null;
+	}
+} elseif ( ! empty( $_REQUEST['pmpro_order_id'] ) ) {
+	// An order ID was passed. Get the order and its subscription.
+	$pmpro_billing_order = MemberOrder::get_order( (int)$_REQUEST['pmpro_order_id'] );
+	if ( ! empty( $pmpro_billing_order ) ) {
+		$pmpro_billing_subscription = $pmpro_billing_order->get_subscription();
+	}
+} else {
+	// No subscription or order was passed. Check if the user has exactly one active subscription. If so, use it.
+	$subscriptions = PMPro_Subscription::get_subscriptions_for_user( $current_user->ID );
+	if ( count( $subscriptions ) === 1 ) {
+		$pmpro_billing_subscription = $subscriptions[0];
+		$newest_orders              = $pmpro_billing_subscription->get_orders(
+			array(
+				'limit'   => 1,
+				'orderby' => '`timestamp` DESC, `id` DESC',
+			)
+		);
+		$pmpro_billing_order = ! empty( $newest_orders ) ? $newest_orders[0] : null;
+	}
+}
 
 if ( empty( $pmpro_billing_order ) ) {
     // We need an order to update. Redirect to the account page.
@@ -34,7 +64,6 @@ if ( $pmpro_billing_order->status != 'success' ) {
 }
 
 // Get the subscription for this order and make sure that we can update its billing info.
-$pmpro_billing_subscription = $pmpro_billing_order->get_subscription();
 $subscription_gateway_obj   = empty( $pmpro_billing_subscription ) ? null: $pmpro_billing_subscription->get_gateway_object();
 if ( empty( $pmpro_billing_subscription ) || $pmpro_billing_subscription->get_status() != 'active' || empty( $subscription_gateway_obj ) || ! $subscription_gateway_obj->supports( 'payment_method_updates' ) ) {
     // We cannot update the billing info for this subscription. Redirect to the account page.

@@ -78,7 +78,7 @@ class PMProGateway_stripe extends PMProGateway {
 	public static function supports( $feature ) {
 		$supports = array(
 			'subscription_sync' => true,
-			'payment_method_updates' => 'all'
+			'payment_method_updates' => 'individual'
 		);
 
 		if ( empty( $supports[$feature] ) ) {

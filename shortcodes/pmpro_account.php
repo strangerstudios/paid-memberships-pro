@@ -97,11 +97,10 @@ function pmpro_shortcode_account($atts, $content=null, $code="")
 												// Check if the gateway supports updating billing info.
 												$gateway_obj = $subscription->get_gateway_object();
 												if ( ! empty( $gateway_obj ) && method_exists( $gateway_obj, 'supports' ) && $gateway_obj->supports( 'payment_method_updates' ) ) {
-													// Get the newest order for this subscription so that we can build the update billing link.
+													// Make sure that the subscription has an order, which is necessary to update.
 													$newest_orders = $subscription->get_orders( array( 'limit' => 1 ) );
 													if ( ! empty( $newest_orders ) ) {
-														$order = $newest_orders[0];
-														$pmpro_member_action_links['update-billing'] = sprintf( '<a id="pmpro_actionlink-update-billing" href="%s">%s</a>', pmpro_url( 'billing', 'order_id=' . $order->id, 'https' ), esc_html__( 'Update Billing Info', 'paid-memberships-pro' ) );
+														$pmpro_member_action_links['update-billing'] = sprintf( '<a id="pmpro_actionlink-update-billing" href="%s">%s</a>', pmpro_url( 'billing', 'pmpro_subscription_id=' . $subscription->get_id(), 'https' ), esc_html__( 'Update Billing Info', 'paid-memberships-pro' ) );
 													}
 												}
 											}
