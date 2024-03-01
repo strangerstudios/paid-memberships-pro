@@ -13,27 +13,11 @@ if ( ! is_user_logged_in() ) {
 if ( ! empty( $_REQUEST['pmpro_subscription_id'] ) ) {
 	// A subscription ID was passed. Get the subscription and its order.
 	$pmpro_billing_subscription = PMPro_Subscription::get_subscription( (int)$_REQUEST['pmpro_subscription_id'] );
-	if ( ! empty( $pmpro_billing_subscription ) ) {
-		$newest_orders = $pmpro_billing_subscription->get_orders(
-			array(
-				'limit'   => 1,
-				'orderby' => '`timestamp` DESC, `id` DESC',
-			)
-		);
-		$pmpro_billing_order = ! empty( $newest_orders ) ? $newest_orders[0] : null;
-	}
 } else {
 	// No subscription or order was passed. Check if the user has exactly one active subscription. If so, use it.
 	$subscriptions = PMPro_Subscription::get_subscriptions_for_user( $current_user->ID );
 	if ( count( $subscriptions ) === 1 ) {
 		$pmpro_billing_subscription = $subscriptions[0];
-		$newest_orders              = $pmpro_billing_subscription->get_orders(
-			array(
-				'limit'   => 1,
-				'orderby' => '`timestamp` DESC, `id` DESC',
-			)
-		);
-		$pmpro_billing_order = ! empty( $newest_orders ) ? $newest_orders[0] : null;
 	}
 }
 
@@ -44,7 +28,7 @@ if ( empty( $pmpro_billing_subscription ) || $pmpro_billing_subscription->get_st
 }
 
 // Get the order for this subscription.
-$newest_orders              = $pmpro_billing_subscription->get_orders(
+$newest_orders = $pmpro_billing_subscription->get_orders(
 	array(
 		'status'  => 'success',
 		'limit'   => 1,
