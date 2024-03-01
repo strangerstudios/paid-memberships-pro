@@ -4,7 +4,7 @@ Tags: memberships, member, community, user profile, user registration, members, 
 Requires at least: 5.2
 Tested up to: 6.4.3
 Requires PHP: 5.6
-Stable tag: 2.99.995
+Stable tag: 2.99.996
 
 Build a membership site that grows with you: user registration, member profiles, 28 protected content types, free or paid subscriptions.
 
@@ -190,7 +190,7 @@ Not sure? You can find out by doing a bit a research.
 9. Advanced settings for updating non-member messages, optionally show excerpts or filter content, use reCAPTCHA, and a Terms of Service checkbox.
 
 == Changelog ==
-= 3.0 (Updated for v2.99.995 on 2024-02-28) =
+= 3.0 (Updated for v2.99.996 on 2024-03-01) =
 * FEATURE: Now tracking payment subscriptions using a new subscriptions table. (@dparker1005)
 * FEATURE: The Multiple Memberships Per User Add On has been merged into the core PMPro plugin. #2250 (@dparker1005)
 * FEATURE: The Stripe Billing Limits Add On  has been merged into the core PMPro plugin. All gateways now support billing limits. #2384 (@dparker1005)
@@ -243,6 +243,7 @@ Not sure? You can find out by doing a bit a research.
 * DEPRECATED: Marked the following hooks as deprecated: pmpro_admin_pagesetting_post_type_array (replaced by pmpro_admin_pagesetting_post_type), pmpro_stripe_subscription_deleted, pmpro_subscription_cancelled. #2819 (@dparker1005)
 * DEPRECATED: Removed the following functions which were previously marked deprecated: `pmpro_set_pause_mode()`, `pmpro_cron_trial_ending_warnings()`. #2818 (@dparker1005)
 * DEPRECATED: No longer showing "billing address" user meta fields in the Members List table or the Members CSV export. #2873 (@dparker1005)
+* DEPRECATED: The checkout_levels API endpoint has been marked as deprecated. Please use the checkout_level (no s) endpoint instead. #2879 (@dparker1005)
 
 = 2.12.10 - 2024-02-08 =
 * BUG FIX: Fixed fatal error on post save introduced in 2.12.9.
