@@ -13,7 +13,7 @@
 ?>
 <div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_billing_wrap' ) ); ?>">
 <?php
-	global $wpdb, $current_user, $gateway, $pmpro_msg, $pmpro_msgt, $show_check_payment_instructions, $show_paypal_link, $pmpro_billing_order, $pmpro_billing_subscription, $pmpro_billing_level;
+	global $wpdb, $current_user, $gateway, $pmpro_msg, $pmpro_msgt, $show_check_payment_instructions, $show_paypal_link, $pmpro_billing_subscription, $pmpro_billing_level;
 	global $bfirstname, $blastname, $baddress1, $baddress2, $bcity, $bstate, $bzipcode, $bcountry, $bphone, $bemail, $bconfirmemail, $CardType, $AccountNumber, $ExpirationMonth, $ExpirationYear;
 
 	/**
@@ -36,7 +36,7 @@
 	}
 
 	//Make sure the $pmpro_billing_level object is a valid level definition
-	if ( ! empty($pmpro_billing_order) && ! empty( $pmpro_billing_subscription ) ) {
+	if ( ! empty( $pmpro_billing_subscription ) ) {
 		$checkout_url = pmpro_url( 'checkout', '?pmpro_level=' . $pmpro_billing_level->id );
 		$logout_url = wp_logout_url( $checkout_url );
 

@@ -1691,17 +1691,17 @@ class PMProGateway_stripe extends PMProGateway {
 	 * @since 2.8
 	 */
 	public static function pmpro_billing_preheader_stripe_checkout() {
-		global $pmpro_billing_order;
+		global $pmpro_billing_subscription;
 
 		// If the order being updated is not a Stripe order, bail.
-		if ( empty( $pmpro_billing_order ) || 'stripe' !== $pmpro_billing_order->gateway ) {
+		if ( empty( $pmpro_billing_subscription ) || 'stripe' !== $pmpro_billing_subscription->get_gateway() ) {
 			return;
 		}
 
 		if ( 'portal' === get_option( 'pmpro_stripe_update_billing_flow' ) ) {
 			// Send user to Stripe Customer Portal.
 			$stripe = new PMProGateway_stripe();
-			$customer = $stripe->get_customer_for_user( $pmpro_billing_order->user_id );
+			$customer = $stripe->get_customer_for_user( $pmpro_billing_subscription->get_user_id() );
 			if ( empty( $customer->id ) ) {
 				$error = __( 'Could not get Stripe customer for user.', 'paid-memberships-pro' );
 			}
@@ -1727,14 +1727,14 @@ class PMProGateway_stripe extends PMProGateway {
 	 * @since 2.10.
 	 */
 	public static function pmpro_billing_preheader_stripe_customer_portal() {
-		global 	$pmpro_billing_order;
+		global 	$pmpro_billing_subscription;
 		//Bail if the customer portal isn't enabled
 		if ( 'portal' !== pmpro_getOption( 'stripe_update_billing_flow' ) ) {
 			return;
 		}
 
 		//Bail if the order's gateway isn't Stripe
-		if ( empty( $pmpro_billing_order->gateway ) || 'stripe' !== $pmpro_billing_order->gateway  ) {
+		if ( empty( $pmpro_billing_subscription->get_gateway() ) || 'stripe' !== $pmpro_billing_subscription->get_gateway()  ) {
 			return;
 		}
 
