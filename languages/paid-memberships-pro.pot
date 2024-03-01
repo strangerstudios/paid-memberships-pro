@@ -1,22 +1,22 @@
 # Copyright (C) 2024 Paid Memberships Pro
-# This file is distributed under the same license as the Paid Memberships Pro - v3.0 Beta 4 plugin.
+# This file is distributed under the same license as the Paid Memberships Pro - v3.0 RC3 plugin.
 msgid ""
 msgstr ""
-"Project-Id-Version: Paid Memberships Pro - v3.0 Beta 4 2.99.995\n"
+"Project-Id-Version: Paid Memberships Pro - v3.0 RC3 2.99.996\n"
 "Report-Msgid-Bugs-To: info@paidmembershipspro.com\n"
 "Last-Translator: Paid Memberships Pro <info@paidmembershipspro.com>\n"
 "Language-Team: Paid Memberships Pro <info@paidmembershipspro.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2024-02-28T18:11:48+00:00\n"
+"POT-Creation-Date: 2024-03-01T20:11:34+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.10.0\n"
 "X-Domain: paid-memberships-pro\n"
 
 #. Plugin Name of the plugin
 #: paid-memberships-pro.php
-msgid "Paid Memberships Pro - v3.0 Beta 4"
+msgid "Paid Memberships Pro - v3.0 RC3"
 msgstr ""
 
 #. Plugin URI of the plugin
@@ -972,7 +972,7 @@ msgstr ""
 #: classes/class-pmpro-members-list-table.php:133
 #: classes/class-pmpro-subscription.php:1181
 #: pages/checkout.php:191
-#: shortcodes/pmpro_account.php:189
+#: shortcodes/pmpro_account.php:188
 msgid "Username"
 msgstr ""
 
@@ -996,7 +996,7 @@ msgstr ""
 #: pages/invoice.php:131
 #: pages/levels.php:51
 #: shortcodes/pmpro_account.php:55
-#: shortcodes/pmpro_account.php:247
+#: shortcodes/pmpro_account.php:246
 msgid "Level"
 msgstr ""
 
@@ -1064,7 +1064,7 @@ msgstr ""
 #: includes/profile.php:871
 #: includes/profile.php:918
 #: pages/invoice.php:41
-#: shortcodes/pmpro_account.php:249
+#: shortcodes/pmpro_account.php:248
 msgid "Status"
 msgstr ""
 
@@ -1076,7 +1076,7 @@ msgstr ""
 #: includes/profile.php:747
 #: includes/profile.php:864
 #: pages/invoice.php:129
-#: shortcodes/pmpro_account.php:246
+#: shortcodes/pmpro_account.php:245
 msgid "Date"
 msgstr ""
 
@@ -1390,7 +1390,7 @@ msgstr ""
 #: includes/profile.php:1305
 #: pages/billing.php:426
 #: pages/cancel.php:118
-#: shortcodes/pmpro_account.php:115
+#: shortcodes/pmpro_account.php:114
 msgid "Cancel"
 msgstr ""
 
@@ -2337,7 +2337,7 @@ msgstr ""
 #: includes/profile.php:933
 #: includes/profile.php:934
 #: includes/profile.php:935
-#: shortcodes/pmpro_account.php:277
+#: shortcodes/pmpro_account.php:276
 msgid "N/A"
 msgstr ""
 
@@ -2354,7 +2354,7 @@ msgstr ""
 #: includes/profile.php:803
 #: includes/profile.php:810
 #: includes/profile.php:820
-#: shortcodes/pmpro_account.php:149
+#: shortcodes/pmpro_account.php:148
 msgid "&#8212;"
 msgstr ""
 
@@ -2459,7 +2459,7 @@ msgstr ""
 #: classes/class-pmpro-orders-list-table.php:1003
 #: includes/profile.php:791
 #: includes/profile.php:1145
-#: shortcodes/pmpro_account.php:190
+#: shortcodes/pmpro_account.php:189
 msgid "Email"
 msgstr ""
 
@@ -2472,7 +2472,7 @@ msgstr ""
 #: classes/class-pmpro-orders-list-table.php:1236
 #: includes/profile.php:824
 #: pages/invoice.php:44
-#: shortcodes/pmpro_account.php:267
+#: shortcodes/pmpro_account.php:266
 msgid "Paid"
 msgstr ""
 
@@ -4688,7 +4688,7 @@ msgid "Transaction IDs"
 msgstr ""
 
 #: classes/class-pmpro-orders-list-table.php:352
-#: shortcodes/pmpro_account.php:272
+#: shortcodes/pmpro_account.php:271
 msgid "Refunded"
 msgstr ""
 
@@ -4702,7 +4702,7 @@ msgstr ""
 
 #: classes/class-pmpro-orders-list-table.php:355
 #: pages/confirmation.php:77
-#: shortcodes/pmpro_account.php:270
+#: shortcodes/pmpro_account.php:269
 msgid "Pending"
 msgstr ""
 
@@ -9561,7 +9561,7 @@ msgstr ""
 #: includes/menus.php:76
 #: includes/menus.php:79
 #: includes/menus.php:169
-#: shortcodes/pmpro_account.php:214
+#: shortcodes/pmpro_account.php:213
 msgid "Log Out"
 msgstr ""
 
@@ -9844,7 +9844,7 @@ msgstr ""
 
 #: includes/profile.php:1267
 #: includes/profile.php:1304
-#: shortcodes/pmpro_account.php:211
+#: shortcodes/pmpro_account.php:210
 msgid "Change Password"
 msgstr ""
 
@@ -10289,35 +10289,35 @@ msgstr ""
 msgid "Sorry, your request could not be completed - please try again in a few moments."
 msgstr ""
 
-#: preheaders/billing.php:198
+#: preheaders/billing.php:207
 #: preheaders/checkout.php:397
 msgid "reCAPTCHA failed. (%s) Please try again."
 msgstr ""
 
-#: preheaders/billing.php:204
+#: preheaders/billing.php:213
 #: preheaders/checkout.php:334
 msgid "Please complete all required fields."
 msgstr ""
 
-#: preheaders/billing.php:207
+#: preheaders/billing.php:216
 #: preheaders/checkout.php:342
 msgid "Your email addresses do not match. Please try again."
 msgstr ""
 
-#: preheaders/billing.php:210
+#: preheaders/billing.php:219
 #: preheaders/checkout.php:347
 msgid "The email address entered is in an invalid format. Please try again."
 msgstr ""
 
-#: preheaders/billing.php:216
+#: preheaders/billing.php:225
 msgid "All good!"
 msgstr ""
 
-#: preheaders/billing.php:311
+#: preheaders/billing.php:320
 msgid "Information updated. <a href=\"%s\">&laquo; back to my account</a>"
 msgstr ""
 
-#: preheaders/billing.php:328
+#: preheaders/billing.php:337
 msgid "Error updating billing information."
 msgstr ""
 
@@ -10436,47 +10436,47 @@ msgstr ""
 msgid "Renew %1$s Membership"
 msgstr ""
 
-#: shortcodes/pmpro_account.php:104
+#: shortcodes/pmpro_account.php:103
 msgid "Update Billing Info"
 msgstr ""
 
-#: shortcodes/pmpro_account.php:112
+#: shortcodes/pmpro_account.php:111
 msgid "Change %1$s Membership"
 msgstr ""
 
-#: shortcodes/pmpro_account.php:112
+#: shortcodes/pmpro_account.php:111
 msgid "Change"
 msgstr ""
 
-#: shortcodes/pmpro_account.php:115
+#: shortcodes/pmpro_account.php:114
 msgid "Cancel %1$s Membership"
 msgstr ""
 
-#: shortcodes/pmpro_account.php:167
+#: shortcodes/pmpro_account.php:166
 msgid "View all Membership Options"
 msgstr ""
 
-#: shortcodes/pmpro_account.php:179
+#: shortcodes/pmpro_account.php:178
 msgid "My Account"
 msgstr ""
 
-#: shortcodes/pmpro_account.php:207
+#: shortcodes/pmpro_account.php:206
 msgid "Edit Profile"
 msgstr ""
 
-#: shortcodes/pmpro_account.php:239
+#: shortcodes/pmpro_account.php:238
 msgid "Past Invoices"
 msgstr ""
 
-#: shortcodes/pmpro_account.php:248
+#: shortcodes/pmpro_account.php:247
 msgid "Amount"
 msgstr ""
 
-#: shortcodes/pmpro_account.php:289
+#: shortcodes/pmpro_account.php:288
 msgid "View All Invoices"
 msgstr ""
 
-#: shortcodes/pmpro_account.php:300
+#: shortcodes/pmpro_account.php:299
 msgid "Member Links"
 msgstr ""
 
