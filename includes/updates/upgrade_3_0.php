@@ -73,6 +73,7 @@ function pmpro_upgrade_3_0_ajax() {
 	// Check if the migration was successful.
 	$failed_migrations = array();
 	foreach ( $subscriptions as $subscription ) {
+		// This is the same check we used to get subs to update. We want to avoid infinite loops.
 		if ( empty( $subscription->get_billing_amount() ) && empty( $subscription->get_cycle_number() ) ) {
 			$failed_migrations[] = $subscription->get_id();
 		}
