@@ -479,16 +479,16 @@
 
 			global $wpdb;
 
-			$sql_query = "SELECT `id` FROM `$wpdb->pmpro_membership_orders`";
+			$sql_query = "SELECT `o`.`id` FROM `$wpdb->pmpro_membership_orders` `o`";
 
 			$prepared = array();
 			$where    = array();
 
-			$orderby  = isset( $args['orderby'] ) ? $args['orderby'] : '`timestamp` DESC';
+			$orderby  = isset( $args['orderby'] ) ? $args['orderby'] : '`o`.`timestamp` DESC';
 			$limit    = isset( $args['limit'] ) ? (int) $args['limit'] : 100;
 
 			// Detect unsupported orderby usage (in the future we may support better syntax).
-			if ( $orderby !== preg_replace( '/[^a-zA-Z0-9\s,`]/', ' ', $orderby ) ) {
+			if ( $orderby !== preg_replace( '/[^a-zA-Z0-9\s,.`]/', ' ', $orderby ) ) {
 				return array();
 			}
 
@@ -603,9 +603,9 @@
 			 * @DISCOUNT_CODE_ID_TODO
 			 */
 			if ( isset( $args['discount_code_id'] ) ) {
-				$sql_query .= " LEFT JOIN $wpdb->pmpro_discount_codes_uses dcu ON dcu.order_id = id";
+				$sql_query .= " LEFT JOIN `$wpdb->pmpro_discount_codes_uses` `dcu` ON `dcu`.`order_id` = `o`.`id`";
 				if ( ! is_array( $args['discount_code_id'] ) ) {
-					$where[]    = 'dcu.code_id = %d';
+					$where[]    = '`dcu`.`code_id` = %d';
 					$prepared[] = $args['discount_code_id'];
 				} else {
 					$where[]  = 'dcu.code_id IN ( ' . implode( ', ', array_fill( 0, count( $args['discount_code_id'] ), '%d' ) ) . ' )';
