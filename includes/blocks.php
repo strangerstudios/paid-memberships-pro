@@ -207,7 +207,7 @@ function pmpro_filter_core_blocks( $block_content, $block ) {
 		'segment' => 'all',
 		'levels' => array(),
 		'show_noaccess' => '0',
-		 'invert_restrictions' => '0',
+		'invert_restrictions' => '0',
 	) );
 	return pmpro_apply_block_visibility( $attributes, $block_content );
 }
