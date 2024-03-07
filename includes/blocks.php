@@ -146,20 +146,33 @@ function pmpro_apply_block_visibility( $attributes, $content ) {
 		// Setup for PMPro >= 3.0.
 		switch ( $attributes['segment'] ) {
 			case 'all':
-				$levels_to_check = $attributes['invert_restrictions'] == '0' ? null : '0';
+				$levels_to_check = null; // All levels.
 				break;
 			case 'specific':
-				// If inverting restrictions, we need to make all level IDs negative.
-				$levels_to_check = array_map( function( $level ) use ( $attributes ) {
-					return $attributes['invert_restrictions'] == '0' ? $level : '-' . $level;
-				}, $attributes['levels'] );
+				$levels_to_check = $attributes['levels']; // Specific levels.
 				break;
 			case 'logged_in':
-				$levels_to_check = $attributes['invert_restrictions'] == '0' ? 'L' : '-L';
+				$levels_to_check = 'L'; // Logged in users.
 				break;
 		}
 
-		if ( pmpro_hasMembershipLevel( $levels_to_check ) ) {
+		if ( $attributes['invert_restrictions'] == '0' ) {
+			$should_show = pmpro_hasMembershipLevel( $levels_to_check );
+		} else {
+			// Make sure we have an array.
+			$levels_to_check = is_array( $levels_to_check ) ? $levels_to_check : array( $levels_to_check );
+
+			// Check if the user has any of the levels.
+			$should_show = true;
+			foreach ( $levels_to_check as $level ) {
+				if ( pmpro_hasMembershipLevel( $level ) ) {
+					$should_show = false;
+					break;
+				}
+			}
+		}
+
+		if ( $should_show ) {
 			$output = do_blocks( $content );
 		} elseif ( ! empty( $attributes['show_noaccess'] ) && $attributes['invert_restrictions'] == '0' ) {
 			$output = pmpro_get_no_access_message( NULL, $attributes['levels'] );
@@ -194,7 +207,7 @@ function pmpro_filter_core_blocks( $block_content, $block ) {
 		'segment' => 'all',
 		'levels' => array(),
 		'show_noaccess' => '0',
-		'invert_restrictions' => '0',
+		 'invert_restrictions' => '0',
 	) );
 	return pmpro_apply_block_visibility( $attributes, $block_content );
 }
