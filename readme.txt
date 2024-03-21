@@ -16,7 +16,7 @@ Paid Memberships Pro is a complete solution to secure your content and create a 
 
 With over 28 ways to protect content, advanced membership management, and built-in recurring payment gateways, we provide you with everything you need to create an efficient and user-friendly membership site.
 
-Read about all of the plugin’s features at [Paid Memberships Pro](https://www.paidmembershipspro.com/)
+Read about all of the plugin’s features at [Paid Memberships Pro](https://www.paidmembershipspro.com/) or [launch a personal demo site now](https://try.pmproplugin.com) to test drive the full plugin and premium Add Ons for free.
 
 ### Built For Your Unique Type of Membership Site
 PMPro supports any kind of member-focused business or organization. With over 12 years of experience working with creators like you, this plugin delivers on what you need today and in the future. Select a use case to learn more about how we specialize in supporting your unique business:
