@@ -49,6 +49,9 @@ if($ml_id > 0) {
         }
     }
 
+    // delete the level group entry.
+    $wpdb->delete( $wpdb->pmpro_membership_levels_groups, array( 'level' => $ml_id ) );
+
     //delete the ml
     $sqlQuery = $wpdb->prepare( "
         DELETE FROM $wpdb->pmpro_membership_levels

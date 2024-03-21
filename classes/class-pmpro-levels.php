@@ -222,6 +222,9 @@ class PMPro_Membership_Level{
         if( $deleted_membership_users !== false ) {
             $r3 = true;
         }
+
+        // Remove the level from the level group.
+        $wpdb->delete( $wpdb->pmpro_membership_levels_groups, array( 'level' => $this->id ) );
             
         if ( $r1 == true && $r2 == true && $r3 == true ) {
             return true;
