@@ -576,9 +576,11 @@ if ( empty( $default_gateway ) ) {
 
 	<?php
 		do_action('pmpro_checkout_after_captcha');
-	?>
+		do_action("pmpro_checkout_before_submit_button");
 
-	<?php do_action("pmpro_checkout_before_submit_button"); ?>
+		// Add nonce.
+		wp_nonce_field( 'pmpro_checkout_nonce', 'pmpro_checkout_nonce' );
+	?>
 
 	<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_submit' ) ); ?>">
 		<hr />
