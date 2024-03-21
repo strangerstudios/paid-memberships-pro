@@ -618,6 +618,14 @@ use Braintree\WebhookNotification as Braintree_WebhookNotification;
 			//charge
 			try
 			{
+				/**
+				 * Filter the array of parameters to pass to the Braintree API for a sale transaction.
+				 *
+				 * @since TBD
+				 *
+				 * @param array $braintree_sale_array Array of parameters to pass to the Braintree API for a sale transaction.
+				 * @param array The new sale array.
+				 */
 				$braintree_sale_array = apply_filters( 'pmpro_braintree_transaction_sale_array', array(
 					'amount' => $amount,
 					'customerId' => $this->customer->id
@@ -936,6 +944,15 @@ use Braintree\WebhookNotification as Braintree_WebhookNotification;
 				if(!empty($order->TotalBillingCycles))
 					$details['numberOfBillingCycles'] = $order->TotalBillingCycles;
 
+				/**
+				 * Filter the Braintree Subscription create array.
+				 *
+				 * @since TBD
+				 *
+				 * @param array $details Array of details to create the subscription.
+				 * @return array $details Array of details to create the subscription.
+				 */
+				$details = apply_filters( 'pmpro_braintree_subscription_create_array', $details);
 				$result = Braintree_Subscription::create($details);
 			}
 			catch (Exception $e)
