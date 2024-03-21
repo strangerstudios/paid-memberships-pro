@@ -227,6 +227,33 @@
 		private $checkout_id = '';	
 
 		/**
+		 * The discount code ID that was used for this order.
+		 *
+		 * This property is being added in PMPro v3.0 with the intention
+		 * of adding a new column to the pmpro_membership_orders table duringe next
+		 * major release. For now, we need to have code to "fake" this property.
+		 * For now, this property will be initialized to `null` and will be set to an int
+		 * when this property is accessed.
+		 *
+		 * Step 1 (v3.0): Create abstracted function for modifying/searching the discount code ID.
+		 * Step 2 (At least 1 year later): Update Add Ons to use the new abstracted functions.
+		 * Step 3 (Next major release after all Add Ons updated): Add new column to the pmpro_membership_orders
+		 *        table for the discount code ID, update the abstracted functions to use the new column, create
+		 *        migration script to move the discount code ID from the pmpro_discount_codes_uses table to the
+		 *        new column in the pmpro_membership_orders table, and finally, drop the pmpro_discount_codes_uses table.
+		 *
+		 * Search "@DISCOUNT_CODE_ID_TODO" to find the places where we need to update
+		 * the code to use the new column when we add it.
+		 *
+		 * `0` means no discount code was used, any other int is the ID of the discount code used.
+		 *
+		 * @since 3.0
+		 *
+		 * @var int|null
+		 */
+		private $discount_code_id = null;
+
+		/**
 		 * Defines an array of optionally used properties
 		 *
 		 * @since 2.9
@@ -286,6 +313,20 @@
 		 * @return mixed|void
 		 */
 		public function __get( $property ) {
+			/**
+			 * Special case. We want to add `discount_code_id` as a property/db column in the future.
+			 * For now, we should support `discount_code_id` as a "property" by adding it here and
+			 * querying the pmpro_discount_codes_uses table for the discount code ID.
+			 *
+			 * @DISCOUNT_CODE_ID_TODO
+			 */
+			if ( $property == 'discount_code_id' ) {
+				if ( null === $this->discount_code_id ) {
+					// Get the discount code ID from the pmpro_discount_codes_uses table.
+					$this->getDiscountCode( true );
+				}
+				return $this->discount_code_id;
+			}
 
 			if ( $property == 'other_properties' ) {
 				return; //We don't want the actual other_properties array to be changed
@@ -315,6 +356,17 @@
 
 			if ( $property == 'other_properties' ) {
 				return; //We don't want the actual other_properties array to be changed
+			}
+
+			/**
+			 * Special case. We want to add `discount_code_id` as a property/db column in the future.
+			 * For now, `discount_code_id` may be null or an int. But if being updated, we always want it to be an int.
+			 *
+			 * @DISCOUNT_CODE_ID_TODO
+			 */
+			if ( $property == 'discount_code_id' ) {
+				$this->discount_code_id = (int) $value;
+				return;
 			}
 
 			if ( property_exists( $this, $property ) ) {
@@ -430,16 +482,16 @@
 			// Check if we are going to return the count of orders.
 			$return_count = isset( $args['return_count'] ) ? (bool) $args['return_count'] : false;
 
-			$sql_query = $return_count ? "SELECT COUNT(*) FROM `$wpdb->pmpro_membership_orders`" : "SELECT `id` FROM `$wpdb->pmpro_membership_orders`";
+			$sql_query = $return_count ? "SELECT COUNT(*) FROM `$wpdb->pmpro_membership_orders`" : "SELECT `o`.`id` FROM `$wpdb->pmpro_membership_orders` `o`";
 
 			$prepared = array();
 			$where    = array();
 
-			$orderby  = isset( $args['orderby'] ) ? $args['orderby'] : '`timestamp` DESC';
+			$orderby  = isset( $args['orderby'] ) ? $args['orderby'] : '`o`.`timestamp` DESC';
 			$limit    = isset( $args['limit'] ) ? (int) $args['limit'] : 100;
 
 			// Detect unsupported orderby usage (in the future we may support better syntax).
-			if ( $orderby !== preg_replace( '/[^a-zA-Z0-9\s,`]/', ' ', $orderby ) ) {
+			if ( $orderby !== preg_replace( '/[^a-zA-Z0-9\s,.`]/', ' ', $orderby ) ) {
 				return array();
 			}
 
@@ -545,6 +597,24 @@
 					$prepared = array_merge( $prepared, $args['payment_transaction_id'] );
 				}
 			}
+
+			// Filter by discount code ID
+			/**
+			 * Special case. Eventually, we want to add `discount_code_id` as a property/db column. But
+			 * for now, we need to query the pmpro_discount_codes_uses table for the discount code ID.
+			 *
+			 * @DISCOUNT_CODE_ID_TODO
+			 */
+			if ( isset( $args['discount_code_id'] ) ) {
+				$sql_query .= " LEFT JOIN `$wpdb->pmpro_discount_codes_uses` `dcu` ON `dcu`.`order_id` = `o`.`id`";
+				if ( ! is_array( $args['discount_code_id'] ) ) {
+					$where[]    = '`dcu`.`code_id` = %d';
+					$prepared[] = $args['discount_code_id'];
+				} else {
+					$where[]  = 'dcu.code_id IN ( ' . implode( ', ', array_fill( 0, count( $args['discount_code_id'] ), '%d' ) ) . ' )';
+					$prepared = array_merge( $prepared, $args['discount_code_id'] );
+				}
+      }
 
 			// Filter by date range by start date. (YYYY-MM-DD HH:MM:SS UTC)
 			if ( isset( $args['start_date'] ) ) {
@@ -974,6 +1044,13 @@
 			//filter @since v1.7.14
 			$this->discount_code = apply_filters("pmpro_order_discount_code", $this->discount_code, $this);
 
+			/**
+			 * Special case. We want to add `discount_code_id` as a property/db column in the future.
+			 * For now, save the discount code ID as a property on the order object.
+			 *
+			 * @DISCOUNT_CODE_ID_TODO
+			 */
+			$this->discount_code_id = ! empty( $this->discount_code ) ? $this->discount_code->id : 0;
 			return $this->discount_code;
 		}
 
@@ -1373,6 +1450,18 @@
 			{
 				if(empty($this->id))
 					$this->id = $wpdb->insert_id;
+
+				/**
+				 * Special case. We want to add `discount_code_id` as a property/db column in the future.
+				 * For now, if we are saving an order with a non-null discount_code_id property,
+				 * call updateDiscountCode to save the discount code use in the current pmpro_discount_codes_uses table.
+				 *
+				 * @DISCOUNT_CODE_ID_TODO
+				 */
+				if ( null !== $this->discount_code_id ) {
+					$this->updateDiscountCode( $this->discount_code_id );
+				}
+
 				do_action($after_action, $this);
 
 				// Create a subscription if we need to.
