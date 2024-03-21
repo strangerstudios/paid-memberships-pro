@@ -964,6 +964,7 @@ class PMPro_Field {
 			if(!empty($this->readonly))
 				$r .= 'disabled="disabled" ';
 			$r .= 'name="' . esc_attr( $this->name ) . '" />';
+			$r .= '</div>';
 
 		}
         elseif($this->type == "date")
