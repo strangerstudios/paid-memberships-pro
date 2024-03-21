@@ -947,7 +947,7 @@
 			}
 
 			if(!empty($membership_id) && is_array($membership_id)) {
-				$this->sqlQuery .= "AND membership_id IN('" . implode( "','", array_map( 'esc_sql', $membership_id ) ) . "') ";
+				$this->sqlQuery .= "AND membership_id IN(" . implode( ",", array_map( 'esc_sql', $membership_id ) ) . ") ";
 			} elseif(!empty($membership_id)) {
 				$this->sqlQuery .= "AND membership_id = '" . esc_sql( $membership_id ) . "' ";
 			}
