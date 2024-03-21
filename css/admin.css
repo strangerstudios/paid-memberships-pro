@@ -2015,6 +2015,11 @@ table.pmprommpu_levels tr.remove_level td {background: #F2DEDE; }
 	padding: var(--pmpro--spacing--medium);
 }
 
+.pmpro_display-field-date {
+	align-items: center;
+	display: flex;
+}
+
 /**
  * Advanced Settings 
  */
