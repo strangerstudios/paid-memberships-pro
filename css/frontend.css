@@ -230,6 +230,11 @@ form.pmpro_form .pmpro_checkout-field-date input[type=text] {
 	width: unset;
 }
 
+/** File-specific field type **/
+form.pmpro_form .pmpro_checkout-field-file button {
+	margin-right: 5px;
+}
+
 /** Membership Checkout and Billing-specific Fields **/
 form.pmpro_form #pmpro_payment_information_fields .pmpro_checkout-fields label {
 	display: block;
@@ -386,6 +391,7 @@ select.pmpro_error {
 }
 
 #wpadminbar .menupop .ab-item:has(.pmpro_admin-view) + .ab-sub-wrapper select {
+	background-color: #FFF;
 	border-radius: 6px;
 	line-height: 1.5;
 	padding: 5px 8px;
@@ -783,6 +789,9 @@ li.pmpro_more {
 /*---------------------------------------
 	Misc
 ---------------------------------------*/
+.pmpro_content_message {
+	margin-bottom: 1em;
+}
 .pmpro_actions_nav:not(.pmpro_login_wrap .pmpro_actions_nav) {
 	display: flex;
 	flex-wrap: wrap;

@@ -3909,7 +3909,10 @@ class PMProGateway_stripe extends PMProGateway {
 
 			//Make sure we're refunding an order that was successful
 			if ( $refund->status != 'failed' ) {
-				$order->status = 'refunded';	
+				// Set the order to refunded status and save immediately.
+				// This helps to eliminate a race condition where the Stripe webhook may try to set the order status and send the refund email again.
+				$order->status = 'refunded';
+				$order->saveOrder();	
 
 				$success = true;
 			

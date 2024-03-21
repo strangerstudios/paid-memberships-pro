@@ -168,7 +168,8 @@ function pmpro_search_filter_pmpro_pages( $query ) {
 	}
 
 	// We're good. Remove the PMPro pages from the results.
-	$query->set( 'post__not_in', array_merge( $query->get('post__not_in'), array_filter( array_values( $pmpro_pages ) ) ) );
+	$pmpro_page_ids = empty( $pmpro_pages ) ? array() : array_filter( array_values( $pmpro_pages ) );
+	$query->set( 'post__not_in', array_merge( $query->get('post__not_in'), $pmpro_page_ids ) );
 
 	return $query;
 }
