@@ -1046,6 +1046,7 @@
 			 * @DISCOUNT_CODE_ID_TODO
 			 */
 			$this->discount_code_id = ! empty( $this->discount_code ) ? $this->discount_code->id : 0;
+			return $this->discount_code;
 		}
 
 		/**
