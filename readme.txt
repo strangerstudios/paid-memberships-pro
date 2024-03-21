@@ -43,7 +43,7 @@ PMPro supports any kind of member-focused business or organization. With over 12
 = Membership Management Features =
 
 * Unlimited Levels: Create distinct pricing and content access for each level
-* Multiple Memberships Per User: Sell multiple membership types and membership add ons
+* Multiple Memberships Per User: Increase LTV by selling multiple membership types, allowing members to hold more than one active subscription simultaneously.
 * Group Memberships: Offer child accounts linked to a paying parent account for umbrella memberships
 * User Fields by Level: Capture custom profile info by membership level
 * Email Communications: Customize content and design of every message
