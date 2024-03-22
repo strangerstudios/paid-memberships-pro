@@ -107,7 +107,7 @@ function pmpro_lifter_membership_content_filter( $filtered_content, $original_co
 			$post_membership_levels_names = $hasaccess[2];
 			$hasaccess = $hasaccess[0];
 			if ( ! $hasaccess ) {
-				echo pmpro_get_no_access_message( '', $post_membership_levels_ids, $post_membership_levels_names );
+				echo wp_kses_post( pmpro_get_no_access_message( '', $post_membership_levels_ids, $post_membership_levels_names ) );
 			}
 		}
 		
@@ -364,7 +364,7 @@ function pmpro_lifter_intro_html( $html, $wizard ) {
 
 				// If we are running this on load, add a nonce to the URL.
 				if (onload) {
-					$link.attr('href', $link.attr('href') + '&pmpro_lifter_streamline_nonce=<?php echo wp_create_nonce( 'pmpro_lifter_streamline_nonce' ); ?>');
+					$link.attr('href', $link.attr('href') + '&pmpro_lifter_streamline_nonce=<?php echo esc_attr( wp_create_nonce( 'pmpro_lifter_streamline_nonce' ) ); ?>');
 				}
 
 				//If the checkbox is checked, add streamline to the url
@@ -420,7 +420,7 @@ function pmpro_lifter_save_streamline_option() {
 
 	// We are trying to set the streamline option. Check the nonce.
 	if ( ! isset( $_REQUEST['pmpro_lifter_streamline_nonce'] ) || ! wp_verify_nonce( sanitize_key( $_REQUEST['pmpro_lifter_streamline_nonce'] ), 'pmpro_lifter_streamline_nonce' ) ) {
-		wp_die( __( 'Security check failed.', 'paid-memberships-pro' ), '', array( 'response' => 403 ) );
+		wp_die( esc_html__( 'Security check failed.', 'paid-memberships-pro' ), '', array( 'response' => 403 ) );
 	}
 
 	// Get the streamline value.
