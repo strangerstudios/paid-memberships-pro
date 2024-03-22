@@ -540,7 +540,7 @@ class PMPro_Orders_List_Table extends WP_List_Table {
 					echo 'error';
 				}
 				?>
-				"><p><?php echo $pmpro_msg; ?></p></div>
+				"><p><?php echo esc_html( $pmpro_msg ); ?></p></div>
 			<?php } ?>
 
 			<div class="tablenav top">
@@ -1033,7 +1033,7 @@ class PMPro_Orders_List_Table extends WP_List_Table {
 			}
 
 			if ( ! empty( $actions_html ) ) {
-				echo implode( ' | ', $actions_html );
+				echo wp_kses_post( implode( ' | ', $actions_html ) );
 			}
 			?>
 		</div>
@@ -1087,7 +1087,7 @@ class PMPro_Orders_List_Table extends WP_List_Table {
 	 */
 	public function column_total( $item ) {
 
-		echo pmpro_escape_price( pmpro_formatPrice( $item->total ) );
+		echo pmpro_escape_price( pmpro_formatPrice( $item->total ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 
 		// If there is a discount code, show it.
 		if ( $item->getDiscountCode() ) {
@@ -1149,7 +1149,7 @@ class PMPro_Orders_List_Table extends WP_List_Table {
 		}
 
 		// Echo the data for this column.
-		echo $r;
+		echo $r; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		
 	}
 
@@ -1166,7 +1166,7 @@ class PMPro_Orders_List_Table extends WP_List_Table {
 
 		if ( ! empty( $item->gateway ) ) {
 			if ( ! empty( $pmpro_gateways[$item->gateway] ) ) {
-				echo $pmpro_gateways[$item->gateway];
+				echo esc_html( $pmpro_gateways[$item->gateway] );
 			} else {
 				echo esc_html( ucwords( $item->gateway ) );
 			}

@@ -536,7 +536,7 @@ class PMPro_Field {
 			
 			//let's not expect more than 50 files with the same name
 			if($count > 50)
-				die( __( "Error uploading file. Too many files with the same name.", "paid-memberships-pro" ) );
+				die( esc_html__( "Error uploading file. Too many files with the same name.", "paid-memberships-pro" ) );
 		}
 
 		$file_path = $dir_path . $filename;
@@ -610,7 +610,7 @@ class PMPro_Field {
 	//echo the HTML for the field
 	function display($value = NULL)
 	{
-		echo $this->getHTML($value);
+		echo wp_kses_post( $this->getHTML($value) );
 		return;
 	}
 	
@@ -1124,7 +1124,7 @@ class PMPro_Field {
 					<?php
 					foreach( $checks_escaped as $check_escaped ) {
 					?>
-					checks.push(<?php echo $check_escaped;?>);
+					checks.push(<?php echo $check_escaped; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>);
 					<?php
 					}
 					
@@ -1154,7 +1154,7 @@ class PMPro_Field {
 						pmprorh_<?php echo esc_html( $this->id );?>_hideshow();
 						
 						//and run when certain fields are changed
-						jQuery('<?php echo implode(',', $binds);?>').bind('click change keyup', function() {
+						jQuery('<?php echo implode(',', $binds); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>').bind('click change keyup', function() {
 							pmprorh_<?php echo esc_html( $this->id );?>_hideshow();
 						});
 				});
@@ -1296,7 +1296,7 @@ class PMPro_Field {
 					if(current_user_can("edit_user", $user_id) && $edit !== false)
 						$this->display($value);
 					else
-						echo "<div>" . $this->displayValue($value) . "</div>";
+						echo "<div>" . wp_kses_post( $this->displayValue($value) ) . "</div>";
 				?>
 				<?php if(!empty($this->hint)) { ?>
 					<small class="lite"><?php echo wp_kses_post( $this->hint );?></small>
