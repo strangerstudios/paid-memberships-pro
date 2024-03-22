@@ -446,6 +446,14 @@
 		<?php
 	} else {
 		// User does not have a membership level.
-		printf( __( "You do not have an active membership. <a href='%s'>Choose a membership level.</a>", 'paid-memberships-pro' ), esc_url( pmpro_url( 'levels' ) ) );
+		$allowed_html = array(
+			'a' => array(
+				'href' => array(),
+				'title' => array(),
+				'target' => array(),
+				'rel' => array(),
+			),
+		);
+		echo wp_kses( sprintf( __( "You do not have an active membership. <a href='%s'>Choose a membership level.</a>", 'paid-memberships-pro' ), esc_url( pmpro_url( 'levels' ) ) ), $allowed_html );
 	} ?>
 </div> <!-- end pmpro_billing_wrap -->
