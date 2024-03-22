@@ -8,6 +8,6 @@ if ( function_exists( 'apply_shortcodes' ) ) {
 	$output = do_shortcode( '[pmpro_member_profile_edit]' );
 }
 ?>
-<div <?php echo get_block_wrapper_attributes(); ?>>
-    <?php echo $output; ?>
+<div <?php echo get_block_wrapper_attributes(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
+    <?php echo wp_kses_post( $output ); ?>
 </div>

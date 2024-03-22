@@ -21,6 +21,6 @@ $str_atts = '';
 	$atts = [ 'sections' => $str_atts ];
 	$output = pmpro_shortcode_account( $atts );
 ?>
-<div <?php echo get_block_wrapper_attributes(); ?>>
-	<?php echo $output; ?>
+<div <?php echo get_block_wrapper_attributes(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
+	<?php echo wp_kses_post( $output ); ?>
 </div>
