@@ -1,15 +1,15 @@
 # Copyright (C) 2024 Paid Memberships Pro
-# This file is distributed under the same license as the Paid Memberships Pro - v3.0 RC3 plugin.
+# This file is distributed under the same license as the Paid Memberships Pro - v3.0 RC4 plugin.
 msgid ""
 msgstr ""
-"Project-Id-Version: Paid Memberships Pro - v3.0 RC3 2.99.996\n"
+"Project-Id-Version: Paid Memberships Pro - v3.0 RC4 2.99.997\n"
 "Report-Msgid-Bugs-To: info@paidmembershipspro.com\n"
 "Last-Translator: Paid Memberships Pro <info@paidmembershipspro.com>\n"
 "Language-Team: Paid Memberships Pro <info@paidmembershipspro.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2024-03-01T20:11:51+00:00\n"
+"POT-Creation-Date: 2024-03-22T01:13:12+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.10.0\n"
 "X-Domain: paid-memberships-pro\n"
@@ -541,6 +541,7 @@ msgstr "WordPress.org"
 #: adminpages/memberslist-csv.php:441
 #: adminpages/memberslist-csv.php:446
 #: shortcodes/pmpro_account.php:276
+#: classes/class-pmpro-field.php:1363
 msgid "N/A"
 msgstr "Nicht verfügbar"
 
@@ -1334,6 +1335,7 @@ msgstr "Werbung vor Mitgliedern verstecken?"
 #: includes/fields.php:1260
 #: includes/fields.php:1439
 #: includes/fields.php:1453
+#: classes/class-pmpro-field.php:1333
 msgid "No"
 msgstr "Nein"
 
@@ -1563,6 +1565,7 @@ msgstr "nur Multisite"
 #: includes/fields.php:1430
 #: includes/fields.php:1440
 #: includes/fields.php:1451
+#: classes/class-pmpro-field.php:1333
 msgid "Yes"
 msgstr "Ja"
 
@@ -3562,6 +3565,7 @@ msgstr "Letzte Rechnung"
 #: adminpages/membershiplevels.php:251
 #: adminpages/levels/delete-level.php:64
 #: adminpages/levels/delete-level.php:62
+#: adminpages/levels/delete-level.php:65
 msgid "Membership level deleted successfully."
 msgstr "Paket erfolgreich gelöscht."
 
@@ -3584,6 +3588,8 @@ msgstr "Paket erfolgreich gelöscht."
 #: adminpages/levels/delete-level.php:72
 #: adminpages/levels/delete-level.php:65
 #: adminpages/levels/delete-level.php:70
+#: adminpages/levels/delete-level.php:68
+#: adminpages/levels/delete-level.php:73
 msgid "Error deleting membership level."
 msgstr "Fehler beim Löschen des Pakets."
 
@@ -9959,6 +9965,9 @@ msgstr "Übernehmen"
 #: classes/gateways/class.pmprogateway_braintree.php:858
 #: classes/gateways/class.pmprogateway_braintree.php:967
 #: classes/gateways/class.pmprogateway_braintree.php:994
+#: classes/gateways/class.pmprogateway_braintree.php:695
+#: classes/gateways/class.pmprogateway_braintree.php:866
+#: classes/gateways/class.pmprogateway_braintree.php:1011
 msgid "Payment error: Please contact the webmaster (braintree-load-error)"
 msgstr "Fehler bei der Zahlung: Bitte kontaktieren Sie Ihren Webmaster (braintree-load-error)"
 
@@ -10009,6 +10018,7 @@ msgstr "Unbekannter Fehler: Einmal-Zahlung fehlgeschlagen."
 #: classes/gateways/class.pmprogateway_braintree.php:596
 #: classes/gateways/class.pmprogateway_braintree.php:650
 #: classes/gateways/class.pmprogateway_braintree.php:660
+#: classes/gateways/class.pmprogateway_braintree.php:668
 msgid "Error during settlement:"
 msgstr "Fehler während der Abrechnung:"
 
@@ -10025,6 +10035,7 @@ msgstr "Fehler während der Abrechnung:"
 #: classes/gateways/class.pmprogateway_braintree.php:605
 #: classes/gateways/class.pmprogateway_braintree.php:659
 #: classes/gateways/class.pmprogateway_braintree.php:669
+#: classes/gateways/class.pmprogateway_braintree.php:677
 msgid "Error during charge:"
 msgstr "Fehler während der Abbuchung:"
 
@@ -10032,6 +10043,7 @@ msgstr "Fehler während der Abbuchung:"
 #: classes/gateways/class.pmprogateway_braintree.php:690
 #: classes/gateways/class.pmprogateway_braintree.php:750
 #: classes/gateways/class.pmprogateway_braintree.php:760
+#: classes/gateways/class.pmprogateway_braintree.php:768
 #, php-format
 msgid "Failed to update customer: %s"
 msgstr "Kunde konnte nicht aktualisiert werden: %s"
@@ -10050,6 +10062,7 @@ msgstr "Kunde konnte nicht aktualisiert werden: %s"
 #: classes/gateways/class.pmprogateway_braintree.php:703
 #: classes/gateways/class.pmprogateway_braintree.php:762
 #: classes/gateways/class.pmprogateway_braintree.php:772
+#: classes/gateways/class.pmprogateway_braintree.php:780
 msgid "Failed to update customer."
 msgstr "Kunde konnte nicht aktualisiert werden."
 
@@ -10067,6 +10080,7 @@ msgstr "Kunde konnte nicht aktualisiert werden."
 #: classes/gateways/class.pmprogateway_braintree.php:751
 #: classes/gateways/class.pmprogateway_braintree.php:810
 #: classes/gateways/class.pmprogateway_braintree.php:820
+#: classes/gateways/class.pmprogateway_braintree.php:828
 msgid "Failed to create customer."
 msgstr "Kunde konnte nicht angelegt werden."
 
@@ -10084,6 +10098,7 @@ msgstr "Kunde konnte nicht angelegt werden."
 #: classes/gateways/class.pmprogateway_braintree.php:758
 #: classes/gateways/class.pmprogateway_braintree.php:817
 #: classes/gateways/class.pmprogateway_braintree.php:827
+#: classes/gateways/class.pmprogateway_braintree.php:835
 msgid "Error creating customer record with Braintree:"
 msgstr "Braintree meldet einen Fehler bei der Erstellung des Kunden Protokolls:"
 
@@ -10169,6 +10184,7 @@ msgstr "Braintree meldet einen Fehler beim Einrichten des Abos für den Kunden:"
 #: classes/gateways/class.pmprogateway_braintree.php:1036
 #: classes/gateways/class.pmprogateway_braintree.php:1046
 #: classes/gateways/class.pmprogateway_braintree.php:1047
+#: classes/gateways/class.pmprogateway_braintree.php:1064
 msgid "Could not find the subscription."
 msgstr "Abonnement konnte nicht gefunden werden."
 
@@ -10603,6 +10619,7 @@ msgstr "Zahlung mit PayPal abschließen"
 #: classes/gateways/class.pmprogateway_paypalstandard.php:248
 #: pages/checkout.php:609
 #: classes/gateways/class.pmprogateway_paypalexpress.php:536
+#: pages/checkout.php:611
 msgid "Submit and Check Out"
 msgstr "Zahlung bestätigen"
 
@@ -10651,6 +10668,7 @@ msgstr "Zahlung bestätigen"
 #: classes/gateways/class.pmprogateway_paypalstandard.php:248
 #: pages/checkout.php:609
 #: classes/gateways/class.pmprogateway_paypalexpress.php:536
+#: pages/checkout.php:611
 msgid "Submit and Confirm"
 msgstr "Senden und Bestätigen"
 
@@ -16031,6 +16049,7 @@ msgstr "Ich stimme der %s zu"
 #: pages/checkout.php:564
 #: pages/checkout.php:565
 #: pages/checkout.php:597
+#: pages/checkout.php:599
 msgid "Complete Payment"
 msgstr "Zahlung abschließen"
 
@@ -16053,6 +16072,7 @@ msgstr "Zahlung abschließen"
 #: pages/checkout.php:586
 #: pages/checkout.php:587
 #: pages/checkout.php:619
+#: pages/checkout.php:621
 msgid "Processing..."
 msgstr "wird bearbeitet..."
 
@@ -16587,6 +16607,7 @@ msgstr "Leider konnte Ihre Anfrage nicht durchgeführt werden. Bitte versuchen S
 #: preheaders/billing.php:204
 #: preheaders/checkout.php:334
 #: preheaders/billing.php:213
+#: preheaders/checkout.php:344
 msgid "Please complete all required fields."
 msgstr "Füllen Sie bitte alle erforderlichen Felder aus."
 
@@ -16617,6 +16638,7 @@ msgstr "Füllen Sie bitte alle erforderlichen Felder aus."
 #: preheaders/billing.php:207
 #: preheaders/checkout.php:342
 #: preheaders/billing.php:216
+#: preheaders/checkout.php:352
 msgid "Your email addresses do not match. Please try again."
 msgstr "Ihre E-Mail Adressen stimmen nicht überein. Bitte versuchen Sie es erneut."
 
@@ -16647,6 +16669,7 @@ msgstr "Ihre E-Mail Adressen stimmen nicht überein. Bitte versuchen Sie es erne
 #: preheaders/billing.php:210
 #: preheaders/checkout.php:347
 #: preheaders/billing.php:219
+#: preheaders/checkout.php:357
 msgid "The email address entered is in an invalid format. Please try again."
 msgstr "Ihre eingegebene E-Mail Adresse ist ungültig. Bitte versuchen Sie es erneut."
 
@@ -16753,6 +16776,7 @@ msgstr "Ihre Mitgliedschaft wurde storniert."
 #: preheaders/checkout.php:37
 #: preheaders/checkout.php:363
 #: preheaders/checkout.php:356
+#: preheaders/checkout.php:366
 msgid "Invalid gateway."
 msgstr "Ungültiger Zugang."
 
@@ -16784,6 +16808,7 @@ msgstr "Konto einrichten"
 #: preheaders/checkout.php:301
 #: preheaders/checkout.php:306
 #: preheaders/checkout.php:299
+#: preheaders/checkout.php:309
 msgid "There are JavaScript errors on the page. Please contact the webmaster."
 msgstr "Es gibt JavaScript-Fehler auf der Seite. Bitte kontaktieren Sie den Seiteninhaber."
 
@@ -16798,6 +16823,7 @@ msgstr "Es gibt JavaScript-Fehler auf der Seite. Bitte kontaktieren Sie den Seit
 #: preheaders/checkout.php:486
 #: preheaders/checkout.php:344
 #: preheaders/checkout.php:337
+#: preheaders/checkout.php:347
 msgid "Your passwords do not match. Please try again."
 msgstr "Die Passwörter stimmen nicht überein. Bitte versuchen Sie es erneut."
 
@@ -16813,6 +16839,7 @@ msgstr "Die Passwörter stimmen nicht überein. Bitte versuchen Sie es erneut."
 #: preheaders/checkout.php:504
 #: preheaders/checkout.php:359
 #: preheaders/checkout.php:352
+#: preheaders/checkout.php:362
 #, php-format
 msgid "Please check the box to agree to the %s."
 msgstr "Bestätigen Sie bitte, dass Sie mit der %s einverstanden sind."
@@ -16828,6 +16855,7 @@ msgstr "Bestätigen Sie bitte, dass Sie mit der %s einverstanden sind."
 #: preheaders/checkout.php:513
 #: preheaders/checkout.php:366
 #: preheaders/checkout.php:359
+#: preheaders/checkout.php:369
 msgid "Are you a spammer?"
 msgstr "Sind Sie ein Spammer?"
 
@@ -16844,6 +16872,7 @@ msgstr "Sind Sie ein Spammer?"
 #: preheaders/checkout.php:382
 #: preheaders/checkout.php:387
 #: preheaders/checkout.php:380
+#: preheaders/checkout.php:390
 msgid "That username is already taken. Please try another."
 msgstr "Dieser Benutzername wird bereits verwendet. Bitte versuchen Sie einen anderen."
 
@@ -16851,6 +16880,7 @@ msgstr "Dieser Benutzername wird bereits verwendet. Bitte versuchen Sie einen an
 #: preheaders/checkout.php:387
 #: preheaders/checkout.php:392
 #: preheaders/checkout.php:385
+#: preheaders/checkout.php:395
 msgid "That email address is already in use. Please log in, or use a different email address."
 msgstr "Diese E-Mail Adresse wird bereits verwendet. Bitte loggen Sie sich damit ein oder verrsuchen Sie es mit einer anderen."
 
@@ -16874,6 +16904,7 @@ msgstr "Diese E-Mail Adresse wird bereits verwendet. Bitte loggen Sie sich damit
 #: preheaders/billing.php:166
 #: preheaders/billing.php:198
 #: preheaders/billing.php:207
+#: preheaders/checkout.php:407
 #, php-format
 msgid "reCAPTCHA failed. (%s) Please try again."
 msgstr "reCAPTCHA fehlgeschlagen. (%s) Bitte versuchen Sie es erneut."
@@ -16917,6 +16948,7 @@ msgstr "Zahlung erfolgreich."
 #: preheaders/checkout.php:543
 #: preheaders/checkout.php:546
 #: preheaders/checkout.php:506
+#: preheaders/checkout.php:516
 msgid "Unknown error generating account. Please contact us to set up your membership."
 msgstr "Unbekannter Fehler beim Erstellen des Kontos. Bitte kontaktieren Sie uns um Ihren Konto einzurichten."
 
@@ -16968,6 +17000,7 @@ msgstr "Ihre Zahlung war erfolgreich, aber es gab leider einen Fehler beim Einri
 #: preheaders/checkout.php:780
 #: preheaders/checkout.php:800
 #: preheaders/checkout.php:783
+#: preheaders/checkout.php:793
 msgid "IMPORTANT: Something went wrong during membership creation. Your credit card authorized, but we cancelled the order immediately. You should not try to submit this form again. Please contact the site owner to fix this issue."
 msgstr "WICHTIG: Bei der Anmeldung gab es leider einen Fehler. Ihre Kreditkarte wurde verifiziert, aber der Vorgang wurde von uns abgebrochen. Versuchen Sie bitte nicht erneut, das Formular abzusenden und kontaktieren Sie den Betreiber dieser Seite um den Fehler zu korrigieren."
 
@@ -16998,6 +17031,7 @@ msgstr "WICHTIG: Bei der Anmeldung gab es leider einen Fehler. Ihre Kreditkarte 
 #: preheaders/checkout.php:783
 #: preheaders/checkout.php:803
 #: preheaders/checkout.php:786
+#: preheaders/checkout.php:796
 msgid "IMPORTANT: Something went wrong during membership creation. Your credit card was charged, but we couldn't assign your membership. You should not submit this form again. Please contact the site owner to fix this issue."
 msgstr "WICHTIG: Bei der Anmeldung gab es leider einen Fehler. Ihre Kreditkarte wurde belastet, aber wir konnten Ihre Mitgliedschaft nicht einrichten. Bitte senden Sie das Formular nicht erneut und kontaktieren Sie den Betreiber dieser Seite um dieses Problem zu lösen."
 
@@ -17028,6 +17062,7 @@ msgstr "WICHTIG: Bei der Anmeldung gab es leider einen Fehler. Ihre Kreditkarte 
 #: preheaders/checkout.php:795
 #: preheaders/checkout.php:814
 #: preheaders/checkout.php:798
+#: preheaders/checkout.php:808
 #, php-format
 msgid "You must <a href=\"%s\">set up a Payment Gateway</a> before any payments will be processed."
 msgstr "Sie müssen <a href=\"%s\">einen Zahlungsdienstleister auswählen</a> damit Zahlungen durchgeführt werden können."
@@ -17059,6 +17094,7 @@ msgstr "Sie müssen <a href=\"%s\">einen Zahlungsdienstleister auswählen</a> da
 #: preheaders/checkout.php:797
 #: preheaders/checkout.php:816
 #: preheaders/checkout.php:800
+#: preheaders/checkout.php:810
 msgid "A Payment Gateway must be set up before any payments will be processed."
 msgstr "Ein Zahlungsdienstleister muss ausgewählt werden, bevor Zahlungen erfolgen können."
 
@@ -20024,6 +20060,7 @@ msgstr "Bestellung bearbeiten"
 #: classes/class.memberorder.php:1676
 #: classes/class.memberorder.php:1681
 #: classes/class.memberorder.php:1637
+#: classes/class.memberorder.php:1754
 msgid "This is a test order used with the PMPro Email Templates addon."
 msgstr "Dies ist ein Testauftrag, der mit dem Addon PMPro E-Mail Templates verwendet wird."
 
@@ -20176,11 +20213,13 @@ msgstr "Zahlungsvorgang erforderlich: Mitgliedschaft für %s bei %s"
 
 #: classes/gateways/class.pmprogateway_braintree.php:933
 #: classes/gateways/class.pmprogateway_braintree.php:943
+#: classes/gateways/class.pmprogateway_braintree.php:960
 msgid "Error subscribing customer to plan with Braintree: %s (%s)"
 msgstr "Fehler beim Abonnieren eines Kunden für einen Tarif mit Braintree: %s (%s)"
 
 #: classes/gateways/class.pmprogateway_braintree.php:948
 #: classes/gateways/class.pmprogateway_braintree.php:958
+#: classes/gateways/class.pmprogateway_braintree.php:975
 msgid "Failed to subscribe with Braintree: %s"
 msgstr "Anmeldung bei Braintree fehlgeschlagen: %s"
 
@@ -20189,6 +20228,8 @@ msgstr "Anmeldung bei Braintree fehlgeschlagen: %s"
 #: classes/gateways/class.pmprogateway_braintree.php:1028
 #: classes/gateways/class.pmprogateway_braintree.php:1039
 #: classes/gateways/class.pmprogateway_braintree.php:1040
+#: classes/gateways/class.pmprogateway_braintree.php:1046
+#: classes/gateways/class.pmprogateway_braintree.php:1057
 msgid "Could not find the subscription. %s"
 msgstr "Das Abonnement konnte nicht gefunden werden. %s"
 
@@ -20196,6 +20237,8 @@ msgstr "Das Abonnement konnte nicht gefunden werden. %s"
 #: classes/gateways/class.pmprogateway_braintree.php:1092
 #: classes/gateways/class.pmprogateway_braintree.php:1093
 #: classes/gateways/class.pmprogateway_braintree.php:1142
+#: classes/gateways/class.pmprogateway_braintree.php:1110
+#: classes/gateways/class.pmprogateway_braintree.php:1159
 msgid "Error getting subscription with Braintree:"
 msgstr "Fehler beim Abonnieren mit Braintree:"
 
@@ -23550,6 +23593,7 @@ msgstr "Aktuelles Passwort"
 #: includes/profile.php:1283
 #: includes/profile.php:1288
 #: includes/profile.php:1295
+#: classes/class-pmpro-field.php:1251
 msgid "Required Field"
 msgstr "Pflichtfeld"
 
@@ -25367,6 +25411,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_paypalexpress.php:1227
 #: classes/gateways/class.pmprogateway_stripe.php:3892
 #: classes/gateways/class.pmprogateway_stripe.php:3918
+#: classes/gateways/class.pmprogateway_stripe.php:3921
 msgid "Admin: Order successfully refunded on %1$s for transaction ID %2$s by %3$s."
 msgstr ""
 
@@ -26197,6 +26242,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:5006
 #: classes/gateways/class.pmprogateway_stripe.php:3904
 #: classes/gateways/class.pmprogateway_stripe.php:3930
+#: classes/gateways/class.pmprogateway_stripe.php:3933
 msgid "Admin: An error occured while attempting to process this refund."
 msgstr ""
 
@@ -26242,6 +26288,8 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:3910
 #: classes/gateways/class.pmprogateway_stripe.php:3934
 #: classes/gateways/class.pmprogateway_stripe.php:3936
+#: classes/gateways/class.pmprogateway_stripe.php:3937
+#: classes/gateways/class.pmprogateway_stripe.php:3939
 msgid "Admin: There was a problem processing the refund"
 msgstr ""
 
@@ -27193,6 +27241,7 @@ msgstr ""
 #: classes/class-pmpro-field.php:896
 #: classes/class-pmpro-field.php:898
 #: classes/class-pmpro-field.php:1364
+#: classes/class-pmpro-field.php:1365
 msgid "Current File: %s"
 msgstr ""
 
@@ -28672,6 +28721,7 @@ msgstr ""
 #: preheaders/checkout.php:484
 #: preheaders/checkout.php:451
 #: preheaders/checkout.php:444
+#: preheaders/checkout.php:454
 msgid "There was an error setting up your account. Please contact us."
 msgstr ""
 
@@ -30639,6 +30689,7 @@ msgid "Authorize.net error:"
 msgstr ""
 
 #: classes/gateways/class.pmprogateway_braintree.php:1134
+#: classes/gateways/class.pmprogateway_braintree.php:1151
 msgid "Cannot access Braintree API."
 msgstr ""
 
@@ -31968,4 +32019,13 @@ msgstr ""
 #. Plugin Name of the plugin
 #: paid-memberships-pro.php
 msgid "Paid Memberships Pro - v3.0 RC3"
+msgstr ""
+
+#. Plugin Name of the plugin
+#: paid-memberships-pro.php
+msgid "Paid Memberships Pro - v3.0 RC4"
+msgstr ""
+
+#: preheaders/checkout.php:303
+msgid "Nonce security check failed."
 msgstr ""
