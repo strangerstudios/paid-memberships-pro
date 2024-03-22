@@ -1,7 +1,7 @@
 <?php
 // only admins can get this
 if ( ! function_exists( 'current_user_can' ) || ( ! current_user_can( 'manage_options' ) && ! current_user_can( 'pmpro_orders' ) ) ) {
-	die( __( 'You do not have permissions to perform this action.', 'paid-memberships-pro' ) );
+	die( esc_html__( 'You do not have permissions to perform this action.', 'paid-memberships-pro' ) );
 }
 
 // vars
@@ -311,7 +311,7 @@ require_once( dirname( __FILE__ ) . '/admin_header.php' ); ?>
 			echo 'error';
 		}
 		?>
-		"><p><?php echo $pmpro_msg; ?></p></div>
+		"><p><?php echo esc_html( $pmpro_msg ); ?></p></div>
 	<?php } ?>
 
 	<form method="post" action="">
@@ -424,7 +424,7 @@ require_once( dirname( __FILE__ ) . '/admin_header.php' ); ?>
 
 										?>
 										<select id="membership_id" name="membership_id">
-											<option value="0" <?php selected( $membership_id, 0 ); ?>>-- <?php _e("None", 'paid-memberships-pro' );?> --</option>
+											<option value="0" <?php selected( $membership_id, 0 ); ?>>-- <?php esc_html_e("None", 'paid-memberships-pro' );?> --</option>
 											<?php
 											// If the current membership level is not in the list, add it as "ID {membership_id} [deleted]".
 											if ( ! empty( $membership_id ) && ! in_array( $membership_id, wp_list_pluck( $levels, 'id' ) ) ) {
@@ -600,7 +600,7 @@ require_once( dirname( __FILE__ ) . '/admin_header.php' ); ?>
 									}
 								} else { ?>
 									<select id="discount_code_id" name="discount_code_id">
-										<option value="0" <?php selected( $discount_code_id, 0); ?>>-- <?php _e("None", 'paid-memberships-pro' );?> --</option>
+										<option value="0" <?php selected( $discount_code_id, 0); ?>>-- <?php esc_html_e("None", 'paid-memberships-pro' );?> --</option>
 										<?php foreach ( $codes as $code ) { ?>
 											<option value="<?php echo esc_attr( $code->id ); ?>" <?php selected( $discount_code_id, $code->id ); ?>><?php echo esc_html( $code->code ); ?></option>
 										<?php } ?>
@@ -812,7 +812,7 @@ require_once( dirname( __FILE__ ) . '/admin_header.php' ); ?>
 						<td>
 							<?php
 								if ( in_array( 'subscription_transaction_id', $read_only_fields ) && $order_id > 0 ) {
-									echo $order->subscription_transaction_id;
+									echo esc_html( $order->subscription_transaction_id );
 								} else {
 									?>
 									<input id="subscription_transaction_id" name="subscription_transaction_id" type="text" size="50" value="<?php echo esc_attr( $order->subscription_transaction_id ); ?>"/>
@@ -978,7 +978,7 @@ require_once( dirname( __FILE__ ) . '/admin_header.php' ); ?>
 				echo 'error';
 			}
 			?>
-			"><p><?php echo $pmpro_msg; ?></p></div>
+			"><p><?php echo esc_html( $pmpro_msg ); ?></p></div>
 		<?php }
 		$orders_list_table = new PMPro_Orders_List_Table();
 		$orders_list_table->prepare_items();

@@ -185,7 +185,7 @@
 							<label for="nonmembertext"><?php esc_html_e('Message for Logged-in Non-members', 'paid-memberships-pro' );?>:</label>
 						</th>
 						<td>
-							<textarea name="nonmembertext" rows="3" cols="50" class="large-text"><?php echo stripslashes($nonmembertext)?></textarea>
+							<textarea name="nonmembertext" rows="3" cols="50" class="large-text"><?php echo wp_kses_post( stripslashes($nonmembertext) )?></textarea>
 							<p class="description"><?php esc_html_e('This message replaces the post content for non-members. Available variables', 'paid-memberships-pro' );?>: <code>!!levels!!</code> <code>!!referrer!!</code> <code>!!levels_page_url!!</code></p>
 						</td>
 					</tr>
@@ -194,7 +194,7 @@
 							<label for="notloggedintext"><?php esc_html_e('Message for Logged-out Users', 'paid-memberships-pro' );?>:</label>
 						</th>
 						<td>
-							<textarea name="notloggedintext" rows="3" cols="50" class="large-text"><?php echo stripslashes($notloggedintext)?></textarea>
+							<textarea name="notloggedintext" rows="3" cols="50" class="large-text"><?php echo wp_kses_post( stripslashes($notloggedintext) )?></textarea>
 							<p class="description"><?php esc_html_e('This message replaces the post content for logged-out visitors.', 'paid-memberships-pro' );?> <?php esc_html_e('Available variables', 'paid-memberships-pro' );?>: <code>!!levels!!</code> <code>!!referrer!!</code> <code>!!login_url!!</code> <code>!!levels_page_url!!</code></p>
 						</td>
 					</tr>
@@ -203,7 +203,7 @@
 							<label for="rsstext"><?php esc_html_e('Message for RSS Feed', 'paid-memberships-pro' );?>:</label>
 						</th>
 						<td>
-							<textarea name="rsstext" rows="3" cols="50" class="large-text"><?php echo stripslashes($rsstext)?></textarea>
+							<textarea name="rsstext" rows="3" cols="50" class="large-text"><?php echo wp_kses_post( stripslashes($rsstext) )?></textarea>
 							<p class="description"><?php esc_html_e('This message replaces the post content in RSS feeds.', 'paid-memberships-pro' );?> <?php esc_html_e('Available variables', 'paid-memberships-pro' );?>: <code>!!levels!!</code></p>
 						</td>
 					</tr>
@@ -263,7 +263,7 @@
 						</th>
 						<td>
 							<?php
-								wp_dropdown_pages(array("name"=>"tospage", "show_option_none"=>"No", "selected"=>$tospage));
+								wp_dropdown_pages(array("name"=>"tospage", "show_option_none"=>"No", "selected"=>esc_html( $tospage )));
 							?>
 							<br />
 							<p class="description"><?php esc_html_e('If yes, create a WordPress page containing your TOS agreement and assign it using the dropdown above.', 'paid-memberships-pro' );?></p>

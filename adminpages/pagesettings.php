@@ -206,7 +206,7 @@ require_once(dirname(__FILE__) . "/admin_header.php"); ?>
 				<p><?php
 					$frontend_template_customization_link_escaped = '<a title="' . esc_html__( 'Paid Memberships Pro - Frontend Page Templates', 'paid-memberships-pro' ) . '" target="_blank" rel="nofollow noopener" href="https://www.paidmembershipspro.com/documentation/templates/?utm_source=plugin&utm_medium=pmpro-pagesettings&utm_campaign=documentation&utm_content=frontend-page-templates">' . esc_html__( 'how to customize the content of frontend pages', 'paid-memberships-pro' ) . '</a>';
 					// translators: %s: Link to Frontend Page Templates docs.
-					printf( esc_html__('Click here for documentation on %s beyond the block or shortcode settings.', 'paid-memberships-pro' ), $frontend_template_customization_link_escaped );
+					printf( esc_html__('Click here for documentation on %s beyond the block or shortcode settings.', 'paid-memberships-pro' ), $frontend_template_customization_link_escaped ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 				?></p>
 				<table class="form-table">
 				<tbody>
@@ -220,8 +220,8 @@ require_once(dirname(__FILE__) . "/admin_header.php"); ?>
 								array(
 									'name'             => 'account_page_id',
 									'show_option_none' => '-- ' . esc_html__( 'Choose One', 'paid-memberships-pro' ) . ' --',
-									'selected'         => $pmpro_pages['account'],
-									'post_type'        => $post_type,
+									'selected'         => esc_html( $pmpro_pages['account'] ),
+									'post_type'        => esc_html( $post_type ),
 								)
 							);
 							?>
@@ -244,8 +244,8 @@ require_once(dirname(__FILE__) . "/admin_header.php"); ?>
 								array(
 									'name'             => 'billing_page_id',
 									'show_option_none' => '-- ' . esc_html__( 'Choose One', 'paid-memberships-pro' ) . ' --',
-									'selected'         => $pmpro_pages['billing'],
-									'post_type'        => $post_type,
+									'selected'         => esc_html( $pmpro_pages['billing'] ),
+									'post_type'        => esc_html( $post_type ),
 								)
 							);
 							?>
@@ -268,8 +268,8 @@ require_once(dirname(__FILE__) . "/admin_header.php"); ?>
 								array(
 									'name'             => 'cancel_page_id',
 									'show_option_none' => '-- ' . esc_html__( 'Choose One', 'paid-memberships-pro' ) . ' --',
-									'selected'         => $pmpro_pages['cancel'],
-									'post_type'        => $post_type,
+									'selected'         => esc_html( $pmpro_pages['cancel'] ),
+									'post_type'        => esc_html( $post_type ),
 								)
 							);
 							?>
@@ -293,8 +293,8 @@ require_once(dirname(__FILE__) . "/admin_header.php"); ?>
 								array(
 									'name'             => 'checkout_page_id',
 									'show_option_none' => '-- ' . esc_html__( 'Choose One', 'paid-memberships-pro' ) . ' --',
-									'selected'         => $pmpro_pages['checkout'],
-									'post_type'        => $post_type,
+									'selected'         => esc_html( $pmpro_pages['checkout'] ),
+									'post_type'        => esc_html( $post_type ),
 								)
 							);
 							?>
@@ -318,8 +318,8 @@ require_once(dirname(__FILE__) . "/admin_header.php"); ?>
 								array(
 									'name'             => 'confirmation_page_id',
 									'show_option_none' => '-- ' . esc_html__( 'Choose One', 'paid-memberships-pro' ) . ' --',
-									'selected'         => $pmpro_pages['confirmation'],
-									'post_type'        => $post_type,
+									'selected'         => esc_html( $pmpro_pages['confirmation'] ),
+									'post_type'        => esc_html( $post_type ),
 								)
 							);
 							?>
@@ -343,8 +343,8 @@ require_once(dirname(__FILE__) . "/admin_header.php"); ?>
 								array(
 									'name'             => 'invoice_page_id',
 									'show_option_none' => '-- ' . esc_html__( 'Choose One', 'paid-memberships-pro' ) . ' --',
-									'selected'         => $pmpro_pages['invoice'],
-									'post_type'        => $post_type,
+									'selected'         => esc_html( $pmpro_pages['invoice'] ),
+									'post_type'        => esc_html( $post_type ),
 								)
 							);
 							?>
@@ -368,8 +368,8 @@ require_once(dirname(__FILE__) . "/admin_header.php"); ?>
 								array(
 									'name'             => 'levels_page_id',
 									'show_option_none' => '-- ' . esc_html__( 'Choose One', 'paid-memberships-pro' ) . ' --',
-									'selected'         => $pmpro_pages['levels'],
-									'post_type'        => $post_type,
+									'selected'         => esc_html( $pmpro_pages['levels'] ),
+									'post_type'        => esc_html( $post_type ),
 								)
 							);
 							?>
@@ -404,8 +404,8 @@ require_once(dirname(__FILE__) . "/admin_header.php"); ?>
 									array(
 										'name' => 'login_page_id',
 										'show_option_none' => '-- ' . esc_html__('Use WordPress Default', 'paid-memberships-pro') . ' --',
-										'selected' => $pmpro_pages['login'],
-										'post_type' => $post_type,
+										'selected' => esc_html( $pmpro_pages['login'] ),
+										'post_type' => esc_html( $post_type ),
 									)
 								);
 							?>
@@ -418,7 +418,7 @@ require_once(dirname(__FILE__) . "/admin_header.php"); ?>
 								class="button button-secondary pmpro_page_view"><?php esc_html_e('view page', 'paid-memberships-pro' ); ?></a>
 							<?php } elseif ( empty( pmpro_getOption( 'login_page_generated' ) ) ) { ?>
 								&nbsp;
-								<a href="<?php echo wp_nonce_url( add_query_arg( array( 'page' => 'pmpro-pagesettings', 'createpages' => 1, 'page_name' => esc_attr( 'login' )   ), admin_url('admin.php') ), 'createpages', 'pmpro_pagesettings_nonce' ); ?>"><?php esc_html_e('Generate Page', 'paid-memberships-pro' ); ?></a>
+								<a href="<?php echo esc_url( wp_nonce_url( add_query_arg( array( 'page' => 'pmpro-pagesettings', 'createpages' => 1, 'page_name' => esc_attr( 'login' ) ), admin_url('admin.php') ) ), 'createpages', 'pmpro_pagesettings_nonce' ); ?>"><?php esc_html_e('Generate Page', 'paid-memberships-pro' ); ?></a>
 							<?php } ?>
 							<p class="description"><?php printf( esc_html__('Include the shortcode %s or the Log In Form block.', 'paid-memberships-pro' ), '[pmpro_login]' ); ?></p>
 						</td>
@@ -433,8 +433,8 @@ require_once(dirname(__FILE__) . "/admin_header.php"); ?>
 									array(
 										'name' => 'member_profile_edit_page_id',
 										'show_option_none' => '-- ' . esc_html__('Use WordPress Default', 'paid-memberships-pro') . ' --',
-										'selected' => $pmpro_pages['member_profile_edit'],
-										'post_type' => $post_type,
+										'selected' => esc_html( $pmpro_pages['member_profile_edit'] ),
+										'post_type' => esc_html( $post_type ),
 									)
 								);
 							?>
@@ -499,9 +499,9 @@ require_once(dirname(__FILE__) . "/admin_header.php"); ?>
 									<?php wp_dropdown_pages(
 										array(
 											'name'             => esc_html( $name . '_page_id' ),
-											'show_option_none' => '-- ' . __( 'Choose One', 'paid-memberships-pro' ) . ' --',
-											'selected'         => $pmpro_pages[ $name ],
-											'post_type'        => $post_type,
+											'show_option_none' => '-- ' . esc_html__( 'Choose One', 'paid-memberships-pro' ) . ' --',
+											'selected'         => esc_html( $pmpro_pages[ $name ] ),
+											'post_type'        => esc_html( $post_type ),
 										)
 									);
 									if(!empty($pmpro_pages[$name])) {
@@ -509,7 +509,7 @@ require_once(dirname(__FILE__) . "/admin_header.php"); ?>
 										<a target="_blank" href="post.php?post=<?php echo esc_attr( $pmpro_pages[$name] );?>&action=edit"
 										class="button button-secondary pmpro_page_edit"><?php esc_html_e('edit page', 'paid-memberships-pro' ); ?></a>
 										&nbsp;
-										<a target="_blank" href="<?php echo get_permalink($pmpro_pages[$name]); ?>"
+										<a target="_blank" href="<?php echo esc_url( get_permalink($pmpro_pages[$name]) ); ?>"
 										class="button button-secondary pmpro_page_view"><?php esc_html_e('view page', 'paid-memberships-pro' ); ?></a>
 									<?php } else { ?>
 										&nbsp;

@@ -116,7 +116,7 @@
 						</th>
 						<td>
 							<input type="checkbox" id="only_filter_pmpro_emails" name="only_filter_pmpro_emails" value="1" <?php if(!empty($only_filter_pmpro_emails)) { ?>checked="checked"<?php } ?> />
-							<label for="only_filter_pmpro_emails"><?php printf( __('If unchecked, all emails from "WordPress &lt;%s&gt;" will be filtered to use the above settings.', 'paid-memberships-pro' ),  esc_html( $default_from_email ) );?></label>
+							<label for="only_filter_pmpro_emails"><?php printf( esc_html__('If unchecked, all emails from "WordPress &lt;%s&gt;" will be filtered to use the above settings.', 'paid-memberships-pro' ),  esc_html( $default_from_email ) );?></label>
 						</td>
 					</tr>
 				</tbody>
@@ -161,7 +161,7 @@
 						$connected = esc_html__( 'Your site is connected to SendWP.', 'paid-memberships-pro' ) . " <a href='https://app.sendwp.com/dashboard/' target='_blank' rel='nofollow noopener'>" . __( 'View Your SendWP Account', 'paid-memberships-pro' ) . "</a>";
 						$disconnected = ' ' . sprintf( esc_html__( 'Please enable email sending inside %s.', 'paid-memberships-pro' ), '<a href="' . esc_url( admin_url('tools.php?page=sendwp') ) . '">SendWP Settings</a>' );
 						?>
-						<p class="description" id="pmpro-sendwp-description"><?php echo $sendwp_email_forwarding ? $connected : $disconnected; ?></p>
+						<p class="description" id="pmpro-sendwp-description"><?php echo wp_kses_post( $sendwp_email_forwarding ? $connected : $disconnected ); ?></p>
 					<?php }
 				?>
 			</div> <!-- end pmpro_section_inside -->

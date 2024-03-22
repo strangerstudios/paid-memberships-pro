@@ -470,7 +470,7 @@
 												}
 
 												if ( ! empty( $actions_html ) ) {
-													echo implode( ' | ', $actions_html );
+													echo implode( ' | ', $actions_html ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 												}
 												?>
 											</div>

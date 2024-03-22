@@ -377,7 +377,7 @@ function pmpro_add_email_order_modal() {
 	if ( ! empty( $_REQUEST['pmpro_email_to'] ) && ! empty( $_REQUEST['pmpro_email_order'] ) ) {
 		// verify nonce
 		if ( ! wp_verify_nonce( sanitize_key( $_REQUEST['pmpro_email_invoice_nonce'] ), 'pmpro_email_invoice' ) ) {
-			wp_die( __( 'Security error.', 'paid-memberships-pro' ) );
+			wp_die( esc_html__( 'Security error.', 'paid-memberships-pro' ) );
 		}
 
 		$email = new PMProEmail();
@@ -419,7 +419,7 @@ function pmpro_add_email_order_modal() {
 		<h3><?php esc_html_e( 'Email Invoice', 'paid-memberships-pro' ); ?></h3>
 		<form method="post" action="">
 			<input type="hidden" name="pmpro_email_order" value=""/>
-			<?php _e( 'Send an invoice for this order to: ', 'paid-memberships-pro' ); ?>
+			<?php esc_html_e( 'Send an invoice for this order to: ', 'paid-memberships-pro' ); ?>
 			<input type="text" value="" name="pmpro_email_to"/>
 			<?php wp_nonce_field( 'pmpro_email_invoice', 'pmpro_email_invoice_nonce' ); ?>
 			<button class="button button-primary alignright"><?php esc_html_e( 'Send Email', 'paid-memberships-pro' ); ?></button>
