@@ -16,7 +16,8 @@ function pmpro_upgrade_1_8_8() {
 	$sqlQuery = "UPDATE $wpdb->pmpro_membership_orders SET status = 'success' WHERE gateway = 'authorizenet' AND status = ''";
 	$wpdb->query($sqlQuery);
 	
-	// Removed the Stripe update, which relied on deprecated code.
+	// Since 3.0: Removed the Stripe update, which relied on deprecated code.
+
 
 	update_option("pmpro_db_version", "1.88");
 	return 1.88;
