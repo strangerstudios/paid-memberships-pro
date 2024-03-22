@@ -157,14 +157,14 @@ function pmpro_pause_mode_notice() {
 			</div>
 			<div class="pmpro_notification-content">
 				<h3><?php esc_html_e( 'Site URL Change Detected', 'paid-memberships-pro' ); ?></h3>
-				<p><?php printf( __( '<strong>Warning:</strong> We have detected that your site URL has changed. All PMPro-related cron jobs and automated services have been disabled. Paid Memberships Pro considers %s to be the site URL.', 'paid-memberships-pro' ), '<code>' . esc_url( get_option( 'pmpro_last_known_url' ) ) . '</code>' ); ?></p>
+				<p><?php echo wp_kses_post( sprintf( __( '<strong>Warning:</strong> We have detected that your site URL has changed. All PMPro-related cron jobs and automated services have been disabled. Paid Memberships Pro considers %s to be the site URL.', 'paid-memberships-pro' ), '<code>' . esc_url( get_option( 'pmpro_last_known_url' ) ) . '</code>' ) ); ?></p>
 				<?php if ( current_user_can( 'pmpro_manage_pause_mode' ) ) { ?>
 				<p>
 					<a href='#' id="hide_pause_notification_button" class='button' value="hide_pause_notification"><?php esc_html_e( 'Dismiss notice and keep all services paused', 'paid-memberships-pro' ); ?></a>
-					<a href='<?php echo admin_url( '?pmpro-reactivate-services=true' ); ?>' class='button button-secondary'><?php esc_html_e( 'Update my primary domain and reactivate all services', 'paid-memberships-pro' ); ?></a>
+					<a href='<?php echo esc_url( admin_url( '?pmpro-reactivate-services=true' ) ); ?>' class='button button-secondary'><?php esc_html_e( 'Update my primary domain and reactivate all services', 'paid-memberships-pro' ); ?></a>
 				</p>
 				<?php } else { ?>
-					<p><?php _e( 'Only users with the <code>pmpro_manage_pause_mode</code> capability are able to deactivate pause mode.', 'paid-memberships-pro' ); ?></p>
+					<p><?php echo wp_kses_post( __( 'Only users with the <code>pmpro_manage_pause_mode</code> capability are able to deactivate pause mode.', 'paid-memberships-pro' ) ); ?></p>
 				<?php } ?>
 				</div>
 		</div>
@@ -205,7 +205,7 @@ function pmpro_spamprotection_notice() {
 				<h3><?php esc_html_e( 'Spam Protection Disabled', 'paid-memberships-pro' ); ?></h3>
 				<p><?php esc_html_e( 'Spam protection is currently disabled. This is not recommended. Please enable spam protection on the Advanced Settings page.', 'paid-memberships-pro' ); ?></p>
 				<p>
-					<a href='<?php echo admin_url( 'admin.php?page=pmpro-advancedsettings' ); ?>' class='button button-secondary'><?php esc_html_e( 'Go to Advanced Settings', 'paid-memberships-pro' ); ?></a>
+					<a href='<?php echo esc_url( admin_url( 'admin.php?page=pmpro-advancedsettings' ) ); ?>' class='button button-secondary'><?php esc_html_e( 'Go to Advanced Settings', 'paid-memberships-pro' ); ?></a>
 				</p>
 			</div>
 		</div>
@@ -254,7 +254,7 @@ function pmpro_admin_header() {
 					<span class="screen-reader-text"><?php esc_html_e( 'Paid Memberships Pro', 'paid-memberships-pro' ); ?></span>
 					<a target="_blank" rel="noopener noreferrer" href="https://www.paidmembershipspro.com/?utm_source=plugin&utm_medium=pmpro-admin-header&utm_campaign=homepage"><img src="<?php echo esc_url( PMPRO_URL . '/images/Paid-Memberships-Pro.png' ); ?>" width="300" border="0" alt="Paid Memberships Pro(c) - All Rights Reserved" /></a>
 				</h1>
-				<span class="pmpro_version">v<?php echo PMPRO_VERSION?></span>
+				<span class="pmpro_version">v<?php echo esc_html( PMPRO_VERSION ); ?></span>
 			</div>
 			<div class="pmpro_meta">
 				<a target="_blank" rel="noopener noreferrer" href="https://www.paidmembershipspro.com/documentation/?utm_source=plugin&utm_medium=pmpro-admin-header&utm_campaign=documentation"><?php esc_html_e('Documentation', 'paid-memberships-pro' ); ?></a>
@@ -272,9 +272,9 @@ function pmpro_admin_header() {
 					}
 				?>
 				<?php if ( pmpro_license_isValid( null, pmpro_license_get_premium_types() ) ) { ?>
-					<?php printf(__( '<a class="pmpro_license_tag pmpro_license_tag-valid" href="%s">Valid License</a>', 'paid-memberships-pro' ), esc_url( add_query_arg( array( 'page' => 'pmpro-license' ), admin_url( 'admin.php' ) ) ) ); ?>
+					<?php echo wp_kses_post( sprintf(__( '<a class="pmpro_license_tag pmpro_license_tag-valid" href="%s">Valid License</a>', 'paid-memberships-pro' ), esc_url( add_query_arg( array( 'page' => 'pmpro-license' ), admin_url( 'admin.php' ) ) ) ) ); ?>
 				<?php } elseif ( ! defined( 'PMPRO_LICENSE_NAG' ) || PMPRO_LICENSE_NAG == true ) { ?>
-					<?php printf(__( '<a class="pmpro_license_tag pmpro_license_tag-invalid" href="%s">No License</a>', 'paid-memberships-pro' ), esc_url( add_query_arg( array( 'page' => 'pmpro-license' ), admin_url( 'admin.php' ) ) ) ); ?>
+					<?php echo wp_kses_post( sprintf(__( '<a class="pmpro_license_tag pmpro_license_tag-invalid" href="%s">No License</a>', 'paid-memberships-pro' ), esc_url( add_query_arg( array( 'page' => 'pmpro-license' ), admin_url( 'admin.php' ) ) ) ) ); ?>
 				<?php } ?>
 			</div> <!-- end pmpro_meta -->
 		</div> <!-- end pmpro_banner_wrapper -->		

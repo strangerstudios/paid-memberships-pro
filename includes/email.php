@@ -175,7 +175,7 @@ function pmpro_email_templates_get_template_data() {
 	check_ajax_referer('pmproet', 'security');
 
 	if ( ! current_user_can( 'pmpro_emailtemplates' ) ) {
-		die( __( 'You do not have permissions to perform this action.', 'paid-memberships-pro' ) );
+		die( esc_html__( 'You do not have permissions to perform this action.', 'paid-memberships-pro' ) );
 	}
 
 	global $pmpro_email_templates_defaults;
@@ -211,7 +211,7 @@ function pmpro_email_templates_save_template_data() {
 	check_ajax_referer('pmproet', 'security');
 
 	if ( ! current_user_can( 'pmpro_emailtemplates' ) ) {
-		die( __( 'You do not have permissions to perform this action.', 'paid-memberships-pro' ) );
+		die( esc_html__( 'You do not have permissions to perform this action.', 'paid-memberships-pro' ) );
 	}
 
 	$template = sanitize_text_field( $_REQUEST['template'] );
@@ -234,7 +234,7 @@ function pmpro_email_templates_reset_template_data() {
 	check_ajax_referer('pmproet', 'security');
 
 	if ( ! current_user_can( 'pmpro_emailtemplates' ) ) {
-		die( __( 'You do not have permissions to perform this action.', 'paid-memberships-pro' ) );
+		die( esc_html__( 'You do not have permissions to perform this action.', 'paid-memberships-pro' ) );
 	}
 
 	global $pmpro_email_templates_defaults;
@@ -259,7 +259,7 @@ function pmpro_email_templates_disable_template() {
 	check_ajax_referer('pmproet', 'security');
 
 	if ( ! current_user_can( 'pmpro_emailtemplates' ) ) {
-		die( __( 'You do not have permissions to perform this action.', 'paid-memberships-pro' ) );
+		die( esc_html__( 'You do not have permissions to perform this action.', 'paid-memberships-pro' ) );
 	}
 
 	$template = sanitize_text_field( $_REQUEST['template'] );
@@ -277,7 +277,7 @@ function pmpro_email_templates_send_test() {
 	check_ajax_referer('pmproet', 'security');
 
 	if ( ! current_user_can( 'pmpro_emailtemplates' ) ) {
-		die( __( 'You do not have permissions to perform this action.', 'paid-memberships-pro' ) );
+		die( esc_html__( 'You do not have permissions to perform this action.', 'paid-memberships-pro' ) );
 	}
 
 	global $current_user;
@@ -395,7 +395,7 @@ function pmpro_email_templates_send_test() {
 	$response = call_user_func_array(array($test_email, $send_email), $params);
 
 	//return the response
-	echo $response;
+	echo esc_html( $response );
 	exit;
 }
 add_action('wp_ajax_pmpro_email_templates_send_test', 'pmpro_email_templates_send_test');

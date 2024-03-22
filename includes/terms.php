@@ -24,7 +24,7 @@ function pmpro_term_add_form_fields() {
 	// Render form field div.
 	?>
 	<div class="form-field">
-		<label><?php _e( 'Require Membership', 'paid-memberships-pro' ); ?></label>
+		<label><?php esc_html_e( 'Require Membership', 'paid-memberships-pro' ); ?></label>
 		<?php if ( count( $membership_levels ) > 1 ) { ?>
 			<p><?php esc_html_e( 'Select:', 'paid-memberships-pro' ); ?> <a id="pmpro-memberships-checklist-select-all" href="javascript:void(0);"><?php esc_html_e( 'All', 'paid-memberships-pro' ); ?></a> | <a id="pmpro-memberships-checklist-select-none" href="javascript:void(0);"><?php esc_html_e( 'None', 'paid-memberships-pro' ); ?></a></p>
 			<script type="text/javascript">
@@ -82,7 +82,7 @@ function pmpro_term_edit_form_fields( $term ) {
 	// Render table row.
 	?>
 	<tr class="form-field">
-		<th scope="row"><label><?php _e( 'Require Membership', 'paid-memberships-pro' ); ?></label></th>
+		<th scope="row"><label><?php esc_html_e( 'Require Membership', 'paid-memberships-pro' ); ?></label></th>
 		<td>
 			<?php if ( count( $membership_levels ) > 1 ) { ?>
 				<p><?php esc_html_e( 'Select:', 'paid-memberships-pro' ); ?> <a id="pmpro-memberships-checklist-select-all" href="javascript:void(0);"><?php esc_html_e( 'All', 'paid-memberships-pro' ); ?></a> | <a id="pmpro-memberships-checklist-select-none" href="javascript:void(0);"><?php esc_html_e( 'None', 'paid-memberships-pro' ); ?></a></p>
