@@ -21,5 +21,5 @@ $output = ( pmpro_login_forms_handler(
 ) );
 ?>
 <div <?php echo get_block_wrapper_attributes(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
-	<?php echo wp_kses_post( $output ); ?>
+	<?php echo $output ; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 </div>
