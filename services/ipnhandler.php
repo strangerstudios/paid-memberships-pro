@@ -277,6 +277,7 @@ if ( $txn_type == 'recurring_payment_failed' || $txn_type == 'recurring_payment_
 		// The user for this subscription does not exist. Let's just cancel the subscription.
 		$subscription->cancel_at_gateway();
 		ipnlog( 'ERROR: Could not cancel subscription after failed payment attempts. No user attached to subscription #' . $subscription->get_id() . ' with subscription transaction id = ' . $recurring_payment_id . '.' );
+		pmpro_ipnExit();
 	}
 
 	// Cancel the user's membership level which will also cancel the subscription.
@@ -284,6 +285,7 @@ if ( $txn_type == 'recurring_payment_failed' || $txn_type == 'recurring_payment_
 		// User didn't have the level. Let's just cancel the subscription.
 		$subscription->cancel_at_gateway();
 		ipnlog( 'ERROR: Could not cancel membership level for user ' . $user->user_email . ' after failed payment attempts. Subscription #' . $subscription->get_id() . ' with subscription transaction id = ' . $recurring_payment_id . ' was cancelled.' );
+		pmpro_ipnExit();
 	}
 
 	// Cancellation was successful.
