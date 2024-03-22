@@ -109,7 +109,8 @@ function pmpro_shortcode_account($atts, $content=null, $code="")
 
 										// Check if we should show the change membership level link.
 										if(count($pmpro_levels) > 1 && !defined("PMPRO_DEFAULT_LEVEL")) {
-											$pmpro_member_action_links['change'] = '<a id="pmpro_actionlink-change" href="' . esc_url( pmpro_url( 'levels' ) ) . '" aria-label="' . esc_html( sprintf( esc_html__( 'Change %1$s Membership', 'paid-memberships-pro' ), $level->name ) ) . '">' . esc_html__( 'Change', 'paid-memberships-pro' ) . '</a>';
+											$pmpro_member_action_links['change'] = '<a id="pmpro_actionlink-change" href="' . esc_url( pmpro_url( 'levels' ) ) . '" aria-label="' . esc_attr( sprintf( esc_html__( 'Change %1$s Membership', 'paid-memberships-pro' ), $level->name ) ) . '">' . esc_html__( 'Change', 'paid-memberships-pro' ) . '</a>';
+
 										}
 
 										$pmpro_member_action_links['cancel'] = '<a id="pmpro_actionlink-cancel" href="' . esc_url( add_query_arg( 'levelstocancel', $level->id, pmpro_url( 'cancel' ) ) ) . '" aria-label="' . esc_html( sprintf( esc_html__( 'Cancel %1$s Membership', 'paid-memberships-pro' ), $level->name ) ) . '">' . esc_html__( 'Cancel', 'paid-memberships-pro' ) . '</a>';
