@@ -54,7 +54,7 @@ if ( ! empty( $mmpu_incompatible_add_ons ) ) {
 <?php
 }
 ?>
-<form action="<?php esc_attr_e( add_query_arg( 'page', 'pmpro-membershiplevels', admin_url( 'admin.php' ) ) ) ?>" method="post" enctype="multipart/form-data">
+<form action="<?php echo esc_attr( add_query_arg( 'page', 'pmpro-membershiplevels', admin_url( 'admin.php' ) ) ) ?>" method="post" enctype="multipart/form-data">
 	<input name="saveid" type="hidden" value="<?php echo esc_attr( $edit_group ); ?>" />
 	<input type="hidden" name="action" value="save_group" />
 	<input type="hidden" name="displayorder" value="<?php echo esc_attr( $group->displayorder ); ?>" />

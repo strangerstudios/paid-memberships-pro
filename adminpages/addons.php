@@ -162,7 +162,7 @@
 								<?php if ( ! empty( $addon['PluginURI'] ) ) { ?>
 									<a target="_blank" href="<?php echo esc_url( $plugin_link ); ?>">
 								<?php } ?>
-								<img src="<?php echo esc_url( $addon['plugin_icon_src'] ); ?>" alt="<?php esc_attr_e( $addon['Name'] ); ?>">
+								<img src="<?php echo esc_url( $addon['plugin_icon_src'] ); ?>" alt="<?php echo esc_attr( $addon['Name'] ); ?>">
 								<?php if ( ! empty( $addon['PluginURI'] ) ) { ?>
 									</a>
 								<?php } ?>
@@ -171,13 +171,13 @@
 								<?php if ( ! empty( $addon['PluginURI'] ) ) { ?>
 									<a target="_blank" href="<?php echo esc_url( $plugin_link ); ?>">
 								<?php } ?>
-								<?php esc_html_e( $addon['ShortName'] ); ?>
+								<?php echo esc_html( $addon['ShortName'] ); ?>
 								<?php if ( ! empty( $addon['PluginURI'] ) ) { ?>
 									</a>
 								<?php } ?>
 							</h5> <!-- end add-on-name -->
 							<div class="add-on-description">
-								<p><?php esc_html_e( $addon['Description'] ); ?></p>
+								<p><?php echo esc_html( $addon['Description'] ); ?></p>
 								<p>
 								<?php
 									$plugin_meta = array();

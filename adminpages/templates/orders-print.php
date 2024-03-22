@@ -90,10 +90,10 @@
 					foreach ( $pmpro_price_parts as $pmpro_price_part ) { ?>
 						<tr style="border-width:1px;border-style:solid;border-collapse:collapse;">
 							<th colspan="2" style="text-align:right;border-width:1px;border-style:solid;border-collapse:collapse;">
-								<?php esc_html_e( $pmpro_price_part['label'] ); ?>
+								<?php echo esc_html( $pmpro_price_part['label'] ); ?>
 							</th>
 							<td style="text-align:right;border-width:1px;border-style:solid;border-collapse:collapse;">
-								<?php esc_html_e( $pmpro_price_part['value'] ); ?>
+								<?php echo esc_html( $pmpro_price_part['value'] ); ?>
 							</td>
 						</tr>
 						<?php

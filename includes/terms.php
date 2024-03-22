@@ -102,7 +102,7 @@ function pmpro_term_edit_form_fields( $term ) {
 					foreach ( $membership_levels as $level ) { ?>
 						<div id="membership-level-<?php echo esc_attr( $level->id ); ?>" class="pmpro_clickable">
 							<input id="in-membership-level-<?php echo esc_attr( $level->id ); ?>" type="checkbox" <?php if ( in_array( $level->id, $term_levels ) ) { ?>checked="checked"<?php } ?> name="pmpro_term_restrictions[]" value="<?php echo esc_attr( $level->id ) ;?>" />
-							<label for="in-membership-level-<?php echo esc_attr( $level->id ); ?>"><?php esc_html_e( $level->name ); ?></label>
+							<label for="in-membership-level-<?php echo esc_attr( $level->id ); ?>"><?php echo esc_html( $level->name ); ?></label>
 						</div>
 						<?php
 					}

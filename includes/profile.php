@@ -819,11 +819,11 @@ function pmpro_membership_history_profile_fields( $user ) {
 								if ( empty( $invoice->status ) ) {
 									esc_html_e( '&#8212;', 'paid-memberships-pro' );
 								} else { ?>
-									<span class="pmpro_order-status pmpro_order-status-<?php esc_attr_e( $invoice->status ); ?>">
+									<span class="pmpro_order-status pmpro_order-status-<?php echo esc_attr( $invoice->status ); ?>">
 										<?php if ( in_array( $invoice->status, array( 'success', 'cancelled' ) ) ) {
 											esc_html_e( 'Paid', 'paid-memberships-pro' );
 										} else {
-											esc_html_e( ucwords( $invoice->status ) );
+											echo esc_html( ucwords( $invoice->status ) );
 										} ?>
 									</span>
 									<?php
@@ -1151,7 +1151,7 @@ function pmpro_member_profile_edit_form() {
 				<div class="<?php echo pmpro_get_element_class( 'pmpro_member_profile_edit-fields' ); ?>">
 				<?php foreach ( $user_fields as $field_key => $label ) { ?>
 					<div class="<?php echo pmpro_get_element_class( 'pmpro_member_profile_edit-field pmpro_member_profile_edit-field- ' . $field_key, 'pmpro_member_profile_edit-field- ' . $field_key ); ?>">
-						<label for="<?php echo esc_attr( $field_key ); ?>"><?php esc_html_e( $label ); ?></label>
+						<label for="<?php echo esc_attr( $field_key ); ?>"><?php echo esc_html( $label ); ?></label>
 						<?php if ( current_user_can( 'manage_options' ) && $field_key === 'user_email' ) { ?>
 							<input type="text" readonly="readonly" name="user_email" id="user_email" value="<?php echo esc_attr( $user->user_email ); ?>" class="<?php echo pmpro_get_element_class( 'input', 'user_email' ); ?>" />
 							<p class="<?php echo pmpro_get_element_class( 'lite' ); ?>"><?php esc_html_e( 'Site administrators must use the WordPress dashboard to update their email address.', 'paid-memberships-pro' ); ?></p>

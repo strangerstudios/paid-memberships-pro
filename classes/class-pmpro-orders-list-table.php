@@ -564,7 +564,7 @@ class PMPro_Orders_List_Table extends WP_List_Table {
 
 					<?php $custom_filters = apply_filters( 'pmpro_admin_orders_filters', array() ); ?>
 					<?php foreach( $custom_filters as $value => $name ) { ?>
-						<option value="<?php echo esc_attr( $value ); ?>" <?php selected( $filter, $value ); ?>><?php esc_html_e( $name ); ?></option>
+						<option value="<?php echo esc_attr( $value ); ?>" <?php selected( $filter, $value ); ?>><?php echo esc_html( $name ); ?></option>
 					<?php } ?>
 				</select>
 
@@ -1168,7 +1168,7 @@ class PMPro_Orders_List_Table extends WP_List_Table {
 			if ( ! empty( $pmpro_gateways[$item->gateway] ) ) {
 				echo $pmpro_gateways[$item->gateway];
 			} else {
-				esc_html_e( ucwords( $item->gateway ) );
+				echo esc_html( ucwords( $item->gateway ) );
 			}
 			if ( $item->gateway_environment == 'sandbox' ) {
 				echo ' (test)';
@@ -1231,11 +1231,11 @@ class PMPro_Orders_List_Table extends WP_List_Table {
 	public function column_order_status( $item ) {     
 		
 		?>
-		<span class="pmpro_order-status pmpro_order-status-<?php esc_attr_e( $item->status ); ?>">
+		<span class="pmpro_order-status pmpro_order-status-<?php echo esc_attr( $item->status ); ?>">
 			<?php if ( in_array( $item->status, array( 'success', 'cancelled' ) ) ) {
 				esc_html_e( 'Paid', 'paid-memberships-pro' );
 			} else {
-				esc_html_e( ucwords( $item->status ) );
+				echo esc_html( ucwords( $item->status ) );
 			} ?>
 		</span>
 		<?php if ( $item->is_renewal() ) { ?>

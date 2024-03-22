@@ -45,7 +45,7 @@
 					} else {
 						$display_status = ucwords( $pmpro_invoice->status );
 					}
-					esc_html_e( $display_status );
+					echo esc_html( $display_status );
 				?>
 				</li>
 			<?php } ?>

@@ -87,7 +87,7 @@ class PMPro_Admin_Activity_Email extends PMProEmail {
 					</tr>
 					<tr>
 						<td valign="top" style="background:#F1F1F1;font-family:Helvetica,Arial,sans-serif;font-size:20px;line-height:30px;color:#222222;padding:15px;text-align:center;">
-							<p style="margin:0px;padding:0px;"><strong><?php esc_html_e( $date_range ); ?></strong></p>
+							<p style="margin:0px;padding:0px;"><strong><?php echo esc_html( $date_range ); ?></strong></p>
 						</td>
 					</tr>
 					<?php
@@ -116,9 +116,9 @@ class PMPro_Admin_Activity_Email extends PMProEmail {
 									$num_expired_link   = admin_url( 'admin.php?page=pmpro-memberslist&l=expired' );
 									$num_cancelled_link = admin_url( 'admin.php?page=pmpro-memberslist&l=cancelled' );
 									?>
-									<td width="33%"><div style="border:8px solid #dff0d8;color:#3c763d;margin:5px;padding:10px;"><a style="color:#3c763d;display:block;text-decoration:none;" href="<?php echo( esc_url( $num_joined_link ) ); ?>" target="_blank"><div style="font-size:50px;font-weight:900;line-height:65px;"><?php esc_html_e( number_format_i18n( $num_joined ) ); ?></div><?php esc_html_e( 'Joined', 'paid-memberships-pro' ) ?></a></div></td>
-									<td width="33%"><div style="border:8px solid #fcf8e3;color:#8a6d3b;margin:5px;padding:10px;"><a style="color:#8a6d3b;display:block;text-decoration:none;" href="<?php echo( esc_url( $num_expired_link ) ); ?>" target="_blank"><div style="font-size:50px;font-weight:900;line-height:65px;"><?php esc_html_e( number_format_i18n( $num_expired ) ); ?></div><?php esc_html_e( 'Expired', 'paid-memberships-pro' ) ?></a></div></td>
-									<td width="33%"><div style="border:8px solid #f2dede;color:#a94442;margin:5px;padding:10px;"><a style="color:#a94442;display:block;text-decoration:none;" href="<?php echo( esc_url( $num_cancelled_link ) ); ?>" target="_blank"><div style="font-size:50px;font-weight:900;line-height:65px;"><?php esc_html_e( number_format_i18n( $num_cancelled ) ); ?></div><?php esc_html_e( 'Cancelled', 'paid-memberships-pro' ) ?></a></div></td>
+									<td width="33%"><div style="border:8px solid #dff0d8;color:#3c763d;margin:5px;padding:10px;"><a style="color:#3c763d;display:block;text-decoration:none;" href="<?php echo( esc_url( $num_joined_link ) ); ?>" target="_blank"><div style="font-size:50px;font-weight:900;line-height:65px;"><?php echo esc_html( number_format_i18n( $num_joined ) ); ?></div><?php esc_html_e( 'Joined', 'paid-memberships-pro' ) ?></a></div></td>
+									<td width="33%"><div style="border:8px solid #fcf8e3;color:#8a6d3b;margin:5px;padding:10px;"><a style="color:#8a6d3b;display:block;text-decoration:none;" href="<?php echo( esc_url( $num_expired_link ) ); ?>" target="_blank"><div style="font-size:50px;font-weight:900;line-height:65px;"><?php echo esc_html( number_format_i18n( $num_expired ) ); ?></div><?php esc_html_e( 'Expired', 'paid-memberships-pro' ) ?></a></div></td>
+									<td width="33%"><div style="border:8px solid #f2dede;color:#a94442;margin:5px;padding:10px;"><a style="color:#a94442;display:block;text-decoration:none;" href="<?php echo( esc_url( $num_cancelled_link ) ); ?>" target="_blank"><div style="font-size:50px;font-weight:900;line-height:65px;"><?php echo esc_html( number_format_i18n( $num_cancelled ) ); ?></div><?php esc_html_e( 'Cancelled', 'paid-memberships-pro' ) ?></a></div></td>
 								</tr>
 							</table>
 						</td>
@@ -262,8 +262,8 @@ class PMPro_Admin_Activity_Email extends PMProEmail {
 									$addon_updates_box_color      = $update_addons ? '#f2dede' : '#FFFFFF';
 									$addon_updates_text_color = $update_addons ? '#a94442' : '#222222';
 									?>
-									<td width="50%"><div style="background:#FFFFFF;margin:5px;padding:10px;"><div style="font-size:50px;font-weight:900;line-height:65px;"><?php esc_html_e( number_format_i18n( $all_addons ) ); ?></div><?php esc_html_e( 'Active Add Ons', 'paid-memberships-pro' ); ?></div></td>
-									<td width="500%"><div style="background:<?php echo $addon_updates_box_color; ?>;color:<?php echo $addon_updates_text_color; ?>;margin:5px;padding:10px;"><a style="color:<?php echo $addon_updates_text_color; ?>;display:block;text-decoration:none;" href="<?php echo( esc_url( admin_url( 'admin.php?page=pmpro-addons&plugin_status=update' ) ) ); ?>" target="_blank"><div style="font-size:50px;font-weight:900;line-height:65px;"><?php esc_html_e( number_format_i18n( $update_addons ) ); ?></div><?php esc_html_e( 'Required Updates', 'paid-memberships-pro' ); ?></a></div></td>
+									<td width="50%"><div style="background:#FFFFFF;margin:5px;padding:10px;"><div style="font-size:50px;font-weight:900;line-height:65px;"><?php echo esc_html( number_format_i18n( $all_addons ) ); ?></div><?php esc_html_e( 'Active Add Ons', 'paid-memberships-pro' ); ?></div></td>
+									<td width="500%"><div style="background:<?php echo $addon_updates_box_color; ?>;color:<?php echo $addon_updates_text_color; ?>;margin:5px;padding:10px;"><a style="color:<?php echo $addon_updates_text_color; ?>;display:block;text-decoration:none;" href="<?php echo( esc_url( admin_url( 'admin.php?page=pmpro-addons&plugin_status=update' ) ) ); ?>" target="_blank"><div style="font-size:50px;font-weight:900;line-height:65px;"><?php echo esc_html( number_format_i18n( $update_addons ) ); ?></div><?php esc_html_e( 'Required Updates', 'paid-memberships-pro' ); ?></a></div></td>
 								</tr>
 							</table>
 							<p style="margin:15px 0px 0px 0px;padding:0px;"><?php printf( __( 'It is important to keep all Add Ons up to date to take advantage of security improvements, bug fixes, and expanded features. Add On updates can be made <a href="%s" style="color:#1A688B;" target="_blank">via the WordPress Dashboard</a>.', 'paid-memberships-pro' ), esc_url( admin_url( 'update-core.php' ) ) ); ?></p>

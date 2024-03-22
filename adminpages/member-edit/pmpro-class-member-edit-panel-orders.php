@@ -129,11 +129,11 @@ class PMPro_Member_Edit_Panel_Orders extends PMPro_Member_Edit_Panel {
 									if ( empty( $invoice->status ) ) {
 										esc_html_e( '&#8212;', 'paid-memberships-pro' );
 									} else { ?>
-										<span class="pmpro_order-status pmpro_order-status-<?php esc_attr_e( $invoice->status ); ?>">
+										<span class="pmpro_order-status pmpro_order-status-<?php echo esc_attr( $invoice->status ); ?>">
 											<?php if ( in_array( $invoice->status, array( 'success', 'cancelled' ) ) ) {
 												esc_html_e( 'Paid', 'paid-memberships-pro' );
 											} else {
-												esc_html_e( ucwords( $invoice->status ) );
+												echo esc_html( ucwords( $invoice->status ) );
 											} ?>
 										</span>
 										<?php
