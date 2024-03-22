@@ -375,7 +375,7 @@ class PMProGateway_stripe extends PMProGateway {
 			</th>
 			<td>
 				<?php if ( ! empty( $webhook ) && is_array( $webhook ) && $stripe->show_legacy_keys_settings()) { ?>
-				<button type="button" id="pmpro_stripe_create_webhook" class="button button-secondary" style="display: none;"><span class="dashicons dashicons-update-alt"></span> <?php _e( 'Create Webhook' ,'paid-memberships-pro' ); ?></button>
+				<button type="button" id="pmpro_stripe_create_webhook" class="button button-secondary" style="display: none;"><span class="dashicons dashicons-update-alt"></span> <?php esc_html_e( 'Create Webhook' ,'paid-memberships-pro' ); ?></button>
 					<?php
 						if ( 'disabled' === $webhook['status'] ) {
 							// Check webhook status.
@@ -399,7 +399,7 @@ class PMProGateway_stripe extends PMProGateway {
 							<?php
 						}
 					} elseif ( $stripe->show_legacy_keys_settings() ) { ?>
-						<button type="button" id="pmpro_stripe_create_webhook" class="button button-secondary"><span class="dashicons dashicons-update-alt"></span> <?php _e( 'Create Webhook' ,'paid-memberships-pro' ); ?></button>
+						<button type="button" id="pmpro_stripe_create_webhook" class="button button-secondary"><span class="dashicons dashicons-update-alt"></span> <?php esc_html_e( 'Create Webhook' ,'paid-memberships-pro' ); ?></button>
 						<div class="notice error inline">
 							<p id="pmpro_stripe_webhook_notice" class="pmpro_stripe_webhook_notice"><?php esc_html_e('A webhook in Stripe is required to process recurring payments, manage failed payments, and synchronize cancellations.', 'paid-memberships-pro' );?></p>
 						</div>
@@ -410,7 +410,7 @@ class PMProGateway_stripe extends PMProGateway {
 				<code><?php echo esc_url( $stripe->get_site_webhook_url() ); ?></code></p>
 			</td>
 		</tr>
-		<tr class="pmpro_settings_divider gateway gateway_stripe_<?php echo $stripe->gateway_environment; ?>" <?php if ( $gateway != "stripe" ) { ?>style="display: none;"<?php } ?>>
+		<tr class="pmpro_settings_divider gateway gateway_stripe_<?php echo esc_attr( $stripe->gateway_environment ); ?>" <?php if ( $gateway != "stripe" ) { ?>style="display: none;"<?php } ?>>
 			<td colspan="2">
 				<hr />
 				<h2><?php esc_html_e( 'Webhook Status', 'paid-memberships-pro' ); ?></h2>
@@ -514,9 +514,9 @@ class PMProGateway_stripe extends PMProGateway {
 								foreach ( $ordered_webhooks as $webhook_event ) {
 									?>
 									<tr>
-										<td><?php echo $webhook_event['name']; ?></td>
+										<td><?php echo esc_html( $webhook_event['name'] ); ?></td>
 										<td><?php echo esc_html( $webhook_event['last_received'] ); ?></td>
-										<td><?php echo $webhook_event['status']; ?></td>
+										<td><?php echo esc_html( $webhook_event['status'] ); ?></td>
 									</tr>
 									<?php
 								}
@@ -622,7 +622,7 @@ class PMProGateway_stripe extends PMProGateway {
 						if ( ! empty( $payment_request_error_escaped ) ) {
 							?>
 							<div class="notice error inline">
-								<p id="pmpro_stripe_payment_request_button_notice"><?php echo( $payment_request_error_escaped ); ?></p>
+								<p id="pmpro_stripe_payment_request_button_notice"><?php echo wp_kses_post( $payment_request_error_escaped ); ?></p>
 							</div>
 							<?php
 						}
@@ -1002,7 +1002,13 @@ class PMProGateway_stripe extends PMProGateway {
 					<?php } ?>
                 </div> <!-- end pmpro_checkout-fields -->
 				<?php if ( ! empty( $sslseal ) ) { ?>
-                <div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout-fields-rightcol pmpro_sslseal', 'pmpro_sslseal' ) ); ?>"><?php echo stripslashes( $sslseal ); ?></div>
+                <div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout-fields-rightcol pmpro_sslseal', 'pmpro_sslseal' ) ); ?>">
+					<?php
+					// This value is set by admins and could contain JS. Will be replaced with a hook in future versions.
+					//phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+					echo stripslashes( $sslseal );
+					?>
+				</div>
             </div> <!-- end pmpro_checkout-fields-display-seal -->
 		<?php } ?>
         </div> <!-- end pmpro_payment_information_fields -->
@@ -1211,7 +1217,7 @@ class PMProGateway_stripe extends PMProGateway {
 		global $pmpro_stripe_error;
 		if ( ! empty( $pmpro_stripe_error ) ) {
 			$class   = 'notice notice-error pmpro-stripe-connect-message';
-			printf( '<div class="%1$s"><p>%2$s</p></div>', esc_attr( $class ), $pmpro_stripe_error );
+			printf( '<div class="%1$s"><p>%2$s</p></div>', esc_attr( $class ), esc_html( $pmpro_stripe_error ) );
 		}
 	}
 
