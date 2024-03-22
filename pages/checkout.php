@@ -534,7 +534,7 @@ if ( empty( $default_gateway ) ) {
 	 * @return string $pmpro_tos_content
 	 */
 	$pmpro_tos_content = apply_filters( 'pmpro_tos_content', wp_kses_post( do_shortcode( $tospage->post_content ) ), $tospage );
-	echo $pmpro_tos_content; //phpcs:ignore Content escaped above, but filtering allowed.
+	echo $pmpro_tos_content; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 ?>
 				</div> <!-- end pmpro_license -->
 				<?php
