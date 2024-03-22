@@ -1,5 +1,5 @@
 == Changelog ==
-= 3.0 (Updated for v2.99.996 on 2024-03-01) =
+= 3.0 (Updated for v2.99.997 on 2024-03-21) =
 * FEATURE: Now tracking payment subscriptions using a new subscriptions table. (@dparker1005)
 * FEATURE: The Multiple Memberships Per User Add On has been merged into the core PMPro plugin. #2250 (@dparker1005)
 * FEATURE: The Stripe Billing Limits Add On  has been merged into the core PMPro plugin. All gateways now support billing limits. #2384 (@dparker1005)
@@ -22,6 +22,9 @@
 * ENHANCEMENT: Added Screen Options for the orders and discount code list tables. #2799 (@dparker1005)
 * ENHANCEMENT: Now showing links and previews when viewing file fields as read only. #2792 (@ideadude)
 * ENHANCEMENT: Now passing the `$item` object to the `pmpro_manage_memberslist_custom_column` so that custom code knows which specific level is being shown for the user. #2857 (@dparker1005)
+* ENHANCEMENT: You can now set block visibility for nested blocks. #2869 (@kimcoleman)
+* ENHANCEMENT: Added `pmpro_braintree_subscription_create_array` filter. #2890 (@dparker1005)
+* ENHANCEMENT: Added subscription transaction ID and next payment date to members list export. #2872 (@kimcoleman)
 * BUG FIX/ENHANCEMENT: Now storing payment information in individual orders instead of in user meta. #2398 (@JarrydLong)
 * BUG FIX/ENHANCENENT: Now showing "Credit Card" instead of "Pay With Credit Card" on the Update Billing page when using the Stripe payment request button. #2684 (jahidhasan018)
 * BUG FIX/ENHANCEMENT: Now preventing multiple user field groups with the same name from being created. #2625 (@MaximilianoRicoTabo)
@@ -35,6 +38,9 @@
 * BUG FIX/ENHANCEMENT: No longer attempting to load our blocks if the register_block_type function is unavailable. (ClassicPress compatibility.) #2840 (@MaximilianoRicoTabo)
 * BUG FIX/ENHANCEMENT: Adjusted the dashboard UI to hide some elements when the current user doesn't have the proper caps to use them. #2771 (@kimcoleman)
 * BUG FIX/ENHANCEMENT: No longer making the AJAX call to check for notifications if notifications are turned off. #2856 (@mircobabini)
+* BUG FIX/ENHANCEMENT: Adding nonce to email order modal and prefixing params. #2864 (@dparker1005)
+* BUG FIX/ENHANCEMENT: Adding nonce to checkout form. #2893 (@dparker1005)
+* BUG FIX/ENHANCEMENT: Small fixes for theme compatibility in Kadence, BuddyBoss. #2894 (@kimcoleman)
 * BUG FIX: Fixed an issue in the WordPress dashboard where the site locale would be loaded instead of the user locale. #2707 (@andrewlimaza)
 * BUG FIX: Fixed an issue where `admin_only` user fields would still show on the frontend profile if the current user was an administrator. #2432 (@dparker1005)
 * BUG FIX: Fixed an issue where the annual membership report would not show cancellations. #2630 (@MaximilianoRicoTabo)
@@ -43,6 +49,8 @@
 * BUG FIX: Fixed issue where clicking outside of a modal popup was not closing the popup. #2776 (@mircobabini)
 * BUG FIX: Fixed an issue where reCAPTCHA v3 wouldn't show the badge for offsite gateways. #2826 (@andrewlimaza)
 * BUG FIX: Fixed an issue where reCAPTCHA v3 wouldn't show the badge for gateways that use a custom submit button at checkout. #2867 (@dparker1005)
+* BUG FIX: Fixed edge case issues when blocks were set to hide from multiple levels. #2884 (@dparker1005)
+* BUG FIX: Fixed "WordPress database error Index column size too large." issues on some MySQL setups. #2876 (@dparker1005)
 * REFACTOR: Updated how we enqueue blocks to follow most recent WordPress standards. #2647 (@briansantos10)
 * REFACTOR: Removed deprecated and unused code in the Stripe gateway integration code. #2428 (@dparker1005)
 * REFACTOR: Changing uses of `pmpro_getOption()` to `get_option()`. #2491, #2493, #2494, #2495 (@JarrydLong, @MaximilianoRicoTabo)
