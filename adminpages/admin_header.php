@@ -165,7 +165,23 @@
 	<?php } ?>
 
 <div class="wrap pmpro_admin <?php echo 'pmpro_admin-' . esc_attr( $view ); ?>">
-    <?php if( pmpro_get_max_notification_priority() > 0 ) : ?>
+    <?php
+		// Default to showing notification banners.
+		$show_notifications = true;
+
+		// Hide notifications on certain pages.
+		$hide_on_these_pages = array( 'pmpro-updates' );
+		if ( ! empty( $_REQUEST['page'] ) && in_array( sanitize_text_field( $_REQUEST['page'] ), $hide_on_these_pages ) ) {
+			$show_notifications = false;
+		}
+
+		// Hide notifications if the user has disabled them.
+		if( pmpro_get_max_notification_priority() < 1 ) {
+			$show_notifications = false;
+		}
+
+		if( $show_notifications ) :
+		?>
         <div id="pmpro_notifications">
         </div>
         <?php
