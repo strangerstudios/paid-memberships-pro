@@ -2,7 +2,7 @@
 	//only admins can get this
 	if(!function_exists("current_user_can") || (!current_user_can("manage_options") && !current_user_can("pmpro_emailsettings")))
 	{
-		die(__("You do not have permissions to perform this action.", 'paid-memberships-pro' ));
+		die(esc_html__("You do not have permissions to perform this action.", 'paid-memberships-pro' ));
 	}	
 	
 	global $wpdb, $msg, $msgt;
@@ -15,7 +15,7 @@
 	//check nonce for saving settings
 	if (!empty($_REQUEST['savesettings']) && (empty($_REQUEST['pmpro_emailsettings_nonce']) || !check_admin_referer('savesettings', 'pmpro_emailsettings_nonce'))) {
 		$msg = -1;
-		$msgt = __("Are you sure you want to do that? Try again.", 'paid-memberships-pro' );
+		$msgt = esc_html__("Are you sure you want to do that? Try again.", 'paid-memberships-pro' );
 		unset($_REQUEST['savesettings']);
 	}	
 	
@@ -116,7 +116,7 @@
 						</th>
 						<td>
 							<input type="checkbox" id="only_filter_pmpro_emails" name="only_filter_pmpro_emails" value="1" <?php if(!empty($only_filter_pmpro_emails)) { ?>checked="checked"<?php } ?> />
-							<label for="only_filter_pmpro_emails"><?php printf( __('If unchecked, all emails from "WordPress &lt;%s&gt;" will be filtered to use the above settings.', 'paid-memberships-pro' ),  $default_from_email );?></label>
+							<label for="only_filter_pmpro_emails"><?php printf( __('If unchecked, all emails from "WordPress &lt;%s&gt;" will be filtered to use the above settings.', 'paid-memberships-pro' ),  esc_html( $default_from_email ) );?></label>
 						</td>
 					</tr>
 				</tbody>
@@ -158,8 +158,8 @@
 						$sendwp_email_forwarding = function_exists( 'sendwp_forwarding_enabled' ) && sendwp_forwarding_enabled() ? true : false;
 						
 						// Messages for connected or not.
-						$connected = __( 'Your site is connected to SendWP.', 'paid-memberships-pro' ) . " <a href='https://app.sendwp.com/dashboard/' target='_blank' rel='nofollow noopener'>" . __( 'View Your SendWP Account', 'paid-memberships-pro' ) . "</a>";
-						$disconnected = ' ' . sprintf( __( 'Please enable email sending inside %s.', 'paid-memberships-pro' ), '<a href="' . admin_url('tools.php?page=sendwp') . '">SendWP Settings</a>' );
+						$connected = esc_html__( 'Your site is connected to SendWP.', 'paid-memberships-pro' ) . " <a href='https://app.sendwp.com/dashboard/' target='_blank' rel='nofollow noopener'>" . __( 'View Your SendWP Account', 'paid-memberships-pro' ) . "</a>";
+						$disconnected = ' ' . sprintf( esc_html__( 'Please enable email sending inside %s.', 'paid-memberships-pro' ), '<a href="' . esc_url( admin_url('tools.php?page=sendwp') ) . '">SendWP Settings</a>' );
 						?>
 						<p class="description" id="pmpro-sendwp-description"><?php echo $sendwp_email_forwarding ? $connected : $disconnected; ?></p>
 					<?php }

@@ -161,7 +161,7 @@
 
 	// Show the contextual messages on our admin pages.
 	if ( ! empty( $msg ) && ! in_array( $view, array( 'pmpro-dashboard', 'pmpro-member' ) ) ) { ?>
-		<div id="message" class="<?php if($msg > 0) echo "updated fade"; else echo "error"; ?>"><p><?php echo $msgt?></p></div>
+		<div id="message" class="<?php if($msg > 0) echo "updated fade"; else echo "error"; ?>"><p><?php echo wp_kses_post( $msgt );?></p></div>
 	<?php } ?>
 
 <div class="wrap pmpro_admin <?php echo 'pmpro_admin-' . esc_attr( $view ); ?>">
@@ -194,7 +194,7 @@
         ?>
         <script>
             jQuery(document).ready(function() {
-                jQuery.get('<?php echo admin_url( "admin-ajax.php?action=pmpro_notifications" . $specific_notification ); ?>', function(data) {
+                jQuery.get('<?php echo esc_url( admin_url( "admin-ajax.php?action=pmpro_notifications" . $specific_notification ) ); ?>', function(data) {
                     if(data && data != 'NULL')
                         jQuery('#pmpro_notifications').html(data);
                 });
@@ -288,7 +288,7 @@
 			<?php } ?>
 
 			<?php if ( current_user_can( 'pmpro_userfields' ) ) { ?>
-				<li><a href="<?php echo add_query_arg( array( 'page' => 'pmpro-userfields' ), get_admin_url(null, 'admin.php' ) ); ?>" class="<?php if($view == 'pmpro-userfields') { ?>current<?php } ?>"><?php _e('User Fields', 'paid-memberships-pro' );?></a></li>
+				<li><a href="<?php echo esc_url( add_query_arg( array( 'page' => 'pmpro-userfields' ), get_admin_url(null, 'admin.php' ) ) ); ?>" class="<?php if($view == 'pmpro-userfields') { ?>current<?php } ?>"><?php esc_html_e('User Fields', 'paid-memberships-pro' );?></a></li>
 			<?php } ?>
 
 			<?php if(current_user_can('pmpro_advancedsettings')) { ?>

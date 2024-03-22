@@ -1,7 +1,7 @@
 <?php
 //only admins can get this
 if ( ! function_exists( "current_user_can" ) || ( ! current_user_can( "manage_options" ) && ! current_user_can( "pmpro_sales_report_csv" ) ) ) {
-	die( __( "You do not have permissions to perform this action.", 'paid-memberships-pro' ) );
+	die( esc_html__( "You do not have permissions to perform this action.", 'paid-memberships-pro' ) );
 }
 
 //get values from form
@@ -51,7 +51,7 @@ $param_hash = md5( implode( ' ', $param_array ) . PMPRO_VERSION );
 $sales_data = get_transient( 'pmpro_sales_data_' . $param_hash );
 
 if ( empty( $sales_data ) ) {
-	die( __('Error finding report data. Make sure transients are working.', 'paid-memberships-pro' ) );
+	die( esc_html__('Error finding report data. Make sure transients are working.', 'paid-memberships-pro' ) );
 }
 
 $headers   = array();

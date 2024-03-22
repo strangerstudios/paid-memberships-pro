@@ -2,7 +2,7 @@
 	//only admins can get this
 	if(!function_exists("current_user_can") || (!current_user_can("manage_options") && !current_user_can("pmpro_membershiplevels")))
 	{
-		die(__("You do not have permissions to perform this action.", 'paid-memberships-pro' ));
+		die(esc_html__("You do not have permissions to perform this action.", 'paid-memberships-pro' ));
 	}
 
 	// Process form submissions.
@@ -274,7 +274,7 @@
 							$pmpro_membershiplevels_page_action_link['url'] = esc_url( $pmpro_membershiplevels_page_action_link['url'] );
 						}
 						?>
-						<a class="<?php echo esc_attr( $class ); ?>" href="<?php echo $pmpro_membershiplevels_page_action_link['url']; ?>"><?php echo esc_html( $pmpro_membershiplevels_page_action_link['name'] ); ?></a>
+						<a class="<?php echo esc_attr( $class ); ?>" href="<?php echo esc_url( $pmpro_membershiplevels_page_action_link['url'] ); ?>"><?php echo esc_html( $pmpro_membershiplevels_page_action_link['name'] ); ?></a>
 						<?php
 					}
 				?>
@@ -385,7 +385,7 @@
 										foreach ( $group_levels_to_show as $level ) {
 									?>
 									<tr class="<?php if(!$level->allow_signups) { ?>pmpro_gray<?php } ?> <?php if(!pmpro_checkLevelForStripeCompatibility($level) || !pmpro_checkLevelForBraintreeCompatibility($level) || !pmpro_checkLevelForPayflowCompatibility($level) || !pmpro_checkLevelForTwoCheckoutCompatibility($level)) { ?>pmpro_error<?php } ?>">
-										<td><?php echo $level->id?></td>
+										<td><?php echo esc_html( $level->id );?></td>
 										<td class="level_name has-row-actions">
 											<span class="level-name"><a href="<?php echo esc_url( add_query_arg( array( 'page' => 'pmpro-membershiplevels', 'edit' => $level->id ), admin_url( 'admin.php' ) ) ); ?>"><?php echo esc_html( $level->name ); ?></a></span>
 											<div class="row-actions">
@@ -479,14 +479,14 @@
 											<?php if(pmpro_isLevelFree($level)) { ?>
 												<?php esc_html_e( 'Free', 'paid-memberships-pro' ); ?>
 											<?php } else { ?>
-												<?php echo str_replace( 'The price for membership is', '', pmpro_getLevelCost($level) ); ?>
+												<?php echo wp_kses_post( str_replace( 'The price for membership is', '', pmpro_getLevelCost($level) ) ); ?>
 											<?php } ?>
 										</td>
 										<td>
 											<?php if(!pmpro_isLevelExpiring($level)) {
 												esc_html_e( '&#8212;', 'paid-memberships-pro' );
 											} else { ?>
-												<?php esc_html_e('After', 'paid-memberships-pro' );?> <?php echo $level->expiration_number?> <?php echo sornot($level->expiration_period,$level->expiration_number)?>
+												<?php esc_html_e('After', 'paid-memberships-pro' );?> <?php echo esc_html( $level->expiration_number );?> <?php echo esc_html( sornot($level->expiration_period,$level->expiration_number) );?>
 											<?php } ?>
 										</td>
 										<td><?php
@@ -494,10 +494,10 @@
 												if ( ! empty( $pmpro_pages['checkout'] ) ) {
 													?><a target="_blank" href="<?php echo esc_url( add_query_arg( 'pmpro_level', $level->id, pmpro_url("checkout") ) );?>"><?php esc_html_e('Yes', 'paid-memberships-pro' );?></a><?php
 												} else {
-													_e('Yes', 'paid-memberships-pro' );
+													esc_html_e('Yes', 'paid-memberships-pro' );
 												}
 											} else {
-												_e('No', 'paid-memberships-pro' );
+												esc_html_e('No', 'paid-memberships-pro' );
 											}
 											?></td>
 										<?php do_action( 'pmpro_membership_levels_table_extra_cols_body', $level ); ?>

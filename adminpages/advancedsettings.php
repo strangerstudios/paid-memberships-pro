@@ -2,7 +2,7 @@
 	//only admins can get this
 	if(!function_exists("current_user_can") || (!current_user_can("manage_options") && !current_user_can("pmpro_advancedsettings")))
 	{
-		die(__("You do not have permissions to perform this action.", 'paid-memberships-pro' ));
+		die(esc_html__("You do not have permissions to perform this action.", 'paid-memberships-pro' ));
 	}
 
 	global $wpdb, $msg, $msgt, $allowedposttags;
@@ -279,7 +279,7 @@
 								<!-- For reference, removed the Yes - Free memberships only. option -->
 								<option value="2" <?php if( $spamprotection > 0 ) { ?>selected="selected"<?php } ?>><?php esc_html_e('Yes - Enable Spam Protection', 'paid-memberships-pro' );?></option>
 							</select>
-							<p class="description"><?php printf( __( 'Block IPs from checkout if there are more than %d failures within %d minutes.', 'paid-memberships-pro' ), PMPRO_SPAM_ACTION_NUM_LIMIT, round(PMPRO_SPAM_ACTION_TIME_LIMIT/60,2) );?></p>
+							<p class="description"><?php printf( esc_html__( 'Block IPs from checkout if there are more than %d failures within %d minutes.', 'paid-memberships-pro' ), (int)PMPRO_SPAM_ACTION_NUM_LIMIT, (int)round(PMPRO_SPAM_ACTION_TIME_LIMIT/60,2) );?></p>
 						</td>
 					</tr>
 					<tr>
@@ -339,10 +339,10 @@
 						<td>
 							<select name="maxnotificationpriority">
 								<option value="5" <?php selected( $maxnotificationpriority, 5 ); ?>>
-									<?php _e( 'Show all notifications.', 'paid-memberships-pro' ); ?>
+									<?php esc_html_e( 'Show all notifications.', 'paid-memberships-pro' ); ?>
 								</option>
 								<option value="1" <?php selected( $maxnotificationpriority, 1 ); ?>>
-									<?php _e( 'Show only security notifications.', 'paid-memberships-pro' ); ?>
+									<?php esc_html_e( 'Show only security notifications.', 'paid-memberships-pro' ); ?>
 								</option>
 							</select>
 							<br />
@@ -356,16 +356,16 @@
 						<td>
 							<select name="activity_email_frequency">
 								<option value="day" <?php selected( $activity_email_frequency, 'day' ); ?>>
-									<?php _e( 'Daily', 'paid-memberships-pro' ); ?>
+									<?php esc_html_e( 'Daily', 'paid-memberships-pro' ); ?>
 								</option>
 								<option value="week" <?php selected( $activity_email_frequency, 'week' ); ?>>
-									<?php _e( 'Weekly', 'paid-memberships-pro' ); ?>
+									<?php esc_html_e( 'Weekly', 'paid-memberships-pro' ); ?>
 								</option>
 								<option value="month" <?php selected( $activity_email_frequency, 'month' ); ?>>
-									<?php _e( 'Monthly', 'paid-memberships-pro' ); ?>
+									<?php esc_html_e( 'Monthly', 'paid-memberships-pro' ); ?>
 								</option>
 								<option value="never" <?php selected( $activity_email_frequency, 'never' ); ?>>
-									<?php _e( 'Never', 'paid-memberships-pro' ); ?>
+									<?php esc_html_e( 'Never', 'paid-memberships-pro' ); ?>
 								</option>
 							</select>
 							<br />
