@@ -63,8 +63,8 @@ class PMPro_Member_Edit_Panel_Orders extends PMPro_Member_Edit_Panel {
 									<span class="id">
 										<?php echo sprintf(
 											// translators: %s is the Order ID.
-											__( 'ID: %s', 'paid-memberships-pro' ),
-											esc_attr( $invoice->id )
+											esc_html__( 'ID: %s', 'paid-memberships-pro' ),
+											esc_html( $invoice->id )
 										); ?>
 									</span> |
 									<span class="edit">
@@ -93,7 +93,7 @@ class PMPro_Member_Edit_Panel_Orders extends PMPro_Member_Edit_Panel {
 								?>
 							</td>
 							<td>
-								<?php echo pmpro_formatPrice( $invoice->total ); ?>
+								<?php echo esc_html( pmpro_formatPrice( $invoice->total ) ); ?>
 								<?php
 									if ( ! empty( $invoice->code_id ) ) {
 										$discountQuery = $wpdb->prepare( "SELECT c.code FROM $wpdb->pmpro_discount_codes c WHERE c.id = %d LIMIT 1", $invoice->code_id );
