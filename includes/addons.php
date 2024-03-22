@@ -423,8 +423,9 @@ function pmpro_admin_init_updating_plugins() {
 				}
 				
 				// show error
-				$msg = sprintf( __( 'You must have a <a href="https://www.paidmembershipspro.com/pricing/?utm_source=wp-admin&utm_pluginlink=bulkupdate">valid PMPro %s License Key</a> to update PMPro %s add ons. The following plugins will not be updated:', 'paid-memberships-pro' ), ucwords( $license_type ), ucwords( $license_type ) );
-				echo '<div class="error"><p>' . esc_html( $msg ) . ' <strong>' . esc_html( implode( ', ', $premium_addons[$license_type] ) ) . '</strong></p></div>';
+				$msg = wp_kses( sprintf( __( 'You must have a <a target="_blank" href="https://www.paidmembershipspro.com/pricing/?utm_source=wp-admin&utm_pluginlink=bulkupdate">valid PMPro %s License Key</a> to update PMPro %s add ons. The following plugins will not be updated:', 'paid-memberships-pro' ), ucwords( $license_type ), ucwords( $license_type ) ), array( 'a' => array( 'href' => array(), 'target' => array() ) ) );
+				// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+				echo '<div class="error"><p>' . $msg . ' <strong>' . esc_html( implode( ', ', $premium_addons[$license_type] ) ) . '</strong></p></div>';
 			}			
 		}
 
