@@ -240,7 +240,7 @@ function pmpro_report_login_page()
 									<?php
 										$userlink_escaped = '<a href="' . esc_url( add_query_arg( array( 'page' => 'pmpro-member', 'user_id' => (int)$theuser->ID ), admin_url( 'admin.php' ) ) ) . '">' . esc_html( $theuser->display_name ) . '</a>';
 										$userlink_escaped = apply_filters("pmpro_members_list_user_link", $userlink_escaped, $theuser);
-										echo $userlink_escaped;
+										echo $userlink_escaped; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 									?>
 								</strong>
 								<div class="row-actions">
