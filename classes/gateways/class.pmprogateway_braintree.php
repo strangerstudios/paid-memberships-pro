@@ -621,7 +621,7 @@ use Braintree\WebhookNotification as Braintree_WebhookNotification;
 				/**
 				 * Filter the array of parameters to pass to the Braintree API for a sale transaction.
 				 *
-				 * @since TBD
+				 * @since 3.0
 				 *
 				 * @param array $braintree_sale_array Array of parameters to pass to the Braintree API for a sale transaction.
 				 * @param array The new sale array.
@@ -947,7 +947,7 @@ use Braintree\WebhookNotification as Braintree_WebhookNotification;
 				/**
 				 * Filter the Braintree Subscription create array.
 				 *
-				 * @since TBD
+				 * @since 3.0
 				 *
 				 * @param array $details Array of details to create the subscription.
 				 * @return array $details Array of details to create the subscription.
