@@ -669,7 +669,7 @@ class PMPro_Members_List_Table extends WP_List_Table {
 				<div class="pmpro_message pmpro_error">
 					<p>
 						<?php
-						wp_kses_post( sprintf(
+						echo wp_kses_post( sprintf(
 							// translators: %1$d is the number of subscriptions and %2$s is the link to view subscriptions.
 							_n(
 								'This user has %1$d active subscription for this level. %2$s',
