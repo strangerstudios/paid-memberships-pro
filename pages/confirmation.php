@@ -68,7 +68,7 @@ if ( empty( $pmpro_invoice ) ) {
 			// If the invoice is not free, show the full invoice, but make sure we don't show $pmpro_msg again.
 			$pmpro_msg = false;
 			$pmpro_msgt = false;
-			echo pmpro_loadTemplate( 'invoice' );
+			echo pmpro_loadTemplate( 'invoice' );	// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Output already escaped in invoice.php.
 		} else {
 			// The invoice is free, so we don't need to show a full invoice.
 			?>
