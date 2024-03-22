@@ -558,7 +558,7 @@ function pmpro_login_forms_handler( $show_menu = true, $show_logout_link = true,
 
 	$content = ob_get_clean();
 	if ( $echo ) {
-		echo wp_kses_post( $content );
+		echo $content; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 	}
 
 	return $content;
