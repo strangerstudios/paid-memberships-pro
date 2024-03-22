@@ -610,7 +610,7 @@ class PMPro_Field {
 	//echo the HTML for the field
 	function display($value = NULL)
 	{
-		echo wp_kses_post( $this->getHTML($value) );
+		echo $this->getHTML($value); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		return;
 	}
 	
