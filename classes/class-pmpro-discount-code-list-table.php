@@ -472,7 +472,7 @@ class PMPro_Discount_Code_List_Table extends WP_List_Table {
 			}
 
 			if ( ! empty( $actions_html ) ) {
-				echo =implode( ' | ', $actions_html ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+				echo implode( ' | ', $actions_html ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 			}
 		?>
 		</div>
