@@ -1033,7 +1033,7 @@ class PMPro_Orders_List_Table extends WP_List_Table {
 			}
 
 			if ( ! empty( $actions_html ) ) {
-				echo wp_kses_post( implode( ' | ', $actions_html ) );
+				echo implode( ' | ', $actions_html ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 			}
 			?>
 		</div>

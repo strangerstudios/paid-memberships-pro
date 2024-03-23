@@ -710,7 +710,7 @@ class PMPro_Members_List_Table extends WP_List_Table {
 
 			if ( ! empty( $actions_html ) ) { ?>
 				<div class="row-actions">
-					<?php echo wp_kses_post( implode( ' | ', $actions_html ) ); ?>
+					<?php echo implode( ' | ', $actions_html ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 				</div>
 				<?php
 			}
