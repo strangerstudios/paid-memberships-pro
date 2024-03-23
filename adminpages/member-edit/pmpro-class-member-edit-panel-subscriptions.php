@@ -35,7 +35,7 @@ class PMPro_Member_Edit_Panel_Subscriptions extends PMPro_Member_Edit_Panel {
 				<?php
 					printf(
 						esc_html__( 'Active Subscriptions (%d)', 'paid-memberships-pro' ),
-						number_format_i18n( count( $active_subscriptions ) )
+						esc_html( number_format_i18n( count( $active_subscriptions ) ) )
 					);
 				?>
 			</h3>
@@ -54,7 +54,7 @@ class PMPro_Member_Edit_Panel_Subscriptions extends PMPro_Member_Edit_Panel {
 					<?php
 						printf(
 							esc_html__( 'Cancelled Subscriptions (%d)', 'paid-memberships-pro' ),
-							number_format_i18n( count( $cancelled_subscriptions ) )
+							esc_html( number_format_i18n( count( $cancelled_subscriptions ) ) )
 						);
 					?>
 				</button>
@@ -180,7 +180,7 @@ class PMPro_Member_Edit_Panel_Subscriptions extends PMPro_Member_Edit_Panel {
 								}
 
 								if ( ! empty( $actions_html ) ) {
-									echo implode( ' | ', $actions_html );
+									echo implode( ' | ', $actions_html ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 								}
 								?>
 							</div>

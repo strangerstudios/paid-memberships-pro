@@ -74,7 +74,7 @@ global $pmpro_pages;
 			}
 			?>
 			<p class="pmpro-wizard__field-description"><?php esc_html_e( 'An annual support license is recommended for websites running Paid Memberships Pro.', 'paid-memberships-pro' ); ?> <a aria-label="<?php esc_attr_e( 'View plans and pricing for Paid Memberships Pro optional licenses in a new tab', 'paid-memberships-pro' ); ?>" href="https://www.paidmembershipspro.com/pricing/?utm_source=plugin&utm_medium=pmpro-wizard&utm_campaign=pricing&utm_content=view-plans-pricing" target="_blank"><?php esc_html_e( 'View Plans and Pricing', 'paid-memberships-pro' ); ?></a></p>
-			<input type="text" name="pmpro_license_key" id="pmpro_license_key" class="pmpro-wizard__field-block" value="<?php esc_attr_e( $pmpro_license_key ); ?>">
+			<input type="text" name="pmpro_license_key" id="pmpro_license_key" class="pmpro-wizard__field-block" value="<?php echo esc_attr( $pmpro_license_key ); ?>">
 		</div>
 		<p class="pmpro_wizard__submit">
 			<?php wp_nonce_field( 'pmpro_wizard_step_1_nonce', 'pmpro_wizard_step_1_nonce' ); ?>

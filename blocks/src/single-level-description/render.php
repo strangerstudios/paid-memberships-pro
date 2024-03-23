@@ -31,7 +31,7 @@ $wrapper_attributes = get_block_wrapper_attributes( array( 'class' => implode( '
 // Echo the complete block with level description.
 echo sprintf(
 	'<%1$s %2$s>%3$s</%1$s>',
-	$tag_name,
-	$wrapper_attributes,
-	$level_description
+	esc_attr( $tag_name ),
+	$wrapper_attributes, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+	wp_kses_post( $level_description )
 );

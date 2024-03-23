@@ -77,7 +77,7 @@ function pmpro_report_sales_widget() {
 						<?php } ?>
 					</td>
 					<td><?php echo esc_html( number_format_i18n( pmpro_getSales( $report_type, null, 'all' ) ) ); ?></td>
-					<td><?php echo pmpro_escape_price( pmpro_formatPrice( pmpro_getRevenue( $report_type ) ) ); ?></td>
+					<td><?php echo pmpro_escape_price( pmpro_formatPrice( pmpro_getRevenue( $report_type ) ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></td>
 				</tr>
 				<?php
 					//sale prices stats
@@ -89,9 +89,9 @@ function pmpro_report_sales_widget() {
 						}
 				?>
 					<tr class="pmpro_report_tr_sub" style="display: none;">
-						<td aria-label="<?php echo esc_attr( sprintf( __( 'Orders %s at %s price', 'paid-memberships-pro' ), $report_name, pmpro_escape_price( pmpro_formatPrice( $price ) ) ) ); ?>">- <?php echo pmpro_escape_price( pmpro_formatPrice( $price ) );?></td>
+						<td aria-label="<?php echo esc_attr( sprintf( __( 'Orders %s at %s price', 'paid-memberships-pro' ), $report_name, pmpro_escape_price( pmpro_formatPrice( $price ) ) ) ); ?>">- <?php echo pmpro_escape_price( pmpro_formatPrice( $price ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></td>
 						<td><?php echo esc_html( number_format_i18n( $quantity['total'] ) ); ?></td>
-						<td><?php echo pmpro_escape_price( pmpro_formatPrice( $price * $quantity['total'] ) ); ?></td>
+						<td><?php echo pmpro_escape_price( pmpro_formatPrice( $price * $quantity['total'] ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></td>
 					</tr>
 				<?php
 				}
@@ -587,7 +587,7 @@ function pmpro_report_sales_page()
 	?>
 	<form id="posts-filter" method="get" action="">
 	<h1 class="wp-heading-inline">
-		<?php _e('Sales and Revenue', 'paid-memberships-pro' );?>
+		<?php esc_html_e('Sales and Revenue', 'paid-memberships-pro' );?>
 	</h1>
 	<?php if ( current_user_can( 'pmpro_sales_report_csv' ) ) { ?>
 		<a target="_blank" href="<?php echo esc_url( $csv_export_link ); ?>" class="page-title-action pmpro-has-icon pmpro-has-icon-download"><?php esc_html_e( 'Export to CSV', 'paid-memberships-pro' ); ?></a>
@@ -724,7 +724,7 @@ function pmpro_report_sales_page()
 						<?php echo wp_json_encode( esc_html( $chart_row_data['date'] ) ); ?>,
 						<?php echo wp_json_encode( wp_kses( $chart_row_data['tooltip'], 'post' ) ); ?>,
 						<?php
-						echo implode( ',', $chart_row_data['data'] ) . ',';
+						echo esc_html( implode( ',', $chart_row_data['data'] ) . ',' );
 						?>
 					],
 				<?php } ?>

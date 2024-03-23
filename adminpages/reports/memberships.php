@@ -353,7 +353,7 @@ function pmpro_report_memberships_page() {
 	?>
 	<form id="posts-filter" method="get" action="">
 	<h1 class="wp-heading-inline">
-		<?php _e( 'Membership Stats', 'paid-memberships-pro' ); ?>
+		<?php esc_html_e( 'Membership Stats', 'paid-memberships-pro' ); ?>
 	</h1>
 	<?php if ( current_user_can( 'pmpro_reportscsv' ) ) { ?>
 		<a target="_blank" href="<?php echo esc_url( $csv_export_link ); ?>" class="page-title-action pmpro-has-icon pmpro-has-icon-download"><?php esc_html_e( 'Export to CSV', 'paid-memberships-pro' ); ?></a>

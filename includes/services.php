@@ -117,7 +117,7 @@ add_action('wp_ajax_pmpro_orders_print_view', 'pmpro_orders_print_view');
 function pmpro_get_order_json() {
 	// only admins can get this
 	if ( ! function_exists( 'current_user_can' ) || ( ! current_user_can( 'manage_options' ) && ! current_user_can( 'pmpro_orders' ) ) ) {
-		die( __( 'You do not have permissions to perform this action.', 'paid-memberships-pro' ) );
+		die( esc_html__( 'You do not have permissions to perform this action.', 'paid-memberships-pro' ) );
 	}
 	
 	$order_id = intval( $_REQUEST['order_id'] );
@@ -139,12 +139,12 @@ add_action('wp_ajax_pmpro_get_order_json', 'pmpro_get_order_json');
 function pmpro_update_level_order() {
 	// only admins can get this
 	if ( ! function_exists( 'current_user_can' ) || ( ! current_user_can( 'manage_options' ) && ! current_user_can( 'pmpro_membershiplevels' ) ) ) {
-		die( __( 'You do not have permissions to perform this action.', 'paid-memberships-pro' ) );
+		die( esc_html__( 'You do not have permissions to perform this action.', 'paid-memberships-pro' ) );
 	}
 
 	// Check the nonce.
 	if ( ! wp_verify_nonce( sanitize_key( $_REQUEST['nonce'] ), 'pmpro_update_level_order' ) ) {
-		die( __( 'You do not have permissions to perform this action.', 'paid-memberships-pro' ) );
+		die( esc_html__( 'You do not have permissions to perform this action.', 'paid-memberships-pro' ) );
 	}
 
 	$level_order = null;
@@ -156,7 +156,7 @@ function pmpro_update_level_order() {
 		$level_order = sanitize_text_field( $_REQUEST['level_order'] );
 	}
 	
-	echo update_option('pmpro_level_order', $level_order);
+	echo esc_html( update_option('pmpro_level_order', $level_order) );
     exit;
 }
 add_action('wp_ajax_pmpro_update_level_order', 'pmpro_update_level_order');
@@ -164,7 +164,7 @@ add_action('wp_ajax_pmpro_update_level_order', 'pmpro_update_level_order');
 function pmpro_update_level_group_order() {
 	// only admins can get this
 	if ( ! function_exists( 'current_user_can' ) || ( ! current_user_can( 'manage_options' ) && ! current_user_can( 'pmpro_membershiplevels' ) ) ) {
-		die( __( 'You do not have permissions to perform this action.', 'paid-memberships-pro' ) );
+		die( esc_html__( 'You do not have permissions to perform this action.', 'paid-memberships-pro' ) );
 	}
 
 	$level_group_order = null;
@@ -193,7 +193,7 @@ add_action('wp_ajax_pmpro_update_level_group_order', 'pmpro_update_level_group_o
  * Callback to draw a field group.
  */
 function pmpro_userfields_get_group_ajax() {	
-	echo pmpro_get_field_group_html();
+	echo pmpro_get_field_group_html(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
     exit;
 }
 add_action( 'wp_ajax_pmpro_userfields_get_group', 'pmpro_userfields_get_group_ajax' );
@@ -202,7 +202,7 @@ add_action( 'wp_ajax_pmpro_userfields_get_group', 'pmpro_userfields_get_group_aj
  * Callback to draw a field.
  */
 function pmpro_userfields_get_field_ajax() {
- 	echo pmpro_get_field_html();
+ 	echo pmpro_get_field_html(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 	exit;
 }
 add_action( 'wp_ajax_pmpro_userfields_get_field', 'pmpro_userfields_get_field_ajax' );

@@ -80,7 +80,7 @@ function pmpro_upgrade_3_0_ajax() {
 	}
 	if ( ! empty( $failed_migrations ) ) {
 		// If we have failed migrations, echo the error.
-		echo '[error] Failed to migrate subscriptions: ' . implode( ', ', $failed_migrations );
+		echo esc_html( '[error] Failed to migrate subscriptions: ' . implode( ', ', $failed_migrations ) );
 		return;
 	}
 

@@ -66,7 +66,7 @@ function pmpro_add_pages() {
 	} else {
 		$span_color = '#FCD34D';
 	}
-	add_submenu_page( 'pmpro-dashboard', __( 'License', 'paid-memberships-pro' ), __( '<span style="color: ' . $span_color . '">License</span>', 'paid-memberships-pro' ), 'manage_options', 'pmpro-license', 'pmpro_license_settings_page' );
+	add_submenu_page( 'pmpro-dashboard', __( 'License', 'paid-memberships-pro' ),'<span style="color: ' . $span_color . '">' . __( 'License', 'paid-memberships-pro' ) . '</span>', 'manage_options', 'pmpro-license', 'pmpro_license_settings_page' );
 
 	// Settings tabs
 	$discount_codes_list_table_hook = add_submenu_page( 'admin.php', __( 'Discount Codes', 'paid-memberships-pro' ), __( 'Discount Codes', 'paid-memberships-pro' ), 'pmpro_discountcodes', 'pmpro-discountcodes', 'pmpro_discountcodes' );
@@ -266,7 +266,7 @@ function pmpro_admin_bar_menu() {
 			array(
 				'id' => 'pmpro-license',
 				'parent' => 'paid-memberships-pro',
-				'title' => __( '<span style="color: ' . $span_color . '; line-height: 26px;">License</span>', 'paid-memberships-pro' ),
+				'title' => '<span style="color: ' . $span_color . '; line-height: 26px;">' . __( 'License', 'paid-memberships-pro' ) . '</span>',
 				'href' => admin_url( 'admin.php?page=pmpro-license' )
 			)
 		);

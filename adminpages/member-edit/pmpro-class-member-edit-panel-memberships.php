@@ -74,7 +74,7 @@ class PMPro_Member_Edit_Panel_Memberships extends PMPro_Member_Edit_Panel {
 			}
 
 			// State whether users can have multiple levels from this group.
-			echo '<p>' . ( empty( $group->allow_multiple_selections ) ? __( 'Users can only hold one level from this group.', 'paid-memberships-pro' ) : __( 'Users can hold multiple levels from this group.', 'paid-memberships-pro' ) ) . '</p>';
+			echo '<p>' . ( empty( $group->allow_multiple_selections ) ? esc_html__( 'Users can only hold one level from this group.', 'paid-memberships-pro' ) : esc_html__( 'Users can hold multiple levels from this group.', 'paid-memberships-pro' ) ) . '</p>';
 
 			// Show the table for this group.
 			?>
@@ -129,13 +129,13 @@ class PMPro_Member_Edit_Panel_Memberships extends PMPro_Member_Edit_Panel {
 									}
 
 									if ( ! empty( $actions_html ) ) {
-										echo implode( ' | ', $actions_html );
+										echo implode( ' | ', $actions_html ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 									}
 								?>
 								</div>
 							</td>
 							<td>
-								<?php echo pmpro_get_membership_expiration_text( $shown_level, $user ); ?>
+								<?php echo wp_kses_post( pmpro_get_membership_expiration_text( $shown_level, $user ) ); ?>
 							</td>
 							<td class="pmpro_levels_subscription_data has-row-actions">
 								<?php
@@ -147,7 +147,7 @@ class PMPro_Member_Edit_Panel_Memberships extends PMPro_Member_Edit_Panel {
 											<div class="pmpro_message pmpro_error">
 												<p>
 													<?php
-													printf(
+													echo wp_kses_post( sprintf(
 														// translators: %1$d is the number of subscriptions and %2$s is the link to view subscriptions.
 														_n(
 															'This user has %1$d active subscription for this level. %2$s',
@@ -161,7 +161,7 @@ class PMPro_Member_Edit_Panel_Memberships extends PMPro_Member_Edit_Panel {
 															esc_url( add_query_arg( array( 'page' => 'pmpro-member', 'user_id' => $user->ID, 'pmpro_member_edit_panel' => 'subscriptions' ), admin_url( 'admin.php' ) ) ),
 															esc_html__( 'View Subscriptions', 'paid-memberships-pro' )
 														)
-													); ?>
+													) ); ?>
 												</p>
 											</div>
 											<?php
@@ -188,7 +188,7 @@ class PMPro_Member_Edit_Panel_Memberships extends PMPro_Member_Edit_Panel {
 
 										if ( ! empty( $actions_html ) ) { ?>
 											<div class="row-actions">
-												<?php echo implode( ' | ', $actions_html ); ?>
+												<?php echo implode( ' | ', $actions_html ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 											</div>
 											<?php
 										}
@@ -308,7 +308,7 @@ class PMPro_Member_Edit_Panel_Memberships extends PMPro_Member_Edit_Panel {
 											<span class="pmpro-level_change-action-field">
 												<label>
 													<input type="checkbox" name="<?php echo esc_attr( $cancel_level_input_name_base ); ?>[refund]" value="<?php echo (int)$last_order->id; ?>" />
-													<?php printf( esc_html( 'Refund the last payment (%s).', 'paid-memberships-pro' ), pmpro_formatPrice( $last_order->total ) ); ?>
+													<?php printf( esc_html( 'Refund the last payment (%s).', 'paid-memberships-pro' ), pmpro_escape_price( pmpro_formatPrice( $last_order->total ) ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 												</label>
 											</span>
 										</div>
@@ -398,7 +398,7 @@ class PMPro_Member_Edit_Panel_Memberships extends PMPro_Member_Edit_Panel {
 											</span>
 											<span class="pmpro-level_change-action-field">
 												<select id="<?php echo esc_attr( $add_level_to_group_input_name_base ); ?>[level_id]" name="<?php echo esc_attr( $add_level_to_group_input_name_base ); ?>[level_id]">
-													<option value="">-- <?php _e( 'Choose Level', 'paid-memberships-pro' );?> --</option>
+													<option value="">-- <?php esc_html_e( 'Choose Level', 'paid-memberships-pro' );?> --</option>
 													<?php
 													foreach ( $levels_in_group as $level ) {
 														// If the user already has this level, don't allow them to add it.
@@ -436,7 +436,7 @@ class PMPro_Member_Edit_Panel_Memberships extends PMPro_Member_Edit_Panel {
 														<span class="pmpro-level_change-action-field">
 														<label>
 															<input type="checkbox" name="<?php echo esc_attr( $add_level_to_group_input_name_base ); ?>[refund]" value="<?php echo (int)$last_order->id; ?>" />
-															<?php printf( esc_html( 'Refund the last payment (%s).', 'paid-memberships-pro' ), pmpro_formatPrice( $last_order->total ) ); ?>
+															<?php printf( esc_html( 'Refund the last payment (%s).', 'paid-memberships-pro' ), pmpro_escape_price( pmpro_formatPrice( $last_order->total ) ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 														</label>
 													</span>
 												</div>
@@ -638,12 +638,12 @@ class PMPro_Member_Edit_Panel_Memberships extends PMPro_Member_Edit_Panel {
 									$levelhistory->enddate = date_i18n( get_option( 'date_format'), strtotime( $levelhistory->enddate ) );
 								} ?>
 								<tr>
-									<td><?php if ( ! empty( $level ) ) { echo $level->id; } else { esc_html_e( 'N/A', 'paid-memberships-pro' ); } ?></td>
-									<td><?php if ( ! empty( $level ) ) { echo $level->name; } else { esc_html_e( 'N/A', 'paid-memberships-pro' ); } ?></td>
-									<td><?php echo ( $levelhistory->startdate === '0000-00-00 00:00:00' ? __('N/A', 'paid-memberships-pro') : date_i18n( get_option( 'date_format' ), strtotime( $levelhistory->startdate ) ) ); ?></td>
-									<td><?php echo date_i18n( get_option( 'date_format'), strtotime( $levelhistory->modified ) ); ?></td>
+									<td><?php if ( ! empty( $level ) ) { echo esc_html( $level->id ); } else { esc_html_e( 'N/A', 'paid-memberships-pro' ); } ?></td>
+									<td><?php if ( ! empty( $level ) ) { echo esc_html( $level->name ); } else { esc_html_e( 'N/A', 'paid-memberships-pro' ); } ?></td>
+									<td><?php echo esc_html( ( $levelhistory->startdate === '0000-00-00 00:00:00' ? __('N/A', 'paid-memberships-pro') : date_i18n( get_option( 'date_format' ), strtotime( $levelhistory->startdate ) ) ) ); ?></td>
+									<td><?php echo esc_html( date_i18n( get_option( 'date_format'), strtotime( $levelhistory->modified ) ) ); ?></td>
 									<td><?php echo esc_html( $levelhistory->enddate ); ?></td>
-									<td><?php echo pmpro_getLevelCost( $levelhistory, true, true ); ?></td>
+									<td><?php echo wp_kses_post( pmpro_getLevelCost( $levelhistory, true, true ) ); ?></td>
 									<td>
 										<?php 
 											if ( empty( $levelhistory->status ) ) {

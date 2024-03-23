@@ -69,7 +69,7 @@ function pmpro_build_pointer_script( $id, $options, $button1, $button2 = false, 
 		wp_pointers_tour_opts = $.extend (wp_pointers_tour_opts, {
 			// Add 'Close' button
 			buttons: function (event, t) {
-				button = jQuery ('<a id="pointer-close" class="button-secondary">' + '<?php echo $button1; ?>' + '</a>');
+				button = jQuery ('<a id="pointer-close" class="button-secondary">' + '<?php echo esc_html( $button1 ); ?>' + '</a>');
 				button.bind ('click.pointer', function () {
 					t.element.pointer ('close');
 				});
@@ -86,12 +86,12 @@ function pmpro_build_pointer_script( $id, $options, $button1, $button2 = false, 
 
 		// This is used for our "button2" value above (advances the pointers)
 		setup = function () {
-			$('<?php echo $id; ?>').pointer(wp_pointers_tour_opts).pointer('open');
+			$('<?php echo esc_html( $id ); ?>').pointer(wp_pointers_tour_opts).pointer('open');
 			
 			<?php if ( $button2 ) { ?>
-				jQuery ('#pointer-close').after ('<a id="pointer-primary" class="button-primary">' + '<?php echo $button2; ?>' + '</a>');
+				jQuery ('#pointer-close').after ('<a id="pointer-primary" class="button-primary">' + '<?php echo esc_html( $button2 ); ?>' + '</a>');
 				jQuery ('#pointer-primary').click (function () {
-					<?php echo $function; ?>  // Execute button2 function
+					<?php echo esc_html( $function ); ?>  // Execute button2 function
 				});
 				jQuery ('#pointer-close').click (function () {
 					// Post to admin ajax to disable pointers when user clicks "Close"

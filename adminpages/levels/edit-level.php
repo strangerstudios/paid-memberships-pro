@@ -179,7 +179,7 @@ if (!empty($temp_id)) {
 		<?php
 		echo sprintf(
 			// translators: %s is the Level ID.
-			__('Edit Level ID: %s', 'paid-memberships-pro'),
+			esc_html__('Edit Level ID: %s', 'paid-memberships-pro'),
 			esc_attr($level->id)
 		);
 		?>
@@ -200,7 +200,7 @@ if (!empty($temp_id)) {
 // Show the settings page message.
 if (!empty($page_msg)) { ?>
 	<div class="inline notice notice-large <?php echo $page_msg > 0 ? 'notice-success' : 'notice-error'; ?>">
-		<p><?php echo $page_msgt; ?></p>
+		<p><?php echo wp_kses_post( $page_msgt ); ?></p>
 	</div>
 <?php }
 ?>
@@ -329,12 +329,12 @@ if (!empty($page_msg)) { ?>
 						<td>
 							<?php
 							if (pmpro_getCurrencyPosition() == "left")
-								echo $pmpro_currency_symbol;
+								echo wp_kses_post( $pmpro_currency_symbol );
 							?>
 							<input name="initial_payment" type="text" value="<?php echo esc_attr(pmpro_filter_price_for_text_field($level->initial_payment)); ?>" class="regular-text" />
 							<?php
 							if (pmpro_getCurrencyPosition() == "right")
-								echo $pmpro_currency_symbol;
+								echo wp_kses_post( $pmpro_currency_symbol );
 							?>
 							<p class="description"><?php esc_html_e('The initial amount collected at registration.', 'paid-memberships-pro'); ?></p>
 						</td>
@@ -351,14 +351,14 @@ if (!empty($page_msg)) { ?>
 						<td>
 							<?php
 							if (pmpro_getCurrencyPosition() == "left")
-								echo $pmpro_currency_symbol;
+								echo wp_kses_post( $pmpro_currency_symbol );
 							?>
 							<input name="billing_amount" type="text" value="<?php echo esc_attr(pmpro_filter_price_for_text_field($level->billing_amount)); ?>" class="regular-text" />
 							<?php
 							if (pmpro_getCurrencyPosition() == "right")
-								echo $pmpro_currency_symbol;
+								echo wp_kses_post( $pmpro_currency_symbol );
 							?>
-							<?php _e('per', 'paid-memberships-pro'); ?>
+							<?php esc_html_e('per', 'paid-memberships-pro'); ?>
 							<input id="cycle_number" name="cycle_number" type="text" value="<?php echo esc_attr($level->cycle_number); ?>" class="small-text" />
 							<select id="cycle_period" name="cycle_period">
 								<?php
@@ -369,18 +369,18 @@ if (!empty($page_msg)) { ?>
 									__('Year(s)', 'paid-memberships-pro') => 'Year',
 								);
 								foreach ($cycles as $name => $value) {
-									echo '<option value="' . $value . '"';
+									echo '<option value="' . esc_attr( $value ) . '"';
 									if (empty($level->cycle_period) && $value === 'Month') {
 										echo 'selected';
 									} else {
 										selected($level->cycle_period, $value, true);
 									}
-									echo '>' . $name . '</option>';
+									echo '>' . esc_html( $name ) . '</option>';
 								}
 								?>
 							</select>
 							<p class="description">
-								<?php _e('The amount to be billed one cycle after the initial payment.', 'paid-memberships-pro'); ?>
+								<?php esc_html_e('The amount to be billed one cycle after the initial payment.', 'paid-memberships-pro'); ?>
 								<?php if ($gateway == "braintree") { ?>
 									<strong <?php if (!empty($pmpro_braintree_error)) { ?>class="pmpro_red" <?php } ?>><?php esc_html_e('Braintree integration currently only supports billing periods of "Month" or "Year".', 'paid-memberships-pro'); ?></strong>
 								<?php } elseif ($gateway == "stripe") { ?>
@@ -403,7 +403,7 @@ if (!empty($page_msg)) { ?>
 						<td>
 							<input name="billing_limit" type="text" value="<?php echo esc_attr($level->billing_limit) ?>" class="small-text" />
 							<p class="description">
-								<?php _e('The <strong>total</strong> number of recurring billing cycles for this level, including the trial period (if applicable) but not including the initial payment. Set to zero if membership is indefinite.', 'paid-memberships-pro'); ?>
+								<?php echo wp_kses( __( 'The <strong>total</strong> number of recurring billing cycles for this level, including the trial period (if applicable) but not including the initial payment. Set to zero if membership is indefinite.', 'paid-memberships-pro'), array( 'strong' => array() ) ); ?>
 							</p>
 						</td>
 					</tr>
@@ -437,16 +437,16 @@ if (!empty($page_msg)) { ?>
 					<td>
 						<?php
 						if (pmpro_getCurrencyPosition() == "left")
-							echo $pmpro_currency_symbol;
+							echo wp_kses_post( $pmpro_currency_symbol );
 						?>
 						<input name="trial_amount" type="text" value="<?php echo esc_attr(pmpro_filter_price_for_text_field($level->trial_amount)); ?>" class="regular-text" />
 						<?php
 						if (pmpro_getCurrencyPosition() == "right")
-							echo $pmpro_currency_symbol;
+							echo wp_kses_post( $pmpro_currency_symbol );
 						?>
-						<?php _e('for the first', 'paid-memberships-pro'); ?>
+						<?php esc_html_e('for the first', 'paid-memberships-pro'); ?>
 						<input name="trial_limit" type="text" value="<?php echo esc_attr($level->trial_limit); ?>" class="small-text" />
-						<?php _e('subscription payments', 'paid-memberships-pro'); ?>.
+						<?php esc_html_e('subscription payments', 'paid-memberships-pro'); ?>.
 						<?php if ($gateway == "stripe") { ?>
 							<p class="description"><strong <?php if (!empty($pmpro_stripe_error)) { ?>class="pmpro_red" <?php } ?>><?php esc_html_e('Stripe integration currently does not support trial amounts greater than $0.', 'paid-memberships-pro'); ?></strong></p>
 						<?php } elseif ($gateway == "braintree") { ?>
@@ -489,7 +489,16 @@ if (!empty($page_msg)) { ?>
 		</div>
 		<div class="pmpro_section_inside" <?php echo $section_visibility === 'hidden' ? 'style="display: none"' : ''; ?>>
 			<div id="pmpro_expiration_warning" style="display: none;" class="notice notice-alt notice-error inline">
-				<p><?php printf(__('WARNING: This level is set with both a recurring billing amount and an expiration date. You only need to set one of these unless you really want this membership to expire after a certain number of payments. For more information, <a target="_blank" rel="nofollow noopener" href="%s">see our post here</a>.', 'paid-memberships-pro'), 'https://www.paidmembershipspro.com/important-notes-on-recurring-billing-and-expiration-dates-for-membership-levels/?utm_source=plugin&utm_medium=pmpro-membershiplevels&utm_campaign=blog&utm_content=important-notes-on-recurring-billing-and-expiration-dates-for-membership-levels'); ?></p>
+				<p><?php
+					$allowed_html = array(
+						'a' => array(
+							'target' => array(),
+							'rel' => array(),
+							'href' => array(),
+						),
+					);
+					echo wp_kses( sprintf( __('WARNING: This level is set with both a recurring billing amount and an expiration date. You only need to set one of these unless you really want this membership to expire after a certain number of payments. For more information, <a target="_blank" rel="nofollow noopener" href="%s">see our post here</a>.', 'paid-memberships-pro'), 'https://www.paidmembershipspro.com/important-notes-on-recurring-billing-and-expiration-dates-for-membership-levels/?utm_source=plugin&utm_medium=pmpro-membershiplevels&utm_campaign=blog&utm_content=important-notes-on-recurring-billing-and-expiration-dates-for-membership-levels'), $allowed_html );
+				?></p>
 			</div>
 			<script>
 				jQuery(document).ready(function() {
@@ -520,8 +529,9 @@ if (!empty($page_msg)) { ?>
 						$allowed_sed_html = array(
 							'a' => array(
 								'href' => array(),
-								'target' => array(),
 								'title' => array(),
+								'target' => array(),
+								'rel' => array(),
 							),
 						);
 						echo '<tr><th>&nbsp;</th><td><p class="description">' . sprintf(wp_kses(__('Optional: Allow more customizable expiration dates using the <a href="%s" title="Paid Memberships Pro - Set Expiration Date Add On" target="_blank" rel="nofollow noopener">Set Expiration Date Add On</a>.', 'paid-memberships-pro'), $allowed_sed_html), 'https://www.paidmembershipspro.com/add-ons/pmpro-expiration-date/?utm_source=plugin&utm_medium=pmpro-membershiplevels&utm_campaign=add-ons&utm_content=pmpro-expiration-date') . '</p></td></tr>';
@@ -540,13 +550,13 @@ if (!empty($page_msg)) { ?>
 									__('Year(s)', 'paid-memberships-pro') => 'Year',
 								);
 								foreach ($cycles as $name => $value) {
-									echo '<option value="' . $value . '"';
+									echo '<option value="' . esc_attr( $value ) . '"';
 									if (empty($level->expiration_period) && $value === 'Month') {
 										echo 'selected';
 									} else {
 										selected($level->expiration_period, $value, true);
 									}
-									echo '>' . $name . '</option>';
+									echo '>' . esc_html( $name ) . '</option>';
 								}
 								?>
 							</select>
@@ -591,12 +601,13 @@ if (!empty($page_msg)) { ?>
 			$allowed_html = array(
 				'a' => array(
 					'href' => array(),
+					'title' => array(),
 					'target' => array(),
 					'title' => array(),
 				),
 			);
 			?>
-			<p><?php echo sprintf(wp_kses(__('Protect access to posts, pages, and content sections with built-in PMPro features. If you want to protect more content types, <a href="%s" rel="nofollow noopener" target="_blank">read our documentation on restricting content</a>.', 'paid-memberships-pro'), $allowed_html), 'https://www.paidmembershipspro.com/documentation/content-controls/?utm_source=plugin&utm_medium=pmpro-membershiplevels&utm_campaign=documentation&utm_content=pmpro-content-settings'); ?></p>
+			<p><?php echo wp_kses( sprintf( __('Protect access to posts, pages, and content sections with built-in PMPro features. If you want to protect more content types, <a href="%s" rel="nofollow noopener" target="_blank">read our documentation on restricting content</a>.', 'paid-memberships-pro'), 'https://www.paidmembershipspro.com/documentation/content-controls/?utm_source=plugin&utm_medium=pmpro-membershiplevels&utm_campaign=documentation&utm_content=pmpro-content-settings'), $allowed_html ); ?></p>
 			<table class="form-table">
 				<tbody>
 					<tr class="membership_categories">
@@ -636,14 +647,14 @@ if (!empty($page_msg)) { ?>
 								$showexcerpts = get_option("pmpro_showexcerpts");
 								if ($filterqueries == 1) {
 									// Show a message that posts in these categories are hidden.
-									echo sprintf(wp_kses(__('Non-members will not see posts in these categories. You can <a href="%s" title="Advanced Settings" target="_blank">update this setting here</a>.', 'paid-memberships-pro'), $allowed_html), admin_url('admin.php?page=pmpro-advancedsettings'));
+									echo sprintf(wp_kses(__('Non-members will not see posts in these categories. You can <a href="%s" title="Advanced Settings" target="_blank">update this setting here</a>.', 'paid-memberships-pro'), $allowed_html), esc_url( admin_url('admin.php?page=pmpro-advancedsettings')));
 								} else {
 									if ($showexcerpts == 1) {
 										// Show a message that posts in these categories will show title and excerpt.
-										echo sprintf(wp_kses(__('Non-members will see the title and excerpt for posts in these categories. You can <a href="%s" title="Advanced Settings" target="_blank">update this setting here</a>.', 'paid-memberships-pro'), $allowed_html), admin_url('admin.php?page=pmpro-advancedsettings'));
+										echo sprintf(wp_kses(__('Non-members will see the title and excerpt for posts in these categories. You can <a href="%s" title="Advanced Settings" target="_blank">update this setting here</a>.', 'paid-memberships-pro'), $allowed_html), esc_url( admin_url('admin.php?page=pmpro-advancedsettings')));
 									} else {
 										// Show a message that posts in these categories will show only the title.
-										echo sprintf(wp_kses(__('Non-members will see the title only for posts in these categories. You can <a href="%s" title="Advanced Settings" target="_blank">update this setting here</a>.', 'paid-memberships-pro'), $allowed_html), admin_url('admin.php?page=pmpro-advancedsettings'));
+										echo sprintf(wp_kses(__('Non-members will see the title only for posts in these categories. You can <a href="%s" title="Advanced Settings" target="_blank">update this setting here</a>.', 'paid-memberships-pro'), $allowed_html), esc_url( admin_url('admin.php?page=pmpro-advancedsettings')));
 									}
 								}
 								?>

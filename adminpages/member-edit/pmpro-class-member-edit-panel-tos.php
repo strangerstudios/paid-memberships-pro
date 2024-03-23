@@ -29,17 +29,17 @@ class PMPro_Member_Edit_Panel_TOS extends PMPro_Member_Edit_Panel {
 						$consent_log_class = implode( ' ', array_unique( $consent_log_classes ) );
 						echo '<ul class="' . esc_attr( $consent_log_class ) . '">';
 						foreach( $consent_log as $entry ) {
-							echo '<li>' . pmpro_consent_to_text( $entry ) . '</li>';
+							echo '<li>' . esc_html( pmpro_consent_to_text( $entry ) ) . '</li>';
 						}
 						echo '</ul> <!-- end pmpro_consent_log -->';
 					} else {
-						echo __( 'N/A', 'paid-memberships-pro' );
+						esc_html_e( 'N/A', 'paid-memberships-pro' );
 					}
 				?>
 			</div>
 			<?php
 		} else {
-			echo '<p>' . __( 'No TOS consent history found.', 'paid-memberships-pro' ) . '</p>';
+			echo '<p>' . esc_html__( 'No TOS consent history found.', 'paid-memberships-pro' ) . '</p>';
 		}
 	}
 

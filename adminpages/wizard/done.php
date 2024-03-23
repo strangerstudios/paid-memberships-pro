@@ -86,8 +86,8 @@
 						<a href="<?php echo esc_url( $link ); ?>" target='_blank' rel='nofollow'>
 							<img src="<?php echo esc_url( $icon ); ?>" />
 							<div>
-								<span><?php esc_html_e( $title ); ?></span>
-								<small><?php esc_html_e( $license_label ); ?></small>
+								<span><?php echo esc_html( $title ); ?></span>
+								<small><?php echo esc_html( $license_label ); ?></small>
 							</div>
 						</a>
 					</div>

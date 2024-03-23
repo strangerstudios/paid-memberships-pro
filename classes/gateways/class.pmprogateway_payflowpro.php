@@ -670,14 +670,14 @@
 
 			if ( is_wp_error( $response ) ) {
 			   $error_message = $response->get_error_message();
-			   wp_die( "{$methodName_} failed: $error_message" );
+			   wp_die( esc_html( "{$methodName_} failed: $error_message" ) );
 			} else {
 				//extract the response details
 				parse_str(wp_remote_retrieve_body($response), $httpParsedResponseAr);
 
 				//check for valid response
 				if((0 == sizeof($httpParsedResponseAr)) || !array_key_exists('RESULT', $httpParsedResponseAr)) {
-					exit("Invalid HTTP Response for POST request($nvpreq) to $API_Endpoint.");
+					exit( esc_html( "Invalid HTTP Response for POST request($nvpreq) to $API_Endpoint.") );
 				}
 			}
 

@@ -290,7 +290,7 @@ class PMPro_Members_List_Table extends WP_List_Table {
 			$s = "";
 		?>
 		<p>
-			<?php _e( 'No members found.', 'paid-memberships-pro' ); ?>
+			<?php esc_html_e( 'No members found.', 'paid-memberships-pro' ); ?>
 			<?php if ( $l ) { ?>
 				<a href="<?php echo esc_url( add_query_arg( array( 'page' => 'pmpro-memberslist', 's' => $s ) ) ); ?>"><?php esc_html_e( 'Search all levels', 'paid-memberships-pro' );?></a>
 			<?php } ?>
@@ -669,7 +669,7 @@ class PMPro_Members_List_Table extends WP_List_Table {
 				<div class="pmpro_message pmpro_error">
 					<p>
 						<?php
-						printf(
+						echo wp_kses_post( sprintf(
 							// translators: %1$d is the number of subscriptions and %2$s is the link to view subscriptions.
 							_n(
 								'This user has %1$d active subscription for this level. %2$s',
@@ -683,7 +683,7 @@ class PMPro_Members_List_Table extends WP_List_Table {
 								esc_url( add_query_arg( array( 'page' => 'pmpro-member', 'user_id' => $item['ID'], 'pmpro_member_edit_panel' => 'subscriptions' ), admin_url( 'admin.php' ) ) ),
 								esc_html__( 'View Subscriptions', 'paid-memberships-pro' )
 							)
-						); ?>
+						) ); ?>
 					</p>
 				</div>
 				<?php
@@ -710,7 +710,7 @@ class PMPro_Members_List_Table extends WP_List_Table {
 
 			if ( ! empty( $actions_html ) ) { ?>
 				<div class="row-actions">
-					<?php echo implode( ' | ', $actions_html ); ?>
+					<?php echo implode( ' | ', $actions_html ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 				</div>
 				<?php
 			}

@@ -24,7 +24,7 @@ function pmpro_init_check_for_deprecated_filters() {
 			if ( ! empty( $new ) ) {
 				// We have an alternative filter. Let's show an error message and forward to that new filter.
 				/* translators: 1: the old hook name, 2: the new or replacement hook name */
-				trigger_error( sprintf( esc_html__( 'The %1$s hook has been deprecated in Paid Memberships Pro. Please use the %2$s hook instead.', 'paid-memberships-pro' ), $old, $new ) );
+				trigger_error( esc_html( sprintf( esc_html__( 'The %1$s hook has been deprecated in Paid Memberships Pro. Please use the %2$s hook instead.', 'paid-memberships-pro' ), $old, $new ) ) );
 				
 				// Add filters back using the new tag.
 				foreach( $wp_filter[$old]->callbacks as $priority => $callbacks ) {
@@ -35,7 +35,7 @@ function pmpro_init_check_for_deprecated_filters() {
 			} else {
 				// We don't have an alternative filter. Let's just show an error message.
 				/* translators: 1: the old hook name */
-				trigger_error( sprintf( esc_html__( 'The %1$s hook has been deprecated in Paid Memberships Pro and may not be available in future versions.', 'paid-memberships-pro' ), $old ) );
+				trigger_error( esc_html( sprintf( esc_html__( 'The %1$s hook has been deprecated in Paid Memberships Pro and may not be available in future versions.', 'paid-memberships-pro' ), $old ) ) );
 			}
 		}
 	}

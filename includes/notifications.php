@@ -555,12 +555,12 @@ add_action( 'wp_ajax_pmpro_hide_notice', 'pmpro_hide_notice' );
  * Show Powered by Paid Memberships Pro comment (only visible in source) in the footer.
  */
 function pmpro_link() {
-	?>Memberships powered by Paid Memberships Pro v<?php echo PMPRO_VERSION; ?>.<?php
+	?>Memberships powered by Paid Memberships Pro v<?php echo esc_html( PMPRO_VERSION ); ?>.<?php
 }
 
 function pmpro_footer_link() {
 	if ( ! get_option( 'pmpro_hide_footer_link' ) ) { ?>
-		<!-- <?php echo pmpro_link()?> -->
+		<!-- <?php pmpro_link()?> -->
 	<?php }
 }
 add_action( 'wp_footer', 'pmpro_footer_link' );
