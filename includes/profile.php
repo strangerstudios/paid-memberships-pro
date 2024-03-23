@@ -276,7 +276,7 @@ function pmpro_membership_level_profile_fields($user)
 									?>
 									<label for="<?php echo esc_attr( $shown_level_name_prefix ); ?>[refund]" style="display: none">
 										<input type="checkbox" name="<?php echo esc_attr( $shown_level_name_prefix ); ?>[refund]" value="1" />
-										<?php printf( esc_html__( 'Refund the last payment (%s).', 'paid-memberships-pro' ), esc_html( pmpro_formatPrice( $last_order->total ) ) ); ?>
+										<?php printf( esc_html__( 'Refund the last payment (%s).', 'paid-memberships-pro' ), pmpro_escape_price( pmpro_formatPrice( $last_order->total ) ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 									</label>
 									<?php
 								}
@@ -382,7 +382,7 @@ function pmpro_membership_level_profile_fields($user)
 													?>
 													<label for="<?php echo esc_attr( $name_prefix ); ?>[refund]" style="display: none">
 														<input type="checkbox" name="<?php echo esc_attr( $name_prefix ); ?>[refund]" value="1" />
-														<?php printf( esc_html__( 'Refund the last payment (%s).', 'paid-memberships-pro' ), esc_html( pmpro_formatPrice( $last_order->total ) ) ); ?>
+														<?php printf( esc_html__( 'Refund the last payment (%s).', 'paid-memberships-pro' ), pmpro_escape_price( pmpro_formatPrice( $last_order->total ) ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 													</label>
 													<?php
 												}
@@ -723,7 +723,7 @@ function pmpro_membership_history_profile_fields( $user ) {
 	if ( $invoices || $subscriptions || $levelshistory ) { ?>
 		<hr />
 		<h2><?php esc_html_e( 'Member History', 'paid-memberships-pro' ); ?></h2>
-		<p><strong><?php esc_html_e( 'Total Paid', 'paid-memberships-pro' ); ?></strong> <?php echo esc_html( pmpro_formatPrice( $totalvalue ) ); ?></p>
+		<p><strong><?php esc_html_e( 'Total Paid', 'paid-memberships-pro' ); ?></strong> <?php echo pmpro_escape_price( pmpro_formatPrice( $totalvalue ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></p>
 		<ul id="member-history-filters" class="subsubsub">
 			<li id="member-history-filters-orders"><a href="javascript:void(0);" class="current orders tab"><?php esc_html_e( 'Order History', 'paid-memberships-pro' ); ?></a> <span>(<?php echo count( $invoices ); ?>)</span></li>
 			<li id="member-history-filters-subscriptions">| <a href="javascript:void(0);" class="tab"><?php esc_html_e( 'Subscription History', 'paid-memberships-pro' ); ?></a> <span>(<?php echo count( $subscriptions ); ?>)</span></li>
@@ -804,7 +804,7 @@ function pmpro_membership_history_profile_fields( $user ) {
 								}
 							?>
 						</td>
-						<td><?php echo esc_html( pmpro_formatPrice( $invoice->total ) ); ?></td>
+						<td><?php echo pmpro_escape_price( pmpro_formatPrice( $invoice->total ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></td>
 						<td><?php 
 							if ( empty( $invoice->code_id ) ) {
 								esc_html_e( '&#8212;', 'paid-memberships-pro' );

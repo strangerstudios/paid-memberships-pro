@@ -93,7 +93,7 @@ class PMPro_Member_Edit_Panel_Orders extends PMPro_Member_Edit_Panel {
 								?>
 							</td>
 							<td>
-								<?php echo esc_html( pmpro_formatPrice( $invoice->total ) ); ?>
+								<?php echo pmpro_escape_price( pmpro_formatPrice( $invoice->total ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 								<?php
 									if ( ! empty( $invoice->code_id ) ) {
 										$discountQuery = $wpdb->prepare( "SELECT c.code FROM $wpdb->pmpro_discount_codes c WHERE c.id = %d LIMIT 1", $invoice->code_id );
