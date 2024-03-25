@@ -642,12 +642,12 @@ body[class*="memberships_page_pmpro-"] {
 .pmpro-popup-wrap a.pmproPopupCloseButton, 
 .pmpro-popup-wrap button.pmproPopupCloseButton {
 	color: #666;
+	cursor: pointer;
+	padding:0;
 	position: absolute;
 	right: 10px;
-	top: 10px;
-	padding:0;
 	text-decoration: none;
-
+	top: 10px;
 }
 
 .pmpro-popup-wrap a.pmproPopupCloseButton:hover, 
@@ -2017,6 +2017,11 @@ table.pmprommpu_levels tr.remove_level td {background: #F2DEDE; }
 	border: 3px dashed var(--pmpro--border--color);
 	border-radius: var(--pmpro--border--radius);
 	padding: var(--pmpro--spacing--medium);
+}
+
+.pmpro_display-field-date {
+	align-items: center;
+	display: flex;
 }
 
 /**

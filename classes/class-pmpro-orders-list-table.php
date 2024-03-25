@@ -540,7 +540,7 @@ class PMPro_Orders_List_Table extends WP_List_Table {
 					echo 'error';
 				}
 				?>
-				"><p><?php echo $pmpro_msg; ?></p></div>
+				"><p><?php echo esc_html( $pmpro_msg ); ?></p></div>
 			<?php } ?>
 
 			<div class="tablenav top">
@@ -564,7 +564,7 @@ class PMPro_Orders_List_Table extends WP_List_Table {
 
 					<?php $custom_filters = apply_filters( 'pmpro_admin_orders_filters', array() ); ?>
 					<?php foreach( $custom_filters as $value => $name ) { ?>
-						<option value="<?php echo esc_attr( $value ); ?>" <?php selected( $filter, $value ); ?>><?php esc_html_e( $name ); ?></option>
+						<option value="<?php echo esc_attr( $value ); ?>" <?php selected( $filter, $value ); ?>><?php echo esc_html( $name ); ?></option>
 					<?php } ?>
 				</select>
 
@@ -651,7 +651,7 @@ class PMPro_Orders_List_Table extends WP_List_Table {
 			<script>
 				//update month/year when period dropdown is changed
 				jQuery(document).ready(function () {
-					jQuery('#filter').change(function () {
+					jQuery('#filter').on('change',function () {
 						pmpro_ShowMonthOrYear();
 					});
 				});
@@ -1033,7 +1033,7 @@ class PMPro_Orders_List_Table extends WP_List_Table {
 			}
 
 			if ( ! empty( $actions_html ) ) {
-				echo implode( ' | ', $actions_html );
+				echo implode( ' | ', $actions_html ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 			}
 			?>
 		</div>
@@ -1087,7 +1087,7 @@ class PMPro_Orders_List_Table extends WP_List_Table {
 	 */
 	public function column_total( $item ) {
 
-		echo pmpro_escape_price( pmpro_formatPrice( $item->total ) );
+		echo pmpro_escape_price( pmpro_formatPrice( $item->total ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 
 		// If there is a discount code, show it.
 		if ( $item->getDiscountCode() ) {
@@ -1149,7 +1149,7 @@ class PMPro_Orders_List_Table extends WP_List_Table {
 		}
 
 		// Echo the data for this column.
-		echo $r;
+		echo $r; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		
 	}
 
@@ -1166,9 +1166,9 @@ class PMPro_Orders_List_Table extends WP_List_Table {
 
 		if ( ! empty( $item->gateway ) ) {
 			if ( ! empty( $pmpro_gateways[$item->gateway] ) ) {
-				echo $pmpro_gateways[$item->gateway];
+				echo esc_html( $pmpro_gateways[$item->gateway] );
 			} else {
-				esc_html_e( ucwords( $item->gateway ) );
+				echo esc_html( ucwords( $item->gateway ) );
 			}
 			if ( $item->gateway_environment == 'sandbox' ) {
 				echo ' (test)';
@@ -1231,11 +1231,11 @@ class PMPro_Orders_List_Table extends WP_List_Table {
 	public function column_order_status( $item ) {     
 		
 		?>
-		<span class="pmpro_order-status pmpro_order-status-<?php esc_attr_e( $item->status ); ?>">
+		<span class="pmpro_order-status pmpro_order-status-<?php echo esc_attr( $item->status ); ?>">
 			<?php if ( in_array( $item->status, array( 'success', 'cancelled' ) ) ) {
 				esc_html_e( 'Paid', 'paid-memberships-pro' );
 			} else {
-				esc_html_e( ucwords( $item->status ) );
+				echo esc_html( ucwords( $item->status ) );
 			} ?>
 		</span>
 		<?php if ( $item->is_renewal() ) { ?>

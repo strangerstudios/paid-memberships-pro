@@ -337,16 +337,24 @@ function pmpro_checkForUpgrades() {
 	}
 
 	/**
-	 * Version 3.0
+	 * Version 3.0 (db v3.0-3.009 for RC's)
 	 * Running `pmpro_db_delta` to add subscription and subscription meta tables.
 	 * Populate subscription and subscription meta tables based on this site's order data.
 	 * Updates all orders in `cancelled` status to `success` so that we can remove cancelled status.
 	 */
 	require_once( PMPRO_DIR . "/includes/updates/upgrade_3_0.php" );
-	if ( $pmpro_db_version < 3.0 ) {
+	if ( $pmpro_db_version < 3.001 ) {
+		// Run the dbDelta function to add new tables.
 		pmpro_db_delta();
-		$pmpro_db_version = pmpro_upgrade_3_0();
-		update_option( 'pmpro_db_version', '3.0' );
+
+		// Determine if the migration script has already ran ($pmpro_db_version >= 3.0).
+		$rerunning_migration = $pmpro_db_version >= 3.0;
+
+		// Run the migration script.
+		$pmpro_db_version = pmpro_upgrade_3_0( $rerunning_migration );
+
+		// If the migration script has already ran, we need to update the db version to the latest version.
+		update_option( 'pmpro_db_version', '3.001' );
 	}
 }
 
@@ -375,6 +383,15 @@ function pmpro_db_delta() {
 		$collate = $wpdb->get_charset_collate();
 	}
 
+	/*
+	 * Indexes have a maximum size of 767 bytes. Historically, we haven't need to be concerned about that.
+	 * As of 4.2, however, we moved to utf8mb4, which uses 4 bytes per character. This means that an index which
+	 * used to have room for floor(767/3) = 255 characters, now only has room for floor(767/4) = 191 characters.
+	 *
+	 * Copied from Core WP.
+	 */
+	$max_index_length = 191;
+
 	//wp_pmpro_membership_levels
 	$sqlQuery = "
 		CREATE TABLE `" . $wpdb->pmpro_membership_levels . "` (
@@ -395,7 +412,7 @@ function pmpro_db_delta() {
 		  PRIMARY KEY  (`id`),
 		  KEY `allow_signups` (`allow_signups`),
 		  KEY `initial_payment` (`initial_payment`),
-		  KEY `name` (`name`)
+		  KEY `name` (`name`(" . $max_index_length . "))
 		) $collate;
 	";
 	dbDelta($sqlQuery);
@@ -565,7 +582,7 @@ function pmpro_db_delta() {
 		  `meta_value` longtext,
 		  PRIMARY KEY (`meta_id`),
 		  KEY `pmpro_membership_level_id` (`pmpro_membership_level_id`),
-		  KEY `meta_key` (`meta_key`)
+		  KEY `meta_key` (`meta_key`(" . $max_index_length . "))
 		) $collate;
 	";
 	dbDelta($sqlQuery);
@@ -607,7 +624,7 @@ function pmpro_db_delta() {
 		  `meta_value` longtext,
 		  PRIMARY KEY (`meta_id`),
 		  KEY `pmpro_membership_order_id` (`pmpro_membership_order_id`),
-		  KEY `meta_key` (`meta_key`)
+		  KEY `meta_key` (`meta_key`(" . $max_index_length . "))
 		) $collate;
 	";
 	dbDelta($sqlQuery);
@@ -621,7 +638,7 @@ function pmpro_db_delta() {
 		  `meta_value` longtext,
 		  PRIMARY KEY (`meta_id`),
 		  KEY `pmpro_subscription_id` (`pmpro_subscription_id`),
-		  KEY `meta_key` (`meta_key`)
+		  KEY `meta_key` (`meta_key`(" . $max_index_length . "))
 		) $collate;
 	";
 	dbDelta($sqlQuery);
@@ -634,7 +651,7 @@ function pmpro_db_delta() {
 		 `allow_multiple_selections` tinyint NOT NULL DEFAULT '1',
 		 `displayorder` int,
 		 PRIMARY KEY (`id`),
-		 KEY `name` (`name`)
+		 KEY `name` (`name`(" . $max_index_length . "))
 		) $collate;
 	";
 	dbDelta($sqlQuery);

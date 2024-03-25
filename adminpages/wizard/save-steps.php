@@ -133,7 +133,7 @@ function pmpro_init_save_wizard_data() {
 				array(
 					'action' => 'authorize',
 					'gateway_environment' => $environment,
-					'return_url' => rawurlencode( $next_step ),
+					'return_url' => rawurlencode( add_query_arg( 'pmpro_stripe_connect_nonce', wp_create_nonce( 'pmpro_stripe_connect_nonce' ), $next_step ) ),
 				),
 				esc_url( $connect_url_base )
 			);

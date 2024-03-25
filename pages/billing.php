@@ -13,7 +13,7 @@
 ?>
 <div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_billing_wrap' ) ); ?>">
 <?php
-	global $wpdb, $current_user, $gateway, $pmpro_msg, $pmpro_msgt, $show_check_payment_instructions, $show_paypal_link, $pmpro_billing_order, $pmpro_billing_subscription, $pmpro_billing_level;
+	global $wpdb, $current_user, $gateway, $pmpro_msg, $pmpro_msgt, $show_check_payment_instructions, $show_paypal_link, $pmpro_billing_subscription, $pmpro_billing_level;
 	global $bfirstname, $blastname, $baddress1, $baddress2, $bcity, $bstate, $bzipcode, $bcountry, $bphone, $bemail, $bconfirmemail, $CardType, $AccountNumber, $ExpirationMonth, $ExpirationYear;
 
 	/**
@@ -36,7 +36,7 @@
 	}
 
 	//Make sure the $pmpro_billing_level object is a valid level definition
-	if ( ! empty($pmpro_billing_order) && ! empty( $pmpro_billing_subscription ) ) {
+	if ( ! empty( $pmpro_billing_subscription ) ) {
 		$checkout_url = pmpro_url( 'checkout', '?pmpro_level=' . $pmpro_billing_level->id );
 		$logout_url = wp_logout_url( $checkout_url );
 
@@ -118,7 +118,7 @@
 			?>
 			<div id="pmpro_level-<?php echo intval( $pmpro_billing_level->id ); ?>" class="<?php echo esc_attr( pmpro_get_element_class( $pmpro_billing_gateway_class, 'pmpro_level-' . $pmpro_billing_level->id ) ); ?>">
 			<form id="pmpro_form" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form' ) ); ?>" action="<?php echo esc_url( pmpro_url( "billing", "", "https") ) ?>" method="post">
-				<input type="hidden" name="order_id" value="<?php echo empty( $_REQUEST['order_id'] ) ? 0 : esc_attr( intval( $_REQUEST['order_id'] ) ); ?>" />
+				<input type="hidden" name="pmpro_subscription_id" value="<?php echo empty( $pmpro_billing_subscription->get_id() ) ? '' : (int) $pmpro_billing_subscription->get_id(); ?>" />
 				<input type="hidden" name="pmpro_level" value="<?php echo esc_attr($pmpro_billing_level->id);?>" />
 				<div id="pmpro_message" <?php if(! $pmpro_msg) { ?> style="display:none" <?php } ?> class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_message ' . $pmpro_msgt, $pmpro_msgt ) ); ?>">
 					<?php if($pmpro_msg) { echo wp_kses_post( $pmpro_msg ); } ?>
@@ -429,7 +429,7 @@
 			<script>
 				<!--
 				// Find ALL <form> tags on your page
-				jQuery('form').submit(function(){
+				jQuery('form').on('submit',function(){
 					// On submit disable its submit button
 					jQuery('input[type=submit]', this).attr('disabled', 'disabled');
 					jQuery('input[type=image]', this).attr('disabled', 'disabled');
@@ -446,6 +446,14 @@
 		<?php
 	} else {
 		// User does not have a membership level.
-		printf( __( "You do not have an active membership. <a href='%s'>Choose a membership level.</a>", 'paid-memberships-pro' ), esc_url( pmpro_url( 'levels' ) ) );
+		$allowed_html = array(
+			'a' => array(
+				'href' => array(),
+				'title' => array(),
+				'target' => array(),
+				'rel' => array(),
+			),
+		);
+		echo wp_kses( sprintf( __( "You do not have an active membership. <a href='%s'>Choose a membership level.</a>", 'paid-memberships-pro' ), esc_url( pmpro_url( 'levels' ) ) ), $allowed_html );
 	} ?>
 </div> <!-- end pmpro_billing_wrap -->

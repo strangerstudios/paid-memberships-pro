@@ -536,7 +536,7 @@ class PMPro_Field {
 			
 			//let's not expect more than 50 files with the same name
 			if($count > 50)
-				die( __( "Error uploading file. Too many files with the same name.", "paid-memberships-pro" ) );
+				die( esc_html__( "Error uploading file. Too many files with the same name.", "paid-memberships-pro" ) );
 		}
 
 		$file_path = $dir_path . $filename;
@@ -610,7 +610,7 @@ class PMPro_Field {
 	//echo the HTML for the field
 	function display($value = NULL)
 	{
-		echo $this->getHTML($value);
+		echo $this->getHTML($value); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		return;
 	}
 	
@@ -921,7 +921,7 @@ class PMPro_Field {
 				jQuery(document).ready(function() {
 					jQuery("#' . esc_attr( $this->id ) . '").closest("form").attr("enctype", "multipart/form-data");
 
-					jQuery("#pmprorh_delete_file_' . esc_attr( $this->name ) . '_button").click(function(){
+					jQuery("#pmprorh_delete_file_' . esc_attr( $this->name ) . '_button").on("click",function(){
 						jQuery("#pmprorh_delete_file_' . esc_attr( $this->name ) . '_field").val("' . esc_attr( basename($value) ) . '");
 						jQuery(".pmprorh_file_' . esc_attr( $this->name ) . '_name").css("text-decoration", "line-through");
 						jQuery("#pmprorh_cancel_change_file_' . esc_attr( $this->name ) . '_button").show();
@@ -930,7 +930,7 @@ class PMPro_Field {
 						jQuery("#pmprorh_file_' . esc_attr( $this->id ) . '_upload").hide();
 					});
 
-					jQuery("#pmprorh_replace_file_' . esc_attr( $this->name ) . '_button").click(function(){
+					jQuery("#pmprorh_replace_file_' . esc_attr( $this->name ) . '_button").on("click",function(){
 						jQuery("#pmprorh_delete_file_' . esc_attr( $this->name ) . '_field").val("' . esc_attr( basename($value) ) . '");
 						jQuery(".pmprorh_file_' . esc_attr( $this->name ) . '_name").css("text-decoration", "line-through");
 						jQuery("#pmprorh_cancel_change_file_' . esc_attr( $this->name ) . '_button").show();
@@ -939,7 +939,7 @@ class PMPro_Field {
 						jQuery("#pmprorh_file_' . esc_attr( $this->id ) . '_upload").show();
 					});
 
-					jQuery("#pmprorh_cancel_change_file_' . esc_attr( $this->name ) . '_button").click(function(){
+					jQuery("#pmprorh_cancel_change_file_' . esc_attr( $this->name ) . '_button").on("click",function(){
 						jQuery("#pmprorh_delete_file_' . esc_attr( $this->name ) . '_field").val(0);
 						jQuery(".pmprorh_file_' . esc_attr( $this->name ) . '_name").css("text-decoration", "none");
 						jQuery("#pmprorh_delete_file_' . esc_attr( $this->name ) . '_button").show();
@@ -964,6 +964,7 @@ class PMPro_Field {
 			if(!empty($this->readonly))
 				$r .= 'disabled="disabled" ';
 			$r .= 'name="' . esc_attr( $this->name ) . '" />';
+			$r .= '</div>';
 
 		}
         elseif($this->type == "date")
@@ -1123,7 +1124,7 @@ class PMPro_Field {
 					<?php
 					foreach( $checks_escaped as $check_escaped ) {
 					?>
-					checks.push(<?php echo $check_escaped;?>);
+					checks.push(<?php echo $check_escaped; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>);
 					<?php
 					}
 					
@@ -1153,7 +1154,7 @@ class PMPro_Field {
 						pmprorh_<?php echo esc_html( $this->id );?>_hideshow();
 						
 						//and run when certain fields are changed
-						jQuery('<?php echo implode(',', $binds);?>').bind('click change keyup', function() {
+						jQuery('<?php echo implode(',', $binds); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>').bind('click change keyup', function() {
 							pmprorh_<?php echo esc_html( $this->id );?>_hideshow();
 						});
 				});
@@ -1295,7 +1296,7 @@ class PMPro_Field {
 					if(current_user_can("edit_user", $user_id) && $edit !== false)
 						$this->display($value);
 					else
-						echo "<div>" . $this->displayValue($value) . "</div>";
+						echo "<div>" . wp_kses_post( $this->displayValue($value) ) . "</div>";
 				?>
 				<?php if(!empty($this->hint)) { ?>
 					<small class="lite"><?php echo wp_kses_post( $this->hint );?></small>

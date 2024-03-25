@@ -1,6 +1,6 @@
 <?php
 
-global $wpdb, $current_user, $pmpro_msg, $pmpro_msgt, $bfirstname, $blastname, $baddress1, $baddress2, $bcity, $bstate, $bzipcode, $bcountry, $bphone, $bemail, $bconfirmemail, $CardType, $AccountNumber, $ExpirationMonth, $ExpirationYear, $pmpro_requirebilling, $pmpro_billing_order, $pmpro_billing_subscription, $pmpro_billing_level;
+global $wpdb, $current_user, $pmpro_msg, $pmpro_msgt, $bfirstname, $blastname, $baddress1, $baddress2, $bcity, $bstate, $bzipcode, $bcountry, $bphone, $bemail, $bconfirmemail, $CardType, $AccountNumber, $ExpirationMonth, $ExpirationYear, $pmpro_requirebilling, $pmpro_billing_subscription, $pmpro_billing_level;
 
 // Redirect non-user to the login page; pass the Billing page as the redirect_to query arg.
 if ( ! is_user_logged_in() ) {
@@ -9,41 +9,50 @@ if ( ! is_user_logged_in() ) {
     exit;
 }
 
-// Get the order that was passed in.
-$order_id = empty( $_REQUEST['order_id'] ) ? 0 : intval( $_REQUEST['order_id'] );
-$pmpro_billing_order = MemberOrder::get_order( $order_id );
+// Get the subscription and order that was passed in.
+if ( ! empty( $_REQUEST['pmpro_subscription_id'] ) ) {
+	// A subscription ID was passed. Get the subscription and its order.
+	$pmpro_billing_subscription = PMPro_Subscription::get_subscription( (int)$_REQUEST['pmpro_subscription_id'] );
+} else {
+	// No subscription or order was passed. Check if the user has exactly one active subscription. If so, use it.
+	$subscriptions = PMPro_Subscription::get_subscriptions_for_user( $current_user->ID );
+	if ( count( $subscriptions ) === 1 ) {
+		$pmpro_billing_subscription = $subscriptions[0];
+	}
+}
 
-if ( empty( $pmpro_billing_order ) ) {
-    // We need an order to update. Redirect to the account page.
+if ( empty( $pmpro_billing_subscription ) || $pmpro_billing_subscription->get_status() != 'active' || $pmpro_billing_subscription->get_user_id() != $current_user->ID ) {
+    // We don't have a sub, it isn't active, or it isn't for this user.
     wp_redirect( pmpro_url( 'account' ) );
     exit;
 }
 
-// Check that the order belongs to the current user.
-if ( $pmpro_billing_order->user_id != $current_user->ID ) {
-    // This order doesn't belong to the current user. Redirect to the account page.
-    wp_redirect( pmpro_url( 'account' ) );
-    exit;
-}
+// Get the order for this subscription.
+$newest_orders = $pmpro_billing_subscription->get_orders(
+	array(
+		'status'  => 'success',
+		'limit'   => 1,
+		'orderby' => '`timestamp` DESC, `id` DESC',
+	)
+);
+$pmpro_billing_order = ! empty( $newest_orders ) ? $newest_orders[0] : null;
 
-// Make sure that the order is in success status.
-if ( $pmpro_billing_order->status != 'success' ) {
-    // This order is not in success status. Redirect to the account page.
-    wp_redirect( pmpro_url( 'account' ) );
-    exit;
+if ( empty( $pmpro_billing_order ) || $pmpro_billing_order->user_id != $current_user->ID ) {
+	// We need an order for this user to update. Redirect to the account page.
+	wp_redirect( pmpro_url( 'account' ) );
+	exit;
 }
 
 // Get the subscription for this order and make sure that we can update its billing info.
-$pmpro_billing_subscription = $pmpro_billing_order->get_subscription();
 $subscription_gateway_obj   = empty( $pmpro_billing_subscription ) ? null: $pmpro_billing_subscription->get_gateway_object();
-if ( empty( $pmpro_billing_subscription ) || $pmpro_billing_subscription->get_status() != 'active' || empty( $subscription_gateway_obj ) || ! $subscription_gateway_obj->supports( 'payment_method_updates' ) ) {
+if ( empty( $subscription_gateway_obj ) || ! $subscription_gateway_obj->supports( 'payment_method_updates' ) ) {
     // We cannot update the billing info for this subscription. Redirect to the account page.
     wp_redirect( pmpro_url( 'account' ) );
     exit;
 }
 
 // Get the user's current membership level.
-$pmpro_billing_level            = pmpro_getSpecificMembershipLevelForUser( $current_user->ID, $pmpro_billing_order->membership_id );
+$pmpro_billing_level            = pmpro_getSpecificMembershipLevelForUser( $current_user->ID, $pmpro_billing_subscription->get_membership_level_id() );
 $current_user->membership_level = $pmpro_billing_level;
 
 //need to be secure?

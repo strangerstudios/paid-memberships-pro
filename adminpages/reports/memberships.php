@@ -99,7 +99,7 @@ function pmpro_report_memberships_widget() {
 </span>
 <script>
 	jQuery(document).ready(function() {
-		jQuery('.pmpro_report_th ').click(function(event) {
+		jQuery('.pmpro_report_th ').on('click',function(event) {
 			//prevent form submit onclick
 			event.preventDefault();
 
@@ -353,7 +353,7 @@ function pmpro_report_memberships_page() {
 	?>
 	<form id="posts-filter" method="get" action="">
 	<h1 class="wp-heading-inline">
-		<?php _e( 'Membership Stats', 'paid-memberships-pro' ); ?>
+		<?php esc_html_e( 'Membership Stats', 'paid-memberships-pro' ); ?>
 	</h1>
 	<?php if ( current_user_can( 'pmpro_reportscsv' ) ) { ?>
 		<a target="_blank" href="<?php echo esc_url( $csv_export_link ); ?>" class="page-title-action pmpro-has-icon pmpro-has-icon-download"><?php esc_html_e( 'Export to CSV', 'paid-memberships-pro' ); ?></a>
@@ -451,7 +451,7 @@ function pmpro_report_memberships_page() {
 	<script>
 		//update month/year when period dropdown is changed
 		jQuery(document).ready(function() {
-			jQuery('#period').change(function() {
+			jQuery('#period').on('change',function() {
 				pmpro_ShowMonthOrYear();
 			});
 		});
@@ -581,7 +581,7 @@ function pmpro_report_memberships_page() {
 function pmpro_getSignups( $period = false, $levels = 'all' ) {
 	// check for a transient
 	$cache = get_transient( 'pmpro_report_memberships_signups' );
-	if ( ! empty( $cache ) && ! empty( $cache[ $period ] ) && ! empty( $cache[ $period ][ $levels ] ) ) {
+	if ( ! empty( $cache ) && isset( $cache[ $period ] ) && isset( $cache[ $period ][ $levels ] ) ) {
 		return $cache[ $period ][ $levels ];
 	}
 
@@ -649,7 +649,7 @@ function pmpro_getCancellations( $period = null, $levels = 'all', $status = arra
 		implode( ',', $status )
 	);
 
-	if ( ! empty( $cache ) && ! empty( $cache[ $hash ] ) ) {
+	if ( ! empty( $cache ) && isset( $cache[ $hash ] ) ) {
 		return $cache[ $hash ];
 	}
 
@@ -738,7 +738,7 @@ function pmpro_getCancellationRate( $period, $levels = 'all', $status = null ) {
 	// check for a transient
 	$cache = get_transient( 'pmpro_report_cancellation_rate' );
 	$hash  = md5( $period . $levels . implode( '', $status ) );
-	if ( ! empty( $cache ) && ! empty( $cache[ $hash ] ) ) {
+	if ( ! empty( $cache ) && isset( $cache[ $hash ] ) ) {
 		return $cache[ $hash ];
 	}
 

@@ -1,7 +1,7 @@
 <?php
 //only let admins get here
 if ( ! function_exists( 'current_user_can' ) || ( ! current_user_can( 'manage_options' ) && ! current_user_can( 'pmpro_license') ) ) {
-	die( __( 'You do not have permissions to perform this action.', 'paid-memberships-pro' ) );
+	die( esc_html__( 'You do not have permissions to perform this action.', 'paid-memberships-pro' ) );
 }
 
 //updating license?
@@ -65,9 +65,9 @@ if ( defined( 'PMPRO_DIR' ) ) {
 			<form action="" method="post">
 				<label for="pmpro-license-key"><?php esc_html_e( 'License Key', 'paid-memberships-pro' ); ?></label>
 				<div id="pmpro-settings-key-box">
-					<input type="text" name="pmpro-license-key" id="pmpro-license-key" value="<?php echo esc_attr($key);?>" placeholder="<?php _e('Enter license key here...', 'paid-memberships-pro' );?>" size="40" />
+					<input type="text" name="pmpro-license-key" id="pmpro-license-key" value="<?php echo esc_attr($key);?>" placeholder="<?php esc_html_e('Enter license key here...', 'paid-memberships-pro' );?>" size="40" />
 					<?php wp_nonce_field( 'pmpro-key-nonce', 'pmpro-key-nonce' ); ?>
-					<?php submit_button( __( 'Validate Key', 'paid-memberships-pro' ), 'primary', 'pmpro-verify-submit', false ); ?>
+					<?php submit_button( esc_html__( 'Validate Key', 'paid-memberships-pro' ), 'primary', 'pmpro-verify-submit', false ); ?>
 				</div>
 			</form>
 
@@ -93,7 +93,7 @@ if ( defined( 'PMPRO_DIR' ) ) {
 			</button>
 		</div>
 		<div class="pmpro_section_inside">
-			<img class="pmpro_icon alignright" src="<?php echo PMPRO_URL?>/images/Paid-Memberships-Pro_icon.png" border="0" alt="Paid Memberships Pro(c) - All Rights Reserved" />			
+			<img class="pmpro_icon alignright" src="<?php echo esc_attr( PMPRO_URL );?>/images/Paid-Memberships-Pro_icon.png" border="0" alt="Paid Memberships Pro(c) - All Rights Reserved" />			
 
 			<?php
 				echo '<p>' . sprintf( wp_kses( __( 'Paid Memberships Pro and our Add Ons are distributed under the <a href="%s" target="_blank">GPLv2 license</a>. This means, among other things, that you may use the software on this site or any other site free of charge.', 'paid-memberships-pro' ), $allowed_pmpro_license_strings_html ), 'https://www.paidmembershipspro.com/features/paid-memberships-pro-is-100-gpl/?utm_source=plugin&utm_medium=pmpro-license&utm_campaign=documentation&utm_content=gpl' ) . '</p>';

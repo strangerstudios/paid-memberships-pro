@@ -16,7 +16,7 @@ $pmpro_email_templates_defaults = array(
 		'help_text' => __( 'This email is sent when there is a general message that needs to be communicated to the site administrator.', 'paid-memberships-pro' )
 	),
 	'footer'                  => array(
-		'subject'     => __( '', 'paid-memberships-pro' ),
+		'subject'     => '',
 		'description' => __( 'Email Footer', 'paid-memberships-pro'),
 		'body' => __( '<p>
 	Respectfully,<br />
@@ -25,7 +25,7 @@ $pmpro_email_templates_defaults = array(
 		'help_text' => __( 'This is the closing message included in every email sent to members and the site administrator through Paid Memberships Pro.', 'paid-memberships-pro' )
 	),
 	'header'                  => array(
-		'subject'     => __( '', 'paid-memberships-pro' ),
+		'subject'     => '',
 		'description' => __( 'Email Header', 'paid-memberships-pro'),
 		'body' => __( '<p>Dear !!header_name!!,</p>', 'paid-memberships-pro' ),
 		'help_text' => __( 'This is the opening message included in every email sent to members and the site administrator through Paid Memberships Pro.', 'paid-memberships-pro' )

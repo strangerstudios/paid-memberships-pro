@@ -320,7 +320,7 @@ function pmpro_checkout_boxes_fields() {
 
 		if($n > 0) {
 			?>
-			<div id="pmpro_checkout_box-<?php echo sanitize_title( $cb->name ); ?>" class="pmpro_checkout">
+			<div id="pmpro_checkout_box-<?php echo esc_attr( sanitize_title( $cb->name ) ); ?>" class="pmpro_checkout">
 				<hr />
 				<h2>
 					<span class="pmpro_checkout-h2-name"><?php echo wp_kses_post( $cb->label );?></span>
@@ -712,7 +712,7 @@ function pmpro_show_user_fields_in_frontend_profile( $user, $withlocations = fal
 			}
 			?>
 
-			<div class="pmpro_checkout_box-<?php echo sanitize_title( $where ); ?>">
+			<div class="pmpro_checkout_box-<?php echo esc_attr( sanitize_title( $where ) ); ?>">
 				<?php if ( ! empty( $box->label ) ) { ?>
 					<h2><?php echo wp_kses_post( $box->label ); ?></h2>
 				<?php } ?>
@@ -1298,7 +1298,7 @@ function pmpro_get_field_group_html( $group = null ) {
 				<?php
 					if ( ! empty( $group->fields ) ) {
 						foreach ( $group->fields as $field ) {
-							echo pmpro_get_field_html( $field );
+							echo wp_kses_post( pmpro_get_field_html( $field ) );
 						}
 					}
                 ?>
@@ -1372,7 +1372,7 @@ function pmpro_get_field_html( $field = null ) {
                 </div> <!-- end pmpro_userfield-group-buttons -->
             </li>
             <li class="pmpro_userfield-group-column-label">
-                <span class="pmpro_userfield-label"><?php echo strip_tags( wp_kses_post( $field_label ) );?></span>
+                <span class="pmpro_userfield-label"><?php echo strip_tags( wp_kses_post( $field_label ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></span>
                 <div class="pmpro_userfield-field-options">
                     <a class="edit-field" title="<?php esc_attr_e( 'Edit field', 'paid-memberships-pro' ); ?>" href="javascript:void(0);"><?php esc_html_e( 'Edit', 'paid-memberships-pro' ); ?></a> |
                     <a class="duplicate-field" title="<?php esc_attr_e( 'Duplicate field', 'paid-memberships-pro' ); ?>" href="javascript:void(0);"><?php esc_html_e( 'Duplicate', 'paid-memberships-pro' ); ?></a> |
@@ -1494,7 +1494,7 @@ function pmpro_get_field_html( $field = null ) {
                     <?php esc_html_e( 'Close Field', 'paid-memberships-pro' ); ?>
                 </button> 
 				<button name="pmpro_userfields_delete_field" class="button button-secondary is-destructive">
-                    <?php _e( 'Delete Field', 'paid-memberships-pro' ); ?>
+                    <?php esc_html_e( 'Delete Field', 'paid-memberships-pro' ); ?>
                 </button>           
             </div> <!-- end pmpro_userfield-field-actions -->
         </div> <!-- end pmpro_userfield-field-settings -->        

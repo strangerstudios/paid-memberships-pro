@@ -1065,14 +1065,10 @@ function pmpro_cancelMembershipLevel( $level_id, $user_id = null, $status = 'ina
 	}
 
 	// Check if we should cancel the user's subscription.
-	$subscriptions_cancelled_successfully = true;
 	if ( apply_filters( 'pmpro_cancel_previous_subscriptions', true ) ) {
 		$active_subscriptions = PMPro_Subscription::get_subscriptions_for_user( $user_id, $level_id );
 		foreach ( $active_subscriptions as $subscription ) {
-			if ( ! $subscription->cancel_at_gateway() ) {
-				$pmpro_error = __( 'Error cancelling subscription at gateway.', 'paid-memberships-pro' );
-				$subscriptions_cancelled_successfully = false;
-			}
+			$subscription->cancel_at_gateway();
 		}
 	}
 
@@ -1091,7 +1087,7 @@ function pmpro_cancelMembershipLevel( $level_id, $user_id = null, $status = 'ina
 		do_action( 'pmpro_after_change_membership_level', 0, $user_id, $level_id );
 	}
 
-	return $subscriptions_cancelled_successfully;
+	return true;
 }
 
 /**
@@ -1133,13 +1129,13 @@ function pmpro_changeMembershipLevel( $level, $user_id = null, $old_level_status
 
 	// Check if we are trying to cancel a single level (Deprecated).
 	if ( empty( $level ) && ! empty( $cancel_level ) ) {
-		_doing_it_wrong( __FUNCTION__, __( 'The $cancel_level parameter is deprecated. Use pmpro_cancelMembershipLevel() instead.', 'paid-memberships-pro' ), '3.0' );
+		_doing_it_wrong( __FUNCTION__, esc_html__( 'The $cancel_level parameter is deprecated. Use pmpro_cancelMembershipLevel() instead.', 'paid-memberships-pro' ), '3.0' );
 		return pmpro_cancelMembershipLevel( $cancel_level, $user_id, $old_level_status );
 	}
 
 	// Check if we are trying to cancel all levels (Deprecated).
 	if ( empty( $level ) && empty( $cancel_level ) ) {
-		_doing_it_wrong( __FUNCTION__, __( 'The pmpro_cancelMembershipLevel() function should be used to cancel membership levels.', 'paid-memberships-pro' ), '3.0' );
+		_doing_it_wrong( __FUNCTION__, esc_html__( 'The pmpro_cancelMembershipLevel() function should be used to cancel membership levels.', 'paid-memberships-pro' ), '3.0' );
 		$membership_levels = pmpro_getMembershipLevelsForUser( $user_id );
 		$success = true;
 		foreach ( $membership_levels as $membership_level ) {
@@ -1420,7 +1416,7 @@ function pmpro_listCategories( $parent_id = 0, $level_categories = array() ) {
 			} ?>
 			<div class="pmpro_clickable">
 				<input type="checkbox" name="membershipcategory_<?php echo esc_attr( $cat->term_id ); ?>" id="membershipcategory_<?php echo esc_attr( $cat->term_id ); ?>" value="yes" <?php echo esc_attr( $checked ); ?>>
-				<label for="membershipcategory_<?php echo esc_attr( $cat->term_id ); ?>"><?php echo $cat->name; ?></label>
+				<label for="membershipcategory_<?php echo esc_attr( $cat->term_id ); ?>"><?php echo esc_html( $cat->name ); ?></label>
 			</div>
 			<?php pmpro_listCategories( $cat->term_id, $level_categories ); ?>
 			<?php
@@ -4236,7 +4232,7 @@ function pmpro_method_should_be_private( $deprecated_notice_version ) {
 	// Check whether the caller of this function is in the same file (class)
 	// as the caller of the previous function.
 	if ( $backtrace[0]['file'] !== $backtrace[1]['file'] ) {
-		_deprecated_function( $backtrace[1]['function'], $deprecated_notice_version );
+		_deprecated_function( esc_html( $backtrace[1]['function'] ), esc_html( $deprecated_notice_version ) );
 		return true;
 	}
 	return false;

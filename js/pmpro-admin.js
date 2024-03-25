@@ -794,7 +794,7 @@ jQuery(document).ready(function ($) {
 // Add Ons Page Code.
 jQuery(document).ready(function () {
     // Hide the license banner.
-    jQuery('.pmproPopupCloseButton').click(function (e) {
+    jQuery('.pmproPopupCloseButton, .pmproPopupCompleteButton').click(function (e) {
         e.preventDefault();
         jQuery('.pmpro-popup-overlay').hide();
     });

@@ -28,7 +28,7 @@ if ( ! empty( $_REQUEST[ 'report' ] ) ) {
 			}
 			foreach ( $pmpro_reports as $report_menu_item => $report_menu_title ) {
 				if ( function_exists( 'pmpro_report_' . $report_menu_item . '_page' ) ) { ?>
-					<li>&nbsp;|&nbsp;<a class="<?php if ( $report === $report_menu_item ) { ?>current<?php } ?>"href="<?php echo esc_url( admin_url( 'admin.php?page=pmpro-reports&report=' . $report_menu_item ) ); ?>"><?php echo $report_menu_title; ?></a></li>
+					<li>&nbsp;|&nbsp;<a class="<?php if ( $report === $report_menu_item ) { ?>current<?php } ?>"href="<?php echo esc_url( admin_url( 'admin.php?page=pmpro-reports&report=' . $report_menu_item ) ); ?>"><?php echo esc_html( $report_menu_title ); ?></a></li>
 					<?php
 				}
 			}

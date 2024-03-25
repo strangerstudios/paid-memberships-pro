@@ -63,8 +63,8 @@ class PMPro_Member_Edit_Panel_Orders extends PMPro_Member_Edit_Panel {
 									<span class="id">
 										<?php echo sprintf(
 											// translators: %s is the Order ID.
-											__( 'ID: %s', 'paid-memberships-pro' ),
-											esc_attr( $invoice->id )
+											esc_html__( 'ID: %s', 'paid-memberships-pro' ),
+											esc_html( $invoice->id )
 										); ?>
 									</span> |
 									<span class="edit">
@@ -93,7 +93,7 @@ class PMPro_Member_Edit_Panel_Orders extends PMPro_Member_Edit_Panel {
 								?>
 							</td>
 							<td>
-								<?php echo pmpro_formatPrice( $invoice->total ); ?>
+								<?php echo pmpro_escape_price( pmpro_formatPrice( $invoice->total ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 								<?php
 									if ( ! empty( $invoice->code_id ) ) {
 										$discountQuery = $wpdb->prepare( "SELECT c.code FROM $wpdb->pmpro_discount_codes c WHERE c.id = %d LIMIT 1", $invoice->code_id );
@@ -129,11 +129,11 @@ class PMPro_Member_Edit_Panel_Orders extends PMPro_Member_Edit_Panel {
 									if ( empty( $invoice->status ) ) {
 										esc_html_e( '&#8212;', 'paid-memberships-pro' );
 									} else { ?>
-										<span class="pmpro_order-status pmpro_order-status-<?php esc_attr_e( $invoice->status ); ?>">
+										<span class="pmpro_order-status pmpro_order-status-<?php echo esc_attr( $invoice->status ); ?>">
 											<?php if ( in_array( $invoice->status, array( 'success', 'cancelled' ) ) ) {
 												esc_html_e( 'Paid', 'paid-memberships-pro' );
 											} else {
-												esc_html_e( ucwords( $invoice->status ) );
+												echo esc_html( ucwords( $invoice->status ) );
 											} ?>
 										</span>
 										<?php

@@ -136,7 +136,6 @@ class PMPro_Members_List_Table extends WP_List_Table {
 			'last_name'     => __( 'Last Name', 'paid-memberships-pro' ),
 			'display_name'  => __( 'Display Name', 'paid-memberships-pro' ),
 			'user_email'    => __( 'Email', 'paid-memberships-pro' ),
-			'address'       => __( 'Billing Address', 'paid-memberships-pro' ),
 			'membership'    => __( 'Level', 'paid-memberships-pro' ),
 			'membership_id' => __( 'Level ID', 'paid-memberships-pro' ),
 			'subscription'  => __( 'Subscription', 'paid-memberships-pro' ),
@@ -203,7 +202,6 @@ class PMPro_Members_List_Table extends WP_List_Table {
 				'ID',
 				'first_name',
 				'last_name',
-				'address',
 				'membership_id',
 				'joindate',
 			);
@@ -292,7 +290,7 @@ class PMPro_Members_List_Table extends WP_List_Table {
 			$s = "";
 		?>
 		<p>
-			<?php _e( 'No members found.', 'paid-memberships-pro' ); ?>
+			<?php esc_html_e( 'No members found.', 'paid-memberships-pro' ); ?>
 			<?php if ( $l ) { ?>
 				<a href="<?php echo esc_url( add_query_arg( array( 'page' => 'pmpro-memberslist', 's' => $s ) ) ); ?>"><?php esc_html_e( 'Search all levels', 'paid-memberships-pro' );?></a>
 			<?php } ?>
@@ -525,7 +523,14 @@ class PMPro_Members_List_Table extends WP_List_Table {
 			}
 		} else {
 			// The preferred ways of doing things.
-			do_action( 'pmpro_manage_memberslist_custom_column', $column_name, $item['ID'] );
+			/**
+			 * Fill in columns that don't have a built-in method.
+			 *
+			 * @param string $column_name The name of the column.
+			 * @param int    $user_id     The ID of the user.
+			 * @param array  $item        The membership data being shown.
+			 */
+			do_action( 'pmpro_manage_memberslist_custom_column', $column_name, $item['ID'], $item );
 		}
 	}
 
@@ -629,17 +634,6 @@ class PMPro_Members_List_Table extends WP_List_Table {
 	}
 
 	/**
-	 * Get value for Address column.
-	 *
-	 * @param object $item A row's data.
-	 * @return string Text to be placed inside the column <td>.
-	 */
-	public function column_address( $item ) {
-		$user_object = get_userdata( $item['ID'] );
-		return pmpro_formatAddress( trim( $user_object->pmpro_bfirstname . ' ' . $user_object->pmpro_blastname ), $user_object->pmpro_baddress1, $user_object->pmpro_baddress2, $user_object->pmpro_bcity, $user_object->pmpro_bstate, $user_object->pmpro_bzipcode, $user_object->pmpro_bcountry, $user_object->pmpro_bphone );
-	}
-
-	/**
 	 * Get value for membership column.
 	 *
 	 * @param object $item A row's data.
@@ -675,7 +669,7 @@ class PMPro_Members_List_Table extends WP_List_Table {
 				<div class="pmpro_message pmpro_error">
 					<p>
 						<?php
-						printf(
+						echo wp_kses_post( sprintf(
 							// translators: %1$d is the number of subscriptions and %2$s is the link to view subscriptions.
 							_n(
 								'This user has %1$d active subscription for this level. %2$s',
@@ -689,7 +683,7 @@ class PMPro_Members_List_Table extends WP_List_Table {
 								esc_url( add_query_arg( array( 'page' => 'pmpro-member', 'user_id' => $item['ID'], 'pmpro_member_edit_panel' => 'subscriptions' ), admin_url( 'admin.php' ) ) ),
 								esc_html__( 'View Subscriptions', 'paid-memberships-pro' )
 							)
-						); ?>
+						) ); ?>
 					</p>
 				</div>
 				<?php
@@ -716,7 +710,7 @@ class PMPro_Members_List_Table extends WP_List_Table {
 
 			if ( ! empty( $actions_html ) ) { ?>
 				<div class="row-actions">
-					<?php echo implode( ' | ', $actions_html ); ?>
+					<?php echo implode( ' | ', $actions_html ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 				</div>
 				<?php
 			}
@@ -778,7 +772,7 @@ class PMPro_Members_List_Table extends WP_List_Table {
 				$l = false;
 			}
 			esc_html_e('Show', 'paid-memberships-pro' );?>
-			<select name="l" onchange="jQuery('#current-page-selector').val('1'); jQuery('#member-list-form').submit();">
+			<select name="l" onchange="jQuery('#current-page-selector').val('1'); jQuery('#member-list-form').trigger('submit');">
 				<option value="" <?php if(!$l) { ?>selected="selected"<?php } ?>><?php esc_html_e('All Levels', 'paid-memberships-pro' );?></option>
 				<?php
 					$levels = $wpdb->get_results("SELECT id, name FROM $wpdb->pmpro_membership_levels ORDER BY name");

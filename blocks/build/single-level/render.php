@@ -6,4 +6,5 @@
 if ( empty( $attributes['selected_membership_level'] ) ) {
 	return;
 }
-echo wp_kses_post( $content );
+// The content here is the block's inner content, which should already be escaped.
+echo $content; // phpcs:disable WordPress.Security.EscapeOutput.OutputNotEscaped

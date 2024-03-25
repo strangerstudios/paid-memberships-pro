@@ -157,7 +157,7 @@ class PMPro_Member_Edit_Panel_User_Info extends PMPro_Member_Edit_Panel {
 			<tr class="form-field">
 				<th scope="row" valign="top"><label for="user_notes"><?php esc_html_e( 'Member Notes', 'paid-memberships-pro' ); ?></label></th>
 				<td>
-					<textarea name="user_notes" id="user_notes" rows="5" class="<?php echo pmpro_getClassForField( 'user_notes' ); ?>" <?php echo esc_attr( $disable_fields ); ?>><?php echo esc_textarea( $user_notes ); ?></textarea>
+					<textarea name="user_notes" id="user_notes" rows="5" class="<?php echo esc_attr( pmpro_getClassForField( 'user_notes' ) ); ?>" <?php echo esc_attr( $disable_fields ); ?>><?php echo esc_textarea( $user_notes ); ?></textarea>
 					<p class="description"><?php esc_html_e( 'Member notes are private and only visible to other users with membership management capabilities.', 'paid-memberships-pro' ); ?></p>
 				</td>
 			</tr>
@@ -176,7 +176,7 @@ class PMPro_Member_Edit_Panel_User_Info extends PMPro_Member_Edit_Panel {
 							?>
 							<th scope="row"><label for="role"><?php esc_html_e( 'Role', 'paid-memberships-pro' ); ?></label></th>
 							<td>
-								<select name="role" id="role" class="<?php echo pmpro_getClassForField( 'role' ); ?>" <?php echo esc_attr( $disable_fields ); ?>>
+								<select name="role" id="role" class="<?php echo esc_attr( pmpro_getClassForField( 'role' ) ); ?>" <?php echo esc_attr( $disable_fields ); ?>>
 									<?php wp_dropdown_roles( $role ); ?>
 								</select>
 							</td>
@@ -187,6 +187,7 @@ class PMPro_Member_Edit_Panel_User_Info extends PMPro_Member_Edit_Panel {
 			<?php } ?>
 		</table>
 		<?php
+		do_action( 'pmpro_after_membership_level_profile_fields', self::get_user() );
 	}
 
 	/**
@@ -220,7 +221,7 @@ class PMPro_Member_Edit_Panel_User_Info extends PMPro_Member_Edit_Panel {
 			// If the new role isn't editable by the logged-in user die with error.
 			$editable_roles = get_editable_roles();
 			if ( ! empty( $new_role ) && empty( $editable_roles[ $new_role ] ) ) {
-				wp_die( __( 'Sorry, you are not allowed to give users that role.', 'paid-memberships-pro' ), 403 );
+				wp_die( esc_html__( 'Sorry, you are not allowed to give users that role.', 'paid-memberships-pro' ), 403 );
 			}
 
 			$potential_role = isset( $wp_roles->role_objects[ $new_role ] ) ? $wp_roles->role_objects[ $new_role ] : false;

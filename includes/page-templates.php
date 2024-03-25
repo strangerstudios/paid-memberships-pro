@@ -194,7 +194,7 @@ function pmpro_page_template_notices() {
 			<p>
 				<?php
 					esc_html_e( 'Outdated page templates have been detected in your theme or a plugin. You should update the following templates to ensure compatibility with the Paid Memberships Pro plugin:', 'paid-memberships-pro' );
-					echo '<tr>' . $outdated_templates_string. '</tr>'; // Escaped when built above.
+					echo '<tr>' . $outdated_templates_string. '</tr>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 				?>
 			</p>
 			</div>

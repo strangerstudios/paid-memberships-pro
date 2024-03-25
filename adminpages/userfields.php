@@ -3,7 +3,7 @@
 	
 	// Only admins can get this.
 	if ( ! function_exists( 'current_user_can' ) || ( ! current_user_can( 'manage_options' ) && ! current_user_can( 'pmpro_userfields' ) ) ) {
-		die( __( 'You do not have permissions to perform this action.', 'paid-memberships-pro' ) );
+		die( esc_html__( 'You do not have permissions to perform this action.', 'paid-memberships-pro' ) );
 	}
 
 	// Get all levels regardless of visibility.
@@ -120,7 +120,7 @@
 
 					<?php						
 						foreach( $user_fields_settings as $group ) {
-							echo pmpro_get_field_group_html( $group );
+							echo wp_kses_post( pmpro_get_field_group_html( $group ) );
 						}
 					?>
 

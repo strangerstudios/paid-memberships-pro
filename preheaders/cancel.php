@@ -56,13 +56,13 @@
 	if ( ! empty( $_REQUEST['confirm'] ) ) {
 		// Check the nonce.
 		if ( ! wp_verify_nonce( $_REQUEST['pmpro_cancel-nonce'], 'pmpro_cancel-nonce' ) ) {
-			wp_die( __( 'Error: Invalid nonce.', 'paid-memberships-pro' ) );
+			wp_die( esc_html__( 'Error: Invalid nonce.', 'paid-memberships-pro' ) );
 		}
 
 		/**
 		 * Check whether a cancellation should be able to process.
 		 *
-		 * @since TBD
+		 * @since 3.0
 		 *
 		 * @param bool $process_cancellation Whether the cancellation should be processed.
 		 * @param WP_User $user The user cancelling their membership.
@@ -121,7 +121,7 @@
 			}
 		}
         
-		if ( $worked != false && empty( $pmpro_error ) ) {
+		if ( ! empty( $worked ) ) {
 			if ( count( $old_level_ids ) > 1 ) {
 				// If cancelling multiple levels, show a generic message.
 				$pmpro_msg = __( 'Your memberships have been cancelled.', 'paid-memberships-pro' );
@@ -148,15 +148,16 @@
 			/**
 			 * Fires after a membership level is cancelled.
 			 *
-			 * @since TBD
+			 * @since 3.0
 			 *
 			 * @param WP_User $user The user who cancelled their membership.
 			 */
 			do_action( 'pmpro_cancel_processed', $current_user );
 		} else {
-			global $pmpro_error;
-			$pmpro_msg = $pmpro_error;
-			$pmpro_msgt = "pmpro_error";
+			if ( ! empty( $pmpro_error ) ) {
+				pmpro_setMessage( $pmpro_error, 'pmpro_error' );
+			}
+			$_REQUEST['confirm'] = false; // Show the form again.
 		}
 	}
 

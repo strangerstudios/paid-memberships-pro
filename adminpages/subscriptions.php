@@ -3,7 +3,7 @@ global $wpdb, $pmpro_msg, $pmpro_msgt;
 
 // only admins can get this
 if ( ! function_exists( 'current_user_can' ) || ( ! current_user_can( 'manage_options' ) && ! current_user_can( 'pmpro_edit_members' ) ) ) {
-	die( __( 'You do not have permissions to perform this action.', 'paid-memberships-pro' ) );
+	die( esc_html__( 'You do not have permissions to perform this action.', 'paid-memberships-pro' ) );
 }
 
 $subscription = PMPro_Subscription::get_subscription( empty( $_REQUEST['id'] ) ? null : sanitize_text_field( $_REQUEST['id'] ) );
@@ -124,7 +124,7 @@ if ( ! empty( $subscription ) ) {
 								}
 
 								if ( ! empty( $actions_html ) ) {
-									echo implode( ' | ', $actions_html );
+									echo implode( ' | ', $actions_html ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 								}
 							?>
 							</div>
@@ -189,7 +189,7 @@ if ( ! empty( $subscription ) ) {
 								</div>
 								<script>
 									jQuery(document).ready(function() {
-										jQuery('#pmpro-show-change-subscription-level').click(function() {
+										jQuery('#pmpro-show-change-subscription-level').on('click',function() {
 											jQuery('#pmpro-change-subscription-level').show();
 											jQuery(this).hide();
 										});
@@ -204,7 +204,7 @@ if ( ! empty( $subscription ) ) {
 						<th scope="row"><?php esc_html_e( 'Status', 'paid-memberships-pro' ); ?></th>
 						<td>
 							<span class="pmpro_tag pmpro_tag-has_icon pmpro_tag-<?php echo esc_attr( $subscription->get_status() ); ?>">
-								<?php echo ucwords( esc_html( $subscription->get_status() ) ); ?>
+								<?php echo esc_html( ucwords( $subscription->get_status() ) ); ?>
 							</span>
 							<?php
 							// Show warning if the subscription had an error when trying to sync.
@@ -274,7 +274,7 @@ if ( ! empty( $subscription ) ) {
 							$orders_count = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM $wpdb->pmpro_membership_orders WHERE subscription_transaction_id = %s", $subscription->get_subscription_transaction_id() ) );
 							?>
 							<a href="<?php echo esc_url( add_query_arg( array( 'page' => 'pmpro-orders', 's' => $subscription->get_subscription_transaction_id() ), admin_url( 'admin.php' ) ) ); ?>" title="<?php esc_attr_e( 'View all orders for this subscription', 'paid-memberships-pro' ); ?>">
-								<?php echo sprintf( _n( 'View %s order', 'View %s orders', $orders_count, 'text-domain' ), number_format_i18n( $orders_count ) ); ?>
+								<?php echo esc_html( sprintf( _n( 'View %s order', 'View %s orders', $orders_count, 'text-domain' ), number_format_i18n( $orders_count ) ) ); ?>
 							</a>
 						</td>
 					</tr>
