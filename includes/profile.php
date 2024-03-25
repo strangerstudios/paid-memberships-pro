@@ -1313,6 +1313,10 @@ function pmpro_change_password_form() {
  * Add a link to the Edit Member page in PMPro inline with the Edit User screen's page title.
  */
 function pmpro_add_edit_member_link_on_profile( $user ) {
+	// Only show the link to users who can edit members.
+	if ( ! current_user_can( pmpro_get_edit_member_capability() ) ) {
+		return;
+	}
 	?>
 	<script>
 		jQuery(document).ready(function() {
