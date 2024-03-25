@@ -274,7 +274,7 @@
 							$pmpro_membershiplevels_page_action_link['url'] = esc_url( $pmpro_membershiplevels_page_action_link['url'] );
 						}
 						?>
-						<a class="<?php echo esc_attr( $class ); ?>" href="<?php echo esc_url( $pmpro_membershiplevels_page_action_link['url'] ); ?>"><?php echo esc_html( $pmpro_membershiplevels_page_action_link['name'] ); ?></a>
+						<a class="<?php echo esc_attr( $class ); ?>" href="<?php echo $pmpro_membershiplevels_page_action_link['url']; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>"><?php echo esc_html( $pmpro_membershiplevels_page_action_link['name'] ); ?></a>
 						<?php
 					}
 				?>
