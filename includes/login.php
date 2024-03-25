@@ -632,7 +632,7 @@ add_action( 'login_form_lostpassword', 'pmpro_lost_password_redirect' );
 /**
  * Redirect Password reset to our own page and honor all $_REQUEST params.
  * @since 2.3
- * @since [version] Uses the pmpro_url function now.
+ * @since 2.10.7 Uses the pmpro_url function now.
  */
 function pmpro_reset_password_redirect() {
 
