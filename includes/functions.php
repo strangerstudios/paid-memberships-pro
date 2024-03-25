@@ -664,7 +664,7 @@ function pmpro_get_membership_expiration_text( $level, $user ) {
 	}
 
 	// Apply legacy filter pmpro_account_membership_expiration_text.
-	if ( is_admin() && has_filter( 'pmpro_account_membership_expiration_text' ) ) {
+	if ( ! is_admin() && has_filter( 'pmpro_account_membership_expiration_text' ) ) {
 		/**
 		 * Legacy filter for showing the expiration date on the frontend.
 		 *
