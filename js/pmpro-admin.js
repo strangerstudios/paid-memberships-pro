@@ -1029,6 +1029,12 @@ function pmpro_changeTabs( e, inputChanged ) {
 	url.searchParams.set('pmpro_member_edit_panel', panelSlug);
 	window.history.pushState({}, '', url);
 
+    // Hide tne PMPro message.
+    const pmproMessage = document.querySelector('#pmpro_message');
+    if ( pmproMessage ) {
+        pmproMessage.style.display = 'none';
+    }
+
 	return true;
 }
 
