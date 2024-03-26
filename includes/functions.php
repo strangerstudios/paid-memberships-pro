@@ -1978,7 +1978,7 @@ function pmpro_checkDiscountCode( $code, $level_id = null, $return_errors = fals
 }
 
 function pmpro_no_quotes( $s, $quotes = array( "'", '"' ) ) {
-	return str_replace( $quotes, '', $s );
+	return str_replace( $quotes, '', $s ?? '' );
 }
 
 /**
