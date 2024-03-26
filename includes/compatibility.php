@@ -71,6 +71,11 @@ function pmpro_compatibility_checker() {
 			'check_type'  => 'constant',
 			'check_value' => 'BLUEHOST_PLUGIN_VERSION',
 		],
+		[
+			'file'		  => 'wp-bakery.php',
+			'check_type'  => 'function',
+			'check_value' => 'vc_add_param'
+		],
 	];
 
 	foreach ( $compat_checks as $value ) {
