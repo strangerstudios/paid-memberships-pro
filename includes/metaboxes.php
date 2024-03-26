@@ -118,6 +118,7 @@ function pmpro_page_save( $post_id ) {
 
 	return $mydata;
 }
+add_action( 'save_post', 'pmpro_page_save' );
 
 /**
  * Wrapper to add meta boxes for classic editor.
@@ -128,12 +129,11 @@ function pmpro_page_meta_wrapper() {
 	if ( method_exists( $current_screen, 'is_block_editor' ) && $current_screen->is_block_editor() ) {
 		return;
 	}
-	add_action( 'save_post', 'pmpro_page_save' );
-
+	
 	// Add meta box for each restrictable post type.
 	$restrictable_post_types = apply_filters( 'pmpro_restrictable_post_types', array( 'page', 'post' ) );
 	foreach( $restrictable_post_types as $post_type ) {
 		add_meta_box( 'pmpro_page_meta', __( 'Require Membership', 'paid-memberships-pro' ), 'pmpro_page_meta', $post_type, 'side', 'high' );
 	}
 }
-add_action( 'current_screen', 'pmpro_page_meta_wrapper' );
+add_action( 'add_meta_boxes', 'pmpro_page_meta_wrapper' );
