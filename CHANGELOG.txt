@@ -1,4 +1,24 @@
 == Changelog ==
+= 3.0.1 - 2024-03-27 =
+* ENHANCEMENT: Improved the admin UI on mobile devices. #2913 (@kimcoleman)
+* ENHANCEMENT: Now hiding save messages when switching tabs on the edit member page. #2910 (@dparker1005)
+* ENHANCEMENT: The "Generate pages" checkbox in the setup wizard is now checked by default. #2916 (@dparker1005)
+* BUG FIX/ENHANCEMENT: Now only showing membership groups on the levels page if the group contains levels that will also be shown. #2917 (@dparker1005)
+* BUG FIX: Fixed a fatal error caused by plugin conflicts with plugins triggering the `current_screen` action before `add_meta_box()` is defined. #2911 (@dparker1005)
+* BUG FIX: Fixed a plugin conflict that may cause the "Require Membership" metabox not to show when editing a post. #2911 (@dparker1005)
+* BUG FIX: Fixed an issue where the "Add New Level" button on the levels settings page would not work. #2905 (@dparker1005)
+* BUG FIX: Fixed an issue where the expired/cancelled date would not show in the members list when filtering by old members. #2908 (@dparker1005)
+* BUG FIX: Fixed an issue where the "Edit Member" link on the edit user page was visible to everyone. #2903 (@dparker1005)
+* BUG FIX: Fixed an issue where custom code using the `pmpro_account_membership_expiration_text` filter would no longer run. #2906 (@dparker1005)
+* BUG FIX: Fixed an issue where custom code passing an array of statuses to `pmpro_next_payment()` would no longer work. #2904 (@dparker1005)
+* BUG FIX: Fixed an issue where discount codes could not be applied when using an outdated checkout page template. #2921 (@dparker1005)
+* BUG FIX: Fixed a PHP warning when creating a new membership level. (@dparker1005)
+* BUG FIX: Fixed a PHP warning when passing NULL to `pmpro_no_quotes()`. #2909 (@ipokkel)
+* BUG FIX: Fixed a PHP warning when passing NULL as a value to `pmpro_setOption()`. #2915 (@dparker1005)
+* BUG FIX: Fixed a PHP warning when saving a restricted post in the block editor. #2919 (@dparker1005)
+* BUG FIX: Fixed the formatting of the "Status" column of the Stripe webhook checker. #2918 (@dparker1005)
+* REFACTOR: Changed uses of `pmpro_getOption()` to `get_option()`. #2914 (@dparker1005)
+
 = 3.0 - 2024-03-25 =
 * FEATURE: Now tracking payment subscriptions using a new subscriptions table. (@dparker1005)
 * FEATURE: The Multiple Memberships Per User Add On has been merged into the core PMPro plugin. #2250 (@dparker1005)
