@@ -3299,6 +3299,10 @@ button.pmpro_report_th_closed:before {
 		width: auto;
 	}
 
+	.pmpro_admin-pmpro-member input[type=text]:not(.pmpro_admin-pmpro-member tr#date_field_tr input[type=text]), .pmpro_admin-pmpro-member input[type=email] {
+		min-width: auto;
+	}
+
 	#pmpro_dashboard_report_recent_members .wp-list-table .column-username img {
 		display: none;
 	}
@@ -3340,6 +3344,10 @@ button.pmpro_report_th_closed:before {
 
 	.pmpro_admin #pmpro-page-settings select {
 		margin-bottom: var(--pmpro--spacing--small);
+	}
+
+	.pmpro_admin-pmpro-member .pmpro-level_change-action {
+		flex-direction: column;
 	}
 
 	.pmpro_admin-pmpro-reports #dashboard-widgets .meta-box-sortables {
