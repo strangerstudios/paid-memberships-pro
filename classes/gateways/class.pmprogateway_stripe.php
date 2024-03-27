@@ -1735,7 +1735,7 @@ class PMProGateway_stripe extends PMProGateway {
 	public static function pmpro_billing_preheader_stripe_customer_portal() {
 		global 	$pmpro_billing_subscription;
 		//Bail if the customer portal isn't enabled
-		if ( 'portal' !== pmpro_getOption( 'stripe_update_billing_flow' ) ) {
+		if ( 'portal' !== get_option( 'pmpro_stripe_update_billing_flow' ) ) {
 			return;
 		}
 
