@@ -1,12 +1,12 @@
 <?php
 /**
  * Template: Levels
- * Version: 3.0
+ * Version: 3.0.1
  *
  * See documentation for how to override the PMPro templates.
  * @link https://www.paidmembershipspro.com/documentation/templates/
  *
- * @version 3.0
+ * @version 3.0.1
  *
  * @author Paid Memberships Pro
  */
@@ -25,7 +25,17 @@ if($pmpro_msg)
 }
 foreach ( $level_groups as $level_group ) {
 	$levels_in_group = pmpro_get_level_ids_for_group( $level_group->id );
-	if ( empty( $levels_in_group ) ) {
+
+	// The pmpro_levels_array filter is sometimes used to hide levels from the levels page.
+	// Let's make sure that every level in the group should still be displayed.
+	$levels_to_show_for_group = array();
+	foreach ( $pmpro_levels as $level ) {
+		if ( in_array( $level->id, $levels_in_group ) ) {
+			$levels_to_show_for_group[] = $level;
+		}
+	}
+
+	if ( empty( $levels_to_show_for_group ) ) {
 		continue;
 	}
 
@@ -56,12 +66,8 @@ foreach ( $level_groups as $level_group ) {
 	<tbody>
 		<?php	
 		$count = 0;
-		foreach($pmpro_levels as $level)
+		foreach($levels_to_show_for_group as $level)
 		{
-			if ( ! in_array( $level->id, $levels_in_group ) ) {
-				continue;
-			}
-
 			$user_level = pmpro_getSpecificMembershipLevelForUser( $current_user->ID, $level->id );
 			$has_level = ! empty( $user_level );
 		?>
