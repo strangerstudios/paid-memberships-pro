@@ -423,6 +423,7 @@ body[class*="memberships_page_pmpro-"] {
 	.pmpro_admin .pmpro-nav-primary ul {
 		border-bottom: none;
 		justify-content: center;
+		padding-left: 0;
 	}
 
 	.pmpro_admin .pmpro-nav-primary ul li a {
@@ -3232,8 +3233,11 @@ button.pmpro_report_th_closed:before {
 }
 
 @media only screen and (max-width: 782px) {
+	.pmpro_banner {
+		margin-left: -30px;
+	}
 	.wrap.pmpro_admin {
-		margin-right: var(--pmpro--spacing--small);
+		margin-right: calc( var(--pmpro--spacing--small) * 2 );
 		margin-left: var(--pmpro--spacing--small);
 	}
 
@@ -3244,6 +3248,13 @@ button.pmpro_report_th_closed:before {
 
 	.wrap.pmpro_admin form .page-title-action {
 		top: 0;
+	}
+
+	.wrap.pmpro_admin .add-new-h2,
+	.wrap.pmpro_admin .add-new-h2:active,
+	.wrap.pmpro_admin .page-title-action,
+	.wrap.pmpro_admin .page-title-action:active {
+		padding: calc( var(--pmpro--spacing--small) / 4 ) var(--pmpro--spacing--small);
 	}
 
 	.wrap.pmpro_admin .tablenav.top {
@@ -3265,6 +3276,31 @@ button.pmpro_report_th_closed:before {
 		display: table-cell;
 		overflow: hidden;
 		word-wrap: break-word;
+	}
+
+	.wrap.pmpro_admin .row-actions {
+		align-items: center;
+		color: #a7aaad;
+		gap: 0;
+		margin: 0 -4px;
+	}
+
+	.wrap.pmpro_admin .row-actions span .button-link,
+	.wrap.pmpro_admin .row-actions span a {
+		padding-right: 4px;
+		padding-left: 4px;
+	}
+
+	.wrap.pmpro_admin .form-table td input[type=email],
+	.wrap.pmpro_admin .form-table td input[type=password],
+	.wrap.pmpro_admin .form-table td input[type=text],
+	.wrap.pmpro_admin .form-table td select {
+		display: inline-block;
+		width: auto;
+	}
+
+	.pmpro_admin-pmpro-member input[type=text]:not(.pmpro_admin-pmpro-member tr#date_field_tr input[type=text]), .pmpro_admin-pmpro-member input[type=email] {
+		min-width: auto;
 	}
 
 	#pmpro_dashboard_report_recent_members .wp-list-table .column-username img {
@@ -3304,6 +3340,19 @@ button.pmpro_report_th_closed:before {
 	.pmpro_admin-pmpro-membershiplevels .membership-levels tr td:first-child:before {
 		content: '';
 		width: 0;
+	}
+
+	.pmpro_admin #pmpro-page-settings select {
+		margin-bottom: var(--pmpro--spacing--small);
+	}
+
+	.pmpro_admin-pmpro-member .pmpro-level_change-action {
+		flex-direction: column;
+	}
+
+	.pmpro_admin-pmpro-reports #dashboard-widgets .meta-box-sortables {
+		margin-left: 0;
+		margin-right: 0;
 	}
 }
 
