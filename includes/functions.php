@@ -104,7 +104,7 @@ function pmpro_setOption( $s, $v = null, $sanitize_function = 'sanitize_text_fie
 
 	if ( is_array( $v ) ) {
 		$v = implode( ',', $v );
-	} else {
+	} elseif ( is_string( $v ) ) {
 		$v = trim( $v );
 	}
 
