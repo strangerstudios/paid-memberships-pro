@@ -754,7 +754,7 @@ class PMPro_Members_List_Table extends WP_List_Table {
 	 * @return string Text to be placed inside the column <td>.
 	 */
 	public function column_enddate( $item ) {
-		if ( isset( $_REQUEST['l'] ) && in_array( sanitize_text_field( $_REQUEST['l'] ), array( 'oldmembers', 'expired', 'cancelled' ) ) ) {
+		if ( isset( $_REQUEST['l'] ) && ! empty( pmpro_sanitize_with_safelist( $_REQUEST['l'] , array( 'oldmembers', 'expired', 'cancelled' ) ) ) ) {
 			// If viewing removed levels, show the end date for the membership that was removed.
 			return date_i18n( get_option( 'date_format' ), $item['enddate'] );
 		}
