@@ -516,7 +516,7 @@ class PMProGateway_stripe extends PMProGateway {
 									<tr>
 										<td><?php echo esc_html( $webhook_event['name'] ); ?></td>
 										<td><?php echo esc_html( $webhook_event['last_received'] ); ?></td>
-										<td><?php echo esc_html( $webhook_event['status'] ); ?></td>
+										<td><?php echo wp_kses( $webhook_event['status'], array( 'span' => array( 'style' => array() ) ) ); ?></td>
 									</tr>
 									<?php
 								}
