@@ -29,6 +29,10 @@ jQuery(document).ready(function(){
         jQuery('#other_discount_code_button').click(function() {
             var code = jQuery('#pmpro_other_discount_code').val();
             var level_id = jQuery('#pmpro_level').val();
+            if ( ! level_id ) {
+                // If the level ID is not set, try to get it from the #level field for outdated checkout templates.
+                level_id = jQuery('#level').val();
+            }
 
             if(code)
             {
