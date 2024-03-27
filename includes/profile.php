@@ -261,7 +261,7 @@ function pmpro_membership_level_profile_fields($user)
 									?>
 									<label for="<?php echo esc_attr( $shown_level_name_prefix ); ?>[subscription_action]" style="display: none">
 										<select name="<?php echo esc_attr( $shown_level_name_prefix ); ?>[subscription_action]">
-											<option value="cancel"><?php esc_html_e( 'Cancel payment subscription (Reccomended)', 'paid-memberships-pro' ); ?></option>
+											<option value="cancel"><?php esc_html_e( 'Cancel payment subscription (Recommended)', 'paid-memberships-pro' ); ?></option>
 											<option value="keep"><?php esc_html_e( 'Keep subscription active', 'paid-memberships-pro' ); ?></option>
 										</select>
 									</label>
@@ -364,7 +364,7 @@ function pmpro_membership_level_profile_fields($user)
 													<p><?php echo esc_html( $subscription->get_cost_text() ); ?></p>
 													<label for="<?php echo esc_attr( $name_prefix ); ?>[subscription_action]" style="display: none">
 														<select name="<?php echo esc_attr( $name_prefix ); ?>[subscription_action]">
-															<option value="cancel"><?php esc_html_e( 'Cancel payment subscription (Reccomended)', 'paid-memberships-pro' ); ?></option>
+															<option value="cancel"><?php esc_html_e( 'Cancel payment subscription (Recommended)', 'paid-memberships-pro' ); ?></option>
 															<option value="keep"><?php esc_html_e( 'Keep subscription active', 'paid-memberships-pro' ); ?></option>
 														</select>
 													</label>
