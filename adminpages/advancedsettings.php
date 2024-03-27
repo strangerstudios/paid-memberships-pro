@@ -481,7 +481,7 @@ if ( function_exists( 'pmpro_displayAds' ) && pmpro_displayAds() ) {
 												foreach ($field['options'] as $key => $option) {
 													if(!$is_associative) $key = $option;
 													?>
-													<option value="<?php echo esc_attr($key); ?>" <?php selected($key, pmpro_getOption($field['field_name']));?>>
+													<option value="<?php echo esc_attr($key); ?>" <?php selected($key, get_option( 'pmpro_' . $field['field_name'] ));?>>
 														<?php echo esc_textarea($option); ?>
 													</option>
 													<?php
@@ -495,7 +495,7 @@ if ( function_exists( 'pmpro_displayAds' ) && pmpro_displayAds() ) {
 										<input id="<?php echo esc_attr( $field['field_name'] ); ?>"
 											name="<?php echo esc_attr( $field['field_name'] ); ?>"
 											type="<?php echo esc_attr( $field['field_type'] ); ?>"
-											value="<?php echo esc_attr(pmpro_getOption($field['field_name'])); ?> "
+											value="<?php echo esc_attr(get_option( 'pmpro_' . $field['field_name'] )); ?> "
 											class="regular-text">
 										<?php
 										break;
@@ -504,7 +504,7 @@ if ( function_exists( 'pmpro_displayAds' ) && pmpro_displayAds() ) {
 										<textarea id="<?php echo esc_attr( $field['field_name'] ); ?>"
 												name="<?php echo esc_attr( $field['field_name'] ); ?>"
 												class="large-text">
-											<?php echo esc_textarea(pmpro_getOption($field['field_name'])); ?>
+											<?php echo esc_textarea(get_option( 'pmpro_' . $field['field_name'] )); ?>
 										</textarea>
 										<?php
 										break;

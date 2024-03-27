@@ -381,7 +381,7 @@
 				'user_email' => $user->user_email,
 				'display_name' => $user->display_name,
 				'sitename' => get_option( 'blogname' ),
-				'siteemail' => pmpro_getOption( 'from_email' ),
+				'siteemail' => get_option( 'pmpro_from_email' ),
 				'login_link' => pmpro_login_url(),
 				'login_url' => pmpro_login_url(),
 				'levels_url' => pmpro_url( 'levels' ),
@@ -421,7 +421,7 @@
 				return false;
 			}
 
-			$this->email = pmpro_getOption( 'from_email' );
+			$this->email = get_option( 'pmpro_from_email' );
 			$this->subject = sprintf( __( 'Payment subscription for %s at %s has been CANCELLED', 'paid-memberships-pro' ), $user->user_login, get_option( 'blogname' ) );
 
 			$this->data = array(
@@ -429,7 +429,7 @@
 				'user_email' => $user->user_email,
 				'display_name' => $user->display_name,
 				'sitename' => get_option( 'blogname' ),
-				'siteemail' => pmpro_getOption( 'from_email' ),
+				'siteemail' => get_option( 'pmpro_from_email' ),
 				'login_link' => pmpro_login_url(),
 				'login_url' => pmpro_login_url(),
 				'levels_url' => pmpro_url( 'levels' ),
