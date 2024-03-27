@@ -62,8 +62,8 @@ if (empty($level)) {
 	$level = new stdClass();
 	$level->id = NULL;
 	$level->name = NULL;
-	$level->description = NULL;
-	$level->confirmation = NULL;
+	$level->description = '';
+	$level->confirmation = '';
 	$level->initial_payment = NULL;
 	$level->billing_amount = NULL;
 	$level->cycle_number = 1;
