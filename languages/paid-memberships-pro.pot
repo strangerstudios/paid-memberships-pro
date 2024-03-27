@@ -2,14 +2,14 @@
 # This file is distributed under the same license as the Paid Memberships Pro plugin.
 msgid ""
 msgstr ""
-"Project-Id-Version: Paid Memberships Pro 3.0\n"
+"Project-Id-Version: Paid Memberships Pro 3.0.1\n"
 "Report-Msgid-Bugs-To: info@paidmembershipspro.com\n"
 "Last-Translator: Paid Memberships Pro <info@paidmembershipspro.com>\n"
 "Language-Team: Paid Memberships Pro <info@paidmembershipspro.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2024-03-25T13:05:54+00:00\n"
+"POT-Creation-Date: 2024-03-27T17:07:51+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.10.0\n"
 "X-Domain: paid-memberships-pro\n"
@@ -423,7 +423,7 @@ msgid "Email Templates"
 msgstr ""
 
 #: adminpages/admin_header.php:291
-#: adminpages/userfields.php:113
+#: adminpages/userfields.php:114
 #: includes/adminpages.php:77
 msgid "User Fields"
 msgstr ""
@@ -991,7 +991,7 @@ msgstr ""
 #: includes/profile.php:913
 #: pages/cancel.php:99
 #: pages/invoice.php:131
-#: pages/levels.php:51
+#: pages/levels.php:61
 #: shortcodes/pmpro_account.php:55
 #: shortcodes/pmpro_account.php:249
 msgid "Level"
@@ -1042,7 +1042,7 @@ msgstr ""
 #: adminpages/member-edit/pmpro-class-member-edit-panel-orders.php:38
 #: adminpages/orders.php:640
 #: classes/class-pmpro-orders-list-table.php:149
-#: includes/functions.php:3140
+#: includes/functions.php:3144
 #: includes/privacy.php:281
 #: includes/profile.php:750
 msgid "Total"
@@ -2259,6 +2259,8 @@ msgstr ""
 
 #: adminpages/member-edit/pmpro-class-member-edit-panel-memberships.php:329
 #: adminpages/member-edit/pmpro-class-member-edit-panel-memberships.php:458
+#: includes/profile.php:264
+#: includes/profile.php:367
 msgid "Cancel payment subscription (Recommended)"
 msgstr ""
 
@@ -2759,7 +2761,7 @@ msgstr ""
 #: blocks/build/membership/index.js:1
 #: blocks/build/sidebar/index.js:1
 #: blocks/src/component-content-visibility/content-visibility-controls.js:106
-#: blocks/src/sidebar/index.js:196
+#: blocks/src/sidebar/index.js:230
 msgid "Membership Levels"
 msgstr ""
 
@@ -3056,7 +3058,7 @@ msgid "Sub Total"
 msgstr ""
 
 #: adminpages/orders.php:627
-#: includes/functions.php:3119
+#: includes/functions.php:3123
 #: includes/privacy.php:277
 msgid "Tax"
 msgstr ""
@@ -3685,7 +3687,7 @@ msgstr ""
 #: adminpages/reports/logins.php:173
 #: adminpages/reports/memberships.php:397
 #: adminpages/reports/sales.php:629
-#: classes/class-pmpro-members-list-table.php:776
+#: classes/class-pmpro-members-list-table.php:781
 #: classes/class.pmproemail.php:280
 #: classes/class.pmproemail.php:341
 msgid "All Levels"
@@ -3986,7 +3988,7 @@ msgstr ""
 #: classes/class-pmpro-members-list-table.php:570
 #: includes/adminpages.php:298
 #: includes/adminpages.php:705
-#: includes/profile.php:1319
+#: includes/profile.php:1323
 msgid "Edit Member"
 msgstr ""
 
@@ -4046,7 +4048,7 @@ msgstr ""
 
 #: adminpages/templates/orders-email.php:51
 #: adminpages/templates/orders-print.php:80
-#: pages/levels.php:52
+#: pages/levels.php:62
 msgid "Price"
 msgstr ""
 
@@ -4079,15 +4081,19 @@ msgid "Save All Changes"
 msgstr ""
 
 #: adminpages/userfields.php:106
-msgid "User fields can be added to the membership checkout form, the frontend user profile edit page, and for admins only on the Edit Users Screen in the WordPress admin."
+msgid "User fields can be added to the membership checkout form, the frontend user profile edit page, and for admins only on the Edit Member and Edit User screens."
 msgstr ""
 
 #: adminpages/userfields.php:107
 msgid "Groups are used to define a collection of fields that should be displayed together under a common heading. Group settings control field locations and membership level visibility."
 msgstr ""
 
+#: adminpages/userfields.php:108
+msgid "Documentation: User Fields"
+msgstr ""
+
 #. translators: a plus sign dashicon
-#: adminpages/userfields.php:131
+#: adminpages/userfields.php:132
 msgid "%s Add Field Group"
 msgstr ""
 
@@ -4648,21 +4654,21 @@ msgid "You can also try searching:"
 msgstr ""
 
 #: classes/class-pmpro-members-list-table.php:302
-#: classes/class-pmpro-members-list-table.php:786
+#: classes/class-pmpro-members-list-table.php:791
 msgid "Cancelled Members"
 msgstr ""
 
 #: classes/class-pmpro-members-list-table.php:303
-#: classes/class-pmpro-members-list-table.php:787
+#: classes/class-pmpro-members-list-table.php:792
 msgid "Expired Members"
 msgstr ""
 
 #: classes/class-pmpro-members-list-table.php:304
-#: classes/class-pmpro-members-list-table.php:788
+#: classes/class-pmpro-members-list-table.php:793
 msgid "Old Members"
 msgstr ""
 
-#: classes/class-pmpro-members-list-table.php:774
+#: classes/class-pmpro-members-list-table.php:779
 #: classes/class-pmpro-orders-list-table.php:547
 #: blocks/build/component-content-visibility/index.js:1
 #: blocks/build/membership/index.js:1
@@ -9279,40 +9285,40 @@ msgstr ""
 msgid "This discount code is okay."
 msgstr ""
 
-#: includes/functions.php:2003
+#: includes/functions.php:2007
 msgid "and"
 msgstr ""
 
-#: includes/functions.php:2639
+#: includes/functions.php:2643
 msgid "Sign Up for !!name!! Now"
 msgstr ""
 
-#: includes/functions.php:2663
+#: includes/functions.php:2667
 msgid "Sign Up Now"
 msgstr ""
 
-#: includes/functions.php:3112
+#: includes/functions.php:3116
 msgid "Subtotal"
 msgstr ""
 
-#: includes/functions.php:4668
+#: includes/functions.php:4672
 msgid "No file was uploaded."
 msgstr ""
 
-#: includes/functions.php:4674
+#: includes/functions.php:4678
 msgid "No file name found."
 msgstr ""
 
-#: includes/functions.php:4681
-#: includes/functions.php:4702
+#: includes/functions.php:4685
+#: includes/functions.php:4706
 msgid "Invalid file type."
 msgstr ""
 
-#: includes/functions.php:4696
+#: includes/functions.php:4700
 msgid "Invalid field input."
 msgstr ""
 
-#: includes/functions.php:4720
+#: includes/functions.php:4724
 msgid "Invalid file submission."
 msgstr ""
 
@@ -9586,7 +9592,7 @@ msgstr ""
 #: includes/terms.php:27
 #: includes/terms.php:85
 #: blocks/build/sidebar/index.js:1
-#: blocks/src/sidebar/index.js:204
+#: blocks/src/sidebar/index.js:238
 msgid "Require Membership"
 msgstr ""
 
@@ -9743,11 +9749,6 @@ msgstr ""
 #: includes/profile.php:253
 #: includes/profile.php:355
 msgid "The user has multiple active subscriptions for this level. Old payment subscriptions should be cancelled using the Member History tool below."
-msgstr ""
-
-#: includes/profile.php:264
-#: includes/profile.php:367
-msgid "Cancel payment subscription (Reccomended)"
 msgstr ""
 
 #: includes/profile.php:279
@@ -10220,19 +10221,19 @@ msgstr ""
 msgid "&larr; View All Invoices"
 msgstr ""
 
-#: pages/levels.php:38
+#: pages/levels.php:48
 msgid "You may select multiple levels from this group."
 msgstr ""
 
-#: pages/levels.php:42
+#: pages/levels.php:52
 msgid "You may select only one level from this group."
 msgstr ""
 
-#: pages/levels.php:84
+#: pages/levels.php:90
 msgid "Select the %s membership level"
 msgstr ""
 
-#: pages/levels.php:84
+#: pages/levels.php:90
 #: blocks/build/component-content-visibility/index.js:1
 #: blocks/build/membership/index.js:1
 #: blocks/build/sidebar/index.js:1
@@ -10241,20 +10242,20 @@ msgstr ""
 msgid "Select"
 msgstr ""
 
-#: pages/levels.php:90
+#: pages/levels.php:96
 msgid "Renew your %s membership level"
 msgstr ""
 
-#: pages/levels.php:90
+#: pages/levels.php:96
 #: shortcodes/pmpro_account.php:85
 msgid "Renew"
 msgstr ""
 
-#: pages/levels.php:94
+#: pages/levels.php:100
 msgid "View your %s membership account"
 msgstr ""
 
-#: pages/levels.php:94
+#: pages/levels.php:100
 msgid "Your&nbsp;Level"
 msgstr ""
 
@@ -10684,7 +10685,7 @@ msgid "This block has content visibility settings."
 msgstr ""
 
 #: blocks/build/sidebar/index.js:1
-#: blocks/src/sidebar/index.js:192
+#: blocks/src/sidebar/index.js:226
 msgid "No levels found. Please create a level to restrict content."
 msgstr ""
 
