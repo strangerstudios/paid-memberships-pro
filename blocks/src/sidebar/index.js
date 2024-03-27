@@ -142,8 +142,42 @@ register( pmproCustomStore() );
 	} );
 
 	// Whenever a post is saved, call the saveRestrictedLevels action.
+	// Adapted from here to ensure API is only called once: https://github.com/WordPress/gutenberg/issues/17632#issuecomment-819379829
+	/**
+	 * Consults values to determine whether the editor is busy saving a post.
+	 * Includes checks on whether the save button is busy.
+	 * 
+	 * @returns {boolean} Whether the editor is on a busy save state.
+	 */
+	function isSavingPost() {
+
+		// State data necessary to establish if a save is occuring.
+		const isSaving = wp.data.select('core/editor').isSavingPost() || wp.data.select('core/editor').isAutosavingPost();
+		const isSaveable = wp.data.select('core/editor').isEditedPostSaveable();
+		const isPostSavingLocked = wp.data.select('core/editor').isPostSavingLocked();
+		const hasNonPostEntityChanges = wp.data.select('core/editor').hasNonPostEntityChanges();
+		const isAutoSaving = wp.data.select('core/editor').isAutosavingPost();
+		const isButtonDisabled = isSaving || !isSaveable || isPostSavingLocked;
+	
+		// Reduces state into checking whether the post is saving and that the save button is disabled.
+		const isBusy = !isAutoSaving && isSaving;
+		const isNotInteractable = isButtonDisabled && ! hasNonPostEntityChanges;
+		
+		return isBusy && isNotInteractable;
+	}
+	
+	// Current saving state. isSavingPost is defined above.
+	var wasSaving = isSavingPost();
 	wp.data.subscribe( function () {
-		if ( wp.data.select( 'core/editor' ).isSavingPost() ) {
+		// New saving state
+		let isSaving = isSavingPost();
+
+		// It is done saving if it was saving and it no longer is.
+		let isDoneSaving = wasSaving && !isSaving;
+	  
+		// Update value for next use.
+		wasSaving = isSaving;
+		if ( isDoneSaving ) {
 			dispatch( 'pmpro/require-membership' ).saveRestrictedLevels();
 		}
 	} );
