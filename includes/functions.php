@@ -786,7 +786,7 @@ function pmpro_next_payment( $user_id = null, $order_status = 'success', $format
 
 	if ( $user_id ) {
 		// Convert passed order status to a subscription status.
-		$subscription_status = $order_status === 'success' ? 'active' : 'cancelled';
+		$subscription_status = ( $order_status === 'success' || ( is_array( $order_status ) && in_array( 'success', $order_status ) ) ) ? 'active' : 'cancelled';
 		$subscriptions = PMPro_Subscription::get_subscriptions_for_user( $user_id, null, $subscription_status );
 		if ( ! empty( $subscriptions ) ) {
 			return $subscriptions[0]->get_next_payment_date( $format );
