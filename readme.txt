@@ -378,4 +378,4 @@ Not sure? You can find out by doing a bit a research.
 
 == Upgrade Notice ==
 = 3.0 =
-The PMPro v3.0 release will make irreversible changes to the structure of your membership site data. Please back up your database before upgrading. For more information, please visit https://www.paidmembershipspro.com/pmpro-update-3-0/.
+The PMPro v3.0 release will make irreversible changes to the structure of your membership site data. Please back up your database and ensure that all PMPro Add Ons are up to date before upgrading. For more information, please visit https://www.paidmembershipspro.com/pmpro-update-3-0/.
