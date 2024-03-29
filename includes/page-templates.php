@@ -71,6 +71,29 @@ function pmpro_loadTemplate( $page_name = null, $where = 'local', $type = 'pages
 	// Get the path of the template to load.
 	$path = pmpro_get_template_path_to_load( $page_name, $where, $type, $ext );
 
+	// Get the default plugin path.
+	$default_path = PMPRO_DIR . "/{$type}/{$page_name}.{$ext}";
+
+	// If this is a custom page template, check if we should load it.
+	if ( $type = 'pages' && $path !== $default_path ) {
+		$use_custom_page_templates = get_option( 'pmpro_use_custom_page_templates' );
+		switch( $use_custom_page_templates ) {
+			case 'yes':
+				break;
+			case 'no':
+				$path = $default_path;
+				break;
+			default:
+				// Check if the custom template is newer than the default template.
+				$default_version = pmpro_get_version_for_page_template_at_path( $default_path );
+				$custom_version = pmpro_get_version_for_page_template_at_path( $path );
+				if ( $default_version != $custom_version ) {
+					$path = $default_path;
+				}
+				break;
+		}
+	}
+
 	// If the template exists, load it.
 	ob_start();
 	if ( ! empty( $path ) && file_exists( $path ) ) {
@@ -164,6 +187,11 @@ function pmpro_page_template_notices() {
 
 	//Only show this notice on PMPro admin pages
 	if ( ! isset( $_REQUEST['page'] ) || strpos( $_REQUEST['page'], 'pmpro' ) === false  ) {
+		return;
+	}
+
+	// Check if outdated page templates will be loaded.
+	if ( 'yes' !== get_option( 'pmpro_use_custom_page_templates' ) ) {
 		return;
 	}
 

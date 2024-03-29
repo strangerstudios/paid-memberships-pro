@@ -80,6 +80,11 @@ if (!empty($_REQUEST['savesettings'])) {
         }
     }
 
+	// Save page template settings.
+	if ( ! empty( $_POST['use_custom_page_templates'] ) ) {
+		pmpro_setOption( 'use_custom_page_templates', $_POST['use_custom_page_templates'] );
+	}
+
     //assume success
     $msg = true;
     $msgt = __("Your page settings have been updated.", 'paid-memberships-pro' );
@@ -526,6 +531,120 @@ require_once(dirname(__FILE__) . "/admin_header.php"); ?>
 				</div> <!-- end pmpro_section_inside -->
 			</div> <!-- end pmpro_section -->
         <?php } ?>
+		<div id="pmpro-custom-page-template-settings" class="pmpro_section" data-visibility="hidden" data-activated="false">
+			<div class="pmpro_section_toggle">
+				<button class="pmpro_section-toggle-button" type="button" aria-expanded="false">
+					<span class="dashicons dashicons-arrow-down-alt2"></span>
+					<?php esc_html_e( 'Custom Page Templates', 'paid-memberships-pro' ); ?>
+				</button>
+			</div>
+			<div class="pmpro_section_inside" style="display: none">
+				<?php
+				// Create a $template => $path array of all default page templates.
+				$default_templates = array(
+					'account' => PMPRO_DIR . '/pages/account.php',
+					'billing' => PMPRO_DIR . '/pages/billing.php',
+					'cancel' => PMPRO_DIR . '/pages/cancel.php',
+					'checkout' => PMPRO_DIR . '/pages/checkout.php',
+					'confirmation' => PMPRO_DIR . '/pages/confirmation.php',
+					'invoice' => PMPRO_DIR . '/pages/invoice.php',
+					'levels' => PMPRO_DIR . '/pages/levels.php',
+					'login' => PMPRO_DIR . '/pages/login.php',
+					'member_profile_edit' => PMPRO_DIR . '/pages/member_profile_edit.php',
+				);
+
+				// Filter $default_templates so that Add Ons can add their own templates.
+				$default_templates = apply_filters( 'pmpro_default_page_templates', $default_templates );
+
+				// Loop through each template. For each, if a custom page template is being loaded, store:
+				// - The custom path being loaded.
+				// - The version of the default template.
+				// - The version of the custom template.
+				$custom_templates = array(); // Array of $template => array( 'default_version' => $default_version, 'loaded_version' => $loaded_version, 'loaded_path' => $loaded_path ).
+				foreach ( $default_templates as $template => $path ) {
+					// Gather information about the default and loaded templates.
+					$default_version = pmpro_get_version_for_page_template_at_path( $path );
+					$loaded_path = pmpro_get_template_path_to_load( $template );
+					$loaded_version = pmpro_get_version_for_page_template_at_path( $loaded_path );
+
+					// If the $path and $loaded_path are different, a custom template is being loaded.
+					if ( $path !== $loaded_path ) {
+						$custom_templates[ $template ] = array(
+							'default_version' => $default_version,
+							'loaded_version' => $loaded_version,
+							'loaded_path' => $loaded_path,
+						);
+					}
+				}
+
+				// If there are custom templates, display them.
+				if ( ! empty( $custom_templates ) ) {
+					?>
+					<p><?php esc_html_e( 'The following custom page templates are available:', 'paid-memberships-pro' ); ?></p>
+					<table class="form-table">
+						<tbody>
+							<tr>
+								<th><?php esc_html_e( 'Template', 'paid-memberships-pro' ); ?></th>
+								<th><?php esc_html_e( 'Path', 'paid-memberships-pro' ); ?></th>
+								<th><?php esc_html_e( 'Default Version', 'paid-memberships-pro' ); ?></th>
+								<th><?php esc_html_e( 'Loaded Version', 'paid-memberships-pro' ); ?></th>
+							</tr>
+							<?php
+							foreach ( $custom_templates as $template => $data ) {
+								?>
+								<tr>
+									<td><?php echo esc_html( $template ); ?></td>
+									<td><?php echo esc_html( $data['loaded_path'] ); ?></td>
+									<td><?php echo esc_html( empty( $data['default_version'] ) ? esc_html__( 'N/A', 'paid-memberships-pro' ) : $data['default_version'] ); ?></td>
+									<td>
+										<?php
+										if ( $data['loaded_version'] !== $data['default_version'] ) {
+											?>
+											<span style="color: red;"><?php echo esc_html( empty( $data['loaded_version'] ) ? esc_html__( 'N/A', 'paid-memberships-pro' ) : $data['loaded_version'] ); ?></span>
+											<?php
+										} else {
+											echo esc_html( empty( $data['loaded_version'] ) ? esc_html__( 'N/A', 'paid-memberships-pro' ) : $data['loaded_version'] );
+										}
+										?>
+									</td>
+								</tr>
+								<?php
+							}
+							?>
+						</tbody>
+					</table>
+					<?php
+				} else {
+					?>
+					<p><?php esc_html_e( 'No custom page templates are available.', 'paid-memberships-pro' ); ?></p>
+					<?php
+				} 
+				?>
+				<table class="form-table">
+					<tbody>
+						<tr>
+							<th scope="row" valign="top">
+								<label for="use_custom_page_templates"><?php esc_html_e('Use custom page templates?', 'paid-memberships-pro' );?></label>
+							</th>
+							<td>
+								<?php
+								$use_custom_page_templates = get_option( 'pmpro_use_custom_page_templates' );
+								if ( 'no' !== $use_custom_page_templates && 'yes' != $use_custom_page_templates ) {
+									$use_custom_page_templates = 'compatible';
+								}
+								?>
+								<select name="use_custom_page_templates">
+									<option value="yes" <?php selected( $use_custom_page_templates, 'yes' ); ?>><?php esc_html_e('Yes, always use custom page templates.', 'paid-memberships-pro' );?></option>
+									<option value="compatible" <?php selected( $use_custom_page_templates, 'compatible' ); ?>><?php esc_html_e('Yes, use compatible custom page templates.', 'paid-memberships-pro' );?></option>
+									<option value="no" <?php selected( $use_custom_page_templates, 'no' ); ?>><?php esc_html_e('No, do not use custom page templates.', 'paid-memberships-pro' );?></option>
+								</select>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+
+			</div>
+		</div> <!-- end pmpro_section -->
         <p class="submit">
             <input name="savesettings" type="submit" class="button button-primary"
                    value="<?php esc_attr_e('Save Settings', 'paid-memberships-pro' ); ?>"/>
