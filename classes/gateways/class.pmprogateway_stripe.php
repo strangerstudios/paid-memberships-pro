@@ -2847,6 +2847,10 @@ class PMProGateway_stripe extends PMProGateway {
 
 		$unit_amount = $this->convert_price_to_unit_amount( $amount );
 
+		if ( empty( $cycle_period ) ) {
+			$cycle_period = '';
+		}
+
 		$cycle_period = strtolower( $cycle_period );
 
 		// Only for use with Stripe Checkout.
