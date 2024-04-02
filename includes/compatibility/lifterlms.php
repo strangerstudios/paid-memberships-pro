@@ -459,6 +459,28 @@ add_filter( 'llms_install_get_pages', 'pmpro_lifter_install_get_pages' );
 add_filter( 'llms_install_create_pages', 'pmpro_lifter_install_get_pages' );	// Old filter.
 
 /**
+ * If the streamline option is enabled, unregister the LifterLMS membership post type.
+ *
+ * @param string $post_type The post type name.
+ * @param array $args The post type arguments.
+ * @since TBD
+ */
+function pmpro_lifter_unregister_membership_post_type( $post_type, $args ) {
+	// Bail if streamline is not enabled.
+	if ( ! get_option( 'pmpro_lifter_streamline' ) ) {
+		return;
+	}
+
+    if ( 'llms_membership' === $post_type ) {
+		unregister_post_type( 'llms_membership' );
+	}
+
+}
+
+add_action( 'registered_post_type', 'pmpro_lifter_unregister_membership_post_type', 10, 2 );
+
+
+/**
  * If (1) we are in streamlined mode and (2) PMPro Courses was
  * only being used for the LifterLMS module, deactivate it
  * and show a notice.
