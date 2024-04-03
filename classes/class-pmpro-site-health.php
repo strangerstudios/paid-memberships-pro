@@ -169,7 +169,7 @@ class PMPro_Site_Health {
 	/**
 	 * Get the level group information.
 	 *
-	 * @since 2.6.2
+	 * @since TBD
 	 *
 	 * @return string The level group information.
 	 */
