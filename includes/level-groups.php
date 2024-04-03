@@ -124,7 +124,7 @@ function pmpro_edit_level_group( $id, $name, $allow_multiple_levels = true, $dis
 			'displayorder' => (int) $displayorder,
 		),
 		array( 'id' => $id ),
-		array( '%s', '%d', '%d', '%d' ),
+		array( '%s', '%d', '%d', '%d' )
 	);
 
 	return ! empty( $result );
