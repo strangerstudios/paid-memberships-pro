@@ -406,7 +406,6 @@
 					//set up values
 					$morder->membership_id = $pmpro_level->id;
 					$morder->membership_name = $pmpro_level->name;
-					$morder->discount_code = $discount_code;
 					$morder->InitialPayment = pmpro_round_price( $pmpro_level->initial_payment );
 					$morder->PaymentAmount = pmpro_round_price( $pmpro_level->billing_amount );
 					$morder->ProfileStartDate = date_i18n("Y-m-d\TH:i:s");
@@ -1280,7 +1279,7 @@
 					'httpversion' => '1.1',
 					'body' => $nvpreq,
 					'headers'     => array(
-						'content-type'      => 'application/json',
+						'content-type'      => 'application/x-www-form-urlencoded',
 						'PayPal-Request-Id' => $uuid,
 					),
 			    )
