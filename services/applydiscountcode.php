@@ -32,10 +32,9 @@
 
 	//check that the code is valid
 	$codecheck = pmpro_checkDiscountCode($discount_code, $level_ids, true);
-	if($codecheck[0] == false)
-	{
+	if( $codecheck[0] == false ) {
 		//uh oh. show code error
-		echo esc_html( pmpro_no_quotes($codecheck[1]) );
+		echo esc_html( $codecheck[1] );
 		?>
 		<script>
 			jQuery('#<?php echo esc_attr( $msgfield ); ?>').show();
