@@ -49,7 +49,21 @@
 		 * @var string $body
 		 */
 		public $body = '';
-		
+
+		/**
+		 * Email headers
+		 *
+		 * @var array $headers
+		 */
+		public  $headers;
+
+		/**
+		 * Email attachments
+		 *
+		 * @var array $attachments
+		 */
+		 public $attachments;
+
 		/**
 		 * Send an email to a member or admin. Uses the wp_mail function.
 		 *
