@@ -1279,7 +1279,7 @@
 					'httpversion' => '1.1',
 					'body' => $nvpreq,
 					'headers'     => array(
-						'content-type'      => 'application/x-www-form-urlencoded',
+						'content-type'      => 'application/json',
 						'PayPal-Request-Id' => $uuid,
 					),
 			    )
