@@ -218,14 +218,29 @@ function pmpro_page_template_notices() {
 			$outdated_templates_string .= '<li><strong>' . esc_html( $template_name ) . '</strong> - ' . esc_html( $template_data['loaded_path'] ) . '</li>';
 		}
 		?>
-		<div class="notice notice-warning">
-			<p>
-				<?php
-					esc_html_e( 'Outdated page templates have been detected in your theme or a plugin. You should update the following templates to ensure compatibility with the Paid Memberships Pro plugin:', 'paid-memberships-pro' );
-					echo '<tr>' . $outdated_templates_string. '</tr>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-				?>
-			</p>
+		<div class="notice notice-error pmpro_notification pmpro_notification-error">
+			<button type="button" class="pmpro-notice-button notice-dismiss" value="hide_pause_notification"><span class="screen-reader-text"><?php esc_html_e( 'Dismiss this notice.', 'paid-memberships-pro' ); ?></span></button>
+			<div class="pmpro_notification-icon">
+				<span class="dashicons dashicons-warning"></span>
 			</div>
+			<div class="pmpro_notification-content">
+				<h3><?php esc_html_e( 'Outdated Page Templates Detected', 'paid-memberships-pro' ); ?></h3>
+				<p>
+					<?php
+						esc_html_e( 'Paid Memberships Pro has detected that your site is using outdated frontend page templates. If you are experiencing an issue on the frontend of your site, use the Settings > Pages screen to change which custom template is being loaded for your frontend pages.', 'paid-memberships-pro' );
+					?>
+				</p>
+				<p>
+					<a href="<?php echo esc_url( add_query_arg( array( 'page' => 'pmpro-pagesettings#pmpro-custom-page-template-settings' ), admin_url( 'admin.php' ) ) ); ?>" class="button"><?php esc_html_e( 'View outdated page templates', 'paid-memberships-pro' ); ?></a>
+					<a href="#" class="button button-secondary"><?php esc_html_e( 'Stop showing me this notice', 'paid-memberships-pro' ); ?></a>
+				</p>
+
+					<?php /*
+						esc_html_e( 'Outdated page templates have been detected in your theme or a plugin. You should update the following templates to ensure compatibility with the Paid Memberships Pro plugin:', 'paid-memberships-pro' );
+						echo '<tr>' . $outdated_templates_string. '</tr>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped*/
+					?>
+			</div>
+		</div>
 		<?php
 	}	
 
