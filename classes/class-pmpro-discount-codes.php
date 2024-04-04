@@ -1,6 +1,42 @@
 <?php
 
-class PMPro_Discount_Code{
+class PMPro_Discount_Code {
+
+	/**
+	 * Discount code id
+	 *
+	 * @var int $id
+	 */
+	public $id;
+
+	/**
+	 * When the discount code starts
+	 *
+	 * @var date $starts
+	 */
+	public $starts;
+
+	/**
+	 * When the discount code expires
+	 *
+	 * @var date $expires
+	 */
+	public $expires;
+
+	/**
+	 * how many times the discount code has been used. 0 means unlimited.
+	 *
+	 * @var int $uses
+	 */
+	public $uses;
+
+
+	/**
+	 * Levels and billing settings tied to the discount code.
+	 *
+	 * @var array $levels
+	 */
+	public $levels;
 
     function __construct( $code = NULL ) {
 
