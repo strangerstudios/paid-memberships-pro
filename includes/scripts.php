@@ -26,15 +26,6 @@ function pmpro_enqueue_scripts() {
         }        
         wp_enqueue_style( 'pmpro_frontend_rtl', $frontend_css_rtl, array(), PMPRO_VERSION, "screen" ); 
     }
-
-    // Print styles.
-    if(file_exists(get_stylesheet_directory() . "/paid-memberships-pro/css/print.css"))
-        $print_css = get_stylesheet_directory_uri() . "/paid-memberships-pro/css/print.css";
-    elseif(file_exists(get_template_directory() . "/paid-memberships-pro/print.css"))
-        $print_css = get_template_directory_uri() . "/paid-memberships-pro/print.css";
-    else
-        $print_css = plugins_url('css/print.css',dirname(__FILE__) );
-    wp_enqueue_style('pmpro_print', $print_css, array(), PMPRO_VERSION, "print");
     
     // Checkout page JS
     if ( pmpro_is_checkout() ) {
