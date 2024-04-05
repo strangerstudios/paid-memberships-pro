@@ -76,8 +76,8 @@ function pmpro_loadTemplate( $page_name = null, $where = 'local', $type = 'pages
 
 	// If this is a custom page template, check if we should load it.
 	if ( $type = 'pages' && $path !== $default_path ) {
-		$use_custom_page_templates = get_option( 'pmpro_use_custom_page_templates' );
-		switch( $use_custom_page_templates ) {
+		$use_custom_page_template = get_option( 'pmpro_use_custom_page_template_' . $page_name );
+		switch( $use_custom_page_template ) {
 			case 'yes':
 				break;
 			case 'no':
@@ -152,6 +152,11 @@ function pmpro_get_outdated_page_templates() {
 	// $outdated_templates array.
 	$outdated_templates = array(); // Array of $template => array( 'default_version' => $default_version, 'loaded_version' => $loaded_version, 'loaded_path' => $loaded_path ).
 	foreach ( $default_templates as $template => $path ) {
+		// Check if the custom page template would actually be loaded.
+		if ( 'yes' !== get_option( 'pmpro_use_custom_page_template_' . $template ) ) {
+			continue;
+		}
+
 		// Get the version for the default template.
 		$default_version = pmpro_get_version_for_page_template_at_path( $path );
 
@@ -165,7 +170,7 @@ function pmpro_get_outdated_page_templates() {
 		$loaded_version = pmpro_get_version_for_page_template_at_path( $loaded_path );
 
 		// If either version is null or the loaded version is older than the default version, add it to the $outdated_templates array.
-		if ( is_null( $default_version ) || is_null( $loaded_version ) || version_compare( $loaded_version, $default_version, '<' ) ) {
+		if ( $default_version !== $loaded_version ) {
 			$outdated_templates[ $template ] = array(
 				'default_version' => $default_version,
 				'loaded_version' => $loaded_version,
@@ -186,12 +191,7 @@ function pmpro_get_outdated_page_templates() {
 function pmpro_page_template_notices() {
 
 	//Only show this notice on PMPro admin pages
-	if ( ! isset( $_REQUEST['page'] ) || strpos( $_REQUEST['page'], 'pmpro' ) === false  ) {
-		return;
-	}
-
-	// Check if outdated page templates will be loaded.
-	if ( 'yes' !== get_option( 'pmpro_use_custom_page_templates' ) ) {
+	if ( ! isset( $_REQUEST['page'] ) || strpos( $_REQUEST['page'], 'pmpro' ) === false || $_REQUEST['page'] === 'pmpro-pagesettings' ) {
 		return;
 	}
 
@@ -234,11 +234,6 @@ function pmpro_page_template_notices() {
 					<a href="<?php echo esc_url( add_query_arg( array( 'page' => 'pmpro-pagesettings#pmpro-custom-page-template-settings' ), admin_url( 'admin.php' ) ) ); ?>" class="button"><?php esc_html_e( 'View outdated page templates', 'paid-memberships-pro' ); ?></a>
 					<a href="#" class="button button-secondary"><?php esc_html_e( 'Stop showing me this notice', 'paid-memberships-pro' ); ?></a>
 				</p>
-
-					<?php /*
-						esc_html_e( 'Outdated page templates have been detected in your theme or a plugin. You should update the following templates to ensure compatibility with the Paid Memberships Pro plugin:', 'paid-memberships-pro' );
-						echo '<tr>' . $outdated_templates_string. '</tr>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped*/
-					?>
 			</div>
 		</div>
 		<?php
