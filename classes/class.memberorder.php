@@ -2,23 +2,678 @@
 	class MemberOrder
 	{	
 		/**
+		 * The Member Order ID
+		 *
+		 * @since 2.9
+		 *
+		 * @var int
+		 */
+		private $id = 0;
+
+		/**
+		 * The Member Order Identifier, also used as invoie number
+		 *
+		 * @since 2.9
+		 *
+		 * @var string
+		 */
+		private $code = '';
+
+		/**
+		 * User ID
+		 *
+		 * @since 2.9
+		 *
+		 * @var int
+		 */
+		private $user_id = 0;
+
+		/**
+		 * Level ID
+		 *
+		 * @since 2.9
+		 *
+		 * @var int
+		 */
+		private $membership_id = 0;
+
+		/**
+		 * Session ID
+		 *
+		 * @since 2.9
+		 *
+		 * @var string
+		 */
+		private $session_id = '';
+
+		/**
+		 * PayPal Token 
+		 *
+		 * @since 2.9
+		 *
+		 * @var string
+		 */
+		private $paypal_token = '';
+
+		/**
+		 * Contain a billing address object
+		 *
+		 * @since 2.9
+		 *
+		 * @var object
+		 */
+		private $billing = '';
+
+		/**
+		 * Subtotal value
+		 *
+		 * @since 2.9
+		 *
+		 * @var float
+		 */
+		private $subtotal = 0.00;
+
+		/**
+		 * Tax Amount
+		 *
+		 * @since 2.9
+		 *
+		 * @var float
+		 */
+		private $tax = 0.00;
+
+		/**
+		 * Total order amount
+		 *
+		 * @since 2.9
+		 *
+		 * @var float
+		 */
+		private $total = 0.00;
+
+		/**
+		 * The gateway name or label used (Stripe, Check etc)
+		 *
+		 * @since 2.9
+		 *
+		 * @var string
+		 */
+		private $payment_type = '';
+
+		/**
+		 * The Card Type used (Visa etc)
+		 *
+		 * @since 2.9
+		 *
+		 * @var string
+		 */
+		private $cardtype = '';
+
+		/**
+		 * Account or Card Number (only shows last 4 digits)
+		 *
+		 * @since 2.9
+		 *
+		 * @var string
+		 */
+		private $accountnumber = '';
+
+		/**
+		 * Card Expiration Month (02)
+		 *
+		 * @since 2.9
+		 *
+		 * @var string
+		 */
+		private $expirationmonth = '';
+
+		/**
+		 * Expiration Year (22)
+		 *
+		 * @since 2.9
+		 *
+		 * @var string
+		 */
+		private $expirationyear = '';
+
+		/**
+		 * The Order Status
+		 *
+		 * @since 2.9
+		 *
+		 * @var string
+		 */
+		private $status = '';
+
+		/**
+		 * The Gateway identifier (stripe, paypalexpress etc)
+		 *
+		 * @since 2.9
+		 *
+		 * @var string
+		 */
+		private $gateway = '';
+
+		/**
+		 * The Gateway Environment (live, sandbox)
+		 *
+		 * @since 2.9
+		 *
+		 * @var string
+		 */
+		private $gateway_environment = '';
+
+		/**
+		 * The payment Transaction ID
+		 *
+		 * @since 2.9
+		 *
+		 * @var string
+		 */
+		private $payment_transaction_id = '';
+
+		/**
+		 * The Subscription Transaction ID
+		 *
+		 * @since 2.9
+		 *
+		 * @var string
+		 */
+		private $subscription_transaction_id = '';
+
+		/**
+		 * The time the order was created (UTC YYYY-MM-DD HH:MM:SS)
+		 *
+		 * @since 2.9
+		 *
+		 * @var string
+		 */
+		private $timestamp = '';
+
+		/**
+		 * The Affiliate ID 
+		 *
+		 * @since 2.9
+		 *
+		 * @var int
+		 */
+		private $affiliate_id = 0;
+
+		/**
+		 * The Affiliate Sub ID
+		 *
+		 * @since 2.9
+		 *
+		 * @var string
+		 */
+		private $affiliate_subid = '';
+
+		/**
+		 * The Order notes
+		 *
+		 * @since 2.9
+		 *
+		 * @var string
+		 */
+		private $notes = '';
+
+		/**
+		 * The Checkout ID - used to track multiple orders during a single checkout
+		 *
+		 * @since 2.9
+		 *
+		 * @var string
+		 */
+		private $checkout_id = '';	
+
+		/**
+		 * The discount code ID that was used for this order.
+		 *
+		 * This property is being added in PMPro v3.0 with the intention
+		 * of adding a new column to the pmpro_membership_orders table duringe next
+		 * major release. For now, we need to have code to "fake" this property.
+		 * For now, this property will be initialized to `null` and will be set to an int
+		 * when this property is accessed.
+		 *
+		 * Step 1 (v3.0): Create abstracted function for modifying/searching the discount code ID.
+		 * Step 2 (At least 1 year later): Update Add Ons to use the new abstracted functions.
+		 * Step 3 (Next major release after all Add Ons updated): Add new column to the pmpro_membership_orders
+		 *        table for the discount code ID, update the abstracted functions to use the new column, create
+		 *        migration script to move the discount code ID from the pmpro_discount_codes_uses table to the
+		 *        new column in the pmpro_membership_orders table, and finally, drop the pmpro_discount_codes_uses table.
+		 *
+		 * Search "@DISCOUNT_CODE_ID_TODO" to find the places where we need to update
+		 * the code to use the new column when we add it.
+		 *
+		 * `0` means no discount code was used, any other int is the ID of the discount code used.
+		 *
+		 * @since 3.0
+		 *
+		 * @var int|null
+		 */
+		private $discount_code_id = null;
+
+		/**
+		 * Defines an array of optionally used properties
+		 *
+		 * @since 2.9
+		 *
+		 * @var array
+		 */
+		private $other_properties = array();	
+
+
+		/**
 		 * Constructor
 		 */
 		function __construct($id = NULL)
 		{
+
 			//set up the gateway
-			$this->setGateway(pmpro_getOption("gateway"));
+			$this->setGateway(get_option("pmpro_gateway"));
+
+			//set up the billing address structure
+			$this->billing = new stdClass();
+			$this->billing->name = '';
+			$this->billing->street = '';
+			$this->billing->city = '';
+			$this->billing->state = '';
+			$this->billing->zip = '';
+			$this->billing->country = '';
+			$this->billing->phone = '';
 
 			//get data if an id was passed
-			if($id)
-			{
-				if(is_numeric($id))
-					return $this->getMemberOrderByID($id);
-				else
-					return $this->getMemberOrderByCode($id);
+			if ( $id ) {
+				if ( is_numeric( $id ) ) {
+					$morder = $this->getMemberOrderByID( $id );
+				} else {
+					$morder = $this->getMemberOrderByCode( $id );
+				}
+
+				// If we found an order, create a subscription if needed.
+				if ( ! empty( $this->id ) ) {
+					$this->get_subscription();
+				}
+			} else {
+				$morder = $this->getEmptyMemberOrder();	//blank constructor
 			}
-			else
-				return $this->getEmptyMemberOrder();	//blank constructor
+
+			$this->original_status = $this->status;
+
+			return $morder;
+		}
+		
+		/**
+		 * Get Magic Method
+		 *
+		 * @since 2.9
+		 * 
+		 * @param string $property The property we want to get
+		 *
+		 * @return mixed|void
+		 */
+		public function __get( $property ) {
+			/**
+			 * Special case. We want to add `discount_code_id` as a property/db column in the future.
+			 * For now, we should support `discount_code_id` as a "property" by adding it here and
+			 * querying the pmpro_discount_codes_uses table for the discount code ID.
+			 *
+			 * @DISCOUNT_CODE_ID_TODO
+			 */
+			if ( $property == 'discount_code_id' ) {
+				if ( null === $this->discount_code_id ) {
+					// Get the discount code ID from the pmpro_discount_codes_uses table.
+					$this->getDiscountCode( true );
+				}
+				return $this->discount_code_id;
+			}
+
+			if ( $property == 'other_properties' ) {
+				return; //We don't want the actual other_properties array to be changed
+			}
+
+			if ( property_exists( $this, $property ) ) {
+				return $this->{$property};
+			}
+
+			if ( isset( $this->other_properties[ $property ] ) ) {
+				return $this->other_properties[ $property ];
+			}
+
+		}
+
+		/**
+		 * Set Magic Method
+		 *
+		 * @since 2.9
+		 * 
+		 * @param string $property The property we want to reference
+		 * @param string $value The value we want to set for $property
+		 *
+		 * @return mixed|null
+		 */
+		public function __set( $property, $value ) {
+
+			if ( $property == 'other_properties' ) {
+				return; //We don't want the actual other_properties array to be changed
+			}
+
+			/**
+			 * Special case. We want to add `discount_code_id` as a property/db column in the future.
+			 * For now, `discount_code_id` may be null or an int. But if being updated, we always want it to be an int.
+			 *
+			 * @DISCOUNT_CODE_ID_TODO
+			 */
+			if ( $property == 'discount_code_id' ) {
+				$this->discount_code_id = (int) $value;
+				return;
+			}
+
+			if ( property_exists( $this, $property ) ) {
+				
+				// Perform validation as needed here.
+				if ( is_int( $this->{$property} ) ) {
+					$value = (int) $value;
+				} elseif ( is_float( $this->{$property} ) ) {
+					$value = (float) $value;
+				}
+				
+				$this->{$property} = $value;
+
+			} else {
+
+				$this->other_properties[ $property ] = $value;
+
+			}
+
+		}
+
+		/**
+		 * Is Set Magic Method
+		 *
+		 * @since 2.9
+		 * 
+		 * @param string $property The property we want to reference
+		 *
+		 * @return bool
+		 */
+		public function __isset( $property ) {
+
+			return property_exists( $this, $property ) || isset( $this->other_properties[ $property ] );
+	
+		}
+
+		/**
+		 * Unset Magic Method.
+		 *
+		 * @since 2.9.1
+		 * 
+		 * @param string $property The property we want to unset.
+		 */
+		public function __unset( $property ) {
+			if ( property_exists( $this, $property ) ) {
+				unset( $this->{$property} );
+			} else {
+				unset( $this->other_properties[ $property ] );
+			}
+		}
+		
+		/**
+		 * Get a specific order by ID, code, or an array of arguments
+		 *
+		 * @since 2.9
+		 * 
+		 * @param mixed $args Specify an order ID, code, or array of arguments to find an order for.
+		 *
+		 */
+		public static function get_order( $args = NULL ) {
+
+			// At least one argument is required.
+			if ( empty( $args ) ) {
+				return null;
+			}
+
+			if ( is_numeric( $args ) ) {
+				// If its numeric we assume you're trying to get an ID.
+				$args = array(
+					'id' => $args,
+				);
+
+			} elseif ( is_string( $args ) ) {
+				// If it is a string but not numeric, we assume it's a string and should be a code.
+				$args = array(
+					'code' => $args,
+				);
+			}
+
+			// Invalid arguments.
+			if ( ! is_array( $args ) ) {
+				return null;
+			}
+
+			// Force returning of one order.
+			$args['limit'] = 1;
+
+			// Get the orders using query arguments.
+			$orders = self::get_orders( $args );
+
+			// Check if we found any orders.
+			if ( empty( $orders ) ) {
+				return null;
+			}
+
+			// Get the first order in the array.
+			return reset( $orders );
+
+		}
+
+		/**
+		 * Get orders based on various parameters
+		 *
+		 * @since 2.9
+		 * 
+		 * @param array $args Specify what you'd like to filter the query by
+		 *
+		 */
+		public static function get_orders( array $args = array() ) {
+
+			global $wpdb;
+
+			// Check if we are going to return the count of orders.
+			$return_count = isset( $args['return_count'] ) ? (bool) $args['return_count'] : false;
+
+			$sql_query = $return_count ? "SELECT COUNT(*) FROM `$wpdb->pmpro_membership_orders`" : "SELECT `o`.`id` FROM `$wpdb->pmpro_membership_orders` `o`";
+
+			$prepared = array();
+			$where    = array();
+
+			$orderby  = isset( $args['orderby'] ) ? $args['orderby'] : '`o`.`timestamp` DESC';
+			$limit    = isset( $args['limit'] ) ? (int) $args['limit'] : 100;
+
+			// Detect unsupported orderby usage (in the future we may support better syntax).
+			if ( $orderby !== preg_replace( '/[^a-zA-Z0-9\s,.`]/', ' ', $orderby ) ) {
+				return array();
+			}
+
+			/*
+			 * Now filter the query based on the arguments provided.
+			 */
+
+			// Filter by ID(s).
+			if ( isset( $args['id'] ) ) {
+				if ( ! is_array( $args['id'] ) ) {
+					$where[]    = 'id = %d';
+					$prepared[] = $args['id'];
+				} else {
+					$where[]  = 'id IN ( ' . implode( ', ', array_fill( 0, count( $args['id'] ), '%d' ) ) . ' )';
+					$prepared = array_merge( $prepared, $args['id'] );
+				}
+			}
+
+			// Filter by user ID(s).
+			if ( isset( $args['user_id'] ) ) {
+				if ( ! is_array( $args['user_id'] ) ) {
+					$where[]    = 'user_id = %d';
+					$prepared[] = $args['user_id'];
+				} else {
+					$where[]  = 'user_id IN ( ' . implode( ', ', array_fill( 0, count( $args['user_id'] ), '%d' ) ) . ' )';
+					$prepared = array_merge( $prepared, $args['user_id'] );
+				}
+			}
+
+			// Filter by membership level ID(s).
+			if ( isset( $args['membership_level_id'] ) ) {
+				if ( ! is_array( $args['membership_level_id'] ) ) {
+					$where[]    = 'membership_id = %d';
+					$prepared[] = $args['membership_level_id'];
+				} else {
+					$where[]  = 'membership_id IN ( ' . implode( ', ', array_fill( 0, count( $args['membership_level_id'] ), '%d' ) ) . ' )';
+					$prepared = array_merge( $prepared, $args['membership_level_id'] );
+				}
+			}
+
+			// Filter by status(es).
+			if ( isset( $args['status'] ) ) {
+				if ( ! is_array( $args['status'] ) ) {
+					$where[]    = 'status = %s';
+					$prepared[] = $args['status'];
+				} else {
+					$where[]  = 'status IN ( ' . implode( ', ', array_fill( 0, count( $args['status'] ), '%s' ) ) . ' )';
+					$prepared = array_merge( $prepared, $args['status'] );
+				}
+			}
+
+			// Filter by subscription transaction ID(s).
+			if ( isset( $args['subscription_transaction_id'] ) ) {
+				if ( ! is_array( $args['subscription_transaction_id'] ) ) {
+					$where[]    = 'subscription_transaction_id = %s';
+					$prepared[] = $args['subscription_transaction_id'];
+				} else {
+					$where[]  = 'subscription_transaction_id IN ( ' . implode( ', ', array_fill( 0, count( $args['subscription_transaction_id'] ), '%s' ) ) . ' )';
+					$prepared = array_merge( $prepared, $args['subscription_transaction_id'] );
+				}
+			}
+
+			// Filter by gateway(s).
+			if ( isset( $args['gateway'] ) ) {
+				if ( ! is_array( $args['gateway'] ) ) {
+					$where[]    = 'gateway = %s';
+					$prepared[] = $args['gateway'];
+				} else {
+					$where[]  = 'gateway IN ( ' . implode( ', ', array_fill( 0, count( $args['gateway'] ), '%s' ) ) . ' )';
+					$prepared = array_merge( $prepared, $args['gateway'] );
+				}
+			}
+
+			// Filter by gateway environment(s).
+			if ( isset( $args['gateway_environment'] ) ) {
+				if ( ! is_array( $args['gateway_environment'] ) ) {
+					$where[]    = 'gateway_environment = %s';
+					$prepared[] = $args['gateway_environment'];
+				} else {
+					$where[]  = 'gateway_environment IN ( ' . implode( ', ', array_fill( 0, count( $args['gateway_environment'] ), '%s' ) ) . ' )';
+					$prepared = array_merge( $prepared, $args['gateway_environment'] );
+				}
+			}
+
+			// Filter by billing amount(s).
+			if ( isset( $args['total'] ) ) {
+				if ( ! is_array( $args['total'] ) ) {
+					$where[]    = 'total = %f';
+					$prepared[] = $args['total'];
+				} else {
+					$where[]  = 'total IN ( ' . implode( ', ', array_fill( 0, count( $args['total'] ), '%f' ) ) . ' )';
+					$prepared = array_merge( $prepared, $args['total'] );
+				}
+			}
+
+			// Filter by payment transaction ID
+			if ( isset( $args['payment_transaction_id'] ) ) {
+				if ( ! is_array( $args['payment_transaction_id'] ) ) {
+					$where[]    = 'payment_transaction_id = %s';
+					$prepared[] = $args['payment_transaction_id'];
+				} else {
+					$where[]  = 'payment_transaction_id IN ( ' . implode( ', ', array_fill( 0, count( $args['payment_transaction_id'] ), '%f' ) ) . ' )';
+					$prepared = array_merge( $prepared, $args['payment_transaction_id'] );
+				}
+			}
+
+			// Filter by discount code ID
+			/**
+			 * Special case. Eventually, we want to add `discount_code_id` as a property/db column. But
+			 * for now, we need to query the pmpro_discount_codes_uses table for the discount code ID.
+			 *
+			 * @DISCOUNT_CODE_ID_TODO
+			 */
+			if ( isset( $args['discount_code_id'] ) ) {
+				$sql_query .= " LEFT JOIN `$wpdb->pmpro_discount_codes_uses` `dcu` ON `dcu`.`order_id` = `o`.`id`";
+				if ( ! is_array( $args['discount_code_id'] ) ) {
+					$where[]    = '`dcu`.`code_id` = %d';
+					$prepared[] = $args['discount_code_id'];
+				} else {
+					$where[]  = 'dcu.code_id IN ( ' . implode( ', ', array_fill( 0, count( $args['discount_code_id'] ), '%d' ) ) . ' )';
+					$prepared = array_merge( $prepared, $args['discount_code_id'] );
+				}
+      }
+
+			// Filter by date range by start date. (YYYY-MM-DD HH:MM:SS UTC)
+			if ( isset( $args['start_date'] ) ) {
+				$where[]    = 'timestamp >= %s';
+				$prepared[] = $args['start_date'];
+			}
+
+			// Filter by date range by end date. (YYYY-MM-DD HH:MM:SS UTC)
+			if ( isset( $args['end_date'] ) ) {
+				$where[]    = 'timestamp <= %s';
+				$prepared[] = $args['end_date'];
+			}
+
+			// Maybe filter the data.
+			if ( $where ) {
+				$sql_query .= ' WHERE ' . implode( ' AND ', $where );
+			}
+
+			if ( ! $return_count ) {
+				// Handle the order of data.
+				$sql_query .= ' ORDER BY ' . $orderby;
+
+				// Maybe limit the data.
+				if ( $limit ) {
+					$sql_query .= ' LIMIT %d';
+					$prepared[] = $limit;
+				}
+			}
+
+			// Maybe prepare the query.
+			if ( $prepared ) {
+				$sql_query = $wpdb->prepare( $sql_query, $prepared );
+			}
+
+			// If we're returning a count, return the count.
+			if ( $return_count ) {
+				return (int) $wpdb->get_var( $sql_query );
+			}
+
+			// Not returning a count, so get the order IDs.
+			$member_order_ids = $wpdb->get_col( $sql_query );
+
+			if ( empty( $member_order_ids ) ) {
+				return array();
+			}
+
+			$member_orders = array();
+
+			foreach ( $member_order_ids as $member_order_id ) {
+				$morder = new MemberOrder( $member_order_id );
+
+				// Make sure the subscription object is valid.
+				if ( ! empty( $morder->id ) ) {
+					$member_orders[] = $morder;
+				}
+			}
+
+			return $member_orders;
+
 		}
 
 		/**
@@ -30,41 +685,13 @@
 		 */
 		function getEmptyMemberOrder()
 		{
-
 			//defaults
-			$order = new stdClass();
-			$order->code = $this->getRandomCode();
-			$order->user_id = "";
-			$order->membership_id = "";
-			$order->subtotal = "";
-			$order->tax = "";
-			$order->couponamount = "";
-			$order->total = "";
-			$order->payment_type = "";
-			$order->cardtype = "";
-			$order->accountnumber = "";
-			$order->expirationmonth = "";
-			$order->expirationyear = "";
-			$order->status = "success";
-			$order->gateway = pmpro_getOption("gateway");
-			$order->gateway_environment = pmpro_getOption("gateway_environment");
-			$order->payment_transaction_id = "";
-			$order->subscription_transaction_id = "";
-			$order->affiliate_id = "";
-			$order->affiliate_subid = "";
-			$order->notes = "";
-			$order->checkout_id = 0;
+			$this->code = $this->getRandomCode();
+			$this->status = "success";
+			$this->gateway = get_option("pmpro_gateway");
+			$this->gateway_environment = get_option("pmpro_gateway_environment");
 
-			$order->billing = new stdClass();
-			$order->billing->name = "";
-			$order->billing->street = "";
-			$order->billing->city = "";
-			$order->billing->state = "";
-			$order->billing->zip = "";
-			$order->billing->country = "";
-			$order->billing->phone = "";
-
-			return $order;
+			return $this;
 		}
 
 		/**
@@ -77,7 +704,7 @@
 			if(!$id)
 				return false;
 
-			$dbobj = $wpdb->get_row("SELECT * FROM $wpdb->pmpro_membership_orders WHERE id = '$id' LIMIT 1");
+			$dbobj = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM $wpdb->pmpro_membership_orders WHERE id = %d LIMIT 1", $id ) );
 
 			if($dbobj)
 			{
@@ -111,13 +738,10 @@
 				$this->Address1 = $this->billing->street;
 
 				//get email from user_id
-				$this->Email = $wpdb->get_var("SELECT user_email FROM $wpdb->users WHERE ID = '" . $this->user_id . "' LIMIT 1");
+				$this->Email = $wpdb->get_var( $wpdb->prepare( "SELECT user_email FROM $wpdb->users WHERE ID = %d LIMIT 1", $this->user_id ) );
 
 				$this->subtotal = $dbobj->subtotal;
-				$this->tax = $dbobj->tax;
-				$this->couponamount = $dbobj->couponamount;
-				$this->certificate_id = $dbobj->certificate_id;
-				$this->certificateamount = $dbobj->certificateamount;
+				$this->tax = (float)$dbobj->tax;
 				$this->total = $dbobj->total;
 				$this->payment_type = $dbobj->payment_type;
 				$this->cardtype = $dbobj->cardtype;
@@ -298,8 +922,10 @@
 		 * Get the most recent order for a user.
 		 *
 		 * @param int $user_id ID of user to find order for.
-		 * @param string $status Limit search to only orders with this status. Defaults to "success".
-		 * @param int $membership_id Limit search to only orders for this membership level. Defaults to NULL to find orders for any level.
+		 * @param string|string[] $status Limit search to only orders with this status. Defaults to "success".
+		 * @param int|int[] $membership_id Limit search to only orders for this membership level. Defaults to NULL to find orders for any level.
+		 * @param string $gateway Limit search to only orders with this gateway. Defaults to NULL to find orders for any gateway.
+		 * @param string $gateway_environment Limit search to only orders with this gateway environment. Defaults to NULL to find orders for any gateway environment.
 		 *
 		 * @return MemberOrder
 		 */
@@ -313,14 +939,18 @@
 				return false;
 
 			//build query
-			$this->sqlQuery = "SELECT id FROM $wpdb->pmpro_membership_orders WHERE user_id = '" . $user_id . "' ";
-			if(!empty($status) && is_array($status))
-				$this->sqlQuery .= "AND status IN('" . implode("','", $status) . "') ";
-			elseif(!empty($status))
+			$this->sqlQuery = "SELECT id FROM $wpdb->pmpro_membership_orders WHERE user_id = '" . esc_sql( $user_id ) . "' ";
+			if(!empty($status) && is_array($status)) {
+				$this->sqlQuery .= "AND status IN('" . implode("','", array_map( 'esc_sql', $status ) ) . "') ";
+			} elseif(!empty($status)) {
 				$this->sqlQuery .= "AND status = '" . esc_sql($status) . "' ";
+			}
 
-			if(!empty($membership_id))
-				$this->sqlQuery .= "AND membership_id = '" . $membership_id . "' ";
+			if(!empty($membership_id) && is_array($membership_id)) {
+				$this->sqlQuery .= "AND membership_id IN(" . implode( ",", array_map( 'esc_sql', $membership_id ) ) . ") ";
+			} elseif(!empty($membership_id)) {
+				$this->sqlQuery .= "AND membership_id = '" . esc_sql( $membership_id ) . "' ";
+			}
 
 			if(!empty($gateway))
 				$this->sqlQuery .= "AND gateway = '" . esc_sql($gateway) . "' ";
@@ -342,7 +972,7 @@
 		function getMemberOrderByCode($code)
 		{
 			global $wpdb;
-			$id = $wpdb->get_var("SELECT id FROM $wpdb->pmpro_membership_orders WHERE code = '" . $code . "' LIMIT 1");
+			$id = $wpdb->get_var( $wpdb->prepare( "SELECT id FROM $wpdb->pmpro_membership_orders WHERE code = %s LIMIT 1", $code ) );
 			if($id)
 				return $this->getMemberOrderByID($id);
 			else
@@ -359,7 +989,7 @@
 				return false;
 
 			global $wpdb;
-			$id = $wpdb->get_var("SELECT id FROM $wpdb->pmpro_membership_orders WHERE payment_transaction_id = '" . esc_sql($payment_transaction_id) . "' LIMIT 1");
+			$id = $wpdb->get_var( $wpdb->prepare( "SELECT id FROM $wpdb->pmpro_membership_orders WHERE payment_transaction_id = %s LIMIT 1", $payment_transaction_id ) );
 			if($id)
 				return $this->getMemberOrderByID($id);
 			else
@@ -376,7 +1006,7 @@
 				return false;
 
 			global $wpdb;
-			$id = $wpdb->get_var("SELECT id FROM $wpdb->pmpro_membership_orders WHERE subscription_transaction_id = '" . esc_sql($subscription_transaction_id) . "' ORDER BY id DESC LIMIT 1");
+			$id = $wpdb->get_var( $wpdb->prepare( "SELECT id FROM $wpdb->pmpro_membership_orders WHERE subscription_transaction_id = %s ORDER BY id DESC LIMIT 1", $subscription_transaction_id ) );
 
 			if($id)
 				return $this->getMemberOrderByID($id);
@@ -390,7 +1020,7 @@
 		function getMemberOrderByPayPalToken($token)
 		{
 			global $wpdb;
-			$id = $wpdb->get_var("SELECT id FROM $wpdb->pmpro_membership_orders WHERE paypal_token = '" . $token . "' LIMIT 1");
+			$id = $wpdb->get_var( $wpdb->prepare( "SELECT id FROM $wpdb->pmpro_membership_orders WHERE paypal_token = %s LIMIT 1", $token ) );
 			if($id)
 				return $this->getMemberOrderByID($id);
 			else
@@ -409,11 +1039,18 @@
 				return $this->discount_code;
 
 			global $wpdb;
-			$this->discount_code = $wpdb->get_row("SELECT dc.* FROM $wpdb->pmpro_discount_codes dc LEFT JOIN $wpdb->pmpro_discount_codes_uses dcu ON dc.id = dcu.code_id WHERE dcu.order_id = '" . $this->id . "' LIMIT 1");
+			$this->discount_code = $wpdb->get_row( $wpdb->prepare( "SELECT dc.* FROM $wpdb->pmpro_discount_codes dc LEFT JOIN $wpdb->pmpro_discount_codes_uses dcu ON dc.id = dcu.code_id WHERE dcu.order_id = %d LIMIT 1", $this->id ) );
 
 			//filter @since v1.7.14
 			$this->discount_code = apply_filters("pmpro_order_discount_code", $this->discount_code, $this);
 
+			/**
+			 * Special case. We want to add `discount_code_id` as a property/db column in the future.
+			 * For now, save the discount code ID as a property on the order object.
+			 *
+			 * @DISCOUNT_CODE_ID_TODO
+			 */
+			$this->discount_code_id = ! empty( $this->discount_code ) ? $this->discount_code->id : 0;
 			return $this->discount_code;
 		}
 
@@ -479,7 +1116,7 @@
 				return $this->user;
 
 			
-			$this->user = $wpdb->get_row("SELECT * FROM $wpdb->users WHERE ID = '" . $this->user_id . "' LIMIT 1");
+			$this->user = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM $wpdb->users WHERE ID = %d LIMIT 1", $this->user_id ) );
 			
 			// Fix the timestamp for local time 
 			if ( ! empty( $this->user ) && ! empty( $this->user->user_registered ) ) {
@@ -505,7 +1142,8 @@
 			//check if there is an entry in memberships_users first
 			if(!empty($this->user_id))
 			{
-				$this->membership_level = $wpdb->get_row("SELECT l.id as level_id, l.name, l.description, l.allow_signups, l.expiration_number, l.expiration_period, mu.*, UNIX_TIMESTAMP(CONVERT_TZ(mu.startdate, '+00:00', @@global.time_zone)) as startdate, UNIX_TIMESTAMP(CONVERT_TZ(mu.enddate, '+00:00', @@global.time_zone)) as enddate, l.name, l.description, l.allow_signups FROM $wpdb->pmpro_membership_levels l LEFT JOIN $wpdb->pmpro_memberships_users mu ON l.id = mu.membership_id WHERE mu.status = 'active' AND l.id = '" . $this->membership_id . "' AND mu.user_id = '" . $this->user_id . "' LIMIT 1");
+				$sqlQuery = $wpdb->prepare( "SELECT l.id as level_id, l.name, l.description, l.allow_signups, l.expiration_number, l.expiration_period, mu.*, UNIX_TIMESTAMP(CONVERT_TZ(mu.startdate, '+00:00', @@global.time_zone)) as startdate, UNIX_TIMESTAMP(CONVERT_TZ(mu.enddate, '+00:00', @@global.time_zone)) as enddate, l.name, l.description, l.allow_signups FROM $wpdb->pmpro_membership_levels l LEFT JOIN $wpdb->pmpro_memberships_users mu ON l.id = mu.membership_id WHERE mu.status = 'active' AND l.id = %d AND mu.user_id = %d LIMIT 1", $this->membership_id, $this->user_id );
+				$this->membership_level = $wpdb->get_row( $sqlQuery );
 
 				//fix the membership level id
 				if(!empty($this->membership_level->level_id))
@@ -520,7 +1158,7 @@
 				else
 					$discount_code = $this->discount_code;
 
-				$sqlQuery = "SELECT l.id, cl.*, l.name, l.description, l.allow_signups FROM $wpdb->pmpro_discount_codes_levels cl LEFT JOIN $wpdb->pmpro_membership_levels l ON cl.level_id = l.id LEFT JOIN $wpdb->pmpro_discount_codes dc ON dc.id = cl.code_id WHERE dc.code = '" . $discount_code . "' AND cl.level_id = '" . $this->membership_id . "' LIMIT 1";
+				$sqlQuery = $wpdb->prepare( "SELECT l.id, cl.*, l.name, l.description, l.allow_signups FROM $wpdb->pmpro_discount_codes_levels cl LEFT JOIN $wpdb->pmpro_membership_levels l ON cl.level_id = l.id LEFT JOIN $wpdb->pmpro_discount_codes dc ON dc.id = cl.code_id WHERE dc.code = %s AND cl.level_id = %d LIMIT 1", $discount_code, $this->membership_id );
 
 				$this->membership_level = $wpdb->get_row($sqlQuery);
 			}
@@ -528,7 +1166,7 @@
 			//just get the info from the membership table	(sigh, I really need to standardize the column names for membership_id/level_id) but we're checking if we got the information already or not
 			if(empty($this->membership_level->membership_id) && empty($this->membership_level->level_id))
 			{
-				$this->membership_level = $wpdb->get_row("SELECT l.* FROM $wpdb->pmpro_membership_levels l WHERE l.id = '" . $this->membership_id . "' LIMIT 1");
+				$this->membership_level = $wpdb->get_row( $wpdb->prepare( "SELECT l.* FROM $wpdb->pmpro_membership_levels l WHERE l.id = %d LIMIT 1", $this->membership_id ) );
 			}
 			
 			// Round prices to avoid extra decimals.
@@ -549,20 +1187,10 @@
 		 * @param bool $force If true, it will reset the property.
 		 *
 		 */
-		function getMembershipLevelAtCheckout($force = false) {
-			global $pmpro_level;
-
-			if( ! empty( $this->membership_level ) && empty( $force ) ) {
-				return $this->membership_level;
+		function getMembershipLevelAtCheckout($force = false) {			
+			if ( empty( $this->membership_level ) || $force ) {
+				$this->membership_level = pmpro_getLevelAtCheckout( empty( $this->membership_id ) ? null : $this->membership_id );
 			}
-			
-			// If for some reason, we haven't setup pmpro_level yet, do that.
-			if ( empty( $pmpro_level ) ) {
-				$pmpro_level = pmpro_getLevelAtCheckout();
-			}
-			
-			// Set the level to the checkout level global.
-			$this->membership_level = $pmpro_level;
 			
 			// Fix the membership level id.
 			if(!empty( $this->membership_level) && !empty($this->membership_level->level_id)) {
@@ -585,11 +1213,11 @@
 		function getTaxForPrice($price)
 		{
 			//get options
-			$tax_state = pmpro_getOption("tax_state");
-			$tax_rate = pmpro_getOption("tax_rate");
+			$tax_state = get_option("pmpro_tax_state");
+			$tax_rate = get_option("pmpro_tax_rate");
 
 			//default
-			$tax = 0;
+			$tax = 0.00;
 
 			//calculate tax
 			if($tax_state && $tax_rate)
@@ -616,7 +1244,7 @@
 				$values['billing_country'] = $this->billing->country;
 
 			//filter
-			$tax = apply_filters("pmpro_tax", $tax, $values, $this);
+			$tax = (float)apply_filters("pmpro_tax", $tax, $values, $this);
 			return $tax;
 		}
 
@@ -666,7 +1294,7 @@
 			}
 
 			global $wpdb;
-			$this->sqlQuery = "UPDATE $wpdb->pmpro_membership_orders SET timestamp = '" . $date . "' WHERE id = '" . $this->id . "' LIMIT 1";
+			$this->sqlQuery = $wpdb->prepare( "UPDATE $wpdb->pmpro_membership_orders SET timestamp = %s WHERE id = %d LIMIT 1", $date, $this->id );
 
 			do_action('pmpro_update_order', $this);
 			if($wpdb->query($this->sqlQuery) !== "false") {
@@ -684,82 +1312,14 @@
 		 */
 		function saveOrder()
 		{
-			global $current_user, $wpdb, $pmpro_checkout_id;
+			global $wpdb;
 
+			// Perform calculations before each order save.
 			//get a random code to use for the public ID
 			if(empty($this->code))
 				$this->code = $this->getRandomCode();
 
-			//figure out how much we charged
-			if(!empty($this->InitialPayment))
-				$amount = $this->InitialPayment;
-			elseif(!empty($this->subtotal))
-				$amount = $this->subtotal;
-			else
-				$amount = 0;
-
-			//Todo: Tax?!, Coupons, Certificates, affiliates
-			if(empty($this->subtotal))
-				$this->subtotal = $amount;
-			if(isset($this->tax))
-				$tax = $this->tax;
-			else
-				$tax = $this->getTax(true);
-			$this->certificate_id = "";
-			$this->certificateamount = "";
-
-			//calculate total
-			if(!empty($this->total))
-				$total = $this->total;
-			elseif ( ! isset( $this->total ) || $this->total === '' ) {
-				$total = (float)$amount + (float)$tax;
-				$this->total = $total;
-			} else {
-				$total = 0;
-			}
-			
-			//these fix some warnings/notices
-			if(empty($this->billing))
-			{
-				$this->billing = new stdClass();
-				$this->billing->name = $this->billing->street = $this->billing->city = $this->billing->state = $this->billing->zip = $this->billing->country = $this->billing->phone = "";
-			}
-			if(empty($this->user_id))
-				$this->user_id = 0;
-			if(empty($this->paypal_token))
-				$this->paypal_token = "";
-			if(empty($this->couponamount))
-				$this->couponamount = "";
-			if(empty($this->payment_type))
-				$this->payment_type = "";
-			if(empty($this->payment_transaction_id))
-				$this->payment_transaction_id = "";
-			if(empty($this->subscription_transaction_id))
-				$this->subscription_transaction_id = "";
-			if(empty($this->affiliate_id))
-				$this->affiliate_id = "";
-			if(empty($this->affiliate_subid))
-				$this->affiliate_subid = "";
-			if(empty($this->session_id))
-				$this->session_id = "";
-			if(empty($this->accountnumber))
-				$this->accountnumber = "";
-			if(empty($this->cardtype))
-				$this->cardtype = "";
-			if(empty($this->expirationmonth))
-				$this->expirationmonth = "";
-			if(empty($this->expirationyear))
-				$this->expirationyear = "";
-			if(empty($this->ExpirationDate))
-				$this->ExpirationDate = "";
-			if (empty($this->status))
-				$this->status = "";
-
-			if(empty($this->gateway))
-				$this->gateway = pmpro_getOption("gateway");
-			if(empty($this->gateway_environment))
-				$this->gateway_environment = pmpro_getOption("gateway_environment");
-			
+			// Calculate datetime/timestamp. Datetime is what actually gets saved.
 			if( empty( $this->datetime ) && empty( $this->timestamp ) ) {
 				$this->timestamp = time();
 				$this->datetime = date("Y-m-d H:i:s", $this->timestamp);				
@@ -768,15 +1328,17 @@
 			} elseif( empty( $this->datetime ) && ! empty( $this->timestamp ) ) {
 				$this->datetime = $this->timestamp;		//must have a datetime in it
 				$this->timestamp = strtotime( $this->datetime );	//fixing the timestamp
-			}				
+			}
 
-			if(empty($this->notes))
-				$this->notes = "";
-
+			// Calculate checkout_id if necessary.
 			if(empty($this->checkout_id) || intval($this->checkout_id)<1) {
 				$highestval = $wpdb->get_var("SELECT MAX(checkout_id) FROM $wpdb->pmpro_membership_orders");
 				$this->checkout_id = intval($highestval)+1;
-				$pmpro_checkout_id = $this->checkout_id;
+			}
+
+			// Deprecating cancelled status with subscriptions table update. Change to success.
+			if ( $this->status == 'cancelled' ) {
+				$this->status = 'success';
 			}
 
 			//build query
@@ -801,9 +1363,6 @@
 									`billing_phone` = '" . esc_sql($this->billing->phone) . "',
 									`subtotal` = '" . esc_sql( $this->subtotal ) . "',
 									`tax` = '" . esc_sql( $this->tax ) . "',
-									`couponamount` = '" . esc_sql( $this->couponamount ) . "',
-									`certificate_id` = " . intval($this->certificate_id) . ",
-									`certificateamount` = '" . esc_sql( $this->certificateamount ) . "',
 									`total` = '" . esc_sql( $this->total ) . "',
 									`payment_type` = '" . esc_sql( $this->payment_type ) . "',
 									`cardtype` = '" . esc_sql( $this->cardtype ) . "',
@@ -828,6 +1387,21 @@
 				//set up actions
 				$before_action = "pmpro_add_order";
 				$after_action = "pmpro_added_order";
+
+				// Perform calculations before a new order is added.
+				// Figure out how much we charged.
+				$amount = ! empty( $this->InitialPayment ) ? (float)$this->InitialPayment : (float)$this->subtotal;
+
+				// Fill subtotal if necessary.
+				if ( empty( $this->subtotal ) ) {
+					$this->subtotal = $amount;
+				}
+
+				// Calculate tax if necessary.
+				$this->tax = empty( $this->tax ) ? $this->getTax(true) : $this->tax;
+
+				// Calculate total.
+				$this->total = empty( $this->total ) ? (float)$amount + (float)$this->tax : $this->total;
 				
 				//only on inserts, we might want to set the expirationmonth and expirationyear from ExpirationDate
 				if( (empty($this->expirationmonth) || empty($this->expirationyear)) && !empty($this->ExpirationDate)) {
@@ -837,7 +1411,7 @@
 				
 				//insert
 				$this->sqlQuery = "INSERT INTO $wpdb->pmpro_membership_orders
-								(`code`, `session_id`, `user_id`, `membership_id`, `paypal_token`, `billing_name`, `billing_street`, `billing_city`, `billing_state`, `billing_zip`, `billing_country`, `billing_phone`, `subtotal`, `tax`, `couponamount`, `certificate_id`, `certificateamount`, `total`, `payment_type`, `cardtype`, `accountnumber`, `expirationmonth`, `expirationyear`, `status`, `gateway`, `gateway_environment`, `payment_transaction_id`, `subscription_transaction_id`, `timestamp`, `affiliate_id`, `affiliate_subid`, `notes`, `checkout_id`)
+								(`code`, `session_id`, `user_id`, `membership_id`, `paypal_token`, `billing_name`, `billing_street`, `billing_city`, `billing_state`, `billing_zip`, `billing_country`, `billing_phone`, `subtotal`, `tax`, `total`, `payment_type`, `cardtype`, `accountnumber`, `expirationmonth`, `expirationyear`, `status`, `gateway`, `gateway_environment`, `payment_transaction_id`, `subscription_transaction_id`, `timestamp`, `affiliate_id`, `affiliate_subid`, `notes`, `checkout_id`)
 								VALUES('" . esc_sql( $this->code ) . "',
 									   '" . esc_sql( session_id() ) . "',
 									   " . intval($this->user_id) . ",
@@ -851,11 +1425,8 @@
 									   '" . esc_sql($this->billing->country) . "',
 									   '" . esc_sql( cleanPhone($this->billing->phone) ) . "',
 									   '" . esc_sql( $this->subtotal ) . "',
-									   '" . esc_sql( $tax ) . "',
-									   '" . esc_sql( $this->couponamount ). "',
-									   " . intval($this->certificate_id) . ",
-									   '" . esc_sql( $this->certificateamount ) . "',
-									   '" . esc_sql( $total ) . "',
+									   '" . esc_sql( $this->tax ) . "',
+									   '" . esc_sql( $this->total ) . "',
 									   '" . esc_sql( $this->payment_type ) . "',
 									   '" . esc_sql( $this->cardtype ) . "',
 									   '" . esc_sql( hideCardNumber($this->accountnumber, false) ) . "',
@@ -879,7 +1450,46 @@
 			{
 				if(empty($this->id))
 					$this->id = $wpdb->insert_id;
+
+				/**
+				 * Special case. We want to add `discount_code_id` as a property/db column in the future.
+				 * For now, if we are saving an order with a non-null discount_code_id property,
+				 * call updateDiscountCode to save the discount code use in the current pmpro_discount_codes_uses table.
+				 *
+				 * @DISCOUNT_CODE_ID_TODO
+				 */
+				if ( null !== $this->discount_code_id ) {
+					$this->updateDiscountCode( $this->discount_code_id );
+				}
+
 				do_action($after_action, $this);
+
+				// Create a subscription if we need to.
+				$subscription = $this->get_subscription();
+
+				// Check if the subscription has reached its billing limit.
+				if ( ! empty( $subscription ) && 'active' === $subscription->get_status() && $subscription->billing_limit_reached() ) {
+					// Cancel the subscription.
+					$subscription->cancel_at_gateway();
+				}
+
+				//Lets only run this once the update has been run successfully.
+				if ( $this->status !== $this->original_status ) {
+				
+					/**
+					 * Runs when the order status changes
+					 *
+					 * @param $this object The current member order object
+					 * @param $original_status The original status before changing to the new status
+					 * 
+					 * @since 2.9
+					 */
+					do_action( 'pmpro_order_status_' . $this->status, $this, $this->original_status );
+					
+					//Set the original status to the new status
+					$this->original_status = $this->status;
+				}
+
 				return $this->getMemberOrderByID($this->id);
 			}
 			else
@@ -898,11 +1508,20 @@
 			static $count = 0;
 			$count++;
 
+			if( defined( 'AUTH_KEY' ) && defined( 'SECURE_AUTH_KEY' ) ) {
+				$auth_code = AUTH_KEY;
+				$secure_auth_code = SECURE_AUTH_KEY;
+			} else {
+				//Generate our own random string and hash it
+				$auth_code = md5( rand() );
+				$secure_auth_code = md5( rand() );
+			}
+
 			while( empty( $code ) ) {
-				$scramble = md5( AUTH_KEY . microtime() . SECURE_AUTH_KEY . $count );
+				$scramble = md5( $auth_code . microtime() . $secure_auth_code . $count );
 				$code = substr( $scramble, 0, 10 );
 				$code = apply_filters( 'pmpro_random_code', $code, $this );	//filter
-				$check = $wpdb->get_var( "SELECT id FROM $wpdb->pmpro_membership_orders WHERE code = '$code' LIMIT 1" );
+				$check = $wpdb->get_var( $wpdb->prepare( "SELECT id FROM $wpdb->pmpro_membership_orders WHERE code = %s LIMIT 1", $code ) );
 				if( $check || is_numeric( $code ) ) {
 					$code = NULL;
 				}
@@ -914,22 +1533,27 @@
 		/**
 		 * Update the status of the order in the database.
 		 */
-		function updateStatus($newstatus)
-		{
+		function updateStatus( $newstatus ) {
 			global $wpdb;
 
-			if(empty($this->id))
+			if( empty( $this->id ) ) {
 				return false;
+			}				
 
-			$this->sqlQuery = "UPDATE $wpdb->pmpro_membership_orders SET status = '" . esc_sql($newstatus) . "' WHERE id = '" . $this->id . "' LIMIT 1";
+			if ( 'cancelled' === $newstatus ) {
+				// Only cancel subscription, not order.
+				return $this->cancel();
+			}
+
+			$this->status = $newstatus;
+			$this->sqlQuery = $wpdb->prepare( "UPDATE $wpdb->pmpro_membership_orders SET status = %s WHERE id = %d LIMIT 1", $newstatus, $this->id );			
 			
-			do_action('pmpro_update_order', $this);
-			if($wpdb->query($this->sqlQuery) !== false){
-				$this->status = $newstatus;
+			do_action( 'pmpro_update_order', $this );
+			if ( $wpdb->query( $this->sqlQuery ) !== false ) {
 				do_action('pmpro_updated_order', $this);
 				
 				return true;
-			}else{
+			} else {
 				return false;
 			}
 		}
@@ -957,79 +1581,17 @@
 		}
 
 		/**
-		 * Cancel an order and call the cancel step of the gateway class if needed.
+		 * Call the cancel step of the order's subscription if needed.
 		 */
-		function cancel() {
-			global $wpdb;
-			
-			//only need to cancel on the gateway if there is a subscription id
-			if(empty($this->subscription_transaction_id)) {
-				//just mark as cancelled
-				$this->updateStatus("cancelled");
+		function cancel() {			
+			// Only need to cancel on the gateway if there is a subscription.
+			$subscription = $this->get_subscription();
+			if ( empty( $subscription ) ) {
 				return true;
-			} else {
-				//get some data
-				$order_user = get_userdata($this->user_id);
-
-				//cancel orders for the same subscription
-				//Note: We do this early to avoid race conditions if and when the
-				//gateway send the cancel webhook after cancelling the subscription.				
-				$sqlQuery = $wpdb->prepare(
-					"UPDATE $wpdb->pmpro_membership_orders 
-						SET `status` = 'cancelled' 
-						WHERE user_id = %d 
-							AND membership_id = %d 
-							AND gateway = %s 
-							AND gateway_environment = %s 
-							AND subscription_transaction_id = %s 
-							AND `status` IN('success', '') ",					
-					$this->user_id,
-					$this->membership_id,
-					$this->gateway,
-					$this->gateway_environment,
-					$this->subscription_transaction_id
-				);
-				do_action('pmpro_update_order', $this);
-				$wpdb->query($sqlQuery);
-				do_action('pmpro_updated_order', $this);
-				
-				//cancel the gateway subscription first
-				if (is_object($this->Gateway)) {
-					$result = $this->Gateway->cancel( $this );
-				} else {
-					$result = false;
-				}
-
-				if($result == false) {
-					//there was an error, but cancel the order no matter what
-					$this->updateStatus("cancelled");
-
-					//we should probably notify the admin
-					$pmproemail = new PMProEmail();
-					$pmproemail->template = "subscription_cancel_error";
-					$pmproemail->data = array("body"=>"<p>" . sprintf(__("There was an error canceling the subscription for user with ID=%s. You will want to check your payment gateway to see if their subscription is still active.", 'paid-memberships-pro' ), strval($this->user_id)) . "</p><p>Error: " . $this->error . "</p>");
-					$pmproemail->data["body"] .= '<p>' . __('User Email', 'paid-memberships-pro') . ': ' . $order_user->user_email . '</p>';
-					$pmproemail->data["body"] .= '<p>' . __('Username', 'paid-memberships-pro') . ': ' . $order_user->user_login . '</p>';
-					$pmproemail->data["body"] .= '<p>' . __('User Display Name', 'paid-memberships-pro') . ': ' . $order_user->display_name . '</p>';
-					$pmproemail->data["body"] .= '<p>' . __('Order', 'paid-memberships-pro') . ': ' . $this->code . '</p>';
-					$pmproemail->data["body"] .= '<p>' . __('Gateway', 'paid-memberships-pro') . ': ' . $this->gateway . '</p>';
-					$pmproemail->data["body"] .= '<p>' . __('Subscription Transaction ID', 'paid-memberships-pro') . ': ' . $this->subscription_transaction_id . '</p>';
-					$pmproemail->data["body"] .= '<hr />';
-					$pmproemail->data["body"] .= '<p>' . __('Edit User', 'paid-memberships-pro') . ': ' . esc_url( add_query_arg( 'user_id', $this->user_id, self_admin_url( 'user-edit.php' ) ) ) . '</p>';
-					$pmproemail->data["body"] .= '<p>' . __('Edit Order', 'paid-memberships-pro') . ': ' . esc_url( add_query_arg( array( 'page' => 'pmpro-orders', 'order' => $this->id ), admin_url('admin.php' ) ) ) . '</p>';
-					$pmproemail->sendEmail(get_bloginfo("admin_email"));
-				} else {
-					//Note: status would have been set to cancelled by the gateway class. So we don't have to update it here.
-
-					//remove billing numbers in pmpro_memberships_users if the membership is still active					
-					$sqlQuery = "UPDATE $wpdb->pmpro_memberships_users SET initial_payment = 0, billing_amount = 0, cycle_number = 0 WHERE user_id = '" . $this->user_id . "' AND membership_id = '" . $this->membership_id . "' AND status = 'active'";
-					$wpdb->query($sqlQuery);
-				}
-				
-				
-				
-				return $result;
 			}
+
+			// Cancel the subscription.
+			return $subscription->cancel_at_gateway();
 		}
 
 		/**
@@ -1101,7 +1663,7 @@
 					$this->Zip         = $last_subscription_order->billing->zip;
 					$this->CountryCode = $last_subscription_order->billing->country;
 					$this->PhoneNumber = $last_subscription_order->billing->phone;
-					$this->Email       = $wpdb->get_var("SELECT user_email FROM $wpdb->users WHERE ID = '" . $this->user_id . "' LIMIT 1");
+					$this->Email       = $wpdb->get_var( $wpdb->prepare( "SELECT user_email FROM $wpdb->users WHERE ID = %d LIMIT 1", $this->user_id ) );
 
 					$this->billing          = new stdClass();
 					$this->billing->name    = $last_subscription_order->billing->name;
@@ -1116,10 +1678,10 @@
 					$this->Address1    = get_user_meta( $this->user_id, "pmpro_baddress1", true );
 					$this->City        = get_user_meta( $this->user_id, "pmpro_bcity", true );
 					$this->State       = get_user_meta( $this->user_id, "pmpro_bstate", true );
-					$this->Zip         = get_user_meta( $this->user_id, "pmpro_bzip", true );
+					$this->Zip         = get_user_meta( $this->user_id, "pmpro_bzipcode", true );
 					$this->CountryCode = get_user_meta( $this->user_id, "pmpro_bcountry", true );
 					$this->PhoneNumber = get_user_meta( $this->user_id, "pmpro_bphone", true );
-					$this->Email       = $wpdb->get_var("SELECT user_email FROM $wpdb->users WHERE ID = '" . $this->user_id . "' LIMIT 1");
+					$this->Email       = $wpdb->get_var( $wpdb->prepare( "SELECT user_email FROM $wpdb->users WHERE ID = %d LIMIT 1", $this->user_id ) );
 
 					$this->billing          = new stdClass();
 					$this->billing->name    = get_user_meta( $this->user_id, "pmpro_bfirstname", true ) . " " . get_user_meta( $this->user_id, "pmpro_blastname", true ) ;
@@ -1142,7 +1704,7 @@
 				return false;
 
 			global $wpdb;
-			$this->sqlQuery = "DELETE FROM $wpdb->pmpro_membership_orders WHERE id = '" . $this->id . "' LIMIT 1";
+			$this->sqlQuery = $wpdb->prepare( "DELETE FROM $wpdb->pmpro_membership_orders WHERE id = %d LIMIT 1", $this->id );
 			if($wpdb->query($this->sqlQuery) !== false)
 			{
 				do_action("pmpro_delete_order", $this->id, $this);
@@ -1193,7 +1755,71 @@
 
 			return apply_filters( 'pmpro_test_order_data', $this );
 		}
-		
+
+		/**
+		 * Get the PMPro_Subscription object for this order.
+		 * If the subscription doesn't exist, it will be created.
+		 *
+		 * @return PMPro_Subscription|null The subscription object or null if the order is not a subscription.
+		 */
+		public function get_subscription() {
+			// Make sure that this order is a part of a subscription.
+			if ( empty( $this->subscription_transaction_id ) || empty( $this->gateway ) || empty( $this->gateway_environment ) ) {
+				// We don't have all the info needed for a subscription. Bail.
+				return null;
+			}
+
+			$get_subscription_args = array(
+				'subscription_transaction_id' => $this->subscription_transaction_id,
+				'gateway'                     => $this->gateway,
+				'gateway_environment'  	      => $this->gateway_environment,
+			);
+			$existing_subscription = PMPro_Subscription::get_subscription( $get_subscription_args );
+			if ( ! empty( $existing_subscription ) ) {
+				// We already have a subscription for this order, return it.
+				return $existing_subscription;
+			}
+
+			// Only create a subscription if this order is complete.
+			if ( 'success' !== $this->status ) {
+				// The order is not complete, so it isn't a valid subscription payment.
+				return null;
+			}
+
+			if ( pmpro_is_checkout() ) {
+				// We are processing a checkout. Get the level from the checkout.
+				$subscription_level = $this->getMembershipLevelAtCheckout();
+			} else {
+				// Not at checkout. Get the level from the database.
+				$subscription_level = $this->getMembershipLevel();
+			}
+
+			if ( empty( $subscription_level ) ) {
+				// We couldn't get level information, so we shouldn't create a subscription.
+				return null;
+			}
+
+			$create_subscription_args = array(
+				'user_id'                     => $this->user_id,
+				'membership_level_id'  		  => $this->membership_id,
+				'gateway'                     => $this->gateway,
+				'gateway_environment'  	      => $this->gateway_environment,
+				'subscription_transaction_id' => $this->subscription_transaction_id,
+				'status'                      => 'active',
+				'billing_amount'              => empty( $subscription_level->billing_amount ) ? 0.00 : $subscription_level->billing_amount,
+				'cycle_number'                => empty( $subscription_level->cycle_number ) ? 0 : $subscription_level->cycle_number,
+				'cycle_period'                => empty( $subscription_level->cycle_period ) ? 'Month' : $subscription_level->cycle_period,
+				'billing_limit'               => empty( $subscription_level->billing_limit ) ? 0 : $subscription_level->billing_limit,
+				'trial_amount'                => empty( $subscription_level->trial_amount ) ? 0.00 : $subscription_level->trial_amount,
+				'trial_limit'                 => empty( $subscription_level->trial_limit ) ? 0 : $subscription_level->trial_limit,
+				'startdate'                   => date_i18n( 'Y-m-d H:i:s', $this->timestamp ),
+				'next_payment_date'           => empty( $this->ProfileStartDate ) ? date_i18n( 'Y-m-d H:i:s', strtotime( '+ ' . $subscription_level->cycle_number . ' ' . $subscription_level->cycle_period, (int)$this->timestamp ) ) : $this->ProfileStartDate,
+			);
+
+			$new_subscription = PMPro_Subscription::create( $create_subscription_args );
+			return ! empty( $new_subscription ) ? $new_subscription : null;
+		}
+
 		/**
 		 * Does this order have any billing address fields set?
 		 * @since 2.8

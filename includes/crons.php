@@ -28,6 +28,10 @@ function pmpro_get_crons() {
 			'interval'  => 'daily',
 			'timestamp' => strtotime( '10:30:00' ) - ( get_option( 'gmt_offset' ) * HOUR_IN_SECONDS ),
 		],
+		'pmpro_cron_delete_tmp'          => [
+			'interval'  => 'daily',
+			'timestamp' => strtotime( '10:30:00' ) - ( get_option( 'gmt_offset' ) * HOUR_IN_SECONDS ),
+		],
 		'pmpro_license_check_key'                  => [
 			'interval' => 'monthly',
 		],
@@ -48,8 +52,8 @@ function pmpro_get_crons() {
 			$cron['timestamp'] = current_time( 'timestamp' );
 		}
 
-		if ( empty( $cron['recurrence'] ) ) {
-			$cron['recurrence'] = 'hourly';
+		if ( empty( $cron['interval'] ) ) {
+			$cron['interval'] = 'hourly';
 		}
 
 		if ( empty( $cron['args'] ) ) {
@@ -71,7 +75,18 @@ function pmpro_maybe_schedule_crons() {
 	$crons = pmpro_get_crons();
 
 	foreach ( $crons as $hook => $cron ) {
-		pmpro_maybe_schedule_event( $cron['timestamp'], $cron['recurrence'], $hook, $cron['args'] );
+		pmpro_maybe_schedule_event( $cron['timestamp'], $cron['interval'], $hook, $cron['args'] );
+	}
+}
+
+/**
+ * Clear all PMPro related crons.
+ * @since 2.8.1
+ */
+function pmpro_clear_crons() {	
+	$crons = array_keys( pmpro_get_crons() );
+	foreach( $crons as $cron ) {
+		wp_clear_scheduled_hook( $cron );
 	}
 }
 

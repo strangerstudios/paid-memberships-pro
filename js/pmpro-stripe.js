@@ -68,6 +68,18 @@ jQuery( document ).ready( function( $ ) {
 		pmpro_require_billing = pmproStripe.pmpro_require_billing;
 	}
 	$( '.pmpro_form' ).submit( function( event ) {
+
+		// If default is already being prevented, don't try to initiate the payment process.
+		// Likely caused by ReCAPTCHA failing.
+		if ( event.isDefaultPrevented() ) {
+			return;
+		}
+
+		// If there is no "pmpro_level" input (or "level" input for legacy page templates), then this is not a checkout form. Return.
+		if ( $( 'input[name="pmpro_level"]' ).length === 0 && $( 'input[name="level"]' ).length === 0 ) {
+			return;
+		}
+
 		var name, address;
 
 		// Prevent the form from submitting with the default action.
@@ -76,14 +88,14 @@ jQuery( document ).ready( function( $ ) {
 		// Double check in case a discount code made the level free.
 		if ( typeof pmpro_require_billing === 'undefined' || pmpro_require_billing ) {
 			// Get the data needed to create a payment method for this checkout.
-			if ( pmproStripe.verifyAddress ) {
+			if ( $( '#baddress1' ).length ) {
 				address = {
-					line1: $( '#baddress1' ).val(),
-					line2: $( '#baddress2' ).val(),
-					city: $( '#bcity' ).val(),
-					state: $( '#bstate' ).val(),
-					postal_code: $( '#bzipcode' ).val(),
-					country: $( '#bcountry' ).val(),
+					line1: $( '#baddress1' ).length ? $( '#baddress1' ).val() : '',
+					line2: $( '#baddress2' ).length ? $( '#baddress2' ).val() : '',
+					city: $( '#bcity' ).length ? $( '#bcity' ).val() : '',
+					state: $( '#bstate' ).length ? $( '#bstate' ).val() : '',
+					postal_code: $( '#bzipcode' ).length ? $( '#bzipcode' ).val() : '',
+					country: $( '#bcountry' ).length ? $( '#bcountry' ).val() : '',
 				}
 			}
 
@@ -117,9 +129,9 @@ jQuery( document ).ready( function( $ ) {
 
 		// Get the level price so that information can be shown in payment request popup
 		jQuery.noConflict().ajax({
-			url: pmproStripe.restUrl + 'pmpro/v1/checkout_levels',
+			url: pmproStripe.restUrl + 'pmpro/v1/checkout_level',
 			dataType: 'json',
-			data: jQuery( "#pmpro_form" ).serialize(),
+			data: pmpro_getCheckoutFormDataForCheckoutLevels(),
 			success: function(data) {
 				if ( data.hasOwnProperty('initial_payment') ) {
 					// Build payment request button.
@@ -171,9 +183,9 @@ jQuery( document ).ready( function( $ ) {
 		// Update price shown in payment request button if price changes.
 		function stripeUpdatePaymentRequestButton() {
 			jQuery.noConflict().ajax({
-				url: pmproStripe.restUrl + 'pmpro/v1/checkout_levels',
+				url: pmproStripe.restUrl + 'pmpro/v1/checkout_level',
 				dataType: 'json',
-				data: jQuery( "#pmpro_form" ).serialize(),
+				data: pmpro_getCheckoutFormDataForCheckoutLevels(),
 				success: function(data) {
 					if ( data.hasOwnProperty('initial_payment') ) {
 						paymentRequest.update({
@@ -211,7 +223,7 @@ jQuery( document ).ready( function( $ ) {
 			$('#pmpro_processing_message').css('visibility', 'hidden');
 
 			// error message
-			$( '#pmpro_message' ).text( response.error.message ).addClass( 'pmpro_error' ).removeClass( 'pmpro_alert' ).removeClass( 'pmpro_success' ).show();
+			$( '#pmpro_message' ).text( response.error.message ).addClass( 'pmpro_error' ).removeClass( 'pmpro_alert' ).removeClass( 'pmpro_success' ).attr('role', 'alert').show();
 			
 		} else if ( response.paymentMethod ) {			
 			// A payment method was created successfully. Submit the checkout form and finish the checkout in PHP.

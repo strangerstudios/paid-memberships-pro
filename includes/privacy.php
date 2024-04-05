@@ -278,10 +278,6 @@ function pmpro_personal_data_exporter( $email_address, $page = 1 ) {
 					'value' => $order->tax,
 				),
 				array(
-					'name' => __( 'Coupon Amount', 'paid-memberships-pro' ),
-					'value' => $order->couponamount,
-				),
-				array(
 					'name' => __( 'Total', 'paid-memberships-pro' ),
 					'value' => $order->total,
 				),
@@ -364,6 +360,7 @@ function pmpro_get_personal_user_meta_fields() {
 		'pmpro_AccountNumber' => __( 'Credit Card Account Number', 'paid-memberships-pro' ),
 		'pmpro_ExpirationMonth' => __( 'Credit Card Expiration Month', 'paid-memberships-pro' ),
 		'pmpro_ExpirationYear' => __( 'Credit Card Expiration Year', 'paid-memberships-pro' ),
+		'pmpro_bcountry' => __( 'Billing Country', 'paid-memberships-pro' ),		
 		'pmpro_logins' => __( 'Login Data', 'paid-memberships-pro' ),
 		'pmpro_visits' => __( 'Visits Data', 'paid-memberships-pro' ),
 		'pmpro_views' => __( 'Views Data', 'paid-memberships-pro' ),
@@ -393,6 +390,7 @@ function pmpro_get_personal_user_meta_fields_to_erase() {
 		'pmpro_AccountNumber',
 		'pmpro_ExpirationMonth',
 		'pmpro_ExpirationYear',
+		'pmpro_bcountry',		
 		'pmpro_logins',
 		'pmpro_visits',
 		'pmpro_views',
@@ -420,7 +418,7 @@ function pmpro_save_consent( $user_id = NULL, $post_id = NULL, $post_modified = 
 
 	// Default to the TOS post chosen on the advanced settings page
 	if( empty( $post_id ) ) {
-		$post_id = pmpro_getOption( 'tospage' );
+		$post_id = get_option( 'pmpro_tospage' );
 	}
 
 	if( empty( $post_id ) ) {
@@ -482,7 +480,7 @@ function pmpro_get_consent_log( $user_id = NULL, $reversed = true ) {
  */
 function pmpro_after_checkout_update_consent( $user_id, $order ) {
 	if( !empty( $_REQUEST['tos'] ) ) {
-		$tospage_id = pmpro_getOption( 'tospage' );
+		$tospage_id = get_option( 'pmpro_tospage' );
 		pmpro_save_consent( $user_id, $tospage_id, NULL, $order->id );
 	} elseif ( !empty( $_SESSION['tos'] ) ) {
 		// PayPal Express and others might save tos info into a session variable
