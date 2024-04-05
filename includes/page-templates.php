@@ -203,7 +203,7 @@ function pmpro_page_template_notices() {
 	 * @since 2.11
 	 *
 	 */
-	$hide_template_notices = apply_filters( 'pmpro_hide_template_version_notices', false );
+	$hide_template_notices = apply_filters( 'pmpro_hide_template_version_notices', (bool) get_option( 'pmpro_disable_outdated_template_warning' ) );
 
 	if( $hide_template_notices ) {
 		return;

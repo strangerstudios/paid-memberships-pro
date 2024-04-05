@@ -91,6 +91,12 @@ if (!empty($_REQUEST['savesettings'])) {
 		}
 	}
 
+	if ( empty( $_REQUEST['pmpro_disable_outdated_template_warning'] ) ) {
+		delete_option( 'pmpro_disable_outdated_template_warning' );
+	} else {
+		update_option( 'pmpro_disable_outdated_template_warning', sanitize_text_field( $_REQUEST['pmpro_disable_outdated_template_warning'] ) );
+	}
+
     //assume success
     $msg = true;
     $msgt = __("Your page settings have been updated.", 'paid-memberships-pro' );
@@ -577,7 +583,8 @@ require_once(dirname(__FILE__) . "/admin_header.php"); ?>
 			}
 
 			// If there are custom templates, display them.
-			if ( ! empty( $custom_templates ) ) { ?>
+			if ( ! empty( $custom_templates ) ) {
+				?>
 				<div id="pmpro-custom-page-template-settings" class="pmpro_section" data-visibility="shown" data-activated="true">
 					<div class="pmpro_section_toggle">
 						<button class="pmpro_section-toggle-button" type="button" aria-expanded="false">
@@ -708,7 +715,27 @@ require_once(dirname(__FILE__) . "/admin_header.php"); ?>
 								?>
 							</tbody>
 						</table>
-			<?php } ?>
+			<?php
+			}
+			// Add a dropdown setting to disable the "outdated template" warning.
+			$disable_outdated_template_warning = ! empty( get_option( 'pmpro_disable_outdated_template_warning' ) );
+			?>
+			<table class="form-table">
+				<tbody>
+					<tr>
+						<th scope="row" valign="top">
+							<label for="pmpro_disable_outdated_template_warning"><?php esc_html_e( 'Disable Outdated Template Warning', 'paid-memberships-pro' ); ?></label>
+						</th>
+						<td>
+							<select name="pmpro_disable_outdated_template_warning">
+								<option value="0" <?php selected( $disable_outdated_template_warning, false ); ?>><?php esc_html_e( 'Show warning for outdated custom page templates.', 'paid-memberships-pro' ); ?></option>
+								<option value="1" <?php selected( $disable_outdated_template_warning, true ); ?>><?php esc_html_e( 'Do not show warning for outdated custom page templates.', 'paid-memberships-pro' ); ?></option>
+							</select>
+							<p class="description"><?php esc_html_e( 'If you are aware of the outdated custom page templates and do not want to see the warning, you can disable it here.', 'paid-memberships-pro' ); ?></p>
+						</td>
+					</tr>
+				</tbody>
+			</table>
 			<p class="submit">
 				<input name="savesettings" type="submit" class="button button-primary"
 					value="<?php esc_attr_e('Save Settings', 'paid-memberships-pro' ); ?>"/>
