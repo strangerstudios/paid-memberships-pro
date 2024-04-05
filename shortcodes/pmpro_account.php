@@ -82,7 +82,8 @@ function pmpro_shortcode_account($atts, $content=null, $code="")
 										$pmpro_member_action_links = array();
 
 										if( array_key_exists($level->id, $pmpro_levels) && pmpro_isLevelExpiringSoon( $level ) ) {
-											$pmpro_member_action_links['renew'] = '<a id="pmpro_actionlink-renew" href="' . esc_url( add_query_arg( 'pmpro_level', $level->id, pmpro_url( 'checkout', '', 'https' ) ) ) . '" aria-label="' . esc_html__( sprintf( esc_html__( 'Renew %1$s Membership', 'paid-memberships-pro' ), $level->name ) ) . '">' . esc_html__( 'Renew', 'paid-memberships-pro' ) . '</a>';
+											$pmpro_member_action_links['renew'] = '<a id="pmpro_actionlink-renew" href="' . esc_url( add_query_arg( 'pmpro_level', $level->id, pmpro_url( 'checkout', '', 'https' ) ) ) . '" aria-label="' . esc_attr( sprintf( esc_html__( 'Renew %1$s Membership', 'paid-memberships-pro' ), $level->name ) ) . '">' . esc_html__( 'Renew', 'paid-memberships-pro' ) . '</a>';
+
 										}
 
 										// Check if we should show the update billing link.
@@ -96,12 +97,11 @@ function pmpro_shortcode_account($atts, $content=null, $code="")
 											if ( $subscription->get_gateway() == get_option( 'pmpro_gateway' ) ) {
 												// Check if the gateway supports updating billing info.
 												$gateway_obj = $subscription->get_gateway_object();
-												if ( ! empty( $gateway_obj) && method_exists( $gateway_obj, 'supports_payment_method_updates' ) && ! empty( $gateway_obj->supports_payment_method_updates() ) ) {
-													// Get the newest order for this subscription so that we can build the update billing link.
+												if ( ! empty( $gateway_obj ) && method_exists( $gateway_obj, 'supports' ) && $gateway_obj->supports( 'payment_method_updates' ) ) {
+													// Make sure that the subscription has an order, which is necessary to update.
 													$newest_orders = $subscription->get_orders( array( 'limit' => 1 ) );
 													if ( ! empty( $newest_orders ) ) {
-														$order = $newest_orders[0];
-														$pmpro_member_action_links['update-billing'] = sprintf( '<a id="pmpro_actionlink-update-billing" href="%s">%s</a>', pmpro_url( 'billing', 'order_id=' . $order->id, 'https' ), esc_html__( 'Update Billing Info', 'paid-memberships-pro' ) );
+														$pmpro_member_action_links['update-billing'] = sprintf( '<a id="pmpro_actionlink-update-billing" href="%s">%s</a>', pmpro_url( 'billing', 'pmpro_subscription_id=' . $subscription->get_id(), 'https' ), esc_html__( 'Update Billing Info', 'paid-memberships-pro' ) );
 													}
 												}
 											}
@@ -109,10 +109,12 @@ function pmpro_shortcode_account($atts, $content=null, $code="")
 
 										// Check if we should show the change membership level link.
 										if(count($pmpro_levels) > 1 && !defined("PMPRO_DEFAULT_LEVEL")) {
-											$pmpro_member_action_links['change'] = '<a id="pmpro_actionlink-change" href="' . esc_url( pmpro_url( 'levels' ) ) . '" aria-label="' . esc_html__( sprintf( esc_html__( 'Change %1$s Membership', 'paid-memberships-pro' ), $level->name ) ) . '">' . esc_html__( 'Change', 'paid-memberships-pro' ) . '</a>';
+											$pmpro_member_action_links['change'] = '<a id="pmpro_actionlink-change" href="' . esc_url( pmpro_url( 'levels' ) ) . '" aria-label="' . esc_attr( sprintf( esc_html__( 'Change %1$s Membership', 'paid-memberships-pro' ), $level->name ) ) . '">' . esc_html__( 'Change', 'paid-memberships-pro' ) . '</a>';
+
 										}
 
-										$pmpro_member_action_links['cancel'] = '<a id="pmpro_actionlink-cancel" href="' . esc_url( add_query_arg( 'levelstocancel', $level->id, pmpro_url( 'cancel' ) ) ) . '" aria-label="' . esc_html__( sprintf( esc_html__( 'Cancel %1$s Membership', 'paid-memberships-pro' ), $level->name ) ) . '">' . esc_html__( 'Cancel', 'paid-memberships-pro' ) . '</a>';
+										$pmpro_member_action_links['cancel'] = '<a id="pmpro_actionlink-cancel" href="' . esc_url( add_query_arg( 'levelstocancel', $level->id, pmpro_url( 'cancel' ) ) ) . '" aria-label="' . esc_attr( sprintf( esc_html__( 'Cancel %1$s Membership', 'paid-memberships-pro' ), $level->name ) ) . '">' . esc_html__( 'Cancel', 'paid-memberships-pro' ) . '</a>';
+
 
 										/**
 										 * Filter the member action links.
@@ -152,27 +154,11 @@ function pmpro_shortcode_account($atts, $content=null, $code="")
 									</p>
 								</td>
 								<td class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_account-membership-expiration' ) ); ?>">
-									<?php
-										$expiration_text = '<p>';
-										if ( $level->enddate ) {
-											$expiration_text .= date_i18n( get_option( 'date_format' ), $level->enddate );
-											/**
-											 * Filter to include the expiration time with expiration date
-											 *
-											 * @param bool $pmpro_show_time_on_expiration_date Show the expiration time with expiration date (default: false).
-											 *
-											 * @return bool $pmpro_show_time_on_expiration_date Whether to show the expiration time with expiration date.
-											 *
-											 */
-											if ( apply_filters( 'pmpro_show_time_on_expiration_date', false ) ) {
-												$expiration_text .= ' ' . date_i18n( get_option( 'time_format', __( 'g:i a' ) ), $level->enddate );
-											}
-										} else {
-											$expiration_text .= esc_html_x( '&#8212;', 'A dash is shown when there is no expiration date.', 'paid-memberships-pro' );
-										}
-										$expiration_text .= '</p>';
-										echo wp_kses_post( apply_filters( 'pmpro_account_membership_expiration_text', $expiration_text, $level ) );
-									?>
+									<p>
+										<?php
+										echo wp_kses_post( pmpro_get_membership_expiration_text( $level, $current_user ) );
+										?>
+									</p>
 								</td>
 							</tr>
 							<?php } ?>

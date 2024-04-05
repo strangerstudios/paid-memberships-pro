@@ -2,7 +2,7 @@
 	//only admins can get this
 	if(!function_exists("current_user_can") || (!current_user_can("manage_options") && !current_user_can("pmpro_discountcodes")))
 	{
-		die(__("You do not have permissions to perform this action.", 'paid-memberships-pro' ));
+		die(esc_html__("You do not have permissions to perform this action.", 'paid-memberships-pro' ));
 	}
 
 	//vars
@@ -362,14 +362,14 @@
 		<h1>
 			<?php
 				if($edit > 0)
-					echo __("Edit Discount Code", 'paid-memberships-pro' );
+					echo esc_html__("Edit Discount Code", 'paid-memberships-pro' );
 				else
-					echo __("Add New Discount Code", 'paid-memberships-pro' );
+					echo esc_html__("Add New Discount Code", 'paid-memberships-pro' );
 			?>
 		</h1>
 
 		<?php if(!empty($pmpro_msg)) { ?>
-			<div id="message" class="<?php if($pmpro_msgt == "success") echo "updated fade"; else echo "error"; ?>"><p><?php echo $pmpro_msg?></p></div>
+			<div id="message" class="<?php if($pmpro_msgt == "success") echo "updated fade"; else echo "error"; ?>"><p><?php echo wp_kses_post( $pmpro_msg );?></p></div>
 		<?php } ?>
 
 		<?php
@@ -441,7 +441,7 @@
 					<tbody>
 						<tr>
 							<th scope="row" valign="top"><label><?php esc_html_e('ID', 'paid-memberships-pro' );?></label></th>
-							<td><p class="description"><?php if(!empty($code->id)) echo esc_html( $code->id ); else echo __("This will be generated when you save.", 'paid-memberships-pro' );?></p></td>
+							<td><p class="description"><?php if(!empty($code->id)) echo esc_html( $code->id ); else echo esc_html__("This will be generated when you save.", 'paid-memberships-pro' );?></p></td>
 						</tr>
 
 						<tr>
@@ -575,7 +575,7 @@
 						<div class="pmpro_discount_level_select">
 							<input type="hidden" name="all_levels[]" value="<?php echo esc_attr( $level->id ); ?>" />
 							<input type="checkbox" id="levels_<?php echo esc_attr( $level->id ); ?>" name="levels[]" value="<?php echo esc_attr( $level->id ); ?>" <?php if(!empty($level->checked)) { ?>checked="checked"<?php } ?> onclick="if(jQuery(this).is(':checked')) jQuery(this).parent().next().show();	else jQuery(this).parent().next().hide();" />
-							<label for="levels_<?php echo esc_attr( $level->id ); ?>"><?php echo $level->name?></label>
+							<label for="levels_<?php echo esc_attr( $level->id ); ?>"><?php echo esc_html( $level->name );?></label>
 						</div>
 						<div class="pmpro_discount_levels_pricing level_<?php echo esc_attr( $level->id ); ?>" <?php if(empty($level->checked)) { ?>style="display: none;"<?php } ?>>
 							<table class="form-table">
@@ -585,12 +585,12 @@
 									<td>
 										<?php
 										if(pmpro_getCurrencyPosition() == "left")
-											echo $pmpro_currency_symbol;
+											echo wp_kses_post( $pmpro_currency_symbol );
 										?>
 										<input name="initial_payment[]" type="text" size="20" value="<?php echo esc_attr( pmpro_filter_price_for_text_field( $level->initial_payment ) ); ?>" />
 										<?php
 										if(pmpro_getCurrencyPosition() == "right")
-											echo $pmpro_currency_symbol;
+											echo wp_kses_post( $pmpro_currency_symbol );
 										?>
 										<p class="description"><?php esc_html_e('The initial amount collected at registration.', 'paid-memberships-pro' );?></p>
 									</td>
@@ -606,22 +606,22 @@
 									<td>
 										<?php
 										if(pmpro_getCurrencyPosition() == "left")
-											echo $pmpro_currency_symbol;
+											echo wp_kses_post( $pmpro_currency_symbol );
 										?>
 										<input name="billing_amount[]" type="text" size="20" value="<?php echo esc_attr( pmpro_filter_price_for_text_field( $level->billing_amount ) );?>" />
 										<?php
 										if(pmpro_getCurrencyPosition() == "right")
-											echo $pmpro_currency_symbol;
+											echo wp_kses_post( $pmpro_currency_symbol );
 										?>
-										<?php _e('per', 'paid-memberships-pro' ); ?>
+										<?php esc_html_e('per', 'paid-memberships-pro' ); ?>
 										<input name="cycle_number[]" type="text" size="10" value="<?php echo esc_attr( $level->cycle_number ); ?>" />
 										<select name="cycle_period[]">
 										<?php
 											$cycles = array( __('Day(s)', 'paid-memberships-pro' ) => 'Day', __('Week(s)', 'paid-memberships-pro' ) => 'Week', __('Month(s)', 'paid-memberships-pro' ) => 'Month', __('Year(s)', 'paid-memberships-pro' ) => 'Year' );
 											foreach ( $cycles as $name => $value ) {
-											echo "<option value='$value'";
+											echo "<option value='" . esc_attr( $value ) . "'";
 											if ( $level->cycle_period == $value ) echo " selected='selected'";
-											echo ">$name</option>";
+											echo ">" . esc_html( $name ) . "</option>";
 											}
 										?>
 										</select>
@@ -639,7 +639,7 @@
 									<td>
 										<input name="billing_limit[]" type="text" size="20" value="<?php echo esc_attr( $level->billing_limit ); ?>" />
 										<p class="description">
-											<?php _e('The <strong>total</strong> number of recurring billing cycles for this level, including the trial period (if applicable) but not including the initial payment. Set to zero if membership is indefinite.', 'paid-memberships-pro' );?>
+											<?php echo wp_kses( __( 'The <strong>total</strong> number of recurring billing cycles for this level, including the trial period (if applicable) but not including the initial payment. Set to zero if membership is indefinite.', 'paid-memberships-pro' ), array( 'strong' => array() ) ); ?>
 									</p>
 									</td>
 								</tr>
@@ -659,16 +659,16 @@
 									<td>
 										<?php
 										if(pmpro_getCurrencyPosition() == "left")
-											echo $pmpro_currency_symbol;
+											echo wp_kses_post( $pmpro_currency_symbol );
 										?>
 										<input name="trial_amount[]" type="text" size="20" value="<?php echo esc_attr( pmpro_filter_price_for_text_field( $level->trial_amount ) );?>" />
 										<?php
 										if(pmpro_getCurrencyPosition() == "right")
-											echo $pmpro_currency_symbol;
+											echo wp_kses_post( $pmpro_currency_symbol );
 										?>
-										<?php _e('for the first', 'paid-memberships-pro' );?>
+										<?php esc_html_e('for the first', 'paid-memberships-pro' );?>
 										<input name="trial_limit[]" type="text" size="10" value="<?php echo esc_attr( $level->trial_limit ); ?>" />
-										<?php _e('subscription payments', 'paid-memberships-pro' );?>.
+										<?php esc_html_e('subscription payments', 'paid-memberships-pro' );?>.
 										<?php if($gateway == "stripe") { ?>
 											<p class="description"><strong <?php if(!empty($pmpro_stripe_error)) { ?>class="pmpro_red"<?php } ?>><?php esc_html_e('Stripe integration currently does not support trial amounts greater than $0.', 'paid-memberships-pro' );?></strong></p>
 										<?php } elseif($gateway == "braintree") { ?>
@@ -694,9 +694,9 @@
 											$cycles = array( __('Hour(s)', 'paid-memberships-pro' ) => 'Hour', __('Day(s)', 'paid-memberships-pro' ) => 'Day', __('Week(s)', 'paid-memberships-pro' ) => 'Week', __('Month(s)', 'paid-memberships-pro' ) => 'Month', __('Year(s)', 'paid-memberships-pro' ) => 'Year' );
 											foreach ( $cycles as $name => $value ) {
 
-											echo "<option value='$value'";
+											echo "<option value='" . esc_attr( $value ) . "'";
 											if ( $level->expiration_period == $value ) echo " selected='selected'";
-											echo ">$name</option>";
+											echo ">" . esc_html( $name ) . "</option>";
 											}
 										?>
 
@@ -744,7 +744,7 @@
 
 					if(!empty($pmpro_msg)) { 
 					?>
-						<div id="message" class="<?php if($pmpro_msgt == "success") echo "updated fade"; else echo "error"; ?>"><p><?php echo $pmpro_msg?></p></div>
+						<div id="message" class="<?php if($pmpro_msgt == "success") echo "updated fade"; else echo "error"; ?>"><p><?php echo wp_kses_post( $pmpro_msg );?></p></div>
 					<?php
 					}
 

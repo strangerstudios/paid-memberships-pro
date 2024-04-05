@@ -124,7 +124,7 @@
 		jQuery('#other_discount_code_p').html('<button type="button" id="other_discount_code_toggle"><?php esc_html_e('Click here to change your discount code', 'paid-memberships-pro' );?></button>');
 		jQuery('#other_discount_code_p').show();
 
-		jQuery('#other_discount_code_toggle').click(function() {
+		jQuery('#other_discount_code_toggle').on('click',function() {
 			jQuery('#other_discount_code_tr').show();
 			jQuery('#other_discount_code_p').hide();
 		});

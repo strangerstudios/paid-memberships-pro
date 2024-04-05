@@ -1,5 +1,5 @@
 <?php
-global $post, $gateway, $wpdb, $besecure, $discount_code, $discount_code_id, $pmpro_level, $pmpro_msg, $pmpro_msgt, $pmpro_review, $skip_account_fields, $pmpro_paypal_token, $pmpro_show_discount_code, $pmpro_error_fields, $pmpro_required_billing_fields, $pmpro_required_user_fields, $wp_version, $current_user;
+global $post, $gateway, $wpdb, $besecure, $discount_code, $discount_code_id, $pmpro_level, $pmpro_msg, $pmpro_msgt, $pmpro_review, $skip_account_fields, $pmpro_paypal_token, $pmpro_show_discount_code, $pmpro_error_fields, $pmpro_required_billing_fields, $pmpro_required_user_fields, $wp_version, $current_user, $pmpro_checkout_level_ids;
 
 // we are on the checkout page
 add_filter( 'pmpro_is_checkout', '__return_true' );
@@ -293,6 +293,16 @@ $pmpro_confirmed = false;
 
 //check their fields if they clicked continue
 if ( $submit && $pmpro_msgt != "pmpro_error" ) {
+	// Check the nonce.
+	if ( empty( $_REQUEST['pmpro_checkout_nonce'] ) || ! wp_verify_nonce( sanitize_key( $_REQUEST['pmpro_checkout_nonce'] ), 'pmpro_checkout_nonce' ) ) {
+		// Nonce is not valid, but a nonce was only added in the 3.0 checkout template. We only want to show an error if the checkout template is 3.0 or later.
+		$loaded_path = pmpro_get_template_path_to_load( 'checkout' );
+		$loaded_version = pmpro_get_version_for_page_template_at_path( $loaded_path );
+		if ( ! empty( $loaded_version ) && version_compare( $loaded_version, '3.0', '>=' ) ) {
+			// Nonce is not valid. Show an error.
+			pmpro_setMessage( __( "Nonce security check failed.", 'paid-memberships-pro' ), 'pmpro_error' );
+		}
+	}
 
 	//make sure javascript is ok
 	if ( apply_filters( "pmpro_require_javascript_for_checkout", true ) && ! empty( $_REQUEST['checkjavascript'] ) && empty( $_REQUEST['javascriptok'] ) ) {
@@ -590,28 +600,31 @@ if ( ! empty( $pmpro_confirmed ) ) {
 		$enddate = apply_filters( "pmpro_checkout_end_date", $enddate, $user_id, $pmpro_level, $startdate );
 
 		//check code before adding it to the order
-		global $pmpro_checkout_level_ids; // Set by MMPU.
-		if ( isset( $pmpro_checkout_level_ids ) ) {
-			$code_check = pmpro_checkDiscountCode( $discount_code, $pmpro_checkout_level_ids, true );
-		} else {
-			$code_check = pmpro_checkDiscountCode( $discount_code, $pmpro_level->id, true );
-		}
+		if ( ! empty( $discount_code ) ) {
+			if ( isset( $pmpro_checkout_level_ids ) ) {
+				$code_check = pmpro_checkDiscountCode( $discount_code, $pmpro_checkout_level_ids, true );
+			} else {
+				$code_check = pmpro_checkDiscountCode( $discount_code, $pmpro_level->id, true );
+			}
 
-		if ( $code_check[0] == false ) {
-			//error
-			$pmpro_msg  = $code_check[1];
-			$pmpro_msgt = "pmpro_error";
+			if ( $code_check[0] == false ) {
+				//error
+				$pmpro_msg  = $code_check[1];
+				$pmpro_msgt = "pmpro_error";
 
-			//don't use this code
-			$use_discount_code = false;
-		} else {
-			//all okay
-			$use_discount_code = true;
-		}
+				//don't use this code
+				$use_discount_code = false;
+			} else {
+				//all okay
+				$use_discount_code = true;
+			}
 
-		//update membership_user table.
-		if ( ! empty( $discount_code ) && ! empty( $use_discount_code ) ) {
-			$discount_code_id = $wpdb->get_var( "SELECT id FROM $wpdb->pmpro_discount_codes WHERE code = '" . esc_sql( $discount_code ) . "' LIMIT 1" );
+			//update membership_user table.
+			if ( ! empty( $discount_code ) && ! empty( $use_discount_code ) ) {
+				$discount_code_id = $wpdb->get_var( "SELECT id FROM $wpdb->pmpro_discount_codes WHERE code = '" . esc_sql( $discount_code ) . "' LIMIT 1" );
+			} else {
+				$discount_code_id = "";
+			}
 		} else {
 			$discount_code_id = "";
 		}

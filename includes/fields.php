@@ -115,6 +115,8 @@ function pmpro_add_field_group( $name, $label = NULL, $description = '', $order 
  *
  */
 function pmpro_add_user_taxonomy( $name, $name_plural ) {
+	global $pmpro_user_taxonomies;
+	
 	// Sanitize the taxonomy $name and make sure it is less than 32 characters.
 	$safe_name = sanitize_key( $name );
 	if ( strlen( $safe_name ) > 32 ) {
@@ -318,7 +320,7 @@ function pmpro_checkout_boxes_fields() {
 
 		if($n > 0) {
 			?>
-			<div id="pmpro_checkout_box-<?php echo sanitize_title( $cb->name ); ?>" class="pmpro_checkout">
+			<div id="pmpro_checkout_box-<?php echo esc_attr( sanitize_title( $cb->name ) ); ?>" class="pmpro_checkout">
 				<hr />
 				<h2>
 					<span class="pmpro_checkout-h2-name"><?php echo wp_kses_post( $cb->label );?></span>
@@ -710,7 +712,7 @@ function pmpro_show_user_fields_in_frontend_profile( $user, $withlocations = fal
 			}
 			?>
 
-			<div class="pmpro_checkout_box-<?php echo sanitize_title( $where ); ?>">
+			<div class="pmpro_checkout_box-<?php echo esc_attr( sanitize_title( $where ) ); ?>">
 				<?php if ( ! empty( $box->label ) ) { ?>
 					<h2><?php echo wp_kses_post( $box->label ); ?></h2>
 				<?php } ?>
@@ -1296,7 +1298,7 @@ function pmpro_get_field_group_html( $group = null ) {
 				<?php
 					if ( ! empty( $group->fields ) ) {
 						foreach ( $group->fields as $field ) {
-							echo pmpro_get_field_html( $field );
+							echo wp_kses_post( pmpro_get_field_html( $field ) );
 						}
 					}
                 ?>
@@ -1370,7 +1372,7 @@ function pmpro_get_field_html( $field = null ) {
                 </div> <!-- end pmpro_userfield-group-buttons -->
             </li>
             <li class="pmpro_userfield-group-column-label">
-                <span class="pmpro_userfield-label"><?php echo strip_tags( wp_kses_post( $field_label ) );?></span>
+                <span class="pmpro_userfield-label"><?php echo strip_tags( wp_kses_post( $field_label ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></span>
                 <div class="pmpro_userfield-field-options">
                     <a class="edit-field" title="<?php esc_attr_e( 'Edit field', 'paid-memberships-pro' ); ?>" href="javascript:void(0);"><?php esc_html_e( 'Edit', 'paid-memberships-pro' ); ?></a> |
                     <a class="duplicate-field" title="<?php esc_attr_e( 'Duplicate field', 'paid-memberships-pro' ); ?>" href="javascript:void(0);"><?php esc_html_e( 'Duplicate', 'paid-memberships-pro' ); ?></a> |
@@ -1492,7 +1494,7 @@ function pmpro_get_field_html( $field = null ) {
                     <?php esc_html_e( 'Close Field', 'paid-memberships-pro' ); ?>
                 </button> 
 				<button name="pmpro_userfields_delete_field" class="button button-secondary is-destructive">
-                    <?php _e( 'Delete Field', 'paid-memberships-pro' ); ?>
+                    <?php esc_html_e( 'Delete Field', 'paid-memberships-pro' ); ?>
                 </button>           
             </div> <!-- end pmpro_userfield-field-actions -->
         </div> <!-- end pmpro_userfield-field-settings -->        
@@ -1683,4 +1685,28 @@ function pmpro_get_label_for_user_field_value( $field_name, $field_value ) {
 		}
 	}
 	return $field_value;
+}
+
+/**
+ * Get a single field from the global $pmpro_user_fields array.
+ * @since 3.0
+ * @param string $field_name The name of the field to get.
+ * @return bool|object The field object if found, false otherwise.
+ */
+function pmpro_get_user_field( $field_name ) {
+	global $pmpro_user_fields;
+	
+	if ( empty( $pmpro_user_fields ) ) {
+		return false;
+	}
+
+	foreach ( $pmpro_user_fields as $group ) {
+		foreach ( $group as $field ) {
+			if ( $field->name === $field_name ) {
+				return $field;
+			}
+		}
+	}
+	
+	return false;
 }

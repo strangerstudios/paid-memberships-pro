@@ -247,7 +247,7 @@
 		{
 			// If an array is passed for $old_level_id, throw doing it wrong warning.
 			if ( is_array( $old_level_id ) ) {
-				_doing_it_wrong( __FUNCTION__, __( 'The $old_level_id parameter should be an integer, not an array.', 'paid-memberships-pro' ), '3.0' );
+				_doing_it_wrong( __FUNCTION__, esc_html__( 'The $old_level_id parameter should be an integer, not an array.', 'paid-memberships-pro' ), '3.0' );
 			}
 
 			global $wpdb, $current_user;
@@ -294,7 +294,7 @@
 		{
 			// If an array is passed for $old_level_id, throw doing it wrong warning.
 			if ( is_array( $old_level_id ) ) {
-				_doing_it_wrong( __FUNCTION__, __( 'The $old_level_id parameter should be an integer, not an array.', 'paid-memberships-pro' ), '3.0' );
+				_doing_it_wrong( __FUNCTION__, esc_html__( 'The $old_level_id parameter should be an integer, not an array.', 'paid-memberships-pro' ), '3.0' );
 			}
 
 			global $wpdb, $current_user;
@@ -357,12 +357,12 @@
 		function sendCancelOnNextPaymentDateEmail( $user, $level_id ) {
 			// If an array is passed for $level_id, throw doing it wrong warning.
 			if ( is_array( $level_id ) ) {
-				_doing_it_wrong( __FUNCTION__, __( 'The $level_id parameter should be an integer, not an array.', 'paid-memberships-pro' ), '3.0' );
+				_doing_it_wrong( __FUNCTION__, esc_html__( 'The $level_id parameter should be an integer, not an array.', 'paid-memberships-pro' ), '3.0' );
 			}
 
 			// Make sure that the user object is a WP_User object.
 			if ( ! is_a( $user, 'WP_User' ) ) {
-				_doing_it_wrong( __FUNCTION__, __( 'The $user parameter should be a WP_User object.', 'paid-memberships-pro' ), '3.0' );
+				_doing_it_wrong( __FUNCTION__, esc_html__( 'The $user parameter should be a WP_User object.', 'paid-memberships-pro' ), '3.0' );
 			}
 
 			// Get the level object.
@@ -381,7 +381,7 @@
 				'user_email' => $user->user_email,
 				'display_name' => $user->display_name,
 				'sitename' => get_option( 'blogname' ),
-				'siteemail' => pmpro_getOption( 'from_email' ),
+				'siteemail' => get_option( 'pmpro_from_email' ),
 				'login_link' => pmpro_login_url(),
 				'login_url' => pmpro_login_url(),
 				'levels_url' => pmpro_url( 'levels' ),
@@ -405,12 +405,12 @@
 		function sendCancelOnNextPaymentDateAdminEmail( $user, $level_id ) {
 			// If an array is passed for $level_id, throw doing it wrong warning.
 			if ( is_array( $level_id ) ) {
-				_doing_it_wrong( __FUNCTION__, __( 'The $level_id parameter should be an integer, not an array.', 'paid-memberships-pro' ), '3.0' );
+				_doing_it_wrong( __FUNCTION__, esc_html__( 'The $level_id parameter should be an integer, not an array.', 'paid-memberships-pro' ), '3.0' );
 			}
 
 			// Make sure that the user object is a WP_User object.
 			if ( ! is_a( $user, 'WP_User' ) ) {
-				_doing_it_wrong( __FUNCTION__, __( 'The $user parameter should be a WP_User object.', 'paid-memberships-pro' ), '3.0' );
+				_doing_it_wrong( __FUNCTION__, esc_html__( 'The $user parameter should be a WP_User object.', 'paid-memberships-pro' ), '3.0' );
 			}
 
 			// Get the level object.
@@ -421,7 +421,7 @@
 				return false;
 			}
 
-			$this->email = pmpro_getOption( 'from_email' );
+			$this->email = get_option( 'pmpro_from_email' );
 			$this->subject = sprintf( __( 'Payment subscription for %s at %s has been CANCELLED', 'paid-memberships-pro' ), $user->user_login, get_option( 'blogname' ) );
 
 			$this->data = array(
@@ -429,7 +429,7 @@
 				'user_email' => $user->user_email,
 				'display_name' => $user->display_name,
 				'sitename' => get_option( 'blogname' ),
-				'siteemail' => pmpro_getOption( 'from_email' ),
+				'siteemail' => get_option( 'pmpro_from_email' ),
 				'login_link' => pmpro_login_url(),
 				'login_url' => pmpro_login_url(),
 				'levels_url' => pmpro_url( 'levels' ),

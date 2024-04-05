@@ -161,28 +161,47 @@
 
 	// Show the contextual messages on our admin pages.
 	if ( ! empty( $msg ) && ! in_array( $view, array( 'pmpro-dashboard', 'pmpro-member' ) ) ) { ?>
-		<div id="message" class="<?php if($msg > 0) echo "updated fade"; else echo "error"; ?>"><p><?php echo $msgt?></p></div>
+		<div id="message" class="<?php if($msg > 0) echo "updated fade"; else echo "error"; ?>"><p><?php echo wp_kses_post( $msgt );?></p></div>
 	<?php } ?>
 
 <div class="wrap pmpro_admin <?php echo 'pmpro_admin-' . esc_attr( $view ); ?>">
-	<div id="pmpro_notifications">
-	</div>
-	<?php
-		// To debug a specific notification.
-		if ( !empty( $_REQUEST['pmpro_notification'] ) ) {
-			$specific_notification = '&pmpro_notification=' . intval( $_REQUEST['pmpro_notification'] );
-		} else {	
-			$specific_notification = '';
+    <?php
+		// Default to showing notification banners.
+		$show_notifications = true;
+
+		// Hide notifications on certain pages.
+		$hide_on_these_pages = array( 'pmpro-updates' );
+		if ( ! empty( $_REQUEST['page'] ) && in_array( sanitize_text_field( $_REQUEST['page'] ), $hide_on_these_pages ) ) {
+			$show_notifications = false;
 		}
-	?>
-	<script>
-		jQuery(document).ready(function() {
-			jQuery.get('<?php echo admin_url( "admin-ajax.php?action=pmpro_notifications" . $specific_notification ); ?>', function(data) {
-				if(data && data != 'NULL')
-					jQuery('#pmpro_notifications').html(data);
-			});
-		});
-	</script>
+
+		// Hide notifications if the user has disabled them.
+		if( pmpro_get_max_notification_priority() < 1 ) {
+			$show_notifications = false;
+		}
+
+		if( $show_notifications ) :
+		?>
+        <div id="pmpro_notifications">
+        </div>
+        <?php
+            // To debug a specific notification.
+            if ( !empty( $_REQUEST['pmpro_notification'] ) ) {
+                $specific_notification = '&pmpro_notification=' . intval( $_REQUEST['pmpro_notification'] );
+            } else {
+                $specific_notification = '';
+            }
+        ?>
+        <script>
+            jQuery(document).ready(function() {
+                jQuery.get('<?php echo esc_url( admin_url( "admin-ajax.php?action=pmpro_notifications" . $specific_notification ) ); ?>', function(data) {
+                    if(data && data != 'NULL')
+                        jQuery('#pmpro_notifications').html(data);
+                });
+            });
+        </script>
+    <?php endif; ?>
+
 	<?php
 		$settings_tabs = array(
 			'pmpro-dashboard',
@@ -269,7 +288,7 @@
 			<?php } ?>
 
 			<?php if ( current_user_can( 'pmpro_userfields' ) ) { ?>
-				<li><a href="<?php echo add_query_arg( array( 'page' => 'pmpro-userfields' ), get_admin_url(null, 'admin.php' ) ); ?>" class="<?php if($view == 'pmpro-userfields') { ?>current<?php } ?>"><?php _e('User Fields', 'paid-memberships-pro' );?></a></li>
+				<li><a href="<?php echo esc_url( add_query_arg( array( 'page' => 'pmpro-userfields' ), get_admin_url(null, 'admin.php' ) ) ); ?>" class="<?php if($view == 'pmpro-userfields') { ?>current<?php } ?>"><?php esc_html_e('User Fields', 'paid-memberships-pro' );?></a></li>
 			<?php } ?>
 
 			<?php if(current_user_can('pmpro_advancedsettings')) { ?>

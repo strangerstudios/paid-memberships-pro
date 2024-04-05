@@ -4,6 +4,6 @@
  */
 $output = pmpro_loadTemplate( 'billing', 'local', 'pages' );
 ?>
-<div <?php echo get_block_wrapper_attributes(); ?>>
-    <?php echo $output; ?>
+<div <?php echo get_block_wrapper_attributes(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
+    <?php echo $output ; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 </div>

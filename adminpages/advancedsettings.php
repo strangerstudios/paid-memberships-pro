@@ -2,7 +2,7 @@
 	//only admins can get this
 	if(!function_exists("current_user_can") || (!current_user_can("manage_options") && !current_user_can("pmpro_advancedsettings")))
 	{
-		die(__("You do not have permissions to perform this action.", 'paid-memberships-pro' ));
+		die(esc_html__("You do not have permissions to perform this action.", 'paid-memberships-pro' ));
 	}
 
 	global $wpdb, $msg, $msgt, $allowedposttags;
@@ -185,7 +185,7 @@
 							<label for="nonmembertext"><?php esc_html_e('Message for Logged-in Non-members', 'paid-memberships-pro' );?>:</label>
 						</th>
 						<td>
-							<textarea name="nonmembertext" rows="3" cols="50" class="large-text"><?php echo stripslashes($nonmembertext)?></textarea>
+							<textarea name="nonmembertext" rows="3" cols="50" class="large-text"><?php echo wp_kses_post( stripslashes($nonmembertext) )?></textarea>
 							<p class="description"><?php esc_html_e('This message replaces the post content for non-members. Available variables', 'paid-memberships-pro' );?>: <code>!!levels!!</code> <code>!!referrer!!</code> <code>!!levels_page_url!!</code></p>
 						</td>
 					</tr>
@@ -194,7 +194,7 @@
 							<label for="notloggedintext"><?php esc_html_e('Message for Logged-out Users', 'paid-memberships-pro' );?>:</label>
 						</th>
 						<td>
-							<textarea name="notloggedintext" rows="3" cols="50" class="large-text"><?php echo stripslashes($notloggedintext)?></textarea>
+							<textarea name="notloggedintext" rows="3" cols="50" class="large-text"><?php echo wp_kses_post( stripslashes($notloggedintext) )?></textarea>
 							<p class="description"><?php esc_html_e('This message replaces the post content for logged-out visitors.', 'paid-memberships-pro' );?> <?php esc_html_e('Available variables', 'paid-memberships-pro' );?>: <code>!!levels!!</code> <code>!!referrer!!</code> <code>!!login_url!!</code> <code>!!levels_page_url!!</code></p>
 						</td>
 					</tr>
@@ -203,7 +203,7 @@
 							<label for="rsstext"><?php esc_html_e('Message for RSS Feed', 'paid-memberships-pro' );?>:</label>
 						</th>
 						<td>
-							<textarea name="rsstext" rows="3" cols="50" class="large-text"><?php echo stripslashes($rsstext)?></textarea>
+							<textarea name="rsstext" rows="3" cols="50" class="large-text"><?php echo wp_kses_post( stripslashes($rsstext) )?></textarea>
 							<p class="description"><?php esc_html_e('This message replaces the post content in RSS feeds.', 'paid-memberships-pro' );?> <?php esc_html_e('Available variables', 'paid-memberships-pro' );?>: <code>!!levels!!</code></p>
 						</td>
 					</tr>
@@ -263,7 +263,7 @@
 						</th>
 						<td>
 							<?php
-								wp_dropdown_pages(array("name"=>"tospage", "show_option_none"=>"No", "selected"=>$tospage));
+								wp_dropdown_pages(array("name"=>"tospage", "show_option_none"=>"No", "selected"=>esc_html( $tospage )));
 							?>
 							<br />
 							<p class="description"><?php esc_html_e('If yes, create a WordPress page containing your TOS agreement and assign it using the dropdown above.', 'paid-memberships-pro' );?></p>
@@ -279,7 +279,7 @@
 								<!-- For reference, removed the Yes - Free memberships only. option -->
 								<option value="2" <?php if( $spamprotection > 0 ) { ?>selected="selected"<?php } ?>><?php esc_html_e('Yes - Enable Spam Protection', 'paid-memberships-pro' );?></option>
 							</select>
-							<p class="description"><?php printf( __( 'Block IPs from checkout if there are more than %d failures within %d minutes.', 'paid-memberships-pro' ), PMPRO_SPAM_ACTION_NUM_LIMIT, round(PMPRO_SPAM_ACTION_TIME_LIMIT/60,2) );?></p>
+							<p class="description"><?php printf( esc_html__( 'Block IPs from checkout if there are more than %d failures within %d minutes.', 'paid-memberships-pro' ), (int)PMPRO_SPAM_ACTION_NUM_LIMIT, (int)round(PMPRO_SPAM_ACTION_TIME_LIMIT/60,2) );?></p>
 						</td>
 					</tr>
 					<tr>
@@ -339,10 +339,10 @@
 						<td>
 							<select name="maxnotificationpriority">
 								<option value="5" <?php selected( $maxnotificationpriority, 5 ); ?>>
-									<?php _e( 'Show all notifications.', 'paid-memberships-pro' ); ?>
+									<?php esc_html_e( 'Show all notifications.', 'paid-memberships-pro' ); ?>
 								</option>
 								<option value="1" <?php selected( $maxnotificationpriority, 1 ); ?>>
-									<?php _e( 'Show only security notifications.', 'paid-memberships-pro' ); ?>
+									<?php esc_html_e( 'Show only security notifications.', 'paid-memberships-pro' ); ?>
 								</option>
 							</select>
 							<br />
@@ -356,16 +356,16 @@
 						<td>
 							<select name="activity_email_frequency">
 								<option value="day" <?php selected( $activity_email_frequency, 'day' ); ?>>
-									<?php _e( 'Daily', 'paid-memberships-pro' ); ?>
+									<?php esc_html_e( 'Daily', 'paid-memberships-pro' ); ?>
 								</option>
 								<option value="week" <?php selected( $activity_email_frequency, 'week' ); ?>>
-									<?php _e( 'Weekly', 'paid-memberships-pro' ); ?>
+									<?php esc_html_e( 'Weekly', 'paid-memberships-pro' ); ?>
 								</option>
 								<option value="month" <?php selected( $activity_email_frequency, 'month' ); ?>>
-									<?php _e( 'Monthly', 'paid-memberships-pro' ); ?>
+									<?php esc_html_e( 'Monthly', 'paid-memberships-pro' ); ?>
 								</option>
 								<option value="never" <?php selected( $activity_email_frequency, 'never' ); ?>>
-									<?php _e( 'Never', 'paid-memberships-pro' ); ?>
+									<?php esc_html_e( 'Never', 'paid-memberships-pro' ); ?>
 								</option>
 							</select>
 							<br />
@@ -481,7 +481,7 @@ if ( function_exists( 'pmpro_displayAds' ) && pmpro_displayAds() ) {
 												foreach ($field['options'] as $key => $option) {
 													if(!$is_associative) $key = $option;
 													?>
-													<option value="<?php echo esc_attr($key); ?>" <?php selected($key, pmpro_getOption($field['field_name']));?>>
+													<option value="<?php echo esc_attr($key); ?>" <?php selected($key, get_option( 'pmpro_' . $field['field_name'] ));?>>
 														<?php echo esc_textarea($option); ?>
 													</option>
 													<?php
@@ -495,7 +495,7 @@ if ( function_exists( 'pmpro_displayAds' ) && pmpro_displayAds() ) {
 										<input id="<?php echo esc_attr( $field['field_name'] ); ?>"
 											name="<?php echo esc_attr( $field['field_name'] ); ?>"
 											type="<?php echo esc_attr( $field['field_type'] ); ?>"
-											value="<?php echo esc_attr(pmpro_getOption($field['field_name'])); ?> "
+											value="<?php echo esc_attr(get_option( 'pmpro_' . $field['field_name'] )); ?> "
 											class="regular-text">
 										<?php
 										break;
@@ -504,7 +504,7 @@ if ( function_exists( 'pmpro_displayAds' ) && pmpro_displayAds() ) {
 										<textarea id="<?php echo esc_attr( $field['field_name'] ); ?>"
 												name="<?php echo esc_attr( $field['field_name'] ); ?>"
 												class="large-text">
-											<?php echo esc_textarea(pmpro_getOption($field['field_name'])); ?>
+											<?php echo esc_textarea(get_option( 'pmpro_' . $field['field_name'] )); ?>
 										</textarea>
 										<?php
 										break;

@@ -26,7 +26,7 @@
 			<td style="padding-bottom:10px;">
 				<strong><?php esc_html_e( 'Bill to:', 'paid-memberships-pro' ); ?></strong><br>
 				<?php
-					echo pmpro_formatAddress(
+					echo wp_kses_post( pmpro_formatAddress(
 						$order->billing->name,
 						$order->billing->street,
 						"",
@@ -35,7 +35,7 @@
 						$order->billing->zip,
 						$order->billing->country,
 						$order->billing->phone
-					); 
+					) ); 
 				?>
 				<?php endif; ?>
 			</td>
@@ -51,9 +51,9 @@
 					<th style="border-width:1px;border-style:solid;border-collapse:collapse;padding:4px;"><?php esc_html_e('Price', 'paid-memberships-pro' ); ?></th>
 				</tr>
 				<tr style="border-width:1px;border-style:solid;border-collapse:collapse;">
-					<td style="text-align:center;border-width:1px;border-style:solid;border-collapse:collapse;padding:4px;"><?php echo $level->id; ?></td>
-					<td style="border-width:1px;border-style:solid;border-collapse:collapse;padding:4px;"><?php echo $level->name; ?></td>
-					<td style="border-width:1px;border-style:solid;border-collapse:collapse;text-align:right;padding:4px;"><?php echo pmpro_escape_price( pmpro_formatPrice( $order->subtotal ) ); ?></td>
+					<td style="text-align:center;border-width:1px;border-style:solid;border-collapse:collapse;padding:4px;"><?php echo esc_html( $level->id ); ?></td>
+					<td style="border-width:1px;border-style:solid;border-collapse:collapse;padding:4px;"><?php echo esc_html( $level->name ); ?></td>
+					<td style="border-width:1px;border-style:solid;border-collapse:collapse;text-align:right;padding:4px;"><?php echo pmpro_escape_price( pmpro_formatPrice( $order->subtotal ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></td>
 				</tr>
 				<?php
 					if ( (float)$order->total > 0 ) {
@@ -61,10 +61,10 @@
 						foreach ( $pmpro_price_parts as $pmpro_price_part ) { ?>
 							<tr style="border-width:1px;border-style:solid;border-collapse:collapse;padding:4px;">
 								<th colspan="2" style="text-align:right;border-width:1px;border-style:solid;border-collapse:collapse;padding:4px;">
-									<?php esc_html_e( $pmpro_price_part['label'] ); ?>
+									<?php echo esc_html( $pmpro_price_part['label'] ); ?>
 								</th>
 								<td style="text-align:right;border-width:1px;border-style:solid;border-collapse:collapse;padding:4px;">
-									<?php esc_html_e( $pmpro_price_part['value'] ); ?>
+									<?php echo esc_html( $pmpro_price_part['value'] ); ?>
 								</td>
 							</tr>
 							<?php

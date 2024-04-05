@@ -1,7 +1,7 @@
 <?php
 // only admins can get this
 if ( ! function_exists( 'current_user_can' ) || ( ! current_user_can( 'manage_options' ) && ! current_user_can( 'pmpro_orders' ) ) ) {
-	die( __( 'You do not have permissions to perform this action.', 'paid-memberships-pro' ) );
+	die( esc_html__( 'You do not have permissions to perform this action.', 'paid-memberships-pro' ) );
 }
 
 // vars
@@ -119,14 +119,6 @@ if ( ! empty( $_REQUEST['save'] ) ) {
 		$order->tax = sanitize_text_field( $_POST['tax'] );
 	}
 
-	// Hiding couponamount by default.
-	$coupons = apply_filters( 'pmpro_orders_show_coupon_amounts', false );
-	if ( ! empty( $coupons ) ) {
-		if ( ! in_array( 'couponamount', $read_only_fields ) && isset( $_POST['couponamount'] ) ) {
-			$order->couponamount = sanitize_text_field( $_POST['couponamount'] );
-		}
-	}
-
 	if ( ! in_array( 'total', $read_only_fields ) && isset( $_POST['total'] ) ) {
 		$order->total = sanitize_text_field( $_POST['total'] );
 	}
@@ -238,7 +230,6 @@ if ( ! empty( $_REQUEST['save'] ) ) {
 			$order->discount_code = '';
 			$order->subtotal = '';
 			$order->tax = '';
-			$order->couponamount = '';
 			$order->total = '';
 			$order->payment_type = '';
 			$order->cardtype = '';
@@ -320,7 +311,7 @@ require_once( dirname( __FILE__ ) . '/admin_header.php' ); ?>
 			echo 'error';
 		}
 		?>
-		"><p><?php echo $pmpro_msg; ?></p></div>
+		"><p><?php echo esc_html( $pmpro_msg ); ?></p></div>
 	<?php } ?>
 
 	<form method="post" action="">
@@ -433,7 +424,7 @@ require_once( dirname( __FILE__ ) . '/admin_header.php' ); ?>
 
 										?>
 										<select id="membership_id" name="membership_id">
-											<option value="0" <?php selected( $membership_id, 0 ); ?>>-- <?php _e("None", 'paid-memberships-pro' );?> --</option>
+											<option value="0" <?php selected( $membership_id, 0 ); ?>>-- <?php esc_html_e("None", 'paid-memberships-pro' );?> --</option>
 											<?php
 											// If the current membership level is not in the list, add it as "ID {membership_id} [deleted]".
 											if ( ! empty( $membership_id ) && ! in_array( $membership_id, wp_list_pluck( $levels, 'id' ) ) ) {
@@ -609,7 +600,7 @@ require_once( dirname( __FILE__ ) . '/admin_header.php' ); ?>
 									}
 								} else { ?>
 									<select id="discount_code_id" name="discount_code_id">
-										<option value="0" <?php selected( $discount_code_id, 0); ?>>-- <?php _e("None", 'paid-memberships-pro' );?> --</option>
+										<option value="0" <?php selected( $discount_code_id, 0); ?>>-- <?php esc_html_e("None", 'paid-memberships-pro' );?> --</option>
 										<?php foreach ( $codes as $code ) { ?>
 											<option value="<?php echo esc_attr( $code->id ); ?>" <?php selected( $discount_code_id, $code->id ); ?>><?php echo esc_html( $code->code ); ?></option>
 										<?php } ?>
@@ -645,28 +636,6 @@ require_once( dirname( __FILE__ ) . '/admin_header.php' ); ?>
 							<?php } ?>
 						</td>
 					</tr>
-					<?php
-						// Hiding couponamount by default.
-						$coupons = apply_filters( 'pmpro_orders_show_coupon_amounts', false );
-						if ( ! empty( $coupons ) ) { ?>
-						<tr>
-							<th scope="row" valign="top"><label for="couponamount"><?php esc_html_e( 'Coupon Amount', 'paid-memberships-pro' ); ?></label>
-							</th>
-							<td>
-							<?php
-								if ( in_array( 'couponamount', $read_only_fields ) && $order_id > 0 ) {
-									echo $order->couponamount;
-								} else {
-								?>
-									<input id="couponamount" name="couponamount" type="text" size="10" value="<?php echo esc_attr( $order->couponamount ); ?>"/>
-								<?php
-								}
-							?>
-							</td>
-						</tr>
-						<?php
-						}
-					?>
 					<tr>
 						<th scope="row" valign="top"><label for="total"><?php esc_html_e( 'Total', 'paid-memberships-pro' ); ?></label></th>
 						<td>
@@ -842,15 +811,24 @@ require_once( dirname( __FILE__ ) . '/admin_header.php' ); ?>
 								for="subscription_transaction_id"><?php esc_html_e( 'Subscription Transaction ID', 'paid-memberships-pro' ); ?></label></th>
 						<td>
 							<?php
-							if ( in_array( 'subscription_transaction_id', $read_only_fields ) && $order_id > 0 ) {
-								echo $order->subscription_transaction_id;
-							} else { ?>
-								<input id="subscription_transaction_id" name="subscription_transaction_id" type="text" size="50" value="<?php echo esc_attr( $order->subscription_transaction_id ); ?>"/>
-								<?php if ( $order->is_renewal() ) { ?>
-									<a href="<?php echo esc_url( add_query_arg( array( 'page' => 'pmpro-orders', 's' => $order->subscription_transaction_id ), admin_url( 'admin.php' ) ) ); ?>" title="<?php esc_attr_e( 'View all orders for this subscription', 'paid-memberships-pro' ); ?>" class="pmpro_order-renewal"><?php esc_html_e( 'Renewal', 'paid-memberships-pro' ); ?></a>
-								<?php } ?>
+								if ( in_array( 'subscription_transaction_id', $read_only_fields ) && $order_id > 0 ) {
+									echo esc_html( $order->subscription_transaction_id );
+								} else {
+									?>
+									<input id="subscription_transaction_id" name="subscription_transaction_id" type="text" size="50" value="<?php echo esc_attr( $order->subscription_transaction_id ); ?>"/>
+									<?php
+								}
+							?>
+							<?php if ( $order->is_renewal() ) { ?>
+								<a href="<?php echo esc_url( add_query_arg( array( 'page' => 'pmpro-orders', 's' => $order->subscription_transaction_id ), admin_url( 'admin.php' ) ) ); ?>" title="<?php esc_attr_e( 'View all orders for this subscription', 'paid-memberships-pro' ); ?>" class="pmpro_order-renewal"><?php esc_html_e( 'Renewal', 'paid-memberships-pro' ); ?></a>
 							<?php } ?>
 							<p class="description"><?php esc_html_e( 'Generated by the gateway. Useful to cross reference subscriptions.', 'paid-memberships-pro' ); ?></p>
+							<?php
+								$subscription = $order->get_subscription();
+								if ( ! empty( $subscription ) ) {
+									echo '<p><a href="' . esc_url( add_query_arg( array( 'page' => 'pmpro-subscriptions', 'id' => $subscription->get_id() ), admin_url('admin.php' ) ) ) . '">' . esc_html__( 'View Subscription', 'paid-memberships-pro') . '</a></p>';
+								}
+							?>
 						</td>
 					</tr>
 					</tbody>
@@ -986,7 +964,10 @@ require_once( dirname( __FILE__ ) . '/admin_header.php' ); ?>
 		);
 		$export_url = add_query_arg( $url_params, $export_url );
 		?>
-		<a target="_blank" href="<?php echo esc_url( $export_url ); ?>" class="page-title-action pmpro-has-icon pmpro-has-icon-download"><?php esc_html_e( 'Export to CSV', 'paid-memberships-pro' ); ?></a>
+
+		<?php if ( current_user_can( 'pmpro_orderscsv' ) ) { ?>
+			<a target="_blank" href="<?php echo esc_url( $export_url ); ?>" class="page-title-action pmpro-has-icon pmpro-has-icon-download"><?php esc_html_e( 'Export to CSV', 'paid-memberships-pro' ); ?></a>
+		<?php } ?>
 
 		<?php if ( ! empty( $pmpro_msg ) ) { ?>
 			<div id="message" class="
@@ -997,7 +978,7 @@ require_once( dirname( __FILE__ ) . '/admin_header.php' ); ?>
 				echo 'error';
 			}
 			?>
-			"><p><?php echo $pmpro_msg; ?></p></div>
+			"><p><?php echo esc_html( $pmpro_msg ); ?></p></div>
 		<?php }
 		$orders_list_table = new PMPro_Orders_List_Table();
 		$orders_list_table->prepare_items();

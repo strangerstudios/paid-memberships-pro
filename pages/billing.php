@@ -1,19 +1,19 @@
 <?php
 /**
  * Template: Billing
- * Version: 2.0.1
+ * Version: 3.0
  *
  * See documentation for how to override the PMPro templates.
  * @link https://www.paidmembershipspro.com/documentation/templates/
  *
- * @version 2.0.1
+ * @version 3.0
  *
  * @author Paid Memberships Pro
  */
 ?>
 <div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_billing_wrap' ) ); ?>">
 <?php
-	global $wpdb, $current_user, $gateway, $pmpro_msg, $pmpro_msgt, $show_check_payment_instructions, $show_paypal_link, $pmpro_billing_order, $pmpro_billing_subscription, $pmpro_billing_level;
+	global $wpdb, $current_user, $gateway, $pmpro_msg, $pmpro_msgt, $show_check_payment_instructions, $show_paypal_link, $pmpro_billing_subscription, $pmpro_billing_level;
 	global $bfirstname, $blastname, $baddress1, $baddress2, $bcity, $bstate, $bzipcode, $bcountry, $bphone, $bemail, $bconfirmemail, $CardType, $AccountNumber, $ExpirationMonth, $ExpirationYear;
 
 	/**
@@ -36,7 +36,7 @@
 	}
 
 	//Make sure the $pmpro_billing_level object is a valid level definition
-	if ( ! empty($pmpro_billing_order) && ! empty( $pmpro_billing_subscription ) ) {
+	if ( ! empty( $pmpro_billing_subscription ) ) {
 		$checkout_url = pmpro_url( 'checkout', '?pmpro_level=' . $pmpro_billing_level->id );
 		$logout_url = wp_logout_url( $checkout_url );
 
@@ -59,12 +59,12 @@
 
 			// Check if the gateway for this subscription updates a single subscription at once or all subscriptions at once.
 			$subscription_gateway_obj = $pmpro_billing_subscription->get_gateway_object();
-			if ( 'individual' === $subscription_gateway_obj->supports_payment_method_updates() ) {
+			if ( 'individual' === $subscription_gateway_obj->supports( 'payment_method_updates' ) ) {
 				// Show the level name and the cost text for the subscription.
 				?>
 				<li><strong><?php echo esc_html( $pmpro_billing_level->name ); ?>:</strong> (<?php echo esc_html( $pmpro_billing_subscription->get_cost_text() ); ?>)</li>
 				<?php
-			} elseif ( 'all' === $subscription_gateway_obj->supports_payment_method_updates() ) {
+			} elseif ( 'all' === $subscription_gateway_obj->supports( 'payment_method_updates' ) ) {
 				// This is a bit trickier. We need to get all subscriptions that will be updated, which should be all subscriptions for this user
 				// that have the same gateway.
 				$user_subscriptions = PMPro_Subscription::get_subscriptions_for_user();
@@ -118,7 +118,7 @@
 			?>
 			<div id="pmpro_level-<?php echo intval( $pmpro_billing_level->id ); ?>" class="<?php echo esc_attr( pmpro_get_element_class( $pmpro_billing_gateway_class, 'pmpro_level-' . $pmpro_billing_level->id ) ); ?>">
 			<form id="pmpro_form" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form' ) ); ?>" action="<?php echo esc_url( pmpro_url( "billing", "", "https") ) ?>" method="post">
-				<input type="hidden" name="order_id" value="<?php echo empty( $_REQUEST['order_id'] ) ? 0 : esc_attr( intval( $_REQUEST['order_id'] ) ); ?>" />
+				<input type="hidden" name="pmpro_subscription_id" value="<?php echo empty( $pmpro_billing_subscription->get_id() ) ? '' : (int) $pmpro_billing_subscription->get_id(); ?>" />
 				<input type="hidden" name="pmpro_level" value="<?php echo esc_attr($pmpro_billing_level->id);?>" />
 				<div id="pmpro_message" <?php if(! $pmpro_msg) { ?> style="display:none" <?php } ?> class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_message ' . $pmpro_msgt, $pmpro_msgt ) ); ?>">
 					<?php if($pmpro_msg) { echo wp_kses_post( $pmpro_msg ); } ?>
@@ -429,7 +429,7 @@
 			<script>
 				<!--
 				// Find ALL <form> tags on your page
-				jQuery('form').submit(function(){
+				jQuery('form').on('submit',function(){
 					// On submit disable its submit button
 					jQuery('input[type=submit]', this).attr('disabled', 'disabled');
 					jQuery('input[type=image]', this).attr('disabled', 'disabled');
@@ -446,6 +446,14 @@
 		<?php
 	} else {
 		// User does not have a membership level.
-		printf( __( "You do not have an active membership. <a href='%s'>Choose a membership level.</a>", 'paid-memberships-pro' ), esc_url( $url ) );
+		$allowed_html = array(
+			'a' => array(
+				'href' => array(),
+				'title' => array(),
+				'target' => array(),
+				'rel' => array(),
+			),
+		);
+		echo wp_kses( sprintf( __( "You do not have an active membership. <a href='%s'>Choose a membership level.</a>", 'paid-memberships-pro' ), esc_url( pmpro_url( 'levels' ) ) ), $allowed_html );
 	} ?>
 </div> <!-- end pmpro_billing_wrap -->

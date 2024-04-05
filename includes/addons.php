@@ -423,8 +423,9 @@ function pmpro_admin_init_updating_plugins() {
 				}
 				
 				// show error
-				$msg = sprintf( __( 'You must have a <a href="https://www.paidmembershipspro.com/pricing/?utm_source=wp-admin&utm_pluginlink=bulkupdate">valid PMPro %s License Key</a> to update PMPro %s add ons. The following plugins will not be updated:', 'paid-memberships-pro' ), ucwords( $license_type ), ucwords( $license_type ) );
-				echo '<div class="error"><p>' . $msg . ' <strong>' . implode( ', ', $premium_addons[$license_type] ) . '</strong></p></div>';
+				$msg = wp_kses( sprintf( __( 'You must have a <a target="_blank" href="https://www.paidmembershipspro.com/pricing/?utm_source=wp-admin&utm_pluginlink=bulkupdate">valid PMPro %s License Key</a> to update PMPro %s add ons. The following plugins will not be updated:', 'paid-memberships-pro' ), ucwords( $license_type ), ucwords( $license_type ) ), array( 'a' => array( 'href' => array(), 'target' => array() ) ) );
+				// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+				echo '<div class="error"><p>' . $msg . ' <strong>' . esc_html( implode( ', ', $premium_addons[$license_type] ) ) . '</strong></p></div>';
 			}			
 		}
 
@@ -443,12 +444,12 @@ function pmpro_admin_init_updating_plugins() {
 		if ( ! empty( $addon ) && pmpro_license_type_is_premium( $addon['License'] ) && ! pmpro_can_download_addon_with_license( $addon['License'] ) ) {
 			require_once( ABSPATH . 'wp-admin/admin-header.php' );
 
-			echo '<div class="wrap"><h2>' . __( 'Update Plugin' ) . '</h2>';
+			echo '<div class="wrap"><h2>' . esc_html__( 'Update Plugin' ) . '</h2>';
 
 			$msg = sprintf( __( 'You must have a <a href="https://www.paidmembershipspro.com/pricing/?utm_source=wp-admin&utm_pluginlink=addon_update">valid PMPro %s License Key</a> to update PMPro %s add ons.', 'paid-memberships-pro' ), ucwords( $addon['License'] ), ucwords( $addon['License'] ) );
-			echo '<div class="error"><p>' . $msg . '</p></div>';
+			echo '<div class="error"><p>' . wp_kses_post( $msg ) . '</p></div>';
 
-			echo '<p><a href="' . admin_url( 'admin.php?page=pmpro-addons' ) . '" target="_parent">' . __( 'Return to the PMPro Add Ons page', 'paid-memberships-pro' ) . '</a></p>';
+			echo '<p><a href="' . esc_url( admin_url( 'admin.php?page=pmpro-addons' ) ) . '" target="_parent">' . esc_html__( 'Return to the PMPro Add Ons page', 'paid-memberships-pro' ) . '</a></p>';
 
 			echo '</div>';
 
@@ -468,7 +469,7 @@ function pmpro_admin_init_updating_plugins() {
 		$addon = pmpro_getAddonBySlug( $slug );
 		if ( ! empty( $addon ) && pmpro_license_type_is_premium( $addon['License'] ) && ! pmpro_can_download_addon_with_license( $addon['License'] ) ) {
 			$msg = sprintf( __( 'You must enter a valid PMPro %s License Key under Settings > PMPro License to update this add on.', 'paid-memberships-pro' ), ucwords( $addon['License'] ) );
-			echo '<div class="error"><p>' . $msg . '</p></div>';
+			echo '<div class="error"><p>' . esc_html( $msg ) . '</p></div>';
 
 			// can exit WP now
 			exit;

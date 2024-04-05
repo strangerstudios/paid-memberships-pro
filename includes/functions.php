@@ -104,7 +104,7 @@ function pmpro_setOption( $s, $v = null, $sanitize_function = 'sanitize_text_fie
 
 	if ( is_array( $v ) ) {
 		$v = implode( ',', $v );
-	} else {
+	} elseif ( is_string( $v ) ) {
 		$v = trim( $v );
 	}
 
@@ -589,6 +589,113 @@ function pmpro_getLevelsExpiration( &$levels ) {
 }
 
 /**
+ * Get the text to display a membership's expiration date.
+ *
+ * @since 3.0
+ *
+ * @param object|int  $level The level object or ID to get the expiration date for.
+ * @param WP_User|int $user  The user object or ID to get the expiration date for.
+ *
+ * @return string The expiration date text.
+ */
+function pmpro_get_membership_expiration_text( $level, $user ) {
+	// If a user ID was passed, get the user object.
+	if ( is_numeric( $user ) ) {
+		$user = get_userdata( $user );
+	}
+
+	// Make sure that we have a user object.
+	if ( empty( $user ) || ! is_a( $user, 'WP_User' ) ) {
+		return '';
+	}
+
+	// If a level ID was passed, get the level object.
+	if ( is_numeric( $level ) ) {
+		$level = pmpro_getSpecificMembershipLevelForUser( $user->ID, (int)$level );
+	}
+
+	// Make sure that we have a level object.
+	if ( empty( $level ) || ! is_object( $level ) ) {
+		return '';
+	}
+
+	/**
+	 * Filter to include the expiration time with expiration date.
+	 * Used in adminpages/member-edit/pmpro-class-member-edit-panel-memberships.php.
+	 *
+	 * @param bool $show_time Whether to show the expiration time with expiration date.
+	 *
+	 * @return bool Whether to show the expiration time with expiration date.
+	 */
+	$show_time = apply_filters( 'pmpro_show_time_on_expiration_date', false );
+
+	// Generate the expiration date text.
+	if ( empty( $level->enddate ) ) {
+		// If the level does not have an enddate, show a dash (&#8212;).
+		$text = esc_html_x( '&#8212;', 'A dash is shown when there is no expiration date.', 'paid-memberships-pro' );
+	} elseif ( $show_time ) {
+		// Show the enddate with the time.
+		$text = sprintf(
+			// translators: %1$s is the date and %2$s is the time.
+			esc_html__( '%1$s at %2$s', 'paid-memberships-pro' ),
+			date_i18n( get_option( 'date_format'), $level->enddate ),
+			date_i18n( get_option( 'time_format'), $level->enddate )
+		);
+	} else {
+		// Show the enddate without the time.
+		$text = date_i18n( get_option( 'date_format' ), $level->enddate );
+	}
+
+	// Apply legacy filter pmpro_memberslist_expires_column.
+	if ( is_admin() && has_filter( 'pmpro_memberslist_expires_column' ) ) {
+		/**
+		 * Legacy filter for showing the expiration date in the WP Dashboard.
+		 *
+		 * Note: Since level data is not passed, this filter is not MMPU-compatible.
+		 *
+		 * @deprecated 3.0 Use the pmpro_membership_expiration_text filter instead.
+		 *
+		 * @param string  $text The expiration date text to show for this level.
+		 * @param WP_User $user The user that the expiration date is for.
+		 *
+		 * @return string $text The expiration date text to show for this level.
+		 */
+		$text = apply_filters_deprecated( 'pmpro_memberslist_expires_column', array( $text, $user ), '3.0', 'pmpro_membership_expiration_text' );
+	}
+
+	// Apply legacy filter pmpro_account_membership_expiration_text.
+	if ( ! is_admin() && has_filter( 'pmpro_account_membership_expiration_text' ) ) {
+		/**
+		 * Legacy filter for showing the expiration date on the frontend.
+		 *
+		 * @deprecated 3.0 Use the pmpro_membership_expiration_text filter instead.
+		 *
+		 * @param string $text  The expiration date text to show for this level.
+		 * @param object $level The level that the expiration date is for.
+		 *
+		 * @return string $text The expiration date text to show for this level.
+		 */
+		$text = apply_filters_deprecated( 'pmpro_account_membership_expiration_text', array( $text, $level ), '3.0', 'pmpro_membership_expiration_text' );
+	}
+
+	/**
+	 * Filter the expiration date text to show for this level.
+	 *
+	 * @since 3.0
+	 *
+	 * @param string  $text The expiration date text to show for this level.	
+	 * @param object  $level The level that the expiration date is for.
+	 * @param WP_User $user The user that the expiration date is for.
+	 * @param bool    $show_time Whether to show the expiration time with expiration date.
+	 *
+	 * @return string $text The expiration date text to show for this level.
+	 */
+	$text = apply_filters( 'pmpro_membership_expiration_text', $text, $level, $user, $show_time );
+
+	return $text;
+}
+
+/**
  * pmpro_membership_level Meta Functions
  *
  * @ssince 1.8.6.5
@@ -679,7 +786,7 @@ function pmpro_next_payment( $user_id = null, $order_status = 'success', $format
 
 	if ( $user_id ) {
 		// Convert passed order status to a subscription status.
-		$subscription_status = $order_status === 'success' ? 'active' : 'cancelled';
+		$subscription_status = ( $order_status === 'success' || ( is_array( $order_status ) && in_array( 'success', $order_status ) ) ) ? 'active' : 'cancelled';
 		$subscriptions = PMPro_Subscription::get_subscriptions_for_user( $user_id, null, $subscription_status );
 		if ( ! empty( $subscriptions ) ) {
 			return $subscriptions[0]->get_next_payment_date( $format );
@@ -958,14 +1065,10 @@ function pmpro_cancelMembershipLevel( $level_id, $user_id = null, $status = 'ina
 	}
 
 	// Check if we should cancel the user's subscription.
-	$subscriptions_cancelled_successfully = true;
 	if ( apply_filters( 'pmpro_cancel_previous_subscriptions', true ) ) {
 		$active_subscriptions = PMPro_Subscription::get_subscriptions_for_user( $user_id, $level_id );
 		foreach ( $active_subscriptions as $subscription ) {
-			if ( ! $subscription->cancel_at_gateway() ) {
-				$pmpro_error = __( 'Error cancelling subscription at gateway.', 'paid-memberships-pro' );
-				$subscriptions_cancelled_successfully = false;
-			}
+			$subscription->cancel_at_gateway();
 		}
 	}
 
@@ -984,7 +1087,7 @@ function pmpro_cancelMembershipLevel( $level_id, $user_id = null, $status = 'ina
 		do_action( 'pmpro_after_change_membership_level', 0, $user_id, $level_id );
 	}
 
-	return $subscriptions_cancelled_successfully;
+	return true;
 }
 
 /**
@@ -1026,13 +1129,13 @@ function pmpro_changeMembershipLevel( $level, $user_id = null, $old_level_status
 
 	// Check if we are trying to cancel a single level (Deprecated).
 	if ( empty( $level ) && ! empty( $cancel_level ) ) {
-		_doing_it_wrong( __FUNCTION__, __( 'The $cancel_level parameter is deprecated. Use pmpro_cancelMembershipLevel() instead.', 'paid-memberships-pro' ), '3.0' );
+		_doing_it_wrong( __FUNCTION__, esc_html__( 'The $cancel_level parameter is deprecated. Use pmpro_cancelMembershipLevel() instead.', 'paid-memberships-pro' ), '3.0' );
 		return pmpro_cancelMembershipLevel( $cancel_level, $user_id, $old_level_status );
 	}
 
 	// Check if we are trying to cancel all levels (Deprecated).
 	if ( empty( $level ) && empty( $cancel_level ) ) {
-		_doing_it_wrong( __FUNCTION__, __( 'The pmpro_cancelMembershipLevel() function should be used to cancel membership levels.', 'paid-memberships-pro' ), '3.0' );
+		_doing_it_wrong( __FUNCTION__, esc_html__( 'The pmpro_cancelMembershipLevel() function should be used to cancel membership levels.', 'paid-memberships-pro' ), '3.0' );
 		$membership_levels = pmpro_getMembershipLevelsForUser( $user_id );
 		$success = true;
 		foreach ( $membership_levels as $membership_level ) {
@@ -1313,7 +1416,7 @@ function pmpro_listCategories( $parent_id = 0, $level_categories = array() ) {
 			} ?>
 			<div class="pmpro_clickable">
 				<input type="checkbox" name="membershipcategory_<?php echo esc_attr( $cat->term_id ); ?>" id="membershipcategory_<?php echo esc_attr( $cat->term_id ); ?>" value="yes" <?php echo esc_attr( $checked ); ?>>
-				<label for="membershipcategory_<?php echo esc_attr( $cat->term_id ); ?>"><?php echo $cat->name; ?></label>
+				<label for="membershipcategory_<?php echo esc_attr( $cat->term_id ); ?>"><?php echo esc_html( $cat->name ); ?></label>
 			</div>
 			<?php pmpro_listCategories( $cat->term_id, $level_categories ); ?>
 			<?php
@@ -1875,6 +1978,10 @@ function pmpro_checkDiscountCode( $code, $level_id = null, $return_errors = fals
 }
 
 function pmpro_no_quotes( $s, $quotes = array( "'", '"' ) ) {
+	if ( empty( $s ) ) {
+		$s = '';
+	}
+
 	return str_replace( $quotes, '', $s );
 }
 
@@ -2375,26 +2482,26 @@ function pmpro_are_any_visible_levels() {
  * Get level at checkout and place into $pmpro_level global.
  * If no level is passed or found in the URL parameters, global vars,
  * or in the post options, then this will return the first level found.
+ *
  * @param int $level_id (optional) Pass a level ID to force that level.
- * @param string $discount_code (optional) Pass a discount code to force that code.
+ * @param string $discount_code (optional) Pass a discount code to force that code
+ *
  * @return mixed|void
  */
 function pmpro_getLevelAtCheckout( $level_id = null, $discount_code = null ) {
 	global $pmpro_level, $wpdb, $post;
-	// Commenting out caching for now. We want to rethink this approach before we commit to it.
-	/*
+
 	static $function_cache = array();
 
-	// Get the cache key for the passed inputs.
+	// Check if we have a cached value to use.
 	$cache_key = md5( serialize( array( $level_id, $discount_code ) ) );
-
 	if ( array_key_exists( $cache_key, $function_cache ) ) {
+		// Set the global and return the cached value.
 		$pmpro_level = $function_cache[ $cache_key ];
 		return $pmpro_level;
 	}
-	*/
 
-	// reset pmpro_level
+	// Reset $pmpro_level global.
 	$pmpro_level = null;
 
 	// Default to level passed in via URL.
@@ -2428,7 +2535,7 @@ function pmpro_getLevelAtCheckout( $level_id = null, $discount_code = null ) {
 	}
 
 	// If we still don't have a level, bail.
-	if ( empty( $level_id ) || $level_id < 1 || ! is_int( $level_id ) ) {
+	if ( empty( $level_id ) || intval( $level_id ) < 1 ) {
 		return;
 	}
 
@@ -2477,14 +2584,13 @@ function pmpro_getLevelAtCheckout( $level_id = null, $discount_code = null ) {
 		$pmpro_level = $wpdb->get_row( "SELECT * FROM $wpdb->pmpro_membership_levels WHERE id = '" . esc_sql( $level_id ) . "' AND allow_signups = 1 LIMIT 1" );
 	}
 
-	// filter the level (for upgrades, etc)
+	// Filter the level (for upgrades, etc).
 	$pmpro_level = apply_filters( 'pmpro_checkout_level', $pmpro_level );
 
-	// Commenting out caching for now. We want to rethink this approach before we commit to it.
-	/*
-	// Cache it.
-	$function_cache[ $cache_key ] = $pmpro_level;
-	*/
+	// Cache the result for future use if this is a "top level" call to this function.
+	if ( ! doing_filter( 'pmpro_checkout_level' ) ) {
+		$function_cache[ $cache_key ] = $pmpro_level;
+	}
 
 	return $pmpro_level;
 }
@@ -3016,14 +3122,6 @@ function pmpro_get_price_parts( $pmpro_invoice, $format = 'array' ) {
 		$pmpro_price_parts['tax'] = array(
 			'label' => __( 'Tax', 'paid-memberships-pro' ),
 			'value' => pmpro_escape_price( pmpro_formatPrice( $pmpro_invoice->tax ) ),
-		);
-	}
-
-	if ( ! empty( $pmpro_invoice->couponamount ) ) {
-		// We don't even use this but it is in the database so it could be shown here.
-		$pmpro_price_parts['couponamount'] = array(
-			'label' => __( 'Coupon', 'paid-memberships-pro' ),
-			'value' => pmpro_escape_price( pmpro_formatPrice( $pmpro_invoice->couponamount ) ),
 		);
 	}
 
@@ -4138,7 +4236,7 @@ function pmpro_method_should_be_private( $deprecated_notice_version ) {
 	// Check whether the caller of this function is in the same file (class)
 	// as the caller of the previous function.
 	if ( $backtrace[0]['file'] !== $backtrace[1]['file'] ) {
-		_deprecated_function( $backtrace[1]['function'], $deprecated_notice_version );
+		_deprecated_function( esc_html( $backtrace[1]['function'] ), esc_html( $deprecated_notice_version ) );
 		return true;
 	}
 	return false;
@@ -4492,19 +4590,6 @@ function pmpro_is_paused() {
 
 	// We should never filter this function. We will never change this function to do anything else without lots and lots of discussion and thought.
 	return false;
-}
-
-/**
- * Set the pause mode status
- *
- * @param $state bool true or false if in pause mode state
- * @since 2.10
- * @deprecated 2.10.7 No longer using `pmpro_pause_mode` option
- * @return bool True if the option has been updated
- */
-function pmpro_set_pause_mode( $state ) {
-  _deprecated_function( __FUNCTION__, '3.0' );
-	return pmpro_setOption( 'pause_mode', $state );
 }
 
 /**

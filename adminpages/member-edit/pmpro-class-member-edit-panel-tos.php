@@ -1,12 +1,12 @@
 <?php
 
-class PMPro_Member_Edit_Panel_Other extends PMPro_Member_Edit_Panel {
+class PMPro_Member_Edit_Panel_TOS extends PMPro_Member_Edit_Panel {
 	/**
 	 * Set up the panel.
 	 */
 	public function __construct() {
-		$this->slug = 'other';
-		$this->title = __( 'Additional Info', 'paid-memberships-pro' );
+		$this->slug = 'tos';
+		$this->title = __( 'Terms of Service', 'paid-memberships-pro' );
 	}
 
 	/**
@@ -14,9 +14,8 @@ class PMPro_Member_Edit_Panel_Other extends PMPro_Member_Edit_Panel {
 	 */
 	protected function display_panel_contents() {
 		// Show TOS Consent History if available.
-		$tospage_id = pmpro_getOption( 'tospage' );
 		$consent_log = pmpro_get_consent_log( self::get_user()->ID, true );
-		if ( ! empty( $tospage_id ) || ! empty( $consent_log ) ) { ?>
+		if ( ! empty( $consent_log ) ) { ?>
 			<h3><?php esc_html_e("TOS Consent History", 'paid-memberships-pro' ); ?></h3>
 			<div id="tos_consent_history">
 				<?php
@@ -30,17 +29,30 @@ class PMPro_Member_Edit_Panel_Other extends PMPro_Member_Edit_Panel {
 						$consent_log_class = implode( ' ', array_unique( $consent_log_classes ) );
 						echo '<ul class="' . esc_attr( $consent_log_class ) . '">';
 						foreach( $consent_log as $entry ) {
-							echo '<li>' . pmpro_consent_to_text( $entry ) . '</li>';
+							echo '<li>' . esc_html( pmpro_consent_to_text( $entry ) ) . '</li>';
 						}
 						echo '</ul> <!-- end pmpro_consent_log -->';
 					} else {
-						echo __( 'N/A', 'paid-memberships-pro' );
+						esc_html_e( 'N/A', 'paid-memberships-pro' );
 					}
 				?>
 			</div>
 			<?php
+		} else {
+			echo '<p>' . esc_html__( 'No TOS consent history found.', 'paid-memberships-pro' ) . '</p>';
+		}
+	}
+
+	/**
+	 * Do not show if TOS is not enabled.
+	 *
+	 * @return bool
+	 */
+	public function should_show() {
+		if ( empty( get_option( 'pmpro_tospage' ) ) ) {
+			return false;
 		}
 
-		do_action( 'pmpro_after_membership_level_profile_fields', self::get_user() );
+		return parent::should_show();
 	}
 }

@@ -336,13 +336,10 @@ class PMPro_Subscription {
 
 		/*
 		 * Now filter the query based on the arguments provided.
-		 *
-		 * isset( $arg ) && null !== $arg is meant to deal with $args['arg'] = null usage
-		 * while still supporting $args['arg'] = ''.
 		 */
 
 		// Filter by ID(s).
-		if ( isset( $args['id'] ) && null !== $args['id'] ) {
+		if ( isset( $args['id'] ) ) {
 			if ( ! is_array( $args['id'] ) ) {
 				$where[]    = 'id = %d';
 				$prepared[] = $args['id'];
@@ -353,7 +350,7 @@ class PMPro_Subscription {
 		}
 
 		// Filter by user ID(s).
-		if ( isset( $args['user_id'] ) && null !== $args['user_id'] ) {
+		if ( isset( $args['user_id'] ) ) {
 			if ( ! is_array( $args['user_id'] ) ) {
 				$where[]    = 'user_id = %d';
 				$prepared[] = $args['user_id'];
@@ -364,7 +361,7 @@ class PMPro_Subscription {
 		}
 
 		// Filter by membership level ID(s).
-		if ( isset( $args['membership_level_id'] ) && null !== $args['membership_level_id'] ) {
+		if ( isset( $args['membership_level_id'] ) ) {
 			if ( ! is_array( $args['membership_level_id'] ) ) {
 				$where[]    = 'membership_level_id = %d';
 				$prepared[] = $args['membership_level_id'];
@@ -375,7 +372,7 @@ class PMPro_Subscription {
 		}
 
 		// Filter by status(es).
-		if ( isset( $args['status'] ) && null !== $args['status'] ) {
+		if ( isset( $args['status'] ) ) {
 			if ( ! is_array( $args['status'] ) ) {
 				$where[]    = 'status = %s';
 				$prepared[] = $args['status'];
@@ -386,7 +383,7 @@ class PMPro_Subscription {
 		}
 
 		// Filter by subscription transaction ID(s).
-		if ( isset( $args['subscription_transaction_id'] ) && null !== $args['subscription_transaction_id'] ) {
+		if ( isset( $args['subscription_transaction_id'] ) ) {
 			if ( ! is_array( $args['subscription_transaction_id'] ) ) {
 				$where[]    = 'subscription_transaction_id = %s';
 				$prepared[] = $args['subscription_transaction_id'];
@@ -397,7 +394,7 @@ class PMPro_Subscription {
 		}
 
 		// Filter by gateway(s).
-		if ( isset( $args['gateway'] ) && null !== $args['gateway'] ) {
+		if ( isset( $args['gateway'] ) ) {
 			if ( ! is_array( $args['gateway'] ) ) {
 				$where[]    = 'gateway = %s';
 				$prepared[] = $args['gateway'];
@@ -408,7 +405,7 @@ class PMPro_Subscription {
 		}
 
 		// Filter by gateway environment(s).
-		if ( isset( $args['gateway_environment'] ) && null !== $args['gateway_environment'] ) {
+		if ( isset( $args['gateway_environment'] ) ) {
 			if ( ! is_array( $args['gateway_environment'] ) ) {
 				$where[]    = 'gateway_environment = %s';
 				$prepared[] = $args['gateway_environment'];
@@ -419,7 +416,7 @@ class PMPro_Subscription {
 		}
 
 		// Filter by billing amount(s).
-		if ( isset( $args['billing_amount'] ) && null !== $args['billing_amount'] ) {
+		if ( isset( $args['billing_amount'] ) ) {
 			if ( ! is_array( $args['billing_amount'] ) ) {
 				$where[]    = 'billing_amount = %f';
 				$prepared[] = $args['billing_amount'];
@@ -430,7 +427,7 @@ class PMPro_Subscription {
 		}
 
 		// Filter by cycle number(s).
-		if ( isset( $args['cycle_number'] ) && null !== $args['cycle_number'] ) {
+		if ( isset( $args['cycle_number'] ) ) {
 			if ( ! is_array( $args['cycle_number'] ) ) {
 				$where[]    = 'cycle_number = %d';
 				$prepared[] = $args['cycle_number'];
@@ -441,7 +438,7 @@ class PMPro_Subscription {
 		}
 
 		// Filter by cycle period(s).
-		if ( isset( $args['cycle_period'] ) && null !== $args['cycle_period'] ) {
+		if ( isset( $args['cycle_period'] ) ) {
 			if ( ! is_array( $args['cycle_period'] ) ) {
 				$where[]    = 'cycle_period = %s';
 				$prepared[] = $args['cycle_period'];
@@ -452,7 +449,7 @@ class PMPro_Subscription {
 		}
 
 		// Filter by billing limit(s).
-		if ( isset( $args['billing_limit'] ) && null !== $args['billing_limit'] ) {
+		if ( isset( $args['billing_limit'] ) ) {
 			if ( ! is_array( $args['billing_limit'] ) ) {
 				$where[]    = 'billing_limit = %d';
 				$prepared[] = $args['billing_limit'];
@@ -463,7 +460,7 @@ class PMPro_Subscription {
 		}
 
 		// Filter by trial amount(s).
-		if ( isset( $args['trial_amount'] ) && null !== $args['trial_amount'] ) {
+		if ( isset( $args['trial_amount'] ) ) {
 			if ( ! is_array( $args['trial_amount'] ) ) {
 				$where[]    = 'trial_amount = %f';
 				$prepared[] = $args['trial_amount'];
@@ -474,7 +471,7 @@ class PMPro_Subscription {
 		}
 
 		// Filter by trial limit(s).
-		if ( isset( $args['trial_limit'] ) && null !== $args['trial_limit'] ) {
+		if ( isset( $args['trial_limit'] ) ) {
 			if ( ! is_array( $args['trial_limit'] ) ) {
 				$where[]    = 'trial_limit = %d';
 				$prepared[] = $args['trial_limit'];
@@ -653,12 +650,17 @@ class PMPro_Subscription {
 		// Create the subscription.
 		$new_subscription = new PMPro_Subscription( $subscription_data );
 
-		// Try to pull as much info as possible directly from the gateway or from the database.
-		$saved = $new_subscription->update();
+		// Save the subscription before syncing with gateway
+		// to avoid infinite loops if gateways load orders which
+		// in turn try to create this subscription again.
+		$saved = $new_subscription->save();
 		if ( ! $saved ) {
 			// We couldn't save the subscription.
 			return null;
 		}
+
+		// Try to pull as much info as possible directly from the gateway or from the database.
+		$new_subscription->update();
 
 		return $new_subscription;
 	}
@@ -686,25 +688,8 @@ class PMPro_Subscription {
 			$error_message = __( 'Could not find gateway class.', 'paid-memberships-pro' );
 		}
 
-		// Send an email if there was an error.
-		if ( ! empty( $error_message ) ) {
-			$pmproemail                = new PMProEmail();
-			$pmproemail->template      = 'subscription_sync_failed';
-			$pmproemail->subject       = __( 'Error Synchronizing Subscription', 'paid-memberships-pro' );
-			$pmproemail->data          = array( 'body' => '<p>' . esc_html__( 'There was an error synchronizing a subscription with your payment gateway.', 'paid-memberships-pro' ) . '</p>' . "\n" );
-			$pmproemail->data['body'] .= '<p>' . esc_html__( 'Error', 'paid-memberships-pro' ) . ': ' . esc_html( $error_message ) . '</p>' . "\n";
-			$pmproemail->data['body'] .= '<p>' . esc_html__( 'Subscription ID', 'paid-memberships-pro' ) . ': ' . $this->id . '</p>' . "\n";
-			$pmproemail->data['body'] .= '<p>' . esc_html__( 'Gateway', 'paid-memberships-pro' ) . ': ' . $this->gateway . '</p>' . "\n";
-			$pmproemail->data['body'] .= '<p>' . esc_html__( 'Subscription Transaction ID', 'paid-memberships-pro' ) . ': ' . $this->subscription_transaction_id . '</p>' . "\n";
-			$pmproemail->data['body'] .= '<p>' . esc_html__( 'User ID', 'paid-memberships-pro' ) . ': ' . $this->user_id . '</p>' . "\n";
-			$pmproemail->data['body'] .= '<p>' . esc_html__( 'Membership Level ID', 'paid-memberships-pro' ) . ': ' . $this->membership_level_id . '</p>' . "\n";
-			$pmproemail->data['body'] .= '<hr />' . "\n";
-			$pmproemail->data['body'] .= '<p>' . esc_html__( 'Edit User', 'paid-memberships-pro' ) . ': ' . esc_url( add_query_arg( 'user_id', $this->user_id, self_admin_url( 'user-edit.php' ) ) ) . '</p>';
-			$pmproemail->sendEmail( get_bloginfo( 'admin_email' ) );
-
-			pmpro_setMessage( __( 'There was an error synchronizing a subscription with your payment gateway: ', 'paid-memberships-pro' ) . esc_html( $error_message ), 'pmpro_error' );
-
-			// Save error in subscription meta with date to reference later.
+		// Save error in subscription meta with date to reference later.
+		if ( ! empty( $error_message )  ) {
 			update_pmpro_subscription_meta( $this->id, 'sync_error', $error_message );
 			update_pmpro_subscription_meta( $this->id, 'sync_error_timestamp', current_time( 'timestamp' ) );
 		} else {
@@ -726,7 +711,7 @@ class PMPro_Subscription {
 	 * @param MemberOrder $order The order for the recurring payment that was just processed.
 	 */
 	public static function update_subscription_for_order( $order ) {
-		$subscription = self::get_subscription_from_subscription_transaction_id( $order->subscription_transaction_id, $order->gateway, $order->gateway_environment );
+		$subscription = $order->get_subscription();
 		if ( ! empty( $subscription ) ) {
 			$subscription->update();
 		}
@@ -914,13 +899,10 @@ class PMPro_Subscription {
 
 		/*
 		 * Now filter the query based on the arguments provided.
-		 *
-		 * isset( $arg ) && null !== $arg is meant to deal with $args['arg'] = null usage
-		 * while still supporting $args['arg'] = ''.
 		 */
 
 		// Filter by ID(s).
-		if ( isset( $args['id'] ) && null !== $args['id'] ) {
+		if ( isset( $args['id'] ) ) {
 			if ( ! is_array( $args['id'] ) ) {
 				$where[]    = 'id = %d';
 				$prepared[] = $args['id'];
@@ -931,7 +913,7 @@ class PMPro_Subscription {
 		}
 
 		// Filter by code(s).
-		if ( isset( $args['code'] ) && null !== $args['code'] ) {
+		if ( isset( $args['code'] ) ) {
 			if ( ! is_array( $args['code'] ) ) {
 				$where[]    = 'code = %s';
 				$prepared[] = $args['code'];
@@ -942,7 +924,7 @@ class PMPro_Subscription {
 		}
 
 		// Filter by status(es).
-		if ( isset( $args['status'] ) && null !== $args['status'] ) {
+		if ( isset( $args['status'] ) ) {
 			if ( ! is_array( $args['status'] ) ) {
 				$where[]    = 'status = %s';
 				$prepared[] = $args['status'];
@@ -953,7 +935,7 @@ class PMPro_Subscription {
 		}
 
 		// Filter by payment transaction ID(s).
-		if ( isset( $args['payment_transaction_id'] ) && null !== $args['payment_transaction_id'] ) {
+		if ( isset( $args['payment_transaction_id'] ) ) {
 			if ( ! is_array( $args['payment_transaction_id'] ) ) {
 				$where[]    = 'payment_transaction_id = %s';
 				$prepared[] = $args['payment_transaction_id'];
@@ -1069,14 +1051,6 @@ class PMPro_Subscription {
 			$this->enddate = '';
 		} elseif ( 'cancelled' === $this->status ) {
 			$this->next_payment_date = '';
-
-			// Mark incomplete orders as error since the subscription is no longer active.
-			$incomplete_orders = $this->get_orders( array( 'status' => array( 'token', 'pending', 'review' ) ) );
-			if ( ! empty( $incomplete_orders ) ) {
-				foreach ( $incomplete_orders as $order ) {
-					$order->updateStatus( 'error' );
-				}
-			}
 		}
 
 		// If the startdate is empty or later than the current time, set it to the current time.
@@ -1133,6 +1107,17 @@ class PMPro_Subscription {
 		if ( empty( $this->id ) ) {
 			pmpro_setMessage( __( 'There was an error saving the subscription.', 'paid-memberships-pro' ), 'pmpro_error' );
 			return false;
+		}
+
+		// If the subscription was cancelled, mark any incomplete orders as error.
+		if ( 'cancelled' === $this->status ) {
+			// Mark incomplete orders as error since the subscription is no longer active.
+			$incomplete_orders = $this->get_orders( array( 'status' => array( 'token', 'pending', 'review' ) ) );
+			if ( ! empty( $incomplete_orders ) ) {
+				foreach ( $incomplete_orders as $order ) {
+					$order->updateStatus( 'error' );
+				}
+			}
 		}
 
 		pmpro_setMessage( __( 'Subscription saved.', 'paid-memberships-pro' ), 'pmpro_success' ); // Will not overwrite previous messages.
@@ -1220,8 +1205,27 @@ class PMPro_Subscription {
 	 */
 	private function maybe_fix_default_migration_data() {
 		// Make sure that this looks like default migration data for an active subscription.
-		if (  empty( $this->id ) || 'active' !== $this->status || ! empty( $this->billing_amount ) || ! empty( $this->cycle_number ) ) {
+		if (  empty( $this->id ) || ! empty( $this->billing_amount ) || ! empty( $this->cycle_number ) ) {
 			// This is not default migration data for an active subscription. Bail.
+			return;
+		}
+
+		/**
+		 * Filter to skip fixing default migration data for a subscription.
+		 *
+		 * Useful in cases such as CSV imports where we need to be performant when creating subscriptions.
+		 * In such a use-case, the following steps should be taken:
+		 * 1. Use this hook to disable updating default migration data.
+		 * 2. Directly add the subscription data to the database with "default migration data".
+		 * 3. Create any orders for the subscription (this should only be done after the subscription is created in the db).
+		 * 4. After all entries are processed, add the `pmpro_upgrade_3_0_ajax` update so that admins can automatically sync the subscriptions after the import is complete.
+		 *
+		 * @since 3.0
+		 *
+		 * @param bool $skip_fixing_default_migration_data True to skip fixing default migration data for a subscription, false to process it.
+		 */
+		$skip_fixing_default_migration_data = apply_filters( 'pmpro_subscription_skip_fixing_default_migration_data', false );
+		if ( $skip_fixing_default_migration_data ) {
 			return;
 		}
 
@@ -1242,31 +1246,40 @@ class PMPro_Subscription {
 		 *        created for.
 		 * 4. If we do not find a membership level that matches the subscription level and is recurring,
 		 *       then let's use the default membership level settings if it is recurring.
-		*/
-		$all_user_levels = pmpro_getMembershipLevelsForUser( $this->user_id, true ); // True to include old memberships.
-		// Looping through $all_user_levels backwards to get the most recent first.
-		for ( end( $all_user_levels ); key( $all_user_levels ) !== null; prev( $all_user_levels ) ) {
-			$level_check = current( $all_user_levels );
+		 */
+		if ( 'active' === $this->status ) { // Only guess for active subscriptions. For cancelled subscriptions, we would rather show $0/month than a potentially wrong amount.
+			$all_user_levels = pmpro_getMembershipLevelsForUser( $this->user_id, true ); // True to include old memberships.
+			// Looping through $all_user_levels backwards to get the most recent first.
+			for ( end( $all_user_levels ); key( $all_user_levels ) !== null; prev( $all_user_levels ) ) {
+				$level_check = current( $all_user_levels );
 
-			// Let's check if level the same level as this subscription and if it's a recurring level.
-			if ( $level_check->id == $this->membership_level_id && pmpro_isLevelRecurring( $level_check ) ) {
-				$subscription_level = $level_check;
-				break;
+				// Let's check if level the same level as this subscription and if it's a recurring level.
+				if ( $level_check->id == $this->membership_level_id && ! empty( $level_check->billing_amount ) && ! empty( $level_check->cycle_number ) ) {
+					$subscription_level = $level_check;
+					break;
+				}
 			}
 		}
 
-		// If the user hasn't had a recurring membership for this level,
-		// pull from the level settings instead.
-		if ( empty( $subscription_level ) ) {
+		// If the user hasn't had a recurring membership for this level, pull from the level settings instead.
+		// Only do this if the subscription is active since we can guess wrong and may not be able to sync with the gateway since this is an old subscription.
+		if ( empty( $subscription_level ) && 'active' === $this->status) {
 			$level = pmpro_getLevel( $this->membership_level_id );
-			if ( ! empty( $level ) && pmpro_isLevelRecurring( $level ) ) {
+			if ( ! empty( $level ) && ! empty( $level->billing_amount ) && ! empty( $level->cycle_number ) ) {
 				$subscription_level = $level;
 			}
 		}
 
-		// If we still don't have a subscription level, then this membership level isn't recurring or no longer exists on the site. Bail.
+		// If we still don't have a subscription level, then this membership level isn't recurring or no longer exists on the site.
+		// Give it some default values.
 		if ( empty( $subscription_level ) ) {
-			return;
+			$subscription_level = new stdClass();
+			$subscription_level->billing_amount = 0;
+			$subscription_level->cycle_number   = 1;
+			$subscription_level->cycle_period   = 'Month';
+			$subscription_level->billing_limit  = 0;
+			$subscription_level->trial_amount   = 0;
+			$subscription_level->trial_limit    = 0;
 		}
 
 		// We have found a level, let's fill in the subscription.
@@ -1276,6 +1289,9 @@ class PMPro_Subscription {
 		$this->billing_limit  = $subscription_level->billing_limit;
 		$this->trial_amount   = $subscription_level->trial_amount;
 		$this->trial_limit    = $subscription_level->trial_limit;
+
+		// Save so that we don't start another migration when we call get_orders().
+		$this->save();
 
 		// Let's take a guess at the start date.
 		$oldest_orders = $this->get_orders( [
@@ -1288,11 +1304,20 @@ class PMPro_Subscription {
 		}
 
 
-		// Let's also take a guess at the next payment date.
-		$newest_orders = $this->get_orders( array( 'limit' => 1 ) );
+		// Let's also take a guess at the next payment date or end date.
+		$newest_orders = $this->get_orders(
+			[
+				'limit'   => 1,
+				'orderby' => '`timestamp` DESC, `id` DESC',
+			]
+		);
 		if ( ! empty( $newest_orders ) ) {
 			$newest_order = current( $newest_orders );
-			$this->next_payment_date = date_i18n( 'Y-m-d H:i:s', strtotime( '+ ' . $this->cycle_number . ' ' . $this->cycle_period, $newest_order->getTimestamp( true ) ) );
+			if ( 'active' === $this->status ) {
+				$this->next_payment_date = date_i18n( 'Y-m-d H:i:s', strtotime( '+ ' . $this->cycle_number . ' ' . $this->cycle_period, $newest_order->getTimestamp( true ) ) );
+			} else {
+				$this->enddate = date_i18n( 'Y-m-d H:i:s', $newest_order->getTimestamp( true ) );
+			}
 		}
 
 		// Now that we have the basic data filled in, the `update()` method will take care of the rest.

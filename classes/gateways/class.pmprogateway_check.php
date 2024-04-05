@@ -118,7 +118,7 @@
 				<label for="instructions"><?php esc_html_e('Instructions', 'paid-memberships-pro' );?></label>
 			</th>
 			<td>
-				<textarea id="instructions" name="instructions" rows="3" cols="50" class="large-text"><?php echo wpautop(  wp_unslash( $values['instructions'] ) ); ?></textarea>
+				<textarea id="instructions" name="instructions" rows="3" cols="50" class="large-text"><?php echo wp_kses_post( wpautop(  wp_unslash( $values['instructions'] ) ) ); ?></textarea>
 				<p class="description"><?php echo esc_html( sprintf( __( 'Instructions for members to follow to complete their purchase when paying with %s. Shown on the membership checkout, confirmation, and invoice pages.', 'paid-memberships-pro' ), $check_gateway_label ) );?></p>
 			</td>
 		</tr>
@@ -167,7 +167,7 @@
 					</h2>
 					<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout-fields' ) ); ?>">
 						<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout-field pmpro_check_instructions', 'pmpro_check_instructions' ) ); ?>">
-							<?php echo wpautop( wp_unslash( $instructions ) ); ?>
+							<?php echo wp_kses_post( wpautop( wp_unslash( $instructions ) ) ); ?>
 						</div> <!-- end pmpro_checkout-field pmpro_check_instructions -->
 					</div> <!-- end pmpro_checkout-fields -->
 				</div> <!-- end pmpro_payment_information_fields -->

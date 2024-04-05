@@ -45,15 +45,23 @@ class PMProGateway_authorizenet extends PMProGateway
 	}
 
 	/**
-	 * Returns whether the gateway allows for payment method updates.
-	 *
+	 * Check whether or not a gateway supports a specific feature.
+	 * 
 	 * @since 3.0
-	 *
-	 * @return string|false 'individual' if the gateway allows for payment method updates for individual subscriptions, 
-	 *                      'all' if the gateway updates all subscriptions, or false if the gateway does not support payment method updates.
+	 * 
+	 * @return string|boolean $supports Returns whether or not the gateway supports the requested feature.
 	 */
-	function supports_payment_method_updates() {
-		return 'individual';
+	public static function supports( $feature ) {
+		$supports = array(
+			'subscription_sync' => true,
+			'payment_method_updates' => 'individual'
+		);
+
+		if ( empty( $supports[$feature] ) ) {
+			return false;
+		}
+
+		return $supports[$feature];
 	}
 
 	/**
@@ -144,7 +152,7 @@ class PMProGateway_authorizenet extends PMProGateway
 		</th>
 		<td>
 			<p><?php esc_html_e('To fully integrate with Authorize.net, be sure to set your Silent Post URL to', 'paid-memberships-pro' ); ?></p>
-			<p><code><?php echo admin_url("admin-ajax.php") . "?action=authnet_silent_post";?></code></p>
+			<p><code><?php echo esc_url( admin_url("admin-ajax.php") . "?action=authnet_silent_post" );?></code></p>
 		</td>
 	</tr>
 	<?php

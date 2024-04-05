@@ -1,12 +1,12 @@
 <?php
 /**
  * Template: Confirmation
- * Version: 2.0
+ * Version: 3.0
  *
  * See documentation for how to override the PMPro templates.
  * @link https://www.paidmembershipspro.com/documentation/templates/
  *
- * @version 2.0
+ * @version 3.0
  *
  * @author Paid Memberships Pro
  */
@@ -68,7 +68,7 @@ if ( empty( $pmpro_invoice ) ) {
 			// If the invoice is not free, show the full invoice, but make sure we don't show $pmpro_msg again.
 			$pmpro_msg = false;
 			$pmpro_msgt = false;
-			echo pmpro_loadTemplate( 'invoice' );
+			echo pmpro_loadTemplate( 'invoice' );	// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		} else {
 			// The invoice is free, so we don't need to show a full invoice.
 			?>

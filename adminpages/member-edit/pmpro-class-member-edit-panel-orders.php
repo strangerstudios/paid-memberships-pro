@@ -36,7 +36,7 @@ class PMPro_Member_Edit_Panel_Orders extends PMPro_Member_Edit_Panel {
 						<th><?php esc_html_e( 'Code', 'paid-memberships-pro' ); ?></th>
 						<th><?php esc_html_e( 'Level', 'paid-memberships-pro' ); ?></th>
 						<th><?php esc_html_e( 'Total', 'paid-memberships-pro' ); ?></th>
-						<th><?php esc_html_e( 'Discount Code', 'paid-memberships-pro' ); ?></th>
+						<th><?php esc_html_e( 'Subscription', 'paid-memberships-pro' ); ?></th>
 						<th><?php esc_html_e( 'Status', 'paid-memberships-pro' ); ?></th>
 						<?php do_action('pmpromh_orders_extra_cols_header');?>
 					</tr>
@@ -63,8 +63,8 @@ class PMPro_Member_Edit_Panel_Orders extends PMPro_Member_Edit_Panel {
 									<span class="id">
 										<?php echo sprintf(
 											// translators: %s is the Order ID.
-											__( 'ID: %s', 'paid-memberships-pro' ),
-											esc_attr( $invoice->id )
+											esc_html__( 'ID: %s', 'paid-memberships-pro' ),
+											esc_html( $invoice->id )
 										); ?>
 									</span> |
 									<span class="edit">
@@ -92,26 +92,48 @@ class PMPro_Member_Edit_Panel_Orders extends PMPro_Member_Edit_Panel {
 									}
 								?>
 							</td>
-							<td><?php echo pmpro_formatPrice( $invoice->total ); ?></td>
-							<td><?php 
-								if ( empty( $invoice->code_id ) ) {
-									esc_html_e( '&#8212;', 'paid-memberships-pro' );
-								} else {
-									$discountQuery = $wpdb->prepare( "SELECT c.code FROM $wpdb->pmpro_discount_codes c WHERE c.id = %d LIMIT 1", $invoice->code_id );
-									$discount_code = $wpdb->get_row( $discountQuery );
-									echo '<a href="admin.php?page=pmpro-discountcodes&edit=' . esc_attr( $invoice->code_id ). '">'. esc_attr( $discount_code->code ) . '</a>';
-								}
-							?></td>
+							<td>
+								<?php echo pmpro_escape_price( pmpro_formatPrice( $invoice->total ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+								<?php
+									if ( ! empty( $invoice->code_id ) ) {
+										$discountQuery = $wpdb->prepare( "SELECT c.code FROM $wpdb->pmpro_discount_codes c WHERE c.id = %d LIMIT 1", $invoice->code_id );
+										$discount_code = $wpdb->get_row( $discountQuery );
+										?>
+										<a class="pmpro_discount_code-tag" href="<?php echo esc_url( add_query_arg( array( 'page' => 'pmpro-orders', 'discount-code' => $invoice->code_id, 'filter' => 'with-discount-code' ), admin_url( 'admin.php' ) ) ); ?>" title="<?php esc_attr_e( 'View all orders with this discount code', 'paid-memberships-pro' ); ?>"><?php echo esc_html( $discount_code->code ); ?></a>
+										<?php
+									}
+								?>
+							</td>
+							<td>
+								<?php
+									if ( ! empty( $invoice->subscription_transaction_id ) ) {
+										$subscription = PMPro_Subscription::get_subscription_from_subscription_transaction_id( $invoice->subscription_transaction_id, $invoice->gateway, $invoice->gateway_environment );
+										if ( ! empty( $subscription ) ) {
+											// Show the transaction ID and link it if the subscription is found.
+											?>
+											<a href="<?php echo esc_url( add_query_arg( array( 'page' => 'pmpro-subscriptions', 'id' => $subscription->get_id() ), admin_url('admin.php' ) ) ); ?>">
+												<?php echo esc_html( $invoice->subscription_transaction_id ); ?>
+											</a>
+											<?php
+										} else {
+											// Show the transaction ID but do not link it if the subscription is not found.
+											echo esc_html( $invoice->subscription_transaction_id );
+										}
+									} else {
+										esc_html_e( '&#8212;', 'paid-memberships-pro' );
+									}
+								?>
+							</td>
 							<td>
 								<?php
 									if ( empty( $invoice->status ) ) {
 										esc_html_e( '&#8212;', 'paid-memberships-pro' );
 									} else { ?>
-										<span class="pmpro_order-status pmpro_order-status-<?php esc_attr_e( $invoice->status ); ?>">
+										<span class="pmpro_order-status pmpro_order-status-<?php echo esc_attr( $invoice->status ); ?>">
 											<?php if ( in_array( $invoice->status, array( 'success', 'cancelled' ) ) ) {
 												esc_html_e( 'Paid', 'paid-memberships-pro' );
 											} else {
-												esc_html_e( ucwords( $invoice->status ) );
+												echo esc_html( ucwords( $invoice->status ) );
 											} ?>
 										</span>
 										<?php
@@ -136,5 +158,17 @@ class PMPro_Member_Edit_Panel_Orders extends PMPro_Member_Edit_Panel {
 			<?php } ?>
 		</div> <!-- end #member-history-orders -->
 		<?php
+	}
+
+	/**
+	 * Check if the current user can view this panel.
+	 * Can be overridden by child classes.
+	 *
+	 * @since 3.0
+	 *
+	 * @return bool
+	 */
+	public function should_show() {
+		return current_user_can( 'pmpro_orders' );
 	}
 }

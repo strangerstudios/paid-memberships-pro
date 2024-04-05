@@ -25,7 +25,7 @@ $wrapper_attributes = get_block_wrapper_attributes( array( 'class' => implode( '
 // Echo the complete block with level expiration.
 echo sprintf(
 	'<%1$s %2$s>%3$s</%1$s>',
-	$tag_name,
-	$wrapper_attributes,
-	$content
+	esc_attr( $tag_name ),
+	$wrapper_attributes, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+	esc_html( $content )
 );

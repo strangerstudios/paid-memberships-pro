@@ -19,12 +19,20 @@ if ( ! empty( $_REQUEST[ 'report' ] ) ) {
 	$report = sanitize_text_field( $_REQUEST[ 'report' ] ); ?>
 	<ul class="subsubsub">
 		<li><a href="<?php echo esc_url( admin_url( 'admin.php?page=pmpro-reports' ) ); ?>"><?php esc_html_e('All', 'paid-memberships-pro' ); ?></a></li>
-		<?php foreach ( $pmpro_reports as $report_menu_item => $report_menu_title ) {
-			if ( function_exists( 'pmpro_report_' . $report_menu_item . '_page' ) ) { ?>
-				<li>&nbsp;|&nbsp;<a class="<?php if ( $report === $report_menu_item ) { ?>current<?php } ?>"href="<?php echo esc_url( admin_url( 'admin.php?page=pmpro-reports&report=' . $report_menu_item ) ); ?>"><?php echo $report_menu_title; ?></a></li>
-				<?php
+		<?php
+			// If the Visits, Views, and Logins report is in the array, show it last.
+			if ( array_key_exists( 'login', $pmpro_reports ) ) {
+				$login = $pmpro_reports['login'];
+				unset( $pmpro_reports['login'] );
+				$pmpro_reports['login'] = $login;
 			}
-		} ?>
+			foreach ( $pmpro_reports as $report_menu_item => $report_menu_title ) {
+				if ( function_exists( 'pmpro_report_' . $report_menu_item . '_page' ) ) { ?>
+					<li>&nbsp;|&nbsp;<a class="<?php if ( $report === $report_menu_item ) { ?>current<?php } ?>"href="<?php echo esc_url( admin_url( 'admin.php?page=pmpro-reports&report=' . $report_menu_item ) ); ?>"><?php echo esc_html( $report_menu_title ); ?></a></li>
+					<?php
+				}
+			}
+		?>
 	</ul>
 	<br class="clear" />
 	<?php
@@ -36,32 +44,36 @@ if ( ! empty( $_REQUEST[ 'report' ] ) ) {
 	<?php
 } else { ?>
 	<h1><?php esc_html_e( 'Reports', 'paid-memberships-pro' ); ?></h1>
-    <?php if( ! empty( $pmpro_reports ) ) {
-        $pieces = array_chunk( $pmpro_reports, ceil( count( $pmpro_reports ) / 2 ), true );
-        foreach ( $pieces[0] as $report => $title ) {
-            add_meta_box(
-                'pmpro_report_' . $report,
-                $title,
-                'pmpro_report_' . $report . '_widget',
-                'memberships_page_pmpro-reports',
-                'advanced'
-            );
-        }
+    <?php if ( ! empty( $pmpro_reports ) ) {
+		// If the Visits, Views, and Logins report is in the array, show it last.
+		if ( array_key_exists( 'login', $pmpro_reports ) ) {
+			$login = $pmpro_reports['login'];
+			unset( $pmpro_reports['login'] );
+			$pmpro_reports['login'] = $login;
+		}
+		$pieces = array_chunk( $pmpro_reports, ceil( count( $pmpro_reports ) / 2 ), true );
+		foreach ( $pieces[0] as $report => $title ) {
+			add_meta_box(
+				'pmpro_report_' . $report,
+				$title,
+				'pmpro_report_' . $report . '_widget',
+				'memberships_page_pmpro-reports',
+				'advanced'
+			);
+		}
 
-        if( ! empty( $pieces[1] ) ) {
-	        foreach ( $pieces[1] as $report => $title ) {
-		        add_meta_box(
-			        'pmpro_report_' . $report,
-			        $title,
-			        'pmpro_report_' . $report . '_widget',
-			        'memberships_page_pmpro-reports',
-			        'side'
-		        );
-	        }
-        }
-    }
-
-	?>
+		if( ! empty( $pieces[1] ) ) {
+			foreach ( $pieces[1] as $report => $title ) {
+				add_meta_box(
+					'pmpro_report_' . $report,
+					$title,
+					'pmpro_report_' . $report . '_widget',
+					'memberships_page_pmpro-reports',
+					'side'
+				);
+			}
+		}
+    } ?>
 	<form id="pmpro-reports-form" method="post" action="admin-post.php">
 
 		<div class="dashboard-widgets-wrap">

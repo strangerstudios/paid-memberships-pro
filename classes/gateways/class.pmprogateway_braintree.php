@@ -459,7 +459,7 @@ use Braintree\WebhookNotification as Braintree_WebhookNotification;
 			<div id="pmpro_payment_information_fields" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout', 'pmpro_payment_information_fields' ) ); ?>" <?php if(!$pmpro_requirebilling || apply_filters("pmpro_hide_payment_information_fields", false) ) { ?>style="display: none;"<?php } ?>>
 				<h2>
 					<span class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout-h2-name' ) ); ?>"><?php esc_html_e('Payment Information', 'paid-memberships-pro' );?></span>
-				<span class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout-h2-msg' ) ); ?>"><?php printf(esc_html__('We Accept %s', 'paid-memberships-pro' ), $pmpro_accepted_credit_cards_string);?></span>
+				<span class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout-h2-msg' ) ); ?>"><?php printf(esc_html__('We Accept %s', 'paid-memberships-pro' ), esc_html( $pmpro_accepted_credit_cards_string ) );?></span>
 				</h2>
 				<?php $sslseal = get_option("pmpro_sslseal"); ?>
 				<?php if(!empty($sslseal)) { ?>
@@ -508,7 +508,7 @@ use Braintree\WebhookNotification as Braintree_WebhookNotification;
 						if($pmpro_show_cvv) { ?>
 							<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout-field pmpro_payment-cvv', 'pmpro_payment-cvv' ) ); ?>">
 								<label for="CVV"><?php esc_html_e('CVV', 'paid-memberships-pro' );?></label>
-								<input id="CVV" name="cvv" type="text" size="4" value="<?php if(!empty($_REQUEST['CVV'])) { echo esc_attr(sanitize_text_field($_REQUEST['CVV'])); }?>" class="<?php echo esc_attr( pmpro_get_element_class( 'input', 'CVV' ) ); ?>" data-encrypted-name="cvv" />  <small>(<a href="javascript:void(0);" onclick="javascript:window.open('<?php echo pmpro_https_filter(PMPRO_URL)?>/pages/popup-cvv.html','cvv','toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=yes, resizable=yes, width=600, height=475');"><?php esc_html_e("what's this?", 'paid-memberships-pro' );?></a>)</small>
+								<input id="CVV" name="cvv" type="text" size="4" value="<?php if(!empty( $_REQUEST['CVV'])) { echo esc_attr(sanitize_text_field($_REQUEST['CVV'])); }?>" class="<?php echo esc_attr( pmpro_get_element_class( 'input', 'CVV' ) ); ?>" data-encrypted-name="cvv" />  <small>(<a href="javascript:void(0);" onclick="javascript:window.open('<?php echo esc_url( pmpro_https_filter(PMPRO_URL) )?>/pages/popup-cvv.html','cvv','toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=yes, resizable=yes, width=600, height=475');"><?php esc_html_e("what's this?", 'paid-memberships-pro' );?></a>)</small>
 							</div>
 					<?php } ?>
 					<?php if($pmpro_show_discount_code) { ?>
@@ -521,7 +521,13 @@ use Braintree\WebhookNotification as Braintree_WebhookNotification;
 					<?php } ?>
 				</div> <!-- end pmpro_checkout-fields -->
 				<?php if(!empty($sslseal)) { ?>
-					<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout-fields-rightcol pmpro_sslseal', 'pmpro_sslseal' ) ); ?>"><?php echo stripslashes($sslseal); ?></div>
+					<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout-fields-rightcol pmpro_sslseal', 'pmpro_sslseal' ) ); ?>">
+						<?php
+						// This value is set by admins and could contain JS. Will be replaced with a hook in future versions.
+						//phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+						echo stripslashes( $sslseal );
+						?>
+					</div>
 				</div> <!-- end pmpro_checkout-fields-display-seal -->
 				<?php } ?>
 			</div> <!-- end pmpro_payment_information_fields -->
@@ -618,6 +624,14 @@ use Braintree\WebhookNotification as Braintree_WebhookNotification;
 			//charge
 			try
 			{
+				/**
+				 * Filter the array of parameters to pass to the Braintree API for a sale transaction.
+				 *
+				 * @since 3.0
+				 *
+				 * @param array $braintree_sale_array Array of parameters to pass to the Braintree API for a sale transaction.
+				 * @param array The new sale array.
+				 */
 				$braintree_sale_array = apply_filters( 'pmpro_braintree_transaction_sale_array', array(
 					'amount' => $amount,
 					'customerId' => $this->customer->id
@@ -936,6 +950,15 @@ use Braintree\WebhookNotification as Braintree_WebhookNotification;
 				if(!empty($order->TotalBillingCycles))
 					$details['numberOfBillingCycles'] = $order->TotalBillingCycles;
 
+				/**
+				 * Filter the Braintree Subscription create array.
+				 *
+				 * @since 3.0
+				 *
+				 * @param array $details Array of details to create the subscription.
+				 * @return array $details Array of details to create the subscription.
+				 */
+				$details = apply_filters( 'pmpro_braintree_subscription_create_array', $details);
 				$result = Braintree_Subscription::create($details);
 			}
 			catch (Exception $e)
@@ -1185,14 +1208,22 @@ use Braintree\WebhookNotification as Braintree_WebhookNotification;
 	}
 
 	/**
-	 * Returns whether the gateway allows for payment method updates.
-	 *
+	 * Check whether or not a gateway supports a specific feature.
+	 * 
 	 * @since 3.0
-	 *
-	 * @return string|false 'individual' if the gateway allows for payment method updates for individual subscriptions, 
-	 *                      'all' if the gateway updates all subscriptions, or false if the gateway does not support payment method updates.
+	 * 
+	 * @return string|boolean $supports Returns whether or not the gateway supports the requested feature.
 	 */
-	function supports_payment_method_updates() {
-		return 'all';
+	public static function supports( $feature ) {
+		$supports = array(
+			'subscription_sync' => true,
+			'payment_method_updates' => 'all'
+		);
+
+		if ( empty( $supports[$feature] ) ) {
+			return false;
+		}
+
+		return $supports[$feature];
 	}
 }

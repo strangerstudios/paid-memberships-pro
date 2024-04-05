@@ -28,26 +28,28 @@ add_filter( 'block_categories_all', 'pmpro_block_categories' );
  * Register block types for the block editor.
  */
 function pmpro_register_block_types() {
-	register_block_type( PMPRO_DIR . '/blocks/build/account-invoices-section' );
-	register_block_type( PMPRO_DIR . '/blocks/build/account-profile-section' );	
-	register_block_type( PMPRO_DIR . '/blocks/build/account-links-section' );
- 	register_block_type( PMPRO_DIR . '/blocks/build/account-membership-section' );
-	register_block_type( PMPRO_DIR . '/blocks/build/account-page' );
-	register_block_type( PMPRO_DIR . '/blocks/build/billing-page' );
-	register_block_type( PMPRO_DIR . '/blocks/build/cancel-page' );
-	register_block_type( PMPRO_DIR . '/blocks/build/checkout-button' );
-	register_block_type( PMPRO_DIR . '/blocks/build/checkout-page' );
-	register_block_type( PMPRO_DIR . '/blocks/build/confirmation-page' );
-	register_block_type( PMPRO_DIR . '/blocks/build/invoice-page' );
-	register_block_type( PMPRO_DIR . '/blocks/build/levels-page' );
-	register_block_type( PMPRO_DIR . '/blocks/build/login' );
-	register_block_type( PMPRO_DIR . '/blocks/build/member-profile-edit' );
-	register_block_type( PMPRO_DIR . '/blocks/build/membership' );
-	register_block_type( PMPRO_DIR . '/blocks/build/single-level' );
-	register_block_type( PMPRO_DIR . '/blocks/build/single-level-name' );
-	register_block_type( PMPRO_DIR . '/blocks/build/single-level-expiration' );
-	register_block_type( PMPRO_DIR . '/blocks/build/single-level-description' );
-	register_block_type( PMPRO_DIR . '/blocks/build/single-level-price' );
+	if ( function_exists( 'register_block_type' ) ) {
+		register_block_type( PMPRO_DIR . '/blocks/build/account-invoices-section' );
+		register_block_type( PMPRO_DIR . '/blocks/build/account-profile-section' );	
+		register_block_type( PMPRO_DIR . '/blocks/build/account-links-section' );
+		register_block_type( PMPRO_DIR . '/blocks/build/account-membership-section' );
+		register_block_type( PMPRO_DIR . '/blocks/build/account-page' );
+		register_block_type( PMPRO_DIR . '/blocks/build/billing-page' );
+		register_block_type( PMPRO_DIR . '/blocks/build/cancel-page' );
+		register_block_type( PMPRO_DIR . '/blocks/build/checkout-button' );
+		register_block_type( PMPRO_DIR . '/blocks/build/checkout-page' );
+		register_block_type( PMPRO_DIR . '/blocks/build/confirmation-page' );
+		register_block_type( PMPRO_DIR . '/blocks/build/invoice-page' );
+		register_block_type( PMPRO_DIR . '/blocks/build/levels-page' );
+		register_block_type( PMPRO_DIR . '/blocks/build/login' );
+		register_block_type( PMPRO_DIR . '/blocks/build/member-profile-edit' );
+		register_block_type( PMPRO_DIR . '/blocks/build/membership' );
+		register_block_type( PMPRO_DIR . '/blocks/build/single-level' );
+		register_block_type( PMPRO_DIR . '/blocks/build/single-level-name' );
+		register_block_type( PMPRO_DIR . '/blocks/build/single-level-expiration' );
+		register_block_type( PMPRO_DIR . '/blocks/build/single-level-description' );
+		register_block_type( PMPRO_DIR . '/blocks/build/single-level-price' );
+	}
 }
 add_action( 'init', 'pmpro_register_block_types' );
 /**
@@ -144,22 +146,20 @@ function pmpro_apply_block_visibility( $attributes, $content ) {
 		// Setup for PMPro >= 3.0.
 		switch ( $attributes['segment'] ) {
 			case 'all':
-				$levels_to_check = $attributes['invert_restrictions'] == '0' ? null : '0';
+				$levels_to_check = null; // All levels.
 				break;
 			case 'specific':
-				// If inverting restrictions, we need to make all level IDs negative.
-				$levels_to_check = array_map( function( $level ) use ( $attributes ) {
-					return $attributes['invert_restrictions'] == '0' ? $level : '-' . $level;
-				}, $attributes['levels'] );
+				$levels_to_check = $attributes['levels']; // Specific levels.
 				break;
 			case 'logged_in':
-				$levels_to_check = $attributes['invert_restrictions'] == '0' ? 'L' : '-L';
+				$levels_to_check = 'L'; // Logged in users.
 				break;
 		}
 
-		if ( pmpro_hasMembershipLevel( $levels_to_check ) ) {
+		$should_show = empty( $attributes['invert_restrictions'] ) ? pmpro_hasMembershipLevel( $levels_to_check ) : ! pmpro_hasMembershipLevel( $levels_to_check );
+		if ( $should_show ) {
 			$output = do_blocks( $content );
-		} elseif ( ! empty( $attributes['show_noaccess'] ) && $attributes['invert_restrictions'] == '0' ) {
+		} elseif ( ! empty( $attributes['show_noaccess'] ) && empty( $attributes['invert_restrictions'] ) ) {
 			$output = pmpro_get_no_access_message( NULL, $attributes['levels'] );
 		}
 	}

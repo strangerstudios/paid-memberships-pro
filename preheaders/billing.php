@@ -1,6 +1,6 @@
 <?php
 
-global $wpdb, $current_user, $pmpro_msg, $pmpro_msgt, $bfirstname, $blastname, $baddress1, $baddress2, $bcity, $bstate, $bzipcode, $bcountry, $bphone, $bemail, $bconfirmemail, $CardType, $AccountNumber, $ExpirationMonth, $ExpirationYear, $pmpro_requirebilling, $pmpro_billing_order, $pmpro_billing_subscription, $pmpro_billing_level;
+global $wpdb, $current_user, $pmpro_msg, $pmpro_msgt, $bfirstname, $blastname, $baddress1, $baddress2, $bcity, $bstate, $bzipcode, $bcountry, $bphone, $bemail, $bconfirmemail, $CardType, $AccountNumber, $ExpirationMonth, $ExpirationYear, $pmpro_requirebilling, $pmpro_billing_subscription, $pmpro_billing_level;
 
 // Redirect non-user to the login page; pass the Billing page as the redirect_to query arg.
 if ( ! is_user_logged_in() ) {
@@ -9,41 +9,50 @@ if ( ! is_user_logged_in() ) {
     exit;
 }
 
-// Get the order that was passed in.
-$order_id = empty( $_REQUEST['order_id'] ) ? 0 : intval( $_REQUEST['order_id'] );
-$pmpro_billing_order = MemberOrder::get_order( $order_id );
+// Get the subscription and order that was passed in.
+if ( ! empty( $_REQUEST['pmpro_subscription_id'] ) ) {
+	// A subscription ID was passed. Get the subscription and its order.
+	$pmpro_billing_subscription = PMPro_Subscription::get_subscription( (int)$_REQUEST['pmpro_subscription_id'] );
+} else {
+	// No subscription or order was passed. Check if the user has exactly one active subscription. If so, use it.
+	$subscriptions = PMPro_Subscription::get_subscriptions_for_user( $current_user->ID );
+	if ( count( $subscriptions ) === 1 ) {
+		$pmpro_billing_subscription = $subscriptions[0];
+	}
+}
 
-if ( empty( $pmpro_billing_order ) ) {
-    // We need an order to update. Redirect to the account page.
+if ( empty( $pmpro_billing_subscription ) || $pmpro_billing_subscription->get_status() != 'active' || $pmpro_billing_subscription->get_user_id() != $current_user->ID ) {
+    // We don't have a sub, it isn't active, or it isn't for this user.
     wp_redirect( pmpro_url( 'account' ) );
     exit;
 }
 
-// Check that the order belongs to the current user.
-if ( $pmpro_billing_order->user_id != $current_user->ID ) {
-    // This order doesn't belong to the current user. Redirect to the account page.
-    wp_redirect( pmpro_url( 'account' ) );
-    exit;
-}
+// Get the order for this subscription.
+$newest_orders = $pmpro_billing_subscription->get_orders(
+	array(
+		'status'  => 'success',
+		'limit'   => 1,
+		'orderby' => '`timestamp` DESC, `id` DESC',
+	)
+);
+$pmpro_billing_order = ! empty( $newest_orders ) ? $newest_orders[0] : null;
 
-// Make sure that the order is in success status.
-if ( $pmpro_billing_order->status != 'success' ) {
-    // This order is not in success status. Redirect to the account page.
-    wp_redirect( pmpro_url( 'account' ) );
-    exit;
+if ( empty( $pmpro_billing_order ) || $pmpro_billing_order->user_id != $current_user->ID ) {
+	// We need an order for this user to update. Redirect to the account page.
+	wp_redirect( pmpro_url( 'account' ) );
+	exit;
 }
 
 // Get the subscription for this order and make sure that we can update its billing info.
-$pmpro_billing_subscription = PMPro_Subscription::get_subscription_from_subscription_transaction_id( $pmpro_billing_order->subscription_transaction_id, $pmpro_billing_order->gateway, $pmpro_billing_order->gateway_environment );
 $subscription_gateway_obj   = empty( $pmpro_billing_subscription ) ? null: $pmpro_billing_subscription->get_gateway_object();
-if ( empty( $pmpro_billing_subscription ) || $pmpro_billing_subscription->get_status() != 'active' || empty( $subscription_gateway_obj ) || empty( $subscription_gateway_obj->supports_payment_method_updates() ) ) {
+if ( empty( $subscription_gateway_obj ) || ! $subscription_gateway_obj->supports( 'payment_method_updates' ) ) {
     // We cannot update the billing info for this subscription. Redirect to the account page.
     wp_redirect( pmpro_url( 'account' ) );
     exit;
 }
 
 // Get the user's current membership level.
-$pmpro_billing_level            = pmpro_getSpecificMembershipLevelForUser( $current_user->ID, $pmpro_billing_order->membership_id );
+$pmpro_billing_level            = pmpro_getSpecificMembershipLevelForUser( $current_user->ID, $pmpro_billing_subscription->get_membership_level_id() );
 $current_user->membership_level = $pmpro_billing_level;
 
 //need to be secure?
@@ -263,10 +272,49 @@ if ($submit) {
             $pmproemail = new PMProEmail();
             $pmproemail->sendBillingAdminEmail($current_user, $pmpro_billing_order);
 
-            //update the user meta too
-            $meta_keys = array("pmpro_bfirstname", "pmpro_blastname", "pmpro_baddress1", "pmpro_baddress2", "pmpro_bcity", "pmpro_bstate", "pmpro_bzipcode", "pmpro_bcountry", "pmpro_bphone", "pmpro_bemail");
-            $meta_values = array($bfirstname, $blastname, $baddress1, $baddress2, $bcity, $bstate, $bzipcode, $bcountry, $bphone, $bemail, $CardType, hideCardNumber($AccountNumber), $ExpirationMonth, $ExpirationYear);
-            pmpro_replaceUserMeta($current_user->ID, $meta_keys, $meta_values);
+            // Save billing info ect, as user meta.
+			$meta_keys   = array();
+			$meta_values = array();
+
+			// Check if firstname and last name fields are set.
+			if ( ! empty( $bfirstname ) || ! empty( $blastname ) ) {
+				$meta_keys = array_merge( $meta_keys, array(
+					"pmpro_bfirstname",
+					"pmpro_blastname",
+				) );
+
+				$meta_values = array_merge( $meta_values, array(
+					$bfirstname,
+					$blastname,
+				) );
+			}
+
+			// Check if billing details are available, if not adjust the arrays.
+			if ( ! empty( $baddress1 ) ) {
+				$meta_keys = array_merge( $meta_keys, array(
+					"pmpro_baddress1",
+					"pmpro_baddress2",
+					"pmpro_bcity",
+					"pmpro_bstate",
+					"pmpro_bzipcode",
+					"pmpro_bcountry",
+					"pmpro_bphone",
+					"pmpro_bemail",
+				) );
+
+				$meta_values = array_merge( $meta_values, array(
+					$baddress1,
+					$baddress2,
+					$bcity,
+					$bstate,
+					$bzipcode,
+					$bcountry,
+					$bphone,
+					$bemail,
+				) );
+			}
+
+			pmpro_replaceUserMeta( $current_user->ID, $meta_keys, $meta_values );
 
             //message
             $pmpro_msg = sprintf(__('Information updated. <a href="%s">&laquo; back to my account</a>', 'paid-memberships-pro' ), pmpro_url("account"));
