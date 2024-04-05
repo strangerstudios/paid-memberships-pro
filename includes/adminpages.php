@@ -432,7 +432,7 @@ function pmpro_admin_membership_access_menu_bar() {
 	}
 
 	// Let's get the option now so we can show it.
-	$admin_membership_access = get_user_meta( $current_user->ID, 'pmpro_admin_membership_access', true );
+	$admin_membership_access = get_user_meta( $current_user->ID, 'pmpro_admin_membership_access', true ) ?: 'current';
 
 	// Set the title and the option value.
 	$title = '<span class="pmpro_admin-view pmpro_admin-view-' . esc_attr( $admin_membership_access ) . '">';
