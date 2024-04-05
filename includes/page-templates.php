@@ -232,7 +232,6 @@ function pmpro_page_template_notices() {
 				</p>
 				<p>
 					<a href="<?php echo esc_url( add_query_arg( array( 'page' => 'pmpro-pagesettings#pmpro-custom-page-template-settings' ), admin_url( 'admin.php' ) ) ); ?>" class="button"><?php esc_html_e( 'View outdated page templates', 'paid-memberships-pro' ); ?></a>
-					<a href="#" class="button button-secondary"><?php esc_html_e( 'Stop showing me this notice', 'paid-memberships-pro' ); ?></a>
 				</p>
 			</div>
 		</div>
