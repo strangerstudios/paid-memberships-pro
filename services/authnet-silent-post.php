@@ -1,18 +1,11 @@
 <?php
-	global $isapage;
-	$isapage = true;
-
-	global $lostr;
-	$logstr = '';
-
 	//in case the file is loaded directly
-	if(!defined("ABSPATH"))
-	{
-		define('WP_USE_THEMES', false);
-		require_once(dirname(__FILE__) . '/../../../../wp-load.php');
+	if( ! defined( 'ABSPATH' ) ) {
+		exit;
 	}
-
-	global $wpdb;
+	
+	global $lostr, $wpdb;
+	$logstr = '';
 
 	// Sets the PMPRO_DOING_WEBHOOK constant and fires the pmpro_doing_webhook action.
 	pmpro_doing_webhook( 'authnet', true );
@@ -49,7 +42,8 @@
 	if(defined('PMPRO_AUTHNET_SILENT_POST_DEBUG') && PMPRO_AUTHNET_SILENT_POST_DEBUG === "log")
 	{
 		//file
-		$loghandle = fopen(dirname(__FILE__) . "/../logs/authnet-silent-post.txt", "a+");
+		$logfile = apply_filters( 'pmpro_authnet_silent_post_logfile', dirname( __FILE__ ) . "/../logs/authnet-silent-post.txt" );
+		$loghandle = fopen( $logfile, "a+" );
 		fwrite($loghandle, $logstr);
 		fclose($loghandle);
 	} elseif(defined('PMPRO_AUTHNET_SILENT_POST_DEBUG') && false !== PMPRO_AUTHNET_SILENT_POST_DEBUG) {
@@ -113,14 +107,9 @@
 				$morder->billing->country = $fields['x_country'];
 				$morder->billing->phone = $fields['x_phone'];
 
-				//get CC info that is on file
-				$morder->cardtype = get_user_meta($user_id, "pmpro_CardType", true);
-				$morder->accountnumber = hideCardNumber(get_user_meta($user_id, "pmpro_AccountNumber", true), false);
-				$morder->expirationmonth = get_user_meta($user_id, "pmpro_ExpirationMonth", true);
-				$morder->expirationyear = get_user_meta($user_id, "pmpro_ExpirationYear", true);
-				$morder->ExpirationDate = $morder->expirationmonth . $morder->expirationyear;
-				$morder->ExpirationDate_YdashM = $morder->expirationyear . "-" . $morder->expirationmonth;
-
+				//Updates this order with the most recent orders payment method information and saves it. 
+				pmpro_update_order_with_recent_payment_method( $morder );
+				
 				//save
 				$morder->status = "success";
 				$morder->saveOrder();
@@ -156,11 +145,8 @@
 			$morder->billing->country = $fields['x_country'];
 			$morder->billing->phone = $fields['x_phone'];
 
-			//get CC info that is on file
-			$morder->cardtype = get_user_meta($user_id, "pmpro_CardType", true);
-			$morder->accountnumber = hideCardNumber(get_user_meta($user_id, "pmpro_AccountNumber", true), false);
-			$morder->expirationmonth = get_user_meta($user_id, "pmpro_ExpirationMonth", true);
-			$morder->expirationyear = get_user_meta($user_id, "pmpro_ExpirationYear", true);
+			//Updates this order with the most recent orders payment method information and saves it. 
+			pmpro_update_order_with_recent_payment_method( $morder );
 
 			// Email the user and ask them to update their credit card information
 			$pmproemail = new PMProEmail();

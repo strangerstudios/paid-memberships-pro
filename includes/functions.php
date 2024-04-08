@@ -39,7 +39,11 @@ function pmpro_setDBTables() {
 	$wpdb->pmpro_discount_codes_levels = $wpdb->prefix . 'pmpro_discount_codes_levels';
 	$wpdb->pmpro_discount_codes_uses = $wpdb->prefix . 'pmpro_discount_codes_uses';
 	$wpdb->pmpro_membership_levelmeta = $wpdb->prefix . 'pmpro_membership_levelmeta';
+	$wpdb->pmpro_subscriptions = $wpdb->prefix . 'pmpro_subscriptions';
 	$wpdb->pmpro_membership_ordermeta = $wpdb->prefix . 'pmpro_membership_ordermeta';
+	$wpdb->pmpro_subscriptionmeta = $wpdb->prefix . 'pmpro_subscriptionmeta';
+	$wpdb->pmpro_groups = $wpdb->prefix . 'pmpro_groups';
+	$wpdb->pmpro_membership_levels_groups = $wpdb->prefix . 'pmpro_membership_levels_groups';
 }
 pmpro_setDBTables();
 
@@ -48,7 +52,9 @@ function pmpro_is_plugin_active( $plugin ) {
 	return in_array( $plugin, (array) get_option( 'active_plugins', array() ) );
 }
 
-// scraping - override n if you have more than 1 group of matches and don't want the first group
+/**
+ * @param int $n Override if you have more than 1 group of matches and don't want the first group.
+ */
 function pmpro_getMatches( $p, $s, $firstvalue = false, $n = 1 ) {
 	$ok = preg_match_all( $p, $s, $matches );
 
@@ -76,27 +82,29 @@ function pmpro_br2nl( $text, $tags = 'br' ) {
 	return( $text );
 }
 
+/**
+ * get_option() should be used directly instead.
+ *
+ * Will be deprecated in a future release.
+ */
 function pmpro_getOption( $s, $force = false ) {
-	if ( get_option( 'pmpro_' . $s ) ) {
-		return get_option( 'pmpro_' . $s );
-	} else {
-		return '';
-	}
+	return get_option( 'pmpro_' . $s, '' );
 }
 
-function pmpro_setOption( $s, $v = null, $sanitize_function = 'sanitize_text_field', $autoload = false ) {
-	// no value is given, set v to the p var
+function pmpro_setOption( $s, $v = null, $sanitize_function = 'sanitize_text_field', $autoload = false ) {		
 	if ( $v === null && isset( $_POST[ $s ] ) ) {
+		// phpcs:disable WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 		if ( is_array( $_POST[ $s ] ) ) {
 			$v = array_map( $sanitize_function, $_POST[ $s ] );
 		} else {
 			$v = call_user_func( $sanitize_function, $_POST[ $s ] );
 		}
+		// phpcs:enable WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 	}
 
 	if ( is_array( $v ) ) {
 		$v = implode( ',', $v );
-	} else {
+	} elseif ( is_string( $v ) ) {
 		$v = trim( $v );
 	}
 
@@ -180,7 +188,9 @@ function pmpro_isLevelFree( &$level ) {
 	return $r;
 }
 
-// Given an array of levels, will return true if all of them are free.
+/**
+ * Given an array of levels, will return true if all of them are free.
+ */
 function pmpro_areLevelsFree( $levelarr ) {
 	if ( ! is_array( $levelarr ) ) {
 		return false; }
@@ -323,69 +333,7 @@ function pmpro_isLevelExpiringSoon( &$level ) {
 	return $r;
 }
 
-/**
- * Loads a template from one of the default paths (PMPro plugin or theme), or from filtered path
- *
- * @param null   $page_name - Name of the page/template
- * @param string $where - `local` or `url` (whether to load from FS or over http)
- * @param string $type - Type of template (valid: 'email' or 'pages', 'adminpages', 'preheader')
- * @param string $ext - File extension ('php', 'html', 'htm', etc)
- * @return string - The HTML for the template.
- *
- * TODO - Allow localized template files to be loaded?
- *
- * @since 1.8.9
- */
-function pmpro_loadTemplate( $page_name = null, $where = 'local', $type = 'pages', $ext = 'php' ) {
-	// called from page handler shortcode
-	if ( is_null( $page_name ) ) {
-		global $pmpro_page_name;
-		$page_name = $pmpro_page_name;
-	}
 
-	if ( $where == 'local' ) {
-		// template paths in order of priority (array gets reversed)
-		$default_templates = array(
-			PMPRO_DIR . "/{$type}/{$page_name}.{$ext}", // default plugin path
-			get_template_directory() . "/paid-memberships-pro/{$type}/{$page_name}.{$ext}", // parent theme
-			get_stylesheet_directory() . "/paid-memberships-pro/{$type}/{$page_name}.{$ext}", // child / active theme
-		);
-	} elseif ( $where == 'url' ) {
-		// template paths in order of priority (array gets reversed)
-		$default_templates = array(
-			PMPRO_URL . "/{$type}/{$page_name}.{$ext}", // default plugin path
-			get_template_directory_uri() . "/paid-memberships-pro/{$type}/{$page_name}.{$ext}", // parent theme
-			get_stylesheet_directory_uri() . "/paid-memberships-pro/{$type}/{$page_name}.{$ext}", // child / active theme
-		);
-
-	}
-	// Valid types: 'email', 'pages'
-	$templates = apply_filters( "pmpro_{$type}_custom_template_path", $default_templates, $page_name, $type, $where, $ext );
-	$user_templates = array_diff( $templates, $default_templates );
-	$allowed_default_templates = array_intersect( $templates, $default_templates );
-
-	// user specified a custom template path, so it has priority.
-	if ( ! empty( $user_templates ) ) {
-		$templates = array_merge($allowed_default_templates, $user_templates);
-	}
-
-	// last element included in the array is the most first one we try to load
-	$templates = array_reverse( $templates );
-
-	// look for template file to include
-	ob_start();
-	foreach ( $templates as $template_path ) {
-		// If loading a local file, check if it exists first
-		if ( $where == 'url' || file_exists( $template_path ) ) {
-			include $template_path;
-			break;
-		}
-	}
-	$template = ob_get_clean();
-
-	// return template content
-	return $template;
-}
 
 function pmpro_getLevelCost( &$level, $tags = true, $short = false ) {
 	// initial payment
@@ -441,7 +389,7 @@ function pmpro_getLevelCost( &$level, $tags = true, $short = false ) {
 
 	// trial part
 	if ( $level->trial_limit ) {
-		if ( (float)$level->trial_amount > 0 ) {
+		if ( (float)$level->trial_amount == 0 ) {
 			if ( $level->trial_limit == '1' ) {
 				$r .= ' ' . __( 'After your initial payment, your first payment is Free.', 'paid-memberships-pro' );
 			} else {
@@ -457,8 +405,8 @@ function pmpro_getLevelCost( &$level, $tags = true, $short = false ) {
 	}
 
 	// taxes part
-	$tax_state = pmpro_getOption( 'tax_state' );
-	$tax_rate = pmpro_getOption( 'tax_rate' );
+	$tax_state = get_option( 'pmpro_tax_state' );
+	$tax_rate = get_option( 'pmpro_tax_rate' );
 
 	if ( $tax_state && $tax_rate && ! pmpro_isLevelFree( $level ) ) {
 		$r .= sprintf( __( 'Customers in %1$s will be charged %2$s%% tax.', 'paid-memberships-pro' ), $tax_state, round( $tax_rate * 100, 2 ) );
@@ -472,7 +420,9 @@ function pmpro_getLevelCost( &$level, $tags = true, $short = false ) {
 	return $r;
 }
 
-// Similar to pmpro_getLevelCost, but loops through all levels in the incoming array and puts it all together.
+/**
+ * Similar to pmpro_getLevelCost, but loops through all levels in the incoming array and puts it all together.
+ */
 function pmpro_getLevelsCost( &$levels, $tags = true, $short = false ) {
 	// let's build the array to work from to consolidate recurring info.
 	// recurpmts[cycle_period][cycle_number][billing_limit] = total_amount
@@ -551,15 +501,15 @@ function pmpro_getLevelsCost( &$levels, $tags = true, $short = false ) {
 	// trial part - not as detailed as the single-level counterpart. Could be improved in the future.
 	if ( $trialperiods > 0 ) {
 		if ( $trialperiods == 1 ) {
-			$r .= __( 'Trial pricing has been applied to the first payment.', 'mmpu' );
+			$r .= __( 'Trial pricing has been applied to the first payment.', 'paid-memberships-pro' );
 		} else {
-			$r .= sprintf( __( 'Trial pricing has been applied to the first %d payments.', 'mmpu' ), $trialperiods );
+			$r .= sprintf( __( 'Trial pricing has been applied to the first %d payments.', 'paid-memberships-pro' ), $trialperiods );
 		}
 	}
 
 	// taxes part
-	$tax_state = pmpro_getOption( 'tax_state' );
-	$tax_rate = pmpro_getOption( 'tax_rate' );
+	$tax_state = get_option( 'pmpro_tax_state' );
+	$tax_rate = get_option( 'pmpro_tax_rate' );
 
 	if ( $tax_state && $tax_rate && ! pmpro_areLevelsFree( $levels ) ) {
 		$r .= sprintf( __( 'Customers in %1$s will be charged %2$s%% tax.', 'paid-memberships-pro' ), $tax_state, round( $tax_rate * 100, 2 ) );
@@ -639,6 +589,113 @@ function pmpro_getLevelsExpiration( &$levels ) {
 }
 
 /**
+ * Get the text to display a membership's expiration date.
+ *
+ * @since 3.0
+ *
+ * @param object|int  $level The level object or ID to get the expiration date for.
+ * @param WP_User|int $user  The user object or ID to get the expiration date for.
+ *
+ * @return string The expiration date text.
+ */
+function pmpro_get_membership_expiration_text( $level, $user ) {
+	// If a user ID was passed, get the user object.
+	if ( is_numeric( $user ) ) {
+		$user = get_userdata( $user );
+	}
+
+	// Make sure that we have a user object.
+	if ( empty( $user ) || ! is_a( $user, 'WP_User' ) ) {
+		return '';
+	}
+
+	// If a level ID was passed, get the level object.
+	if ( is_numeric( $level ) ) {
+		$level = pmpro_getSpecificMembershipLevelForUser( $user->ID, (int)$level );
+	}
+
+	// Make sure that we have a level object.
+	if ( empty( $level ) || ! is_object( $level ) ) {
+		return '';
+	}
+
+	/**
+	 * Filter to include the expiration time with expiration date.
+	 * Used in adminpages/member-edit/pmpro-class-member-edit-panel-memberships.php.
+	 *
+	 * @param bool $show_time Whether to show the expiration time with expiration date.
+	 *
+	 * @return bool Whether to show the expiration time with expiration date.
+	 */
+	$show_time = apply_filters( 'pmpro_show_time_on_expiration_date', false );
+
+	// Generate the expiration date text.
+	if ( empty( $level->enddate ) ) {
+		// If the level does not have an enddate, show a dash (&#8212;).
+		$text = esc_html_x( '&#8212;', 'A dash is shown when there is no expiration date.', 'paid-memberships-pro' );
+	} elseif ( $show_time ) {
+		// Show the enddate with the time.
+		$text = sprintf(
+			// translators: %1$s is the date and %2$s is the time.
+			esc_html__( '%1$s at %2$s', 'paid-memberships-pro' ),
+			date_i18n( get_option( 'date_format'), $level->enddate ),
+			date_i18n( get_option( 'time_format'), $level->enddate )
+		);
+	} else {
+		// Show the enddate without the time.
+		$text = date_i18n( get_option( 'date_format' ), $level->enddate );
+	}
+
+	// Apply legacy filter pmpro_memberslist_expires_column.
+	if ( is_admin() && has_filter( 'pmpro_memberslist_expires_column' ) ) {
+		/**
+		 * Legacy filter for showing the expiration date in the WP Dashboard.
+		 *
+		 * Note: Since level data is not passed, this filter is not MMPU-compatible.
+		 *
+		 * @deprecated 3.0 Use the pmpro_membership_expiration_text filter instead.
+		 *
+		 * @param string  $text The expiration date text to show for this level.
+		 * @param WP_User $user The user that the expiration date is for.
+		 *
+		 * @return string $text The expiration date text to show for this level.
+		 */
+		$text = apply_filters_deprecated( 'pmpro_memberslist_expires_column', array( $text, $user ), '3.0', 'pmpro_membership_expiration_text' );
+	}
+
+	// Apply legacy filter pmpro_account_membership_expiration_text.
+	if ( ! is_admin() && has_filter( 'pmpro_account_membership_expiration_text' ) ) {
+		/**
+		 * Legacy filter for showing the expiration date on the frontend.
+		 *
+		 * @deprecated 3.0 Use the pmpro_membership_expiration_text filter instead.
+		 *
+		 * @param string $text  The expiration date text to show for this level.
+		 * @param object $level The level that the expiration date is for.
+		 *
+		 * @return string $text The expiration date text to show for this level.
+		 */
+		$text = apply_filters_deprecated( 'pmpro_account_membership_expiration_text', array( $text, $level ), '3.0', 'pmpro_membership_expiration_text' );
+	}
+
+	/**
+	 * Filter the expiration date text to show for this level.
+	 *
+	 * @since 3.0
+	 *
+	 * @param string  $text The expiration date text to show for this level.	
+	 * @param object  $level The level that the expiration date is for.
+	 * @param WP_User $user The user that the expiration date is for.
+	 * @param bool    $show_time Whether to show the expiration time with expiration date.
+	 *
+	 * @return string $text The expiration date text to show for this level.
+	 */
+	$text = apply_filters( 'pmpro_membership_expiration_text', $text, $level, $user, $show_time );
+
+	return $text;
+}
+
+/**
  * pmpro_membership_level Meta Functions
  *
  * @ssince 1.8.6.5
@@ -678,6 +735,25 @@ function delete_pmpro_membership_order_meta( $order_id, $meta_key, $meta_value =
 	return delete_metadata( 'pmpro_membership_order', $order_id, $meta_key, $meta_value );
 }
 
+/**
+ * pmpro_subscription Meta Functions
+ */
+function add_pmpro_subscription_meta( $subscription_id, $meta_key, $meta_value, $unique = false ) {
+	return add_metadata( 'pmpro_subscription', $subscription_id, $meta_key, $meta_value, $unique );
+}
+
+function get_pmpro_subscription_meta( $subscription_id, $key = '', $single = false ) {
+	return get_metadata( 'pmpro_subscription', $subscription_id, $key, $single );
+}
+
+function update_pmpro_subscription_meta( $subscription_id, $meta_key, $meta_value, $prev_value = '' ) {
+	return update_metadata( 'pmpro_subscription', $subscription_id, $meta_key, $meta_value, $prev_value );
+}
+
+function delete_pmpro_subscription_meta( $subscription_id, $meta_key, $meta_value = '' ) {
+	return delete_metadata( 'pmpro_subscription', $subscription_id, $meta_key, $meta_value );
+}
+
 function pmpro_hideAds() {
 	global $pmpro_display_ads;
 	return ! $pmpro_display_ads;
@@ -688,54 +764,35 @@ function pmpro_displayAds() {
 	return $pmpro_display_ads;
 }
 
+/**
+ * Get the next payment date for a user.
+ *
+ * This function will only return the next payment date for the subscription with
+ * the most recent start date. For this reason, it is not MMPU-compatible.
+ *
+ * @since unknown
+ *
+ * @param int|null $user_id      User ID. Defaults to the current user.
+ * @param string   $order_status If value passed in is not "success", will get next payment date for a cancelled subscription.
+ * @param string   $format       Date format to return.
+ *
+ * @return string|bool Date of next payment, or false if no subscription is found.
+ */
 function pmpro_next_payment( $user_id = null, $order_status = 'success', $format = 'timestamp' ) {
 	global $wpdb, $current_user;
 	if ( ! $user_id ) {
 		$user_id = $current_user->ID;
 	}
 
-	if ( ! $user_id ) {
-		$r = false;
-	} else {
-		// get last order
-		$order = new MemberOrder();
-		$order->getLastMemberOrder( $user_id, $order_status );
-
-		// get current membership level
-		$level = pmpro_getMembershipLevelForUser( $user_id );
-
-		if ( ! empty( $order ) && ! empty( $order->id ) && ! empty( $level ) && ! empty( $level->id ) && ! empty( $level->cycle_number ) ) {
-			// next payment date
-			$nextdate = strtotime( '+' . $level->cycle_number . ' ' . $level->cycle_period, $order->getTimestamp() );
-
-			$r = $nextdate;
-		} else {
-			// no order or level found, or level was not recurring
-			$r = false;
+	if ( $user_id ) {
+		// Convert passed order status to a subscription status.
+		$subscription_status = ( $order_status === 'success' || ( is_array( $order_status ) && in_array( 'success', $order_status ) ) ) ? 'active' : 'cancelled';
+		$subscriptions = PMPro_Subscription::get_subscriptions_for_user( $user_id, null, $subscription_status );
+		if ( ! empty( $subscriptions ) ) {
+			return $subscriptions[0]->get_next_payment_date( $format );
 		}
 	}
-
-	/**
-	 * Filter the next payment date.
-	 *
-	 * @since 1.8.5
-	 *
-	 * @param mixed $r false or the next payment date timestamp
-	 * @param int $user_id The user id to get the next payment date for
-	 * @param string $order_status Status or array of statuses to find the last order based on.
-	 */
-	$r = apply_filters( 'pmpro_next_payment', $r, $user_id, $order_status );
-
-	// return in desired format
-	if ( $r === false ) {
-		return false;               // always return false when no date found
-	} elseif ( $format == 'timestamp' ) {
-		return $r;
-	} elseif ( $format == 'date_format' ) {
-		return date_i18n( get_option( 'date_format' ), $r );
-	} else {
-		return date_i18n( $format, $r );  // assume a PHP date format
-	}
+	return false;
 }
 
 if ( ! function_exists( 'last4' ) ) {
@@ -816,18 +873,19 @@ if ( ! function_exists( 'formatPhone' ) ) {
 }
 
 function pmpro_showRequiresMembershipMessage() {
-	// TODO $current_user $post_membership_levels_names are undefined variables
+    global $current_user, $post_membership_levels_names;
+
 	// get the correct message
 	if ( is_feed() ) {
-		$content = pmpro_getOption( 'rsstext' );
+		$content = get_option( 'pmpro_rsstext' );
 		$content = str_replace( '!!levels!!', implode( ', ', $post_membership_levels_names ), $content );
 	} elseif ( $current_user->ID ) {
 		// not a member
-		$content = pmpro_getOption( 'nonmembertext' );
+		$content = get_option( 'pmpro_nonmembertext' );
 		$content = str_replace( '!!levels!!', implode( ', ', $post_membership_levels_names ), $content );
 	} else {
 		// not logged in!
-		$content = pmpro_getOption( 'notloggedintext' );
+		$content = get_option( 'pmpro_notloggedintext' );
 		$content = str_replace( '!!levels!!', implode( ', ', $post_membership_levels_names ), $content );
 	}
 }
@@ -836,13 +894,14 @@ function pmpro_showRequiresMembershipMessage() {
  * Function to check if a user has specified membership levels.
  *
  * pmpro_hasMembershipLevel() checks if the passed user is a member of the passed level
- * $level may either be the ID or name of the desired membership_level. (or an array of such)
+ * $level may either be the ID or name of the desired membership_level. (or an array of such or a comma separated string)
  * If $user_id is omitted, the value will be retrieved from $current_user.
  *
  *  Return values:
  *   * Success returns boolean true.
  *   * Failure returns a string containing the error message.
  *
+ * @since 2.12.3 Added support to pass comma separated value to $levels
  * @since 1.8.5 Added 'e' option for expired members.
  * @since 1.0.0
  *
@@ -872,7 +931,17 @@ function pmpro_hasMembershipLevel( $levels = null, $user_id = null ) {
 		$return = ! empty( $membership_levels );
 	} else {
 		if ( ! is_array( $levels ) ) {
-			$levels = array( $levels );
+			// Check for a comma.
+			$levels_str = (string)$levels;
+			if ( strpos( $levels_str, ',' ) !== false ) {
+				// We have a string with at least 1 comma in it, turn it into an array.
+				$level_ids = explode( ',', $levels_str );
+				// Trim whitespace from the levels ids or names.
+				$levels = array_map( 'trim', $level_ids );				
+			} else {
+				// No comma, but we want an array of levels.
+				$levels = array( $levels );
+			}
 		}
 
 		if ( empty( $membership_levels ) ) {
@@ -895,7 +964,7 @@ function pmpro_hasMembershipLevel( $levels = null, $user_id = null ) {
 			} elseif ( in_array( '-L', $levels ) || in_array( '-l', $levels ) ) {
 				$return = ( empty( $user_id ) || $user_id != $current_user->ID );       // -L, not logged in users
 			} elseif ( in_array( 'E', $levels ) || in_array( 'e', $levels ) ) {
-				$sql = "SELECT id FROM $wpdb->pmpro_memberships_users WHERE user_id=$user_id AND status='expired' LIMIT 1";
+				$sql = "SELECT id FROM $wpdb->pmpro_memberships_users WHERE user_id = " . (int) $user_id . " AND status ='expired' LIMIT 1";
 				$expired = $wpdb->get_var( $sql );                                    // E, expired members
 				$return = ! empty( $expired );
 			}
@@ -943,33 +1012,102 @@ function pmpro_hasMembershipLevel( $levels = null, $user_id = null ) {
 }
 
 /**
- * Wrapper for pmpro_changeMembershipLevel to cancel one level.
+ * Remove a membership level from a user.
  *
  * @since 1.8.11
+ *
+ * @param int $level_id ID of the level to remove.
+ * @param int $user_id ID of the user to remove the level from.
+ * @param string $status Status to set the membership to.
+ *
+ * @return bool True if the level was removed, false otherwise.
  */
-function pmpro_cancelMembershipLevel( $cancel_level, $user_id = null, $old_level_status = 'inactive' ) {
-	return pmpro_changeMembershipLevel( 0, $user_id, $old_level_status, $cancel_level );
+function pmpro_cancelMembershipLevel( $level_id, $user_id = null, $status = 'inactive' ) {
+	global $current_user, $wpdb, $pmpro_error;
+
+	// If we weren't passed a user ID, use the current user.
+	if ( empty( $user_id ) && ! empty( $current_user->ID ) ) {
+		$user_id = $current_user->ID;
+	} elseif ( empty( $user_id ) ) {
+		$pmpro_error = __( 'User ID not found.', 'paid-memberships-pro' );
+		return false;
+	}
+
+	// If the user doesn't have the level, we don't need to do anything.
+	$user_levels = pmpro_getMembershipLevelsForUser( $user_id );
+	$user_level_ids = array_map( 'intval', wp_list_pluck( $user_levels, 'id' ) );
+	if ( ! in_array( (int)$level_id, $user_level_ids ) ) {
+		return false;
+	}
+
+	// Set old user levels to be used in the pmpro_do_action_after_all_membership_level_changes() function.
+	pmpro_set_old_user_levels( $user_id );
+
+	// If we are not giving the user a new level, run the before change membership action.
+	if ( ! in_array( $status, array( 'changed', 'admin_changed' ) ) ) {
+		/**
+		 * Action to run before the membership level changes.
+		 *
+		 * @param int $level_id ID of the level changed to.
+		 * @param int $user_id ID of the user changed.
+		 * @param int $cancel_level ID of the level being cancelled if specified.
+		 */
+		do_action( 'pmpro_before_change_membership_level', 0, $user_id, pmpro_getMembershipLevelsForUser( $user_id ), $level_id );
+	}
+
+	// Remove the membership level.	
+	$cols_set = array( 'status'=> $status, 'enddate' => current_time( 'mysql' ) );
+	$cols_where = array( 'user_id' => $user_id, 'membership_id' => $level_id, 'status' => 'active' );
+	$cols_format = array( '%s', '%s');
+	if ( $wpdb->update( $wpdb->pmpro_memberships_users, $cols_set, $cols_where, $cols_format ) === false ) {
+		$pmpro_error = __( 'Error interacting with database', 'paid-memberships-pro' ) . ': ' . ( $wpdb->last_error ? $wpdb->last_error : 'unavailable' );
+		return false;
+	}
+
+	// Check if we should cancel the user's subscription.
+	if ( apply_filters( 'pmpro_cancel_previous_subscriptions', true ) ) {
+		$active_subscriptions = PMPro_Subscription::get_subscriptions_for_user( $user_id, $level_id );
+		foreach ( $active_subscriptions as $subscription ) {
+			$subscription->cancel_at_gateway();
+		}
+	}
+
+	// If we are not giving the user a new level, clear the level cache for this user and run the change membership action.
+	if ( ! in_array( $status, array( 'changed', 'admin_changed' ) ) ) {
+		// Clear the level cache for this user.
+		pmpro_clear_level_cache_for_user( $user_id );
+
+		/**
+		 * Action to run after the membership level changes.
+		 *
+		 * @param int $level_id ID of the level changed to.
+		 * @param int $user_id ID of the user changed.
+		 * @param int $cancel_level ID of the level being cancelled if specified.
+		 */
+		do_action( 'pmpro_after_change_membership_level', 0, $user_id, $level_id );
+	}
+
+	return true;
 }
 
 /**
- * Create, add, remove or updates the membership level of the given user to the given level.
+ * Give a membership level to a user.
  *
- * $level may either be the ID or name of the desired membership_level.
  * If $user_id is omitted, the value will be retrieved from $current_user.
  *
- * @param int    $level ID of level to set as new level, use 0 to cancel membership
- * @param int    $user_id ID of the user to change levels for
- * @param string $old_level_status The status to set for the row in the memberships users table. (e.g. inactive, cancelled, admin_cancelled, expired) Defaults to 'inactive'.
- * @param int    $cancel_level If set cancel just this one level instead of all active levels (to support Multiple Memberships per User)
+ * @param int|array $level ID of level to set as new level, use 0 to cancel membership
+ * @param int       $user_id ID of the user to change levels for
+ * @param string    $old_level_status Deprecated. The status to set for the row in the memberships users table. (e.g. inactive, cancelled, admin_cancelled, expired) Defaults to 'inactive'.
+ * @param int       $cancel_level Deprecated. If set cancel just this one level instead of all active levels (to support Multiple Memberships per User)
  *
+ * @return bool|void
  * Return values:
  *      Success returns boolean true.
  *      Failure returns boolean false.
  *		No change returns null.
  */
 function pmpro_changeMembershipLevel( $level, $user_id = null, $old_level_status = 'inactive', $cancel_level = null ) {
-	global $wpdb;
-	global $current_user, $pmpro_error;
+	global $current_user, $pmpro_error, $wpdb, $pmpro_giving_level;
 
 	if ( empty( $user_id ) ) {
 		$user_id = $current_user->ID;
@@ -989,57 +1127,61 @@ function pmpro_changeMembershipLevel( $level, $user_id = null, $old_level_status
 	 */
 	$level = apply_filters( 'pmpro_change_level', $level, $user_id, $old_level_status, $cancel_level );
 
-	if ( empty( $level ) ) {
-		$level = 0;
-	} else if ( is_array( $level ) ) {
-		// custom level
-		if ( empty( $level['membership_id'] ) ) {
-			$pmpro_error = __( 'No membership_id specified in pmpro_changeMembershipLevel.', 'paid-memberships-pro' );
-			return false;
-		}
-
-		$level_obj = pmpro_getLevel( $level['membership_id'] );
-		if ( empty( $level_obj ) ) {
-			$pmpro_error = __( 'Invalid level.', 'paid-memberships-pro' );
-			return false;
-		}
-		unset( $level_obj );
-	} else {
-		// just level id
-		$level_obj = pmpro_getLevel( $level );
-		if ( empty( $level_obj ) ) {
-			$pmpro_error = __( 'Invalid level.', 'paid-memberships-pro' );
-			return false;
-		}
-		$level = $level_obj->id;
-		unset( $level_obj );
+	// Check if we are trying to cancel a single level (Deprecated).
+	if ( empty( $level ) && ! empty( $cancel_level ) ) {
+		_doing_it_wrong( __FUNCTION__, esc_html__( 'The $cancel_level parameter is deprecated. Use pmpro_cancelMembershipLevel() instead.', 'paid-memberships-pro' ), '3.0' );
+		return pmpro_cancelMembershipLevel( $cancel_level, $user_id, $old_level_status );
 	}
 
-	// if it's a custom level, they're changing
-	if ( ! is_array( $level ) ) {
-		// are they even changing?
-		if ( pmpro_hasMembershipLevel( $level, $user_id ) ) {
-			return;
+	// Check if we are trying to cancel all levels (Deprecated).
+	if ( empty( $level ) && empty( $cancel_level ) ) {
+		_doing_it_wrong( __FUNCTION__, esc_html__( 'The pmpro_cancelMembershipLevel() function should be used to cancel membership levels.', 'paid-memberships-pro' ), '3.0' );
+		$membership_levels = pmpro_getMembershipLevelsForUser( $user_id );
+		$success = true;
+		foreach ( $membership_levels as $membership_level ) {
+			$deletion_success = pmpro_cancelMembershipLevel( $membership_level->id, $user_id, $old_level_status );
+			if ( ! $deletion_success ) {
+				$success = false;
+			}
 		}
+		return $success;
 	}
 
-	// get all active membershipships for this user
-	$old_levels = pmpro_getMembershipLevelsForUser( $user_id );
-
-	global $pmpro_old_user_levels;
-	if ( empty( $pmpro_old_user_levels ) ) {
-		$pmpro_old_user_levels = array();
-	}
-	if ( ! array_key_exists( $user_id, $pmpro_old_user_levels ) ) {
-		$pmpro_old_user_levels[$user_id] = empty( $old_levels ) ? array() : $old_levels;
+	// Now we know that we are actually adding a level.
+	// Check if they they already have the membership level that we are changing them to.
+	if ( ! is_array( $level ) && pmpro_hasMembershipLevel( $level, $user_id ) ) {
+		return;
 	}
 
-		// get level id
+	// Get the level ID.
 	if ( is_array( $level ) ) {
-		$level_id = $level['membership_id'];    // custom level
+		// We have a custom level. Make sure that it is valid.
+		if ( empty( $level['membership_id'] ) ) {
+			$pmpro_error = __( 'No membership_id specified in pmpro_changeMembershipLevel().', 'paid-memberships-pro' );
+			return false;
+		}
+		$level_id = (int) $level['membership_id'];
+	} elseif ( is_numeric( $level ) ) {
+		// Only a level ID was passed.
+		$level_id = (int) $level; 
 	} else {
-		$level_id = $level; // just id
+		// Invalid level passed.
+		$pmpro_error = __( 'Invalid level parameter passed to pmpro_changeMembershipLevel().', 'paid-memberships-pro' );
+		return false;
 	}
+
+	// Make sure that level actually exists.
+	if ( empty( pmpro_getLevel( $level_id ) ) ) {
+		$pmpro_error = __( 'Invalid level.', 'paid-memberships-pro' );
+		return false;
+	}	
+
+	// Set old user levels to be used in the pmpro_do_action_after_all_membership_level_changes() function.
+	pmpro_set_old_user_levels( $user_id );
+
+	// Get all levels for the user.
+	$membership_levels = pmpro_getMembershipLevelsForUser( $user_id );
+	$membership_ids    = wp_list_pluck( $membership_levels, 'id' );
 
 	/**
 	 * Action to run before the membership level changes.
@@ -1049,92 +1191,31 @@ function pmpro_changeMembershipLevel( $level, $user_id = null, $old_level_status
 	 * @param array $old_levels array of prior levels the user belonged to.
 	 * @param int $cancel_level ID of the level being cancelled if specified
 	 */
-	do_action( 'pmpro_before_change_membership_level', $level_id, $user_id, $old_levels, $cancel_level );
+	do_action( 'pmpro_before_change_membership_level', $level_id, $user_id, $membership_levels, null );
 
-	// deactivate old memberships based on the old_level_status passed in (updates pmpro_memberships_users table)
-	$pmpro_deactivate_old_levels = true;
-	/**
-	 * Filter whether old levels should be deactivated or not. This supports the MMPU addon.
-	 * Typically you'll want to hook into pmpro_before_change_membership_level
-	 * or pmpro_after_change_membership_level later to run your own deactivation logic.
-	 *
-	 * @since  1.8.11
-	 * @var $pmpro_deactivate_old_levels bool True or false if levels should be deactivated. Defaults to true.
-	 */
-	$pmpro_deactivate_old_levels = apply_filters( 'pmpro_deactivate_old_levels', $pmpro_deactivate_old_levels );
+	// Cancel all membership levels for this user in the same level group if only one level per group is allowed.
+	$level_group_id = pmpro_get_group_id_for_level( $level_id );
+	$level_group = pmpro_get_level_group( $level_group_id );
+	if ( ! empty( $level_group) && empty( $level_group->allow_multiple_selections ) ) {
+		// Get all levels in the group.
+		$levels_in_group = pmpro_get_levels_for_group( $level_group->id );
+		$group_level_ids = wp_list_pluck( $levels_in_group, 'id' );
 
-	// make sure we deactivate the specified level if it's passed in
-	if ( ! empty( $cancel_level ) ) {
-		$pmpro_deactivate_old_levels = true;
-		$new_old_levels = array();
-		foreach ( $old_levels as $key => $old_level ) {
-			if ( $old_level->id == $cancel_level ) {
-				$new_old_levels[] = $old_levels[ $key ];
-				break;
-			}
+		// Get the intersection of the two arrays.
+		$levels_to_cancel = array_intersect( $group_level_ids, $membership_ids );
+
+		// Cancel the levels.
+		foreach ( $levels_to_cancel as $level_to_cancel ) {
+			pmpro_cancelMembershipLevel( $level_to_cancel, $user_id, 'changed' );
 		}
-		$old_levels = $new_old_levels;
-	}
-
-	if ( $old_levels && $pmpro_deactivate_old_levels ) {
-		foreach ( $old_levels as $old_level ) {
-
-			$sql = "UPDATE $wpdb->pmpro_memberships_users SET `status`='$old_level_status', `enddate`='" . esc_sql( current_time( 'mysql' ) ) . "' WHERE `id`=" . esc_sql( $old_level->subscription_id );
-
-			if ( ! $wpdb->query( $sql ) ) {
-				$pmpro_error = __( 'Error interacting with database', 'paid-memberships-pro' ) . ': ' . ( $wpdb->last_error ? $wpdb->last_error : 'unavailable' );
-
-				return false;
-			}
-		}
-	}
-
-	// should we cancel their gateway subscriptions?
-	if ( ! empty( $cancel_level ) ) {
-		$pmpro_cancel_previous_subscriptions = true;    // don't filter cause we're doing just the one
-
-		$other_order_ids = $wpdb->get_col( "SELECT id FROM $wpdb->pmpro_membership_orders WHERE user_id = '" . esc_sql( $user_id ) . "' AND status = 'success' AND membership_id = '" . esc_sql( $cancel_level ) . "' ORDER BY id DESC LIMIT 1" );
 	} else {
-		$pmpro_cancel_previous_subscriptions = true;
-		if ( isset( $_REQUEST['cancel_membership'] ) && $_REQUEST['cancel_membership'] == false ) {
-			$pmpro_cancel_previous_subscriptions = false;
-		}
-		$pmpro_cancel_previous_subscriptions = apply_filters( 'pmpro_cancel_previous_subscriptions', $pmpro_cancel_previous_subscriptions );
-
-		$other_order_ids = $wpdb->get_col(
-			"SELECT id, IF(subscription_transaction_id = '', CONCAT('UNIQUE_SUB_ID_', id), subscription_transaction_id) as unique_sub_id
-											FROM $wpdb->pmpro_membership_orders
-											WHERE user_id = '" . esc_sql( $user_id ) . "'
-												AND status = 'success'
-											GROUP BY unique_sub_id
-											ORDER BY id DESC"
-		);
-	}
-
-	/**
-	 * Filter the other/old order ids in case we want to exclude some.
-	 * NOTE: As of version 2.0.3, includes/filters.php has code to
-	 * ignore the order for the current checkout.
-	 */
-	$other_order_ids = apply_filters( 'pmpro_other_order_ids_to_cancel', $other_order_ids );
-
-	// cancel any other subscriptions they have (updates pmpro_membership_orders table)
-	if ( $pmpro_cancel_previous_subscriptions && ! empty( $other_order_ids ) ) {
-		foreach ( $other_order_ids as $order_id ) {
-			$c_order = new MemberOrder( $order_id );
-			$c_order->cancel();
-
-			if ( ! empty( $c_order->error ) ) {
-				$pmpro_error = $c_order->error;
-			}
-
-			if( $old_level_status == 'error' ) {
-				$c_order->updateStatus("error");
-			}
+		// If the user already has this membership level, we still want to cancel it.
+		if ( in_array( $level_id, $membership_ids ) ) {
+			pmpro_cancelMembershipLevel( $level_id, $user_id, 'changed' );
 		}
 	}
-
-	// insert current membership
+	
+	// Insert current membership
 	if ( ! empty( $level ) ) {
 		// make sure the dates are in good formats
 		if ( is_array( $level ) ) {
@@ -1224,18 +1305,8 @@ function pmpro_changeMembershipLevel( $level, $user_id = null, $old_level_status
 		}
 	}
 
-	// remove cached level
-	global $all_membership_levels;
-	unset( $all_membership_levels[ $user_id ] );
-
-	// remove levels cache for user
-	$cache_key = 'user_' . $user_id . '_levels';
-	wp_cache_delete( $cache_key, 'pmpro' );
-	wp_cache_delete( $cache_key . '_all', 'pmpro' );
-	wp_cache_delete( $cache_key . '_active', 'pmpro' );
-
-	// update user data and call action
-	pmpro_set_current_user();
+	// Clear the level cache for this user.
+	pmpro_clear_level_cache_for_user( $user_id );
 
 	/**
 	 * Action to run after the membership level changes.
@@ -1244,8 +1315,45 @@ function pmpro_changeMembershipLevel( $level, $user_id = null, $old_level_status
 	 * @param int $user_id ID of the user changed.
 	 * @param int $cancel_level ID of the level being cancelled if specified.
 	 */
-	do_action( 'pmpro_after_change_membership_level', $level_id, $user_id, $cancel_level );
+	do_action( 'pmpro_after_change_membership_level', $level_id, $user_id, null );
+
 	return true;
+}
+
+/**
+ * Set old user levels to be used in the pmpro_do_action_after_all_membership_level_changes() function.
+ *
+ * @param int $user_id ID of the user to set the old levels for.
+ */
+function pmpro_set_old_user_levels( $user_id ) {
+	global $pmpro_old_user_levels;
+	if ( empty( $pmpro_old_user_levels ) ) {
+		$pmpro_old_user_levels = array();
+	}
+	if ( ! array_key_exists( $user_id, $pmpro_old_user_levels ) ) {
+		$old_levels = pmpro_getMembershipLevelsForUser( $user_id );
+		$pmpro_old_user_levels[$user_id] = empty( $old_levels ) ? array() : $old_levels;
+	}
+}
+
+/**
+ * Clear the membership level cache for a user.
+ *
+ * @param int $user_id ID of the user to clear the cache for.
+ */
+function pmpro_clear_level_cache_for_user( $user_id ) {
+	// Removed cached global.
+	global $all_membership_levels;
+	unset( $all_membership_levels[ $user_id ] );
+
+	// Remove levels cache for user.
+	$cache_key = 'user_' . $user_id . '_levels';
+	wp_cache_delete( $cache_key, 'pmpro' );
+	wp_cache_delete( $cache_key . '_all', 'pmpro' );
+	wp_cache_delete( $cache_key . '_active', 'pmpro' );
+
+	// Update user data.
+	pmpro_set_current_user();
 }
 
 /**
@@ -1301,26 +1409,29 @@ function pmpro_listCategories( $parent_id = 0, $level_categories = array() ) {
 
 	if ( $cats ) {
 		foreach ( $cats as $cat ) {
-			$name = 'membershipcategory_' . $cat->term_id;
 			if ( ! empty( $level_categories ) ) {
 				$checked = checked( in_array( $cat->term_id, $level_categories ), true, false );
 			} else {
 				$checked = '';
-			}
-			echo "<ul><li class=membershipcategory><input type=checkbox name={$name} id={$name} value=yes {$checked}><label for={$name}>{$cat->name}</label>";
-			pmpro_listCategories( $cat->term_id, $level_categories );
-			echo '</li></ul>';
+			} ?>
+			<div class="pmpro_clickable">
+				<input type="checkbox" name="membershipcategory_<?php echo esc_attr( $cat->term_id ); ?>" id="membershipcategory_<?php echo esc_attr( $cat->term_id ); ?>" value="yes" <?php echo esc_attr( $checked ); ?>>
+				<label for="membershipcategory_<?php echo esc_attr( $cat->term_id ); ?>"><?php echo esc_html( $cat->name ); ?></label>
+			</div>
+			<?php pmpro_listCategories( $cat->term_id, $level_categories ); ?>
+			<?php
 		}
 	}
 }
 
-/*
- pmpro_toggleMembershipCategory() creates or deletes a linking entry between the membership level and post category tables.
+/**
+ * pmpro_toggleMembershipCategory() creates or deletes a linking entry between the membership level and post category tables.
  *
- * @param $level may either be the ID or name of the desired membership_level.
- * @param $category must be a valid post category ID.
- * @param $value
+ * @param int $level may either be the ID or name of the desired membership_level.
+ * @param int $category must be a valid post category ID.
+ * @param bool $value
  *
+ * @return string|true
  * Return values:
  *		Success returns boolean true.
  *		Failure returns a string containing the error message.
@@ -1331,19 +1442,19 @@ function pmpro_toggleMembershipCategory( $level, $category, $value ) {
 
 	if ( ( $level = intval( $level ) ) <= 0 ) {
 		$safe = addslashes( $level );
-		if ( ( $level = intval( $wpdb->get_var( "SELECT id FROM {$wpdb->pmpro_membership_levels} WHERE name = '$safe' LIMIT 1" ) ) ) <= 0 ) {
+		if ( ( $level = intval( $wpdb->get_var( "SELECT id FROM {$wpdb->pmpro_membership_levels} WHERE name = '" . esc_sql( $safe ) . "' LIMIT 1" ) ) ) <= 0 ) {
 			return __( 'Membership level not found.', 'paid-memberships-pro' );
 		}
 	}
 
 	if ( $value ) {
-		$sql = "REPLACE INTO {$wpdb->pmpro_memberships_categories} (`membership_id`,`category_id`) VALUES ('$level','$category')";
+		$sql = "REPLACE INTO {$wpdb->pmpro_memberships_categories} (`membership_id`,`category_id`) VALUES ('" . esc_sql( $level ) . "','" . esc_sql( $category ) . "')";
 		$wpdb->query( $sql );
 		if ( $wpdb->last_error ) {
 			return $wpdb->last_error;
 		}
 	} else {
-		$sql = "DELETE FROM {$wpdb->pmpro_memberships_categories} WHERE `membership_id` = '$level' AND `category_id` = '$category' LIMIT 1";
+		$sql = "DELETE FROM {$wpdb->pmpro_memberships_categories} WHERE `membership_id` = '" . esc_sql( $level ) . "' AND `category_id` = '" . esc_sql( $category ). "' LIMIT 1";
 		$wpdb->query( $sql );
 		if ( $wpdb->last_error ) {
 			return $wpdb->last_error;
@@ -1353,17 +1464,18 @@ function pmpro_toggleMembershipCategory( $level, $category, $value ) {
 	return true;
 }
 
-/*
- pmpro_updateMembershipCategories() ensures that all those and only those categories given
-* are associated with the given membership level.
-*
-* @param $level is a valid membership level ID or name
-* @param $categories is an array of post category IDs
-*
-* Return values:
-*		Success returns boolean true.
-*		Failure returns a string containing the error message.
-*/
+/**
+ * pmpro_updateMembershipCategories() ensures that all those and only those categories given
+ * are associated with the given membership level.
+ *
+ * @param string|int $level is a valid membership level ID or name
+ * @param int[] $categories is an array of post category IDs
+ *
+ * @return string|true
+ * Return values:
+ *		Success returns boolean true.
+ *		Failure returns a string containing the error message.
+ */
 function pmpro_updateMembershipCategories( $level, $categories ) {
 	global $wpdb;
 
@@ -1393,15 +1505,13 @@ function pmpro_updateMembershipCategories( $level, $categories ) {
 	return true;
 }
 
-/*
- pmpro_getMembershipCategories() returns the categories for a given level
-*
-* @param $level_id is a valid membership level ID
-*
-* Return values:
-*		Success returns boolean true.
-*		Failure returns boolean false.
-*/
+/**
+ * pmpro_getMembershipCategories() returns the categories for a given level
+ *
+ * @param int $level_id is a valid membership level ID
+ *
+ * @return int[]
+ */
 function pmpro_getMembershipCategories( $level_id ) {
 	$level_id = intval( $level_id );
 
@@ -1500,7 +1610,7 @@ function pmpro_getPaginationString( $page = 1, $totalitems = 0, $limit = 15, $ad
 	*/
 	$pagination = '';
 	if ( $lastpage > 1 ) {
-		$pagination .= '<div class="pmpro_pagination"';
+		$pagination .= '<span class="pmpro_pagination"';
 		if ( ! empty( $margin ) || ! empty( $padding ) ) {
 			$pagination .= ' style="';
 			if ( $margin ) {
@@ -1578,7 +1688,7 @@ function pmpro_getPaginationString( $page = 1, $totalitems = 0, $limit = 15, $ad
 		} else {
 			$pagination .= '<span class="disabled">next &raquo;</span>';
 		}
-		$pagination .= "</div>\n";
+		$pagination .= "</span>\n";
 	}
 
 	return $pagination;
@@ -1721,7 +1831,9 @@ function pmpro_generateUsername( $firstname = '', $lastname = '', $email = '' ) 
 	return $username;
 }
 
-// get a new random code for discount codes
+/**
+ * Get a new random code for discount codes.
+ */
 function pmpro_getDiscountCode( $seed = null ) {
 	global $wpdb;
 
@@ -1729,8 +1841,17 @@ function pmpro_getDiscountCode( $seed = null ) {
 	static $count = 0;
 	$count++;
 
+	if( defined( 'AUTH_KEY' ) && defined( 'SECURE_AUTH_KEY' ) ) {
+		$auth_code = AUTH_KEY;
+		$secure_auth_code = SECURE_AUTH_KEY;
+	} else {
+		//Generate our own random string and hash it
+		$auth_code = md5( rand() );
+		$secure_auth_code = md5( rand() );
+	}
+
 	while ( empty( $code ) ) {
-		$scramble = md5( AUTH_KEY . microtime() . $seed . SECURE_AUTH_KEY . $count );
+		$scramble = md5( $auth_code . microtime() . $seed . $secure_auth_code . $count );
 		$code = substr( $scramble, 0, 10 );
 		$check = $wpdb->get_var( "SELECT code FROM $wpdb->pmpro_discount_codes WHERE code = '" . esc_sql( $code ) . "' LIMIT 1" );
 		if ( $check || is_numeric( $code ) ) {
@@ -1741,7 +1862,9 @@ function pmpro_getDiscountCode( $seed = null ) {
 	return strtoupper( $code );
 }
 
-// is a discount code valid - level_id could be a scalar or an array (or unset)
+/**
+ * Is a discount code valid - $level_id could be a scalar or an array (or unset)
+ */
 function pmpro_checkDiscountCode( $code, $level_id = null, $return_errors = false ) {
 	global $wpdb;
 
@@ -1806,7 +1929,7 @@ function pmpro_checkDiscountCode( $code, $level_id = null, $return_errors = fals
 			} else {
 				$level_id = intval( $level_id );
 			}
-			$code_level = $wpdb->get_row( "SELECT l.id, cl.*, l.name, l.description, l.allow_signups FROM $wpdb->pmpro_discount_codes_levels cl LEFT JOIN $wpdb->pmpro_membership_levels l ON cl.level_id = l.id WHERE cl.code_id = '" . esc_sql( $dbcode->id ) . "' AND cl.level_id IN (" . esc_sql( $level_id ) . ") LIMIT 1" );
+			$code_level = $wpdb->get_row( "SELECT l.id, cl.*, l.name, l.description, l.allow_signups FROM $wpdb->pmpro_discount_codes_levels cl LEFT JOIN $wpdb->pmpro_membership_levels l ON cl.level_id = l.id WHERE cl.code_id = '" . esc_sql( $dbcode->id ) . "' AND cl.level_id IN (" . $level_id . ") LIMIT 1" ); // $level_id is already escaped above.
 
 			if ( empty( $code_level ) ) {
 				$error = __( 'This discount code does not apply to this membership level.', 'paid-memberships-pro' );
@@ -1855,10 +1978,16 @@ function pmpro_checkDiscountCode( $code, $level_id = null, $return_errors = fals
 }
 
 function pmpro_no_quotes( $s, $quotes = array( "'", '"' ) ) {
+	if ( empty( $s ) ) {
+		$s = '';
+	}
+
 	return str_replace( $quotes, '', $s );
 }
 
-// from: http://www.php.net/manual/en/function.implode.php#86845
+/**
+ * From: http://www.php.net/manual/en/function.implode.php#86845
+ */
 function pmpro_implodeToEnglish( $array, $conjunction = 'and' ) {
 	// sanity check
 	if ( ! $array || ! count( $array ) ) {
@@ -1904,8 +2033,6 @@ function pmpro_text_limit( $text, $limit, $finish = '&hellip;' ) {
  * Filters the separator used between action navigation links.
  *
  * @since 2.3
- *
- * @param string $separator The separator used between action links.
  */
 function pmpro_actions_nav_separator() {
 	$separator = apply_filters( 'pmpro_actions_nav_separator', ' | ' );
@@ -1933,7 +2060,9 @@ function pmpro_get_no_access_message( $content, $level_ids, $level_names = NULL 
 		$level_names = array();
 		foreach ( $level_ids as $key => $id ) {
 			$level_obj = pmpro_getLevel( $id );
-			$level_names[] = $level_obj->name;
+			if ( ! empty( $level_obj ) ) {
+				$level_names[] = $level_obj->name;
+			}
 		}
 	}
 
@@ -1953,30 +2082,31 @@ function pmpro_get_no_access_message( $content, $level_ids, $level_names = NULL 
 	$pmpro_content_message_post = '</div>';
 
 	$sr_search = array( '!!levels!!', '!!referrer!!', '!!login_url!!', '!!login_page_url!!', '!!levels_url!!', '!!levels_page_url!!' );
-	$sr_replace = array( pmpro_implodeToEnglish( $level_names ), urlencode( site_url( $_SERVER['REQUEST_URI'] ) ), esc_url( pmpro_login_url() ), esc_url( pmpro_login_url() ), esc_url( pmpro_url( 'levels' ) ), esc_url( pmpro_url( 'levels' ) ) );
+	$sr_replace = array( pmpro_implodeToEnglish( $level_names ), urlencode( site_url( esc_url_raw( $_SERVER['REQUEST_URI'] ) ) ), esc_url( pmpro_login_url() ), esc_url( pmpro_login_url() ), esc_url( pmpro_url( 'levels' ) ), esc_url( pmpro_url( 'levels' ) ) );
 
 	// Get the correct message to show at the bottom.
 	if ( is_feed() ) {
-		$newcontent = apply_filters( 'pmpro_rss_text_filter', stripslashes( pmpro_getOption( 'rsstext' ) ) );
+		$newcontent = apply_filters( 'pmpro_rss_text_filter', stripslashes( get_option( 'pmpro_rsstext' ) ) );
 		$content .= $pmpro_content_message_pre . str_replace( $sr_search, $sr_replace, $newcontent ) . $pmpro_content_message_post;
 	} elseif ( $current_user->ID ) {
 		//not a member
-		$newcontent = apply_filters( 'pmpro_non_member_text_filter', stripslashes( pmpro_getOption( 'nonmembertext' ) ) );
+		$newcontent = apply_filters( 'pmpro_non_member_text_filter', stripslashes( get_option( 'pmpro_nonmembertext' ) ) );
 		$content .= $pmpro_content_message_pre . str_replace( $sr_search, $sr_replace, $newcontent ) . $pmpro_content_message_post;
 	} else {
 		//not logged in!
-		$newcontent = apply_filters( 'pmpro_not_logged_in_text_filter', stripslashes( pmpro_getOption( 'notloggedintext' ) ) );
+		$newcontent = apply_filters( 'pmpro_not_logged_in_text_filter', stripslashes( get_option( 'pmpro_notloggedintext' ) ) );
 		$content .= $pmpro_content_message_pre . str_replace( $sr_search, $sr_replace, $newcontent ) . $pmpro_content_message_post;
 	}
 
 	return $content;
 }
 
-/*
- pmpro_getMembershipLevelForUser() returns the first active membership level for a user
+/**
+ * pmpro_getMembershipLevelForUser() returns the first active membership level for a user
  *
  * If $user_id is omitted, the value will be retrieved from $current_user.
  *
+ * @return false|object
  * Return values:
  *		Success returns the level object.
  *		Failure returns false.
@@ -2060,19 +2190,20 @@ function pmpro_getMembershipLevelForUser( $user_id = null, $force = false ) {
 	}
 }
 
-/*
- pmpro_getMembershipLevelsForUser() returns the membership levels for a user
+/**
+ * pmpro_getMembershipLevelsForUser() returns the membership levels for a user
  *
  * If $user_id is omitted, the value will be retrieved from $current_user.
- * By default it only includes actvie memberships.
+ * By default it only includes active memberships.
  *
+ * @return array|false
  * Return values:
  *		Success returns an array of level objects.
  *		Failure returns false.
  */
 function pmpro_getMembershipLevelsForUser( $user_id = null, $include_inactive = false ) {
+	global $current_user, $pmpro_pages;
 	if ( empty( $user_id ) ) {
-		global $current_user;
 		$user_id = $current_user->ID;
 	}
 
@@ -2082,6 +2213,45 @@ function pmpro_getMembershipLevelsForUser( $user_id = null, $include_inactive = 
 
 	// make sure user id is int for security
 	$user_id = intval( $user_id );
+
+	// Admins have special rules for membership levels. Check them here.
+	if ( $user_id == $current_user->ID && current_user_can( 'manage_options' ) ) {
+		// Make sure that we are not on a page where we want to always show the user's true levels.
+		if (
+			! is_admin() &&
+			( empty( $GLOBALS['wp_query'] ) || ! pmpro_is_checkout() ) &&
+			( empty( $pmpro_pages['account'] ) || ! is_page( $pmpro_pages['account'] ) ) &&
+			( empty( $pmpro_pages['billing'] ) || ! is_page( $pmpro_pages['billing'] ) ) &&
+			( empty( $pmpro_pages['cancel'] ) || ! is_page( $pmpro_pages['cancel'] ) ) &&
+			( empty( $pmpro_pages['checkout'] ) || ! is_page( $pmpro_pages['checkout'] ) ) &&
+			( empty( $pmpro_pages['confirmation'] ) || ! is_page( $pmpro_pages['confirmation'] ) ) &&
+			( empty( $pmpro_pages['invoice'] ) || ! is_page( $pmpro_pages['invoice'] ) ) &&
+			( empty( $pmpro_pages['levels'] ) || ! is_page( $pmpro_pages['levels'] ) ) &&
+			! apply_filters( 'pmpro_disable_admin_membership_access', false )
+		) {
+			// This user meta can be changed via the admin bar.
+			$admin_membership_access = get_user_meta( $current_user->ID, 'pmpro_admin_membership_access', true );
+
+			if ( 'no' === $admin_membership_access ) {
+				return array();
+			} elseif ( 'current' !== $admin_membership_access ) {
+				$all_levels = pmpro_getAllLevels( true );
+
+				// Make sure that each level has all the necessary fields.
+				foreach ( $all_levels as $key => $level ) {
+					$level->ID = $level->id;
+					$level->subscription_id = null;
+					$level->code_id = null;
+					$level->startdate = strtotime( '-1 year' );
+					$level->enddate = strtotime ( '+1 year' );
+				}
+				return $all_levels;
+			}
+
+			// If we get here, the admin membership access is set to 'current'.
+			// Continue checking access as normal.
+		}
+	}
 
 	global $wpdb;
 
@@ -2154,12 +2324,13 @@ function pmpro_getMembershipLevelsForUser( $user_id = null, $include_inactive = 
  *
  * If $user_id is null, the value will be retrieved from $current_user.
  *
+ * @param int $user_id User ID to check for
+ * @param int $level_id Level ID to check for.
+ *
+ * @return false|object
  * Return values:
  *      Success returns the level object.
  *      Failure returns false.
- *
- * @param  int $user_id User ID to check for
- * @param  int $level_id Level ID to check for.
  */
 function pmpro_getSpecificMembershipLevelForUser( $user_id, $level_id ) {
 	if ( empty( $user_id ) ) {
@@ -2182,11 +2353,12 @@ function pmpro_getSpecificMembershipLevelForUser( $user_id, $level_id ) {
 	return false;
 }
 
-/*
- pmpro_getLevel() returns the level object for a level
+/**
+ * pmpro_getLevel() returns the level object for a level
  *
- * @param $level may be the level id or name
+ * @param int|string|object $level may be the level id or name
  *
+ * @return false|object
  * Return values:
  *		Success returns the level object.
  *		Failure returns false.
@@ -2230,14 +2402,17 @@ function pmpro_getLevel( $level ) {
 	return $pmpro_levels[ $level_id ];
 }
 
-/*
-	Get all PMPro membership levels.
-
-	@param	bool  $include_hidden  Include levels marked as hidden/inactive.
-	@param  bool  $use_cache	   If false, use $pmpro_levels global. If true use other caches.
-	@param  bool  $force           Resets the static var caches as well.
-*/
-function pmpro_getAllLevels( $include_hidden = false, $use_cache = false, $force = false ) {
+/**
+ * Get all PMPro membership levels.
+ *
+ * @since 3.0 deprecated the second `$use_cache` argument.
+ *
+ * @param bool $include_hidden      Include levels marked as hidden/inactive.
+ * @param bool $deprecated_argument No longer used.
+ * @param bool $force               Resets the static var caches.
+ */
+function pmpro_getAllLevels( $include_hidden = false, $deprecated_argument = false, $force = false ) {
+	// The global $pmpro_levels variable is deprecated and should no longer be used, but we'll set it for backwards compatibility.
 	global $pmpro_levels, $wpdb;
 
 	static $pmpro_all_levels;			// every single level
@@ -2249,16 +2424,13 @@ function pmpro_getAllLevels( $include_hidden = false, $use_cache = false, $force
 		$pmpro_visible_levels = NULL;
 	}
 
-	// just use the $pmpro_levels global
-	if ( ! empty( $pmpro_levels ) && ! $use_cache ) {
-		return $pmpro_levels;
-	}
-
 	// If use_cache is true check if we have something in a static var.
 	if ( $include_hidden && isset( $pmpro_all_levels ) ) {
+		$pmpro_levels = $pmpro_all_levels;
 		return $pmpro_all_levels;
 	}
 	if ( ! $include_hidden && isset( $pmpro_visible_levels ) ) {
+		$pmpro_levels = $pmpro_visible_levels;
 		return $pmpro_visible_levels;
 	}
 
@@ -2310,61 +2482,84 @@ function pmpro_are_any_visible_levels() {
  * Get level at checkout and place into $pmpro_level global.
  * If no level is passed or found in the URL parameters, global vars,
  * or in the post options, then this will return the first level found.
+ *
  * @param int $level_id (optional) Pass a level ID to force that level.
- * @param string $discount_code (optional) Pass a discount code to force that code.
+ * @param string $discount_code (optional) Pass a discount code to force that code
+ *
+ * @return mixed|void
  */
 function pmpro_getLevelAtCheckout( $level_id = null, $discount_code = null ) {
 	global $pmpro_level, $wpdb, $post;
 
-	// reset pmpro_level
+	static $function_cache = array();
+
+	// Check if we have a cached value to use.
+	$cache_key = md5( serialize( array( $level_id, $discount_code ) ) );
+	if ( array_key_exists( $cache_key, $function_cache ) ) {
+		// Set the global and return the cached value.
+		$pmpro_level = $function_cache[ $cache_key ];
+		return $pmpro_level;
+	}
+
+	// Reset $pmpro_level global.
 	$pmpro_level = null;
 
-	// default to level passed in via URL
+	// Default to level passed in via URL.
+	if ( empty( $level_id ) && ! empty( $_REQUEST['pmpro_level'] ) ) {
+		$level_id = intval( $_REQUEST['pmpro_level'] );
+	}
+
+	// If we don't have a level, check the legacy 'level' request parameter.
 	if ( empty( $level_id ) && ! empty( $_REQUEST['level'] ) ) {
+		// TODO: We may want to show a message here that the level parameter is deprecated.
 		$level_id = intval( $_REQUEST['level'] );
 	}
 
-	// no level, check for a default level in the custom fields for this post
+	// If we still don't have a level yet, check for a default level in the custom fields for this post.
 	if ( empty( $level_id ) && ! empty( $post ) ) {
+		$level_id = intval( get_post_meta( $post->ID, 'pmpro_default_level', true ) );
+	}
 
-		$level_id = get_post_meta( $post->ID, 'pmpro_default_level', true );
+	// If we still don't have a level, use the default level.
+	if ( empty( $level_id ) ) {
+		$all_levels = pmpro_getAllLevels( false, false );
 
-		// if still empty, let's try get first available level.
-		if ( empty( $level_id ) ) {
-			$all_levels = pmpro_getAllLevels( false, false );
-
-			if ( ! empty( $all_levels ) ) {
-				// Get lowest level ID.
-				$default_level =  min( array_keys( $all_levels ) );
-			} else {
-				$default_level = null;
-			}
-
-			$level_id = apply_filters( 'pmpro_default_level', intval( $default_level ) );
-
-			// Bail back to levels page if level ID is empty or less than 1.
-			if ( empty( $level_id ) || $level_id < 1 || ! is_int( $level_id ) ) {
-				return;
-			}
+		if ( ! empty( $all_levels ) ) {
+			// Get lowest level ID.
+			$default_level =  min( array_keys( $all_levels ) );
+		} else {
+			$default_level = null;
 		}
+
+		$level_id = apply_filters( 'pmpro_default_level', intval( $default_level ) );
 	}
 
-	// default to discount code passed in
+	// If we still don't have a level, bail.
+	if ( empty( $level_id ) || intval( $level_id ) < 1 ) {
+		return;
+	}
+
+	// default to discount code passed in via URL.
+	if ( empty( $discount_code ) && ! empty( $_REQUEST['pmpro_discount_code'] ) ) {
+		$discount_code = preg_replace( '/[^A-Za-z0-9\-]/', '', sanitize_text_field( $_REQUEST['pmpro_discount_code'] ) );
+	}
+
+	// If we still don't have a discount code, check the legacy 'discount_code' request parameter.
 	if ( empty( $discount_code ) && ! empty( $_REQUEST['discount_code'] ) ) {
-		$discount_code = preg_replace( '/[^A-Za-z0-9\-]/', '', $_REQUEST['discount_code'] );
+		$discount_code = preg_replace( '/[^A-Za-z0-9\-]/', '', sanitize_text_field( $_REQUEST['discount_code'] ) );
 	}
 
-	// what level are they purchasing? (discount code passed)
+	// If we still don't have a discount code, add a filter to let other plugins add one.
+	if ( empty( $discount_code ) ) {
+		$discount_code = apply_filters( 'pmpro_default_discount_code', null, $level_id );
+	}
+
+	// If we are using a discount code, check it and get the level.
 	if ( ! empty( $level_id ) && ! empty( $discount_code ) ) {
-		$discount_code_id = $wpdb->get_var( "SELECT id FROM $wpdb->pmpro_discount_codes WHERE code = '" . esc_sql( $discount_code ) . "' LIMIT 1" );		
+		$discount_code_id = $wpdb->get_var( "SELECT id FROM $wpdb->pmpro_discount_codes WHERE code = '" . esc_sql( $discount_code ) . "' LIMIT 1" );
 
 		// check code
-		global $pmpro_checkout_level_ids; // Set by MMPU.
-		if ( isset( $pmpro_checkout_level_ids ) ) {
-			$code_check = pmpro_checkDiscountCode( $discount_code, $pmpro_checkout_level_ids, true );
-		} else {
-			$code_check = pmpro_checkDiscountCode( $discount_code, $level_id, true );
-		}
+		$code_check = pmpro_checkDiscountCode( $discount_code, $level_id, true );
 		if ( $code_check[0] != false ) {
 			$sqlQuery    = "SELECT l.id, cl.*, l.name, l.description, l.allow_signups, l.confirmation FROM $wpdb->pmpro_discount_codes_levels cl LEFT JOIN $wpdb->pmpro_membership_levels l ON cl.level_id = l.id LEFT JOIN $wpdb->pmpro_discount_codes dc ON dc.id = cl.code_id WHERE dc.code = '" . esc_sql( $discount_code ) . "' AND cl.level_id = '" . esc_sql( $level_id ) . "' LIMIT 1";
 			$pmpro_level = $wpdb->get_row( $sqlQuery );
@@ -2375,21 +2570,27 @@ function pmpro_getLevelAtCheckout( $level_id = null, $discount_code = null ) {
 			}
 
 			// filter adjustments to the level
-			$pmpro_level->code_id = $discount_code_id;
-			$pmpro_level          = apply_filters( 'pmpro_discount_code_level', $pmpro_level, $discount_code_id );
+			$pmpro_level->code_id       = $discount_code_id;
+			$pmpro_level->discount_code = $discount_code;
+			$pmpro_level                = apply_filters( 'pmpro_discount_code_level', $pmpro_level, $discount_code_id );
 		} else {
 			// error with discount code, we want to halt checkout
 			pmpro_setMessage( $code_check[1], 'pmpro_error' );
 		}
 	}
 
-	// what level are they purchasing? (no discount code)
+	// If we don't have a level object yet, pull it from the database.
 	if ( empty( $pmpro_level ) && ! empty( $level_id ) ) {
 		$pmpro_level = $wpdb->get_row( "SELECT * FROM $wpdb->pmpro_membership_levels WHERE id = '" . esc_sql( $level_id ) . "' AND allow_signups = 1 LIMIT 1" );
 	}
 
-	// filter the level (for upgrades, etc)
+	// Filter the level (for upgrades, etc).
 	$pmpro_level = apply_filters( 'pmpro_checkout_level', $pmpro_level );
+
+	// Cache the result for future use if this is a "top level" call to this function.
+	if ( ! doing_filter( 'pmpro_checkout_level' ) ) {
+		$function_cache[ $cache_key ] = $pmpro_level;
+	}
 
 	return $pmpro_level;
 }
@@ -2402,7 +2603,7 @@ function pmpro_getLevelAtCheckout( $level_id = null, $discount_code = null ) {
  *
  */
 function pmpro_sort_levels_by_order( $pmpro_levels ) {
-	$pmpro_level_order = pmpro_getOption( 'level_order' );
+	$pmpro_level_order = get_option( 'pmpro_level_order' );
 
 	// No custom sort order, just return.
 	if ( empty( $pmpro_level_order ) ) {
@@ -2433,14 +2634,16 @@ function pmpro_getCheckoutButton( $level_id, $button_text = null, $classes = nul
 		// get level
 		$level = pmpro_getLevel( $level_id );
 
+		$level_id = intval( $level_id );
+
 		if( ! empty( $level ) ) {
 
 			// default button text with name field for replacement
 			if ( empty( $button_text ) ) {
-				$button_text = __( 'Sign Up for !!name!! Now', 'paid-memberships-pro' );
+				$button_text = esc_html__( 'Sign Up for !!name!! Now', 'paid-memberships-pro' );
 			}
 
-			// replace vars
+			// replace vars - this will be escaped when outputting (see below).
 			$replacements = array(
 				'!!id!!' => $level->id,
 				'!!name!!' => $level->name,
@@ -2461,7 +2664,7 @@ function pmpro_getCheckoutButton( $level_id, $button_text = null, $classes = nul
 	}
 
 	if ( empty( $button_text ) ) {
-		$button_text = __( 'Sign Up Now', 'paid-memberships-pro' );
+		$button_text = esc_html__( 'Sign Up Now', 'paid-memberships-pro' );
 	}
 
 	if ( empty( $classes ) ) {
@@ -2469,9 +2672,9 @@ function pmpro_getCheckoutButton( $level_id, $button_text = null, $classes = nul
 	}
 
 	if ( ! empty( $level_id ) ) {
-		$r = '<a href="' . pmpro_url( 'checkout', '?level=' . $level_id ) . '" class="' . $classes . '">' . $button_text . '</a>';
+		$r = '<a href="' . esc_url( pmpro_url( 'checkout', '?pmpro_level=' . $level_id ) ) . '" class="' . esc_attr( $classes ) . '">' . wp_kses_post( $button_text ) . '</a>';
 	} else {
-		$r = '<a href="' . pmpro_url( 'checkout' ) . '" class="' . $classes . '">' . $button_text . '</a>';
+		$r = '<a href="' . esc_url( pmpro_url( 'checkout' ) ) . '" class="' . esc_attr( $classes ) . '">' . wp_kses_post( $button_text ) . '</a>';
 	}
 
 	return $r;
@@ -2511,10 +2714,10 @@ function pmpro_getDomainFromURL( $url = null ) {
 	return $domain;
 }
 
-/*
-	Get a member's start date... either in general or for a specific level_id.
-*/
 if ( ! function_exists( 'pmpro_getMemberStartdate' ) ) {
+	/**
+	 * Get a member's start date... either in general or for a specific level_id.
+	 */
 	function pmpro_getMemberStartdate( $user_id = null, $level_id = 0 ) {
 		if ( empty( $user_id ) ) {
 			global $current_user;
@@ -2530,7 +2733,7 @@ if ( ! function_exists( 'pmpro_getMemberStartdate' ) ) {
 			global $wpdb;
 
 			if ( ! empty( $level_id ) ) {
-				$sqlQuery = "SELECT UNIX_TIMESTAMP(CONVERT_TZ(startdate, '+00:00', @@global.time_zone)) FROM $wpdb->pmpro_memberships_users WHERE status = 'active' AND membership_id IN(" . esc_sql( $level_id ) . ") AND user_id = '" . $user_id . "' ORDER BY id LIMIT 1";
+				$sqlQuery = "SELECT UNIX_TIMESTAMP(CONVERT_TZ(startdate, '+00:00', @@global.time_zone)) FROM $wpdb->pmpro_memberships_users WHERE status = 'active' AND membership_id IN(" . (int) $level_id . ") AND user_id = '" . $user_id . "' ORDER BY id LIMIT 1";
 			} else {
 				$sqlQuery = "SELECT UNIX_TIMESTAMP(CONVERT_TZ(startdate, '+00:00', @@global.time_zone)) FROM $wpdb->pmpro_memberships_users WHERE status = 'active' AND user_id = '" . esc_sql( $user_id ) . "' ORDER BY id LIMIT 1";
 			}
@@ -2544,10 +2747,10 @@ if ( ! function_exists( 'pmpro_getMemberStartdate' ) ) {
 	}
 }
 
-/*
-	How long has this member been a member
-*/
 if ( ! function_exists( 'pmpro_getMemberDays' ) ) {
+	/**
+	 * How long has this member been a member.
+	 */
 	function pmpro_getMemberDays( $user_id = null, $level_id = 0 ) {
 		if ( empty( $user_id ) ) {
 			global $current_user;
@@ -2585,17 +2788,33 @@ function pmpro_setMessage( $message, $type, $force = false ) {
 }
 
 /**
- * Show a a PMPro message set via pmpro_setMessage
+ * Show a PMPro message set via pmpro_setMessage
  *
  * @since 1.8.5
  */
 function pmpro_showMessage() {
 	global $pmpro_msg, $pmpro_msgt;
 
-	if ( ! empty( $pmpro_msg ) ) {
+	$allowed_html = array (
+		'a' => array (
+			'href' => array(),
+			'target' => array(),
+			'title' => array(),
+		),		
+		'em' => array(),
+		'p' => array(),
+		'span' => array(
+			'class' => array(),
+		),
+		'strong' => array(),
+		'ul' => array(),
+		'li' => array(),
+	);
+
+	if ( ! empty( $pmpro_msg ) ) {		
 		?>
-		<div class="<?php echo pmpro_get_element_class( 'pmpro_msg ' . $pmpro_msgt, $pmpro_msgt ); ?>">
-			<p><?php echo $pmpro_msg; ?></p>
+		<div role="alert" id="pmpro_message" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_message ' . $pmpro_msgt, $pmpro_msgt ) ); ?>">
+			<p><?php echo wp_kses( $pmpro_msg, $allowed_html ); ?></p>
 		</div>
 		<?php
 	}
@@ -2680,8 +2899,11 @@ function pmpro_get_field_class( $class, $element ) {
 }
 add_filter( 'pmpro_element_class', 'pmpro_get_field_class', 10, 2 );
 
-// get a var from $_GET or $_POST
+/**
+ * Get a var from $_GET or $_POST.
+ */
 function pmpro_getParam( $index, $method = 'REQUEST', $default = '', $sanitize_function = 'sanitize_text_field' ) {
+	// phpcs:disable WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 	if ( $method == 'REQUEST' ) {
 		if ( ! empty( $_REQUEST[ $index ] ) ) {
 			return call_user_func( $sanitize_function, $_REQUEST[ $index ] );
@@ -2695,13 +2917,14 @@ function pmpro_getParam( $index, $method = 'REQUEST', $default = '', $sanitize_f
 			return call_user_func( $sanitize_function, $_GET[ $index ] );
 		}
 	}
+	// phpcs:enable WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 
 	return $default;
 }
 
-/*
-	Format an address from address, city, state, zip, country, and phone
-*/
+/**
+ * Format an address from address, city, state, zip, country, and phone.
+ */
 function pmpro_formatAddress( $name, $address1, $address2, $city, $state, $zip, $country, $phone, $nl2br = true ) {
 	$address = '';
 
@@ -2742,9 +2965,9 @@ function pmpro_formatAddress( $name, $address1, $address2, $city, $state, $zip, 
 	return apply_filters( 'pmpro_formatted_address', $address, $name, $address1, $address2, $city, $state, $zip, $country, $phone, $nl2br );
 }
 
-/*
-	Checks if all required settings are set.
-*/
+/**
+ * Checks if all required settings are set.
+ */
 function pmpro_is_ready() {
 	global $wpdb, $pmpro_pages, $pmpro_level_ready, $pmpro_gateway_ready, $pmpro_pages_ready;
 
@@ -2759,56 +2982,56 @@ function pmpro_is_ready() {
 		// no paid membership level now or attached to a user. we don't need the gateway setup
 		$pmpro_gateway_ready = true;
 	} else {
-		$gateway             = pmpro_getOption( 'gateway' );
-		$gateway_environment = pmpro_getOption( 'gateway_environment' );
+		$gateway             = get_option( 'pmpro_gateway' );
+		$gateway_environment = get_option( 'pmpro_gateway_environment' );
 		if ( $gateway == 'authorizenet' ) {
-			if ( $gateway_environment && pmpro_getOption( 'loginname' ) && pmpro_getOption( 'transactionkey' ) ) {
+			if ( $gateway_environment && get_option( 'pmpro_loginname' ) && get_option( 'pmpro_transactionkey' ) ) {
 				$pmpro_gateway_ready = true;
 			} else {
 				$pmpro_gateway_ready = false;
 			}
 		} elseif ( $gateway == 'paypal' || $gateway == 'paypalexpress' ) {
-			if ( $gateway_environment && pmpro_getOption( 'gateway_email' ) && pmpro_getOption( 'apiusername' ) && pmpro_getOption( 'apipassword' ) && pmpro_getOption( 'apisignature' ) ) {
+			if ( $gateway_environment && get_option( 'pmpro_gateway_email' ) && get_option( 'pmpro_apiusername' ) && get_option( 'pmpro_apipassword' ) && get_option( 'pmpro_apisignature' ) ) {
 				$pmpro_gateway_ready = true;
 			} else {
 				$pmpro_gateway_ready = false;
 			}
 		} elseif ( $gateway == 'paypalstandard' ) {
-			if ( $gateway_environment && pmpro_getOption( 'gateway_email' ) ) {
+			if ( $gateway_environment && get_option( 'pmpro_gateway_email' ) ) {
 				$pmpro_gateway_ready = true;
 			} else {
 				$pmpro_gateway_ready = false;
 			}
 		} elseif ( $gateway == 'payflowpro' ) {
-			if ( pmpro_getOption( 'payflow_partner' ) && pmpro_getOption( 'payflow_vendor' ) && pmpro_getOption( 'payflow_user' ) && pmpro_getOption( 'payflow_pwd' ) ) {
+			if ( get_option( 'pmpro_payflow_partner' ) && get_option( 'pmpro_payflow_vendor' ) && get_option( 'pmpro_payflow_user' ) && get_option( 'pmpro_payflow_pwd' ) ) {
 				$pmpro_gateway_ready = true;
 			} else {
 				$pmpro_gateway_ready = false;
 			}
 		} elseif ( $gateway == 'stripe' ) {
-			if ( $gateway_environment && pmpro_getOption( 'stripe_secretkey' ) && pmpro_getOption( 'stripe_publishablekey' ) ) {
+			if ( $gateway_environment && get_option( 'pmpro_stripe_secretkey' ) && get_option( 'pmpro_stripe_publishablekey' ) ) {
 				// Using legacy keys.
 				$pmpro_gateway_ready = true;
-			} elseif ( $gateway_environment && pmpro_getOption( $gateway_environment . '_stripe_connect_secretkey' ) && pmpro_getOption( $gateway_environment . '_stripe_connect_publishablekey' ) ) {
+			} elseif ( $gateway_environment && get_option( 'pmpro_' . $gateway_environment . '_stripe_connect_secretkey' ) && get_option( 'pmpro_' . $gateway_environment . '_stripe_connect_publishablekey' ) ) {
 				// Using connect.
 				$pmpro_gateway_ready = true;
 			} else {
 				$pmpro_gateway_ready = false;
 			}
 		} elseif ( $gateway == 'braintree' ) {
-			if ( $gateway_environment && pmpro_getOption( 'braintree_merchantid' ) && pmpro_getOption( 'braintree_publickey' ) && pmpro_getOption( 'braintree_privatekey' ) ) {
+			if ( $gateway_environment && get_option( 'pmpro_braintree_merchantid' ) && get_option( 'pmpro_braintree_publickey' ) && get_option( 'pmpro_braintree_privatekey' ) ) {
 				$pmpro_gateway_ready = true;
 			} else {
 				$pmpro_gateway_ready = false;
 			}
 		} elseif ( $gateway == 'twocheckout' ) {
-			if ( $gateway_environment && pmpro_getOption( 'twocheckout_apiusername' ) && pmpro_getOption( 'twocheckout_apipassword' ) ) {
+			if ( $gateway_environment && get_option( 'pmpro_twocheckout_apiusername' ) && get_option( 'pmpro_twocheckout_apipassword' ) ) {
 				$pmpro_gateway_ready = true;
 			} else {
 				$pmpro_gateway_ready = false;
 			}
 		} elseif ( $gateway == 'cybersource' ) {
-			if ( $gateway_environment && pmpro_getOption( 'cybersource_merchantid' ) && pmpro_getOption( 'cybersource_securitykey' ) ) {
+			if ( $gateway_environment && get_option( 'pmpro_cybersource_merchantid' ) && get_option( 'pmpro_cybersource_securitykey' ) ) {
 				$pmpro_gateway_ready = true;
 			} else {
 				$pmpro_gateway_ready = false;
@@ -2857,6 +3080,26 @@ function pmpro_is_ready() {
 }
 
 /**
+ * Display the Setup Wizard links.
+ * 
+ * @since 2.10
+ * 
+ * @return bool $show Whether or not the Setup Wizard link should show.
+ */
+function pmpro_show_setup_wizard_link() {
+	global $pmpro_ready;
+
+	// If PMPro isn't ready AND the wizard hasn't completed yet.
+	if ( ! $pmpro_ready && get_option( 'pmpro_wizard_step' ) !== 'done' ) {
+		$show = true;
+	} else {
+		$show = false;
+	}
+
+	return $show;
+}
+
+/**
  * Display Invoice Price Data with Parts
  *
  * @param object $pmpro_invoice The full order object.
@@ -2879,14 +3122,6 @@ function pmpro_get_price_parts( $pmpro_invoice, $format = 'array' ) {
 		$pmpro_price_parts['tax'] = array(
 			'label' => __( 'Tax', 'paid-memberships-pro' ),
 			'value' => pmpro_escape_price( pmpro_formatPrice( $pmpro_invoice->tax ) ),
-		);
-	}
-
-	if ( ! empty( $pmpro_invoice->couponamount ) ) {
-		// We don't even use this but it is in the database so it could be shown here.
-		$pmpro_price_parts['couponamount'] = array(
-			'label' => __( 'Coupon', 'paid-memberships-pro' ),
-			'value' => pmpro_escape_price( pmpro_formatPrice( $pmpro_invoice->couponamount ) ),
 		);
 	}
 
@@ -3092,7 +3327,7 @@ function pmpro_getCurrencyPosition() {
  * Rounds price based on currency
  * Does not format price, to do that, call pmpro_formatPrice().
  *
- * @param string/float $price to round.
+ * @param string|float $price to round.
  * @param string       $currency to round price into.
  */
 function pmpro_round_price( $price, $currency = '' ) {
@@ -3120,6 +3355,97 @@ function pmpro_round_price( $price, $currency = '' ) {
 }
 
 /**
+ * Rounds price based on currency and returns a string.
+ *
+ * Does not format price, to do that, call pmpro_formatPrice().
+ *
+ * @since 2.8
+ *
+ * @param int|float|string $amount   The amount to get price information for.
+ * @param null|string      $currency The currency to use, defaults to current currency.
+ *
+ * @return string The rounded price as a string.
+ */
+function pmpro_round_price_as_string( $amount, $currency = null ) {
+	$price_info = pmpro_get_price_info( $amount, $currency );
+
+	if ( ! $price_info ) {
+		return (string) pmpro_round_price( $amount, $currency );
+	}
+
+	return $price_info['amount_string'];
+}
+
+/**
+ * Get the price information about the provided amount.
+ *
+ * @since 2.8
+ *
+ * @param int|float|string $amount   The amount to get price information for.
+ * @param null|string      $currency The currency to use, defaults to current currency.
+ *
+ * @return array|false The price information about the provided amount.
+ */
+function pmpro_get_price_info( $amount, $currency = null ) {
+	if ( ! is_numeric( $amount ) ) {
+		return false;
+	}
+
+	$amount = (float) $amount;
+
+	$currency_info = pmpro_get_currency( $currency );
+
+	$price_info = [
+		// The amount represented as a float.
+		'amount'        => $amount,
+		// The flat amount represent (example: 1.99 would be 199).
+		'amount_flat'   => 0,
+		// The amount as a string.
+		'amount_string' => '',
+		'parts'         => [
+			// The whole number part of the amount (example: 1.99 would be 1).
+			'number'         => (int) $amount,
+			// The decimal part of the amount (example: 1.99 would be 99, 1.00 would be 0).
+			'decimal'        => 0,
+			// The decimal part of the amount as a string (example: 1.99 would be 99, 1.00 would be 00).
+			'decimal_string' => '',
+		],
+		// The currency information.
+		'currency'      => $currency_info,
+	];
+
+	// Enforce integer.
+	$currency_info['decimals'] = (int) $currency_info['decimals'];
+
+	$multiplier = 1;
+
+	if ( 0 < $currency_info['decimals'] ) {
+		$multiplier = pow( 10, $currency_info['decimals'] );
+	}
+
+	// Convert the amount from 100.99 to 10099.
+	$price_info['amount_flat'] = $amount * $multiplier;
+
+	// If there were additional unsupported decimal points, round to remove and convert to integer.
+	$price_info['amount_flat'] = round( $price_info['amount_flat'] );
+
+	// Get the decimal part of the amount as a whole number.
+	$price_info['parts']['decimal'] = (
+		$price_info['amount_flat'] - (
+			$price_info['parts']['number'] * $multiplier
+		)
+	);
+
+	// Get the zero-padded decimal amount.
+	$price_info['parts']['decimal_string'] = sprintf( '%02d', $price_info['parts']['decimal'] );
+
+	// Get the amount as a string.
+	$price_info['amount_string'] = sprintf( '%s.%s', $price_info['parts']['number'], $price_info['parts']['decimal_string'] );
+
+	return $price_info;
+}
+
+/**
  * Cast to floats and pad zeroes after the decimal
  * when editing the price on the edit level page.
  * Only do this for currency with decimals = 2
@@ -3129,7 +3455,7 @@ function pmpro_round_price( $price, $currency = '' ) {
  *
  * @since  2.0.2
  */
-function pmpro_filter_price_for_text_field( $price, $currency = null ) {
+function pmpro_filter_price_for_text_field( $price ) {
 	global $pmpro_currency, $pmpro_currencies;
 
 	// We always want to cast to float
@@ -3163,7 +3489,7 @@ function pmpro_filter_price_for_text_field( $price, $currency = null ) {
 	return $price;
 }
 
-/*
+/**
  * What gateway should we be using?
  *
  * @since 1.8
@@ -3171,18 +3497,18 @@ function pmpro_filter_price_for_text_field( $price, $currency = null ) {
 function pmpro_getGateway() {
 	// grab from param or options
 	if ( ! empty( $_REQUEST['gateway'] ) ) {
-		$gateway = $_REQUEST['gateway'];        // gateway passed as param
+		$gateway = sanitize_text_field( $_REQUEST['gateway'] );        // gateway passed as param
 	} elseif ( ! empty( $_REQUEST['review'] ) ) {
 		$gateway = 'paypalexpress';             // if review param assume paypalexpress
 	} else {
-		$gateway = pmpro_getOption( 'gateway' );  // get from options
+		$gateway = get_option( 'pmpro_gateway' );  // get from options
 	}
 
 	// set valid gateways - the active gateway in the settings and any gateway added through the filter will be allowed
-	if ( pmpro_getOption( 'gateway', true ) == 'paypal' ) {
+	if ( get_option( 'pmpro_gateway' ) == 'paypal' ) {
 		$valid_gateways = apply_filters( 'pmpro_valid_gateways', array( 'paypal', 'paypalexpress' ) );
 	} else {
-		$valid_gateways = apply_filters( 'pmpro_valid_gateways', array( pmpro_getOption( 'gateway', true ) ) );
+		$valid_gateways = apply_filters( 'pmpro_valid_gateways', array( get_option( 'pmpro_gateway' ) ) );
 	}
 
 	// make sure it's valid
@@ -3201,7 +3527,7 @@ function pmpro_getGateway() {
  * Used in logins/visits/views report.
  *
  * @since 1.8.3
- * @param	$str	Date to check. Will be passed through strtotime().
+ * @param string $str	Date to check. Will be passed through strtotime().
  */
 function pmpro_isDateThisMonth( $str ) {
 	$now = current_time( 'timestamp' );
@@ -3223,7 +3549,7 @@ function pmpro_isDateThisMonth( $str ) {
  * Does the date provided fall within the current week?
  * Merged in from the Better Logins Report Add On.
  * @since 2.0
- * @param	$str	Date to check. Will be passed through strtotime().
+ * @param string $str Date to check. Will be passed through strtotime().
  */
 function pmpro_isDateThisWeek( $str ) {
 	$now = current_time( 'timestamp' );
@@ -3243,7 +3569,7 @@ function pmpro_isDateThisWeek( $str ) {
  * Does the dave provided fall within the current year?
  * Merged in from the Better Logins Report Add On.
  * @since 2.0
- * @param	$str	Date to check. Will be passed through strtotime().
+ * @param string $str Date to check. Will be passed through strtotime().
  */
 function pmpro_isDateThisYear( $str ) {
 	$now = current_time( 'timestamp' );
@@ -3316,31 +3642,12 @@ function pmpro_generatePages( $pages ) {
 			$pmpro_pages[ $name ] = wp_insert_post( $insert );
 
 			// update the option too
-			pmpro_setOption( $name . '_page_id', $pmpro_pages[ $name ] );
+			update_option( 'pmpro_' . $name . '_page_id', $pmpro_pages[ $name ] );
 			$pages_created[] = $pmpro_pages[ $name ];
 		}
 	}
 
 	return $pages_created;
-}
-
-/**
- * Schedule a periodic event unless one with the same hook is already scheduled.
- *
- * @param int    $timestamp Timestamp for when to run the event.
- * @param string $recurrence How often the event should recur.
- * @param string $hook Action hook to execute when cron is run.
- * @param array  $args Optional. Arguments to pass to the hook's callback function.
- * @return false|void False when an event is not scheduled.
- * @since 1.8.7.3
- */
-function pmpro_maybe_schedule_event( $timestamp, $recurrence, $hook, $args = array() ) {
-	$next = wp_next_scheduled( $hook, $args );
-	if ( empty( $next ) ) {
-		return wp_schedule_event( $timestamp, $recurrence, $hook, $args );
-	} else {
-		return false;
-	}
 }
 
 /**
@@ -3366,7 +3673,7 @@ function pmpro_getMemberOrdersByCheckoutID( $checkout_id ) {
  * Check that the test value is a member of a specific array for sanitization purposes.
  *
  * @param mixed $needle Value to be tested.
- * @param array $safe Array of safelist values.
+ * @param array $safelist Array of safelist values.
  * @since 1.9.3
  */
 function pmpro_sanitize_with_safelist( $needle, $safelist ) {
@@ -3378,6 +3685,45 @@ function pmpro_sanitize_with_safelist( $needle, $safelist ) {
 }
 
 /**
+ * Sanitizes the passed value.
+ * Default sanitizing for things like user fields.
+ *
+ * @param array|int|null|string|stdClass $value The value to sanitize
+ * @param PMPro_Field $field (optional) Field to check type.
+ *
+ * @return array|int|string|object     Sanitized value
+ */
+function pmpro_sanitize( $value, $field = null ) {
+
+	if ( is_array( $value ) ) {
+
+		foreach ( $value as $key => $val ) {
+			$value[ $key ] = pmpro_sanitize( $val );
+		}
+	}
+
+	if ( is_object( $value ) ) {
+
+		foreach ( $value as $key => $val ) {
+			$value->{$key} = pmpro_sanitize( $val );
+		}
+	}
+
+	if ( ! empty( $field ) && ! empty( $field->type ) && $field->type === 'textarea' ) {
+		$value = sanitize_textarea_field( $value );
+	} elseif ( ( ! is_array( $value ) ) && ctype_alpha( $value ) ||
+	     ( ( ! is_array( $value ) ) && strtotime( $value ) ) ||
+	     ( ( ! is_array( $value ) ) && is_string( $value ) ) ||
+	     ( ( ! is_array( $value ) ) && is_numeric( $value) )
+	) {
+
+		$value = sanitize_text_field( $value );
+	}
+
+	return $value;
+}
+
+/**
   * Return an array of allowed order statuses
   *
   * @since 1.9.3
@@ -3385,10 +3731,12 @@ function pmpro_sanitize_with_safelist( $needle, $safelist ) {
 function pmpro_getOrderStatuses( $force = false ) {
 	global $pmpro_order_statuses;
 
+	$statuses = array();
+
 	if ( ! isset( $pmpro_order_statuses ) || $force ) {
 		global $wpdb;
 		$statuses         = array();
-		$default_statuses = array( '', 'success', 'cancelled', 'review', 'token', 'refunded', 'pending', 'error' );
+		$default_statuses = array( '', 'success', 'review', 'token', 'refunded', 'pending', 'error' );
 		$used_statuses    = $wpdb->get_col( "SELECT DISTINCT(status) FROM $wpdb->pmpro_membership_orders" );
 		$statuses         = array_unique( array_merge( $default_statuses, $used_statuses ) );
 		asort( $statuses );
@@ -3527,6 +3875,7 @@ function pmpro_show_discount_code() {
 	global $post, $gateway, $wpdb, $besecure, $discount_code, $discount_code_id, $pmpro_level, $pmpro_levels, $pmpro_msg, $pmpro_msgt, $pmpro_review, $skip_account_fields, $pmpro_paypal_token, $pmpro_show_discount_code, $pmpro_error_fields, $pmpro_required_billing_fields, $pmpro_required_user_fields, $wp_version, $current_user, $pmpro_requirebilling, $tospage, $username, $password, $password2, $bfirstname, $blastname, $baddress1, $baddress2, $bcity, $bstate, $bzipcode, $bcountry, $bphone, $bemail, $bconfirmemail, $CardType, $AccountNumber, $ExpirationMonth, $ExpirationYear, $pmpro_states, $recaptcha, $recaptcha_privatekey, $CVV;
 
 	$morder                   = new MemberOrder();
+	$morder->user_id          = $current_user->ID;
 	$morder->membership_id    = $pmpro_level->id;
 	$morder->membership_name  = $pmpro_level->name;
 	$morder->discount_code    = $discount_code;
@@ -3611,7 +3960,7 @@ function pmpro_check_plugin_version( $plugin_file, $comparison, $version ) {
 		return false;
 	}
 
-	// Get plugin data.	
+	// Get plugin data.
 	$full_plugin_file_path = WP_PLUGIN_DIR . '/' . $plugin_file;
 	if ( is_file( $full_plugin_file_path ) ) {
 		$plugin_data = get_plugin_data( $full_plugin_file_path, false, true );
@@ -3723,16 +4072,16 @@ function pmpro_doing_webhook( $gateway = null, $set = false ){
 
 /**
  * Called once a webhook has been run but was not handled.
- * 
+ *
  * @return void
  *
- * @since TBD
+ * @since 2.8
  */
 function pmpro_unhandled_webhook(){
 	/**
 	 * Allow hooking into after a webhook has been run but was not handled.
 	 *
-	 * @since TBD
+	 * @since 2.8
 	 *
 	 * @param string $gateway The gateway the webhook was not handled for.
 	 */
@@ -3771,6 +4120,44 @@ function pmpro_kses( $original_string, $context = 'email' ) {
 	 * @since 2.6.2
 	 */
 	return apply_filters( 'pmpro_kses', $sanitized_string, $original_string, $context );
+}
+
+/**
+ * Replace last occurence of a string.
+ * From: http://stackoverflow.com/a/3835653/1154321
+ * @since 2.6
+ */
+if( ! function_exists("str_lreplace") ) {
+	function str_lreplace( $search, $replace, $subject ) {
+		$pos = strrpos( $subject, $search );
+
+		if( $pos !== false ) {
+			$subject = substr_replace( $subject, $replace, $pos, strlen( $search ) );
+		}
+
+		return $subject;
+	}
+}
+
+/**
+ * Get the last element of an array without affecting the array.
+ * From: http://www.php.net/manual/en/function.end.php#107733
+ * @since 2.6
+ */
+function pmpro_end( $array ) {
+	return end( $array );
+}
+
+/**
+ * Sort an array of objects by their order property.
+ * This function is meant to be used with the usort function.
+ * @since 2.6
+ */
+function pmpro_sort_by_order( $a, $b ) {
+	if ( $a->order == $b->order ) {
+        return 0;
+    }
+    return ( $a->order < $b->order ) ? -1 : 1;
 }
 
 /**
@@ -3840,7 +4227,7 @@ add_filter( 'wp_kses_allowed_html', 'pmpro_kses_allowed_html', 10, 2 );
  *
  * Useful for preparing to change method visibility from public to private.
  *
- * @param string $deprecation_notice_version to show.
+ * @param string $deprecated_notice_version to show.
  * @return bool
  */
 function pmpro_method_should_be_private( $deprecated_notice_version ) {
@@ -3849,7 +4236,7 @@ function pmpro_method_should_be_private( $deprecated_notice_version ) {
 	// Check whether the caller of this function is in the same file (class)
 	// as the caller of the previous function.
 	if ( $backtrace[0]['file'] !== $backtrace[1]['file'] ) {
-		_deprecated_function( $backtrace[1]['function'], $deprecated_notice_version );
+		_deprecated_function( esc_html( $backtrace[1]['function'] ), esc_html( $deprecated_notice_version ) );
 		return true;
 	}
 	return false;
@@ -3905,11 +4292,12 @@ function pmpro_send_200_http_response() {
 	flush();
 }
 
-/** 
+/**
  * Returns formatted ISO-8601 date (Used for Zapier Native app.)
  * @since 2.6.6
- * @param $date date A valid date value.
+ * @param string $date date A valid date value.
  * @return string The date in ISO-8601 format.
+ * @throws Exception
  */
 function pmpro_format_date_iso8601( $date ) {
 	$datetime = new DateTime( $date );
@@ -3969,7 +4357,7 @@ function pmpro_get_ip() {
 			 * addresses. The first one is the original client. It can't be
 			 * trusted for authenticity, but we don't need to for this purpose.
 			 */
-			$address_chain = explode( ',', $_SERVER[ $header ] );
+			$address_chain = explode( ',', sanitize_text_field( $_SERVER[ $header ] ) );
 			$client_ip     = trim( $address_chain[0] );
 
 			break;
@@ -3979,23 +4367,365 @@ function pmpro_get_ip() {
 	if ( ! $client_ip ) {
 		return false;
 	}
-	
+
 	// Sanitize the IP
 	$client_ip = preg_replace( '/[^0-9a-fA-F:., ]/', '', $client_ip );
-	
+
 	return $client_ip;
 }
 
 /**
+ * Get the last item of an array without affecting the internal array pointer.
+ * Going through the function keeps the original array from being updated.
+ * @since 2.9
+ * @param  $array array The array to get the value of.
+ * @return mixed Whatever is the last element in the array.
+ * from: http://www.php.net/manual/en/function.end.php#107733
+ */
+function pmpro_array_end( $array ) {
+	return end( $array );
+}
+
+/*
  * Send the WP new user notification email, but also check our filter.
+ * Determines if this order can be refunded
+ * @param  object $order The order that we want to refund
+ * @return bool Returns a bool value based on if the order can be refunded
+ */
+function pmpro_allowed_refunds( $order ) { 
+
+	//If this isn't a valid order then lets not allow it
+	if( empty( $order ) || empty( $order->gateway ) || empty( $order->status ) || empty( $order->payment_transaction_id ) ) {
+		return false;
+	}	
+
+	//Orders with a 0 total shouldn't be able to be refunded
+	if( $order->total == 0 ){
+		return false;
+	}
+
+	$okay = false;
+
+	/**
+	 * Specify which gateways support refund functionality
+	 *
+	 * @since 2.8
+	 *
+	 * @param array $allowed_gateways A list of allowed gateways to work with refunds
+	 */
+	$allowed_gateways = apply_filters( 'pmpro_allowed_refunds_gateways', array( 'stripe', 'paypalexpress' ) );
+	//Only apply to these gateways
+	if( in_array( $order->gateway, $allowed_gateways, true ) ) {
+		$okay = true;
+	}
+	
+	$disallowed_statuses = pmpro_disallowed_refund_statuses();
+	//Don't allow pending orders to be refunded
+	if( in_array( $order->status, $disallowed_statuses, true ) ){
+		$okay = false;
+	}
+
+	$okay = apply_filters( 'pmpro_refund_allowed', $okay, $order );
+
+	return $okay;
+}
+
+
+/**
+ * Decides which filter should be used for the refund depending on gateway
+ * @param  object $order Member Order that we are refunding
+ * @return bool 	Returns a bool value based on if a refund was processed successfully or not
+ */
+function pmpro_refund_order( $order ){
+
+	if( empty( $order ) ){
+		return false;
+	}
+
+	//Not going to refund an order that has already been refunded
+	if( $order->status == 'refunded' ) {
+		return true; 
+	}
+
+	/**
+	 * Processes a refund for a specific gateway
+	 *
+	 * @since 2.8
+	 *
+	 * @param bool $success Default return value is false to determine if the refund was successfully processed. 
+	 * @param object $order The Member Order we want to refund.
+	 */
+	$success = apply_filters( 'pmpro_process_refund_'.$order->gateway, false, $order );
+	
+	return $success;
+
+}
+
+/**
+ * Returns an array of order statuses that do not qualify for a refund
+ * 
+ * @return array Returns an array of statuses that are not allowe to be refunded
+ */
+function pmpro_disallowed_refund_statuses() {
+
+	/**
+	 * Allow filtering the list of statuses that can not be refunded from.
+	 *
+	 * @since 2.8
+	 *
+	 * @param array $disallowed_statuses The list of statuses that can not be refunded from.
+	 */
+	$disallowed_statuses = apply_filters( 'pmpro_disallowed_refund_statuses', array( 'pending', 'refunded', 'review', 'token', 'error' ) );
+
+	return $disallowed_statuses;
+}
+
+/* Send the WP new user notification email, but also check our filter.
  * NOTE: includes/email.php has code to check for the related setting and
  *       filters on the pmpro_wp_new_user_notification hook.
  * @since 2.7.4
  * @param int $user_id ID of the user to send the email for.
  * @param int $level_id Level ID the user just got. (Need to send to filter.)
  */
-function pmpro_maybe_send_wp_new_user_notification( $user_id, $level_id = null ) {	
-	if ( apply_filters( 'pmpro_wp_new_user_notification', true, $user_id, $level_id ) ) {		
+function pmpro_maybe_send_wp_new_user_notification( $user_id, $level_id = null ) {
+	if ( apply_filters( 'pmpro_wp_new_user_notification', true, $user_id, $level_id ) ) {
 		wp_new_user_notification( $user_id, null, 'both' );
 	}
+}
+
+/**
+ * Replace all special characters with underscore, including spaces.
+ * 
+ * @since 2.9
+ * 
+ * @param string $field_name The raw field name to be formatted.
+ */
+function pmpro_format_field_name( $field_name ) {
+	$formatted_name = preg_replace( '/[^A-Za-z0-9\-]+/', '_', $field_name );
+	
+	/**
+	 * Filter the formatted/output field names.
+	 * 
+	 * @since 2.9
+	 * 
+	 * @param string $formatted_name The formatted field name (replaced spaces and dashes with underscores).
+	 * @param string $field_name The original field name.
+	 */
+	$formatted_name = apply_filters( 'pmpro_formatted_field_name', $formatted_name, $field_name );
+
+	return $formatted_name;
+}
+
+/**
+ * Are we activating a plugin?
+ * @since 2.9.1
+ * @param string $plugin A specific plugin to check for (optional).
+ * @return bool True if we are activating a plugin, otherwise false.
+ */
+function pmpro_activating_plugin( $plugin = null ) {
+	if ( ! is_admin() ) {
+		return false;
+	}
+	
+	if ( empty( $_REQUEST['action'] ) ) {
+		return false;	
+	}
+	
+	if ( $_REQUEST['action'] !== 'activate'
+		&& $_REQUEST['action'] !== 'activate-selected' ) {
+		return false;
+	}
+	
+	// Not checking for a specific plugin, and activating something.
+	if ( empty( $plugin ) ) {
+		return true;
+	}
+	
+	// Check if the specified plugin isn't one being activated.
+	if ( ! empty( $_REQUEST['plugin'] ) && $_REQUEST['plugin'] !== $plugin ) {
+		return false;
+	}
+	if ( ! empty( $_REQUEST['checked'] ) && ! in_array( $plugin, (array)$_REQUEST['checked'] ) ) {
+		return false;
+	}
+	
+	// Must be activating the $plugin specified.
+	return true;
+}
+
+/**
+ * Compare the stored site URL with the current site URL
+ *
+ * @since 2.10
+ * @return bool True if the stored and current URL match
+ */
+function pmpro_compare_siteurl() {
+	$site_url = get_site_url( null, '', 'https' ); // Always get the https version of the site URL.=
+	$current_url = get_option( 'pmpro_last_known_url' );
+
+	// If we don't have a current URL yet, set it to the site URL.
+	if ( empty( $current_url ) ) {
+		update_option( 'pmpro_last_known_url', $site_url );
+		$current_url = $site_url;
+	}
+
+	// We don't want to consider scheme, so just force https for this check.
+	$site_url = str_replace( 'http://', 'https://', $site_url );
+	$current_url = str_replace( 'http://', 'https://', $current_url );	
+
+	return ( $site_url === $current_url );
+}
+
+/**
+ * Determine if the site is in pause mode or not
+ *
+ * @since 2.10
+ * @return bool True if the the site is in pause mode
+ */
+function pmpro_is_paused() {
+	// If the current site URL is different than the last known URL, then we are in pause mode.
+	if ( ! pmpro_compare_siteurl() ) {
+		return true;
+	}
+
+	// We should never filter this function. We will never change this function to do anything else without lots and lots of discussion and thought.
+	return false;
+}
+
+/**
+ * Sanitizes a cycle period or expiration period and makes sure it's a valid period.
+ *
+ * @since 2.12
+ *
+ * @param string $cycle_period The cycle period to sanitize.
+ * @return string The sanitized cycle period or false if invalid.
+ */
+function pmpro_sanitize_period( $period ) {
+	// Validate the cycle period that was passed in.
+	$allowed_periods = apply_filters( 'pmpro_allowed_periods', array( 'Hour', 'Day', 'Week', 'Month', 'Year' ) );
+	$sanitized_period = pmpro_sanitize_with_safelist( $period, $allowed_periods );
+
+	// If the period was invalid, default to Month.
+	if ( empty( $sanitized_period ) ) {
+		$sanitized_period = 'Month';
+	}
+
+	return $sanitized_period;
+}
+
+/**
+ * Set the expiration date for an active membership.
+ *
+ * @since 3.0
+ *
+ * @param int $user_id The ID of the user to update.
+ * @param int $level_id The ID of the level to update.
+ * @param int|string $enddate The date to set the enddate to.
+ */
+function pmpro_set_expiration_date( $user_id, $level_id, $enddate ) {
+	global $wpdb;
+
+	if ( is_numeric( $enddate ) ) {
+		$enddate = date( 'Y-m-d H:i:s', $enddate );
+	}
+
+	$wpdb->update(
+		$wpdb->pmpro_memberships_users,
+		[
+			'enddate' => $enddate,
+		],
+		[
+			'status'        => 'active',
+			'membership_id' => $level_id,
+			'user_id'       => $user_id,
+		],
+		[
+			'%s',
+		],
+		[
+			'%s',
+			'%d',
+			'%d',
+		]
+	);
+
+	// Clear the level cache for this user.
+	pmpro_clear_level_cache_for_user( $user_id );
+}
+
+/*
+ * Check whether a file should be allowed to be uploaded.
+ *
+ * By default, only files assiciated with a user field can be uploaded,
+ * but there is a filter to allow other files to be uploaded as well.
+ *
+ * @since 2.12.4
+ *
+ * @param $file_index string The array index of the file to check in the $_FILES array.
+ * @return true|WP_Error True if the file is allowed, otherwise a WP_Error object.
+ */
+function pmpro_check_upload( $file_index ) {
+	global $pmpro_user_fields;
+
+	// Check if the file was uploaded.
+	if ( empty( $_FILES[ $file_index ] ) ) {
+		return new WP_Error( 'pmpro_upload_error', __( 'No file was uploaded.', 'paid-memberships-pro' ) );
+	}
+
+	// Get the file info.
+	$file = array_map( 'sanitize_text_field', $_FILES[ $file_index ] );
+	if ( empty( $file['name'] ) ) {
+		return new WP_Error( 'pmpro_upload_error', __( 'No file name found.', 'paid-memberships-pro' ) );
+	}
+
+	// If the current user cannot does not have the unfiltered_upload permission, check if the file is an allowed file type.
+	if ( ! current_user_can( 'unfiltered_upload' ) ) {
+		$filetype = wp_check_filetype_and_ext( $file['tmp_name'], $file['name'] );
+		if ( empty( $filetype['ext'] ) || empty( $filetype['type'] ) ) {
+			return new WP_Error( 'pmpro_upload_error', __( 'Invalid file type.', 'paid-memberships-pro' ) );
+		}
+	}
+
+	// If this is an upload for a user field, we need to perform additional checks.
+	$is_user_field = false;
+	if ( ! empty( $pmpro_user_fields ) && is_array( $pmpro_user_fields ) ) {
+		foreach ( $pmpro_user_fields as $checkout_box ) {
+			foreach ( $checkout_box as $field ) {
+				if ( $field->name == $file_index ) {
+					// This file is being uploaded for a user field.
+					$is_user_field = true;
+
+					// First, make sure that this is a 'file' field.
+					if ( $field->type !== 'file' ) {
+						return new WP_Error( 'pmpro_upload_error', __( 'Invalid field input.', 'paid-memberships-pro' ) );
+					}
+
+					// If there are allowed file types, check if the file is an allowed file type.
+					// It does not look like the ext property is documented anywhere, but keeping it in case sites are using it.
+					if ( ! empty( $field->ext ) && is_array( $field->ext ) && ! in_array( $filetype['ext'], $field->ext ) ) {
+						return new WP_Error( 'pmpro_upload_error', __( 'Invalid file type.', 'paid-memberships-pro' ) );
+					}
+				}
+			}
+		}
+	}
+
+	if ( ! $is_user_field ) {
+		/**
+		 * Filter whether a file not associated with a user field can be uploaded.
+		 *
+		 * @since 2.12.4
+		 *
+		 * @param bool $allow_upload True if the file can be uploaded, otherwise false.
+		 * @param array $file The file info.
+		 * @param array $filetype The file type info.
+		 */
+		if ( ! apply_filters( 'pmpro_allow_uploading_non_user_field_file', false, $file, $filetype ) ) {
+			return new WP_Error( 'pmpro_upload_error', __( 'Invalid file submission.', 'paid-memberships-pro' ) );
+		}
+	}
+	
+
+	// If we made it this far, the file is allowed.
+	return true;
 }

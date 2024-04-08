@@ -136,6 +136,21 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 		));
 
 		/**
+		 * Get all membership levels.
+		 * @since 3.0
+		 * Example: https://example.com/wp-json/pmpro/v1/membership_levels
+		 */
+		register_rest_route( $pmpro_namespace, '/membership_levels',
+			array(
+				array(
+					'methods'         => WP_REST_Server::READABLE,
+					'callback'        => array( $this, 'pmpro_rest_api_get_membership_levels' ),
+					'permission_callback' => array( $this, 'pmpro_rest_api_get_permissions_check' ),
+				),
+			)
+		);
+
+		/**
 		 * Create/Retrieve discount code.
 		 * @since 2.3
 		 * Example: https://example.com/wp-json/pmpro/v1/discount_code
@@ -155,6 +170,21 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 		));
 
 		/**
+		 * Retrieve an order.
+		 * @since 2.8
+		 * Example: https://example.com/wp-json/pmpro/v1/order
+		 */
+		register_rest_route( $pmpro_namespace, '/order', 
+		array(
+			array(
+				'methods' => WP_REST_Server::READABLE,
+				'callback' => array( $this, 'pmpro_rest_api_get_order' ),
+				'permission_callback' => array( $this, 'pmpro_rest_api_get_permissions_check' )
+			),
+		));
+		add_filter( 'pmpro_rest_api_permissions', array( $this, 'pmpro_rest_api_permissions_get_order' ), 10, 2 );
+
+		/**
 		 * Get membership level after checkout options are applied.
 		 * @since 2.4
 		 * Example: https://example.com/wp-json/pmpro/v1/checkout_level
@@ -171,6 +201,7 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 		/**
 		 * Get membership levels after checkout options are applied.
 		 * Example: https://example.com/wp-json/pmpro/v1/checkout_levels
+		 * @deprecated 3.0
 		 */
 		register_rest_route( $pmpro_namespace, '/checkout_levels', 
 		array(
@@ -220,6 +251,33 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 				array(
 					'methods'  => WP_REST_Server::READABLE,
 					'callback' => array( $this, 'pmpro_rest_api_recent_orders' ),
+					'permission_callback' => array( $this, 'pmpro_rest_api_get_permissions_check' ),
+				)
+			)
+		);
+
+		/**
+		 * Get the IDs that a post has been restricted to.
+		 * @since 3.0
+		 * Example: https://example.com/wp-json/pmpro/v1/post_restrictions
+		 */
+		register_rest_route( $pmpro_namespace, '/post_restrictions',
+			array(
+				array(
+					'methods'  => WP_REST_Server::READABLE,
+					'callback' => array( $this, 'pmpro_rest_api_get_post_restrictions' ),
+					'args'     => array(
+						'post_id' => array(),
+					),
+					'permission_callback' => array( $this, 'pmpro_rest_api_get_permissions_check' ),
+				), 
+				array(
+					'methods'  => WP_REST_Server::EDITABLE,
+					'args'     => array(
+						'post_id' => array(),
+						'level_ids' => array(),
+					),
+					'callback' => array( $this, 'pmpro_rest_api_set_post_restrictions' ),
 					'permission_callback' => array( $this, 'pmpro_rest_api_get_permissions_check' ),
 				)
 			)
@@ -495,12 +553,12 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 			}
 
 			$level = new PMPro_Membership_Level( $id );
-			
+
 			// Hide confirmation message if not an admin or member.
 			if ( ! empty( $level->confirmation ) 
 				 && ! pmpro_hasMembershipLevel( $id )
-				 && ! current_user_can( 'pmpro_edit_memberships' ) ) {				
-					 $level->confirmation = '';					
+				 && ! current_user_can( 'pmpro_edit_members' ) ) {
+					 $level->confirmation = '';
 			}
 
 			if ( 'json' === $response_type ) {
@@ -542,7 +600,7 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 			$initial_payment = isset( $params['initial_payment'] ) ? floatval( $params['initial_payment'] ) : $level->initial_payment;
 			$billing_amount = isset( $params['billing_amount'] ) ? floatval( $params['billing_amount'] ) : $level->billing_amount;
 			$cycle_number = isset( $params['cycle_number'] ) ? intval( $params['cycle_number'] ) : $level->cycle_number;
-			$cycle_period = isset( $params['cycle_period'] ) ? sanitize_text_field( $params['cycle_period'] ) : $level->cycle_period;
+			$cycle_period = isset( $params['cycle_period'] ) ? pmpro_sanitize_period( $params['cycle_period'] ) : $level->cycle_period;
 			$billing_limit = isset( $params['billing_limit'] ) ? sanitize_text_field( $params['billing_limit'] ) : $level->billing_limit;
 			$trial_amount = isset( $params['trial_amount'] ) ? floatval( $params['trial_amount'] ) : $level->trial_amount;
 			$trial_limit = isset( $params['trial_limit'] ) ? floatval( $params['trial_limit'] ) : $level->trial_limit;
@@ -595,6 +653,38 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 			$level = new PMPro_Membership_Level( $id );
 
 			return new WP_REST_Response( $level->delete(), 200 );
+		}
+
+		/**
+		 * Get all membership levels.
+		 * @since 3.0
+		 * Example: https://example.com/wp-json/pmpro/v1/membership_levels
+		 */
+		function pmpro_rest_api_get_membership_levels( $request ) {
+			
+			if ( ! class_exists( 'PMPro_Membership_Level' ) ) {
+				return new WP_REST_Response( 'Paid Memberships Pro level class not found.', 404 );
+			}
+
+			$params = $request->get_params();
+			$response_type = isset( $params['response_type'] ) ? sanitize_text_field( $params['response_type'] ) : null;
+
+			$levels = pmpro_getAllLevels( true, true );
+
+			// Hide confirmation message if not an admin or member.
+			if ( ! current_user_can( 'manage_options' ) && ! current_user_can( 'pmpro_membershiplevels' ) ) {
+				foreach ( $levels as $level ) {
+					if ( ! pmpro_hasMembershipLevel( $level->id ) ) {
+						$level->confirmation = '';
+					}
+				}
+			}
+
+			if ( 'json' === $response_type ) {
+				wp_send_json_success( array( "levels" => $levels ) );
+			}
+
+			return new WP_REST_Response( $levels, 200 );
 		}
 
 		/**
@@ -686,15 +776,92 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 		}
 
 		/**
+		 * Get an order.
+		 * @since 2.8
+		 * Example: https://example.com/wp-json/pmpro/v1/order
+		 */
+		function pmpro_rest_api_get_order( $request ) {
+			if ( ! class_exists( 'MemberOrder' ) ) {
+				return new WP_REST_Response( 'Paid Memberships Pro order class not found.', 404 );
+			}
+
+			$params = $request->get_params();
+			$code   = isset( $params['code'] ) ? sanitize_text_field( $params['code'] ) : null;
+
+			if ( empty( $code ) ) {
+				return new WP_REST_Response( 'No order code sent.', 400 );
+			}
+
+			// Build the order object to return.
+			// Need to do this because the order object now has private properties.
+			$order = new MemberOrder( $code );
+			$order_data_to_return = new stdClass();
+			if ( ! empty( $order->id ) ) {
+				$order_data_to_return->id = $order->id;
+				$order_data_to_return->code = $order->code;
+				$order_data_to_return->user_id = $order->user_id;
+				$order_data_to_return->membership_id = $order->membership_id;
+				$order_data_to_return->billing = $order->billing;
+				$order_data_to_return->subtotal = $order->subtotal;
+				$order_data_to_return->tax = $order->tax;
+				$order_data_to_return->total = $order->total;
+				$order_data_to_return->payment_type = $order->payment_type;
+				$order_data_to_return->cardtype = $order->cardtype;
+				$order_data_to_return->accountnumber = $order->accountnumber;
+				$order_data_to_return->expirationmonth = $order->expirationmonth;
+				$order_data_to_return->expirationyear = $order->expirationyear;
+				$order_data_to_return->status = $order->status;
+				$order_data_to_return->gateway = $order->gateway;
+				$order_data_to_return->gateway_environment = $order->gateway_environment;
+				$order_data_to_return->payment_transaction_id = $order->payment_transaction_id;
+				$order_data_to_return->subscription_transaction_id = $order->subscription_transaction_id;
+				$order_data_to_return->timestamp = $order->timestamp;
+				$order_data_to_return->affiliate_id = $order->affiliate_id;
+				$order_data_to_return->affiliate_subid = $order->affiliate_subid;
+				$order_data_to_return->notes = $order->notes;
+				$order_data_to_return->checkout_id = $order->checkout_id;
+			}
+
+			return new WP_REST_Response( $order_data_to_return, 200 );
+		}
+
+		/**
+		 * Make sure that users can GET their own orders.
+		 * @since 2.8
+		 */
+		function pmpro_rest_api_permissions_get_order( $permission, $request ) {
+			$method = $request->get_method();
+			$route  = $request->get_route();
+
+			// Check if the user does not have access but is trying to get an order.
+			if ( ! $permission && 'GET' === $method && '/pmpro/v1/order' === $route ) {
+				// Check if the order belongs to the user.
+				$params = $request->get_params();
+				$code   = isset( $params['code'] ) ? sanitize_text_field( $params['code'] ) : null;
+
+				if ( ! empty( $code ) ) {
+					$order = new MemberOrder( $code );
+
+					if ( $order->user_id == get_current_user_id() ) {
+						return true;
+					}
+				}
+			}
+			return $permission;
+		}
+
+		/**
 		 * Get a membership level at checkout.
-		 * Note: Not compatible with MMPU.
+		 *
 		 * @since 2.4
 		 * Example: https://example.com/wp-json/pmpro/v1/checkout_level
 		 */
 		function pmpro_rest_api_get_checkout_level( $request ) {
 			$params = $request->get_params();
 
-			if ( isset( $params['level_id'] ) ) {
+			if ( isset( $params['pmpro_level' ] ) ) {
+				$level_id = intval( $params['pmpro_level'] );
+			} elseif ( isset( $params['level_id'] ) ) {
 				$level_id = intval( $params['level_id'] );
 			} elseif ( isset( $params['level'] ) ) {
 				$level_id = intval( $params['level'] );
@@ -704,22 +871,36 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 				return new WP_REST_Response( 'No level found.', 400 );
 			}
 
-			$discount_code = isset( $params['discount_code'] ) ? sanitize_text_field( $params['discount_code'] ) : null;
-			$checkout_level = pmpro_getLevelAtCheckout( $level_id, $discount_code );
-			
-			// Hide confirmation message if not an admin or member.
-			if ( ! empty( $checkout_level->confirmation ) 
-				 && ! pmpro_hasMembershipLevel( $level_id )
-				 && ! current_user_can( 'pmpro_edit_memberships' ) ) {				
-					 $checkout_level->confirmation = '';					
+			if ( isset( $params['pmpro_discount_code'] ) ) {
+				$discount_code = sanitize_text_field( $params['pmpro_discount_code'] );
+			} elseif ( isset( $params['discount_code'] ) ) {
+				$discount_code = sanitize_text_field( $params['discount_code'] );
+			} else {
+				$discount_code = null;
 			}
-			
+
+			$checkout_level = pmpro_getLevelAtCheckout( $level_id, $discount_code );
+
+			if ( ! empty( $checkout_level ) ) {
+				// Hide confirmation message if not an admin or member.
+				if ( ! empty( $checkout_level->confirmation ) 
+					&& ! pmpro_hasMembershipLevel( $level_id )
+					&& ! current_user_can( 'pmpro_edit_members' ) ) {
+						$checkout_level->confirmation = '';
+				}
+
+				// Also add a formatted version of the initial payment.
+				$checkout_level->initial_payment_formatted = pmpro_formatPrice( $checkout_level->initial_payment );
+			}
+
 			return new WP_REST_Response( $checkout_level );
 		}
 
 		/**
 		 * Get membership levels at checkout.
 		 * Example: https://example.com/wp-json/pmpro/v1/checkout_levels
+		 *
+		 * @deprecated 3.0 Use the /pmpro/v1/checkout_level endpoint instead.
 		 */
 		function pmpro_rest_api_get_checkout_levels( $request ) {
 			$params = $request->get_params();
@@ -728,7 +909,9 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 			if ( ! empty( $pmpro_checkout_level_ids ) ) {
 				// MMPU Compatibility...
 				$level_ids = $pmpro_checkout_level_ids;
-			} elseif ( isset( $params['level_id'] ) ) {
+			} elseif ( isset( $params['pmpro_level' ] ) ) {
+				$level_ids = explode( '+', intval( $params['pmpro_level'] ) );
+			}elseif ( isset( $params['level_id'] ) ) {
 				$level_ids = explode( '+', intval( $params['level_id'] ) );
 			} elseif ( isset( $params['level'] ) ) {
 				$level_ids = explode( '+', intval( $params['level'] ) );
@@ -743,8 +926,17 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 			$r['initial_payment'] = 0.00;
 			foreach ( $level_ids as $level_id ) {
 				$r[ $level_id ] = pmpro_getLevelAtCheckout( $level_id, $discount_code );
+				
+				// Increment the total initial_paymnent.
 				if ( ! empty( $r[ $level_id ]->initial_payment ) ) {
 					$r['initial_payment'] += floatval( $r[ $level_id ]->initial_payment );
+				}
+
+				// Hide confirmation message if not an admin or member.
+				if ( ! empty( $r[ $level_id ]->confirmation ) 
+						&& ! pmpro_hasMembershipLevel( $level_id )
+						&& ! current_user_can( 'pmpro_membershiplevels' ) ) {				
+					$r[ $level_id ]->confirmation = '';					
 				}
 			}
 			$r['initial_payment_formatted'] = pmpro_formatPrice( $r['initial_payment'] );
@@ -795,8 +987,6 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 			 * @param int $limit The total number of recent members to show.
 			 */
 			$limit = apply_filters( 'pmpro_trigger_recent_members_limit', $limit );
-			
-			$response_type = isset( $params['response_type'] ) ? sanitize_text_field( $params['response_type'] ) : null;
 			
 			if ( empty( $params['level_status'] ) ) {
 				$level_status = [ 'active' ];
@@ -876,6 +1066,7 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 					`u`.`ID` AS `user_id`,
 					`u`.`user_email`,
 					`u`.`user_nicename`,
+					`o`.`membership_id`,
 					`o`.`billing_name`,
 					`o`.`billing_street`,
 					`o`.`billing_city`,
@@ -906,44 +1097,130 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 		}
 
 		/**
+		 * Get the membership level IDs restricting a given post.
+		 *
+		 * @since 3.0
+		 *
+		 * @param WP_REST_Request $request The REST request.
+		 *
+		 * @return WP_REST_Response The REST response.
+		 */
+		public function pmpro_rest_api_get_post_restrictions( $request ) {
+			global $wpdb;
+
+			$params = $request->get_params();
+
+			$post_id = isset( $params['post_id'] ) ? intval( $params['post_id'] ) : null;
+
+			if ( empty( $post_id ) ) {
+				return new WP_REST_Response( array( 'error' => 'No post ID provided.' ), 400 );
+			}
+
+			$level_ids = $wpdb->get_results( $wpdb->prepare( "SELECT `membership_id` FROM `{$wpdb->pmpro_memberships_pages}` WHERE `page_id` = %d", $post_id ) );
+
+			return new WP_REST_Response( $level_ids, 200 );
+		}
+
+		/**
+		 * Set the membership level IDs restricting a given post.
+		 *
+		 * @since 3.0
+		 *
+		 * @param WP_REST_Request $request The REST request.
+		 * @return WP_REST_Response The REST response.
+		 */
+		public function pmpro_rest_api_set_post_restrictions( $request ) {
+			global $wpdb;
+
+			$params = $request->get_params();
+
+			$post_id = isset( $params['post_id'] ) ? intval( $params['post_id'] ) : null;
+			$level_ids = isset( $params['level_ids'] ) ? array_map( 'intval', $params['level_ids'] ) : null;
+
+			if ( empty( $post_id ) ) {
+				return new WP_REST_Response( array( 'error' => 'No post ID provided.' ), 400 );
+			}
+
+			if ( ! is_array( $level_ids ) ) {
+				return new WP_REST_Response( array( 'error' => 'No level IDs provided.' ), 400 );
+			}
+
+			// Delete existing restrictions.
+			$wpdb->query( "DELETE FROM {$wpdb->pmpro_memberships_pages} WHERE page_id = '" . intval( $post_id ) . "'" );
+
+			// Add new restrictions.
+			foreach ( $level_ids as $level_id ) {
+				$wpdb->query( "INSERT INTO {$wpdb->pmpro_memberships_pages} (membership_id, page_id) VALUES('" . intval( $level_id ) . "', '" . intval( $post_id ) . "')" );
+			}
+
+			return new WP_REST_Response( array( 'success' => $level_ids ), 200 );
+		}
+
+		/**
 		 * Default permissions check for endpoints/routes.
 		 * Defaults to 'subscriber' for all GET requests and 
 		 * 'administrator' for any other type of request.
 		 *
 		 * @since 2.3
+		 * @since 2.12.6 Now allowing arrays in $route_caps so you can have a different permission per HTTP method.
 		 */
 		 function pmpro_rest_api_get_permissions_check( $request ) {
 
 			$method = $request->get_method();
 			$route = $request->get_route();
 
-			// Default to requiring pmpro_edit_memberships capability.
-			$permission = current_user_can( 'pmpro_edit_memberships' );
+			// Default to requiring pmpro_edit_members capability.
+			// NOTE: This basically means that anyone with the pmpro_edit_members capability could potentially do anything made available through the API in this file.
+			$permission = current_user_can( 'pmpro_edit_members' );
 
 			// Check other caps for some routes.
 			$route_caps = array(
-				'/pmpro/v1/has_membership_access' => 'pmpro_edit_memberships',
-				'/pmpro/v1/get_membership_level_for_user' => 'pmpro_edit_memberships',
-				'/pmpro/v1/get_membership_levels_for_user' => 'pmpro_edit_memberships',
-				'/pmpro/v1/change_membership_level' => 'pmpro_edit_memberships',
-				'/pmpro/v1/cancel_membership_level' => 'pmpro_edit_memberships',
-				'/pmpro/v1/membership_level' => true,
+				'/pmpro/v1/has_membership_access' => 'pmpro_edit_members',
+				'/pmpro/v1/get_membership_level_for_user' => 'pmpro_edit_members',
+				'/pmpro/v1/get_membership_levels_for_user' => 'pmpro_edit_members',
+				'/pmpro/v1/change_membership_level' => 'pmpro_edit_members',
+				'/pmpro/v1/cancel_membership_level' => 'pmpro_edit_members',
+				'/pmpro/v1/membership_level' => array(
+					'GET' => true,
+					'POST' => 'pmpro_membershiplevels',
+					'PUT' => 'pmpro_membershiplevels',
+					'PATCH' => 'pmpro_membershiplevels',
+					'DELETE' => 'pmpro_membershiplevels',
+				),
+				'/pmpro/v1/membership_levels' => true,
 				'/pmpro/v1/discount_code' => 'pmpro_discountcodes',
+				'/pmpro/v1/order' => 'pmpro_orders',
 				'/pmpro/v1/checkout_level' => true,
 				'/pmpro/v1/checkout_levels' => true,
 				'/pmpro/v1/me' => true,
-				'/pmpro/v1/recent_memberships' => 'pmpro_edit_memberships',
-				'/pmpro/v1/recent_orders' => 'pmpro_orders'
+				'/pmpro/v1/recent_memberships' => 'pmpro_edit_members',
+				'/pmpro/v1/recent_orders' => 'pmpro_orders',
+				'/pmpro/v1/post_restrictions' => 'pmpro_edit_members',
 			);
-			$route_caps = apply_filters( 'pmpro_rest_api_route_capabilities', $route_caps, $request );			
+			$route_caps = apply_filters( 'pmpro_rest_api_route_capabilities', $route_caps, $request );
 			
+			// Check if we have a specific permission to check for this route/method.
 			if ( isset( $route_caps[$route] ) ) {
-				if ( $route_caps[$route] === true ) {
-					// public
-					$permission = true;
-				} else {									
-					$permission = current_user_can( $route_caps[$route] );					
-				}				
+				// Find the permission to check.
+				if ( is_array ( $route_caps[$route] ) && isset( $route_caps[$route][$method] ) ) {
+					// Different permission for this method, use it.
+					$permission_to_check = $route_caps[$route][$method];
+				} elseif ( is_array( $route_caps[$route] ) ) {
+					// No permission for this method, default to false.
+					$permission_to_check = false;
+				} else {
+					// Same permission for all methods, use it.
+					$permission_to_check = $route_caps[$route];
+				}
+
+				// Check the permission.
+				if ( $permission_to_check === true || $permission_to_check === false ) {
+					// For true or false, just pass it along.
+					$permission = $permission_to_check;
+				} else {
+					// Check if the current user has this capability.
+					$permission = current_user_can( $permission );
+				}
 			}
 
 			// Is the request method allowed? We disable DELETE by default.

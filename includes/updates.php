@@ -64,7 +64,7 @@ function pmpro_wp_ajax_pmpro_updates() {
 		if(function_exists($updates[0]))
 			call_user_func($updates[0]);
 		else
-			echo "[error] Function not found: " . $updates[0];
+			echo "[error] Function not found: " . esc_html( $updates[0] );
 		echo ". ";
 	} else {
 		echo "[done]";
@@ -76,7 +76,7 @@ function pmpro_wp_ajax_pmpro_updates() {
 	//show progress
 	global $pmpro_updates_progress;
 	if(!empty($pmpro_updates_progress))
-		echo $pmpro_updates_progress;
+		echo esc_html( $pmpro_updates_progress );
 
 	exit;
 }
@@ -106,8 +106,9 @@ function pmpro_updates_notice() {
 ?>
 <div class="update-nag notice notice-warning inline">
 	<?php
-		echo __( 'Paid Memberships Pro Data Update Required', 'paid-memberships-pro' ) . '. ';
-		echo sprintf(__( '(1) <a target="_blank" href="%s">Backup your WordPress database</a></strong> and then (2) <a href="%s">click here to start the update</a>.', 'paid-memberships-pro' ), 'https://codex.wordpress.org/WordPress_Backups#Database_Backup_Instructions', admin_url('admin.php?page=pmpro-updates'));
+		echo esc_html( 'Paid Memberships Pro Data Update Required', 'paid-memberships-pro' ) . '. ';
+		/* translators: %s: URL to the updates page. */
+		echo wp_kses_post( sprintf(__( '(1) <a target="_blank" href="%s">Backup your WordPress database</a></strong> and then (2) <a href="%s">click here to start the update</a>.', 'paid-memberships-pro' ), esc_url( 'https://www.paidmembershipspro.com/backup-wordpress-site/?utm_source=plugin&utm_medium=pmpro-admin-header&utm_campaign=blog&utm_content=backup-notification' ), admin_url('admin.php?page=pmpro-updates')));
 	?>
 </div>
 <?php
@@ -127,7 +128,7 @@ function pmpro_updates_notice_complete() {
 <div class="updated notice notice-success is-dismissible">
 	<p>
 	<?php
-		echo __('All Paid Memberships Pro updates have finished.', 'paid-memberships-pro' );
+		esc_html_e('All Paid Memberships Pro updates have finished.', 'paid-memberships-pro' );
 	?>
 	</p>
 </div>
@@ -135,22 +136,43 @@ function pmpro_updates_notice_complete() {
 }
 
 /**
- * Show a notice if Better Logins Report Add On activated with version 2.0
- * This Add On has been merged into PMPro Core from 2.0
- * @since 2.0
+ * If there is an upgrade notice for updating PMPro to the latest version, show it.
+ *
+ * @since 2.9
+ *
+ * @param array $current_plugin_data {
+ *     An array of plugin metadata.
+ *
+ *     @type string $name         The human-readable name of the plugin.
+ *     @type string $plugin_uri   Plugin URI.
+ *     @type string $version      Plugin version.
+ *     @type string $description  Plugin description.
+ *     @type string $author       Plugin author.
+ *     @type string $author_uri   Plugin author URI.
+ *     @type string $text_domain  Plugin text domain.
+ *     @type string $domain_path  Relative path to the plugin's .mo file(s).
+ *     @type bool   $network      Whether the plugin can only be activated network wide.
+ *     @type string $title        The human-readable title of the plugin.
+ *     @type string $author_name  Plugin author's name.
+ *     @type bool   $update       Whether there's an available update. Default null.
+ * }
+ * @param array $update_data {
+ *     An array of metadata about the available plugin update.
+ *
+ *     @type int    $id           Plugin ID.
+ *     @type string $slug         Plugin slug.
+ *     @type string $new_version  New plugin version.
+ *     @type string $url          Plugin URL.
+ *     @type string $package      Plugin update package URL.
+ * }
  */
-function pmpro_show_notice_for_reports() {
+function pmpro_maybe_show_upgrade_notices( $current_plugin_data, $update_data ) {
+	if ( isset( $update_data->upgrade_notice ) && strlen( trim( $update_data->upgrade_notice ) ) > 0 ) {
+		echo '<p class="pmpro_plugin_update_notice"><strong>' . esc_html( 'Important Upgrade Notice', 'paid-memberships-pro' ) . ':</strong> ' . esc_html( strip_tags( $update_data->upgrade_notice ) ) . '</p>';
 
-	if( ! function_exists( 'pmproblr_fixOptions' ) || ! current_user_can( 'activate_plugins' ) ) {
-		return;
 	}
-
-	?>
-    <div class="notice notice-warning">
-        <p><?php _e( sprintf( 'You currently have the Better Login Reports Add On activated. This functionality has now been merged into Paid Memberships Pro. %s', "<br/><a href='". esc_url( admin_url( '/plugins.php?s=better%20logins%20report%20add%20on&plugin_status=inactive&pmpro-deactivate-reports=true' ) ) . "'>Please deactivate and remove this plugin.</a>" ), 'paid-memberships-pro' ); ?></p>
-    </div>
-    <?php
 }
-if ( isset( $_REQUEST['page'] ) && $_REQUEST['page'] == 'pmpro-reports' ) {
-	add_action( 'admin_notices', 'pmpro_show_notice_for_reports', 20 );
+$pmpro_path_from_plugins_dir_arr = explode( '/wp-content/plugins/', PMPRO_BASE_FILE );
+if ( ! empty( $pmpro_path_from_plugins_dir_arr ) ) {
+	add_action( 'in_plugin_update_message-' . end( $pmpro_path_from_plugins_dir_arr ), 'pmpro_maybe_show_upgrade_notices', 10, 2 );
 }

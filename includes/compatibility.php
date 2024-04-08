@@ -46,6 +46,31 @@ function pmpro_compatibility_checker() {
 			'check_type'  => 'class',
 			'check_value' => 'Jetpack',
 		],
+		[
+			'file' 		  => 'avada.php',
+			'check_type'  => 'constant',
+			'check_value' => 'FUSION_BUILDER_VERSION'
+		],
+		[
+			'file' 		  => 'oxygen-builder.php',
+			'check_type'  => 'class',
+			'check_value' => 'OxyEl'
+		],
+		[
+			'file'		  => 'lifterlms.php',
+			'check_type'  => 'function',
+			'check_value' => 'llms'
+		],
+		[
+			'file'		  => 'buddypress.php',
+			'check_type'  => 'class',
+			'check_value' => 'BuddyPress' //BuddyBoss uses this class, too.
+		],
+		[
+			'file'        => 'bluehost-wordpress-plugin.php',
+			'check_type'  => 'constant',
+			'check_value' => 'BLUEHOST_PLUGIN_VERSION',
+		],
 	];
 
 	foreach ( $compat_checks as $value ) {
@@ -114,3 +139,48 @@ function pmpro_compatibility_checker_themes(){
 
 }
 add_action( 'after_setup_theme', 'pmpro_compatibility_checker_themes' );
+
+/**
+ * Keep track of plugins that load libraries before PMPro loads its version.
+ *
+ * @param string $name    The name of the library.
+ * @param string $path    The path of the loaded library.
+ * @param string $version The version of the loaded library.
+ *
+ * @since 2.8
+ */
+function pmpro_track_library_conflict( $name, $path, $version ) {	
+	// Ignore when PMPro is trying to load.
+	if ( strpos( $path, '/plugins/paid-memberships-pro/' ) !== false ) {
+		return;
+	}
+	
+	// Use a static var for timestamp so we can avoid multiple updates per pageload.
+	static $now = null;
+	if ( empty( $now ) ) {
+		$now = current_time( 'Y-m-d H:i:s' );
+	}	
+	
+	// Get the current list of library conflicts.
+	$library_conflicts = get_option( 'pmpro_library_conflicts', array() );
+
+	// Make sure we have an entry for this library.
+	if ( ! isset( $library_conflicts[ $name ] ) ) {
+		$library_conflicts[ $name ] = array();
+	}
+
+	// Make sure we have an entry for this path.
+	if ( ! isset( $library_conflicts[ $name ][ $path ] ) ) {
+		$library_conflicts[ $name ][ $path ] = array();
+	}
+	
+	// Don't save conflict if no time has passed.
+	if ( ! empty( $library_conflicts[ $name ][ $path ]['timestamp'] ) && $library_conflicts[ $name ][ $path ]['timestamp'] === $now ) {
+		return;
+	}
+
+	// Update the library conflict information.
+	$library_conflicts[ $name ][ $path ]['version']   = $version;
+	$library_conflicts[ $name ][ $path ]['timestamp'] = $now;	
+	update_option( 'pmpro_library_conflicts', $library_conflicts, false );
+}

@@ -1,8 +1,7 @@
 {
   "name": "paid-memberships-pro",
-  "version": "2.3.0",
+  "version": "3.0.1",
   "description": "WordPress Membership Plugin",
-  "main": "webpack.config.js",
   "directories": {
     "test": "tests"
   },
@@ -10,9 +9,15 @@
     "type": "git",
     "url": "https://github.com/strangerstudios/paid-memberships-pro.git"
   },
+  "main": "build/index.js",
   "scripts": {
-    "start": "wp-scripts start",
-    "build": "wp-scripts build"
+    "build": "wp-scripts build",
+    "format": "wp-scripts format",
+    "lint:css": "wp-scripts lint-style",
+    "lint:js": "wp-scripts lint-js",
+    "packages-update": "wp-scripts packages-update",
+    "plugin-zip": "wp-scripts plugin-zip",
+    "start": "wp-scripts start"
   },
   "keywords": [
     "wordpress",
@@ -22,6 +27,9 @@
   "author": "Stranger Studios",
   "license": "GPL-2.0",
   "devDependencies": {
-    "@wordpress/scripts": "^7.2.0"
+    "@wordpress/scripts": "^23.5.0"
+  },
+  "dependencies": {
+    "classnames": "^2.3.2"
   }
 }

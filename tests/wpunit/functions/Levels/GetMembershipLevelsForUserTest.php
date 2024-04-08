@@ -62,6 +62,7 @@ class GetMembershipLevelsForUserTest extends TestCase {
 		$levels = pmpro_getMembershipLevelsForUser( $this->user_id );
 
 		$this->assertIsArray( $levels );
+		$this->assertNotCount( 0, $levels );
 		$this->assertEquals( $this->level_id, current( $levels )->ID );
 	}
 
@@ -74,6 +75,7 @@ class GetMembershipLevelsForUserTest extends TestCase {
 		$levels = pmpro_getMembershipLevelsForUser();
 
 		$this->assertIsArray( $levels );
+		$this->assertNotCount( 0, $levels );
 		$this->assertEquals( $this->level_id, current( $levels )->ID );
 	}
 

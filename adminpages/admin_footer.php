@@ -1,2 +1,2 @@
 <div class="clear"></div>
-</div>
+</div> <!-- end .pmpro_admin -->

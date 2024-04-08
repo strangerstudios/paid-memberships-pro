@@ -81,6 +81,10 @@ class PMPro_Site_Health {
 					'label' => __( 'Discount Codes', 'paid-memberships-pro' ),
 					'value' => self::get_discount_codes(),
 				],
+				'pmpro-sessions'       => [
+					'label' => __( 'PHP Sessions', 'paid-memberships-pro' ),
+					'value' => self::test_sessions(),
+				],
 				'pmpro-membership-levels'    => [
 					'label' => __( 'Membership Levels', 'paid-memberships-pro' ),
 					'value' => self::get_levels(),
@@ -100,12 +104,37 @@ class PMPro_Site_Health {
 				'pmpro-pages' => [
 					'label' => __( 'Membership Pages', 'paid-memberships-pro' ),
 					'value' => self::get_pmpro_pages(),
-				]
+				],
+				'pmpro-library-conflicts' => [
+					'label' => __( 'Library Conflicts', 'paid-memberships-pro' ),
+					'value' => self::get_library_conflicts(),
+				],
+				'pmpro-outdated-templates' => [
+					'label' => __( 'Outdated Templates', 'paid-memberships-pro' ),
+					'value' => self::get_outdated_templates(),
+				],
+				'pmpro-current-site-url' => [
+					'label' => __( 'Current Site URL', 'paid-memberships-pro' ),
+					'value' => get_site_url(),
+				],
+				'pmpro-recorded-site-url' => [
+					'label' => __( 'Last Known Site URL', 'paid-memberships-pro' ),
+					'value' => get_option( 'pmpro_last_known_url' ),
+				],
+				'pmpro-pause-mode' => [
+					'label' => __( 'Pause Mode', 'paid-memberships-pro' ),
+					'value' => self::get_pause_mode_state(),
+				],
 			],
 		];
 
 		// Automatically add information about constants set.
 		$info['pmpro']['fields'] = array_merge( $info['pmpro']['fields'], self::get_constants() );
+
+		if ( function_exists( 'pmpro_add_site_health_info_2_10_6' ) ) {
+			// If the 2.10.6 update cleaned up sensitive order meta data, we want to show that.
+			$info = pmpro_add_site_health_info_2_10_6( $info );
+		}
 
 		return $info;
 	}
@@ -122,6 +151,12 @@ class PMPro_Site_Health {
 
 		if ( ! $membership_levels ) {
 			return __( 'No Levels Found', 'paid-memberships-pro' );
+		}
+
+		foreach ( $membership_levels as &$membership_level ) {
+			$membership_level->meta = get_pmpro_membership_level_meta( $membership_level->id );
+
+			$membership_level = apply_filters( 'pmpro_site_health_info_membership_level', $membership_level );
 		}
 
 		return wp_json_encode( $membership_levels, JSON_PRETTY_PRINT );
@@ -167,7 +202,7 @@ class PMPro_Site_Health {
 	 * @return string The payment gateway information.
 	 */
 	public function get_gateway() {
-		$gateway  = pmpro_getOption( 'gateway' );
+		$gateway  = get_option( 'pmpro_gateway' );
 		$gateways = pmpro_gateways();
 
 		// Check if gateway is registered.
@@ -187,14 +222,17 @@ class PMPro_Site_Health {
 
 			if ( $legacy ) {
 				$gateway_text .= ' (' . __( 'Legacy Keys', 'paid-memberships-pro' ) . ')';
+				return $gateway_text . ' [' . $gateway . ':legacy-keys]';
 			}
 
 			if ( $connect ) {
 				$gateway_text .= ' (' . __( 'Stripe Connect', 'paid-memberships-pro' ) . ')';
+				return $gateway_text . ' [' . $gateway . ':stripe-connect]';
 			}
+
 		}
 
-		return $gateway_text;
+		return $gateway_text . ' [' . $gateway . ']';
 	}
 
 	/**
@@ -205,7 +243,7 @@ class PMPro_Site_Health {
 	 * @return string The payment gateway environment information.
 	 */
 	public function get_gateway_env() {
-		$environment  = pmpro_getOption( 'gateway_environment' );
+		$environment  = get_option( 'pmpro_gateway_environment' );
 		$environments = [
 			'sandbox' => __( 'Sandbox/Testing', 'paid-memberships-pro' ),
 			'live'    => __( 'Live/Production', 'paid-memberships-pro' ),
@@ -217,7 +255,34 @@ class PMPro_Site_Health {
 			return sprintf( __( '%s (environment not registered)', 'paid-memberships-pro' ), $environment );
 		}
 
-		return $environments[ $environment ];
+		return $environments[ $environment ] . ' [' . $environment . ']';
+	}
+
+	/**
+	 * Tests if PHP sessions are enabled
+	 *
+	 * @since 2.9
+	 *
+	 * @return string The PHP Session data.
+	 */
+	public function test_sessions() {
+
+		$session_data = array();
+
+		$php_session_status = session_status();
+
+		if ( $php_session_status !== 0 || $php_session_status !== PHP_SESSIONS_DISABLED ) {
+			$session_data['session_status'] = __( 'Active', 'paid-memberships-pro' );
+		} else {
+			$session_data['session_status'] = __( 'Inactive', 'paid-memberships-pro' );
+		}
+
+		if ( defined( 'PANTHEON_SESSIONS_VERSION' ) ) {
+			$session_data['wp_native_sessions'] = __( 'Active', 'paid-memberships-pro' );
+		}
+
+		return $session_data;
+
 	}
 
 	/**
@@ -268,7 +333,7 @@ class PMPro_Site_Health {
 
 		WP_Filesystem();
 
-		if ( ! $wp_filesystem ) {
+        if ( ! $wp_filesystem || ! is_object($wp_filesystem) || ( is_wp_error($wp_filesystem->errors) && $wp_filesystem->errors->has_errors() ) ) {
 			return new WP_Error( 'access-denied', __( 'Unable to verify', 'paid-memberships-pro' ) );
 		}
 
@@ -313,18 +378,7 @@ class PMPro_Site_Health {
 		$cron_times = [];
 
 		// These are our crons.
-		$expected_crons = [
-			'pmpro_cron_expire_memberships',
-			'pmpro_cron_expiration_warnings',
-			'pmpro_cron_credit_card_expiring_warnings',
-			'pmpro_cron_admin_activity_email',
-		];
-
-		$gateway = pmpro_getOption( 'gateway' );
-
-		if ( 'stripe' === $gateway ) {
-			$expected_crons[] = 'pmpro_cron_stripe_subscription_updates';
-		}
+		$expected_crons = array_keys( pmpro_get_crons() );
 
 		// Find any of our crons and when their next run is.
 		if ( $crons ) {
@@ -366,7 +420,7 @@ class PMPro_Site_Health {
 		global $pmpro_pages;
 
 		$page_information = array();
-		
+
 		if( !empty( $pmpro_pages ) ){
 
 			foreach( $pmpro_pages as $key => $val ){
@@ -450,7 +504,7 @@ class PMPro_Site_Health {
 
 		WP_Filesystem();
 
-		if ( ! $wp_filesystem ) {
+        if ( ! $wp_filesystem || ! is_object($wp_filesystem) || ( is_wp_error($wp_filesystem->errors) && $wp_filesystem->errors->has_errors() ) ) {
 			return __( 'Unable to access .htaccess file', 'paid-memberships-pro' );
 		}
 
@@ -467,6 +521,61 @@ class PMPro_Site_Health {
 		}
 
 		return __( 'Off', 'paid-memberships-pro' );
+	}
+
+	/**
+	 * Get library conflicts.
+	 *
+	 * @since 2.8
+	 *
+	 * @return string|string[] The member page information
+	 */
+	function get_library_conflicts() {
+		// Get the current list of library conflicts.
+		$library_conflicts = get_option( 'pmpro_library_conflicts' );
+
+		// If there are no library conflicts, return a message.
+		if ( empty( $library_conflicts ) ) {
+			return __( 'No library conflicts detected.', 'paid-memberships-pro' );
+		}
+
+		// Format data to be displayed in site health.
+		$return_arr = array();
+
+		// Loop through all libraries that have conflicts.
+		foreach ( $library_conflicts as $library_name => $conflicting_plugins ) {
+			$conflict_strings = array();
+			// Loop through all plugins that have conflicts with this library.
+			foreach ( $conflicting_plugins as $conflicting_plugin_path => $conflicting_plugin_data ) {
+				$conflict_strings[] = 'v' . $conflicting_plugin_data['version'] . ' (' . $conflicting_plugin_data['timestamp'] . ')' . ' - ' . $conflicting_plugin_path;
+			}
+			$return_arr[ $library_name ] = implode( ' | ', $conflict_strings );
+		}
+		return $return_arr;
+	}
+
+	/**
+ 	 * Get outdated templates.
+ 	 *
+	 * @since 2.11
+ 	 *
+ 	 * @return string|string[] The outdated templates information.
+ 	 */
+	  function get_outdated_templates() {
+		// Get outdated templates.
+		$outdated_templates = pmpro_get_outdated_page_templates();
+
+		// If there are no outdated templates, return a message.
+		if ( empty( $outdated_templates ) ) {
+			return __( 'No outdated templates detected.', 'paid-memberships-pro' );
+		}
+
+		// Format data to be displayed in site health.
+		$return_arr = array();
+		foreach ( $outdated_templates as $template_name => $template_data ) {
+			$return_arr[ $template_name ] = __( 'Default version', 'paid-memberships-pro' ) . ': ' . $template_data['default_version'] . ' | ' . __( 'Loaded version', 'paid-memberships-pro' ) . ': ' . $template_data['loaded_version'] . ' | ' . __( 'Loaded path', 'paid-memberships-pro' ) . ': ' . $template_data['loaded_path'];
+		}
+		return $return_arr;
 	}
 
 	/**
@@ -500,7 +609,6 @@ class PMPro_Site_Health {
 				'PMPRO_IPN_DEBUG'                 => __( 'PayPal IPN Debug Mode', 'paid-memberships-pro' ),
 			],
 			'stripe' => [
-				'PMPRO_STRIPE_WEBHOOK_DELAY'      => __( 'Stripe Webhook Delay', 'paid-memberships-pro' ),
 				'PMPRO_STRIPE_WEBHOOK_DEBUG'      => __( 'Stripe Webhook Debug Mode', 'paid-memberships-pro' ),
 			],
 			'twocheckout' => [
@@ -508,7 +616,7 @@ class PMPro_Site_Health {
 			],
 		];
 
-		$gateway = pmpro_getOption( 'gateway' );
+		$gateway = get_option( 'pmpro_gateway' );
 
 		if ( $gateway && isset( $gateway_specific_constants[ $gateway ] ) ) {
 			$constants = array_merge( $constants, $gateway_specific_constants[ $gateway ] );
@@ -542,4 +650,22 @@ class PMPro_Site_Health {
 		return $constants_formatted;
 	}
 
+	/**
+	 * Get the pause mode state
+	 *
+	 * @since 2.10
+	 *
+	 * @return string What state is pause mode in 
+	 */
+	public function get_pause_mode_state() {
+
+		$pause_mode = pmpro_is_paused();
+
+		if( $pause_mode ) {
+			return __( 'Enabled', 'paid-memberships-pro' );
+		}
+
+		return __( 'Disabled', 'paid-memberships-pro' );
+
+	}
 }
