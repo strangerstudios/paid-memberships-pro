@@ -1196,7 +1196,18 @@ function pmpro_changeMembershipLevel( $level, $user_id = null, $old_level_status
 	// Cancel all membership levels for this user in the same level group if only one level per group is allowed.
 	$level_group_id = pmpro_get_group_id_for_level( $level_id );
 	$level_group = pmpro_get_level_group( $level_group_id );
-	if ( ! empty( $level_group) && empty( $level_group->allow_multiple_selections ) ) {
+
+	/**
+	 * Filter whether old levels should be deactivated or not.
+	 * Typically you'll want to hook into pmpro_before_change_membership_level
+	 * or pmpro_after_change_membership_level later to run your own deactivation logic.
+	 *
+	 * @since  1.8.11
+	 * @var $pmpro_deactivate_old_levels bool True or false if levels should be deactivated. Defaults to true.
+	 */
+	$pmpro_deactivate_old_levels = apply_filters( 'pmpro_deactivate_old_levels', true );
+
+	if ( ! empty( $level_group) && empty( $level_group->allow_multiple_selections ) && $pmpro_deactivate_old_levels ) {
 		// Get all levels in the group.
 		$levels_in_group = pmpro_get_levels_for_group( $level_group->id );
 		$group_level_ids = wp_list_pluck( $levels_in_group, 'id' );
@@ -1208,7 +1219,7 @@ function pmpro_changeMembershipLevel( $level, $user_id = null, $old_level_status
 		foreach ( $levels_to_cancel as $level_to_cancel ) {
 			pmpro_cancelMembershipLevel( $level_to_cancel, $user_id, 'changed' );
 		}
-	} else {
+	} elseif ( $pmpro_deactivate_old_levels ) {
 		// If the user already has this membership level, we still want to cancel it.
 		if ( in_array( $level_id, $membership_ids ) ) {
 			pmpro_cancelMembershipLevel( $level_id, $user_id, 'changed' );
