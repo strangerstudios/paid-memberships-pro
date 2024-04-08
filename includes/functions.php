@@ -2234,7 +2234,7 @@ function pmpro_getMembershipLevelsForUser( $user_id = null, $include_inactive = 
 
 			if ( 'no' === $admin_membership_access ) {
 				return array();
-			} elseif ( 'current' !== $admin_membership_access ) {
+			} elseif ( 'yes' === $admin_membership_access ) {
 				$all_levels = pmpro_getAllLevels( true );
 
 				// Make sure that each level has all the necessary fields.
