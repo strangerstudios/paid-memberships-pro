@@ -219,7 +219,6 @@ function pmpro_page_template_notices() {
 		}
 		?>
 		<div class="notice notice-error pmpro_notification pmpro_notification-error">
-			<button type="button" class="pmpro-notice-button notice-dismiss" value="hide_pause_notification"><span class="screen-reader-text"><?php esc_html_e( 'Dismiss this notice.', 'paid-memberships-pro' ); ?></span></button>
 			<div class="pmpro_notification-icon">
 				<span class="dashicons dashicons-warning"></span>
 			</div>
