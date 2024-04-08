@@ -9,12 +9,12 @@ class PMPro_Discount_Code {
 	 */
 	public $id = 0;
 
-    /**
-     * Discount code
-     *
-     * @var string $code
-     */
-    public $code = '';
+	/**
+	 * Discount code
+	 *
+	 * @var string $code
+	 */
+	public $code = '';
 
 	/**
 	 * When the discount code starts (YYYY-MM-DD format)
