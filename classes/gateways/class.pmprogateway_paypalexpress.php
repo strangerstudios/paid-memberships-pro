@@ -1280,7 +1280,7 @@
 					'httpversion' => '1.1',
 					'body' => $nvpreq,
 					'headers'     => array(
-						'content-type'      => 'application/json',
+						'content-type'      => 'application/x-www-form-urlencoded',
 						'PayPal-Request-Id' => $uuid,
 					),
 			    )
@@ -1326,7 +1326,7 @@
 			// But never sleep less than the base sleep seconds.
 			$sleepSeconds = \max( self::$initialNetworkRetryDelay, $sleepSeconds );
 
-			return $sleepSeconds;
+			return (int)$sleepSeconds;
 		}
 
 		/**
