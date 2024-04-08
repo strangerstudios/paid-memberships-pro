@@ -7,28 +7,35 @@ class PMPro_Discount_Code {
 	 *
 	 * @var int $id
 	 */
-	public $id;
+	public $id = 0;
+
+    /**
+     * Discount code
+     *
+     * @var string $code
+     */
+    public $code = '';
 
 	/**
-	 * When the discount code starts
+	 * When the discount code starts (YYYY-MM-DD format)
 	 *
-	 * @var date $starts
+	 * @var string $starts
 	 */
-	public $starts;
+	public $starts = '';
 
 	/**
-	 * When the discount code expires
+	 * When the discount code expires (YYYY-MM-DD format)
 	 *
-	 * @var date $expires
+	 * @var string $expires
 	 */
-	public $expires;
+	public $expires = '';
 
 	/**
 	 * how many times the discount code has been used. 0 means unlimited.
 	 *
 	 * @var int $uses
 	 */
-	public $uses;
+	public $uses = 0;
 
 
 	/**
@@ -36,7 +43,7 @@ class PMPro_Discount_Code {
 	 *
 	 * @var array $levels
 	 */
-	public $levels;
+	public $levels = array();
 
     function __construct( $code = NULL ) {
 
@@ -140,6 +147,7 @@ class PMPro_Discount_Code {
         if ( ! empty( $dcobj ) ) {
             // Setup the discount code object.
             $this->id = $dcobj->id;
+            $this->code = $dcobj->code;
             $this->starts = $dcobj->starts;
             $this->expires = $dcobj->expires;
             $this->uses = $dcobj->uses;
