@@ -3,7 +3,7 @@
  * Step 3 file content. [Memberships]
  */
 // Get option for collecting payments
-$collecting_payment = pmpro_getOption( 'wizard_collect_payment' );
+$collecting_payment = get_option( 'pmpro_wizard_collect_payment' );
 ?>
 <div class="pmpro-wizard__step pmpro-wizard__step-3">
 	<div class="pmpro-wizard__step-header">
@@ -27,7 +27,7 @@ $collecting_payment = pmpro_getOption( 'wizard_collect_payment' );
 		</div>
 		<script>
 			jQuery(document).ready(function() {
-				jQuery('#pmpro-wizard__free-level').click(function() {
+				jQuery('#pmpro-wizard__free-level').on('click',function() {
 					pmpro_toggle_elements_by_selector( jQuery(this).parent().find('.pmpro-wizard__field__checkbox-content'), jQuery( this ).prop( 'checked' ) );
 				});
 			});
@@ -69,7 +69,7 @@ $collecting_payment = pmpro_getOption( 'wizard_collect_payment' );
 		</div>
 		<script>
 			jQuery(document).ready(function() {
-				jQuery('#pmpro-wizard__paid-level').click(function() {
+				jQuery('#pmpro-wizard__paid-level').on('click',function() {
 					pmpro_toggle_elements_by_selector( jQuery(this).parent().find('.pmpro-wizard__field__checkbox-content'), jQuery( this ).prop( 'checked' ) );
 				});
 			});

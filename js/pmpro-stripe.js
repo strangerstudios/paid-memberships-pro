@@ -75,8 +75,8 @@ jQuery( document ).ready( function( $ ) {
 			return;
 		}
 
-		// If there is no "level" input, then this is not a checkout form. Return.
-		if ( $( 'input[name="level"]' ).length === 0 ) {
+		// If there is no "pmpro_level" input (or "level" input for legacy page templates), then this is not a checkout form. Return.
+		if ( $( 'input[name="pmpro_level"]' ).length === 0 && $( 'input[name="level"]' ).length === 0 ) {
 			return;
 		}
 
@@ -129,7 +129,7 @@ jQuery( document ).ready( function( $ ) {
 
 		// Get the level price so that information can be shown in payment request popup
 		jQuery.noConflict().ajax({
-			url: pmproStripe.restUrl + 'pmpro/v1/checkout_levels',
+			url: pmproStripe.restUrl + 'pmpro/v1/checkout_level',
 			dataType: 'json',
 			data: pmpro_getCheckoutFormDataForCheckoutLevels(),
 			success: function(data) {
@@ -183,7 +183,7 @@ jQuery( document ).ready( function( $ ) {
 		// Update price shown in payment request button if price changes.
 		function stripeUpdatePaymentRequestButton() {
 			jQuery.noConflict().ajax({
-				url: pmproStripe.restUrl + 'pmpro/v1/checkout_levels',
+				url: pmproStripe.restUrl + 'pmpro/v1/checkout_level',
 				dataType: 'json',
 				data: pmpro_getCheckoutFormDataForCheckoutLevels(),
 				success: function(data) {

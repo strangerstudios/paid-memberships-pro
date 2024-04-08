@@ -9,7 +9,7 @@
 
 //only admins can get this
 if ( ! function_exists( "current_user_can" ) || ( ! current_user_can( "manage_options" ) && ! current_user_can( "pmpro_ordersprint" ) ) ) {
-	die( __( "You do not have permissions to perform this action.", 'paid-memberships-pro' ) );
+	die( esc_html__( "You do not have permissions to perform this action.", 'paid-memberships-pro' ) );
 }
 
 // Do we have an order ID?

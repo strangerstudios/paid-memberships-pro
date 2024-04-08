@@ -39,6 +39,58 @@ class PMPro_Discount_Code_List_Table extends WP_List_Table {
 	}
 
 	/**
+	 * Sets up screen options for the discount codes list table.
+	 *
+	 * @since 3.0
+	 */
+	public static function hook_screen_options() {
+		$list_table = new PMPro_Discount_Code_List_Table();
+		add_screen_option(
+			'per_page',
+			array(
+				'default' => 20,
+				'label'   => __( 'Discount codes per page', 'paid-memberships-pro' ),
+				'option'  => 'pmpro_discount_codes_per_page',
+			)
+		);
+		add_filter(
+			'screen_settings',
+			array(
+				$list_table,
+				'screen_controls',
+			),
+			10,
+			2
+		);
+		add_filter(
+			'set-screen-option',
+			array(
+				$list_table,
+				'set_screen_option',
+			),
+			10,
+			3
+		);
+		set_screen_options();
+	}
+
+	/**
+	 * Sets the screen options.
+	 *
+	 * @param string $dummy   Unused.
+	 * @param string $option  Screen option name.
+	 * @param string $value   Screen option value.
+	 * @return string
+	 */
+	public function set_screen_option( $dummy, $option, $value ) {
+		if ( 'pmpro_discount_codes_per_page' === $option ) {
+			return $value;
+		} else {
+			return $dummy;
+		}
+	}
+
+	/**
 	 * Prepares the list of items for displaying.
 	 *
 	 * Query, filter data, handle sorting, and pagination, and any other data-manipulation required prior to rendering
@@ -55,7 +107,7 @@ class PMPro_Discount_Code_List_Table extends WP_List_Table {
 
 		$this->items = $this->sql_table_data();
 
-		$items_per_page = $this->get_items_per_page( 'discount_codes_per_page' );
+		$items_per_page = $this->get_items_per_page( 'pmpro_discount_codes_per_page' );
 		$total_items = $this->sql_table_data( true );
 		$this->set_pagination_args(
 			array(
@@ -115,9 +167,22 @@ class PMPro_Discount_Code_List_Table extends WP_List_Table {
 	 * @return Array
 	 */
 	public function get_hidden_columns() {
-		
-		return array();
-		
+		$user = wp_get_current_user();
+ 		if ( ! $user ) {
+ 			return array();
+ 		}
+
+ 		// Check whether the current user has changed screen options or not.
+ 		$hidden = get_user_meta( $user->ID, 'manage' . $this->screen->id . 'columnshidden', true );
+
+ 		// If user meta is not found, add the default hidden columns.
+ 		// Right now, we don't have any default hidden columns.
+ 		if ( ! $hidden ) {
+ 			$hidden = array();
+ 			update_user_meta( $user->ID, 'manage' . $this->screen->id . 'columnshidden', $hidden );
+ 		}
+
+ 		return $hidden;
 	}
 
 	/**
@@ -186,7 +251,7 @@ class PMPro_Discount_Code_List_Table extends WP_List_Table {
 			$pn = 1;
 		}
 		
-		$limit = $this->get_items_per_page( 'discount_codes_per_page' );
+		$limit = $this->get_items_per_page( 'pmpro_discount_codes_per_page' );
 
 		$end = $pn * $limit;
 		$start = $end - $limit;
@@ -304,7 +369,7 @@ class PMPro_Discount_Code_List_Table extends WP_List_Table {
 	public function column_discount_code( $item ) {
 
 		?>
-		<strong><a title="<?php echo esc_attr( sprintf( __( 'Edit Code: %s', 'paid-memberships-pro' ), $item->id ) ); ?>" href="<?php echo esc_url( add_query_arg( array( 'page' => 'pmpro-discountcodes', 'edit' => $item->id ), admin_url('admin.php' ) ) ); ?>"><?php echo $item->code; ?></a></strong>
+		<strong><a title="<?php echo esc_attr( sprintf( __( 'Edit Code: %s', 'paid-memberships-pro' ), $item->id ) ); ?>" href="<?php echo esc_url( add_query_arg( array( 'page' => 'pmpro-discountcodes', 'edit' => $item->id ), admin_url('admin.php' ) ) ); ?>"><?php echo esc_html( $item->code ); ?></a></strong>
 		<div class="row-actions">
 		<?php
 			$delete_text = esc_html(
@@ -407,7 +472,7 @@ class PMPro_Discount_Code_List_Table extends WP_List_Table {
 			}
 
 			if ( ! empty( $actions_html ) ) {
-				echo implode( ' | ', $actions_html );
+				echo implode( ' | ', $actions_html ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 			}
 		?>
 		</div>
@@ -484,7 +549,7 @@ class PMPro_Discount_Code_List_Table extends WP_List_Table {
 		$level_names = array();
 		foreach( $levels as $level ) {
 			if ( ! empty( $pmpro_pages['checkout'] ) ) {
-				$level_names[] = '<a target="_blank" href="' . esc_url( pmpro_url( 'checkout', '?level=' . $level->id . '&discount_code=' . $item->code ) ) . '">' . esc_html( $level->name ) . '</a>';
+				$level_names[] = '<a target="_blank" href="' . esc_url( pmpro_url( 'checkout', '?pmpro_level=' . $level->id . '&pmpro_discount_code=' . $item->code ) ) . '">' . esc_html( $level->name ) . '</a>';
 			} else {
 				$level_names[] = $level->name;
 			}

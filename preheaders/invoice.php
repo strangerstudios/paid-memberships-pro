@@ -2,10 +2,6 @@
 
 global $current_user, $pmpro_invoice;
 
-if ( $current_user->ID ) {
-	$current_user->membership_level = pmpro_getMembershipLevelForUser( $current_user->ID );
-}
-
 //get invoice from DB
 if ( ! empty( $_REQUEST['invoice'] ) ) {
 	$invoice_code = sanitize_text_field( $_REQUEST['invoice'] );

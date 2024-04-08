@@ -13,7 +13,7 @@
 	* pmpro_report_{slug}_page()     to show up when users click on the report page widget.
 */
 global $pmpro_reports;
-$gateway_environment = pmpro_getOption("gateway_environment");
+$gateway_environment = get_option( "pmpro_gateway_environment");
 if($gateway_environment == "sandbox")
 	$pmpro_reports['sales'] = __('Sales and Revenue (Testing/Sandbox)', 'paid-memberships-pro' );
 else
@@ -77,7 +77,7 @@ function pmpro_report_sales_widget() {
 						<?php } ?>
 					</td>
 					<td><?php echo esc_html( number_format_i18n( pmpro_getSales( $report_type, null, 'all' ) ) ); ?></td>
-					<td><?php echo pmpro_escape_price( pmpro_formatPrice( pmpro_getRevenue( $report_type ) ) ); ?></td>
+					<td><?php echo pmpro_escape_price( pmpro_formatPrice( pmpro_getRevenue( $report_type ) ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></td>
 				</tr>
 				<?php
 					//sale prices stats
@@ -89,9 +89,9 @@ function pmpro_report_sales_widget() {
 						}
 				?>
 					<tr class="pmpro_report_tr_sub" style="display: none;">
-						<td aria-label="<?php echo esc_attr( sprintf( __( 'Orders %s at %s price', 'paid-memberships-pro' ), $report_name, pmpro_escape_price( pmpro_formatPrice( $price ) ) ) ); ?>">- <?php echo pmpro_escape_price( pmpro_formatPrice( $price ) );?></td>
+						<td aria-label="<?php echo esc_attr( sprintf( __( 'Orders %s at %s price', 'paid-memberships-pro' ), $report_name, pmpro_escape_price( pmpro_formatPrice( $price ) ) ) ); ?>">- <?php echo pmpro_escape_price( pmpro_formatPrice( $price ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></td>
 						<td><?php echo esc_html( number_format_i18n( $quantity['total'] ) ); ?></td>
-						<td><?php echo pmpro_escape_price( pmpro_formatPrice( $price * $quantity['total'] ) ); ?></td>
+						<td><?php echo pmpro_escape_price( pmpro_formatPrice( $price * $quantity['total'] ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></td>
 					</tr>
 				<?php
 				}
@@ -123,7 +123,7 @@ function pmpro_report_sales_data( $args ){
 	$l = ! empty( $args['l'] ) ? (int) $args['l'] : '';
 
 	//testing or live data
-	$gateway_environment = pmpro_getOption("gateway_environment");
+	$gateway_environment = get_option( "pmpro_gateway_environment");
 
 	// Get the estimated second offset to convert from GMT time to local.This is not perfect as daylight
 	// savings time can come and go in the middle of a month, but it's a tradeoff that we are making
@@ -245,7 +245,7 @@ function pmpro_report_sales_page()
 		// Set up the compare period. Comparing to same month last year.
 		$compare_startdate = date( 'Y-m-d', strtotime( $startdate . ' -1 year' ) );
 		$compare_enddate = date( 'Y-m-d', strtotime( $enddate . ' -1 year' ) );
-	} elseif($period == "monthly") {
+	} else if( $period == "monthly" ) {
 		// Set up the report unit to use.
 		$report_unit = 'MONTH';
 		$axis_date_format = 'M';
@@ -253,38 +253,37 @@ function pmpro_report_sales_page()
 
 		// Set up the start and end dates.
 		$startdate = $year . '-01-01';
-		$enddate = $year . '-12-31';
+		$enddate = $year . '-12-' . date_i18n( 't', strtotime( $startdate ) );
 		
 		// Set up the compare period.
 		$compare_startdate = date( 'Y-m-d', strtotime( $startdate . ' -1 year' ) );
 		$compare_enddate = date( 'Y-m-d', strtotime( $enddate . ' -1 year' ) );
-	} else if ( $period === '7days' || $period === '30days' || $period === '12months' ) {
+	} else if ( $period === '7days' || $period === '30days' ) {
 		// Set up the report unit to use.
-		if( $period === '7days' || $period === '30days' ) {
-			$report_unit = 'DAY';
-			$timeframe = ( $period === '7days' ) ? 7 : 30;
-			$axis_date_format = 'd';
-			$tooltip_date_format = get_option( 'date_format' );
-		} else {
-			$report_unit = 'MONTH';
-			$timeframe = 12;
-			$axis_date_format = 'M';
-			$tooltip_date_format = 'F Y';
-		}
-
-		// Set up the start and end dates.
+		$report_unit = 'DAY';
+		$timeframe = ( $period === '7days' ) ? 7 : 30;
+		$axis_date_format = 'd';
+		$tooltip_date_format = get_option( 'date_format' );
 		$startdate   = date( 'Y-m-d', strtotime( current_time( 'mysql' ) .' -'.$timeframe.' '.$report_unit ) );
-		$enddate     = current_time( 'mysql' );
+		$enddate = current_time( 'mysql' );
+	} else if ( $period === '12months' ) {
+		$report_unit = 'MONTH';
+		$timeframe = 12;
+		$axis_date_format = 'M';
+		$tooltip_date_format = 'F Y';
+		// Set the start date to the first day of the month 12 months ago.
+		$startdate = date( 'Y-m-01', strtotime( current_time( 'mysql' ) . ' -12 month' ) );
+		// Set the end date to the last day of the previous month.
+		$enddate = date('Y-m-t', strtotime( current_time( 'mysql' ) . ' -1 month' ) );
 	} else {
 		// Set up the report unit to use.
 		$report_unit = 'YEAR';
 		$axis_date_format = 'Y';
 		$tooltip_date_format = 'Y';
-
 		// Set up the start and end dates.
 		$startdate = '1970-01-01';	//all time
 		$enddate = current_time( 'mysql' );
-	}		
+	}
 
 	// Get the data.
 	$report_data_args = array(
@@ -588,9 +587,11 @@ function pmpro_report_sales_page()
 	?>
 	<form id="posts-filter" method="get" action="">
 	<h1 class="wp-heading-inline">
-		<?php _e('Sales and Revenue', 'paid-memberships-pro' );?>
+		<?php esc_html_e('Sales and Revenue', 'paid-memberships-pro' );?>
 	</h1>
-	<a target="_blank" href="<?php echo esc_url( $csv_export_link ); ?>" class="page-title-action pmpro-has-icon pmpro-has-icon-download"><?php esc_html_e( 'Export to CSV', 'paid-memberships-pro' ); ?></a>
+	<?php if ( current_user_can( 'pmpro_sales_report_csv' ) ) { ?>
+		<a target="_blank" href="<?php echo esc_url( $csv_export_link ); ?>" class="page-title-action pmpro-has-icon pmpro-has-icon-download"><?php esc_html_e( 'Export to CSV', 'paid-memberships-pro' ); ?></a>
+	<?php } ?>
 	<div class="pmpro_report-filters">
 		<h3><?php esc_html_e( 'Customize Report', 'paid-memberships-pro'); ?></h3>
 		<div class="tablenav top">
@@ -669,7 +670,7 @@ function pmpro_report_sales_page()
 	<script>
 		//update month/year when period dropdown is changed
 		jQuery(document).ready(function() {
-			jQuery('#period').change(function() {
+			jQuery('#period').on('change',function() {
 				pmpro_ShowMonthOrYear();
 			});
 		});
@@ -723,7 +724,7 @@ function pmpro_report_sales_page()
 						<?php echo wp_json_encode( esc_html( $chart_row_data['date'] ) ); ?>,
 						<?php echo wp_json_encode( wp_kses( $chart_row_data['tooltip'], 'post' ) ); ?>,
 						<?php
-						echo implode( ',', $chart_row_data['data'] ) . ',';
+						echo esc_html( implode( ',', $chart_row_data['data'] ) . ',' );
 						?>
 					],
 				<?php } ?>
@@ -889,7 +890,7 @@ function pmpro_getSales( $period = 'all time', $levels = 'all', $type = 'all' ) 
 	else
 		$startdate = date_i18n("Y-m-d", 0);
 
-	$gateway_environment = pmpro_getOption("gateway_environment");
+	$gateway_environment = get_option( "pmpro_gateway_environment");
 
 	// Convert from local to UTC.
 	$startdate = get_gmt_from_date( $startdate );
@@ -961,7 +962,7 @@ function pmpro_get_prices_paid( $period, $count = NULL ) {
 	// Check for a transient.
 	$cache = get_transient( 'pmpro_report_prices_paid' );
 	$param_hash = md5( $period . $count . PMPRO_VERSION );
-	if ( ! empty( $cache ) && ! empty( $cache[$param_hash] ) ) {
+	if ( ! empty( $cache ) && isset( $cache[$param_hash] ) ) {
 		return $cache[$param_hash];
 	}
 
@@ -979,7 +980,7 @@ function pmpro_get_prices_paid( $period, $count = NULL ) {
 	// Convert from local to UTC.
 	$startdate = get_gmt_from_date( $startdate );
 
-	$gateway_environment = pmpro_getOption( 'gateway_environment' );
+	$gateway_environment = get_option( 'pmpro_gateway_environment' );
 
 	// Build query.
 	global $wpdb;
@@ -1083,7 +1084,7 @@ function pmpro_getRevenue( $period, $levels = NULL, $type = 'all' ) {
 	// Convert from local to UTC.
 	$startdate = get_gmt_from_date( $startdate );
 
-	$gateway_environment = pmpro_getOption("gateway_environment");
+	$gateway_environment = get_option( "pmpro_gateway_environment");
 
 	// Build query.
 	global $wpdb;

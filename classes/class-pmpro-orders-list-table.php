@@ -39,6 +39,58 @@ class PMPro_Orders_List_Table extends WP_List_Table {
 	}
 
 	/**
+	 * Sets up screen options for the orders list table.
+	 *
+	 * @since 3.0
+	 */
+	public static function hook_screen_options() {
+		$list_table = new PMPro_Orders_List_Table();
+		add_screen_option(
+			'per_page',
+			array(
+				'default' => 20,
+				'label'   => __( 'Orders per page', 'paid-memberships-pro' ),
+				'option'  => 'pmpro_orders_per_page',
+			)
+		);
+		add_filter(
+			'screen_settings',
+			array(
+				$list_table,
+				'screen_controls',
+			),
+			10,
+			2
+		);
+		add_filter(
+			'set-screen-option',
+			array(
+				$list_table,
+				'set_screen_option',
+			),
+			10,
+			3
+		);
+		set_screen_options();
+	}
+
+	/**
+	 * Sets the screen options.
+	 *
+	 * @param string $dummy   Unused.
+	 * @param string $option  Screen option name.
+	 * @param string $value   Screen option value.
+	 * @return string
+	 */
+	public function set_screen_option( $dummy, $option, $value ) {
+		if ( 'pmpro_orders_per_page' === $option ) {
+			return $value;
+		} else {
+			return $dummy;
+		}
+	}
+
+	/**
 	 * Prepares the list of items for displaying.
 	 *
 	 * Query, filter data, handle sorting, and pagination, and any other data-manipulation required prior to rendering
@@ -53,7 +105,7 @@ class PMPro_Orders_List_Table extends WP_List_Table {
 
 		$this->_column_headers = array($columns, $hidden, $sortable);
 
-		$items_per_page = $this->get_items_per_page( 'orders_per_page' );
+		$items_per_page = $this->get_items_per_page( 'pmpro_orders_per_page' );
 		/**
 		 * Filter to set the default number of items to show per page
 		 * on the Orders page in the admin.
@@ -100,7 +152,6 @@ class PMPro_Orders_List_Table extends WP_List_Table {
 			'transaction_ids'   => __( 'Transaction IDs', 'paid-memberships-pro' ),
 			'order_status'        => __( 'Status', 'paid-memberships-pro' ),
 			'date'          => __( 'Date', 'paid-memberships-pro' ),
-			'discount_code' => __( 'Discount Code', 'paid-memberships-pro' ),
 		);
 
 		// Re-implementing old hook, will be deprecated.
@@ -130,9 +181,22 @@ class PMPro_Orders_List_Table extends WP_List_Table {
 	 * @return Array
 	 */
 	public function get_hidden_columns() {
-		
-		return array();
-		
+		$user = wp_get_current_user();
+		if ( ! $user ) {
+			return array();
+		}
+
+		// Check whether the current user has changed screen options or not.
+		$hidden = get_user_meta( $user->ID, 'manage' . $this->screen->id . 'columnshidden', true );
+
+		// If user meta is not found, add the default hidden columns.
+		// Right now, we don't have any default hidden columns.
+		if ( ! $hidden ) {
+			$hidden = array();
+			update_user_meta( $user->ID, 'manage' . $this->screen->id . 'columnshidden', $hidden );
+		}
+
+		return $hidden;
 	}
 
 	/**
@@ -202,7 +266,7 @@ class PMPro_Orders_List_Table extends WP_List_Table {
 		$filter = isset( $_REQUEST['filter'] ) ? sanitize_text_field( $_REQUEST['filter'] ) : 'all';
 		$pn = isset( $_REQUEST['paged'] ) ? intval( $_REQUEST['paged'] ) : 1;
 
-		$items_per_page = $this->get_items_per_page( 'orders_per_page' );
+		$items_per_page = $this->get_items_per_page( 'pmpro_orders_per_page' );
 		/**
 		 * Filter to set the default number of items to show per page
 		 * on the Orders page in the admin.
@@ -476,7 +540,7 @@ class PMPro_Orders_List_Table extends WP_List_Table {
 					echo 'error';
 				}
 				?>
-				"><p><?php echo $pmpro_msg; ?></p></div>
+				"><p><?php echo esc_html( $pmpro_msg ); ?></p></div>
 			<?php } ?>
 
 			<div class="tablenav top">
@@ -500,7 +564,7 @@ class PMPro_Orders_List_Table extends WP_List_Table {
 
 					<?php $custom_filters = apply_filters( 'pmpro_admin_orders_filters', array() ); ?>
 					<?php foreach( $custom_filters as $value => $name ) { ?>
-						<option value="<?php echo esc_attr( $value ); ?>" <?php selected( $filter, $value ); ?>><?php esc_html_e( $name ); ?></option>
+						<option value="<?php echo esc_attr( $value ); ?>" <?php selected( $filter, $value ); ?>><?php echo esc_html( $name ); ?></option>
 					<?php } ?>
 				</select>
 
@@ -587,7 +651,7 @@ class PMPro_Orders_List_Table extends WP_List_Table {
 			<script>
 				//update month/year when period dropdown is changed
 				jQuery(document).ready(function () {
-					jQuery('#filter').change(function () {
+					jQuery('#filter').on('change',function () {
 						pmpro_ShowMonthOrYear();
 					});
 				});
@@ -969,7 +1033,7 @@ class PMPro_Orders_List_Table extends WP_List_Table {
 			}
 
 			if ( ! empty( $actions_html ) ) {
-				echo implode( ' | ', $actions_html );
+				echo implode( ' | ', $actions_html ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 			}
 			?>
 		</div>
@@ -985,7 +1049,7 @@ class PMPro_Orders_List_Table extends WP_List_Table {
 	 */
 	public function column_user( $item ) {
 		if ( ! empty( $item->user ) ) { 
-			echo '<a href="user-edit.php?user_id='.esc_attr( $item->user->ID ).'">'.esc_html( $item->user->user_login ).'</a><br />';
+			echo '<a href="' . esc_url( add_query_arg( array( 'page' => 'pmpro-member', 'user_id' => (int)$item->user->ID ), admin_url( 'admin.php' ) ) ) . '">' . esc_html( $item->user->user_login ) . '</a><br />';
 			echo esc_html( $item->user->user_email );
 		 } elseif ( $item->user_id > 0 ) {
 			echo '['. esc_html__( 'deleted', 'paid-memberships-pro' ) . ']';
@@ -1023,8 +1087,14 @@ class PMPro_Orders_List_Table extends WP_List_Table {
 	 */
 	public function column_total( $item ) {
 
-		echo pmpro_escape_price( pmpro_formatPrice( $item->total ) );
+		echo pmpro_escape_price( pmpro_formatPrice( $item->total ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 
+		// If there is a discount code, show it.
+		if ( $item->getDiscountCode() ) {
+			?>
+			<a class="pmpro_discount_code-tag" title="<?php esc_attr_e('edit', 'paid-memberships-pro' ); ?>" href="<?php echo esc_url( add_query_arg( array( 'page' => 'pmpro-discountcodes', 'edit' => $item->discount_code->id ), admin_url('admin.php' ) ) ); ?>"><?php echo esc_html( $item->discount_code->code ); ?></a>
+			<?php
+		}
 	}
 
 	/**
@@ -1079,7 +1149,7 @@ class PMPro_Orders_List_Table extends WP_List_Table {
 		}
 
 		// Echo the data for this column.
-		echo $r;
+		echo $r; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		
 	}
 
@@ -1096,9 +1166,9 @@ class PMPro_Orders_List_Table extends WP_List_Table {
 
 		if ( ! empty( $item->gateway ) ) {
 			if ( ! empty( $pmpro_gateways[$item->gateway] ) ) {
-				echo $pmpro_gateways[$item->gateway];
+				echo esc_html( $pmpro_gateways[$item->gateway] );
 			} else {
-				esc_html_e( ucwords( $item->gateway ) );
+				echo esc_html( ucwords( $item->gateway ) );
 			}
 			if ( $item->gateway_environment == 'sandbox' ) {
 				echo ' (test)';
@@ -1118,24 +1188,37 @@ class PMPro_Orders_List_Table extends WP_List_Table {
 	 */
 	public function column_transaction_ids( $item ) {
 
-		esc_html_e( 'Payment', 'paid-memberships-pro' ); ?>:
-		<?php
+		// Build our return variable.
+		$column_value = array();
+
+		// If there is a payment transaction ID, add it to the return variable.
 		if ( ! empty( $item->payment_transaction_id ) ) {
-			echo esc_html( $item->payment_transaction_id );
-		} else {
-			esc_html_e( 'N/A', 'paid-memberships-pro' );
+			$column_value['payment_transaction_id'] = sprintf(
+				// translators: %s is the payment transaction ID.
+				__( 'Payment: %s', 'paid-memberships-pro' ),
+				esc_html( $item->payment_transaction_id )
+			);
 		}
-		?>
-		<br/>
-		<?php esc_html_e( 'Subscription', 'paid-memberships-pro' ); ?>:
-		<?php
+
+		// If there is a subscription transaction ID, add it to the return variable.
 		if ( ! empty( $item->subscription_transaction_id ) ) {
-			echo esc_html( $item->subscription_transaction_id );
-		} else {
-			esc_html_e( 'N/A', 'paid-memberships-pro' );
+			$subscription = PMPro_Subscription::get_subscription_from_subscription_transaction_id( $item->subscription_transaction_id, $item->gateway, $item->gateway_environment );
+			$column_value['subscription_transaction_id'] = sprintf(
+				// translators: %s is the subscription transaction ID.
+				__( 'Subscription: %s', 'paid-memberships-pro' ),
+				! empty( $subscription ) ? '<a href="' . esc_url( add_query_arg( array( 'page' => 'pmpro-subscriptions', 'id' => $subscription->get_id() ), admin_url('admin.php' ) ) ) . '">' . esc_html( $item->subscription_transaction_id ) . '</a>' : esc_html( $item->subscription_transaction_id )
+			);
 		}
-		
-		
+
+		// If there is no transaction IDs, set $column_value to a dash.
+		if ( empty( $column_value ) ) {
+			$column_value['none'] = esc_html__( '&#8212;', 'paid-memberships-pro' );
+		}
+
+		// Echo the data for this column.
+		foreach( $column_value as $key => $value ) {
+			echo '<p>' . wp_kses_post( $value ) . '</p>';
+		}
 	}
 
 	/**
@@ -1148,11 +1231,11 @@ class PMPro_Orders_List_Table extends WP_List_Table {
 	public function column_order_status( $item ) {     
 		
 		?>
-		<span class="pmpro_order-status pmpro_order-status-<?php esc_attr_e( $item->status ); ?>">
+		<span class="pmpro_order-status pmpro_order-status-<?php echo esc_attr( $item->status ); ?>">
 			<?php if ( in_array( $item->status, array( 'success', 'cancelled' ) ) ) {
 				esc_html_e( 'Paid', 'paid-memberships-pro' );
 			} else {
-				esc_html_e( ucwords( $item->status ) );
+				echo esc_html( ucwords( $item->status ) );
 			} ?>
 		</span>
 		<?php if ( $item->is_renewal() ) { ?>
@@ -1176,20 +1259,4 @@ class PMPro_Orders_List_Table extends WP_List_Table {
 		) );
 	}
 
-	/**
-	 * Renders the columns order discount value
-	 *
-	 * @param object  $item
-	 *
-	 * @return string
-	 */
-	public function column_discount_code( $item ) {
-		if ( $item->getDiscountCode() ) { ?>
-			<a title="<?php esc_attr_e('edit', 'paid-memberships-pro' ); ?>" href="<?php echo esc_url( add_query_arg( array( 'page' => 'pmpro-discountcodes', 'edit' => $item->discount_code->id ), admin_url('admin.php' ) ) ); ?>">
-				<?php echo esc_html( $item->discount_code->code ); ?>
-			</a>
-		<?php } else {
-			esc_html_e( '&#8212;', 'paid-memberships-pro' );
-		}
-	}
 }

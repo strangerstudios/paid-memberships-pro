@@ -12,7 +12,7 @@ function pmpro_upgrade_1_8_9_3() {
 	if(!empty($user_ids))
 		pmpro_addUpdate('pmpro_upgrade_1_8_9_3_ajax');
 
-	pmpro_setOption("db_version", "1.91");
+	update_option("pmpro_db_version", "1.91");
 	return 1.893;
 }
 
@@ -65,7 +65,7 @@ function pmpro_upgrade_1_8_9_3_ajax() {
 			//user not found for some reason
 			if(empty($user)) {
 				if($debug)
-					echo "User #" . $user_id . " not found.\n";
+					echo esc_html( "User #" . $user_id . " not found.\n" );
 				continue;
 			}
 
@@ -75,7 +75,7 @@ function pmpro_upgrade_1_8_9_3_ajax() {
 			//has a start and end date already
 			if(!empty($user->membership_level->enddate) && !empty($user->membership_level->startdate)) {
 				if($debug)
-					echo "User #" . $user_id . ", " . $user->user_email . " already has a start and end date.\n";
+					echo esc_html( "User #" . $user_id . ", " . $user->user_email . " already has a start and end date.\n" );
 				continue;
 			}
 
@@ -134,7 +134,7 @@ function pmpro_upgrade_1_8_9_3_ajax() {
 			//no level for some reason
 			if(empty($pmpro_level) && empty($pmpro_level->id)) {
 				if($debug)
-					echo "No level found with ID #" . $level_id . " for user #" . $user_id . ", " . $user->user_email . ".\n";
+					echo esc_html( "No level found with ID #" . $level_id . " for user #" . $user_id . ", " . $user->user_email . ".\n" );
 				continue;
 			}
 
@@ -142,7 +142,7 @@ function pmpro_upgrade_1_8_9_3_ajax() {
 			$pmpro_level = apply_filters( "pmpro_checkout_level", $pmpro_level );
 
 			if($debug)
-				echo "User #" . $user_id . ", " . $user->user_email . ". Fixing.\n";
+				echo esc_html( "User #" . $user_id . ", " . $user->user_email . ". Fixing.\n" );
 
 			//calculate and fix start date
 			if(empty($user->membership_level->startdate)) {
@@ -156,7 +156,7 @@ function pmpro_upgrade_1_8_9_3_ajax() {
 					$startdate = $filtered_startdate;
 
 				if($debug)
-					echo "- Adding startdate " . $startdate . ".\n";
+					echo esc_html( "- Adding startdate " . $startdate . ".\n" );
 				if($run) {
 					$sqlQuery = "UPDATE $wpdb->pmpro_memberships_users SET startdate = '" . esc_sql($startdate) . "' WHERE user_id = $user_id AND membership_id = $level_id AND status = 'active' LIMIT 1";
 					$wpdb->query($sqlQuery);
@@ -177,7 +177,7 @@ function pmpro_upgrade_1_8_9_3_ajax() {
 
 				if(!empty($enddate) && $enddate != "NULL") {
 					if($debug)
-						echo "- Adding enddate " . $enddate . ".\n";
+						echo esc_html( "- Adding enddate " . $enddate . ".\n" );
 					if($run) {
 						$sqlQuery = "UPDATE $wpdb->pmpro_memberships_users SET enddate = '" . esc_sql($enddate) . "' WHERE user_id = $user_id AND membership_id = $level_id AND status = 'active' LIMIT 1";
 						$wpdb->query($sqlQuery);

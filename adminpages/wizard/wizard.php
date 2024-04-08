@@ -3,7 +3,7 @@
  * Setup Wizard containing file that handles logic and loading of templates.
  */
 if ( empty( $_REQUEST['step'] ) ) {
-	$previous_step = pmpro_getOption( 'wizard_step' );
+	$previous_step = get_option( 'pmpro_wizard_step' );
 	if ( ! empty( $previous_step ) ) {
 		$active_step = sanitize_text_field( $previous_step );
 	} else {
@@ -51,12 +51,12 @@ function pmpro_wizard_get_site_type_hubs() {
 	return array(
 		'association'		=> 'https://www.paidmembershipspro.com/associations/hub/?utm_source=plugin&utm_medium=setup-wizard&utm_campaign=wizard-done&utm_content=use-case-hub',
 		'premium_content'	=> 'https://www.paidmembershipspro.com/restrict-access-wordpress/?utm_source=plugin&utm_medium=setup-wizard&utm_campaign=wizard-done&utm_content=use-case-hub',
-		'community'			=> 'https://www.paidmembershipspro.com/build-a-community/?utm_source=plugin&utm_medium=setup-wizard&utm_campaign=wizard-done&utm_content=use-case-hub',
+		'community'			=> 'https://www.paidmembershipspro.com/communities/hub/?utm_source=plugin&utm_medium=setup-wizard&utm_campaign=wizard-done&utm_content=use-case-hub',
 		'courses'			=> 'https://www.paidmembershipspro.com/courses/hub/?utm_source=plugin&utm_medium=setup-wizard&utm_campaign=wizard-done&utm_content=use-case-hub',
 		'directory'			=> 'https://www.paidmembershipspro.com/add-ons/member-directory/?utm_source=plugin&utm_medium=setup-wizard&utm_campaign=wizard-done&utm_content=use-case-hub',
 		'newsletter'		=> 'https://www.paidmembershipspro.com/paid-newsletters/hub/?utm_source=plugin&utm_medium=setup-wizard&utm_campaign=wizard-done&utm_content=use-case-hub',
 		'podcast'			=> 'https://www.paidmembershipspro.com/new-castos-private-podcasting/?utm_source=plugin&utm_medium=setup-wizard&utm_campaign=wizard-done&utm_content=use-case-hub',
-		'video'				=> 'https://www.paidmembershipspro.com/sell-videos-online/hub/?utm_source=plugin&utm_medium=setup-wizard&utm_campaign=wizard-done&utm_content=use-case-hub',
+		'video'				=> 'https://www.paidmembershipspro.com/private-videos/hub/?utm_source=plugin&utm_medium=setup-wizard&utm_campaign=wizard-done&utm_content=use-case-hub',
 	);
 }
 

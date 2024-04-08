@@ -136,6 +136,21 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 		));
 
 		/**
+		 * Get all membership levels.
+		 * @since 3.0
+		 * Example: https://example.com/wp-json/pmpro/v1/membership_levels
+		 */
+		register_rest_route( $pmpro_namespace, '/membership_levels',
+			array(
+				array(
+					'methods'         => WP_REST_Server::READABLE,
+					'callback'        => array( $this, 'pmpro_rest_api_get_membership_levels' ),
+					'permission_callback' => array( $this, 'pmpro_rest_api_get_permissions_check' ),
+				),
+			)
+		);
+
+		/**
 		 * Create/Retrieve discount code.
 		 * @since 2.3
 		 * Example: https://example.com/wp-json/pmpro/v1/discount_code
@@ -186,6 +201,7 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 		/**
 		 * Get membership levels after checkout options are applied.
 		 * Example: https://example.com/wp-json/pmpro/v1/checkout_levels
+		 * @deprecated 3.0
 		 */
 		register_rest_route( $pmpro_namespace, '/checkout_levels', 
 		array(
@@ -235,6 +251,33 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 				array(
 					'methods'  => WP_REST_Server::READABLE,
 					'callback' => array( $this, 'pmpro_rest_api_recent_orders' ),
+					'permission_callback' => array( $this, 'pmpro_rest_api_get_permissions_check' ),
+				)
+			)
+		);
+
+		/**
+		 * Get the IDs that a post has been restricted to.
+		 * @since 3.0
+		 * Example: https://example.com/wp-json/pmpro/v1/post_restrictions
+		 */
+		register_rest_route( $pmpro_namespace, '/post_restrictions',
+			array(
+				array(
+					'methods'  => WP_REST_Server::READABLE,
+					'callback' => array( $this, 'pmpro_rest_api_get_post_restrictions' ),
+					'args'     => array(
+						'post_id' => array(),
+					),
+					'permission_callback' => array( $this, 'pmpro_rest_api_get_permissions_check' ),
+				), 
+				array(
+					'methods'  => WP_REST_Server::EDITABLE,
+					'args'     => array(
+						'post_id' => array(),
+						'level_ids' => array(),
+					),
+					'callback' => array( $this, 'pmpro_rest_api_set_post_restrictions' ),
 					'permission_callback' => array( $this, 'pmpro_rest_api_get_permissions_check' ),
 				)
 			)
@@ -510,12 +553,12 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 			}
 
 			$level = new PMPro_Membership_Level( $id );
-			
+
 			// Hide confirmation message if not an admin or member.
 			if ( ! empty( $level->confirmation ) 
 				 && ! pmpro_hasMembershipLevel( $id )
-				 && ! current_user_can( 'pmpro_edit_memberships' ) ) {				
-					 $level->confirmation = '';					
+				 && ! current_user_can( 'pmpro_edit_members' ) ) {
+					 $level->confirmation = '';
 			}
 
 			if ( 'json' === $response_type ) {
@@ -610,6 +653,38 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 			$level = new PMPro_Membership_Level( $id );
 
 			return new WP_REST_Response( $level->delete(), 200 );
+		}
+
+		/**
+		 * Get all membership levels.
+		 * @since 3.0
+		 * Example: https://example.com/wp-json/pmpro/v1/membership_levels
+		 */
+		function pmpro_rest_api_get_membership_levels( $request ) {
+			
+			if ( ! class_exists( 'PMPro_Membership_Level' ) ) {
+				return new WP_REST_Response( 'Paid Memberships Pro level class not found.', 404 );
+			}
+
+			$params = $request->get_params();
+			$response_type = isset( $params['response_type'] ) ? sanitize_text_field( $params['response_type'] ) : null;
+
+			$levels = pmpro_getAllLevels( true, true );
+
+			// Hide confirmation message if not an admin or member.
+			if ( ! current_user_can( 'manage_options' ) && ! current_user_can( 'pmpro_membershiplevels' ) ) {
+				foreach ( $levels as $level ) {
+					if ( ! pmpro_hasMembershipLevel( $level->id ) ) {
+						$level->confirmation = '';
+					}
+				}
+			}
+
+			if ( 'json' === $response_type ) {
+				wp_send_json_success( array( "levels" => $levels ) );
+			}
+
+			return new WP_REST_Response( $levels, 200 );
 		}
 
 		/**
@@ -777,14 +852,16 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 
 		/**
 		 * Get a membership level at checkout.
-		 * Note: Not compatible with MMPU.
+		 *
 		 * @since 2.4
 		 * Example: https://example.com/wp-json/pmpro/v1/checkout_level
 		 */
 		function pmpro_rest_api_get_checkout_level( $request ) {
 			$params = $request->get_params();
 
-			if ( isset( $params['level_id'] ) ) {
+			if ( isset( $params['pmpro_level' ] ) ) {
+				$level_id = intval( $params['pmpro_level'] );
+			} elseif ( isset( $params['level_id'] ) ) {
 				$level_id = intval( $params['level_id'] );
 			} elseif ( isset( $params['level'] ) ) {
 				$level_id = intval( $params['level'] );
@@ -794,22 +871,36 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 				return new WP_REST_Response( 'No level found.', 400 );
 			}
 
-			$discount_code = isset( $params['discount_code'] ) ? sanitize_text_field( $params['discount_code'] ) : null;
-			$checkout_level = pmpro_getLevelAtCheckout( $level_id, $discount_code );
-			
-			// Hide confirmation message if not an admin or member.
-			if ( ! empty( $checkout_level->confirmation ) 
-				 && ! pmpro_hasMembershipLevel( $level_id )
-				 && ! current_user_can( 'pmpro_edit_memberships' ) ) {				
-					 $checkout_level->confirmation = '';					
+			if ( isset( $params['pmpro_discount_code'] ) ) {
+				$discount_code = sanitize_text_field( $params['pmpro_discount_code'] );
+			} elseif ( isset( $params['discount_code'] ) ) {
+				$discount_code = sanitize_text_field( $params['discount_code'] );
+			} else {
+				$discount_code = null;
 			}
-			
+
+			$checkout_level = pmpro_getLevelAtCheckout( $level_id, $discount_code );
+
+			if ( ! empty( $checkout_level ) ) {
+				// Hide confirmation message if not an admin or member.
+				if ( ! empty( $checkout_level->confirmation ) 
+					&& ! pmpro_hasMembershipLevel( $level_id )
+					&& ! current_user_can( 'pmpro_edit_members' ) ) {
+						$checkout_level->confirmation = '';
+				}
+
+				// Also add a formatted version of the initial payment.
+				$checkout_level->initial_payment_formatted = pmpro_formatPrice( $checkout_level->initial_payment );
+			}
+
 			return new WP_REST_Response( $checkout_level );
 		}
 
 		/**
 		 * Get membership levels at checkout.
 		 * Example: https://example.com/wp-json/pmpro/v1/checkout_levels
+		 *
+		 * @deprecated 3.0 Use the /pmpro/v1/checkout_level endpoint instead.
 		 */
 		function pmpro_rest_api_get_checkout_levels( $request ) {
 			$params = $request->get_params();
@@ -818,7 +909,9 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 			if ( ! empty( $pmpro_checkout_level_ids ) ) {
 				// MMPU Compatibility...
 				$level_ids = $pmpro_checkout_level_ids;
-			} elseif ( isset( $params['level_id'] ) ) {
+			} elseif ( isset( $params['pmpro_level' ] ) ) {
+				$level_ids = explode( '+', intval( $params['pmpro_level'] ) );
+			}elseif ( isset( $params['level_id'] ) ) {
 				$level_ids = explode( '+', intval( $params['level_id'] ) );
 			} elseif ( isset( $params['level'] ) ) {
 				$level_ids = explode( '+', intval( $params['level'] ) );
@@ -842,7 +935,7 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 				// Hide confirmation message if not an admin or member.
 				if ( ! empty( $r[ $level_id ]->confirmation ) 
 						&& ! pmpro_hasMembershipLevel( $level_id )
-						&& ! current_user_can( 'pmpro_edit_memberships' ) ) {				
+						&& ! current_user_can( 'pmpro_membershiplevels' ) ) {				
 					$r[ $level_id ]->confirmation = '';					
 				}
 			}
@@ -1004,6 +1097,66 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 		}
 
 		/**
+		 * Get the membership level IDs restricting a given post.
+		 *
+		 * @since 3.0
+		 *
+		 * @param WP_REST_Request $request The REST request.
+		 *
+		 * @return WP_REST_Response The REST response.
+		 */
+		public function pmpro_rest_api_get_post_restrictions( $request ) {
+			global $wpdb;
+
+			$params = $request->get_params();
+
+			$post_id = isset( $params['post_id'] ) ? intval( $params['post_id'] ) : null;
+
+			if ( empty( $post_id ) ) {
+				return new WP_REST_Response( array( 'error' => 'No post ID provided.' ), 400 );
+			}
+
+			$level_ids = $wpdb->get_results( $wpdb->prepare( "SELECT `membership_id` FROM `{$wpdb->pmpro_memberships_pages}` WHERE `page_id` = %d", $post_id ) );
+
+			return new WP_REST_Response( $level_ids, 200 );
+		}
+
+		/**
+		 * Set the membership level IDs restricting a given post.
+		 *
+		 * @since 3.0
+		 *
+		 * @param WP_REST_Request $request The REST request.
+		 * @return WP_REST_Response The REST response.
+		 */
+		public function pmpro_rest_api_set_post_restrictions( $request ) {
+			global $wpdb;
+
+			$params = $request->get_params();
+
+			$post_id = isset( $params['post_id'] ) ? intval( $params['post_id'] ) : null;
+			$level_ids = isset( $params['level_ids'] ) ? array_map( 'intval', $params['level_ids'] ) : null;
+
+			if ( empty( $post_id ) ) {
+				return new WP_REST_Response( array( 'error' => 'No post ID provided.' ), 400 );
+			}
+
+			if ( ! is_array( $level_ids ) ) {
+				return new WP_REST_Response( array( 'error' => 'No level IDs provided.' ), 400 );
+			}
+
+			// Delete existing restrictions.
+			$wpdb->query( "DELETE FROM {$wpdb->pmpro_memberships_pages} WHERE page_id = '" . intval( $post_id ) . "'" );
+
+			// Add new restrictions.
+			foreach ( $level_ids as $level_id ) {
+				$wpdb->query( "INSERT INTO {$wpdb->pmpro_memberships_pages} (membership_id, page_id) VALUES('" . intval( $level_id ) . "', '" . intval( $post_id ) . "')" );
+			}
+
+			return new WP_REST_Response( array( 'success' => $level_ids ), 200 );
+		}
+
+		/**
 		 * Default permissions check for endpoints/routes.
 		 * Defaults to 'subscriber' for all GET requests and 
 		 * 'administrator' for any other type of request.
@@ -1016,31 +1169,33 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 			$method = $request->get_method();
 			$route = $request->get_route();
 
-			// Default to requiring pmpro_edit_memberships capability.
-			// NOTE: This basically means that anyone with the pmpro_edit_memberships capability could potentially do anything made available through the API in this file.
-			$permission = current_user_can( 'pmpro_edit_memberships' );
+			// Default to requiring pmpro_edit_members capability.
+			// NOTE: This basically means that anyone with the pmpro_edit_members capability could potentially do anything made available through the API in this file.
+			$permission = current_user_can( 'pmpro_edit_members' );
 
 			// Check other caps for some routes.
 			$route_caps = array(
-				'/pmpro/v1/has_membership_access' => 'pmpro_edit_memberships',
-				'/pmpro/v1/get_membership_level_for_user' => 'pmpro_edit_memberships',
-				'/pmpro/v1/get_membership_levels_for_user' => 'pmpro_edit_memberships',
-				'/pmpro/v1/change_membership_level' => 'pmpro_edit_memberships',
-				'/pmpro/v1/cancel_membership_level' => 'pmpro_edit_memberships',
+				'/pmpro/v1/has_membership_access' => 'pmpro_edit_members',
+				'/pmpro/v1/get_membership_level_for_user' => 'pmpro_edit_members',
+				'/pmpro/v1/get_membership_levels_for_user' => 'pmpro_edit_members',
+				'/pmpro/v1/change_membership_level' => 'pmpro_edit_members',
+				'/pmpro/v1/cancel_membership_level' => 'pmpro_edit_members',
 				'/pmpro/v1/membership_level' => array(
 					'GET' => true,
-					'POST' => 'pmpro_edit_memberships',
-					'PUT' => 'pmpro_edit_memberships',
-					'PATCH' => 'pmpro_edit_memberships',
-					'DELETE' => 'pmpro_edit_memberships',
+					'POST' => 'pmpro_membershiplevels',
+					'PUT' => 'pmpro_membershiplevels',
+					'PATCH' => 'pmpro_membershiplevels',
+					'DELETE' => 'pmpro_membershiplevels',
 				),
+				'/pmpro/v1/membership_levels' => true,
 				'/pmpro/v1/discount_code' => 'pmpro_discountcodes',
 				'/pmpro/v1/order' => 'pmpro_orders',
 				'/pmpro/v1/checkout_level' => true,
 				'/pmpro/v1/checkout_levels' => true,
 				'/pmpro/v1/me' => true,
-				'/pmpro/v1/recent_memberships' => 'pmpro_edit_memberships',
-				'/pmpro/v1/recent_orders' => 'pmpro_orders'
+				'/pmpro/v1/recent_memberships' => 'pmpro_edit_members',
+				'/pmpro/v1/recent_orders' => 'pmpro_orders',
+				'/pmpro/v1/post_restrictions' => 'pmpro_edit_members',
 			);
 			$route_caps = apply_filters( 'pmpro_rest_api_route_capabilities', $route_caps, $request );
 			

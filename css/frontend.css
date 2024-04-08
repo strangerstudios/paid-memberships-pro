@@ -1,3 +1,25 @@
+/**
+ * Root variables
+ */
+ :root {
+	--pmpro--color--info-background: #d9edf7;
+	--pmpro--color--info-border: #bce8f1;
+	--pmpro--color--info-text: #31708f;
+	--pmpro--color--info-link: #245269;
+	--pmpro--color--success-background: #d4edda;
+	--pmpro--color--success-border: #c3e6cb;
+	--pmpro--color--success-text: #0F441C;
+	--pmpro--color--success-link: #2b542c;
+	--pmpro--color--error-background: #f8d7da;
+	--pmpro--color--error-border: #f5c6cb;
+	--pmpro--color--error-text: #721c24;
+	--pmpro--color--error-link: #843534;
+	--pmpro--color--alert-background: #fff8e0;
+	--pmpro--color--alert-border: #ffeeba;
+	--pmpro--color--alert-text: #6C5101;
+	--pmpro--color--alert-link: #66512c;
+}
+
 /*---------------------------------------
 	Buttons
 ---------------------------------------*/
@@ -208,6 +230,11 @@ form.pmpro_form .pmpro_checkout-field-date input[type=text] {
 	width: unset;
 }
 
+/** File-specific field type **/
+form.pmpro_form .pmpro_checkout-field-file button {
+	margin-right: 5px;
+}
+
 /** Membership Checkout and Billing-specific Fields **/
 form.pmpro_form #pmpro_payment_information_fields .pmpro_checkout-fields label {
 	display: block;
@@ -223,7 +250,7 @@ form.pmpro_form .pmpro_checkout-field-bcity_state_zip select {
 }
 form.pmpro_form .pmpro_payment-cvv .input,
 form.pmpro_form .pmpro_payment-discount-code .input,
-form.pmpro_form #other_discount_code.input {
+form.pmpro_form #pmpro_other_discount_code.input {
 	max-width: 40%;
 }
 form.pmpro_form #discount_code.input,
@@ -264,12 +291,12 @@ form.pmpro_form .pmpro_change_password-fields .lite {
 	Messages - Success, Error, Alert
 ----------------------------------------------------*/
 .pmpro_message {
-	background-color: #d9edf7;
-	border: 1px solid #bce8f1;
+	background-color: var(--pmpro--color--info-background);
+	border: 1px solid var(--pmpro--color--info-border);
 	-webkit-border-radius: 4px;
 	-moz-border-radius: 4px;
 	border-radius: 4px;
-	color: #31708f;
+	color: var(--pmpro--color--info-text);
 	font-size: 14px;
 	font-weight: 400;
 	line-height: 1.5em;
@@ -278,9 +305,9 @@ form.pmpro_form .pmpro_change_password-fields .lite {
 	text-align: left;
 }
 .pmpro_success {
-	background-color: #dff0d8;
-	border-color: #d6e9c6;
-	color: #3c763d;
+	background-color: var(--pmpro--color--success-background);
+	border-color: var(--pmpro--color--success-border);
+	color: var(--pmpro--color--success-text);
 }
 .pmpro_error,
 input[type="text"].pmpro_error,
@@ -298,31 +325,31 @@ input[type="datetime"].pmpro_error,
 input[type="datetime-local"].pmpro_error,
 input[type="color"].pmpro_error,
 textarea.pmpro_error {
-	background-color: #f2dede;
-	border-color: #ebccd1;
-	color: #a94442;
+	background-color: var(--pmpro--color--error-background);
+	border-color: var(--pmpro--color--error-border);
+	color: var(--pmpro--color--error-text);
 }
 .pmpro_alert {
-	background-color: #fcf8e3;
-	border-color: #faebcc;
-	color: #8a6d3b;
+	background-color: var(--pmpro--color--alert-background);
+	border-color: var(--pmpro--color--alert-border);
+	color: var(--pmpro--color--alert-text);
 }
 .pmpro_content_message a,
 .pmpro_content_message a:link {
 	margin: 10px 10px 0 0;
 }
 .pmpro_message a {
-	color: #245269;
+	color: var(--pmpro--color--info-link);
 	text-decoration: underline;
 }
 .pmpro_success a {
-	color: #2b542c;
+	color: var(--pmpro--color--success-link);
 }
 .pmpro_error a {
-	color: #843534;
+	color: var(--pmpro--color--error-link);
 }
 .pmpro_alert a {
-	color: #66512c;
+	color: var(--pmpro--color--alert-link);
 }
 input.pmpro_error {
 	background-image: none;
@@ -336,6 +363,72 @@ select.pmpro_error {
 
 #pmpro_message_bottom {
 	margin-bottom: 1em;
+}
+
+/*---------------------------------------
+	Admin Toolbar View As Feature
+---------------------------------------*/
+#wpadminbar .pmpro_admin-view {
+	display: inline-block;
+	padding: 0 5px;
+}
+
+#wpadminbar .menupop .ab-item:has(.pmpro_admin-view) + .ab-sub-wrapper {
+	border-bottom-right-radius: 6px;
+	border-bottom-left-radius: 6px;
+	padding: 10px;
+}
+
+#wpadminbar .menupop .ab-item:has(.pmpro_admin-view) + .ab-sub-wrapper ul li .ab-item {
+	height: auto;
+}
+
+#wpadminbar .menupop .ab-item:has(.pmpro_admin-view) + .ab-sub-wrapper p {
+	color: #FFF;
+	line-height: 1.5;
+	margin-bottom: 5px;
+	white-space: normal;
+}
+
+#wpadminbar .menupop .ab-item:has(.pmpro_admin-view) + .ab-sub-wrapper select {
+	background-color: #FFF;
+	border-radius: 6px;
+	line-height: 1.5;
+	padding: 5px 8px;
+}
+
+#wpadminbar .ab-item:has(.pmpro_admin-view-yes),
+#wpadminbar .ab-top-menu > li.hover > .ab-item:has(.pmpro_admin-view-yes),
+#wpadminbar:not(.mobile) .ab-top-menu > li:hover > .ab-item:has(.pmpro_admin-view-yes),
+#wpadminbar:not(.mobile) .ab-top-menu > li > .ab-item:has(.pmpro_admin-view-yes):focus,
+#wpadminbar .menupop .ab-item:has(.pmpro_admin-view-yes) + .ab-sub-wrapper {
+	background-color: #0F441C;
+	color: #FFF;
+}
+
+#wpadminbar .ab-item:has(.pmpro_admin-view-no),
+#wpadminbar .ab-top-menu > li.hover > .ab-item:has(.pmpro_admin-view-no),
+#wpadminbar:not(.mobile) .ab-top-menu > li:hover > .ab-item:has(.pmpro_admin-view-no),
+#wpadminbar:not(.mobile) .ab-top-menu > li > .ab-item:has(.pmpro_admin-view-no):focus,
+#wpadminbar .menupop .ab-item:has(.pmpro_admin-view-no) + .ab-sub-wrapper {
+	background-color: #721c24;
+	color: #FFF;
+}
+
+#wpadminbar .pmpro_admin-view .ab-icon {
+	margin-right: 3px;
+}
+
+#wpadminbar .pmpro_admin-view .ab-icon:before,
+#wpadminbar li:hover .pmpro_admin-view .ab-icon:before,
+#wpadminbar li.hover .pmpro_admin-view .ab-icon:before {
+	color: #FFF;
+}
+
+#wpadminbar .pmpro_admin-view-current .ab-icon:before,
+#wpadminbar li:hover .pmpro_admin-view-current .ab-icon:before,
+#wpadminbar li.hover .pmpro_admin-view-current .ab-icon:before {
+	color: inherit;
 }
 
 /*---------------------------------------
@@ -671,40 +764,48 @@ li.pmpro_more {
 /*---------------------------------------
 	Membership Levels
 ---------------------------------------*/
-#pmpro_levels_table {
+.pmpro_levels_table {
 	table-layout: fixed;
 	width: 100%;
 }
-#pmpro_levels_table thead th,
-#pmpro_levels_table tbody th {
+.pmpro_levels_table thead th,
+.pmpro_levels_table tbody th {
 	text-align: left;
 }
-#pmpro_levels_table td:nth-child(1) {
+.pmpro_levels_table th:nth-child(1) {
 	min-width: 200px;
 }
-#pmpro_levels_table .pmpro_btn {
+.pmpro_levels_table .pmpro_btn {
 	display: block;
 }
+
+/*---------------------------------------
+	Blocks
+---------------------------------------*/
+[class*="wp-block-pmpro-"] {
+	overflow: hidden;
+}
+
 /*---------------------------------------
 	Misc
 ---------------------------------------*/
-.pmpro_actions_nav {
-	text-align: center;
+.pmpro_content_message {
+	margin-bottom: 1em;
+}
+.pmpro_actions_nav:not(.pmpro_login_wrap .pmpro_actions_nav) {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: space-between;
 }
 .pmpro_actions_nav-left {
-	display: block;
-	float: left;
-	width: 48%;
+	flex: 1;
+	order: 1;
 	text-align: left;
 }
 .pmpro_actions_nav-right {
-	display: block;
-	float: right;
-	width: 48%;
+	flex: 1;
+	order: 2;
 	text-align: right;
-}
-.pmpro-levels .pmpro_actions_nav {
-	text-align: left;
 }
 .pmpro_a-right {
 	float: right;
@@ -761,7 +862,7 @@ li.pmpro_more {
 }
 @media (max-width:768px) {
 	#pmpro_account #pmpro_account-membership .pmpro_table td:nth-child(1),
-	#pmpro_levels_table td:nth-child(1) {
+	.pmpro_levels_table td:nth-child(1) {
 		min-width: unset;
 	}
 	.pmpro_checkout h2 span.pmpro_checkout-h2-name {
@@ -782,7 +883,7 @@ li.pmpro_more {
 	form.pmpro_form .pmpro_change_password-fields #pass-strength-result {
 		max-width: 90%;
 	}
-	form.pmpro_form input[type=text]#other_discount_code, form.pmpro_form input[type=text]#CVV, form.pmpro_form input[type=text]#discount_code {
+	form.pmpro_form input[type=text]#pmpro_other_discount_code, form.pmpro_form input[type=text]#CVV, form.pmpro_form input[type=text]#pmpro_discount_code {
 		width: 40%;
 	}
 	#pmpro_payment_information_fields .pmpro_checkout-fields-display-seal {
@@ -798,5 +899,13 @@ li.pmpro_more {
 	}
 	.pmpro_invoice_details {
 		display: block;
+	}
+	.pmpro_actions_nav {
+		text-align: center;
+	}
+	.pmpro_actions_nav-left,
+	.pmpro_actions_nav-right {
+		flex-basis: 100%;
+		text-align: center;
 	}
 }

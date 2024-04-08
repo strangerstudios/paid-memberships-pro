@@ -1,7 +1,7 @@
 <?php
 // only admins can get this
 if ( ! function_exists( 'current_user_can' ) || ( ! current_user_can( 'manage_options' ) && ! current_user_can( 'pmpro_orders' ) ) ) {
-	die( __( 'You do not have permissions to perform this action.', 'paid-memberships-pro' ) );
+	die( esc_html__( 'You do not have permissions to perform this action.', 'paid-memberships-pro' ) );
 }
 
 // vars
@@ -119,14 +119,6 @@ if ( ! empty( $_REQUEST['save'] ) ) {
 		$order->tax = sanitize_text_field( $_POST['tax'] );
 	}
 
-	// Hiding couponamount by default.
-	$coupons = apply_filters( 'pmpro_orders_show_coupon_amounts', false );
-	if ( ! empty( $coupons ) ) {
-		if ( ! in_array( 'couponamount', $read_only_fields ) && isset( $_POST['couponamount'] ) ) {
-			$order->couponamount = sanitize_text_field( $_POST['couponamount'] );
-		}
-	}
-
 	if ( ! in_array( 'total', $read_only_fields ) && isset( $_POST['total'] ) ) {
 		$order->total = sanitize_text_field( $_POST['total'] );
 	}
@@ -145,7 +137,6 @@ if ( ! empty( $_REQUEST['save'] ) ) {
 	if ( ! in_array( 'expirationyear', $read_only_fields ) && isset( $_POST['expirationyear'] ) ) {
 		$order->expirationyear = sanitize_text_field( $_POST['expirationyear'] );
 	}
-
 	if ( ! in_array( 'status', $read_only_fields ) && isset( $_POST['status'] ) ) {
 		$order->status = pmpro_sanitize_with_safelist( $_POST['status'], pmpro_getOrderStatuses() ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 	}
@@ -239,7 +230,6 @@ if ( ! empty( $_REQUEST['save'] ) ) {
 			$order->discount_code = '';
 			$order->subtotal = '';
 			$order->tax = '';
-			$order->couponamount = '';
 			$order->total = '';
 			$order->payment_type = '';
 			$order->cardtype = '';
@@ -247,8 +237,8 @@ if ( ! empty( $_REQUEST['save'] ) ) {
 			$order->expirationmonth = '';
 			$order->expirationyear = '';
 			$order->status = 'success';
-			$order->gateway = pmpro_getOption( 'gateway' );
-			$order->gateway_environment = pmpro_getOption( 'gateway_environment' );
+			$order->gateway = get_option( 'pmpro_gateway' );
+			$order->gateway_environment = get_option( 'pmpro_gateway_environment' );
 			$order->payment_transaction_id = '';
 			$order->subscription_transaction_id = '';
 			$order->affiliate_id = '';
@@ -294,8 +284,7 @@ require_once( dirname( __FILE__ ) . '/admin_header.php' ); ?>
 			'pmpro_orders_nonce'
 		);
 		?>
-	<br class="wp-clearfix">
-    <h1 class="wp-heading-inline"><?php esc_html_e( 'Edit Order', 'paid-memberships-pro' ); ?> ID: <?php echo esc_html( $order->id ); ?></h1>
+		<h1 class="wp-heading-inline"><?php esc_html_e( 'Edit Order', 'paid-memberships-pro' ); ?> ID: <?php echo esc_html( $order->id ); ?></h1>
 		<a title="<?php esc_attr_e( 'Print', 'paid-memberships-pro' ); ?>" href="<?php echo esc_url( add_query_arg( array( 'action' => 'pmpro_orders_print_view', 'order' => $order->id ), admin_url( 'admin-ajax.php' ) ) ); ?>" target="_blank" class="page-title-action pmpro-has-icon pmpro-has-icon-printer"><?php esc_html_e( 'Print', 'paid-memberships-pro' ); ?></a>
 		<a title="<?php esc_attr_e( 'Email', 'paid-memberships-pro' ); ?>" href="#TB_inline?width=600&height=200&inlineId=email_invoice" class="thickbox email_link page-title-action pmpro-has-icon pmpro-has-icon-email" data-order="<?php echo esc_html( $order->id ); ?>"><?php esc_html_e( 'Email', 'paid-memberships-pro' ); ?></a>
 		<a title="<?php esc_attr_e( 'View', 'paid-memberships-pro' ); ?>" href="<?php echo esc_url( pmpro_url("invoice", "?invoice=" . $order->code ) ) ?>" target="_blank" class="page-title-action pmpro-has-icon pmpro-has-icon-admin-users"><?php esc_html_e( 'View', 'paid-memberships-pro' ); ?></a>
@@ -322,562 +311,612 @@ require_once( dirname( __FILE__ ) . '/admin_header.php' ); ?>
 			echo 'error';
 		}
 		?>
-		"><p><?php echo $pmpro_msg; ?></p></div>
+		"><p><?php echo esc_html( $pmpro_msg ); ?></p></div>
 	<?php } ?>
 
 	<form method="post" action="">
 		<?php wp_nonce_field( 'save', 'pmpro_orders_nonce' ); ?>
 
-		<table class="form-table">
-			<tbody>
-			<tr>
-				<th scope="row" valign="top"><label for="code"><?php esc_html_e( 'Code', 'paid-memberships-pro' ); ?>:</label></th>
-				<td>
-					<?php
-						if ( in_array( 'code', $read_only_fields ) ) {
-							echo esc_html( $order->code );
-						} else { ?>
-							<input id="code" name="code" type="text" value="<?php echo esc_attr( $order->code ); ?>" />
-						<?php
-						}
-					?>
-					<p class="description"><?php esc_html_e( 'A randomly generated code that serves as a unique, non-sequential invoice number.', 'paid-memberships-pro' ); ?></p>
-					<?php if ( $order_id < 0 ) { ?>
-						<p class="description"><?php esc_html_e( 'Randomly generated for you.', 'paid-memberships-pro' ); ?></p>
-					<?php } ?>
-				</td>
-			</tr>
-			<tr>
-				<th scope="row" valign="top"><label for="ts_month"><?php esc_html_e( 'Date', 'paid-memberships-pro' ); ?>:</label></th>
-				<td>
-					<?php
-					if ( in_array( 'timestamp', $read_only_fields ) && $order_id > 0 ) {
-						echo esc_html( date_i18n( get_option( 'date_format' ) . ' ' . get_option( 'time_format' ), $order->getTimestamp() ) );
-					} else {
-						// set up date vars
-						if ( ! empty( $order->timestamp ) ) {
-							$timestamp = $order->getTimestamp();
-						} else {
-							$timestamp = current_time( 'timestamp' );
-						}						
-						$year   = date( 'Y', $timestamp );
-						$month  = date( 'n', $timestamp );
-						$day    = date( 'j', $timestamp );
-						$hour   = date( 'H', $timestamp );
-						$minute = date( 'i', $timestamp );
-						$second = date( 's', $timestamp );
-						?>
-						<select id="ts_month" name="ts_month">
-						<?php
-						for ( $i = 1; $i < 13; $i ++ ) {
-						?>
-							<option value="<?php echo esc_attr( $i ); ?>" <?php selected( $i, $month ); ?>>
-							<?php echo esc_html( date_i18n( 'F', mktime( 0, 0, 0, $i, 2 ) ) ); ?>
-							</option>
-						<?php
-						}
-						?>
-						</select>
-						<input name="ts_day" type="text" size="2" value="<?php echo esc_attr( $day ); ?>"/>
-						<input name="ts_year" type="text" size="4" value="<?php echo esc_attr( $year ); ?>"/>
-						<?php esc_html_e( 'at', 'paid-memberships-pro' ); ?>
-						<input name="ts_hour" type="text" size="2" value="<?php echo esc_attr( $hour ); ?>"/> :
-						<input name="ts_minute" type="text" size="2" value="<?php echo esc_attr( $minute ); ?>"/>
-					<?php } ?>
-				</td>
-			</tr>
-			</tbody>
-		</table>
-		<hr />
-		<h2><?php esc_html_e( 'Member Information', 'paid-memberships-pro' ); ?></h2>
-		<table class="form-table">
-			<tbody>
-			<tr>
-			<tr>
-				<th scope="row" valign="top"><label for="user_id"><?php esc_html_e( 'User ID', 'paid-memberships-pro' ); ?>:</label></th>
-				<td>
-					<?php
-						if ( in_array( 'user_id', $read_only_fields ) && $order_id > 0 ) {
-							echo esc_html( $order->user_id );
-						} else { 
-							$user_id = ! empty( $_REQUEST['user'] ) ? intval( $_REQUEST['user'] ) : $order->user_id;
-							?>
-							<input id="user_id" name="user_id" type="text" value="<?php echo esc_attr( $user_id ); ?>" size="10" />
-						<?php
-						}
-					?>
-				</td>
-			</tr>
-			<tr>
-				<th scope="row" valign="top"><label for="membership_id"><?php esc_html_e( 'Membership Level ID', 'paid-memberships-pro' ); ?>:</label></th>
-				<td>
-					<?php
-						if ( in_array( 'membership_id', $read_only_fields ) && $order_id > 0 ) {
-						echo esc_html( $order->membership_id );
-						} else { ?>
-							<input id="membership_id" name="membership_id" type="text" value="<?php echo esc_attr( $order->membership_id ); ?>" size="10" />
-						<?php
-						}
-					?>
-				</td>
-			</tr>
-			</tbody>
-		</table>
-		<hr />
-		<h2>
-			<?php esc_html_e( 'Billing Address', 'paid-memberships-pro' ); ?>
-			<?php if ( ! $order->has_billing_address() ) { ?>
-				<a href="javascript:void(0);" id="show_billing_action"><?php esc_html_e( 'Show Billing Address Fields', 'paid-memberships-pro' ); ?></a>
-			<?php } ?>
-		</h2>
-		<table id="billing_address_fields" class="form-table"<?php if ( ! $order->has_billing_address() ) { ?> style="display: none;"<?php } ?>>
-			<tbody>
-			<tr>
-				<th scope="row" valign="top"><label for="billing_name"><?php esc_html_e( 'Billing Name', 'paid-memberships-pro' ); ?>:</label>
-				</th>
-				<td>
-					<?php
-					if ( in_array( 'billing_name', $read_only_fields ) && $order_id > 0 ) {
-						echo esc_html( $order->billing_name );
-					} else {
-										?>
-											<input id="billing_name" name="billing_name" type="text" size="50"
-												   value="<?php echo esc_attr( $order->billing->name ); ?>"/>
-					<?php } ?>
-				</td>
-			</tr>
-			<tr>
-				<th scope="row" valign="top"><label for="billing_street"><?php esc_html_e( 'Billing Street', 'paid-memberships-pro' ); ?>:</label></th>
-				<td>
-					<?php
-					if ( in_array( 'billing_street', $read_only_fields ) && $order_id > 0 ) {
-						echo esc_html( $order->billing_street );
-					} else {
-										?>
-										<input id="billing_street" name="billing_street" type="text" size="50"
-											   value="<?php echo esc_attr( $order->billing->street ); ?>"/></td>
-									<?php } ?>
-			</tr>
-			<tr>
-				<th scope="row" valign="top"><label for="billing_city"><?php esc_html_e( 'Billing City', 'paid-memberships-pro' ); ?>:</label>
-				</th>
-				<td>
-					<?php
-					if ( in_array( 'billing_city', $read_only_fields ) && $order_id > 0 ) {
-						echo esc_html( $order->billing_city );
-					} else {
-										?>
-										<input id="billing_city" name="billing_city" type="text" size="50"
-											   value="<?php echo esc_attr( $order->billing->city ); ?>"/></td>
-									<?php } ?>
-			</tr>
-			<tr>
-				<th scope="row" valign="top"><label for="billing_state"><?php esc_html_e( 'Billing State', 'paid-memberships-pro' ); ?>:</label></th>
-				<td>
-					<?php
-					if ( in_array( 'billing_state', $read_only_fields ) && $order_id > 0 ) {
-						echo esc_html( $order->billing_state );
-					} else {
-										?>
-										<input id="billing_state" name="billing_state" type="text" size="50"
-											   value="<?php echo esc_attr( $order->billing->state ); ?>"/></td>
-									<?php } ?>
-			</tr>
-			<tr>
-				<th scope="row" valign="top"><label for="billing_zip"><?php esc_html_e( 'Billing Postal Code', 'paid-memberships-pro' ); ?>:</label></th>
-				<td>
-					<?php
-					if ( in_array( 'billing_zip', $read_only_fields ) && $order_id > 0 ) {
-						echo esc_html( $order->billing_zip );
-					} else {
-										?>
-										<input id="billing_zip" name="billing_zip" type="text" size="50"
-											   value="<?php echo esc_attr( $order->billing->zip ); ?>"/></td>
-									<?php } ?>
-			</tr>
-			<tr>
-				<th scope="row" valign="top"><label for="billing_country"><?php esc_html_e( 'Billing Country', 'paid-memberships-pro' ); ?>:</label></th>
-				<td>
-					<?php
-					if ( in_array( 'billing_country', $read_only_fields ) && $order_id > 0 ) {
-						echo esc_html( $order->billing_country );
-					} else {
-										?>
-											<input id="billing_country" name="billing_country" type="text" size="50"
-												   value="<?php echo esc_attr( $order->billing->country ); ?>"/>
-					<?php } ?>
-				</td>
-			</tr>
-			<tr>
-				<th scope="row" valign="top"><label for="billing_phone"><?php esc_html_e( 'Billing Phone', 'paid-memberships-pro' ); ?>:</label></th>
-				<td>
-					<?php
-					if ( in_array( 'billing_phone', $read_only_fields ) && $order_id > 0 ) {
-						echo esc_html( $order->billing_phone );
-					} else {
-										?>
-											<input id="billing_phone" name="billing_phone" type="text" size="50"
-												   value="<?php echo esc_attr( $order->billing->phone ); ?>"/>
-					<?php } ?>
-				</td>
-			</tr>
-			</tbody>
-		</table> <!-- end #billing_address_fields -->
-		<script>
-			// Script to show billing fields if they are empty and hidden by default on this form.
-			jQuery(document).ready(function() {
-				jQuery('#show_billing_action').click(function() {
-					jQuery('#show_billing_action').hide();
-					jQuery('#billing_address_fields').show();
-				});
-			});
-		</script>
-		<hr />
-		<h2><?php esc_html_e( 'Payment Information', 'paid-memberships-pro' ); ?></h2>
-		<table class="form-table">
-			<tbody>
-
-			<?php
-			if ( $order_id > 0 ) {
-				$order->getDiscountCode();
-				if ( ! empty( $order->discount_code ) ) {
-					$discount_code_id = $order->discount_code->id;
-				} else {
-					$discount_code_id = 0;
-				}
-			} else {
-				$discount_code_id = 0;
-			}
-
-			$sqlQuery = "SELECT SQL_CALC_FOUND_ROWS * FROM $wpdb->pmpro_discount_codes ";
-			$sqlQuery .= "ORDER BY id DESC ";
-			$codes = $wpdb->get_results($sqlQuery, OBJECT);
-			if ( ! empty( $codes ) ) { ?>
-			<tr>
-				<th scope="row" valign="top"><label for="discount_code_id"><?php esc_html_e( 'Discount Code', 'paid-memberships-pro' ); ?>:</label></th>
-				<td>
-					<?php
-						if ( in_array( 'discount_code_id', $read_only_fields ) && $order_id > 0 ) {
-							if( ! empty( $order->discount_code ) ) {
-								echo esc_html( $order->discount_code->code );
-							} else {
-								esc_html_e( 'N/A', 'paid-memberships-pro' );
-							}
-						} else { ?>
-							<select id="discount_code_id" name="discount_code_id">
-								<option value="0" <?php selected( $discount_code_id, 0); ?>>-- <?php _e("None", 'paid-memberships-pro' );?> --</option>
-								<?php foreach ( $codes as $code ) { ?>
-									<option value="<?php echo esc_attr( $code->id ); ?>" <?php selected( $discount_code_id, $code->id ); ?>><?php echo esc_html( $code->code ); ?></option>
-								<?php } ?>
-							</select>
+		<div class="pmpro_section" data-visibility="shown" data-activated="true">
+			<div class="pmpro_section_toggle">
+				<button class="pmpro_section-toggle-button" type="button" aria-expanded="true">
+					<span class="dashicons dashicons-arrow-up-alt2"></span>
+					<?php esc_html_e( 'Order Information', 'paid-memberships-pro' ); ?>
+				</button>
+			</div>
+			<div class="pmpro_section_inside">
+				<table class="form-table">
+					<tbody>
+					<tr>
+						<th scope="row" valign="top"><label for="code"><?php esc_html_e( 'Code', 'paid-memberships-pro' ); ?></label></th>
+						<td>
 							<?php
-						} ?>
-				</td>
-			</tr>
-			<?php } ?>
-			<tr>
-				<th scope="row" valign="top"><label for="subtotal"><?php esc_html_e( 'Sub Total', 'paid-memberships-pro' ); ?>:</label></th>
-				<td>
-					<?php
-					if ( in_array( 'subtotal', $read_only_fields ) && $order_id > 0 ) {
-						echo esc_html( $order->subtotal );
-					} else {
-										?>
-											<input id="subtotal" name="subtotal" type="text" size="10"
-												   value="<?php echo esc_attr( $order->subtotal ); ?>"/>
-					<?php } ?>
-				</td>
-			</tr>
-			<tr>
-				<th scope="row" valign="top"><label for="tax"><?php esc_html_e( 'Tax', 'paid-memberships-pro' ); ?>:</label></th>
-				<td>
-					<?php
-					if ( in_array( 'tax', $read_only_fields ) && $order_id > 0 ) {
-						echo esc_html( $order->tax );
-					} else {
-										?>
-											<input id="tax" name="tax" type="text" size="10"
-												   value="<?php echo esc_attr( $order->tax ); ?>"/>
-					<?php } ?>
-				</td>
-			</tr>
-			<?php
-				// Hiding couponamount by default.
-				$coupons = apply_filters( 'pmpro_orders_show_coupon_amounts', false );
-				if ( ! empty( $coupons ) ) { ?>
-				<tr>
-					<th scope="row" valign="top"><label for="couponamount"><?php esc_html_e( 'Coupon Amount', 'paid-memberships-pro' ); ?>:</label>
-					</th>
-					<td>
-					<?php
-						if ( in_array( 'couponamount', $read_only_fields ) && $order_id > 0 ) {
-							echo $order->couponamount;
-						} else {
-						?>
-							<input id="couponamount" name="couponamount" type="text" size="10" value="<?php echo esc_attr( $order->couponamount ); ?>"/>
-						<?php
-						}
-					?>
-					</td>
-				</tr>
-				<?php
-				}
-			?>
-			<tr>
-				<th scope="row" valign="top"><label for="total"><?php esc_html_e( 'Total', 'paid-memberships-pro' ); ?>:</label></th>
-				<td>
-					<?php
-					if ( in_array( 'total', $read_only_fields ) && $order_id > 0 ) {
-						echo esc_html( $order->total );
-					} else {
-										?>
-											<input id="total" name="total" type="text" size="10"
-												   value="<?php echo esc_attr( $order->total ); ?>"/>
-					<?php } ?>
-				</td>
-			</tr>
-
-			<tr>
-				<th scope="row" valign="top"><label for="payment_type"><?php esc_html_e( 'Payment Type', 'paid-memberships-pro' ); ?>:</label>
-				</th>
-				<td>
-					<?php
-					if ( in_array( 'payment_type', $read_only_fields ) && $order_id > 0 ) {
-						echo esc_html( $order->payment_type );
-					} else {
-										?>
-											<input id="payment_type" name="payment_type" type="text" size="50"
-												   value="<?php echo esc_attr( $order->payment_type ); ?>"/>
-					<?php } ?>
-					<p class="description"><?php esc_html_e( 'e.g. PayPal Express, PayPal Standard, Credit Card.', 'paid-memberships-pro' ); ?></p>
-				</td>
-			</tr>
-			<tr>
-				<th scope="row" valign="top"><label for="cardtype"><?php esc_html_e( 'Card Type', 'paid-memberships-pro' ); ?>:</label></th>
-				<td>
-					<?php
-					if ( in_array( 'cardtype', $read_only_fields ) && $order_id > 0 ) {
-						echo esc_html( $order->cardtype );
-					} else {
-										?>
-											<input id="cardtype" name="cardtype" type="text" size="50"
-												   value="<?php echo esc_attr( $order->cardtype ); ?>"/>
-					<?php } ?>
-					<p class="description"><?php esc_html_e( 'e.g. Visa, MasterCard, AMEX, etc', 'paid-memberships-pro' ); ?></p>
-				</td>
-			</tr>
-			<tr>
-				<th scope="row" valign="top"><label for="accountnumber"><?php esc_html_e( 'Account Number', 'paid-memberships-pro' ); ?>:</label></th>
-				<td>
-					<?php
-					if ( in_array( 'accountnumber', $read_only_fields ) && $order_id > 0 ) {
-						echo esc_html( $order->accountnumber );
-					} else {
-										?>
-											<input id="accountnumber" name="accountnumber" type="text" size="50"
-												   value="<?php echo esc_attr( $order->accountnumber ); ?>"/>
-					<?php } ?>
-					<p class="description"><?php esc_html_e( 'Obscure all but last 4 digits.', 'paid-memberships-pro' ); ?></p>
-				</td>
-			</tr>
-			<?php
-			if ( in_array( 'ExpirationDate', $read_only_fields ) && $order_id > 0 ) {
-				?>
-
-				<tr>
-				    <th scope="row" valign="top"><label
-						for="expirationmonth"><?php esc_html_e( 'Expiration Month', 'paid-memberships-pro' ); ?>:</label></th>
-				    <td>
-					<?php echo esc_html( $order->expirationmonth . '/' . $order->expirationyear ); ?>
-				    </td>
-				</tr>
-
-				<?php
-			} else { ?>
-				<tr>
-					<th scope="row" valign="top"><label for="expirationmonth"><?php esc_html_e( 'Expiration', 'paid-memberships-pro' ); ?>:</label></th>
-					<td>
-						<input id="expirationmonth" name="expirationmonth" type="text" size="10"
-				   value="<?php echo esc_attr( $order->expirationmonth ); ?>"/> /
-						<input id="expirationyear" name="expirationyear" type="text" size="10"
-				   value="<?php echo esc_attr( $order->expirationyear ); ?>"/>
-						<span class="description"><?php esc_html_e( 'MM/YYYY', 'paid-memberships-pro' );?></span>
-					</td>
-				</tr>
-			<?php } ?>
-			<tr>
-				<th scope="row" valign="top"><label for="status"><?php esc_html_e( 'Status', 'paid-memberships-pro' ); ?>:</label></th>
-				<td>
-					<?php
-					if ( in_array( 'status', $read_only_fields ) && $order_id > 0 ) {
-						echo esc_html( ucwords( $order->status ) );
-					} else { ?>
-					<?php
-						$statuses = pmpro_getOrderStatuses();
-						?>
-						<select id="status" name="status">
-							<?php foreach ( $statuses as $status ) { ?>
-								<option
-									value="<?php echo esc_attr( $status ); ?>" <?php selected( $order->status, $status ); ?>><?php echo esc_html( $status ); ?></option>
+								if ( in_array( 'code', $read_only_fields ) ) {
+									echo esc_html( $order->code );
+								} else { ?>
+									<input id="code" name="code" type="text" value="<?php echo esc_attr( $order->code ); ?>" />
+								<?php
+								}
+							?>
+							<p class="description"><?php esc_html_e( 'A randomly generated code that serves as a unique, non-sequential invoice number.', 'paid-memberships-pro' ); ?></p>
+						</td>
+					</tr>
+					<tr>
+						<th scope="row" valign="top"><label for="ts_month"><?php esc_html_e( 'Date', 'paid-memberships-pro' ); ?></label></th>
+						<td>
+							<?php
+							if ( in_array( 'timestamp', $read_only_fields ) && $order_id > 0 ) {
+								echo esc_html( date_i18n( get_option( 'date_format' ) . ' ' . get_option( 'time_format' ), $order->getTimestamp() ) );
+							} else {
+								// set up date vars
+								if ( ! empty( $order->timestamp ) ) {
+									$timestamp = $order->getTimestamp();
+								} else {
+									$timestamp = current_time( 'timestamp' );
+								}						
+								$year   = date( 'Y', $timestamp );
+								$month  = date( 'n', $timestamp );
+								$day    = date( 'j', $timestamp );
+								$hour   = date( 'H', $timestamp );
+								$minute = date( 'i', $timestamp );
+								$second = date( 's', $timestamp );
+								?>
+								<select id="ts_month" name="ts_month">
+								<?php
+								for ( $i = 1; $i < 13; $i ++ ) {
+								?>
+									<option value="<?php echo esc_attr( $i ); ?>" <?php selected( $i, $month ); ?>>
+									<?php echo esc_html( date_i18n( 'F', mktime( 0, 0, 0, $i, 2 ) ) ); ?>
+									</option>
+								<?php
+								}
+								?>
+								</select>
+								<input name="ts_day" type="text" size="2" value="<?php echo esc_attr( $day ); ?>"/>
+								<input name="ts_year" type="text" size="4" value="<?php echo esc_attr( $year ); ?>"/>
+								<?php esc_html_e( 'at', 'paid-memberships-pro' ); ?>
+								<input name="ts_hour" type="text" size="2" value="<?php echo esc_attr( $hour ); ?>"/> :
+								<input name="ts_minute" type="text" size="2" value="<?php echo esc_attr( $minute ); ?>"/>
 							<?php } ?>
-						</select>
-						<?php
-						}
-					?>
-				</td>
-			</tr>
-			</tbody>
-		</table>
-		<hr />
-		<h2><?php esc_html_e( 'Payment Gateway Information', 'paid-memberships-pro' ); ?></h2>
-		<table class="form-table">
-			<tbody>
-			<tr>
-				<th scope="row" valign="top"><label for="gateway"><?php esc_html_e( 'Gateway', 'paid-memberships-pro' ); ?>:</label></th>
-				<td>
-					<?php
-					if ( in_array( 'gateway', $read_only_fields ) && $order_id > 0 ) {
-						echo esc_html( $order->gateway );
-					} else {
-					?>
-						<select id="gateway" name="gateway" onchange="pmpro_changeGateway(jQuery(this).val());">
-					<?php
-						$pmpro_gateways = pmpro_gateways();
-						foreach ( $pmpro_gateways as $pmpro_gateway_name => $pmpro_gateway_label ) {
-							?>
-							<option
-								value="<?php echo esc_attr( $pmpro_gateway_name ); ?>" <?php selected( $order->gateway, $pmpro_gateway_name ); ?>><?php echo esc_html( $pmpro_gateway_label ); ?></option>
-							<?php
-						}
-					?>
-						</select>
-					<?php } ?>
-				</td>
-			</tr>
-			<tr>
-				<th scope="row" valign="top"><label
-						for="gateway_environment"><?php esc_html_e( 'Gateway Environment', 'paid-memberships-pro' ); ?>:</label></th>
-				<td>
-					<?php
-					if ( in_array( 'gateway_environment', $read_only_fields ) && $order_id > 0 ) {
-						echo esc_html( $order->gateway_environment );
-					} else {
-					?>
-						<select name="gateway_environment">
-							<option value="sandbox" <?php if ( $order->gateway_environment == 'sandbox' ) { ?>selected="selected"<?php } ?>><?php esc_html_e( 'Sandbox/Testing', 'paid-memberships-pro' ); ?></option>
-							<option value="live" <?php if ( $order->gateway_environment == 'live' ) { ?>selected="selected"<?php } ?>><?php esc_html_e( 'Live/Production', 'paid-memberships-pro' ); ?></option>
-						</select>
-					<?php } ?>
-				</td>
-			</tr>
-
-			<tr>
-				<th scope="row" valign="top"><label
-						for="payment_transaction_id"><?php esc_html_e( 'Payment Transaction ID', 'paid-memberships-pro' ); ?>:</label></th>
-				<td>
-					<?php
-					if ( in_array( 'payment_transaction_id', $read_only_fields ) && $order_id > 0 ) {
-						echo esc_html( $order->payment_transaction_id );
-					} else {
+						</td>
+					</tr>
+					</tbody>
+				</table>
+			</div> <!-- end pmpro_section_inside -->
+		</div> <!-- end pmpro_section -->
+		<div class="pmpro_section" data-visibility="shown" data-activated="true">
+			<div class="pmpro_section_toggle">
+				<button class="pmpro_section-toggle-button" type="button" aria-expanded="true">
+					<span class="dashicons dashicons-arrow-up-alt2"></span>
+					<?php esc_html_e( 'Member Information', 'paid-memberships-pro' ); ?>
+				</button>
+			</div>
+			<div class="pmpro_section_inside">
+				<table class="form-table">
+					<tbody>
+						<tr>
+							<th scope="row" valign="top"><label for="user_id"><?php esc_html_e( 'User ID', 'paid-memberships-pro' ); ?></label></th>
+							<td>
+								<?php
+									if ( in_array( 'user_id', $read_only_fields ) && $order_id > 0 ) {
+										echo esc_html( $order->user_id );
+									} else { 
+										$user_id = ! empty( $_REQUEST['user'] ) ? intval( $_REQUEST['user'] ) : $order->user_id;
 										?>
-											<input id="payment_transaction_id" name="payment_transaction_id" type="text" size="50"
-												   value="<?php echo esc_attr( $order->payment_transaction_id ); ?>"/>
-					<?php } ?>
-					<p class="description"><?php esc_html_e( 'Generated by the gateway. Useful to cross reference orders.', 'paid-memberships-pro' ); ?></p>
-				</td>
-			</tr>
-			<tr>
-				<th scope="row" valign="top"><label
-						for="subscription_transaction_id"><?php esc_html_e( 'Subscription Transaction ID', 'paid-memberships-pro' ); ?>:</label></th>
-				<td>
-					<?php
-					if ( in_array( 'subscription_transaction_id', $read_only_fields ) && $order_id > 0 ) {
-						echo $order->subscription_transaction_id;
-					} else { ?>
-						<input id="subscription_transaction_id" name="subscription_transaction_id" type="text" size="50" value="<?php echo esc_attr( $order->subscription_transaction_id ); ?>"/>
-						<?php if ( $order->is_renewal() ) { ?>
-							<a href="<?php echo esc_url( add_query_arg( array( 'page' => 'pmpro-orders', 's' => $order->subscription_transaction_id ), admin_url( 'admin.php' ) ) ); ?>" title="<?php esc_attr_e( 'View all orders for this subscription', 'paid-memberships-pro' ); ?>" class="pmpro_order-renewal"><?php esc_html_e( 'Renewal', 'paid-memberships-pro' ); ?></a>
-						<?php } ?>
-					<?php } ?>
-					<p class="description"><?php esc_html_e( 'Generated by the gateway. Useful to cross reference subscriptions.', 'paid-memberships-pro' ); ?></p>
-				</td>
-			</tr>
-			</tbody>
-		</table>
-		<hr />
-		<h2><?php esc_html_e( 'Additional Order Information', 'paid-memberships-pro' ); ?></h2>
-		<table class="form-table">
-			<tbody>
-			<?php
-			$affiliates = apply_filters( 'pmpro_orders_show_affiliate_ids', false );
-			if ( ! empty( $affiliates ) ) {
-				?>
-				<tr>
-					<th scope="row" valign="top"><label for="affiliate_id"><?php esc_html_e( 'Affiliate ID', 'paid-memberships-pro' ); ?>
-							:</label></th>
-					<td>
-						<?php
-						if ( in_array( 'affiliate_id', $read_only_fields ) && $order_id > 0 ) {
-							echo esc_html( $order->affiliate_id );
-						} else {
-						?>
-							<input id="affiliate_id" name="affiliate_id" type="text" size="50" value="<?php echo esc_attr( $order->affiliate_id ); ?>"/>
-						<?php } ?>
-					</td>
-				</tr>
-				<tr>
-					<th scope="row" valign="top"><label for="affiliate_subid"><?php esc_html_e( 'Affiliate SubID', 'paid-memberships-pro' ); ?>
-							:</label></th>
-					<td>
-						<?php
-						if ( in_array( 'affiliate_subid', $read_only_fields ) && $order_id > 0 ) {
-							echo esc_html( $order->affiliate_subid );
-						} else {
-						?>
-							<input id="affiliate_subid" name="affiliate_subid" type="text" size="50" value="<?php echo esc_attr( $order->affiliate_subid ); ?>"/>
-						<?php } ?>
-					</td>
-				</tr>
-			<?php } ?>
+										<input id="user_id" name="user_id" type="text" value="<?php echo esc_attr( $user_id ); ?>" size="10" />
+									<?php
+									}
+								?>
+							</td>
+						</tr>
+						<tr>
+							<th scope="row" valign="top"><label for="membership_id"><?php esc_html_e( 'Membership Level ID', 'paid-memberships-pro' ); ?></label></th>
+							<td>
+								<?php
+									if ( in_array( 'membership_id', $read_only_fields ) && $order_id > 0 ) {
+										echo esc_html( $order->membership_id );
+									} else {
+										// Get the order's current membership level ID.
+										$membership_id = ! empty( $_REQUEST['membership_id'] ) ? intval( $_REQUEST['membership_id'] ) : $order->membership_id;
 
-			<?php
-				$tospage_id = pmpro_getOption( 'tospage' );
-				$consent_entry = $order->get_tos_consent_log_entry();
+										// Get all membership levels.
+										$levels = pmpro_getAllLevels( true, true );
 
-				if( !empty( $tospage_id ) || !empty( $consent_entry ) ) {
-				?>
-				<tr>
-					<th scope="row" valign="top"><label for="tos_consent"><?php esc_html_e( 'TOS Consent', 'paid-memberships-pro' ); ?>:</label></th>
-					<td id="tos_consent">
-						<?php
-							if( !empty( $consent_entry ) ) {
-								echo esc_html( pmpro_consent_to_text( $consent_entry ) );
+										?>
+										<select id="membership_id" name="membership_id">
+											<option value="0" <?php selected( $membership_id, 0 ); ?>>-- <?php esc_html_e("None", 'paid-memberships-pro' );?> --</option>
+											<?php
+											// If the current membership level is not in the list, add it as "ID {membership_id} [deleted]".
+											if ( ! empty( $membership_id ) && ! in_array( $membership_id, wp_list_pluck( $levels, 'id' ) ) ) {
+												?>
+												<option value="<?php echo esc_attr( $membership_id ); ?>" selected><?php echo esc_html( sprintf( __( 'ID %d [deleted]', 'paid-memberships-pro' ), $membership_id ) ); ?></option>
+												<?php
+											}
+
+											// Add the rest of the levels.
+											foreach ( $levels as $level ) {
+												?>
+												<option value="<?php echo esc_attr( $level->id ); ?>" <?php selected( $membership_id, $level->id ); ?>><?php echo esc_html( $level->name ); ?></option>
+												<?php
+											}
+											?>
+										</select>
+										<?php
+									}
+								?>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+			</div> <!-- end pmpro_section_inside -->
+		</div> <!-- end pmpro_section -->
+		<?php
+			if ( $order->has_billing_address() ) {
+				$section_visibility = 'shown';
+				$section_activated = 'true';
+			} else {
+				$section_visibility = 'hidden';
+				$section_activated = 'false';
+			}
+		?>
+		<div class="pmpro_section" data-visibility="<?php echo esc_attr($section_visibility); ?>" data-activated="<?php echo esc_attr($section_activated); ?>">
+			<div class="pmpro_section_toggle">
+				<button class="pmpro_section-toggle-button" type="button" aria-expanded="<?php echo $section_visibility === 'hidden' ? 'false' : 'true'; ?>">
+					<span class="dashicons dashicons-arrow-<?php echo $section_visibility === 'hidden' ? 'down' : 'up'; ?>-alt2"></span>
+					<?php esc_html_e('Billing Address', 'paid-memberships-pro'); ?>
+				</button>
+			</div>
+			<div class="pmpro_section_inside" <?php echo $section_visibility === 'hidden' ? 'style="display: none"' : ''; ?>>
+				<table id="billing_address_fields" class="form-table">
+					<tbody>
+					<tr>
+						<th scope="row" valign="top"><label for="billing_name"><?php esc_html_e( 'Billing Name', 'paid-memberships-pro' ); ?></label>
+						</th>
+						<td>
+							<?php
+							if ( in_array( 'billing_name', $read_only_fields ) && $order_id > 0 ) {
+								echo esc_html( $order->billing_name );
 							} else {
-								esc_html_e( 'N/A', 'paid-memberships-pro' );
-							}
-						?>
-					</td>
-				</tr>
-				<?php
-				}
-			?>
-			<tr>
-				<th scope="row" valign="top"><label for="notes"><?php esc_html_e( 'Notes', 'paid-memberships-pro' ); ?>:</label></th>
-				<td>
+												?>
+													<input id="billing_name" name="billing_name" type="text" size="50"
+														value="<?php echo esc_attr( $order->billing->name ); ?>"/>
+							<?php } ?>
+						</td>
+					</tr>
+					<tr>
+						<th scope="row" valign="top"><label for="billing_street"><?php esc_html_e( 'Billing Street', 'paid-memberships-pro' ); ?></label></th>
+						<td>
+							<?php
+							if ( in_array( 'billing_street', $read_only_fields ) && $order_id > 0 ) {
+								echo esc_html( $order->billing_street );
+							} else {
+												?>
+												<input id="billing_street" name="billing_street" type="text" size="50"
+													value="<?php echo esc_attr( $order->billing->street ); ?>"/></td>
+											<?php } ?>
+					</tr>
+					<tr>
+						<th scope="row" valign="top"><label for="billing_city"><?php esc_html_e( 'Billing City', 'paid-memberships-pro' ); ?></label>
+						</th>
+						<td>
+							<?php
+							if ( in_array( 'billing_city', $read_only_fields ) && $order_id > 0 ) {
+								echo esc_html( $order->billing_city );
+							} else {
+												?>
+												<input id="billing_city" name="billing_city" type="text" size="50"
+													value="<?php echo esc_attr( $order->billing->city ); ?>"/></td>
+											<?php } ?>
+					</tr>
+					<tr>
+						<th scope="row" valign="top"><label for="billing_state"><?php esc_html_e( 'Billing State', 'paid-memberships-pro' ); ?></label></th>
+						<td>
+							<?php
+							if ( in_array( 'billing_state', $read_only_fields ) && $order_id > 0 ) {
+								echo esc_html( $order->billing_state );
+							} else {
+												?>
+												<input id="billing_state" name="billing_state" type="text" size="50"
+													value="<?php echo esc_attr( $order->billing->state ); ?>"/></td>
+											<?php } ?>
+					</tr>
+					<tr>
+						<th scope="row" valign="top"><label for="billing_zip"><?php esc_html_e( 'Billing Postal Code', 'paid-memberships-pro' ); ?></label></th>
+						<td>
+							<?php
+							if ( in_array( 'billing_zip', $read_only_fields ) && $order_id > 0 ) {
+								echo esc_html( $order->billing_zip );
+							} else {
+												?>
+												<input id="billing_zip" name="billing_zip" type="text" size="50"
+													value="<?php echo esc_attr( $order->billing->zip ); ?>"/></td>
+											<?php } ?>
+					</tr>
+					<tr>
+						<th scope="row" valign="top"><label for="billing_country"><?php esc_html_e( 'Billing Country', 'paid-memberships-pro' ); ?></label></th>
+						<td>
+							<?php
+							if ( in_array( 'billing_country', $read_only_fields ) && $order_id > 0 ) {
+								echo esc_html( $order->billing_country );
+							} else {
+												?>
+													<input id="billing_country" name="billing_country" type="text" size="50"
+														value="<?php echo esc_attr( $order->billing->country ); ?>"/>
+							<?php } ?>
+						</td>
+					</tr>
+					<tr>
+						<th scope="row" valign="top"><label for="billing_phone"><?php esc_html_e( 'Billing Phone', 'paid-memberships-pro' ); ?></label></th>
+						<td>
+							<?php
+							if ( in_array( 'billing_phone', $read_only_fields ) && $order_id > 0 ) {
+								echo esc_html( $order->billing_phone );
+							} else {
+												?>
+													<input id="billing_phone" name="billing_phone" type="text" size="50"
+														value="<?php echo esc_attr( $order->billing->phone ); ?>"/>
+							<?php } ?>
+						</td>
+					</tr>
+					</tbody>
+				</table> <!-- end #billing_address_fields -->
+			</div> <!-- end pmpro_section_inside -->
+		</div> <!-- end pmpro_section -->
+		<div class="pmpro_section" data-visibility="shown" data-activated="true">
+			<div class="pmpro_section_toggle">
+				<button class="pmpro_section-toggle-button" type="button" aria-expanded="true">
+					<span class="dashicons dashicons-arrow-up-alt2"></span>
+					<?php esc_html_e( 'Payment Information', 'paid-memberships-pro' ); ?>
+				</button>
+			</div>
+			<div class="pmpro_section_inside">
+				<table class="form-table">
+					<tbody>
 					<?php
-					if ( in_array( 'notes', $read_only_fields ) && $order_id > 0 ) {
-						echo wp_kses_post( $order->notes );
+					if ( $order_id > 0 ) {
+						$order->getDiscountCode();
+						if ( ! empty( $order->discount_code ) ) {
+							$discount_code_id = $order->discount_code->id;
+						} else {
+							$discount_code_id = 0;
+						}
 					} else {
-					?>
-						<textarea id="notes" name="notes" rows="5" cols="80"><?php echo esc_textarea( $order->notes ); ?></textarea>
+						$discount_code_id = 0;
+					}
+
+					$sqlQuery = "SELECT SQL_CALC_FOUND_ROWS * FROM $wpdb->pmpro_discount_codes ";
+					$sqlQuery .= "ORDER BY id DESC ";
+					$codes = $wpdb->get_results($sqlQuery, OBJECT);
+					if ( ! empty( $codes ) ) { ?>
+					<tr>
+						<th scope="row" valign="top"><label for="discount_code_id"><?php esc_html_e( 'Discount Code', 'paid-memberships-pro' ); ?></label></th>
+						<td>
+							<?php
+								if ( in_array( 'discount_code_id', $read_only_fields ) && $order_id > 0 ) {
+									if( ! empty( $order->discount_code ) ) {
+										echo esc_html( $order->discount_code->code );
+									} else {
+										esc_html_e( 'N/A', 'paid-memberships-pro' );
+									}
+								} else { ?>
+									<select id="discount_code_id" name="discount_code_id">
+										<option value="0" <?php selected( $discount_code_id, 0); ?>>-- <?php esc_html_e("None", 'paid-memberships-pro' );?> --</option>
+										<?php foreach ( $codes as $code ) { ?>
+											<option value="<?php echo esc_attr( $code->id ); ?>" <?php selected( $discount_code_id, $code->id ); ?>><?php echo esc_html( $code->code ); ?></option>
+										<?php } ?>
+									</select>
+									<?php
+								} ?>
+						</td>
+					</tr>
 					<?php } ?>
-				</td>
-			</tr>
+					<tr>
+						<th scope="row" valign="top"><label for="subtotal"><?php esc_html_e( 'Sub Total', 'paid-memberships-pro' ); ?></label></th>
+						<td>
+							<?php
+							if ( in_array( 'subtotal', $read_only_fields ) && $order_id > 0 ) {
+								echo esc_html( $order->subtotal );
+							} else {
+												?>
+													<input id="subtotal" name="subtotal" type="text" size="10"
+														value="<?php echo esc_attr( $order->subtotal ); ?>"/>
+							<?php } ?>
+						</td>
+					</tr>
+					<tr>
+						<th scope="row" valign="top"><label for="tax"><?php esc_html_e( 'Tax', 'paid-memberships-pro' ); ?></label></th>
+						<td>
+							<?php
+							if ( in_array( 'tax', $read_only_fields ) && $order_id > 0 ) {
+								echo esc_html( $order->tax );
+							} else {
+												?>
+													<input id="tax" name="tax" type="text" size="10"
+														value="<?php echo esc_attr( $order->tax ); ?>"/>
+							<?php } ?>
+						</td>
+					</tr>
+					<tr>
+						<th scope="row" valign="top"><label for="total"><?php esc_html_e( 'Total', 'paid-memberships-pro' ); ?></label></th>
+						<td>
+							<?php
+							if ( in_array( 'total', $read_only_fields ) && $order_id > 0 ) {
+								echo esc_html( $order->total );
+							} else {
+												?>
+													<input id="total" name="total" type="text" size="10"
+														value="<?php echo esc_attr( $order->total ); ?>"/>
+							<?php } ?>
+						</td>
+					</tr>
 
-			<?php do_action( 'pmpro_after_order_settings', $order ); ?>
+					<tr>
+						<th scope="row" valign="top"><label for="payment_type"><?php esc_html_e( 'Payment Type', 'paid-memberships-pro' ); ?></label>
+						</th>
+						<td>
+							<?php
+							if ( in_array( 'payment_type', $read_only_fields ) && $order_id > 0 ) {
+								echo esc_html( $order->payment_type );
+							} else {
+												?>
+													<input id="payment_type" name="payment_type" type="text" size="50"
+														value="<?php echo esc_attr( $order->payment_type ); ?>"/>
+							<?php } ?>
+							<p class="description"><?php esc_html_e( 'e.g. PayPal Express, PayPal Standard, Credit Card.', 'paid-memberships-pro' ); ?></p>
+						</td>
+					</tr>
+					<tr>
+						<th scope="row" valign="top"><label for="cardtype"><?php esc_html_e( 'Card Type', 'paid-memberships-pro' ); ?></label></th>
+						<td>
+							<?php
+							if ( in_array( 'cardtype', $read_only_fields ) && $order_id > 0 ) {
+								echo esc_html( $order->cardtype );
+							} else {
+												?>
+													<input id="cardtype" name="cardtype" type="text" size="50"
+														value="<?php echo esc_attr( $order->cardtype ); ?>"/>
+							<?php } ?>
+							<p class="description"><?php esc_html_e( 'e.g. Visa, MasterCard, AMEX, etc', 'paid-memberships-pro' ); ?></p>
+						</td>
+					</tr>
+					<tr>
+						<th scope="row" valign="top"><label for="accountnumber"><?php esc_html_e( 'Account Number', 'paid-memberships-pro' ); ?></label></th>
+						<td>
+							<?php
+							if ( in_array( 'accountnumber', $read_only_fields ) && $order_id > 0 ) {
+								echo esc_html( $order->accountnumber );
+							} else { ?>
+								<input id="accountnumber" name="accountnumber" type="text" size="50"
+									value="<?php echo esc_attr( $order->accountnumber ); ?>"/>
+							<?php } ?>
+							<p class="description"><?php esc_html_e( 'Only the last 4 digits are stored in this site to use as a reference with the gateway.', 'paid-memberships-pro' ); ?></p>
+						</td>
+					</tr>
+					<?php
+					if ( in_array( 'ExpirationDate', $read_only_fields ) && $order_id > 0 ) {
+						?>
 
-			</tbody>
-		</table>
+						<tr>
+							<th scope="row" valign="top"><label
+								for="expirationmonth"><?php esc_html_e( 'Expiration Month', 'paid-memberships-pro' ); ?></label></th>
+							<td>
+							<?php echo esc_html( $order->expirationmonth . '/' . $order->expirationyear ); ?>
+							</td>
+						</tr>
+
+						<?php
+					} else { ?>
+						<tr>
+							<th scope="row" valign="top"><label for="expirationmonth"><?php esc_html_e( 'Expiration', 'paid-memberships-pro' ); ?></label></th>
+							<td>
+								<input id="expirationmonth" name="expirationmonth" type="text" size="10"
+						value="<?php echo esc_attr( $order->expirationmonth ); ?>"/> /
+								<input id="expirationyear" name="expirationyear" type="text" size="10"
+						value="<?php echo esc_attr( $order->expirationyear ); ?>"/>
+								<span class="description"><?php esc_html_e( 'MM/YYYY', 'paid-memberships-pro' );?></span>
+							</td>
+						</tr>
+					<?php } ?>
+					<tr>
+						<th scope="row" valign="top"><label for="status"><?php esc_html_e( 'Status', 'paid-memberships-pro' ); ?></label></th>
+						<td>
+							<?php
+							if ( in_array( 'status', $read_only_fields ) && $order_id > 0 ) {
+								echo esc_html( ucwords( $order->status ) );
+							} else { ?>
+							<?php
+								$statuses = pmpro_getOrderStatuses();
+								?>
+								<select id="status" name="status">
+									<?php foreach ( $statuses as $status ) { ?>
+										<option
+											value="<?php echo esc_attr( $status ); ?>" <?php selected( $order->status, $status ); ?>><?php echo esc_html( $status ); ?></option>
+									<?php } ?>
+								</select>
+								<?php
+								}
+							?>
+						</td>
+					</tr>
+					</tbody>
+				</table>
+			</div> <!-- end pmpro_section_inside -->
+		</div> <!-- end pmpro_section -->
+		<div class="pmpro_section" data-visibility="shown" data-activated="true">
+			<div class="pmpro_section_toggle">
+				<button class="pmpro_section-toggle-button" type="button" aria-expanded="true">
+					<span class="dashicons dashicons-arrow-up-alt2"></span>
+					<?php esc_html_e( 'Payment Gateway Information', 'paid-memberships-pro' ); ?>
+				</button>
+			</div>
+			<div class="pmpro_section_inside">
+				<table class="form-table">
+					<tbody>
+					<tr>
+						<th scope="row" valign="top"><label for="gateway"><?php esc_html_e( 'Gateway', 'paid-memberships-pro' ); ?></label></th>
+						<td>
+							<?php
+							if ( in_array( 'gateway', $read_only_fields ) && $order_id > 0 ) {
+								echo esc_html( $order->gateway );
+							} else {
+							?>
+								<select id="gateway" name="gateway" onchange="pmpro_changeGateway(jQuery(this).val());">
+							<?php
+								$pmpro_gateways = pmpro_gateways();
+								foreach ( $pmpro_gateways as $pmpro_gateway_name => $pmpro_gateway_label ) {
+									?>
+									<option
+										value="<?php echo esc_attr( $pmpro_gateway_name ); ?>" <?php selected( $order->gateway, $pmpro_gateway_name ); ?>><?php echo esc_html( $pmpro_gateway_label ); ?></option>
+									<?php
+								}
+							?>
+								</select>
+							<?php } ?>
+						</td>
+					</tr>
+					<tr>
+						<th scope="row" valign="top"><label
+								for="gateway_environment"><?php esc_html_e( 'Gateway Environment', 'paid-memberships-pro' ); ?></label></th>
+						<td>
+							<?php
+							if ( in_array( 'gateway_environment', $read_only_fields ) && $order_id > 0 ) {
+								echo esc_html( $order->gateway_environment );
+							} else {
+							?>
+								<select name="gateway_environment">
+									<option value="sandbox" <?php if ( $order->gateway_environment == 'sandbox' ) { ?>selected="selected"<?php } ?>><?php esc_html_e( 'Sandbox/Testing', 'paid-memberships-pro' ); ?></option>
+									<option value="live" <?php if ( $order->gateway_environment == 'live' ) { ?>selected="selected"<?php } ?>><?php esc_html_e( 'Live/Production', 'paid-memberships-pro' ); ?></option>
+								</select>
+							<?php } ?>
+						</td>
+					</tr>
+
+					<tr>
+						<th scope="row" valign="top"><label
+								for="payment_transaction_id"><?php esc_html_e( 'Payment Transaction ID', 'paid-memberships-pro' ); ?></label></th>
+						<td>
+							<?php
+							if ( in_array( 'payment_transaction_id', $read_only_fields ) && $order_id > 0 ) {
+								echo esc_html( $order->payment_transaction_id );
+							} else {
+												?>
+													<input id="payment_transaction_id" name="payment_transaction_id" type="text" size="50"
+														value="<?php echo esc_attr( $order->payment_transaction_id ); ?>"/>
+							<?php } ?>
+							<p class="description"><?php esc_html_e( 'Generated by the gateway. Useful to cross reference orders.', 'paid-memberships-pro' ); ?></p>
+						</td>
+					</tr>
+					<tr>
+						<th scope="row" valign="top"><label
+								for="subscription_transaction_id"><?php esc_html_e( 'Subscription Transaction ID', 'paid-memberships-pro' ); ?></label></th>
+						<td>
+							<?php
+								if ( in_array( 'subscription_transaction_id', $read_only_fields ) && $order_id > 0 ) {
+									echo esc_html( $order->subscription_transaction_id );
+								} else {
+									?>
+									<input id="subscription_transaction_id" name="subscription_transaction_id" type="text" size="50" value="<?php echo esc_attr( $order->subscription_transaction_id ); ?>"/>
+									<?php
+								}
+							?>
+							<?php if ( $order->is_renewal() ) { ?>
+								<a href="<?php echo esc_url( add_query_arg( array( 'page' => 'pmpro-orders', 's' => $order->subscription_transaction_id ), admin_url( 'admin.php' ) ) ); ?>" title="<?php esc_attr_e( 'View all orders for this subscription', 'paid-memberships-pro' ); ?>" class="pmpro_order-renewal"><?php esc_html_e( 'Renewal', 'paid-memberships-pro' ); ?></a>
+							<?php } ?>
+							<p class="description"><?php esc_html_e( 'Generated by the gateway. Useful to cross reference subscriptions.', 'paid-memberships-pro' ); ?></p>
+							<?php
+								$subscription = $order->get_subscription();
+								if ( ! empty( $subscription ) ) {
+									echo '<p><a href="' . esc_url( add_query_arg( array( 'page' => 'pmpro-subscriptions', 'id' => $subscription->get_id() ), admin_url('admin.php' ) ) ) . '">' . esc_html__( 'View Subscription', 'paid-memberships-pro') . '</a></p>';
+								}
+							?>
+						</td>
+					</tr>
+					</tbody>
+				</table>
+			</div> <!-- end pmpro_section_inside -->
+		</div> <!-- end pmpro_section -->
+		<div class="pmpro_section" data-visibility="shown" data-activated="true">
+			<div class="pmpro_section_toggle">
+				<button class="pmpro_section-toggle-button" type="button" aria-expanded="true">
+					<span class="dashicons dashicons-arrow-up-alt2"></span>
+					<?php esc_html_e( 'Additional Order Information', 'paid-memberships-pro' ); ?>
+				</button>
+			</div>
+			<div class="pmpro_section_inside">
+				<table class="form-table">
+					<tbody>
+					<?php
+					$affiliates = apply_filters( 'pmpro_orders_show_affiliate_ids', false );
+					if ( ! empty( $affiliates ) ) {
+						?>
+						<tr>
+							<th scope="row" valign="top"><label for="affiliate_id"><?php esc_html_e( 'Affiliate ID', 'paid-memberships-pro' ); ?>
+									:</label></th>
+							<td>
+								<?php
+								if ( in_array( 'affiliate_id', $read_only_fields ) && $order_id > 0 ) {
+									echo esc_html( $order->affiliate_id );
+								} else {
+								?>
+									<input id="affiliate_id" name="affiliate_id" type="text" size="50" value="<?php echo esc_attr( $order->affiliate_id ); ?>"/>
+								<?php } ?>
+							</td>
+						</tr>
+						<tr>
+							<th scope="row" valign="top"><label for="affiliate_subid"><?php esc_html_e( 'Affiliate SubID', 'paid-memberships-pro' ); ?>
+									:</label></th>
+							<td>
+								<?php
+								if ( in_array( 'affiliate_subid', $read_only_fields ) && $order_id > 0 ) {
+									echo esc_html( $order->affiliate_subid );
+								} else {
+								?>
+									<input id="affiliate_subid" name="affiliate_subid" type="text" size="50" value="<?php echo esc_attr( $order->affiliate_subid ); ?>"/>
+								<?php } ?>
+							</td>
+						</tr>
+					<?php } ?>
+
+					<?php
+						$tospage_id = get_option( 'pmpro_tospage' );
+						$consent_entry = $order->get_tos_consent_log_entry();
+
+						if( !empty( $tospage_id ) || !empty( $consent_entry ) ) {
+						?>
+						<tr>
+							<th scope="row" valign="top"><label for="tos_consent"><?php esc_html_e( 'TOS Consent', 'paid-memberships-pro' ); ?></label></th>
+							<td id="tos_consent">
+								<?php
+									if( !empty( $consent_entry ) ) {
+										echo esc_html( pmpro_consent_to_text( $consent_entry ) );
+									} else {
+										esc_html_e( 'N/A', 'paid-memberships-pro' );
+									}
+								?>
+							</td>
+						</tr>
+						<?php
+						}
+					?>
+					<tr>
+						<th scope="row" valign="top"><label for="notes"><?php esc_html_e( 'Notes', 'paid-memberships-pro' ); ?></label></th>
+						<td>
+							<?php
+							if ( in_array( 'notes', $read_only_fields ) && $order_id > 0 ) {
+								echo wp_kses_post( $order->notes );
+							} else {
+							?>
+								<textarea id="notes" name="notes" rows="5" cols="80"><?php echo esc_textarea( $order->notes ); ?></textarea>
+							<?php } ?>
+						</td>
+					</tr>
+
+					<?php do_action( 'pmpro_after_order_settings', $order ); ?>
+
+					</tbody>
+				</table>
+			</div> <!-- end pmpro_section_inside -->
+		</div> <!-- end pmpro_section -->
 
 		<?php
 		/**
@@ -890,16 +929,8 @@ require_once( dirname( __FILE__ ) . '/admin_header.php' ); ?>
 		do_action( 'pmpro_after_order_settings_table', $order );
 		?>
 
-		<p class="submit topborder">
-			<input name="order" type="hidden" value="
-			<?php
-			if ( ! empty( $order->id ) ) {
-				echo esc_html( $order->id );
-			} else {
-				echo esc_html( $order_id );
-			}
-			?>
-			"/>
+		<p class="submit">
+			<input name="order" type="hidden" value="<?php echo esc_html( empty( $order->id ) ? $order_id : $order->id ); ?>"/>
 			<input name="save" type="submit" class="button-primary" value="<?php esc_attr_e( 'Save Order', 'paid-memberships-pro' ); ?>"/>
 			<input name="cancel" type="button" class="cancel button-secondary" value="<?php esc_attr_e( 'Cancel', 'paid-memberships-pro' ); ?>"
 				   onclick="location.href='<?php echo esc_url( admin_url( 'admin.php?page=pmpro-orders' ) ); ?>';"/>
@@ -909,7 +940,7 @@ require_once( dirname( __FILE__ ) . '/admin_header.php' ); ?>
 
 <?php } else { ?>
 
-	<form id="posts-filter" method="get" action="">
+	<form id="order-list-form" method="get" action="">
 
 		<h1 class="wp-heading-inline"><?php esc_html_e( 'Orders', 'paid-memberships-pro' ); ?></h1>
 		<a href="<?php echo esc_url( add_query_arg( array( 'page' => 'pmpro-orders', 'order' => -1 ), admin_url( 'admin.php' ) ) ); ?>" class="page-title-action pmpro-has-icon pmpro-has-icon-plus"><?php esc_html_e( 'Add New Order', 'paid-memberships-pro' ); ?></a>
@@ -933,7 +964,10 @@ require_once( dirname( __FILE__ ) . '/admin_header.php' ); ?>
 		);
 		$export_url = add_query_arg( $url_params, $export_url );
 		?>
-		<a target="_blank" href="<?php echo esc_url( $export_url ); ?>" class="page-title-action pmpro-has-icon pmpro-has-icon-download"><?php esc_html_e( 'Export to CSV', 'paid-memberships-pro' ); ?></a>
+
+		<?php if ( current_user_can( 'pmpro_orderscsv' ) ) { ?>
+			<a target="_blank" href="<?php echo esc_url( $export_url ); ?>" class="page-title-action pmpro-has-icon pmpro-has-icon-download"><?php esc_html_e( 'Export to CSV', 'paid-memberships-pro' ); ?></a>
+		<?php } ?>
 
 		<?php if ( ! empty( $pmpro_msg ) ) { ?>
 			<div id="message" class="
@@ -944,7 +978,7 @@ require_once( dirname( __FILE__ ) . '/admin_header.php' ); ?>
 				echo 'error';
 			}
 			?>
-			"><p><?php echo $pmpro_msg; ?></p></div>
+			"><p><?php echo esc_html( $pmpro_msg ); ?></p></div>
 		<?php }
 		$orders_list_table = new PMPro_Orders_List_Table();
 		$orders_list_table->prepare_items();

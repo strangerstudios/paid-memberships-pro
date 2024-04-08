@@ -26,7 +26,7 @@
 */
 function pmpro_checkLevelForStripeCompatibility($level = NULL)
 {
-	$gateway = pmpro_getOption("gateway");
+	$gateway = get_option( "pmpro_gateway");
 	if($gateway == "stripe")
 	{
 		global $wpdb;
@@ -51,11 +51,6 @@ function pmpro_checkLevelForStripeCompatibility($level = NULL)
 			if(is_numeric($level))
 				$level = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM $wpdb->pmpro_membership_levels WHERE id = %d LIMIT 1" , $level ) );
 
-			// Check if this level uses billing limits.
-			if ( ( $level->billing_limit > 0 ) && ! function_exists( 'pmprosbl_plugin_row_meta' ) ) {
-				return false;
-			}
-
 			// Check if this level has a billing period longer than 1 year.
 			if ( 
 				( $level->cycle_period === 'Year' && $level->cycle_number > 1 ) ||
@@ -79,7 +74,7 @@ function pmpro_checkLevelForStripeCompatibility($level = NULL)
 */
 function pmpro_checkLevelForPayflowCompatibility($level = NULL)
 {
-	$gateway = pmpro_getOption("gateway");
+	$gateway = get_option( "pmpro_gateway");
 	if($gateway == "payflowpro")
 	{
 		global $wpdb;
@@ -125,7 +120,7 @@ function pmpro_checkLevelForPayflowCompatibility($level = NULL)
 */
 function pmpro_checkLevelForBraintreeCompatibility($level = NULL)
 {
-	$gateway = pmpro_getOption("gateway");
+	$gateway = get_option( "pmpro_gateway");
 	if($gateway == "braintree")
 	{
 		global $wpdb;
@@ -174,7 +169,7 @@ function pmpro_checkLevelForBraintreeCompatibility($level = NULL)
  */
 function pmpro_check_discount_code_for_gateway_compatibility( $discount_code = NULL ) {
 	// Return if no gateway is set.
-	$gateway = pmpro_getOption( 'gateway' );
+	$gateway = get_option( 'pmpro_gateway' );
 	if ( empty( $gateway ) ) {
 		return true;
 	}
@@ -215,7 +210,7 @@ function pmpro_check_discount_code_for_gateway_compatibility( $discount_code = N
  */
 function pmpro_check_discount_code_level_for_gateway_compatibility( $discount_code_level = NULL ) {
 	// Return if no gateway is set.
-	$gateway = pmpro_getOption( 'gateway' );
+	$gateway = get_option( 'pmpro_gateway' );
 	if ( empty( $gateway ) ) {
 		return true;
 	}
@@ -241,12 +236,6 @@ function pmpro_check_discount_code_level_for_gateway_compatibility( $discount_co
 
 		// Check this discount code level for gateway compatibility
 		if ( $gateway == 'stripe' ) {
-			// Check if this code level has a billing limit.
-			if ( ( intval( $discount_code_level->billing_limit ) > 0 ) && ! function_exists( 'pmprosbl_plugin_row_meta' ) ) {
-				global $pmpro_stripe_error;
-				$pmpro_stripe_error = true;
-				return false;
-			}
 			// Check if this code level has a billing period longer than 1 year.
 			if ( 
 				( $discount_code_level->cycle_period === 'Year' && intval( $discount_code_level->cycle_number ) > 1 ) ||
@@ -291,7 +280,7 @@ function pmpro_check_discount_code_level_for_gateway_compatibility( $discount_co
 */
 function pmpro_checkLevelForTwoCheckoutCompatibility($level = NULL)
 {
-	$gateway = pmpro_getOption("gateway");
+	$gateway = get_option( "pmpro_gateway");
 	if($gateway == "twocheckout")
 	{
 		global $wpdb;
@@ -385,16 +374,21 @@ function pmpro_getClassesForPaymentSettingsField($field, $force = false)
 function pmpro_add_email_order_modal() {
 
 	// emailing?
-	if ( ! empty( $_REQUEST['email'] ) && ! empty( $_REQUEST['order'] ) ) {
+	if ( ! empty( $_REQUEST['pmpro_email_to'] ) && ! empty( $_REQUEST['pmpro_email_order'] ) ) {
+		// verify nonce
+		if ( ! wp_verify_nonce( sanitize_key( $_REQUEST['pmpro_email_invoice_nonce'] ), 'pmpro_email_invoice' ) ) {
+			wp_die( esc_html__( 'Security error.', 'paid-memberships-pro' ) );
+		}
+
 		$email = new PMProEmail();
-		$user  = get_user_by( 'email', sanitize_email( $_REQUEST['email'] ) );
-		$order = new MemberOrder( intval( $_REQUEST['order'] ) );
+		$user  = get_user_by( 'email', sanitize_email( $_REQUEST['pmpro_email_to'] ) );
+		$order = new MemberOrder( intval( $_REQUEST['pmpro_email_order'] ) );
 		if ( ! empty( $user ) && ! empty( $order ) && $email->sendBillableInvoiceEmail( $user, $order ) ) { ?>
-			<div class="notice notice-success is-dismissible">
+			<div class="notice notice-success pmpro_message pmpro_success is-dismissible">
 				<p><?php esc_html_e( 'Invoice emailed successfully.', 'paid-memberships-pro' ); ?></p>
 			</div>
 		<?php } else { ?>
-			<div class="notice notice-error is-dismissible">
+			<div class="notice notice-error pmpro_message pmpro_error is-dismissible">
 				<p><?php esc_html_e( 'Error emailing invoice.', 'paid-memberships-pro' ); ?></p>
 			</div>
 		<?php }
@@ -405,9 +399,9 @@ function pmpro_add_email_order_modal() {
 		// Update fields in email modal.
 		jQuery(document).ready(function ($) {
 			var order, order_id;
-			$('.email_link').click(function () {
+			$('.email_link').on('click',function () {
 				order_id = $(this).data('order');
-				$('input[name=order]').val(order_id);
+				$('input[name=pmpro_email_order]').val(order_id);
 				// Get email address from order ID
 				data = {
 					action: 'pmpro_get_order_json',
@@ -415,7 +409,7 @@ function pmpro_add_email_order_modal() {
 				};
 				$.post(ajaxurl, data, function (response) {
 					order = JSON.parse(response);
-					$('input[name=email]').val(order.Email);
+					$('input[name=pmpro_email_to]').val(order.Email);
 				});
 			});
 		});
@@ -424,9 +418,10 @@ function pmpro_add_email_order_modal() {
 	<div id="email_invoice" style="display:none;">
 		<h3><?php esc_html_e( 'Email Invoice', 'paid-memberships-pro' ); ?></h3>
 		<form method="post" action="">
-			<input type="hidden" name="order" value=""/>
-			<?php _e( 'Send an invoice for this order to: ', 'paid-memberships-pro' ); ?>
-			<input type="text" value="" name="email"/>
+			<input type="hidden" name="pmpro_email_order" value=""/>
+			<?php esc_html_e( 'Send an invoice for this order to: ', 'paid-memberships-pro' ); ?>
+			<input type="text" value="" name="pmpro_email_to"/>
+			<?php wp_nonce_field( 'pmpro_email_invoice', 'pmpro_email_invoice_nonce' ); ?>
 			<button class="button button-primary alignright"><?php esc_html_e( 'Send Email', 'paid-memberships-pro' ); ?></button>
 		</form>
 	</div>

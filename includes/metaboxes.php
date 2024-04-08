@@ -18,10 +18,10 @@ function pmpro_page_meta() {
 	if ( count( $membership_levels ) > 1 ) { ?>
 		<p><?php esc_html_e( 'Select:', 'paid-memberships-pro' ); ?> <a id="pmpro-memberships-checklist-select-all" href="javascript:void(0);"><?php esc_html_e( 'All', 'paid-memberships-pro' ); ?></a> | <a id="pmpro-memberships-checklist-select-none" href="javascript:void(0);"><?php esc_html_e( 'None', 'paid-memberships-pro' ); ?></a></p>
 		<script type="text/javascript">
-			jQuery('#pmpro-memberships-checklist-select-all').click(function(){
+			jQuery('#pmpro-memberships-checklist-select-all').on('click',function(){
 				jQuery('#pmpro-memberships-checklist input').prop('checked', true);
 			});
-			jQuery('#pmpro-memberships-checklist-select-none').click(function(){
+			jQuery('#pmpro-memberships-checklist-select-none').on('click',function(){
 				jQuery('#pmpro-memberships-checklist input').prop('checked', false);
 			});
 		</script>
@@ -53,7 +53,7 @@ function pmpro_page_meta() {
     </ul>
 	<?php
 		if( 'post' == get_post_type( $post ) && $in_member_cat ) { ?>
-		<p class="pmpro_meta_notice">* <?php _e("This post is already protected for this level because it is within a category that requires membership.", 'paid-memberships-pro' );?></p>
+		<p class="pmpro_meta_notice">* <?php esc_html_e("This post is already protected for this level because it is within a category that requires membership.", 'paid-memberships-pro' );?></p>
 	<?php
 		}
 	?>
@@ -118,15 +118,22 @@ function pmpro_page_save( $post_id ) {
 
 	return $mydata;
 }
+add_action( 'save_post', 'pmpro_page_save' );
 
 /**
- * Wrapper to add meta boxes
+ * Wrapper to add meta boxes for classic editor.
  */
 function pmpro_page_meta_wrapper() {
-	add_meta_box( 'pmpro_page_meta', __( 'Require Membership', 'paid-memberships-pro' ), 'pmpro_page_meta', 'page', 'side', 'high' );
-	add_meta_box( 'pmpro_page_meta', __( 'Require Membership', 'paid-memberships-pro' ), 'pmpro_page_meta', 'post', 'side', 'high' );
+    // If the block editor is being used, skip adding the meta boxes.
+	$current_screen = get_current_screen();
+	if ( method_exists( $current_screen, 'is_block_editor' ) && $current_screen->is_block_editor() ) {
+		return;
+	}
+	
+	// Add meta box for each restrictable post type.
+	$restrictable_post_types = apply_filters( 'pmpro_restrictable_post_types', array( 'page', 'post' ) );
+	foreach( $restrictable_post_types as $post_type ) {
+		add_meta_box( 'pmpro_page_meta', __( 'Require Membership', 'paid-memberships-pro' ), 'pmpro_page_meta', $post_type, 'side', 'high' );
+	}
 }
-if ( is_admin() ) {
-	add_action( 'admin_menu', 'pmpro_page_meta_wrapper' );
-	add_action( 'save_post', 'pmpro_page_save' );
-}
+add_action( 'add_meta_boxes', 'pmpro_page_meta_wrapper' );

@@ -14,41 +14,51 @@ add_meta_box(
 	'toplevel_page_pmpro-dashboard',
 	'normal'
 );
-add_meta_box(
-	'pmpro_dashboard_report_sales',
-	__( 'Sales and Revenue', 'paid-memberships-pro' ),
-	'pmpro_report_sales_widget',
-	'toplevel_page_pmpro-dashboard',
-	'advanced'
-);
-add_meta_box(
-	'pmpro_dashboard_report_membership_stats',
-	__( 'Membership Stats', 'paid-memberships-pro' ),
-	'pmpro_report_memberships_widget',
-	'toplevel_page_pmpro-dashboard',
-	'advanced'
-);
-add_meta_box(
-	'pmpro_dashboard_report_logins',
-	__( 'Visits, Views, and Logins', 'paid-memberships-pro' ),
-	'pmpro_report_login_widget',
-	'toplevel_page_pmpro-dashboard',
-	'advanced'
-);
-add_meta_box(
-	'pmpro_dashboard_report_recent_members',
-	__( 'Recent Members', 'paid-memberships-pro' ),
-	'pmpro_dashboard_report_recent_members_callback',
-	'toplevel_page_pmpro-dashboard',
-	'side'
-);
-add_meta_box(
-	'pmpro_dashboard_report_recent_orders',
-	__( 'Recent Orders', 'paid-memberships-pro' ),
-	'pmpro_dashboard_report_recent_orders_callback',
-	'toplevel_page_pmpro-dashboard',
-	'side'
-);
+
+if ( current_user_can( 'pmpro_reports' ) ) {
+	add_meta_box(
+		'pmpro_dashboard_report_sales',
+		__( 'Sales and Revenue', 'paid-memberships-pro' ),
+		'pmpro_report_sales_widget',
+		'toplevel_page_pmpro-dashboard',
+		'advanced'
+	);
+	add_meta_box(
+		'pmpro_dashboard_report_membership_stats',
+		__( 'Membership Stats', 'paid-memberships-pro' ),
+		'pmpro_report_memberships_widget',
+		'toplevel_page_pmpro-dashboard',
+		'advanced'
+	);
+	add_meta_box(
+		'pmpro_dashboard_report_logins',
+		__( 'Visits, Views, and Logins', 'paid-memberships-pro' ),
+		'pmpro_report_login_widget',
+		'toplevel_page_pmpro-dashboard',
+		'advanced'
+	);
+}
+
+if ( current_user_can( 'pmpro_memberslist' ) ) {
+	add_meta_box(
+		'pmpro_dashboard_report_recent_members',
+		__( 'Recent Members', 'paid-memberships-pro' ),
+		'pmpro_dashboard_report_recent_members_callback',
+		'toplevel_page_pmpro-dashboard',
+		'side'
+	);
+}
+
+if ( current_user_can( 'pmpro_orders' ) ) {
+	add_meta_box(
+		'pmpro_dashboard_report_recent_orders',
+		__( 'Recent Orders', 'paid-memberships-pro' ),
+		'pmpro_dashboard_report_recent_orders_callback',
+		'toplevel_page_pmpro-dashboard',
+		'side'
+	);
+}
+
 add_meta_box(
 	'pmpro_dashboard_news_updates',
 	__( 'Paid Memberships Pro News and Updates', 'paid-memberships-pro' ),
@@ -139,7 +149,7 @@ function pmpro_dashboard_welcome_callback() { ?>
 
 				<?php if ( current_user_can( 'pmpro_userfields' ) ) { ?>
 				<li>
-					<a href="<?php echo add_query_arg( array( 'page' => 'pmpro-userfields' ), get_admin_url(null, 'admin.php' ) ); ?>"><i class="dashicons dashicons-id"></i> <?php esc_attr_e( 'Manage User Fields', 'paid-memberships-pro' ); ?></a>
+					<a href="<?php echo esc_url( add_query_arg( array( 'page' => 'pmpro-userfields' ), get_admin_url(null, 'admin.php' ) ) ); ?>"><i class="dashicons dashicons-id"></i> <?php esc_attr_e( 'Manage User Fields', 'paid-memberships-pro' ); ?></a>
 				</li>
 				<?php } ?>
     		</ul>
@@ -177,16 +187,16 @@ function pmpro_dashboard_welcome_callback() { ?>
 			<?php if ( ! pmpro_license_isValid() && empty( $key ) ) { ?>
 				<p class="pmpro_message pmpro_error">
 					<strong><?php esc_html_e( 'No support license key found.', 'paid-memberships-pro' ); ?></strong><br />
-					<?php printf(__( '<a href="%s">Enter your key here</a>', 'paid-memberships-pro' ), admin_url( 'admin.php?page=pmpro-license' ) );?>
+					<?php echo wp_kses_post( sprintf(__( '<a href="%s">Enter your key here</a>', 'paid-memberships-pro' ), esc_url( admin_url( 'admin.php?page=pmpro-license' ) ) ) );?>
 				</p>
 			<?php } elseif ( ! pmpro_license_isValid() ) { ?>
 				<p class="pmpro_message pmpro_alert">
     				<strong><?php esc_html_e( 'Your license is invalid or expired.', 'paid-memberships-pro' ); ?></strong><br />
-					<?php printf(__( '<a href="%s">View your membership account</a> to verify your license key.', 'paid-memberships-pro' ), 'https://www.paidmembershipspro.com/login/?redirect_to=%2Fmembership-account%2F%3Futm_source%3Dplugin%26utm_medium%3Dpmpro-dashboard%26utm_campaign%3Dmembership-account%26utm_content%3Dverify-license-key' );?>
+					<?php echo wp_kses_post( sprintf(__( '<a href="%s">View your membership account</a> to verify your license key.', 'paid-memberships-pro' ), 'https://www.paidmembershipspro.com/login/?redirect_to=%2Fmembership-account%2F%3Futm_source%3Dplugin%26utm_medium%3Dpmpro-dashboard%26utm_campaign%3Dmembership-account%26utm_content%3Dverify-license-key' ) );?>
     		<?php } elseif ( pmpro_license_isValid() && ! pmpro_license_isValid( $key, pmpro_license_get_premium_types() ) ) { ?>
-    			<p class="pmpro_message pmpro_alert"><?php printf(__('Your <strong>%1$s</strong> key is active. %1$s accounts include access to documentation and free downloads.', 'paid-memberships-pro' ), ucwords( $pmpro_license_check['license'] ) );?></p>
+    			<p class="pmpro_message pmpro_alert"><?php echo wp_kses_post( sprintf(__('Your <strong>%1$s</strong> key is active. %1$s accounts include access to documentation and free downloads.', 'paid-memberships-pro' ), ucwords( $pmpro_license_check['license'] ) ) );?></p>
     		<?php } else { ?>
-    			<p class="pmpro_message pmpro_success"><?php printf(__( '<strong>Thank you!</strong> A valid <strong>%s</strong> license key has been used to activate your support license on this site.', 'paid-memberships-pro' ), ucwords($pmpro_license_check['license']));?></p>
+    			<p class="pmpro_message pmpro_success"><?php echo wp_kses_post( sprintf(__( '<strong>Thank you!</strong> A valid <strong>%s</strong> license key has been used to activate your support license on this site.', 'paid-memberships-pro' ), ucwords($pmpro_license_check['license'])));?></p>
     		<?php } ?>
 
 			<?php if ( ! pmpro_license_isValid() || pmpro_license_isValid() && ! pmpro_license_isValid( $key, pmpro_license_get_premium_types() ) ) { ?>
@@ -219,11 +229,16 @@ function pmpro_dashboard_welcome_callback() { ?>
 function pmpro_dashboard_report_recent_members_callback() {
 	global $wpdb;
 
-	$sqlQuery = "SELECT SQL_CALC_FOUND_ROWS u.ID, u.user_login, u.user_email, UNIX_TIMESTAMP(CONVERT_TZ(u.user_registered, '+00:00', @@global.time_zone)) as joindate, mu.membership_id, mu.initial_payment, mu.billing_amount, mu.cycle_period, mu.cycle_number, mu.billing_limit, mu.trial_amount, mu.trial_limit, UNIX_TIMESTAMP( CONVERT_TZ(mu.startdate, '+00:00', @@global.time_zone) ) as startdate, UNIX_TIMESTAMP( CONVERT_TZ(mu.enddate, '+00:00', @@global.time_zone) ) as enddate, m.name as membership FROM $wpdb->users u LEFT JOIN $wpdb->pmpro_memberships_users mu ON u.ID = mu.user_id LEFT JOIN $wpdb->pmpro_membership_levels m ON mu.membership_id = m.id WHERE mu.membership_id > 0 AND mu.status = 'active' GROUP BY u.ID ORDER BY u.user_registered DESC LIMIT 5";
-
-	$sqlQuery = apply_filters( 'pmpro_members_list_sql', $sqlQuery );
-
-	$theusers = $wpdb->get_results( $sqlQuery ); ?>
+	// Check if we have a cache.
+	$theusers = get_transient( 'pmpro_dashboard_report_recent_members' );
+	if ( false === $theusers ) {
+		// No cached value. Get the users.
+		$sqlQuery = "SELECT SQL_CALC_FOUND_ROWS u.ID, u.user_login, u.user_email, UNIX_TIMESTAMP(CONVERT_TZ(u.user_registered, '+00:00', @@global.time_zone)) as joindate, mu.membership_id, mu.initial_payment, mu.billing_amount, mu.cycle_period, mu.cycle_number, mu.billing_limit, mu.trial_amount, mu.trial_limit, UNIX_TIMESTAMP( CONVERT_TZ(mu.startdate, '+00:00', @@global.time_zone) ) as startdate, UNIX_TIMESTAMP( CONVERT_TZ(mu.enddate, '+00:00', @@global.time_zone) ) as enddate, m.name as membership FROM $wpdb->users u LEFT JOIN $wpdb->pmpro_memberships_users mu ON u.ID = mu.user_id LEFT JOIN $wpdb->pmpro_membership_levels m ON mu.membership_id = m.id WHERE mu.membership_id > 0 AND mu.status = 'active' GROUP BY u.ID ORDER BY u.user_registered DESC LIMIT 5";
+		$sqlQuery = apply_filters( 'pmpro_members_list_sql', $sqlQuery );
+		$theusers = $wpdb->get_results( $sqlQuery );
+		set_transient( 'pmpro_dashboard_report_recent_members', $theusers, 3600 * 24 );
+	}
+	?>
     <span id="pmpro_report_members" class="pmpro_report-holder">
     	<table class="wp-list-table widefat fixed striped">
     		<thead>
@@ -249,22 +264,15 @@ function pmpro_dashboard_report_recent_members_callback() {
     						<?php echo get_avatar($theuser->ID, 32)?>
     						<strong>
     							<?php
-    								$userlink = '<a href="' . get_edit_user_link( $theuser->ID ) . '">' . esc_attr( $theuser->user_login ) . '</a>';
+    								$userlink = '<a href="' . esc_url( add_query_arg( array( 'page' => 'pmpro-member', 'user_id' => (int)$theuser->ID ), admin_url( 'admin.php' ) ) ) . '">' . esc_attr( $theuser->user_login ) . '</a>';
     								$userlink = apply_filters( 'pmpro_members_list_user_link', $userlink, $theuser );
-    								echo $userlink;
+    								echo wp_kses_post( $userlink );
     							?>
     						</strong>
     					</td>
     					<td><?php echo esc_html( $auser->membership ); ?></td>
-    					<td><?php echo date_i18n( get_option( 'date_format' ), strtotime( get_date_from_gmt( $theuser->user_registered ), current_time( 'timestamp' ) ) ); ?></td>
-    					<td>
-    						<?php
-    							if($auser->enddate)
-    								echo apply_filters("pmpro_memberslist_expires_column", date_i18n(get_option('date_format'), $auser->enddate), $auser);
-    							else
-    								echo apply_filters("pmpro_memberslist_expires_column", __('Never', 'paid-memberships-pro'), $auser);
-    						?>
-    					</td>
+    					<td><?php echo esc_html( date_i18n( get_option( 'date_format' ), strtotime( get_date_from_gmt( $theuser->user_registered ), current_time( 'timestamp' ) ) ) ); ?></td>
+    					<td><?php echo wp_kses_post( pmpro_get_membership_expiration_text( $auser->membership_id, $theuser ) ); ?></td>
     				</tr>
     				<?php
     			}
@@ -274,7 +282,7 @@ function pmpro_dashboard_report_recent_members_callback() {
     	</table>
     </span>
     <?php if ( ! empty( $theusers ) ) { ?>
-        <p class="text-center"><a class="button button-primary" href="<?php echo esc_url( admin_url( 'admin.php?page=pmpro-memberslist' ) ); ?>"><?php esc_html_e( 'View All Members ', 'paid-memberships-pro' ); ?></a></p>
+        <p class="pmpro_report-button"><a class="button button-primary" href="<?php echo esc_url( admin_url( 'admin.php?page=pmpro-memberslist' ) ); ?>"><?php esc_html_e( 'View All Members ', 'paid-memberships-pro' ); ?></a></p>
     <?php } ?>
 	<?php
 }
@@ -285,11 +293,14 @@ function pmpro_dashboard_report_recent_members_callback() {
 function pmpro_dashboard_report_recent_orders_callback() {
 	global $wpdb;
 
-	$sqlQuery = "SELECT SQL_CALC_FOUND_ROWS id FROM $wpdb->pmpro_membership_orders ORDER BY id DESC, timestamp DESC LIMIT 5";
-
-	$order_ids = $wpdb->get_col( $sqlQuery );
-
-	$totalrows = $wpdb->get_var( 'SELECT FOUND_ROWS() as found_rows' );
+	// Check if we have a cache.
+	$order_ids = get_transient( 'pmpro_dashboard_report_recent_orders' );
+	if ( false === $order_ids) {
+		// No cached value. Get the orders.
+		$sqlQuery = "SELECT SQL_CALC_FOUND_ROWS id FROM $wpdb->pmpro_membership_orders ORDER BY id DESC, timestamp DESC LIMIT 5";
+		$order_ids = $wpdb->get_col( $sqlQuery );
+		set_transient( 'pmpro_dashboard_report_recent_orders', $order_ids, 3600 * 24 );
+	}
 	?>
     <span id="pmpro_report_orders" class="pmpro_report-holder">
     	<table class="wp-list-table widefat fixed striped">
@@ -317,45 +328,45 @@ function pmpro_dashboard_report_recent_orders_callback() {
         			?>
         			<tr>
         				<td>
-        					<a href="admin.php?page=pmpro-orders&order=<?php echo $order->id; ?>"><?php echo $order->code; ?></a>
+        					<a href="admin.php?page=pmpro-orders&order=<?php echo esc_html( $order->id ); ?>"><?php echo esc_html( $order->code ); ?></a>
         				</td>
         				<td class="username column-username">
         					<?php $order->getUser(); ?>
         					<?php if ( ! empty( $order->user ) ) { ?>
-        						<a href="user-edit.php?user_id=<?php echo $order->user->ID; ?>"><?php echo $order->user->user_login; ?></a>
+        						<a href="<?php echo esc_url( add_query_arg( array( 'page' => 'pmpro-member', 'user_id' => (int)$order->user->ID ), admin_url( 'admin.php' ) ) ); ?>"><?php echo esc_html( $order->user->user_login ); ?></a>
         					<?php } elseif ( $order->user_id > 0 ) { ?>
-        						[<?php _e( 'deleted', 'paid-memberships-pro' ); ?>]
+        						[<?php esc_html_e( 'deleted', 'paid-memberships-pro' ); ?>]
         					<?php } else { ?>
-        						[<?php _e( 'none', 'paid-memberships-pro' ); ?>]
+        						[<?php esc_html_e( 'none', 'paid-memberships-pro' ); ?>]
         					<?php } ?>
                             
                             <?php if ( ! empty( $order->billing->name ) ) { ?>
-                                <br /><?php echo $order->billing->name; ?>
+                                <br /><?php echo esc_html( $order->billing->name ); ?>
                             <?php } ?>
         				</td>
                         <td>
 							<?php
 								$level = pmpro_getLevel( $order->membership_id );
 								if ( ! empty( $level ) ) {
-									echo $level->name;
+									echo esc_html( $level->name );
 								} elseif ( $order->membership_id > 0 ) { ?>
-									[<?php _e( 'deleted', 'paid-memberships-pro' ); ?>]
+									[<?php esc_html_e( 'deleted', 'paid-memberships-pro' ); ?>]
 								<?php } else { ?>
-									[<?php _e( 'none', 'paid-memberships-pro' ); ?>]
+									[<?php esc_html_e( 'none', 'paid-memberships-pro' ); ?>]
 								<?php }
 							?>
                         </td>
-        				<td><?php echo pmpro_escape_price( pmpro_formatPrice( $order->total ) ); ?></td>
+        				<td><?php echo pmpro_escape_price( pmpro_formatPrice( $order->total ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></td>
         				<td>
-                            <?php echo $order->gateway; ?>
+                            <?php echo esc_html( $order->gateway ); ?>
                             <?php if ( $order->gateway_environment == 'test' ) {
                                 echo '(test)';
                             } ?>
                             <?php if ( ! empty( $order->status ) ) {
-                                echo '<br />(' . $order->status . ')'; 
+                                echo '<br />(' . esc_html( $order->status ) . ')'; 
                             } ?>
                         </td>
-                        <td><?php echo date_i18n( get_option( 'date_format' ), $order->getTimestamp() ); ?></td>
+                        <td><?php echo esc_html( date_i18n( get_option( 'date_format' ), $order->getTimestamp() ) ); ?></td>
         			</tr>
                     <?php
                 }
@@ -365,7 +376,7 @@ function pmpro_dashboard_report_recent_orders_callback() {
     	</table>
     </span>
     <?php if ( ! empty( $order_ids ) ) { ?>
-        <p class="text-center"><a class="button button-primary" href="<?php echo esc_url( admin_url( 'admin.php?page=pmpro-orders' ) ); ?>"><?php esc_html_e( 'View All Orders ', 'paid-memberships-pro' ); ?></a></p>
+        <p class="pmpro_report-button"><a class="button button-primary" href="<?php echo esc_url( admin_url( 'admin.php?page=pmpro-orders' ) ); ?>"><?php esc_html_e( 'View All Orders ', 'paid-memberships-pro' ); ?></a></p>
     <?php } ?>
 	<?php
 }
@@ -402,7 +413,7 @@ function pmpro_dashboard_news_updates_callback() {
 	        <?php foreach ( $rss_items as $item ) : ?>
 	            <li>
 	                <a href="<?php echo esc_url( $item->get_permalink() ); ?>"
-	                    title="<?php printf( __( 'Posted %s', 'paid-memberships-pro' ), date_i18n( get_option( 'date_format' ), $item->get_date( 'U' ) ) ); ?>">
+	                    title="<?php echo esc_attr( sprintf( __( 'Posted %s', 'paid-memberships-pro' ), date_i18n( get_option( 'date_format' ), $item->get_date( 'U' ) ) ) ); ?>">
 	                    <?php echo esc_html( $item->get_title() ); ?>
 	                </a>
 					<?php echo esc_html( date_i18n( get_option( 'date_format' ), $item->get_date( 'U' ) ) ); ?>
@@ -410,9 +421,22 @@ function pmpro_dashboard_news_updates_callback() {
 	        <?php endforeach; ?>
 	    <?php endif; ?>
 	</ul>
-	<p class="text-center"><a class="button button-primary" href="https://www.paidmembershipspro.com/blog/?utm_source=plugin&utm_medium=pmpro-dashboard&utm_campaign=blog&utm_content=news-updates-metabox"><?php esc_html_e( 'View More', 'paid-memberships-pro' ); ?></a></p>
+	<p class="pmpro_report-button"><a class="button button-primary" href="https://www.paidmembershipspro.com/blog/?utm_source=plugin&utm_medium=pmpro-dashboard&utm_campaign=blog&utm_content=news-updates-metabox"><?php esc_html_e( 'View More', 'paid-memberships-pro' ); ?></a></p>
 	<?php
 }
+
+/**
+ * Delete transients when orders are updated.
+ *
+ * @since 3.0
+ */
+function pmpro_report_dashboard_delete_transients() {
+	delete_transient( 'pmpro_dashboard_report_recent_members' );
+	delete_transient( 'pmpro_dashboard_report_recent_orders' );
+}
+add_action( 'pmpro_updated_order', 'pmpro_report_dashboard_delete_transients' );
+add_action( 'pmpro_after_checkout', 'pmpro_report_dashboard_delete_transients' );
+add_action( 'pmpro_after_change_membership_level', 'pmpro_report_dashboard_delete_transients' );
 
 /**
  * Load the Paid Memberships Pro dashboard-area footer

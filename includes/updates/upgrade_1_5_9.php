@@ -9,6 +9,6 @@ function pmpro_upgrade_1_5_9()
 	$sqlQuery = "UPDATE " . $wpdb->pmpro_membership_orders . " SET status = 'success' WHERE status = 'firstpayment'";
 	$wpdb->query($sqlQuery);
 
-	pmpro_setOption("db_version", "1.59");
+	update_option("pmpro_db_version", "1.59");
 	return 1.59;
 }

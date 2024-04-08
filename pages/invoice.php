@@ -1,12 +1,12 @@
 <?php 
 /**
  * Template: Invoice
- * Version: 2.0
+ * Version: 3.0
  *
  * See documentation for how to override the PMPro templates.
  * @link https://www.paidmembershipspro.com/documentation/templates/
  *
- * @version 2.0
+ * @version 3.0
  *
  * @author Paid Memberships Pro
  */
@@ -45,7 +45,7 @@
 					} else {
 						$display_status = ucwords( $pmpro_invoice->status );
 					}
-					esc_html_e( $display_status );
+					echo esc_html( $display_status );
 				?>
 				</li>
 			<?php } ?>
@@ -58,7 +58,7 @@
 		<?php
 			// Check instructions
 			if ( $pmpro_invoice->gateway == "check" && ! pmpro_isLevelFree( $pmpro_invoice->membership_level ) ) {
-				echo '<div class="' . esc_attr( pmpro_get_element_class( 'pmpro_payment_instructions' ) ) . '">' . wp_kses_post( wpautop( wp_unslash( pmpro_getOption("instructions") ) ) ) . '</div>';
+				echo '<div class="' . esc_attr( pmpro_get_element_class( 'pmpro_payment_instructions' ) ) . '">' . wp_kses_post( wpautop( wp_unslash( get_option( 'pmpro_instructions' ) ) ) ) . '</div>';
 			}
 		?>
 
@@ -88,7 +88,11 @@
 						<p><?php echo esc_html( ucwords( $pmpro_invoice->cardtype ) ); ?> <?php esc_html_e('ending in', 'paid-memberships-pro' );?> <?php echo esc_html( last4($pmpro_invoice->accountnumber) )?>
 						<br />
 						<?php esc_html_e('Expiration', 'paid-memberships-pro' );?>: <?php echo esc_html( $pmpro_invoice->expirationmonth ); ?>/<?php echo esc_html( $pmpro_invoice->expirationyear ); ?></p>
-					<?php } else { ?>
+					<?php } else { 
+						if ( $pmpro_invoice->payment_type === 'Check' && ! empty( get_option( 'pmpro_check_gateway_label' ) ) ) {
+							$pmpro_invoice->payment_type = get_option( 'pmpro_check_gateway_label' );
+						}
+						?>
 						<p><?php echo esc_html( $pmpro_invoice->payment_type ); ?></p>
 					<?php } ?>
 				</div> <!-- end pmpro_invoice-payment-method -->
@@ -137,7 +141,7 @@
 						<td><a href="<?php echo esc_url( pmpro_url("invoice", "?invoice=" . $invoice->code ) ) ?>"><?php echo esc_html( date_i18n( get_option("date_format"), strtotime( get_date_from_gmt( date( 'Y-m-d H:i:s', $invoice->timestamp ) ) ) ) )?></a></td>
 						<td><a href="<?php echo esc_url( pmpro_url("invoice", "?invoice=" . $invoice->code ) ) ?>"><?php echo esc_html( $invoice->code ); ?></a></td>
 						<td><?php echo esc_html( $invoice->membership_level_name );?></td>
-						<td><?php echo esc_html( pmpro_formatPrice($invoice->total) );?></td>
+						<td><?php echo pmpro_escape_price( pmpro_formatPrice($invoice->total) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped?></td>
 					</tr>
 					<?php
 				}
@@ -154,10 +158,10 @@
 		}
 	}
 ?>
-<p class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_actions_nav' ) ); ?>">
+<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_actions_nav' ) ); ?>">
 	<span class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_actions_nav-right' ) ); ?>"><a href="<?php echo esc_url( pmpro_url( "account" ) ) ?>"><?php esc_html_e('View Your Membership Account &rarr;', 'paid-memberships-pro' );?></a></span>
 	<?php if ( $pmpro_invoice ) { ?>
 		<span class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_actions_nav-left' ) ); ?>"><a href="<?php echo esc_url( pmpro_url( "invoice" ) ) ?>"><?php esc_html_e('&larr; View All Invoices', 'paid-memberships-pro' );?></a></span>
 	<?php } ?>
-</p> <!-- end pmpro_actions_nav -->
+</div> <!-- end pmpro_actions_nav -->
 </div> <!-- end pmpro_invoice_wrap -->

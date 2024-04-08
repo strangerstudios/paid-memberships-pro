@@ -47,7 +47,7 @@ function pmpro_enqueue_scripts() {
             'ajaxurl' => admin_url( 'admin-ajax.php' ),
             'ajax_timeout' => apply_filters( 'pmpro_ajax_timeout', 5000, 'applydiscountcode' ),
             'show_discount_code' => pmpro_show_discount_code(),
-			'discount_code_passed_in' => !empty( $_REQUEST['discount_code'] ),
+			'discount_code_passed_in' => !empty( $_REQUEST['pmpro_discount_code'] ) && !empty( $_REQUEST['discount_code'] ),
             'sensitiveCheckoutRequestVars' => pmpro_get_sensitive_checkout_request_vars(),
         ));
         wp_enqueue_script( 'pmpro_checkout' );
@@ -90,7 +90,7 @@ function pmpro_enqueue_scripts() {
 
     // Enqueue select2 on front end and user profiles
 	if( pmpro_is_checkout() || 
-        ! empty( $_REQUEST['level'] ) ||
+        ! empty( $_REQUEST['pmpro_level'] ) ||
         ! empty( $pmpro_level ) ||
 		( class_exists("Theme_My_Login") && method_exists('Theme_My_Login', 'is_tml_page') && Theme_My_Login::is_tml_page("profile") ) ||
 		( isset( $pmpro_pages['member_profile_edit'] ) && is_page( $pmpro_pages['member_profile_edit'] ) ) ) {
@@ -121,9 +121,9 @@ function pmpro_admin_enqueue_scripts() {
         wp_enqueue_script( 'pmpro_confetti' );
     }
    
-
-	$all_levels                  = pmpro_getAllLevels( true, true );
-	$all_level_values_and_labels = [];
+	$all_levels = pmpro_getAllLevels( true, true );
+	$all_level_values_and_labels = array();
+	$all_levels_formatted_text = array();
 
     // Enqueue pmpro-admin.js.
     wp_register_script( 'pmpro_admin',
@@ -134,6 +134,9 @@ function pmpro_admin_enqueue_scripts() {
     $all_level_values_and_labels = array();
     foreach( $all_levels as $level ) {
         $all_level_values_and_labels[] = array( 'value' => $level->id, 'label' => $level->name );
+		$level->formatted_price = trim( pmpro_no_quotes( pmpro_getLevelCost( $level, true, true ) ) );
+        $level->formatted_expiration = trim( pmpro_no_quotes( pmpro_getLevelExpiration( $level ) ) );
+        $all_levels_formatted_text[$level->id] = $level;
     }
     // Get HTML for empty field group.
     ob_start();
@@ -146,7 +149,9 @@ function pmpro_admin_enqueue_scripts() {
 
     wp_localize_script( 'pmpro_admin', 'pmpro', array(
         'all_levels' => $all_levels,
+        'all_levels_formatted_text' => $all_levels_formatted_text,
         'all_level_values_and_labels' => $all_level_values_and_labels,
+        'checkout_url' => pmpro_url( 'checkout' ),
         'user_fields_blank_group' => $empty_field_group_html,
         'user_fields_blank_field' => $empty_field_html,
         // We want the core WP translation so we can check for it in JS.
@@ -174,7 +179,7 @@ function pmpro_admin_enqueue_scripts() {
 	}        
 
 	wp_register_style( 'pmpro_admin', $admin_css, [], PMPRO_VERSION, 'screen' );
-	wp_register_style( 'pmpro_admin_rtl', $admin_css_rtl, [], PMPRO_VERSION, 'screen' );	
+	wp_register_style( 'pmpro_admin_rtl', $admin_css_rtl, [], PMPRO_VERSION, 'screen' );
 
 	wp_enqueue_style( 'pmpro_admin' );
 

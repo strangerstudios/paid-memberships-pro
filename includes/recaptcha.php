@@ -7,7 +7,7 @@ function pmpro_init_recaptcha() {
 	// global $recaptcha for backwards compatbility.
 	// TODO: Remove this in a future version.
 	global $recaptcha;
-	$recaptcha = pmpro_getOption( 'recaptcha' );
+	$recaptcha = get_option( 'pmpro_recaptcha' );
 	if ( empty( $recaptcha ) ) {
 		return;
 	}
@@ -18,13 +18,13 @@ function pmpro_init_recaptcha() {
 	}	
 
 	// Set up form submission JS code.
-	$recaptcha_version = pmpro_getOption( 'recaptcha_version' );
+	$recaptcha_version = get_option( 'pmpro_recaptcha_version' );
 	if( $recaptcha_version == '3_invisible' ) {
 		wp_register_script( 'pmpro-recaptcha-v3', plugins_url( 'js/pmpro-recaptcha-v3.js', PMPRO_BASE_FILE ), array( 'jquery' ), PMPRO_VERSION );
 		$localize_vars = array(
 			'admin_ajax_url' => esc_url( admin_url( 'admin-ajax.php' ) ),
 			'error_message' => esc_attr__( 'ReCAPTCHA validation failed. Try again.', 'paid-memberships-pro' ),
-			'public_key' => esc_html( pmpro_getOption( 'recaptcha_publickey' ) ),
+			'public_key' => esc_html( get_option( 'pmpro_recaptcha_publickey' ) ),
 		);
 		wp_localize_script( 'pmpro-recaptcha-v3', 'pmpro_recaptcha_v3', $localize_vars );
 		wp_enqueue_script( 'pmpro-recaptcha-v3' );
@@ -65,7 +65,7 @@ function pmpro_recaptcha_get_html() {
 		return;
 	}
 
-	$recaptcha_publickey = pmpro_getOption( 'recaptcha_publickey' );
+	$recaptcha_publickey = get_option( 'pmpro_recaptcha_publickey' );
 	// Make sure we have a public key.
 	if ( empty( $recaptcha_publickey ) ) {
 		return;
@@ -82,7 +82,7 @@ function pmpro_recaptcha_get_html() {
 	$lang = apply_filters( 'pmpro_recaptcha_lang', $lang );
 
 	// Check which version of ReCAPTCHA we are using.
-	$recaptcha_version = pmpro_getOption( 'recaptcha_version' ); 
+	$recaptcha_version = get_option( 'pmpro_recaptcha_version' ); 
 	if( $recaptcha_version == '3_invisible' ) { ?>
 		<div class="g-recaptcha" data-sitekey="<?php echo esc_attr( $recaptcha_publickey );?>" data-size="invisible" data-callback="onSubmit"></div>
 			<script type="text/javascript"
@@ -102,7 +102,7 @@ function pmpro_recaptcha_get_html() {
 function pmpro_wp_ajax_validate_recaptcha() {
 	require_once( PMPRO_DIR . '/includes/lib/recaptchalib.php' );
 	
-	$recaptcha_privatekey = pmpro_getOption( 'recaptcha_privatekey' );
+	$recaptcha_privatekey = get_option( 'pmpro_recaptcha_privatekey' );
 	
 	$reCaptcha = new pmpro_ReCaptcha( $recaptcha_privatekey );
 	$resp      = $reCaptcha->verifyResponse( pmpro_get_ip(), sanitize_text_field( $_REQUEST['g-recaptcha-response'] ) );
@@ -137,7 +137,7 @@ function pmpro_recaptcha_is_validated() {
 	}
 
 	// Get the ReCAPTCHA private key.
-	$recaptcha_privatekey = pmpro_getOption( 'recaptcha_privatekey' );
+	$recaptcha_privatekey = get_option( 'pmpro_recaptcha_privatekey' );
 
 	// Check if the user has completed a ReCAPTCHA challenge.
 	if ( isset( $_POST["recaptcha_challenge_field"] ) ) {

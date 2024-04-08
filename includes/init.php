@@ -11,15 +11,15 @@ function pmpro_init() {
 
 	global $pmpro_pages, $pmpro_core_pages, $pmpro_ready, $pmpro_currencies, $pmpro_currency, $pmpro_currency_symbol;
 	$pmpro_pages = array();
-	$pmpro_pages["account"] = pmpro_getOption("account_page_id");
-	$pmpro_pages["billing"] = pmpro_getOption("billing_page_id");
-	$pmpro_pages["cancel"] = pmpro_getOption("cancel_page_id");
-	$pmpro_pages["checkout"] = pmpro_getOption("checkout_page_id");
-	$pmpro_pages["confirmation"] = pmpro_getOption("confirmation_page_id");
-	$pmpro_pages["invoice"] = pmpro_getOption("invoice_page_id");
-	$pmpro_pages["levels"] = pmpro_getOption("levels_page_id");
-	$pmpro_pages["login"] = pmpro_getOption("login_page_id");
-	$pmpro_pages["member_profile_edit"] = pmpro_getOption("member_profile_edit_page_id");
+	$pmpro_pages["account"] = get_option("pmpro_account_page_id");
+	$pmpro_pages["billing"] = get_option("pmpro_billing_page_id");
+	$pmpro_pages["cancel"] = get_option("pmpro_cancel_page_id");
+	$pmpro_pages["checkout"] = get_option("pmpro_checkout_page_id");
+	$pmpro_pages["confirmation"] = get_option("pmpro_confirmation_page_id");
+	$pmpro_pages["invoice"] = get_option("pmpro_invoice_page_id");
+	$pmpro_pages["levels"] = get_option("pmpro_levels_page_id");
+	$pmpro_pages["login"] = get_option("pmpro_login_page_id");
+	$pmpro_pages["member_profile_edit"] = get_option("pmpro_member_profile_edit_page_id");
 
 	//save this in case we want a clean version of the array with just the core pages
 	$pmpro_core_pages = $pmpro_pages;
@@ -31,11 +31,11 @@ function pmpro_init() {
 	 */
 	$extra_pages = apply_filters('pmpro_extra_page_settings', array());
 	foreach($extra_pages as $name => $page)
-		$pmpro_pages[$name] = pmpro_getOption($name . '_page_id');
+		$pmpro_pages[$name] = get_option('pmpro_' . $name . '_page_id');
 
 
 	//set currency
-	$pmpro_currency = pmpro_getOption("currency");
+	$pmpro_currency = get_option("pmpro_currency");
 	if(!$pmpro_currency)
 	{
 		global $pmpro_default_currency;
@@ -70,7 +70,7 @@ function pmpro_wp()
 		//run the appropriate preheader function
 		foreach($pmpro_core_pages as $pmpro_page_name => $pmpro_page_id)
 		{
-			if(!empty($post->post_content) && ( strpos($post->post_content, "[pmpro_" . $pmpro_page_name . "]") !== false || has_block( 'pmpro/' . $pmpro_page_name . '-page', $post ) ) )
+			if( ! empty( $post->post_content ) && ( strpos( $post->post_content, "[pmpro_" . $pmpro_page_name . "]" ) !== false || ( function_exists( 'has_block' ) && has_block( 'pmpro/' . $pmpro_page_name . '-page', $post ) ) ) )
 			{
 				//preheader
 				require_once(PMPRO_DIR . "/preheaders/" . $pmpro_page_name . ".php");
@@ -133,8 +133,8 @@ function pmpro_set_current_user()
 	}
 
 	//hiding ads?
-	$hideads = pmpro_getOption("hideads");
-	$hideadslevels = pmpro_getOption("hideadslevels");
+	$hideads = get_option("pmpro_hideads");
+	$hideadslevels = get_option("pmpro_hideadslevels");
 	if(!is_array($hideadslevels))
 		$hideadslevels = explode(",", $hideadslevels);
 	if($hideads == 1 && pmpro_hasMembershipLevel() || $hideads == 2 && pmpro_hasMembershipLevel($hideadslevels))

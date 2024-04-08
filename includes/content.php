@@ -25,7 +25,7 @@ function pmpro_has_membership_access($post_id = NULL, $user_id = NULL, $return_m
 	//use current user if no value is supplied
 	if(!$user_id)
 		$user_id = $current_user->ID;
-	
+
 	//if no post or current_user object, set them up
 	if(isset($queried_object->ID) && !empty($queried_object->ID) && $post_id == $queried_object->ID)
 		$mypost = $queried_object;
@@ -144,29 +144,42 @@ function pmpro_has_membership_access($post_id = NULL, $user_id = NULL, $return_m
 		return $hasaccess;
 }
 
-function pmpro_search_filter($query)
-{
-    global $current_user, $wpdb, $pmpro_pages;
-	
-    //hide pmpro pages from search results
-    if( ! $query->is_admin && $query->is_search && empty( $query->query['post_parent'] ) ) {
-        //avoiding post_parent queries for now
-		if( empty( $query->query_vars['post_parent'] ) && ! empty( $pmpro_pages ) ) {
-			$query->set( 'post__not_in', array_merge( $query->get('post__not_in'), array_values( $pmpro_pages ) ) );
-		}
-    }
+/**
+ * Filter PMPro pages from search results.
+ * @since 3.0 This functionality was moved out
+ *        of the pmpro_search_filter function.
+ */
+function pmpro_search_filter_pmpro_pages( $query ) {
+	global $pmpro_pages;
 
-    // If this is a post type query, get the queried post types into an array.	
-	if ( ! empty( $query->query_vars['post_type'] ) ) {
-		// Get the post types in the query and cast the string to an array.
-		if ( is_array( $query->query_vars['post_type'] ) ) {
-			$query_var_post_types = $query->query_vars['post_type'];
-	    } else {
-			$query_var_post_types = array( $query->query_vars['post_type'] );
-		}
-	} else {
-		$query_var_post_types = array();
+	// Ignore queries from the admin dashboard.
+	if ( $query->is_admin ) {
+		return $query;
 	}
+
+	// Ingore queries that aren't search related.
+	if ( ! $query->is_search ) {
+		return $query;
+	}
+
+	// Ignore post parent queries.
+	if ( ! empty( $query->query['post_parent'] ) ) {
+		return $query;
+	}
+
+	// We're good. Remove the PMPro pages from the results.
+	$pmpro_page_ids = empty( $pmpro_pages ) ? array() : array_filter( array_values( $pmpro_pages ) );
+	$query->set( 'post__not_in', array_merge( $query->get('post__not_in'), $pmpro_page_ids ) );
+
+	return $query;
+}
+add_filter( 'pre_get_posts', 'pmpro_search_filter_pmpro_pages' );
+
+/**
+ * Filter restricted posts from searches and archive queries.
+ */
+function pmpro_search_filter( $query ) {
+    global $current_user, $wpdb, $pmpro_pages;
 		
 	/**
 	 * Filter which post types to hide members-only content from search.
@@ -179,126 +192,137 @@ function pmpro_search_filter($query)
 	$pmpro_search_filter_post_types = apply_filters( 'pmpro_search_filter_post_types', array( 'page', 'post' ) );
 	if ( ! is_array( $pmpro_search_filter_post_types ) ) {
 		$pmpro_search_filter_post_types = array( $pmpro_search_filter_post_types );		
+	}	
+
+	// Ignore queries from the admin dashboard.
+	if ( $query->is_admin ) {
+		return $query;
 	}
 
-    //hide member pages from non-members (make sure they aren't hidden from members)
-	if( !$query->is_admin &&
-	    !$query->is_singular &&
-	    empty($query->query['post_parent']) &&
-	    ( empty($query->query_vars['post_type']) || array_intersect( $query_var_post_types, $pmpro_search_filter_post_types ) ) &&
-	    ( ( ! defined('REST_REQUEST') || ( defined( 'REST_REQUEST' ) && false === REST_REQUEST  ) ) )
-	) { 
-		//get page ids that are in my levels
-        if( ! empty( $current_user->ID ) ) {
-			$levels = pmpro_getMembershipLevelsForUser($current_user->ID);
-		} else {
-			$levels = false;
-		}
-		
-        $my_pages = array();
-		$member_pages = array();
+	// Ignore single post queries.
+	if ( $query->is_singular ) {
+		return $query;
+	}
 
-        if( $levels ) {
-            foreach( $levels as $key => $level ) {
-                //get restricted posts for level
+	// Ignore REST API requests.
+	if ( defined( 'REST_REQUEST' ) && REST_REQUEST ) {
+		return $query;
+	}
 
-				// make sure the object contains membership info.
-				if ( isset( $level->ID ) ) {
+	// If post_parent is set, this is probably a menu/submenu query. Ignore it.
+	if ( ! empty( $query->query['post_parent'] ) ) {
+		return $query;
+	}
 
-					$sql = $wpdb->prepare("
-						SELECT page_id
-						FROM {$wpdb->pmpro_memberships_pages}
-						WHERE membership_id = %d",
-						$level->ID
-					);
+	// If post_type is set, make sure it's in the array of post types to filter.
+	if ( ! empty( $query->query_vars['post_type'] ) && ! array_intersect( (array)$query->query_vars['post_type'], $pmpro_search_filter_post_types ) ) {
+		return $query;
+	}
 
-					$member_pages = $wpdb->get_col($sql);
-					$my_pages = array_unique(array_merge($my_pages, $member_pages));
-				}
-            } // foreach
-        } // if($levels)
+	// If posts aren't being filtered, don't filter categories either.
+	if ( ! in_array( 'post', $pmpro_search_filter_post_types ) && $query->is_category() ) {
+		return $query;
+	}
+	
+	// If posts aren't being filtered, don't filter tags either.
+	if ( ! in_array( 'post', $pmpro_search_filter_post_types ) && $query->is_tag() ) {
+		return $query;
+	}
 
-        //get hidden page ids
-        if( ! empty( $my_pages ) ) {
-			$sql = "SELECT page_id FROM $wpdb->pmpro_memberships_pages WHERE page_id NOT IN(" . implode(',', array_map( 'esc_sql', $my_pages ) ) . ")";
-		} else {
-			$sql = "SELECT page_id FROM $wpdb->pmpro_memberships_pages";
-		}
-        $hidden_page_ids = array_values(array_unique($wpdb->get_col($sql)));
-		
-        if( $hidden_page_ids ) {
-			//avoiding post_parent queries for now
-			if( empty( $query->query_vars['post_parent'] ) ) {
-				$query->set( 'post__not_in', array_merge( $query->get('post__not_in'), $hidden_page_ids ) );
-			}
-		}
-				
-        //get categories that are filtered by level, but not my level
-        global $pmpro_my_cats;
-		$pmpro_my_cats = array();
+	/**
+	 * Okay. We're going to filter the search results.
+	 * We save the array of posts to hide in a static var for cache.
+	 * So first, check if we have a cache, and if so use that.
+	 */	
+	static $final_hidden_posts = null;	
+	if ( isset( $final_hidden_posts ) ) {		
+		if( ! empty( $final_hidden_posts ) ) {
+			$query->set( 'post__not_in', array_merge( $query->get('post__not_in'), $final_hidden_posts ) );
+		}		
+		return $query;
+	}
 
-        if( $levels ) {
-            foreach( $levels as $key => $level ) {
-                $member_cats = pmpro_getMembershipCategories($level->id);
-                $pmpro_my_cats = array_unique(array_merge($pmpro_my_cats, $member_cats));
-            }
-        }
-		
-        //get hidden cats
-        if( ! empty( $pmpro_my_cats ) ) {
-			$sql = "SELECT category_id FROM $wpdb->pmpro_memberships_categories WHERE category_id NOT IN(" . implode(',', array_map( 'esc_sql', $pmpro_my_cats ) ) . ")";
-		} else {
-			$sql = "SELECT category_id FROM $wpdb->pmpro_memberships_categories";
-		}							
-        $hidden_cat_ids = array_values(array_unique($wpdb->get_col($sql)));
-		
-        //make this work
-        if( $hidden_cat_ids ) {
+	/**
+	 * No cache yet. Let's run the queries.
+	 * Some explaination of what we're doing.
+	 * A = All posts hidden by level.
+	 * B = All posts hidden by category.
+	 * C = All posts the current user has access to by level.
+	 * D = All posts the current user has access to by category.
+	 * 
+	 * Then the final hidden posts = (A + B) - (C + D)
+	 * 
+	 * Then we merge and add to post__not_in.
+	 */
 
-			// Get all registered category ID's so we may remove the ones we need to hide. This is to support posts that may belong to multiple categories and only one of them is hidden.
-			$all_cat_ids = get_terms( array(
-				'taxonomy' => 'category',
-				'fields'   => 'ids',
-				'get'      => 'all',
-			));
+	// First, figure out if their is a current user with levels.
+	if ( ! empty( $current_user->ID ) ) {
+		$levels = pmpro_getMembershipLevelsForUser( $current_user->ID );
+		$level_ids = ! empty( $levels ) ? wp_list_pluck( $levels, 'ID' ) : [];
+	} else {
+		$level_ids = [];
+	}
 
-			// Show only these categories to members.
-			$query->set( 'category__in', array_merge( $query->get( 'category__in' ), array_diff( $all_cat_ids, $hidden_cat_ids ) ) );
-						
-			//filter so posts in this member's categories are allowed
-			add_action( 'posts_where', 'pmpro_posts_where_unhide_cats' );
-		}
-    }
+	// Query A: All posts hidden by level
+	$sql_A = "SELECT DISTINCT(mp.page_id)
+			  FROM {$wpdb->pmpro_memberships_pages} mp
+			  LEFT JOIN {$wpdb->posts} p ON mp.page_id = p.ID
+			  WHERE p.post_type IN('" . implode( "', '", array_map('esc_sql', $pmpro_search_filter_post_types)) . "')";
+	$posts_hidden_by_level = $wpdb->get_col( $sql_A );
+
+	// Query B: All posts hidden by category
+	$sql_B = "SELECT DISTINCT(tr.object_id)
+	FROM {$wpdb->term_relationships} tr
+	LEFT JOIN {$wpdb->posts} p ON tr.object_id = p.ID
+	WHERE tr.term_taxonomy_id IN(
+		SELECT category_id
+		FROM {$wpdb->pmpro_memberships_categories}
+	)
+	AND p.post_type IN('" . implode( "', '", array_map('esc_sql', $pmpro_search_filter_post_types)) . "')";
+	$posts_hidden_by_category = $wpdb->get_col( $sql_B );
+
+	// Query C: All posts the current user has access to by level	
+	if ( ! empty( $level_ids ) ) {
+		$sql_C = "SELECT DISTINCT(mp.page_id)
+			  FROM {$wpdb->pmpro_memberships_pages} mp
+			  LEFT JOIN {$wpdb->posts} p ON mp.page_id = p.ID
+			  WHERE mp.membership_id IN (" . implode(',', array_map('esc_sql', $level_ids)) . ")
+				  AND p.post_type IN('" . implode( "', '", array_map('esc_sql', $pmpro_search_filter_post_types)) . "')";
+		$accessible_posts_by_level = $wpdb->get_col( $sql_C );
+	} else {
+		$accessible_posts_by_level = [];
+	}
+
+	// Query D: All posts the current user has access to by category	
+	if ( ! empty ($level_ids ) ) {
+		$sql_D = "SELECT DISTINCT(tr.object_id)
+		FROM {$wpdb->term_relationships} tr
+		LEFT JOIN {$wpdb->posts} p ON tr.object_id = p.ID
+		WHERE tr.term_taxonomy_id IN(
+			SELECT category_id
+			FROM {$wpdb->pmpro_memberships_categories}
+			WHERE membership_id IN (" . implode(',', array_map('esc_sql', $level_ids)) . ")
+		) AND p.post_type IN('" . implode( "', '", array_map('esc_sql', $pmpro_search_filter_post_types)) . "')";
+		$accessible_posts_by_category = $wpdb->get_col ($sql_D );
+	} else {
+		$accessible_posts_by_category = [];
+	}
+
+	// Combine and compute final hidden posts
+	$hidden_posts = array_unique(array_merge($posts_hidden_by_level, $posts_hidden_by_category));
+	$accessible_posts = array_unique(array_merge($accessible_posts_by_level, $accessible_posts_by_category));
+	$final_hidden_posts = array_diff($hidden_posts, $accessible_posts);
+
+	// If we have posts to hide, add them to the query.
+	if( ! empty( $final_hidden_posts ) ) {
+		$query->set( 'post__not_in', array_merge( $query->get('post__not_in'), $final_hidden_posts ) );
+	}
 
     return $query;
 }
-$filterqueries = pmpro_getOption("filterqueries");
+$filterqueries = get_option("pmpro_filterqueries");
 if( ! empty( $filterqueries ) ) {
 	add_filter( 'pre_get_posts', 'pmpro_search_filter' );
-}
-
-/*
- * Find taxonomy filters and make sure member categories are not hidden from members.
- * @since 1.7.15
-*/
-function pmpro_posts_where_unhide_cats($where) {
-	global $pmpro_my_cats, $wpdb;
-	
-	//if we have member cats, make sure they are allowed in taxonomy queries
-	if( ! empty( $where ) && ! empty( $pmpro_my_cats ) ) {
-		$pattern = "/$wpdb->posts.ID NOT IN \(\s*SELECT object_id\s*FROM dev_term_relationships\s*WHERE term_taxonomy_id IN \((.*)\)\s*\)/";
-		$replacement = $wpdb->posts . '.ID NOT IN (
-						SELECT tr1.object_id
-						FROM ' . $wpdb->term_relationships . ' tr1
-							LEFT JOIN ' . $wpdb->term_relationships . ' tr2 ON tr1.object_id = tr2.object_id AND tr2.term_taxonomy_id IN(' . implode( array_map( 'intval', $pmpro_my_cats ) ) . ')
-						WHERE tr1.term_taxonomy_id IN(${1}) AND tr2.term_taxonomy_id IS NULL ) ';
-		$where = preg_replace( $pattern, $replacement, $where );
-	}
-	
-	//remove filter for next query
-	remove_action( 'posts_where', 'pmpro_posts_where_unhide_cats' );
-	
-	return $where;
 }
 
 function pmpro_membership_content_filter( $content, $skipcheck = false ) {
@@ -329,7 +353,7 @@ function pmpro_membership_content_filter( $content, $skipcheck = false ) {
 		return $content;
 	} else {
 		//if show excerpts is set, return just the excerpt
-		if( pmpro_getOption( "showexcerpts" ) ) {
+		if( get_option( "pmpro_showexcerpts" ) ) {
 			//show excerpt
 			global $post;
 			if( $post->post_excerpt ) {
