@@ -55,7 +55,7 @@ $pmpro_email_templates_defaults = array(
 	'billable_invoice' => array(
 		'subject' => __( 'Invoice for order #: !!order_code!!', 'paid-memberships-pro' ),
         'description' => __( 'Billable Invoice', 'paid-membershps-pro' ),
-		'body' => __( '<p>Thank you for your membership to !!sitename!!. Below is your invoice for order #: !!order_code!!</p>
+		'body' => __( '<p>Thank you for your membership to !!membership_level_name!! at !!sitename!!. Below is your invoice for order #: !!order_code!!</p>
 
 !!invoice!!
 
