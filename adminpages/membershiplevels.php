@@ -156,7 +156,8 @@
 
 						data = {
 							action: 'pmpro_update_level_group_order',
-							level_group_order: level_group_order
+							level_group_order: level_group_order,
+							nonce: '<?php echo esc_attr( wp_create_nonce( 'pmpro_update_level_group_order' ) ); ?>'
 						};
 
 						$.post(ajaxurl, data, function(response) {
