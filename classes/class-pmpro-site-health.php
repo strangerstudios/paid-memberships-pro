@@ -89,6 +89,10 @@ class PMPro_Site_Health {
 					'label' => __( 'Membership Levels', 'paid-memberships-pro' ),
 					'value' => self::get_levels(),
 				],
+				'pmpro-level-groups'         => [
+					'label' => __( 'Level Groups', 'paid-memberships-pro' ),
+					'value' => self::get_level_groups(),
+				],
 				'pmpro-custom-templates'     => [
 					'label' => __( 'Custom Templates', 'paid-memberships-pro' ),
 					'value' => self::get_custom_templates(),
@@ -160,6 +164,28 @@ class PMPro_Site_Health {
 		}
 
 		return wp_json_encode( $membership_levels, JSON_PRETTY_PRINT );
+	}
+
+	/**
+	 * Get the level group information.
+	 *
+	 * @since TBD
+	 *
+	 * @return string The level group information.
+	 */
+	public function get_level_groups() {
+		$level_groups = pmpro_get_level_groups();
+
+		if ( ! $level_groups ) {
+			return __( 'No Level Groups Found', 'paid-memberships-pro' );
+		}
+
+		// Add the level IDs to the group objects.
+		foreach ( $level_groups as $group_id => $group ) {
+			$group->level_ids = pmpro_get_level_ids_for_group( $group_id );
+		}
+
+		return wp_json_encode( $level_groups, JSON_PRETTY_PRINT );
 	}
 
 	/**
