@@ -602,14 +602,13 @@ require_once(dirname(__FILE__) . "/admin_header.php"); ?>
 					</div>
 					<div class="pmpro_section_inside">
 						<p>
-							<?php esc_html_e( 'Your site is loading custom page templates. These settings allow you to change which custom template is being loaded for your frontend pages. If your custom template is causing fatal errors or blocking the checkout process, you should load the core PMPro template file while you or your developer works on template compatibility.', 'paid-memberships-pro' ); ?>
-							<a href="https://www.paidmembershipspro.com/documentation/templates/template-versions/" target="_blank"><?php esc_html_e( 'Docs: Template versions and outdated templates', 'paid-memberships-pro' ); ?></a>
+							<?php esc_html_e( 'Your site is loading custom page templates. These settings allow you to change which custom template is being loaded for your frontend pages. If your custom template is causing fatal errors or blocking the checkout process, you should load the core PMPro version while you or your developer works on template compatibility.', 'paid-memberships-pro' ); ?>
 						</p>
 						<h4><?php esc_html_e( 'How to Fix Outdated Page Templates', 'paid-memberships-pro' ); ?></h4>
 						<ol>
 							<li><?php esc_html_e( 'If your templates are loaded from a third-party plugin or theme, update to the latest version or contact the developer and let them know their templates are out of date.', 'paid-memberships-pro' ); ?></li>
-							<li><?php esc_html_e( 'If you or your developer wrote your own templates, compare your version to the latest stable version, make the required updates, and update the version number in your custom template.', 'paid-memberships-pro' ); ?></li>
-							<li><?php esc_html_e( 'If you are unable to update the custom template file, use the settings below to load the PMPro default templates.', 'paid-memberships-pro' ); ?></li>
+							<li><?php esc_html_e( 'If you or your developer wrote your own templates, compare your version to the core PMPro version, make the required updates, and update the version number in your custom template.', 'paid-memberships-pro' ); ?></li>
+							<li><?php esc_html_e( 'If you are unable to update the custom template file, use the settings below to load the core PMPro version of the template.', 'paid-memberships-pro' ); ?></li>
 						</ol>
 						<p>
 							<a href="https://www.paidmembershipspro.com/documentation/templates/template-versions/" target="_blank"><?php esc_html_e( 'Docs: Template versions and outdated templates', 'paid-memberships-pro' ); ?></a>
@@ -618,9 +617,8 @@ require_once(dirname(__FILE__) . "/admin_header.php"); ?>
 							<thead>
 								<tr>
 									<th><?php esc_html_e( 'Template', 'paid-memberships-pro' ); ?></th>
-									<th><?php esc_html_e( 'Latest Stable Version', 'paid-memberships-pro' ); ?></th>
+									<th><?php esc_html_e( 'Core PMPro Version', 'paid-memberships-pro' ); ?></th>
 									<th><?php esc_html_e( 'Custom Template Version', 'paid-memberships-pro' ); ?></th>
-									<th><?php esc_html_e( 'Status', 'paid-memberships-pro' ); ?></th>
 									<th><?php esc_html_e( 'Action', 'paid-memberships-pro' ); ?></th>
 								</tr>
 							</thead>
@@ -646,76 +644,60 @@ require_once(dirname(__FILE__) . "/admin_header.php"); ?>
 										$use_custom_page_template = ''; // Empty is "use custom page template when compatible with current PMPro version".
 									}
 
-									// Get CSS for the dropdown span.
-									$dropdown_span_class = '';
-									if ( 'yes' === $use_custom_page_template ) {
-										$dropdown_span_class = 'pmpro_tag pmpro_tag-has_icon pmpro_tag-' . ( $versions_match ? 'alert' : 'error' );
-									}
-
 									// Output the row.
 									?>
 									<tr>
 										<td><?php echo esc_html( $template ); ?></td>
-										<?php /*<td><?php echo esc_html( $data['loaded_path'] ); ?></td> */ ?>
-										<td><?php echo esc_html( empty( $data['default_version'] ) ? esc_html__( 'N/A', 'paid-memberships-pro' ) : $data['default_version'] ); ?></td>
 										<td>
-											<strong style="color: var(--pmpro--color--<?php echo $version_match ? 'success' : 'error'; ?>-text);">
+											<strong><?php echo esc_html( empty( $data['default_version'] ) ? esc_html__( 'N/A', 'paid-memberships-pro' ) : $data['default_version'] ); ?></strong>
+											<br />
+											<small><?php
+											// Display the source of the PMPro version from the Paid Memberships Pro plugin.
+											// translators: %1$s: The Paid Memberships Pro plugin folder name.
+											printf( esc_html__( 'Plugin: %1$s', 'paid-memberships-pro' ), '<code>paid-memberships-pro</code>' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+											?></small>
+										</td>
+										<td>
+											<strong style="color: var(--pmpro--color--<?php echo $versions_match ? 'success' : 'error'; ?>-text);">
 												<?php echo esc_html( empty( $data['loaded_version'] ) ? esc_html__( 'N/A', 'paid-memberships-pro' ) : $data['loaded_version'] ); ?>
 											</strong>
-											<?php
+											<?php if ( $use_custom_page_template == 'yes' && ! $versions_match ) { ?>
+												<span class="pmpro_tag pmpro_tag-has_icon pmpro_tag-error"><?php esc_html_e( 'Outdated Template', 'paid-memberships-pro' ); ?></span>
+											<?php } ?>
+											<br />
+											<small><?php
 											// Display the source of the loaded file and type.
 											// translators: %1$s: The source type of the loaded file. %2$s: The theme or plugin folder name of the loaded file.
 											printf( esc_html__( '%1$s: %2$s', 'paid-memberships-pro' ), esc_html( ucwords( $loaded_path_source_type ) ), '<code>' . esc_html( $loaded_file_from_name ) . '</code>' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-											?>
+											?></small>
 										</td>
 										<td>
-											<?php
-												if ( $use_custom_page_template == 'no' ) {
-													?>
-													<span class="pmpro_tag pmpro_tag-has_icon pmpro_tag-success"><?php esc_html_e( 'Using Default', 'paid-memberships-pro' ); ?></span>
+											<?php if ( 'yes' === $use_custom_page_template && ! $versions_match ) { ?>
+												<span class="pmpro_tag pmpro_tag-has_icon pmpro_tag-error">
+											<?php } ?>
+											<select name="pmpro_use_custom_page_template_<?php echo esc_attr( $template ); ?>">
+												<option value="yes" <?php selected( $use_custom_page_template, 'yes' ); ?>>
 													<?php
-												} elseif ( $use_custom_page_template == '' && ! $versions_match ) {
+													// translators: %s: The custom page template name.
+													echo esc_html( sprintf( __('Custom: Always use my custom %s template.', 'paid-memberships-pro' ), $template ) );
 													?>
-													<span class="pmpro_tag pmpro_tag-has_icon pmpro_tag-alert"><?php esc_html_e( 'Using Default', 'paid-memberships-pro' ); ?></span>
+												</option>
+												<option value="" <?php selected( $use_custom_page_template, '' ); ?>>
 													<?php
-												} elseif ( $use_custom_page_template == '' && $versions_match ) {
+													// translators: %s: The custom page template name.
+													echo esc_html( sprintf( __('Fallback: Use the core PMPro template if my custom %s template is not compatible.', 'paid-memberships-pro' ), $template ) );
 													?>
-													<span class="pmpro_tag pmpro_tag-has_icon pmpro_tag-success"><?php esc_html_e( 'Using Custom', 'paid-memberships-pro' ); ?></span>
+												</option>
+												<option value="no" <?php selected( $use_custom_page_template, 'no' ); ?>>
 													<?php
-												} elseif ( $use_custom_page_template == 'yes' && $versions_match ) {
+													// translators: %s: The custom page template name.
+													echo esc_html( sprintf( __('Core: Always use the core PMPro %s template.', 'paid-memberships-pro' ), $template ) );
 													?>
-													<span class="pmpro_tag pmpro_tag-has_icon pmpro_tag-alert"><?php esc_html_e( 'Using Custom', 'paid-memberships-pro' ); ?></span>
-													<?php
-												} elseif ( $use_custom_page_template == 'yes' && ! $versions_match ) {
-													?>
-													<span class="pmpro_tag pmpro_tag-has_icon pmpro_tag-error"><?php esc_html_e( 'Template Outdated', 'paid-memberships-pro' ); ?></span>
-													<?php
-												}
-											?>
-										</td>
-										<td>
-											<span class="<?php echo esc_attr( $dropdown_span_class ) ?>">
-												<select name="pmpro_use_custom_page_template_<?php echo esc_attr( $template ); ?>">
-													<option value="yes" <?php selected( $use_custom_page_template, 'yes' ); ?>>
-														<?php
-														// translators: %s: The custom page template name.
-														echo esc_html( sprintf( __('Always use my custom %s page template.', 'paid-memberships-pro' ), $template ) );
-														?>
-													</option>
-													<option value="" <?php selected( $use_custom_page_template, '' ); ?>>
-														<?php
-														// translators: %s: The custom page template name.
-														echo esc_html( sprintf( __('Only use my custom %s page template if it is compatible.', 'paid-memberships-pro' ), $template ) );
-														?>
-													</option>
-													<option value="no" <?php selected( $use_custom_page_template, 'no' ); ?>>
-														<?php
-														// translators: %s: The custom page template name.
-														echo esc_html( sprintf( __('Do not use my custom %s page template. Always load the PMPro template.', 'paid-memberships-pro' ), $template ) );
-														?>
-													</option>
-												</select>
-											</span>
+												</option>
+											</select>
+											<?php if ( 'yes' === $use_custom_page_template && ! $versions_match ) { ?>
+												</span>
+											<?php } ?>
 										</td>
 									</tr>
 									<?php

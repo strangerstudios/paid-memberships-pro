@@ -1543,13 +1543,29 @@ table.pmprommpu_levels tr.remove_level td {background: #F2DEDE; }
 	vertical-align: middle;
 }
 
-#pmpro-custom-page-template-settings table tr td .pmpro_tag {
-	display: block;
-	margin: 0;
+#pmpro-custom-page-template-settings table tr.pmpro_template-active-pmpro td:nth-child(2),
+#pmpro-custom-page-template-settings table tr.pmpro_template-active-custom td:nth-child(3) {
+	background-color: var(--pmpro--color--info-background);
+}
+
+#pmpro-custom-page-template-settings table tr.pmpro_template-active-error td:nth-child(3) {
+	background-color: var(--pmpro--color--error-background);
+}
+
+#pmpro-custom-page-template-settings table tr td code {
+	font-size: 85%;
+	white-space: nowrap;
+}
+
+#pmpro-custom-page-template-settings table tr td:not(:last-of-type) .pmpro_tag {
+	background-color: transparent;
+	border: none;
+	margin: 0 0 0 calc( var(--pmpro--spacing--small) / 3 );
+	padding: 0;
 }
 
 #pmpro-custom-page-template-settings table tr td:last-of-type .pmpro_tag {
-	padding: calc( var(--pmpro--spacing--small) / 3 ) calc( var(--pmpro--spacing--small) / 3 ) calc( var(--pmpro--spacing--small) / 3 ) var(--pmpro--spacing--small);
+	margin: 0;
 }
 
 /**
