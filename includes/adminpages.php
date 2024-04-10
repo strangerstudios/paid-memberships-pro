@@ -433,16 +433,18 @@ function pmpro_admin_membership_access_menu_bar() {
 
 	// Let's get the option now so we can show it.
 	$admin_membership_access = get_user_meta( $current_user->ID, 'pmpro_admin_membership_access', true );
+	if ( ! in_array( $admin_membership_access, array( 'yes', 'no' ) ) ) {
+		$admin_membership_access = 'current';
+	}
 
 	// Set the title and the option value.
 	$title = '<span class="pmpro_admin-view pmpro_admin-view-' . esc_attr( $admin_membership_access ) . '">';
 	if ( 'no' === $admin_membership_access ) {
 		$title .= '<span class="ab-icon dashicons dashicons-lock non-member-icon"></span>' . esc_html__( 'View: No Access', 'paid-memberships-pro' );
-	} elseif ( 'current' === $admin_membership_access ) {
-		$title .= '<span class="ab-icon dashicons dashicons-admin-users current-access-icon"></span>' . esc_html__( 'View: My Access', 'paid-memberships-pro' );
-	} else {
+	} elseif ( 'yes' === $admin_membership_access ) {
 		$title .= '<span class="ab-icon dashicons dashicons-unlock has-access-icon"></span>' . esc_html__( 'View: With Access', 'paid-memberships-pro' );
-		$admin_membership_access = 'yes';
+	} else {
+		$title .= '<span class="ab-icon dashicons dashicons-admin-users current-access-icon"></span>' . esc_html__( 'View: My Access', 'paid-memberships-pro' );
 	}
 	$title .= '</span>';
 
