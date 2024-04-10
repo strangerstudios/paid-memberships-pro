@@ -571,7 +571,7 @@ class PMPro_Discount_Code_List_Table extends WP_List_Table {
 	 */
 	public function single_row( $item ) {
 		$cssClass = ( ! pmpro_check_discount_code_for_gateway_compatibility( $item ) ) ? 'pmpro_error' : '';
-		echo '<tr class="' . $cssClass . '">';
+		echo '<tr class="' . esc_attr( $cssClass ) . '">';
 		$this->single_row_columns( $item );
 		echo '</tr>';
 	}
