@@ -101,7 +101,7 @@ class PMPro_Admin_Activity_Email extends PMProEmail {
 							if ( $revenue > 0 ) {
 								?>
 								<h3 style="color:#1A688B;font-size:20px;line-height:30px;margin:0px 0px 15px 0px;padding:0px;"><?php esc_html_e( 'Sales and Revenue', 'paid-memberships-pro' ); ?></h3>
-								<p style="margin:0px 0px 15px 0px;padding:0px;"><?php printf( esc_html__( 'Your membership site made <strong>%1$s</strong> in revenue %2$s.', 'paid-memberships-pro' ), pmpro_escape_price( pmpro_formatPrice( $revenue ) ), esc_html( $term ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></p>
+								<p style="margin:0px 0px 15px 0px;padding:0px;"><?php printf( wp_kses_post( __( 'Your membership site made <strong>%1$s</strong> in revenue %2$s.', 'paid-memberships-pro' ) ), pmpro_escape_price( pmpro_formatPrice( $revenue ) ), esc_html( $term ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></p>
 							<?php } else { ?>
 								<h3 style="color:#1A688B;font-size:20px;line-height:30px;margin:0px 0px 15px 0px;padding:0px;"><?php esc_html_e( 'Signups and Cancellations', 'paid-memberships-pro' ); ?></h3>
 							<?php } ?>
@@ -148,7 +148,7 @@ class PMPro_Admin_Activity_Email extends PMProEmail {
 
 							$num_levels_to_show = 5;
 							if ( count( $members_per_level ) > $num_levels_to_show ) {
-								echo( '<p>' . sprintf( esc_html__( 'Here is a summary of your top %s most popular levels:</p>', 'paid-memberships-pro' ), esc_html( $num_levels_to_show ) ) . '</p>' );
+								echo( '<p>' . sprintf( esc_html__( 'Here is a summary of your top %d most popular levels:', 'paid-memberships-pro' ), esc_html( $num_levels_to_show ) ) . '</p>' );
 							}
 							?>
 							<ul>
@@ -203,9 +203,9 @@ class PMPro_Admin_Activity_Email extends PMProEmail {
 									<p style="margin:0px 0px 15px 0px;padding:0px;">
 									<?php
 										if ( $num_orders_with_discount_code == 1 ) {
-											printf( esc_html__( '<strong>%1$d order</strong> used a <a %2$s>Discount Code</a> at checkout:', 'paid-memberships-pro' ), esc_html( number_format_i18n( $num_orders_with_discount_code ) ), 'style="color:#1A688B;" target="_blank" href="' . esc_url( admin_url( 'admin.php?page=pmpro-discountcodes' ) ) . '"' );
+											printf( wp_kses_post( __( '<strong>%1$d order</strong> used a <a %2$s>Discount Code</a> at checkout:', 'paid-memberships-pro' ) ), esc_html( number_format_i18n( $num_orders_with_discount_code ) ), 'style="color:#1A688B;" target="_blank" href="' . esc_url( admin_url( 'admin.php?page=pmpro-discountcodes' ) ) . '"' );
 										} else {
-											printf( esc_html__( '<strong>%1$d orders</strong> used a <a %2$s>Discount Code</a> at checkout. Here is a breakdown of your most used codes:', 'paid-memberships-pro' ), esc_html( number_format_i18n( $num_orders_with_discount_code ) ), 'style="color:#1A688B;" target="_blank" href="' . esc_url( admin_url( 'admin.php?page=pmpro-discountcodes' ) ) . '"' );
+											printf( wp_kses_post( __( '<strong>%1$d orders</strong> used a <a %2$s>Discount Code</a> at checkout. Here is a breakdown of your most used codes:', 'paid-memberships-pro' ) ), esc_html( number_format_i18n( $num_orders_with_discount_code ) ), 'style="color:#1A688B;" target="_blank" href="' . esc_url( admin_url( 'admin.php?page=pmpro-discountcodes' ) ) . '"' );
 										}
 										?>
 									</p>
@@ -266,7 +266,12 @@ class PMPro_Admin_Activity_Email extends PMProEmail {
 									<td width="500%"><div style="background:<?php echo esc_attr( $addon_updates_box_color ); ?>;color:<?php echo esc_attr( $addon_updates_text_color ); ?>;margin:5px;padding:10px;"><a style="color:<?php echo esc_attr( $addon_updates_text_color ); ?>;display:block;text-decoration:none;" href="<?php echo( esc_url( admin_url( 'admin.php?page=pmpro-addons&plugin_status=update' ) ) ); ?>" target="_blank"><div style="font-size:50px;font-weight:900;line-height:65px;"><?php echo esc_html( number_format_i18n( $update_addons ) ); ?></div><?php esc_html_e( 'Required Updates', 'paid-memberships-pro' ); ?></a></div></td>
 								</tr>
 							</table>
-							<p style="margin:15px 0px 0px 0px;padding:0px;"><?php printf( esc_html__( 'It is important to keep all Add Ons up to date to take advantage of security improvements, bug fixes, and expanded features. Add On updates can be made <a href="%s" style="color:#1A688B;" target="_blank">via the WordPress Dashboard</a>.', 'paid-memberships-pro' ), esc_url( admin_url( 'update-core.php' ) ) ); ?></p>
+							<p style="margin:15px 0px 0px 0px;padding:0px;">
+								<?php
+								// translators: %1$s is the opening anchor tag, %2$s is the closing anchor tag.
+								printf( esc_html__( 'It is important to keep all Add Ons up to date to take advantage of security improvements, bug fixes, and expanded features. Add On updates can be made %1$svia the WordPress Dashboard%2$s.', 'paid-memberships-pro' ), '<a href="' . esc_url( admin_url( 'update-core.php' ) ) . '" style="color:#1A688B;" target="_blank">', '</a>' );
+								?>
+							</p>
 						</td>
 					</tr>
 					<?php
