@@ -352,6 +352,12 @@ body[class*="memberships_page_pmpro-"] {
 	margin: var(--pmpro--spacing--small) 0;
 }
 
+.pmpro_admin ul,
+.pmpro_admin ol {
+	font-size: 14px;
+	line-height: 1.5;
+}
+
 .pmpro_admin small {
 	font-size: 13px;
 }
@@ -1524,6 +1530,26 @@ table.pmprommpu_levels tr.remove_level td {background: #F2DEDE; }
 	#membership-level-list-form+p {
 		margin-top: var(--pmpro--spacing--medium);
 	}
+}
+
+/**
+ * Page Settings
+ */
+#pmpro-custom-page-template-settings table {
+	margin-top: var(--pmpro--spacing--medium);
+}
+
+#pmpro-custom-page-template-settings table tr td {
+	vertical-align: middle;
+}
+
+#pmpro-custom-page-template-settings table tr td .pmpro_tag {
+	display: block;
+	margin: 0;
+}
+
+#pmpro-custom-page-template-settings table tr td:last-of-type .pmpro_tag {
+	padding: calc( var(--pmpro--spacing--small) / 3 ) calc( var(--pmpro--spacing--small) / 3 ) calc( var(--pmpro--spacing--small) / 3 ) var(--pmpro--spacing--small);
 }
 
 /**
