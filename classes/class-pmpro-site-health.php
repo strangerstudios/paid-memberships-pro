@@ -318,27 +318,24 @@ class PMPro_Site_Health {
 
 			// If the $path and $loaded_path are different, a custom template is being loaded.
 			if ( $path !== $custom_path ) {
-				$custom_templates[ $template ] = array(
-					'default_version' => $default_version,
-					'custom_version' => $custom_version,
-					'custom_path' => $custom_path,
-				);
+				$custom_templates[ $template ] = 'Default Version: ' . $default_version . ' | Custom Version: ' . $custom_version . ' | Custom Path: ' . $custom_path . ' | Action: ';
 				$use_custom_page_template = get_option( 'pmpro_use_custom_page_template_' . $template );
 				switch( $use_custom_page_template ) {
 					case 'yes':
-						$custom_templates[ $template ]['action'] = 'use custom';
+						$custom_templates[ $template ] .= 'Custom';
 						break;
 					case 'no':
-						$custom_templates[ $template ]['action'] = 'use default';
+						$custom_templates[ $template ] .= 'Core';
 						break;
 					default:
-						$custom_templates[ $template ]['action'] = 'fallback if needed';
+						$custom_templates[ $template ] .= 'Fallback';
 						break;
 				}
+				$custom_templates[ $template ] = esc_html( $custom_templates[ $template] );
 			}
 		}
 
-		return wp_json_encode( $custom_templates, JSON_PRETTY_PRINT );
+		return $custom_templates;
 	}
 
 	/**
