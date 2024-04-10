@@ -482,7 +482,7 @@
 			// Check if we are going to return the count of orders.
 			$return_count = isset( $args['return_count'] ) ? (bool) $args['return_count'] : false;
 
-			$sql_query = $return_count ? "SELECT COUNT(*) FROM `$wpdb->pmpro_membership_orders`" : "SELECT `o`.`id` FROM `$wpdb->pmpro_membership_orders` `o`";
+			$sql_query = $return_count ? "SELECT COUNT(*) FROM `$wpdb->pmpro_membership_orders` `o`" : "SELECT `o`.`id` FROM `$wpdb->pmpro_membership_orders` `o`";
 
 			$prepared = array();
 			$where    = array();
@@ -502,10 +502,10 @@
 			// Filter by ID(s).
 			if ( isset( $args['id'] ) ) {
 				if ( ! is_array( $args['id'] ) ) {
-					$where[]    = 'id = %d';
+					$where[]    = '`o`.`id` = %d';
 					$prepared[] = $args['id'];
 				} else {
-					$where[]  = 'id IN ( ' . implode( ', ', array_fill( 0, count( $args['id'] ), '%d' ) ) . ' )';
+					$where[]  = '`o`.`id` IN ( ' . implode( ', ', array_fill( 0, count( $args['id'] ), '%d' ) ) . ' )';
 					$prepared = array_merge( $prepared, $args['id'] );
 				}
 			}
@@ -513,10 +513,10 @@
 			// Filter by user ID(s).
 			if ( isset( $args['user_id'] ) ) {
 				if ( ! is_array( $args['user_id'] ) ) {
-					$where[]    = 'user_id = %d';
+					$where[]    = '`o`.`user_id` = %d';
 					$prepared[] = $args['user_id'];
 				} else {
-					$where[]  = 'user_id IN ( ' . implode( ', ', array_fill( 0, count( $args['user_id'] ), '%d' ) ) . ' )';
+					$where[]  = '`o`.`user_id` IN ( ' . implode( ', ', array_fill( 0, count( $args['user_id'] ), '%d' ) ) . ' )';
 					$prepared = array_merge( $prepared, $args['user_id'] );
 				}
 			}
@@ -524,10 +524,10 @@
 			// Filter by membership level ID(s).
 			if ( isset( $args['membership_level_id'] ) ) {
 				if ( ! is_array( $args['membership_level_id'] ) ) {
-					$where[]    = 'membership_id = %d';
+					$where[]    = '`o`.`membership_id` = %d';
 					$prepared[] = $args['membership_level_id'];
 				} else {
-					$where[]  = 'membership_id IN ( ' . implode( ', ', array_fill( 0, count( $args['membership_level_id'] ), '%d' ) ) . ' )';
+					$where[]  = '`o`.`membership_id` IN ( ' . implode( ', ', array_fill( 0, count( $args['membership_level_id'] ), '%d' ) ) . ' )';
 					$prepared = array_merge( $prepared, $args['membership_level_id'] );
 				}
 			}
@@ -535,10 +535,10 @@
 			// Filter by status(es).
 			if ( isset( $args['status'] ) ) {
 				if ( ! is_array( $args['status'] ) ) {
-					$where[]    = 'status = %s';
+					$where[]    = '`o`.`status` = %s';
 					$prepared[] = $args['status'];
 				} else {
-					$where[]  = 'status IN ( ' . implode( ', ', array_fill( 0, count( $args['status'] ), '%s' ) ) . ' )';
+					$where[]  = '`o`.`status` IN ( ' . implode( ', ', array_fill( 0, count( $args['status'] ), '%s' ) ) . ' )';
 					$prepared = array_merge( $prepared, $args['status'] );
 				}
 			}
@@ -546,10 +546,10 @@
 			// Filter by subscription transaction ID(s).
 			if ( isset( $args['subscription_transaction_id'] ) ) {
 				if ( ! is_array( $args['subscription_transaction_id'] ) ) {
-					$where[]    = 'subscription_transaction_id = %s';
+					$where[]    = '`o`.`subscription_transaction_id` = %s';
 					$prepared[] = $args['subscription_transaction_id'];
 				} else {
-					$where[]  = 'subscription_transaction_id IN ( ' . implode( ', ', array_fill( 0, count( $args['subscription_transaction_id'] ), '%s' ) ) . ' )';
+					$where[]  = '`o`.`subscription_transaction_id` IN ( ' . implode( ', ', array_fill( 0, count( $args['subscription_transaction_id'] ), '%s' ) ) . ' )';
 					$prepared = array_merge( $prepared, $args['subscription_transaction_id'] );
 				}
 			}
@@ -557,10 +557,10 @@
 			// Filter by gateway(s).
 			if ( isset( $args['gateway'] ) ) {
 				if ( ! is_array( $args['gateway'] ) ) {
-					$where[]    = 'gateway = %s';
+					$where[]    = '`o`.`gateway` = %s';
 					$prepared[] = $args['gateway'];
 				} else {
-					$where[]  = 'gateway IN ( ' . implode( ', ', array_fill( 0, count( $args['gateway'] ), '%s' ) ) . ' )';
+					$where[]  = '`o`.`gateway` IN ( ' . implode( ', ', array_fill( 0, count( $args['gateway'] ), '%s' ) ) . ' )';
 					$prepared = array_merge( $prepared, $args['gateway'] );
 				}
 			}
@@ -568,10 +568,10 @@
 			// Filter by gateway environment(s).
 			if ( isset( $args['gateway_environment'] ) ) {
 				if ( ! is_array( $args['gateway_environment'] ) ) {
-					$where[]    = 'gateway_environment = %s';
+					$where[]    = '`o`.`gateway_environment` = %s';
 					$prepared[] = $args['gateway_environment'];
 				} else {
-					$where[]  = 'gateway_environment IN ( ' . implode( ', ', array_fill( 0, count( $args['gateway_environment'] ), '%s' ) ) . ' )';
+					$where[]  = '`o`.`gateway_environment` IN ( ' . implode( ', ', array_fill( 0, count( $args['gateway_environment'] ), '%s' ) ) . ' )';
 					$prepared = array_merge( $prepared, $args['gateway_environment'] );
 				}
 			}
@@ -579,10 +579,10 @@
 			// Filter by billing amount(s).
 			if ( isset( $args['total'] ) ) {
 				if ( ! is_array( $args['total'] ) ) {
-					$where[]    = 'total = %f';
+					$where[]    = '`o`.`total` = %f';
 					$prepared[] = $args['total'];
 				} else {
-					$where[]  = 'total IN ( ' . implode( ', ', array_fill( 0, count( $args['total'] ), '%f' ) ) . ' )';
+					$where[]  = '`o`.`total` IN ( ' . implode( ', ', array_fill( 0, count( $args['total'] ), '%f' ) ) . ' )';
 					$prepared = array_merge( $prepared, $args['total'] );
 				}
 			}
@@ -590,10 +590,10 @@
 			// Filter by payment transaction ID
 			if ( isset( $args['payment_transaction_id'] ) ) {
 				if ( ! is_array( $args['payment_transaction_id'] ) ) {
-					$where[]    = 'payment_transaction_id = %s';
+					$where[]    = '`o`.`payment_transaction_id` = %s';
 					$prepared[] = $args['payment_transaction_id'];
 				} else {
-					$where[]  = 'payment_transaction_id IN ( ' . implode( ', ', array_fill( 0, count( $args['payment_transaction_id'] ), '%f' ) ) . ' )';
+					$where[]  = '`o`.`payment_transaction_id` IN ( ' . implode( ', ', array_fill( 0, count( $args['payment_transaction_id'] ), '%f' ) ) . ' )';
 					$prepared = array_merge( $prepared, $args['payment_transaction_id'] );
 				}
 			}
@@ -611,20 +611,20 @@
 					$where[]    = '`dcu`.`code_id` = %d';
 					$prepared[] = $args['discount_code_id'];
 				} else {
-					$where[]  = 'dcu.code_id IN ( ' . implode( ', ', array_fill( 0, count( $args['discount_code_id'] ), '%d' ) ) . ' )';
+					$where[]  = '`dcu`.`code_id` IN ( ' . implode( ', ', array_fill( 0, count( $args['discount_code_id'] ), '%d' ) ) . ' )';
 					$prepared = array_merge( $prepared, $args['discount_code_id'] );
 				}
       }
 
 			// Filter by date range by start date. (YYYY-MM-DD HH:MM:SS UTC)
 			if ( isset( $args['start_date'] ) ) {
-				$where[]    = 'timestamp >= %s';
+				$where[]    = '`o`.`timestamp` >= %s';
 				$prepared[] = $args['start_date'];
 			}
 
 			// Filter by date range by end date. (YYYY-MM-DD HH:MM:SS UTC)
 			if ( isset( $args['end_date'] ) ) {
-				$where[]    = 'timestamp <= %s';
+				$where[]    = '`o`.`timestamp` <= %s';
 				$prepared[] = $args['end_date'];
 			}
 
