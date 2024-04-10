@@ -315,7 +315,7 @@ function pmpro_login_forms_handler( $show_menu = true, $show_logout_link = true,
 	$message = '';
 	$msgt = 'pmpro_alert';
 	$allowed_html = array('strong' => array() );
-	if ( isset( $_GET['action'] ) ) {
+	if ( isset( $_GET['action'] ) && ! is_user_logged_in() ) {
 		$username = isset( $_GET['username'] ) ? sanitize_text_field( $_GET['username'] ) : '';
 		switch ( sanitize_text_field( $_GET['action'] ) ) {
 			case 'failed':
