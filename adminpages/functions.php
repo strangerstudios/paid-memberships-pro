@@ -187,7 +187,7 @@ function pmpro_check_discount_code_for_gateway_compatibility( $discount_code = N
 			}
 		}
 	} else {
-		if ( ! is_numeric( $discount_code ) ) {
+		if (  $discount_code instanceof stdClass ) {
 			// Convert the code array into a single id.
 			$discount_code = $discount_code->id;
 		}
