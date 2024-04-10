@@ -85,7 +85,7 @@
 		$code_levels = apply_filters("pmpro_discount_code_level", $code_levels, $discount_code_id);
 	}
 
-	echo esc_html( sprintf( __( "The %s code has been applied to your order. ", 'paid-memberships-pro' ), $discount_code ) );
+	printf( esc_html__( 'The %s code has been applied to your order.', 'paid-memberships-pro' ), '<strong>' . esc_html( $discount_code ) . '</strong>' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 
 	$combined_level = null;
 	foreach ( $code_levels as $code_level ) {
@@ -130,8 +130,7 @@
 
 			<?php
 			$html = [];
-
-			$html[] = '<p class="' . pmpro_get_element_class( 'pmpro_level_discount_applied' ) . '">' . wp_kses_post( sprintf( __( 'The <strong>%s</strong> code has been applied to your order.', 'paid-memberships-pro' ), $discount_code ) ) . '</div>';
+			$html[] = '<p class="' . pmpro_get_element_class( 'pmpro_level_discount_applied' ) . '">' . sprintf( esc_html__( 'The %s code has been applied to your order.', 'paid-memberships-pro' ), '<strong>' . esc_html( $discount_code ) . '</strong>' ) . '</p>';
 
 			if ( count( $code_levels ) <= 1 ) {
 				$code_level = empty( $code_levels ) ? null : $code_levels[0];
