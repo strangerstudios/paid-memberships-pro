@@ -1478,7 +1478,7 @@
 			if(!$user || !$order)
 				return false;
 
-			$level = pmpro_getLevel($order->membership_id);
+			$level = pmpro_getLevel( $order->membership_id );
 
 			$this->email = $user->user_email;
 			$this->subject = __('Invoice for order #: ', 'paid-memberships-pro') . $order->code;
@@ -1506,7 +1506,9 @@
 				'invoice_url' => pmpro_login_url( pmpro_url( 'invoice', '?invoice=' . $order->code ) ),
 				'invoice_id' => $order->id,
 				'invoice' => $invoice,
-				'levels_url' => pmpro_url( 'levels' )
+				'levels_url' => pmpro_url( 'levels' ),
+				'membership_level_name' => $level->name,
+				'membership_level_id' => $order->membership_id
 			);
 
 			$this->template = apply_filters("pmpro_email_template", "billable_invoice", $this);
