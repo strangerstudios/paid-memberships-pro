@@ -163,7 +163,7 @@ jQuery( document ).ready( function( $ ) {
 						$('#pmpro_processing_message').css('visibility', 'visible');
 						$('#payment-request-button').hide();
 						/*
-						 Close the payment request interface immeditately. This is not the intended
+						 Close the payment request interface immediately. This is not the intended
 						 implementation from Stripe, but we are submitting the payment method
 						 through our default checkout process instead of letting Stripe
 						 process it through	the payment request button. Closing immediately also

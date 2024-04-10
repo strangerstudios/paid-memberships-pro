@@ -28,7 +28,7 @@ function pmpro_admin_init_redirect_to_dashboard() {
 add_action( 'admin_init', 'pmpro_admin_init_redirect_to_dashboard' );
 
 /**
- * Block Subscibers from accessing the WordPress Dashboard.
+ * Block Subscribers from accessing the WordPress Dashboard.
  *
  * @since 2.3.4
  */

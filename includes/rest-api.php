@@ -424,7 +424,7 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 						
 						if ( is_wp_error( $user_id ) ) {
 							$error = $user_id->get_error_message();
-							return new WP_REST_Response( $error, 500 ); // Assume it failed and return a 500 error occured like core WordPress.
+							return new WP_REST_Response( $error, 500 ); // Assume it failed and return a 500 error occurred like core WordPress.
 						}
 						
 						pmpro_maybe_send_wp_new_user_notification( $user_id, $level_id );

@@ -689,7 +689,7 @@ if ( ! empty( $pmpro_confirmed ) ) {
 				do_action( 'pmpro_discount_code_used', $discount_code_id, $user_id, $code_order_id );
 			}
 
-			//save billing info ect, as user meta
+			//save billing info etc, as user meta
 			$meta_keys   = array();
 			$meta_values = array();
 

@@ -229,7 +229,7 @@ class PMPro_Field {
 	public $options = array();
 
 	/**
-	 * Whether multiple options should be selectable when using a select, seelect2, or multiselect field type.
+	 * Whether multiple options should be selectable when using a select, select2, or multiselect field type.
 	 *
 	 * @since 2.9
 	 *
