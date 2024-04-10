@@ -55,14 +55,14 @@
 		 *
 		 * @var array $headers
 		 */
-		public  $headers;
+		public $headers = array();
 
 		/**
 		 * Email attachments
 		 *
 		 * @var array $attachments
 		 */
-		 public $attachments;
+		 public $attachments = array();
 
 		/**
 		 * Send an email to a member or admin. Uses the wp_mail function.
