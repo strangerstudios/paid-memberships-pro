@@ -177,7 +177,15 @@ class PMPro_Member_Edit_Panel_User_Info extends PMPro_Member_Edit_Panel {
 							<th scope="row"><label for="role"><?php esc_html_e( 'Role', 'paid-memberships-pro' ); ?></label></th>
 							<td>
 								<select name="role" id="role" class="<?php echo esc_attr( pmpro_getClassForField( 'role' ) ); ?>" <?php echo esc_attr( $disable_fields ); ?>>
-									<?php wp_dropdown_roles( $role ); ?>
+									<?php
+									wp_dropdown_roles( $role );
+									// Print the 'no role' option. Make it selected if the user has no role yet.
+									if ( $role ) {
+										echo '<option value="">' . __( '&mdash; No role for this site &mdash;' ) . '</option>';
+									} else {
+										echo '<option value="" selected="selected">' . __( '&mdash; No role for this site &mdash;' ) . '</option>';
+									}
+									?>
 								</select>
 							</td>
 						<?php
