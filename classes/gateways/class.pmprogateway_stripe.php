@@ -73,7 +73,7 @@ class PMProGateway_stripe extends PMProGateway {
 	 * 
 	 * @since 3.0
 	 * 
-	 * @return array
+	 * @return bool|string
 	 */
 	public static function supports( $feature ) {
 		$supports = array(
@@ -2723,7 +2723,7 @@ class PMProGateway_stripe extends PMProGateway {
 	 *
 	 * @since 2.7.0
 	 *
-	 * @param PMPro_Membership_Leve|int $level to get product ID for.
+	 * @param PMPro_Membership_Level|int $level to get product ID for.
 	 * @return string|null
 	 */
 	private function get_product_id_for_level( $level ) {
@@ -2873,7 +2873,7 @@ class PMProGateway_stripe extends PMProGateway {
 			$prices = Stripe_Price::all( $price_search_args );
 		} catch (\Throwable $th) {
 			// There was an error listing prices.
-			return $th->getMessage();;
+			return $th->getMessage();
 		} catch (\Exception $e) {
 			// There was an error listing prices.
 			return $e->getMessage();
@@ -3298,7 +3298,7 @@ class PMProGateway_stripe extends PMProGateway {
 	 */
 	private function delete_webhook( $webhook_id, $secretkey = false ) {
 		if ( empty( $secretkey ) ) {
-			$secretkey = $this->$get_secretkey();
+			$secretkey = $this->get_secretkey();
 		}
 		if ( is_array( $webhook_id ) ) {
 			$webhook_id = $webhook_id['webhook_id'];
@@ -3736,7 +3736,7 @@ class PMProGateway_stripe extends PMProGateway {
 	 * @since 2.7 Deprecated for public use.
 	 * @since 3.0 Updated to private non-static.
 	 *
-	 * @return The Stripe secret key.
+	 * @return string The Stripe secret key.
 	 */
 	private function get_secretkey() {
 		$secretkey = '';
@@ -3756,7 +3756,7 @@ class PMProGateway_stripe extends PMProGateway {
 	 * @since 2.7 Deprecated for public use.
 	 * @since 3.0 Updated to private non-static.
 	 *
-	 * @return The Stripe publishable key.
+	 * @return string The Stripe publishable key.
 	 */
 	private function get_publishablekey() {
 		$publishablekey = '';
