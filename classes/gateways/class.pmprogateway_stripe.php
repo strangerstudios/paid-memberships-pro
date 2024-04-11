@@ -40,18 +40,22 @@ class PMProGateway_stripe extends PMProGateway {
 	 */
 	private static $is_loaded = false;
 
+	private $order_id;
+
 	/**
 	 * Stripe Class Constructor
 	 *
 	 * @since 1.4
 	 */
-	function __construct( $gateway = null ) {
+	function __construct( $gateway = null, $order_id = null ) {
 		$this->gateway             = $gateway;
 		$this->gateway_environment = get_option( "pmpro_gateway_environment" );
 
-		if ( true === $this->dependencies() ) {
+	  $this->order_id = $order_id;
+
+	  if ( true === $this->dependencies() ) {
 			$this->loadStripeLibrary();
-			Stripe\Stripe::setApiKey( $this->get_secretkey() );
+			Stripe\Stripe::setApiKey( $this->get_secretkey( $this->order_id ) );
 			Stripe\Stripe::setAPIVersion( PMPRO_STRIPE_API_VERSION );
 			Stripe\Stripe::setAppInfo(
 				'WordPress Paid Memberships Pro',
@@ -70,9 +74,9 @@ class PMProGateway_stripe extends PMProGateway {
 	 ****************************************/
 	/**
 	 * Check whether or not a gateway supports a specific feature.
-	 * 
+	 *
 	 * @since 3.0
-	 * 
+	 *
 	 * @return array
 	 */
 	public static function supports( $feature ) {
@@ -87,7 +91,7 @@ class PMProGateway_stripe extends PMProGateway {
 
 		return $supports[$feature];
 	}
-	
+
 	 /**
 	 * Load the Stripe API library.
 	 *
@@ -179,7 +183,7 @@ class PMProGateway_stripe extends PMProGateway {
 				add_filter( 'pmpro_include_payment_information_fields', array(
 					'PMProGateway_stripe',
 					'pmpro_include_payment_information_fields'
-				) );				
+				) );
 			} else {
 				// Checkout flow for Stripe Checkout.
 				add_filter('pmpro_include_payment_information_fields', array('PMProGateway_stripe', 'show_stripe_checkout_pending_warning'));
@@ -800,8 +804,8 @@ class PMProGateway_stripe extends PMProGateway {
 			if ( ! function_exists( 'pmpro_stripe_javascript' ) ) {
 				$stripe = new PMProGateway_stripe();
 				$localize_vars = array(
-					'publishableKey' => $stripe->get_publishablekey(),
-					'user_id'        => $stripe->get_connect_user_id(),
+					'publishableKey' => $stripe->get_publishablekey( ! empty( $order ) ? $order->id : null ),
+					'user_id'        => $stripe->get_connect_user_id( ! empty( $order ) ? $order->id : null ),
 					'verifyAddress'  => apply_filters( 'pmpro_stripe_verify_address', get_option( 'pmpro_stripe_billingaddress' ) ),
 					'ajaxUrl'        => admin_url( "admin-ajax.php" ),
 					'msgAuthenticationValidated' => __( 'Verification steps confirmed. Your payment is processing.', 'paid-memberships-pro' ),
@@ -963,7 +967,7 @@ class PMProGateway_stripe extends PMProGateway {
 					<div id="payment-request-button"><!-- Alternate payment method will be inserted here. --></div>
 					<h4 class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout-field pmpro_payment-credit-card', 'pmpro_payment-credit-card' ) ); ?>">
 						<?php
-						echo esc_html( pmpro_is_checkout() ? __( 'Pay with Credit Card', 'paid-memberships-pro' ) : __( 'Credit Card', 'paid-memberships-pro' ) );					
+						echo esc_html( pmpro_is_checkout() ? __( 'Pay with Credit Card', 'paid-memberships-pro' ) : __( 'Credit Card', 'paid-memberships-pro' ) );
 						?>
 					</h4>
 				</div>
@@ -1494,7 +1498,7 @@ class PMProGateway_stripe extends PMProGateway {
 				</div>
 				<?php
 			}
-			
+
 			?>
 		</span>
 		<?php
@@ -1670,7 +1674,7 @@ class PMProGateway_stripe extends PMProGateway {
 		}
 
 		$checkout_session_params = apply_filters( 'pmpro_stripe_checkout_session_parameters', $checkout_session_params, $morder, $customer );
-		
+
 		try {
 			$checkout_session = Stripe_Checkout_Session::create( $checkout_session_params );
 		} catch ( Throwable $th ) {
@@ -1790,7 +1794,7 @@ class PMProGateway_stripe extends PMProGateway {
 
 		$payment_transaction_id = '';
 		$subscription_transaction_id = '';
-		
+
 		// User has either just submitted the checkout form or tried to confirm their
 		// payment intent.
 		$customer = null; // This will be used to create the subscription later.
@@ -1872,12 +1876,12 @@ class PMProGateway_stripe extends PMProGateway {
 				$order->shorterror = $order->error;
 				return false;
 			}
-			$order->stripe_subscription = $subscription;				
+			$order->stripe_subscription = $subscription;
 
 			// Successfully created a subscription.
 			$subscription_transaction_id = $subscription->id;
 		}
-		
+
 		// All charges have been processed and all subscriptions have been created.
 		$order->payment_transaction_id = $payment_transaction_id;
 		$order->subscription_transaction_id = $subscription_transaction_id;
@@ -2416,7 +2420,7 @@ class PMProGateway_stripe extends PMProGateway {
 							} else {
 								esc_html_e( 'Note: You are using the free Stripe payment gateway integration. There is no additional fee for payment processing above what Stripe charges.', 'paid-memberships-pro' );
 							}
-							
+
 						}
 						echo ' <a href="https://www.paidmembershipspro.com/gateway/stripe/?utm_source=plugin&utm_medium=pmpro-paymentsettings&utm_campaign=gateways&utm_content=stripe-fees#fees" target="_blank" rel="noopener noreferrer">' . esc_html__( 'Learn More', 'paid-memberships-pro' ) . '</a>';
 					?>
@@ -2691,7 +2695,7 @@ class PMProGateway_stripe extends PMProGateway {
 		if (
 			is_array( $pmpro_currencies[ $pmpro_currency ] ) &&
 			isset( $pmpro_currencies[ $pmpro_currency ]['decimals'] ) &&
-			$pmpro_currencies[ $pmpro_currency ]['decimals'] == 0 
+			$pmpro_currencies[ $pmpro_currency ]['decimals'] == 0
 		) {
 			$currency_unit_multiplier = 1;
 		}
@@ -3298,7 +3302,7 @@ class PMProGateway_stripe extends PMProGateway {
 	 */
 	private function delete_webhook( $webhook_id, $secretkey = false ) {
 		if ( empty( $secretkey ) ) {
-			$secretkey = $this->$get_secretkey();
+			$secretkey = $this->get_secretkey();
 		}
 		if ( is_array( $webhook_id ) ) {
 			$webhook_id = $webhook_id['webhook_id'];
@@ -3738,7 +3742,7 @@ class PMProGateway_stripe extends PMProGateway {
 	 *
 	 * @return The Stripe secret key.
 	 */
-	private function get_secretkey() {
+	private function get_secretkey( $order_id = null ) {
 		$secretkey = '';
 		if ( self::using_legacy_keys() ) {
 			$secretkey = get_option( 'pmpro_stripe_secretkey' );
@@ -3747,6 +3751,9 @@ class PMProGateway_stripe extends PMProGateway {
 				? get_option( 'pmpro_live_stripe_connect_secretkey' )
 				: get_option( 'pmpro_sandbox_stripe_connect_secretkey' );
 		}
+
+	  $secretkey = apply_filters( 'pmpro_stripe_secretkey', $secretkey, $order_id );
+
 		return $secretkey;
 	}
 
@@ -3758,7 +3765,7 @@ class PMProGateway_stripe extends PMProGateway {
 	 *
 	 * @return The Stripe publishable key.
 	 */
-	private function get_publishablekey() {
+	private function get_publishablekey( $order_id = null ) {
 		$publishablekey = '';
 		if ( self::using_legacy_keys() ) {
 			$publishablekey = get_option( 'pmpro_stripe_publishablekey' );
@@ -3767,7 +3774,10 @@ class PMProGateway_stripe extends PMProGateway {
 				? get_option( 'pmpro_live_stripe_connect_publishablekey' )
 				: get_option( 'pmpro_sandbox_stripe_connect_publishablekey' );
 		}
-		return $publishablekey;
+
+	  $publishablekey = apply_filters( 'pmpro_stripe_publishablekey', $publishablekey, $order_id );
+
+	  return $publishablekey;
 	}
 
 	/**
@@ -3779,11 +3789,15 @@ class PMProGateway_stripe extends PMProGateway {
 	 *
 	 * @return string The Stripe Connect User ID.
 	 */
-	private function get_connect_user_id() {
-		return get_option( 'pmpro_gateway_environment' ) === 'live'
+	private function get_connect_user_id( $order_id = null ) {
+		$connect_user_id = get_option( 'pmpro_gateway_environment' ) === 'live'
 			? get_option( 'pmpro_live_stripe_connect_user_id' )
 			: get_option( 'pmpro_sandbox_stripe_connect_user_id' );
-	}
+
+	  $connect_user_id = apply_filters( 'pmpro_stripe_connect_user_id', $connect_user_id, $order_id );
+
+    return $connect_user_id;
+  }
 
 	/**
 	 * @since 2.7 Deprecated for public use.

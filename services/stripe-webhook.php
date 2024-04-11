@@ -53,6 +53,9 @@
 		} else {
 			$secret_key = get_option( 'pmpro_sandbox_stripe_connect_secretkey' );
 		}
+
+		$secret_key = apply_filters( 'pmpro_stripe_webhook_secret_key', $secret_key );
+
 		Stripe\Stripe::setApiKey( $secret_key );
 	} catch ( Exception $e ) {
 		$logstr .= "Unable to set API key for Stripe gateway: " . $e->getMessage();

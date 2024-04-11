@@ -817,7 +817,16 @@ class PMPro_Subscription {
 		}
 
 		if ( class_exists( $classname ) ) {
-			return new $classname( $this->gateway );
+			$orders = $this->get_orders( [
+				'limit'   => 1,
+				'orderby' => '`timestamp` ASC, `id` ASC',
+			] );
+
+			if ( ! empty( $orders ) ) {
+				return new $classname( $this->gateway, end( $orders )->id );
+			} else {
+				return new $classname( $this->gateway );
+			}
 		}
 
 		return null;
