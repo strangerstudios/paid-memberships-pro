@@ -356,6 +356,15 @@ function pmpro_checkForUpgrades() {
 		// If the migration script has already ran, we need to update the db version to the latest version.
 		update_option( 'pmpro_db_version', '3.001' );
 	}
+
+	/**
+	 * Version 3.0.2
+	 * Default sites that are already using outdated page templates to continue using them.
+	 */
+	if ( $pmpro_db_version < 3.02 ) {
+		require_once( PMPRO_DIR . "/includes/updates/upgrade_3_0_2.php" );
+		pmpro_upgrade_3_0_2(); // This function will update the db version.
+	}
 }
 
 function pmpro_db_delta() {

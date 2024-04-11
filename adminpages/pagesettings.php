@@ -80,6 +80,23 @@ if (!empty($_REQUEST['savesettings'])) {
         }
     }
 
+	// Save pmpro_use_custom_page_template settings.
+	foreach ( $pmpro_pages as $name => $page_id ) {
+		if ( isset( $_REQUEST[ 'pmpro_use_custom_page_template_' . $name ] ) ) {
+			if ( ! in_array( $_REQUEST[ 'pmpro_use_custom_page_template_' . $name ], array( 'yes', 'no' ) ) ) {
+				delete_option( 'pmpro_use_custom_page_template_' . $name );
+			} else {
+				update_option( 'pmpro_use_custom_page_template_' . $name, sanitize_text_field( $_REQUEST[ 'pmpro_use_custom_page_template_' . $name ] ) );
+			}
+		}
+	}
+
+	if ( empty( $_REQUEST['pmpro_disable_outdated_template_warning'] ) ) {
+		delete_option( 'pmpro_disable_outdated_template_warning' );
+	} else {
+		update_option( 'pmpro_disable_outdated_template_warning', sanitize_text_field( $_REQUEST['pmpro_disable_outdated_template_warning'] ) );
+	}
+
     //assume success
     $msg = true;
     $msgt = __("Your page settings have been updated.", 'paid-memberships-pro' );
@@ -465,6 +482,10 @@ require_once(dirname(__FILE__) . "/admin_header.php"); ?>
 					</tr>
 				</tbody>
 				</table>
+				<p class="submit">
+					<input name="savesettings" type="submit" class="button button-primary"
+						value="<?php esc_attr_e('Save Settings', 'paid-memberships-pro' ); ?>"/>
+				</p>
 			</div> <!-- end pmpro_section_inside -->
 		</div> <!-- end pmpro_section -->
 		<?php if ( ! empty( $extra_pages )) { ?>
@@ -523,14 +544,198 @@ require_once(dirname(__FILE__) . "/admin_header.php"); ?>
 						<?php } ?>
 						</tbody>
 					</table>
+					<p class="submit">
+						<input name="savesettings" type="submit" class="button button-primary"
+							value="<?php esc_attr_e('Save Settings', 'paid-memberships-pro' ); ?>"/>
+					</p>
 				</div> <!-- end pmpro_section_inside -->
 			</div> <!-- end pmpro_section -->
         <?php } ?>
-        <p class="submit">
-            <input name="savesettings" type="submit" class="button button-primary"
-                   value="<?php esc_attr_e('Save Settings', 'paid-memberships-pro' ); ?>"/>
-        </p>
-        <?php } ?>
+
+		<?php
+			// Create a $template => $path array of all default page templates.
+			$default_templates = array(
+				'account' => PMPRO_DIR . '/pages/account.php',
+				'billing' => PMPRO_DIR . '/pages/billing.php',
+				'cancel' => PMPRO_DIR . '/pages/cancel.php',
+				'checkout' => PMPRO_DIR . '/pages/checkout.php',
+				'confirmation' => PMPRO_DIR . '/pages/confirmation.php',
+				'invoice' => PMPRO_DIR . '/pages/invoice.php',
+				'levels' => PMPRO_DIR . '/pages/levels.php',
+				'login' => PMPRO_DIR . '/pages/login.php',
+				'member_profile_edit' => PMPRO_DIR . '/pages/member_profile_edit.php',
+			);
+
+			// Filter $default_templates so that Add Ons can add their own templates.
+			$default_templates = apply_filters( 'pmpro_default_page_templates', $default_templates );
+
+			// Loop through each template. For each, if a custom page template is being loaded, store:
+			// - The custom path being loaded.
+			// - The version of the default template.
+			// - The version of the custom template.
+			$custom_templates = array(); // Array of $template => array( 'default_version' => $default_version, 'loaded_version' => $loaded_version, 'loaded_path' => $loaded_path ).
+			foreach ( $default_templates as $template => $path ) {
+				// Gather information about the default and loaded templates.
+				$default_version = pmpro_get_version_for_page_template_at_path( $path );
+				$loaded_path = pmpro_get_template_path_to_load( $template );
+				$loaded_version = pmpro_get_version_for_page_template_at_path( $loaded_path );
+
+				// If the $path and $loaded_path are different, a custom template is being loaded.
+				if ( $path !== $loaded_path ) {
+					$custom_templates[ $template ] = array(
+						'default_version' => $default_version,
+						'loaded_version' => $loaded_version,
+						'loaded_path' => $loaded_path,
+					);
+				}
+			}
+
+			// If there are custom templates, display them.
+			if ( ! empty( $custom_templates ) ) {
+				?>
+				<div id="pmpro-custom-page-template-settings" class="pmpro_section" data-visibility="shown" data-activated="true">
+					<div class="pmpro_section_toggle">
+						<button class="pmpro_section-toggle-button" type="button" aria-expanded="false">
+							<span class="dashicons dashicons-arrow-down-alt2"></span>
+							<?php esc_html_e( 'Custom Page Templates', 'paid-memberships-pro' ); ?>
+						</button>
+					</div>
+					<div class="pmpro_section_inside">
+						<p>
+							<?php esc_html_e( 'Your site is loading custom page templates. These settings allow you to change which custom template is being loaded for your frontend pages. If your custom template is causing fatal errors or blocking the checkout process, you should load the core PMPro version while you or your developer works on template compatibility.', 'paid-memberships-pro' ); ?>
+						</p>
+						<h4><?php esc_html_e( 'How to Fix Outdated Page Templates', 'paid-memberships-pro' ); ?></h4>
+						<ol>
+							<li><?php esc_html_e( 'If your templates are loaded from a third-party plugin or theme, update to the latest version or contact the developer and let them know their templates are out of date.', 'paid-memberships-pro' ); ?></li>
+							<li><?php esc_html_e( 'If you or your developer wrote your own templates, compare your version to the core PMPro version, make the required updates, and update the version number in your custom template.', 'paid-memberships-pro' ); ?></li>
+							<li><?php esc_html_e( 'If you are unable to update the custom template file, use the settings below to load the core PMPro version of the template.', 'paid-memberships-pro' ); ?></li>
+						</ol>
+						<p>
+							<a href="https://www.paidmembershipspro.com/documentation/templates/template-versions/" target="_blank"><?php esc_html_e( 'Docs: Template versions and outdated templates', 'paid-memberships-pro' ); ?></a>
+						</p>
+						<table class="widefat striped">
+							<thead>
+								<tr>
+									<th><?php esc_html_e( 'Template', 'paid-memberships-pro' ); ?></th>
+									<th><?php esc_html_e( 'Core PMPro Version', 'paid-memberships-pro' ); ?></th>
+									<th><?php esc_html_e( 'Custom Template Version', 'paid-memberships-pro' ); ?></th>
+									<th><?php esc_html_e( 'Action', 'paid-memberships-pro' ); ?></th>
+								</tr>
+							</thead>
+							<tbody>
+								<?php
+								foreach ( $custom_templates as $template => $data ) {
+									// Calculate data for "Custom Template Version" column.
+									$versions_match = $data['loaded_version'] === $data['default_version'];
+									$loaded_path_parts = explode('/', $data['loaded_path']);
+									if (strpos($data['loaded_path'], '/themes/') !== false) {
+										// Must be from a theme.
+										$loaded_file_from_name = $loaded_path_parts[ array_search('themes', $loaded_path_parts) + 1 ];
+										$loaded_path_source_type = __('theme', 'paid-memberships-pro');
+									} else {
+										// Must be from a plugin.
+										$loaded_file_from_name = $loaded_path_parts[ array_search('plugins', $loaded_path_parts) + 1 ];
+										$loaded_path_source_type = __('plugin', 'paid-memberships-pro');
+									}
+
+									// Detect the current "using page template?" setting.
+									$use_custom_page_template = get_option( 'pmpro_use_custom_page_template_' . $template );
+									if ( 'no' !== $use_custom_page_template && 'yes' != $use_custom_page_template ) {
+										$use_custom_page_template = ''; // Empty is "use custom page template when compatible with current PMPro version".
+									}
+
+									// Output the row.
+									?>
+									<tr>
+										<td><?php echo esc_html( $template ); ?></td>
+										<td>
+											<strong><?php echo esc_html( empty( $data['default_version'] ) ? esc_html__( 'N/A', 'paid-memberships-pro' ) : $data['default_version'] ); ?></strong>
+											<br />
+											<small><?php
+											// Display the source of the PMPro version from the Paid Memberships Pro plugin.
+											// translators: %1$s: The Paid Memberships Pro plugin folder name.
+											printf( esc_html__( 'Plugin: %1$s', 'paid-memberships-pro' ), '<code>paid-memberships-pro</code>' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+											?></small>
+										</td>
+										<td>
+											<strong style="color: var(--pmpro--color--<?php echo $versions_match ? 'success' : 'error'; ?>-text);">
+												<?php echo esc_html( empty( $data['loaded_version'] ) ? esc_html__( 'N/A', 'paid-memberships-pro' ) : $data['loaded_version'] ); ?>
+											</strong>
+											<?php if ( $use_custom_page_template == 'yes' && ! $versions_match ) { ?>
+												<span class="pmpro_tag pmpro_tag-has_icon pmpro_tag-error"><?php esc_html_e( 'Outdated Template', 'paid-memberships-pro' ); ?></span>
+											<?php } ?>
+											<br />
+											<small><?php
+											// Display the source of the loaded file and type.
+											// translators: %1$s: The source type of the loaded file. %2$s: The theme or plugin folder name of the loaded file.
+											printf( esc_html__( '%1$s: %2$s', 'paid-memberships-pro' ), esc_html( ucwords( $loaded_path_source_type ) ), '<code>' . esc_html( $loaded_file_from_name ) . '</code>' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+											?></small>
+										</td>
+										<td>
+											<?php if ( 'yes' === $use_custom_page_template && ! $versions_match ) { ?>
+												<span class="pmpro_tag pmpro_tag-has_icon pmpro_tag-error">
+											<?php } ?>
+											<select name="pmpro_use_custom_page_template_<?php echo esc_attr( $template ); ?>">
+												<option value="yes" <?php selected( $use_custom_page_template, 'yes' ); ?>>
+													<?php
+													// translators: %s: The custom page template name.
+													echo esc_html( sprintf( __('Custom: Always use my custom %s template.', 'paid-memberships-pro' ), $template ) );
+													?>
+												</option>
+												<option value="" <?php selected( $use_custom_page_template, '' ); ?>>
+													<?php
+													// translators: %s: The custom page template name.
+													echo esc_html( sprintf( __('Fallback: Use the core PMPro template if my custom %s template is not compatible.', 'paid-memberships-pro' ), $template ) );
+													?>
+												</option>
+												<option value="no" <?php selected( $use_custom_page_template, 'no' ); ?>>
+													<?php
+													// translators: %s: The custom page template name.
+													echo esc_html( sprintf( __('Core: Always use the core PMPro %s template.', 'paid-memberships-pro' ), $template ) );
+													?>
+												</option>
+											</select>
+											<?php if ( 'yes' === $use_custom_page_template && ! $versions_match ) { ?>
+												</span>
+											<?php } ?>
+										</td>
+									</tr>
+									<?php
+								}
+								?>
+							</tbody>
+						</table>
+						<?php
+						// Add a dropdown setting to disable the "outdated template" warning.
+						$disable_outdated_template_warning = ! empty( get_option( 'pmpro_disable_outdated_template_warning' ) );
+						?>
+						<table class="form-table">
+							<tbody>
+								<tr>
+									<th scope="row" valign="top">
+										<label for="pmpro_disable_outdated_template_warning"><?php esc_html_e( 'Disable Outdated Template Warning', 'paid-memberships-pro' ); ?></label>
+									</th>
+									<td>
+										<select name="pmpro_disable_outdated_template_warning">
+											<option value="0" <?php selected( $disable_outdated_template_warning, false ); ?>><?php esc_html_e( 'Show warning for outdated custom page templates.', 'paid-memberships-pro' ); ?></option>
+											<option value="1" <?php selected( $disable_outdated_template_warning, true ); ?>><?php esc_html_e( 'Do not show warning for outdated custom page templates.', 'paid-memberships-pro' ); ?></option>
+										</select>
+										<p class="description"><?php esc_html_e( 'If you are aware of the outdated custom page templates and do not want to see the warning, you can disable it here.', 'paid-memberships-pro' ); ?></p>
+									</td>
+								</tr>
+							</tbody>
+						</table>
+						<p class="submit">
+							<input name="savesettings" type="submit" class="button button-primary"
+								value="<?php esc_attr_e('Save Settings', 'paid-memberships-pro' ); ?>"/>
+						</p>
+						<?php
+					} ?>
+					</div>
+				</div>
+				<?php
+			}
+			?>
     </form>
 
 <?php
