@@ -1323,20 +1323,30 @@
 			if( !$user ) {
 				return false;
 			}
-
-			if ( empty( $membership_id ) ) {
-				$membership_level = pmpro_getMembershipLevelForUser( $user->ID );
+			//If we have a membership ID, get the level.
+			if (! empty( $membership_id ) ) {
+				$membership_level = pmpro_getLevel( $membership_id );
+			//If not let's find out what's the last ended membership level.
 			} else {
-				$membership_level = pmpro_getSpecificMembershipLevelForUser( $user->ID, $membership_id );
-			}
+				//Get all levels for a specific member
+				$all_levels = pmpro_getMembershipLevelsForUser( $user->ID );
+				//Bail if we don't have any levels.
+				if ( empty( $all_levels ) ) {
+					return false;
+				}
+				//get the older membership
+				$membership_level = array_reduce( $all_levels, function ( $oldest_level, $current_level ) {
+					// Check if the level status is not "active" and compare end dates
+					if ( $current_level->enddate !== null && ( $oldest_level === null || $current_level->enddate > $oldest_level->enddate ) ) {
+						return $current_level;
+					}
+					return $oldest_level;
+				});
 
-			//Bail if we still don't have a membership level.
-			if ( !$membership_level ) {
-				return false;
 			}
 
 			$this->email = $user->user_email;
-			$this->subject = sprintf(__("Your membership at %s has ended", "paid-memberships-pro"), get_option("blogname"));			
+			$this->subject = sprintf( __("Your membership at %s has ended", "paid-memberships-pro"), get_option( "blogname" ) );
 
 			$this->data = array(
 				"subject" => $this->subject,
@@ -1359,7 +1369,7 @@
 
 			return $this->sendEmail();
 		}
-		
+
 		/**
 		 * Send the member an email when their membership has ended.
 		 *
