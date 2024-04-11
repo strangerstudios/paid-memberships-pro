@@ -3298,7 +3298,7 @@ class PMProGateway_stripe extends PMProGateway {
 	 */
 	private function delete_webhook( $webhook_id, $secretkey = false ) {
 		if ( empty( $secretkey ) ) {
-			$secretkey = $this->$get_secretkey();
+			$secretkey = $this->get_secretkey();
 		}
 		if ( is_array( $webhook_id ) ) {
 			$webhook_id = $webhook_id['webhook_id'];
