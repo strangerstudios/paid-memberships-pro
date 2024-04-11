@@ -471,10 +471,13 @@ function pmpro_lifter_unregister_membership_post_type( $post_type, $args ) {
 		return;
 	}
 
-    if ( 'llms_membership' === $post_type ) {
-		unregister_post_type( 'llms_membership' );
-	}
 
+	add_filter( 'register_post_type_args', function( $args, $post_type ) {
+		if ( 'llms_membership' === $post_type ) {
+			$args['has_archive'] = false;
+		}
+		return $args;
+	}, 10, 2 );
 }
 
 add_action( 'registered_post_type', 'pmpro_lifter_unregister_membership_post_type', 10, 2 );
