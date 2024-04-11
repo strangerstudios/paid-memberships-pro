@@ -197,7 +197,7 @@
 			if(empty($order->subscription_transaction_id))
 				return false;
 			
-			//simulate a successful cancel			
+			//simulate a successful cancel
 			$order->updateStatus("cancelled");					
 			return true;
 		}	

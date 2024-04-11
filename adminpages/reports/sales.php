@@ -460,7 +460,7 @@ function pmpro_report_sales_page()
 	$param_hash = md5( implode( ' ', $param_array ) . PMPRO_VERSION );
 	set_transient( 'pmpro_sales_data_' . $param_hash, $csvdata, HOUR_IN_SECONDS );
 
-	// Here, we're goign to build data for the Google Chart.
+	// Here, we're going to build data for the Google Chart.
 	// We are doing the calculations up here so that we don't need to weave them into the JS to display the chart.
 	$google_chart_column_labels = array();
 	$google_chart_row_data = array();
