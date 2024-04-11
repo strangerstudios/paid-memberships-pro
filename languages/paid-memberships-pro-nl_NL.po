@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2024-04-11T15:49:04+00:00\n"
+"POT-Creation-Date: 2024-04-11T16:09:03+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.10.0\n"
 "X-Domain: paid-memberships-pro\n"
@@ -27543,4 +27543,8 @@ msgstr ""
 
 #: includes/page-templates.php:233
 msgid "View outdated page templates"
+msgstr ""
+
+#: classes/gateways/class.pmprogateway_stripe.php:3943
+msgid "Admin: An error occurred while attempting to process this refund."
 msgstr ""
