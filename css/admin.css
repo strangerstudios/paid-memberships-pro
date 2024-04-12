@@ -1610,7 +1610,6 @@ table.pmprommpu_levels tr.remove_level td {background: #F2DEDE; }
 
 .pmpro_discount_code-tag {
 	border: 2px dashed var(--pmpro--color--blue-darkest);
-	color: var(--pmpro--color--blue);
 	display: block;
 	font-size: 12px;
 	font-weight: normal;
@@ -1620,7 +1619,7 @@ table.pmprommpu_levels tr.remove_level td {background: #F2DEDE; }
 
 .pmpro_discount_code-tag:hover {
 	background-color: #FFF;
-	border-color: var(--pmpro--color--blue);
+	border-color: currentColor;
 }
 
 .pmpro_discount_code-tag:before {
