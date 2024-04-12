@@ -406,7 +406,7 @@
 
 				$user = get_user_by( 'email', $morder->Email );
 				if ( empty( $user ) ) {
-					$logstr .= "Couldn't find the old order's user. Order ID = " . $old_order->id . ".";
+					$logstr .= "Couldn't find the old order's user. Order ID = " . $morder->id . ".";
 					pmpro_stripeWebhookExit();
 				}
 
