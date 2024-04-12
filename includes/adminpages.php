@@ -469,9 +469,8 @@ function pmpro_admin_membership_access_menu_bar() {
 		<?php wp_nonce_field( 'pmpro_admin_membership_access', 'pmpro_admin_membership_access_nonce' ); ?>
 	</form>
 	<script>
-		jQuery( document ).ready( function( $ ) {
-			//Prevent hoverIntent from firing due propagation from this event. Issue #2907
-			$( '#pmpro-admin-membership-access' ).on( 'mouseout', function( ev ) {
+		document.addEventListener( 'DOMContentLoaded', function() {
+			document.getElementById( 'pmpro-admin-membership-access' ).addEventListener( 'mouseout', function( ev ) {
 				ev.stopPropagation();
 			});
 		});
