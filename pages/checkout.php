@@ -70,7 +70,13 @@ if ( empty( $default_gateway ) ) {
 				<p class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_level_name_text' ) );?>">
 					<?php
 					// Tell the user which level they are signing up for.
-					printf( esc_html__('You have selected the %s membership level.', 'paid-memberships-pro' ), '<strong>' . esc_html( $pmpro_level->name ) . '</strong>' );
+					printf(
+            				   wp_kses(
+                				__('You have selected the <strong>%s</strong> membership level.', 'paid-memberships-pro'),
+                				array('strong' => array())
+            					),
+            				   esc_html($pmpro_level->name)
+        				);
 
 					// If a level will be removed with this purchase, let them know that too.
 					// First off, get the group for this level and check if it allows a user to have multiple levels.
