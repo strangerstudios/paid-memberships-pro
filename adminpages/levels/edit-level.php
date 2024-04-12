@@ -603,7 +603,6 @@ if (!empty($page_msg)) { ?>
 					'href' => array(),
 					'title' => array(),
 					'target' => array(),
-					'title' => array(),
 				),
 			);
 			?>
