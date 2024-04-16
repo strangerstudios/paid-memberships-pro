@@ -37,7 +37,6 @@ class PMPro_Member_Edit_Panel_User_Info extends PMPro_Member_Edit_Panel {
 		$user_email = ! empty( $_POST['email'] ) ? stripslashes( sanitize_email( $_POST['email'] ) ) : '';
 		$first_name = ! empty( $_POST['first_name'] ) ? stripslashes( sanitize_text_field( $_POST['first_name'] ) ): '';
 		$last_name = ! empty( $_POST['last_name'] ) ? stripslashes( sanitize_text_field( $_POST['last_name'] ) ) : '';	
-		$role = ! empty( $_POST['role'] ) ? sanitize_text_field( $_POST['role'] ) : get_option( 'default_role' );
 		$user_notes = ! empty( $_POST['user_notes'] ) ? stripslashes( sanitize_textarea_field( $_POST['user_notes'] ) ) : '';
 
 		// If we are edting a user, get the user information.
@@ -47,7 +46,6 @@ class PMPro_Member_Edit_Panel_User_Info extends PMPro_Member_Edit_Panel {
 			$user_email = $user->user_email;
 			$first_name = $user->first_name;
 			$last_name = $user->last_name;
-			$role = current( $user->roles );
 			$user_notes = $user->user_notes;
 		} else {
 			// We are creating a new user.
@@ -161,38 +159,6 @@ class PMPro_Member_Edit_Panel_User_Info extends PMPro_Member_Edit_Panel {
 					<p class="description"><?php esc_html_e( 'Member notes are private and only visible to other users with membership management capabilities.', 'paid-memberships-pro' ); ?></p>
 				</td>
 			</tr>
-			<?php if ( ! IS_PROFILE_PAGE && current_user_can( 'promote_user', $user->ID ) ) {
-				?>
-				<tr>
-					<?php
-						// Set the role to subscriber if the default role is subscriber.
-						if ( empty( $user->ID ) && get_option( 'default_role' ) == 'subscriber' ) {
-							?>
-							<td colspan="2">
-								<input type="hidden" name="role" id="role" value="subscriber">
-							</td>
-							<?php
-						} else {
-							?>
-							<th scope="row"><label for="role"><?php esc_html_e( 'Role', 'paid-memberships-pro' ); ?></label></th>
-							<td>
-								<select name="role" id="role" class="<?php echo esc_attr( pmpro_getClassForField( 'role' ) ); ?>" <?php echo esc_attr( $disable_fields ); ?>>
-									<?php
-									wp_dropdown_roles( $role );
-									// Print the 'no role' option. Make it selected if the user has no role yet.
-									if ( $role ) {
-										echo '<option value="">' . __( '&mdash; No role for this site &mdash;' ) . '</option>';
-									} else {
-										echo '<option value="" selected="selected">' . __( '&mdash; No role for this site &mdash;' ) . '</option>';
-									}
-									?>
-								</select>
-							</td>
-						<?php
-						}
-					?>
-				</tr>
-			<?php } ?>
 		</table>
 		<?php
 		do_action( 'pmpro_after_membership_level_profile_fields', self::get_user() );
@@ -207,9 +173,6 @@ class PMPro_Member_Edit_Panel_User_Info extends PMPro_Member_Edit_Panel {
 			return;
 		}
 
-		// Get all roles for the site.
-		$wp_roles = wp_roles();
-
 		// Get the user we are editing or set up a new blank user.
 		$user = self::get_user();
 		$update = $user->ID ? true : false;
@@ -221,30 +184,6 @@ class PMPro_Member_Edit_Panel_User_Info extends PMPro_Member_Edit_Panel {
 		$pass1 = '';
 		if ( isset( $_POST['pass1'] ) ) {
 			$pass1 = trim( $_POST['pass1'] );
-		}
-
-		if ( isset( $_POST['role'] ) && current_user_can( 'promote_users' ) && ( ! $user->ID || current_user_can( 'promote_user', $user->ID ) ) ) {
-			$new_role = sanitize_text_field( $_POST['role'] );
-
-			// If the new role isn't editable by the logged-in user die with error.
-			$editable_roles = get_editable_roles();
-			if ( ! empty( $new_role ) && empty( $editable_roles[ $new_role ] ) ) {
-				wp_die( esc_html__( 'Sorry, you are not allowed to give users that role.', 'paid-memberships-pro' ), 403 );
-			}
-
-			$potential_role = isset( $wp_roles->role_objects[ $new_role ] ) ? $wp_roles->role_objects[ $new_role ] : false;
-
-			/*
-			 * Don't let anyone with 'promote_users' edit their own role to something without it.
-			 * Multisite super admins can freely edit their roles, they possess all caps.
-			 */
-			if (
-				( is_multisite() && current_user_can( 'manage_network_users' ) ) ||
-				get_current_user_id() !== $user->ID ||
-				( $potential_role && $potential_role->has_cap( 'promote_users' ) )
-			) {
-				$user->role = $new_role;
-			}
 		}
 
 		if ( isset( $_POST['email'] ) ) {
