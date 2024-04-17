@@ -220,17 +220,19 @@ jQuery(document).ready(function(){
 		}
 	}
 
-	// Call the pmpro_get_checkout_nonce AJAX function to get the updated nonce value.
-	// Important for correcting the nonce value at checkout if the user is logged in during the same page load.
-	jQuery.ajax({
-		url: pmpro.ajaxurl,
-		type: 'POST',
-		data: {
-			action: 'pmpro_get_checkout_nonce'
-		}
-	}).done(function(response) {
-		jQuery('input[name="pmpro_checkout_nonce"]').val(response);
-	});
+	// If a user was created during this page load, update the nonce to be valid.
+	// User is considered "created" if they were not logged in before the checkout preheader, and the username field is not present.
+	if ( pmpro.update_nonces ) {
+		jQuery.ajax({
+			url: pmpro.ajaxurl,
+			type: 'POST',
+			data: {
+				action: 'pmpro_get_checkout_nonce'
+			}
+		}).done(function(response) {
+			jQuery('input[name="pmpro_checkout_nonce"]').val(response);
+		});
+	}
 });
 
 // Get non-sensitive checkout form data to be sent to checkout_levels endpoint.
