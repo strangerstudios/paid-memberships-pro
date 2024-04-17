@@ -219,6 +219,17 @@ jQuery(document).ready(function(){
 			jQuery('#pmpro_message_bottom').hide();
 		}
 	}
+
+	// Call the pmpro_get_checkout_nonce AJAX function to get the updated nonce value.
+	jQuery.ajax({
+		url: pmpro.ajaxurl,
+		type: 'POST',
+		data: {
+			action: 'pmpro_get_checkout_nonce'
+		}
+	}).done(function(response) {
+		jQuery('input[name="pmpro_checkout_nonce"]').val(response);
+	});
 });
 
 // Get non-sensitive checkout form data to be sent to checkout_levels endpoint.

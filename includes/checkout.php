@@ -272,3 +272,21 @@ function pmpro_pull_checkout_data_from_order( $order ) {
 		return false;
 	}
 }
+
+/**
+ * AJAX method to get the checkout nonce.
+ *
+ * @since TBD
+ */
+function pmpro_get_checkout_nonce() {
+	// Get the checkout nonce.
+	$checkout_nonce = wp_create_nonce( 'pmpro_checkout_nonce' );
+
+	// Return the checkout nonce.
+	echo esc_html( $checkout_nonce );
+
+	// End the AJAX request.
+	wp_die();
+}
+add_action( 'wp_ajax_pmpro_get_checkout_nonce', 'pmpro_get_checkout_nonce' );
+add_action( 'wp_ajax_nopriv_pmpro_get_checkout_nonce', 'pmpro_get_checkout_nonce' );
