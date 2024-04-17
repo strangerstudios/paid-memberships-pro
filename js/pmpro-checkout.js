@@ -134,7 +134,7 @@ jQuery(document).ready(function(){
     }
 	
 	// Find ALL <form> tags on your page
-	jQuery('form').submit(function(){
+	jQuery('form#pmpro_form').submit(function(){
 		// On submit disable its submit button
 		jQuery('input[type=submit]', this).attr('disabled', 'disabled');
 		jQuery('input[type=image]', this).attr('disabled', 'disabled');
@@ -221,7 +221,7 @@ jQuery(document).ready(function(){
 	}
 });
 
-// Get non-sensitve checkout form data to be sent to checkout_levels endpoint.
+// Get non-sensitive checkout form data to be sent to checkout_levels endpoint.
 function pmpro_getCheckoutFormDataForCheckoutLevels() {
 	// We need the level, discount code, and any field with the pmpro_alter_price CSS class.
 	const checkoutFormData = jQuery( "#level, #pmpro_level, #discount_code, #pmpro_form .pmpro_alter_price" ).serializeArray();

@@ -609,7 +609,7 @@
 		}
 		
 		/**
-		 * Send the member a confirmation checkout email after succesfully purchasing a membership level.
+		 * Send the member a confirmation checkout email after successfully purchasing a membership level.
 		 *
 		 * @param object $user The WordPress user object.
 		 * @param MemberOrder $invoice The order object that is associated with the checkout.
@@ -737,7 +737,7 @@
 		}
 		
 		/**
-		 * Send the admin a confirmation checkout email after the member succesfully purchases a membership level.
+		 * Send the admin a confirmation checkout email after the member successfully purchases a membership level.
 		 *
 		 * @param object $user The WordPress user object.
 		 * @param MemberOrder $invoice The order object that is associated with the checkout.

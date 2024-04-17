@@ -4,7 +4,7 @@
  */
 
 /**
- * When a user is logged in, the BlueHost plugin will check if their passowrd is
+ * When a user is logged in, the BlueHost plugin will check if their password is
  * insecure. If it is, they will be redirected to an "insecure password" screen.
  * This can interrupt our checkout flow.
  *

@@ -857,7 +857,7 @@ class PMPro_Subscription {
 			// Get the first order object.
 			$order = current( $orders );
 
-			// Use the order total as the intitial payment.
+			// Use the order total as the initial payment.
 			$this->initial_payment = $order->total;
 		}
 

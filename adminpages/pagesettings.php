@@ -729,13 +729,12 @@ require_once(dirname(__FILE__) . "/admin_header.php"); ?>
 							<input name="savesettings" type="submit" class="button button-primary"
 								value="<?php esc_attr_e('Save Settings', 'paid-memberships-pro' ); ?>"/>
 						</p>
-						<?php
-					} ?>
 					</div>
 				</div>
 				<?php
 			}
-			?>
+		}
+		?>
     </form>
 
 <?php

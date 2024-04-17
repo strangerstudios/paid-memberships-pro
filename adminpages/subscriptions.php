@@ -148,7 +148,7 @@ if ( empty( $subscription ) ) {
 							echo esc_html( $sub_membership_level_name );
 
 							// If the subscription is active and the user has membership levels other than the one that the subscription is for, we should
-							// give the option to move the subcription to another user level.
+							// give the option to move the subscription to another user level.
 							if ( 'active' == $subscription->get_status() ) {
 								// Get all of the user's membership levels.
 								$user_membership_levels = pmpro_getMembershipLevelsForUser( $subscription->get_user_id() );

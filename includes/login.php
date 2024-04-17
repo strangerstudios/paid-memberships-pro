@@ -785,7 +785,7 @@ function pmpro_login_forms_handler_nav( $pmpro_form ) { ?>
 }
 
 /**
- * Function to handle the actualy password reset and update password.
+ * Function to handle the actually password reset and update password.
  * @since 2.3
  */
 function pmpro_do_password_reset() {

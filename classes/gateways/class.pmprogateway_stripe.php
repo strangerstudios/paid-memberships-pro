@@ -73,7 +73,7 @@ class PMProGateway_stripe extends PMProGateway {
 	 * 
 	 * @since 3.0
 	 * 
-	 * @return array
+	 * @return bool|string
 	 */
 	public static function supports( $feature ) {
 		$supports = array(
@@ -129,7 +129,7 @@ class PMProGateway_stripe extends PMProGateway {
 
 		//old global RE showing billing address or not
 		global $pmpro_stripe_lite;
-		$pmpro_stripe_lite = apply_filters( "pmpro_stripe_lite", ! get_option( "pmpro_stripe_billingaddress" ) );    //default is oposite of the stripe_billingaddress setting
+		$pmpro_stripe_lite = apply_filters( "pmpro_stripe_lite", ! get_option( "pmpro_stripe_billingaddress" ) );    //default is opposite of the stripe_billingaddress setting
 
 		$gateway = pmpro_getGateway();
 		if($gateway == "stripe")
@@ -428,9 +428,9 @@ class PMProGateway_stripe extends PMProGateway {
 					$failed_webhooks = array();
 					$missing_webhooks = array();
 					$working_webhooks = array();
-					// For sites that tracked "last webhook recieved" before we started tracking webhook events individually,
+					// For sites that tracked "last webhook received" before we started tracking webhook events individually,
 					// we want to ignore events that were sent by Stripe before site was updated to start tracking individual events.
-					$legacy_last_webhook_recieved_timestamp = get_option( 'pmpro_stripe_last_webhook_received_' . $stripe->gateway_environment );
+					$legacy_last_webhook_received_timestamp = get_option( 'pmpro_stripe_last_webhook_received_' . $stripe->gateway_environment );
 					foreach ( $required_webhook_events as $required_webhook_event ) {
 						$event_data = array( 'name' => $required_webhook_event );
 
@@ -453,8 +453,8 @@ class PMProGateway_stripe extends PMProGateway {
 								),
 								'type' => $required_webhook_event,
 							);
-							if ( ! empty( $legacy_last_webhook_recieved_timestamp ) ) {
-								$event_query_arr['created']['gt'] = strtotime( $legacy_last_webhook_recieved_timestamp );
+							if ( ! empty( $legacy_last_webhook_received_timestamp ) ) {
+								$event_query_arr['created']['gt'] = strtotime( $legacy_last_webhook_received_timestamp );
 							}
 
 							try {
@@ -1134,7 +1134,7 @@ class PMProGateway_stripe extends PMProGateway {
    }
 
    /**
-	 * This function is used to save the parameters returned after successfull connection of Stripe account.
+	 * This function is used to save the parameters returned after successful connection of Stripe account.
 	 *
 	 * @return void
 	 */
@@ -1427,7 +1427,7 @@ class PMProGateway_stripe extends PMProGateway {
 
 			$pmpro_stripe_error = true;
 			$msg                = - 1;
-			$msgt               = sprintf( __( "The Stripe Gateway requires PHP 5.3.29 or greater. We recommend upgrading to PHP %s or greater. Ask your host to upgrade.", "paid-memberships-pro" ), PMPRO_PHP_MIN_VERSION );
+			$msgt               = sprintf( __( "The Stripe Gateway requires PHP 5.3.29 or greater. We recommend upgrading to PHP %s or greater. Ask your host to upgrade.", "paid-memberships-pro" ), PMPRO_MIN_PHP_VERSION );
 
 			if ( ! is_admin() ) {
 				pmpro_setMessage( $msgt, "pmpro_error" );
@@ -1504,7 +1504,7 @@ class PMProGateway_stripe extends PMProGateway {
 	}
 
 	/**
-	 * Instead of changeing membership levels, send users to Stripe to pay.
+	 * Instead of changing membership levels, send users to Stripe to pay.
 	 *
 	 * @since 2.8
 	 *
@@ -1627,7 +1627,7 @@ class PMProGateway_stripe extends PMProGateway {
 			}
 		}
 
-		// Set up tax and billing addres collection.
+		// Set up tax and billing address collection.
 		$automatic_tax = ( ! empty( get_option( 'pmpro_stripe_tax' ) ) && 'no' !== get_option( 'pmpro_stripe_tax' ) ) ? array(
 			'enabled' => true,
 		) : array(
@@ -2516,7 +2516,7 @@ class PMProGateway_stripe extends PMProGateway {
 	 * Falls back on information in User object if insufficient
 	 * information in MemberOrder.
 	 *
-	 * Should only be called when checkout is being proceesed. Otherwise,
+	 * Should only be called when checkout is being processed. Otherwise,
 	 * use update_customer_from_user() method.
 	 *
 	 * @since 2.7.0
@@ -2723,7 +2723,7 @@ class PMProGateway_stripe extends PMProGateway {
 	 *
 	 * @since 2.7.0
 	 *
-	 * @param PMPro_Membership_Leve|int $level to get product ID for.
+	 * @param PMPro_Membership_Level|int $level to get product ID for.
 	 * @return string|null
 	 */
 	private function get_product_id_for_level( $level ) {
@@ -2873,7 +2873,7 @@ class PMProGateway_stripe extends PMProGateway {
 			$prices = Stripe_Price::all( $price_search_args );
 		} catch (\Throwable $th) {
 			// There was an error listing prices.
-			return $th->getMessage();;
+			return $th->getMessage();
 		} catch (\Exception $e) {
 			// There was an error listing prices.
 			return $e->getMessage();
@@ -3298,7 +3298,7 @@ class PMProGateway_stripe extends PMProGateway {
 	 */
 	private function delete_webhook( $webhook_id, $secretkey = false ) {
 		if ( empty( $secretkey ) ) {
-			$secretkey = $this->$get_secretkey();
+			$secretkey = $this->get_secretkey();
 		}
 		if ( is_array( $webhook_id ) ) {
 			$webhook_id = $webhook_id['webhook_id'];
@@ -3736,7 +3736,7 @@ class PMProGateway_stripe extends PMProGateway {
 	 * @since 2.7 Deprecated for public use.
 	 * @since 3.0 Updated to private non-static.
 	 *
-	 * @return The Stripe secret key.
+	 * @return string The Stripe secret key.
 	 */
 	private function get_secretkey() {
 		$secretkey = '';
@@ -3756,7 +3756,7 @@ class PMProGateway_stripe extends PMProGateway {
 	 * @since 2.7 Deprecated for public use.
 	 * @since 3.0 Updated to private non-static.
 	 *
-	 * @return The Stripe publishable key.
+	 * @return string The Stripe publishable key.
 	 */
 	private function get_publishablekey() {
 		$publishablekey = '';
@@ -3940,7 +3940,7 @@ class PMProGateway_stripe extends PMProGateway {
 				$myemail->sendRefundedAdminEmail( $user, $order );
 
 			} else {
-				$order->notes = trim( $order->notes . ' ' . __('Admin: An error occured while attempting to process this refund.', 'paid-memberships-pro' ) );
+				$order->notes = trim( $order->notes . ' ' . __('Admin: An error occurred while attempting to process this refund.', 'paid-memberships-pro' ) );
 			}
 
 		} catch ( \Throwable $e ) {			
