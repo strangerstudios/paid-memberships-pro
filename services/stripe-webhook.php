@@ -59,6 +59,13 @@
 		pmpro_stripeWebhookExit();
 	}
 
+	/**
+	 * Allow adding other content after the Order Settings table.
+	 *
+	 * @since TBD
+	 */
+	do_action( 'pmpro_stripe_before_retrieve_webhook_event' );
+
 	//get the event through the API now
 	if(!empty($event_id))
 	{
