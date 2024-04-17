@@ -481,7 +481,7 @@ if ( $submit && $pmpro_msgt != "pmpro_error" ) {
 					wp_set_auth_cookie( $user_id, true, apply_filters( 'pmpro_checkout_signon_secure', force_ssl_admin() ) );
 
 					// Update nonce value when we re-load the checkout page.
-					add_filter( 'pmpro_update_nonces_at_checkout', '__return_true' );
+					add_filter( 'pmpro_update_nonce_at_checkout', '__return_true' );
 
 					// Skip the account fields since we just created an account.
 					$skip_account_fields = true;

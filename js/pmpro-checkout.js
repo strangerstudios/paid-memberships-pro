@@ -222,7 +222,7 @@ jQuery(document).ready(function(){
 
 	// If a user was created during this page load, update the nonce to be valid.
 	// User is considered "created" if they were not logged in before the checkout preheader, and the username field is not present.
-	if ( pmpro.update_nonces ) {
+	if ( pmpro.update_nonce ) {
 		jQuery.ajax({
 			url: pmpro.ajaxurl,
 			type: 'POST',
