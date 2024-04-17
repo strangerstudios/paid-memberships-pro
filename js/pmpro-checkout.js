@@ -221,6 +221,7 @@ jQuery(document).ready(function(){
 	}
 
 	// Call the pmpro_get_checkout_nonce AJAX function to get the updated nonce value.
+	// Important for correcting the nonce value at checkout if the user is logged in during the same page load.
 	jQuery.ajax({
 		url: pmpro.ajaxurl,
 		type: 'POST',
