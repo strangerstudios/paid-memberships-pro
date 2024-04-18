@@ -46,6 +46,7 @@ class PMPro_Member_Edit_Panel_User_Info extends PMPro_Member_Edit_Panel {
 			$user_email = $user->user_email;
 			$first_name = $user->first_name;
 			$last_name = $user->last_name;
+			$role = current( $user->roles );
 			$user_notes = $user->user_notes;
 		} else {
 			// We are creating a new user.
@@ -159,6 +160,23 @@ class PMPro_Member_Edit_Panel_User_Info extends PMPro_Member_Edit_Panel {
 					<p class="description"><?php esc_html_e( 'Member notes are private and only visible to other users with membership management capabilities.', 'paid-memberships-pro' ); ?></p>
 				</td>
 			</tr>
+			<?php
+			if ( ! IS_PROFILE_PAGE && current_user_can( 'promote_user', $user->ID ) && ! empty( $user->ID ) ) {
+				?>
+				<tr>
+					<th scope="row"><label for="role"><?php esc_html_e( 'Role', 'paid-memberships-pro' ); ?></label></th>
+					<td>
+						<input type="text" name="role" id="role" autocapitalize="none" autocorrect="off" autocomplete="off" disabled value="<?php echo esc_attr( empty( $role ) ? '&mdash; No role for this site &mdash;' : $role ); ?>">
+						<p class="description">
+							<?php
+							printf( esc_html__( 'Roles can be changed from the %s page.', 'paid-memberships-pro' ), '<a href="' . esc_url( add_query_arg( array( 'user_id' => $user->ID ), admin_url( 'user-edit.php' ) ) ) . '" target="_blank">' . esc_html__( 'Edit User', 'paid-memberships-pro' ) . '</a>' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+							?>
+						</p>
+					</td>
+				</tr>
+				<?php
+			}
+			?>
 		</table>
 		<?php
 		do_action( 'pmpro_after_membership_level_profile_fields', self::get_user() );
