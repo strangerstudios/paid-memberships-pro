@@ -277,7 +277,7 @@ function pmpro_pull_checkout_data_from_order( $order ) {
  * AJAX method to get the checkout nonce.
  * Important for correcting the nonce value at checkout if the user is logged in during the same page load.
  *
- * @since TBD
+ * @since 3.0.3
  */
 function pmpro_get_checkout_nonce() {
 	// Output the checkout nonce.

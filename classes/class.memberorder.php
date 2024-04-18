@@ -916,7 +916,7 @@
 			 * @param PMProGateway $gateway_object Gateway object.
 			 * @param MemberOrder $this Member order object.
 			 *
-			 * @since TBD
+			 * @since 3.0.3
 			 */
 			$this->Gateway = apply_filters( 'pmpro_order_gateway_object', $this->Gateway, $this );
 

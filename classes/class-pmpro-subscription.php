@@ -826,7 +826,7 @@ class PMPro_Subscription {
 		 * @param PMProGateway $gateway_object Gateway object.
 		 * @param PMPro_Subscription $this Subscription object.
 		 *
-		 * @since TBD
+		 * @since 3.0.3
 		 */
 		$gateway_object = apply_filters( 'pmpro_subscription_gateway_object', $gateway_object, $this );
 

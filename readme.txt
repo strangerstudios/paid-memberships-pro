@@ -4,7 +4,7 @@ Tags: memberships, member, community, user profile, user registration
 Requires at least: 5.2
 Tested up to: 6.5
 Requires PHP: 5.6
-Stable tag: 3.0.2
+Stable tag: 3.0.3
 
 Build a membership site that grows with you: user registration, member profiles, 28 protected content types, free or paid subscriptions.
 
@@ -214,6 +214,20 @@ Not sure? You can find out by doing a bit a research.
 10. Advanced settings for updating non-member messages, optionally show excerpts or filter content, use reCAPTCHA, and a Terms of Service checkbox.
 
 == Changelog ==
+= 3.0.3 - 2024-04-18 =
+* ENHANCEMENT: No longer making API calls to pull subscription data from Stripe or PayPal Express when we do not have gateway credentials. #2956 (@mircobabini)
+* ENHANCEMENT: Added new filters `pmpro_subscription_gateway_object` and `pmpro_order_gateway_object` to allow developers to modify gateway objects before they are used. #2962 (@mircobabini)
+* ENHANCEMENT: Added a new filter `pmpro_stripe_before_retrieve_webhook_event` to allow developers to modify the Stripe API key before retrieving a webhook event. #2962 (@mircobabini)
+* BUG FIX: Fixed an issue where nonce verification checks may fail when creating a new user at checkout. #2963 (@dparker1005)
+* BUG FIX: Fixed issues where users' roles could be unintentionally changed on the Edit Member page by making the "Role" field read-only. #2961 (@dparker1005)
+* BUG FIX: Fixed an issue where the status for an old membership level would be `changed` instead of `admin_changed` when an admin modified a user's membership. #2965 (@dparker1005)
+* BUG FIX: Fixed PHP errors in the PMPro "Recent Members" Dashboard widget when a user that would be shown on that list was deleted. #2964 (@andrewlimaza)
+* BUG FIX: Added some missing global variables on admin pages. #2955 (@mircobabini)
+* BUG FIX: Fixed missing CSS color variable. #2955 (@kimcoleman)
+* BUG FIX: Fixed variable name when generating an error message in the Stripe webhook. #2955 (@mircobabini)
+* BUG FIX: Fixed an issue where the Braintree webhook log may not include transaction details. #2955 (@mircobabini)
+* REFACTOR: Removed duplicate array elements throughout the codebase. #2955 (@mircobabini)
+
 = 3.0.2 - 2024-04-11 =
 * ENHANCEMENT: Added settings to disable custom page templates when they are out of date. #2923 (@dparker1005, @kimcoleman)
 * ENHANCEMENT: Now defaulting the "View: My Access" setting to "View with my access". #2938 (@andrewlimaza) 

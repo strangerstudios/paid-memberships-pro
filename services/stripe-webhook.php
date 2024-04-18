@@ -62,7 +62,7 @@
 	/**
 	 * Allow adding other content after the Order Settings table.
 	 *
-	 * @since TBD
+	 * @since 3.0.3
 	 */
 	do_action( 'pmpro_stripe_before_retrieve_webhook_event' );
 
