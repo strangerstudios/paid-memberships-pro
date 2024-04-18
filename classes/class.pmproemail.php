@@ -1329,19 +1329,19 @@
 			//If not let's find out what's the last ended membership level.
 			} else {
 				//Get all levels for a specific member
-				$all_levels = pmpro_getMembershipLevelsForUser( $user->ID );
+				$all_levels = pmpro_getMembershipLevelsForUser( $user->ID, true );
 				//Bail if we don't have any levels.
 				if ( empty( $all_levels ) ) {
 					return false;
 				}
-				//get the older membership
+				//get the older inactive membership
 				$membership_level = array_reduce( $all_levels, function ( $oldest_level, $current_level ) {
-					// Check if the level status is not "active" and compare end dates
-					if ( $current_level->enddate !== null && ( $oldest_level === null || $current_level->enddate > $oldest_level->enddate ) ) {
-						return $current_level;
-					}
-					return $oldest_level;
-				});
+                    // Check if the level status is not "active" and compare end dates
+                    if ( $current_level->enddate !== null && ( $oldest_level === null || ( $current_level->enddate < time() && $current_level->enddate > $oldest_level->enddate  ) ) ) {
+                        return $current_level;
+                    }
+                    return $oldest_level;
+                });
 
 			}
 
