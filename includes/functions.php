@@ -1207,6 +1207,9 @@ function pmpro_changeMembershipLevel( $level, $user_id = null, $old_level_status
 	 */
 	$pmpro_deactivate_old_levels = apply_filters( 'pmpro_deactivate_old_levels', true );
 
+	// If we are deactivating old levels, typically we will want to put the old level in 'changed status.
+	// The exception is if the level is being changed by an administrator, in which case 'admin_changed' would have been passed to this function.
+	$change_status = 'admin_changed' === $old_level_status ? 'admin_changed' : 'changed';
 	if ( ! empty( $level_group) && empty( $level_group->allow_multiple_selections ) && $pmpro_deactivate_old_levels ) {
 		// Get all levels in the group.
 		$levels_in_group = pmpro_get_levels_for_group( $level_group->id );
@@ -1217,12 +1220,12 @@ function pmpro_changeMembershipLevel( $level, $user_id = null, $old_level_status
 
 		// Cancel the levels.
 		foreach ( $levels_to_cancel as $level_to_cancel ) {
-			pmpro_cancelMembershipLevel( $level_to_cancel, $user_id, 'changed' );
+			pmpro_cancelMembershipLevel( $level_to_cancel, $user_id, $change_status );
 		}
 	} elseif ( $pmpro_deactivate_old_levels ) {
 		// If the user already has this membership level, we still want to cancel it.
 		if ( in_array( $level_id, $membership_ids ) ) {
-			pmpro_cancelMembershipLevel( $level_id, $user_id, 'changed' );
+			pmpro_cancelMembershipLevel( $level_id, $user_id, $change_status );
 		}
 	}
 	

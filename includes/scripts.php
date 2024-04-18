@@ -49,6 +49,7 @@ function pmpro_enqueue_scripts() {
             'show_discount_code' => pmpro_show_discount_code(),
 			'discount_code_passed_in' => !empty( $_REQUEST['pmpro_discount_code'] ) && !empty( $_REQUEST['discount_code'] ),
             'sensitiveCheckoutRequestVars' => pmpro_get_sensitive_checkout_request_vars(),
+            'update_nonce' => apply_filters( 'pmpro_update_nonce_at_checkout', false ),
         ));
         wp_enqueue_script( 'pmpro_checkout' );
     }

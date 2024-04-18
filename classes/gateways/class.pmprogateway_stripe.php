@@ -2177,6 +2177,10 @@ class PMProGateway_stripe extends PMProGateway {
 	 * @return string|null Error message is returned if update fails.
 	 */
 	public function update_subscription_info( $subscription ) {
+		if( empty( $this->get_secretkey() ) ){
+			return __( "Stripe login credentials are not set.", 'paid-memberships-pro' );
+		}
+		
 		try {
 			$stripe_subscription = Stripe_Subscription::retrieve(
 				array(

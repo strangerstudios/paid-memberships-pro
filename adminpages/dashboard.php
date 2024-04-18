@@ -258,7 +258,13 @@ function pmpro_dashboard_report_recent_members_callback() {
     			foreach ( $theusers as $auser ) {
     				$auser = apply_filters( 'pmpro_members_list_user', $auser );
     				//get meta
-    				$theuser = get_userdata( $auser->ID ); ?>
+    				$theuser = get_userdata( $auser->ID ); 
+					
+					// Lets check again if the user exists as it may be pulling "old data" from the transient.
+					if ( ! isset( $theuser->ID ) ) {
+						continue;
+					}
+					?>
     				<tr>
     					<td class="username column-username">
     						<?php echo get_avatar($theuser->ID, 32)?>
