@@ -3645,9 +3645,15 @@ function pmpro_generatePages( $pages ) {
 			);
 
 			// make some pages a subpage of account
-			$top_level_pages = array( 'account', 'login' );
-			if ( ! in_array( $name, $top_level_pages ) ) {
+			$post_parent_account_pages = array( 'billing', 'cancel', 'invoice', 'member_profile_edit' );
+			if ( in_array( $name, $post_parent_account_pages ) ) {
 				$insert['post_parent'] = $pmpro_pages['account'];
+			}
+
+			// make some pages a subpage of checkout
+			$post_parent_checkout_pages = array( 'confirmation' );
+			if ( in_array( $name, $post_parent_checkout_pages ) ) {
+				$insert['post_parent'] = $pmpro_pages['checkout'];
 			}
 
 			// tweak the login slug

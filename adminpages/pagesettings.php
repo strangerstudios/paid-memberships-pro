@@ -130,7 +130,7 @@ if (!empty($_REQUEST['createpages'])) {
         $pages['cancel'] = __('Membership Cancel', 'paid-memberships-pro' );
         $pages['checkout'] = __('Membership Checkout', 'paid-memberships-pro' );
         $pages['confirmation'] = __('Membership Confirmation', 'paid-memberships-pro' );
-        $pages['invoice'] = __('Membership Invoice', 'paid-memberships-pro' );
+        $pages['invoice'] = __('Membership Orders', 'paid-memberships-pro' );
         $pages['levels'] = __('Membership Levels', 'paid-memberships-pro' );
 		$pages['login'] = __('Log In', 'paid-memberships-pro' );
 		$pages['member_profile_edit'] = __('Your Profile', 'paid-memberships-pro' );
