@@ -1481,7 +1481,7 @@
 			$level = pmpro_getLevel( $order->membership_id );
 
 			$this->email = $user->user_email;
-			$this->subject = __('Invoice for order #: ', 'paid-memberships-pro') . $order->code;
+			$this->subject = __('Receipt for order #: ', 'paid-memberships-pro') . $order->code;
 
 			// Load invoice template
 			if ( file_exists( get_stylesheet_directory() . '/paid-memberships-pro/pages/orders-email.php' ) ) {

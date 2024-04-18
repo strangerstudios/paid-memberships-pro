@@ -998,7 +998,7 @@ class PMPro_Orders_List_Table extends WP_List_Table {
 				'email'   => sprintf(
 					'<a title="%1$s" href="%2$s" data-order="%3$s" class="thickbox email_link">%4$s</a>',
 					esc_attr__( 'Email', 'paid-memberships-pro' ),
-					'#TB_inline?width=600&height=200&inlineId=email_invoice',
+					'#TB_inline?width=600&height=200&inlineId=email_order',
 					esc_attr( $item->id ),
 					esc_html__( 'Email', 'paid-memberships-pro' )
 				),

@@ -76,7 +76,7 @@ class PMPro_Member_Edit_Panel_Orders extends PMPro_Member_Edit_Panel {
 									<?php if ( function_exists( 'pmpro_add_email_order_modal' ) ) { ?>
 										|
 										<span class="email">
-											<a title="<?php esc_attr_e( 'Email', 'paid-memberships-pro' ); ?>" href="#TB_inline?width=600&height=200&inlineId=email_invoice" class="thickbox email_link" data-order="<?php echo esc_attr( $invoice->id ); ?>"><?php esc_html_e( 'Email', 'paid-memberships-pro' ); ?></a>
+											<a title="<?php esc_attr_e( 'Email', 'paid-memberships-pro' ); ?>" href="#TB_inline?width=600&height=200&inlineId=email_order" class="thickbox email_link" data-order="<?php echo esc_attr( $invoice->id ); ?>"><?php esc_html_e( 'Email', 'paid-memberships-pro' ); ?></a>
 										</span>
 									<?php } ?>
 								</div> <!-- end .row-actions -->
