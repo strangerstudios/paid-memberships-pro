@@ -16,20 +16,33 @@ $pmpro_levels = pmpro_sort_levels_by_order( pmpro_getAllLevels(false, true) );
 $pmpro_levels = apply_filters( 'pmpro_levels_array', $pmpro_levels );
 
 $level_groups  = pmpro_get_level_groups_in_order();
+//if atts array isn't empty and levels key exist explode the string to a new array
+if ( ! empty( $atts ) ) {
+	isset( $atts['levels'] ) ?  $atts_levels_ids = explode( ',', $atts['levels'] ) : $atts_levels_ids = array();
+	//the same than above but for the groups
+	isset( $atts['groups'] ) ?  $atts_groups_ids = explode( ',', $atts['groups'] ) : $atts_groups_ids = array();
+}
 
-if($pmpro_msg)
-{
-?>
-<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_message ' . $pmpro_msgt, $pmpro_msgt ) ); ?>"><?php echo wp_kses_post( $pmpro_msg ); ?></div>
+if( $pmpro_msg ) { ?>
+	<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_message ' . $pmpro_msgt, $pmpro_msgt ) ); ?>"><?php echo wp_kses_post( $pmpro_msg ); ?></div>
 <?php
 }
+
 foreach ( $level_groups as $level_group ) {
+	//If we have a list of groups to show and this group isn't in the list, skip it
+	if ( ! empty( $atts_groups_ids ) && ! in_array( $level_group->id, $atts_groups_ids ) ) {
+		continue;
+	}
 	$levels_in_group = pmpro_get_level_ids_for_group( $level_group->id );
 
 	// The pmpro_levels_array filter is sometimes used to hide levels from the levels page.
 	// Let's make sure that every level in the group should still be displayed.
 	$levels_to_show_for_group = array();
 	foreach ( $pmpro_levels as $level ) {
+		//If atts isn't empty check the level is present to show it
+		if ( ! empty( $atts_levels_ids ) && ! in_array( $level->id, $atts_levels_ids ) ) {
+			continue;
+		}
 		if ( in_array( $level->id, $levels_in_group ) ) {
 			$levels_to_show_for_group[] = $level;
 		}

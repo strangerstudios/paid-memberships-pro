@@ -70,7 +70,7 @@ function pmpro_wp()
 		//run the appropriate preheader function
 		foreach($pmpro_core_pages as $pmpro_page_name => $pmpro_page_id)
 		{
-			if( ! empty( $post->post_content ) && ( strpos( $post->post_content, "[pmpro_" . $pmpro_page_name . "]" ) !== false || ( function_exists( 'has_block' ) && has_block( 'pmpro/' . $pmpro_page_name . '-page', $post ) ) ) )
+			if( ! empty( $post->post_content ) && ( strpos( $post->post_content, "[pmpro_" . $pmpro_page_name ) !== false || ( function_exists( 'has_block' ) && has_block( 'pmpro/' . $pmpro_page_name . '-page', $post ) ) ) )
 			{
 				//preheader
 				require_once(PMPRO_DIR . "/preheaders/" . $pmpro_page_name . ".php");
@@ -82,7 +82,7 @@ function pmpro_wp()
 				function pmpro_pages_shortcode($atts, $content=null, $code="")
 				{
 					global $pmpro_page_name;
-					$temp_content = pmpro_loadTemplate($pmpro_page_name, 'local', 'pages');
+					$temp_content = pmpro_loadTemplate( $pmpro_page_name, 'local', 'pages', 'php', $atts );
 					return apply_filters("pmpro_pages_shortcode_" . $pmpro_page_name, $temp_content);
 				}
 				add_shortcode("pmpro_" . $pmpro_page_name, "pmpro_pages_shortcode");

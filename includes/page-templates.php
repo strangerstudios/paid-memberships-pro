@@ -61,13 +61,15 @@ function pmpro_get_template_path_to_load( $page_name = null, $where = 'local', $
  * @param string $where - `local` or `url` (whether to load from FS or over http)
  * @param string $type - Type of template (valid: 'email' or 'pages', 'adminpages', 'preheader')
  * @param string $ext - File extension ('php', 'html', 'htm', etc)
+ * @param array $atts - Array of attributes to pass to the template
  * @return string - The HTML for the template.
  *
  * TODO - Allow localized template files to be loaded?
  *
  * @since 1.8.9
+ * @since TBD Added $atts parameter to pass attributes to the template.
  */
-function pmpro_loadTemplate( $page_name = null, $where = 'local', $type = 'pages', $ext = 'php' ) {
+function pmpro_loadTemplate( $page_name = null, $where = 'local', $type = 'pages', $ext = 'php', $atts = array() ) {
 	// Get the path of the template to load.
 	$path = pmpro_get_template_path_to_load( $page_name, $where, $type, $ext );
 
