@@ -829,9 +829,6 @@
 					$order->payment_transaction_id = urldecode($this->httpParsedResponseAr['PROFILEID']);
 					$order->subscription_transaction_id = urldecode($this->httpParsedResponseAr['PROFILEID']);
 
-					//update order
-					$order->saveOrder();
-
 					return true;
 				} else {
 					// stop processing the review request on checkout page
