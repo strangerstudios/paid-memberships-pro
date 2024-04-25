@@ -6,8 +6,6 @@
 	"category": "pmpro",
 	"description": "Dynamic page section that displays a list of membership levels and pricing, linked to membership checkout. To reorder the display, navigate to Memberships > Settings > Levels.",
 	"keywords": [ "level", "price", "pricing table", "paid memberships pro", "pmpro" ],
-	"attributes" : {
-	},
 	"supports": {
 		"align": [ "wide", "full" ],
 		"ariaLabel": true,

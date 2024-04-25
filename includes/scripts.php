@@ -4,7 +4,7 @@
  */
 function pmpro_enqueue_scripts() {
     global $pmpro_level, $pmpro_pages;
-    
+
     // Figure out which frontend.css file to load.    
     if( file_exists( get_stylesheet_directory() . "/paid-memberships-pro/css/frontend.css" ) ) {
         $frontend_css = get_stylesheet_directory_uri() . "/paid-memberships-pro/css/frontend.css";        
@@ -14,7 +14,7 @@ function pmpro_enqueue_scripts() {
         $frontend_css = plugins_url( 'css/frontend.css',dirname(__FILE__) );        
     }
     wp_enqueue_style( 'pmpro_frontend', $frontend_css, array(), PMPRO_VERSION, "screen" );
-    
+
     // Figure out which frontend-rlt.css file to load if applicable.
     if( is_rtl() ) {        
         if( file_exists( get_stylesheet_directory() . "/paid-memberships-pro/css/frontend-rtl.css" ) ) {
@@ -35,7 +35,7 @@ function pmpro_enqueue_scripts() {
     else
         $print_css = plugins_url('css/print.css',dirname(__FILE__) );
     wp_enqueue_style('pmpro_print', $print_css, array(), PMPRO_VERSION, "print");
-    
+
     // Checkout page JS
     if ( pmpro_is_checkout() ) {
         wp_register_script( 'pmpro_checkout',
@@ -52,7 +52,7 @@ function pmpro_enqueue_scripts() {
         ));
         wp_enqueue_script( 'pmpro_checkout' );
     }
-    
+
     // Change Password page JS 
 	$is_change_pass_page = ! empty( $pmpro_pages['member_profile_edit'] )
 							&& is_page( $pmpro_pages['member_profile_edit'] )
@@ -120,10 +120,16 @@ function pmpro_admin_enqueue_scripts() {
 
         wp_enqueue_script( 'pmpro_confetti' );
     }
-   
+
 	$all_levels = pmpro_getAllLevels( true, true );
 	$all_level_values_and_labels = array();
 	$all_levels_formatted_text = array();
+	$all_groups = pmpro_get_level_groups_in_order();
+
+	//Iterate over groups and add levels
+	foreach( $all_groups as $group ) {
+		$group->levels = pmpro_get_level_ids_for_group( $group->id );
+	}
 
     // Enqueue pmpro-admin.js.
     wp_register_script( 'pmpro_admin',
@@ -133,7 +139,7 @@ function pmpro_admin_enqueue_scripts() {
     $all_levels = pmpro_getAllLevels( true, true );
     $all_level_values_and_labels = array();
     foreach( $all_levels as $level ) {
-        $all_level_values_and_labels[] = array( 'value' => $level->id, 'label' => $level->name );
+        $all_level_values_and_labels[] = array( 'value' => $level->id, 'label' => $level->name, 'group_id' => pmpro_get_group_id_for_level( $level->id ) );
 		$level->formatted_price = trim( pmpro_no_quotes( pmpro_getLevelCost( $level, true, true ) ) );
         $level->formatted_expiration = trim( pmpro_no_quotes( pmpro_getLevelExpiration( $level ) ) );
         $all_levels_formatted_text[$level->id] = $level;
@@ -147,16 +153,17 @@ function pmpro_admin_enqueue_scripts() {
     pmpro_get_field_html();
     $empty_field_html = ob_get_clean();
 
-    wp_localize_script( 'pmpro_admin', 'pmpro', array(
-        'all_levels' => $all_levels,
-        'all_levels_formatted_text' => $all_levels_formatted_text,
-        'all_level_values_and_labels' => $all_level_values_and_labels,
-        'checkout_url' => pmpro_url( 'checkout' ),
-        'user_fields_blank_group' => $empty_field_group_html,
-        'user_fields_blank_field' => $empty_field_html,
-        // We want the core WP translation so we can check for it in JS.
-        'plugin_updated_successfully_text' => __( 'Plugin updated successfully.' ),
-    ));
+	wp_localize_script( 'pmpro_admin', 'pmpro', array(
+		'all_levels' => $all_levels,
+		'all_levels_formatted_text' => $all_levels_formatted_text,
+		'all_level_values_and_labels' => $all_level_values_and_labels,
+		'all_groups' => $all_groups,
+		'checkout_url' => pmpro_url( 'checkout' ),
+		'user_fields_blank_group' => $empty_field_group_html,
+		'user_fields_blank_field' => $empty_field_html,
+		// We want the core WP translation so we can check for it in JS.
+		'plugin_updated_successfully_text' => __( 'Plugin updated successfully.' ),
+	));
     wp_enqueue_script( 'pmpro_admin' );
 
     // Enqueue styles.
@@ -168,7 +175,7 @@ function pmpro_admin_enqueue_scripts() {
 	} else {
 		$admin_css = plugins_url( 'css/admin.css', __DIR__ );
 	}
-    
+
     // Figure out which admin-rtl.css to load if applicable.
     if ( file_exists( get_stylesheet_directory() . '/paid-memberships-pro/css/admin-rtl.css' ) ) {
 		$admin_css_rtl = get_stylesheet_directory_uri() . '/paid-memberships-pro/css/admin-rtl.css';
@@ -176,7 +183,7 @@ function pmpro_admin_enqueue_scripts() {
 		$admin_css_rtl = get_template_directory_uri() . '/paid-memberships-pro/css/admin-rtl.css';
 	} else {
 		$admin_css_rtl = plugins_url( 'css/admin-rtl.css', __DIR__ );
-	}        
+	}
 
 	wp_register_style( 'pmpro_admin', $admin_css, [], PMPRO_VERSION, 'screen' );
 	wp_register_style( 'pmpro_admin_rtl', $admin_css_rtl, [], PMPRO_VERSION, 'screen' );

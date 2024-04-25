@@ -8,7 +8,12 @@ import { __ } from '@wordpress/i18n';
 /**
  * WordPress dependencies
  */
-import { useBlockProps } from '@wordpress/block-editor';
+import { useBlockProps, InspectorControls } from '@wordpress/block-editor';
+import { PanelBody } from '@wordpress/components';
+
+import Levels from './levels';
+import Groups from './groups';
+
 
 /**
  * Render the Membership Levels and Pricing Table block in the editor.
@@ -17,13 +22,29 @@ import { useBlockProps } from '@wordpress/block-editor';
  *
  * @return {WPElement} Element to render.
  */
-export default function Edit() {
+export default function Edit(props) {
 	const blockProps = useBlockProps( {} );
-	
+
 	return [
 		<div className="pmpro-block-element"  { ...blockProps }>
 			<span className="pmpro-block-title">{ __( 'Paid Memberships Pro', 'paid-memberships-pro' ) }</span>
 			<span className="pmpro-block-subtitle">{ __( 'Membership Levels List', 'paid-memberships-pro' ) }</span>
-		</div>
+		</div>,
+		<InspectorControls>
+			<PanelBody
+				title={ __( 'Membership Groups', 'paid-memberships-pro' ) }
+				initialOpen={ true }
+			>
+				{ Groups( props ) }
+			</PanelBody>
+			
+			<PanelBody
+				title={ __( 'Membership Levels', 'paid-memberships-pro' ) }
+				initialOpen={ true }
+			>
+			{ Levels( props ) }
+			</PanelBody>
+		</InspectorControls>
+		
 	];
 }

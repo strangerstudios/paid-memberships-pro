@@ -29,6 +29,21 @@ add_filter( 'block_categories_all', 'pmpro_block_categories' );
  */
 function pmpro_register_block_types() {
 	if ( function_exists( 'register_block_type' ) ) {
+
+		//Get all groups and levels to add as a default attribute to the levels-page block.
+		$all_groups = pmpro_get_level_groups_in_order();
+		$to_return = array();
+		foreach( $all_groups as $group ) {
+			$group->levels = pmpro_get_level_ids_for_group( $group->id );
+			$to_return[] = array( 'id' => $group->id, 'name' => $group->name, 'levels' => $group->levels );
+		}
+
+		$all_levels = pmpro_getAllLevels( true, true );
+		$all_level_values_and_labels = array();
+		foreach( $all_levels as $level ) {
+			$all_level_values_and_labels[] = array( 'value' => $level->id, 'label' => $level->name, 'group_id' => pmpro_get_group_id_for_level( $level->id ) );
+		}
+
 		register_block_type( PMPRO_DIR . '/blocks/build/account-invoices-section' );
 		register_block_type( PMPRO_DIR . '/blocks/build/account-profile-section' );	
 		register_block_type( PMPRO_DIR . '/blocks/build/account-links-section' );
@@ -40,7 +55,18 @@ function pmpro_register_block_types() {
 		register_block_type( PMPRO_DIR . '/blocks/build/checkout-page' );
 		register_block_type( PMPRO_DIR . '/blocks/build/confirmation-page' );
 		register_block_type( PMPRO_DIR . '/blocks/build/invoice-page' );
-		register_block_type( PMPRO_DIR . '/blocks/build/levels-page' );
+		register_block_type( PMPRO_DIR . '/blocks/build/levels-page' , array(
+			'attributes' => array(
+				'levels' => array(
+					'type' => 'array',
+					'default' => $all_level_values_and_labels,
+				),
+				'groups' => array(
+					'type' => 'array',
+					'default' => $to_return,
+				),
+			),
+		) );
 		register_block_type( PMPRO_DIR . '/blocks/build/login' );
 		register_block_type( PMPRO_DIR . '/blocks/build/member-profile-edit' );
 		register_block_type( PMPRO_DIR . '/blocks/build/membership' );
