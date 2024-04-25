@@ -1298,7 +1298,7 @@ function pmpro_get_field_group_html( $group = null ) {
 				<?php
 					if ( ! empty( $group->fields ) ) {
 						foreach ( $group->fields as $field ) {
-							echo wp_kses_post( pmpro_get_field_html( $field ) );
+							pmpro_get_field_html( $field );
 						}
 					}
                 ?>

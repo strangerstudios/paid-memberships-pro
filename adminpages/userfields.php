@@ -121,7 +121,7 @@
 
 					<?php						
 						foreach( $user_fields_settings as $group ) {
-							echo wp_kses_post( pmpro_get_field_group_html( $group ) );
+							pmpro_get_field_group_html( $group );
 						}
 					?>
 

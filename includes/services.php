@@ -198,7 +198,7 @@ add_action('wp_ajax_pmpro_update_level_group_order', 'pmpro_update_level_group_o
  * Callback to draw a field group.
  */
 function pmpro_userfields_get_group_ajax() {	
-	echo pmpro_get_field_group_html(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+	pmpro_get_field_group_html();
     exit;
 }
 add_action( 'wp_ajax_pmpro_userfields_get_group', 'pmpro_userfields_get_group_ajax' );
@@ -207,7 +207,7 @@ add_action( 'wp_ajax_pmpro_userfields_get_group', 'pmpro_userfields_get_group_aj
  * Callback to draw a field.
  */
 function pmpro_userfields_get_field_ajax() {
- 	echo pmpro_get_field_html(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+ 	pmpro_get_field_html();
 	exit;
 }
 add_action( 'wp_ajax_pmpro_userfields_get_field', 'pmpro_userfields_get_field_ajax' );
