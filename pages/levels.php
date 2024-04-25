@@ -18,9 +18,21 @@ $pmpro_levels = apply_filters( 'pmpro_levels_array', $pmpro_levels );
 $level_groups  = pmpro_get_level_groups_in_order();
 //if atts array isn't empty and levels key exist explode the string to a new array
 if ( ! empty( $atts ) ) {
-	isset( $atts['levels'] ) ?  $atts_levels_ids = explode( ',', $atts['levels'] ) : $atts_levels_ids = array();
-	//the same than above but for the groups
-	isset( $atts['groups'] ) ?  $atts_groups_ids = explode( ',', $atts['groups'] ) : $atts_groups_ids = array();
+	// Check if there are level ID's passed and sanitize them.
+	if ( isset( $atts['levels'] ) ) {
+		$atts_levels_ids = explode( ',', $atts['levels'] );
+		$atts_levels_ids = array_map( 'intval', $atts_levels_ids );
+	} else {
+		$atts_levels_ids = array();
+	}
+
+	// Check if there are group ID's passed and sanitize them.
+	if ( isset( $atts['groups'] ) ) {
+		$atts_groups_ids = explode( ',', $atts['groups'] );
+		$atts_groups_ids = array_map( 'intval', $atts_groups_ids );
+	} else {
+		$atts_groups_ids = array();
+	}
 }
 
 if( $pmpro_msg ) { ?>
