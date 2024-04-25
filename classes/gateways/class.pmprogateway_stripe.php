@@ -525,8 +525,6 @@ class PMProGateway_stripe extends PMProGateway {
 					<?php
 				}
 				?>
-				<p class="description"><?php esc_html_e( 'Webhook URL', 'paid-memberships-pro' ); ?>:
-				<code><?php echo esc_html( $stripe->get_site_webhook_url() ); ?></code></p>
             </td>
         </tr>
 		<tr class="pmpro_settings_divider gateway gateway_stripe" <?php if ( $gateway != "stripe" ) { ?>style="display: none;"<?php } ?>>
