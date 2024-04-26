@@ -501,11 +501,8 @@ function pmpro_login_forms_handler( $show_menu = true, $show_logout_link = true,
 					<?php
 						$login_form_array = array(
 							'value_username' => esc_html( $username ),
-							'redirect' => false
+							'redirect' => empty( $redirect_to ) ? false : esc_url( $redirect_to ),
 						);
-						if ( ! empty( $redirect_to ) ) {
-							$login_form_array['redirect'] = esc_url( $redirect_to );
-						}
 						pmpro_login_form( $login_form_array );
 						pmpro_login_forms_handler_nav( 'login' );
 					?>
