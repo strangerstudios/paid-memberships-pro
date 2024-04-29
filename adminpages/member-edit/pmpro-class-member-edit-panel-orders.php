@@ -115,7 +115,7 @@ class PMPro_Member_Edit_Panel_Orders extends PMPro_Member_Edit_Panel {
 											$gateway = esc_html( ucwords( $invoice->gateway ) );
 										}
 										if ( $invoice->gateway_environment == 'sandbox' ) {
-											$gateway .= ' (test)';
+											$gateway .= ' (' . esc_html__( 'test', 'paid-memberships-pro' ) . ')';
 										}
 
 										echo $gateway;
