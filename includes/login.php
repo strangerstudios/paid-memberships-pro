@@ -501,7 +501,7 @@ function pmpro_login_forms_handler( $show_menu = true, $show_logout_link = true,
 					<?php
 						$login_form_array = array(
 							'value_username' => esc_html( $username ),
-							'redirect' => empty( $redirect_to ) ? '' : esc_url( $redirect_to )
+							'redirect' => empty( $redirect_to ) ? '' : $redirect_to // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped - This is escaped above already.
 						);
 						pmpro_login_form( $login_form_array );
 						pmpro_login_forms_handler_nav( 'login' );
