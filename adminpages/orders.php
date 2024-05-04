@@ -338,7 +338,7 @@ require_once( dirname( __FILE__ ) . '/admin_header.php' ); ?>
 								<?php
 								}
 							?>
-							<p class="description"><?php esc_html_e( 'A randomly generated code that serves as a unique, non-sequential invoice number.', 'paid-memberships-pro' ); ?></p>
+							<p class="description"><?php esc_html_e( 'A randomly generated code that serves as a unique, non-sequential order number.', 'paid-memberships-pro' ); ?></p>
 						</td>
 					</tr>
 					<tr>
