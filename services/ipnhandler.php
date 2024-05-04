@@ -52,8 +52,8 @@ if ( ! pmpro_ipnCheckReceiverEmail( array( strtolower( $receiver_email ), strtol
 /*
 	PayPal Standard
 	- we will get txn_type subscr_signup and subscr_payment (or subscr_eot or subscr_failed or subscr_cancel)
-	- subscr_signup (if amount1 = 0, then we need to update membership, else ignore and wait for payment. create invoice for $0 with just subscr_id)
-	- subscr_payment (check if we should update membership, add invoice for amount with subscr_id and payment_id)
+	- subscr_signup (if amount1 = 0, then we need to update membership, else ignore and wait for payment. create order for $0 with just subscr_id)
+	- subscr_payment (check if we should update membership, add order for amount with subscr_id and payment_id)
 	- subscr_eot (usually sent for every subscription that doesn't have recurring activated, at the end)
 	- subscr_failed (usually sent if a recurring payment fails)
 	- subscr_cancel (sent on recurring payment profile cancellation)
@@ -652,20 +652,20 @@ function pmpro_ipnChangeMembershipLevel( $txn_id, &$morder ) {
 
 		//setup some values for the emails
 		if ( ! empty( $morder ) ) {
-			$invoice = new MemberOrder( $morder->id );
+			$order = new MemberOrder( $morder->id );
 		} else {
-			$invoice = null;
+			$order = null;
 		}
 
 		$user = get_userdata( $morder->user_id );
 
 		//send email to member
 		$pmproemail = new PMProEmail();
-		$pmproemail->sendCheckoutEmail( $user, $invoice );
+		$pmproemail->sendCheckoutEmail( $user, $order );
 
 		//send email to admin
 		$pmproemail = new PMProEmail();
-		$pmproemail->sendCheckoutAdminEmail( $user, $invoice );
+		$pmproemail->sendCheckoutAdminEmail( $user, $order );
 
 		return true;
 	} else {
@@ -822,7 +822,7 @@ function pmpro_ipnSaveOrder( $txn_id, $last_order ) {
 		$morder->saveOrder();
 		$morder->getMemberOrderByID( $morder->id );
 
-		//email the user their invoice
+		//email the user their order
 		$pmproemail = new PMProEmail();
 		$pmproemail->sendInvoiceEmail( get_userdata( $last_order->user_id ), $morder );
 
