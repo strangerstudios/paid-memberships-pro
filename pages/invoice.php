@@ -31,7 +31,7 @@
 			$pmpro_invoice->getUser();
 			$pmpro_invoice->getMembershipLevel();
 		?>
-		<h2><?php echo esc_html( sprintf(__('Invoice #%s on %s', 'paid-memberships-pro' ), $pmpro_invoice->code, date_i18n(get_option('date_format'), $pmpro_invoice->getTimestamp())) );?></h2>
+		<h2><?php echo esc_html( sprintf(__('Order #%s on %s', 'paid-memberships-pro' ), $pmpro_invoice->code, date_i18n(get_option('date_format'), $pmpro_invoice->getTimestamp())) );?></h2>
 		<a class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_a-print' ) ); ?>" href="javascript:window.print()"><?php esc_html_e('Print', 'paid-memberships-pro' ); ?></a>
 		<ul>
 			<?php do_action("pmpro_invoice_bullets_top", $pmpro_invoice); ?>
@@ -127,7 +127,7 @@
 			<thead>
 				<tr>
 					<th><?php esc_html_e('Date', 'paid-memberships-pro' ); ?></th>
-					<th><?php esc_html_e('Invoice #', 'paid-memberships-pro' ); ?></th>
+					<th><?php esc_html_e('Order #', 'paid-memberships-pro' ); ?></th>
 					<th><?php esc_html_e('Level', 'paid-memberships-pro' ); ?></th>
 					<th><?php esc_html_e('Total Billed', 'paid-memberships-pro' ); ?></th>
 				</tr>
@@ -153,7 +153,7 @@
 		else
 		{
 			?>
-			<p><?php esc_html_e('No invoices found.', 'paid-memberships-pro' );?></p>
+			<p><?php esc_html_e('No orders found.', 'paid-memberships-pro' );?></p>
 			<?php
 		}
 	}
@@ -161,7 +161,7 @@
 <div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_actions_nav' ) ); ?>">
 	<span class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_actions_nav-right' ) ); ?>"><a href="<?php echo esc_url( pmpro_url( "account" ) ) ?>"><?php esc_html_e('View Your Membership Account &rarr;', 'paid-memberships-pro' );?></a></span>
 	<?php if ( $pmpro_invoice ) { ?>
-		<span class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_actions_nav-left' ) ); ?>"><a href="<?php echo esc_url( pmpro_url( "invoice" ) ) ?>"><?php esc_html_e('&larr; View All Invoices', 'paid-memberships-pro' );?></a></span>
+		<span class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_actions_nav-left' ) ); ?>"><a href="<?php echo esc_url( pmpro_url( "invoice" ) ) ?>"><?php esc_html_e('&larr; View All Orders', 'paid-memberships-pro' );?></a></span>
 	<?php } ?>
 </div> <!-- end pmpro_actions_nav -->
 </div> <!-- end pmpro_invoice_wrap -->

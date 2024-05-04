@@ -14,7 +14,7 @@ global $wpdb, $pmpro_invoice, $pmpro_msg, $pmpro_msgt;
 
 // If this file is loaded, $pmpro_invoice should have been set by preheaders/confirmation.php. If not, show an error.
 if ( empty( $pmpro_invoice ) ) {
-	$pmpro_msg = __( 'There was an error retrieving your invoice. Please contact the site owner.', 'paid-memberships-pro' );
+	$pmpro_msg = __( 'There was an error retrieving your order. Please contact the site owner.', 'paid-memberships-pro' );
 	$pmpro_msgt = 'pmpro_error';
 }
 
@@ -29,7 +29,7 @@ if ( empty( $pmpro_invoice ) ) {
 		<?php
 	}
 
-	// Check that we have an invoice.
+	// Check that we have an order.
 	if ( ! empty( $pmpro_invoice ) ) {
 		$pmpro_invoice->getUser();
 		$pmpro_invoice->getMembershipLevel();
@@ -48,9 +48,9 @@ if ( empty( $pmpro_invoice ) ) {
 			$confirmation_message .= wpautop( stripslashes( $level_message ) );
 		}
 
-		// Add some details to the confirmation message about the invoice.
+		// Add some details to the confirmation message about the order.
 		if ( ! pmpro_isLevelFree( $pmpro_invoice->membership_level ) ) {
-			$confirmation_message .= '<p>' . sprintf( __( 'Below are details about your membership account and a receipt for your initial membership invoice. A welcome email with a copy of your initial membership invoice has been sent to %s.', 'paid-memberships-pro' ), $pmpro_invoice->user->user_email ) . '</p>';
+			$confirmation_message .= '<p>' . sprintf( __( 'Below are details about your membership account and a receipt for your initial membership payment. A welcome email with a copy of your initial membership order has been sent to %s.', 'paid-memberships-pro' ), $pmpro_invoice->user->user_email ) . '</p>';
 		} else {
 			$confirmation_message .= '<p>' . sprintf( __( 'Below are details about your membership account. A welcome email has been sent to %s.', 'paid-memberships-pro' ), $pmpro_invoice->user->user_email ) . '</p>';
 		}
@@ -65,12 +65,12 @@ if ( empty( $pmpro_invoice ) ) {
 		echo wp_kses_post( $confirmation_message );
 
 		if (  ! pmpro_isLevelFree( $pmpro_invoice->membership_level ) ) {
-			// If the invoice is not free, show the full invoice, but make sure we don't show $pmpro_msg again.
+			// If the order is not free, show the full order, but make sure we don't show $pmpro_msg again.
 			$pmpro_msg = false;
 			$pmpro_msgt = false;
 			echo pmpro_loadTemplate( 'invoice' );	// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		} else {
-			// The invoice is free, so we don't need to show a full invoice.
+			// The order is free, so we don't need to show a full order.
 			?>
 			<ul>
 				<li><strong><?php esc_html_e('Account', 'paid-memberships-pro' );?>:</strong> <?php echo esc_html( $pmpro_invoice->user->display_name );?> (<?php echo esc_html( $pmpro_invoice->user->user_email );?>)</li>
@@ -86,7 +86,7 @@ if ( empty( $pmpro_invoice ) ) {
 			<?php
 		}
 
-		// Show a message about account activation if the invoice is not yet successful.
+		// Show a message about account activation if the order is not yet successful.
 		if ( 'success' != $pmpro_invoice->status ) {
 			?>
 			<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_message pmpro_alert' ) ); ?>">
