@@ -31,12 +31,12 @@ function pmpro_shortcode_account($atts, $content=null, $code="")
 		$title = null;
 	}
 
-	//if a member is logged in, show them some info here (1. past invoices. 2. billing information with button to update.)
+	//if a member is logged in, show them some info here (1. past orders. 2. billing information with button to update.)
 	add_filter( 'pmpro_disable_admin_membership_access', '__return_true', 15 ); // We want to show the actual levels for admins.
 	$mylevels = pmpro_getMembershipLevelsForUser();
 	remove_filter( 'pmpro_disable_admin_membership_access', '__return_true', 15 ); // Remove the filter so we don't mess up other stuff.
 	$pmpro_levels = pmpro_getAllLevels(); // just to be sure - include only the ones that allow signups
-	$invoices = $wpdb->get_results("SELECT *, UNIX_TIMESTAMP(CONVERT_TZ(timestamp, '+00:00', @@global.time_zone)) as timestamp FROM $wpdb->pmpro_membership_orders WHERE user_id = '$current_user->ID' AND status NOT IN('review', 'token', 'error') ORDER BY timestamp DESC LIMIT 6");
+	$orders = $wpdb->get_results("SELECT *, UNIX_TIMESTAMP(CONVERT_TZ(timestamp, '+00:00', @@global.time_zone)) as timestamp FROM $wpdb->pmpro_membership_orders WHERE user_id = '$current_user->ID' AND status NOT IN('review', 'token', 'error') ORDER BY timestamp DESC LIMIT 6");
 	?>
 	<div id="pmpro_account">
 		<?php if(in_array('membership', $sections) || in_array('memberships', $sections)) { ?>
@@ -232,13 +232,13 @@ function pmpro_shortcode_account($atts, $content=null, $code="")
 			</div> <!-- end pmpro_account-profile -->
 		<?php } ?>
 
-		<?php if(in_array('invoices', $sections) && !empty($invoices)) { ?>
+		<?php if(in_array('invoices', $sections) && !empty($orders)) { ?>
 		<div id="pmpro_account-invoices" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_box', 'pmpro_account-invoices' ) ); ?>">
 			<?php
 			if ( '' !== $title ) { // Check if title is being forced to not show.
 				// If a custom title was not set, use the default. Otherwise, show the custom title.
 				?>
-				<h2><?php echo esc_html( null === $title ? __( 'Past Invoices', 'paid-memberships-pro' ) : $title ); ?></h2>
+				<h2><?php echo esc_html( null === $title ? __( 'Past Orders', 'paid-memberships-pro' ) : $title ); ?></h2>
 				<?php
 			}
 			?>
@@ -254,32 +254,32 @@ function pmpro_shortcode_account($atts, $content=null, $code="")
 				<tbody>
 				<?php
 					$count = 0;
-					foreach($invoices as $invoice)
+					foreach($orders as $order)
 					{
 						if($count++ > 4)
 							break;
 
 						//get an member order object
-						$invoice_id = $invoice->id;
-						$invoice = new MemberOrder;
-						$invoice->getMemberOrderByID($invoice_id);
-						$invoice->getMembershipLevel();
+						$order_id = $order->id;
+						$order = new MemberOrder;
+						$order->getMemberOrderByID($order_id);
+						$order->getMembershipLevel();
 
-						if ( in_array( $invoice->status, array( '', 'success', 'cancelled' ) ) ) {
+						if ( in_array( $order->status, array( '', 'success', 'cancelled' ) ) ) {
 						    $display_status = esc_html__( 'Paid', 'paid-memberships-pro' );
-						} elseif ( $invoice->status == 'pending' ) {
+						} elseif ( $order->status == 'pending' ) {
 						    // Some Add Ons set status to pending.
 						    $display_status = esc_html__( 'Pending', 'paid-memberships-pro' );
-						} elseif ( $invoice->status == 'refunded' ) {
+						} elseif ( $order->status == 'refunded' ) {
 						    $display_status = esc_html__( 'Refunded', 'paid-memberships-pro' );
 						}
 						?>
-						<tr id="pmpro_account-invoice-<?php echo esc_attr( $invoice->code ); ?>">
-							<td><a href="<?php echo esc_url( pmpro_url( "invoice", "?invoice=" . $invoice->code ) ) ?>"><?php echo esc_html( date_i18n(get_option("date_format"), $invoice->getTimestamp()) )?></a></td>
-							<td><?php if(!empty($invoice->membership_level)) echo esc_html( $invoice->membership_level->name ); else echo esc_html__("N/A", 'paid-memberships-pro' );?></td>
+						<tr id="pmpro_account-invoice-<?php echo esc_attr( $order->code ); ?>">
+							<td><a href="<?php echo esc_url( pmpro_url( "invoice", "?invoice=" . $order->code ) ) ?>"><?php echo esc_html( date_i18n(get_option("date_format"), $order->getTimestamp()) )?></a></td>
+							<td><?php if(!empty($order->membership_level)) echo esc_html( $order->membership_level->name ); else echo esc_html__("N/A", 'paid-memberships-pro' );?></td>
 							<td><?php
 								//phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-								echo pmpro_escape_price( pmpro_formatPrice($invoice->total) ); ?></td>
+								echo pmpro_escape_price( pmpro_formatPrice($order->total) ); ?></td>
 							<td><?php echo esc_html( $display_status ); ?></td>
 						</tr>
 						<?php
@@ -288,7 +288,7 @@ function pmpro_shortcode_account($atts, $content=null, $code="")
 				</tbody>
 			</table>
 			<?php if($count == 6) { ?>
-				<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_actionlinks' ) ); ?>"><a id="pmpro_actionlink-invoices" href="<?php echo esc_url( pmpro_url( "invoice" ) ); ?>"><?php esc_html_e("View All Invoices", 'paid-memberships-pro' );?></a></div>
+				<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_actionlinks' ) ); ?>"><a id="pmpro_actionlink-invoices" href="<?php echo esc_url( pmpro_url( "invoice" ) ); ?>"><?php esc_html_e("View All Orders", 'paid-memberships-pro' );?></a></div>
 			<?php } ?>
 		</div> <!-- end pmpro_account-invoices -->
 		<?php } ?>
