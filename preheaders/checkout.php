@@ -763,19 +763,19 @@ if ( ! empty( $pmpro_confirmed ) ) {
 
 				//setup some values for the emails
 				if ( ! empty( $morder ) ) {
-					$invoice = new MemberOrder( $morder->id );
+					$order = new MemberOrder( $morder->id );
 				} else {
-					$invoice = null;
+					$order = null;
 				}
 				$current_user->membership_level = $pmpro_level; //make sure they have the right level info
 
 				//send email to member
 				$pmproemail = new PMProEmail();
-				$pmproemail->sendCheckoutEmail( $current_user, $invoice );
+				$pmproemail->sendCheckoutEmail( $current_user, $order );
 
 				//send email to admin
 				$pmproemail = new PMProEmail();
-				$pmproemail->sendCheckoutAdminEmail( $current_user, $invoice );
+				$pmproemail->sendCheckoutAdminEmail( $current_user, $order );
 			}
 
 			//redirect to confirmation
