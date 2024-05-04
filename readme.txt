@@ -73,7 +73,7 @@ All of our payment gateways are included in the plugin. Choose from [Stripe](htt
 * Custom form fields
 * Conditional logic for form fields
 * Membership account dashboard
-* Membership invoices and billing information pages
+* Membership orders and billing information pages
 * Custom member emails
 * Restrict WP dashboard access
 * Hide the WP toolbar
