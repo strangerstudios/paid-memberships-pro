@@ -42,7 +42,7 @@ if($ml_id > 0) {
                 $user_id
             ) );
             if($last_order)
-                $pmproemail->data["body"] .= "<p>" . __("Last Invoice", 'paid-memberships-pro' ) . ":<br />" . nl2br(var_export($last_order, true)) . "</p>";
+                $pmproemail->data["body"] .= "<p>" . __("Last Order", 'paid-memberships-pro' ) . ":<br />" . nl2br(var_export($last_order, true)) . "</p>";
             $pmproemail->sendEmail(get_bloginfo("admin_email"));
 
             $r2 = false;
