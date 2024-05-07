@@ -207,17 +207,17 @@ class PMPro_Member_Edit_Panel_Subscriptions extends PMPro_Member_Edit_Panel {
 							// Show the gateway used for this subscription.
 							$subscription_gateway = $subscription->get_gateway_object();
 							if ( ! empty( $subscription_gateway->gateway ) ) {
-								$gateway = esc_html( ucwords( $subscription_gateway->gateway ) );
+								$gateway = ucwords( $subscription_gateway->gateway );
 
 								// Check if the gateway was set to sandbox mode.
 								if ( $subscription_gateway->gateway_environment === 'sandbox' ) {
-									$gateway .= ' (' . esc_html__( 'test', 'paid-memberships-pro' ) . ')';
+									$gateway .= ' (' . __( 'test', 'paid-memberships-pro' ) . ')';
 								}
 							} else {
 								$gateway = '&#8212;';
 							}
 
-							echo $gateway;
+							echo esc_html( $gateway );
 							
 							?>
 						</td>
