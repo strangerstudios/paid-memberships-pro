@@ -210,7 +210,7 @@ class PMPro_Member_Edit_Panel_Subscriptions extends PMPro_Member_Edit_Panel {
 								$gateway = ucwords( $subscription_gateway->gateway );
 
 								// Check if the gateway was set to sandbox mode.
-								if ( $subscription_gateway->gateway_environment === 'sandbox' ) {
+								if ( $subscription->get_gateway_environment() === 'sandbox' ) {
 									$gateway .= ' (' . __( 'test', 'paid-memberships-pro' ) . ')';
 								}
 							} else {
