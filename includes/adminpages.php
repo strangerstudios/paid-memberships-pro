@@ -273,7 +273,7 @@ function pmpro_admin_bar_menu() {
 	}
 
 	// Add menu item for adding a new member.
-	if ( current_user_can( 'manage_options' ) ) {
+	if ( current_user_can( 'edit_users' ) ) {
 		$wp_admin_bar->add_menu(
 			array(
 				'id' => 'pmpro-new-member',
