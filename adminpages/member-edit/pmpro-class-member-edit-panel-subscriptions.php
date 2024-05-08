@@ -111,6 +111,7 @@ class PMPro_Member_Edit_Panel_Subscriptions extends PMPro_Member_Edit_Panel {
 					<th><?php esc_html_e( 'Level', 'paid-memberships-pro' ); ?></th>
 					<th><?php esc_html_e( 'Created', 'paid-memberships-pro' ); ?></th>
 					<th><?php esc_html_e( 'Fee', 'paid-memberships-pro' ); ?></th>
+					<th><?php esc_html_e( 'Gateway', 'paid-memberships-pro' ); ?></th>
 					<th><?php echo esc_html( $showing_active_subscriptions ? __( 'Next Payment', 'paid-memberships-pro' ) : __( 'Ended', 'paid-memberships-pro' ) ); ?></th>
 					<th><?php esc_html_e( 'Orders', 'paid-memberships-pro' ); ?></th>
 				</tr>
@@ -200,6 +201,26 @@ class PMPro_Member_Edit_Panel_Subscriptions extends PMPro_Member_Edit_Panel {
 							// Show the subscription fee.
 							echo esc_html( $subscription->get_cost_text() );
 							?>
+						</td>
+						<td>
+							<?php
+							// Show the gateway used for this subscription.
+							$subscription_gateway = $subscription->get_gateway_object();
+							if ( ! empty( $subscription_gateway->gateway ) ) {
+								$gateway = ucwords( $subscription_gateway->gateway );
+
+								// Check if the gateway was set to sandbox mode.
+								if ( $subscription->get_gateway_environment() === 'sandbox' ) {
+									$gateway .= ' (' . __( 'test', 'paid-memberships-pro' ) . ')';
+								}
+							} else {
+								$gateway = '&#8212;';
+							}
+
+							echo esc_html( $gateway );
+							
+							?>
+						</td>
 						<td>
 							<?php
 							$date_to_show = $showing_active_subscriptions ? $subscription->get_next_payment_date( get_option( 'date_format' ) ) : $subscription->get_enddate( get_option( 'date_format' ) );
