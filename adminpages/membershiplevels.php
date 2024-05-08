@@ -342,7 +342,7 @@
 							<button class="pmpro_section-toggle-button" type="button" aria-expanded="<?php echo $section_visibility === 'hidden' ? 'false' : 'true'; ?>">
 								<span class="dashicons dashicons-arrow-<?php echo $section_visibility === 'hidden' ? 'down' : 'up'; ?>-alt2"></span>
 								<input type="hidden" class="pmpro-level-settings-group-id" value="<?php echo esc_attr( $level_group->id ); ?>" />
-								<?php echo esc_html( $level_group->name ) ?>
+								<?php echo esc_html( $level_group->name ) . '<small>'. sprintf( esc_html__( 'ID: %d', 'paid-memberships-pro' ), esc_html( $level_group->id ) ) . '</small>'; ?>
 							</button>
 						</div>
 						<div class="pmpro_section_inside">
