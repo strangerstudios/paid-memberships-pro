@@ -4,7 +4,7 @@ Tags: memberships, member, community, user profile, user registration
 Requires at least: 5.2
 Tested up to: 6.5
 Requires PHP: 5.6
-Stable tag: 3.0.3
+Stable tag: 3.0.4
 
 Build a membership site that grows with you: user registration, member profiles, 28 protected content types, free or paid subscriptions.
 
@@ -214,6 +214,19 @@ Not sure? You can find out by doing a bit a research.
 10. Advanced settings for updating non-member messages, optionally show excerpts or filter content, use reCAPTCHA, and a Terms of Service checkbox.
 
 == Changelog ==
+= 3.0.4 - 2024-05-08 =
+* ENHANCEMENT: Now detecting whether a webhook is set up in Stripe and, if not, showing a button to set one up. Webhooks are also automatically set up after the Stripe Connect flow is created. #2976 (@dparker1005)
+* ENHANCEMENT: Added a `group` attribute to the `[pmpro_member]` shortcode to show specific member information in the context of a level group. #2966 (@kimcoleman)
+* ENHANCEMENT: Added a new "gateway" column to the Orders tab of the Edit Member page. #2970 (@andrewlimaza)
+* ENHANCEMENT: Added a new "gateway" column to the Subscriptions tab of the Edit Member page. #2979 (@andrewlimaza)
+* ENHANCEMENT: Adjusted the hierarchy and names for PMPro pages generated as part of the initial plugin setup. #2967 (@kimcoleman)
+* ENHANCEMENT: Added the ID for each group to the `Memberships > Settings > Levels` settings page. #2978 (@andrewlimaza)
+* BUG FIX/ENHANCEMENT: Updated the `+ New > Member` admin bar menu item to be visible to any user with the `edit_users` capability. #2968 (@kimcoleman)
+* BUG FIX: Fixed an issue where the login redirect may incorrectly redirect back to the login page. #2971 (@andrewlimaza)
+* BUG FIX: Fixed an issue where purchasing a recurring membership with PayPal Express for a level that the user already had would immediately cancel the new payment subscription. #2972 (@dparker1005)
+* BUG FIX: Fixed PHP deprecation warnings on the User Fields settings page for some versions of PHP. #2975 (@dparker1005)
+* DEPRECATED: No longer showing the "Register a webhook" popup after connecting to Stripe since this process is now automated. #2976 (@dparker1005)
+
 = 3.0.3 - 2024-04-18 =
 * ENHANCEMENT: No longer making API calls to pull subscription data from Stripe or PayPal Express when we do not have gateway credentials. #2956 (@mircobabini)
 * ENHANCEMENT: Added new filters `pmpro_subscription_gateway_object` and `pmpro_order_gateway_object` to allow developers to modify gateway objects before they are used. #2962 (@mircobabini)

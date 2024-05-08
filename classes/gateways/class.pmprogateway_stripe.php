@@ -1270,12 +1270,12 @@ class PMProGateway_stripe extends PMProGateway {
 	 * If the checkout flow has changed to Stripe Checkout, remember to show a banner to set up webhooks.
 	 *
 	 * @since 2.12
-	 * @deprecated TBD
+	 * @deprecated 3.0.4
 	 *
 	 * @param string $old_value The old value of the option.
 	 */
 	public static function update_option_pmpro_stripe_payment_flow( $old_value ) {
-		_deprecated_function( __FUNCTION__, 'TBD' );
+		_deprecated_function( __FUNCTION__, '3.0.4' );
 		global $pmpro_stripe_old_payment_flow;
 		$pmpro_stripe_old_payment_flow = empty( $old_value ) ? 'onsite' : $old_value;
 	}
@@ -1284,10 +1284,10 @@ class PMProGateway_stripe extends PMProGateway {
 	 * Show a modal to the user after connecting to Stripe or switching to Stripe Checkout.
 	 *
 	 * @since 2.12
-	 * @deprecated TBD
+	 * @deprecated 3.0.4
 	 */
 	public static function show_set_up_webhooks_popup() {
-		_deprecated_function( __FUNCTION__, 'TBD' );
+		_deprecated_function( __FUNCTION__, '3.0.4' );
 
 		global $pmpro_stripe_old_payment_flow;
 
