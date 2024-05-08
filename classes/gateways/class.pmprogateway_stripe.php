@@ -701,14 +701,12 @@ class PMProGateway_stripe extends PMProGateway {
 				'success' => false,
 				'notice' => 'error',
 				'message' => esc_html( $message ),
-				'response' => esc_html( $update_webhook_response )
 			);
 		} else {
 			$r = array(
 				'success' => true,
 				'notice' => 'notice-success',
 				'message' => esc_html__( 'Your webhook is enabled.', 'paid-memberships-pro' ),
-				'response' => esc_html( $update_webhook_response )
 			);
 		}
 
@@ -743,7 +741,6 @@ class PMProGateway_stripe extends PMProGateway {
 					'message' => esc_html( $message ),
 				);
 			}
-			$r['response'] = esc_html( $delete_webhook_response );
 		}
 
 		if ( $silent ) {
