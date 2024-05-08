@@ -20,6 +20,7 @@ function pmpro_member_shortcode( $atts, $content = null, $shortcode_tag = '' ) {
 				'user_id' => $current_user->ID,
 				'field'   => null,
 				'levels'  => null,
+				'group'   => null,
 			),
 			$atts
 		)
@@ -102,13 +103,21 @@ function pmpro_member_shortcode( $atts, $content = null, $shortcode_tag = '' ) {
 		// Fields about the user's membership or subscription.
 		// Get the membership level to show.
 		$membership_level = null;
-		if ( empty( $levels ) ) {
+		if ( empty( $levels ) && empty( $group ) ) {
 			// Grab any one of the user's levels.
 			$membership_level = pmpro_getMembershipLevelForUser( $user_id );
 		} else {
-			// Grab the first level in the list.
-			$levels = explode( ',', $levels );
-			foreach ( $levels as $level_id ) {
+			// Find a level from the list of levels or group.
+			if ( ! empty( $levels ) ) {
+				// Level IDs were passed in.
+				$level_ids = explode( ',', $levels );
+			} else {
+				// A level group was passed in.
+				$level_ids = wp_list_pluck( pmpro_get_levels_for_group( intval( $group ) ), 'id' );
+			}
+
+			// Grab the first level the user has from the list.
+			foreach ( $level_ids as $level_id ) {
 				$membership_level = pmpro_getSpecificMembershipLevelForUser( $user_id, $level_id );
 				if ( ! empty( $membership_level ) ) {
 					break;
