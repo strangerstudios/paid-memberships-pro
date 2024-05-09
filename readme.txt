@@ -5,6 +5,8 @@ Requires at least: 5.2
 Tested up to: 6.5
 Requires PHP: 5.6
 Stable tag: 3.0.4
+License: GPLv2
+License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
 Build a membership site that grows with you: user registration, member profiles, 28 protected content types, free or paid subscriptions.
 
