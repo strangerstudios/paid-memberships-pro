@@ -825,6 +825,13 @@ li.pmpro_more {
 	text-decoration: none;
 	width: auto;
 }
+@media print {
+	.pmpro_a-print {
+		display: none;
+		position: absolute;
+		left: -9999px;
+	}
+}
 .pmpro_red {
 	color: #CC0000;
 }
