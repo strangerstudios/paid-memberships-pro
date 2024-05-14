@@ -279,7 +279,6 @@ use Braintree\WebhookNotification as Braintree_WebhookNotification;
 				'use_ssl',
 				'tax_state',
 				'tax_rate',
-				'accepted_credit_cards',
 			);
 
 			return $options;
@@ -449,35 +448,17 @@ use Braintree\WebhookNotification as Braintree_WebhookNotification;
 			//global vars
 			global $pmpro_requirebilling, $pmpro_show_discount_code, $discount_code, $CardType, $AccountNumber, $ExpirationMonth, $ExpirationYear;
 
-			//get accepted credit cards
-			$pmpro_accepted_credit_cards = get_option("pmpro_accepted_credit_cards");
-			$pmpro_accepted_credit_cards = explode(",", $pmpro_accepted_credit_cards);
-			$pmpro_accepted_credit_cards_string = pmpro_implodeToEnglish($pmpro_accepted_credit_cards);
-
 			//include ours
 			?>
 			<div id="pmpro_payment_information_fields" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout', 'pmpro_payment_information_fields' ) ); ?>" <?php if(!$pmpro_requirebilling || apply_filters("pmpro_hide_payment_information_fields", false) ) { ?>style="display: none;"<?php } ?>>
 				<h2>
 					<span class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout-h2-name' ) ); ?>"><?php esc_html_e('Payment Information', 'paid-memberships-pro' );?></span>
-				<span class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout-h2-msg' ) ); ?>"><?php printf(esc_html__('We Accept %s', 'paid-memberships-pro' ), esc_html( $pmpro_accepted_credit_cards_string ) );?></span>
 				</h2>
 				<?php $sslseal = get_option("pmpro_sslseal"); ?>
 				<?php if(!empty($sslseal)) { ?>
 					<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout-fields-display-seal' ) ); ?>">
 				<?php } ?>
 				<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout-fields' ) ); ?>">
-					<?php
-						$pmpro_include_cardtype_field = apply_filters('pmpro_include_cardtype_field', true);
-						if($pmpro_include_cardtype_field) { ?>
-						<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout-field pmpro_payment-card-type', 'pmpro_payment-card-type' ) ); ?>">
-							<label for="CardType"><?php esc_html_e('Card Type', 'paid-memberships-pro' );?></label>
-							<select id="CardType" name="CardType" class="<?php echo esc_attr( pmpro_get_element_class( 'CardType' ) ); ?>">
-								<?php foreach($pmpro_accepted_credit_cards as $cc) { ?>
-									<option value="<?php echo esc_attr( $cc ); ?>" <?php if($CardType == $cc) { ?>selected="selected"<?php } ?>><?php echo esc_html( $cc ); ?></option>
-								<?php } ?>
-							</select>
-						</div>
-					<?php } ?>
 					<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout-field pmpro_payment-account-number', 'pmpro_payment-account-number' ) ); ?>">
 						<label for="AccountNumber"><?php esc_html_e('Card Number', 'paid-memberships-pro' );?></label>
 						<input id="AccountNumber" name="AccountNumber" class="<?php echo esc_attr( pmpro_get_element_class( 'input', 'AccountNumber' ) ); ?>" type="text" size="25" value="<?php echo esc_attr($AccountNumber)?>" data-encrypted-name="number" autocomplete="off" />
