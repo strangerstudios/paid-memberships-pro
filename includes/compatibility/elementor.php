@@ -2,8 +2,6 @@
 
 // Include custom settings to restrict Elementor widgets.
 require_once( 'elementor/class-pmpro-elementor.php' );
-// Elementor Display Conditions
-require_once( 'elementor/display-conditions.php' );
 
 /**
  * Elementor Compatibility
