@@ -278,8 +278,9 @@ function pmpro_shortcode_account($atts, $content=null, $code="")
 							<td><a href="<?php echo esc_url( pmpro_url( "invoice", "?invoice=" . $invoice->code ) ) ?>"><?php echo esc_html( date_i18n(get_option("date_format"), $invoice->getTimestamp()) )?></a></td>
 							<td><?php if(!empty($invoice->membership_level)) echo esc_html( $invoice->membership_level->name ); else echo esc_html__("N/A", 'paid-memberships-pro' );?></td>
 							<td><?php
+								$invoice_total = apply_filters('pmpro_account_invoices_amount', pmpro_formatPrice($invoice->total), $invoice);
 								//phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-								echo pmpro_escape_price( pmpro_formatPrice($invoice->total) ); ?></td>
+								echo pmpro_escape_price( $invoice_total ); ?></td>
 							<td><?php echo esc_html( $display_status ); ?></td>
 						</tr>
 						<?php

@@ -141,7 +141,13 @@
 						<td><a href="<?php echo esc_url( pmpro_url("invoice", "?invoice=" . $invoice->code ) ) ?>"><?php echo esc_html( date_i18n( get_option("date_format"), strtotime( get_date_from_gmt( date( 'Y-m-d H:i:s', $invoice->timestamp ) ) ) ) )?></a></td>
 						<td><a href="<?php echo esc_url( pmpro_url("invoice", "?invoice=" . $invoice->code ) ) ?>"><?php echo esc_html( $invoice->code ); ?></a></td>
 						<td><?php echo esc_html( $invoice->membership_level_name );?></td>
-						<td><?php echo pmpro_escape_price( pmpro_formatPrice($invoice->total) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped?></td>
+						<td>
+							<?php
+							$invoice_total = apply_filters('pmpro_invoices_table_total_billed', pmpro_formatPrice($invoice->total), $invoice);
+							echo pmpro_escape_price( $invoice_total ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+							?>
+						</td>
+
 					</tr>
 					<?php
 				}

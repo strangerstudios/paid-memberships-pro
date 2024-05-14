@@ -1087,7 +1087,8 @@ class PMPro_Orders_List_Table extends WP_List_Table {
 	 */
 	public function column_total( $item ) {
 
-		echo pmpro_escape_price( pmpro_formatPrice( $item->total ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		$total = apply_filters( 'pmpro_admin_order_item_total', pmpro_formatPrice( $item->total ), $item );
+		echo pmpro_escape_price( $total ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 
 		// If there is a discount code, show it.
 		if ( $item->getDiscountCode() ) {
