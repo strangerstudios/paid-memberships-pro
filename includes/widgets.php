@@ -62,7 +62,7 @@ class PMPro_Widget_Member_Login extends WP_Widget {
 			if ( ! empty( $content_escaped ) ) {
 				echo wp_kses_post( $before_widget );
 				// phpcs:ignore Content has been escaped on each section within the pmpro_login_forms_handler function
-				echo $content_escaped;
+				echo $content_escaped; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 				echo wp_kses_post( $after_widget );
 			}
 		?>

@@ -4,6 +4,7 @@
  */
 
  global $pmpro_email_templates_defaults;
+ $check_gateway_label = get_option( 'pmpro_check_gateway_label' ) ? get_option( 'pmpro_check_gateway_label' ) : __( 'Check', 'paid-memberships-pro' );
  /**
  * Default email templates.
  */
@@ -15,7 +16,7 @@ $pmpro_email_templates_defaults = array(
 		'help_text' => __( 'This email is sent when there is a general message that needs to be communicated to the site administrator.', 'paid-memberships-pro' )
 	),
 	'footer'                  => array(
-		'subject'     => __( '', 'paid-memberships-pro' ),
+		'subject'     => '',
 		'description' => __( 'Email Footer', 'paid-memberships-pro'),
 		'body' => __( '<p>
 	Respectfully,<br />
@@ -24,7 +25,7 @@ $pmpro_email_templates_defaults = array(
 		'help_text' => __( 'This is the closing message included in every email sent to members and the site administrator through Paid Memberships Pro.', 'paid-memberships-pro' )
 	),
 	'header'                  => array(
-		'subject'     => __( '', 'paid-memberships-pro' ),
+		'subject'     => '',
 		'description' => __( 'Email Header', 'paid-memberships-pro'),
 		'body' => __( '<p>Dear !!header_name!!,</p>', 'paid-memberships-pro' ),
 		'help_text' => __( 'This is the opening message included in every email sent to members and the site administrator through Paid Memberships Pro.', 'paid-memberships-pro' )
@@ -142,9 +143,30 @@ $pmpro_email_templates_defaults = array(
 <p>Log in to your WordPress admin here: !!login_url!!</p>', 'paid-memberships-pro' ),
 		'help_text' => __( 'The site administrator can manually cancel a user\'s membership through the WordPress admin or the member can cancel their own membership through your site. This email is sent to the site administrator as confirmation of a cancelled membership.', 'paid-memberships-pro' )
 	),
+	'cancel_on_next_payment_date' => array(
+		'subject'     => __( "Your payment subscription at !!sitename!! has been CANCELLED", 'paid-memberships-pro' ),
+		'description' => __('Cancel On Next Payment Date', 'paid-memberships-pro'),
+		'body' => __( '<p>Your payment subscription at !!sitename!! has been cancelled.</p>
+
+<p>Account: !!display_name!! (!!user_email!!)</p>
+<p>Membership Level: !!membership_level_name!!</p>
+<p>Your access will expire on !!enddate!!.</p>', 'paid-memberships-pro' ),
+		'help_text' => __( 'When a user cancels a membership with a recurring subscription, they will still have access until when their next payment would have been taken. This email is sent to the member to notify them of this change.', 'paid-memberships-pro' )
+	),
+	'cancel_on_next_payment_date_admin' => array(
+		'subject'     => __( "Payment subscription for !!user_login!! at !!sitename!! has been CANCELLED", 'paid-memberships-pro' ),
+		'description' => __('Cancel On Next Payment Date (admin)', 'paid-memberships-pro'),
+		'body' => __( '<p>The payment subscription for !!user_login!! at !!sitename!! has been cancelled.</p>
+
+<p>Account: !!display_name!! (!!user_email!!)</p>
+<p>Membership Level: !!membership_level_name!!</p>
+<p>Start Date: !!startdate!!</p>
+<p>Expiration Date: !!enddate!!</p>', 'paid-memberships-pro' ),
+		'help_text' => __( 'When a user cancels a membership with a recurring subscription, they will still have access until when their next payment would have been taken. This email is sent to the site administrator to notify them of this change.', 'paid-memberships-pro' )
+	),
 	'checkout_check'           => array(
 		'subject'     => __( "Your membership confirmation for !!sitename!!", 'paid-memberships-pro' ),
-		'description' => __('Checkout - Check', 'paid-memberships-pro'),
+		'description' => sprintf( __('Checkout - %s', 'paid-memberships-pro' ), $check_gateway_label ),
 		'body' => __( '<p>Thank you for your membership to !!sitename!!. Your membership account is now active.</p>
 
 !!membership_level_confirmation_message!!
@@ -164,14 +186,15 @@ $pmpro_email_templates_defaults = array(
 </p>
 
 <p>Log in to your membership account here: !!login_url!!</p>', 'paid-memberships-pro' ),
-		'help_text' => __( 'This is a membership confirmation welcome email sent to a new member or to existing members that change their level using the "Pay by Check" gateway.', 'paid-memberships-pro' )
+		'help_text' => sprintf( __('This is a membership confirmation welcome email sent to a new member or to existing members that change their level using the "%s (Pay by Check)" gateway.','paid-memberships-pro' ), $check_gateway_label ) 
+	
 	),
 	'checkout_check_admin'     => array(
 		'subject'     => __( "Member checkout for !!membership_level_name!! at !!sitename!!", 'paid-memberships-pro' ),
-		'description' => __('Checkout - Check (admin)', 'paid-memberships-pro'),
-		'body' => __( '<p>There was a new member checkout at !!sitename!!.</p>
+		'description' => sprintf( __('Checkout - %s (admin)', 'paid-memberships-pro') , $check_gateway_label ),
+		'body' =>  sprintf (__( '<p>There was a new member checkout at !!sitename!!.</p>
 
-<p><strong>They have chosen to pay by check.</strong></p>
+<p><strong>They have chosen to pay by %s.</strong></p>
 
 <p>Below are details about the new membership account and a receipt for the initial membership invoice.</p>
 
@@ -185,10 +208,10 @@ $pmpro_email_templates_defaults = array(
 	Total Billed: !!invoice_total!!
 </p>
 
-<p>Log in to your membership account here: !!login_url!!</p>', 'paid-memberships-pro' ),
-		'help_text' => __( 'This is the membership confirmation email sent to the site administrator for every membership checkout using the "Pay by Check" gateway.', 'paid-memberships-pro' )
+<p>Log in to your membership account here: !!login_url!!</p>','paid-memberships-pro' ),  $check_gateway_label ),
+		'help_text' =>  sprintf( __('This is the membership confirmation email sent to the site administrator for every membership checkout using the "%s (Pay by Check)" gateway.', 'paid-memberships-pro' ),  $check_gateway_label )
 	),
-	'checkout_express'         => array(
+	'checkout_express'	=> array(
 		'subject'     => __( "Your membership confirmation for !!sitename!!", 'paid-memberships-pro' ),
 		'description' => __('Checkout - PayPal Express', 'paid-memberships-pro'),
 		'body' => __( '<p>Thank you for your membership to !!sitename!!. Your membership account is now active.</p>

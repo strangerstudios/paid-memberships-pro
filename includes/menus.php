@@ -7,14 +7,14 @@
  */
 function pmpro_get_pmpro_pages() {
 	$pmpro_pages = array(
-		'account' => intval( pmpro_getOption( 'account_page_id' ) ),
-		'billing' => intval( pmpro_getOption( 'billing_page_id' ) ),
-		'cancel' => intval( pmpro_getOption( 'cancel_page_id' ) ),
-		'checkout' => intval( pmpro_getOption( 'checkout_page_id' ) ),
-		'confirmation' => intval( pmpro_getOption( 'confirmation_page_id' ) ),
-		'invoice' => intval( pmpro_getOption( 'invoice_page_id' ) ),
-		'levels' => intval( pmpro_getOption( 'levels_page_id' ) ),
-		'member_profile_edit' => intval( pmpro_getOption( 'member_profile_edit_page_id' ) ),
+		'account' => intval( get_option( 'pmpro_account_page_id' ) ),
+		'billing' => intval( get_option( 'pmpro_billing_page_id' ) ),
+		'cancel' => intval( get_option( 'pmpro_cancel_page_id' ) ),
+		'checkout' => intval( get_option( 'pmpro_checkout_page_id' ) ),
+		'confirmation' => intval( get_option( 'pmpro_confirmation_page_id' ) ),
+		'invoice' => intval( get_option( 'pmpro_invoice_page_id' ) ),
+		'levels' => intval( get_option( 'pmpro_levels_page_id' ) ),
+		'member_profile_edit' => intval( get_option( 'pmpro_member_profile_edit_page_id' ) ),
 	);
 
 	$pmpro_page_names = array();
@@ -63,7 +63,7 @@ function pmpro_pages_metabox_nav_links() {
 				<?php // Include the custom Log In and Log Out menu items. ?>
 				<li>
 					<label class="menu-item-title">
-						<input type="checkbox" class="menu-item-checkbox" name="menu-item[-1][menu-item-object-id]" value="-1"> <?php _e( 'Log In', 'paid-memberships-pro'); ?>
+						<input type="checkbox" class="menu-item-checkbox" name="menu-item[-1][menu-item-object-id]" value="-1"> <?php esc_html_e( 'Log In', 'paid-memberships-pro'); ?>
 					</label>
 					<input type="hidden" class="menu-item-type" name="menu-item[-1][menu-item-type]" value="custom">
 					<input type="hidden" class="menu-item-type-name" name="menu-item[-1][menu-item-type]" value="custom">
@@ -73,7 +73,7 @@ function pmpro_pages_metabox_nav_links() {
 				</li>
 				<li>
 					<label class="menu-item-title">
-						<input type="checkbox" class="menu-item-checkbox" name="menu-item[-2][menu-item-object-id]" value="-2"> <?php _e( 'Log Out', 'paid-memberships-pro'); ?>
+						<input type="checkbox" class="menu-item-checkbox" name="menu-item[-2][menu-item-object-id]" value="-2"> <?php esc_html_e( 'Log Out', 'paid-memberships-pro'); ?>
 					</label>
 					<input type="hidden" class="menu-item-type" name="menu-item[-2][menu-item-type]" value="custom">
 					<input type="hidden" class="menu-item-title" name="menu-item[-2][menu-item-title]" value="<?php esc_attr_e( 'Log Out', 'paid-memberships-pro'); ?>">
@@ -241,7 +241,7 @@ add_action( 'after_setup_theme', 'pmpro_register_menus' );
  */
 function pmpro_hide_toolbar() {
 	global $current_user;
-	$hide_toolbar = pmpro_getOption( 'hide_toolbar' );
+	$hide_toolbar = get_option( 'pmpro_hide_toolbar' );
 	if ( ! empty( $hide_toolbar ) && is_user_logged_in() && in_array( 'subscriber', (array) $current_user->roles ) ) {
 		$hide = true;
 	} else {

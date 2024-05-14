@@ -6,7 +6,7 @@
  */
 if( function_exists( 'oxygen_vsb_register_condition' ) ) {
 
-    global $pmpro_levels;
+    $pmpro_levels = pmpro_getAllLevels( true );
 
     $oxygen_pmpro_levels = array( '0' => '[0] '.__( 'Non-Members', 'paid-memberships-pro' ) );
 

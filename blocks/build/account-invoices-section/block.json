@@ -1,0 +1,74 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "pmpro/account-invoices-section",
+	"title": "PMPro Page: Account Invoices",
+	"category": "pmpro-pages",
+	"description": "Dynamic page section that displays a list of the last 5 membership invoices for the active member.",
+	"keywords": [ "account", "member", "order", "purchases", "receipt", "user", "paid memberships pro", "pmpro" ],
+	"attributes" : {
+		"title" : {
+			"type" : "string",
+			"default" : "Past Invoices"
+		}
+	},
+	"supports": {
+		"align": [ "wide", "full" ],
+		"ariaLabel": true,
+		"html": false,
+		"background": {
+			"backgroundImage": true
+		},
+		"color": {
+			"gradients": true,
+			"heading": true,
+			"button": true,
+			"link": true
+		},
+		"spacing": {
+			"margin": [ "top", "bottom" ],
+			"padding": true,
+			"blockGap": true,
+			"__experimentalDefaultControls": {
+				"padding": true,
+				"blockGap": true
+			}
+		},
+		"dimensions": {
+			"minHeight": true
+		},
+		"__experimentalBorder": {
+			"color": true,
+			"radius": true,
+			"style": true,
+			"width": true,
+			"__experimentalDefaultControls": {
+				"color": true,
+				"radius": true,
+				"style": true,
+				"width": true
+			}
+		},
+		"typography": {
+			"fontSize": true,
+			"lineHeight": true,
+			"__experimentalFontFamily": true,
+			"__experimentalFontWeight": true,
+			"__experimentalFontStyle": true,
+			"__experimentalTextTransform": true,
+			"__experimentalTextDecoration": true,
+			"__experimentalLetterSpacing": true,
+			"__experimentalDefaultControls": {
+				"fontSize": true
+			}
+		},
+		"layout": {
+			"allowSizingOnChildren": true
+		}
+	},
+	"example": {
+	},
+	"textdomain": "paid-memberships-pro",
+	"editorScript": "file:./index.js",
+	"render": "file:./render.php"
+}

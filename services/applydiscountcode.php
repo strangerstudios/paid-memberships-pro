@@ -17,8 +17,8 @@
 		$discount_code_id = "";
 	}
 
-	if ( ! empty( $_REQUEST['level'] ) ) {
-		$level_str = sanitize_text_field( $_REQUEST['level'] );
+	if ( ! empty( $_REQUEST['pmpro_level'] ) ) {
+		$level_str = sanitize_text_field( $_REQUEST['pmpro_level'] );
 		$level_str = str_replace( ' ', '+', $level_str ); // If val passed via URL, + would be converted to space.
 		$level_ids = array_map( 'intval', explode( '+', $level_str ) );
 	} else {
@@ -32,10 +32,9 @@
 
 	//check that the code is valid
 	$codecheck = pmpro_checkDiscountCode($discount_code, $level_ids, true);
-	if($codecheck[0] == false)
-	{
+	if( $codecheck[0] == false ) {
 		//uh oh. show code error
-		echo esc_html( pmpro_no_quotes($codecheck[1]) );
+		echo esc_html( $codecheck[1] );
 		?>
 		<script>
 			jQuery('#<?php echo esc_attr( $msgfield ); ?>').show();
@@ -86,7 +85,7 @@
 		$code_levels = apply_filters("pmpro_discount_code_level", $code_levels, $discount_code_id);
 	}
 
-	echo esc_html( sprintf( __( "The %s code has been applied to your order. ", 'paid-memberships-pro' ), $discount_code ) );
+	printf( esc_html__( 'The %s code has been applied to your order.', 'paid-memberships-pro' ), '<strong>' . esc_html( $discount_code ) . '</strong>' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 
 	$combined_level = null;
 	foreach ( $code_levels as $code_level ) {
@@ -114,8 +113,8 @@
 		} else {
 			jQuery('<input>').attr({
 				type: 'hidden',
-				id: 'discount_code',
-				name: 'discount_code',
+				id: 'pmpro_discount_code',
+				name: 'pmpro_discount_code',
 				value: '<?php echo esc_attr( $discount_code );?>'
 			}).appendTo('#pmpro_form');
 		}
@@ -124,15 +123,14 @@
 		jQuery('#other_discount_code_p').html('<button type="button" id="other_discount_code_toggle"><?php esc_html_e('Click here to change your discount code', 'paid-memberships-pro' );?></button>');
 		jQuery('#other_discount_code_p').show();
 
-		jQuery('#other_discount_code_toggle').click(function() {
+		jQuery('#other_discount_code_toggle').on('click',function() {
 			jQuery('#other_discount_code_tr').show();
 			jQuery('#other_discount_code_p').hide();
 		});
 
 			<?php
 			$html = [];
-
-			$html[] = '<p class="' . pmpro_get_element_class( 'pmpro_level_discount_applied' ) . '">' . wp_kses_post( sprintf( __( 'The <strong>%s</strong> code has been applied to your order.', 'paid-memberships-pro' ), $discount_code ) ) . '</div>';
+			$html[] = '<p class="' . pmpro_get_element_class( 'pmpro_level_discount_applied' ) . '">' . sprintf( esc_html__( 'The %s code has been applied to your order.', 'paid-memberships-pro' ), '<strong>' . esc_html( $discount_code ) . '</strong>' ) . '</p>';
 
 			if ( count( $code_levels ) <= 1 ) {
 				$code_level = empty( $code_levels ) ? null : $code_levels[0];

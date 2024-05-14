@@ -1,7 +1,7 @@
 <?php
 //only admins can get this
 if ( ! function_exists( "current_user_can" ) || ( ! current_user_can( "manage_options" ) && ! current_user_can( "pmpro_orderscsv" ) ) ) {
-	die( __( "You do not have permissions to perform this action.", 'paid-memberships-pro' ) );
+	die( esc_html__( "You do not have permissions to perform this action.", 'paid-memberships-pro' ) );
 }
 
 if (!defined('PMPRO_BENCHMARK'))
@@ -274,7 +274,6 @@ $csv_file_header_array = array(
 	"level_name",
 	"subtotal",
 	"tax",
-	"couponamount",
 	"total",
 	"payment_type",
 	"cardtype",
@@ -313,7 +312,6 @@ $default_columns = array(
 	array( "level", "name" ),
 	array( "order", "subtotal" ),
 	array( "order", "tax" ),
-	array( "order", "couponamount" ),
 	array( "order", "total" ),
 	array( "order", "payment_type" ),
 	array( "order", "cardtype" ),
@@ -328,14 +326,6 @@ $default_columns = array(
 	array( "discount_code", "id" ),
 	array( "discount_code", "code" )
 );
-
-// Hiding couponamount by default.
-$coupons = apply_filters( 'pmpro_orders_show_coupon_amounts', false );
-if ( empty( $coupons ) ) {
-	$csv_file_header_array = array_diff( $csv_file_header_array, array( 'couponamount' ) );
-	$couponamount_array_key = array_keys( $default_columns, array( 'order', 'couponamount' ) );
-	unset( $default_columns[ $couponamount_array_key[0] ] );
-}
 
 $default_columns = apply_filters( "pmpro_order_list_csv_default_columns", $default_columns );
 
@@ -569,12 +559,12 @@ function pmpro_transmit_order_content( $csv_fh, $filename, $headers = array() ) 
 
 	//did we accidentally send errors/warnings to browser?
 	if ( headers_sent() ) {
-		echo str_repeat( '-', 75 ) . "<br/>\n";
+		echo esc_html( str_repeat( '-', 75 ) ) . "<br/>\n";
 		echo 'Please open a support case and paste in the warnings/errors you see above this text to\n ';
 		echo 'the <a href="http://paidmembershipspro.com/support/?utm_source=plugin&utm_medium=pmpro-orders-csv&utm_campaign=support" target="_blank">Paid Memberships Pro support forum</a><br/>\n';
-		echo str_repeat( "=", 75 ) . "<br/>\n";
-		echo file_get_contents( $filename );
-		echo str_repeat( "=", 75 ) . "<br/>\n";
+		echo esc_html( str_repeat( '-', 75 ) ) . "<br/>\n";
+		echo wp_kses_post( file_get_contents( $filename ) );
+		echo esc_html( str_repeat( '-', 75 ) ) . "<br/>\n";
 	}
 
 	//transmission

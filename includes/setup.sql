@@ -1,20 +1,20 @@
 -- phpMyAdmin SQL Dump
 -- version 2.8.2.4
 -- http://www.phpmyadmin.net
--- 
+--
 -- Host: localhost:3306
 -- Generation Time: Sep 14, 2012 at 12:16 PM
 -- Server version: 5.1.57
 -- PHP Version: 5.2.6
--- 
+--
 -- PMPro Version: 1.5.2
--- 
+--
 
 -- --------------------------------------------------------
 
--- 
+--
 -- Table structure for table `wp_pmpro_discount_codes`
--- 
+--
 
 CREATE TABLE `wp_pmpro_discount_codes` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
@@ -30,9 +30,9 @@ CREATE TABLE `wp_pmpro_discount_codes` (
 
 -- --------------------------------------------------------
 
--- 
+--
 -- Table structure for table `wp_pmpro_discount_codes_levels`
--- 
+--
 
 CREATE TABLE `wp_pmpro_discount_codes_levels` (
   `code_id` int(11) unsigned NOT NULL,
@@ -52,9 +52,9 @@ CREATE TABLE `wp_pmpro_discount_codes_levels` (
 
 -- --------------------------------------------------------
 
--- 
+--
 -- Table structure for table `wp_pmpro_discount_codes_uses`
--- 
+--
 
 CREATE TABLE `wp_pmpro_discount_codes_uses` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
@@ -69,9 +69,9 @@ CREATE TABLE `wp_pmpro_discount_codes_uses` (
 
 -- --------------------------------------------------------
 
--- 
+--
 -- Table structure for table `wp_pmpro_membership_levels`
--- 
+--
 
 CREATE TABLE `wp_pmpro_membership_levels` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
@@ -96,9 +96,9 @@ CREATE TABLE `wp_pmpro_membership_levels` (
 
 -- --------------------------------------------------------
 
--- 
+--
 -- Table structure for table `wp_pmpro_membership_levelmeta`
--- 
+--
 
 CREATE TABLE `wp_pmpro_membership_levelmeta` (
   `meta_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
@@ -128,9 +128,9 @@ CREATE TABLE `wp_pmpro_membership_ordermeta` (
 
 -- --------------------------------------------------------
 
--- 
+--
 -- Table structure for table `wp_pmpro_membership_orders`
--- 
+--
 
 CREATE TABLE `wp_pmpro_membership_orders` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
@@ -148,10 +148,7 @@ CREATE TABLE `wp_pmpro_membership_orders` (
   `billing_phone` varchar(32) NOT NULL,
   `subtotal` varchar(16) NOT NULL DEFAULT '',
   `tax` varchar(16) NOT NULL DEFAULT '',
-  `couponamount` varchar(16) NOT NULL DEFAULT '',
   `checkout_id` int(11) NOT NULL DEFAULT '0',
-  `certificate_id` int(11) NOT NULL DEFAULT '0',
-  `certificateamount` varchar(16) NOT NULL DEFAULT '',
   `total` varchar(16) NOT NULL DEFAULT '',
   `payment_type` varchar(64) NOT NULL DEFAULT '',
   `cardtype` varchar(32) NOT NULL DEFAULT '',
@@ -185,9 +182,9 @@ CREATE TABLE `wp_pmpro_membership_orders` (
 
 -- --------------------------------------------------------
 
--- 
+--
 -- Table structure for table `wp_pmpro_memberships_categories`
--- 
+--
 
 CREATE TABLE `wp_pmpro_memberships_categories` (
   `membership_id` int(11) unsigned NOT NULL,
@@ -199,9 +196,9 @@ CREATE TABLE `wp_pmpro_memberships_categories` (
 
 -- --------------------------------------------------------
 
--- 
+--
 -- Table structure for table `wp_pmpro_memberships_pages`
--- 
+--
 
 CREATE TABLE `wp_pmpro_memberships_pages` (
   `membership_id` int(11) unsigned NOT NULL,
@@ -213,9 +210,9 @@ CREATE TABLE `wp_pmpro_memberships_pages` (
 
 -- --------------------------------------------------------
 
--- 
+--
 -- Table structure for table `wp_pmpro_memberships_users`
--- 
+--
 
 CREATE TABLE `wp_pmpro_memberships_users` (
    `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
@@ -240,4 +237,80 @@ CREATE TABLE `wp_pmpro_memberships_users` (
    KEY `enddate` (`enddate`),
    KEY `user_id` (`user_id`),
    KEY `status` (`status`)
+);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `wp_pmpro_subscriptions`
+--
+
+CREATE TABLE `wp_pmpro_subscriptions` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `user_id` int(11) unsigned NOT NULL,
+  `membership_level_id` int(20) unsigned NOT NULL,
+  `gateway` varchar(64) NOT NULL,
+  `gateway_environment` varchar(64) NOT NULL,
+  `subscription_transaction_id` varchar(32) NOT NULL,
+  `status` varchar(20) NOT NULL DEFAULT 'active',
+  `startdate` datetime DEFAULT NULL,
+  `enddate` datetime DEFAULT NULL,
+  `next_payment_date` datetime DEFAULT NULL,
+  `billing_amount` decimal(18,8) NOT NULL DEFAULT '0.00',
+  `cycle_number` int(11) NOT NULL DEFAULT '0',
+  `cycle_period` varchar(10) NOT NULL DEFAULT 'Month',
+  `billing_limit` int(11) NOT NULL DEFAULT '0',
+  `trial_amount` decimal(18,8) NOT NULL DEFAULT '0.00',
+  `trial_limit` int(11) NOT NULL DEFAULT '0',
+  `modified` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `subscription_link` (`subscription_transaction_id`, `gateway_environment`, `gateway`),
+  KEY `user_id` (`user_id`),
+  KEY `next_payment_date` (`next_payment_date`)
+);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `wp_pmpro_subscriptionmeta`
+--
+
+CREATE TABLE `wp_pmpro_subscriptionmeta` (
+  `meta_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `pmpro_subscription_id` int(10) unsigned NOT NULL,
+  `meta_key` varchar(255) NOT NULL,
+  `meta_value` longtext,
+  PRIMARY KEY (`meta_id`),
+  KEY `pmpro_subscription_id` (`pmpro_subscription_id`),
+  KEY `meta_key` (`meta_key`)
+);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `wp_pmpro_groups`
+--
+
+CREATE TABLE `wp_pmpro_groups` (
+	`id` int unsigned NOT NULL AUTO_INCREMENT,
+	`name` varchar(255) NOT NULL,
+	`allow_multiple_selections` tinyint NOT NULL DEFAULT '1',
+	`displayorder` int,
+	PRIMARY KEY (`id`),
+	KEY `name` (`name`)
+);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `wp_pmpro_membership_levels_groups`
+--
+
+CREATE TABLE `wp_pmpro_membership_levels_groups` (
+	`id` int unsigned NOT NULL AUTO_INCREMENT,
+	`level` int unsigned NOT NULL DEFAULT '0',
+	`group` int unsigned NOT NULL DEFAULT '0',
+	PRIMARY KEY (`id`),
+	KEY `level` (`level`),
+	KEY `group` (`group`)
 );

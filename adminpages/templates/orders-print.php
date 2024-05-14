@@ -54,7 +54,7 @@
 				</tr>
 				<tr>
 					<td>
-						<?php echo __( 'Date:', 'paid-memberships-pro' ) . '&nbsp;' . date_i18n( get_option( 'date_format' ), $order->getTimestamp() ); ?>
+						<?php echo esc_html( __( 'Date:', 'paid-memberships-pro' ) . '&nbsp;' . date_i18n( get_option( 'date_format' ), $order->getTimestamp() ) ); ?>
 					</td>
 				</tr>
 			</table>
@@ -62,7 +62,7 @@
 	</header>
 	<main class="main">
 		<p>
-			<?php echo pmpro_formatAddress(
+			<?php echo wp_kses_post( pmpro_formatAddress(
 				$order->billing->name,
 				$order->billing->street,
 				'',
@@ -71,7 +71,7 @@
 				$order->billing->zip,
 				$order->billing->country,
 				$order->billing->phone
-			); ?>
+			) ); ?>
 		</p>
 		<table class="invoice" style="border-width:0px;border-collapse:collapse;">
 			<tr>
@@ -80,9 +80,9 @@
 				<th><?php esc_html_e('Price', 'paid-memberships-pro' ); ?></th>
 			</tr>
 			<tr>
-				<td class="aligncenter"><?php echo $level->id; ?></td>
-				<td><?php echo $level->name; ?></td>
-				<td class="alignright"><?php echo pmpro_escape_price( pmpro_formatPrice( $order->subtotal ) ); ?></td>
+				<td class="aligncenter"><?php echo esc_html( $level->id ); ?></td>
+				<td><?php echo esc_html( $level->name ); ?></td>
+				<td class="alignright"><?php echo pmpro_escape_price( pmpro_formatPrice( $order->subtotal ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></td>
 			</tr>
 			<?php
 				if ( (float)$order->total > 0 ) {
@@ -90,10 +90,10 @@
 					foreach ( $pmpro_price_parts as $pmpro_price_part ) { ?>
 						<tr style="border-width:1px;border-style:solid;border-collapse:collapse;">
 							<th colspan="2" style="text-align:right;border-width:1px;border-style:solid;border-collapse:collapse;">
-								<?php esc_html_e( $pmpro_price_part['label'] ); ?>
+								<?php echo esc_html( $pmpro_price_part['label'] ); ?>
 							</th>
 							<td style="text-align:right;border-width:1px;border-style:solid;border-collapse:collapse;">
-								<?php esc_html_e( $pmpro_price_part['value'] ); ?>
+								<?php echo esc_html( $pmpro_price_part['value'] ); ?>
 							</td>
 						</tr>
 						<?php

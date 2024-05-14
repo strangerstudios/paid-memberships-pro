@@ -1,0 +1,82 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "pmpro/login-form",
+	"title": "Login Form",
+	"category": "pmpro",
+	"description": "Dynamic form that allows users to log in or recover a lost password. Logged in users can see a welcome message with the selected custom menu.",
+	"keywords": [ "log in", "lost password", "password reset", "paid memberships pro", "pmpro" ],
+	"attributes" : {
+		"display_if_logged_in": {
+			"type": "boolean",
+			"default": true
+		},
+		"show_menu": {
+			"type": "boolean",
+			"default": true
+		},
+		"show_logout_link": {
+			"type": "boolean",
+			"default": true
+		}
+	},
+	"supports": {
+		"align": [ "wide", "full" ],
+		"ariaLabel": true,
+		"html": false,
+		"background": {
+			"backgroundImage": true
+		},
+		"color": {
+			"gradients": true,
+			"heading": true,
+			"button": true,
+			"link": true
+		},
+		"spacing": {
+			"margin": [ "top", "bottom" ],
+			"padding": true,
+			"blockGap": true,
+			"__experimentalDefaultControls": {
+				"padding": true,
+				"blockGap": true
+			}
+		},
+		"dimensions": {
+			"minHeight": true
+		},
+		"__experimentalBorder": {
+			"color": true,
+			"radius": true,
+			"style": true,
+			"width": true,
+			"__experimentalDefaultControls": {
+				"color": true,
+				"radius": true,
+				"style": true,
+				"width": true
+			}
+		},
+		"typography": {
+			"fontSize": true,
+			"lineHeight": true,
+			"__experimentalFontFamily": true,
+			"__experimentalFontWeight": true,
+			"__experimentalFontStyle": true,
+			"__experimentalTextTransform": true,
+			"__experimentalTextDecoration": true,
+			"__experimentalLetterSpacing": true,
+			"__experimentalDefaultControls": {
+				"fontSize": true
+			}
+		},
+		"layout": {
+			"allowSizingOnChildren": true
+		}
+	},
+	"example": {
+	},
+	"textdomain": "paid-memberships-pro",
+	"editorScript": "file:./index.js",
+	"render": "file:./render.php"
+}
