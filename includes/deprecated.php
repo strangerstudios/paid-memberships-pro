@@ -17,6 +17,7 @@ function pmpro_init_check_for_deprecated_filters() {
 		'pmpro_default_field_group_label'   => 'pmprorh_section_header',
 		'pmpro_stripe_subscription_deleted' => null,
 		'pmpro_subscription_cancelled'      => null,
+		'pmpro_longform_address'            => null,
 	);
 	
 	foreach ( $pmpro_map_deprecated_filters as $old => $new ) {

@@ -313,56 +313,18 @@ if ( empty( $default_gateway ) ) {
 				<label for="baddress2"><?php esc_html_e('Address 2', 'paid-memberships-pro' );?></label>
 				<input id="baddress2" name="baddress2" type="text" class="<?php echo esc_attr( pmpro_get_element_class( 'input', 'baddress2' ) ); ?>" size="30" value="<?php echo esc_attr($baddress2); ?>" />
 			</div> <!-- end pmpro_checkout-field-baddress2 -->
-			<?php
-				$longform_address = apply_filters("pmpro_longform_address", true);
-				if($longform_address) { ?>
-					<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout-field pmpro_checkout-field-bcity', 'pmpro_checkout-field-bcity' ) ); ?>">
-						<label for="bcity"><?php esc_html_e('City', 'paid-memberships-pro' );?></label>
-						<input id="bcity" name="bcity" type="text" class="<?php echo esc_attr( pmpro_get_element_class( 'input', 'bcity' ) ); ?>" size="30" value="<?php echo esc_attr($bcity); ?>" />
-					</div> <!-- end pmpro_checkout-field-bcity -->
-					<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout-field pmpro_checkout-field-bstate', 'pmpro_checkout-field-bstate' ) ); ?>">
-						<label for="bstate"><?php esc_html_e('State', 'paid-memberships-pro' );?></label>
-						<input id="bstate" name="bstate" type="text" class="<?php echo esc_attr( pmpro_get_element_class( 'input', 'bstate' ) ); ?>" size="30" value="<?php echo esc_attr($bstate); ?>" />
-					</div> <!-- end pmpro_checkout-field-bstate -->
-					<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout-field pmpro_checkout-field-bzipcode', 'pmpro_checkout-field-bzipcode' ) ); ?>">
-						<label for="bzipcode"><?php esc_html_e('Postal Code', 'paid-memberships-pro' );?></label>
-						<input id="bzipcode" name="bzipcode" type="text" class="<?php echo esc_attr( pmpro_get_element_class( 'input', 'bzipcode' ) ); ?>" size="30" value="<?php echo esc_attr($bzipcode); ?>" />
-					</div> <!-- end pmpro_checkout-field-bzipcode -->
-				<?php } else { ?>
-					<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout-field pmpro_checkout-field-bcity_state_zip', 'pmpro_checkout-field-bcity_state_zip' ) ); ?>">
-						<label for="bcity_state_zip' ); ?>"><?php esc_html_e('City, State Zip', 'paid-memberships-pro' );?></label>
-						<input id="bcity" name="bcity" type="text" class="<?php echo esc_attr( pmpro_get_element_class( 'input', 'bcity' ) ); ?>" size="14" value="<?php echo esc_attr($bcity); ?>" />,
-						<?php
-							$state_dropdowns = apply_filters("pmpro_state_dropdowns", false);
-							if($state_dropdowns === true || $state_dropdowns == "names") {
-								global $pmpro_states;
-								?>
-								<select id="bstate" name="bstate" class="<?php echo esc_attr( pmpro_get_element_class( '', 'bstate' ) ); ?>">
-									<option value="">--</option>
-									<?php
-										foreach($pmpro_states as $ab => $st) { ?>
-											<option value="<?php echo esc_attr($ab);?>" <?php if($ab == $bstate) { ?>selected="selected"<?php } ?>><?php echo esc_html( $st );?></option>
-									<?php } ?>
-								</select>
-							<?php } elseif($state_dropdowns == "abbreviations") {
-								global $pmpro_states_abbreviations;
-								?>
-								<select id="bstate" name="bstate" class="<?php echo esc_attr( pmpro_get_element_class( '', 'bstate' ) ); ?>">
-									<option value="">--</option>
-									<?php
-										foreach($pmpro_states_abbreviations as $ab)
-										{
-									?>
-										<option value="<?php echo esc_attr($ab);?>" <?php if($ab == $bstate) { ?>selected="selected"<?php } ?>><?php echo esc_html( $ab );?></option>
-									<?php } ?>
-								</select>
-							<?php } else { ?>
-								<input id="bstate" name="bstate" type="text" class="<?php echo esc_attr( pmpro_get_element_class( 'input', 'bstate' ) ); ?>" size="2" value="<?php echo esc_attr($bstate); ?>" />
-						<?php } ?>
-						<input id="bzipcode" name="bzipcode" type="text" class="<?php echo esc_attr( pmpro_get_element_class( 'input', 'bzipcode' ) ); ?>" size="5" value="<?php echo esc_attr($bzipcode); ?>" />
-					</div> <!-- end pmpro_checkout-field-bcity_state_zip -->
-			<?php } ?>
-
+			<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout-field pmpro_checkout-field-bcity', 'pmpro_checkout-field-bcity' ) ); ?>">
+				<label for="bcity"><?php esc_html_e('City', 'paid-memberships-pro' );?></label>
+				<input id="bcity" name="bcity" type="text" class="<?php echo esc_attr( pmpro_get_element_class( 'input', 'bcity' ) ); ?>" size="30" value="<?php echo esc_attr($bcity); ?>" />
+			</div> <!-- end pmpro_checkout-field-bcity -->
+			<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout-field pmpro_checkout-field-bstate', 'pmpro_checkout-field-bstate' ) ); ?>">
+				<label for="bstate"><?php esc_html_e('State', 'paid-memberships-pro' );?></label>
+				<input id="bstate" name="bstate" type="text" class="<?php echo esc_attr( pmpro_get_element_class( 'input', 'bstate' ) ); ?>" size="30" value="<?php echo esc_attr($bstate); ?>" />
+			</div> <!-- end pmpro_checkout-field-bstate -->
+			<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout-field pmpro_checkout-field-bzipcode', 'pmpro_checkout-field-bzipcode' ) ); ?>">
+				<label for="bzipcode"><?php esc_html_e('Postal Code', 'paid-memberships-pro' );?></label>
+				<input id="bzipcode" name="bzipcode" type="text" class="<?php echo esc_attr( pmpro_get_element_class( 'input', 'bzipcode' ) ); ?>" size="30" value="<?php echo esc_attr($bzipcode); ?>" />
+			</div> <!-- end pmpro_checkout-field-bzipcode -->
 			<?php
 				$show_country = apply_filters("pmpro_international_addresses", true);
 				if($show_country) { ?>
