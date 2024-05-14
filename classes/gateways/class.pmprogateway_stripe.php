@@ -244,7 +244,6 @@ class PMProGateway_stripe extends PMProGateway {
 	 */
 	public static function getGatewayOptions() {
 		$options = array(
-			'sslseal',
 			'nuclear_HTTPS',
 			'gateway_environment',
 			'stripe_secretkey',
@@ -939,10 +938,6 @@ class PMProGateway_stripe extends PMProGateway {
                 <span class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout-h2-name' ) ); ?>"><?php esc_html_e( 'Payment Information', 'paid-memberships-pro' ); ?></span>
                 <span class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout-h2-msg' ) ); ?>"><?php esc_html_e( 'We accept all major credit cards', 'paid-memberships-pro' ); ?></span>
             </h2>
-			<?php $sslseal = get_option( "pmpro_sslseal" ); ?>
-			<?php if ( ! empty( $sslseal ) ) { ?>
-            <div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout-fields-display-seal' ) ); ?>">
-				<?php } ?>
 		<?php
 			if ( get_option( 'pmpro_stripe_payment_request_button' ) ) { ?>
 				<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout-field pmpro_checkout-field-payment-request-button', 'pmpro_checkout-field-payment-request-button' ) ); ?>">
@@ -956,47 +951,37 @@ class PMProGateway_stripe extends PMProGateway {
 				<?php
 			}
 		?>
-                <div class="pmpro_checkout-fields<?php if ( ! empty( $sslseal ) ) { ?> pmpro_checkout-fields-leftcol<?php } ?>">
-                    <input type="hidden" id="CardType" name="CardType"
-                           value="<?php echo esc_attr( $CardType ); ?>"/>
-                    <div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout-field pmpro_payment-account-number', 'pmpro_payment-account-number' ) ); ?>">
-                        <label for="AccountNumber"><?php esc_html_e( 'Card Number', 'paid-memberships-pro' ); ?></label>
-                        <div id="AccountNumber"></div>
-                    </div>
-                    <div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout-field pmpro_payment-expiration', 'pmpro_payment-expiration' ) ); ?>">
-                        <label for="Expiry"><?php esc_html_e( 'Expiration Date', 'paid-memberships-pro' ); ?></label>
-                        <div id="Expiry"></div>
-                    </div>
-					<?php
-					$pmpro_show_cvv = apply_filters( "pmpro_show_cvv", true );
-					if ( $pmpro_show_cvv ) { ?>
-                        <div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout-field pmpro_payment-cvv', 'pmpro_payment-cvv' ) ); ?>">
-                            <label for="CVV"><?php esc_html_e( 'CVC', 'paid-memberships-pro' ); ?></label>
-                            <div id="CVV"></div>
-                        </div>
-					<?php } ?>
-					<?php if ( $pmpro_show_discount_code ) { ?>
-                        <div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout-field pmpro_payment-discount-code', 'pmpro_payment-discount-code' ) ); ?>">
-                            <label for="pmpro_discount_code"><?php esc_html_e( 'Discount Code', 'paid-memberships-pro' ); ?></label>
-                            <input class="<?php echo esc_attr( pmpro_get_element_class( 'input pmpro_alter_price', 'pmpro_discount_code' ) ); ?>"
-                                   id="pmpro_discount_code" name="pmpro_discount_code" type="text" size="10"
-                                   value="<?php echo esc_attr( $discount_code ) ?>"/>
-                            <input aria-label="<?php esc_html_e( 'Apply discount code', 'paid-memberships-pro' ); ?>" type="button" id="discount_code_button" name="discount_code_button"
-                                   value="<?php esc_attr_e( 'Apply', 'paid-memberships-pro' ); ?>"/>
-                            <p id="discount_code_message" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_message' ) ); ?>" style="display: none;"></p>
-                        </div>
-					<?php } ?>
-                </div> <!-- end pmpro_checkout-fields -->
-				<?php if ( ! empty( $sslseal ) ) { ?>
-                <div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout-fields-rightcol pmpro_sslseal', 'pmpro_sslseal' ) ); ?>">
-					<?php
-					// This value is set by admins and could contain JS. Will be replaced with a hook in future versions.
-					//phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-					echo stripslashes( $sslseal );
-					?>
+			<div class="pmpro_checkout-fields">
+				<input type="hidden" id="CardType" name="CardType"
+						value="<?php echo esc_attr( $CardType ); ?>"/>
+				<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout-field pmpro_payment-account-number', 'pmpro_payment-account-number' ) ); ?>">
+					<label for="AccountNumber"><?php esc_html_e( 'Card Number', 'paid-memberships-pro' ); ?></label>
+					<div id="AccountNumber"></div>
 				</div>
-            </div> <!-- end pmpro_checkout-fields-display-seal -->
-		<?php } ?>
+				<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout-field pmpro_payment-expiration', 'pmpro_payment-expiration' ) ); ?>">
+					<label for="Expiry"><?php esc_html_e( 'Expiration Date', 'paid-memberships-pro' ); ?></label>
+					<div id="Expiry"></div>
+				</div>
+				<?php
+				$pmpro_show_cvv = apply_filters( "pmpro_show_cvv", true );
+				if ( $pmpro_show_cvv ) { ?>
+					<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout-field pmpro_payment-cvv', 'pmpro_payment-cvv' ) ); ?>">
+						<label for="CVV"><?php esc_html_e( 'CVC', 'paid-memberships-pro' ); ?></label>
+						<div id="CVV"></div>
+					</div>
+				<?php } ?>
+				<?php if ( $pmpro_show_discount_code ) { ?>
+					<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout-field pmpro_payment-discount-code', 'pmpro_payment-discount-code' ) ); ?>">
+						<label for="pmpro_discount_code"><?php esc_html_e( 'Discount Code', 'paid-memberships-pro' ); ?></label>
+						<input class="<?php echo esc_attr( pmpro_get_element_class( 'input pmpro_alter_price', 'pmpro_discount_code' ) ); ?>"
+								id="pmpro_discount_code" name="pmpro_discount_code" type="text" size="10"
+								value="<?php echo esc_attr( $discount_code ) ?>"/>
+						<input aria-label="<?php esc_html_e( 'Apply discount code', 'paid-memberships-pro' ); ?>" type="button" id="discount_code_button" name="discount_code_button"
+								value="<?php esc_attr_e( 'Apply', 'paid-memberships-pro' ); ?>"/>
+						<p id="discount_code_message" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_message' ) ); ?>" style="display: none;"></p>
+					</div>
+				<?php } ?>
+			</div> <!-- end pmpro_checkout-fields -->
         </div> <!-- end pmpro_payment_information_fields -->
 		<?php
 

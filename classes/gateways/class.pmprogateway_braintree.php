@@ -268,7 +268,6 @@ use Braintree\WebhookNotification as Braintree_WebhookNotification;
 		static function getGatewayOptions()
 		{
 			$options = array(
-				'sslseal',
 				'nuclear_HTTPS',
 				'gateway_environment',
 				'braintree_merchantid',
@@ -461,10 +460,6 @@ use Braintree\WebhookNotification as Braintree_WebhookNotification;
 					<span class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout-h2-name' ) ); ?>"><?php esc_html_e('Payment Information', 'paid-memberships-pro' );?></span>
 				<span class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout-h2-msg' ) ); ?>"><?php printf(esc_html__('We Accept %s', 'paid-memberships-pro' ), esc_html( $pmpro_accepted_credit_cards_string ) );?></span>
 				</h2>
-				<?php $sslseal = get_option("pmpro_sslseal"); ?>
-				<?php if(!empty($sslseal)) { ?>
-					<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout-fields-display-seal' ) ); ?>">
-				<?php } ?>
 				<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout-fields' ) ); ?>">
 					<?php
 						$pmpro_include_cardtype_field = apply_filters('pmpro_include_cardtype_field', true);
@@ -520,16 +515,6 @@ use Braintree\WebhookNotification as Braintree_WebhookNotification;
 						</div>
 					<?php } ?>
 				</div> <!-- end pmpro_checkout-fields -->
-				<?php if(!empty($sslseal)) { ?>
-					<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout-fields-rightcol pmpro_sslseal', 'pmpro_sslseal' ) ); ?>">
-						<?php
-						// This value is set by admins and could contain JS. Will be replaced with a hook in future versions.
-						//phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-						echo stripslashes( $sslseal );
-						?>
-					</div>
-				</div> <!-- end pmpro_checkout-fields-display-seal -->
-				<?php } ?>
 			</div> <!-- end pmpro_payment_information_fields -->
 			<?php
 

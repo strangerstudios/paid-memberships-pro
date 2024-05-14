@@ -473,22 +473,6 @@ span.pmpro_price_part_sub:before {
 #pmpro_payment_method span.gateway_paypalexpress {
 	margin-left: 2em;
 }
-#pmpro_payment_information_fields .pmpro_checkout-fields-display-seal {
-	clear: both;
-	display: -ms-grid;
-	display: grid;
-	-ms-grid-columns: 3fr 1em 1fr;
-	grid-template-columns: 3fr 1fr;
-	grid-column-gap: 1em;
-	grid-template-areas:
-		"leftcol rightcol";
-}
-#pmpro_payment_information_fields .pmpro_checkout-fields-display-seal .pmpro_checkout-fields-leftcol {
-	grid-area: leftcol;
-}
-#pmpro_payment_information_fields .pmpro_checkout-fields-display-seal .pmpro_checkout-fields-rightcol {
-	grid-area: rightcol;
-}
 #pmpro_license {
 	background: #FFF;
 	border: 1px solid #CCC;
@@ -505,11 +489,6 @@ span.pmpro_price_part_sub:before {
 }
 .pmpro_checkout_gateway-stripe form.pmpro_form #pmpro_payment_information_fields .pmpro_checkout-field-payment-request-button h4 {
 	margin-top: 1em;
-}
-.pmpro_checkout_gateway-stripe form.pmpro_form #pmpro_payment_information_fields .pmpro_checkout-fields-display-seal  {
-	grid-template-areas:
-		"paymentrequestbutton rightcol"
-		"leftcol rightcol";
 }
 .pmpro_checkout_gateway-stripe form.pmpro_form #pmpro_payment_information_fields .pmpro_checkout-fields,
 .pmpro_billing_gateway-stripe form.pmpro_form #pmpro_payment_information_fields .pmpro_checkout-fields {
@@ -892,9 +871,6 @@ li.pmpro_more {
 	}
 	form.pmpro_form input[type=text]#pmpro_other_discount_code, form.pmpro_form input[type=text]#CVV, form.pmpro_form input[type=text]#pmpro_discount_code {
 		width: 40%;
-	}
-	#pmpro_payment_information_fields .pmpro_checkout-fields-display-seal {
-		display: block;
 	}
 	form.pmpro_form .pmpro_btn,
 	.pmpro_login_wrap #loginform input[type=submit] {

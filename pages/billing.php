@@ -310,10 +310,6 @@
 							<span class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout-h2-msg' ) ); ?>"><?php echo esc_html( sprintf( __('We accept %s', 'paid-memberships-pro' ), $pmpro_accepted_credit_cards_string ) ); ?></span>
 
 						</h2>
-						<?php $sslseal = get_option("pmpro_sslseal"); ?>
-						<?php if(!empty($sslseal)) { ?>
-							<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout-fields-display-seal' ) ); ?>">
-						<?php } ?>
 						<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout-fields' ) ); ?>">
 							<?php
 								$pmpro_include_cardtype_field = apply_filters('pmpro_include_cardtype_field', false);

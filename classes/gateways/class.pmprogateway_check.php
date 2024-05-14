@@ -59,7 +59,6 @@
 		static function getGatewayOptions()
 		{			
 			$options = array(
-				'sslseal',
 				'nuclear_HTTPS',
 				'gateway_environment',
 				'instructions',
