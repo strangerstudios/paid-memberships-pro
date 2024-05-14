@@ -2,7 +2,7 @@
 if ( class_exists( 'ElementorPro\Modules\DisplayConditions\Module' ) ) {
 	add_action( 'elementor/display_conditions/register', function ( $conditions_manager ) {
 		$conditions = [
-			'Membership_Level_Condition' => 'conditions/membership-level-condition.php',
+			'PMPro\Elementor\DisplayConditions\Membership_Level_Condition' => 'conditions/membership-level-condition.php',
 		];
 	
 		foreach ( $conditions as $condition_name => $location ) {

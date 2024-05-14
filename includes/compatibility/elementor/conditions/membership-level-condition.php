@@ -1,4 +1,6 @@
 <?php
+namespace PMPro\Elementor\DisplayConditions;
+
 use Elementor\Controls_Manager;
 use ElementorPro\Modules\DisplayConditions\Conditions\Base\Condition_Base;
 
