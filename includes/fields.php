@@ -321,7 +321,6 @@ function pmpro_checkout_boxes_fields() {
 		if($n > 0) {
 			?>
 			<div id="pmpro_checkout_box-<?php echo esc_attr( sanitize_title( $cb->name ) ); ?>" class="pmpro_checkout">
-				<hr />
 				<h2>
 					<span class="pmpro_checkout-h2-name"><?php echo wp_kses_post( $cb->label );?></span>
 				</h2>
