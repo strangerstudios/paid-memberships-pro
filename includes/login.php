@@ -741,7 +741,6 @@ function pmpro_reset_password_form() {
  * Show the nav links below the login form.
  */
 function pmpro_login_forms_handler_nav( $pmpro_form ) { ?>
-	<hr />
 	<p class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_actions_nav' ) ); ?>">
 		<?php
 			// Build the links to return.
