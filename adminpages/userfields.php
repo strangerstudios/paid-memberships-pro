@@ -59,15 +59,6 @@
 	 */
 	require_once( dirname(__FILE__) . '/admin_header.php' );
 
-	// Show warning if there are additional fields that are coded.
-	if ( pmpro_has_coded_user_fields() ) {
-		?>
-		<div class="notice notice-warning">
-			<p><?php esc_html_e( 'This website has additional user fields that are set up with code. Coded fields cannot be edited here and will show in addition to the fields set up on this page.', 'paid-memberships-pro' ); ?></p>
-		</div>
-		<?php
-	}
-
 	/**
 	 * Meta boxes for User Fields admin page.
 	 *
@@ -86,6 +77,15 @@
 		'memberships_page_pmpro-userfields',
 		'side'
 	);
+	if ( pmpro_has_coded_user_fields() ) {
+		add_meta_box(
+			'pmpro_userfields_coded_fields',
+			esc_html( 'Coded Fields', 'paid-memberships-pro' ),
+			'pmpro_userfields_coded_fields_widget',
+			'memberships_page_pmpro-userfields',
+			'side',
+		);
+	}
 
 	/**
 	 * Meta box to show a save button and other data.
@@ -107,6 +107,47 @@
 		<p><?php esc_html_e( 'Groups are used to define a collection of fields that should be displayed together under a common heading. Group settings control field locations and membership level visibility.', 'paid-memberships-pro' ); ?></p>
 		<p><a target="_blank" href="https://www.paidmembershipspro.com/documentation/user-fields/create-field-group/?utm_source=plugin&utm_medium=pmpro-userfields&utm_campaign=documentation&utm_content=user-fields"><?php esc_html_e( 'Documentation: User Fields', 'paid-memberships-pro' ); ?></a></p>
 		<?php
+	}
+
+	/**
+	 * Meta box to show coded fields.
+	 *
+	 * @since TBD
+	 */
+	function pmpro_userfields_coded_fields_widget() {
+		global $pmpro_user_fields;
+
+		// Calculate names of UI fields.
+		$ui_fields_in_groups = pmpro_get_user_fields_settings();
+		$ui_fields           = array_merge( ...array_map( function ( $group ) { return $group->fields; }, $ui_fields_in_groups ) );
+		$ui_field_names      = array_map( function ( $field ) { return $field->name; }, $ui_fields );
+
+		// Find all fields that are not in the UI.
+		$coded_fields = array();
+		foreach( $pmpro_user_fields as $group_name => $fields ) {
+			foreach( $fields as $field ) {
+				if ( ! in_array( $field->name, $ui_field_names ) ) {
+					if ( empty( $coded_fields[ $group_name ] ) ) {
+						$coded_fields[ $group_name ] = array();
+					}
+					$coded_fields[ $group_name ][] = $field;
+				}
+			}
+		}
+
+		// Display the coded fields.
+		if ( ! empty( $coded_fields ) ) {
+			echo '<ul>';
+			foreach ( $coded_fields as $group_name => $fields ) {
+				echo '<li>';
+				echo '<strong>' . esc_html( $group_name ) . ':</strong> ';
+				echo '<br />';
+				echo esc_html( implode( ', ', array_map( function ( $field ) { return $field->label; }, $fields ) ) );
+				echo '</li>';
+			}
+		} else {
+			echo '<p>' . esc_html__( 'No coded fields found.', 'paid-memberships-pro' ) . '</p>';
+		}
 	}
 
 	?>		
@@ -145,7 +186,6 @@
 					<input type="hidden" id="pmpro_user_fields_settings" name="pmpro_user_fields_settings" value="<?php echo esc_attr( json_encode( $user_fields_settings ) );?>" />
 				</form>
 			</div> <!-- end postbox-container-1 -->
-
 		</div> <!-- end post-body -->
 	</div> <!-- end poststuff -->		
 	<script type="text/javascript">
