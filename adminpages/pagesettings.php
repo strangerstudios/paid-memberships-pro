@@ -468,7 +468,7 @@ require_once(dirname(__FILE__) . "/admin_header.php"); ?>
 							<?php } ?>
 							<p class="description"><?php printf( esc_html__('Include the shortcode %s or the Member Profile Edit block.', 'paid-memberships-pro' ), '[pmpro_member_profile_edit]' ); ?></p>
 
-							<?php if ( ! class_exists( 'PMProRH_Field' ) ) {
+							<?php
 								$allowed_member_profile_edit_html = array (
 									'a' => array (
 									'href' => array(),
@@ -476,8 +476,8 @@ require_once(dirname(__FILE__) . "/admin_header.php"); ?>
 									'title' => array(),
 								),
 							);
-							echo '<br /><p class="description">' . sprintf( wp_kses( __( 'Optional: Collect additional member fields at checkout, on the profile, or for admin-use only using the <a href="%s" title="Paid Memberships Pro - Register Helper Add On" target="_blank">Register Helper Add On</a>.', 'paid-memberships-pro' ), $allowed_member_profile_edit_html ), 'https://www.paidmembershipspro.com/add-ons/pmpro-register-helper-add-checkout-and-profile-fields/?utm_source=plugin&utm_medium=pmpro-pagesettings&utm_campaign=add-ons&utm_content=pmpro-register-helper' ) . '</p>';
-							} ?>
+							echo '<p class="description">' . sprintf( wp_kses( __( 'Optional: Collect additional member fields at checkout, on the profile, or for admin-use only. Set up your custom fields on the <a href="%s" title="Paid Memberships Pro - User Fields" target="_blank">User Fields</a> settings page.', 'paid-memberships-pro' ), $allowed_member_profile_edit_html ), esc_url( add_query_arg( array( 'page' => 'pmpro-userfields' ), get_admin_url(null, 'admin.php' ) ) ) ) . '</p>';
+							?>
 						</td>
 					</tr>
 				</tbody>
