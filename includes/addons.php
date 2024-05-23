@@ -3,6 +3,18 @@
  * Some of the code in this library was borrowed from the TGM Updater class by Thomas Griffin. (https://github.com/thomasgriffin/TGM-Updater)
  */
 
+
+/**
+ * Setup plugins api filters
+ *
+ * @since 1.8.5
+ */
+function pmpro_setupAddonUpdateInfo() {
+	add_action( 'update_option_pmpro_license_key', 'pmpro_reset_update_plugins_cache', 10, 2 );
+}
+
+add_action( 'init', 'pmpro_setupAddonUpdateInfo' );
+
 /**
  * Get addon information from PMPro server.
  *
