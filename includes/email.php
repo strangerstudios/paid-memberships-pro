@@ -41,7 +41,7 @@ function pmpro_wp_mail_from( $from_email ) {
 	$default_from_email = 'wordpress@' . $sitename;
 
 	//make sure it's the default email address
-	if( $from_email == $default_from_email ) {
+	if ( $from_email == $default_from_email ) {
 		$pmpro_from_email = get_option( 'pmpro_from_email' );
 		if ( $pmpro_from_email && is_email( $pmpro_from_email ) ) {
 			$from_email = $pmpro_from_email;
