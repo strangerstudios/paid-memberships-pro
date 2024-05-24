@@ -396,7 +396,7 @@ function pmpro_update_manager_notices() {
 
 	//If pmpro update manager is active bail
 	if ( is_plugin_active( $manager_update_slug ) ) {
-		//return;
+		return;
 	}
 
 	$is_update_manager_installed = in_array( $manager_update_slug, $installed_plugins );
@@ -407,36 +407,42 @@ function pmpro_update_manager_notices() {
 		//Word the notice for the plugin isn't installed
 		$notice_message = esc_html__( 'The Paid Memberships Pro Update Manager plugin is not installed. 
 			You need to install and activate it to properly download and install PMPro Add Ons.', 'paid-memberships-pro' );
+		$link_text = esc_html__( 'Click here to install.', 'paid-memberships-pro' );
+		$link_url = wp_nonce_url(
+			self_admin_url(
+				add_query_arg( array(
+					'action' => 'install-plugin',
+					'plugin' => $manager_update_slug
+				),
+				'update.php'
+				)
+			),
+			'install-plugin_' . $manager_update_slug
+		);
 	} else {
 		//Word the notice for the plugin is installed but not active
 		$notice_message = esc_html__( 'The Paid Memberships Pro Update Manager plugin is installed but not active. 
 			You need to activate it to properly download and install PMPro Add Ons.', 'paid-memberships-pro' );
-	}
-	//Add the div with the message to display in plugins.php page
-
-	$update_manager_install_link = wp_nonce_url(
-		self_admin_url(
-			add_query_arg( array(
-				'action' => 'activate',
-				'plugin' => $manager_update_slug,	
-			),
-			'plugins.php'
+			$link_text = esc_html__( 'Click here to activate.', 'paid-memberships-pro' );
+		$link_url = wp_nonce_url(
+			self_admin_url(
+				add_query_arg( array(
+					'action' => 'activate',
+					'plugin' => $manager_update_slug,
+				),
+				'plugins.php'
 			)
-		),
-		'activate-plugin_' . $manager_update_slug
-	);
+			),
+			'activate-plugin_' . $manager_update_slug
+		);
+	}
+	//Add the div with the message to display
 	?>
-
 	 <div class="notice notice-warning is-dismissible">
 	 		<p>
-				<?php esc_html_e( 'The Paid Memberships Pro Update Manager plugin is installed but not active. 
-					You need to activate it to properly download and install PMPro Add Ons.', 'paid-memberships-pro' ); 
+				<?php echo esc_html( sprintf( __( '%s' , 'paid-memberships-pro'), $notice_message ) );
 				?>
-			</p>
-
-			<p>
-				<?php esc_html_e('...', '...');?>
-				<a href="..."><?php esc_html_e( 'Click here to activate.', '...' ); ?></a>
+				<a href="<?php echo esc_url( $link_url ); ?>"><?php echo esc_html( $link_text ); ?></a>
 			</p>
 	</div>
 	<?php 	
