@@ -348,3 +348,98 @@ function pmpro_can_download_addon_with_license( $addon_license ) {
 	
 	return pmpro_license_isValid( null, $types_to_check );		
 }
+
+/**
+ *  Show a notification if Update Manager Add On isn't installed
+ * 
+ * @since TBD
+ */
+function pmpro_update_manager_notices() {
+	global $pagenow;
+	$allowed_pages = array( "update-core.php", "plugins.php" );
+	$manager_update_slug = 'pmpro-update-manager/pmpro-update-manager.php';
+	
+	$is_pmpro_page = isset( $_REQUEST['page'] ) 
+	&& substr( sanitize_text_field( $_REQUEST['page'] ), 0, 6 ) == 'pmpro-';
+
+	//if $page_name is in $allowed_pages var below is true
+	$show_notice = in_array( $pagenow, $allowed_pages ) || $is_pmpro_page;
+
+	//Bail if we shouldn't show notice according to the page
+	if ( ! $show_notice ) {
+		return;
+	}
+
+
+	//Get addons
+	$addons = pmpro_getAddons();
+
+	$installed_plugins = array_keys( get_plugins() );
+
+	$pmpro_license_server_addons = array();
+
+	foreach ( $addons as $addon ) {
+		//Get Add On file name
+		$plugin_file = $addon['Slug'] . '/' . $addon['Slug'] . '.php';
+		//Get Abs Add On file name
+		$plugin_file_abs = ABSPATH . 'wp-content/plugins/' . $plugin_file;
+		// Which one have 'License' != 'wordpress.org' AND are installed?
+		if ( $addon['License'] != 'wordpress.org' && in_array( $plugin_file, $installed_plugins ) ) {
+			$pmpro_license_server_addons[] = $addon;
+		}
+	}
+
+	//If no addons bail
+	if ( empty( $pmpro_license_server_addons ) ) {
+		return;
+	}
+
+	//If pmpro update manager is active bail
+	if ( is_plugin_active( $manager_update_slug ) ) {
+		//return;
+	}
+
+	$is_update_manager_installed = in_array( $manager_update_slug, $installed_plugins );
+
+	
+	//If not installed show a notice is not installed
+	if ( ! $is_update_manager_installed ) {
+		//Word the notice for the plugin isn't installed
+		$notice_message = esc_html__( 'The Paid Memberships Pro Update Manager plugin is not installed. 
+			You need to install and activate it to properly download and install PMPro Add Ons.', 'paid-memberships-pro' );
+	} else {
+		//Word the notice for the plugin is installed but not active
+		$notice_message = esc_html__( 'The Paid Memberships Pro Update Manager plugin is installed but not active. 
+			You need to activate it to properly download and install PMPro Add Ons.', 'paid-memberships-pro' );
+	}
+	//Add the div with the message to display in plugins.php page
+
+	$update_manager_install_link = wp_nonce_url(
+		self_admin_url(
+			add_query_arg( array(
+				'action' => 'activate',
+				'plugin' => $manager_update_slug,	
+			),
+			'plugins.php'
+			)
+		),
+		'activate-plugin_' . $manager_update_slug
+	);
+	?>
+
+	 <div class="notice notice-warning is-dismissible">
+	 		<p>
+				<?php esc_html_e( 'The Paid Memberships Pro Update Manager plugin is installed but not active. 
+					You need to activate it to properly download and install PMPro Add Ons.', 'paid-memberships-pro' ); 
+				?>
+			</p>
+
+			<p>
+				<?php esc_html_e('...', '...');?>
+				<a href="..."><?php esc_html_e( 'Click here to activate.', '...' ); ?></a>
+			</p>
+	</div>
+	<?php 	
+}
+
+add_action( 'admin_init', 'pmpro_update_manager_notices' );
