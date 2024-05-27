@@ -1001,7 +1001,7 @@ class PMPro_Field {
                 if($i == $month)
                     $r .= 'selected="selected"';
 
-                $r .= '>' . esc_html( date("M", strtotime($i . "/15/" . $year, current_time("timestamp"))) ) . '</option>';
+                $r .= '>' . esc_html( date_i18n("M", strtotime($i . "/15/" . $year, current_time("timestamp"))) ) . '</option>';
             }
 
             $r .= '</select><input id="' . esc_attr( $this->id ) . '_d" name="' . esc_attr( $this->name ) . '[d]" type="text" size="2" value="' . esc_attr( $day ) . '" ';
