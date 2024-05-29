@@ -872,8 +872,15 @@ if ( ! function_exists( 'formatPhone' ) ) {
 	}
 }
 
+/**
+ * Display a message to users based on their current status.
+ *
+ * @since 2.4.5
+ * @deprecated 3.1
+ */
 function pmpro_showRequiresMembershipMessage() {
-    global $current_user, $post_membership_levels_names;
+	_deprecated_function( __FUNCTION__, '3.1' );
+	global $current_user, $post_membership_levels_names;
 
 	// get the correct message
 	if ( is_feed() ) {
