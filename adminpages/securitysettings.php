@@ -7,7 +7,7 @@
 
 	//Bail if nonce field isn't set
 	if ( !empty( $_REQUEST['savesettings'] ) && ( empty( $_REQUEST[ 'pmpro_securitysettings_nonce' ] ) 
-		|| !check_admin_referer( 'savesettings', 'pmpro_paymentsettings_nonce' ) ) ) {
+		|| !check_admin_referer( 'savesettings', 'pmpro_securitysettings_nonce' ) ) ) {
 		$msg = -1;
 		$msgt = __( "Are you sure you want to do that? Try again.", 'paid-memberships-pro' );
 		unset( $_REQUEST[ 'savesettings' ] );
@@ -15,12 +15,18 @@
 
 	//get/set settings
 	if( !empty( $_REQUEST['savesettings'] ) ) {
-		setOption( "pmpro_spamprotection", intval( $_POST['spamprotection'] ) );
-		setOption( "pmpro_recaptcha", intval( $_POST['recaptcha'] ) );
-		setOption( "pmpro_recaptcha_version", sanitize_text_field( $_POST['recaptcha_version'] ) );
-		setOption( "pmpro_recaptcha_publickey", sanitize_text_field( $_POST['recaptcha_publickey'] ) );
-		setOption( "pmpro_recaptcha_privatekey", sanitize_text_field( $_POST['recaptcha_privatekey'] ) );
-		setOption( "pmpro_sslseal", wp_kses_post( stripslashes( $_POST['sslseal'] ) ) );
+		pmpro_setOption( "spamprotection", intval( $_POST['spamprotection'] ) );
+		pmpro_setOption( "recaptcha", intval( $_POST['recaptcha'] ) );
+		pmpro_setOption( "recaptcha_version", sanitize_text_field( $_POST['recaptcha_version'] ) );
+		pmpro_setOption( "recaptcha_publickey", sanitize_text_field( $_POST['recaptcha_publickey'] ) );
+		pmpro_setOption( "recaptcha_privatekey", sanitize_text_field( $_POST['recaptcha_privatekey'] ) );
+		pmpro_setOption( "use_ssl", intval( $_POST['use_ssl'] ) );
+		if( !empty( $_POST['nuclear_HTTPS'] ) ) {
+			$nuclear_HTTPS = 1;
+		} else {
+			$nuclear_HTTPS = 0;
+		}
+		pmpro_setOption( "nuclear_HTTPS", $nuclear_HTTPS );
 
 	}
 
@@ -29,10 +35,14 @@
 	$recaptcha_version = get_option( "pmpro_recaptcha_version" );
 	$recaptcha_publickey = get_option( "pmpro_recaptcha_publickey" );
 	$recaptcha_privatekey = get_option( "pmpro_recaptcha_privatekey" );
-	$sslseal = get_option( "pmpro_sslseal" );
+	$use_ssl = get_option( "pmpro_use_ssl" );
+	$nuclear_HTTPS = get_option( "pmpro_nuclear_HTTPS" );
+
 	$cloudflare_plugin_slug = 'simple-cloudflare-turnstile/simple-cloudflare-turnstile.php';
-
-
+	$blogvault_plugin_slug = 'blogvault-real-time-backup/blogvault.php';
+	$wordfence_plugin_slug = 'wordfence/wordfence.php';
+	$wpsolid_plugin_slug = 'better-wp-security/better-wp-security.php';
+	$akismet_plugin_slug = 'akismet/akismet.php';
 
 	require_once(dirname(__FILE__) . "/admin_header.php");
 
@@ -40,17 +50,56 @@
 	/**
 	 * Check if plugin is installed by getting all plugins from the plugins dir
 	 *
-	 * @param $plugin_slug
+	 * @param $plugin_slug The plugin slug to check if it is installed
 	 *
-	 * @return bool
+	 * @return bool True if plugin is installed, false otherwise
+	 * @since TBD
 	 */
 	function check_plugin_installed( $plugin_slug ) {
 		$installed_plugins = get_plugins();
 		return array_key_exists( $plugin_slug, $installed_plugins );
 	}
 
+	/**
+	 * Print a general notice that can be customized with different parameters
+	 *
+	 * @param string $msg The message to display
+	 * @param string $type The type of notice to display (error, warning, general)
+	 * @param string $plugin_slug The plugin slug to check if it is installed or active
+	 * @param string $action The action to take (install, activate)
+	 * @param string $style The style to apply to the notice
+	 * @return void
+	 * @since TBD
+	 */
+	function print_notice( $msg, $type, $plugin_slug, $action = '', $style = 'margin:0;' ) {
+		$link_url = $action == 'activate' ? ( 'activate-plugin_' . $plugin_slug ) : 'install-plugin_' . $plugin_slug;
+		$link_text = $action == 'activate' ? 'Activate Plugin' : 'Install Plugin';
+		$plugin_activate_link = wp_nonce_url(
+			self_admin_url(
+				add_query_arg( array(
+					'action' =>$action,
+					'plugin' => $plugin_slug,
+				),
+				'plugins.php'
+				)
+			),
+			$link_url
+		);
+		?>
+		<div role="alert" class="pmpro_notification">
+			<div class="pmpro_notification-<?php echo esc_attr( $type ); ?>" style="<?php echo esc_attr( $style ) ?>">
+				<?php echo esc_html( $msg ); ?>
+				<?php if (  $type != 'general' ) { ?>
+					<a href="<?php echo esc_url( $plugin_activate_link ); ?>">
+						<?php echo esc_html(  sprintf( __( '%s', 'paid-memberships-pro' ), $link_text ) ); ?>
+					</a>
+				<?php } ?>
+			<div>
+		</div>
+		<?php
+	}
 ?>
-	<form action="" method="POST">
+	<form action="" method="POST" enctype="multipart/form-data">
 		<?php wp_nonce_field( 'savesettings', 'pmpro_securitysettings_nonce' );?>
 		<hr class="wp-header-end">
         <h1><?php esc_html_e( 'Security Settings', 'paid-memberships-pro' );?></h1>
@@ -64,6 +113,31 @@
 			<div class="pmpro_section_inside">
 				<table class="form-table">
 					<tbody>
+						<tr>
+							<th scope="row" valign="top">
+								<label for="use_waf"><?php esc_html_e('Is Akismet Active ?', 'paid-memberships-pro' );?></label>
+							</th>
+							<td>
+								<p>
+									<?php esc_html_e( 'Akismet is a powerful anti-spam plugin for WordPress that automatically
+									filters out spam comments and form submissions. By leveraging advanced algorithms and a
+									vast database of spam patterns, Akismet keeps your site clean and improves performance
+									by reducing unwanted clutter.', 'paid-memberships-pro' ); ?>
+								</p>
+								<?php
+									//check akismet is installed
+									if (! check_plugin_installed( $akismet_plugin_slug ) ) {
+										//Show a message notice that plugin is not active
+										print_notice( 'Akismet is not installed', 'error', $akismet_plugin_slug, 'install-plugin');
+									} else if ( ! is_plugin_active( $akismet_plugin_slug ) ) {
+										print_notice( 'Akismet is installed but not active on your site.', 'warning',
+											$akismet_plugin_slug, 'activate');
+									} else {
+										print_notice( 'Akismet is active on your site.', 'general', '', '');
+									}
+								?>
+							</td>
+						</tr>
 						<tr>
 							<th scope="row" valign="top">
 								<label for="spamprotection"><?php esc_html_e('Enable Spam Protection?', 'paid-memberships-pro' );?></label>
@@ -184,56 +258,19 @@
 								<p>
 									<?php esc_html_e( 'A Web Application Firewall (WAF) like Cloudflare is important for 
 									securing WordPress sites by blocking common attacks such as SQL injection, XSS, 
-									and DDoS, enhancing website integrity and availability.', 'paid-memberships-pro' ); ?>
+									and DDoS, enhancing website integrity a availability.', 'paid-memberships-pro' ); ?>
 								</p>
 								<?php 
-								//check cloudflare is active 
-								if (! check_plugin_installed( $cloudflare_plugin_slug ) ) {
-									//Show a message notice that plugin is not active
-								?>
-									<div role="alert" class="pmpro_notification">
-										<div class="pmpro_notification-error" style="margin:0">
-											<?php esc_html_e( 'Cloudflare is not active','paid-memberships-pro' )  ?>
-											<a href=https://www.cloudflare.com/application-services/products/waf/ target="_blank" rel="nofollow noopener">
-												<?php esc_html_e('Click here to signup for Cloudflare', 'paid-memberships-pro' );?>
-											</a>
-										<div>
-									</div>
-								<?php
-								} else if ( ! is_plugin_active( $cloudflare_plugin_slug ) ) {
-									$security_clodflare_activate_link = wp_nonce_url(
-										self_admin_url(
-											add_query_arg( array(
-												'action' => 'activate',
-												'plugin' => $cloudflare_plugin_slug,	
-											),
-											'plugins.php'
-											)
-										),
-										'activate-plugin_' . $cloudflare_plugin_slug
-									);
-
-								?>
-									<div role="alert" class="pmpro_notification">
-										<div class="pmpro_notification-general notice-warning" style="margin:0; border-left-color:#dba617">
-											<?php esc_html_e( 'Cloudflare is installed but not active on your site.', 'paid-memberships-pro' ); ?>
-											<a href="<?php echo esc_url( $security_clodflare_activate_link ); ?>"><?php esc_html_e( 'Activate Cloudflare', 'paid-memberships-pro' ); ?></a>
-										<div>
-											
-									</div>
-								<?php
-								} else {
-								?>
-									<div role="alert" class="pmpro_notification">
-										<div class="pmpro_notification-general" style="margin:0">
-											<?php esc_html_e( 'Cloudflare is active on your site.', 'paid-memberships-pro' ); ?>
-										<div>
-									</div>
-								<?php
-								}
-								
-								
-								
+									//check cloudflare is installed
+									if (! check_plugin_installed( $cloudflare_plugin_slug ) ) {
+										//Show a message notice that plugin is not active
+										print_notice( 'Cloudflare is not installed', 'error', $cloudflare_plugin_slug, 'install-plugin');
+									} else if ( ! is_plugin_active( $cloudflare_plugin_slug ) ) {
+										print_notice( 'Cloudflare is installed but not active on your site.', 'warning',
+											$cloudflare_plugin_slug, 'activate');
+									} else {
+										print_notice( 'Cloudflare is active on your site.', 'general', '', '');
+									}
 								?>
 							</td>
 						</tr>
@@ -252,7 +289,84 @@
 				<table class="form-table">
 					<tbody>
 						<tr>
+							<p>
+								<?php esc_html_e( 'WordPress security plugins are important for safeguarding your
+								WordPress site. They provide comprehensive protection through features like
+								reliable backups, real-time threat detection, firewall protection,
+								and performance optimization.', 'paid-memberships-pro' ); ?>
+							</p>
 						</tr>
+						<tr>
+							<th scope="row" valign="top">
+								<label for="use_blogvault"><?php esc_html_e('Is Blogvault Active ?', 'paid-memberships-pro' );?></label>
+							</th>
+							<td>
+								<p>
+									<?php esc_html_e( 'BlogVault is a real-time backup and security plugin that provides
+									automatic backups, website staging, and one-click site restore.', 'paid-memberships-pro' ); ?>
+								</p>
+								<?php
+								//check blogvault is installed
+								if (! check_plugin_installed( $blogvault_plugin_slug ) ) {
+									//Show a message notice that plugin is not active
+									print_notice( 'Blogvault is not installed', 'error', 'install', '');
+								} else if ( ! is_plugin_active( $blogvault_plugin_slug ) ) {
+									print_notice( 'Blogvault is installed but not active on your site.', 'warning',
+										$blogvault_plugin_slug, 'activate');
+								} else {
+									print_notice( 'Blogvault is active on your site.', 'general', '', '');
+								}
+								?>
+								<tr>
+									<th scope="row" valign="top">
+										<label for="use_wordfence">
+											<?php esc_html_e('Is Wordfence Active ?', 'paid-memberships-pro' );?>
+										</label>
+									</th>
+									<td>
+										<p>
+											<?php esc_html_e( 'Wordfence is a comprehensive security plugin that provides
+											firewall protection, malware scanning, and login security.', 'paid-memberships-pro' ); ?>
+										</p>
+										<?php
+										//check wordfence is installed
+										if (! check_plugin_installed( $wordfence_plugin_slug ) ) {
+											//Show a message notice that plugin is not active
+											print_notice( 'Wordfence is not installed', 'error', 'install', '');
+										} else if ( ! is_plugin_active( $wordfence_plugin_slug ) ) {
+											print_notice( 'Wordfence is installed but not active on your site.', 'warning',
+												$wordfence_plugin_slug, 'activate');
+										} else {
+											print_notice( 'Wordfence is active on your site.', 'general', '', '');
+										}
+									?>
+									<td>
+								</tr>
+								<tr>
+									<th scope="row" valign="top">
+										<label for="use_wp_solid">
+											<?php esc_html_e('Is WPSolid Active ?', 'paid-memberships-pro' );?>
+										</label>
+									</th>
+									<td>
+										<p>
+											<?php esc_html_e( 'SolidWP simplifies WordPress site management with powerful
+											tools for backups, performance optimization, and security. ', 'paid-memberships-pro' ); ?>
+										</p>
+										<?php
+										//check SolidWP is installed
+										if (! check_plugin_installed( $wpsolid_plugin_slug ) ) {
+											//Show a message notice that plugin is not active
+											print_notice( 'SolidWP is not installed', 'error', 'install', '');
+										} else if ( ! is_plugin_active( $wpsolid_plugin_slug ) ) {
+											print_notice( 'SolidWP is installed but not active on your site.', 'warning',
+												$wpsolid_plugin_slug, 'activate');
+										} else {
+											print_notice( 'SolidWP is active on your site.', 'general', '', '');
+										}
+									?>
+									<td>
+								</tr>
 					</tbody>
 				</table>
 			</div> <!-- end pmpro_section_inside -->
