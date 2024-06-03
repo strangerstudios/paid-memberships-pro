@@ -55,7 +55,7 @@
 	 * @return bool True if plugin is installed, false otherwise
 	 * @since TBD
 	 */
-	function check_plugin_installed( $plugin_slug ) {
+	function pmpro_check_plugin_installed( $plugin_slug ) {
 		$installed_plugins = get_plugins();
 		return array_key_exists( $plugin_slug, $installed_plugins );
 	}
@@ -71,7 +71,7 @@
 	 * @return void
 	 * @since TBD
 	 */
-	function print_notice( $msg, $type, $plugin_slug, $action = '', $style = 'margin:0;' ) {
+	function pmpro_print_notice( $msg, $type, $plugin_slug, $action = '', $style = 'margin:0;' ) {
 		$link_url = $action == 'activate' ? ( 'activate-plugin_' . $plugin_slug ) : 'install-plugin_' . $plugin_slug;
 		$link_text = $action == 'activate' ? 'Activate Plugin' : 'Install Plugin';
 		$plugin_activate_link = wp_nonce_url(
@@ -126,14 +126,14 @@
 								</p>
 								<?php
 									//check akismet is installed
-									if (! check_plugin_installed( $akismet_plugin_slug ) ) {
+									if (! pmpro_check_plugin_installed( $akismet_plugin_slug ) ) {
 										//Show a message notice that plugin is not active
-										print_notice( 'Akismet is not installed', 'error', $akismet_plugin_slug, 'install-plugin');
+										pmpro_print_notice( 'Akismet is not installed', 'error', $akismet_plugin_slug, 'install-plugin');
 									} else if ( ! is_plugin_active( $akismet_plugin_slug ) ) {
-										print_notice( 'Akismet is installed but not active on your site.', 'warning',
+										pmpro_print_notice( 'Akismet is installed but not active on your site.', 'warning',
 											$akismet_plugin_slug, 'activate');
 									} else {
-										print_notice( 'Akismet is active on your site.', 'general', '', '');
+										pmpro_print_notice( 'Akismet is active on your site.', 'general', '', '');
 									}
 								?>
 							</td>
@@ -262,14 +262,14 @@
 								</p>
 								<?php 
 									//check cloudflare is installed
-									if (! check_plugin_installed( $cloudflare_plugin_slug ) ) {
+									if (! pmpro_check_plugin_installed( $cloudflare_plugin_slug ) ) {
 										//Show a message notice that plugin is not active
-										print_notice( 'Cloudflare is not installed', 'error', $cloudflare_plugin_slug, 'install-plugin');
+										pmpro_print_notice( 'Cloudflare is not installed', 'error', $cloudflare_plugin_slug, 'install-plugin');
 									} else if ( ! is_plugin_active( $cloudflare_plugin_slug ) ) {
-										print_notice( 'Cloudflare is installed but not active on your site.', 'warning',
+										pmpro_print_notice( 'Cloudflare is installed but not active on your site.', 'warning',
 											$cloudflare_plugin_slug, 'activate');
 									} else {
-										print_notice( 'Cloudflare is active on your site.', 'general', '', '');
+										pmpro_print_notice( 'Cloudflare is active on your site.', 'general', '', '');
 									}
 								?>
 							</td>
@@ -307,14 +307,14 @@
 								</p>
 								<?php
 								//check blogvault is installed
-								if (! check_plugin_installed( $blogvault_plugin_slug ) ) {
+								if (! pmpro_check_plugin_installed( $blogvault_plugin_slug ) ) {
 									//Show a message notice that plugin is not active
-									print_notice( 'Blogvault is not installed', 'error', 'install', '');
+									pmpro_print_notice( 'Blogvault is not installed', 'error', 'install', '');
 								} else if ( ! is_plugin_active( $blogvault_plugin_slug ) ) {
-									print_notice( 'Blogvault is installed but not active on your site.', 'warning',
+									pmpro_print_notice( 'Blogvault is installed but not active on your site.', 'warning',
 										$blogvault_plugin_slug, 'activate');
 								} else {
-									print_notice( 'Blogvault is active on your site.', 'general', '', '');
+									pmpro_print_notice( 'Blogvault is active on your site.', 'general', '', '');
 								}
 								?>
 								<tr>
@@ -330,14 +330,14 @@
 										</p>
 										<?php
 										//check wordfence is installed
-										if (! check_plugin_installed( $wordfence_plugin_slug ) ) {
+										if (! pmpro_check_plugin_installed( $wordfence_plugin_slug ) ) {
 											//Show a message notice that plugin is not active
-											print_notice( 'Wordfence is not installed', 'error', 'install', '');
+											pmpro_print_notice( 'Wordfence is not installed', 'error', 'install', '');
 										} else if ( ! is_plugin_active( $wordfence_plugin_slug ) ) {
-											print_notice( 'Wordfence is installed but not active on your site.', 'warning',
+											pmpro_print_notice( 'Wordfence is installed but not active on your site.', 'warning',
 												$wordfence_plugin_slug, 'activate');
 										} else {
-											print_notice( 'Wordfence is active on your site.', 'general', '', '');
+											pmpro_print_notice( 'Wordfence is active on your site.', 'general', '', '');
 										}
 									?>
 									<td>
@@ -355,14 +355,14 @@
 										</p>
 										<?php
 										//check SolidWP is installed
-										if (! check_plugin_installed( $wpsolid_plugin_slug ) ) {
+										if (! pmpro_check_plugin_installed( $wpsolid_plugin_slug ) ) {
 											//Show a message notice that plugin is not active
-											print_notice( 'SolidWP is not installed', 'error', 'install', '');
+											pmpro_print_notice( 'SolidWP is not installed', 'error', 'install', '');
 										} else if ( ! is_plugin_active( $wpsolid_plugin_slug ) ) {
-											print_notice( 'SolidWP is installed but not active on your site.', 'warning',
+											pmpro_print_notice( 'SolidWP is installed but not active on your site.', 'warning',
 												$wpsolid_plugin_slug, 'activate');
 										} else {
-											print_notice( 'SolidWP is active on your site.', 'general', '', '');
+											pmpro_print_notice( 'SolidWP is active on your site.', 'general', '', '');
 										}
 									?>
 									<td>
