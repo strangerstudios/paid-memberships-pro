@@ -5,6 +5,8 @@
 		die( esc_html__( "You do not have permissions to perform this action.", 'paid-memberships-pro' ) );
 	}
 
+	global $msg, $msgt;
+
 	//Bail if nonce field isn't set
 	if ( !empty( $_REQUEST['savesettings'] ) && ( empty( $_REQUEST[ 'pmpro_securitysettings_nonce' ] ) 
 		|| !check_admin_referer( 'savesettings', 'pmpro_securitysettings_nonce' ) ) ) {
@@ -28,6 +30,10 @@
 		}
 		pmpro_setOption( "nuclear_HTTPS", $nuclear_HTTPS );
 
+		// Assume success.
+		$msg = true;
+		$msgt = __("Your security settings have been updated.", 'paid-memberships-pro' );
+
 	}
 
 	$spamprotection = get_option( "pmpro_spamprotection" );
@@ -43,6 +49,7 @@
 	$wordfence_plugin_slug = 'wordfence/wordfence.php';
 	$wpsolid_plugin_slug = 'better-wp-security/better-wp-security.php';
 	$akismet_plugin_slug = 'akismet/akismet.php';
+	$pmpro_akismet_plugin_slug = 'pmpro-akismet/pmpro-akismet.php';
 
 	require_once(dirname(__FILE__) . "/admin_header.php");
 
@@ -111,6 +118,16 @@
 				</button>
 			</div>
 			<div class="pmpro_section_inside">
+				<p>
+					<?php
+					esc_html_e('To ensure your site is as protected as possible, we recommend setting up several
+						spam protection methods. Read our full guide on', 'paid-memberships-pro' );
+					?>
+					<a target="_blank" href="https://www.paidmembershipspro.com/how-to-stop-spam/">
+						 <?php esc_html_e('how to stop spam', 'paid-memberships-pro')?>
+					</a>
+					<?php esc_html_e('in your membership site for more information about these options.', 'paid-memberships-pro' ); ?>
+				</p>
 				<table class="form-table">
 					<tbody>
 						<tr>
@@ -134,6 +151,32 @@
 											$akismet_plugin_slug, 'activate');
 									} else {
 										pmpro_print_notice( 'Akismet is active on your site.', 'general', '', '');
+									}
+								?>
+							</td>
+						</tr>
+						<tr>
+							<th scope="row" valign="top">
+								<label for="pmpro_akismet"><?php esc_html_e('Is PMPro Akismet Active ?', 'paid-memberships-pro' );?></label>
+							</th>
+							<td>
+								<p>
+									<?php esc_html_e( 'Akismet checks your site’s comments and certain form submissions
+									against a global database of spam intelligence to prevent your site from publishing malicious content.
+									With this integration, the same comment spam filters are used to detect checkout form abuse.
+									The plugin checks the submitted email address against Akismet’s world-class spam filters.
+									If a checkout is flagged, membership registration is completely blocked.', 'paid-memberships-pro' ); ?>
+								</p>
+								<?php
+									//check akismet is installed
+									if (! pmpro_check_plugin_installed( $pmpro_akismet_plugin_slug ) ) {
+										//Show a message notice that plugin is not active
+										pmpro_print_notice( 'PMPro Akismet is not installed', 'error', $pmpro_akismet_plugin_slug, 'install-plugin');
+									} else if ( ! is_plugin_active( $pmpro_akismet_plugin_slug ) ) {
+										pmpro_print_notice( 'PMPro Akismet is installed but not active on your site.', 'warning',
+											$pmpro_akismet_plugin_slug, 'activate');
+									} else {
+										pmpro_print_notice( 'PMPro Akismet is active on your site.', 'general', '', '');
 									}
 								?>
 							</td>
