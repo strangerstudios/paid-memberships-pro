@@ -380,7 +380,7 @@ function pmpro_update_manager_notices() {
 		$plugin_file_abs = ABSPATH . 'wp-content/plugins/' . $plugin_file;
 		
 		// Must not update via .org.
-		if ( $addon['License'] === 'wordpress.org' ) {
+		if ( empty( $addon['License'] ) || $addon['License'] == 'wordpress.org' ) {
 			continue;
 		}
 
