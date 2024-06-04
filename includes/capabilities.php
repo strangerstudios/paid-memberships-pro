@@ -59,6 +59,7 @@ function pmpro_get_capability_defs($role)
         'pmpro_paymentsettings',
         'pmpro_emailsettings',
         'pmpro_emailtemplates',
+        'pmpro_designsettings',
         'pmpro_advancedsettings',
         'pmpro_addons',
         'pmpro_loginscsv',

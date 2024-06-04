@@ -1,0 +1,571 @@
+/**
+ * The high contrast style variation for Paid Memberships Pro.
+ *
+ * These styles can be unset on the Memberships > Settings > Design admin screen.
+*/
+
+:root {
+	--pmpro--box-shadow: 5px 4px 0px #222;
+}
+
+/**
+ * Main Container
+*/
+.pmpro {
+	color: var(--pmpro--color--contrast);
+
+	/**
+	* Sections
+	*/
+	.pmpro_section {
+		margin: calc( var(--pmpro--base--spacing--large) * 2 ) 0;
+	}
+
+	.pmpro_section:first-of-type {
+		margin-top: 0;
+	}
+
+	.pmpro_section_title {
+		font-weight: 700;
+		margin: 0;
+		padding: 0;
+	}
+
+	/**
+	* Cards
+	*/
+	.pmpro_card {
+		background-color: var(--pmpro--color--base);
+		border: 1px solid var(--pmpro--color--border--variation);
+		box-shadow: var(--pmpro--box-shadow);
+		display: flex;
+		flex-direction: column;
+		margin: var(--pmpro--base--spacing--medium) 0;
+		overflow: hidden;
+	}
+
+	.pmpro_card_title {
+		font-weight: 700;
+		margin: 0;
+		padding: var(--pmpro--base--spacing--medium) var(--pmpro--base--spacing--medium) 0;
+	}
+
+	.pmpro_card_content {
+		padding: var(--pmpro--base--spacing--small) var(--pmpro--base--spacing--medium) var(--pmpro--base--spacing--medium);
+
+		p:not(.pmpro_form_hint) {
+			margin: var(--pmpro--base--spacing--small) 0;
+			padding: 0;
+		}
+
+		p:last-of-type {
+			margin-bottom: 0;
+		}
+
+	}
+
+	.pmpro_card_actions {
+		background-color: transparent;
+		border-top: 1px solid var(--pmpro--color--border--variation);
+		margin: 0 var(--pmpro--base--spacing--medium);
+		padding: var(--pmpro--base--spacing--small) 0;
+	}
+
+	.pmpro_card_action { }
+	.pmpro_card_action_separator {
+		margin: 0 calc( var(--pmpro--base--spacing--small) / 2 );
+		opacity: 0.25;
+	}
+
+	/**
+	 * Heading Styles
+	 */
+	.pmpro_heading-with-avatar {
+		align-items: center;
+		display: flex;
+		font-weight: 700;
+		gap: var(--pmpro--base--spacing--small);
+	}
+
+	/**
+	* Contextual Messages
+	*/
+	.pmpro_message {
+		box-shadow: var(--pmpro--box-shadow);
+	}
+
+	/**
+	 * Buttons
+	 */
+	.pmpro_btn {
+		background-color: var(--pmpro--color--accent);
+		border: 1px solid var(--pmpro--color--accent);
+		border-radius: 0;
+		box-shadow: 1px 2px 4px rgba(0, 0, 0, 0.1);
+		box-sizing: border-box;
+		color: var(--pmpro--color--base);
+		cursor: pointer;
+		display: inline-block;
+		font-size: 16px;
+		font-weight: 700;
+		letter-spacing: normal;
+		line-height: 1.5;
+		min-height: 40px;
+		outline: 0;
+		padding: var(--pmpro--base--spacing--small) var(--pmpro--base--spacing--medium);
+		text-align: center;
+		text-decoration: none;
+		text-rendering: geometricprecision;
+		text-transform: none;
+		user-select: none;
+		-webkit-user-select: none;
+		touch-action: manipulation;
+		vertical-align: middle;
+		transition: background-color 0.2s, color 0.2s;
+	}
+	.pmpro_btn:hover,
+	.pmpro_btn:focus {
+		background-color: initial;
+		background-position: 0 0;
+		border-color: var(--pmpro--color--accent);
+		color: var(--pmpro--color--accent);
+	}
+	.pmpro_btn:active {
+		opacity: .7;
+	}
+
+	.pmpro_btn-delete {
+		background-color: var(--pmpro--color--error-text);
+		border-color: var(--pmpro--color--error-text);
+	}
+	.pmpro_btn-delete:hover,
+	.pmpro_btn-delete:focus {
+		color: var(--pmpro--color--error-text);
+	}
+
+	.pmpro_btn-cancel {
+		background-color: transparent;
+		border-color: var(--pmpro--color--border--variation);
+		box-shadow: 1px 2px 2px rgba(0, 0, 0, 0.1);
+		color: var(--pmpro--color--contrast);
+	}
+	.pmpro_btn-cancel:hover,
+	.pmpro_btn-cancel:focus {
+		background-color: #ededed;
+	}
+
+	/**
+	 * Form Styles
+	 */
+	.pmpro_section:has(.pmpro_form) .pmpro_card_title {
+		padding: var(--pmpro--base--spacing--large) var(--pmpro--base--spacing--large) 0;
+	}
+
+	.pmpro_section:has(.pmpro_form) .pmpro_card_content {
+		padding: var(--pmpro--base--spacing--large);
+	}
+
+	.pmpro_section:has(.pmpro_form) .pmpro_card_title + .pmpro_card_content {
+		padding-top: var(--pmpro--base--spacing--small);
+	}
+
+	.pmpro_section:has(.pmpro_form) .pmpro_card_actions {
+		margin: 0 var(--pmpro--base--spacing--large);
+		padding: var(--pmpro--base--spacing--medium) 0;
+	}
+
+	.pmpro_form_fieldset {
+		border: 0;
+		margin: 0;
+		padding: 0;
+	}
+
+	.pmpro_form_legend {
+		border: none;
+		margin: 0 0 var(--pmpro--base--spacing--medium);
+		padding: 0;
+	}
+
+	.pmpro_form_heading {
+		font-weight: 700;
+		margin: var(--pmpro--base--spacing--large) 0 0;
+		padding: 0;
+	}
+
+	.pmpro_card_content .pmpro_form_heading {
+		margin-top: 0;
+	}
+
+	.pmpro_form_fields {
+		display: flex;
+		flex-direction: column;
+		gap: var(--pmpro--base--spacing--medium);
+	}
+
+	.pmpro_form_fields-inline {
+		align-items: center;
+		display: flex;
+		flex-direction: row;
+		gap: calc( var(--pmpro--base--spacing--small) / 2 );
+	}
+
+	.pmpro_form_field {
+		display: flex;
+		flex-direction: column;
+		gap: calc( var(--pmpro--base--spacing--small) / 2 );
+	}
+
+	.pmpro_form_label {
+		margin: 0;
+		padding: 0;
+	}
+
+	.pmpro_form_label:not(.pmpro_form_label-inline) {
+		display: block;
+		font-weight: 500;
+	}
+
+	.pmpro_form_input {
+		background-color: var(--pmpro--color--base);
+		border: 1px solid var(--pmpro--color--border);
+		border-radius: 0;
+		box-sizing: border-box;
+		color: var(--pmpro--color--contrast);
+		font-size: 16px;
+		height: auto;
+		line-height: 1.5;
+		margin: 0;
+		min-height: auto;
+		outline: none;
+		padding: var(--pmpro--base--spacing--small);
+	}
+
+	.pmpro_form_input-textarea {
+		width: 100%;
+	}
+
+	.pmpro_form_input-text:focus,
+	.pmpro_form_input-email:focus,
+	.pmpro_form_input-url:focus,
+	.pmpro_form_input-password:focus,
+	.pmpro_form_input-search:focus,
+	.pmpro_form_input-select:focus,
+	.pmpro_form_input-checkbox:focus,
+	.pmpro_form_input-radio:focus,
+	.pmpro_form_input-multiselect:focus,
+	.pmpro_form_input-number:focus,
+	.pmpro_form_input-file:focus,
+	.pmpro_form_input-date:focus,
+	.pmpro_form_input-textarea:focus {
+		background-color: var(--pmpro--color--base);
+		border-color: #80BDFF;
+		box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);
+		outline: none;
+		word-break: initial;
+	}
+
+	.pmpro_form_hint {
+		display: block;
+		font-size: 14px;
+		margin: 0;
+		opacity: 0.75;
+		padding: 0;
+	}
+
+	.pmpro_form_field-checkbox,
+	.pmpro_form_field-radio-item {
+		align-items: baseline;
+		flex-direction: row;
+		flex-wrap: wrap;
+
+		.pmpro_form_hint {
+			flex: 0 0 100%;
+		}
+	}
+
+	.pmpro_form_field-radio-item:not(:last-of-type) {
+		margin-bottom: calc( var(--pmpro--base--spacing--small) / 2 );
+	}
+
+	.pmpro_form_input-file {
+		border: 3px dashed var(--pmpro--color--border--variation);
+		border-radius: 0;
+		padding: var(--pmpro--base--spacing--small) var(--pmpro--base--spacing--medium);
+		width: 100%;
+	}
+
+	/* Special Fields */
+	.pmpro_form_field-select2 {
+		display: block;
+	}
+
+	.pmpro_form_field-select2 .pmpro_form_label {
+		margin-bottom: calc( var(--pmpro--base--spacing--small) / 2 );
+	}
+
+	.pmpro_form_field-select2 .pmpro_form_hint {
+		margin-top: calc( var(--pmpro--base--spacing--small) / 2 );
+	}
+
+	.pmpro_payment-expiration #ExpirationMonth,
+	.pmpro_payment-expiration #ExpirationYear {
+		flex-grow: 1;
+	}
+
+	.pmpro_payment-discount-code #pmpro_discount_code {
+		flex-grow: 1;
+	}
+
+	#other_discount_code_fields {
+		margin-bottom: var(--pmpro--base--spacing--small);
+	}
+
+	span#pmpro_payment_information_fields + .pmpro_divider {
+		display: none;
+	}
+
+	.pmpro_form_submit {
+		align-items: center;
+		display: flex;
+		flex-direction: row;
+		flex-wrap: wrap;
+		gap: var(--pmpro--base--spacing--medium);
+		margin-top: var(--pmpro--base--spacing--large);
+	}
+
+	.pmpro_checkout_gateway-stripe form.pmpro_form #pmpro_payment_information_fields div#AccountNumber,
+	.pmpro_checkout_gateway-stripe form.pmpro_form #pmpro_payment_information_fields div#Expiry,
+	.pmpro_checkout_gateway-stripe form.pmpro_form #pmpro_payment_information_fields div#CVV,
+	.pmpro_billing_gateway-stripe form.pmpro_form #pmpro_payment_information_fields div#AccountNumber,
+	.pmpro_billing_gateway-stripe form.pmpro_form #pmpro_payment_information_fields div#Expiry,
+	.pmpro_billing_gateway-stripe form.pmpro_form #pmpro_payment_information_fields div#CVV {
+		border-radius: 0;
+	}
+
+	/* Login Form (WordPress default) */
+	.pmpro_section:has(#loginform) .pmpro_card_content:not(.widget .pmpro_section:has(#loginform) .pmpro_card_content) {
+		padding: var(--pmpro--base--spacing--large);
+	}
+
+	.pmpro_section:has(#loginform) .pmpro_card_actions {
+		margin: 0 var(--pmpro--base--spacing--large);
+		padding: var(--pmpro--base--spacing--medium) 0;
+	}
+
+	/**
+	* List Styles
+	*/
+	.pmpro_list.pmpro_cols-3 {
+
+		.pmpro_list_item {
+			margin-bottom: 0;
+		}
+
+		li:not(.pmpro_list_item) {
+			border-top: 1px solid var(--pmpro--color--border--variation);
+			padding-top: var(--pmpro--base--spacing--medium);
+			grid-column: span 3;
+		}
+	}
+
+	.pmpro_list_item_label {
+		opacity: 0.75;
+		display: block;
+	}
+
+	.pmpro_list_item_value {
+		font-weight: 700;
+	}
+
+	/**
+	* Tables and Table Elements
+	*/
+	.pmpro_table {
+		background-color: var(--pmpro--color--base);
+		border: none;
+		text-align: left;
+
+		thead th {
+			background-color: var(--pmpro--color--base);
+			border: none;
+			padding: var(--pmpro--base--spacing--small);
+			vertical-align: text-bottom;
+		}
+
+		tbody th,
+		tbody td {
+			background-color: var(--pmpro--color--base);
+			border-color: var(--pmpro--color--border--variation);
+			border-width: 1px 0 0 0;
+			border-style: solid;
+			padding: var(--pmpro--base--spacing--small);
+			vertical-align: middle;
+		}
+
+	}
+
+	/**
+	* Membership Account
+	*/
+	#pmpro_account-membership {
+
+	}
+
+	#pmpro_account-profile {
+
+	}
+
+	#pmpro_account-orders { }
+
+	#pmpro_account-links { }
+
+	/**
+	* Membership Orders
+	*/
+	.pmpro_table_orders {
+
+		.pmpro_tag {
+			display: block;
+		}
+	}
+	.pmpro_table_order-date { }
+	.pmpro_table_order-level { }
+	.pmpro_table_order-amount { }
+	.pmpro_table_order-status { }
+
+	.pmpro_price_part-total {
+		border-top: 1px solid var(--pmpro--color--border--variation);
+		margin-top: var(--pmpro--base--spacing--small);
+		padding-top: var(--pmpro--base--spacing--small);
+	}
+
+	/**
+	* Log In Form and Logged In Member Widget
+	*/
+	.pmpro_logged_in_welcome_wrap {
+
+		.menu {
+			display: flex;
+			flex-direction: column;
+			list-style: none;
+			margin: 0;
+			padding: 0;
+		}
+
+		.menu-item {
+			display: block;
+			margin: 0 0 calc( var(--pmpro--base--spacing--small) / 2 );
+		}
+	}
+
+	/**
+	* Protected Content Messages
+	*/
+	.pmpro_content_message .pmpro_card_title {
+		align-items: center;
+		display: flex;
+		gap: var(--pmpro--base--spacing--small);
+		padding: var(--pmpro--base--spacing--large) var(--pmpro--base--spacing--large) 0;
+	}
+
+	.pmpro_content_message .pmpro_card_content {
+		padding: var(--pmpro--base--spacing--large);
+	}
+
+	.pmpro_content_message:has(.pmpro_card_title) .pmpro_card_content {
+		padding-top: 0;
+	}
+
+	.pmpro_content_message .pmpro_card_content h2 {
+		margin: 0;
+		padding: 0;
+	}
+
+	.pmpro_content_message .pmpro_card_content p {
+		margin: var(--pmpro--base--spacing--medium) 0;
+		padding: 0;
+	}
+
+	.pmpro_content_message .pmpro_card_content p:last-of-type {
+		margin-bottom: 0;
+	}
+
+	.pmpro_content_message .pmpro_card_content .pmpro_btn {
+		text-decoration: none;
+	}
+
+	.pmpro_content_message .pmpro_card_actions {
+		margin-right: var(--pmpro--base--spacing--large);
+		margin-left: var(--pmpro--base--spacing--large);
+		padding: var(--pmpro--base--spacing--medium) 0;
+	}
+
+	/**
+	 * Misc
+	 */
+	.avatar {
+		border: 1px solid var(--pmpro--color--border--variation);
+		border-radius: 50%;
+		margin: 0;
+		padding: 0;
+	}
+
+	.pmpro_cols-2,
+	.pmpro_cols-3 {
+		display: flex;
+		flex-direction: row;
+		flex-wrap: wrap;
+		gap: var(--pmpro--base--spacing--medium);
+	}
+
+	.pmpro_cols-2 > * {
+		width: calc( 50% - calc( var(--pmpro--base--spacing--medium) / 2 ) );
+	}
+
+	.pmpro_cols-3 > * {
+		width: calc( 33.333333% - calc( var(--pmpro--base--spacing--medium) * 2 / 3 ) );
+	}
+
+	.pmpro_font-x-large {
+		font-size: 32px;
+	}
+
+	.pmpro_font-large {
+		font-size: 24px;
+	}
+
+	.pmpro_font-medium {
+		font-size: 16px;
+	}
+
+	.pmpro_tag-discount-code {
+		border-style: dashed;
+	}
+
+	.pmpro_divider {
+		background-color: var(--pmpro--color--border--variation);
+		height: 1px;
+		margin: var(--pmpro--base--spacing--medium) 0;
+	}
+
+	.pmpro_form .pmpro_divider {
+		margin-top: var(--pmpro--base--spacing--large);
+	}
+
+}
+
+/**
+ * Responsive Styles
+ */
+@media (max-width: 767px) {
+	.pmpro {
+
+		.pmpro_cols-2,
+		.pmpro_cols-3 {
+			display: block;
+			margin-bottom: var(--pmpro--base--spacing--medium);
+		}
+
+	}
+
+}

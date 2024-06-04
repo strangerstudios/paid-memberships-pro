@@ -8,6 +8,14 @@ function pmpro_enqueue_scripts() {
 	// Load the base stylesheet.
 	wp_enqueue_style( 'pmpro_frontend_base', plugins_url( 'css/frontend/base.css', dirname(__FILE__) ), array(), PMPRO_VERSION, 'all' );
 
+	// Load the style variation stylesheet.
+	$pmpro_style_variation = get_option( 'pmpro_style_variation' );
+	$pmpro_style_variation = ! empty( $pmpro_style_variation ) ? $pmpro_style_variation : 'variation_1';
+
+	if ( $pmpro_style_variation !== 'variation_minimal' ) {
+		wp_enqueue_style( 'pmpro_frontend_' . esc_attr( $pmpro_style_variation ), plugins_url( 'css/frontend/' . esc_attr( $pmpro_style_variation ) . '.css', dirname(__FILE__) ), array(), PMPRO_VERSION, 'all' );
+	}
+
 	// Load the base RTL stylesheet.
 	if ( is_rtl() ) {
 		wp_enqueue_style( 'pmpro_frontend_base_rtl', 'css/frontend/base-rtl.css', array(), PMPRO_VERSION, 'screen' );

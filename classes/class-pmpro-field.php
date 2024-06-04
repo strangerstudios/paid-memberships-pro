@@ -751,7 +751,7 @@ class PMPro_Field {
 				$value = array($value);
 
 			//build multi select
-			$r = '<select id="' . esc_attr( $this->id ) . '" name="' . esc_attr( $this->name ) . '[]" multiple="multiple" ';
+			$r = '<select id="' . esc_attr( $this->id ) . '" name="' . esc_attr( $this->name ) . '[]" multiple="multiple" style="width: 100%" ';
 			if(isset($this->placeholder)) {
 				$r .= 'placeholder="' . esc_attr($this->placeholder) . '" ';
 				if(empty($this->select2options)) {
@@ -778,9 +778,9 @@ class PMPro_Field {
 			$r .= '<input type="hidden" name="'. esc_attr( $this->name ) .'_checkbox" value="1" />';	// Extra field so we can track unchecked boxes. Naming just for consistency.
 
 			if(!empty($this->select2options))
-				$r .= '<script>jQuery(document).ready(function($){ $("#' . esc_attr( $this->id ) . '").select2({' . $this->select2options . '}); });</script>';
+				$r .= '<script>jQuery(document).ready(function($){ $("#' . esc_attr( $this->id ) . '").select2({ ' . $this->select2options . ', theme: "classic", width: "resolve" }); });</script>';
 			else
-				$r .= '<script>jQuery(document).ready(function($){ $("#' . $this->id . '").select2(); });</script>';
+				$r .= '<script>jQuery(document).ready(function($){ $("#' . $this->id . '").select2( { theme: "classic", width: "resolve" }); });</script>';
 		}
 		elseif($this->type == "radio")
 		{
@@ -841,7 +841,7 @@ class PMPro_Field {
 					esc_attr( $this->name ),
 					esc_html( $ovalue ),
 					esc_attr( "{$this->id}_{$counter}" ),
-					esc_attr( $this->id . ' ' . str_replace( 'pmpro_required pmpro-required', '', $class ) ), // Don't show every option as required.
+					esc_attr( $this->id ),
 					( in_array($ovalue, $value) ? 'checked="checked"' : null ),
 					( !empty( $this->readonly ) ? 'readonly="readonly"' : null ),
 					$this->getHTMLAttributes()
@@ -929,7 +929,7 @@ class PMPro_Field {
 
 				if( empty( $this->readonly ) ) {
 					$r_beginning .= '<button class="button button-secondary pmpro_btn pmpro_btn-secondary" id="pmpro_replace_file_' . esc_attr( $this->name ) . '_button" onclick="return false;">' . __( 'Replace', 'paid-memberships-pro' ) . '</button>';
-					$r_beginning .= '<button class="button button-secondary pmpro_btn pmpro_btn-secondary" id="pmpro_cancel_change_file_' . esc_attr( $this->name ) . '_button" style="display: none;" onclick="return false;">' . __( 'Cancel', 'paid-memberships-pro' ) . '</button>';
+					$r_beginning .= '<button class="button button-secondary pmpro_btn pmpro_btn-cancel" id="pmpro_cancel_change_file_' . esc_attr( $this->name ) . '_button" style="display: none;" onclick="return false;">' . __( 'Cancel', 'paid-memberships-pro' ) . '</button>';
 					$r_beginning .= '<input id="pmpro_delete_file_' . esc_attr( $this->name ) . '_field" name="pmpro_delete_file_' . esc_attr( $this->name ) . '_field" type="hidden" value="0" />';
 				}
 				$r_beginning .= '</div>';
@@ -1227,8 +1227,8 @@ class PMPro_Field {
 
 		// Add the required class to field.
 		if ( ! empty( $this->required ) ) {
-			$this->class .= " pmpro_form_input-required";
 			$this->divclass .= " pmpro_form_field-required";
+			$this->class .= " pmpro_form_input-required";
 		}
 
 		// Add the class to not show a field is required if set.
