@@ -49,7 +49,21 @@
 		 * @var string $body
 		 */
 		public $body = '';
-		
+
+		/**
+		 * Email headers
+		 *
+		 * @var array $headers
+		 */
+		public $headers = array();
+
+		/**
+		 * Email attachments
+		 *
+		 * @var array $attachments
+		 */
+		 public $attachments = array();
+
 		/**
 		 * Send an email to a member or admin. Uses the wp_mail function.
 		 *
@@ -497,8 +511,6 @@
 				'accountnumber' => hideCardNumber($invoice->accountnumber),
 				'expirationmonth' => $invoice->expirationmonth,
 				'expirationyear' => $invoice->expirationyear,
-				'login_link' => pmpro_login_url(),
-				'login_url' => pmpro_login_url(),
 				'invoice_link' => pmpro_login_url( pmpro_url( 'invoice', '?invoice=' . $invoice->code ) ),
 				'invoice_url' => pmpro_login_url( pmpro_url( 'invoice', '?invoice=' . $invoice->code ) ),
 				'levels_url' => pmpro_url( 'levels' )
@@ -571,8 +583,6 @@
 				'accountnumber' => hideCardNumber($invoice->accountnumber),
 				'expirationmonth' => $invoice->expirationmonth,
 				'expirationyear' => $invoice->expirationyear,
-				'login_link' => pmpro_login_url(),
-				'login_url' => pmpro_login_url(),
 				'invoice_link' => pmpro_login_url( pmpro_url( 'invoice', '?invoice=' . $invoice->code ) ),
 				'invoice_url' => pmpro_login_url( pmpro_url( 'invoice', '?invoice=' . $invoice->code ) ),
 				'levels_url' => pmpro_url( 'levels' )							
@@ -595,7 +605,7 @@
 		}
 		
 		/**
-		 * Send the member a confirmation checkout email after succesfully purchasing a membership level.
+		 * Send the member a confirmation checkout email after successfully purchasing a membership level.
 		 *
 		 * @param object $user The WordPress user object.
 		 * @param MemberOrder $invoice The order object that is associated with the checkout.
@@ -723,7 +733,7 @@
 		}
 		
 		/**
-		 * Send the admin a confirmation checkout email after the member succesfully purchases a membership level.
+		 * Send the admin a confirmation checkout email after the member successfully purchases a membership level.
 		 *
 		 * @param object $user The WordPress user object.
 		 * @param MemberOrder $invoice The order object that is associated with the checkout.
@@ -1464,7 +1474,7 @@
 			if(!$user || !$order)
 				return false;
 
-			$level = pmpro_getLevel($order->membership_id);
+			$level = pmpro_getLevel( $order->membership_id );
 
 			$this->email = $user->user_email;
 			$this->subject = __('Invoice for order #: ', 'paid-memberships-pro') . $order->code;
@@ -1492,7 +1502,9 @@
 				'invoice_url' => pmpro_login_url( pmpro_url( 'invoice', '?invoice=' . $order->code ) ),
 				'invoice_id' => $order->id,
 				'invoice' => $invoice,
-				'levels_url' => pmpro_url( 'levels' )
+				'levels_url' => pmpro_url( 'levels' ),
+				'membership_level_name' => $level->name,
+				'membership_level_id' => $order->membership_id
 			);
 
 			$this->template = apply_filters("pmpro_email_template", "billable_invoice", $this);

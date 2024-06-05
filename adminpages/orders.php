@@ -163,7 +163,7 @@ if ( ! empty( $_REQUEST['save'] ) ) {
 		$hour   = intval( $_POST['ts_hour'] );
 		$minute = intval( $_POST['ts_minute'] );
 		$date = get_gmt_from_date( $year . '-' . $month . '-' . $day . ' ' . $hour . ':' . $minute . ':00' , 'U' );
-		$order->timestamp = $date; // Passed 'U' to get_gmt_from_date() so that we get a Unix timesamp.
+		$order->timestamp = $date; // Passed 'U' to get_gmt_from_date() so that we get a Unix timestamp.
 	}
 
 	// affiliate stuff

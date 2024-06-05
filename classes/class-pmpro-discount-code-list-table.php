@@ -561,5 +561,19 @@ class PMPro_Discount_Code_List_Table extends WP_List_Table {
 			esc_html_e( 'None', 'paid-memberships-pro' );
 		}
 	}
+
+	/**
+	 * Override single_row function to add error class if the discount code row need to be higlighted due miscounfiguration
+	 *
+	 * @param StdClass $item The current row item.
+	 * @return void
+	 * @since 3.0.2
+	 */
+	public function single_row( $item ) {
+		$cssClass = ( ! pmpro_check_discount_code_for_gateway_compatibility( $item ) ) ? 'pmpro_error' : '';
+		echo '<tr class="' . esc_attr( $cssClass ) . '">';
+		$this->single_row_columns( $item );
+		echo '</tr>';
+	}
 	
 }

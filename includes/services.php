@@ -167,6 +167,11 @@ function pmpro_update_level_group_order() {
 		die( esc_html__( 'You do not have permissions to perform this action.', 'paid-memberships-pro' ) );
 	}
 
+	// Check the nonce.
+	if ( ! wp_verify_nonce( sanitize_key( $_REQUEST['nonce'] ), 'pmpro_update_level_group_order' ) ) {
+		die( esc_html__( 'You do not have permissions to perform this action.', 'paid-memberships-pro' ) );
+	}
+
 	$level_group_order = null;
 	
 	if ( isset( $_REQUEST['level_group_order'] ) && is_array( $_REQUEST['level_group_order'] ) ) {
@@ -193,7 +198,7 @@ add_action('wp_ajax_pmpro_update_level_group_order', 'pmpro_update_level_group_o
  * Callback to draw a field group.
  */
 function pmpro_userfields_get_group_ajax() {	
-	echo pmpro_get_field_group_html(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+	pmpro_get_field_group_html();
     exit;
 }
 add_action( 'wp_ajax_pmpro_userfields_get_group', 'pmpro_userfields_get_group_ajax' );
@@ -202,7 +207,7 @@ add_action( 'wp_ajax_pmpro_userfields_get_group', 'pmpro_userfields_get_group_aj
  * Callback to draw a field.
  */
 function pmpro_userfields_get_field_ajax() {
- 	echo pmpro_get_field_html(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+ 	pmpro_get_field_html();
 	exit;
 }
 add_action( 'wp_ajax_pmpro_userfields_get_field', 'pmpro_userfields_get_field_ajax' );

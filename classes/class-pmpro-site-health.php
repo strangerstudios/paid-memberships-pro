@@ -89,6 +89,10 @@ class PMPro_Site_Health {
 					'label' => __( 'Membership Levels', 'paid-memberships-pro' ),
 					'value' => self::get_levels(),
 				],
+				'pmpro-level-groups'         => [
+					'label' => __( 'Level Groups', 'paid-memberships-pro' ),
+					'value' => self::get_level_groups(),
+				],
 				'pmpro-custom-templates'     => [
 					'label' => __( 'Custom Templates', 'paid-memberships-pro' ),
 					'value' => self::get_custom_templates(),
@@ -108,10 +112,6 @@ class PMPro_Site_Health {
 				'pmpro-library-conflicts' => [
 					'label' => __( 'Library Conflicts', 'paid-memberships-pro' ),
 					'value' => self::get_library_conflicts(),
-				],
-				'pmpro-outdated-templates' => [
-					'label' => __( 'Outdated Templates', 'paid-memberships-pro' ),
-					'value' => self::get_outdated_templates(),
 				],
 				'pmpro-current-site-url' => [
 					'label' => __( 'Current Site URL', 'paid-memberships-pro' ),
@@ -160,6 +160,28 @@ class PMPro_Site_Health {
 		}
 
 		return wp_json_encode( $membership_levels, JSON_PRETTY_PRINT );
+	}
+
+	/**
+	 * Get the level group information.
+	 *
+	 * @since 3.0.2
+	 *
+	 * @return string The level group information.
+	 */
+	public function get_level_groups() {
+		$level_groups = pmpro_get_level_groups();
+
+		if ( ! $level_groups ) {
+			return __( 'No Level Groups Found', 'paid-memberships-pro' );
+		}
+
+		// Add the level IDs to the group objects.
+		foreach ( $level_groups as $group_id => $group ) {
+			$group->level_ids = pmpro_get_level_ids_for_group( $group_id );
+		}
+
+		return wp_json_encode( $level_groups, JSON_PRETTY_PRINT );
 	}
 
 	/**
@@ -293,76 +315,53 @@ class PMPro_Site_Health {
 	 * @return string The custom template information.
 	 */
 	public function get_custom_templates() {
-		$parent_theme_path = get_template_directory() . '/paid-memberships-pro/';
-		$child_theme_path  = get_stylesheet_directory() . '/paid-memberships-pro/';
+		// Create a $template => $path array of all default page templates.
+		$default_templates = array(
+			'account' => PMPRO_DIR . '/pages/account.php',
+			'billing' => PMPRO_DIR . '/pages/billing.php',
+			'cancel' => PMPRO_DIR . '/pages/cancel.php',
+			'checkout' => PMPRO_DIR . '/pages/checkout.php',
+			'confirmation' => PMPRO_DIR . '/pages/confirmation.php',
+			'invoice' => PMPRO_DIR . '/pages/invoice.php',
+			'levels' => PMPRO_DIR . '/pages/levels.php',
+			'login' => PMPRO_DIR . '/pages/login.php',
+			'member_profile_edit' => PMPRO_DIR . '/pages/member_profile_edit.php',
+		);
 
-		$parent_theme_templates = $this->get_custom_templates_from_path( $parent_theme_path );
-		$child_theme_templates  = null;
+		// Filter $default_templates so that Add Ons can add their own templates.
+		$default_templates = apply_filters( 'pmpro_default_page_templates', $default_templates );
 
-		if ( $parent_theme_path !== $child_theme_path ) {
-			$child_theme_templates = $this->get_custom_templates_from_path( $child_theme_path );
-		}
+		// Loop through each template. For each, if a custom page template is being loaded, store:
+		// - The custom path being loaded.
+		// - The version of the default template.
+		// - The version of the custom template.
+		$custom_templates = array(); // Array of $template => array( 'default_version' => $default_version, 'loaded_version' => $loaded_version, 'loaded_path' => $loaded_path ).
+		foreach ( $default_templates as $template => $path ) {
+			// Gather information about the default and loaded templates.
+			$default_version = pmpro_get_version_for_page_template_at_path( $path );
+			$custom_path = pmpro_get_template_path_to_load( $template );
+			$custom_version = pmpro_get_version_for_page_template_at_path( $custom_path );
 
-		if ( is_wp_error( $parent_theme_templates ) ) {
-			return $parent_theme_templates->get_error_message();
-		}
-
-		$templates = $parent_theme_templates;
-
-		if ( null !== $child_theme_templates ) {
-			if ( is_wp_error( $child_theme_templates ) ) {
-				$child_theme_templates = $child_theme_templates->get_error_message();
+			// If the $path and $loaded_path are different, a custom template is being loaded.
+			if ( $path !== $custom_path ) {
+				$custom_templates[ $template ] = 'Default Version: ' . $default_version . ' | Custom Version: ' . $custom_version . ' | Custom Path: ' . $custom_path . ' | Action: ';
+				$use_custom_page_template = get_option( 'pmpro_use_custom_page_template_' . $template );
+				switch( $use_custom_page_template ) {
+					case 'yes':
+						$custom_templates[ $template ] .= 'Custom';
+						break;
+					case 'no':
+						$custom_templates[ $template ] .= 'Core';
+						break;
+					default:
+						$custom_templates[ $template ] .= 'Fallback';
+						break;
+				}
+				$custom_templates[ $template ] = esc_html( $custom_templates[ $template] );
 			}
-
-			$templates = [
-				'parent' => $parent_theme_templates,
-				'child'  => $child_theme_templates,
-			];
 		}
 
-		return wp_json_encode( $templates, JSON_PRETTY_PRINT );
-	}
-
-	private function get_custom_templates_from_path( $path ) {
-		require_once ABSPATH . 'wp-admin/includes/file.php';
-
-		/**
-		 * @var $wp_filesystem WP_Filesystem_Base
-		 */
-		global $wp_filesystem;
-
-		WP_Filesystem();
-
-        if ( ! $wp_filesystem || ! is_object($wp_filesystem) || ( is_wp_error($wp_filesystem->errors) && $wp_filesystem->errors->has_errors() ) ) {
-			return new WP_Error( 'access-denied', __( 'Unable to verify', 'paid-memberships-pro' ) );
-		}
-
-		if ( ! $wp_filesystem->is_dir( $path ) ) {
-			return new WP_Error( 'path-not-found', __( 'No template overrides', 'paid-memberships-pro' ) );
-		}
-
-		$override_list = $wp_filesystem->dirlist( $path );
-
-		if ( ! $override_list ) {
-			return new WP_Error( 'path-empty', __( 'Empty override folder -- no template overrides', 'paid-memberships-pro' ) );
-		}
-
-		$templates = [];
-
-		foreach ( $override_list as $template => $info ) {
-			$last_modified = $info['lastmod'] . ' ' . $info['time'];
-
-			if ( isset( $info['lastmodunix'] ) ) {
-				$last_modified = date( 'Y-m-d H:i:s', $info['lastmodunix'] );
-			}
-
-			$templates[ $template ] = [
-				'last_updated' => $last_modified,
-				'path'         => str_replace( ABSPATH, '', $path ) . $template,
-			];
-		}
-
-		return $templates;
+		return $custom_templates;
 	}
 
 	/**
@@ -550,30 +549,6 @@ class PMPro_Site_Health {
 				$conflict_strings[] = 'v' . $conflicting_plugin_data['version'] . ' (' . $conflicting_plugin_data['timestamp'] . ')' . ' - ' . $conflicting_plugin_path;
 			}
 			$return_arr[ $library_name ] = implode( ' | ', $conflict_strings );
-		}
-		return $return_arr;
-	}
-
-	/**
- 	 * Get outdated templates.
- 	 *
-	 * @since 2.11
- 	 *
- 	 * @return string|string[] The outdated templates information.
- 	 */
-	  function get_outdated_templates() {
-		// Get outdated templates.
-		$outdated_templates = pmpro_get_outdated_page_templates();
-
-		// If there are no outdated templates, return a message.
-		if ( empty( $outdated_templates ) ) {
-			return __( 'No outdated templates detected.', 'paid-memberships-pro' );
-		}
-
-		// Format data to be displayed in site health.
-		$return_arr = array();
-		foreach ( $outdated_templates as $template_name => $template_data ) {
-			$return_arr[ $template_name ] = __( 'Default version', 'paid-memberships-pro' ) . ': ' . $template_data['default_version'] . ' | ' . __( 'Loaded version', 'paid-memberships-pro' ) . ': ' . $template_data['loaded_version'] . ' | ' . __( 'Loaded path', 'paid-memberships-pro' ) . ': ' . $template_data['loaded_path'];
 		}
 		return $return_arr;
 	}

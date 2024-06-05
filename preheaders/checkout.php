@@ -485,6 +485,9 @@ if ( $submit && $pmpro_msgt != "pmpro_error" ) {
 					} //in case the user just signed up
 					pmpro_set_current_user();
 
+					// Update nonce value to be for this new user when we load the checkout page.
+					add_filter( 'pmpro_update_nonce_at_checkout', '__return_true' );
+
 					// Skip the account fields since we just created an account.
 					$skip_account_fields = true;
 				}

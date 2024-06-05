@@ -134,7 +134,7 @@ jQuery(document).ready(function(){
     }
 	
 	// Find ALL <form> tags on your page
-	jQuery('form').submit(function(){
+	jQuery('form#pmpro_form').submit(function(){
 		// On submit disable its submit button
 		jQuery('input[type=submit]', this).attr('disabled', 'disabled');
 		jQuery('input[type=image]', this).attr('disabled', 'disabled');
@@ -219,9 +219,22 @@ jQuery(document).ready(function(){
 			jQuery('#pmpro_message_bottom').hide();
 		}
 	}
+
+	// If a user was created during this page load, update the nonce to be valid.
+	if ( pmpro.update_nonce ) {
+		jQuery.ajax({
+			url: pmpro.ajaxurl,
+			type: 'POST',
+			data: {
+				action: 'pmpro_get_checkout_nonce'
+			}
+		}).done(function(response) {
+			jQuery('input[name="pmpro_checkout_nonce"]').val(response);
+		});
+	}
 });
 
-// Get non-sensitve checkout form data to be sent to checkout_levels endpoint.
+// Get non-sensitive checkout form data to be sent to checkout_levels endpoint.
 function pmpro_getCheckoutFormDataForCheckoutLevels() {
 	// We need the level, discount code, and any field with the pmpro_alter_price CSS class.
 	const checkoutFormData = jQuery( "#level, #pmpro_level, #discount_code, #pmpro_form .pmpro_alter_price" ).serializeArray();

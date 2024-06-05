@@ -315,7 +315,7 @@ function pmpro_login_forms_handler( $show_menu = true, $show_logout_link = true,
 	$message = '';
 	$msgt = 'pmpro_alert';
 	$allowed_html = array('strong' => array() );
-	if ( isset( $_GET['action'] ) ) {
+	if ( isset( $_GET['action'] ) && ! is_user_logged_in() ) {
 		$username = isset( $_GET['username'] ) ? sanitize_text_field( $_GET['username'] ) : '';
 		switch ( sanitize_text_field( $_GET['action'] ) ) {
 			case 'failed':
@@ -485,7 +485,7 @@ function pmpro_login_forms_handler( $show_menu = true, $show_logout_link = true,
 			// Login form.
 			if ( empty( $_GET['login'] ) || empty( $_GET['key'] ) ) {
 				$username = isset( $_REQUEST['username'] ) ? sanitize_text_field( $_REQUEST['username'] ) : NULL;
-				$redirect_to = isset( $_REQUEST['redirect_to'] ) ? esc_url_raw( $_REQUEST['redirect_to'] ) : NULL;
+				$redirect_to = isset( $_REQUEST['redirect_to'] ) ? esc_url_raw( $_REQUEST['redirect_to'] ) : '';
 
 				// Redirect users back to their page that they logged-in from via the widget.
 				if( empty( $redirect_to ) && $location === 'widget' && apply_filters( 'pmpro_login_widget_redirect_back', true ) ) {
@@ -499,7 +499,11 @@ function pmpro_login_forms_handler( $show_menu = true, $show_logout_link = true,
 						}
 					?>
 					<?php
-						pmpro_login_form( array( 'value_username' => esc_html( $username ), 'redirect' => esc_url( $redirect_to ) ) );
+						$login_form_array = array(
+							'value_username' => esc_html( $username ),
+							'redirect' => $redirect_to,
+						);
+						pmpro_login_form( $login_form_array );
 						pmpro_login_forms_handler_nav( 'login' );
 					?>
 				</div> <!-- end pmpro_login_wrap -->
@@ -779,7 +783,7 @@ function pmpro_login_forms_handler_nav( $pmpro_form ) { ?>
 }
 
 /**
- * Function to handle the actualy password reset and update password.
+ * Function to handle the actually password reset and update password.
  * @since 2.3
  */
 function pmpro_do_password_reset() {

@@ -455,7 +455,7 @@ class PMPro_Orders_List_Table extends WP_List_Table {
 
 		if ( $which == 'top' ) {
 
-			global $wpdb;
+			global $wpdb, $pmpro_msg, $pmpro_msgt;
 
 			$now = current_time( 'timestamp' );
 

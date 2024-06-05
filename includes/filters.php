@@ -1,6 +1,6 @@
 <?php
 /*
-	This file was added in version 1.5.5 of the plugin. This file is meant to store various hacks, filters, and actions that were originally developed outside of the PMPro core and brought in later... or just things that are cleaner/easier to impement via hooks and filters.
+	This file was added in version 1.5.5 of the plugin. This file is meant to store various hacks, filters, and actions that were originally developed outside of the PMPro core and brought in later... or just things that are cleaner/easier to implement via hooks and filters.
 */
 
 /*
@@ -28,22 +28,12 @@ function pmpro_checkout_level_extend_memberships( $level ) {
 
 		// time left?
 		if ( $time_left > 0 ) {
-			// convert to days and add to the expiration date (assumes expiration was 1 year)
-			$days_left = floor( $time_left / ( 60 * 60 * 24 ) );
+			// Calculate when the new expiration date should be.
+			$new_expiration_date = strtotime( '+' . $level->expiration_number . ' ' . $level->expiration_period, $expiration_date);
 
-			// figure out days based on period
-			if ( $level->expiration_period == 'Day' ) {
-				$total_days = $days_left + $level->expiration_number;
-			} elseif ( $level->expiration_period == 'Week' ) {
-				$total_days = $days_left + $level->expiration_number * 7;
-			} elseif ( $level->expiration_period == 'Month' ) {
-				$total_days = $days_left + $level->expiration_number * 30;
-			} elseif ( $level->expiration_period == 'Year' ) {
-				$total_days = $days_left + $level->expiration_number * 365;
-			}
-
-			// update number and period
-			$level->expiration_number = $total_days;
+			// Set the level to expire in that many days.
+			$days_until_new_expiration = floor( ( $new_expiration_date - $todays_date ) / ( 60 * 60 * 24 ) );
+			$level->expiration_number = $days_until_new_expiration;
 			$level->expiration_period = 'Day';
 		}
 	}
