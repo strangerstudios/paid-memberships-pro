@@ -555,8 +555,8 @@ class PMProGateway_stripe extends PMProGateway {
 			</th>
 			<td>
 				<select id="stripe_update_billing_flow" name="stripe_update_billing_flow">
-					<option value="onsite"><?php esc_html_e( 'Update billing on this site', 'paid-memberships-pro' ); ?></option>
-					<option value="portal" <?php if ( $values['stripe_update_billing_flow'] === 'portal' ) { ?>selected="selected"<?php } ?>><?php esc_html_e( 'Update billing in the Stripe Customer Portal', 'paid-memberships-pro' ); ?></option>
+					<option value="portal"><?php esc_html_e( 'Update billing in the Stripe Customer Portal', 'paid-memberships-pro' ); ?></option>
+					<option value="onsite"<?php if ( $values['stripe_update_billing_flow'] === 'onsite' ) { ?>selected="selected"<?php } ?>><?php esc_html_e( 'Update billing on this site', 'paid-memberships-pro' ); ?></option>
 				</select>
 				<p class="description"><?php esc_html_e( 'Embed the billing information fields on your Membership Billing page or use the Stripe Customer Portal hosted by Stripe.', 'paid-memberships-pro' ); ?></p>
 			</td>
@@ -1696,7 +1696,7 @@ class PMProGateway_stripe extends PMProGateway {
 			return;
 		}
 
-		if ( 'portal' === get_option( 'pmpro_stripe_update_billing_flow' ) ) {
+		if ( 'onsite' !== get_option( 'pmpro_stripe_update_billing_flow' ) ) {
 			// Send user to Stripe Customer Portal.
 			$stripe = new PMProGateway_stripe();
 			$customer = $stripe->get_customer_for_user( $pmpro_billing_subscription->get_user_id() );
@@ -1726,8 +1726,8 @@ class PMProGateway_stripe extends PMProGateway {
 	 */
 	public static function pmpro_billing_preheader_stripe_customer_portal() {
 		global 	$pmpro_billing_subscription;
-		//Bail if the customer portal isn't enabled
-		if ( 'portal' !== get_option( 'pmpro_stripe_update_billing_flow' ) ) {
+		//Bail if the onsite billing form is being used.
+		if ( 'onsite' === get_option( 'pmpro_stripe_update_billing_flow' ) ) {
 			return;
 		}
 
