@@ -543,8 +543,8 @@ class PMProGateway_stripe extends PMProGateway {
 			</th>
 			<td>
 				<select id="stripe_payment_flow" name="stripe_payment_flow">
-					<option value="onsite" <?php selected( $values['stripe_payment_flow'], 'onsite' ); ?>><?php esc_html_e( 'Accept payments on this site', 'paid-memberships-pro' ); ?></option>
 					<option value="checkout" <?php selected( $values['stripe_payment_flow'], 'checkout' ); ?>><?php esc_html_e( 'Accept payments in Stripe (Stripe Checkout)', 'paid-memberships-pro' ); ?></option>
+					<option value="onsite" <?php selected( $values['stripe_payment_flow'], 'onsite' ); ?>><?php esc_html_e( 'Accept payments on this site', 'paid-memberships-pro' ); ?></option>
 				</select>
 				<p class="description"><?php esc_html_e( 'Embed the payment information fields on your Membership Checkout page or use the Stripe-hosted payment page (Stripe Checkout). If using Stripe Checkout, be sure that all webhook events listed above are set up in Stripe.', 'paid-memberships-pro' ); ?>
 			</td>
@@ -1456,7 +1456,14 @@ class PMProGateway_stripe extends PMProGateway {
 	 * @return bool
 	 */
 	public static function using_stripe_checkout() {
-		return 'checkout' === get_option( 'pmpro_stripe_payment_flow' );
+		/**
+		 * Filter whether Stripe Checkout is being used.
+		 *
+		 * @since TBD
+		 *
+		 * @param bool $using_stripe_checkout
+		 */
+		return apply_filters( 'pmpro_stripe_using_stripe_checkout', 'onsite' !== get_option( 'pmpro_stripe_payment_flow' ) );
 	}
 
 	/**
@@ -1716,7 +1723,7 @@ class PMProGateway_stripe extends PMProGateway {
 			'PMProGateway_stripe',
 			'pmpro_include_payment_information_fields'
 		), 15 );
-		add_filter( 'option_pmpro_stripe_payment_flow', '__return_false' ); // Disable Stripe Checkout for rest of page load.
+		add_filter( 'pmpro_stripe_using_stripe_checkout', '__return_false' ); // Disable Stripe Checkout for rest of page load.
 	}
 
 	/**
