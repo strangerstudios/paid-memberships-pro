@@ -467,7 +467,6 @@ if ( empty( $default_gateway ) ) {
 				<?php do_action( 'pmpro_checkout_after_payment_information_fields' ); ?>
 
 				<?php if ( $tospage && ! $pmpro_review ) { ?>
-					<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_spacer' ) ); ?>"></div>
 					<fieldset id="pmpro_tos_fields" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_fieldset', 'pmpro_tos_fields' ) ); ?>">
 						<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_fields' ) ); ?>">
 							<?php
@@ -515,7 +514,7 @@ if ( empty( $default_gateway ) ) {
 
 					<?php do_action( 'pmpro_checkout_after_tos_fields' ); ?>
 
-					<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_captcha', 'pmpro_captcha' ) ); ?>">
+					<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_captcha' ) ); ?>">
 					<?php
 						$recaptcha = get_option( "pmpro_recaptcha");
 						if ( $recaptcha == 2 || $recaptcha == 1 ) {

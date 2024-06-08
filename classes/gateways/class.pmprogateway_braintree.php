@@ -513,7 +513,7 @@ use Braintree\WebhookNotification as Braintree_WebhookNotification;
 							<p id="discount_code_message" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_message', 'discount_code_message' ) ); ?>" style="display: none;"></p>
 						</div>
 					<?php } ?>
-				</div> <!-- end pmpro_checkout-fields -->
+				</div> <!-- end pmpro_form_fields -->
 			</fieldset> <!-- end pmpro_payment_information_fields -->
 			<?php
 

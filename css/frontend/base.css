@@ -107,7 +107,7 @@
 	width: auto;
 }
 
-.pmpro_form_field-checkbox input[type=checkbox] {
+.pmpro_form_field-checkbox input[type="checkbox"] {
 	height: auto;
 	opacity: 1;
 	width: auto;
@@ -142,7 +142,7 @@
 	width: unset;
 }
 
-.pmpro_form_field-date input[type=text] {
+.pmpro_form_field-date input[type="text"] {
 	margin-left: var(--pmpro--base--spacing--small);
 	max-width: unset;
 	width: unset;
@@ -154,7 +154,7 @@
 }
 
 /* Checkout and Billing forms */
-#pmpro_payment_information_fields .pmpro_checkout-fields label {
+#pmpro_payment_information_fields .pmpro_form_fields label {
 	display: block;
 	float: none;
 	max-width: initial;
@@ -177,7 +177,7 @@ button[type="button"]#other_discount_code_toggle:focus {
     text-decoration: underline;
 }
 
-#pmpro_tos_fields input[type=checkbox]#tos {
+#pmpro_tos_fields input[type="checkbox"]#tos {
 	width: auto;
 }
 
@@ -187,18 +187,10 @@ button[type="button"]#other_discount_code_toggle:focus {
 }
 
 /* Stripe gateway Membership Checkout specific styles. */
-.pmpro_checkout_gateway-stripe form.pmpro_form #pmpro_payment_information_fields .pmpro_checkout-field-payment-request-button h4 {
-	margin-top: var(--pmpro--base--spacing--medium);
-}
-
-.pmpro_checkout_gateway-stripe form.pmpro_form #pmpro_payment_information_fields .pmpro_checkout-fields,
-.pmpro_billing_gateway-stripe form.pmpro_form #pmpro_payment_information_fields .pmpro_checkout-fields {
-	display: grid;
-	grid-template-areas:
-		"AccountNumber AccountNumber"
-		"Expiry CVV"
-		"DiscountCode DiscountCode";
-	grid-column-gap: var(--pmpro--base--spacing--medium);
+.pmpro_checkout_gateway-stripe form.pmpro_form #pmpro_payment_information_fields .pmpro_payment-request-button h3,
+.pmpro_billing_gateway-stripe form.pmpro_form #pmpro_payment_information_fields .pmpro_payment-request-button h3 {
+	margin: var(--pmpro--base--spacing--medium) 0 var(--pmpro--base--spacing--small);
+	padding: 0;
 }
 
 .pmpro_checkout_gateway-stripe form.pmpro_form #pmpro_payment_information_fields div#AccountNumber,
@@ -208,25 +200,8 @@ button[type="button"]#other_discount_code_toggle:focus {
 .pmpro_billing_gateway-stripe form.pmpro_form #pmpro_payment_information_fields div#Expiry,
 .pmpro_billing_gateway-stripe form.pmpro_form #pmpro_payment_information_fields div#CVV {
 	border: 1px solid var(--pmpro--color--border);
-	border-radius: var(--pmpro--base--border-radius);
 	padding: var(--pmpro--base--spacing--small);
 }
-.pmpro_checkout_gateway-stripe form.pmpro_form #pmpro_payment_information_fields .pmpro_payment-account-number,
-.pmpro_billing_gateway-stripe form.pmpro_form #pmpro_payment_information_fields .pmpro_payment-account-number {
-	grid-area: AccountNumber;
-}
-.pmpro_checkout_gateway-stripe form.pmpro_form #pmpro_payment_information_fields .pmpro_payment-expiration,
-.pmpro_billing_gateway-stripe form.pmpro_form #pmpro_payment_information_fields .pmpro_payment-expiration {
-	grid-area: Expiry;
-}
-.pmpro_checkout_gateway-stripe form.pmpro_form #pmpro_payment_information_fields .pmpro_payment-cvv,
-.pmpro_billing_gateway-stripe form.pmpro_form #pmpro_payment_information_fields .pmpro_payment-cvv {
-	grid-area: CVV;
-}
-.pmpro_checkout_gateway-stripe form.pmpro_form #pmpro_payment_information_fields .pmpro_payment-discount-code {
-	grid-area: DiscountCode;
-}
-
 
 /* Memberhip Order specific styles. */
 .pmpro_invoice_details .pmpro_invoice-billing-address {

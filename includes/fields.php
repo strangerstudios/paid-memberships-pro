@@ -716,7 +716,7 @@ function pmpro_show_user_fields_in_frontend_profile( $user, $withlocations = fal
 				continue;
 			}
 			?>
-
+			<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_spacer' ) ); ?>"></div>
 			<fieldset id="pmpro_form_fieldset-<?php echo esc_attr( sanitize_title( $where ) ); ?>" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_fieldset', 'pmpro_form_fieldset-' . sanitize_title( $where ) ) ); ?>">
 				<?php if ( ! empty( $box->label ) ) { ?>
 					<legend class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_legend' ) ); ?>">

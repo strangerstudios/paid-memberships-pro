@@ -317,7 +317,7 @@
 									<label for="bphone" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_label' ) ); ?>"><?php esc_html_e('Phone', 'paid-memberships-pro' );?></label>
 									<input id="bphone" name="bphone" type="tel" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_input pmpro_form_input-text', 'bphone' ) ); ?>" value="<?php echo esc_attr($bphone)?>" />
 								</div> <!-- end pmpro_form_field-bphone -->
-							</div> <!-- end pmpro_checkout-fields -->
+							</div> <!-- end pmpro_form_fields -->
 						</fieldset> <!-- end pmpro_billing_address_fields -->
 						<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_divider' ) ); ?>"></div>
 						<?php } ?>
@@ -433,7 +433,7 @@
 						}
 						?>
 
-						<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_field pmpro_captcha', 'pmpro_captcha' ) ); ?>">
+						<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_captcha' ) ); ?>">
 						<?php
 							$recaptcha = get_option("pmpro_recaptcha");
 							if ( $recaptcha == 2 || ( $recaptcha == 1 && pmpro_isLevelFree( $pmpro_level ) ) ) {

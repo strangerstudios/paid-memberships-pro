@@ -123,13 +123,14 @@
 		vertical-align: middle;
 		transition: background-color 0.2s, color 0.2s;
 	}
+
 	.pmpro_btn:hover,
 	.pmpro_btn:focus {
-		background-color: initial;
+		background-color: var(--pmpro--color--accent--variation);
 		background-position: 0 0;
-		border-color: var(--pmpro--color--accent);
-		color: var(--pmpro--color--accent);
+		border-color: var(--pmpro--color--accent--variation);
 	}
+
 	.pmpro_btn:active {
 		opacity: .7;
 	}
@@ -138,8 +139,11 @@
 		background-color: var(--pmpro--color--error-text);
 		border-color: var(--pmpro--color--error-text);
 	}
+
 	.pmpro_btn-delete:hover,
 	.pmpro_btn-delete:focus {
+		background-color: transparent;
+		border-color: var(--pmpro--color--error-text);
 		color: var(--pmpro--color--error-text);
 	}
 
@@ -149,9 +153,12 @@
 		box-shadow: 1px 2px 2px rgba(0, 0, 0, 0.1);
 		color: var(--pmpro--color--contrast);
 	}
+
 	.pmpro_btn-cancel:hover,
 	.pmpro_btn-cancel:focus {
 		background-color: #ededed;
+		border-color: var(--pmpro--color--border--variation);
+		color: var(--pmpro--color--contrast);
 	}
 
 	/**
@@ -320,8 +327,8 @@
 		margin-bottom: var(--pmpro--base--spacing--small);
 	}
 
-	span#pmpro_payment_information_fields + .pmpro_divider {
-		display: none;
+	#pmpro_payment_information_fields {
+		margin-bottom: var(--pmpro--base--spacing--large);
 	}
 
 	.pmpro_form_submit {
@@ -342,7 +349,11 @@
 		border-radius: 0;
 	}
 
-	/* Login Form (WordPress default) */
+	/* Login Form (WordPress default and our lost/reset password forms) */
+	#pmpro_login input[type="submit"] {
+		width: 100%;
+	}
+
 	.pmpro_section:has(#loginform) .pmpro_card_content:not(.widget .pmpro_section:has(#loginform) .pmpro_card_content) {
 		padding: var(--pmpro--base--spacing--large);
 	}
@@ -350,6 +361,97 @@
 	.pmpro_section:has(#loginform) .pmpro_card_actions {
 		margin: 0 var(--pmpro--base--spacing--large);
 		padding: var(--pmpro--base--spacing--medium) 0;
+	}
+
+	.pmpro_section #loginform p {
+		display: flex;
+		flex-direction: column;
+		gap: calc( var(--pmpro--base--spacing--small) / 2 );
+		margin: 0 0 var(--pmpro--base--spacing--medium);
+		padding: 0;
+	}
+
+	.pmpro_section #loginform label:not(.pmpro_section #loginform .login-remember label) {
+		display: block;
+		font-weight: 500;
+		margin: 0;
+		padding: 0;
+	}
+
+	.pmpro_section #loginform .input {
+		background-color: var(--pmpro--color--base);
+		border: 1px solid var(--pmpro--color--border);
+		border-radius: 0;
+		box-sizing: border-box;
+		color: var(--pmpro--color--contrast);
+		font-size: 16px;
+		height: auto;
+		line-height: 1.5;
+		margin: 0;
+		min-height: auto;
+		outline: none;
+		padding: var(--pmpro--base--spacing--small);
+	}
+
+	.pmpro_section #loginform .input:focus {
+		background-color: var(--pmpro--color--base);
+		border-color: #80BDFF;
+		box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);
+		outline: none;
+		word-break: initial;
+	}
+
+	.pmpro_section #loginform .login-remember {
+		align-items: baseline;
+		flex-direction: row;
+		flex-wrap: wrap;
+	}
+
+	.pmpro_section #loginform .login-submit {
+		margin: var(--pmpro--base--spacing--medium) 0 0;
+	}
+
+	.pmpro_section #loginform .login-submit .button {
+		background-color: var(--pmpro--color--accent);
+		border: 1px solid var(--pmpro--color--accent);
+		border-radius: 0;
+		box-shadow: 1px 2px 4px rgba(0, 0, 0, 0.1);
+		box-sizing: border-box;
+		color: var(--pmpro--color--base);
+		cursor: pointer;
+		display: inline-block;
+		font-size: 16px;
+		font-weight: 700;
+		letter-spacing: normal;
+		line-height: 1.5;
+		min-height: 40px;
+		outline: 0;
+		padding: var(--pmpro--base--spacing--small) var(--pmpro--base--spacing--medium);
+		text-align: center;
+		text-decoration: none;
+		text-rendering: geometricprecision;
+		text-transform: none;
+		user-select: none;
+		-webkit-user-select: none;
+		touch-action: manipulation;
+		vertical-align: middle;
+		transition: background-color 0.2s, color 0.2s;
+	}
+
+	.pmpro_section #loginform .login-submit .button:hover,
+	.pmpro_section #loginform .login-submit .button:focus {
+		background-color: initial;
+		background-position: 0 0;
+		border-color: var(--pmpro--color--accent);
+		color: var(--pmpro--color--accent);
+	}
+
+	.pmpro_section #loginform .login-submit .button:active {
+		opacity: .7;
+	}
+
+	#pass-strength-result {
+		border-radius: 0;
 	}
 
 	/**
@@ -423,7 +525,6 @@
 	* Membership Orders
 	*/
 	.pmpro_table_orders {
-
 		.pmpro_tag {
 			display: block;
 		}
@@ -508,6 +609,10 @@
 		border-radius: 50%;
 		margin: 0;
 		padding: 0;
+	}
+
+	.pmpro_tag {
+		border-radius: 0;
 	}
 
 	.pmpro_cols-2,

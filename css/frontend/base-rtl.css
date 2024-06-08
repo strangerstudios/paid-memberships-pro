@@ -10,16 +10,6 @@
 }
 
 /**
- * Form Elements
- */
-
-/* Checkout and Billing forms */
-#pmpro_payment_information_fields .pmpro_checkout-fields label {
-	text-align: right;
-}
-
-
-/**
  * Frontend page navigation
  */
 .pmpro_actions_nav-left {
