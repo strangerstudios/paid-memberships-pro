@@ -203,7 +203,7 @@ button[type="button"]#other_discount_code_toggle:focus {
 	padding: var(--pmpro--base--spacing--small);
 }
 
-/* Memberhip Order specific styles. */
+/* Membership Order specific styles. */
 .pmpro_invoice_details .pmpro_invoice-billing-address {
 	display: flex;
 	flex-direction: column;
@@ -332,6 +332,7 @@ button[type="button"]#other_discount_code_toggle:focus {
  */
 .pmpro_table {
 	border-collapse: collapse;
+	margin: 0;
 	width: 100%;
 }
 

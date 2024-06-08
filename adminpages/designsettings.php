@@ -155,7 +155,7 @@ function pmpro_style_variation_item_preview_html() { ?>
 				<?php esc_html_e( '$10 per month', 'paid-memberships-pro' ); ?>
 			</span>
 			<span class="pmpro_style_variation_item-preview-button">
-				<button class="pmpro_btn"><?php esc_html_e( 'Sign Up', 'paid-memberships-pro' ); ?></button>
+				<span class="pmpro_btn"><?php esc_html_e( 'Sign Up', 'paid-memberships-pro' ); ?></span>
 			</span>
 		</div>
 		<div class="pmpro_style_variation_item-preview-actions">
