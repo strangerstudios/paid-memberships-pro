@@ -1314,14 +1314,14 @@ function pmpro_change_password_form() {
 												<?php esc_html_e( 'New Password', 'paid-memberships-pro' ); ?>
 												<span class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_asterisk' ) ); ?>"> <abbr title="<?php esc_html_e( 'Required Field', 'paid-memberships-pro' ); ?>">*</abbr></span>
 											</label>
-											<input type="password" name="pass1" id="pass1" value="" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_input pmpro_form_input-password pmpro_form_input-required pass1', 'pass1' ) ); ?>" autocomplete="off" aria-required="true" aria-describedby="pass-strength-result" />
+											<input type="password" name="pass1" id="pass1" value="" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_input pmpro_form_input-password pmpro_form_input-required pass1', 'pass1' ) ); ?>" autocomplete="new-password" aria-required="true" aria-describedby="pass-strength-result" />
 										</div> <!-- end pmpro_form_field-pass1 -->
 										<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_field pmpro_form_field-pass2', 'pmpro_form_field-pass2' ) ); ?>">
 											<label for="pass2" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_label' ) ); ?>">
 												<?php esc_html_e( 'Confirm New Password', 'paid-memberships-pro' ); ?>
 												<span class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_asterisk'  )); ?>"> <abbr title="<?php esc_html_e( 'Required Field', 'paid-memberships-pro' ); ?>">*</abbr></span>
 											</label>
-											<input type="password" name="pass2" id="pass2" value="" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_input pmpro_form_input-password pmpro_form_input-required pass2', 'pass2' ) ); ?>" autocomplete="off" aria-required="true" spellcheck="false" />
+											<input type="password" name="pass2" id="pass2" value="" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_input pmpro_form_input-password pmpro_form_input-required pass2', 'pass2' ) ); ?>" autocomplete="new-password" aria-required="true" spellcheck="false" />
 										</div> <!-- end pmpro_form_field-pass2 -->
 									</div> <!-- end pmpro_cols-2 -->
 									<p class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_hint' ) ); ?>"><?php echo esc_html( wp_get_password_hint() ); ?></p>

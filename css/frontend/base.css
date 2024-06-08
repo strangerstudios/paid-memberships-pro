@@ -242,6 +242,7 @@ button[type="button"]#other_discount_code_toggle:focus {
 	border: 1px solid var(--pmpro--color--border);
 	border-radius: var(--pmpro--base--border-radius);
 	color: inherit;
+	font-size: 16px;
 	margin: 0;
 	padding: calc( var(--pmpro--base--spacing--small) / 3 ) var(--pmpro--base--spacing--small);
 	text-align: center;

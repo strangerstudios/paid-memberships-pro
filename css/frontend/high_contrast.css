@@ -91,7 +91,8 @@
 	* Contextual Messages
 	*/
 	.pmpro_message {
-		box-shadow: var(--pmpro--box-shadow);
+		border-radius: 0;
+		box-shadow: none;
 	}
 
 	/**
