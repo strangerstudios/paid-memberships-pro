@@ -173,6 +173,18 @@
 		color: var(--pmpro--color--contrast);
 	}
 
+	.pmpro_btn-plain,
+	.pmpro_btn-plain:hover,
+	.pmpro_btn-plain:focus,
+	.pmpro_btn-plain:active {
+		background: 0 0;
+		border: 1px solid transparent;
+		box-shadow: none;
+		font-size: 14px;
+		margin: 0;
+		padding: 0;
+	}
+
 	/**
 	 * Form Styles
 	 */
@@ -305,6 +317,42 @@
 	}
 
 	/* Special Fields */
+	.pmpro_form_field-password-toggle {
+		align-items: center;
+		background-color: var(--pmpro--color--base);
+		border: 1px solid var(--pmpro--color--border);
+		border-radius: 0;
+		box-sizing: border-box;
+		display: flex;
+		flex-direction: row;
+		margin: 0;
+		padding: 0 var(--pmpro--base--spacing--small) 0 0;
+	}
+
+	.pmpro_form_field-password-toggle .pmpro_form_input {
+		border: none;
+		flex: 1;
+	}
+
+	.pmpro_form_field-password-toggle .pmpro_form_input:focus {
+		border-color: transparent;
+		box-shadow: none;
+	}
+
+	.pmpro_form_field-password-toggle .pmpro_icon-eye {
+		display: block;
+		height: 24px;
+		width: 24px;
+	}
+
+	.pmpro_form_field-password-toggle:has(.pmpro_form_input:focus) {
+		background-color: var(--pmpro--color--base);
+		border-color: #80BDFF;
+		box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);
+		outline: none;
+		word-break: initial;
+	}
+
 	.pmpro_form_field-select2 {
 		display: block;
 	}

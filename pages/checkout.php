@@ -193,7 +193,7 @@ if ( empty( $default_gateway ) ) {
 
 							<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_field pmpro_form_field-text pmpro_form_field-username pmpro_form_field-required', 'pmpro_form_field-username' ) ); ?>">
 								<label for="username" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_label' ) ); ?>"><?php esc_html_e('Username', 'paid-memberships-pro' );?></label>
-								<input id="username" name="username" type="text" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_input pmpro_form_input-text pmpro_form_input-required', 'username' ) ); ?>" value="<?php echo esc_attr($username); ?>" />
+								<input id="username" name="username" type="text" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_input pmpro_form_input-text pmpro_form_input-required', 'username' ) ); ?>" autocomplete="username" value="<?php echo esc_attr($username); ?>" />
 							</div> <!-- end pmpro_form_field-username -->
 
 							<?php do_action( 'pmpro_checkout_after_username' ); ?>
@@ -201,7 +201,12 @@ if ( empty( $default_gateway ) ) {
 							<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_cols-2' ) ); ?>">
 								<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_field pmpro_form_field-password pmpro_form_field-required' ) ); ?>">
 									<label for="password" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_label' ) ); ?>"><?php esc_html_e('Password', 'paid-memberships-pro' );?></label>
-									<input id="password" name="password" type="password" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_input pmpro_form_input-password pmpro_form_input-required', 'password' ) ); ?>" value="<?php echo esc_attr($password); ?>" />
+									<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_field-password-toggle' ) ); ?>">
+										<input type="password" name="password" id="password" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_input pmpro_form_input-password pmpro_form_input-required', 'password' ) ); ?>" autocomplete="new-password" spellcheck="false" value="<?php echo esc_attr($password); ?>" />
+										<button type="button" tabindex="-1" class="pmpro_btn pmpro_btn-plain pmpro_btn-password-toggle hide-if-no-js" data-toggle="0" aria-label="<?php esc_attr_e( 'Show password', 'paid-memberships-pro' ); ?>">
+											<span class="pmpro_icon pmpro_icon-eye" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--pmpro--color--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-eye"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg></span>
+										</button>
+									</div> <!-- end pmpro_form_field-password-toggle -->
 								</div> <!-- end pmpro_form_field-password -->
 
 								<?php
@@ -209,7 +214,7 @@ if ( empty( $default_gateway ) ) {
 									if($pmpro_checkout_confirm_password) { ?>
 										<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_field pmpro_form_field-password pmpro_form_field-required', 'pmpro_form_field-password2' ) ); ?>">
 											<label for="password2" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_label' ) ); ?>"><?php esc_html_e('Confirm Password', 'paid-memberships-pro' );?></label>
-											<input id="password2" name="password2" type="password" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_input pmpro_form_input-password pmpro_form_input-required', 'password2' ) ); ?>" value="<?php echo esc_attr($password2); ?>" />
+											<input type="password" name="password2" id="password2" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_input pmpro_form_input-password pmpro_form_input-required', 'password2' ) ); ?>" autocomplete="new-password" spellcheck="false" value="<?php echo esc_attr($password2); ?>" />
 										</div> <!-- end pmpro_form_field-password2 -->
 									<?php } else { ?>
 										<input type="hidden" name="password2_copy" value="1" />

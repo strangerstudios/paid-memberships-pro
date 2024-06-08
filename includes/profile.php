@@ -1301,7 +1301,12 @@ function pmpro_change_password_form() {
 											<?php esc_html_e( 'Current Password', 'paid-memberships-pro' ); ?>
 											<span class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_asterisk' ) ); ?>"> <abbr title="<?php esc_html_e( 'Required Field', 'paid-memberships-pro' ); ?>">*</abbr></span>
 										</label>
-										<input type="password" name="password_current" id="password_current" value="" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_input pmpro_required password_current', 'password_current' ) ); ?>" aria-required="true" />
+										<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_field-password-toggle' ) ); ?>">
+											<input type="password" name="password_current" id="password_current" value="" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_input pmpro_form_input-password pmpro_form_input-required password_current', 'password_current' ) ); ?>" autocomplete="current-password" spellcheck="false" aria-required="true" />
+											<button type="button" tabindex="-1" class="pmpro_btn pmpro_btn-plain pmpro_btn-password-toggle hide-if-no-js" data-toggle="0" aria-label="<?php esc_attr_e( 'Show password', 'paid-memberships-pro' ); ?>">
+												<span class="pmpro_icon pmpro_icon-eye" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--pmpro--color--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-eye"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg></span>
+											</button>
+										</div> <!-- end pmpro_form_field-password-toggle -->
 									</div> <!-- end pmpro_form_field-password_current -->
 									<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_cols-2' ) ); ?>">
 										<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_field pmpro_form_field-pass1', 'pmpro_form_field-pass1' ) ); ?>">
@@ -1309,14 +1314,14 @@ function pmpro_change_password_form() {
 												<?php esc_html_e( 'New Password', 'paid-memberships-pro' ); ?>
 												<span class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_asterisk' ) ); ?>"> <abbr title="<?php esc_html_e( 'Required Field', 'paid-memberships-pro' ); ?>">*</abbr></span>
 											</label>
-											<input type="password" name="pass1" id="pass1" value="" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_input pmpro_required pass1', 'pass1' ) ); ?>" autocomplete="off" aria-required="true" />
+											<input type="password" name="pass1" id="pass1" value="" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_input pmpro_form_input-password pmpro_form_input-required pass1', 'pass1' ) ); ?>" autocomplete="off" aria-required="true" aria-describedby="pass-strength-result" />
 										</div> <!-- end pmpro_form_field-pass1 -->
 										<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_field pmpro_form_field-pass2', 'pmpro_form_field-pass2' ) ); ?>">
 											<label for="pass2" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_label' ) ); ?>">
 												<?php esc_html_e( 'Confirm New Password', 'paid-memberships-pro' ); ?>
 												<span class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_asterisk'  )); ?>"> <abbr title="<?php esc_html_e( 'Required Field', 'paid-memberships-pro' ); ?>">*</abbr></span>
 											</label>
-											<input type="password" name="pass2" id="pass2" value="" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_input pmpro_required pass2', 'pass2' ) ); ?>" autocomplete="off" aria-required="true" />
+											<input type="password" name="pass2" id="pass2" value="" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_input pmpro_form_input-password pmpro_form_input-required pass2', 'pass2' ) ); ?>" autocomplete="off" aria-required="true" spellcheck="false" />
 										</div> <!-- end pmpro_form_field-pass2 -->
 									</div> <!-- end pmpro_cols-2 -->
 									<p class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_hint' ) ); ?>"><?php echo esc_html( wp_get_password_hint() ); ?></p>

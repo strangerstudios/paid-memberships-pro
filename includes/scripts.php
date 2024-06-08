@@ -28,14 +28,20 @@ function pmpro_enqueue_scripts() {
 							array( 'jquery' ),
 							PMPRO_VERSION );
 
-		wp_localize_script( 'pmpro_checkout', 'pmpro', array(
-			'ajaxurl' => admin_url( 'admin-ajax.php' ),
-			'ajax_timeout' => apply_filters( 'pmpro_ajax_timeout', 5000, 'applydiscountcode' ),
-			'show_discount_code' => pmpro_show_discount_code(),
-			'discount_code_passed_in' => !empty( $_REQUEST['pmpro_discount_code'] ) && !empty( $_REQUEST['discount_code'] ),
-			'sensitiveCheckoutRequestVars' => pmpro_get_sensitive_checkout_request_vars(),
-			'update_nonce' => apply_filters( 'pmpro_update_nonce_at_checkout', false ),
-		));
+		wp_localize_script(
+			'pmpro_checkout',
+			'pmpro',
+			array(
+				'ajaxurl' => admin_url( 'admin-ajax.php' ),
+				'ajax_timeout' => apply_filters( 'pmpro_ajax_timeout', 5000, 'applydiscountcode' ),
+				'show_discount_code' => pmpro_show_discount_code(),
+				'discount_code_passed_in' => !empty( $_REQUEST['pmpro_discount_code'] ) && !empty( $_REQUEST['discount_code'] ),
+				'sensitiveCheckoutRequestVars' => pmpro_get_sensitive_checkout_request_vars(),
+				'update_nonce' => apply_filters( 'pmpro_update_nonce_at_checkout', false ),
+				'hide_password_text' =>  __( 'Hide password', 'paid-memberships-pro' ),
+				'show_password_text' =>  __( 'Show password', 'paid-memberships-pro' ),
+			)
+		);
 		wp_enqueue_script( 'pmpro_checkout' );
 	}
 
@@ -67,10 +73,17 @@ function pmpro_enqueue_scripts() {
 		 */
 		$allow_weak_passwords = apply_filters( 'pmpro_allow_weak_passwords', false );
 
-		wp_localize_script( 'pmpro_login', 'pmpro', array(
-			'pmpro_login_page' => 'changepassword',
-			'strength_indicator_text' => __( 'Strength Indicator', 'paid-memberships-pro' ),
-			'allow_weak_passwords' => $allow_weak_passwords ) );
+		wp_localize_script(
+			'pmpro_login',
+			'pmpro',
+			array(
+				'pmpro_login_page' => 'changepassword',
+				'strength_indicator_text' => __( 'Strength Indicator', 'paid-memberships-pro' ),
+				'allow_weak_passwords' => $allow_weak_passwords,
+				'hide_password_text' =>  __( 'Hide password', 'paid-memberships-pro' ),
+				'show_password_text' =>  __( 'Show password', 'paid-memberships-pro' )
+			)
+		);
 		wp_enqueue_script( 'pmpro_login' );
 	}
 
@@ -133,17 +146,21 @@ function pmpro_admin_enqueue_scripts() {
     pmpro_get_field_html();
     $empty_field_html = ob_get_clean();
 
-    wp_localize_script( 'pmpro_admin', 'pmpro', array(
-        'all_levels' => $all_levels,
-        'all_levels_formatted_text' => $all_levels_formatted_text,
-        'all_level_values_and_labels' => $all_level_values_and_labels,
-        'checkout_url' => pmpro_url( 'checkout' ),
-        'user_fields_blank_group' => $empty_field_group_html,
-        'user_fields_blank_field' => $empty_field_html,
-        // We want the core WP translation so we can check for it in JS.
-        'plugin_updated_successfully_text' => __( 'Plugin updated successfully.' ),
-    ));
-    wp_enqueue_script( 'pmpro_admin' );
+	wp_localize_script(
+		'pmpro_admin',
+		'pmpro',
+		array(
+			'all_levels' => $all_levels,
+			'all_levels_formatted_text' => $all_levels_formatted_text,
+			'all_level_values_and_labels' => $all_level_values_and_labels,
+			'checkout_url' => pmpro_url( 'checkout' ),
+			'user_fields_blank_group' => $empty_field_group_html,
+			'user_fields_blank_field' => $empty_field_html,
+			// We want the core WP translation so we can check for it in JS.
+			'plugin_updated_successfully_text' => __( 'Plugin updated successfully.' ),
+		)
+	);
+	wp_enqueue_script( 'pmpro_admin' );
 
     // Enqueue styles.
 	// Figure out which admin.css to load.
