@@ -18,7 +18,7 @@ function pmpro_enqueue_scripts() {
 
 	// Load the base RTL stylesheet.
 	if ( is_rtl() ) {
-		wp_enqueue_style( 'pmpro_frontend_base_rtl', 'css/frontend/base-rtl.css', array(), PMPRO_VERSION, 'screen' );
+		wp_enqueue_style( 'pmpro_frontend_base_rtl', plugins_url( 'css/frontend/base-rtl.css', dirname(__FILE__) ), array(), PMPRO_VERSION, 'screen' );
 	}
 
 	// Checkout page JS

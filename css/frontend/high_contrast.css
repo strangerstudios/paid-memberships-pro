@@ -130,6 +130,7 @@
 		background-color: var(--pmpro--color--accent--variation);
 		background-position: 0 0;
 		border-color: var(--pmpro--color--accent--variation);
+		color: var(--pmpro--color--base);
 	}
 
 	.pmpro_btn:active {
@@ -189,6 +190,10 @@
 	/**
 	 * Form Styles
 	 */
+	.pmpro_form {
+		margin: 0;
+	}
+
 	.pmpro_section:has(.pmpro_form) .pmpro_card_content {
 		padding-top: var(--pmpro--base--spacing--large);
 	}
@@ -252,6 +257,7 @@
 		background-color: var(--pmpro--color--base);
 		border: 1px solid var(--pmpro--color--border);
 		border-radius: 0;
+		box-shadow: none;
 		box-sizing: border-box;
 		color: var(--pmpro--color--contrast);
 		font-size: 16px;
@@ -405,7 +411,11 @@
 	}
 
 	/* Login Form (WordPress default and our lost/reset password forms) */
-	#pmpro_login input[type="submit"] {
+	#loginform {
+		margin-bottom: 0;
+	}
+
+	#loginform input[type="submit"] {
 		width: 100%;
 	}
 
@@ -447,6 +457,7 @@
 		background-color: var(--pmpro--color--base);
 		border: none;
 		border-radius: 0;
+		box-shadow: none;
 		box-sizing: border-box;
 		color: var(--pmpro--color--contrast);
 		font-size: 16px;
@@ -701,6 +712,17 @@
 
 	.pmpro_form .pmpro_divider {
 		margin-top: var(--pmpro--base--spacing--large);
+	}
+
+}
+
+/**
+ * RTL Styles
+ */
+ .rtl {
+
+	.pmpro_form_field-password-toggle {
+		padding: 0 0 0 var(--pmpro--base--spacing--small);
 	}
 
 }

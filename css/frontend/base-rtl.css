@@ -12,12 +12,6 @@
 /**
  * Frontend page navigation
  */
-.pmpro_actions_nav-left {
-	order: 2;
-	text-align: right;
-}
-
-.pmpro_actions_nav-right {
-	order: 1;
-	text-align: left;
+.pmpro_actions_nav:not(.pmpro_login_wrap .pmpro_actions_nav) {
+	flex-direction: row-reverse;
 }
