@@ -1236,6 +1236,10 @@ class PMPro_Field {
 			$this->divclass .= " pmpro_form_field-hide-required";
 		}
 
+		// Run the class through the filter.
+		$this->divclass = pmpro_get_element_class( $this->divclass );
+		$this->class = pmpro_get_element_class( $this->class );
+
 		?>
 		<div id="<?php echo esc_attr( $this->id );?>_div" <?php if ( ! empty( $this->divclass ) ) { echo 'class="' . esc_attr( $this->divclass ) . '"'; } ?>>
 			<?php if(!empty($this->showmainlabel)) { ?>
