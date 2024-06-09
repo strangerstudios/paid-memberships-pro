@@ -91,6 +91,10 @@
 /**
  * Form Elements
  */
+.pmpro_captcha {
+	margin: var(--pmpro--base--spacing--large) 0;
+}
+
 .pmpro_captcha div {
 	clear: none;
 	margin: 0;
