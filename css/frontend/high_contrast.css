@@ -330,12 +330,14 @@
 		padding: 0 var(--pmpro--base--spacing--small) 0 0;
 	}
 
-	.pmpro_form_field-password-toggle .pmpro_form_input {
+	.pmpro_form_field-password-toggle .pmpro_form_input,
+	.pmpro_form_field-password-toggle .input {
 		border: none;
 		flex: 1;
 	}
 
-	.pmpro_form_field-password-toggle .pmpro_form_input:focus {
+	.pmpro_form_field-password-toggle .pmpro_form_input:focus,
+	.pmpro_form_field-password-toggle .input:focus {
 		border-color: transparent;
 		box-shadow: none;
 	}
@@ -346,7 +348,8 @@
 		width: 24px;
 	}
 
-	.pmpro_form_field-password-toggle:has(.pmpro_form_input:focus) {
+	.pmpro_form_field-password-toggle:has(.pmpro_form_input:focus),
+	.pmpro_form_field-password-toggle:has(.input:focus) {
 		background-color: var(--pmpro--color--base);
 		border-color: #80BDFF;
 		box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);
@@ -425,7 +428,7 @@
 		padding: 0;
 	}
 
-	.pmpro_section #loginform .input {
+	.pmpro_section #loginform #user_login {
 		background-color: var(--pmpro--color--base);
 		border: 1px solid var(--pmpro--color--border);
 		border-radius: 0;
@@ -440,7 +443,22 @@
 		padding: var(--pmpro--base--spacing--small);
 	}
 
-	.pmpro_section #loginform .input:focus {
+	.pmpro_section #loginform #user_pass {
+		background-color: var(--pmpro--color--base);
+		border: none;
+		border-radius: 0;
+		box-sizing: border-box;
+		color: var(--pmpro--color--contrast);
+		font-size: 16px;
+		height: auto;
+		line-height: 1.5;
+		margin: 0;
+		min-height: auto;
+		outline: none;
+		padding: var(--pmpro--base--spacing--small);
+	}
+
+	.pmpro_section #loginform #user_login:focus {
 		background-color: var(--pmpro--color--base);
 		border-color: #80BDFF;
 		box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);

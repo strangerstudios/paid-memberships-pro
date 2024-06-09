@@ -73,7 +73,7 @@ jQuery(document).ready(function(){
 		});
 	}
 
-	// Password visibility toggle.
+	// Password visibility toggle (all except the wp_login_form instance).
 	(function() {
 		const toggleElements = document.querySelectorAll('.pmpro_btn-password-toggle');
 
