@@ -500,9 +500,22 @@ button[type="button"]#other_discount_code_toggle:focus {
 }
 
 /**
+ * Print Styles
+ */
+@media print {
+	.pmpro {
+		.pmpro_actions_nav:not(.pmpro_login_wrap .pmpro_actions_nav),
+		.pmpro_actions_nav,
+		.pmpro_card_actions {
+			display: none;
+		}
+	}
+}
+
+/**
  * Responsive Styles
  */
-@media (max-width: 767px) {
+@media screen and (max-width: 767px) {
 	.pmpro_reset_password_wrap form.pmpro_form #pass-strength-result,
 	form.pmpro_form .pmpro_change_password-fields #pass-strength-result {
 		max-width: 90%;
@@ -534,16 +547,16 @@ button[type="button"]#other_discount_code_toggle:focus {
 	}
 }
 
-@media (min-width: 768px) {
+@media screen and (min-width: 768px) {
 
 }
 
-@media (min-width: 1024px) {
+@media screen and (min-width: 1024px) {
 	.pmpro_checkout_gateway-stripe form.pmpro_form #pmpro_payment_information_fields #payment-request-button {
 		max-width: 50%;
 	}
 }
 
-@media (min-width: 1280px) {
+@media screen and (min-width: 1280px) {
 
 }
