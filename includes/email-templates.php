@@ -508,19 +508,6 @@ $pmpro_email_templates_defaults = array(
 <p>Log in to your membership account here: !!login_url!!</p>', 'paid-memberships-pro' ),
 		'help_text' => __( 'This email is sent to the member when their expiration date is approaching, at an interval based on the term of the membership.', 'paid-memberships-pro' )
 	),
-	'trial_ending'             => array(
-		'subject'     => __( "Your trial at !!sitename!! is ending soon", 'paid-memberships-pro' ),
-		'description' => __('Trial Ending', 'paid-memberships-pro'),
-		'body' => __( '<p>Thank you for your membership to !!sitename!!. Your trial period is ending on !!trial_end!!.</p>
-
-<p>Account: !!display_name!! (!!user_email!!)</p>
-<p>Membership Level: !!membership_level_name!!</p>
-
-<p>Your fee will be changing from !!trial_amount!! to !!billing_amount!! every !!cycle_number!! !!cycle_period!!(s).</p>
-
-<p>Log in to your membership account here: !!login_url!!</p>', 'paid-memberships-pro' ),
-		'help_text' => __( 'This email is sent to the member when the trial portion of their membership level is approaching, at an interval based on the term of the trial.', 'paid-memberships-pro' )
-	),
 	'refund'                   => array(
 		'subject'     => __( 'Your invoice for order #!!invoice_id!! at !!sitename!! has been REFUNDED', 'paid-memberships-pro' ),
 		'description' => __('Refund', 'paid-memberships-pro'),
