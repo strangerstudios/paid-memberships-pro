@@ -379,10 +379,6 @@ function pmpro_email_templates_send_test() {
 			$send_email = 'sendInvoiceEmail';
 			$params = array($test_user, $test_order);
 			break;
-		case 'trial_ending':
-			$send_email = 'sendTrialEndingEmail';
-			$params = array($test_user);
-			break;
 		case 'membership_expired';
 			$send_email = 'sendMembershipExpiredEmail';
 			$params = array($test_user);

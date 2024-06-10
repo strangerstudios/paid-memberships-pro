@@ -1254,17 +1254,8 @@
 
 			return $this->sendEmail();
 		}
-		
-		/**
-		 * Send the member an email when their trial is ending soon.
-		 *
-		 * @param object $user The WordPress user object.
-		 * @param int $membership_id The member's membership level ID.
-		 */
-		function sendTrialEndingEmail( $user = NULL, $membership_id = NULL )
-		{
-			global $current_user;
 
+<<<<<<< HEAD
 			_deprecated_function( 'sendTrialEndingEmail', '2.10' );
 
 			if(!$user)
@@ -1322,6 +1313,12 @@
 		function sendMembershipExpiredEmail( $user = NULL, $membership_id = NULL ) {
 			global $current_user, $wpdb;
 			if( !$user ) {
+=======
+		function sendMembershipExpiredEmail( $user = NULL, $membership_id = NULL )
+		{
+			global $current_user;
+			if(!$user)
+>>>>>>> a5b52449 (Overhaul and reevaluate emails in core PMPro)
 				$user = $current_user;
 			}
 			//Bail if still we don't have a user.
