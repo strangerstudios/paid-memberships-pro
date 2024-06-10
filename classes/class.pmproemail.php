@@ -656,9 +656,7 @@
 			// Figure out which template to use.
 			if ( empty( $this->template ) ) {
 				if( ! empty( $invoice ) && ! pmpro_isLevelFree( $membership_level ) ) {
-					if( $invoice->gateway == "paypalexpress") {
-						$this->template = "checkout_express";
-					} elseif( $invoice->gateway == "check" ) {
+					if( $invoice->gateway == "check" ) {
 						$this->template = "checkout_check";						
 					} elseif( pmpro_isLevelTrial( $membership_level ) ) {
 						$this->template = "checkout_trial";
@@ -675,9 +673,9 @@
 			$this->template = apply_filters( "pmpro_email_template", $this->template, $this );
 			
 			// Gather data depending on template being used.
-			if( in_array( $this->template, array( 'checkout_express', 'checkout_check', 'checkout_trial', 'checkout_paid' ) ) ) {									
+			if( in_array( $this->template, array( 'checkout_check', 'checkout_trial', 'checkout_paid' ) ) ) {
 				if( $this->template === 'checkout_check' ) {					
-					$this->data["instructions"] = wpautop(get_option("pmpro_instructions"));
+					$this->data["instructions"] = wpautop( get_option( "pmpro_instructions" ) );
 				}
 				
 				$this->data["invoice_id"] = $invoice->code;
@@ -784,9 +782,7 @@
 			// Figure out which template to use.
 			if ( empty( $this->template ) ) {
 				if( ! empty( $invoice ) && ! pmpro_isLevelFree( $membership_level ) ) {
-					if( $invoice->gateway == "paypalexpress") {
-						$this->template = "checkout_express_admin";
-					} elseif( $invoice->gateway == "check" ) {
+					if( $invoice->gateway == "check" ) {
 						$this->template = "checkout_check_admin";						
 					} elseif( pmpro_isLevelTrial( $membership_level ) ) {
 						$this->template = "checkout_trial_admin";
@@ -803,7 +799,7 @@
 			$this->template = apply_filters( "pmpro_email_template", $this->template, $this );
 			
 			// Gather data depending on template being used.
-			if( in_array( $this->template, array( 'checkout_express_admin', 'checkout_check_admin', 'checkout_trial_admin', 'checkout_paid_admin' ) ) ) {
+			if( in_array( $this->template, array( 'checkout_check_admin', 'checkout_trial_admin', 'checkout_paid_admin' ) ) ) {
 				$this->data["invoice_id"] = $invoice->code;
 				$this->data["invoice_total"] = pmpro_formatPrice($invoice->total);
 				$this->data["invoice_date"] = date_i18n(get_option('date_format'), $invoice->getTimestamp());

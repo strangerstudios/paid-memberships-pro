@@ -325,7 +325,6 @@ function pmpro_email_templates_send_test() {
 			$params = array( $test_user, $test_user->membership_level->id );
 			break;
 		case 'checkout_check':
-		case 'checkout_express':
 		case 'checkout_free':
 		case 'checkout_freetrial':
 		case 'checkout_paid':
@@ -334,7 +333,6 @@ function pmpro_email_templates_send_test() {
 			$params = array($test_user, $test_order);
 			break;
 		case 'checkout_check_admin':
-		case 'checkout_express_admin':
 		case 'checkout_free_admin':
 		case 'checkout_freetrial_admin':
 		case 'checkout_paid_admin':

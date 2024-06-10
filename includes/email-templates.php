@@ -211,48 +211,6 @@ $pmpro_email_templates_defaults = array(
 <p>Log in to your membership account here: !!login_url!!</p>','paid-memberships-pro' ),  $check_gateway_label ),
 		'help_text' =>  sprintf( __('This is the membership confirmation email sent to the site administrator for every membership checkout using the "%s (Pay by Check)" gateway.', 'paid-memberships-pro' ),  $check_gateway_label )
 	),
-	'checkout_express'	=> array(
-		'subject'     => __( "Your membership confirmation for !!sitename!!", 'paid-memberships-pro' ),
-		'description' => __('Checkout - PayPal Express', 'paid-memberships-pro'),
-		'body' => __( '<p>Thank you for your membership to !!sitename!!. Your membership account is now active.</p>
-!!membership_level_confirmation_message!!
-<p>Below are details about your membership account and a receipt for your initial membership invoice.</p>
-
-<p>Account: !!display_name!! (!!user_email!!)</p>
-<p>Membership Level: !!membership_level_name!!</p>
-<p>Membership Fee: !!membership_cost!!</p>
-!!membership_expiration!! !!discount_code!!
-
-<p>
-	Invoice #!!invoice_id!! on !!invoice_date!!<br />
-	Total Billed: !!invoice_total!!
-</p>
-
-<p>Log in to your membership account here: !!login_url!!</p>
-', 'paid-memberships-pro' ),
-		'help_text' => __( 'This is a membership confirmation welcome email sent to a new member or to existing members that change their level using the "PayPal Express" gateway.', 'paid-memberships-pro' )
-
-	),
-	'checkout_express_admin'   => array(
-		'subject'     => __( "Member checkout for !!membership_level_name!! at !!sitename!!", 'paid-memberships-pro' ),
-		'description' => __('Checkout - PayPal Express (admin)', 'paid-memberships-pro'),
-		'body' => __( '<p>There was a new member checkout at !!sitename!!.</p>
-<p>Below are details about the new membership account and a receipt for the initial membership invoice.</p>
-
-<p>Account: !!display_name!! (!!user_email!!)</p>
-<p>Membership Level: !!membership_level_name!!</p>
-<p>Membership Fee: !!membership_cost!!</p>
-!!membership_expiration!! !!discount_code!!
-
-<p>
-	Invoice #!!invoice_id!! on !!invoice_date!!<br />
-	Total Billed: !!invoice_total!!
-</p>
-
-<p>Log in to your membership account here: !!login_url!!</p>
-', 'paid-memberships-pro' ),
-		'help_text' => __( 'This is the membership confirmation email sent to the site administrator for every membership checkout using the "PayPal Express" gateway.', 'paid-memberships-pro' )
-	),
 	'checkout_free'            => array(
 		'subject'     => __( "Your membership confirmation for !!sitename!!", 'paid-memberships-pro' ),
 		'description' => __('Checkout - Free', 'paid-memberships-pro'),
