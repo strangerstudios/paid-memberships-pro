@@ -238,55 +238,6 @@ $pmpro_email_templates_defaults = array(
 <p>Log in to your membership account here: !!login_url!!</p>', 'paid-memberships-pro' ),
 		'help_text' => __( 'This is the membership confirmation email sent to the site administrator for every membership checkout that has no charge.', 'paid-memberships-pro' )
 	),
-	'checkout_freetrial'       => array(
-		'subject'     => __( "Your membership confirmation for !!sitename!!", 'paid-memberships-pro' ),
-		'description' => __('Checkout - Free Trial', 'paid-memberships-pro'),
-		'body' => __( '<p>Thank you for your membership to !!sitename!!. Your membership account is now active.</p>
-!!membership_level_confirmation_message!!
-<p>Below are details about your membership account.</p>
-
-<p>Account: !!display_name!! (!!user_email!!)</p>
-<p>Membership Level: !!membership_level_name!!</p>
-<p>Membership Fee: !!membership_cost!!</p>
-!!membership_expiration!! !!discount_code!!
-
-<p>
-	Billing Information on File:<br />
-	!!billing_address!!
-</p>
-
-<p>
-	!!cardtype!!: !!accountnumber!!<br />
-	Expires: !!expirationmonth!!/!!expirationyear!!
-</p>
-
-<p>Log in to your membership account here: !!login_url!!</p>', 'paid-memberships-pro' ),
-		'help_text' => __( 'This is a membership confirmation welcome email sent to a new member or to existing members that change their level with a trial period.', 'paid-memberships-pro' )
-	),
-	'checkout_freetrial_admin' => array(
-		'subject'     => __( "Member checkout for !!membership_level_name!! at !!sitename!!", 'paid-memberships-pro' ),
-		'description' => __('Checkout - Free Trial (admin)', 'paid-memberships-pro'),
-		'body' => __( '<p>There was a new member checkout at !!sitename!!.</p>
-<p>Below are details about the new membership account and a receipt for the initial membership invoice.</p>
-
-<p>Account: !!display_name!! (!!user_email!!)</p>
-<p>Membership Level: !!membership_level_name!!</p>
-<p>Membership Fee: !!membership_cost!!</p>
-!!membership_expiration!! !!discount_code!!
-
-<p>
-	Billing Information on File:<br />
-	!!billing_address!!
-</p>
-
-<p>
-	!!cardtype!!: !!accountnumber!!<br />
-	Expires: !!expirationmonth!!/!!expirationyear!!
-</p>
-
-<p>Log in to your membership account here: !!login_url!!</p>', 'paid-memberships-pro' ),
-		'help_text' => __( 'This is the membership confirmation email sent to the site administrator for every membership checkout with a trial period.', 'paid-memberships-pro' )
-	),
 	'checkout_paid'            => array(
 		'subject'     => __( "Your membership confirmation for !!sitename!!", 'paid-memberships-pro' ),
 		'description' => __('Checkout - Paid', 'paid-memberships-pro'),
@@ -343,63 +294,6 @@ $pmpro_email_templates_defaults = array(
 
 <p>Log in to your membership account here: !!login_url!!</p>', 'paid-memberships-pro' ),
 		'help_text' => __( 'This is the membership confirmation email sent to the site administrator for every paid membership checkout on the site.', 'paid-memberships-pro' )
-	),
-	'checkout_trial'           => array(
-		'subject'     => __( "Your membership confirmation for !!sitename!!", 'paid-memberships-pro' ),
-		'description' => __('Checkout - Trial', 'paid-memberships-pro'),
-		'body' => __( '<p>Thank you for your membership to !!sitename!!. Your membership account is now active.</p>
-!!membership_level_confirmation_message!!
-<p>Below are details about your membership account and a receipt for your initial membership invoice.</p>
-
-<p>Account: !!display_name!! (!!user_email!!)</p>
-<p>Membership Level: !!membership_level_name!!</p>
-<p>Membership Fee: !!membership_cost!!</p>
-!!membership_expiration!! !!discount_code!!
-
-<p>
-	Invoice #!!invoice_id!! on !!invoice_date!!<br />
-	Total Billed: !!invoice_total!!
-</p>
-<p>
-	Billing Information:<br />
-	!!billing_address!!
-</p>
-
-<p>
-	!!cardtype!!: !!accountnumber!!<br />
-	Expires: !!expirationmonth!!/!!expirationyear!!
-</p>
-
-<p>Log in to your membership account here: !!login_url!!</p>', 'paid-memberships-pro' ),
-		'help_text' => __( 'This is a membership confirmation welcome email sent to a new member or to existing members that change their level with a trial period.', 'paid-memberships-pro' )
-	),
-	'checkout_trial_admin'     => array(
-		'subject'     => __( "Member checkout for !!membership_level_name!! at !!sitename!!", 'paid-memberships-pro' ),
-		'description' => __('Checkout - Trial (admin)', 'paid-memberships-pro'),
-		'body' => __( '<p>There was a new member checkout at !!sitename!!.</p>
-<p>Below are details about the new membership account and a receipt for the initial membership invoice.</p>
-
-<p>Account: !!display_name!! (!!user_email!!)</p>
-<p>Membership Level: !!membership_level_name!!</p>
-<p>Membership Fee: !!membership_cost!!</p>
-!!membership_expiration!! !!discount_code!!
-
-<p>
-	Invoice #!!invoice_id!! on !!invoice_date!!<br />
-	Total Billed: !!invoice_total!!
-</p>
-<p>
-	Billing Information:<br />
-	!!billing_address!!
-</p>
-
-<p>
-	!!cardtype!!: !!accountnumber!!<br />
-	Expires: !!expirationmonth!!/!!expirationyear!!
-</p>
-
-<p>Log in to your membership account here: !!login_url!!</p>', 'paid-memberships-pro' ),
-		'help_text' => __( 'This is the membership confirmation email sent to the site administrator for every membership checkout with a trial period.', 'paid-memberships-pro' )
 	),
 	'credit_card_expiring'     => array(
 		'subject'     => __( "Credit card on file expiring soon at !!sitename!!", 'paid-memberships-pro' ),

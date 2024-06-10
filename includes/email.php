@@ -339,17 +339,13 @@ function pmpro_email_templates_send_test() {
 			break;
 		case 'checkout_check':
 		case 'checkout_free':
-		case 'checkout_freetrial':
 		case 'checkout_paid':
-		case 'checkout_trial':
 			$send_email = 'sendCheckoutEmail';
 			$params = array($test_user, $test_order);
 			break;
 		case 'checkout_check_admin':
 		case 'checkout_free_admin':
-		case 'checkout_freetrial_admin':
 		case 'checkout_paid_admin':
-		case 'checkout_trial_admin':
 			$send_email = 'sendCheckoutAdminEmail';
 			$params = array($test_user, $test_order);
 			break;
