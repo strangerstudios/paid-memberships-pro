@@ -1161,7 +1161,7 @@
 			}
 
 			$membership_level = pmpro_getSpecificMembershipLevelForUser($user->ID, $invoice->membership_id);
-			
+
 			$this->email = $user->user_email;
 			$this->subject = sprintf(__("Invoice for %s membership", "paid-memberships-pro"), get_option("blogname"));
 
@@ -1226,6 +1226,61 @@
 			return $this->sendEmail();
 		}
 
+		/**
+		 * Send the member an email when their trial is ending soon.
+		 *
+		 * @param object $user The WordPress user object.
+		 * @param int $membership_id The member's membership level ID.
+		 * @deprecated 2.10
+		 */
+		function sendTrialEndingEmail( $user = NULL, $membership_id = NULL ) {
+			global $current_user;
+
+			_deprecated_function( 'sendTrialEndingEmail', '2.10' );
+
+			if(!$user)
+				$user = $current_user;
+
+			if(!$user)
+				return false;
+
+			//make sure we have the current membership level data
+			if ( empty( $membership_id ) ) {
+				$membership_level = pmpro_getMembershipLevelForUser($user->ID);
+			} else {
+				$membership_level = pmpro_getSpecificMembershipLevelForUser($user->ID, $membership_id);
+			}
+
+			$this->email = $user->user_email;
+			$this->subject = sprintf(__("Your trial at %s is ending soon", "paid-memberships-pro"), get_option("blogname"));
+
+			$this->data = array(
+				'subject' => $this->subject,
+				'header_name' => $user->display_name,
+				'name' => $user->display_name,
+				'user_login' => $user->user_login,
+				'sitename' => get_option( 'blogname' ),
+				'membership_id' => $membership_level->id,
+				'membership_level_name' => $membership_level->name,
+				'siteemail' => get_option( 'pmpro_from_email' ),
+				'login_link' => pmpro_login_url(),
+				'login_url' => pmpro_login_url(),
+				'display_name' => $user->display_name,
+				'user_email' => $user->user_email,
+				'billing_amount' => pmpro_formatPrice( $membership_level->billing_amount ),
+				'cycle_number' => $membership_level->cycle_number,
+				'cycle_period' => $membership_level->cycle_period,
+				'trial_amount' => pmpro_formatPrice( $membership_level->trial_amount ),
+				'trial_limit' => $membership_level->trial_limit,
+				'trial_end' => date_i18n( get_option( 'date_format' ), strtotime( date_i18n( 'm/d/Y', $membership_level->startdate ) . ' + ' . $membership_level->trial_limit . ' ' . $membership_level->cycle_period ), current_time( 'timestamp' ) ),
+				'levels_url' => pmpro_url( 'levels' )
+			);
+
+			$this->template = apply_filters("pmpro_email_template", "trial_ending", $this);
+
+			return $this->sendEmail();
+		}
+
 		function sendMembershipExpiredEmail( $user = NULL, $membership_id = NULL )
 		{
 			global $current_user;
@@ -1244,6 +1299,66 @@
 
 			return $this->sendEmail();
 		}
+
+		/**
+		 * Send billable invoice email.
+		 *
+		 * @since 1.8.6
+		 *
+		 * @param WP_User $user
+		 * @param MemberOrder $order
+		 *
+		 * @return bool Whether the email was sent successfully.
+		 * @deprecated TBD
+		 */
+		function sendBillableInvoiceEmail( $user = NULL, $order = NULL ) {
+			_deprecated_function( 'sendBillableInvoiceEmail', 'TBD' );
+			global $current_user;
+
+			if(!$user)
+					$user = $current_user;
+
+			if(!$user || !$order)
+					return false;
+
+			$level = pmpro_getLevel( $order>membership_id );
+
+			$this->email = $user->user_email;
+			$this->subject = __('Invoice for order #: ', 'paid-memberships-pro') . $order->code;
+
+			// Load invoice template
+			if ( file_exists( get_stylesheet_directory() . '/paid-memberships-pro/pages/orders-email.php' ) ) {
+					$template = get_stylesheet_directory() . '/paid-memberships-pro/pages/orders-email.php';
+			} elseif ( file_exists( get_template_directory() . '/paid-memberships-pro/pages/orders-email.php' ) ) {
+					$template = get_template_directory() . '/paid-memberships-pro/pages/orders-email.php';
+			} else {
+					$template = PMPRO_DIR . '/adminpages/templates/orders-email.php';
+			}
+
+			ob_start();
+			require_once( $template );
+
+			$invoice = ob_get_contents();
+			ob_end_clean();
+
+			$this->data = array(
+					'order_code' => $order->code,
+					'login_link' => pmpro_login_url(),
+					'login_url' => pmpro_login_url(),
+					'invoice_link' => pmpro_login_url( pmpro_url( 'invoice', '?invoice=' . $order->code ) ),
+					'invoice_url' => pmpro_login_url( pmpro_url( 'invoice', '?invoice=' . $order->code ) ),
+					'invoice_id' => $order->id,
+					'invoice' => $invoice,
+					'levels_url' => pmpro_url( 'levels' ),
+					'membership_level_name' => $level->name,
+					'membership_level_id' => $order->membership_id
+			);
+
+			$this->template = apply_filters("pmpro_email_template", "billable_invoice", $this);
+
+			return $this->sendEmail();
+		}
+
 		
 		/**
 		 * Send the member an email when their membership has ended.
@@ -1373,64 +1488,6 @@
 			}
 
 			$this->template = apply_filters("pmpro_email_template", "admin_change_admin", $this);
-
-			return $this->sendEmail();
-		}
-
-		/**
-		 * Send billable invoice email.
-		 *
-		 * @since 1.8.6
-		 *
-		 * @param WP_User $user
-		 * @param MemberOrder $order
-		 *
-		 * @return bool Whether the email was sent successfully.
-		 */
-		function sendBillableInvoiceEmail($user = NULL, $order = NULL)
-		{
-			global $current_user;
-
-			if(!$user)
-				$user = $current_user;
-
-			if(!$user || !$order)
-				return false;
-
-			$level = pmpro_getLevel( $order->membership_id );
-
-			$this->email = $user->user_email;
-			$this->subject = __('Invoice for order #: ', 'paid-memberships-pro') . $order->code;
-
-			// Load invoice template
-			if ( file_exists( get_stylesheet_directory() . '/paid-memberships-pro/pages/orders-email.php' ) ) {
-				$template = get_stylesheet_directory() . '/paid-memberships-pro/pages/orders-email.php';
-			} elseif ( file_exists( get_template_directory() . '/paid-memberships-pro/pages/orders-email.php' ) ) {
-				$template = get_template_directory() . '/paid-memberships-pro/pages/orders-email.php';
-			} else {
-				$template = PMPRO_DIR . '/adminpages/templates/orders-email.php';
-			}
-
-			ob_start();
-			require_once( $template );
-
-			$invoice = ob_get_contents();
-			ob_end_clean();
-
-			$this->data = array(
-				'order_code' => $order->code,
-				'login_link' => pmpro_login_url(),
-				'login_url' => pmpro_login_url(),
-				'invoice_link' => pmpro_login_url( pmpro_url( 'invoice', '?invoice=' . $order->code ) ),
-				'invoice_url' => pmpro_login_url( pmpro_url( 'invoice', '?invoice=' . $order->code ) ),
-				'invoice_id' => $order->id,
-				'invoice' => $invoice,
-				'levels_url' => pmpro_url( 'levels' ),
-				'membership_level_name' => $level->name,
-				'membership_level_id' => $order->membership_id
-			);
-
-			$this->template = apply_filters("pmpro_email_template", "billable_invoice", $this);
 
 			return $this->sendEmail();
 		}
