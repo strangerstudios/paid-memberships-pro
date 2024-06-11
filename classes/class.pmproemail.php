@@ -1170,7 +1170,7 @@
 			}
 
 			$membership_level = pmpro_getSpecificMembershipLevelForUser($user->ID, $invoice->membership_id);
-			
+
 			$this->email = $user->user_email;
 			$this->subject = sprintf(__("Invoice for %s membership", "paid-memberships-pro"), get_option("blogname"));
 
@@ -1234,16 +1234,25 @@
 
 			return $this->sendEmail();
 		}
+		
+		/**
+		 * Send the member an email when their trial is ending soon.
+		 *
+		 * @param object $user The WordPress user object.
+		 * @param int $membership_id The member's membership level ID.
+		 * @deprecated 2.10
+		 */
+		function sendTrialEndingEmail( $user = NULL, $membership_id = NULL ) {
+			global $current_user;
 
-<<<<<<< HEAD
 			_deprecated_function( 'sendTrialEndingEmail', '2.10' );
 
 			if(!$user)
 				$user = $current_user;
-			
+
 			if(!$user)
 				return false;
-			
+
 			//make sure we have the current membership level data
 			if ( empty( $membership_id ) ) {
 				$membership_level = pmpro_getMembershipLevelForUser($user->ID);
@@ -1251,30 +1260,29 @@
 				$membership_level = pmpro_getSpecificMembershipLevelForUser($user->ID, $membership_id);
 			}
 
-						
 			$this->email = $user->user_email;
 			$this->subject = sprintf(__("Your trial at %s is ending soon", "paid-memberships-pro"), get_option("blogname"));
 
 			$this->data = array(
 				'subject' => $this->subject,
 				'header_name' => $user->display_name,
-				'name' => $user->display_name, 
+				'name' => $user->display_name,
 				'user_login' => $user->user_login,
-				'sitename' => get_option( 'blogname' ), 				
+				'sitename' => get_option( 'blogname' ),
 				'membership_id' => $membership_level->id,
 				'membership_level_name' => $membership_level->name,
-				'siteemail' => get_option( 'pmpro_from_email' ), 
+				'siteemail' => get_option( 'pmpro_from_email' ),
 				'login_link' => pmpro_login_url(),
 				'login_url' => pmpro_login_url(),
-				'display_name' => $user->display_name, 
-				'user_email' => $user->user_email, 
-				'billing_amount' => pmpro_formatPrice( $membership_level->billing_amount ), 
-				'cycle_number' => $membership_level->cycle_number, 
-				'cycle_period' => $membership_level->cycle_period, 
-				'trial_amount' => pmpro_formatPrice( $membership_level->trial_amount ), 
+				'display_name' => $user->display_name,
+				'user_email' => $user->user_email,
+				'billing_amount' => pmpro_formatPrice( $membership_level->billing_amount ),
+				'cycle_number' => $membership_level->cycle_number,
+				'cycle_period' => $membership_level->cycle_period,
+				'trial_amount' => pmpro_formatPrice( $membership_level->trial_amount ),
 				'trial_limit' => $membership_level->trial_limit,
 				'trial_end' => date_i18n( get_option( 'date_format' ), strtotime( date_i18n( 'm/d/Y', $membership_level->startdate ) . ' + ' . $membership_level->trial_limit . ' ' . $membership_level->cycle_period ), current_time( 'timestamp' ) ),
-				'levels_url' => pmpro_url( 'levels' )							
+				'levels_url' => pmpro_url( 'levels' )
 			);
 
 			$this->template = apply_filters("pmpro_email_template", "trial_ending", $this);
@@ -1293,12 +1301,6 @@
 		function sendMembershipExpiredEmail( $user = NULL, $membership_id = NULL ) {
 			global $current_user, $wpdb;
 			if( !$user ) {
-=======
-		function sendMembershipExpiredEmail( $user = NULL, $membership_id = NULL )
-		{
-			global $current_user;
-			if(!$user)
->>>>>>> a5b52449 (Overhaul and reevaluate emails in core PMPro)
 				$user = $current_user;
 			}
 			//Bail if still we don't have a user.

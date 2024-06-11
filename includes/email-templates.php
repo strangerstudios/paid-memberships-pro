@@ -52,18 +52,6 @@ $pmpro_email_templates_defaults = array(
 <p>Log in to your WordPress admin here: !!login_url!!</p>', 'paid-memberships-pro' ),
 		'help_text' => __( 'The site administrator can manually update a user\'s membership level through the WordPress admin. This email notifies the site administrator of the level update.', 'paid-memberships-pro' )
 	),
-	'billable_invoice' => array(
-		'subject' => __( 'Invoice for order #: !!order_code!!', 'paid-memberships-pro' ),
-        'description' => __( 'Billable Invoice', 'paid-membershps-pro' ),
-		'body' => __( '<p>Thank you for your membership to !!sitename!!. Below is your invoice for order #: !!order_code!!</p>
-
-!!invoice!!
-
-<p>Log in to your membership account here: !!login_url!!</p>
-
-<p>To view an online version of this invoice, click here: !!invoice_url!!</p>', 'paid-memberships-pro' ),
-		'help_text' => __( 'The site administrator can manually send a user a copy of this invoice email via the Memberships > Orders admin page.', 'paid-memberships-pro' )
-	),
 	'billing'	=> array(
 		'subject'     => __( "Your billing information has been updated at !!sitename!!", 'paid-memberships-pro' ),
 		'description' => __('Billing', 'paid-memberships-pro'),
