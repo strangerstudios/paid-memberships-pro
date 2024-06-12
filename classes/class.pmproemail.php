@@ -984,10 +984,11 @@
 			if(!$user || !$invoice)
 				return false;
 
-			$membership_level = pmpro_getSpecificMembershipLevelForUser( $user->ID, $invoice->membership_id );
-			
+			//get Level from constructor
+			$membership_level = new PMPro_Membership_Level( $invoice->membership_id );
 			$this->email = $user->user_email;
-			$this->subject = sprintf(__("Membership payment failed at %s", "paid-memberships-pro"), get_option("blogname"));
+			$this->subject = sprintf( __("Membership payment for level %s failed at %s", "paid-memberships-pro"),
+				$membership_level->name, get_option("blogname") );
 			
 			$this->data = array(
 								'subject' => $this->subject,
@@ -1013,7 +1014,7 @@
 								'expirationyear' => $invoice->expirationyear,
 								'login_link' => pmpro_login_url( pmpro_url( 'billing' ) ),
 								'login_url' => pmpro_login_url( pmpro_url( 'billing' ) ),
-								'levels_url' => pmpro_url( 'levels' )							
+								'levels_url' => pmpro_url( 'levels' )
 							);
 			$this->data["billing_address"] = pmpro_formatAddress($invoice->billing->name,
 																 $invoice->billing->street,
@@ -1023,6 +1024,17 @@
 																 $invoice->billing->zip,
 																 $invoice->billing->country,
 																 $invoice->billing->phone);
+
+			// Get the current user's subscriptions for the level.
+			$subscriptions =  PMPro_Subscription::get_subscriptions_for_user( $user->ID, $membership_level->id );
+
+			if ( ! empty( $subscriptions ) ) {
+				// Let's get the first. There should not be more than one.
+				$subscription = $subscriptions[0];
+				$this->data['billing_url'] = pmpro_url( 'billing', 'pmpro_subscription_id=' . $subscription->get_id(), 'https' );
+			} else {
+				$this->data['billing_url'] = pmpro_url( 'billing', '', 'https' );
+			}
 
 			$this->template = apply_filters("pmpro_email_template", "billing_failure", $this);
 
@@ -1041,7 +1053,7 @@
 				return false;
 				
 			$user = get_userdata($invoice->user_id);
-			$membership_level = pmpro_getSpecificMembershipLevelForUser( $user->ID, $invoice->membership_id );
+			$membership_level = new PMPro_Membership_Level( $invoice->membership_id ); //pmpro_getSpecificMembershipLevelForUser( $user->ID, $invoice->membership_id );
 			
 			$this->email = $email;
 			$this->subject = sprintf(__("Membership payment failed For %s at %s", "paid-memberships-pro"), $user->display_name, get_option("blogname"));
@@ -1080,6 +1092,18 @@
 																 $invoice->billing->zip,
 																 $invoice->billing->country,
 																 $invoice->billing->phone);
+
+			// Get the current user's subscriptions for the level.
+			$subscriptions =  PMPro_Subscription::get_subscriptions_for_user( $user->ID, $membership_level->id );
+
+			if ( ! empty( $subscriptions ) ) {
+				// Let's get the first. There should not be more than one.
+				$subscription = $subscriptions[0];
+				$this->data['billing_url'] = pmpro_url( 'billing', 'pmpro_subscription_id=' . $subscription->get_id(), 'https' );
+			} else {
+				$this->data['billing_url'] = pmpro_url( 'billing', '', 'https' );
+			}
+
 			$this->template = apply_filters("pmpro_email_template", "billing_failure_admin", $this);
 
 			return $this->sendEmail();
