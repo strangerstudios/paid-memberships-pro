@@ -360,7 +360,6 @@ function pmpro_get_personal_user_meta_fields() {
 		'pmpro_AccountNumber' => __( 'Credit Card Account Number', 'paid-memberships-pro' ),
 		'pmpro_ExpirationMonth' => __( 'Credit Card Expiration Month', 'paid-memberships-pro' ),
 		'pmpro_ExpirationYear' => __( 'Credit Card Expiration Year', 'paid-memberships-pro' ),
-		'pmpro_bcountry' => __( 'Billing Country', 'paid-memberships-pro' ),		
 		'pmpro_logins' => __( 'Login Data', 'paid-memberships-pro' ),
 		'pmpro_visits' => __( 'Visits Data', 'paid-memberships-pro' ),
 		'pmpro_views' => __( 'Views Data', 'paid-memberships-pro' ),

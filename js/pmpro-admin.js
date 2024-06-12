@@ -257,7 +257,7 @@ jQuery(document).ready(function () {
 
 // Function to prep click events.
 function pmpro_userfields_prep_click_events() {
-	// Whenever we make a change, warn the user if they try to nagivate away.
+	// Whenever we make a change, warn the user if they try to navigate away.
 	function pmpro_userfields_made_a_change() {
 		window.onbeforeunload = function () {
 			return true;

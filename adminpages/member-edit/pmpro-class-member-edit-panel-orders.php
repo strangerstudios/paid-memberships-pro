@@ -15,7 +15,7 @@ class PMPro_Member_Edit_Panel_Orders extends PMPro_Member_Edit_Panel {
 	 * Display the panel contents.
 	 */
 	protected function display_panel_contents() {
-		global $wpdb;
+		global $wpdb, $pmpro_gateways;
 
 		//Show all invoices for user
 		$invoices = $wpdb->get_results( $wpdb->prepare( "SELECT mo.*, du.code_id as code_id FROM $wpdb->pmpro_membership_orders mo LEFT JOIN $wpdb->pmpro_discount_codes_uses du ON mo.id = du.order_id WHERE mo.user_id = %d ORDER BY mo.timestamp DESC", self::get_user()->ID ) );
@@ -36,6 +36,7 @@ class PMPro_Member_Edit_Panel_Orders extends PMPro_Member_Edit_Panel {
 						<th><?php esc_html_e( 'Code', 'paid-memberships-pro' ); ?></th>
 						<th><?php esc_html_e( 'Level', 'paid-memberships-pro' ); ?></th>
 						<th><?php esc_html_e( 'Total', 'paid-memberships-pro' ); ?></th>
+						<th><?php esc_html_e( 'Gateway', 'paid-memberships-pro' ); ?></th>
 						<th><?php esc_html_e( 'Subscription', 'paid-memberships-pro' ); ?></th>
 						<th><?php esc_html_e( 'Status', 'paid-memberships-pro' ); ?></th>
 						<?php do_action('pmpromh_orders_extra_cols_header');?>
@@ -101,6 +102,25 @@ class PMPro_Member_Edit_Panel_Orders extends PMPro_Member_Edit_Panel {
 										?>
 										<a class="pmpro_discount_code-tag" href="<?php echo esc_url( add_query_arg( array( 'page' => 'pmpro-orders', 'discount-code' => $invoice->code_id, 'filter' => 'with-discount-code' ), admin_url( 'admin.php' ) ) ); ?>" title="<?php esc_attr_e( 'View all orders with this discount code', 'paid-memberships-pro' ); ?>"><?php echo esc_html( $discount_code->code ); ?></a>
 										<?php
+									}
+								?>
+							</td>
+							<td>
+								<?php
+								// Logic to get the gateway name and output it neatly.
+									if ( ! empty( $invoice->gateway ) ) {
+										if ( ! empty( $pmpro_gateways[$invoice->gateway] ) ) {
+											$gateway = esc_html( $pmpro_gateways[$invoice->gateway] );
+										} else {
+											$gateway = esc_html( ucwords( $invoice->gateway ) );
+										}
+										if ( $invoice->gateway_environment == 'sandbox' ) {
+											$gateway .= ' (' . esc_html__( 'test', 'paid-memberships-pro' ) . ')';
+										}
+
+										echo $gateway;
+									} else {
+										echo  '&#8212;';
 									}
 								?>
 							</td>

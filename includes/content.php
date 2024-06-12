@@ -357,7 +357,7 @@ function pmpro_membership_content_filter( $content, $skipcheck = false ) {
 			//show excerpt
 			global $post;
 			if( $post->post_excerpt ) {
-				//defined exerpt
+				//defined excerpt
 				$content = wpautop( $post->post_excerpt );
 			} elseif(strpos($content, "<span id=\"more-" . $post->ID . "\"></span>") !== false) {
 				//more tag

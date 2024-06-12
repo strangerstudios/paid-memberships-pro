@@ -669,7 +669,7 @@ class PMProGateway_authorizenet extends PMProGateway
 
 		//send the xml via curl
 		$this->response = $this->send_request_via_curl($host,$path,$this->content);
-		//if curl is unavilable you can try using fsockopen
+		//if curl is unavailable you can try using fsockopen
 		/*
 		$response = send_request_via_fsockopen($host,$path,$content);
 		*/
@@ -778,7 +778,7 @@ class PMProGateway_authorizenet extends PMProGateway
 
 		//send the xml via curl
 		$this->response = $this->send_request_via_curl($host,$path,$this->content);
-		//if curl is unavilable you can try using fsockopen
+		//if curl is unavailable you can try using fsockopen
 		/*
 		$response = send_request_via_fsockopen($host,$path,$order->content);
 		*/
@@ -844,7 +844,7 @@ class PMProGateway_authorizenet extends PMProGateway
 						"<includeIssuerInfo>true</includeIssuerInfo>".
 						"</getCustomerProfileRequest>";
 					$this->response = $this->send_request_via_curl($host,$path,$this->content);
-					// Print entire repsonse.
+					// Print entire response.
 					echo $this->response;
 					wp_die();
 					*/
@@ -906,7 +906,7 @@ class PMProGateway_authorizenet extends PMProGateway
 
 		//send the xml via curl
 		$response = $this->send_request_via_curl($host,$path,$content);
-		//if curl is unavilable you can try using fsockopen
+		//if curl is unavailable you can try using fsockopen
 		/*
 		$response = send_request_via_fsockopen($host,$path,$content);
 		*/
@@ -978,7 +978,7 @@ class PMProGateway_authorizenet extends PMProGateway
 		//send the xml via curl
 		$response = $this->send_request_via_curl($host,$path,$content);
 
-		//if curl is unavilable you can try using fsockopen
+		//if curl is unavailable you can try using fsockopen
 		/*
 		$response = send_request_via_fsockopen($host,$path,$content);
 		*/

@@ -551,7 +551,7 @@ function pmpro_ipnCheckReceiverEmail( $email ) {
 }
 
 /*
-	Change the membership level. We also update the membership order to include filtered valus.
+	Change the membership level. We also update the membership order to include filtered values.
 */
 function pmpro_ipnChangeMembershipLevel( $txn_id, &$morder ) {
 

@@ -59,6 +59,13 @@
 		pmpro_stripeWebhookExit();
 	}
 
+	/**
+	 * Allow adding other content after the Order Settings table.
+	 *
+	 * @since 3.0.3
+	 */
+	do_action( 'pmpro_stripe_before_retrieve_webhook_event' );
+
 	//get the event through the API now
 	if(!empty($event_id))
 	{
@@ -380,7 +387,7 @@
 
 			//We've got the right order	
 			if( !empty( $morder->id ) ) {
-				// Ingore orders already in refund status.
+				// Ignore orders already in refund status.
 				if( $morder->status == 'refunded' ) {					
 					$logstr .= sprintf( 'Webhook: Order ID %1$s with transaction ID %2$s was already in refund status.', $morder->id, $payment_transaction_id );									
 					pmpro_stripeWebhookExit();
@@ -406,7 +413,7 @@
 
 				$user = get_user_by( 'email', $morder->Email );
 				if ( empty( $user ) ) {
-					$logstr .= "Couldn't find the old order's user. Order ID = " . $old_order->id . ".";
+					$logstr .= "Couldn't find the old order's user. Order ID = " . $morder->id . ".";
 					pmpro_stripeWebhookExit();
 				}
 

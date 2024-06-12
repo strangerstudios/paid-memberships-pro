@@ -23,7 +23,7 @@ function pmpro_is_field( $var ) {
 }
 
 /**
- * Add a field to the PMProRH regisration fields global
+ * Add a field to the PMProRH registration fields global
  *
  *	$where refers to various hooks in the PMPro checkout page and can be:
  *	- after_username
@@ -1298,7 +1298,7 @@ function pmpro_get_field_group_html( $group = null ) {
 				<?php
 					if ( ! empty( $group->fields ) ) {
 						foreach ( $group->fields as $field ) {
-							echo wp_kses_post( pmpro_get_field_html( $field ) );
+							pmpro_get_field_html( $field );
 						}
 					}
                 ?>
