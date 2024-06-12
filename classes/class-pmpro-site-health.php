@@ -109,9 +109,9 @@ class PMPro_Site_Health {
 					'label' => __( 'Library Conflicts', 'paid-memberships-pro' ),
 					'value' => self::get_library_conflicts(),
 				],
-				'pmpro-addons-name-issues' => [
-					'label' => __( 'Add Ons Issues', 'paid-memberships-pro' ),
-					'value' => self::get_addons_name_issues(),
+				'pmpro-add-ons-incorrect-folder-names' => [
+					'label' => __( 'Incorrect Add On Folder Names', 'paid-memberships-pro' ),
+					'value' => self::get_add_ons_with_incorrect_folder_name(),
         ],
 				'pmpro-outdated-templates' => [
 					'label' => __( 'Outdated Templates', 'paid-memberships-pro' ),
@@ -558,17 +558,17 @@ class PMPro_Site_Health {
 		return $return_arr;
 	}
 
-	function get_addons_name_issues() {
-		// Get the current list of addons with the wrong name.
-		$wrong_name_addons = pmpro_searchWrongFolderNameAddons();
+	function get_add_ons_with_incorrect_folder_name() {
+		// Get the current list of Add Ons with the wrong name.
+		$incorrect_folder_names = pmpro_get_add_ons_with_incorrect_folder_names();
 
-		// Loop through all addons that have the wrong name.
-		$wrong_name_issues = array();
-		foreach ( $wrong_name_addons as $plugin_name => $addon ) {
-			$wrong_name_issues[] = "Found an instance of {$addon['Name']} installed into $plugin_name instead of {$addon['plugin']}";
+		// Build error messages for each Add On with the wrong name.
+		$errors = array();
+		foreach ( $incorrect_folder_names as $installed_name => $addon ) {
+			$errors[] = "{$addon['Name']} ( {$addon['plugin']} => {$installed_name} )";
 		}
 
-		return implode( " | \n", $wrong_name_issues );
+		return empty( $errors ) ? __( 'No add ons with incorrect folder names detected.', 'paid-memberships-pro' ) : implode( " | \n", $errors );
 	}
 
 	/**

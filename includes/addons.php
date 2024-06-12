@@ -72,42 +72,43 @@ function pmpro_getAddons() {
 }
 
 /**
- * Search installed addons with wrong folder name.
+ * Get a list of installed Add Ons with incorrect folder names.
  *
  * @since TBD
+ *
+ * @return array $incorrect_folder_names An array of Add Ons with incorrect folder names. The key is the installed folder name, the value is the Add On data.
  */
-function pmpro_searchWrongFolderNameAddons() {
-	// prepare
+function pmpro_get_add_ons_with_incorrect_folder_names() {
+	// Make an easily searchable array of installed plugins to reduce computational compexity.
+	// The key of the array is the plugin filename, the value is the folder name.
 	$installed_plugins = array();
 	foreach ( get_plugins() as $plugin_name => $plugin_data ) {
+		// Skip plugins that are not in a folder.
 		if ( false === strpos( $plugin_name, '/' ) ) {
 			continue;
 		}
 
+		// Add the plugin to the $installed_plugins array.
 		list( $plugin_folder, $plugin_filename ) = explode( '/', $plugin_name, 2 );
-		$installed_plugins[ $plugin_name ] = array(
-			'plugin_folder'   => $plugin_folder,
-			'plugin_filename' => $plugin_filename,
-		);
+		$installed_plugins[ $plugin_filename ] = $plugin_folder;
 	}
 
-	$wrong_name_addons = array();
+	// Set up an array to track Add Ons with wrong folder names.
+	// The key of the array is the equivalent of $plugin_name above, the value is the Add On data.
+	$incorrect_folder_names = array();
 	foreach ( pmpro_getAddons() as $addon ) {
+		// Get information about the Add On.
 		list( $addon_folder, $addon_filename ) = explode( '/', $addon['plugin'], 2 );
-
-		// search for any installed plugin with:
-		// - folder name which starts with another addon's folder name
-		// - the same plugin file name
-		foreach ( $installed_plugins as $plugin_name => $plugin ) {
-			if ( $addon_folder !== $plugin['plugin_folder'] &&
-			     false !== stripos( $plugin['plugin_folder'], $addon_folder ) &&
-			     $addon_filename === $plugin['plugin_filename'] ) {
-				$wrong_name_addons[ $plugin_name ] = $addon;
-			}
+	
+		// Check if the Add On is installed with an incorrect folder name.
+		if ( array_key_exists( $addon_filename, $installed_plugins ) && $addon_folder !== $installed_plugins[ $addon_filename ] ) {
+			// The Add On is installed with the wrong folder nane. Add it to the array.
+			$installed_name = $installed_plugins[ $addon_filename ] . '/' . $addon_filename;
+			$incorrect_folder_names[ $installed_name ] = $addon;
 		}
 	}
 
-	return $wrong_name_addons;
+	return $incorrect_folder_names;
 }
 
 /**
