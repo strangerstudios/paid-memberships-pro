@@ -3160,28 +3160,28 @@ function pmpro_show_setup_wizard_link() {
 }
 
 /**
- * Display Invoice Price Data with Parts
+ * Display Order Price Data with Parts
  *
- * @param object $pmpro_invoice The full order object.
+ * @param object $pmpro_order The full order object.
  * @param string $format Format of the return value. Accepts array, span, list, or line_breaks.
  *
  * @return array|string $price_parts The array or formatted HTML string to display price parts and total.
  *
  */
-function pmpro_get_price_parts( $pmpro_invoice, $format = 'array' ) {
+function pmpro_get_price_parts( $pmpro_order, $format = 'array' ) {
 	$pmpro_price_parts = array();
 
-	if ( ! empty( $pmpro_invoice->subtotal ) && $pmpro_invoice->subtotal != $pmpro_invoice->total ) {
+	if ( ! empty( $pmpro_order->subtotal ) && $pmpro_order->subtotal != $pmpro_order->total ) {
 		$pmpro_price_parts['subtotal'] = array(
 			'label' => __( 'Subtotal', 'paid-memberships-pro' ),
-			'value' => pmpro_escape_price( pmpro_formatPrice( $pmpro_invoice->subtotal ) ),
+			'value' => pmpro_escape_price( pmpro_formatPrice( $pmpro_order->subtotal ) ),
 		);
 	}
 
-	if ( ! empty( $pmpro_invoice->tax ) ) {
+	if ( ! empty( $pmpro_order->tax ) ) {
 		$pmpro_price_parts['tax'] = array(
 			'label' => __( 'Tax', 'paid-memberships-pro' ),
-			'value' => pmpro_escape_price( pmpro_formatPrice( $pmpro_invoice->tax ) ),
+			'value' => pmpro_escape_price( pmpro_formatPrice( $pmpro_order->tax ) ),
 		);
 	}
 
@@ -3190,19 +3190,19 @@ function pmpro_get_price_parts( $pmpro_invoice, $format = 'array' ) {
 	 *
 	 * @param array $pmpro_price_parts The array of price parts not including the total.
 	 * @param string $format Format of the return value passed to the function.
-	 * @param object $pmpro_invoice The full order object.
+	 * @param object $pmpro_order The full order object.
 	 *
 	 * @return array $pmpro_price_parts Filtered array of price parts not including the total.
 	 *
 	 */
-	$pmpro_price_parts = apply_filters( 'pmpro_get_price_parts', $pmpro_price_parts, $pmpro_invoice );
+	$pmpro_price_parts = apply_filters( 'pmpro_get_price_parts', $pmpro_price_parts, $pmpro_order );
 
 	$pmpro_price_parts_with_total = $pmpro_price_parts;
 
-	if ( ! empty( $pmpro_invoice->total ) ) {
+	if ( ! empty( $pmpro_order->total ) ) {
 		$pmpro_price_parts_with_total['total'] = array(
 			'label' => __( 'Total', 'paid-memberships-pro' ),
-			'value' => pmpro_escape_price( pmpro_formatPrice( $pmpro_invoice->total ) ),
+			'value' => pmpro_escape_price( pmpro_formatPrice( $pmpro_order->total ) ),
 		);
 	}
 
@@ -3211,12 +3211,12 @@ function pmpro_get_price_parts( $pmpro_invoice, $format = 'array' ) {
 	 *
 	 * @param array $pmpro_price_parts The array of price parts including the total.
 	 * @param string $format Format of the return value passed to the function.
-	 * @param object $pmpro_invoice The full order object.
+	 * @param object $pmpro_order The full order object.
 	 *
 	 * @return array $pmpro_price_parts Filtered array of price parts not including the total.
 	 *
 	 */
-	$pmpro_price_parts_with_total = apply_filters( 'pmpro_get_price_parts_with_total', $pmpro_price_parts_with_total, $pmpro_invoice );
+	$pmpro_price_parts_with_total = apply_filters( 'pmpro_get_price_parts_with_total', $pmpro_price_parts_with_total, $pmpro_order );
 
 	if ( $format == 'array' ) {
 		return $pmpro_price_parts_with_total;

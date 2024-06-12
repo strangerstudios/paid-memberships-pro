@@ -126,7 +126,7 @@ if ( $webhookNotification->kind === Braintree_WebhookNotification::SUBSCRIPTION_
 	//log it for debug email
 	$logstr[] = var_export( $transaction, true );
 
-	//alright. create a new order/invoice
+	//alright. create a new order
 	$morder                              = new \MemberOrder();
 	$morder->user_id                     = $old_order->user_id;
 	$morder->membership_id               = $old_order->membership_id;
@@ -187,7 +187,7 @@ if ( $webhookNotification->kind === Braintree_WebhookNotification::SUBSCRIPTION_
 	$morder->saveOrder();
 	$morder->getMemberOrderByID( $morder->id );
 	
-	//email the user their invoice
+	//email the user their order
 	$pmproemail = new \PMProEmail();
 	$pmproemail->sendInvoiceEmail( $user, $morder );
 	

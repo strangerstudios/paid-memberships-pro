@@ -2,14 +2,14 @@
 	"$schema": "https://schemas.wp.org/trunk/block.json",
 	"apiVersion": 3,
 	"name": "pmpro/account-invoices-section",
-	"title": "PMPro Page: Account Invoices",
+	"title": "PMPro Page: Account Orders",
 	"category": "pmpro-pages",
-	"description": "Dynamic page section that displays a list of the last 5 membership invoices for the active member.",
+	"description": "Dynamic page section that displays a list of the last 5 membership orders for the active member.",
 	"keywords": [ "account", "member", "order", "purchases", "receipt", "user", "paid memberships pro", "pmpro" ],
 	"attributes" : {
 		"title" : {
 			"type" : "string",
-			"default" : "Past Invoices"
+			"default" : "Past Orders"
 		}
 	},
 	"supports": {

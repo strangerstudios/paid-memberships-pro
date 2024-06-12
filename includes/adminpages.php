@@ -619,7 +619,7 @@ function pmpro_display_post_states( $post_states, $post ) {
 	}
 
 	if ( intval( $pmpro_pages['invoice'] ) === $post->ID ) {
-		$post_states['pmpro_invoice_page'] = __( 'Membership Invoice Page', 'paid-memberships-pro' );
+		$post_states['pmpro_invoice_page'] = __( 'Membership Orders Page', 'paid-memberships-pro' );
 	}
 
 	if ( intval( $pmpro_pages['levels'] ) === $post->ID ) {
