@@ -470,6 +470,14 @@ function pmpro_admin_membership_access_menu_bar() {
 		</select>
 		<?php wp_nonce_field( 'pmpro_admin_membership_access', 'pmpro_admin_membership_access_nonce' ); ?>
 	</form>
+	<script>
+		// Needed to fix Firefox issue where the admin membership access setting couldn't be changed.
+		document.addEventListener( 'DOMContentLoaded', function() {
+			document.getElementById( 'pmpro-admin-membership-access' ).addEventListener( 'mouseout', function( ev ) {
+				ev.stopPropagation();
+			});
+		});
+	</script>
 	<?php
 
 	// Add the form to the menu.
