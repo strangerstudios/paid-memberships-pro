@@ -775,6 +775,11 @@ class PMPro_Wisdom_Tracker {
 		if ( ! $is_time ) {
 			return false;
 		}
+		
+		// Don't display on the PMPro Advanced Settings page.
+		if ( ! empty( $_REQUEST['page'] ) && $_REQUEST['page'] === 'pmpro-advancedsettings' ) {
+		   return false;
+	   	}
 
 		// Check whether to block the notice, e.g. because we're in a local environment
 		// wisdom_block_notice works the same as wisdom_allow_tracking, an array of plugin names
@@ -788,19 +793,9 @@ class PMPro_Wisdom_Tracker {
 			return;
 		}
 
-		// @credit EDD
 		// Don't bother asking user to opt in if they're in local dev
-		$is_local = false;
-		if ( stristr( network_site_url( '/' ), '.dev' ) !== false || stristr( network_site_url( '/' ), 'localhost' ) !== false || stristr( network_site_url( '/' ), ':8888' ) !== false ) {
-			$is_local = true;
-		}
+		$is_local = apply_filters( 'wisdom_is_local_' . $this->plugin_name, false );
 
-		// PMPRO MODIFICATION
-		if ( ! $is_local && stristr( network_site_url( '/' ), '.local' ) !== false ) {
-			//$is_local = true;
-		}
-
-		$is_local = apply_filters( 'wisdom_is_local_' . $this->plugin_name, $is_local );
 		if ( $is_local ) {
 			$this->update_block_notice();
 
@@ -808,6 +803,9 @@ class PMPro_Wisdom_Tracker {
 			if ( $this->marketing ) {
 				$this->set_can_collect_email( false );
 			}
+		} elseif ( get_option( 'pmpro_wisdom_opt_out' ) !== false ) {			
+			// Option already set in PMPro Wizard or Advanced Settings page.
+			$this->update_block_notice();
 		} else {
 			// Display the notice requesting permission to track
 			// Retrieve current plugin information
@@ -849,8 +847,8 @@ class PMPro_Wisdom_Tracker {
 				<h3><?php echo 'Enable Data Tracking For ' . esc_html( $plugin_name ) . '</strong>'; ?></h3>
 				<p><?php echo wp_kses_post( $notice_text ); ?></p>
 				<p>
-					<a href="<?php echo esc_url( $url_yes ); ?>" class="button button-primary"><?php _e( 'Allow', 'paid-memberships-pro' ); ?></a>
-					<a href="<?php echo esc_url( $url_no ); ?>" class="button button-secondary"><?php _e( 'Do Not Allow', 'paid-memberships-pro' ); ?></a>
+					<a href="<?php echo esc_url( $url_yes ); ?>" class="button button-primary"><?php esc_html_e( 'Allow', 'paid-memberships-pro' ); ?></a>
+					<a href="<?php echo esc_url( $url_no ); ?>" class="button button-secondary"><?php esc_html_e( 'Do Not Allow', 'paid-memberships-pro' ); ?></a>
 				</p>
 			</div>
 			<?php
@@ -892,8 +890,8 @@ class PMPro_Wisdom_Tracker {
 				<p><?php echo '<strong>' . esc_html( $plugin_name ) . '</strong>'; ?></p>
 				<p><?php echo esc_html( $marketing_text ); ?></p>
 				<p>
-					<a href="<?php echo esc_url( $url_yes ); ?>" data-putnotice="yes" class="button-secondary"><?php _e( 'Yes Please', 'paid-memberships-pro' ); ?></a>
-					<a href="<?php echo esc_url( $url_no ); ?>" data-putnotice="no" class="button-secondary"><?php _e( 'No Thank You', 'paid-memberships-pro' ); ?></a>
+					<a href="<?php echo esc_url( $url_yes ); ?>" data-putnotice="yes" class="button-secondary"><?php esc_html_e( 'Yes Please', 'paid-memberships-pro' ); ?></a>
+					<a href="<?php echo esc_url( $url_no ); ?>" data-putnotice="no" class="button-secondary"><?php esc_html_e( 'No Thank You', 'paid-memberships-pro' ); ?></a>
 				</p>
 			</div>
 		<?php }
@@ -1049,7 +1047,7 @@ class PMPro_Wisdom_Tracker {
 					var url = document.getElementById( "put-goodbye-link-<?php echo esc_attr( $this->plugin_name ); ?>" );
 					$( 'body' ).toggleClass( 'put-form-active' );
 					$( "#put-goodbye-form-<?php echo esc_attr( $this->plugin_name ); ?>" ).fadeIn();
-					$( "#put-goodbye-form-<?php echo esc_attr( $this->plugin_name ); ?>" ).html( '<?php echo $html_escaped; ?>' + '<div class="put-goodbye-form-footer"><p><a id="put-submit-form" class="button primary" href="#"><?php _e( 'Submit and Deactivate', 'paid-memberships-pro' ); ?></a>&nbsp;<a class="secondary button" href="' + url + '"><?php _e( 'Just Deactivate', 'paid-memberships-pro' ); ?></a></p></div>' );
+					$( "#put-goodbye-form-<?php echo esc_attr( $this->plugin_name ); ?>" ).html( '<?php echo wp_kses_post( $html_escaped ); ?>' + '<div class="put-goodbye-form-footer"><p><a id="put-submit-form" class="button primary" href="#"><?php esc_html_e( 'Submit and Deactivate', 'paid-memberships-pro' ); ?></a>&nbsp;<a class="secondary button" href="' + url + '"><?php esc_html_e( 'Just Deactivate', 'paid-memberships-pro' ); ?></a></p></div>' );
 					$( '#put-submit-form' ).on( 'click', function ( e ) {
 						// As soon as we click, the body of the form should disappear
 						$( "#put-goodbye-form-<?php echo esc_attr( $this->plugin_name ); ?> .put-goodbye-form-body" ).fadeOut();
@@ -1066,7 +1064,7 @@ class PMPro_Wisdom_Tracker {
 							'action'   : 'goodbye_form',
 							'values'   : values,
 							'details'  : details,
-							'security' : "<?php echo wp_create_nonce( 'wisdom_goodbye_form' ); ?>",
+							'security' : "<?php echo esc_attr( wp_create_nonce( 'wisdom_goodbye_form' ) ); ?>",
 							'dataType' : "json"
 						}
 						$.post( ajaxurl, data, function ( response ) {

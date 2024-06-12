@@ -1,18 +1,11 @@
 <?php
-	global $isapage;
-	$isapage = true;
-
-	global $lostr;
-	$logstr = '';
-
 	//in case the file is loaded directly
-	if(!defined("ABSPATH"))
-	{
-		define('WP_USE_THEMES', false);
-		require_once(dirname(__FILE__) . '/../../../../wp-load.php');
+	if( ! defined( 'ABSPATH' ) ) {
+		exit;
 	}
-
-	global $wpdb;
+	
+	global $lostr, $wpdb;
+	$logstr = '';
 
 	// Sets the PMPRO_DOING_WEBHOOK constant and fires the pmpro_doing_webhook action.
 	pmpro_doing_webhook( 'authnet', true );
@@ -65,7 +58,7 @@
 	// If it is an ARB transaction, do something with it
 	if($arb == true)
 	{
-		// okay, add an invoice. first lookup the user_id from the subscription id passed
+		// okay, add an order. first lookup the user_id from the subscription id passed
 		$old_order_id = $wpdb->get_var("SELECT id FROM $wpdb->pmpro_membership_orders WHERE subscription_transaction_id = '" . esc_sql($fields['x_subscription_id']) . "' AND gateway = 'authorizenet' ORDER BY timestamp DESC LIMIT 1");
 		$old_order = new MemberOrder($old_order_id);
 		$user_id = $old_order->user_id;
@@ -80,7 +73,7 @@
 				//get the user's membership level info
 				$user->membership_level = pmpro_getMembershipLevelForUser($user_id);
 
-				//alright. create a new order/invoice
+				//alright. create a new order
 				$morder = new MemberOrder();
 				$morder->user_id = $old_order->user_id;
 				$morder->membership_id = $old_order->membership_id;
@@ -114,20 +107,15 @@
 				$morder->billing->country = $fields['x_country'];
 				$morder->billing->phone = $fields['x_phone'];
 
-				//get CC info that is on file
-				$morder->cardtype = get_user_meta($user_id, "pmpro_CardType", true);
-				$morder->accountnumber = hideCardNumber(get_user_meta($user_id, "pmpro_AccountNumber", true), false);
-				$morder->expirationmonth = get_user_meta($user_id, "pmpro_ExpirationMonth", true);
-				$morder->expirationyear = get_user_meta($user_id, "pmpro_ExpirationYear", true);
-				$morder->ExpirationDate = $morder->expirationmonth . $morder->expirationyear;
-				$morder->ExpirationDate_YdashM = $morder->expirationyear . "-" . $morder->expirationmonth;
-
+				//Updates this order with the most recent orders payment method information and saves it. 
+				pmpro_update_order_with_recent_payment_method( $morder );
+				
 				//save
 				$morder->status = "success";
 				$morder->saveOrder();
 				$morder->getMemberOrderByID($morder->id);
 
-				//email the user their invoice
+				//email the user their order
 				$pmproemail = new PMProEmail();
 				$pmproemail->sendInvoiceEmail($user, $morder);
 
@@ -157,11 +145,8 @@
 			$morder->billing->country = $fields['x_country'];
 			$morder->billing->phone = $fields['x_phone'];
 
-			//get CC info that is on file
-			$morder->cardtype = get_user_meta($user_id, "pmpro_CardType", true);
-			$morder->accountnumber = hideCardNumber(get_user_meta($user_id, "pmpro_AccountNumber", true), false);
-			$morder->expirationmonth = get_user_meta($user_id, "pmpro_ExpirationMonth", true);
-			$morder->expirationyear = get_user_meta($user_id, "pmpro_ExpirationYear", true);
+			//Updates this order with the most recent orders payment method information and saves it. 
+			pmpro_update_order_with_recent_payment_method( $morder );
 
 			// Email the user and ask them to update their credit card information
 			$pmproemail = new PMProEmail();

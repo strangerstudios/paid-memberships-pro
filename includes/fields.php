@@ -23,7 +23,7 @@ function pmpro_is_field( $var ) {
 }
 
 /**
- * Add a field to the PMProRH regisration fields global
+ * Add a field to the PMPro registration fields global
  *
  *	$where refers to various hooks in the PMPro checkout page and can be:
  *	- after_username
@@ -72,12 +72,19 @@ function pmpro_add_user_field( $where, $field ) {
 /**
  * Add a new checkout box to the checkout_boxes section.
  * You can then use this as the $where parameter
- * to pmprorh_add_registration_field.
+ * to pmpro_add_user_field.
  *
  * Name must contain no spaces or special characters.
  */
 function pmpro_add_field_group( $name, $label = NULL, $description = '', $order = NULL ) {
 	global $pmpro_field_groups;
+	// Bail if the group already exists.
+	foreach ( $pmpro_field_groups as $group ) {
+		if ( $group->name === $name ) {
+			// Group already exists.
+			return false;
+		}
+	}
 
 	$temp = new stdClass();
 	$temp->name = $name;
@@ -101,7 +108,7 @@ function pmpro_add_field_group( $name, $label = NULL, $description = '', $order 
 }
 
 /**
- * Add a new User Taxonomy. You can then use this as the user_taxonomny parameter to pmprorh_add_registration_field.
+ * Add a new User Taxonomy. You can then use this as the user_taxonomny parameter to pmpro_add_user_field.
  *
  * @param string $name The singular name for the taxonomy object.
  * @param string $name_plural The plural name for the taxonomy object.
@@ -109,12 +116,16 @@ function pmpro_add_field_group( $name, $label = NULL, $description = '', $order 
  */
 function pmpro_add_user_taxonomy( $name, $name_plural ) {
 	global $pmpro_user_taxonomies;
-
+	
 	// Sanitize the taxonomy $name and make sure it is less than 32 characters.
 	$safe_name = sanitize_key( $name );
 	if ( strlen( $safe_name ) > 32 ) {
 		$safe_name = substr( $safe_name, 0, 32 );
 	}
+
+	// Add to the global so we can keep track.
+	$pmpro_user_taxonomies = (array) $pmpro_user_taxonomies;
+	$pmpro_user_taxonomies[] = $safe_name;
 
 	// Make sure name and plural name are less than 32 characters.
 	if ( strlen( $name ) > 32 ) {
@@ -125,46 +136,51 @@ function pmpro_add_user_taxonomy( $name, $name_plural ) {
 	}
 
 	$pmpro_user_taxonomy_labels = array(
-		'name' => ucwords( $name ),
-		'singular_name' => ucwords( $name ),
-		'menu_name' => ucwords( $name_plural ),
-		'search_items' => sprintf( __( 'Search %s', 'paid-memberships-pro' ), ucwords( $name_plural ) ),
-		'popular_items' => sprintf( __( 'Popular %s', 'paid-memberships-pro' ), ucwords( $name_plural ) ),
-		'all_items' => sprintf( __( 'All %s', 'paid-memberships-pro' ), ucwords( $name_plural ) ),
-		'edit_item' => sprintf( __( 'Edit %s', 'paid-memberships-pro' ), ucwords( $name ) ),
-		'update_item' => sprintf( __( 'Update %s', 'paid-memberships-pro' ), ucwords( $name ) ),
-		'add_new_item' => sprintf( __( 'Add New %s', 'paid-memberships-pro' ), ucwords( $name ) ),
-		'new_item_name' => sprintf( __( 'New %s Name', 'paid-memberships-pro' ), ucwords( $name ) ),
+		'name'                       => ucwords( $name ),
+		'singular_name'              => ucwords( $name ),
+		'menu_name'                  => ucwords( $name_plural ),
+		'search_items'               => sprintf( __( 'Search %s', 'paid-memberships-pro' ), ucwords( $name_plural ) ),
+		'popular_items'              => sprintf( __( 'Popular %s', 'paid-memberships-pro' ), ucwords( $name_plural ) ),
+		'all_items'                  => sprintf( __( 'All %s', 'paid-memberships-pro' ), ucwords( $name_plural ) ),
+		'edit_item'                  => sprintf( __( 'Edit %s', 'paid-memberships-pro' ), ucwords( $name ) ),
+		'update_item'                => sprintf( __( 'Update %s', 'paid-memberships-pro' ), ucwords( $name ) ),
+		'add_new_item'               => sprintf( __( 'Add New %s', 'paid-memberships-pro' ), ucwords( $name ) ),
+		'new_item_name'              => sprintf( __( 'New %s Name', 'paid-memberships-pro' ), ucwords( $name ) ),
 		'separate_items_with_commas' => sprintf( __( 'Separate %s with commas', 'paid-memberships-pro' ), $name_plural ),
-		'add_or_remove_items' => sprintf( __( 'Add or remove %s', 'paid-memberships-pro' ), $name_plural ),
-		'choose_from_most_used' => sprintf( __( 'Choose from the most popular %s', 'paid-memberships-pro' ), $name_plural ),
+		'add_or_remove_items'        => sprintf( __( 'Add or remove %s', 'paid-memberships-pro' ), $name_plural ),
+		'choose_from_most_used'      => sprintf( __( 'Choose from the most popular %s', 'paid-memberships-pro' ), $name_plural ),
 	);
-	
+
+	$pmpro_user_taxonomy_args = array(
+		'public'       => false,
+		'labels'       => $pmpro_user_taxonomy_labels,
+		'rewrite'      => false,
+		'show_ui'      => true,
+		'capabilities' => array(
+			'manage_terms' => 'edit_users',
+			'edit_terms'   => 'edit_users',
+			'delete_terms' => 'edit_users',
+			'assign_terms' => 'read',
+		),
+	);
+
 	/**
 	 * Filter the args passed to the user taxonomy created.
 	 *
 	 * @param array $pmpro_user_taxonomy_args The arguments passed to the register_taxonomy function.
+	 * @param string $name The current taxonomy name.
 	 *
 	 */
-	$pmpro_user_taxonomy_args = apply_filters( 'pmpro_user_taxonomy_args', array(
-			'public' => false,
-			'labels' => $pmpro_user_taxonomy_labels,
-			'rewrite' => false,
-			'show_ui' => true,
-			'capabilities' => array(
-				'manage_terms' => 'edit_users',
-				'edit_terms'   => 'edit_users',
-				'delete_terms' => 'edit_users',
-				'assign_terms' => 'read',
-			),
-		)
-	);
+	$pmpro_user_taxonomy_args = apply_filters( 'pmpro_user_taxonomy_args', $pmpro_user_taxonomy_args, $name );
 	register_taxonomy( $safe_name, 'user', $pmpro_user_taxonomy_args );
+
+	// Update the labels after the args are filtered.
+	$pmpro_user_taxonomy_labels = $pmpro_user_taxonomy_args['labels'];
 
 	/**
 	 * Add admin page for the registered user taxonomies.
 	 */
-	add_action( 'admin_menu', function() use ( $pmpro_user_taxonomy_labels, $safe_name ) {
+	add_action( 'admin_menu', function () use ( $pmpro_user_taxonomy_labels, $safe_name ) {
 		add_users_page(
 			esc_attr( $pmpro_user_taxonomy_labels['menu_name'] ),
 			esc_attr( $pmpro_user_taxonomy_labels['menu_name'] ),
@@ -174,17 +190,18 @@ function pmpro_add_user_taxonomy( $name, $name_plural ) {
 	} );
 
 	/**
-	 * Update parent file name to fix the selected menu issue for a user taaxonomy.
+	 * Update parent file name to fix the selected menu issue for a user taxonomy.
 	 */
-	add_filter( 'parent_file', function( $parent_file ) use ( $safe_name ) {
+	add_filter( 'parent_file', function ( $parent_file ) use ( $safe_name ) {
 		global $submenu_file;
 		if (
-			isset($_GET['taxonomy']) &&
+			isset( $_GET['taxonomy'] ) &&
 			$_GET['taxonomy'] == $safe_name &&
 			$submenu_file == 'edit-tags.php?taxonomy=' . $safe_name
 		) {
 			$parent_file = 'users.php';
 		}
+
 		return $parent_file;
 	} );
 }
@@ -303,25 +320,30 @@ function pmpro_checkout_boxes_fields() {
 
 		if($n > 0) {
 			?>
-			<div id="pmpro_checkout_box-<?php echo sanitize_title( $cb->name ); ?>" class="pmpro_checkout">
-				<hr />
-				<h3>
-					<span class="pmpro_checkout-h3-name"><?php echo wp_kses_post( $cb->label );?></span>
-				</h3>
-				<div class="pmpro_checkout-fields">
-				<?php if(!empty($cb->description)) { ?>
-					<div class="pmpro_checkout_decription"><?php echo wp_kses_post( $cb->description ); ?></div>
-				<?php } ?>
+			<fieldset id="pmpro_form_fieldset-<?php echo esc_attr( sanitize_title( $cb->name ) ); ?>" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_fieldset', 'pmpro_form_fieldset-' . sanitize_title( $cb->name ) ) ); ?>">
+				<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_card' ) ); ?>">
+					<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_card_content' ) ); ?>">
+						<?php if ( ! empty( $cb->label ) ) { ?>
+							<legend class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_legend' ) ); ?>">
+								<h2 class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_heading pmpro_font-large' ) ); ?>"><?php echo wp_kses_post( $cb->label ); ?></h2>
+							</legend>
+						<?php } ?>
+						<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_fields' ) ); ?>">
+							<?php if ( ! empty( $cb->description ) ) { ?>
+								<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_fields-description' ) ); ?>"><?php echo wp_kses_post( $cb->description ); ?></div>
+							<?php } ?>
 
-				<?php
-					foreach($pmpro_user_fields[$cb->name] as $field) {
-						if( pmpro_is_field($field) && pmpro_check_field_for_level($field) && (!isset($field->profile) || (isset($field->profile) && $field->profile !== "only" && $field->profile !== "only_admin"))) {
-							$field->displayAtCheckout();
-						}
-					}
-				?>
-				</div> <!-- end pmpro_checkout-fields -->
-			</div> <!-- end pmpro_checkout_box-name -->
+							<?php
+								foreach($pmpro_user_fields[$cb->name] as $field) {
+									if( pmpro_is_field($field) && pmpro_check_field_for_level($field) && (!isset($field->profile) || (isset($field->profile) && $field->profile !== "only" && $field->profile !== "only_admin"))) {
+										$field->displayAtCheckout();
+									}
+								}
+							?>
+						</div> <!-- end pmpro_form_fields -->
+					</div> <!-- end pmpro_card_content -->
+				</div> <!-- end pmpro_card -->
+			</fieldset> <!-- end pmpro_form_fieldset -->
 			<?php
 		}
 	}
@@ -485,39 +507,14 @@ function pmpro_registration_checks_for_user_fields( $okay ) {
                     continue;	//wasn't shown at checkout
                 }
 
-				if(isset($_REQUEST[$field->name]))
-					$value = pmpro_sanitize( $_REQUEST[$field->name], $field ); //phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
-				elseif(isset($_FILES[$field->name]))
-				{
-					$value = sanitize_file_name( $_FILES[$field->name]['name'] );
-
-					//handle empty file but the user already has a file
-					if(empty($value) && !empty($_REQUEST[$field->name . "_old"]))
-						$value = sanitize_file_name( $_REQUEST[$field->name . "_old"] );
-					elseif(!empty($value))
-					{
-						//check extension against allowed extensions
-						$filetype = wp_check_filetype_and_ext( sanitize_text_field( $_FILES[$field->name]['tmp_name'] ), sanitize_file_name( $_FILES[$field->name]['name'] ) );
-						if((!$filetype['type'] || !$filetype['ext'] ) && !current_user_can( 'unfiltered_upload' ))
-						{
-							if($okay)	//only want to update message if there is no previous error
-								pmpro_setMessage( sprintf( __( "Sorry, the file type for %s is not permitted for security reasons.", "paid-memberships-pro"), sanitize_file_name( $_FILES[$field->name]['name'] ) ), "pmpro_error");
-							return false;
-						}
-						else
-						{
-							//check for specific extensions anyway
-							if(!empty($field->ext) && !in_array($filetype['ext'], $field->ext))
-							{
-								if($okay)	//only want to update message if there is no previous error
-									pmpro_setMessage( sprintf( __( "Sorry, the file type for %s is not permitted for security reasons.", "paid-memberships-pro"), sanitize_file_name( $_FILES[$field->name]['name'] ) ), "pmpro_error");
-								return false;
-							}
-						}
+				// If this is a file upload, check whether the file is allowed.
+				if ( isset( $_FILES[ $field->name ] ) && ! empty( $_FILES[$field->name]['name'] ) ) {
+					$upload_check = pmpro_check_upload( $field->name );
+					if ( is_wp_error( $upload_check ) ) {
+						pmpro_setMessage( $upload_check->get_error_message(), 'pmpro_error' );
+						return false;
 					}
 				}
-				else
-					$value = false;
 
 				if( ! $field->was_filled_if_needed() ) {
 					$required[] = $field->name;
@@ -555,10 +552,14 @@ function pmpro_registration_checks_for_user_fields( $okay ) {
 add_filter( 'pmpro_registration_checks', 'pmpro_registration_checks_for_user_fields' );
 
 /**
- * Sessions vars for PayPal Express
+ * Sessions vars for TwoCheckout. PayPal Express was updated to store in order meta.
+ *
+ * @deprecated 2.12.4 Use pmpro_after_checkout_save_fields instead to save fields immediately or pmpro_save_checkout_data_to_order for delayed checkouts.
  */
 function pmpro_paypalexpress_session_vars_for_user_fields() {
 	global $pmpro_user_fields;
+
+	_deprecated_function( __FUNCTION__, '2.12.4', 'pmpro_after_checkout_save_fields' );
 
 	//save our added fields in session while the user goes off to PayPal
 	if(!empty($pmpro_user_fields))
@@ -583,10 +584,19 @@ function pmpro_paypalexpress_session_vars_for_user_fields() {
 					/*
 						We need to save the file somewhere and save values in $_SESSION
 					*/
+					// Make sure the file is allowed.
+					$upload_check = pmpro_check_upload( $field->name );
+					if ( is_wp_error( $upload_check ) ) {
+						continue;
+					}
 
-					// Make sure file was uploaded.
-					if ( ! is_uploaded_file( sanitize_text_field( $_FILES[$field->name]['tmp_name'] ) ) ) {						
-                        continue;
+					// Get $file and $filetype.
+					$file = array_map( 'sanitize_text_field', $_FILES[ $field->name ] );
+					$filetype = wp_check_filetype_and_ext( $file['tmp_name'], $file['name'] );
+
+					// Make sure file was uploaded during this page load.
+					if ( ! is_uploaded_file( sanitize_text_field( $file['tmp_name'] ) ) ) {						
+						continue;
 					}
 
 					//check for a register helper directory in wp-content
@@ -600,21 +610,19 @@ function pmpro_paypalexpress_session_vars_for_user_fields() {
 					}
 
 					//move file
-					$new_filename = $pmprorh_dir . basename( sanitize_file_name( $_FILES[$field->name]['name'] ) );
-					move_uploaded_file( sanitize_text_field( $_FILES[$field->name]['tmp_name'] ), $new_filename );
+					$new_filename = $pmprorh_dir . basename( sanitize_file_name( $file['name'] ) );
+					move_uploaded_file( sanitize_text_field( $$file['tmp_name'] ), $new_filename );
 
 					//update location of file
 					$_FILES[$field->name]['tmp_name'] = $new_filename;
 
 					//save file info in session
-					$_SESSION[$field->name] = array_map( 'sanitize_text_field', $_FILES[$field->name] );
+					$_SESSION[$field->name] = array_map( 'sanitize_text_field', $file );
 				}
 			}
 		}
 	}
 }
-add_action( 'pmpro_paypalexpress_session_vars', 'pmpro_paypalexpress_session_vars_for_user_fields' );
-add_action( 'pmpro_before_send_to_twocheckout', 'pmpro_paypalexpress_session_vars_for_user_fields', 10, 0);
 
 /**
  * Show user fields in profile.
@@ -634,7 +642,7 @@ function pmpro_show_user_fields_in_profile( $user, $withlocations = false ) {
 
 			if ( !empty($box->label) ) {
 				?>
-				<h3><?php echo wp_kses_post( $box->label ); ?></h3>
+				<h2><?php echo wp_kses_post( $box->label ); ?></h2>
 				<?php
 				if ( ! empty( $box->description ) ) {
 					?>
@@ -687,8 +695,6 @@ add_action( 'edit_user_profile', 'pmpro_show_user_fields_in_profile_with_locatio
  * @since 2.3
  */
 function pmpro_show_user_fields_in_frontend_profile( $user, $withlocations = false ) {
-	global $pmpro_user_fields;
-
 	//which fields are marked for the profile
 	$profile_fields = pmpro_get_user_fields_for_profile($user->ID, $withlocations);
 
@@ -698,57 +704,58 @@ function pmpro_show_user_fields_in_frontend_profile( $user, $withlocations = fal
 			$box = pmpro_get_field_group_by_name( $where );
 
 			// Only show on front-end if there are fields to be shown.
-			$show_fields = false;
+			$show_fields = array();
 			foreach( $fields as $key => $field ) {
-				if ( $field->profile !== 'only_admin' ) {
-					$show_fields = true;
+				if ( pmpro_is_field( $field ) && $field->profile !== 'only_admin' && $field->profile !== 'admin' && $field->profile !== 'admins' ) {
+					$show_fields[] = $field;
 				}
 			}
 
 			// Bail if there are no fields to show on the front-end profile.
-			if ( ! $show_fields ) {
+			if ( empty( $show_fields ) ) {
 				continue;
 			}
 			?>
-
-			<div class="pmpro_checkout_box-<?php echo sanitize_title( $where ); ?>">
+			<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_spacer' ) ); ?>"></div>
+			<fieldset id="pmpro_form_fieldset-<?php echo esc_attr( sanitize_title( $where ) ); ?>" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_fieldset', 'pmpro_form_fieldset-' . sanitize_title( $where ) ) ); ?>">
 				<?php if ( ! empty( $box->label ) ) { ?>
-					<h3><?php echo wp_kses_post( $box->label ); ?></h3>
+					<legend class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_legend' ) ); ?>">
+						<h2 class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_heading pmpro_font-large' ) ); ?>"><?php echo wp_kses_post( $box->label ); ?></h2>
+					</legend>
 				<?php } ?>
-
-				<div class="pmpro_member_profile_edit-fields">
+				<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_fields' ) ); ?>">
 					<?php if ( ! empty( $box->description ) ) { ?>
-						<div class="pmpro_checkout_description"><?php echo wp_kses_post( $box->description ); ?></div>
+						<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_fields-description' ) ); ?>"><?php echo wp_kses_post( $box->description ); ?></div>
 					<?php } ?>
 
 					<?php
-						 // Cycle through groups.
-						foreach( $fields as $field ) {
-							if ( pmpro_is_field( $field ) && $field->profile !== 'only_admin' ) {
-								$field->displayAtCheckout( $user->ID );
-							}
+						 // Show fields.
+						foreach( $show_fields as $field ) {
+							$field->displayAtCheckout( $user->ID );
 						}
 					?>
-				</div> <!-- end pmpro_member_profile_edit-fields -->
-			</div> <!-- end pmpro_checkout_box-name -->
+				</div> <!-- end pmpro_form_fields -->
+			</fieldset> <!-- end pmpro_form_fieldset -->
 			<?php
 		}
 	} elseif ( ! empty( $profile_fields ) ) { ?>
-		<div class="pmpro_member_profile_edit-fields">
-			<?php
-				 // Cycle through groups.
-				foreach( $profile_fields as $field ) {
-					if ( pmpro_is_field( $field ) && $field->profile !== 'only_admin' ) {
-						$field->displayAtCheckout( $user->ID );
+		<fieldset class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_fieldset' ) ); ?>">
+			<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_fields' ) ); ?>">
+				<?php
+					// Cycle through groups.
+					foreach( $profile_fields as $field ) {
+						if ( pmpro_is_field( $field ) && $field->profile !== 'only_admin' ) {
+							$field->displayAtCheckout( $user->ID );
+						}
 					}
-				}
-			?>
-		</div> <!-- end pmpro_member_profile_edit-fields -->
+				?>
+			</div> <!-- end pmpro_form_fields -->
+		</fieldset> <!-- end pmpro_form_fieldset -->
 		<?php
 	}
 }
 function pmpro_show_user_fields_in_frontend_profile_with_locations( $user ) {
-	pmpro_show_user_fields_in_frontend_profile($user, true);
+	pmpro_show_user_fields_in_frontend_profile( $user, true );
 }
 add_action( 'pmpro_show_user_profile', 'pmpro_show_user_fields_in_frontend_profile_with_locations' );
 
@@ -895,7 +902,7 @@ function pmpro_add_member_admin_save_user_fields( $uid = null, $user = null ) {
 add_action( 'pmpro_add_member_added', 'pmpro_add_member_admin_save_user_fields', 10, 2 );
 
 /**
- * Get RH fields which are set to showup in the Members List CSV Export.
+ * Get user fields which are set to show up in the Members List CSV Export.
  */
 function pmpro_get_user_fields_for_csv() {
 	global $pmpro_user_fields;
@@ -1043,49 +1050,78 @@ add_action( 'pmpro_personal_options_update', 'pmpro_save_user_fields_in_profile'
  * Add user fields to confirmation email.
  */
 function pmpro_add_user_fields_to_email( $email ) {
-	global $wpdb;
+	global $wpdb, $pmpro_user_fields, $pmpro_field_groups;
 
 	//only update admin confirmation emails
-	if(!empty($email) && strpos($email->template, "checkout") !== false && strpos($email->template, "admin") !== false)
-	{
+	if ( ! empty( $email ) && strpos( $email->template, "checkout" ) !== false && strpos( $email->template, "admin" ) !== false ) {
 		//get the user_id from the email
-		$user_id = $wpdb->get_var("SELECT ID FROM $wpdb->users WHERE user_email = '" . $email->data['user_email'] . "' LIMIT 1");
+		$user_id = $wpdb->get_var( "SELECT ID FROM $wpdb->users WHERE user_email = '" . esc_sql( $email->data['user_email'] ) . "' LIMIT 1" );
+		$level_id = empty( $email->data['membership_id'] ) ? null : intval( $email->data['membership_id'] );
 
-		if(!empty($user_id))
-		{
-			//get meta fields
-			$fields = pmpro_get_user_fields_for_profile($user_id);
+		if ( ! empty( $user_id ) ) {
+
 
 			//add to bottom of email
-			if(!empty($fields))
-			{
-				$email->body .= "<p>" . __( 'Extra Fields:', 'paid-memberships-pro' ) . "<br />";
-				foreach($fields as $field)
-				{
-                    if( ! pmpro_is_field( $field ) ) {
-                        continue;
-                    }
+			if ( ! empty( $pmpro_field_groups ) ) {
+				$fields_content = "<p>" . __( 'Extra Fields:', 'paid-memberships-pro' ) . "<br />";
+				$added_field = false;
+				//cycle through groups
+				foreach( $pmpro_field_groups as $group ) {
 
-					$email->body .= "- " . $field->label . ": ";
+					// Get the groups name so we can grab it from the associative array.
+					$group_name = $group->name;
 
-					$value = get_user_meta($user_id, $field->meta_key, true);
-					if($field->type == "file" && is_array($value) && !empty($value['fullurl']))
-						$email->body .= $value['fullurl'];
-					elseif(is_array($value))
-						$email->body .= implode(", ", $value);
-					else
-						$email->body .= $value;
+					// Skip if there are no fields in this group.
+					if ( empty( $pmpro_user_fields[$group_name] ) ) {
+						continue;
+					}
+					
+					//cycle through groups and fields associated with that group.
+					foreach( $pmpro_user_fields[$group_name] as $field ) {
 
-					$email->body .= "<br />";
+						if ( ! pmpro_is_field( $field ) ) {
+							continue;
+						}
+
+						// If the field is showing only in the profile or to admins we can skip it.
+						if ( ! empty( $field->profile ) && ( $field->profile === "only" || $field->profile === "only_admin" ) ) {
+							continue;
+						}
+
+						// Let's make sure the field level ID's are the same as the one they checked out for.
+						if ( ! empty( $field->levels ) &&  ( empty( $level_id) || ! in_array( $level_id, $field->levels ) ) ) {
+							continue;
+						}
+
+						$fields_content .= "- " . esc_html( $field->label ) . ": ";
+						$value = get_user_meta( $user_id, $field->name, true);
+
+						// Get the label value for field types that have labels.
+						$value = pmpro_get_label_for_user_field_value( $field->name, $value );
+
+						if ( $field->type == "file" && is_array( $value ) && ! empty( $value['fullurl'] ) ) {
+							$fields_content .= pmpro_sanitize( $value['fullurl'], $field );
+						} elseif( is_array( $value  ) ) {
+							$fields_content .= implode(", ", pmpro_sanitize( $value, $field ) );
+						} else {
+							$fields_content .= pmpro_sanitize( $value, $field );
+						}
+
+						$fields_content .= "<br />";
+						$added_field = true;
+					}
 				}
-				$email->body .= "</p>";
+				$fields_content .= "</p>";
+				if ( $added_field ) {
+					$email->body .= $fields_content;
+				}
 			}
 		}
 	}
 
 	return $email;
 }
-add_filter( 'pmpro_email_filter', 'pmpro_add_user_fields_to_email', 10, 2);
+add_filter( 'pmpro_email_filter', 'pmpro_add_user_fields_to_email', 10, 2 );
 
 /**
  * Add CSV fields to the Member's List CSV Export.
@@ -1270,7 +1306,7 @@ function pmpro_get_field_group_html( $group = null ) {
 				<?php
 					if ( ! empty( $group->fields ) ) {
 						foreach ( $group->fields as $field ) {
-							echo pmpro_get_field_html( $field );
+							pmpro_get_field_html( $field );
 						}
 					}
                 ?>
@@ -1344,7 +1380,7 @@ function pmpro_get_field_html( $field = null ) {
                 </div> <!-- end pmpro_userfield-group-buttons -->
             </li>
             <li class="pmpro_userfield-group-column-label">
-                <span class="pmpro_userfield-label"><?php echo strip_tags( wp_kses_post( $field_label ) );?></span>
+                <span class="pmpro_userfield-label"><?php echo strip_tags( wp_kses_post( $field_label ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></span>
                 <div class="pmpro_userfield-field-options">
                     <a class="edit-field" title="<?php esc_attr_e( 'Edit field', 'paid-memberships-pro' ); ?>" href="javascript:void(0);"><?php esc_html_e( 'Edit', 'paid-memberships-pro' ); ?></a> |
                     <a class="duplicate-field" title="<?php esc_attr_e( 'Duplicate field', 'paid-memberships-pro' ); ?>" href="javascript:void(0);"><?php esc_html_e( 'Duplicate', 'paid-memberships-pro' ); ?></a> |
@@ -1466,7 +1502,7 @@ function pmpro_get_field_html( $field = null ) {
                     <?php esc_html_e( 'Close Field', 'paid-memberships-pro' ); ?>
                 </button> 
 				<button name="pmpro_userfields_delete_field" class="button button-secondary is-destructive">
-                    <?php _e( 'Delete Field', 'paid-memberships-pro' ); ?>
+                    <?php esc_html_e( 'Delete Field', 'paid-memberships-pro' ); ?>
                 </button>           
             </div> <!-- end pmpro_userfield-field-actions -->
         </div> <!-- end pmpro_userfield-field-settings -->        
@@ -1476,6 +1512,8 @@ function pmpro_get_field_html( $field = null ) {
 
 /**
  * Get user fields from options.
+ *
+ * This function will not return fields that are added through code.
  */
 function pmpro_get_user_fields_settings() {
     $default_user_fields_settings = array(
@@ -1609,7 +1647,7 @@ function pmpro_has_coded_user_fields() {
 /**
  * Gets the label(s) for a passed user field value.
  *
- * @since TBD
+ * @since 2.11
  *
  * @param string $field_name  The name of the field that the value belongs to.
  * @param string|array $field_value The value to get the label for.
@@ -1620,6 +1658,11 @@ function pmpro_get_label_for_user_field_value( $field_name, $field_value ) {
 	global $pmpro_user_fields;
 	foreach ( $pmpro_user_fields as $user_field_group ) { // Loop through each user field group.
 		foreach ( $user_field_group as $user_field ) { // Loop through each user field in the group.
+			// Check if this is the user field that we are displaying.
+			if ( $user_field->name !== $field_name ) {
+				continue;
+			}
+
 			// Make sure that we have a valid user field.
             if ( ! pmpro_is_field( $user_field ) ) {
                 continue;
@@ -1632,11 +1675,6 @@ function pmpro_get_label_for_user_field_value( $field_name, $field_value ) {
             
             // Make sure that $options is an array.
             if ( ! is_array( $user_field->options ) ) {
-                continue;
-            }
-            
-            // Check if this is a user field with an associative array of values.
-            if ( ! array_keys( $user_field->options ) !== range( 0, count( $user_field->options ) - 1 ) ) {
                 continue;
             }
             
@@ -1655,4 +1693,28 @@ function pmpro_get_label_for_user_field_value( $field_name, $field_value ) {
 		}
 	}
 	return $field_value;
+}
+
+/**
+ * Get a single field from the global $pmpro_user_fields array.
+ * @since 3.0
+ * @param string $field_name The name of the field to get.
+ * @return bool|object The field object if found, false otherwise.
+ */
+function pmpro_get_user_field( $field_name ) {
+	global $pmpro_user_fields;
+	
+	if ( empty( $pmpro_user_fields ) ) {
+		return false;
+	}
+
+	foreach ( $pmpro_user_fields as $group ) {
+		foreach ( $group as $field ) {
+			if ( $field->name === $field_name ) {
+				return $field;
+			}
+		}
+	}
+	
+	return false;
 }

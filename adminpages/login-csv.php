@@ -1,11 +1,9 @@
 <?php
 
 // only admins can get this
-if ( ! function_exists( 'current_user_can' ) || ( ! current_user_can( 'manage_options' ) && ! current_user_can( 'pmpro_logincsv' ) ) ) {
-	die( __( 'You do not have permissions to perform this action.', 'paid-memberships-pro' ) );
+if ( ! function_exists( 'current_user_can' ) || ( ! current_user_can( 'manage_options' ) && ! current_user_can( 'pmpro_loginscsv' ) ) ) {
+	die( esc_html__( 'You do not have permissions to perform this action.', 'paid-memberships-pro' ) );
 }
-
-define( 'PMPRO_BENCHMARK', true );
 
 if ( ! defined( 'PMPRO_BENCHMARK' ) ) {
 	define( 'PMPRO_BENCHMARK', false );
@@ -58,11 +56,16 @@ if ( isset( $_REQUEST['pn'] ) ) {
 if ( isset( $_REQUEST['limit'] ) ) {
 	$limit = intval( $_REQUEST['limit'] );
 } else {
-	$limit = 15;
+	$limit = false;
 }
 
-$end   = $pn * $limit;
-$start = $end - $limit;
+if ( $limit ) {
+	$end   = $pn * $limit;
+	$start = $end - $limit;
+} else {
+	$end   = null;
+	$start = null;
+}
 
 if ( $s ) {
 	$sqlQuery = "SELECT SQL_CALC_FOUND_ROWS u.ID, u.user_login, u.user_email, UNIX_TIMESTAMP(CONVERT_TZ(u.user_registered, '+00:00', @@global.time_zone)) as joindate, mu.membership_id, mu.initial_payment, mu.billing_amount, mu.cycle_period, mu.cycle_number, mu.billing_limit, mu.trial_amount, mu.trial_limit, UNIX_TIMESTAMP(CONVERT_TZ(mu.startdate, '+00:00', @@global.time_zone)) as startdate, UNIX_TIMESTAMP(CONVERT_TZ(mu.enddate, '+00:00', @@global.time_zone)) as enddate, m.name as membership FROM $wpdb->users u LEFT JOIN $wpdb->usermeta um ON u.ID = um.user_id LEFT JOIN $wpdb->pmpro_memberships_users mu ON u.ID = mu.user_id AND mu.status = 'active' LEFT JOIN $wpdb->pmpro_membership_levels m ON mu.membership_id = m.id WHERE (u.user_login LIKE '%" . esc_sql( $s ) . "%' OR u.user_email LIKE '%" . esc_sql( $s ) . "%' OR um.meta_value LIKE '%" . esc_sql( $s ) . "%') ";
@@ -73,7 +76,7 @@ if ( $s ) {
 		$sqlQuery .= " AND mu.membership_id = '" . esc_sql( $l ) . "' ";
 	}
 
-	$sqlQuery .= "GROUP BY u.ID ORDER BY user_registered DESC LIMIT $start, $limit";
+	$sqlQuery .= "GROUP BY u.ID ORDER BY user_registered DESC";
 } else {
 	$sqlQuery  = "SELECT SQL_CALC_FOUND_ROWS u.ID, u.user_login, u.user_email, UNIX_TIMESTAMP(CONVERT_TZ(u.user_registered, '+00:00', @@global.time_zone)) as joindate, mu.membership_id, mu.initial_payment, mu.billing_amount, mu.cycle_period, mu.cycle_number, mu.billing_limit, mu.trial_amount, mu.trial_limit, UNIX_TIMESTAMP(CONVERT_TZ(mu.startdate, '+00:00', @@global.time_zone)) as startdate, UNIX_TIMESTAMP(CONVERT_TZ(mu.enddate, '+00:00', @@global.time_zone)) as enddate, m.name as membership FROM $wpdb->users u LEFT JOIN $wpdb->pmpro_memberships_users mu ON u.ID = mu.user_id AND mu.status = 'active' LEFT JOIN $wpdb->pmpro_membership_levels m ON mu.membership_id = m.id";
 	$sqlQuery .= ' WHERE 1=1 ';
@@ -83,7 +86,11 @@ if ( $s ) {
 	} elseif ( $l ) {
 		$sqlQuery .= " AND mu.membership_id = '" . esc_sql( $l ) . "' ";
 	}
-	$sqlQuery .= "GROUP BY u.ID ORDER BY user_registered DESC LIMIT " . esc_sql( $start ) . "," . esc_sql( $limit );
+	$sqlQuery .= "GROUP BY u.ID ORDER BY user_registered DESC";
+}
+
+if ( ! empty( $start ) && ! empty( $limit ) ) {
+	$sqlQuery .= "LIMIT " . (int) $start . "," . (int) $limit;
 }
 
 		$sqlQuery = apply_filters( 'pmpro_visits_views_logins_csv_sql', $sqlQuery );
@@ -132,17 +139,17 @@ $default_columns = array(
 	array( 'user', 'user_login' ),
 	array( 'user', 'membership' ),
 	array( 'visits', 'last' ),
-	array( 'visits', 'thisweek' ),
-	array( 'visits', 'thismonth' ),
+	array( 'visits', 'week' ),
+	array( 'visits', 'month' ),
 	array( 'visits', 'ytd' ),
 	array( 'visits', 'alltime' ),
-	array( 'views', 'thisweek' ),
-	array( 'views', 'thismonth' ),
+	array( 'views', 'week' ),
+	array( 'views', 'month' ),
 	array( 'views', 'ytd' ),
 	array( 'views', 'alltime' ),
 	array( 'logins', 'last' ),
-	array( 'logins', 'thisweek' ),
-	array( 'logins', 'thismonth' ),
+	array( 'logins', 'week' ),
+	array( 'logins', 'month' ),
 	array( 'logins', 'ytd' ),
 	array( 'logins', 'alltime' ),
 );
@@ -224,7 +231,6 @@ for ( $ic = 1; $ic <= $iterations; $ic ++ ) {
 	}
 
 	foreach ( $theusers as $user ) {
-
 		$csvoutput = array();
 
 		// Get the visits, views and logins arrays. Set it to an object.
@@ -256,9 +262,9 @@ for ( $ic = 1; $ic <= $iterations; $ic ++ ) {
 
 		// Check if the user has an enddate or not.
 		if ( $user->enddate ) {
-			$enddate = pmpro_enclose( date_i18n( $dateformat, $user->joindate ) );
+			$enddate = pmpro_enclose( date_i18n( $dateformat, $user->enddate ) );
 		} else {
-			$enddate = 'Never';
+			$enddate = __( 'Never', 'paid-memberships-pro' );
 		}
 		
 		// Add joindate and enddate to the CSV export.
@@ -331,12 +337,12 @@ function pmpro_transmit_report_data( $csv_fh, $filename, $headers = array() ) {
 
 	// did we accidentally send errors/warnings to browser?
 	if ( headers_sent() ) {
-		echo str_repeat( '-', 75 ) . "<br/>\n";
+		echo esc_html( str_repeat( '-', 75 ) ) . "<br/>\n";
 		echo 'Please open a support case and paste in the warnings/errors you see above this text to\n ';
 		echo 'the <a href="http://paidmembershipspro.com/support/?utm_source=plugin&utm_medium=pmpro-visits-views-logins-csv&utm_campaign=support" target="_blank">Paid Memberships Pro support forum</a><br/>\n';
-		echo str_repeat( '=', 75 ) . "<br/>\n";
-		echo file_get_contents( $filename );
-		echo str_repeat( '=', 75 ) . "<br/>\n";
+		echo esc_html( str_repeat( '-', 75 ) ) . "<br/>\n";
+		echo wp_kses_post( file_get_contents( $filename ) );
+		echo esc_html( str_repeat( '-', 75 ) ) . "<br/>\n";
 	}
 
 	// transmission

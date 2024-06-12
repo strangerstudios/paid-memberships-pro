@@ -12,7 +12,7 @@ function pmpro_upgrade_1_8_9_1() {
 	if(!empty($orders))
 		pmpro_addUpdate('pmpro_upgrade_1_8_9_1_ajax');
 
-	pmpro_setOption("db_version", "1.891");
+	update_option("pmpro_db_version", "1.891");
 	return 1.891;
 }
 
@@ -67,14 +67,14 @@ function pmpro_upgrade_1_8_9_1_ajax() {
 				continue;
 			
 			if($debug)
-				echo "Order #" . $order->id . ", " . $order->code . " (" . $order->subscription_transaction_id . ")\n";
+				echo esc_html( "Order #" . $order->id . ", " . $order->code . " (" . $order->subscription_transaction_id . ")\n" );
 			
 			//find the subscription (via remote_get since this isn't the version of the library we use)
 			$subscription = json_decode(wp_remote_retrieve_body(wp_remote_get('https://api.stripe.com/v1/subscriptions/' . $order->subscription_transaction_id, array(
 					'timeout' => 60,
 					'sslverify' => FALSE,
 					'httpversion' => '1.1',
-					'headers'=>array('Authorization' => 'Bearer ' . pmpro_getOption("stripe_secretkey")),
+					'headers'=>array('Authorization' => 'Bearer ' . get_option( "pmpro_stripe_secretkey")),
 			    ))));
 
 			//no sub?
@@ -120,7 +120,7 @@ function pmpro_upgrade_1_8_9_1_ajax() {
 						if(!empty($old_order)) {
 							//found it, let's fix data
 							if($debug)
-								echo "- Order #" . $old_order->id . ", " . $old_order->code . " found! FIXED\n";
+								echo esc_html( "- Order #" . $old_order->id . ", " . $old_order->code . " found! FIXED\n" );
 							
 							if($run) {
 								$sqlQuery = "UPDATE $wpdb->pmpro_membership_orders SET user_id = " . $old_order->user_id . ", membership_id = " . $old_order->membership_id . " WHERE user_id = 0 AND membership_id = 0 AND subscription_transaction_id = '" . $order->subscription_transaction_id . "' ";							

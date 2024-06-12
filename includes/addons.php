@@ -72,6 +72,46 @@ function pmpro_getAddons() {
 }
 
 /**
+ * Get a list of installed Add Ons with incorrect folder names.
+ *
+ * @since TBD
+ *
+ * @return array $incorrect_folder_names An array of Add Ons with incorrect folder names. The key is the installed folder name, the value is the Add On data.
+ */
+function pmpro_get_add_ons_with_incorrect_folder_names() {
+	// Make an easily searchable array of installed plugins to reduce computational compexity.
+	// The key of the array is the plugin filename, the value is the folder name.
+	$installed_plugins = array();
+	foreach ( get_plugins() as $plugin_name => $plugin_data ) {
+		// Skip plugins that are not in a folder.
+		if ( false === strpos( $plugin_name, '/' ) ) {
+			continue;
+		}
+
+		// Add the plugin to the $installed_plugins array.
+		list( $plugin_folder, $plugin_filename ) = explode( '/', $plugin_name, 2 );
+		$installed_plugins[ $plugin_filename ] = $plugin_folder;
+	}
+
+	// Set up an array to track Add Ons with wrong folder names.
+	// The key of the array is the equivalent of $plugin_name above, the value is the Add On data.
+	$incorrect_folder_names = array();
+	foreach ( pmpro_getAddons() as $addon ) {
+		// Get information about the Add On.
+		list( $addon_folder, $addon_filename ) = explode( '/', $addon['plugin'], 2 );
+	
+		// Check if the Add On is installed with an incorrect folder name.
+		if ( array_key_exists( $addon_filename, $installed_plugins ) && $addon_folder !== $installed_plugins[ $addon_filename ] ) {
+			// The Add On is installed with the wrong folder nane. Add it to the array.
+			$installed_name = $installed_plugins[ $addon_filename ] . '/' . $addon_filename;
+			$incorrect_folder_names[ $installed_name ] = $addon;
+		}
+	}
+
+	return $incorrect_folder_names;
+}
+
+/**
  * Find a PMPro addon by slug.
  *
  * @since 1.8.5
@@ -105,14 +145,87 @@ function pmpro_getAddonBySlug( $slug ) {
  */
 function pmpro_get_addon_categories() {
 	return array(
-		'popular' => array( 'pmpro-advanced-levels-shortcode', 'pmpro-register-helper', 'pmpro-woocommerce', 'pmpro-courses', 'pmpro-member-directory', 'pmpro-subscription-delays', 'pmpro-roles', 'pmpro-add-paypal-express', 'pmpro-set-expiration-dates' ),
-		'association' => array( 'basic-user-avatars', 'pmpro-add-member-admin', 'pmpro-add-name-to-checkout', 'pmpro-approvals', 'pmpro-donations', 'pmpro-events', 'pmpro-import-users-from-csv', 'pmpro-member-directory', 'pmpro-membership-manager-role', 'pmpro-pay-by-check', 'pmpro-set-expiration-dates', 'pmpro-sponsored-members' ),
-		'coaching' => array( 'pmpro-affiliates', 'pmpro-courses', 'pmpro-gift-levels', 'pmpro-member-badges', 'pmpro-membership-card', 'pmpro-user-pages' ),
-		'community' => array( 'pmpro-approvals', 'pmpro-bbpress', 'pmpro-buddypress', 'pmpro-discord-add-on', 'pmpro-email-confirmation', 'pmpro-import-users-from-csv', 'pmpro-invite-only' ),
-		'courses' => array( 'pmpro-courses', 'pmpro-goals', 'pmpro-member-badges', 'pmpro-multiple-memberships-per-user', 'pmpro-user-pages' ),
-		'directory' => array( 'basic-user-avatars', 'pmpro-member-badges', 'pmpro-member-directory', 'pmpro-membership-maps' ),
-		'products' => array( 'MailPoet-Paid-Memberships-Pro-Add-on', 'pmpro-akismet', 'pmpro-gift-levels', 'pmpro-shipping', 'pmpro-woocommerce' ),
-		'content' => array( 'pmpro-addon-packages', 'pmpro-cpt', 'pmpro-series', 'seriously-simple-podcasting', 'pmpro-user-pages' ),
+		'popular' => array(
+			'pmpro-advanced-levels-shortcode',
+			'pmpro-woocommerce',
+			'pmpro-courses',
+			'pmpro-member-directory',
+			'pmpro-subscription-delays',
+			'pmpro-roles',
+			'pmpro-approvals',
+			'pmpro-add-paypal-express',
+			'pmpro-group-accounts',
+			'pmpro-signup-shortcode',
+			'pmpro-set-expiration-dates',
+			'pmpro-import-users-from-csv'
+		),
+		'association' => array(
+			'pmpro-member-directory',
+			'pmpro-membership-manager-role',
+			'pmpro-import-users-from-csv',
+			'pmpro-approvals',
+			'basic-user-avatars',
+			'pmpro-add-member-admin',
+			'pmpro-add-name-to-checkout',
+			'pmpro-donations',
+			'pmpro-events',
+			'pmpro-group-accounts',
+			'pmpro-pay-by-check',
+			'pmpro-set-expiration-dates'
+		),
+		'premium_content' => array(
+			'pmpro-email-confirmation',
+			'pmpro-cpt',
+			'pmpro-series',
+			'pmpro-events',
+			'pmpro-addon-packages',
+			'seriously-simple-podcasting',
+			'pmpro-user-pages'
+		),
+		'community' => array(
+			'pmpro-approvals',
+			'pmpro-bbpress',
+			'pmpro-buddypress',
+			'pmpro-discord-add-on',
+			'pmpro-invite-only',
+			'pmpro-email-confirmation',
+			'pmpro-import-users-from-csv'
+		),
+		'courses' => array(
+			'pmpro-courses',
+			'pmpro-approvals',
+			'pmpro-cpt',
+			'pmpro-user-pages',
+			'pmpro-member-badges',
+			'pmpro-multiple-memberships-per-user'
+		),
+		'directory' => array(
+			'basic-user-avatars',
+			'pmpro-member-badges',
+			'pmpro-member-directory',
+			'pmpro-membership-maps',
+			'pmpro-approvals'
+		),
+		'newsletter' => array(
+			'MailPoet-Paid-Memberships-Pro-Add-on',
+			'pmpro-mailchimp',
+			'pmpro-aweber',
+			'convertkit-for-paid-memberships-pro'
+		),
+		'podcast' => array(
+			'seriously-simple-podcasting',
+			'pmpro-akismet',
+			'pmpro-events',
+			'pmpro-invite-only',
+			'pmpro-email-confirmation'
+		),
+		'video' => array(
+			'pmpro-cpt',
+			'pmpro-email-confirmation',
+			'pmpro-events',
+			'pmpro-invite-only',
+			'pmpro-addon-packages'
+		),
 	);
 }
 
@@ -350,8 +463,9 @@ function pmpro_admin_init_updating_plugins() {
 				}
 				
 				// show error
-				$msg = sprintf( __( 'You must have a <a href="https://www.paidmembershipspro.com/pricing/?utm_source=wp-admin&utm_pluginlink=bulkupdate">valid PMPro %s License Key</a> to update PMPro %s add ons. The following plugins will not be updated:', 'paid-memberships-pro' ), ucwords( $license_type ), ucwords( $license_type ) );
-				echo '<div class="error"><p>' . $msg . ' <strong>' . implode( ', ', $premium_addons[$license_type] ) . '</strong></p></div>';
+				$msg = wp_kses( sprintf( __( 'You must have a <a target="_blank" href="https://www.paidmembershipspro.com/pricing/?utm_source=wp-admin&utm_pluginlink=bulkupdate">valid PMPro %s License Key</a> to update PMPro %s add ons. The following plugins will not be updated:', 'paid-memberships-pro' ), ucwords( $license_type ), ucwords( $license_type ) ), array( 'a' => array( 'href' => array(), 'target' => array() ) ) );
+				// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+				echo '<div class="error"><p>' . $msg . ' <strong>' . esc_html( implode( ', ', $premium_addons[$license_type] ) ) . '</strong></p></div>';
 			}			
 		}
 
@@ -370,12 +484,12 @@ function pmpro_admin_init_updating_plugins() {
 		if ( ! empty( $addon ) && pmpro_license_type_is_premium( $addon['License'] ) && ! pmpro_can_download_addon_with_license( $addon['License'] ) ) {
 			require_once( ABSPATH . 'wp-admin/admin-header.php' );
 
-			echo '<div class="wrap"><h2>' . __( 'Update Plugin' ) . '</h2>';
+			echo '<div class="wrap"><h2>' . esc_html__( 'Update Plugin' ) . '</h2>';
 
 			$msg = sprintf( __( 'You must have a <a href="https://www.paidmembershipspro.com/pricing/?utm_source=wp-admin&utm_pluginlink=addon_update">valid PMPro %s License Key</a> to update PMPro %s add ons.', 'paid-memberships-pro' ), ucwords( $addon['License'] ), ucwords( $addon['License'] ) );
-			echo '<div class="error"><p>' . $msg . '</p></div>';
+			echo '<div class="error"><p>' . wp_kses_post( $msg ) . '</p></div>';
 
-			echo '<p><a href="' . admin_url( 'admin.php?page=pmpro-addons' ) . '" target="_parent">' . __( 'Return to the PMPro Add Ons page', 'paid-memberships-pro' ) . '</a></p>';
+			echo '<p><a href="' . esc_url( admin_url( 'admin.php?page=pmpro-addons' ) ) . '" target="_parent">' . esc_html__( 'Return to the PMPro Add Ons page', 'paid-memberships-pro' ) . '</a></p>';
 
 			echo '</div>';
 
@@ -395,7 +509,7 @@ function pmpro_admin_init_updating_plugins() {
 		$addon = pmpro_getAddonBySlug( $slug );
 		if ( ! empty( $addon ) && pmpro_license_type_is_premium( $addon['License'] ) && ! pmpro_can_download_addon_with_license( $addon['License'] ) ) {
 			$msg = sprintf( __( 'You must enter a valid PMPro %s License Key under Settings > PMPro License to update this add on.', 'paid-memberships-pro' ), ucwords( $addon['License'] ) );
-			echo '<div class="error"><p>' . $msg . '</p></div>';
+			echo '<div class="error"><p>' . esc_html( $msg ) . '</p></div>';
 
 			// can exit WP now
 			exit;

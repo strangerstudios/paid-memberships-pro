@@ -2,7 +2,7 @@
 	//only admins can get this
 	if(!function_exists("current_user_can") || (!current_user_can("manage_options") && !current_user_can("pmpro_addons")))
 	{
-		die(__("You do not have permissions to perform this action.", 'paid-memberships-pro' ));
+		die(esc_html__("You do not have permissions to perform this action.", 'paid-memberships-pro' ));
 	}	
 	
 	global $wpdb, $msg, $msgt, $pmpro_addons;
@@ -43,7 +43,7 @@
 	<div id="pmpro-admin-add-ons">
 		<h1 class="wp-heading-inline"><?php esc_html_e( 'Add Ons', 'paid-memberships-pro' ); ?></h1>
 		<p class="pmpro-admin-add-ons-refresh">
-			<?php printf(__('Last checked on %s at %s.', 'paid-memberships-pro' ), date_i18n(get_option('date_format'), $addons_timestamp), date_i18n(get_option('time_format'), $addons_timestamp));?> &nbsp;
+			<?php echo esc_html( sprintf(__('Last checked on %s at %s.', 'paid-memberships-pro' ), date_i18n(get_option('date_format'), $addons_timestamp), date_i18n(get_option('time_format'), $addons_timestamp)));?> &nbsp;
 			<a class="button" href="<?php echo esc_url( admin_url("admin.php?page=pmpro-addons&force-check=1") );?>"><?php esc_html_e('Check Again', 'paid-memberships-pro' ); ?></a>
 		</p>
 		<?php
@@ -162,7 +162,7 @@
 								<?php if ( ! empty( $addon['PluginURI'] ) ) { ?>
 									<a target="_blank" href="<?php echo esc_url( $plugin_link ); ?>">
 								<?php } ?>
-								<img src="<?php echo esc_url( $addon['plugin_icon_src'] ); ?>" alt="<?php esc_attr_e( $addon['Name'] ); ?>">
+								<img src="<?php echo esc_url( $addon['plugin_icon_src'] ); ?>" alt="<?php echo esc_attr( $addon['Name'] ); ?>">
 								<?php if ( ! empty( $addon['PluginURI'] ) ) { ?>
 									</a>
 								<?php } ?>
@@ -171,13 +171,13 @@
 								<?php if ( ! empty( $addon['PluginURI'] ) ) { ?>
 									<a target="_blank" href="<?php echo esc_url( $plugin_link ); ?>">
 								<?php } ?>
-								<?php esc_html_e( $addon['ShortName'] ); ?>
+								<?php echo esc_html( $addon['ShortName'] ); ?>
 								<?php if ( ! empty( $addon['PluginURI'] ) ) { ?>
 									</a>
 								<?php } ?>
 							</h5> <!-- end add-on-name -->
 							<div class="add-on-description">
-								<p><?php esc_html_e( $addon['Description'] ); ?></p>
+								<p><?php echo esc_html( $addon['Description'] ); ?></p>
 								<p>
 								<?php
 									$plugin_meta = array();
@@ -188,7 +188,7 @@
 										$plugin_meta[] = sprintf( __( 'By %s' ), $author );
 									}
 									//$plugin_meta = apply_filters( 'plugin_row_meta', $plugin_meta, $plugin_file, $addon, $addon['status']);
-									echo implode( ' | ', $plugin_meta );
+									echo implode( ' | ', $plugin_meta ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 									?>
 								</p>
 							</div>
@@ -332,7 +332,7 @@
 											}
 										}
 									} else {
-										echo $action_button;
+										echo $action_button; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 									}
 								?>
 							</div> <!-- end action-button -->
@@ -346,26 +346,62 @@
 		</div> <!-- end pmpro-admin-add-ons-list -->
 		<script>
 			jQuery(document).ready( function($) {
-				$('[data-search]').keyup(function() {
-					var views = $( '.addons-search' ).closest( '.filter-links' );
-					views.find( 'li a' ).removeClass( 'current' );
-					$('.addons-search a').addClass( 'current' );
-					$('.addons-search').show();
 
-					var filter = $(this).data('search');
-					var filter_items = $(`[data-search-${filter}]`);
-					var search_val = $(this).val();
+				/**
+				 * Catches native clear search form event and run custom code.
+				 */
+				$('[data-search]').on('search', () => {
+					clearSearch($( '.addons-search' ))
+				});
 
-					if ( search_val != '' ) {
-						filter_items.addClass('search-hide');
-						$(`[data-search-${filter}*="${search_val.toLowerCase()}"]`).removeClass('search-hide');
-					} else {
-						filter_items.removeClass('search-hide');
-						jQuery('.addons-search').hide();
+				/**
+				 * Clear search.
+				 */
+				const clearSearch = ($addonsSearch) => {
+					$('#pmpro-no-add-ons').hide();
+					$addonsSearch.hide();
+					const current = location.hash.split("#")[1] || 'all';
+					$( `.filter-links li a[href="#${current}"` ).trigger('click');
+				};
+
+				/**
+				 * Add-on search.
+				 */
+				$('[data-search]').on('keyup', (ev) => {
+					const MIN_SEARCH_LENGTH = 3;
+					const $input = $(ev.currentTarget);
+					const searchTerms = $input.val().toLowerCase().split( ' ' ).filter( term => term !== '' && term.length >= MIN_SEARCH_LENGTH );
+					$addonsSearch = $( '.addons-search' );
+
+					if (searchTerms.length === 0) {
+						clearSearch($( '.addons-search' ));
+						return;
+					}
+
+					$addonsSearch.closest( '.filter-links' ).find( 'li a' ).removeClass( 'current' );
+					$addonsSearch.addClass( 'current' ).show();
+
+					const filter = $input.data('search');
+					const $allItemsArray = $(`[data-search-${filter}]`);
+					$allItemsArray.hide();
+
+					const filteredItems = $allItemsArray.filter((index,element) => {
+						const addonsSearchableDescription = $(element).data(`search-${filter}`).toLowerCase();
+						return searchTerms.some((term) => addonsSearchableDescription.includes(term));
+					});
+
+					if( filteredItems.length > 0 ) {
+						filteredItems.show();
+						$('#pmpro-no-add-ons').hide();
+					 } else {
+						$('#pmpro-no-add-ons').show();
 					}
 				});
 
-				$('.filter-links li a' ).click( function(e) {
+				/**
+				 * Handles clicks on filter addons links.
+				 */
+				$('.filter-links li a' ).on('click', function(e) {
 					// don't want to jump to #
 					e.preventDefault();
 
@@ -393,16 +429,16 @@
 					}
 
 					if ( view_val != '' ) {
-						view_items.addClass('search-hide');
-						$(`[data-search-${view}*="${view_val.toLowerCase()}"]`).removeClass('search-hide').addClass('search-show');
+						view_items.hide();
+						$(`[data-search-${view}*="${view_val.toLowerCase()}"]`).show();
 					} else {
-						view_items.removeClass('search-hide').addClass('search-show');
+						view_items.show();
 					}
 
 				});
 
 				// check if we should switch Add On content on page loads
-				$( 'a[data-toggle="view"][href="' + window.location.hash + '"]' ).click();
+				$( 'a[data-toggle="view"][href="' + window.location.hash + '"]' ).trigger('click');
 
 			});
 		</script>
@@ -413,9 +449,9 @@
 			<span id="pmpro-popup-inner">
 				<a class="pmproPopupCloseButton" href="#" title="<?php esc_attr_e( 'Close Popup', 'paid-memberships-pro' ); ?>"><span class="dashicons dashicons-no"></span></a>
 				<a title="Paid Memberships Pro - Membership Plugin for WordPress" target="_blank" rel="noopener noreferrer" href="https://www.paidmembershipspro.com/pricing/?utm_source=plugin&utm_medium=pmpro-addons&utm_campaign=pricing&utm_content=pmpro-popup"><img src="<?php echo esc_url( PMPRO_URL . '/images/Paid-Memberships-Pro.png' ); ?>" width="350" height="75" border="0" alt="Paid Memberships Pro(c) - All Rights Reserved" /></a>
-				<h1><?php printf(__( 'Get %s and more with a %s license.', 'paid-memberships-pro' ), '<strong id="addon-name"></strong>', '<strong id="addon-license"></strong>' ); ?></h1>
+				<h1><?php printf(esc_html__( 'Get %s and more with a %s license.', 'paid-memberships-pro' ), '<strong id="addon-name"></strong>', '<strong id="addon-license"></strong>' ); ?></h1>
 				<p><a class="button button-primary button-hero" href="https://www.paidmembershipspro.com/pricing/?utm_source=plugin&utm_medium=pmpro-addons&utm_campaign=pricing&utm_content=pmpro-popup"><strong><?php esc_html_e( 'View Plans and Pricing', 'paid-memberships-pro' ); ?></strong></a></p>
-				<p><?php printf(__( 'Already purchased? <a href="%s">Enter your license key here &raquo;</a>', 'paid-memberships-pro' ), admin_url( 'admin.php?page=pmpro-license' ) ); ?></p>
+				<p><?php printf( wp_kses_post( __( 'Already purchased? <a href="%s">Enter your license key here</a>', 'paid-memberships-pro' ) ), esc_url( admin_url( 'admin.php?page=pmpro-license' ) ) ); ?></p>
 			</span>
 		</div>
 	</div> <!-- end pmpro-popup -->

@@ -1,0 +1,15 @@
+/**
+ * Generate the Content Visibility block styles to be applied in the block editor.
+ */
+.wp-block-pmpro-membership .block-editor-inner-blocks {
+	margin: 8px;
+	min-height: 30px;
+}
+.pmpro-block-require-membership-element__set-hide-button.is-secondary,
+.pmpro-block-require-membership-element__set-show-button.is-secondary {
+	box-shadow: inset 0 0 0 1px #777;
+	color: #777;
+}
+.pmpro-block-inspector-scrollable {
+	margin-bottom: 20px;
+}

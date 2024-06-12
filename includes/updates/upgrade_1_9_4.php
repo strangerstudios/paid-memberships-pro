@@ -15,7 +15,7 @@ function pmpro_upgrade_1_9_4() {
 			add_action( 'admin_notices', 'pmpro_upgrade_1_9_4_show_div_notice' );
 		}
 
-		pmpro_setOption( 'db_version', '1.94' );
+		update_option( 'pmpro_db_version', '1.94' );
 		return 1.94;
 }
 
@@ -24,7 +24,7 @@ function pmpro_upgrade_1_9_4_show_div_notice() {
  ?>
     <div class="notice notice-warning">
         <p><?php esc_html_e( 'We have detected that you are using a custom checkout page template for Paid Memberships Pro. This was recently changed and may need to be updated in order to display correctly.', 'paid-memberships-pro')?>
-        	<?php _e('If you notice UI issues after upgrading, <a href="https://www.paidmembershipspro.com/add-ons/table-layout-plugin-pages/">see this free add on to temporarily roll back to the table-based layout while you resolve the issues</a>.', 'paid-memberships-pro' ); ?> <a href="<?php echo esc_url( add_query_arg( 'pmpro_div_notice_hide', '1', esc_url_raw( $_SERVER['REQUEST_URI'] ) ) );?>"><?php esc_html_e( 'Dismiss', 'paid-memberships-pro' );?></a></p>
+        	<?php echo wp_kses_post( __('If you notice UI issues after upgrading, <a href="https://www.paidmembershipspro.com/add-ons/table-layout-plugin-pages/">see this free add on to temporarily roll back to the table-based layout while you resolve the issues</a>.', 'paid-memberships-pro' ) ); ?> <a href="<?php echo esc_url( add_query_arg( 'pmpro_div_notice_hide', '1', esc_url_raw( $_SERVER['REQUEST_URI'] ) ) );?>"><?php esc_html_e( 'Dismiss', 'paid-memberships-pro' );?></a></p>
     </div>
 <?php
 }

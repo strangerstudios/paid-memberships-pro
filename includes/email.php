@@ -13,7 +13,7 @@ function pmpro_wp_mail_from_name($from_name)
 	//make sure it's the default from name
 	if($from_name == $default_from_name)
 	{
-		$pmpro_from_name = pmpro_getOption("from_name");
+		$pmpro_from_name = get_option("pmpro_from_name");
 		if ($pmpro_from_name)
 			$from_name = stripslashes($pmpro_from_name);
 	}
@@ -37,7 +37,7 @@ function pmpro_wp_mail_from($from_email)
 	//make sure it's the default email address
 	if($from_email == $default_from_email)
 	{
-		$pmpro_from_email = pmpro_getOption("from_email");
+		$pmpro_from_email = get_option("pmpro_from_email");
 		if ($pmpro_from_email && is_email( $pmpro_from_email ) )
 			$from_email = $pmpro_from_email;
 	}
@@ -46,7 +46,7 @@ function pmpro_wp_mail_from($from_email)
 }
 
 // Are we filtering all WP emails or just PMPro ones?
-$only_filter_pmpro_emails = pmpro_getOption("only_filter_pmpro_emails");
+$only_filter_pmpro_emails = get_option("pmpro_only_filter_pmpro_emails");
 if($only_filter_pmpro_emails) {
 	add_filter('pmpro_email_sender_name', 'pmpro_wp_mail_from_name');
 	add_filter('pmpro_email_sender', 'pmpro_wp_mail_from');
@@ -58,7 +58,7 @@ if($only_filter_pmpro_emails) {
 /**
  * If the $email_member_notification option is empty, disable the wp_new_user_notification email at checkout.
  */
-$email_member_notification = pmpro_getOption("email_member_notification");
+$email_member_notification = get_option("pmpro_email_member_notification");
 if(empty($email_member_notification))
 	add_filter("pmpro_wp_new_user_notification", "__return_false", 0);
 
@@ -175,7 +175,7 @@ function pmpro_email_templates_get_template_data() {
 	check_ajax_referer('pmproet', 'security');
 
 	if ( ! current_user_can( 'pmpro_emailtemplates' ) ) {
-		die( __( 'You do not have permissions to perform this action.', 'paid-memberships-pro' ) );
+		die( esc_html__( 'You do not have permissions to perform this action.', 'paid-memberships-pro' ) );
 	}
 
 	global $pmpro_email_templates_defaults;
@@ -183,9 +183,9 @@ function pmpro_email_templates_get_template_data() {
 	$template = sanitize_text_field( $_REQUEST['template'] );
 
 	//get template data
-	$template_data['body'] = pmpro_getOption('email_' . $template . '_body');
-	$template_data['subject'] = pmpro_getOption('email_' . $template . '_subject');
-	$template_data['disabled'] = pmpro_getOption('email_' . $template . '_disabled');
+	$template_data['body'] = get_option('pmpro_email_' . $template . '_body');
+	$template_data['subject'] = get_option('pmpro_email_' . $template . '_subject');
+	$template_data['disabled'] = get_option('pmpro_email_' . $template . '_disabled');
 
 	if (empty($template_data['body'])) {
 		//if not found, load template
@@ -211,7 +211,7 @@ function pmpro_email_templates_save_template_data() {
 	check_ajax_referer('pmproet', 'security');
 
 	if ( ! current_user_can( 'pmpro_emailtemplates' ) ) {
-		die( __( 'You do not have permissions to perform this action.', 'paid-memberships-pro' ) );
+		die( esc_html__( 'You do not have permissions to perform this action.', 'paid-memberships-pro' ) );
 	}
 
 	$template = sanitize_text_field( $_REQUEST['template'] );
@@ -219,8 +219,8 @@ function pmpro_email_templates_save_template_data() {
 	$body = pmpro_kses( wp_unslash( $_REQUEST['body'] ), 'email' );	// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 
 	//update this template's settings
-	pmpro_setOption( 'email_' . $template . '_subject', $subject );
-	pmpro_setOption( 'email_' . $template . '_body', $body );
+	update_option( 'pmpro_email_' . $template . '_subject', $subject );
+	update_option( 'pmpro_email_' . $template . '_body', $body );
 	delete_transient( 'pmproet_' . $template );
 	esc_html_e( 'Template Saved', 'paid-memberships-pro' );
 
@@ -234,7 +234,7 @@ function pmpro_email_templates_reset_template_data() {
 	check_ajax_referer('pmproet', 'security');
 
 	if ( ! current_user_can( 'pmpro_emailtemplates' ) ) {
-		die( __( 'You do not have permissions to perform this action.', 'paid-memberships-pro' ) );
+		die( esc_html__( 'You do not have permissions to perform this action.', 'paid-memberships-pro' ) );
 	}
 
 	global $pmpro_email_templates_defaults;
@@ -259,7 +259,7 @@ function pmpro_email_templates_disable_template() {
 	check_ajax_referer('pmproet', 'security');
 
 	if ( ! current_user_can( 'pmpro_emailtemplates' ) ) {
-		die( __( 'You do not have permissions to perform this action.', 'paid-memberships-pro' ) );
+		die( esc_html__( 'You do not have permissions to perform this action.', 'paid-memberships-pro' ) );
 	}
 
 	$template = sanitize_text_field( $_REQUEST['template'] );
@@ -277,7 +277,7 @@ function pmpro_email_templates_send_test() {
 	check_ajax_referer('pmproet', 'security');
 
 	if ( ! current_user_can( 'pmpro_emailtemplates' ) ) {
-		die( __( 'You do not have permissions to perform this action.', 'paid-memberships-pro' ) );
+		die( esc_html__( 'You do not have permissions to perform this action.', 'paid-memberships-pro' ) );
 	}
 
 	global $current_user;
@@ -315,6 +315,14 @@ function pmpro_email_templates_send_test() {
 		case 'cancel_admin':
 			$send_email = 'sendCancelAdminEmail';
 			$params = array($current_user, $current_user->membership_level->id);
+			break;
+		case 'cancel_on_next_payment_date':
+			$send_email = 'sendCancelOnNextPaymentDateEmail';
+			$params = array( $test_user, $test_user->membership_level->id );
+			break;
+		case 'cancel_on_next_payment_date_admin':
+			$send_email = 'sendCancelOnNextPaymentDateAdminEmail';
+			$params = array( $test_user, $test_user->membership_level->id );
 			break;
 		case 'checkout_check':
 		case 'checkout_express':
@@ -387,7 +395,7 @@ function pmpro_email_templates_send_test() {
 	$response = call_user_func_array(array($test_email, $send_email), $params);
 
 	//return the response
-	echo $response;
+	echo esc_html( $response );
 	exit;
 }
 add_action('wp_ajax_pmpro_email_templates_send_test', 'pmpro_email_templates_send_test');
@@ -440,7 +448,7 @@ function pmpro_email_templates_email_data($data, $email) {
 
 	//general data
 	$new_data['sitename'] = get_option("blogname");
-	$new_data['siteemail'] = pmpro_getOption("from_email");
+	$new_data['siteemail'] = get_option("pmpro_from_email");
 	if(empty($new_data['login_link'])) {
 		$new_data['login_link'] = wp_login_url();
 		$new_data['login_url'] = wp_login_url();
@@ -494,7 +502,7 @@ function pmpro_email_templates_email_data($data, $email) {
 			$new_data['accountnumber'] = hideCardNumber($invoice->accountnumber);
 			$new_data['expirationmonth'] = $invoice->expirationmonth;
 			$new_data['expirationyear'] = $invoice->expirationyear;
-			$new_data['instructions'] = wpautop(pmpro_getOption('instructions'));
+			$new_data['instructions'] = wpautop(get_option('pmpro_instructions'));
 			$new_data['invoice_id'] = $invoice->code;
 			$new_data['invoice_total'] = $pmpro_currency_symbol . number_format($invoice->total, 2);
 			$new_data['invoice_date'] = date_i18n( get_option( 'date_format' ), $invoice->getTimestamp() );
@@ -513,7 +521,7 @@ function pmpro_email_templates_email_data($data, $email) {
 	}
 
 	//if others are used in the email look in usermeta
-	$et_body = pmpro_getOption('email_' . $email->template . '_body');
+	$et_body = get_option('pmpro_email_' . $email->template . '_body');
 	$templates_in_email = preg_match_all("/!!([^!]+)!!/", $et_body, $matches);
 	if ( ! empty( $templates_in_email ) && ! empty( $user->ID ) ) {
 		$matches = $matches[1];
@@ -568,8 +576,8 @@ function pmpro_email_templates_get_template_body($template) {
 	// Load the template.
 	if ( get_transient( 'pmproet_' . $template ) === false ) {
 		// Load template
-		if ( ! empty( pmpro_getOption('email_' . $template . '_body') ) ) {
-			$body = pmpro_getOption('email_' . $template . '_body');
+		if ( ! empty( get_option('pmpro_email_' . $template . '_body') ) ) {
+			$body = get_option('pmpro_email_' . $template . '_body');
 		}elseif( ! empty($pmpro_email_templates_defaults[$template]['body'])) {
 			$body = $pmpro_email_templates_defaults[$template]['body'];
 		} elseif ( file_exists( get_stylesheet_directory() . '/paid-memberships-pro/email/' . $template . '.html' ) ) {

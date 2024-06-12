@@ -1,10 +1,8 @@
 <?php
 //only admins can get this
 if ( ! function_exists( "current_user_can" ) || ( ! current_user_can( "manage_options" ) && ! current_user_can( "pmpro_orderscsv" ) ) ) {
-	die( __( "You do not have permissions to perform this action.", 'paid-memberships-pro' ) );
+	die( esc_html__( "You do not have permissions to perform this action.", 'paid-memberships-pro' ) );
 }
-
-define('PMPRO_BENCHMARK', true);
 
 if (!defined('PMPRO_BENCHMARK'))
 	define('PMPRO_BENCHMARK', false);
@@ -132,9 +130,9 @@ if ( $filter == "all" || ! $filter ) {
 	$start_date = $start_year . "-" . $start_month . "-" . $start_day;
 	$end_date   = $end_year . "-" . $end_month . "-" . $end_day;
 
-	//add times to dates
-	$start_date = $start_date . " 00:00:00";
-	$end_date   = $end_date . " 23:59:59";
+	//add times to dates and localize
+	$start_date = get_gmt_from_date( $start_date . ' 00:00:00' );
+	$end_date   = get_gmt_from_date( $end_date . ' 23:59:59' );
 
 	$condition = "o.timestamp BETWEEN '" . $start_date . "' AND '" . $end_date . "'";
 } elseif ( $filter == "predefined-date-range" ) {
@@ -154,15 +152,15 @@ if ( $filter == "all" || ! $filter ) {
 		$end_date   = date_i18n( "Y-m-d", strtotime( "last day of December $year", current_time( "timestamp" ) ) );
 	}
 
-	//add times to dates
-	$start_date = $start_date . " 00:00:00";
-	$end_date   = $end_date . " 23:59:59";
+	//add times to dates and localize
+	$start_date = get_gmt_from_date( $start_date . ' 00:00:00' );
+	$end_date   = get_gmt_from_date( $end_date . ' 23:59:59' );
 
 	$condition = "o.timestamp BETWEEN '" . esc_sql( $start_date ) . "' AND '" . esc_sql( $end_date ) . "'";
 } elseif ( $filter == "within-a-level" ) {
-	$condition = "o.membership_id = " . esc_sql( $l );
+	$condition = "o.membership_id = " . (int) $l;
 } elseif ( $filter == 'with-discount-code' ) {
-	$condition = 'dc.code_id = ' . esc_sql( $discount_code );
+	$condition = 'dc.code_id = ' . (int) $discount_code;
 } elseif ( $filter == "within-a-status" ) {
 	$condition = "o.status = '" . esc_sql( $status ) . "' ";
 } elseif ( $filter == 'only-paid' ) {
@@ -241,7 +239,7 @@ if ( ! empty( $s ) ) {
 }
 
 if ( ! empty( $start ) && ! empty( $limit ) ) {
-	$sqlQuery .= "LIMIT " . esc_sql( $start ) . "," . esc_sql( $limit );
+	$sqlQuery .= "LIMIT " . (int) $start . "," . (int) $limit;
 }
 
 $headers   = array();
@@ -276,7 +274,6 @@ $csv_file_header_array = array(
 	"level_name",
 	"subtotal",
 	"tax",
-	"couponamount",
 	"total",
 	"payment_type",
 	"cardtype",
@@ -315,7 +312,6 @@ $default_columns = array(
 	array( "level", "name" ),
 	array( "order", "subtotal" ),
 	array( "order", "tax" ),
-	array( "order", "couponamount" ),
 	array( "order", "total" ),
 	array( "order", "payment_type" ),
 	array( "order", "cardtype" ),
@@ -330,14 +326,6 @@ $default_columns = array(
 	array( "discount_code", "id" ),
 	array( "discount_code", "code" )
 );
-
-// Hiding couponamount by default.
-$coupons = apply_filters( 'pmpro_orders_show_coupon_amounts', false );
-if ( empty( $coupons ) ) {
-	$csv_file_header_array = array_diff( $csv_file_header_array, array( 'couponamount' ) );
-	$couponamount_array_key = array_keys( $default_columns, array( 'order', 'couponamount' ) );
-	unset( $default_columns[ $couponamount_array_key[0] ] );
-}
 
 $default_columns = apply_filters( "pmpro_order_list_csv_default_columns", $default_columns );
 
@@ -571,12 +559,12 @@ function pmpro_transmit_order_content( $csv_fh, $filename, $headers = array() ) 
 
 	//did we accidentally send errors/warnings to browser?
 	if ( headers_sent() ) {
-		echo str_repeat( '-', 75 ) . "<br/>\n";
+		echo esc_html( str_repeat( '-', 75 ) ) . "<br/>\n";
 		echo 'Please open a support case and paste in the warnings/errors you see above this text to\n ';
 		echo 'the <a href="http://paidmembershipspro.com/support/?utm_source=plugin&utm_medium=pmpro-orders-csv&utm_campaign=support" target="_blank">Paid Memberships Pro support forum</a><br/>\n';
-		echo str_repeat( "=", 75 ) . "<br/>\n";
-		echo file_get_contents( $filename );
-		echo str_repeat( "=", 75 ) . "<br/>\n";
+		echo esc_html( str_repeat( '-', 75 ) ) . "<br/>\n";
+		echo wp_kses_post( file_get_contents( $filename ) );
+		echo esc_html( str_repeat( '-', 75 ) ) . "<br/>\n";
 	}
 
 	//transmission

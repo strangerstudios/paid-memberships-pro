@@ -89,6 +89,10 @@ class PMPro_Site_Health {
 					'label' => __( 'Membership Levels', 'paid-memberships-pro' ),
 					'value' => self::get_levels(),
 				],
+				'pmpro-level-groups'         => [
+					'label' => __( 'Level Groups', 'paid-memberships-pro' ),
+					'value' => self::get_level_groups(),
+				],
 				'pmpro-custom-templates'     => [
 					'label' => __( 'Custom Templates', 'paid-memberships-pro' ),
 					'value' => self::get_custom_templates(),
@@ -109,11 +113,32 @@ class PMPro_Site_Health {
 					'label' => __( 'Library Conflicts', 'paid-memberships-pro' ),
 					'value' => self::get_library_conflicts(),
 				],
+				'pmpro-add-ons-incorrect-folder-names' => [
+					'label' => __( 'Incorrect Add On Folder Names', 'paid-memberships-pro' ),
+					'value' => self::get_add_ons_with_incorrect_folder_name(),
+        ],
+				'pmpro-current-site-url' => [
+					'label' => __( 'Current Site URL', 'paid-memberships-pro' ),
+					'value' => get_site_url(),
+				],
+				'pmpro-recorded-site-url' => [
+					'label' => __( 'Last Known Site URL', 'paid-memberships-pro' ),
+					'value' => get_option( 'pmpro_last_known_url' ),
+				],
+				'pmpro-pause-mode' => [
+					'label' => __( 'Pause Mode', 'paid-memberships-pro' ),
+					'value' => self::get_pause_mode_state(),
+				],
 			],
 		];
 
 		// Automatically add information about constants set.
 		$info['pmpro']['fields'] = array_merge( $info['pmpro']['fields'], self::get_constants() );
+
+		if ( function_exists( 'pmpro_add_site_health_info_2_10_6' ) ) {
+			// If the 2.10.6 update cleaned up sensitive order meta data, we want to show that.
+			$info = pmpro_add_site_health_info_2_10_6( $info );
+		}
 
 		return $info;
 	}
@@ -132,7 +157,35 @@ class PMPro_Site_Health {
 			return __( 'No Levels Found', 'paid-memberships-pro' );
 		}
 
+		foreach ( $membership_levels as &$membership_level ) {
+			$membership_level->meta = get_pmpro_membership_level_meta( $membership_level->id );
+
+			$membership_level = apply_filters( 'pmpro_site_health_info_membership_level', $membership_level );
+		}
+
 		return wp_json_encode( $membership_levels, JSON_PRETTY_PRINT );
+	}
+
+	/**
+	 * Get the level group information.
+	 *
+	 * @since 3.0.2
+	 *
+	 * @return string The level group information.
+	 */
+	public function get_level_groups() {
+		$level_groups = pmpro_get_level_groups();
+
+		if ( ! $level_groups ) {
+			return __( 'No Level Groups Found', 'paid-memberships-pro' );
+		}
+
+		// Add the level IDs to the group objects.
+		foreach ( $level_groups as $group_id => $group ) {
+			$group->level_ids = pmpro_get_level_ids_for_group( $group_id );
+		}
+
+		return wp_json_encode( $level_groups, JSON_PRETTY_PRINT );
 	}
 
 	/**
@@ -175,7 +228,7 @@ class PMPro_Site_Health {
 	 * @return string The payment gateway information.
 	 */
 	public function get_gateway() {
-		$gateway  = pmpro_getOption( 'gateway' );
+		$gateway  = get_option( 'pmpro_gateway' );
 		$gateways = pmpro_gateways();
 
 		// Check if gateway is registered.
@@ -216,7 +269,7 @@ class PMPro_Site_Health {
 	 * @return string The payment gateway environment information.
 	 */
 	public function get_gateway_env() {
-		$environment  = pmpro_getOption( 'gateway_environment' );
+		$environment  = get_option( 'pmpro_gateway_environment' );
 		$environments = [
 			'sandbox' => __( 'Sandbox/Testing', 'paid-memberships-pro' ),
 			'live'    => __( 'Live/Production', 'paid-memberships-pro' ),
@@ -266,76 +319,53 @@ class PMPro_Site_Health {
 	 * @return string The custom template information.
 	 */
 	public function get_custom_templates() {
-		$parent_theme_path = get_template_directory() . '/paid-memberships-pro/';
-		$child_theme_path  = get_stylesheet_directory() . '/paid-memberships-pro/';
+		// Create a $template => $path array of all default page templates.
+		$default_templates = array(
+			'account' => PMPRO_DIR . '/pages/account.php',
+			'billing' => PMPRO_DIR . '/pages/billing.php',
+			'cancel' => PMPRO_DIR . '/pages/cancel.php',
+			'checkout' => PMPRO_DIR . '/pages/checkout.php',
+			'confirmation' => PMPRO_DIR . '/pages/confirmation.php',
+			'invoice' => PMPRO_DIR . '/pages/invoice.php',
+			'levels' => PMPRO_DIR . '/pages/levels.php',
+			'login' => PMPRO_DIR . '/pages/login.php',
+			'member_profile_edit' => PMPRO_DIR . '/pages/member_profile_edit.php',
+		);
 
-		$parent_theme_templates = $this->get_custom_templates_from_path( $parent_theme_path );
-		$child_theme_templates  = null;
+		// Filter $default_templates so that Add Ons can add their own templates.
+		$default_templates = apply_filters( 'pmpro_default_page_templates', $default_templates );
 
-		if ( $parent_theme_path !== $child_theme_path ) {
-			$child_theme_templates = $this->get_custom_templates_from_path( $child_theme_path );
-		}
+		// Loop through each template. For each, if a custom page template is being loaded, store:
+		// - The custom path being loaded.
+		// - The version of the default template.
+		// - The version of the custom template.
+		$custom_templates = array(); // Array of $template => array( 'default_version' => $default_version, 'loaded_version' => $loaded_version, 'loaded_path' => $loaded_path ).
+		foreach ( $default_templates as $template => $path ) {
+			// Gather information about the default and loaded templates.
+			$default_version = pmpro_get_version_for_page_template_at_path( $path );
+			$custom_path = pmpro_get_template_path_to_load( $template );
+			$custom_version = pmpro_get_version_for_page_template_at_path( $custom_path );
 
-		if ( is_wp_error( $parent_theme_templates ) ) {
-			return $parent_theme_templates->get_error_message();
-		}
-
-		$templates = $parent_theme_templates;
-
-		if ( null !== $child_theme_templates ) {
-			if ( is_wp_error( $child_theme_templates ) ) {
-				$child_theme_templates = $child_theme_templates->get_error_message();
+			// If the $path and $loaded_path are different, a custom template is being loaded.
+			if ( $path !== $custom_path ) {
+				$custom_templates[ $template ] = 'Default Version: ' . $default_version . ' | Custom Version: ' . $custom_version . ' | Custom Path: ' . $custom_path . ' | Action: ';
+				$use_custom_page_template = get_option( 'pmpro_use_custom_page_template_' . $template );
+				switch( $use_custom_page_template ) {
+					case 'yes':
+						$custom_templates[ $template ] .= 'Custom';
+						break;
+					case 'no':
+						$custom_templates[ $template ] .= 'Core';
+						break;
+					default:
+						$custom_templates[ $template ] .= 'Fallback';
+						break;
+				}
+				$custom_templates[ $template ] = esc_html( $custom_templates[ $template] );
 			}
-
-			$templates = [
-				'parent' => $parent_theme_templates,
-				'child'  => $child_theme_templates,
-			];
 		}
 
-		return wp_json_encode( $templates, JSON_PRETTY_PRINT );
-	}
-
-	private function get_custom_templates_from_path( $path ) {
-		require_once ABSPATH . 'wp-admin/includes/file.php';
-
-		/**
-		 * @var $wp_filesystem WP_Filesystem_Base
-		 */
-		global $wp_filesystem;
-
-		WP_Filesystem();
-
-		if ( ! $wp_filesystem ) {
-			return new WP_Error( 'access-denied', __( 'Unable to verify', 'paid-memberships-pro' ) );
-		}
-
-		if ( ! $wp_filesystem->is_dir( $path ) ) {
-			return new WP_Error( 'path-not-found', __( 'No template overrides', 'paid-memberships-pro' ) );
-		}
-
-		$override_list = $wp_filesystem->dirlist( $path );
-
-		if ( ! $override_list ) {
-			return new WP_Error( 'path-empty', __( 'Empty override folder -- no template overrides', 'paid-memberships-pro' ) );
-		}
-
-		$templates = [];
-
-		foreach ( $override_list as $template => $info ) {
-			$last_modified = $info['lastmod'] . ' ' . $info['time'];
-
-			if ( isset( $info['lastmodunix'] ) ) {
-				$last_modified = date( 'Y-m-d H:i:s', $info['lastmodunix'] );
-			}
-
-			$templates[ $template ] = [
-				'last_updated' => $last_modified,
-				'path'         => str_replace( ABSPATH, '', $path ) . $template,
-			];
-		}
-
-		return $templates;
+		return $custom_templates;
 	}
 
 	/**
@@ -477,7 +507,7 @@ class PMPro_Site_Health {
 
 		WP_Filesystem();
 
-		if ( ! $wp_filesystem ) {
+        if ( ! $wp_filesystem || ! is_object($wp_filesystem) || ( is_wp_error($wp_filesystem->errors) && $wp_filesystem->errors->has_errors() ) ) {
 			return __( 'Unable to access .htaccess file', 'paid-memberships-pro' );
 		}
 
@@ -527,6 +557,19 @@ class PMPro_Site_Health {
 		return $return_arr;
 	}
 
+	function get_add_ons_with_incorrect_folder_name() {
+		// Get the current list of Add Ons with the wrong name.
+		$incorrect_folder_names = pmpro_get_add_ons_with_incorrect_folder_names();
+
+		// Build error messages for each Add On with the wrong name.
+		$errors = array();
+		foreach ( $incorrect_folder_names as $installed_name => $addon ) {
+			$errors[] = "{$addon['Name']} ( {$addon['plugin']} => {$installed_name} )";
+		}
+
+		return empty( $errors ) ? __( 'No add ons with incorrect folder names detected.', 'paid-memberships-pro' ) : implode( " | \n", $errors );
+	}
+
 	/**
 	 * Get the constants site health information.
 	 *
@@ -558,7 +601,6 @@ class PMPro_Site_Health {
 				'PMPRO_IPN_DEBUG'                 => __( 'PayPal IPN Debug Mode', 'paid-memberships-pro' ),
 			],
 			'stripe' => [
-				'PMPRO_STRIPE_WEBHOOK_DELAY'      => __( 'Stripe Webhook Delay', 'paid-memberships-pro' ),
 				'PMPRO_STRIPE_WEBHOOK_DEBUG'      => __( 'Stripe Webhook Debug Mode', 'paid-memberships-pro' ),
 			],
 			'twocheckout' => [
@@ -566,7 +608,7 @@ class PMPro_Site_Health {
 			],
 		];
 
-		$gateway = pmpro_getOption( 'gateway' );
+		$gateway = get_option( 'pmpro_gateway' );
 
 		if ( $gateway && isset( $gateway_specific_constants[ $gateway ] ) ) {
 			$constants = array_merge( $constants, $gateway_specific_constants[ $gateway ] );
@@ -598,5 +640,24 @@ class PMPro_Site_Health {
 		}
 
 		return $constants_formatted;
+	}
+
+	/**
+	 * Get the pause mode state
+	 *
+	 * @since 2.10
+	 *
+	 * @return string What state is pause mode in 
+	 */
+	public function get_pause_mode_state() {
+
+		$pause_mode = pmpro_is_paused();
+
+		if( $pause_mode ) {
+			return __( 'Enabled', 'paid-memberships-pro' );
+		}
+
+		return __( 'Disabled', 'paid-memberships-pro' );
+
 	}
 }

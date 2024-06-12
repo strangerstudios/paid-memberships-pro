@@ -68,8 +68,15 @@ jQuery( document ).ready( function( $ ) {
 		pmpro_require_billing = pmproStripe.pmpro_require_billing;
 	}
 	$( '.pmpro_form' ).submit( function( event ) {
-		// If there is no "level" input, then this is not a checkout form. Return.
-		if ( $( 'input[name="level"]' ).length === 0 ) {
+
+		// If default is already being prevented, don't try to initiate the payment process.
+		// Likely caused by ReCAPTCHA failing.
+		if ( event.isDefaultPrevented() ) {
+			return;
+		}
+
+		// If there is no "pmpro_level" input (or "level" input for legacy page templates), then this is not a checkout form. Return.
+		if ( $( 'input[name="pmpro_level"]' ).length === 0 && $( 'input[name="level"]' ).length === 0 ) {
 			return;
 		}
 
@@ -122,9 +129,9 @@ jQuery( document ).ready( function( $ ) {
 
 		// Get the level price so that information can be shown in payment request popup
 		jQuery.noConflict().ajax({
-			url: pmproStripe.restUrl + 'pmpro/v1/checkout_levels',
+			url: pmproStripe.restUrl + 'pmpro/v1/checkout_level',
 			dataType: 'json',
-			data: jQuery( "#pmpro_form" ).serialize(),
+			data: pmpro_getCheckoutFormDataForCheckoutLevels(),
 			success: function(data) {
 				if ( data.hasOwnProperty('initial_payment') ) {
 					// Build payment request button.
@@ -156,7 +163,7 @@ jQuery( document ).ready( function( $ ) {
 						$('#pmpro_processing_message').css('visibility', 'visible');
 						$('#payment-request-button').hide();
 						/*
-						 Close the payment request interface immeditately. This is not the intended
+						 Close the payment request interface immediately. This is not the intended
 						 implementation from Stripe, but we are submitting the payment method
 						 through our default checkout process instead of letting Stripe
 						 process it through	the payment request button. Closing immediately also
@@ -176,9 +183,9 @@ jQuery( document ).ready( function( $ ) {
 		// Update price shown in payment request button if price changes.
 		function stripeUpdatePaymentRequestButton() {
 			jQuery.noConflict().ajax({
-				url: pmproStripe.restUrl + 'pmpro/v1/checkout_levels',
+				url: pmproStripe.restUrl + 'pmpro/v1/checkout_level',
 				dataType: 'json',
-				data: jQuery( "#pmpro_form" ).serialize(),
+				data: pmpro_getCheckoutFormDataForCheckoutLevels(),
 				success: function(data) {
 					if ( data.hasOwnProperty('initial_payment') ) {
 						paymentRequest.update({
@@ -216,7 +223,7 @@ jQuery( document ).ready( function( $ ) {
 			$('#pmpro_processing_message').css('visibility', 'hidden');
 
 			// error message
-			$( '#pmpro_message' ).text( response.error.message ).addClass( 'pmpro_error' ).removeClass( 'pmpro_alert' ).removeClass( 'pmpro_success' ).show();
+			$( '#pmpro_message' ).text( response.error.message ).addClass( 'pmpro_error' ).removeClass( 'pmpro_alert' ).removeClass( 'pmpro_success' ).attr('role', 'alert').show();
 			
 		} else if ( response.paymentMethod ) {			
 			// A payment method was created successfully. Submit the checkout form and finish the checkout in PHP.

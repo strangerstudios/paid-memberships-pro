@@ -42,6 +42,26 @@
 		}
 
 		/**
+		 * Check whether or not a gateway supports a specific feature.
+		 * 
+		 * @since 3.0
+		 * 
+		 * @return string|boolean $supports Returns whether or not the gateway supports the requested feature.
+		 */
+		public static function supports( $feature ) {
+			$supports = array(
+				'subscription_sync' => false,
+				'payment_method_updates' => 'individual'
+			);
+
+			if ( empty( $supports[$feature] ) ) {
+				return false;
+			}
+
+			return $supports[$feature];
+		}
+
+		/**
 		 * Get a list of payment options that the this gateway needs/supports.
 		 *
 		 * @since 1.8
@@ -98,7 +118,7 @@
 		</tr>
 		<tr class="gateway gateway_payflowpro" <?php if($gateway != "payflowpro") { ?>style="display: none;"<?php } ?>>
 		    <th scope="row" valign="top">
-				<label for="payflow_partner"><?php esc_html_e('Partner', 'paid-memberships-pro' );?>:</label>
+				<label for="payflow_partner"><?php esc_html_e('Partner', 'paid-memberships-pro' );?></label>
 			</th>
 			<td>
 				<input type="text" id="payflow_partner" name="payflow_partner" value="<?php echo esc_attr($values['payflow_partner'])?>" class="regular-text code" />
@@ -106,7 +126,7 @@
 	    </tr>
 	    <tr class="gateway gateway_payflowpro" <?php if($gateway != "payflowpro") { ?>style="display: none;"<?php } ?>>
 		    <th scope="row" valign="top">
-				<label for="payflow_vendor"><?php esc_html_e('Vendor', 'paid-memberships-pro' );?>:</label>
+				<label for="payflow_vendor"><?php esc_html_e('Vendor', 'paid-memberships-pro' );?></label>
 			</th>
 			<td>
 				<input type="text" id="payflow_vendor" name="payflow_vendor" value="<?php echo esc_attr($values['payflow_vendor'])?>" class="regular-text code" />
@@ -114,7 +134,7 @@
 	    </tr>
 	    <tr class="gateway gateway_payflowpro" <?php if($gateway != "payflowpro") { ?>style="display: none;"<?php } ?>>
 		    <th scope="row" valign="top">
-				<label for="payflow_user"><?php esc_html_e('User', 'paid-memberships-pro' );?>:</label>
+				<label for="payflow_user"><?php esc_html_e('User', 'paid-memberships-pro' );?></label>
 			</th>
 			<td>
 				<input type="text" id="payflow_user" name="payflow_user" value="<?php echo esc_attr($values['payflow_user'])?>" class="regular-text code" />
@@ -122,7 +142,7 @@
 	    </tr>
 	    <tr class="gateway gateway_payflowpro" <?php if($gateway != "payflowpro") { ?>style="display: none;"<?php } ?>>
 		    <th scope="row" valign="top">
-				<label for="payflow_pwd"><?php esc_html_e('Password', 'paid-memberships-pro' );?>:</label>
+				<label for="payflow_pwd"><?php esc_html_e('Password', 'paid-memberships-pro' );?></label>
 			</th>
 			<td>
 				<input type="password" id="payflow_pwd" name="payflow_pwd" value="<?php echo esc_attr($values['payflow_pwd'])?>" class="regular-text code" />
@@ -130,7 +150,7 @@
 	    </tr>
 		<tr class="gateway gateway_payflowpro" <?php if($gateway != "payflowpro") { ?>style="display: none;"<?php } ?>>
 			<th scope="row" valign="top">
-				<label><?php esc_html_e('IPN Handler', 'paid-memberships-pro' );?>:</label>
+				<label><?php esc_html_e('IPN Handler', 'paid-memberships-pro' );?></label>
 			</th>
 			<td>
 				<p class="description">
@@ -623,10 +643,10 @@
 			global $gateway_environment;
 			$environment = $gateway_environment;
 
-			$PARTNER = pmpro_getOption("payflow_partner");
-			$VENDOR = pmpro_getOption("payflow_vendor");
-			$USER = pmpro_getOption("payflow_user");
-			$PWD = pmpro_getOption("payflow_pwd");
+			$PARTNER = get_option("pmpro_payflow_partner");
+			$VENDOR = get_option("pmpro_payflow_vendor");
+			$USER = get_option("pmpro_payflow_user");
+			$PWD = get_option("pmpro_payflow_pwd");
 			$API_Endpoint = "https://payflowpro.paypal.com";
 			if("sandbox" === $environment || "beta-sandbox" === $environment) {
 				$API_Endpoint = "https://pilot-payflowpro.paypal.com";
@@ -650,14 +670,14 @@
 
 			if ( is_wp_error( $response ) ) {
 			   $error_message = $response->get_error_message();
-			   wp_die( "{$methodName_} failed: $error_message" );
+			   wp_die( esc_html( "{$methodName_} failed: $error_message" ) );
 			} else {
 				//extract the response details
 				parse_str(wp_remote_retrieve_body($response), $httpParsedResponseAr);
 
 				//check for valid response
 				if((0 == sizeof($httpParsedResponseAr)) || !array_key_exists('RESULT', $httpParsedResponseAr)) {
-					exit("Invalid HTTP Response for POST request($nvpreq) to $API_Endpoint.");
+					exit( esc_html( "Invalid HTTP Response for POST request($nvpreq) to $API_Endpoint.") );
 				}
 			}
 

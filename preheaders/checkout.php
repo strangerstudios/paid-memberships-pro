@@ -1,13 +1,8 @@
 <?php
-global $post, $gateway, $wpdb, $besecure, $discount_code, $discount_code_id, $pmpro_level, $pmpro_levels, $pmpro_msg, $pmpro_msgt, $pmpro_review, $skip_account_fields, $pmpro_paypal_token, $pmpro_show_discount_code, $pmpro_error_fields, $pmpro_required_billing_fields, $pmpro_required_user_fields, $wp_version, $current_user;
+global $post, $gateway, $wpdb, $besecure, $discount_code, $discount_code_id, $pmpro_level, $pmpro_msg, $pmpro_msgt, $pmpro_review, $skip_account_fields, $pmpro_paypal_token, $pmpro_show_discount_code, $pmpro_error_fields, $pmpro_required_billing_fields, $pmpro_required_user_fields, $wp_version, $current_user, $pmpro_checkout_level_ids;
 
 // we are on the checkout page
 add_filter( 'pmpro_is_checkout', '__return_true' );
-
-//make sure we know current user's membership level
-if ( $current_user->ID ) {
-	$current_user->membership_level = pmpro_getMembershipLevelForUser( $current_user->ID );
-}
 
 //this var stores fields with errors so we can make them red on the frontend
 $pmpro_error_fields = array();
@@ -22,14 +17,16 @@ if ( ! empty( $_REQUEST['gateway'] ) ) {
 } elseif ( ! empty( $_REQUEST['review'] ) ) {
 	$gateway = "paypalexpress";
 } else {
-	$gateway = pmpro_getOption( "gateway" );
+	$gateway = get_option( "pmpro_gateway" );
 }
 
 //set valid gateways - the active gateway in the settings and any gateway added through the filter will be allowed
-if ( pmpro_getOption( "gateway", true ) == "paypal" ) {
+if ( get_option( "pmpro_gateway" ) == "paypal" ) {
+
 	$valid_gateways = apply_filters( "pmpro_valid_gateways", array( "paypal", "paypalexpress" ) );
 } else {
-	$valid_gateways = apply_filters( "pmpro_valid_gateways", array( pmpro_getOption( "gateway", true ) ) );
+	$valid_gateways = apply_filters( "pmpro_valid_gateways", array( get_option( "pmpro_gateway" ) ) );
+
 }
 
 //let's add an error now, if an invalid gateway is set
@@ -62,7 +59,7 @@ if ( empty( $pmpro_level->id ) ) {
 }
 
 //enqueue some scripts
-wp_enqueue_script( 'jquery.creditCardValidator', plugins_url( '/js/jquery.creditCardValidator.js', dirname( __FILE__ ) ), array( 'jquery' ) );
+wp_enqueue_script( 'jquery.creditCardValidator', plugins_url( '/js/jquery.creditCardValidator.js', dirname( __FILE__ ) ), array( 'jquery' ), '1.2' );
 
 global $wpdb, $current_user, $pmpro_requirebilling;
 //unless we're submitting a form, let's try to figure out if https should be used
@@ -71,7 +68,7 @@ if ( ! pmpro_isLevelFree( $pmpro_level ) ) {
 	//require billing and ssl
 	$pagetitle            = __( "Checkout: Payment Information", 'paid-memberships-pro' );
 	$pmpro_requirebilling = true;
-	$besecure             = pmpro_getOption( "use_ssl" );
+	$besecure             = get_option( "pmpro_use_ssl" );
 } else {
 	//no payment so we don't need ssl
 	$pagetitle            = __( "Set Up Your Account", 'paid-memberships-pro' );
@@ -91,10 +88,6 @@ if ( ! $besecure && ! empty( $_REQUEST['submit-checkout'] ) && is_ssl() ) {
 //action to run extra code for gateways/etc
 do_action( 'pmpro_checkout_preheader' );
 
-//get all levels in case we need them
-global $pmpro_levels;
-$pmpro_levels = pmpro_getAllLevels();
-
 // We set a global var for add-ons that are expecting it.
 $pmpro_show_discount_code = pmpro_show_discount_code();
 
@@ -109,7 +102,7 @@ $skip_account_fields = apply_filters( "pmpro_skip_account_fields", $skip_account
 
 //some options
 global $tospage;
-$tospage = pmpro_getOption( "tospage" );
+$tospage = get_option( "pmpro_tospage" );
 if ( $tospage ) {
 	$tospage = get_post( $tospage );
 }
@@ -227,8 +220,8 @@ if ( isset( $_REQUEST['CVV'] ) ) {
 	$CVV = "";
 }
 
-if ( isset( $_REQUEST['discount_code'] ) ) {
-	$discount_code = preg_replace( "/[^A-Za-z0-9\-]/", "", sanitize_text_field( $_REQUEST['discount_code'] ) );
+if ( ! empty( $pmpro_level->discount_code ) ) {
+	$discount_code = preg_replace( "/[^A-Za-z0-9\-]/", "", sanitize_text_field( $pmpro_level->discount_code ) );
 } else {
 	$discount_code = "";
 }
@@ -300,6 +293,16 @@ $pmpro_confirmed = false;
 
 //check their fields if they clicked continue
 if ( $submit && $pmpro_msgt != "pmpro_error" ) {
+	// Check the nonce.
+	if ( empty( $_REQUEST['pmpro_checkout_nonce'] ) || ! wp_verify_nonce( sanitize_key( $_REQUEST['pmpro_checkout_nonce'] ), 'pmpro_checkout_nonce' ) ) {
+		// Nonce is not valid, but a nonce was only added in the 3.0 checkout template. We only want to show an error if the checkout template is 3.0 or later.
+		$loaded_path = pmpro_get_template_path_to_load( 'checkout' );
+		$loaded_version = pmpro_get_version_for_page_template_at_path( $loaded_path );
+		if ( ! empty( $loaded_version ) && version_compare( $loaded_version, '3.0', '>=' ) ) {
+			// Nonce is not valid. Show an error.
+			pmpro_setMessage( __( "Nonce security check failed.", 'paid-memberships-pro' ), 'pmpro_error' );
+		}
+	}
 
 	//make sure javascript is ok
 	if ( apply_filters( "pmpro_require_javascript_for_checkout", true ) && ! empty( $_REQUEST['checkjavascript'] ) && empty( $_REQUEST['javascriptok'] ) ) {
@@ -397,49 +400,94 @@ if ( $submit && $pmpro_msgt != "pmpro_error" ) {
 		//only continue if there are no other errors yet
 		if ( $pmpro_msgt != "pmpro_error" ) {
 			//check recaptcha first
-			global $recaptcha, $recaptcha_validated;
+			$recaptcha = get_option( "pmpro_recaptcha");
 			if (  $recaptcha == 2 || ( $recaptcha == 1 && pmpro_isLevelFree( $pmpro_level ) ) ) {
+				$recaptcha_validated = pmpro_recaptcha_is_validated(); // Returns true if validated, string error message if not.
+				if ( is_string( $recaptcha_validated ) ) {
+					$pmpro_msg  = sprintf( __( "reCAPTCHA failed. (%s) Please try again.", 'paid-memberships-pro' ), $recaptcha_validated );
+					$pmpro_msgt = "pmpro_error";
+				}
+			}
+		}
 
-				global $recaptcha_privatekey;
+		// Only continue if there are no other errors yet
+		if ( $pmpro_msgt != "pmpro_error" ) {
+			// Do we need to create a user account?
+			if ( ! $current_user->ID ) {
+				// Yes, create user.
 
-				if ( isset( $_POST["recaptcha_challenge_field"] ) ) {
-					// Using older recaptcha lib. Google needs the raw POST data.
-					// phpcs:disable WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
-					$resp = recaptcha_check_answer( $recaptcha_privatekey,
-						pmpro_get_ip(),
-						$_POST["recaptcha_challenge_field"],
-						$_POST["recaptcha_response_field"] );
-					// phpcs:enable WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
-
-					$recaptcha_valid  = $resp->is_valid;
-					$recaptcha_errors = $resp->error;
+				//first name
+				if ( ! empty( $_REQUEST['first_name'] ) ) {
+					$first_name = sanitize_text_field( $_REQUEST['first_name'] );
 				} else {
-					//using newer recaptcha lib
-					// NOTE: In practice, we don't execute this code because
-					// we use AJAX to send the data back to the server and set the
-					// pmpro_recaptcha_validated session variable, which is checked
-					// earlier. We should remove/refactor this code.
-					$reCaptcha = new pmpro_ReCaptcha( $recaptcha_privatekey );
-					$resp      = $reCaptcha->verifyResponse( pmpro_get_ip(), $_POST["g-recaptcha-response"] ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
-
-					$recaptcha_valid  = $resp->success;
-					$recaptcha_errors = $resp->errorCodes;
+					$first_name = $bfirstname;
+				}
+				//last name
+				if ( ! empty( $_REQUEST['last_name'] ) ) {
+					$last_name = sanitize_text_field( $_REQUEST['last_name'] );
+				} else {
+					$last_name = $blastname;
 				}
 
-				if ( ! $recaptcha_valid ) {
-					$pmpro_msg  = sprintf( __( "reCAPTCHA failed. (%s) Please try again.", 'paid-memberships-pro' ), $recaptcha_errors );
-					$pmpro_msgt = "pmpro_error";
-				} else {
-					// Your code here to handle a successful verification
-					if ( $pmpro_msgt != "pmpro_error" ) {
-						$pmpro_msg = "All good!";
+				//insert user
+				$new_user_array = apply_filters( 'pmpro_checkout_new_user_array', array(
+						"user_login" => $username,
+						"user_pass"  => $password,
+						"user_email" => $bemail,
+						"first_name" => $first_name,
+						"last_name"  => $last_name
+					)
+				);
+
+				$user_id = apply_filters( 'pmpro_new_user', '', $new_user_array );
+				if ( empty( $user_id ) ) {
+					$user_id = wp_insert_user( $new_user_array );
+				}
+
+				if ( empty( $user_id ) || is_wp_error( $user_id ) ) {
+					$e_msg = '';
+
+					if ( is_wp_error( $user_id ) ) {
+						$e_msg = $user_id->get_error_message();
 					}
-					pmpro_set_session_var( 'pmpro_recaptcha_validated', true );
+
+					$pmpro_msg  = __( "There was an error setting up your account. Please contact us.", 'paid-memberships-pro' ) . sprintf( " %s", $e_msg ); // Dirty 'don't break translation hack.
+					$pmpro_msgt = "pmpro_error";
+				} elseif ( apply_filters( 'pmpro_setup_new_user', true, $user_id, $new_user_array, $pmpro_level ) ) {
+
+					pmpro_maybe_send_wp_new_user_notification( $user_id, $pmpro_level->id );
+
+					$wpuser = get_userdata( $user_id );
+					$wpuser->set_role( get_option( 'default_role', 'subscriber' ) );
+
+					/**
+					 * Allow hooking before the user authentication process when setting up new user.
+					 *
+					 * @since 2.5.10
+					 *
+					 * @param int $user_id The user ID that is being setting up.
+					 */
+					do_action( 'pmpro_checkout_before_user_auth', $user_id );
+
+
+					//okay, log them in to WP
+					$creds                  = array();
+					$creds['user_login']    = $new_user_array['user_login'];
+					$creds['user_password'] = $new_user_array['user_pass'];
+					$creds['remember']      = true;
+					$user                   = wp_signon( $creds, false );
+					//setting some cookies
+					wp_set_current_user( $user_id, $username );
+					wp_set_auth_cookie( $user_id, true, apply_filters( 'pmpro_checkout_signon_secure', force_ssl_admin() ) );
+
+					// Update nonce value to be for this new user when we load the checkout page.
+					add_filter( 'pmpro_update_nonce_at_checkout', '__return_true' );
+
+					// Skip the account fields since we just created an account.
+					$skip_account_fields = true;
 				}
 			} else {
-				if ( $pmpro_msgt != "pmpro_error" ) {
-					$pmpro_msg = "All good!";
-				}
+				$user_id = $current_user->ID;
 			}
 
 			//no errors yet
@@ -492,6 +540,11 @@ if ( empty( $morder ) ) {
 	$morder = false;
 }
 
+// Make sure that we have a User ID to avoid a warning.
+if ( empty( $user_id ) && ! empty( $current_user->ID ) ) {
+	$user_id = $current_user->ID;
+}
+
 //Hook to check payment confirmation or replace it. If we get an array back, pull the values (morder) out
 $pmpro_confirmed_data = apply_filters( 'pmpro_checkout_confirmed', $pmpro_confirmed, $morder );
 
@@ -509,93 +562,9 @@ if ( ! empty( $pmpro_confirmed ) ) {
 	//just in case this hasn't been set yet
 	$submit = true;
 
-	//do we need to create a user account?
-	if ( ! $current_user->ID ) {
-		/*
-			create user
-		*/
-		if ( version_compare( $wp_version, "3.1" ) < 0 ) {
-			require_once( ABSPATH . WPINC . '/registration.php' );
-		}    //need this for WP versions before 3.1
+	do_action( 'pmpro_checkout_before_change_membership_level', $user_id, $morder );
 
-		//first name
-		if ( ! empty( $_REQUEST['first_name'] ) ) {
-			$first_name = sanitize_text_field( $_REQUEST['first_name'] );
-		} else {
-			$first_name = $bfirstname;
-		}
-		//last name
-		if ( ! empty( $_REQUEST['last_name'] ) ) {
-			$last_name = sanitize_text_field( $_REQUEST['last_name'] );
-		} else {
-			$last_name = $blastname;
-		}
-
-		//insert user
-		$new_user_array = apply_filters( 'pmpro_checkout_new_user_array', array(
-				"user_login" => $username,
-				"user_pass"  => $password,
-				"user_email" => $bemail,
-				"first_name" => $first_name,
-				"last_name"  => $last_name
-			)
-		);
-
-		$user_id = apply_filters( 'pmpro_new_user', '', $new_user_array );
-		if ( empty( $user_id ) ) {
-			$user_id = wp_insert_user( $new_user_array );
-		}
-
-		if ( empty( $user_id ) || is_wp_error( $user_id ) ) {
-			$e_msg = '';
-
-			if ( is_wp_error( $user_id ) ) {
-				$e_msg = $user_id->get_error_message();
-			}
-
-			$pmpro_msg  = __( "Your payment was accepted, but there was an error setting up your account. Please contact us.", 'paid-memberships-pro' ) . sprintf( " %s", $e_msg ); // Dirty 'don't break translation hack.
-			$pmpro_msgt = "pmpro_error";
-		} elseif ( apply_filters( 'pmpro_setup_new_user', true, $user_id, $new_user_array, $pmpro_level ) ) {
-
-			pmpro_maybe_send_wp_new_user_notification( $user_id, $pmpro_level->id );
-			
-			$wpuser = get_userdata( $user_id );
-			$wpuser->set_role( get_option( 'default_role', 'subscriber' ) );
-
-			/**
-			 * Allow hooking before the user authentication process when setting up new user.
-			 *
-			 * @since 2.5.10
-			 *
-			 * @param int $user_id The user ID that is being setting up.
-			 */
-			do_action( 'pmpro_checkout_before_user_auth', $user_id );
-
-
-			//okay, log them in to WP
-			$creds                  = array();
-			$creds['user_login']    = $new_user_array['user_login'];
-			$creds['user_password'] = $new_user_array['user_pass'];
-			$creds['remember']      = true;
-			$user                   = wp_signon( $creds, false );
-			//setting some cookies
-			wp_set_current_user( $user_id, $username );
-			wp_set_auth_cookie( $user_id, true, apply_filters( 'pmpro_checkout_signon_secure', force_ssl_admin() ) );
-		}
-	} else {
-		$user_id = $current_user->ID;
-	}
-
-	$is_user_valid = ! empty( $user_id ) && ! is_wp_error( $user_id );
-	if( $is_user_valid ) {
-		// If we have a valid user, perform any necessary actions before the membership is given.
-		// Currently being used by Stripe and PayPal Standard to send users offsite to pay.
-		// May set $pmpro_msgt if there's an error sending them to offiste gateway.
-		do_action( 'pmpro_checkout_before_change_membership_level', $user_id, $morder );
-	}
-
-	// User is created and we are ready to give them a membership.
-	if ( $is_user_valid && 'pmpro_error' !== $pmpro_msgt ) {
+	if ( 'pmpro_error' !== $pmpro_msgt ) {
 		//start date is NOW() but filterable below
 		$startdate = current_time( "mysql" );
 
@@ -634,28 +603,31 @@ if ( ! empty( $pmpro_confirmed ) ) {
 		$enddate = apply_filters( "pmpro_checkout_end_date", $enddate, $user_id, $pmpro_level, $startdate );
 
 		//check code before adding it to the order
-		global $pmpro_checkout_level_ids; // Set by MMPU.
-		if ( isset( $pmpro_checkout_level_ids ) ) {
-			$code_check = pmpro_checkDiscountCode( $discount_code, $pmpro_checkout_level_ids, true );
-		} else {
-			$code_check = pmpro_checkDiscountCode( $discount_code, $pmpro_level->id, true );
-		}
+		if ( ! empty( $discount_code ) ) {
+			if ( isset( $pmpro_checkout_level_ids ) ) {
+				$code_check = pmpro_checkDiscountCode( $discount_code, $pmpro_checkout_level_ids, true );
+			} else {
+				$code_check = pmpro_checkDiscountCode( $discount_code, $pmpro_level->id, true );
+			}
 
-		if ( $code_check[0] == false ) {
-			//error
-			$pmpro_msg  = $code_check[1];
-			$pmpro_msgt = "pmpro_error";
+			if ( $code_check[0] == false ) {
+				//error
+				$pmpro_msg  = $code_check[1];
+				$pmpro_msgt = "pmpro_error";
 
-			//don't use this code
-			$use_discount_code = false;
-		} else {
-			//all okay
-			$use_discount_code = true;
-		}
+				//don't use this code
+				$use_discount_code = false;
+			} else {
+				//all okay
+				$use_discount_code = true;
+			}
 
-		//update membership_user table.
-		if ( ! empty( $discount_code ) && ! empty( $use_discount_code ) ) {
-			$discount_code_id = $wpdb->get_var( "SELECT id FROM $wpdb->pmpro_discount_codes WHERE code = '" . esc_sql( $discount_code ) . "' LIMIT 1" );
+			//update membership_user table.
+			if ( ! empty( $discount_code ) && ! empty( $use_discount_code ) ) {
+				$discount_code_id = $wpdb->get_var( "SELECT id FROM $wpdb->pmpro_discount_codes WHERE code = '" . esc_sql( $discount_code ) . "' LIMIT 1" );
+			} else {
+				$discount_code_id = "";
+			}
 		} else {
 			$discount_code_id = "";
 		}
@@ -720,19 +692,9 @@ if ( ! empty( $pmpro_confirmed ) ) {
 				do_action( 'pmpro_discount_code_used', $discount_code_id, $user_id, $code_order_id );
 			}
 
-			//save billing info ect, as user meta
-			$meta_keys   = array(
-				"pmpro_CardType",
-				"pmpro_AccountNumber",
-				"pmpro_ExpirationMonth",
-				"pmpro_ExpirationYear",
-			);
-			$meta_values = array(
-				$CardType,
-				hideCardNumber( $AccountNumber ),
-				$ExpirationMonth,
-				$ExpirationYear,
-			);
+			//save billing info etc, as user meta
+			$meta_keys   = array();
+			$meta_values = array();
 
 			// Check if firstname and last name fields are set.
 			if ( ! empty( $bfirstname ) || ! empty( $blastname ) ) {
@@ -804,23 +766,23 @@ if ( ! empty( $pmpro_confirmed ) ) {
 
 				//setup some values for the emails
 				if ( ! empty( $morder ) ) {
-					$invoice = new MemberOrder( $morder->id );
+					$order = new MemberOrder( $morder->id );
 				} else {
-					$invoice = null;
+					$order = null;
 				}
 				$current_user->membership_level = $pmpro_level; //make sure they have the right level info
 
 				//send email to member
 				$pmproemail = new PMProEmail();
-				$pmproemail->sendCheckoutEmail( $current_user, $invoice );
+				$pmproemail->sendCheckoutEmail( $current_user, $order );
 
 				//send email to admin
 				$pmproemail = new PMProEmail();
-				$pmproemail->sendCheckoutAdminEmail( $current_user, $invoice );
+				$pmproemail->sendCheckoutAdminEmail( $current_user, $order );
 			}
 
 			//redirect to confirmation
-			$rurl = pmpro_url( "confirmation", "?level=" . $pmpro_level->id );
+			$rurl = pmpro_url( "confirmation", "?pmpro_level=" . $pmpro_level->id );
 			$rurl = apply_filters( "pmpro_confirmation_url", $rurl, $user_id, $pmpro_level );
 			wp_redirect( $rurl );
 			exit;
@@ -843,9 +805,10 @@ if ( ! empty( $pmpro_confirmed ) ) {
 //default values
 if ( empty( $submit ) ) {
 	//show message if the payment gateway is not setup yet
-	if ( $pmpro_requirebilling && ! pmpro_getOption( "gateway", true ) ) {
+	if ( $pmpro_requirebilling && ! get_option( "pmpro_gateway" ) ) {
+
 		if ( pmpro_isAdmin() ) {
-			$pmpro_msg = sprintf( __( 'You must <a href="%s">set up a Payment Gateway</a> before any payments will be processed.', 'paid-memberships-pro' ), admin_url( '/admin.php?page=pmpro-paymentsettings' ) );
+			$pmpro_msg = sprintf( __( 'You must <a href="%s">set up a Payment Gateway</a> before any payments will be processed.', 'paid-memberships-pro' ), admin_url( 'admin.php?page=pmpro-paymentsettings' ) );
 		} else {
 			$pmpro_msg = __( "A Payment Gateway must be set up before any payments will be processed.", 'paid-memberships-pro' );
 		}
@@ -865,17 +828,11 @@ if ( empty( $submit ) ) {
 		$bphone        = get_user_meta( $current_user->ID, "pmpro_bphone", true );
 		$bemail        = get_user_meta( $current_user->ID, "pmpro_bemail", true );
 		$bconfirmemail = $bemail;    //as of 1.7.5, just setting to bemail
-		$CardType      = get_user_meta( $current_user->ID, "pmpro_CardType", true );
-		//$AccountNumber = hideCardNumber(get_user_meta($current_user->ID, "pmpro_AccountNumber", true), false);
-		$ExpirationMonth = get_user_meta( $current_user->ID, "pmpro_ExpirationMonth", true );
-		$ExpirationYear  = get_user_meta( $current_user->ID, "pmpro_ExpirationYear", true );
 	}
 }
 
-//clear out XXXX numbers (e.g. with Stripe)
-if ( ! empty( $AccountNumber ) && strpos( $AccountNumber, "XXXX" ) === 0 ) {
-	$AccountNumber = "";
-}
+// Preventing conflicts with old checkout templates that depend on the $pmpro_level global being set.
+pmpro_getAllLevels();
 
 /**
  * Hook to run actions after the checkout preheader is loaded.

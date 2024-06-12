@@ -3,7 +3,7 @@
 	
 	// Only admins can get this.
 	if ( ! function_exists( 'current_user_can' ) || ( ! current_user_can( 'manage_options' ) && ! current_user_can( 'pmpro_userfields' ) ) ) {
-		die( __( 'You do not have permissions to perform this action.', 'paid-memberships-pro' ) );
+		die( esc_html__( 'You do not have permissions to perform this action.', 'paid-memberships-pro' ) );
 	}
 
 	// Get all levels regardless of visibility.
@@ -24,7 +24,7 @@
 			$group->name        = sanitize_text_field( $group->name );
 			$group->checkout    = 'yes' === $group->checkout ? 'yes' : 'no';
 			$group->profile     = sanitize_text_field( $group->profile );
-			$group->description = sanitize_text_field( $group->description );
+			$group->description = wp_kses_post( $group->description );
 			$group->levels      = array_map( 'intval', $group->levels );
 			foreach ( $group->fields as $field ) {
 				$field_name 		  = pmpro_format_field_name( $field->name ); //Replace spaces and dashes with underscores.
@@ -103,14 +103,15 @@
 	 *
 	 */
 	function pmpro_userfields_help_widget() { ?>
-		<p><?php esc_html_e( 'User fields can be added to the membership checkout form, the frontend user profile edit page, and for admins only on the Edit Users Screen in the WordPress admin.', 'paid-memberships-pro' ); ?></p>
+		<p><?php esc_html_e( 'User fields can be added to the membership checkout form, the frontend user profile edit page, and for admins only on the Edit Member and Edit User screens.', 'paid-memberships-pro' ); ?></p>
 		<p><?php esc_html_e( 'Groups are used to define a collection of fields that should be displayed together under a common heading. Group settings control field locations and membership level visibility.', 'paid-memberships-pro' ); ?></p>
+		<p><a target="_blank" href="https://www.paidmembershipspro.com/documentation/user-fields/create-field-group/?utm_source=plugin&utm_medium=pmpro-userfields&utm_campaign=documentation&utm_content=user-fields"><?php esc_html_e( 'Documentation: User Fields', 'paid-memberships-pro' ); ?></a></p>
 		<?php
 	}
 
 	?>		
 	<hr class="wp-header-end">
-	<h1 class="wp-heading-inline"><?php esc_html_e( 'User Fields', 'paid-memberships-pro' ); ?></h1>
+	<h1><?php esc_html_e( 'User Fields', 'paid-memberships-pro' ); ?></h1>
 
 	<div id="poststuff">
 		<div id="post-body" class="metabox-holder columns-2">
@@ -120,7 +121,7 @@
 
 					<?php						
 						foreach( $user_fields_settings as $group ) {
-							echo pmpro_get_field_group_html( $group );
+							pmpro_get_field_group_html( $group );
 						}
 					?>
 
