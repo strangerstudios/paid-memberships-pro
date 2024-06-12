@@ -163,7 +163,11 @@ function pmpro_dashboard_welcome_callback() { ?>
 					<li><a href="<?php echo esc_url( admin_url( 'admin.php?page=pmpro-emailtemplates' ) );?>"><i class="dashicons dashicons-editor-spellcheck"></i> <?php esc_html_e( 'Customize Email Templates', 'paid-memberships-pro' );?></a></li>
 				<?php } ?>
 
-    			<?php if ( current_user_can( 'pmpro_advancedsettings' ) ) { ?>
+    			<?php if ( current_user_can( 'pmpro_designsettings' ) ) { ?>
+    				<li><a href="<?php echo esc_url( admin_url( 'admin.php?page=pmpro-designsettings' ) );?>"><i class="dashicons dashicons-art"></i> <?php esc_html_e( 'View Design Settings', 'paid-memberships-pro' ); ?></a></li>
+    			<?php } ?>
+
+				<?php if ( current_user_can( 'pmpro_advancedsettings' ) ) { ?>
     				<li><a href="<?php echo esc_url( admin_url( 'admin.php?page=pmpro-advancedsettings' ) );?>"><i class="dashicons dashicons-admin-settings"></i> <?php esc_html_e( 'View Advanced Settings', 'paid-memberships-pro' ); ?></a></li>
     			<?php } ?>
 
