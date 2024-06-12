@@ -146,25 +146,26 @@ jQuery(document).ready(function(){
 			const status = this.getAttribute('data-toggle');
 			const passwordInputs = document.querySelectorAll('.pmpro_form_input-password');
 			const icon = this.getElementsByClassName('pmpro_icon')[0];
+			const state = this.getElementsByClassName('pmpro_form_field-password-toggle-state')[0];
 
 			if (parseInt(status, 10) === 0) {
 				this.setAttribute('data-toggle', 1);
-				this.setAttribute('aria-label', pmpro.hide_password_text);
 				passwordInputs.forEach(input => input.setAttribute('type', 'text'));
 				icon.innerHTML = `
-					<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--pmpro--color--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-eye-off">
+					<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--pmpro--color--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-eye-off">
 						<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
 						<line x1="1" y1="1" x2="23" y2="23"></line>
 					</svg>`;
+				state.textContent = pmpro.hide_password_text;
 			} else {
 				this.setAttribute('data-toggle', 0);
-				this.setAttribute('aria-label', pmpro.show_password_text);
 				passwordInputs.forEach(input => input.setAttribute('type', 'password'));
 				icon.innerHTML = `
-					<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--pmpro--color--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-eye">
+					<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--pmpro--color--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-eye">
 						<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
 						<circle cx="12" cy="12" r="3"></circle>
 					</svg>`;
+				state.textContent = pmpro.show_password_text;
 			}
 		}
 	})();
@@ -255,7 +256,7 @@ jQuery(document).ready(function(){
 // Get non-sensitive checkout form data to be sent to checkout_levels endpoint.
 function pmpro_getCheckoutFormDataForCheckoutLevels() {
 	// We need the level, discount code, and any field with the pmpro_alter_price CSS class.
-	const checkoutFormData = jQuery( "#level, #pmpro_level, #discount_code, #pmpro_form .pmpro_alter_price" ).serializeArray();
+	const checkoutFormData = jQuery( "#level, #pmpro_level, #discount_code, #pmpro_discount_code, #pmpro_form .pmpro_alter_price" ).serializeArray();
 
 	// Double check to remove sensitive data from the array.
 	const sensitiveCheckoutRequestVars = pmpro.sensitiveCheckoutRequestVars;

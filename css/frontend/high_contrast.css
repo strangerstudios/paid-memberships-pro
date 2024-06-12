@@ -325,41 +325,38 @@
 	/* Special Fields */
 	.pmpro_form_field-password-toggle {
 		align-items: center;
-		background-color: var(--pmpro--color--base);
-		border: 1px solid var(--pmpro--color--border);
+		display: flex;
+		font-weight: 500;
+		justify-content: space-between;
+		margin: 0;
+		padding: 0;
+	}
+
+	.pmpro_form_field-password-toggle button,
+	.pmpro_form_field-password-toggle button:hover,
+	.pmpro_form_field-password-toggle button:focus,
+	.pmpro_form_field-password-toggle button:active {
+		align-items: center;
+		background: transparent;
+		border: none;
 		border-radius: 0;
+		box-shadow: none;
 		box-sizing: border-box;
+		color: var(--pmpro--color--accent);
 		display: flex;
 		flex-direction: row;
+		font-size: 16px;
+		gap: calc( var(--pmpro--base--spacing--small) / 2 );
+		line-height: 1;
 		margin: 0;
-		padding: 0 var(--pmpro--base--spacing--small) 0 0;
-	}
-
-	.pmpro_form_field-password-toggle .pmpro_form_input,
-	.pmpro_form_field-password-toggle .input {
-		border: none;
-		flex: 1;
-	}
-
-	.pmpro_form_field-password-toggle .pmpro_form_input:focus,
-	.pmpro_form_field-password-toggle .input:focus {
-		border-color: transparent;
-		box-shadow: none;
+		min-height: 1px;
+		padding: 0;
 	}
 
 	.pmpro_form_field-password-toggle .pmpro_icon-eye {
 		display: block;
-		height: 24px;
-		width: 24px;
-	}
-
-	.pmpro_form_field-password-toggle:has(.pmpro_form_input:focus),
-	.pmpro_form_field-password-toggle:has(.input:focus) {
-		background-color: var(--pmpro--color--base);
-		border-color: #80BDFF;
-		box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);
-		outline: none;
-		word-break: initial;
+		height: 20px;
+		width: 20px;
 	}
 
 	.pmpro_form_field-select2 {
@@ -431,13 +428,15 @@
 	}
 
 	.pmpro_section #loginform label:not(.pmpro_section #loginform .login-remember label) {
-		display: block;
+		align-items: center;
+		display: flex;
 		font-weight: 500;
+		justify-content: space-between;
 		margin: 0;
 		padding: 0;
 	}
 
-	.pmpro_section #loginform #user_login {
+	.pmpro_section #loginform .input {
 		background-color: var(--pmpro--color--base);
 		border: 1px solid var(--pmpro--color--border);
 		border-radius: 0;
@@ -452,23 +451,7 @@
 		padding: var(--pmpro--base--spacing--small);
 	}
 
-	.pmpro_section #loginform #user_pass {
-		background-color: var(--pmpro--color--base);
-		border: none;
-		border-radius: 0;
-		box-shadow: none;
-		box-sizing: border-box;
-		color: var(--pmpro--color--contrast);
-		font-size: 16px;
-		height: auto;
-		line-height: 1.5;
-		margin: 0;
-		min-height: auto;
-		outline: none;
-		padding: var(--pmpro--base--spacing--small);
-	}
-
-	.pmpro_section #loginform #user_login:focus {
+	.pmpro_section #loginform .input:focus {
 		background-color: var(--pmpro--color--base);
 		border-color: #80BDFF;
 		box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);

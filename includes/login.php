@@ -599,21 +599,21 @@ function pmpro_login_form( $args = array() ) {
 	wp_login_form( $args );
 	?>
 	<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_field-password-toggle' ) ); ?>">
-		<button type="button" tabindex="-1" class="pmpro_btn pmpro_btn-plain pmpro_btn-password-toggle-alt hide-if-no-js" data-toggle="0" aria-label="<?php esc_attr_e( 'Show password', 'paid-memberships-pro' ); ?>">
-			<span class="pmpro_icon pmpro_icon-eye" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--pmpro--color--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-eye"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg></span>
+		<button type="button" tabindex="-1" class="pmpro_btn pmpro_btn-plain pmpro_btn-password-toggle-alt hide-if-no-js" data-toggle="0">
+			<span class="pmpro_icon pmpro_icon-eye" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--pmpro--color--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-eye"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg></span>
+			<span class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_field-password-toggle-state' ) ); ?>"><?php esc_html_e( 'Show Password', 'paid-memberships-pro' ); ?></span>
 		</button>
 	</div>
 	<script>
 		// Password visibility toggle (wp_login_form instance).
 		(function() {
-			const toggleElements = document.querySelectorAll('.pmpro_btn-password-toggle-alt');
+			const toggleButton = document.querySelectorAll('.pmpro_btn-password-toggle-alt');
 			const toggleWrapper = document.querySelector('.pmpro_form_field-password-toggle');
-			const passwordParagraph = document.querySelector('.login-password');
+			const passwordLabel = document.querySelector('label[for="user_pass"]');
 			const passwordInput = document.querySelector('#user_pass');
 
-			toggleElements.forEach(toggle => {
-				passwordParagraph.appendChild(toggleWrapper);
-				toggle.parentNode.insertBefore(passwordInput, toggle);
+			toggleButton.forEach(toggle => {
+				passwordLabel.appendChild(toggleWrapper);
 				toggle.classList.remove('hide-if-no-js');
 				toggle.addEventListener('click', togglePassword);
 			});
@@ -622,25 +622,26 @@ function pmpro_login_form( $args = array() ) {
 				const status = this.getAttribute('data-toggle');
 				const passwordInputs = document.querySelectorAll('#user_pass');
 				const icon = this.getElementsByClassName('pmpro_icon')[0];
+				const state = this.getElementsByClassName('pmpro_form_field-password-toggle-state')[0];
 
 				if (parseInt(status, 10) === 0) {
 					this.setAttribute('data-toggle', 1);
-					this.setAttribute('aria-label', '<?php esc_attr_e( 'Hide password', 'paid-memberships-pro' ); ?>');
 					passwordInputs.forEach(input => input.setAttribute('type', 'text'));
 					icon.innerHTML = `
-						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--pmpro--color--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-eye-off">
+						<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--pmpro--color--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-eye-off">
 							<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
 							<line x1="1" y1="1" x2="23" y2="23"></line>
 						</svg>`;
+					state.textContent = '<?php esc_html_e( 'Hide Password', 'paid-memberships-pro' ); ?>';
 				} else {
 					this.setAttribute('data-toggle', 0);
-					this.setAttribute('aria-label', '<?php esc_attr_e( 'Show password', 'paid-memberships-pro' ); ?>');
 					passwordInputs.forEach(input => input.setAttribute('type', 'password'));
 					icon.innerHTML = `
-						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--pmpro--color--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-eye">
+						<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--pmpro--color--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-eye">
 							<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
 							<circle cx="12" cy="12" r="3"></circle>
 						</svg>`;
+					state.textContent = '<?php esc_html_e( 'Show Password', 'paid-memberships-pro' ); ?>';
 				}
 			}
 		})();
@@ -793,16 +794,17 @@ function pmpro_reset_password_form() {
 			<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_fields' ) ); ?>">
 				<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_cols-2' ) ); ?>">
 					<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_field pmpro_form_field-password pmpro_form_field-pass1 pmpro_form_field-required', 'pmpro_form_field-pass1' ) ); ?>">
-						<label for="pass1" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_label' ) ); ?>">
-							<?php esc_html_e( 'New Password', 'paid-memberships-pro' ) ?>
-							<span class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_asterisk' ) ); ?>"> <abbr title="<?php esc_html_e( 'Required Field', 'paid-memberships-pro' ); ?>">*</abbr></span>
-						</label>
 						<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_field-password-toggle' ) ); ?>">
-							<input type="password" name="pass1" id="pass1" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_input pmpro_form_input-password pmpro_form_input-required pass1', 'pass1' ) ); ?>" size="20" value="" autocomplete="new-password" aria-required="true" />
-							<button type="button" tabindex="-1" class="pmpro_btn pmpro_btn-plain pmpro_btn-password-toggle hide-if-no-js" data-toggle="0" aria-label="<?php esc_attr_e( 'Show password', 'paid-memberships-pro' ); ?>">
-								<span class="pmpro_icon pmpro_icon-eye" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--pmpro--color--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-eye"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg></span>
+							<label for="pass1" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_label' ) ); ?>">
+								<?php esc_html_e( 'New Password', 'paid-memberships-pro' ) ?>
+								<span class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_asterisk' ) ); ?>"> <abbr title="<?php esc_html_e( 'Required Field', 'paid-memberships-pro' ); ?>">*</abbr></span>
+							</label>
+							<button type="button" class="pmpro_btn pmpro_btn-plain pmpro_btn-password-toggle hide-if-no-js" data-toggle="0">
+								<span class="pmpro_icon pmpro_icon-eye" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--pmpro--color--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-eye"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg></span>
+								<span class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_field-password-toggle-state' ) ); ?>"><?php esc_html_e( 'Show Password', 'paid-memberships-pro' ); ?></span>
 							</button>
 						</div> <!-- end pmpro_form_field-password-toggle -->
+						<input type="password" name="pass1" id="pass1" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_input pmpro_form_input-password pmpro_form_input-required pass1', 'pass1' ) ); ?>" size="20" value="" autocomplete="new-password" aria-required="true" />
 					</div> <!-- end pmpro_form_field-pass1 -->
 					<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_field pmpro_form_field-password pmpro_form_field-required pmpro_form_field-pass2', 'pmpro_form_field-pass2' ) ); ?>">
 						<label for="pass2" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_label' ) ); ?>">
