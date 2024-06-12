@@ -59,6 +59,13 @@
 		pmpro_stripeWebhookExit();
 	}
 
+	/**
+	 * Allow adding other content after the Order Settings table.
+	 *
+	 * @since 3.0.3
+	 */
+	do_action( 'pmpro_stripe_before_retrieve_webhook_event' );
+
 	//get the event through the API now
 	if(!empty($event_id))
 	{
@@ -406,7 +413,7 @@
 
 				$user = get_user_by( 'email', $morder->Email );
 				if ( empty( $user ) ) {
-					$logstr .= "Couldn't find the old order's user. Order ID = " . $old_order->id . ".";
+					$logstr .= "Couldn't find the old order's user. Order ID = " . $morder->id . ".";
 					pmpro_stripeWebhookExit();
 				}
 

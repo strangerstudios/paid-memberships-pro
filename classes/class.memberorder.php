@@ -907,8 +907,18 @@
 				$this->Gateway = new $classname($this->gateway);
 			} else {
 				$this->Gateway = null;	//null out any current gateway
-				$error = new WP_Error("PMPro1001", "Could not locate the gateway class file with class name = " . $classname . ".");
+				new WP_Error("PMPro1001", "Could not locate the gateway class file with class name = " . $classname . ".");
 			}
+
+			/**
+			 * Allow changing the gateway object for this member order
+			 *
+			 * @param PMProGateway $gateway_object Gateway object.
+			 * @param MemberOrder $this Member order object.
+			 *
+			 * @since 3.0.3
+			 */
+			$this->Gateway = apply_filters( 'pmpro_order_gateway_object', $this->Gateway, $this );
 
 			if(!empty($this->Gateway)) {
 				return $this->Gateway;

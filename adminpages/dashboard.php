@@ -163,7 +163,11 @@ function pmpro_dashboard_welcome_callback() { ?>
 					<li><a href="<?php echo esc_url( admin_url( 'admin.php?page=pmpro-emailtemplates' ) );?>"><i class="dashicons dashicons-editor-spellcheck"></i> <?php esc_html_e( 'Customize Email Templates', 'paid-memberships-pro' );?></a></li>
 				<?php } ?>
 
-    			<?php if ( current_user_can( 'pmpro_advancedsettings' ) ) { ?>
+    			<?php if ( current_user_can( 'pmpro_designsettings' ) ) { ?>
+    				<li><a href="<?php echo esc_url( admin_url( 'admin.php?page=pmpro-designsettings' ) );?>"><i class="dashicons dashicons-art"></i> <?php esc_html_e( 'View Design Settings', 'paid-memberships-pro' ); ?></a></li>
+    			<?php } ?>
+
+				<?php if ( current_user_can( 'pmpro_advancedsettings' ) ) { ?>
     				<li><a href="<?php echo esc_url( admin_url( 'admin.php?page=pmpro-advancedsettings' ) );?>"><i class="dashicons dashicons-admin-settings"></i> <?php esc_html_e( 'View Advanced Settings', 'paid-memberships-pro' ); ?></a></li>
     			<?php } ?>
 
@@ -258,7 +262,13 @@ function pmpro_dashboard_report_recent_members_callback() {
     			foreach ( $theusers as $auser ) {
     				$auser = apply_filters( 'pmpro_members_list_user', $auser );
     				//get meta
-    				$theuser = get_userdata( $auser->ID ); ?>
+    				$theuser = get_userdata( $auser->ID ); 
+					
+					// Lets check again if the user exists as it may be pulling "old data" from the transient.
+					if ( ! isset( $theuser->ID ) ) {
+						continue;
+					}
+					?>
     				<tr>
     					<td class="username column-username">
     						<?php echo get_avatar($theuser->ID, 32)?>

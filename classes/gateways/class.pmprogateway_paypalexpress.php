@@ -829,9 +829,6 @@
 					$order->payment_transaction_id = urldecode($this->httpParsedResponseAr['PROFILEID']);
 					$order->subscription_transaction_id = urldecode($this->httpParsedResponseAr['PROFILEID']);
 
-					//update order
-					$order->saveOrder();
-
 					return true;
 				} else {
 					// stop processing the review request on checkout page
@@ -949,9 +946,16 @@
 		 * @return string|null Error message is returned if update fails.
 		 */
 		function update_subscription_info( $subscription ) {
+			$API_UserName	= get_option( "pmpro_apiusername" );
+			$API_Password	= get_option( "pmpro_apipassword" );
+			$API_Signature = get_option( "pmpro_apisignature" );
+			if ( empty( $API_UserName ) || empty( $API_Password ) || empty( $API_Signature ) ) {
+				return __( "PayPal login credentials are not set.", 'paid-memberships-pro' );
+			}
+
 			$subscription_transaction_id = $subscription->get_subscription_transaction_id();
 			if ( empty( $subscription_transaction_id ) ) {
-				return 'Subscription transaction ID is empty.';
+				return __( 'Subscription transaction ID is empty.', 'paid-memberships-pro' );
 			}
 
 			//paypal profile stuff

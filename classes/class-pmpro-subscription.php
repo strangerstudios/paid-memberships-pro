@@ -803,24 +803,34 @@ class PMPro_Subscription {
 	 * @return null|PMProGateway The PMProGateway object, null if not set or class found.
 	 */
 	public function get_gateway_object() {
-		// No gateway was set.
-		if ( empty( $this->gateway ) ) {
-			return null;
+		$gateway_object = null;
+
+		// The gateway was set.
+		if ( ! empty( $this->gateway ) ) {
+			// Default test gateway.
+			$classname = 'PMProGateway';
+
+			if ( 'free' !== $this->gateway ) {
+				// Adding the gateway suffix.
+				$classname .= '_' . $this->gateway;
+			}
+
+			if ( class_exists( $classname ) ) {
+				$gateway_object = new $classname( $this->gateway );
+			}
 		}
 
-		// Default test gateway.
-		$classname = 'PMProGateway';
+		/**
+		 * Allow changing the gateway object for this subscription
+		 *
+		 * @param PMProGateway $gateway_object Gateway object.
+		 * @param PMPro_Subscription $this Subscription object.
+		 *
+		 * @since 3.0.3
+		 */
+		$gateway_object = apply_filters( 'pmpro_subscription_gateway_object', $gateway_object, $this );
 
-		if ( 'free' !== $this->gateway ) {
-			// Adding the gateway suffix.
-			$classname .= '_' . $this->gateway;
-		}
-
-		if ( class_exists( $classname ) ) {
-			return new $classname( $this->gateway );
-		}
-
-		return null;
+		return $gateway_object;
 	}
 
 	/**

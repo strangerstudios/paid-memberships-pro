@@ -511,8 +511,6 @@
 				'accountnumber' => hideCardNumber($invoice->accountnumber),
 				'expirationmonth' => $invoice->expirationmonth,
 				'expirationyear' => $invoice->expirationyear,
-				'login_link' => pmpro_login_url(),
-				'login_url' => pmpro_login_url(),
 				'invoice_link' => pmpro_login_url( pmpro_url( 'invoice', '?invoice=' . $invoice->code ) ),
 				'invoice_url' => pmpro_login_url( pmpro_url( 'invoice', '?invoice=' . $invoice->code ) ),
 				'levels_url' => pmpro_url( 'levels' )
@@ -585,8 +583,6 @@
 				'accountnumber' => hideCardNumber($invoice->accountnumber),
 				'expirationmonth' => $invoice->expirationmonth,
 				'expirationyear' => $invoice->expirationyear,
-				'login_link' => pmpro_login_url(),
-				'login_url' => pmpro_login_url(),
 				'invoice_link' => pmpro_login_url( pmpro_url( 'invoice', '?invoice=' . $invoice->code ) ),
 				'invoice_url' => pmpro_login_url( pmpro_url( 'invoice', '?invoice=' . $invoice->code ) ),
 				'levels_url' => pmpro_url( 'levels' )							

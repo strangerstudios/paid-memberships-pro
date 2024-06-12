@@ -1207,6 +1207,9 @@ function pmpro_changeMembershipLevel( $level, $user_id = null, $old_level_status
 	 */
 	$pmpro_deactivate_old_levels = apply_filters( 'pmpro_deactivate_old_levels', true );
 
+	// If we are deactivating old levels, typically we will want to put the old level in 'changed status.
+	// The exception is if the level is being changed by an administrator, in which case 'admin_changed' would have been passed to this function.
+	$change_status = 'admin_changed' === $old_level_status ? 'admin_changed' : 'changed';
 	if ( ! empty( $level_group) && empty( $level_group->allow_multiple_selections ) && $pmpro_deactivate_old_levels ) {
 		// Get all levels in the group.
 		$levels_in_group = pmpro_get_levels_for_group( $level_group->id );
@@ -1217,12 +1220,12 @@ function pmpro_changeMembershipLevel( $level, $user_id = null, $old_level_status
 
 		// Cancel the levels.
 		foreach ( $levels_to_cancel as $level_to_cancel ) {
-			pmpro_cancelMembershipLevel( $level_to_cancel, $user_id, 'changed' );
+			pmpro_cancelMembershipLevel( $level_to_cancel, $user_id, $change_status );
 		}
 	} elseif ( $pmpro_deactivate_old_levels ) {
 		// If the user already has this membership level, we still want to cancel it.
 		if ( in_array( $level_id, $membership_ids ) ) {
-			pmpro_cancelMembershipLevel( $level_id, $user_id, 'changed' );
+			pmpro_cancelMembershipLevel( $level_id, $user_id, $change_status );
 		}
 	}
 	
@@ -2089,24 +2092,67 @@ function pmpro_get_no_access_message( $content, $level_ids, $level_names = NULL 
 		}
 	}
 
-	$pmpro_content_message_pre = '<div class="' . pmpro_get_element_class( 'pmpro_content_message' ) . '">';
-	$pmpro_content_message_post = '</div>';
+	$pmpro_content_mesage_pre = '<div class="' . pmpro_get_element_class( 'pmpro' ) . '"><div class="' . pmpro_get_element_class( 'pmpro_card pmpro_content_message', 'pmpro_content_message' ) . '">';
+	$pmpro_content_message_post = '</div></div>';
 
 	$sr_search = array( '!!levels!!', '!!referrer!!', '!!login_url!!', '!!login_page_url!!', '!!levels_url!!', '!!levels_page_url!!' );
 	$sr_replace = array( pmpro_implodeToEnglish( $level_names ), urlencode( site_url( esc_url_raw( $_SERVER['REQUEST_URI'] ) ) ), esc_url( pmpro_login_url() ), esc_url( pmpro_login_url() ), esc_url( pmpro_url( 'levels' ) ), esc_url( pmpro_url( 'levels' ) ) );
 
 	// Get the correct message to show at the bottom.
 	if ( is_feed() ) {
-		$newcontent = apply_filters( 'pmpro_rss_text_filter', stripslashes( get_option( 'pmpro_rsstext' ) ) );
-		$content .= $pmpro_content_message_pre . str_replace( $sr_search, $sr_replace, $newcontent ) . $pmpro_content_message_post;
-	} elseif ( $current_user->ID ) {
-		//not a member
-		$newcontent = apply_filters( 'pmpro_non_member_text_filter', stripslashes( get_option( 'pmpro_nonmembertext' ) ) );
-		$content .= $pmpro_content_message_pre . str_replace( $sr_search, $sr_replace, $newcontent ) . $pmpro_content_message_post;
+		$rsstext = __( 'This content is for members only. Visit the site and log in/register to read.', 'paid-memberships-pro' );
+		/**
+		 * Filter the RSS text for protected content.
+		 *
+		 * @param string $rsstext The RSS text for protected content.
+		 *
+		 * @return string $rsstext The filtered RSS text for protected content.
+		 */
+		$content = apply_filters( 'pmpro_rss_text_filter', $rsstext );
 	} else {
-		//not logged in!
-		$newcontent = apply_filters( 'pmpro_not_logged_in_text_filter', stripslashes( get_option( 'pmpro_notloggedintext' ) ) );
-		$content .= $pmpro_content_message_pre . str_replace( $sr_search, $sr_replace, $newcontent ) . $pmpro_content_message_post;
+		// Not a member. Show our default message or the site's custom message.
+		$nonmembertext_type = get_option( 'pmpro_nonmembertext_type' );
+		if ( $nonmembertext_type == 'custom' ) {
+			$newcontent = '<div class="' . pmpro_get_element_class( 'pmpro_card_content' ) . '">';
+			$newcontent .= stripslashes( get_option( 'pmpro_nonmembertext' ) );
+			$newcontent .= '</div>';
+
+			/**
+			 * Filter the content message for non-members.
+			 *
+			 * @param string $content The content message for non-members.
+			 * @return string $content The filtered content message for non-members.
+			 */
+			$newcontent = apply_filters( 'pmpro_non_member_text_filter', $newcontent );
+		} else {
+			// Use our generated smart default message.
+			$newcontent = '<h2 class="' . pmpro_get_element_class( 'pmpro_card_title pmpro_font-large' ) . '">';
+			$newcontent .= '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--pmpro--color--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-lock"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>';
+			if ( count( $level_ids ) > 1 ) {
+				$newcontent .= __( 'Membership Required', 'paid-memberships-pro' );
+			} else {
+				$newcontent .= __( '!!levels!! Membership Required', 'paid-memberships-pro' );
+			}
+			$newcontent .= '</h2>';
+			$newcontent .= '<div class="' . pmpro_get_element_class( 'pmpro_card_content' ) . '">';
+			if ( count( $level_ids ) > 1 ) {
+				$newcontent .= '<p>' . __(' You must be a member to access this content.', 'paid-memberships-pro') . '</p>';
+				$newcontent .= '<p><a class="' . pmpro_get_element_class( 'pmpro_btn' ) . '" href="!!levels_page_url!!">' . __( 'View Membership Levels', 'paid-memberships-pro' ) . '</a></p>';
+			} else {
+				$newcontent .= '<p>' . __(' You must be a !!levels!! member to access this content.', 'paid-memberships-pro') . '</p>';
+				$newcontent .= '<p><a class="' . pmpro_get_element_class( 'pmpro_btn' ) . '" href="' . esc_url( pmpro_url( 'checkout', '?pmpro_level=' . $level_ids[0] ) ) . '">' . __( 'Join Now', 'paid-memberships-pro' ) . '</a></p>';
+			}
+			$newcontent .= '</div>';
+		}
+
+		// If the user is not logged in, show a link to log in if the message doesn't already have one.
+		if ( ! is_user_logged_in() && strpos( $newcontent, '!!login' ) === false ) {
+			$newcontent .= '<div class="' . esc_attr( pmpro_get_element_class( 'pmpro_card_actions pmpro_font-medium' ) ) . '">';
+			// to do redirect back to content.
+			$newcontent .= esc_html__( 'Already a member?', 'paid-memberships-pro' ) . ' <a href="' . esc_url( wp_login_url( get_permalink() ) ) . '">' . esc_html__( 'Log in here', 'paid-memberships-pro' ) . '</a>';
+			$newcontent .= '</div>';
+		}
+		$content .= $pmpro_content_mesage_pre . str_replace( $sr_search, $sr_replace, $newcontent ) . $pmpro_content_message_post;
 	}
 
 	return $content;
@@ -3642,9 +3688,15 @@ function pmpro_generatePages( $pages ) {
 			);
 
 			// make some pages a subpage of account
-			$top_level_pages = array( 'account', 'login' );
-			if ( ! in_array( $name, $top_level_pages ) ) {
+			$post_parent_account_pages = array( 'billing', 'cancel', 'invoice', 'member_profile_edit' );
+			if ( in_array( $name, $post_parent_account_pages ) ) {
 				$insert['post_parent'] = $pmpro_pages['account'];
+			}
+
+			// make some pages a subpage of checkout
+			$post_parent_checkout_pages = array( 'confirmation' );
+			if ( in_array( $name, $post_parent_checkout_pages ) ) {
+				$insert['post_parent'] = $pmpro_pages['checkout'];
 			}
 
 			// tweak the login slug
@@ -4742,4 +4794,46 @@ function pmpro_check_upload( $file_index ) {
 
 	// If we made it this far, the file is allowed.
 	return true;
+}
+
+/**
+ * Function to convert a hex color to HSL.
+ */
+function pmpro_hex_to_hsl_parts( $hex ) {
+	// Remove the # from the hex value, if present.
+	$hex = str_replace( '#', '', $hex );
+
+	$red = hexdec( substr( $hex, 0, 2 ) ) / 255;
+	$green = hexdec( substr( $hex, 2, 2 ) ) / 255;
+	$blue = hexdec( substr( $hex, 4, 2 ) ) / 255;
+
+	$cmin = min( $red, $green, $blue );
+	$cmax = max( $red, $green, $blue );
+	$delta = $cmax - $cmin;
+
+	if ( $delta == 0 ) {
+		$hue = 0;
+	} elseif ( $cmax === $red ) {
+		$hue = ( ( $green - $blue ) / $delta );
+	} elseif ( $cmax === $green ) {
+		$hue = ( $blue - $red ) / $delta + 2;
+	} else {
+		$hue = ( $red - $green ) / $delta + 4;
+	}
+
+	$hue = round( $hue * 60 );
+	if ( $hue < 0 ) {
+		$hue += 360;
+	}
+
+	$lightness = ( ( $cmax + $cmin ) / 2 );
+	$saturation = $delta === 0 ? 0 : ( $delta / ( 1 - abs( 2 * $lightness - 1 ) ) );
+	if ( $saturation < 0 ) {
+		$saturation += 1;
+	}
+
+	$lightness = round( $lightness * 100 );
+	$saturation = round( $saturation * 100 );
+
+ 	return array( $hue, $saturation, $lightness );
 }

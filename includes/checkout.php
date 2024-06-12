@@ -272,3 +272,19 @@ function pmpro_pull_checkout_data_from_order( $order ) {
 		return false;
 	}
 }
+
+/**
+ * AJAX method to get the checkout nonce.
+ * Important for correcting the nonce value at checkout if the user is logged in during the same page load.
+ *
+ * @since 3.0.3
+ */
+function pmpro_get_checkout_nonce() {
+	// Output the checkout nonce.
+	echo esc_html( wp_create_nonce( 'pmpro_checkout_nonce' ) );
+
+	// End the AJAX request.
+	exit;
+}
+add_action( 'wp_ajax_pmpro_get_checkout_nonce', 'pmpro_get_checkout_nonce' );
+add_action( 'wp_ajax_nopriv_pmpro_get_checkout_nonce', 'pmpro_get_checkout_nonce' );

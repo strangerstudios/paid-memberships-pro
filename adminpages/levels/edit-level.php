@@ -1,5 +1,9 @@
 <?php
-global $wpdb, $msg, $msgt, $pmpro_stripe_error, $pmpro_braintree_error, $pmpro_payflow_error, $pmpro_twocheckout_error, $pmpro_currency_symbol;
+/**
+ * @var int $edit
+ */
+
+global $wpdb, $msg, $msgt, $page_msg, $page_msgt, $pmpro_stripe_error, $pmpro_braintree_error, $pmpro_payflow_error, $pmpro_twocheckout_error, $pmpro_currency_symbol;
 
 // Get level templates.
 $level_templates = pmpro_edit_level_templates();
@@ -603,7 +607,6 @@ if (!empty($page_msg)) { ?>
 					'href' => array(),
 					'title' => array(),
 					'target' => array(),
-					'title' => array(),
 				),
 			);
 			?>
