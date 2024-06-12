@@ -370,7 +370,7 @@
 		}
 
 		/**
-		 * Semnd the "cancel on next payment date" email to the member.
+		 * Send the "cancel on next payment date" email to the member.
 		 *
 		 * @param WP_User $user The WordPress user object.
 		 * @param int $level_id The level ID of the level that was cancelled.
@@ -390,7 +390,7 @@
 			$level = pmpro_getSpecificMembershipLevelForUser( $user->ID, $level_id );
 
 			// Make sure that the level is now set to expire.
-			if ( empty( $level ) || empty( $level->enddate) ) {
+				if ( empty( $level ) || empty( $level->enddate) ) {
 				return false;
 			}
 
@@ -422,6 +422,8 @@
 		 *
 		 * @param WP_User $user The WordPress user object.
 		 * @param int $level_id The level ID of the level that was cancelled.
+		 * @return bool True if the email was sent, false otherwise.
+		 * @since TBD
 		 */
 		function sendCancelOnNextPaymentDateAdminEmail( $user, $level_id ) {
 			// If an array is passed for $level_id, throw doing it wrong warning.
