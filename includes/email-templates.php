@@ -87,18 +87,18 @@ $pmpro_email_templates_defaults = array(
 <p>Log in to your WordPress dashboard here: !!login_url!!</p>', 'paid-memberships-pro' ),
 		'help_text' => __( 'Members can update the payment method associated with their recurring subscription. This email is sent to the site administrator as a confirmation of a payment method update.', 'paid-memberships-pro' )
 	),
-	'billing_failure'          => array(
-		'subject'     => __( "Membership payment failed at !!sitename!!", 'paid-memberships-pro' ),
+	'billing_failure' => array(
+		'subject'     => __( "Membership payment for level !!membership_level_name!! failed at !!sitename!!", 'paid-memberships-pro' ),
 		'description' => __('Billing Failure', 'paid-memberships-pro'),
-		'body' => __( '<p>The current subscription payment for your !!sitename!! membership has failed. <strong>Please click the following link to log in and update your billing information to avoid account suspension. !!login_url!!</strong></p>
+		'body' => __( '<p>The current subscription payment for level !!membership_level_name!! at !!sitename!! membership has failed. <strong>Please click the following link to log in and update your billing information to avoid account suspension.</strong><br/> !!billing_url!! </p>
 
 <p>Account: !!display_name!! (!!user_email!!)</p>', 'paid-memberships-pro' ),
 		'help_text' => __( 'This email is sent out if a recurring payment has failed, usually due to an expired or cancelled credit card. This email is sent to the member to allowing them time to update payment information without a disruption in access to your site.', 'paid-memberships-pro' )
 	),
-	'billing_failure_admin'    => array(
-		'subject'     => __( "Membership payment failed for !!display_name!! at !!sitename!!", 'paid-memberships-pro' ),
+	'billing_failure_admin' => array(
+		'subject' => __( "Membership payment for level !!membership_level_name!! failed for !!display_name!! at !!sitename!!", 'paid-memberships-pro' ),
 		'description' => __('Billing Failure (admin)', 'paid-memberships-pro'),
-		'body' => __( '<p>The subscription payment for !!user_login!! at !!sitename!! has failed.</p>
+		'body' => __( '<p>The subscription payment for !!user_login!! for level !!membership_level_name!! at !!sitename!! has failed.</p>
 
 <p>Account: !!display_name!! (!!user_email!!)</p>
 <p>Membership Level: !!membership_level_name!!</p>
