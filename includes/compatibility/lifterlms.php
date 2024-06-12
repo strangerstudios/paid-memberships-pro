@@ -461,26 +461,23 @@ add_filter( 'llms_install_create_pages', 'pmpro_lifter_install_get_pages' );	// 
 /**
  * If the streamline option is enabled, unregister the LifterLMS membership post type.
  *
- * @param string $post_type The post type name.
  * @param array $args The post type arguments.
+ * @param string $post_type The post type name.
  * @since TBD
  */
-function pmpro_lifter_unregister_membership_post_type( $post_type, $args ) {
+function pmpro_lifter_unregister_membership_post_type( $args, $post_type ) {
 	// Bail if streamline is not enabled.
 	if ( ! get_option( 'pmpro_lifter_streamline' ) ) {
-		return;
+		return $args;
 	}
 
-
-	add_filter( 'register_post_type_args', function( $args, $post_type ) {
-		if ( 'llms_membership' === $post_type ) {
-			$args['has_archive'] = false;
-		}
-		return $args;
-	}, 10, 2 );
+	if ( 'llms_membership' === $post_type ) {
+		$args['has_archive'] = false;
+	}
+	return $args;
 }
 
-add_action( 'registered_post_type', 'pmpro_lifter_unregister_membership_post_type', 10, 2 );
+add_action( 'register_post_type_args', 'pmpro_lifter_unregister_membership_post_type', 10, 2 );
 
 
 /**
