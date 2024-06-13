@@ -317,12 +317,19 @@ function pmpro_email_templates_send_test() {
 			$params = array($current_user, $current_user->membership_level->id);
 			break;
 		case 'cancel_on_next_payment_date':
-			$send_email = 'sendCancelOnNextPaymentDateEmail';
-			$params = array( $test_user, $test_user->membership_level->id );
-			break;
 		case 'cancel_on_next_payment_date_admin':
-			$send_email = 'sendCancelOnNextPaymentDateAdminEmail';
-			$params = array( $test_user, $test_user->membership_level->id );
+			$send_email = 'cancel_on_next_payment_date' == $test_email->template ? 'sendCancelOnNextPaymentDateEmail' :
+				'sendCancelOnNextPaymentDateAdminEmail';
+			$levels = pmpro_getAllLevels( true );
+			global $pmpro_conpd_email_test_level;
+			$pmpro_conpd_email_test_level = current( $levels );
+			//Ensure mock level has enddate set
+			add_filter( 'pmpro_get_membership_levels_for_user', function() {
+				global $pmpro_conpd_email_test_level;
+				$pmpro_conpd_email_test_level->enddate = date( 'Y-m-d', strtotime( '+1 month' ) );
+				return array( $pmpro_conpd_email_test_level->id => $pmpro_conpd_email_test_level );
+			} );
+			$params = array( $test_user, $pmpro_conpd_email_test_level->id );
 			break;
 		case 'checkout_check':
 		case 'checkout_express':

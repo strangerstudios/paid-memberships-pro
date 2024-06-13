@@ -11,7 +11,7 @@ import { __ } from '@wordpress/i18n';
 import { useBlockProps } from '@wordpress/block-editor';
 
 /**
- * Render the Membership Account: Invoices block in the editor.
+ * Render the Membership Account: Orders block in the editor.
  *
  * @see https://developer.wordpress.org/block-editor/reference-guides/block-api/block-edit-save/#edit
  *
@@ -26,7 +26,7 @@ export default function Edit( { attributes, setAttributes } ) {
 	return [
 		<div className="pmpro-block-element" { ...blockProps }>
 			<span className="pmpro-block-title">{ __( 'Paid Memberships Pro', 'paid-memberships-pro' ) }</span>
-			<span className="pmpro-block-subtitle"> { __( 'Membership Account: Invoices', 'paid-memberships-pro' ) }</span>
+			<span className="pmpro-block-subtitle"> { __( 'Membership Account: Orders', 'paid-memberships-pro' ) }</span>
 			<input
 				placeholder={ __( 'No title will be shown.', 'paid-memberships-pro' ) }
 				type="text"

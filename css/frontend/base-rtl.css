@@ -1,0 +1,17 @@
+/**
+ * Base styles for RTL sites wtih Paid Memberships Pro.
+ */
+
+/**
+ * Contextual Messages
+ */
+.pmpro_message {
+	text-align: right;
+}
+
+/**
+ * Frontend page navigation
+ */
+.pmpro_actions_nav:not(.pmpro_login_wrap .pmpro_actions_nav) {
+	flex-direction: row-reverse;
+}

@@ -1,6 +1,6 @@
 <?php
 /**
- * Template for Print Invoices
+ * Template for Print Orders
  *
  * @since 1.8.6
  * 
@@ -26,12 +26,12 @@
 		.aligncenter {
 			text-align: center;
 		}
-		.invoice, .invoice tr, .invoice th, .invoice td {
+		.order, .order tr, .order th, .order td {
 			border: 1px solid;
 			border-collapse: collapse;
 			padding: 4px;
 		}
-		.invoice {
+		.order {
 			width: 100%;
 		}
 		@media screen {
@@ -50,7 +50,7 @@
 		<div class="right">
 			<table>
 				<tr>
-					<td><?php echo esc_html( __('Invoice #: ', 'paid-memberships-pro' ) . '&nbsp;' . $order->code ); ?></td>
+					<td><?php echo esc_html( __('Order #: ', 'paid-memberships-pro' ) . '&nbsp;' . $order->code ); ?></td>
 				</tr>
 				<tr>
 					<td>
@@ -73,7 +73,7 @@
 				$order->billing->phone
 			) ); ?>
 		</p>
-		<table class="invoice" style="border-width:0px;border-collapse:collapse;">
+		<table class="order" style="border-width:0px;border-collapse:collapse;">
 			<tr>
 				<th><?php esc_html_e('ID', 'paid-memberships-pro' ); ?></th>
 				<th><?php esc_html_e('Item', 'paid-memberships-pro' ); ?></th>
