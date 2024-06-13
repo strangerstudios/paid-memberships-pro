@@ -1429,7 +1429,7 @@ class PMProGateway_stripe extends PMProGateway {
 	 * @return bool
 	 */
 	public static function using_stripe_checkout() {
-		'onsite' !== get_option( 'pmpro_stripe_payment_flow' );
+		return 'onsite' !== get_option( 'pmpro_stripe_payment_flow' );
 	}
 
 	/**
