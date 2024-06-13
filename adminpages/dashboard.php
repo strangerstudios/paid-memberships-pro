@@ -370,7 +370,7 @@ function pmpro_dashboard_report_recent_orders_callback() {
 								<?php }
 							?>
 						</td>
-						<td><?php echo pmpro_escape_price( pmpro_formatPrice( $order->total ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></td>
+						<td><?php echo pmpro_escape_price( $order->get_formatted_total() ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></td>
 						<td>
 							<?php echo esc_html( $order->gateway ); ?>
 							<?php if ( $order->gateway_environment == 'test' ) {

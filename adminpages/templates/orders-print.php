@@ -82,7 +82,7 @@
 			<tr>
 				<td class="aligncenter"><?php echo esc_html( $level->id ); ?></td>
 				<td><?php echo esc_html( $level->name ); ?></td>
-				<td class="alignright"><?php echo pmpro_escape_price( pmpro_formatPrice( $order->subtotal ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></td>
+				<td class="alignright"><?php echo pmpro_escape_price( $last_order->get_formatted_subtotal() ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></td>
 			</tr>
 			<?php
 				if ( (float)$order->total > 0 ) {

@@ -3181,14 +3181,14 @@ function pmpro_get_price_parts( $pmpro_order, $format = 'array' ) {
 	if ( ! empty( $pmpro_order->subtotal ) && $pmpro_order->subtotal != $pmpro_order->total ) {
 		$pmpro_price_parts['subtotal'] = array(
 			'label' => __( 'Subtotal', 'paid-memberships-pro' ),
-			'value' => pmpro_escape_price( pmpro_formatPrice( $pmpro_order->subtotal ) ),
+			'value' => pmpro_escape_price( $pmpro_order->get_formatted_subtotal() ),
 		);
 	}
 
 	if ( ! empty( $pmpro_order->tax ) ) {
 		$pmpro_price_parts['tax'] = array(
 			'label' => __( 'Tax', 'paid-memberships-pro' ),
-			'value' => pmpro_escape_price( pmpro_formatPrice( $pmpro_order->tax ) ),
+			'value' => pmpro_escape_price( $pmpro_order->get_formatted_tax() ),
 		);
 	}
 
@@ -3209,7 +3209,7 @@ function pmpro_get_price_parts( $pmpro_order, $format = 'array' ) {
 	if ( ! empty( $pmpro_order->total ) ) {
 		$pmpro_price_parts_with_total['total'] = array(
 			'label' => __( 'Total', 'paid-memberships-pro' ),
-			'value' => pmpro_escape_price( pmpro_formatPrice( $pmpro_order->total ) ),
+			'value' => pmpro_escape_price( $pmpro_order->get_formatted_total() ),
 		);
 	}
 

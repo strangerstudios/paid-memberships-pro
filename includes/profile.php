@@ -276,7 +276,7 @@ function pmpro_membership_level_profile_fields($user)
 									?>
 									<label for="<?php echo esc_attr( $shown_level_name_prefix ); ?>[refund]" style="display: none">
 										<input type="checkbox" name="<?php echo esc_attr( $shown_level_name_prefix ); ?>[refund]" value="1" />
-										<?php printf( esc_html__( 'Refund the last payment (%s).', 'paid-memberships-pro' ), pmpro_escape_price( pmpro_formatPrice( $last_order->total ) ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+										<?php printf( esc_html__( 'Refund the last payment (%s).', 'paid-memberships-pro' ), pmpro_escape_price( $last_order->get_formatted_total() ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 									</label>
 									<?php
 								}
@@ -382,7 +382,7 @@ function pmpro_membership_level_profile_fields($user)
 													?>
 													<label for="<?php echo esc_attr( $name_prefix ); ?>[refund]" style="display: none">
 														<input type="checkbox" name="<?php echo esc_attr( $name_prefix ); ?>[refund]" value="1" />
-														<?php printf( esc_html__( 'Refund the last payment (%s).', 'paid-memberships-pro' ), pmpro_escape_price( pmpro_formatPrice( $last_order->total ) ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+														<?php printf( esc_html__( 'Refund the last payment (%s).', 'paid-memberships-pro' ), pmpro_escape_price( $last_order->get_formatted_total() ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 													</label>
 													<?php
 												}
@@ -804,7 +804,7 @@ function pmpro_membership_history_profile_fields( $user ) {
 								}
 							?>
 						</td>
-						<td><?php echo pmpro_escape_price( pmpro_formatPrice( $invoice->total ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></td>
+						<td><?php echo pmpro_escape_price( $invoice->get_formatted_total() ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></td>
 						<td><?php 
 							if ( empty( $invoice->code_id ) ) {
 								esc_html_e( '&#8212;', 'paid-memberships-pro' );

@@ -53,7 +53,7 @@
 				<tr style="border-width:1px;border-style:solid;border-collapse:collapse;">
 					<td style="text-align:center;border-width:1px;border-style:solid;border-collapse:collapse;padding:4px;"><?php echo esc_html( $level->id ); ?></td>
 					<td style="border-width:1px;border-style:solid;border-collapse:collapse;padding:4px;"><?php echo esc_html( $level->name ); ?></td>
-					<td style="border-width:1px;border-style:solid;border-collapse:collapse;text-align:right;padding:4px;"><?php echo pmpro_escape_price( pmpro_formatPrice( $order->subtotal ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></td>
+					<td style="border-width:1px;border-style:solid;border-collapse:collapse;text-align:right;padding:4px;"><?php echo pmpro_escape_price( $last_order->get_formatted_subtotal() ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></td>
 				</tr>
 				<?php
 					if ( (float)$order->total > 0 ) {
