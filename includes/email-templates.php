@@ -9,13 +9,7 @@
  * Default email templates.
  */
 $pmpro_email_templates_defaults = array(
-	'default'                  => array(
-		'subject'     => __( "An email from !!sitename!!", 'paid-memberships-pro' ),
-		'description' => __( 'Default Email', 'paid-memberships-pro'),
-		'body' => __( '!!body!!', 'paid-memberships-pro' ),
-		'help_text' => __( 'This email is sent when there is a general message that needs to be communicated to the site administrator.', 'paid-memberships-pro' )
-	),
-	'footer'                  => array(
+	'footer' => array(
 		'subject'     => '',
 		'description' => __( 'Email Footer', 'paid-memberships-pro'),
 		'body' => __( '<p>
