@@ -484,11 +484,13 @@ function pmpro_update_manager_notices() {
 		return;
 	}
 
-	// If this notice was dismissed, bail.
-	$archived_notifications = get_user_meta( $current_user->ID, 'pmpro_archived_notifications', true );
+	// Hide on PMPro pages if the notice has been dismissed.
+	if ( $is_pmpro_page ) {
+		$archived_notifications = get_user_meta( $current_user->ID, 'pmpro_archived_notifications', true );
 
-	if ( ! empty( $archived_notifications ) && in_array( 'pmpro_update_manager_notice', array_keys( $archived_notifications ) ) ) {
-		return;
+		if ( ! empty( $archived_notifications ) && in_array( 'pmpro_update_manager_notice', array_keys( $archived_notifications ) ) ) {
+			return;
+		}
 	}
 
 	// We should show a notice. Figure out which one.
