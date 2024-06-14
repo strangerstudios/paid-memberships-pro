@@ -2,7 +2,7 @@
 
 // only admins can get this
 if ( ! function_exists( 'current_user_can' ) || ( ! current_user_can( 'manage_options' ) && ! current_user_can( 'pmpro_reportscsv' ) ) ) {
-	die( __( 'You do not have permissions to perform this action.', 'paid-memberships-pro' ) );
+	die( esc_html__( 'You do not have permissions to perform this action.', 'paid-memberships-pro' ) );
 }
 
 if ( ! defined( 'PMPRO_BENCHMARK' ) ) {
@@ -74,7 +74,7 @@ if ( isset( $_REQUEST[ 'discount_code' ] ) ) {
 if($period == "daily")
 {
 	$startdate = $year . '-' . substr("0" . $month, strlen($month) - 1, 2) . '-01';
-	$enddate = $year . '-' . substr("0" . $month, strlen($month) - 1, 2) . '-31';
+	$enddate = $year . '-' . substr("0" . $month, strlen($month) - 1, 2) . '-' . date_i18n( 't', strtotime( $startdate ) );
 	$date_function = 'DAY';
 }
 elseif($period == "monthly")
@@ -86,12 +86,12 @@ elseif($period == "monthly")
 elseif($period == "annual")
 {
 	$startdate = '1970-01-01';	//all time
-	$enddate = strval(intval($year)+1) . '-01-01';
+	$enddate = strval(intval($thisyear)+1) . '-01-01';
 	$date_function = 'YEAR';
 }
 
 //testing or live data
-$gateway_environment = pmpro_getOption("gateway_environment");
+$gateway_environment = get_option( "pmpro_gateway_environment");
 
 //get data
 if (
@@ -167,6 +167,28 @@ elseif($period == "monthly")
 }
 elseif($period == "annual") //annual
 {
+	// Get the first year we have signups for.
+	$first_year = $thisyear;
+	foreach ( $dates as $date ) {
+		if ( $date->date < $first_year ) {
+			$first_year = $date->date;
+		}
+	}
+
+	for ( $i = $first_year; $i <= $thisyear; $i++ ) {
+		// Signups vs. Cancellations, Expirations, or All
+		if ( $type === 'signup_v_cancel' || $type === 'signup_v_expiration' || $type === 'signup_v_all' ) {
+			$cols[ $i ]          = new stdClass();
+			$cols[ $i ]->date    = $i;
+			$cols[ $i ]->signups = 0;
+			foreach ( $dates as $date ) {
+				if ( $date->date == $i ) {
+					$cols[ $i ]->date    = $date->date;
+					$cols[ $i ]->signups = $date->signups;
+				}
+			}
+		}
+	}
 }
 
 $dates = ( ! empty( $cols ) ) ? $cols : $dates;
@@ -218,13 +240,14 @@ if ( $type === "signup_v_cancel" || $type === "signup_v_expiration" || $type ===
 
 	$cdates = $wpdb->get_results($sqlQuery, OBJECT_K);
 
-	foreach( $dates as $day => &$date )
-	{
-		if(!empty($cdates) && !empty($cdates[$day]))
+	foreach ( $dates as $day => &$date ) {
+		if ( ! empty( $cdates ) && ! empty( $cdates[$day] ) ) {
 			$date->cancellations = $cdates[$day]->cancellations;
-		else
+		} else {
 			$date->cancellations = 0;
+		}
 	}
+
 }
 
 $headers   = array();
@@ -423,12 +446,12 @@ function pmpro_transmit_report_data( $csv_fh, $filename, $headers = array() ) {
 
 	// did we accidentally send errors/warnings to browser?
 	if ( headers_sent() ) {
-		echo str_repeat( '-', 75 ) . "<br/>\n";
+		echo esc_html( str_repeat( '-', 75 ) ) . "<br/>\n";
 		echo 'Please open a support case and paste in the warnings/errors you see above this text to\n ';
 		echo 'the <a href="http://paidmembershipspro.com/support/?utm_source=plugin&utm_medium=pmpro-membership-stats-csv&utm_campaign=support" target="_blank">Paid Memberships Pro support forum</a><br/>\n';
-		echo str_repeat( '=', 75 ) . "<br/>\n";
-		echo file_get_contents( $filename );
-		echo str_repeat( '=', 75 ) . "<br/>\n";
+		echo esc_html( str_repeat( '-', 75 ) ) . "<br/>\n";
+		echo wp_kses_post( file_get_contents( $filename ) );
+		echo esc_html( str_repeat( '-', 75 ) ) . "<br/>\n";
 	}
 
 	// transmission

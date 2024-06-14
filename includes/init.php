@@ -11,15 +11,15 @@ function pmpro_init() {
 
 	global $pmpro_pages, $pmpro_core_pages, $pmpro_ready, $pmpro_currencies, $pmpro_currency, $pmpro_currency_symbol;
 	$pmpro_pages = array();
-	$pmpro_pages["account"] = pmpro_getOption("account_page_id");
-	$pmpro_pages["billing"] = pmpro_getOption("billing_page_id");
-	$pmpro_pages["cancel"] = pmpro_getOption("cancel_page_id");
-	$pmpro_pages["checkout"] = pmpro_getOption("checkout_page_id");
-	$pmpro_pages["confirmation"] = pmpro_getOption("confirmation_page_id");
-	$pmpro_pages["invoice"] = pmpro_getOption("invoice_page_id");
-	$pmpro_pages["levels"] = pmpro_getOption("levels_page_id");
-	$pmpro_pages["login"] = pmpro_getOption("login_page_id");
-	$pmpro_pages["member_profile_edit"] = pmpro_getOption("member_profile_edit_page_id");
+	$pmpro_pages["account"] = get_option("pmpro_account_page_id");
+	$pmpro_pages["billing"] = get_option("pmpro_billing_page_id");
+	$pmpro_pages["cancel"] = get_option("pmpro_cancel_page_id");
+	$pmpro_pages["checkout"] = get_option("pmpro_checkout_page_id");
+	$pmpro_pages["confirmation"] = get_option("pmpro_confirmation_page_id");
+	$pmpro_pages["invoice"] = get_option("pmpro_invoice_page_id");
+	$pmpro_pages["levels"] = get_option("pmpro_levels_page_id");
+	$pmpro_pages["login"] = get_option("pmpro_login_page_id");
+	$pmpro_pages["member_profile_edit"] = get_option("pmpro_member_profile_edit_page_id");
 
 	//save this in case we want a clean version of the array with just the core pages
 	$pmpro_core_pages = $pmpro_pages;
@@ -31,11 +31,11 @@ function pmpro_init() {
 	 */
 	$extra_pages = apply_filters('pmpro_extra_page_settings', array());
 	foreach($extra_pages as $name => $page)
-		$pmpro_pages[$name] = pmpro_getOption($name . '_page_id');
+		$pmpro_pages[$name] = get_option('pmpro_' . $name . '_page_id');
 
 
 	//set currency
-	$pmpro_currency = pmpro_getOption("currency");
+	$pmpro_currency = get_option("pmpro_currency");
 	if(!$pmpro_currency)
 	{
 		global $pmpro_default_currency;
@@ -70,7 +70,7 @@ function pmpro_wp()
 		//run the appropriate preheader function
 		foreach($pmpro_core_pages as $pmpro_page_name => $pmpro_page_id)
 		{
-			if(!empty($post->post_content) && ( strpos($post->post_content, "[pmpro_" . $pmpro_page_name . "]") !== false || has_block( 'pmpro/' . $pmpro_page_name . '-page', $post ) ) )
+			if( ! empty( $post->post_content ) && ( strpos( $post->post_content, "[pmpro_" . $pmpro_page_name . "]" ) !== false || ( function_exists( 'has_block' ) && has_block( 'pmpro/' . $pmpro_page_name . '-page', $post ) ) ) )
 			{
 				//preheader
 				require_once(PMPRO_DIR . "/preheaders/" . $pmpro_page_name . ".php");
@@ -100,6 +100,51 @@ function pmpro_wp()
 	}
 }
 add_action("wp", "pmpro_wp", 2);
+
+/**
+ * Add root colors to the head tag.
+ */
+function pmpro_print_root_color_values() {
+	// Color settings.
+	$pmpro_colors = get_option( 'pmpro_colors' );
+	$pmpro_colors = ! empty( $pmpro_colors ) ? $pmpro_colors : array(
+		'base' => '#ffffff',
+		'contrast' => '#222222',
+		'accent' => '#0c3d54',
+	);
+
+	// Get the accent color variation.
+	$accent_variation_hsl_parts = pmpro_hex_to_hsl_parts( $pmpro_colors['accent'] );
+	$accent_variation_hsl_parts[1] = $accent_variation_hsl_parts[1] . '%';
+	$accent_variation_hsl_parts[2] = $accent_variation_hsl_parts[2] * 1.5 . '%';
+	$accent_variation_hsl_parts = implode( ',', $accent_variation_hsl_parts );
+
+	// Get the style variation to be used when we calculate some colors.
+	$pmpro_style_variation = get_option( 'pmpro_style_variation' );
+
+	// Calculate a border variation color based on the base color's lightness.
+	$base_hsl_parts = pmpro_hex_to_hsl_parts( $pmpro_colors['base'] );
+	$base_hsl_parts[1] = $base_hsl_parts[1] . '%';
+	if ( $base_hsl_parts[2] < 50 ) {
+		// This is a dark color.
+		$base_hsl_parts[2] = $pmpro_style_variation == 'variation_1' ? '30%' : '80%';
+	} else {
+		// This is a light color.
+		$base_hsl_parts[2] = $pmpro_style_variation == 'variation_1' ? '91%' : '0%';
+	}
+	$base_hsl_parts = implode( ',', $base_hsl_parts );
+
+	$css = ":root {
+	--pmpro--color--base: {$pmpro_colors['base']};
+	--pmpro--color--contrast: {$pmpro_colors['contrast']};
+	--pmpro--color--accent: {$pmpro_colors['accent']};
+	--pmpro--color--accent--variation: hsl( $accent_variation_hsl_parts );
+	--pmpro--color--border--variation: hsl( $base_hsl_parts );
+}";
+
+	echo '<style id="pmpro_colors">' . $css . '</style>';
+}
+add_action( 'wp_head', 'pmpro_print_root_color_values' );
 
 /*
 	Add PMPro page names to the BODY class.
@@ -133,8 +178,8 @@ function pmpro_set_current_user()
 	}
 
 	//hiding ads?
-	$hideads = pmpro_getOption("hideads");
-	$hideadslevels = pmpro_getOption("hideadslevels");
+	$hideads = get_option("pmpro_hideads");
+	$hideadslevels = get_option("pmpro_hideadslevels");
 	if(!is_array($hideadslevels))
 		$hideadslevels = explode(",", $hideadslevels);
 	if($hideads == 1 && pmpro_hasMembershipLevel() || $hideads == 2 && pmpro_hasMembershipLevel($hideadslevels))

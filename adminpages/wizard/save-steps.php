@@ -62,7 +62,7 @@ function pmpro_init_save_wizard_data() {
 				$pages['cancel']              = __( 'Membership Cancel', 'paid-memberships-pro' );
 				$pages['checkout']            = __( 'Membership Checkout', 'paid-memberships-pro' );
 				$pages['confirmation']        = __( 'Membership Confirmation', 'paid-memberships-pro' );
-				$pages['invoice']             = __( 'Membership Invoice', 'paid-memberships-pro' );
+				$pages['invoice']             = __( 'Membership Orders', 'paid-memberships-pro' );
 				$pages['levels']              = __( 'Membership Levels', 'paid-memberships-pro' );
 				$pages['login']               = __( 'Log In', 'paid-memberships-pro' );
 				$pages['member_profile_edit'] = __( 'Your Profile', 'paid-memberships-pro' );
@@ -133,7 +133,7 @@ function pmpro_init_save_wizard_data() {
 				array(
 					'action' => 'authorize',
 					'gateway_environment' => $environment,
-					'return_url' => rawurlencode( $next_step ),
+					'return_url' => rawurlencode( add_query_arg( 'pmpro_stripe_connect_nonce', wp_create_nonce( 'pmpro_stripe_connect_nonce' ), $next_step ) ),
 				),
 				esc_url( $connect_url_base )
 			);

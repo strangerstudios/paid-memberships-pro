@@ -107,7 +107,7 @@ function pmpro_lifter_membership_content_filter( $filtered_content, $original_co
 			$post_membership_levels_names = $hasaccess[2];
 			$hasaccess = $hasaccess[0];
 			if ( ! $hasaccess ) {
-				echo pmpro_get_no_access_message( '', $post_membership_levels_ids, $post_membership_levels_names );
+				echo wp_kses_post( pmpro_get_no_access_message( '', $post_membership_levels_ids, $post_membership_levels_names ) );
 			}
 		}
 		
@@ -358,25 +358,32 @@ function pmpro_lifter_intro_html( $html, $wizard ) {
 	</label>
 	<script>
 		jQuery(document).ready(function(){
-			function pmpro_lifter_add_streamline_to_url() {
+			function pmpro_lifter_add_streamline_to_url( onload ) {
 				let $checkbox = jQuery('#lifter-streamline');
 				let $link = jQuery('.llms-setup-actions a.llms-button-primary');
 
+				// If we are running this on load, add a nonce to the URL.
+				if (onload) {
+					$link.attr('href', $link.attr('href') + '&pmpro_lifter_streamline_nonce=<?php echo esc_attr( wp_create_nonce( 'pmpro_lifter_streamline_nonce' ) ); ?>');
+				}
+
 				//If the checkbox is checked, add streamline to the url
+				$link.attr('href', $link.attr('href').replace('&pmpro_lifter_streamline=0', ''));
+				$link.attr('href', $link.attr('href').replace('&pmpro_lifter_streamline=1', ''));
 				if ($checkbox.is(':checked')) {
 					$link.attr('href', $link.attr('href') + '&pmpro_lifter_streamline=1');
 				} else {
-					$link.attr('href', $link.attr('href').replace('&pmpro_lifter_streamline=1', ''));
+					$link.attr('href', $link.attr('href') + '&pmpro_lifter_streamline=0');
 				}
 			}
 			
 			// Update the URL when the checkbox is changed.
 			jQuery('#lifter-streamline').on('change', function(){
-				pmpro_lifter_add_streamline_to_url();
+				pmpro_lifter_add_streamline_to_url( false );
 			});
 
 			// Run on load too.
-			pmpro_lifter_add_streamline_to_url();
+			pmpro_lifter_add_streamline_to_url( true );
 		});
 	</script>
 	<?php
@@ -404,6 +411,16 @@ function pmpro_lifter_save_streamline_option() {
 	// Bail if the current user doesn't have permission to manage LifterLMS.
 	if ( ! current_user_can( 'manage_lifterlms' ) ) {
 		return;
+	}
+
+	// Bail if a streamline option was not passed.
+	if ( ! isset( $_REQUEST['pmpro_lifter_streamline'] ) ) {
+		return;
+	}
+
+	// We are trying to set the streamline option. Check the nonce.
+	if ( ! isset( $_REQUEST['pmpro_lifter_streamline_nonce'] ) || ! wp_verify_nonce( sanitize_key( $_REQUEST['pmpro_lifter_streamline_nonce'] ), 'pmpro_lifter_streamline_nonce' ) ) {
+		wp_die( esc_html__( 'Security check failed.', 'paid-memberships-pro' ), '', array( 'response' => 403 ) );
 	}
 
 	// Get the streamline value.
@@ -549,9 +566,9 @@ function pmpro_lifter_dashboard_checklist( $checklist ) {
 	$sqlQuery = "SELECT COUNT(*) FROM $wpdb->pmpro_memberships_pages mp LEFT JOIN $wpdb->posts p ON mp.page_id = p.ID WHERE p.post_type = 'course' AND p.post_status = 'publish' GROUP BY mp.page_id LIMIT 1";
 	$ap_check = $wpdb->get_var( $sqlQuery );
 	if ( $ap_check ) {
-		$checklist['access_plan'] = '<i class="fa fa-check"></i> ' . esc_html( 'Restrict a Course', 'paid-memberships-pro' );
+		$checklist['access_plan'] = '<i class="fa fa-check"></i> ' . esc_html__( 'Restrict a Course', 'paid-memberships-pro' );
 	} else {
-		$checklist['access_plan'] = '<i class="fa fa-times"></i> <a href="https://www.paidmembershipspro.com/add-ons/lifterlms/?utm_source=plugin&utm_medium=lifterlms-dashboard&utm_campaign=lifterlms&utm_content=restrict-a-course" target="_blank" rel="noopener">' .  esc_html( 'Restrict a Course', 'paid-memberships-pro' ) . '</a>';
+		$checklist['access_plan'] = '<i class="fa fa-times"></i> <a href="https://www.paidmembershipspro.com/add-ons/lifterlms/?utm_source=plugin&utm_medium=lifterlms-dashboard&utm_campaign=lifterlms&utm_content=restrict-a-course" target="_blank" rel="noopener">' .  esc_html__( 'Restrict a Course', 'paid-memberships-pro' ) . '</a>';
 	}	
 
 	return $checklist;

@@ -64,7 +64,7 @@ function pmpro_wp_ajax_pmpro_updates() {
 		if(function_exists($updates[0]))
 			call_user_func($updates[0]);
 		else
-			echo "[error] Function not found: " . $updates[0];
+			echo "[error] Function not found: " . esc_html( $updates[0] );
 		echo ". ";
 	} else {
 		echo "[done]";
@@ -76,7 +76,7 @@ function pmpro_wp_ajax_pmpro_updates() {
 	//show progress
 	global $pmpro_updates_progress;
 	if(!empty($pmpro_updates_progress))
-		echo $pmpro_updates_progress;
+		echo esc_html( $pmpro_updates_progress );
 
 	exit;
 }
@@ -106,8 +106,9 @@ function pmpro_updates_notice() {
 ?>
 <div class="update-nag notice notice-warning inline">
 	<?php
-		echo __( 'Paid Memberships Pro Data Update Required', 'paid-memberships-pro' ) . '. ';
-		echo sprintf(__( '(1) <a target="_blank" href="%s">Backup your WordPress database</a></strong> and then (2) <a href="%s">click here to start the update</a>.', 'paid-memberships-pro' ), 'https://codex.wordpress.org/WordPress_Backups#Database_Backup_Instructions', admin_url('admin.php?page=pmpro-updates'));
+		echo esc_html__( 'Paid Memberships Pro Data Update Required', 'paid-memberships-pro' ) . '. ';
+		/* translators: %s: URL to the updates page. */
+		echo wp_kses_post( sprintf(__( '(1) <a target="_blank" href="%s">Backup your WordPress database</a></strong> and then (2) <a href="%s">click here to start the update</a>.', 'paid-memberships-pro' ), esc_url( 'https://www.paidmembershipspro.com/backup-wordpress-site/?utm_source=plugin&utm_medium=pmpro-admin-header&utm_campaign=blog&utm_content=backup-notification' ), admin_url('admin.php?page=pmpro-updates')));
 	?>
 </div>
 <?php
@@ -127,7 +128,7 @@ function pmpro_updates_notice_complete() {
 <div class="updated notice notice-success is-dismissible">
 	<p>
 	<?php
-		echo __('All Paid Memberships Pro updates have finished.', 'paid-memberships-pro' );
+		esc_html_e('All Paid Memberships Pro updates have finished.', 'paid-memberships-pro' );
 	?>
 	</p>
 </div>
@@ -167,7 +168,7 @@ function pmpro_updates_notice_complete() {
  */
 function pmpro_maybe_show_upgrade_notices( $current_plugin_data, $update_data ) {
 	if ( isset( $update_data->upgrade_notice ) && strlen( trim( $update_data->upgrade_notice ) ) > 0 ) {
-		echo '<p class="pmpro_plugin_update_notice"><strong>' . esc_html( 'Important Upgrade Notice', 'paid-memberships-pro' ) . ':</strong> ' . esc_html( strip_tags( $update_data->upgrade_notice ) ) . '</p>';
+		echo '<p class="pmpro_plugin_update_notice"><strong>' . esc_html__( 'Important Upgrade Notice', 'paid-memberships-pro' ) . ':</strong> ' . esc_html( strip_tags( $update_data->upgrade_notice ) ) . '</p>';
 
 	}
 }

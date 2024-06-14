@@ -36,33 +36,33 @@ function pmpro_report_login_widget() {
 	<tbody>
 		<tr>
 			<th scope="row"><?php esc_html_e('Today','paid-memberships-pro'); ?></th>
-			<td><?php echo number_format_i18n($visits['today']); ?></td>
-			<td><?php echo number_format_i18n($views['today']); ?></td>
-			<td><?php echo number_format_i18n($logins['today']);?></td>
+			<td><?php echo esc_html( number_format_i18n($visits['today']) ); ?></td>
+			<td><?php echo esc_html( number_format_i18n($views['today']) ); ?></td>
+			<td><?php echo esc_html( number_format_i18n($logins['today'] ));?></td>
 		</tr>
 		<tr>
 			<th scope="row"><?php esc_html_e('This Week','paid-memberships-pro'); ?></th>
-			<td><?php echo number_format_i18n($visits['week']); ?></td>
-			<td><?php echo number_format_i18n($views['week']); ?></td>
-			<td><?php echo number_format_i18n($logins['week']); ?></td>
+			<td><?php echo esc_html( number_format_i18n($visits['week']) ); ?></td>
+			<td><?php echo esc_html( number_format_i18n($views['week']) ); ?></td>
+			<td><?php echo esc_html( number_format_i18n($logins['week']) ); ?></td>
 		</tr>
 		<tr>
 			<th scope="row"><?php esc_html_e('This Month','paid-memberships-pro'); ?></th>
-			<td><?php echo number_format_i18n($visits['month']); ?></td>
-			<td><?php echo number_format_i18n($views['month']); ?></td>
-			<td><?php echo number_format_i18n($logins['month']); ?></td>
+			<td><?php echo esc_html( number_format_i18n($visits['month']) ); ?></td>
+			<td><?php echo esc_html( number_format_i18n($views['month']) ); ?></td>
+			<td><?php echo esc_html( number_format_i18n($logins['month']) ); ?></td>
 		</tr>
 		<tr>
 			<th scope="row"><?php esc_html_e('Year to Date','paid-memberships-pro'); ?></th>
-			<td><?php echo number_format_i18n($visits['ytd']); ?></td>
-			<td><?php echo number_format_i18n($views['ytd']); ?></td>
-			<td><?php echo number_format_i18n($logins['ytd']);?></td>
+			<td><?php echo esc_html( number_format_i18n($visits['ytd']) ); ?></td>
+			<td><?php echo esc_html( number_format_i18n($views['ytd']) ); ?></td>
+			<td><?php echo esc_html( number_format_i18n($logins['ytd']) );?></td>
 		</tr>
 		<tr>
 			<th scope="row"><?php esc_html_e('All Time','paid-memberships-pro'); ?></th>
-			<td><?php echo number_format_i18n($visits['alltime']); ?></td>
-			<td><?php echo number_format_i18n($views['alltime']);?></td>
-			<td><?php echo number_format_i18n($logins['alltime']); ?></td>
+			<td><?php echo esc_html( number_format_i18n($visits['alltime']) ); ?></td>
+			<td><?php echo esc_html( number_format_i18n($views['alltime']) );?></td>
+			<td><?php echo esc_html( number_format_i18n($logins['alltime']) ); ?></td>
 		</tr>
 	</tbody>
 	</table>
@@ -103,11 +103,13 @@ function pmpro_report_login_page()
 		$csv_export_link = add_query_arg( 'l', $l, $csv_export_link );
 	}
 ?>
-	<form id="posts-filter" method="get" action="">
+	<form id="visits-views-logins-form" method="get" action="">
 	<h1 class="wp-heading-inline">
-		<?php _e('Visits, Views, and Logins Report', 'paid-memberships-pro');?>
+		<?php esc_html_e('Visits, Views, and Logins', 'paid-memberships-pro');?>
 	</h1>
-	<a target="_blank" href="<?php echo esc_url( $csv_export_link ); ?>" class="page-title-action pmpro-has-icon pmpro-has-icon-download"><?php esc_html_e( 'Export to CSV', 'paid-memberships-pro' ); ?></a>
+	<?php if ( current_user_can( 'pmpro_loginscsv' ) ) { ?>
+		<a target="_blank" href="<?php echo esc_url( $csv_export_link ); ?>" class="page-title-action pmpro-has-icon pmpro-has-icon-download"><?php esc_html_e( 'Export to CSV', 'paid-memberships-pro' ); ?></a>
+	<?php } ?>
 	<p class="search-box">
 		<label class="screen-reader-text" for="post-search-input"><?php echo esc_html_x( 'Search', 'Search form label', 'paid-memberships-pro')?> <?php if(empty($l)) esc_html_e( 'Users', 'paid-memberships-pro' ); else esc_html_e( 'Members', 'paid-memberships-pro' );?>:</label>
 		<input type="hidden" name="page" value="pmpro-reports" />
@@ -158,11 +160,15 @@ function pmpro_report_login_page()
 		$theusers = $wpdb->get_results($sqlQuery);
 		$totalrows = $wpdb->get_var("SELECT FOUND_ROWS() as found_rows");
 	?>
+	<p>
+		<?php esc_html_e( 'This report offers a detailed view of data points by user and member. For various reasons, the numbers below will not perfectly match up to other tracking you might be doing (such as the data provided by an analytics plugin).', 'paid-memberships-pro' ); ?>
+		<a href="https://www.paidmembershipspro.com/documentation/admin/reports/?utm_source=plugin&utm_medium=pmpro-reports&utm_campaign=documentation&utm_content=visits-views-logins' ); ?>" target="_blank" rel="nofollow noopener"><?php esc_html_e( 'Click here to learn how these numbers are calculated.', 'paid-memberships-pro' ); ?></a>
+	</p>
 	<div class="pmpro_report-filters">
 		<h3><?php esc_html_e( 'Customize Report', 'paid-memberships-pro'); ?></h3>
 		<div class="tablenav top">
 			<label for="l"><?php echo esc_html_x( 'Show', 'Dropdown label, e.g. Show All Users', 'paid-memberships-pro' ); ?></label>
-			<select id="l" name="l" onchange="jQuery('#posts-filter').submit();" aria-label="<?php esc_attr_e( 'Select a membership level to customize this report', 'paid-memberships-pro' ); ?>">
+			<select id="l" name="l" onchange="jQuery('#visits-views-logins-form').trigger('submit');" aria-label="<?php esc_attr_e( 'Select a membership level to customize this report', 'paid-memberships-pro' ); ?>">
 				<option value="" <?php if(!$l) { ?>selected="selected"<?php } ?>><?php esc_html_e('All Users', 'paid-memberships-pro')?></option>
 				<option value="all" <?php if($l == "all") { ?>selected="selected"<?php } ?>><?php esc_html_e('All Levels', 'paid-memberships-pro')?></option>
 				<?php
@@ -183,7 +189,7 @@ function pmpro_report_login_page()
 	<?php if ( $theusers ) { ?>
 		<div class="tablenav top">
 			<div class="tablenav-pages one-page">
-				<span class="displaying-num"><?php echo strval($totalrows)?> <?php if(empty($l)) echo "users"; else echo "members";?> found.</span>
+				<span class="displaying-num"><?php echo esc_html( strval($totalrows) ); ?> <?php if(empty($l)) echo "users"; else echo "members";?> found.</span>
 			</div>
 			<br class="clear" />
 		</div> <!-- end tablenav -->
@@ -232,45 +238,45 @@ function pmpro_report_login_page()
 								<?php echo get_avatar($theuser->ID, 32)?>
 								<strong>
 									<?php
-										$userlink = '<a href="user-edit.php?user_id=' . $theuser->ID . '">' . $theuser->display_name . '</a>';
-										$userlink = apply_filters("pmpro_members_list_user_link", $userlink, $theuser);
-										echo $userlink;
+										$userlink_escaped = '<a href="' . esc_url( add_query_arg( array( 'page' => 'pmpro-member', 'user_id' => (int)$theuser->ID ), admin_url( 'admin.php' ) ) ) . '">' . esc_html( $theuser->display_name ) . '</a>';
+										$userlink_escaped = apply_filters("pmpro_members_list_user_link", $userlink_escaped, $theuser);
+										echo $userlink_escaped; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 									?>
 								</strong>
 								<div class="row-actions">
 									<?php
 										printf(
 											// translators: %s is the User ID.
-											__( 'ID: %s', 'paid-memberships-pro' ),
+											esc_html__( 'ID: %s', 'paid-memberships-pro' ),
 											esc_attr( $theuser->ID )
 										);
 									?>
 								</div>
 							</td>
-							<td><?php echo $auser->membership?></td>
-							<td><?php echo date_i18n( get_option( 'date_format' ), strtotime( get_date_from_gmt( $theuser->user_registered ), current_time( 'timestamp' ) ) ); ?></td>
+							<td><?php echo esc_html( $auser->membership );?></td>
+							<td><?php echo esc_html( date_i18n( get_option( 'date_format' ), strtotime( get_date_from_gmt( $theuser->user_registered ), current_time( 'timestamp' ) ) ) ); ?></td>
 							<td>
 								<?php
 									if($auser->enddate)
-										echo date_i18n(get_option('date_format'), $auser->enddate);
+										echo esc_html( date_i18n(get_option('date_format'), $auser->enddate) );
 									else
 										esc_html_e( 'Never', 'paid-memberships-pro' );
 								?>
 							</td>
-							<td><?php if(!empty($visits['last'])) echo $visits['last'];?></td>
-							<td><?php if(!empty($visits['week']) && pmpro_isDateThisWeek($visits['last'])) echo $visits['week'];?></td>
-							<td><?php if(!empty($visits['month']) && pmpro_isDateThisMonth($visits['last'])) echo $visits['month'];?></td>
-							<td><?php if(!empty($visits['ytd']) && pmpro_isDateThisYear($visits['last'])) echo $visits['ytd'];?></td>
-							<td><?php if(!empty($visits['alltime'])) echo $visits['alltime'];?></td>
-							<td><?php if(!empty($views['week']) && pmpro_isDateThisWeek($views['last'])) echo $views['week'];?></td>
-							<td><?php if(!empty($views['month']) && pmpro_isDateThisMonth($views['last'])) echo $views['month'];?></td>
-							<td><?php if(!empty($views['ytd']) && pmpro_isDateThisYear($views['last'])) echo $views['ytd'];?></td>
-							<td><?php if(!empty($views['alltime'])) echo $views['alltime'];?></td>
-							<td><?php if(!empty($logins['last'])) echo $logins['last'];?></td>
-							<td><?php if(!empty($logins['week']) && pmpro_isDateThisWeek($logins['last'])) echo $logins['week'];?></td>
-							<td><?php if(!empty($logins['month']) && pmpro_isDateThisMonth($logins['last'])) echo $logins['month'];?></td>
-							<td><?php if(!empty($logins['ytd']) && pmpro_isDateThisYear($logins['last'])) echo $logins['ytd'];?></td>
-							<td><?php if(!empty($logins['alltime'])) echo $logins['alltime'];?></td>
+							<td><?php if(!empty($visits['last'])) echo esc_html( $visits['last'] );?></td>
+							<td><?php if(!empty($visits['week']) && pmpro_isDateThisWeek($visits['last'])) echo esc_html( $visits['week'] );?></td>
+							<td><?php if(!empty($visits['month']) && pmpro_isDateThisMonth($visits['last'])) echo esc_html( $visits['month'] );?></td>
+							<td><?php if(!empty($visits['ytd']) && pmpro_isDateThisYear($visits['last'])) echo esc_html( $visits['ytd'] );?></td>
+							<td><?php if(!empty($visits['alltime'])) echo esc_html( $visits['alltime'] );?></td>
+							<td><?php if(!empty($views['week']) && pmpro_isDateThisWeek($views['last'])) echo esc_html( $views['week'] );?></td>
+							<td><?php if(!empty($views['month']) && pmpro_isDateThisMonth($views['last'])) echo esc_html( $views['month'] );?></td>
+							<td><?php if(!empty($views['ytd']) && pmpro_isDateThisYear($views['last'])) echo esc_html( $views['ytd'] );?></td>
+							<td><?php if(!empty($views['alltime'])) echo esc_html( $views['alltime'] );?></td>
+							<td><?php if(!empty($logins['last'])) echo esc_html( $logins['last'] );?></td>
+							<td><?php if(!empty($logins['week']) && pmpro_isDateThisWeek($logins['last'])) echo esc_html( $logins['week'] );?></td>
+							<td><?php if(!empty($logins['month']) && pmpro_isDateThisMonth($logins['last'])) echo esc_html( $logins['month'] );?></td>
+							<td><?php if(!empty($logins['ytd']) && pmpro_isDateThisYear($logins['last'])) echo esc_html( $logins['ytd'] );?></td>
+							<td><?php if(!empty($logins['alltime'])) echo esc_html( $logins['alltime'] );?></td>
 						</tr>
 					<?php
 				}
@@ -290,7 +296,7 @@ function pmpro_report_login_page()
 	<div class="tablenav bottom">
 		<div class="tablenav-pages">
 			<?php
-				echo pmpro_getPaginationString($pn, $totalrows, $limit, 1, admin_url( "admin.php?page=pmpro-reports&report=login&s=" . urlencode($s)), "&l=$l&limit=$limit&pn=");
+				echo wp_kses_post( pmpro_getPaginationString($pn, $totalrows, $limit, 1, admin_url( "admin.php?page=pmpro-reports&report=login&s=" . urlencode($s)), "&l=$l&limit=$limit&pn=") );
 			?>
 		</div>
 	</div>

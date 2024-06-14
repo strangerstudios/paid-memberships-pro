@@ -2,7 +2,7 @@
 	//only admins can get this
 	if(!function_exists("current_user_can") || (!current_user_can("manage_options") && !current_user_can("pmpro_emailsettings")))
 	{
-		die(__("You do not have permissions to perform this action.", 'paid-memberships-pro' ));
+		die( esc_html__("You do not have permissions to perform this action.", 'paid-memberships-pro' ));
 	}	
 	
 	global $wpdb, $msg, $msgt;
@@ -18,99 +18,108 @@
 	<?php wp_nonce_field('savesettings', 'pmpro_emailsettings_nonce');?>
 	<hr class="wp-header-end">
 	<h1><?php esc_html_e( 'Email Templates', 'paid-memberships-pro' ); ?></h1>
-	<p><?php esc_html_e( 'Select an email template from the dropdown below to customize the subject and body of emails sent through your membership site. You can also disable a specific email or send a test version through this admin page.', 'paid-memberships-pro' ); ?> <a href="https://www.paidmembershipspro.com/documentation/member-communications/list-of-pmpro-email-templates/" target="_blank"><?php esc_html_e( 'Click here for a description of each email sent to your members and admins at different stages of the member experience.', 'paid-memberships-pro'); ?></a></p>
+	<div id="edit-email-templates" class="pmpro_section" data-visibility="shown" data-activated="true">
+		<div class="pmpro_section_toggle">
+			<button class="pmpro_section-toggle-button" type="button" aria-expanded="true">
+				<span class="dashicons dashicons-arrow-up-alt2"></span>
+				<?php esc_html_e( 'Edit Email Templates', 'paid-memberships-pro' ); ?>
+			</button>
+		</div>
+		<div class="pmpro_section_inside">
+			<p><?php esc_html_e( 'Select an email template from the dropdown below to customize the subject and body of emails sent through your membership site. You can also disable a specific email or send a test version through this admin page.', 'paid-memberships-pro' ); ?> <a href="https://www.paidmembershipspro.com/documentation/member-communications/list-of-pmpro-email-templates/" target="_blank"><?php esc_html_e( 'Click here for a description of each email sent to your members and admins at different stages of the member experience.', 'paid-memberships-pro'); ?></a></p>
+			<table class="form-table">
+				<tr class="status hide-while-loading" style="display:none;">
+					<th scope="row" valign="top"></th>
+					<td>
+						<div id="message" class="status_message_wrapper">
+							<p class="status_message"></p>
+						</div>
+					</td>
+				</tr>
+				<tr>
+					<th scope="row" valign="top">
+						<label for="pmpro_email_template_switcher"><?php esc_html_e( 'Email Template', 'paid-memberships-pro' ); ?></label>
+					</th>
+					<td>
+						<select name="pmpro_email_template_switcher" id="pmpro_email_template_switcher">
+							<option value="" selected="selected"><?php echo '--- ' . esc_html__( 'Select a Template to Edit', 'paid-memberships-pro' ) . ' ---'; ?></option>
 
-	<div class="pmpro_admin_section pmpro_admin_section-email-templates-content">
+						<?php foreach ( $pmpro_email_templates_defaults as $key => $template ): ?>
+							<option value="<?php echo esc_attr( $key ); ?>"><?php echo esc_html( $template['description'] ); ?></option>
 
-		<table class="form-table">
-			<tr class="status hide-while-loading" style="display:none;">
-				<th scope="row" valign="top"></th>
-				<td>
-					<div id="message" class="status_message_wrapper">
-						<p class="status_message"></p>
-					</div>
-				</td>
-			</tr>
-			<tr>
-				<th scope="row" valign="top">
-					<label for="pmpro_email_template_switcher"><?php esc_html_e( 'Email Template', 'paid-memberships-pro' ); ?></label>
-				</th>
-				<td>
-					<select name="pmpro_email_template_switcher" id="pmpro_email_template_switcher">
-						<option value="" selected="selected"><?php echo '--- ' . esc_html__( 'Select a Template to Edit', 'paid-memberships-pro' ) . ' ---'; ?></option>
+						<?php endforeach; ?>
+						</select>
+						<img src="<?php echo esc_url( admin_url( 'images/wpspin_light.gif' ) ); ?>" id="pmproet-spinner" style="display:none;"/>
 
-					<?php foreach ( $pmpro_email_templates_defaults as $key => $template ): ?>
-						<option value="<?php echo esc_attr( $key ); ?>"><?php echo esc_html( $template['description'] ); ?></option>
-
-					<?php endforeach; ?>
-					</select>
-					<img src="<?php echo esc_url( admin_url( 'images/wpspin_light.gif' ) ); ?>" id="pmproet-spinner" style="display:none;"/>
-
-					<p id="pmpro_email_template_help_text" class="description"></p>
-				</td>
-			</tr>
-			<tr class="hide-while-loading">
-				<th scope="row" valign="top"></th>
-				<td>
-					<label><input id="pmpro_email_template_disable" name="pmpro_email_template_disable" type="checkbox" /><span
-							id="disable_label"><?php esc_html_e( 'Disable this email?', 'paid-memberships-pro' ); ?></span></label>
+						<p id="pmpro_email_template_help_text" class="description"></p>
+					</td>
+				</tr>
+				<tr class="hide-while-loading">
+					<th scope="row" valign="top"></th>
+					<td>
+						<label><input id="pmpro_email_template_disable" name="pmpro_email_template_disable" type="checkbox" /><span
+								id="disable_label"><?php esc_html_e( 'Disable this email?', 'paid-memberships-pro' ); ?></span></label>
 
 
-					<p id="disable_description" class="description"><?php esc_html_e( 'Emails with this template will not be sent.', 'paid-memberships-pro' ); ?></p>
+						<p id="disable_description" class="description"><?php esc_html_e( 'Emails with this template will not be sent.', 'paid-memberships-pro' ); ?></p>
 
-				</td>
-			</tr>
-			<tr class="hide-while-loading">
-				<th scope="row" valign="top"><label for="pmpro_email_template_subject"><?php esc_html_e( 'Subject', 'paid-memberships-pro' ); ?></label></th>
+					</td>
+				</tr>
+				<tr class="hide-while-loading">
+					<th scope="row" valign="top"><label for="pmpro_email_template_subject"><?php esc_html_e( 'Subject', 'paid-memberships-pro' ); ?></label></th>
 
-				<td>
-					<input id="pmpro_email_template_subject" name="pmpro_email_template_subject" type="text" size="100"/>
-				</td>
-			</tr>
-			<tr class="hide-while-loading">
-				<th scope="row" valign="top"><label for="pmpro_email_template_body"><?php esc_html_e( 'Body', 'paid-memberships-pro' ); ?></label></th>
+					<td>
+						<input id="pmpro_email_template_subject" name="pmpro_email_template_subject" type="text" size="100"/>
+					</td>
+				</tr>
+				<tr class="hide-while-loading">
+					<th scope="row" valign="top"><label for="pmpro_email_template_body"><?php esc_html_e( 'Body', 'paid-memberships-pro' ); ?></label></th>
 
-				<td>
-					<div id="template_editor_container">
-						<textarea rows="10" cols="80" name="pmpro_email_template_body" id="pmpro_email_template_body"></textarea>
-					</div>
-				</td>
-			</tr>
-			<tr class="hide-while-loading">
-				<th scope="row" valign="top"></th>
-				<td>
-					<?php esc_html_e( 'Send a test email to ', 'paid-memberships-pro' ); ?>
-					<input id="test_email_address" name="test_email_address" type="text"
-						value="<?php echo esc_attr( $current_user->user_email ); ?>"/>
-					<input id="send_test_email" class="button" name="send_test_email" value="<?php esc_attr_e( 'Save Template and Send Email', 'paid-memberships-pro' ); ?>"
+					<td>
+						<div id="template_editor_container">
+							<textarea rows="10" cols="80" name="pmpro_email_template_body" id="pmpro_email_template_body"></textarea>
+						</div>
+					</td>
+				</tr>
+				<tr class="hide-while-loading">
+					<th scope="row" valign="top"></th>
+					<td>
+						<?php esc_html_e( 'Send a test email to ', 'paid-memberships-pro' ); ?>
+						<input id="test_email_address" name="test_email_address" type="text"
+							value="<?php echo esc_attr( $current_user->user_email ); ?>"/>
+						<input id="send_test_email" class="button" name="send_test_email" value="<?php esc_attr_e( 'Save Template and Send Email', 'paid-memberships-pro' ); ?>"
 
-						type="button"/>
+							type="button"/>
 
-					<p class="description">
-						<?php esc_html_e( 'Your current membership will be used for any membership level data.', 'paid-memberships-pro' ); ?>
-					</p>
-				</td>
-			</tr>
-			<tr class="controls hide-while-loading">
-				<th scope="row" valign="top"></th>
-				<td>
-					<p class="submit">
-						<input id="pmpro_submit_template_data" name="pmpro_save_template" type="button" class="button-primary"
-							value="<?php esc_attr_e( 'Save Template', 'paid-memberships-pro' ); ?>"/>
+						<p class="description">
+							<?php esc_html_e( 'Your current membership will be used for any membership level data.', 'paid-memberships-pro' ); ?>
+						</p>
+					</td>
+				</tr>
+				<tr class="controls hide-while-loading">
+					<th scope="row" valign="top"></th>
+					<td>
+						<p class="submit">
+							<input id="pmpro_submit_template_data" name="pmpro_save_template" type="button" class="button-primary"
+								value="<?php esc_attr_e( 'Save Template', 'paid-memberships-pro' ); ?>"/>
 
-						<input id="pmpro_reset_template_data" name="pmpro_reset_template" type="button" class="button"
-							value="<?php esc_attr_e( 'Reset Template', 'paid-memberships-pro' ); ?>"/>
+							<input id="pmpro_reset_template_data" name="pmpro_reset_template" type="button" class="button"
+								value="<?php esc_attr_e( 'Reset Template', 'paid-memberships-pro' ); ?>"/>
 
-					</p>
-				</td>
-			</tr>
-		</table>
-
-		<hr />
-
-		<div class="pmpro-email-templates-variable-reference">
-			<h2><?php esc_html_e( 'Variable Reference', 'paid-memberships-pro' ); ?></h2>
-
+						</p>
+					</td>
+				</tr>
+			</table>
+		</div> <!-- end pmpro_section_inside -->
+	</div> <!-- end pmpro_section -->
+	<div id="email-variable-reference" class="pmpro_section" data-visibility="shown" data-activated="true">
+		<div class="pmpro_section_toggle">
+			<button class="pmpro_section-toggle-button" type="button" aria-expanded="true">
+				<span class="dashicons dashicons-arrow-up-alt2"></span>
+				<?php esc_html_e( 'Variable Reference', 'paid-memberships-pro' ); ?>
+			</button>
+		</div>
+		<div class="pmpro_section_inside">
 			<p><?php esc_html_e( 'Use the placeholder variables below to customize your member and admin emails with specific user or membership data.', 'paid-memberships-pro' ); ?></p>
 
 			<h3><?php esc_html_e('General Settings / Membership Info', 'paid-memberships-pro'); ?></h3>
@@ -184,11 +193,11 @@
 					?>
 				</tbody>
 			</table>
-		</div> <!-- end pmpro-email-templates-variable-reference -->
+		</div> <!-- end pmpro_section_inside -->
+	</div> <!-- end pmpro_section -->
+	
+	<?php wp_nonce_field( 'pmproet', 'security' ); ?>
 
-		<?php wp_nonce_field( 'pmproet', 'security' ); ?>
-
-	</div> <!-- end pmpro_admin_section-email-templates-content -->
 </form>
 <?php
 	require_once(dirname(__FILE__) . "/admin_footer.php");

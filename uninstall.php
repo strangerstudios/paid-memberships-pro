@@ -36,16 +36,20 @@ if ( get_option( 'pmpro_uninstall', 0 ) ) {
 	global $wpdb;
 
 	$tables = array(
-	    'pmpro_discount_codes',
-	    'pmpro_discount_codes_levels',
-	    'pmpro_discount_codes_uses',
-	    'pmpro_memberships_categories',
-	    'pmpro_memberships_pages',
-	    'pmpro_memberships_users',
-	    'pmpro_membership_levels',
-	    'pmpro_membership_orders',
-	    'pmpro_membership_levelmeta',
-	    'pmpro_membership_ordermeta'
+		'pmpro_discount_codes',
+		'pmpro_discount_codes_levels',
+		'pmpro_discount_codes_uses',
+		'pmpro_memberships_categories',
+		'pmpro_memberships_pages',
+		'pmpro_memberships_users',
+		'pmpro_membership_levels',
+		'pmpro_membership_orders',
+		'pmpro_membership_levelmeta',
+		'pmpro_membership_ordermeta',
+		'pmpro_groups',
+		'pmpro_membership_levels_groups',
+		'pmpro_subscriptions',
+		'pmpro_subscriptionmeta'
 	);
 
 	foreach($tables as $table){

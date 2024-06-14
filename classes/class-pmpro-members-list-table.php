@@ -39,6 +39,58 @@ class PMPro_Members_List_Table extends WP_List_Table {
 	}
 
 	/**
+	 * Sets up screen options for the members list table.
+	 *
+	 * @since 3.0
+	 */
+	public static function hook_screen_options() {
+		$list_table = new PMPro_Members_List_Table();
+		add_screen_option(
+			'per_page',
+			array(
+				'default' => 20,
+				'label'   => __( 'Members per page', 'paid-memberships-pro' ),
+				'option'  => 'pmpro_members_per_page',
+			)
+		);
+		add_filter(
+			'screen_settings',
+			array(
+				$list_table,
+				'screen_controls',
+			),
+			10,
+			2
+		);
+		add_filter(
+			'set-screen-option',
+			array(
+				$list_table,
+				'set_screen_option',
+			),
+			10,
+			3
+		);
+		set_screen_options();
+	}
+
+	/**
+	 * Sets the screen options.
+	 *
+	 * @param string $dummy   Unused.
+	 * @param string $option  Screen option name.
+	 * @param string $value   Screen option value.
+	 * @return string
+	 */
+	public function set_screen_option( $dummy, $option, $value ) {
+		if ( 'pmpro_members_per_page' === $option ) {
+			return $value;
+		} else {
+			return $dummy;
+		}
+	}
+
+	/**
 	 * Prepares the list of items for displaying.
 	 *
 	 * Query, filter data, handle sorting, and pagination, and any other data-manipulation required prior to rendering
@@ -46,11 +98,17 @@ class PMPro_Members_List_Table extends WP_List_Table {
 	 * @since 2.2.0
 	 */
 	public function prepare_items() {
-		$this->_column_headers = $this->get_column_info();
+		// Get the columns and set the _column_headers for the list table.
+		$columns = $this->get_columns();
+		$hidden = $this->get_hidden_columns();
+		$sortable = $this->get_sortable_columns();
+		$this->_column_headers = array($columns, $hidden, $sortable);
+
+		// Get the data for the list table.
 		$this->items = $this->sql_table_data();
 
-		// set the pagination arguments
-		$items_per_page = $this->get_items_per_page( 'users_per_page' );
+		// Set the pagination arguments.
+		$items_per_page = $this->get_items_per_page( 'pmpro_members_per_page' );
 		$total_items = $this->sql_table_data( true );
 		$this->set_pagination_args(
 			array(
@@ -78,10 +136,9 @@ class PMPro_Members_List_Table extends WP_List_Table {
 			'last_name'     => __( 'Last Name', 'paid-memberships-pro' ),
 			'display_name'  => __( 'Display Name', 'paid-memberships-pro' ),
 			'user_email'    => __( 'Email', 'paid-memberships-pro' ),
-			'address'       => __( 'Billing Address', 'paid-memberships-pro' ),
 			'membership'    => __( 'Level', 'paid-memberships-pro' ),
 			'membership_id' => __( 'Level ID', 'paid-memberships-pro' ),
-			'fee'           => __( 'Fee', 'paid-memberships-pro' ),
+			'subscription'  => __( 'Subscription', 'paid-memberships-pro' ),
 			'joindate'      => __( 'Registered', 'paid-memberships-pro' ),
 			'startdate'     => __( 'Start Date', 'paid-memberships-pro' ),
 			'enddate'       => __( 'End Date', 'paid-memberships-pro' ),
@@ -131,11 +188,26 @@ class PMPro_Members_List_Table extends WP_List_Table {
 	 * @return Array
 	 */
 	public function get_hidden_columns() {
-		$hidden = array(
-			'display_name',
-			'membership_id',
-			'joindate',
-		);
+		$user = wp_get_current_user();
+		if ( ! $user ) {
+			return array();
+		}
+
+		// Check whether the current user has changed screen options or not.
+		$hidden = get_user_meta( $user->ID, 'manage' . $this->screen->id . 'columnshidden', true );
+
+		// If user meta is not found, add the default hidden columns.
+		if ( ! is_array( $hidden ) ) {
+			$hidden = array(
+				'ID',
+				'first_name',
+				'last_name',
+				'membership_id',
+				'joindate',
+			);
+			update_user_meta( $user->ID, 'manage' . $this->screen->id . 'columnshidden', $hidden );
+		}
+
 		return $hidden;
 	}
 
@@ -166,10 +238,6 @@ class PMPro_Members_List_Table extends WP_List_Table {
 			),
 			'username'     => array(
 				'user_login',
-				false,
-			),
-			'fee' => array(
-				'fee',
 				false,
 			),
 			'display_name'   => array(
@@ -222,7 +290,7 @@ class PMPro_Members_List_Table extends WP_List_Table {
 			$s = "";
 		?>
 		<p>
-			<?php _e( 'No members found.', 'paid-memberships-pro' ); ?>
+			<?php esc_html_e( 'No members found.', 'paid-memberships-pro' ); ?>
 			<?php if ( $l ) { ?>
 				<a href="<?php echo esc_url( add_query_arg( array( 'page' => 'pmpro-memberslist', 's' => $s ) ) ); ?>"><?php esc_html_e( 'Search all levels', 'paid-memberships-pro' );?></a>
 			<?php } ?>
@@ -294,18 +362,18 @@ class PMPro_Members_List_Table extends WP_List_Table {
 		else
 			$pn = 1;
 
-		$limit = $this->get_items_per_page( 'users_per_page' );
+		$limit = $this->get_items_per_page( 'pmpro_members_per_page' );
 
 		$end = $pn * $limit;
 		$start = $end - $limit;
 
 		if ( $count ) {
-			$sqlQuery = "SELECT COUNT( DISTINCT u.ID ) ";
+			$sqlQuery = "SELECT COUNT( DISTINCT u.ID, mu.membership_id ) ";
 		} else {
 			$sqlQuery =
 				"
 				SELECT u.ID, u.user_login, u.user_email, u.display_name,
-				UNIX_TIMESTAMP(CONVERT_TZ(u.user_registered, '+00:00', @@global.time_zone)) as joindate, mu.membership_id, mu.initial_payment, mu.billing_amount, SUM(mu.initial_payment+ mu.billing_amount) as fee, mu.cycle_period, mu.cycle_number, mu.billing_limit, mu.trial_amount, mu.trial_limit,
+				UNIX_TIMESTAMP(CONVERT_TZ(u.user_registered, '+00:00', @@global.time_zone)) as joindate, mu.membership_id,
 				UNIX_TIMESTAMP(CONVERT_TZ(mu.startdate, '+00:00', @@global.time_zone)) as startdate,
 				UNIX_TIMESTAMP(CONVERT_TZ(max(mu.enddate), '+00:00', @@global.time_zone)) as enddate, m.name as membership
 				";
@@ -318,6 +386,8 @@ class PMPro_Members_List_Table extends WP_List_Table {
 			ON u.ID = mu.user_id
 			LEFT JOIN $wpdb->pmpro_membership_levels m
 			ON mu.membership_id = m.id
+			LEFT JOIN $wpdb->pmpro_subscriptions s
+			ON mu.user_id = s.user_id
 			";
 
 		if ( !empty( $s ) ) {
@@ -332,6 +402,8 @@ class PMPro_Members_List_Table extends WP_List_Table {
 						$user_ids = array(0);	// Avoid warning, but ensure 0 results.
 					}
 					$search_query = " AND u.ID IN(" . implode( ",", $user_ids ) . ") ";					
+				} elseif ( $search_key === 'subscription_transaction_id' ) {
+					$search_query = " AND s.subscription_transaction_id LIKE '%" . esc_sql( $s ) . "%' AND mu.membership_id = s.membership_level_id AND mu.status = 'active' ";
 				} else {
 					$user_ids = $wpdb->get_col( "SELECT user_id FROM $wpdb->usermeta WHERE meta_key = '" . esc_sql( $search_key ) . "' AND meta_value LIKE '%" . esc_sql( $s ) . "%'" );
 					if ( empty( $user_ids ) ) {
@@ -345,7 +417,7 @@ class PMPro_Members_List_Table extends WP_List_Table {
 			} else {
 				// Default search checks a few fields.
 				$sqlQuery .= " LEFT JOIN $wpdb->usermeta um ON u.ID = um.user_id ";
-				$search_query = " AND ( u.user_login LIKE '%" . esc_sql($s) . "%' OR u.user_email LIKE '%" . esc_sql($s) . "%' OR um.meta_value LIKE '%" . esc_sql($s) . "%' OR u.display_name LIKE '%" . esc_sql($s) . "%' ) ";
+				$search_query = " AND ( u.user_login LIKE '%" . esc_sql($s) . "%' OR u.user_email LIKE '%" . esc_sql($s) . "%' OR um.meta_value LIKE '%" . esc_sql($s) . "%' OR u.display_name LIKE '%" . esc_sql($s) . "%' OR ( s.subscription_transaction_id LIKE '%" . esc_sql( $s ) . "%' AND mu.membership_id = s.membership_level_id AND s.status = 'active' ) ) ";
 			}
 		}
 
@@ -372,7 +444,7 @@ class PMPro_Members_List_Table extends WP_List_Table {
 		}
 
 		if ( ! $count ) {
-			$sqlQuery .= ' GROUP BY u.ID ';
+			$sqlQuery .= ' GROUP BY u.ID, mu.membership_id ';
 
 			$sqlQuery .= " ORDER BY $orderby $order ";
 
@@ -406,7 +478,6 @@ class PMPro_Members_List_Table extends WP_List_Table {
 			'user_email' 		=> 'u.user_email',
 			'membership' 		=> 'mu.membership_id',
 			'membership_id' 	=> 'mu.membership_id',
-			'fee' 				=> 'fee',
 			'joindate' 			=> 'u.user_registered',
 			'startdate' 		=> 'mu.startdate',
 			'enddate' 			=> 'mu.enddate',
@@ -452,7 +523,14 @@ class PMPro_Members_List_Table extends WP_List_Table {
 			}
 		} else {
 			// The preferred ways of doing things.
-			do_action( 'pmpro_manage_memberslist_custom_column', $column_name, $item['ID'] );
+			/**
+			 * Fill in columns that don't have a built-in method.
+			 *
+			 * @param string $column_name The name of the column.
+			 * @param int    $user_id     The ID of the user.
+			 * @param array  $item        The membership data being shown.
+			 */
+			do_action( 'pmpro_manage_memberslist_custom_column', $column_name, $item['ID'], $item );
 		}
 	}
 
@@ -474,14 +552,33 @@ class PMPro_Members_List_Table extends WP_List_Table {
 	 */
 	public function column_username( $item ) {
 		$avatar   = get_avatar( $item['ID'], 32 );
-		$userlink = '<a href="user-edit.php?user_id=' . $item['ID'] . '">' . $item['user_login'] . '</a>';
+		
+		if ( current_user_can( pmpro_get_edit_member_capability() ) ) {
+			$userlink = '<a href="' . esc_url( add_query_arg( array( 'page' => 'pmpro-member', 'user_id' => (int)$item['ID'] ), admin_url( 'admin.php' ) ) ) . '">' . $item['user_login'] . '</a>';
+		} else {
+			// If the user can't edit members, don't link to the edit page.
+			$userlink = $item['user_login'];
+		}
 		$userlink = apply_filters( 'pmpro_members_list_user_link', $userlink, get_userdata( $item['ID'] ) );
 		$output   = $avatar . ' <strong>' . $userlink . '</strong><br />';
 
 		// Set up the hover actions for this user.
-		$actions      = apply_filters( 'pmpro_memberslist_user_row_actions', array(), (object) $item );
+		$actions = array();
+
+		if ( current_user_can( pmpro_get_edit_member_capability() ) ) {
+			// Add the "Edit Member" action.
+			$actions['editmember'] = '<a href="' . esc_url( add_query_arg( array( 'page' => 'pmpro-member', 'user_id' => (int)$item['ID'] ), admin_url( 'admin.php' ) ) ) . '">' . __( 'Edit Member', 'paid-memberships-pro' ) . '</a>';
+		}
+
+		if ( current_user_can( 'edit_users' ) ) {
+			// Add the "Edit User" action.
+			$actions['edituser'] = '<a href="' . esc_url( add_query_arg( array( 'user_id' => (int)$item['ID'] ), admin_url( 'user-edit.php' ) ) ) . '">' . __( 'Edit User', 'paid-memberships-pro' ) . '</a>';
+		}
+
+		$actions = apply_filters( 'pmpro_memberslist_user_row_actions', $actions, (object) $item );
+
 		$action_count = count( $actions );
-		$i            = 0;
+		$i = 0;
 		if ( $action_count ) {
 			$output .= '<div class="row-actions">';
 			foreach ( $actions as $action => $link ) {
@@ -537,17 +634,6 @@ class PMPro_Members_List_Table extends WP_List_Table {
 	}
 
 	/**
-	 * Get value for Address column.
-	 *
-	 * @param object $item A row's data.
-	 * @return string Text to be placed inside the column <td>.
-	 */
-	public function column_address( $item ) {
-		$user_object = get_userdata( $item['ID'] );
-		return pmpro_formatAddress( trim( $user_object->pmpro_bfirstname . ' ' . $user_object->pmpro_blastname ), $user_object->pmpro_baddress1, $user_object->pmpro_baddress2, $user_object->pmpro_bcity, $user_object->pmpro_bstate, $user_object->pmpro_bzipcode, $user_object->pmpro_bcountry, $user_object->pmpro_bphone );
-	}
-
-	/**
 	 * Get value for membership column.
 	 *
 	 * @param object $item A row's data.
@@ -568,37 +654,69 @@ class PMPro_Members_List_Table extends WP_List_Table {
 	}
 
 	/**
-	 * Get value for fee column.
+	 * Get value for subscription column.
 	 *
 	 * @param object $item A row's data.
 	 * @return string Text to be placed inside the column <td>.
 	 */
-	public function column_fee( $item ) {
-		$fee = '';
-		// If there is no payment for the level, show a dash.
-		if ( (float)$item['initial_payment'] <= 0 && (float)$item['billing_amount'] <= 0 ) {
-			$fee .= esc_html__( '&#8212;', 'paid-memberships-pro' );
+	public function column_subscription( $item ) {
+		// Check if we have subscriptions for this user.
+		$subscriptions = PMPro_Subscription::get_subscriptions_for_user( $item['ID'], $item['membership_id'] );
+		if ( ! empty( $subscriptions ) ) {
+			// If the user has more than 1 subscription, show a warning message.
+			if ( count( $subscriptions ) > 1 ) {
+				?>
+				<div class="pmpro_message pmpro_error">
+					<p>
+						<?php
+						echo wp_kses_post( sprintf(
+							// translators: %1$d is the number of subscriptions and %2$s is the link to view subscriptions.
+							_n(
+								'This user has %1$d active subscription for this level. %2$s',
+								'This user has %1$d active subscriptions for this level. %2$s',
+								count( $subscriptions ),
+								'paid-memberships-pro'
+							),
+							count( $subscriptions ),
+							sprintf(
+								'<a href="%1$s">%2$s</a>',
+								esc_url( add_query_arg( array( 'page' => 'pmpro-member', 'user_id' => $item['ID'], 'pmpro_member_edit_panel' => 'subscriptions' ), admin_url( 'admin.php' ) ) ),
+								esc_html__( 'View Subscriptions', 'paid-memberships-pro' )
+							)
+						) ); ?>
+					</p>
+				</div>
+				<?php
+			}
+			$subscription = $subscriptions[0];
+			echo esc_html( $subscription->get_cost_text() );
+			$actions = [
+				'view'   => sprintf(
+					'<a href="%1$s">%2$s</a>',
+					esc_url( add_query_arg( array( 'page' => 'pmpro-subscriptions', 'id' => $subscription->get_id() ), admin_url('admin.php' ) ) ),
+					esc_html__( 'View Details', 'paid-memberships-pro' )
+				)
+			];
+
+			$actions_html = [];
+
+			foreach ( $actions as $action => $link ) {
+				$actions_html[] = sprintf(
+					'<span class="%1$s">%2$s</span>',
+					esc_attr( $action ),
+					$link
+				);
+			}
+
+			if ( ! empty( $actions_html ) ) { ?>
+				<div class="row-actions">
+					<?php echo implode( ' | ', $actions_html ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+				</div>
+				<?php
+			}
 		} else {
-			// Display the member's initial payment.
-			if ( (float)$item['initial_payment'] > 0 ) {
-				$fee .= pmpro_escape_price( pmpro_formatPrice( $item['initial_payment'] ) );
-			}
-			// If there is a recurring payment, show a plus sign.
-			if ( (float)$item['initial_payment'] > 0 && (float)$item['billing_amount'] > 0 ) {
-				$fee .= esc_html__( ' + ', 'paid-memberships-pro' );
-			}
-			// If there is a recurring payment, show the recurring payment amount and cycle.
-			if ( (float)$item['billing_amount'] > 0 ) {
-				$fee .= pmpro_escape_price( pmpro_formatPrice( $item['billing_amount'] ) );
-				$fee .= esc_html__( ' per ', 'paid-memberships-pro' );
-				if ( $item['cycle_number'] > 1 ) {
-					$fee .= $item['cycle_number'] . " " . pmpro_translate_billing_period( $item['cycle_period'], $item['cycle_number'] );
-				} else {
-					$fee .= pmpro_translate_billing_period( $item['cycle_period'], 1 );
-				}
-			}
+			echo '&#8212;';
 		}
-		return $fee;
 	}
 
 	/**
@@ -636,12 +754,12 @@ class PMPro_Members_List_Table extends WP_List_Table {
 	 * @return string Text to be placed inside the column <td>.
 	 */
 	public function column_enddate( $item ) {
-		$user_object = get_userdata( $item['ID'] );
-		if ( 0 == $item['enddate'] ) {
-			return apply_filters( 'pmpro_memberslist_expires_column', __( 'Never', 'paid-memberships-pro' ), $user_object );
-		} else {
-			return apply_filters( 'pmpro_memberslist_expires_column', date_i18n( get_option( 'date_format' ), $item['enddate'] ), $user_object );
+		if ( isset( $_REQUEST['l'] ) && ! empty( pmpro_sanitize_with_safelist( $_REQUEST['l'] , array( 'oldmembers', 'expired', 'cancelled' ) ) ) ) {
+			// If viewing removed levels, show the end date for the membership that was removed.
+			return date_i18n( get_option( 'date_format' ), $item['enddate'] );
 		}
+
+		return pmpro_get_membership_expiration_text( $item['membership_id'], $item['ID'] );
 	}
 
 	/**
@@ -659,7 +777,7 @@ class PMPro_Members_List_Table extends WP_List_Table {
 				$l = false;
 			}
 			esc_html_e('Show', 'paid-memberships-pro' );?>
-			<select name="l" onchange="jQuery('#current-page-selector').val('1'); jQuery('#member-list-form').submit();">
+			<select name="l" onchange="jQuery('#current-page-selector').val('1'); jQuery('#member-list-form').trigger('submit');">
 				<option value="" <?php if(!$l) { ?>selected="selected"<?php } ?>><?php esc_html_e('All Levels', 'paid-memberships-pro' );?></option>
 				<?php
 					$levels = $wpdb->get_results("SELECT id, name FROM $wpdb->pmpro_membership_levels ORDER BY name");
