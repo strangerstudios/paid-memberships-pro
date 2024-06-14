@@ -440,7 +440,7 @@ function pmpro_can_download_addon_with_license( $addon_license ) {
  * @since TBD
  */
 function pmpro_update_manager_notices() {
-	global $pagenow;
+	global $current_user, $pagenow;
 	
 	// Only show on the PMPro dashboard and some other plugin-related pages.
 	$is_pmpro_page = isset( $_REQUEST['page'] ) 
@@ -484,6 +484,13 @@ function pmpro_update_manager_notices() {
 		return;
 	}
 
+	// If this notice was dismissed, bail.
+	$archived_notifications = get_user_meta( $current_user->ID, 'pmpro_archived_notifications', true );
+
+	if ( ! empty( $archived_notifications ) && in_array( 'pmpro_update_manager_notice', array_keys( $archived_notifications ) ) ) {
+		return;
+	}
+
 	// We should show a notice. Figure out which one.
 	$is_update_manager_installed = in_array( $manager_update_plugin_file, $installed_plugins );
 	if ( ! $is_update_manager_installed ) {
@@ -521,7 +528,7 @@ function pmpro_update_manager_notices() {
 	}
 	// Output the notice div.
 	?>
-	 <div class="notice notice-warning is-dismissible">
+	<div id="pmpro_update_manager_notice" class="notice notice-warning is-dismissible pmpro-notice">
 	 		<p>
 				<?php echo esc_html( sprintf( __( '%s' , 'paid-memberships-pro'), $notice_message ) );
 				?>
