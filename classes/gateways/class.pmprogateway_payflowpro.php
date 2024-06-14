@@ -42,15 +42,23 @@
 		}
 
 		/**
-		 * Returns whether the gateway allows for payment method updates.
-		 *
-		 * @since TBD
-		 *
-		 * @return string|false 'individual' if the gateway allows for payment method updates for individual subscriptions, 
-		 *                      'all' if the gateway updates all subscriptions, or false if the gateway does not support payment method updates.
+		 * Check whether or not a gateway supports a specific feature.
+		 * 
+		 * @since 3.0
+		 * 
+		 * @return string|boolean $supports Returns whether or not the gateway supports the requested feature.
 		 */
-		function supports_payment_method_updates() {
-			return 'individual';
+		public static function supports( $feature ) {
+			$supports = array(
+				'subscription_sync' => false,
+				'payment_method_updates' => 'individual'
+			);
+
+			if ( empty( $supports[$feature] ) ) {
+				return false;
+			}
+
+			return $supports[$feature];
 		}
 
 		/**
@@ -662,14 +670,14 @@
 
 			if ( is_wp_error( $response ) ) {
 			   $error_message = $response->get_error_message();
-			   wp_die( "{$methodName_} failed: $error_message" );
+			   wp_die( esc_html( "{$methodName_} failed: $error_message" ) );
 			} else {
 				//extract the response details
 				parse_str(wp_remote_retrieve_body($response), $httpParsedResponseAr);
 
 				//check for valid response
 				if((0 == sizeof($httpParsedResponseAr)) || !array_key_exists('RESULT', $httpParsedResponseAr)) {
-					exit("Invalid HTTP Response for POST request($nvpreq) to $API_Endpoint.");
+					exit( esc_html( "Invalid HTTP Response for POST request($nvpreq) to $API_Endpoint.") );
 				}
 			}
 

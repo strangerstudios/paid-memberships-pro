@@ -29,7 +29,7 @@ function pmpro_cron_expire_memberships()
 		do_action("pmpro_membership_pre_membership_expiry", $e->user_id, $e->membership_id );		
 
 		//remove their membership
-		pmpro_changeMembershipLevel(false, $e->user_id, 'expired', $e->membership_id);
+		pmpro_cancelMembershipLevel( $e->membership_id, $e->user_id, 'expired' );
 
 		do_action("pmpro_membership_post_membership_expiry", $e->user_id, $e->membership_id );
 
@@ -136,12 +136,12 @@ function pmpro_cron_expiration_warnings()
 
 /*
 	Credit Card Expiring Warnings
-	@deprecated TBD
+	@deprecated 3.0
 */
 function pmpro_cron_credit_card_expiring_warnings() {
 	global $wpdb;
 
-	_deprecated_function( __FUNCTION__, 'TBD' );
+	_deprecated_function( __FUNCTION__, '3.0' );
 
 	//Don't let anything run if PMPro is paused
 	if( pmpro_is_paused() ) {
@@ -219,73 +219,6 @@ function pmpro_cron_credit_card_expiring_warnings() {
 			}
 
 		}
-	}
-}
-
-/*
-	Trial Ending Emails
-	Commented out as of version 1.7.2 since this caused issues on some sites
-	and doesn't take into account the many "custom trial" solutions that are
-	in the wild (e.g. some trials are actually a delay of the subscription start date)
-
-	@deprecated 2.10
-*/
-//add_action("pmpro_cron_trial_ending_warnings", "pmpro_cron_trial_ending_warnings");
-function pmpro_cron_trial_ending_warnings()
-{
-	_deprecated_function( 'pmpro_cron_trial_ending_warnings', '2.10' );
-
-	global $wpdb;
-
-	//Don't let anything run if PMPro is paused
-	if( pmpro_is_paused() ) {
-		return;
-	}
-
-	//clean up errors in the memberships_users table that could cause problems
-	pmpro_cleanup_memberships_users_table();
-
-	$today = date("Y-m-d 00:00:00", current_time("timestamp"));
-
-	$pmpro_email_days_before_trial_end = apply_filters("pmpro_email_days_before_trial_end", 7);
-
-	//look for memberships with trials ending soon (but we haven't emailed them within a week)
-	$sqlQuery = "
-	SELECT
-		mu.user_id, mu.membership_id, mu.startdate, mu.cycle_period, mu.trial_limit FROM $wpdb->pmpro_memberships_users mu LEFT JOIN $wpdb->usermeta um ON um.user_id = mu.user_id AND um.meta_key = 'pmpro_trial_ending_notice'
-	WHERE
-		mu.status = 'active' AND mu.trial_limit IS NOT NULL AND mu.trial_limit > 0 AND
-		(
-			(cycle_period = 'Day' AND DATE_ADD(mu.startdate, INTERVAL mu.trial_limit Day) <= DATE_ADD('" . esc_sql( $today ) . "', INTERVAL " . $pmpro_email_days_before_trial_end . " Day)) OR
-			(cycle_period = 'Week' AND DATE_ADD(mu.startdate, INTERVAL mu.trial_limit Week) <= DATE_ADD('" . esc_sql( $today ) . "', INTERVAL " . $pmpro_email_days_before_trial_end . " Day)) OR
-			(cycle_period = 'Month' AND DATE_ADD(mu.startdate, INTERVAL mu.trial_limit Month) <= DATE_ADD('" . esc_sql( $today ) . "', INTERVAL " . $pmpro_email_days_before_trial_end . " Day)) OR
-			(cycle_period = 'Year' AND DATE_ADD(mu.startdate, INTERVAL mu.trial_limit Year) <= DATE_ADD('" . esc_sql( $today ) . "', INTERVAL " . $pmpro_email_days_before_trial_end . " Day))
-		)
-
-		AND (um.meta_value IS NULL OR um.meta_value = '' OR DATE_ADD(um.meta_value, INTERVAL " . $pmpro_email_days_before_trial_end . " Day) <= '" . $today . "')
-	ORDER BY mu.startdate";
-
-	$trial_ending_soon = $wpdb->get_results($sqlQuery);
-
-	foreach($trial_ending_soon as $e)
-	{
-		$send_email = apply_filters("pmpro_send_trial_ending_email", true, $e->user_id);
-		if($send_email)
-		{
-			//send an email
-			$pmproemail = new PMProEmail();
-			$euser = get_userdata($e->user_id);
-			if ( ! empty( $euser ) ) {
-				$pmproemail->sendTrialEndingEmail($euser);
-
-				if ( WP_DEBUG ) {
-					error_log( sprintf( __("Trial ending email sent to %s. ", 'paid-memberships-pro' ), $euser->user_email) );
-				}
-			}
-		}
-
-		//update user meta so we don't email them again
-		update_user_meta($e->user_id, "pmpro_trial_ending_notice", $today);
 	}
 }
 

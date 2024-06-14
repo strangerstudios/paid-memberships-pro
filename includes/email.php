@@ -175,7 +175,7 @@ function pmpro_email_templates_get_template_data() {
 	check_ajax_referer('pmproet', 'security');
 
 	if ( ! current_user_can( 'pmpro_emailtemplates' ) ) {
-		die( __( 'You do not have permissions to perform this action.', 'paid-memberships-pro' ) );
+		die( esc_html__( 'You do not have permissions to perform this action.', 'paid-memberships-pro' ) );
 	}
 
 	global $pmpro_email_templates_defaults;
@@ -211,7 +211,7 @@ function pmpro_email_templates_save_template_data() {
 	check_ajax_referer('pmproet', 'security');
 
 	if ( ! current_user_can( 'pmpro_emailtemplates' ) ) {
-		die( __( 'You do not have permissions to perform this action.', 'paid-memberships-pro' ) );
+		die( esc_html__( 'You do not have permissions to perform this action.', 'paid-memberships-pro' ) );
 	}
 
 	$template = sanitize_text_field( $_REQUEST['template'] );
@@ -234,7 +234,7 @@ function pmpro_email_templates_reset_template_data() {
 	check_ajax_referer('pmproet', 'security');
 
 	if ( ! current_user_can( 'pmpro_emailtemplates' ) ) {
-		die( __( 'You do not have permissions to perform this action.', 'paid-memberships-pro' ) );
+		die( esc_html__( 'You do not have permissions to perform this action.', 'paid-memberships-pro' ) );
 	}
 
 	global $pmpro_email_templates_defaults;
@@ -259,7 +259,7 @@ function pmpro_email_templates_disable_template() {
 	check_ajax_referer('pmproet', 'security');
 
 	if ( ! current_user_can( 'pmpro_emailtemplates' ) ) {
-		die( __( 'You do not have permissions to perform this action.', 'paid-memberships-pro' ) );
+		die( esc_html__( 'You do not have permissions to perform this action.', 'paid-memberships-pro' ) );
 	}
 
 	$template = sanitize_text_field( $_REQUEST['template'] );
@@ -277,7 +277,7 @@ function pmpro_email_templates_send_test() {
 	check_ajax_referer('pmproet', 'security');
 
 	if ( ! current_user_can( 'pmpro_emailtemplates' ) ) {
-		die( __( 'You do not have permissions to perform this action.', 'paid-memberships-pro' ) );
+		die( esc_html__( 'You do not have permissions to perform this action.', 'paid-memberships-pro' ) );
 	}
 
 	global $current_user;
@@ -317,12 +317,19 @@ function pmpro_email_templates_send_test() {
 			$params = array($current_user, $current_user->membership_level->id);
 			break;
 		case 'cancel_on_next_payment_date':
-			$send_email = 'sendCancelOnNextPaymentDateEmail';
-			$params = array( $test_user, $test_user->membership_level->id );
-			break;
 		case 'cancel_on_next_payment_date_admin':
-			$send_email = 'sendCancelOnNextPaymentDateAdminEmail';
-			$params = array( $test_user, $test_user->membership_level->id );
+			$send_email = 'cancel_on_next_payment_date' == $test_email->template ? 'sendCancelOnNextPaymentDateEmail' :
+				'sendCancelOnNextPaymentDateAdminEmail';
+			$levels = pmpro_getAllLevels( true );
+			global $pmpro_conpd_email_test_level;
+			$pmpro_conpd_email_test_level = current( $levels );
+			//Ensure mock level has enddate set
+			add_filter( 'pmpro_get_membership_levels_for_user', function() {
+				global $pmpro_conpd_email_test_level;
+				$pmpro_conpd_email_test_level->enddate = date( 'Y-m-d', strtotime( '+1 month' ) );
+				return array( $pmpro_conpd_email_test_level->id => $pmpro_conpd_email_test_level );
+			} );
+			$params = array( $test_user, $pmpro_conpd_email_test_level->id );
 			break;
 		case 'checkout_check':
 		case 'checkout_express':
@@ -395,7 +402,7 @@ function pmpro_email_templates_send_test() {
 	$response = call_user_func_array(array($test_email, $send_email), $params);
 
 	//return the response
-	echo $response;
+	echo esc_html( $response );
 	exit;
 }
 add_action('wp_ajax_pmpro_email_templates_send_test', 'pmpro_email_templates_send_test');

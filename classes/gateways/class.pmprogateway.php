@@ -1,7 +1,8 @@
 <?php	
 	//require_once(dirname(__FILE__) . "/class.pmprogateway.php");
+	#[AllowDynamicProperties]
 	class PMProGateway
-	{
+	{	
 		function __construct($gateway = NULL)
 		{
 			$this->gateway = $gateway;
@@ -196,7 +197,7 @@
 			if(empty($order->subscription_transaction_id))
 				return false;
 			
-			//simulate a successful cancel			
+			//simulate a successful cancel
 			$order->updateStatus("cancelled");					
 			return true;
 		}	
@@ -215,24 +216,25 @@
 		{			
 			//this looks different for each gateway, but generally an array of some sort
 			return array();
-		}
+		}		
 
 		/**
-		 * Returns whether the gateway allows for payment method updates.
-		 *
-		 * @since TBD
-		 *
-		 * @return string|false 'individual' if the gateway allows for payment method updates for individual subscriptions, 
-		 *                      'all' if the gateway updates all subscriptions, or false if the gateway does not support payment method updates.
+		 * Check if the gateway supports a certain feature.
+		 * 
+		 * @since 3.0
+		 * 
+		 * @param string $feature The feature to check for.
+		 * @return bool|string Whether the gateway supports the requested. A string may be returned in cases where a feature has different variations of support.
 		 */
-		function supports_payment_method_updates() {
+		public static function supports( $feature ) {
+			// The base gateway doesn't support anything.			
 			return false;
 		}
 
 		/**
 		 * Synchronizes a subscription with this payment gateway.
 		 *
-		 * @since TBD
+		 * @since 3.0
 		 *
 		 * @param PMPro_Subscription $subscription The subscription to synchronize.
 		 * @return string|null Error message is returned if update fails.

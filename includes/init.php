@@ -70,7 +70,7 @@ function pmpro_wp()
 		//run the appropriate preheader function
 		foreach($pmpro_core_pages as $pmpro_page_name => $pmpro_page_id)
 		{
-			if(!empty($post->post_content) && ( strpos($post->post_content, "[pmpro_" . $pmpro_page_name . "]") !== false || has_block( 'pmpro/' . $pmpro_page_name . '-page', $post ) ) )
+			if( ! empty( $post->post_content ) && ( strpos( $post->post_content, "[pmpro_" . $pmpro_page_name . "]" ) !== false || ( function_exists( 'has_block' ) && has_block( 'pmpro/' . $pmpro_page_name . '-page', $post ) ) ) )
 			{
 				//preheader
 				require_once(PMPRO_DIR . "/preheaders/" . $pmpro_page_name . ".php");
@@ -100,6 +100,51 @@ function pmpro_wp()
 	}
 }
 add_action("wp", "pmpro_wp", 2);
+
+/**
+ * Add root colors to the head tag.
+ */
+function pmpro_print_root_color_values() {
+	// Color settings.
+	$pmpro_colors = get_option( 'pmpro_colors' );
+	$pmpro_colors = ! empty( $pmpro_colors ) ? $pmpro_colors : array(
+		'base' => '#ffffff',
+		'contrast' => '#222222',
+		'accent' => '#0c3d54',
+	);
+
+	// Get the accent color variation.
+	$accent_variation_hsl_parts = pmpro_hex_to_hsl_parts( $pmpro_colors['accent'] );
+	$accent_variation_hsl_parts[1] = $accent_variation_hsl_parts[1] . '%';
+	$accent_variation_hsl_parts[2] = $accent_variation_hsl_parts[2] * 1.5 . '%';
+	$accent_variation_hsl_parts = implode( ',', $accent_variation_hsl_parts );
+
+	// Get the style variation to be used when we calculate some colors.
+	$pmpro_style_variation = get_option( 'pmpro_style_variation' );
+
+	// Calculate a border variation color based on the base color's lightness.
+	$base_hsl_parts = pmpro_hex_to_hsl_parts( $pmpro_colors['base'] );
+	$base_hsl_parts[1] = $base_hsl_parts[1] . '%';
+	if ( $base_hsl_parts[2] < 50 ) {
+		// This is a dark color.
+		$base_hsl_parts[2] = $pmpro_style_variation == 'variation_1' ? '30%' : '80%';
+	} else {
+		// This is a light color.
+		$base_hsl_parts[2] = $pmpro_style_variation == 'variation_1' ? '91%' : '0%';
+	}
+	$base_hsl_parts = implode( ',', $base_hsl_parts );
+
+	$css = ":root {
+	--pmpro--color--base: {$pmpro_colors['base']};
+	--pmpro--color--contrast: {$pmpro_colors['contrast']};
+	--pmpro--color--accent: {$pmpro_colors['accent']};
+	--pmpro--color--accent--variation: hsl( $accent_variation_hsl_parts );
+	--pmpro--color--border--variation: hsl( $base_hsl_parts );
+}";
+
+	echo '<style id="pmpro_colors">' . $css . '</style>';
+}
+add_action( 'wp_head', 'pmpro_print_root_color_values' );
 
 /*
 	Add PMPro page names to the BODY class.

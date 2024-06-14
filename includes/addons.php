@@ -72,6 +72,46 @@ function pmpro_getAddons() {
 }
 
 /**
+ * Get a list of installed Add Ons with incorrect folder names.
+ *
+ * @since TBD
+ *
+ * @return array $incorrect_folder_names An array of Add Ons with incorrect folder names. The key is the installed folder name, the value is the Add On data.
+ */
+function pmpro_get_add_ons_with_incorrect_folder_names() {
+	// Make an easily searchable array of installed plugins to reduce computational compexity.
+	// The key of the array is the plugin filename, the value is the folder name.
+	$installed_plugins = array();
+	foreach ( get_plugins() as $plugin_name => $plugin_data ) {
+		// Skip plugins that are not in a folder.
+		if ( false === strpos( $plugin_name, '/' ) ) {
+			continue;
+		}
+
+		// Add the plugin to the $installed_plugins array.
+		list( $plugin_folder, $plugin_filename ) = explode( '/', $plugin_name, 2 );
+		$installed_plugins[ $plugin_filename ] = $plugin_folder;
+	}
+
+	// Set up an array to track Add Ons with wrong folder names.
+	// The key of the array is the equivalent of $plugin_name above, the value is the Add On data.
+	$incorrect_folder_names = array();
+	foreach ( pmpro_getAddons() as $addon ) {
+		// Get information about the Add On.
+		list( $addon_folder, $addon_filename ) = explode( '/', $addon['plugin'], 2 );
+	
+		// Check if the Add On is installed with an incorrect folder name.
+		if ( array_key_exists( $addon_filename, $installed_plugins ) && $addon_folder !== $installed_plugins[ $addon_filename ] ) {
+			// The Add On is installed with the wrong folder nane. Add it to the array.
+			$installed_name = $installed_plugins[ $addon_filename ] . '/' . $addon_filename;
+			$incorrect_folder_names[ $installed_name ] = $addon;
+		}
+	}
+
+	return $incorrect_folder_names;
+}
+
+/**
  * Find a PMPro addon by slug.
  *
  * @since 1.8.5
@@ -114,9 +154,9 @@ function pmpro_get_addon_categories() {
 			'pmpro-roles',
 			'pmpro-approvals',
 			'pmpro-add-paypal-express',
+			'pmpro-group-accounts',
 			'pmpro-signup-shortcode',
 			'pmpro-set-expiration-dates',
-			'pmpro-sponsored-members',
 			'pmpro-import-users-from-csv'
 		),
 		'association' => array(
@@ -129,9 +169,9 @@ function pmpro_get_addon_categories() {
 			'pmpro-add-name-to-checkout',
 			'pmpro-donations',
 			'pmpro-events',
+			'pmpro-group-accounts',
 			'pmpro-pay-by-check',
-			'pmpro-set-expiration-dates',
-			'pmpro-sponsored-members'
+			'pmpro-set-expiration-dates'
 		),
 		'premium_content' => array(
 			'pmpro-email-confirmation',
@@ -423,8 +463,9 @@ function pmpro_admin_init_updating_plugins() {
 				}
 				
 				// show error
-				$msg = sprintf( __( 'You must have a <a href="https://www.paidmembershipspro.com/pricing/?utm_source=wp-admin&utm_pluginlink=bulkupdate">valid PMPro %s License Key</a> to update PMPro %s add ons. The following plugins will not be updated:', 'paid-memberships-pro' ), ucwords( $license_type ), ucwords( $license_type ) );
-				echo '<div class="error"><p>' . $msg . ' <strong>' . implode( ', ', $premium_addons[$license_type] ) . '</strong></p></div>';
+				$msg = wp_kses( sprintf( __( 'You must have a <a target="_blank" href="https://www.paidmembershipspro.com/pricing/?utm_source=wp-admin&utm_pluginlink=bulkupdate">valid PMPro %s License Key</a> to update PMPro %s add ons. The following plugins will not be updated:', 'paid-memberships-pro' ), ucwords( $license_type ), ucwords( $license_type ) ), array( 'a' => array( 'href' => array(), 'target' => array() ) ) );
+				// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+				echo '<div class="error"><p>' . $msg . ' <strong>' . esc_html( implode( ', ', $premium_addons[$license_type] ) ) . '</strong></p></div>';
 			}			
 		}
 
@@ -443,12 +484,12 @@ function pmpro_admin_init_updating_plugins() {
 		if ( ! empty( $addon ) && pmpro_license_type_is_premium( $addon['License'] ) && ! pmpro_can_download_addon_with_license( $addon['License'] ) ) {
 			require_once( ABSPATH . 'wp-admin/admin-header.php' );
 
-			echo '<div class="wrap"><h2>' . __( 'Update Plugin' ) . '</h2>';
+			echo '<div class="wrap"><h2>' . esc_html__( 'Update Plugin' ) . '</h2>';
 
 			$msg = sprintf( __( 'You must have a <a href="https://www.paidmembershipspro.com/pricing/?utm_source=wp-admin&utm_pluginlink=addon_update">valid PMPro %s License Key</a> to update PMPro %s add ons.', 'paid-memberships-pro' ), ucwords( $addon['License'] ), ucwords( $addon['License'] ) );
-			echo '<div class="error"><p>' . $msg . '</p></div>';
+			echo '<div class="error"><p>' . wp_kses_post( $msg ) . '</p></div>';
 
-			echo '<p><a href="' . admin_url( 'admin.php?page=pmpro-addons' ) . '" target="_parent">' . __( 'Return to the PMPro Add Ons page', 'paid-memberships-pro' ) . '</a></p>';
+			echo '<p><a href="' . esc_url( admin_url( 'admin.php?page=pmpro-addons' ) ) . '" target="_parent">' . esc_html__( 'Return to the PMPro Add Ons page', 'paid-memberships-pro' ) . '</a></p>';
 
 			echo '</div>';
 
@@ -468,7 +509,7 @@ function pmpro_admin_init_updating_plugins() {
 		$addon = pmpro_getAddonBySlug( $slug );
 		if ( ! empty( $addon ) && pmpro_license_type_is_premium( $addon['License'] ) && ! pmpro_can_download_addon_with_license( $addon['License'] ) ) {
 			$msg = sprintf( __( 'You must enter a valid PMPro %s License Key under Settings > PMPro License to update this add on.', 'paid-memberships-pro' ), ucwords( $addon['License'] ) );
-			echo '<div class="error"><p>' . $msg . '</p></div>';
+			echo '<div class="error"><p>' . esc_html( $msg ) . '</p></div>';
 
 			// can exit WP now
 			exit;

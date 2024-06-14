@@ -6,7 +6,7 @@ class PMPro_Member_Edit_Panel_User_Info extends PMPro_Member_Edit_Panel {
 	 */
 	public function __construct() {
 		$user = self::get_user();
-		$this->slug = 'user_info';
+		$this->slug = 'user-info';
 		$this->title = empty( $user->ID ) ? __( 'Add New User', 'paid-memberships-pro' ) : __( 'User Info', 'paid-memberships-pro' );
 		$this->title_link = empty( $user->ID ) ? '' : '<a href="' . esc_url( add_query_arg( array( 'user_id' => intval( $user->ID ) ), admin_url( 'user-edit.php' ) ) ) . '" target="_blank" class="page-title-action pmpro-has-icon pmpro-has-icon-admin-users">' . esc_html__( 'Edit User', 'paid-memberships-pro' ) . '</a>';
 		$this->submit_text = empty( $user->ID ) ? __( 'Create User ') : __( 'Update User Info', 'paid-memberships-pro' );
@@ -18,6 +18,12 @@ class PMPro_Member_Edit_Panel_User_Info extends PMPro_Member_Edit_Panel {
 			} elseif ( 'created' === $_REQUEST['user_info_action'] ) {
 				pmpro_setMessage( __( 'New user created.', 'paid-memberships-pro' ), 'pmpro_success' );
 			}
+		}
+
+		// If user cannot edit users, empty the submit text and title link.
+		if ( ! current_user_can( 'edit_users' ) ) {
+			$this->submit_text = '';
+			$this->title_link = '';
 		}
 	}
 
@@ -31,7 +37,6 @@ class PMPro_Member_Edit_Panel_User_Info extends PMPro_Member_Edit_Panel {
 		$user_email = ! empty( $_POST['email'] ) ? stripslashes( sanitize_email( $_POST['email'] ) ) : '';
 		$first_name = ! empty( $_POST['first_name'] ) ? stripslashes( sanitize_text_field( $_POST['first_name'] ) ): '';
 		$last_name = ! empty( $_POST['last_name'] ) ? stripslashes( sanitize_text_field( $_POST['last_name'] ) ) : '';	
-		$role = ! empty( $_POST['role'] ) ? sanitize_text_field( $_POST['role'] ) : get_option( 'default_role' );
 		$user_notes = ! empty( $_POST['user_notes'] ) ? stripslashes( sanitize_textarea_field( $_POST['user_notes'] ) ) : '';
 
 		// If we are edting a user, get the user information.
@@ -41,12 +46,32 @@ class PMPro_Member_Edit_Panel_User_Info extends PMPro_Member_Edit_Panel {
 			$user_email = $user->user_email;
 			$first_name = $user->first_name;
 			$last_name = $user->last_name;
-			$role = $user->roles[0];
+			$role = current( $user->roles );
 			$user_notes = $user->user_notes;
 		} else {
 			// We are creating a new user.
 			// Enqueue core WordPress script for passwords: generate, visibility, and strength check.
 			wp_enqueue_script( 'user-profile' );
+		}
+
+		// If the user doesn't have the edit_users capability, make the fields read-only.
+		$disable_fields = ! current_user_can( 'edit_users' ) ? 'disabled' : '';
+
+		// Show a message if the user doesn't have permission to edit this user.
+		if ( ! empty( $disable_fields ) ) {
+			if ( empty( $user->ID ) ) {
+				?>
+				<div class="pmpro_message pmpro_alert">
+					<p><?php esc_html_e( 'You do not have permission to create new users.', 'paid-memberships-pro' ); ?></p>
+				</div>
+				<?php
+			} else {
+				?>
+				<div class="pmpro_message pmpro_alert">
+					<p><?php esc_html_e( 'You do not have permission to edit this user. User information is displayed below as read-only.', 'paid-memberships-pro' ); ?></p>
+				</div>
+				<?php
+			}
 		}
 
 		// Show the form.
@@ -63,7 +88,7 @@ class PMPro_Member_Edit_Panel_User_Info extends PMPro_Member_Edit_Panel {
 					</label>
 				</th>
 				<td>
-					<input type="text" name="user_login" id="user_login" autocapitalize="none" autocorrect="off" autocomplete="off" required <?php $user->ID ?'disabled="disabled"' : ''; ?> value="<?php echo esc_attr( $user_login ) ?>">
+					<input type="text" name="user_login" id="user_login" autocapitalize="none" autocorrect="off" autocomplete="off" required <?php echo ( $user->ID || ! empty( $disable_fields ) ) ? 'disabled' : ''; ?> value="<?php echo esc_attr( $user_login ) ?>">
 					<?php if ( $user->ID ) { ?>
 						<p class="description"><?php esc_html_e( 'Usernames cannot be changed.', 'paid-memberships-pro' ); ?></p>
 					<?php } ?>
@@ -71,19 +96,19 @@ class PMPro_Member_Edit_Panel_User_Info extends PMPro_Member_Edit_Panel {
 			</tr>
 			<tr class="form-field form-required">
 				<th scope="row"><label for="email"><?php esc_html_e( 'Email (required)', 'paid-memberships-pro' ); ?></label></th>
-				<td><input type="email" name="email" id="email" autocomplete="new-password" spellcheck="false" required value="<?php echo esc_attr( $user_email ) ?>"></td>
+				<td><input type="email" name="email" id="email" autocomplete="new-password" spellcheck="false" required value="<?php echo esc_attr( $user_email ); ?>" <?php echo esc_attr( $disable_fields ); ?>></td>
 			</tr>
 			<tr class="form-field">
 				<th scope="row"><label for="first_name"><?php esc_html_e( 'First Name', 'paid-memberships-pro' ); ?></label></th>
-				<td><input type="text" name="first_name" id="first_name" autocomplete="off" value="<?php echo esc_attr( $first_name ); ?>"></td>
+				<td><input type="text" name="first_name" id="first_name" autocomplete="off" value="<?php echo esc_attr( $first_name ); ?>" <?php echo esc_attr( $disable_fields ); ?>></td>
 			</tr>
 			<tr class="form-field">
 				<th scope="row"><label for="last_name"><?php esc_html_e( 'Last Name', 'paid-memberships-pro' ); ?></label></th>
-				<td><input type="text" name="last_name" id="last_name" autocomplete="off" value="<?php echo esc_attr( $last_name ); ?>"></td>
+				<td><input type="text" name="last_name" id="last_name" autocomplete="off" value="<?php echo esc_attr( $last_name ); ?>" <?php echo esc_attr( $disable_fields ); ?>></td>
 			</tr>						
 			<?php
 			// Only show for new users.
-			if ( empty( $user->ID ) ) {
+			if ( empty( $user->ID ) && current_user_can( 'edit_users' ) ) {
 				?>
 				<tr class="form-field form-required user-pass1-wrap">
 					<th scope="row">
@@ -131,44 +156,40 @@ class PMPro_Member_Edit_Panel_User_Info extends PMPro_Member_Edit_Panel {
 			<tr class="form-field">
 				<th scope="row" valign="top"><label for="user_notes"><?php esc_html_e( 'Member Notes', 'paid-memberships-pro' ); ?></label></th>
 				<td>
-					<textarea name="user_notes" id="user_notes" rows="5" class="<?php echo pmpro_getClassForField( 'user_notes' ); ?>"><?php echo esc_textarea( $user_notes ); ?></textarea>
+					<textarea name="user_notes" id="user_notes" rows="5" <?php echo esc_attr( $disable_fields ); ?>><?php echo esc_textarea( $user_notes ); ?></textarea>
 					<p class="description"><?php esc_html_e( 'Member notes are private and only visible to other users with membership management capabilities.', 'paid-memberships-pro' ); ?></p>
 				</td>
 			</tr>
-			<?php if ( ! IS_PROFILE_PAGE && current_user_can( 'promote_user', $user->ID ) ) {
+			<?php
+			if ( ! IS_PROFILE_PAGE && current_user_can( 'promote_user', $user->ID ) && ! empty( $user->ID ) ) {
 				?>
 				<tr>
-					<?php
-						// Set the role to subscriber if the default role is subscriber.
-						if ( empty( $user->ID ) && get_option( 'default_role' ) == 'subscriber' ) {
-							?>
-							<td colspan="2">
-								<input type="hidden" name="role" id="role" value="subscriber">
-							</td>
+					<th scope="row"><label for="role"><?php esc_html_e( 'Role', 'paid-memberships-pro' ); ?></label></th>
+					<td>
+						<input type="text" name="role" id="role" autocapitalize="none" autocorrect="off" autocomplete="off" disabled value="<?php echo esc_attr( empty( $role ) ? '&mdash; No role for this site &mdash;' : $role ); ?>">
+						<p class="description">
 							<?php
-						} else {
+							printf( esc_html__( 'Roles can be changed from the %s page.', 'paid-memberships-pro' ), '<a href="' . esc_url( add_query_arg( array( 'user_id' => $user->ID ), admin_url( 'user-edit.php' ) ) ) . '" target="_blank">' . esc_html__( 'Edit User', 'paid-memberships-pro' ) . '</a>' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 							?>
-							<th scope="row"><label for="role"><?php esc_html_e( 'Role', 'paid-memberships-pro' ); ?></label></th>
-							<td>
-								<select name="role" id="role" class="<?php echo pmpro_getClassForField( 'role' ); ?>">
-									<?php wp_dropdown_roles( $role ); ?>
-								</select>
-							</td>
-						<?php
-						}
-					?>
+						</p>
+					</td>
 				</tr>
-			<?php } ?>
+				<?php
+			}
+			?>
 		</table>
 		<?php
+		do_action( 'pmpro_after_membership_level_profile_fields', self::get_user() );
 	}
 
 	/**
 	 * Save panel data and redirect if we are creating a new user.
 	 */
 	public function save() {
-		// Get all roles for the site.
-		$wp_roles = wp_roles();
+		// If the current user can't edit users, bail.
+		if ( ! current_user_can( 'edit_users' ) ) {
+			return;
+		}
 
 		// Get the user we are editing or set up a new blank user.
 		$user = self::get_user();
@@ -181,30 +202,6 @@ class PMPro_Member_Edit_Panel_User_Info extends PMPro_Member_Edit_Panel {
 		$pass1 = '';
 		if ( isset( $_POST['pass1'] ) ) {
 			$pass1 = trim( $_POST['pass1'] );
-		}
-
-		if ( isset( $_POST['role'] ) && current_user_can( 'promote_users' ) && ( ! $user->ID || current_user_can( 'promote_user', $user->ID ) ) ) {
-			$new_role = sanitize_text_field( $_POST['role'] );
-
-			// If the new role isn't editable by the logged-in user die with error.
-			$editable_roles = get_editable_roles();
-			if ( ! empty( $new_role ) && empty( $editable_roles[ $new_role ] ) ) {
-				wp_die( __( 'Sorry, you are not allowed to give users that role.', 'paid-memberships-pro' ), 403 );
-			}
-
-			$potential_role = isset( $wp_roles->role_objects[ $new_role ] ) ? $wp_roles->role_objects[ $new_role ] : false;
-
-			/*
-			 * Don't let anyone with 'promote_users' edit their own role to something without it.
-			 * Multisite super admins can freely edit their roles, they possess all caps.
-			 */
-			if (
-				( is_multisite() && current_user_can( 'manage_network_users' ) ) ||
-				get_current_user_id() !== $user->ID ||
-				( $potential_role && $potential_role->has_cap( 'promote_users' ) )
-			) {
-				$user->role = $new_role;
-			}
 		}
 
 		if ( isset( $_POST['email'] ) ) {
@@ -301,7 +298,7 @@ class PMPro_Member_Edit_Panel_User_Info extends PMPro_Member_Edit_Panel {
 			}
 
 			// Add other user meta
-			$user_notes = ! empty( $_POST['user_notes'] ) ? stripslashes( sanitize_textarea_field( $_POST['user_notes'] ) ) : '';
+			$user_notes = ! empty( $_POST['user_notes'] ) ? sanitize_textarea_field( $_POST['user_notes'] ) : '';
 			update_user_meta( $user_id, 'user_notes', $user_notes );
 
 			// Set message and redirect if this is a new user.		

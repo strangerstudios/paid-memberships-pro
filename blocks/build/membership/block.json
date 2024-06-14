@@ -7,6 +7,10 @@
 	"description": "Nest blocks within this wrapper to show or hide content by membership level, login status, or for non-members.",
 	"keywords": [ "block visibility", "conditional", "content", "exclude", "hide", "hidden", "membership", "membership excluded", "membership required", "private", "restrict", "require", "paid memberships pro", "pmpro" ],
 	"attributes": {
+		"visibilityBlockEnabled": {
+			"type": "boolean",
+			"default": true
+		},
 		"invert_restrictions": {
 			"type": "string",
 			"default": "0"

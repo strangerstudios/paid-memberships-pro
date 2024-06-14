@@ -23,7 +23,7 @@ abstract class PMPro_Member_Edit_Panel {
 	/**
 	 * Get the slug for this panel.
 	 *
-	 * @since TBD
+	 * @since 3.0
 	 *
 	 * @return string
 	 */
@@ -34,19 +34,26 @@ abstract class PMPro_Member_Edit_Panel {
 	/**
 	 * Display the tab for this panel.
 	 *
-	 * @since TBD
+	 * @since 3.0
 	 *
 	 * @param bool $is_selected True if this is the selected panel, false otherwise.
+	 * @param string $tab_visibility True if  the tab is visible.
 	 */
-	final public function display_tab( $is_selected ) {
+	final public function display_tab( $is_selected, $tab_visibility = true ) {
+		// Check capabilities.
+		if ( ! $this->should_show() ) {
+			return;
+		}
+
 		?>
 		<button
 			role="tab"
 			aria-selected="<?php echo $is_selected ? 'true' : 'false' ?>"
 			aria-controls="pmpro-member-edit-<?php echo esc_attr( $this->slug ) ?>-panel"
 			id="pmpro-member-edit-<?php echo esc_attr( $this->slug ) ?>-tab"
-			<?php echo ( empty( self::get_user()->ID ) && $this->slug != 'user_info'  ) ? 'disabled="disabled"' : ''; ?>
+			<?php echo ( empty( self::get_user()->ID ) && $this->slug != 'user-info'  ) ? 'disabled="disabled"' : ''; ?>
 			tabindex="<?php echo ( $is_selected ) ? '0' : '-1' ?>"
+			<?php echo empty( $tab_visibility ) ? 'style="display: none;"' : ''; ?>
 		>
 			<?php
 				echo esc_attr( ( strlen( $this->title ) > 40 ) ? substr( $this->title, 0, 40 ) . '...' : $this->title );
@@ -58,11 +65,16 @@ abstract class PMPro_Member_Edit_Panel {
 	/**
 	 * Display the panel.
 	 *
-	 * @since TBD
+	 * @since 3.0
 	 *
 	 * @param bool $is_selected True if this is the selected panel, false otherwise.
 	 */
 	final public function display_panel( $is_selected ) {
+		// Check capabilities.
+		if ( ! $this->should_show() ) {
+			return;
+		}
+
 		?>
 		<div
 			id="pmpro-member-edit-<?php echo esc_attr( $this->slug ) ?>-panel"
@@ -107,7 +119,7 @@ abstract class PMPro_Member_Edit_Panel {
 	/**
 	 * Get the user that we are editing.
 	 *
-	 * @since TBD
+	 * @since 3.0
 	 *
 	 * @return WP_User
 	 */
@@ -135,16 +147,28 @@ abstract class PMPro_Member_Edit_Panel {
 	}
 
 	/**
+	 * Check if the current user can view this panel.
+	 * Can be overridden by child classes.
+	 *
+	 * @since 3.0
+	 *
+	 * @return bool
+	 */
+	public function should_show() {
+		return current_user_can( pmpro_get_edit_member_capability() );
+	}
+
+	/**
 	 * Save the panel.
 	 *
-	 * @since TBD
+	 * @since 3.0
 	 */
 	public function save() {}
 
 	/**
 	 * Display the contents of the panel.
 	 *
-	 * @since TBD
+	 * @since 3.0
 	 */
 	abstract protected function display_panel_contents();
 }

@@ -45,15 +45,23 @@ class PMProGateway_authorizenet extends PMProGateway
 	}
 
 	/**
-	 * Returns whether the gateway allows for payment method updates.
-	 *
-	 * @since TBD
-	 *
-	 * @return string|false 'individual' if the gateway allows for payment method updates for individual subscriptions, 
-	 *                      'all' if the gateway updates all subscriptions, or false if the gateway does not support payment method updates.
+	 * Check whether or not a gateway supports a specific feature.
+	 * 
+	 * @since 3.0
+	 * 
+	 * @return string|boolean $supports Returns whether or not the gateway supports the requested feature.
 	 */
-	function supports_payment_method_updates() {
-		return 'individual';
+	public static function supports( $feature ) {
+		$supports = array(
+			'subscription_sync' => true,
+			'payment_method_updates' => 'individual'
+		);
+
+		if ( empty( $supports[$feature] ) ) {
+			return false;
+		}
+
+		return $supports[$feature];
 	}
 
 	/**
@@ -144,7 +152,7 @@ class PMProGateway_authorizenet extends PMProGateway
 		</th>
 		<td>
 			<p><?php esc_html_e('To fully integrate with Authorize.net, be sure to set your Silent Post URL to', 'paid-memberships-pro' ); ?></p>
-			<p><code><?php echo admin_url("admin-ajax.php") . "?action=authnet_silent_post";?></code></p>
+			<p><code><?php echo esc_url( admin_url("admin-ajax.php") . "?action=authnet_silent_post" );?></code></p>
 		</td>
 	</tr>
 	<?php
@@ -661,7 +669,7 @@ class PMProGateway_authorizenet extends PMProGateway
 
 		//send the xml via curl
 		$this->response = $this->send_request_via_curl($host,$path,$this->content);
-		//if curl is unavilable you can try using fsockopen
+		//if curl is unavailable you can try using fsockopen
 		/*
 		$response = send_request_via_fsockopen($host,$path,$content);
 		*/
@@ -770,7 +778,7 @@ class PMProGateway_authorizenet extends PMProGateway
 
 		//send the xml via curl
 		$this->response = $this->send_request_via_curl($host,$path,$this->content);
-		//if curl is unavilable you can try using fsockopen
+		//if curl is unavailable you can try using fsockopen
 		/*
 		$response = send_request_via_fsockopen($host,$path,$order->content);
 		*/
@@ -836,7 +844,7 @@ class PMProGateway_authorizenet extends PMProGateway
 						"<includeIssuerInfo>true</includeIssuerInfo>".
 						"</getCustomerProfileRequest>";
 					$this->response = $this->send_request_via_curl($host,$path,$this->content);
-					// Print entire repsonse.
+					// Print entire response.
 					echo $this->response;
 					wp_die();
 					*/
@@ -898,7 +906,7 @@ class PMProGateway_authorizenet extends PMProGateway
 
 		//send the xml via curl
 		$response = $this->send_request_via_curl($host,$path,$content);
-		//if curl is unavilable you can try using fsockopen
+		//if curl is unavailable you can try using fsockopen
 		/*
 		$response = send_request_via_fsockopen($host,$path,$content);
 		*/
@@ -970,7 +978,7 @@ class PMProGateway_authorizenet extends PMProGateway
 		//send the xml via curl
 		$response = $this->send_request_via_curl($host,$path,$content);
 
-		//if curl is unavilable you can try using fsockopen
+		//if curl is unavailable you can try using fsockopen
 		/*
 		$response = send_request_via_fsockopen($host,$path,$content);
 		*/

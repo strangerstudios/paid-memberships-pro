@@ -187,7 +187,7 @@ function pmpro_check_discount_code_for_gateway_compatibility( $discount_code = N
 			}
 		}
 	} else {
-		if ( ! is_numeric( $discount_code ) ) {
+		if (  $discount_code instanceof stdClass ) {
 			// Convert the code array into a single id.
 			$discount_code = $discount_code->id;
 		}
@@ -358,33 +358,29 @@ function pmpro_getClassesForPaymentSettingsField($field, $force = false)
 
 
 /**
- * Code to handle emailing billable invoices.
+ * Code to handle emailing orders.
  *
  * @since 1.8.6
- */
-
-/**
- * Get the gateway-related classes for fields on the payment settings page.
- *
- * @param string $field The name of the field to check.
- * @param bool $force If true, it will rebuild the cached results.
- *
- * @since  1.8
  */
 function pmpro_add_email_order_modal() {
 
 	// emailing?
-	if ( ! empty( $_REQUEST['email'] ) && ! empty( $_REQUEST['order'] ) ) {
+	if ( ! empty( $_REQUEST['pmpro_email_to'] ) && ! empty( $_REQUEST['pmpro_email_order'] ) ) {
+		// verify nonce
+		if ( ! wp_verify_nonce( sanitize_key( $_REQUEST['pmpro_send_email_order_nonce'] ), 'pmpro_send_email_order' ) ) {
+			wp_die( esc_html__( 'Security error.', 'paid-memberships-pro' ) );
+		}
+
 		$email = new PMProEmail();
-		$user  = get_user_by( 'email', sanitize_email( $_REQUEST['email'] ) );
-		$order = new MemberOrder( intval( $_REQUEST['order'] ) );
+		$user  = get_user_by( 'email', sanitize_email( $_REQUEST['pmpro_email_to'] ) );
+		$order = new MemberOrder( intval( $_REQUEST['pmpro_email_order'] ) );
 		if ( ! empty( $user ) && ! empty( $order ) && $email->sendBillableInvoiceEmail( $user, $order ) ) { ?>
 			<div class="notice notice-success pmpro_message pmpro_success is-dismissible">
-				<p><?php esc_html_e( 'Invoice emailed successfully.', 'paid-memberships-pro' ); ?></p>
+				<p><?php esc_html_e( 'Order emailed successfully.', 'paid-memberships-pro' ); ?></p>
 			</div>
 		<?php } else { ?>
 			<div class="notice notice-error pmpro_message pmpro_error is-dismissible">
-				<p><?php esc_html_e( 'Error emailing invoice.', 'paid-memberships-pro' ); ?></p>
+				<p><?php esc_html_e( 'Error emailing order.', 'paid-memberships-pro' ); ?></p>
 			</div>
 		<?php }
 	}
@@ -394,9 +390,9 @@ function pmpro_add_email_order_modal() {
 		// Update fields in email modal.
 		jQuery(document).ready(function ($) {
 			var order, order_id;
-			$('.email_link').click(function () {
+			$('.email_link').on('click',function () {
 				order_id = $(this).data('order');
-				$('input[name=order]').val(order_id);
+				$('input[name=pmpro_email_order]').val(order_id);
 				// Get email address from order ID
 				data = {
 					action: 'pmpro_get_order_json',
@@ -404,18 +400,19 @@ function pmpro_add_email_order_modal() {
 				};
 				$.post(ajaxurl, data, function (response) {
 					order = JSON.parse(response);
-					$('input[name=email]').val(order.Email);
+					$('input[name=pmpro_email_to]').val(order.Email);
 				});
 			});
 		});
 	</script>
 	<?php add_thickbox(); ?>
-	<div id="email_invoice" style="display:none;">
-		<h3><?php esc_html_e( 'Email Invoice', 'paid-memberships-pro' ); ?></h3>
+	<div id="email_order" style="display:none;">
+		<h3><?php esc_html_e( 'Email Order', 'paid-memberships-pro' ); ?></h3>
 		<form method="post" action="">
-			<input type="hidden" name="order" value=""/>
-			<?php _e( 'Send an invoice for this order to: ', 'paid-memberships-pro' ); ?>
-			<input type="text" value="" name="email"/>
+			<input type="hidden" name="pmpro_email_order" value=""/>
+			<?php esc_html_e( 'Send a receipt for this order to: ', 'paid-memberships-pro' ); ?>
+			<input type="text" value="" name="pmpro_email_to"/>
+			<?php wp_nonce_field( 'pmpro_send_email_order', 'pmpro_send_email_order_nonce' ); ?>
 			<button class="button button-primary alignright"><?php esc_html_e( 'Send Email', 'paid-memberships-pro' ); ?></button>
 		</form>
 	</div>

@@ -3,7 +3,7 @@
 /**
  * Get the panels to display on the member edit page.
  *
- * @since TBD
+ * @since 3.0
  *
  * @return array
  */
@@ -20,7 +20,7 @@ function pmpro_member_edit_get_panels() {
 	$panels[] = new PMPro_Member_Edit_Panel_Memberships();
 	$panels[] = new PMPro_Member_Edit_Panel_Subscriptions();
 	$panels[] = new PMPro_Member_Edit_Panel_Orders();
-	$panels[] = new PMPro_Member_Edit_Panel_Other();
+	$panels[] = new PMPro_Member_Edit_Panel_TOS();
 
 	// Add user fields panels.
 	$user_id = PMPro_Member_Edit_Panel::get_user()->ID;
@@ -36,7 +36,7 @@ function pmpro_member_edit_get_panels() {
 	/**
 	 * Filter to add/edit panels on the member edit page.
 	 *
-	 * @since TBD
+	 * @since 3.0
 	 *
 	 * @param array $panels The panels to display on the member edit page.
 	 */
@@ -54,7 +54,7 @@ function pmpro_member_edit_get_panels() {
 /**
  * Display the member edit page.
  *
- * @since TBD
+ * @since 3.0
  */
 function pmpro_member_edit_display() {
 	global $current_user;
@@ -70,7 +70,7 @@ function pmpro_member_edit_display() {
 	$panels = pmpro_member_edit_get_panels();
 
 	// Get the panel to default to.
-	$default_panel_slug = 'user_info';
+	$default_panel_slug = 'user-info';
 	if ( ! empty( $user->ID ) && ! empty( $_REQUEST['pmpro_member_edit_panel'] ) && ! empty( $panels[ $_REQUEST['pmpro_member_edit_panel'] ] ) ) {
 		$default_panel_slug = sanitize_text_field( $_REQUEST['pmpro_member_edit_panel'] );
 	}
@@ -98,20 +98,48 @@ function pmpro_member_edit_display() {
 		<nav id="pmpro-edit-user-nav" role="tablist" aria-labelledby="pmpro-edit-user-menu">
 			<h2 id="pmpro-edit-user-menu" class="screen-reader-text"><?php esc_html_e( 'Edit Member Area Menu', 'paid-memberships-pro' ); ?></h2>
 			<?php
+				$count = 0;
 				foreach ( $panels as $panel_slug => $panel ) {
-					$panel->display_tab( $panel_slug === $default_panel_slug );
+					/**
+					 * Filter to limit the number of tabs that are visible on the member edit page.
+					 *
+					 * @since 3.0
+					 * @param int $num_visible_tabs The default number of tabs that are visible on the member edit page.
+					 * @return int
+					 */
+					$num_visible_tabs = apply_filters( 'pmpro_member_edit_num_visible_tabs', 6 );
+					$tab_visibility = $count < (int) $num_visible_tabs ? true : false;
+
+					// Show the tab.
+					$panel->display_tab( $panel_slug === $default_panel_slug, $tab_visibility );
+
+					// Increment the count.
+					$count++;
+				}
+
+				// Show a "More" tab if there are more than 4 panels.
+				if ( $count > (int) $num_visible_tabs ) {
+					?>
+					<div class="pmpro_relative">
+						<div class="pmpro_divider"></div>
+						<button role="showmore" class="pmpro-member-edit-show-more-tab">
+							<?php esc_html_e( 'Show More', 'paid-memberships-pro' ); ?>
+							<span class="dashicons dashicons-arrow-down-alt2"></span>
+						</button>
+					</div>
+					<?php
 				}
 			?>
 		</nav>
 		<div class="pmpro_section">
 			<?php
 			foreach ( $panels as $panel_slug => $panel ) {
-				// When creating a new user, we only want to show the user_info panel.
-				if ( empty( $user->ID ) && $panel_slug !== 'user_info' ) {
+				// When creating a new user, we only want to show the user-info panel.
+				if ( empty( $user->ID ) && $panel_slug !== 'user-info' ) {
 					continue;
 				}
 
-				// If we are showing the orders panel, there is additional code that we need to run to allow emailing invoices.
+				// If we are showing the orders panel, there is additional code that we need to run to allow emailing orders.
 				// Ideally this would be in the "orders" panel class, but this code needs to be its own separate <form>.
 				// Hopefully we will have a solution for this down the road, but for now, adding this code here.
 				if ( $panel_slug === 'orders' && function_exists( 'pmpro_add_email_order_modal' ) ) {
@@ -121,6 +149,9 @@ function pmpro_member_edit_display() {
 
 				// Display the panel.
 				$panel->display_panel( $panel_slug === $default_panel_slug );
+
+				// Increment the count.
+				$count++;
 			}
 			?>
 		</div>
@@ -133,7 +164,7 @@ function pmpro_member_edit_display() {
 /**
  * Save the member edit page.
  *
- * @since TBD
+ * @since 3.0
  */
 function pmpro_member_edit_save() {
 	global $current_user;
@@ -149,11 +180,11 @@ function pmpro_member_edit_save() {
 	}
 
 	// Make sure the current user can edit this user.
-	// Alterred from wp-admin/user-edit.php.
-	$user = PMPro_Member_Edit_Panel::get_user();
-	if ( ! current_user_can( 'edit_user', $user->ID ) ) {
-		wp_die( __( 'Sorry, you are not allowed to edit this user.', 'paid-memberships-pro' ) );
-	}
+ 	// Alterred from wp-admin/user-edit.php.
+ 	$user = PMPro_Member_Edit_Panel::get_user();
+ 	if ( ! current_user_can( pmpro_get_edit_member_capability() ) ) {
+ 		wp_die( esc_html__( 'Sorry, you are not allowed to edit this user.', 'paid-memberships-pro' ) );
+ 	}
 
 	// Get the panel slug that was submitted.
 	$panel_slug = empty( $_REQUEST['pmpro_member_edit_panel'] ) ? '' : sanitize_text_field( $_REQUEST['pmpro_member_edit_panel'] );
@@ -178,3 +209,24 @@ function pmpro_member_edit_save() {
 	}
 }
 add_action( 'admin_init', 'pmpro_member_edit_save' );
+
+/**
+ * We always want to show the time of expiration on the edit member page of the dashboard.
+ * Fires on priority 5 so sites filtering run later by default.
+ * @param bool $show Whether to show the time of expiration
+ * @since 3.0
+ */
+function pmpro_member_edit_show_time_on_expiration( $show ) {
+	// Ignore on frontend.
+	if ( ! is_admin() ) {
+		return $show;
+	}
+
+	// Make sure we are on the edit member page.
+	if ( empty( $_REQUEST['page'] ) || $_REQUEST['page'] !== 'pmpro-member' ) {
+		return $show;
+	}
+
+	return true;
+}
+add_filter( 'pmpro_show_time_on_expiration_date', 'pmpro_member_edit_show_time_on_expiration', 5 );

@@ -1,9 +1,9 @@
 <?php
-global $pmpro_msg, $pmpro_msgt;
+global $wpdb, $pmpro_msg, $pmpro_msgt;
 
 // only admins can get this
-if ( ! function_exists( 'current_user_can' ) || ( ! current_user_can( 'manage_options' ) && ! current_user_can( 'pmpro_subscriptions' ) ) ) {
-	die( __( 'You do not have permissions to perform this action.', 'paid-memberships-pro' ) );
+if ( ! function_exists( 'current_user_can' ) || ( ! current_user_can( 'manage_options' ) && ! current_user_can( 'pmpro_edit_members' ) ) ) {
+	die( esc_html__( 'You do not have permissions to perform this action.', 'paid-memberships-pro' ) );
 }
 
 $subscription = PMPro_Subscription::get_subscription( empty( $_REQUEST['id'] ) ? null : sanitize_text_field( $_REQUEST['id'] ) );
@@ -44,15 +44,23 @@ if ( empty( $subscription ) ) {
 
 	$sub_membership_level_id   = $subscription->get_membership_level_id();
 	$sub_membership_level      = pmpro_getLevel( $sub_membership_level_id );
-	$sub_membership_level_name = empty( $sub_membership_level ) ? '' : $sub_membership_level->name;
+	$sub_membership_level_name = empty( $sub_membership_level )
+		? sprintf(
+			/* translators: %d is the level ID. */
+			esc_html__( 'Level ID: %d [deleted]', 'paid-memberships-pro' ),
+			(int) $subscription->get_membership_level_id()
+		)
+		: $sub_membership_level->name;
 	?>
 
-	<a
-		href="<?php echo ( esc_url( wp_nonce_url( add_query_arg( array( 'page' => 'pmpro-subscriptions', 'id' => $subscription->get_id(), 'update' => '1' ), admin_url('admin.php' ) ), 'update', 'pmpro_subscriptions_nonce'  ) ) ); ?>"
-		title="<?php esc_attr_e( 'Sync With Gateway', 'paid-memberships-pro' ); ?>" 
-		class="page-title-action pmpro-has-icon pmpro-has-icon-update">
-		<?php esc_html_e( 'Sync With Gateway', 'paid-memberships-pro' ); ?>
-	</a>
+	<?php if ( $subscription->get_gateway_object()->supports( 'subscription_sync' ) ) { ?>
+		<a
+			href="<?php echo ( esc_url( wp_nonce_url( add_query_arg( array( 'page' => 'pmpro-subscriptions', 'id' => $subscription->get_id(), 'update' => '1' ), admin_url('admin.php' ) ), 'update', 'pmpro_subscriptions_nonce'  ) ) ); ?>"
+			title="<?php esc_attr_e( 'Sync With Gateway', 'paid-memberships-pro' ); ?>" 
+			class="page-title-action pmpro-has-icon pmpro-has-icon-update">
+			<?php esc_html_e( 'Sync With Gateway', 'paid-memberships-pro' ); ?>
+		</a>
+	<?php } ?>
 
 	<a
 		href="javascript:void(0);"
@@ -118,7 +126,7 @@ if ( empty( $subscription ) ) {
 								}
 
 								if ( ! empty( $actions_html ) ) {
-									echo implode( ' | ', $actions_html );
+									echo implode( ' | ', $actions_html ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 								}
 							?>
 							</div>
@@ -140,7 +148,7 @@ if ( empty( $subscription ) ) {
 							echo esc_html( $sub_membership_level_name );
 
 							// If the subscription is active and the user has membership levels other than the one that the subscription is for, we should
-							// give the option to move the subcription to another user level.
+							// give the option to move the subscription to another user level.
 							if ( 'active' == $subscription->get_status() ) {
 								// Get all of the user's membership levels.
 								$user_membership_levels = pmpro_getMembershipLevelsForUser( $subscription->get_user_id() );
@@ -183,7 +191,7 @@ if ( empty( $subscription ) ) {
 								</div>
 								<script>
 									jQuery(document).ready(function() {
-										jQuery('#pmpro-show-change-subscription-level').click(function() {
+										jQuery('#pmpro-show-change-subscription-level').on('click',function() {
 											jQuery('#pmpro-change-subscription-level').show();
 											jQuery(this).hide();
 										});
@@ -198,8 +206,19 @@ if ( empty( $subscription ) ) {
 						<th scope="row"><?php esc_html_e( 'Status', 'paid-memberships-pro' ); ?></th>
 						<td>
 							<span class="pmpro_tag pmpro_tag-has_icon pmpro_tag-<?php echo esc_attr( $subscription->get_status() ); ?>">
-								<?php echo ucwords( esc_html( $subscription->get_status() ) ); ?>
+								<?php echo esc_html( ucwords( $subscription->get_status() ) ); ?>
 							</span>
+							<?php
+							// Show warning if the subscription had an error when trying to sync.
+							$sync_error = get_pmpro_subscription_meta( $subscription->get_id(), 'sync_error', true );
+							if ( ! empty( $sync_error ) ) {
+								?>
+								<span class="pmpro_tag pmpro_tag-has_icon pmpro_tag-error">
+									<?php echo esc_html( __( 'Sync Error', 'paid-memberships-pro' ) . ': ' . $sync_error ); ?>
+								</span>
+								<?php
+							}
+							?>
 						</td>
 					</tr>
 					<tr>
@@ -247,6 +266,18 @@ if ( empty( $subscription ) ) {
 						<th scope="row"><?php esc_html_e( 'Fee', 'paid-memberships-pro' ); ?></th>
 						<td>
 							<?php echo esc_html( $subscription->get_cost_text() ); ?>
+						</td>
+					</tr>
+					<tr>
+						<th scope="row"><?php esc_html_e( 'Orders', 'paid-memberships-pro' ); ?></th>
+						<td>
+							<?php
+							// Display the number of orders for this subscription and link to the orders page filtered by this subscription.
+							$orders_count = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM $wpdb->pmpro_membership_orders WHERE subscription_transaction_id = %s", $subscription->get_subscription_transaction_id() ) );
+							?>
+							<a href="<?php echo esc_url( add_query_arg( array( 'page' => 'pmpro-orders', 's' => $subscription->get_subscription_transaction_id() ), admin_url( 'admin.php' ) ) ); ?>" title="<?php esc_attr_e( 'View all orders for this subscription', 'paid-memberships-pro' ); ?>">
+								<?php echo esc_html( sprintf( _n( 'View %s order', 'View %s orders', $orders_count, 'text-domain' ), number_format_i18n( $orders_count ) ) ); ?>
+							</a>
 						</td>
 					</tr>
 				</tbody>

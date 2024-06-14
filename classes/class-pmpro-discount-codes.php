@@ -1,6 +1,49 @@
 <?php
 
-class PMPro_Discount_Code{
+class PMPro_Discount_Code {
+
+	/**
+	 * Discount code id
+	 *
+	 * @var int $id
+	 */
+	public $id = 0;
+
+	/**
+	 * Discount code
+	 *
+	 * @var string $code
+	 */
+	public $code = '';
+
+	/**
+	 * When the discount code starts (YYYY-MM-DD format)
+	 *
+	 * @var string $starts
+	 */
+	public $starts = '';
+
+	/**
+	 * When the discount code expires (YYYY-MM-DD format)
+	 *
+	 * @var string $expires
+	 */
+	public $expires = '';
+
+	/**
+	 * how many times the discount code has been used. 0 means unlimited.
+	 *
+	 * @var int $uses
+	 */
+	public $uses = 0;
+
+
+	/**
+	 * Levels and billing settings tied to the discount code.
+	 *
+	 * @var array $levels
+	 */
+	public $levels = array();
 
     function __construct( $code = NULL ) {
 
@@ -104,6 +147,7 @@ class PMPro_Discount_Code{
         if ( ! empty( $dcobj ) ) {
             // Setup the discount code object.
             $this->id = $dcobj->id;
+            $this->code = $dcobj->code;
             $this->starts = $dcobj->starts;
             $this->expires = $dcobj->expires;
             $this->uses = $dcobj->uses;

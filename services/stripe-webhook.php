@@ -36,18 +36,18 @@
 			$livemode = ! empty( $post_event->livemode );
 		} else {
 			// No event data passed in body, so use current environment.
-			$livemode = get_option( 'pmro_gateway_environment' ) === 'live';
+			$livemode = get_option( 'pmpro_gateway_environment' ) === 'live';
 		}
 	}
 	else
 	{
 		$event_id = sanitize_text_field($_REQUEST['event_id']);
-		$livemode = get_option( 'pmro_gateway_environment' ) === 'live'; // User is testing, so use current environment.
+		$livemode = get_option( 'pmpro_gateway_environment' ) === 'live'; // User is testing, so use current environment.
 	}
 
 	try {
 		if ( PMProGateway_stripe::using_legacy_keys() ) {
-			$secret_key = get_option( "pmro_stripe_secretkey" );
+			$secret_key = get_option( "pmpro_stripe_secretkey" );
 		} elseif ( $livemode ) {
 			$secret_key = get_option( 'pmpro_live_stripe_connect_secretkey' );
 		} else {
@@ -58,6 +58,13 @@
 		$logstr .= "Unable to set API key for Stripe gateway: " . $e->getMessage();
 		pmpro_stripeWebhookExit();
 	}
+
+	/**
+	 * Allow adding other content after the Order Settings table.
+	 *
+	 * @since 3.0.3
+	 */
+	do_action( 'pmpro_stripe_before_retrieve_webhook_event' );
 
 	//get the event through the API now
 	if(!empty($event_id))
@@ -126,7 +133,7 @@
 
 					$invoice = $pmpro_stripe_event->data->object;
 
-					//alright. create a new order/invoice
+					//alright. create a new order
 					$morder = new MemberOrder();
 					$morder->user_id = $old_order->user_id;
 					$morder->membership_id = $old_order->membership_id;
@@ -187,7 +194,7 @@
 					$morder->saveOrder();
 					$morder->getMemberOrderByID($morder->id);
 
-					//email the user their invoice
+					//email the user their order
 					$pmproemail = new PMProEmail();
 					$pmproemail->sendInvoiceEmail($user, $morder);
 
@@ -380,7 +387,7 @@
 
 			//We've got the right order	
 			if( !empty( $morder->id ) ) {
-				// Ingore orders already in refund status.
+				// Ignore orders already in refund status.
 				if( $morder->status == 'refunded' ) {					
 					$logstr .= sprintf( 'Webhook: Order ID %1$s with transaction ID %2$s was already in refund status.', $morder->id, $payment_transaction_id );									
 					pmpro_stripeWebhookExit();
@@ -406,7 +413,7 @@
 
 				$user = get_user_by( 'email', $morder->Email );
 				if ( empty( $user ) ) {
-					$logstr .= "Couldn't find the old order's user. Order ID = " . $old_order->id . ".";
+					$logstr .= "Couldn't find the old order's user. Order ID = " . $morder->id . ".";
 					pmpro_stripeWebhookExit();
 				}
 
@@ -667,9 +674,6 @@
  * @return bool
  */
 function pmpro_stripe_webhook_change_membership_level( $morder ) {
-	// Make sure that we don't redirect back to Stripe Checkout.
-	remove_action(  'pmpro_checkout_before_change_membership_level', array('PMProGateway_stripe', 'pmpro_checkout_before_change_membership_level'), 10, 2 );
-
 	pmpro_pull_checkout_data_from_order( $morder );
  	return pmpro_complete_async_checkout( $morder );
 }

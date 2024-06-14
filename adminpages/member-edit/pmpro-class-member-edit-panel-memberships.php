@@ -4,7 +4,7 @@ class PMPro_Member_Edit_Panel_Memberships extends PMPro_Member_Edit_Panel {
 	/**
 	 * Set up the panel.
 	 *
-	 * @since TBD
+	 * @since 3.0
 	 */
 	public function __construct() {
 		$this->slug = 'memberships';
@@ -14,7 +14,7 @@ class PMPro_Member_Edit_Panel_Memberships extends PMPro_Member_Edit_Panel {
 	/**
 	 * Display the panel contents.
 	 *
-	 * @since TBD
+	 * @since 3.0
 	 */
 	protected function display_panel_contents() {
 		global $wpdb;
@@ -64,8 +64,17 @@ class PMPro_Member_Edit_Panel_Memberships extends PMPro_Member_Edit_Panel {
 				<?php
 			}
 
+			// If this group does not have any levels, show a message to create a new level and move on to the next group.
+			if ( empty( $levels_in_group ) ) {
+				?>
+				<p><?php esc_html_e( 'There are no membership levels in this group.', 'paid-memberships-pro' ); ?></p>
+				<a class="button-primary" href="<?php echo esc_url( add_query_arg( array( 'page' => 'pmpro-membershiplevels' ), admin_url( 'admin.php' ) ) ) ?>"><?php esc_html_e( 'Edit Membership Levels', 'paid-memberships-pro' ) ?></a>
+				<?php
+				continue;
+			}
+
 			// State whether users can have multiple levels from this group.
-			echo '<p>' . ( empty( $group->allow_multiple_selections ) ? __( 'Users can only hold one level from this group.', 'paid-memberships-pro' ) : __( 'Users can hold multiple levels from this group.', 'paid-memberships-pro' ) ) . '</p>';
+			echo '<p>' . ( empty( $group->allow_multiple_selections ) ? esc_html__( 'Users can only hold one level from this group.', 'paid-memberships-pro' ) : esc_html__( 'Users can hold multiple levels from this group.', 'paid-memberships-pro' ) ) . '</p>';
 
 			// Show the table for this group.
 			?>
@@ -120,26 +129,13 @@ class PMPro_Member_Edit_Panel_Memberships extends PMPro_Member_Edit_Panel {
 									}
 
 									if ( ! empty( $actions_html ) ) {
-										echo implode( ' | ', $actions_html );
+										echo implode( ' | ', $actions_html ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 									}
 								?>
 								</div>
 							</td>
 							<td>
-								<?php
-									// Get the expiration date to show for this level.
-									$enddate_to_show = $shown_level->enddate;
-									if ( empty( $enddate_to_show ) ) {
-										esc_html_e( 'Never', 'paid-memberships-pro' );
-									} else {
-										echo esc_html( sprintf(
-											// translators: %1$s is the date and %2$s is the time.
-											__( '%1$s at %2$s', 'paid-memberships-pro' ),
-											esc_html( date_i18n( get_option( 'date_format'), $enddate_to_show ) ),
-											esc_html( date_i18n( get_option( 'time_format'), $enddate_to_show ) )
-										) );
-									}
-								?>
+								<?php echo wp_kses_post( pmpro_get_membership_expiration_text( $shown_level, $user ) ); ?>
 							</td>
 							<td class="pmpro_levels_subscription_data has-row-actions">
 								<?php
@@ -151,7 +147,7 @@ class PMPro_Member_Edit_Panel_Memberships extends PMPro_Member_Edit_Panel {
 											<div class="pmpro_message pmpro_error">
 												<p>
 													<?php
-													printf(
+													echo wp_kses_post( sprintf(
 														// translators: %1$d is the number of subscriptions and %2$s is the link to view subscriptions.
 														_n(
 															'This user has %1$d active subscription for this level. %2$s',
@@ -165,7 +161,7 @@ class PMPro_Member_Edit_Panel_Memberships extends PMPro_Member_Edit_Panel {
 															esc_url( add_query_arg( array( 'page' => 'pmpro-member', 'user_id' => $user->ID, 'pmpro_member_edit_panel' => 'subscriptions' ), admin_url( 'admin.php' ) ) ),
 															esc_html__( 'View Subscriptions', 'paid-memberships-pro' )
 														)
-													); ?>
+													) ); ?>
 												</p>
 											</div>
 											<?php
@@ -192,7 +188,7 @@ class PMPro_Member_Edit_Panel_Memberships extends PMPro_Member_Edit_Panel {
 
 										if ( ! empty( $actions_html ) ) { ?>
 											<div class="row-actions">
-												<?php echo implode( ' | ', $actions_html ); ?>
+												<?php echo implode( ' | ', $actions_html ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 											</div>
 											<?php
 										}
@@ -212,28 +208,73 @@ class PMPro_Member_Edit_Panel_Memberships extends PMPro_Member_Edit_Panel {
 									?>
 									<div class="pmpro-level_change-action-header">
 										<h4><?php esc_html_e( 'Edit Membership', 'paid-memberships-pro' ); ?></h4>
-										<p><?php printf( esc_html( 'You are editing the following membership level: %s.', 'paid-memberships-pro' ),  esc_html( $shown_level->name ) ); ?></p>
+										<p><?php printf( esc_html__( 'You are editing the following membership level: %s.', 'paid-memberships-pro' ), '<strong>' . esc_html( $shown_level->name ) . '</strong>' ); ?></p>
 									</div>
 
 									<div class="pmpro-level_change-action">
 										<span class="pmpro-level_change-action-label"><?php esc_html_e( 'Level Expiration', 'paid-memberships-pro' ); ?></span>
 										<span class="pmpro-level_change-action-field">
 											<?php
-											$has_enddate = ! empty( $shown_level->enddate );
-											$enddate     = $has_enddate ? date( 'Y-m-d H:i', $shown_level->enddate ) : date( 'Y-m-d H:i', strtotime( '+1 year' ) );
+											$expiration_input_enddate = date( 'Y-m-d H:i', strtotime( '+1 year' ) ); // Default to 1 year in the future.
+											if ( ! empty( $shown_level->enddate ) ) {
+												// If the user's membership already has an end date, use that.
+												$expiration_input_enddate = date( 'Y-m-d H:i', $shown_level->enddate );
+											} elseif ( ! empty( $subscriptions ) ) {
+												// If the user has a subscription, default to the subscription's next payment date.
+												$expiration_input_enddate = $subscriptions[0]->get_next_payment_date('Y-m-d H:i');
+												$expiration_input_next_payment_date = $expiration_input_enddate;
+											}
 											?>
-											<input type="checkbox" name="<?php echo esc_attr( $edit_level_input_name_base ); ?>[expires]" id="<?php echo esc_attr( $edit_level_input_name_base ); ?>[expires]" value="1" class="pmpro_expires_checkbox" <?php checked( $has_enddate ) ?>/>
-											<label for="<?php echo esc_attr( $edit_level_input_name_base ); ?>[expires]"><?php esc_html_e( 'Click to set the level expiration date.', 'paid-memberships-pro' ); ?></label>
-											<input type="datetime-local" name="<?php echo esc_attr( $edit_level_input_name_base ); ?>[expiration]" value="<?php echo esc_attr( $enddate ); ?>" <?php echo $has_enddate ? '' : 'style="display: none"'; ?>>
+											
+											<label>
+												<input type="checkbox" name="<?php echo esc_attr( $edit_level_input_name_base ); ?>[expires]" id="<?php echo esc_attr( $edit_level_input_name_base ); ?>[expires]" value="1" class="pmpro_expires_checkbox" <?php checked( ! empty( $shown_level->enddate ) ) ?>/>
+												<?php esc_html_e( 'Click to set the level expiration date.', 'paid-memberships-pro' ); ?>
+												<input type="datetime-local" name="<?php echo esc_attr( $edit_level_input_name_base ); ?>[expiration]" value="<?php echo esc_attr( $expiration_input_enddate ); ?>" <?php echo ( ! empty( $shown_level->enddate ) ? '' : 'style="display: none"' ); ?>>	
+											</label>
+											<?php
+												// Show the next payment date for this member if available.
+												if ( ! empty( $expiration_input_next_payment_date ) ) {
+													?>
+													<p class="description" style="display: none;">
+													<?php
+														printf(
+															// translators: %s is the next payment date.
+															esc_html__( 'Note: The next payment date for this level is %s.', 'paid-memberships-pro' ),
+															esc_html( date_i18n( get_option( 'date_format' ), strtotime( $expiration_input_next_payment_date ) ) )
+														);
+													?>
+													</p>
+													<?php
+												}
+											?>
 										</span>
 									</div>
+
+									<?php
+									// If the user has a subscription, show a checkbox to cancel the subscription.
+									if ( ! empty( $subscriptions ) ) {
+										?>
+										<div class="pmpro-level_change-action">
+											<span class="pmpro-level_change-action-label">
+												<?php esc_html_e( 'Cancel Subscription', 'paid-memberships-pro' ); ?>
+											</span>
+											<span class="pmpro-level_change-action-field">
+												<label>
+													<input type="checkbox" id="<?php echo esc_attr( $edit_level_input_name_base ); ?>[cancel_subscription]" name="<?php echo esc_attr( $edit_level_input_name_base ); ?>[cancel_subscription]" value="1" />
+													<?php esc_html_e( 'Cancel the user\'s subscription for this level.', 'paid-memberships-pro' ); ?>
+												</label>
+											</span>
+										</div>
+										<?php
+									}
+									?>
 
 									<div class="pmpro-level_change-action">
 										<span class="pmpro-level_change-action-label">
 											<?php esc_html_e( 'Member Communication', 'paid-memberships-pro' ); ?>
 										</span>
 										<span class="pmpro-level_change-action-field">
-											<label for="<?php echo esc_attr( $edit_level_input_name_base ); ?>[send_change_email]">
+											<label>
 												<input type="checkbox" name="<?php echo esc_attr( $edit_level_input_name_base ); ?>[send_change_email]" value="1" />
 												<?php esc_html_e( 'Send membership change email to member.', 'paid-memberships-pro' ); ?>
 											</label>
@@ -242,7 +283,7 @@ class PMPro_Member_Edit_Panel_Memberships extends PMPro_Member_Edit_Panel {
 
 									<div class="pmpro-level_change-action-footer">
 										<button type="submit" name="pmpro-member-edit-memberships-panel-edit_level" class="button button-primary" value="<?php echo (int)$shown_level->id; ?>"><?php esc_html_e( 'Edit Membership', 'paid-memberships-pro' ) ?></button>
-										<input type="button" name="cancel-edit-level" value="Cancel" class="button button-secondary">
+										<input type="button" name="cancel-edit-level" value="<?php esc_attr_e( 'Close', 'paid-memberships-pro' ); ?>" class="button button-secondary">
 									</div>
 								</div> <!-- end pmpro-level_change-actions -->
 							</td>
@@ -255,7 +296,7 @@ class PMPro_Member_Edit_Panel_Memberships extends PMPro_Member_Edit_Panel {
 									?>
 									<div class="pmpro-level_change-action-header">
 										<h4><?php esc_html_e( 'Cancel Membership', 'paid-memberships-pro' ); ?></h4>
-										<p><?php printf( esc_html( 'This change will permanently cancel the following membership level: %s.', 'paid-memberships-pro' ),  esc_html( $shown_level->name ) ); ?></p>
+										<p><?php printf( esc_html__( 'This change will permanently cancel the following membership level: %s.', 'paid-memberships-pro' ),  '<strong>' . esc_html( $shown_level->name ) . '</strong>' ); ?></p>
 									</div>
 
 									<?php
@@ -265,9 +306,9 @@ class PMPro_Member_Edit_Panel_Memberships extends PMPro_Member_Edit_Panel {
 										<div class="pmpro-level_change-action">
 											<span class="pmpro-level_change-action-label"><?php esc_html_e( 'Refund Payment', 'paid-memberships-pro' ); ?></span>
 											<span class="pmpro-level_change-action-field">
-												<label for="<?php echo esc_attr( $cancel_level_input_name_base ); ?>[refund]">
+												<label>
 													<input type="checkbox" name="<?php echo esc_attr( $cancel_level_input_name_base ); ?>[refund]" value="<?php echo (int)$last_order->id; ?>" />
-													<?php printf( esc_html( 'Refund the last payment (%s).', 'paid-memberships-pro' ), pmpro_formatPrice( $last_order->total ) ); ?>
+													<?php printf( esc_html__( 'Refund the last payment (%s).', 'paid-memberships-pro' ), pmpro_escape_price( pmpro_formatPrice( $last_order->total ) ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 												</label>
 											</span>
 										</div>
@@ -284,7 +325,7 @@ class PMPro_Member_Edit_Panel_Memberships extends PMPro_Member_Edit_Panel {
 												</label>
 											</span>
 											<span class="pmpro-level_change-action-field">
-												<select name="<?php echo esc_attr( $cancel_level_input_name_base ); ?>[subscription_action]">
+												<select id="<?php echo esc_attr( $cancel_level_input_name_base ); ?>[subscription_action]" name="<?php echo esc_attr( $cancel_level_input_name_base ); ?>[subscription_action]">
 													<option value="cancel"><?php esc_html_e( 'Cancel payment subscription (Recommended)', 'paid-memberships-pro' ); ?></option>
 													<option value="keep"><?php esc_html_e( 'Keep subscription active', 'paid-memberships-pro' ); ?></option>
 												</select>
@@ -299,7 +340,7 @@ class PMPro_Member_Edit_Panel_Memberships extends PMPro_Member_Edit_Panel {
 											<?php esc_html_e( 'Member Communication', 'paid-memberships-pro' ); ?>
 										</span>
 										<span class="pmpro-level_change-action-field">
-											<label for="<?php echo esc_attr( $cancel_level_input_name_base ); ?>[send_change_email]">
+											<label>
 												<input type="checkbox" name="<?php echo esc_attr( $cancel_level_input_name_base ); ?>[send_change_email]" value="1" />
 												<?php esc_html_e( 'Send membership change email to member.', 'paid-memberships-pro' ); ?>
 											</label>
@@ -308,7 +349,7 @@ class PMPro_Member_Edit_Panel_Memberships extends PMPro_Member_Edit_Panel {
 
 									<div class="pmpro-level_change-action-footer">
 										<button type="submit" name="pmpro-member-edit-memberships-panel-cancel_level" class="button button-primary" value="<?php echo (int)$shown_level->id; ?>"><?php esc_html_e( 'Cancel Membership', 'paid-memberships-pro' ) ?></button>
-										<input type="button" name="cancel-cancel-level" value="Cancel" class="button button-secondary">
+										<input type="button" name="cancel-cancel-level" value="<?php esc_attr_e( 'Close', 'paid-memberships-pro' ); ?>" class="button button-secondary">
 									</div>
 								</div> <!-- end pmpro-level_change-actions -->
 							</td>
@@ -343,7 +384,7 @@ class PMPro_Member_Edit_Panel_Memberships extends PMPro_Member_Edit_Panel {
 											// If the group only allows a single level and the user already has a level, note the level that will be removed.
 											if ( empty( $group->allow_multiple_selections ) && ! empty( $shown_level ) ) {
 												?>
-												<p><?php printf( esc_html( 'This change will remove the following membership level: %s.', 'paid-memberships-pro' ), esc_html( $shown_level->name ) ); ?></p>
+												<p><?php printf( esc_html__( 'This change will remove the following membership level: %s.', 'paid-memberships-pro' ), '<strong>' . esc_html( $shown_level->name ) . '</strong>' ); ?></p>
 												<?php
 											}
 											?>
@@ -351,11 +392,13 @@ class PMPro_Member_Edit_Panel_Memberships extends PMPro_Member_Edit_Panel {
 
 										<div class="pmpro-level_change-action">
 											<span class="pmpro-level_change-action-label">
-												<label for="<?php echo esc_attr( $add_level_to_group_input_name_base ); ?>[level_id]"><?php esc_html_e( 'New Membership Level', 'paid-memberships-pro' ); ?></label>
+												<label for="<?php echo esc_attr( $add_level_to_group_input_name_base ); ?>[level_id]">
+													<?php esc_html_e( 'New Membership Level', 'paid-memberships-pro' ); ?>
+												</label>
 											</span>
 											<span class="pmpro-level_change-action-field">
-												<select name="<?php echo esc_attr( $add_level_to_group_input_name_base ); ?>[level_id]">
-													<option value="">-- <?php _e( 'Choose Level', 'paid-memberships-pro' );?> --</option>
+												<select id="<?php echo esc_attr( $add_level_to_group_input_name_base ); ?>[level_id]" name="<?php echo esc_attr( $add_level_to_group_input_name_base ); ?>[level_id]">
+													<option value="">-- <?php esc_html_e( 'Choose Level', 'paid-memberships-pro' );?> --</option>
 													<?php
 													foreach ( $levels_in_group as $level ) {
 														// If the user already has this level, don't allow them to add it.
@@ -374,9 +417,11 @@ class PMPro_Member_Edit_Panel_Memberships extends PMPro_Member_Edit_Panel {
 										<div class="pmpro-level_change-action">
 											<span class="pmpro-level_change-action-label"><?php esc_html_e( 'Level Expiration', 'paid-memberships-pro' ); ?></span>
 											<span class="pmpro-level_change-action-field">
-												<input type="checkbox" name="<?php echo esc_attr( $add_level_to_group_input_name_base ); ?>[expires]" id="<?php echo esc_attr( $add_level_to_group_input_name_base ); ?>[expires]" value="1" class="pmpro_expires_checkbox" />
-												<label for="<?php echo esc_attr( $add_level_to_group_input_name_base ); ?>[expires]"><?php esc_html_e( 'Click to set the level expiration date.', 'paid-memberships-pro' ); ?></label>
-												<input type="datetime-local" name="<?php echo esc_attr( $add_level_to_group_input_name_base ); ?>[expiration]" value="<?php echo esc_attr( date( 'Y-m-d H:i', strtotime( '+1 year' ) ) ); ?>" style="display: none" >
+												<label>
+													<input type="checkbox" name="<?php echo esc_attr( $add_level_to_group_input_name_base ); ?>[expires]" id="<?php echo esc_attr( $add_level_to_group_input_name_base ); ?>[expires]" value="1" class="pmpro_expires_checkbox" />
+													<?php esc_html_e( 'Click to set the level expiration date.', 'paid-memberships-pro' ); ?>
+													<input type="datetime-local" id="<?php echo esc_attr( $add_level_to_group_input_name_base ); ?>[expiration]" name="<?php echo esc_attr( $add_level_to_group_input_name_base ); ?>[expiration]" value="<?php echo esc_attr( date( 'Y-m-d H:i', strtotime( '+1 year' ) ) ); ?>" style="display: none" >
+												</label>
 											</span>
 										</div>
 									
@@ -389,9 +434,9 @@ class PMPro_Member_Edit_Panel_Memberships extends PMPro_Member_Edit_Panel {
 												<div class="pmpro-level_change-action">
 														<span class="pmpro-level_change-action-label"><?php esc_html_e( 'Refund Payment', 'paid-memberships-pro' ); ?></span>
 														<span class="pmpro-level_change-action-field">
-														<label for="<?php echo esc_attr( $add_level_to_group_input_name_base ); ?>[refund]">
+														<label>
 															<input type="checkbox" name="<?php echo esc_attr( $add_level_to_group_input_name_base ); ?>[refund]" value="<?php echo (int)$last_order->id; ?>" />
-															<?php printf( esc_html( 'Refund the last payment (%s).', 'paid-memberships-pro' ), pmpro_formatPrice( $last_order->total ) ); ?>
+															<?php printf( esc_html__( 'Refund the last payment (%s).', 'paid-memberships-pro' ), pmpro_escape_price( pmpro_formatPrice( $last_order->total ) ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 														</label>
 													</span>
 												</div>
@@ -409,7 +454,7 @@ class PMPro_Member_Edit_Panel_Memberships extends PMPro_Member_Edit_Panel {
 													</label>
 												</span>
 												<span class="pmpro-level_change-action-field">
-													<select name="<?php echo esc_attr( $add_level_to_group_input_name_base ); ?>[subscription_action]">
+													<select id="<?php echo esc_attr( $add_level_to_group_input_name_base ); ?>[subscription_action]" name="<?php echo esc_attr( $add_level_to_group_input_name_base ); ?>[subscription_action]">
 														<option value="cancel"><?php esc_html_e( 'Cancel payment subscription (Recommended)', 'paid-memberships-pro' ); ?></option>
 														<option value="keep"><?php esc_html_e( 'Keep subscription active', 'paid-memberships-pro' ); ?></option>
 													</select>
@@ -424,7 +469,7 @@ class PMPro_Member_Edit_Panel_Memberships extends PMPro_Member_Edit_Panel {
 												<?php esc_html_e( 'Member Communication', 'paid-memberships-pro' ); ?>
 											</span>
 											<span class="pmpro-level_change-action-field">
-												<label for="<?php echo esc_attr( $add_level_to_group_input_name_base ); ?>[send_change_email]">
+												<label>
 													<input type="checkbox" name="<?php echo esc_attr( $add_level_to_group_input_name_base ); ?>[send_change_email]" value="1" />
 													<?php esc_html_e( 'Send membership change email to member.', 'paid-memberships-pro' ); ?>
 												</label>
@@ -433,7 +478,7 @@ class PMPro_Member_Edit_Panel_Memberships extends PMPro_Member_Edit_Panel {
 
 										<div class="pmpro-level_change-action-footer">
 											<button type="submit" name="pmpro-member-edit-memberships-panel-add_level_to_group" class="button button-primary" value="<?php echo (int)$group->id; ?>"><?php echo esc_html( $link_text ) ?></button>
-											<input type="button" name="cancel-add-level" value="Cancel" class="button button-secondary">
+											<input type="button" name="cancel-add-level" value="<?php esc_attr_e( 'Close', 'paid-memberships-pro' ); ?>" class="button button-secondary">
 										</div>
 
 									</div> <!-- end pmpro-level_change-actions -->
@@ -537,10 +582,13 @@ class PMPro_Member_Edit_Panel_Memberships extends PMPro_Member_Edit_Panel {
 
 		// Show/hide the expiration date field when the checkbox is clicked.
 		jQuery( '#pmpro-member-edit-memberships-panel .pmpro_expires_checkbox' ).on( 'change', function() {
-			if ( jQuery( this ).is( ':checked' ) ) {
-				jQuery( this ).next().next( 'input' ).show();
+			var checkbox = jQuery(this);
+			if (checkbox.is(':checked')) {
+				checkbox.next('input').show();
+				checkbox.closest('.pmpro-level_change-action-field').find('p.description').show();
 			} else {
-				jQuery( this ).next().next( 'input' ).hide();
+				checkbox.next('input').hide();
+				checkbox.closest('.pmpro-level_change-action-field').find('p.description').hide();
 			}
 		} );
 	</script>
@@ -590,12 +638,12 @@ class PMPro_Member_Edit_Panel_Memberships extends PMPro_Member_Edit_Panel {
 									$levelhistory->enddate = date_i18n( get_option( 'date_format'), strtotime( $levelhistory->enddate ) );
 								} ?>
 								<tr>
-									<td><?php if ( ! empty( $level ) ) { echo $level->id; } else { esc_html_e( 'N/A', 'paid-memberships-pro' ); } ?></td>
-									<td><?php if ( ! empty( $level ) ) { echo $level->name; } else { esc_html_e( 'N/A', 'paid-memberships-pro' ); } ?></td>
-									<td><?php echo ( $levelhistory->startdate === '0000-00-00 00:00:00' ? __('N/A', 'paid-memberships-pro') : date_i18n( get_option( 'date_format' ), strtotime( $levelhistory->startdate ) ) ); ?></td>
-									<td><?php echo date_i18n( get_option( 'date_format'), strtotime( $levelhistory->modified ) ); ?></td>
+									<td><?php if ( ! empty( $level ) ) { echo esc_html( $level->id ); } else { esc_html_e( 'N/A', 'paid-memberships-pro' ); } ?></td>
+									<td><?php if ( ! empty( $level ) ) { echo esc_html( $level->name ); } else { esc_html_e( 'N/A', 'paid-memberships-pro' ); } ?></td>
+									<td><?php echo esc_html( ( $levelhistory->startdate === '0000-00-00 00:00:00' ? __('N/A', 'paid-memberships-pro') : date_i18n( get_option( 'date_format' ), strtotime( $levelhistory->startdate ) ) ) ); ?></td>
+									<td><?php echo esc_html( date_i18n( get_option( 'date_format'), strtotime( $levelhistory->modified ) ) ); ?></td>
 									<td><?php echo esc_html( $levelhistory->enddate ); ?></td>
-									<td><?php echo pmpro_getLevelCost( $levelhistory, true, true ); ?></td>
+									<td><?php echo wp_kses_post( pmpro_getLevelCost( $levelhistory, true, true ) ); ?></td>
 									<td>
 										<?php 
 											if ( empty( $levelhistory->status ) ) {
@@ -622,14 +670,12 @@ class PMPro_Member_Edit_Panel_Memberships extends PMPro_Member_Edit_Panel {
 	/**
 	 * Save the panel.
 	 *
-	 * @since TBD
+	 * @since 3.0
 	 */
 	public function save() {
 		global $wpdb;
 
-		// Check if the current user can manage memberships.
-		$membership_level_capability = apply_filters( 'pmpro_edit_member_capability', 'pmpro_edit_members' );
-		if ( ! current_user_can( $membership_level_capability ) ) {
+		if ( ! current_user_can( pmpro_get_edit_member_capability() ) ) {
 			pmpro_setMessage( __( "You do not have permission to update this user's membership levels.", 'paid-memberships-pro' ), 'pmpro_error' );
 			return;
 		}
@@ -764,6 +810,17 @@ class PMPro_Member_Edit_Panel_Memberships extends PMPro_Member_Edit_Panel {
 			if ( $wpdb->last_error ) {
 				pmpro_setMessage( __( 'Error updating expiration date.', 'paid-memberships-pro' ), 'pmpro_error' );
 				return;
+			}
+
+			// Check if we should cancel the subscription.
+			$cancel_subscription = ! empty( $level_data[ 'cancel_subscription' ] );
+			if ( $cancel_subscription ) {
+				// Get all subscriptions for this user's membership.
+				$subscriptions = PMPro_Subscription::get_subscriptions_for_user( $user->ID, $level_id );
+				foreach( $subscriptions as $subscription ) {
+					// Cancel the subscription.
+					$subscription->cancel_at_gateway();
+				}
 			}
 
 			// Check if we should send the change email.

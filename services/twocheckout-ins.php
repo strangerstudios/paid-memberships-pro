@@ -261,7 +261,7 @@
 	}
 
 	/*
-		Change the membership level. We also update the membership order to include filtered valus.
+		Change the membership level. We also update the membership order to include filtered values.
 	*/
 	function pmpro_insChangeMembershipLevel($txn_id, &$morder)
 	{
@@ -367,9 +367,9 @@
 
 			//setup some values for the emails
 			if(!empty($morder))
-				$invoice = new MemberOrder($morder->id);
+				$order = new MemberOrder($morder->id);
 			else
-				$invoice = NULL;
+				$order = NULL;
 
 			inslog("CHANGEMEMBERSHIPLEVEL: ORDER: " . var_export($morder, true) . "\n---\n");
 
@@ -381,11 +381,11 @@
 
 			//send email to member
 			$pmproemail = new PMProEmail();
-			$pmproemail->sendCheckoutEmail($user, $invoice);
+			$pmproemail->sendCheckoutEmail($user, $order);
 
 			//send email to admin
 			$pmproemail = new PMProEmail();
-			$pmproemail->sendCheckoutAdminEmail($user, $invoice);
+			$pmproemail->sendCheckoutAdminEmail($user, $order);
 
 			return true;
 		}
@@ -457,7 +457,7 @@
 			$morder->saveOrder();
 			$morder->getMemberOrderByID( $morder->id );
 
-			//email the user their invoice
+			//email the user their order
 			$pmproemail = new PMProEmail();
 			$pmproemail->sendInvoiceEmail( get_userdata( $last_order->user_id ), $morder );
 

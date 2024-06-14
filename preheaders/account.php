@@ -10,18 +10,6 @@ if ( ! is_user_logged_in() ) {
 	}
 }
 
-// Process the msg param.
-if ( isset($_REQUEST['msg'] ) ) {
-    if ( $_REQUEST['msg'] == 1 ) {
-        $pmpro_msg = __( 'Your membership status has been updated - Thank you!', 'paid-memberships-pro' );
-    } else {
-        $pmpro_msg = __( 'Sorry, your request could not be completed - please try again in a few moments.', 'paid-memberships-pro' );
-        $pmpro_msgt = 'pmpro_error';
-    }
-} else {
-    $pmpro_msg = false;
-}
-
 /**
  * Check if the current logged in user has a membership level.
  * If not, and the site is using the pmpro_account_preheader_redirect

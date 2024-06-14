@@ -29,14 +29,12 @@ if($ml_id > 0) {
     ) );
 
     foreach($user_ids as $user_id) {
-        //change there membership level to none. that will handle the cancel
-        if(pmpro_changeMembershipLevel(0, $user_id)) {
-            //okay
-        } else {
-            //couldn't delete the subscription
-            //we should probably notify the admin
+        // Cancel the membership level and subscription.
+        if ( ! pmpro_cancelMembershipLevel( $ml_id, $user_id, 'inactive' ) ) {
+            // Couldn't delete the subscription or the membership.
+            // We should probably notify the admin
             $pmproemail = new PMProEmail();
-            $pmproemail->data = array("body"=>"<p>" . sprintf(__("There was an error canceling the subscription for user with ID=%d. You will want to check your payment gateway to see if their subscription is still active.", 'paid-memberships-pro' ), $user_id) . "</p>");
+            $pmproemail->data = array("body"=>"<p>" . sprintf(__("There was an error removing the membership level for user with ID=%d. You will want to check your payment gateway to see if their subscription is still active.", 'paid-memberships-pro' ), $user_id) . "</p>");
             $last_order = $wpdb->get_row( $wpdb->prepare( "
                 SELECT * FROM $wpdb->pmpro_membership_orders
                 WHERE user_id = %d
@@ -44,12 +42,15 @@ if($ml_id > 0) {
                 $user_id
             ) );
             if($last_order)
-                $pmproemail->data["body"] .= "<p>" . __("Last Invoice", 'paid-memberships-pro' ) . ":<br />" . nl2br(var_export($last_order, true)) . "</p>";
+                $pmproemail->data["body"] .= "<p>" . __("Last Order", 'paid-memberships-pro' ) . ":<br />" . nl2br(var_export($last_order, true)) . "</p>";
             $pmproemail->sendEmail(get_bloginfo("admin_email"));
 
             $r2 = false;
         }
     }
+
+    // delete the level group entry.
+    $wpdb->delete( $wpdb->pmpro_membership_levels_groups, array( 'level' => $ml_id ) );
 
     //delete the ml
     $sqlQuery = $wpdb->prepare( "

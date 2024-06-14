@@ -3,7 +3,7 @@
 /**
  * Return an array of all level groups, with the key being the level group id.
  *
- * @since TBD
+ * @since 3.0
  *
  * @return array
  */
@@ -34,7 +34,7 @@ function pmpro_get_level_groups() {
 /**
  * Return an array of all level groups in order.
  *
- * @since TBD
+ * @since 3.0
  *
  * @return array
  */
@@ -50,7 +50,7 @@ function pmpro_get_level_groups_in_order() {
 /**
  * Get data for a level group.
  *
- * @since TBD
+ * @since 3.0
  *
  * @param int $group_id The ID of the group to get data for.
  * @return object|bool The group data, or false if the group doesn't exist.
@@ -67,7 +67,7 @@ function pmpro_get_level_group( $group_id ) {
 /**
  * Create a level group.
  *
- * @since TBD
+ * @since 3.0
  *
  * @param string $name The name of the group.
  * @param bool   $allow_multiple_levels Whether or not to allow multiple levels to be selected from this group.
@@ -99,7 +99,7 @@ function pmpro_create_level_group( $name, $allow_multiple_levels = true, $displa
 /**
  * Edit a level group.
  *
- * @since TBD
+ * @since 3.0
  *
  * @param int    $id The id of the group to edit.
  * @param string $name The name of the group.
@@ -124,7 +124,7 @@ function pmpro_edit_level_group( $id, $name, $allow_multiple_levels = true, $dis
 			'displayorder' => (int) $displayorder,
 		),
 		array( 'id' => $id ),
-		array( '%s', '%d', '%d', '%d' ),
+		array( '%s', '%d', '%d', '%d' )
 	);
 
 	return ! empty( $result );
@@ -133,7 +133,7 @@ function pmpro_edit_level_group( $id, $name, $allow_multiple_levels = true, $dis
 /**
  * Delete a level group.
  *
- * @since TBD
+ * @since 3.0
  *
  * @param int $id The id of the group to delete.
  *
@@ -160,7 +160,7 @@ function pmpro_delete_level_group( $id ) {
 /**
  * Add a membership level to a level group.
  *
- * @since TBD
+ * @since 3.0
  *
  * @param int $level_id The id of the level to add.
  * @param int $group_id The id of the group to add the level to.
@@ -178,7 +178,7 @@ function pmpro_add_level_to_group( $level_id, $group_id ) {
 /**
  * Get the group for a level.
  *
- * @since TBD
+ * @since 3.0
  *
  * @param int $level_id The id of the level to get the group for.
  * @return int|false The id of the group the level is in or false if the level is not in a group.
@@ -195,7 +195,7 @@ function pmpro_get_group_id_for_level( $level_id ) {
 /**
  * Get the membership levels for a given group.
  *
- * @since TBD
+ * @since 3.0
  *
  * @param int $group_id The id of the group to get the levels for.
  * @return array An array of membership levels.
@@ -212,7 +212,7 @@ function pmpro_get_levels_for_group( $group_id ) {
 /**
  * Get the level IDs for a given group.
  *
- * @since TBD
+ * @since 3.0
  *
  * @param int $group_id The id of the group to get the levels for.
  * @return array An array of membership level IDs.

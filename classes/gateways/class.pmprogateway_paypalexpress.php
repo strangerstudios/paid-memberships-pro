@@ -97,6 +97,26 @@
 		}
 
 		/**
+		 * Check whether or not a gateway supports a specific feature.
+		 * 
+		 * @since 3.0
+		 * 
+		 * @return string|boolean $supports Returns whether or not the gateway supports the requested feature.
+		 */
+		public static function supports( $feature ) {
+			$supports = array(
+				'subscription_sync' => true,
+				'payment_method_updates' => false,
+			);
+
+			if ( empty( $supports[$feature] ) ) {
+				return false;
+			}
+
+			return $supports[$feature];
+		}
+
+		/**
 		 * Get a list of payment options that the this gateway needs/supports.
 		 *
 		 * @since 1.8
@@ -508,12 +528,12 @@
 			?>
 			<span id="pmpro_paypalexpress_checkout" <?php if(($gateway != "paypalexpress" && $gateway != "paypalstandard") || !$pmpro_requirebilling) { ?>style="display: none;"<?php } ?>>
 				<input type="hidden" name="submit-checkout" value="1" />
-				<input type="image" id="pmpro_btn-submit-paypalexpress" class="<?php echo pmpro_get_element_class( 'pmpro_btn-submit-checkout' ); ?>" value="<?php esc_attr_e('Check Out with PayPal', 'paid-memberships-pro' );?>" src="<?php echo apply_filters("pmpro_paypal_button_image", "https://www.paypalobjects.com/webstatic/en_US/i/buttons/checkout-logo-medium.png");?>" />
+				<input type="image" id="pmpro_btn-submit-paypalexpress" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_btn-submit-checkout' ) ); ?>" value="<?php esc_attr_e('Check Out with PayPal', 'paid-memberships-pro' );?>" src="<?php echo esc_url( apply_filters("pmpro_paypal_button_image", "https://www.paypalobjects.com/webstatic/en_US/i/buttons/checkout-logo-medium.png" ) );?>" />
 			</span>
 
 			<span id="pmpro_submit_span" <?php if(($gateway == "paypalexpress" || $gateway == "paypalstandard") && $pmpro_requirebilling) { ?>style="display: none;"<?php } ?>>
 				<input type="hidden" name="submit-checkout" value="1" />
-				<input type="submit" id="pmpro_btn-submit" class="<?php echo pmpro_get_element_class( 'pmpro_btn pmpro_btn-submit-checkout', 'pmpro_btn-submit-checkout' ); ?>" value="<?php if($pmpro_requirebilling) { _e('Submit and Check Out', 'paid-memberships-pro' ); } else { _e('Submit and Confirm', 'paid-memberships-pro' );}?>" />
+				<input type="submit" id="pmpro_btn-submit" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_btn pmpro_btn-submit-checkout', 'pmpro_btn-submit-checkout' ) ); ?>" value="<?php if($pmpro_requirebilling) { esc_html_e('Submit and Check Out', 'paid-memberships-pro' ); } else { esc_html_e('Submit and Confirm', 'paid-memberships-pro' );}?>" />
 			</span>
 			<?php
 
@@ -809,9 +829,6 @@
 					$order->payment_transaction_id = urldecode($this->httpParsedResponseAr['PROFILEID']);
 					$order->subscription_transaction_id = urldecode($this->httpParsedResponseAr['PROFILEID']);
 
-					//update order
-					$order->saveOrder();
-
 					return true;
 				} else {
 					// stop processing the review request on checkout page
@@ -929,9 +946,16 @@
 		 * @return string|null Error message is returned if update fails.
 		 */
 		function update_subscription_info( $subscription ) {
+			$API_UserName	= get_option( "pmpro_apiusername" );
+			$API_Password	= get_option( "pmpro_apipassword" );
+			$API_Signature = get_option( "pmpro_apisignature" );
+			if ( empty( $API_UserName ) || empty( $API_Password ) || empty( $API_Signature ) ) {
+				return __( "PayPal login credentials are not set.", 'paid-memberships-pro' );
+			}
+
 			$subscription_transaction_id = $subscription->get_subscription_transaction_id();
 			if ( empty( $subscription_transaction_id ) ) {
-				return 'Subscription transaction ID is empty.';
+				return __( 'Subscription transaction ID is empty.', 'paid-memberships-pro' );
 			}
 
 			//paypal profile stuff
@@ -1154,7 +1178,7 @@
 				// exiting is never a good user experience and it's hard to debug, but we can
 				// at least leave a trace in error log to make it easier to see this happening
 				error_log( "Unable to complete $methodName_ request with $nvpStr_: " . $httpParsedResponseAr->get_error_message() );
-				die( "Unable to complete $methodName_ request with $nvpStr_: " . $httpParsedResponseAr->get_error_message() );
+				die( esc_html( "Unable to complete $methodName_ request with $nvpStr_: " . $httpParsedResponseAr->get_error_message() ) );
 			}
 
 			/**
@@ -1260,7 +1284,7 @@
 					'httpversion' => '1.1',
 					'body' => $nvpreq,
 					'headers'     => array(
-						'content-type'      => 'application/json',
+						'content-type'      => 'application/x-www-form-urlencoded',
 						'PayPal-Request-Id' => $uuid,
 					),
 			    )
@@ -1306,7 +1330,7 @@
 			// But never sleep less than the base sleep seconds.
 			$sleepSeconds = \max( self::$initialNetworkRetryDelay, $sleepSeconds );
 
-			return $sleepSeconds;
+			return (int)$sleepSeconds;
 		}
 
 		/**

@@ -52,8 +52,8 @@ if ( ! pmpro_ipnCheckReceiverEmail( array( strtolower( $receiver_email ), strtol
 /*
 	PayPal Standard
 	- we will get txn_type subscr_signup and subscr_payment (or subscr_eot or subscr_failed or subscr_cancel)
-	- subscr_signup (if amount1 = 0, then we need to update membership, else ignore and wait for payment. create invoice for $0 with just subscr_id)
-	- subscr_payment (check if we should update membership, add invoice for amount with subscr_id and payment_id)
+	- subscr_signup (if amount1 = 0, then we need to update membership, else ignore and wait for payment. create order for $0 with just subscr_id)
+	- subscr_payment (check if we should update membership, add order for amount with subscr_id and payment_id)
 	- subscr_eot (usually sent for every subscription that doesn't have recurring activated, at the end)
 	- subscr_failed (usually sent if a recurring payment fails)
 	- subscr_cancel (sent on recurring payment profile cancellation)
@@ -254,10 +254,42 @@ if ( in_array( $txn_type, $failed_payment_txn_types ) ) {
 	pmpro_ipnExit();
 }
 
-// Recurring Payment Profile Cancelled or Failed (PayPal Express)
-if ( $txn_type == 'recurring_payment_profile_cancel' || $txn_type == 'recurring_payment_failed' || $txn_type == 'recurring_payment_suspended_due_to_max_failed_payment' ) {
+// Recurring Payment Profile Cancelled (PayPal Express)
+if ( $txn_type == 'recurring_payment_profile_cancel' ) {
 	// Find subscription.
 	ipnlog( pmpro_handle_subscription_cancellation_at_gateway( $recurring_payment_id, 'paypalexpress', $gateway_environment ) );
+	pmpro_ipnExit();
+}
+
+// All payment collection retries have failed (PayPal Express)
+if ( $txn_type == 'recurring_payment_failed' || $txn_type == 'recurring_payment_suspended_due_to_max_failed_payment' ) {
+	// Find subscription.
+	$subscription = PMPro_Subscription::get_subscription_from_subscription_transaction_id( $recurring_payment_id, 'paypalexpress', $gateway_environment );
+	if ( empty( $subscription ) ) {
+		// The subscription does not exist on this site. Bail.
+		ipnlog( 'ERROR: Could not find this subscription to cancel after failed payment attempts (subscription_transaction_id=' . $recurring_payment_id . ').' );
+		pmpro_ipnExit();
+	}
+
+	// Get the user associated with the subscription.
+	$user = get_userdata( $subscription->get_user_id() );
+	if ( empty( $user ) ) {
+		// The user for this subscription does not exist. Let's just cancel the subscription.
+		$subscription->cancel_at_gateway();
+		ipnlog( 'ERROR: Could not cancel subscription after failed payment attempts. No user attached to subscription #' . $subscription->get_id() . ' with subscription transaction id = ' . $recurring_payment_id . '.' );
+		pmpro_ipnExit();
+	}
+
+	// Cancel the user's membership level which will also cancel the subscription.
+	if ( ! pmpro_cancelMembershipLevel( $subscription->get_membership_level_id(), $user->ID ) ) {
+		// User didn't have the level. Let's just cancel the subscription.
+		$subscription->cancel_at_gateway();
+		ipnlog( 'ERROR: Could not cancel membership level for user ' . $user->user_email . ' after failed payment attempts. Subscription #' . $subscription->get_id() . ' with subscription transaction id = ' . $recurring_payment_id . ' was cancelled.' );
+		pmpro_ipnExit();
+	}
+
+	// Cancellation was successful.
+	ipnlog( 'Subscription #' . $subscription->get_id() . ' with subscription transaction id = ' . $recurring_payment_id . ' was cancelled after failed payment attempts.' );
 	pmpro_ipnExit();
 }
 
@@ -519,7 +551,7 @@ function pmpro_ipnCheckReceiverEmail( $email ) {
 }
 
 /*
-	Change the membership level. We also update the membership order to include filtered valus.
+	Change the membership level. We also update the membership order to include filtered values.
 */
 function pmpro_ipnChangeMembershipLevel( $txn_id, &$morder ) {
 
@@ -620,20 +652,20 @@ function pmpro_ipnChangeMembershipLevel( $txn_id, &$morder ) {
 
 		//setup some values for the emails
 		if ( ! empty( $morder ) ) {
-			$invoice = new MemberOrder( $morder->id );
+			$order = new MemberOrder( $morder->id );
 		} else {
-			$invoice = null;
+			$order = null;
 		}
 
 		$user = get_userdata( $morder->user_id );
 
 		//send email to member
 		$pmproemail = new PMProEmail();
-		$pmproemail->sendCheckoutEmail( $user, $invoice );
+		$pmproemail->sendCheckoutEmail( $user, $order );
 
 		//send email to admin
 		$pmproemail = new PMProEmail();
-		$pmproemail->sendCheckoutAdminEmail( $user, $invoice );
+		$pmproemail->sendCheckoutAdminEmail( $user, $order );
 
 		return true;
 	} else {
@@ -790,7 +822,7 @@ function pmpro_ipnSaveOrder( $txn_id, $last_order ) {
 		$morder->saveOrder();
 		$morder->getMemberOrderByID( $morder->id );
 
-		//email the user their invoice
+		//email the user their order
 		$pmproemail = new PMProEmail();
 		$pmproemail->sendInvoiceEmail( get_userdata( $last_order->user_id ), $morder );
 

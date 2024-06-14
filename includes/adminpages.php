@@ -18,9 +18,9 @@ function pmpro_getPMProCaps() {
 		'pmpro_emailsettings',		
 		'pmpro_emailtemplates',
 		'pmpro_userfields',
+		'pmpro_designsettings',
 		'pmpro_advancedsettings',
 		'pmpro_addons',
-		'pmpro_subscriptions',
 		'pmpro_updates',
 		'pmpro_manage_pause_mode'
 	);
@@ -54,8 +54,8 @@ function pmpro_add_pages() {
 	
 	// Main submenus
 	add_submenu_page( 'pmpro-dashboard', __( 'Dashboard', 'paid-memberships-pro' ), __( 'Dashboard', 'paid-memberships-pro' ), 'pmpro_dashboard', 'pmpro-dashboard', 'pmpro_dashboard' );
-	$list_table_hook = add_submenu_page( 'pmpro-dashboard', __( 'Members', 'paid-memberships-pro' ), __( 'Members', 'paid-memberships-pro' ), 'pmpro_memberslist', 'pmpro-memberslist', 'pmpro_memberslist' );
-	add_submenu_page( 'pmpro-dashboard', __( 'Orders', 'paid-memberships-pro' ), __( 'Orders', 'paid-memberships-pro' ), 'pmpro_orders', 'pmpro-orders', 'pmpro_orders' );
+	$members_list_table_hook = add_submenu_page( 'pmpro-dashboard', __( 'Members', 'paid-memberships-pro' ), __( 'Members', 'paid-memberships-pro' ), 'pmpro_memberslist', 'pmpro-memberslist', 'pmpro_memberslist' );
+	$orders_list_table_hook = add_submenu_page( 'pmpro-dashboard', __( 'Orders', 'paid-memberships-pro' ), __( 'Orders', 'paid-memberships-pro' ), 'pmpro_orders', 'pmpro-orders', 'pmpro_orders' );
 	add_submenu_page( 'pmpro-dashboard', __( 'Reports', 'paid-memberships-pro' ), __( 'Reports', 'paid-memberships-pro' ), 'pmpro_reports', 'pmpro-reports', 'pmpro_reports' );
 	add_submenu_page( 'pmpro-dashboard', __( 'Settings', 'paid-memberships-pro' ), __( 'Settings', 'paid-memberships-pro' ), 'pmpro_membershiplevels', 'pmpro-membershiplevels', 'pmpro_membershiplevels' );
 	add_submenu_page( 'pmpro-dashboard', __( 'Add Ons', 'paid-memberships-pro' ), __( 'Add Ons', 'paid-memberships-pro' ), 'pmpro_addons', 'pmpro-addons', 'pmpro_addons' );
@@ -67,18 +67,22 @@ function pmpro_add_pages() {
 	} else {
 		$span_color = '#FCD34D';
 	}
-	add_submenu_page( 'pmpro-dashboard', __( 'License', 'paid-memberships-pro' ), __( '<span style="color: ' . $span_color . '">License</span>', 'paid-memberships-pro' ), 'manage_options', 'pmpro-license', 'pmpro_license_settings_page' );
+	add_submenu_page( 'pmpro-dashboard', __( 'License', 'paid-memberships-pro' ),'<span style="color: ' . $span_color . '">' . __( 'License', 'paid-memberships-pro' ) . '</span>', 'manage_options', 'pmpro-license', 'pmpro_license_settings_page' );
 
 	// Settings tabs
-	add_submenu_page( 'admin.php', __( 'Discount Codes', 'paid-memberships-pro' ), __( 'Discount Codes', 'paid-memberships-pro' ), 'pmpro_discountcodes', 'pmpro-discountcodes', 'pmpro_discountcodes' );
+	$discount_codes_list_table_hook = add_submenu_page( 'admin.php', __( 'Discount Codes', 'paid-memberships-pro' ), __( 'Discount Codes', 'paid-memberships-pro' ), 'pmpro_discountcodes', 'pmpro-discountcodes', 'pmpro_discountcodes' );
 	add_submenu_page( 'admin.php', __( 'Page Settings', 'paid-memberships-pro' ), __( 'Page Settings', 'paid-memberships-pro' ), 'pmpro_pagesettings', 'pmpro-pagesettings', 'pmpro_pagesettings' );
 	add_submenu_page( 'admin.php', __( 'Payment Settings', 'paid-memberships-pro' ), __( 'Payment Settings', 'paid-memberships-pro' ), 'pmpro_paymentsettings', 'pmpro-paymentsettings', 'pmpro_paymentsettings' );
 	add_submenu_page( 'admin.php', __( 'Email Settings', 'paid-memberships-pro' ), __( 'Email Settings', 'paid-memberships-pro' ), 'pmpro_emailsettings', 'pmpro-emailsettings', 'pmpro_emailsettings' );
 	add_submenu_page( 'admin.php', __( 'Email Templates', 'paid-memberships-pro' ), __( 'Email Templates', 'paid-memberships-pro' ), 'pmpro_emailtemplates', 'pmpro-emailtemplates', 'pmpro_emailtemplates' );
 	add_submenu_page( 'admin.php', __( 'User Fields', 'paid-memberships-pro' ), __( 'User Fields', 'paid-memberships-pro' ), 'pmpro_userfields', 'pmpro-userfields', 'pmpro_userfields' );
+	add_submenu_page( 'admin.php', __( 'Design Settings', 'paid-memberships-pro' ), __( 'Design Settings', 'paid-memberships-pro' ), 'pmpro_designsettings', 'pmpro-designsettings', 'pmpro_designsettings' );
 	add_submenu_page( 'admin.php', __( 'Advanced Settings', 'paid-memberships-pro' ), __( 'Advanced Settings', 'paid-memberships-pro' ), 'pmpro_advancedsettings', 'pmpro-advancedsettings', 'pmpro_advancedsettings' );
 
-	add_action( 'load-' . $list_table_hook, 'pmpro_list_table_screen_options' );
+	// Set up screen settings for list tables.
+	add_action( 'load-' . $members_list_table_hook, 'PMPro_Members_List_Table::hook_screen_options' );
+	add_action( 'load-' . $orders_list_table_hook, 'PMPro_Orders_List_Table::hook_screen_options' );
+	add_action( 'load-' . $discount_codes_list_table_hook, 'PMPro_Discount_Code_List_Table::hook_screen_options' );
 
 	//updates page only if needed
 	if ( pmpro_isUpdateRequired() ) {
@@ -95,8 +99,8 @@ function pmpro_add_pages() {
 	add_submenu_page( $wizard_location, __( 'Setup Wizard', 'paid-memberships-pro' ), __( 'Setup Wizard', 'paid-memberships-pro' ), 'pmpro_wizard', 'pmpro-wizard', 'pmpro_wizard' );
 
 	// Hidden pages
-	add_submenu_page( 'admin.php', __( 'Subscriptions', 'paid-memberships-pro' ), __( 'Subscriptions', 'paid-memberships-pro' ), 'pmpro_subscriptions', 'pmpro-subscriptions', 'pmpro_subscriptions' );
-	add_submenu_page( 'admin.php', __( 'Add Member', 'paid-memberships-pro' ), __( 'Add Member', 'paid-memberships-pro' ), 'pmpro_edit_members', 'pmpro-member', 'pmpro_member_edit_display' );
+	add_submenu_page( 'admin.php', __( 'Subscriptions', 'paid-memberships-pro' ), __( 'Subscriptions', 'paid-memberships-pro' ), pmpro_get_edit_member_capability(), 'pmpro-subscriptions', 'pmpro_subscriptions' );
+	add_submenu_page( 'admin.php', __( 'Add Member', 'paid-memberships-pro' ), __( 'Add Member', 'paid-memberships-pro' ), pmpro_get_edit_member_capability(), 'pmpro-member', 'pmpro_member_edit_display' );
 }
 add_action( 'admin_menu', 'pmpro_add_pages' );
 
@@ -264,14 +268,14 @@ function pmpro_admin_bar_menu() {
 			array(
 				'id' => 'pmpro-license',
 				'parent' => 'paid-memberships-pro',
-				'title' => __( '<span style="color: ' . $span_color . '; line-height: 26px;">License</span>', 'paid-memberships-pro' ),
+				'title' => '<span style="color: ' . $span_color . '; line-height: 26px;">' . __( 'License', 'paid-memberships-pro' ) . '</span>',
 				'href' => admin_url( 'admin.php?page=pmpro-license' )
 			)
 		);
 	}
 
 	// Add menu item for adding a new member.
-	if ( current_user_can( 'manage_options' ) ) {
+	if ( current_user_can( 'edit_users' ) ) {
 		$wp_admin_bar->add_menu(
 			array(
 				'id' => 'pmpro-new-member',
@@ -310,7 +314,7 @@ add_action( 'admin_bar_menu', 'pmpro_admin_bar_menu', 1000 );
 /**
  * Redirect away from certain admin pages if the single item doesn't exist.
  *
- * @since TBD
+ * @since 3.0
  * @return void
  */
 function pmpro_admin_init_redirect_single_item_edit() {
@@ -344,9 +348,9 @@ function pmpro_admin_init_redirect_single_item_edit() {
 
 	// Edit Member redirect.
 	if ( $pmpro_admin_page == 'pmpro-member' ) {
-		// If the discount code they are trying to edit does not exist, redirect them to the discount codes page.
+		// If the user they are trying to edit does not exist, redirect them to the members list.
 		if ( ! empty( $_REQUEST['user_id'] ) && $_REQUEST['user_id'] > 0 && empty( PMPro_Member_Edit_Panel::get_user()->ID ) ) {
-			wp_redirect( add_query_arg( array( 'page' => 'pmpro-memberslist' ), 	admin_url( 'admin.php' ) ) );
+			wp_redirect( add_query_arg( array( 'page' => 'pmpro-memberslist' ), admin_url( 'admin.php' ) ) );
 			exit;
 		}
 	}
@@ -397,7 +401,7 @@ function pmpro_admin_membership_access_menu_bar() {
 
 	/**
 	 * Filter to hide the "Admin Membership Access" menu in the admin bar.
-	 * @since TBD
+	 * @since 3.0
 	 * @param bool $hide Whether to hide the "Admin Membership Access" menu in the admin bar. Default false.
 	 */
 	if ( apply_filters( 'pmpro_hide_admin_membership_access_toolbar', false ) ) {
@@ -431,16 +435,20 @@ function pmpro_admin_membership_access_menu_bar() {
 
 	// Let's get the option now so we can show it.
 	$admin_membership_access = get_user_meta( $current_user->ID, 'pmpro_admin_membership_access', true );
+	if ( ! in_array( $admin_membership_access, array( 'yes', 'no' ) ) ) {
+		$admin_membership_access = 'current';
+	}
 
 	// Set the title and the option value.
+	$title = '<span class="pmpro_admin-view pmpro_admin-view-' . esc_attr( $admin_membership_access ) . '">';
 	if ( 'no' === $admin_membership_access ) {
-		$title = '<span class="ab-icon dashicons dashicons-hidden non-member-icon"></span>' . esc_html__( 'Viewing without membership access', 'paid-memberships-pro' );
-	} elseif ( 'current' === $admin_membership_access ) {
-		$title = esc_html__( 'Viewing with current membership levels', 'paid-memberships-pro' );
+		$title .= '<span class="ab-icon dashicons dashicons-lock non-member-icon"></span>' . esc_html__( 'View: No Access', 'paid-memberships-pro' );
+	} elseif ( 'yes' === $admin_membership_access ) {
+		$title .= '<span class="ab-icon dashicons dashicons-unlock has-access-icon"></span>' . esc_html__( 'View: With Access', 'paid-memberships-pro' );
 	} else {
-		$title = '<span class="ab-icon dashicons dashicons-saved has-access-icon"></span>' . esc_html__( 'Viewing with membership access', 'paid-memberships-pro' );
-		$admin_membership_access = 'yes';
+		$title .= '<span class="ab-icon dashicons dashicons-admin-users current-access-icon"></span>' . esc_html__( 'View: My Access', 'paid-memberships-pro' );
 	}
+	$title .= '</span>';
 
 	$wp_admin_bar->add_menu(
 		array(
@@ -454,6 +462,7 @@ function pmpro_admin_membership_access_menu_bar() {
 	ob_start();
 	?>
 	<form method="POST" id="pmpro-admin-membership-access-form" action="">
+		<p><?php esc_html_e( 'Preview your membership site by changing the selected view below.', 'paid-memberships-pro' ); ?></p>
 		<select name="pmpro-admin-membership-access" id="pmpro-admin-membership-access" onchange="this.form.submit()">
 			<option value="yes" <?php selected( $admin_membership_access, 'yes', true ); ?>><?php esc_html_e( 'View with membership access', 'paid-memberships-pro' ); ?></option>
 			<option value="current" <?php selected( $admin_membership_access, 'current', true ); ?>><?php esc_html_e( 'View with current membership levels', 'paid-memberships-pro' ); ?></option>
@@ -461,6 +470,14 @@ function pmpro_admin_membership_access_menu_bar() {
 		</select>
 		<?php wp_nonce_field( 'pmpro_admin_membership_access', 'pmpro_admin_membership_access_nonce' ); ?>
 	</form>
+	<script>
+		// Needed to fix Firefox issue where the admin membership access setting couldn't be changed.
+		document.addEventListener( 'DOMContentLoaded', function() {
+			document.getElementById( 'pmpro-admin-membership-access' ).addEventListener( 'mouseout', function( ev ) {
+				ev.stopPropagation();
+			});
+		});
+	</script>
 	<?php
 
 	// Add the form to the menu.
@@ -532,6 +549,10 @@ function pmpro_userfields() {
 
 function pmpro_emailtemplates() {
 	require_once( PMPRO_DIR . '/adminpages/emailtemplates.php' );
+}
+
+function pmpro_designsettings() {
+	require_once( PMPRO_DIR . '/adminpages/designsettings.php' );
 }
 
 function pmpro_advancedsettings() {
@@ -606,7 +627,7 @@ function pmpro_display_post_states( $post_states, $post ) {
 	}
 
 	if ( intval( $pmpro_pages['invoice'] ) === $post->ID ) {
-		$post_states['pmpro_invoice_page'] = __( 'Membership Invoice Page', 'paid-memberships-pro' );
+		$post_states['pmpro_invoice_page'] = __( 'Membership Orders Page', 'paid-memberships-pro' );
 	}
 
 	if ( intval( $pmpro_pages['levels'] ) === $post->ID ) {
@@ -632,9 +653,11 @@ add_filter( 'display_post_states', 'pmpro_display_post_states', 10, 2 );
  * Called when the plugin page is loaded
  *
  * @since    2.0.0
+ * @deprecated 3.0
  */
 function pmpro_list_table_screen_options() {
-	global $user_list_table;
+	_deprecated_function( __FUNCTION__, '3.0' );
+
 	$arguments = array(
 		'label'   => __( 'Members Per Page', 'paid-memberships-pro' ),
 		'default' => 13,
@@ -684,13 +707,19 @@ function pmpro_plugin_row_meta( $links, $file ) {
 add_filter( 'plugin_row_meta', 'pmpro_plugin_row_meta', 10, 2 );
 
 function pmpro_users_action_links( $actions, $user ) {
-	$cap = apply_filters( 'pmpro_add_member_cap', 'edit_users' );
-
-	if ( current_user_can( $cap ) && ! empty( $user->ID ) ) {
-		$actions['editmember'] = '<a href="' . esc_url( add_query_arg( array( 'page' => 'pmpro-member', 'user_id' => (int) $user->ID ), admin_url( 'admin.php' ) ) ) . '">' . __( 'Edit Member', 'paid-memberships-pro' ) . '</a>';
+	// If the user doesn't have the capability to edit members, return.
+	if ( ! current_user_can( pmpro_get_edit_member_capability() ) ) {
+		return $actions;
 	}
+
+	// If the user doesn't have an ID, return.
+	if ( empty( $user->ID ) ) {
+		return $actions;
+	}
+
+	// Add the edit member link.
+	$actions['editmember'] = '<a href="' . esc_url( add_query_arg( array( 'page' => 'pmpro-member', 'user_id' => (int) $user->ID ), admin_url( 'admin.php' ) ) ) . '">' . __( 'Edit Member', 'paid-memberships-pro' ) . '</a>';
 
 	return $actions;
 }
-
 add_filter( 'user_row_actions', 'pmpro_users_action_links', 10, 2 );

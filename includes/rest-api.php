@@ -137,7 +137,7 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 
 		/**
 		 * Get all membership levels.
-		 * @since TBD
+		 * @since 3.0
 		 * Example: https://example.com/wp-json/pmpro/v1/membership_levels
 		 */
 		register_rest_route( $pmpro_namespace, '/membership_levels',
@@ -201,6 +201,7 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 		/**
 		 * Get membership levels after checkout options are applied.
 		 * Example: https://example.com/wp-json/pmpro/v1/checkout_levels
+		 * @deprecated 3.0
 		 */
 		register_rest_route( $pmpro_namespace, '/checkout_levels', 
 		array(
@@ -257,7 +258,7 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 
 		/**
 		 * Get the IDs that a post has been restricted to.
-		 * @since TBD
+		 * @since 3.0
 		 * Example: https://example.com/wp-json/pmpro/v1/post_restrictions
 		 */
 		register_rest_route( $pmpro_namespace, '/post_restrictions',
@@ -423,7 +424,7 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 						
 						if ( is_wp_error( $user_id ) ) {
 							$error = $user_id->get_error_message();
-							return new WP_REST_Response( $error, 500 ); // Assume it failed and return a 500 error occured like core WordPress.
+							return new WP_REST_Response( $error, 500 ); // Assume it failed and return a 500 error occurred like core WordPress.
 						}
 						
 						pmpro_maybe_send_wp_new_user_notification( $user_id, $level_id );
@@ -656,7 +657,7 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 
 		/**
 		 * Get all membership levels.
-		 * @since TBD
+		 * @since 3.0
 		 * Example: https://example.com/wp-json/pmpro/v1/membership_levels
 		 */
 		function pmpro_rest_api_get_membership_levels( $request ) {
@@ -851,7 +852,7 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 
 		/**
 		 * Get a membership level at checkout.
-		 * Note: Not compatible with MMPU.
+		 *
 		 * @since 2.4
 		 * Example: https://example.com/wp-json/pmpro/v1/checkout_level
 		 */
@@ -880,11 +881,16 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 
 			$checkout_level = pmpro_getLevelAtCheckout( $level_id, $discount_code );
 
-			// Hide confirmation message if not an admin or member.
-			if ( ! empty( $checkout_level->confirmation ) 
-				 && ! pmpro_hasMembershipLevel( $level_id )
-				 && ! current_user_can( 'pmpro_edit_members' ) ) {
-					 $checkout_level->confirmation = '';
+			if ( ! empty( $checkout_level ) ) {
+				// Hide confirmation message if not an admin or member.
+				if ( ! empty( $checkout_level->confirmation ) 
+					&& ! pmpro_hasMembershipLevel( $level_id )
+					&& ! current_user_can( 'pmpro_edit_members' ) ) {
+						$checkout_level->confirmation = '';
+				}
+
+				// Also add a formatted version of the initial payment.
+				$checkout_level->initial_payment_formatted = pmpro_formatPrice( $checkout_level->initial_payment );
 			}
 
 			return new WP_REST_Response( $checkout_level );
@@ -893,6 +899,8 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 		/**
 		 * Get membership levels at checkout.
 		 * Example: https://example.com/wp-json/pmpro/v1/checkout_levels
+		 *
+		 * @deprecated 3.0 Use the /pmpro/v1/checkout_level endpoint instead.
 		 */
 		function pmpro_rest_api_get_checkout_levels( $request ) {
 			$params = $request->get_params();
@@ -901,7 +909,9 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 			if ( ! empty( $pmpro_checkout_level_ids ) ) {
 				// MMPU Compatibility...
 				$level_ids = $pmpro_checkout_level_ids;
-			} elseif ( isset( $params['level_id'] ) ) {
+			} elseif ( isset( $params['pmpro_level' ] ) ) {
+				$level_ids = explode( '+', intval( $params['pmpro_level'] ) );
+			}elseif ( isset( $params['level_id'] ) ) {
 				$level_ids = explode( '+', intval( $params['level_id'] ) );
 			} elseif ( isset( $params['level'] ) ) {
 				$level_ids = explode( '+', intval( $params['level'] ) );
@@ -916,8 +926,17 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 			$r['initial_payment'] = 0.00;
 			foreach ( $level_ids as $level_id ) {
 				$r[ $level_id ] = pmpro_getLevelAtCheckout( $level_id, $discount_code );
+				
+				// Increment the total initial_paymnent.
 				if ( ! empty( $r[ $level_id ]->initial_payment ) ) {
 					$r['initial_payment'] += floatval( $r[ $level_id ]->initial_payment );
+				}
+
+				// Hide confirmation message if not an admin or member.
+				if ( ! empty( $r[ $level_id ]->confirmation ) 
+						&& ! pmpro_hasMembershipLevel( $level_id )
+						&& ! current_user_can( 'pmpro_membershiplevels' ) ) {				
+					$r[ $level_id ]->confirmation = '';					
 				}
 			}
 			$r['initial_payment_formatted'] = pmpro_formatPrice( $r['initial_payment'] );
@@ -1080,7 +1099,7 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 		/**
 		 * Get the membership level IDs restricting a given post.
 		 *
-		 * @since TBD
+		 * @since 3.0
 		 *
 		 * @param WP_REST_Request $request The REST request.
 		 *
@@ -1105,7 +1124,7 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 		/**
 		 * Set the membership level IDs restricting a given post.
 		 *
-		 * @since TBD
+		 * @since 3.0
 		 *
 		 * @param WP_REST_Request $request The REST request.
 		 * @return WP_REST_Response The REST response.
@@ -1143,6 +1162,7 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 		 * 'administrator' for any other type of request.
 		 *
 		 * @since 2.3
+		 * @since 2.12.6 Now allowing arrays in $route_caps so you can have a different permission per HTTP method.
 		 */
 		 function pmpro_rest_api_get_permissions_check( $request ) {
 
@@ -1150,6 +1170,7 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 			$route = $request->get_route();
 
 			// Default to requiring pmpro_edit_members capability.
+			// NOTE: This basically means that anyone with the pmpro_edit_members capability could potentially do anything made available through the API in this file.
 			$permission = current_user_can( 'pmpro_edit_members' );
 
 			// Check other caps for some routes.
@@ -1159,7 +1180,13 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 				'/pmpro/v1/get_membership_levels_for_user' => 'pmpro_edit_members',
 				'/pmpro/v1/change_membership_level' => 'pmpro_edit_members',
 				'/pmpro/v1/cancel_membership_level' => 'pmpro_edit_members',
-				'/pmpro/v1/membership_level' => true,
+				'/pmpro/v1/membership_level' => array(
+					'GET' => true,
+					'POST' => 'pmpro_membershiplevels',
+					'PUT' => 'pmpro_membershiplevels',
+					'PATCH' => 'pmpro_membershiplevels',
+					'DELETE' => 'pmpro_membershiplevels',
+				),
 				'/pmpro/v1/membership_levels' => true,
 				'/pmpro/v1/discount_code' => 'pmpro_discountcodes',
 				'/pmpro/v1/order' => 'pmpro_orders',
@@ -1170,15 +1197,30 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 				'/pmpro/v1/recent_orders' => 'pmpro_orders',
 				'/pmpro/v1/post_restrictions' => 'pmpro_edit_members',
 			);
-			$route_caps = apply_filters( 'pmpro_rest_api_route_capabilities', $route_caps, $request );			
+			$route_caps = apply_filters( 'pmpro_rest_api_route_capabilities', $route_caps, $request );
 			
+			// Check if we have a specific permission to check for this route/method.
 			if ( isset( $route_caps[$route] ) ) {
-				if ( $route_caps[$route] === true ) {
-					// public
-					$permission = true;
-				} else {									
-					$permission = current_user_can( $route_caps[$route] );					
-				}				
+				// Find the permission to check.
+				if ( is_array ( $route_caps[$route] ) && isset( $route_caps[$route][$method] ) ) {
+					// Different permission for this method, use it.
+					$permission_to_check = $route_caps[$route][$method];
+				} elseif ( is_array( $route_caps[$route] ) ) {
+					// No permission for this method, default to false.
+					$permission_to_check = false;
+				} else {
+					// Same permission for all methods, use it.
+					$permission_to_check = $route_caps[$route];
+				}
+
+				// Check the permission.
+				if ( $permission_to_check === true || $permission_to_check === false ) {
+					// For true or false, just pass it along.
+					$permission = $permission_to_check;
+				} else {
+					// Check if the current user has this capability.
+					$permission = current_user_can( $permission );
+				}
 			}
 
 			// Is the request method allowed? We disable DELETE by default.

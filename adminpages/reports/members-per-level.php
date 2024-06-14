@@ -61,8 +61,8 @@ function pmpro_report_members_per_level_page() {
 						foreach ( $active_members as $am ) {
 							if ( ! empty( $pmpro_levels[$am->membership_id] ) ) { ?>
 								<tr>
-									<td><a href="<?php echo admin_url( 'admin.php?page=pmpro-memberslist&l='.$am->membership_id ); ?>" title="<?php esc_attr_e( 'View Active Members With This Level', 'paid-memberships-pro' ); ?>"><?php echo $pmpro_levels[$am->membership_id]->name; ?></a></td>
-									<td><?php echo $am->total_active_members; ?></td>
+									<td><a href="<?php echo esc_url( admin_url( 'admin.php?page=pmpro-memberslist&l='.$am->membership_id ) ); ?>" title="<?php esc_attr_e( 'View Active Members With This Level', 'paid-memberships-pro' ); ?>"><?php echo esc_html( $pmpro_levels[$am->membership_id]->name ); ?></a></td>
+									<td><?php echo esc_html( $am->total_active_members ); ?></td>
 								</tr>
 								<?php
 							}

@@ -2,10 +2,8 @@
 
 // only admins can get this
 if ( ! function_exists( 'current_user_can' ) || ( ! current_user_can( 'manage_options' ) && ! current_user_can( 'pmpro_reportscsv' ) ) ) {
-	die( __( 'You do not have permissions to perform this action.', 'paid-memberships-pro' ) );
+	die( esc_html__( 'You do not have permissions to perform this action.', 'paid-memberships-pro' ) );
 }
-
-define( 'PMPRO_BENCHMARK', true );
 
 if ( ! defined( 'PMPRO_BENCHMARK' ) ) {
 	define( 'PMPRO_BENCHMARK', false );
@@ -76,7 +74,7 @@ if ( isset( $_REQUEST[ 'discount_code' ] ) ) {
 if($period == "daily")
 {
 	$startdate = $year . '-' . substr("0" . $month, strlen($month) - 1, 2) . '-01';
-	$enddate = $year . '-' . substr("0" . $month, strlen($month) - 1, 2) . '-31';
+	$enddate = $year . '-' . substr("0" . $month, strlen($month) - 1, 2) . '-' . date_i18n( 't', strtotime( $startdate ) );
 	$date_function = 'DAY';
 }
 elseif($period == "monthly")
@@ -448,12 +446,12 @@ function pmpro_transmit_report_data( $csv_fh, $filename, $headers = array() ) {
 
 	// did we accidentally send errors/warnings to browser?
 	if ( headers_sent() ) {
-		echo str_repeat( '-', 75 ) . "<br/>\n";
+		echo esc_html( str_repeat( '-', 75 ) ) . "<br/>\n";
 		echo 'Please open a support case and paste in the warnings/errors you see above this text to\n ';
 		echo 'the <a href="http://paidmembershipspro.com/support/?utm_source=plugin&utm_medium=pmpro-membership-stats-csv&utm_campaign=support" target="_blank">Paid Memberships Pro support forum</a><br/>\n';
-		echo str_repeat( '=', 75 ) . "<br/>\n";
-		echo file_get_contents( $filename );
-		echo str_repeat( '=', 75 ) . "<br/>\n";
+		echo esc_html( str_repeat( '-', 75 ) ) . "<br/>\n";
+		echo wp_kses_post( file_get_contents( $filename ) );
+		echo esc_html( str_repeat( '-', 75 ) ) . "<br/>\n";
 	}
 
 	// transmission

@@ -49,7 +49,21 @@
 		 * @var string $body
 		 */
 		public $body = '';
-		
+
+		/**
+		 * Email headers
+		 *
+		 * @var array $headers
+		 */
+		public $headers = array();
+
+		/**
+		 * Email attachments
+		 *
+		 * @var array $attachments
+		 */
+		 public $attachments = array();
+
 		/**
 		 * Send an email to a member or admin. Uses the wp_mail function.
 		 *
@@ -141,24 +155,6 @@
 			elseif(!empty($this->data) && !empty($this->data['body']))
 				$this->body = $this->data['body'];																						//data passed in
 
-
-			// Get template header.
-			if( get_option( 'pmpro_email_header_disabled' ) != 'true' ) {
-				$email_header = pmpro_email_templates_get_template_body('header');
-			} else {
-				$email_header = '';
-			}
-
-			// Get template footer
-			if( get_option( 'pmpro_email_footer_disabled' ) != 'true' ) {
-				$email_footer = pmpro_email_templates_get_template_body('footer');
-			} else {
-				$email_footer = '';
-			}
-
-			// Add header and footer to email body.
-			$this->body = $email_header . $this->body . $email_footer;
-
 			//if data is a string, assume we mean to replace !!body!! with it
 			if(is_string($this->data))
 				$this->data = array("body"=>$data);											
@@ -206,6 +202,31 @@
 			$this->body = apply_filters("pmpro_email_body", $temail->body, $this);
 			$this->headers = apply_filters("pmpro_email_headers", $temail->headers, $this);
 			$this->attachments = apply_filters("pmpro_email_attachments", $temail->attachments, $this);
+
+			// Get template header.
+			$email_header = '';
+			if ( pmpro_getOption( 'email_header_disabled' ) != 'true' ) {
+				$email_header = pmpro_email_templates_get_template_body( 'header' );
+				if ( has_filter( 'pmpro_email_body', 'pmpro_kses' ) ) {
+					$email_header = pmpro_kses( $email_header );
+				}
+
+				$email_header = apply_filters( 'pmpro_email_header', $email_header, $this );
+			}
+
+			// Get template footer
+			$email_footer = '';
+			if ( get_option( 'pmpro_email_footer_disabled' ) != 'true' ) {
+				$email_footer = pmpro_email_templates_get_template_body( 'footer' );
+				if ( has_filter( 'pmpro_email_body', 'pmpro_kses' ) ) {
+					$email_footer = pmpro_kses( $email_footer );
+				}
+
+				$email_footer = apply_filters( 'pmpro_email_footer', $email_footer, $this );
+			}
+
+			// Add header and footer to email body.
+			$this->body = $email_header . $this->body . $email_footer;
 			
 			return wp_mail($this->email,$this->subject,$this->body,$this->headers,$this->attachments);
 		}
@@ -247,7 +268,7 @@
 		{
 			// If an array is passed for $old_level_id, throw doing it wrong warning.
 			if ( is_array( $old_level_id ) ) {
-				_doing_it_wrong( __FUNCTION__, __( 'The $old_level_id parameter should be an integer, not an array.', 'paid-memberships-pro' ), 'TBD' );
+				_doing_it_wrong( __FUNCTION__, esc_html__( 'The $old_level_id parameter should be an integer, not an array.', 'paid-memberships-pro' ), '3.0' );
 			}
 
 			global $wpdb, $current_user;
@@ -294,7 +315,7 @@
 		{
 			// If an array is passed for $old_level_id, throw doing it wrong warning.
 			if ( is_array( $old_level_id ) ) {
-				_doing_it_wrong( __FUNCTION__, __( 'The $old_level_id parameter should be an integer, not an array.', 'paid-memberships-pro' ), 'TBD' );
+				_doing_it_wrong( __FUNCTION__, esc_html__( 'The $old_level_id parameter should be an integer, not an array.', 'paid-memberships-pro' ), '3.0' );
 			}
 
 			global $wpdb, $current_user;
@@ -349,7 +370,7 @@
 		}
 
 		/**
-		 * Semnd the "cancel on next payment date" email to the member.
+		 * Send the "cancel on next payment date" email to the member.
 		 *
 		 * @param WP_User $user The WordPress user object.
 		 * @param int $level_id The level ID of the level that was cancelled.
@@ -357,19 +378,19 @@
 		function sendCancelOnNextPaymentDateEmail( $user, $level_id ) {
 			// If an array is passed for $level_id, throw doing it wrong warning.
 			if ( is_array( $level_id ) ) {
-				_doing_it_wrong( __FUNCTION__, __( 'The $level_id parameter should be an integer, not an array.', 'paid-memberships-pro' ), 'TBD' );
+				_doing_it_wrong( __FUNCTION__, esc_html__( 'The $level_id parameter should be an integer, not an array.', 'paid-memberships-pro' ), '3.0' );
 			}
 
 			// Make sure that the user object is a WP_User object.
 			if ( ! is_a( $user, 'WP_User' ) ) {
-				_doing_it_wrong( __FUNCTION__, __( 'The $user parameter should be a WP_User object.', 'paid-memberships-pro' ), 'TBD' );
+				_doing_it_wrong( __FUNCTION__, esc_html__( 'The $user parameter should be a WP_User object.', 'paid-memberships-pro' ), '3.0' );
 			}
 
 			// Get the level object.
 			$level = pmpro_getSpecificMembershipLevelForUser( $user->ID, $level_id );
 
 			// Make sure that the level is now set to expire.
-			if ( empty( $level ) || empty( $level->enddate) ) {
+				if ( empty( $level ) || empty( $level->enddate) ) {
 				return false;
 			}
 
@@ -381,7 +402,7 @@
 				'user_email' => $user->user_email,
 				'display_name' => $user->display_name,
 				'sitename' => get_option( 'blogname' ),
-				'siteemail' => pmpro_getOption( 'from_email' ),
+				'siteemail' => get_option( 'pmpro_from_email' ),
 				'login_link' => pmpro_login_url(),
 				'login_url' => pmpro_login_url(),
 				'levels_url' => pmpro_url( 'levels' ),
@@ -401,16 +422,18 @@
 		 *
 		 * @param WP_User $user The WordPress user object.
 		 * @param int $level_id The level ID of the level that was cancelled.
+		 * @return bool True if the email was sent, false otherwise.
+		 * @since TBD
 		 */
 		function sendCancelOnNextPaymentDateAdminEmail( $user, $level_id ) {
 			// If an array is passed for $level_id, throw doing it wrong warning.
 			if ( is_array( $level_id ) ) {
-				_doing_it_wrong( __FUNCTION__, __( 'The $level_id parameter should be an integer, not an array.', 'paid-memberships-pro' ), 'TBD' );
+				_doing_it_wrong( __FUNCTION__, esc_html__( 'The $level_id parameter should be an integer, not an array.', 'paid-memberships-pro' ), '3.0' );
 			}
 
 			// Make sure that the user object is a WP_User object.
 			if ( ! is_a( $user, 'WP_User' ) ) {
-				_doing_it_wrong( __FUNCTION__, __( 'The $user parameter should be a WP_User object.', 'paid-memberships-pro' ), 'TBD' );
+				_doing_it_wrong( __FUNCTION__, esc_html__( 'The $user parameter should be a WP_User object.', 'paid-memberships-pro' ), '3.0' );
 			}
 
 			// Get the level object.
@@ -421,7 +444,7 @@
 				return false;
 			}
 
-			$this->email = pmpro_getOption( 'from_email' );
+			$this->email = get_option( 'pmpro_from_email' );
 			$this->subject = sprintf( __( 'Payment subscription for %s at %s has been CANCELLED', 'paid-memberships-pro' ), $user->user_login, get_option( 'blogname' ) );
 
 			$this->data = array(
@@ -429,7 +452,7 @@
 				'user_email' => $user->user_email,
 				'display_name' => $user->display_name,
 				'sitename' => get_option( 'blogname' ),
-				'siteemail' => pmpro_getOption( 'from_email' ),
+				'siteemail' => get_option( 'pmpro_from_email' ),
 				'login_link' => pmpro_login_url(),
 				'login_url' => pmpro_login_url(),
 				'levels_url' => pmpro_url( 'levels' ),
@@ -497,8 +520,6 @@
 				'accountnumber' => hideCardNumber($invoice->accountnumber),
 				'expirationmonth' => $invoice->expirationmonth,
 				'expirationyear' => $invoice->expirationyear,
-				'login_link' => pmpro_login_url(),
-				'login_url' => pmpro_login_url(),
 				'invoice_link' => pmpro_login_url( pmpro_url( 'invoice', '?invoice=' . $invoice->code ) ),
 				'invoice_url' => pmpro_login_url( pmpro_url( 'invoice', '?invoice=' . $invoice->code ) ),
 				'levels_url' => pmpro_url( 'levels' )
@@ -571,8 +592,6 @@
 				'accountnumber' => hideCardNumber($invoice->accountnumber),
 				'expirationmonth' => $invoice->expirationmonth,
 				'expirationyear' => $invoice->expirationyear,
-				'login_link' => pmpro_login_url(),
-				'login_url' => pmpro_login_url(),
 				'invoice_link' => pmpro_login_url( pmpro_url( 'invoice', '?invoice=' . $invoice->code ) ),
 				'invoice_url' => pmpro_login_url( pmpro_url( 'invoice', '?invoice=' . $invoice->code ) ),
 				'levels_url' => pmpro_url( 'levels' )							
@@ -595,7 +614,7 @@
 		}
 		
 		/**
-		 * Send the member a confirmation checkout email after succesfully purchasing a membership level.
+		 * Send the member a confirmation checkout email after successfully purchasing a membership level.
 		 *
 		 * @param object $user The WordPress user object.
 		 * @param MemberOrder $invoice The order object that is associated with the checkout.
@@ -723,7 +742,7 @@
 		}
 		
 		/**
-		 * Send the admin a confirmation checkout email after the member succesfully purchases a membership level.
+		 * Send the admin a confirmation checkout email after the member successfully purchases a membership level.
 		 *
 		 * @param object $user The WordPress user object.
 		 * @param MemberOrder $invoice The order object that is associated with the checkout.
@@ -1464,10 +1483,10 @@
 			if(!$user || !$order)
 				return false;
 
-			$level = pmpro_getLevel($order->membership_id);
+			$level = pmpro_getLevel( $order->membership_id );
 
 			$this->email = $user->user_email;
-			$this->subject = __('Invoice for order #: ', 'paid-memberships-pro') . $order->code;
+			$this->subject = __('Receipt for order #: ', 'paid-memberships-pro') . $order->code;
 
 			// Load invoice template
 			if ( file_exists( get_stylesheet_directory() . '/paid-memberships-pro/pages/orders-email.php' ) ) {
@@ -1492,7 +1511,9 @@
 				'invoice_url' => pmpro_login_url( pmpro_url( 'invoice', '?invoice=' . $order->code ) ),
 				'invoice_id' => $order->id,
 				'invoice' => $invoice,
-				'levels_url' => pmpro_url( 'levels' )
+				'levels_url' => pmpro_url( 'levels' ),
+				'membership_level_name' => $level->name,
+				'membership_level_id' => $order->membership_id
 			);
 
 			$this->template = apply_filters("pmpro_email_template", "billable_invoice", $this);

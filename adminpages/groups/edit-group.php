@@ -1,5 +1,9 @@
 <?php
 
+/**
+ * @var int $edit_group
+ */
+
 // Creating or editing a group.
 // If we are editing an existing group, current group data.
 if ( intval( $edit_group ) > 0) {
@@ -35,23 +39,26 @@ $mmpu_incompatible_add_ons = pmpro_get_mmpu_incompatible_add_ons();
 <?php
 if ( ! empty( $mmpu_incompatible_add_ons ) ) {
 ?>
-	<div class="pmpro_error">
+	<div class="pmpro_message pmpro_error">
 		<p>
 			<?php
 			echo sprintf(
 				// translators: %s is the list of incompatible add ons.
-				esc_html__( 'The following add ons are not compatible with "Multiple Memberships Per User" setups: %s', 'paid-memberships-pro' ),
-				esc_html( implode( ', ', $mmpu_incompatible_add_ons ) )
+				esc_html__( 'The following active Add Ons are not compatible with your membership level setup: %s', 'paid-memberships-pro' ),
+				'<strong>' . esc_html( implode( ', ', $mmpu_incompatible_add_ons ) ) . '.</strong>'
 			);
-			echo '<br />';
-			esc_html_e( 'You should not have multiple level groups or a  group that allows users to have multiple levels from the group while those Add Ons are active.', 'paid-memberships-pro' );
+			?>
+		</p>
+		<p>
+			<?php
+			esc_html_e( 'This warning is shown because you have more than one level group or a level group that allows multiple selections. To continue using these Add Ons, you should move all levels to a single "one level per" group.', 'paid-memberships-pro' );
 			?>
 		</p>
 	</div>
 <?php
 }
 ?>
-<form action="<?php esc_attr_e( add_query_arg( 'page', 'pmpro-membershiplevels', admin_url( 'admin.php' ) ) ) ?>" method="post" enctype="multipart/form-data">
+<form action="<?php echo esc_attr( add_query_arg( 'page', 'pmpro-membershiplevels', admin_url( 'admin.php' ) ) ) ?>" method="post" enctype="multipart/form-data">
 	<input name="saveid" type="hidden" value="<?php echo esc_attr( $edit_group ); ?>" />
 	<input type="hidden" name="action" value="save_group" />
 	<input type="hidden" name="displayorder" value="<?php echo esc_attr( $group->displayorder ); ?>" />

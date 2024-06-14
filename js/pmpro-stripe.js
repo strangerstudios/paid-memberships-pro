@@ -129,9 +129,9 @@ jQuery( document ).ready( function( $ ) {
 
 		// Get the level price so that information can be shown in payment request popup
 		jQuery.noConflict().ajax({
-			url: pmproStripe.restUrl + 'pmpro/v1/checkout_levels',
+			url: pmproStripe.restUrl + 'pmpro/v1/checkout_level',
 			dataType: 'json',
-			data: jQuery( "#pmpro_form" ).serialize(),
+			data: pmpro_getCheckoutFormDataForCheckoutLevels(),
 			success: function(data) {
 				if ( data.hasOwnProperty('initial_payment') ) {
 					// Build payment request button.
@@ -163,7 +163,7 @@ jQuery( document ).ready( function( $ ) {
 						$('#pmpro_processing_message').css('visibility', 'visible');
 						$('#payment-request-button').hide();
 						/*
-						 Close the payment request interface immeditately. This is not the intended
+						 Close the payment request interface immediately. This is not the intended
 						 implementation from Stripe, but we are submitting the payment method
 						 through our default checkout process instead of letting Stripe
 						 process it through	the payment request button. Closing immediately also
@@ -183,9 +183,9 @@ jQuery( document ).ready( function( $ ) {
 		// Update price shown in payment request button if price changes.
 		function stripeUpdatePaymentRequestButton() {
 			jQuery.noConflict().ajax({
-				url: pmproStripe.restUrl + 'pmpro/v1/checkout_levels',
+				url: pmproStripe.restUrl + 'pmpro/v1/checkout_level',
 				dataType: 'json',
-				data: jQuery( "#pmpro_form" ).serialize(),
+				data: pmpro_getCheckoutFormDataForCheckoutLevels(),
 				success: function(data) {
 					if ( data.hasOwnProperty('initial_payment') ) {
 						paymentRequest.update({
