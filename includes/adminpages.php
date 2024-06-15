@@ -19,6 +19,7 @@ function pmpro_getPMProCaps() {
 		'pmpro_emailsettings',		
 		'pmpro_emailtemplates',
 		'pmpro_userfields',
+		'pmpro_designsettings',
 		'pmpro_advancedsettings',
 		'pmpro_addons',
 		'pmpro_updates',
@@ -77,6 +78,7 @@ function pmpro_add_pages() {
 	add_submenu_page( 'admin.php', __( 'Email Settings', 'paid-memberships-pro' ), __( 'Email Settings', 'paid-memberships-pro' ), 'pmpro_emailsettings', 'pmpro-emailsettings', 'pmpro_emailsettings' );
 	add_submenu_page( 'admin.php', __( 'Email Templates', 'paid-memberships-pro' ), __( 'Email Templates', 'paid-memberships-pro' ), 'pmpro_emailtemplates', 'pmpro-emailtemplates', 'pmpro_emailtemplates' );
 	add_submenu_page( 'admin.php', __( 'User Fields', 'paid-memberships-pro' ), __( 'User Fields', 'paid-memberships-pro' ), 'pmpro_userfields', 'pmpro-userfields', 'pmpro_userfields' );
+	add_submenu_page( 'admin.php', __( 'Design Settings', 'paid-memberships-pro' ), __( 'Design Settings', 'paid-memberships-pro' ), 'pmpro_designsettings', 'pmpro-designsettings', 'pmpro_designsettings' );
 	add_submenu_page( 'admin.php', __( 'Advanced Settings', 'paid-memberships-pro' ), __( 'Advanced Settings', 'paid-memberships-pro' ), 'pmpro_advancedsettings', 'pmpro-advancedsettings', 'pmpro_advancedsettings' );
 
 	// Set up screen settings for list tables.
@@ -546,6 +548,10 @@ function pmpro_userfields() {
 
 function pmpro_emailtemplates() {
 	require_once( PMPRO_DIR . '/adminpages/emailtemplates.php' );
+}
+
+function pmpro_designsettings() {
+	require_once( PMPRO_DIR . '/adminpages/designsettings.php' );
 }
 
 function pmpro_advancedsettings() {
