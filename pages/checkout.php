@@ -171,26 +171,6 @@ if ( empty( $default_gateway ) ) {
 					<?php } ?>
 				</div> <!-- end pmpro_pricing_fields -->
 				<?php
-<<<<<<< HEAD
-					$pmpro_show_cvv = apply_filters("pmpro_show_cvv", true);
-					if($pmpro_show_cvv) { ?>
-					<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout-field pmpro_payment-cvv', 'pmpro_payment-cvv' ) ); ?>">
-						<label for="CVV"><?php esc_html_e('Security Code (CVC)', 'paid-memberships-pro' );?></label>
-						<input id="CVV" name="CVV" type="text" size="4" value="<?php if(!empty($_REQUEST['CVV'])) { echo esc_attr( sanitize_text_field( $_REQUEST['CVV'] ) ); }?>" class="<?php echo esc_attr( pmpro_get_element_class( 'input', 'CVV' ) ); ?>" />
-					</div>
-				<?php } ?>
-				<?php if($pmpro_show_discount_code) { ?>
-					<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_checkout-field pmpro_payment-discount-code', 'pmpro_payment-discount-code' ) ); ?>">
-						<label for="pmpro_discount_code"><?php esc_html_e('Discount Code', 'paid-memberships-pro' );?></label>
-						<input class="<?php echo esc_attr( pmpro_get_element_class( 'input pmpro_alter_price', 'discount_code' ) ); ?>" id="pmpro_discount_code" name="pmpro_discount_code" type="text" size="10" value="<?php echo esc_attr($discount_code); ?>" />
-						<input  aria-label="<?php esc_html_e( 'Apply discount code', 'paid-memberships-pro' ); ?>" type="button" id="discount_code_button" name="discount_code_button" value="<?php esc_attr_e('Apply', 'paid-memberships-pro' );?>" />
-						<p id="discount_code_message" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_message', 'discount_code_message' ) ); ?>" style="display: none;"></p>
-					</div>
-				<?php } ?>
-			</div> <!-- end pmpro_checkout-fields -->
-		</div> <!-- end pmpro_payment_information_fields -->
-	<?php } ?>
-=======
 				} // if ( $include_pricing_fields )
 			?>
 
@@ -329,7 +309,6 @@ if ( empty( $default_gateway ) ) {
 				</div> <!-- end pmpro_card -->
 			</fieldset> <!-- end pmpro_payment_method -->
 			<?php } ?>
->>>>>>> v3.1
 
 			<?php
 				$pmpro_include_billing_address_fields = apply_filters('pmpro_include_billing_address_fields', true);
