@@ -2,18 +2,19 @@
 /**
  * Upgrade to version 3.1
  *
-<<<<<<< HEAD
  * We are eliminating the SSL Seal Code setting.
+ * We are also changing the default text and adding a setting for protected content messages.
+ *
+ * @since TBD
  */
 function pmpro_upgrade_3_1() {
     // Check if we have a setting for pmpro_sslseal and delete it.
     $pmpro_sslseal = get_option( 'pmpro_sslseal' );
     if ( $pmpro_sslseal !== false ) {
         delete_option( 'pmpro_sslseal' );
-=======
- */
-function pmpro_upgrade_3_1() {
-    // Check if we have a setting for pmpro_nonmembertext and compare it to the default.
+	}
+
+	// Check if we have a setting for pmpro_nonmembertext and compare it to the default.
     $pmpro_nonmembertext = get_option( 'pmpro_nonmembertext' );
     if ( $pmpro_nonmembertext !== false ) {
 		// We have text set, let's compare it to the old default.
@@ -29,7 +30,6 @@ function pmpro_upgrade_3_1() {
 			// Set the new option for pmpro_nonmembertext_type to "custom".
 			update_option( 'pmpro_nonmembertext_type', 'custom' );
 		}
->>>>>>> v3.1
     }
 
 	// Update the version number
