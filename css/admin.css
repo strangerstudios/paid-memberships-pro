@@ -536,13 +536,17 @@ body[class*="memberships_page_pmpro-"] {
 	content: "\f534";
 }
 
-.pmpro_tag-alert {
+.pmpro_tag-alert,
+.pmpro_tag-not-installed,
+.pmpro_tag-inactive  {
 	background-color: var(--pmpro--color--alert-background);
 	border-color: var(--pmpro--color--alert-border);
 	color: var(--pmpro--color--alert-text);
 }
 
-.pmpro_tag-alert.pmpro_tag-has_icon:before {
+.pmpro_tag-alert.pmpro_tag-has_icon:before,
+.pmpro_tag-not-installed.pmpro_tag-has_icon:before,
+.pmpro_tag-inactive.pmpro_tag-has_icon:before {
 	content: "\f16d";
 }
 
@@ -555,7 +559,6 @@ body[class*="memberships_page_pmpro-"] {
 .pmpro_tag-info.pmpro_tag-has_icon:before {
 	content: "\f111";
 }
-
 
 /**
  * Checkbox Boxes
