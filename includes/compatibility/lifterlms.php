@@ -566,9 +566,9 @@ function pmpro_lifter_dashboard_checklist( $checklist ) {
 	$sqlQuery = "SELECT COUNT(*) FROM $wpdb->pmpro_memberships_pages mp LEFT JOIN $wpdb->posts p ON mp.page_id = p.ID WHERE p.post_type = 'course' AND p.post_status = 'publish' GROUP BY mp.page_id LIMIT 1";
 	$ap_check = $wpdb->get_var( $sqlQuery );
 	if ( $ap_check ) {
-		$checklist['access_plan'] = '<i class="fa fa-check"></i> ' . esc_html( 'Restrict a Course', 'paid-memberships-pro' );
+		$checklist['access_plan'] = '<i class="fa fa-check"></i> ' . esc_html__( 'Restrict a Course', 'paid-memberships-pro' );
 	} else {
-		$checklist['access_plan'] = '<i class="fa fa-times"></i> <a href="https://www.paidmembershipspro.com/add-ons/lifterlms/?utm_source=plugin&utm_medium=lifterlms-dashboard&utm_campaign=lifterlms&utm_content=restrict-a-course" target="_blank" rel="noopener">' .  esc_html( 'Restrict a Course', 'paid-memberships-pro' ) . '</a>';
+		$checklist['access_plan'] = '<i class="fa fa-times"></i> <a href="https://www.paidmembershipspro.com/add-ons/lifterlms/?utm_source=plugin&utm_medium=lifterlms-dashboard&utm_campaign=lifterlms&utm_content=restrict-a-course" target="_blank" rel="noopener">' .  esc_html__( 'Restrict a Course', 'paid-memberships-pro' ) . '</a>';
 	}	
 
 	return $checklist;

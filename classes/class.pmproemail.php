@@ -155,24 +155,6 @@
 			elseif(!empty($this->data) && !empty($this->data['body']))
 				$this->body = $this->data['body'];																						//data passed in
 
-
-			// Get template header.
-			if( get_option( 'pmpro_email_header_disabled' ) != 'true' ) {
-				$email_header = pmpro_email_templates_get_template_body('header');
-			} else {
-				$email_header = '';
-			}
-
-			// Get template footer
-			if( get_option( 'pmpro_email_footer_disabled' ) != 'true' ) {
-				$email_footer = pmpro_email_templates_get_template_body('footer');
-			} else {
-				$email_footer = '';
-			}
-
-			// Add header and footer to email body.
-			$this->body = $email_header . $this->body . $email_footer;
-
 			//if data is a string, assume we mean to replace !!body!! with it
 			if(is_string($this->data))
 				$this->data = array("body"=>$data);											
@@ -220,6 +202,31 @@
 			$this->body = apply_filters("pmpro_email_body", $temail->body, $this);
 			$this->headers = apply_filters("pmpro_email_headers", $temail->headers, $this);
 			$this->attachments = apply_filters("pmpro_email_attachments", $temail->attachments, $this);
+
+			// Get template header.
+			$email_header = '';
+			if ( pmpro_getOption( 'email_header_disabled' ) != 'true' ) {
+				$email_header = pmpro_email_templates_get_template_body( 'header' );
+				if ( has_filter( 'pmpro_email_body', 'pmpro_kses' ) ) {
+					$email_header = pmpro_kses( $email_header );
+				}
+
+				$email_header = apply_filters( 'pmpro_email_header', $email_header, $this );
+			}
+
+			// Get template footer
+			$email_footer = '';
+			if ( get_option( 'pmpro_email_footer_disabled' ) != 'true' ) {
+				$email_footer = pmpro_email_templates_get_template_body( 'footer' );
+				if ( has_filter( 'pmpro_email_body', 'pmpro_kses' ) ) {
+					$email_footer = pmpro_kses( $email_footer );
+				}
+
+				$email_footer = apply_filters( 'pmpro_email_footer', $email_footer, $this );
+			}
+
+			// Add header and footer to email body.
+			$this->body = $email_header . $this->body . $email_footer;
 			
 			return wp_mail($this->email,$this->subject,$this->body,$this->headers,$this->attachments);
 		}
@@ -363,7 +370,7 @@
 		}
 
 		/**
-		 * Semnd the "cancel on next payment date" email to the member.
+		 * Send the "cancel on next payment date" email to the member.
 		 *
 		 * @param WP_User $user The WordPress user object.
 		 * @param int $level_id The level ID of the level that was cancelled.
@@ -383,7 +390,7 @@
 			$level = pmpro_getSpecificMembershipLevelForUser( $user->ID, $level_id );
 
 			// Make sure that the level is now set to expire.
-			if ( empty( $level ) || empty( $level->enddate) ) {
+				if ( empty( $level ) || empty( $level->enddate) ) {
 				return false;
 			}
 
@@ -415,6 +422,8 @@
 		 *
 		 * @param WP_User $user The WordPress user object.
 		 * @param int $level_id The level ID of the level that was cancelled.
+		 * @return bool True if the email was sent, false otherwise.
+		 * @since TBD
 		 */
 		function sendCancelOnNextPaymentDateAdminEmail( $user, $level_id ) {
 			// If an array is passed for $level_id, throw doing it wrong warning.
@@ -1477,7 +1486,7 @@
 			$level = pmpro_getLevel( $order->membership_id );
 
 			$this->email = $user->user_email;
-			$this->subject = __('Invoice for order #: ', 'paid-memberships-pro') . $order->code;
+			$this->subject = __('Receipt for order #: ', 'paid-memberships-pro') . $order->code;
 
 			// Load invoice template
 			if ( file_exists( get_stylesheet_directory() . '/paid-memberships-pro/pages/orders-email.php' ) ) {

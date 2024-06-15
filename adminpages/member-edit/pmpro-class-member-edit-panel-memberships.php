@@ -208,7 +208,7 @@ class PMPro_Member_Edit_Panel_Memberships extends PMPro_Member_Edit_Panel {
 									?>
 									<div class="pmpro-level_change-action-header">
 										<h4><?php esc_html_e( 'Edit Membership', 'paid-memberships-pro' ); ?></h4>
-										<p><?php printf( esc_html( 'You are editing the following membership level: %s.', 'paid-memberships-pro' ), '<strong>' . esc_html( $shown_level->name ) . '</strong>' ); ?></p>
+										<p><?php printf( esc_html__( 'You are editing the following membership level: %s.', 'paid-memberships-pro' ), '<strong>' . esc_html( $shown_level->name ) . '</strong>' ); ?></p>
 									</div>
 
 									<div class="pmpro-level_change-action">
@@ -296,7 +296,7 @@ class PMPro_Member_Edit_Panel_Memberships extends PMPro_Member_Edit_Panel {
 									?>
 									<div class="pmpro-level_change-action-header">
 										<h4><?php esc_html_e( 'Cancel Membership', 'paid-memberships-pro' ); ?></h4>
-										<p><?php printf( esc_html( 'This change will permanently cancel the following membership level: %s.', 'paid-memberships-pro' ),  '<strong>' . esc_html( $shown_level->name ) . '</strong>' ); ?></p>
+										<p><?php printf( esc_html__( 'This change will permanently cancel the following membership level: %s.', 'paid-memberships-pro' ),  '<strong>' . esc_html( $shown_level->name ) . '</strong>' ); ?></p>
 									</div>
 
 									<?php
@@ -308,7 +308,7 @@ class PMPro_Member_Edit_Panel_Memberships extends PMPro_Member_Edit_Panel {
 											<span class="pmpro-level_change-action-field">
 												<label>
 													<input type="checkbox" name="<?php echo esc_attr( $cancel_level_input_name_base ); ?>[refund]" value="<?php echo (int)$last_order->id; ?>" />
-													<?php printf( esc_html( 'Refund the last payment (%s).', 'paid-memberships-pro' ), pmpro_escape_price( pmpro_formatPrice( $last_order->total ) ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+													<?php printf( esc_html__( 'Refund the last payment (%s).', 'paid-memberships-pro' ), pmpro_escape_price( pmpro_formatPrice( $last_order->total ) ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 												</label>
 											</span>
 										</div>
@@ -384,7 +384,7 @@ class PMPro_Member_Edit_Panel_Memberships extends PMPro_Member_Edit_Panel {
 											// If the group only allows a single level and the user already has a level, note the level that will be removed.
 											if ( empty( $group->allow_multiple_selections ) && ! empty( $shown_level ) ) {
 												?>
-												<p><?php printf( esc_html( 'This change will remove the following membership level: %s.', 'paid-memberships-pro' ), '<strong>' . esc_html( $shown_level->name ) . '</strong>' ); ?></p>
+												<p><?php printf( esc_html__( 'This change will remove the following membership level: %s.', 'paid-memberships-pro' ), '<strong>' . esc_html( $shown_level->name ) . '</strong>' ); ?></p>
 												<?php
 											}
 											?>
@@ -436,7 +436,7 @@ class PMPro_Member_Edit_Panel_Memberships extends PMPro_Member_Edit_Panel {
 														<span class="pmpro-level_change-action-field">
 														<label>
 															<input type="checkbox" name="<?php echo esc_attr( $add_level_to_group_input_name_base ); ?>[refund]" value="<?php echo (int)$last_order->id; ?>" />
-															<?php printf( esc_html( 'Refund the last payment (%s).', 'paid-memberships-pro' ), pmpro_escape_price( pmpro_formatPrice( $last_order->total ) ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+															<?php printf( esc_html__( 'Refund the last payment (%s).', 'paid-memberships-pro' ), pmpro_escape_price( pmpro_formatPrice( $last_order->total ) ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 														</label>
 													</span>
 												</div>
