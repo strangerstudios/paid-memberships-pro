@@ -139,7 +139,7 @@ function pmpro_member_edit_display() {
 					continue;
 				}
 
-				// If we are showing the orders panel, there is additional code that we need to run to allow emailing invoices.
+				// If we are showing the orders panel, there is additional code that we need to run to allow emailing orders.
 				// Ideally this would be in the "orders" panel class, but this code needs to be its own separate <form>.
 				// Hopefully we will have a solution for this down the road, but for now, adding this code here.
 				if ( $panel_slug === 'orders' && function_exists( 'pmpro_add_email_order_modal' ) ) {

@@ -133,7 +133,7 @@
 
 					$invoice = $pmpro_stripe_event->data->object;
 
-					//alright. create a new order/invoice
+					//alright. create a new order
 					$morder = new MemberOrder();
 					$morder->user_id = $old_order->user_id;
 					$morder->membership_id = $old_order->membership_id;
@@ -194,7 +194,7 @@
 					$morder->saveOrder();
 					$morder->getMemberOrderByID($morder->id);
 
-					//email the user their invoice
+					//email the user their order
 					$pmproemail = new PMProEmail();
 					$pmproemail->sendInvoiceEmail($user, $morder);
 

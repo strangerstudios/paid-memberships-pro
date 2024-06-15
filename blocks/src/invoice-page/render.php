@@ -1,6 +1,6 @@
 <?php
 /**
- * Render the Membership Invoice block on the frontend.
+ * Render the Membership Orders block on the frontend.
  */
 $output = pmpro_loadTemplate( 'invoice', 'local', 'pages' );
 ?>

@@ -352,31 +352,6 @@ require_once(dirname(__FILE__) . "/admin_header.php"); ?>
 					</tr>
 					<tr>
 						<th scope="row" valign="top">
-							<label for="invoice_page_id"><?php esc_html_e('Invoice Page', 'paid-memberships-pro' ); ?></label>
-						</th>
-						<td>
-							<?php
-							wp_dropdown_pages(
-								array(
-									'name'             => 'invoice_page_id',
-									'show_option_none' => '-- ' . esc_html__( 'Choose One', 'paid-memberships-pro' ) . ' --',
-									'selected'         => esc_html( $pmpro_pages['invoice'] ),
-									'post_type'        => esc_html( $post_type ),
-								)
-							);
-							?>
-							<?php if (!empty($pmpro_pages['invoice'])) { ?>
-								<a target="_blank" href="post.php?post=<?php echo esc_attr( $pmpro_pages['invoice'] ); ?>&action=edit"
-								class="button button-secondary pmpro_page_edit"><?php esc_html_e('edit page', 'paid-memberships-pro' ); ?></a>
-								&nbsp;
-								<a target="_blank" href="<?php echo esc_url( get_permalink($pmpro_pages['invoice']) ); ?>"
-								class="button button-secondary pmpro_page_view"><?php esc_html_e('view page', 'paid-memberships-pro' ); ?></a>
-							<?php } ?>
-							<p class="description"><?php esc_html_e('Include the shortcode', 'paid-memberships-pro' ); ?> [pmpro_invoice] <?php esc_html_e('or the Membership Invoice block', 'paid-memberships-pro' ); ?>.</p>
-						</td>
-					</tr>
-					<tr>
-						<th scope="row" valign="top">
 							<label for="levels_page_id"><?php esc_html_e('Levels Page', 'paid-memberships-pro' ); ?></label>
 						</th>
 						<td>
@@ -478,6 +453,31 @@ require_once(dirname(__FILE__) . "/admin_header.php"); ?>
 							);
 							echo '<br /><p class="description">' . sprintf( wp_kses( __( 'Optional: Collect additional member fields at checkout, on the profile, or for admin-use only using the <a href="%s" title="Paid Memberships Pro - Register Helper Add On" target="_blank">Register Helper Add On</a>.', 'paid-memberships-pro' ), $allowed_member_profile_edit_html ), 'https://www.paidmembershipspro.com/add-ons/pmpro-register-helper-add-checkout-and-profile-fields/?utm_source=plugin&utm_medium=pmpro-pagesettings&utm_campaign=add-ons&utm_content=pmpro-register-helper' ) . '</p>';
 							} ?>
+						</td>
+					</tr>
+					<tr>
+						<th scope="row" valign="top">
+							<label for="invoice_page_id"><?php esc_html_e('Orders Page', 'paid-memberships-pro' ); ?></label>
+						</th>
+						<td>
+							<?php
+							wp_dropdown_pages(
+								array(
+									'name'             => 'invoice_page_id',
+									'show_option_none' => '-- ' . esc_html__( 'Choose One', 'paid-memberships-pro' ) . ' --',
+									'selected'         => esc_html( $pmpro_pages['invoice'] ),
+									'post_type'        => esc_html( $post_type ),
+								)
+							);
+							?>
+							<?php if (!empty($pmpro_pages['invoice'])) { ?>
+								<a target="_blank" href="post.php?post=<?php echo esc_attr( $pmpro_pages['invoice'] ); ?>&action=edit"
+								class="button button-secondary pmpro_page_edit"><?php esc_html_e('edit page', 'paid-memberships-pro' ); ?></a>
+								&nbsp;
+								<a target="_blank" href="<?php echo esc_url( get_permalink($pmpro_pages['invoice']) ); ?>"
+								class="button button-secondary pmpro_page_view"><?php esc_html_e('view page', 'paid-memberships-pro' ); ?></a>
+							<?php } ?>
+							<p class="description"><?php esc_html_e('Include the shortcode', 'paid-memberships-pro' ); ?> [pmpro_invoice] <?php esc_html_e('or the Membership Orders block', 'paid-memberships-pro' ); ?>.</p>
 						</td>
 					</tr>
 				</tbody>

@@ -1,6 +1,6 @@
 <?php
 /**
- * Template for Email Invoices
+ * Template for Email Orders
  *
  * @since 1.8.6
  * 
@@ -14,7 +14,7 @@
 		<td rowspan="2" style="width:80%;">
 			<h2><?php bloginfo( 'sitename' ); ?></h2>
 		</td>
-		<td><?php echo esc_html( __('Invoice #: ', 'paid-memberships-pro' ) . '&nbsp;' . $order->code ); ?></td>
+		<td><?php echo esc_html( __('Order #: ', 'paid-memberships-pro' ) . '&nbsp;' . $order->code ); ?></td>
 	</tr>
 	<tr>
 		<td>
