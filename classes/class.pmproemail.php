@@ -156,16 +156,18 @@
 				$this->body = $this->data['body'];																						//data passed in
 
 
-			// Get template header.
+			// Add template header.
 			if( get_option( 'pmpro_email_header_disabled' ) != 'true' ) {
-				$email_header = pmpro_email_templates_get_template_body('header');
+				$email_header = apply_filters( 'pmproet_header_template',
+				__( '<p>Dear !!header_name!!,</p>', 'paid-memberships-pro' ) );
 			} else {
 				$email_header = '';
 			}
 
-			// Get template footer
+			// Add template footer
 			if( get_option( 'pmpro_email_footer_disabled' ) != 'true' ) {
-				$email_footer = pmpro_email_templates_get_template_body('footer');
+				$email_footer = apply_filters( 'pmproet_footer_template', __( '<p>Respectfully,<br />!!sitename!!</p>',
+				'paid-memberships-pro' ) );
 			} else {
 				$email_footer = '';
 			}
