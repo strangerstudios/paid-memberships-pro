@@ -1,25 +1,17 @@
 <?php
-/**
- * File used to setup default email templates data.
- */
 
- global $pmpro_email_templates_defaults, $pmpro_email_templates_header, $pmpro_email_templates_footer;
+// File used to setup default email templates data.
+global $pmpro_email_templates_defaults;
 
- $pmpro_email_templates_header = apply_filter( 'pmproet_header_template',
- 	 __( '<p>Dear !!header_name!!,</p>', 'paid-memberships-pro' ) );
- $pmpro_email_templates_footer = apply_filter( 'pmproet_footer_template', __( '<p>Respectfully,<br />!!sitename!!</p>',
-  'paid-memberships-pro' ) );
-
- $check_gateway_label = get_option( 'pmpro_check_gateway_label' ) ? get_option( 'pmpro_check_gateway_label' ) : __( 'Check', 'paid-memberships-pro' );
- /**
- * Default email templates.
- */
+$check_gateway_label = get_option( 'pmpro_check_gateway_label' ) ? get_option( 'pmpro_check_gateway_label' ) : __( 'Check', 'paid-memberships-pro' );
+ 
+// Default email templates.
 $pmpro_email_templates_defaults = array(
 	'admin_change' => array(
 		'subject' => __( "Your membership at !!sitename!! has been changed", 'paid-memberships-pro' ),
 		'description' => __( 'Admin Change', 'paid-memberships-pro'),
 		'body' => __( '<p>An administrator at !!sitename!! has changed your membership level.</p>
-		
+
 <p>!!membership_change!!</p>
 		
 <p>If you did not request this membership change and would like more information please contact us at !!siteemail!!</p>

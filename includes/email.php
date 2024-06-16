@@ -3,11 +3,13 @@
 add_filter( 'pmpro_email_body', 'pmpro_kses', 11 );
 
 /**
- * The default name for WP emails is WordPress.
- * Use our setting instead.
+ * The default name for WP emails is WordPress. Use our setting instead.
+ *
+ * @param string $from_name The default from name.
+ * @return string The from name.
+ * @since TBD
  */
-function pmpro_wp_mail_from_name($from_name)
-{
+function pmpro_wp_mail_from_name( $from_name ) {
 	$default_from_name = 'WordPress';
 
 	//make sure it's the default from name
@@ -22,8 +24,11 @@ function pmpro_wp_mail_from_name($from_name)
 }
 
 /**
- * The default email address for WP emails is wordpress@sitename.
- * Use our setting instead.
+ * The default email address for WP emails is wordpress@sitename. Use our setting instead.
+ *
+ * @param string $from_email The default from email.
+ * @return string The from email.
+ * @since TBD
  */
 function pmpro_wp_mail_from( $from_email ) {
 	// default from email wordpress@sitename
@@ -52,24 +57,26 @@ function pmpro_wp_mail_from( $from_email ) {
 }
 
 // Are we filtering all WP emails or just PMPro ones?
-$only_filter_pmpro_emails = get_option("pmpro_only_filter_pmpro_emails");
-if($only_filter_pmpro_emails) {
-	add_filter('pmpro_email_sender_name', 'pmpro_wp_mail_from_name');
-	add_filter('pmpro_email_sender', 'pmpro_wp_mail_from');
+$only_filter_pmpro_emails = get_option( "pmpro_only_filter_pmpro_emails" );
+if( $only_filter_pmpro_emails ) {
+	add_filter( 'pmpro_email_sender_name', 'pmpro_wp_mail_from_name' );
+	add_filter( 'pmpro_email_sender', 'pmpro_wp_mail_from' );
 } else {
-	add_filter('wp_mail_from_name', 'pmpro_wp_mail_from_name');
-	add_filter('wp_mail_from', 'pmpro_wp_mail_from');
+	add_filter( 'wp_mail_from_name', 'pmpro_wp_mail_from_name' );
+	add_filter( 'wp_mail_from', 'pmpro_wp_mail_from' );
+}
+
+//If the $email_member_notification option is empty, disable the wp_new_user_notification email at checkout.
+$email_member_notification = get_option( "pmpro_email_member_notification" );
+if( empty( $email_member_notification ) ) {
+	add_filter( "pmpro_wp_new_user_notification", "__return_false", 0 );
 }
 
 /**
- * If the $email_member_notification option is empty, disable the wp_new_user_notification email at checkout.
- */
-$email_member_notification = get_option("pmpro_email_member_notification");
-if(empty($email_member_notification))
-	add_filter("pmpro_wp_new_user_notification", "__return_false", 0);
-
-/**
- * Adds template files and changes content type to html if using PHPMailer directly.
+ * Add template files and change content type to HTML if using PHPMailer directly.
+ *
+ * @param object $phpmailer The PHPMailer object.
+ * @since TBD
  */
 function pmpro_send_html( $phpmailer ) {
 
@@ -161,6 +168,10 @@ add_filter('wp_mail_content_type', 'pmpro_wp_mail_content_type');
  * We double check the wp_mail_content_type filter hasn't been disabled.
  * We check if there are already <br /> tags before running nl2br.
  * Running make_clickable() multiple times has no effect.
+ *
+ * @param string $message The message to be sent in the email.
+ * @return string The message to be sent in the email.
+ * @since TBD
  */
 function pmpro_retrieve_password_message( $message ) {
 	if ( has_filter( 'wp_mail_content_type', 'pmpro_wp_mail_content_type' ) ) {
@@ -175,7 +186,12 @@ function pmpro_retrieve_password_message( $message ) {
 }
 add_filter( 'retrieve_password_message', 'pmpro_retrieve_password_message', 10, 1 );
 
-//get template data
+/**
+ * Get template data. Ajax endpoint to get template data from the database and serve into the client side.
+ *
+ * @return void Despite it doesn't return anything, it echoes the template data.
+ * @since TBD
+ */
 function pmpro_email_templates_get_template_data() {
 
 	check_ajax_referer('pmproet', 'security');
@@ -211,7 +227,12 @@ function pmpro_email_templates_get_template_data() {
 }
 add_action('wp_ajax_pmpro_email_templates_get_template_data', 'pmpro_email_templates_get_template_data');
 
-//save template data
+
+/**
+ * Ajax endpoint to save template data into the database.
+ *
+ * @return void Despite it doesn't return anything, it echoes a message to the AJAX callback.
+ */
 function pmpro_email_templates_save_template_data() {
 
 	check_ajax_referer('pmproet', 'security');
@@ -234,7 +255,12 @@ function pmpro_email_templates_save_template_data() {
 }
 add_action('wp_ajax_pmpro_email_templates_save_template_data', 'pmpro_email_templates_save_template_data');
 
-//reset template data
+/**
+ * Reset template data. Ajax endpoint to reset template data to the default values.
+ *
+ * @return void Despite it doesn't return anything, it echoes the template data.
+ * @since TBD
+ */
 function pmpro_email_templates_reset_template_data() {
 
 	check_ajax_referer('pmproet', 'security');
@@ -259,7 +285,12 @@ function pmpro_email_templates_reset_template_data() {
 }
 add_action('wp_ajax_pmpro_email_templates_reset_template_data', 'pmpro_email_templates_reset_template_data');
 
-// disable template
+/**
+ * Disable/Enable template. Ajax endpoint to disable or enable a template.
+ *
+ * @return void Despite it doesn't return anything, it echoes the template data.
+ * @since TBD
+ */
 function pmpro_email_templates_disable_template() {
 
 	check_ajax_referer('pmproet', 'security');
@@ -277,7 +308,12 @@ function pmpro_email_templates_disable_template() {
 }
 add_action('wp_ajax_pmpro_email_templates_disable_template', 'pmpro_email_templates_disable_template');
 
-//send test email
+/**
+ * Send test email. Ajax endpoint to send a test email.
+ *
+ * @return void Despite it doesn't return anything, it echoes the response.
+ * @since TBD
+ */
 function pmpro_email_templates_send_test() {
 
 	check_ajax_referer('pmproet', 'security');
@@ -557,17 +593,13 @@ add_filter('pmpro_email_data', 'pmpro_email_templates_email_data', 10, 2);
 
 
 /**
- * Load the default email template.
+ * Load the default email template. Checks theme, then template, then PMPro directory.
  *
- * Checks theme, then template, then PMPro directory.
- *
- * @since 0.6
- *
- * @param $template string
- *
+ * @param $template string The template name to load.
  * @return string
+ * @since 0.6
  */
-function pmpro_email_templates_get_template_body($template) {
+function pmpro_email_templates_get_template_body( $template ) {
 
 	global $pmpro_email_templates_defaults;
 
@@ -602,7 +634,6 @@ function pmpro_email_templates_get_template_body($template) {
 	} else {
 		$body = get_transient( 'pmproet_' . $template );
 	}
-
 
 	return $body;
 }
