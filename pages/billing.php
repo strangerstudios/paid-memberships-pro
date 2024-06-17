@@ -283,47 +283,32 @@
 									<h2 class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_heading pmpro_font-large' ) ); ?>"><?php esc_html_e('Payment Information', 'paid-memberships-pro' ); ?></h2>
 								</legend>
 								<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_fields' ) ); ?>">
-									<?php
-										$pmpro_include_cardtype_field = apply_filters('pmpro_include_cardtype_field', false);
-										if($pmpro_include_cardtype_field) { ?>
-											<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_field pmpro_form_field-select pmpro_payment-card-type', 'pmpro_payment-card-type' ) ); ?>">
-												<label for="CardType" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_label' ) ); ?>"><?php esc_html_e('Card Type', 'paid-memberships-pro' );?></label>
-												<select id="CardType" name="CardType" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_input pmpro_form_input-select', 'CardType' ) );?>">
-													<?php foreach($pmpro_accepted_credit_cards as $cc) { ?>
-														<option value="<?php echo esc_attr( $cc ); ?>" <?php if($CardType === $cc) { ?>selected="selected"<?php } ?>><?php echo esc_html( $cc ); ?></option>
-													<?php } ?>
-												</select>
-											</div> <!-- end pmpro_payment-card-type -->
-										<?php } else { ?>
-											<input type="hidden" id="CardType" name="CardType" value="<?php echo esc_attr($CardType);?>" />
-											<script>
-												<!--
-												jQuery(document).ready(function() {
-														jQuery('#AccountNumber').validateCreditCard(function(result) {
-															var cardtypenames = {
-																"amex"                      : "American Express",
-																"diners_club_carte_blanche" : "Diners Club Carte Blanche",
-																"diners_club_international" : "Diners Club International",
-																"discover"                  : "Discover",
-																"jcb"                       : "JCB",
-																"laser"                     : "Laser",
-																"maestro"                   : "Maestro",
-																"mastercard"                : "Mastercard",
-																"visa"                      : "Visa",
-																"visa_electron"             : "Visa Electron"
-															};
+									<input type="hidden" id="CardType" name="CardType" value="<?php echo esc_attr($CardType);?>" />
+									<script>
+										<!--
+										jQuery(document).ready(function() {
+												jQuery('#AccountNumber').validateCreditCard(function(result) {
+													var cardtypenames = {
+														"amex"                      : "American Express",
+														"diners_club_carte_blanche" : "Diners Club Carte Blanche",
+														"diners_club_international" : "Diners Club International",
+														"discover"                  : "Discover",
+														"jcb"                       : "JCB",
+														"laser"                     : "Laser",
+														"maestro"                   : "Maestro",
+														"mastercard"                : "Mastercard",
+														"visa"                      : "Visa",
+														"visa_electron"             : "Visa Electron"
+													};
 
-															if(result.card_type)
-																jQuery('#CardType').val(cardtypenames[result.card_type.name]);
-															else
-																jQuery('#CardType').val('Unknown Card Type');
-														});
+													if(result.card_type)
+														jQuery('#CardType').val(cardtypenames[result.card_type.name]);
+													else
+														jQuery('#CardType').val('Unknown Card Type');
 												});
-												-->
-											</script>
-											<?php
-											}
-										?>
+										});
+										-->
+									</script>
 									<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_field pmpro_form_field-text pmpro_payment-account-number', 'pmpro_payment-account-number' ) ); ?>">
 										<label for="AccountNumber" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_label' ) ); ?>"><?php esc_html_e('Card Number', 'paid-memberships-pro' );?></label>
 										<input id="AccountNumber" name="AccountNumber" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_input pmpro_form_input-text', 'AccountNumber' ) );?>" type="text" size="25" value="<?php echo esc_attr($AccountNumber)?>" autocomplete="off" />
