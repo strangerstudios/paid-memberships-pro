@@ -27,8 +27,8 @@
 			Save any value that might have been passed in
 		*/
 		foreach($payment_options as $option) {
-			//for now we make a special case for sslseal, but we need a way to specify sanitize functions for other fields
-			if( in_array( $option, array( 'sslseal', 'instructions' ) ) ) {
+			//for now we make a special case for check instructions, but we need a way to specify sanitize functions for other fields
+			if( in_array( $option, array( 'instructions' ) ) ) {
 				global $allowedposttags;
 				$html = wp_kses(wp_unslash($_POST[$option]), $allowedposttags);
 				update_option("pmpro_{$option}", $html);
@@ -252,27 +252,6 @@
 									<?php
 								}
 							?>
-						</td>
-					</tr>
-					<tr>
-						<th scope="row" valign="top">
-							<label for="sslseal"><?php esc_html_e('SSL Seal Code', 'paid-memberships-pro' );?></label>
-						</th>
-						<td>
-							<textarea id="sslseal" name="sslseal" rows="3" cols="50" class="large-text">
-								<?php
-								// This value is set by admins and could contain JS. Will be replaced with a hook in future versions.
-								// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-								echo stripslashes(esc_textarea($sslseal))
-								?>
-							</textarea>
-							<p class="description">
-								<?php
-									$ssl_certificate_link = '<a target="_blank" rel="nofollow noopener" href="https://www.paidmembershipspro.com/documentation/initial-plugin-setup/ssl/?utm_source=plugin&utm_medium=pmpro-paymentsettings&utm_campaign=documentation&utm_content=ssl&utm_term=link2">' . esc_html__( 'SSL Certificate', 'paid-memberships-pro' ) . '</a>';
-									// translators: %s: Link to SSL Certificate docs.
-									printf( esc_html__('Your %s must be installed by your web host. Use this field to display your seal or other trusted merchant images. This field does not accept JavaScript.', 'paid-memberships-pro' ), $ssl_certificate_link ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-								?>
-							</p>
 						</td>
 					</tr>
 					<tr>

@@ -244,7 +244,6 @@ class PMProGateway_stripe extends PMProGateway {
 	 */
 	public static function getGatewayOptions() {
 		$options = array(
-			'sslseal',
 			'nuclear_HTTPS',
 			'gateway_environment',
 			'stripe_secretkey',

@@ -2,13 +2,14 @@
 /**
  * Upgrade to version 3.1
  *
+ * We are eliminating the SSL Seal Code setting.
+ * We are also changing the default text and adding a setting for protected content messages.
+ *
+ * @since TBD
  */
 function pmpro_upgrade_3_1() {
-	// Check if we have a setting for pmpro_accepted_card_types and delete it.
-	$pmpro_accepted_credit_cards = get_option( 'pmpro_accepted_credit_cards' );
-	if ( $pmpro_accepted_credit_cards !== false ) {
-		delete_option( 'pmpro_accepted_credit_cards' );
-	}
+    delete_option( 'pmpro_sslseal' );
+    delete_option( 'pmpro_accepted_credit_cards' );
 
 	// Check if we have a setting for pmpro_nonmembertext and compare it to the default.
     $pmpro_nonmembertext = get_option( 'pmpro_nonmembertext' );

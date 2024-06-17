@@ -268,7 +268,6 @@ use Braintree\WebhookNotification as Braintree_WebhookNotification;
 		static function getGatewayOptions()
 		{
 			$options = array(
-				'sslseal',
 				'nuclear_HTTPS',
 				'gateway_environment',
 				'braintree_merchantid',
