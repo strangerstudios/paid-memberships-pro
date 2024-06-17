@@ -973,7 +973,7 @@ class PMProGateway_stripe extends PMProGateway {
 					</div> <!-- end pmpro_cols-2 -->
 					<?php if ( $pmpro_show_discount_code ) { ?>
 						 <div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_cols-2' ) ); ?>">
-							<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_field pmpro_payment-discount-code', 'pmpro_payment-discount-code' ) ); ?>">
+							<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_field pmpro_form_field-text pmpro_payment-discount-code', 'pmpro_payment-discount-code' ) ); ?>">
 								<label for="pmpro_discount_code" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_label' ) ); ?>"><?php esc_html_e( 'Discount Code', 'paid-memberships-pro' ); ?></label>
 								<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_fields-inline' ) ); ?>">
 									<input id="pmpro_discount_code" name="pmpro_discount_code" type="text" value="<?php echo esc_attr( $discount_code ) ?>" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_input pmpro_form_input-text pmpro_alter_price', 'pmpro_discount_code' ) ); ?>" />

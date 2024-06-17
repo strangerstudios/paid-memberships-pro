@@ -120,7 +120,7 @@ function pmpro_print_root_color_values() {
 	$accent_variation_hsl_parts = implode( ',', $accent_variation_hsl_parts );
 
 	// Get the style variation to be used when we calculate some colors.
-	$pmpro_style_variation = get_option( 'pmpro_style_variation' );
+	$pmpro_style_variation = get_option( 'pmpro_style_variation', 'variation_1' );
 
 	// Calculate a border variation color based on the base color's lightness.
 	$base_hsl_parts = pmpro_hex_to_hsl_parts( $pmpro_colors['base'] );

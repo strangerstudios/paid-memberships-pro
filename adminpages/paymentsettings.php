@@ -39,28 +39,6 @@
 
 		do_action( 'pmpro_after_saved_payment_options', $payment_options );
 
-		/*
-			Some special case options still worked out here
-		*/
-		//credit cards
-		$pmpro_accepted_credit_cards = array();
-		if(!empty($_REQUEST['creditcards_visa']))
-			$pmpro_accepted_credit_cards[] = "Visa";
-		if(!empty($_REQUEST['creditcards_mastercard']))
-			$pmpro_accepted_credit_cards[] = "Mastercard";
-		if(!empty($_REQUEST['creditcards_amex']))
-			$pmpro_accepted_credit_cards[] = "American Express";
-		if(!empty($_REQUEST['creditcards_discover']))
-			$pmpro_accepted_credit_cards[] = "Discover";
-		if(!empty($_REQUEST['creditcards_dinersclub']))
-			$pmpro_accepted_credit_cards[] = "Diners Club";
-		if(!empty($_REQUEST['creditcards_enroute']))
-			$pmpro_accepted_credit_cards[] = "EnRoute";
-		if(!empty($_REQUEST['creditcards_jcb']))
-			$pmpro_accepted_credit_cards[] = "JCB";
-
-		pmpro_setOption("accepted_credit_cards", implode(",", $pmpro_accepted_credit_cards));
-
 		//assume success
 		$msg = true;
 		$msgt = __("Your payment settings have been updated.", 'paid-memberships-pro' );
@@ -87,21 +65,12 @@
 		pmpro_setOption("tax_rate", $tax_rate);
 	}
 
-	//accepted credit cards
-	$pmpro_accepted_credit_cards = $payment_option_values['accepted_credit_cards'];	//this var has the pmpro_ prefix
-
 	//default settings
 	if(empty($gateway_environment))
 	{
 		$gateway_environment = "sandbox";
 		pmpro_setOption("gateway_environment", $gateway_environment);
 	}
-	if(empty($pmpro_accepted_credit_cards))
-	{
-		$pmpro_accepted_credit_cards = "Visa,Mastercard,American Express,Discover";
-		pmpro_setOption("accepted_credit_cards", $pmpro_accepted_credit_cards);
-	}
-	$pmpro_accepted_credit_cards = explode(",", $pmpro_accepted_credit_cards);
 
 	require_once(dirname(__FILE__) . "/admin_header.php");
 ?>
@@ -226,20 +195,6 @@
 							?>
 							</select>
 							<p class="description"><?php esc_html_e( 'Not all currencies will be supported by every gateway. Please check with your gateway.', 'paid-memberships-pro' ); ?></p>
-						</td>
-					</tr>
-					<tr class="gateway gateway_ <?php echo esc_attr(pmpro_getClassesForPaymentSettingsField("accepted_credit_cards"));?>" <?php if(!empty($gateway) && $gateway != "authorizenet" && $gateway != "paypal" && $gateway != "payflowpro" && $gateway != "braintree" && $gateway != "twocheckout" && $gateway != "cybersource") { ?>style="display: none;"<?php } ?>>
-						<th scope="row" valign="top">
-							<label for="creditcards"><?php esc_html_e('Accepted Credit Card Types', 'paid-memberships-pro' );?></label>
-						</th>
-						<td>
-							<input type="checkbox" id="creditcards_visa" name="creditcards_visa" value="1" <?php if(in_array("Visa", $pmpro_accepted_credit_cards)) { ?>checked="checked"<?php } ?> /> <label for="creditcards_visa">Visa</label><br />
-							<input type="checkbox" id="creditcards_mastercard" name="creditcards_mastercard" value="1" <?php if(in_array("Mastercard", $pmpro_accepted_credit_cards)) { ?>checked="checked"<?php } ?> /> <label for="creditcards_mastercard">Mastercard</label><br />
-							<input type="checkbox" id="creditcards_amex" name="creditcards_amex" value="1" <?php if(in_array("American Express", $pmpro_accepted_credit_cards)) { ?>checked="checked"<?php } ?> /> <label for="creditcards_amex">American Express</label><br />
-							<input type="checkbox" id="creditcards_discover" name="creditcards_discover" value="1" <?php if(in_array("Discover", $pmpro_accepted_credit_cards)) { ?>checked="checked"<?php } ?> /> <label for="creditcards_discover">Discover</label><br />
-							<input type="checkbox" id="creditcards_dinersclub" name="creditcards_dinersclub" value="1" <?php if(in_array("Diners Club", $pmpro_accepted_credit_cards)) {?>checked="checked"<?php } ?> /> <label for="creditcards_dinersclub">Diner's Club</label><br />
-							<input type="checkbox" id="creditcards_enroute" name="creditcards_enroute" value="1" <?php if(in_array("EnRoute", $pmpro_accepted_credit_cards)) {?>checked="checked"<?php } ?> /> <label for="creditcards_enroute">EnRoute</label><br />
-							<input type="checkbox" id="creditcards_jcb" name="creditcards_jcb" value="1" <?php if(in_array("JCB", $pmpro_accepted_credit_cards)) {?>checked="checked"<?php } ?> /> <label for="creditcards_jcb">JCB</label><br />
 						</td>
 					</tr>
 					<tr class="gateway gateway_ <?php echo esc_attr(pmpro_getClassesForPaymentSettingsField("tax_rate"));?>" <?php if(!empty($gateway) && $gateway != "stripe" && $gateway != "authorizenet" && $gateway != "paypal" && $gateway != "paypalexpress" && $gateway != "check" && $gateway != "paypalstandard" && $gateway != "payflowpro" && $gateway != "braintree" && $gateway != "twocheckout" && $gateway != "cybersource") { ?>style="display: none;"<?php } ?>>

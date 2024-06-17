@@ -8,11 +8,8 @@
  * @since TBD
  */
 function pmpro_upgrade_3_1() {
-    // Check if we have a setting for pmpro_sslseal and delete it.
-    $pmpro_sslseal = get_option( 'pmpro_sslseal' );
-    if ( $pmpro_sslseal !== false ) {
-        delete_option( 'pmpro_sslseal' );
-	}
+    delete_option( 'pmpro_sslseal' );
+    delete_option( 'pmpro_accepted_credit_cards' );
 
 	// Check if we have a setting for pmpro_nonmembertext and compare it to the default.
     $pmpro_nonmembertext = get_option( 'pmpro_nonmembertext' );
