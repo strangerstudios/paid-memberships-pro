@@ -467,17 +467,6 @@ require_once(dirname(__FILE__) . "/admin_header.php"); ?>
 								<a href="<?php echo esc_url( wp_nonce_url( add_query_arg( array( 'page' => 'pmpro-pagesettings', 'createpages' => 1, 'page_name' => esc_attr( 'member_profile_edit' )   ), admin_url('admin.php') ), 'createpages', 'pmpro_pagesettings_nonce' ) ); ?>"><?php esc_html_e('Generate Page', 'paid-memberships-pro' ); ?></a>
 							<?php } ?>
 							<p class="description"><?php printf( esc_html__('Include the shortcode %s or the Member Profile Edit block.', 'paid-memberships-pro' ), '[pmpro_member_profile_edit]' ); ?></p>
-
-							<?php
-								$allowed_member_profile_edit_html = array (
-									'a' => array (
-									'href' => array(),
-									'target' => array(),
-									'title' => array(),
-								),
-							);
-							echo '<p class="description">' . sprintf( wp_kses( __( 'Optional: Collect additional member fields at checkout, on the profile, or for admin-use only. Set up your custom fields on the <a href="%s" title="Paid Memberships Pro - User Fields" target="_blank">User Fields</a> settings page.', 'paid-memberships-pro' ), $allowed_member_profile_edit_html ), esc_url( add_query_arg( array( 'page' => 'pmpro-userfields' ), get_admin_url(null, 'admin.php' ) ) ) ) . '</p>';
-							?>
 						</td>
 					</tr>
 				</tbody>
