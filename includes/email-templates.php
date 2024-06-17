@@ -357,9 +357,10 @@ $pmpro_email_templates_defaults = array(
 		'help_text' => __( 'This email is sent to the admin as confirmation of a refunded payment. The email is sent after your membership site receives notification of a successful payment refund through your gateway.', 'paid-memberships-pro' )
 	)
 );
-
+//we can hide the payment action required emails if default gateway isn't Stripe.
+$defaul_gateway = get_option( 'pmpro_gateway' );
 // add SCA payment action required emails if we're using PMPro 2.1 or later
-if( defined( 'PMPRO_VERSION' ) && version_compare( PMPRO_VERSION, '2.1' ) >= 0 ) {
+if( defined( 'PMPRO_VERSION' ) && version_compare( PMPRO_VERSION, '2.1' ) >= 0 && 'stripe' === $defaul_gateway ) {
 	$pmpro_email_templates_defaults = array_merge( $pmpro_email_templates_defaults, array(
 		'payment_action' => array(
 			'subject' => __( "Payment action required for your !!sitename!! membership", 'paid-memberships-pro' ),
