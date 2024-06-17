@@ -243,7 +243,7 @@
 			<?php } ?>
 
 			<?php if(current_user_can('pmpro_membershiplevels')) { ?>
-				<li><a href="<?php echo esc_url( admin_url( 'admin.php?page=pmpro-membershiplevels' ) );?>"<?php if( in_array( $view, array( 'pmpro-membershiplevels', 'pmpro-discountcodes', 'pmpro-pagesettings', 'pmpro-paymentsettings', 'pmpro-emailsettings', 'pmpro-emailtemplates', 'pmpro-advancedsettings' ) ) ) { ?> class="current"<?php } ?>"><?php esc_html_e('Settings', 'paid-memberships-pro' );?></a></li>
+				<li><a href="<?php echo esc_url( admin_url( 'admin.php?page=pmpro-membershiplevels' ) );?>"<?php if( in_array( $view, array( 'pmpro-membershiplevels', 'pmpro-discountcodes', 'pmpro-pagesettings', 'pmpro-paymentsettings', 'pmpro-emailsettings', 'pmpro-emailtemplates', 'pmpro-designsettings', 'pmpro-advancedsettings' ) ) ) { ?> class="current"<?php } ?>"><?php esc_html_e('Settings', 'paid-memberships-pro' );?></a></li>
 			<?php } ?>
 
 			<?php if(current_user_can('pmpro_addons')) { ?>
