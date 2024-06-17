@@ -109,8 +109,8 @@ $pmpro_email_templates_defaults = array(
 		'help_text' => __( 'The site administrator can manually cancel a user\'s membership through the WordPress admin or the member can cancel their own membership through your site. This email is sent to the site administrator as confirmation of a cancelled membership.', 'paid-memberships-pro' )
 	),
 	'cancel_on_next_payment_date' => array(
-		'subject'=> __( "Your payment subscription at !!sitename!! has been CANCELLED", 'paid-memberships-pro' ),
-		'description' => __('Cancel On Next Payment Date', 'paid-memberships-pro'),
+		'subject' => __( "Your payment subscription at !!sitename!! has been CANCELLED", 'paid-memberships-pro' ),
+		'description' => __('Canceled Auto-Renewals', 'paid-memberships-pro'),
 		'body' => __( '<p>Your payment subscription at !!sitename!! has been cancelled.</p>
 
 <p>Account: !!display_name!! (!!user_email!!)</p>
@@ -120,7 +120,7 @@ $pmpro_email_templates_defaults = array(
 	),
 	'cancel_on_next_payment_date_admin' => array(
 		'subject' => __( "Payment subscription for !!user_login!! at !!sitename!! has been CANCELLED", 'paid-memberships-pro' ),
-		'description' => __('Cancel On Next Payment Date (admin)', 'paid-memberships-pro'),
+		'description' => __('Canceled Auto-Renewals (admin)', 'paid-memberships-pro'),
 		'body' => __( '<p>The payment subscription for !!user_login!! at !!sitename!! has been cancelled.</p>
 
 <p>Account: !!display_name!! (!!user_email!!)</p>
