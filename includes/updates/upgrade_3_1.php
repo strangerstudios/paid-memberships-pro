@@ -4,7 +4,13 @@
  *
  */
 function pmpro_upgrade_3_1() {
-    // Check if we have a setting for pmpro_nonmembertext and compare it to the default.
+	// Check if we have a setting for pmpro_accepted_card_types and delete it.
+	$pmpro_accepted_credit_cards = get_option( 'pmpro_accepted_credit_cards' );
+	if ( $pmpro_accepted_credit_cards !== false ) {
+		delete_option( 'pmpro_accepted_credit_cards' );
+	}
+
+	// Check if we have a setting for pmpro_nonmembertext and compare it to the default.
     $pmpro_nonmembertext = get_option( 'pmpro_nonmembertext' );
     if ( $pmpro_nonmembertext !== false ) {
 		// We have text set, let's compare it to the old default.

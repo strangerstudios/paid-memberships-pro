@@ -279,7 +279,6 @@ use Braintree\WebhookNotification as Braintree_WebhookNotification;
 				'use_ssl',
 				'tax_state',
 				'tax_rate',
-				'accepted_credit_cards',
 			);
 
 			return $options;
@@ -448,11 +447,6 @@ use Braintree\WebhookNotification as Braintree_WebhookNotification;
 
 			//global vars
 			global $pmpro_requirebilling, $pmpro_show_discount_code, $discount_code, $CardType, $AccountNumber, $ExpirationMonth, $ExpirationYear;
-
-			//get accepted credit cards
-			$pmpro_accepted_credit_cards = get_option("pmpro_accepted_credit_cards");
-			$pmpro_accepted_credit_cards = explode(",", $pmpro_accepted_credit_cards);
-			$pmpro_accepted_credit_cards_string = pmpro_implodeToEnglish($pmpro_accepted_credit_cards);
 
 			//include ours
 			?>
