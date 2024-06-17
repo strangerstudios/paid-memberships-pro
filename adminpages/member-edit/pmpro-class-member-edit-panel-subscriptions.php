@@ -7,20 +7,6 @@ class PMPro_Member_Edit_Panel_Subscriptions extends PMPro_Member_Edit_Panel {
 	public function __construct() {
 		$this->slug = 'subscriptions';
 		$this->title = __( 'Subscriptions', 'paid-memberships-pro' );
-
-		// Get the user's Stripe Customer if they have one.
-		$user = self::get_user();
-		$stripe = new PMProGateway_Stripe();
-		$customer = $stripe->get_customer_for_user( $user->ID );
-		$subscriptions = PMPro_Subscription::get_subscriptions_for_user( $user->ID );
-		$user_has_active_stripe_subscription = array_reduce( $subscriptions, function ( $carry, $subscription ) {
-			return $carry || ( $subscription->get_status() === 'active' && $subscription->get_gateway() === 'stripe' );
-		}, false );
-		// Link to the Stripe Customer if they have one.
-		// TODO: Eventually make this a hook or filter so other gateways can add their own links.
-		if ( ! empty( $customer ) && $user_has_active_stripe_subscription ) {
-			$this->title_link = '<a target="_blank" class="page-title-action pmpro-has-icon pmpro-has-icon-admin-users" href="' . esc_url( 'https://dashboard.stripe.com/' . ( get_option( 'pmpro_gateway_environment' ) == 'sandbox' ? 'test/' : '' ) . 'customers/' . $customer->id ) . '">' . esc_html__( 'Edit customer in Stripe', 'paid-memberships-pro' ) . '</a>';
-		}
 	}
 
 	/**
