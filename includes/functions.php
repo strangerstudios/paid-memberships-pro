@@ -3811,7 +3811,7 @@ function pmpro_cleanup_memberships_users_table() {
  * @return bool True if we are on the checkout page, false otherwise
  */
 function pmpro_is_checkout() {
-	global $pmpro_pages;
+	global $pmpro_pages, $wp_query;
 
 	// Try is_page first.
 	if ( ! empty( $pmpro_pages['checkout'] ) ) {
@@ -3821,7 +3821,11 @@ function pmpro_is_checkout() {
 	}
 
 	// Page might not be setup yet or a custom page.
-	$queried_object = get_queried_object();
+	if ( ! empty( $wp_query ) ) {
+		$queried_object = get_queried_object();
+	} else {
+		$queried_object = null;
+	}
 
 	if ( ! $is_checkout &&
 		! empty( $queried_object ) &&
