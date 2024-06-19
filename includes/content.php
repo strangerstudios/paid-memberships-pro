@@ -568,7 +568,9 @@ function pmpro_body_classes( $classes ) {
 		if( ! empty( $post_levels[1] ) ) {
 			$classes[] = 'pmpro-body-level-required';
 			foreach( $post_levels[1] as $post_level ) {
-				$classes[] = 'pmpro-body-level-' . $post_level[0];
+				if ( ! empty( $post_level[0] ) ) {
+					$classes[] = 'pmpro-body-level-' . $post_level[0];
+				}
 			}
 		}
 		if( ! empty( $post_levels[0] ) && $post_levels[0] == true) {
