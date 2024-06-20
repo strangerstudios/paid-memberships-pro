@@ -223,7 +223,7 @@ if ( $txn_type == "recurring_payment" ) {
 			// Check if the subscription has been suspended/paused in PPE.
 			if ( $profile_status == "suspended") {
 				// Subscription was suspended. Let's remove the user's membership level, which will also cancel the subscription.
-				$subscription = PMPro_Subscription::get_subscription_from_subscription_transaction_id( $subscr_id, 'paypalexpress', $gateway_environment );
+				$subscription = $last_subscription_order->get_subscription();
 				if ( ! empty( $subscription ) ) {
 					$user = get_userdata( $subscription->get_user_id() );
 					if ( ! empty( $user ) ) {
