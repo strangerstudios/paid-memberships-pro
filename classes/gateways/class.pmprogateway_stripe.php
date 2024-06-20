@@ -165,10 +165,7 @@ class PMProGateway_stripe extends PMProGateway {
 					'PMProGateway_stripe',
 					'pmpro_checkout_after_preheader'
 				) );
-				add_filter( 'pmpro_include_cardtype_field', array(
-					'PMProGateway_stripe',
-					'pmpro_include_billing_address_fields'
-				) );
+
 				add_action( 'pmpro_billing_preheader', array( 'PMProGateway_stripe', 'pmpro_checkout_after_preheader' ) );
 				add_filter( 'pmpro_checkout_order', array( 'PMProGateway_stripe', 'pmpro_checkout_order' ) );
 				add_filter( 'pmpro_billing_order', array( 'PMProGateway_stripe', 'pmpro_checkout_order' ) );
@@ -1686,11 +1683,6 @@ class PMProGateway_stripe extends PMProGateway {
 			}
 		}
 
-		// Disable Stripe Checkout functionality for the rest of this page load.
-		add_filter( 'pmpro_include_cardtype_field', array(
-			'PMProGateway_stripe',
-			'pmpro_include_billing_address_fields'
-		), 15 );
 		add_action( 'pmpro_billing_preheader', array( 'PMProGateway_stripe', 'pmpro_checkout_after_preheader' ), 15 );
 		add_filter( 'pmpro_billing_order', array( 'PMProGateway_stripe', 'pmpro_checkout_order' ), 15 );
 		add_filter( 'pmpro_include_payment_information_fields', array(
