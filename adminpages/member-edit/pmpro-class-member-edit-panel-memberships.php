@@ -737,7 +737,10 @@ class PMPro_Member_Edit_Panel_Memberships extends PMPro_Member_Edit_Panel {
 				}
 
 				// Process the refund.
-				pmpro_refund_order( $refund_order );
+				if ( ! pmpro_refund_order( $refund_order ) ) {
+					pmpro_setMessage( __( 'Error refunding order. Please check the order notes for more information.', 'paid-memberships-pro' ), 'pmpro_error' );
+					return;
+				}
 			}
 
 			// If we need to keep the subscription, add the filter.
@@ -865,7 +868,10 @@ class PMPro_Member_Edit_Panel_Memberships extends PMPro_Member_Edit_Panel {
 				}
 
 				// Process the refund.
-				pmpro_refund_order( $refund_order );
+				if ( ! pmpro_refund_order( $refund_order ) ) {
+					pmpro_setMessage( __( 'Error refunding order. Please check the order notes for more information.', 'paid-memberships-pro' ), 'pmpro_error' );
+					return;
+				}
 			}
 
 			// Check if we should keep the subscription active.
