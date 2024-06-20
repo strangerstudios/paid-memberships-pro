@@ -220,7 +220,20 @@ if ( $txn_type == "recurring_payment" ) {
 		if ( $payment_status == "completed" ) {
 			pmpro_ipnSaveOrder( $txn_id, $last_subscription_order );
 		} elseif ( in_array( $payment_status, $failed_payment_statuses ) ) {
-			pmpro_ipnFailedPayment( $last_subscription_order );
+			// Check if the subscription has been suspended/paused in PPE.
+			if ( $profile_status == "suspended") {
+				// Subscription was suspended. Let's cancel it.
+				$subscription = PMPro_Subscription::get_subscription_from_subscription_transaction_id( $subscr_id, 'paypalexpress', $gateway_environment );
+				if ( empty( $subscription ) ) {
+					// The subscription does not exist on this site. Bail.
+					ipnlog( 'ERROR: Could not find this subscription to cancel after profile suspension (subscription_transaction_id=' . $subscr_id . ').' );
+				} else {
+					$subscription->cancel_at_gateway();
+				}
+			} else {
+				// Subscription is not suspended. Send failed payment email.
+				pmpro_ipnFailedPayment( $last_subscription_order );
+			}
 		} else {
 			ipnlog( 'Payment status is ' . $payment_status . '.' );
 		}
