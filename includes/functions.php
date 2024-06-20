@@ -3181,14 +3181,14 @@ function pmpro_get_price_parts( $pmpro_order, $format = 'array' ) {
 	if ( ! empty( $pmpro_order->subtotal ) && $pmpro_order->subtotal != $pmpro_order->total ) {
 		$pmpro_price_parts['subtotal'] = array(
 			'label' => __( 'Subtotal', 'paid-memberships-pro' ),
-			'value' => pmpro_escape_price( pmpro_formatPrice( $pmpro_order->subtotal ) ),
+			'value' => pmpro_escape_price( $pmpro_order->get_formatted_subtotal() ),
 		);
 	}
 
 	if ( ! empty( $pmpro_order->tax ) ) {
 		$pmpro_price_parts['tax'] = array(
 			'label' => __( 'Tax', 'paid-memberships-pro' ),
-			'value' => pmpro_escape_price( pmpro_formatPrice( $pmpro_order->tax ) ),
+			'value' => pmpro_escape_price( $pmpro_order->get_formatted_tax() ),
 		);
 	}
 
@@ -3209,7 +3209,7 @@ function pmpro_get_price_parts( $pmpro_order, $format = 'array' ) {
 	if ( ! empty( $pmpro_order->total ) ) {
 		$pmpro_price_parts_with_total['total'] = array(
 			'label' => __( 'Total', 'paid-memberships-pro' ),
-			'value' => pmpro_escape_price( pmpro_formatPrice( $pmpro_order->total ) ),
+			'value' => pmpro_escape_price( $pmpro_order->get_formatted_total() ),
 		);
 	}
 
@@ -3861,7 +3861,7 @@ function pmpro_cleanup_memberships_users_table() {
  * @return bool True if we are on the checkout page, false otherwise
  */
 function pmpro_is_checkout() {
-	global $pmpro_pages;
+	global $pmpro_pages, $wp_query;
 
 	// Try is_page first.
 	if ( ! empty( $pmpro_pages['checkout'] ) ) {
@@ -3871,7 +3871,11 @@ function pmpro_is_checkout() {
 	}
 
 	// Page might not be setup yet or a custom page.
-	$queried_object = get_queried_object();
+	if ( ! empty( $wp_query ) ) {
+		$queried_object = get_queried_object();
+	} else {
+		$queried_object = null;
+	}
 
 	if ( ! $is_checkout &&
 		! empty( $queried_object ) &&

@@ -226,74 +226,22 @@
 			</div>
 			<div class="pmpro_section_inside">
 				<table class="form-table">
-				<tbody>
-					<tr>
-						<th scope="row" valign="top">
-							<label for="tospage"><?php esc_html_e('Require Terms of Service on signups?', 'paid-memberships-pro' );?></label>
-						</th>
-						<td>
-							<?php
-								wp_dropdown_pages(array("name"=>"tospage", "show_option_none"=>"No", "selected"=>esc_html( $tospage )));
-							?>
-							<br />
-							<p class="description"><?php esc_html_e('If yes, create a WordPress page containing your TOS agreement and assign it using the dropdown above.', 'paid-memberships-pro' );?></p>
-						</td>
-					</tr>
-					<tr>
-						<th scope="row" valign="top">
-							<label for="spamprotection"><?php esc_html_e('Enable Spam Protection?', 'paid-memberships-pro' );?></label>
-						</th>
-						<td>
-							<select id="spamprotection" name="spamprotection">
-								<option value="0" <?php if(!$spamprotection) { ?>selected="selected"<?php } ?>><?php esc_html_e('No', 'paid-memberships-pro' );?></option>
-								<!-- For reference, removed the Yes - Free memberships only. option -->
-								<option value="2" <?php if( $spamprotection > 0 ) { ?>selected="selected"<?php } ?>><?php esc_html_e('Yes - Enable Spam Protection', 'paid-memberships-pro' );?></option>
-							</select>
-							<p class="description"><?php printf( esc_html__( 'Block IPs from checkout if there are more than %d failures within %d minutes.', 'paid-memberships-pro' ), (int)PMPRO_SPAM_ACTION_NUM_LIMIT, (int)round(PMPRO_SPAM_ACTION_TIME_LIMIT/60,2) );?></p>
-						</td>
-					</tr>
-					<tr>
-						<th scope="row" valign="top">
-							<label for="recaptcha"><?php esc_html_e('Use reCAPTCHA?', 'paid-memberships-pro' );?></label>
-						</th>
-						<td>
-							<select id="recaptcha" name="recaptcha" onchange="pmpro_updateRecaptchaTRs();">
-								<option value="0" <?php if(!$recaptcha) { ?>selected="selected"<?php } ?>><?php esc_html_e('No', 'paid-memberships-pro' );?></option>
-								<!-- For reference, removed the Yes - Free memberships only. option -->
-								<option value="2" <?php if( $recaptcha > 0 ) { ?>selected="selected"<?php } ?>><?php esc_html_e('Yes - All memberships.', 'paid-memberships-pro' );?></option>
-							</select>
-							<p class="description"><?php esc_html_e('A free reCAPTCHA key is required.', 'paid-memberships-pro' );?> <a href="https://www.google.com/recaptcha/admin/create" target="_blank" rel="nofollow noopener"><?php esc_html_e('Click here to signup for reCAPTCHA', 'paid-memberships-pro' );?></a>.</p>
-						</td>
-					</tr>
-				</tbody>
-				</table>
-				<table class="form-table" id="recaptcha_settings" <?php if(!$recaptcha) { ?>style="display: none;"<?php } ?>>
-				<tbody>
-					<tr>
-						<th scope="row" valign="top"><label for="recaptcha_version"><?php esc_html_e( 'reCAPTCHA Version', 'paid-memberships-pro' );?>:</label></th>
-						<td>					
-							<select id="recaptcha_version" name="recaptcha_version">
-								<option value="2_checkbox" <?php selected( '2_checkbox', $recaptcha_version ); ?>><?php esc_html_e( ' v2 - Checkbox', 'paid-memberships-pro' ); ?></option>
-								<option value="3_invisible" <?php selected( '3_invisible', $recaptcha_version ); ?>><?php esc_html_e( 'v3 - Invisible', 'paid-memberships-pro' ); ?></option>
-							</select>
-							<p class="description"><?php esc_html_e( 'Changing your version will require new API keys.', 'paid-memberships-pro' ); ?></p>
-						</td>
-					</tr>
-					<tr>
-						<th scope="row"><label for="recaptcha_publickey"><?php esc_html_e('reCAPTCHA Site Key', 'paid-memberships-pro' );?>:</label></th>
-						<td>
-							<input type="text" id="recaptcha_publickey" name="recaptcha_publickey" value="<?php echo esc_attr($recaptcha_publickey);?>" class="regular-text code" />
-						</td>
-					</tr>
-					<tr>
-						<th scope="row"><label for="recaptcha_privatekey"><?php esc_html_e('reCAPTCHA Secret Key', 'paid-memberships-pro' );?>:</label></th>
-						<td>
-							<input type="text" id="recaptcha_privatekey" name="recaptcha_privatekey" value="<?php echo esc_attr($recaptcha_privatekey);?>" class="regular-text code" />
-						</td>
-					</tr>
-				</tbody>
-				</table>
-				</div> <!-- end pmpro_section_inside -->
+					<tbody>
+						<tr>
+							<th scope="row" valign="top">
+								<label for="tospage"><?php esc_html_e('Require Terms of Service on signups?', 'paid-memberships-pro' );?></label>
+							</th>
+							<td>
+								<?php
+									wp_dropdown_pages(array("name"=>"tospage", "show_option_none"=>"No", "selected"=>esc_html( $tospage )));
+								?>
+								<br />
+								<p class="description"><?php esc_html_e('If yes, create a WordPress page containing your TOS agreement and assign it using the dropdown above.', 'paid-memberships-pro' );?></p>
+							</td>
+						</tr>
+					</tbody>
+				</table>	
+			</div> <!-- end pmpro_section_inside -->
 		</div> <!-- end pmpro_section -->
 		<div id="communication-settings" class="pmpro_section" data-visibility="shown" data-activated="true">
 			<div class="pmpro_section_toggle">
@@ -565,20 +513,6 @@ if ( function_exists( 'pmpro_displayAds' ) && pmpro_displayAds() ) {
 						}
 					}
 					pmpro_updateHideAdsTRs();
-
-					function pmpro_updateRecaptchaTRs()
-					{
-						var recaptcha = jQuery('#recaptcha').val();
-						if(recaptcha > 0)
-						{
-							jQuery('#recaptcha_settings').show();
-						}
-						else
-						{
-							jQuery('#recaptcha_settings').hide();
-						}
-					}
-					pmpro_updateRecaptchaTRs();
 				</script>
 			</div> <!-- end pmpro_section_inside -->
 		</div> <!-- end pmpro_section -->

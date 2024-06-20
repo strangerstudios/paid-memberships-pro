@@ -212,75 +212,18 @@
 									<input id="baddress2" name="baddress2" type="text" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_input pmpro_form_input-text', 'baddress2' ) ); ?>" value="<?php echo esc_attr($baddress2);?>" />
 								</div> <!-- end pmpro_form_field-baddress2 -->
 
-								<?php
-									$longform_address = apply_filters("pmpro_longform_address", true);
-									if($longform_address)
-									{
-									?>
-										<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_field pmpro_form_field-text pmpro_form_field-bcity', 'pmpro_form_field-bcity' ) ); ?>">
-											<label for="bcity" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_label' ) ); ?>"><?php esc_html_e('City', 'paid-memberships-pro' );?></label>
-											<input id="bcity" name="bcity" type="text" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_input pmpro_form_input-text', 'bcity' ) ); ?>" value="<?php echo esc_attr($bcity)?>" />
-										</div> <!-- end pmpro_form_field-bcity -->
-										<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_field pmpro_form_field-text pmpro_form_field-bstate', 'pmpro_form_field-bstate' ) ); ?>">
-											<label for="bstate" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_label' ) ); ?>"><?php esc_html_e('State', 'paid-memberships-pro' );?></label>
-											<input id="bstate" name="bstate" type="text" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_input pmpro_form_input-text', 'bstate' ) ); ?>" value="<?php echo esc_attr($bstate)?>" />
-										</div> <!-- end pmpro_form_field-bstate -->
-										<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_field pmpro_form_field-text pmpro_form_field-bzipcode', 'pmpro_form_field-bzipcode' ) ); ?>">
-											<label for="bzipcode" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_label' ) ); ?>"><?php esc_html_e('Postal Code', 'paid-memberships-pro' );?></label>
-											<input id="bzipcode" name="bzipcode" type="text" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_input pmpro_form_input-text', 'bzipcode' ) ); ?>" value="<?php echo esc_attr($bzipcode)?>" />
-										</div> <!-- end pmpro_form_field-bzipcode -->
-									<?php
-									}
-									else
-									{
-									?>
-										<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_field pmpro_form_field-text pmpro_form_field-bcity_state_zip', 'pmpro_form_field-bcity_state_zip' ) ); ?>">
-											<label for="bcity_state_zip" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_label' ) ); ?>"><?php esc_html_e('City, State Zip', 'paid-memberships-pro' );?></label>
-											<input id="bcity" name="bcity" type="text" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_input  pmpro_form_input-text', 'bcity' ) ); ?>" size="14" value="<?php echo esc_attr($bcity)?>" />,
-											<?php
-												$state_dropdowns = apply_filters("pmpro_state_dropdowns", false);
-												if($state_dropdowns === true || $state_dropdowns == "names")
-												{
-													global $pmpro_states;
-													?>
-													<select id="bstate" name="bstate" class="<?php echo esc_attr( pmpro_get_element_class( '  pmpro_form_input pmpro_form_input-select', 'bstate' ) ); ?>">
-														<option value="">--</option>
-														<?php
-															foreach($pmpro_states as $ab => $st)
-															{
-														?>
-															<option value="<?php echo esc_attr($ab);?>" <?php if($ab == $bstate) { ?>selected="selected"<?php } ?>><?php echo esc_html( $st );?></option>
-														<?php } ?>
-													</select>
-													<?php
-												}
-												elseif($state_dropdowns == "abbreviations")
-												{
-													global $pmpro_states_abbreviations;
-													?>
-													<select id="bstate" name="bstate" class="<?php echo esc_attr( pmpro_get_element_class( ' pmpro_form_input  pmpro_form_input-select', 'bstate' ) ); ?>">
-														<option value="">--</option>
-														<?php
-															foreach($pmpro_states_abbreviations as $ab)
-															{
-														?>
-															<option value="<?php echo esc_attr($ab);?>" <?php if($ab == $bstate) { ?>selected="selected"<?php } ?>><?php esc_html( $ab );?></option>
-														<?php } ?>
-													</select>
-													<?php
-												}
-												else
-												{
-													?>
-													<input id="bstate" name="bstate" type="text" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_input pmpro_form_input-text', 'bstate' ) ); ?>" size="2" value="<?php echo esc_attr($bstate)?>" />
-													<?php
-												}
-											?>
-										<input id="bzipcode" name="bzipcode" type="text" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_input pmpro_form_input-text', 'bzipcode' ) ); ?>" size="5" value="<?php echo esc_attr($bzipcode)?>" />
-										</div> <!-- end pmpro_form_field-bcity_state_zip -->
-									<?php
-									}
-								?>
+								<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_field pmpro_form_field-text pmpro_form_field-bcity', 'pmpro_form_field-bcity' ) ); ?>">
+									<label for="bcity" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_label' ) ); ?>"><?php esc_html_e('City', 'paid-memberships-pro' );?></label>
+									<input id="bcity" name="bcity" type="text" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_input pmpro_form_input-text', 'bcity' ) ); ?>" value="<?php echo esc_attr($bcity)?>" />
+								</div> <!-- end pmpro_form_field-bcity -->
+								<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_field pmpro_form_field-text pmpro_form_field-bstate', 'pmpro_form_field-bstate' ) ); ?>">
+									<label for="bstate" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_label' ) ); ?>"><?php esc_html_e('State', 'paid-memberships-pro' );?></label>
+									<input id="bstate" name="bstate" type="text" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_input pmpro_form_input-text', 'bstate' ) ); ?>" value="<?php echo esc_attr($bstate)?>" />
+								</div> <!-- end pmpro_form_field-bstate -->
+								<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_field pmpro_form_field-text pmpro_form_field-bzipcode', 'pmpro_form_field-bzipcode' ) ); ?>">
+									<label for="bzipcode" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_label' ) ); ?>"><?php esc_html_e('Postal Code', 'paid-memberships-pro' );?></label>
+									<input id="bzipcode" name="bzipcode" type="text" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_input pmpro_form_input-text', 'bzipcode' ) ); ?>" value="<?php echo esc_attr($bzipcode)?>" />
+								</div> <!-- end pmpro_form_field-bzipcode -->
 
 								<?php
 									$show_country = apply_filters("pmpro_international_addresses", true);
@@ -340,47 +283,32 @@
 									<h2 class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_heading pmpro_font-large' ) ); ?>"><?php esc_html_e('Payment Information', 'paid-memberships-pro' ); ?></h2>
 								</legend>
 								<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_fields' ) ); ?>">
-									<?php
-										$pmpro_include_cardtype_field = apply_filters('pmpro_include_cardtype_field', false);
-										if($pmpro_include_cardtype_field) { ?>
-											<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_field pmpro_form_field-select pmpro_payment-card-type', 'pmpro_payment-card-type' ) ); ?>">
-												<label for="CardType" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_label' ) ); ?>"><?php esc_html_e('Card Type', 'paid-memberships-pro' );?></label>
-												<select id="CardType" name="CardType" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_input pmpro_form_input-select', 'CardType' ) );?>">
-													<?php foreach($pmpro_accepted_credit_cards as $cc) { ?>
-														<option value="<?php echo esc_attr( $cc ); ?>" <?php if($CardType === $cc) { ?>selected="selected"<?php } ?>><?php echo esc_html( $cc ); ?></option>
-													<?php } ?>
-												</select>
-											</div> <!-- end pmpro_payment-card-type -->
-										<?php } else { ?>
-											<input type="hidden" id="CardType" name="CardType" value="<?php echo esc_attr($CardType);?>" />
-											<script>
-												<!--
-												jQuery(document).ready(function() {
-														jQuery('#AccountNumber').validateCreditCard(function(result) {
-															var cardtypenames = {
-																"amex"                      : "American Express",
-																"diners_club_carte_blanche" : "Diners Club Carte Blanche",
-																"diners_club_international" : "Diners Club International",
-																"discover"                  : "Discover",
-																"jcb"                       : "JCB",
-																"laser"                     : "Laser",
-																"maestro"                   : "Maestro",
-																"mastercard"                : "Mastercard",
-																"visa"                      : "Visa",
-																"visa_electron"             : "Visa Electron"
-															};
+									<input type="hidden" id="CardType" name="CardType" value="<?php echo esc_attr($CardType);?>" />
+									<script>
+										<!--
+										jQuery(document).ready(function() {
+												jQuery('#AccountNumber').validateCreditCard(function(result) {
+													var cardtypenames = {
+														"amex"                      : "American Express",
+														"diners_club_carte_blanche" : "Diners Club Carte Blanche",
+														"diners_club_international" : "Diners Club International",
+														"discover"                  : "Discover",
+														"jcb"                       : "JCB",
+														"laser"                     : "Laser",
+														"maestro"                   : "Maestro",
+														"mastercard"                : "Mastercard",
+														"visa"                      : "Visa",
+														"visa_electron"             : "Visa Electron"
+													};
 
-															if(result.card_type)
-																jQuery('#CardType').val(cardtypenames[result.card_type.name]);
-															else
-																jQuery('#CardType').val('Unknown Card Type');
-														});
+													if(result.card_type)
+														jQuery('#CardType').val(cardtypenames[result.card_type.name]);
+													else
+														jQuery('#CardType').val('Unknown Card Type');
 												});
-												-->
-											</script>
-											<?php
-											}
-										?>
+										});
+										-->
+									</script>
 									<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_field pmpro_form_field-text pmpro_payment-account-number', 'pmpro_payment-account-number' ) ); ?>">
 										<label for="AccountNumber" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_label' ) ); ?>"><?php esc_html_e('Card Number', 'paid-memberships-pro' );?></label>
 										<input id="AccountNumber" name="AccountNumber" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_input pmpro_form_input-text', 'AccountNumber' ) );?>" type="text" size="25" value="<?php echo esc_attr($AccountNumber)?>" autocomplete="off" />

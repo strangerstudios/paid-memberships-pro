@@ -354,7 +354,7 @@ function pmpro_shortcode_account($atts, $content=null, $code="")
 											<td class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_table_order-level' ) ); ?>" data-title="<?php esc_attr_e( 'Level', 'paid-memberships-pro' ); ?>"><?php if(!empty($order->membership_level)) echo esc_html( $order->membership_level->name ); else echo esc_html__("N/A", 'paid-memberships-pro' );?></td>
 											<td class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_table_order-amount' ) ); ?>" data-title="<?php esc_attr_e( 'Amount', 'paid-memberships-pro' ); ?>"><?php
 												//phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-												echo pmpro_escape_price( pmpro_formatPrice($order->total) ); ?></td>
+												echo pmpro_escape_price( $order->get_formatted_total() ); ?></td>
 											<td class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_table_order-status' ) ); ?>" data-title="<?php esc_attr_e( 'Status', 'paid-memberships-pro' ); ?>">
 												<span class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_tag pmpro_tag-' . $tag_style ) ); ?>"><?php echo esc_html( $display_status ); ?></span>
 											</td>

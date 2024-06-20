@@ -27,8 +27,8 @@
 			Save any value that might have been passed in
 		*/
 		foreach($payment_options as $option) {
-			//for now we make a special case for sslseal, but we need a way to specify sanitize functions for other fields
-			if( in_array( $option, array( 'sslseal', 'instructions' ) ) ) {
+			//for now we make a special case for check instructions, but we need a way to specify sanitize functions for other fields
+			if( in_array( $option, array( 'instructions' ) ) ) {
 				global $allowedposttags;
 				$html = wp_kses(wp_unslash($_POST[$option]), $allowedposttags);
 				update_option("pmpro_{$option}", $html);
@@ -38,28 +38,6 @@
 		}
 
 		do_action( 'pmpro_after_saved_payment_options', $payment_options );
-
-		/*
-			Some special case options still worked out here
-		*/
-		//credit cards
-		$pmpro_accepted_credit_cards = array();
-		if(!empty($_REQUEST['creditcards_visa']))
-			$pmpro_accepted_credit_cards[] = "Visa";
-		if(!empty($_REQUEST['creditcards_mastercard']))
-			$pmpro_accepted_credit_cards[] = "Mastercard";
-		if(!empty($_REQUEST['creditcards_amex']))
-			$pmpro_accepted_credit_cards[] = "American Express";
-		if(!empty($_REQUEST['creditcards_discover']))
-			$pmpro_accepted_credit_cards[] = "Discover";
-		if(!empty($_REQUEST['creditcards_dinersclub']))
-			$pmpro_accepted_credit_cards[] = "Diners Club";
-		if(!empty($_REQUEST['creditcards_enroute']))
-			$pmpro_accepted_credit_cards[] = "EnRoute";
-		if(!empty($_REQUEST['creditcards_jcb']))
-			$pmpro_accepted_credit_cards[] = "JCB";
-
-		pmpro_setOption("accepted_credit_cards", implode(",", $pmpro_accepted_credit_cards));
 
 		//assume success
 		$msg = true;
@@ -87,21 +65,12 @@
 		pmpro_setOption("tax_rate", $tax_rate);
 	}
 
-	//accepted credit cards
-	$pmpro_accepted_credit_cards = $payment_option_values['accepted_credit_cards'];	//this var has the pmpro_ prefix
-
 	//default settings
 	if(empty($gateway_environment))
 	{
 		$gateway_environment = "sandbox";
 		pmpro_setOption("gateway_environment", $gateway_environment);
 	}
-	if(empty($pmpro_accepted_credit_cards))
-	{
-		$pmpro_accepted_credit_cards = "Visa,Mastercard,American Express,Discover";
-		pmpro_setOption("accepted_credit_cards", $pmpro_accepted_credit_cards);
-	}
-	$pmpro_accepted_credit_cards = explode(",", $pmpro_accepted_credit_cards);
 
 	require_once(dirname(__FILE__) . "/admin_header.php");
 ?>
@@ -109,7 +78,7 @@
 	<form action="" method="post" enctype="multipart/form-data">
 		<?php wp_nonce_field('savesettings', 'pmpro_paymentsettings_nonce');?>
 		<hr class="wp-header-end">
-        <h1><?php esc_html_e( 'Payment Gateway', 'paid-memberships-pro' );?> &amp; <?php esc_html_e( 'SSL Settings', 'paid-memberships-pro' ); ?></h1>
+        <h1><?php esc_html_e( 'Payment Gateway', 'paid-memberships-pro' );?></h1>
 		<div id="choose-gateway" class="pmpro_section" data-visibility="shown" data-activated="true">
 			<div class="pmpro_section_toggle">
 				<button class="pmpro_section-toggle-button" type="button" aria-expanded="true">
@@ -228,20 +197,6 @@
 							<p class="description"><?php esc_html_e( 'Not all currencies will be supported by every gateway. Please check with your gateway.', 'paid-memberships-pro' ); ?></p>
 						</td>
 					</tr>
-					<tr class="gateway gateway_ <?php echo esc_attr(pmpro_getClassesForPaymentSettingsField("accepted_credit_cards"));?>" <?php if(!empty($gateway) && $gateway != "authorizenet" && $gateway != "paypal" && $gateway != "payflowpro" && $gateway != "braintree" && $gateway != "twocheckout" && $gateway != "cybersource") { ?>style="display: none;"<?php } ?>>
-						<th scope="row" valign="top">
-							<label for="creditcards"><?php esc_html_e('Accepted Credit Card Types', 'paid-memberships-pro' );?></label>
-						</th>
-						<td>
-							<input type="checkbox" id="creditcards_visa" name="creditcards_visa" value="1" <?php if(in_array("Visa", $pmpro_accepted_credit_cards)) { ?>checked="checked"<?php } ?> /> <label for="creditcards_visa">Visa</label><br />
-							<input type="checkbox" id="creditcards_mastercard" name="creditcards_mastercard" value="1" <?php if(in_array("Mastercard", $pmpro_accepted_credit_cards)) { ?>checked="checked"<?php } ?> /> <label for="creditcards_mastercard">Mastercard</label><br />
-							<input type="checkbox" id="creditcards_amex" name="creditcards_amex" value="1" <?php if(in_array("American Express", $pmpro_accepted_credit_cards)) { ?>checked="checked"<?php } ?> /> <label for="creditcards_amex">American Express</label><br />
-							<input type="checkbox" id="creditcards_discover" name="creditcards_discover" value="1" <?php if(in_array("Discover", $pmpro_accepted_credit_cards)) { ?>checked="checked"<?php } ?> /> <label for="creditcards_discover">Discover</label><br />
-							<input type="checkbox" id="creditcards_dinersclub" name="creditcards_dinersclub" value="1" <?php if(in_array("Diners Club", $pmpro_accepted_credit_cards)) {?>checked="checked"<?php } ?> /> <label for="creditcards_dinersclub">Diner's Club</label><br />
-							<input type="checkbox" id="creditcards_enroute" name="creditcards_enroute" value="1" <?php if(in_array("EnRoute", $pmpro_accepted_credit_cards)) {?>checked="checked"<?php } ?> /> <label for="creditcards_enroute">EnRoute</label><br />
-							<input type="checkbox" id="creditcards_jcb" name="creditcards_jcb" value="1" <?php if(in_array("JCB", $pmpro_accepted_credit_cards)) {?>checked="checked"<?php } ?> /> <label for="creditcards_jcb">JCB</label><br />
-						</td>
-					</tr>
 					<tr class="gateway gateway_ <?php echo esc_attr(pmpro_getClassesForPaymentSettingsField("tax_rate"));?>" <?php if(!empty($gateway) && $gateway != "stripe" && $gateway != "authorizenet" && $gateway != "paypal" && $gateway != "paypalexpress" && $gateway != "check" && $gateway != "paypalstandard" && $gateway != "payflowpro" && $gateway != "braintree" && $gateway != "twocheckout" && $gateway != "cybersource") { ?>style="display: none;"<?php } ?>>
 						<th scope="row" valign="top">
 							<label for="tax"><?php esc_html_e('Sales Tax', 'paid-memberships-pro' );?> (<?php esc_html_e('optional', 'paid-memberships-pro' );?>)</label>
@@ -297,27 +252,6 @@
 									<?php
 								}
 							?>
-						</td>
-					</tr>
-					<tr>
-						<th scope="row" valign="top">
-							<label for="sslseal"><?php esc_html_e('SSL Seal Code', 'paid-memberships-pro' );?></label>
-						</th>
-						<td>
-							<textarea id="sslseal" name="sslseal" rows="3" cols="50" class="large-text">
-								<?php
-								// This value is set by admins and could contain JS. Will be replaced with a hook in future versions.
-								// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-								echo stripslashes(esc_textarea($sslseal))
-								?>
-							</textarea>
-							<p class="description">
-								<?php
-									$ssl_certificate_link = '<a target="_blank" rel="nofollow noopener" href="https://www.paidmembershipspro.com/documentation/initial-plugin-setup/ssl/?utm_source=plugin&utm_medium=pmpro-paymentsettings&utm_campaign=documentation&utm_content=ssl&utm_term=link2">' . esc_html__( 'SSL Certificate', 'paid-memberships-pro' ) . '</a>';
-									// translators: %s: Link to SSL Certificate docs.
-									printf( esc_html__('Your %s must be installed by your web host. Use this field to display your seal or other trusted merchant images. This field does not accept JavaScript.', 'paid-memberships-pro' ), $ssl_certificate_link ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-								?>
-							</p>
 						</td>
 					</tr>
 					<tr>

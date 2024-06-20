@@ -368,6 +368,7 @@ function pmpro_checkForUpgrades() {
 
 	/**
 	 * Version 3.1
+	 * Delete the option for pmpro_accepted_credit_cards.
 	 * Modify and set new options for membership required messages.
 	 */
 	if ( $pmpro_db_version < 3.1 ) {

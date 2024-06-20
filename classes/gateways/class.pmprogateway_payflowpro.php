@@ -69,7 +69,6 @@
 		static function getGatewayOptions()
 		{
 			$options = array(
-				'sslseal',
 				'nuclear_HTTPS',
 				'gateway_environment',
 				'payflow_partner',
@@ -80,7 +79,6 @@
 				'use_ssl',
 				'tax_state',
 				'tax_rate',
-				'accepted_credit_cards',
 			);
 
 			return $options;

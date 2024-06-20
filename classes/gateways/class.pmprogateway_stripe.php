@@ -165,10 +165,7 @@ class PMProGateway_stripe extends PMProGateway {
 					'PMProGateway_stripe',
 					'pmpro_checkout_after_preheader'
 				) );
-				add_filter( 'pmpro_include_cardtype_field', array(
-					'PMProGateway_stripe',
-					'pmpro_include_billing_address_fields'
-				) );
+
 				add_action( 'pmpro_billing_preheader', array( 'PMProGateway_stripe', 'pmpro_checkout_after_preheader' ) );
 				add_filter( 'pmpro_checkout_order', array( 'PMProGateway_stripe', 'pmpro_checkout_order' ) );
 				add_filter( 'pmpro_billing_order', array( 'PMProGateway_stripe', 'pmpro_checkout_order' ) );
@@ -242,7 +239,6 @@ class PMProGateway_stripe extends PMProGateway {
 	 */
 	public static function getGatewayOptions() {
 		$options = array(
-			'sslseal',
 			'nuclear_HTTPS',
 			'gateway_environment',
 			'stripe_secretkey',
@@ -959,7 +955,7 @@ class PMProGateway_stripe extends PMProGateway {
 					</div> <!-- end pmpro_cols-2 -->
 					<?php if ( $pmpro_show_discount_code ) { ?>
 						 <div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_cols-2' ) ); ?>">
-							<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_field pmpro_payment-discount-code', 'pmpro_payment-discount-code' ) ); ?>">
+							<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_field pmpro_form_field-text pmpro_payment-discount-code', 'pmpro_payment-discount-code' ) ); ?>">
 								<label for="pmpro_discount_code" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_label' ) ); ?>"><?php esc_html_e( 'Discount Code', 'paid-memberships-pro' ); ?></label>
 								<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_fields-inline' ) ); ?>">
 									<input id="pmpro_discount_code" name="pmpro_discount_code" type="text" value="<?php echo esc_attr( $discount_code ) ?>" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_input pmpro_form_input-text pmpro_alter_price', 'pmpro_discount_code' ) ); ?>" />

@@ -78,7 +78,6 @@
 		static function getGatewayOptions()
 		{
 			$options = array(
-				'sslseal',
 				'nuclear_HTTPS',
 				'gateway_environment',
 				'gateway_email',
@@ -89,7 +88,6 @@
 				'use_ssl',
 				'tax_state',
 				'tax_rate',
-				'accepted_credit_cards',
 				'paypalexpress_skip_confirmation',
 				///'paypal_enable_3dsecure',
 				//'paypal_cardinal_apikey',
