@@ -7,69 +7,70 @@
 /**
  * Add all the meta boxes for the dashboard.
  */
-add_action( 'add_meta_boxes', function() {
-	add_meta_box(
-		'pmpro_dashboard_welcome',
-		__( 'Welcome to Paid Memberships Pro', 'paid-memberships-pro' ),
-		'pmpro_dashboard_welcome_callback',
-		'toplevel_page_pmpro-dashboard',
-		'normal'
-	);
 
-	if ( current_user_can( 'pmpro_reports' ) ) {
+/**
+ * Filter the meta boxes to display on the Paid Memberships Pro dashboard.
+ * 
+ * @since TBD
+ * 
+ * @param array $pmpro_dashboard_meta_boxes Array of meta boxes to display on the dashboard. Hint: Use the associative array key as the meta box ID.
+ */
+$pmpro_dashboard_meta_boxes = apply_filters( 'pmpro_dashboard_meta_boxes', array(
+	'pmpro_dashboard_welcome' => array(
+		'title'    => esc_html__( 'Welcome to Paid Memberships Pro', 'paid-memberships-pro' ),
+		'callback' => 'pmpro_dashboard_welcome_callback',
+		'context'  => 'normal',
+		'capability' => '',
+	),
+	'pmpro_dashboard_report_sales' => array(
+		'title'    => esc_html__( 'Sales and Revenue', 'paid-memberships-pro' ),
+		'callback' => 'pmpro_report_sales_widget',
+		'context'  => 'advanced',
+		'capability' => 'pmpro_reports'
+	),
+	'pmpro_dashboard_report_membership_stats' => array(
+		'title'    => esc_html__( 'Membership Stats', 'paid-memberships-pro' ),
+		'callback' => 'pmpro_report_memberships_widget',
+		'context'  => 'advanced',
+		'capability' => ''
+	),
+	'pmpro_dashboard_report_logins' => array(
+		'title'    => esc_html__( 'Visits, Views, and Logins', 'paid-memberships-pro' ),
+		'callback' => 'pmpro_report_login_widget',
+		'context'  => 'advanced',
+		'capability' => ''
+	),
+	'pmpro_dashboard_report_recent_members' => array(
+		'title'    => esc_html__( 'Recent Members', 'paid-memberships-pro' ),
+		'callback' => 'pmpro_dashboard_report_recent_members_callback',
+		'context'  => 'side',
+		'capability' => 'pmpro_memberslist'
+	),
+	'pmpro_dashboard_report_recent_orders' => array(
+		'title'    => esc_html__( 'Recent Orders', 'paid-memberships-pro' ),
+		'callback' => 'pmpro_dashboard_report_recent_orders_callback',
+		'context'  => 'side',
+		'capability' => 'pmpro_orders'
+	),
+	'pmpro_dashboard_news_updates' => array(
+		'title'    => esc_html__( 'Paid Memberships Pro News and Updates', 'paid-memberships-pro' ),
+		'callback' => 'pmpro_dashboard_news_updates_callback',
+		'context'  => 'side',
+		'capability' => ''
+	),
+) );
+
+foreach ( $pmpro_dashboard_meta_boxes as $id => $meta_box ) {
+	if ( empty( $meta_box['capability'] ) || current_user_can( $meta_box['capability'] ) ) {
 		add_meta_box(
-			'pmpro_dashboard_report_sales',
-			__( 'Sales and Revenue', 'paid-memberships-pro' ),
-			'pmpro_report_sales_widget',
+			$id,
+			$meta_box['title'],
+			$meta_box['callback'],
 			'toplevel_page_pmpro-dashboard',
-			'advanced'
-		);
-		add_meta_box(
-			'pmpro_dashboard_report_membership_stats',
-			__( 'Membership Stats', 'paid-memberships-pro' ),
-			'pmpro_report_memberships_widget',
-			'toplevel_page_pmpro-dashboard',
-			'advanced'
-		);
-		add_meta_box(
-			'pmpro_dashboard_report_logins',
-			__( 'Visits, Views, and Logins', 'paid-memberships-pro' ),
-			'pmpro_report_login_widget',
-			'toplevel_page_pmpro-dashboard',
-			'advanced'
+			$meta_box['context']
 		);
 	}
-	
-	if ( current_user_can( 'pmpro_memberslist' ) ) {
-		add_meta_box(
-			'pmpro_dashboard_report_recent_members',
-			__( 'Recent Members', 'paid-memberships-pro' ),
-			'pmpro_dashboard_report_recent_members_callback',
-			'toplevel_page_pmpro-dashboard',
-			'side'
-		);
-	}
-	
-	if ( current_user_can( 'pmpro_orders' ) ) {
-		add_meta_box(
-			'pmpro_dashboard_report_recent_orders',
-			__( 'Recent Orders', 'paid-memberships-pro' ),
-			'pmpro_dashboard_report_recent_orders_callback',
-			'toplevel_page_pmpro-dashboard',
-			'side'
-		);
-	}
-
-	add_meta_box(
-		'pmpro_dashboard_news_updates',
-		__( 'Paid Memberships Pro News and Updates', 'paid-memberships-pro' ),
-		'pmpro_dashboard_news_updates_callback',
-		'toplevel_page_pmpro-dashboard',
-		'side'
-	);
-} );
-
-do_action( 'add_meta_boxes', 'toplevel_page_pmpro-dashboard' );
+}
 
 /**
  * Load the Paid Memberships Pro dashboard-area header
