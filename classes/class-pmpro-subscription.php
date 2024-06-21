@@ -1002,13 +1002,17 @@ class PMPro_Subscription {
 	 * @return string
 	 */
 	public function get_cost_text() {
+		$cost_text = '';
+
 		if  ( 1 == $this->cycle_number ) {
 			// translators: %1$s - price, %2$s - period.
-			return sprintf( __( '%1$s per %2$s', 'paid-memberships-pro' ), pmpro_formatPrice( $this->billing_amount ), $this->cycle_period );
+			$cost_text = sprintf( __( '%1$s per %2$s', 'paid-memberships-pro' ), pmpro_formatPrice( $this->billing_amount ), $this->cycle_period );
 		} else {
 			// translators: %1$s - price, %2$d - number, %3$s - period.
-			return sprintf( __( '%1$s every %2$d %3$s', 'paid-memberships-pro' ), pmpro_formatPrice( $this->billing_amount ), $this->cycle_number, $this->cycle_period );
+			$cost_text = sprintf( __( '%1$s every %2$d %3$s', 'paid-memberships-pro' ), pmpro_formatPrice( $this->billing_amount ), $this->cycle_number, $this->cycle_period );
 		}
+
+		return apply_filters( 'pmpro_subscription_formatted_cost_text', $cost_text, $this );
 	}
 
 	/**
@@ -1039,6 +1043,15 @@ class PMPro_Subscription {
 		}
 
 		$this->{$property} = $value;
+	}
+
+	/**
+	 * Get the membership Level ID for this subscription.
+	 *
+	 * @since 3.1
+	 */
+	public function get_membership_level_id() {
+		return $this->membership_level_id;
 	}
 
 	/**
