@@ -225,7 +225,18 @@ class PMPro_Admin_Activity_Email extends PMProEmail {
 										}
 								} else {
 									?>
-									<p style="margin:0px;padding:0px;"><?php printf( esc_html__( 'No <a %1$s>Discount Codes</a> were used %2$s.', 'paid-memberships-pro' ), 'style="color:#1A688B;" target="_blank" href="' . esc_url( admin_url( 'admin.php?page=pmpro-discountcodes' ) ) . '"', esc_html( $term ) ); ?></p>
+									<p style="margin:0px;padding:0px;">
+										<?php
+										echo wp_kses_post(
+											sprintf(
+												// translators: %1$s is the attributes for the anchor tag, %2$s is the term being used.
+												__( 'No <a %1$s>Discount Codes</a> were used %2$s.', 'paid-memberships-pro' ),
+												'style="color:#1A688B;" target="_blank" href="' . esc_url( admin_url( 'admin.php?page=pmpro-discountcodes' ) ) . '"',
+												esc_html( $term )
+											),
+										);
+										?>
+									</p>
 									<?php
 								}
 								?>
