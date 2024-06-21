@@ -18,7 +18,11 @@ class PMPro_Member_Edit_Panel_Orders extends PMPro_Member_Edit_Panel {
 		global $wpdb, $pmpro_gateways;
 
 		// Show all orders for user
-		$orders = $wpdb->get_results( $wpdb->prepare( "SELECT mo.*, du.code_id as code_id FROM $wpdb->pmpro_membership_orders mo LEFT JOIN $wpdb->pmpro_discount_codes_uses du ON mo.id = du.order_id WHERE mo.user_id = %d ORDER BY mo.timestamp DESC", self::get_user()->ID ) );
+		$orders = MemberOrder::get_orders(
+			array(
+				'user_id' => self::get_user()->ID,
+			)
+		);
 
 		// Build the selectors for the orders history list based on history count.
 		$orders_classes = array();
@@ -96,11 +100,10 @@ class PMPro_Member_Edit_Panel_Orders extends PMPro_Member_Edit_Panel {
 							<td>
 								<?php echo pmpro_escape_price( $order->get_formatted_total() ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 								<?php
-									if ( ! empty( $order->code_id ) ) {
-										$discountQuery = $wpdb->prepare( "SELECT c.code FROM $wpdb->pmpro_discount_codes c WHERE c.id = %d LIMIT 1", $order->code_id );
-										$discount_code = $wpdb->get_row( $discountQuery );
+									if ( ! empty( $order->discount_code_id ) ) {
+										$discount_code = $order->getDiscountCode();
 										?>
-										<a class="pmpro_discount_code-tag" href="<?php echo esc_url( add_query_arg( array( 'page' => 'pmpro-orders', 'discount-code' => $order->code_id, 'filter' => 'with-discount-code' ), admin_url( 'admin.php' ) ) ); ?>" title="<?php esc_attr_e( 'View all orders with this discount code', 'paid-memberships-pro' ); ?>"><?php echo esc_html( $discount_code->code ); ?></a>
+										<a class="pmpro_discount_code-tag" href="<?php echo esc_url( add_query_arg( array( 'page' => 'pmpro-orders', 'discount-code' => $order->discount_code_id, 'filter' => 'with-discount-code' ), admin_url( 'admin.php' ) ) ); ?>" title="<?php esc_attr_e( 'View all orders with this discount code', 'paid-memberships-pro' ); ?>"><?php echo esc_html( $discount_code->code ); ?></a>
 										<?php
 									}
 								?>
