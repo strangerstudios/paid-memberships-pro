@@ -234,11 +234,21 @@
 		if(!empty($params['demo']) && $params['demo'] == 'Y')
 			$params['order_number'] = 1;
 
-		//is this a return call or notification
-		if(empty($params['message_type']))
-			$check = Twocheckout_Return::check( $params, get_option( 'pmpro_twocheckout_secretword' ) );
-		else
-			$check = Twocheckout_Notification::check( $params, get_option( 'pmpro_twocheckout_secretword' ) );
+		// Get the secret word
+		$secret_word = get_option('pmpro_twocheckout_secretword');
+
+		// Validate that the secret word is not empty
+		if ( empty( $secret_word ) ) {
+			return false;
+		}
+
+		// Is this a return call or notification
+		if (empty($params['message_type'])) {
+			$check = Twocheckout_Return::check( $params, $secret_word );
+		} else {
+			$check = Twocheckout_Notification::check( $params, $secret_word );
+		}
+
 
 		if( empty ( $check ) )
 			$r = false;	//HTTP failure
@@ -480,8 +490,8 @@
 		global $pmpro_error;
 		//hook to do other stuff when payments stop		
 		do_action( 'pmpro_subscription_recurring_stopped', $morder );
-    do_action( 'pmpro_subscription_recuring_stopped', $morder );    // Keeping the mispelled version in case. Will deprecate.
-    
+	do_action( 'pmpro_subscription_recuring_stopped', $morder );    // Keeping the mispelled version in case. Will deprecate.
+	
 		$worked = pmpro_cancelMembershipLevel( $morder->membership_level->id, $morder->user->ID, 'inactive' );
 		if( $worked === true ) {
 			//$pmpro_msg = __("Your membership has been cancelled.", 'paid-memberships-pro' );
