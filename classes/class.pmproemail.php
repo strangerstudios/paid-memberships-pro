@@ -1315,7 +1315,7 @@
 		 * @since TBD
 		 */
 		function sendMembershipExpiredEmail( $user = NULL, $membership_id = NULL ) {
-			global $current_user;
+			global $current_user, $wpdb;
 			if( !$user ) {
 				$user = $current_user;
 			}
@@ -1323,27 +1323,28 @@
 			if( !$user ) {
 				return false;
 			}
-			//If we have a membership ID, get the level.
-			if (! empty( $membership_id ) ) {
-				$membership_level = pmpro_getLevel( $membership_id );
-			//If not let's find out what's the last ended membership level.
-			} else {
-				//Get all levels for a specific member
-				$all_levels = pmpro_getMembershipLevelsForUser( $user->ID, true );
-				//Bail if we don't have any levels.
-				if ( empty( $all_levels ) ) {
-					return false;
-				}
-				//get the older inactive membership
-				$membership_level = array_reduce( $all_levels, function ( $oldest_level, $current_level ) {
-                    // Check if the level status is not "active" and compare end dates
-                    if ( $current_level->enddate !== null && ( $oldest_level === null || ( $current_level->enddate < time() && $current_level->enddate > $oldest_level->enddate  ) ) ) {
-                        return $current_level;
-                    }
-                    return $oldest_level;
-                });
 
+			// If we don't have a level ID, query the user's most recently expired level from the database.
+			if ( empty( $membership_id ) ) {
+				$membership_id = $wpdb->get_var(
+					$wpdb->prepare(
+						"SELECT membership_id FROM $wpdb->pmpro_memberships_users
+						WHERE user_id = %d
+						AND status = 'expired'
+						ORDER BY enddate DESC
+						LIMIT 1",
+						$user->ID
+					)
+				);
+
+				// If we still don't have a level ID, bail.
+				if ( empty( $membership_id ) ) {
+					$membership_id = 0;
+				}
 			}
+
+			// Get the membership level object.
+			$membership_level = pmpro_getLevel( $membership_id );
 
 			$this->email = $user->user_email;
 			$this->subject = sprintf( __("Your membership at %s has ended", "paid-memberships-pro"), get_option( "blogname" ) );
@@ -1361,8 +1362,8 @@
 				"user_email" => $user->user_email,
 				"levels_link" => pmpro_url("levels"),
 				"levels_url" => pmpro_url("levels"),
-				"membership_id" => $membership_level->id,
-				"membership_level_name" => $membership_level->name
+				"membership_id" => $membership_id,
+				"membership_level_name" => ( ! empty( $membership_level ) && ! empty( $membership_level->name ) ) ? $membership_level->name : '[' . esc_html( 'deleted', 'paid-memberships-pro' ) . ']',
 			);
 
 			$this->template = apply_filters("pmpro_email_template", "membership_expired", $this);
