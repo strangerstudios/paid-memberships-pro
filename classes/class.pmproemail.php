@@ -1291,7 +1291,7 @@
 				'user_login' => $user->user_login,
 				'sitename' => get_option( 'blogname' ), 				
 				'membership_id' => $membership_level->id,
-				'membership_level_name' => $membership_level->name, 
+				'membership_level_name' => $membership_level->name,
 				'siteemail' => get_option( 'pmpro_from_email' ), 
 				'login_link' => pmpro_login_url(),
 				'login_url' => pmpro_login_url(),
@@ -1311,26 +1311,71 @@
 			return $this->sendEmail();
 		}
 		
-		
-		function sendMembershipExpiredEmail( $user = NULL, $membership_id = NULL )
-		{
-			global $current_user;
-			if(!$user)
+		/**
+		 * Send the member an email when their membership has ended.
+		 *
+		 * @param object $user The WordPress user object.
+		 * @param int $membership_id The member's membership level ID.
+		 * @return bool Whether the email was sent successfully.
+		 * @since TBD
+		 */
+		function sendMembershipExpiredEmail( $user = NULL, $membership_id = NULL ) {
+			global $current_user, $wpdb;
+			if( !$user ) {
 				$user = $current_user;
-			
-			if(!$user)
-				return false;						
+			}
+			//Bail if still we don't have a user.
+			if( !$user ) {
+				return false;
+			}
+
+			// If we don't have a level ID, query the user's most recently expired level from the database.
+			if ( empty( $membership_id ) ) {
+				$membership_id = $wpdb->get_var(
+					$wpdb->prepare(
+						"SELECT membership_id FROM $wpdb->pmpro_memberships_users
+						WHERE user_id = %d
+						AND status = 'expired'
+						ORDER BY enddate DESC
+						LIMIT 1",
+						$user->ID
+					)
+				);
+
+				// If we still don't have a level ID, bail.
+				if ( empty( $membership_id ) ) {
+					$membership_id = 0;
+				}
+			}
+
+			// Get the membership level object.
+			$membership_level = pmpro_getLevel( $membership_id );
 
 			$this->email = $user->user_email;
-			$this->subject = sprintf(__("Your membership at %s has ended", "paid-memberships-pro"), get_option("blogname"));			
+			$this->subject = sprintf( __("Your membership at %s has ended", "paid-memberships-pro"), get_option( "blogname" ) );
 
-			$this->data = array("subject" => $this->subject, "name" => $user->display_name, "user_login" => $user->user_login, "header_name" => $user->display_name, "sitename" => get_option("blogname"), "siteemail" => get_option("pmpro_from_email"), "login_link" => pmpro_login_url(), "login_url" => pmpro_login_url(), "display_name" => $user->display_name, "user_email" => $user->user_email, "levels_link" => pmpro_url("levels"), "levels_url" => pmpro_url("levels"));
+			$this->data = array(
+				"subject" => $this->subject,
+				"name" => $user->display_name,
+				"user_login" => $user->user_login,
+				"header_name" => $user->display_name,
+				"sitename" => get_option("blogname"),
+				"siteemail" => get_option("pmpro_from_email"),
+				"login_link" => pmpro_login_url(),
+				"login_url" => pmpro_login_url(),
+				"display_name" => $user->display_name,
+				"user_email" => $user->user_email,
+				"levels_link" => pmpro_url("levels"),
+				"levels_url" => pmpro_url("levels"),
+				"membership_id" => $membership_id,
+				"membership_level_name" => ( ! empty( $membership_level ) && ! empty( $membership_level->name ) ) ? $membership_level->name : '[' . esc_html( 'deleted', 'paid-memberships-pro' ) . ']',
+			);
 
 			$this->template = apply_filters("pmpro_email_template", "membership_expired", $this);
 
 			return $this->sendEmail();
 		}
-		
+
 		/**
 		 * Send the member an email when their membership has ended.
 		 *
