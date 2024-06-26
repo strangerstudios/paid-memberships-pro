@@ -220,7 +220,25 @@ if ( $txn_type == "recurring_payment" ) {
 		if ( $payment_status == "completed" ) {
 			pmpro_ipnSaveOrder( $txn_id, $last_subscription_order );
 		} elseif ( in_array( $payment_status, $failed_payment_statuses ) ) {
-			pmpro_ipnFailedPayment( $last_subscription_order );
+			// Check if the subscription has been suspended/paused in PPE.
+			if ( $profile_status == "suspended") {
+				// Subscription was suspended. Let's remove the user's membership level, which will also cancel the subscription.
+				$subscription = $last_subscription_order->get_subscription();
+				if ( ! empty( $subscription ) ) {
+					$user = get_userdata( $subscription->get_user_id() );
+					if ( ! empty( $user ) ) {
+						pmpro_cancelMembershipLevel( $subscription->get_membership_level_id(), $user->ID );
+						ipnlog( 'Subscription #' . $subscription->get_id() . ' with subscription transaction id = ' . $subscr_id . ' was cancelled after payment failure.' );
+					} else {
+						ipnlog( 'ERROR: Could not cancel membership level for user with subscription transaction id = ' . $subscr_id . ' after payment failure. No user attached to subscription.' );
+					}
+				} else {
+					ipnlog( 'ERROR: Could not find this subscription to cancel after payment failure (subscription_transaction_id=' . $subscr_id . ').' );
+				}
+			} else {
+				// Subscription is not suspended. Send failed payment email.
+				pmpro_ipnFailedPayment( $last_subscription_order );
+			}
 		} else {
 			ipnlog( 'Payment status is ' . $payment_status . '.' );
 		}
