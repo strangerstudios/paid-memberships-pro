@@ -27,6 +27,7 @@
 			add_filter('pmpro_payment_options', array('PMProGateway_check', 'pmpro_payment_options'));
 			add_filter('pmpro_payment_option_fields', array('PMProGateway_check', 'pmpro_payment_option_fields'), 10, 2);
 			add_filter('pmpro_checkout_after_payment_information_fields', array('PMProGateway_check', 'pmpro_checkout_after_payment_information_fields'));
+			add_action( 'pmpro_order_single_before_order_details', array( 'PMProGateway_check', 'pmpro_order_single_before_order_details' ) );
 
 			//code to add at checkout
 			$gateway = pmpro_getGateway();
@@ -174,7 +175,36 @@
 			}
 		}
 
-		
+		/**
+		 * Show instructions on the single order frontend page.
+		 *
+		 * @since TBD
+		 */
+		static function pmpro_order_single_before_order_details( $order) {
+			if ( $order->gateway == 'check' && ! pmpro_isLevelFree( $order->membership_level ) && $order->status == 'pending' ) {
+				$instructions = get_option( 'pmpro_instructions' );
+				$check_gateway_label = get_option( 'pmpro_check_gateway_label' );
+				?>
+				<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_divider' ) ); ?>"></div>
+
+				<div id="pmpro_order_single-instructions">
+
+					<h3 class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_font-large' ) ); ?>">
+						<?php echo esc_html( sprintf( __ ( 'Payment Instructions: %s', 'paid-memberships-pro' ), $check_gateway_label ) ); ?>
+					</h3>
+
+					<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_payment_instructions' ) ); ?>">
+						<?php echo wp_kses_post( wpautop( wp_unslash( get_option( 'pmpro_instructions' ) ) ) ); ?>
+					</div>
+
+				</div> <!-- end pmpro_order_single-instructions -->
+
+				<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_divider' ) ); ?>"></div>
+
+				<?php
+			}
+		}
+
 		/**
 		 * Process checkout.
 		 *

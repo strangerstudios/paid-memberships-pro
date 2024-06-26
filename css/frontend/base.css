@@ -509,6 +509,10 @@ button[type="button"]#other_discount_code_toggle:focus {
 		.pmpro_card_actions {
 			display: none;
 		}
+
+		h2, h3 {
+			page-break-after: avoid;
+		}
 	}
 }
 
@@ -536,13 +540,15 @@ button[type="button"]#other_discount_code_toggle:focus {
 	}
 
 	.pmpro_table tbody tr th,
-	.pmpro_table tbody tr td {
+	.pmpro_table tbody tr td,
+	.pmpro_table tfoot tr td {
 		display: grid;
 		grid-template-columns: 1fr 2fr;
 	}
 
 	.pmpro_table tbody tr th::before,
-	.pmpro_table tbody tr td::before {
+	.pmpro_table tbody tr td::before,
+	.pmpro_table tfoot tr td::before {
 		content: attr(data-title) ": ";
 	}
 }
