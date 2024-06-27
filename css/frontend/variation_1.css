@@ -434,15 +434,6 @@
 		border-color: #ffb60a;
 	}
 
-	[id^="pmpro_paypal"] .pmpro_btn-submit-checkout-paypal-image {
-		background-image: url(../../images/paypal-color.svg);
-		background-repeat: no-repeat;
-		background-size: contain;
-		display: inline-block;
-		height: 30px;
-		width: 100px;
-	}
-
 	/* Login Form (WordPress default and our lost/reset password forms) */
 	#loginform {
 		margin-bottom: 0;
