@@ -418,6 +418,31 @@
 		padding: calc( var(--pmpro--base--spacing--small) + 3px );
 	}
 
+	[id^="pmpro_paypal"] .pmpro_btn-submit-checkout-paypal {
+		align-items: center;
+		background-color: #ffc439;
+		border-color: #ffc439;
+		color: #000;
+		display: flex;
+		flex-direction: row;
+		gap: calc( var(--pmpro--base--spacing--small) / 2 );
+		justify-content: center;
+	}
+
+	[id^="pmpro_paypal"] .pmpro_btn-submit-checkout-paypal:hover {
+		background-color: #ffb60a;
+		border-color: #ffb60a;
+	}
+
+	[id^="pmpro_paypal"] .pmpro_btn-submit-checkout-paypal-image {
+		background-image: url(../../images/paypal-color.svg);
+		background-repeat: no-repeat;
+		background-size: contain;
+		display: inline-block;
+		height: 30px;
+		width: 100px;
+	}
+
 	/* Login Form (WordPress default and our lost/reset password forms) */
 	#loginform {
 		margin-bottom: 0;
