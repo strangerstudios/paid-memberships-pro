@@ -72,6 +72,24 @@ if ( empty( $subscription ) ) {
 	</a>
 
 	<?php
+	// If this is a Stripe subscription and we have a customer for the user, show a link to edit the customer in Stripe.
+	if ( 'stripe' === $subscription->get_gateway() ) {
+		$stripe = new PMProGateway_Stripe();
+ 		$customer = $stripe->get_customer_for_user( $sub_user->ID );
+		 if ( ! empty( $customer ) ) {
+			?>
+			<a
+				target="_blank"
+				class="page-title-action pmpro-has-icon pmpro-has-icon-admin-users"
+				href="<?php echo esc_url( 'https://dashboard.stripe.com/' . ( get_option( 'pmpro_gateway_environment' ) == 'sandbox' ? 'test/' : '' ) . 'customers/' . $customer->id ) ?>">
+				<?php esc_html_e( 'Edit Customer in Stripe', 'paid-memberships-pro' ); ?>
+			</a>
+			<?php
+		}
+	}
+	?>
+
+	<?php
 		if ( $pmpro_msg ) {
 			?>
 			<div role="alert" id="pmpro_message" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_message ' . $pmpro_msgt, $pmpro_msgt ) ); ?>">
