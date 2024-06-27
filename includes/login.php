@@ -599,7 +599,7 @@ function pmpro_login_form( $args = array() ) {
 	wp_login_form( $args );
 	?>
 	<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_field-password-toggle' ) ); ?>">
-		<button type="button" class="pmpro_btn pmpro_btn-plain pmpro_btn-password-toggle-alt hide-if-no-js" data-toggle="0">
+		<button type="button" class="pmpro_btn pmpro_btn-plain pmpro_btn-password-toggle-alt hide-if-no-js" data-toggle="0" tabindex="3">
 			<span class="pmpro_icon pmpro_icon-eye" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--pmpro--color--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-eye"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg></span>
 			<span class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_field-password-toggle-state' ) ); ?>"><?php esc_html_e( 'Show Password', 'paid-memberships-pro' ); ?></span>
 		</button>
@@ -609,8 +609,17 @@ function pmpro_login_form( $args = array() ) {
 		(function() {
 			const toggleButton = document.querySelectorAll('.pmpro_btn-password-toggle-alt');
 			const toggleWrapper = document.querySelector('.pmpro_form_field-password-toggle');
+			const userloginInput = document.querySelector('#user_login');
 			const passwordLabel = document.querySelector('label[for="user_pass"]');
 			const passwordInput = document.querySelector('#user_pass');
+			const remembermeInput = document.querySelector('#rememberme');
+			const submitInput = document.querySelector('#wp-submit');
+
+			// Set tabindex values on form fields.
+			userloginInput.setAttribute('tabindex', '1');
+			passwordInput.setAttribute('tabindex', '2');
+			remembermeInput.setAttribute('tabindex', '4');
+			submitInput.setAttribute('tabindex', '5');
 
 			toggleButton.forEach(toggle => {
 				passwordLabel.appendChild(toggleWrapper);
@@ -799,19 +808,19 @@ function pmpro_reset_password_form() {
 								<?php esc_html_e( 'New Password', 'paid-memberships-pro' ) ?>
 								<span class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_asterisk' ) ); ?>"> <abbr title="<?php esc_html_e( 'Required Field', 'paid-memberships-pro' ); ?>">*</abbr></span>
 							</label>
-							<button type="button" class="pmpro_btn pmpro_btn-plain pmpro_btn-password-toggle hide-if-no-js" data-toggle="0">
+							<button type="button" class="pmpro_btn pmpro_btn-plain pmpro_btn-password-toggle hide-if-no-js" data-toggle="0" tabindex="2">
 								<span class="pmpro_icon pmpro_icon-eye" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--pmpro--color--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-eye"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg></span>
 								<span class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_field-password-toggle-state' ) ); ?>"><?php esc_html_e( 'Show Password', 'paid-memberships-pro' ); ?></span>
 							</button>
 						</div> <!-- end pmpro_form_field-password-toggle -->
-						<input type="password" name="pass1" id="pass1" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_input pmpro_form_input-password pmpro_form_input-required pass1', 'pass1' ) ); ?>" size="20" value="" autocomplete="new-password" aria-required="true" />
+						<input type="password" name="pass1" id="pass1" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_input pmpro_form_input-password pmpro_form_input-required pass1', 'pass1' ) ); ?>" size="20" value="" autocomplete="new-password" aria-required="true" tabindex="1" />
 					</div> <!-- end pmpro_form_field-pass1 -->
 					<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_field pmpro_form_field-password pmpro_form_field-required pmpro_form_field-pass2', 'pmpro_form_field-pass2' ) ); ?>">
 						<label for="pass2" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_label' ) ); ?>">
 							<?php esc_html_e( 'Confirm New Password', 'paid-memberships-pro' ) ?>
 							<span class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_asterisk' ) ); ?>"> <abbr title="<?php esc_html_e( 'Required Field', 'paid-memberships-pro' ); ?>">*</abbr></span>
 						</label>
-						<input type="password" name="pass2" id="pass2" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_input pmpro_form_input-password pmpro_form_input-required pass2', 'pass2' ) ); ?>" size="20" value="" autocomplete="new-password" aria-required="true" />
+						<input type="password" name="pass2" id="pass2" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_input pmpro_form_input-password pmpro_form_input-required pass2', 'pass2' ) ); ?>" size="20" value="" autocomplete="new-password" aria-required="true" tabindex="3" />
 					</div> <!-- end pmpro_form_field-pass2 -->
 				</div> <!-- end pmpro_cols-2 -->
 				<p class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_hint' ) ); ?>"><?php echo esc_html( wp_get_password_hint() ); ?></p>
@@ -819,7 +828,7 @@ function pmpro_reset_password_form() {
 			</div> <!-- end pmpro_form_fields -->
 			<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_submit' ) ); ?>">
 				<input type="hidden" name="pmpro_login_form_used" value="1" />
-				<input type="submit" name="submit" id="resetpass-button" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_btn pmpro_btn-submit', 'pmpro_btn-submit' ) ); ?>" value="<?php esc_attr_e( 'Reset Password', 'paid-memberships-pro' ); ?>" />
+				<input type="submit" name="submit" id="resetpass-button" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_btn pmpro_btn-submit', 'pmpro_btn-submit' ) ); ?>" value="<?php esc_attr_e( 'Reset Password', 'paid-memberships-pro' ); ?>" tabindex="4" />
 			</div> <!-- end pmpro_form_submit -->
 		</form>
 		<?php
