@@ -1518,53 +1518,11 @@
 		 * @param MemberOrder $order
 		 *
 		 * @return bool Whether the email was sent successfully.
+		 * @deprecated 3.1 Use sendInvoiceEmail instead.
 		 */
-		function sendBillableInvoiceEmail($user = NULL, $order = NULL)
-		{
-			global $current_user;
-
-			if(!$user)
-				$user = $current_user;
-
-			if(!$user || !$order)
-				return false;
-
-			$level = pmpro_getLevel( $order->membership_id );
-
-			$this->email = $user->user_email;
-			$this->subject = __('Receipt for order #: ', 'paid-memberships-pro') . $order->code;
-
-			// Load invoice template
-			if ( file_exists( get_stylesheet_directory() . '/paid-memberships-pro/pages/orders-email.php' ) ) {
-				$template = get_stylesheet_directory() . '/paid-memberships-pro/pages/orders-email.php';
-			} elseif ( file_exists( get_template_directory() . '/paid-memberships-pro/pages/orders-email.php' ) ) {
-				$template = get_template_directory() . '/paid-memberships-pro/pages/orders-email.php';
-			} else {
-				$template = PMPRO_DIR . '/adminpages/templates/orders-email.php';
-			}
-
-			ob_start();
-			require_once( $template );
-
-			$invoice = ob_get_contents();
-			ob_end_clean();
-
-			$this->data = array(
-				'order_code' => $order->code,
-				'login_link' => pmpro_login_url(),
-				'login_url' => pmpro_login_url(),
-				'invoice_link' => pmpro_login_url( pmpro_url( 'invoice', '?invoice=' . $order->code ) ),
-				'invoice_url' => pmpro_login_url( pmpro_url( 'invoice', '?invoice=' . $order->code ) ),
-				'invoice_id' => $order->id,
-				'invoice' => $invoice,
-				'levels_url' => pmpro_url( 'levels' ),
-				'membership_level_name' => $level->name,
-				'membership_level_id' => $order->membership_id
-			);
-
-			$this->template = apply_filters("pmpro_email_template", "billable_invoice", $this);
-
-			return $this->sendEmail();
+		function sendBillableInvoiceEmail( $user = NULL, $order = NULL ) {
+			_deprecated_function( 'sendBillableInvoiceEmail', '3.1', 'sendInvoiceEmail' );
+			return $this->sendInvoiceEmail( $user, $order );
 		}
 
 		/**
