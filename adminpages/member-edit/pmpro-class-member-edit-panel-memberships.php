@@ -737,7 +737,16 @@ class PMPro_Member_Edit_Panel_Memberships extends PMPro_Member_Edit_Panel {
 				}
 
 				// Process the refund.
-				pmpro_refund_order( $refund_order );
+				if ( ! pmpro_refund_order( $refund_order ) ) {
+					pmpro_setMessage(
+						sprintf(
+							/* translators: %s is the order code. */
+							__( 'There was an error refunding order #%s. None of the submitted changes to this membership have been made. Please check the order notes for more information.', 'paid-memberships-pro' ),
+							$refund_order->code
+						) . ' <a href="' . esc_url( add_query_arg( array( 'page' => 'pmpro-orders', 'order' => $refund_order->id ), admin_url( 'admin.php' ) ) ) . '">' . esc_html__( 'View Order', 'paid-memberships-pro' ) . '</a>', 'pmpro_error'
+					);
+					return;
+				}
 			}
 
 			// If we need to keep the subscription, add the filter.
@@ -865,7 +874,16 @@ class PMPro_Member_Edit_Panel_Memberships extends PMPro_Member_Edit_Panel {
 				}
 
 				// Process the refund.
-				pmpro_refund_order( $refund_order );
+				if ( ! pmpro_refund_order( $refund_order ) ) {
+					pmpro_setMessage(
+						sprintf(
+							/* translators: %s is the order code. */
+							__( 'There was an error refunding order #%s. None of the submitted changes to this membership have been made. Please check the order notes for more information.', 'paid-memberships-pro' ),
+							$refund_order->code
+						) . ' <a href="' . esc_url( add_query_arg( array( 'page' => 'pmpro-orders', 'order' => $refund_order->id ), admin_url( 'admin.php' ) ) ) . '">' . esc_html__( 'View Order', 'paid-memberships-pro' ) . '</a>', 'pmpro_error'
+					);
+					return;
+				}
 			}
 
 			// Check if we should keep the subscription active.
