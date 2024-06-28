@@ -589,6 +589,22 @@
 	}
 
 	/**
+	* Membership Account
+	*/
+	#pmpro_account-membership-none {
+
+		.pmpro_card_content {
+			padding-top: var(--pmpro--base--spacing--large);
+
+			p {
+				margin: 0;
+			}
+
+		}
+
+	}
+
+	/**
 	 * Membership Levels
 	 */
 	.pmpro_levels_table {

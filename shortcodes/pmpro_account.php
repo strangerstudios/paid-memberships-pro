@@ -148,7 +148,13 @@ function pmpro_shortcode_account($atts, $content=null, $code="")
 				<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_section_content' ) ); ?>">
 					<?php if ( empty( $mylevels ) ) {
 						$url = pmpro_url( 'levels' );
-						echo '<p>' . wp_kses( sprintf( __( "You do not have an active membership. <a href='%s'>Choose a membership level.</a>", 'paid-memberships-pro' ), $url ), array( 'a' => array( 'href' => array() ) ) ) . '</p>';
+						?>
+						<div id="pmpro_account-membership-none" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_card' ) ); ?>">
+							<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_card_content' ) ); ?>">
+								<p><?php echo wp_kses( sprintf( __( "You do not have an active membership. <a href='%s'>Choose a membership level.</a>", 'paid-memberships-pro' ), $url ), array( 'a' => array( 'href' => array() ) ) ); ?></p>
+							</div> <!-- end pmpro_card_content -->
+						</div> <!-- end pmpro_card -->
+						<?php
 					} else {
 						foreach ( $mylevels as $level ) {
 							?>
