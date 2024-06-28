@@ -335,8 +335,17 @@ class PMPro_Orders_List_Table extends WP_List_Table {
 
 		if( ! empty( $_REQUEST['order'] ) && ! empty( $_REQUEST['orderby'] ) && ! $count ) {
 
-			$order = strtoupper( esc_sql( $_REQUEST['order'] ) );
-			$orderby = ( $_REQUEST['orderby'] );
+			if( isset( $_REQUEST['orderby'] ) ) {
+				$orderby = $this->sanitize_orderby( sanitize_text_field( $_REQUEST['orderby'] ) );
+			} else {
+				$orderby = 'id';
+			}
+
+			if( isset( $_REQUEST['order'] ) && $_REQUEST['order'] == 'asc' ) {
+				$order = 'ASC';
+			} else {
+				$order = 'DESC';
+			}
 
 			if( $orderby == 'total' ) {
 				$orderby = 'total + 0'; //This pads the number and allows it to sort correctly
@@ -807,11 +816,11 @@ class PMPro_Orders_List_Table extends WP_List_Table {
 	function sanitize_orderby( $orderby ) {
 
 		$allowed_orderbys = array(
-			'order_id' 		=> 'id',
-			'level'	        => 'name',
-			'total' 	    => 'total',
-			'status' 	    => 'status_label',
-			'date' 		    => 'timestamp',
+			'id'           => 'id',
+			'name'	       => 'membership_id',
+			'total'        => 'total',
+			'status_label' => 'status',
+			'timestamp'    => 'timestamp',
 		);
 
 	 	if ( ! empty( $allowed_orderbys[$orderby] ) ) {
@@ -820,7 +829,7 @@ class PMPro_Orders_List_Table extends WP_List_Table {
 			$orderby = false;
 		}
 
-		return $allowed_orderbys;
+		return $orderby;
 	}
 
 	/**
