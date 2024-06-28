@@ -32,11 +32,6 @@
 
 		// Checkout settings.
 		pmpro_setOption("tospage");
-		pmpro_setOption("spamprotection");
-		pmpro_setOption("recaptcha");
-		pmpro_setOption("recaptcha_version");
-		pmpro_setOption("recaptcha_publickey");
-		pmpro_setOption("recaptcha_privatekey");
 
 		// Communication settings.
 		pmpro_setOption("maxnotificationpriority");
@@ -82,11 +77,6 @@
 
 	// Checkout settings.
 	$tospage = get_option( "pmpro_tospage");
-	$spamprotection = get_option( "pmpro_spamprotection");
-	$recaptcha = get_option( "pmpro_recaptcha");
-	$recaptcha_version = get_option( "pmpro_recaptcha_version");
-	$recaptcha_publickey = get_option( "pmpro_recaptcha_publickey");
-	$recaptcha_privatekey = get_option( "pmpro_recaptcha_privatekey");
 
 	// Communication settings.
 	$maxnotificationpriority = get_option( "pmpro_maxnotificationpriority");
