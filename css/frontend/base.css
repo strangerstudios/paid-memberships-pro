@@ -226,6 +226,12 @@ button[type="button"]#other_discount_code_toggle:focus {
 /**
  * Lists
  */
+.pmpro_list {
+	li {
+		word-break: break-all;
+	}
+}
+
 .pmpro_list.pmpro_list-plain,
 .pmpro_list.pmpro_list-plain .pmpro_list_item {
 	list-style: none;
