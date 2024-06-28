@@ -239,7 +239,16 @@
 			?>
 			<span id="pmpro_paypalexpress_checkout" <?php if(($gateway != "paypalexpress" && $gateway != "paypalstandard") || !$pmpro_requirebilling) { ?>style="display: none;"<?php } ?>>
 				<input type="hidden" name="submit-checkout" value="1" />
-				<input type="image" id="pmpro_btn-submit-paypalstandard" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_btn-submit-checkout' ) ); ?>" value="<?php esc_attr_e('Check Out with PayPal', 'paid-memberships-pro' );?>" src="<?php echo esc_url( apply_filters("pmpro_paypal_button_image", "https://www.paypalobjects.com/webstatic/en_US/i/buttons/checkout-logo-medium.png") );?>" />
+				<button type="submit" id="pmpro_btn-submit-paypalexpress" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_btn pmpro_btn-submit-checkout pmpro_btn-submit-checkout-paypal' ) ); ?>">
+					<?php
+						printf(
+							/* translators: %s is the PayPal logo */
+							esc_html__( 'Check Out With %s', 'paid-memberships-pro' ),
+							'<span class="pmpro_btn-submit-checkout-paypal-image"></span>'
+						);
+					?>
+					<span class="screen-reader-text"><?php esc_html_e( 'PayPal', 'paid-memberships-pro' ); ?></span>
+				</button>
 			</span>
 
 			<span id="pmpro_submit_span" <?php if(($gateway == "paypalexpress" || $gateway == "paypalstandard") && $pmpro_requirebilling) { ?>style="display: none;"<?php } ?>>

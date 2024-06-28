@@ -25,21 +25,27 @@ function pmpro_wp_mail_from_name($from_name)
  * The default email address for WP emails is wordpress@sitename.
  * Use our setting instead.
  */
-function pmpro_wp_mail_from($from_email)
-{
+function pmpro_wp_mail_from( $from_email ) {
 	// default from email wordpress@sitename
-	$sitename = strtolower( sanitize_text_field( $_SERVER['SERVER_NAME'] ) );
+	if ( isset( $_SERVER['SERVER_NAME'] ) ) {
+		$sitename = strtolower( sanitize_text_field( $_SERVER['SERVER_NAME'] ) );
+	} else {
+		$site_url = get_option( 'siteurl' );
+		$parsed_url = parse_url( $site_url );
+		$sitename = strtolower( $parsed_url['host'] );
+	}
+
 	if ( substr( $sitename, 0, 4 ) == 'www.' ) {
 		$sitename = substr( $sitename, 4 );
 	}
 	$default_from_email = 'wordpress@' . $sitename;
 
 	//make sure it's the default email address
-	if($from_email == $default_from_email)
-	{
-		$pmpro_from_email = get_option("pmpro_from_email");
-		if ($pmpro_from_email && is_email( $pmpro_from_email ) )
+	if ( $from_email == $default_from_email ) {
+		$pmpro_from_email = get_option( 'pmpro_from_email' );
+		if ( $pmpro_from_email && is_email( $pmpro_from_email ) ) {
 			$from_email = $pmpro_from_email;
+		}
 	}
 
 	return $from_email;

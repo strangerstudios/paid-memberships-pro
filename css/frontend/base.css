@@ -190,6 +190,15 @@ button[type="button"]#other_discount_code_toggle:focus {
 	margin-left: var(--pmpro--base--spacing--large);
 }
 
+[id^="pmpro_paypal"] .pmpro_btn-submit-checkout-paypal-image {
+	background-image: url(../../images/paypal-color.svg);
+	background-repeat: no-repeat;
+	background-size: contain;
+	display: inline-block;
+	height: 30px;
+	width: 100px;
+}
+
 /* Stripe gateway Membership Checkout specific styles. */
 .pmpro_checkout_gateway-stripe form.pmpro_form #pmpro_payment_information_fields .pmpro_payment-request-button h3,
 .pmpro_billing_gateway-stripe form.pmpro_form #pmpro_payment_information_fields .pmpro_payment-request-button h3 {
