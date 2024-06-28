@@ -85,6 +85,11 @@
 										'label' => __( 'Payment method', 'paid-memberships-pro' ),
 										'value' => $pmpro_invoice->payment_type,
 									);
+								} elseif ( ! empty( $pmpro_invoice->payment_type ) ) {
+									$pmpro_order_single_meta['payment_method'] = array(
+										'label' => __( 'Payment method', 'paid-memberships-pro' ),
+										'value' => $pmpro_invoice->payment_type,
+									);
 								} else {
 									$pmpro_order_single_meta['payment_method'] = array(
 										'label' => __( 'Payment method', 'paid-memberships-pro' ),
