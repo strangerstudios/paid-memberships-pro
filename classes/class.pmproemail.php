@@ -155,9 +155,6 @@
 			elseif(!empty($this->data) && !empty($this->data['body']))
 				$this->body = $this->data['body'];																						//data passed in
 
-<<<<<<< HEAD
-=======
-
 			// Add template header.
 			if( get_option( 'pmpro_email_header_disabled' ) != 'true' ) {
 				$email_header = apply_filters( 'pmproet_header_template',
@@ -177,8 +174,7 @@
 			// Add header and footer to email body.
 			$this->body = $email_header . $this->body . $email_footer;
 
->>>>>>> 4c8fc6d6 (* Add more WPCS)
-			//if data is a string, assume we mean to replace !!body!! with it
+				//if data is a string, assume we mean to replace !!body!! with it
 			if(is_string($this->data))
 				$this->data = array("body"=>$data);											
 				
