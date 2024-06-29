@@ -141,7 +141,6 @@
 						'!!user_email!!'            => __( 'User Email', 'paid-memberships-pro' ),
 						'!!login_url!!'            => __( 'Login URL', 'paid-memberships-pro' ),
 						'!!levels_url!!'           => __( 'Membership Levels Page URL', 'paid-memberships-pro' ),
-						'!!billing_url!!'          => __( 'Billing Info Update URL', 'paid-memberships-pro' ),
 					];
 
 					foreach ( $email_variables as $email_variable => $description ) {

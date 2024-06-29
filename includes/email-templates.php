@@ -67,7 +67,7 @@ $pmpro_email_templates_defaults = array(
 	'billing_failure' => array(
 		'subject' => __( "Membership payment for level !!membership_level_name!! failed at !!sitename!!", 'paid-memberships-pro' ),
 		'description' => __( 'Payment Failure', 'paid-memberships-pro' ),
-		'body' => __( '<p>The current subscription payment for level !!membership_level_name!! at !!sitename!! membership has failed. <strong>Please click the following link to log in and update your billing information to avoid account suspension.</strong><br/> !!billing_url!! </p>
+		'body' => __( '<p>The current subscription payment for level !!membership_level_name!! at !!sitename!! membership has failed. <strong>Please click the following link to log in and update your billing information to avoid account suspension.</strong><br/> !!login_url!! </p>
 
 <p>Account: !!display_name!! (!!user_email!!)</p>', 'paid-memberships-pro' ),
 		'help_text' => __( 'This email is sent out if a recurring payment has failed, usually due to an expired or cancelled credit card. This email is sent to the member to allowing them time to update payment information without a disruption in access to your site.', 'paid-memberships-pro' )

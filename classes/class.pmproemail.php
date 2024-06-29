@@ -994,8 +994,7 @@
 		 * @param object $user The WordPress user object.
 		 * @param MemberOrder $invoice The order object that is associated to the member.
 		 */
-		function sendBillingFailureEmail($user = NULL, $invoice = NULL)
-		{
+		function sendBillingFailureEmail( $user = NULL, $invoice = NULL ) {
 			global $current_user;
 			if(!$user)
 				$user = $current_user;
@@ -1008,7 +1007,7 @@
 			$this->email = $user->user_email;
 			$this->subject = sprintf( __("Membership payment for level %s failed at %s", "paid-memberships-pro"),
 				$membership_level->name, get_option("blogname") );
-			
+
 			$this->data = array(
 								'subject' => $this->subject,
 								'header_name' => $user->display_name,
@@ -1031,10 +1030,9 @@
 								'accountnumber' => hideCardNumber($invoice->accountnumber),
 								'expirationmonth' => $invoice->expirationmonth,
 								'expirationyear' => $invoice->expirationyear,
-								'login_link' => pmpro_login_url( pmpro_url( 'billing' ) ),
-								'login_url' => pmpro_login_url( pmpro_url( 'billing' ) ),
-								'levels_url' => pmpro_url( 'levels' ),
-								'billing_url' => $this->get_billing_url( $user->ID, $membership_level->id )
+								'login_link' => pmpro_login_url( pmpro_url( 'billing', $this->get_query_string_for_login_link( $user->ID, $membership_level->id ) ) ),
+								'login_url' => pmpro_login_url( pmpro_url( 'billing', $this->get_query_string_for_login_link( $user->ID, $membership_level->id ) ) ),
+								'levels_url' => pmpro_url( 'levels' )
 							);
 			$this->data["billing_address"] = pmpro_formatAddress($invoice->billing->name,
 																 $invoice->billing->street,
@@ -1091,7 +1089,6 @@
 								'login_link' => pmpro_login_url( get_edit_user_link( $user->ID ) ),
 								'login_url' => pmpro_login_url( get_edit_user_link( $user->ID ) ),
 								'levels_url' => pmpro_url( 'levels' ),
-								'billing_url' => $this->get_billing_url( $user->ID, $membership_level->id )
 							);
 			$this->data["billing_address"] = pmpro_formatAddress($invoice->billing->name,
 																 $invoice->billing->street,
@@ -1635,34 +1632,34 @@
 		}
 
 		/**
-		 * Get a URL to display in the email for the user to update their billing information if appropriate,
-		 * otherwise to the account page.
+		 * Get the query string for the login link.
 		 *
 		 * @param int $user_id The user ID.
 		 * @param int $level_id The membership level ID.
-		 * @return string The URL to the billing page.
-		 * @since TBD
+		 * @return string The query string.
+		 * @since 3.1
 		 */
-		private function get_billing_url( $user_id, $level_id ) {
-			// Get the current user's subscriptions for the level.
-			$alternative_url = pmpro_url( 'billing', '', 'https' );
-			$subscriptions =  PMPro_Subscription::get_subscriptions_for_user( $user_id, $level_idq );
-			if ( ! empty( $subscriptions ) ) {
-				// Let's get the first. There should not be more than one.
-				$subscription = $subscriptions[0];
-				// Check if this subscription is for the default gateaway (we can currently only update billing info for the default gateway).
-				if ( $subscription->get_gateway() == get_option( 'pmpro_gateway' ) ) {
-					// Check if the gateway supports updating billing info.
-					$gateway_obj = $subscription->get_gateway_object();
-					if ( ! empty( $gateway_obj ) && method_exists( $gateway_obj, 'supports' ) && $gateway_obj->supports( 'payment_method_updates' ) ) {
-						// Make sure that the subscription has an order, which is necessary to update.
-						$newest_orders = $subscription->get_orders( array( 'limit' => 1 ) );
-						if ( ! empty( $newest_orders ) ) {
-							return pmpro_login_url( pmpro_url( 'billing', 'pmpro_subscription_id=' . $subscription->get_id(), 'https' ) );
-						}
-					}
-				}
+		private function get_query_string_for_login_link( $user_id, $level_id ) {
+			$subscriptions =  PMPro_Subscription::get_subscriptions_for_user( $user_id, $level_id );
+			//Bail if we don't have a subscription
+			if (  empty( $subscriptions ) ) {
+				return '';
 			}
-			return $alternative_url;
+			$subscription = $subscriptions[0];
+			//Bail if the subscription is not for the default gateway
+			if ( $subscription->get_gateway() != get_option( 'pmpro_gateway' ) ) {
+				return '';
+			}
+			$gateway_obj = $subscription->get_gateway_object();
+			//Bail if not gatway object or does not support payment method updates
+			if ( empty( $gateway_obj ) || ! method_exists( $gateway_obj, 'supports' ) || ! $gateway_obj->supports( 'payment_method_updates' ) ) {
+				return '';
+			}
+			$newest_orders = $subscription->get_orders( array( 'limit' => 1 ) );
+			//Bail if we don't have an order
+			if ( empty( $newest_orders ) ) {
+				return '';
+			}
+			return 'pmpro_subscription_id=' . $subscription->get_id();
 		}
 }
