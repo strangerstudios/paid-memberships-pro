@@ -213,6 +213,11 @@
 				</button>
 			</div>
 			<div class="pmpro_section_inside">
+				<p><?php			
+					$ssl_settings_link = '<a title="' . esc_attr__( 'Paid Memberships Pro - SSL Settings', 'paid-memberships-pro' ) . '" target="_blank" rel="nofollow noopener" href="https://www.paidmembershipspro.com/documentation/initial-plugin-setup/ssl/?utm_source=plugin&utm_medium=pmpro-paymentsettings&utm_campaign=documentation&utm_content=ssl&utm_term=link1">' . esc_html__( 'SSL', 'paid-memberships-pro' ) . '</a>';
+					// translators: %s: Link to SSL Settings doc.
+					printf( esc_html__('Learn more about %s.', 'paid-memberships-pro' ), $ssl_settings_link ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+				?></p>
 				<table class="form-table">
 				<tbody>
 					<tr>
