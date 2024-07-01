@@ -2,14 +2,14 @@
 # This file is distributed under the same license as the Paid Memberships Pro plugin.
 msgid ""
 msgstr ""
-"Project-Id-Version: Paid Memberships Pro 3.0.5\n"
+"Project-Id-Version: Paid Memberships Pro 3.0.6\n"
 "Report-Msgid-Bugs-To: info@paidmembershipspro.com\n"
 "Last-Translator: Paid Memberships Pro <info@paidmembershipspro.com>\n"
 "Language-Team: Paid Memberships Pro <info@paidmembershipspro.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2024-06-24T17:00:18+00:00\n"
+"POT-Creation-Date: 2024-07-01T13:39:38+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.10.0\n"
 "X-Domain: paid-memberships-pro\n"
@@ -120,7 +120,7 @@ msgstr ""
 #: adminpages/addons.php:55
 #: adminpages/levels/edit-level.php:619
 #: adminpages/reports.php:21
-#: classes/class-pmpro-orders-list-table.php:549
+#: classes/class-pmpro-orders-list-table.php:558
 #: includes/metaboxes.php:19
 #: includes/terms.php:29
 #: includes/terms.php:88
@@ -356,7 +356,7 @@ msgstr ""
 #: adminpages/orders.php:945
 #: adminpages/subscriptions.php:272
 #: classes/class-pmpro-admin-activity-email.php:221
-#: classes/class-pmpro-discount-code-list-table.php:450
+#: classes/class-pmpro-discount-code-list-table.php:449
 #: classes/class-pmpro-site-health.php:77
 #: includes/adminpages.php:57
 #: includes/adminpages.php:214
@@ -1088,14 +1088,14 @@ msgstr ""
 #: adminpages/dashboard.php:344
 #: adminpages/dashboard.php:359
 #: adminpages/member-edit/pmpro-class-member-edit-panel-orders.php:90
-#: classes/class-pmpro-orders-list-table.php:1055
+#: classes/class-pmpro-orders-list-table.php:1064
 #: includes/profile.php:801
 msgid "deleted"
 msgstr ""
 
 #: adminpages/dashboard.php:346
 #: adminpages/dashboard.php:361
-#: classes/class-pmpro-orders-list-table.php:1057
+#: classes/class-pmpro-orders-list-table.php:1066
 msgid "none"
 msgstr ""
 
@@ -1846,7 +1846,7 @@ msgid "View Members"
 msgstr ""
 
 #: adminpages/levels/edit-level.php:198
-#: classes/class-pmpro-discount-code-list-table.php:439
+#: classes/class-pmpro-discount-code-list-table.php:438
 msgid "View Orders"
 msgstr ""
 
@@ -1934,7 +1934,7 @@ msgstr ""
 #: adminpages/levels/edit-level.php:619
 #: adminpages/orders.php:427
 #: adminpages/orders.php:603
-#: classes/class-pmpro-discount-code-list-table.php:561
+#: classes/class-pmpro-discount-code-list-table.php:560
 #: includes/init.php:198
 #: includes/metaboxes.php:19
 #: includes/profile.php:210
@@ -2157,10 +2157,10 @@ msgstr ""
 #: adminpages/member-edit/pmpro-class-member-edit-panel-orders.php:72
 #: adminpages/membershiplevels.php:418
 #: adminpages/membershiplevels.php:428
-#: classes/class-pmpro-discount-code-list-table.php:401
-#: classes/class-pmpro-discount-code-list-table.php:411
-#: classes/class-pmpro-orders-list-table.php:951
-#: classes/class-pmpro-orders-list-table.php:961
+#: classes/class-pmpro-discount-code-list-table.php:400
+#: classes/class-pmpro-discount-code-list-table.php:410
+#: classes/class-pmpro-orders-list-table.php:960
+#: classes/class-pmpro-orders-list-table.php:970
 #: includes/fields.php:1377
 #: includes/profile.php:783
 msgid "Edit"
@@ -2351,10 +2351,10 @@ msgstr ""
 #: adminpages/member-edit/pmpro-class-member-edit-panel-orders.php:150
 #: adminpages/member-edit/pmpro-class-member-edit-panel-subscriptions.php:139
 #: adminpages/membershiplevels.php:488
-#: classes/class-pmpro-orders-list-table.php:1076
-#: classes/class-pmpro-orders-list-table.php:1148
-#: classes/class-pmpro-orders-list-table.php:1177
-#: classes/class-pmpro-orders-list-table.php:1215
+#: classes/class-pmpro-orders-list-table.php:1085
+#: classes/class-pmpro-orders-list-table.php:1157
+#: classes/class-pmpro-orders-list-table.php:1186
+#: classes/class-pmpro-orders-list-table.php:1224
 #: includes/profile.php:803
 #: includes/profile.php:810
 #: includes/profile.php:820
@@ -2442,7 +2442,7 @@ msgstr ""
 #: adminpages/subscriptions.php:230
 #: adminpages/subscriptions.php:243
 #: adminpages/subscriptions.php:257
-#: classes/class-pmpro-orders-list-table.php:1256
+#: classes/class-pmpro-orders-list-table.php:1265
 #: includes/functions.php:640
 #: includes/profile.php:69
 #: includes/profile.php:766
@@ -2453,15 +2453,15 @@ msgstr ""
 #. translators: %s is the User ID.
 #: adminpages/member-edit/pmpro-class-member-edit-panel-orders.php:67
 #: adminpages/reports/logins.php:250
-#: classes/class-pmpro-orders-list-table.php:946
+#: classes/class-pmpro-orders-list-table.php:955
 #: includes/profile.php:778
 msgid "ID: %s"
 msgstr ""
 
 #: adminpages/member-edit/pmpro-class-member-edit-panel-orders.php:75
 #: adminpages/orders.php:288
-#: classes/class-pmpro-orders-list-table.php:986
-#: classes/class-pmpro-orders-list-table.php:996
+#: classes/class-pmpro-orders-list-table.php:995
+#: classes/class-pmpro-orders-list-table.php:1005
 #: includes/profile.php:786
 #: pages/invoice.php:35
 msgid "Print"
@@ -2470,8 +2470,8 @@ msgstr ""
 #: adminpages/member-edit/pmpro-class-member-edit-panel-orders.php:80
 #: adminpages/orders.php:289
 #: classes/class-pmpro-members-list-table.php:138
-#: classes/class-pmpro-orders-list-table.php:1000
-#: classes/class-pmpro-orders-list-table.php:1003
+#: classes/class-pmpro-orders-list-table.php:1009
+#: classes/class-pmpro-orders-list-table.php:1012
 #: includes/profile.php:791
 #: includes/profile.php:1145
 #: shortcodes/pmpro_account.php:192
@@ -2488,8 +2488,8 @@ msgid "test"
 msgstr ""
 
 #: adminpages/member-edit/pmpro-class-member-edit-panel-orders.php:154
-#: classes/class-pmpro-orders-list-table.php:350
-#: classes/class-pmpro-orders-list-table.php:1236
+#: classes/class-pmpro-orders-list-table.php:359
+#: classes/class-pmpro-orders-list-table.php:1245
 #: includes/profile.php:824
 #: pages/invoice.php:44
 #: shortcodes/pmpro_account.php:269
@@ -2563,7 +2563,7 @@ msgstr ""
 #: adminpages/member-edit/pmpro-class-member-edit-panel-subscriptions.php:247
 #: adminpages/orders.php:823
 #: adminpages/subscriptions.php:278
-#: classes/class-pmpro-orders-list-table.php:1242
+#: classes/class-pmpro-orders-list-table.php:1251
 msgid "View all orders for this subscription"
 msgstr ""
 
@@ -2854,20 +2854,20 @@ msgstr ""
 
 #: adminpages/membershiplevels.php:432
 #: adminpages/membershiplevels.php:443
-#: classes/class-pmpro-discount-code-list-table.php:415
-#: classes/class-pmpro-discount-code-list-table.php:426
-#: classes/class-pmpro-orders-list-table.php:965
-#: classes/class-pmpro-orders-list-table.php:976
+#: classes/class-pmpro-discount-code-list-table.php:414
+#: classes/class-pmpro-discount-code-list-table.php:425
+#: classes/class-pmpro-orders-list-table.php:974
+#: classes/class-pmpro-orders-list-table.php:985
 msgid "Copy"
 msgstr ""
 
 #: adminpages/membershiplevels.php:447
 #: adminpages/membershiplevels.php:449
-#: classes/class-pmpro-discount-code-list-table.php:430
-#: classes/class-pmpro-discount-code-list-table.php:432
+#: classes/class-pmpro-discount-code-list-table.php:429
+#: classes/class-pmpro-discount-code-list-table.php:431
 #: classes/class-pmpro-field.php:907
-#: classes/class-pmpro-orders-list-table.php:980
-#: classes/class-pmpro-orders-list-table.php:982
+#: classes/class-pmpro-orders-list-table.php:989
+#: classes/class-pmpro-orders-list-table.php:991
 #: includes/fields.php:1379
 msgid "Delete"
 msgstr ""
@@ -2959,7 +2959,7 @@ msgstr ""
 
 #. translators: %s is the Order Code.
 #: adminpages/orders.php:268
-#: classes/class-pmpro-orders-list-table.php:925
+#: classes/class-pmpro-orders-list-table.php:934
 msgid "Refund order %s at the payment gateway. This action is permanent. The user and admin will receive an email confirmation after the refund is processed. Are you sure you want to refund this order?"
 msgstr ""
 
@@ -2973,8 +2973,8 @@ msgstr ""
 
 #: adminpages/orders.php:295
 #: adminpages/orders.php:297
-#: classes/class-pmpro-orders-list-table.php:1010
-#: classes/class-pmpro-orders-list-table.php:1012
+#: classes/class-pmpro-orders-list-table.php:1019
+#: classes/class-pmpro-orders-list-table.php:1021
 #: includes/email-templates.php:526
 msgid "Refund"
 msgstr ""
@@ -3170,7 +3170,7 @@ msgid "Subscription Transaction ID"
 msgstr ""
 
 #: adminpages/orders.php:823
-#: classes/class-pmpro-orders-list-table.php:1242
+#: classes/class-pmpro-orders-list-table.php:1251
 msgid "Renewal"
 msgstr ""
 
@@ -3728,7 +3728,7 @@ msgstr ""
 #: adminpages/reports/logins.php:221
 #: adminpages/reports/memberships.php:48
 #: adminpages/reports/sales.php:51
-#: classes/class-pmpro-orders-list-table.php:604
+#: classes/class-pmpro-orders-list-table.php:613
 msgid "This Month"
 msgstr ""
 
@@ -3816,7 +3816,7 @@ msgstr ""
 #: adminpages/reports/logins.php:222
 #: adminpages/reports/memberships.php:49
 #: adminpages/reports/sales.php:52
-#: classes/class-pmpro-orders-list-table.php:608
+#: classes/class-pmpro-orders-list-table.php:617
 msgid "This Year"
 msgstr ""
 
@@ -4585,7 +4585,7 @@ msgstr ""
 
 #: classes/class-pmpro-admin-activity-email.php:121
 #: classes/class-pmpro-members-list-table.php:158
-#: classes/class-pmpro-orders-list-table.php:351
+#: classes/class-pmpro-orders-list-table.php:360
 msgid "Cancelled"
 msgstr ""
 
@@ -4708,16 +4708,16 @@ msgstr ""
 msgid "No discount codes found."
 msgstr ""
 
-#: classes/class-pmpro-discount-code-list-table.php:372
+#: classes/class-pmpro-discount-code-list-table.php:371
 msgid "Edit Code: %s"
 msgstr ""
 
 #. translators: %s is the Discount Code.
-#: classes/class-pmpro-discount-code-list-table.php:378
+#: classes/class-pmpro-discount-code-list-table.php:377
 msgid "Are you sure you want to delete the %s discount code? The subscriptions for existing users will not change, but new users will not be able to use this code anymore."
 msgstr ""
 
-#: classes/class-pmpro-discount-code-list-table.php:496
+#: classes/class-pmpro-discount-code-list-table.php:495
 msgid "unlimited"
 msgstr ""
 
@@ -4783,7 +4783,7 @@ msgid "Old Members"
 msgstr ""
 
 #: classes/class-pmpro-members-list-table.php:779
-#: classes/class-pmpro-orders-list-table.php:547
+#: classes/class-pmpro-orders-list-table.php:556
 #: blocks/build/component-content-visibility/index.js:1
 #: blocks/build/membership/index.js:1
 #: blocks/src/component-content-visibility/content-visibility-controls.js:81
@@ -4804,101 +4804,101 @@ msgstr ""
 msgid "Transaction IDs"
 msgstr ""
 
-#: classes/class-pmpro-orders-list-table.php:352
+#: classes/class-pmpro-orders-list-table.php:361
 #: shortcodes/pmpro_account.php:274
 msgid "Refunded"
 msgstr ""
 
-#: classes/class-pmpro-orders-list-table.php:353
+#: classes/class-pmpro-orders-list-table.php:362
 msgid "Token"
 msgstr ""
 
-#: classes/class-pmpro-orders-list-table.php:354
+#: classes/class-pmpro-orders-list-table.php:363
 msgid "Review"
 msgstr ""
 
-#: classes/class-pmpro-orders-list-table.php:355
+#: classes/class-pmpro-orders-list-table.php:364
 #: pages/confirmation.php:77
 #: shortcodes/pmpro_account.php:272
 msgid "Pending"
 msgstr ""
 
-#: classes/class-pmpro-orders-list-table.php:356
+#: classes/class-pmpro-orders-list-table.php:365
 msgid "Error"
 msgstr ""
 
-#: classes/class-pmpro-orders-list-table.php:551
+#: classes/class-pmpro-orders-list-table.php:560
 msgid "Within a Date Range"
 msgstr ""
 
-#: classes/class-pmpro-orders-list-table.php:553
+#: classes/class-pmpro-orders-list-table.php:562
 msgid "Predefined Date Range"
 msgstr ""
 
-#: classes/class-pmpro-orders-list-table.php:555
+#: classes/class-pmpro-orders-list-table.php:564
 msgid "Within a Level"
 msgstr ""
 
-#: classes/class-pmpro-orders-list-table.php:557
+#: classes/class-pmpro-orders-list-table.php:566
 msgid "With a Discount Code"
 msgstr ""
 
-#: classes/class-pmpro-orders-list-table.php:559
+#: classes/class-pmpro-orders-list-table.php:568
 msgid "Within a Status"
 msgstr ""
 
-#: classes/class-pmpro-orders-list-table.php:561
+#: classes/class-pmpro-orders-list-table.php:570
 msgid "Only Paid Orders"
 msgstr ""
 
-#: classes/class-pmpro-orders-list-table.php:563
+#: classes/class-pmpro-orders-list-table.php:572
 msgid "Only Free Orders"
 msgstr ""
 
-#: classes/class-pmpro-orders-list-table.php:571
+#: classes/class-pmpro-orders-list-table.php:580
 msgid "From"
 msgstr ""
 
-#: classes/class-pmpro-orders-list-table.php:586
+#: classes/class-pmpro-orders-list-table.php:595
 msgid "To"
 msgstr ""
 
-#: classes/class-pmpro-orders-list-table.php:599
+#: classes/class-pmpro-orders-list-table.php:608
 msgid "filter by "
 msgstr ""
 
-#: classes/class-pmpro-orders-list-table.php:606
+#: classes/class-pmpro-orders-list-table.php:615
 msgid "Last Month"
 msgstr ""
 
-#: classes/class-pmpro-orders-list-table.php:610
+#: classes/class-pmpro-orders-list-table.php:619
 msgid "Last Year"
 msgstr ""
 
-#: classes/class-pmpro-orders-list-table.php:649
+#: classes/class-pmpro-orders-list-table.php:658
 msgid "Filter"
 msgstr ""
 
 #. translators: %s is the Order Code.
-#: classes/class-pmpro-orders-list-table.php:890
+#: classes/class-pmpro-orders-list-table.php:899
 msgid "Deleting orders is permanent and can affect active users. Are you sure you want to delete order %s?"
 msgstr ""
 
-#: classes/class-pmpro-orders-list-table.php:1095
+#: classes/class-pmpro-orders-list-table.php:1104
 msgid "edit"
 msgstr ""
 
-#: classes/class-pmpro-orders-list-table.php:1114
+#: classes/class-pmpro-orders-list-table.php:1123
 msgid "PayPal"
 msgstr ""
 
 #. translators: %s is the payment transaction ID.
-#: classes/class-pmpro-orders-list-table.php:1198
+#: classes/class-pmpro-orders-list-table.php:1207
 msgid "Payment: %s"
 msgstr ""
 
 #. translators: %s is the subscription transaction ID.
-#: classes/class-pmpro-orders-list-table.php:1208
+#: classes/class-pmpro-orders-list-table.php:1217
 msgid "Subscription: %s"
 msgstr ""
 
@@ -9406,24 +9406,24 @@ msgstr ""
 msgid "Subtotal"
 msgstr ""
 
-#: includes/functions.php:4695
+#: includes/functions.php:4699
 msgid "No file was uploaded."
 msgstr ""
 
-#: includes/functions.php:4701
+#: includes/functions.php:4705
 msgid "No file name found."
 msgstr ""
 
-#: includes/functions.php:4708
-#: includes/functions.php:4729
+#: includes/functions.php:4712
+#: includes/functions.php:4733
 msgid "Invalid file type."
 msgstr ""
 
-#: includes/functions.php:4723
+#: includes/functions.php:4727
 msgid "Invalid field input."
 msgstr ""
 
-#: includes/functions.php:4747
+#: includes/functions.php:4751
 msgid "Invalid file submission."
 msgstr ""
 
