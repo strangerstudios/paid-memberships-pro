@@ -521,7 +521,8 @@ button[type="button"]#other_discount_code_toggle:focus {
 	.pmpro {
 		.pmpro_actions_nav:not(.pmpro_login_wrap .pmpro_actions_nav),
 		.pmpro_actions_nav,
-		.pmpro_card_actions {
+		.pmpro_card_actions,
+		.pmpro_hide_print {
 			display: none;
 		}
 
