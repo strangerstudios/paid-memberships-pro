@@ -40,7 +40,7 @@ $pmpro_email_templates_defaults = array(
 		'description' => __('Billing Information Updated', 'paid-memberships-pro'),
 		'body' => __( '<p>Your billing information at !!sitename!! has been changed.</p><p>Account: !!display_name!! (!!user_email!!)</p>
 <p>
-	Billing Information Updated:<br />
+	Billing Information:<br />
 	!!billing_address!!
 </p><p>
 	!!cardtype!!: !!accountnumber!!<br />
