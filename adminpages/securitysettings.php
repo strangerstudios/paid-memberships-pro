@@ -22,7 +22,10 @@
 		pmpro_setOption( "recaptcha_version", sanitize_text_field( $_POST['recaptcha_version'] ) );
 		pmpro_setOption( "recaptcha_publickey", sanitize_text_field( $_POST['recaptcha_publickey'] ) );
 		pmpro_setOption( "recaptcha_privatekey", sanitize_text_field( $_POST['recaptcha_privatekey'] ) );
-		pmpro_setOption( "use_ssl", intval( $_POST['use_ssl'] ) );
+		if ( isset( $_POST['use_ssl'] ) ) {
+			// REQUEST['use_ssl'] will not be set if the entire site is already over HTTPS.
+			pmpro_setOption( "use_ssl", intval( $_POST['use_ssl'] ) );
+		}
 		if( !empty( $_POST['nuclear_HTTPS'] ) ) {
 			$nuclear_HTTPS = 1;
 		} else {
@@ -210,6 +213,11 @@
 				</button>
 			</div>
 			<div class="pmpro_section_inside">
+				<p><?php			
+					$ssl_settings_link = '<a title="' . esc_attr__( 'Paid Memberships Pro - SSL Settings', 'paid-memberships-pro' ) . '" target="_blank" rel="nofollow noopener" href="https://www.paidmembershipspro.com/documentation/initial-plugin-setup/ssl/?utm_source=plugin&utm_medium=pmpro-paymentsettings&utm_campaign=documentation&utm_content=ssl&utm_term=link1">' . esc_html__( 'SSL', 'paid-memberships-pro' ) . '</a>';
+					// translators: %s: Link to SSL Settings doc.
+					printf( esc_html__('Learn more about %s.', 'paid-memberships-pro' ), $ssl_settings_link ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+				?></p>
 				<table class="form-table">
 				<tbody>
 					<tr>

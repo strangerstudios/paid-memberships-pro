@@ -241,7 +241,6 @@ class PMProGateway_stripe extends PMProGateway {
 	 */
 	public static function getGatewayOptions() {
 		$options = array(
-			'nuclear_HTTPS',
 			'gateway_environment',
 			'stripe_secretkey',
 			'stripe_publishablekey',
@@ -254,7 +253,6 @@ class PMProGateway_stripe extends PMProGateway {
 			'stripe_webhook',
 			'stripe_billingaddress',
 			'currency',
-			'use_ssl',
 			'tax_state',
 			'tax_rate',
 			'stripe_payment_request_button',
