@@ -268,14 +268,12 @@ use Braintree\WebhookNotification as Braintree_WebhookNotification;
 		static function getGatewayOptions()
 		{
 			$options = array(
-				'nuclear_HTTPS',
 				'gateway_environment',
 				'braintree_merchantid',
 				'braintree_publickey',
 				'braintree_privatekey',
 				'braintree_encryptionkey',
 				'currency',
-				'use_ssl',
 				'tax_state',
 				'tax_rate',
 			);

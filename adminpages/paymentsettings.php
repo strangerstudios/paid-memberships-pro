@@ -89,9 +89,8 @@
 			<div class="pmpro_section_inside">
 				<p><?php			
 					$gateway_settings_link = '<a title="' . esc_attr__( 'Paid Memberships Pro - Payment Gateway Settings', 'paid-memberships-pro' ) . '" target="_blank" rel="nofollow noopener" href="https://www.paidmembershipspro.com/documentation/admin/payment-ssl-settings/?utm_source=plugin&utm_medium=pmpro-paymentsettings&utm_campaign=documentation&utm_content=payment-gateway-settings">' . esc_html__( 'Payment Gateway Settings', 'paid-memberships-pro' ) . '</a>';
-					$ssl_settings_link = '<a title="' . esc_attr__( 'Paid Memberships Pro - SSL Settings', 'paid-memberships-pro' ) . '" target="_blank" rel="nofollow noopener" href="https://www.paidmembershipspro.com/documentation/initial-plugin-setup/ssl/?utm_source=plugin&utm_medium=pmpro-paymentsettings&utm_campaign=documentation&utm_content=ssl&utm_term=link1">' . esc_html__( 'SSL', 'paid-memberships-pro' ) . '</a>';
-					// translators: %s and %s: Links to Payment Gateway Settings and SSL Settings docs.
-					printf( esc_html__('Learn more about %s and %s.', 'paid-memberships-pro' ), $gateway_settings_link, $ssl_settings_link ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+					// translators: %s: Link to Payment Gateway Settings doc.
+					printf( esc_html__('Learn more about %s.', 'paid-memberships-pro' ), $gateway_settings_link ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 				?></p>
 				<table class="form-table">
 				<tbody>
@@ -213,53 +212,6 @@
 									printf( esc_html__('US only. If values are given, tax will be applied for any members ordering from the selected state. For non-US or more complex tax rules, use the %s.', 'paid-memberships-pro' ), $filter_link ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 								?>
 							</p>
-						</td>
-					</tr>
-				</tbody>
-				</table>
-			</div> <!-- end pmpro_section_inside -->
-		</div> <!-- end pmpro_section -->
-		<div id="ssl-settings" class="pmpro_section" data-visibility="shown" data-activated="true">
-			<div class="pmpro_section_toggle">
-				<button class="pmpro_section-toggle-button" type="button" aria-expanded="true">
-					<span class="dashicons dashicons-arrow-up-alt2"></span>
-					<?php esc_html_e( 'SSL Settings', 'paid-memberships-pro' ); ?>
-				</button>
-			</div>
-			<div class="pmpro_section_inside">
-				<table class="form-table">
-				<tbody>
-					<tr class="gateway gateway_ <?php echo esc_attr(pmpro_getClassesForPaymentSettingsField("use_ssl"));?>">
-						<th scope="row" valign="top">
-							<label for="use_ssl"><?php esc_html_e('Force SSL', 'paid-memberships-pro' );?></label>
-						</th>
-						<td>
-							<?php
-								if( pmpro_check_site_url_for_https() ) {
-									//entire site is over HTTPS
-									?>
-									<p class="description"><?php esc_html_e( 'Your Site URL starts with https:// and so PMPro will allow your entire site to be served over HTTPS.', 'paid-memberships-pro' ); ?></p>
-									<?php
-								} else {
-									//site is not over HTTPS, show setting
-									?>
-									<select id="use_ssl" name="use_ssl">
-										<option value="0" <?php if(empty($use_ssl)) { ?>selected="selected"<?php } ?>><?php esc_html_e('No', 'paid-memberships-pro' );?></option>
-										<option value="1" <?php if(!empty($use_ssl) && $use_ssl == 1) { ?>selected="selected"<?php } ?>><?php esc_html_e('Yes', 'paid-memberships-pro' );?></option>
-										<option value="2" <?php if(!empty($use_ssl) && $use_ssl == 2) { ?>selected="selected"<?php } ?>><?php esc_html_e('Yes (with JavaScript redirects)', 'paid-memberships-pro' );?></option>
-									</select>
-									<p class="description"><?php esc_html_e('Recommended: Yes. Try the JavaScript redirects setting if you are having issues with infinite redirect loops.', 'paid-memberships-pro' ); ?></p>
-									<?php
-								}
-							?>
-						</td>
-					</tr>
-					<tr>
-						<th scope="row" valign="top">
-							<label for="nuclear_HTTPS"><?php esc_html_e('Extra HTTPS URL Filter', 'paid-memberships-pro' );?></label>
-						</th>
-						<td>
-							<input type="checkbox" id="nuclear_HTTPS" name="nuclear_HTTPS" value="1" <?php if(!empty($nuclear_HTTPS)) { ?>checked="checked"<?php } ?> /> <label for="nuclear_HTTPS"><?php esc_html_e('Pass all generated HTML through a URL filter to add HTTPS to URLs used on secure pages. Check this if you are using SSL and have warnings on your checkout pages.', 'paid-memberships-pro' );?></label>
 						</td>
 					</tr>
 				</tbody>

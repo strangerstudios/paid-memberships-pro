@@ -59,12 +59,10 @@
 		static function getGatewayOptions()
 		{			
 			$options = array(
-				'nuclear_HTTPS',
 				'gateway_environment',
 				'instructions',
 				'check_gateway_label',
 				'currency',
-				'use_ssl',
 				'tax_state',
 				'tax_rate'
 			);
