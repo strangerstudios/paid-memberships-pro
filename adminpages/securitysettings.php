@@ -22,7 +22,10 @@
 		pmpro_setOption( "recaptcha_version", sanitize_text_field( $_POST['recaptcha_version'] ) );
 		pmpro_setOption( "recaptcha_publickey", sanitize_text_field( $_POST['recaptcha_publickey'] ) );
 		pmpro_setOption( "recaptcha_privatekey", sanitize_text_field( $_POST['recaptcha_privatekey'] ) );
-		pmpro_setOption( "use_ssl", intval( $_POST['use_ssl'] ) );
+		if ( isset( $_POST['use_ssl'] ) ) {
+			// REQUEST['use_ssl'] will not be set if the entire site is already over HTTPS.
+			pmpro_setOption( "use_ssl", intval( $_POST['use_ssl'] ) );
+		}
 		if( !empty( $_POST['nuclear_HTTPS'] ) ) {
 			$nuclear_HTTPS = 1;
 		} else {
