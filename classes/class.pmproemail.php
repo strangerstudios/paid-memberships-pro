@@ -1109,9 +1109,12 @@
 		 *
 		 * @param object $user The WordPress user object.
 		 * @param MemberOrder $invoice The order object that is associated to the member.
+		 * @return bool True if the email was sent, false otherwise.
+		 * @deprecated 3.1
 		 */
-		function sendCreditCardExpiringEmail($user = NULL, $invoice = NULL)
-		{
+		function sendCreditCardExpiringEmail($user = NULL, $invoice = NULL) {
+			_deprecated_function( 'sendCreditCardExpiringEmail', '3.1' );
+
 			global $current_user;
 			if(!$user)
 				$user = $current_user;
