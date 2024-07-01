@@ -364,9 +364,8 @@ $pmpro_email_templates_defaults = array(
 	)
 );
 //we can hide the payment action required emails if default gateway isn't Stripe.
-$defaul_gateway = get_option( 'pmpro_gateway' );
-// add SCA payment action required emails if we're using PMPro 2.1 or later
-if( defined( 'PMPRO_VERSION' ) && version_compare( PMPRO_VERSION, '2.1' ) >= 0 && 'stripe' === $defaul_gateway ) {
+$default_gateway = get_option( 'pmpro_gateway' );
+if( 'stripe' === $default_gateway ) {
 	$pmpro_email_templates_defaults = array_merge( $pmpro_email_templates_defaults, array(
 		'payment_action' => array(
 			'subject' => __( "Payment action required for your !!sitename!! membership", 'paid-memberships-pro' ),
@@ -389,7 +388,7 @@ if( defined( 'PMPRO_VERSION' ) && version_compare( PMPRO_VERSION, '2.1' ) >= 0 &
 <p>!!invoice_url!!</p>', 'paid-memberships-pro' ),
 		'help_text' => __( 'This email is sent to the site administrator when an attempted membership checkout requires additional customer authentication.', 'paid-memberships-pro' )
 		)
-	));
+	) );
 }
 
 /**
