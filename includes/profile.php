@@ -1302,12 +1302,12 @@ function pmpro_change_password_form() {
 												<?php esc_html_e( 'Current Password', 'paid-memberships-pro' ); ?>
 												<span class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_asterisk' ) ); ?>"> <abbr title="<?php esc_html_e( 'Required Field', 'paid-memberships-pro' ); ?>">*</abbr></span>
 											</label>
-											<button type="button" class="pmpro_btn pmpro_btn-plain pmpro_btn-password-toggle hide-if-no-js" data-toggle="0">
+											<button type="button" class="pmpro_btn pmpro_btn-plain pmpro_btn-password-toggle hide-if-no-js" data-toggle="0" tabindex="2">
 												<span class="pmpro_icon pmpro_icon-eye" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--pmpro--color--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-eye"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg></span>
 												<span class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_field-password-toggle-state' ) ); ?>"><?php esc_html_e( 'Show Password', 'paid-memberships-pro' ); ?></span>
 											</button>
 										</div> <!-- end pmpro_form_field-password-toggle -->
-										<input type="password" name="password_current" id="password_current" value="" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_input pmpro_form_input-password pmpro_form_input-required password_current', 'password_current' ) ); ?>" autocomplete="current-password" spellcheck="false" aria-required="true" />
+										<input type="password" name="password_current" id="password_current" value="" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_input pmpro_form_input-password pmpro_form_input-required password_current', 'password_current' ) ); ?>" autocomplete="current-password" spellcheck="false" aria-required="true" tabindex="1" />
 									</div> <!-- end pmpro_form_field-password_current -->
 									<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_cols-2' ) ); ?>">
 										<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_field pmpro_form_field-pass1', 'pmpro_form_field-pass1' ) ); ?>">
@@ -1315,14 +1315,14 @@ function pmpro_change_password_form() {
 												<?php esc_html_e( 'New Password', 'paid-memberships-pro' ); ?>
 												<span class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_asterisk' ) ); ?>"> <abbr title="<?php esc_html_e( 'Required Field', 'paid-memberships-pro' ); ?>">*</abbr></span>
 											</label>
-											<input type="password" name="pass1" id="pass1" value="" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_input pmpro_form_input-password pmpro_form_input-required pass1', 'pass1' ) ); ?>" autocomplete="new-password" aria-required="true" aria-describedby="pass-strength-result" />
+											<input type="password" name="pass1" id="pass1" value="" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_input pmpro_form_input-password pmpro_form_input-required pass1', 'pass1' ) ); ?>" autocomplete="new-password" aria-required="true" aria-describedby="pass-strength-result" tabindex="3" />
 										</div> <!-- end pmpro_form_field-pass1 -->
 										<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_field pmpro_form_field-pass2', 'pmpro_form_field-pass2' ) ); ?>">
 											<label for="pass2" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_label' ) ); ?>">
 												<?php esc_html_e( 'Confirm New Password', 'paid-memberships-pro' ); ?>
 												<span class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_asterisk'  )); ?>"> <abbr title="<?php esc_html_e( 'Required Field', 'paid-memberships-pro' ); ?>">*</abbr></span>
 											</label>
-											<input type="password" name="pass2" id="pass2" value="" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_input pmpro_form_input-password pmpro_form_input-required pass2', 'pass2' ) ); ?>" autocomplete="new-password" aria-required="true" spellcheck="false" />
+											<input type="password" name="pass2" id="pass2" value="" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_input pmpro_form_input-password pmpro_form_input-required pass2', 'pass2' ) ); ?>" autocomplete="new-password" aria-required="true" spellcheck="false" tabindex="4" />
 										</div> <!-- end pmpro_form_field-pass2 -->
 									</div> <!-- end pmpro_cols-2 -->
 									<p class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_hint' ) ); ?>"><?php echo esc_html( wp_get_password_hint() ); ?></p>
@@ -1332,8 +1332,8 @@ function pmpro_change_password_form() {
 							<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_submit' ) ); ?>">
 								<input type="hidden" name="action" value="change-password" />
 								<input type="hidden" name="user_id" value="<?php echo esc_attr( $current_user->ID ); ?>" />
-								<input type="submit" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_btn pmpro_btn-submit pmpro_btn-submit-change-password', 'pmpro_btn-submit-change-password' ) ); ?>" value="<?php esc_attr_e('Change Password', 'paid-memberships-pro' );?>" />
-								<input type="button" name="cancel" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_btn pmpro_btn-cancel', 'pmpro_btn-cancel' ) ); ?>" value="<?php esc_attr_e('Cancel', 'paid-memberships-pro' );?>" onclick="location.href='<?php echo esc_url( pmpro_url( 'account') ); ?>';" />
+								<input type="submit" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_btn pmpro_btn-submit pmpro_btn-submit-change-password', 'pmpro_btn-submit-change-password' ) ); ?>" value="<?php esc_attr_e('Change Password', 'paid-memberships-pro' );?>" tabindex="5" />
+								<input type="button" name="cancel" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_btn pmpro_btn-cancel', 'pmpro_btn-cancel' ) ); ?>" value="<?php esc_attr_e('Cancel', 'paid-memberships-pro' );?>" onclick="location.href='<?php echo esc_url( pmpro_url( 'account') ); ?>';" tabindex="6" />
 							</div> <!-- end pmpro_form_submit -->
 						</div> <!-- end pmpro_card_content -->
 					</div> <!-- end pmpro_card -->

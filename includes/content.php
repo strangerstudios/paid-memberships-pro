@@ -327,7 +327,7 @@ if( ! empty( $filterqueries ) ) {
 
 function pmpro_membership_content_filter( $content, $skipcheck = false ) {
 	global $post, $current_user;
-	
+
 	if( ! $skipcheck ) {
 		$hasaccess = pmpro_has_membership_access(NULL, NULL, true);
 		if( is_array( $hasaccess ) ) {
@@ -337,7 +337,7 @@ function pmpro_membership_content_filter( $content, $skipcheck = false ) {
 			$hasaccess = $hasaccess[0];
 		}
 	}
-	
+
 	/**
 	 * Filter to let other plugins change how PMPro filters member content.
 	 * If anything other than false is returned, that value will overwrite
