@@ -2129,7 +2129,6 @@ function pmpro_get_no_access_message( $content, $level_ids, $level_names = NULL 
 			$newcontent = '<h2 class="' . pmpro_get_element_class( 'pmpro_card_title pmpro_font-large' ) . '">';
 			$newcontent .= '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--pmpro--color--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-lock"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>';
 			
-			
 			if ( count( $level_ids ) > 1 ) {
 				$header = __( 'Membership Required', 'paid-memberships-pro' );
 			} elseif ( ! empty( $level_ids ) ) {
@@ -2137,6 +2136,7 @@ function pmpro_get_no_access_message( $content, $level_ids, $level_names = NULL 
 			} else {
 				$header = __( 'Account Required', 'paid-memberships-pro' );
 			}
+
 			/**
 			 * Filter the header message for the no access message.
 			 *
@@ -2146,18 +2146,17 @@ function pmpro_get_no_access_message( $content, $level_ids, $level_names = NULL 
 			 * @param array $level_ids The array of level IDs this post is protected for.
 			 */
 			$newcontent .= apply_filters( 'pmpro_no_access_message_header', $header, $level_ids );
-
 			$newcontent .= '</h2>';
 			$newcontent .= '<div class="' . pmpro_get_element_class( 'pmpro_card_content' ) . '">';
 			if ( count( $level_ids ) > 1 ) {
 				$body = '<p>' . __(' You must be a member to access this content.', 'paid-memberships-pro') . '</p>';
-				$body = '<p><a class="' . pmpro_get_element_class( 'pmpro_btn' ) . '" href="!!levels_page_url!!">' . __( 'View Membership Levels', 'paid-memberships-pro' ) . '</a></p>';
+				$body .= '<p><a class="' . pmpro_get_element_class( 'pmpro_btn' ) . '" href="!!levels_page_url!!">' . __( 'View Membership Levels', 'paid-memberships-pro' ) . '</a></p>';
 			} elseif ( ! empty( $levels_ids ) ) {
 				$body = '<p>' . __(' You must be a !!levels!! member to access this content.', 'paid-memberships-pro') . '</p>';
-				$body = '<p><a class="' . pmpro_get_element_class( 'pmpro_btn' ) . '" href="' . esc_url( pmpro_url( 'checkout', '?pmpro_level=' . $level_ids[0] ) ) . '">' . __( 'Join Now', 'paid-memberships-pro' ) . '</a></p>';
+				$body .= '<p><a class="' . pmpro_get_element_class( 'pmpro_btn' ) . '" href="' . esc_url( pmpro_url( 'checkout', '?pmpro_level=' . $level_ids[0] ) ) . '">' . __( 'Join Now', 'paid-memberships-pro' ) . '</a></p>';
 			} else {
-				$body = '<p>' . __(' You must be logged-in to access this content.', 'paid-memberships-pro') . '</p>';
-				$body = '<p><a class="' . pmpro_get_element_class( 'pmpro_btn' ) . '" href="!!login_url!!">' . __( 'Log In', 'paid-memberships-pro' ) . '</a></p>';
+				$body = '<p>' . __(' You must be logged in to access this content.', 'paid-memberships-pro') . '</p>';
+				$body .= '<p><a class="' . pmpro_get_element_class( 'pmpro_btn' ) . '" href="!!login_url!!">' . __( 'Log In', 'paid-memberships-pro' ) . '</a></p>';
 			}
 			/**
 			 * Filter the body message for the no access message.
