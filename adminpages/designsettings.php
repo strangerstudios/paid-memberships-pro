@@ -60,7 +60,7 @@
 			</div>
 			<div class="pmpro_section_inside">
 				<p><?php esc_html_e( 'Choose a style variation for your frontend membership pages.', 'paid-memberships-pro' ); ?></p>
-				<style>
+				<style id="pmpro_global_style_colors">
 					:root {
 						--pmpro--color--base: <?php echo esc_attr( $pmpro_colors['base'] ); ?>;
 						--pmpro--color--contrast: <?php echo esc_attr( $pmpro_colors['contrast'] ); ?>;
@@ -74,7 +74,7 @@
 							<label for="style_variation_1">
 								<input name="style_variation" id="style_variation_1" type="radio" value="variation_1" class="tog" <?php checked( 'variation_1', $pmpro_style_variation ); ?>>
 								<span class="pmpro_style_variation_item-name"><?php esc_html_e( 'Variation 1', 'paid-memberships-pro' ); ?></span>
-								<?php wp_kses_post( pmpro_style_variation_item_preview_html() ); ?>
+								<?php pmpro_style_variation_item_preview_html(); ?>
 								<p class="description"><?php esc_html_e( 'A light variation with rounded cards and soft shadows.', 'paid-memberships-pro' ); ?></p>
 							</label>
 						</div>
@@ -82,7 +82,7 @@
 							<label for="style_high_contrast">
 								<input name="style_variation" id="style_high_contrast" type="radio" value="high_contrast" class="tog" <?php checked( 'high_contrast', $pmpro_style_variation ); ?>>
 								<span class="pmpro_style_variation_item-name"><?php esc_html_e( 'High Contrast', 'paid-memberships-pro' ); ?></span>
-								<?php wp_kses_post( pmpro_style_variation_item_preview_html() ); ?>
+								<?php pmpro_style_variation_item_preview_html(); ?>
 								<p class="description"><?php esc_html_e( 'Crisp borders and high contrast colors.', 'paid-memberships-pro' ); ?></p>
 							</label>
 						</div>
@@ -90,7 +90,7 @@
 							<label for="style_variation_minimal">
 								<input name="style_variation" id="style_variation_minimal" type="radio" value="variation_minimal" class="tog" <?php checked( 'variation_minimal', $pmpro_style_variation ); ?>>
 								<span class="pmpro_style_variation_item-name"><?php esc_html_e( 'Minimal', 'paid-memberships-pro' ); ?></span>
-								<?php wp_kses_post( pmpro_style_variation_item_preview_html() ); ?>
+								<?php pmpro_style_variation_item_preview_html(); ?>
 								<p class="description"><?php esc_html_e( 'Load minimal styles and let your theme handle the rest.', 'paid-memberships-pro' ); ?></p>
 							</label>
 						</div>
