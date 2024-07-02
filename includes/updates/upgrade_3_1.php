@@ -29,6 +29,9 @@ function pmpro_upgrade_3_1() {
 		}
     }
 
+	// Delete the pmpro_stripe_update_billing_flow option. The update billing flow now matches the payment flow.
+	delete_option( 'pmpro_stripe_update_billing_flow' );
+
 	// Update the version number
 	update_option( 'pmpro_db_version', '3.1' );
 }
