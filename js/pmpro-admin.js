@@ -97,8 +97,12 @@ jQuery(document).on('click', function (e) {
 
 /** JQuery to hide the notifications. */
 jQuery(document).ready(function () {
-	jQuery(document).on('click', '.pmpro-notice-button.notice-dismiss', function () {
-		var notification_id = jQuery(this).val();
+	jQuery(document).on('click', '.pmpro-notice-button.notice-dismiss,.pmpro-notice button', function () {
+		if ( jQuery(this).val().length > 0 ) {
+			var notification_id = jQuery(this).val();
+		} else {
+			var notification_id = jQuery(this).parent().attr('id');
+		}
 
 		var postData = {
 			action: 'pmpro_hide_notice',
