@@ -2131,24 +2131,50 @@ function pmpro_get_no_access_message( $content, $level_ids, $level_names = NULL 
 			
 			
 			if ( count( $level_ids ) > 1 ) {
-				$newcontent .= __( 'Membership Required', 'paid-memberships-pro' );
+				$header = __( 'Membership Required', 'paid-memberships-pro' );
 			} elseif ( ! empty( $level_ids ) ) {
-				$newcontent .= __( '!!levels!! Membership Required', 'paid-memberships-pro' );
+				$header = __( '!!levels!! Membership Required', 'paid-memberships-pro' );
 			} else {
-				$newcontent .= __( 'Account Required', 'paid-memberships-pro' );
+				$header = __( 'Account Required', 'paid-memberships-pro' );
 			}
+			/**
+			 * Filter the header message for the no access message.
+			 *
+			 * @since TBD
+			 *
+			 * @param string $header The header message for the no access message.
+			 * @param array $level_ids The array of level IDs this post is protected for.
+			 */
+			$newcontent .= apply_filters( 'pmpro_no_access_message_header', $header, $level_ids );
+
 			$newcontent .= '</h2>';
 			$newcontent .= '<div class="' . pmpro_get_element_class( 'pmpro_card_content' ) . '">';
 			if ( count( $level_ids ) > 1 ) {
-				$newcontent .= '<p>' . __(' You must be a member to access this content.', 'paid-memberships-pro') . '</p>';
-				$newcontent .= '<p><a class="' . pmpro_get_element_class( 'pmpro_btn' ) . '" href="!!levels_page_url!!">' . __( 'View Membership Levels', 'paid-memberships-pro' ) . '</a></p>';
+				$body = '<p>' . __(' You must be a member to access this content.', 'paid-memberships-pro') . '</p>';
+				$body = '<p><a class="' . pmpro_get_element_class( 'pmpro_btn' ) . '" href="!!levels_page_url!!">' . __( 'View Membership Levels', 'paid-memberships-pro' ) . '</a></p>';
 			} elseif ( ! empty( $levels_ids ) ) {
-				$newcontent .= '<p>' . __(' You must be a !!levels!! member to access this content.', 'paid-memberships-pro') . '</p>';
-				$newcontent .= '<p><a class="' . pmpro_get_element_class( 'pmpro_btn' ) . '" href="' . esc_url( pmpro_url( 'checkout', '?pmpro_level=' . $level_ids[0] ) ) . '">' . __( 'Join Now', 'paid-memberships-pro' ) . '</a></p>';
+				$body = '<p>' . __(' You must be a !!levels!! member to access this content.', 'paid-memberships-pro') . '</p>';
+				$body = '<p><a class="' . pmpro_get_element_class( 'pmpro_btn' ) . '" href="' . esc_url( pmpro_url( 'checkout', '?pmpro_level=' . $level_ids[0] ) ) . '">' . __( 'Join Now', 'paid-memberships-pro' ) . '</a></p>';
 			} else {
-				$newcontent .= '<p>' . __(' You must be logged-in to access this content.', 'paid-memberships-pro') . '</p>';
-				$newcontent .= '<p><a class="' . pmpro_get_element_class( 'pmpro_btn' ) . '" href="!!login_url!!">' . __( 'Log in', 'paid-memberships-pro' ) . '</a></p>';
+				$body = '<p>' . __(' You must be logged-in to access this content.', 'paid-memberships-pro') . '</p>';
+				$body = '<p><a class="' . pmpro_get_element_class( 'pmpro_btn' ) . '" href="!!login_url!!">' . __( 'Log In', 'paid-memberships-pro' ) . '</a></p>';
 			}
+			/**
+			 * Filter the body message for the no access message.
+			 *
+			 * @since TBD
+			 *
+			 * @param string $body The body message for the no access message.
+			 * @param array $level_ids The array of level IDs this post is protected for.
+			 */
+			$body = apply_filters( 'pmpro_no_access_message_body', $body, $level_ids );
+			/**
+			 * Legacy filter for the body message for the no access message.
+			 *
+			 * @deprecated TBD
+			 */
+			$body = apply_filters_deprecated( 'pmpro_non_member_text_body', array( $body ), 'TBD', 'pmpro_no_access_message_body' );
+			$newcontent .= $body;
 			$newcontent .= '</div>';
 		}
 
@@ -2161,12 +2187,14 @@ function pmpro_get_no_access_message( $content, $level_ids, $level_names = NULL 
 		}
 		
 		/**
-		 * Filter the content message for non-members.
+		 * Filter the HTML of the no access message.
 		 *
-		 * @param string $content The content message for non-members.
-		 * @return string $content The filtered content message for non-members.
+		 * @since TBD
+		 *
+		 * @param string $newcontent The HTML of the no access message.
+		 * @param array $level_ids The array of level IDs this post is protected for.
 		 */
-		$newcontent = apply_filters( 'pmpro_non_member_text_filter', $newcontent );
+		$newcontent = apply_filters( 'pmpro_no_access_message_html', $newcontent, $level_ids );
 
 		$content .= $pmpro_content_mesage_pre . str_replace( $sr_search, $sr_replace, $newcontent ) . $pmpro_content_message_post;
 	}
