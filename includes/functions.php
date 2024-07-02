@@ -4848,3 +4848,58 @@ function pmpro_hex_to_hsl_parts( $hex ) {
 
  	return array( $hue, $saturation, $lightness );
 }
+
+/**
+ * Calculate the end date for the period of time this order covers in the subscription.
+ *
+ * @since TBD
+ *
+ * @param MemberOrder $order       The order to calculate the end date date for.
+ * @param string      $date_format The format to use when formatting the profile start date.
+ *
+ * @return string The order's subscription period end date in UTC time and the desired $date_format.
+ */
+function pmpro_get_subscription_period_end_date_for_order( $order, $date_format ) {
+	global $wpdb;
+
+	// Get the subscription for this order.
+	$subscription = $order->get_subscription();
+
+	// If the order is not part of a subscription, return false.
+	if ( empty( $subscription ) ) {
+		return false;
+	}
+
+	// Get all orders for the subscription.
+	$subscription_orders = $subscription->get_orders(
+		array(
+			'orderby' => '`timestamp` ASC, `id` ASC',
+			'limit' => 1000,
+			'status' => array( 'success', 'pending', 'refunded' ),
+		)
+	);
+
+	// Get the timestamp of the order following the order passed to this function.
+	$period_end = null;
+	foreach ( $subscription_orders as $subscription_order ) {
+		if ( $subscription_order->timestamp > $order->timestamp ) {
+			$period_end = $subscription_order->timestamp;
+			break;
+		}
+	}
+
+	// If we don't have a date yet, this is the last order in the subscription.
+	if ( empty( $period_end ) ) {
+		if ( $subscription->get_status() === 'active' ) {
+			// The subscription is active. Next payment date is the end date.
+			$period_end = $subscription->get_next_payment_date( 'timestamp' );
+		} else {
+			// Subscription is not active. End date is the subscription end date.
+			// Note, this can sometimes be the same date as the order date. We may consider to snapshot what would have been the next payment date in the future.
+			$period_end = $subscription->get_enddate( 'timestamp' );
+		}
+	}
+
+	// Format and return the end date.
+	return date_i18n( $date_format, $period_end );
+}
