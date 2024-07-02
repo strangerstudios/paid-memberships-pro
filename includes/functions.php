@@ -598,7 +598,7 @@ function pmpro_getLevelsExpiration( &$levels ) {
  *
  * @return string The expiration date text.
  */
-function pmpro_get_membership_expiration_text( $level, $user ) {
+function pmpro_get_membership_expiration_text( $level, $user, $default = null ) {
 	// If a user ID was passed, get the user object.
 	if ( is_numeric( $user ) ) {
 		$user = get_userdata( $user );
@@ -631,8 +631,8 @@ function pmpro_get_membership_expiration_text( $level, $user ) {
 
 	// Generate the expiration date text.
 	if ( empty( $level->enddate ) ) {
-		// If the level does not have an enddate, show a dash (&#8212;).
-		$text = esc_html_x( '&#8212;', 'A dash is shown when there is no expiration date.', 'paid-memberships-pro' );
+		// If the level does not have an enddate, show a dash (&#8212;) or empty string.
+		$text = empty( $default ) ? '' : esc_html_x( '&#8212;', 'A dash is shown when there is no expiration date.', 'paid-memberships-pro' );
 	} elseif ( $show_time ) {
 		// Show the enddate with the time.
 		$text = sprintf(
