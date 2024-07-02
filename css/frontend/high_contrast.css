@@ -413,6 +413,22 @@
 		border-radius: 0;
 	}
 
+	[id^="pmpro_paypal"] .pmpro_btn-submit-checkout-paypal {
+		align-items: center;
+		background-color: #ffc439;
+		border-color: #ffc439;
+		color: #000;
+		display: flex;
+		flex-direction: row;
+		gap: calc( var(--pmpro--base--spacing--small) / 2 );
+		justify-content: center;
+	}
+
+	[id^="pmpro_paypal"] .pmpro_btn-submit-checkout-paypal:hover {
+		background-color: #ffb60a;
+		border-color: #ffb60a;
+	}
+
 	/* Login Form (WordPress default and our lost/reset password forms) */
 	#loginform {
 		margin-bottom: 0;
@@ -585,6 +601,22 @@
 	.pmpro_level .pmpro_btn {
 		display: block;
 		text-decoration: none;
+	}
+
+	/**
+	* Membership Account
+	*/
+	#pmpro_account-membership-none {
+
+		.pmpro_card_content {
+			padding-top: var(--pmpro--base--spacing--large);
+
+			p {
+				margin: 0;
+			}
+
+		}
+
 	}
 
 	/**

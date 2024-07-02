@@ -19,6 +19,7 @@ function pmpro_init_check_for_deprecated_filters() {
 		'pmpro_subscription_cancelled'      => null,
 		'pmpro_longform_address'            => null,
 		'pmpro_include_cardtype_field'      => null,
+		'pmpro_paypal_button_image'         => null,
 	);
 	
 	foreach ( $pmpro_map_deprecated_filters as $old => $new ) {
