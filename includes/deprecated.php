@@ -1017,3 +1017,47 @@ function pmpro_get_plugin_duplicates() {
 
 	return $multiple_installations;
 }
+
+/**
+ * Show admin notice if site was using a custom-loaded frontend.css file.
+ * We no longer enqueue the frontend.css override file by default.
+ *
+ * @since TBD
+ */
+function pmpro_was_loading_frontend_css_override_notice() {
+	global $current_user;
+
+	// Only show on PMPro admin pages.
+	if ( empty( $_REQUEST['page'] ) || strpos( $_REQUEST['page'], 'pmpro' ) === false ) {
+		return;
+	}
+
+	// Determine if this site was loading a custom frontend.css override file.
+	if ( ! file_exists( get_stylesheet_directory() . '/paid-memberships-pro/css/frontend.css' ) && ! file_exists( get_template_directory() . '/paid-memberships-pro/frontend.css' ) ) {
+		// No custom frontend.css override file was found.
+		return;
+	}
+
+	// Hide if the notice has been dismissed.
+	$archived_notifications = get_user_meta( $current_user->ID, 'pmpro_archived_notifications', true );
+	if ( ! empty( $archived_notifications ) && in_array( 'pmpro_was_loading_frontend_css_notice', array_keys( $archived_notifications ) ) ) {
+		return;
+	}
+
+	// Show a dismissable notice to the user.
+	?>
+	<div id="pmpro_was_loading_frontend_css_notice" class="notice notice-warning is-dismissible pmpro-notice">
+		<p>
+			<?php
+			printf(
+				wp_kses_post(
+					__( 'Paid Memberships Pro detected that you were using a custom override for the frontend stylesheet. As of v3.1 and later, we no longer load your custom stylesheet. For more information, read our <a href="%s">v3.1 release notes post here</a>.', 'paid-memberships-pro' )
+				),
+				esc_url( 'https://www.paidmembershipspro.com/pmpro-update-3-1/' )
+			);
+			?>
+		</p>
+	</div>
+	<?php
+}
+add_action( 'admin_notices', 'pmpro_was_loading_frontend_css_override_notice' );
