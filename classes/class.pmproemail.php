@@ -995,6 +995,11 @@
 
 			//get Level from constructor
 			$membership_level = new PMPro_Membership_Level( $invoice->membership_id );
+
+			// Try to get the subscription ID.
+			$subscription = $invoice->get_subscription();
+			$subscription_id = ! empty( $subscription ) ? $subscription->get_id() : null;
+
 			$this->email = $user->user_email;
 			$this->subject = sprintf( __("Membership payment for level %s failed at %s", "paid-memberships-pro"),
 				$membership_level->name, get_option("blogname") );
@@ -1021,8 +1026,8 @@
 								'accountnumber' => hideCardNumber($invoice->accountnumber),
 								'expirationmonth' => $invoice->expirationmonth,
 								'expirationyear' => $invoice->expirationyear,
-								'login_link' => pmpro_login_url( pmpro_url( 'billing', $this->get_query_string_for_login_link( $user->ID, $membership_level->id ) ) ),
-								'login_url' => pmpro_login_url( pmpro_url( 'billing', $this->get_query_string_for_login_link( $user->ID, $membership_level->id ) ) ),
+								'login_link' => pmpro_login_url( pmpro_url( 'billing', empty( $subscription_id ) ? '' : '?subscription_id=' . $subscription_id ) ),
+								'login_url' => pmpro_login_url( pmpro_url( 'billing', empty( $subscription_id ) ? '' : '?subscription_id=' . $subscription_id ) ),
 								'levels_url' => pmpro_url( 'levels' )
 							);
 			$this->data["billing_address"] = pmpro_formatAddress($invoice->billing->name,
@@ -1625,35 +1630,4 @@
 			return $admin ? $admin->display_name : 'admin';
 		}
 
-		/**
-		 * Get the query string for the login link.
-		 *
-		 * @param int $user_id The user ID.
-		 * @param int $level_id The membership level ID.
-		 * @return string The query string.
-		 * @since 3.1
-		 */
-		private function get_query_string_for_login_link( $user_id, $level_id ) {
-			$subscriptions =  PMPro_Subscription::get_subscriptions_for_user( $user_id, $level_id );
-			//Bail if we don't have a subscription
-			if (  empty( $subscriptions ) ) {
-				return '';
-			}
-			$subscription = $subscriptions[0];
-			//Bail if the subscription is not for the default gateway
-			if ( $subscription->get_gateway() != get_option( 'pmpro_gateway' ) ) {
-				return '';
-			}
-			$gateway_obj = $subscription->get_gateway_object();
-			//Bail if not gatway object or does not support payment method updates
-			if ( empty( $gateway_obj ) || ! method_exists( $gateway_obj, 'supports' ) || ! $gateway_obj->supports( 'payment_method_updates' ) ) {
-				return '';
-			}
-			$newest_orders = $subscription->get_orders( array( 'limit' => 1 ) );
-			//Bail if we don't have an order
-			if ( empty( $newest_orders ) ) {
-				return '';
-			}
-			return 'pmpro_subscription_id=' . $subscription->get_id();
-		}
 }
