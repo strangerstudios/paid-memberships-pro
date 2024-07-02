@@ -146,21 +146,29 @@ function pmpro_apply_block_visibility( $attributes, $content ) {
 		// Setup for PMPro >= 3.0.
 		switch ( $attributes['segment'] ) {
 			case 'all':
-				$levels_to_check = null; // All levels.
+				$pmpro_hasMembershipLevel_params = null; // All levels.
+				$all_levels = pmpro_getAllLevels( true );
+				$pmpro_get_no_access_message_param_level_ids = wp_list_pluck( $all_levels, 'id' );
+				$pmpro_get_no_access_message_param_level_names = wp_list_pluck( $all_levels, 'name' ); // Getting names now to avoid multiple queries in the function.
 				break;
 			case 'specific':
-				$levels_to_check = $attributes['levels']; // Specific levels.
+				$pmpro_hasMembershipLevel_params = $attributes['levels']; // Specific levels.
+				$pmpro_get_no_access_message_param_level_ids = $attributes['levels'];
+				$pmpro_get_no_access_message_param_level_names = null; // This will be done in the function.
+
 				break;
 			case 'logged_in':
-				$levels_to_check = 'L'; // Logged in users.
+				$pmpro_hasMembershipLevel_params = 'L'; // Logged in users.
+				$pmpro_get_no_access_message_param_level_ids = array();
+				$pmpro_get_no_access_message_param_level_names = null;
 				break;
 		}
 
-		$should_show = empty( $attributes['invert_restrictions'] ) ? pmpro_hasMembershipLevel( $levels_to_check ) : ! pmpro_hasMembershipLevel( $levels_to_check );
+		$should_show = empty( $attributes['invert_restrictions'] ) ? pmpro_hasMembershipLevel( $pmpro_hasMembershipLevel_params ) : ! pmpro_hasMembershipLevel( $pmpro_hasMembershipLevel_params );
 		if ( $should_show ) {
 			$output = do_blocks( $content );
 		} elseif ( ! empty( $attributes['show_noaccess'] ) && empty( $attributes['invert_restrictions'] ) ) {
-			$output = pmpro_get_no_access_message( NULL, $attributes['levels'] );
+			$output = pmpro_get_no_access_message( NULL, $pmpro_get_no_access_message_param_level_ids, $pmpro_get_no_access_message_param_level_names );
 		}
 	}
 	return $output;
