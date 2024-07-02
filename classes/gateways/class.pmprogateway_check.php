@@ -160,14 +160,18 @@
 				$check_gateway_label = get_option( 'pmpro_check_gateway_label' );
 				?>
 				<fieldset id="pmpro_payment_information_fields" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_fieldset', 'pmpro_payment_information_fields' ) ); ?>">
-					<legend class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_legend' ) ); ?>">
-						<h2 class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_heading pmpro_font-large' ) ); ?>"><?php echo esc_html( sprintf( __( 'Pay by %s', 'paid-memberships-pro' ), $check_gateway_label ) ); ?></h2>
-					</legend>
-					<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_fields' ) ); ?>">		
-						<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_field pmpro_check_instructions' ) ); ?>">
-							<?php echo wp_kses_post( wpautop( wp_unslash( $instructions ) ) ); ?>
-						</div> <!-- end pmpro_check_instructions -->
-					</div> <!-- end pmpro_form_fields -->
+					<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_card' ) ); ?>">
+						<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_card_content' ) ); ?>">
+							<legend class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_legend' ) ); ?>">
+								<h2 class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_heading pmpro_font-large' ) ); ?>"><?php echo esc_html( sprintf( __( 'Pay by %s', 'paid-memberships-pro' ), $check_gateway_label ) ); ?></h2>
+							</legend>
+							<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_fields' ) ); ?>">
+								<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_field pmpro_check_instructions' ) ); ?>">
+									<?php echo wp_kses_post( wpautop( wp_unslash( $instructions ) ) ); ?>
+								</div> <!-- end pmpro_check_instructions -->
+							</div> <!-- end pmpro_form_fields -->
+						</div> <!-- end pmpro_card_content -->
+					</div> <!-- end pmpro_card -->
 				</fieldset> <!-- end pmpro_payment_information_fields -->
 				<?php
 			}
