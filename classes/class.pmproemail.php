@@ -155,24 +155,7 @@
 			elseif(!empty($this->data) && !empty($this->data['body']))
 				$this->body = $this->data['body'];																						//data passed in
 
-			// Get template header.
-			if( get_option( 'pmpro_email_header_disabled' ) != 'true' ) {
-				$email_header = pmpro_email_templates_get_template_body('header');
-			} else {
-				$email_header = '';
-			}
-
-			// Get template footer
-			if( get_option( 'pmpro_email_footer_disabled' ) != 'true' ) {
-				$email_footer = pmpro_email_templates_get_template_body('footer');
-			} else {
-				$email_footer = '';
-			}
-
-			// Add header and footer to email body.
-			$this->body = $email_header . $this->body . $email_footer;
-
-				//if data is a string, assume we mean to replace !!body!! with it
+			//if data is a string, assume we mean to replace !!body!! with it
 			if(is_string($this->data))
 				$this->data = array("body"=>$data);											
 				
@@ -244,6 +227,16 @@
 
 			// Add header and footer to email body.
 			$this->body = $email_header . $this->body . $email_footer;
+
+			// Swap data into body and subject line again in case filters changed them or in case we added header/footer.
+			if ( is_array( $this->data ) ) {
+				foreach ( $this->data as $key => $value ) {
+					if ( 'body' != $key ) {
+						$this->body = str_replace("!!" . $key . "!!", $value, $this->body);
+						$this->subject = str_replace("!!" . $key . "!!", $value, $this->subject);
+					}
+				}
+			}
 			
 			return wp_mail($this->email,$this->subject,$this->body,$this->headers,$this->attachments);
 		}
