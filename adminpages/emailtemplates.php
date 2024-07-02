@@ -8,11 +8,20 @@
 	global $wpdb, $msg, $msgt;
 	
 	//get/set settings
-	global $pmpro_pages;
+	global $pmpro_email_templates_defaults, $pmpro_pages;
 
-	global $pmpro_email_templates_defaults, $current_user;	
-				
-	require_once(dirname(__FILE__) . "/admin_header.php");		
+	global  $current_user;
+
+	//Remove the default template from the default list before displaying the list.
+	$pmpro_email_templates_defaults = apply_filters( 'pmpro_hide_default_email_from_default_templates',
+	( function( $templates ) {
+		unset( $templates[ 'default' ] );
+		return $templates;
+	} ) ( $pmpro_email_templates_defaults ) );
+
+	require_once(dirname(__FILE__) . "/admin_header.php");
+
+
 ?>
 <form action="" method="post" enctype="multipart/form-data"> 
 	<?php wp_nonce_field('savesettings', 'pmpro_emailsettings_nonce');?>
