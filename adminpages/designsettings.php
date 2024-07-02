@@ -60,7 +60,7 @@
 			</div>
 			<div class="pmpro_section_inside">
 				<p><?php esc_html_e( 'Choose a style variation for your frontend membership pages.', 'paid-memberships-pro' ); ?></p>
-				<style>
+				<style id="pmpro_global_style_colors">
 					:root {
 						--pmpro--color--base: <?php echo esc_attr( $pmpro_colors['base'] ); ?>;
 						--pmpro--color--contrast: <?php echo esc_attr( $pmpro_colors['contrast'] ); ?>;
