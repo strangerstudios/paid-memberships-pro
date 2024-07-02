@@ -183,11 +183,17 @@ function pmpro_shortcode_account($atts, $content=null, $code="")
 											</li>
 											<?php
 										}
+
+										$expiration_text = pmpro_get_membership_expiration_text( $level, $current_user, '' );
+										if ( ! empty( $expiration_text ) ) {
+											?>
+											<li class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_list_item' ) ); ?>">
+												<span class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_list_item_label' ) ); ?>"><?php esc_html_e( 'Expires', 'paid-memberships-pro' ); ?></span>
+												<span class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_list_item_value' ) ); ?>"><?php echo wp_kses_post( $expiration_text ); ?></span>
+											</li>
+											<?php
+										}
 										?>
-										<li class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_list_item' ) ); ?>">
-											<span class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_list_item_label' ) ); ?>"><?php esc_html_e( 'Expires', 'paid-memberships-pro' ); ?></span>
-											<span class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_list_item_value' ) ); ?>"><?php echo wp_kses_post( pmpro_get_membership_expiration_text( $level, $current_user ) ); ?></span>
-										</li>
 									</ul> <!-- end pmpro_list -->
 								</div> <!-- end pmpro_card_content -->
 
