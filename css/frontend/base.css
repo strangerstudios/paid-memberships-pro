@@ -235,6 +235,12 @@ button[type="button"]#other_discount_code_toggle:focus {
 /**
  * Lists
  */
+.pmpro_list {
+	#pmpro_order_single-meta-bill_to {
+		word-break: break-all;
+	}
+}
+
 .pmpro_list.pmpro_list-plain,
 .pmpro_list.pmpro_list-plain .pmpro_list_item {
 	list-style: none;
@@ -515,8 +521,13 @@ button[type="button"]#other_discount_code_toggle:focus {
 	.pmpro {
 		.pmpro_actions_nav:not(.pmpro_login_wrap .pmpro_actions_nav),
 		.pmpro_actions_nav,
-		.pmpro_card_actions {
+		.pmpro_card_actions,
+		.pmpro_hide_print {
 			display: none;
+		}
+
+		h2, h3 {
+			page-break-after: avoid;
 		}
 	}
 }
@@ -545,13 +556,15 @@ button[type="button"]#other_discount_code_toggle:focus {
 	}
 
 	.pmpro_table tbody tr th,
-	.pmpro_table tbody tr td {
+	.pmpro_table tbody tr td,
+	.pmpro_table tfoot tr td {
 		display: grid;
 		grid-template-columns: 1fr 2fr;
 	}
 
 	.pmpro_table tbody tr th::before,
-	.pmpro_table tbody tr td::before {
+	.pmpro_table tbody tr td::before,
+	.pmpro_table tfoot tr td::before {
 		content: attr(data-title) ": ";
 	}
 }

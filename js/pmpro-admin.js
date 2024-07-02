@@ -791,6 +791,18 @@ jQuery(document).ready(function ($) {
 
 });
 
+// Design Settings.
+jQuery(document).ready(function () {
+	// Preview color changes by updating the #pmpro_global_style_colors inline styles.
+	jQuery('.pmpro_color_picker').on('change', function () {
+		var baseColor = jQuery('#pmpro_base_color').val();
+		var contrastColor = jQuery('#pmpro_contrast_color').val();
+		var accentColor = jQuery('#pmpro_accent_color').val();
+
+		jQuery('#pmpro_global_style_colors').html(':root { --pmpro--color--base: ' + baseColor + '; --pmpro--color--contrast: ' + contrastColor + '; --pmpro--color--accent: ' + accentColor + '; }');
+	});
+});
+
 // Add Ons Page Code.
 jQuery(document).ready(function () {
 	// Hide the license banner.

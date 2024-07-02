@@ -2172,28 +2172,31 @@ table.pmprommpu_levels tr.remove_level td {background: #F2DEDE; }
 }
 
 #pmpro_style_variation_item-variation-1 .pmpro_style_variation_item-preview {
-	background-color: #fff;
+	background-color: var(--pmpro--color--base);
 	border: 1px solid #e5e7eb;
 	border-radius: 8px;
 	box-shadow: 2px 2px 7px rgba( 0, 0, 0, 0.07 );
+	color: var(--pmpro--color--contrast);
 	overflow: hidden;
 }
 
 #pmpro_style_variation_item-variation-1 .pmpro_style_variation_item-preview-actions {
-	background-color: #F9FAFB;
+	background-color: var(--pmpro--color--base);
 	border-top: 1px solid #e5e7eb;
+	filter: brightness(0.95);
 	padding: var(--pmpro--spacing--small);
 }
 
 #pmpro_style_variation_item-high-contrast .pmpro_style_variation_item-preview {
-	background-color: #fff;
-	border: 1px solid #000;
+	background-color: var(--pmpro--color--base);
+	border: 1px solid var(--pmpro--color--contrast);
 	border-radius: 0;
 	box-shadow: 5px 4px 0px #555;
+	color: var(--pmpro--color--contrast);
 }
 
 #pmpro_style_variation_item-high-contrast .pmpro_style_variation_item-preview-actions {
-	border-top: 1px solid #000;
+	border-top: 1px solid var(--pmpro--color--contrast);
 	margin: 0 calc( var(--pmpro--spacing--medium) / 2 );
 	padding: var(--pmpro--spacing--small) 0;
 }
