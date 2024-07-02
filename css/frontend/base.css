@@ -236,7 +236,7 @@ button[type="button"]#other_discount_code_toggle:focus {
  * Lists
  */
 .pmpro_list {
-	li {
+	#pmpro_order_single-meta-bill_to {
 		word-break: break-all;
 	}
 }
