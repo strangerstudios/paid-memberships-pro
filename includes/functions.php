@@ -595,6 +595,7 @@ function pmpro_getLevelsExpiration( &$levels ) {
  *
  * @param object|int  $level The level object or ID to get the expiration date for.
  * @param WP_User|int $user  The user object or ID to get the expiration date for.
+ * @param string|null $default The default text to show when there is no expiration date. If null, a dash is shown.
  *
  * @return string The expiration date text.
  */
@@ -632,7 +633,7 @@ function pmpro_get_membership_expiration_text( $level, $user, $default = null ) 
 	// Generate the expiration date text.
 	if ( empty( $level->enddate ) ) {
 		// If the level does not have an enddate, show a dash (&#8212;) or empty string.
-		$text = empty( $default ) ? '' : esc_html_x( '&#8212;', 'A dash is shown when there is no expiration date.', 'paid-memberships-pro' );
+		$text = ( null === $default ) ? esc_html_x( '&#8212;', 'A dash is shown when there is no expiration date.', 'paid-memberships-pro' ) : $default;
 	} elseif ( $show_time ) {
 		// Show the enddate with the time.
 		$text = sprintf(
