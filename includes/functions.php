@@ -2151,7 +2151,7 @@ function pmpro_get_no_access_message( $content, $level_ids, $level_names = NULL 
 			if ( count( $level_ids ) > 1 ) {
 				$body = '<p>' . __(' You must be a member to access this content.', 'paid-memberships-pro') . '</p>';
 				$body .= '<p><a class="' . pmpro_get_element_class( 'pmpro_btn' ) . '" href="!!levels_page_url!!">' . __( 'View Membership Levels', 'paid-memberships-pro' ) . '</a></p>';
-			} elseif ( ! empty( $levels_ids ) ) {
+			} elseif ( ! empty( $level_ids ) ) {
 				$body = '<p>' . __(' You must be a !!levels!! member to access this content.', 'paid-memberships-pro') . '</p>';
 				$body .= '<p><a class="' . pmpro_get_element_class( 'pmpro_btn' ) . '" href="' . esc_url( pmpro_url( 'checkout', '?pmpro_level=' . $level_ids[0] ) ) . '">' . __( 'Join Now', 'paid-memberships-pro' ) . '</a></p>';
 			} else {
