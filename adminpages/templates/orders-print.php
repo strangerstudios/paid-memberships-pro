@@ -1,6 +1,6 @@
 <?php
 /**
- * Template for Print Invoices
+ * Template for Print Orders
  *
  * @since 1.8.6
  * 
@@ -13,26 +13,50 @@
 <head>
 	<meta charset="UTF-8">
 	<style>
+		body {
+			font-family: Arial, sans-serif;
+		}
 		.main, .header {
 			display: block;
+			margin: 0 0 20px 0;
 		}
-		.right {
-			display: inline-block;
-			float: right;
-		}
-		.alignright {
-			text-align: right;
-		}
-		.aligncenter {
-			text-align: center;
-		}
-		.invoice, .invoice tr, .invoice th, .invoice td {
+		.order, .order tr, .order th, .order td {
 			border: 1px solid;
 			border-collapse: collapse;
-			padding: 4px;
+			padding: 10px;
+			vertical-align: top;
 		}
-		.invoice {
+		.order thead th {
+			font-weight: 700;
+			text-align: left;
+		}
+		.order td:last-child {
+			text-align: right;
+		}
+		.order tfoot th {
+			font-weight: 400;
+			text-align: right;
+		}
+		.order tfoot tr:last-child * {
+			font-weight: 700;
+		}
+		.order {
+			margin-top: 20px;
 			width: 100%;
+		}
+		ul {
+			display: flex;
+			flex-direction: row;
+			flex-wrap: wrap;
+			gap: 20px;
+			list-style: none;
+			margin: 0;
+			padding: 0;
+		}
+		ul li {
+			margin: 0;
+			padding: 0;
+			width: calc( 50% - 10px );
 		}
 		@media screen {
 			body {
@@ -44,63 +68,169 @@
 </head>
 <body>
 	<header class="header">
-		<div>
-			<h2><?php bloginfo( 'sitename' ); ?></h2>
-		</div>
-		<div class="right">
-			<table>
-				<tr>
-					<td><?php echo esc_html( __('Invoice #: ', 'paid-memberships-pro' ) . '&nbsp;' . $order->code ); ?></td>
-				</tr>
-				<tr>
-					<td>
-						<?php echo esc_html( __( 'Date:', 'paid-memberships-pro' ) . '&nbsp;' . date_i18n( get_option( 'date_format' ), $order->getTimestamp() ) ); ?>
-					</td>
-				</tr>
-			</table>
-		</div>
+		<h1><?php bloginfo( 'sitename' ); ?></h1>
+		<h2><?php echo esc_html( sprintf( __( 'Order #%s', 'paid-memberships-pro' ), $order->code ) ); ?></h2>
+		<p>
+			<strong><?php esc_html_e( 'Status', 'paid-memberships-pro' ); ?></strong><br />
+			<?php echo esc_html( ucwords( $order->status ) ); ?>
+		</p>
 	</header>
 	<main class="main">
-		<p>
-			<?php echo wp_kses_post( pmpro_formatAddress(
-				$order->billing->name,
-				$order->billing->street,
-				'',
-				$order->billing->city,
-				$order->billing->state,
-				$order->billing->zip,
-				$order->billing->country,
-				$order->billing->phone
-			) ); ?>
-		</p>
-		<table class="invoice" style="border-width:0px;border-collapse:collapse;">
-			<tr>
-				<th><?php esc_html_e('ID', 'paid-memberships-pro' ); ?></th>
-				<th><?php esc_html_e('Item', 'paid-memberships-pro' ); ?></th>
-				<th><?php esc_html_e('Price', 'paid-memberships-pro' ); ?></th>
-			</tr>
-			<tr>
-				<td class="aligncenter"><?php echo esc_html( $level->id ); ?></td>
-				<td><?php echo esc_html( $level->name ); ?></td>
-				<td class="alignright"><?php echo pmpro_escape_price( pmpro_formatPrice( $order->subtotal ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></td>
-			</tr>
-			<?php
-				if ( (float)$order->total > 0 ) {
-					$pmpro_price_parts = pmpro_get_price_parts( $order, 'array' );
-					foreach ( $pmpro_price_parts as $pmpro_price_part ) { ?>
-						<tr style="border-width:1px;border-style:solid;border-collapse:collapse;">
-							<th colspan="2" style="text-align:right;border-width:1px;border-style:solid;border-collapse:collapse;">
-								<?php echo esc_html( $pmpro_price_part['label'] ); ?>
-							</th>
-							<td style="text-align:right;border-width:1px;border-style:solid;border-collapse:collapse;">
-								<?php echo esc_html( $pmpro_price_part['value'] ); ?>
-							</td>
-						</tr>
-						<?php
+		<ul>
+		<?php
+			// Build the order meta.
+			$pmpro_order_single_meta = array();
+
+			// Order date.
+			$pmpro_order_single_meta['order_date'] = array(
+				'label' => __( 'Order date', 'paid-memberships-pro' ),
+				'value' => date_i18n( get_option( 'date_format' ), $order->getTimestamp() ),
+			);
+
+			// Payment method.
+			if ( ! empty( $order->accountnumber ) || ! empty( $order->payment_type ) ) {
+				if ( $order->accountnumber ) {
+					$pmpro_order_single_meta['payment_method'] = array(
+						'label' => __( 'Payment method', 'paid-memberships-pro' ),
+						'value' => ucwords( $order->cardtype ) . ' ' . __( 'ending in', 'paid-memberships-pro' ) . ' ' . last4( $order->accountnumber ),
+					);
+				} else {
+					if ( $order->payment_type === 'Check' && ! empty( get_option( 'pmpro_check_gateway_label' ) ) ) {
+						$order->payment_type = get_option( 'pmpro_check_gateway_label' );
 					}
+					$pmpro_order_single_meta['payment_method'] = array(
+						'label' => __( 'Payment method', 'paid-memberships-pro' ),
+						'value' => $order->payment_type,
+					);
 				}
-			?>
+			}
+
+			if ( (float)$order->total > 0 ) {
+				// Pay to.
+				$pmpro_order_single_meta['pay_to'] = array(
+					'label' => __( 'Pay to', 'paid-memberships-pro' ),
+					'value' => get_option( 'blogname' ),
+				);
+
+				// Bill to.
+				$pmpro_order_single_meta['bill_to']['label'] = __( 'Bill to', 'paid-memberships-pro' );
+				if ( $order->has_billing_address() ) {
+					$pmpro_order_single_meta['bill_to']['value'] = pmpro_formatAddress(
+						$order->billing->name,
+						$order->billing->street,
+						"",
+						$order->billing->city,
+						$order->billing->state,
+						$order->billing->zip,
+						$order->billing->country,
+						$order->billing->phone
+					);
+				} else {
+					$pmpro_order_single_meta['bill_to']['value'] = $order->user->display_name . '<br />' . $order->user->user_email;
+				}
+			}
+
+			/**
+			 * Filter to add, edit, or remove information in the meta section of the single order frontend page.
+			 *
+			 * @since TBD
+			 * @param array $pmpro_order_single_meta Array of meta information.
+			 * @param object $order The PMPro Invoice/Order object.
+			 * @return array $pmpro_order_single_meta Array of meta information.
+			 */
+			$pmpro_order_single_meta = apply_filters( 'pmpro_order_single_meta', $pmpro_order_single_meta, $order );
+
+			// Display the meta.
+			foreach ( $pmpro_order_single_meta as $key => $value ) {
+				?>
+				<li>
+					<strong><?php echo esc_html( $value['label'] ); ?></strong><br />
+					<?php echo wp_kses_post( $value['value'] ); ?>
+				</li>
+				<?php
+			}
+		?>
+		</ul>
+		<table class="order">
+			<thead>
+				<tr>
+					<th><?php esc_html_e('ID', 'paid-memberships-pro' ); ?></th>
+					<th><?php esc_html_e('Description', 'paid-memberships-pro' ); ?></th>
+					<th><?php esc_html_e('Amount', 'paid-memberships-pro' ); ?></th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td><?php echo esc_html( $order->membership_level->id ); ?></td>
+					<td>
+						<?php
+							echo esc_html(
+								sprintf(
+									// translators: 1: level name, 2: order code
+									__( '%1$s for order #%2$s', 'paid-memberships-pro' ),
+									$order->membership_level->name,
+									$order->code,
+								)
+							);
+						?>
+						<?php
+							if ( ! empty( $order->billing->name ) ) {
+								echo '<p>' . esc_html(
+									sprintf(
+										// translators: 1: user display name, 2: user email
+										__( 'Account: %1$s (%2$s)', 'paid-memberships-pro' ),
+										$order->user->display_name,
+										$order->user->user_email
+									)
+								) . '</p>';
+							}
+						?>
+						<?php
+							$subscription_period_end = pmpro_get_subscription_period_end_date_for_order( $order, get_option( 'date_format' ) );
+							$order_date = date_i18n( get_option( 'date_format' ), $order->getTimestamp() );
+							if ( ! empty( $subscription_period_end ) && $subscription_period_end !== $order_date ) {
+								?>
+								<p class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_font-small' ) ); ?>">
+									<?php echo esc_html( sprintf( __( '%1$s to %2$s', 'paid-memberships-pro' ), $order_date, $subscription_period_end ) ); ?>
+								</p>
+								<?php
+							}
+						?>
+					</td>
+					<td><?php echo pmpro_escape_price( $order->get_formatted_subtotal() ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></td>
+				</tr>
+			</tbody>
+			<?php if ( (float)$order->total > 0 ) { ?>
+				<tfoot>
+					<?php
+						// Get the price parts.
+						$pmpro_price_parts = pmpro_get_price_parts( $order, 'array' );
+
+						// If the order is refunded, add to price parts.
+						if ( $order->status == 'refunded' ) {
+							$pmpro_price_parts['refunded']['label'] = __( 'Refunded', 'paid-memberships-pro' );
+							$pmpro_price_parts['refunded']['value'] = $pmpro_price_parts['total']['value'];
+						}
+
+						foreach ( $pmpro_price_parts as $pmpro_price_part ) { ?>
+							<tr>
+								<th colspan="2">
+									<?php echo esc_html( $pmpro_price_part['label'] ); ?>
+								</th>
+								<td>
+									<?php echo esc_html( $pmpro_price_part['value'] ); ?>
+								</td>
+							</tr>
+							<?php
+						}
+					?>
+				</tfoot>
+			<?php } ?>
 		</table>
+		<?php if ( $order->getDiscountCode() ) { ?>
+			<p><?php echo esc_html( sprintf( __( 'Discount Code: %s', 'paid-memberships-pro' ), esc_html( $order->discount_code->code ) ) ); ?></p>
+			</p>
+		<?php } ?>
 	</main>
 </body>
 </html>

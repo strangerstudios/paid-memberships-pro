@@ -536,13 +536,17 @@ body[class*="memberships_page_pmpro-"] {
 	content: "\f534";
 }
 
-.pmpro_tag-alert {
+.pmpro_tag-alert,
+.pmpro_tag-not-installed,
+.pmpro_tag-inactive  {
 	background-color: var(--pmpro--color--alert-background);
 	border-color: var(--pmpro--color--alert-border);
 	color: var(--pmpro--color--alert-text);
 }
 
-.pmpro_tag-alert.pmpro_tag-has_icon:before {
+.pmpro_tag-alert.pmpro_tag-has_icon:before,
+.pmpro_tag-not-installed.pmpro_tag-has_icon:before,
+.pmpro_tag-inactive.pmpro_tag-has_icon:before {
 	content: "\f16d";
 }
 
@@ -555,7 +559,6 @@ body[class*="memberships_page_pmpro-"] {
 .pmpro_tag-info.pmpro_tag-has_icon:before {
 	content: "\f111";
 }
-
 
 /**
  * Checkbox Boxes
@@ -1209,7 +1212,7 @@ body[class*="memberships_page_pmpro-"] {
 	width: 100%;
 }
 
-.pmpro_admin-pmpro-member .pmpro_display-field-file .pmprorh_file_upload {
+.pmpro_admin-pmpro-member .pmpro_form_field-file .pmpro_form_field-file-upload {
 	margin-top: var(--pmpro--spacing--medium);
 }
 
@@ -2044,7 +2047,7 @@ table.pmprommpu_levels tr.remove_level td {background: #F2DEDE; }
 }
 
 /* Display-style User Fields on Edit Member or Edit User screen */
-.pmpro_display-field-file .pmprorh_file_preview {
+.pmpro_form_field-file .pmpro_form_field-file-preview {
 	border: 1px solid var(--pmpro--border--color);
 	border-radius: var(--pmpro--border--radius);
 	box-shadow: var(--pmpro--box-shadow);
@@ -2053,23 +2056,158 @@ table.pmprommpu_levels tr.remove_level td {background: #F2DEDE; }
 	overflow: hidden;
 }
 
-.pmpro_display-field-file .pmprorh_file_file_field_name {
+.pmpro_form_field-file .pmpro_form_field-file-preview img {
+	display: block;
+}
+
+.pmpro_form_field-file .pmpro_form_field-file-name {
 	margin-bottom: var(--pmpro--spacing--small);
 }
 
-.pmpro_display-field-file .button {
+.pmpro_form_field-file .pmpro_btn {
 	margin-right: calc( var(--pmpro--spacing--small) / 2 );
 }
 
-.pmpro_display-field-file .pmprorh_file_upload {
+.pmpro_form_field-file .pmpro_form_field-file-upload {
 	border: 3px dashed var(--pmpro--border--color);
 	border-radius: var(--pmpro--border--radius);
 	padding: var(--pmpro--spacing--medium);
 }
 
-.pmpro_display-field-date {
+.pmpro_form_field-date {
 	align-items: center;
 	display: flex;
+}
+
+/**
+ * Design Settings
+ */
+.pmpro_style_variation_items {
+    display: grid;
+	gap: var(--pmpro--spacing--medium);
+	grid-template-columns: repeat(3, 1fr);
+}
+
+.pmpro_style_variation_item {
+	background-color: var(--pmpro--color--blue-medium);
+	border: 2px solid var(--pmpro--color--blue-medium);
+	border-radius: var(--pmpro--border--radius);
+    box-sizing: border-box;
+	cursor: pointer;
+	padding: var(--pmpro--spacing--medium);
+}
+
+.pmpro_style_variation_item:hover,
+.pmpro_style_variation_item:has(input[type="radio"]:checked) {
+	background-color: var(--pmpro--color--blue-lightest);
+}
+
+.pmpro_admin-pmpro-designsettings .pmpro_style_variation_item label {
+	cursor: pointer;
+	display: block;
+	margin: 0;
+}
+
+.pmpro_style_variation_item-name {
+	font-weight: bold;
+}
+
+.pmpro_style_variation_item .description {
+	color: inherit;
+}
+
+.pmpro_style_variation_item-preview {
+	background-color: #fff;
+	border: 1px solid var(--pmpro--border--color);
+	margin: calc( var(--pmpro--spacing--medium) / 2 ) 0;
+}
+
+.pmpro_style_variation_item-preview-content {
+	display: flex;
+	flex-direction: column;
+	gap: var(--pmpro--spacing--small);
+	padding: calc( var(--pmpro--spacing--medium) / 2 );
+}
+
+.pmpro_style_variation_item-preview-heading {
+	font-size: 130%;
+	font-weight: 700;
+}
+
+.pmpro_style_variation_item:not(#pmpro_style_variation_item-minimal) .pmpro_btn {
+	background-color: var(--pmpro--color--accent);
+	border: 1px solid var(--pmpro--color--accent);
+	box-sizing: border-box;
+	color: #fff;
+	cursor: pointer;
+	display: inline-block;
+	font-size: 16px;
+	font-weight: 700;
+	letter-spacing: normal;
+	line-height: 1.5;
+	min-height: 40px;
+	outline: 0;
+	padding: 8px calc( var(--pmpro--spacing--medium) / 2 );
+	text-align: center;
+	text-decoration: none;
+	text-rendering: geometricprecision;
+	text-transform: none;
+	user-select: none;
+	-webkit-user-select: none;
+	touch-action: manipulation;
+	vertical-align: middle;
+}
+
+.pmpro_style_variation_item-preview-actions {
+	padding: 0 calc( var(--pmpro--spacing--medium) / 2 ) calc( var(--pmpro--spacing--medium) / 2 );
+}
+
+.pmpro_style_variation_item-preview-actions .pmpro_card_action {
+	text-decoration: underline;
+}
+
+.pmpro_style_variation_item-preview-actions .pmpro_card_action_separator {
+	margin: 0 calc( var(--pmpro--base--spacing--small) / 2 );
+	opacity: 0.5;
+}
+
+#pmpro_style_variation_item-variation-1 .pmpro_style_variation_item-preview {
+	background-color: var(--pmpro--color--base);
+	border: 1px solid #e5e7eb;
+	border-radius: 8px;
+	box-shadow: 2px 2px 7px rgba( 0, 0, 0, 0.07 );
+	color: var(--pmpro--color--contrast);
+	overflow: hidden;
+}
+
+#pmpro_style_variation_item-variation-1 .pmpro_style_variation_item-preview-actions {
+	background-color: var(--pmpro--color--base);
+	border-top: 1px solid #e5e7eb;
+	filter: brightness(0.95);
+	padding: var(--pmpro--spacing--small);
+}
+
+#pmpro_style_variation_item-high-contrast .pmpro_style_variation_item-preview {
+	background-color: var(--pmpro--color--base);
+	border: 1px solid var(--pmpro--color--contrast);
+	border-radius: 0;
+	box-shadow: 5px 4px 0px #555;
+	color: var(--pmpro--color--contrast);
+}
+
+#pmpro_style_variation_item-high-contrast .pmpro_style_variation_item-preview-actions {
+	border-top: 1px solid var(--pmpro--color--contrast);
+	margin: 0 calc( var(--pmpro--spacing--medium) / 2 );
+	padding: var(--pmpro--spacing--small) 0;
+}
+
+#pmpro_style_variation_item-variation-1 .pmpro_btn {
+	border-radius: 8px;
+	box-shadow: 1px 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+#pmpro_style_variation_item-high-contrast .pmpro_btn {
+	border-radius: 0;
 }
 
 /**
@@ -2197,6 +2335,14 @@ td.has-row-actions > .pmpro_message {
 .pmpro_notification .pmpro_notification-error {
 	background: #FFF;
 	border-left: 4px solid #DC3232;
+	box-shadow: 0 1px 1px 0 rgba(0, 0, 0, .1);
+	margin: 1em 0;
+	padding: 15px;
+}
+
+.pmpro_notification .pmpro_notification-warning {
+	background: #FFF;
+	border-left: 4px solid #dba617;
 	box-shadow: 0 1px 1px 0 rgba(0, 0, 0, .1);
 	margin: 1em 0;
 	padding: 15px;

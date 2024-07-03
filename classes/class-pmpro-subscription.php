@@ -1004,11 +1004,21 @@ class PMPro_Subscription {
 	public function get_cost_text() {
 		if  ( 1 == $this->cycle_number ) {
 			// translators: %1$s - price, %2$s - period.
-			return sprintf( __( '%1$s per %2$s', 'paid-memberships-pro' ), pmpro_formatPrice( $this->billing_amount ), $this->cycle_period );
+			$cost_text = sprintf( __( '%1$s per %2$s', 'paid-memberships-pro' ), pmpro_formatPrice( $this->billing_amount ), $this->cycle_period );
 		} else {
 			// translators: %1$s - price, %2$d - number, %3$s - period.
-			return sprintf( __( '%1$s every %2$d %3$s', 'paid-memberships-pro' ), pmpro_formatPrice( $this->billing_amount ), $this->cycle_number, $this->cycle_period );
+			$cost_text = sprintf( __( '%1$s every %2$d %3$s', 'paid-memberships-pro' ), pmpro_formatPrice( $this->billing_amount ), $this->cycle_number, $this->cycle_period );
 		}
+
+		/**
+		 * Filter the cost text for this subscription.
+		 *
+		 * @since TBD
+		 *
+		 * @param string $cost_text The cost text for this subscription.
+		 * @param PMPro_Subscription $this The subscription object.
+		 */
+		return apply_filters( 'pmpro_subscription_cost_text', $cost_text, $this );
 	}
 
 	/**
@@ -1073,41 +1083,46 @@ class PMPro_Subscription {
 			$this->enddate = gmdate( 'Y-m-d H:i:s' );
 		}
 
-		$wpdb->replace( $wpdb->pmpro_subscriptions, [
-			'id'                          => $this->id,
-			'user_id'                     => $this->user_id,
-			'membership_level_id'         => $this->membership_level_id,
-			'gateway'                     => $this->gateway,
-			'gateway_environment'         => $this->gateway_environment,
-			'subscription_transaction_id' => $this->subscription_transaction_id,
-			'status'                      => $this->status,
-			'startdate'                   => $this->startdate,
-			'enddate'                     => $this->enddate,
-			'next_payment_date'           => $this->next_payment_date,
-			'billing_amount'              => $this->billing_amount,
-			'cycle_number'                => $this->cycle_number,
-			'cycle_period'                => $this->cycle_period,
-			'billing_limit'               => $this->billing_limit,
-			'trial_amount'                => $this->trial_amount,
-			'trial_limit'                 => $this->trial_limit,
-		], [
-			'%d', // id
-			'%d', // user_id
-			'%d', // membership_level_id
-			'%s', // gateway
-			'%s', // gateway_environment
-			'%s', // subscription_transaction_id
-			'%s', // status
-			'%s', // startdate
-			'%s', // enddate
-			'%s', // next_payment_date
-			'%f', // billing_amount
-			'%d', // cycle_number
-			'%s', // cycle_period
-			'%d', // billing_limit
-			'%f', // trial_amount
-			'%d', // trial_limit
-		] );
+		pmpro_insert_or_replace( 
+			$wpdb->pmpro_subscriptions,
+			array(
+				'id'                          => $this->id,
+				'user_id'                     => $this->user_id,
+				'membership_level_id'         => $this->membership_level_id,
+				'gateway'                     => $this->gateway,
+				'gateway_environment'         => $this->gateway_environment,
+				'subscription_transaction_id' => $this->subscription_transaction_id,
+				'status'                      => $this->status,
+				'startdate'                   => $this->startdate,
+				'enddate'                     => $this->enddate,
+				'next_payment_date'           => $this->next_payment_date,
+				'billing_amount'              => $this->billing_amount,
+				'cycle_number'                => $this->cycle_number,
+				'cycle_period'                => $this->cycle_period,
+				'billing_limit'               => $this->billing_limit,
+				'trial_amount'                => $this->trial_amount,
+				'trial_limit'                 => $this->trial_limit,
+			),
+			array(
+				'%d', // id
+				'%d', // user_id
+				'%d', // membership_level_id
+				'%s', // gateway
+				'%s', // gateway_environment
+				'%s', // subscription_transaction_id
+				'%s', // status
+				'%s', // startdate
+				'%s', // enddate
+				'%s', // next_payment_date
+				'%f', // billing_amount
+				'%d', // cycle_number
+				'%s', // cycle_period
+				'%d', // billing_limit
+				'%f', // trial_amount
+				'%d', // trial_limit
+			),
+			'id'
+		);
 
 		if ( $wpdb->insert_id ) {
 			$this->id = $wpdb->insert_id;

@@ -4,15 +4,6 @@ function pmpro_upgrade_1()
 	/*
 		default options
 	*/
-	$nonmembertext = sprintf( __( 'This content is for !!levels!! members only.<br /><a href="%s">Join Now</a>', 'paid-memberships-pro' ), "!!levels_page_url!!" );
-	update_option("pmpro_nonmembertext", $nonmembertext);
-
-	$notloggedintext = sprintf( __( 'This content is for !!levels!! members only.<br /><a href="%s">Login</a> <a href="%s">Join Now</a>', 'paid-memberships-pro' ), '!!login_url!!', "!!levels_page_url!!" );
-	update_option("pmpro_notloggedintext", $notloggedintext);
-
-	$rsstext = __( 'This content is for members only. Visit the site and log in/register to read.', 'paid-memberships-pro' );
-	update_option("pmpro_rsstext", $rsstext);
-
 	$gateway_environment = "sandbox";
 	update_option("pmpro_gateway_environment", $gateway_environment);
 

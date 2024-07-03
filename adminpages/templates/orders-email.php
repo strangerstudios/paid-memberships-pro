@@ -1,6 +1,6 @@
 <?php
 /**
- * Template for Email Invoices
+ * Template for Email Orders
  *
  * @since 1.8.6
  * 
@@ -14,7 +14,7 @@
 		<td rowspan="2" style="width:80%;">
 			<h2><?php bloginfo( 'sitename' ); ?></h2>
 		</td>
-		<td><?php echo esc_html( __('Invoice #: ', 'paid-memberships-pro' ) . '&nbsp;' . $order->code ); ?></td>
+		<td><?php echo esc_html( __('Order #: ', 'paid-memberships-pro' ) . '&nbsp;' . $order->code ); ?></td>
 	</tr>
 	<tr>
 		<td>
@@ -53,7 +53,7 @@
 				<tr style="border-width:1px;border-style:solid;border-collapse:collapse;">
 					<td style="text-align:center;border-width:1px;border-style:solid;border-collapse:collapse;padding:4px;"><?php echo esc_html( $level->id ); ?></td>
 					<td style="border-width:1px;border-style:solid;border-collapse:collapse;padding:4px;"><?php echo esc_html( $level->name ); ?></td>
-					<td style="border-width:1px;border-style:solid;border-collapse:collapse;text-align:right;padding:4px;"><?php echo pmpro_escape_price( pmpro_formatPrice( $order->subtotal ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></td>
+					<td style="border-width:1px;border-style:solid;border-collapse:collapse;text-align:right;padding:4px;"><?php echo pmpro_escape_price( $order->get_formatted_subtotal() ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></td>
 				</tr>
 				<?php
 					if ( (float)$order->total > 0 ) {

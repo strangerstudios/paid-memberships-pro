@@ -4,7 +4,7 @@ Tags: memberships, member, community, user profile, user registration
 Requires at least: 5.2
 Tested up to: 6.5
 Requires PHP: 5.6
-Stable tag: 3.0.4
+Stable tag: 3.0.6
 License: GPLv2
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -75,7 +75,7 @@ All of our payment gateways are included in the plugin. Choose from [Stripe](htt
 * Custom form fields
 * Conditional logic for form fields
 * Membership account dashboard
-* Membership invoices and billing information pages
+* Membership orders and billing information pages
 * Custom member emails
 * Restrict WP dashboard access
 * Hide the WP toolbar
@@ -216,6 +216,14 @@ Not sure? You can find out by doing a bit a research.
 10. Advanced settings for updating non-member messages, optionally show excerpts or filter content, use reCAPTCHA, and a Terms of Service checkbox.
 
 == Changelog ==
+= 3.0.6 - 2024-07-01 =
+* SECURITY: Fixed an authenticated SQL injection vulnerability in the Orders and Discount Codes list tables. (Thanks, Trương Hữu Phúc from Patchstack)
+* BUG FIX: Fixed PHP errors when calling `pmpro_is_checkout()` too early in the page load. (@kimcoleman)
+
+= 3.0.5 - 2024-06-24 =
+* SECURITY: Fixed a vulnerability in the 2Checkout payment integration that could allow unauthenticated users to move orders from the "pending" status to the "success" status (Thanks, Rafie Muhammad from Patchstack)
+* BUG FIX: Fixed an incorrect query when using the "Show Only New" or "Show Only Renewals" filters on the sales report. (@ideadude)
+
 = 3.0.4 - 2024-05-08 =
 * ENHANCEMENT: Now detecting whether a webhook is set up in Stripe and, if not, showing a button to set one up. Webhooks are also automatically set up after the Stripe Connect flow is created. #2976 (@dparker1005)
 * ENHANCEMENT: Added a `group` attribute to the `[pmpro_member]` shortcode to show specific member information in the context of a level group. #2966 (@kimcoleman)

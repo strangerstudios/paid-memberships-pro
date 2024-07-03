@@ -49,31 +49,33 @@ function pmpro_get_capability_defs($role)
     // TODO: Add other standard roles (if/when needed)
 
     // caps for the administrator role
-    $cap_array = array(
-        'pmpro_memberships_menu',
-        'pmpro_dashboard',
-        'pmpro_wizard',
-        'pmpro_membershiplevels',
-        'pmpro_edit_members',
-        'pmpro_pagesettings',
-        'pmpro_paymentsettings',
-        'pmpro_emailsettings',
-        'pmpro_emailtemplates',
-        'pmpro_advancedsettings',
-        'pmpro_addons',
-        'pmpro_loginscsv',
-        'pmpro_memberslist',
-        'pmpro_memberslistcsv',
-        'pmpro_reports',
-        'pmpro_reportscsv',
-        'pmpro_orders',
-        'pmpro_orderscsv',
-        'pmpro_sales_report_csv',
-        'pmpro_discountcodes',
-        'pmpro_userfields',
-        'pmpro_updates',
-        'pmpro_manage_pause_mode'
-    );
+	$cap_array = array(
+		'pmpro_memberships_menu',
+		'pmpro_dashboard',
+		'pmpro_wizard',
+		'pmpro_membershiplevels',
+		'pmpro_edit_members',
+		'pmpro_pagesettings',
+		'pmpro_paymentsettings',
+		'pmpro_securitysettings',
+		'pmpro_emailsettings',
+		'pmpro_emailtemplates',
+		'pmpro_designsettings',
+		'pmpro_advancedsettings',
+		'pmpro_addons',
+		'pmpro_loginscsv',
+		'pmpro_memberslist',
+		'pmpro_memberslistcsv',
+		'pmpro_reports',
+		'pmpro_reportscsv',
+		'pmpro_orders',
+		'pmpro_orderscsv',
+		'pmpro_sales_report_csv',
+		'pmpro_discountcodes',
+		'pmpro_userfields',
+		'pmpro_updates',
+		'pmpro_manage_pause_mode'
+	);
 
     return apply_filters( "pmpro_assigned_{$role}_capabilities", $cap_array);
 }

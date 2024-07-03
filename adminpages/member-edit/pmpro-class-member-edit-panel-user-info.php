@@ -11,6 +11,13 @@ class PMPro_Member_Edit_Panel_User_Info extends PMPro_Member_Edit_Panel {
 		$this->title_link = empty( $user->ID ) ? '' : '<a href="' . esc_url( add_query_arg( array( 'user_id' => intval( $user->ID ) ), admin_url( 'user-edit.php' ) ) ) . '" target="_blank" class="page-title-action pmpro-has-icon pmpro-has-icon-admin-users">' . esc_html__( 'Edit User', 'paid-memberships-pro' ) . '</a>';
 		$this->submit_text = empty( $user->ID ) ? __( 'Create User ') : __( 'Update User Info', 'paid-memberships-pro' );
 
+		// If this user has an associated Stripe Customer, add a link to edit that Stripe Customer as well.
+		$stripe = new PMProGateway_Stripe();
+ 		$customer = $stripe->get_customer_for_user( $user->ID );
+		 if ( ! empty( $customer ) ) {
+			$this->title_link .= '<a target="_blank" class="page-title-action pmpro-has-icon pmpro-has-icon-admin-users" href="' . esc_url( 'https://dashboard.stripe.com/' . ( get_option( 'pmpro_gateway_environment' ) == 'sandbox' ? 'test/' : '' ) . 'customers/' . $customer->id ) . '">' . esc_html__( 'Edit Customer in Stripe', 'paid-memberships-pro' ) . '</a>';
+		}
+
 		// Show user updated or user created message if necessary.
 		if ( isset( $_REQUEST['user_id'] ) && ! empty( $_REQUEST['user_id'] && ! empty( $_REQUEST['user_info_action'] ) ) ) {
 			if ( 'updated' === $_REQUEST['user_info_action'] ) {
@@ -156,7 +163,7 @@ class PMPro_Member_Edit_Panel_User_Info extends PMPro_Member_Edit_Panel {
 			<tr class="form-field">
 				<th scope="row" valign="top"><label for="user_notes"><?php esc_html_e( 'Member Notes', 'paid-memberships-pro' ); ?></label></th>
 				<td>
-					<textarea name="user_notes" id="user_notes" rows="5" class="<?php echo esc_attr( pmpro_getClassForField( 'user_notes' ) ); ?>" <?php echo esc_attr( $disable_fields ); ?>><?php echo esc_textarea( $user_notes ); ?></textarea>
+					<textarea name="user_notes" id="user_notes" rows="5" <?php echo esc_attr( $disable_fields ); ?>><?php echo esc_textarea( $user_notes ); ?></textarea>
 					<p class="description"><?php esc_html_e( 'Member notes are private and only visible to other users with membership management capabilities.', 'paid-memberships-pro' ); ?></p>
 				</td>
 			</tr>

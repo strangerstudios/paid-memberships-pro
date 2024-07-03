@@ -36,26 +36,8 @@
 			//add fields to payment settings
 			add_filter('pmpro_payment_options', array('PMProGateway_paypalexpress', 'pmpro_payment_options'));
 
-			/*
-				Filter pmpro_next_payment to get actual value
-				via the PayPal API. This is disabled by default
-				for performance reasons, but you can enable it
-				by copying this line into a custom plugin or
-				your active theme's functions.php and uncommenting
-				it there.
-			*/
-			//add_filter('pmpro_next_payment', array('PMProGateway_paypalexpress', 'pmpro_next_payment'), 10, 3);
-
-			/*
-				This code is the same for PayPal Website Payments Pro, PayPal Express, and PayPal Standard
-				So we only load it if we haven't already.
-			*/
-			global $pmpro_payment_option_fields_for_paypal;
-			if(empty($pmpro_payment_option_fields_for_paypal))
-			{
-				add_filter('pmpro_payment_option_fields', array('PMProGateway_paypalexpress', 'pmpro_payment_option_fields'), 10, 2);
-				$pmpro_payment_option_fields_for_paypal = true;
-			}
+			// Add payment setting fields.
+			add_filter('pmpro_payment_option_fields', array('PMProGateway_paypalexpress', 'pmpro_payment_option_fields'), 10, 2);
 
 			//code to add at checkout
 			$gateway = pmpro_getGateway();
@@ -124,15 +106,12 @@
 		static function getGatewayOptions()
 		{
 			$options = array(
-				'sslseal',
-				'nuclear_HTTPS',
 				'gateway_environment',
 				'gateway_email',
 				'apiusername',
 				'apipassword',
 				'apisignature',
 				'currency',
-				'use_ssl',
 				'tax_state',
 				'tax_rate',
 				'paypalexpress_skip_confirmation',
@@ -527,7 +506,16 @@
 			?>
 			<span id="pmpro_paypalexpress_checkout" <?php if(($gateway != "paypalexpress" && $gateway != "paypalstandard") || !$pmpro_requirebilling) { ?>style="display: none;"<?php } ?>>
 				<input type="hidden" name="submit-checkout" value="1" />
-				<input type="image" id="pmpro_btn-submit-paypalexpress" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_btn-submit-checkout' ) ); ?>" value="<?php esc_attr_e('Check Out with PayPal', 'paid-memberships-pro' );?>" src="<?php echo esc_url( apply_filters("pmpro_paypal_button_image", "https://www.paypalobjects.com/webstatic/en_US/i/buttons/checkout-logo-medium.png" ) );?>" />
+				<button type="submit" id="pmpro_btn-submit-paypalexpress" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_btn pmpro_btn-submit-checkout pmpro_btn-submit-checkout-paypal' ) ); ?>">
+					<?php
+						printf(
+							/* translators: %s is the PayPal logo */
+							esc_html__( 'Check Out With %s', 'paid-memberships-pro' ),
+							'<span class="pmpro_btn-submit-checkout-paypal-image"></span>'
+						);
+					?>
+					<span class="screen-reader-text"><?php esc_html_e( 'PayPal', 'paid-memberships-pro' ); ?></span>
+				</button>
 			</span>
 
 			<span id="pmpro_submit_span" <?php if(($gateway == "paypalexpress" || $gateway == "paypalstandard") && $pmpro_requirebilling) { ?>style="display: none;"<?php } ?>>

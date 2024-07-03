@@ -1097,7 +1097,7 @@ function pmpro_getRevenue( $period, $levels = NULL, $type = 'all' ) {
 					 	ON mo1.user_id = mo2.user_id
 						AND mo2.total > 0
 						AND mo2.status NOT IN('refunded', 'review', 'token', 'error')
-						AND mo2.timestamp < mo1.end_timestamp
+						AND mo2.timestamp < mo1.timestamp
 						AND mo2.gateway_environment = '" . esc_sql( $gateway_environment ) . "' ";
 	}
 	

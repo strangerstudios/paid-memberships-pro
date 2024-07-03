@@ -18,9 +18,10 @@ if ( empty( $_REQUEST['order'] ) ) {
 	exit;
 }
 
-// Get order and membership level.
+// Get order, user, and membership level.
 $order = new MemberOrder( intval( $_REQUEST['order'] ) );
-$level = pmpro_getLevel($order->membership_id);
+$order->getUser();
+$level = $order->getMembershipLevel();
 
 // Load template
 if ( file_exists( get_stylesheet_directory() . '/paid-memberships-pro/pages/orders-print.php' ) ) {

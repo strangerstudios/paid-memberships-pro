@@ -113,6 +113,10 @@ class PMPro_Site_Health {
 					'label' => __( 'Library Conflicts', 'paid-memberships-pro' ),
 					'value' => self::get_library_conflicts(),
 				],
+				'pmpro-add-ons-incorrect-folder-names' => [
+					'label' => __( 'Incorrect Add On Folder Names', 'paid-memberships-pro' ),
+					'value' => self::get_add_ons_with_incorrect_folder_name(),
+        ],
 				'pmpro-current-site-url' => [
 					'label' => __( 'Current Site URL', 'paid-memberships-pro' ),
 					'value' => get_site_url(),
@@ -551,6 +555,19 @@ class PMPro_Site_Health {
 			$return_arr[ $library_name ] = implode( ' | ', $conflict_strings );
 		}
 		return $return_arr;
+	}
+
+	function get_add_ons_with_incorrect_folder_name() {
+		// Get the current list of Add Ons with the wrong name.
+		$incorrect_folder_names = pmpro_get_add_ons_with_incorrect_folder_names();
+
+		// Build error messages for each Add On with the wrong name.
+		$errors = array();
+		foreach ( $incorrect_folder_names as $installed_name => $addon ) {
+			$errors[] = "{$addon['Name']} ( {$addon['plugin']} => {$installed_name} )";
+		}
+
+		return empty( $errors ) ? __( 'No add ons with incorrect folder names detected.', 'paid-memberships-pro' ) : implode( " | \n", $errors );
 	}
 
 	/**

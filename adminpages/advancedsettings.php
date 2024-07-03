@@ -20,29 +20,18 @@
 		// Dashboard settings.
 		pmpro_setOption( 'hide_toolbar' );
 		pmpro_setOption( 'block_dashboard' );
+		
+		// Content settings.
+		pmpro_setOption("filterqueries");
+		pmpro_setOption("showexcerpts");
+		pmpro_setOption("nonmembertext_type");
 
-		// Message settings.
 		// These use wp_kses for better security handling.
 		$nonmembertext = wp_kses(wp_unslash($_POST['nonmembertext']), $allowedposttags);
 		update_option('pmpro_nonmembertext', $nonmembertext);
 
-		$notloggedintext = wp_kses(wp_unslash($_POST['notloggedintext']), $allowedposttags);
-		update_option('pmpro_notloggedintext', $notloggedintext);
-
-		$rsstext = wp_kses(wp_unslash($_POST['rsstext']), $allowedposttags);
-		update_option('pmpro_rsstext', $rsstext);
-
-		// Content settings.
-		pmpro_setOption("filterqueries");
-		pmpro_setOption("showexcerpts");
-
 		// Checkout settings.
 		pmpro_setOption("tospage");
-		pmpro_setOption("spamprotection");
-		pmpro_setOption("recaptcha");
-		pmpro_setOption("recaptcha_version");
-		pmpro_setOption("recaptcha_publickey");
-		pmpro_setOption("recaptcha_privatekey");
 
 		// Communication settings.
 		pmpro_setOption("maxnotificationpriority");
@@ -80,22 +69,14 @@
 	$hide_toolbar = get_option( 'pmpro_hide_toolbar' );
 	$block_dashboard = get_option( 'pmpro_block_dashboard' );
 
-	// Message settings.
-	$nonmembertext = get_option( "pmpro_nonmembertext");
-	$notloggedintext = get_option( "pmpro_notloggedintext");
-	$rsstext = get_option( "pmpro_rsstext");
-
 	// Content settings.
 	$filterqueries = get_option( 'pmpro_filterqueries');
-	$showexcerpts = get_option( "pmpro_showexcerpts");
+	$showexcerpts = get_option( 'pmpro_showexcerpts' );
+	$nonmembertext_type = get_option( 'pmpro_nonmembertext_type' );
+	$nonmembertext = get_option( 'pmpro_nonmembertext' );
 
 	// Checkout settings.
 	$tospage = get_option( "pmpro_tospage");
-	$spamprotection = get_option( "pmpro_spamprotection");
-	$recaptcha = get_option( "pmpro_recaptcha");
-	$recaptcha_version = get_option( "pmpro_recaptcha_version");
-	$recaptcha_publickey = get_option( "pmpro_recaptcha_publickey");
-	$recaptcha_privatekey = get_option( "pmpro_recaptcha_privatekey");
 
 	// Communication settings.
 	$maxnotificationpriority = get_option( "pmpro_maxnotificationpriority");
@@ -111,20 +92,9 @@
 	$uninstall = get_option( 'pmpro_uninstall');
 
 	// Default settings.
-	if(!$nonmembertext)
-	{
-		$nonmembertext = sprintf( __( 'This content is for !!levels!! members only.<br /><a href="%s">Join Now</a>', 'paid-memberships-pro' ), "!!levels_page_url!!" );
-		pmpro_setOption("nonmembertext", $nonmembertext);
-	}
-	if(!$notloggedintext)
-	{
-		$notloggedintext = sprintf( __( 'This content is for !!levels!! members only.<br /><a href="%s">Log In</a> <a href="%s">Join Now</a>', 'paid-memberships-pro' ), '!!login_url!!', "!!levels_page_url!!" );
-		pmpro_setOption("notloggedintext", $notloggedintext);
-	}
-	if(!$rsstext)
-	{
-		$rsstext = __( 'This content is for members only. Visit the site and log in/register to read.', 'paid-memberships-pro' );
-		pmpro_setOption("rsstext", $rsstext);
+	if ( ! $nonmembertext ) {
+		$nonmembertext = sprintf( __( '<h2 class="pmpro_card_title pmpro_font-large">Membership Required</h2><p>You must be a !!levels!! member to access this content.</p><p><a class="pmpro_btn" href="%s">Join Now</a></p>', 'paid-memberships-pro' ), "!!levels_page_url!!" );
+		pmpro_setOption( 'nonmembertext', $nonmembertext );
 	}
 
 	$levels = $wpdb->get_results( "SELECT * FROM {$wpdb->pmpro_membership_levels}", OBJECT );
@@ -170,47 +140,6 @@
 				</table>
 			</div> <!-- end pmpro_section_inside -->
 		</div> <!-- end pmpro_section -->
-		<div id="message-settings" class="pmpro_section" data-visibility="shown" data-activated="true">
-			<div class="pmpro_section_toggle">
-				<button class="pmpro_section-toggle-button" type="button" aria-expanded="true">
-					<span class="dashicons dashicons-arrow-up-alt2"></span>
-					<?php esc_html_e( 'Message Settings', 'paid-memberships-pro' ); ?>
-				</button>
-			</div>
-			<div class="pmpro_section_inside">
-				<table class="form-table">
-				<tbody>
-					<tr>
-						<th scope="row" valign="top">
-							<label for="nonmembertext"><?php esc_html_e('Message for Logged-in Non-members', 'paid-memberships-pro' );?>:</label>
-						</th>
-						<td>
-							<textarea name="nonmembertext" rows="3" cols="50" class="large-text"><?php echo wp_kses_post( stripslashes($nonmembertext) )?></textarea>
-							<p class="description"><?php esc_html_e('This message replaces the post content for non-members. Available variables', 'paid-memberships-pro' );?>: <code>!!levels!!</code> <code>!!referrer!!</code> <code>!!levels_page_url!!</code></p>
-						</td>
-					</tr>
-					<tr>
-						<th scope="row" valign="top">
-							<label for="notloggedintext"><?php esc_html_e('Message for Logged-out Users', 'paid-memberships-pro' );?>:</label>
-						</th>
-						<td>
-							<textarea name="notloggedintext" rows="3" cols="50" class="large-text"><?php echo wp_kses_post( stripslashes($notloggedintext) )?></textarea>
-							<p class="description"><?php esc_html_e('This message replaces the post content for logged-out visitors.', 'paid-memberships-pro' );?> <?php esc_html_e('Available variables', 'paid-memberships-pro' );?>: <code>!!levels!!</code> <code>!!referrer!!</code> <code>!!login_url!!</code> <code>!!levels_page_url!!</code></p>
-						</td>
-					</tr>
-					<tr>
-						<th scope="row" valign="top">
-							<label for="rsstext"><?php esc_html_e('Message for RSS Feed', 'paid-memberships-pro' );?>:</label>
-						</th>
-						<td>
-							<textarea name="rsstext" rows="3" cols="50" class="large-text"><?php echo wp_kses_post( stripslashes($rsstext) )?></textarea>
-							<p class="description"><?php esc_html_e('This message replaces the post content in RSS feeds.', 'paid-memberships-pro' );?> <?php esc_html_e('Available variables', 'paid-memberships-pro' );?>: <code>!!levels!!</code></p>
-						</td>
-					</tr>
-				</tbody>
-				</table>
-			</div> <!-- end pmpro_section_inside -->
-		</div> <!-- end pmpro_section -->
 		<div id="content-settings" class="pmpro_section" data-visibility="shown" data-activated="true">
 			<div class="pmpro_section_toggle">
 				<button class="pmpro_section-toggle-button" type="button" aria-expanded="true">
@@ -223,26 +152,57 @@
 				<tbody>
 					<tr>
 						<th scope="row" valign="top">
-							<label for="filterqueries"><?php esc_html_e("Filter searches and archives?", 'paid-memberships-pro' );?></label>
+							<label for="filterqueries"><?php esc_html_e("Filter searches and archives?", 'paid-memberships-pro' ); ?></label>
 						</th>
 						<td>
 							<select id="filterqueries" name="filterqueries">
-								<option value="0" <?php if(!$filterqueries) { ?>selected="selected"<?php } ?>><?php esc_html_e('No - Non-members will see restricted posts/pages in searches and archives.', 'paid-memberships-pro' );?></option>
-								<option value="1" <?php if($filterqueries == 1) { ?>selected="selected"<?php } ?>><?php esc_html_e('Yes - Only members will see restricted posts/pages in searches and archives.', 'paid-memberships-pro' );?></option>
+								<option value="0" <?php if(!$filterqueries) { ?>selected="selected"<?php } ?>><?php esc_html_e('No - Non-members will see restricted posts/pages in searches and archives.', 'paid-memberships-pro' ); ?></option>
+								<option value="1" <?php if($filterqueries == 1) { ?>selected="selected"<?php } ?>><?php esc_html_e('Yes - Only members will see restricted posts/pages in searches and archives.', 'paid-memberships-pro' ); ?></option>
 							</select>
 						</td>
 					</tr>
 					<tr>
 						<th scope="row" valign="top">
-							<label for="showexcerpts"><?php esc_html_e('Show Excerpts to Non-Members?', 'paid-memberships-pro' );?></label>
-					</th>
-					<td>
-						<select id="showexcerpts" name="showexcerpts">
-							<option value="0" <?php if(!$showexcerpts) { ?>selected="selected"<?php } ?>><?php esc_html_e('No - Hide excerpts.', 'paid-memberships-pro' );?></option>
-							<option value="1" <?php if($showexcerpts == 1) { ?>selected="selected"<?php } ?>><?php esc_html_e('Yes - Show excerpts.', 'paid-memberships-pro' );?></option>
-						</select>
-					</td>
+							<label for="showexcerpts"><?php esc_html_e('Show Excerpts to Non-Members?', 'paid-memberships-pro' ); ?></label>
+						</th>
+						<td>
+							<select id="showexcerpts" name="showexcerpts">
+								<option value="0" <?php if(!$showexcerpts) { ?>selected="selected"<?php } ?>><?php esc_html_e('No - Hide excerpts.', 'paid-memberships-pro' ); ?></option>
+								<option value="1" <?php if($showexcerpts == 1) { ?>selected="selected"<?php } ?>><?php esc_html_e('Yes - Show excerpts.', 'paid-memberships-pro' ); ?></option>
+							</select>
+						</td>
 					</tr>
+					<tr>
+						<th scope="row" valign="top">
+							<label for="nonmembertext_type"><?php esc_html_e( 'Membership Required Message', 'paid-memberships-pro' );?></label>
+						</th>
+						<td>
+							<select id="nonmembertext_type" name="nonmembertext_type">
+								<option value="pmpro" <?php selected( $nonmembertext_type, 'pmpro' ); ?>><?php esc_html_e( 'Let Paid Memberships Pro generate the message.', 'paid-memberships-pro' ); ?></option>
+								<option value="custom" <?php selected( $nonmembertext_type, 'custom' ); ?>><?php esc_html_e( 'Use my custom membership required message.', 'paid-memberships-pro' ); ?></option>
+							</select>
+							<p class="description"><?php esc_html_e( 'Allow PMPro to generate a smart message for protected content. This message will automatically include a link to the checkout or levels page, based on whether the content is protected for a single level or multiple levels. You also have the option to customize your own message.', 'paid-memberships-pro' ); ?></p>
+						</td>
+					</tr>
+					<tr class="toggle_nonmembertext" <?php if ( $nonmembertext_type !== 'custom' ) { ?>style="display: none;"<?php } ?>>
+						<th scope="row" valign="top">
+							<label for="nonmembertext"><?php esc_html_e( 'Custom Membership Required Message', 'paid-memberships-pro' );?></label>
+						</th>
+						<td>
+							<textarea name="nonmembertext" rows="3" cols="50" class="large-text"><?php echo wp_kses_post( stripslashes($nonmembertext) )?></textarea>
+							<p class="description"><?php esc_html_e('This message is shown in place of the post content for non-members. Available variables', 'paid-memberships-pro' );?>: <code>!!levels!!</code> <code>!!referrer!!</code> <code>!!levels_page_url!!</code></p>
+						</td>
+					</tr>
+					<script>
+						jQuery(document).ready(function() {
+							jQuery('#nonmembertext_type').change(function() {
+								if(jQuery(this).val() == 'custom')
+									jQuery('.toggle_nonmembertext').show();
+								else
+									jQuery('.toggle_nonmembertext').hide();
+							});
+						});
+					</script>
 				</tbody>
 				</table>
 			</div> <!-- end pmpro_section_inside -->
@@ -256,74 +216,22 @@
 			</div>
 			<div class="pmpro_section_inside">
 				<table class="form-table">
-				<tbody>
-					<tr>
-						<th scope="row" valign="top">
-							<label for="tospage"><?php esc_html_e('Require Terms of Service on signups?', 'paid-memberships-pro' );?></label>
-						</th>
-						<td>
-							<?php
-								wp_dropdown_pages(array("name"=>"tospage", "show_option_none"=>"No", "selected"=>esc_html( $tospage )));
-							?>
-							<br />
-							<p class="description"><?php esc_html_e('If yes, create a WordPress page containing your TOS agreement and assign it using the dropdown above.', 'paid-memberships-pro' );?></p>
-						</td>
-					</tr>
-					<tr>
-						<th scope="row" valign="top">
-							<label for="spamprotection"><?php esc_html_e('Enable Spam Protection?', 'paid-memberships-pro' );?></label>
-						</th>
-						<td>
-							<select id="spamprotection" name="spamprotection">
-								<option value="0" <?php if(!$spamprotection) { ?>selected="selected"<?php } ?>><?php esc_html_e('No', 'paid-memberships-pro' );?></option>
-								<!-- For reference, removed the Yes - Free memberships only. option -->
-								<option value="2" <?php if( $spamprotection > 0 ) { ?>selected="selected"<?php } ?>><?php esc_html_e('Yes - Enable Spam Protection', 'paid-memberships-pro' );?></option>
-							</select>
-							<p class="description"><?php printf( esc_html__( 'Block IPs from checkout if there are more than %d failures within %d minutes.', 'paid-memberships-pro' ), (int)PMPRO_SPAM_ACTION_NUM_LIMIT, (int)round(PMPRO_SPAM_ACTION_TIME_LIMIT/60,2) );?></p>
-						</td>
-					</tr>
-					<tr>
-						<th scope="row" valign="top">
-							<label for="recaptcha"><?php esc_html_e('Use reCAPTCHA?', 'paid-memberships-pro' );?></label>
-						</th>
-						<td>
-							<select id="recaptcha" name="recaptcha" onchange="pmpro_updateRecaptchaTRs();">
-								<option value="0" <?php if(!$recaptcha) { ?>selected="selected"<?php } ?>><?php esc_html_e('No', 'paid-memberships-pro' );?></option>
-								<!-- For reference, removed the Yes - Free memberships only. option -->
-								<option value="2" <?php if( $recaptcha > 0 ) { ?>selected="selected"<?php } ?>><?php esc_html_e('Yes - All memberships.', 'paid-memberships-pro' );?></option>
-							</select>
-							<p class="description"><?php esc_html_e('A free reCAPTCHA key is required.', 'paid-memberships-pro' );?> <a href="https://www.google.com/recaptcha/admin/create" target="_blank" rel="nofollow noopener"><?php esc_html_e('Click here to signup for reCAPTCHA', 'paid-memberships-pro' );?></a>.</p>
-						</td>
-					</tr>
-				</tbody>
-				</table>
-				<table class="form-table" id="recaptcha_settings" <?php if(!$recaptcha) { ?>style="display: none;"<?php } ?>>
-				<tbody>
-					<tr>
-						<th scope="row" valign="top"><label for="recaptcha_version"><?php esc_html_e( 'reCAPTCHA Version', 'paid-memberships-pro' );?>:</label></th>
-						<td>					
-							<select id="recaptcha_version" name="recaptcha_version">
-								<option value="2_checkbox" <?php selected( '2_checkbox', $recaptcha_version ); ?>><?php esc_html_e( ' v2 - Checkbox', 'paid-memberships-pro' ); ?></option>
-								<option value="3_invisible" <?php selected( '3_invisible', $recaptcha_version ); ?>><?php esc_html_e( 'v3 - Invisible', 'paid-memberships-pro' ); ?></option>
-							</select>
-							<p class="description"><?php esc_html_e( 'Changing your version will require new API keys.', 'paid-memberships-pro' ); ?></p>
-						</td>
-					</tr>
-					<tr>
-						<th scope="row"><label for="recaptcha_publickey"><?php esc_html_e('reCAPTCHA Site Key', 'paid-memberships-pro' );?>:</label></th>
-						<td>
-							<input type="text" id="recaptcha_publickey" name="recaptcha_publickey" value="<?php echo esc_attr($recaptcha_publickey);?>" class="regular-text code" />
-						</td>
-					</tr>
-					<tr>
-						<th scope="row"><label for="recaptcha_privatekey"><?php esc_html_e('reCAPTCHA Secret Key', 'paid-memberships-pro' );?>:</label></th>
-						<td>
-							<input type="text" id="recaptcha_privatekey" name="recaptcha_privatekey" value="<?php echo esc_attr($recaptcha_privatekey);?>" class="regular-text code" />
-						</td>
-					</tr>
-				</tbody>
-				</table>
-				</div> <!-- end pmpro_section_inside -->
+					<tbody>
+						<tr>
+							<th scope="row" valign="top">
+								<label for="tospage"><?php esc_html_e('Require Terms of Service on signups?', 'paid-memberships-pro' );?></label>
+							</th>
+							<td>
+								<?php
+									wp_dropdown_pages(array("name"=>"tospage", "show_option_none"=>"No", "selected"=>esc_html( $tospage )));
+								?>
+								<br />
+								<p class="description"><?php esc_html_e('If yes, create a WordPress page containing your TOS agreement and assign it using the dropdown above.', 'paid-memberships-pro' );?></p>
+							</td>
+						</tr>
+					</tbody>
+				</table>	
+			</div> <!-- end pmpro_section_inside -->
 		</div> <!-- end pmpro_section -->
 		<div id="communication-settings" class="pmpro_section" data-visibility="shown" data-activated="true">
 			<div class="pmpro_section_toggle">
@@ -595,20 +503,6 @@ if ( function_exists( 'pmpro_displayAds' ) && pmpro_displayAds() ) {
 						}
 					}
 					pmpro_updateHideAdsTRs();
-
-					function pmpro_updateRecaptchaTRs()
-					{
-						var recaptcha = jQuery('#recaptcha').val();
-						if(recaptcha > 0)
-						{
-							jQuery('#recaptcha_settings').show();
-						}
-						else
-						{
-							jQuery('#recaptcha_settings').hide();
-						}
-					}
-					pmpro_updateRecaptchaTRs();
 				</script>
 			</div> <!-- end pmpro_section_inside -->
 		</div> <!-- end pmpro_section -->

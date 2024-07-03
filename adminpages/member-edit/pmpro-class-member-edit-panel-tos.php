@@ -20,7 +20,7 @@ class PMPro_Member_Edit_Panel_TOS extends PMPro_Member_Edit_Panel {
 			<div id="tos_consent_history">
 				<?php
 					if ( ! empty( $consent_log ) ) {
-						// Build the selectors for the invoices history list based on history count.
+						// Build the selectors for the consent log history list based on history count.
 						$consent_log_classes = array();
 						$consent_log_classes[] = "pmpro_consent_log";
 						if ( count( $consent_log ) > 5 ) {

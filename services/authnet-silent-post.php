@@ -58,7 +58,7 @@
 	// If it is an ARB transaction, do something with it
 	if($arb == true)
 	{
-		// okay, add an invoice. first lookup the user_id from the subscription id passed
+		// okay, add an order. first lookup the user_id from the subscription id passed
 		$old_order_id = $wpdb->get_var("SELECT id FROM $wpdb->pmpro_membership_orders WHERE subscription_transaction_id = '" . esc_sql($fields['x_subscription_id']) . "' AND gateway = 'authorizenet' ORDER BY timestamp DESC LIMIT 1");
 		$old_order = new MemberOrder($old_order_id);
 		$user_id = $old_order->user_id;
@@ -73,7 +73,7 @@
 				//get the user's membership level info
 				$user->membership_level = pmpro_getMembershipLevelForUser($user_id);
 
-				//alright. create a new order/invoice
+				//alright. create a new order
 				$morder = new MemberOrder();
 				$morder->user_id = $old_order->user_id;
 				$morder->membership_id = $old_order->membership_id;
@@ -115,7 +115,7 @@
 				$morder->saveOrder();
 				$morder->getMemberOrderByID($morder->id);
 
-				//email the user their invoice
+				//email the user their order
 				$pmproemail = new PMProEmail();
 				$pmproemail->sendInvoiceEmail($user, $morder);
 

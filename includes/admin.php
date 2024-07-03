@@ -185,7 +185,7 @@ function pmpro_spamprotection_notice() {
 		get_option( 'pmpro_spamprotection' ) ||
 		! isset( $_REQUEST['page'] ) ||
 		( isset( $_REQUEST['page'] ) && 'pmpro-' !== substr( $_REQUEST['page'], 0, 6 ) ) ||
-		( isset( $_REQUEST['page'] ) && 'pmpro-advancedsettings' === $_REQUEST['page'] )
+		( isset( $_REQUEST['page'] ) && 'pmpro-securitysettings' === $_REQUEST['page'] )
 	) {
 		return;
 	}
@@ -203,9 +203,9 @@ function pmpro_spamprotection_notice() {
 			</div>
 			<div class="pmpro_notification-content">
 				<h3><?php esc_html_e( 'Spam Protection Disabled', 'paid-memberships-pro' ); ?></h3>
-				<p><?php esc_html_e( 'Spam protection is currently disabled. This is not recommended. Please enable spam protection on the Advanced Settings page.', 'paid-memberships-pro' ); ?></p>
+				<p><?php esc_html_e( 'Spam protection is currently disabled. This is not recommended. Please enable spam protection on the Security Settings page.', 'paid-memberships-pro' ); ?></p>
 				<p>
-					<a href='<?php echo esc_url( admin_url( 'admin.php?page=pmpro-advancedsettings' ) ); ?>' class='button button-secondary'><?php esc_html_e( 'Go to Advanced Settings', 'paid-memberships-pro' ); ?></a>
+					<a href='<?php echo esc_url( admin_url( 'admin.php?page=pmpro-securitysettings' ) ); ?>' class='button button-secondary'><?php esc_html_e( 'Go to Security Settings', 'paid-memberships-pro' ); ?></a>
 				</p>
 			</div>
 		</div>

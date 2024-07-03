@@ -365,6 +365,17 @@ function pmpro_checkForUpgrades() {
 		require_once( PMPRO_DIR . "/includes/updates/upgrade_3_0_2.php" );
 		pmpro_upgrade_3_0_2(); // This function will update the db version.
 	}
+
+	/**
+	 * Version 3.1
+	 * Delete the option for pmpro_accepted_credit_cards.
+	 * Modify and set new options for membership required messages.
+	 */
+	if ( $pmpro_db_version < 3.1 ) {
+		require_once( PMPRO_DIR . "/includes/updates/upgrade_3_1.php" );
+		pmpro_upgrade_3_1(); // This function will update the db version.
+	}
+
 }
 
 function pmpro_db_delta() {

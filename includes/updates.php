@@ -106,7 +106,7 @@ function pmpro_updates_notice() {
 ?>
 <div class="update-nag notice notice-warning inline">
 	<?php
-		echo esc_html( 'Paid Memberships Pro Data Update Required', 'paid-memberships-pro' ) . '. ';
+		echo esc_html__( 'Paid Memberships Pro Data Update Required', 'paid-memberships-pro' ) . '. ';
 		/* translators: %s: URL to the updates page. */
 		echo wp_kses_post( sprintf(__( '(1) <a target="_blank" href="%s">Backup your WordPress database</a></strong> and then (2) <a href="%s">click here to start the update</a>.', 'paid-memberships-pro' ), esc_url( 'https://www.paidmembershipspro.com/backup-wordpress-site/?utm_source=plugin&utm_medium=pmpro-admin-header&utm_campaign=blog&utm_content=backup-notification' ), admin_url('admin.php?page=pmpro-updates')));
 	?>
@@ -168,7 +168,7 @@ function pmpro_updates_notice_complete() {
  */
 function pmpro_maybe_show_upgrade_notices( $current_plugin_data, $update_data ) {
 	if ( isset( $update_data->upgrade_notice ) && strlen( trim( $update_data->upgrade_notice ) ) > 0 ) {
-		echo '<p class="pmpro_plugin_update_notice"><strong>' . esc_html( 'Important Upgrade Notice', 'paid-memberships-pro' ) . ':</strong> ' . esc_html( strip_tags( $update_data->upgrade_notice ) ) . '</p>';
+		echo '<p class="pmpro_plugin_update_notice"><strong>' . esc_html__( 'Important Upgrade Notice', 'paid-memberships-pro' ) . ':</strong> ' . esc_html( strip_tags( $update_data->upgrade_notice ) ) . '</p>';
 
 	}
 }

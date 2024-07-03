@@ -595,10 +595,11 @@ function pmpro_getLevelsExpiration( &$levels ) {
  *
  * @param object|int  $level The level object or ID to get the expiration date for.
  * @param WP_User|int $user  The user object or ID to get the expiration date for.
+ * @param string|null $default The default text to show when there is no expiration date. If null, a dash is shown.
  *
  * @return string The expiration date text.
  */
-function pmpro_get_membership_expiration_text( $level, $user ) {
+function pmpro_get_membership_expiration_text( $level, $user, $default = null ) {
 	// If a user ID was passed, get the user object.
 	if ( is_numeric( $user ) ) {
 		$user = get_userdata( $user );
@@ -631,8 +632,8 @@ function pmpro_get_membership_expiration_text( $level, $user ) {
 
 	// Generate the expiration date text.
 	if ( empty( $level->enddate ) ) {
-		// If the level does not have an enddate, show a dash (&#8212;).
-		$text = esc_html_x( '&#8212;', 'A dash is shown when there is no expiration date.', 'paid-memberships-pro' );
+		// If the level does not have an enddate, show a dash (&#8212;) or empty string.
+		$text = ( null === $default ) ? esc_html_x( '&#8212;', 'A dash is shown when there is no expiration date.', 'paid-memberships-pro' ) : $default;
 	} elseif ( $show_time ) {
 		// Show the enddate with the time.
 		$text = sprintf(
@@ -872,8 +873,15 @@ if ( ! function_exists( 'formatPhone' ) ) {
 	}
 }
 
+/**
+ * Display a message to users based on their current status.
+ *
+ * @since 2.4.5
+ * @deprecated 3.1
+ */
 function pmpro_showRequiresMembershipMessage() {
-    global $current_user, $post_membership_levels_names;
+	_deprecated_function( __FUNCTION__, '3.1' );
+	global $current_user, $post_membership_levels_names;
 
 	// get the correct message
 	if ( is_feed() ) {
@@ -2057,6 +2065,7 @@ function pmpro_actions_nav_separator() {
 /**
  * pmpro_get_no_access_message to return the appropriate content message for the protected content.
  *
+ * @param string $content The content being shown before the no access message. Usually an excerpt.
  * @param array $level_ids The array of level IDs this post is protected for.
  * @param array $level_names The array of names for the levels this post is protected for.
  *
@@ -2064,8 +2073,6 @@ function pmpro_actions_nav_separator() {
  *
  */
 function pmpro_get_no_access_message( $content, $level_ids, $level_names = NULL ) {
-	global $current_user;
-
 	if ( empty( $level_ids ) ) {
 		$level_ids = array();
 	}
@@ -2092,24 +2099,99 @@ function pmpro_get_no_access_message( $content, $level_ids, $level_names = NULL 
 		}
 	}
 
-	$pmpro_content_message_pre = '<div class="' . pmpro_get_element_class( 'pmpro_content_message' ) . '">';
-	$pmpro_content_message_post = '</div>';
+	$pmpro_content_mesage_pre = '<div class="' . pmpro_get_element_class( 'pmpro' ) . '"><div class="' . pmpro_get_element_class( 'pmpro_card pmpro_content_message', 'pmpro_content_message' ) . '">';
+	$pmpro_content_message_post = '</div></div>';
 
 	$sr_search = array( '!!levels!!', '!!referrer!!', '!!login_url!!', '!!login_page_url!!', '!!levels_url!!', '!!levels_page_url!!' );
 	$sr_replace = array( pmpro_implodeToEnglish( $level_names ), urlencode( site_url( esc_url_raw( $_SERVER['REQUEST_URI'] ) ) ), esc_url( pmpro_login_url() ), esc_url( pmpro_login_url() ), esc_url( pmpro_url( 'levels' ) ), esc_url( pmpro_url( 'levels' ) ) );
 
 	// Get the correct message to show at the bottom.
 	if ( is_feed() ) {
-		$newcontent = apply_filters( 'pmpro_rss_text_filter', stripslashes( get_option( 'pmpro_rsstext' ) ) );
-		$content .= $pmpro_content_message_pre . str_replace( $sr_search, $sr_replace, $newcontent ) . $pmpro_content_message_post;
-	} elseif ( $current_user->ID ) {
-		//not a member
-		$newcontent = apply_filters( 'pmpro_non_member_text_filter', stripslashes( get_option( 'pmpro_nonmembertext' ) ) );
-		$content .= $pmpro_content_message_pre . str_replace( $sr_search, $sr_replace, $newcontent ) . $pmpro_content_message_post;
+		$rsstext = __( 'This content is for members only. Visit the site and log in/register to read.', 'paid-memberships-pro' );
+		/**
+		 * Filter the RSS text for protected content.
+		 *
+		 * @param string $rsstext The RSS text for protected content.
+		 *
+		 * @return string $rsstext The filtered RSS text for protected content.
+		 */
+		$content = apply_filters( 'pmpro_rss_text_filter', $rsstext );
 	} else {
-		//not logged in!
-		$newcontent = apply_filters( 'pmpro_not_logged_in_text_filter', stripslashes( get_option( 'pmpro_notloggedintext' ) ) );
-		$content .= $pmpro_content_message_pre . str_replace( $sr_search, $sr_replace, $newcontent ) . $pmpro_content_message_post;
+		// Not a member. Show our default message or the site's custom message.
+		$nonmembertext_type = get_option( 'pmpro_nonmembertext_type' );
+		if ( $nonmembertext_type == 'custom' ) {
+			$no_access_message_inner = '<div class="' . pmpro_get_element_class( 'pmpro_card_content' ) . '">';
+			$no_access_message_inner .= stripslashes( get_option( 'pmpro_nonmembertext' ) );
+			$no_access_message_inner .= '</div>';
+
+		} else {
+			// Use our generated smart default message.
+			// Build the dynamic message contents.
+			if ( count( $level_ids ) !== 1 ) {
+				$header = __( 'Membership Required', 'paid-memberships-pro' );
+				$body = '<p>' . __(' You must be a member to access this content.', 'paid-memberships-pro') . '</p>';
+				$body .= '<p><a class="' . pmpro_get_element_class( 'pmpro_btn' ) . '" href="!!levels_page_url!!">' . __( 'View Membership Levels', 'paid-memberships-pro' ) . '</a></p>';
+			} else {
+				$header = __( '!!levels!! Membership Required', 'paid-memberships-pro' );
+				$body = '<p>' . __(' You must be a !!levels!! member to access this content.', 'paid-memberships-pro') . '</p>';
+				$body .= '<p><a class="' . pmpro_get_element_class( 'pmpro_btn' ) . '" href="' . esc_url( pmpro_url( 'checkout', '?pmpro_level=' . $level_ids[0] ) ) . '">' . __( 'Join Now', 'paid-memberships-pro' ) . '</a></p>';
+			}
+			/**
+			 * Filter the header message for the no access message.
+			 *
+			 * @since TBD
+			 *
+			 * @param string $header The header message for the no access message.
+			 * @param array $level_ids The array of level IDs this post is protected for.
+			 */
+			$header = apply_filters( 'pmpro_no_access_message_header', $header, $level_ids );
+
+			/**
+			 * Filter the body message for the no access message.
+			 *
+			 * @since TBD
+			 *
+			 * @param string $body The body message for the no access message.
+			 * @param array $level_ids The array of level IDs this post is protected for.
+			 */
+			$body = apply_filters( 'pmpro_no_access_message_body', $body, $level_ids );
+
+			/**
+			 * Legacy filter for the body message for the no access message.
+			 *
+			 * @deprecated TBD
+			 */
+			$body = apply_filters_deprecated( 'pmpro_non_member_text_body', array( $body ), 'TBD', 'pmpro_no_access_message_body' );
+
+			// Build the content message.
+			$no_access_message_inner = '<h2 class="' . pmpro_get_element_class( 'pmpro_card_title pmpro_font-large' ) . '">';
+			$no_access_message_inner .= '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--pmpro--color--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-lock"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>';
+			$no_access_message_inner .= $header;
+			$no_access_message_inner .= '</h2>';
+			$no_access_message_inner .= '<div class="' . pmpro_get_element_class( 'pmpro_card_content' ) . '">' . $body . '</div>';
+		}
+
+		// If the user is not logged in, show a link to log in if the message doesn't already have one.
+		if ( ! is_user_logged_in() && strpos( $no_access_message_inner, '!!login' ) === false ) {
+			$no_access_message_inner .= '<div class="' . esc_attr( pmpro_get_element_class( 'pmpro_card_actions pmpro_font-medium' ) ) . '">';
+			// to do redirect back to content.
+			$no_access_message_inner .= esc_html__( 'Already a member?', 'paid-memberships-pro' ) . ' <a href="' . esc_url( wp_login_url( get_permalink() ) ) . '">' . esc_html__( 'Log in here', 'paid-memberships-pro' ) . '</a>';
+			$no_access_message_inner .= '</div>';
+		}
+
+		// Add the pre and post content message.
+		$no_access_message_html = $pmpro_content_mesage_pre . str_replace( $sr_search, $sr_replace, $no_access_message_inner ) . $pmpro_content_message_post;
+		/**
+		 * Filter the HTML of the no access message.
+		 *
+		 * @since TBD
+		 *
+		 * @param string $content_message The HTML of the no access message.
+		 * @param array $level_ids The array of level IDs this post is protected for.
+		 */
+		$no_access_message_html = apply_filters( 'pmpro_no_access_message_html', $no_access_message_html, $level_ids );
+
+		$content .= $no_access_message_html;
 	}
 
 	return $content;
@@ -3117,28 +3199,28 @@ function pmpro_show_setup_wizard_link() {
 }
 
 /**
- * Display Invoice Price Data with Parts
+ * Display Order Price Data with Parts
  *
- * @param object $pmpro_invoice The full order object.
+ * @param object $pmpro_order The full order object.
  * @param string $format Format of the return value. Accepts array, span, list, or line_breaks.
  *
  * @return array|string $price_parts The array or formatted HTML string to display price parts and total.
  *
  */
-function pmpro_get_price_parts( $pmpro_invoice, $format = 'array' ) {
+function pmpro_get_price_parts( $pmpro_order, $format = 'array' ) {
 	$pmpro_price_parts = array();
 
-	if ( ! empty( $pmpro_invoice->subtotal ) && $pmpro_invoice->subtotal != $pmpro_invoice->total ) {
+	if ( ! empty( $pmpro_order->subtotal ) && $pmpro_order->subtotal != $pmpro_order->total ) {
 		$pmpro_price_parts['subtotal'] = array(
 			'label' => __( 'Subtotal', 'paid-memberships-pro' ),
-			'value' => pmpro_escape_price( pmpro_formatPrice( $pmpro_invoice->subtotal ) ),
+			'value' => pmpro_escape_price( $pmpro_order->get_formatted_subtotal() ),
 		);
 	}
 
-	if ( ! empty( $pmpro_invoice->tax ) ) {
+	if ( ! empty( $pmpro_order->tax ) ) {
 		$pmpro_price_parts['tax'] = array(
 			'label' => __( 'Tax', 'paid-memberships-pro' ),
-			'value' => pmpro_escape_price( pmpro_formatPrice( $pmpro_invoice->tax ) ),
+			'value' => pmpro_escape_price( $pmpro_order->get_formatted_tax() ),
 		);
 	}
 
@@ -3147,19 +3229,19 @@ function pmpro_get_price_parts( $pmpro_invoice, $format = 'array' ) {
 	 *
 	 * @param array $pmpro_price_parts The array of price parts not including the total.
 	 * @param string $format Format of the return value passed to the function.
-	 * @param object $pmpro_invoice The full order object.
+	 * @param object $pmpro_order The full order object.
 	 *
 	 * @return array $pmpro_price_parts Filtered array of price parts not including the total.
 	 *
 	 */
-	$pmpro_price_parts = apply_filters( 'pmpro_get_price_parts', $pmpro_price_parts, $pmpro_invoice );
+	$pmpro_price_parts = apply_filters( 'pmpro_get_price_parts', $pmpro_price_parts, $pmpro_order );
 
 	$pmpro_price_parts_with_total = $pmpro_price_parts;
 
-	if ( ! empty( $pmpro_invoice->total ) ) {
+	if ( ! empty( $pmpro_order->total ) ) {
 		$pmpro_price_parts_with_total['total'] = array(
 			'label' => __( 'Total', 'paid-memberships-pro' ),
-			'value' => pmpro_escape_price( pmpro_formatPrice( $pmpro_invoice->total ) ),
+			'value' => pmpro_escape_price( $pmpro_order->get_formatted_total() ),
 		);
 	}
 
@@ -3168,12 +3250,12 @@ function pmpro_get_price_parts( $pmpro_invoice, $format = 'array' ) {
 	 *
 	 * @param array $pmpro_price_parts The array of price parts including the total.
 	 * @param string $format Format of the return value passed to the function.
-	 * @param object $pmpro_invoice The full order object.
+	 * @param object $pmpro_order The full order object.
 	 *
 	 * @return array $pmpro_price_parts Filtered array of price parts not including the total.
 	 *
 	 */
-	$pmpro_price_parts_with_total = apply_filters( 'pmpro_get_price_parts_with_total', $pmpro_price_parts_with_total, $pmpro_invoice );
+	$pmpro_price_parts_with_total = apply_filters( 'pmpro_get_price_parts_with_total', $pmpro_price_parts_with_total, $pmpro_order );
 
 	if ( $format == 'array' ) {
 		return $pmpro_price_parts_with_total;
@@ -3811,7 +3893,7 @@ function pmpro_cleanup_memberships_users_table() {
  * @return bool True if we are on the checkout page, false otherwise
  */
 function pmpro_is_checkout() {
-	global $pmpro_pages;
+	global $pmpro_pages, $wp_query;
 
 	// Try is_page first.
 	if ( ! empty( $pmpro_pages['checkout'] ) ) {
@@ -3821,7 +3903,11 @@ function pmpro_is_checkout() {
 	}
 
 	// Page might not be setup yet or a custom page.
-	$queried_object = get_queried_object();
+	if ( ! empty( $wp_query ) ) {
+		$queried_object = get_queried_object();
+	} else {
+		$queried_object = null;
+	}
 
 	if ( ! $is_checkout &&
 		! empty( $queried_object ) &&
@@ -4750,4 +4836,101 @@ function pmpro_check_upload( $file_index ) {
 
 	// If we made it this far, the file is allowed.
 	return true;
+}
+
+/**
+ * Function to convert a hex color to HSL.
+ */
+function pmpro_hex_to_hsl_parts( $hex ) {
+	// Remove the # from the hex value, if present.
+	$hex = str_replace( '#', '', $hex );
+
+	$red = hexdec( substr( $hex, 0, 2 ) ) / 255;
+	$green = hexdec( substr( $hex, 2, 2 ) ) / 255;
+	$blue = hexdec( substr( $hex, 4, 2 ) ) / 255;
+
+	$cmin = min( $red, $green, $blue );
+	$cmax = max( $red, $green, $blue );
+	$delta = $cmax - $cmin;
+
+	if ( $delta == 0 ) {
+		$hue = 0;
+	} elseif ( $cmax === $red ) {
+		$hue = ( ( $green - $blue ) / $delta );
+	} elseif ( $cmax === $green ) {
+		$hue = ( $blue - $red ) / $delta + 2;
+	} else {
+		$hue = ( $red - $green ) / $delta + 4;
+	}
+
+	$hue = round( $hue * 60 );
+	if ( $hue < 0 ) {
+		$hue += 360;
+	}
+
+	$lightness = ( ( $cmax + $cmin ) / 2 );
+	$saturation = $delta === 0 ? 0 : ( $delta / ( 1 - abs( 2 * $lightness - 1 ) ) );
+	if ( $saturation < 0 ) {
+		$saturation += 1;
+	}
+
+	$lightness = round( $lightness * 100 );
+	$saturation = round( $saturation * 100 );
+
+ 	return array( $hue, $saturation, $lightness );
+}
+
+/**
+ * Calculate the end date for the period of time this order covers in the subscription.
+ *
+ * @since TBD
+ *
+ * @param MemberOrder $order       The order to calculate the end date date for.
+ * @param string      $date_format The format to use when formatting the profile start date.
+ *
+ * @return string The order's subscription period end date in UTC time and the desired $date_format.
+ */
+function pmpro_get_subscription_period_end_date_for_order( $order, $date_format ) {
+	global $wpdb;
+
+	// Get the subscription for this order.
+	$subscription = $order->get_subscription();
+
+	// If the order is not part of a subscription, return false.
+	if ( empty( $subscription ) ) {
+		return false;
+	}
+
+	// Get all orders for the subscription.
+	$subscription_orders = $subscription->get_orders(
+		array(
+			'orderby' => '`timestamp` ASC, `id` ASC',
+			'limit' => 1000,
+			'status' => array( 'success', 'pending', 'refunded' ),
+		)
+	);
+
+	// Get the timestamp of the order following the order passed to this function.
+	$period_end = null;
+	foreach ( $subscription_orders as $subscription_order ) {
+		if ( $subscription_order->timestamp > $order->timestamp ) {
+			$period_end = $subscription_order->timestamp;
+			break;
+		}
+	}
+
+	// If we don't have a date yet, this is the last order in the subscription.
+	if ( empty( $period_end ) ) {
+		if ( $subscription->get_status() === 'active' ) {
+			// The subscription is active. Next payment date is the end date.
+			$period_end = $subscription->get_next_payment_date( 'timestamp' );
+		} else {
+			// Subscription is not active. End date is the subscription end date.
+			// Note, this can sometimes be the same date as the order date. We may consider to snapshot what would have been the next payment date in the future.
+			$period_end = $subscription->get_enddate( 'timestamp' );
+		}
+	}
+
+	// Format and return the end date.
+	return date_i18n( $date_format, $period_end );
 }

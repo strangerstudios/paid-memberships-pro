@@ -270,13 +270,13 @@ class PMPro_Discount_Code_List_Table extends WP_List_Table {
 		if ( ! $count ) {
 
 			if( isset( $_REQUEST['orderby'] ) ) {
-				$orderby = sanitize_text_field( $_REQUEST['orderby'] );
+				$orderby = $this->sanitize_orderby( sanitize_text_field( $_REQUEST['orderby'] ) );
 			} else {
 				$orderby = 'id';
 			}
 
-			if( isset( $_REQUEST['order'] ) ) {
-				$order = strtoupper( sanitize_text_field( $_REQUEST['order'] ) );
+			if( isset( $_REQUEST['order'] ) && $_REQUEST['order'] == 'asc' ) {
+				$order = 'ASC';
 			} else {
 				$order = 'DESC';
 			}
@@ -305,13 +305,12 @@ class PMPro_Discount_Code_List_Table extends WP_List_Table {
 	 * @return string The sanitized value.
 	 */
 	function sanitize_orderby( $orderby ) {
-
 		$allowed_orderbys = array(
-			'id' 		=> 'id',
-			'discount_code'	=> 'code',
-			'starts' 	=> 'starts',
-			'finishes' 	=> 'finishes',
-			'uses' 		=> 'uses',
+			'id'      => 'id',
+			'code'    => 'code',
+			'starts'  => 'starts',
+			'expires' => 'expires',
+			'used'    => 'uses',
 		);
 
 	 	if ( ! empty( $allowed_orderbys[$orderby] ) ) {
@@ -320,7 +319,7 @@ class PMPro_Discount_Code_List_Table extends WP_List_Table {
 			$orderby = false;
 		}
 
-		return $allowed_orderbys;
+		return $orderby;
 	}
 
 	/**

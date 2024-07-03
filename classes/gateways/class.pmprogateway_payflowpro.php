@@ -69,18 +69,14 @@
 		static function getGatewayOptions()
 		{
 			$options = array(
-				'sslseal',
-				'nuclear_HTTPS',
 				'gateway_environment',
 				'payflow_partner',
 				'payflow_vendor',
 				'payflow_user',
 				'payflow_pwd',
 				'currency',
-				'use_ssl',
 				'tax_state',
 				'tax_rate',
-				'accepted_credit_cards',
 			);
 
 			return $options;

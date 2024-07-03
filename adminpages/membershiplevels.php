@@ -602,9 +602,18 @@
 				<?php if( ! empty( $_REQUEST['showpopup'] ) ) { ?>addLevel();<?php } ?>
 			} );
 			function addLevel( group_id ) {
-				if ( typeof group_id !== undefined ) {
+				if ( group_id ) {
+					// Add the level group to URLs.
 					jQuery('a.pmpro_level_template').each(function(){
-						this.href += '&level_group=' + group_id;
+						// Only add the level group to links to the edit level page.
+						if ( this.href.indexOf('page=pmpro-membershiplevels') !== -1 ) {
+							this.href += '&level_group=' + group_id;
+						}
+					});
+				} else {
+					// Remove the level group from all URLs.
+					jQuery('a.pmpro_level_template').each(function(){
+						this.href = this.href.replace(/&level_group=\d+/, '');
 					});
 				}
 				jQuery('.pmpro-popup-overlay').show();

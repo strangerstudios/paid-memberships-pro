@@ -85,16 +85,12 @@ class PMProGateway_authorizenet extends PMProGateway
 	static function getGatewayOptions()
 	{
 		$options = array(
-			'sslseal',
-			'nuclear_HTTPS',
 			'gateway_environment',
 			'loginname',
 			'transactionkey',
 			'currency',
-			'use_ssl',
 			'tax_state',
 			'tax_rate',
-			'accepted_credit_cards',
 		);
 
 		return $options;

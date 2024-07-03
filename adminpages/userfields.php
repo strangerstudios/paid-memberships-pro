@@ -74,14 +74,14 @@
 	 */
 	add_meta_box(
 		'pmpro_userfields_save',
-		esc_html( 'Save', 'paid-memberships-pro' ),
+		esc_html__( 'Save', 'paid-memberships-pro' ),
 		'pmpro_userfields_save_widget',
 		'memberships_page_pmpro-userfields',
 		'side'
 	);
 	add_meta_box(
 		'pmpro_userfields_help',
-		esc_html( 'User Fields Help', 'paid-memberships-pro' ),
+		esc_html__( 'User Fields Help', 'paid-memberships-pro' ),
 		'pmpro_userfields_help_widget',
 		'memberships_page_pmpro-userfields',
 		'side'

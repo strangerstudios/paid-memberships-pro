@@ -44,16 +44,12 @@
 		static function getGatewayOptions()
 		{
 			$options = array(
-				'sslseal',
-				'nuclear_HTTPS',
 				'gateway_environment',
 				'cybersource_merchantid',
 				'cybersource_securitykey',
 				'currency',
-				'use_ssl',
 				'tax_state',
 				'tax_rate',
-				'accepted_credit_cards',
 			);
 			return $options;
 		}

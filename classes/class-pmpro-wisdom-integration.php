@@ -48,6 +48,7 @@ class PMPro_Wisdom_Integration {
 		'pmpro-discountcodes'    => true,
 		'pmpro-pagesettings'     => true,
 		'pmpro-paymentsettings'  => true,
+		'pmpro-securitysettings' => true,
 		'pmpro-emailsettings'    => true,
 		'pmpro-emailtemplates'   => true,
 		'pmpro-advancedsettings' => true,
@@ -354,12 +355,6 @@ class PMPro_Wisdom_Integration {
 		$stats['plugin_options_fields']['pmpro_only_filter_pmpro_emails'] = get_option( 'pmpro_only_filter_pmpro_emails', 'No Value' );
 		$stats['plugin_options_fields']['pmpro_email_member_notification'] = get_option( 'pmpro_email_member_notification', 'No Value' );
 		$stats['plugin_options_fields']['pmpro_use_ssl'] = get_option( 'pmpro_pmpro_use_ssl', 'No Value' );
-		$ssl_seal = get_option( 'pmpro_sslseal', '' );
-		if ( ! empty( $ssl_seal ) ) {
-			$stats['plugin_options_fields']['pmpro_sslseal'] = 'Yes';
-		} else {
-			$stats['plugin_options_fields']['pmpro_sslseal'] = 'No';
-		}
 		$stats['plugin_options_fields']['pmpro_nuclear_HTTPS'] = get_option( 'pmpro_nuclear_HTTPS', 'No Value' );
 
 		// Add Ons.

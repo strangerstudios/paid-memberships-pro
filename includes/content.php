@@ -525,10 +525,8 @@ function pmpro_post_classes( $classes, $class, $post_id ) {
 	if( ! empty( $post_levels ) ) {
 		if( ! empty( $post_levels[1] ) ) {
 			$classes[] = 'pmpro-level-required';
-			foreach( $post_levels[1] as $post_level ) {
-				if ( isset( $post_level[0] ) ) {
-					$classes[] = 'pmpro-level-' . $post_level[0];
-				} 	
+			foreach( $post_levels[1] as $post_level_id ) {
+				$classes[] = 'pmpro-level-' . $post_level_id;	
 			}
 		}
 		if(!empty($post_levels[0]) && $post_levels[0] == true) {
@@ -567,8 +565,8 @@ function pmpro_body_classes( $classes ) {
 	if( ! empty( $post_levels ) ) {
 		if( ! empty( $post_levels[1] ) ) {
 			$classes[] = 'pmpro-body-level-required';
-			foreach( $post_levels[1] as $post_level ) {
-				$classes[] = 'pmpro-body-level-' . $post_level[0];
+			foreach( $post_levels[1] as $post_level_id ) {
+				$classes[] = 'pmpro-body-level-' . $post_level_id;	
 			}
 		}
 		if( ! empty( $post_levels[0] ) && $post_levels[0] == true) {

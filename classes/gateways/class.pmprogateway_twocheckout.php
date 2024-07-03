@@ -76,15 +76,12 @@
 		static function getGatewayOptions()
 		{
 			$options = array(
-				'sslseal',
-				'nuclear_HTTPS',
 				'gateway_environment',
 				'twocheckout_apiusername',
 				'twocheckout_apipassword',
 				'twocheckout_accountnumber',
 				'twocheckout_secretword',
 				'currency',
-				'use_ssl',
 				'tax_state',
 				'tax_rate'
 			);

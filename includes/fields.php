@@ -23,7 +23,7 @@ function pmpro_is_field( $var ) {
 }
 
 /**
- * Add a field to the PMProRH registration fields global
+ * Add a field to the PMPro registration fields global
  *
  *	$where refers to various hooks in the PMPro checkout page and can be:
  *	- after_username
@@ -72,7 +72,7 @@ function pmpro_add_user_field( $where, $field ) {
 /**
  * Add a new checkout box to the checkout_boxes section.
  * You can then use this as the $where parameter
- * to pmprorh_add_registration_field.
+ * to pmpro_add_user_field.
  *
  * Name must contain no spaces or special characters.
  */
@@ -108,7 +108,7 @@ function pmpro_add_field_group( $name, $label = NULL, $description = '', $order 
 }
 
 /**
- * Add a new User Taxonomy. You can then use this as the user_taxonomny parameter to pmprorh_add_registration_field.
+ * Add a new User Taxonomy. You can then use this as the user_taxonomny parameter to pmpro_add_user_field.
  *
  * @param string $name The singular name for the taxonomy object.
  * @param string $name_plural The plural name for the taxonomy object.
@@ -320,25 +320,30 @@ function pmpro_checkout_boxes_fields() {
 
 		if($n > 0) {
 			?>
-			<div id="pmpro_checkout_box-<?php echo esc_attr( sanitize_title( $cb->name ) ); ?>" class="pmpro_checkout">
-				<hr />
-				<h2>
-					<span class="pmpro_checkout-h2-name"><?php echo wp_kses_post( $cb->label );?></span>
-				</h2>
-				<div class="pmpro_checkout-fields">
-				<?php if(!empty($cb->description)) { ?>
-					<div class="pmpro_checkout_description"><?php echo wp_kses_post( $cb->description ); ?></div>
-				<?php } ?>
+			<fieldset id="pmpro_form_fieldset-<?php echo esc_attr( sanitize_title( $cb->name ) ); ?>" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_fieldset', 'pmpro_form_fieldset-' . sanitize_title( $cb->name ) ) ); ?>">
+				<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_card' ) ); ?>">
+					<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_card_content' ) ); ?>">
+						<?php if ( ! empty( $cb->label ) ) { ?>
+							<legend class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_legend' ) ); ?>">
+								<h2 class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_heading pmpro_font-large' ) ); ?>"><?php echo wp_kses_post( $cb->label ); ?></h2>
+							</legend>
+						<?php } ?>
+						<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_fields' ) ); ?>">
+							<?php if ( ! empty( $cb->description ) ) { ?>
+								<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_fields-description' ) ); ?>"><?php echo wp_kses_post( $cb->description ); ?></div>
+							<?php } ?>
 
-				<?php
-					foreach($pmpro_user_fields[$cb->name] as $field) {
-						if( pmpro_is_field($field) && pmpro_check_field_for_level($field) && (!isset($field->profile) || (isset($field->profile) && $field->profile !== "only" && $field->profile !== "only_admin"))) {
-							$field->displayAtCheckout();
-						}
-					}
-				?>
-				</div> <!-- end pmpro_checkout-fields -->
-			</div> <!-- end pmpro_checkout_box-name -->
+							<?php
+								foreach($pmpro_user_fields[$cb->name] as $field) {
+									if( pmpro_is_field($field) && pmpro_check_field_for_level($field) && (!isset($field->profile) || (isset($field->profile) && $field->profile !== "only" && $field->profile !== "only_admin"))) {
+										$field->displayAtCheckout();
+									}
+								}
+							?>
+						</div> <!-- end pmpro_form_fields -->
+					</div> <!-- end pmpro_card_content -->
+				</div> <!-- end pmpro_card -->
+			</fieldset> <!-- end pmpro_form_fieldset -->
 			<?php
 		}
 	}
@@ -711,15 +716,16 @@ function pmpro_show_user_fields_in_frontend_profile( $user, $withlocations = fal
 				continue;
 			}
 			?>
-
-			<div class="pmpro_checkout_box-<?php echo esc_attr( sanitize_title( $where ) ); ?>">
+			<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_spacer' ) ); ?>"></div>
+			<fieldset id="pmpro_form_fieldset-<?php echo esc_attr( sanitize_title( $where ) ); ?>" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_fieldset', 'pmpro_form_fieldset-' . sanitize_title( $where ) ) ); ?>">
 				<?php if ( ! empty( $box->label ) ) { ?>
-					<h2><?php echo wp_kses_post( $box->label ); ?></h2>
+					<legend class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_legend' ) ); ?>">
+						<h2 class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_heading pmpro_font-large' ) ); ?>"><?php echo wp_kses_post( $box->label ); ?></h2>
+					</legend>
 				<?php } ?>
-
-				<div class="pmpro_member_profile_edit-fields">
+				<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_fields' ) ); ?>">
 					<?php if ( ! empty( $box->description ) ) { ?>
-						<div class="pmpro_checkout_description"><?php echo wp_kses_post( $box->description ); ?></div>
+						<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_fields-description' ) ); ?>"><?php echo wp_kses_post( $box->description ); ?></div>
 					<?php } ?>
 
 					<?php
@@ -728,26 +734,28 @@ function pmpro_show_user_fields_in_frontend_profile( $user, $withlocations = fal
 							$field->displayAtCheckout( $user->ID );
 						}
 					?>
-				</div> <!-- end pmpro_member_profile_edit-fields -->
-			</div> <!-- end pmpro_checkout_box-name -->
+				</div> <!-- end pmpro_form_fields -->
+			</fieldset> <!-- end pmpro_form_fieldset -->
 			<?php
 		}
 	} elseif ( ! empty( $profile_fields ) ) { ?>
-		<div class="pmpro_member_profile_edit-fields">
-			<?php
-				 // Cycle through groups.
-				foreach( $profile_fields as $field ) {
-					if ( pmpro_is_field( $field ) && $field->profile !== 'only_admin' ) {
-						$field->displayAtCheckout( $user->ID );
+		<fieldset class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_fieldset' ) ); ?>">
+			<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_fields' ) ); ?>">
+				<?php
+					// Cycle through groups.
+					foreach( $profile_fields as $field ) {
+						if ( pmpro_is_field( $field ) && $field->profile !== 'only_admin' ) {
+							$field->displayAtCheckout( $user->ID );
+						}
 					}
-				}
-			?>
-		</div> <!-- end pmpro_member_profile_edit-fields -->
+				?>
+			</div> <!-- end pmpro_form_fields -->
+		</fieldset> <!-- end pmpro_form_fieldset -->
 		<?php
 	}
 }
 function pmpro_show_user_fields_in_frontend_profile_with_locations( $user ) {
-	pmpro_show_user_fields_in_frontend_profile($user, true);
+	pmpro_show_user_fields_in_frontend_profile( $user, true );
 }
 add_action( 'pmpro_show_user_profile', 'pmpro_show_user_fields_in_frontend_profile_with_locations' );
 
@@ -894,7 +902,7 @@ function pmpro_add_member_admin_save_user_fields( $uid = null, $user = null ) {
 add_action( 'pmpro_add_member_added', 'pmpro_add_member_admin_save_user_fields', 10, 2 );
 
 /**
- * Get RH fields which are set to showup in the Members List CSV Export.
+ * Get user fields which are set to show up in the Members List CSV Export.
  */
 function pmpro_get_user_fields_for_csv() {
 	global $pmpro_user_fields;
