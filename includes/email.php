@@ -520,38 +520,38 @@ function pmpro_email_templates_email_data($data, $email) {
 		}
 	}
 
-	//invoice data
-	if(!empty($data['invoice_id']))
+	// Order data
+	if(!empty($data['order_id']))
 	{
-		$invoice = new MemberOrder($data['invoice_id']);
-		if(!empty($invoice) && !empty($invoice->code))
+		$order = new MemberOrder($data['order_id']);
+		if(!empty($order) && !empty($order->code))
 		{
-			$new_data['billing_name'] = $invoice->billing->name;
-			$new_data['billing_street'] = $invoice->billing->street;
-			$new_data['billing_city'] = $invoice->billing->city;
-			$new_data['billing_state'] = $invoice->billing->state;
-			$new_data['billing_zip'] = $invoice->billing->zip;
-			$new_data['billing_country'] = $invoice->billing->country;
-			$new_data['billing_phone'] = $invoice->billing->phone;
-			$new_data['cardtype'] = $invoice->cardtype;
-			$new_data['accountnumber'] = hideCardNumber($invoice->accountnumber);
-			$new_data['expirationmonth'] = $invoice->expirationmonth;
-			$new_data['expirationyear'] = $invoice->expirationyear;
+			$new_data['billing_name'] = $order->billing->name;
+			$new_data['billing_street'] = $order->billing->street;
+			$new_data['billing_city'] = $order->billing->city;
+			$new_data['billing_state'] = $order->billing->state;
+			$new_data['billing_zip'] = $order->billing->zip;
+			$new_data['billing_country'] = $order->billing->country;
+			$new_data['billing_phone'] = $order->billing->phone;
+			$new_data['cardtype'] = $order->cardtype;
+			$new_data['accountnumber'] = hideCardNumber($order->accountnumber);
+			$new_data['expirationmonth'] = $order->expirationmonth;
+			$new_data['expirationyear'] = $order->expirationyear;
 			$new_data['instructions'] = wpautop(get_option('pmpro_instructions'));
-			$new_data['invoice_id'] = $invoice->code;
-			$new_data['invoice_total'] = $pmpro_currency_symbol . number_format($invoice->total, 2);
-			$new_data['invoice_date'] = date_i18n( get_option( 'date_format' ), $invoice->getTimestamp() );
-			$new_data['invoice_link'] = pmpro_url('invoice', '?invoice=' . $invoice->code);
+			$new_data['order_id'] = $order->code;
+			$new_data['order_total'] = $pmpro_currency_symbol . number_format($order->total, 2);
+			$new_data['order_date'] = date_i18n( get_option( 'date_format' ), $order->getTimestamp() );
+			$new_data['order_link'] = pmpro_url('invoice', '?invoice=' . $order->code);
 
 				//billing address
-			$new_data["billing_address"] = pmpro_formatAddress($invoice->billing->name,
-				$invoice->billing->street,
+			$new_data["billing_address"] = pmpro_formatAddress($order->billing->name,
+				$order->billing->street,
 				"", //address 2
-				$invoice->billing->city,
-				$invoice->billing->state,
-				$invoice->billing->zip,
-				$invoice->billing->country,
-				$invoice->billing->phone);
+				$order->billing->city,
+				$order->billing->state,
+				$order->billing->zip,
+				$order->billing->country,
+				$order->billing->phone);
 		}
 	}
 
