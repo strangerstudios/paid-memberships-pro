@@ -173,6 +173,20 @@
 					$this->data['header_name'] = __( 'User', 'paid-memberships-pro' );
 				}
 			}
+
+			// We switched our wording from using "invoice" to "order", but we want to keep backwards compat for variables with "invoice" in the name.
+			if ( is_array( $this->data ) ) {
+				$data_keys = array_keys( $this->data );
+				foreach ( $data_keys as $key ) {
+					// If this key has "order" in it, add an identical entry for "invoice" if it doesn't already exist.
+					if ( strpos( $key, 'order' ) !== false ) {
+						$invoice_key = str_replace( 'order', 'invoice', $key );
+						if ( ! isset( $this->data[ $invoice_key ] ) ) {
+							$this->data[ $invoice_key ] = $this->data[ $key ];
+						}
+					}
+				}
+			}
 			
 			//swap data into body and subject line
 			if(is_array($this->data))
@@ -481,9 +495,9 @@
 		 * Send the refunded email to the member.
 		 *
 		 * @param object $user The WordPress user object.
-		 * @param MemberOrder $invoice The order object that is associated with the refund.
+		 * @param MemberOrder $order The order object that is associated with the refund.
 		 */
-		function sendRefundedEmail( $user = NULL, $invoice = NULL ) {
+		function sendRefundedEmail( $user = NULL, $order = NULL ) {
 			global $wpdb, $current_user;
 			if ( ! $user ) {
 				$user = $current_user;
@@ -493,7 +507,7 @@
 				return false;
 			}
 
-			$membership_level = pmpro_getSpecificMembershipLevelForUser( $user->ID, $invoice->membership_id );
+			$membership_level = pmpro_getSpecificMembershipLevelForUser( $user->ID, $order->membership_id );
 			if ( ! empty( $membership_level ) ) {
 				$membership_level_id = $membership_level->id;
 				$membership_level_name = $membership_level->name;
@@ -503,7 +517,7 @@
 			}
 
 			$this->email = $user->user_email;
-			$this->subject = sprintf(__( 'Your invoice for order #%s at %s has been REFUNDED', 'paid-memberships-pro' ), $invoice->code, get_option( 'blogname' ) );
+			$this->subject = sprintf(__( 'Order #%s at %s has been REFUNDED', 'paid-memberships-pro' ), $order->code, get_option( 'blogname' ) );
 
 			$this->data = array(
 				'user_login' => $user->user_login,
@@ -516,33 +530,33 @@
 				'login_url' => pmpro_login_url(),
 				'membership_id' => $membership_level_id,
 				'membership_level_name' => $membership_level_name,
-				'invoice_id' => $invoice->code,
-				'invoice_total' => $invoice->get_formatted_total(),
-				'invoice_date' => date_i18n(get_option('date_format'), $invoice->getTimestamp()),
-				'billing_name' => $invoice->billing->name,
-				'billing_street' => $invoice->billing->street,
-				'billing_city' => $invoice->billing->city,
-				'billing_state' => $invoice->billing->state,
-				'billing_zip' => $invoice->billing->zip,
-				'billing_country' => $invoice->billing->country,
-				'billing_phone' => $invoice->billing->phone,
-				'cardtype' => $invoice->cardtype,
-				'accountnumber' => hideCardNumber($invoice->accountnumber),
-				'expirationmonth' => $invoice->expirationmonth,
-				'expirationyear' => $invoice->expirationyear,
-				'invoice_link' => pmpro_login_url( pmpro_url( 'invoice', '?invoice=' . $invoice->code ) ),
-				'invoice_url' => pmpro_login_url( pmpro_url( 'invoice', '?invoice=' . $invoice->code ) ),
+				'order_id' => $order->code,
+				'order_total' => $order->get_formatted_total(),
+				'order_date' => date_i18n(get_option('date_format'), $order->getTimestamp()),
+				'billing_name' => $order->billing->name,
+				'billing_street' => $order->billing->street,
+				'billing_city' => $order->billing->city,
+				'billing_state' => $order->billing->state,
+				'billing_zip' => $order->billing->zip,
+				'billing_country' => $order->billing->country,
+				'billing_phone' => $order->billing->phone,
+				'cardtype' => $order->cardtype,
+				'accountnumber' => hideCardNumber($order->accountnumber),
+				'expirationmonth' => $order->expirationmonth,
+				'expirationyear' => $order->expirationyear,
+				'order_link' => pmpro_login_url( pmpro_url( 'invoice', '?invoice=' . $order->code ) ),
+				'order_url' => pmpro_login_url( pmpro_url( 'invoice', '?invoice=' . $order->code ) ),
 				'levels_url' => pmpro_url( 'levels' )
 			);
 			$this->data['billing_address'] = pmpro_formatAddress(
-				$invoice->billing->name,
-				$invoice->billing->street,
+				$order->billing->name,
+				$order->billing->street,
 				"", //address 2
-				$invoice->billing->city,
-				$invoice->billing->state,
-				$invoice->billing->zip,
-				$invoice->billing->country,
-				$invoice->billing->phone
+				$order->billing->city,
+				$order->billing->state,
+				$order->billing->zip,
+				$order->billing->country,
+				$order->billing->phone
 			);
 
 			$this->template = apply_filters( 'pmpro_email_template', 'refund', $this );
@@ -553,9 +567,9 @@
 		 * Send the refunded email to the member.
 		 *
 		 * @param object $user The WordPress user object.
-		 * @param MemberOrder $invoice The order object that is associated with the refund.
+		 * @param MemberOrder $order The order object that is associated with the refund.
 		 */
-		function sendRefundedAdminEmail( $user = NULL, $invoice = NULL ) {
+		function sendRefundedAdminEmail( $user = NULL, $order = NULL ) {
 			global $wpdb, $current_user;
 			if ( ! $user ) {
 				$user = $current_user;
@@ -565,7 +579,7 @@
 				return false;
 			}
 
-			$membership_level = pmpro_getSpecificMembershipLevelForUser( $user->ID, $invoice->membership_id );
+			$membership_level = pmpro_getSpecificMembershipLevelForUser( $user->ID, $order->membership_id );
 			if ( ! empty( $membership_level ) ) {
 				$membership_level_id = $membership_level->id;
 				$membership_level_name = $membership_level->name;
@@ -575,7 +589,7 @@
 			}
 
 			$this->email = get_bloginfo( 'admin_email' );
-			$this->subject = sprintf(__( 'Invoice for order #%s at %s has been REFUNDED', 'paid-memberships-pro' ), $invoice->code, get_option( 'blogname' ) );
+			$this->subject = sprintf(__( 'Order #%s at %s has been REFUNDED', 'paid-memberships-pro' ), $order->code, get_option( 'blogname' ) );
 
 			$this->data = array(
 				'user_login' => $user->user_login,
@@ -588,34 +602,34 @@
 				'login_url' => pmpro_login_url(),
 				'membership_id' => $membership_level_id,
 				'membership_level_name' => $membership_level_name,
-				'invoice_id' => $invoice->code,
-				'invoice_total' => $invoice->get_formatted_total(),
-				'invoice_date' => date_i18n(get_option('date_format'), $invoice->getTimestamp()),
-				'billing_name' => $invoice->billing->name,
-				'billing_street' => $invoice->billing->street,
-				'billing_city' => $invoice->billing->city,
-				'billing_state' => $invoice->billing->state,
-				'billing_zip' => $invoice->billing->zip,
-				'billing_country' => $invoice->billing->country,
-				'billing_phone' => $invoice->billing->phone,
-				'cardtype' => $invoice->cardtype,
-				'accountnumber' => hideCardNumber($invoice->accountnumber),
-				'expirationmonth' => $invoice->expirationmonth,
-				'expirationyear' => $invoice->expirationyear,
-				'invoice_link' => pmpro_login_url( pmpro_url( 'invoice', '?invoice=' . $invoice->code ) ),
-				'invoice_url' => pmpro_login_url( pmpro_url( 'invoice', '?invoice=' . $invoice->code ) ),
+				'order_id' => $order->code,
+				'order_total' => $order->get_formatted_total(),
+				'order_date' => date_i18n(get_option('date_format'), $order->getTimestamp()),
+				'billing_name' => $order->billing->name,
+				'billing_street' => $order->billing->street,
+				'billing_city' => $order->billing->city,
+				'billing_state' => $order->billing->state,
+				'billing_zip' => $order->billing->zip,
+				'billing_country' => $order->billing->country,
+				'billing_phone' => $order->billing->phone,
+				'cardtype' => $order->cardtype,
+				'accountnumber' => hideCardNumber($order->accountnumber),
+				'expirationmonth' => $order->expirationmonth,
+				'expirationyear' => $order->expirationyear,
+				'order_link' => pmpro_login_url( pmpro_url( 'invoice', '?invoice=' . $order->code ) ),
+				'order_url' => pmpro_login_url( pmpro_url( 'invoice', '?invoice=' . $order->code ) ),
 				'levels_url' => pmpro_url( 'levels' )							
 
 			);
 			$this->data['billing_address'] = pmpro_formatAddress(
-				$invoice->billing->name,
-				$invoice->billing->street,
+				$order->billing->name,
+				$order->billing->street,
 				"", //address 2
-				$invoice->billing->city,
-				$invoice->billing->state,
-				$invoice->billing->zip,
-				$invoice->billing->country,
-				$invoice->billing->phone
+				$order->billing->city,
+				$order->billing->state,
+				$order->billing->zip,
+				$order->billing->country,
+				$order->billing->phone
 			);
 
 			$this->template = apply_filters( 'pmpro_email_template', 'refund_admin', $this );
@@ -627,9 +641,9 @@
 		 * Send the member a confirmation checkout email after successfully purchasing a membership level.
 		 *
 		 * @param object $user The WordPress user object.
-		 * @param MemberOrder $invoice The order object that is associated with the checkout.
+		 * @param MemberOrder $order The order object that is associated with the checkout.
 		 */
-		function sendCheckoutEmail($user = NULL, $invoice = NULL)
+		function sendCheckoutEmail($user = NULL, $order = NULL)
 		{
 			global $wpdb, $current_user, $discount_code;
 			if(!$user)
@@ -638,11 +652,11 @@
 			if(!$user)
 				return false;
 
-			if ( empty( $invoice->membership_id ) ) {
+			if ( empty( $order->membership_id ) ) {
 				return false;
 			}
 
-			$membership_level = pmpro_getSpecificMembershipLevelForUser($user->ID, $invoice->membership_id);
+			$membership_level = pmpro_getSpecificMembershipLevelForUser($user->ID, $order->membership_id);
 
 			$confirmation_in_email = get_pmpro_membership_level_meta( $membership_level->id, 'confirmation_in_email', true );
 			if ( ! empty( $confirmation_in_email ) ) {
@@ -674,8 +688,8 @@
 			
 			// Figure out which template to use.
 			if ( empty( $this->template ) ) {
-				if( ! empty( $invoice ) && ! pmpro_isLevelFree( $membership_level ) ) {
-					if( $invoice->gateway == "check" ) {
+				if( ! empty( $order ) && ! pmpro_isLevelFree( $membership_level ) ) {
+					if( $order->gateway == "check" ) {
 						$this->template = "checkout_check";						
 					} else {
 						$this->template = "checkout_paid";
@@ -693,31 +707,31 @@
 					$this->data["instructions"] = wpautop( get_option( "pmpro_instructions" ) );
 				}
 				
-				$this->data["invoice_id"] = $invoice->code;
-				$this->data["invoice_total"] = $invoice->get_formatted_total();
-				$this->data["invoice_date"] = date_i18n( get_option( 'date_format' ), $invoice->getTimestamp() );
-				$this->data["billing_name"] = $invoice->billing->name;
-				$this->data["billing_street"] = $invoice->billing->street;
-				$this->data["billing_city"] = $invoice->billing->city;
-				$this->data["billing_state"] = $invoice->billing->state;
-				$this->data["billing_zip"] = $invoice->billing->zip;
-				$this->data["billing_country"] = $invoice->billing->country;
-				$this->data["billing_phone"] = $invoice->billing->phone;
-				$this->data["cardtype"] = $invoice->cardtype;
-				$this->data["accountnumber"] = hideCardNumber($invoice->accountnumber);
-				$this->data["expirationmonth"] = $invoice->expirationmonth;
-				$this->data["expirationyear"] = $invoice->expirationyear;
-				$this->data["billing_address"] = pmpro_formatAddress($invoice->billing->name,
-																	 $invoice->billing->street,
+				$this->data["order_id"] = $order->code;
+				$this->data["order_total"] = $order->get_formatted_total();
+				$this->data["order_date"] = date_i18n( get_option( 'date_format' ), $order->getTimestamp() );
+				$this->data["billing_name"] = $order->billing->name;
+				$this->data["billing_street"] = $order->billing->street;
+				$this->data["billing_city"] = $order->billing->city;
+				$this->data["billing_state"] = $order->billing->state;
+				$this->data["billing_zip"] = $order->billing->zip;
+				$this->data["billing_country"] = $order->billing->country;
+				$this->data["billing_phone"] = $order->billing->phone;
+				$this->data["cardtype"] = $order->cardtype;
+				$this->data["accountnumber"] = hideCardNumber($order->accountnumber);
+				$this->data["expirationmonth"] = $order->expirationmonth;
+				$this->data["expirationyear"] = $order->expirationyear;
+				$this->data["billing_address"] = pmpro_formatAddress($order->billing->name,
+																	 $order->billing->street,
 																	 "", //address 2
-																	 $invoice->billing->city,
-																	 $invoice->billing->state,
-																	 $invoice->billing->zip,
-																	 $invoice->billing->country,
-																	 $invoice->billing->phone);
+																	 $order->billing->city,
+																	 $order->billing->state,
+																	 $order->billing->zip,
+																	 $order->billing->country,
+																	 $order->billing->phone);
 				
-				if( $invoice->getDiscountCode() ) {
-					$this->data["discount_code"] = "<p>" . __("Discount Code", 'paid-memberships-pro' ) . ": " . $invoice->discount_code->code . "</p>\n";
+				if( $order->getDiscountCode() ) {
+					$this->data["discount_code"] = "<p>" . __("Discount Code", 'paid-memberships-pro' ) . ": " . $order->discount_code->code . "</p>\n";
 				} else {
 					$this->data["discount_code"] = "";
 				}
@@ -743,9 +757,9 @@
 		 * Send the admin a confirmation checkout email after the member successfully purchases a membership level.
 		 *
 		 * @param object $user The WordPress user object.
-		 * @param MemberOrder $invoice The order object that is associated with the checkout.
+		 * @param MemberOrder $order The order object that is associated with the checkout.
 		 */
-		function sendCheckoutAdminEmail($user = NULL, $invoice = NULL)
+		function sendCheckoutAdminEmail($user = NULL, $order = NULL)
 		{
 			global $wpdb, $current_user, $discount_code;
 			if(!$user)
@@ -754,11 +768,11 @@
 			if(!$user)
 				return false;
 
-			if ( empty( $invoice->membership_id ) ) {
+			if ( empty( $order->membership_id ) ) {
 				return false;
 			}
 
-			$membership_level = pmpro_getSpecificMembershipLevelForUser($user->ID, $invoice->membership_id);
+			$membership_level = pmpro_getSpecificMembershipLevelForUser($user->ID, $order->membership_id);
 
 			$confirmation_in_email = get_pmpro_membership_level_meta( $membership_level->id, 'confirmation_in_email', true );
 			if ( ! empty( $confirmation_in_email ) ) {
@@ -790,8 +804,8 @@
 			
 			// Figure out which template to use.
 			if ( empty( $this->template ) ) {
-				if( ! empty( $invoice ) && ! pmpro_isLevelFree( $membership_level ) ) {
-					if( $invoice->gateway == "check" ) {
+				if( ! empty( $order ) && ! pmpro_isLevelFree( $membership_level ) ) {
+					if( $order->gateway == "check" ) {
 						$this->template = "checkout_check_admin";						
 					} else {
 						$this->template = "checkout_paid_admin";
@@ -805,31 +819,31 @@
 			
 			// Gather data depending on template being used.
 			if( in_array( $this->template, array( 'checkout_check_admin', 'checkout_paid_admin' ) ) ) {
-				$this->data["invoice_id"] = $invoice->code;
-				$this->data["invoice_total"] = $invoice->get_formatted_total();
-				$this->data["invoice_date"] = date_i18n(get_option('date_format'), $invoice->getTimestamp());
-				$this->data["billing_name"] = $invoice->billing->name;
-				$this->data["billing_street"] = $invoice->billing->street;
-				$this->data["billing_city"] = $invoice->billing->city;
-				$this->data["billing_state"] = $invoice->billing->state;
-				$this->data["billing_zip"] = $invoice->billing->zip;
-				$this->data["billing_country"] = $invoice->billing->country;
-				$this->data["billing_phone"] = $invoice->billing->phone;
-				$this->data["cardtype"] = $invoice->cardtype;
-				$this->data["accountnumber"] = hideCardNumber($invoice->accountnumber);
-				$this->data["expirationmonth"] = $invoice->expirationmonth;
-				$this->data["expirationyear"] = $invoice->expirationyear;
-				$this->data["billing_address"] = pmpro_formatAddress($invoice->billing->name,
-																	 $invoice->billing->street,
+				$this->data["order_id"] = $order->code;
+				$this->data["order_total"] = $order->get_formatted_total();
+				$this->data["order_date"] = date_i18n(get_option('date_format'), $order->getTimestamp());
+				$this->data["billing_name"] = $order->billing->name;
+				$this->data["billing_street"] = $order->billing->street;
+				$this->data["billing_city"] = $order->billing->city;
+				$this->data["billing_state"] = $order->billing->state;
+				$this->data["billing_zip"] = $order->billing->zip;
+				$this->data["billing_country"] = $order->billing->country;
+				$this->data["billing_phone"] = $order->billing->phone;
+				$this->data["cardtype"] = $order->cardtype;
+				$this->data["accountnumber"] = hideCardNumber($order->accountnumber);
+				$this->data["expirationmonth"] = $order->expirationmonth;
+				$this->data["expirationyear"] = $order->expirationyear;
+				$this->data["billing_address"] = pmpro_formatAddress($order->billing->name,
+																	 $order->billing->street,
 																	 "", //address 2
-																	 $invoice->billing->city,
-																	 $invoice->billing->state,
-																	 $invoice->billing->zip,
-																	 $invoice->billing->country,
-																	 $invoice->billing->phone);
+																	 $order->billing->city,
+																	 $order->billing->state,
+																	 $order->billing->zip,
+																	 $order->billing->country,
+																	 $order->billing->phone);
 				
-				if( $invoice->getDiscountCode() ) {
-					$this->data["discount_code"] = "<p>" . __("Discount Code", 'paid-memberships-pro' ) . ": " . $invoice->discount_code->code . "</p>\n";
+				if( $order->getDiscountCode() ) {
+					$this->data["discount_code"] = "<p>" . __("Discount Code", 'paid-memberships-pro' ) . ": " . $order->discount_code->code . "</p>\n";
 				} else {
 					$this->data["discount_code"] = "";
 				}
@@ -855,22 +869,22 @@
 		 * Send the member a confirmation email when updating their billing details
 		 *
 		 * @param object $user The WordPress user object.
-		 * @param MemberOrder $invoice The order object that is associated to the member.
+		 * @param MemberOrder $order The order object that is associated to the member.
 		 */
-		function sendBillingEmail($user = NULL, $invoice = NULL)
+		function sendBillingEmail($user = NULL, $order = NULL)
 		{
 			global $current_user;
 			if(!$user)
 				$user = $current_user;
 			
-			if(!$user || !$invoice)
+			if(!$user || !$order)
 				return false;
 
-			if ( empty( $invoice->membership_id ) ) {
+			if ( empty( $order->membership_id ) ) {
 				return false;
 			}
 
-			$membership_level = pmpro_getSpecificMembershipLevelForUser($user->ID, $invoice->membership_id);
+			$membership_level = pmpro_getSpecificMembershipLevelForUser($user->ID, $order->membership_id);
 			
 			$this->email = $user->user_email;
 			$this->subject = sprintf(__("Your billing information has been updated at %s", "paid-memberships-pro"), get_option("blogname"));
@@ -886,29 +900,29 @@
 								'membership_level_name' => $membership_level->name,
 								'display_name' => $user->display_name,
 								'user_email' => $user->user_email,																	
-								'billing_name' => $invoice->billing->name,
-								'billing_street' => $invoice->billing->street,
-								'billing_city' => $invoice->billing->city,
-								'billing_state' => $invoice->billing->state,
-								'billing_zip' => $invoice->billing->zip,
-								'billing_country' => $invoice->billing->country,
-								'billing_phone' => $invoice->billing->phone,
-								'cardtype' => $invoice->cardtype,
-								'accountnumber' => hideCardNumber($invoice->accountnumber),
-								'expirationmonth' => $invoice->expirationmonth,
-								'expirationyear' => $invoice->expirationyear,
+								'billing_name' => $order->billing->name,
+								'billing_street' => $order->billing->street,
+								'billing_city' => $order->billing->city,
+								'billing_state' => $order->billing->state,
+								'billing_zip' => $order->billing->zip,
+								'billing_country' => $order->billing->country,
+								'billing_phone' => $order->billing->phone,
+								'cardtype' => $order->cardtype,
+								'accountnumber' => hideCardNumber($order->accountnumber),
+								'expirationmonth' => $order->expirationmonth,
+								'expirationyear' => $order->expirationyear,
 								'login_link' => pmpro_login_url(),
 								'login_url' => pmpro_login_url(),
 								'levels_url' => pmpro_url( 'levels' )							
 							);
-			$this->data["billing_address"] = pmpro_formatAddress($invoice->billing->name,
-																 $invoice->billing->street,
+			$this->data["billing_address"] = pmpro_formatAddress($order->billing->name,
+																 $order->billing->street,
 																 "", //address 2
-																 $invoice->billing->city,
-																 $invoice->billing->state,
-																 $invoice->billing->zip,
-																 $invoice->billing->country,
-																 $invoice->billing->phone);
+																 $order->billing->city,
+																 $order->billing->state,
+																 $order->billing->zip,
+																 $order->billing->country,
+																 $order->billing->phone);
 
 			$this->template = apply_filters( "pmpro_email_template", "billing", $this );
 
@@ -919,22 +933,22 @@
 		 * Send the admin a confirmation email when a member updatestheir billing details
 		 *
 		 * @param object $user The WordPress user object.
-		 * @param MemberOrder $invoice The order object that is associated to the member.
+		 * @param MemberOrder $order The order object that is associated to the member.
 		 */
-		function sendBillingAdminEmail($user = NULL, $invoice = NULL)
+		function sendBillingAdminEmail($user = NULL, $order = NULL)
 		{
 			global $current_user;
 			if(!$user)
 				$user = $current_user;
 			
-			if(!$user || !$invoice)
+			if(!$user || !$order)
 				return false;
 			
-			if ( empty( $invoice->membership_id ) ) {
+			if ( empty( $order->membership_id ) ) {
 				return false;
 			}
 
-			$membership_level = pmpro_getSpecificMembershipLevelForUser($user->ID, $invoice->membership_id);
+			$membership_level = pmpro_getSpecificMembershipLevelForUser($user->ID, $order->membership_id);
 			
 			$this->email = get_bloginfo("admin_email");
 			$this->subject = sprintf(__("Billing information has been updated for %s at %s", "paid-memberships-pro"), $user->user_login, get_option("blogname"));
@@ -950,29 +964,29 @@
 								'membership_level_name' => $membership_level->name,
 								'display_name' => $user->display_name,
 								'user_email' => $user->user_email,																	
-								'billing_name' => $invoice->billing->name,
-								'billing_street' => $invoice->billing->street,
-								'billing_city' => $invoice->billing->city,
-								'billing_state' => $invoice->billing->state,
-								'billing_zip' => $invoice->billing->zip,
-								'billing_country' => $invoice->billing->country,
-								'billing_phone' => $invoice->billing->phone,
-								'cardtype' => $invoice->cardtype,
-								'accountnumber' => hideCardNumber($invoice->accountnumber),
-								'expirationmonth' => $invoice->expirationmonth,
-								'expirationyear' => $invoice->expirationyear,
+								'billing_name' => $order->billing->name,
+								'billing_street' => $order->billing->street,
+								'billing_city' => $order->billing->city,
+								'billing_state' => $order->billing->state,
+								'billing_zip' => $order->billing->zip,
+								'billing_country' => $order->billing->country,
+								'billing_phone' => $order->billing->phone,
+								'cardtype' => $order->cardtype,
+								'accountnumber' => hideCardNumber($order->accountnumber),
+								'expirationmonth' => $order->expirationmonth,
+								'expirationyear' => $order->expirationyear,
 								'login_link' => pmpro_login_url(),
 								'login_url' => pmpro_login_url(),
 								'levels_url' => pmpro_url( 'levels' )							
 							);
-			$this->data["billing_address"] = pmpro_formatAddress($invoice->billing->name,
-																 $invoice->billing->street,
+			$this->data["billing_address"] = pmpro_formatAddress($order->billing->name,
+																 $order->billing->street,
 																 "", //address 2
-																 $invoice->billing->city,
-																 $invoice->billing->state,
-																 $invoice->billing->zip,
-																 $invoice->billing->country,
-																 $invoice->billing->phone);
+																 $order->billing->city,
+																 $order->billing->state,
+																 $order->billing->zip,
+																 $order->billing->country,
+																 $order->billing->phone);
 
 			$this->template = apply_filters( "pmpro_email_template", "billing_admin", $this );
 
@@ -983,21 +997,21 @@
 		 * Send the member an email when their recurring payment has failed.
 		 *
 		 * @param object $user The WordPress user object.
-		 * @param MemberOrder $invoice The order object that is associated to the member.
+		 * @param MemberOrder $order The order object that is associated to the member.
 		 */
-		function sendBillingFailureEmail( $user = NULL, $invoice = NULL ) {
+		function sendBillingFailureEmail( $user = NULL, $order = NULL ) {
 			global $current_user;
 			if(!$user)
 				$user = $current_user;
 			
-			if(!$user || !$invoice)
+			if(!$user || !$order)
 				return false;
 
 			//get Level from constructor
-			$membership_level = new PMPro_Membership_Level( $invoice->membership_id );
+			$membership_level = new PMPro_Membership_Level( $order->membership_id );
 
 			// Try to get the subscription ID.
-			$subscription = $invoice->get_subscription();
+			$subscription = $order->get_subscription();
 			$subscription_id = ! empty( $subscription ) ? $subscription->get_id() : null;
 
 			$this->email = $user->user_email;
@@ -1015,29 +1029,29 @@
 								'membership_level_name' => $membership_level->name,
 								'display_name' => $user->display_name,
 								'user_email' => $user->user_email,									
-								'billing_name' => $invoice->billing->name,
-								'billing_street' => $invoice->billing->street,
-								'billing_city' => $invoice->billing->city,
-								'billing_state' => $invoice->billing->state,
-								'billing_zip' => $invoice->billing->zip,
-								'billing_country' => $invoice->billing->country,
-								'billing_phone' => $invoice->billing->phone,
-								'cardtype' => $invoice->cardtype,
-								'accountnumber' => hideCardNumber($invoice->accountnumber),
-								'expirationmonth' => $invoice->expirationmonth,
-								'expirationyear' => $invoice->expirationyear,
+								'billing_name' => $order->billing->name,
+								'billing_street' => $order->billing->street,
+								'billing_city' => $order->billing->city,
+								'billing_state' => $order->billing->state,
+								'billing_zip' => $order->billing->zip,
+								'billing_country' => $order->billing->country,
+								'billing_phone' => $order->billing->phone,
+								'cardtype' => $order->cardtype,
+								'accountnumber' => hideCardNumber($order->accountnumber),
+								'expirationmonth' => $order->expirationmonth,
+								'expirationyear' => $order->expirationyear,
 								'login_link' => pmpro_login_url( pmpro_url( 'billing', empty( $subscription_id ) ? '' : '?subscription_id=' . $subscription_id ) ),
 								'login_url' => pmpro_login_url( pmpro_url( 'billing', empty( $subscription_id ) ? '' : '?subscription_id=' . $subscription_id ) ),
 								'levels_url' => pmpro_url( 'levels' )
 							);
-			$this->data["billing_address"] = pmpro_formatAddress($invoice->billing->name,
-																 $invoice->billing->street,
+			$this->data["billing_address"] = pmpro_formatAddress($order->billing->name,
+																 $order->billing->street,
 																 "", //address 2
-																 $invoice->billing->city,
-																 $invoice->billing->state,
-																 $invoice->billing->zip,
-																 $invoice->billing->country,
-																 $invoice->billing->phone);
+																 $order->billing->city,
+																 $order->billing->state,
+																 $order->billing->zip,
+																 $order->billing->country,
+																 $order->billing->phone);
 
 			$this->template = apply_filters("pmpro_email_template", "billing_failure", $this);
 
@@ -1048,14 +1062,14 @@
 		 * Send the admin an email when their recurring payment has failed.
 		 *
 		 * @param object $user The WordPress user object.
-		 * @param MemberOrder $invoice The order object that is associated to the member.
+		 * @param MemberOrder $order The order object that is associated to the member.
 		 */
-		function sendBillingFailureAdminEmail($email, $invoice = NULL) {
-			if(!$invoice)			
+		function sendBillingFailureAdminEmail($email, $order = NULL) {
+			if(!$order)			
 				return false;
 				
-			$user = get_userdata($invoice->user_id);
-			$membership_level = new PMPro_Membership_Level( $invoice->membership_id );
+			$user = get_userdata($order->user_id);
+			$membership_level = new PMPro_Membership_Level( $order->membership_id );
 			
 			$this->email = $email;
 			$this->subject = sprintf(__("Membership payment failed For %s at %s", "paid-memberships-pro"), $user->display_name, get_option("blogname"));
@@ -1071,29 +1085,29 @@
 								'membership_level_name' => $membership_level->name,
 								'display_name' => $user->display_name,
 								'user_email' => $user->user_email,									
-								'billing_name' => $invoice->billing->name,
-								'billing_street' => $invoice->billing->street,
-								'billing_city' => $invoice->billing->city,
-								'billing_state' => $invoice->billing->state,
-								'billing_zip' => $invoice->billing->zip,
-								'billing_country' => $invoice->billing->country,
-								'billing_phone' => $invoice->billing->phone,
-								'cardtype' => $invoice->cardtype,
-								'accountnumber' => hideCardNumber($invoice->accountnumber),
-								'expirationmonth' => $invoice->expirationmonth,
-								'expirationyear' => $invoice->expirationyear,
+								'billing_name' => $order->billing->name,
+								'billing_street' => $order->billing->street,
+								'billing_city' => $order->billing->city,
+								'billing_state' => $order->billing->state,
+								'billing_zip' => $order->billing->zip,
+								'billing_country' => $order->billing->country,
+								'billing_phone' => $order->billing->phone,
+								'cardtype' => $order->cardtype,
+								'accountnumber' => hideCardNumber($order->accountnumber),
+								'expirationmonth' => $order->expirationmonth,
+								'expirationyear' => $order->expirationyear,
 								'login_link' => pmpro_login_url( get_edit_user_link( $user->ID ) ),
 								'login_url' => pmpro_login_url( get_edit_user_link( $user->ID ) ),
 								'levels_url' => pmpro_url( 'levels' ),
 							);
-			$this->data["billing_address"] = pmpro_formatAddress($invoice->billing->name,
-																 $invoice->billing->street,
+			$this->data["billing_address"] = pmpro_formatAddress($order->billing->name,
+																 $order->billing->street,
 																 "", //address 2
-																 $invoice->billing->city,
-																 $invoice->billing->state,
-																 $invoice->billing->zip,
-																 $invoice->billing->country,
-																 $invoice->billing->phone);
+																 $order->billing->city,
+																 $order->billing->state,
+																 $order->billing->zip,
+																 $order->billing->country,
+																 $order->billing->phone);
 
 			$this->template = apply_filters("pmpro_email_template", "billing_failure_admin", $this);
 
@@ -1104,25 +1118,25 @@
 		 * Send the member an email when their credit card is expiring soon.
 		 *
 		 * @param object $user The WordPress user object.
-		 * @param MemberOrder $invoice The order object that is associated to the member.
+		 * @param MemberOrder $order The order object that is associated to the member.
 		 * @return bool True if the email was sent, false otherwise.
 		 * @deprecated 3.1
 		 */
-		function sendCreditCardExpiringEmail($user = NULL, $invoice = NULL) {
+		function sendCreditCardExpiringEmail($user = NULL, $order = NULL) {
 			_deprecated_function( 'sendCreditCardExpiringEmail', '3.1' );
 
 			global $current_user;
 			if(!$user)
 				$user = $current_user;
 			
-			if(!$user || !$invoice)
+			if(!$user || !$order)
 				return false;
 			
-			if ( empty( $invoice->membership_id ) ) {
+			if ( empty( $order->membership_id ) ) {
 				return false;
 			}
 
-			$membership_level = pmpro_getSpecificMembershipLevelForUser($user->ID, $invoice->membership_id);
+			$membership_level = pmpro_getSpecificMembershipLevelForUser($user->ID, $order->membership_id);
 			
 			$this->email = $user->user_email;
 			$this->subject = sprintf(__("Credit card on file expiring soon at %s", "paid-memberships-pro"), get_option("blogname"));
@@ -1138,30 +1152,30 @@
 								'membership_level_name' => $membership_level->name,
 								'display_name' => $user->display_name,
 								'user_email' => $user->user_email,									
-								'billing_name' => $invoice->billing->name,
-								'billing_street' => $invoice->billing->street,
-								'billing_city' => $invoice->billing->city,
-								'billing_state' => $invoice->billing->state,
-								'billing_zip' => $invoice->billing->zip,
-								'billing_country' => $invoice->billing->country,
-								'billing_phone' => $invoice->billing->phone,
-								'cardtype' => $invoice->cardtype,
-								'accountnumber' => hideCardNumber($invoice->accountnumber),
-								'expirationmonth' => $invoice->expirationmonth,
-								'expirationyear' => $invoice->expirationyear,
+								'billing_name' => $order->billing->name,
+								'billing_street' => $order->billing->street,
+								'billing_city' => $order->billing->city,
+								'billing_state' => $order->billing->state,
+								'billing_zip' => $order->billing->zip,
+								'billing_country' => $order->billing->country,
+								'billing_phone' => $order->billing->phone,
+								'cardtype' => $order->cardtype,
+								'accountnumber' => hideCardNumber($order->accountnumber),
+								'expirationmonth' => $order->expirationmonth,
+								'expirationyear' => $order->expirationyear,
 								'login_link' => pmpro_login_url( pmpro_url( 'billing' ) ),
 								'login_url' => pmpro_login_url( pmpro_url( 'billing' ) ),
 								'levels_url' => pmpro_url( 'levels' )							
 
 							);
-			$this->data["billing_address"] = pmpro_formatAddress($invoice->billing->name,
-																 $invoice->billing->street,
+			$this->data["billing_address"] = pmpro_formatAddress($order->billing->name,
+																 $order->billing->street,
 																 "", //address 2
-																 $invoice->billing->city,
-																 $invoice->billing->state,
-																 $invoice->billing->zip,
-																 $invoice->billing->country,
-																 $invoice->billing->phone);
+																 $order->billing->city,
+																 $order->billing->state,
+																 $order->billing->zip,
+																 $order->billing->country,
+																 $order->billing->phone);
 
 			$this->template = apply_filters("pmpro_email_template", "credit_card_expiring", $this);
 
@@ -1172,25 +1186,25 @@
 		 * Send the member an email when their recurring payment has succeeded.
 		 *
 		 * @param object $user The WordPress user object.
-		 * @param MemberOrder $invoice The order object that is associated to the member.
+		 * @param MemberOrder $order The order object that is associated to the member.
 		 */
-		function sendInvoiceEmail($user = NULL, $invoice = NULL)
+		function sendInvoiceEmail($user = NULL, $order = NULL)
 		{
 			global $wpdb, $current_user;
 			if(!$user)
 				$user = $current_user;
 			
-			if(!$user || !$invoice)
+			if(!$user || !$order)
 				return false;
 			
-			if ( empty( $invoice->membership_id ) ) {
+			if ( empty( $order->membership_id ) ) {
 				return false;
 			}
 
-			$membership_level = pmpro_getSpecificMembershipLevelForUser($user->ID, $invoice->membership_id);
+			$membership_level = pmpro_getSpecificMembershipLevelForUser($user->ID, $order->membership_id);
 
 			$this->email = $user->user_email;
-			$this->subject = sprintf(__("Invoice for %s membership", "paid-memberships-pro"), get_option("blogname"));
+			$this->subject = sprintf(__("Order for %s membership", "paid-memberships-pro"), get_option("blogname"));
 
 			$this->data = array(
 								'subject' => $this->subject,
@@ -1203,40 +1217,40 @@
 								'membership_level_name' => $membership_level->name,
 								'display_name' => $user->display_name,
 								'user_email' => $user->user_email,	
-								'invoice_id' => $invoice->code,
-								'invoice_total' => $invoice->get_formatted_total(),
-								'invoice_date' => date_i18n( get_option( 'date_format' ), $invoice->getTimestamp() ),
-								'billing_name' => $invoice->billing->name,
-								'billing_street' => $invoice->billing->street,
-								'billing_city' => $invoice->billing->city,
-								'billing_state' => $invoice->billing->state,
-								'billing_zip' => $invoice->billing->zip,
-								'billing_country' => $invoice->billing->country,
-								'billing_phone' => $invoice->billing->phone,
-								'cardtype' => $invoice->cardtype,
-								'accountnumber' => hideCardNumber($invoice->accountnumber),
-								'expirationmonth' => $invoice->expirationmonth,
-								'expirationyear' => $invoice->expirationyear,
+								'order_id' => $order->code,
+								'order_total' => $order->get_formatted_total(),
+								'order_date' => date_i18n( get_option( 'date_format' ), $order->getTimestamp() ),
+								'billing_name' => $order->billing->name,
+								'billing_street' => $order->billing->street,
+								'billing_city' => $order->billing->city,
+								'billing_state' => $order->billing->state,
+								'billing_zip' => $order->billing->zip,
+								'billing_country' => $order->billing->country,
+								'billing_phone' => $order->billing->phone,
+								'cardtype' => $order->cardtype,
+								'accountnumber' => hideCardNumber($order->accountnumber),
+								'expirationmonth' => $order->expirationmonth,
+								'expirationyear' => $order->expirationyear,
 								'login_link' => pmpro_login_url(),
 								'login_url' => pmpro_login_url(),
-								'invoice_link' => pmpro_login_url( pmpro_url( 'invoice', '?invoice=' . $invoice->code ) ),
-								'invoice_url' => pmpro_login_url( pmpro_url( 'invoice', '?invoice=' . $invoice->code ) ),
+								'order_link' => pmpro_login_url( pmpro_url( 'invoice', '?invoice=' . $order->code ) ),
+								'order_url' => pmpro_login_url( pmpro_url( 'invoice', '?invoice=' . $order->code ) ),
 								'levels_url' => pmpro_url( 'levels' )
 							);
-			$this->data["billing_address"] = pmpro_formatAddress($invoice->billing->name,
-																 $invoice->billing->street,
+			$this->data["billing_address"] = pmpro_formatAddress($order->billing->name,
+																 $order->billing->street,
 																 "", //address 2
-																 $invoice->billing->city,
-																 $invoice->billing->state,
-																 $invoice->billing->zip,
-																 $invoice->billing->country,
-																 $invoice->billing->phone);
+																 $order->billing->city,
+																 $order->billing->state,
+																 $order->billing->zip,
+																 $order->billing->country,
+																 $order->billing->phone);
 		
-			if($invoice->getDiscountCode()) {
-				if(!empty($invoice->discount_code->code))
-					$this->data["discount_code"] = "<p>" . __("Discount Code", 'paid-memberships-pro' ) . ": " . $invoice->discount_code->code . "</p>\n";
+			if($order->getDiscountCode()) {
+				if(!empty($order->discount_code->code))
+					$this->data["discount_code"] = "<p>" . __("Discount Code", 'paid-memberships-pro' ) . ": " . $order->discount_code->code . "</p>\n";
 				else
-					$this->data["discount_code"] = "<p>" . __("Discount Code", 'paid-memberships-pro' ) . ": " . $invoice->discount_code . "</p>\n";
+					$this->data["discount_code"] = "<p>" . __("Discount Code", 'paid-memberships-pro' ) . ": " . $order->discount_code . "</p>\n";
 			} else {
 				$this->data["discount_code"] = "";
 			}
@@ -1526,10 +1540,10 @@
 		 *
 		 * @param object $user
 		 * @param MemberOrder $order 
-		 * @param string $invoice_url The link to the invoice that is generated by Stripe.
+		 * @param string $order_url The link to the order that is generated by Stripe.
 		 * @return void
 		 */
-		function sendPaymentActionRequiredEmail($user = NULL, $order = NULL, $invoice_url = NULL)
+		function sendPaymentActionRequiredEmail($user = NULL, $order = NULL, $order_url = NULL)
 		{
 			global $current_user;
 			if(!$user)
@@ -1538,12 +1552,12 @@
 			if(!$user || !$order)
 				return false;
 
-			// if an invoice URL wasn't passed in, grab it from the order
-			if(empty($invoice_url) && isset($order->invoice_url))
-				$invoice_url = $order->invoice_url;
+			// if an order URL wasn't passed in, grab it from the order
+			if(empty($order_url) && isset($order->order_url))
+				$order_url = $order->order_url;
 
-			// still no invoice URL? bail
-			if(empty($invoice_url))
+			// still no order URL? bail
+			if(empty($order_url))
 				return false;
 				
 			$this->email = $user->user_email;
@@ -1561,8 +1575,8 @@
 				'user_login' => $user->user_login,
 				'sitename' => get_option( 'blogname' ),
 				'siteemail' => get_option( 'pmpro_from_email' ),
-				'invoice_link' => $invoice_url,
-				'invoice_url' => $invoice_url,
+				'order_link' => $order_url,
+				'order_url' => $order_url,
 				'levels_url' => pmpro_url( 'levels' )
 			);
 						
