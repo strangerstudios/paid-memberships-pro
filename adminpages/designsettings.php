@@ -73,7 +73,7 @@
 						<div id="pmpro_style_variation_item-variation-1" class="pmpro_style_variation_item">
 							<label for="style_variation_1">
 								<input name="style_variation" id="style_variation_1" type="radio" value="variation_1" class="tog" <?php checked( 'variation_1', $pmpro_style_variation ); ?>>
-								<span class="pmpro_style_variation_item-name"><?php esc_html_e( 'Variation 1', 'paid-memberships-pro' ); ?></span>
+								<span class="pmpro_style_variation_item-name"><?php esc_html_e( 'Default (Recommended)', 'paid-memberships-pro' ); ?></span>
 								<?php pmpro_style_variation_item_preview_html(); ?>
 								<p class="description"><?php esc_html_e( 'A light variation with rounded cards and soft shadows.', 'paid-memberships-pro' ); ?></p>
 							</label>
