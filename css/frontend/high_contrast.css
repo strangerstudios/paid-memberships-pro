@@ -372,6 +372,13 @@
 		padding: 0;
 	}
 
+	.pmpro_form_field-password-toggle button:focus,
+	.pmpro_form_field-password-toggle button:active {
+		box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);
+		color: var(--pmpro--color--accent--variation);
+		outline: none;
+	}
+
 	.pmpro_form_field-password-toggle .pmpro_icon-eye {
 		display: block;
 		height: 20px;
