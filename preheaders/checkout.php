@@ -592,15 +592,14 @@ if ( ! empty( $pmpro_confirmed ) ) {
 		exit;
 	} else {
 
-		//uh oh. we charged them then the membership creation failed
-
-		// test that the order object contains data
+		// Something went wrong with the checkout.
+		// If we get here, then the call to pmpro_changeMembershipLevel() returned false within pmpro_complete_checkout(). Let's try to cancel the payment.
 		$test = (array) $morder;
 		if ( ! empty( $test ) && $morder->cancel() ) {
-			$pmpro_msg = __( "IMPORTANT: Something went wrong during membership creation. Your credit card authorized, but we cancelled the order immediately. You should not try to submit this form again. Please contact the site owner to fix this issue.", 'paid-memberships-pro' );
+			$pmpro_msg = __( "IMPORTANT: Something went wrong while processing your checkout. Your credit card authorized, but we cancelled the order immediately. You should not try to submit this form again. Please contact the site owner to fix this issue.", 'paid-memberships-pro' );
 			$morder    = null;
 		} else {
-			$pmpro_msg = __( "IMPORTANT: Something went wrong during membership creation. Your credit card was charged, but we couldn't assign your membership. You should not submit this form again. Please contact the site owner to fix this issue.", 'paid-memberships-pro' );
+			$pmpro_msg = __( "IMPORTANT: Something went wrong while processing your checkout. Your credit card was charged, but we couldn't assign your membership. You should not submit this form again. Please contact the site owner to fix this issue.", 'paid-memberships-pro' );
 		}
 	}
 }
