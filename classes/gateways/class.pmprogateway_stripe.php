@@ -177,8 +177,6 @@ class PMProGateway_stripe extends PMProGateway {
 				// Checkout flow for Stripe Checkout.
 				add_filter('pmpro_include_payment_information_fields', array('PMProGateway_stripe', 'show_stripe_checkout_pending_warning'));
 				add_filter('pmpro_checkout_before_change_membership_level', array('PMProGateway_stripe', 'pmpro_checkout_before_change_membership_level'), 10, 2);
-				add_filter('pmprommpu_gateway_supports_multiple_level_checkout', '__return_false', 10, 2);
-				add_action( 'pmpro_billing_preheader', array( 'PMProGateway_stripe', 'pmpro_billing_preheader_stripe_checkout' ) );
 			}
 		}
 
@@ -257,7 +255,6 @@ class PMProGateway_stripe extends PMProGateway {
 			'tax_rate',
 			'stripe_payment_request_button',
 			'stripe_payment_flow', // 'onsite' or 'checkout'
-			'stripe_update_billing_flow', // 'onsite' or 'portal'
 			'stripe_checkout_billing_address', //'auto' or 'required'
 			'stripe_tax', // 'no', 'inclusive', 'exclusive'
 			'stripe_tax_id_collection_enabled', // '0', '1'
@@ -537,22 +534,10 @@ class PMProGateway_stripe extends PMProGateway {
 			</th>
 			<td>
 				<select id="stripe_payment_flow" name="stripe_payment_flow">
-					<option value="onsite" <?php selected( $values['stripe_payment_flow'], 'onsite' ); ?>><?php esc_html_e( 'Accept payments on this site', 'paid-memberships-pro' ); ?></option>
 					<option value="checkout" <?php selected( $values['stripe_payment_flow'], 'checkout' ); ?>><?php esc_html_e( 'Accept payments in Stripe (Stripe Checkout)', 'paid-memberships-pro' ); ?></option>
+					<option value="onsite" <?php selected( $values['stripe_payment_flow'], 'onsite' ); ?>><?php esc_html_e( 'Accept payments on this site', 'paid-memberships-pro' ); ?></option>
 				</select>
 				<p class="description"><?php esc_html_e( 'Embed the payment information fields on your Membership Checkout page or use the Stripe-hosted payment page (Stripe Checkout). If using Stripe Checkout, be sure that all webhook events listed above are set up in Stripe.', 'paid-memberships-pro' ); ?>
-			</td>
-		</tr>
-		<tr class="gateway gateway_stripe" <?php if ( $gateway != "stripe" ) { ?>style="display: none;"<?php } ?>>
-			<th scope="row" valign="top">
-				<label for="stripe_update_billing_flow"><?php esc_html_e( 'Update Billing Flow', 'paid-memberships-pro' ); ?></label>
-			</th>
-			<td>
-				<select id="stripe_update_billing_flow" name="stripe_update_billing_flow">
-					<option value="onsite"><?php esc_html_e( 'Update billing on this site', 'paid-memberships-pro' ); ?></option>
-					<option value="portal" <?php if ( $values['stripe_update_billing_flow'] === 'portal' ) { ?>selected="selected"<?php } ?>><?php esc_html_e( 'Update billing in the Stripe Customer Portal', 'paid-memberships-pro' ); ?></option>
-				</select>
-				<p class="description"><?php esc_html_e( 'Embed the billing information fields on your Membership Billing page or use the Stripe Customer Portal hosted by Stripe.', 'paid-memberships-pro' ); ?></p>
 			</td>
 		</tr>
 		<tr class="gateway gateway_stripe" <?php if ( $gateway != "stripe" ) { ?>style="display: none;"<?php } ?>>
@@ -927,58 +912,61 @@ class PMProGateway_stripe extends PMProGateway {
 
 		//include ours
 		?>
-		<fieldset id="pmpro_payment_information_fields" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_fieldset', 'pmpro_payment_information_fields' ) ); ?>"
-		     <?php if ( ! $pmpro_requirebilling || apply_filters( "pmpro_hide_payment_information_fields", false ) ) { ?>style="display: none;"<?php } ?>>
-			 <legend class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_legend' ) ); ?>">
-				<h2 class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_heading pmpro_font-large' ) ); ?>"><?php esc_html_e('Payment Information', 'paid-memberships-pro' ); ?></h2>
-			</legend>
-		<?php
-			if ( get_option( 'pmpro_stripe_payment_request_button' ) ) { ?>
-				<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_field pmpro_payment-request-button', 'pmpro_payment-request-button' ) ); ?>">
-					<div id="payment-request-button"><!-- Alternate payment method will be inserted here. --></div>
-					<h3 class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_heading pmpro_font-large' ) ); ?>">
-						<?php
-						echo esc_html( pmpro_is_checkout() ? __( 'Pay with Credit Card', 'paid-memberships-pro' ) : __( 'Credit Card', 'paid-memberships-pro' ) );					
-						?>
-					</h3>
-				</div>
+		<fieldset id="pmpro_payment_information_fields" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_fieldset', 'pmpro_payment_information_fields' ) ); ?>" <?php if ( ! $pmpro_requirebilling || apply_filters( "pmpro_hide_payment_information_fields", false ) ) { ?>style="display: none;"<?php } ?>>
+			<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_card' ) ); ?>">
+				<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_card_content' ) ); ?>">
+					<legend class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_legend' ) ); ?>">
+						<h2 class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_heading pmpro_font-large' ) ); ?>"><?php esc_html_e('Payment Information', 'paid-memberships-pro' ); ?></h2>
+					</legend>
 				<?php
-			}
-		?>
-				<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_fields' ) ); ?>">
-                    <input type="hidden" id="CardType" name="CardType"
-                           value="<?php echo esc_attr( $CardType ); ?>"/>
-                    <div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_field pmpro_payment-account-number', 'pmpro_payment-account-number' ) ); ?>">
-                        <label for="AccountNumber" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_label' ) ); ?>"><?php esc_html_e( 'Card Number', 'paid-memberships-pro' ); ?></label>
-                        <div id="AccountNumber"></div>
-                    </div>
-                    <div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_cols-2' ) ); ?>">
-						<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_field pmpro_payment-expiration', 'pmpro_payment-expiration' ) ); ?>">
-							<label for="Expiry" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_label' ) ); ?>"><?php esc_html_e( 'Expiration Date', 'paid-memberships-pro' ); ?></label>
-							<div id="Expiry"></div>
+					if ( get_option( 'pmpro_stripe_payment_request_button' ) ) { ?>
+						<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_field pmpro_payment-request-button', 'pmpro_payment-request-button' ) ); ?>">
+							<div id="payment-request-button"><!-- Alternate payment method will be inserted here. --></div>
+							<h3 class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_heading pmpro_font-large' ) ); ?>">
+								<?php
+								echo esc_html( pmpro_is_checkout() ? __( 'Pay with Credit Card', 'paid-memberships-pro' ) : __( 'Credit Card', 'paid-memberships-pro' ) );
+								?>
+							</h3>
 						</div>
 						<?php
-						$pmpro_show_cvv = apply_filters( "pmpro_show_cvv", true );
-						if ( $pmpro_show_cvv ) { ?>
-							<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_field pmpro_payment-cvv', 'pmpro_payment-cvv' ) ); ?>">
-								<label for="CVV" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_label' ) ); ?>"><?php esc_html_e( 'CVC', 'paid-memberships-pro' ); ?></label>
-								<div id="CVV"></div>
+					}
+				?>
+						<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_fields' ) ); ?>">
+							<input type="hidden" id="CardType" name="CardType"
+								value="<?php echo esc_attr( $CardType ); ?>"/>
+							<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_field pmpro_payment-account-number', 'pmpro_payment-account-number' ) ); ?>">
+								<label for="AccountNumber" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_label' ) ); ?>"><?php esc_html_e( 'Card Number', 'paid-memberships-pro' ); ?></label>
+								<div id="AccountNumber"></div>
 							</div>
-						<?php } ?>
-					</div> <!-- end pmpro_cols-2 -->
-					<?php if ( $pmpro_show_discount_code ) { ?>
-						 <div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_cols-2' ) ); ?>">
-							<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_field pmpro_form_field-text pmpro_payment-discount-code', 'pmpro_payment-discount-code' ) ); ?>">
-								<label for="pmpro_discount_code" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_label' ) ); ?>"><?php esc_html_e( 'Discount Code', 'paid-memberships-pro' ); ?></label>
-								<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_fields-inline' ) ); ?>">
-									<input id="pmpro_discount_code" name="pmpro_discount_code" type="text" value="<?php echo esc_attr( $discount_code ) ?>" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_input pmpro_form_input-text pmpro_alter_price', 'pmpro_discount_code' ) ); ?>" />
-									<input aria-label="<?php esc_html_e( 'Apply discount code', 'paid-memberships-pro' ); ?>" type="button" id="discount_code_button" name="discount_code_button" value="<?php esc_attr_e( 'Apply', 'paid-memberships-pro' ); ?>" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_btn pmpro_btn-submit-discount-code', 'discount_code_button' ) ); ?>" />
-								</div> <!-- end pmpro_form_fields-inline -->
-								<p id="discount_code_message" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_message' ) ); ?>" style="display: none;"></p>
-							</div>
-						</div> <!-- end pmpro_cols-2 -->
-					<?php } ?>
-                </div> <!-- end pmpro_form_fields -->
+							<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_cols-2' ) ); ?>">
+								<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_field pmpro_payment-expiration', 'pmpro_payment-expiration' ) ); ?>">
+									<label for="Expiry" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_label' ) ); ?>"><?php esc_html_e( 'Expiration Date', 'paid-memberships-pro' ); ?></label>
+									<div id="Expiry"></div>
+								</div>
+								<?php
+								$pmpro_show_cvv = apply_filters( "pmpro_show_cvv", true );
+								if ( $pmpro_show_cvv ) { ?>
+									<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_field pmpro_payment-cvv', 'pmpro_payment-cvv' ) ); ?>">
+										<label for="CVV" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_label' ) ); ?>"><?php esc_html_e( 'CVC', 'paid-memberships-pro' ); ?></label>
+										<div id="CVV"></div>
+									</div>
+								<?php } ?>
+							</div> <!-- end pmpro_cols-2 -->
+							<?php if ( $pmpro_show_discount_code ) { ?>
+								<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_cols-2' ) ); ?>">
+									<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_field pmpro_form_field-text pmpro_payment-discount-code', 'pmpro_payment-discount-code' ) ); ?>">
+										<label for="pmpro_discount_code" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_label' ) ); ?>"><?php esc_html_e( 'Discount Code', 'paid-memberships-pro' ); ?></label>
+										<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_fields-inline' ) ); ?>">
+											<input id="pmpro_discount_code" name="pmpro_discount_code" type="text" value="<?php echo esc_attr( $discount_code ) ?>" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_input pmpro_form_input-text pmpro_alter_price', 'pmpro_discount_code' ) ); ?>" />
+											<input aria-label="<?php esc_html_e( 'Apply discount code', 'paid-memberships-pro' ); ?>" type="button" id="discount_code_button" name="discount_code_button" value="<?php esc_attr_e( 'Apply', 'paid-memberships-pro' ); ?>" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_btn pmpro_btn-submit-discount-code', 'discount_code_button' ) ); ?>" />
+										</div> <!-- end pmpro_form_fields-inline -->
+										<p id="discount_code_message" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_message' ) ); ?>" style="display: none;"></p>
+									</div>
+								</div> <!-- end pmpro_cols-2 -->
+							<?php } ?>
+						</div> <!-- end pmpro_form_fields -->
+				</div> <!-- end pmpro_card_content -->
+			</div> <!-- end pmpro_card -->
 		</fieldset> <!-- end pmpro_payment_information_fields -->
 		<?php
 
@@ -1438,7 +1426,7 @@ class PMProGateway_stripe extends PMProGateway {
 	 * @return bool
 	 */
 	public static function using_stripe_checkout() {
-		return 'checkout' === get_option( 'pmpro_stripe_payment_flow' );
+		return 'onsite' !== get_option( 'pmpro_stripe_payment_flow' );
 	}
 
 	/**
@@ -1658,39 +1646,6 @@ class PMProGateway_stripe extends PMProGateway {
 	}
 
 	/**
-	 * User has not been sent to the Customer Portal, so we need to disable
-	 * Stripe Checkout for this page load and show the default update billing
-	 * fields.
-	 *
-	 * @since 2.8
-	 */
-	public static function pmpro_billing_preheader_stripe_checkout() {
-		global $pmpro_billing_subscription;
-
-		// If the order being updated is not a Stripe order, bail.
-		if ( empty( $pmpro_billing_subscription ) || 'stripe' !== $pmpro_billing_subscription->get_gateway() ) {
-			return;
-		}
-
-		if ( 'portal' === get_option( 'pmpro_stripe_update_billing_flow' ) ) {
-			// Send user to Stripe Customer Portal.
-			$stripe = new PMProGateway_stripe();
-			$customer = $stripe->get_customer_for_user( $pmpro_billing_subscription->get_user_id() );
-			if ( empty( $customer->id ) ) {
-				$error = __( 'Could not get Stripe customer for user.', 'paid-memberships-pro' );
-			}
-		}
-
-		add_action( 'pmpro_billing_preheader', array( 'PMProGateway_stripe', 'pmpro_checkout_after_preheader' ), 15 );
-		add_filter( 'pmpro_billing_order', array( 'PMProGateway_stripe', 'pmpro_checkout_order' ), 15 );
-		add_filter( 'pmpro_include_payment_information_fields', array(
-			'PMProGateway_stripe',
-			'pmpro_include_payment_information_fields'
-		), 15 );
-		add_filter( 'option_pmpro_stripe_payment_flow', '__return_false' ); // Disable Stripe Checkout for rest of page load.
-	}
-
-	/**
 	 * Send the user to the Stripe Customer Portal if the customer portal is enabled.
 	 *
 	 * @since 2.10.
@@ -1698,7 +1653,7 @@ class PMProGateway_stripe extends PMProGateway {
 	public static function pmpro_billing_preheader_stripe_customer_portal() {
 		global 	$pmpro_billing_subscription;
 		//Bail if the customer portal isn't enabled
-		if ( 'portal' !== get_option( 'pmpro_stripe_update_billing_flow' ) ) {
+		if ( ! self::using_stripe_checkout() ) {
 			return;
 		}
 

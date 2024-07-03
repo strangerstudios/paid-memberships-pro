@@ -403,8 +403,8 @@
 		margin-bottom: var(--pmpro--base--spacing--small);
 	}
 
-	#pmpro_payment_information_fields {
-		margin-bottom: var(--pmpro--base--spacing--large);
+	#pmpro_tos_fields {
+		margin-top: var(--pmpro--base--spacing--large);
 	}
 
 	.pmpro_form_submit {
