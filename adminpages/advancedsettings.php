@@ -177,28 +177,36 @@
 							</th>
 							<td>
 								<select id="nonmembertext_type" name="nonmembertext_type">
-									<option value="custom"><?php esc_html_e( 'Use my custom membership required message. This is a legacy option that will be removed in a future version of PMPro.', 'paid-memberships-pro' ); ?></option>
+									<option value="custom"><?php esc_html_e( 'Use my custom membership required message. (Legacy)', 'paid-memberships-pro' ); ?></option>
 									<option value=""><?php esc_html_e( 'Let Paid Memberships Pro generate the message.', 'paid-memberships-pro' ); ?></option>
 								</select>
-								<p class="description"><?php esc_html_e( 'Allow PMPro to generate a smart message for protected content. This message will automatically include a link to the checkout or levels page, based on whether the content is protected for a single level or multiple levels. You also have the option to customize your own message.', 'paid-memberships-pro' ); ?></p>
+								<p class="description"><?php esc_html_e( 'We recommend that you allow Paid Memberships Pro to generate the message for protected content.', 'paid-memberships-pro' ); ?></p>
+
+								<div id="pmpro_notice-nonmembertext_type" class="notice notice-warning pmpro-notice inline" style="display: none;">
+									<p><strong><?php esc_html_e( 'Warning: Saving these settings will permanently delete your custom message. This change is irreversible.', 'paid-memberships-pro' ); ?></strong></p>
+									<?php esc_html_e( 'We recommend updating to allow PMPro to generate a smart message for protected content. This message is fully compatible with all of your PMPro Add Ons and includes a link to the checkout or levels page, based on whether the content is protected for a single level or multiple levels.', 'paid-memberships-pro' ); ?></p>
+								</div>
 							</td>
 						</tr>
 						<tr class="toggle_nonmembertext">
 							<th scope="row" valign="top">
-								<label for="nonmembertext"><?php esc_html_e( 'Custom Membership Required Message', 'paid-memberships-pro' );?></label>
+								<label for="nonmembertext"><?php esc_html_e( 'Custom Membership Required Message (Legacy)', 'paid-memberships-pro' );?></label>
 							</th>
 							<td>
 								<textarea name="nonmembertext" rows="3" cols="50" class="large-text"><?php echo wp_kses_post( stripslashes($nonmembertext) )?></textarea>
-								<p class="description"><?php esc_html_e('This message is shown in place of the post content for non-members. Available variables', 'paid-memberships-pro' );?>: <code>!!levels!!</code> <code>!!referrer!!</code> <code>!!levels_page_url!!</code></p>
+								<p class="description"><?php esc_html_e('This is a legacy option that will be removed in a future version of PMPro. This message is shown in place of the post content for non-members. Available variables', 'paid-memberships-pro' );?>: <code>!!levels!!</code> <code>!!referrer!!</code> <code>!!levels_page_url!!</code></p>
 							</td>
 						</tr>
 						<script>
 							jQuery(document).ready(function() {
 								jQuery('#nonmembertext_type').change(function() {
-									if(jQuery(this).val() == 'custom')
+									if(jQuery(this).val() == 'custom') {
 										jQuery('.toggle_nonmembertext').show();
-									else
+										jQuery('#pmpro_notice-nonmembertext_type').hide();
+									} else {
 										jQuery('.toggle_nonmembertext').hide();
+										jQuery('#pmpro_notice-nonmembertext_type').show();
+									}
 								});
 							});
 						</script>
