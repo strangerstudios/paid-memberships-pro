@@ -177,8 +177,6 @@ class PMProGateway_stripe extends PMProGateway {
 				// Checkout flow for Stripe Checkout.
 				add_filter('pmpro_include_payment_information_fields', array('PMProGateway_stripe', 'show_stripe_checkout_pending_warning'));
 				add_filter('pmpro_checkout_before_change_membership_level', array('PMProGateway_stripe', 'pmpro_checkout_before_change_membership_level'), 10, 2);
-				add_filter('pmprommpu_gateway_supports_multiple_level_checkout', '__return_false', 10, 2);
-				add_action( 'pmpro_billing_preheader', array( 'PMProGateway_stripe', 'pmpro_billing_preheader_stripe_checkout' ) );
 			}
 		}
 
@@ -257,7 +255,6 @@ class PMProGateway_stripe extends PMProGateway {
 			'tax_rate',
 			'stripe_payment_request_button',
 			'stripe_payment_flow', // 'onsite' or 'checkout'
-			'stripe_update_billing_flow', // 'onsite' or 'portal'
 			'stripe_checkout_billing_address', //'auto' or 'required'
 			'stripe_tax', // 'no', 'inclusive', 'exclusive'
 			'stripe_tax_id_collection_enabled', // '0', '1'
@@ -537,22 +534,10 @@ class PMProGateway_stripe extends PMProGateway {
 			</th>
 			<td>
 				<select id="stripe_payment_flow" name="stripe_payment_flow">
-					<option value="onsite" <?php selected( $values['stripe_payment_flow'], 'onsite' ); ?>><?php esc_html_e( 'Accept payments on this site', 'paid-memberships-pro' ); ?></option>
 					<option value="checkout" <?php selected( $values['stripe_payment_flow'], 'checkout' ); ?>><?php esc_html_e( 'Accept payments in Stripe (Stripe Checkout)', 'paid-memberships-pro' ); ?></option>
+					<option value="onsite" <?php selected( $values['stripe_payment_flow'], 'onsite' ); ?>><?php esc_html_e( 'Accept payments on this site', 'paid-memberships-pro' ); ?></option>
 				</select>
 				<p class="description"><?php esc_html_e( 'Embed the payment information fields on your Membership Checkout page or use the Stripe-hosted payment page (Stripe Checkout). If using Stripe Checkout, be sure that all webhook events listed above are set up in Stripe.', 'paid-memberships-pro' ); ?>
-			</td>
-		</tr>
-		<tr class="gateway gateway_stripe" <?php if ( $gateway != "stripe" ) { ?>style="display: none;"<?php } ?>>
-			<th scope="row" valign="top">
-				<label for="stripe_update_billing_flow"><?php esc_html_e( 'Update Billing Flow', 'paid-memberships-pro' ); ?></label>
-			</th>
-			<td>
-				<select id="stripe_update_billing_flow" name="stripe_update_billing_flow">
-					<option value="onsite"><?php esc_html_e( 'Update billing on this site', 'paid-memberships-pro' ); ?></option>
-					<option value="portal" <?php if ( $values['stripe_update_billing_flow'] === 'portal' ) { ?>selected="selected"<?php } ?>><?php esc_html_e( 'Update billing in the Stripe Customer Portal', 'paid-memberships-pro' ); ?></option>
-				</select>
-				<p class="description"><?php esc_html_e( 'Embed the billing information fields on your Membership Billing page or use the Stripe Customer Portal hosted by Stripe.', 'paid-memberships-pro' ); ?></p>
 			</td>
 		</tr>
 		<tr class="gateway gateway_stripe" <?php if ( $gateway != "stripe" ) { ?>style="display: none;"<?php } ?>>
@@ -1441,7 +1426,7 @@ class PMProGateway_stripe extends PMProGateway {
 	 * @return bool
 	 */
 	public static function using_stripe_checkout() {
-		return 'checkout' === get_option( 'pmpro_stripe_payment_flow' );
+		return 'onsite' !== get_option( 'pmpro_stripe_payment_flow' );
 	}
 
 	/**
@@ -1661,39 +1646,6 @@ class PMProGateway_stripe extends PMProGateway {
 	}
 
 	/**
-	 * User has not been sent to the Customer Portal, so we need to disable
-	 * Stripe Checkout for this page load and show the default update billing
-	 * fields.
-	 *
-	 * @since 2.8
-	 */
-	public static function pmpro_billing_preheader_stripe_checkout() {
-		global $pmpro_billing_subscription;
-
-		// If the order being updated is not a Stripe order, bail.
-		if ( empty( $pmpro_billing_subscription ) || 'stripe' !== $pmpro_billing_subscription->get_gateway() ) {
-			return;
-		}
-
-		if ( 'portal' === get_option( 'pmpro_stripe_update_billing_flow' ) ) {
-			// Send user to Stripe Customer Portal.
-			$stripe = new PMProGateway_stripe();
-			$customer = $stripe->get_customer_for_user( $pmpro_billing_subscription->get_user_id() );
-			if ( empty( $customer->id ) ) {
-				$error = __( 'Could not get Stripe customer for user.', 'paid-memberships-pro' );
-			}
-		}
-
-		add_action( 'pmpro_billing_preheader', array( 'PMProGateway_stripe', 'pmpro_checkout_after_preheader' ), 15 );
-		add_filter( 'pmpro_billing_order', array( 'PMProGateway_stripe', 'pmpro_checkout_order' ), 15 );
-		add_filter( 'pmpro_include_payment_information_fields', array(
-			'PMProGateway_stripe',
-			'pmpro_include_payment_information_fields'
-		), 15 );
-		add_filter( 'option_pmpro_stripe_payment_flow', '__return_false' ); // Disable Stripe Checkout for rest of page load.
-	}
-
-	/**
 	 * Send the user to the Stripe Customer Portal if the customer portal is enabled.
 	 *
 	 * @since 2.10.
@@ -1701,7 +1653,7 @@ class PMProGateway_stripe extends PMProGateway {
 	public static function pmpro_billing_preheader_stripe_customer_portal() {
 		global 	$pmpro_billing_subscription;
 		//Bail if the customer portal isn't enabled
-		if ( 'portal' !== get_option( 'pmpro_stripe_update_billing_flow' ) ) {
+		if ( ! self::using_stripe_checkout() ) {
 			return;
 		}
 
