@@ -297,7 +297,7 @@ $pmpro_email_templates_defaults = array(
 		'help_text' => __( 'This email is sent when a member\'s payment method will be expiring soon. This allows the member to update their payment method before a payment failure, which may result in lost access to member features.', 'paid-memberships-pro' )
 	),
 	'invoice'  => array(
-		'subject' => __( "Recurring Payment Receipt for !!sitename!! membership", 'paid-memberships-pro' ),
+		'subject' => __( "Recurring payment receipt for !!sitename!! membership", 'paid-memberships-pro' ),
 		'description' => __('Recurring Payment Receipt', 'paid-memberships-pro'),
 		'body' => __( '<p>Thank you for your membership to !!sitename!!. Below is a receipt for your most recent membership order.</p>
 
@@ -361,7 +361,7 @@ $pmpro_email_templates_defaults = array(
 		'help_text' => __( 'This email is sent to the member as confirmation of a refunded payment. The email is sent after your membership site receives notification of a successful payment refund through your gateway.', 'paid-memberships-pro' )
 	),
 	'refund_admin' => array(
-		'subject' => __( 'Orderrder #!!order_id!! at !!sitename!! has been REFUNDED', 'paid-memberships-pro' ),
+		'subject' => __( 'Order #!!order_id!! at !!sitename!! has been REFUNDED', 'paid-memberships-pro' ),
 		'description' => __('Refund (admin)', 'paid-memberships-pro'),
 		'body' => __( '<p>Order #!!order_id!! at !!sitename!! has been refunded.</p>
 
