@@ -24,11 +24,13 @@
 		// Content settings.
 		pmpro_setOption("filterqueries");
 		pmpro_setOption("showexcerpts");
-		pmpro_setOption("nonmembertext_type");
-
-		// These use wp_kses for better security handling.
-		$nonmembertext = wp_kses(wp_unslash($_POST['nonmembertext']), $allowedposttags);
-		update_option('pmpro_nonmembertext', $nonmembertext);
+		if ( ! empty( $_POST['nonmembertext_type'] ) ) {
+			// These use wp_kses for better security handling.
+			$nonmembertext = wp_kses( wp_unslash( $_POST['nonmembertext'] ), $allowedposttags );
+			update_option( 'pmpro_nonmembertext', $nonmembertext );
+		} else {
+			delete_option( 'pmpro_nonmembertext' );
+		}
 
 		// Checkout settings.
 		pmpro_setOption("tospage");
@@ -72,7 +74,6 @@
 	// Content settings.
 	$filterqueries = get_option( 'pmpro_filterqueries');
 	$showexcerpts = get_option( 'pmpro_showexcerpts' );
-	$nonmembertext_type = get_option( 'pmpro_nonmembertext_type' );
 	$nonmembertext = get_option( 'pmpro_nonmembertext' );
 
 	// Checkout settings.
@@ -90,12 +91,6 @@
 		$redirecttosubscription = get_option( "pmpro_redirecttosubscription");
 	}
 	$uninstall = get_option( 'pmpro_uninstall');
-
-	// Default settings.
-	if ( ! $nonmembertext ) {
-		$nonmembertext = sprintf( __( '<h2 class="pmpro_card_title pmpro_font-large">Membership Required</h2><p>You must be a !!levels!! member to access this content.</p><p><a class="pmpro_btn" href="%s">Join Now</a></p>', 'paid-memberships-pro' ), "!!levels_page_url!!" );
-		pmpro_setOption( 'nonmembertext', $nonmembertext );
-	}
 
 	$levels = $wpdb->get_results( "SELECT * FROM {$wpdb->pmpro_membership_levels}", OBJECT );
 
@@ -172,37 +167,52 @@
 							</select>
 						</td>
 					</tr>
-					<tr>
-						<th scope="row" valign="top">
-							<label for="nonmembertext_type"><?php esc_html_e( 'Membership Required Message', 'paid-memberships-pro' );?></label>
-						</th>
-						<td>
-							<select id="nonmembertext_type" name="nonmembertext_type">
-								<option value="pmpro" <?php selected( $nonmembertext_type, 'pmpro' ); ?>><?php esc_html_e( 'Let Paid Memberships Pro generate the message.', 'paid-memberships-pro' ); ?></option>
-								<option value="custom" <?php selected( $nonmembertext_type, 'custom' ); ?>><?php esc_html_e( 'Use my custom membership required message.', 'paid-memberships-pro' ); ?></option>
-							</select>
-							<p class="description"><?php esc_html_e( 'Allow PMPro to generate a smart message for protected content. This message will automatically include a link to the checkout or levels page, based on whether the content is protected for a single level or multiple levels. You also have the option to customize your own message.', 'paid-memberships-pro' ); ?></p>
-						</td>
-					</tr>
-					<tr class="toggle_nonmembertext" <?php if ( $nonmembertext_type !== 'custom' ) { ?>style="display: none;"<?php } ?>>
-						<th scope="row" valign="top">
-							<label for="nonmembertext"><?php esc_html_e( 'Custom Membership Required Message', 'paid-memberships-pro' );?></label>
-						</th>
-						<td>
-							<textarea name="nonmembertext" rows="3" cols="50" class="large-text"><?php echo wp_kses_post( stripslashes($nonmembertext) )?></textarea>
-							<p class="description"><?php esc_html_e('This message is shown in place of the post content for non-members. Available variables', 'paid-memberships-pro' );?>: <code>!!levels!!</code> <code>!!referrer!!</code> <code>!!levels_page_url!!</code></p>
-						</td>
-					</tr>
-					<script>
-						jQuery(document).ready(function() {
-							jQuery('#nonmembertext_type').change(function() {
-								if(jQuery(this).val() == 'custom')
-									jQuery('.toggle_nonmembertext').show();
-								else
-									jQuery('.toggle_nonmembertext').hide();
+					<?php
+					// Only show the custom message field if the option is set.
+					if ( ! empty( $nonmembertext ) ) {
+						?>
+						<tr>
+							<th scope="row" valign="top">
+								<label for="nonmembertext_type"><?php esc_html_e( 'Membership Required Message', 'paid-memberships-pro' );?></label>
+							</th>
+							<td>
+								<select id="nonmembertext_type" name="nonmembertext_type">
+									<option value="custom"><?php esc_html_e( 'Use my custom membership required message. (Legacy)', 'paid-memberships-pro' ); ?></option>
+									<option value=""><?php esc_html_e( 'Let Paid Memberships Pro generate the message.', 'paid-memberships-pro' ); ?></option>
+								</select>
+								<p class="description"><?php esc_html_e( 'We recommend that you allow Paid Memberships Pro to generate the message for protected content.', 'paid-memberships-pro' ); ?></p>
+
+								<div id="pmpro_notice-nonmembertext_type" class="notice notice-warning pmpro-notice inline" style="display: none;">
+									<p><strong><?php esc_html_e( 'Warning: Saving these settings will permanently delete your custom message. This change is irreversible.', 'paid-memberships-pro' ); ?></strong></p>
+									<?php esc_html_e( 'We recommend updating to allow PMPro to generate a smart message for protected content. This message is fully compatible with all of your PMPro Add Ons and includes a link to the checkout or levels page, based on whether the content is protected for a single level or multiple levels.', 'paid-memberships-pro' ); ?></p>
+								</div>
+							</td>
+						</tr>
+						<tr class="toggle_nonmembertext">
+							<th scope="row" valign="top">
+								<label for="nonmembertext"><?php esc_html_e( 'Custom Membership Required Message (Legacy)', 'paid-memberships-pro' );?></label>
+							</th>
+							<td>
+								<textarea name="nonmembertext" rows="3" cols="50" class="large-text"><?php echo wp_kses_post( stripslashes($nonmembertext) )?></textarea>
+								<p class="description"><?php esc_html_e('This is a legacy option that will be removed in a future version of PMPro. This message is shown in place of the post content for non-members. Available variables', 'paid-memberships-pro' );?>: <code>!!levels!!</code> <code>!!referrer!!</code> <code>!!levels_page_url!!</code></p>
+							</td>
+						</tr>
+						<script>
+							jQuery(document).ready(function() {
+								jQuery('#nonmembertext_type').change(function() {
+									if(jQuery(this).val() == 'custom') {
+										jQuery('.toggle_nonmembertext').show();
+										jQuery('#pmpro_notice-nonmembertext_type').hide();
+									} else {
+										jQuery('.toggle_nonmembertext').hide();
+										jQuery('#pmpro_notice-nonmembertext_type').show();
+									}
+								});
 							});
-						});
-					</script>
+						</script>
+						<?php
+					}
+					?>
 				</tbody>
 				</table>
 			</div> <!-- end pmpro_section_inside -->

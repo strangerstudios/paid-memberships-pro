@@ -2118,12 +2118,11 @@ function pmpro_get_no_access_message( $content, $level_ids, $level_names = NULL 
 		$content = apply_filters( 'pmpro_rss_text_filter', $rsstext );
 	} else {
 		// Not a member. Show our default message or the site's custom message.
-		$nonmembertext_type = get_option( 'pmpro_nonmembertext_type' );
-		if ( $nonmembertext_type == 'custom' ) {
+		$nonmembertext = get_option( 'pmpro_nonmembertext' );
+		if ( ! empty( $nonmembertext ) ) {
 			$no_access_message_inner = '<div class="' . pmpro_get_element_class( 'pmpro_card_content' ) . '">';
-			$no_access_message_inner .= stripslashes( get_option( 'pmpro_nonmembertext' ) );
+			$no_access_message_inner .= stripslashes( $nonmembertext );
 			$no_access_message_inner .= '</div>';
-
 		} else {
 			// Use our generated smart default message.
 			// Build the dynamic message contents.
