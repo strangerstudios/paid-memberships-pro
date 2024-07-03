@@ -1221,6 +1221,11 @@ class PMPro_Field {
 			$value = "";
 		}
 
+		// Fix divclass.
+		if ( ! empty( $this->divclass ) ) {
+			$this->divclass .= " ";
+		}
+
 		// Add a class to the field based on the type.
 		$this->divclass .= "pmpro_form_field pmpro_form_field-" . $this->type;
 		$this->class .= " pmpro_form_input-" . $this->type;
