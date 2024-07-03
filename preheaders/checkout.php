@@ -479,6 +479,11 @@ if ( $submit && $pmpro_msgt != "pmpro_error" ) {
 					//setting some cookies
 					wp_set_current_user( $user_id, $username );
 					wp_set_auth_cookie( $user_id, true, apply_filters( 'pmpro_checkout_signon_secure', force_ssl_admin() ) );
+					global $current_user;
+					if ( ! $current_user->ID && $user->ID ) {
+						$current_user = $user;
+					} //in case the user just signed up
+					pmpro_set_current_user();
 
 					// Update nonce value to be for this new user when we load the checkout page.
 					add_filter( 'pmpro_update_nonce_at_checkout', '__return_true' );
@@ -562,242 +567,39 @@ if ( ! empty( $pmpro_confirmed ) ) {
 	//just in case this hasn't been set yet
 	$submit = true;
 
-	do_action( 'pmpro_checkout_before_change_membership_level', $user_id, $morder );
+	// Make sure we have an order object.
+	if ( empty( $morder ) ) {
+		$morder                 = new MemberOrder();
+		$morder->InitialPayment = 0;
+		$morder->Email          = $bemail;
+		$morder->gateway        = 'free';
+		$morder->status			= 'success';
+		$morder = apply_filters( "pmpro_checkout_order_free", $morder );
+	}
 
-	if ( 'pmpro_error' !== $pmpro_msgt ) {
-		//start date is NOW() but filterable below
-		$startdate = current_time( "mysql" );
+	//add an item to the history table, cancel old subscriptions
+	if ( ! empty( $morder ) ) {
+		$morder->user_id       = $user_id;
+		$morder->membership_id = $pmpro_level->id;
+		$morder->saveOrder();
+	}
 
-		/**
-		 * Filter the start date for the membership/subscription.
-		 *
-		 * @since 1.8.9
-		 *
-		 * @param string $startdate , datetime formatsted for MySQL (NOW() or YYYY-MM-DD)
-		 * @param int $user_id , ID of the user checking out
-		 * @param object $pmpro_level , object of level being checked out for
-		 */
-		$startdate = apply_filters( "pmpro_checkout_start_date", $startdate, $user_id, $pmpro_level );
+	if ( pmpro_complete_checkout( $morder ) ) {
+		//redirect to confirmation
+		$rurl = pmpro_url( "confirmation", "?pmpro_level=" . $pmpro_level->id );
+		$rurl = apply_filters( "pmpro_confirmation_url", $rurl, $user_id, $pmpro_level );
+		wp_redirect( $rurl );
+		exit;
+	} else {
 
-		//calculate the end date
-		if ( ! empty( $pmpro_level->expiration_number ) ) {
-			if( $pmpro_level->expiration_period == 'Hour' ){
-				$enddate =  date( "Y-m-d H:i:s", strtotime( "+ " . $pmpro_level->expiration_number . " " . $pmpro_level->expiration_period, current_time( "timestamp" ) ) );
-			} else {
-				$enddate =  date( "Y-m-d 23:59:59", strtotime( "+ " . $pmpro_level->expiration_number . " " . $pmpro_level->expiration_period, current_time( "timestamp" ) ) );
-			}
+		// Something went wrong with the checkout.
+		// If we get here, then the call to pmpro_changeMembershipLevel() returned false within pmpro_complete_checkout(). Let's try to cancel the payment.
+		$test = (array) $morder;
+		if ( ! empty( $test ) && $morder->cancel() ) {
+			$pmpro_msg = __( "IMPORTANT: Something went wrong while processing your checkout. Your credit card authorized, but we cancelled the order immediately. You should not try to submit this form again. Please contact the site owner to fix this issue.", 'paid-memberships-pro' );
+			$morder    = null;
 		} else {
-			$enddate = "NULL";
-		}
-
-		/**
-		 * Filter the end date for the membership/subscription.
-		 *
-		 * @since 1.8.9
-		 *
-		 * @param string $enddate , datetime formatsted for MySQL (YYYY-MM-DD)
-		 * @param int $user_id , ID of the user checking out
-		 * @param object $pmpro_level , object of level being checked out for
-		 * @param string $startdate , startdate calculated above
-		 */
-		$enddate = apply_filters( "pmpro_checkout_end_date", $enddate, $user_id, $pmpro_level, $startdate );
-
-		//check code before adding it to the order
-		if ( ! empty( $discount_code ) ) {
-			if ( isset( $pmpro_checkout_level_ids ) ) {
-				$code_check = pmpro_checkDiscountCode( $discount_code, $pmpro_checkout_level_ids, true );
-			} else {
-				$code_check = pmpro_checkDiscountCode( $discount_code, $pmpro_level->id, true );
-			}
-
-			if ( $code_check[0] == false ) {
-				//error
-				$pmpro_msg  = $code_check[1];
-				$pmpro_msgt = "pmpro_error";
-
-				//don't use this code
-				$use_discount_code = false;
-			} else {
-				//all okay
-				$use_discount_code = true;
-			}
-
-			//update membership_user table.
-			if ( ! empty( $discount_code ) && ! empty( $use_discount_code ) ) {
-				$discount_code_id = $wpdb->get_var( "SELECT id FROM $wpdb->pmpro_discount_codes WHERE code = '" . esc_sql( $discount_code ) . "' LIMIT 1" );
-			} else {
-				$discount_code_id = "";
-			}
-		} else {
-			$discount_code_id = "";
-		}
-
-		$custom_level = array(
-			'user_id'         => $user_id,
-			'membership_id'   => $pmpro_level->id,
-			'code_id'         => $discount_code_id,
-			'initial_payment' => pmpro_round_price( $pmpro_level->initial_payment ),
-			'billing_amount'  => pmpro_round_price( $pmpro_level->billing_amount ),
-			'cycle_number'    => $pmpro_level->cycle_number,
-			'cycle_period'    => $pmpro_level->cycle_period,
-			'billing_limit'   => $pmpro_level->billing_limit,
-			'trial_amount'    => pmpro_round_price( $pmpro_level->trial_amount ),
-			'trial_limit'     => $pmpro_level->trial_limit,
-			'startdate'       => $startdate,
-			'enddate'         => $enddate
-		);
-
-		if ( pmpro_changeMembershipLevel( $custom_level, $user_id, 'changed' ) ) {
-			//we're good
-			//blank order for free levels
-			if ( empty( $morder ) ) {
-				$morder                 = new MemberOrder();
-				$morder->InitialPayment = 0;
-				$morder->Email          = $bemail;
-				$morder->gateway        = 'free';
-				$morder->status			= 'success';
-				$morder = apply_filters( "pmpro_checkout_order_free", $morder );
-			}
-
-			//add an item to the history table, cancel old subscriptions
-			if ( ! empty( $morder ) ) {
-				$morder->user_id       = $user_id;
-				$morder->membership_id = $pmpro_level->id;
-				$morder->saveOrder();
-			}
-
-			//update the current user
-			global $current_user;
-			if ( ! $current_user->ID && $user->ID ) {
-				$current_user = $user;
-			} //in case the user just signed up
-			pmpro_set_current_user();
-
-			//add discount code use
-			if ( $discount_code && $use_discount_code ) {
-				if ( ! empty( $morder->id ) ) {
-					$code_order_id = $morder->id;
-				} else {
-					$code_order_id = "";
-				}
-
-				$wpdb->query( $wpdb->prepare(
-					"INSERT INTO $wpdb->pmpro_discount_codes_uses (code_id, user_id, order_id, timestamp) VALUES(%d, %d, %d, %s)",
-					$discount_code_id,
-					$user_id,
-					$code_order_id,
-					current_time( "mysql" )
-				) );
-
-				do_action( 'pmpro_discount_code_used', $discount_code_id, $user_id, $code_order_id );
-			}
-
-			//save billing info etc, as user meta
-			$meta_keys   = array();
-			$meta_values = array();
-
-			// Check if firstname and last name fields are set.
-			if ( ! empty( $bfirstname ) || ! empty( $blastname ) ) {
-				$meta_keys = array_merge( $meta_keys, array(
-					"pmpro_bfirstname",
-					"pmpro_blastname",
-				) );
-
-				$meta_values = array_merge( $meta_values, array(
-					$bfirstname,
-					$blastname,
-				) );
-			}
-
-			// Check if billing details are available, if not adjust the arrays.
-			if ( ! empty( $baddress1 ) ) {
-				$meta_keys = array_merge( $meta_keys, array(
-					"pmpro_baddress1",
-					"pmpro_baddress2",
-					"pmpro_bcity",
-					"pmpro_bstate",
-					"pmpro_bzipcode",
-					"pmpro_bcountry",
-					"pmpro_bphone",
-					"pmpro_bemail",
-				) );
-
-				$meta_values = array_merge( $meta_values, array(
-					$baddress1,
-					$baddress2,
-					$bcity,
-					$bstate,
-					$bzipcode,
-					$bcountry,
-					$bphone,
-					$bemail,
-				) );
-			}
-
-			pmpro_replaceUserMeta( $user_id, $meta_keys, $meta_values );
-
-			//save first and last name fields
-			if ( ! empty( $bfirstname ) ) {
-				$old_firstname = get_user_meta( $user_id, "first_name", true );
-				if ( empty( $old_firstname ) ) {
-					update_user_meta( $user_id, "first_name", $bfirstname );
-				}
-			}
-			if ( ! empty( $blastname ) ) {
-				$old_lastname = get_user_meta( $user_id, "last_name", true );
-				if ( empty( $old_lastname ) ) {
-					update_user_meta( $user_id, "last_name", $blastname );
-				}
-			}
-
-			if( $pmpro_level->expiration_period == 'Hour' ){
-				update_user_meta( $user_id, 'pmpro_disable_notifications', true );
-			}
-
-			//show the confirmation
-			$ordersaved = true;
-
-			//hook
-			do_action( "pmpro_after_checkout", $user_id, $morder );    //added $morder param in v2.0
-
-			$sendemails = apply_filters( "pmpro_send_checkout_emails", true);
-
-			if($sendemails) { // Send the emails only if the flag is set to true
-
-				//setup some values for the emails
-				if ( ! empty( $morder ) ) {
-					$order = new MemberOrder( $morder->id );
-				} else {
-					$order = null;
-				}
-				$current_user->membership_level = $pmpro_level; //make sure they have the right level info
-
-				//send email to member
-				$pmproemail = new PMProEmail();
-				$pmproemail->sendCheckoutEmail( $current_user, $order );
-
-				//send email to admin
-				$pmproemail = new PMProEmail();
-				$pmproemail->sendCheckoutAdminEmail( $current_user, $order );
-			}
-
-			//redirect to confirmation
-			$rurl = pmpro_url( "confirmation", "?pmpro_level=" . $pmpro_level->id );
-			$rurl = apply_filters( "pmpro_confirmation_url", $rurl, $user_id, $pmpro_level );
-			wp_redirect( $rurl );
-			exit;
-		} else {
-
-			//uh oh. we charged them then the membership creation failed
-
-			// test that the order object contains data
-			$test = (array) $morder;
-			if ( ! empty( $test ) && $morder->cancel() ) {
-				$pmpro_msg = __( "IMPORTANT: Something went wrong during membership creation. Your credit card authorized, but we cancelled the order immediately. You should not try to submit this form again. Please contact the site owner to fix this issue.", 'paid-memberships-pro' );
-				$morder    = null;
-			} else {
-				$pmpro_msg = __( "IMPORTANT: Something went wrong during membership creation. Your credit card was charged, but we couldn't assign your membership. You should not submit this form again. Please contact the site owner to fix this issue.", 'paid-memberships-pro' );
-			}
+			$pmpro_msg = __( "IMPORTANT: Something went wrong while processing your checkout. Your credit card was charged, but we couldn't assign your membership. You should not submit this form again. Please contact the site owner to fix this issue.", 'paid-memberships-pro' );
 		}
 	}
 }
