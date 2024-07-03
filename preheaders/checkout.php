@@ -584,7 +584,7 @@ if ( ! empty( $pmpro_confirmed ) ) {
 		$morder->saveOrder();
 	}
 
-	if ( pmpro_complete_async_checkout( $morder ) ) {
+	if ( pmpro_complete_checkout( $morder ) ) {
 		//redirect to confirmation
 		$rurl = pmpro_url( "confirmation", "?pmpro_level=" . $pmpro_level->id );
 		$rurl = apply_filters( "pmpro_confirmation_url", $rurl, $user_id, $pmpro_level );
