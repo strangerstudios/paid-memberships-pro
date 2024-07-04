@@ -2160,7 +2160,7 @@ function pmpro_get_no_access_message( $content, $level_ids, $level_names = NULL 
 			 *
 			 * @deprecated TBD
 			 */
-			$body = apply_filters_deprecated( 'pmpro_non_member_text_body', array( $body ), 'TBD', 'pmpro_no_access_message_body' );
+			$body = apply_filters_deprecated( 'pmpro_non_member_text_filter', array( $body ), 'TBD', 'pmpro_no_access_message_body' );
 
 			/**
 			 * Legacy filter for logged-out message for non-members/logged-out visitors.
