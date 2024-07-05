@@ -288,6 +288,7 @@
 	}
 
 	.pmpro_form_input-textarea {
+		font-family: inherit;
 		width: 100%;
 	}
 
