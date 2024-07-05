@@ -463,7 +463,7 @@ add_filter( 'llms_install_create_pages', 'pmpro_lifter_install_get_pages' );	// 
  *
  * @param array $args The post type arguments.
  * @param string $post_type The post type name.
- * @since TBD
+ * @since 3.1
  */
 function pmpro_lifter_unregister_membership_post_type( $args, $post_type ) {
 	// Bail if streamline is not enabled.

@@ -74,7 +74,7 @@ function pmpro_getAddons() {
 /**
  * Get a list of installed Add Ons with incorrect folder names.
  *
- * @since TBD
+ * @since 3.1
  *
  * @return array $incorrect_folder_names An array of Add Ons with incorrect folder names. The key is the installed folder name, the value is the Add On data.
  */

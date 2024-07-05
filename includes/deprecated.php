@@ -1022,7 +1022,7 @@ function pmpro_get_plugin_duplicates() {
  * Show admin notice if site was using a custom-loaded frontend.css file.
  * We no longer enqueue the frontend.css override file by default.
  *
- * @since TBD
+ * @since 3.1
  */
 function pmpro_was_loading_frontend_css_notice() {
 	global $current_user;

@@ -1,12 +1,12 @@
 <?php
 /**
  * Template: Cancel
- * Version: 3.0
+ * Version: 3.1
  *
  * See documentation for how to override the PMPro templates.
  * @link https://www.paidmembershipspro.com/documentation/templates/
  *
- * @version 3.0
+ * @version 3.1
  *
  * @author Paid Memberships Pro
  */

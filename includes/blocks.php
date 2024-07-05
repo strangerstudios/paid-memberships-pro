@@ -203,7 +203,7 @@ add_filter( 'render_block', 'pmpro_filter_core_blocks', 10, 2 );
  *
  * @param array $metadata The block metadata.
  * @return array The filtered block metadata.
- * @since TBD
+ * @since 3.1
  *
  */
 function pmpro_block_type_metadata( $metadata ) {

@@ -1864,7 +1864,7 @@
 		/**
 		 * Get the formatted total for this order.
 		 *
-		 * @since TBD
+		 * @since 3.1
 		 *
 		 * @return string
 		 */
@@ -1874,7 +1874,7 @@
 			/**
 			 * Filter the formatted total for this order.
 			 *
-			 * @since TBD
+			 * @since 3.1
 			 *
 			 * @param string $formatted_total The formatted total for this order.
 			 * @param MemberOrder $this The order object.
@@ -1885,7 +1885,7 @@
 		/**
 		 * Get the formatted subtotal for this order.
 		 *
-		 * @since TBD
+		 * @since 3.1
 		 *
 		 * @return string
 		 */
@@ -1895,7 +1895,7 @@
 			/**
 			 * Filter the formatted subtotal for this order.
 			 *
-			 * @since TBD
+			 * @since 3.1
 			 *
 			 * @param string $formatted_subtotal The formatted subtotal for this order.
 			 * @param MemberOrder $this The order object.
@@ -1906,7 +1906,7 @@
 		/**
 		 * Get the formatted tax for this order.
 		 *
-		 * @since TBD
+		 * @since 3.1
 		 *
 		 * @return string
 		 */
@@ -1916,7 +1916,7 @@
 			/**
 			 * Filter the formatted tax for this order.
 			 *
-			 * @since TBD
+			 * @since 3.1
 			 *
 			 * @param string $formatted_tax The formatted tax for this order.
 			 * @param MemberOrder $this The order object.

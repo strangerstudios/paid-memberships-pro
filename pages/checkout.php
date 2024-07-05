@@ -1,12 +1,12 @@
 <?php
 /**
  * Template: Checkout
- * Version: 3.0
+ * Version: 3.1
  *
  * See documentation for how to override the PMPro templates.
  * @link https://www.paidmembershipspro.com/documentation/templates/
  *
- * @version 3.0
+ * @version 3.1
  *
  * @author Paid Memberships Pro
  */
@@ -507,7 +507,7 @@ if ( empty( $default_gateway ) ) {
 									/**
 									 * Filter the Terms of Service field label.
 									 *
-									 * @since TBD
+									 * @since 3.1
 									 *
 									 * @param string $tos_label The field label.
 									 * @param object $tospage The Terms of Service page object.

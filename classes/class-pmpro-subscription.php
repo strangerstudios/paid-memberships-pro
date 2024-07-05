@@ -1013,7 +1013,7 @@ class PMPro_Subscription {
 		/**
 		 * Filter the cost text for this subscription.
 		 *
-		 * @since TBD
+		 * @since 3.1
 		 *
 		 * @param string $cost_text The cost text for this subscription.
 		 * @param PMPro_Subscription $this The subscription object.

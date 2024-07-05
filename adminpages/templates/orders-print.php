@@ -133,7 +133,7 @@
 			/**
 			 * Filter to add, edit, or remove information in the meta section of the single order frontend page.
 			 *
-			 * @since TBD
+			 * @since 3.1
 			 * @param array $pmpro_order_single_meta Array of meta information.
 			 * @param object $order The PMPro Invoice/Order object.
 			 * @return array $pmpro_order_single_meta Array of meta information.

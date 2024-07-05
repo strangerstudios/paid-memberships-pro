@@ -1,12 +1,12 @@
 <?php
 /**
  * Template: Confirmation
- * Version: 3.0
+ * Version: 3.1
  *
  * See documentation for how to override the PMPro templates.
  * @link https://www.paidmembershipspro.com/documentation/templates/
  *
- * @version 3.0
+ * @version 3.1
  *
  * @author Paid Memberships Pro
  */
@@ -74,7 +74,7 @@ if ( empty( $pmpro_invoice ) ) {
 							/**
 							 * Filter to change the message shown when the order is not successful.
 							 *
-							 * @since TBD
+							 * @since 3.1
 							 *
 							 * @param string $message The message to show.
 							 * @param object $pmpro_invoice The PMProOrder object.

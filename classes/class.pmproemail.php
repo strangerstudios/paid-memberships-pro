@@ -447,7 +447,7 @@
 		 * @param WP_User $user The WordPress user object.
 		 * @param int $level_id The level ID of the level that was cancelled.
 		 * @return bool True if the email was sent, false otherwise.
-		 * @since TBD
+		 * @since 3.1
 		 */
 		function sendCancelOnNextPaymentDateAdminEmail( $user, $level_id ) {
 			// If an array is passed for $level_id, throw doing it wrong warning.
@@ -1328,7 +1328,7 @@
 		 * @param object $user The WordPress user object.
 		 * @param int $membership_id The member's membership level ID.
 		 * @return bool Whether the email was sent successfully.
-		 * @since TBD
+		 * @since 3.1
 		 */
 		function sendMembershipExpiredEmail( $user = NULL, $membership_id = NULL ) {
 			global $current_user, $wpdb;

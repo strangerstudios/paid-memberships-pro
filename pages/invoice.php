@@ -1,12 +1,12 @@
 <?php 
 /**
  * Template: Invoice
- * Version: 3.0
+ * Version: 3.1
  *
  * See documentation for how to override the PMPro templates.
  * @link https://www.paidmembershipspro.com/documentation/templates/
  *
- * @version 3.0
+ * @version 3.1
  *
  * @author Paid Memberships Pro
  */
@@ -123,7 +123,7 @@
 								/**
 								 * Filter to add, edit, or remove information in the meta section of the single order frontend page.
 								 *
-								 * @since TBD
+								 * @since 3.1
 								 * @param array $pmpro_order_single_meta Array of meta information.
 								 * @param object $pmpro_invoice The PMPro Invoice/Order object.
 								 * @return array $pmpro_order_single_meta Array of meta information.
@@ -179,7 +179,7 @@
 						/**
 						 * Add additional content to the single order frontend page before the order item details.
 						 *
-						 * @since TBD
+						 * @since 3.1
 						 * @param object $pmpro_invoice The PMPro Invoice/Order object.
 						 */
 						do_action( 'pmpro_order_single_before_order_details', $pmpro_invoice );

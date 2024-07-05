@@ -2138,7 +2138,7 @@ function pmpro_get_no_access_message( $content, $level_ids, $level_names = NULL 
 			/**
 			 * Filter the header message for the no access message.
 			 *
-			 * @since TBD
+			 * @since 3.1
 			 *
 			 * @param string $header The header message for the no access message.
 			 * @param array $level_ids The array of level IDs this post is protected for.
@@ -2148,7 +2148,7 @@ function pmpro_get_no_access_message( $content, $level_ids, $level_names = NULL 
 			/**
 			 * Filter the body message for the no access message.
 			 *
-			 * @since TBD
+			 * @since 3.1
 			 *
 			 * @param string $body The body message for the no access message.
 			 * @param array $level_ids The array of level IDs this post is protected for.
@@ -2158,12 +2158,12 @@ function pmpro_get_no_access_message( $content, $level_ids, $level_names = NULL 
 			/**
 			 * Legacy filter for logged-out message for non-members/logged-out visitors.
 			 * 
-			 * @deprecated TBD
+			 * @deprecated 3.1
 			 */
 			if ( ! is_user_logged_in() ) {
-				$body = apply_filters_deprecated( 'pmpro_not_logged_in_text_filter', array( $body ), 'TBD', 'pmpro_no_access_message_body' );
+				$body = apply_filters_deprecated( 'pmpro_not_logged_in_text_filter', array( $body ), '3.1', 'pmpro_no_access_message_body' );
 			} else {
-				$body = apply_filters_deprecated( 'pmpro_non_member_text_filter', array( $body ), 'TBD', 'pmpro_no_access_message_body' );
+				$body = apply_filters_deprecated( 'pmpro_non_member_text_filter', array( $body ), '3.1', 'pmpro_no_access_message_body' );
 			}
 			
 			// Build the content message.
@@ -2187,7 +2187,7 @@ function pmpro_get_no_access_message( $content, $level_ids, $level_names = NULL 
 		/**
 		 * Filter the HTML of the no access message.
 		 *
-		 * @since TBD
+		 * @since 3.1
 		 *
 		 * @param string $content_message The HTML of the no access message.
 		 * @param array $level_ids The array of level IDs this post is protected for.
@@ -4886,7 +4886,7 @@ function pmpro_hex_to_hsl_parts( $hex ) {
 /**
  * Calculate the end date for the period of time this order covers in the subscription.
  *
- * @since TBD
+ * @since 3.1
  *
  * @param MemberOrder $order       The order to calculate the end date date for.
  * @param string      $date_format The format to use when formatting the profile start date.

@@ -60,7 +60,7 @@
 	/**
 	 * Check if plugin is active, installed, or not installed.
 	 *
-	 * @since TBD
+	 * @since 3.1
 	 *
 	 * @param $plugin_file The plugin file to check.
 	 * @return string The status of the plugin (active, inactive, not installed).

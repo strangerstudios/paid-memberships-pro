@@ -44,7 +44,7 @@
 							/**
 							 * Filter to show the "default" email template in the dropdown.
 							 *
-							 * @since TBD
+							 * @since 3.1
 							 *
 							 * @param bool $show_default_email_template Whether to show the default email template in the dropdown.
 							 */

@@ -7,7 +7,7 @@ add_filter( 'pmpro_email_body', 'pmpro_kses', 11 );
  *
  * @param string $from_name The default from name.
  * @return string The from name.
- * @since TBD
+ * @since 3.1
  */
 function pmpro_wp_mail_from_name( $from_name ) {
 	$default_from_name = 'WordPress';
@@ -28,7 +28,7 @@ function pmpro_wp_mail_from_name( $from_name ) {
  *
  * @param string $from_email The default from email.
  * @return string The from email.
- * @since TBD
+ * @since 3.1
  */
 function pmpro_wp_mail_from( $from_email ) {
 	// default from email wordpress@sitename
@@ -76,7 +76,7 @@ if( empty( $email_member_notification ) ) {
  * Add template files and change content type to HTML if using PHPMailer directly.
  *
  * @param object $phpmailer The PHPMailer object.
- * @since TBD
+ * @since 3.1
  */
 function pmpro_send_html( $phpmailer ) {
 
@@ -171,7 +171,7 @@ add_filter('wp_mail_content_type', 'pmpro_wp_mail_content_type');
  *
  * @param string $message The message to be sent in the email.
  * @return string The message to be sent in the email.
- * @since TBD
+ * @since 3.1
  */
 function pmpro_retrieve_password_message( $message ) {
 	if ( has_filter( 'wp_mail_content_type', 'pmpro_wp_mail_content_type' ) ) {
@@ -190,7 +190,7 @@ add_filter( 'retrieve_password_message', 'pmpro_retrieve_password_message', 10, 
  * Get template data. Ajax endpoint to get template data from the database and serve into the client side.
  *
  * @return void Despite it doesn't return anything, it echoes the template data.
- * @since TBD
+ * @since 3.1
  */
 function pmpro_email_templates_get_template_data() {
 
@@ -259,7 +259,7 @@ add_action('wp_ajax_pmpro_email_templates_save_template_data', 'pmpro_email_temp
  * Reset template data. Ajax endpoint to reset template data to the default values.
  *
  * @return void Despite it doesn't return anything, it echoes the template data.
- * @since TBD
+ * @since 3.1
  */
 function pmpro_email_templates_reset_template_data() {
 
@@ -289,7 +289,7 @@ add_action('wp_ajax_pmpro_email_templates_reset_template_data', 'pmpro_email_tem
  * Disable/Enable template. Ajax endpoint to disable or enable a template.
  *
  * @return void Despite it doesn't return anything, it echoes the template data.
- * @since TBD
+ * @since 3.1
  */
 function pmpro_email_templates_disable_template() {
 
@@ -312,7 +312,7 @@ add_action('wp_ajax_pmpro_email_templates_disable_template', 'pmpro_email_templa
  * Send test email. Ajax endpoint to send a test email.
  *
  * @return void Despite it doesn't return anything, it echoes the response.
- * @since TBD
+ * @since 3.1
  */
 function pmpro_email_templates_send_test() {
 

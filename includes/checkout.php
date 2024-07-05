@@ -165,7 +165,7 @@ function pmpro_pull_checkout_data_from_order( $order ) {
 /**
  * Complete a checkout.
  *
- * @since TBD
+ * @since 3.1
  *
  * @param MemberOrder $order The order to complete the checkout for.
  * @return bool True if the checkout was completed successfully, false otherwise.

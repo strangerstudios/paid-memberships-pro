@@ -11,7 +11,7 @@
 /**
  * Filter the meta boxes to display on the Paid Memberships Pro dashboard.
  * 
- * @since TBD
+ * @since 3.1
  * 
  * @param array $pmpro_dashboard_meta_boxes Array of meta boxes to display on the dashboard. Hint: Use the associative array key as the meta box ID.
  */

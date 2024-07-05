@@ -5,7 +5,7 @@
  * We are eliminating the SSL Seal Code setting.
  * We are also changing the default text and adding a setting for protected content messages.
  *
- * @since TBD
+ * @since 3.1
  */
 function pmpro_upgrade_3_1() {
     delete_option( 'pmpro_sslseal' );

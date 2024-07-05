@@ -321,14 +321,14 @@ class PMPro_Field {
 		/**
 		 * Legacy filter to define what field keys are saved to the wp_users table. 
 		 *
-		 * @deprecated TBD
+		 * @deprecated 3.1
 		 */
-		$user_table_fields = apply_filters_deprecated( 'pmprorh_user_table_fields', array( array( 'user_url' ) ), 'TBD', 'pmpro_user_table_fields' );
+		$user_table_fields = apply_filters_deprecated( 'pmprorh_user_table_fields', array( array( 'user_url' ) ), '3.1', 'pmpro_user_table_fields' );
 
 		/**
 		 * Filter to define what field keys are saved to the wp_users table.
 		 *
-		 * @since TBD
+		 * @since 3.1
 		 *
 		 * @param array $user_table_fields Array of field keys saved to the wp_users table.
 		 * @return array $user_table_fields Array of field keys saved to the wp_users table.
@@ -381,14 +381,14 @@ class PMPro_Field {
 			/**
 			 * Legacy filter to repair non-associative options.
 			 *
-			 * @deprecated TBD
+			 * @deprecated 3.1
 			 */
-			$repair_non_associative_options = apply_filters_deprecated( 'pmprorh_repair_non_associative_options', array( true ), 'TBD', 'pmpro_field_repair_non_associative_options' );
+			$repair_non_associative_options = apply_filters_deprecated( 'pmprorh_repair_non_associative_options', array( true ), '3.1', 'pmpro_field_repair_non_associative_options' );
 
 			/**
 			 * Filter to repair non-associative options.
 			 *
-			 * @since TBD
+			 * @since 3.1
 			 *
 			 * @param bool $repair_non_associative_options Whether to repair non-associative options.
 			 * @return bool $repair_non_associative_options Whether to repair non-associative options.
@@ -1019,17 +1019,17 @@ class PMPro_Field {
 		/**
 		 * Legacy filter to show a field as required on the profile page.
 		 *
-		 * @deprecated TBD Use the pmpro_show_required_on_profile filter instead.
+		 * @deprecated 3.1 Use the pmpro_show_required_on_profile filter instead.
 		 *
 		 * @param bool $showrequired Whether to show the field as required on the profile page.
 		 * @return bool Whether to show the field as required on the profile page.
 		 */
-		$show_required_on_profile = apply_filters_deprecated( 'pmprorh_show_required_on_profile', array( false, $this ), 'TBD', 'pmpro_field_show_required_on_profile' );
+		$show_required_on_profile = apply_filters_deprecated( 'pmprorh_show_required_on_profile', array( false, $this ), '3.1', 'pmpro_field_show_required_on_profile' );
 
 		/**
 		 * Filter to show a field as required on the profile page.
 		 *
-		 * @since TBD
+		 * @since 3.1
 		 *
 		 * @param bool $showrequired Whether to show the field as required on the profile page.
 		 * @return bool Whether to show the field as required on the profile page.
@@ -1050,17 +1050,17 @@ class PMPro_Field {
 		/**
 		 * Legacy filter to allow hooking into the generated field HTML.
 		 *
-		 * @deprecated TBD
+		 * @deprecated 3.1
 		 *
 		 * @param string      $r     The field HTML.
 		 * @param PMPro_Field $field The field object.
 		 */
-		$r = apply_filters_deprecated( 'pmprorh_get_html', array( $r, $this ), 'TBD', 'pmpro_field_get_html' );
+		$r = apply_filters_deprecated( 'pmprorh_get_html', array( $r, $this ), '3.1', 'pmpro_field_get_html' );
 
 		/**
 		 * Filter to allow hooking into the generated field HTML.
 		 *
-		 * @since TBD
+		 * @since 3.1
 		 *
 		 * @param string      $r     The field HTML.
 		 * @param PMPro_Field $field The field object.

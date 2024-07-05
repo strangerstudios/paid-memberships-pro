@@ -107,10 +107,10 @@
 		 * Display fields for this gateway's options.
 		 *
 		 * @since 1.8
-		 * @deprecated TBD
+		 * @deprecated 3.1
 		 */
 		static function pmpro_payment_option_fields($values, $gateway) {
-			_deprecated_function( __FUNCTION__, 'TBD', 'PMProGateway_paypalexpress::pmpro_payment_option_fields()' );
+			_deprecated_function( __FUNCTION__, '3.1', 'PMProGateway_paypalexpress::pmpro_payment_option_fields()' );
 			PMProGateway_paypalexpress::pmpro_payment_option_fields( $values, $gateway );
 		}
 

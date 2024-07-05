@@ -180,7 +180,7 @@
 		/**
 		 * Show instructions on the single order frontend page.
 		 *
-		 * @since TBD
+		 * @since 3.1
 		 */
 		static function pmpro_order_single_before_order_details( $order) {
 			if ( $order->gateway == 'check' && ! pmpro_isLevelFree( $order->membership_level ) && $order->status == 'pending' ) {
