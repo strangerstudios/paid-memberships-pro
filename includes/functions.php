@@ -2156,19 +2156,14 @@ function pmpro_get_no_access_message( $content, $level_ids, $level_names = NULL 
 			$body = apply_filters( 'pmpro_no_access_message_body', $body, $level_ids );
 
 			/**
-			 * Legacy filter for the body message for the no access message.
-			 *
-			 * @deprecated TBD
-			 */
-			$body = apply_filters_deprecated( 'pmpro_non_member_text_filter', array( $body ), 'TBD', 'pmpro_no_access_message_body' );
-
-			/**
 			 * Legacy filter for logged-out message for non-members/logged-out visitors.
 			 * 
 			 * @deprecated TBD
 			 */
 			if ( ! is_user_logged_in() ) {
 				$body = apply_filters_deprecated( 'pmpro_not_logged_in_text_filter', array( $body ), 'TBD', 'pmpro_no_access_message_body' );
+			} else {
+				$body = apply_filters_deprecated( 'pmpro_non_member_text_filter', array( $body ), 'TBD', 'pmpro_no_access_message_body' );
 			}
 			
 			// Build the content message.
