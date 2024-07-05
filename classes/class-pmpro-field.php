@@ -1226,8 +1226,10 @@ class PMPro_Field {
 			$this->divclass .= " ";
 		}
 
-		// Add a class to the field based on the type.
-		$this->divclass .= "pmpro_form_field pmpro_form_field-" . $this->type;
+		// Add a class to the field based on the type and skip if we're trying to hide it with pmpro_hidden
+		if ( strpos( $this->divclass, 'pmpro_hidden' ) === false ) {
+			$this->divclass .= "pmpro_form_field pmpro_form_field-" . $this->type;
+		}
 		$this->class .= " pmpro_form_input-" . $this->type;
 
 		// Add the required class to field.
