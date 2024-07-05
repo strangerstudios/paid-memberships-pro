@@ -2156,12 +2156,16 @@ function pmpro_get_no_access_message( $content, $level_ids, $level_names = NULL 
 			$body = apply_filters( 'pmpro_no_access_message_body', $body, $level_ids );
 
 			/**
-			 * Legacy filter for the body message for the no access message.
-			 *
+			 * Legacy filter for logged-out message for non-members/logged-out visitors.
+			 * 
 			 * @deprecated TBD
 			 */
-			$body = apply_filters_deprecated( 'pmpro_non_member_text_body', array( $body ), 'TBD', 'pmpro_no_access_message_body' );
-
+			if ( ! is_user_logged_in() ) {
+				$body = apply_filters_deprecated( 'pmpro_not_logged_in_text_filter', array( $body ), 'TBD', 'pmpro_no_access_message_body' );
+			} else {
+				$body = apply_filters_deprecated( 'pmpro_non_member_text_filter', array( $body ), 'TBD', 'pmpro_no_access_message_body' );
+			}
+			
 			// Build the content message.
 			$no_access_message_inner = '<h2 class="' . pmpro_get_element_class( 'pmpro_card_title pmpro_font-large' ) . '">';
 			$no_access_message_inner .= '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--pmpro--color--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-lock"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>';
