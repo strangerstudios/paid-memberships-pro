@@ -579,6 +579,7 @@ function pmpro_login_forms_handler( $show_menu = true, $show_logout_link = true,
 					}
 				}
 			?>
+		</section> <!-- end pmpro_login -->
 	</div> <!-- end pmpro -->
 	<?php
 
