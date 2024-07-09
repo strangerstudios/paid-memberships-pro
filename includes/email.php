@@ -13,14 +13,14 @@ function pmpro_wp_mail_from_name( $from_name ) {
 	$default_from_name = 'WordPress';
 
 	//make sure it's the default from name
-	if($from_name == $default_from_name)
-	{
-		$pmpro_from_name = get_option("pmpro_from_name");
-		if ($pmpro_from_name)
-			$from_name = stripslashes($pmpro_from_name);
+	if( $from_name == $default_from_name ) {
+		$pmpro_from_name = get_option( 'pmpro_from_name' );
+		if ($pmpro_from_name) {
+			$from_name = $pmpro_from_name;
+		}
 	}
 
-	return $from_name;
+	return wp_unslash( $from_name );
 }
 
 /**
