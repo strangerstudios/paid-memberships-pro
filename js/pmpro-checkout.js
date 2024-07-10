@@ -40,7 +40,7 @@ jQuery(document).ready(function(){
                 jQuery('.pmpro_discount_code_msg').hide();
 
                 //disable the apply button
-				jQuery('#pmpro_discount_code_button').attr('disabled', 'disabled');
+                jQuery('#pmpro_discount_code_button').attr('disabled', 'disabled');
                 jQuery('#other_discount_code_button').attr('disabled', 'disabled');
 
                 jQuery.ajax({
@@ -51,7 +51,7 @@ jQuery(document).ready(function(){
                         alert('Error applying discount code [1]');
 
                         //enable apply button
-						jQuery('#pmpro_discount_code_button').removeAttr('disabled');
+                        jQuery('#pmpro_discount_code_button').removeAttr('disabled');
                         jQuery('#other_discount_code_button').removeAttr('disabled');
 
                     },
@@ -66,7 +66,7 @@ jQuery(document).ready(function(){
                         }
 
                         //enable invite button
-						jQuery('#pmpro_discount_code_button').removeAttr('disabled');
+                        jQuery('#pmpro_discount_code_button').removeAttr('disabled');
                         jQuery('#other_discount_code_button').removeAttr('disabled');
                     }
                 });
