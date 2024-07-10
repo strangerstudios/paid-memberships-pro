@@ -26,7 +26,7 @@ jQuery(document).ready(function(){
         });
 
         // Top discount code field click handler.
-        jQuery('#other_discount_code_button').click(function() {
+        jQuery('#other_discount_code_button, #discount_code_button').click(function() {
             var code = jQuery('#pmpro_other_discount_code').val();
             var level_id = jQuery('#pmpro_level').val();
             if ( ! level_id ) {
@@ -40,6 +40,7 @@ jQuery(document).ready(function(){
                 jQuery('.pmpro_discount_code_msg').hide();
 
                 //disable the apply button
+				jQuery('#pmpro_discount_code_button').attr('disabled', 'disabled');
                 jQuery('#other_discount_code_button').attr('disabled', 'disabled');
 
                 jQuery.ajax({
@@ -50,7 +51,9 @@ jQuery(document).ready(function(){
                         alert('Error applying discount code [1]');
 
                         //enable apply button
+						jQuery('#pmpro_discount_code_button').removeAttr('disabled');
                         jQuery('#other_discount_code_button').removeAttr('disabled');
+
                     },
                     success: function(responseHTML){
                         if (responseHTML == 'error')
@@ -63,51 +66,12 @@ jQuery(document).ready(function(){
                         }
 
                         //enable invite button
+						jQuery('#pmpro_discount_code_button').removeAttr('disabled');
                         jQuery('#other_discount_code_button').removeAttr('disabled');
                     }
                 });
             }
         });
-		
-		// Bottom discount code field click handler.
-		jQuery('#discount_code_button').click(function() {
-			var code = jQuery('#pmpro_discount_code').val();
-			var level_id = jQuery('#pmpro_level').val();
-
-			if(code)
-			{
-				//hide any previous message
-				jQuery('.pmpro_discount_code_msg').hide();
-
-				//disable the apply button
-				jQuery('#pmpro_discount_code_button').attr('disabled', 'disabled');
-
-				jQuery.ajax({
-					url: pmpro.ajaxurl,type:'GET',timeout: pmpro.ajax_timeout,
-					dataType: 'html',
-					data: "action=applydiscountcode&code=" + code + "&pmpro_level=" + level_id + "&msgfield=discount_code_message",
-					error: function(xml){
-						alert('Error applying discount code [1]');
-
-						//enable apply button
-						jQuery('#pmpro_discount_code_button').removeAttr('disabled');
-					},
-					success: function(responseHTML){
-						if (responseHTML == 'error')
-						{
-							alert('Error applying discount code [2]');
-						}
-						else
-						{
-							jQuery('#discount_code_message').html(responseHTML);
-						}
-
-						//enable invite button
-						jQuery('#pmpro_discount_code_button').removeAttr('disabled');
-					}
-				});
-			}
-		});
     }
 	
 	// Validate credit card number and determine card type.
