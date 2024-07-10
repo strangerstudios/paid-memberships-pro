@@ -1,5 +1,5 @@
 <?php
-
+#[AllowDynamicProperties]
 class PMPro_Membership_Level{
 
     function __construct( $id = NULL ) {
