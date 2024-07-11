@@ -198,53 +198,81 @@ if ( empty( $default_gateway ) ) {
 
 							<?php do_action( 'pmpro_checkout_after_username' ); ?>
 
-							<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_cols-2' ) ); ?>">
-								<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_field pmpro_form_field-password pmpro_form_field-required' ) ); ?>">
-									<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_field-password-toggle' ) ); ?>">
-										<label for="password" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_label' ) ); ?>">
-											<?php esc_html_e( 'Password', 'paid-memberships-pro' );?>
-										</label>
-										<button type="button" class="pmpro_btn pmpro_btn-plain pmpro_btn-password-toggle hide-if-no-js" data-toggle="0" tabindex="-1">
-											<span class="pmpro_icon pmpro_icon-eye" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--pmpro--color--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-eye"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg></span>
-											<span class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_field-password-toggle-state' ) ); ?>"><?php esc_html_e( 'Show Password', 'paid-memberships-pro' ); ?></span>
-										</button>
-									</div> <!-- end pmpro_form_field-password-toggle -->
-									<input type="password" name="password" id="password" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_input pmpro_form_input-password pmpro_form_input-required', 'password' ) ); ?>" autocomplete="new-password" spellcheck="false" value="<?php echo esc_attr($password); ?>" />
-								</div> <!-- end pmpro_form_field-password -->
+							<?php
+								/**
+								 * Filter to require confirmed password at checkout.
+								 *
+								 * @param bool $pmpro_checkout_confirm_password, true to require a password confirm field, false to hide.
+								 */
+								$pmpro_checkout_confirm_password = apply_filters( 'pmpro_checkout_confirm_password', true );
 
-								<?php
-									$pmpro_checkout_confirm_password = apply_filters("pmpro_checkout_confirm_password", true);
-									if($pmpro_checkout_confirm_password) { ?>
-										<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_field pmpro_form_field-password pmpro_form_field-required', 'pmpro_form_field-password2' ) ); ?>">
-											<label for="password2" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_label' ) ); ?>"><?php esc_html_e('Confirm Password', 'paid-memberships-pro' );?></label>
-											<input type="password" name="password2" id="password2" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_input pmpro_form_input-password pmpro_form_input-required', 'password2' ) ); ?>" autocomplete="new-password" spellcheck="false" value="<?php echo esc_attr($password2); ?>" />
-										</div> <!-- end pmpro_form_field-password2 -->
-									<?php } else { ?>
-										<input type="hidden" name="password2_copy" value="1" />
-									<?php }
-								?>
-							</div> <!-- end pmpro_cols-2 -->
+								echo $pmpro_checkout_confirm_password ? '<div class="' . esc_attr( pmpro_get_element_class( 'pmpro_cols-2' ) ) . '">' : '';
+							?>
+
+							<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_field pmpro_form_field-password pmpro_form_field-required' ) ); ?>">
+								<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_field-password-toggle' ) ); ?>">
+									<label for="password" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_label' ) ); ?>">
+										<?php esc_html_e( 'Password', 'paid-memberships-pro' );?>
+									</label>
+									<button type="button" class="pmpro_btn pmpro_btn-plain pmpro_btn-password-toggle hide-if-no-js" data-toggle="0" tabindex="-1">
+										<span class="pmpro_icon pmpro_icon-eye" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--pmpro--color--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-eye"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg></span>
+										<span class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_field-password-toggle-state' ) ); ?>"><?php esc_html_e( 'Show Password', 'paid-memberships-pro' ); ?></span>
+									</button>
+								</div> <!-- end pmpro_form_field-password-toggle -->
+								<input type="password" name="password" id="password" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_input pmpro_form_input-password pmpro_form_input-required', 'password' ) ); ?>" autocomplete="new-password" spellcheck="false" value="<?php echo esc_attr($password); ?>" />
+							</div> <!-- end pmpro_form_field-password -->
+
+							<?php
+								if ( $pmpro_checkout_confirm_password ) {
+									?>
+									<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_field pmpro_form_field-password pmpro_form_field-required', 'pmpro_form_field-password2' ) ); ?>">
+										<label for="password2" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_label' ) ); ?>"><?php esc_html_e('Confirm Password', 'paid-memberships-pro' );?></label>
+										<input type="password" name="password2" id="password2" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_input pmpro_form_input-password pmpro_form_input-required', 'password2' ) ); ?>" autocomplete="new-password" spellcheck="false" value="<?php echo esc_attr($password2); ?>" />
+									</div> <!-- end pmpro_form_field-password2 -->
+									<?php
+								} else {
+									?>
+									<input type="hidden" name="password2_copy" value="1" />
+									<?php
+								}
+							?>
+
+							<?php echo $pmpro_checkout_confirm_password ? '</div>' : ''; ?>
 
 							<?php do_action( 'pmpro_checkout_after_password' ); ?>
 
-							<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_cols-2' ) ); ?>">
-								<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_field pmpro_form_field-email pmpro_form_field-bemail pmpro_form_field-required', 'pmpro_form_field-bemail' ) ); ?>">
-									<label for="bemail" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_label' ) ); ?>"><?php esc_html_e('Email Address', 'paid-memberships-pro' );?></label>
-									<input id="bemail" name="bemail" type="<?php echo ($pmpro_email_field_type ? 'email' : 'text'); ?>" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_input pmpro_form_input-email pmpro_form_input-required', 'bemail' ) ); ?>" value="<?php echo esc_attr($bemail); ?>" />
-								</div> <!-- end pmpro_form_field-bemail -->
+							<?php
+								/**
+								 * Filter to require confirmed email at checkout.
+								 *
+								 * @param bool $pmpro_checkout_confirm_email, true to require a email confirm field, false to hide.
+								 */
+								$pmpro_checkout_confirm_email = apply_filters( 'pmpro_checkout_confirm_email', true );
 
-								<?php
-									$pmpro_checkout_confirm_email = apply_filters("pmpro_checkout_confirm_email", true);
-									if($pmpro_checkout_confirm_email) { ?>
-										<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_field pmpro_form_field-email pmpro_form_field-bconfirmemail pmpro_form_field-required', 'pmpro_form_field-bconfirmemail' ) ); ?>">
-											<label for="bconfirmemail" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_label' ) ); ?>"><?php esc_html_e('Confirm Email Address', 'paid-memberships-pro' );?></label>
-											<input id="bconfirmemail" name="bconfirmemail" type="<?php echo ($pmpro_email_field_type ? 'email' : 'text'); ?>" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_input pmpro_form_input-email pmpro_form_input-required', 'bconfirmemail' ) ); ?>" value="<?php echo esc_attr($bconfirmemail); ?>" />
-										</div> <!-- end pmpro_form_field-bconfirmemail -->
-									<?php } else { ?>
-										<input type="hidden" name="bconfirmemail_copy" value="1" />
-									<?php }
-								?>
-							</div> <!-- end pmpro_cols-2 -->
+								echo $pmpro_checkout_confirm_email ? '<div class="' . esc_attr( pmpro_get_element_class( 'pmpro_cols-2' ) ) . '">' : '';
+							?>
+
+							<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_field pmpro_form_field-email pmpro_form_field-bemail pmpro_form_field-required', 'pmpro_form_field-bemail' ) ); ?>">
+								<label for="bemail" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_label' ) ); ?>"><?php esc_html_e('Email Address', 'paid-memberships-pro' );?></label>
+								<input id="bemail" name="bemail" type="<?php echo ($pmpro_email_field_type ? 'email' : 'text'); ?>" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_input pmpro_form_input-email pmpro_form_input-required', 'bemail' ) ); ?>" value="<?php echo esc_attr($bemail); ?>" />
+							</div> <!-- end pmpro_form_field-bemail -->
+
+							<?php
+								if ( $pmpro_checkout_confirm_email ) {
+									?>
+									<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_field pmpro_form_field-email pmpro_form_field-bconfirmemail pmpro_form_field-required', 'pmpro_form_field-bconfirmemail' ) ); ?>">
+										<label for="bconfirmemail" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_label' ) ); ?>"><?php esc_html_e('Confirm Email Address', 'paid-memberships-pro' );?></label>
+										<input id="bconfirmemail" name="bconfirmemail" type="<?php echo ($pmpro_email_field_type ? 'email' : 'text'); ?>" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_input pmpro_form_input-email pmpro_form_input-required', 'bconfirmemail' ) ); ?>" value="<?php echo esc_attr($bconfirmemail); ?>" />
+									</div> <!-- end pmpro_form_field-bconfirmemail -->
+									<?php
+								} else {
+									?>
+									<input type="hidden" name="bconfirmemail_copy" value="1" />
+									<?php
+								}
+							?>
+
+							<?php echo $pmpro_checkout_confirm_email ? '</div>' : ''; ?>
 
 							<?php do_action( 'pmpro_checkout_after_email' ); ?>
 
