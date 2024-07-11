@@ -907,6 +907,15 @@
 
 		}
 
+		.pmpro_table_cancel {
+			border-bottom: 1px solid var(--pmpro--color--border--variation);
+		}
+
+		.pmpro_table_cancel tbody tr td {
+			border-width: 0;
+			padding-top: 0;
+		}
+
 		.pmpro_cols-2,
 		.pmpro_cols-3 {
 			display: flex;

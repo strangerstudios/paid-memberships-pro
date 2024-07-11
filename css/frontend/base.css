@@ -567,6 +567,14 @@ button[type="button"]#other_discount_code_toggle:focus {
 	.pmpro_table tfoot tr td::before {
 		content: attr(data-title) ": ";
 	}
+
+	.pmpro_table_cancel tbody tr td:last-child {
+		display: block;
+	}
+
+	.pmpro_table_cancel tbody tr td:last-child::before {
+		content: "";
+	}
 }
 
 @media screen and (min-width: 768px) {
