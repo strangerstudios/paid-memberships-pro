@@ -895,6 +895,12 @@
 
 		}
 
+		.pmpro_table_cancel tbody tr td,
+		.pmpro_table_cancel tbody tr:first-child th {
+			border-width: 0;
+			padding-top: 0;
+		}
+
 		.pmpro_cols-2,
 		.pmpro_cols-3 {
 			display: block;
