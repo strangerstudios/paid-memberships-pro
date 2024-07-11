@@ -897,8 +897,14 @@
 
 		.pmpro_cols-2,
 		.pmpro_cols-3 {
-			display: block;
-			margin-bottom: var(--pmpro--base--spacing--medium);
+			display: flex;
+			flex-direction: column;
+			gap: var(--pmpro--base--spacing--medium);
+		}
+
+		.pmpro_cols-2 > *,
+		.pmpro_cols-3 > * {
+			width: auto;
 		}
 
 	}
