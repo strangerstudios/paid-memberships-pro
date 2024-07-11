@@ -390,6 +390,10 @@ button[type="button"]#other_discount_code_toggle:focus {
 /**
  * Admin Toolbar View As Feature
  */
+#wpadminbar #wp-admin-bar-pmpro-admin-membership-access {
+	background-color: #1d2327;
+}
+
 #wpadminbar .pmpro_admin-view {
 	display: inline-block;
 	padding: 0 5px;
