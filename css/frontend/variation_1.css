@@ -328,7 +328,7 @@
 	.pmpro_form_field-radio-item {
 		align-items: baseline;
 		flex-direction: row;
-		flex-wrap: wrap;
+		flex-wrap: nowrap;
 
 		.pmpro_form_hint {
 			flex: 0 0 100%;
