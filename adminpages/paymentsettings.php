@@ -127,8 +127,8 @@
 								<option value="live" <?php selected( $gateway_environment, "live" ); ?>><?php esc_html_e('Live/Production', 'paid-memberships-pro' );?></option>
 							</select>
 							<script>
-								function pmpro_changeGateway()
-								{
+							jQuery(document).ready(function(){;
+								function pmpro_changeGateway() {
 									const gateway = jQuery('#gateway').val();
 									const gateway_environment = jQuery('#gateway_environment').val();
 
@@ -145,7 +145,7 @@
 										}
 									});							
 
-									if ( jQuery('#gateway').val() === '' ) {
+									if ( gateway === '' ) {
 										jQuery('#pmpro-default-gateway-message').show();
 									} else {
 										jQuery('#pmpro-default-gateway-message').hide();
@@ -155,6 +155,7 @@
 
 								// Handle change events.
 								jQuery('#gateway, #gateway_environment').on('change', pmpro_changeGateway);
+							});
 							</script>
 						</td>
 					</tr>
