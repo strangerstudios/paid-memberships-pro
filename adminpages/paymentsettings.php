@@ -127,7 +127,7 @@
 								<option value="live" <?php selected( $gateway_environment, "live" ); ?>><?php esc_html_e('Live/Production', 'paid-memberships-pro' );?></option>
 							</select>
 							<script>
-							jQuery(document).ready(function(){;
+							jQuery(document).ready(function(){
 								function pmpro_changeGateway() {
 									const gateway = jQuery('#gateway').val();
 									const gateway_environment = jQuery('#gateway_environment').val();
