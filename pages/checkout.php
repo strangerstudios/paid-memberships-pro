@@ -223,7 +223,7 @@ if ( empty( $default_gateway ) ) {
 							</div> <!-- end pmpro_form_field-password -->
 
 							<?php
-								if ( $pmpro_checkout_confirm_password || true) {
+								if ( $pmpro_checkout_confirm_password ) {
 									?>
 									<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_field pmpro_form_field-password pmpro_form_field-required', 'pmpro_form_field-password2' ) ); ?>">
 										<label for="password2" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_label' ) ); ?>"><?php esc_html_e('Confirm Password', 'paid-memberships-pro' );?></label>

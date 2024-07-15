@@ -613,6 +613,7 @@ function pmpro_login_form( $args = array() ) {
 			const toggleWrapper = toggleButton.closest('.pmpro_form_field-password-toggle');
 			const loginForm = toggleWrapper.previousElementSibling;
 			const passwordParagraph = loginForm.querySelector('.login-password');
+			const passwordInput = loginForm.querySelector('#user_pass');
 
 			passwordParagraph.appendChild(toggleWrapper);
 			toggleButton.classList.remove('hide-if-no-js');
