@@ -612,21 +612,9 @@ function pmpro_login_form( $args = array() ) {
 			const toggleButton = document.querySelectorAll('#pmpro_btn-password-toggle-<?php echo esc_attr( $pmpro_login_form_counter ); ?>')[0];
 			const toggleWrapper = toggleButton.closest('.pmpro_form_field-password-toggle');
 			const loginForm = toggleWrapper.previousElementSibling;
-			const userloginInput = loginForm.querySelector('#user_login');
-			const passwordLabel = loginForm.querySelector('label[for="user_pass"]');
-			const passwordInput = loginForm.querySelector('#user_pass');
-			const remembermeInput = loginForm.querySelector('#rememberme');
-			const submitInput = loginForm.querySelector('#wp-submit');
+			const passwordParagraph = loginForm.querySelector('.login-password');
 
-			// Set tabindex values on form fields.
-			const tabIndexStart = 5 * <?php echo intval( $pmpro_login_form_counter - 1 ); ?>; // Start at 0.
-			userloginInput.setAttribute('tabindex', tabIndexStart + 1);
-			passwordInput.setAttribute('tabindex', tabIndexStart + 2);
-			toggleButton.setAttribute('tabindex', tabIndexStart + 3);
-			remembermeInput.setAttribute('tabindex', tabIndexStart + 4);
-			submitInput.setAttribute('tabindex', tabIndexStart + 5);
-
-			passwordLabel.appendChild(toggleWrapper);
+			passwordParagraph.appendChild(toggleWrapper);
 			toggleButton.classList.remove('hide-if-no-js');
 			toggleButton.addEventListener('click', togglePassword);
 
