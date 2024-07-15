@@ -54,12 +54,14 @@ class PMPro_Member_Edit_Panel_Orders extends PMPro_Member_Edit_Panel {
 						<tr>
 							<td>
 								<?php
-									echo esc_html( sprintf(
-										// translators: %1$s is the date and %2$s is the time.
-										__( '%1$s at %2$s', 'paid-memberships-pro' ),
-										esc_html( date_i18n( get_option( 'date_format' ), strtotime( get_date_from_gmt( $order->timestamp ) ) ) ),
-										esc_html( date_i18n( get_option( 'time_format' ), strtotime( get_date_from_gmt( $order->timestamp ) ) ) )
-									) );
+									echo esc_html(
+										sprintf(
+											// translators: %1$s is the date and %2$s is the time.
+											__( '%1$s at %2$s', 'paid-memberships-pro' ),
+											esc_html( date_i18n( get_option( 'date_format' ), $order->getTimestamp() ) ),
+											esc_html( date_i18n( get_option( 'time_format' ), $order->getTimestamp() ) )
+										)
+									);
 								?>
 							</td>
 							<td class="order_code column-order_code has-row-actions">

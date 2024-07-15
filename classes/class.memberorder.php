@@ -182,13 +182,13 @@
 		private $subscription_transaction_id = '';
 
 		/**
-		 * The time the order was created (UTC YYYY-MM-DD HH:MM:SS)
+		 * The time the order was created as a Unix timestamp.
 		 *
 		 * @since 2.9
 		 *
-		 * @var string
+		 * @var int
 		 */
-		private $timestamp = '';
+		private $timestamp = 0;
 
 		/**
 		 * The Affiliate ID 
