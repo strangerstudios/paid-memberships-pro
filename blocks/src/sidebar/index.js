@@ -151,7 +151,7 @@ register( pmproCustomStore() );
 	 */
 	function isSavingPost() {
 
-		// State data necessary to establish if a save is occuring.
+		// State data necessary to establish if a save is occurring.
 		const isSaving = wp.data.select('core/editor').isSavingPost() || wp.data.select('core/editor').isAutosavingPost();
 		const isSaveable = wp.data.select('core/editor').isEditedPostSaveable();
 		const isPostSavingLocked = wp.data.select('core/editor').isPostSavingLocked();

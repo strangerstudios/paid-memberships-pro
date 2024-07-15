@@ -269,7 +269,7 @@
 * BUG FIX/ENHANCEMENT: Now validating license keys in setup wizard. #2464 (@dparker1005)
 * BUG FIX: Fixed fatal error on payment gateway settings page when using Stripe with expired API keys. #2455 (@dparker1005)
 * BUG FIX: Fixed issue where an error message would not be displayed on the Update Billing page when a credit card number was not entered. #2457 (@MaximilianoRicoTabo)
-* BUG FIX: Fixed issue where the orders export date filter may ignore the site's timzeone. #2460 (@JarrydLong)
+* BUG FIX: Fixed issue where the orders export date filter may ignore the site's timezone. #2460 (@JarrydLong)
 
 = 2.10.5 - 2023-04-27 =
 * BUG FIX/ENHANCEMENT: Fixed issue where the date/time of orders in the Member History table were sometimes off based on timezone. #2552 (@JarrydLong, @dparker1005)
@@ -539,13 +539,13 @@ BUG FIX: Fixed issue where the billing zipcode was not pulled from user meta cor
 * BUG FIX/ENHANCEMENT: Fixed the text domain for some strings that weren't translatable. (@mircobabini)
 * BUG FIX/ENHANCEMENT: Fixed misspelled text domains in the pmpro_reset_password_form() function. (Thanks, @isaiahfb)
 * BUG FIX: Fixed issues with the update billing page when using PayPal Websites Payments Pro. (@dparker1005)
-* BUG FIX: Fixed issues with Stripe checkouts when users had previous checkouts throug a different gateway. (@dparker1005)
+* BUG FIX: Fixed issues with Stripe checkouts when users had previous checkouts through a different gateway. (@dparker1005)
 * REFACTOR: Removed unused condition in send method of PMProEmail class. (Thanks, @freax)
 * BUG FIX: Fixed notice when pmpro_check_plugin_version was called for an invalid plugin file. (@ideadude)
 
 = 2.7.3 - 2022-02-01 =
 * ENHANCEMENT: Added CSS to make sure input fields input fields aren't extra tiny/short, e.g. in the Twenty Twenty Two theme. (@kimcoleman)
-* BUG FIX: Fixed a fatal error for older PHP sites when visiting the page settings in the admin dasboard. (@andrewlimaza)
+* BUG FIX: Fixed a fatal error for older PHP sites when visiting the page settings in the admin dashboard. (@andrewlimaza)
 * BUG FIX: Fixed issue where license keys were incorrectly flagged as invalid if expiring within 1 month. (@ideadude)
 * BUG FIX: Fixed issue where billing addresses were not added to the Stripe customer at checkout. (@dparker1005)
 
@@ -575,7 +575,7 @@ BUG FIX: Fixed issue where the billing zipcode was not pulled from user meta cor
 * BUG FIX: Various text adjustments for readability. #1892 (@kimcoleman)
 * BUG FIX: Set primary key for `wp_pmpro_memberships_categories` and `wp_pmpro_memberships_pages` tables. #1891 (@ideadude)
 * BUG FIX: Fixes around the `pmpro_manage_memberslist_columns` filter to accommodate sites that aren't in English. #1879 #1876 (@JarrydLong)
-* BUG FIX: Use the correct cancel method when cancelling an oder through PayPal Standard IPN requests. Fixes compatibility with PMPro Cancel on Next Payment Date add on. #1882 (@mircobabini)
+* BUG FIX: Use the correct cancel method when cancelling an order through PayPal Standard IPN requests. Fixes compatibility with PMPro Cancel on Next Payment Date add on. #1882 (@mircobabini)
 * BUG FIX: Discount code expiration date is now properly being used in the REST API. #1877 (@JarrydLong)
 * BUG FIX: Remove the `SHIPTOPHONENUM` parameter sent to PayPal Website Payments API and encode all parameters passed into API updates. #1883 (@dparker1005)
 * BUG FIX: Resolve timezone issue with Stripe subscriptions to resolve problems where trials would receive an extra day depending on the time of checkout. #1874 (@dparker1005)
@@ -630,7 +630,7 @@ BUG FIX: Fixed issue where the billing zipcode was not pulled from user meta cor
 * BUG FIX/ENAHCEMENT: Expanded the allowed HTML for pmpro_kses to support email templates and added a pmpro_kses filter. #1770 (@sc0ttkclark)
 * BUG FIX/ENHANCEMENT: Updated the CSS for "clickable" labels in checkbox lists. #1752 (@kimcoleman)
 * BUG FIX: Fixed bug with sending test emails from the email templates page. #1765 (@ideadude)
-* BUG FIX: Added the !!membership_level_confirmation_message!! var to the list on the email tempaltes page. #1783 (@kimwhite)
+* BUG FIX: Added the !!membership_level_confirmation_message!! var to the list on the email templates page. #1783 (@kimwhite)
 * BUG FIX: Updated the SendWP link per their new dashboard area. #1777 (@kimcoleman)
 * BUG FIX: Fixed bug where PMPro-related usermeta was sometimes blanked out if those fields weren't present at checkout, e.g. when a logged in user was checking out. #1762 (@andrewlimaza)
 * BUG FIX: Fixed issue where gateway-related notices weren't showing up on the discount codes page. #1757 (@mircobabini)
@@ -700,7 +700,7 @@ BUG FIX: Fixed issue where the billing zipcode was not pulled from user meta cor
 * BUG FIX: Fixed warnings related to PayPal Express session variables.
 
 = 2.5.9.1 - 2021-05-12 =
-* BUG FIX/ENHANCEMENT: Updated pmpro_changeMembershipLevel() to return null if the user's level is not changed. For the past 2 vesions, we've been returning true in these cases, which caused PMPro to send emails to the admin when the edit use page was saved, even if there was no level change. This change has been backported to versions 2.5.8 and 2.5.9.
+* BUG FIX/ENHANCEMENT: Updated pmpro_changeMembershipLevel() to return null if the user's level is not changed. For the past 2 versions, we've been returning true in these cases, which caused PMPro to send emails to the admin when the edit use page was saved, even if there was no level change. This change has been backported to versions 2.5.8 and 2.5.9.
 
 = 2.5.9 - 2021-05-05 =
 * ENHANCEMENT: Adjusting style for prices and price parts shown on the frontend.
@@ -883,7 +883,7 @@ BUG FIX: Fixed issue where PMPro would always try to add capabilities to the adm
 * BUG FIX: Fixed issue where renewing memberships were extended one day less than they should have been in some cases.
 * BUG FIX: Fixed issue where users without a PMPro Plus license were sometimes not getting an error when trying to update a Plus Add On.
 * BUG FIX/ENHANCEMENT: Added compatibility for core auto-updates for our Add Ons which aren't hosted in the .org repository.
-* BUG FIX/ENHANCEMENT: Fixed issue where PHP sessions were set up to track ReCAPTCHA even if you weren't using ReCAPTCHA. ReCAPTCHA is now only loaded on the checkout page. Loading sessions unecessarily would break some Varnish cache setups.
+* BUG FIX/ENHANCEMENT: Fixed issue where PHP sessions were set up to track ReCAPTCHA even if you weren't using ReCAPTCHA. ReCAPTCHA is now only loaded on the checkout page. Loading sessions unnecessarily would break some Varnish cache setups.
 * BUG FIX/ENHANCEMENT: Updated the single invoice/order page. No longer showing the end date, which isn't really related to the order. Showing a better status related to the order now.
 * BUG FIX/ENHANCEMENT: Fixed some links to the PMPro site in the plugin admin area.
 * BUG FIX/ENHANCEMENT: Now saving a hash of the Stripe secretkey when saving webhook ids. This allows us to keep track of webhook ids if you switch between gateway environments or swap your Stripe keys for some reason.
@@ -906,7 +906,7 @@ BUG FIX: Fixed issue where PMPro would always try to add capabilities to the adm
 * BUG FIX: Fixed a fatal error that was happening in PHP 5.2 or earlier due to code syntax that was not supported then. We noticed a few other cases as well, but decided we won't support PHP 5.2 consistent with WP and other plugins.
 * BUG FIX: Fixed the URL used when using 2Checkout in sandbox mode.
 * BUG FIX: Fixed JavaScript errors that would occur sometimes on the Billing Update page when using the Stripe gateway.
-* BUG FIX: Fixed issue where the dummy $0 orders created when using the "Stripe Updates" feature weren't saving with the updated subscription_transaction_id. This would prevent future payments from being linked to that user and could prevent subscriptions cancellations from being synchronized. When updating to PMPro 2.4, an update script will run to try to restore these subscription_transaction_id values. However, any recurring orders that occured when the id was missing will not be added to PMPro. You will have to update them manually.
+* BUG FIX: Fixed issue where the dummy $0 orders created when using the "Stripe Updates" feature weren't saving with the updated subscription_transaction_id. This would prevent future payments from being linked to that user and could prevent subscriptions cancellations from being synchronized. When updating to PMPro 2.4, an update script will run to try to restore these subscription_transaction_id values. However, any recurring orders that occurred when the id was missing will not be added to PMPro. You will have to update them manually.
 * BUG FIX: Fixed JavaScript error on the edit discount code page.
 * BUG FIX/ENHANCEMENT: Showing expiration date as text when it is set as a readonly field. (Thanks, Rodmar "rodmarzavala" on GitHub)
 * BUG FIX/ENHANCEMENT: Now checking if headers were already sent before trying to start the PHP session. If headers are sent before PMPro tries to start the session, there is usually another error somewhere on the WP site that needs to be fixed. But at least we aren't adding to the confusion by trying to start the session late causing another error in the log.
@@ -1008,7 +1008,7 @@ BUG FIX: Fixed issue where PMPro would always try to add capabilities to the adm
 * ENHANCEMENT: Added pmpro_admin_orders_filters and pmpro_admin_orders_query_condition filters to add new filters to the orders page in the dashboard. (Thanks, Mirco Babini)
 * ENHANCEMENT: Added an SVG icon to the PMPro blocks category.
 * REFACTOR: Improved the Members List list table code to use a function for each column of data and support the code core WP methods for extending list tables with custom columns.
-* REFACTOR: Moved all Theme My Login compatiblity code to includes/compatibility/theme-my-login.php and only loading if plugin is active.
+* REFACTOR: Moved all Theme My Login compatibility code to includes/compatibility/theme-my-login.php and only loading if plugin is active.
 
 = 2.2.6 - 2020-02-20 =
 * SECURITY: Escaping the post title shown in the Terms of Service section of the checkout page.
@@ -1044,7 +1044,7 @@ BUG FIX: Fixed issue where PMPro would always try to add capabilities to the adm
 = 2.2.3 - 2019-12-09 =
 * BUG FIX: Fixed issue where Stripe checkout failed for free levels that had their price adjusted through the donations or variable pricing add ons.
 * BUG FIX: Fixed undeclared variables warnings in the members list.
-* BUG FIX: Fixed the edit user links in the email sent to admins when cancelations have errors.
+* BUG FIX: Fixed the edit user links in the email sent to admins when cancellations have errors.
 * REFACTOR: Removed some unused code from the members list class.
 
 = 2.2.2 - 2019-11-29 =
@@ -1089,7 +1089,7 @@ BUG FIX: Fixed issue where PMPro would always try to add capabilities to the adm
 * BUG FIX: Fixed issue with CSV exports if the fpassthru function is unavailable.
 * BUG FIX: Fixed warning that occurred when the Email Log plugin was active. (Thanks, Matty Cohen)
 * BUG FIX: Fixed warning that occurred with sessions sometimes. (Thanks, Matty Cohen)
-* ENHANCEMENT: Made labels and styling more consistant across settings pages.
+* ENHANCEMENT: Made labels and styling more consistent across settings pages.
 * ENHANCEMENT: The Consent Log will go into a scrollable box if more than 10 items are in the list.
 * ENHANCEMENT: Updated the copy on the license page.
 
@@ -1104,7 +1104,7 @@ BUG FIX: Fixed issue where PMPro would always try to add capabilities to the adm
 * ENHANCEMENT: Added some help text and links to popular add ons in a few places in the PMPro settings.
 
 = 2.1.1 - 2019-09-16 =
-* BUG FIX: Fixed issue with SCA authentications via Stripe for subscriptions with a $0 initial payment. (Thanks, mjulian87 on Github.)
+* BUG FIX: Fixed issue with SCA authentications via Stripe for subscriptions with a $0 initial payment. (Thanks, mjulian87 on GitHub.)
 * BUG FIX: Fixed issue where code was shown in the message box when applying a discount code.
 * BUG FIX: Fixed issue where pmpro_is_checkout() would always return true if no checkout page was set. This caused JavaScript issues on non-checkout pages.
 * BUG FIX: The SVN repo on WordPress.org was missing a file for about 10 minutes after version 2.1 was pushed. Users who upgraded during this time may be missing that file. Updating now will restore it.
@@ -1189,7 +1189,7 @@ BUG FIX: Fixed issue where PMPro would always try to add capabilities to the adm
 = 2.0.2 - 2019-01-10 =
 * BUG FIX: Fixed issues when using non-US currencies. Using the pmpro_round_price function in a few places it was needed. Prepared for a later update that will increase the number of decimals on certain columns in the DB to 8 to support currencies like Bitcoin, but shelving the actual DB update for version 2.1.
 * BUG FIX: Fixed issue where existing users who checked out could run into problems. Added a getMembershipLevelAtCheckout method to the MemberOrder class and using that during checkout. The getMembershipLevel method would see the user_id property of the order (added to orders at checkout in version 2.0) and lookup the level data from the pmpro_memberships_users table instead of using the pmpro_level global. Then gateways like PayPal Express (but others also) would use the wrong data when making calls to pmpro_isLevelRecurring/etc.
-* BUG FIX: Fixed bug where a notice to deactivate the Better Logins Report plugin could show up for users who couldn't deactive the plugin.
+* BUG FIX: Fixed bug where a notice to deactivate the Better Logins Report plugin could show up for users who couldn't deactivate the plugin.
 * BUG FIX: Fixed bad translation in the membership_expired.html file of the French translation.
 * BUG FIX: Fixed some strings on updated reports that weren't wrapped for translation.
 
@@ -1214,7 +1214,7 @@ BUG FIX: Fixed issue where PMPro would always try to add capabilities to the adm
 * BUG FIX/ENHANCEMENT: Brought back the Stripe Billing limit warnings. Here is a plugin to get billing limits working with Stripe https://github.com/strangerstudios/pmpro-stripe-billing-limits/blob/master/pmpro-stripe-billing-limits.php
 * FEATURE: Gutenberg / v5.0 Editor Blocks for Paid Memberships Pro pages, the Checkout Button and Membership "shortcode" functionality.
 * FEATURE: Added new "Dashboard" page and adjusted the entire menu structure for "Memberships".
-* FEATURE: Created new compatibility checks and included compatability functions for Beaver Builder, Elementor, and SiteOrigin Page Builder.
+* FEATURE: Created new compatibility checks and included compatibility functions for Beaver Builder, Elementor, and SiteOrigin Page Builder.
 * FEATURE: Added REST API routes for post membership access, and user membership level.
 * FEATURE: Added option to include the level's Confirmation Message in the Confirmation Email.
 * FEATURE: Added a filter by discount code to Memberships and Sales reports.
@@ -1345,7 +1345,7 @@ BUG FIX: Fixed issue where PMPro would always try to add capabilities to the adm
 * BUG FIX: pmpro_getMembershipLevelsForUser() would sometimes return duplicate levels in the array if the user had multiple active entries in the pmpro_memberships_users table.
 * BUG FIX: Updated includes/metaboxes.php to call pmpro_getAllLevels() instead of relying on the $membership_levels global which is problematic.
 * BUG FIX: Fixed a few strings that weren't wrapped for translation or were using the old text domain.
-* BUG FIX: Fixed redirect error that occured when the levels page was not set.
+* BUG FIX: Fixed redirect error that occurred when the levels page was not set.
 * BUG FIX: Updated getfile.php to support file names with urlencoded characters (e.g. spaces) in them. (Thanks, florent from PMPro blog)
 * BUG FIX: Fixed notice when use the getfile.php script due to using add_filter instead of apply_filters in the mimetype class.
 * BUG FIX: Fixed the all time views column for the logins report.
@@ -1353,7 +1353,7 @@ BUG FIX: Fixed issue where PMPro would always try to add capabilities to the adm
 * BUG FIX: Fixed issue with saving arrays using pmpro_setOption()
 up the lines of text.
 * BUG FIX: Fixed typo in the string "Are you sure you want to do that? Try again."
-* BUG FIX: Fixed a few strings that used the wrong text domain or weren't wrapped correclty for translation.
+* BUG FIX: Fixed a few strings that used the wrong text domain or weren't wrapped correctly for translation.
 * BUG FIX/ENHANCEMENT: Now bundling Google's jsapi.js file for use in the reports.
 * BUG FIX/ENHANCEMENT: Fixed issue where some emails (e.g. the password reset email) would not have wpautop applied to them, crunching
 * BUG FIX/ENHANCEMENT: Better checking for Theme My Login compatibility when handling login redirects.
@@ -1406,7 +1406,7 @@ up the lines of text.
 * ENHANCEMENT: Added to code to stop network activation of Paid Memberships Pro. (Thanks, Paul Barthmaier)
 
 = 1.9.1 - 2017-05-11 =
-* BUG FIX: Fixed the code checking if the Stripe library is already loaded to compatability issues with other plugins bundling the Stripe API library.
+* BUG FIX: Fixed the code checking if the Stripe library is already loaded to compatibility issues with other plugins bundling the Stripe API library.
 * BUG FIX: Cancel code now properly uses preg_replace when sanitizing the list of level ids to cancel.
 * FIX/ENHANCEMENT: Removed test/doc code from Stripe and Braintree libraries.
 * ENHANCEMENT: Now pausing the license nag for the first week of use and removed the "invalid" error if no key is being used.
@@ -1425,9 +1425,9 @@ up the lines of text.
 * ENHANCEMENT: The Braintree level compatibility check now also looks for a properly named plan.
 * ENHANCEMENT: Better error handling when trying to update plugins that update against the PMPro license server.
 * ENHANCEMENT: Improved Italian translation. (Thanks, Francesco Pezzotti)
-* ENHANCEMENT: Improved German tranlsation. (Thanks, Simon)
-* ENHANCEMENT: Added a Sweedish tranlsation. (Thanks, Mathias Persson)
-* ENHANCEMENT: Added a "Chinese/Cantonese (Hong Kong SAR China)" tranlsation. (Thanks, Kai Chan)
+* ENHANCEMENT: Improved German translation. (Thanks, Simon)
+* ENHANCEMENT: Added a Sweedish translation. (Thanks, Mathias Persson)
+* ENHANCEMENT: Added a "Chinese/Cantonese (Hong Kong SAR China)" translation. (Thanks, Kai Chan)
 
 = 1.8.13.6 =
 * BUG: Fixed bug where credit card expiration emails would be sent to users with PayPal Express orders.
@@ -1554,7 +1554,7 @@ up the lines of text.
 * BUG: Added pmpro_btn-submit-checkout class to the PayPal checkout buttons.
 * BUG: Updated Stripe and Braintree gateways to load billing fields and JavaScript when it's the default gateway (if not the current gateway specified).
 * BUG: Fixed bug where cancelation emails weren't being sent to users if they originated from PayPal.
-* BUG: Fixed bug where unsucessful invoices were shown on the Membership Account page. We aren't showing refunded invoices here now either, but plan to in the future.
+* BUG: Fixed bug where unsuccessful invoices were shown on the Membership Account page. We aren't showing refunded invoices here now either, but plan to in the future.
 * BUG: The update billing page now uses the pmpro_include_billing_address_fields filter so gateways and addons can properly override the payment fields when needed.
 * BUG: The update billing page now uses the validatecreditcard.js script to set the Card Type in the background, just like checkout. Fixes some issues with updating credit cards on certain gateways.
 * BUG: Reintroduced the pmpro_members_list_sql filter.
@@ -1569,7 +1569,7 @@ up the lines of text.
 * BUG: Fixed bug introduced in 1.8.9.2 where member start and end dates weren't being set correctly. Includes an update script to fix past users affected by this.
 * BUG: Fixed warnings on new order page in the dashboard.
 * BUG/ENHANCEMENT: Fixed the pmpro_checkout_default_submit_button() methods of the PayPal Express to no longer check if the current gateway is a paypal one. The method is only called when the gateway is loaded anyway or when another addon (e.g. the pmpro-pay-by-check addon) adds the hook.
-* BUG/ENHANCEMENT: Moved check instructions code into the check gateway class so it can be overriden by addons (e.g. an update to the pmpro-pay-by-check addon).
+* BUG/ENHANCEMENT: Moved check instructions code into the check gateway class so it can be overridden by addons (e.g. an update to the pmpro-pay-by-check addon).
 
 = 1.8.9.2 =
 * BUG: Fixed SQL in pmpro_changeMembershipLevel that caused issues with some MySQL setups.
@@ -1784,13 +1784,13 @@ up the lines of text.
 * ENHANCEMENT: Added the pmpro_is_ready filter. This should be used by gateway plugins to set the $pmpro_gateway_ready global variable.
 * ENHANCEMENT: Added pmpro_memberslist_per_page and pmpro_orders_per_page filters to change the default number of items to show on those admin pages.
 * ENHANCEMENT: Added pmpro_new_user and pmpro_new_user_setup hooks to allow for alterring the user creation code at checkout. For an example of how to use these see (https://github.com/strangerstudios/paid-memberships-pro/pull/224). (Thanks, David Crabill)
-* ENHANCEMENT: Now setting the Stripe API version in the Stripe class. (Set to version "2015-07-13" right now.) This ensures that Stripe processes PMPro API calls correctly. We will update this to the latest versions as they come out and we test PMPro against them. You will still need to update the API version in the Account Settings of your Stripe dashboard to versio 2015-07-13 (or later as we update the version we work against) so webhook events originating from Stripe are sent out in the correct format.
+* ENHANCEMENT: Now setting the Stripe API version in the Stripe class. (Set to version "2015-07-13" right now.) This ensures that Stripe processes PMPro API calls correctly. We will update this to the latest versions as they come out and we test PMPro against them. You will still need to update the API version in the Account Settings of your Stripe dashboard to version 2015-07-13 (or later as we update the version we work against) so webhook events originating from Stripe are sent out in the correct format.
 
 = 1.8.4.4 =
 * BUG: Fixed issue where subscriptions cancelled at Stripe wouldn't cancel the related PMPro membership if the membership was created after updating to v1.8. (Thank, Ninjami-Juho)
 * BUG: Now tracking "views" when the wp_head hook is fired instead of the "wp" hook. Previously page redirects and AJAX calls might have been counted as "views". Using wp_head will result in more accurate numbers (compared to something like Google Analytics, e.g.). Also note that the number of views will now be much much lower than before on some sites. (Thanks, Michael Cummings)
 * BUG: Fixed loading of email templates from language folders in themes, child themes, and languages folder. (Thanks, Karel Martens)
-* ENHANCEMENT: Added the pmpro_format_phone filter to change how phone numbers are formated. Param 1 is $r, the formatted phone number. Param 2 is $phone, the original phone number.
+* ENHANCEMENT: Added the pmpro_format_phone filter to change how phone numbers are formatted. Param 1 is $r, the formatted phone number. Param 2 is $phone, the original phone number.
 * ENHANCEMENT: Added doc blocks to cleanPhone and formatPhone functions and the new pmpro_format_phone filter.
 
 = 1.8.4.3 =
@@ -1847,7 +1847,7 @@ up the lines of text.
 * BUG: Fixed issue where calls to pmpro_hasMembershipLevel() using level names wasn't working. (Thanks, Scott Slone)
 * BUG: Fixed issue with memberslistcsv capabilities. (Thanks, Arnaud Devic)
 * BUG: Fixed fatal error that could come up sometimes when PMPro could not find a subscription for a user in Stripe. (Thanks, Chris Eller)
-* ENHANCEMENT: Triming whitespace off of search text on members list and orders list searches.
+* ENHANCEMENT: Trimming whitespace off of search text on members list and orders list searches.
 * ENHANCEMENT: Security hardening of SQL queries for members list, orders list, and some helper functions.
 
 = 1.8.1 =
@@ -1922,7 +1922,7 @@ up the lines of text.
 
 = 1.7.14.1 =
 * BUG: Fixed warnings in PayPal Express class that could break redirects at checkout. (Thanks, Adam Warner)
-* BUG: Fixed issue where new users who checked out with Braintree weren't having their customerid's saved, which led to subscription syncronization issues if they checked out again or updated their billing.
+* BUG: Fixed issue where new users who checked out with Braintree weren't having their customerid's saved, which led to subscription synchronization issues if they checked out again or updated their billing.
 * BUG: Fixed warnings in the membership-billing page.
 * BUG: Fixed false positive "There are JavaScript errors on the page. Please contact the webmaster." errors.
 * BUG: Fixed issue where users on some sites running 1.7.14 could not logout.
@@ -1935,7 +1935,7 @@ up the lines of text.
 * BUG/ENHANCEMENT: getMembershipLevel method of MemberOrder can now handle when discount_code property is an object. Also, the IPN Handler and 2Checkout handler will now try to get the discount code for the order to correctly update the users pmpro_memberships_users entry.
 * BUG: Removed extra class attribute from CVV field that interfered with the required * JS code and some other CSS/JS-related things. (Thanks, catapult)
 * ENHANCEMENT: Added code to redirect to the redirect_url if you pass a redirect_url to the login page and the user is already logged in. Updated the links in email confirmations to use login links with redirects instead of direct links.
-* EHANCEMENT: Added pmpro_email_attachments filter, which can be used to add attachments to PMPro emails that are sent out. E.g., https://gist.github.com/strangerstudios/c4e771dca8723613bce3
+* ENHANCEMENT: Added pmpro_email_attachments filter, which can be used to add attachments to PMPro emails that are sent out. E.g., https://gist.github.com/strangerstudios/c4e771dca8723613bce3
 
 = 1.7.13.1 =
 * Fixed bug introduced in 1.7.12 where discount code uses were not being tracked.
@@ -1972,7 +1972,7 @@ up the lines of text.
 = 1.7.10.1 =
 * Fixed bug where the $pmpro_levels global would sometimes not include all levels on the levels page. (A better fix for this is coming in v2.0.)
 * Fixed bug in pmpro_getMemberDays that sometimes reported more days than the user had really been a member. (Thanks, surefireweb)
-* Fixed bug where search results were being incorrectly filtered. The pmpro_search_filter() function in includes/content.php hides member content from non-members if the "show exceprts" setting is set to false.
+* Fixed bug where search results were being incorrectly filtered. The pmpro_search_filter() function in includes/content.php hides member content from non-members if the "show excerpts" setting is set to false.
 * Now checking specifically for payment_status = 'Failed' in the IPN handler before sending off the payment failed emails. (There may be other statuses we want to consider as "failures" as well, but we want to avoid failing on "pending" statuses/etc.)
 
 = 1.7.10 =
@@ -2170,7 +2170,7 @@ up the lines of text.
 * Only checking pmpro_checkForUpgrades in admin/dashboard now. (Thanks, topdown on GitHub)
 * No longer loading recaptcha library in the admin. Also wrapped the recaptchalib require in an init function to delay it a bit so we can check if other plugins have already loaded it.
 * PMPro-Mailchimp and WP-Bouncer have been moved into the WP repository. Other Add-on updates.
-* New users will now be set to the "default role" set in the General settings instead of spefically "subscriber". (Subscriber is the default default role though.) Thanks, Nabil Kadimi.
+* New users will now be set to the "default role" set in the General settings instead of specifically "subscriber". (Subscriber is the default default role though.) Thanks, Nabil Kadimi.
 * Wrapped strings in login report for translation.
 * Added indexes to the following columns in the pmpro_membership_orders table: status, payment_transaction_id, subscription_transaction_id, affiliate_id, affiliate_subid
 
@@ -2285,7 +2285,7 @@ up the lines of text.
 * The pmpro_login_redirect and pmpro_besecure functions, which handle HTTP/HTTPS logic have been updated. pmpro_besecure is now running on login_init instead of login_head to avoid a "cannot resend headers" error. pmpro_login_redirect will strip https from the URL if FORCE_SSL_LOGIN is set but FORCE_SSL_ADMIN is not set to avoid "need to login twice" bugs.
 * Updated code to support auto-hiding ads with newer versions of Easy AdSense.
 * Updated how the members list CSV is generated to avoid PHP notices when meta values are not found/etc. Also added a prefix to the enclose function in memberslist-csv.php (enclose => pmpro_enclose).
-* Now using get_option("date_format") when outputing a date in the admin, frontend, or in an email.
+* Now using get_option("date_format") when outputting a date in the admin, frontend, or in an email.
 * Proper trial support for Stripe. (We use the trial_period_days parameter of the Stripe plan object to push the first payment back - since the first payment is handled in its own transaction. We now also add days to this based on the # of trial subscriptions set for the level in the admin.
 * Added a pmpro_require_billing javascript variable when using Stripe. If a discount code changes the membership level to free, pmpro_require_billing will be set to false and the Stripe JS checks won't fire.
 
@@ -2313,7 +2313,7 @@ up the lines of text.
 
 = 1.5.5 =
 * Updated pmpro_check_site_url_for_https function to cache the siteurl to limit DB queries.
-* Added includes/filters.php to store hacks/filters/actions that were originally developed outside of the PMPro core and brought in later... or just things that are cleaner/easier to impement via hooks and filters.
+* Added includes/filters.php to store hacks/filters/actions that were originally developed outside of the PMPro core and brought in later... or just things that are cleaner/easier to implement via hooks and filters.
 * Added a "delay" property to the membership shortcode. E.g. [membership level="1" delay="7"]...[/membership] will show that content if a member has had level 1 for at least 7 days.
 * If a member checks out for the same level again (extending their membership), the startdate added to pmpro_memberships_users will be their old startdate.
 * If a member checks out for the same level again, the remaining days on their existing membership will be added to their new enddate. So e.g. if a user starts an annual membership in April 2013, then checks out again (extends) their membership in February 2014, their new enddate will be April 2015 instead of February 2015. (NOTE: if you were doing this through the custom code here - https://gist.github.com/3678054 - you should remove your custom code.)
@@ -2323,7 +2323,7 @@ up the lines of text.
 = 1.5.4 =
 * Added a gateway check to preheaders/checkout.php. Mischivous users used to be able to bypass payment by passing &gateway=check or something similar to the checkout page. PMPro would then use the check gateway to checkout. Now only the active gateway option in the payments settings or gateways added via the new pmpro_valid_gateways filter (1 parameter is the array of gateways, add/edit the gateways and return the array). It is important that all PMPro users upgrade to keep mischivious users from accessing your site for free. Any site currently enabling multiple gateway options will need to add code to set the valid gateways. More info here: http://www.paidmembershipspro.com/2012/06/offering-multiple-gateway-options-at-checkout/
 * Fixed bug where level restrictions would be deleted if a page were updated via quick edit.
-* Added if(!class_exists("Stripe")) to the Stripe class definition. This should help with some conflicts if other plugins have their own Stripe library. (Going to udate the Stripe library in the next version and work on supporting new Stripe functionality.)
+* Added if(!class_exists("Stripe")) to the Stripe class definition. This should help with some conflicts if other plugins have their own Stripe library. (Going to update the Stripe library in the next version and work on supporting new Stripe functionality.)
 * Fixed a bug where copying a level didn't properly set recurring billing settings. (Thanks, AtheistsUnited)
 * Fixed some typos. (Thanks, AtheistsUnited)
 * Fixed some warnings.
@@ -2346,7 +2346,7 @@ up the lines of text.
 * Fixed bug in initial and recurring revenue calculation on members list page.
 * Fixed bug when setting membership_level of current user after checkout that could cause various issues. (Thanks, drrobotnik)
 * Fixed bug in Stripe webhook that resulting in cancelation emails being sent to the 1st user in the DB vs. the user who cancelled. (Thanks, Kunjan of QuarkStudios.com)
-* The getLastMemberOrder() method of the MemberOrder class now returns the last order with status = 'success' by deafult. You can override this via the second parameter of the function. So getLastMemberOrder($user_id, "cancelled") to get the last cancelled order or getLastMemberOrder($user_id, false) to get the last order no matter the status.
+* The getLastMemberOrder() method of the MemberOrder class now returns the last order with status = 'success' by default. You can override this via the second parameter of the function. So getLastMemberOrder($user_id, "cancelled") to get the last cancelled order or getLastMemberOrder($user_id, false) to get the last order no matter the status.
 * Added pmpro_authnet_silent_post_fields filter and pmpro_before_authnet_silent_post and pmpro_after_authnet_silent_post hooks to the Authorize.net silent post handler. All hooks are passed the $fields variable built at the top of the script that mirrors the $_REQUEST array.
 
 = 1.5.2.1 =

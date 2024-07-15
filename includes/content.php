@@ -157,7 +157,7 @@ function pmpro_search_filter_pmpro_pages( $query ) {
 		return $query;
 	}
 
-	// Ingore queries that aren't search related.
+	// Ignore queries that aren't search related.
 	if ( ! $query->is_search ) {
 		return $query;
 	}
@@ -244,7 +244,7 @@ function pmpro_search_filter( $query ) {
 
 	/**
 	 * No cache yet. Let's run the queries.
-	 * Some explaination of what we're doing.
+	 * Some explanation of what we're doing.
 	 * A = All posts hidden by level.
 	 * B = All posts hidden by category.
 	 * C = All posts the current user has access to by level.

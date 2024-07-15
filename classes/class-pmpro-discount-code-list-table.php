@@ -562,7 +562,7 @@ class PMPro_Discount_Code_List_Table extends WP_List_Table {
 	}
 
 	/**
-	 * Override single_row function to add error class if the discount code row need to be higlighted due miscounfiguration
+	 * Override single_row function to add error class if the discount code row need to be highlighted due miscounfiguration
 	 *
 	 * @param StdClass $item The current row item.
 	 * @return void
