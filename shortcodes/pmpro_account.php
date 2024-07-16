@@ -404,7 +404,7 @@ function pmpro_shortcode_account($atts, $content=null, $code="")
 				?>
 				<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_card' ) ); ?>">
 					<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_card_content' ) ); ?>">
-						<ul>
+						<ul class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_list' ) ); ?>">
 							<?php
 								do_action("pmpro_member_links_top");
 							?>

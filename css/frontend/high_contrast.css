@@ -650,6 +650,19 @@
 
 	}
 
+	#pmpro_account-links {
+
+		.pmpro_card_content {
+			padding-top: var(--pmpro--base--spacing--large);
+
+			.pmpro_list {
+				margin-bottom: 0;
+			}
+
+		}
+
+	}
+
 	/**
 	* Membership Orders
 	*/
