@@ -371,9 +371,18 @@ function pmpro_checkForUpgrades() {
 	 * Delete the option for pmpro_accepted_credit_cards.
 	 * Modify and set new options for membership required messages.
 	 */
-	if ( $pmpro_db_version < 3.1 ) {
-		require_once( PMPRO_DIR . "/includes/updates/upgrade_3_1.php" );
-		pmpro_upgrade_3_1(); // This function will update the db version.
+	if ( $pmpro_db_version < 3.1001 ) {
+		// Run the dbDelta function for fixing some int columns to be bigint.
+		// Added after 3.1 RCs were released, so DB version for this is 3.1001.
+		pmpro_db_delta();
+
+		// Run the upgrade function for 3.1.
+		if ( $pmpro_db_version < 3.1 ) {
+			require_once( PMPRO_DIR . "/includes/updates/upgrade_3_1.php" );
+			pmpro_upgrade_3_1(); // This function will update the db version.
+		}
+
+		update_option( 'pmpro_db_version', '3.1001' );
 	}
 
 }
@@ -611,8 +620,8 @@ function pmpro_db_delta() {
 	$sqlQuery = "
 		CREATE TABLE `" . $wpdb->pmpro_subscriptions . "` (
 			`id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
-			`user_id` int(11) unsigned NOT NULL,
-			`membership_level_id` int(20) unsigned NOT NULL,
+			`user_id` bigint(20) unsigned NOT NULL,
+			`membership_level_id` int(11) unsigned NOT NULL,
 			`gateway` varchar(64) NOT NULL,
 			`gateway_environment` varchar(64) NOT NULL,
 			`subscription_transaction_id` varchar(32) NOT NULL,
@@ -639,7 +648,7 @@ function pmpro_db_delta() {
 	$sqlQuery = "
 		CREATE TABLE `" . $wpdb->pmpro_membership_ordermeta . "` (
 		  `meta_id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
-		  `pmpro_membership_order_id` int(11) unsigned NOT NULL,
+		  `pmpro_membership_order_id` bigint(20) unsigned NOT NULL,
 		  `meta_key` varchar(255) NOT NULL,
 		  `meta_value` longtext,
 		  PRIMARY KEY (`meta_id`),
@@ -653,7 +662,7 @@ function pmpro_db_delta() {
 	$sqlQuery = "
 		CREATE TABLE `" . $wpdb->pmpro_subscriptionmeta . "` (
 		  `meta_id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
-		  `pmpro_subscription_id` int(11) unsigned NOT NULL,
+		  `pmpro_subscription_id` bigint(20) unsigned NOT NULL,
 		  `meta_key` varchar(255) NOT NULL,
 		  `meta_value` longtext,
 		  PRIMARY KEY (`meta_id`),

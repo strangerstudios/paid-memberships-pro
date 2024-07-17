@@ -118,7 +118,7 @@ CREATE TABLE `wp_pmpro_membership_levelmeta` (
 
 CREATE TABLE `wp_pmpro_membership_ordermeta` (
   `meta_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `pmpro_membership_order_id` int(10) unsigned NOT NULL,
+  `pmpro_membership_order_id` bigint(20) unsigned NOT NULL,
   `meta_key` varchar(255) NOT NULL,
   `meta_value` longtext,
   PRIMARY KEY (`meta_id`),
@@ -247,8 +247,8 @@ CREATE TABLE `wp_pmpro_memberships_users` (
 
 CREATE TABLE `wp_pmpro_subscriptions` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
-  `user_id` int(11) unsigned NOT NULL,
-  `membership_level_id` int(20) unsigned NOT NULL,
+  `user_id` bigint(20) unsigned NOT NULL,
+	`membership_level_id` int(11) unsigned NOT NULL,
   `gateway` varchar(64) NOT NULL,
   `gateway_environment` varchar(64) NOT NULL,
   `subscription_transaction_id` varchar(32) NOT NULL,
@@ -277,7 +277,7 @@ CREATE TABLE `wp_pmpro_subscriptions` (
 
 CREATE TABLE `wp_pmpro_subscriptionmeta` (
   `meta_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `pmpro_subscription_id` int(10) unsigned NOT NULL,
+  `pmpro_subscription_id` bigint(20) unsigned NOT NULL,
   `meta_key` varchar(255) NOT NULL,
   `meta_value` longtext,
   PRIMARY KEY (`meta_id`),
