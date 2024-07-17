@@ -80,7 +80,7 @@
 						</div>
 						<div id="pmpro_style_variation_item-high-contrast" class="pmpro_style_variation_item">
 							<label for="style_high_contrast">
-								<input name="style_variation" id="style_high_contrast" type="radio" value="high_contrast" class="tog" <?php checked( 'high_contrast', $pmpro_style_variation ); ?>>
+								<input name="style_variation" id="style_high_contrast" type="radio" value="variation_high_contrast" class="tog" <?php checked( 'variation_high_contrast', $pmpro_style_variation ); ?>>
 								<span class="pmpro_style_variation_item-name"><?php esc_html_e( 'High Contrast', 'paid-memberships-pro' ); ?></span>
 								<?php pmpro_style_variation_item_preview_html(); ?>
 								<p class="description"><?php esc_html_e( 'Crisp borders and high contrast colors.', 'paid-memberships-pro' ); ?></p>

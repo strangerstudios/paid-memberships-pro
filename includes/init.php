@@ -146,19 +146,26 @@ function pmpro_print_root_color_values() {
 }
 add_action( 'wp_head', 'pmpro_print_root_color_values' );
 
-/*
-	Add PMPro page names to the BODY class.
-*/
-function pmpro_body_class($classes)
-{
+/**
+ * Add PMPro CSS selectors to the BODY class.
+ *
+ * @param array $classes An array of body classes.
+ */
+function pmpro_body_class( $classes ) {
 	global $pmpro_body_classes;
 
-	if(is_array($pmpro_body_classes))
-		$classes = array_merge($pmpro_body_classes, $classes);
+	// Add PMPro classes based on the site's selected style variation.
+	$pmpro_style_variation = get_option( 'pmpro_style_variation', 'variation_1' );
+	! empty( $pmpro_style_variation ) ? array_unshift( $classes, 'pmpro-' . esc_attr( $pmpro_style_variation ) ) : '';
+
+	// Add PMPro classes based on the current page.
+	if ( is_array($pmpro_body_classes ) ) {
+		$classes = array_merge( $pmpro_body_classes, $classes );
+	}
 
 	return $classes;
 }
-add_filter("body_class", "pmpro_body_class");
+add_filter( 'body_class', 'pmpro_body_class' );
 
 //add membership level to current user object
 function pmpro_set_current_user()
