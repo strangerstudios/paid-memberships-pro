@@ -34,6 +34,7 @@
 * BUG FIX: Fixed an issue where there might not be a space between class names when creating a user field. #3046 (@kimcoleman)
 * BUG FIX: Fixed issues where user IDs over 4294967295 would not be correctly linked to their subscription. #3065 (@dparker1005)
 * BUG FIX: Fixed over-escaped HTML in the admin activity email. #2985 (@MaximilianoRicoTabo)
+* BUG FIX: Fixed some typos in the plugin. #3062 (@szepeviktor)
 * REFACTOR: Updated the checkout preheader to use the abstracted `pmpro_complete_checkout()` function. #2937 (@dparker1005)
 * REFACTOR: Removed duplicate code from PayPal gateway classes. #2932 (@dparker1005)
 * DEPRECATED: Removed the ability to customize no access messages for the RSS feed and the secondary option for logged out members. Filters should be used to customize these messages. #3003 (@kimcoleman)
