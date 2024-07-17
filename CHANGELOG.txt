@@ -1,5 +1,5 @@
 == Changelog ==
-= 3.1 RC2 - 2024-07-11 =
+= 3.1 - 2024-07-17 =
 * FEATURE: Added a new "Design" tab to the Memberships > Settings page with multiple frontend style variations to choose from. #3003 (@kimcoleman)
 * FEATURE: Added a new "Security" tab to the Memberships > Settings page. #2999 (@MaximilianoRicoTabo)
 * ENHANCEMENT: Updated the styling of frontend pages. #3003 (@kimcoleman)
@@ -32,6 +32,7 @@
 * BUG FIX: Fixed an issue where the "From Name" email setting could add slashes before escaped characters when saved. #3050 (@andrewlimaza)
 * BUG FIX: Fixed an issue where the "View With" admin bar dropdown might not work correctly when using Firefox. #2953 (@MaximilianoRicoTabo)
 * BUG FIX: Fixed an issue where there might not be a space between class names when creating a user field. #3046 (@kimcoleman)
+* BUG FIX: Fixed issues where user IDs over 4294967295 would not be correctly linked to their subscription. #3065 (@dparker1005)
 * BUG FIX: Fixed over-escaped HTML in the admin activity email. #2985 (@MaximilianoRicoTabo)
 * REFACTOR: Updated the checkout preheader to use the abstracted `pmpro_complete_checkout()` function. #2937 (@dparker1005)
 * REFACTOR: Removed duplicate code from PayPal gateway classes. #2932 (@dparker1005)
@@ -42,6 +43,7 @@
 * DEPRECATED: Removed setting and display of SSL Seal Code option from database and frontend pages. #2991 (@kimcoleman)
 * DEPRECATED: No longer storing an option for accepted card types or allowing a card type select field in payment forms. #2989 (@kimcoleman)
 * DEPRECATED: Deprecated the billable invoice, credit card expiring, checkout express, checkout trial, and checkout free trial email templates along with their admin counterparts. #3032 (@MaximilianoRicoTabo)
+* DEPRECATED: Removed the setup.sql file from the plugin. #3068 (@dparker1005)
 
 = 3.0.6 - 2024-07-01 =
 * SECURITY: Fixed an authenticated SQL injection vulnerability in the Orders and Discount Codes list tables. (Thanks, Trương Hữu Phúc from Patchstack)
