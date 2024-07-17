@@ -142,7 +142,7 @@ Are you comparing Paid Memberships Pro with another membership plugin or third-p
 * [Patreon](https://www.paidmembershipspro.com/paid-memberships-pro-vs-patreon/)
 * [Substack](https://www.paidmembershipspro.com/paid-memberships-pro-vs-substack/)
 
-...and more. You can [read all of these comparision guides here](https://www.paidmembershipspro.com/category/product-comparison/).
+...and more. You can [read all of these comparison guides here](https://www.paidmembershipspro.com/category/product-comparison/).
 
 == Installation ==
 

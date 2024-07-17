@@ -946,7 +946,7 @@ window.addEventListener("DOMContentLoaded", () => {
 					// If we changed tabs, reset the inputChanged flag.
 					inputChanged = false;
 
-					// Hide tne PMPro message.
+					// Hide the PMPro message.
 					const pmproMessage = document.querySelector('#pmpro_message');
 					if ( pmproMessage ) {
 						pmproMessage.style.display = 'none';

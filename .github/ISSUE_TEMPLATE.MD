@@ -11,7 +11,7 @@
 <!-- MARK COMPLETED ITEMS WITH AN [x] -->
 
 - [ ] I have searched for similar issues in both open and closed tickets and cannot find a duplicate.
-- [ ] The issue still exists against the latest `dev` branch of Paid Memberships Pro on Github (this is **not** the same version as on WordPress.org!)
+- [ ] The issue still exists against the latest `dev` branch of Paid Memberships Pro on GitHub (this is **not** the same version as on WordPress.org!)
 - [ ] I have attempted to find the simplest possible steps to reproduce the issue
 
 ## Steps to reproduce the issue

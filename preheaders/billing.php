@@ -272,7 +272,7 @@ if ($submit) {
             $pmproemail = new PMProEmail();
             $pmproemail->sendBillingAdminEmail($current_user, $pmpro_billing_order);
 
-            // Save billing info ect, as user meta.
+            // Save billing info etc, as user meta.
 			$meta_keys   = array();
 			$meta_values = array();
 
