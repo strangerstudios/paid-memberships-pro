@@ -2,14 +2,14 @@
 # This file is distributed under the same license as the Paid Memberships Pro plugin.
 msgid ""
 msgstr ""
-"Project-Id-Version: Paid Memberships Pro 3.0.99\n"
+"Project-Id-Version: Paid Memberships Pro 3.1\n"
 "Report-Msgid-Bugs-To: info@paidmembershipspro.com\n"
 "Last-Translator: Paid Memberships Pro <info@paidmembershipspro.com>\n"
 "Language-Team: Paid Memberships Pro <info@paidmembershipspro.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2024-07-05T18:48:50+00:00\n"
+"POT-Creation-Date: 2024-07-17T17:59:45+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.10.0\n"
 "X-Domain: paid-memberships-pro\n"
@@ -892,6 +892,7 @@ msgstr "Requerir suscripción"
 #: adminpages/subscriptions.php:162
 #: includes/init.php:222
 #: pages/confirmation.php:107
+#: includes/init.php:229
 msgid "Membership Level"
 msgstr "Tipo de suscripción"
 
@@ -966,6 +967,7 @@ msgstr "Nivel actual"
 #: adminpages/levels/edit-level.php:619
 #: classes/class-pmpro-discount-code-list-table.php:560
 #: includes/init.php:243
+#: includes/init.php:250
 msgid "None"
 msgstr "Ninguno"
 
@@ -1516,6 +1518,7 @@ msgstr "Pasarela de pagos &amp; SSL"
 #: includes/profile.php:1148
 #: pages/confirmation.php:105
 #: shortcodes/pmpro_account.php:77
+#: adminpages/member-edit/pmpro-class-member-edit-panel-orders.php:86
 msgid "Email"
 msgstr "Email"
 
@@ -1782,6 +1785,7 @@ msgstr "En caso positivo, crear una página WordPress que contiene tus términos
 #: adminpages/pagesettings.php:719
 #: adminpages/paymentsettings.php:222
 #: adminpages/securitysettings.php:423
+#: adminpages/paymentsettings.php:223
 msgid "Save Settings"
 msgstr "Guardar opciones"
 
@@ -3254,6 +3258,8 @@ msgstr "Periodo de prueba"
 #: pages/cancel.php:100
 #: adminpages/membershiplevels.php:364
 #: pages/cancel.php:105
+#: pages/cancel.php:135
+#: pages/cancel.php:147
 msgid "Expiration"
 msgstr "Expiración"
 
@@ -3603,6 +3609,7 @@ msgstr "Apellidos"
 #: classes/class-pmpro-members-list-table.php:139
 #: pages/billing.php:195
 #: pages/checkout.php:320
+#: pages/checkout.php:348
 msgid "Billing Address"
 msgstr "Dirección de facturación"
 
@@ -4744,6 +4751,7 @@ msgstr "Guardar pago"
 #: pages/billing.php:379
 #: pages/cancel.php:123
 #: shortcodes/pmpro_account.php:256
+#: pages/cancel.php:153
 msgid "Cancel"
 msgstr "Cancelar"
 
@@ -4900,6 +4908,7 @@ msgstr "IDs de transacción"
 #: adminpages/dashboard.php:368
 #: adminpages/member-edit/pmpro-class-member-edit-panel-orders.php:94
 #: classes/class-pmpro-orders-list-table.php:1083
+#: adminpages/member-edit/pmpro-class-member-edit-panel-orders.php:96
 msgid "deleted"
 msgstr "borrado"
 
@@ -5274,6 +5283,7 @@ msgstr "Vendedor"
 #: adminpages/member-edit/pmpro-class-member-edit-panel-user-info.php:123
 #: classes/gateways/class.pmprogateway_payflowpro.php:141
 #: pages/checkout.php:205
+#: pages/checkout.php:214
 msgid "Password"
 msgstr "Contraseña"
 
@@ -5423,6 +5433,7 @@ msgstr "Llave de encripción para el lado del cliente (Client-Side Encryption Ke
 #: adminpages/paymentsettings.php:204
 #: adminpages/paymentsettings.php:212
 #: adminpages/paymentsettings.php:180
+#: adminpages/paymentsettings.php:181
 msgid "Currency"
 msgstr "Moneda"
 
@@ -5452,6 +5463,7 @@ msgstr "A nombre de quien escribir el cheque. Donde enviarlo. Mostrado durante c
 #: adminpages/paymentsettings.php:239
 #: adminpages/paymentsettings.php:247
 #: adminpages/paymentsettings.php:201
+#: adminpages/paymentsettings.php:202
 msgid "Sales Tax"
 msgstr "IVA (impuesto a las ventas)"
 
@@ -5467,6 +5479,7 @@ msgstr "IVA (impuesto a las ventas)"
 #: adminpages/paymentsettings.php:247
 #: pages/billing.php:165
 #: adminpages/paymentsettings.php:201
+#: adminpages/paymentsettings.php:202
 msgid "optional"
 msgstr "opcional"
 
@@ -5476,6 +5489,7 @@ msgstr "opcional"
 #: adminpages/paymentsettings.php:242
 #: adminpages/paymentsettings.php:250
 #: adminpages/paymentsettings.php:204
+#: adminpages/paymentsettings.php:205
 msgid "Tax State"
 msgstr "Impuesto del estado"
 
@@ -5485,6 +5499,7 @@ msgstr "Impuesto del estado"
 #: adminpages/paymentsettings.php:243
 #: adminpages/paymentsettings.php:251
 #: adminpages/paymentsettings.php:205
+#: adminpages/paymentsettings.php:206
 msgid "abbreviation, e.g. \"PA\""
 msgstr "abreviación, p.ej. \"PA\""
 
@@ -5494,6 +5509,7 @@ msgstr "abreviación, p.ej. \"PA\""
 #: adminpages/paymentsettings.php:245
 #: adminpages/paymentsettings.php:253
 #: adminpages/paymentsettings.php:207
+#: adminpages/paymentsettings.php:208
 msgid "decimal, e.g. \"0.06\""
 msgstr "decimal, p.ej. \"0.06\""
 
@@ -6095,6 +6111,7 @@ msgstr "Confirmación de suscripción para %s"
 #: pages/checkout.php:164
 #: pages/checkout.php:473
 #: pages/invoice.php:300
+#: pages/checkout.php:501
 msgid "Discount Code"
 msgstr "Cupón de descuento"
 
@@ -6795,6 +6812,8 @@ msgstr "Tu suscripción esta <strong>activa</strong>."
 #: pages/levels.php:76
 #: shortcodes/pmpro_account.php:331
 #: shortcodes/pmpro_account.php:366
+#: pages/cancel.php:134
+#: pages/cancel.php:144
 msgid "Level"
 msgstr "Nivel"
 
@@ -7017,6 +7036,7 @@ msgstr "Tu subscripción de pago es gestionada por Paypal. Por favor <a href=\"h
 #: includes/profile.php:1145
 #: pages/billing.php:199
 #: pages/checkout.php:324
+#: pages/checkout.php:352
 msgid "First Name"
 msgstr "Nombre"
 
@@ -7049,6 +7069,7 @@ msgstr "Nombre"
 #: includes/profile.php:1146
 #: pages/billing.php:203
 #: pages/checkout.php:328
+#: pages/checkout.php:356
 msgid "Last Name"
 msgstr "Apellidos"
 
@@ -7066,6 +7087,7 @@ msgstr "Apellidos"
 #: pages/checkout.php:309
 #: pages/billing.php:207
 #: pages/checkout.php:332
+#: pages/checkout.php:360
 msgid "Address 1"
 msgstr "Direccion 1"
 
@@ -7083,6 +7105,7 @@ msgstr "Direccion 1"
 #: pages/checkout.php:313
 #: pages/billing.php:211
 #: pages/checkout.php:336
+#: pages/checkout.php:364
 msgid "Address 2"
 msgstr "Direccion 2"
 
@@ -7100,6 +7123,7 @@ msgstr "Direccion 2"
 #: pages/checkout.php:320
 #: pages/billing.php:216
 #: pages/checkout.php:340
+#: pages/checkout.php:368
 msgid "City"
 msgstr "Ciudad"
 
@@ -7117,6 +7141,7 @@ msgstr "Ciudad"
 #: pages/checkout.php:324
 #: pages/billing.php:220
 #: pages/checkout.php:344
+#: pages/checkout.php:372
 msgid "State"
 msgstr "Estado"
 
@@ -7134,6 +7159,7 @@ msgstr "Estado"
 #: pages/checkout.php:328
 #: pages/billing.php:224
 #: pages/checkout.php:348
+#: pages/checkout.php:376
 msgid "Postal Code"
 msgstr "Código postal"
 
@@ -7166,6 +7192,7 @@ msgstr "Ciudad, Código postal de estado"
 #: pages/checkout.php:370
 #: pages/billing.php:234
 #: pages/checkout.php:355
+#: pages/checkout.php:383
 msgid "Country"
 msgstr "País"
 
@@ -7183,6 +7210,7 @@ msgstr "País"
 #: pages/checkout.php:386
 #: pages/billing.php:260
 #: pages/checkout.php:397
+#: pages/checkout.php:425
 msgid "Phone"
 msgstr "Teléfono"
 
@@ -7206,6 +7234,8 @@ msgstr "Teléfono"
 #: pages/checkout.php:401
 #: pages/checkout.php:232
 #: pages/checkout.php:382
+#: pages/checkout.php:256
+#: pages/checkout.php:410
 msgid "Email Address"
 msgstr "Dirección de Email"
 
@@ -7222,6 +7252,7 @@ msgstr "Dirección de Email"
 #: pages/billing.php:286
 #: pages/checkout.php:408
 #: pages/checkout.php:389
+#: pages/checkout.php:417
 msgid "Confirm Email"
 msgstr "Confirmar E-mail"
 
@@ -7276,6 +7307,7 @@ msgstr "Información de la tarjeta de crédito"
 #: classes/gateways/class.pmprogateway_stripe.php:938
 #: pages/billing.php:313
 #: pages/checkout.php:427
+#: pages/checkout.php:455
 msgid "Card Number"
 msgstr "Número de la Tarjeta"
 
@@ -7361,8 +7393,11 @@ msgstr "Esta subscripción no es recurrente.  Por lo tanto no necesitas actualiz
 #: pages/cancel.php:48
 #: pages/cancel.php:49
 #: pages/cancel.php:50
+#: pages/cancel.php:63
 msgid "Are you sure you want to cancel your membership?"
-msgstr "¿Estas seguro de que quieres cancelar tu suscripción?"
+msgid_plural "Are you sure you want to cancel all of your memberships?"
+msgstr[0] ""
+msgstr[1] ""
 
 #: pages/cancel.php:17
 msgid "Yes, cancel my account"
@@ -7470,6 +7505,7 @@ msgstr "Haz click aquí para introducir tu cupón de descuento"
 #: classes/gateways/class.pmprogateway_stripe.php:961
 #: pages/checkout.php:167
 #: pages/checkout.php:476
+#: pages/checkout.php:504
 msgid "Apply"
 msgstr "Aplicar"
 
@@ -7480,6 +7516,7 @@ msgstr "Aplicar"
 #: pages/checkout.php:155
 #: pages/checkout.php:187
 #: pages/checkout.php:275
+#: pages/checkout.php:303
 msgid "Already have an account?"
 msgstr "¿Ya tienes una cuenta?"
 
@@ -7491,6 +7528,7 @@ msgstr "¿Ya tienes una cuenta?"
 #: pages/checkout.php:187
 #: includes/functions.php:2181
 #: pages/checkout.php:275
+#: pages/checkout.php:303
 msgid "Log in here"
 msgstr "logeate aquí"
 
@@ -7517,6 +7555,7 @@ msgstr "Información de la cuenta"
 #: adminpages/member-edit/pmpro-class-member-edit-panel-user-info.php:137
 #: adminpages/member-edit/pmpro-class-member-edit-panel-user-info.php:144
 #: pages/checkout.php:219
+#: pages/checkout.php:229
 msgid "Confirm Password"
 msgstr "Confirma tu contraseña"
 
@@ -7527,6 +7566,7 @@ msgstr "Confirma tu contraseña"
 #: pages/checkout.php:197
 #: pages/checkout.php:229
 #: pages/checkout.php:240
+#: pages/checkout.php:264
 msgid "Confirm Email Address"
 msgstr "Confirma tu dirección de E-mail"
 
@@ -7537,6 +7577,7 @@ msgstr "Confirma tu dirección de E-mail"
 #: pages/checkout.php:210
 #: pages/checkout.php:242
 #: pages/checkout.php:252
+#: pages/checkout.php:280
 msgid "Full Name"
 msgstr "Nombre Completo"
 
@@ -7547,6 +7588,7 @@ msgstr "Nombre Completo"
 #: pages/checkout.php:211
 #: pages/checkout.php:243
 #: pages/checkout.php:253
+#: pages/checkout.php:281
 msgid "LEAVE THIS BLANK"
 msgstr "DEJA ESTO EN BLANCO"
 
@@ -7557,6 +7599,7 @@ msgstr "DEJA ESTO EN BLANCO"
 #: pages/checkout.php:227
 #: pages/checkout.php:259
 #: pages/checkout.php:267
+#: pages/checkout.php:295
 #, php-format
 msgid "You are logged in as <strong>%s</strong>. If you would like to use a different account for this membership, <a href=\"%s\">log out now</a>."
 msgstr "Estas logeado como <strong>%s</strong>. Si deseas usar una cuenta diferente para esta suscripción,<a href=\"%s\">deslogeate ahora</a>."
@@ -7580,6 +7623,7 @@ msgstr "Acepto %s"
 #: pages/checkout.php:244
 #: pages/checkout.php:276
 #: pages/checkout.php:290
+#: pages/checkout.php:318
 msgid "Choose your Payment Method"
 msgstr "Elije tu método de pago"
 
@@ -7590,6 +7634,7 @@ msgstr "Elije tu método de pago"
 #: pages/checkout.php:249
 #: pages/checkout.php:281
 #: pages/checkout.php:297
+#: pages/checkout.php:325
 msgid "Check Out with a Credit Card Here"
 msgstr "Pague con su tarjeta de crédito aquí"
 
@@ -7614,6 +7659,7 @@ msgstr "Pague con su tarjeta de crédito aquí"
 #: pages/checkout.php:285
 #: classes/gateways/class.pmprogateway_paypalexpress.php:531
 #: pages/checkout.php:303
+#: pages/checkout.php:331
 msgid "Check Out with PayPal"
 msgstr "pague con PayPal"
 
@@ -7669,6 +7715,7 @@ msgstr "Aceptamos %s"
 #: pages/billing.php:170
 #: pages/billing.php:283
 #: pages/checkout.php:422
+#: pages/checkout.php:450
 msgid "Payment Information"
 msgstr "Información de pago"
 
@@ -7709,6 +7756,7 @@ msgstr "Completa el pago"
 #: classes/gateways/class.pmprogateway_paypalexpress.php:523
 #: classes/gateways/class.pmprogateway_paypalstandard.php:176
 #: pages/checkout.php:586
+#: pages/checkout.php:614
 msgid "Submit and Check Out"
 msgstr "Envíar y pagar"
 
@@ -7740,6 +7788,7 @@ msgstr "Envíar y pagar"
 #: classes/gateways/class.pmprogateway_paypalstandard.php:176
 #: classes/gateways/class.pmprogateway_twocheckout.php:209
 #: pages/checkout.php:586
+#: pages/checkout.php:614
 msgid "Submit and Confirm"
 msgstr "Enviar y confirmar"
 
@@ -7752,6 +7801,7 @@ msgstr "Enviar y confirmar"
 #: pages/checkout.php:619
 #: pages/checkout.php:621
 #: pages/checkout.php:596
+#: pages/checkout.php:624
 msgid "Processing..."
 msgstr "Procesando..."
 
@@ -7831,6 +7881,7 @@ msgstr "Factura #%s en %s"
 #: classes/class-pmpro-orders-list-table.php:995
 #: classes/class-pmpro-orders-list-table.php:1005
 #: adminpages/member-edit/pmpro-class-member-edit-panel-orders.php:79
+#: adminpages/member-edit/pmpro-class-member-edit-panel-orders.php:81
 msgid "Print"
 msgstr "Imprimir"
 
@@ -7945,6 +7996,8 @@ msgstr "Pendiente"
 #: pages/cancel.php:158
 #: pages/confirmation.php:128
 #: pages/invoice.php:389
+#: pages/cancel.php:175
+#: pages/cancel.php:192
 msgid "View Your Membership Account &rarr;"
 msgstr "Ver tu cuenta de miembro &rarr;"
 
@@ -10012,6 +10065,7 @@ msgstr ""
 #: classes/class-pmpro-orders-list-table.php:970
 #: adminpages/member-edit/pmpro-class-member-edit-panel-orders.php:76
 #: includes/fields.php:1385
+#: adminpages/member-edit/pmpro-class-member-edit-panel-orders.php:78
 msgid "Edit"
 msgstr ""
 
@@ -11119,6 +11173,7 @@ msgstr ""
 #: includes/login.php:751
 #: includes/login.php:502
 #: includes/login.php:848
+#: includes/login.php:841
 msgid "Log In"
 msgstr ""
 
@@ -11504,6 +11559,7 @@ msgstr ""
 #: adminpages/paymentsettings.php:199
 #: adminpages/paymentsettings.php:204
 #: adminpages/paymentsettings.php:172
+#: adminpages/paymentsettings.php:173
 msgid "Currency and Tax Settings"
 msgstr ""
 
@@ -11512,6 +11568,7 @@ msgstr ""
 #: adminpages/paymentsettings.php:220
 #: adminpages/paymentsettings.php:228
 #: adminpages/paymentsettings.php:196
+#: adminpages/paymentsettings.php:197
 msgid "Not all currencies will be supported by every gateway. Please check with your gateway."
 msgstr ""
 
@@ -11520,6 +11577,7 @@ msgstr ""
 #: adminpages/paymentsettings.php:244
 #: adminpages/paymentsettings.php:252
 #: adminpages/paymentsettings.php:206
+#: adminpages/paymentsettings.php:207
 msgid "Tax Rate"
 msgstr ""
 
@@ -12210,6 +12268,8 @@ msgstr ""
 #: adminpages/member-edit/pmpro-class-member-edit-panel-orders.php:153
 #: adminpages/member-edit/pmpro-class-member-edit-panel-subscriptions.php:128
 #: pages/invoice.php:96
+#: adminpages/member-edit/pmpro-class-member-edit-panel-orders.php:148
+#: adminpages/member-edit/pmpro-class-member-edit-panel-orders.php:155
 msgid "&#8212;"
 msgstr ""
 
@@ -17543,6 +17603,7 @@ msgstr ""
 #: includes/login.php:733
 #: includes/login.php:561
 #: includes/login.php:831
+#: includes/login.php:824
 msgid "Reset Password"
 msgstr ""
 
@@ -17691,6 +17752,7 @@ msgstr ""
 #: includes/login.php:591
 #: includes/login.php:589
 #: includes/login.php:671
+#: includes/login.php:664
 msgid "Username or Email Address"
 msgstr ""
 
@@ -17700,6 +17762,7 @@ msgstr ""
 #: includes/login.php:597
 #: includes/login.php:595
 #: includes/login.php:679
+#: includes/login.php:672
 msgid "Get New Password"
 msgstr ""
 
@@ -17719,6 +17782,7 @@ msgstr ""
 #: includes/login.php:721
 #: includes/login.php:808
 #: includes/profile.php:1315
+#: includes/login.php:801
 msgid "New Password"
 msgstr ""
 
@@ -17742,6 +17806,7 @@ msgstr ""
 #: includes/login.php:827
 #: includes/profile.php:1329
 #: includes/scripts.php:81
+#: includes/login.php:820
 msgid "Strength Indicator"
 msgstr ""
 
@@ -17761,6 +17826,7 @@ msgstr ""
 #: includes/login.php:727
 #: includes/login.php:820
 #: includes/profile.php:1322
+#: includes/login.php:813
 msgid "Confirm New Password"
 msgstr ""
 
@@ -17771,6 +17837,7 @@ msgstr ""
 #: includes/login.php:758
 #: includes/functions.php:2136
 #: includes/login.php:855
+#: includes/login.php:848
 msgid "Join Now"
 msgstr ""
 
@@ -17780,6 +17847,7 @@ msgstr ""
 #: includes/login.php:762
 #: includes/login.php:760
 #: includes/login.php:857
+#: includes/login.php:850
 msgid "Register"
 msgstr ""
 
@@ -17789,6 +17857,7 @@ msgstr ""
 #: includes/login.php:767
 #: includes/login.php:765
 #: includes/login.php:862
+#: includes/login.php:855
 msgid "Lost Password?"
 msgstr ""
 
@@ -17801,6 +17870,7 @@ msgstr ""
 #: includes/login.php:865
 #: includes/login.php:863
 #: includes/login.php:960
+#: includes/login.php:953
 msgid "Invalid Request"
 msgstr ""
 
@@ -17818,6 +17888,7 @@ msgstr ""
 #: includes/login.php:1097
 #: pages/confirmation.php:99
 #: shortcodes/pmpro_account.php:70
+#: includes/login.php:1090
 msgid "Welcome, %s"
 msgstr ""
 
@@ -17842,6 +17913,7 @@ msgstr ""
 #: includes/login.php:1034
 #: includes/login.php:1134
 #: shortcodes/pmpro_account.php:102
+#: includes/login.php:1127
 msgid "Log Out"
 msgstr ""
 
@@ -17869,6 +17941,7 @@ msgstr ""
 #: includes/admin.php:200
 #: includes/updates/upgrade_2_10_6.php:48
 #: includes/deprecated.php:1048
+#: includes/updates/upgrade_3_1.php:78
 msgid "Dismiss this notice."
 msgstr ""
 
@@ -18114,6 +18187,7 @@ msgstr ""
 #: pages/invoice.php:45
 #: pages/invoice.php:350
 #: shortcodes/pmpro_account.php:353
+#: adminpages/member-edit/pmpro-class-member-edit-panel-orders.php:159
 msgid "Paid"
 msgstr ""
 
@@ -18195,6 +18269,7 @@ msgstr ""
 #: includes/profile.php:844
 #: adminpages/member-edit/pmpro-class-member-edit-panel-orders.php:174
 #: adminpages/member-edit/pmpro-class-member-edit-panel-orders.php:177
+#: adminpages/member-edit/pmpro-class-member-edit-panel-orders.php:179
 msgid "No membership orders found."
 msgstr ""
 
@@ -18401,6 +18476,9 @@ msgstr ""
 #: includes/profile.php:1303
 #: includes/profile.php:1316
 #: includes/profile.php:1323
+#: includes/login.php:665
+#: includes/login.php:802
+#: includes/login.php:814
 msgid "Required Field"
 msgstr ""
 
@@ -18533,7 +18611,9 @@ msgstr[1] ""
 #: pages/cancel.php:78
 #: pages/cancel.php:79
 msgid "Yes, cancel this membership"
-msgstr ""
+msgid_plural "Yes, cancel these memberships"
+msgstr[0] ""
+msgstr[1] ""
 
 #: pages/cancel.php:57
 #: pages/cancel.php:59
@@ -18542,7 +18622,9 @@ msgstr ""
 #: pages/cancel.php:79
 #: pages/cancel.php:80
 msgid "No, keep this membership"
-msgstr ""
+msgid_plural "No, keep these memberships"
+msgstr[0] ""
+msgstr[1] ""
 
 #: pages/cancel.php:66
 #: shortcodes/pmpro_account.php:38
@@ -18555,6 +18637,7 @@ msgstr ""
 #: pages/cancel.php:95
 #: pages/cancel.php:98
 #: shortcodes/pmpro_account.php:144
+#: pages/cancel.php:127
 msgid "My Memberships"
 msgstr ""
 
@@ -18564,6 +18647,7 @@ msgstr ""
 #: pages/cancel.php:120
 #: pages/cancel.php:128
 #: pages/cancel.php:133
+#: pages/cancel.php:167
 msgid "Cancel All Memberships"
 msgstr ""
 
@@ -18584,6 +18668,7 @@ msgstr ""
 #: pages/checkout.php:459
 #: pages/checkout.php:491
 #: pages/checkout.php:465
+#: pages/checkout.php:493
 msgid "Security Code (CVC)"
 msgstr ""
 
@@ -20525,6 +20610,8 @@ msgstr ""
 #: includes/login.php:694
 #: includes/login.php:769
 #: includes/login.php:778
+#: includes/login.php:762
+#: includes/login.php:771
 msgid "Your password reset link appears to be invalid. Please request a new link below."
 msgstr ""
 
@@ -20542,6 +20629,8 @@ msgstr ""
 #: includes/login.php:696
 #: includes/login.php:771
 #: includes/login.php:780
+#: includes/login.php:764
+#: includes/login.php:773
 msgid "Your password reset link has expired. Please request a new link below."
 msgstr ""
 
@@ -20555,6 +20644,7 @@ msgstr ""
 #: includes/login.php:1069
 #: includes/login.php:1067
 #: includes/login.php:1168
+#: includes/login.php:1161
 msgid "Missing request ID."
 msgstr ""
 
@@ -20568,6 +20658,7 @@ msgstr ""
 #: includes/login.php:1073
 #: includes/login.php:1071
 #: includes/login.php:1172
+#: includes/login.php:1165
 msgid "Missing confirm key."
 msgstr ""
 
@@ -20686,6 +20777,7 @@ msgstr ""
 #: adminpages/paymentsettings.php:250
 #: adminpages/paymentsettings.php:258
 #: adminpages/paymentsettings.php:212
+#: adminpages/paymentsettings.php:213
 msgid "US only. If values are given, tax will be applied for any members ordering from the selected state. For non-US or more complex tax rules, use the %s."
 msgstr ""
 
@@ -20910,6 +21002,7 @@ msgstr ""
 #: adminpages/member-edit/pmpro-class-member-edit-panel-orders.php:67
 #: classes/class-pmpro-orders-list-table.php:955
 #: adminpages/member-edit/pmpro-class-member-edit-panel-orders.php:71
+#: adminpages/member-edit/pmpro-class-member-edit-panel-orders.php:73
 msgid "ID: %s"
 msgstr ""
 
@@ -21154,6 +21247,7 @@ msgstr ""
 #: adminpages/subscriptions.php:261
 #: adminpages/subscriptions.php:275
 #: includes/functions.php:641
+#: adminpages/member-edit/pmpro-class-member-edit-panel-orders.php:60
 msgid "%1$s at %2$s"
 msgstr ""
 
@@ -24599,6 +24693,7 @@ msgstr ""
 #: includes/login.php:923
 #: includes/login.php:921
 #: includes/login.php:1018
+#: includes/login.php:1011
 msgid "<strong>Error:</strong> The password field is empty."
 msgstr ""
 
@@ -25195,6 +25290,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_stripe.php:961
 #: pages/checkout.php:167
 #: pages/checkout.php:476
+#: pages/checkout.php:504
 msgid "Apply discount code"
 msgstr ""
 
@@ -27085,6 +27181,7 @@ msgstr ""
 #: pages/cancel.php:134
 #: pages/cancel.php:142
 #: pages/cancel.php:153
+#: pages/cancel.php:187
 msgid "View the Homepage &rarr;"
 msgstr ""
 
@@ -28064,6 +28161,7 @@ msgstr ""
 #: adminpages/member-edit/pmpro-class-member-edit-panel-orders.php:102
 #: adminpages/member-edit/pmpro-class-member-edit-panel-orders.php:103
 #: adminpages/member-edit/pmpro-class-member-edit-panel-orders.php:106
+#: adminpages/member-edit/pmpro-class-member-edit-panel-orders.php:108
 msgid "View all orders with this discount code"
 msgstr ""
 
@@ -28402,6 +28500,7 @@ msgstr ""
 #: adminpages/member-edit/pmpro-class-member-edit-panel-subscriptions.php:214
 #: adminpages/member-edit/pmpro-class-member-edit-panel-orders.php:121
 #: adminpages/member-edit/pmpro-class-member-edit-panel-subscriptions.php:203
+#: adminpages/member-edit/pmpro-class-member-edit-panel-orders.php:123
 msgid "test"
 msgstr ""
 
@@ -29077,10 +29176,15 @@ msgstr ""
 #: includes/login.php:813
 #: includes/profile.php:1307
 #: pages/checkout.php:209
+#: includes/login.php:606
+#: includes/login.php:645
+#: includes/login.php:806
+#: pages/checkout.php:220
 msgid "Show Password"
 msgstr ""
 
 #: includes/login.php:644
+#: includes/login.php:636
 msgid "Hide Password"
 msgstr ""
 
@@ -29102,6 +29206,7 @@ msgid "Important Upgrade Notice"
 msgstr ""
 
 #: includes/updates/upgrade_3_1.php:18
+#: includes/updates/upgrade_3_1.php:20
 msgid "This content is for !!levels!! members only.<br /><a href=\"!!levels_page_url!!\">Join Now</a>"
 msgstr ""
 
@@ -29119,6 +29224,7 @@ msgid "Your payment subscription is managed by PayPal. Please <a href=\"https://
 msgstr ""
 
 #: pages/cancel.php:100
+#: pages/cancel.php:129
 msgid "You have the following active memberships."
 msgstr ""
 
@@ -29127,6 +29233,7 @@ msgid "Membership Information"
 msgstr ""
 
 #: pages/checkout.php:506
+#: pages/checkout.php:534
 msgid "I agree to the <a href=\"%1$s\" target=\"_blank\">%2$s</a>"
 msgstr ""
 
@@ -29213,4 +29320,44 @@ msgstr ""
 #: blocks/src/invoice-page/block.json
 msgctxt "block description"
 msgid "Dynamic page section that displays a list of all orders (purchase history) for the active member. Each order can be selected and viewed in full detail."
+msgstr ""
+
+#: classes/gateways/class.pmprogateway_authorizenet.php:131
+msgid "API Login ID"
+msgstr ""
+
+#: includes/updates/upgrade_3_1.php:66
+msgid "Important Notice: Paid Memberships Pro v3.1 Update"
+msgstr ""
+
+#: includes/updates/upgrade_3_1.php:71
+msgid "In previous versions of PMPro, we discovered an issue where subscriptions were not linked to the correct user ID in the database. The current version you are running has resolved this issue, however we detect that some of your subscriptions need to be manually corrected. For more information and steps to resolve this for your site, read our <a href=\"%s\">v3.1 release notes post here</a>."
+msgstr ""
+
+#: pages/cancel.php:64
+msgid "Yes, cancel my membership"
+msgid_plural "Yes, cancel all of my memberships"
+msgstr[0] ""
+msgstr[1] ""
+
+#: pages/cancel.php:65
+msgid "No, keep my membership"
+msgid_plural "No, keep my memberships"
+msgstr[0] ""
+msgstr[1] ""
+
+#: pages/cancel.php:79
+msgid "Your subscription will be cancelled. You will not be billed again. Your membership will remain active until %s. "
+msgstr ""
+
+#: pages/cancel.php:82
+msgid "Your membership will be cancelled immediately."
+msgstr ""
+
+#: pages/cancel.php:87
+msgid "Some of the memberships you are cancelling have a recurring subscription. These subscriptions will be cancelled, you will not be billed again, and the associated memberships will remain active through the end of the current payment period."
+msgstr ""
+
+#: pages/cancel.php:90
+msgid "Your memberships will be cancelled immediately."
 msgstr ""
