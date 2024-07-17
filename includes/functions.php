@@ -2133,7 +2133,7 @@ function pmpro_get_no_access_message( $content, $level_ids, $level_names = NULL 
 			} else {
 				$header = __( '!!levels!! Membership Required', 'paid-memberships-pro' );
 				$body = '<p>' . __(' You must be a !!levels!! member to access this content.', 'paid-memberships-pro') . '</p>';
-				$body .= '<p><a class="' . pmpro_get_element_class( 'pmpro_btn' ) . '" href="' . esc_url( pmpro_url( 'checkout', '?pmpro_level=' . $level_ids[0] ) ) . '">' . __( 'Join Now', 'paid-memberships-pro' ) . '</a></p>';
+				$body .= '<p><a class="' . pmpro_get_element_class( 'pmpro_btn' ) . '" href="' . esc_url( pmpro_url( 'checkout', '?pmpro_level=' . current( $level_ids ) ) ) . '">' . __( 'Join Now', 'paid-memberships-pro' ) . '</a></p>';
 			}
 			/**
 			 * Filter the header message for the no access message.
