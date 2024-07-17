@@ -37,7 +37,7 @@ jQuery(document).ready(function() {
 							// Likely the case with a PHP error.
 							alert( error + '. Try refreshing. If this error occurs again, check your PHP error logs or seek help on the PMPro member forums.');
 						} else if ( status == 'error' ) {
-							// Likely the case if the user tries to nagivate away from the update page.
+							// Likely the case if the user tries to navigate away from the update page.
 							alert( 'This update could not complete. Try refreshing. If this error occurs again, seek help on the PMPro member forums.');
 						}
 					}

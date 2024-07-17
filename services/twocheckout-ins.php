@@ -490,7 +490,7 @@
 		global $pmpro_error;
 		//hook to do other stuff when payments stop		
 		do_action( 'pmpro_subscription_recurring_stopped', $morder );
-	do_action( 'pmpro_subscription_recuring_stopped', $morder );    // Keeping the mispelled version in case. Will deprecate.
+		do_action( 'pmpro_subscription_recuring_stopped', $morder );    // Keeping the misspelled version in case. Will deprecate.
 	
 		$worked = pmpro_cancelMembershipLevel( $morder->membership_level->id, $morder->user->ID, 'inactive' );
 		if( $worked === true ) {

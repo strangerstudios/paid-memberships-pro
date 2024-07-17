@@ -84,7 +84,7 @@ require_once( PMPRO_DIR . '/includes/scripts.php' );                // enqueue f
 require_once( PMPRO_DIR . '/includes/terms.php' );                  // allow restricting terms by membership level
 require_once( PMPRO_DIR . '/includes/page-templates.php' );         // page templates
 
-require_once( PMPRO_DIR . '/includes/content.php' );                // code to check for memebrship and protect content
+require_once( PMPRO_DIR . '/includes/content.php' );                // code to check for membership and protect content
 require_once( PMPRO_DIR . '/includes/compatibility.php' );          // code to support compatibility for popular page builders
 require_once( PMPRO_DIR . '/includes/email.php' );                  // code related to email
 require_once( PMPRO_DIR . '/includes/fields.php' );                  // user fields
