@@ -210,16 +210,16 @@ if ( empty( $default_gateway ) ) {
 							?>
 
 							<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_field pmpro_form_field-password pmpro_form_field-required' ) ); ?>">
+								<label for="password" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_label' ) ); ?>">
+									<?php esc_html_e( 'Password', 'paid-memberships-pro' );?>
+								</label>
+								<input type="password" name="password" id="password" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_input pmpro_form_input-password pmpro_form_input-required', 'password' ) ); ?>" autocomplete="new-password" spellcheck="false" value="<?php echo esc_attr($password); ?>" />
 								<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_field-password-toggle' ) ); ?>">
-									<label for="password" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_label' ) ); ?>">
-										<?php esc_html_e( 'Password', 'paid-memberships-pro' );?>
-									</label>
-									<button type="button" class="pmpro_btn pmpro_btn-plain pmpro_btn-password-toggle hide-if-no-js" data-toggle="0" tabindex="-1">
+									<button type="button" class="pmpro_btn pmpro_btn-plain pmpro_btn-password-toggle hide-if-no-js" data-toggle="0">
 										<span class="pmpro_icon pmpro_icon-eye" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--pmpro--color--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-eye"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg></span>
-										<span class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_field-password-toggle-state' ) ); ?>"><?php esc_html_e( 'Show Password', 'paid-memberships-pro' ); ?></span>
+											<span class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_field-password-toggle-state' ) ); ?>"><?php esc_html_e( 'Show Password', 'paid-memberships-pro' ); ?></span>
 									</button>
 								</div> <!-- end pmpro_form_field-password-toggle -->
-								<input type="password" name="password" id="password" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_input pmpro_form_input-password pmpro_form_input-required', 'password' ) ); ?>" autocomplete="new-password" spellcheck="false" value="<?php echo esc_attr($password); ?>" />
 							</div> <!-- end pmpro_form_field-password -->
 
 							<?php

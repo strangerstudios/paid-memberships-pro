@@ -596,11 +596,12 @@ function pmpro_login_forms_handler( $show_menu = true, $show_logout_link = true,
  * @since 2.3
  */
 function pmpro_login_form( $args = array() ) {
+	static $pmpro_login_form_counter = 1;
 	add_filter( 'login_form_top', 'pmpro_login_form_hidden_field' );
 	wp_login_form( $args );
 	?>
 	<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_field-password-toggle' ) ); ?>">
-		<button type="button" class="pmpro_btn pmpro_btn-plain pmpro_btn-password-toggle-alt hide-if-no-js" data-toggle="0" tabindex="3">
+		<button type="button" id="pmpro_btn-password-toggle-<?php echo esc_attr( $pmpro_login_form_counter ); ?>" class="pmpro_btn pmpro_btn-plain hide-if-no-js" data-toggle="0">
 			<span class="pmpro_icon pmpro_icon-eye" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--pmpro--color--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-eye"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg></span>
 			<span class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_field-password-toggle-state' ) ); ?>"><?php esc_html_e( 'Show Password', 'paid-memberships-pro' ); ?></span>
 		</button>
@@ -608,25 +609,15 @@ function pmpro_login_form( $args = array() ) {
 	<script>
 		// Password visibility toggle (wp_login_form instance).
 		(function() {
-			const toggleButton = document.querySelectorAll('.pmpro_btn-password-toggle-alt');
-			const toggleWrapper = document.querySelector('.pmpro_form_field-password-toggle');
-			const userloginInput = document.querySelector('#user_login');
-			const passwordLabel = document.querySelector('label[for="user_pass"]');
-			const passwordInput = document.querySelector('#user_pass');
-			const remembermeInput = document.querySelector('#rememberme');
-			const submitInput = document.querySelector('#wp-submit');
+			const toggleButton = document.querySelectorAll('#pmpro_btn-password-toggle-<?php echo esc_attr( $pmpro_login_form_counter ); ?>')[0];
+			const toggleWrapper = toggleButton.closest('.pmpro_form_field-password-toggle');
+			const loginForm = toggleWrapper.previousElementSibling;
+			const passwordParagraph = loginForm.querySelector('.login-password');
+			const passwordInput = loginForm.querySelector('#user_pass');
 
-			// Set tabindex values on form fields.
-			userloginInput.setAttribute('tabindex', '1');
-			passwordInput.setAttribute('tabindex', '2');
-			remembermeInput.setAttribute('tabindex', '4');
-			submitInput.setAttribute('tabindex', '5');
-
-			toggleButton.forEach(toggle => {
-				passwordLabel.appendChild(toggleWrapper);
-				toggle.classList.remove('hide-if-no-js');
-				toggle.addEventListener('click', togglePassword);
-			});
+			passwordParagraph.appendChild(toggleWrapper);
+			toggleButton.classList.remove('hide-if-no-js');
+			toggleButton.addEventListener('click', togglePassword);
 
 			function togglePassword() {
 				const status = this.getAttribute('data-toggle');
@@ -636,7 +627,7 @@ function pmpro_login_form( $args = array() ) {
 
 				if (parseInt(status, 10) === 0) {
 					this.setAttribute('data-toggle', 1);
-					passwordInputs.forEach(input => input.setAttribute('type', 'text'));
+					passwordInput.setAttribute( 'type', 'text' );
 					icon.innerHTML = `
 						<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--pmpro--color--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-eye-off">
 							<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
@@ -645,7 +636,7 @@ function pmpro_login_form( $args = array() ) {
 					state.textContent = '<?php esc_html_e( 'Hide Password', 'paid-memberships-pro' ); ?>';
 				} else {
 					this.setAttribute('data-toggle', 0);
-					passwordInputs.forEach(input => input.setAttribute('type', 'password'));
+					passwordInput.setAttribute( 'type', 'password' );
 					icon.innerHTML = `
 						<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--pmpro--color--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-eye">
 							<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
@@ -658,6 +649,7 @@ function pmpro_login_form( $args = array() ) {
 	</script>
 	<?php
 	remove_filter( 'login_form_top', 'pmpro_login_form_hidden_field' );
+	$pmpro_login_form_counter++;
 }
 
 /**
