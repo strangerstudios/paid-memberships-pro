@@ -63,11 +63,12 @@ function pmpro_show_upgrade_3_1_notice() {
 	// Show a dismissable notice. Do not show a link to scrub data.
 	?>
 	<div class="notice notice-warning" id="pmpro-upgrade-3-1-notice">
+		<p><strong><?php esc_html_e( 'Important Notice: Paid Memberships Pro v3.1 Update', 'paid-memberships-pro' ); ?></strong></p>
 		<p>
 			<?php
 			printf(
 				wp_kses_post(
-					__( 'Paid Memberships Pro has detected data that may not be linked to the correct user in your database. For more information, read our <a href="%s">post here</a>.', 'paid-memberships-pro' )
+					__( 'In previous versions of PMPro, we discovered an issue where subscriptions were not linked to the correct user ID in the database. The current version you are running has resolved this issue, however we detect that some of your subscriptions need to be manually corrected. For more information and steps to resolve this for your site, read our <a href="%s">v3.1 release notes post here</a>.', 'paid-memberships-pro' )
 				),
 				esc_url( 'https://www.paidmembershipspro.com/pmpro-update-3-1/' )
 			);
