@@ -572,11 +572,13 @@ button[type="button"]#other_discount_code_toggle:focus {
 		content: attr(data-title) ": ";
 	}
 
-	.pmpro_table_cancel tbody tr td:last-child {
+	.pmpro_table_cancel tbody tr td:last-child,
+	.pmpro_levels_table tbody tr td:last-child {
 		display: block;
 	}
 
-	.pmpro_table_cancel tbody tr td:last-child::before {
+	.pmpro_table_cancel tbody tr td:last-child::before,
+	.pmpro_levels_table tbody tr td:last-child::before {
 		content: "";
 	}
 }

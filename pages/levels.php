@@ -95,8 +95,8 @@ $level_groups  = pmpro_get_level_groups_in_order();
 										$element_class = implode( ' ', array_unique( $element_classes ) );
 									?>
 									<tr id="pmpro_level-<?php echo esc_attr( $level->id ); ?>" class="<?php echo esc_attr( pmpro_get_element_class( $element_class, 'pmpro_level-' . esc_attr( $level->id ) ) ); ?>">
-										<th ><?php echo esc_html( $level->name ); ?></th>
-										<td>
+										<th data-title="<?php esc_attr_e( 'Level', 'paid-memberships-pro' ); ?>"><?php echo esc_html( $level->name ); ?></th>
+										<td data-title="<?php esc_attr_e( 'Price', 'paid-memberships-pro' ); ?>">
 											<?php
 												$cost_text = pmpro_getLevelCost( $level, true, true );
 												if ( ! empty($cost_text ) ) {
