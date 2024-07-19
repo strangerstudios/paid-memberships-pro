@@ -665,6 +665,16 @@ function pmpro_lost_password_form() { ?>
 					<span class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_asterisk' ) ); ?>"> <abbr title="<?php esc_html_e( 'Required Field', 'paid-memberships-pro' ); ?>">*</abbr></span>
 				</label>
 				<input type="text" name="user_login" id="user_login" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_input pmpro_form_input-text pmpro_form_input-required pmpro_form_input-user_login', 'user_login' ) ); ?>" aria-required="true" />
+				<?php 
+					/**
+					 * Insert HTML after the lost password form fields.
+					 * 
+					 * @since 3.2
+					 * 
+					 * @param string $html The HTML to be output.
+					 */
+					echo apply_filters( 'pmpro_lost_password_after_fields', '' ); 
+				?> 
 			</div>
 		</div> <!-- end pmpro_form_fields -->
 		<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_submit' ) ); ?>">
