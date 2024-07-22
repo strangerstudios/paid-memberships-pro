@@ -2973,7 +2973,7 @@ function pmpro_get_field_class( $class, $element ) {
 
 	// error on this field?
 	if ( ! empty( $pmpro_error_fields ) && in_array( $element, $pmpro_error_fields ) ) {
-		$class[] = 'pmpro_error';
+		$class[] = 'pmpro_form_input-error';
 	}
 
 	if ( is_array( $pmpro_required_billing_fields ) && is_array( $pmpro_required_user_fields ) ) {
@@ -2988,7 +2988,7 @@ function pmpro_get_field_class( $class, $element ) {
 
 	// required?
 	if ( in_array( $element, $required_fields ) ) {
-		$class[] = 'pmpro_required';
+		$class[] = 'pmpro_form_input-required';
 	}
 
 	// DEPRECATED: Use pmpro_element_class to filter classes instead.
