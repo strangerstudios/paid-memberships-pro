@@ -404,6 +404,8 @@ body[class*="memberships_page_pmpro-"] {
 	border-color: var(--pmpro--border--color);
 	border-radius: var(--pmpro--border--radius);
 	box-shadow: var(--pmpro--box-shadow);
+	display: flex;
+	justify-content: space-between;
 }
 
 .pmpro_admin .select2-container {
@@ -2974,6 +2976,12 @@ tr.pmpro_alert {
 
 @media only screen and (max-width: 767px) {
 	#pmpro-admin-add-ons .add-on-container {
+		width: 100%;
+	}
+	#pmpro-admin-add-ons .wp-filter {
+		display: inline-block;
+	}
+	#pmpro-admin-add-ons .wp-filter .search-form input[type=search] {
 		width: 100%;
 	}
 }
