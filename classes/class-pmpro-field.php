@@ -829,7 +829,8 @@ class PMPro_Field {
 			if(!is_array($value))
 				$value = array($value);
 
-			$r = sprintf( '<div class="' . esc_attr( pmpro_get_element_class( 'pmpro_form_field-checkbox-grouped' ) ) . '"><ul>' );
+			$r = '<div class="' . esc_attr( pmpro_get_element_class( 'pmpro_form_field-checkbox-grouped' ) ) . '">';
+			$r .= '<ul class="' . esc_attr( pmpro_get_element_class( 'pmpro_list pmpro_list-plain' ) ) . '">';
 			$counter = 1;
 			foreach($this->options as $ovalue => $option)
 			{
@@ -837,7 +838,8 @@ class PMPro_Field {
 					$class = $this->class;
 				}
 
-				$r .= sprintf( '<li><span class="' . esc_attr( pmpro_get_element_class( 'pmpro_form_field-checkbox-grouped-item' ) ) . '">' );
+				$r .= '<li class="' . esc_attr( pmpro_get_element_class( 'pmpro_list_item' ) ) . '">';
+				$r .= '<span class="' . esc_attr( pmpro_get_element_class( 'pmpro_form_field-checkbox-grouped-item' ) ) . '">';
 				$r .= sprintf(
 					'<input name="%1$s[]" type="checkbox" value="%2$s" id="%3$s" class="%4$s" %5$s %6$s %7$s />',
 					esc_attr( $this->name ),
