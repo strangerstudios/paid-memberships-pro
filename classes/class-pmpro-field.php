@@ -845,7 +845,7 @@ class PMPro_Field {
 					esc_attr( $this->name ),
 					esc_html( $ovalue ),
 					esc_attr( "{$this->id}_{$counter}" ),
-					esc_attr( $this->id ),
+					esc_attr( pmpro_get_element_class( 'pmpro_form_input pmpro_form_input-checkbox ' . $this->id ), $this->id ),
 					( in_array($ovalue, $value) ? 'checked="checked"' : null ),
 					( !empty( $this->readonly ) ? 'readonly="readonly"' : null ),
 					$this->getHTMLAttributes()
