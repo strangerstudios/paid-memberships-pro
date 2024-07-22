@@ -958,6 +958,10 @@
 			width: auto;
 		}
 
+		#pmpro_user_fields .pmpro_form_field-password:has(.pmpro_form_field-password-toggle) {
+			width: 100%;
+		}
+
 	}
 
 }
