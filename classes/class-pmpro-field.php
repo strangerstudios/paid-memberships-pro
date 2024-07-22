@@ -808,8 +808,9 @@ class PMPro_Field {
 		}
 		elseif($this->type == "checkbox")
 		{
-			$r = '<input name="'. esc_attr( $this->name ) .'"' .' type="checkbox" value="1"'.' id="'. esc_attr( $this->id ) .'"';
-			$r.=checked( $value, 1,false);
+			$r = '<label class="' . esc_attr( pmpro_get_element_class( 'pmpro_form_label pmpro_form_label-inline pmpro_clickable' ) ) . '" for="' . esc_attr( $this->name ) . '">';
+			$r .= '<input name="'. esc_attr( $this->name ) .'"' .' type="checkbox" value="1"'.' id="'. esc_attr( $this->id ) .'"';
+			$r .= checked( $value, 1, false );
 			if(!empty($this->class))
 				$r .= 'class="' . esc_attr( $this->class ) . '" ';
 			if(!empty($this->readonly))
@@ -817,7 +818,8 @@ class PMPro_Field {
 			if(!empty($this->html_attributes))
 				$r .= $this->getHTMLAttributes();
 			$r .= ' /> ';
-			$r .= '<label class="' . esc_attr( pmpro_get_element_class( 'pmpro_form_label pmpro_form_label-inline pmpro_clickable' ) ) . '" for="' . esc_attr( $this->name ) . '">' . wp_kses_post( $this->text )  . '</label>';
+			$r .= wp_kses_post( $this->text );
+			$r .= '</label>';
 			$r .= '<input type="hidden" name="'. esc_attr( $this->name ) .'_checkbox" value="1" />';	//extra field so we can track unchecked boxes
 		}
 
@@ -835,7 +837,7 @@ class PMPro_Field {
 					$class = $this->class;
 				}
 
-				$r .= sprintf( '<li><span class="' . esc_attr( pmpro_get_element_class( 'pmpro_form_field-checkbox-grouped' ) ) . '">' );
+				$r .= sprintf( '<li><span class="' . esc_attr( pmpro_get_element_class( 'pmpro_form_field-checkbox-grouped-item' ) ) . '">' );
 				$r .= sprintf(
 					'<input name="%1$s[]" type="checkbox" value="%2$s" id="%3$s" class="%4$s" %5$s %6$s %7$s />',
 					esc_attr( $this->name ),

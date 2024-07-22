@@ -324,7 +324,17 @@
 		padding: 0;
 	}
 
-	.pmpro_form_field-checkbox,
+	.pmpro_form_field-checkbox {
+
+		.pmpro_form_label {
+			align-items: first baseline;
+			display: flex;
+			flex-direction: row;
+			gap: calc( var(--pmpro--base--spacing--small) / 2 );
+		}
+
+	}
+
 	.pmpro_form_field-radio-item {
 		align-items: baseline;
 		flex-direction: row;
@@ -337,6 +347,17 @@
 
 	.pmpro_form_field-radio-item:not(:last-of-type) {
 		margin-bottom: calc( var(--pmpro--base--spacing--small) / 2 );
+	}
+
+	.pmpro_form_field-checkbox-grouped {
+
+		.pmpro_form_field-checkbox-grouped-item {
+			align-items: first baseline;
+			display: flex;
+			flex-direction: row;
+			gap: calc( var(--pmpro--base--spacing--small) / 2 );
+		}
+
 	}
 
 	.pmpro_form_input-multiselect {
