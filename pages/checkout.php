@@ -186,9 +186,9 @@ if ( empty( $default_gateway ) ) {
 
 						<?php if ( ! $skip_account_fields && ! $pmpro_review ) { ?>
 
-							<?php 
+							<?php
 								// Get discount code from URL parameter, so if the user logs in it will keep it applied.
-								$discount_code_link = !empty( $discount_code) ? '&pmpro_discount_code=' . $discount_code : ''; 
+								$discount_code_link = !empty( $discount_code) ? '&pmpro_discount_code=' . $discount_code : '';
 							?>
 
 							<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_field pmpro_form_field-text pmpro_form_field-username pmpro_form_field-required', 'pmpro_form_field-username' ) ); ?>">
@@ -281,7 +281,7 @@ if ( empty( $default_gateway ) ) {
 								<input id="fullname" name="fullname" type="text" value="" autocomplete="off"/> <strong><?php esc_html_e('LEAVE THIS BLANK', 'paid-memberships-pro' );?></strong>
 							</div> <!-- end pmpro_hidden -->
 
-						<?php } elseif ( $current_user->ID && ! $pmpro_review ) { ?>			
+						<?php } elseif ( $current_user->ID && ! $pmpro_review ) { ?>
 							<div id="pmpro_account_loggedin">
 							<?php
 								$allowed_html = array(
@@ -393,7 +393,7 @@ if ( empty( $default_gateway ) ) {
 										</select>
 									</div> <!-- end pmpro_form_field-bcountry -->
 								<?php } else { ?>
-									<input type="hidden" name="bcountry" id="bcountry" value="<?php esc_attr( $pmpro_default_country ) ?>" />
+									<input type="hidden" name="bcountry" id="bcountry" value="<?php esc_attr_e( $pmpro_default_country ) ?>" />
 								<?php } ?>
 							<?php if($skip_account_fields) { ?>
 							<?php
