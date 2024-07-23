@@ -393,7 +393,7 @@ if ( empty( $default_gateway ) ) {
 										</select>
 									</div> <!-- end pmpro_form_field-bcountry -->
 								<?php } else { ?>
-									<input type="hidden" name="bcountry" id="bcountry" value="<?php esc_attr_e( $pmpro_default_country ) ?>" />
+									<input type="hidden" name="bcountry" id="bcountry" value="<?php echo esc_attr( $pmpro_default_country ); ?>" />
 								<?php } ?>
 							<?php if($skip_account_fields) { ?>
 							<?php
