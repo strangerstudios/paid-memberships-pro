@@ -187,7 +187,7 @@
 
 						<?php
 							$pmpro_include_billing_address_fields = apply_filters('pmpro_include_billing_address_fields', true);
-							if($pmpro_include_billing_address_fields  || true)
+							if($pmpro_include_billing_address_fields )
 							{
 						?>
 						<fieldset id="pmpro_billing_address_fields" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_fieldset', 'pmpro_billing_address_fields' ) ); ?>">
