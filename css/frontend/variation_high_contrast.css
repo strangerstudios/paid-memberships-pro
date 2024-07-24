@@ -467,7 +467,9 @@
 		padding-top: var(--pmpro--base--spacing--large);
 	}
 
-	.pmpro_section #loginform p {
+	.pmpro_section #loginform .login-username,
+	.pmpro_section #loginform .login-password,
+	.pmpro_section #loginform .login-remember {
 		display: flex;
 		flex-direction: column;
 		gap: calc( var(--pmpro--base--spacing--small) / 2 );
