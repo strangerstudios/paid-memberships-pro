@@ -13,6 +13,7 @@
 global $wpdb, $pmpro_invoice, $pmpro_msg, $pmpro_msgt;
 
 // If this file is loaded, $pmpro_invoice should have been set by preheaders/confirmation.php. If not, show an error.
+// Below, we should still check if $pmpro_invoice is empty as there are edge cases such as saving a page with the Confirmation block in the block editor.
 if ( empty( $pmpro_invoice ) ) {
 	$pmpro_msg = __( 'There was an error retrieving your order. Please contact the site owner.', 'paid-memberships-pro' );
 	$pmpro_msgt = 'pmpro_error';
@@ -134,7 +135,7 @@ if ( empty( $pmpro_invoice ) ) {
 	</section> <!-- end pmpro_confirmation -->
 </div> <!-- end pmpro -->
 <?php
-	if ( ! pmpro_isLevelFree( $pmpro_invoice->membership_level ) ) {
+	if ( ! empty( $pmpro_invoice ) && ! pmpro_isLevelFree( $pmpro_invoice->membership_level ) ) {
 		// If the order is not free, show the full order, but make sure we don't show $pmpro_msg again.
 		$pmpro_msg = false;
 		$pmpro_msgt = false;
