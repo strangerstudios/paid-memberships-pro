@@ -104,6 +104,25 @@
 	display: inline-block;
 }
 
+.pmpro {
+	.pmpro_form_input-text.pmpro_form_input-error,
+	.pmpro_form_input-email.pmpro_form_input-error,
+	.pmpro_form_input-url.pmpro_form_input-error,
+	.pmpro_form_input-password.pmpro_form_input-error,
+	.pmpro_form_input-search.pmpro_form_input-error,
+	.pmpro_form_input-select.pmpro_form_input-error,
+	.pmpro_form_input-checkbox.pmpro_form_input-error,
+	.pmpro_form_input-radio.pmpro_form_input-error,
+	.pmpro_form_input-multiselect.pmpro_form_input-error,
+	.pmpro_form_input-number.pmpro_form_input-error,
+	.pmpro_form_input-file.pmpro_form_input-error,
+	.pmpro_form_input-date.pmpro_form_input-error,
+	.pmpro_form_input-textarea.pmpro_form_input-error {
+		border-color: var(--pmpro--color--error-border);
+		box-shadow: 0 0 0 0.2rem #f8d7da;
+	}
+}
+
 /* Checkbox-specific field type */
 .pmpro_form_field-checkbox .pmpro_form_label {
 	cursor: pointer;
