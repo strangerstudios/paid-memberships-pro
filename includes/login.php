@@ -667,6 +667,14 @@ function pmpro_lost_password_form() { ?>
 				<input type="text" name="user_login" id="user_login" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_input pmpro_form_input-text pmpro_form_input-required pmpro_form_input-user_login', 'user_login' ) ); ?>" aria-required="true" />
 			</div>
 		</div> <!-- end pmpro_form_fields -->
+		<?php 
+		/**
+		 * Insert HTML before the submit button on the lost password form.
+		 * 
+		 * @since TBD
+		 */
+		echo do_action( 'pmpro_lost_password_before_submit_button' ); 
+		?>
 		<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_submit' ) ); ?>">
 			<input type="hidden" name="pmpro_login_form_used" value="1" />
 			<input type="submit" name="submit" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_btn pmpro_btn-submit', 'pmpro_btn-submit' ) ); ?>" value="<?php esc_attr_e( 'Get New Password', 'paid-memberships-pro' ); ?>" />
