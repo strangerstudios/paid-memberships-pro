@@ -673,7 +673,7 @@ function pmpro_lost_password_form() { ?>
 		 * 
 		 * @since TBD
 		 */
-		echo do_action( 'pmpro_lost_password_before_submit_button' ); 
+		do_action( 'pmpro_lost_password_before_submit_button' ); 
 		?>
 		<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_submit' ) ); ?>">
 			<input type="hidden" name="pmpro_login_form_used" value="1" />
