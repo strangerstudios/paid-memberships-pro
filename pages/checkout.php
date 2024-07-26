@@ -527,7 +527,7 @@ if ( empty( $default_gateway ) ) {
 								$tos = "";
 							}
 						?>
-						<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_field pmpro_form_field-checkbox pmpro_form_field-required pmpro_form_fields-inline' ) ); ?>">
+						<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_field pmpro_form_field-checkbox pmpro_form_field-required' ) ); ?>">
 							<label class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_label pmpro_clickable', 'tos' ) ); ?>" for="tos">
 								<input type="checkbox" name="tos" value="1" id="tos" <?php checked( 1, $tos ); ?> class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_input pmpro_form_input-checkbox pmpro_form_input-required', 'tos' ) ); ?>" />
 								<?php
