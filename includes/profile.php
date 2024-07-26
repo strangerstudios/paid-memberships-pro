@@ -1148,6 +1148,11 @@ function pmpro_member_profile_edit_form() {
 										'user_email'	=> __( 'Email', 'paid-memberships-pro' ),
 									)
 								);
+								// Add autocomplete attributes for user fields.
+								$user_field_autocomplete = array(
+									'first_name'	=> 'given-name',
+									'last_name'		=> 'family-name',
+								);
 							?>
 							<fieldset id="pmpro_member_profile_edit-account-information" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_fieldset', 'pmpro_member_profile_edit-account-information' ) ); ?>">
 								<legend class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_legend' ) ); ?>">
@@ -1162,10 +1167,11 @@ function pmpro_member_profile_edit_form() {
 													<input type="email" readonly="readonly" name="user_email" id="user_email" value="<?php echo esc_attr( $user->user_email ); ?>" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_input pmpro_form_input-email', 'user_email' ) ); ?>" />
 													<p class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_hint' ) ); ?>"><?php esc_html_e( 'Site administrators must use the WordPress dashboard to update their email address.', 'paid-memberships-pro' ); ?></p>
 												<?php } else { ?>
-													<input type="email" name="<?php echo esc_attr( $field_key ); ?>" id="<?php echo esc_attr( $field_key ); ?>" value="<?php echo esc_attr( stripslashes( $user->{$field_key} ) ); ?>" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_input pmpro_form_input-email', $field_key ) ); ?>" />
+													<input type="email" name="<?php echo esc_attr( $field_key ); ?>" id="<?php echo esc_attr( $field_key ); ?>" value="<?php echo esc_attr( stripslashes( $user->{$field_key} ) ); ?>" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_input pmpro_form_input-email', $field_key ) ); ?>" autocomplete="email" />
 												<?php }
 											} else { ?>
-												<input type="text" name="<?php echo esc_attr( $field_key ); ?>" id="<?php echo esc_attr( $field_key ); ?>" value="<?php echo esc_attr( stripslashes( $user->{$field_key} ) ); ?>" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_input pmpro_form_input-text', $field_key ) ); ?>" />
+												<input type="text" name="<?php echo esc_attr( $field_key ); ?>" id="<?php echo esc_attr( $field_key ); ?>" value="<?php echo esc_attr( stripslashes( $user->{$field_key} ) ); ?>" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_input pmpro_form_input-text', $field_key ) ); ?>"
+												<?php echo isset( $user_field_autocomplete[ $field_key ] ) ? ' autocomplete="' . esc_attr( $user_field_autocomplete[ $field_key ] ) . '"' : ''; ?> />
 											<?php } ?>
 										</div>	<!-- end pmpro_form_field -->
 									<?php } ?>

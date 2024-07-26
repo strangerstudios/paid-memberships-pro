@@ -145,7 +145,7 @@
 									}
 								?>
 								<p class="description">
-									<?php echo wp_kses( sprintf( __('With the Akismet Integration for Paid Memberships Pro, the same comment spam filters built into Akismet are used to detect and prevent membership checkout form abuse. This integration requires both the <a href="%1$s" target="_blank">Akisment plugin</a> and the <a href="%2$s" target="_blank">Akisment Integration for Paid Memberships Pro</a>.', 'paid-memberships-pro' ), 'https://wordpress.org/plugins/akismet/', 'https://www.paidmembershipspro.com/add-ons/pmpro-akismet/' ), $allowed_pmpro_spam_protection_strings_html ); ?>
+									<?php echo wp_kses( sprintf( __('With the Akismet Integration for Paid Memberships Pro, the same comment spam filters built into Akismet are used to detect and prevent membership checkout form abuse. This integration requires both the <a href="%1$s" target="_blank">Akismet plugin</a> and the <a href="%2$s" target="_blank">Akismet Integration for Paid Memberships Pro</a>.', 'paid-memberships-pro' ), 'https://wordpress.org/plugins/akismet/', 'https://www.paidmembershipspro.com/add-ons/pmpro-akismet/' ), $allowed_pmpro_spam_protection_strings_html ); ?>
 								</p>
 							</td>
 						</tr>
