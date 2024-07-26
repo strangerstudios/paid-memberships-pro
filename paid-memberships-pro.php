@@ -112,6 +112,7 @@ require_once( PMPRO_DIR . '/shortcodes/pmpro_account.php' );        // [pmpro_ac
 require_once( PMPRO_DIR . '/shortcodes/pmpro_login.php' );          // [pmpro_login] shortcode to show a login form or logged in member info and menu.
 require_once( PMPRO_DIR . '/shortcodes/pmpro_member.php' );         // [pmpro_member] shortcode to show user fields
 require_once( PMPRO_DIR . '/shortcodes/pmpro_member_profile_edit.php' );         // [pmpro_member_profile_edit] shortcode to allow members to edit their profile
+require_once( PMPRO_DIR . '/shortcodes/pmpro_membership_level.php' );         // [pmpro_membership_level] shortcode to show single level fields
 require_once( PMPRO_DIR . '/includes/blocks.php' ); // Set up blocks.
 
 // load gateway
