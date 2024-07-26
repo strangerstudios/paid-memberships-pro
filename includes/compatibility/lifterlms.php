@@ -635,3 +635,23 @@ function pmpro_lifter_ajax_llms_widget_sold_pmpro() {
 	exit;
 }
 add_filter( 'wp_ajax_llms_widget_sold_pmpro', 'pmpro_lifter_ajax_llms_widget_sold_pmpro' );
+
+/**
+ * Make sure the PMPro lost password form
+ * doesn't submit to the LifterLMS lost password form.
+ *
+ * @since TBD
+ */
+function pmpro_maybe_remove_lifterlms_lostpassword_url_filter() {
+	// Bail	if streamline is not enabled.
+	if ( ! get_option( 'pmpro_lifter_streamline' ) ) {
+		return;
+	}
+
+	global $pmpro_pages;
+
+	if ( ! empty( $pmpro_pages ) && ! empty( $pmpro_pages['login'] ) && is_page( $pmpro_pages['login'] ) ) {
+		remove_filter( 'lostpassword_url', 'llms_lostpassword_url', 10, 0 );
+	}
+}
+add_action( 'wp', 'pmpro_maybe_remove_lifterlms_lostpassword_url_filter' );
