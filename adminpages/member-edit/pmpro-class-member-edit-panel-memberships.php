@@ -215,7 +215,7 @@ class PMPro_Member_Edit_Panel_Memberships extends PMPro_Member_Edit_Panel {
 										<span class="pmpro-level_change-action-label"><?php esc_html_e( 'Level Expiration', 'paid-memberships-pro' ); ?></span>
 										<span class="pmpro-level_change-action-field">
 											<?php
-											$expiration_input_enddate = date( 'Y-m-d H:i', strtotime( '+1 year' ) ); // Default to 1 year in the future.
+											$expiration_input_enddate = date( 'Y-m-d H:i', strtotime( '+1 year', current_time( 'timestamp' ) ) ); // Default to 1 year in the future.
 											if ( ! empty( $shown_level->enddate ) ) {
 												// If the user's membership already has an end date, use that.
 												$expiration_input_enddate = date( 'Y-m-d H:i', $shown_level->enddate );
@@ -225,11 +225,11 @@ class PMPro_Member_Edit_Panel_Memberships extends PMPro_Member_Edit_Panel {
 												$expiration_input_next_payment_date = $expiration_input_enddate;
 											}
 											?>
-											
+
 											<label>
 												<input type="checkbox" name="<?php echo esc_attr( $edit_level_input_name_base ); ?>[expires]" id="<?php echo esc_attr( $edit_level_input_name_base ); ?>[expires]" value="1" class="pmpro_expires_checkbox" <?php checked( ! empty( $shown_level->enddate ) ) ?>/>
 												<?php esc_html_e( 'Click to set the level expiration date.', 'paid-memberships-pro' ); ?>
-												<input type="datetime-local" name="<?php echo esc_attr( $edit_level_input_name_base ); ?>[expiration]" value="<?php echo esc_attr( $expiration_input_enddate ); ?>" <?php echo ( ! empty( $shown_level->enddate ) ? '' : 'style="display: none"' ); ?>>	
+												<input type="datetime-local" name="<?php echo esc_attr( $edit_level_input_name_base ); ?>[expiration]" value="<?php echo esc_attr( $expiration_input_enddate ); ?>" <?php echo ( ! empty( $shown_level->enddate ) ? '' : 'style="display: none"' ); ?>>
 											</label>
 											<?php
 												// Show the next payment date for this member if available.
@@ -420,11 +420,11 @@ class PMPro_Member_Edit_Panel_Memberships extends PMPro_Member_Edit_Panel {
 												<label>
 													<input type="checkbox" name="<?php echo esc_attr( $add_level_to_group_input_name_base ); ?>[expires]" id="<?php echo esc_attr( $add_level_to_group_input_name_base ); ?>[expires]" value="1" class="pmpro_expires_checkbox" />
 													<?php esc_html_e( 'Click to set the level expiration date.', 'paid-memberships-pro' ); ?>
-													<input type="datetime-local" id="<?php echo esc_attr( $add_level_to_group_input_name_base ); ?>[expiration]" name="<?php echo esc_attr( $add_level_to_group_input_name_base ); ?>[expiration]" value="<?php echo esc_attr( date( 'Y-m-d H:i', strtotime( '+1 year' ) ) ); ?>" style="display: none" >
+													<input type="datetime-local" id="<?php echo esc_attr( $add_level_to_group_input_name_base ); ?>[expiration]" name="<?php echo esc_attr( $add_level_to_group_input_name_base ); ?>[expiration]" value="<?php echo esc_attr( date( 'Y-m-d H:i', strtotime( '+1 year', current_time( 'timestamp' ) ) ) ); ?>" style="display: none" >
 												</label>
 											</span>
 										</div>
-									
+
 										<?php
 										// If this group only allows users to have a single level, get the last member order and see if we can refund it.
 										if ( empty( $group->allow_multiple_selections ) && ! empty( $shown_level ) ) {
@@ -645,11 +645,11 @@ class PMPro_Member_Edit_Panel_Memberships extends PMPro_Member_Edit_Panel {
 									<td><?php echo esc_html( $levelhistory->enddate ); ?></td>
 									<td><?php echo wp_kses_post( pmpro_getLevelCost( $levelhistory, true, true ) ); ?></td>
 									<td>
-										<?php 
+										<?php
 											if ( empty( $levelhistory->status ) ) {
 												esc_html_e( '&#8212;', 'paid-memberships-pro' );
 											} else {
-												echo esc_html( $levelhistory->status ); 
+												echo esc_html( $levelhistory->status );
 											}
 										?>
 									</td>
