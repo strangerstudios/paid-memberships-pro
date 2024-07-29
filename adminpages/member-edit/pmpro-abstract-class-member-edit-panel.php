@@ -88,10 +88,12 @@ abstract class PMPro_Member_Edit_Panel {
 			echo wp_kses( $this->title_link, array( 'a' => array( 'href' => array(), 'target' => array(), 'class' => array() ) ) );
 
 			// Get the URL to submit to.
-			$submit_url = add_query_arg( 'user_id', self::get_user()->ID, admin_url( 'admin.php?page=pmpro-member' ) );
+			$submit_url = add_query_arg( [
+				'user_id' => self::get_user()->ID,
+				'pmpro_member_edit_panel' => $this->slug
+			], admin_url( 'admin.php?page=pmpro-member' ) );
 			?>
 			<form class="pmpro-members" action="<?php echo esc_url( $submit_url ); ?>" method="post">
-				<input type="hidden" name="pmpro_member_edit_panel" value="<?php echo esc_attr( $this->slug ); ?>">
 				<?php
 				// Add a nonce.
 				wp_nonce_field( 'pmpro_member_edit_saved_panel_' . $this->slug, 'pmpro_member_edit_saved_panel_nonce' );
@@ -103,7 +105,7 @@ abstract class PMPro_Member_Edit_Panel {
 				if ( ! empty( $this->submit_text ) ) {
 					// If this is the selected panel, set the submit button ID.
 					// Needed for the 'user-profile' script on the user info panel when creating a new user.
-					$submit_id = $is_selected ? 'submit' : ''; 
+					$submit_id = $is_selected ? 'submit' : '';
 					?>
 					<p class="submit">
 						<input id="<?php echo esc_attr( $submit_id ); ?>" type="submit" name="submit" class="button button-primary" value="<?php echo esc_attr( $this->submit_text ); ?>">
@@ -112,7 +114,7 @@ abstract class PMPro_Member_Edit_Panel {
 				}
 				?>
 			</form>
-		</div>			
+		</div>
 		<?php
 	}
 
