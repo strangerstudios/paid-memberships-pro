@@ -197,6 +197,11 @@
 			if(empty($morder))
 				return;
 
+			// If this isn't a PayPal Standard order, bail.
+			if ( 'paypalstandard' !== $morder->gateway ) {
+				return;
+			}
+
 			$morder->user_id = $user_id;
 			$morder->saveOrder();
 
