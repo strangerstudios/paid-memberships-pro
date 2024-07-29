@@ -227,6 +227,12 @@
 			if(empty($morder))
 				return;
 
+			// If this isn't a 2Checkout order, bail.
+			if ( 'twocheckout' !== $morder->gateway ) {
+				return;
+			}
+
+
 			$morder->user_id = $user_id;
 			$morder->saveOrder();
 
