@@ -783,6 +783,12 @@ class PMPro_Subscription {
 
 		// Get date in WP local timezone.
 		if ( $local_time ) {
+			if( 'U' === $format ){
+				// When formatting using the epoch, the date must already consider the timezone offset.
+				// Then, first apply a simple format to add the timezone.
+				$date = get_date_from_gmt( $date );
+			}
+
 			return get_date_from_gmt( $date, $format );
 		}
 
