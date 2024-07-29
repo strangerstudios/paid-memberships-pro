@@ -89,9 +89,9 @@ abstract class PMPro_Member_Edit_Panel {
 
 			// Get the URL to submit to.
 			$submit_url = add_query_arg( [
-          'user_id' => self::get_user()->ID,
-          'pmpro_member_edit_panel' => $this->slug
-      ], admin_url( 'admin.php?page=pmpro-member' ) );
+				'user_id' => self::get_user()->ID,
+				'pmpro_member_edit_panel' => $this->slug
+			], admin_url( 'admin.php?page=pmpro-member' ) );
 			?>
 			<form class="pmpro-members" action="<?php echo esc_url( $submit_url ); ?>" method="post">
 				<?php
