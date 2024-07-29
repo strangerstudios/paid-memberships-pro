@@ -640,7 +640,7 @@ add_filter( 'wp_ajax_llms_widget_sold_pmpro', 'pmpro_lifter_ajax_llms_widget_sol
  * Make sure the PMPro lost password form
  * doesn't submit to the LifterLMS lost password form.
  *
- * @since TBD
+ * @since 3.1.1
  */
 function pmpro_maybe_remove_lifterlms_lostpassword_url_filter() {
 	// Bail	if streamline is not enabled.

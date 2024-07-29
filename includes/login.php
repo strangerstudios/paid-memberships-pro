@@ -671,7 +671,7 @@ function pmpro_lost_password_form() { ?>
 		/**
 		 * Insert HTML before the submit button on the lost password form.
 		 * 
-		 * @since TBD
+		 * @since 3.1.1
 		 */
 		do_action( 'pmpro_lost_password_before_submit_button' ); 
 		?>

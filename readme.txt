@@ -4,7 +4,7 @@ Tags: memberships, member, community, user profile, user registration
 Requires at least: 5.2
 Tested up to: 6.6
 Requires PHP: 5.6
-Stable tag: 3.1
+Stable tag: 3.1.1
 License: GPLv2
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -216,6 +216,26 @@ Not sure? You can find out by doing a bit a research.
 10. Advanced settings for updating non-member messages, optionally show excerpts or filter content, use reCAPTCHA, and a Terms of Service checkbox.
 
 == Changelog ==
+= 3.1.1 - 2024-07-29 =
+* ENHANCEMENT: Added autocomplete functionality for name and billing fields on the checkout page. #3081 (@andrewlimaza)
+* ENHANCEMENT: Improved the field structure and styling for checkbox and radio user fields. #3077 (@kimcoleman)
+* ENHANCEMENT: Added a new hook `pmpro_lost_password_before_submit_button`. #3090 (@dioliviers, @dparker1005)
+* BUG FIX/ENHANCEMENT: The current panel on the Member Edit page is now included in the form action instead of as a hidden input. #3092 (@mircobabini)
+* BUG FIX/ENHANCEMENT: Improved the LifterLMS streamline option to prevent LifterLMS from modifying the login form links on the PMPro login page. #3089 (@kimcoleman)
+* BUG FIX: Fixed an issue where fields may overlap on the checkout page when viewing on a mobile device. #3078 (@kimcoleman)
+* BUG FIX: Fixed an issue where pages could not be saved when they contain the "Confirmation Page" block. #3085 (@dparker1005)
+* BUG FIX: Fixed an issue where the billing address fields were always shown on the Update Billing page, even when disabled. #3082 (@dparker1005)
+* BUG FIX: Fixed an issue where some required fields did not display a "required" asterisk or the `aria-required` attribute. #3076 (@kimcoleman)
+* BUG FIX: Fixed the styling for fields with errors after submitting the checkout form. #3076 (@kimcoleman)
+* BUG FIX: Fixed an issue where the default expiration date when adding a new membership level via the Edit Member page would be calculated based on the current UTC time. #3093 (@mircobabini)
+* BUG FIX: Fixed an issue where free orders would not process correctly when the default gateway was set to PayPal Standard or 2Checkout. #3091 (@dparker1005)
+* BUG FIX: Fixed an issue where some HTML elements were missing class names. #3080 (@mircobabini)
+* BUG FIX: Fixed the alignment of the action links on the "lost password" form. #3084 (@kimcoleman)
+* BUG FIX: Fixed an issue where content added to the login form via hooks might be given flex alignment. #3083 (@kimcoleman)
+* BUG FIX: Fixed an issue where requesting a subscription date as a timestamp would always return in the UTC timezone regardless of if `$local_time` was set to `true`. #3069 (@mircobabini)
+* BUG FIX: Fixed a typo of "Akismet" on the PMPro Security settings page. #3081 (@andrewlimaza)
+* BUG FIX: Fixed the alignment of the "search" field on the Add Ons dashboard page. #3079 (@kimcoleman)
+
 = 3.1 - 2024-07-17 =
 * FEATURE: Added a new "Design" tab to the Memberships > Settings page with multiple frontend style variations to choose from. #3003 (@kimcoleman)
 * FEATURE: Added a new "Security" tab to the Memberships > Settings page. #2999 (@MaximilianoRicoTabo)
