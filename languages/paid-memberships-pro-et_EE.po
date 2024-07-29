@@ -2,14 +2,14 @@
 # This file is distributed under the same license as the Paid Memberships Pro plugin.
 msgid ""
 msgstr ""
-"Project-Id-Version: Paid Memberships Pro 3.1\n"
+"Project-Id-Version: Paid Memberships Pro 3.1.1\n"
 "Report-Msgid-Bugs-To: info@paidmembershipspro.com\n"
 "Last-Translator: Paid Memberships Pro <info@paidmembershipspro.com>\n"
 "Language-Team: Paid Memberships Pro <info@paidmembershipspro.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2024-07-17T17:59:49+00:00\n"
+"POT-Creation-Date: 2024-07-29T14:21:36+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.10.0\n"
 "X-Domain: paid-memberships-pro\n"
@@ -396,6 +396,7 @@ msgstr "Aktiveeri %s"
 #: classes/class-pmpro-orders-list-table.php:991
 #: classes/class-pmpro-field.php:926
 #: includes/fields.php:1387
+#: classes/class-pmpro-field.php:930
 msgid "Delete"
 msgstr "Kustuta"
 
@@ -569,6 +570,7 @@ msgstr "WordPress.org"
 #: classes/gateways/class.pmprogateway_stripe.php:480
 #: pages/invoice.php:363
 #: shortcodes/pmpro_account.php:366
+#: classes/class-pmpro-field.php:1370
 msgid "N/A"
 msgstr "Ei ole kättesaadav"
 
@@ -860,6 +862,7 @@ msgstr "Makse meetod &amp; SSL"
 #: pages/confirmation.php:105
 #: shortcodes/pmpro_account.php:77
 #: adminpages/member-edit/pmpro-class-member-edit-panel-orders.php:86
+#: pages/confirmation.php:106
 msgid "Email"
 msgstr "Email"
 
@@ -1259,6 +1262,7 @@ msgstr "Peida reklaame liikmete eest?"
 #: includes/fields.php:1268
 #: includes/fields.php:1447
 #: includes/fields.php:1461
+#: classes/class-pmpro-field.php:1342
 msgid "No"
 msgstr "Ei"
 
@@ -1482,6 +1486,7 @@ msgstr "multilehed ainult"
 #: includes/fields.php:1266
 #: includes/fields.php:1448
 #: includes/fields.php:1459
+#: classes/class-pmpro-field.php:1342
 msgid "Yes"
 msgstr "Jah"
 
@@ -2664,6 +2669,7 @@ msgstr "Tee linnuke/Kontrolli, millal saab liikmelisus pääse läbi."
 #: adminpages/levels/edit-level.php:540
 #: adminpages/levels/edit-level.php:544
 #: pages/confirmation.php:120
+#: pages/confirmation.php:121
 msgid "Expires In"
 msgstr "Aegub"
 
@@ -3684,6 +3690,9 @@ msgstr "Salvesta tase"
 #: pages/cancel.php:123
 #: shortcodes/pmpro_account.php:256
 #: pages/cancel.php:153
+#: classes/class-pmpro-field.php:936
+#: includes/profile.php:1195
+#: includes/profile.php:1342
 msgid "Cancel"
 msgstr "Tühista"
 
@@ -4223,6 +4232,8 @@ msgstr "%d liikmed leitud."
 #: pages/checkout.php:195
 #: pages/confirmation.php:104
 #: shortcodes/pmpro_account.php:76
+#: classes/class-pmpro-subscription.php:1212
+#: pages/confirmation.php:105
 msgid "Username"
 msgstr "Kasutajanimi"
 
@@ -5149,6 +5160,7 @@ msgstr "Olek"
 #: adminpages/member-edit/pmpro-class-member-edit-panel-subscriptions.php:103
 #: adminpages/subscriptions.php:320
 #: classes/class-pmpro-subscription.php:1209
+#: classes/class-pmpro-subscription.php:1215
 msgid "Gateway"
 msgstr "Meetod"
 
@@ -5326,6 +5338,7 @@ msgstr "Loodud gateway poolt. Kasulik tellimuste risti võrdlemiseks."
 #: classes/class-pmpro-subscription.php:1185
 #: classes/class-pmpro-subscription.php:1195
 #: classes/class-pmpro-subscription.php:1210
+#: classes/class-pmpro-subscription.php:1216
 msgid "Subscription Transaction ID"
 msgstr "Tellimus kande ID"
 
@@ -5852,6 +5865,7 @@ msgstr "Kasutaja"
 #: adminpages/subscriptions.php:162
 #: pages/confirmation.php:107
 #: includes/init.php:229
+#: pages/confirmation.php:108
 msgid "Membership Level"
 msgstr "Liikme tase"
 
@@ -5976,6 +5990,7 @@ msgstr "kustutatud"
 #: classes/class-pmpro-subscription.php:1208
 #: pages/billing.php:82
 #: shortcodes/pmpro_account.php:177
+#: classes/class-pmpro-subscription.php:1214
 msgid "Subscription"
 msgstr "Tellimus"
 
@@ -7401,6 +7416,7 @@ msgstr "Kaup/Ese"
 #: pages/levels.php:52
 #: pages/levels.php:62
 #: pages/levels.php:77
+#: pages/levels.php:99
 msgid "Price"
 msgstr "Hind"
 
@@ -9237,6 +9253,7 @@ msgstr "Esita ja kinnita"
 #: classes/gateways/class.pmprogateway_paypal.php:644
 #: classes/gateways/class.pmprogateway_paypalexpress.php:881
 #: classes/gateways/class.pmprogateway_paypalstandard.php:518
+#: classes/gateways/class.pmprogateway_paypalstandard.php:523
 msgid "Please contact the site owner or cancel your subscription from within PayPal to make sure you are not charged going forward."
 msgstr "Palun võtke ühendust saidi omanikuga või tühistage tellimus PayPal-is et veenduda, teid ei maksustata edasi minnes."
 
@@ -11645,6 +11662,7 @@ msgstr "logi välja"
 #: shortcodes/pmpro_account.php:366
 #: pages/cancel.php:134
 #: pages/cancel.php:144
+#: pages/levels.php:98
 msgid "Level"
 msgstr "Tase"
 
@@ -12258,6 +12276,7 @@ msgstr "Kas teil on allahindluse kood?"
 #: includes/profile.php:1154
 #: pages/billing.php:55
 #: pages/checkout.php:183
+#: includes/profile.php:1159
 msgid "Account Information"
 msgstr "Konto andmed"
 
@@ -12470,6 +12489,7 @@ msgstr "Teie makse võeti vastu. Teie liikme tase aktiveeritakse varsti."
 #: pages/confirmation.php:28
 #: pages/confirmation.php:42
 #: pages/confirmation.php:43
+#: pages/confirmation.php:44
 #, php-format
 msgid "Thank you for your membership to %s. Your %s membership is now active."
 msgstr "Täname teid teie liikme taseme %s eest. Teie %s liikme tase on nüüd aktiivne."
@@ -12639,6 +12659,7 @@ msgstr "lõppeb"
 #: pages/confirmation.php:129
 #: pages/confirmation.php:55
 #: pages/confirmation.php:56
+#: pages/confirmation.php:57
 #, php-format
 msgid "Below are details about your membership account. A welcome email has been sent to %s."
 msgstr "Allpool on välja toodud detailid teie liikme konto kohta. Tere tulemast e-mail saadeti %s."
@@ -12666,6 +12687,7 @@ msgstr "Allpool on välja toodud detailid teie liikme konto kohta. Tere tulemast
 #: pages/confirmation.php:108
 #: pages/invoice.php:354
 #: shortcodes/pmpro_account.php:357
+#: pages/confirmation.php:109
 msgid "Pending"
 msgstr "Ootel"
 
@@ -12703,6 +12725,8 @@ msgstr "Ootel"
 #: pages/invoice.php:389
 #: pages/cancel.php:175
 #: pages/cancel.php:192
+#: includes/profile.php:1289
+#: pages/confirmation.php:129
 msgid "View Your Membership Account &rarr;"
 msgstr "Vaata oma liikme kontot &rarr;"
 
@@ -13604,6 +13628,8 @@ msgstr "Muuda profiili"
 #: includes/profile.php:1295
 #: includes/profile.php:1335
 #: shortcodes/pmpro_account.php:99
+#: includes/profile.php:1301
+#: includes/profile.php:1341
 msgid "Change Password"
 msgstr "Muuda parooli"
 
@@ -15455,6 +15481,7 @@ msgstr ""
 #: classes/class-pmpro-subscription.php:1190
 #: adminpages/emailtemplates.php:153
 #: classes/class-pmpro-subscription.php:1205
+#: classes/class-pmpro-subscription.php:1211
 msgid "User Email"
 msgstr ""
 
@@ -15865,6 +15892,7 @@ msgstr ""
 #: includes/login.php:502
 #: includes/login.php:848
 #: includes/login.php:841
+#: includes/login.php:849
 msgid "Log In"
 msgstr ""
 
@@ -16188,6 +16216,7 @@ msgstr ""
 #: adminpages/member-edit/pmpro-class-member-edit-panel-user-info.php:179
 #: adminpages/subscriptions.php:132
 #: classes/class-pmpro-subscription.php:1212
+#: classes/class-pmpro-subscription.php:1218
 msgid "Edit User"
 msgstr ""
 
@@ -16614,6 +16643,7 @@ msgstr ""
 #: classes/class-pmpro-subscription.php:1182
 #: classes/class-pmpro-subscription.php:1192
 #: classes/class-pmpro-subscription.php:1207
+#: classes/class-pmpro-subscription.php:1213
 msgid "User Display Name"
 msgstr ""
 
@@ -17442,6 +17472,7 @@ msgstr ""
 #: classes/gateways/class.pmprogateway_paypalstandard.php:572
 #: classes/gateways/class.pmprogateway_paypalstandard.php:574
 #: classes/gateways/class.pmprogateway_paypalstandard.php:502
+#: classes/gateways/class.pmprogateway_paypalstandard.php:507
 msgid "User requested cancellation"
 msgstr ""
 
@@ -21333,6 +21364,7 @@ msgstr ""
 #: includes/login.php:561
 #: includes/login.php:831
 #: includes/login.php:824
+#: includes/login.php:832
 msgid "Reset Password"
 msgstr ""
 
@@ -21430,6 +21462,7 @@ msgstr ""
 #: includes/profile.php:1239
 #: includes/profile.php:1238
 #: includes/profile.php:1250
+#: includes/profile.php:1256
 msgid "New passwords do not match."
 msgstr ""
 
@@ -21444,6 +21477,7 @@ msgstr ""
 #: includes/profile.php:1235
 #: includes/profile.php:1234
 #: includes/profile.php:1246
+#: includes/profile.php:1252
 msgid "Please complete all fields."
 msgstr ""
 
@@ -21492,6 +21526,7 @@ msgstr ""
 #: includes/login.php:595
 #: includes/login.php:679
 #: includes/login.php:672
+#: includes/login.php:680
 msgid "Get New Password"
 msgstr ""
 
@@ -21512,6 +21547,8 @@ msgstr ""
 #: includes/login.php:808
 #: includes/profile.php:1315
 #: includes/login.php:801
+#: includes/login.php:809
+#: includes/profile.php:1321
 msgid "New Password"
 msgstr ""
 
@@ -21536,6 +21573,8 @@ msgstr ""
 #: includes/profile.php:1329
 #: includes/scripts.php:81
 #: includes/login.php:820
+#: includes/login.php:828
+#: includes/profile.php:1335
 msgid "Strength Indicator"
 msgstr ""
 
@@ -21556,6 +21595,8 @@ msgstr ""
 #: includes/login.php:820
 #: includes/profile.php:1322
 #: includes/login.php:813
+#: includes/login.php:821
+#: includes/profile.php:1328
 msgid "Confirm New Password"
 msgstr ""
 
@@ -21567,6 +21608,7 @@ msgstr ""
 #: includes/functions.php:2136
 #: includes/login.php:855
 #: includes/login.php:848
+#: includes/login.php:856
 msgid "Join Now"
 msgstr ""
 
@@ -21577,6 +21619,7 @@ msgstr ""
 #: includes/login.php:760
 #: includes/login.php:857
 #: includes/login.php:850
+#: includes/login.php:858
 msgid "Register"
 msgstr ""
 
@@ -21587,6 +21630,7 @@ msgstr ""
 #: includes/login.php:765
 #: includes/login.php:862
 #: includes/login.php:855
+#: includes/login.php:863
 msgid "Lost Password?"
 msgstr ""
 
@@ -21600,6 +21644,7 @@ msgstr ""
 #: includes/login.php:863
 #: includes/login.php:960
 #: includes/login.php:953
+#: includes/login.php:961
 msgid "Invalid Request"
 msgstr ""
 
@@ -21618,6 +21663,8 @@ msgstr ""
 #: pages/confirmation.php:99
 #: shortcodes/pmpro_account.php:70
 #: includes/login.php:1090
+#: includes/login.php:1098
+#: pages/confirmation.php:100
 msgid "Welcome, %s"
 msgstr ""
 
@@ -21643,6 +21690,7 @@ msgstr ""
 #: includes/login.php:1134
 #: shortcodes/pmpro_account.php:102
 #: includes/login.php:1127
+#: includes/login.php:1135
 msgid "Log Out"
 msgstr ""
 
@@ -22086,6 +22134,7 @@ msgstr ""
 #: includes/profile.php:1158
 #: includes/profile.php:1157
 #: includes/profile.php:1163
+#: includes/profile.php:1168
 msgid "Site administrators must use the WordPress dashboard to update their email address."
 msgstr ""
 
@@ -22098,6 +22147,7 @@ msgstr ""
 #: includes/profile.php:1181
 #: includes/profile.php:1180
 #: includes/profile.php:1188
+#: includes/profile.php:1194
 msgid "Update Profile"
 msgstr ""
 
@@ -22110,6 +22160,7 @@ msgstr ""
 #: includes/profile.php:1237
 #: includes/profile.php:1236
 #: includes/profile.php:1248
+#: includes/profile.php:1254
 msgid "Please enter your current password."
 msgstr ""
 
@@ -22122,6 +22173,7 @@ msgstr ""
 #: includes/profile.php:1241
 #: includes/profile.php:1240
 #: includes/profile.php:1252
+#: includes/profile.php:1258
 msgid "Your current password is incorrect."
 msgstr ""
 
@@ -22134,6 +22186,7 @@ msgstr ""
 #: includes/profile.php:1252
 #: includes/profile.php:1251
 #: includes/profile.php:1263
+#: includes/profile.php:1269
 msgid "Your password has been updated."
 msgstr ""
 
@@ -22146,6 +22199,7 @@ msgstr ""
 #: includes/profile.php:1282
 #: includes/profile.php:1281
 #: includes/profile.php:1302
+#: includes/profile.php:1308
 msgid "Current Password"
 msgstr ""
 
@@ -22188,6 +22242,11 @@ msgstr ""
 #: includes/login.php:665
 #: includes/login.php:802
 #: includes/login.php:814
+#: includes/login.php:810
+#: includes/login.php:822
+#: includes/profile.php:1309
+#: includes/profile.php:1322
+#: includes/profile.php:1329
 msgid "Required Field"
 msgstr ""
 
@@ -24160,6 +24219,8 @@ msgstr ""
 #: includes/login.php:778
 #: includes/login.php:762
 #: includes/login.php:771
+#: includes/login.php:770
+#: includes/login.php:779
 msgid "Your password reset link appears to be invalid. Please request a new link below."
 msgstr ""
 
@@ -24179,6 +24240,8 @@ msgstr ""
 #: includes/login.php:780
 #: includes/login.php:764
 #: includes/login.php:773
+#: includes/login.php:772
+#: includes/login.php:781
 msgid "Your password reset link has expired. Please request a new link below."
 msgstr ""
 
@@ -24193,6 +24256,7 @@ msgstr ""
 #: includes/login.php:1067
 #: includes/login.php:1168
 #: includes/login.php:1161
+#: includes/login.php:1169
 msgid "Missing request ID."
 msgstr ""
 
@@ -24207,6 +24271,7 @@ msgstr ""
 #: includes/login.php:1071
 #: includes/login.php:1172
 #: includes/login.php:1165
+#: includes/login.php:1173
 msgid "Missing confirm key."
 msgstr ""
 
@@ -26485,6 +26550,9 @@ msgstr ""
 #: classes/class-pmpro-field.php:914
 #: classes/class-pmpro-field.php:916
 #: classes/class-pmpro-field.php:1368
+#: classes/class-pmpro-field.php:918
+#: classes/class-pmpro-field.php:920
+#: classes/class-pmpro-field.php:1372
 msgid "Current File: %s"
 msgstr ""
 
@@ -28216,6 +28284,7 @@ msgstr ""
 #: includes/login.php:921
 #: includes/login.php:1018
 #: includes/login.php:1011
+#: includes/login.php:1019
 msgid "<strong>Error:</strong> The password field is empty."
 msgstr ""
 
@@ -30170,6 +30239,7 @@ msgstr ""
 #: includes/adminpages.php:304
 #: includes/adminpages.php:729
 #: includes/profile.php:1358
+#: includes/profile.php:1364
 msgid "Edit Member"
 msgstr ""
 
@@ -30251,6 +30321,7 @@ msgstr ""
 #: classes/class-pmpro-subscription.php:1015
 #: classes/class-pmpro-subscription.php:1017
 #: classes/class-pmpro-subscription.php:997
+#: classes/class-pmpro-subscription.php:1013
 msgid "%1$s per %2$s"
 msgstr ""
 
@@ -30260,6 +30331,7 @@ msgstr ""
 #: classes/class-pmpro-subscription.php:1018
 #: classes/class-pmpro-subscription.php:1020
 #: classes/class-pmpro-subscription.php:1000
+#: classes/class-pmpro-subscription.php:1016
 msgid "%1$s every %2$d %3$s"
 msgstr ""
 
@@ -30270,6 +30342,7 @@ msgstr ""
 #: classes/class-pmpro-subscription.php:1108
 #: classes/class-pmpro-subscription.php:1118
 #: classes/class-pmpro-subscription.php:1133
+#: classes/class-pmpro-subscription.php:1139
 msgid "There was an error saving the subscription."
 msgstr ""
 
@@ -30280,6 +30353,7 @@ msgstr ""
 #: classes/class-pmpro-subscription.php:1123
 #: classes/class-pmpro-subscription.php:1133
 #: classes/class-pmpro-subscription.php:1148
+#: classes/class-pmpro-subscription.php:1154
 msgid "Subscription saved."
 msgstr ""
 
@@ -30297,6 +30371,7 @@ msgstr ""
 #: classes/class-pmpro-subscription.php:1200
 #: classes/class-pmpro-subscription.php:1204
 #: classes/class-pmpro-subscription.php:1215
+#: classes/class-pmpro-subscription.php:1221
 msgid "There was an error cancelling a subscription from your website. Check your payment gateway to see if the subscription is still active."
 msgstr ""
 
@@ -30307,6 +30382,7 @@ msgstr ""
 #: classes/class-pmpro-subscription.php:1192
 #: classes/class-pmpro-subscription.php:1202
 #: classes/class-pmpro-subscription.php:1217
+#: classes/class-pmpro-subscription.php:1223
 msgid "Subscription cancelled at gateway."
 msgstr ""
 
@@ -31729,6 +31805,7 @@ msgstr ""
 
 #: classes/class-pmpro-field.php:912
 #: classes/class-pmpro-field.php:931
+#: classes/class-pmpro-field.php:935
 msgid "Replace"
 msgstr ""
 
@@ -32702,6 +32779,8 @@ msgstr ""
 #: includes/login.php:645
 #: includes/login.php:806
 #: pages/checkout.php:220
+#: includes/login.php:814
+#: includes/profile.php:1313
 msgid "Show Password"
 msgstr ""
 
@@ -32711,10 +32790,12 @@ msgid "Hide Password"
 msgstr ""
 
 #: includes/profile.php:1188
+#: includes/profile.php:1194
 msgid "Submit the update profile form"
 msgstr ""
 
 #: includes/profile.php:1189
+#: includes/profile.php:1195
 msgid "Cancel changes and return to the account page"
 msgstr ""
 
@@ -32760,18 +32841,22 @@ msgid "I agree to the <a href=\"%1$s\" target=\"_blank\">%2$s</a>"
 msgstr ""
 
 #: pages/confirmation.php:17
+#: pages/confirmation.php:18
 msgid "There was an error retrieving your order. Please contact the site owner."
 msgstr ""
 
 #: pages/confirmation.php:41
+#: pages/confirmation.php:42
 msgid "Thank you for your membership to %1$s. Your %2$s membership will be activated once the payment has been completed."
 msgstr ""
 
 #: pages/confirmation.php:54
+#: pages/confirmation.php:55
 msgid "Below are details about your membership account and a receipt for your initial membership order. A welcome email with a copy of your initial membership order has been sent to %s."
 msgstr ""
 
 #: pages/confirmation.php:84
+#: pages/confirmation.php:85
 msgid "We are waiting for your payment to be completed."
 msgstr ""
 
@@ -32882,4 +32967,8 @@ msgstr ""
 
 #: pages/cancel.php:90
 msgid "Your memberships will be cancelled immediately."
+msgstr ""
+
+#: adminpages/securitysettings.php:148
+msgid "With the Akismet Integration for Paid Memberships Pro, the same comment spam filters built into Akismet are used to detect and prevent membership checkout form abuse. This integration requires both the <a href=\"%1$s\" target=\"_blank\">Akismet plugin</a> and the <a href=\"%2$s\" target=\"_blank\">Akismet Integration for Paid Memberships Pro</a>."
 msgstr ""
