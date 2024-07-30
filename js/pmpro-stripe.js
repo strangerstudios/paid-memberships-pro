@@ -80,6 +80,12 @@ jQuery( document ).ready( function( $ ) {
 			return;
 		}
 
+		// If there is a payment method ID already, then this is a form submission after card authentication.
+		// This may be the case when the payment request button is used, for example.
+		if ( $( 'input[name="payment_method_id"]' ).length > 0 ) {
+			return;
+		}
+
 		var name, address;
 
 		// Prevent the form from submitting with the default action.
@@ -246,7 +252,7 @@ jQuery( document ).ready( function( $ ) {
 			form.append( '<input type="hidden" name="ExpirationYear" value="' + card.exp_year + '"/>' );
 
 			// and submit
-			form.get(0).submit();			
+			form.submit();			
 			
 		} else if ( response.paymentIntent || response.setupIntent ) {
 			// Card authentication was successful. Finish the checkout in PHP.

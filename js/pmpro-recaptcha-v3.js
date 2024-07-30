@@ -58,13 +58,11 @@ var pmpro_recaptcha_onloadCallback = function () {
     var recaptcha_widget = jQuery('#pmpro_btn-submit').prev();
     recaptcha_widget.insertAfter( submit_span );
 
-    // Update other submit buttons.
-    submit_buttons.each(function () {
-        if (jQuery(this).attr('id') != 'pmpro_btn-submit') {
-            jQuery(this).click(function (event) {
-                event.preventDefault();
-                grecaptcha.execute();
-            });
+    // Run when the form is submitted.
+    jQuery('#pmpro_form, .pmro_form').submit(function (event) {
+        if (!pmpro_recaptcha_validated) {
+            event.preventDefault();
+            grecaptcha.execute();
         }
     });
 };
