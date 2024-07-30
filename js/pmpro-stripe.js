@@ -288,7 +288,7 @@ jQuery( document ).ready( function( $ ) {
 			form.append( '<input type="hidden" name="AccountNumber" value="XXXXXXXXXXXX' + card.last4 + '"/>' );
 			form.append( '<input type="hidden" name="ExpirationMonth" value="' + ( '0' + card.exp_month ).slice( -2 ) + '"/>' );
 			form.append( '<input type="hidden" name="ExpirationYear" value="' + card.exp_year + '"/>' );
-			form.get(0).submit();
+			form.submit();
 			return true;
 		}
 	}
