@@ -19,9 +19,9 @@ jQuery( document ).ready( function( $ ) {
 	 * Set up default credit card fields.
 	 */
 	// Create Elements.
-	cardNumber = elements.create('cardNumber');
-	cardExpiry = elements.create('cardExpiry');
-	cardCvc = elements.create('cardCvc');
+	cardNumber = elements.create('cardNumber', { style: pmproStripe.style });
+	cardExpiry = elements.create('cardExpiry', { style: pmproStripe.style });
+	cardCvc = elements.create('cardCvc', { style: pmproStripe.style });
 
 	// Mount Elements. Ensure CC field is present before loading Stripe.
 	if ( $( '#AccountNumber' ).length > 0 ) { 
