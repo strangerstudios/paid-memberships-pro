@@ -285,7 +285,6 @@
 								<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_fields' ) ); ?>">
 									<input type="hidden" id="CardType" name="CardType" value="<?php echo esc_attr($CardType);?>" />
 									<script>
-										<!--
 										jQuery(document).ready(function() {
 												jQuery('#AccountNumber').validateCreditCard(function(result) {
 													var cardtypenames = {
@@ -307,7 +306,6 @@
 														jQuery('#CardType').val('Unknown Card Type');
 												});
 										});
-										-->
 									</script>
 									<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_field pmpro_form_field-text pmpro_payment-account-number', 'pmpro_payment-account-number' ) ); ?>">
 										<label for="AccountNumber" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_label' ) ); ?>"><?php esc_html_e('Card Number', 'paid-memberships-pro' );?></label>
