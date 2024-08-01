@@ -198,16 +198,15 @@ if ($submit) {
             break;
         }
     }
-	
-	// Check reCAPTCHA if needed.
-    $recaptcha = get_option( "pmpro_recaptcha");
-    if (  $recaptcha == 2 || ( $recaptcha == 1 && pmpro_isLevelFree( $pmpro_level ) ) ) {
-        $recaptcha_validated = pmpro_recaptcha_is_validated(); // Returns true if validated, string error message if not.
-        if ( is_string( $recaptcha_validated ) ) {
-            $pmpro_msg  = sprintf( __( "reCAPTCHA failed. (%s) Please try again.", 'paid-memberships-pro' ), $recaptcha_validated );
-            $pmpro_msgt = "pmpro_error";
-        }
-    }
+
+    /**
+     * Mirror of pmpro_registration_checks filter for the billing page.
+     *
+     * @since TBD
+     *
+     * @param bool $continue_billing_update Whether to continue with the billing update.
+     */
+    $continue_billing_update = apply_filters( 'pmpro_billing_update_checks', true );
 	
     if (!empty($missing_billing_field)) {
         $pmpro_msg = __("Please complete all required fields.", 'paid-memberships-pro' );
@@ -218,7 +217,7 @@ if ($submit) {
     } elseif (!is_email($bemail)) {
         $pmpro_msg = __("The email address entered is in an invalid format. Please try again.", 'paid-memberships-pro' );
         $pmpro_msgt = "pmpro_error";
-    } elseif ( $pmpro_msgt == 'pmpro_error' ) {
+    } elseif ( empty( $continue_billing_update ) || $pmpro_msgt == 'pmpro_error' ) {
 		// Something else threw an error, maybe reCAPTCHA.		
 	} else {
         //all good. update billing info.

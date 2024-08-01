@@ -304,7 +304,7 @@ add_action( 'pmpro_checkout_after_email', 'pmpro_checkout_after_email_fields' );
 function pmpro_checkout_after_captcha_fields() {
 	pmpro_display_fields_in_group( 'after_captcha', 'checkout' );
 }
-add_action( 'pmpro_checkout_after_captcha', 'pmpro_checkout_after_captcha_fields' );
+add_action( 'pmpro_checkout_before_submit_button', 'pmpro_checkout_after_captcha_fields' );
 
 //checkout boxes
 function pmpro_checkout_boxes_fields() {

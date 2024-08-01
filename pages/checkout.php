@@ -561,23 +561,11 @@ if ( empty( $default_gateway ) ) {
 				}
 			?>
 
-			<?php do_action( 'pmpro_checkout_after_tos_fields' ); ?>
-
-			<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_captcha' ) ); ?>">
 			<?php
-				$recaptcha = get_option( "pmpro_recaptcha");
-				if ( $recaptcha == 2 || $recaptcha == 1 ) {
-					pmpro_recaptcha_get_html();
-				}
-			?>
-			</div> <!-- end pmpro_captcha -->
-
-			<?php
-				do_action( 'pmpro_checkout_after_captcha' );
-				do_action( 'pmpro_checkout_before_submit_button' );
-
-				// Add nonce.
-				wp_nonce_field( 'pmpro_checkout_nonce', 'pmpro_checkout_nonce' );
+			do_action( 'pmpro_checkout_after_tos_fields' );
+			do_action( 'pmpro_checkout_before_submit_button' );
+			// Add nonce.
+			wp_nonce_field( 'pmpro_checkout_nonce', 'pmpro_checkout_nonce' );
 			?>
 
 			<?php if ( $pmpro_msg ) { ?>
