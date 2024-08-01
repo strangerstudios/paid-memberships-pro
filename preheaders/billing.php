@@ -182,7 +182,6 @@ if ($submit) {
         "bphone" => $bphone,
         "bemail" => $bemail,
         "bcountry" => $bcountry,
-        "CardType" => $CardType,
         "AccountNumber" => $AccountNumber,
         "ExpirationMonth" => $ExpirationMonth,
         "ExpirationYear" => $ExpirationYear,

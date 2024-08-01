@@ -272,7 +272,6 @@ $pmpro_required_billing_fields = array(
 	"bphone"          => $bphone,
 	"bemail"          => $bemail,
 	"bcountry"        => $bcountry,
-	"CardType"        => $CardType,
 	"AccountNumber"   => $AccountNumber,
 	"ExpirationMonth" => $ExpirationMonth,
 	"ExpirationYear"  => $ExpirationYear,
