@@ -189,6 +189,9 @@ class PMProGateway_stripe extends PMProGateway {
 		add_action( 'admin_notices', array( 'PMProGateway_stripe', 'stripe_connect_show_errors' ) );
 		add_action( 'admin_notices', array( 'PMProGateway_stripe', 'stripe_connect_deauthorize' ) );
 
+		// Show warning if webhooks are not set up.
+		add_action( 'admin_notices', array( 'PMProGateway_stripe', 'show_stripe_webhook_setup_notice' ) );
+
 		add_filter( 'pmpro_process_refund_stripe', array( 'PMProGateway_stripe', 'process_refund' ), 10, 2 );
 	}
 
@@ -398,7 +401,7 @@ class PMProGateway_stripe extends PMProGateway {
 					} else { ?>
 						<button type="button" id="pmpro_stripe_create_webhook" class="button button-secondary"><span class="dashicons dashicons-update-alt"></span> <?php esc_html_e( 'Create Webhook' ,'paid-memberships-pro' ); ?></button>
 						<div class="notice error inline">
-							<p id="pmpro_stripe_webhook_notice" class="pmpro_stripe_webhook_notice"><?php esc_html_e('A webhook in Stripe is required to process recurring payments, manage failed payments, and synchronize cancellations.', 'paid-memberships-pro' );?></p>
+							<p id="pmpro_stripe_webhook_notice" class="pmpro_stripe_webhook_notice"><?php esc_html_e('A webhook in Stripe is required to process payments, manage failed payments, and synchronize cancellations.', 'paid-memberships-pro' );?></p>
 						</div>
 						<?php
 					}
@@ -1245,6 +1248,57 @@ class PMProGateway_stripe extends PMProGateway {
 		_deprecated_function( __FUNCTION__, '3.0.4' );
 		global $pmpro_stripe_old_payment_flow;
 		$pmpro_stripe_old_payment_flow = empty( $old_value ) ? 'onsite' : $old_value;
+	}
+
+	/**
+	 * If Stripe is the current gateway but webhooks are not set up, show an admin notice.
+	 *
+	 * @since TBD
+	 */
+	public static function show_stripe_webhook_setup_notice() {
+		// If Stripe isn't the current gateway, we don't need to show the notice.
+		if ( 'stripe' !== pmpro_getOption( 'gateway' ) ) {
+			return;
+		}
+
+		// Only show on PMPro admin pages except for the payment settings page.
+		if ( empty( $_REQUEST['page'] ) || strpos( $_REQUEST['page'], 'pmpro' ) === false || 'pmpro-paymentsettings' === $_REQUEST['page'] ) {
+			return;
+		}
+
+		// Get webhook data from Stripe.
+		$stripe = new PMProGateway_stripe();
+		$webhook = $stripe->does_webhook_exist();
+
+		if ( empty( $webhook ) || ! is_array( $webhook ) ) {
+			// The webhook is not set up.
+			?>
+			<div class="notice notice-error" id="pmpro-stripe_webhook_setup-notice">
+				<p><strong><?php esc_html_e( 'Important Notice: Stripe Webhooks Are Not Set Up', 'paid-memberships-pro' ); ?></strong></p>
+				<p>
+					<?php
+					esc_html_e( 'In order for Stripe to function properly, there must be a Stripe Webhook configured for this website.', 'paid-memberships-pro' );
+					echo ' ';
+					echo '<a href="' . esc_url( admin_url( 'admin.php?page=pmpro-paymentsettings' ) ) . '">' . esc_html__( 'Set up webhooks now', 'paid-memberships-pro' ) . '</a>';
+					?>
+				</p>
+			</div>
+			<?php
+		} elseif ( 'disabled' === $webhook['status'] ) {
+			// The webhook is disabled.
+			?>
+			<div class="notice notice-error" id="pmpro-stripe_webhook_setup-notice">
+				<p><strong><?php esc_html_e( 'Important Notice: Stripe Webhooks Are Disabled', 'paid-memberships-pro' ); ?></strong></p>
+				<p>
+					<?php
+					esc_html_e( 'In order for Stripe to function properly, there must be a Stripe Webhook configured for this website.', 'paid-memberships-pro' );
+					echo ' ';
+					echo '<a href="' . esc_url( admin_url( 'admin.php?page=pmpro-paymentsettings' ) ) . '">' . esc_html__( 'Enable webhooks now', 'paid-memberships-pro' ) . '</a>';
+					?>
+				</p>
+			</div>
+			<?php
+		}
 	}
 
 	/**
