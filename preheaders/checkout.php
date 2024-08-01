@@ -397,19 +397,6 @@ if ( $submit && $pmpro_msgt != "pmpro_error" ) {
 			$pmpro_error_fields[] = "bconfirmemail";
 		}
 
-		//only continue if there are no other errors yet
-		if ( $pmpro_msgt != "pmpro_error" ) {
-			//check recaptcha first
-			$recaptcha = get_option( "pmpro_recaptcha");
-			if (  $recaptcha == 2 || ( $recaptcha == 1 && pmpro_isLevelFree( $pmpro_level ) ) ) {
-				$recaptcha_validated = pmpro_recaptcha_is_validated(); // Returns true if validated, string error message if not.
-				if ( is_string( $recaptcha_validated ) ) {
-					$pmpro_msg  = sprintf( __( "reCAPTCHA failed. (%s) Please try again.", 'paid-memberships-pro' ), $recaptcha_validated );
-					$pmpro_msgt = "pmpro_error";
-				}
-			}
-		}
-
 		// Only continue if there are no other errors yet
 		if ( $pmpro_msgt != "pmpro_error" ) {
 			// Do we need to create a user account?
