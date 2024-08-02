@@ -15,10 +15,7 @@ jQuery( document ).ready( function( $ ) {
 	}
 	elements = stripe.elements();
 
-	/**
-	 * Set up default credit card fields.
-	 */
-	// Create Elements.
+	// Set up default credit card fields.
 	cardNumber = elements.create('cardNumber', { style: pmproStripe.style });
 	cardExpiry = elements.create('cardExpiry', { style: pmproStripe.style });
 	cardCvc = elements.create('cardCvc', { style: pmproStripe.style });
