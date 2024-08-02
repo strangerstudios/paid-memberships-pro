@@ -267,6 +267,17 @@ button[type="button"]#other_discount_code_toggle:focus {
 	padding: 0;
 }
 
+.pmpro_list.pmpro_list-bulleted {
+	list-style-type: disc;
+	margin: 0;
+	padding: 0 0 0 var(--pmpro--base--spacing--medium);
+}
+
+.pmpro_list.pmpro_list-bulleted .pmpro_list_item {
+	margin: 0;
+	padding: 0;
+}
+
 .pmpro_list .pmpro_list_item:not(:last-child) {
 	margin-bottom: var(--pmpro--base--spacing--small);
 }
