@@ -292,7 +292,30 @@
 								</legend>
 								<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_fields' ) ); ?>">
 									<input type="hidden" id="CardType" name="CardType" value="<?php echo esc_attr($CardType);?>" />								
-									<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_field pmpro_form_field-text pmpro_payment-account-number', 'pmpro_payment-account-number' ) ); ?>">
+									<script>
+										jQuery(document).ready(function() {
+												jQuery('#AccountNumber').validateCreditCard(function(result) {
+													var cardtypenames = {
+														"amex"                      : "American Express",
+														"diners_club_carte_blanche" : "Diners Club Carte Blanche",
+														"diners_club_international" : "Diners Club International",
+														"discover"                  : "Discover",
+														"jcb"                       : "JCB",
+														"laser"                     : "Laser",
+														"maestro"                   : "Maestro",
+														"mastercard"                : "Mastercard",
+														"visa"                      : "Visa",
+														"visa_electron"             : "Visa Electron"
+													};
+
+													if(result.card_type)
+														jQuery('#CardType').val(cardtypenames[result.card_type.name]);
+													else
+														jQuery('#CardType').val('Unknown Card Type');
+												});
+										});
+									</script>
+                                    <div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_field pmpro_form_field-text pmpro_payment-account-number', 'pmpro_payment-account-number' ) ); ?>">
 										<label for="AccountNumber" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_label' ) ); ?>"><?php esc_html_e('Card Number', 'paid-memberships-pro' );?></label>
 										<input id="AccountNumber" name="AccountNumber" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_input pmpro_form_input-text', 'AccountNumber' ) );?>" type="text" size="25" value="<?php echo esc_attr($AccountNumber)?>" autocomplete="off" />
 									</div>
