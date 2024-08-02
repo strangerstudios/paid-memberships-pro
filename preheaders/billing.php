@@ -212,6 +212,9 @@ if ($submit) {
     if (!empty($missing_billing_field)) {
         $pmpro_msg = __("Please complete all required fields.", 'paid-memberships-pro' );
         $pmpro_msgt = "pmpro_error";
+    } elseif ($bemail != $bconfirmemail) {
+        $pmpro_msg = __("Your email addresses do not match. Please try again.", 'paid-memberships-pro' );
+        $pmpro_msgt = "pmpro_error";
     } elseif (!is_email($bemail)) {
         $pmpro_msg = __("The email address entered is in an invalid format. Please try again.", 'paid-memberships-pro' );
         $pmpro_msgt = "pmpro_error";
