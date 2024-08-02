@@ -1768,6 +1768,12 @@ table.pmprommpu_levels tr.remove_level td {background: #F2DEDE; }
 	}
 }
 
+.pmpro_admin-pmpro-paymentsettings #pmpro_stripe_create_webhook {
+	align-items: center;
+	display: flex;
+	gap: 5px;
+}
+
 .pmpro_admin-pmpro-paymentsettings .pmpro-admin-secure-key {
 	-webkit-text-security: disc;
 }

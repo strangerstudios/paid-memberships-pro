@@ -361,7 +361,7 @@ class PMProGateway_stripe extends PMProGateway {
 				<h2><?php esc_html_e( 'Webhook', 'paid-memberships-pro' ); ?></h2>
 			</td>
 		</tr>
-		<tr class="pmpro_settings_divider gateway gateway_stripe_<?php echo esc_attr( $stripe->gateway_environment ); ?>" <?php if ( $gateway != "stripe" ) { ?>style="display: none;"<?php } ?>>
+		<tr class="gateway gateway_stripe_<?php echo esc_attr( $stripe->gateway_environment ); ?>" <?php if ( $gateway != "stripe" ) { ?>style="display: none;"<?php } ?>>
 			<th scope="row" valign="top">
 				<label><?php esc_html_e( 'Webhook URL', 'paid-memberships-pro' ); ?></label>
 			</th>
@@ -369,7 +369,7 @@ class PMProGateway_stripe extends PMProGateway {
 				<p><code><?php echo esc_html( $stripe->get_site_webhook_url() ); ?></code></p>
 			</td>
 		</tr>
-		<tr class="pmpro_settings_divider gateway gateway_stripe_<?php echo esc_attr( $stripe->gateway_environment ); ?>" <?php if ( $gateway != "stripe" ) { ?>style="display: none;"<?php } ?>>
+		<tr class="gateway gateway_stripe_<?php echo esc_attr( $stripe->gateway_environment ); ?>" <?php if ( $gateway != "stripe" ) { ?>style="display: none;"<?php } ?>>
 			<th scope="row" valign="top">
 				<label><?php esc_html_e( 'Webhook Status', 'paid-memberships-pro' ); ?></label>
 			</th>
@@ -400,9 +400,7 @@ class PMProGateway_stripe extends PMProGateway {
 						}
 					} else { ?>
 						<button type="button" id="pmpro_stripe_create_webhook" class="button button-secondary"><span class="dashicons dashicons-update-alt"></span> <?php esc_html_e( 'Create Webhook' ,'paid-memberships-pro' ); ?></button>
-						<div class="notice error inline">
-							<p id="pmpro_stripe_webhook_notice" class="pmpro_stripe_webhook_notice"><?php esc_html_e('A webhook in Stripe is required to process payments, manage failed payments, and synchronize cancellations.', 'paid-memberships-pro' );?></p>
-						</div>
+						<p class="description"><?php esc_html_e('A webhook in Stripe is required to process payments, manage failed payments, and synchronize cancellations.', 'paid-memberships-pro' );?></p>
 						<?php
 					}
 				?>
@@ -486,7 +484,7 @@ class PMProGateway_stripe extends PMProGateway {
 						}
 					}
 					if ( ! empty( $failed_webhooks ) ) {
-						echo '<div class="notice error inline"><p>'. esc_html__( 'Some webhooks recently sent by Stripe have not been received by your website. Please ensure that you have a webhook set up in Stripe for the Webhook URL shown below with all of the listed event types active. To test an event type again, please resend the most recent webhook event of that type from the Stripe webhook settings page or wait for it to be sent again in the future.', 'paid-memberships-pro' ) . '</p></div>';
+						echo '<div class="notice error inline"><p>'. esc_html__( 'Some webhooks recently sent by Stripe have not been received by your website. Please ensure that you have a webhook set up in Stripe for the Webhook URL shown above with all of the listed event types active. To test an event type again, please resend the most recent webhook event of that type from the Stripe webhook settings page or wait for it to be sent again in the future.', 'paid-memberships-pro' ) . '</p></div>';
 					} elseif ( ! empty( $missing_webhooks ) ) {
 						echo '<div class="notice inline"><p>'. esc_html__( 'Recent webhook attempts appear to have worked correctly, but there are some event types that have not been checked. Those event types will be checked as they are sent by Stripe. In the meantime, please ensure that you have a webhook set up in Stripe for the Webhook URL shown below with all of the listed event types active.', 'paid-memberships-pro' ) . '</p></div>';
 					} else {
@@ -1274,10 +1272,10 @@ class PMProGateway_stripe extends PMProGateway {
 			// The webhook is not set up.
 			?>
 			<div class="notice notice-error" id="pmpro-stripe_webhook_setup-notice">
-				<p><strong><?php esc_html_e( 'Important Notice: Stripe Webhooks Are Not Set Up', 'paid-memberships-pro' ); ?></strong></p>
+				<p><strong><?php esc_html_e( 'Important Notice: Your Stripe Webhook Is Disabled or Not Configured', 'paid-memberships-pro' ); ?></strong></p>
 				<p>
 					<?php
-					esc_html_e( 'In order for Stripe to function properly, there must be a Stripe Webhook configured for this website.', 'paid-memberships-pro' );
+					esc_html_e( 'A valid Stripe webhook is required for your membership checkout to communicate with your payment gateway. We have detected that your Stripe webhook is either disabled or not configured for this website.', 'paid-memberships-pro' );
 					echo ' ';
 					echo '<a href="' . esc_url( admin_url( 'admin.php?page=pmpro-paymentsettings' ) ) . '">' . esc_html__( 'Set up webhooks now', 'paid-memberships-pro' ) . '</a>';
 					?>
