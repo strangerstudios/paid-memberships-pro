@@ -4736,7 +4736,7 @@ function pmpro_sanitize_period( $period ) {
  *
  * @param int $user_id The ID of the user to update.
  * @param int $level_id The ID of the level to update.
- * @param int|string $enddate The date to set the enddate to.
+ * @param int|string|null $enddate The date to set the enddate to.
  */
 function pmpro_set_expiration_date( $user_id, $level_id, $enddate ) {
 	global $wpdb;
