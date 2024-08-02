@@ -14,7 +14,7 @@
 <div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro' ) ); ?>">
 <?php
 	global $wpdb, $current_user, $gateway, $pmpro_msg, $pmpro_msgt, $show_check_payment_instructions, $show_paypal_link, $pmpro_billing_subscription, $pmpro_billing_level;
-	global $bfirstname, $blastname, $baddress1, $baddress2, $bcity, $bstate, $bzipcode, $bcountry, $bphone, $CardType, $AccountNumber, $ExpirationMonth, $ExpirationYear;
+	global $bfirstname, $blastname, $baddress1, $baddress2, $bcity, $bstate, $bzipcode, $bcountry, $bemail, $bconfirmemail, $bphone, $CardType, $AccountNumber, $ExpirationMonth, $ExpirationYear;
 
 	/**
 	 * Filter to set if PMPro uses email or text as the type for email field inputs.
@@ -260,6 +260,22 @@
 									<label for="bphone" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_label' ) ); ?>"><?php esc_html_e('Phone', 'paid-memberships-pro' );?></label>
 									<input id="bphone" name="bphone" type="tel" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_input pmpro_form_input-text', 'bphone' ) ); ?>" value="<?php echo esc_attr($bphone)?>" autocomplete="tel" />
 								</div> <!-- end pmpro_form_field-bphone -->
+                                <?php if($current_user->ID) { ?>
+                                    <?php
+                                        if(!$bemail && $current_user->user_email)
+                                            $bemail = $current_user->user_email;
+                                        if(!$bconfirmemail && $current_user->user_email)
+                                            $bconfirmemail = $current_user->user_email;
+                                    ?>
+                                    <div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_field pmpro_form_field-text pmpro_form_field-bemail', 'pmpro_form_field-bemail' ) ); ?>">
+                                        <label for="bemail" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_label' ) ); ?>"><?php esc_html_e('Email Address', 'paid-memberships-pro' );?></label>
+                                        <input id="bemail" name="bemail" type="<?php echo ($pmpro_email_field_type ? 'email' : 'text'); ?>" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_input pmpro_form_input-text', 'bemail' ) ); ?>" size="30" value="<?php echo esc_attr($bemail)?>" />
+                                    </div> <!-- end pmpro_checkout-field-bemail -->
+                                    <div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_field pmpro_form_field-text pmpro_form_field-bconfirmemail', 'pmpro_form_field-bconfirmemail' ) ); ?>">
+                                        <label for="bconfirmemail" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_label' ) ); ?>"><?php esc_html_e('Confirm Email', 'paid-memberships-pro' );?></label>
+                                        <input id="bconfirmemail" name="bconfirmemail" type="<?php echo ($pmpro_email_field_type ? 'email' : 'text'); ?>" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_input pmpro_form_input-text', 'bconfirmemail' ) ); ?>" size="30" value="<?php echo esc_attr($bconfirmemail)?>" />
+                                    </div> <!-- end pmpro_checkout-field-bconfirmemail -->
+                                <?php } ?>
 							</div> <!-- end pmpro_form_fields -->
 						</fieldset> <!-- end pmpro_billing_address_fields -->
 						<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_divider' ) ); ?>"></div>
@@ -283,30 +299,7 @@
 									<h2 class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_heading pmpro_font-large' ) ); ?>"><?php esc_html_e('Payment Information', 'paid-memberships-pro' ); ?></h2>
 								</legend>
 								<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_fields' ) ); ?>">
-									<input type="hidden" id="CardType" name="CardType" value="<?php echo esc_attr($CardType);?>" />
-									<script>
-										jQuery(document).ready(function() {
-												jQuery('#AccountNumber').validateCreditCard(function(result) {
-													var cardtypenames = {
-														"amex"                      : "American Express",
-														"diners_club_carte_blanche" : "Diners Club Carte Blanche",
-														"diners_club_international" : "Diners Club International",
-														"discover"                  : "Discover",
-														"jcb"                       : "JCB",
-														"laser"                     : "Laser",
-														"maestro"                   : "Maestro",
-														"mastercard"                : "Mastercard",
-														"visa"                      : "Visa",
-														"visa_electron"             : "Visa Electron"
-													};
-
-													if(result.card_type)
-														jQuery('#CardType').val(cardtypenames[result.card_type.name]);
-													else
-														jQuery('#CardType').val('Unknown Card Type');
-												});
-										});
-									</script>
+									<input type="hidden" id="CardType" name="CardType" value="<?php echo esc_attr($CardType);?>" />								
 									<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_field pmpro_form_field-text pmpro_payment-account-number', 'pmpro_payment-account-number' ) ); ?>">
 										<label for="AccountNumber" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_label' ) ); ?>"><?php esc_html_e('Card Number', 'paid-memberships-pro' );?></label>
 										<input id="AccountNumber" name="AccountNumber" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_input pmpro_form_input-text', 'AccountNumber' ) );?>" type="text" size="25" value="<?php echo esc_attr($AccountNumber)?>" autocomplete="off" />
