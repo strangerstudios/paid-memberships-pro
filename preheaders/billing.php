@@ -350,7 +350,13 @@ if ($submit) {
     $bcountry = get_user_meta($current_user->ID, "pmpro_bcountry", true);
     $bphone = get_user_meta($current_user->ID, "pmpro_bphone", true);
     $bemail = get_user_meta($current_user->ID, "pmpro_bemail", true);
-    $bconfirmemail = get_user_meta($current_user->ID, "pmpro_bemail", true);    
+    $bconfirmemail = get_user_meta($current_user->ID, "pmpro_bemail", true);
+
+    // Fallback for email fields.
+    if ( empty( $bemail ) && ! empty( $current_user->user_email ) ) {
+        $bemail = empty( $current_user->user_email ) ? '' : $current_user->user_email;
+        $bconfirmemail = empty( $current_user->user_email ) ? '' : $current_user->user_email;
+    }
 }
 
 /**
