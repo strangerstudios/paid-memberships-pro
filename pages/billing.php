@@ -14,7 +14,7 @@
 <div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro' ) ); ?>">
 <?php
 	global $wpdb, $current_user, $gateway, $pmpro_msg, $pmpro_msgt, $show_check_payment_instructions, $show_paypal_link, $pmpro_billing_subscription, $pmpro_billing_level;
-	global $bfirstname, $blastname, $baddress1, $baddress2, $bcity, $bstate, $bzipcode, $bcountry, $bemail, $bphone, $CardType, $AccountNumber, $ExpirationMonth, $ExpirationYear;
+	global $bfirstname, $blastname, $baddress1, $baddress2, $bcity, $bstate, $bzipcode, $bcountry, $bemail, $bconfirmemail, $bphone, $CardType, $AccountNumber, $ExpirationMonth, $ExpirationYear;
 
 	/**
 	 * Filter to set if PMPro uses email or text as the type for email field inputs.
@@ -263,10 +263,18 @@
                                 <?php if($current_user->ID) { ?>
                                     <?php
                                         if(!$bemail && $current_user->user_email)
-                                            $bemail = $current_user->user_email;                            
+                                            $bemail = $current_user->user_email;
+                                        if(!$bconfirmemail && $current_user->user_email)
+                                            $bconfirmemail = $current_user->user_email;
                                     ?>
-                                    <input id="bemail" name="bemail" type="hidden" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_input pmpro_form_input-text', 'bemail' ) ); ?>" size="30" value="<?php echo esc_attr($bemail)?>" />
-                        
+                                    <div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_field pmpro_form_field-text pmpro_form_field-bemail', 'pmpro_form_field-bemail' ) ); ?>">
+                                        <label for="bemail" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_label' ) ); ?>"><?php esc_html_e('Email Address', 'paid-memberships-pro' );?></label>
+                                        <input id="bemail" name="bemail" type="<?php echo ($pmpro_email_field_type ? 'email' : 'text'); ?>" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_input pmpro_form_input-text', 'bemail' ) ); ?>" size="30" value="<?php echo esc_attr($bemail)?>" />
+                                    </div> <!-- end pmpro_checkout-field-bemail -->
+                                    <div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_field pmpro_form_field-text pmpro_form_field-bconfirmemail', 'pmpro_form_field-bconfirmemail' ) ); ?>">
+                                        <label for="bconfirmemail" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_label' ) ); ?>"><?php esc_html_e('Confirm Email', 'paid-memberships-pro' );?></label>
+                                        <input id="bconfirmemail" name="bconfirmemail" type="<?php echo ($pmpro_email_field_type ? 'email' : 'text'); ?>" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_input pmpro_form_input-text', 'bconfirmemail' ) ); ?>" size="30" value="<?php echo esc_attr($bconfirmemail)?>" />
+                                    </div> <!-- end pmpro_checkout-field-bconfirmemail -->
                                 <?php } ?>
 							</div> <!-- end pmpro_form_fields -->
 						</fieldset> <!-- end pmpro_billing_address_fields -->
