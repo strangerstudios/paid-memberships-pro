@@ -1255,7 +1255,7 @@ class PMProGateway_stripe extends PMProGateway {
 	/**
 	 * If Stripe is the current gateway but webhooks are not set up, show an admin notice.
 	 *
-	 * @since TBD
+	 * @since 3.1.2
 	 */
 	public static function show_stripe_webhook_setup_notice() {
 		// If Stripe isn't the current gateway, we don't need to show the notice.

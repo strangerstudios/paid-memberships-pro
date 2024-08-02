@@ -1,4 +1,14 @@
 == Changelog ==
+= 3.1.2 - 2024-08-02 =
+* ENHANCEMENT: Added an admin notice on PMPro settings pages when using Stripe without a webhook set up. #3103 (@dparker1005)
+* ENHANCEMENT: Added a new filter `pmpro_stripe_card_element_style` to allow developers to customize the Stripe card element style. #3099 (@kimcoleman)
+* ENHANCEMENT: Improved the styling of bulleted lists. #3095 (@kimcoleman)
+* BUG FIX: Fixed an issue where Braintree checkouts would fail due to the `CardType` field not being present in the payment form. #3102 (@JarrydLong)
+* BUG FIX: Fixed an issue where billing updates could fail for some gateways. #3102, #3106 (@JarrydLong, @dparker1005)
+* BUG FIX: Fixed PHP errors when showing a "no access" message and there is not a levels page or checkout page set. #3096 (@kimcoleman)
+* BUG FIX: Fixed an issue where checkouts would fail when using the Stripe payment request button and reCAPTCHA v3. #3094 (@dparker1005)
+* REFACTOR: Updated doc block for the `pmpro_set_expiration_date()` function to allow `null` as a valid value for the `$enddate` parameter. #3098 (@ZebulanStanphill)
+
 = 3.1.1 - 2024-07-29 =
 * ENHANCEMENT: Added autocomplete functionality for name and billing fields on the checkout page. #3081 (@andrewlimaza)
 * ENHANCEMENT: Improved the field structure and styling for checkbox and radio user fields. #3077 (@kimcoleman)
