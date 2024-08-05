@@ -581,7 +581,6 @@ if ( ! empty( $pmpro_confirmed ) ) {
 	if ( ! empty( $morder ) ) {
 		$morder->user_id       = $user_id;
 		$morder->membership_id = $pmpro_level->id;
-		$morder->saveOrder();
 	}
 
 	if ( pmpro_complete_checkout( $morder ) ) {
