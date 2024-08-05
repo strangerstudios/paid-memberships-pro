@@ -130,6 +130,7 @@ require_once( PMPRO_DIR . '/classes/gateways/class.pmprogateway_check.php' );
 require_once( PMPRO_DIR . '/classes/gateways/class.pmprogateway_payflowpro.php' );
 require_once( PMPRO_DIR . '/classes/gateways/class.pmprogateway_paypalexpress.php' );
 require_once( PMPRO_DIR . '/classes/gateways/class.pmprogateway_paypalstandard.php' );
+require_once( PMPRO_DIR . '/classes/gateways/class.pmprogateway_paypalsmart.php' );
 
 pmpro_check_for_deprecated_gateways();
 
@@ -190,6 +191,7 @@ function pmpro_gateways() {
 		'paypalexpress'     => __( 'PayPal Express', 'paid-memberships-pro' ),
 		'payflowpro'        => __( 'PayPal Payflow Pro/PayPal Pro', 'paid-memberships-pro' ),
 		'paypalstandard'    => __( 'PayPal Standard', 'paid-memberships-pro' ),
+		'paypalsmart'       => __( 'PayPal Smart', 'paid-memberships-pro' ),
 		'authorizenet'      => __( 'Authorize.net', 'paid-memberships-pro' ),
 		'braintree'         => __( 'Braintree Payments', 'paid-memberships-pro' ),
 	);
