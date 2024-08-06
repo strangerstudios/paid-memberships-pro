@@ -2,14 +2,14 @@
 # This file is distributed under the same license as the Paid Memberships Pro plugin.
 msgid ""
 msgstr ""
-"Project-Id-Version: Paid Memberships Pro 3.1.2\n"
+"Project-Id-Version: Paid Memberships Pro 3.1.3\n"
 "Report-Msgid-Bugs-To: info@paidmembershipspro.com\n"
 "Last-Translator: Paid Memberships Pro <info@paidmembershipspro.com>\n"
 "Language-Team: Paid Memberships Pro <info@paidmembershipspro.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2024-08-02T16:42:38+00:00\n"
+"POT-Creation-Date: 2024-08-06T18:12:58+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.10.0\n"
 "X-Domain: paid-memberships-pro\n"
@@ -1254,7 +1254,7 @@ msgid "Start Date"
 msgstr ""
 
 #: adminpages/discountcodes.php:504
-#: classes/gateways/class.pmprogateway_braintree.php:464
+#: classes/gateways/class.pmprogateway_braintree.php:487
 #: classes/gateways/class.pmprogateway_stripe.php:948
 #: pages/billing.php:323
 #: pages/checkout.php:460
@@ -3165,7 +3165,7 @@ msgstr ""
 #: classes/class.pmproemail.php:852
 #: classes/class.pmproemail.php:1251
 #: classes/class.pmproemail.php:1253
-#: classes/gateways/class.pmprogateway_braintree.php:505
+#: classes/gateways/class.pmprogateway_braintree.php:528
 #: classes/gateways/class.pmprogateway_stripe.php:963
 #: includes/profile.php:751
 #: pages/checkout.php:161
@@ -5778,92 +5778,92 @@ msgstr ""
 msgid "To fully integrate with Braintree, be sure to set your Web Hook URL to"
 msgstr ""
 
-#: classes/gateways/class.pmprogateway_braintree.php:459
+#: classes/gateways/class.pmprogateway_braintree.php:482
 #: classes/gateways/class.pmprogateway_stripe.php:943
 #: pages/billing.php:319
 #: pages/checkout.php:455
 msgid "Card Number"
 msgstr ""
 
-#: classes/gateways/class.pmprogateway_braintree.php:497
+#: classes/gateways/class.pmprogateway_braintree.php:520
 #: pages/billing.php:360
 msgid "CVV"
 msgstr ""
 
-#: classes/gateways/class.pmprogateway_braintree.php:508
+#: classes/gateways/class.pmprogateway_braintree.php:531
 #: classes/gateways/class.pmprogateway_stripe.php:966
 #: pages/checkout.php:167
 #: pages/checkout.php:504
 msgid "Apply discount code"
 msgstr ""
 
-#: classes/gateways/class.pmprogateway_braintree.php:508
+#: classes/gateways/class.pmprogateway_braintree.php:531
 #: classes/gateways/class.pmprogateway_stripe.php:966
 #: pages/checkout.php:167
 #: pages/checkout.php:504
 msgid "Apply"
 msgstr ""
 
-#: classes/gateways/class.pmprogateway_braintree.php:567
-#: classes/gateways/class.pmprogateway_braintree.php:584
-#: classes/gateways/class.pmprogateway_braintree.php:685
-#: classes/gateways/class.pmprogateway_braintree.php:856
-#: classes/gateways/class.pmprogateway_braintree.php:974
-#: classes/gateways/class.pmprogateway_braintree.php:1001
+#: classes/gateways/class.pmprogateway_braintree.php:590
+#: classes/gateways/class.pmprogateway_braintree.php:607
+#: classes/gateways/class.pmprogateway_braintree.php:708
+#: classes/gateways/class.pmprogateway_braintree.php:879
+#: classes/gateways/class.pmprogateway_braintree.php:997
+#: classes/gateways/class.pmprogateway_braintree.php:1024
 msgid "Payment error: Please contact the webmaster (braintree-load-error)"
 msgstr ""
 
-#: classes/gateways/class.pmprogateway_braintree.php:571
+#: classes/gateways/class.pmprogateway_braintree.php:594
 msgid "Unknown error: Initial payment failed."
 msgstr ""
 
-#: classes/gateways/class.pmprogateway_braintree.php:658
+#: classes/gateways/class.pmprogateway_braintree.php:681
 msgid "Error during settlement:"
 msgstr ""
 
-#: classes/gateways/class.pmprogateway_braintree.php:667
+#: classes/gateways/class.pmprogateway_braintree.php:690
 msgid "Error during charge:"
 msgstr ""
 
-#: classes/gateways/class.pmprogateway_braintree.php:758
+#: classes/gateways/class.pmprogateway_braintree.php:781
 msgid "Failed to update customer: %s"
 msgstr ""
 
-#: classes/gateways/class.pmprogateway_braintree.php:770
+#: classes/gateways/class.pmprogateway_braintree.php:793
 msgid "Failed to update customer."
 msgstr ""
 
-#: classes/gateways/class.pmprogateway_braintree.php:818
+#: classes/gateways/class.pmprogateway_braintree.php:841
 msgid "Failed to create customer."
 msgstr ""
 
-#: classes/gateways/class.pmprogateway_braintree.php:825
+#: classes/gateways/class.pmprogateway_braintree.php:848
 msgid "Error creating customer record with Braintree:"
 msgstr ""
 
-#: classes/gateways/class.pmprogateway_braintree.php:950
+#: classes/gateways/class.pmprogateway_braintree.php:973
 msgid "Error subscribing customer to plan with Braintree: %s (%s)"
 msgstr ""
 
-#: classes/gateways/class.pmprogateway_braintree.php:965
+#: classes/gateways/class.pmprogateway_braintree.php:988
 msgid "Failed to subscribe with Braintree: %s"
 msgstr ""
 
-#: classes/gateways/class.pmprogateway_braintree.php:1036
-#: classes/gateways/class.pmprogateway_braintree.php:1047
+#: classes/gateways/class.pmprogateway_braintree.php:1059
+#: classes/gateways/class.pmprogateway_braintree.php:1070
 msgid "Could not find the subscription. %s"
 msgstr ""
 
-#: classes/gateways/class.pmprogateway_braintree.php:1054
+#: classes/gateways/class.pmprogateway_braintree.php:1077
 msgid "Could not find the subscription."
 msgstr ""
 
-#: classes/gateways/class.pmprogateway_braintree.php:1100
-#: classes/gateways/class.pmprogateway_braintree.php:1149
+#: classes/gateways/class.pmprogateway_braintree.php:1123
+#: classes/gateways/class.pmprogateway_braintree.php:1172
 msgid "Error getting subscription with Braintree:"
 msgstr ""
 
-#: classes/gateways/class.pmprogateway_braintree.php:1141
+#: classes/gateways/class.pmprogateway_braintree.php:1164
 msgid "Cannot access Braintree API."
 msgstr ""
 
@@ -10647,19 +10647,19 @@ msgstr ""
 msgid "Unknown error generating account. Please contact us to set up your membership."
 msgstr ""
 
-#: preheaders/checkout.php:599
+#: preheaders/checkout.php:598
 msgid "IMPORTANT: Something went wrong while processing your checkout. Your credit card authorized, but we cancelled the order immediately. You should not try to submit this form again. Please contact the site owner to fix this issue."
 msgstr ""
 
-#: preheaders/checkout.php:602
+#: preheaders/checkout.php:601
 msgid "IMPORTANT: Something went wrong while processing your checkout. Your credit card was charged, but we couldn't assign your membership. You should not submit this form again. Please contact the site owner to fix this issue."
 msgstr ""
 
-#: preheaders/checkout.php:613
+#: preheaders/checkout.php:612
 msgid "You must <a href=\"%s\">set up a Payment Gateway</a> before any payments will be processed."
 msgstr ""
 
-#: preheaders/checkout.php:615
+#: preheaders/checkout.php:614
 msgid "A Payment Gateway must be set up before any payments will be processed."
 msgstr ""
 
