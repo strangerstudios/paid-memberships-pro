@@ -4,7 +4,7 @@ Tags: memberships, member, community, user profile, user registration
 Requires at least: 5.2
 Tested up to: 6.6
 Requires PHP: 5.6
-Stable tag: 3.1.2
+Stable tag: 3.1.3
 License: GPLv2
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -216,6 +216,13 @@ Not sure? You can find out by doing a bit a research.
 10. Advanced settings for updating non-member messages, optionally show excerpts or filter content, use reCAPTCHA, and a Terms of Service checkbox.
 
 == Changelog ==
+= 3.1.3 - 2024-08-06 =
+* ENHANCEMENT: Improved the appearance of input fields on dark-background themes. #3111 (@kimcoleman)
+* ENHANCEMENT: Improved the appearance of dropdown arrow icons. #3111 (@kimcoleman)
+* ENHANCEMENT: Added an icon for the upcoming Localized Pricing Add On. #3110 (@kimcoleman)
+* BUG FIX: Fixed an issue where new subscriptions might be immediately cancelled after checkout when re-purchasing a level that the user already had. #3107 (@dparker1005)
+* BUG FIX: Fixed an issue where Braintree billing updates would fail due to the `CardType` JavaScript not being present in the update billing form. #3108 (@dparker1005)
+
 = 3.1.2 - 2024-08-02 =
 * ENHANCEMENT: Added an admin notice on PMPro settings pages when using Stripe without a webhook set up. #3103 (@dparker1005)
 * ENHANCEMENT: Added a new filter `pmpro_stripe_card_element_style` to allow developers to customize the Stripe card element style. #3099 (@kimcoleman)
