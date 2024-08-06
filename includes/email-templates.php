@@ -373,7 +373,19 @@ $pmpro_email_templates_defaults = array(
 
 <p>Log in to your WordPress admin here: !!login_url!!</p>', 'paid-memberships-pro' ),
 		'help_text' => __( 'This email is sent to the admin as confirmation of a refunded payment. The email is sent after your membership site receives notification of a successful payment refund through your gateway.', 'paid-memberships-pro' )
-	)
+	),
+	'membership_recurring' => array(
+		'subject' => __( "Your membership at !!sitename!! will renew soon", 'paid-memberships-pro' ),
+		'description' => __('Recurring Payment Reminder', 'paid-memberships-pro'),
+		'body' => __( '<p>Thank you for your membership to !!sitename!!.</p>
+
+<p>This is just a reminder that your !!membership_level_name!! membership will automatically renew on !!renewaldate!!.</p>
+
+<p>Account: !!display_name!! (!!user_email!!)</p>
+
+<p>If for some reason you do not want to renew your membership you can cancel by clicking here: !!cancel_link!!</p>', 'paid-memberships-pro' ),
+		'help_text' => __( 'This email is sent when a subscription is approaching its renewal date. The additional placeholders !!renewaldate!! and !!billing_amount!! can be used to print the date that the subscription will renew and the renewal price.', 'paid-memberships-pro' )
+	),
 );
 //we can hide the payment action required emails if default gateway isn't Stripe.
 $default_gateway = get_option( 'pmpro_gateway' );
