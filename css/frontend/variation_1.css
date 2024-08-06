@@ -276,7 +276,7 @@
 	}
 
 	.pmpro_form_input {
-		background-color: var(--pmpro--color--white);
+		background-color: var(--pmpro--color--base);
 		border: 1px solid var(--pmpro--color--border);
 		border-radius: var(--pmpro--base--border-radius);
 		box-shadow: none;
@@ -296,6 +296,17 @@
 		width: 100%;
 	}
 
+	.pmpro_form_input-select {
+		-webkit-appearance: none;
+		-moz-appearance: none;
+		appearance: none;
+		background-image: url('data:image/svg+xml;utf8,<svg height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>');
+		background-position: right var(--pmpro--base--spacing--small) center;
+		background-repeat: no-repeat;
+		background-size: 16px 16px;
+		padding-right: calc(var(--pmpro--base--spacing--small) + 20px);
+	}
+
 	.pmpro_form_input-text:focus,
 	.pmpro_form_input-email:focus,
 	.pmpro_form_input-url:focus,
@@ -309,7 +320,7 @@
 	.pmpro_form_input-file:focus,
 	.pmpro_form_input-date:focus,
 	.pmpro_form_input-textarea:focus {
-		background-color: var(--pmpro--color--white);
+		background-color: var(--pmpro--color--base);
 		border-color: #80BDFF;
 		box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);
 		outline: none;
