@@ -458,7 +458,6 @@ use Braintree\WebhookNotification as Braintree_WebhookNotification;
                                 <input type="hidden" id="CardType" name="CardType" value="<?php echo esc_attr($CardType);?>" />
 								<script>
 									jQuery(document).ready(function() {
-											console.log('hit');
 											jQuery('#AccountNumber').validateCreditCard(function(result) {
 												var cardtypenames = {
 													"amex"                      : "American Express",
