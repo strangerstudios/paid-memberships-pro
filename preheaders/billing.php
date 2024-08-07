@@ -62,13 +62,7 @@ if (empty($pmpro_billing_order->gateway)) {
     $besecure = false;
 } elseif ($pmpro_billing_order->gateway == "paypalexpress") {
     $besecure = get_option("pmpro_use_ssl");
-    //still they might have website payments pro setup
-    if ($gateway == "paypal") {
-        //$besecure = true;
-    } else {
-        //$besecure = false;
-        $show_paypal_link = true;
-    }
+    $show_paypal_link = true;
 } elseif( $pmpro_billing_order->gateway == 'check' ) {
     $show_check_payment_instructions = true;
 } else {

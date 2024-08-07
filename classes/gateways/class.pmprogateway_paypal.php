@@ -136,24 +136,7 @@
 						$songbird_url = 'https://songbird.cardinalcommerce.com/edge/v1/songbird.js';
 					}
 					wp_enqueue_script( 'pmpro_songbird', $songbird_url );
-					$dependencies[] = 'pmpro_songbird';
-					$data['enable_3dsecure'] = $paypal_enable_3dsecure;
-					$data['cardinal_jwt'] = PMProGateway_paypal::get_cardinal_jwt();
-					if ( WP_DEBUG ) {
-						$data['cardinal_debug'] = 'verbose';
-						$data['cardinal_logging'] = 'On';
-					} else {
-						$data['cardinal_debug'] = '';
-						$data['cardinal_logging'] = 'Off';
-					}
 				}
-
-				wp_register_script( 'pmpro_paypal',
-                            plugins_url( 'js/pmpro-paypal.js', PMPRO_BASE_FILE ),
-                            $dependencies,
-                            PMPRO_VERSION );
-				wp_localize_script( 'pmpro_paypal', 'pmpro_paypal', $data );
-				wp_enqueue_script( 'pmpro_paypal' );
 			}
 		}
 

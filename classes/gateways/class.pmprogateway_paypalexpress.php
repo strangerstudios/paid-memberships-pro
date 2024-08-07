@@ -43,7 +43,6 @@
 			$gateway = pmpro_getGateway();
 			if($gateway == "paypalexpress")
 			{
-				add_action('pmpro_checkout_preheader', array('PMProGateway_paypalexpress', 'pmpro_checkout_preheader'));
 				add_filter('pmpro_include_billing_address_fields', '__return_false');
 				add_filter('pmpro_include_payment_information_fields', '__return_false');
 				add_filter('pmpro_required_billing_fields', array('PMProGateway_paypalexpress', 'pmpro_required_billing_fields'));
@@ -246,26 +245,6 @@
 			unset($fields['CVV']);
 
 			return $fields;
-		}
-
-		/**
-		 * Code added to checkout preheader.
-		 *
-		 * @since 2.1
-		 */
-		static function pmpro_checkout_preheader() {
-			global $gateway, $pmpro_level;
-
-			$default_gateway = get_option("pmpro_gateway");
-
-			if(($gateway == "paypal" || $default_gateway == "paypal") && !pmpro_isLevelFree($pmpro_level)) {
-				wp_register_script( 'pmpro_paypal',
-                            plugins_url( 'js/pmpro-paypal.js', PMPRO_BASE_FILE ),
-                            array( 'jquery' ),
-                            PMPRO_VERSION );
-				//wp_localize_script( 'pmpro_paypal', 'pmpro_paypal', array());
-				wp_enqueue_script( 'pmpro_paypal' );
-			}
 		}
 
 		/**

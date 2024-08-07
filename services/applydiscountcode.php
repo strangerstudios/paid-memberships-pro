@@ -192,14 +192,6 @@
 				<?php
 			}
 
-			if ( pmpro_getGateway() == "paypal" && true == apply_filters('pmpro_include_payment_option_for_paypal', true ) ) {
-				if ( pmpro_areLevelsFree($code_levels) ) {
-					?> jQuery('#pmpro_payment_method').hide(); <?php
-				} else {
-					?> jQuery('#pmpro_payment_method').show(); <?php
-				}
-			}
-
 			//hide/show paypal button
 			if(pmpro_getGateway() == "paypalexpress" || pmpro_getGateway() == "paypalstandard")
 			{
