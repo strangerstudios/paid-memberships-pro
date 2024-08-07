@@ -319,42 +319,16 @@ function pmpro_cron_recurring_payment_reminders() {
 				continue;
 			}
 
-			// By default, only send emails if the last successful orders was 6 months before the next payment date or more.
-			$send_email = true;
-			$oldest_order = $subscription_obj->get_orders(
-				array(
-					'limit' => 1,
-					'status' => 'success',
-				)
-			);
-			if ( ! empty( $oldest_order ) ) {
-				$oldest_order = $oldest_order[0];
-
-				// Get the timestamp for the subscription.
-				$subscription_timestamp = $subscription_obj->get_next_payment_date( 'timestamp', false );
-
-				// Get the timestamp 6 months before the next payment date.
-				$notification_cutoff = strtotime( '-6 months', $subscription_timestamp );
-
-				// Add two days to the notification cutoff to err on the side of caution RE timezones.
-				$notification_cutoff = strtotime( '+2 days', $notification_cutoff );
-
-				// If the oldest order is newer than the notification cutoff, don't send the email.
-				if ( $oldest_order->timestamp > $notification_cutoff ) {
-					$send_email = false;
-				}
-			}
-
 			/**
 			 * Filter whether to send a recurring payment reminder email.
 			 *
 			 * @since TBD
 			 *
-			 * @param bool $send_email Whether to send the email.
+			 * @param bool $send_email Whether to send the email. Default is true.
 			 * @param PMPro_Subscription $subscription_obj The subscription object.
 			 * @param int $days The number of days before the next payment that the email is being sent.
 			 */
-			$send_email = apply_filters( 'pmpro_send_recurring_payment_reminder_email', $send_email, $subscription_obj, $days );
+			$send_email = apply_filters( 'pmpro_send_recurring_payment_reminder_email', true, $subscription_obj, $days );
 
 			/**
 			 * @filter      pmprorm_send_reminder_to_user
