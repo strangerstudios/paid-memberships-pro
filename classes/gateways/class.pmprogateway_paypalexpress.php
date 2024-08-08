@@ -279,32 +279,15 @@
 			if ( ! empty( $_REQUEST['confirm'] ) ) {
 				// Process the checkout form submission.
 				$_REQUEST['submit-checkout'] = 1;
-			}
-
-			// Check if the confirmation step should be skipped. If not, bail.
-			if ( empty( get_option( 'pmpro_paypalexpress_skip_confirmation' ) ) ) {
 				return;
 			}
 
-			// Process "skip confirmation" checkouts.
-			// Warning: Nonce will not be processed in this case.
-			if ( $pmpro_review->process() ) {
-				// Success! Complete the checkout.
-				if ( pmpro_complete_checkout( $pmpro_review ) ) {
-					//redirect to confirmation
-					$rurl = pmpro_url( "confirmation", "?pmpro_level=" . $pmpro_review->membership_id );
-					$rurl = apply_filters( "pmpro_confirmation_url", $rurl, $pmpro_review->user_id, $pmpro_review->getMembershipLevelAtCheckout() );
-					wp_redirect( $rurl );
-					exit;
-				} else {
-					// Something went wrong with the checkout.
-					// If we get here, then the call to pmpro_changeMembershipLevel() returned false within pmpro_complete_checkout(). Let's try to cancel the payment.
-					$pmpro_review->cancel();
-					pmpro_setMessage( "IMPORTANT: Something went wrong while processing your checkout. Your credit card was charged, but we couldn't assign your membership. You should not submit this form again. Please contact the site owner to fix this issue.", 'pmpro_error' );
-				}
+			// We also want to process the submission if the confirmation step should be skipped.
+			// Warning: This requires spoofing the nonce.
+			if ( ! empty( get_option( 'pmpro_paypalexpress_skip_confirmation' ) ) ) {
+				$_REQUEST['submit-checkout'] = 1;
+				$_REQUEST['pmpro_checkout_nonce'] = wp_create_nonce( 'pmpro_checkout_nonce' );
 			}
-
-			// The order could not be processed. Let the checkout preheader continue.
 		}
 
 		/**
@@ -814,7 +797,7 @@
 			$nvpStr .= "&NOTIFYURL=" . urlencode( add_query_arg( 'action', 'ipnhandler', admin_url('admin-ajax.php') ) );
 			$nvpStr .= "&NOSHIPPING=1";
 
-			$nvpStr .= "&PAYERID=" . $_SESSION['payer_id'] . "&PAYMENTACTION=sale";
+			$nvpStr .= "&PAYERID=" . sanitize_text_field( $_REQUEST['PayerID'] ) . "&PAYMENTACTION=sale";
 
 			$nvpStr = apply_filters("pmpro_do_express_checkout_payment_nvpstr", $nvpStr, $order);
 
