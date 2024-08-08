@@ -47,8 +47,6 @@
 				add_filter('pmpro_include_billing_address_fields', '__return_false');
 				add_filter('pmpro_include_payment_information_fields', '__return_false');
 				add_filter('pmpro_required_billing_fields', array('PMProGateway_paypalexpress', 'pmpro_required_billing_fields'));
-				add_filter('pmpro_checkout_new_user_array', array('PMProGateway_paypalexpress', 'pmpro_checkout_new_user_array'));
-				add_filter('pmpro_checkout_confirmed', array('PMProGateway_paypalexpress', 'pmpro_checkout_confirmed'));
 				add_filter('pmpro_checkout_default_submit_button', array('PMProGateway_paypalexpress', 'pmpro_checkout_default_submit_button'));
 				add_action('http_api_curl', array('PMProGateway_paypalexpress', 'http_api_curl'), 10, 3);
 			}
@@ -254,7 +252,7 @@
 		 * @since 2.1
 		 */
 		static function pmpro_checkout_preheader() {
-			global $gateway, $pmpro_level;
+			global $gateway, $pmpro_level, $pmpro_review;
 
 			$default_gateway = get_option("pmpro_gateway");
 
@@ -266,6 +264,47 @@
 				//wp_localize_script( 'pmpro_paypal', 'pmpro_paypal', array());
 				wp_enqueue_script( 'pmpro_paypal' );
 			}
+
+			// Check if the we already have an order that is being paid with PayPal Express. If not, bail.
+			if ( empty( $pmpro_review ) || ! is_a( $pmpro_review, 'MemberOrder' ) || $pmpro_review->gateway !== 'paypalexpress') {
+				return;
+			}
+
+			// Set some globals for compatibility with pre-TBD checkout page templates.
+			global $pmpro_paypal_token;
+			$pmpro_paypal_token = $pmpro_review->paypal_token;
+
+			// For backwards compatibility with pre-TBD checkout page templates, also check if the $_REQUEST['confirm'] attribute is set.
+			// If so, we want to process the chekcout form submission.
+			if ( ! empty( $_REQUEST['confirm'] ) ) {
+				// Process the checkout form submission.
+				$_REQUEST['submit-checkout'] = 1;
+			}
+
+			// Check if the confirmation step should be skipped. If not, bail.
+			if ( empty( get_option( 'pmpro_paypalexpress_skip_confirmation' ) ) ) {
+				return;
+			}
+
+			// Process "skip confirmation" checkouts.
+			// Warning: Nonce will not be processed in this case.
+			if ( $pmpro_review->process() ) {
+				// Success! Complete the checkout.
+				if ( pmpro_complete_checkout( $pmpro_review ) ) {
+					//redirect to confirmation
+					$rurl = pmpro_url( "confirmation", "?pmpro_level=" . $pmpro_review->membership_id );
+					$rurl = apply_filters( "pmpro_confirmation_url", $rurl, $pmpro_review->user_id, $pmpro_review->getMembershipLevelAtCheckout() );
+					wp_redirect( $rurl );
+					exit;
+				} else {
+					// Something went wrong with the checkout.
+					// If we get here, then the call to pmpro_changeMembershipLevel() returned false within pmpro_complete_checkout(). Let's try to cancel the payment.
+					$pmpro_review->cancel();
+					pmpro_setMessage( "IMPORTANT: Something went wrong while processing your checkout. Your credit card was charged, but we couldn't assign your membership. You should not submit this form again. Please contact the site owner to fix this issue.", 'pmpro_error' );
+				}
+			}
+
+			// The order could not be processed. Let the checkout preheader continue.
 		}
 
 		/**
@@ -320,9 +359,11 @@
 		 * Review and Confirmation code.
 		 *
 		 * @since 1.8
+		 * @deprecated TBD
 		 */
 		static function pmpro_checkout_confirmed($pmpro_confirmed)
 		{
+			_deprecated_function( __FUNCTION__, 'TBD', 'PMProGateway_paypalexpress::process()' );
 			global $pmpro_msg, $pmpro_msgt, $pmpro_level, $current_user, $pmpro_review, $pmpro_paypal_token, $discount_code, $bemail;
 
 			//PayPal Express Call Backs
@@ -436,9 +477,11 @@
 		 * Swap in user/pass/etc from session
 		 *
 		 * @since 1.8
+		 * @deprecated TBD
 		 */
 		static function pmpro_checkout_new_user_array($new_user_array)
 		{
+			_deprecated_function( __FUNCTION__, 'TBD' );
 			global $current_user;
 
 			if(!$current_user->ID)
@@ -466,24 +509,92 @@
 		/**
 		 * Process at checkout
 		 *
-		 * Repurposed in v2.0. The old process() method is now confirm().
+		 * @since 2.0 - The old process() method is now confirm().
+		 * @since TBD - This method now handles both sending users to PayPal and confirming checkouts.
 		 */
-		function process(&$order)
-		{
-			$order->payment_type = "PayPal Express";
-			$order->cardtype = "";
-			$order->ProfileStartDate = pmpro_calculate_profile_start_date( $order, 'Y-m-d\TH:i:s\Z' );
+		function process( &$order ) {
+			// If the user has not yet been sent to PayPal, send them to pay.
+			if ( empty( $order->paypal_token ) ) {
+				// No. Send them to PayPal.
+				$order->payment_type = "PayPal Express";
+				$order->cardtype = "";
+				$order->ProfileStartDate = pmpro_calculate_profile_start_date( $order, 'Y-m-d\TH:i:s\Z' );
 
-			return $this->setExpressCheckout($order);
+				return $this->setExpressCheckout($order);
+			}
+
+			// We know that the user had been sent to pay and has re-submitted the chekcout form to confirm.
+			// Make sure the order is in `token` status.
+			if ( $order->status !== 'token' ) {
+				pmpro_setMessage( __("Checkout was already processed.", 'paid-memberships-pro' ), 'pmpro_error' );
+				return false;
+			}
+
+			// Make sure we still have the PayPal token.
+			if ( empty( $order->paypal_token ) ) {
+				pmpro_setMessage( __( 'The PayPal Token was lost.', 'paid-memberships-pro' ), 'pmpro_error' );
+				return false;
+			}
+
+			// Validate the PayPal Token.
+			if ( ! $order->Gateway->getExpressCheckoutDetails($order) ) {
+				pmpro_setMessage( $order->error, 'pmpro_error' );
+				return false;
+			}
+
+			//set up values
+			$pmpro_level = $order->getMembershipLevelAtCheckout();
+			$user        = get_userdata( $order->user_id );
+			$order->membership_id = $pmpro_level->id;
+			$order->membership_name = $pmpro_level->name;
+			$order->InitialPayment = pmpro_round_price( $pmpro_level->initial_payment );
+			$order->PaymentAmount = pmpro_round_price( $pmpro_level->billing_amount );
+			$order->ProfileStartDate = date_i18n("Y-m-d\TH:i:s");
+			$order->BillingPeriod = $pmpro_level->cycle_period;
+			$order->BillingFrequency = $pmpro_level->cycle_number;
+			$order->Email = $user->user_email;
+
+			//setup level var
+			$order->getMembershipLevelAtCheckout();
+
+			//tax
+			$order->subtotal = $order->InitialPayment;
+			$order->getTax();
+			if($pmpro_level->billing_limit)
+				$order->TotalBillingCycles = $pmpro_level->billing_limit;
+
+			if(pmpro_isLevelTrial($pmpro_level))
+			{
+				$order->TrialBillingPeriod = $pmpro_level->cycle_period;
+				$order->TrialBillingFrequency = $pmpro_level->cycle_number;
+				$order->TrialBillingCycles = $pmpro_level->trial_limit;
+				$order->TrialAmount = pmpro_round_price( $pmpro_level->trial_amount );
+			}
+
+			if ( pmpro_isLevelRecurring( $order->membership_level ) ) {
+				$order->ProfileStartDate = pmpro_calculate_profile_start_date( $order, 'Y-m-d\TH:i:s\Z' );
+				$success = $this->subscribe($order);
+			} else {
+				$success = $this->charge($order);
+			}
+
+			if ( ! $success ) {
+				pmpro_setMessage( $order->error, 'pmpro_error' );
+				return false;
+			}
+
+			return true;
 		}
 
 		/**
 		 * Process charge or subscription after confirmation.
 		 *
 		 * @since 1.8
+		 * @deprecated TBD
 		 */
 		function confirm(&$order)
 		{
+			_deprecated_function( __FUNCTION__, 'TBD', 'PMProGateway_paypalexpress::process()' );
 			if(pmpro_isLevelRecurring($order->membership_level))
 			{
 				$order->ProfileStartDate = pmpro_calculate_profile_start_date( $order, 'Y-m-d\TH:i:s\Z' );
@@ -579,11 +690,11 @@
 
 			if(!empty($order->discount_code))
 			{
-				$nvpStr .= "&ReturnUrl=" . urlencode(pmpro_url("checkout", "?pmpro_level=" . $order->membership_level->id . "&pmpro_discount_code=" . $order->discount_code . "&review=" . $order->code));
+				$nvpStr .= "&ReturnUrl=" . urlencode(pmpro_url("checkout", "?pmpro_level=" . $order->membership_level->id . "&pmpro_discount_code=" . $order->discount_code . "&pmpro_order=" . $order->code));
 			}
 			else
 			{
-				$nvpStr .= "&ReturnUrl=" . urlencode(pmpro_url("checkout", "?pmpro_level=" . $order->membership_level->id . "&review=" . $order->code));
+				$nvpStr .= "&ReturnUrl=" . urlencode(pmpro_url("checkout", "?pmpro_level=" . $order->membership_level->id . "&pmpro_order=" . $order->code));
 			}
 
 			$additional_parameters = apply_filters("pmpro_paypal_express_return_url_parameters", array());
@@ -652,7 +763,7 @@
 
 		function getExpressCheckoutDetails(&$order)
 		{
-			$nvpStr="&TOKEN=".$order->Token;
+			$nvpStr="&TOKEN=".$order->paypal_token;
 
 			$nvpStr = apply_filters("pmpro_get_express_checkout_details_nvpstr", $nvpStr, $order);
 
@@ -663,12 +774,6 @@
 			$this->httpParsedResponseAr = $this->PPHttpPost('GetExpressCheckoutDetails', $nvpStr);
 
 			if("SUCCESS" == strtoupper($this->httpParsedResponseAr["ACK"]) || "SUCCESSWITHWARNING" == strtoupper($this->httpParsedResponseAr["ACK"])) {
-				$order->status = "review";
-
-				//update order
-
-				$order->saveOrder();
-
 				return true;
 			} else  {
 				$order->errorcode = $this->httpParsedResponseAr['L_ERRORCODE0'];
@@ -696,8 +801,8 @@
 
 			//paypal profile stuff
 			$nvpStr = "";
-			if(!empty($order->Token))
-				$nvpStr .= "&TOKEN=" . $order->Token;
+			if(!empty($order->paypal_token))
+				$nvpStr .= "&TOKEN=" . $order->paypal_token;
 			$nvpStr .="&AMT=" . $amount . "&CURRENCYCODE=" . $pmpro_currency;
 			/*
 			if(!empty($amount_tax))
@@ -760,8 +865,8 @@
 
 			//paypal profile stuff
 			$nvpStr = "";
-			if(!empty($order->Token))
-				$nvpStr .= "&TOKEN=" . $order->Token;
+			if(!empty($order->paypal_token))
+				$nvpStr .= "&TOKEN=" . $order->paypal_token;
 			$nvpStr .="&INITAMT=" . $initial_payment . "&AMT=" . $amount . "&CURRENCYCODE=" . $pmpro_currency . "&PROFILESTARTDATE=" . $order->ProfileStartDate;
 			if(!empty($amount_tax))
 				$nvpStr .= "&TAXAMT=" . pmpro_round_price_as_string( $amount_tax );
@@ -818,11 +923,6 @@
 
 					return true;
 				} else {
-					// stop processing the review request on checkout page
-					$pmpro_review = false;
-
-					$order->status = "error";
-
 					// this is wrong, but we don't know the real transaction id at this point
 					$order->payment_transaction_id = urldecode($this->httpParsedResponseAr['PROFILEID']);
 					$order->subscription_transaction_id = urldecode($this->httpParsedResponseAr['PROFILEID']);
