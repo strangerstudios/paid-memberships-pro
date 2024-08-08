@@ -938,8 +938,6 @@
 				}
 			} else  {
 				// stop processing the review request on checkout page
-				$pmpro_review = false;
-
 				$order->errorcode = $this->httpParsedResponseAr['L_ERRORCODE0'];
 				$order->error = urldecode($this->httpParsedResponseAr['L_LONGMESSAGE0']);
 				$order->shorterror = urldecode($this->httpParsedResponseAr['L_SHORTMESSAGE0']);
