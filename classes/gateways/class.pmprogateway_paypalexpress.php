@@ -281,13 +281,6 @@
 				$_REQUEST['submit-checkout'] = 1;
 				return;
 			}
-
-			// We also want to process the submission if the confirmation step should be skipped.
-			// Warning: This requires spoofing the nonce.
-			if ( ! empty( get_option( 'pmpro_paypalexpress_skip_confirmation' ) ) ) {
-				$_REQUEST['submit-checkout'] = 1;
-				$_REQUEST['pmpro_checkout_nonce'] = wp_create_nonce( 'pmpro_checkout_nonce' );
-			}
 		}
 
 		/**
@@ -671,14 +664,15 @@
 			if(!empty($order->TrialBillingCycles))
 				$nvpStr .= "&TRIALTOTALBILLINGCYCLES=" . $order->TrialBillingCycles;
 
-			if(!empty($order->discount_code))
-			{
-				$nvpStr .= "&ReturnUrl=" . urlencode(pmpro_url("checkout", "?pmpro_level=" . $order->membership_level->id . "&pmpro_discount_code=" . $order->discount_code . "&pmpro_order=" . $order->code));
+			// Build the return URL. If we are skipping confirmation, add the necessary parameters to make the checkout form appear as if it was submitted.
+			$return_url_params = array(
+				'pmpro_order' => $order->code,
+			);
+			if ( ! empty( get_option( 'pmpro_paypalexpress_skip_confirmation' ) ) ) {
+				$return_url_params['submit-checkout'] = 1;
+				$return_url_params['pmpro_checkout_nonce'] = wp_create_nonce( 'pmpro_checkout_nonce' );
 			}
-			else
-			{
-				$nvpStr .= "&ReturnUrl=" . urlencode(pmpro_url("checkout", "?pmpro_level=" . $order->membership_level->id . "&pmpro_order=" . $order->code));
-			}
+			$nvpStr .= "&ReturnUrl=" . urlencode( add_query_arg( $return_url_params, pmpro_url( 'checkout' ) ) );
 
 			$additional_parameters = apply_filters("pmpro_paypal_express_return_url_parameters", array());
 			if(!empty($additional_parameters))
