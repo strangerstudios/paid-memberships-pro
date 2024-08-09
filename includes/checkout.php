@@ -123,6 +123,10 @@ function pmpro_get_sensitive_checkout_request_vars() {
 		'ExpirationMonth',
 		'ExpirationYear',
 		'add_sub_accounts_password', // Creating users at checkout with Sponsored Members.
+		'pmpro_checkout_nonce', // The checkout nonce.
+		'checkjavascript', // Used to check if JavaScript is enabled.
+		'submit-checkout', // Used to check if the checkout form was submitted.
+		'submit-checkout_x', // Used to check if the checkout form was submitted.
 	);
 
 	/**

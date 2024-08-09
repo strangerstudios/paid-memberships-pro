@@ -1582,9 +1582,11 @@
 		 * For offsite gateways with a confirm step.
 		 *
 		 * @since 1.8
+		 * @deprecated TBD
 		 */
 		function confirm()
 		{
+			_deprecated_function( __FUNCTION__, 'TBD' );
 			if (is_object($this->Gateway)) {
 				return $this->Gateway->confirm($this);
 			}
