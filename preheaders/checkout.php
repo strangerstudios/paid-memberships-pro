@@ -100,13 +100,6 @@ if ( $current_user->ID ) {
 //in case people want to have an account created automatically
 $skip_account_fields = apply_filters( "pmpro_skip_account_fields", $skip_account_fields, $current_user );
 
-//some options
-global $tospage;
-$tospage = get_option( "pmpro_tospage" );
-if ( $tospage ) {
-	$tospage = get_post( $tospage );
-}
-
 //load em up (other fields)
 global $username, $password, $password2, $bfirstname, $blastname, $baddress1, $baddress2, $bcity, $bstate, $bzipcode, $bcountry, $bphone, $bemail, $bconfirmemail, $CardType, $AccountNumber, $ExpirationMonth, $ExpirationYear;
 
@@ -247,12 +240,6 @@ if ( isset( $_REQUEST['password2_copy'] ) ) {
 }
 // phpcs:enable WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 
-if ( isset( $_REQUEST['tos'] ) ) {
-	$tos = intval( $_REQUEST['tos'] );
-} else {
-	$tos = "";
-}
-
 $submit = pmpro_was_checkout_form_submitted();
 
 /**
@@ -357,10 +344,6 @@ if ( $submit && $pmpro_msgt != "pmpro_error" ) {
 		pmpro_setMessage( __( "The email address entered is in an invalid format. Please try again.", 'paid-memberships-pro' ), "pmpro_error" );
 		$pmpro_error_fields[] = "bemail";
 		$pmpro_error_fields[] = "bconfirmemail";
-	}
-	if ( ! empty( $tospage ) && empty( $tos ) ) {
-		pmpro_setMessage( sprintf( __( "Please check the box to agree to the %s.", 'paid-memberships-pro' ), $tospage->post_title ), "pmpro_error" );
-		$pmpro_error_fields[] = "tospage";
 	}
 	if ( ! in_array( $gateway, $valid_gateways ) ) {
 		pmpro_setMessage( __( "Invalid gateway.", 'paid-memberships-pro' ), "pmpro_error" );

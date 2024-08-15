@@ -1637,8 +1637,10 @@
 		/** 
 		 * Get TOS consent information.
 		 * @since  1.9.5
+		 * @deprecated TBD - Use pmpro_get_consent_log_entry_for_order() insetad.
 		 */
 		function get_tos_consent_log_entry() {
+			_deprecated_function( __METHOD__, 'TBD', 'pmpro_get_consent_log_entry_for_order()' );
 			if ( empty( $this->id ) ) {
 				return false;
 			}

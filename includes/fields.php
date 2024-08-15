@@ -372,7 +372,7 @@ add_action( 'pmpro_checkout_before_submit_button', 'pmpro_checkout_before_submit
 function pmpro_checkout_after_tos_fields() {
 	pmpro_display_fields_in_group( 'after_tos_fields', 'checkout' );
 }
-add_action( 'pmpro_checkout_after_tos_fields', 'pmpro_checkout_after_tos_fields' );
+add_action( 'pmpro_checkout_before_submit_button', 'pmpro_checkout_after_tos_fields', 6 );
 
 /**
  * Update the fields at checkout.

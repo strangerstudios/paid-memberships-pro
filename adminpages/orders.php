@@ -876,28 +876,6 @@ require_once( dirname( __FILE__ ) . '/admin_header.php' ); ?>
 							</td>
 						</tr>
 					<?php } ?>
-
-					<?php
-						$tospage_id = get_option( 'pmpro_tospage' );
-						$consent_entry = $order->get_tos_consent_log_entry();
-
-						if( !empty( $tospage_id ) || !empty( $consent_entry ) ) {
-						?>
-						<tr>
-							<th scope="row" valign="top"><label for="tos_consent"><?php esc_html_e( 'TOS Consent', 'paid-memberships-pro' ); ?></label></th>
-							<td id="tos_consent">
-								<?php
-									if( !empty( $consent_entry ) ) {
-										echo esc_html( pmpro_consent_to_text( $consent_entry ) );
-									} else {
-										esc_html_e( 'N/A', 'paid-memberships-pro' );
-									}
-								?>
-							</td>
-						</tr>
-						<?php
-						}
-					?>
 					<tr>
 						<th scope="row" valign="top"><label for="notes"><?php esc_html_e( 'Notes', 'paid-memberships-pro' ); ?></label></th>
 						<td>
