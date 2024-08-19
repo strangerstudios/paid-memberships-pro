@@ -43,6 +43,9 @@ function pmpro_tos_advanced_settings_callback() {
 function pmpro_show_tos_at_checkout() {
 	global $pmpro_review;
 
+	// We are showing the TOS checkbox on the checkout page. Unhook pmpro_unhook_pmpro_show_tos_at_checkout().
+	remove_action( 'pmpro_checkout_after_tos_fields', 'pmpro_unhook_pmpro_show_tos_at_checkout' );
+
 	// If checkout is being reviewed, don't show the TOS checkbox.
 	if ( $pmpro_review ) {
 		do_action_deprecated( 'pmpro_checkout_after_tos_fields', array(), 'TBD' );
@@ -105,6 +108,38 @@ function pmpro_show_tos_at_checkout() {
 
 }
 add_action( 'pmpro_checkout_before_submit_button', 'pmpro_show_tos_at_checkout', 5 ); // 5 to show before reCAPTCHA.
+
+/**
+ * If a pre-TBD checkout template is being used, then the TOS checkbox will be displayed in the checkout template.
+ *
+ * This function will be unhooked at the top of pmpro_checkout_before_submit_button(), so this will only prevent pmpro_checkout_before_submit_button() from generating TOS fields if
+ * the `pmpro_checkout_after_tos_fields` hook is called from the checkout preheader before `pmpro_checkout_before_submit_button` is run.
+ *
+ * Note: This function will be removed in a future version of Paid Memberships Pro once pre-TBD templates have had time to phase out.
+ *
+ * @since TBD
+ */
+function pmpro_unhook_pmpro_show_tos_at_checkout() {
+	remove_action( 'pmpro_checkout_before_submit_button', 'pmpro_show_tos_at_checkout', 5 );
+}
+add_action( 'pmpro_checkout_after_tos_fields', 'pmpro_unhook_pmpro_show_tos_at_checkout' );
+
+/**
+ * In case a pre-TBD checkout template is being used, we need to set the $tospage global in order to display the TOS checkbox.
+ *
+ * Note: This function will be removed in a future version of Paid Memberships Pro once pre-TBD templates have had time to phase out.
+ *
+ * @since TBD
+ */
+function pmpro_set_tospage_global() {
+	global $tospage;
+	$tospage = get_option( "pmpro_tospage" );
+	if ( $tospage ) {
+		$tospage = get_post( $tospage );
+	}
+}
+add_action( 'pmpro_checkout_preheader', 'pmpro_set_tospage_global' );
+
 
 /**
  * Validate the TOS checkbox at checkout.
