@@ -381,6 +381,15 @@ function pmpro_checkForUpgrades() {
 		update_option( 'pmpro_db_version', '3.1001' );
 	}
 
+	/**
+	 * Version 3.2
+	 * Notice that PPE is no longer automatically bundled with Website Payments Pro
+	 */
+	require_once( PMPRO_DIR . "/includes/updates/upgrade_3_2.php" );
+	if ( $pmpro_db_version < 3.2 ) {
+		pmpro_upgrade_3_2();
+		update_option( 'pmpro_db_version', '3.2' );
+	}
 }
 
 function pmpro_db_delta() {
