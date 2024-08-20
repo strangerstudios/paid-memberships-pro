@@ -308,14 +308,6 @@
 				$_SESSION['pmpro_signup_email'] = $bemail;
 			}
 
-			if( !empty( $_REQUEST['tos'] ) ) {
-				$tospost = get_post( get_option( 'pmpro_tospage' ) );
-				$_SESSION['tos'] = array(
-					'post_id' => $tospost->ID,
-					'post_modified' => $tospost->post_modified,
-				);
-			}
-
 			//can use this hook to save some other variables to the session
 			// @deprecated 2.12.3
 			do_action("pmpro_paypalexpress_session_vars");
