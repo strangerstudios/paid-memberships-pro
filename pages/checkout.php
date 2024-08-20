@@ -1,12 +1,12 @@
 <?php
 /**
  * Template: Checkout
- * Version: 3.1
+ * Version: TBD
  *
  * See documentation for how to override the PMPro templates.
  * @link https://www.paidmembershipspro.com/documentation/templates/
  *
- * @version 3.1
+ * @version TBD
  *
  * @author Paid Memberships Pro
  */
@@ -310,34 +310,6 @@ if ( empty( $default_gateway ) ) {
 
 			<?php do_action( 'pmpro_checkout_boxes' ); ?>
 
-			<?php if ( pmpro_getGateway() == "paypal" && empty($pmpro_review) && true == apply_filters('pmpro_include_payment_option_for_paypal', true ) ) { ?>
-			<fieldset id="pmpro_payment_method" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_fieldset', 'pmpro_payment_method' ) ); ?>" <?php if(!$pmpro_requirebilling) { ?>style="display: none;"<?php } ?>>
-				<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_card' ) ); ?>">
-					<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_card_content' ) ); ?>">
-						<legend class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_legend' ) ); ?>">
-							<h2 class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_heading pmpro_font-large' ) ); ?>"><?php esc_html_e( 'Choose your Payment Method', 'paid-memberships-pro' ); ?></h2>
-						</legend>
-						<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_fields' ) ); ?>">
-							<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_field-radio-items pmpro_cols-2' ) ); ?>">
-								<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_field pmpro_form_field-radio-item gateway_paypal', 'gateway_paypal' ) ); ?>">
-									<input id="gateway-paypal" type="radio" name="gateway" value="paypal" <?php if(!$gateway || $gateway == "paypal") { ?>checked="checked"<?php } ?> class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_input pmpro_form_input-radio' ) ); ?>" />
-									<label for="gateway-paypal" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_label pmpro_form_label-inline pmpro_clickable' ) ); ?>">
-										<a href="javascript:void(0);"><?php esc_html_e('Check Out with a Credit Card Here', 'paid-memberships-pro' );?></a>
-									</label>
-								</div> <!-- end gateway_paypal -->
-								<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_field pmpro_form_field-radio-item gateway_paypalexpress', 'gateway_paypalexpress' ) ); ?>">
-									<input id="gateway-paypalexpress" type="radio" name="gateway" value="paypalexpress" <?php if($gateway == "paypalexpress") { ?>checked="checked"<?php } ?> class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_input pmpro_form_input-radio' ) ); ?>" />
-									<label for="gateway-paypalexpress" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_label pmpro_form_label-inline pmpro_clickable' ) ); ?>">
-										<a href="javascript:void(0);" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_radio' ) ); ?>"><?php esc_html_e('Check Out with PayPal', 'paid-memberships-pro' );?></a>
-									</label>
-								</div> <!-- end gateway_paypalexpress -->
-							</div> <!-- end pmpro_form_field-radio-items -->
-						</div> <!-- end pmpro_form_fields -->
-					</div> <!-- end pmpro_card_content -->
-				</div> <!-- end pmpro_card -->
-			</fieldset> <!-- end pmpro_payment_method -->
-			<?php } ?>
-
 			<?php
 				$pmpro_include_billing_address_fields = apply_filters('pmpro_include_billing_address_fields', true);
 				if ( $pmpro_include_billing_address_fields ) { ?>
@@ -561,23 +533,11 @@ if ( empty( $default_gateway ) ) {
 				}
 			?>
 
-			<?php do_action( 'pmpro_checkout_after_tos_fields' ); ?>
-
-			<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_captcha' ) ); ?>">
 			<?php
-				$recaptcha = get_option( "pmpro_recaptcha");
-				if ( $recaptcha == 2 || $recaptcha == 1 ) {
-					pmpro_recaptcha_get_html();
-				}
-			?>
-			</div> <!-- end pmpro_captcha -->
-
-			<?php
-				do_action( 'pmpro_checkout_after_captcha' );
-				do_action( 'pmpro_checkout_before_submit_button' );
-
-				// Add nonce.
-				wp_nonce_field( 'pmpro_checkout_nonce', 'pmpro_checkout_nonce' );
+			do_action( 'pmpro_checkout_after_tos_fields' );
+			do_action( 'pmpro_checkout_before_submit_button' );
+			// Add nonce.
+			wp_nonce_field( 'pmpro_checkout_nonce', 'pmpro_checkout_nonce' );
 			?>
 
 			<?php if ( $pmpro_msg ) { ?>

@@ -176,7 +176,6 @@ class PMProGateway_stripe extends PMProGateway {
 			} else {
 				// Checkout flow for Stripe Checkout.
 				add_filter('pmpro_include_payment_information_fields', array('PMProGateway_stripe', 'show_stripe_checkout_pending_warning'));
-				add_filter('pmpro_checkout_before_change_membership_level', array('PMProGateway_stripe', 'pmpro_checkout_before_change_membership_level'), 10, 2);
 			}
 		}
 
@@ -1516,26 +1515,16 @@ class PMProGateway_stripe extends PMProGateway {
 	}
 
 	/**
-	 * Instead of changing membership levels, send users to Stripe to pay.
+	 * Send user to Stripe to pay.
 	 *
-	 * @since 2.8
+	 * @since 2.8 - Hooked into pmpro_checkout_before_change_membership_level
+	 * @since TBD - Now called by the gateway's process() method.
 	 *
 	 * @param int         $user_id ID of user who is checking out.
 	 * @param MemberOrder $morder  MemberOrder object for this checkout.
 	 */
-	static function pmpro_checkout_before_change_membership_level($user_id, $morder)
-	{
-		global $pmpro_level, $discount_code, $wpdb, $pmpro_currency;
-
-		//if no order, no need to pay
-		if ( empty( $morder ) || $morder->gateway != 'stripe' ) {
-			return;
-		}
-
-		// Only continue if the order's payment_transaction_id and subscription_transaction_id are empty, meaning that a payment hasn't been made yet.
-		if ( ! empty( $morder->payment_transaction_id ) || ! empty( $morder->subscription_transaction_id ) ) {
-			return;
-		}
+	static function pmpro_checkout_before_change_membership_level( $user_id, $morder ) {
+		global $pmpro_level;
 
 		$morder->user_id = $user_id;
 		$morder->status  = 'token';
@@ -1758,8 +1747,11 @@ class PMProGateway_stripe extends PMProGateway {
 	 */
 	public function process( &$order ) {
 		if ( self::using_stripe_checkout() ) {
-			// If using Stripe Checkout, we will try to collect the payment later.
-			return true;
+			// If using Stripe Checkout, redirect them.
+			self::pmpro_checkout_before_change_membership_level( $order->user_id, $order );
+
+			// If we were not redirected, there was an error.
+			return false;
 		}
 
 		$payment_transaction_id = '';
