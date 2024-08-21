@@ -1043,10 +1043,16 @@
 		 * @param bool $force If true, it will query the database again.
 		 *
 		 */
-		function getDiscountCode($force = false)
-		{
-			if(!empty($this->discount_code) && !$force)
+		function getDiscountCode( $force = false ) {
+			// If the order doesn't have an ID yet, we don't want to search the database for a use matching a null order ID.
+			if ( empty( $this->id ) ) {
+				return null;
+			}
+
+			// If we already have the discount code, return it.
+			if ( ! empty ($this->discount_code ) && ! $force ) {
 				return $this->discount_code;
+			}
 
 			global $wpdb;
 			$this->discount_code = $wpdb->get_row( $wpdb->prepare( "SELECT dc.* FROM $wpdb->pmpro_discount_codes dc LEFT JOIN $wpdb->pmpro_discount_codes_uses dcu ON dc.id = dcu.code_id WHERE dcu.order_id = %d LIMIT 1", $this->id ) );
