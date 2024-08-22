@@ -12,8 +12,11 @@
  * @return string The profile start date in UTC time and the desired $date_format.
  */
 function pmpro_calculate_profile_start_date( $order, $date_format, $filter = true ) {
+	// Get the checkout level.
+	$level = $order->getMembershipLevelAtCheckout();
+
 	// Calculate the profile start date.
-	$profile_start_date = date_i18n( 'Y-m-d H:i:s', strtotime( '+ ' . $order->BillingFrequency . ' ' . $order->BillingPeriod ) );
+	$profile_start_date = date_i18n( 'Y-m-d H:i:s', strtotime( '+ ' . $level->cycle_number . ' ' . $level->cycle_period ) );
 
 	// Filter the profile start date if needed.
 	if ( $filter ) {

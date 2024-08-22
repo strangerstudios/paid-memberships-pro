@@ -383,10 +383,12 @@ function pmpro_checkForUpgrades() {
 
 	/**
 	 * Version 3.2
-	 * Notice that PPE is no longer automatically bundled with Website Payments Pro
+	 * Notice that PPE is no longer automatically bundled with Website Payments Pro.
+	 * Adding billing_street2 to the orders table.
 	 */
 	require_once( PMPRO_DIR . "/includes/updates/upgrade_3_2.php" );
 	if ( $pmpro_db_version < 3.2 ) {
+		pmpro_db_delta();
 		pmpro_upgrade_3_2();
 		update_option( 'pmpro_db_version', '3.2' );
 	}
@@ -462,6 +464,7 @@ function pmpro_db_delta() {
 		  `paypal_token` varchar(64) NOT NULL DEFAULT '',
 		  `billing_name` varchar(128) NOT NULL DEFAULT '',
 		  `billing_street` varchar(128) NOT NULL DEFAULT '',
+		  `billing_street2` varchar(128) NOT NULL DEFAULT '',
 		  `billing_city` varchar(128) NOT NULL DEFAULT '',
 		  `billing_state` varchar(32) NOT NULL DEFAULT '',
 		  `billing_zip` varchar(16) NOT NULL DEFAULT '',

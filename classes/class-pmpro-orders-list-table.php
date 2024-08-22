@@ -1139,6 +1139,10 @@ class PMPro_Orders_List_Table extends WP_List_Table {
 			$r .= esc_html( $item->billing->street ) . '<br />';
 		}
 
+		if ( ! empty( $item->billing->street2 ) ) {
+			$r .= esc_html( $item->billing->street2 ) . '<br />';
+		}
+
 		if ( $item->billing->city && $item->billing->state ) {
 			$r .= esc_html( $item->billing->city ) . ', ';
 			$r .= esc_html( $item->billing->state ) . ' ';

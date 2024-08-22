@@ -572,8 +572,6 @@ if ( ! empty( $pmpro_confirmed ) ) {
 	// Make sure we have an order object.
 	if ( empty( $morder ) ) {
 		$morder                 = new MemberOrder();
-		$morder->InitialPayment = 0;
-		$morder->Email          = $bemail;
 		$morder->gateway        = 'free';
 		$morder->status			= 'success';
 		$morder = apply_filters( "pmpro_checkout_order_free", $morder );
