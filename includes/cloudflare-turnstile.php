@@ -24,7 +24,7 @@ function pmpro_cloudflare_turnstile_get_html() {
 	}
 	?>
 	<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
-	<div class="cf-turnstile" data-sitekey="<?php echo esc_attr( get_option( 'pmpro_cloudflare_turnstile_public_key' ) ); ?>" data-theme="<?php echo esc_attr( $cf_theme ); ?>"></div>
+	<div class="cf-turnstile" data-sitekey="<?php echo esc_attr( get_option( 'pmpro_cloudflare_turnstile_site_key' ) ); ?>" data-theme="<?php echo esc_attr( $cf_theme ); ?>"></div>
 	<?php
 
 }
@@ -90,7 +90,7 @@ add_action( 'pmpro_billing_update_checks', 'pmpro_cloudflare_turnstile_validatio
 function pmpro_cloudflare_turnstile_settings() {
 	// Get the options
 	$cloudflare_turnstile  = get_option( 'pmpro_cloudflare_turnstile' );
-	$cloudflare_public_key = get_option( 'pmpro_cloudflare_turnstile_public_key' );
+	$cloudflare_site_key = get_option( 'pmpro_cloudflare_turnstile_site_key' );
 	$cloudflare_secret_key = get_option( 'pmpro_cloudflare_turnstile_secret_key' );
 
 	// If CloudFlare Turnstile is not enabled, hide some settings by default.
@@ -120,9 +120,9 @@ function pmpro_cloudflare_turnstile_settings() {
 		</td>
 	</tr>
    <tr class='pmpro_cloudflare_turnstile_settings' style='<?php esc_attr_e( $tr_style ); ?>'>
-		<th scope="row"><label for="cloudflare_turnstile_public_key"><?php esc_html_e( 'Turnstile Site Key', 'paid-memberships-pro' ); ?>:</label></th>
+		<th scope="row"><label for="cloudflare_turnstile_site_key"><?php esc_html_e( 'Turnstile Site Key', 'paid-memberships-pro' ); ?>:</label></th>
 		<td>
-			<input type="text" id="cloudflare_turnstile_public_key" name="cloudflare_turnstile_public_key" value="<?php echo esc_attr( $cloudflare_public_key ); ?>" class="regular-text code" />
+			<input type="text" id="cloudflare_turnstile_site_key" name="cloudflare_turnstile_site_key" value="<?php echo esc_attr( $cloudflare_site_key ); ?>" class="regular-text code" />
 		</td>
 	</tr>
 	<tr class='pmpro_cloudflare_turnstile_settings' style='<?php esc_attr_e( $tr_style ); ?>'>
@@ -153,7 +153,7 @@ add_action( 'pmpro_security_spam_fields', 'pmpro_cloudflare_turnstile_settings' 
  */
 function pmpro_cloudflare_turnstile_settings_save() {
 	pmpro_setOption( 'cloudflare_turnstile', intval( $_POST['cloudflare_turnstile'] ) );
-	pmpro_setOption( 'cloudflare_turnstile_public_key', sanitize_text_field( $_POST['cloudflare_turnstile_public_key'] ) );
+	pmpro_setOption( 'cloudflare_turnstile_site_key', sanitize_text_field( $_POST['cloudflare_turnstile_site_key'] ) );
 	pmpro_setOption( 'cloudflare_turnstile_secret_key', sanitize_text_field( $_POST['cloudflare_turnstile_secret_key'] ) );
 }
 add_action( 'pmpro_save_security_settings', 'pmpro_cloudflare_turnstile_settings_save' );
