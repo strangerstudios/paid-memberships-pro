@@ -37,6 +37,10 @@ add_action( 'pmpro_billing_before_submit_button', 'pmpro_cloudflare_turnstile_ge
  * @return void
  */
 function pmpro_cloudflare_turnstile_validation( $okay ) {
+	// If checkout is already halted, bail.
+	if ( ! $okay ) {
+		return $okay;
+	}
 
 	// If CloudFlare Turnstile is not enabled, bail.
 	if ( empty( get_option( 'pmpro_cloudflare_turnstile' ) ) ) {
@@ -49,32 +53,25 @@ function pmpro_cloudflare_turnstile_validation( $okay ) {
 		return false;
 	}
 
-	// Check if the Turnstile response is successful.
-	$secret = get_option( 'pmpro_cloudflare_turnstile_secret_key' );
+	// Verify the turnstile check.
+	$headers = array(
+		'body' => array(
+			'secret'   => get_option( 'pmpro_cloudflare_turnstile_secret_key', '' ),
+			'response' => pmpro_getParam( 'cf-turnstile-response' ),
+		),
+	);
+	$verify   = wp_remote_post( 'https://challenges.cloudflare.com/turnstile/v0/siteverify', $headers );
+	$verify   = wp_remote_retrieve_body( $verify );
+	$response = json_decode( $verify );
 
-	// Verify the turnstile check now.
-	if ( $secret ) {
-		$headers = array(
-			'body' => array(
-				'secret'   => $secret,
-				'response' => pmpro_getParam( 'cf-turnstile-response' ),
-			),
-		);
+	// If the check failed, show an error.
+	if ( empty( $response->success ) ) {
+		$error_messages    = pmpro_cloudflare_turnstile_get_error_message();
+		$error_code        = $response->{'error-codes'}[0];
+		$displayed_message = isset( $error_messages[ $error_code ] ) ? $error_messages[ $error_code ] : esc_html__( 'An error occurred while validating the security check.', 'paid-memberships-pro' );
 
-		$verify   = wp_remote_post( 'https://challenges.cloudflare.com/turnstile/v0/siteverify', $headers );
-		$verify   = wp_remote_retrieve_body( $verify );
-		$response = json_decode( $verify );
-
-		if ( $response->success ) {
-			$okay = true;
-		} else {
-			$error_messages    = pmpro_cloudflare_turnstile_get_error_message();
-			$error_code        = $response->{'error-codes'}[0];
-			$displayed_message = isset( $error_messages[ $error_code ] ) ? $error_messages[ $error_code ] : esc_html__( 'An error occurred while validating the security check.', 'paid-memberships-pro' );
-
-			pmpro_setMessage( $displayed_message, 'pmpro_error' );
-			$okay = false;
-		}
+		pmpro_setMessage( $displayed_message, 'pmpro_error' );
+		$okay = false;
 	}
 
 	return $okay;
@@ -89,9 +86,9 @@ add_action( 'pmpro_billing_update_checks', 'pmpro_cloudflare_turnstile_validatio
  */
 function pmpro_cloudflare_turnstile_settings() {
 	// Get the options
-	$cloudflare_turnstile  = get_option( 'pmpro_cloudflare_turnstile' );
-	$cloudflare_site_key = get_option( 'pmpro_cloudflare_turnstile_site_key' );
-	$cloudflare_secret_key = get_option( 'pmpro_cloudflare_turnstile_secret_key' );
+	$cloudflare_turnstile  = get_option( 'pmpro_cloudflare_turnstile', '0' );
+	$cloudflare_site_key = get_option( 'pmpro_cloudflare_turnstile_site_key', '' );
+	$cloudflare_secret_key = get_option( 'pmpro_cloudflare_turnstile_secret_key', '' );
 
 	// If CloudFlare Turnstile is not enabled, hide some settings by default.
 	$tr_style = empty( $cloudflare_turnstile ) ? 'display: none;' : '';
@@ -104,17 +101,8 @@ function pmpro_cloudflare_turnstile_settings() {
 		</th>
 		<td>
 			<select id="cloudflare_turnstile" name="cloudflare_turnstile">
-				<option value="0" 
-				<?php
-				if ( ! $cloudflare_turnstile ) {
-					?>
-					selected="selected"<?php } ?>><?php esc_html_e( 'No', 'paid-memberships-pro' ); ?></option>
-				<!-- For reference, removed the Yes - Free memberships only. option -->
-				<option value="2" 
-				<?php
-				if ( $cloudflare_turnstile > 0 ) {
-					?>
-					selected="selected"<?php } ?>><?php esc_html_e( 'Yes - All memberships.', 'paid-memberships-pro' ); ?></option>
+				<option value="0" <?php selected( $cloudflare_turnstile, 0 ); ?>><?php esc_html_e( 'No', 'paid-memberships-pro' ); ?></option>
+				<option value="1" <?php selected( $cloudflare_turnstile, 1 ); ?>><?php esc_html_e( 'Yes', 'paid-memberships-pro' ); ?></option>
 			</select>
 			<p class="description"><?php esc_html_e( 'A free CloudFlare Turnstile key is required.', 'paid-memberships-pro' ); ?> <a href="https://www.cloudflare.com/products/turnstile/" target="_blank" rel="nofollow noopener"><?php esc_html_e( 'Click here to signup for CloudFlare Turnstile', 'paid-memberships-pro' ); ?></a>.</p>
 		</td>
@@ -134,7 +122,7 @@ function pmpro_cloudflare_turnstile_settings() {
 	<script>
 		jQuery(document).ready(function() {
 			jQuery('#cloudflare_turnstile').change(function() {
-				if(jQuery(this).val() == '2') {
+				if(jQuery(this).val() == '1') {
 					jQuery('.pmpro_cloudflare_turnstile_settings').show();
 				} else {
 					jQuery('.pmpro_cloudflare_turnstile_settings').hide();
