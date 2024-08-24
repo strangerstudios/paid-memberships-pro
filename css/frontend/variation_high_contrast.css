@@ -522,6 +522,7 @@
 		background-color: var(--pmpro--color--base);
 		border: 1px solid var(--pmpro--color--border);
 		border-radius: 0;
+		box-shadow: none;
 		box-sizing: border-box;
 		color: var(--pmpro--color--contrast);
 		font-size: 16px;
