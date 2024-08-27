@@ -560,28 +560,7 @@ function pmpro_stripe_get_secretkey() {
 jQuery(document).ready(function ($) {
 
 	/* Variables */
-	var template, disabled, $subject, $editor, $testemail;
-	$subject = $("#pmpro_email_template_subject").closest("tr");
-	$editor = $("#wp-email_template_body-wrap");
-	$testemail = $("#test_email_address").closest("tr");
-
-	$(".pmpro_admin .hide-while-loading").hide();
-	$(".pmpro_admin .controls").hide();
-
-	/* PMPro Email Template Switcher */
-	$("#pmpro_email_template_switcher").change(function () {
-
-		$(".status_message").hide();
-		template = $(this).val();
-
-		//get template data
-		if (template)
-			pmpro_get_template(template);
-		else {
-			$(".pmpro_admin .hide-while-loading").hide();
-			$(".pmpro_admin .controls").hide();
-		}
-	});
+	$template = $('#edit').val();
 
 	$("#pmpro_submit_template_data").click(function () {
 		pmpro_save_template()
@@ -599,70 +578,14 @@ jQuery(document).ready(function ($) {
 		pmpro_save_template().done(setTimeout(function () { pmpro_send_test_email(); }, '1000'));
 	});
 
-	/* Functions */
-	function pmpro_get_template(template) {
-
-		//hide stuff and show ajax spinner
-		$(".hide-while-loading").hide();
-		$("#pmproet-spinner").show();
-
-		//get template data
-		$data = {
-			template: template,
-			action: 'pmpro_email_templates_get_template_data',
-			security: $('input[name=security]').val()
-		};
-
-		//console.log( $data );
-
-		$.post(ajaxurl, $data, function (response) {
-			var template_data = JSON.parse(response);
-
-			//show/hide stuff
-			$("#pmproet-spinner").hide();
-			$(".pmpro_admin .controls").show();
-			$(".pmpro_admin .hide-while-loading").show();
-			$(".pmpro_admin .status").hide();
-
-			//change disable text
-			if (template == 'header' || template === 'footer') {
-
-				$subject.hide();
-				$testemail.hide();
-
-				if (template == 'header')
-					$("#disable_label").text("Disable email header for all PMPro emails?");
-				else
-					$("#disable_label").text("Disable email footer for all PMPro emails?");
-
-				//hide description
-				$("#disable_description").hide();
-			}
-			else {
-				$testemail.show();
-				$("#disable_label").text("Disable this email?");
-				$("#disable_description").show().text("PMPro emails with this template will not be sent.");
-			}
-
-			// populate help text, subject, and body
-			$('#pmpro_email_template_help_text').text(template_data['help_text']);
-			$('#pmpro_email_template_subject').val(template_data['subject']);
-			$('#pmpro_email_template_body').val(template_data['body']);
-
-			// disable form
-			disabled = template_data['disabled'];
-			pmpro_toggle_form_disabled(disabled);
-		});
-	}
-
 	function pmpro_save_template() {
 
-		$("#submit_template_data").attr("disabled", true);
+		$("#pmpro_submit_template_data").attr("disabled", true);
 		$(".status").hide();
 		// console.log(template);
 
 		$data = {
-			template: template,
+			template: $template,
 			subject: $("#pmpro_email_template_subject").val(),
 			body: $("#pmpro_email_template_body").val(),
 			action: 'pmpro_email_templates_save_template_data',
@@ -675,10 +598,10 @@ jQuery(document).ready(function ($) {
 			else {
 				$(".status_message_wrapper").addClass("error");
 			}
-			$("#submit_template_data").attr("disabled", false);
+			$("#pmpro_submit_template_data").attr("disabled", false);
 			$(".status_message").html(response);
-			$(".status").show();
 			$(".status_message").show();
+			$('html, body').animate({ scrollTop : 0 }, 'fast');
 		});
 
 		return $.Deferred().resolve();
@@ -691,7 +614,7 @@ jQuery(document).ready(function ($) {
 		if (!r) return false;
 
 		$data = {
-			template: template,
+			template: $template,
 			action: 'pmpro_email_templates_reset_template_data',
 			security: $('input[name=security]').val()
 		};
@@ -699,6 +622,10 @@ jQuery(document).ready(function ($) {
 			var template_data = $.parseJSON(response);
 			$('#pmpro_email_template_subject').val(template_data['subject']);
 			$('#pmpro_email_template_body').val(template_data['body']);
+			$(".status_message_wrapper").addClass('updated');
+			$(".status_message").html('Template Reset');
+			$(".status_message").show();
+			$('html, body').animate({ scrollTop : 0 }, 'fast');
 		});
 
 		return true;
@@ -708,7 +635,7 @@ jQuery(document).ready(function ($) {
 
 		//update wp_options
 		data = {
-			template: template,
+			template: $template,
 			action: 'pmpro_email_templates_disable_template',
 			disabled: $("#pmpro_email_template_disable").is(":checked"),
 			security: $('input[name=security]').val()
@@ -727,14 +654,20 @@ jQuery(document).ready(function ($) {
 				if (response['status'] == 'true') {
 					$(".status_message_wrapper").addClass("updated");
 					$(".status_message").show().text("Template Disabled");
+					$(".pmpro_tag-success").addClass("pmpro_tag-alert");
+					$(".pmpro_tag-success").removeClass("pmpro_tag-success");
+					$(".pmpro_tag-alert").text("Disabled");
 				}
 				else {
 					$(".status_message_wrapper").addClass("updated");
 					$(".status_message").show().text("Template Enabled");
+					$(".pmpro_tag-alert").addClass("pmpro_tag-success");
+					$(".pmpro_tag-alert").removeClass("pmpro_tag-alert");
+					$(".pmpro_tag-success").text("Enabled");
 				}
 			}
 
-			$(".hide-while-loading").show();
+			$('html, body').animate({ scrollTop : 0 }, 'fast');
 
 			disabled = response['status'];
 
@@ -744,22 +677,14 @@ jQuery(document).ready(function ($) {
 
 	function pmpro_send_test_email() {
 
-		//hide stuff and show ajax spinner
-		$(".hide-while-loading").hide();
-		$("#pmproet-spinner").show();
-
 		data = {
-			template: template,
+			template: $template,
 			email: $("#test_email_address").val(),
 			action: 'pmpro_email_templates_send_test',
 			security: $('input[name=security]').val()
 		};
 
 		$.post(ajaxurl, data, function (success) {
-			//show/hide stuff
-			$("#pmproet-spinner").hide();
-			$(".pmpro_admin .controls").show();
-			$(".pmpro_admin .hide-while-loading").show();
 
 			if (success) {
 				$(".status_message_wrapper").addClass("updated").removeClass("error");
@@ -778,13 +703,11 @@ jQuery(document).ready(function ($) {
 			$("#pmpro_email_template_disable").prop('checked', true);
 			$("#pmpro_email_template_body").attr('readonly', 'readonly').attr('disabled', 'disabled');
 			$("#pmpro_email_template_subject").attr('readonly', 'readonly').attr('disabled', 'disabled');
-			$(".pmpro_admin .controls").hide();
 		}
 		else {
 			$("#pmpro_email_template_disable").prop('checked', false);
 			$("#pmpro_email_template_body").removeAttr('readonly', 'readonly').removeAttr('disabled', 'disabled');
 			$("#pmpro_email_template_subject").removeAttr('readonly', 'readonly').removeAttr('disabled', 'disabled');
-			$(".pmpro_admin .controls").show();
 		}
 
 	}
