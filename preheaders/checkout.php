@@ -108,7 +108,10 @@ if ( ! pmpro_isLevelFree( $pmpro_level ) ) {
 
 // Allow for filters.
 // TODO: docblock.
-$pmpro_requirebilling = apply_filters( 'pmpro_require_billing', $pmpro_requirebilling, $pmpro_level );
+/**
+ * @deprecated TBD
+ */
+$pmpro_requirebilling = apply_filters_deprecated( 'pmpro_require_billing', array( $pmpro_requirebilling, $pmpro_level ), 'TBD' );
 
 //in case a discount code was used or something else made the level free, but we're already over ssl
 if ( ! $besecure && ! empty( $_REQUEST['submit-checkout'] ) && is_ssl() ) {
@@ -499,90 +502,93 @@ if ( $submit && $pmpro_msgt != "pmpro_error" ) {
 			if ( $pmpro_msgt != "pmpro_error" ) {
 				do_action( 'pmpro_checkout_before_processing' );
 
-				//process checkout if required
-				if ( $pmpro_requirebilling ) {
-					if ( empty( $morder ) ) {
-						$morder = pmpro_build_order_for_checkout();
+				// If we don't have a checkout order yet, create one.
+				if ( empty( $morder ) ) {
+					$morder                   = new MemberOrder();
+					$morder->user_id          = $current_user->ID;
+					$morder->membership_id    = $pmpro_level->id;
+					$morder->cardtype         = $CardType;
+					$morder->accountnumber    = $AccountNumber;
+					$morder->expirationmonth  = $ExpirationMonth;
+					$morder->expirationyear   = $ExpirationYear;
+					$morder->gateway          = $pmpro_requirebilling ? $gateway : 'free';
+					$morder->billing          = new stdClass();
+					$morder->billing->name    = $bfirstname . " " . $blastname;
+					$morder->billing->street  = trim( $baddress1 );
+					$morder->billing->street2 = trim( $baddress2 );
+					$morder->billing->city    = $bcity;
+					$morder->billing->state   = $bstate;
+					$morder->billing->country = $bcountry;
+					$morder->billing->zip     = $bzipcode;
+					$morder->billing->phone   = $bphone;
+
+					// Calculate the order subtotal, tax, and total.
+					$morder->subtotal         = pmpro_round_price( $pmpro_level->initial_payment );
+					$morder->tax              = pmpro_round_price( $morder->getTax( true ) );
+					$morder->total            = pmpro_round_price( $morder->subtotal + $morder->tax );
+
+					if ( ! $pmpro_requirebilling ) {
+						$morder = apply_filters( "pmpro_checkout_order_free", $morder );
 					}
 
-					$pmpro_processed = $morder->process();
+					// Finish setting up the order.
+					$morder->setGateway();
+					$morder->getMembershipLevelAtCheckout();	
 
-					if ( ! empty( $pmpro_processed ) ) {
-						$pmpro_msg       = __( "Payment accepted.", 'paid-memberships-pro' );
-						$pmpro_msgt      = "pmpro_success";
-						$pmpro_confirmed = true;
+					// Filter for order, since v1.8
+					if ( $pmpro_requirebilling ) {
+						$morder = apply_filters( 'pmpro_checkout_order', $morder );
 					} else {
-						/**
-						 * Allow running code when processing fails.
-						 *
-						 * @since 2.7
-						 * @param MemberOrder $morder The order object used at checkout.
-						 */
-						do_action( 'pmpro_checkout_processing_failed', $morder );
-
-						// Make sure we have an error message.
-						$pmpro_msg = !empty( $morder->error ) ? $morder->error : null;
-						if ( empty( $pmpro_msg ) ) {
-							$pmpro_msg = __( "Unknown error generating account. Please contact us to set up your membership.", 'paid-memberships-pro' );
-						}
-						if ( ! empty( $morder->error_type ) ) {
-							$pmpro_msgt = $morder->error_type;
-						} else {
-							$pmpro_msgt = "pmpro_error";
-						}
+						$morder = apply_filters( 'pmpro_checkout_order_free', $morder );
 					}
+				}
 
-				} else // !$pmpro_requirebilling
-				{
-					//must have been a free membership, continue
+				// Process the payment.
+				$pmpro_processed = $morder->process();
+				if ( ! empty( $pmpro_processed ) ) {
+					$pmpro_msg       = __( "Payment accepted.", 'paid-memberships-pro' );
+					$pmpro_msgt      = "pmpro_success";
 					$pmpro_confirmed = true;
+				} else {
+					/**
+					 * Allow running code when processing fails.
+					 *
+					 * @since 2.7
+					 * @param MemberOrder $morder The order object used at checkout.
+					 */
+					do_action( 'pmpro_checkout_processing_failed', $morder );
+
+					// Make sure we have an error message.
+					$pmpro_msg = !empty( $morder->error ) ? $morder->error : null;
+					if ( empty( $pmpro_msg ) ) {
+						$pmpro_msg = __( "Unknown error generating account. Please contact us to set up your membership.", 'paid-memberships-pro' );
+					}
+					if ( ! empty( $morder->error_type ) ) {
+						$pmpro_msgt = $morder->error_type;
+					} else {
+						$pmpro_msgt = "pmpro_error";
+					}
 				}
 			}
 		}
 	}    //endif ($pmpro_continue_registration)
 }
 
-//make sure we have at least an empty morder here to avoid a warning
+// Hook to check payment confirmation or replace it. If we get an array back, pull the values (morder) out
+// All of this is deprecated and will be removed in a future version.
 if ( empty( $morder ) ) {
+	// make sure we have at least an empty morder here to avoid a warning
 	$morder = false;
 }
-
-// Make sure that we have a User ID to avoid a warning.
-if ( empty( $user_id ) && ! empty( $current_user->ID ) ) {
-	$user_id = $current_user->ID;
-}
-
-//Hook to check payment confirmation or replace it. If we get an array back, pull the values (morder) out
 $pmpro_confirmed_data = apply_filters_deprecated( 'pmpro_checkout_confirmed', array( $pmpro_confirmed, $morder ), 'TBD' );
-
-/**
- * @todo Refactor this to avoid using extract.
- */
 if ( is_array( $pmpro_confirmed_data ) ) {
 	extract( $pmpro_confirmed_data );
 } else {
 	$pmpro_confirmed = $pmpro_confirmed_data;
 }
 
-//if payment was confirmed create/update the user.
+// If the payment was successful, complete the checkout.
 if ( ! empty( $pmpro_confirmed ) ) {
-	//just in case this hasn't been set yet
-	$submit = true;
-
-	// Make sure we have an order object.
-	if ( empty( $morder ) ) {
-		$morder                 = new MemberOrder();
-		$morder->gateway        = 'free';
-		$morder->status			= 'success';
-		$morder = apply_filters( "pmpro_checkout_order_free", $morder );
-	}
-
-	//add an item to the history table, cancel old subscriptions
-	if ( ! empty( $morder ) ) {
-		$morder->user_id       = $user_id;
-		$morder->membership_id = $pmpro_level->id;
-	}
-
 	if ( pmpro_complete_checkout( $morder ) ) {
 		//redirect to confirmation
 		$rurl = pmpro_url( "confirmation", "?pmpro_level=" . $pmpro_level->id );
@@ -601,10 +607,7 @@ if ( ! empty( $pmpro_confirmed ) ) {
 			$pmpro_msg = __( "IMPORTANT: Something went wrong while processing your checkout. Your credit card was charged, but we couldn't assign your membership. You should not submit this form again. Please contact the site owner to fix this issue.", 'paid-memberships-pro' );
 		}
 	}
-}
-
-//default values
-if ( empty( $submit ) ) {
+} else {
 	//show message if the payment gateway is not setup yet
 	if ( $pmpro_requirebilling && ! get_option( "pmpro_gateway" ) ) {
 
