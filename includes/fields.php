@@ -1416,6 +1416,7 @@ function pmpro_get_field_html( $field = null ) {
                         <option value="text" <?php selected( $field_type, 'text' ); ?>><?php esc_html_e( 'Text', 'paid-memberships-pro' ); ?></option>
                         <option value="textarea" <?php selected( $field_type, 'textarea' ); ?>><?php esc_html_e( 'Text Area', 'paid-memberships-pro' ); ?></option>
                         <option value="checkbox" <?php selected( $field_type, 'checkbox' ); ?>><?php esc_html_e( 'Checkbox', 'paid-memberships-pro' ); ?></option>
+						<option value="checkbox_grouped" <?php selected( $field_type, 'checkbox_grouped' ); ?>><?php esc_html_e( 'Checkbox Group', 'paid-memberships-pro' ); ?></option>
                         <option value="radio" <?php selected( $field_type, 'radio' ); ?>><?php esc_html_e( 'Radio', 'paid-memberships-pro' ); ?></option>
                         <option value="select" <?php selected( $field_type, 'select' ); ?>><?php esc_html_e( 'Select / Dropdown', 'paid-memberships-pro' ); ?></option>
                         <option value="select2" <?php selected( $field_type, 'select2' ); ?>><?php esc_html_e( 'Select2 / Autocomplete', 'paid-memberships-pro' ); ?></option>
@@ -1582,7 +1583,7 @@ function pmpro_load_user_fields_from_settings() {
             }
             
             // Figure out options.
-            $option_types = array( 'radio', 'select', 'select2', 'multiselect' );
+            $option_types = array( 'checkbox_grouped', 'radio', 'select', 'select2', 'multiselect' );
             if ( in_array( $settings_field->type, $option_types ) ) {
                 $options = array();
                 $settings_options = explode( "\n", $settings_field->options );
