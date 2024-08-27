@@ -221,22 +221,11 @@ if ($submit) {
         $pmpro_billing_order->accountnumber = $AccountNumber;
         $pmpro_billing_order->expirationmonth = $ExpirationMonth;
         $pmpro_billing_order->expirationyear = $ExpirationYear;
-        $pmpro_billing_order->ExpirationDate = $ExpirationMonth . $ExpirationYear;
-        $pmpro_billing_order->ExpirationDate_YdashM = $ExpirationYear . "-" . $ExpirationMonth;
-        $pmpro_billing_order->CVV2 = $CVV;
-        
-        //not saving email in order table, but the sites need it
-        $pmpro_billing_order->Email = $bemail;
-
-        //sometimes we need these split up
-        $pmpro_billing_order->FirstName = $bfirstname;
-        $pmpro_billing_order->LastName = $blastname;
-        $pmpro_billing_order->Address1 = $baddress1;
-        $pmpro_billing_order->Address2 = $baddress2;
 
         //other values
         $pmpro_billing_order->billing->name = $bfirstname . " " . $blastname;
-        $pmpro_billing_order->billing->street = trim($baddress1 . " " . $baddress2);
+        $pmpro_billing_order->billing->street = trim( $baddress1 );
+        $pmpro_billing_order->billing->street2 = trim( $baddress2 );
         $pmpro_billing_order->billing->city = $bcity;
         $pmpro_billing_order->billing->state = $bstate;
         $pmpro_billing_order->billing->country = $bcountry;

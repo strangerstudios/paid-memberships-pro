@@ -29,7 +29,7 @@
 					echo wp_kses_post( pmpro_formatAddress(
 						$order->billing->name,
 						$order->billing->street,
-						"",
+						$order->billing->street2,
 						$order->billing->city,
 						$order->billing->state,
 						$order->billing->zip,

@@ -250,6 +250,10 @@ function pmpro_personal_data_exporter( $email_address, $page = 1 ) {
 					'value' => $order->billing->street,
 				),
 				array(
+					'name' => __( 'Billing Street 2', 'paid-memberships-pro' ),
+					'value' => $order->billing->street2,
+				),
+				array(
 					'name' => __( 'Billing City', 'paid-memberships-pro' ),
 					'value' => $order->billing->city,
 				),
