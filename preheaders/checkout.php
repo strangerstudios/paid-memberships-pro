@@ -527,10 +527,6 @@ if ( $submit && $pmpro_msgt != "pmpro_error" ) {
 					$morder->tax              = pmpro_round_price( $morder->getTax( true ) );
 					$morder->total            = pmpro_round_price( $morder->subtotal + $morder->tax );
 
-					if ( ! $pmpro_requirebilling ) {
-						$morder = apply_filters( "pmpro_checkout_order_free", $morder );
-					}
-
 					// Finish setting up the order.
 					$morder->setGateway();
 					$morder->getMembershipLevelAtCheckout();	
