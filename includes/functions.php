@@ -91,7 +91,7 @@ function pmpro_getOption( $s, $force = false ) {
 	return get_option( 'pmpro_' . $s, '' );
 }
 
-function pmpro_setOption( $s, $v = null, $sanitize_function = 'sanitize_text_field', $autoload = false ) {		
+function pmpro_setOption( $s, $v = null, $sanitize_function = 'sanitize_text_field', $autoload = false ) {
 	if ( $v === null && isset( $_POST[ $s ] ) ) {
 		// phpcs:disable WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 		if ( is_array( $_POST[ $s ] ) ) {
@@ -684,7 +684,7 @@ function pmpro_get_membership_expiration_text( $level, $user, $default = null ) 
 	 *
 	 * @since 3.0
 	 *
-	 * @param string  $text The expiration date text to show for this level.	
+	 * @param string  $text The expiration date text to show for this level.
 	 * @param object  $level The level that the expiration date is for.
 	 * @param WP_User $user The user that the expiration date is for.
 	 * @param bool    $show_time Whether to show the expiration time with expiration date.
@@ -945,7 +945,7 @@ function pmpro_hasMembershipLevel( $levels = null, $user_id = null ) {
 				// We have a string with at least 1 comma in it, turn it into an array.
 				$level_ids = explode( ',', $levels_str );
 				// Trim whitespace from the levels ids or names.
-				$levels = array_map( 'trim', $level_ids );				
+				$levels = array_map( 'trim', $level_ids );
 			} else {
 				// No comma, but we want an array of levels.
 				$levels = array( $levels );
@@ -1063,7 +1063,7 @@ function pmpro_cancelMembershipLevel( $level_id, $user_id = null, $status = 'ina
 		do_action( 'pmpro_before_change_membership_level', 0, $user_id, pmpro_getMembershipLevelsForUser( $user_id ), $level_id );
 	}
 
-	// Remove the membership level.	
+	// Remove the membership level.
 	$cols_set = array( 'status'=> $status, 'enddate' => current_time( 'mysql' ) );
 	$cols_where = array( 'user_id' => $user_id, 'membership_id' => $level_id, 'status' => 'active' );
 	$cols_format = array( '%s', '%s');
@@ -1171,7 +1171,7 @@ function pmpro_changeMembershipLevel( $level, $user_id = null, $old_level_status
 		$level_id = (int) $level['membership_id'];
 	} elseif ( is_numeric( $level ) ) {
 		// Only a level ID was passed.
-		$level_id = (int) $level; 
+		$level_id = (int) $level;
 	} else {
 		// Invalid level passed.
 		$pmpro_error = __( 'Invalid level parameter passed to pmpro_changeMembershipLevel().', 'paid-memberships-pro' );
@@ -1182,7 +1182,7 @@ function pmpro_changeMembershipLevel( $level, $user_id = null, $old_level_status
 	if ( empty( pmpro_getLevel( $level_id ) ) ) {
 		$pmpro_error = __( 'Invalid level.', 'paid-memberships-pro' );
 		return false;
-	}	
+	}
 
 	// Set old user levels to be used in the pmpro_do_action_after_all_membership_level_changes() function.
 	pmpro_set_old_user_levels( $user_id );
@@ -1236,7 +1236,7 @@ function pmpro_changeMembershipLevel( $level, $user_id = null, $old_level_status
 			pmpro_cancelMembershipLevel( $level_id, $user_id, $change_status );
 		}
 	}
-	
+
 	// Insert current membership
 	if ( ! empty( $level ) ) {
 		// make sure the dates are in good formats
@@ -1374,8 +1374,10 @@ function pmpro_clear_level_cache_for_user( $user_id ) {
 	wp_cache_delete( $cache_key . '_all', 'pmpro' );
 	wp_cache_delete( $cache_key . '_active', 'pmpro' );
 
-	// Update user data.
-	pmpro_set_current_user();
+	// Update the global user data if cleaning the current user.
+	if ( get_current_user_id() === (int) $user_id ) {
+		pmpro_set_current_user();
+	}
 }
 
 /**
@@ -2162,7 +2164,7 @@ function pmpro_get_no_access_message( $content, $level_ids, $level_names = NULL 
 
 			/**
 			 * Legacy filter for logged-out message for non-members/logged-out visitors.
-			 * 
+			 *
 			 * @deprecated 3.1
 			 */
 			if ( ! is_user_logged_in() ) {
@@ -2170,7 +2172,7 @@ function pmpro_get_no_access_message( $content, $level_ids, $level_names = NULL 
 			} else {
 				$body = apply_filters_deprecated( 'pmpro_non_member_text_filter', array( $body ), '3.1', 'pmpro_no_access_message_body' );
 			}
-			
+
 			// Build the content message.
 			$no_access_message_inner = '<h2 class="' . pmpro_get_element_class( 'pmpro_card_title pmpro_font-large' ) . '">';
 			$no_access_message_inner .= '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--pmpro--color--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-lock"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>';
@@ -2904,7 +2906,7 @@ function pmpro_showMessage() {
 			'href' => array(),
 			'target' => array(),
 			'title' => array(),
-		),		
+		),
 		'em' => array(),
 		'p' => array(),
 		'span' => array(
@@ -2915,7 +2917,7 @@ function pmpro_showMessage() {
 		'li' => array(),
 	);
 
-	if ( ! empty( $pmpro_msg ) ) {		
+	if ( ! empty( $pmpro_msg ) ) {
 		?>
 		<div role="alert" id="pmpro_message" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_message ' . $pmpro_msgt, $pmpro_msgt ) ); ?>">
 			<p><?php echo wp_kses( $pmpro_msg, $allowed_html ); ?></p>
@@ -3185,9 +3187,9 @@ function pmpro_is_ready() {
 
 /**
  * Display the Setup Wizard links.
- * 
+ *
  * @since 2.10
- * 
+ *
  * @return bool $show Whether or not the Setup Wizard link should show.
  */
 function pmpro_show_setup_wizard_link() {
@@ -4513,12 +4515,12 @@ function pmpro_array_end( $array ) {
  * @param  object $order The order that we want to refund
  * @return bool Returns a bool value based on if the order can be refunded
  */
-function pmpro_allowed_refunds( $order ) { 
+function pmpro_allowed_refunds( $order ) {
 
 	//If this isn't a valid order then lets not allow it
 	if( empty( $order ) || empty( $order->gateway ) || empty( $order->status ) || empty( $order->payment_transaction_id ) ) {
 		return false;
-	}	
+	}
 
 	//Orders with a 0 total shouldn't be able to be refunded
 	if( $order->total == 0 ){
@@ -4539,7 +4541,7 @@ function pmpro_allowed_refunds( $order ) {
 	if( in_array( $order->gateway, $allowed_gateways, true ) ) {
 		$okay = true;
 	}
-	
+
 	$disallowed_statuses = pmpro_disallowed_refund_statuses();
 	//Don't allow pending orders to be refunded
 	if( in_array( $order->status, $disallowed_statuses, true ) ){
@@ -4565,7 +4567,7 @@ function pmpro_refund_order( $order ){
 
 	//Not going to refund an order that has already been refunded
 	if( $order->status == 'refunded' ) {
-		return true; 
+		return true;
 	}
 
 	/**
@@ -4573,18 +4575,18 @@ function pmpro_refund_order( $order ){
 	 *
 	 * @since 2.8
 	 *
-	 * @param bool $success Default return value is false to determine if the refund was successfully processed. 
+	 * @param bool $success Default return value is false to determine if the refund was successfully processed.
 	 * @param object $order The Member Order we want to refund.
 	 */
 	$success = apply_filters( 'pmpro_process_refund_'.$order->gateway, false, $order );
-	
+
 	return $success;
 
 }
 
 /**
  * Returns an array of order statuses that do not qualify for a refund
- * 
+ *
  * @return array Returns an array of statuses that are not allowed to be refunded
  */
 function pmpro_disallowed_refund_statuses() {
@@ -4616,19 +4618,19 @@ function pmpro_maybe_send_wp_new_user_notification( $user_id, $level_id = null )
 
 /**
  * Replace all special characters with underscore, including spaces.
- * 
+ *
  * @since 2.9
- * 
+ *
  * @param string $field_name The raw field name to be formatted.
  */
 function pmpro_format_field_name( $field_name ) {
 	$formatted_name = preg_replace( '/[^A-Za-z0-9\-]+/', '_', $field_name );
-	
+
 	/**
 	 * Filter the formatted/output field names.
-	 * 
+	 *
 	 * @since 2.9
-	 * 
+	 *
 	 * @param string $formatted_name The formatted field name (replaced spaces and dashes with underscores).
 	 * @param string $field_name The original field name.
 	 */
@@ -4647,21 +4649,21 @@ function pmpro_activating_plugin( $plugin = null ) {
 	if ( ! is_admin() ) {
 		return false;
 	}
-	
+
 	if ( empty( $_REQUEST['action'] ) ) {
-		return false;	
+		return false;
 	}
-	
+
 	if ( $_REQUEST['action'] !== 'activate'
 		&& $_REQUEST['action'] !== 'activate-selected' ) {
 		return false;
 	}
-	
+
 	// Not checking for a specific plugin, and activating something.
 	if ( empty( $plugin ) ) {
 		return true;
 	}
-	
+
 	// Check if the specified plugin isn't one being activated.
 	if ( ! empty( $_REQUEST['plugin'] ) && $_REQUEST['plugin'] !== $plugin ) {
 		return false;
@@ -4669,7 +4671,7 @@ function pmpro_activating_plugin( $plugin = null ) {
 	if ( ! empty( $_REQUEST['checked'] ) && ! in_array( $plugin, (array)$_REQUEST['checked'] ) ) {
 		return false;
 	}
-	
+
 	// Must be activating the $plugin specified.
 	return true;
 }
@@ -4692,7 +4694,7 @@ function pmpro_compare_siteurl() {
 
 	// We don't want to consider scheme, so just force https for this check.
 	$site_url = str_replace( 'http://', 'https://', $site_url );
-	$current_url = str_replace( 'http://', 'https://', $current_url );	
+	$current_url = str_replace( 'http://', 'https://', $current_url );
 
 	return ( $site_url === $current_url );
 }
@@ -4845,7 +4847,7 @@ function pmpro_check_upload( $file_index ) {
 			return new WP_Error( 'pmpro_upload_error', __( 'Invalid file submission.', 'paid-memberships-pro' ) );
 		}
 	}
-	
+
 
 	// If we made it this far, the file is allowed.
 	return true;
