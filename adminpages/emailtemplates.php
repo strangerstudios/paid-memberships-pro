@@ -1,8 +1,8 @@
 <?php
-	// Only admins can get to this screen.
-	if ( ! function_exists( 'current_user_can' ) || ( ! current_user_can( 'manage_options' ) && ! current_user_can( 'pmpro_emailsettings' ) ) ) {
-		die (esc_html__( 'You do not have permissions to perform this action.', 'paid-memberships-pro' ) );
-	}
+// Only admins can get to this screen.
+if ( ! function_exists( 'current_user_can' ) || ( ! current_user_can( 'manage_options' ) && ! current_user_can( 'pmpro_emailsettings' ) ) ) {
+	die (esc_html__( 'You do not have permissions to perform this action.', 'paid-memberships-pro' ) );
+}
 
 require_once(dirname(__FILE__) . "/admin_header.php");
 
@@ -28,6 +28,9 @@ if ( ! empty( $template ) ) {
 					<?php esc_html_e( 'Email Template Name', 'paid-memberships-pro' ); ?>
 				</th>
 				<th>
+					<?php esc_html_e( 'Default Recipient', 'paid-memberships-pro' ); ?>
+				</th>
+				<th>
 					<?php esc_html_e( 'Subject', 'paid-memberships-pro' ); ?>
 				</th>
 				<th>
@@ -45,7 +48,30 @@ if ( ! empty( $template ) ) {
 			 * @param bool $show_default_email_template Whether to show the default email template in the dropdown.
 			 */
 			$show_default_email_template = apply_filters( 'pmpro_show_default_email_template_in_dropdown', false );
-			//var_dump( $pmpro_email_templates_defaults );
+
+			// Alphabetize the email templates by description.
+			uasort( $pmpro_email_templates_defaults, function( $a, $b ) {
+				return strcasecmp( $a['description'], $b['description'] );
+			} );
+
+			// Move the default, header, and footer email templates to the bottom of the list.
+			$pmpro_email_templates_defaults = array_merge(
+				array_filter(
+					$pmpro_email_templates_defaults,
+					function( $key ) {
+						return ! in_array( $key, [ 'default', 'header', 'footer' ], true );
+					},
+					ARRAY_FILTER_USE_KEY
+				),
+				array_filter(
+					$pmpro_email_templates_defaults,
+					function( $key ) {
+						return in_array( $key, [ 'default', 'header', 'footer' ], true );
+					},
+					ARRAY_FILTER_USE_KEY
+				)
+			);
+
 			foreach ( $pmpro_email_templates_defaults as $key => $template ) {
 				// If the template is the default template and we're not showing it in the dropdown, skip it.
 				if ( 'default' === $key && ! $show_default_email_template ) {
@@ -99,6 +125,19 @@ if ( ! empty( $template ) ) {
 							}
 							?>
 						</div>
+					</td>
+					<td data-colname="<?php esc_attr_e( 'Default Recipient', 'paid-memberships-pro' ); ?>">
+						<?php
+							// If the email has _admin in $key, it's an admin email.
+							// If the email is default, header, or footer, show a dash.
+							if ( strpos( $key, '_admin' ) !== false ) {
+								echo esc_html__( 'Admin', 'paid-memberships-pro' );
+							} elseif ( in_array( $key, [ 'default', 'header', 'footer' ], true ) ) {
+								echo esc_html__( '&#8212;', 'paid-memberships-pro' );
+							} else {
+								echo esc_html__( 'Member', 'paid-memberships-pro' );
+							}
+						?>
 					</td>
 					<td data-colname="<?php esc_attr_e( 'Subject', 'paid-memberships-pro' ); ?>">
 						<?php

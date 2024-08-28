@@ -4,11 +4,10 @@
 	$template_data['subject'] = get_option( 'pmpro_email_' . $edit . '_subject' );
 	$template_data['disabled'] = get_option( 'pmpro_email_' . $edit . '_disabled' );
 
+	// If not found, load template from defaults.
 	if ( empty( $template_data['body'] ) ) {
-		//if not found, load template
 		$template_data['body'] = pmpro_email_templates_get_template_body( $edit );
 	}
-
 	if ( empty( $template_data['subject'] ) && ! in_array( $edit, array( 'header', 'footer' ) ) ) {
 		$template_data['subject'] = $pmpro_email_templates_defaults[$edit]['subject'];
 	}

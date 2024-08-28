@@ -3599,6 +3599,16 @@ button.pmpro_report_th_closed:before {
 		margin-left: 0;
 		margin-right: 0;
 	}
+
+	.pmpro_admin-pmpro-emailtemplates .wp-list-table thead {
+		display: none;
+	}
+
+	.pmpro_admin-pmpro-emailtemplates .wp-list-table tbody tr td {
+		display: block;
+		padding-left: 35%;
+	}
+
 }
 
 /* plugin update notice */
