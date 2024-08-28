@@ -376,7 +376,7 @@ if ( strtolower( $payment_status ) === 'refunded' ) {
 
 		ipnlog( sprintf( 'IPN: Order successfully refunded on %1$s for transaction ID %2$s at the gateway.', date_i18n('Y-m-d H:i:s'), $payment_transaction_id ) );
 
-		$user = get_user_by( 'email', $morder->Email );
+		$user = get_userdata( $morder->user_id );
 
 		// Send an email to the member.
 		$myemail = new PMProEmail();
@@ -725,6 +725,7 @@ function pmpro_ipnFailedPayment( $last_order ) {
 
 		$morder->billing->name    = $last_order->billing->name;
 		$morder->billing->street  = $last_order->billing->street;
+		$morder->billing->street2 = $last_order->billing->street2;
 		$morder->billing->city    = $last_order->billing->city;
 		$morder->billing->state   = $last_order->billing->state;
 		$morder->billing->zip     = $last_order->billing->zip;
@@ -777,31 +778,25 @@ function pmpro_ipnSaveOrder( $txn_id, $last_order ) {
 		if ( false !== stripos( $last_order->gateway, "paypal" ) ) {
 
 			if ( isset( $_POST['mc_gross'] ) && ! empty( $_POST['mc_gross'] ) ) {
-				$morder->InitialPayment = sanitize_text_field( $_POST['mc_gross'] );    //not the initial payment, but the class is expecting that
-				$morder->PaymentAmount  = sanitize_text_field( $_POST['mc_gross'] );
+				$morder->total  = sanitize_text_field( $_POST['mc_gross'] );
 			} elseif ( isset( $_POST['amount'] ) && ! empty( $_POST['amount'] ) ) {
-				$morder->InitialPayment = sanitize_text_field( $_POST['amount'] );    //not the initial payment, but the class is expecting that
-				$morder->PaymentAmount  = sanitize_text_field( $_POST['amount'] );
+				$morder->total  = sanitize_text_field( $_POST['amount'] );
 			} elseif ( isset( $_POST['payment_gross'] )  && ! empty( $_POST['payment_gross' ] ) ) {
-				$morder->InitialPayment = sanitize_text_field( $_POST['payment_gross'] );    //not the initial payment, but the class is expecting that
-				$morder->PaymentAmount  = sanitize_text_field( $_POST['payment_gross'] );
+				$morder->total  = sanitize_text_field( $_POST['payment_gross'] );
 			}
 			
 			//check for tax
 			if ( isset( $_POST['tax'] ) && ! empty( $_POST['tax'] ) ) {
 				$morder->tax = (float) $_POST['tax'];
-				if ( isset( $_POST['amount'] ) && ! empty( $_POST['amount'] ) && $morder->InitialPayment > (float) $_POST['amount'] ) {
-					$morder->tax *= (float) $morder->InitialPayment / (float) $_POST['amount'];
+				if ( isset( $_POST['amount'] ) && ! empty( $_POST['amount'] ) && $morder->total > (float) $_POST['amount'] ) {
+					$morder->tax *= (float) $morder->total / (float) $_POST['amount'];
 				}
-
-				$morder->total = $morder->InitialPayment;	//so tax isn't added into the subtotal again
 				$morder->subtotal = $morder->total - $morder->tax;
+			} else {
+				$morder->tax = 0;
+				$morder->subtotal = $morder->total;
 			}
 		}
-
-		$morder->FirstName = sanitize_text_field( $_POST['first_name'] );
-		$morder->LastName  = sanitize_text_field( $_POST['last_name'] );
-		$morder->Email     = sanitize_text_field( $_POST['payer_email'] );
 
 		$morder->find_billing_address();
 

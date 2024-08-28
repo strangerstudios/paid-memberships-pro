@@ -32,9 +32,6 @@
 			delete_option( 'pmpro_nonmembertext' );
 		}
 
-		// Checkout settings.
-		pmpro_setOption("tospage");
-
 		// Communication settings.
 		pmpro_setOption("maxnotificationpriority");
 		pmpro_setOption("activity_email_frequency");
@@ -75,9 +72,6 @@
 	$filterqueries = get_option( 'pmpro_filterqueries');
 	$showexcerpts = get_option( 'pmpro_showexcerpts' );
 	$nonmembertext = get_option( 'pmpro_nonmembertext' );
-
-	// Checkout settings.
-	$tospage = get_option( "pmpro_tospage");
 
 	// Communication settings.
 	$maxnotificationpriority = get_option( "pmpro_maxnotificationpriority");
@@ -215,32 +209,6 @@
 					?>
 				</tbody>
 				</table>
-			</div> <!-- end pmpro_section_inside -->
-		</div> <!-- end pmpro_section -->
-		<div id="checkout-settings" class="pmpro_section" data-visibility="shown" data-activated="true">
-			<div class="pmpro_section_toggle">
-				<button class="pmpro_section-toggle-button" type="button" aria-expanded="true">
-					<span class="dashicons dashicons-arrow-up-alt2"></span>
-					<?php esc_html_e( 'Checkout Settings', 'paid-memberships-pro' ); ?>
-				</button>
-			</div>
-			<div class="pmpro_section_inside">
-				<table class="form-table">
-					<tbody>
-						<tr>
-							<th scope="row" valign="top">
-								<label for="tospage"><?php esc_html_e('Require Terms of Service on signups?', 'paid-memberships-pro' );?></label>
-							</th>
-							<td>
-								<?php
-									wp_dropdown_pages(array("name"=>"tospage", "show_option_none"=>"No", "selected"=>esc_html( $tospage )));
-								?>
-								<br />
-								<p class="description"><?php esc_html_e('If yes, create a WordPress page containing your TOS agreement and assign it using the dropdown above.', 'paid-memberships-pro' );?></p>
-							</td>
-						</tr>
-					</tbody>
-				</table>	
 			</div> <!-- end pmpro_section_inside -->
 		</div> <!-- end pmpro_section -->
 		<div id="communication-settings" class="pmpro_section" data-visibility="shown" data-activated="true">
@@ -425,6 +393,9 @@ if ( function_exists( 'pmpro_displayAds' ) && pmpro_displayAds() ) {
 											<?php echo esc_textarea(get_option( 'pmpro_' . $field['field_name'] )); ?>
 										</textarea>
 										<?php
+										break;
+									case 'callback':
+										call_user_func($field['callback']);
 										break;
 									default:
 										break;

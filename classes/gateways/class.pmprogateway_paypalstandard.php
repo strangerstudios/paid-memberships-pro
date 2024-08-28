@@ -248,14 +248,17 @@
 			global $pmpro_currency;
 
 			//taxes on initial amount
-			$initial_payment = $order->InitialPayment;
+			$initial_payment = $order->subtotal;
 			$initial_payment_tax = $order->getTaxForPrice($initial_payment);
 			$initial_payment = pmpro_round_price_as_string( (float) $initial_payment + (float) $initial_payment_tax );
 
 			//taxes on the amount
-			$amount = $order->PaymentAmount;
+			$level = $order->getMembershipLevelAtCheckout();
+			$amount = $level->billing_amount;
 			$amount_tax = $order->getTaxForPrice($amount);
 			$amount = pmpro_round_price_as_string( (float) $amount + (float) $amount_tax );
+
+			$user = get_userdata($order->user_id);
 
 			//build PayPal Redirect	URL
 			$environment = get_option("pmpro_gateway_environment");
@@ -269,18 +272,18 @@
 			if(pmpro_isLevelRecurring($order->membership_level))
 			{
 				//convert billing period
-				if($order->BillingPeriod == "Day")
+				if( $level->cycle_period == "Day")
 					$period = "D";
-				elseif($order->BillingPeriod == "Week")
+				elseif( $level->cycle_period == "Week")
 					$period = "W";
-				elseif($order->BillingPeriod == "Month")
+				elseif( $level->cycle_period == "Month")
 					$period = "M";
-				elseif($order->BillingPeriod == "Year")
+				elseif( $level->cycle_period == "Year")
 					$period = "Y";
 				else
 				{
-					$order->error = "Invalid billing period: " . $order->BillingPeriod;
-					$order->shorterror = "Invalid billing period: " . $order->BillingPeriod;
+					$order->error = "Invalid billing period: " . $level->cycle_period;
+					$order->shorterror = "Invalid billing period: " . $level->cycle_period;
 					return false;
 				}
 
@@ -289,13 +292,13 @@
                     'business'      => get_option("pmpro_gateway_email"),
 					'cmd'           => '_xclick-subscriptions',
 					'a1'			=> $initial_payment,
-					'p1'			=> $order->BillingFrequency,
+					'p1'			=> $level->cycle_number,
 					't1'			=> $period,
 					'a3'			=> $amount,
-					'p3'			=> $order->BillingFrequency,
+					'p3'			=> $level->cycle_number,
 					't3'			=> $period,
 					'item_name'     => apply_filters( 'pmpro_paypal_level_description', substr($order->membership_level->name . " at " . get_bloginfo("name"), 0, 127), $order->membership_level->name, $order, get_bloginfo("name") ),
-					'email'         => $order->Email,
+					'email'         => empty( $user->user_email ) ? '' : $user->user_email,
 					'no_shipping'   => '1',
 					'shipping'      => '0',
 					'no_note'       => '1',
@@ -315,21 +318,20 @@
 				/*
 					Note here that the TrialBillingCycles value is being ignored. PayPal Standard only offers 1 payment during each trial period.
 				*/
-				if(!empty($order->TrialBillingPeriod))
-				{
+				if ( pmpro_isLevelTrial( $level ) ) {
 					//if a1 and a2 are 0, let's just combine them. PayPal doesn't like a2 = 0.
-					if($paypal_args['a1'] == 0 && $order->TrialAmount == 0)
+					if($paypal_args['a1'] == 0 && pmpro_round_price( $level->trial_amount ) == 0)
 					{
-						$paypal_args['p1'] = $paypal_args['p1'] + $order->TrialBillingFrequency;
+						$paypal_args['p1'] = $paypal_args['p1'] + $level->cycle_number;
 					}
 					else
 					{
-						$trial_amount = $order->TrialAmount;
+						$trial_amount = pmpro_round_price( $level->trial_amount );
 						$trial_tax = $order->getTaxForPrice($trial_amount);
 						$trial_amount = pmpro_round_price_as_string((float)$trial_amount + (float)$trial_tax);
 
 						$paypal_args['a2'] = $trial_amount;
-						$paypal_args['p2'] = $order->TrialBillingFrequency;
+						$paypal_args['p2'] = $level->cycle_number;
 						$paypal_args['t2'] = $period;
 					}
 				}
@@ -342,8 +344,8 @@
                                 strtotime(
                                         sprintf(
                                                 "+ %s %s",
-                                                $order->BillingFrequency,
-                                                $order->BillingPeriod
+                                                $level->cycle_number,
+                                                $level->cycle_period
                                             ),
                                         current_time("timestamp" )
                                 )
@@ -377,16 +379,16 @@
 				}
 
 				//billing limit?
-				if(!empty($order->TotalBillingCycles))
+				if(!empty($level->billing_limit))
 				{
 					if(!empty($trial_amount))
 					{
 
-						$srt = intval($order->TotalBillingCycles) - 1;	//subtract one for the trial period
+						$srt = intval($level->billing_limit) - 1;	//subtract one for the trial period
 					}
 					else
 					{
-						$srt = intval($order->TotalBillingCycles);
+						$srt = intval($level->billing_limit);
 					}
 
 					//srt must be at least 2 or the subscription is not "recurring" according to paypal
@@ -406,7 +408,7 @@
 					'cmd'           => '_xclick',
 					'amount'        => $initial_payment,
 					'item_name'     => apply_filters( 'pmpro_paypal_level_description', substr($order->membership_level->name . " at " . get_bloginfo("name"), 0, 127), $order->membership_level->name, $order, get_bloginfo("name") ),
-					'email'         => $order->Email,
+					'email'         => empty( $user->user_email ) ? '' : $user->user_email,
 					'no_shipping'   => '1',
 					'shipping'      => '0',
 					'no_note'       => '1',

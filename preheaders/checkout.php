@@ -11,23 +11,53 @@ $pmpro_error_fields = array();
 $pmpro_required_billing_fields = array();
 $pmpro_required_user_fields    = array();
 
+/**
+ * If there is a token order passed in the URL, we are processing the payment for that order.
+ */
+if ( ! empty( $_REQUEST['pmpro_order'] ) ) {
+	$order_code = sanitize_text_field( $_REQUEST['pmpro_order'] );
+	$order_obj  = new MemberOrder( $order_code );
+	if ( ! empty( $order_obj->id ) ) {
+		$morder = $order_obj;
+
+		// If the order is not for the current user or the order is in error status, redirect to the account page.
+		if ( $current_user->ID != $morder->user_id || 'error' === $morder->status ) {
+			wp_redirect( pmpro_url( 'account' ) );
+			exit;
+		}
+
+		// If the order has already had a payment submitted, redirect to the confirmation page.
+		if ( in_array( $morder->status, array( 'success', 'pending' ) ) ) {
+			wp_redirect( pmpro_url( 'confirmation', '?level=' . $morder->membership_id ) );
+			exit;
+		}
+
+		pmpro_pull_checkout_data_from_order( $morder );
+
+		// $pmpro_review is a legacy variable from the old PayPal Express flow. When set, it was used to
+		// display a version of the checkout page where the user could review their order before submitting.
+		// Fields were not editable.
+		// We are reworking this variable to maintain backwards compatiblity with custom page templates and
+		// setting it whenever a token order is passed in the URL and requires addtional payment steps.
+		$pmpro_review = $morder;
+	} else {
+		// This is an invalid order. Redirect to the account page.
+		wp_redirect( pmpro_url( 'account' ) );
+		exit;
+	}
+}
+
 //was a gateway passed?
-if ( ! empty( $_REQUEST['gateway'] ) ) {
+if ( ! empty( $morder ) ) {
+	$gateway = $morder->gateway;
+} elseif ( ! empty( $_REQUEST['gateway'] ) ) {
 	$gateway = sanitize_text_field($_REQUEST['gateway']);
-} elseif ( ! empty( $_REQUEST['review'] ) ) {
-	$gateway = "paypalexpress";
 } else {
 	$gateway = get_option( "pmpro_gateway" );
 }
 
 //set valid gateways - the active gateway in the settings and any gateway added through the filter will be allowed
-if ( get_option( "pmpro_gateway" ) == "paypal" ) {
-
-	$valid_gateways = apply_filters( "pmpro_valid_gateways", array( "paypal", "paypalexpress" ) );
-} else {
-	$valid_gateways = apply_filters( "pmpro_valid_gateways", array( get_option( "pmpro_gateway" ) ) );
-
-}
+$valid_gateways = apply_filters( "pmpro_valid_gateways", array( get_option( "pmpro_gateway" ) ) );
 
 //let's add an error now, if an invalid gateway is set
 if ( ! in_array( $gateway, $valid_gateways ) ) {
@@ -99,13 +129,6 @@ if ( $current_user->ID ) {
 }
 //in case people want to have an account created automatically
 $skip_account_fields = apply_filters( "pmpro_skip_account_fields", $skip_account_fields, $current_user );
-
-//some options
-global $tospage;
-$tospage = get_option( "pmpro_tospage" );
-if ( $tospage ) {
-	$tospage = get_post( $tospage );
-}
 
 //load em up (other fields)
 global $username, $password, $password2, $bfirstname, $blastname, $baddress1, $baddress2, $bcity, $bstate, $bzipcode, $bcountry, $bphone, $bemail, $bconfirmemail, $CardType, $AccountNumber, $ExpirationMonth, $ExpirationYear;
@@ -247,12 +270,6 @@ if ( isset( $_REQUEST['password2_copy'] ) ) {
 }
 // phpcs:enable WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 
-if ( isset( $_REQUEST['tos'] ) ) {
-	$tos = intval( $_REQUEST['tos'] );
-} else {
-	$tos = "";
-}
-
 $submit = pmpro_was_checkout_form_submitted();
 
 /**
@@ -358,10 +375,6 @@ if ( $submit && $pmpro_msgt != "pmpro_error" ) {
 		$pmpro_error_fields[] = "bemail";
 		$pmpro_error_fields[] = "bconfirmemail";
 	}
-	if ( ! empty( $tospage ) && empty( $tos ) ) {
-		pmpro_setMessage( sprintf( __( "Please check the box to agree to the %s.", 'paid-memberships-pro' ), $tospage->post_title ), "pmpro_error" );
-		$pmpro_error_fields[] = "tospage";
-	}
 	if ( ! in_array( $gateway, $valid_gateways ) ) {
 		pmpro_setMessage( __( "Invalid gateway.", 'paid-memberships-pro' ), "pmpro_error" );
 	}
@@ -395,19 +408,6 @@ if ( $submit && $pmpro_msgt != "pmpro_error" ) {
 			pmpro_setMessage( __( "That email address is already in use. Please log in, or use a different email address.", 'paid-memberships-pro' ), "pmpro_error" );
 			$pmpro_error_fields[] = "bemail";
 			$pmpro_error_fields[] = "bconfirmemail";
-		}
-
-		//only continue if there are no other errors yet
-		if ( $pmpro_msgt != "pmpro_error" ) {
-			//check recaptcha first
-			$recaptcha = get_option( "pmpro_recaptcha");
-			if (  $recaptcha == 2 || ( $recaptcha == 1 && pmpro_isLevelFree( $pmpro_level ) ) ) {
-				$recaptcha_validated = pmpro_recaptcha_is_validated(); // Returns true if validated, string error message if not.
-				if ( is_string( $recaptcha_validated ) ) {
-					$pmpro_msg  = sprintf( __( "reCAPTCHA failed. (%s) Please try again.", 'paid-memberships-pro' ), $recaptcha_validated );
-					$pmpro_msgt = "pmpro_error";
-				}
-			}
 		}
 
 		// Only continue if there are no other errors yet
@@ -501,7 +501,9 @@ if ( $submit && $pmpro_msgt != "pmpro_error" ) {
 
 				//process checkout if required
 				if ( $pmpro_requirebilling ) {
-					$morder = pmpro_build_order_for_checkout();
+					if ( empty( $morder ) ) {
+						$morder = pmpro_build_order_for_checkout();
+					}
 
 					$pmpro_processed = $morder->process();
 
@@ -551,7 +553,7 @@ if ( empty( $user_id ) && ! empty( $current_user->ID ) ) {
 }
 
 //Hook to check payment confirmation or replace it. If we get an array back, pull the values (morder) out
-$pmpro_confirmed_data = apply_filters( 'pmpro_checkout_confirmed', $pmpro_confirmed, $morder );
+$pmpro_confirmed_data = apply_filters_deprecated( 'pmpro_checkout_confirmed', array( $pmpro_confirmed, $morder ), 'TBD' );
 
 /**
  * @todo Refactor this to avoid using extract.
@@ -570,8 +572,6 @@ if ( ! empty( $pmpro_confirmed ) ) {
 	// Make sure we have an order object.
 	if ( empty( $morder ) ) {
 		$morder                 = new MemberOrder();
-		$morder->InitialPayment = 0;
-		$morder->Email          = $bemail;
 		$morder->gateway        = 'free';
 		$morder->status			= 'success';
 		$morder = apply_filters( "pmpro_checkout_order_free", $morder );

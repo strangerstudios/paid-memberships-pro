@@ -486,6 +486,7 @@ function pmpro_email_templates_email_data($data, $email) {
 		{
 			$new_data['billing_name'] = $order->billing->name;
 			$new_data['billing_street'] = $order->billing->street;
+			$new_data['billing_street2'] = $order->billing->street2;
 			$new_data['billing_city'] = $order->billing->city;
 			$new_data['billing_state'] = $order->billing->state;
 			$new_data['billing_zip'] = $order->billing->zip;
@@ -504,7 +505,7 @@ function pmpro_email_templates_email_data($data, $email) {
 				//billing address
 			$new_data["billing_address"] = pmpro_formatAddress($order->billing->name,
 				$order->billing->street,
-				"", //address 2
+				$order->billing->street2,
 				$order->billing->city,
 				$order->billing->state,
 				$order->billing->zip,
