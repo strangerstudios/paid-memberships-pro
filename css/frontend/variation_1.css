@@ -534,9 +534,10 @@
 	}
 
 	.pmpro_section #loginform .input {
-		background-color: var(--pmpro--color--white);
+		background-color: var(--pmpro--color--base);
 		border: 1px solid var(--pmpro--color--border);
 		border-radius: var(--pmpro--base--border-radius);
+		box-shadow: none;
 		box-sizing: border-box;
 		color: var(--pmpro--color--contrast);
 		font-size: 16px;
@@ -548,7 +549,7 @@
 	}
 
 	.pmpro_section #loginform .input:focus {
-		background-color: var(--pmpro--color--white);
+		background-color: var(--pmpro--color--base);
 		border-color: #80BDFF;
 		box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);
 		outline: none;
