@@ -4483,6 +4483,11 @@ function pmpro_get_ip() {
 	if ( ! $client_ip ) {
 		return false;
 	}
+	
+	// Check if it's a valid IP address or not.
+	if ( ! filter_var( $client_ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4 ) || ! filter_var( $client_ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6 ) ) {
+		return false;
+	}
 
 	// Sanitize the IP
 	$client_ip = preg_replace( '/[^0-9a-fA-F:., ]/', '', $client_ip );
