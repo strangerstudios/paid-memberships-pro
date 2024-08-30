@@ -434,6 +434,22 @@ function pmpro_userfields_prep_click_events() {
 		}
 	});
 
+	// Toggle default field based on type.
+	jQuery('select[name=pmpro_userfields_field_type]').on('change', function (event) {
+		var fieldcontainer = jQuery(this).parents('.pmpro_userfield-group-field');
+		var fieldsettings = fieldcontainer.children('.pmpro_userfield-field-settings');
+		var fieldtype = jQuery(this).val();
+		var fielddefault = fieldsettings.find('input[name=pmpro_userfields_field_default]').parents('.pmpro_userfield-field-setting');
+
+		var defaulttypes = ['text', 'textarea', 'checkbox', 'radio', 'select', 'select2', 'multiselect'];
+
+		if (jQuery.inArray(fieldtype, defaulttypes) > -1) {
+			fielddefault.show();
+		} else {
+			fielddefault.hide();
+		}
+	});
+
 	// Suggest name after leaving label field.
 	jQuery('input[name=pmpro_userfields_field_label]').on('focusout', function (event) {
 		var fieldcontainer = jQuery(this).parents('.pmpro_userfield-group-field');
@@ -498,6 +514,7 @@ function pmpro_userfields_prep_click_events() {
 				let field_element_class = jQuery(this).find('input[name=pmpro_userfields_field_divclass]').val();
 				let field_hint = jQuery(this).find('textarea[name=pmpro_userfields_field_hint]').val();
 				let field_options = jQuery(this).find('textarea[name=pmpro_userfields_field_options]').val();
+				let field_default = jQuery(this).find('input[name=pmpro_userfields_field_default]').val();
 
 				// Get level ids.            
 				let field_levels = [];
@@ -517,6 +534,7 @@ function pmpro_userfields_prep_click_events() {
 					'element_class': field_element_class,
 					'hint': field_hint,
 					'options': field_options,
+					'default': field_default
 				}
 
 				// Add to array. (Only if it has a label or name.)
