@@ -1347,7 +1347,7 @@ function pmpro_get_field_html( $field = null ) {
         $field_element_class = $field->element_class;
         $field_hint = $field->hint;
         $field_options = $field->options;
-		$field_default = $field->default;
+	    $field_default = $field->default;
     } else {
         // Default field values
         $field_label = '';
@@ -1360,7 +1360,7 @@ function pmpro_get_field_html( $field = null ) {
         $field_element_class = '';
         $field_hint = '';
         $field_options = '';
-		$field_default = '';
+	    $field_default = '';
     }
     
 	// Other vars
@@ -1625,7 +1625,7 @@ function pmpro_load_user_fields_from_settings() {
                     'options' => $options,
                     'levels' => $levels,
                     'memberslistcsv' => true,
-					'default' => $settings_field->default,
+				    'default' => $settings_field->default,
                 )
             );
             pmpro_add_user_field( $group->name, $field );
