@@ -441,7 +441,7 @@ function pmpro_userfields_prep_click_events() {
 		var fieldtype = jQuery(this).val();
 		var fielddefault = fieldsettings.find('input[name=pmpro_userfields_field_default]').parents('.pmpro_userfield-field-setting');
 
-		var defaulttypes = ['text', 'textarea', 'checkbox', 'radio', 'select', 'select2', 'multiselect', 'date', 'readonly'];
+		var defaulttypes = ['text', 'textarea', 'checkbox', 'radio', 'select', 'select2', 'multiselect', 'date', 'readonly', 'hidden'];
 
 		if (jQuery.inArray(fieldtype, defaulttypes) > -1) {
 			fielddefault.show();
