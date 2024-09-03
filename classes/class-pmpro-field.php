@@ -255,6 +255,26 @@ class PMPro_Field {
 	 */
 	public $html = '';
 
+	/**
+	 * File upload types.
+	 * 
+	 * @since TBD
+	 * 
+	 * @var string
+	 *
+	 */
+	public $allowed_file_types = '';
+
+	/**
+	 * File upload limit
+	 * 
+	 * @since TBD
+	 * 
+	 * @var int
+	 */
+	public $max_file_size = '';
+
+
 	function __construct($name = NULL, $type = NULL, $attr = NULL) {
 		if ( ! empty( $name ) )
 			return $this->set( $name, $type, $attr );
@@ -525,7 +545,7 @@ class PMPro_Field {
 
 		// Get $file and $filetype.
 		$file = array_map( 'sanitize_text_field', $_FILES[ $name ] );
-		$filetype = wp_check_filetype_and_ext( $file['tmp_name'], $file['name'] );
+		$filetype = wp_check_filetype_and_ext( $file['tmp_name'], $file['name'] );;
 
 		/*
 			save file in uploads
@@ -978,17 +998,27 @@ class PMPro_Field {
 			</script>
 			';
 
-			//file input
 			$r .= '<div id="pmpro_file_' . esc_attr( $this->id ) . '_upload" class="' . esc_attr( pmpro_get_element_class( 'pmpro_form_field-file-upload' ) ) . '" ' . (empty($value) ? '' : 'style="display: none;"') . '>';
 			$r .= '<input type="file" id="' . esc_attr( $this->id ) . '" ';
-			if(!empty($this->accept))
-				$r .= 'accept="' . esc_attr( $this->accept ) . '" ';
-			if(!empty($this->class))
+			
+			if ( ! empty( $this->allowed_file_types ) ) {
+				// Make sure fullstops are included in the field types.
+				$this->allowed_file_types = preg_replace( '/(?<!\.)\b(' . str_replace( ',', '|', $this->allowed_file_types ) . ')\b(?!\.)/', '.$1', $this->allowed_file_types );
+				$r .= 'accept="' . esc_attr( $this->allowed_file_types ) . '" ';
+			}
+
+			if ( ! empty( $this->class ) ) {
 				$r .= 'class="' . esc_attr( $this->class ) . '" ';
-			if(!empty($this->html_attributes))
+			}
+
+			if ( ! empty( $this->html_attributes ) ) {
 				$r .= $this->getHTMLAttributes();
-			if(!empty($this->readonly))
+			}
+
+			if ( ! empty( $this->readonly ) ) {
 				$r .= 'disabled="disabled" ';
+			}
+
 			$r .= 'name="' . esc_attr( $this->name ) . '" />';
 			$r .= '</div>';
 

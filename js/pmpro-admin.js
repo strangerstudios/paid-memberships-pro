@@ -434,6 +434,20 @@ function pmpro_userfields_prep_click_events() {
 		}
 	});
 
+	// Toggle field settings for File Upload type.
+	jQuery('select[name=pmpro_userfields_field_type]').on('change', function (event) {
+		var fieldcontainer = jQuery(this).parents('.pmpro_userfield-group-field');
+		var fieldsettings = fieldcontainer.children('.pmpro_userfield-field-settings');
+		var fieldtype = jQuery(this).val();
+		var file_field_options = fieldsettings.find('input[name=pmpro_userfields_field_max_file_size]').parents('.pmpro_userfield-field-setting'); // We only need to target one depends file as they are in the same div group.
+
+		if (fieldtype === 'file') {
+			file_field_options.show();
+		} else {
+			file_field_options.hide();
+		}
+	});
+
 	// Suggest name after leaving label field.
 	jQuery('input[name=pmpro_userfields_field_label]').on('focusout', function (event) {
 		var fieldcontainer = jQuery(this).parents('.pmpro_userfield-group-field');
@@ -498,6 +512,8 @@ function pmpro_userfields_prep_click_events() {
 				let field_element_class = jQuery(this).find('input[name=pmpro_userfields_field_divclass]').val();
 				let field_hint = jQuery(this).find('textarea[name=pmpro_userfields_field_hint]').val();
 				let field_options = jQuery(this).find('textarea[name=pmpro_userfields_field_options]').val();
+				let field_allowed_file_types = jQuery(this).find('input[name=pmpro_userfields_field_allowed_file_types]').val();
+				let field_max_file_size = jQuery(this).find('input[name=pmpro_userfields_field_max_file_size]').val();
 
 				// Get level ids.            
 				let field_levels = [];
@@ -517,7 +533,9 @@ function pmpro_userfields_prep_click_events() {
 					'element_class': field_element_class,
 					'hint': field_hint,
 					'options': field_options,
-				}
+					'allowed_file_types': field_allowed_file_types,
+					'max_file_size': field_max_file_size
+				};
 
 				// Add to array. (Only if it has a label or name.)
 				if (field.label.length > 0 || field.name.length > 0) {
