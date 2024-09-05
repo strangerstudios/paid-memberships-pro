@@ -69,22 +69,18 @@
 		}
 
 		/**
-		 * Get a list of payment options that the this gateway needs/supports.
-		 *
-		 * @since 1.8
+		 * {@inheritDoc}
 		 */
-		static function getGatewayOptions()
-		{
-			$options = array(
-				'gateway_environment',
-				'twocheckout_apiusername',
-				'twocheckout_apipassword',
-				'twocheckout_accountnumber',
-				'twocheckout_secretword',
-				'currency',
-				'tax_state',
-				'tax_rate'
-			);
+		static function getGatewayOptions() {
+			//Call super
+			$options = parent::getGatewayOptions();
+			//combine above with specific
+			$options = array_merge( $options, array(
+				'twocheckout_apiusername' => '',
+				'twocheckout_apipassword' => '',
+				'twocheckout_accountnumber' => '',
+				'twocheckout_secretword' => ''
+			) );
 
 			return $options;
 		}

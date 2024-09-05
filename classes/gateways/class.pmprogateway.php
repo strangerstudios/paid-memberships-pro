@@ -275,4 +275,28 @@
 			// Update the subscription.
 			$subscription->set( $update_array );
 		}
+
+		/**
+		 * Get a list of payment options that a gateway needs/supports.
+		 *
+		 * @return array Array of options that the gateway needs/supports.
+		 * @since TBD
+		 */
+		static function getGatewayOptions() {
+			$options = array(
+				'gateway_environment',
+				'currency',
+				'tax_state',
+				'tax_rate',
+				'business_country',
+				'business_state',
+				'business_address',
+				'business_address_2',
+				'business_postal_code',
+				'business_address_description',
+				'business_name'
+			);
+
+			return $options;
+		}
 	}

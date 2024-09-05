@@ -60,29 +60,19 @@
 		}
 
 		/**
-		 * Get a list of payment options that the this gateway needs/supports.
-		 *
-		 * @since 1.8
+		 * {@inheritdoc}
 		 */
-		static function getGatewayOptions()
-		{
-			$options = array(
-				'gateway_environment',
+		static function getGatewayOptions() {
+			//call super
+			$options = parent::getGatewayOptions();
+			//combine with specifics
+			$options = array_merge( $options, array(
 				'gateway_email',
 				'apiusername',
 				'apipassword',
 				'apisignature',
-				'currency',
-				'tax_state',
-				'tax_rate',
 				'paypalexpress_skip_confirmation',
-				///'paypal_enable_3dsecure',
-				//'paypal_cardinal_apikey',
-				//'paypal_cardinal_apiidentifier',
-				//'paypal_cardinal_orgunitid',
-				//'paypal_cardinal_merchantid',
-				//'paypal_cardinal_processorid'
-			);
+			) );
 
 			return $options;
 		}

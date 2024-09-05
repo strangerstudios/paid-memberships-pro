@@ -36,21 +36,19 @@
 				$gateways['cybersource'] = __('CyberSource', 'paid-memberships-pro' );
 			return $gateways;
 		}
+
 		/**
-		 * Get a list of payment options that the this gateway needs/supports.
-		 *
-		 * @since 1.8
+		 * {@inheritdoc}
 		 */
-		static function getGatewayOptions()
-		{
-			$options = array(
-				'gateway_environment',
+		static function getGatewayOptions() {
+			//call super
+			$options = parent::getGatewayOptions();
+			//combine with specifics
+			$options = array_merge( $options, array(
 				'cybersource_merchantid',
 				'cybersource_securitykey',
-				'currency',
-				'tax_state',
-				'tax_rate',
-			);
+			) );
+
 			return $options;
 		}
 		/**

@@ -62,22 +62,18 @@
 		}
 
 		/**
-		 * Get a list of payment options that the this gateway needs/supports.
-		 *
-		 * @since 1.8
+		 * {@inheritdoc}
 		 */
-		static function getGatewayOptions()
-		{
-			$options = array(
-				'gateway_environment',
+		static function getGatewayOptions() {
+			//call super
+			$options = parent::getGatewayOptions();
+			//combine with payflowpro options
+			$options = array_merge( $options, array(
 				'payflow_partner',
 				'payflow_vendor',
 				'payflow_user',
 				'payflow_pwd',
-				'currency',
-				'tax_state',
-				'tax_rate',
-			);
+			) );
 
 			return $options;
 		}

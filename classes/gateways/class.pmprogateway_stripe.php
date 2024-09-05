@@ -236,13 +236,13 @@ class PMProGateway_stripe extends PMProGateway {
 	}
 
 	/**
-	 * Get a list of payment options that the Stripe gateway needs/supports.
-	 *
-	 * @since 1.8
+	 * {@inheritdoc}
 	 */
 	public static function getGatewayOptions() {
-		$options = array(
-			'gateway_environment',
+		//call super
+		$options = parent::getGatewayOptions();
+		//combine above with options below
+		$options = array_merge( $options, array(
 			'stripe_secretkey',
 			'stripe_publishablekey',
 			'live_stripe_connect_user_id',
@@ -253,15 +253,12 @@ class PMProGateway_stripe extends PMProGateway {
 			'sandbox_stripe_connect_publishablekey',
 			'stripe_webhook',
 			'stripe_billingaddress',
-			'currency',
-			'tax_state',
-			'tax_rate',
 			'stripe_payment_request_button',
 			'stripe_payment_flow', // 'onsite' or 'checkout'
 			'stripe_checkout_billing_address', //'auto' or 'required'
 			'stripe_tax', // 'no', 'inclusive', 'exclusive'
 			'stripe_tax_id_collection_enabled', // '0', '1'
-		);
+		) );
 
 		return $options;
 	}

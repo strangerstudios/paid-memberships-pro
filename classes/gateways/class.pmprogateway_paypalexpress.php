@@ -99,23 +99,19 @@
 		}
 
 		/**
-		 * Get a list of payment options that the this gateway needs/supports.
-		 *
-		 * @since 1.8
+		 * {@inheritdoc}
 		 */
-		static function getGatewayOptions()
-		{
-			$options = array(
-				'gateway_environment',
+		static function getGatewayOptions() {
+			//call to super
+			$options = parent::getGatewayOptions();
+			//combine above with this gateway specific options
+			$options = array_merge( $options, array(
 				'gateway_email',
 				'apiusername',
 				'apipassword',
 				'apisignature',
-				'currency',
-				'tax_state',
-				'tax_rate',
 				'paypalexpress_skip_confirmation',
-			);
+			) );
 
 			return $options;
 		}

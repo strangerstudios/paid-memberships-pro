@@ -261,22 +261,18 @@ use Braintree\WebhookNotification as Braintree_WebhookNotification;
 		}
 
 		/**
-		 * Get a list of payment options that the this gateway needs/supports.
-		 *
-		 * @since 1.8
+		 * {@inheritdoc}
 		 */
-		static function getGatewayOptions()
-		{
-			$options = array(
-				'gateway_environment',
+		static function getGatewayOptions() {
+			//cal super
+			$options = parent::getGatewayOptions();
+			//combine above with Braintree specific
+			$options = array_merge( $options, array(
 				'braintree_merchantid',
 				'braintree_publickey',
 				'braintree_privatekey',
 				'braintree_encryptionkey',
-				'currency',
-				'tax_state',
-				'tax_rate',
-			);
+			) );
 
 			return $options;
 		}
