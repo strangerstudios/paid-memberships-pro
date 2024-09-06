@@ -76,6 +76,7 @@
 	$business_country = get_option( "pmpro_business_country" );
 	$business_address = get_option( "pmpro_business_address" );
 	$business_address_2 = get_option( "pmpro_business_address_2" );
+	$business_city = get_option( "pmpro_business_city" );
 	$business_state = get_option( "pmpro_business_state" );
 	$business_postal_code = get_option( "pmpro_business_postal_code" );
 	$business_address_description = get_option( "pmpro_business_address_description" );
@@ -248,35 +249,6 @@
 								<div class="pmpro_flex_row">
 									<div class="pmpro_flex_label">
 										<label>
-											<?php esc_html_e('Country', 'paid-memberships-pro' );?>:
-										</label>
-									</div>
-									<div>
-										<select id="business_country" name="business_country" value="<?php echo esc_attr( $business_country )?>"  class="regular-text" >
-											<?php
-												global $pmpro_countries;
-												foreach( $pmpro_countries as $abbr => $country ) {
-													?>
-													<option value="<?php echo esc_attr( $abbr );?>" <?php selected( $business_country, $abbr );?>><?php echo esc_html( $country );?></option>
-													<?php
-												}
-											?>
-										</select>
-									</div>
-								</div>
-								<div class="pmpro_flex_row">
-									<div class="pmpro_flex_label">
-										<label>
-											<?php esc_html_e('State', 'paid-memberships-pro' );?>:
-										</label>
-									</div>
-									<div>
-										<input type="text" id="business_state" name="business_state" value="<?php echo esc_attr( $business_state )?>" class="regular-text" />
-									</div>
-								</div>
-								<div class="pmpro_flex_row">
-									<div class="pmpro_flex_label">
-										<label>
 											<?php esc_html_e( 'Street Address', 'paid-memberships-pro' );?>:
 										</label>
 									</div>
@@ -297,11 +269,50 @@
 								<div class="pmpro_flex_row">
 									<div class="pmpro_flex_label">
 										<label>
+											<?php esc_html_e('City', 'paid-memberships-pro' );?>:
+										</label>
+									</div>
+									<div>
+										<input type="text" id="business_city" name="business_city" value="<?php echo esc_attr( $business_city )?>" class="regular-text" />
+									</div>
+								</div>
+								<div class="pmpro_flex_row">
+									<div class="pmpro_flex_label">
+										<label>
+											<?php esc_html_e('State', 'paid-memberships-pro' );?>:
+										</label>
+									</div>
+									<div>
+										<input type="text" id="business_state" name="business_state" value="<?php echo esc_attr( $business_state )?>" class="regular-text" />
+									</div>
+								</div>
+								<div class="pmpro_flex_row">
+									<div class="pmpro_flex_label">
+										<label>
 											<?php esc_html_e( 'Postal Code', 'paid-memberships-pro' );?>:
 										</label>
 									</div>
 									<div>
 										<input type="text" id="business_postal_code" name="business_postal_code" value="<?php echo esc_attr( $business_postal_code )?>" class="regular-text" />
+									</div>
+								</div>
+								<div class="pmpro_flex_row">
+									<div class="pmpro_flex_label">
+										<label>
+											<?php esc_html_e('Country', 'paid-memberships-pro' );?>:
+										</label>
+									</div>
+									<div>
+										<select id="business_country" name="business_country" value="<?php echo esc_attr( $business_country )?>"  class="regular-text" >
+											<?php
+												global $pmpro_countries;
+												foreach( $pmpro_countries as $abbr => $country ) {
+													?>
+													<option value="<?php echo esc_attr( $abbr );?>" <?php selected( $business_country, $abbr );?>><?php echo esc_html( $country );?></option>
+													<?php
+												}
+											?>
+										</select>
 									</div>
 								</div>
 								<div class="pmpro_flex_row">

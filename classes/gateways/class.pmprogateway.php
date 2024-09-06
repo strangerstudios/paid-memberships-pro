@@ -294,7 +294,8 @@
 				'business_address_2',
 				'business_postal_code',
 				'business_address_description',
-				'business_name'
+				'business_name',
+				'business_city',
 			);
 
 			return $options;

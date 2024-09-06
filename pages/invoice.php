@@ -97,10 +97,23 @@
 									);
 								}
 
-								// Pay to.
+								if ( get_option( 'pmpro_business_name' ) ) {
+									$pay_to = pmpro_formatAddress(
+										get_option( 'pmpro_business_name' ),
+										get_option( 'pmpro_business_address' ),
+										get_option( 'pmpro_business_address_2' ),
+										get_option( 'pmpro_business_city' ),
+										get_option( 'pmpro_business_state' ),
+										get_option( 'pmpro_business_postal_code' ),
+										get_option( 'pmpro_business_country' ),
+										false
+									 );
+								} else {
+									$pay_to = get_option( 'blogname' );
+								}
 								$pmpro_order_single_meta['pay_to'] = array(
 									'label' => __( 'Pay to', 'paid-memberships-pro' ),
-									'value' => get_option( 'blogname' ),
+									'value' => $pay_to,
 								);
 
 								// Bill to.
