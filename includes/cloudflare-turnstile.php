@@ -76,7 +76,7 @@ function pmpro_cloudflare_turnstile_validation( $okay ) {
 
 	return $okay;
 }
-add_action( 'pmpro_registration_checks', 'pmpro_cloudflare_turnstile_validation' );
+add_action( 'pmpro_checkout_checks', 'pmpro_cloudflare_turnstile_validation' );
 add_action( 'pmpro_billing_update_checks', 'pmpro_cloudflare_turnstile_validation' );
 
 /**

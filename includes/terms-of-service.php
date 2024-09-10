@@ -174,7 +174,8 @@ function pmpro_validate_tos_at_checkout( $pmpro_continue_registration ) {
 
 	return $pmpro_continue_registration;
 }
-add_filter( 'pmpro_registration_checks', 'pmpro_validate_tos_at_checkout' );
+add_filter( 'pmpro_checkout_user_creation_checks', 'pmpro_validate_tos_at_checkout' );
+add_filter( 'pmpro_checkout_order_creation_checks', 'pmpro_validate_tos_at_checkout' );
 
 /**
  * Update TOS consent log after checkout.

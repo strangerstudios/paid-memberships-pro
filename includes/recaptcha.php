@@ -232,7 +232,7 @@ function pmpro_recaptcha_validation_check( $continue = true ) {
 		return false;
 	}
 }
-add_filter( 'pmpro_registration_checks', 'pmpro_recaptcha_validation_check', 10, 1 );
+add_filter( 'pmpro_checkout_checks', 'pmpro_recaptcha_validation_check', 10, 1 );
 add_filter( 'pmpro_billing_update_checks', 'pmpro_recaptcha_validation_check', 10, 1 );
 
 /**
