@@ -1347,6 +1347,8 @@ function pmpro_get_field_html( $field = null ) {
         $field_element_class = $field->element_class;
         $field_hint = $field->hint;
         $field_options = $field->options;
+        $field_display_conditions = $field->display_conditions;
+        $field_conditions = $field->depends;
     } else {
         // Default field values
         $field_label = '';
@@ -1359,6 +1361,11 @@ function pmpro_get_field_html( $field = null ) {
         $field_element_class = '';
         $field_hint = '';
         $field_options = '';
+        $field_display_conditions = '';
+        $field_conditions = new stdClass();
+        $field_conditions->id = '';
+        $field_conditions->value = '';
+        $field_conditions->condition = '';
     }
     
 	// Other vars
@@ -1498,17 +1505,72 @@ function pmpro_get_field_html( $field = null ) {
                 <span class="description"><?php esc_html_e( 'One option per line. To set separate values and labels, use value:label.', 'paid-memberships-pro' ); ?></span>
             </div> <!-- end pmpro_userfield-field-setting -->
             
-            <div class="pmpro_userfield-field-actions">            
-                <button name="pmpro_userfields_close_field" class="button button-secondary pmpro_userfields_close_field">
-                    <?php esc_html_e( 'Close Field', 'paid-memberships-pro' ); ?>
-                </button> 
+			<!-- Conditional logic -->
+			<div class="pmpro_userfield-field-setting">
+				<label>
+					<input type="checkbox" name="pmpro_userfields_field_show_conditional_logic" value=1 <?php checked( $field_display_conditions, 1 ); ?>/>
+					<?php esc_html_e( 'Enable conditional logic for this field', 'paid-memberships-pro' ); ?>
+				</label>
+				<script>
+				jQuery(document).ready(function() {
+					// Show the conditional fields if previously checked on page load/interaction.
+					if ( jQuery( '.pmpro_userfield-field-options a.edit-field' ).click( function(){
+						if ( jQuery(this).closest('.pmpro_userfield-group-field').find('input[name="pmpro_userfields_field_show_conditional_logic"]').is(":checked") ) {
+							jQuery(this).closest('.pmpro_userfield-group-field').find('.pmpro_userfield-field-setting-triple').show();
+						}	
+					}));
+	
+					// Change view on checkbox change.
+					jQuery('input[name="pmpro_userfields_field_show_conditional_logic"]').change(function() {
+						if(jQuery(this).is(":checked")) {
+							jQuery(this).closest('.pmpro_userfield-field-setting').next().show();
+                        } else {
+							jQuery(this).closest('.pmpro_userfield-field-setting').next().hide();
+						}
+					});
+				});
+				</script>
+			</div>
+			<div id="pmpro_userfield-field-setting-conditional-logic" class="pmpro_userfield-field-setting pmpro_userfield-field-setting-triple" style="display:none;">
+				<div class="pmpro_userfield-field-setting">
+					<label>
+						<?php esc_html_e( 'Field Name', 'paid-memberships-pro' ); ?><br>
+						<input type="text" name="pmpro_userfields_field_conditional_logic_field" value="<?php echo esc_attr( $field_conditions->id ); ?>" />
+					</label>
+				</div>
+
+				<div class="pmpro_userfield-field-setting">
+					<label>
+						<?php esc_html_e( 'Condition', 'paid-memberships-pro' ); ?><br>
+						<select name="pmpro_userfields_field_conditional_logic_condition">
+							<option value=""> - </option>
+							<option value="is_empty" <?php selected( $field_conditions->condition, "is_empty" );?>><?php esc_attr_e( 'Is empty', 'paid-memberships-pro' ); ?></option>
+							<option value="is_not_empty" <?php selected( $field_conditions->condition, "is_not_empty" );?>><?php esc_attr_e( 'Is not empty', 'paid-memberships-pro' ); ?></option>
+							<option value="is_equal_to" <?php selected( $field_conditions->condition, "is_equal_to" );?>><?php esc_attr_e( 'Is equal to', 'paid-memberships-pro' ); ?></option>
+							<option value="is_not_equal_to" <?php selected( $field_conditions->condition, "is_not_equal_to" );?>><?php esc_attr_e( 'Is not equal to', 'paid-memberships-pro' ); ?></option>
+							<option value="contains" <?php selected( $field_conditions->condition, "contains" );?>><?php esc_attr_e( 'Contains', 'paid-memberships-pro' ); ?></option>
+							<option value="does_not_contain" <?php selected( $field_conditions->condition, "does_not_contain" );?>><?php esc_attr_e( 'Does not contain', 'paid-memberships-pro' ); ?></option>
+						</select>
+					</label>
+				</div>
+				<div class="pmpro_userfield-field-setting">
+					<label>
+						<?php esc_html_e( 'Value', 'paid-memberships-pro' ); ?><br>
+						<input type="text" name="pmpro_userfields_field_conditional_logic_value" value="<?php echo esc_attr( $field_conditions->value ); ?>"/>
+					</label>
+				</div>
+			</div> <!-- End of triple -->
+			<div class="pmpro_userfield-field-actions">            
+				<button name="pmpro_userfields_close_field" class="button button-secondary pmpro_userfields_close_field">
+					<?php esc_html_e( 'Close Field', 'paid-memberships-pro' ); ?>
+				</button> 
 				<button name="pmpro_userfields_delete_field" class="button button-secondary is-destructive">
-                    <?php esc_html_e( 'Delete Field', 'paid-memberships-pro' ); ?>
-                </button>           
-            </div> <!-- end pmpro_userfield-field-actions -->
-        </div> <!-- end pmpro_userfield-field-settings -->        
-    </div> <!-- end pmpro_userfield-group-field -->
-    <?php
+					<?php esc_html_e( 'Delete Field', 'paid-memberships-pro' ); ?>
+				</button>           
+			</div> <!-- end pmpro_userfield-field-actions -->
+	</div> <!-- end pmpro_userfield-group-field -->
+</div>
+<?php
 }
 
 /**
@@ -1616,6 +1678,8 @@ function pmpro_load_user_fields_from_settings() {
                     'options' => $options,
                     'levels' => $levels,
                     'memberslistcsv' => true,
+                    'depends' => $settings_field->depends,
+                    'display_conditions' => $settings_field->display_conditions
                 )
             );
             pmpro_add_user_field( $group->name, $field );

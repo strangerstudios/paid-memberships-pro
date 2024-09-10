@@ -255,6 +255,16 @@ class PMPro_Field {
 	 */
 	public $html = '';
 
+	/**
+	 * The checkbox conditional field logic.
+	 *
+	 * @since TBD
+	 * 
+	 * @var bool
+	 */
+	public $display_conditions = false;
+
+
 	function __construct($name = NULL, $type = NULL, $attr = NULL) {
 		if ( ! empty( $name ) )
 			return $this->set( $name, $type, $attr );
@@ -1102,18 +1112,26 @@ class PMPro_Field {
 		return $html;
 	}
 
-	function getDependenciesJS()
-	{
+	function getDependenciesJS() {
 		global $pmpro_user_fields;
+
+		// Don't load this for fields that don't have display conditions enabled.
+		if ( empty( $this->display_conditions ) ) {
+			return;
+		}
+
 		//dependencies
-		if(!empty($this->depends))
-		{
-			//build the checks
+		if ( ! empty ( $this->depends ) ) {
+			$depends = array();
+			if ( is_object( $this->depends ) ) {
+				$depends[] = (array) $this->depends;
+			} else {
+				$depends = $this->depends; // Backwards compatibility for RH or fields created by code.
+			}
+
 			$checks_escaped = array();
-			foreach($this->depends as $check)
-			{
-				if(!empty($check['id']))
-				{
+			foreach( $depends as $check ) {
+				if ( ! empty( $check['id'] ) ) {
 					// If checking checkbox_grouped, need to update the $check['id'] with index of option.
 					$field_id = $check['id'];
 					$depends_checkout_box = PMPro_Field::get_checkout_box_name_for_field( $field_id );
@@ -1126,9 +1144,37 @@ class PMPro_Field {
 						}
 					}
 
-					$checks_escaped[] = "((jQuery('#" . esc_html( $field_id ) ."')".".is(':checkbox')) "
-					 ."? jQuery('#" . esc_html( $field_id ) . ":checked').length > 0"
-					 .":(jQuery('#" . esc_html( $field_id ) . "').val() == " . json_encode($check['value']) . " || jQuery.inArray( jQuery('#" . esc_html( $field_id ) . "').val(), " . json_encode($check['value']) . ") > -1)) ||"."(jQuery(\"input:radio[name='". esc_html( $check['id'] ) ."']:checked\").val() == ".json_encode($check['value'])." || jQuery.inArray(".json_encode($check['value']).", jQuery(\"input:radio[name='". esc_html( $field_id ) ."']:checked\").val()) > -1)";
+					// Apply the conditional check with jQuery now.
+					if ( ! empty( $check['condition'] ) ) {
+						switch( $check['condition'] ) {
+							case 'is_empty':
+								$checks_escaped[] = "jQuery('#" . esc_html( $field_id ) . "').val() == ''";
+								$checks_escaped[] = "!jQuery('#" . esc_html( $field_id ) . "').is(':checked')";
+								break;
+							case 'is_not_empty':
+								$checks_escaped[] = "jQuery('#" . esc_html( $field_id ) . "').val() != ''";
+								$checks_escaped[] = "jQuery('#" . esc_html( $field_id ) . "').is(':checked')";
+								break;
+							case 'is_not_equal_to':
+								$checks_escaped[] = "jQuery('#" . esc_html( $field_id ) . "').val() != " . json_encode( $check['value'] );
+								break;
+							case 'is_equal_to':
+								$checks_escaped[] = "jQuery('#" . esc_html( $field_id ) . "').val() == " . json_encode( $check['value'] );
+								break;
+							case 'contains':
+								$checks_escaped[] = "jQuery('#" . esc_html( $field_id ) . "').val().indexOf(" . json_encode( $check['value'] ) . ") > -1";
+								break;
+							case 'does_not_contain':
+								$checks_escaped[] = "jQuery('#" . esc_html( $field_id ) . "').val().indexOf(" . json_encode( $check['value'] ) . ") == -1";
+								break;
+							default: 
+								break;
+						}
+					} else { // Backwards compatibility. 
+						$checks_escaped[] = "((jQuery('#" . esc_html( $field_id ) ."')".".is(':checkbox')) "
+								."? jQuery('#" . esc_html( $field_id ) . ":checked').length > 0"
+								.":(jQuery('#" . esc_html( $field_id ) . "').val() == " . json_encode($check['value']) . " || jQuery.inArray( jQuery('#" . esc_html( $field_id ) . "').val(), " . json_encode($check['value']) . ") > -1)) ||"."(jQuery(\"input:radio[name='". esc_html( $check['id'] ) ."']:checked\").val() == ".json_encode($check['value'])." || jQuery.inArray(".json_encode($check['value']).", jQuery(\"input:radio[name='". esc_html( $field_id ) ."']:checked\").val()) > -1)";
+					}
 
 					$binds[] = "#" . esc_html( $field_id ) .",input:radio[name=". esc_html( $field_id ) ."]";
 				}

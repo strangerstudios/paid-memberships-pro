@@ -498,6 +498,14 @@ function pmpro_userfields_prep_click_events() {
 				let field_element_class = jQuery(this).find('input[name=pmpro_userfields_field_divclass]').val();
 				let field_hint = jQuery(this).find('textarea[name=pmpro_userfields_field_hint]').val();
 				let field_options = jQuery(this).find('textarea[name=pmpro_userfields_field_options]').val();
+				let field_display_conditions = jQuery(this).find('input[name=pmpro_userfields_field_show_conditional_logic]').is(':checked');
+
+				// Field conditions (aka depends)
+				let field_conditions = {
+					'id': jQuery(this).find('input[name=pmpro_userfields_field_conditional_logic_field]').val(),
+					'value': jQuery(this).find('input[name=pmpro_userfields_field_conditional_logic_value]').val(),
+					'condition': jQuery(this).find('select[name=pmpro_userfields_field_conditional_logic_condition]').val()
+				};
 
 				// Get level ids.            
 				let field_levels = [];
@@ -517,6 +525,8 @@ function pmpro_userfields_prep_click_events() {
 					'element_class': field_element_class,
 					'hint': field_hint,
 					'options': field_options,
+					'display_conditions': field_display_conditions,
+					'depends': field_conditions
 				}
 
 				// Add to array. (Only if it has a label or name.)
