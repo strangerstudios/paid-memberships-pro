@@ -1491,21 +1491,23 @@ function pmpro_get_field_html( $field = null ) {
                 </label>                
                 <span class="description"><?php esc_html_e( 'Descriptive text for users or admins submitting the field.', 'paid-memberships-pro' ); ?></span>
             </div> <!-- end pmpro_userfield-field-setting -->
-            
+
             <div class="pmpro_userfield-field-setting">
-                <label>
-                    <?php esc_html_e( 'Options', 'paid-memberships-pro' ); ?><br />
-                    <textarea name="pmpro_userfields_field_options" /><?php echo esc_textarea( $field_options );?></textarea>
-                </label>
-                <span class="description"><?php esc_html_e( 'One option per line. To set separate values and labels, use value:label.', 'paid-memberships-pro' ); ?></span>
-            </div> <!-- end pmpro_userfield-field-setting -->
-            
-			<div class="pmpro_userfield-field-setting">
-				<label>
-					<?php esc_html_e( 'Default Value (optional)', 'paid-memberships-pro' ); ?><br />
-					<input type="text" name="pmpro_userfields_field_default" value="<?php echo esc_attr( $field_default ); ?>" />
-				</label>
-			</div> <!-- end pmpro_userfield-field-setting -->
+				<div class="pmpro_userfield-field-setting">
+					<label>
+						<?php esc_html_e( 'Options', 'paid-memberships-pro' ); ?><br />
+						<textarea name="pmpro_userfields_field_options" /><?php echo esc_textarea( $field_options );?></textarea>
+					</label>
+					<span class="description"><?php esc_html_e( 'One option per line. To set separate values and labels, use value:label.', 'paid-memberships-pro' ); ?></span>
+				</div> <!-- end pmpro_userfield-field-setting -->
+				
+				<div class="pmpro_userfield-field-setting">
+					<label>
+						<?php esc_html_e( 'Default Value (optional)', 'paid-memberships-pro' ); ?><br />
+						<input type="text" name="pmpro_userfields_field_default" value="<?php echo esc_attr( $field_default ); ?>" />
+					</label>
+				</div> <!-- end pmpro_userfield-field-setting -->
+			</div>
 
             <div class="pmpro_userfield-field-actions">            
                 <button name="pmpro_userfields_close_field" class="button button-secondary pmpro_userfields_close_field">
