@@ -1347,6 +1347,7 @@ function pmpro_get_field_html( $field = null ) {
         $field_element_class = $field->element_class;
         $field_hint = $field->hint;
         $field_options = $field->options;
+        $field_default = $field->default;
     } else {
         // Default field values
         $field_label = '';
@@ -1359,6 +1360,7 @@ function pmpro_get_field_html( $field = null ) {
         $field_element_class = '';
         $field_hint = '';
         $field_options = '';
+        $field_default = '';
     }
     
 	// Other vars
@@ -1489,15 +1491,24 @@ function pmpro_get_field_html( $field = null ) {
                 </label>                
                 <span class="description"><?php esc_html_e( 'Descriptive text for users or admins submitting the field.', 'paid-memberships-pro' ); ?></span>
             </div> <!-- end pmpro_userfield-field-setting -->
-            
+
             <div class="pmpro_userfield-field-setting">
-                <label>
-                    <?php esc_html_e( 'Options', 'paid-memberships-pro' ); ?><br />
-                    <textarea name="pmpro_userfields_field_options" /><?php echo esc_textarea( $field_options );?></textarea>
-                </label>
-                <span class="description"><?php esc_html_e( 'One option per line. To set separate values and labels, use value:label.', 'paid-memberships-pro' ); ?></span>
-            </div> <!-- end pmpro_userfield-field-setting -->
-            
+				<div class="pmpro_userfield-field-setting">
+					<label>
+						<?php esc_html_e( 'Options', 'paid-memberships-pro' ); ?><br />
+						<textarea name="pmpro_userfields_field_options" /><?php echo esc_textarea( $field_options );?></textarea>
+					</label>
+					<span class="description"><?php esc_html_e( 'One option per line. To set separate values and labels, use value:label.', 'paid-memberships-pro' ); ?></span>
+				</div> <!-- end pmpro_userfield-field-setting -->
+				
+				<div class="pmpro_userfield-field-setting">
+					<label>
+						<?php esc_html_e( 'Default Value (optional)', 'paid-memberships-pro' ); ?><br />
+						<input type="text" name="pmpro_userfields_field_default" value="<?php echo esc_attr( $field_default ); ?>" />
+					</label>
+				</div> <!-- end pmpro_userfield-field-setting -->
+			</div>
+
             <div class="pmpro_userfield-field-actions">            
                 <button name="pmpro_userfields_close_field" class="button button-secondary pmpro_userfields_close_field">
                     <?php esc_html_e( 'Close Field', 'paid-memberships-pro' ); ?>
@@ -1530,7 +1541,30 @@ function pmpro_get_user_fields_settings() {
     
     $settings = get_option( 'pmpro_user_fields_settings', $default_user_fields_settings );
     
-    // TODO: Might want to validate the format the settings are in here.
+    // Make sure all expected properties are set for each group.
+	foreach ( $settings as $group ) {
+		$group->name = ! empty( $group->name ) ? $group->name : '';
+		$group->checkout = ! empty( $group->checkout ) ? $group->checkout : 'yes';
+		$group->profile = ! empty( $group->profile ) ? $group->profile : 'yes';
+		$group->description = ! empty( $group->description ) ? $group->description : '';
+		$group->levels = ! empty( $group->levels ) ? $group->levels : array();
+		$group->fields = ! empty( $group->fields ) ? $group->fields : array();
+
+		// Make sure all expected properties are set for each field in the group.
+		foreach( $group->fields as $field ) {
+			$field->label = ! empty( $field->label ) ? $field->label : '';
+			$field->name = ! empty( $field->name ) ? $field->name : '';
+			$field->type = ! empty( $field->type ) ? $field->type : '';
+			$field->required = ! empty( $field->required ) ? $field->required : false;
+			$field->readonly = ! empty( $field->readonly ) ? $field->readonly : false;
+			$field->profile = ! empty( $field->profile ) ? $field->profile : '';
+			$field->wrapper_class = ! empty( $field->wrapper_class ) ? $field->wrapper_class : '';
+			$field->element_class = ! empty( $field->element_class ) ? $field->element_class : '';
+			$field->hint = ! empty( $field->hint ) ? $field->hint : '';
+			$field->options = ! empty( $field->options ) ? $field->options : '';
+			$field->default = ! empty( $field->default ) ? $field->default : '';
+		}
+	}
     
     return $settings;
 }
@@ -1616,6 +1650,7 @@ function pmpro_load_user_fields_from_settings() {
                     'options' => $options,
                     'levels' => $levels,
                     'memberslistcsv' => true,
+                    'default' => $settings_field->default,
                 )
             );
             pmpro_add_user_field( $group->name, $field );
