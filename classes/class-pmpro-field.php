@@ -256,6 +256,15 @@ class PMPro_Field {
 	public $html = '';
 
 	/**
+	 * The default value for a field.
+	 *
+	 * @since TBD
+	 *
+	 * @var string
+	 */
+	public $default = '';
+
+	/**
 	 * File upload types.
 	 * 
 	 * @since TBD
@@ -273,7 +282,6 @@ class PMPro_Field {
 	 * @var int
 	 */
 	public $max_file_size = '';
-
 
 	function __construct($name = NULL, $type = NULL, $attr = NULL) {
 		if ( ! empty( $name ) )
@@ -659,6 +667,18 @@ class PMPro_Field {
 		if ( is_admin() ) {
 			$r_beginning .= '<div class="' . esc_attr( pmpro_get_element_class( 'pmpro_form_field pmpro_form_field-' . esc_attr( $this->type ), 'pmpro_form_field-' . esc_attr( $this->type ) ) ) . '">';
 			$r_end .= "</div>";
+		}
+
+		if ( empty( $value ) && pmpro_is_checkout() ) {
+			/**
+			 * Filter to set the default value for a field. The default value will only load if no value is already found.
+			 * 
+			 * @param string $value The default value for the field.
+			 * @param object $this The field object.
+			 * 
+			 * @since TBD
+			 */
+			$value = apply_filters( 'pmpro_field_default_value', $this->default, $this );
 		}
 
 		if($this->type == "text")
