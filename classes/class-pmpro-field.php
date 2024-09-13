@@ -1022,8 +1022,20 @@ class PMPro_Field {
 			$r .= '<input type="file" id="' . esc_attr( $this->id ) . '" ';
 			
 			if ( ! empty( $this->allowed_file_types ) ) {
-				// Make sure fullstops are included in the field types.
-				$this->allowed_file_types = preg_replace( '/(?<!\.)\b(' . str_replace( ',', '|', $this->allowed_file_types ) . ')\b(?!\.)/', '.$1', $this->allowed_file_types );
+
+				// Break it out into an array if it is possible.
+				$allowed_file_array = explode( ',', $this->allowed_file_types );
+
+				// loop through the allowed arrays and add a period if there isn't one, BUT skip this if it contains a /* pattern (we can assume that it's okay.)
+				foreach( $allowed_file_array as $key => $allowed_file_type ) {
+					if ( strpos( $allowed_file_type, '/' ) === false && strpos( $allowed_file_type, '.' ) !== 0 ) {
+						$allowed_file_array[ $key ] = '.' . $allowed_file_type;
+					}
+				}
+
+				// Convert it back to a comma-separated string before adding it to the HTML.
+				$this->allowed_file_types = implode( ',', $allowed_file_array );
+
 				$r .= 'accept="' . esc_attr( $this->allowed_file_types ) . '" ';
 			}
 
