@@ -1157,6 +1157,7 @@ class PMPro_Field {
 								break;
 							case 'is_not_equal_to':
 								$checks_escaped[] = "jQuery('#" . esc_html( $field_id ) . "').val() != " . json_encode( $check['value'] );
+								$checks_escaped[] = "jQuery('#" . esc_html( $field_id ) . "').val() != ''";
 								break;
 							case 'is_equal_to':
 								$checks_escaped[] = "jQuery('#" . esc_html( $field_id ) . "').val() == " . json_encode( $check['value'] );
