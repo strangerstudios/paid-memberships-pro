@@ -1347,6 +1347,8 @@ function pmpro_get_field_html( $field = null ) {
         $field_element_class = $field->element_class;
         $field_hint = $field->hint;
         $field_options = $field->options;
+        $field_allowed_file_types = $field->allowed_file_types;
+        $field_max_file_size = $field->max_file_size;
         $field_default = $field->default;
     } else {
         // Default field values
@@ -1360,6 +1362,8 @@ function pmpro_get_field_html( $field = null ) {
         $field_element_class = '';
         $field_hint = '';
         $field_options = '';
+        $field_allowed_file_types = '';
+        $field_max_file_size = '';
         $field_default = '';
     }
     
@@ -1492,7 +1496,24 @@ function pmpro_get_field_html( $field = null ) {
                 <span class="description"><?php esc_html_e( 'Descriptive text for users or admins submitting the field.', 'paid-memberships-pro' ); ?></span>
             </div> <!-- end pmpro_userfield-field-setting -->
 
-            <div class="pmpro_userfield-field-setting">
+			<div class="pmpro_userfield-field-setting">
+				<div class="pmpro_userfield-field-setting pmpro_userfield-field-setting-dual">
+					<div class="pmpro_userfield-field-setting">
+						<label>
+							<?php esc_html_e( 'Allowed File Types', 'paid-memberships-pro' ); ?><br />
+							<input type="text" name="pmpro_userfields_field_allowed_file_types" value="<?php echo esc_attr( trim( $field_allowed_file_types ) ); ?>" />
+						</label>
+						<span class="description"><?php esc_html_e( 'Restrict the file type that is allowed to be uploaded. Separate the file types using a comma ",". For example: png,pdf,jpg.', 'paid-memberships-pro' ); ?></span>
+					</div> <!-- end pmpro_userfield-field-setting -->
+					<div class="pmpro_userfield-field-setting">
+						<?php $server_max_upload = wp_max_upload_size() / 1024 / 1024; ?>
+						<label>
+							<?php esc_html_e( 'Max File Size Upload', 'paid-memberships-pro' ); ?><br />
+							<input type="number" name="pmpro_userfields_field_max_file_size" value="<?php echo intval( $field_max_file_size ); ?>" max="<?php echo esc_attr( $server_max_upload ); ?>"/>
+						</label>
+						<span class="description"><?php printf( esc_html__( 'Enter an upload size limit for files in Megabytes (MB) or set it to 0 to use your default server upload limit. Your server upload limit is %s.', 'paid-memberships-pro' ), $server_max_upload . 'MB' ); ?></span>
+					</div> <!-- end pmpro_userfield-field-setting -->
+				</div>
 				<div class="pmpro_userfield-field-setting">
 					<label>
 						<?php esc_html_e( 'Options', 'paid-memberships-pro' ); ?><br />
@@ -1563,6 +1584,8 @@ function pmpro_get_user_fields_settings() {
 			$field->hint = ! empty( $field->hint ) ? $field->hint : '';
 			$field->options = ! empty( $field->options ) ? $field->options : '';
 			$field->default = ! empty( $field->default ) ? $field->default : '';
+			$field->allowed_file_types = ! empty( $field->allowed_file_types ) ? $field->allowed_file_types : '';
+			$field->max_file_size = ! empty( $field->max_file_size ) ? $field->max_file_size : '';
 		}
 	}
     
@@ -1650,6 +1673,8 @@ function pmpro_load_user_fields_from_settings() {
                     'options' => $options,
                     'levels' => $levels,
                     'memberslistcsv' => true,
+                    'allowed_file_types' => $settings_field->allowed_file_types,
+                    'max_file_size' => $settings_field->max_file_size,
                     'default' => $settings_field->default,
                 )
             );
