@@ -2048,11 +2048,31 @@ table.pmprommpu_levels tr.remove_level td {background: #F2DEDE; }
 	margin: 12px 0;
 }
 
+.pmpro_userfield-field-full-width {
+	width: 100%;
+}
+
+#pmpro_userfield-field-setting-conditional-logic {
+	background-color:#F0F0F1;
+	padding:0.5rem;
+	border-radius:5px;
+	border:1px solid #CCC;
+	margin-bottom:10px;
+  }
+
 .pmpro_admin-pmpro-userfields .pmpro_userfield-field-settings .pmpro_userfield-field-setting-dual {
 	column-count: 2;
 }
 
 .pmpro_admin-pmpro-userfields .pmpro_userfield-field-settings .pmpro_userfield-field-setting-dual .pmpro_userfield-field-setting {
+	margin: 0;
+}
+
+.pmpro_admin-pmpro-userfields .pmpro_userfield-field-settings .pmpro_userfield-field-setting-triple {
+	column-count: 3;
+}
+
+.pmpro_admin-pmpro-userfields .pmpro_userfield-field-settings .pmpro_userfield-field-setting-triple .pmpro_userfield-field-setting {
 	margin: 0;
 }
 

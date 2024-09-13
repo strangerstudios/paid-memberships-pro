@@ -299,6 +299,25 @@ function pmpro_userfields_prep_click_events() {
 		pmpro_userfields_made_a_change();
 	});
 
+	// Make sure the file is finished loading for this logic of conditional logic.
+	jQuery(document).ready(function() {
+		// Show the conditional fields if previously checked on page load/interaction.
+		if ( jQuery( '.pmpro_userfield-field-options a.edit-field' ).click( function(){
+			if ( jQuery(this).closest('.pmpro_userfield-group-field').find('input[name="pmpro_userfields_field_show_conditional_logic"]').is(":checked") ) {
+				jQuery(this).closest('.pmpro_userfield-group-field').find('#pmpro_userfield-field-setting-conditional-logic').show();
+			}	
+		}));
+
+		// Show or hide condtion fields if the checkbox is checked or not. This tries to show the first field setting after the conditonal logic checkbox which triggers to show all fields within the div as well.
+		jQuery('input[name="pmpro_userfields_field_show_conditional_logic"]').click(function() {
+			if(jQuery(this).is(":checked")) {
+				jQuery(this).closest('.pmpro_userfield-field-setting').next().show();
+			} else {
+				jQuery(this).closest('.pmpro_userfield-field-setting').next().hide();
+			}
+		});
+	});
+
 	// Delete field button.
 	jQuery('.pmpro_userfield-field-options a.delete-field, .pmpro_userfield-field-actions .is-destructive').unbind('click').on('click', function (event) {
 		var thefield = jQuery(this).closest('.pmpro_userfield-group-field');
