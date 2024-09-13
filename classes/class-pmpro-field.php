@@ -1148,12 +1148,10 @@ class PMPro_Field {
 					if ( ! empty( $check['condition'] ) ) {
 						switch( $check['condition'] ) {
 							case 'is_empty':
-								$checks_escaped[] = "jQuery('#" . esc_html( $field_id ) . "').val() == ''";
-								$checks_escaped[] = "!jQuery('#" . esc_html( $field_id ) . "').is(':checked')";
+								$checks_escaped[] = "(jQuery('#" . esc_attr( $field_id ). "').is(':checkbox') ? jQuery('#" . esc_attr( $field_id ) . ":checked').length === 0 : jQuery('#" . esc_attr( $field_id ) ."').val() == '')";
 								break;
 							case 'is_not_empty':
-								$checks_escaped[] = "jQuery('#" . esc_html( $field_id ) . "').val() != ''";
-								$checks_escaped[] = "jQuery('#" . esc_html( $field_id ) . "').is(':checked')";
+								$checks_escaped[] = "(jQuery('#" . esc_attr( $field_id ) . "').is(':checkbox') ? jQuery('#" . esc_attr( $field_id ) . ":checked').length > 0 : jQuery('#" . esc_attr( $field_id ) . "').val() != '')";
 								break;
 							case 'is_not_equal_to':
 								$checks_escaped[] = "jQuery('#" . esc_html( $field_id ) . "').val() != " . json_encode( $check['value'] );
