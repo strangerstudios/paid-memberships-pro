@@ -177,11 +177,22 @@ if ( empty( $default_gateway ) ) {
 			<?php do_action( 'pmpro_checkout_after_pricing_fields' ); ?>
 
 			<?php
-				// Define whether we should show the Account Information box.
-				$show_pmpro_user_fields_fieldset = ! ( $pmpro_review || ( $skip_account_fields && ! $current_user->ID ) );
-			?>
+			// Define whether we should show the Account Information box.
+			$show_pmpro_user_fields_fieldset = true;
 
-			<?php if ( $show_pmpro_user_fields_fieldset ) { ?>
+			// If $pmpro_review is set, skip.
+			if ( $pmpro_review ) {
+				$show_pmpro_user_fields_fieldset = false;
+			}
+
+			// If we are skipping the account fields and the user is logged out, skip the entire fieldset.
+			// The logged out check is important since if the user is logged in, we will show a logged in message.
+			if ( $skip_account_fields && ! $current_user->ID ) {
+				$show_pmpro_user_fields_fieldset = false;
+			}
+
+			if ( $show_pmpro_user_fields_fieldset ) {
+				?>
 				<fieldset id="pmpro_user_fields" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_fieldset', 'pmpro_user_fields' ) ); ?>">
 					<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_card' ) ); ?>">
 						<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_card_content' ) ); ?>">
