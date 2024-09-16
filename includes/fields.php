@@ -1526,7 +1526,7 @@ function pmpro_get_field_html( $field = null ) {
 						<div class="pmpro_userfield-field-setting">
 							<label>
 								<?php esc_html_e( 'Condition Type', 'paid-memberships-pro' ); ?><br>
-								<select name="pmpro_userfields_field_conditional_logic_condition">
+								<select id="pmpro_userfields_field_conditional_logic_condition" name="pmpro_userfields_field_conditional_logic_condition">
 									<option value=""> - </option>
 									<option value="is_empty" <?php selected( $field_conditions->condition, "is_empty" );?>><?php esc_attr_e( 'Is empty', 'paid-memberships-pro' ); ?></option>
 									<option value="is_not_empty" <?php selected( $field_conditions->condition, "is_not_empty" );?>><?php esc_attr_e( 'Is not empty', 'paid-memberships-pro' ); ?></option>
@@ -1537,7 +1537,7 @@ function pmpro_get_field_html( $field = null ) {
 								</select>
 							</label>
 						</div>
-						<div class="pmpro_userfield-field-setting">
+						<div id="pmpro_userfields_field_conditional_logic_value" class="pmpro_userfield-field-setting" style="display:none;">
 							<label>
 								<?php esc_html_e( 'Value', 'paid-memberships-pro' ); ?><br>
 								<input type="text" name="pmpro_userfields_field_conditional_logic_value" value="<?php echo esc_attr( $field_conditions->value ); ?>"/>

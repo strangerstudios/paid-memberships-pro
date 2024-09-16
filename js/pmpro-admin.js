@@ -305,8 +305,24 @@ function pmpro_userfields_prep_click_events() {
 		if ( jQuery( '.pmpro_userfield-field-options a.edit-field' ).click( function(){
 			if ( jQuery(this).closest('.pmpro_userfield-group-field').find('input[name="pmpro_userfields_field_show_conditional_logic"]').is(":checked") ) {
 				jQuery(this).closest('.pmpro_userfield-group-field').find('#pmpro_userfield-field-setting-conditional-logic').show();
-			}	
+			}
+			
+			var condition_value = jQuery(this).closest('.pmpro_userfield-group-field').find('#pmpro_userfields_field_conditional_logic_condition');
+
+			// Show any predefined conditional fields.
+			if ( condition_value.val() !== 'is_empty' && condition_value.val() !== 'is_not_empty' && condition_value.val() !== '' ) {
+				jQuery(this).closest('.pmpro_userfield-group-field').find('#pmpro_userfields_field_conditional_logic_value').show() ;
+			}
 		}));
+
+		// Show or hide the conditional value field if the fields are not "is_empty" and "is_not_empty".
+		jQuery('select#pmpro_userfields_field_conditional_logic_condition').on('change', function() {
+			if( jQuery(this).val() !== 'is_empty' && jQuery(this).val() !== 'is_not_empty' && jQuery(this).val() !== '' ) {
+				jQuery(this).closest('.pmpro_userfield-field-setting').next('#pmpro_userfields_field_conditional_logic_value').show();
+			} else {
+				jQuery(this).closest('.pmpro_userfield-field-setting').next('#pmpro_userfields_field_conditional_logic_value').hide();
+			}
+		});
 
 		// Show or hide condtion fields if the checkbox is checked or not. This tries to show the first field setting after the conditonal logic checkbox which triggers to show all fields within the div as well.
 		jQuery('input[name="pmpro_userfields_field_show_conditional_logic"]').click(function() {
