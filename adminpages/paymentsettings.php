@@ -79,7 +79,6 @@
 	$business_city = get_option( "pmpro_business_city" );
 	$business_state = get_option( "pmpro_business_state" );
 	$business_postal_code = get_option( "pmpro_business_postal_code" );
-	$business_address_description = get_option( "pmpro_business_address_description" );
 	$business_name = get_option( "pmpro_business_name" );
 
 
@@ -313,18 +312,6 @@
 												}
 											?>
 										</select>
-									</div>
-								</div>
-								<div class="pmpro_flex_row">
-									<div class="pmpro_flex_label">
-										<label>
-											<?php esc_html_e( 'Addtional Details', 'paid-memberships-pro' );?>:
-										</label>
-									</div>
-									<div>
-										<textarea id="business_address_description" name="business_address_description" class="regular-text" rows="3">
-											<?php echo esc_textarea( $business_address_description );?>
-										</textarea>
 									</div>
 								</div>
 							</div>
