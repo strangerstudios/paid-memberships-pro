@@ -549,7 +549,7 @@ function pmpro_registration_checks_for_user_fields( $okay ) {
 	//return whatever status was before
 	return $okay;
 }
-add_filter( 'pmpro_registration_checks', 'pmpro_registration_checks_for_user_fields' );
+add_filter( 'pmpro_checkout_order_creation_checks', 'pmpro_registration_checks_for_user_fields' );
 
 /**
  * Sessions vars for TwoCheckout. PayPal Express was updated to store in order meta.
