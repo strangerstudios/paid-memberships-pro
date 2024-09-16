@@ -24,7 +24,7 @@ Read about all of the plugin’s features at [Paid Memberships Pro](https://www.
 PMPro supports any kind of member-focused business or organization. With over 12 years of experience working with creators like you, this plugin delivers on what you need today and in the future. Select a use case to learn more about how we specialize in supporting your unique business:
 
 * [Associations & NPOs](https://www.paidmembershipspro.com/associations/)
-* [Blog & News](https://www.paidmembershipspro.com/restrict-access-wordpress/)
+* [Blog & News](https://www.paidmembershipspro.com/blog-news/)
 * [Communities](https://www.paidmembershipspro.com/communities/)
 * [Courses & Coaching](https://www.paidmembershipspro.com/courses/)
 * [Directory & Listings](https://www.paidmembershipspro.com/add-ons/member-directory/)
@@ -121,7 +121,7 @@ Extend the features of your membership site or integrate with third-party servic
 * Integrate memberships with [email marketing](https://www.paidmembershipspro.com/email-marketing-integrations-paid-memberships-pro/) platforms including [Mailchimp](https://www.paidmembershipspro.com/add-ons/pmpro-mailchimp-integration/)
 * [Manage Affiliates](https://www.paidmembershipspro.com/managing-affiliates-with-paid-memberships-pro/) with Add Ons or use a popular third-party systems like [AffiliateWP](https://www.paidmembershipspro.com/using-affiliatewp-with-paid-memberships-pro/)
 * Let members [log in or join with their social media profiles](https://www.paidmembershipspro.com/add-ons/social-login-add-on/)
-* Design your site [using popular Page Builders](https://www.paidmembershipspro.com/using-page-builders-to-enhance-your-sites-membership-pages/) like Elementor, Page Builder by SiteOrigin, Beaver Builder, and Divi. We offer 15 core membership blocks for the WordPress Block Editor (Gutenberg)
+* Design your site [using popular Page Builders](https://www.paidmembershipspro.com/using-page-builders-for-membership-site/) like Elementor, Page Builder by SiteOrigin, Beaver Builder, and Divi. We offer 15 core membership blocks for the WordPress Block Editor (Gutenberg)
 * [Optional WooCommerce Integration](https://www.paidmembershipspro.com/add-ons/pmpro-woocommerce/) to offer members-only discounts in your shop or sell membership as a product (WooCommerce is not required. Recurring payments and gateway integration is built into PMPro)
 * Create a [sales landing page with banners to run a sitewide or flash sale](https://sitewidesales.com)
 * [Offer members-only events](https://www.paidmembershipspro.com/add-ons/events-for-members-only/) with Events Manager, The Events Calendar, and Sugar Calendar
@@ -178,7 +178,7 @@ Absolutely. We have a [complete guide on using a caching plugin](https://www.pai
 PMPro does not restrict access to the wp-login.php page when active. This allows your administrator users to leverage advanced security plugins, like Two-Factor and more, so that you can keep your membership site secure. We do include a frontend login page for your members to use for logging in and resetting their password.
 
 = Is Paid Memberships Pro Multisite or Network Compatible? =
-"Supporting multisite" means different things to different people. [This guide covers the three primary ways](https://www.paidmembershipspro.com/network-multisite-mega-post-paid-memberships-pro/) you can use Paid Memberships Pro in a network.
+"Supporting multisite" means different things to different people. [This guide covers the three primary ways](https://www.paidmembershipspro.com/membership-website-wordpress-multisite/) you can use Paid Memberships Pro in a network.
 
 Out of the box PMPro will basically act as a stand alone plugin for each site. Each site has its own list of membership levels, members, payment settings, etc.
 
