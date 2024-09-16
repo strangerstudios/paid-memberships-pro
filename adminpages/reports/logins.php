@@ -308,68 +308,75 @@ function pmpro_report_login_page()
 */
 //get values for a user
 function pmpro_reports_get_values_for_user($type, $user_id = NULL) {
-	//default to current user
-	if(empty($user_id))
-	{
+	// Default to current user.
+	if ( empty( $user_id )) {
 		global $current_user;
 		$user_id = $current_user->ID;
 	}
 
-	//need a type and user
-	if(empty($type) || empty($user_id))
+	// Need a type and user.
+	if ( empty( $type ) || empty( $user_id ) ) {
 		return false;
+	}
 
-	//get values from user meta
+	// Get values from user meta.
 	$values = get_user_meta($user_id, "pmpro_" . $type, true);
 
-	//clean them up
-	if(empty($values))
-		$values = array("last"=>"N/A", "thisdate"=>NULL, "week"=>0, "thisweek"=>NULL, "month"=>0, "thismonth"=>NULL, "ytd"=>0, "thisyear"=>NULL, "alltime"=>0);
-	else
-	{
-		//check if we should reset any of the values
+	// Set up empty $values array if it is not set or empty.
+	if ( ! is_array( $values ) || empty( $values ) ) {
+		$values = array(
+			"last"      => "N/A",
+			"thisdate"  => NULL,
+			"week"      => 0,
+			"thisweek"  => NULL,
+			"month"     => 0,
+			"thismonth" => NULL,
+			"ytd"       => 0,
+			"thisyear"  => NULL,
+			"alltime"   => 0
+		);
+	} else {
+		// Check if we should reset any of the values.
 		$now = current_time('timestamp');
 		$thisdate = date("Y-d-m", $now);
 		$thisweek = date("W", $now);
 		$thismonth = date("n", $now);
 		$thisyear = date("Y", $now);
 
-		if(!isset($values['thisdate']) || $thisdate != $values['thisdate'])
-		{
+		if ( ! isset( $values['thisdate'] ) || $thisdate != $values['thisdate'] ) {
 			$values['today'] = 0;
 			$values['thisdate'] = $thisdate;
 			$update = true;
 		}
 
-		if(!isset($values['thisweek']) || $thisweek != $values['thisweek'])
-		{
+		if ( ! isset($values['thisweek']) || $thisweek != $values['thisweek'] ) {
 			$values['week'] = 0;
 			$values['thisweek'] = $thisweek;
 			$update = true;
 		}
 
-		if(!isset($values['thismonth']) || $thismonth != $values['thismonth'])
-		{
+		if ( ! isset($values['thismonth']) || $thismonth != $values['thismonth'] ) {
 			$values['month'] = 0;
 			$values['thismonth'] = $thismonth;
 			$update = true;
 		}
 
-		if(!isset($values['thisyear']) || $thisyear != $values['thisyear'])
-		{
+		if ( ! isset($values['thisyear']) || $thisyear != $values['thisyear'] ) {
 			$values['ytd'] = 0;
 			$values['thisyear'] = $thisyear;
 			$update = true;
 		}
+	}
 
-		if(!empty($update))
-			update_user_meta($user_id, 'pmpro_' . $type, $values);
+	// Update user meta if changes were made.
+	if ( ! empty( $update ) ) {
+		update_user_meta( $user_id, 'pmpro_' . $type, $values );
 	}
 
 	return $values;
 }
 
-//get values for a user
+//get all values
 function pmpro_reports_get_all_values($type) {
 	//need a type and user
 	if(empty($type))
