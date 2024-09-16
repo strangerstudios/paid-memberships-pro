@@ -1148,31 +1148,32 @@ class PMPro_Field {
 					if ( ! empty( $check['condition'] ) ) {
 						switch( $check['condition'] ) {
 							case 'is_empty':
-								$checks_escaped[] = "(jQuery('#" . esc_attr( $field_id ). "').is(':checkbox') ? jQuery('#" . esc_attr( $field_id ) . ":checked').length === 0 : jQuery('#" . esc_attr( $field_id ) ."').val() == '')";
+								$checks_escaped[] = "(jQuery('#" . esc_attr( $field_id ). "').is(':checkbox') ? jQuery('#" . esc_attr( $field_id ) . ":checked').length === 0 : jQuery('#" . esc_attr( $field_id ) ."').val() == '') || (jQuery(\"input:radio[name='". esc_attr( $field_id ) ."']:checked\").val()) === undefined";
 								break;
 							case 'is_not_empty':
-								$checks_escaped[] = "(jQuery('#" . esc_attr( $field_id ) . "').is(':checkbox') ? jQuery('#" . esc_attr( $field_id ) . ":checked').length > 0 : jQuery('#" . esc_attr( $field_id ) . "').val() != '')";
+								$checks_escaped[] = "((jQuery('#" . esc_html( $field_id ) ."')".".is(':checkbox')) "
+								."? jQuery('#" . esc_html( $field_id ) . ":checked').length > 0"
+								.":(jQuery('#" . esc_html( $field_id ) . "').val() == " . json_encode($check['value']) . " || jQuery.inArray( jQuery('#" . esc_html( $field_id ) . "').val(), " . json_encode($check['value']) . ") > -1)) ||"." (jQuery(\"input:radio[name='". esc_html( $field_id ) ."']:checked\").val()) > -1";
 								break;
 							case 'is_not_equal_to':
-								$checks_escaped[] = "jQuery('#" . esc_html( $field_id ) . "').val() != " . json_encode( $check['value'] );
-								$checks_escaped[] = "jQuery('#" . esc_html( $field_id ) . "').val() != ''";
+								$checks_escaped[] = "( jQuery('#" . esc_html( $field_id ) . "').val() != " . json_encode( $check['value'] ) . " && jQuery('#" . esc_html( $field_id ) . "').val() != '' ),(jQuery(\"input:radio[name='". esc_html( $field_id ) ."']:checked\").val() != ".json_encode($check['value']) .")";
 								break;
 							case 'is_equal_to':
-								$checks_escaped[] = "jQuery('#" . esc_html( $field_id ) . "').val() == " . json_encode( $check['value'] );
+								$checks_escaped[] = "jQuery('#" . esc_html( $field_id ) . "').val() == " . json_encode( $check['value'] ) . "|| (jQuery(\"input:radio[name='". esc_html( $field_id ) ."']:checked\").val() == ".json_encode($check['value']) .")";
 								break;
 							case 'contains':
-								$checks_escaped[] = "jQuery('#" . esc_html( $field_id ) . "').val().indexOf(" . json_encode( $check['value'] ) . ") > -1";
+								$checks_escaped[] = "(jQuery('#" . esc_html( $field_id ) . "').val()?.indexOf(" . json_encode( $check['value'] ) . ") > -1) || (jQuery(\"input:radio[name='". esc_html( $field_id ) ."']:checked\").val()?.indexOf(".json_encode($check['value']).") > -1)";
 								break;
 							case 'does_not_contain':
-								$checks_escaped[] = "jQuery('#" . esc_html( $field_id ) . "').val().indexOf(" . json_encode( $check['value'] ) . ") == -1";
+								$checks_escaped[] = "(jQuery('#" . esc_html( $field_id ) . "').val()?.indexOf(" . json_encode( $check['value'] ) . ") == -1) || (jQuery(\"input:radio[name='". esc_html( $field_id ) ."']:checked\").val()?.indexOf(".json_encode($check['value']).") == -1)";
 								break;
 							default: 
 								break;
 						}
-					} else { // Backwards compatibility. 
+					} else { // Backwards compatibility default checks. 
 						$checks_escaped[] = "((jQuery('#" . esc_html( $field_id ) ."')".".is(':checkbox')) "
 								."? jQuery('#" . esc_html( $field_id ) . ":checked').length > 0"
-								.":(jQuery('#" . esc_html( $field_id ) . "').val() == " . json_encode($check['value']) . " || jQuery.inArray( jQuery('#" . esc_html( $field_id ) . "').val(), " . json_encode($check['value']) . ") > -1)) ||"."(jQuery(\"input:radio[name='". esc_html( $check['id'] ) ."']:checked\").val() == ".json_encode($check['value'])." || jQuery.inArray(".json_encode($check['value']).", jQuery(\"input:radio[name='". esc_html( $field_id ) ."']:checked\").val()) > -1)";
+								.":(jQuery('#" . esc_html( $field_id ) . "').val() == " . json_encode($check['value']) . " || jQuery.inArray( jQuery('#" . esc_html( $field_id ) . "').val(), " . json_encode($check['value']) . ") > -1)) ||"."(jQuery(\"input:radio[name='". esc_html( $field_id ) ."']:checked\").val() == ".json_encode($check['value'])." || jQuery.inArray(".json_encode($check['value']).", jQuery(\"input:radio[name='". esc_html( $field_id ) ."']:checked\").val()) > -1)";
 					}
 
 					$binds[] = "#" . esc_html( $field_id ) .",input:radio[name=". esc_html( $field_id ) ."]";
