@@ -1511,6 +1511,7 @@ function pmpro_get_field_html( $field = null ) {
                 <span class="description"><?php esc_html_e( 'One option per line. To set separate values and labels, use value:label.', 'paid-memberships-pro' ); ?></span>
             </div> <!-- end pmpro_userfield-field-setting -->
             
+			<div class="pmpro_userfield-field-setting">
 				<label>
 					<?php esc_html_e( 'Default Value (optional)', 'paid-memberships-pro' ); ?><br />
 					<input type="text" name="pmpro_userfields_field_default" value="<?php echo esc_attr( $field_default ); ?>" />
