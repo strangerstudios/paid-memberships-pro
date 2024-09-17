@@ -1511,10 +1511,35 @@ function pmpro_get_field_html( $field = null ) {
                 <span class="description"><?php esc_html_e( 'One option per line. To set separate values and labels, use value:label.', 'paid-memberships-pro' ); ?></span>
             </div> <!-- end pmpro_userfield-field-setting -->
             
+				<label>
+					<?php esc_html_e( 'Default Value (optional)', 'paid-memberships-pro' ); ?><br />
+					<input type="text" name="pmpro_userfields_field_default" value="<?php echo esc_attr( $field_default ); ?>" />
+				</label>
+			</div> <!-- end pmpro_userfield-field-setting -->
+			
+			<div class="pmpro_userfield-field-setting">
+				<div class="pmpro_userfield-field-setting pmpro_userfield-field-setting-dual">
+					<div class="pmpro_userfield-field-setting">
+						<label>
+							<?php esc_html_e( 'Allowed File Types', 'paid-memberships-pro' ); ?><br />
+							<input type="text" name="pmpro_userfields_field_allowed_file_types" value="<?php echo esc_attr( trim( $field_allowed_file_types ) ); ?>" />
+						</label>
+						<span class="description"><?php esc_html_e( 'Restrict the file type that is allowed to be uploaded. Separate the file types using a comma ",". For example: png,pdf,jpg.', 'paid-memberships-pro' ); ?></span>
+					</div> <!-- end pmpro_userfield-field-setting -->
+					<div class="pmpro_userfield-field-setting">
+						<?php $server_max_upload = wp_max_upload_size() / 1024 / 1024; ?>
+						<label>
+							<?php esc_html_e( 'Max File Size Upload', 'paid-memberships-pro' ); ?><br />
+							<input type="number" name="pmpro_userfields_field_max_file_size" value="<?php echo intval( $field_max_file_size ); ?>" max="<?php echo esc_attr( $server_max_upload ); ?>"/>
+						</label>
+						<span class="description"><?php printf( esc_html__( 'Enter an upload size limit for files in Megabytes (MB) or set it to 0 to use your default server upload limit. Your server upload limit is %s.', 'paid-memberships-pro' ), $server_max_upload . 'MB' ); ?></span>
+					</div> <!-- end pmpro_userfield-field-setting -->
+				</div>
+			</div>
 			<!-- Conditional logic -->
 			<div class="pmpro_userfield-field-full-width">
 				<div class="pmpro_userfield-field-setting">
-					<label>
+					<label class="pmpro_clickable">
 						<input type="checkbox" name="pmpro_userfields_field_show_conditional_logic" value=1 <?php checked( $field_display_conditions, 1 ); ?>/>
 						<?php esc_html_e( 'Enable Conditional Logic', 'paid-memberships-pro' ); ?>
 					</label>
@@ -1552,45 +1577,6 @@ function pmpro_get_field_html( $field = null ) {
 					</div> <!-- end of triple -->
 				</div>
 			</div> <!-- end of full width -->
-			<div class="pmpro_userfield-field-actions">            
-				<button name="pmpro_userfields_close_field" class="button button-secondary pmpro_userfields_close_field">
-					<?php esc_html_e( 'Close Field', 'paid-memberships-pro' ); ?>
-				</button> 
-
-			<div class="pmpro_userfield-field-setting">
-				<div class="pmpro_userfield-field-setting pmpro_userfield-field-setting-dual">
-					<div class="pmpro_userfield-field-setting">
-						<label>
-							<?php esc_html_e( 'Allowed File Types', 'paid-memberships-pro' ); ?><br />
-							<input type="text" name="pmpro_userfields_field_allowed_file_types" value="<?php echo esc_attr( trim( $field_allowed_file_types ) ); ?>" />
-						</label>
-						<span class="description"><?php esc_html_e( 'Restrict the file type that is allowed to be uploaded. Separate the file types using a comma ",". For example: png,pdf,jpg.', 'paid-memberships-pro' ); ?></span>
-					</div> <!-- end pmpro_userfield-field-setting -->
-					<div class="pmpro_userfield-field-setting">
-						<?php $server_max_upload = wp_max_upload_size() / 1024 / 1024; ?>
-						<label>
-							<?php esc_html_e( 'Max File Size Upload', 'paid-memberships-pro' ); ?><br />
-							<input type="number" name="pmpro_userfields_field_max_file_size" value="<?php echo intval( $field_max_file_size ); ?>" max="<?php echo esc_attr( $server_max_upload ); ?>"/>
-						</label>
-						<span class="description"><?php printf( esc_html__( 'Enter an upload size limit for files in Megabytes (MB) or set it to 0 to use your default server upload limit. Your server upload limit is %s.', 'paid-memberships-pro' ), $server_max_upload . 'MB' ); ?></span>
-					</div> <!-- end pmpro_userfield-field-setting -->
-				</div>
-				<div class="pmpro_userfield-field-setting">
-					<label>
-						<?php esc_html_e( 'Options', 'paid-memberships-pro' ); ?><br />
-						<textarea name="pmpro_userfields_field_options" /><?php echo esc_textarea( $field_options );?></textarea>
-					</label>
-					<span class="description"><?php esc_html_e( 'One option per line. To set separate values and labels, use value:label.', 'paid-memberships-pro' ); ?></span>
-				</div> <!-- end pmpro_userfield-field-setting -->
-				
-				<div class="pmpro_userfield-field-setting">
-					<label>
-						<?php esc_html_e( 'Default Value (optional)', 'paid-memberships-pro' ); ?><br />
-						<input type="text" name="pmpro_userfields_field_default" value="<?php echo esc_attr( $field_default ); ?>" />
-					</label>
-				</div> <!-- end pmpro_userfield-field-setting -->
-			</div>
-
             <div class="pmpro_userfield-field-actions">            
                 <button name="pmpro_userfields_close_field" class="button button-secondary pmpro_userfields_close_field">
                     <?php esc_html_e( 'Close Field', 'paid-memberships-pro' ); ?>
