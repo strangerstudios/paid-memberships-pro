@@ -1114,7 +1114,8 @@ function pmpro_member_profile_edit_form() {
 			wp_update_user( $user );
 			?>
 			<div role="alert" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_message pmpro_success', 'pmpro_success' ) ); ?>">
-				<?php echo sprintf( wp_kses_post( 'Your profile has been updated. <a href="%s">View Your Membership Account &rarr;</a>', 'paid-memberships-pro' ), esc_url( pmpro_url( 'account' ) ) ); ?>
+				<?php esc_html_e( 'Your profile has been updated.', 'paid-memberships-pro' ); ?>
+				<a href="<?php echo esc_url( pmpro_url( 'account' ) ); ?>"><?php esc_html_e( 'View Your Membership Account &rarr;', 'paid-memberships-pro' ); ?></a>
 			</div>
 		<?php }
 	} else {
