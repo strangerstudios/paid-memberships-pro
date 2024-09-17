@@ -1735,7 +1735,7 @@ function pmpro_load_user_fields_from_settings() {
                     'levels' => $levels,
                     'memberslistcsv' => true,
                     'depends' => $settings_field->depends,
-                    'display_conditions' => $settings_field->display_conditions
+                    'display_conditions' => $settings_field->display_conditions,
                     'allowed_file_types' => $settings_field->allowed_file_types,
                     'max_file_size' => $settings_field->max_file_size,
                     'default' => $settings_field->default,
