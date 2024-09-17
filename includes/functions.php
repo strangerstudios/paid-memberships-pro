@@ -4790,6 +4790,27 @@ function pmpro_check_upload( $file_index ) {
 					if ( ! empty( $field->ext ) && is_array( $field->ext ) && ! in_array( $filetype['ext'], $field->ext ) ) {
 						return new WP_Error( 'pmpro_upload_error', __( 'Invalid file type.', 'paid-memberships-pro' ) );
 					}
+
+					// Check the file type against the allowed types.
+					$allowed_mime_types = ! empty( $field->allowed_file_types ) ? array_map( 'sanitize_text_field', explode( ',', $field->allowed_file_types ) ) : array();
+
+					//Remove fullstops from the beginning of the allowed file types.
+					$allowed_mime_types = array_map( function( $type ) {
+						return ltrim( $type, '.' );
+					}, $allowed_mime_types );
+
+					// Check the file type against the allowed types.
+					if ( ! in_array( $filetype['ext'], $allowed_mime_types ) ) {
+						return new WP_Error( 'pmpro_upload_file_type_error', sprintf( esc_html__( 'Invalid file type. Please try uploading the file type(s): %s', 'paid-memberships-pro' ), implode( ',' ,$allowed_mime_types ) ) );
+					}
+					
+					// Check if the file upload is too big to upload.
+					if ( $field->max_file_size > 0 ) {
+						$upload_max_file_size_in_bytes = $field->max_file_size * 1024 * 1024;
+						if ( $file['size'] > $upload_max_file_size_in_bytes ) {
+							return new WP_Error( 'pmpro_upload_file_size_error', sprintf( esc_html__( 'File size is too large for %s. Please upload files smaller than %dMB.', 'paid-memberships-pro' ), $field->label, $field->max_file_size ) );
+						}
+					}
 				}
 			}
 		}

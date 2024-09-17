@@ -458,14 +458,31 @@ function pmpro_userfields_prep_click_events() {
 		var fieldcontainer = jQuery(this).parents('.pmpro_userfield-group-field');
 		var fieldsettings = fieldcontainer.children('.pmpro_userfield-field-settings');
 		var fieldtype = jQuery(this).val();
+
 		var fieldoptions = fieldsettings.find('textarea[name=pmpro_userfields_field_options]').parents('.pmpro_userfield-field-setting');
+		var fieldfiles = fieldsettings.find('input[name=pmpro_userfields_field_max_file_size]').parents('.pmpro_userfield-field-setting');
+		var fielddefault = fieldsettings.find('input[name=pmpro_userfields_field_default]').parents('.pmpro_userfield-field-setting');
 
+		// Hide all the field settings.
+		fieldoptions.hide();
+		fieldfiles.hide();
+		fielddefault.hide();
+
+		// Show the option field if needed.
 		var optiontypes = ['checkbox_grouped', 'radio', 'select', 'select2', 'multiselect'];
-
 		if (jQuery.inArray(fieldtype, optiontypes) > -1) {
 			fieldoptions.show();
-		} else {
-			fieldoptions.hide();
+		}
+
+		// Show the file field options if needed.
+		if (fieldtype === 'file') {
+			fieldfiles.show();
+		}
+
+		// Show the default field if needed.
+		var defaulttypes = ['text', 'textarea', 'checkbox', 'radio', 'select', 'date', 'readonly', 'hidden', 'number'];
+		if (jQuery.inArray(fieldtype, defaulttypes) > -1) {
+			fielddefault.show();
 		}
 	});
 
@@ -534,6 +551,9 @@ function pmpro_userfields_prep_click_events() {
 				let field_hint = jQuery(this).find('textarea[name=pmpro_userfields_field_hint]').val();
 				let field_options = jQuery(this).find('textarea[name=pmpro_userfields_field_options]').val();
 				let field_display_conditions = jQuery(this).find('input[name=pmpro_userfields_field_show_conditional_logic]').is(':checked');
+				let field_allowed_file_types = jQuery(this).find('input[name=pmpro_userfields_field_allowed_file_types]').val();
+				let field_max_file_size = jQuery(this).find('input[name=pmpro_userfields_field_max_file_size]').val();
+				let field_default = jQuery(this).find('input[name=pmpro_userfields_field_default]').val();
 
 				// Field conditions (aka depends)
 				let field_conditions = {
@@ -541,7 +561,7 @@ function pmpro_userfields_prep_click_events() {
 					'value': jQuery(this).find('input[name=pmpro_userfields_field_conditional_logic_value]').val(),
 					'condition': jQuery(this).find('select[name=pmpro_userfields_field_conditional_logic_condition]').val()
 				};
-
+				
 				// Get level ids.            
 				let field_levels = [];
 				jQuery(this).find('input[name="pmpro_userfields_field_levels[]"]:checked').each(function () {
@@ -561,8 +581,11 @@ function pmpro_userfields_prep_click_events() {
 					'hint': field_hint,
 					'options': field_options,
 					'display_conditions': field_display_conditions,
-					'depends': field_conditions
-				}
+					'depends': field_conditions,
+					'allowed_file_types': field_allowed_file_types,
+					'max_file_size': field_max_file_size,
+					'default': field_default
+				};
 
 				// Add to array. (Only if it has a label or name.)
 				if (field.label.length > 0 || field.name.length > 0) {
