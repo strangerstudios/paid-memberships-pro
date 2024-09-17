@@ -1647,6 +1647,8 @@ function pmpro_get_user_fields_settings() {
 			$field->default = ! empty( $field->default ) ? $field->default : '';
 			$field->allowed_file_types = ! empty( $field->allowed_file_types ) ? $field->allowed_file_types : '';
 			$field->max_file_size = ! empty( $field->max_file_size ) ? $field->max_file_size : '';
+			$field->depends = ! empty( $field->depends ) ? $field->depends : '';
+			$field->display_conditions = ! empty( $field->display_conditions ) ? $field->display_conditions : '';
 		}
 	}
     
