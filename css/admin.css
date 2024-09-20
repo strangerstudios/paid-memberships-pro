@@ -1787,7 +1787,41 @@ table.pmprommpu_levels tr.remove_level td {background: #F2DEDE; }
 /**
  * Email Template Settings
  */
- #email-variable-reference table {
+.admin_page_pmpro-emailtemplates #poststuff {
+	padding-top: 0;
+}
+
+.admin_page_pmpro-emailtemplates #poststuff .pmpro_tag {
+	display: inline-block;
+	margin-bottom: var(--pmpro--spacing--small);
+}
+
+.admin_page_pmpro-emailtemplates .edit-form-section .form-table tr:first-child th {
+	padding-top: 15px;
+}
+
+.admin_page_pmpro-emailtemplates .edit-form-section .form-table input[type=text],
+.admin_page_pmpro-emailtemplates .edit-form-section .form-table textarea {
+	width: 100%;
+}
+
+.admin_page_pmpro-emailtemplates .pmpro_send_test_email {
+	display: flex;
+	flex-direction: column;
+	gap: var(--pmpro--spacing--small);
+}
+
+.admin_page_pmpro-emailtemplates .pmpro_send_test_email label {
+	font-size: 14px;
+	font-weight: bold;
+	line-height: 1.3;
+}
+
+.admin_page_pmpro-emailtemplates .pmpro_send_test_email p {
+	margin: 0;
+}
+
+#email-variable-reference table {
 	margin-bottom: 3em;
 	max-width: 900px;
 }
@@ -3565,6 +3599,16 @@ button.pmpro_report_th_closed:before {
 		margin-left: 0;
 		margin-right: 0;
 	}
+
+	.pmpro_admin-pmpro-emailtemplates .wp-list-table thead {
+		display: none;
+	}
+
+	.pmpro_admin-pmpro-emailtemplates .wp-list-table tbody tr td {
+		display: block;
+		padding-left: 35%;
+	}
+
 }
 
 /* plugin update notice */

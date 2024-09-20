@@ -172,14 +172,13 @@
 		 */
 		function process(&$order)
 		{
-			if(floatval($order->InitialPayment) == 0)
+			if(floatval($order->subtotal) == 0)
 			{
 				//auth first, then process
 				$authorization_id = $this->authorize($order);
 				if($authorization_id)
 				{
 					$this->void($order, $authorization_id);
-					$order->ProfileStartDate = pmpro_calculate_profile_start_date( $order, 'Y-m-d\TH:i:s' );
 					return $this->subscribe($order);
 				}
 				else
@@ -197,7 +196,6 @@
 					//set up recurring billing
 					if(pmpro_isLevelRecurring($order->membership_level))
 					{
-						$order->ProfileStartDate = pmpro_calculate_profile_start_date( $order, 'Y-m-d\TH:i:s' );
 						if($this->subscribe($order))
 						{
 							return true;
@@ -240,9 +238,6 @@
 			$nvpStr = "";
 
 			$nvpStr .="&AMT=1.00";
-			/* PayFlow Pro doesn't use IPN so this is a little confusing */
-			// $nvpStr .= "&NOTIFYURL=" . urlencode( add_query_arg( 'action', 'ipnhandler', admin_url('admin-ajax.php') ) );
-			//$nvpStr .= "&L_BILLINGTYPE0=RecurringPayments&L_BILLINGAGREEMENTDESCRIPTION0=" . $order->PaymentAmount;
 
 			$nvpStr .= "&CUSTIP=" . pmpro_get_ip() . "&INVNUM=" . $order->code;
 
@@ -253,15 +248,20 @@
 				$cardtype = $order->cardtype;
 
 			if(!empty($order->accountnumber))
-				$nvpStr .= "&ACCT=" . $order->accountnumber . "&EXPDATE=" . $order->expirationmonth . substr($order->expirationyear, 2, 2) . "&CVV2=" . $order->CVV2;
+				$nvpStr .= "&ACCT=" . $order->accountnumber . "&EXPDATE=" . $order->expirationmonth . substr($order->expirationyear, 2, 2) . "&CVV2=" . ( empty( $_REQUEST['CVV'] ) ? '' : sanitize_text_field( $_REQUEST['CVV'] ) );
 
 			//billing address, etc
-			if(!empty($order->Address1))
+			if(!empty($order->billing->street))
 			{
-				$nvpStr .= "&EMAIL=" . $order->Email . "&FIRSTNAME=" . $order->FirstName . "&LASTNAME=" . $order->LastName . "&STREET=" . $order->Address1;
+				$user = get_userdata($order->user_id);
+				$nameparts = pnp_split_full_name( $order->billing->name );
+				$fname = empty( $nameparts['fname'] ) ? '' : $nameparts['fname'];
+				$lname = empty( $nameparts['lname'] ) ? '' : $nameparts['lname'];
+				$email = empty( $user->user_email ) ? '' : $user->user_email;
+				$nvpStr .= "&EMAIL=" . $email . "&FIRSTNAME=" . $fname . "&LASTNAME=" . $lname . "&STREET=" . $order->billing->street;
 
-				if($order->Address2)
-					$nvpStr .= " " . $order->Address2;
+				if($order->billing->street2)
+					$nvpStr .= " " . $order->billing->street2;
 
 				$nvpStr .= "&CITY=" . $order->billing->city . "&STATE=" . $order->billing->state . "&BILLTOCOUNTRY=" . $order->billing->country . "&ZIP=" . $order->billing->zip . "&PHONENUM=" . $order->billing->phone;
 			}
@@ -327,10 +327,8 @@
 				$order->code = $order->getRandomCode();
 
 			//taxes on the amount
-			$amount = $order->InitialPayment;
-			$amount_tax = $order->getTaxForPrice($amount);
-			$order->subtotal = $amount;
-			$amount = pmpro_round_price_as_string((float)$amount + (float)$amount_tax);
+			$amount_tax = $order->getTax(true);
+			$amount = pmpro_round_price_as_string((float)$order->subtotal + (float)$amount_tax);
 
 			//paypal profile stuff
 			$nvpStr = "";
@@ -350,22 +348,23 @@
 
 			$nvpStr .="&AMT=" . $amount . "&TAXAMT=" . $amount_tax . "&CURRENCY=" . $pmpro_currency;
 
-			/* PayFlow Pro doesn't use IPN so this is a little confusing */
-			// $nvpStr .= "&NOTIFYURL=" . urlencode( add_query_arg( 'action', 'ipnhandler', admin_url('admin-ajax.php') ) );
-			//$nvpStr .= "&L_BILLINGTYPE0=RecurringPayments&L_BILLINGAGREEMENTDESCRIPTION0=" . $order->PaymentAmount;
-
 			$nvpStr .= "&CUSTIP=" . pmpro_get_ip() . "&INVNUM=" . $order->code;
 
 			if(!empty($order->accountnumber))
-				$nvpStr .= "&ACCT=" . $order->accountnumber . "&EXPDATE=" . $order->expirationmonth . substr($order->expirationyear, 2, 2) . "&CVV2=" . $order->CVV2;
+				$nvpStr .= "&ACCT=" . $order->accountnumber . "&EXPDATE=" . $order->expirationmonth . substr($order->expirationyear, 2, 2) . "&CVV2=" . ( empty( $_REQUEST['CVV'] ) ? '' : sanitize_text_field( $_REQUEST['CVV'] ) );
 
 			//billing address, etc
-			if($order->Address1)
+			if($order->billing->street)
 			{
-				$nvpStr .= "&EMAIL=" . $order->Email . "&FIRSTNAME=" . $order->FirstName . "&LASTNAME=" . $order->LastName . "&STREET=" . $order->Address1;
+				$nameparts = pnp_split_full_name( $order->billing->name );
+				$fname = empty( $nameparts['fname'] ) ? '' : $nameparts['fname'];
+				$lname = empty( $nameparts['lname'] ) ? '' : $nameparts['lname'];
+				$user = get_userdata($order->user_id);
+				$email = empty( $user->user_email ) ? '' : $user->user_email;
+				$nvpStr .= "&EMAIL=" . $email . "&FIRSTNAME=" . $fname . "&LASTNAME=" . $lname . "&STREET=" . $order->billing->street;
 
-				if($order->Address2)
-					$nvpStr .= " " . $order->Address2;
+				if($order->billing->street2)
+					$nvpStr .= " " . $order->billing->street2;
 
 				$nvpStr .= "&CITY=" . $order->billing->city . "&STATE=" . $order->billing->state . "&BILLTOCOUNTRY=" . $order->billing->country . "&ZIP=" . $order->billing->zip . "&PHONENUM=" . $order->billing->phone;
 			}
@@ -404,17 +403,18 @@
 			$order = apply_filters("pmpro_subscribe_order", $order, $this);
 
 			//taxes on the amount
-			$amount = $order->PaymentAmount;
+			$level = $order->getMembershipLevelAtCheckout();
+			$amount = $level->billing_amount;
 			$amount_tax = $order->getTaxForPrice($amount);
 			$amount = pmpro_round_price_as_string((float)$amount + (float)$amount_tax);
 
-			if($order->BillingPeriod == "Day")
+			if( $level->cycle_period == "Day")
 				$payperiod = "DAYS";
-			elseif($order->BillingPeriod == "Week")
+			elseif( $level->cycle_period == "Week")
 				$payperiod = "WEEK";
-			elseif($order->BillingPeriod == "Month")
+			elseif( $level->cycle_period == "Month")
 				$payperiod = "MONT";
-			elseif($order->BillingPeriod == "Year")
+			elseif( $level->cycle_period == "Year")
 				$payperiod = "YEAR";
 
 			//paypal profile stuff
@@ -432,79 +432,60 @@
 
 			$nvpStr .="&AMT=" . $amount . "&TAXAMT=" . $amount_tax . "&CURRENCY=" . $pmpro_currency;
 
-			/* PayFlow Pro doesn't use IPN so this is a little confusing */
-			// $nvpStr .= "&NOTIFYURL=" . urlencode( add_query_arg( 'action', 'ipnhandler', admin_url('admin-ajax.php') ) );
-			//$nvpStr .= "&L_BILLINGTYPE0=RecurringPayments&L_BILLINGAGREEMENTDESCRIPTION0=" . $order->PaymentAmount;
-
 			$nvpStr .= "&PROFILENAME=" . urlencode( apply_filters( 'pmpro_paypal_level_description', substr($order->membership_level->name . " at " . get_bloginfo("name"), 0, 127), $order->membership_level->name, $order, get_bloginfo("name")) );
 
 			$nvpStr .= "&PAYPERIOD=" . $payperiod;
-			$nvpStr .= "&FREQUENCY=" . $order->BillingFrequency;
+			$nvpStr .= "&FREQUENCY=" . $level->cycle_number;
 
 			$nvpStr .= "&CUSTIP=" . pmpro_get_ip(); // . "&INVNUM=" . $order->code;
 
 			//if billing cycles are defined
-			if(!empty($order->TotalBillingCycles))
-				$nvpStr .= "&TERM=" . $order->TotalBillingCycles;
+			if(!empty($level->billing_limit))
+				$nvpStr .= "&TERM=" . $level->billing_limit;
 			else
 				$nvpStr .= "&TERM=0";
 
 			if(!empty($order->accountnumber))
-				$nvpStr .= "&ACCT=" . $order->accountnumber . "&EXPDATE=" . $order->expirationmonth . substr($order->expirationyear, 2, 2) . "&CVV2=" . $order->CVV2;
+				$nvpStr .= "&ACCT=" . $order->accountnumber . "&EXPDATE=" . $order->expirationmonth . substr($order->expirationyear, 2, 2) . "&CVV2=" . ( empty( $_REQUEST['CVV'] ) ? '' : sanitize_text_field( $_REQUEST['CVV'] ) );
 
-			/*
-				Let's figure out the start date. There are two parts.
-				1. We need to add the billing period to the start date to account for the initial payment.
-				2. We can allow for free trials by further delaying the start date of the subscription.
-			*/
-			if($order->BillingPeriod == "Year")
-				$trial_period_days = $order->BillingFrequency * 365;	//annual
-			elseif($order->BillingPeriod == "Day")
-				$trial_period_days = $order->BillingFrequency * 1;		//daily
-			elseif($order->BillingPeriod == "Week")
-				$trial_period_days = $order->BillingFrequency * 7;		//weekly
-			else
-				$trial_period_days = $order->BillingFrequency * 30;	//assume monthly
-
-			//convert to a profile start date
-			$order->ProfileStartDate = date_i18n("Y-m-d\TH:i:s", strtotime("+ " . $trial_period_days . " Day", current_time("timestamp")));
-
-			//filter the start date
-			$order->ProfileStartDate = apply_filters("pmpro_profile_start_date", $order->ProfileStartDate, $order);
-
-			//convert back to days
-			$trial_period_days = ceil(abs(strtotime(date_i18n("Y-m-d"), current_time('timestamp')) - strtotime($order->ProfileStartDate, current_time("timestamp"))) / 86400);
+			// Get the profile start date.
+			$trial_period_days = ceil(abs(strtotime(date_i18n("Y-m-d"), current_time('timestamp')) - pmpro_calculate_profile_start_date( $order, 'U' ) ) / 86400);
 
 			//now add the actual trial set by the site
-			if(!empty($order->TrialBillingCycles))
+			if(!empty($level->trial_limit))
 			{
-				$trialOccurrences = (int)$order->TrialBillingCycles;
-				if($order->BillingPeriod == "Year")
-					$trial_period_days = $trial_period_days + (365 * $order->BillingFrequency * $trialOccurrences);	//annual
-				elseif($order->BillingPeriod == "Day")
-					$trial_period_days = $trial_period_days + (1 * $order->BillingFrequency * $trialOccurrences);		//daily
-				elseif($order->BillingPeriod == "Week")
-					$trial_period_days = $trial_period_days + (7 * $order->BillingFrequency * $trialOccurrences);	//weekly
+				$trialOccurrences = (int)$level->trial_limit;
+				if( $level->cycle_period == "Year")
+					$trial_period_days = $trial_period_days + (365 * $level->cycle_number * $trialOccurrences);	//annual
+				elseif( $level->cycle_period == "Day")
+					$trial_period_days = $trial_period_days + (1 * $level->cycle_number * $trialOccurrences);		//daily
+				elseif( $level->cycle_period == "Week")
+					$trial_period_days = $trial_period_days + (7 * $level->cycle_number * $trialOccurrences);	//weekly
 				else
-					$trial_period_days = $trial_period_days + (30 * $order->BillingFrequency * $trialOccurrences);	//assume monthly
+					$trial_period_days = $trial_period_days + (30 * $level->cycle_number * $trialOccurrences);	//assume monthly
 			}
 
 			//convert back into a date
-			$order->ProfileStartDate = date_i18n("Y-m-d\TH:i:s", strtotime("+ " . $trial_period_days . " Day", current_time("timestamp")));
+			$profile_start_date = date_i18n("Y-m-d\TH:i:s", strtotime("+ " . $trial_period_days . " Day", current_time("timestamp")));
 
 			//start date
-			$nvpStr .= "&START=" . date_i18n("mdY", strtotime($order->ProfileStartDate));
+			$nvpStr .= "&START=" . date_i18n("mdY", strtotime($profile_start_date));
 
 			if(!empty($order->accountnumber))
-				$nvpStr .= "&ACCT=" . $order->accountnumber . "&EXPDATE=" . $order->expirationmonth . substr($order->expirationyear, 2, 2) . "&CVV2=" . $order->CVV2;
+				$nvpStr .= "&ACCT=" . $order->accountnumber . "&EXPDATE=" . $order->expirationmonth . substr($order->expirationyear, 2, 2) . "&CVV2=" . ( empty( $_REQUEST['CVV'] ) ? '' : sanitize_text_field( $_REQUEST['CVV'] ) );
 
 			//billing address, etc
-			if($order->Address1)
+			if($order->billing->street)
 			{
-				$nvpStr .= "&EMAIL=" . $order->Email . "&FIRSTNAME=" . $order->FirstName . "&LASTNAME=" . $order->LastName . "&STREET=" . $order->Address1;
+				$nameparts = pnp_split_full_name( $order->billing->name );
+				$fname = empty( $nameparts['fname'] ) ? '' : $nameparts['fname'];
+				$lname = empty( $nameparts['lname'] ) ? '' : $nameparts['lname'];
+				$user = get_userdata($order->user_id);
+				$email = empty( $user->user_email ) ? '' : $user->user_email;
+				$nvpStr .= "&EMAIL=" . $email . "&FIRSTNAME=" . $fname . "&LASTNAME=" . $lname . "&STREET=" . $order->billing->street;
 
-				if($order->Address2)
-					$nvpStr .= " " . $order->Address2;
+				if($order->billing->street2)
+					$nvpStr .= " " . $order->billing->street2;
 
 				$nvpStr .= "&CITY=" . $order->billing->city . "&STATE=" . $order->billing->state . "&BILLTOCOUNTRY=" . $order->billing->country . "&ZIP=" . $order->billing->zip . "&PHONENUM=" . $order->billing->phone;
 			}
@@ -557,15 +538,20 @@
 			$nvpStr .= "&CUSTIP=" . pmpro_get_ip(); // . "&INVNUM=" . $order->code;
 
 			if(!empty($order->accountnumber))
-				$nvpStr .= "&ACCT=" . $order->accountnumber . "&EXPDATE=" . $order->expirationmonth . substr($order->expirationyear, 2, 2) . "&CVV2=" . $order->CVV2;
+				$nvpStr .= "&ACCT=" . $order->accountnumber . "&EXPDATE=" . $order->expirationmonth . substr($order->expirationyear, 2, 2) . "&CVV2=" . ( empty( $_REQUEST['CVV'] ) ? '' : sanitize_text_field( $_REQUEST['CVV'] ) );
 
 			//billing address, etc
-			if($order->Address1)
+			if($order->billing->street)
 			{
-				$nvpStr .= "&EMAIL=" . $order->Email . "&FIRSTNAME=" . $order->FirstName . "&LASTNAME=" . $order->LastName . "&STREET=" . $order->Address1;
+				$nameparts = pnp_split_full_name( $order->billing->name );
+				$fname = empty( $nameparts['fname'] ) ? '' : $nameparts['fname'];
+				$lname = empty( $nameparts['lname'] ) ? '' : $nameparts['lname'];
+				$user = get_userdata($order->user_id);
+				$email = empty( $user->user_email ) ? '' : $user->user_email;
+				$nvpStr .= "&EMAIL=" . $email . "&FIRSTNAME=" . $fname . "&LASTNAME=" . $lname . "&STREET=" . $order->billing->street;
 
-				if($order->Address2)
-					$nvpStr .= " " . $order->Address2;
+				if($order->billing->street2)
+					$nvpStr .= " " . $order->billing->street2;
 
 				$nvpStr .= "&CITY=" . $order->billing->city . "&STATE=" . $order->billing->state . "&BILLTOCOUNTRY=" . $order->billing->country . "&ZIP=" . $order->billing->zip . "&PHONENUM=" . $order->billing->phone;
 			}

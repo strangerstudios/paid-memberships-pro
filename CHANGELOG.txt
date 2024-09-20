@@ -1,4 +1,27 @@
 == Changelog ==
+= 3.2 - TBD =
+* FEATURE: Users will now receive a notification email when they have an upcoming subscription payment. #3109 (@dparker1005)
+* FEATURE: Added integration with Cloudflare Turnstile. #3123 (@andrewlimaza)
+* ENHANCEMENT: The business address for the website can now be set on the Advanced Settings page and will be shown on invoices. #3134 (@MaximilianoRicoTabo)
+* ENHANCEMENT: Added a table view on the Email Templates settings page. #3128 (@kimcoleman)
+* ENHANCEMENT: Added the Checkbox Group user field type. #3126 (@andrewlimaza)
+* ENHANCEMENT: A default value can now be set for user fields that do not allow multiselect or file uploads. #3132 (@andrewlimaza)
+* ENHANCEMENT: Allowed file types and maximum file sizes can now be set for "File" user fields. #3133 (@andrewlimaza)
+* ENHANCEMENT: Added three new filters at checkout to allow checks at different parts of the checkout process: `pmpro_checkout_checks`, `pmpro_checkout_user_creation_checks`, and `pmpro_checkout_order_creation_checks`. #3137 (@dparker1005)
+* ENHANCEMENT: Now creating a user at checkout even when order creation checks fail. #3137 (@dparker1005)
+* ENHANCEMENT: Memberships on the Membership Account page will now be shown in the order set on the Membership Levels settings page. #3112 (@kimcoleman)
+* BUG FIX/ENHANCEMENT: Street2 billing address lines are now stored separately in the MemberOrder object. #3122 (@dparker1005)
+* REFACTOR: Abstracted all "Terms of Service" logic into a single file. #3119 (@dparker1005)
+* REFACTOR: Abstracted all reCAPTCHA logic into a single file. #3105 (@dparker1005)
+* REFACTOR: Cleaned up the checkout preheader flow including deprecating the `pmpro_build_order_for_checkout()` function in favor of inline logic. #3129 (@dparker1005)
+* REFACTOR: Updated the PayPal Express integration to run checkout logic in its `process()` method instead of on actions that are being deprecated. #3116 (@dparker1005)
+* REFACTOR: Updated the Stripe  integration to send users to Stripe Checkout in the `process()` method instead of during the `pmpro_checkout_before_change_membership_level` hook. #3104 (@dparker1005)
+* DEPRECATED: PayPal Express will no longer automatically be enabled as a second payment option when using the deprecated Website Payments Pro gateway. This functionality can be restored by using the Add PayPal Express Add On. #3114 (@dparker1005)
+* DEPRECATED: Marked the following filters at checkout as deprecated: `pmpro_checkout_oldemail`, `pmpro_new_user`, `pmpro_require_billing`, and `pmpro_checkout_confirmed`. #3137 (@dparker1005)
+* DEPRECATED: Now throwing deprecation warnings for dynamic order properties that were previously used at by gateways at checkout. #3122 (@dparker1005)
+* DEPRECATED: Marked the `getGatewaySubscriptionStatus()`, `getGatewayTransactionStatus()`, and `confirm()` MemberOrder methods as deprecated. #3129, #3116 (@dparker1005)
+* DEPRECATED: Removed sample code from methods in the `PMProGateway` class and marked sample helper methods as deprecated. #3129 (@dparker1005)
+
 = 3.1.4 - 2024-09-18 =
 * ENHANCEMENT: Improved the wording of the Stripe webhook checker message that displayed when there are event types that have not yet been triggered in Stripe. #3115 (@dparker1005)
 * BUG FIX/ENHANCEMENT: Improved the validation of IP addresses before they are returned by the `pmpro_get_ip()` function. #3113 (@andrewlimaza)
