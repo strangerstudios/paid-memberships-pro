@@ -94,7 +94,7 @@
 	$business_address = get_option( 'pmpro_business_address' );
 	if ( empty( $business_address ) ) {
 		$business_address = array(
-			'name' => get_option( 'blogname' ),
+			'name' => '',
 			'street' => '',
 			'city' => '',
 			'state' => '',
