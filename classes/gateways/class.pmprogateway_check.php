@@ -40,7 +40,9 @@
 		}
 		
 		/**
-		 * {@inheritdoc}
+		 * Make sure Check is in the gateways list
+		 *		 
+		 * @since 1.8
 		 */
 		static function pmpro_gateways($gateways)
 		{
@@ -49,19 +51,23 @@
 		
 			return $gateways;
 		}
-
+		
 		/**
-		 * {@inheritdoc}
+		 * Get a list of payment options that the Check gateway needs/supports.
+		 *		 
+		 * @since 1.8
 		 */
-		static function getGatewayOptions() {
-			//call super
-			$options = parent::getGatewayOptions();
-			//combine with check options
-			$options = array_merge( $options, array(
-				'check_gateway_label',
+		static function getGatewayOptions()
+		{			
+			$options = array(
+				'gateway_environment',
 				'instructions',
-			) );
-
+				'check_gateway_label',
+				'currency',
+				'tax_state',
+				'tax_rate'
+			);
+			
 			return $options;
 		}
 		

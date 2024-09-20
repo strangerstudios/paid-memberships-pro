@@ -78,16 +78,20 @@ class PMProGateway_authorizenet extends PMProGateway
 	}
 
 	/**
-	 * {@inheritdoc}
+	 * Get a list of payment options that the this gateway needs/supports.
+	 *
+	 * @since 1.8
 	 */
-	static function getGatewayOptions() {
-		//call super
-		$options = parent::getGatewayOptions();
-		//combine above with specific options to this gateway
-		$options = array_merge( $options, array(
+	static function getGatewayOptions()
+	{
+		$options = array(
+			'gateway_environment',
 			'loginname',
 			'transactionkey',
-		) );
+			'currency',
+			'tax_state',
+			'tax_rate',
+		);
 
 		return $options;
 	}

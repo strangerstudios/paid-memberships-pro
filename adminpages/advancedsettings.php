@@ -39,6 +39,17 @@
 		pmpro_setOption("maxnotificationpriority");
 		pmpro_setOption("activity_email_frequency");
 
+		// Business settings.
+		$business_address = array();
+		$business_address['name'] = ! empty( $_POST['business_name'] ) ? sanitize_text_field( wp_unslash( $_POST['business_name'] ) ) : '';
+		$business_address['street'] = ! empty( $_POST['business_street'] ) ? sanitize_text_field( wp_unslash( $_POST['business_street'] ) ) : '';
+		$business_address['city'] = ! empty( $_POST['business_city'] ) ? sanitize_text_field( wp_unslash( $_POST['business_city'] ) ) : '';
+		$business_address['state'] = ! empty( $_POST['business_state'] ) ? sanitize_text_field( wp_unslash( $_POST['business_state'] ) ) : '';
+		$business_address['zip'] = ! empty( $_POST['business_zip'] ) ? sanitize_text_field( wp_unslash( $_POST['business_zip'] ) ) : '';
+		$business_address['country'] = ! empty( $_POST['business_country'] ) ? sanitize_text_field( wp_unslash( $_POST['business_country'] ) ) : '';
+		$business_address['phone'] = ! empty( $_POST['business_phone'] ) ? sanitize_text_field( wp_unslash( $_POST['business_phone'] ) ) : '';
+		update_option( 'pmpro_business_address', $business_address );
+
 		// Other settings.
 		pmpro_setOption("hideads");
 		pmpro_setOption("wisdom_opt_out");
@@ -78,6 +89,20 @@
 
 	// Checkout settings.
 	$tospage = get_option( "pmpro_tospage");
+
+	// Business settings.
+	$business_address = get_option( 'pmpro_business_address' );
+	if ( empty( $business_address ) ) {
+		$business_address = array(
+			'name' => get_option( 'blogname' ),
+			'street' => '',
+			'city' => '',
+			'state' => '',
+			'zip' => '',
+			'country' => '',
+			'phone' => ''
+		);
+	}
 
 	// Communication settings.
 	$maxnotificationpriority = get_option( "pmpro_maxnotificationpriority");
@@ -122,8 +147,8 @@
 						<td>
 							<input id="block_dashboard" name="block_dashboard" type="checkbox" value="yes" <?php checked( $block_dashboard, 'yes' ); ?> /> <label for="block_dashboard"><?php esc_html_e('Block all users with the Subscriber role from accessing the Dashboard.', 'paid-memberships-pro' );?></label>
 						</td>
-					</tr>
-					<tr>
+				</tr>
+				<tr>
 						<th scope="row" valign="top">
 							<label for="hide_toolbar"><?php esc_html_e('WordPress Toolbar', 'paid-memberships-pro' );?></label>
 						</th>
@@ -155,8 +180,8 @@
 								<option value="1" <?php if($filterqueries == 1) { ?>selected="selected"<?php } ?>><?php esc_html_e('Yes - Only members will see restricted posts/pages in searches and archives.', 'paid-memberships-pro' ); ?></option>
 							</select>
 						</td>
-					</tr>
-					<tr>
+				</tr>
+				<tr>
 						<th scope="row" valign="top">
 							<label for="showexcerpts"><?php esc_html_e('Show Excerpts to Non-Members?', 'paid-memberships-pro' ); ?></label>
 						</th>
@@ -266,8 +291,8 @@
 							<br />
 							<p class="description"><?php esc_html_e('Notifications are occasionally shown on the Paid Memberships Pro settings pages.', 'paid-memberships-pro' );?></p>
 						</td>
-					</tr>
-					<tr>
+				</tr>
+				<tr>
 						<th>
 							<label for="activity_email_frequency"><?php esc_html_e('Activity Email Frequency', 'paid-memberships-pro' );?></label>
 						</th>
@@ -291,6 +316,89 @@
 						</td>
 					</tr>
 				</tbody>
+				</table>
+			</div> <!-- end pmpro_section_inside -->
+		</div> <!-- end pmpro_section -->
+		<div id="business-settings" class="pmpro_section" data-visibility="shown" data-activated="true">
+			<div class="pmpro_section_toggle">
+				<button class="pmpro_section-toggle-button" type="button" aria-expanded="true">
+					<span class="dashicons dashicons-arrow-up-alt2"></span>
+					<?php esc_html_e( 'Business Settings', 'paid-memberships-pro' ); ?>
+				</button>
+			</div>
+			<div class="pmpro_section_inside">
+				<p class="description">
+					<?php esc_html_e( 'Enter your business name and address. This information will be shown to members on the Membership Orders page and Orders print view.', 'paid-memberships-pro' );?>
+				</p>
+				<table class="form-table">
+					<tbody>
+						<tr>
+							<th scope="row" valign="top">
+								<label for="business_name"><?php esc_html_e( 'Business Name', 'paid-memberships-pro' );?></label>
+							</th>
+							<td>
+								<input type="text" id="business_name" name="business_name" value="<?php echo esc_attr( $business_address['name'] ); ?>" class="regular-text" />
+							</td>
+						</tr>
+						<tr>
+							<th scope="row" valign="top">
+								<label for="business_street"><?php esc_html_e( 'Business Street', 'paid-memberships-pro' );?></label>
+							</th>
+							<td>
+								<input type="text" id="business_street" name="business_street" value="<?php echo esc_attr( $business_address['street'] ); ?>" class="regular-text" />
+							</td>
+						</tr>
+						<tr>
+							<th scope="row" valign="top">
+								<label for="business_city"><?php esc_html_e( 'Business City', 'paid-memberships-pro' ); ?></label>
+							</th>
+							<td>
+							<input type="text" id="business_city" name="business_city" value="<?php echo esc_attr( $business_address['city'] ); ?>" class="regular-text" />
+							</td>
+						</tr>
+						<tr>
+							<th scope="row" valign="top">
+							<label for="business_state"><?php esc_html_e( 'Business State', 'paid-memberships-pro' ); ?></label>
+							</th>
+							<td>
+								<input type="text" id="business_state" name="business_state" value="<?php echo esc_attr( $business_address['state'] ); ?>" class="regular-text" />
+							</td>
+						</tr>
+						<tr>
+							<th scope="row" valign="top">
+								<label for="business_zip"><?php esc_html_e( 'Business Postal Code', 'paid-memberships-pro' ); ?></label>
+							</th>
+							<td>
+								<input type="text" id="business_zip" name="business_zip" value="<?php echo esc_attr( $business_address['zip'] ); ?>" class="regular-text" />
+							</td>
+						</tr>
+						<tr>
+							<th scope="row" valign="top">
+								<label for="business_country"><?php esc_html_e( 'Business Country', 'paid-memberships-pro' ); ?></label>
+							</th>
+							<td>
+								<select id="business_country" name="business_country">
+									<option value="0" <?php selected( $business_address['country'], '0' ); ?>><?php esc_html_e( '-- Select a Country --', 'paid-memberships-pro' ); ?></option>
+								<?php
+									global $pmpro_countries;
+									foreach( $pmpro_countries as $abbr => $country ) {
+										?>
+										<option value="<?php echo esc_attr( $abbr ) ?>" <?php selected( $business_address['country'], $abbr ); ?>><?php echo esc_html( $country ); ?></option>
+										<?php
+									}
+								?>
+								</select>
+							</td>
+						</tr>
+						<tr>
+							<th scope="row" valign="top">
+								<label for="business_phone"><?php esc_html_e( 'Business Phone', 'paid-memberships-pro' ); ?></label>
+							</th>
+							<td>
+								<input type="text" id="business_phone" name="business_phone" value="<?php echo esc_attr( $business_address['phone'] ); ?>" class="regular-text" />
+							</td>
+						</tr>
+					</tbody>
 				</table>
 			</div> <!-- end pmpro_section_inside -->
 		</div> <!-- end pmpro_section -->
@@ -465,8 +573,7 @@ if ( function_exists( 'pmpro_displayAds' ) && pmpro_displayAds() ) {
 								</label>
 							</p>
 							<p>
-								<label>
-									<input name="wisdom_opt_out" type="radio" value="1"<?php checked( 1, $wisdom_opt_out ); ?> />
+								<label>				<input name="wisdom_opt_out" type="radio" value="1"<?php checked( 1, $wisdom_opt_out ); ?> />
 									<?php esc_html_e( 'Do not track usage of Paid Memberships Pro on my site.', 'paid-memberships-pro' );?>
 								</label>
 							</p>
@@ -475,8 +582,8 @@ if ( function_exists( 'pmpro_displayAds' ) && pmpro_displayAds() ) {
 								<a href="https://www.paidmembershipspro.com/privacy-policy/usage-tracking/" title="<?php esc_attr_e( 'PaidMembershipsPro.com Usage Tracking', 'paid-memberships-pro' ); ?>" target="_blank" rel="nofollow noopener"><?php esc_html_e( 'Paid Memberships Pro Usage Tracking', 'paid-memberships-pro' ); ?></a>.
 							</p>
 						</td>
-					</tr>
-					<tr>
+				</tr>
+				<tr>
 						<th scope="row" valign="top">
 							<label for="uninstall"><?php esc_html_e('Uninstall PMPro on deletion?', 'paid-memberships-pro' );?></label>
 						</th>

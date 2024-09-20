@@ -63,15 +63,21 @@
 		}
 
 		/**
-		 * {@inheritdoc}
+		 * Get a list of payment options that the this gateway needs/supports.
+		 *
+		 * @return array
+         *
+		 * @since 1.8
 		 */
-		static function getGatewayOptions() {
-			//call super
-			$options = parent::getGatewayOptions();
-			//combine above with specific
-			$options = array_merge( $options, array(
+		static function getGatewayOptions()
+		{
+			$options = array(
+				'gateway_environment',
 				'gateway_email',
-			) );
+				'currency',
+				'tax_state',
+				'tax_rate',
+			);
 
 			return $options;
 		}

@@ -97,17 +97,19 @@
 									);
 								}
 
-								if ( get_option( 'pmpro_business_name' ) ) {
+								// Pay to.
+								$business_address = get_option( 'pmpro_business_address' );
+								if ( ! empty( $business_address['name'] ) ) {
 									$pay_to = pmpro_formatAddress(
-										get_option( 'pmpro_business_name' ),
-										get_option( 'pmpro_business_address' ),
-										get_option( 'pmpro_business_address_2' ),
-										get_option( 'pmpro_business_city' ),
-										get_option( 'pmpro_business_state' ),
-										get_option( 'pmpro_business_postal_code' ),
-										get_option( 'pmpro_business_country' ),
-										false
-									 );
+										$business_address['name'],
+										$business_address['street'],
+										'',
+										$business_address['city'],
+										$business_address['state'],
+										$business_address['zip'],
+										$business_address['country'],
+										$business_address['phone']
+									);
 								} else {
 									$pay_to = get_option( 'blogname' );
 								}
